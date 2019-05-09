@@ -1,0 +1,121 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "services/pgevent/pgevent.proto",
+    "version": "version not set"
+  },
+  "schemes": [
+    "http",
+    "https"
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/api/pgevent.Event/GenerateEvents": {
+      "post": {
+        "operationId": "GenerateEvents",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/cmEmpty"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/pgeventGenerateEventsRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Event"
+        ]
+      }
+    },
+    "/api/pgevent.Misc/VersionInfo": {
+      "post": {
+        "operationId": "VersionInfo",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/cmVersionInfoResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/cmEmpty"
+            }
+          }
+        ],
+        "tags": [
+          "Misc"
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "cmEmpty": {
+      "type": "object"
+    },
+    "cmVersionInfoResponse": {
+      "type": "object",
+      "properties": {
+        "service": {
+          "type": "string"
+        },
+        "version": {
+          "type": "string"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "pgeventGenerateEventsRequest": {
+      "type": "object",
+      "properties": {
+        "raw_events": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Format: `table:rid:op:id`\nExample: `fulfillment:81460:INSERT:1052886332676874435`",
+          "title": "Be careful, as invalid message can cause errors in other services!"
+        },
+        "raw_events_pg": {
+          "type": "string",
+          "title": "Example: `{fulfillment:81460:INSERT:1052886332676874435,fulfillment:81461:UPDATE:1052886332676874435}`"
+        },
+        "items_per_batch": {
+          "type": "integer",
+          "format": "int32",
+          "description": "Control how many events are dispatched asynchronously as a group.\nWe don't want to dispatch too many events together.\nExample: 100. Default: 0 - events are dispatched synchronously."
+        }
+      }
+    }
+  },
+  "tags": [
+    {
+      "name": "Event"
+    },
+    {
+      "name": "Misc"
+    }
+  ]
+}

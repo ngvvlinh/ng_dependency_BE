@@ -1,0 +1,6 @@
+[gerrit]
+host=g.meta.etop.vn
+port=22
+project=etop/backend
+defaultremote=origin
+defaultbranch=master

@@ -1,0 +1,51 @@
+- baseImportPath: "./cmd/pgevent-forwarder"
+  allowedImports:
+  - etop.vn/backend/cmd/pgevent-forwarder
+  - etop.vn/backend/pb/common
+  - etop.vn/backend/pkg/common
+  - etop.vn/backend/pkg/etop/authorize/middleware
+  - etop.vn/backend/pkg/pgevent
+  - etop.vn/backend/wrapper/services/pgevent
+  - etop.vn/backend/pkg/etop/model
+
+- baseImportPath: "./cmd/etop-uploader"
+  allowedImports:
+  - etop.vn/backend/cmd/etop-uploader
+  - etop.vn/backend/pkg/common
+  - etop.vn/backend/pkg/etop/authorize/tokens
+
+- baseImportPath: "./cmd/etop-exporter"
+  allowedImports:
+  - etop.vn/backend/cmd/etop-exporter
+  - etop.vn/backend/pkg/common
+  - etop.vn/backend/pkg/etop/model
+
+- baseImportPath: "./pkg/common"
+  ignoredSubTrees:
+  - "./pkg/common/httpx"
+  - "./pkg/common/service"
+  - "./pkg/common/wrapper"
+  allowedImports:
+  - etop.vn/backend/pkg/common
+
+## TODO: resolve this later
+#
+#- baseImportPath: "./pkg/integration"
+#  ignoredSubTrees:
+#  - "./pkg/integration/kiotviet"
+#  allowedImports:
+#  - etop.vn/backend/pkg/integration
+#  - etop.vn/backend/pkg/common
+#  - etop.vn/backend/pkg/etop/model
+#  - etop.vn/backend/pkg/etop/model_log
+#  - etop.vn/backend/cmd/etop-server/config
+
+- baseImportPath: "./pkg"
+  ignoredSubTrees:
+  - "./pkg/etop/apix/webhook"
+  - "./pkg/common"
+  allowedImports:
+  - etop.vn/backend/cmd/etop-server/config
+  - etop.vn/backend/pb
+  - etop.vn/backend/pkg
+  - etop.vn/backend/wrapper

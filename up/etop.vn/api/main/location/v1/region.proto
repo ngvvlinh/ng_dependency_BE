@@ -1,0 +1,10 @@
+syntax = "proto2";
+package etop.vn.api.main.location.v1.region;
+option go_package = "v1";
+
+enum VietnamRegion {
+    unknown = 0;
+    north   = 1;
+    middle  = 2;
+    south   = 3;
+}

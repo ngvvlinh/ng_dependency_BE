@@ -1,0 +1,145 @@
+syntax = "proto2";
+package cm;
+option go_package = "etop.vn/backend/pb/common";
+
+import "protoc-gen-swagger/options/annotations.proto";
+option (grpc.gateway.protoc_gen_swagger.options.openapiv2_swagger) = {
+    info: {
+        title: "eTop API: Common";
+        version: "v1";
+    };
+};
+
+import "gogoproto/gogo.proto";
+option (gogoproto.equal_all)                = false;
+option (gogoproto.gogoproto_import)         = false;
+option (gogoproto.goproto_enum_prefix_all)  = false;
+option (gogoproto.goproto_getters_all)      = true;
+option (gogoproto.goproto_unrecognized_all) = false;
+option (gogoproto.gostring_all)             = false;
+option (gogoproto.marshaler_all)            = false;
+option (gogoproto.onlyone_all)              = false;
+option (gogoproto.sizer_all)                = false;
+option (gogoproto.testgen_all)              = false;
+option (gogoproto.unmarshaler_all)          = false;
+option (gogoproto.verbose_equal_all)        = false;
+
+import "google/protobuf/timestamp.proto";
+
+message Empty {}
+
+message VersionInfoResponse {
+    optional string service = 1 [(gogoproto.nullable)=false];
+    optional string version = 2 [(gogoproto.nullable)=false];
+
+    optional google.protobuf.Timestamp updated_at = 3;
+}
+
+message IDRequest {
+    // @required
+    optional int64 id       = 1 [(gogoproto.nullable)=false];
+}
+
+message CodeRequest {
+    // @required
+    optional string code    = 1 [(gogoproto.nullable)=false];
+}
+
+message NameRequest {
+    // @required
+    optional string name    = 1 [(gogoproto.nullable)=false];
+}
+
+message IDsRequest {
+    // @required
+    repeated int64 ids      = 1;
+}
+
+message StatusResponse {
+    optional string status  = 1 [(gogoproto.nullable)=false];
+}
+
+message IDMRequest {
+    optional int64 id       = 1 [(gogoproto.nullable)=false];
+    optional Paging paging  = 2;
+}
+
+message Paging {
+    // optional string after   = 1 [(gogoproto.nullable)=false];
+    // optional string before  = 2 [(gogoproto.nullable)=false];
+    // optional int32  first   = 3 [(gogoproto.nullable)=false];
+    // optional int32  last    = 4 [(gogoproto.nullable)=false];
+
+    optional int32  offset  = 5 [(gogoproto.nullable)=false];
+    optional int32  limit   = 6 [(gogoproto.nullable)=false];
+    optional string sort    = 7 [(gogoproto.nullable)=false];
+
+    // repeated Filter filters = 8;
+}
+
+message ForwardPaging {
+    optional string since = 1 [(gogoproto.nullable)=false];
+    optional int32 limit = 2 [(gogoproto.nullable)=false];
+}
+
+message PageInfo {
+    optional int32  total   = 1 [(gogoproto.nullable)=false];
+    optional int32  limit   = 2 [(gogoproto.nullable)=false];
+    repeated string sort    = 3;
+
+    // optional bool  has_next = 2 [(gogoproto.nullable)=false];
+    // optional bool  has_prev = 3 [(gogoproto.nullable)=false];
+}
+
+message ForwardPageInfo {
+    optional string since = 1 [(gogoproto.nullable)=false];
+    optional int32 limit = 2 [(gogoproto.nullable)=false];
+
+    optional bool has_next = 4[(gogoproto.nullable)=false];
+}
+
+message RawJSONObject {
+    required bytes data     = 1;
+}
+
+message Error {
+    optional string code = 1 [(gogoproto.nullable)=false];
+    optional string msg  = 2 [(gogoproto.nullable)=false];
+    map<string, string> meta = 3;
+}
+
+message ErrorsResponse {
+    repeated Error errors = 1;
+}
+
+message UpdatedResponse {
+    optional int32 updated = 1 [(gogoproto.nullable)=false];
+}
+
+message RemovedResponse {
+    optional int32 removed = 1 [(gogoproto.nullable)=false];
+}
+
+message DeletedResponse {
+    optional int32 deleted = 1 [(gogoproto.nullable)=false];
+}
+
+message MessageResponse {
+    optional string code = 1 [(gogoproto.nullable)=false];
+    optional string msg  = 2 [(gogoproto.nullable)=false];
+}
+
+message Filter {
+    // Comma separated properties: "name,s_name"
+    optional string name  = 1 [(gogoproto.nullable)=false];
+
+    // Can be = ≠ (!=) < ≤ (<=) > ≥ (>=) ⊃ (c) ∈ (in) ∩ (n)
+    //
+    // - Text or set: ⊃ ∩
+    // - Exactly: = ≠ ∈
+    // - Numeric: = ≠ ∈ < ≤ > ≥
+    optional string op    = 2 [(gogoproto.nullable)=false];
+
+    // Must always be string
+    optional string value = 3 [(gogoproto.nullable)=false];
+}

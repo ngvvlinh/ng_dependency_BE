@@ -1,0 +1,13 @@
+syntax = "proto2";
+package try_on;
+option go_package = "etop.vn/backend/pb/etop/etc/try_on";
+
+import "gogoproto/gogo.proto";
+option (gogoproto.gogoproto_import)         = false;
+
+enum TryOnCode {
+    unknown = 0;
+    none = 1;
+    open = 2;
+    try = 3;
+}

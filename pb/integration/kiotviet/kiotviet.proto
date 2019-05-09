@@ -1,0 +1,44 @@
+syntax = "proto2";
+package kiotviet;
+option go_package = "etop.vn/backend/pb/integration/kiotviet";
+
+import "protoc-gen-swagger/options/annotations.proto";
+option (grpc.gateway.protoc_gen_swagger.options.openapiv2_swagger) = {
+    info: {
+        title: "Integration: Kiotviet";
+        version: "v1";
+    };
+};
+
+import "gogoproto/gogo.proto";
+option (gogoproto.equal_all)                = false;
+option (gogoproto.gogoproto_import)         = false;
+option (gogoproto.goproto_enum_prefix_all)  = true;
+option (gogoproto.goproto_getters_all)      = true;
+option (gogoproto.goproto_unrecognized_all) = false;
+option (gogoproto.gostring_all)             = false;
+option (gogoproto.marshaler_all)            = false;
+option (gogoproto.onlyone_all)              = false;
+option (gogoproto.sizer_all)                = false;
+option (gogoproto.testgen_all)              = false;
+option (gogoproto.unmarshaler_all)          = false;
+option (gogoproto.verbose_equal_all)        = false;
+
+import "common/common.proto";
+
+service MiscService {
+    rpc VersionInfo(cm.Empty) returns (cm.VersionInfoResponse);
+}
+
+service SyncService {
+    rpc SyncProductSource(SyncProductSourceRequest) returns (cm.Empty);
+}
+
+message SyncProductSourceRequest {
+    // @required
+    optional int64 id             = 1 [(gogoproto.nullable)=false];
+
+    // Indicate if the product source should be sync from beginning or continue
+    // from the last time. Set this flag to force re-sync all data.
+    optional bool  from_beginning = 2 [(gogoproto.nullable)=false];
+}

@@ -1,0 +1,586 @@
+syntax = "proto2";
+package supplier;
+option go_package = "etop.vn/backend/pb/etop/supplier";
+
+import "protoc-gen-swagger/options/annotations.proto";
+option (grpc.gateway.protoc_gen_swagger.options.openapiv2_swagger) = {
+    info: {
+        title: "eTop API: Supplier";
+        version: "v1";
+    };
+};
+
+import "gogoproto/gogo.proto";
+option (gogoproto.equal_all)                = false;
+option (gogoproto.gogoproto_import)         = false;
+option (gogoproto.goproto_enum_prefix_all)  = true;
+option (gogoproto.goproto_getters_all)      = true;
+option (gogoproto.goproto_unrecognized_all) = false;
+option (gogoproto.gostring_all)             = false;
+option (gogoproto.marshaler_all)            = false;
+option (gogoproto.onlyone_all)              = false;
+option (gogoproto.sizer_all)                = false;
+option (gogoproto.testgen_all)              = false;
+option (gogoproto.unmarshaler_all)          = false;
+option (gogoproto.verbose_equal_all)        = false;
+
+import "google/protobuf/timestamp.proto";
+import "common/common.proto";
+import "etop/etop.proto";
+import "etop/order/order.proto";
+import "etop/order/source/source.proto";
+import "etop/etc/status3/status.proto";
+import "etop/etc/status4/status.proto";
+import "etop/etc/status5/status.proto";
+
+service MiscService {
+    rpc VersionInfo(cm.Empty) returns (cm.VersionInfoResponse);
+}
+
+service KiotvietService {
+    rpc ConnectKiotvietTest(ConnectKiotvietTestRequest) returns (ConnectKiotvietTestResponse);
+    rpc ConnectKiotviet(ConnectKiotvietRequest) returns (ConnectKiotvietResponse);
+}
+
+service CategoryService {
+    rpc GetCategory(cm.IDRequest) returns (Category);
+    rpc GetCategories(GetCategoriesRequest) returns (CategoriesResponse);
+    rpc GetCategoriesByIDs(cm.IDsRequest) returns (CategoriesResponse);
+}
+
+service BrandService {
+    rpc GetBrand(cm.IDRequest) returns (Brand);
+    rpc GetBrands(cm.Empty) returns (BrandsResponse);
+    rpc GetBrandsByIDs(cm.IDsRequest) returns (BrandsResponse);
+
+    rpc CreateBrand(CreateBrandRequest) returns (Brand);
+    rpc DeleteBrand(cm.IDRequest) returns (cm.Empty);
+    rpc UpdateBrand(UpdateBrandRequest) returns (Brand);
+    rpc UpdateBrandImages(UpdateBrandImagesRequest) returns (Brand);
+}
+
+service ProductService {
+    rpc GetProduct(cm.IDRequest) returns (Product);
+
+    // GetProducts
+    //
+    // All price use for variant so when filter by price, you should add prefix 'v.'
+    // Example: v.wholesale_price
+    rpc GetProducts(GetVariantsRequest) returns (ProductsResponse);
+    rpc GetProductsByIDs(cm.IDsRequest) returns (ProductsResponse);
+    rpc UpdateProduct(UpdateProductRequest)  returns (Product);
+    rpc UpdateProductImages(UpdateVariantImagesRequest) returns (Product);
+
+    rpc GetVariant(cm.IDRequest) returns (Variant);
+
+    // GetVariants
+    //
+    // Return list of variants.
+    //
+    // Filters:
+    //   - Text or set: s_name, x_name, s_tags
+    //   - Exactly: x_code, x_base_id, x_id, supplier_id, category_id, x_status, s_status, e_status, status
+    //   - Numeric: wholesale_price, list_price, retail_price_min, retail_price_max, s_wholesale_price, s_list_price, s_retail_price_min, s_retail_price_max, x_price
+    rpc GetVariants(GetVariantsRequest) returns (VariantsResponse);
+
+    rpc GetVariantsByIDs(cm.IDsRequest) returns (VariantsResponse);
+    rpc UpdateVariant (UpdateVariantRequest)  returns (Variant);
+    rpc UpdateVariants(UpdateVariantsRequest) returns (UpdateVariantsResponse);
+    rpc UpdateVariantsStatus(UpdateVariantsStatusRequest) returns (cm.UpdatedResponse);
+    rpc UpdateVariantImages(UpdateVariantImagesRequest) returns (Variant);
+}
+
+service PriceService {
+    rpc GetPriceRules(cm.Empty) returns (PriceRulesResponse);
+    rpc UpdatePriceRules(UpdatePriceRulesRequest) returns (UpdatePriceRulesResponse);
+}
+
+service OrderService {
+    rpc GetOrder(cm.IDRequest) returns (SupplierOrder);
+    rpc GetOrders(GetOrdersRequest) returns (OrdersResponse);
+    rpc GetOrdersByIDs(cm.IDsRequest) returns (OrdersResponse);
+    rpc UpdateOrdersStatus(UpdateOrdersStatusRequest) returns (cm.UpdatedResponse);
+}
+
+service FulfillmentService {
+    rpc GetFulfillment(cm.IDRequest) returns (order.Fulfillment);
+    rpc GetFulfillments(GetFulfillmentsRequest) returns (order.FulfillmentsResponse);
+}
+
+service AccountService {
+    rpc UpdateSupplier(UpdateSupplierRequest) returns (etop.Supplier);
+    rpc SetDefaultAddress(etop.SetDefaultAddressRequest) returns (cm.UpdatedResponse);
+}
+
+message ConnectKiotvietTestRequest {
+    // @required
+    optional KiotvietConnection kiotviet = 1;
+}
+
+message ConnectKiotvietTestResponse {
+    // @required
+    repeated KiotvietBranch branches = 1;
+}
+
+message KiotvietBranch {
+    // @required
+    optional string id      = 1 [(gogoproto.nullable)=false];
+
+    // @required
+    optional string name    = 2 [(gogoproto.nullable)=false];
+
+    // @required
+    optional string code    = 3 [(gogoproto.nullable)=false];
+
+    // @required
+    optional string address = 4 [(gogoproto.nullable)=false];
+}
+
+message ConnectKiotvietRequest {
+    // @required
+    optional string name = 1 [(gogoproto.nullable)=false];
+
+    // @required
+    optional KiotvietConnection kiotviet  = 2;
+
+    // @required
+    optional string branch_id = 3 [(gogoproto.nullable)=false];
+
+    optional string url_slug = 5 [(gogoproto.nullable)=false];
+}
+
+message KiotvietConnection {
+    // @required aka subdomain
+    optional string retailer_id   = 1 [(gogoproto.nullable)=false];
+
+    // @required
+    optional string client_id     = 2 [(gogoproto.nullable)=false];
+
+    // @required
+    optional string client_secret = 3 [(gogoproto.nullable)=false];
+}
+
+message ConnectKiotvietResponse {
+    optional etop.Supplier supplier = 1;
+}
+
+message GetCategoriesRequest {
+    optional bool include_deleted = 1 [(gogoproto.nullable)=false];
+}
+
+message CategoriesResponse {
+    repeated Category categories = 1;
+}
+
+message Category {
+    optional int64  id     = 1 [(gogoproto.nullable)=false];
+    optional string name   = 2 [(gogoproto.nullable)=false];
+    optional int64 product_source_id = 3 [(gogoproto.nullable)=false];
+    optional string product_source_type =  4 [(gogoproto.nullable)=false];
+    optional int64 supplier_id = 5 [(gogoproto.nullable)=false];
+    optional int64 parent_id = 6 [(gogoproto.nullable)=false];
+    optional int64 shop_id = 7 [(gogoproto.nullable)=false];
+
+    optional string x_id        = 8 [(gogoproto.nullable)=false];
+    optional string x_name      = 9 [(gogoproto.nullable)=false];
+    optional string x_parent_id = 10 [(gogoproto.nullable)=false];
+}
+
+message GetVariantsRequest {
+    optional cm.Paging paging = 1;
+    repeated cm.Filter filters = 4;
+}
+
+message VariantsResponse {
+    optional cm.PageInfo paging   = 1;
+    repeated Variant     variants = 2;
+}
+
+message ProductsResponse {
+    optional cm.PageInfo paging   = 1;
+    repeated Product     products = 2;
+}
+
+message Attribute {
+    optional string name      = 1 [(gogoproto.nullable)=false];
+    optional string value     = 2 [(gogoproto.nullable)=false];
+}
+
+message Unit {
+    optional string code      = 1 [(gogoproto.nullable)=false];
+    optional string name      = 2 [(gogoproto.nullable)=false];
+    optional string full_name = 3 [(gogoproto.nullable)=false];
+    optional string unit      = 4 [(gogoproto.nullable)=false];
+    optional float  unit_conv = 5 [(gogoproto.nullable)=false];
+    optional int32  price     = 6 [(gogoproto.nullable)=false];
+}
+
+message Variant {
+    optional int64  id            = 1 [(gogoproto.nullable)=false];
+    optional int64 supplier_id    = 2 [(gogoproto.nullable)=false];
+    optional int64 category_id    = 3 [(gogoproto.nullable)=false];
+
+    // optional string s_short_name  = 5 [(gogoproto.nullable)=false];
+    optional string s_name   = 6 [(gogoproto.nullable)=false];
+    optional string s_description = 7 [(gogoproto.nullable)=false];
+    optional string s_short_desc  = 8 [(gogoproto.nullable)=false];
+    optional string s_desc_html   = 9 [(gogoproto.nullable)=false];
+    optional string s_note        = 10 [(gogoproto.nullable)=false];
+    optional cm.RawJSONObject s_meta    = 11;
+
+    repeated string image_urls    = 12;
+
+    optional string x_id          = 13 [(gogoproto.nullable)=false];
+    optional string x_base_id     = 14 [(gogoproto.nullable)=false];
+    optional string x_category_id = 15 [(gogoproto.nullable)=false];
+    optional string x_code        = 16 [(gogoproto.nullable)=false];
+    optional string x_name        = 17 [(gogoproto.nullable)=false];
+    optional string x_full_name   = 18 [(gogoproto.nullable)=false];
+    optional string x_description = 19 [(gogoproto.nullable)=false];
+    repeated string x_image_urls  = 20;
+    optional string x_unit        = 21 [(gogoproto.nullable)=false];
+    optional float  x_unit_conv   = 22 [(gogoproto.nullable)=false];
+    optional int32  x_price       = 23 [(gogoproto.nullable)=false];
+
+    // repeated Unit      x_units       = 24;
+    repeated Attribute x_attributes  = 25;
+
+    // optional google.protobuf.Timestamp x_created_at = 26;
+
+    optional google.protobuf.Timestamp x_updated_at = 27;
+    optional google.protobuf.Timestamp x_sync_at    = 28;
+    optional google.protobuf.Timestamp   updated_at = 29;
+    optional google.protobuf.Timestamp   created_at = 30;
+
+    optional status3.Status s_status = 31 [(gogoproto.nullable)=false];
+    optional status3.Status x_status = 32 [(gogoproto.nullable)=false];
+    optional status3.Status e_status = 33 [(gogoproto.nullable)=false];
+    optional status3.Status   status = 34 [(gogoproto.nullable)=false];
+
+    repeated string s_tags = 35;
+
+    optional int32 quantity_available = 36 [(gogoproto.nullable)=false];
+    optional int32 quantity_on_hand   = 37 [(gogoproto.nullable)=false];
+    optional int32 quantity_reserved  = 38 [(gogoproto.nullable)=false];
+
+    optional int32 s_wholesale_price  = 40 [(gogoproto.nullable)=false];
+    optional int32 s_list_price       = 41 [(gogoproto.nullable)=false];
+    optional int32 s_retail_price_min = 42 [(gogoproto.nullable)=false];
+    optional int32 s_retail_price_max = 43 [(gogoproto.nullable)=false];
+
+    optional int32 wholesale_price_0 = 44 [(gogoproto.nullable)=false];
+    optional int32 wholesale_price   = 45 [(gogoproto.nullable)=false];
+    optional int32 list_price        = 46 [(gogoproto.nullable)=false];
+    optional int32 retail_price_min  = 47 [(gogoproto.nullable)=false];
+    optional int32 retail_price_max  = 48 [(gogoproto.nullable)=false];
+
+    optional int64 s_brand_id = 49 [(gogoproto.nullable)=false];
+    repeated Attribute attributes = 50;
+}
+
+message Product {
+    optional int64  id            = 1 [(gogoproto.nullable)=false];
+    optional int64 supplier_id    = 2 [(gogoproto.nullable)=false];
+    optional int64 category_id    = 3 [(gogoproto.nullable)=false];
+
+
+    optional string s_name  = 5 [(gogoproto.nullable)=false];
+    optional string s_description = 7 [(gogoproto.nullable)=false];
+    optional string s_short_desc  = 8 [(gogoproto.nullable)=false];
+    optional string s_desc_html   = 9 [(gogoproto.nullable)=false];
+    optional cm.RawJSONObject s_meta    = 11;
+
+    repeated string image_urls    = 12;
+
+    optional string x_id          = 13 [(gogoproto.nullable)=false];
+    optional string x_category_id = 15 [(gogoproto.nullable)=false];
+    optional string x_code        = 16 [(gogoproto.nullable)=false];
+    optional string x_name        = 17 [(gogoproto.nullable)=false];
+    optional string x_description = 19 [(gogoproto.nullable)=false];
+    repeated string x_image_urls  = 20;
+    optional string x_unit        = 21 [(gogoproto.nullable)=false];
+    optional float  x_unit_conv   = 22 [(gogoproto.nullable)=false];
+    optional int32  x_price       = 23 [(gogoproto.nullable)=false];
+
+    repeated Unit      x_units       = 24;
+    // repeated Attribute x_attributes  = 25;
+
+    optional google.protobuf.Timestamp x_created_at = 26;
+
+    optional google.protobuf.Timestamp x_updated_at = 27;
+    optional google.protobuf.Timestamp x_sync_at    = 28;
+    optional google.protobuf.Timestamp   updated_at = 29;
+    optional google.protobuf.Timestamp   created_at = 30;
+
+    optional status3.Status x_status = 32 [(gogoproto.nullable)=false];
+    optional status3.Status   status = 34 [(gogoproto.nullable)=false];
+
+    repeated string s_tags = 35;
+
+    optional int32 quantity_available = 36 [(gogoproto.nullable)=false];
+    optional int32 quantity_on_hand   = 37 [(gogoproto.nullable)=false];
+    optional int32 quantity_reserved  = 38 [(gogoproto.nullable)=false];
+
+
+    repeated Variant variants = 50;
+    optional int64 s_brand_id = 49 [(gogoproto.nullable)=false];
+    optional Brand brand = 51;
+}
+
+message UpdateVariantsRequest {
+    repeated UpdateVariantRequest updates = 1;
+}
+
+message UpdateVariantsResponse {
+    repeated Variant  variants = 2;
+    repeated cm.Error errors   = 3;
+}
+
+message UpdateVariantRequest {
+    // @required
+    optional int64 id = 1 [(gogoproto.nullable)=false];
+
+    optional string s_name  = 2 [(gogoproto.nullable)=false];
+    // optional string s_full_name   = 3 [(gogoproto.nullable)=false];
+    optional string s_description = 4 [(gogoproto.nullable)=false];
+    optional string s_short_desc  = 5 [(gogoproto.nullable)=false];
+    optional string s_desc_html   = 6 [(gogoproto.nullable)=false];
+    optional string s_note        = 7 [(gogoproto.nullable)=false];
+    optional cm.RawJSONObject s_meta    = 8;
+
+    // optional int32 s_wholesale_price  = 10 [(gogoproto.nullable)=false];
+    // optional int32 s_list_price       = 11 [(gogoproto.nullable)=false];
+    // optional int32 s_retail_price_min = 12 [(gogoproto.nullable)=false];
+    // optional int32 s_retail_price_max = 13 [(gogoproto.nullable)=false];
+
+    optional int64 s_brand_id = 14 [(gogoproto.nullable)=false];
+}
+
+message UpdateProductRequest {
+    // @required
+    optional int64 id = 1 [(gogoproto.nullable)=false];
+
+    optional string s_name   = 3 [(gogoproto.nullable)=false];
+    optional string s_description = 4 [(gogoproto.nullable)=false];
+    optional string s_short_desc  = 5 [(gogoproto.nullable)=false];
+    optional string s_desc_html   = 6 [(gogoproto.nullable)=false];
+    optional cm.RawJSONObject s_meta    = 8;
+
+    // optional int32 s_wholesale_price  = 10 [(gogoproto.nullable)=false];
+    // optional int32 s_list_price       = 11 [(gogoproto.nullable)=false];
+    // optional int32 s_retail_price_min = 12 [(gogoproto.nullable)=false];
+    // optional int32 s_retail_price_max = 13 [(gogoproto.nullable)=false];
+
+    optional int64 s_brand_id = 14 [(gogoproto.nullable)=false];
+}
+
+message UpdateVariantsStatusRequest {
+    // @required
+    repeated int64 ids = 1;
+
+    // @required
+    optional status3.Status s_status = 2;
+}
+
+message UpdateVariantImagesRequest {
+    // @required
+    optional int64  id          = 1 [(gogoproto.nullable)=false];
+    repeated string adds        = 2;
+    repeated string deletes     = 3;
+    repeated string replace_all = 4;
+    optional bool   delete_all  = 5 [(gogoproto.nullable)=false];
+}
+
+// PriceRule
+//
+// ```
+// wholesale_price     =    x_price * a + b
+//      list_price     =    x_price * a + b
+//    retail_price_min = list_price * a + b
+//    retail_price_max = list_price * a + b
+// ```
+message PriceRule {
+    optional int64  s_category_id = 1 [(gogoproto.nullable)=false];
+    optional string x_category_id = 2 [(gogoproto.nullable)=false];
+    optional string s_tag         = 3 [(gogoproto.nullable)=false];
+
+    optional double wholesale_price_a  =  4 [(gogoproto.nullable)=false];
+    optional double wholesale_price_b  =  5 [(gogoproto.nullable)=false];
+    optional double list_price_a       =  6 [(gogoproto.nullable)=false];
+    optional double list_price_b       =  7 [(gogoproto.nullable)=false];
+    optional double retail_price_min_a =  8 [(gogoproto.nullable)=false];
+    optional double retail_price_min_b =  9 [(gogoproto.nullable)=false];
+    optional double retail_price_max_a = 10 [(gogoproto.nullable)=false];
+    optional double retail_price_max_b = 11 [(gogoproto.nullable)=false];
+}
+
+message UpdatePriceRulesRequest {
+    optional PriceRule general = 1;
+    repeated PriceRule updates = 2;
+    repeated PriceRule deletes = 3;
+}
+
+message PriceRulesResponse {
+    optional PriceRule general = 1;
+    repeated PriceRule rules   = 2;
+    optional bool    is_config = 3 [(gogoproto.nullable)=false];
+}
+
+message UpdatePriceRulesResponse {
+    optional PriceRule general = 1;
+    repeated PriceRule rules   = 2;
+    repeated cm.Error  update_errors = 3;
+    repeated cm.Error  delete_errors = 4;
+}
+
+message GetOrdersRequest {
+    optional cm.Paging paging = 1;
+    repeated cm.Filter filters = 4;
+}
+
+message UpdateOrdersStatusRequest {
+    // @required
+    repeated UpdateOrderLineStatus updates = 2;
+}
+
+message UpdateOrderLineStatus {
+    optional int64 order_id   = 1 [(gogoproto.nullable)=false];
+    repeated int64 product_ids = 2;
+    optional status3.Status s_confirm = 3;
+    optional string cancel_reason = 4 [(gogoproto.nullable)=false];
+}
+
+message OrdersResponse {
+    optional cm.PageInfo paging = 1;
+    repeated SupplierOrder orders = 2;
+}
+
+message SupplierOrder {
+    optional int64  id        = 1 [(gogoproto.nullable)=false];
+    optional int64  shop_id   = 2 [(gogoproto.nullable)=false];
+    optional string shop_name = 3 [(gogoproto.nullable)=false];
+    optional string code      = 4 [(gogoproto.nullable)=false];
+    optional source.Source source = 5 [(gogoproto.nullable)=false];
+
+    optional string payment_method = 7 [(gogoproto.nullable)=false];
+
+    optional SupplierOrderShopInfo shop             =  8;
+    optional order.OrderCustomer  customer          =  9;
+    optional order.OrderAddress   shipping_address  = 12;
+
+    optional google.protobuf.Timestamp created_at   = 13;
+    optional google.protobuf.Timestamp processed_at = 14;
+    optional google.protobuf.Timestamp updated_at   = 15;
+    optional google.protobuf.Timestamp closed_at    = 16;
+    optional google.protobuf.Timestamp confirmed_at = 17;
+    optional google.protobuf.Timestamp cancelled_at = 18;
+    optional string cancel_reason = 19 [(gogoproto.nullable)=false];
+
+    repeated SupplierOrderLine lines = 41;
+    optional int32 total_items  = 43 [(gogoproto.nullable)=false];
+    optional int32 basket_value = 44 [(gogoproto.nullable)=false];
+    optional int32 total_weight = 45 [(gogoproto.nullable)=false];
+    // optional int32 total_tax = 45 [(gogoproto.nullable)=false];
+    // optional int32 total_discount = 47 [(gogoproto.nullable)=false];
+    optional int32 total_amount = 48 [(gogoproto.nullable)=false];
+
+    optional status3.Status sh_confirm = 31 [(gogoproto.nullable)=false];
+    optional status3.Status    confirm = 33 [(gogoproto.nullable)=false];
+    optional status5.Status  status = 34 [(gogoproto.nullable)=false];
+    optional status5.Status  fulfillment_shipping_status = 35 [(gogoproto.nullable)=false];
+    optional status3.Status      customer_payment_status = 36 [(gogoproto.nullable)=false];
+    repeated order.Fulfillment fulfillments = 37;
+    optional order.OrderExternal external_data = 38;
+}
+
+message SupplierOrderLine {
+    optional int64 order_id = 2 [(gogoproto.nullable)=false];
+    optional int64 variant_id = 3 [(gogoproto.nullable)=false];
+    optional string variant_name = 7 [(gogoproto.nullable)=false];
+
+    optional google.protobuf.Timestamp updated_at   = 10;
+    optional google.protobuf.Timestamp closed_at    = 11;
+    optional google.protobuf.Timestamp confirmed_at = 12;
+    optional google.protobuf.Timestamp cancelled_at = 13;
+
+    optional string cancel_reason = 14 [(gogoproto.nullable)=false];
+    optional status3.Status s_confirm = 15 [(gogoproto.nullable)=false];
+
+    optional int32 quantity   = 17 [(gogoproto.nullable)=false];
+    optional int32 list_price = 18 [(gogoproto.nullable)=false];
+    optional string image_url = 21 [(gogoproto.nullable)=false];
+    repeated Attribute attributes = 22;
+}
+
+message SupplierOrderShopInfo {
+    optional int64 id = 1 [(gogoproto.nullable)=false];
+    optional string name = 2 [(gogoproto.nullable)=false];
+    optional string phone = 3 [(gogoproto.nullable)=false];
+    optional string email = 4 [(gogoproto.nullable)=false];
+    optional string website_url = 5 [(gogoproto.nullable)=false];
+    optional string image_url = 6 [(gogoproto.nullable)=false];
+    optional order.OrderAddress address = 7;
+}
+
+message BrandsResponse {
+    repeated Brand brands = 1;
+}
+
+message Brand {
+    optional int64  id     = 1 [(gogoproto.nullable)=false];
+    optional int64 supplier_id   = 2 [(gogoproto.nullable)=false];
+
+    optional string name   = 3 [(gogoproto.nullable)=false];
+    optional string description   = 4 [(gogoproto.nullable)=false];
+    optional string policy   = 5 [(gogoproto.nullable)=false];
+    repeated string image_urls    = 6;
+
+    optional google.protobuf.Timestamp   updated_at = 7;
+    optional google.protobuf.Timestamp   created_at = 8;
+
+    optional string supplier_name = 9 [(gogoproto.nullable)=false];
+}
+
+message CreateBrandRequest {
+    optional string name = 1 [(gogoproto.nullable)=false];
+    optional string description = 2 [(gogoproto.nullable)=false];
+    optional string policy = 3 [(gogoproto.nullable)=false];
+    repeated string image_urls = 4;
+}
+
+message UpdateBrandRequest {
+    // @required
+    optional int64 id = 1 [(gogoproto.nullable)=false];
+
+    // @required
+    optional string name = 2 [(gogoproto.nullable)=false];
+
+    optional string description = 3 [(gogoproto.nullable)=false];
+    optional string policy = 4 [(gogoproto.nullable)=false];
+}
+
+message UpdateBrandImagesRequest {
+    // @required
+    optional int64  id          = 1 [(gogoproto.nullable)=false];
+    repeated string adds        = 2;
+    repeated string deletes     = 3;
+    repeated string replace_all = 4;
+    optional bool   delete_all  = 5 [(gogoproto.nullable)=false];
+}
+
+message UpdateSupplierRequest {
+    // @required
+    optional int64 id = 6 [(gogoproto.nullable)=false];
+
+    optional string name = 1 [(gogoproto.nullable)=false];
+    optional etop.CompanyInfo company_info = 2;
+    optional etop.Address warehouse_address = 3;
+    optional etop.BankAccount bank_account = 4;
+    repeated etop.ContactPerson contact_persons = 5;
+}
+
+message GetFulfillmentsRequest {
+    optional cm.Paging paging = 1;
+    optional int64 order_id = 4 [(gogoproto.nullable)=false];
+    optional status3.Status status  = 5;
+}

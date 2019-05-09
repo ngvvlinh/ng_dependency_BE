@@ -1,0 +1,6555 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "eTop API: Shop",
+    "version": "v1"
+  },
+  "schemes": [
+    "http",
+    "https"
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/api/shop.Account/DeleteShop": {
+      "post": {
+        "operationId": "DeleteShop",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/cmEmpty"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/cmIDRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Account"
+        ]
+      }
+    },
+    "/api/shop.Account/GetBalanceShop": {
+      "post": {
+        "operationId": "GetBalanceShop",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/shopGetBalanceShopResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/cmEmpty"
+            }
+          }
+        ],
+        "tags": [
+          "Account"
+        ]
+      }
+    },
+    "/api/shop.Account/RegisterShop": {
+      "post": {
+        "operationId": "RegisterShop",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/shopRegisterShopResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/shopRegisterShopRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Account"
+        ]
+      }
+    },
+    "/api/shop.Account/SetDefaultAddress": {
+      "post": {
+        "operationId": "SetDefaultAddress",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/cmUpdatedResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/etopSetDefaultAddressRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Account"
+        ]
+      }
+    },
+    "/api/shop.Account/UpdateShop": {
+      "post": {
+        "operationId": "UpdateShop",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/shopUpdateShopResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/shopUpdateShopRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Account"
+        ]
+      }
+    },
+    "/api/shop.Authorize/AuthorizePartner": {
+      "post": {
+        "operationId": "AuthorizePartner",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/shopAuthorizedPartnerResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/shopAuthorizePartnerRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Authorize"
+        ]
+      }
+    },
+    "/api/shop.Authorize/GetAuthorizedPartners": {
+      "post": {
+        "operationId": "GetAuthorizedPartners",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/shopGetAuthorizedPartnersResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/cmEmpty"
+            }
+          }
+        ],
+        "tags": [
+          "Authorize"
+        ]
+      }
+    },
+    "/api/shop.Authorize/GetAvailablePartners": {
+      "post": {
+        "operationId": "GetAvailablePartners",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/shopGetPartnersResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/cmEmpty"
+            }
+          }
+        ],
+        "tags": [
+          "Authorize"
+        ]
+      }
+    },
+    "/api/shop.Brand/GetBrand": {
+      "post": {
+        "operationId": "GetBrand",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/supplierBrand"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/cmIDRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Brand"
+        ]
+      }
+    },
+    "/api/shop.Brand/GetBrands": {
+      "post": {
+        "operationId": "GetBrands",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/supplierBrandsResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/cmEmpty"
+            }
+          }
+        ],
+        "tags": [
+          "Brand"
+        ]
+      }
+    },
+    "/api/shop.Browse/BrowseCategories": {
+      "post": {
+        "operationId": "BrowseCategories",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/etopCategoriesResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/cmEmpty"
+            }
+          }
+        ],
+        "tags": [
+          "Browse"
+        ]
+      }
+    },
+    "/api/shop.Browse/BrowseProduct": {
+      "post": {
+        "operationId": "BrowseProduct",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/shopEtopProduct"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/cmIDRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Browse"
+        ]
+      }
+    },
+    "/api/shop.Browse/BrowseProducts": {
+      "post": {
+        "operationId": "BrowseProducts",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/shopEtopProductsResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/shopBrowseVariantsRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Browse"
+        ]
+      }
+    },
+    "/api/shop.Browse/BrowseProductsByIDs": {
+      "post": {
+        "operationId": "BrowseProductsByIDs",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/shopEtopProductsResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/cmIDsRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Browse"
+        ]
+      }
+    },
+    "/api/shop.Browse/BrowseVariant": {
+      "post": {
+        "operationId": "BrowseVariant",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/shopEtopVariant"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/cmIDRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Browse"
+        ]
+      }
+    },
+    "/api/shop.Browse/BrowseVariants": {
+      "post": {
+        "operationId": "BrowseVariants",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/shopEtopVariantsResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/shopBrowseVariantsRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Browse"
+        ]
+      }
+    },
+    "/api/shop.Browse/BrowseVariantsByIDs": {
+      "post": {
+        "operationId": "BrowseVariantsByIDs",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/shopEtopVariantsResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/cmIDsRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Browse"
+        ]
+      }
+    },
+    "/api/shop.Collection/CreateCollection": {
+      "post": {
+        "operationId": "CreateCollection",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/shopCollection"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/shopCreateCollectionRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Collection"
+        ]
+      }
+    },
+    "/api/shop.Collection/DeleteCollection": {
+      "post": {
+        "operationId": "DeleteCollection",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/cmRemovedResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/cmIDRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Collection"
+        ]
+      }
+    },
+    "/api/shop.Collection/GetCollection": {
+      "post": {
+        "operationId": "GetCollection",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/shopCollection"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/cmIDRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Collection"
+        ]
+      }
+    },
+    "/api/shop.Collection/GetCollections": {
+      "post": {
+        "operationId": "GetCollections",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/shopCollectionsResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/cmEmpty"
+            }
+          }
+        ],
+        "tags": [
+          "Collection"
+        ]
+      }
+    },
+    "/api/shop.Collection/GetCollectionsByIDs": {
+      "post": {
+        "operationId": "GetCollectionsByIDs",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/shopCollectionsResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/cmIDsRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Collection"
+        ]
+      }
+    },
+    "/api/shop.Collection/RemoveProductsCollection": {
+      "post": {
+        "operationId": "RemoveProductsCollection",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/cmUpdatedResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/shopRemoveProductsCollectionRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Collection"
+        ]
+      }
+    },
+    "/api/shop.Collection/UpdateCollection": {
+      "post": {
+        "operationId": "UpdateCollection",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/shopCollection"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/shopUpdateCollectionRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Collection"
+        ]
+      }
+    },
+    "/api/shop.Collection/UpdateProductsCollection": {
+      "post": {
+        "operationId": "UpdateProductsCollection",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/shopUpdateProductsCollectionResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/shopUpdateProductsCollectionRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Collection"
+        ]
+      }
+    },
+    "/api/shop.Export/GetExports": {
+      "post": {
+        "operationId": "GetExports",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/shopGetExportsResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/shopGetExportsRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Export"
+        ]
+      }
+    },
+    "/api/shop.Export/RequestExport": {
+      "post": {
+        "operationId": "RequestExport",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/shopRequestExportResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/shopRequestExportRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Export"
+        ]
+      }
+    },
+    "/api/shop.Fulfillment/CancelFulfillment": {
+      "post": {
+        "operationId": "CancelFulfillment",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/cmUpdatedResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/cmIDRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Fulfillment"
+        ]
+      }
+    },
+    "/api/shop.Fulfillment/CreateFulfillmentsForOrder": {
+      "post": {
+        "operationId": "CreateFulfillmentsForOrder",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/orderOrder"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/shopCreateFulfillmentsForOrderRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Fulfillment"
+        ]
+      }
+    },
+    "/api/shop.Fulfillment/GetExternalShippingServices": {
+      "post": {
+        "operationId": "GetExternalShippingServices",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/orderGetExternalShippingServicesResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/orderGetExternalShippingServicesRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Fulfillment"
+        ]
+      }
+    },
+    "/api/shop.Fulfillment/GetFulfillment": {
+      "post": {
+        "operationId": "GetFulfillment",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/orderFulfillment"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/cmIDRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Fulfillment"
+        ]
+      }
+    },
+    "/api/shop.Fulfillment/GetFulfillments": {
+      "post": {
+        "operationId": "GetFulfillments",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/orderFulfillmentsResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/shopGetFulfillmentsRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Fulfillment"
+        ]
+      }
+    },
+    "/api/shop.Fulfillment/GetPublicExternalShippingServices": {
+      "post": {
+        "operationId": "GetPublicExternalShippingServices",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/orderGetExternalShippingServicesResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/orderGetExternalShippingServicesRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Fulfillment"
+        ]
+      }
+    },
+    "/api/shop.Fulfillment/GetPublicFulfillment": {
+      "post": {
+        "operationId": "GetPublicFulfillment",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/orderPublicFulfillment"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/shopGetPublicFulfillmentRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Fulfillment"
+        ]
+      }
+    },
+    "/api/shop.Fulfillment/UpdateFulfillmentsShippingState": {
+      "post": {
+        "operationId": "UpdateFulfillmentsShippingState",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/cmUpdatedResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/shopUpdateFulfillmentsShippingStateRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Fulfillment"
+        ]
+      }
+    },
+    "/api/shop.History/GetFulfillmentHistory": {
+      "post": {
+        "operationId": "GetFulfillmentHistory",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/etopHistoryResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/shopGetFulfillmentHistoryRequest"
+            }
+          }
+        ],
+        "tags": [
+          "History"
+        ]
+      }
+    },
+    "/api/shop.Misc/VersionInfo": {
+      "post": {
+        "operationId": "VersionInfo",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/cmVersionInfoResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/cmEmpty"
+            }
+          }
+        ],
+        "tags": [
+          "Misc"
+        ]
+      }
+    },
+    "/api/shop.MoneyTransaction/GetMoneyTransaction": {
+      "post": {
+        "operationId": "GetMoneyTransaction",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/orderMoneyTransaction"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/cmIDRequest"
+            }
+          }
+        ],
+        "tags": [
+          "MoneyTransaction"
+        ]
+      }
+    },
+    "/api/shop.MoneyTransaction/GetMoneyTransactions": {
+      "post": {
+        "operationId": "GetMoneyTransactions",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/orderMoneyTransactionsResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/shopGetMoneyTransactionsRequest"
+            }
+          }
+        ],
+        "tags": [
+          "MoneyTransaction"
+        ]
+      }
+    },
+    "/api/shop.Notification/CreateDevice": {
+      "post": {
+        "operationId": "CreateDevice",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/etopDevice"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/etopCreateDeviceRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Notification"
+        ]
+      }
+    },
+    "/api/shop.Notification/DeleteDevice": {
+      "post": {
+        "operationId": "DeleteDevice",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/cmDeletedResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/etopDeleteDeviceRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Notification"
+        ]
+      }
+    },
+    "/api/shop.Notification/GetNotification": {
+      "post": {
+        "operationId": "GetNotification",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/etopNotification"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/cmIDRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Notification"
+        ]
+      }
+    },
+    "/api/shop.Notification/GetNotifications": {
+      "post": {
+        "operationId": "GetNotifications",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/etopNotificationsResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/etopGetNotificationsRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Notification"
+        ]
+      }
+    },
+    "/api/shop.Notification/UpdateNotifications": {
+      "post": {
+        "operationId": "UpdateNotifications",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/cmUpdatedResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/etopUpdateNotificationsRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Notification"
+        ]
+      }
+    },
+    "/api/shop.Order/CancelOrder": {
+      "post": {
+        "operationId": "CancelOrder",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/orderOrderWithErrorsResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/shopCancelOrderRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Order"
+        ]
+      }
+    },
+    "/api/shop.Order/ConfirmOrderAndCreateFulfillments": {
+      "post": {
+        "operationId": "ConfirmOrderAndCreateFulfillments",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/orderOrderWithErrorsResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/shopOrderIDRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Order"
+        ]
+      }
+    },
+    "/api/shop.Order/ConfirmOrdersAndCreateFulfillments": {
+      "post": {
+        "operationId": "ConfirmOrdersAndCreateFulfillments",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/cmErrorsResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/shopOrderIDsRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Order"
+        ]
+      }
+    },
+    "/api/shop.Order/CreateOrder": {
+      "post": {
+        "operationId": "CreateOrder",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/orderOrder"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/orderCreateOrderRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Order"
+        ]
+      }
+    },
+    "/api/shop.Order/GetOrder": {
+      "post": {
+        "operationId": "GetOrder",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/orderOrder"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/cmIDRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Order"
+        ]
+      }
+    },
+    "/api/shop.Order/GetOrders": {
+      "post": {
+        "operationId": "GetOrders",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/orderOrdersResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/shopGetOrdersRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Order"
+        ]
+      }
+    },
+    "/api/shop.Order/GetOrdersByIDs": {
+      "post": {
+        "operationId": "GetOrdersByIDs",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/orderOrdersResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/etopIDsRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Order"
+        ]
+      }
+    },
+    "/api/shop.Order/UpdateOrder": {
+      "post": {
+        "operationId": "UpdateOrder",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/orderOrder"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/orderUpdateOrderRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Order"
+        ]
+      }
+    },
+    "/api/shop.Order/UpdateOrderPaymentStatus": {
+      "post": {
+        "operationId": "UpdateOrderPaymentStatus",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/cmUpdatedResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/shopUpdateOrderPaymentStatusRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Order"
+        ]
+      }
+    },
+    "/api/shop.Order/UpdateOrdersStatus": {
+      "post": {
+        "summary": "@deprecated",
+        "operationId": "UpdateOrdersStatus",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/cmUpdatedResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/shopUpdateOrdersStatusRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Order"
+        ]
+      }
+    },
+    "/api/shop.Price/GetPriceRules": {
+      "post": {
+        "operationId": "GetPriceRules",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/shopPriceRulesResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/cmEmpty"
+            }
+          }
+        ],
+        "tags": [
+          "Price"
+        ]
+      }
+    },
+    "/api/shop.Price/UpdatePriceRules": {
+      "post": {
+        "operationId": "UpdatePriceRules",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/shopUpdatePriceRulesResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/shopUpdatePriceRulesRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Price"
+        ]
+      }
+    },
+    "/api/shop.Product/AddProducts": {
+      "post": {
+        "operationId": "AddProducts",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/shopAddProductsResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/shopAddProductsRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Product"
+        ]
+      }
+    },
+    "/api/shop.Product/AddVariants": {
+      "post": {
+        "operationId": "AddVariants",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/shopAddVariantsResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/shopAddVariantsRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Product"
+        ]
+      }
+    },
+    "/api/shop.Product/GetProduct": {
+      "post": {
+        "operationId": "GetProduct",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/shopShopProduct"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/cmIDRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Product"
+        ]
+      }
+    },
+    "/api/shop.Product/GetProducts": {
+      "post": {
+        "operationId": "GetProducts",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/shopShopProductsResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/shopGetVariantsRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Product"
+        ]
+      }
+    },
+    "/api/shop.Product/GetProductsByIDs": {
+      "post": {
+        "operationId": "GetProductsByIDs",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/shopShopProductsResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/cmIDsRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Product"
+        ]
+      }
+    },
+    "/api/shop.Product/GetVariant": {
+      "post": {
+        "operationId": "GetVariant",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/shopShopVariant"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/cmIDRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Product"
+        ]
+      }
+    },
+    "/api/shop.Product/GetVariants": {
+      "post": {
+        "summary": "GetVariants",
+        "description": "Return list of variant.\n\nFilters: The same as supplier.GetVariants, plus\n  - Text or set: name, tags (not s_tags)\n  - Exactly: collection_id\n  - Numeric: retail_price",
+        "operationId": "GetVariants",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/shopShopVariantsResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/shopGetVariantsRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Product"
+        ]
+      }
+    },
+    "/api/shop.Product/GetVariantsByIDs": {
+      "post": {
+        "operationId": "GetVariantsByIDs",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/shopShopVariantsResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/cmIDsRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Product"
+        ]
+      }
+    },
+    "/api/shop.Product/RemoveProducts": {
+      "post": {
+        "operationId": "RemoveProducts",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/cmRemovedResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/shopRemoveVariantsRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Product"
+        ]
+      }
+    },
+    "/api/shop.Product/RemoveVariants": {
+      "post": {
+        "operationId": "RemoveVariants",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/cmRemovedResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/shopRemoveVariantsRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Product"
+        ]
+      }
+    },
+    "/api/shop.Product/UpdateProduct": {
+      "post": {
+        "operationId": "UpdateProduct",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/shopShopProduct"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/shopUpdateProductRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Product"
+        ]
+      }
+    },
+    "/api/shop.Product/UpdateProductImages": {
+      "post": {
+        "operationId": "UpdateProductImages",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/shopShopProduct"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/supplierUpdateVariantImagesRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Product"
+        ]
+      }
+    },
+    "/api/shop.Product/UpdateProductsStatus": {
+      "post": {
+        "operationId": "UpdateProductsStatus",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/cmUpdatedResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/shopUpdateVariantsStatusRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Product"
+        ]
+      }
+    },
+    "/api/shop.Product/UpdateProductsTags": {
+      "post": {
+        "operationId": "UpdateProductsTags",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/cmUpdatedResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/shopUpdateVariantsTagsRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Product"
+        ]
+      }
+    },
+    "/api/shop.Product/UpdateVariant": {
+      "post": {
+        "operationId": "UpdateVariant",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/shopShopVariant"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/shopUpdateVariantRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Product"
+        ]
+      }
+    },
+    "/api/shop.Product/UpdateVariantImages": {
+      "post": {
+        "operationId": "UpdateVariantImages",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/shopShopVariant"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/supplierUpdateVariantImagesRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Product"
+        ]
+      }
+    },
+    "/api/shop.Product/UpdateVariants": {
+      "post": {
+        "operationId": "UpdateVariants",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/shopUpdateVariantsResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/shopUpdateVariantsRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Product"
+        ]
+      }
+    },
+    "/api/shop.Product/UpdateVariantsStatus": {
+      "post": {
+        "operationId": "UpdateVariantsStatus",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/cmUpdatedResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/shopUpdateVariantsStatusRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Product"
+        ]
+      }
+    },
+    "/api/shop.Product/UpdateVariantsTags": {
+      "post": {
+        "operationId": "UpdateVariantsTags",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/cmUpdatedResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/shopUpdateVariantsTagsRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Product"
+        ]
+      }
+    },
+    "/api/shop.ProductSource/ConnectProductSource": {
+      "post": {
+        "operationId": "ConnectProductSource",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/cmUpdatedResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/shopConnectProductSourceResquest"
+            }
+          }
+        ],
+        "tags": [
+          "ProductSource"
+        ]
+      }
+    },
+    "/api/shop.ProductSource/CreateProductSource": {
+      "post": {
+        "operationId": "CreateProductSource",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/shopProductSource"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/shopCreateProductSourceRequest"
+            }
+          }
+        ],
+        "tags": [
+          "ProductSource"
+        ]
+      }
+    },
+    "/api/shop.ProductSource/CreateProductSourceCategory": {
+      "post": {
+        "operationId": "CreateProductSourceCategory",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/shopProductSourceCategory"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/shopCreatePSCategoryRequest"
+            }
+          }
+        ],
+        "tags": [
+          "ProductSource"
+        ]
+      }
+    },
+    "/api/shop.ProductSource/CreateVariant": {
+      "post": {
+        "operationId": "CreateVariant",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/shopShopProduct"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/shopCreateVariantRequest"
+            }
+          }
+        ],
+        "tags": [
+          "ProductSource"
+        ]
+      }
+    },
+    "/api/shop.ProductSource/GetProductSourceCategories": {
+      "post": {
+        "operationId": "GetProductSourceCategories",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/supplierCategoriesResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/shopGetProductSourceCategoriesRequest"
+            }
+          }
+        ],
+        "tags": [
+          "ProductSource"
+        ]
+      }
+    },
+    "/api/shop.ProductSource/GetProductSourceCategory": {
+      "post": {
+        "operationId": "GetProductSourceCategory",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/supplierCategory"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/cmIDRequest"
+            }
+          }
+        ],
+        "tags": [
+          "ProductSource"
+        ]
+      }
+    },
+    "/api/shop.ProductSource/GetShopProductSources": {
+      "post": {
+        "operationId": "GetShopProductSources",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/shopProductSourcesResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/cmEmpty"
+            }
+          }
+        ],
+        "tags": [
+          "ProductSource"
+        ]
+      }
+    },
+    "/api/shop.ProductSource/RemoveProductSourceCategory": {
+      "post": {
+        "operationId": "RemoveProductSourceCategory",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/cmRemovedResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/cmIDRequest"
+            }
+          }
+        ],
+        "tags": [
+          "ProductSource"
+        ]
+      }
+    },
+    "/api/shop.ProductSource/UpdateProductSourceCategory": {
+      "post": {
+        "operationId": "UpdateProductSourceCategory",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/supplierCategory"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/shopUpdateProductSourceCategoryRequest"
+            }
+          }
+        ],
+        "tags": [
+          "ProductSource"
+        ]
+      }
+    },
+    "/api/shop.ProductSource/UpdateProductsPSCategory": {
+      "post": {
+        "operationId": "UpdateProductsPSCategory",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/cmUpdatedResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/shopUpdateProductsPSCategoryRequest"
+            }
+          }
+        ],
+        "tags": [
+          "ProductSource"
+        ]
+      }
+    },
+    "/api/shop.Summary/CalcBalanceShop": {
+      "post": {
+        "operationId": "CalcBalanceShop",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/shopCalcBalanceShopResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/cmEmpty"
+            }
+          }
+        ],
+        "tags": [
+          "Summary"
+        ]
+      }
+    },
+    "/api/shop.Summary/SummarizeFulfillments": {
+      "post": {
+        "operationId": "SummarizeFulfillments",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/shopSummarizeFulfillmentsResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/shopSummarizeFulfillmentsRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Summary"
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "address_typeAddressType": {
+      "type": "string",
+      "enum": [
+        "unknown",
+        "general",
+        "warehouse",
+        "shipto",
+        "shipfrom"
+      ],
+      "default": "unknown"
+    },
+    "cmDeletedResponse": {
+      "type": "object",
+      "properties": {
+        "deleted": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "cmEmpty": {
+      "type": "object"
+    },
+    "cmError": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "string"
+        },
+        "msg": {
+          "type": "string"
+        },
+        "meta": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "cmErrorsResponse": {
+      "type": "object",
+      "properties": {
+        "errors": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/cmError"
+          }
+        }
+      }
+    },
+    "cmFilter": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "title": "Comma separated properties: \"name,s_name\""
+        },
+        "op": {
+          "type": "string",
+          "description": "- Text or set: ⊃ ∩\n- Exactly: = ≠ ∈\n- Numeric: = ≠ ∈ < ≤ > ≥",
+          "title": "Can be = ≠ (!=) < ≤ (<=) > ≥ (>=) ⊃ (c) ∈ (in) ∩ (n)"
+        },
+        "value": {
+          "type": "string",
+          "title": "Must always be string"
+        }
+      }
+    },
+    "cmIDRequest": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        }
+      },
+      "required": [
+        "id"
+      ]
+    },
+    "cmIDsRequest": {
+      "type": "object",
+      "properties": {
+        "ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          }
+        }
+      },
+      "required": [
+        "ids"
+      ]
+    },
+    "cmPageInfo": {
+      "type": "object",
+      "properties": {
+        "total": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "limit": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "sort": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "cmPaging": {
+      "type": "object",
+      "properties": {
+        "offset": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "limit": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "sort": {
+          "type": "string"
+        }
+      }
+    },
+    "cmRawJSONObject": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "type": "string",
+          "format": "byte"
+        }
+      }
+    },
+    "cmRemovedResponse": {
+      "type": "object",
+      "properties": {
+        "removed": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "cmUpdatedResponse": {
+      "type": "object",
+      "properties": {
+        "updated": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "cmVersionInfoResponse": {
+      "type": "object",
+      "properties": {
+        "service": {
+          "type": "string"
+        },
+        "version": {
+          "type": "string"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "etopAccountType": {
+      "type": "string",
+      "enum": [
+        "unknown",
+        "partner",
+        "shop",
+        "supplier",
+        "etop"
+      ],
+      "default": "unknown",
+      "description": "Indicates whether given account is **etop**, **shop** or **supplier**."
+    },
+    "etopAddress": {
+      "type": "object",
+      "properties": {
+        "exported_fields": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "province": {
+          "type": "string"
+        },
+        "province_code": {
+          "type": "string"
+        },
+        "district": {
+          "type": "string"
+        },
+        "district_code": {
+          "type": "string"
+        },
+        "ward": {
+          "type": "string"
+        },
+        "ward_code": {
+          "type": "string"
+        },
+        "address1": {
+          "type": "string"
+        },
+        "address2": {
+          "type": "string"
+        },
+        "zip": {
+          "type": "string"
+        },
+        "country": {
+          "type": "string"
+        },
+        "full_name": {
+          "type": "string"
+        },
+        "first_name": {
+          "type": "string"
+        },
+        "last_name": {
+          "type": "string"
+        },
+        "phone": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "position": {
+          "type": "string"
+        },
+        "type": {
+          "$ref": "#/definitions/address_typeAddressType"
+        },
+        "notes": {
+          "$ref": "#/definitions/etopAddressNote"
+        }
+      }
+    },
+    "etopAddressNote": {
+      "type": "object",
+      "properties": {
+        "note": {
+          "type": "string"
+        },
+        "open_time": {
+          "type": "string"
+        },
+        "lunch_break": {
+          "type": "string"
+        },
+        "other": {
+          "type": "string"
+        }
+      }
+    },
+    "etopBankAccount": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "province": {
+          "type": "string"
+        },
+        "branch": {
+          "type": "string"
+        },
+        "account_number": {
+          "type": "string"
+        },
+        "account_name": {
+          "type": "string"
+        }
+      }
+    },
+    "etopCategoriesResponse": {
+      "type": "object",
+      "properties": {
+        "categories": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/etopCategory"
+          }
+        }
+      }
+    },
+    "etopCategory": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "name": {
+          "type": "string"
+        },
+        "status": {
+          "$ref": "#/definitions/status3Status"
+        },
+        "parent_id": {
+          "type": "string",
+          "format": "int64"
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "status"
+      ]
+    },
+    "etopCompanyInfo": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "tax_code": {
+          "type": "string"
+        },
+        "address": {
+          "type": "string"
+        },
+        "website": {
+          "type": "string"
+        },
+        "legal_representative": {
+          "$ref": "#/definitions/etopContactPerson"
+        }
+      }
+    },
+    "etopContactPerson": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "position": {
+          "type": "string"
+        },
+        "phone": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        }
+      }
+    },
+    "etopCreateDeviceRequest": {
+      "type": "object",
+      "properties": {
+        "device_id": {
+          "type": "string"
+        },
+        "device_name": {
+          "type": "string"
+        },
+        "external_device_id": {
+          "type": "string"
+        }
+      }
+    },
+    "etopDeleteDeviceRequest": {
+      "type": "object",
+      "properties": {
+        "device_id": {
+          "type": "string"
+        }
+      }
+    },
+    "etopDevice": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "device_id": {
+          "type": "string"
+        },
+        "device_name": {
+          "type": "string"
+        },
+        "external_device_id": {
+          "type": "string"
+        },
+        "external_service_id": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "account_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "etopGetNotificationsRequest": {
+      "type": "object",
+      "properties": {
+        "paging": {
+          "$ref": "#/definitions/cmPaging"
+        }
+      }
+    },
+    "etopHistoryResponse": {
+      "type": "object",
+      "properties": {
+        "paging": {
+          "$ref": "#/definitions/cmPageInfo"
+        },
+        "data": {
+          "$ref": "#/definitions/cmRawJSONObject"
+        }
+      }
+    },
+    "etopIDsRequest": {
+      "type": "object",
+      "properties": {
+        "ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          }
+        },
+        "mixed": {
+          "$ref": "#/definitions/etopMixedAccount"
+        }
+      },
+      "required": [
+        "ids"
+      ]
+    },
+    "etopMixedAccount": {
+      "type": "object",
+      "properties": {
+        "ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          }
+        },
+        "all": {
+          "type": "boolean",
+          "format": "boolean"
+        },
+        "all_shops": {
+          "type": "boolean",
+          "format": "boolean"
+        },
+        "all_suppliers": {
+          "type": "boolean",
+          "format": "boolean"
+        }
+      }
+    },
+    "etopNotification": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "title": {
+          "type": "string"
+        },
+        "message": {
+          "type": "string"
+        },
+        "is_read": {
+          "type": "boolean",
+          "format": "boolean"
+        },
+        "entity": {
+          "type": "string"
+        },
+        "entity_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "account_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "send_notification": {
+          "type": "boolean",
+          "format": "boolean"
+        },
+        "seen_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "sync_status": {
+          "$ref": "#/definitions/status3Status"
+        }
+      }
+    },
+    "etopNotificationsResponse": {
+      "type": "object",
+      "properties": {
+        "paging": {
+          "$ref": "#/definitions/cmPageInfo"
+        },
+        "notifications": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/etopNotification"
+          }
+        }
+      }
+    },
+    "etopPublicAccountInfo": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "name": {
+          "type": "string"
+        },
+        "type": {
+          "$ref": "#/definitions/etopAccountType"
+        },
+        "image_url": {
+          "type": "string"
+        },
+        "website": {
+          "type": "string"
+        }
+      }
+    },
+    "etopSetDefaultAddressRequest": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "type": {
+          "$ref": "#/definitions/address_typeAddressType"
+        }
+      }
+    },
+    "etopShippingServiceSelectStrategyItem": {
+      "type": "object",
+      "properties": {
+        "key": {
+          "type": "string"
+        },
+        "value": {
+          "type": "string"
+        }
+      }
+    },
+    "etopShop": {
+      "type": "object",
+      "properties": {
+        "exported_fields": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "name": {
+          "type": "string"
+        },
+        "status": {
+          "$ref": "#/definitions/status3Status"
+        },
+        "is_test": {
+          "type": "boolean",
+          "format": "boolean"
+        },
+        "address": {
+          "$ref": "#/definitions/etopAddress"
+        },
+        "phone": {
+          "type": "string"
+        },
+        "bank_account": {
+          "$ref": "#/definitions/etopBankAccount"
+        },
+        "auto_create_ffm": {
+          "type": "boolean",
+          "format": "boolean"
+        },
+        "website_url": {
+          "type": "string"
+        },
+        "image_url": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "product_source_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "ship_to_address_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "ship_from_address_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "ghn_note_code": {
+          "type": "string",
+          "title": "@deprecated use try_on instead"
+        },
+        "try_on": {
+          "$ref": "#/definitions/try_onTryOnCode"
+        },
+        "owner_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "user": {
+          "$ref": "#/definitions/etopUser"
+        },
+        "company_info": {
+          "$ref": "#/definitions/etopCompanyInfo"
+        },
+        "money_transaction_rrule": {
+          "type": "string",
+          "title": "referrence: https://icalendar.org/rrule-tool.html"
+        },
+        "survey_info": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/etopSurveyInfo"
+          }
+        },
+        "shipping_service_select_strategy": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/etopShippingServiceSelectStrategyItem"
+          }
+        },
+        "code": {
+          "type": "string"
+        }
+      }
+    },
+    "etopSurveyInfo": {
+      "type": "object",
+      "properties": {
+        "key": {
+          "type": "string"
+        },
+        "question": {
+          "type": "string"
+        },
+        "answer": {
+          "type": "string"
+        }
+      }
+    },
+    "etopUpdateNotificationsRequest": {
+      "type": "object",
+      "properties": {
+        "ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          }
+        },
+        "is_read": {
+          "type": "boolean",
+          "format": "boolean"
+        }
+      }
+    },
+    "etopUser": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "full_name": {
+          "type": "string"
+        },
+        "short_name": {
+          "type": "string"
+        },
+        "phone": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "email_verified_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "phone_verified_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "email_verification_sent_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "phone_verification_sent_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "description": "Represents a user in eTop system. The user may or may not have associated accounts.",
+      "required": [
+        "id",
+        "full_name",
+        "short_name",
+        "phone",
+        "email",
+        "created_at",
+        "updated_at"
+      ]
+    },
+    "feeFeeType": {
+      "type": "string",
+      "enum": [
+        "other",
+        "shipping",
+        "tax"
+      ],
+      "default": "other"
+    },
+    "genderGender": {
+      "type": "string",
+      "enum": [
+        "unknown",
+        "male",
+        "female",
+        "other"
+      ],
+      "default": "unknown"
+    },
+    "ghn_note_codeGHNNoteCode": {
+      "type": "string",
+      "enum": [
+        "unknown",
+        "CHOTHUHANG",
+        "CHOXEMHANGKHONGTHU",
+        "KHONGCHOXEMHANG"
+      ],
+      "default": "unknown"
+    },
+    "orderAttribute": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "value": {
+          "type": "string"
+        }
+      }
+    },
+    "orderCreateOrderLine": {
+      "type": "object",
+      "properties": {
+        "variant_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "product_name": {
+          "type": "string"
+        },
+        "quantity": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "list_price": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "retail_price": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "payment_price": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "image_url": {
+          "type": "string"
+        },
+        "attributes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/orderAttribute"
+          }
+        }
+      }
+    },
+    "orderCreateOrderRequest": {
+      "type": "object",
+      "properties": {
+        "source": {
+          "$ref": "#/definitions/sourceSource"
+        },
+        "external_id": {
+          "type": "string"
+        },
+        "external_code": {
+          "type": "string"
+        },
+        "external_url": {
+          "type": "string"
+        },
+        "payment_method": {
+          "type": "string"
+        },
+        "customer": {
+          "$ref": "#/definitions/orderOrderCustomer",
+          "description": "If order_source is self, customer must be shop information\nand customer_address, shipping_address must be shop address."
+        },
+        "customer_address": {
+          "$ref": "#/definitions/orderOrderAddress"
+        },
+        "billing_address": {
+          "$ref": "#/definitions/orderOrderAddress"
+        },
+        "shipping_address": {
+          "$ref": "#/definitions/orderOrderAddress"
+        },
+        "shop_address": {
+          "$ref": "#/definitions/orderOrderAddress",
+          "description": "If there are products from shop, this field should be set.\nOtherwise, use shop default address."
+        },
+        "sh_confirm": {
+          "$ref": "#/definitions/status3Status"
+        },
+        "lines": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/orderCreateOrderLine"
+          }
+        },
+        "discounts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/orderOrderDiscount"
+          }
+        },
+        "total_items": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "basket_value": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "total_weight": {
+          "type": "integer",
+          "format": "int32",
+          "title": "@deprecated use shipping.gross_weight, shipping.chargeable_weight"
+        },
+        "order_discount": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "total_fee": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "fee_lines": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/orderOrderFeeLine"
+          }
+        },
+        "total_discount": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "total_amount": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "order_note": {
+          "type": "string"
+        },
+        "shipping_note": {
+          "type": "string"
+        },
+        "shop_shipping_fee": {
+          "type": "integer",
+          "format": "int32",
+          "title": "@deprecated use fee_lines.shipping instead"
+        },
+        "shop_cod": {
+          "type": "integer",
+          "format": "int32",
+          "title": "@deprecated use shipping.cod_amount instead"
+        },
+        "reference_url": {
+          "type": "string"
+        },
+        "shop_shipping": {
+          "$ref": "#/definitions/orderOrderShipping",
+          "title": "@deprecated use shipping instead"
+        },
+        "shipping": {
+          "$ref": "#/definitions/orderOrderShipping"
+        },
+        "ghn_note_code": {
+          "$ref": "#/definitions/ghn_note_codeGHNNoteCode",
+          "title": "@deprecated use shop_shipping.try_on instead"
+        }
+      }
+    },
+    "orderExternalShippingLog": {
+      "type": "object",
+      "properties": {
+        "state_text": {
+          "type": "string"
+        },
+        "time": {
+          "type": "string"
+        },
+        "message": {
+          "type": "string"
+        }
+      }
+    },
+    "orderExternalShipping": {
+      "type": "object",
+      "properties": {
+        "exported_fields": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "external_id": {
+          "type": "string",
+          "title": "@deprecated use code"
+        },
+        "service_fee": {
+          "type": "integer",
+          "format": "int32",
+          "title": "@deprecated use fee"
+        },
+        "provider": {
+          "$ref": "#/definitions/shipping_providerShippingProvider",
+          "title": "@deprecated use carier"
+        },
+        "expected_pick_at": {
+          "type": "string",
+          "format": "date-time",
+          "title": "@deprecated use estimated_pickup_at"
+        },
+        "expected_delivery_at": {
+          "type": "string",
+          "format": "date-time",
+          "title": "@deprecated use estimated_delivery_at"
+        },
+        "name": {
+          "type": "string"
+        },
+        "code": {
+          "type": "string"
+        },
+        "fee": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "carrier": {
+          "$ref": "#/definitions/shipping_providerShippingProvider"
+        },
+        "estimated_pickup_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "estimated_delivery_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "orderFulfillment": {
+      "type": "object",
+      "properties": {
+        "exported_fields": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "order_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "shop_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "supplier_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "partner_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "self_url": {
+          "type": "string"
+        },
+        "lines": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/orderOrderLine"
+          }
+        },
+        "total_items": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "total_weight": {
+          "type": "integer",
+          "format": "int32",
+          "title": "@deprecated use chargeable_weight"
+        },
+        "basket_value": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "total_cod_amount": {
+          "type": "integer",
+          "format": "int32",
+          "title": "@deprecated use cod_amount"
+        },
+        "cod_amount": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "total_amount": {
+          "type": "integer",
+          "format": "int32",
+          "title": "@deprecated"
+        },
+        "chargeable_weight": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "closed_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "cancelled_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "cancel_reason": {
+          "type": "string"
+        },
+        "shipping_provider": {
+          "type": "string",
+          "title": "@deprecated use carrier instead"
+        },
+        "carrier": {
+          "$ref": "#/definitions/shipping_providerShippingProvider"
+        },
+        "shipping_service_name": {
+          "type": "string"
+        },
+        "shipping_service_fee": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "shipping_service_code": {
+          "type": "string"
+        },
+        "shipping_code": {
+          "type": "string"
+        },
+        "shipping_note": {
+          "type": "string"
+        },
+        "try_on": {
+          "$ref": "#/definitions/try_onTryOnCode"
+        },
+        "include_insurance": {
+          "type": "boolean",
+          "format": "boolean"
+        },
+        "sh_confirm": {
+          "$ref": "#/definitions/status3Status"
+        },
+        "s_confirm": {
+          "$ref": "#/definitions/status3Status"
+        },
+        "shipping_state": {
+          "$ref": "#/definitions/shippingState"
+        },
+        "status": {
+          "$ref": "#/definitions/status5Status"
+        },
+        "shipping_status": {
+          "$ref": "#/definitions/status5Status"
+        },
+        "etop_payment_status": {
+          "$ref": "#/definitions/status4Status"
+        },
+        "shipping_fee_customer": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "shipping_fee_shop": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "x_shipping_fee": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "x_shipping_id": {
+          "type": "string"
+        },
+        "x_shipping_code": {
+          "type": "string"
+        },
+        "x_shipping_created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "x_shipping_updated_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "x_shipping_cancelled_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "x_shipping_delivered_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "x_shipping_returned_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "expected_delivery_at": {
+          "type": "string",
+          "format": "date-time",
+          "title": "@deprecated use estimated_delivery_at"
+        },
+        "expected_pick_at": {
+          "type": "string",
+          "format": "date-time",
+          "title": "@deprecated use estimated_pickup_at"
+        },
+        "estimated_delivery_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "estimated_pickup_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "cod_etop_transfered_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "shipping_fee_shop_transfered_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "x_shipping_state": {
+          "type": "string"
+        },
+        "x_shipping_status": {
+          "$ref": "#/definitions/status5Status"
+        },
+        "x_sync_status": {
+          "$ref": "#/definitions/status4Status"
+        },
+        "x_sync_states": {
+          "$ref": "#/definitions/orderFulfillmentSyncStates"
+        },
+        "address_to": {
+          "$ref": "#/definitions/etopAddress",
+          "title": "@deprecated use shipping_address instead"
+        },
+        "address_from": {
+          "$ref": "#/definitions/etopAddress",
+          "title": "@deprecated use pickup_address instead"
+        },
+        "pickup_address": {
+          "$ref": "#/definitions/orderOrderAddress"
+        },
+        "return_address": {
+          "$ref": "#/definitions/orderOrderAddress"
+        },
+        "shipping_address": {
+          "$ref": "#/definitions/orderOrderAddress"
+        },
+        "shop": {
+          "$ref": "#/definitions/etopShop"
+        },
+        "order": {
+          "$ref": "#/definitions/orderOrder"
+        },
+        "provider_shipping_fee_lines": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/orderShippingFeeLine"
+          }
+        },
+        "shipping_fee_shop_lines": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/orderShippingFeeLine"
+          }
+        },
+        "etop_discount": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "money_transaction_shipping_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "money_transaction_shipping_external_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "x_shipping_logs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/orderExternalShippingLog"
+          }
+        },
+        "x_shipping_note": {
+          "type": "string"
+        },
+        "x_shipping_sub_state": {
+          "type": "string"
+        },
+        "code": {
+          "type": "string"
+        },
+        "actual_compensation_amount": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "orderFulfillmentSyncStates": {
+      "type": "object",
+      "properties": {
+        "sync_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "next_shipping_state": {
+          "type": "string"
+        },
+        "error": {
+          "$ref": "#/definitions/cmError"
+        }
+      }
+    },
+    "orderFulfillmentsResponse": {
+      "type": "object",
+      "properties": {
+        "paging": {
+          "$ref": "#/definitions/cmPageInfo"
+        },
+        "fulfillments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/orderFulfillment"
+          }
+        }
+      }
+    },
+    "orderGetExternalShippingServicesRequest": {
+      "type": "object",
+      "properties": {
+        "provider": {
+          "$ref": "#/definitions/shipping_providerShippingProvider",
+          "title": "@deprecated use carrier instead"
+        },
+        "carrier": {
+          "$ref": "#/definitions/shipping_providerShippingProvider"
+        },
+        "from_district_code": {
+          "type": "string"
+        },
+        "from_province_code": {
+          "type": "string"
+        },
+        "to_district_code": {
+          "type": "string"
+        },
+        "to_province_code": {
+          "type": "string"
+        },
+        "from_province": {
+          "type": "string"
+        },
+        "from_district": {
+          "type": "string"
+        },
+        "to_province": {
+          "type": "string"
+        },
+        "to_district": {
+          "type": "string"
+        },
+        "weight": {
+          "type": "integer",
+          "format": "int32",
+          "title": "@deprecated use gross_weight instead"
+        },
+        "gross_weight": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "chargeable_weight": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "length": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "width": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "height": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "value": {
+          "type": "integer",
+          "format": "int32",
+          "title": "@deprecated use basket_value instead"
+        },
+        "total_cod_amount": {
+          "type": "integer",
+          "format": "int32",
+          "title": "@deprecated use cod_amount instead"
+        },
+        "cod_amount": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "basket_value": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "include_insurance": {
+          "type": "boolean",
+          "format": "boolean"
+        }
+      }
+    },
+    "orderGetExternalShippingServicesResponse": {
+      "type": "object",
+      "properties": {
+        "services": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/orderExternalShipping"
+          }
+        }
+      }
+    },
+    "orderMoneyTransaction": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "shop_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "supplier_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "status": {
+          "$ref": "#/definitions/status3Status"
+        },
+        "total_cod": {
+          "type": "string",
+          "format": "int64"
+        },
+        "total_orders": {
+          "type": "string",
+          "format": "int64"
+        },
+        "code": {
+          "type": "string"
+        },
+        "provider": {
+          "type": "string"
+        },
+        "money_transaction_shipping_external_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "money_transaction_shipping_etop_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "total_amount": {
+          "type": "string",
+          "format": "int64"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "closed_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "confirmed_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "etop_transfered_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "note": {
+          "type": "string"
+        },
+        "invoice_number": {
+          "type": "string"
+        },
+        "bank_account": {
+          "$ref": "#/definitions/etopBankAccount"
+        }
+      }
+    },
+    "orderMoneyTransactionsResponse": {
+      "type": "object",
+      "properties": {
+        "paging": {
+          "$ref": "#/definitions/cmPageInfo"
+        },
+        "money_transactions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/orderMoneyTransaction"
+          }
+        }
+      }
+    },
+    "orderOrder": {
+      "type": "object",
+      "properties": {
+        "exported_fields": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "shop_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "shop_name": {
+          "type": "string"
+        },
+        "code": {
+          "type": "string"
+        },
+        "ed_code": {
+          "type": "string",
+          "title": "the same as external_code"
+        },
+        "external_code": {
+          "type": "string"
+        },
+        "source": {
+          "$ref": "#/definitions/sourceSource"
+        },
+        "partner_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "external_id": {
+          "type": "string"
+        },
+        "external_url": {
+          "type": "string"
+        },
+        "self_url": {
+          "type": "string"
+        },
+        "payment_method": {
+          "type": "string"
+        },
+        "customer": {
+          "$ref": "#/definitions/orderOrderCustomer"
+        },
+        "customer_address": {
+          "$ref": "#/definitions/orderOrderAddress"
+        },
+        "billing_address": {
+          "$ref": "#/definitions/orderOrderAddress"
+        },
+        "shipping_address": {
+          "$ref": "#/definitions/orderOrderAddress"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "processed_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "closed_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "confirmed_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "cancelled_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "cancel_reason": {
+          "type": "string"
+        },
+        "sh_confirm": {
+          "$ref": "#/definitions/status3Status"
+        },
+        "confirm": {
+          "$ref": "#/definitions/status3Status",
+          "title": "@deprecated replaced by confirm_status"
+        },
+        "confirm_status": {
+          "$ref": "#/definitions/status3Status"
+        },
+        "status": {
+          "$ref": "#/definitions/status5Status"
+        },
+        "fulfillment_status": {
+          "$ref": "#/definitions/status5Status",
+          "title": "@deprecated replaced by fulfillment_shipping_status"
+        },
+        "fulfillment_shipping_status": {
+          "$ref": "#/definitions/status5Status"
+        },
+        "customer_payment_status": {
+          "$ref": "#/definitions/status3Status"
+        },
+        "etop_payment_status": {
+          "$ref": "#/definitions/status4Status"
+        },
+        "lines": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/orderOrderLine"
+          }
+        },
+        "discounts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/orderOrderDiscount"
+          }
+        },
+        "total_items": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "basket_value": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "total_weight": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "order_discount": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "total_discount": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "total_amount": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "order_note": {
+          "type": "string"
+        },
+        "shipping_fee": {
+          "type": "integer",
+          "format": "int32",
+          "title": "@deprecated use fee_lines.shipping"
+        },
+        "total_fee": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "fee_lines": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/orderOrderFeeLine"
+          }
+        },
+        "shop_shipping_fee": {
+          "type": "integer",
+          "format": "int32",
+          "title": "@deperecated use fee_lines.shipping instead"
+        },
+        "shipping_note": {
+          "type": "string",
+          "title": "@deprecated use shop_shipping.shipping_note instead"
+        },
+        "shop_cod": {
+          "type": "integer",
+          "format": "int32",
+          "title": "@deperecated use shop_shipping.cod_amount instead"
+        },
+        "reference_url": {
+          "type": "string"
+        },
+        "fulfillments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/orderFulfillment"
+          }
+        },
+        "shop_shipping": {
+          "$ref": "#/definitions/orderOrderShipping",
+          "title": "@deprecated use shipping instead"
+        },
+        "shipping": {
+          "$ref": "#/definitions/orderOrderShipping"
+        },
+        "external_data": {
+          "$ref": "#/definitions/orderOrderExternal"
+        },
+        "ghn_note_code": {
+          "type": "string",
+          "title": "@deprecated use try_on_code instead"
+        }
+      }
+    },
+    "orderOrderAddress": {
+      "type": "object",
+      "properties": {
+        "exported_fields": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "full_name": {
+          "type": "string"
+        },
+        "first_name": {
+          "type": "string"
+        },
+        "last_name": {
+          "type": "string"
+        },
+        "phone": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "country": {
+          "type": "string"
+        },
+        "city": {
+          "type": "string"
+        },
+        "province": {
+          "type": "string"
+        },
+        "district": {
+          "type": "string"
+        },
+        "ward": {
+          "type": "string"
+        },
+        "zip": {
+          "type": "string"
+        },
+        "company": {
+          "type": "string"
+        },
+        "address1": {
+          "type": "string"
+        },
+        "address2": {
+          "type": "string"
+        },
+        "province_code": {
+          "type": "string"
+        },
+        "district_code": {
+          "type": "string"
+        },
+        "ward_code": {
+          "type": "string"
+        }
+      }
+    },
+    "orderOrderCustomer": {
+      "type": "object",
+      "properties": {
+        "exported_fields": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "first_name": {
+          "type": "string"
+        },
+        "last_name": {
+          "type": "string"
+        },
+        "full_name": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "phone": {
+          "type": "string"
+        },
+        "gender": {
+          "$ref": "#/definitions/genderGender"
+        }
+      }
+    },
+    "orderOrderDiscount": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        },
+        "amount": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "orderOrderExternal": {
+      "type": "object",
+      "properties": {
+        "order_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "external_order_id": {
+          "type": "string"
+        },
+        "external_order_code": {
+          "type": "string"
+        }
+      }
+    },
+    "orderOrderFeeLine": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "$ref": "#/definitions/feeFeeType"
+        },
+        "name": {
+          "type": "string"
+        },
+        "code": {
+          "type": "string"
+        },
+        "desc": {
+          "type": "string"
+        },
+        "amount": {
+          "type": "integer",
+          "format": "int32"
+        }
+      },
+      "required": [
+        "name",
+        "amount"
+      ]
+    },
+    "orderOrderLine": {
+      "type": "object",
+      "properties": {
+        "exported_fields": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "order_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "variant_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "supplier_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "x_variant_id": {
+          "type": "string"
+        },
+        "product_name": {
+          "type": "string"
+        },
+        "is_outside_etop": {
+          "type": "boolean",
+          "format": "boolean"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "closed_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "confirmed_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "cancelled_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "cancel_reason": {
+          "type": "string"
+        },
+        "s_confirm": {
+          "$ref": "#/definitions/status3Status"
+        },
+        "quantity": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "list_price": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "retail_price": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "payment_price": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "image_url": {
+          "type": "string"
+        },
+        "attributes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/orderAttribute"
+          }
+        },
+        "product_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "total_discount": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "orderOrderShipping": {
+      "type": "object",
+      "properties": {
+        "exported_fields": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "sh_address": {
+          "$ref": "#/definitions/orderOrderAddress",
+          "title": "@deprecated use pickup_address"
+        },
+        "x_service_id": {
+          "type": "string",
+          "title": "@deprecated"
+        },
+        "x_shipping_fee": {
+          "type": "integer",
+          "format": "int32",
+          "title": "@deprecated"
+        },
+        "x_service_name": {
+          "type": "string",
+          "title": "@deprecated"
+        },
+        "pickup_address": {
+          "$ref": "#/definitions/orderOrderAddress"
+        },
+        "return_address": {
+          "$ref": "#/definitions/orderOrderAddress"
+        },
+        "shipping_service_name": {
+          "type": "string"
+        },
+        "shipping_service_code": {
+          "type": "string"
+        },
+        "shipping_service_fee": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "shipping_provider": {
+          "$ref": "#/definitions/shipping_providerShippingProvider",
+          "title": "@deprecated use carrier"
+        },
+        "carrier": {
+          "$ref": "#/definitions/shipping_providerShippingProvider"
+        },
+        "include_insurance": {
+          "type": "boolean",
+          "format": "boolean"
+        },
+        "try_on": {
+          "$ref": "#/definitions/try_onTryOnCode"
+        },
+        "shipping_note": {
+          "type": "string"
+        },
+        "cod_amount": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "weight": {
+          "type": "integer",
+          "format": "int32",
+          "title": "@deprecated"
+        },
+        "gross_weight": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "length": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "width": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "height": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "chargeable_weight": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "orderOrderWithErrorsResponse": {
+      "type": "object",
+      "properties": {
+        "errors": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/cmError"
+          },
+          "title": "@deprecated"
+        },
+        "order": {
+          "$ref": "#/definitions/orderOrder"
+        },
+        "fulfillment_errors": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/cmError"
+          }
+        }
+      }
+    },
+    "orderOrdersResponse": {
+      "type": "object",
+      "properties": {
+        "paging": {
+          "$ref": "#/definitions/cmPageInfo"
+        },
+        "orders": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/orderOrder"
+          }
+        }
+      }
+    },
+    "orderPublicFulfillment": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "shipping_state": {
+          "$ref": "#/definitions/shippingState"
+        },
+        "status": {
+          "$ref": "#/definitions/status5Status"
+        },
+        "expected_delivery_at": {
+          "type": "string",
+          "format": "date-time",
+          "title": "@deprecated use estimated_delivery_at"
+        },
+        "delivered_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "estimated_pickup_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "estimated_delivery_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "shipping_code": {
+          "type": "string"
+        },
+        "order_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "delivered_at_text": {
+          "type": "string",
+          "title": "For using with ManyChat"
+        },
+        "shipping_state_text": {
+          "type": "string"
+        }
+      },
+      "title": "Public API for using with ManyChat"
+    },
+    "orderShippingFeeLine": {
+      "type": "object",
+      "properties": {
+        "shipping_fee_type": {
+          "$ref": "#/definitions/shipping_fee_typeShippingFeeType"
+        },
+        "cost": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "external_service_id": {
+          "type": "string"
+        },
+        "external_service_name": {
+          "type": "string"
+        },
+        "external_service_type": {
+          "type": "string"
+        },
+        "external_shipping_order_id": {
+          "type": "string"
+        },
+        "external_payment_channel_id": {
+          "type": "string"
+        }
+      }
+    },
+    "orderUpdateOrderRequest": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "customer": {
+          "$ref": "#/definitions/orderOrderCustomer"
+        },
+        "customer_address": {
+          "$ref": "#/definitions/orderOrderAddress"
+        },
+        "billing_address": {
+          "$ref": "#/definitions/orderOrderAddress"
+        },
+        "shipping_address": {
+          "$ref": "#/definitions/orderOrderAddress"
+        },
+        "shop_address": {
+          "$ref": "#/definitions/orderOrderAddress"
+        },
+        "order_note": {
+          "type": "string"
+        },
+        "shipping_note": {
+          "type": "string"
+        },
+        "shop_shipping_fee": {
+          "type": "integer",
+          "format": "int32",
+          "title": "@deprecated use fee_lines instead"
+        },
+        "shop_cod": {
+          "type": "integer",
+          "format": "int32",
+          "title": "@deprecated use shipping.cod_amount instead"
+        },
+        "shop_shipping": {
+          "$ref": "#/definitions/orderOrderShipping",
+          "title": "@deprecated use shipping instead"
+        },
+        "shipping": {
+          "$ref": "#/definitions/orderOrderShipping"
+        },
+        "fee_lines": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/orderOrderFeeLine"
+          }
+        },
+        "order_discount": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "total_weight": {
+          "type": "integer",
+          "format": "int32",
+          "title": "@deprecated"
+        },
+        "chargeable_weight": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "lines": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/orderCreateOrderLine"
+          }
+        },
+        "basket_value": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "total_amount": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "total_items": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "total_fee": {
+          "type": "integer",
+          "format": "int32"
+        }
+      },
+      "required": [
+        "id"
+      ]
+    },
+    "product_sourceProductSourceType": {
+      "type": "string",
+      "enum": [
+        "unknown",
+        "custom",
+        "kiotviet"
+      ],
+      "default": "unknown"
+    },
+    "shippingState": {
+      "type": "string",
+      "enum": [
+        "default",
+        "created",
+        "confirmed",
+        "processing",
+        "picking",
+        "holding",
+        "returning",
+        "returned",
+        "delivering",
+        "delivered",
+        "unknown",
+        "undeliverable",
+        "cancelled"
+      ],
+      "default": "default"
+    },
+    "shipping_fee_typeShippingFeeType": {
+      "type": "string",
+      "enum": [
+        "main",
+        "return",
+        "adjustment",
+        "insurance",
+        "tax",
+        "other",
+        "cods",
+        "address_change",
+        "discount",
+        "unknown"
+      ],
+      "default": "main"
+    },
+    "shipping_providerShippingProvider": {
+      "type": "string",
+      "enum": [
+        "unknown",
+        "all",
+        "manual",
+        "ghn",
+        "ghtk",
+        "vtpost"
+      ],
+      "default": "unknown"
+    },
+    "shopAddProductsRequest": {
+      "type": "object",
+      "properties": {
+        "ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          }
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "collection_id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "shopAddProductsResponse": {
+      "type": "object",
+      "properties": {
+        "products": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/shopShopProduct"
+          }
+        },
+        "errors": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/cmError"
+          }
+        }
+      }
+    },
+    "shopAddVariantsRequest": {
+      "type": "object",
+      "properties": {
+        "ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          }
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "collection_id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "shopAddVariantsResponse": {
+      "type": "object",
+      "properties": {
+        "variants": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/shopShopVariant"
+          }
+        },
+        "errors": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/cmError"
+          }
+        }
+      }
+    },
+    "shopAuthorizePartnerRequest": {
+      "type": "object",
+      "properties": {
+        "partner_id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "shopAuthorizedPartnerResponse": {
+      "type": "object",
+      "properties": {
+        "partner": {
+          "$ref": "#/definitions/etopPublicAccountInfo"
+        },
+        "redirect_url": {
+          "type": "string"
+        }
+      }
+    },
+    "shopBrowseVariantsRequest": {
+      "type": "object",
+      "properties": {
+        "paging": {
+          "$ref": "#/definitions/cmPaging"
+        },
+        "filters": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/cmFilter"
+          }
+        }
+      }
+    },
+    "shopCalcBalanceShopResponse": {
+      "type": "object",
+      "properties": {
+        "balance": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "shopCancelOrderRequest": {
+      "type": "object",
+      "properties": {
+        "order_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "cancel_reason": {
+          "type": "string"
+        }
+      }
+    },
+    "shopCollection": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "short_desc": {
+          "type": "string"
+        },
+        "desc_html": {
+          "type": "string"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "created_at",
+        "updated_at"
+      ]
+    },
+    "shopCollectionsResponse": {
+      "type": "object",
+      "properties": {
+        "collections": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/shopCollection"
+          }
+        }
+      }
+    },
+    "shopConnectProductSourceResquest": {
+      "type": "object",
+      "properties": {
+        "product_source_id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "shopCreateCollectionRequest": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "short_desc": {
+          "type": "string"
+        },
+        "desc_html": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "name"
+      ]
+    },
+    "shopCreateFulfillmentsForOrderRequest": {
+      "type": "object",
+      "properties": {
+        "order_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "supplier_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "variant_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          }
+        }
+      }
+    },
+    "shopCreatePSCategoryRequest": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "parent_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "product_source_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "product_source_type": {
+          "$ref": "#/definitions/product_sourceProductSourceType"
+        }
+      }
+    },
+    "shopCreateProductSourceRequest": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "$ref": "#/definitions/product_sourceProductSourceType"
+        },
+        "name": {
+          "type": "string"
+        }
+      }
+    },
+    "shopCreateVariantRequest": {
+      "type": "object",
+      "properties": {
+        "product_source_id": {
+          "type": "string",
+          "format": "int64",
+          "title": "required"
+        },
+        "product_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "product_name": {
+          "type": "string",
+          "title": "In `Dép Adidas Adilette Slides - Full Đỏ`, product_name is \"Dép Adidas Adilette Slides\""
+        },
+        "name": {
+          "type": "string",
+          "title": "In `Dép Adidas Adilette Slides - Full Đỏ`, name is \"Full Đỏ\""
+        },
+        "description": {
+          "type": "string"
+        },
+        "short_desc": {
+          "type": "string"
+        },
+        "desc_html": {
+          "type": "string"
+        },
+        "image_urls": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "status": {
+          "$ref": "#/definitions/status3Status"
+        },
+        "list_price": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "cost_price": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "sku": {
+          "type": "string",
+          "title": "sku: presentation for EdCode in `variant` (Mã phiên bản sản phẩm)"
+        },
+        "code": {
+          "type": "string",
+          "title": "Code: presentation for EdCode in `product` (Mã sản phẩm)"
+        },
+        "quantity_available": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "quantity_on_hand": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "quantity_reserved": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "attributes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/supplierAttribute"
+          }
+        },
+        "unit": {
+          "type": "string"
+        }
+      }
+    },
+    "shopEtopProduct": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "supplier_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "category_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "product_source_category_id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "short_desc": {
+          "type": "string"
+        },
+        "desc_html": {
+          "type": "string"
+        },
+        "image_urls": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "s_meta": {
+          "$ref": "#/definitions/cmRawJSONObject"
+        },
+        "is_available": {
+          "type": "boolean",
+          "format": "boolean"
+        },
+        "quantity_available": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "status": {
+          "$ref": "#/definitions/status3Status"
+        },
+        "x_id": {
+          "type": "string"
+        },
+        "s_brand_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "variants": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/shopEtopVariant"
+          }
+        },
+        "unit": {
+          "type": "string"
+        },
+        "code": {
+          "type": "string"
+        },
+        "ed_code": {
+          "type": "string"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id"
+      ]
+    },
+    "shopEtopProductsResponse": {
+      "type": "object",
+      "properties": {
+        "paging": {
+          "$ref": "#/definitions/cmPageInfo"
+        },
+        "products": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/shopEtopProduct"
+          }
+        }
+      }
+    },
+    "shopEtopVariant": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "supplier_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "category_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "short_desc": {
+          "type": "string"
+        },
+        "desc_html": {
+          "type": "string"
+        },
+        "image_urls": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "s_meta": {
+          "$ref": "#/definitions/cmRawJSONObject"
+        },
+        "wholesale_price": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "list_price": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "retail_price_min": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "retail_price_max": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "is_available": {
+          "type": "boolean",
+          "format": "boolean"
+        },
+        "quantity_available": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "status": {
+          "$ref": "#/definitions/status3Status"
+        },
+        "x_id": {
+          "type": "string"
+        },
+        "x_base_id": {
+          "type": "string"
+        },
+        "x_attributes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/supplierAttribute"
+          }
+        },
+        "s_brand_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "cost_price": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "attributes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/supplierAttribute"
+          }
+        },
+        "sku": {
+          "type": "string",
+          "title": "@deprecated"
+        },
+        "code": {
+          "type": "string"
+        },
+        "ed_code": {
+          "type": "string"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id"
+      ]
+    },
+    "shopEtopVariantsResponse": {
+      "type": "object",
+      "properties": {
+        "paging": {
+          "$ref": "#/definitions/cmPageInfo"
+        },
+        "variants": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/shopEtopVariant"
+          }
+        }
+      }
+    },
+    "shopExportItem": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "filename": {
+          "type": "string"
+        },
+        "export_type": {
+          "type": "string",
+          "title": "example: shop/fulfillments, admin/orders"
+        },
+        "download_url": {
+          "type": "string"
+        },
+        "account_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "user_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "deleted_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "request_query": {
+          "type": "string"
+        },
+        "mime_type": {
+          "type": "string"
+        },
+        "status": {
+          "$ref": "#/definitions/status4Status"
+        },
+        "export_errors": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/cmError"
+          }
+        },
+        "error": {
+          "$ref": "#/definitions/cmError"
+        }
+      }
+    },
+    "shopGetAuthorizedPartnersResponse": {
+      "type": "object",
+      "properties": {
+        "partners": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/shopAuthorizedPartnerResponse"
+          }
+        }
+      }
+    },
+    "shopGetBalanceShopResponse": {
+      "type": "object",
+      "properties": {
+        "amount": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "shopGetExportsRequest": {
+      "type": "object"
+    },
+    "shopGetExportsResponse": {
+      "type": "object",
+      "properties": {
+        "export_items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/shopExportItem"
+          }
+        }
+      }
+    },
+    "shopGetFulfillmentHistoryRequest": {
+      "type": "object",
+      "properties": {
+        "paging": {
+          "$ref": "#/definitions/cmPaging"
+        },
+        "all": {
+          "type": "boolean",
+          "format": "boolean"
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "order_id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "shopGetFulfillmentsRequest": {
+      "type": "object",
+      "properties": {
+        "paging": {
+          "$ref": "#/definitions/cmPaging"
+        },
+        "filters": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/cmFilter"
+          }
+        },
+        "mixed": {
+          "$ref": "#/definitions/etopMixedAccount"
+        },
+        "order_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "status": {
+          "$ref": "#/definitions/status3Status"
+        }
+      }
+    },
+    "shopGetMoneyTransactionsRequest": {
+      "type": "object",
+      "properties": {
+        "paging": {
+          "$ref": "#/definitions/cmPaging"
+        },
+        "filters": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/cmFilter"
+          }
+        }
+      }
+    },
+    "shopGetOrdersRequest": {
+      "type": "object",
+      "properties": {
+        "paging": {
+          "$ref": "#/definitions/cmPaging"
+        },
+        "filters": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/cmFilter"
+          }
+        },
+        "mixed": {
+          "$ref": "#/definitions/etopMixedAccount"
+        }
+      }
+    },
+    "shopGetPartnersResponse": {
+      "type": "object",
+      "properties": {
+        "partners": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/etopPublicAccountInfo"
+          }
+        }
+      }
+    },
+    "shopGetProductSourceCategoriesRequest": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "$ref": "#/definitions/product_sourceProductSourceType"
+        }
+      }
+    },
+    "shopGetPublicFulfillmentRequest": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "string",
+          "title": "@Required"
+        }
+      }
+    },
+    "shopGetVariantsRequest": {
+      "type": "object",
+      "properties": {
+        "paging": {
+          "$ref": "#/definitions/cmPaging"
+        },
+        "filters": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/cmFilter"
+          }
+        }
+      }
+    },
+    "shopOrderIDRequest": {
+      "type": "object",
+      "properties": {
+        "order_id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "shopOrderIDsRequest": {
+      "type": "object",
+      "properties": {
+        "order_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          }
+        }
+      }
+    },
+    "shopPriceRule": {
+      "type": "object",
+      "properties": {
+        "collection_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "tag": {
+          "type": "string"
+        },
+        "retail_price_a": {
+          "type": "number",
+          "format": "double"
+        },
+        "retail_price_b": {
+          "type": "number",
+          "format": "double"
+        },
+        "retail_price_min_a": {
+          "type": "number",
+          "format": "double"
+        },
+        "retail_price_min_b": {
+          "type": "number",
+          "format": "double"
+        },
+        "retail_price_max_a": {
+          "type": "number",
+          "format": "double"
+        },
+        "retail_price_max_b": {
+          "type": "number",
+          "format": "double"
+        }
+      }
+    },
+    "shopPriceRulesResponse": {
+      "type": "object",
+      "properties": {
+        "general": {
+          "$ref": "#/definitions/shopPriceRule"
+        },
+        "rules": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/shopPriceRule"
+          }
+        }
+      }
+    },
+    "shopProductSource": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "type": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "status": {
+          "$ref": "#/definitions/status3Status"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "shopProductSourceCategory": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "product_source_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "product_source_type": {
+          "type": "string"
+        },
+        "supplier_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "parent_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "shop_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "name": {
+          "type": "string"
+        }
+      }
+    },
+    "shopProductSourcesResponse": {
+      "type": "object",
+      "properties": {
+        "product_sources": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/shopProductSource"
+          }
+        }
+      }
+    },
+    "shopRegisterShopRequest": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "address": {
+          "$ref": "#/definitions/etopAddress"
+        },
+        "phone": {
+          "type": "string"
+        },
+        "bank_account": {
+          "$ref": "#/definitions/etopBankAccount"
+        },
+        "website_url": {
+          "type": "string"
+        },
+        "image_url": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "url_slug": {
+          "type": "string"
+        },
+        "company_info": {
+          "$ref": "#/definitions/etopCompanyInfo"
+        },
+        "money_transaction_rrule": {
+          "type": "string",
+          "title": "referrence: https://icalendar.org/rrule-tool.html"
+        },
+        "survey_info": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/etopSurveyInfo"
+          }
+        },
+        "shipping_service_select_strategy": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/etopShippingServiceSelectStrategyItem"
+          }
+        }
+      },
+      "required": [
+        "name"
+      ]
+    },
+    "shopRegisterShopResponse": {
+      "type": "object",
+      "properties": {
+        "shop": {
+          "$ref": "#/definitions/etopShop"
+        }
+      },
+      "required": [
+        "shop"
+      ]
+    },
+    "shopRemoveProductsCollectionRequest": {
+      "type": "object",
+      "properties": {
+        "collection_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "product_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          }
+        }
+      },
+      "required": [
+        "collection_id"
+      ]
+    },
+    "shopRemoveVariantsRequest": {
+      "type": "object",
+      "properties": {
+        "ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          }
+        }
+      }
+    },
+    "shopRequestExportRequest": {
+      "type": "object",
+      "properties": {
+        "export_type": {
+          "type": "string"
+        },
+        "filters": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/cmFilter"
+          }
+        },
+        "date_from": {
+          "type": "string"
+        },
+        "date_to": {
+          "type": "string"
+        },
+        "delimiter": {
+          "type": "string",
+          "description": "Accept '\\t', ',' or ';'. Default to ','."
+        },
+        "excel_compatible_mode": {
+          "type": "boolean",
+          "format": "boolean",
+          "title": "For exporting csv compatible with Excel"
+        }
+      }
+    },
+    "shopRequestExportResponse": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "filename": {
+          "type": "string"
+        },
+        "export_type": {
+          "type": "string"
+        },
+        "status": {
+          "$ref": "#/definitions/status4Status"
+        }
+      }
+    },
+    "shopShopProduct": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "info": {
+          "$ref": "#/definitions/shopEtopProduct"
+        },
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "short_desc": {
+          "type": "string"
+        },
+        "desc_html": {
+          "type": "string"
+        },
+        "image_urls": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "status": {
+          "$ref": "#/definitions/status3Status"
+        },
+        "is_available": {
+          "type": "boolean",
+          "format": "boolean"
+        },
+        "collection_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          }
+        },
+        "variants": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/shopShopVariant"
+          }
+        },
+        "product_source_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "product_source_type": {
+          "type": "string"
+        },
+        "product_source_name": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "id"
+      ]
+    },
+    "shopShopProductsResponse": {
+      "type": "object",
+      "properties": {
+        "paging": {
+          "$ref": "#/definitions/cmPageInfo"
+        },
+        "products": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/shopShopProduct"
+          }
+        }
+      }
+    },
+    "shopShopVariant": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "info": {
+          "$ref": "#/definitions/shopEtopVariant"
+        },
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "short_desc": {
+          "type": "string"
+        },
+        "desc_html": {
+          "type": "string"
+        },
+        "image_urls": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "note": {
+          "type": "string"
+        },
+        "status": {
+          "$ref": "#/definitions/status3Status"
+        },
+        "is_available": {
+          "type": "boolean",
+          "format": "boolean"
+        },
+        "retail_price": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "collection_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "attributes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/supplierAttribute"
+          }
+        }
+      },
+      "required": [
+        "id"
+      ]
+    },
+    "shopShopVariantsResponse": {
+      "type": "object",
+      "properties": {
+        "paging": {
+          "$ref": "#/definitions/cmPageInfo"
+        },
+        "variants": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/shopShopVariant"
+          }
+        }
+      }
+    },
+    "shopSummarizeFulfillmentsRequest": {
+      "type": "object",
+      "properties": {
+        "date_from": {
+          "type": "string"
+        },
+        "date_to": {
+          "type": "string"
+        }
+      }
+    },
+    "shopSummarizeFulfillmentsResponse": {
+      "type": "object",
+      "properties": {
+        "tables": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/shopSummaryTable"
+          }
+        }
+      }
+    },
+    "shopSummaryColRow": {
+      "type": "object",
+      "properties": {
+        "label": {
+          "type": "string"
+        },
+        "spec": {
+          "type": "string"
+        },
+        "unit": {
+          "type": "string"
+        },
+        "indent": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "shopSummaryItem": {
+      "type": "object",
+      "properties": {
+        "spec": {
+          "type": "string"
+        },
+        "value": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "unit": {
+          "type": "string"
+        }
+      }
+    },
+    "shopSummaryTable": {
+      "type": "object",
+      "properties": {
+        "label": {
+          "type": "string"
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "columns": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/shopSummaryColRow"
+          }
+        },
+        "rows": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/shopSummaryColRow"
+          }
+        },
+        "data": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/shopSummaryItem"
+          }
+        }
+      }
+    },
+    "shopUpdateCollectionRequest": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "short_desc": {
+          "type": "string"
+        },
+        "desc_html": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "name"
+      ]
+    },
+    "shopUpdateFulfillmentsShippingStateRequest": {
+      "type": "object",
+      "properties": {
+        "ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          },
+          "title": "Only support for manual order"
+        },
+        "shipping_state": {
+          "$ref": "#/definitions/shippingState"
+        }
+      },
+      "required": [
+        "shipping_state"
+      ]
+    },
+    "shopUpdateOrderPaymentStatusRequest": {
+      "type": "object",
+      "properties": {
+        "order_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "status": {
+          "$ref": "#/definitions/status3Status"
+        }
+      }
+    },
+    "shopUpdateOrdersStatusRequest": {
+      "type": "object",
+      "properties": {
+        "ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          }
+        },
+        "confirm": {
+          "$ref": "#/definitions/status3Status"
+        },
+        "cancel_reason": {
+          "type": "string"
+        },
+        "status": {
+          "$ref": "#/definitions/status4Status"
+        }
+      },
+      "required": [
+        "ids",
+        "confirm"
+      ]
+    },
+    "shopUpdatePriceRulesRequest": {
+      "type": "object",
+      "properties": {
+        "general": {
+          "$ref": "#/definitions/shopPriceRule"
+        },
+        "updates": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/shopPriceRule"
+          }
+        },
+        "deletes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/shopPriceRule"
+          }
+        }
+      }
+    },
+    "shopUpdatePriceRulesResponse": {
+      "type": "object",
+      "properties": {
+        "general": {
+          "$ref": "#/definitions/shopPriceRule"
+        },
+        "rules": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/shopPriceRule"
+          }
+        },
+        "update_errors": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/cmError"
+          }
+        },
+        "delete_errors": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/cmError"
+          }
+        }
+      }
+    },
+    "shopUpdateProductRequest": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "short_desc": {
+          "type": "string"
+        },
+        "desc_html": {
+          "type": "string"
+        },
+        "code": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "id"
+      ]
+    },
+    "shopUpdateProductSourceCategoryRequest": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "parent_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "name": {
+          "type": "string"
+        }
+      }
+    },
+    "shopUpdateProductsCollectionRequest": {
+      "type": "object",
+      "properties": {
+        "collection_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "product_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          }
+        }
+      },
+      "required": [
+        "collection_id"
+      ]
+    },
+    "shopUpdateProductsCollectionResponse": {
+      "type": "object",
+      "properties": {
+        "updated": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "errors": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/cmError"
+          }
+        }
+      }
+    },
+    "shopUpdateProductsPSCategoryRequest": {
+      "type": "object",
+      "properties": {
+        "category_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "product_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          }
+        }
+      }
+    },
+    "shopUpdateShopRequest": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "address": {
+          "$ref": "#/definitions/etopAddress"
+        },
+        "phone": {
+          "type": "string"
+        },
+        "bank_account": {
+          "$ref": "#/definitions/etopBankAccount"
+        },
+        "website_url": {
+          "type": "string"
+        },
+        "image_url": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "auto_create_ffm": {
+          "type": "boolean",
+          "format": "boolean"
+        },
+        "ghn_note_code": {
+          "$ref": "#/definitions/ghn_note_codeGHNNoteCode",
+          "title": "@deprecated use try_on instead"
+        },
+        "try_on": {
+          "$ref": "#/definitions/try_onTryOnCode"
+        },
+        "company_info": {
+          "$ref": "#/definitions/etopCompanyInfo"
+        },
+        "money_transaction_rrule": {
+          "type": "string",
+          "title": "referrence: https://icalendar.org/rrule-tool.html"
+        },
+        "survey_info": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/etopSurveyInfo"
+          }
+        },
+        "shipping_service_select_strategy": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/etopShippingServiceSelectStrategyItem"
+          }
+        }
+      }
+    },
+    "shopUpdateShopResponse": {
+      "type": "object",
+      "properties": {
+        "shop": {
+          "$ref": "#/definitions/etopShop"
+        }
+      }
+    },
+    "shopUpdateVariantRequest": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "short_desc": {
+          "type": "string"
+        },
+        "desc_html": {
+          "type": "string"
+        },
+        "note": {
+          "type": "string"
+        },
+        "retail_price": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "cost_price": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "inventory": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "attributes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/supplierAttribute"
+          }
+        },
+        "sku": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "id"
+      ]
+    },
+    "shopUpdateVariantsRequest": {
+      "type": "object",
+      "properties": {
+        "updates": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/shopUpdateVariantRequest"
+          }
+        }
+      }
+    },
+    "shopUpdateVariantsResponse": {
+      "type": "object",
+      "properties": {
+        "variants": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/shopShopVariant"
+          }
+        },
+        "errors": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/cmError"
+          }
+        }
+      }
+    },
+    "shopUpdateVariantsStatusRequest": {
+      "type": "object",
+      "properties": {
+        "ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          }
+        },
+        "status": {
+          "$ref": "#/definitions/status3Status"
+        }
+      },
+      "required": [
+        "ids",
+        "status"
+      ]
+    },
+    "shopUpdateVariantsTagsRequest": {
+      "type": "object",
+      "properties": {
+        "ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          }
+        },
+        "adds": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "deletes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "replace_all": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "delete_all": {
+          "type": "boolean",
+          "format": "boolean"
+        }
+      },
+      "required": [
+        "ids"
+      ]
+    },
+    "sourceSource": {
+      "type": "string",
+      "enum": [
+        "unknown",
+        "self",
+        "import",
+        "api",
+        "etop_pos",
+        "etop_pxs",
+        "etop_cmx",
+        "ts_app"
+      ],
+      "default": "unknown"
+    },
+    "status3Status": {
+      "type": "string",
+      "enum": [
+        "Z",
+        "P",
+        "N"
+      ],
+      "default": "Z"
+    },
+    "status4Status": {
+      "type": "string",
+      "enum": [
+        "Z",
+        "P",
+        "S",
+        "N"
+      ],
+      "default": "Z"
+    },
+    "status5Status": {
+      "type": "string",
+      "enum": [
+        "Z",
+        "P",
+        "S",
+        "N",
+        "NS"
+      ],
+      "default": "Z"
+    },
+    "supplierAttribute": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "value": {
+          "type": "string"
+        }
+      }
+    },
+    "supplierBrand": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "supplier_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "policy": {
+          "type": "string"
+        },
+        "image_urls": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "supplier_name": {
+          "type": "string"
+        }
+      }
+    },
+    "supplierBrandsResponse": {
+      "type": "object",
+      "properties": {
+        "brands": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/supplierBrand"
+          }
+        }
+      }
+    },
+    "supplierCategoriesResponse": {
+      "type": "object",
+      "properties": {
+        "categories": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/supplierCategory"
+          }
+        }
+      }
+    },
+    "supplierCategory": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "name": {
+          "type": "string"
+        },
+        "product_source_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "product_source_type": {
+          "type": "string"
+        },
+        "supplier_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "parent_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "shop_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "x_id": {
+          "type": "string"
+        },
+        "x_name": {
+          "type": "string"
+        },
+        "x_parent_id": {
+          "type": "string"
+        }
+      }
+    },
+    "supplierUpdateVariantImagesRequest": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "adds": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "deletes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "replace_all": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "delete_all": {
+          "type": "boolean",
+          "format": "boolean"
+        }
+      },
+      "required": [
+        "id"
+      ]
+    },
+    "try_onTryOnCode": {
+      "type": "string",
+      "enum": [
+        "unknown",
+        "none",
+        "open",
+        "try"
+      ],
+      "default": "unknown"
+    }
+  },
+  "tags": [
+    {
+      "name": "Account"
+    },
+    {
+      "name": "Authorize"
+    },
+    {
+      "name": "Brand"
+    },
+    {
+      "name": "Browse"
+    },
+    {
+      "name": "Collection"
+    },
+    {
+      "name": "Export"
+    },
+    {
+      "name": "Fulfillment"
+    },
+    {
+      "name": "History"
+    },
+    {
+      "name": "Misc"
+    },
+    {
+      "name": "MoneyTransaction"
+    },
+    {
+      "name": "Notification"
+    },
+    {
+      "name": "Order"
+    },
+    {
+      "name": "Price"
+    },
+    {
+      "name": "Product"
+    },
+    {
+      "name": "ProductSource"
+    },
+    {
+      "name": "Summary"
+    }
+  ]
+}

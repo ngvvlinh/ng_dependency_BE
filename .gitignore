@@ -1,0 +1,12 @@
+__*
+_out
+.DS_Store
+.idea
+.vscode
+*.cover
+*.out
+*.test
+~*
+bin
+debug*
+vendor

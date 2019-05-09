@@ -1,0 +1,22 @@
+syntax = "proto2";
+package shipping;
+option go_package = "etop.vn/backend/pb/etop/etc/shipping";
+
+import "gogoproto/gogo.proto";
+option (gogoproto.gogoproto_import)         = false;
+
+enum State {
+    default       = 0;
+    created       = 1;
+    confirmed     = 2;
+    processing    = 3;
+    picking       = 4;
+    holding       = 5;
+    returning     = 6;
+    returned      = 7;
+    delivering    = 8;
+    delivered     = 9;
+    unknown       = 101;
+    undeliverable = 126;
+    cancelled     = 127;
+}

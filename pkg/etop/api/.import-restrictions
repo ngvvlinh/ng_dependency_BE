@@ -1,0 +1,28 @@
+{
+  "Rules": [
+    {
+      "SelectorRegexp": "etop[.]vn",
+      "AllowedPrefixes": [
+        "etop.vn/backend/cmd/etop-server/config",
+        "etop.vn/backend/pkg/common",
+        "etop.vn/backend/pb",
+        "etop.vn/backend/pkg/etop-handler/intctl",
+        "etop.vn/backend/pkg/etop-handler/webhook/sender",
+        "etop.vn/backend/pkg/etop/api",
+        "etop.vn/backend/pkg/etop/authorize",
+        "etop.vn/backend/pkg/etop/cache",
+        "etop.vn/backend/pkg/etop/config",
+        "etop.vn/backend/pkg/etop/logic",
+        "etop.vn/backend/pkg/etop/model",
+        "etop.vn/backend/pkg/etop/sqlstore",
+        "etop.vn/backend/pkg/integration",
+        "etop.vn/backend/wrapper",
+        "etop.vn/backend/pkg/models",
+        "etop.vn/backend/pkg/services",
+        "etop.vn/backend/pkg/notifier/model"
+      ],
+      "ForbiddenPrefixes": [
+      ]
+    }
+  ]
+}

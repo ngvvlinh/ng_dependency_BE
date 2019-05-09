@@ -1,0 +1,39 @@
+syntax = "proto2";
+package etop.vn.api.meta.v1;
+option go_package = "v1";
+
+import "gogoproto/gogo.proto";
+option (gogoproto.equal_all)                = false;
+option (gogoproto.gogoproto_import)         = false;
+option (gogoproto.goproto_enum_prefix_all)  = true;
+option (gogoproto.goproto_getters_all)      = true;
+option (gogoproto.goproto_sizecache_all)    = false;
+option (gogoproto.goproto_unkeyed_all)      = false;
+option (gogoproto.goproto_unrecognized_all) = false;
+option (gogoproto.gostring_all)             = false;
+option (gogoproto.marshaler_all)            = false;
+option (gogoproto.onlyone_all)              = false;
+option (gogoproto.sizer_all)                = false;
+option (gogoproto.testgen_all)              = false;
+option (gogoproto.unmarshaler_all)          = false;
+option (gogoproto.verbose_equal_all)        = false;
+
+message Empty{}
+
+message UUID {
+    optional bytes data = 1;
+}
+
+// Extracted from google/protobuf/timestamp.proto
+message Timestamp {
+    // Represents seconds of UTC time since Unix epoch
+    // 1970-01-01T00:00:00Z. Must be from 0001-01-01T00:00:00Z to
+    // 9999-12-31T23:59:59Z inclusive.
+    optional int64 seconds = 1 [(gogoproto.nullable)=false];
+
+    // Non-negative fractions of a second at nanosecond resolution. Negative
+    // second values with fractions must still have non-negative nanos values
+    // that count forward in time. Must be from 0 to 999,999,999
+    // inclusive.
+    optional int32 nanos = 2 [(gogoproto.nullable)=false];
+}

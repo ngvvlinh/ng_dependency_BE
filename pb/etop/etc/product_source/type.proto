@@ -1,0 +1,12 @@
+syntax = "proto2";
+package product_source;
+option go_package = "etop.vn/backend/pb/etop/etc/product_source";
+
+import "gogoproto/gogo.proto";
+option (gogoproto.gogoproto_import)         = false;
+
+enum ProductSourceType {
+  unknown = 0;
+  custom = 1;
+  kiotviet = 2;
+}

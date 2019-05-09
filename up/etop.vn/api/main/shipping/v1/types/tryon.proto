@@ -1,0 +1,13 @@
+syntax = "proto2";
+package etop.vn.api.main.shipping.v1.tryon;
+option go_package = "types";
+
+import "gogoproto/gogo.proto";
+option (gogoproto.gogoproto_import)         = false;
+
+enum TryOnCode {
+    unknown = 0;
+    none = 1;
+    open = 2;
+    try = 3;
+}

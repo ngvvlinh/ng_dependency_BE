@@ -1,0 +1,68 @@
+syntax = "proto2";
+package etop.vn.api.main.order.v1.types;
+option go_package = "types";
+
+import "gogoproto/gogo.proto";
+option (gogoproto.equal_all)                = false;
+option (gogoproto.gogoproto_import)         = false;
+option (gogoproto.goproto_enum_prefix_all)  = false;
+option (gogoproto.goproto_getters_all)      = true;
+option (gogoproto.goproto_sizecache_all)    = false;
+option (gogoproto.goproto_unkeyed_all)      = false;
+option (gogoproto.goproto_unrecognized_all) = false;
+option (gogoproto.gostring_all)             = false;
+option (gogoproto.marshaler_all)            = false;
+option (gogoproto.onlyone_all)              = false;
+option (gogoproto.sizer_all)                = false;
+option (gogoproto.testgen_all)              = false;
+option (gogoproto.unmarshaler_all)          = false;
+option (gogoproto.verbose_equal_all)        = false;
+
+import "etop.vn/api/meta/v1/api.proto";
+import "etop.vn/api/main/product/v1/types/types.proto";
+
+message ItemLine {
+   optional int64 order_id = 1 [(gogoproto.nullable)=false];
+
+//   optional int64 supplier_id = 2;
+
+   optional int64 product_id = 3 [(gogoproto.nullable)=false];
+
+   optional int64 variant_id = 4 [(gogoproto.nullable)=false];
+
+   optional bool is_outside = 5 [(gogoproto.nullable)=false];
+
+   optional ProductInfo product_info = 6 [(gogoproto.nullable)=false];
+}
+
+message ProductInfo {
+   optional string product_name = 1 [(gogoproto.nullable)=false];
+
+   optional string image_url = 2 [(gogoproto.nullable)=false];
+
+   repeated product.v1.types.Attribute attributes = 3;
+}
+
+message Address {
+   optional string full_name = 1 [(gogoproto.nullable)=false];
+
+   optional string phone = 2 [(gogoproto.nullable)=false];
+
+   optional string email = 3 [(gogoproto.nullable)=false];
+
+   optional string company = 4 [(gogoproto.nullable)=false];
+
+   optional string address1 = 5 [(gogoproto.nullable)=false];
+
+   optional string address2 = 6 [(gogoproto.nullable)=false];
+
+   optional Location location = 7 [(gogoproto.nullable)=false, (gogoproto.embed)=true];
+}
+
+message Location {
+   optional string province_code = 1 [(gogoproto.nullable)=false];
+
+   optional string district_code = 2 [(gogoproto.nullable)=false];
+
+   optional string ward_code = 3 [(gogoproto.nullable)=false];
+}

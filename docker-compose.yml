@@ -1,0 +1,77 @@
+version: '3'
+services:
+  redis:
+    container_name: etop_redis
+    image: redis:alpine
+    ports:
+      - 6379:6379
+    volumes:
+      - etop_redis_data:/data
+
+  postgres:
+    container_name: etop_postgres
+    image: postgres:9.6-alpine
+    ports:
+      - 5432:5432
+    volumes:
+      - etop_postgres_data:/var/lib/postgresql/data
+      - $ETOPDIR/backend/db:/db
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=etop_dev
+      - POSTGRES_DATA=/var/lib/postgresql/data/pgdata
+      # - PGUSER=postgres
+      # - PGPASSWORD=postgres
+      # - PGDATABASE=etop_dev
+
+#  nginx:
+#    container_name: etop_nginx
+#    image: nginx:alpine
+#    ports:
+#      - 4080:80
+#    volumes:
+#      - $ETOPDIR/backend/scripts/nginx/conf.d:/etc/nginx/conf.d
+#    extra_hosts:
+#      - "local1:192.168.65.1"
+#      - "local2:192.168.65.2"
+#    command: /bin/sh -c "apk --no-cache add curl && nginx -g 'daemon off;'"
+
+  zookeeper:
+    container_name: etop_zookeeper
+    image: confluentinc/cp-zookeeper
+    ports:
+    - "2181:2181"
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+
+  kafka:
+    container_name: etop_kafka
+    image: confluentinc/cp-kafka
+    ports:
+    - "9092:9092"
+    environment:
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      ADVERTISED_HOST: localhost
+      ADVERTISED_PORT: 9092
+      KAFKA_ADVERTISED_LISTENERS: "PLAINTEXT://localhost:9092"
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+
+  mongo:
+    container_name: etop_mongo
+    image: mongo
+    ports:
+    - "27017:27017"
+    volumes:
+    - etop_mongo_data:/data/db
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: password
+
+volumes:
+  etop_redis_data:
+    external: true
+  etop_postgres_data:
+    external: true
+  etop_mongo_data:
+    external: true

@@ -1,0 +1,3721 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "eTop API: Supplier",
+    "version": "v1"
+  },
+  "schemes": [
+    "http",
+    "https"
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/api/supplier.Account/SetDefaultAddress": {
+      "post": {
+        "operationId": "SetDefaultAddress",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/cmUpdatedResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/etopSetDefaultAddressRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Account"
+        ]
+      }
+    },
+    "/api/supplier.Account/UpdateSupplier": {
+      "post": {
+        "operationId": "UpdateSupplier",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/etopSupplier"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/supplierUpdateSupplierRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Account"
+        ]
+      }
+    },
+    "/api/supplier.Brand/CreateBrand": {
+      "post": {
+        "operationId": "CreateBrand",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/supplierBrand"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/supplierCreateBrandRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Brand"
+        ]
+      }
+    },
+    "/api/supplier.Brand/DeleteBrand": {
+      "post": {
+        "operationId": "DeleteBrand",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/cmEmpty"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/cmIDRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Brand"
+        ]
+      }
+    },
+    "/api/supplier.Brand/GetBrand": {
+      "post": {
+        "operationId": "GetBrand",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/supplierBrand"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/cmIDRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Brand"
+        ]
+      }
+    },
+    "/api/supplier.Brand/GetBrands": {
+      "post": {
+        "operationId": "GetBrands",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/supplierBrandsResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/cmEmpty"
+            }
+          }
+        ],
+        "tags": [
+          "Brand"
+        ]
+      }
+    },
+    "/api/supplier.Brand/GetBrandsByIDs": {
+      "post": {
+        "operationId": "GetBrandsByIDs",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/supplierBrandsResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/cmIDsRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Brand"
+        ]
+      }
+    },
+    "/api/supplier.Brand/UpdateBrand": {
+      "post": {
+        "operationId": "UpdateBrand",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/supplierBrand"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/supplierUpdateBrandRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Brand"
+        ]
+      }
+    },
+    "/api/supplier.Brand/UpdateBrandImages": {
+      "post": {
+        "operationId": "UpdateBrandImages",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/supplierBrand"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/supplierUpdateBrandImagesRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Brand"
+        ]
+      }
+    },
+    "/api/supplier.Category/GetCategories": {
+      "post": {
+        "operationId": "GetCategories",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/supplierCategoriesResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/supplierGetCategoriesRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Category"
+        ]
+      }
+    },
+    "/api/supplier.Category/GetCategoriesByIDs": {
+      "post": {
+        "operationId": "GetCategoriesByIDs",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/supplierCategoriesResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/cmIDsRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Category"
+        ]
+      }
+    },
+    "/api/supplier.Category/GetCategory": {
+      "post": {
+        "operationId": "GetCategory",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/supplierCategory"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/cmIDRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Category"
+        ]
+      }
+    },
+    "/api/supplier.Fulfillment/GetFulfillment": {
+      "post": {
+        "operationId": "GetFulfillment",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/orderFulfillment"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/cmIDRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Fulfillment"
+        ]
+      }
+    },
+    "/api/supplier.Fulfillment/GetFulfillments": {
+      "post": {
+        "operationId": "GetFulfillments",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/orderFulfillmentsResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/supplierGetFulfillmentsRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Fulfillment"
+        ]
+      }
+    },
+    "/api/supplier.Kiotviet/ConnectKiotviet": {
+      "post": {
+        "operationId": "ConnectKiotviet",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/supplierConnectKiotvietResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/supplierConnectKiotvietRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Kiotviet"
+        ]
+      }
+    },
+    "/api/supplier.Kiotviet/ConnectKiotvietTest": {
+      "post": {
+        "operationId": "ConnectKiotvietTest",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/supplierConnectKiotvietTestResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/supplierConnectKiotvietTestRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Kiotviet"
+        ]
+      }
+    },
+    "/api/supplier.Misc/VersionInfo": {
+      "post": {
+        "operationId": "VersionInfo",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/cmVersionInfoResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/cmEmpty"
+            }
+          }
+        ],
+        "tags": [
+          "Misc"
+        ]
+      }
+    },
+    "/api/supplier.Order/GetOrder": {
+      "post": {
+        "operationId": "GetOrder",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/supplierSupplierOrder"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/cmIDRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Order"
+        ]
+      }
+    },
+    "/api/supplier.Order/GetOrders": {
+      "post": {
+        "operationId": "GetOrders",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/supplierOrdersResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/supplierGetOrdersRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Order"
+        ]
+      }
+    },
+    "/api/supplier.Order/GetOrdersByIDs": {
+      "post": {
+        "operationId": "GetOrdersByIDs",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/supplierOrdersResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/cmIDsRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Order"
+        ]
+      }
+    },
+    "/api/supplier.Order/UpdateOrdersStatus": {
+      "post": {
+        "operationId": "UpdateOrdersStatus",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/cmUpdatedResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/supplierUpdateOrdersStatusRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Order"
+        ]
+      }
+    },
+    "/api/supplier.Price/GetPriceRules": {
+      "post": {
+        "operationId": "GetPriceRules",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/supplierPriceRulesResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/cmEmpty"
+            }
+          }
+        ],
+        "tags": [
+          "Price"
+        ]
+      }
+    },
+    "/api/supplier.Price/UpdatePriceRules": {
+      "post": {
+        "operationId": "UpdatePriceRules",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/supplierUpdatePriceRulesResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/supplierUpdatePriceRulesRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Price"
+        ]
+      }
+    },
+    "/api/supplier.Product/GetProduct": {
+      "post": {
+        "operationId": "GetProduct",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/supplierProduct"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/cmIDRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Product"
+        ]
+      }
+    },
+    "/api/supplier.Product/GetProducts": {
+      "post": {
+        "summary": "GetProducts",
+        "description": "All price use for variant so when filter by price, you should add prefix 'v.'\nExample: v.wholesale_price",
+        "operationId": "GetProducts",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/supplierProductsResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/supplierGetVariantsRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Product"
+        ]
+      }
+    },
+    "/api/supplier.Product/GetProductsByIDs": {
+      "post": {
+        "operationId": "GetProductsByIDs",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/supplierProductsResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/cmIDsRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Product"
+        ]
+      }
+    },
+    "/api/supplier.Product/GetVariant": {
+      "post": {
+        "operationId": "GetVariant",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/supplierVariant"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/cmIDRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Product"
+        ]
+      }
+    },
+    "/api/supplier.Product/GetVariants": {
+      "post": {
+        "summary": "GetVariants",
+        "description": "Return list of variants.\n\nFilters:\n  - Text or set: s_name, x_name, s_tags\n  - Exactly: x_code, x_base_id, x_id, supplier_id, category_id, x_status, s_status, e_status, status\n  - Numeric: wholesale_price, list_price, retail_price_min, retail_price_max, s_wholesale_price, s_list_price, s_retail_price_min, s_retail_price_max, x_price",
+        "operationId": "GetVariants",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/supplierVariantsResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/supplierGetVariantsRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Product"
+        ]
+      }
+    },
+    "/api/supplier.Product/GetVariantsByIDs": {
+      "post": {
+        "operationId": "GetVariantsByIDs",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/supplierVariantsResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/cmIDsRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Product"
+        ]
+      }
+    },
+    "/api/supplier.Product/UpdateProduct": {
+      "post": {
+        "operationId": "UpdateProduct",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/supplierProduct"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/supplierUpdateProductRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Product"
+        ]
+      }
+    },
+    "/api/supplier.Product/UpdateProductImages": {
+      "post": {
+        "operationId": "UpdateProductImages",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/supplierProduct"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/supplierUpdateVariantImagesRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Product"
+        ]
+      }
+    },
+    "/api/supplier.Product/UpdateVariant": {
+      "post": {
+        "operationId": "UpdateVariant",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/supplierVariant"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/supplierUpdateVariantRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Product"
+        ]
+      }
+    },
+    "/api/supplier.Product/UpdateVariantImages": {
+      "post": {
+        "operationId": "UpdateVariantImages",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/supplierVariant"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/supplierUpdateVariantImagesRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Product"
+        ]
+      }
+    },
+    "/api/supplier.Product/UpdateVariants": {
+      "post": {
+        "operationId": "UpdateVariants",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/supplierUpdateVariantsResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/supplierUpdateVariantsRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Product"
+        ]
+      }
+    },
+    "/api/supplier.Product/UpdateVariantsStatus": {
+      "post": {
+        "operationId": "UpdateVariantsStatus",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/cmUpdatedResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/supplierUpdateVariantsStatusRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Product"
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "address_typeAddressType": {
+      "type": "string",
+      "enum": [
+        "unknown",
+        "general",
+        "warehouse",
+        "shipto",
+        "shipfrom"
+      ],
+      "default": "unknown"
+    },
+    "cmEmpty": {
+      "type": "object"
+    },
+    "cmError": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "string"
+        },
+        "msg": {
+          "type": "string"
+        },
+        "meta": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "cmFilter": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "title": "Comma separated properties: \"name,s_name\""
+        },
+        "op": {
+          "type": "string",
+          "description": "- Text or set: ⊃ ∩\n- Exactly: = ≠ ∈\n- Numeric: = ≠ ∈ < ≤ > ≥",
+          "title": "Can be = ≠ (!=) < ≤ (<=) > ≥ (>=) ⊃ (c) ∈ (in) ∩ (n)"
+        },
+        "value": {
+          "type": "string",
+          "title": "Must always be string"
+        }
+      }
+    },
+    "cmIDRequest": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        }
+      },
+      "required": [
+        "id"
+      ]
+    },
+    "cmIDsRequest": {
+      "type": "object",
+      "properties": {
+        "ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          }
+        }
+      },
+      "required": [
+        "ids"
+      ]
+    },
+    "cmPageInfo": {
+      "type": "object",
+      "properties": {
+        "total": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "limit": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "sort": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "cmPaging": {
+      "type": "object",
+      "properties": {
+        "offset": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "limit": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "sort": {
+          "type": "string"
+        }
+      }
+    },
+    "cmRawJSONObject": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "type": "string",
+          "format": "byte"
+        }
+      }
+    },
+    "cmUpdatedResponse": {
+      "type": "object",
+      "properties": {
+        "updated": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "cmVersionInfoResponse": {
+      "type": "object",
+      "properties": {
+        "service": {
+          "type": "string"
+        },
+        "version": {
+          "type": "string"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "etopAddress": {
+      "type": "object",
+      "properties": {
+        "exported_fields": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "province": {
+          "type": "string"
+        },
+        "province_code": {
+          "type": "string"
+        },
+        "district": {
+          "type": "string"
+        },
+        "district_code": {
+          "type": "string"
+        },
+        "ward": {
+          "type": "string"
+        },
+        "ward_code": {
+          "type": "string"
+        },
+        "address1": {
+          "type": "string"
+        },
+        "address2": {
+          "type": "string"
+        },
+        "zip": {
+          "type": "string"
+        },
+        "country": {
+          "type": "string"
+        },
+        "full_name": {
+          "type": "string"
+        },
+        "first_name": {
+          "type": "string"
+        },
+        "last_name": {
+          "type": "string"
+        },
+        "phone": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "position": {
+          "type": "string"
+        },
+        "type": {
+          "$ref": "#/definitions/address_typeAddressType"
+        },
+        "notes": {
+          "$ref": "#/definitions/etopAddressNote"
+        }
+      }
+    },
+    "etopAddressNote": {
+      "type": "object",
+      "properties": {
+        "note": {
+          "type": "string"
+        },
+        "open_time": {
+          "type": "string"
+        },
+        "lunch_break": {
+          "type": "string"
+        },
+        "other": {
+          "type": "string"
+        }
+      }
+    },
+    "etopBankAccount": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "province": {
+          "type": "string"
+        },
+        "branch": {
+          "type": "string"
+        },
+        "account_number": {
+          "type": "string"
+        },
+        "account_name": {
+          "type": "string"
+        }
+      }
+    },
+    "etopCompanyInfo": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "tax_code": {
+          "type": "string"
+        },
+        "address": {
+          "type": "string"
+        },
+        "website": {
+          "type": "string"
+        },
+        "legal_representative": {
+          "$ref": "#/definitions/etopContactPerson"
+        }
+      }
+    },
+    "etopContactPerson": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "position": {
+          "type": "string"
+        },
+        "phone": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        }
+      }
+    },
+    "etopSetDefaultAddressRequest": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "type": {
+          "$ref": "#/definitions/address_typeAddressType"
+        }
+      }
+    },
+    "etopShippingServiceSelectStrategyItem": {
+      "type": "object",
+      "properties": {
+        "key": {
+          "type": "string"
+        },
+        "value": {
+          "type": "string"
+        }
+      }
+    },
+    "etopShop": {
+      "type": "object",
+      "properties": {
+        "exported_fields": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "name": {
+          "type": "string"
+        },
+        "status": {
+          "$ref": "#/definitions/status3Status"
+        },
+        "is_test": {
+          "type": "boolean",
+          "format": "boolean"
+        },
+        "address": {
+          "$ref": "#/definitions/etopAddress"
+        },
+        "phone": {
+          "type": "string"
+        },
+        "bank_account": {
+          "$ref": "#/definitions/etopBankAccount"
+        },
+        "auto_create_ffm": {
+          "type": "boolean",
+          "format": "boolean"
+        },
+        "website_url": {
+          "type": "string"
+        },
+        "image_url": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "product_source_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "ship_to_address_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "ship_from_address_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "ghn_note_code": {
+          "type": "string",
+          "title": "@deprecated use try_on instead"
+        },
+        "try_on": {
+          "$ref": "#/definitions/try_onTryOnCode"
+        },
+        "owner_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "user": {
+          "$ref": "#/definitions/etopUser"
+        },
+        "company_info": {
+          "$ref": "#/definitions/etopCompanyInfo"
+        },
+        "money_transaction_rrule": {
+          "type": "string",
+          "title": "referrence: https://icalendar.org/rrule-tool.html"
+        },
+        "survey_info": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/etopSurveyInfo"
+          }
+        },
+        "shipping_service_select_strategy": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/etopShippingServiceSelectStrategyItem"
+          }
+        },
+        "code": {
+          "type": "string"
+        }
+      }
+    },
+    "etopSupplier": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "name": {
+          "type": "string"
+        },
+        "status": {
+          "$ref": "#/definitions/status3Status"
+        },
+        "is_test": {
+          "type": "boolean",
+          "format": "boolean"
+        },
+        "company_info": {
+          "$ref": "#/definitions/etopCompanyInfo"
+        },
+        "warehouse_address": {
+          "$ref": "#/definitions/etopAddress"
+        },
+        "bank_account": {
+          "$ref": "#/definitions/etopBankAccount"
+        },
+        "contact_persons": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/etopContactPerson"
+          }
+        },
+        "ship_from_address_id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "etopSurveyInfo": {
+      "type": "object",
+      "properties": {
+        "key": {
+          "type": "string"
+        },
+        "question": {
+          "type": "string"
+        },
+        "answer": {
+          "type": "string"
+        }
+      }
+    },
+    "etopUser": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "full_name": {
+          "type": "string"
+        },
+        "short_name": {
+          "type": "string"
+        },
+        "phone": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "email_verified_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "phone_verified_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "email_verification_sent_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "phone_verification_sent_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "description": "Represents a user in eTop system. The user may or may not have associated accounts.",
+      "required": [
+        "id",
+        "full_name",
+        "short_name",
+        "phone",
+        "email",
+        "created_at",
+        "updated_at"
+      ]
+    },
+    "feeFeeType": {
+      "type": "string",
+      "enum": [
+        "other",
+        "shipping",
+        "tax"
+      ],
+      "default": "other"
+    },
+    "genderGender": {
+      "type": "string",
+      "enum": [
+        "unknown",
+        "male",
+        "female",
+        "other"
+      ],
+      "default": "unknown"
+    },
+    "orderAttribute": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "value": {
+          "type": "string"
+        }
+      }
+    },
+    "orderExternalShippingLog": {
+      "type": "object",
+      "properties": {
+        "state_text": {
+          "type": "string"
+        },
+        "time": {
+          "type": "string"
+        },
+        "message": {
+          "type": "string"
+        }
+      }
+    },
+    "orderFulfillment": {
+      "type": "object",
+      "properties": {
+        "exported_fields": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "order_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "shop_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "supplier_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "partner_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "self_url": {
+          "type": "string"
+        },
+        "lines": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/orderOrderLine"
+          }
+        },
+        "total_items": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "total_weight": {
+          "type": "integer",
+          "format": "int32",
+          "title": "@deprecated use chargeable_weight"
+        },
+        "basket_value": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "total_cod_amount": {
+          "type": "integer",
+          "format": "int32",
+          "title": "@deprecated use cod_amount"
+        },
+        "cod_amount": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "total_amount": {
+          "type": "integer",
+          "format": "int32",
+          "title": "@deprecated"
+        },
+        "chargeable_weight": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "closed_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "cancelled_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "cancel_reason": {
+          "type": "string"
+        },
+        "shipping_provider": {
+          "type": "string",
+          "title": "@deprecated use carrier instead"
+        },
+        "carrier": {
+          "$ref": "#/definitions/shipping_providerShippingProvider"
+        },
+        "shipping_service_name": {
+          "type": "string"
+        },
+        "shipping_service_fee": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "shipping_service_code": {
+          "type": "string"
+        },
+        "shipping_code": {
+          "type": "string"
+        },
+        "shipping_note": {
+          "type": "string"
+        },
+        "try_on": {
+          "$ref": "#/definitions/try_onTryOnCode"
+        },
+        "include_insurance": {
+          "type": "boolean",
+          "format": "boolean"
+        },
+        "sh_confirm": {
+          "$ref": "#/definitions/status3Status"
+        },
+        "s_confirm": {
+          "$ref": "#/definitions/status3Status"
+        },
+        "shipping_state": {
+          "$ref": "#/definitions/shippingState"
+        },
+        "status": {
+          "$ref": "#/definitions/status5Status"
+        },
+        "shipping_status": {
+          "$ref": "#/definitions/status5Status"
+        },
+        "etop_payment_status": {
+          "$ref": "#/definitions/status4Status"
+        },
+        "shipping_fee_customer": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "shipping_fee_shop": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "x_shipping_fee": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "x_shipping_id": {
+          "type": "string"
+        },
+        "x_shipping_code": {
+          "type": "string"
+        },
+        "x_shipping_created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "x_shipping_updated_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "x_shipping_cancelled_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "x_shipping_delivered_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "x_shipping_returned_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "expected_delivery_at": {
+          "type": "string",
+          "format": "date-time",
+          "title": "@deprecated use estimated_delivery_at"
+        },
+        "expected_pick_at": {
+          "type": "string",
+          "format": "date-time",
+          "title": "@deprecated use estimated_pickup_at"
+        },
+        "estimated_delivery_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "estimated_pickup_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "cod_etop_transfered_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "shipping_fee_shop_transfered_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "x_shipping_state": {
+          "type": "string"
+        },
+        "x_shipping_status": {
+          "$ref": "#/definitions/status5Status"
+        },
+        "x_sync_status": {
+          "$ref": "#/definitions/status4Status"
+        },
+        "x_sync_states": {
+          "$ref": "#/definitions/orderFulfillmentSyncStates"
+        },
+        "address_to": {
+          "$ref": "#/definitions/etopAddress",
+          "title": "@deprecated use shipping_address instead"
+        },
+        "address_from": {
+          "$ref": "#/definitions/etopAddress",
+          "title": "@deprecated use pickup_address instead"
+        },
+        "pickup_address": {
+          "$ref": "#/definitions/orderOrderAddress"
+        },
+        "return_address": {
+          "$ref": "#/definitions/orderOrderAddress"
+        },
+        "shipping_address": {
+          "$ref": "#/definitions/orderOrderAddress"
+        },
+        "shop": {
+          "$ref": "#/definitions/etopShop"
+        },
+        "order": {
+          "$ref": "#/definitions/orderOrder"
+        },
+        "provider_shipping_fee_lines": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/orderShippingFeeLine"
+          }
+        },
+        "shipping_fee_shop_lines": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/orderShippingFeeLine"
+          }
+        },
+        "etop_discount": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "money_transaction_shipping_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "money_transaction_shipping_external_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "x_shipping_logs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/orderExternalShippingLog"
+          }
+        },
+        "x_shipping_note": {
+          "type": "string"
+        },
+        "x_shipping_sub_state": {
+          "type": "string"
+        },
+        "code": {
+          "type": "string"
+        },
+        "actual_compensation_amount": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "orderFulfillmentSyncStates": {
+      "type": "object",
+      "properties": {
+        "sync_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "next_shipping_state": {
+          "type": "string"
+        },
+        "error": {
+          "$ref": "#/definitions/cmError"
+        }
+      }
+    },
+    "orderFulfillmentsResponse": {
+      "type": "object",
+      "properties": {
+        "paging": {
+          "$ref": "#/definitions/cmPageInfo"
+        },
+        "fulfillments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/orderFulfillment"
+          }
+        }
+      }
+    },
+    "orderOrder": {
+      "type": "object",
+      "properties": {
+        "exported_fields": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "shop_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "shop_name": {
+          "type": "string"
+        },
+        "code": {
+          "type": "string"
+        },
+        "ed_code": {
+          "type": "string",
+          "title": "the same as external_code"
+        },
+        "external_code": {
+          "type": "string"
+        },
+        "source": {
+          "$ref": "#/definitions/sourceSource"
+        },
+        "partner_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "external_id": {
+          "type": "string"
+        },
+        "external_url": {
+          "type": "string"
+        },
+        "self_url": {
+          "type": "string"
+        },
+        "payment_method": {
+          "type": "string"
+        },
+        "customer": {
+          "$ref": "#/definitions/orderOrderCustomer"
+        },
+        "customer_address": {
+          "$ref": "#/definitions/orderOrderAddress"
+        },
+        "billing_address": {
+          "$ref": "#/definitions/orderOrderAddress"
+        },
+        "shipping_address": {
+          "$ref": "#/definitions/orderOrderAddress"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "processed_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "closed_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "confirmed_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "cancelled_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "cancel_reason": {
+          "type": "string"
+        },
+        "sh_confirm": {
+          "$ref": "#/definitions/status3Status"
+        },
+        "confirm": {
+          "$ref": "#/definitions/status3Status",
+          "title": "@deprecated replaced by confirm_status"
+        },
+        "confirm_status": {
+          "$ref": "#/definitions/status3Status"
+        },
+        "status": {
+          "$ref": "#/definitions/status5Status"
+        },
+        "fulfillment_status": {
+          "$ref": "#/definitions/status5Status",
+          "title": "@deprecated replaced by fulfillment_shipping_status"
+        },
+        "fulfillment_shipping_status": {
+          "$ref": "#/definitions/status5Status"
+        },
+        "customer_payment_status": {
+          "$ref": "#/definitions/status3Status"
+        },
+        "etop_payment_status": {
+          "$ref": "#/definitions/status4Status"
+        },
+        "lines": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/orderOrderLine"
+          }
+        },
+        "discounts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/orderOrderDiscount"
+          }
+        },
+        "total_items": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "basket_value": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "total_weight": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "order_discount": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "total_discount": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "total_amount": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "order_note": {
+          "type": "string"
+        },
+        "shipping_fee": {
+          "type": "integer",
+          "format": "int32",
+          "title": "@deprecated use fee_lines.shipping"
+        },
+        "total_fee": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "fee_lines": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/orderOrderFeeLine"
+          }
+        },
+        "shop_shipping_fee": {
+          "type": "integer",
+          "format": "int32",
+          "title": "@deperecated use fee_lines.shipping instead"
+        },
+        "shipping_note": {
+          "type": "string",
+          "title": "@deprecated use shop_shipping.shipping_note instead"
+        },
+        "shop_cod": {
+          "type": "integer",
+          "format": "int32",
+          "title": "@deperecated use shop_shipping.cod_amount instead"
+        },
+        "reference_url": {
+          "type": "string"
+        },
+        "fulfillments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/orderFulfillment"
+          }
+        },
+        "shop_shipping": {
+          "$ref": "#/definitions/orderOrderShipping",
+          "title": "@deprecated use shipping instead"
+        },
+        "shipping": {
+          "$ref": "#/definitions/orderOrderShipping"
+        },
+        "external_data": {
+          "$ref": "#/definitions/orderOrderExternal"
+        },
+        "ghn_note_code": {
+          "type": "string",
+          "title": "@deprecated use try_on_code instead"
+        }
+      }
+    },
+    "orderOrderAddress": {
+      "type": "object",
+      "properties": {
+        "exported_fields": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "full_name": {
+          "type": "string"
+        },
+        "first_name": {
+          "type": "string"
+        },
+        "last_name": {
+          "type": "string"
+        },
+        "phone": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "country": {
+          "type": "string"
+        },
+        "city": {
+          "type": "string"
+        },
+        "province": {
+          "type": "string"
+        },
+        "district": {
+          "type": "string"
+        },
+        "ward": {
+          "type": "string"
+        },
+        "zip": {
+          "type": "string"
+        },
+        "company": {
+          "type": "string"
+        },
+        "address1": {
+          "type": "string"
+        },
+        "address2": {
+          "type": "string"
+        },
+        "province_code": {
+          "type": "string"
+        },
+        "district_code": {
+          "type": "string"
+        },
+        "ward_code": {
+          "type": "string"
+        }
+      }
+    },
+    "orderOrderCustomer": {
+      "type": "object",
+      "properties": {
+        "exported_fields": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "first_name": {
+          "type": "string"
+        },
+        "last_name": {
+          "type": "string"
+        },
+        "full_name": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "phone": {
+          "type": "string"
+        },
+        "gender": {
+          "$ref": "#/definitions/genderGender"
+        }
+      }
+    },
+    "orderOrderDiscount": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        },
+        "amount": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "orderOrderExternal": {
+      "type": "object",
+      "properties": {
+        "order_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "external_order_id": {
+          "type": "string"
+        },
+        "external_order_code": {
+          "type": "string"
+        }
+      }
+    },
+    "orderOrderFeeLine": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "$ref": "#/definitions/feeFeeType"
+        },
+        "name": {
+          "type": "string"
+        },
+        "code": {
+          "type": "string"
+        },
+        "desc": {
+          "type": "string"
+        },
+        "amount": {
+          "type": "integer",
+          "format": "int32"
+        }
+      },
+      "required": [
+        "name",
+        "amount"
+      ]
+    },
+    "orderOrderLine": {
+      "type": "object",
+      "properties": {
+        "exported_fields": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "order_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "variant_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "supplier_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "x_variant_id": {
+          "type": "string"
+        },
+        "product_name": {
+          "type": "string"
+        },
+        "is_outside_etop": {
+          "type": "boolean",
+          "format": "boolean"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "closed_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "confirmed_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "cancelled_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "cancel_reason": {
+          "type": "string"
+        },
+        "s_confirm": {
+          "$ref": "#/definitions/status3Status"
+        },
+        "quantity": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "list_price": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "retail_price": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "payment_price": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "image_url": {
+          "type": "string"
+        },
+        "attributes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/orderAttribute"
+          }
+        },
+        "product_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "total_discount": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "orderOrderShipping": {
+      "type": "object",
+      "properties": {
+        "exported_fields": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "sh_address": {
+          "$ref": "#/definitions/orderOrderAddress",
+          "title": "@deprecated use pickup_address"
+        },
+        "x_service_id": {
+          "type": "string",
+          "title": "@deprecated"
+        },
+        "x_shipping_fee": {
+          "type": "integer",
+          "format": "int32",
+          "title": "@deprecated"
+        },
+        "x_service_name": {
+          "type": "string",
+          "title": "@deprecated"
+        },
+        "pickup_address": {
+          "$ref": "#/definitions/orderOrderAddress"
+        },
+        "return_address": {
+          "$ref": "#/definitions/orderOrderAddress"
+        },
+        "shipping_service_name": {
+          "type": "string"
+        },
+        "shipping_service_code": {
+          "type": "string"
+        },
+        "shipping_service_fee": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "shipping_provider": {
+          "$ref": "#/definitions/shipping_providerShippingProvider",
+          "title": "@deprecated use carrier"
+        },
+        "carrier": {
+          "$ref": "#/definitions/shipping_providerShippingProvider"
+        },
+        "include_insurance": {
+          "type": "boolean",
+          "format": "boolean"
+        },
+        "try_on": {
+          "$ref": "#/definitions/try_onTryOnCode"
+        },
+        "shipping_note": {
+          "type": "string"
+        },
+        "cod_amount": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "weight": {
+          "type": "integer",
+          "format": "int32",
+          "title": "@deprecated"
+        },
+        "gross_weight": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "length": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "width": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "height": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "chargeable_weight": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "orderShippingFeeLine": {
+      "type": "object",
+      "properties": {
+        "shipping_fee_type": {
+          "$ref": "#/definitions/shipping_fee_typeShippingFeeType"
+        },
+        "cost": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "external_service_id": {
+          "type": "string"
+        },
+        "external_service_name": {
+          "type": "string"
+        },
+        "external_service_type": {
+          "type": "string"
+        },
+        "external_shipping_order_id": {
+          "type": "string"
+        },
+        "external_payment_channel_id": {
+          "type": "string"
+        }
+      }
+    },
+    "shippingState": {
+      "type": "string",
+      "enum": [
+        "default",
+        "created",
+        "confirmed",
+        "processing",
+        "picking",
+        "holding",
+        "returning",
+        "returned",
+        "delivering",
+        "delivered",
+        "unknown",
+        "undeliverable",
+        "cancelled"
+      ],
+      "default": "default"
+    },
+    "shipping_fee_typeShippingFeeType": {
+      "type": "string",
+      "enum": [
+        "main",
+        "return",
+        "adjustment",
+        "insurance",
+        "tax",
+        "other",
+        "cods",
+        "address_change",
+        "discount",
+        "unknown"
+      ],
+      "default": "main"
+    },
+    "shipping_providerShippingProvider": {
+      "type": "string",
+      "enum": [
+        "unknown",
+        "all",
+        "manual",
+        "ghn",
+        "ghtk",
+        "vtpost"
+      ],
+      "default": "unknown"
+    },
+    "sourceSource": {
+      "type": "string",
+      "enum": [
+        "unknown",
+        "self",
+        "import",
+        "api",
+        "etop_pos",
+        "etop_pxs",
+        "etop_cmx",
+        "ts_app"
+      ],
+      "default": "unknown"
+    },
+    "status3Status": {
+      "type": "string",
+      "enum": [
+        "Z",
+        "P",
+        "N"
+      ],
+      "default": "Z"
+    },
+    "status4Status": {
+      "type": "string",
+      "enum": [
+        "Z",
+        "P",
+        "S",
+        "N"
+      ],
+      "default": "Z"
+    },
+    "status5Status": {
+      "type": "string",
+      "enum": [
+        "Z",
+        "P",
+        "S",
+        "N",
+        "NS"
+      ],
+      "default": "Z"
+    },
+    "supplierAttribute": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "value": {
+          "type": "string"
+        }
+      }
+    },
+    "supplierBrand": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "supplier_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "policy": {
+          "type": "string"
+        },
+        "image_urls": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "supplier_name": {
+          "type": "string"
+        }
+      }
+    },
+    "supplierBrandsResponse": {
+      "type": "object",
+      "properties": {
+        "brands": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/supplierBrand"
+          }
+        }
+      }
+    },
+    "supplierCategoriesResponse": {
+      "type": "object",
+      "properties": {
+        "categories": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/supplierCategory"
+          }
+        }
+      }
+    },
+    "supplierCategory": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "name": {
+          "type": "string"
+        },
+        "product_source_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "product_source_type": {
+          "type": "string"
+        },
+        "supplier_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "parent_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "shop_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "x_id": {
+          "type": "string"
+        },
+        "x_name": {
+          "type": "string"
+        },
+        "x_parent_id": {
+          "type": "string"
+        }
+      }
+    },
+    "supplierConnectKiotvietRequest": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "kiotviet": {
+          "$ref": "#/definitions/supplierKiotvietConnection"
+        },
+        "branch_id": {
+          "type": "string"
+        },
+        "url_slug": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "name",
+        "kiotviet",
+        "branch_id"
+      ]
+    },
+    "supplierConnectKiotvietResponse": {
+      "type": "object",
+      "properties": {
+        "supplier": {
+          "$ref": "#/definitions/etopSupplier"
+        }
+      }
+    },
+    "supplierConnectKiotvietTestRequest": {
+      "type": "object",
+      "properties": {
+        "kiotviet": {
+          "$ref": "#/definitions/supplierKiotvietConnection"
+        }
+      },
+      "required": [
+        "kiotviet"
+      ]
+    },
+    "supplierConnectKiotvietTestResponse": {
+      "type": "object",
+      "properties": {
+        "branches": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/supplierKiotvietBranch"
+          }
+        }
+      },
+      "required": [
+        "branches"
+      ]
+    },
+    "supplierCreateBrandRequest": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "policy": {
+          "type": "string"
+        },
+        "image_urls": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "supplierGetCategoriesRequest": {
+      "type": "object",
+      "properties": {
+        "include_deleted": {
+          "type": "boolean",
+          "format": "boolean"
+        }
+      }
+    },
+    "supplierGetFulfillmentsRequest": {
+      "type": "object",
+      "properties": {
+        "paging": {
+          "$ref": "#/definitions/cmPaging"
+        },
+        "order_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "status": {
+          "$ref": "#/definitions/status3Status"
+        }
+      }
+    },
+    "supplierGetOrdersRequest": {
+      "type": "object",
+      "properties": {
+        "paging": {
+          "$ref": "#/definitions/cmPaging"
+        },
+        "filters": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/cmFilter"
+          }
+        }
+      }
+    },
+    "supplierGetVariantsRequest": {
+      "type": "object",
+      "properties": {
+        "paging": {
+          "$ref": "#/definitions/cmPaging"
+        },
+        "filters": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/cmFilter"
+          }
+        }
+      }
+    },
+    "supplierKiotvietBranch": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "code": {
+          "type": "string"
+        },
+        "address": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "code",
+        "address"
+      ]
+    },
+    "supplierKiotvietConnection": {
+      "type": "object",
+      "properties": {
+        "retailer_id": {
+          "type": "string",
+          "title": "aka subdomain"
+        },
+        "client_id": {
+          "type": "string"
+        },
+        "client_secret": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "retailer_id",
+        "client_id",
+        "client_secret"
+      ]
+    },
+    "supplierOrdersResponse": {
+      "type": "object",
+      "properties": {
+        "paging": {
+          "$ref": "#/definitions/cmPageInfo"
+        },
+        "orders": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/supplierSupplierOrder"
+          }
+        }
+      }
+    },
+    "supplierPriceRule": {
+      "type": "object",
+      "properties": {
+        "s_category_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "x_category_id": {
+          "type": "string"
+        },
+        "s_tag": {
+          "type": "string"
+        },
+        "wholesale_price_a": {
+          "type": "number",
+          "format": "double"
+        },
+        "wholesale_price_b": {
+          "type": "number",
+          "format": "double"
+        },
+        "list_price_a": {
+          "type": "number",
+          "format": "double"
+        },
+        "list_price_b": {
+          "type": "number",
+          "format": "double"
+        },
+        "retail_price_min_a": {
+          "type": "number",
+          "format": "double"
+        },
+        "retail_price_min_b": {
+          "type": "number",
+          "format": "double"
+        },
+        "retail_price_max_a": {
+          "type": "number",
+          "format": "double"
+        },
+        "retail_price_max_b": {
+          "type": "number",
+          "format": "double"
+        }
+      },
+      "description": "```\nwholesale_price     =    x_price * a + b\n     list_price     =    x_price * a + b\n   retail_price_min = list_price * a + b\n   retail_price_max = list_price * a + b\n```",
+      "title": "PriceRule"
+    },
+    "supplierPriceRulesResponse": {
+      "type": "object",
+      "properties": {
+        "general": {
+          "$ref": "#/definitions/supplierPriceRule"
+        },
+        "rules": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/supplierPriceRule"
+          }
+        },
+        "is_config": {
+          "type": "boolean",
+          "format": "boolean"
+        }
+      }
+    },
+    "supplierProduct": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "supplier_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "category_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "s_name": {
+          "type": "string"
+        },
+        "s_description": {
+          "type": "string"
+        },
+        "s_short_desc": {
+          "type": "string"
+        },
+        "s_desc_html": {
+          "type": "string"
+        },
+        "s_meta": {
+          "$ref": "#/definitions/cmRawJSONObject"
+        },
+        "image_urls": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "x_id": {
+          "type": "string"
+        },
+        "x_category_id": {
+          "type": "string"
+        },
+        "x_code": {
+          "type": "string"
+        },
+        "x_name": {
+          "type": "string"
+        },
+        "x_description": {
+          "type": "string"
+        },
+        "x_image_urls": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "x_unit": {
+          "type": "string"
+        },
+        "x_unit_conv": {
+          "type": "number",
+          "format": "float"
+        },
+        "x_price": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "x_units": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/supplierUnit"
+          }
+        },
+        "x_created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "x_updated_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "x_sync_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "x_status": {
+          "$ref": "#/definitions/status3Status"
+        },
+        "status": {
+          "$ref": "#/definitions/status3Status"
+        },
+        "s_tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "quantity_available": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "quantity_on_hand": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "quantity_reserved": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "variants": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/supplierVariant"
+          }
+        },
+        "s_brand_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "brand": {
+          "$ref": "#/definitions/supplierBrand"
+        }
+      }
+    },
+    "supplierProductsResponse": {
+      "type": "object",
+      "properties": {
+        "paging": {
+          "$ref": "#/definitions/cmPageInfo"
+        },
+        "products": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/supplierProduct"
+          }
+        }
+      }
+    },
+    "supplierSupplierOrder": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "shop_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "shop_name": {
+          "type": "string"
+        },
+        "code": {
+          "type": "string"
+        },
+        "source": {
+          "$ref": "#/definitions/sourceSource"
+        },
+        "payment_method": {
+          "type": "string"
+        },
+        "shop": {
+          "$ref": "#/definitions/supplierSupplierOrderShopInfo"
+        },
+        "customer": {
+          "$ref": "#/definitions/orderOrderCustomer"
+        },
+        "shipping_address": {
+          "$ref": "#/definitions/orderOrderAddress"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "processed_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "closed_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "confirmed_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "cancelled_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "cancel_reason": {
+          "type": "string"
+        },
+        "lines": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/supplierSupplierOrderLine"
+          }
+        },
+        "total_items": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "basket_value": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "total_weight": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "total_amount": {
+          "type": "integer",
+          "format": "int32",
+          "title": "optional int32 total_tax = 45 [(gogoproto.nullable)=false];\noptional int32 total_discount = 47 [(gogoproto.nullable)=false];"
+        },
+        "sh_confirm": {
+          "$ref": "#/definitions/status3Status"
+        },
+        "confirm": {
+          "$ref": "#/definitions/status3Status"
+        },
+        "status": {
+          "$ref": "#/definitions/status5Status"
+        },
+        "fulfillment_shipping_status": {
+          "$ref": "#/definitions/status5Status"
+        },
+        "customer_payment_status": {
+          "$ref": "#/definitions/status3Status"
+        },
+        "fulfillments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/orderFulfillment"
+          }
+        },
+        "external_data": {
+          "$ref": "#/definitions/orderOrderExternal"
+        }
+      }
+    },
+    "supplierSupplierOrderLine": {
+      "type": "object",
+      "properties": {
+        "order_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "variant_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "variant_name": {
+          "type": "string"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "closed_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "confirmed_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "cancelled_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "cancel_reason": {
+          "type": "string"
+        },
+        "s_confirm": {
+          "$ref": "#/definitions/status3Status"
+        },
+        "quantity": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "list_price": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "image_url": {
+          "type": "string"
+        },
+        "attributes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/supplierAttribute"
+          }
+        }
+      }
+    },
+    "supplierSupplierOrderShopInfo": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "name": {
+          "type": "string"
+        },
+        "phone": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "website_url": {
+          "type": "string"
+        },
+        "image_url": {
+          "type": "string"
+        },
+        "address": {
+          "$ref": "#/definitions/orderOrderAddress"
+        }
+      }
+    },
+    "supplierUnit": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "full_name": {
+          "type": "string"
+        },
+        "unit": {
+          "type": "string"
+        },
+        "unit_conv": {
+          "type": "number",
+          "format": "float"
+        },
+        "price": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "supplierUpdateBrandImagesRequest": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "adds": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "deletes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "replace_all": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "delete_all": {
+          "type": "boolean",
+          "format": "boolean"
+        }
+      },
+      "required": [
+        "id"
+      ]
+    },
+    "supplierUpdateBrandRequest": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "policy": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "name"
+      ]
+    },
+    "supplierUpdateOrderLineStatus": {
+      "type": "object",
+      "properties": {
+        "order_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "product_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          }
+        },
+        "s_confirm": {
+          "$ref": "#/definitions/status3Status"
+        },
+        "cancel_reason": {
+          "type": "string"
+        }
+      }
+    },
+    "supplierUpdateOrdersStatusRequest": {
+      "type": "object",
+      "properties": {
+        "updates": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/supplierUpdateOrderLineStatus"
+          }
+        }
+      },
+      "required": [
+        "updates"
+      ]
+    },
+    "supplierUpdatePriceRulesRequest": {
+      "type": "object",
+      "properties": {
+        "general": {
+          "$ref": "#/definitions/supplierPriceRule"
+        },
+        "updates": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/supplierPriceRule"
+          }
+        },
+        "deletes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/supplierPriceRule"
+          }
+        }
+      }
+    },
+    "supplierUpdatePriceRulesResponse": {
+      "type": "object",
+      "properties": {
+        "general": {
+          "$ref": "#/definitions/supplierPriceRule"
+        },
+        "rules": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/supplierPriceRule"
+          }
+        },
+        "update_errors": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/cmError"
+          }
+        },
+        "delete_errors": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/cmError"
+          }
+        }
+      }
+    },
+    "supplierUpdateProductRequest": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "s_name": {
+          "type": "string"
+        },
+        "s_description": {
+          "type": "string"
+        },
+        "s_short_desc": {
+          "type": "string"
+        },
+        "s_desc_html": {
+          "type": "string"
+        },
+        "s_meta": {
+          "$ref": "#/definitions/cmRawJSONObject"
+        },
+        "s_brand_id": {
+          "type": "string",
+          "format": "int64"
+        }
+      },
+      "required": [
+        "id"
+      ]
+    },
+    "supplierUpdateSupplierRequest": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "name": {
+          "type": "string"
+        },
+        "company_info": {
+          "$ref": "#/definitions/etopCompanyInfo"
+        },
+        "warehouse_address": {
+          "$ref": "#/definitions/etopAddress"
+        },
+        "bank_account": {
+          "$ref": "#/definitions/etopBankAccount"
+        },
+        "contact_persons": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/etopContactPerson"
+          }
+        }
+      },
+      "required": [
+        "id"
+      ]
+    },
+    "supplierUpdateVariantImagesRequest": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "adds": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "deletes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "replace_all": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "delete_all": {
+          "type": "boolean",
+          "format": "boolean"
+        }
+      },
+      "required": [
+        "id"
+      ]
+    },
+    "supplierUpdateVariantRequest": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "s_name": {
+          "type": "string"
+        },
+        "s_description": {
+          "type": "string",
+          "title": "optional string s_full_name   = 3 [(gogoproto.nullable)=false];"
+        },
+        "s_short_desc": {
+          "type": "string"
+        },
+        "s_desc_html": {
+          "type": "string"
+        },
+        "s_note": {
+          "type": "string"
+        },
+        "s_meta": {
+          "$ref": "#/definitions/cmRawJSONObject"
+        },
+        "s_brand_id": {
+          "type": "string",
+          "format": "int64"
+        }
+      },
+      "required": [
+        "id"
+      ]
+    },
+    "supplierUpdateVariantsRequest": {
+      "type": "object",
+      "properties": {
+        "updates": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/supplierUpdateVariantRequest"
+          }
+        }
+      }
+    },
+    "supplierUpdateVariantsResponse": {
+      "type": "object",
+      "properties": {
+        "variants": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/supplierVariant"
+          }
+        },
+        "errors": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/cmError"
+          }
+        }
+      }
+    },
+    "supplierUpdateVariantsStatusRequest": {
+      "type": "object",
+      "properties": {
+        "ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          }
+        },
+        "s_status": {
+          "$ref": "#/definitions/status3Status"
+        }
+      },
+      "required": [
+        "ids",
+        "s_status"
+      ]
+    },
+    "supplierVariant": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "supplier_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "category_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "s_name": {
+          "type": "string",
+          "title": "optional string s_short_name  = 5 [(gogoproto.nullable)=false];"
+        },
+        "s_description": {
+          "type": "string"
+        },
+        "s_short_desc": {
+          "type": "string"
+        },
+        "s_desc_html": {
+          "type": "string"
+        },
+        "s_note": {
+          "type": "string"
+        },
+        "s_meta": {
+          "$ref": "#/definitions/cmRawJSONObject"
+        },
+        "image_urls": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "x_id": {
+          "type": "string"
+        },
+        "x_base_id": {
+          "type": "string"
+        },
+        "x_category_id": {
+          "type": "string"
+        },
+        "x_code": {
+          "type": "string"
+        },
+        "x_name": {
+          "type": "string"
+        },
+        "x_full_name": {
+          "type": "string"
+        },
+        "x_description": {
+          "type": "string"
+        },
+        "x_image_urls": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "x_unit": {
+          "type": "string"
+        },
+        "x_unit_conv": {
+          "type": "number",
+          "format": "float"
+        },
+        "x_price": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "x_attributes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/supplierAttribute"
+          },
+          "title": "repeated Unit      x_units       = 24;"
+        },
+        "x_updated_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "x_sync_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "s_status": {
+          "$ref": "#/definitions/status3Status"
+        },
+        "x_status": {
+          "$ref": "#/definitions/status3Status"
+        },
+        "e_status": {
+          "$ref": "#/definitions/status3Status"
+        },
+        "status": {
+          "$ref": "#/definitions/status3Status"
+        },
+        "s_tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "quantity_available": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "quantity_on_hand": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "quantity_reserved": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "s_wholesale_price": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "s_list_price": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "s_retail_price_min": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "s_retail_price_max": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "wholesale_price_0": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "wholesale_price": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "list_price": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "retail_price_min": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "retail_price_max": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "s_brand_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "attributes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/supplierAttribute"
+          }
+        }
+      }
+    },
+    "supplierVariantsResponse": {
+      "type": "object",
+      "properties": {
+        "paging": {
+          "$ref": "#/definitions/cmPageInfo"
+        },
+        "variants": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/supplierVariant"
+          }
+        }
+      }
+    },
+    "try_onTryOnCode": {
+      "type": "string",
+      "enum": [
+        "unknown",
+        "none",
+        "open",
+        "try"
+      ],
+      "default": "unknown"
+    }
+  },
+  "tags": [
+    {
+      "name": "Account"
+    },
+    {
+      "name": "Brand"
+    },
+    {
+      "name": "Category"
+    },
+    {
+      "name": "Fulfillment"
+    },
+    {
+      "name": "Kiotviet"
+    },
+    {
+      "name": "Misc"
+    },
+    {
+      "name": "Order"
+    },
+    {
+      "name": "Price"
+    },
+    {
+      "name": "Product"
+    }
+  ]
+}

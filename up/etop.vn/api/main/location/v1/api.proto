@@ -1,0 +1,126 @@
+syntax = "proto2";
+package etop.vn.api.main.location.v1;
+option go_package = "v1";
+
+import "gogoproto/gogo.proto";
+option (gogoproto.equal_all)                = false;
+option (gogoproto.gogoproto_import)         = false;
+option (gogoproto.goproto_enum_prefix_all)  = false;
+option (gogoproto.goproto_getters_all)      = true;
+option (gogoproto.goproto_sizecache_all)    = false;
+option (gogoproto.goproto_unkeyed_all)      = false;
+option (gogoproto.goproto_unrecognized_all) = false;
+option (gogoproto.gostring_all)             = false;
+option (gogoproto.marshaler_all)            = false;
+option (gogoproto.onlyone_all)              = false;
+option (gogoproto.sizer_all)                = false;
+option (gogoproto.testgen_all)              = false;
+option (gogoproto.unmarshaler_all)          = false;
+option (gogoproto.verbose_equal_all)        = false;
+
+import "etop.vn/api/main/location/v1/region.proto";
+import "etop.vn/api/main/location/v1/urban.proto";
+
+service LocationQueryService {
+    rpc GetAllLocations(GetAllLocationsQueryArgs) returns (GetAllLocationsQueryResult);
+
+	rpc GetLocation(GetLocationQueryArgs) returns (LocationQueryResult);
+
+	rpc FindLocation(FindLocationQueryArgs) returns (LocationQueryResult);
+
+	rpc FindOrGetLocation(FindOrGetLocationQueryArgs) returns (LocationQueryResult);
+}
+
+message Province {
+    optional string name = 1 [(gogoproto.nullable)=false];
+
+    optional string code = 2 [(gogoproto.nullable)=false];
+
+    optional region.VietnamRegion region = 3 [(gogoproto.nullable)=false];
+
+    optional Extra extra = 4 [(gogoproto.nullable)=false, (gogoproto.embed)=true];
+}
+
+message District {
+    optional string name = 1 [(gogoproto.nullable)=false];
+
+    optional string code = 2 [(gogoproto.nullable)=false];
+
+    optional string province_code = 3 [(gogoproto.nullable)=false];
+
+    optional urban.UrbanType urban_type = 4 [(gogoproto.nullable)=false];
+
+    optional Extra extra = 5 [(gogoproto.nullable)=false, (gogoproto.embed)=true];
+}
+
+message Ward {
+    optional string name = 1 [(gogoproto.nullable)=false];
+
+    optional string code = 2 [(gogoproto.nullable)=false];
+
+    optional string district_code = 3 [(gogoproto.nullable)=false];
+
+    optional Extra extra = 4 [(gogoproto.nullable)=false, (gogoproto.embed)=true];
+}
+
+message Extra {
+    optional bool special = 1 [(gogoproto.nullable)=false];
+
+    optional int32 ghn_id = 5 [(gogoproto.nullable)=false];
+
+    optional int32 vtpost_id = 6 [(gogoproto.nullable)=false];
+}
+
+message GetAllLocationsQueryArgs {
+    optional bool all = 1 [(gogoproto.nullable)=false];
+
+    optional string province_code = 2 [(gogoproto.nullable)=false];
+
+    optional string district_code = 3 [(gogoproto.nullable)=false];
+}
+
+message GetAllLocationsQueryResult {
+    repeated Province provinces = 1;
+
+    repeated District districts = 2;
+
+    repeated Ward wards = 3;
+}
+
+message LocationQueryResult {
+    optional Province province = 1;
+
+    optional District district = 2;
+
+    optional Ward ward = 3;
+}
+
+message GetLocationQueryArgs {
+    optional string province_code = 1 [(gogoproto.nullable)=false];
+
+    optional string district_code = 2 [(gogoproto.nullable)=false];
+
+    optional string ward_code = 3 [(gogoproto.nullable)=false];
+}
+
+message FindLocationQueryArgs {
+    optional string province = 1 [(gogoproto.nullable)=false];
+
+    optional string district = 2 [(gogoproto.nullable)=false];
+
+    optional string ward = 3 [(gogoproto.nullable)=false];
+}
+
+message FindOrGetLocationQueryArgs {
+    optional string province = 1 [(gogoproto.nullable)=false];
+
+    optional string district = 2 [(gogoproto.nullable)=false];
+
+    optional string ward = 3 [(gogoproto.nullable)=false];
+
+    optional string province_code = 4 [(gogoproto.nullable)=false];
+
+    optional string district_code = 5 [(gogoproto.nullable)=false];
+
+    optional string ward_code = 6 [(gogoproto.nullable)=false];
+}

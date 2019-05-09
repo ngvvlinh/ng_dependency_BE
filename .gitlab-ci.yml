@@ -1,0 +1,62 @@
+stages:
+- build
+
+variables:
+  ETOPDIR: /etop.vn
+  POSTGRES_USER: postgres
+  POSTGRES_DB: test
+  POSTGRES_PASSWORD: postgres
+
+before_script:
+- mkdir -p artifacts
+- mkdir -p /etop.vn
+- ln -s $PWD /etop.vn/backend
+
+build:
+  stage: build
+  image: golang:1.11
+  except:
+  - master
+  - ci/master
+  services:
+  - postgres:9.6-alpine
+  - redis:alpine
+  script:
+  - scripts/ci/cache-load.sh
+  - scripts/verify-imports.sh
+  - scripts/build-linux.sh
+  - go run ./scripts/init_testdb/main.go -drop
+  - go test -v -race $(go list ./... | grep -v '/tests/')
+  - scripts/ci/cache-save.sh
+  cache:
+    key: "ci:$CI_JOB_NAME"
+    paths:
+    - .mod/
+  artifacts:
+    paths:
+    - artifacts/
+
+build-master:
+  stage: build
+  image: golang:1.11
+  only:
+  - master
+  - ci/master
+  services:
+  - postgres:9.6-alpine
+  - redis:alpine
+  script:
+  - scripts/ci/cache-load.sh
+  - scripts/verify-imports.sh
+  - scripts/build-linux.sh
+  - go run ./scripts/init_testdb/main.go -drop
+  - scripts/ci/test-cover.sh
+  - scripts/ci/show-coverage.sh
+  - scripts/ci/cache-save.sh
+  cache:
+    key: "ci:$CI_JOB_NAME"
+    paths:
+    - .mod/
+  artifacts:
+    paths:
+    - artifacts/

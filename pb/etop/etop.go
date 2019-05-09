@@ -1,0 +1,738 @@
+package etop
+
+import (
+	"etop.vn/api/main/location"
+	"etop.vn/backend/pb/common"
+	"etop.vn/backend/pb/etop/etc/address_type"
+	"etop.vn/backend/pb/etop/etc/status3"
+	pbs3 "etop.vn/backend/pb/etop/etc/status3"
+	"etop.vn/backend/pb/etop/etc/try_on"
+	"etop.vn/backend/pkg/etop/model"
+	"etop.vn/backend/pkg/integration/bank"
+	notimodel "etop.vn/backend/pkg/notifier/model"
+)
+
+func (m *CreateUserRequest) Censor() {
+	if m.Password != "" {
+		m.Password = "..."
+	}
+	if m.RegisterToken != "" {
+		m.RegisterToken = "..."
+	}
+}
+
+func (m *LoginRequest) Censor() {
+	if m.Password != "" {
+		m.Password = "..."
+	}
+}
+
+func (m *ChangePasswordRequest) Censor() {
+	if m.CurrentPassword != "" {
+		m.CurrentPassword = "..."
+	}
+	if m.NewPassword != "" {
+		m.NewPassword = "..."
+	}
+	if m.ConfirmPassword != "" {
+		m.ConfirmPassword = "..."
+	}
+}
+
+func (m *ChangePasswordUsingTokenRequest) Censor() {
+	if m.ResetPasswordToken != "" {
+		m.ResetPasswordToken = "..."
+	}
+	if m.NewPassword != "" {
+		m.NewPassword = "..."
+	}
+	if m.ConfirmPassword != "" {
+		m.ConfirmPassword = "..."
+	}
+}
+
+func (e *CompanyInfo) ToModel() *model.CompanyInfo {
+	if e == nil {
+		return nil
+	}
+	return &model.CompanyInfo{
+		Name:                e.Name,
+		TaxCode:             e.TaxCode,
+		Address:             e.Address,
+		Website:             e.Website,
+		LegalRepresentative: e.LegalRepresentative.ToModel(),
+	}
+}
+
+func (b *BankAccount) ToModel() *model.BankAccount {
+	if b == nil {
+		return nil
+	}
+	return &model.BankAccount{
+		Name:          b.Name,
+		Province:      b.Province,
+		Branch:        b.Branch,
+		AccountNumber: b.AccountNumber,
+		AccountName:   b.AccountName,
+	}
+}
+
+func (a *Address) ToModel() *model.Address {
+	if a == nil {
+		return nil
+	}
+	return &model.Address{
+		ID:           a.Id,
+		Province:     a.Province,
+		ProvinceCode: a.ProvinceCode,
+		District:     a.District,
+		DistrictCode: a.DistrictCode,
+		Ward:         a.Ward,
+		WardCode:     a.WardCode,
+		Address1:     a.Address1,
+		Address2:     a.Address2,
+		FullName:     a.FullName,
+		FirstName:    a.FirstName,
+		LastName:     a.LastName,
+		Phone:        a.Phone,
+		Position:     a.Position,
+		Email:        a.Email,
+	}
+}
+
+func PbUser(m *model.User) *User {
+	if m == nil {
+		panic("Nil user")
+	}
+	return &User{
+		Id:        m.ID,
+		FullName:  m.FullName,
+		ShortName: m.ShortName,
+		Phone:     m.Phone,
+		Email:     m.Email,
+		CreatedAt: common.PbTime(m.CreatedAt),
+		UpdatedAt: common.PbTime(m.UpdatedAt),
+
+		EmailVerifiedAt: common.PbTime(m.EmailVerifiedAt),
+		PhoneVerifiedAt: common.PbTime(m.PhoneVerifiedAt),
+
+		EmailVerificationSentAt: common.PbTime(m.EmailVerificationSentAt),
+		PhoneVerificationSentAt: common.PbTime(m.PhoneVerificationSentAt),
+	}
+}
+
+func PbAccountType(t model.AccountType) AccountType {
+	return AccountType(AccountType_value[string(t)])
+}
+
+func PbLoginAccount(m *model.AccountUserExtended) *LoginAccount {
+	account := m.Account
+	return &LoginAccount{
+		Id:          account.ID,
+		Name:        account.Name,
+		Type:        PbAccountType(account.Type),
+		AccessToken: "", // Will be filled later
+		ExpiresIn:   0,  // Will be filled later
+		ImageUrl:    account.ImageURL,
+		UrlSlug:     account.URLSlug,
+		UserAccount: PbUserAccount(m),
+	}
+}
+
+func PbUserAccount(m *model.AccountUserExtended) *UserAccountInfo {
+	account := m.Account
+	accUser := m.AccountUser
+	user := m.User
+
+	fullName, shortName := m.GetUserName()
+	return &UserAccountInfo{
+		UserId:               user.ID,
+		UserFullName:         fullName,
+		UserShortName:        shortName,
+		AccountId:            account.ID,
+		AccountName:          account.Name,
+		AccountType:          PbAccountType(account.Type),
+		Position:             accUser.Position,
+		Permission:           PbPermission(accUser),
+		Status:               status3.Pb(accUser.Status),
+		ResponseStatus:       status3.Pb(accUser.ResponseStatus),
+		InvitationSentBy:     accUser.InvitationSentBy,
+		InvitationSentAt:     common.PbTime(accUser.InvitationSentAt),
+		InvitationAcceptedAt: common.PbTime(accUser.InvitationAcceptedAt),
+		DisabledAt:           common.PbTime(accUser.DisabledAt),
+	}
+}
+
+func PbUserAccounts(items []*model.AccountUserExtended) []*UserAccountInfo {
+	result := make([]*UserAccountInfo, len(items))
+	for i, item := range items {
+		result[i] = PbUserAccount(item)
+	}
+	return result
+}
+
+func PbUserAccountIncomplete(accUser *model.AccountUser, account *model.Account) *UserAccountInfo {
+	return &UserAccountInfo{
+		UserId:               accUser.UserID,
+		UserFullName:         "",
+		UserShortName:        "",
+		AccountId:            accUser.AccountID,
+		AccountName:          account.Name,
+		AccountType:          PbAccountType(account.Type),
+		Position:             accUser.Position,
+		Permission:           PbPermission(accUser),
+		Status:               status3.Pb(accUser.Status),
+		InvitationSentBy:     accUser.InvitationSentBy,
+		InvitationSentAt:     common.PbTime(accUser.InvitationSentAt),
+		InvitationAcceptedAt: common.PbTime(accUser.InvitationAcceptedAt),
+		DisabledAt:           common.PbTime(accUser.DisabledAt),
+	}
+}
+
+func PbPermission(m *model.AccountUser) *Permission {
+	return &Permission{
+		Roles:       m.Roles,
+		Permissions: m.Permissions,
+	}
+}
+
+func PbPartner(m *model.Partner) *Partner {
+	return &Partner{
+		Id:             m.ID,
+		Name:           m.Name,
+		PublicName:     m.PublicName,
+		Status:         status3.Pb(m.Status),
+		IsTest:         m.IsTest != 0,
+		ContactPersons: PbContactPersons(m.ContactPersons),
+		Phone:          m.Phone,
+		WebsiteUrl:     m.WebsiteURL,
+		ImageUrl:       m.ImageURL,
+		Email:          m.Email,
+		OwnerId:        m.OwnerID,
+		User:           nil, // TODO
+	}
+}
+
+func PbPublicPartners(items []*model.Partner) []*PublicAccountInfo {
+	res := make([]*PublicAccountInfo, len(items))
+	for i, item := range items {
+		res[i] = PbPublicAccountInfo(item)
+	}
+	return res
+}
+
+func PbPublicAccountInfo(m model.AccountInterface) *PublicAccountInfo {
+	switch m := m.(type) {
+	case *model.Partner:
+		return &PublicAccountInfo{
+			Id:       m.ID,
+			Name:     m.PublicName, // public name here!
+			Type:     PbAccountType(model.TypePartner),
+			ImageUrl: m.ImageURL,
+			Website:  m.WebsiteURL,
+		}
+	default:
+		account := m.GetAccount()
+		return &PublicAccountInfo{
+			Id:       account.ID,
+			Name:     account.Name,
+			Type:     PbAccountType(account.Type),
+			ImageUrl: account.ImageURL,
+			Website:  "",
+		}
+	}
+}
+
+func PbShop(m *model.Shop) *Shop {
+	return &Shop{
+		Id:          m.ID,
+		Name:        m.Name,
+		Status:      status3.Pb(m.Status),
+		Phone:       m.Phone,
+		BankAccount: PbBankAccount(m.BankAccount),
+		WebsiteUrl:  m.WebsiteURL,
+		ImageUrl:    m.ImageURL,
+		Email:       m.Email,
+		OwnerId:     m.OwnerID,
+		TryOn:       try_on.PbTryOn(m.TryOn),
+	}
+}
+
+func PbShopExtended(m *model.ShopExtended) *Shop {
+	return &Shop{
+		Id:                            m.ID,
+		Name:                          m.Name,
+		Status:                        status3.Pb(m.Status),
+		Address:                       PbAddress(m.Address),
+		Phone:                         m.Phone,
+		BankAccount:                   PbBankAccount(m.BankAccount),
+		WebsiteUrl:                    m.WebsiteURL,
+		ImageUrl:                      m.ImageURL,
+		Email:                         m.Email,
+		ProductSourceId:               m.ProductSourceID,
+		ShipToAddressId:               m.ShipToAddressID,
+		ShipFromAddressId:             m.ShipFromAddressID,
+		AutoCreateFfm:                 m.AutoCreateFFM,
+		TryOn:                         try_on.PbTryOn(m.TryOn),
+		GhnNoteCode:                   m.GhnNoteCode,
+		OwnerId:                       m.OwnerID,
+		User:                          PbUser(m.User),
+		CompanyInfo:                   PbCompanyInfo(m.CompanyInfo),
+		MoneyTransactionRrule:         m.MoneyTransactionRRule,
+		SurveyInfo:                    PbSurveyInfos(m.SurveyInfo),
+		ShippingServiceSelectStrategy: PbShippingServiceSelectStrategy(m.ShippingServiceSelectStrategy),
+		Code:                          m.Code,
+	}
+}
+
+func PbShopExtendeds(items []*model.ShopExtended) []*Shop {
+	result := make([]*Shop, len(items))
+	for i, item := range items {
+		result[i] = PbShopExtended(item)
+	}
+	return result
+}
+
+func PbSuppliers(items []*model.Supplier) []*Supplier {
+	res := make([]*Supplier, len(items))
+	for i, item := range items {
+		res[i] = PbSupplier(item)
+	}
+	return res
+}
+
+func PbSupplierExtended(m *model.SupplierExtended) *Supplier {
+	return &Supplier{
+		Id:                m.ID,
+		Name:              m.Name,
+		Status:            status3.Pb(m.Status),
+		IsTest:            m.IsTest > 0,
+		WarehouseAddress:  PbAddress(m.Address),
+		BankAccount:       PbBankAccount(m.BankAccount),
+		ContactPersons:    PbContactPersons(m.ContactPersons),
+		CompanyInfo:       PbCompanyInfo(m.CompanyInfo),
+		ShipFromAddressId: m.ShipFromAddressID,
+	}
+}
+
+func PbSupplier(m *model.Supplier) *Supplier {
+	return &Supplier{
+		Id:     m.ID,
+		Name:   m.Name,
+		Status: status3.Pb(m.Status),
+		IsTest: m.IsTest > 0,
+	}
+}
+
+func PbCategories(items []*model.EtopCategory) []*Category {
+	res := make([]*Category, len(items))
+	for i, item := range items {
+		res[i] = PbCategory(item)
+	}
+	return res
+}
+
+func PbCategory(m *model.EtopCategory) *Category {
+	return &Category{
+		Id:       m.ID,
+		Name:     m.Name,
+		Status:   status3.Pb(m.Status),
+		ParentId: m.ParentID,
+	}
+}
+
+func PbProvinces(items []*location.Province) []*Province {
+	res := make([]*Province, len(items))
+	for i, item := range items {
+		res[i] = PbProvince(item)
+	}
+	return res
+}
+
+func PbProvince(m *location.Province) *Province {
+	return &Province{
+		Code:       m.Code,
+		Name:       m.Name,
+		Region:     m.Region.Name(),
+		RegionCode: int64(m.Region),
+	}
+}
+
+func PbDistricts(items []*location.District) []*District {
+	res := make([]*District, len(items))
+	for i, item := range items {
+		res[i] = PbDistrict(item)
+	}
+	return res
+}
+
+func PbDistrict(item *location.District) *District {
+	return &District{
+		Code:         item.Code,
+		ProvinceCode: item.ProvinceCode,
+		Name:         item.Name,
+	}
+}
+
+func PbWards(items []*location.Ward) []*Ward {
+	res := make([]*Ward, len(items))
+	for i, item := range items {
+		res[i] = PbWard(item)
+	}
+	return res
+}
+
+func PbWard(item *location.Ward) *Ward {
+	return &Ward{
+		Code:         item.Code,
+		DistrictCode: item.DistrictCode,
+		Name:         item.Name,
+	}
+}
+
+func PbBanks(items []*bank.Bank) []*Bank {
+	res := make([]*Bank, len(items))
+	for i, item := range items {
+		res[i] = PbBank(item)
+	}
+	return res
+}
+
+func PbBank(item *bank.Bank) *Bank {
+	return &Bank{
+		Code: item.MaNganHang,
+		Name: item.TenNH,
+		Type: item.Loai,
+	}
+}
+
+func PbBankProvinces(items []*bank.Province) []*BankProvince {
+	res := make([]*BankProvince, len(items))
+	for i, item := range items {
+		res[i] = PbBankProvince(item)
+	}
+	return res
+}
+
+func PbBankProvince(item *bank.Province) *BankProvince {
+	return &BankProvince{
+		Code:     item.MaTinh,
+		Name:     item.TenTinhThanh,
+		BankCode: item.MaNganHang,
+	}
+}
+
+func PbBankBranches(items []*bank.Branch) []*BankBranch {
+	res := make([]*BankBranch, len(items))
+	for i, item := range items {
+		res[i] = PbBankBranch(item)
+	}
+	return res
+}
+
+func PbBankBranch(item *bank.Branch) *BankBranch {
+	return &BankBranch{
+		Code:         item.MaChiNhanh,
+		Name:         item.TenChiNhanh,
+		BankCode:     item.MaNganHang,
+		ProvinceCode: item.MaTinh,
+	}
+}
+
+func PbAddresses(items []*model.Address) []*Address {
+	result := make([]*Address, len(items))
+	for i, item := range items {
+		result[i] = PbAddress(item)
+	}
+	return result
+}
+
+func PbAddress(a *model.Address) *Address {
+	if a == nil {
+		return nil
+	}
+	return &Address{
+		Id:           a.ID,
+		Province:     a.Province,
+		ProvinceCode: a.ProvinceCode,
+		District:     a.District,
+		DistrictCode: a.DistrictCode,
+		Ward:         a.Ward,
+		WardCode:     a.WardCode,
+		Address1:     a.Address1,
+		Address2:     a.Address2,
+		Zip:          a.Zip,
+		Country:      a.Country,
+		FullName:     a.FullName,
+		FirstName:    a.FirstName,
+		LastName:     a.LastName,
+		Phone:        a.Phone,
+		Email:        a.Email,
+		Position:     a.Position,
+		Type:         address_type.PbType(a.Type),
+		Notes:        PbAddressNote(a.Notes),
+	}
+}
+
+func PbBankAccount(b *model.BankAccount) *BankAccount {
+	if b == nil {
+		return nil
+	}
+	return &BankAccount{
+		Name:          b.Name,
+		Province:      b.Province,
+		Branch:        b.Branch,
+		AccountName:   b.AccountName,
+		AccountNumber: b.AccountNumber,
+	}
+}
+
+func (m *ContactPerson) ToModel() *model.ContactPerson {
+	return &model.ContactPerson{
+		Name:     m.Name,
+		Position: m.Position,
+		Phone:    m.Phone,
+		Email:    m.Email,
+	}
+}
+
+func ContactPersonsToModel(items []*ContactPerson) []*model.ContactPerson {
+	result := make([]*model.ContactPerson, 0, len(items))
+	for _, item := range items {
+		result = append(result, item.ToModel())
+	}
+	return result
+}
+
+func PbContactPerson(c *model.ContactPerson) *ContactPerson {
+	if c == nil {
+		return nil
+	}
+	return &ContactPerson{
+		Name:     c.Name,
+		Position: c.Position,
+		Email:    c.Email,
+		Phone:    c.Phone,
+	}
+}
+
+func PbContactPersons(items []*model.ContactPerson) []*ContactPerson {
+	if items == nil {
+		return nil
+	}
+	result := make([]*ContactPerson, 0, len(items))
+	for _, item := range items {
+		result = append(result, PbContactPerson(item))
+	}
+	return result
+}
+
+func PbCompanyInfo(info *model.CompanyInfo) *CompanyInfo {
+	if info == nil {
+		return nil
+	}
+	return &CompanyInfo{
+		Name:                info.Name,
+		TaxCode:             info.TaxCode,
+		Address:             info.Address,
+		LegalRepresentative: PbContactPerson(info.LegalRepresentative),
+	}
+}
+
+func PbAddressNote(item *model.AddressNote) *AddressNote {
+	if item == nil {
+		return nil
+	}
+	return &AddressNote{
+		OpenTime:   item.OpenTime,
+		LunchBreak: item.LunchBreak,
+		Note:       item.Note,
+		Other:      item.Other,
+	}
+}
+
+func PbAddressNoteToModel(item *AddressNote) *model.AddressNote {
+	return &model.AddressNote{
+		OpenTime:   item.OpenTime,
+		LunchBreak: item.LunchBreak,
+		Note:       item.Note,
+		Other:      item.Other,
+	}
+}
+
+func PbCreateAddressToModel(accountID int64, p *CreateAddressRequest) *model.Address {
+	return &model.Address{
+		FullName:     p.FullName,
+		FirstName:    p.FirstName,
+		LastName:     p.LastName,
+		Phone:        p.Phone,
+		Position:     p.Position,
+		Email:        p.Email,
+		Country:      p.Country,
+		Province:     p.Province,
+		District:     p.District,
+		Ward:         p.Ward,
+		Zip:          p.Zip,
+		DistrictCode: p.DistrictCode,
+		ProvinceCode: p.ProvinceCode,
+		WardCode:     p.WardCode,
+		Address1:     p.Address1,
+		Address2:     p.Address2,
+		Type:         p.Type.ToModel(),
+		AccountID:    accountID,
+		Notes:        PbAddressNoteToModel(p.Notes),
+	}
+}
+
+func PbUpdateAddressToModel(accountID int64, p *UpdateAddressRequest) *model.Address {
+	return &model.Address{
+		ID:           p.Id,
+		FullName:     p.FullName,
+		FirstName:    p.FirstName,
+		LastName:     p.LastName,
+		Phone:        p.Phone,
+		Position:     p.Position,
+		Email:        p.Email,
+		Country:      p.Country,
+		Province:     p.Province,
+		District:     p.District,
+		Ward:         p.Ward,
+		Zip:          p.Zip,
+		DistrictCode: p.DistrictCode,
+		ProvinceCode: p.ProvinceCode,
+		WardCode:     p.WardCode,
+		Address1:     p.Address1,
+		Address2:     p.Address2,
+		Type:         p.Type.ToModel(),
+		AccountID:    accountID,
+		Notes:        PbAddressNoteToModel(p.Notes),
+	}
+}
+
+func PbCreditExtended(item *model.CreditExtended) *Credit {
+	if item == nil {
+		return nil
+	}
+
+	return &Credit{
+		Id:         item.ID,
+		Amount:     int64(item.Amount),
+		ShopId:     item.ShopID,
+		SupplierId: item.SupplierID,
+		Type:       item.Type,
+		Shop:       PbShop(item.Shop),
+		CreatedAt:  common.PbTime(item.CreatedAt),
+		UpdatedAt:  common.PbTime(item.UpdatedAt),
+		PaidAt:     common.PbTime(item.PaidAt),
+		Status:     status3.Pb(item.Status),
+	}
+}
+
+func PbCreditExtendeds(items []*model.CreditExtended) []*Credit {
+	result := make([]*Credit, len(items))
+	for i, item := range items {
+		result[i] = PbCreditExtended(item)
+	}
+	return result
+}
+
+func ShippingServiceSelectStrategyToModel(s []*ShippingServiceSelectStrategyItem) []*model.ShippingServiceSelectStrategyItem {
+	if s == nil {
+		return nil
+	}
+	var result = make([]*model.ShippingServiceSelectStrategyItem, len(s))
+	for i, item := range s {
+		result[i] = &model.ShippingServiceSelectStrategyItem{
+			Key:   item.Key,
+			Value: item.Value,
+		}
+	}
+	return result
+}
+
+func (m *SurveyInfo) ToModel() *model.SurveyInfo {
+	return &model.SurveyInfo{
+		Key:      m.Key,
+		Question: m.Question,
+		Answer:   m.Answer,
+	}
+}
+
+func SurveyInfosToModel(items []*SurveyInfo) []*model.SurveyInfo {
+	result := make([]*model.SurveyInfo, 0, len(items))
+	for _, item := range items {
+		result = append(result, item.ToModel())
+	}
+	return result
+}
+
+func PbSurveyInfo(info *model.SurveyInfo) *SurveyInfo {
+	if info == nil {
+		return nil
+	}
+	return &SurveyInfo{
+		Key:      info.Key,
+		Question: info.Question,
+		Answer:   info.Answer,
+	}
+}
+
+func PbSurveyInfos(items []*model.SurveyInfo) []*SurveyInfo {
+	result := make([]*SurveyInfo, len(items))
+	for i, item := range items {
+		result[i] = PbSurveyInfo(item)
+	}
+	return result
+}
+
+func PbShippingServiceSelectStrategy(items []*model.ShippingServiceSelectStrategyItem) []*ShippingServiceSelectStrategyItem {
+	if items == nil {
+		return nil
+	}
+	var result = make([]*ShippingServiceSelectStrategyItem, len(items))
+	for i, item := range items {
+		result[i] = &ShippingServiceSelectStrategyItem{
+			Key:   item.Key,
+			Value: item.Value,
+		}
+	}
+	return result
+}
+
+func PbDevice(m *notimodel.Device) *Device {
+	return &Device{
+		Id:                m.ID,
+		AccountId:         m.AccountID,
+		DeviceId:          m.DeviceID,
+		DeviceName:        m.DeviceName,
+		ExternalDeviceId:  m.ExternalDeviceID,
+		ExternalServiceId: int32(m.ExternalServiceID),
+		CreatedAt:         common.PbTime(m.CreatedAt),
+		UpdatedAt:         common.PbTime(m.UpdatedAt),
+	}
+}
+
+func PbNotification(m *notimodel.Notification) *Notification {
+	return &Notification{
+		Id:               m.ID,
+		AccountId:        m.AccountID,
+		Title:            m.Title,
+		Message:          m.Message,
+		IsRead:           m.IsRead,
+		Entity:           string(m.Entity),
+		EntityId:         m.EntityID,
+		SendNotification: m.SendNotification,
+		SyncStatus:       pbs3.Pb(m.SyncStatus),
+		SeenAt:           common.PbTime(m.SeenAt),
+		CreatedAt:        common.PbTime(m.CreatedAt),
+		UpdatedAt:        common.PbTime(m.UpdatedAt),
+	}
+}
+
+func PbNotifications(items []*notimodel.Notification) []*Notification {
+	result := make([]*Notification, len(items))
+	for i, item := range items {
+		result[i] = PbNotification(item)
+	}
+	return result
+}

@@ -1,0 +1,2532 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "eTop API",
+    "description": "API Documentation:\n- [/doc/etop](/doc/etop) Shared API for managing login and account\n- [/doc/shop](/doc/shop) API for shops\n- [/doc/supplier](/doc/supplier) API for suppliers\n- [/doc/admin](/doc/admin) API for eTop admins\n- [/doc/integration](/doc/integration) API for integrating into partner sites\n- [/doc/ext/shop](/doc/ext/shop) External API for shops\n- [/doc/ext/partner](/doc/ext/partner) External API for partners\n- [/doc/sadmin](/doc/sadmin) Special API for super admins",
+    "version": "v1"
+  },
+  "schemes": [
+    "http",
+    "https"
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/api/etop.Account/GetPublicPartnerInfo": {
+      "post": {
+        "operationId": "GetPublicPartnerInfo",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/etopPublicAccountInfo"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/cmIDRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Account"
+        ]
+      }
+    },
+    "/api/etop.Account/GetPublicPartners": {
+      "post": {
+        "summary": "leave ids empty to get all connected partners",
+        "operationId": "GetPublicPartners",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/etopPublicAccountsResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/cmIDsRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Account"
+        ]
+      }
+    },
+    "/api/etop.Account/UpdateURLSlug": {
+      "post": {
+        "operationId": "UpdateURLSlug",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/cmEmpty"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/etopUpdateURLSlugRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Account"
+        ]
+      }
+    },
+    "/api/etop.Address/CreateAddress": {
+      "post": {
+        "operationId": "CreateAddress",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/etopAddress"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/etopCreateAddressRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Address"
+        ]
+      }
+    },
+    "/api/etop.Address/GetAddresses": {
+      "post": {
+        "operationId": "GetAddresses",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/etopGetAddressResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/cmEmpty"
+            }
+          }
+        ],
+        "tags": [
+          "Address"
+        ]
+      }
+    },
+    "/api/etop.Address/RemoveAddress": {
+      "post": {
+        "operationId": "RemoveAddress",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/cmEmpty"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/cmIDRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Address"
+        ]
+      }
+    },
+    "/api/etop.Address/UpdateAddress": {
+      "post": {
+        "operationId": "UpdateAddress",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/etopAddress"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/etopUpdateAddressRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Address"
+        ]
+      }
+    },
+    "/api/etop.Bank/GetBanks": {
+      "post": {
+        "operationId": "GetBanks",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/etopGetBanksResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/cmEmpty"
+            }
+          }
+        ],
+        "tags": [
+          "Bank"
+        ]
+      }
+    },
+    "/api/etop.Bank/GetBranchesByBankProvince": {
+      "post": {
+        "operationId": "GetBranchesByBankProvince",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/etopGetBranchesByBankProvinceResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/etopGetBranchesByBankProvinceResquest"
+            }
+          }
+        ],
+        "tags": [
+          "Bank"
+        ]
+      }
+    },
+    "/api/etop.Bank/GetProvincesByBank": {
+      "post": {
+        "operationId": "GetProvincesByBank",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/etopGetBankProvincesResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/etopGetProvincesByBankResquest"
+            }
+          }
+        ],
+        "tags": [
+          "Bank"
+        ]
+      }
+    },
+    "/api/etop.Location/GetDistricts": {
+      "post": {
+        "operationId": "GetDistricts",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/etopGetDistrictsResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/cmEmpty"
+            }
+          }
+        ],
+        "tags": [
+          "Location"
+        ]
+      }
+    },
+    "/api/etop.Location/GetDistrictsByProvince": {
+      "post": {
+        "operationId": "GetDistrictsByProvince",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/etopGetDistrictsResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/etopGetDistrictsByProvinceRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Location"
+        ]
+      }
+    },
+    "/api/etop.Location/GetProvinces": {
+      "post": {
+        "operationId": "GetProvinces",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/etopGetProvincesResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/cmEmpty"
+            }
+          }
+        ],
+        "tags": [
+          "Location"
+        ]
+      }
+    },
+    "/api/etop.Location/GetWards": {
+      "post": {
+        "operationId": "GetWards",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/etopGetWardsResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/cmEmpty"
+            }
+          }
+        ],
+        "tags": [
+          "Location"
+        ]
+      }
+    },
+    "/api/etop.Location/GetWardsByDistrict": {
+      "post": {
+        "operationId": "GetWardsByDistrict",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/etopGetWardsResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/etopGetWardsByDistrictRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Location"
+        ]
+      }
+    },
+    "/api/etop.Location/ParseLocation": {
+      "post": {
+        "operationId": "ParseLocation",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/etopParseLocationResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/etopParseLocationRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Location"
+        ]
+      }
+    },
+    "/api/etop.Misc/VersionInfo": {
+      "post": {
+        "operationId": "VersionInfo",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/cmVersionInfoResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/cmEmpty"
+            }
+          }
+        ],
+        "tags": [
+          "Misc"
+        ]
+      }
+    },
+    "/api/etop.Relationship/AnswerInvitation": {
+      "post": {
+        "operationId": "AnswerInvitation",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/etopUserAccountInfo"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/etopAnswerInvitationRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Relationship"
+        ]
+      }
+    },
+    "/api/etop.Relationship/GetUsersInCurrentAccounts": {
+      "post": {
+        "operationId": "GetUsersInCurrentAccounts",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/etopProtectedUsersResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/etopGetUsersInCurrentAccountsRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Relationship"
+        ]
+      }
+    },
+    "/api/etop.Relationship/InviteUserToAccount": {
+      "post": {
+        "operationId": "InviteUserToAccount",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/etopUserAccountInfo"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/etopInviteUserToAccountRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Relationship"
+        ]
+      }
+    },
+    "/api/etop.Relationship/LeaveAccount": {
+      "post": {
+        "operationId": "LeaveAccount",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/cmEmpty"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/etopLeaveAccountRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Relationship"
+        ]
+      }
+    },
+    "/api/etop.Relationship/RemoveUserFromCurrentAccount": {
+      "post": {
+        "operationId": "RemoveUserFromCurrentAccount",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/cmEmpty"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/etopRemoveUserFromCurrentAccountRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Relationship"
+        ]
+      }
+    },
+    "/api/etop.User/ChangePassword": {
+      "post": {
+        "summary": "ChangePassword",
+        "description": "Change the user password",
+        "operationId": "ChangePassword",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/cmEmpty"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/etopChangePasswordRequest"
+            }
+          }
+        ],
+        "tags": [
+          "User"
+        ]
+      }
+    },
+    "/api/etop.User/ChangePasswordUsingToken": {
+      "post": {
+        "summary": "ChangePasswordUsingToken",
+        "description": "Reset password by providing the token sent to email or phone",
+        "operationId": "ChangePasswordUsingToken",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/cmEmpty"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/etopChangePasswordUsingTokenRequest"
+            }
+          }
+        ],
+        "tags": [
+          "User"
+        ]
+      }
+    },
+    "/api/etop.User/Login": {
+      "post": {
+        "summary": "Login",
+        "description": "Log the user in and generate access token.",
+        "operationId": "Login",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/etopLoginResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/etopLoginRequest"
+            }
+          }
+        ],
+        "tags": [
+          "User"
+        ]
+      }
+    },
+    "/api/etop.User/Register": {
+      "post": {
+        "summary": "Register",
+        "description": "Register a new user or after a user has login using generated password.",
+        "operationId": "Register",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/etopRegisterResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/etopCreateUserRequest"
+            }
+          }
+        ],
+        "tags": [
+          "User"
+        ]
+      }
+    },
+    "/api/etop.User/ResetPassword": {
+      "post": {
+        "summary": "ResetPassword",
+        "description": "Send email or sms to allow the user reset their password.",
+        "operationId": "ResetPassword",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/cmMessageResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/etopResetPasswordRequest"
+            }
+          }
+        ],
+        "tags": [
+          "User"
+        ]
+      }
+    },
+    "/api/etop.User/SendEmailVerification": {
+      "post": {
+        "operationId": "SendEmailVerification",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/cmMessageResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/etopSendEmailVerificationRequest"
+            }
+          }
+        ],
+        "tags": [
+          "User"
+        ]
+      }
+    },
+    "/api/etop.User/SendPhoneVerification": {
+      "post": {
+        "operationId": "SendPhoneVerification",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/cmMessageResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/etopSendPhoneVerificationRequest"
+            }
+          }
+        ],
+        "tags": [
+          "User"
+        ]
+      }
+    },
+    "/api/etop.User/SendSTokenEmail": {
+      "post": {
+        "operationId": "SendSTokenEmail",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/cmMessageResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/etopSendSTokenEmailRequest"
+            }
+          }
+        ],
+        "tags": [
+          "User"
+        ]
+      }
+    },
+    "/api/etop.User/SessionInfo": {
+      "post": {
+        "summary": "SessionInfo",
+        "description": "Return current session info.",
+        "operationId": "SessionInfo",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/etopLoginResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/cmEmpty"
+            }
+          }
+        ],
+        "tags": [
+          "User"
+        ]
+      }
+    },
+    "/api/etop.User/SwitchAccount": {
+      "post": {
+        "summary": "SwitchAccount",
+        "description": "Response error if the user does not have permission to the requested account.",
+        "operationId": "SwitchAccount",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/etopAccessTokenResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/etopSwitchAccountRequest"
+            }
+          }
+        ],
+        "tags": [
+          "User"
+        ]
+      }
+    },
+    "/api/etop.User/UpdatePermission": {
+      "post": {
+        "operationId": "UpdatePermission",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/etopUpdatePermissionResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/etopUpdatePermissionRequest"
+            }
+          }
+        ],
+        "tags": [
+          "User"
+        ]
+      }
+    },
+    "/api/etop.User/UpgradeAccessToken": {
+      "post": {
+        "operationId": "UpgradeAccessToken",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/etopAccessTokenResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/etopUpgradeAccessTokenRequest"
+            }
+          }
+        ],
+        "tags": [
+          "User"
+        ]
+      }
+    },
+    "/api/etop.User/VerifyEmailUsingToken": {
+      "post": {
+        "operationId": "VerifyEmailUsingToken",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/cmMessageResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/etopVerifyEmailUsingTokenRequest"
+            }
+          }
+        ],
+        "tags": [
+          "User"
+        ]
+      }
+    },
+    "/api/etop.User/VerifyPhoneUsingToken": {
+      "post": {
+        "operationId": "VerifyPhoneUsingToken",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/cmMessageResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/etopVerifyPhoneUsingTokenRequest"
+            }
+          }
+        ],
+        "tags": [
+          "User"
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "address_typeAddressType": {
+      "type": "string",
+      "enum": [
+        "unknown",
+        "general",
+        "warehouse",
+        "shipto",
+        "shipfrom"
+      ],
+      "default": "unknown"
+    },
+    "cmEmpty": {
+      "type": "object"
+    },
+    "cmFilter": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "title": "Comma separated properties: \"name,s_name\""
+        },
+        "op": {
+          "type": "string",
+          "description": "- Text or set: ⊃ ∩\n- Exactly: = ≠ ∈\n- Numeric: = ≠ ∈ < ≤ > ≥",
+          "title": "Can be = ≠ (!=) < ≤ (<=) > ≥ (>=) ⊃ (c) ∈ (in) ∩ (n)"
+        },
+        "value": {
+          "type": "string",
+          "title": "Must always be string"
+        }
+      }
+    },
+    "cmIDRequest": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        }
+      },
+      "required": [
+        "id"
+      ]
+    },
+    "cmIDsRequest": {
+      "type": "object",
+      "properties": {
+        "ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          }
+        }
+      },
+      "required": [
+        "ids"
+      ]
+    },
+    "cmMessageResponse": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "string"
+        },
+        "msg": {
+          "type": "string"
+        }
+      }
+    },
+    "cmPageInfo": {
+      "type": "object",
+      "properties": {
+        "total": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "limit": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "sort": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "cmPaging": {
+      "type": "object",
+      "properties": {
+        "offset": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "limit": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "sort": {
+          "type": "string"
+        }
+      }
+    },
+    "cmVersionInfoResponse": {
+      "type": "object",
+      "properties": {
+        "service": {
+          "type": "string"
+        },
+        "version": {
+          "type": "string"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "etopAccessTokenResponse": {
+      "type": "object",
+      "properties": {
+        "access_token": {
+          "type": "string"
+        },
+        "expires_in": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "user": {
+          "$ref": "#/definitions/etopUser"
+        },
+        "account": {
+          "$ref": "#/definitions/etopLoginAccount"
+        },
+        "shop": {
+          "$ref": "#/definitions/etopShop"
+        },
+        "supplier": {
+          "$ref": "#/definitions/etopSupplier"
+        },
+        "stoken": {
+          "type": "boolean",
+          "format": "boolean"
+        },
+        "stoken_expires_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "access_token",
+        "expires_in",
+        "user"
+      ]
+    },
+    "etopAccountType": {
+      "type": "string",
+      "enum": [
+        "unknown",
+        "partner",
+        "shop",
+        "supplier",
+        "etop"
+      ],
+      "default": "unknown",
+      "description": "Indicates whether given account is **etop**, **shop** or **supplier**."
+    },
+    "etopAddress": {
+      "type": "object",
+      "properties": {
+        "exported_fields": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "province": {
+          "type": "string"
+        },
+        "province_code": {
+          "type": "string"
+        },
+        "district": {
+          "type": "string"
+        },
+        "district_code": {
+          "type": "string"
+        },
+        "ward": {
+          "type": "string"
+        },
+        "ward_code": {
+          "type": "string"
+        },
+        "address1": {
+          "type": "string"
+        },
+        "address2": {
+          "type": "string"
+        },
+        "zip": {
+          "type": "string"
+        },
+        "country": {
+          "type": "string"
+        },
+        "full_name": {
+          "type": "string"
+        },
+        "first_name": {
+          "type": "string"
+        },
+        "last_name": {
+          "type": "string"
+        },
+        "phone": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "position": {
+          "type": "string"
+        },
+        "type": {
+          "$ref": "#/definitions/address_typeAddressType"
+        },
+        "notes": {
+          "$ref": "#/definitions/etopAddressNote"
+        }
+      }
+    },
+    "etopAddressNote": {
+      "type": "object",
+      "properties": {
+        "note": {
+          "type": "string"
+        },
+        "open_time": {
+          "type": "string"
+        },
+        "lunch_break": {
+          "type": "string"
+        },
+        "other": {
+          "type": "string"
+        }
+      }
+    },
+    "etopAnswerInvitationRequest": {
+      "type": "object",
+      "properties": {
+        "account_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "response": {
+          "$ref": "#/definitions/status3Status"
+        }
+      }
+    },
+    "etopBank": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        }
+      }
+    },
+    "etopBankAccount": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "province": {
+          "type": "string"
+        },
+        "branch": {
+          "type": "string"
+        },
+        "account_number": {
+          "type": "string"
+        },
+        "account_name": {
+          "type": "string"
+        }
+      }
+    },
+    "etopBankBranch": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "bank_code": {
+          "type": "string"
+        },
+        "province_code": {
+          "type": "string"
+        }
+      }
+    },
+    "etopBankProvince": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "bank_code": {
+          "type": "string"
+        }
+      }
+    },
+    "etopChangePasswordRequest": {
+      "type": "object",
+      "properties": {
+        "current_password": {
+          "type": "string"
+        },
+        "new_password": {
+          "type": "string"
+        },
+        "confirm_password": {
+          "type": "string"
+        }
+      },
+      "description": "Exactly one of current_password or reset_password_token must be provided.",
+      "required": [
+        "current_password",
+        "new_password",
+        "confirm_password"
+      ]
+    },
+    "etopChangePasswordUsingTokenRequest": {
+      "type": "object",
+      "properties": {
+        "email": {
+          "type": "string"
+        },
+        "phone": {
+          "type": "string"
+        },
+        "reset_password_token": {
+          "type": "string"
+        },
+        "new_password": {
+          "type": "string"
+        },
+        "confirm_password": {
+          "type": "string"
+        }
+      },
+      "description": "Exactly one of email or phone must be provided.",
+      "required": [
+        "reset_password_token",
+        "new_password",
+        "confirm_password"
+      ]
+    },
+    "etopCompanyInfo": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "tax_code": {
+          "type": "string"
+        },
+        "address": {
+          "type": "string"
+        },
+        "website": {
+          "type": "string"
+        },
+        "legal_representative": {
+          "$ref": "#/definitions/etopContactPerson"
+        }
+      }
+    },
+    "etopContactPerson": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "position": {
+          "type": "string"
+        },
+        "phone": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        }
+      }
+    },
+    "etopCreateAddressRequest": {
+      "type": "object",
+      "properties": {
+        "province": {
+          "type": "string"
+        },
+        "province_code": {
+          "type": "string"
+        },
+        "district": {
+          "type": "string"
+        },
+        "district_code": {
+          "type": "string"
+        },
+        "ward": {
+          "type": "string"
+        },
+        "ward_code": {
+          "type": "string"
+        },
+        "address1": {
+          "type": "string"
+        },
+        "address2": {
+          "type": "string"
+        },
+        "zip": {
+          "type": "string"
+        },
+        "country": {
+          "type": "string"
+        },
+        "full_name": {
+          "type": "string"
+        },
+        "first_name": {
+          "type": "string"
+        },
+        "last_name": {
+          "type": "string"
+        },
+        "phone": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "position": {
+          "type": "string"
+        },
+        "type": {
+          "$ref": "#/definitions/address_typeAddressType"
+        },
+        "notes": {
+          "$ref": "#/definitions/etopAddressNote"
+        }
+      },
+      "required": [
+        "province_code",
+        "district_code",
+        "ward_code"
+      ]
+    },
+    "etopCreateUserRequest": {
+      "type": "object",
+      "properties": {
+        "full_name": {
+          "type": "string"
+        },
+        "short_name": {
+          "type": "string",
+          "description": "Can be automatically deduce from full_name."
+        },
+        "phone": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string",
+          "title": "It's not required if the user provides register_token"
+        },
+        "password": {
+          "type": "string"
+        },
+        "agree_tos": {
+          "type": "boolean",
+          "format": "boolean"
+        },
+        "agree_email_info": {
+          "type": "boolean",
+          "format": "boolean"
+        },
+        "register_token": {
+          "type": "string",
+          "description": "This field must be set if the user uses generated password to register.\nAutomatically set phone_verified if it's sent within a specific time."
+        }
+      },
+      "required": [
+        "full_name",
+        "phone",
+        "password",
+        "agree_tos",
+        "agree_email_info"
+      ]
+    },
+    "etopDistrict": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "string"
+        },
+        "province_code": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "is_freeship": {
+          "type": "boolean",
+          "format": "boolean"
+        }
+      }
+    },
+    "etopGetAddressResponse": {
+      "type": "object",
+      "properties": {
+        "addresses": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/etopAddress"
+          }
+        }
+      }
+    },
+    "etopGetBankProvincesResponse": {
+      "type": "object",
+      "properties": {
+        "provinces": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/etopBankProvince"
+          }
+        }
+      }
+    },
+    "etopGetBanksResponse": {
+      "type": "object",
+      "properties": {
+        "banks": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/etopBank"
+          }
+        }
+      }
+    },
+    "etopGetBranchesByBankProvinceResponse": {
+      "type": "object",
+      "properties": {
+        "branches": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/etopBankBranch"
+          }
+        }
+      }
+    },
+    "etopGetBranchesByBankProvinceResquest": {
+      "type": "object",
+      "properties": {
+        "bank_code": {
+          "type": "string"
+        },
+        "bank_name": {
+          "type": "string"
+        },
+        "province_code": {
+          "type": "string"
+        },
+        "province_name": {
+          "type": "string"
+        }
+      }
+    },
+    "etopGetDistrictsByProvinceRequest": {
+      "type": "object",
+      "properties": {
+        "province_code": {
+          "type": "string"
+        },
+        "province_name": {
+          "type": "string"
+        }
+      }
+    },
+    "etopGetDistrictsResponse": {
+      "type": "object",
+      "properties": {
+        "districts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/etopDistrict"
+          }
+        }
+      }
+    },
+    "etopGetProvincesByBankResquest": {
+      "type": "object",
+      "properties": {
+        "bank_code": {
+          "type": "string"
+        },
+        "bank_name": {
+          "type": "string"
+        }
+      }
+    },
+    "etopGetProvincesResponse": {
+      "type": "object",
+      "properties": {
+        "provinces": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/etopProvince"
+          }
+        }
+      }
+    },
+    "etopGetUsersInCurrentAccountsRequest": {
+      "type": "object",
+      "properties": {
+        "paging": {
+          "$ref": "#/definitions/cmPaging"
+        },
+        "filters": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/cmFilter"
+          }
+        },
+        "mixed": {
+          "$ref": "#/definitions/etopMixedAccount"
+        }
+      }
+    },
+    "etopGetWardsByDistrictRequest": {
+      "type": "object",
+      "properties": {
+        "district_code": {
+          "type": "string"
+        },
+        "district_name": {
+          "type": "string"
+        }
+      }
+    },
+    "etopGetWardsResponse": {
+      "type": "object",
+      "properties": {
+        "wards": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/etopWard"
+          }
+        }
+      }
+    },
+    "etopInviteUserToAccountRequest": {
+      "type": "object",
+      "properties": {
+        "account_id": {
+          "type": "string",
+          "format": "int64",
+          "title": "account to manage, must be owner of the account"
+        },
+        "invitee_identifier": {
+          "type": "string",
+          "title": "phone or email"
+        },
+        "permission": {
+          "$ref": "#/definitions/etopPermission"
+        }
+      },
+      "required": [
+        "account_id",
+        "invitee_identifier"
+      ]
+    },
+    "etopLeaveAccountRequest": {
+      "type": "object"
+    },
+    "etopLoginAccount": {
+      "type": "object",
+      "properties": {
+        "exported_fields": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "name": {
+          "type": "string"
+        },
+        "type": {
+          "$ref": "#/definitions/etopAccountType"
+        },
+        "access_token": {
+          "type": "string",
+          "description": "Associated token for the account. It's returned when calling Login or\nSwitchAccount with regenerate_tokens set to true."
+        },
+        "expires_in": {
+          "type": "integer",
+          "format": "int32",
+          "description": "The same as access_token."
+        },
+        "image_url": {
+          "type": "string"
+        },
+        "url_slug": {
+          "type": "string"
+        },
+        "user_account": {
+          "$ref": "#/definitions/etopUserAccountInfo"
+        }
+      },
+      "description": "Represents an account associated with the current user. It has extra fields to represents relation with the user.",
+      "required": [
+        "id",
+        "name",
+        "type"
+      ]
+    },
+    "etopLoginRequest": {
+      "type": "object",
+      "properties": {
+        "login": {
+          "type": "string",
+          "title": "Phone or email"
+        },
+        "password": {
+          "type": "string"
+        },
+        "account_id": {
+          "type": "string",
+          "format": "int64",
+          "description": "Automatically switch to this account if available.\n\nIt's *ignored* if the user *does not* have permission to this account."
+        },
+        "account_type": {
+          "$ref": "#/definitions/etopAccountType",
+          "description": "Automatically switch to the only account of this account type if available.\n\nIt's *ignored* if the user *does not* have any account of this account type, or if the user *has more than one* account of this account type."
+        },
+        "account_key": {
+          "type": "string",
+          "description": "Not implemented."
+        }
+      },
+      "required": [
+        "login",
+        "password"
+      ]
+    },
+    "etopLoginResponse": {
+      "type": "object",
+      "properties": {
+        "access_token": {
+          "type": "string"
+        },
+        "expires_in": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "user": {
+          "$ref": "#/definitions/etopUser"
+        },
+        "account": {
+          "$ref": "#/definitions/etopLoginAccount"
+        },
+        "shop": {
+          "$ref": "#/definitions/etopShop"
+        },
+        "supplier": {
+          "$ref": "#/definitions/etopSupplier"
+        },
+        "available_accounts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/etopLoginAccount"
+          }
+        },
+        "invitation_accounts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/etopUserAccountInfo"
+          }
+        },
+        "stoken": {
+          "type": "boolean",
+          "format": "boolean"
+        },
+        "stoken_expires_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "access_token",
+        "expires_in",
+        "user",
+        "available_accounts"
+      ]
+    },
+    "etopMixedAccount": {
+      "type": "object",
+      "properties": {
+        "ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          }
+        },
+        "all": {
+          "type": "boolean",
+          "format": "boolean"
+        },
+        "all_shops": {
+          "type": "boolean",
+          "format": "boolean"
+        },
+        "all_suppliers": {
+          "type": "boolean",
+          "format": "boolean"
+        }
+      }
+    },
+    "etopParseLocationRequest": {
+      "type": "object",
+      "properties": {
+        "province_name": {
+          "type": "string"
+        },
+        "district_name": {
+          "type": "string"
+        },
+        "ward_name": {
+          "type": "string"
+        }
+      }
+    },
+    "etopParseLocationResponse": {
+      "type": "object",
+      "properties": {
+        "province": {
+          "$ref": "#/definitions/etopProvince"
+        },
+        "district": {
+          "$ref": "#/definitions/etopDistrict"
+        },
+        "ward": {
+          "$ref": "#/definitions/etopWard"
+        }
+      }
+    },
+    "etopPermission": {
+      "type": "object",
+      "properties": {
+        "roles": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "permissions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "description": "Represents permission of the current user relation with an account."
+    },
+    "etopProtectedUsersResponse": {
+      "type": "object",
+      "properties": {
+        "paging": {
+          "$ref": "#/definitions/cmPageInfo"
+        },
+        "users": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/etopUserAccountInfo"
+          }
+        }
+      },
+      "title": "Prepsents users in current account"
+    },
+    "etopProvince": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "region": {
+          "type": "string"
+        },
+        "region_code": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "etopPublicAccountInfo": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "name": {
+          "type": "string"
+        },
+        "type": {
+          "$ref": "#/definitions/etopAccountType"
+        },
+        "image_url": {
+          "type": "string"
+        },
+        "website": {
+          "type": "string"
+        }
+      }
+    },
+    "etopPublicAccountsResponse": {
+      "type": "object",
+      "properties": {
+        "accounts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/etopPublicAccountInfo"
+          }
+        }
+      }
+    },
+    "etopRegisterResponse": {
+      "type": "object",
+      "properties": {
+        "user": {
+          "$ref": "#/definitions/etopUser"
+        }
+      },
+      "required": [
+        "user"
+      ]
+    },
+    "etopRemoveUserFromCurrentAccountRequest": {
+      "type": "object"
+    },
+    "etopResetPasswordRequest": {
+      "type": "object",
+      "properties": {
+        "phone": {
+          "type": "string",
+          "description": "Phone number to send reset password instruction."
+        },
+        "email": {
+          "type": "string",
+          "description": "Email address to send reset password instruction."
+        }
+      },
+      "description": "Exactly one of phone or email must be provided."
+    },
+    "etopSendEmailVerificationRequest": {
+      "type": "object",
+      "properties": {
+        "email": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "email"
+      ]
+    },
+    "etopSendPhoneVerificationRequest": {
+      "type": "object",
+      "properties": {
+        "phone": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "phone"
+      ]
+    },
+    "etopSendSTokenEmailRequest": {
+      "type": "object",
+      "properties": {
+        "email": {
+          "type": "string"
+        },
+        "account_id": {
+          "type": "string",
+          "format": "int64"
+        }
+      },
+      "required": [
+        "email",
+        "account_id"
+      ]
+    },
+    "etopShippingServiceSelectStrategyItem": {
+      "type": "object",
+      "properties": {
+        "key": {
+          "type": "string"
+        },
+        "value": {
+          "type": "string"
+        }
+      }
+    },
+    "etopShop": {
+      "type": "object",
+      "properties": {
+        "exported_fields": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "name": {
+          "type": "string"
+        },
+        "status": {
+          "$ref": "#/definitions/status3Status"
+        },
+        "is_test": {
+          "type": "boolean",
+          "format": "boolean"
+        },
+        "address": {
+          "$ref": "#/definitions/etopAddress"
+        },
+        "phone": {
+          "type": "string"
+        },
+        "bank_account": {
+          "$ref": "#/definitions/etopBankAccount"
+        },
+        "auto_create_ffm": {
+          "type": "boolean",
+          "format": "boolean"
+        },
+        "website_url": {
+          "type": "string"
+        },
+        "image_url": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "product_source_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "ship_to_address_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "ship_from_address_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "ghn_note_code": {
+          "type": "string",
+          "title": "@deprecated use try_on instead"
+        },
+        "try_on": {
+          "$ref": "#/definitions/try_onTryOnCode"
+        },
+        "owner_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "user": {
+          "$ref": "#/definitions/etopUser"
+        },
+        "company_info": {
+          "$ref": "#/definitions/etopCompanyInfo"
+        },
+        "money_transaction_rrule": {
+          "type": "string",
+          "title": "referrence: https://icalendar.org/rrule-tool.html"
+        },
+        "survey_info": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/etopSurveyInfo"
+          }
+        },
+        "shipping_service_select_strategy": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/etopShippingServiceSelectStrategyItem"
+          }
+        },
+        "code": {
+          "type": "string"
+        }
+      }
+    },
+    "etopSupplier": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "name": {
+          "type": "string"
+        },
+        "status": {
+          "$ref": "#/definitions/status3Status"
+        },
+        "is_test": {
+          "type": "boolean",
+          "format": "boolean"
+        },
+        "company_info": {
+          "$ref": "#/definitions/etopCompanyInfo"
+        },
+        "warehouse_address": {
+          "$ref": "#/definitions/etopAddress"
+        },
+        "bank_account": {
+          "$ref": "#/definitions/etopBankAccount"
+        },
+        "contact_persons": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/etopContactPerson"
+          }
+        },
+        "ship_from_address_id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "etopSurveyInfo": {
+      "type": "object",
+      "properties": {
+        "key": {
+          "type": "string"
+        },
+        "question": {
+          "type": "string"
+        },
+        "answer": {
+          "type": "string"
+        }
+      }
+    },
+    "etopSwitchAccountRequest": {
+      "type": "object",
+      "properties": {
+        "account_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "regenerate_tokens": {
+          "type": "boolean",
+          "format": "boolean",
+          "description": "This field should only be used after creating new accounts. If it is set,\naccount_id can be left empty."
+        }
+      },
+      "required": [
+        "account_id"
+      ]
+    },
+    "etopUpdateAddressRequest": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "province": {
+          "type": "string"
+        },
+        "province_code": {
+          "type": "string"
+        },
+        "district": {
+          "type": "string"
+        },
+        "district_code": {
+          "type": "string"
+        },
+        "ward": {
+          "type": "string"
+        },
+        "ward_code": {
+          "type": "string"
+        },
+        "address1": {
+          "type": "string"
+        },
+        "address2": {
+          "type": "string"
+        },
+        "zip": {
+          "type": "string"
+        },
+        "country": {
+          "type": "string"
+        },
+        "full_name": {
+          "type": "string"
+        },
+        "first_name": {
+          "type": "string"
+        },
+        "last_name": {
+          "type": "string"
+        },
+        "phone": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "position": {
+          "type": "string"
+        },
+        "type": {
+          "$ref": "#/definitions/address_typeAddressType"
+        },
+        "notes": {
+          "$ref": "#/definitions/etopAddressNote"
+        }
+      },
+      "required": [
+        "province_code",
+        "district_code",
+        "ward_code"
+      ]
+    },
+    "etopUpdatePermissionItem": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string"
+        },
+        "key": {
+          "type": "string"
+        },
+        "grants": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "revokes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "replace_all": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "revoke_all": {
+          "type": "boolean",
+          "format": "boolean"
+        }
+      }
+    },
+    "etopUpdatePermissionRequest": {
+      "type": "object",
+      "properties": {
+        "items": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/etopUpdatePermissionItem"
+          }
+        }
+      }
+    },
+    "etopUpdatePermissionResponse": {
+      "type": "object",
+      "properties": {
+        "msg": {
+          "type": "string"
+        }
+      }
+    },
+    "etopUpdateURLSlugRequest": {
+      "type": "object",
+      "properties": {
+        "account_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "url_slug": {
+          "type": "string"
+        }
+      }
+    },
+    "etopUpgradeAccessTokenRequest": {
+      "type": "object",
+      "properties": {
+        "stoken": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "stoken"
+      ]
+    },
+    "etopUser": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "full_name": {
+          "type": "string"
+        },
+        "short_name": {
+          "type": "string"
+        },
+        "phone": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "email_verified_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "phone_verified_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "email_verification_sent_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "phone_verification_sent_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      },
+      "description": "Represents a user in eTop system. The user may or may not have associated accounts.",
+      "required": [
+        "id",
+        "full_name",
+        "short_name",
+        "phone",
+        "email",
+        "created_at",
+        "updated_at"
+      ]
+    },
+    "etopUserAccountInfo": {
+      "type": "object",
+      "properties": {
+        "user_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "user_full_name": {
+          "type": "string"
+        },
+        "user_short_name": {
+          "type": "string"
+        },
+        "account_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "account_name": {
+          "type": "string"
+        },
+        "account_type": {
+          "$ref": "#/definitions/etopAccountType"
+        },
+        "position": {
+          "type": "string"
+        },
+        "permission": {
+          "$ref": "#/definitions/etopPermission"
+        },
+        "status": {
+          "$ref": "#/definitions/status3Status"
+        },
+        "response_status": {
+          "$ref": "#/definitions/status3Status"
+        },
+        "invitation_sent_by": {
+          "type": "string",
+          "format": "int64"
+        },
+        "invitation_sent_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "invitation_accepted_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "invitation_rejected_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "disabled_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "disabled_by": {
+          "type": "string",
+          "format": "int64"
+        },
+        "disable_reason": {
+          "type": "string"
+        }
+      },
+      "title": "Presents user information inside an account",
+      "required": [
+        "user_id",
+        "user_full_name",
+        "user_short_name",
+        "account_id",
+        "account_name",
+        "account_type",
+        "permission"
+      ]
+    },
+    "etopVerifyEmailUsingTokenRequest": {
+      "type": "object",
+      "properties": {
+        "verification_token": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "verification_token"
+      ]
+    },
+    "etopVerifyPhoneUsingTokenRequest": {
+      "type": "object",
+      "properties": {
+        "verification_token": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "verification_token"
+      ]
+    },
+    "etopWard": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "string"
+        },
+        "district_code": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        }
+      }
+    },
+    "status3Status": {
+      "type": "string",
+      "enum": [
+        "Z",
+        "P",
+        "N"
+      ],
+      "default": "Z"
+    },
+    "try_onTryOnCode": {
+      "type": "string",
+      "enum": [
+        "unknown",
+        "none",
+        "open",
+        "try"
+      ],
+      "default": "unknown"
+    }
+  },
+  "tags": [
+    {
+      "name": "Account"
+    },
+    {
+      "name": "Address"
+    },
+    {
+      "name": "Bank"
+    },
+    {
+      "name": "Location"
+    },
+    {
+      "name": "Misc"
+    },
+    {
+      "name": "Relationship"
+    },
+    {
+      "name": "User"
+    }
+  ]
+}

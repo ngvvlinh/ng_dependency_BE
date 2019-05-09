@@ -1,0 +1,398 @@
+syntax = "proto2";
+package admin;
+option go_package = "etop.vn/backend/pb/etop/admin";
+
+import "protoc-gen-swagger/options/annotations.proto";
+option (grpc.gateway.protoc_gen_swagger.options.openapiv2_swagger) = {
+    info: {
+        title: "eTop API: Admin";
+        version: "v1";
+    };
+};
+
+import "gogoproto/gogo.proto";
+option (gogoproto.equal_all)                = false;
+option (gogoproto.gogoproto_import)         = false;
+option (gogoproto.goproto_enum_prefix_all)  = true;
+option (gogoproto.goproto_getters_all)      = false;
+option (gogoproto.goproto_unrecognized_all) = false;
+option (gogoproto.gostring_all)             = false;
+option (gogoproto.marshaler_all)            = false;
+option (gogoproto.onlyone_all)              = false;
+option (gogoproto.sizer_all)                = false;
+option (gogoproto.testgen_all)              = false;
+option (gogoproto.unmarshaler_all)          = false;
+option (gogoproto.verbose_equal_all)        = false;
+
+import "common/common.proto";
+import "etop/etop.proto";
+import "etop/supplier/supplier.proto";
+import "etop/order/order.proto";
+import "etop/etc/status3/status.proto";
+import "etop/etc/shipping/state.proto";
+import "etop/etc/credit_type/type.proto";
+import "etop/etc/notifier_entity/entity.proto";
+import "google/protobuf/timestamp.proto";
+
+service MiscService {
+    rpc VersionInfo(cm.Empty) returns (cm.VersionInfoResponse);
+    rpc AdminLoginAsAccount(LoginAsAccountRequest) returns (etop.LoginResponse);
+}
+
+service AccountService {
+    rpc CreatePartner(CreatePartnerRequest) returns (etop.Partner);
+    rpc GenerateAPIKey(GenerateAPIKeyRequest) returns (GenerateAPIKeyResponse);
+}
+
+service CategoryService {
+    rpc CreateCategory(CreateCategoryRequest) returns (etop.Category);
+    rpc GetCategories(cm.Empty) returns (etop.CategoriesResponse);
+    rpc UpdateProductsCategory(UpdateProductsCategoryRequest) returns (cm.UpdatedResponse);
+    rpc RemoveProductsCategory(cm.IDsRequest) returns (cm.UpdatedResponse);
+}
+
+service ProductService {
+    rpc GetProduct(cm.IDRequest) returns (ProductWithSupplier);
+    rpc GetProducts(GetProductsRequest) returns (supplier.ProductsResponse);
+    rpc GetProductsByIDs(cm.IDsRequest) returns (supplier.ProductsResponse);
+    rpc UpdateProductsStatus(UpdateProductsStatusRequest) returns (cm.UpdatedResponse);
+    rpc UpdateProduct(UpdateProductRequest)  returns (supplier.Product);
+    rpc UpdateProductImages(supplier.UpdateVariantImagesRequest) returns (supplier.Product);
+
+    rpc GetVariant(cm.IDRequest) returns (VariantWithSupplier);
+    rpc GetVariants(GetVariantsRequest) returns (supplier.VariantsResponse);
+    rpc GetVariantsByIDs(cm.IDsRequest) returns (supplier.VariantsResponse);
+    rpc UpdateVariantsStatus(UpdateVariantsStatusRequest) returns (cm.UpdatedResponse);
+    rpc UpdateVariant(UpdateVariantRequest)  returns (supplier.Variant);
+    rpc UpdateVariantImages(supplier.UpdateVariantImagesRequest) returns (supplier.Variant);
+}
+
+service SupplierService {
+    rpc GetSuppliers(GetSuppliersRequest) returns (etop.SuppliersResponse);
+    rpc GetSuppliersByIDs(cm.IDsRequest) returns (etop.SuppliersResponse);
+}
+
+service OrderService {
+    rpc GetOrder(cm.IDRequest) returns (order.Order);
+    rpc GetOrders(GetOrdersRequest) returns (order.OrdersResponse);
+    rpc GetOrdersByIDs(cm.IDsRequest) returns (order.OrdersResponse);
+}
+
+service FulfillmentService {
+    rpc GetFulfillment(cm.IDRequest) returns (order.Fulfillment);
+    rpc GetFulfillments(GetFulfillmentsRequest) returns (order.FulfillmentsResponse);
+
+    // UpdateFulfillment
+    //
+    // `shipping_state`
+    //
+    // Only update from any state to `undeliverable`
+    // Or update from `undeliverable`to any state
+    rpc UpdateFulfillment(UpdateFulfillmentRequest) returns (cm.UpdatedResponse);
+}
+
+service BrandService {
+    rpc GetBrands(cm.Empty) returns (supplier.BrandsResponse);
+}
+
+service MoneyTransactionService {
+    rpc GetMoneyTransaction(cm.IDRequest) returns (order.MoneyTransaction);
+    rpc GetMoneyTransactions(GetMoneyTransactionsRequest) returns (order.MoneyTransactionsResponse);
+    rpc ConfirmMoneyTransaction(ConfirmMoneyTransactionRequest) returns (cm.UpdatedResponse);
+    rpc UpdateMoneyTransaction(UpdateMoneyTransactionRequest) returns (order.MoneyTransaction);
+
+    rpc GetMoneyTransactionShippingExternal(cm.IDRequest) returns (order.MoneyTransactionShippingExternal);
+    rpc GetMoneyTransactionShippingExternals(GetMoneyTransactionShippingExternalsRequest) returns (order.MoneyTransactionShippingExternalsResponse);
+    rpc RemoveMoneyTransactionShippingExternalLines(RemoveMoneyTransactionShippingExternalLinesRequest) returns (order.MoneyTransactionShippingExternal);
+    rpc DeleteMoneyTransactionShippingExternal(cm.IDRequest) returns (cm.RemovedResponse);
+    rpc ConfirmMoneyTransactionShippingExternal(cm.IDRequest) returns (cm.UpdatedResponse);
+    rpc ConfirmMoneyTransactionShippingExternals(cm.IDsRequest) returns (cm.UpdatedResponse);
+    rpc UpdateMoneyTransactionShippingExternal(UpdateMoneyTransactionShippingExternalRequest) returns (order.MoneyTransactionShippingExternal);
+
+    rpc GetMoneyTransactionShippingEtop(cm.IDRequest) returns (order.MoneyTransactionShippingEtop);
+    rpc GetMoneyTransactionShippingEtops(GetMoneyTransactionShippingEtopsRequest) returns (order.MoneyTransactionShippingEtopsResponse);
+    rpc CreateMoneyTransactionShippingEtop(cm.IDsRequest) returns (order.MoneyTransactionShippingEtop);
+    rpc UpdateMoneyTransactionShippingEtop(UpdateMoneyTransactionShippingEtopRequest) returns (order.MoneyTransactionShippingEtop);
+    rpc DeleteMoneyTransactionShippingEtop(cm.IDRequest) returns (cm.DeletedResponse);
+    rpc ConfirmMoneyTransactionShippingEtop(ConfirmMoneyTransactionShippingEtopRequest) returns (cm.UpdatedResponse);
+}
+
+service ShopService {
+    rpc GetShop(cm.IDRequest) returns (etop.Shop);
+    rpc GetShops(GetShopsRequest) returns (GetShopsResponse);
+}
+
+service CreditService {
+    rpc GetCredit(GetCreditRequest) returns (etop.Credit);
+    rpc GetCredits(GetCreditsRequest) returns (etop.CreditsResponse);
+    rpc CreateCredit(CreateCreditRequest) returns (etop.Credit);
+    rpc UpdateCredit(UpdateCreditRequest) returns (etop.Credit);
+    rpc ConfirmCredit(ConfirmCreditRequest) returns (cm.UpdatedResponse);
+    rpc DeleteCredit(cm.IDRequest) returns (cm.RemovedResponse);
+}
+
+service NotificationService {
+    rpc CreateNotifications(CreateNotificationsRequest) returns (CreateNotificationsResponse);
+}
+
+message CreateCategoryRequest {
+    optional string name = 1 [(gogoproto.nullable)=false];
+    optional int64 parent_id = 2 [(gogoproto.nullable)=false];
+}
+
+message UpdateProductsCategoryRequest {
+    // @required
+    repeated int64 ids = 2;
+
+    // @required
+    optional int64 category_id = 1 [(gogoproto.nullable)=false];
+}
+
+message UpdateVariantsStatusRequest {
+    // @required
+    repeated int64 ids = 1;
+
+    // @required
+    optional status3.Status e_status = 2;
+}
+
+message UpdateProductsStatusRequest {
+    // @required
+    repeated int64 ids = 1;
+
+    // @required
+    optional status3.Status status = 2;
+}
+
+message GetVariantsRequest {
+    optional cm.Paging paging   = 1;
+    repeated cm.Filter filters  = 2;
+    optional int64 supplier_id  = 3 [(gogoproto.nullable)=false];
+    optional status3.Status s_status = 4;
+    optional status3.Status x_status = 5;
+    optional status3.Status e_status = 6;
+    optional status3.Status   status = 7;
+}
+
+message GetProductsRequest {
+    optional cm.Paging paging   = 1;
+    repeated cm.Filter filters  = 2;
+    optional int64 supplier_id  = 3 [(gogoproto.nullable)=false];
+    optional status3.Status   status = 7;
+}
+
+message GetSuppliersRequest {
+    optional cm.Paging paging = 1;
+    optional status3.Status status = 2;
+}
+
+message VariantWithSupplier {
+    optional supplier.Variant variant = 1;
+    optional etop.Supplier supplier   = 2;
+}
+
+message ProductWithSupplier {
+    optional supplier.Product product = 1;
+    optional etop.Supplier supplier   = 2;
+}
+
+message ProductsWithSupplierResponse {
+    optional cm.PageInfo paging = 1;
+    repeated ProductWithSupplier products = 2;
+}
+
+message GetOrdersRequest {
+    optional cm.Paging paging = 1;
+    repeated cm.Filter filters = 4;
+}
+
+message UpdateProductRequest {
+    // @required
+    optional int64 id = 1 [(gogoproto.nullable)=false];
+
+    optional string name  = 2 [(gogoproto.nullable)=false];
+    optional string description = 4 [(gogoproto.nullable)=false];
+    optional string short_desc  = 5 [(gogoproto.nullable)=false];
+    optional string desc_html   = 6 [(gogoproto.nullable)=false];
+}
+
+message UpdateVariantRequest {
+    // @required
+    optional int64 id = 1 [(gogoproto.nullable)=false];
+
+    optional string name  = 2 [(gogoproto.nullable)=false];
+    optional string description = 4 [(gogoproto.nullable)=false];
+    optional string short_desc  = 5 [(gogoproto.nullable)=false];
+    optional string desc_html   = 6 [(gogoproto.nullable)=false];
+}
+
+message GetFulfillmentsRequest {
+    optional cm.Paging paging = 1;
+    optional int64 shop_id = 2 [(gogoproto.nullable)=false];
+    optional int64 supplier_id = 3 [(gogoproto.nullable)=false];
+    optional int64 order_id = 4 [(gogoproto.nullable)=false];
+    optional status3.Status status  = 5;
+    repeated cm.Filter filters = 6;
+}
+
+message LoginAsAccountRequest {
+    optional int64 user_id    = 1 [(gogoproto.nullable)=false];
+    optional int64 account_id = 2 [(gogoproto.nullable)=false];
+
+    // This is a sensitive API, so admin must provide password before processing!
+    optional string password  = 3 [(gogoproto.nullable)=false];
+}
+
+message GetMoneyTransactionsRequest {
+    repeated int64 ids = 1;
+    optional int64 shop_id = 2 [(gogoproto.nullable)=false];
+    optional int64 money_transaction_shipping_external_id = 3 [(gogoproto.nullable)=false];
+    optional cm.Paging paging = 4;
+    repeated cm.Filter filters = 5;
+}
+
+message RemoveFfmsMoneyTransactionRequest {
+    repeated int64 fulfillment_ids = 1;
+    optional int64 money_transaction_id = 2 [(gogoproto.nullable)=false];
+    optional int64 shop_id = 3 [(gogoproto.nullable)=false];
+}
+
+message GetMoneyTransactionShippingExternalsRequest {
+    repeated int64 ids = 1;
+    optional cm.Paging paging = 2;
+    repeated cm.Filter filters = 3;
+}
+
+message RemoveMoneyTransactionShippingExternalLinesRequest {
+    repeated int64 line_ids = 1;
+    optional int64 money_transaction_shipping_external_id = 2 [(gogoproto.nullable)=false];
+}
+
+message ConfirmMoneyTransactionRequest {
+    optional int64 money_transaction_id = 1 [(gogoproto.nullable)=false];
+    optional int64 shop_id = 2 [(gogoproto.nullable)=false];
+    optional int64 total_cod = 3 [(gogoproto.nullable)=false];
+    optional int64 total_amount = 4 [(gogoproto.nullable)=false];
+    optional int64 total_orders = 5 [(gogoproto.nullable)=false];
+}
+
+message DeleteMoneyTransactionRequest {
+    optional int64 money_transaction_id = 1 [(gogoproto.nullable)=false];
+    optional int64 shop_id = 2 [(gogoproto.nullable)=false];
+}
+
+message GetShopsRequest {
+    optional cm.Paging paging = 1;
+}
+
+message GetShopsResponse {
+    optional cm.PageInfo paging    = 1;
+    repeated etop.Shop shops = 2;
+}
+
+message GetCreditRequest {
+    optional int64 id = 1 [(gogoproto.nullable)=false];
+    optional int64 shop_id = 2 [(gogoproto.nullable)=false];
+}
+
+message GetCreditsRequest {
+    optional int64 shop_id = 1 [(gogoproto.nullable)=false];
+    optional cm.Paging paging = 2;
+}
+
+message CreateCreditRequest {
+    optional int64 amount = 1 [(gogoproto.nullable)=false];
+    optional int64 shop_id = 2 [(gogoproto.nullable)=false];
+    optional credit_type.CreditType type  = 3;
+    optional google.protobuf.Timestamp paid_at = 4;
+}
+
+message UpdateCreditRequest {
+    optional int64 id = 1 [(gogoproto.nullable)=false];
+    optional int64 amount = 2 [(gogoproto.nullable)=false];
+    optional int64 shop_id = 3 [(gogoproto.nullable)=false];
+    optional credit_type.CreditType type  = 4;
+    optional google.protobuf.Timestamp paid_at = 5;
+}
+
+message ConfirmCreditRequest {
+    optional int64 id = 1 [(gogoproto.nullable)=false];
+    optional int64 shop_id = 2 [(gogoproto.nullable)=false];
+}
+
+message CreatePartnerRequest {
+    optional etop.Partner partner = 1 [(gogoproto.nullable)=false];
+}
+
+message UpdateFulfillmentRequest {
+    optional int64 id = 1 [(gogoproto.nullable)=false];
+    optional string full_name = 2 [(gogoproto.nullable)=false];
+    optional string phone       = 3 [(gogoproto.nullable)=false];
+    optional int32 total_cod_amount =  5;
+    optional bool is_partial_delivery = 6 [(gogoproto.nullable)=false];
+    optional string admin_note = 7 [(gogoproto.nullable)=false];
+    optional int32 actual_compensation_amount = 8 [(gogoproto.nullable)=false];
+    optional shipping.State shipping_state = 9;
+}
+
+message GenerateAPIKeyRequest {
+    optional int64 account_id = 1 [(gogoproto.nullable)=false];
+}
+
+message GenerateAPIKeyResponse {
+    optional int64 account_id = 1 [(gogoproto.nullable)=false];
+    optional string api_key = 2 [(gogoproto.nullable)=false];
+}
+
+message UpdateMoneyTransactionShippingEtopRequest {
+    optional int64  id          = 1 [(gogoproto.nullable)=false];
+    repeated int64 adds        = 2;
+    repeated int64 deletes     = 3;
+    repeated int64 replace_all = 4;
+    optional string note = 5 [(gogoproto.nullable)=false];
+    optional string invoice_number = 6 [(gogoproto.nullable)=false];
+    optional etop.BankAccount bank_account = 7;
+}
+
+message GetMoneyTransactionShippingEtopsRequest {
+    repeated int64 ids = 1;
+    optional status3.Status status = 2;
+    optional cm.Paging paging = 3;
+    repeated cm.Filter filters = 4;
+}
+
+message ConfirmMoneyTransactionShippingEtopRequest {
+    optional int64 id = 1 [(gogoproto.nullable)=false];
+    optional int64 total_cod = 3 [(gogoproto.nullable)=false];
+    optional int64 total_amount = 4 [(gogoproto.nullable)=false];
+    optional int64 total_orders = 5 [(gogoproto.nullable)=false];
+}
+
+message UpdateMoneyTransactionRequest {
+    optional int64  id          = 1 [(gogoproto.nullable)=false];
+    optional string note = 2 [(gogoproto.nullable)=false];
+    optional string invoice_number = 3 [(gogoproto.nullable)=false];
+    optional etop.BankAccount bank_account = 4;
+}
+
+message UpdateMoneyTransactionShippingExternalRequest {
+    optional int64  id          = 1 [(gogoproto.nullable)=false];
+    optional string note = 2 [(gogoproto.nullable)=false];
+    optional string invoice_number = 3 [(gogoproto.nullable)=false];
+    optional etop.BankAccount bank_account = 4;
+}
+
+message CreateNotificationsRequest {
+    optional string title = 1 [(gogoproto.nullable) = false];
+    optional string message = 2 [(gogoproto.nullable) = false];
+    optional notifier_entity.NotifierEntity entity = 3 [(gogoproto.nullable) = false];
+    optional int64 entity_id = 4 [(gogoproto.nullable) = false];
+    repeated int64 account_ids = 5;
+    // Send to all subscribers
+    optional bool send_all = 6 [(gogoproto.nullable) = false];
+}
+
+message CreateNotificationsResponse {
+    optional int32 created = 1 [(gogoproto.nullable) = false];
+    optional int32 errored = 2 [(gogoproto.nullable) = false];
+}

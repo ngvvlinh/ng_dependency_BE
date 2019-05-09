@@ -1,0 +1,106 @@
+syntax = "proto2";
+package etop.vn.api.main.credit.v1;
+option go_package = "v1";
+
+import "protoc-gen-swagger/options/annotations.proto";
+option (grpc.gateway.protoc_gen_swagger.options.openapiv2_swagger) = {
+    info: {
+        title: "Credit";
+        version:"v1";
+    };
+};
+
+import "gogoproto/gogo.proto";
+option (gogoproto.equal_all)                = false;
+option (gogoproto.gogoproto_import)         = false;
+option (gogoproto.goproto_enum_prefix_all)  = false;
+option (gogoproto.goproto_getters_all)      = true;
+option (gogoproto.goproto_sizecache_all)    = false;
+option (gogoproto.goproto_unkeyed_all)      = false;
+option (gogoproto.goproto_unrecognized_all) = false;
+option (gogoproto.gostring_all)             = false;
+option (gogoproto.marshaler_all)            = false;
+option (gogoproto.onlyone_all)              = false;
+option (gogoproto.sizer_all)                = false;
+option (gogoproto.testgen_all)              = false;
+option (gogoproto.unmarshaler_all)          = false;
+option (gogoproto.verbose_equal_all)        = false;
+
+import "etop.vn/api/meta/v1/api.proto";
+
+service CreditManager {
+    rpc ReserveCredit(ReserveCreditCommand) returns (CreditEvents);
+
+//    rpc ReserveCreditSync(ReserveCreditCommand) returns (CreditEvents);
+
+    rpc CommitCreditReservation(CommitCreditReservationCommand) returns (meta.v1.Empty);
+
+    rpc CancelCreditReservation(CancelCreditReservationCommand) returns (meta.v1.Empty);
+}
+
+service CreditQueryService {
+
+}
+
+//-- Commands --//
+
+message ReserveCreditCommand {
+    optional meta.v1.UUID reserve_id = 1 [(gogoproto.nullable)=false];
+
+    optional int32 amount = 2 [(gogoproto.nullable)=false];
+}
+
+message CommitCreditReservationCommand {
+    optional meta.v1.UUID reserve_id = 1 [(gogoproto.nullable)=false];
+
+    optional int32 amount = 2 [(gogoproto.nullable)=false];
+}
+
+message CancelCreditReservationCommand {
+    optional meta.v1.UUID reserve_id = 1 [(gogoproto.nullable)=false];
+
+    optional int32 amount = 2 [(gogoproto.nullable)=false];
+}
+
+//-- Events --//
+
+// CreditEvents represents a list of events
+message CreditEvents {
+    repeated CreditEvent events = 1;
+}
+
+message CreditEvent {
+    optional int64 id = 1 [(gogoproto.nullable)=false];
+
+    optional meta.v1.UUID uuid = 2 [(gogoproto.nullable)=false];
+
+    optional meta.v1.UUID correlation_id = 3 [(gogoproto.nullable)=false];
+
+    optional int64 account_id = 4 [(gogoproto.nullable)=false];
+
+    optional string wallet_type = 5 [(gogoproto.nullable)=false];
+
+    optional int32 type = 10 [(gogoproto.nullable)=false];
+
+    optional EventData data = 11;
+}
+
+message EventData {
+    oneof data {
+        CreditReservationAcceptedData CreditReservationAccepted = 1;
+        CreditReservationRejectedData CreditReservationRejected = 2;
+    }
+}
+
+message CreditReservationAcceptedData {
+    optional meta.v1.UUID reserve_id = 1 [(gogoproto.nullable)=false];
+
+    optional int32 amount = 2 [(gogoproto.nullable)=false];
+}
+
+message CreditReservationRejectedData {
+    optional meta.v1.UUID reserve_id = 1 [(gogoproto.nullable)=false];
+
+    optional int32 amount = 2 [(gogoproto.nullable)=false];
+}
+

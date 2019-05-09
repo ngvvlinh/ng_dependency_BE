@@ -1,0 +1,112 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "services/handler/handler.proto",
+    "version": "version not set"
+  },
+  "schemes": [
+    "http",
+    "https"
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/api/handler.Misc/VersionInfo": {
+      "post": {
+        "operationId": "VersionInfo",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/cmVersionInfoResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/cmEmpty"
+            }
+          }
+        ],
+        "tags": [
+          "Misc"
+        ]
+      }
+    },
+    "/api/handler.Webhook/ResetState": {
+      "post": {
+        "operationId": "ResetState",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/cmEmpty"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/handlerResetStateRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Webhook"
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "cmEmpty": {
+      "type": "object"
+    },
+    "cmVersionInfoResponse": {
+      "type": "object",
+      "properties": {
+        "service": {
+          "type": "string"
+        },
+        "version": {
+          "type": "string"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "handlerResetStateRequest": {
+      "type": "object",
+      "properties": {
+        "webhook_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "account_id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    }
+  },
+  "tags": [
+    {
+      "name": "Misc"
+    },
+    {
+      "name": "Webhook"
+    }
+  ]
+}
