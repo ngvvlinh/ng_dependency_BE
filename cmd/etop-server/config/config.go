@@ -4,6 +4,7 @@ import (
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/captcha"
 	cc "etop.vn/backend/pkg/common/config"
+	"etop.vn/backend/pkg/integration/ahamove"
 	"etop.vn/backend/pkg/integration/email"
 	"etop.vn/backend/pkg/integration/ghn"
 	"etop.vn/backend/pkg/integration/ghtk"
@@ -54,12 +55,14 @@ type Config struct {
 		Token   string `yaml:"token"`
 	} `yaml:"kiotviet_sync_service"`
 
-	GHN           ghn.Config    `yaml:"ghn"`
-	GHNWebhook    cc.HTTP       `yaml:"ghn_webhook"`
-	GHTK          ghtk.Config   `yaml:"ghtk"`
-	GHTKWebhook   cc.HTTP       `yaml:"ghtk_webhook"`
-	VTPost        vtpost.Config `yaml:"vtpost"`
-	VTPostWebhook cc.HTTP       `yaml:"vtpost_webhook"`
+	GHN            ghn.Config     `yaml:"ghn"`
+	GHNWebhook     cc.HTTP        `yaml:"ghn_webhook"`
+	GHTK           ghtk.Config    `yaml:"ghtk"`
+	GHTKWebhook    cc.HTTP        `yaml:"ghtk_webhook"`
+	VTPost         vtpost.Config  `yaml:"vtpost"`
+	VTPostWebhook  cc.HTTP        `yaml:"vtpost_webhook"`
+	Ahamove        ahamove.Config `yaml:"ahamove"`
+	AhamoveWebhook cc.HTTP        `yaml:"ahamove_webhook"`
 
 	SAdminToken string `yaml:"sadmin_token"`
 	ServeDoc    bool   `yaml:"serve_doc"`
@@ -88,12 +91,14 @@ func Default() Config {
 			URLPrefix: "http://localhost:8080",
 		},
 
-		GHN:           ghn.DefaultConfig(),
-		GHNWebhook:    cc.HTTP{Port: 9022},
-		GHTK:          ghtk.DefaultConfig(),
-		GHTKWebhook:   cc.HTTP{Port: 9032},
-		VTPost:        vtpost.DefaultConfig(),
-		VTPostWebhook: cc.HTTP{Port: 9042},
+		GHN:            ghn.DefaultConfig(),
+		GHNWebhook:     cc.HTTP{Port: 9022},
+		GHTK:           ghtk.DefaultConfig(),
+		GHTKWebhook:    cc.HTTP{Port: 9032},
+		VTPost:         vtpost.DefaultConfig(),
+		VTPostWebhook:  cc.HTTP{Port: 9042},
+		Ahamove:        ahamove.DefaultConfig(),
+		AhamoveWebhook: cc.HTTP{Port: 9052},
 
 		SAdminToken: "PZJvDAY2.sadmin.HXnnEkdV",
 		ServeDoc:    true,
@@ -143,6 +148,7 @@ func Load(isTest bool) (Config, error) {
 	cfg.GHN.MustLoadEnv()
 	cfg.GHTK.MustLoadEnv()
 	cfg.VTPost.MustLoadEnv()
+	cfg.Ahamove.MustLoadEnv()
 	cc.MustLoadEnv("ET_SADMIN_TOKEN", &cfg.SAdminToken)
 	return cfg, err
 }

@@ -10,6 +10,8 @@ import (
 	"syscall"
 	"time"
 
+	"etop.vn/backend/pkg/integration/ahamove"
+
 	"etop.vn/backend/cmd/etop-server/config"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/auth"
@@ -66,11 +68,12 @@ var (
 	ctxCancel     context.CancelFunc
 	healthservice = health.New()
 
-	eventStreamer *eventstream.EventStreamer
-	dbLogs        cmsql.Database
-	ghnCarrier    *ghn.Carrier
-	ghtkCarrier   *ghtk.Carrier
-	vtpostCarrier *vtpost.Carrier
+	eventStreamer  *eventstream.EventStreamer
+	dbLogs         cmsql.Database
+	ghnCarrier     *ghn.Carrier
+	ghtkCarrier    *ghtk.Carrier
+	vtpostCarrier  *vtpost.Carrier
+	ahamoveCarrier *ahamove.Carrier
 )
 
 func main() {
@@ -204,6 +207,19 @@ func main() {
 			ll.Warn("DEVELOPMENT. Skip connecting to VTPost.")
 		} else {
 			ll.Fatal("VTPost: No token")
+		}
+	}
+
+	if cfg.Ahamove.AccountDefault.Token != "" {
+		ahamoveCarrier = ahamove.New(cfg.Ahamove, locationBus)
+		if err := ahamoveCarrier.InitAllClients(ctx); err != nil {
+			ll.Fatal("Unable to connect to Ahamove", l.Error(err))
+		}
+	} else {
+		if cm.IsDev() {
+			ll.Warn("DEVELOPMENT. Skip connecting to Ahamove.")
+		} else {
+			ll.Fatal("Ahamove: No token")
 		}
 	}
 

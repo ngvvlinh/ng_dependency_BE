@@ -18,6 +18,7 @@ const HCMSuburban1Codes = "761,762,763,777"
 const HCMSuburban2Codes = "783,784,785,786,787"
 const (
 	HCMProvinceCode       = "79"
+	HNProvinceCode        = "01"
 	BinhDuongProvinceCode = "74"
 	DongNaiProvinceCode   = "75"
 	VungTauProvinceCode   = "77"

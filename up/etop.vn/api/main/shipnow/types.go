@@ -34,3 +34,17 @@ type ConfirmationRejectedData = shipnowv1.ConfirmationRejectedData
 type CancellationRequestedData = shipnowv1.CancellationRequestedData
 type CancellationAcceptedData = shipnowv1.CancellationAcceptedData
 type CancellationRejectedData = shipnowv1.CancellationRejectedData
+
+type State string
+
+const (
+	StateCreated    State = "created"
+	StateAssigning  State = "assigning"
+	StatePicking    State = "picking"
+	StateDelivering State = "delivering"
+	StateDelivered  State = "delivered"
+	StateCancelled  State = "cancelled"
+	StateDefault    State = "default"
+)
+
+const Ahamove = "ahamove"
