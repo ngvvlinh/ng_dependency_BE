@@ -1,0 +1,14 @@
+syntax = "proto2";
+package etop.vn.api.main.etop.v1.status4;
+option go_package = "types";
+
+import "gogoproto/gogo.proto";
+option (gogoproto.gogoproto_import)         = false;
+
+enum Status4 {
+    Z = 0;
+    P = 1;
+    S = 2;
+    N = 127;
+}
+

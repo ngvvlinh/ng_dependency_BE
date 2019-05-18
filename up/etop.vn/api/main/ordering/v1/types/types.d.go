@@ -8,6 +8,7 @@ import (
 
 type ItemLine struct {
 	OrderId     int64       `protobuf:"varint,1,opt,name=order_id,json=orderId" json:"order_id"`
+	Quantity    int32       `protobuf:"varint,2,opt,name=quantity" json:"quantity"`
 	ProductId   int64       `protobuf:"varint,3,opt,name=product_id,json=productId" json:"product_id"`
 	VariantId   int64       `protobuf:"varint,4,opt,name=variant_id,json=variantId" json:"variant_id"`
 	IsOutside   bool        `protobuf:"varint,5,opt,name=is_outside,json=isOutside" json:"is_outside"`
@@ -31,7 +32,13 @@ type Address struct {
 }
 
 type Location struct {
-	ProvinceCode string `protobuf:"bytes,1,opt,name=province_code,json=provinceCode" json:"province_code"`
-	DistrictCode string `protobuf:"bytes,2,opt,name=district_code,json=districtCode" json:"district_code"`
-	WardCode     string `protobuf:"bytes,3,opt,name=ward_code,json=wardCode" json:"ward_code"`
+	ProvinceCode string       `protobuf:"bytes,1,opt,name=province_code,json=provinceCode" json:"province_code"`
+	DistrictCode string       `protobuf:"bytes,2,opt,name=district_code,json=districtCode" json:"district_code"`
+	WardCode     string       `protobuf:"bytes,3,opt,name=ward_code,json=wardCode" json:"ward_code"`
+	Coordinates  *Coordinates `protobuf:"bytes,4,opt,name=coordinates" json:"coordinates,omitempty"`
+}
+
+type Coordinates struct {
+	Latitude  float32 `protobuf:"fixed32,1,opt,name=latitude" json:"latitude"`
+	Longitude float32 `protobuf:"fixed32,2,opt,name=longitude" json:"longitude"`
 }

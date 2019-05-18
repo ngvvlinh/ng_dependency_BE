@@ -4,6 +4,7 @@ import (
 	"context"
 	"time"
 
+	"etop.vn/api/main/shipping/types"
 	"etop.vn/api/meta"
 )
 
@@ -23,27 +24,6 @@ type ProcessManager interface {
 }
 
 //-- Types --//
-
-type TryOn int
-
-const (
-	TryOnNone TryOn = 1
-	TryOnOpen TryOn = 2
-	TryOnTry  TryOn = 3
-)
-
-func (code TryOn) String() string {
-	switch code {
-	case TryOnNone:
-		return "none"
-	case TryOnOpen:
-		return "open"
-	case TryOnTry:
-		return "try"
-	default:
-		return "unknown"
-	}
-}
 
 type ShippingService struct {
 	Code string
@@ -201,7 +181,7 @@ type CreateFulfillmentCommand struct {
 
 	ValueInfo
 
-	TryOn TryOn
+	TryOn types.TryOn
 
 	ShippingNote string
 

@@ -1,12 +1,13 @@
 package shipnow
 
 import (
+	shipnowtypes "etop.vn/api/main/shipnow/types"
 	shipnowv1 "etop.vn/api/main/shipnow/v1"
 	"etop.vn/api/meta"
 )
 
 type ShipnowFulfillment = shipnowv1.ShipnowFulfillment
-type DeliveryPoint = shipnowv1.DeliveryPoint
+type DeliveryPoint = shipnowtypes.DeliveryPoint // re-export
 
 type ShipnowEvent = shipnowv1.ShipnowEvent
 type IsEventData = shipnowv1.IsEventData
@@ -34,17 +35,5 @@ type ConfirmationRejectedData = shipnowv1.ConfirmationRejectedData
 type CancellationRequestedData = shipnowv1.CancellationRequestedData
 type CancellationAcceptedData = shipnowv1.CancellationAcceptedData
 type CancellationRejectedData = shipnowv1.CancellationRejectedData
-
-type State string
-
-const (
-	StateCreated    State = "created"
-	StateAssigning  State = "assigning"
-	StatePicking    State = "picking"
-	StateDelivering State = "delivering"
-	StateDelivered  State = "delivered"
-	StateCancelled  State = "cancelled"
-	StateDefault    State = "default"
-)
 
 const Ahamove = "ahamove"

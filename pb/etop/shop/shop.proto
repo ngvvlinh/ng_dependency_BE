@@ -6,8 +6,8 @@ import "protoc-gen-swagger/options/annotations.proto";
 option (grpc.gateway.protoc_gen_swagger.options.openapiv2_swagger) = {
     info: {
         title: "eTop API: Shop";
-        version: "v1";
-    };
+version:"v1";
+};
 };
 
 import "gogoproto/gogo.proto";
@@ -129,6 +129,15 @@ service FulfillmentService {
     rpc GetExternalShippingServices(order.GetExternalShippingServicesRequest) returns (order.GetExternalShippingServicesResponse);
     rpc GetPublicFulfillment(GetPublicFulfillmentRequest) returns (order.PublicFulfillment);
     rpc UpdateFulfillmentsShippingState(UpdateFulfillmentsShippingStateRequest) returns (cm.UpdatedResponse);
+}
+
+service ShipnowService {
+    rpc GetShipnowFulfillment (cm.IDRequest) returns (order.ShipnowFulfillment);
+    rpc GetShipnowFulfillments (order.GetShipnowFulfillmentsRequest) returns (order.ShipnowFulfillments);
+
+    rpc CreateShipnowFulfillment (order.CreateShipnowFulfillmentRequest) returns (order.ShipnowFulfillment);
+    rpc ConfirmShipnowFulfillment (cm.IDRequest) returns (order.ShipnowFulfillment);
+    rpc UpdateShipnowFulfillment(order.UpdateShipnowFulfillmentRequest) returns (order.ShipnowFulfillment);
 }
 
 service HistoryService {

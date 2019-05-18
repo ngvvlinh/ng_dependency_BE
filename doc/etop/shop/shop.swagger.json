@@ -1916,6 +1916,136 @@
         ]
       }
     },
+    "/api/shop.Shipnow/ConfirmShipnowFulfillment": {
+      "post": {
+        "operationId": "ConfirmShipnowFulfillment",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/orderShipnowFulfillment"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/cmIDRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Shipnow"
+        ]
+      }
+    },
+    "/api/shop.Shipnow/CreateShipnowFulfillment": {
+      "post": {
+        "operationId": "CreateShipnowFulfillment",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/orderShipnowFulfillment"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/orderCreateShipnowFulfillmentRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Shipnow"
+        ]
+      }
+    },
+    "/api/shop.Shipnow/GetShipnowFulfillment": {
+      "post": {
+        "operationId": "GetShipnowFulfillment",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/orderShipnowFulfillment"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/cmIDRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Shipnow"
+        ]
+      }
+    },
+    "/api/shop.Shipnow/GetShipnowFulfillments": {
+      "post": {
+        "operationId": "GetShipnowFulfillments",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/orderShipnowFulfillments"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/orderGetShipnowFulfillmentsRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Shipnow"
+        ]
+      }
+    },
+    "/api/shop.Shipnow/UpdateShipnowFulfillment": {
+      "post": {
+        "operationId": "UpdateShipnowFulfillment",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/orderShipnowFulfillment"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/orderUpdateShipnowFulfillmentRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Shipnow"
+        ]
+      }
+    },
     "/api/shop.Summary/CalcBalanceShop": {
       "post": {
         "operationId": "CalcBalanceShop",
@@ -2748,6 +2878,19 @@
         }
       }
     },
+    "orderCoordinates": {
+      "type": "object",
+      "properties": {
+        "latitude": {
+          "type": "number",
+          "format": "float"
+        },
+        "longitude": {
+          "type": "number",
+          "format": "float"
+        }
+      }
+    },
     "orderCreateOrderLine": {
       "type": "object",
       "properties": {
@@ -2899,6 +3042,68 @@
         "ghn_note_code": {
           "$ref": "#/definitions/ghn_note_codeGHNNoteCode",
           "title": "@deprecated use shop_shipping.try_on instead"
+        }
+      }
+    },
+    "orderCreateShipnowFulfillmentRequest": {
+      "type": "object",
+      "properties": {
+        "order_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          }
+        },
+        "carrier": {
+          "type": "string"
+        },
+        "shipping_service_code": {
+          "type": "string"
+        },
+        "shipping_service_fee": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "shipping_note": {
+          "type": "string"
+        },
+        "request_pickup_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "pickup_address": {
+          "$ref": "#/definitions/orderOrderAddress"
+        }
+      }
+    },
+    "orderDeliveryPoint": {
+      "type": "object",
+      "properties": {
+        "shipping_address": {
+          "$ref": "#/definitions/orderOrderAddress"
+        },
+        "lines": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/orderOrderLine"
+          }
+        },
+        "shipping_note": {
+          "type": "string"
+        },
+        "order_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "weight_info": {
+          "$ref": "#/definitions/orderWeightInfo"
+        },
+        "value_info": {
+          "$ref": "#/definitions/orderValueInfo"
+        },
+        "try_on": {
+          "$ref": "#/definitions/try_onTryOnCode"
         }
       }
     },
@@ -3367,6 +3572,23 @@
         }
       }
     },
+    "orderGetShipnowFulfillmentsRequest": {
+      "type": "object",
+      "properties": {
+        "paging": {
+          "$ref": "#/definitions/cmPaging"
+        },
+        "filters": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/cmFilter"
+          }
+        },
+        "mixed": {
+          "$ref": "#/definitions/etopMixedAccount"
+        }
+      }
+    },
     "orderMoneyTransaction": {
       "type": "object",
       "properties": {
@@ -3715,6 +3937,9 @@
         },
         "ward_code": {
           "type": "string"
+        },
+        "coordinates": {
+          "$ref": "#/definitions/orderCoordinates"
         }
       }
     },
@@ -4018,6 +4243,69 @@
       },
       "title": "Public API for using with ManyChat"
     },
+    "orderShipnowFulfillment": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "shop_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "partner_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "pickup_address": {
+          "$ref": "#/definitions/orderOrderAddress"
+        },
+        "delivery_points": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/orderDeliveryPoint"
+          }
+        },
+        "carrier": {
+          "type": "string"
+        },
+        "shipping_service_code": {
+          "type": "string"
+        },
+        "shipping_service_fee": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "weight_info": {
+          "$ref": "#/definitions/orderWeightInfo"
+        },
+        "value_info": {
+          "$ref": "#/definitions/orderValueInfo"
+        },
+        "shipping_note": {
+          "type": "string"
+        },
+        "request_pickup_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "orderShipnowFulfillments": {
+      "type": "object",
+      "properties": {
+        "paging": {
+          "$ref": "#/definitions/cmPageInfo"
+        },
+        "shipnow_fulfillments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/orderShipnowFulfillment"
+          }
+        }
+      }
+    },
     "orderShippingFeeLine": {
       "type": "object",
       "properties": {
@@ -4135,6 +4423,84 @@
       "required": [
         "id"
       ]
+    },
+    "orderUpdateShipnowFulfillmentRequest": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "order_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          }
+        },
+        "carrier": {
+          "type": "string"
+        },
+        "shipping_service_code": {
+          "type": "string"
+        },
+        "shipping_service_fee": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "shipping_note": {
+          "type": "string"
+        },
+        "request_pickup_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "pickup_address": {
+          "$ref": "#/definitions/orderOrderAddress"
+        }
+      }
+    },
+    "orderValueInfo": {
+      "type": "object",
+      "properties": {
+        "basket_value": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "cod_amount": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "include_insurance": {
+          "type": "boolean",
+          "format": "boolean"
+        }
+      }
+    },
+    "orderWeightInfo": {
+      "type": "object",
+      "properties": {
+        "gross_weight": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "chargeable_weight": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "length": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "width": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "height": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
     },
     "product_sourceProductSourceType": {
       "type": "string",
@@ -5826,6 +6192,9 @@
     },
     {
       "name": "ProductSource"
+    },
+    {
+      "name": "Shipnow"
     },
     {
       "name": "Summary"

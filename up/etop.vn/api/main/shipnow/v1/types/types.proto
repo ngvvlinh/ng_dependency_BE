@@ -1,0 +1,40 @@
+syntax = "proto2";
+package etop.vn.api.main.shipnow.v1.types;
+option go_package = "types";
+
+import "gogoproto/gogo.proto";
+option (gogoproto.equal_all)                = false;
+option (gogoproto.gogoproto_import)         = false;
+option (gogoproto.goproto_enum_prefix_all)  = false;
+option (gogoproto.goproto_getters_all)      = true;
+option (gogoproto.goproto_sizecache_all)    = false;
+option (gogoproto.goproto_unkeyed_all)      = false;
+option (gogoproto.goproto_unrecognized_all) = false;
+option (gogoproto.gostring_all)             = false;
+option (gogoproto.marshaler_all)            = false;
+option (gogoproto.onlyone_all)              = false;
+option (gogoproto.sizer_all)                = false;
+option (gogoproto.testgen_all)              = false;
+option (gogoproto.unmarshaler_all)          = false;
+option (gogoproto.verbose_equal_all)        = false;
+
+import "etop.vn/api/meta/v1/api.proto";
+import "etop.vn/api/main/ordering/v1/types/types.proto";
+import "etop.vn/api/main/shipping/v1/types/types.proto";
+import "etop.vn/api/main/shipping/v1/types/tryon.proto";
+
+message DeliveryPoint {
+    optional ordering.v1.types.Address shipping_address = 1;
+
+    repeated ordering.v1.types.ItemLine lines = 2;
+
+    optional string shipping_note = 3 [(gogoproto.nullable)=false];
+
+    optional int64 order_id = 4 [(gogoproto.nullable)=false];
+
+    optional shipping.v1.types.WeightInfo weight_info = 5 [(gogoproto.nullable)=false, (gogoproto.embed)=true];
+
+    optional shipping.v1.types.ValueInfo value_info = 6 [(gogoproto.nullable)=false, (gogoproto.embed)=true];
+
+    optional shipping.v1.tryon.TryOnCode try_on = 11 [(gogoproto.nullable)=false];
+}

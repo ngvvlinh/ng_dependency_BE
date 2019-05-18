@@ -17,7 +17,7 @@ func sqlgenShipnowFulfillment(_ *ShipnowFulfillment) bool { return true }
 type ShipnowFulfillments []*ShipnowFulfillment
 
 const __sqlShipnowFulfillment_Table = "shipnow_fulfillment"
-const __sqlShipnowFulfillment_ListCols = "\"id\",\"shop_id\",\"partner_id\",\"order_ids\",\"pickup_address\",\"carrier\",\"shipping_service_code\",\"shipping_service_fee\",\"chargeable_weight\",\"basket_value\",\"cod_amount\",\"shipping_note\",\"request_pickup_at\",\"delivery_points\""
+const __sqlShipnowFulfillment_ListCols = "\"id\",\"shop_id\",\"partner_id\",\"order_ids\",\"pickup_address\",\"carrier\",\"shipping_service_code\",\"shipping_service_fee\",\"chargeable_weight\",\"gross_weight\",\"basket_value\",\"cod_amount\",\"shipping_note\",\"request_pickup_at\",\"delivery_points\",\"status\",\"confirm_status\",\"shipping_status\",\"shipping_state\",\"shipping_code\",\"sync_status\",\"sync_states\",\"last_sync_at\",\"created_at\",\"updated_at\""
 const __sqlShipnowFulfillment_Insert = "INSERT INTO \"shipnow_fulfillment\" (" + __sqlShipnowFulfillment_ListCols + ") VALUES"
 const __sqlShipnowFulfillment_Select = "SELECT " + __sqlShipnowFulfillment_ListCols + " FROM \"shipnow_fulfillment\""
 const __sqlShipnowFulfillment_Select_history = "SELECT " + __sqlShipnowFulfillment_ListCols + " FROM history.\"shipnow_fulfillment\""
@@ -25,8 +25,10 @@ const __sqlShipnowFulfillment_UpdateAll = "UPDATE \"shipnow_fulfillment\" SET ("
 
 func (m *ShipnowFulfillment) SQLTableName() string  { return "shipnow_fulfillment" }
 func (m *ShipnowFulfillments) SQLTableName() string { return "shipnow_fulfillment" }
+func (m *ShipnowFulfillment) SQLListCols() string   { return __sqlShipnowFulfillment_ListCols }
 
 func (m *ShipnowFulfillment) SQLArgs(opts core.Opts, create bool) []interface{} {
+	now := time.Now()
 	return []interface{}{
 		core.Int64(m.ID),
 		core.Int64(m.ShopID),
@@ -37,11 +39,22 @@ func (m *ShipnowFulfillment) SQLArgs(opts core.Opts, create bool) []interface{} 
 		core.String(m.ShippingServiceCode),
 		core.Int32(m.ShippingServiceFee),
 		core.Int32(m.ChargeableWeight),
+		core.Int32(m.GrossWeight),
 		core.Int32(m.BasketValue),
 		core.Int32(m.CODAmount),
 		core.String(m.ShippingNote),
 		core.Time(m.RequestPickupAt),
 		core.JSON{m.DeliveryPoints},
+		core.Int(m.Status),
+		core.Int(m.ConfirmStatus),
+		core.Int(m.ShippingStatus),
+		core.String(m.ShippingState),
+		core.String(m.ShippingCode),
+		core.Int(m.SyncStatus),
+		core.JSON{m.SyncStates},
+		core.Time(m.LastSyncAt),
+		core.Now(m.CreatedAt, now, create),
+		core.Now(m.UpdatedAt, now, true),
 	}
 }
 
@@ -56,11 +69,22 @@ func (m *ShipnowFulfillment) SQLScanArgs(opts core.Opts) []interface{} {
 		(*core.String)(&m.ShippingServiceCode),
 		(*core.Int32)(&m.ShippingServiceFee),
 		(*core.Int32)(&m.ChargeableWeight),
+		(*core.Int32)(&m.GrossWeight),
 		(*core.Int32)(&m.BasketValue),
 		(*core.Int32)(&m.CODAmount),
 		(*core.String)(&m.ShippingNote),
 		(*core.Time)(&m.RequestPickupAt),
 		core.JSON{&m.DeliveryPoints},
+		(*core.Int)(&m.Status),
+		(*core.Int)(&m.ConfirmStatus),
+		(*core.Int)(&m.ShippingStatus),
+		(*core.String)(&m.ShippingState),
+		(*core.String)(&m.ShippingCode),
+		(*core.Int)(&m.SyncStatus),
+		core.JSON{&m.SyncStates},
+		(*core.Time)(&m.LastSyncAt),
+		(*core.Time)(&m.CreatedAt),
+		(*core.Time)(&m.UpdatedAt),
 	}
 }
 
@@ -98,7 +122,7 @@ func (_ *ShipnowFulfillments) SQLSelect(w SQLWriter) error {
 func (m *ShipnowFulfillment) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlShipnowFulfillment_Insert)
 	w.WriteRawString(" (")
-	w.WriteMarkers(14)
+	w.WriteMarkers(25)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), true))
 	return nil
@@ -108,7 +132,7 @@ func (ms ShipnowFulfillments) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlShipnowFulfillment_Insert)
 	w.WriteRawString(" (")
 	for i := 0; i < len(ms); i++ {
-		w.WriteMarkers(14)
+		w.WriteMarkers(25)
 		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
 		w.WriteRawString("),(")
 	}
@@ -195,6 +219,14 @@ func (m *ShipnowFulfillment) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(m.ChargeableWeight)
 	}
+	if m.GrossWeight != 0 {
+		flag = true
+		w.WriteName("gross_weight")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.GrossWeight)
+	}
 	if m.BasketValue != 0 {
 		flag = true
 		w.WriteName("basket_value")
@@ -235,6 +267,86 @@ func (m *ShipnowFulfillment) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(core.JSON{m.DeliveryPoints})
 	}
+	if m.Status != 0 {
+		flag = true
+		w.WriteName("status")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(int(m.Status))
+	}
+	if m.ConfirmStatus != 0 {
+		flag = true
+		w.WriteName("confirm_status")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(int(m.ConfirmStatus))
+	}
+	if m.ShippingStatus != 0 {
+		flag = true
+		w.WriteName("shipping_status")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(int(m.ShippingStatus))
+	}
+	if m.ShippingState != "" {
+		flag = true
+		w.WriteName("shipping_state")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.ShippingState)
+	}
+	if m.ShippingCode != "" {
+		flag = true
+		w.WriteName("shipping_code")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.ShippingCode)
+	}
+	if m.SyncStatus != 0 {
+		flag = true
+		w.WriteName("sync_status")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(int(m.SyncStatus))
+	}
+	if m.SyncStates != nil {
+		flag = true
+		w.WriteName("sync_states")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(core.JSON{m.SyncStates})
+	}
+	if !m.LastSyncAt.IsZero() {
+		flag = true
+		w.WriteName("last_sync_at")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.LastSyncAt)
+	}
+	if !m.CreatedAt.IsZero() {
+		flag = true
+		w.WriteName("created_at")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.CreatedAt)
+	}
+	if !m.UpdatedAt.IsZero() {
+		flag = true
+		w.WriteName("updated_at")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(core.Now(m.UpdatedAt, time.Now(), true))
+	}
 	if !flag {
 		return core.ErrNoColumn
 	}
@@ -245,7 +357,7 @@ func (m *ShipnowFulfillment) SQLUpdate(w SQLWriter) error {
 func (m *ShipnowFulfillment) SQLUpdateAll(w SQLWriter) error {
 	w.WriteQueryString(__sqlShipnowFulfillment_UpdateAll)
 	w.WriteRawString(" = (")
-	w.WriteMarkers(14)
+	w.WriteMarkers(25)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), false))
 	return nil
@@ -284,6 +396,9 @@ func (m ShipnowFulfillmentHistory) ShippingServiceFee() core.Interface {
 func (m ShipnowFulfillmentHistory) ChargeableWeight() core.Interface {
 	return core.Interface{m["chargeable_weight"]}
 }
+func (m ShipnowFulfillmentHistory) GrossWeight() core.Interface {
+	return core.Interface{m["gross_weight"]}
+}
 func (m ShipnowFulfillmentHistory) BasketValue() core.Interface {
 	return core.Interface{m["basket_value"]}
 }
@@ -297,17 +412,41 @@ func (m ShipnowFulfillmentHistory) RequestPickupAt() core.Interface {
 func (m ShipnowFulfillmentHistory) DeliveryPoints() core.Interface {
 	return core.Interface{m["delivery_points"]}
 }
+func (m ShipnowFulfillmentHistory) Status() core.Interface { return core.Interface{m["status"]} }
+func (m ShipnowFulfillmentHistory) ConfirmStatus() core.Interface {
+	return core.Interface{m["confirm_status"]}
+}
+func (m ShipnowFulfillmentHistory) ShippingStatus() core.Interface {
+	return core.Interface{m["shipping_status"]}
+}
+func (m ShipnowFulfillmentHistory) ShippingState() core.Interface {
+	return core.Interface{m["shipping_state"]}
+}
+func (m ShipnowFulfillmentHistory) ShippingCode() core.Interface {
+	return core.Interface{m["shipping_code"]}
+}
+func (m ShipnowFulfillmentHistory) SyncStatus() core.Interface {
+	return core.Interface{m["sync_status"]}
+}
+func (m ShipnowFulfillmentHistory) SyncStates() core.Interface {
+	return core.Interface{m["sync_states"]}
+}
+func (m ShipnowFulfillmentHistory) LastSyncAt() core.Interface {
+	return core.Interface{m["last_sync_at"]}
+}
+func (m ShipnowFulfillmentHistory) CreatedAt() core.Interface { return core.Interface{m["created_at"]} }
+func (m ShipnowFulfillmentHistory) UpdatedAt() core.Interface { return core.Interface{m["updated_at"]} }
 
 func (m *ShipnowFulfillmentHistory) SQLScan(opts core.Opts, row *sql.Row) error {
-	data := make([]interface{}, 14)
-	args := make([]interface{}, 14)
-	for i := 0; i < 14; i++ {
+	data := make([]interface{}, 25)
+	args := make([]interface{}, 25)
+	for i := 0; i < 25; i++ {
 		args[i] = &data[i]
 	}
 	if err := row.Scan(args...); err != nil {
 		return err
 	}
-	res := make(ShipnowFulfillmentHistory, 14)
+	res := make(ShipnowFulfillmentHistory, 25)
 	res["id"] = data[0]
 	res["shop_id"] = data[1]
 	res["partner_id"] = data[2]
@@ -317,19 +456,30 @@ func (m *ShipnowFulfillmentHistory) SQLScan(opts core.Opts, row *sql.Row) error 
 	res["shipping_service_code"] = data[6]
 	res["shipping_service_fee"] = data[7]
 	res["chargeable_weight"] = data[8]
-	res["basket_value"] = data[9]
-	res["cod_amount"] = data[10]
-	res["shipping_note"] = data[11]
-	res["request_pickup_at"] = data[12]
-	res["delivery_points"] = data[13]
+	res["gross_weight"] = data[9]
+	res["basket_value"] = data[10]
+	res["cod_amount"] = data[11]
+	res["shipping_note"] = data[12]
+	res["request_pickup_at"] = data[13]
+	res["delivery_points"] = data[14]
+	res["status"] = data[15]
+	res["confirm_status"] = data[16]
+	res["shipping_status"] = data[17]
+	res["shipping_state"] = data[18]
+	res["shipping_code"] = data[19]
+	res["sync_status"] = data[20]
+	res["sync_states"] = data[21]
+	res["last_sync_at"] = data[22]
+	res["created_at"] = data[23]
+	res["updated_at"] = data[24]
 	*m = res
 	return nil
 }
 
 func (ms *ShipnowFulfillmentHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	data := make([]interface{}, 14)
-	args := make([]interface{}, 14)
-	for i := 0; i < 14; i++ {
+	data := make([]interface{}, 25)
+	args := make([]interface{}, 25)
+	for i := 0; i < 25; i++ {
 		args[i] = &data[i]
 	}
 	res := make(ShipnowFulfillmentHistories, 0, 128)
@@ -347,11 +497,22 @@ func (ms *ShipnowFulfillmentHistories) SQLScan(opts core.Opts, rows *sql.Rows) e
 		m["shipping_service_code"] = data[6]
 		m["shipping_service_fee"] = data[7]
 		m["chargeable_weight"] = data[8]
-		m["basket_value"] = data[9]
-		m["cod_amount"] = data[10]
-		m["shipping_note"] = data[11]
-		m["request_pickup_at"] = data[12]
-		m["delivery_points"] = data[13]
+		m["gross_weight"] = data[9]
+		m["basket_value"] = data[10]
+		m["cod_amount"] = data[11]
+		m["shipping_note"] = data[12]
+		m["request_pickup_at"] = data[13]
+		m["delivery_points"] = data[14]
+		m["status"] = data[15]
+		m["confirm_status"] = data[16]
+		m["shipping_status"] = data[17]
+		m["shipping_state"] = data[18]
+		m["shipping_code"] = data[19]
+		m["sync_status"] = data[20]
+		m["sync_states"] = data[21]
+		m["last_sync_at"] = data[22]
+		m["created_at"] = data[23]
+		m["updated_at"] = data[24]
 		res = append(res, m)
 	}
 	if err := rows.Err(); err != nil {

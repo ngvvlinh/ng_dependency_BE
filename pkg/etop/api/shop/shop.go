@@ -3,6 +3,7 @@ package shop
 import (
 	"context"
 
+	"etop.vn/api/main/shipnow"
 	pbcm "etop.vn/backend/pb/common"
 	pbetop "etop.vn/backend/pb/etop"
 	pborder "etop.vn/backend/pb/etop/order"
@@ -77,16 +78,26 @@ func init() {
 	bus.AddHandler("api", GetNotifications)
 	bus.AddHandler("api", GetNotification)
 	bus.AddHandler("api", UpdateNotifications)
+
+	bus.AddHandler("api", CreateShipNowFulfillment)
+	bus.AddHandler("api", GetShipNowFulfillment)
+	bus.AddHandler("api", GetShipNowFulfillments)
+	bus.AddHandler("api", ConfirmShipNowFulfillment)
+	bus.AddHandler("api", UpdateShipNowFulfillment)
 }
 
 const PrefixIdemp = "IdempOrder"
 
 var idempgroup *idemp.RedisGroup
 var shippingCtrl *shipping_provider.ProviderManager
+var shipnowAggr shipnow.Aggregate
+var shipnowQuery shipnow.QueryService
 
-func Init(shippingProviderCtrl *shipping_provider.ProviderManager, sd cmservice.Shutdowner, rd redis.Store) {
+func Init(shipnowAggregate shipnow.Aggregate, shipnowQueryService shipnow.QueryService, shippingProviderCtrl *shipping_provider.ProviderManager, sd cmservice.Shutdowner, rd redis.Store) {
 	shippingCtrl = shippingProviderCtrl
 	idempgroup = idemp.NewRedisGroup(rd, PrefixIdemp, 5*60)
+	shipnowAggr = shipnowAggregate
+	shipnowQuery = shipnowQueryService
 	sd.Register(idempgroup.Shutdown)
 }
 
@@ -845,5 +856,91 @@ func UpdateNotifications(ctx context.Context, q *wrapshop.UpdateNotificationsEnd
 	q.Result = &pbcm.UpdatedResponse{
 		Updated: int32(len(q.Ids)),
 	}
+	return nil
+}
+
+func GetShipNowFulfillment(ctx context.Context, q *wrapshop.GetShipnowFulfillmentEndpoint) error {
+	args := &shipnow.GetShipnowFulfillmentQueryArgs{
+		Id: q.Id,
+	}
+	ffm, err := shipnowQuery.GetShipnowFulfillment(ctx, args)
+	if err != nil {
+		return err
+	}
+	q.Result = Convert_core_ShipnowFulfillment_To_api_ShipnowFulfillment(ffm.ShipnowFulfillment)
+	return nil
+}
+
+func GetShipNowFulfillments(ctx context.Context, q *wrapshop.GetShipnowFulfillmentsEndpoint) error {
+	args := &shipnow.GetShipnowFulfillmentsQueryArgs{
+		ShopId: q.Context.Shop.ID,
+	}
+	ffms, err := shipnowQuery.GetShipnowFulfillments(ctx, args)
+	if err != nil {
+		return err
+	}
+	q.Result = &pborder.ShipnowFulfillments{
+		ShipnowFulfillments: Convert_core_ShipnowFulfillments_To_api_ShipnowFulfillments(ffms.ShipnowFulfillments),
+	}
+	return nil
+}
+
+func CreateShipNowFulfillment(ctx context.Context, q *wrapshop.CreateShipnowFulfillmentEndpoint) error {
+	pickupAddress, err := q.PickupAddress.Fulfilled()
+	if err != nil {
+		return err
+	}
+	args := &shipnow.CreateShipnowFulfillmentCommand{
+		OrderIds:            q.OrderIds,
+		Carrier:             q.Carrier,
+		ShopId:              q.Context.Shop.ID,
+		ShippingServiceCode: q.ShippingServiceCode,
+		ShippingServiceFee:  q.ShippingServiceFee,
+		ShippingNote:        q.ShippingNote,
+		RequestPickupAt:     nil,
+		PickupAddress:       Convert_api_OrderAddress_To_core_OrderAddress(pickupAddress),
+	}
+	res, err := shipnowAggr.CreateShipnowFulfillment(ctx, args)
+	if err != nil {
+		return err
+	}
+	q.Result = Convert_core_ShipnowFulfillment_To_api_ShipnowFulfillment(res)
+	return nil
+}
+
+func ConfirmShipNowFulfillment(ctx context.Context, q *wrapshop.ConfirmShipnowFulfillmentEndpoint) error {
+	args := &shipnow.ConfirmShipnowFulfillmentCommand{
+		Id:     q.Id,
+		ShopId: q.Context.Shop.ID,
+	}
+	res, err := shipnowAggr.ConfirmShipnowFulfillment(ctx, args)
+	if err != nil {
+		return err
+	}
+	q.Result = Convert_core_ShipnowFulfillment_To_api_ShipnowFulfillment(res)
+	return nil
+}
+
+func UpdateShipNowFulfillment(ctx context.Context, q *wrapshop.UpdateShipnowFulfillmentEndpoint) error {
+	pickupAddress, err := q.PickupAddress.Fulfilled()
+	if err != nil {
+		return err
+	}
+	args := &shipnow.UpdateShipnowFulfillmentCommand{
+		Id:                  q.Id,
+		OrderIds:            q.OrderIds,
+		Carrier:             q.Carrier,
+		ShopId:              q.Context.Shop.ID,
+		ShippingServiceCode: q.ShippingServiceCode,
+		ShippingServiceFee:  q.ShippingServiceFee,
+		ShippingNote:        q.ShippingNote,
+		RequestPickupAt:     nil,
+		PickupAddress:       Convert_api_OrderAddress_To_core_OrderAddress(pickupAddress),
+	}
+	res, err := shipnowAggr.UpdateShipnowFulfillment(ctx, args)
+	if err != nil {
+		return err
+	}
+	q.Result = Convert_core_ShipnowFulfillment_To_api_ShipnowFulfillment(res)
 	return nil
 }

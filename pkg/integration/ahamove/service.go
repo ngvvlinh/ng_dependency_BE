@@ -114,11 +114,11 @@ func newServiceIDGenerator(seed int64) serviceIDGenerator {
 // id is always 8 character in length.
 func (c serviceIDGenerator) GenerateServiceID(clientCode byte, serviceID ServiceCode) (string, error) {
 	if serviceID == "" {
-		return "", cm.Errorf(cm.InvalidArgument, nil, "Ahamove: Missing service ID")
+		return "", cm.Errorf(cm.InvalidArgument, nil, "ahamove: Missing service ID")
 	}
 	service := ServicesIndexID[serviceID]
 	if service == nil {
-		return "", cm.Errorf(cm.InvalidArgument, nil, "Ahamove: Service not found")
+		return "", cm.Errorf(cm.InvalidArgument, nil, "ahamove: Service not found")
 	}
 	n := c.rd.Uint64()
 	v := gencode.Alphabet32.EncodeReverse(n, 8)
@@ -129,7 +129,7 @@ func (c serviceIDGenerator) GenerateServiceID(clientCode byte, serviceID Service
 		v[1] = AhamoveCodePublic
 		v[2] = blacklist(v[2], AhamoveCodePublic)
 	default:
-		return "", cm.Errorf(cm.Internal, nil, "Ahamove: invalid code")
+		return "", cm.Errorf(cm.Internal, nil, "ahamove: invalid code")
 	}
 
 	code := string(v)
@@ -165,11 +165,11 @@ func blacklist(current byte, blacks ...byte) byte {
 
 func ParseServiceID(code string) (clientCode byte, serviceID ServiceCode, err error) {
 	if code == "" {
-		err = cm.Errorf(cm.InvalidArgument, nil, "Ahamove: missing service id")
+		err = cm.Errorf(cm.InvalidArgument, nil, "ahamove: missing service id")
 		return
 	}
 	if len(code) != 8 {
-		err = cm.Errorf(cm.InvalidArgument, nil, "Ahamove: invalid service id")
+		err = cm.Errorf(cm.InvalidArgument, nil, "ahamove: invalid service id")
 		return
 	}
 	if code[1] == AhamoveCodePublic {
@@ -180,7 +180,7 @@ func ParseServiceID(code string) (clientCode byte, serviceID ServiceCode, err er
 	service := ServicesIndexShortCode[shortCode]
 
 	if clientCode == 0 || service == nil {
-		err = cm.Errorf(cm.InvalidArgument, nil, "Ahamove: invalid service id")
+		err = cm.Errorf(cm.InvalidArgument, nil, "ahamove: invalid service id")
 	}
 	serviceID = service.ID
 	return

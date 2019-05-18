@@ -10,8 +10,6 @@ import (
 	"syscall"
 	"time"
 
-	"etop.vn/backend/pkg/integration/ahamove"
-
 	"etop.vn/backend/cmd/etop-server/config"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/auth"
@@ -45,13 +43,21 @@ import (
 	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/backend/pkg/etop/sqlstore"
 	"etop.vn/backend/pkg/etop/upload"
+	"etop.vn/backend/pkg/integration/ahamove"
 	"etop.vn/backend/pkg/integration/email"
 	"etop.vn/backend/pkg/integration/ghn"
 	"etop.vn/backend/pkg/integration/ghtk"
 	"etop.vn/backend/pkg/integration/sms"
 	"etop.vn/backend/pkg/integration/vtpost"
+	"etop.vn/backend/pkg/services/address"
+	"etop.vn/backend/pkg/services/identity"
 	servicelocation "etop.vn/backend/pkg/services/location"
+	"etop.vn/backend/pkg/services/ordering"
+	orderingpm "etop.vn/backend/pkg/services/ordering/pm"
 	ordersqlstore "etop.vn/backend/pkg/services/ordering/sqlstore"
+	"etop.vn/backend/pkg/services/shipnow"
+	shipnow_carrier "etop.vn/backend/pkg/services/shipnow-carrier"
+	shipnowpm "etop.vn/backend/pkg/services/shipnow/pm"
 	shipsqlstore "etop.vn/backend/pkg/services/shipping/sqlstore"
 )
 
@@ -213,13 +219,13 @@ func main() {
 	if cfg.Ahamove.AccountDefault.Token != "" {
 		ahamoveCarrier = ahamove.New(cfg.Ahamove, locationBus)
 		if err := ahamoveCarrier.InitAllClients(ctx); err != nil {
-			ll.Fatal("Unable to connect to Ahamove", l.Error(err))
+			ll.Fatal("Unable to connect to ahamove", l.Error(err))
 		}
 	} else {
 		if cm.IsDev() {
-			ll.Warn("DEVELOPMENT. Skip connecting to Ahamove.")
+			ll.Warn("DEVELOPMENT. Skip connecting to ahamove.")
 		} else {
-			ll.Fatal("Ahamove: No token")
+			ll.Fatal("ahamove: No token")
 		}
 	}
 
@@ -233,7 +239,25 @@ func main() {
 		UrlPrefix: cfg.Export.URLPrefix,
 		DirExport: cfg.Export.DirExport,
 	})
-	shop.Init(shippingManager, shutdowner, redisStore)
+
+	shipnowCarrierManager := shipnow_carrier.NewManager(db, locationBus, ahamoveCarrier)
+	// create aggregate, query service
+	identityQuery := identity.NewQueryService(db)
+	addressQuery := address.NewQueryService(db)
+	shipnowQuery := shipnow.NewQueryService(db)
+	// identityPM := identitypm.NewProcessManager(identityQuery)
+	// addressPM := addresspm.NewProcessManager(addressQuery)
+
+	orderAggregate := ordering.NewAggregate(db)
+	shipnowAggregate := shipnow.NewAggregate(db, locationBus)
+
+	orderingPM := orderingpm.New(orderAggregate, shipnowAggregate)
+	shipnowPM := shipnowpm.New(shipnowAggregate, orderAggregate, identityQuery, nil, addressQuery, shipnowCarrierManager)
+
+	orderAggregate.WithPM(orderingPM)
+	shipnowAggregate.WithPM(shipnowPM)
+
+	shop.Init(shipnowAggregate, shipnowQuery, shippingManager, shutdowner, redisStore)
 	partner.Init(shutdowner, redisStore, authStore, cfg.URL.Auth)
 	xshop.Init(shutdowner, redisStore, authStore)
 	integration.Init(shutdowner, redisStore, authStore)

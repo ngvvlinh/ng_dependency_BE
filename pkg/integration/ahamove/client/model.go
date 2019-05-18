@@ -3,7 +3,7 @@ package ahamoveclient
 import (
 	"encoding/json"
 
-	"etop.vn/api/main/shipnow"
+	shipnowtypes "etop.vn/api/main/shipnow/types"
 	"etop.vn/backend/pkg/etop/model"
 )
 
@@ -50,22 +50,22 @@ const (
 	StateFfmFailed    DeliveryStatus = "FAILED"    // When the supplier arrives at the recipient point, but the recipient does not show up, he will choose Fail and the according stop point status will be changed to FAILED
 )
 
-func (orderState OrderState) ToModel() shipnow.State {
+func (orderState OrderState) ToModel() shipnowtypes.State {
 	switch orderState {
 	case StateConfirmed:
-		return shipnow.StateCreated
+		return shipnowtypes.StateCreated
 	case StateAssigning:
-		return shipnow.StateAssigning
+		return shipnowtypes.StateAssigning
 	case StateAccepted:
-		return shipnow.StatePicking
+		return shipnowtypes.StatePicking
 	case StateInProcess:
-		return shipnow.StateDelivering
+		return shipnowtypes.StateDelivering
 	case StateCompleted:
-		return shipnow.StateDelivered
+		return shipnowtypes.StateDelivered
 	case StateCancelled:
-		return shipnow.StateCancelled
+		return shipnowtypes.StateCancelled
 	default:
-		return shipnow.StateDefault
+		return shipnowtypes.StateDefault
 	}
 }
 

@@ -3,6 +3,10 @@ package sqlstore
 import (
 	"context"
 
+	cm "etop.vn/backend/pkg/common"
+
+	"etop.vn/api/main/ordering"
+
 	"etop.vn/backend/pkg/common/cmsql"
 	ordermodel "etop.vn/backend/pkg/services/ordering/model"
 )
@@ -67,4 +71,16 @@ func (s *OrderStore) Get() (*ordermodel.Order, error) {
 	var order ordermodel.Order
 	err := s.db.Where(s.preds...).ShouldGet(&order)
 	return &order, err
+}
+
+func (s *OrderStore) GetOrdes(args *ordering.GetOrdersArgs) (orders []*ordermodel.Order, err error) {
+	if len(args.IDs) == 0 {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing IDs")
+	}
+	x := s.db.Table("order").In("id", args.IDs)
+	if args.ShopID != 0 {
+		x = x.Where("shop_id = ?", args.ShopID)
+	}
+	err = x.Find((*ordermodel.Orders)(&orders))
+	return
 }

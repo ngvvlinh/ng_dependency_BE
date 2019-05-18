@@ -19,9 +19,9 @@ func (c *Carrier) getClient(code byte) (*ahamoveclient.Client, error) {
 	}
 
 	if cm.IsDev() {
-		return nil, cm.Error(cm.InvalidArgument, "DEVELOPMENT: No client for Ahamove", nil)
+		return nil, cm.Error(cm.InvalidArgument, "DEVELOPMENT: No client for ahamove", nil)
 	}
-	return nil, cm.Error(cm.InvalidArgument, "Ahamove: invalid client code", nil)
+	return nil, cm.Error(cm.InvalidArgument, "ahamove: invalid client code", nil)
 }
 
 func (c *Carrier) CalcShippingFee(ctx context.Context, cmd *CalcShippingFeeCommand) error {
@@ -37,7 +37,7 @@ func (c *Carrier) CalcShippingFee(ctx context.Context, cmd *CalcShippingFeeComma
 
 	services := GetAvailableServices(cmd.Request.DeliveryPoints)
 	if len(services) == 0 {
-		return cm.Error(cm.ExternalServiceError, "Ahamove: Không có gói cước phù hợp", nil)
+		return cm.Error(cm.ExternalServiceError, "ahamove: Không có gói cước phù hợp", nil)
 	}
 	wg.Add(len(c.clients) * len(services))
 	for code, c := range c.clients {
@@ -58,7 +58,7 @@ func (c *Carrier) CalcShippingFee(ctx context.Context, cmd *CalcShippingFeeComma
 	}
 	wg.Wait()
 	if len(results) == 0 {
-		return cm.Error(cm.ExternalServiceError, "Lỗi từ Ahamove: Không thể lấy thông tin gói cước dịch vụ", nil)
+		return cm.Error(cm.ExternalServiceError, "Lỗi từ ahamove: Không thể lấy thông tin gói cước dịch vụ", nil)
 	}
 
 	generator := newServiceIDGenerator(cmd.ArbitraryID)

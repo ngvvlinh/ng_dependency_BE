@@ -874,14 +874,20 @@ type Address struct {
 	ProvinceCode string `json:"province_code"`
 	WardCode     string `json:"ward_code"`
 
-	Company   string       `json:"company"`
-	Address1  string       `json:"address1"`
-	Address2  string       `json:"address2"`
-	Type      string       `json:"type"`
-	AccountID int64        `json:"account_id"`
-	Notes     *AddressNote `json:"notes"`
-	CreatedAt time.Time    `sq:"create" json:"-"`
-	UpdatedAt time.Time    `sq:"update" json:"-"`
+	Company     string       `json:"company"`
+	Address1    string       `json:"address1"`
+	Address2    string       `json:"address2"`
+	Type        string       `json:"type"`
+	AccountID   int64        `json:"account_id"`
+	Notes       *AddressNote `json:"notes"`
+	CreatedAt   time.Time    `sq:"create" json:"-"`
+	UpdatedAt   time.Time    `sq:"update" json:"-"`
+	Coordinates *Coordinates `json:"coordinates"`
+}
+
+type Coordinates struct {
+	Latitude  float32 `json:"latitude"`
+	Longitude float32 `json:"longitude"`
 }
 
 func (m *Address) GetFullName() string {

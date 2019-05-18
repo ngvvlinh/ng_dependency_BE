@@ -282,6 +282,37 @@ func (m *OrderAddress) ToModel() (*ordermodel.OrderAddress, error) {
 	return res, nil
 }
 
+func (m *OrderAddress) Fulfilled() (*OrderAddress, error) {
+	if m == nil {
+		return nil, nil
+	}
+	locationQuery := &location.FindOrGetLocationQuery{
+		ProvinceCode: m.ProvinceCode,
+		DistrictCode: m.DistrictCode,
+		WardCode:     m.WardCode,
+		Province:     m.Province,
+		District:     m.District,
+		Ward:         m.Ward,
+	}
+	if err := locationBus.Dispatch(context.TODO(), locationQuery); err != nil {
+		return nil, err
+	}
+	loc := locationQuery.Result
+	if loc.Province == nil || loc.District == nil {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "cần cung cấp thông tin tỉnh/thành phố và quận/huyện")
+	}
+
+	m.Province = loc.Province.Name
+	m.ProvinceCode = loc.Province.Code
+	m.District = loc.District.Name
+	m.DistrictCode = loc.District.Code
+	if loc.Ward != nil {
+		m.Ward = loc.Ward.Name
+		m.WardCode = loc.Ward.Code
+	}
+	return m, nil
+}
+
 func PbOrderAddressFromAddress(m *model.Address) *OrderAddress {
 	if m == nil {
 		return nil

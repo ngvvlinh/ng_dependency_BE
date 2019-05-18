@@ -9,13 +9,12 @@ import (
 	"net/url"
 	"time"
 
+	"github.com/gorilla/schema"
 	resty "gopkg.in/resty.v1"
 
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/httpreq"
 	"etop.vn/backend/pkg/common/l"
-	"etop.vn/backend/pkg/etop/model"
-	"github.com/gorilla/schema"
 )
 
 var ll = l.New()
@@ -188,9 +187,9 @@ func (c *Client) sendGetRequest(ctx context.Context, path string, req interface{
 	// query, _ := url.QueryUnescape(queryString.Encode())
 	res, err := c.rclient.R().
 		SetQueryString(queryString.Encode()).
-		Get(model.URL(c.baseUrl, path))
+		Get(buildUrl(c.baseUrl, path))
 	if err != nil {
-		return cm.Error(cm.ExternalServiceError, "Lỗi kết nối với Ahamove", err)
+		return cm.Error(cm.ExternalServiceError, "Lỗi kết nối với ahamove", err)
 	}
 	err = handleResponse(res, resp, msg)
 	return err
@@ -200,9 +199,9 @@ func (c *Client) sendPostRequest(ctx context.Context, path string, req interface
 	res, err := c.rclient.R().
 		SetBody(req).
 		SetHeader("token", c.token).
-		Post(model.URL(c.baseUrl, path))
+		Post(buildUrl(c.baseUrl, path))
 	if err != nil {
-		return cm.Error(cm.ExternalServiceError, "Lỗi kết nối với Ahamove", err)
+		return cm.Error(cm.ExternalServiceError, "Lỗi kết nối với ahamove", err)
 	}
 	err = handleResponse(res, resp, msg)
 	return err
@@ -216,10 +215,10 @@ func handleResponse(res *resty.Response, result interface{}, msg string) error {
 	case status >= 200 && status < 300:
 		if result != nil {
 			if httpreq.IsNullJsonRaw(body) {
-				return cm.Error(cm.ExternalServiceError, "Lỗi không xác định từ Ahamove: null response. Chúng tôi đang liên hệ với Ahamove để xử lý. Xin lỗi quý khách vì sự bất tiện này. Nếu cần thêm thông tin vui lòng liên hệ hotro@etop.vn.", nil)
+				return cm.Error(cm.ExternalServiceError, "Lỗi không xác định từ ahamove: null response. Chúng tôi đang liên hệ với ahamove để xử lý. Xin lỗi quý khách vì sự bất tiện này. Nếu cần thêm thông tin vui lòng liên hệ hotro@etop.vn.", nil)
 			}
 			if err = json.Unmarshal(body, result); err != nil {
-				return cm.Errorf(cm.ExternalServiceError, err, "Lỗi không xác định từ Ahamove: %v. Chúng tôi đang liên hệ với Ahamove để xử lý. Xin lỗi quý khách vì sự bất tiện này. Nếu cần thêm thông tin vui lòng liên hệ hotro@etop.vn.", err)
+				return cm.Errorf(cm.ExternalServiceError, err, "Lỗi không xác định từ ahamove: %v. Chúng tôi đang liên hệ với ahamove để xử lý. Xin lỗi quý khách vì sự bất tiện này. Nếu cần thêm thông tin vui lòng liên hệ hotro@etop.vn.", err)
 			}
 		}
 		return nil
@@ -238,8 +237,12 @@ func handleResponse(res *resty.Response, result interface{}, msg string) error {
 			}
 		}
 
-		return cm.Errorf(cm.ExternalServiceError, nil, "Lỗi từ Ahamove. Nếu cần thêm thông tin vui lòng liên hệ hotro@etop.vn.").WithMetaM(meta)
+		return cm.Errorf(cm.ExternalServiceError, nil, "Lỗi từ ahamove. Nếu cần thêm thông tin vui lòng liên hệ hotro@etop.vn.").WithMetaM(meta)
 	default:
-		return cm.Errorf(cm.ExternalServiceError, nil, "Lỗi không xác định từ Ahamove: Invalid status (%v). Chúng tôi đang liên hệ với Ahamove để xử lý. Xin lỗi quý khách vì sự bất tiện này. Nếu cần thêm thông tin vui lòng liên hệ hotro@etop.vn.", status)
+		return cm.Errorf(cm.ExternalServiceError, nil, "Lỗi không xác định từ ahamove: Invalid status (%v). Chúng tôi đang liên hệ với ahamove để xử lý. Xin lỗi quý khách vì sự bất tiện này. Nếu cần thêm thông tin vui lòng liên hệ hotro@etop.vn.", status)
 	}
+}
+
+func buildUrl(baseUrl, path string) string {
+	return baseUrl + path
 }

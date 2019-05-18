@@ -4,15 +4,15 @@ import (
 	"context"
 
 	"etop.vn/api/main/location"
+	"etop.vn/api/main/shipnow/carrier"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/etop/logic/shipping_provider"
 	"etop.vn/backend/pkg/etop/model"
 	ahamoveclient "etop.vn/backend/pkg/integration/ahamove/client"
-	ordermodel "etop.vn/backend/pkg/services/ordering/model"
-	shipmodel "etop.vn/backend/pkg/services/shipping/model"
+	shipnow_carrier "etop.vn/backend/pkg/services/shipnow-carrier"
 )
 
-var _ shipping_provider.ShippingProvider = &Carrier{}
+var _ shipnow_carrier.ShipnowCarrier = &Carrier{}
 
 const (
 	AhamoveCodePublic = 'D'
@@ -44,12 +44,11 @@ func (c *Carrier) InitAllClients(ctx context.Context) error {
 	return nil
 }
 
-func (p *Carrier) CreateFulfillment(ctx context.Context, order *ordermodel.Order, ffm *shipmodel.Fulfillment, args shipping_provider.GetShippingServicesArgs, service *model.AvailableShippingService) (ffmToUpdate *shipmodel.Fulfillment, _err error) {
-
-	return nil, cm.ErrTODO
+func (p *Carrier) CreateExternalShipnow(ctx context.Context, cmd *carrier.CreateExternalShipnowCommand) (_err error) {
+	return cm.ErrTODO
 }
 
-func (p *Carrier) CancelFulfillment(ctx context.Context, ffm *shipmodel.Fulfillment, action model.FfmAction) error {
+func (p *Carrier) CancelExternalShipnow(ctx context.Context, ffm *carrier.CancelExternalShipnowCommand) error {
 	// code := ffm.ExternalShippingCode
 	// cmd := &CancelOrderCommand{
 	// 	ServiceID: ffm.ProviderServiceID,
@@ -60,7 +59,7 @@ func (p *Carrier) CancelFulfillment(ctx context.Context, ffm *shipmodel.Fulfillm
 	return nil
 }
 
-func (p *Carrier) GetShippingServices(ctx context.Context, args shipping_provider.GetShippingServicesArgs) ([]*model.AvailableShippingService, error) {
+func (p *Carrier) GetShippingServices(ctx context.Context, args shipnow_carrier.GetShippingServiceArgs) ([]*carrier.AvailableShippingService, error) {
 
 	// fromQuery := &location.GetLocationQuery{DistrictCode: args.FromDistrictCode}
 	// toQuery := &location.GetLocationQuery{DistrictCode: args.ToDistrictCode}

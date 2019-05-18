@@ -24,7 +24,7 @@ import "etop.vn/api/main/catalog/v1/types/types.proto";
 message ItemLine {
    optional int64 order_id = 1 [(gogoproto.nullable)=false];
 
-//   optional int64 supplier_id = 2;
+   optional int32 quantity = 2 [(gogoproto.nullable)=false];
 
    optional int64 product_id = 3 [(gogoproto.nullable)=false];
 
@@ -65,4 +65,12 @@ message Location {
    optional string district_code = 2 [(gogoproto.nullable)=false];
 
    optional string ward_code = 3 [(gogoproto.nullable)=false];
+
+   optional Coordinates coordinates = 4;
+}
+
+message Coordinates {
+   optional float latitude = 1 [(gogoproto.nullable)=false];
+
+   optional float longitude = 2 [(gogoproto.nullable)=false];
 }

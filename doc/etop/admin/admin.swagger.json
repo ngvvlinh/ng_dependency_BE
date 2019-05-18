@@ -2246,6 +2246,19 @@
         }
       }
     },
+    "orderCoordinates": {
+      "type": "object",
+      "properties": {
+        "latitude": {
+          "type": "number",
+          "format": "float"
+        },
+        "longitude": {
+          "type": "number",
+          "format": "float"
+        }
+      }
+    },
     "orderExternalShippingLog": {
       "type": "object",
       "properties": {
@@ -3111,6 +3124,9 @@
         },
         "ward_code": {
           "type": "string"
+        },
+        "coordinates": {
+          "$ref": "#/definitions/orderCoordinates"
         }
       }
     },

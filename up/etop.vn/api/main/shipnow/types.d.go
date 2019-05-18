@@ -10,9 +10,16 @@ import (
 )
 
 type GetShipnowFulfillmentQuery struct {
-	Id int64 `json:"id"`
+	Id     int64 `json:"id"`
+	ShopId int64 `json:"shop_id"`
 
 	Result *shipnowv1.GetShipnowFulfillmentQueryResult `json:"-"`
+}
+
+type GetShipnowFulfillmentsQuery struct {
+	ShopId int64 `json:"shop_id"`
+
+	Result *shipnowv1.GetShipnowFulfillmentsQueryResult `json:"-"`
 }
 
 // implement query conversion
@@ -20,25 +27,35 @@ type GetShipnowFulfillmentQuery struct {
 func (q *GetShipnowFulfillmentQuery) GetArgs() *shipnowv1.GetShipnowFulfillmentQueryArgs {
 	return (*shipnowv1.GetShipnowFulfillmentQueryArgs)(unsafe.Pointer(q))
 }
+func (q *GetShipnowFulfillmentsQuery) GetArgs() *shipnowv1.GetShipnowFulfillmentsQueryArgs {
+	return (*shipnowv1.GetShipnowFulfillmentsQueryArgs)(unsafe.Pointer(q))
+}
 
 // implement dispatching
 
-type ShipnowQueryServiceHandler struct {
-	inner ShipnowQueryService
+type QueryServiceHandler struct {
+	inner QueryService
 }
 
-func NewShipnowQueryServiceHandler(service ShipnowQueryService) ShipnowQueryServiceHandler {
-	return ShipnowQueryServiceHandler{service}
+func NewQueryServiceHandler(service QueryService) QueryServiceHandler {
+	return QueryServiceHandler{service}
 }
 
-func (h ShipnowQueryServiceHandler) RegisterHandlers(b interface {
+func (h QueryServiceHandler) RegisterHandlers(b interface {
 	AddHandler(handler interface{})
 }) {
 	b.AddHandler(h.HandleGetShipnowFulfillment)
+	b.AddHandler(h.HandleGetShipnowFulfillments)
 }
 
-func (h ShipnowQueryServiceHandler) HandleGetShipnowFulfillment(ctx context.Context, query *GetShipnowFulfillmentQuery) error {
+func (h QueryServiceHandler) HandleGetShipnowFulfillment(ctx context.Context, query *GetShipnowFulfillmentQuery) error {
 	result, err := h.inner.GetShipnowFulfillment(ctx, query.GetArgs())
+	query.Result = result
+	return err
+}
+
+func (h QueryServiceHandler) HandleGetShipnowFulfillments(ctx context.Context, query *GetShipnowFulfillmentsQuery) error {
+	result, err := h.inner.GetShipnowFulfillments(ctx, query.GetArgs())
 	query.Result = result
 	return err
 }

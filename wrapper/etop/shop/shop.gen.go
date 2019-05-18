@@ -34,6 +34,7 @@ type Shop interface {
 	shop.ProductSourceService
 	shop.OrderService
 	shop.FulfillmentService
+	shop.ShipnowService
 	shop.HistoryService
 	shop.MoneyTransactionService
 	shop.SummaryService
@@ -50,6 +51,7 @@ type ShopClient struct {
 	_ProductSourceService    shop.ProductSourceService
 	_OrderService            shop.OrderService
 	_FulfillmentService      shop.FulfillmentService
+	_ShipnowService          shop.ShipnowService
 	_HistoryService          shop.HistoryService
 	_MoneyTransactionService shop.MoneyTransactionService
 	_SummaryService          shop.SummaryService
@@ -74,6 +76,7 @@ func NewShopClient(addr string, client *http.Client) Shop {
 		_ProductSourceService:    shop.NewProductSourceServiceProtobufClient(addr, client),
 		_OrderService:            shop.NewOrderServiceProtobufClient(addr, client),
 		_FulfillmentService:      shop.NewFulfillmentServiceProtobufClient(addr, client),
+		_ShipnowService:          shop.NewShipnowServiceProtobufClient(addr, client),
 		_HistoryService:          shop.NewHistoryServiceProtobufClient(addr, client),
 		_MoneyTransactionService: shop.NewMoneyTransactionServiceProtobufClient(addr, client),
 		_SummaryService:          shop.NewSummaryServiceProtobufClient(addr, client),
@@ -145,6 +148,11 @@ func ConnectShopService(addr string, client *http.Client) error {
 	bus.AddHandler("client", func(ctx context.Context, q *GetPublicExternalShippingServicesEndpoint) error { panic("Unexpected") })
 	bus.AddHandler("client", func(ctx context.Context, q *GetPublicFulfillmentEndpoint) error { panic("Unexpected") })
 	bus.AddHandler("client", func(ctx context.Context, q *UpdateFulfillmentsShippingStateEndpoint) error { panic("Unexpected") })
+	bus.AddHandler("client", func(ctx context.Context, q *ConfirmShipnowFulfillmentEndpoint) error { panic("Unexpected") })
+	bus.AddHandler("client", func(ctx context.Context, q *CreateShipnowFulfillmentEndpoint) error { panic("Unexpected") })
+	bus.AddHandler("client", func(ctx context.Context, q *GetShipnowFulfillmentEndpoint) error { panic("Unexpected") })
+	bus.AddHandler("client", func(ctx context.Context, q *GetShipnowFulfillmentsEndpoint) error { panic("Unexpected") })
+	bus.AddHandler("client", func(ctx context.Context, q *UpdateShipnowFulfillmentEndpoint) error { panic("Unexpected") })
 	bus.AddHandler("client", func(ctx context.Context, q *GetFulfillmentHistoryEndpoint) error { panic("Unexpected") })
 	bus.AddHandler("client", func(ctx context.Context, q *GetMoneyTransactionEndpoint) error { panic("Unexpected") })
 	bus.AddHandler("client", func(ctx context.Context, q *GetMoneyTransactionsEndpoint) error { panic("Unexpected") })
@@ -1023,6 +1031,76 @@ func (c *ShopClient) UpdateFulfillmentsShippingState(ctx context.Context, in *sh
 	newNode.Error = err
 	return resp, err
 }
+func (c *ShopClient) ConfirmShipnowFulfillment(ctx context.Context, in *cm.IDRequest) (*order.ShipnowFulfillment, error) {
+	resp, err := c._ShipnowService.ConfirmShipnowFulfillment(ctx, in)
+
+	node, ok := ctx.(*bus.NodeContext)
+	if !ok {
+		return resp, err
+	}
+	newNode := node.WithMessage(map[string]interface{}{
+		"Request": in,
+		"Result":  resp,
+	})
+	newNode.Error = err
+	return resp, err
+}
+func (c *ShopClient) CreateShipnowFulfillment(ctx context.Context, in *order.CreateShipnowFulfillmentRequest) (*order.ShipnowFulfillment, error) {
+	resp, err := c._ShipnowService.CreateShipnowFulfillment(ctx, in)
+
+	node, ok := ctx.(*bus.NodeContext)
+	if !ok {
+		return resp, err
+	}
+	newNode := node.WithMessage(map[string]interface{}{
+		"Request": in,
+		"Result":  resp,
+	})
+	newNode.Error = err
+	return resp, err
+}
+func (c *ShopClient) GetShipnowFulfillment(ctx context.Context, in *cm.IDRequest) (*order.ShipnowFulfillment, error) {
+	resp, err := c._ShipnowService.GetShipnowFulfillment(ctx, in)
+
+	node, ok := ctx.(*bus.NodeContext)
+	if !ok {
+		return resp, err
+	}
+	newNode := node.WithMessage(map[string]interface{}{
+		"Request": in,
+		"Result":  resp,
+	})
+	newNode.Error = err
+	return resp, err
+}
+func (c *ShopClient) GetShipnowFulfillments(ctx context.Context, in *order.GetShipnowFulfillmentsRequest) (*order.ShipnowFulfillments, error) {
+	resp, err := c._ShipnowService.GetShipnowFulfillments(ctx, in)
+
+	node, ok := ctx.(*bus.NodeContext)
+	if !ok {
+		return resp, err
+	}
+	newNode := node.WithMessage(map[string]interface{}{
+		"Request": in,
+		"Result":  resp,
+	})
+	newNode.Error = err
+	return resp, err
+}
+func (c *ShopClient) UpdateShipnowFulfillment(ctx context.Context, in *order.UpdateShipnowFulfillmentRequest) (*order.ShipnowFulfillment, error) {
+	resp, err := c._ShipnowService.UpdateShipnowFulfillment(ctx, in)
+
+	node, ok := ctx.(*bus.NodeContext)
+	if !ok {
+		return resp, err
+	}
+	newNode := node.WithMessage(map[string]interface{}{
+		"Request": in,
+		"Result":  resp,
+	})
+	newNode.Error = err
+	return resp, err
+}
 func (c *ShopClient) GetFulfillmentHistory(ctx context.Context, in *shop.GetFulfillmentHistoryRequest) (*etop.HistoryResponse, error) {
 	resp, err := c._HistoryService.GetFulfillmentHistory(ctx, in)
 
@@ -1299,6 +1377,11 @@ func NewShopServer(mux Muxer, hooks *twirp.ServerHooks) {
 	bus.Expect(&GetPublicExternalShippingServicesEndpoint{})
 	bus.Expect(&GetPublicFulfillmentEndpoint{})
 	bus.Expect(&UpdateFulfillmentsShippingStateEndpoint{})
+	bus.Expect(&ConfirmShipnowFulfillmentEndpoint{})
+	bus.Expect(&CreateShipnowFulfillmentEndpoint{})
+	bus.Expect(&GetShipnowFulfillmentEndpoint{})
+	bus.Expect(&GetShipnowFulfillmentsEndpoint{})
+	bus.Expect(&UpdateShipnowFulfillmentEndpoint{})
 	bus.Expect(&GetFulfillmentHistoryEndpoint{})
 	bus.Expect(&GetMoneyTransactionEndpoint{})
 	bus.Expect(&GetMoneyTransactionsEndpoint{})
@@ -1321,6 +1404,7 @@ func NewShopServer(mux Muxer, hooks *twirp.ServerHooks) {
 	mux.Handle(shop.ProductSourceServicePathPrefix, shop.NewProductSourceServiceServer(ProductSourceService{}, hooks))
 	mux.Handle(shop.OrderServicePathPrefix, shop.NewOrderServiceServer(OrderService{}, hooks))
 	mux.Handle(shop.FulfillmentServicePathPrefix, shop.NewFulfillmentServiceServer(FulfillmentService{}, hooks))
+	mux.Handle(shop.ShipnowServicePathPrefix, shop.NewShipnowServiceServer(ShipnowService{}, hooks))
 	mux.Handle(shop.HistoryServicePathPrefix, shop.NewHistoryServiceServer(HistoryService{}, hooks))
 	mux.Handle(shop.MoneyTransactionServicePathPrefix, shop.NewMoneyTransactionServiceServer(MoneyTransactionService{}, hooks))
 	mux.Handle(shop.SummaryServicePathPrefix, shop.NewSummaryServiceServer(SummaryService{}, hooks))
@@ -1337,6 +1421,7 @@ type ShopImpl struct {
 	ProductSourceService
 	OrderService
 	FulfillmentService
+	ShipnowService
 	HistoryService
 	MoneyTransactionService
 	SummaryService
@@ -4117,6 +4202,223 @@ func (s FulfillmentService) UpdateFulfillmentsShippingState(ctx context.Context,
 	if !session.IsOwner && permission.MaxRoleLevel(session.Roles) < 2 {
 		return nil, common.ErrPermissionDenied
 	}
+	ctx = bus.NewRootContext(ctx)
+	err = bus.Dispatch(ctx, query)
+	resp = query.Result
+	if err == nil {
+		if resp == nil {
+			return nil, common.Error(common.Internal, "", nil).Log("nil response")
+		}
+		errs = cmWrapper.HasErrors(resp)
+	}
+	return resp, err
+}
+
+type ShipnowService struct{}
+
+type ConfirmShipnowFulfillmentEndpoint struct {
+	*cm.IDRequest
+	Result  *order.ShipnowFulfillment
+	Context ShopClaim
+}
+
+func (s ShipnowService) ConfirmShipnowFulfillment(ctx context.Context, req *cm.IDRequest) (resp *order.ShipnowFulfillment, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "shop.Shipnow/ConfirmShipnowFulfillment"
+	defer func() {
+		recovered := recover()
+		err = cmWrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+	}()
+	defer cmWrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:     ctx,
+		RequireAuth: true,
+		RequireShop: true,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &ConfirmShipnowFulfillmentEndpoint{IDRequest: req}
+	query.Context.Claim = session.Claim
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = bus.Dispatch(ctx, query)
+	resp = query.Result
+	if err == nil {
+		if resp == nil {
+			return nil, common.Error(common.Internal, "", nil).Log("nil response")
+		}
+		errs = cmWrapper.HasErrors(resp)
+	}
+	return resp, err
+}
+
+type CreateShipnowFulfillmentEndpoint struct {
+	*order.CreateShipnowFulfillmentRequest
+	Result  *order.ShipnowFulfillment
+	Context ShopClaim
+}
+
+func (s ShipnowService) CreateShipnowFulfillment(ctx context.Context, req *order.CreateShipnowFulfillmentRequest) (resp *order.ShipnowFulfillment, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "shop.Shipnow/CreateShipnowFulfillment"
+	defer func() {
+		recovered := recover()
+		err = cmWrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+	}()
+	defer cmWrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:     ctx,
+		RequireAuth: true,
+		RequireShop: true,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &CreateShipnowFulfillmentEndpoint{CreateShipnowFulfillmentRequest: req}
+	query.Context.Claim = session.Claim
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = bus.Dispatch(ctx, query)
+	resp = query.Result
+	if err == nil {
+		if resp == nil {
+			return nil, common.Error(common.Internal, "", nil).Log("nil response")
+		}
+		errs = cmWrapper.HasErrors(resp)
+	}
+	return resp, err
+}
+
+type GetShipnowFulfillmentEndpoint struct {
+	*cm.IDRequest
+	Result  *order.ShipnowFulfillment
+	Context ShopClaim
+}
+
+func (s ShipnowService) GetShipnowFulfillment(ctx context.Context, req *cm.IDRequest) (resp *order.ShipnowFulfillment, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "shop.Shipnow/GetShipnowFulfillment"
+	defer func() {
+		recovered := recover()
+		err = cmWrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+	}()
+	defer cmWrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:     ctx,
+		RequireAuth: true,
+		RequireShop: true,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &GetShipnowFulfillmentEndpoint{IDRequest: req}
+	query.Context.Claim = session.Claim
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = bus.Dispatch(ctx, query)
+	resp = query.Result
+	if err == nil {
+		if resp == nil {
+			return nil, common.Error(common.Internal, "", nil).Log("nil response")
+		}
+		errs = cmWrapper.HasErrors(resp)
+	}
+	return resp, err
+}
+
+type GetShipnowFulfillmentsEndpoint struct {
+	*order.GetShipnowFulfillmentsRequest
+	Result  *order.ShipnowFulfillments
+	Context ShopClaim
+}
+
+func (s ShipnowService) GetShipnowFulfillments(ctx context.Context, req *order.GetShipnowFulfillmentsRequest) (resp *order.ShipnowFulfillments, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "shop.Shipnow/GetShipnowFulfillments"
+	defer func() {
+		recovered := recover()
+		err = cmWrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+	}()
+	defer cmWrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:     ctx,
+		RequireAuth: true,
+		RequireShop: true,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &GetShipnowFulfillmentsEndpoint{GetShipnowFulfillmentsRequest: req}
+	query.Context.Claim = session.Claim
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = bus.Dispatch(ctx, query)
+	resp = query.Result
+	if err == nil {
+		if resp == nil {
+			return nil, common.Error(common.Internal, "", nil).Log("nil response")
+		}
+		errs = cmWrapper.HasErrors(resp)
+	}
+	return resp, err
+}
+
+type UpdateShipnowFulfillmentEndpoint struct {
+	*order.UpdateShipnowFulfillmentRequest
+	Result  *order.ShipnowFulfillment
+	Context ShopClaim
+}
+
+func (s ShipnowService) UpdateShipnowFulfillment(ctx context.Context, req *order.UpdateShipnowFulfillmentRequest) (resp *order.ShipnowFulfillment, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "shop.Shipnow/UpdateShipnowFulfillment"
+	defer func() {
+		recovered := recover()
+		err = cmWrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+	}()
+	defer cmWrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:     ctx,
+		RequireAuth: true,
+		RequireShop: true,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &UpdateShipnowFulfillmentEndpoint{UpdateShipnowFulfillmentRequest: req}
+	query.Context.Claim = session.Claim
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
 	err = bus.Dispatch(ctx, query)
 	resp = query.Result
