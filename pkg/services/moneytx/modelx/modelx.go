@@ -3,16 +3,16 @@ package modelx
 import (
 	"time"
 
-	"etop.vn/backend/pkg/services/moneytx/modely"
-
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/etop/model"
 	txmodel "etop.vn/backend/pkg/services/moneytx/model"
+	"etop.vn/backend/pkg/services/moneytx/modely"
+	shipmodel "etop.vn/backend/pkg/services/shipping/model"
 )
 
 // use for import csv file
 type CreateMoneyTransactions struct {
-	ShopIDMapFfms map[int64][]*model.Fulfillment
+	ShopIDMapFfms map[int64][]*shipmodel.Fulfillment
 	ShopIDMap     map[int64]*model.Shop
 
 	Result struct {

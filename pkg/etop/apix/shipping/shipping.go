@@ -11,14 +11,17 @@ import (
 	"etop.vn/backend/pkg/etop/logic/shipping_provider"
 	servicelocation "etop.vn/backend/pkg/services/location"
 	locationlist "etop.vn/backend/pkg/services/location/list"
+	shipsqlstore "etop.vn/backend/pkg/services/shipping/sqlstore"
 )
 
 var shippingCtrl *shipping_provider.ProviderManager
 var locationBus = servicelocation.New().MessageBus()
 var locationList = buildLocationList()
+var fulfillmentStore *shipsqlstore.FulfillmentStore
 
-func Init(_shippingCtrl *shipping_provider.ProviderManager) {
+func Init(_shippingCtrl *shipping_provider.ProviderManager, ffmStore *shipsqlstore.FulfillmentStore) {
 	shippingCtrl = _shippingCtrl
+	fulfillmentStore = ffmStore
 }
 
 // TODO: should not import location/list

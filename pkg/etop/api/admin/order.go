@@ -3,6 +3,8 @@ package admin
 import (
 	"context"
 
+	modelx2 "etop.vn/backend/pkg/services/selling/modelx"
+
 	"etop.vn/backend/pkg/services/shipping/modelx"
 
 	"etop.vn/backend/pkg/common/bus"
@@ -22,7 +24,7 @@ func init() {
 }
 
 func GetOrder(ctx context.Context, q *wrapadmin.GetOrderEndpoint) error {
-	query := &model.GetOrderQuery{
+	query := &modelx2.GetOrderQuery{
 		OrderID:            q.Id,
 		IncludeFulfillment: true,
 	}
@@ -40,7 +42,7 @@ func GetOrder(ctx context.Context, q *wrapadmin.GetOrderEndpoint) error {
 
 func GetOrders(ctx context.Context, q *wrapadmin.GetOrdersEndpoint) error {
 	paging := q.Paging.CMPaging()
-	query := &model.GetOrdersQuery{
+	query := &modelx2.GetOrdersQuery{
 		Paging:  paging,
 		Filters: pbcm.ToFilters(q.Filters),
 	}
@@ -49,20 +51,20 @@ func GetOrders(ctx context.Context, q *wrapadmin.GetOrdersEndpoint) error {
 	}
 	q.Result = &pborder.OrdersResponse{
 		Paging: pbcm.PbPageInfo(paging, query.Result.Total),
-		Orders: pborder.PbOrders(query.Result.Orders, model.TagEtop, query.Result.Shops),
+		Orders: pborder.PbOrdersWithFulfillments(query.Result.Orders, model.TagEtop, query.Result.Shops),
 	}
 	return nil
 }
 
 func GetOrdersByIDs(ctx context.Context, q *wrapadmin.GetOrdersByIDsEndpoint) error {
-	query := &model.GetOrdersQuery{
+	query := &modelx2.GetOrdersQuery{
 		IDs: q.Ids,
 	}
 	if err := bus.Dispatch(ctx, query); err != nil {
 		return err
 	}
 	q.Result = &pborder.OrdersResponse{
-		Orders: pborder.PbOrders(query.Result.Orders, model.TagEtop, query.Result.Shops),
+		Orders: pborder.PbOrdersWithFulfillments(query.Result.Orders, model.TagEtop, query.Result.Shops),
 	}
 	return nil
 }

@@ -12,6 +12,8 @@ import (
 	txmodel "etop.vn/backend/pkg/services/moneytx/model"
 	"etop.vn/backend/pkg/services/moneytx/modelx"
 	txmodely "etop.vn/backend/pkg/services/moneytx/modely"
+	shipmodel "etop.vn/backend/pkg/services/shipping/model"
+	shipmodelx "etop.vn/backend/pkg/services/shipping/modelx"
 	"etop.vn/backend/pkg/services/shipping/modely"
 	shipmodely "etop.vn/backend/pkg/services/shipping/modely"
 )
@@ -121,7 +123,7 @@ func createMoneyTransactions(ctx context.Context, x Qx, cmd *modelx.CreateMoneyT
 	return nil
 }
 
-func CalcFulfillmentsInfo(fulfillments []*model.Fulfillment) (totalCOD int, totalAmount int, totalOrders int, totalShippingFee int, ffmIDs []int64) {
+func CalcFulfillmentsInfo(fulfillments []*shipmodel.Fulfillment) (totalCOD int, totalAmount int, totalOrders int, totalShippingFee int, ffmIDs []int64) {
 	ffmIDs = make([]int64, len(fulfillments))
 	totalCOD = 0
 	totalAmount = 0
@@ -175,7 +177,7 @@ func createMoneyTransaction(ctx context.Context, x Qx, cmd *modelx.CreateMoneyTr
 	}
 
 	var fulfillments []*modely.FulfillmentExtended
-	var ffms []*model.Fulfillment
+	var ffms []*shipmodel.Fulfillment
 	if err := x.Table("fulfillment").Where("f.shop_id = ? AND f.type_from = ?",
 		cmd.Shop.ID, model.FFShop).
 		In("f.id", cmd.FulFillmentIDs).Find((*shipmodely.FulfillmentExtendeds)(&fulfillments)); err != nil {
@@ -378,10 +380,10 @@ func RemoveFfmsMoneyTransaction(ctx context.Context, cmd *modelx.RemoveFfmsMoney
 		return err
 	}
 
-	var fulfillments []*model.Fulfillment
+	var fulfillments []*shipmodel.Fulfillment
 	if err := x.Table("fulfillment").
 		Where("shop_id = ? AND money_transaction_id = ?", cmd.ShopID, cmd.MoneyTransactionID).
-		In("id", cmd.FulfillmentIDs).Find((*model.Fulfillments)(&fulfillments)); err != nil {
+		In("id", cmd.FulfillmentIDs).Find((*shipmodel.Fulfillments)(&fulfillments)); err != nil {
 		return err
 	}
 
@@ -405,8 +407,8 @@ func RemoveFfmsMoneyTransaction(ctx context.Context, cmd *modelx.RemoveFfmsMoney
 		}); err != nil {
 			return err
 		}
-		var fulfillments []*model.Fulfillment
-		if err := s.Table("fulfillment").Where("money_transaction_id = ?", cmd.MoneyTransactionID).Find((*model.Fulfillments)(&fulfillments)); err != nil {
+		var fulfillments []*shipmodel.Fulfillment
+		if err := s.Table("fulfillment").Where("money_transaction_id = ?", cmd.MoneyTransactionID).Find((*shipmodel.Fulfillments)(&fulfillments)); err != nil {
 			return err
 		}
 
@@ -462,7 +464,7 @@ func ConfirmMoneyTransaction(ctx context.Context, cmd *modelx.ConfirmMoneyTransa
 	if transaction.Status != model.S3Zero {
 		return cm.Error(cm.FailedPrecondition, "Can not confirm this money transaction", nil)
 	}
-	var ffms = make([]*model.Fulfillment, len(fulfillments))
+	var ffms = make([]*shipmodel.Fulfillment, len(fulfillments))
 	for i, ffm := range fulfillments {
 		if !cm.StringsContain(acceptStates, string(ffm.ShippingState)) {
 			return cm.Error(cm.FailedPrecondition, "Fulfillment #"+ffm.ShippingCode+" does not valid. Status must be delivered or returning or returned.", nil)
@@ -640,7 +642,7 @@ func createMoneyTransactionShippingExternalLine(ctx context.Context, x Qx, cmd *
 			Msg:  "Thiếu mã vận đơn",
 		}
 	} else {
-		var ffm = new(model.Fulfillment)
+		var ffm = new(shipmodel.Fulfillment)
 		if has, err := x.Table("fulfillment").Where("shipping_code = ?", line.ExternalCode).Get(ffm); err != nil || !has {
 			line.ImportError = &model.Error{
 				Code: "ffm_not_found",
@@ -871,8 +873,8 @@ func UpdateMoneyTransactionShippingExternal(ctx context.Context, cmd *modelx.Upd
     	* Các ffms returned còn lại để nguyên, cho vào phiên sau
 */
 
-func PreprocessMoneyTransactionExternal(ctx context.Context, externalMoneyTransactionExtended *txmodel.MoneyTransactionShippingExternalExtended) (shopFfmMap map[int64][]*model.Fulfillment, _err error) {
-	shopFfmMap = make(map[int64][]*model.Fulfillment)
+func PreprocessMoneyTransactionExternal(ctx context.Context, externalMoneyTransactionExtended *txmodel.MoneyTransactionShippingExternalExtended) (shopFfmMap map[int64][]*shipmodel.Fulfillment, _err error) {
+	shopFfmMap = make(map[int64][]*shipmodel.Fulfillment)
 	if externalMoneyTransactionExtended.Status != model.S3Zero {
 		_err = cm.Error(cm.FailedPrecondition, "Can not confirm this money transaction", nil).WithMetap("id", externalMoneyTransactionExtended.ID)
 		return shopFfmMap, _err
@@ -891,10 +893,10 @@ func PreprocessMoneyTransactionExternal(ctx context.Context, externalMoneyTransa
 		}
 		ffmCodes[i] = line.ExternalCode
 	}
-	var fulfillments []*model.Fulfillment
+	var fulfillments []*shipmodel.Fulfillment
 	if err := x.Table("fulfillment").
 		In("shipping_code", ffmCodes).
-		Find((*model.Fulfillments)(&fulfillments)); err != nil {
+		Find((*shipmodel.Fulfillments)(&fulfillments)); err != nil {
 		return shopFfmMap, err
 	}
 
@@ -913,7 +915,7 @@ func PreprocessMoneyTransactionExternal(ctx context.Context, externalMoneyTransa
 	}
 	for _, ffm := range fulfillments {
 		if shopFfmMap[ffm.ShopID] == nil {
-			shopFfmMap[ffm.ShopID] = make([]*model.Fulfillment, 0, len(fulfillments))
+			shopFfmMap[ffm.ShopID] = make([]*shipmodel.Fulfillment, 0, len(fulfillments))
 		}
 		found := false
 		for _, _ffm := range shopFfmMap[ffm.ShopID] {
@@ -947,7 +949,7 @@ func ComfirmMoneyTransactionShippingExternals(ctx context.Context, cmd *modelx.C
 
 	var externalTransactionIDs []int64
 	var shopIDs []int64
-	shopFfmMap := make(map[int64][]*model.Fulfillment)
+	shopFfmMap := make(map[int64][]*shipmodel.Fulfillment)
 	for _, externalTransaction := range externalTransactions {
 		_shopFfmMap, err := PreprocessMoneyTransactionExternal(ctx, externalTransaction)
 		if err != nil {
@@ -1007,23 +1009,23 @@ func ComfirmMoneyTransactionShippingExternals(ctx context.Context, cmd *modelx.C
 	})
 }
 
-func mergeFulfillments(ffms []*model.Fulfillment, subFfms []*model.Fulfillment) []*model.Fulfillment {
+func mergeFulfillments(ffms []*shipmodel.Fulfillment, subFfms []*shipmodel.Fulfillment) []*shipmodel.Fulfillment {
 	mergeFfms := append(ffms, subFfms...)
-	ffmsMap := make(map[int64]*model.Fulfillment)
+	ffmsMap := make(map[int64]*shipmodel.Fulfillment)
 	for _, _ffm := range mergeFfms {
 		ffmsMap[_ffm.ID] = _ffm
 	}
-	var res []*model.Fulfillment
+	var res []*shipmodel.Fulfillment
 	for _, _ffm := range ffmsMap {
 		res = append(res, _ffm)
 	}
 	return res
 }
 
-func getExtraFfms(provider model.ShippingProvider, isNoneCOD bool, isReturned bool) ([]*model.Fulfillment, error) {
+func getExtraFfms(provider model.ShippingProvider, isNoneCOD bool, isReturned bool) ([]*shipmodel.Fulfillment, error) {
 	// find all ffms has state: "returned" and cod_etop_transfered_at is NULL of this provider
 	// find all ffms has state "delivered" and total_cod_amount = 0
-	var ffms []*model.Fulfillment
+	var ffms []*shipmodel.Fulfillment
 	s := x.Table("fulfillment").
 		Where("shipping_provider = ? AND cod_etop_transfered_at is NULL AND money_transaction_id is NULL AND money_transaction_shipping_external_id is NULL", string(provider))
 
@@ -1035,15 +1037,15 @@ func getExtraFfms(provider model.ShippingProvider, isNoneCOD bool, isReturned bo
 		s = s.Where("shipping_state = ? AND total_cod_amount = 0", model.StateDelivered)
 	}
 
-	if err := s.Find((*model.Fulfillments)(&ffms)); err != nil {
-		return []*model.Fulfillment{}, err
+	if err := s.Find((*shipmodel.Fulfillments)(&ffms)); err != nil {
+		return []*shipmodel.Fulfillment{}, err
 	}
 	return ffms, nil
 }
 
-func combineWithExtraFfms() map[int64][]*model.Fulfillment {
-	var ffmAdditionals []*model.Fulfillment
-	shopFfmMap := make(map[int64][]*model.Fulfillment)
+func combineWithExtraFfms() map[int64][]*shipmodel.Fulfillment {
+	var ffmAdditionals []*shipmodel.Fulfillment
+	shopFfmMap := make(map[int64][]*shipmodel.Fulfillment)
 	// merge with GHN's ffms returned or (ffm delivered and total_cod_amount = 0)
 	GHNFfms, _ := getExtraFfms(model.TypeGHN, true, true)
 	ffmAdditionals = append(ffmAdditionals, GHNFfms...)
@@ -1061,15 +1063,15 @@ func combineWithExtraFfms() map[int64][]*model.Fulfillment {
 	return shopFfmMap
 }
 
-func GetVtpostExtraFfms() []*model.Fulfillment {
+func GetVtpostExtraFfms() []*shipmodel.Fulfillment {
 	// find all ffms has state: "returned" & "returning" and cod_etop_transfered_at is NULL of vtpost
 	// find all ffms has state "delivered" and total_cod_amount = 0
-	var ffms []*model.Fulfillment
+	var ffms []*shipmodel.Fulfillment
 	{
 		s := x.Table("fulfillment").
 			Where("shipping_provider = ? AND cod_etop_transfered_at is NULL AND money_transaction_id is NULL AND money_transaction_shipping_external_id is NULL", string(model.TypeVTPost)).
 			Where("shipping_state in (?, ?)", model.StateReturned, model.StateReturning)
-		if err := s.Find((*model.Fulfillments)(&ffms)); err == nil {
+		if err := s.Find((*shipmodel.Fulfillments)(&ffms)); err == nil {
 			UpdateVtpostShippingFeeReturned(ffms)
 		}
 	}
@@ -1166,7 +1168,7 @@ func GetMoneyTransactionShippingExternals(ctx context.Context, query *modelx.Get
 	return nil
 }
 
-func CheckFulfillmentValid(ffm *model.Fulfillment) error {
+func CheckFulfillmentValid(ffm *shipmodel.Fulfillment) error {
 	if !cm.StringsContain(acceptStates, string(ffm.ShippingState)) {
 		return cm.Error(cm.FailedPrecondition, "Fulfillment #"+ffm.ShippingCode+" does not valid. Status must be delivered or returning or returned.", nil)
 	}
@@ -1656,7 +1658,7 @@ func prepairMoneyTransactionShippingEtop(ctx context.Context, mtseID int64, mtID
 		}
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "MoneyTransactionShipping does not exist. (money_transaction_shiping_id = %v)", errID)
 	}
-	var fulfillments []*model.Fulfillment
+	var fulfillments []*shipmodel.Fulfillment
 	for _, mt := range moneyTransactions {
 		if mt.Status != model.S3Zero {
 			return nil, cm.Errorf(cm.FailedPrecondition, nil, "MoneyTransactionShipping does not valid. (money_transaction_shipping_id = %v)", mt.ID)
@@ -1741,7 +1743,7 @@ func ConfirmMoneyTransactionShippingEtop(ctx context.Context, cmd *modelx.Confir
 		if mt.Status != model.S3Zero {
 			return cm.Errorf(cm.FailedPrecondition, nil, "Can not confirm this MoneyTransactionShipping (money_transaction_shipping_id = %v).", mt.ID)
 		}
-		var _ffms = make([]*model.Fulfillment, len(mt.Fulfillments))
+		var _ffms = make([]*shipmodel.Fulfillment, len(mt.Fulfillments))
 		for j, ffm := range mt.Fulfillments {
 			if !cm.StringsContain(acceptStates, string(ffm.ShippingState)) {
 				return cm.Error(cm.FailedPrecondition, "Fulfillment #"+ffm.ShippingCode+" does not valid. Status must be delivered or returning or returned.", nil)
@@ -1811,7 +1813,7 @@ func ConfirmMoneyTransactionShippingEtop(ctx context.Context, cmd *modelx.Confir
 }
 
 // CalcVtpostShippingFeeReturned: Tính cước phí trả hàng vtpost
-func CalcVtpostShippingFeeReturned(ffm *model.Fulfillment) int {
+func CalcVtpostShippingFeeReturned(ffm *shipmodel.Fulfillment) int {
 	// Nội tỉnh miễn phí trả hàng
 	// Liên tỉnh 50% cước phí chiều đi
 	from := ffm.AddressFrom
@@ -1826,8 +1828,8 @@ func CalcVtpostShippingFeeReturned(ffm *model.Fulfillment) int {
 	return newReturnedFee
 }
 
-func UpdateVtpostShippingFeeReturned(ffms []*model.Fulfillment) error {
-	var updateFFms []*model.Fulfillment
+func UpdateVtpostShippingFeeReturned(ffms []*shipmodel.Fulfillment) error {
+	var updateFFms []*shipmodel.Fulfillment
 	for _, ffm := range ffms {
 		if ffm.ShippingState != model.StateReturned && ffm.ShippingState != model.StateReturning {
 			continue
@@ -1840,7 +1842,7 @@ func UpdateVtpostShippingFeeReturned(ffms []*model.Fulfillment) error {
 		lines := ffm.ProviderShippingFeeLines
 		ffm.ProviderShippingFeeLines = model.UpdateShippingFees(lines, newReturnedFee, model.ShippingFeeTypeReturn)
 		ffm.ShippingFeeShopLines = model.GetShippingFeeShopLines(ffm.ProviderShippingFeeLines, ffm.EtopPriceRule, &ffm.EtopAdjustedShippingFeeMain)
-		updateFFms = append(updateFFms, &model.Fulfillment{
+		updateFFms = append(updateFFms, &shipmodel.Fulfillment{
 			ID:                       ffm.ID,
 			ProviderShippingFeeLines: ffm.ProviderShippingFeeLines,
 			ShippingFeeShopLines:     ffm.ShippingFeeShopLines,
@@ -1850,7 +1852,7 @@ func UpdateVtpostShippingFeeReturned(ffms []*model.Fulfillment) error {
 	if len(updateFFms) == 0 {
 		return nil
 	}
-	cmd := &model.UpdateFulfillmentsCommand{
+	cmd := &shipmodelx.UpdateFulfillmentsCommand{
 		Fulfillments: updateFFms,
 	}
 	ctx := context.Background()

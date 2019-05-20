@@ -1,12 +1,12 @@
-package order
+package selling
 
 import (
 	"context"
 
 	"etop.vn/api/main/order"
 	"etop.vn/backend/pkg/common/cmsql"
-	"etop.vn/backend/pkg/services/order/convert"
-	"etop.vn/backend/pkg/services/order/sqlstore"
+	"etop.vn/backend/pkg/services/selling/convert"
+	"etop.vn/backend/pkg/services/selling/sqlstore"
 )
 
 var _ order.Aggregate = &Aggregate{}

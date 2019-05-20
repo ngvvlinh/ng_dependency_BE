@@ -6,20 +6,20 @@ import (
 	"strconv"
 	"strings"
 
-	ghtkclient "etop.vn/backend/pkg/integration/ghtk/client"
-
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/l"
 	"etop.vn/backend/pkg/common/mq"
 	etopmodel "etop.vn/backend/pkg/etop/model"
+	ghtkclient "etop.vn/backend/pkg/integration/ghtk/client"
 	"etop.vn/backend/pkg/notifier/model"
 	"etop.vn/backend/pkg/pgevent"
+	shipmodel "etop.vn/backend/pkg/services/shipping/model"
 )
 
 var acceptNotifyStates = []string{string(etopmodel.StateReturning), string(etopmodel.StateReturned), string(etopmodel.StateUndeliverable)}
 
 func HandleFulfillmentEvent(ctx context.Context, event *pgevent.PgEvent) (mq.Code, error) {
-	var history etopmodel.FulfillmentHistory
+	var history shipmodel.FulfillmentHistory
 	if ok, err := x.Where("rid = ?", event.RID).Get(&history); err != nil {
 		return mq.CodeStop, nil
 	} else if !ok {
@@ -27,7 +27,7 @@ func HandleFulfillmentEvent(ctx context.Context, event *pgevent.PgEvent) (mq.Cod
 		return mq.CodeIgnore, nil
 	}
 	id := *history.ID().Int64()
-	var ffm etopmodel.Fulfillment
+	var ffm shipmodel.Fulfillment
 	if ok, err := x.Where("id = ?", id).Get(&ffm); err != nil {
 		return mq.CodeStop, nil
 	} else if !ok {
@@ -43,7 +43,7 @@ func HandleFulfillmentEvent(ctx context.Context, event *pgevent.PgEvent) (mq.Cod
 	return mq.CodeOK, nil
 }
 
-func prepareNotiFfmCommands(history etopmodel.FulfillmentHistory, ffm *etopmodel.Fulfillment) []*model.CreateNotificationArgs {
+func prepareNotiFfmCommands(history shipmodel.FulfillmentHistory, ffm *shipmodel.Fulfillment) []*model.CreateNotificationArgs {
 	var res []*model.CreateNotificationArgs
 	externalShippingNote := history.ExternalShippingNote().String()
 	externalSubState := history.ExternalShippingSubState().String()
@@ -62,7 +62,7 @@ func prepareNotiFfmCommands(history etopmodel.FulfillmentHistory, ffm *etopmodel
 	return res
 }
 
-func templateFfmChangedNote(ffm *etopmodel.Fulfillment) *model.CreateNotificationArgs {
+func templateFfmChangedNote(ffm *shipmodel.Fulfillment) *model.CreateNotificationArgs {
 	title, content := "", ""
 	totalCODAmount := cm.FormatCurrency(ffm.TotalCODAmount)
 	subState := ffm.ExternalShippingSubState
@@ -90,7 +90,7 @@ func templateFfmChangedNote(ffm *etopmodel.Fulfillment) *model.CreateNotificatio
 	}
 }
 
-func templateFfmChangedFee(ffm *etopmodel.Fulfillment) *model.CreateNotificationArgs {
+func templateFfmChangedFee(ffm *shipmodel.Fulfillment) *model.CreateNotificationArgs {
 	title := fmt.Sprintf("Thay đổi phí vận chuyển - %v %v - %v", Uppercase(ffm.ShippingProvider), ffm.ShippingCode, ffm.AddressTo.FullName)
 	totalCODAmount := cm.FormatCurrency(ffm.TotalCODAmount)
 	content := fmt.Sprintf("Cước phí thay đổi thành %v. Đơn hàng thuộc người nhận %v, %v, %v. Thu hộ %vđ", ffm.ShippingFeeShop, ffm.AddressTo.FullName, ffm.AddressTo.Phone, ffm.AddressTo.Province, totalCODAmount)
@@ -104,7 +104,7 @@ func templateFfmChangedFee(ffm *etopmodel.Fulfillment) *model.CreateNotification
 	}
 }
 
-func templateFfmChangedStatus(ffm *etopmodel.Fulfillment) *model.CreateNotificationArgs {
+func templateFfmChangedStatus(ffm *shipmodel.Fulfillment) *model.CreateNotificationArgs {
 	content := ""
 	totalCODAmount := cm.FormatCurrency(ffm.TotalCODAmount)
 	switch ffm.ShippingState {

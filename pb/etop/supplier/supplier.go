@@ -427,8 +427,8 @@ func PbOrder(m *model.Order, shop *model.ShopExtended) *SupplierOrder {
 		Status:                    status5.Pb(m.Status),
 		FulfillmentShippingStatus: status5.Pb(m.FulfillmentShippingStatus),
 		CustomerPaymentStatus:     status3.Pb(m.CustomerPaymentStatus),
-		Fulfillments:              order.PbFulfillments(m.Fulfillments, 0),
-		ExternalData:              order.PbOrderExternal(m.ExternalData),
+		// Fulfillments:              order.PbFulfillments(m.Fulfillments, 0),
+		ExternalData: order.PbOrderExternal(m.ExternalData),
 	}
 }
 

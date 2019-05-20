@@ -6,7 +6,13 @@ import (
 	"fmt"
 	"strings"
 
+	"etop.vn/backend/pkg/services/selling/modelx"
+
+	pbcm "etop.vn/backend/pb/common"
+	pborder "etop.vn/backend/pb/etop/order"
+	pbsource "etop.vn/backend/pb/etop/order/source"
 	"etop.vn/backend/pb/etop/shop"
+	pbexternal "etop.vn/backend/pb/external"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/l"
@@ -15,11 +21,6 @@ import (
 	logicorder "etop.vn/backend/pkg/etop/logic/orders"
 	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/backend/pkg/etop/sqlstore"
-
-	pbcm "etop.vn/backend/pb/common"
-	pborder "etop.vn/backend/pb/etop/order"
-	pbsource "etop.vn/backend/pb/etop/order/source"
-	pbexternal "etop.vn/backend/pb/external"
 )
 
 var ll = l.New()
@@ -161,7 +162,7 @@ func CreateAndConfirmOrder(ctx context.Context, accountID int64, shopClaim *clai
 		return nil, anErr
 	}
 
-	orderQuery := &model.GetOrderQuery{
+	orderQuery := &modelx.GetOrderQuery{
 		OrderID:            orderID,
 		IncludeFulfillment: true,
 	}
@@ -205,7 +206,7 @@ func CancelOrder(ctx context.Context, shopID int64, r *pbexternal.CancelOrderReq
 	if err != nil {
 		return nil, err
 	}
-	orderQuery := &model.GetOrderQuery{
+	orderQuery := &modelx.GetOrderQuery{
 		OrderID:            orderID,
 		IncludeFulfillment: true,
 	}
@@ -218,7 +219,7 @@ func CancelOrder(ctx context.Context, shopID int64, r *pbexternal.CancelOrderReq
 }
 
 func GetOrder(ctx context.Context, shopID int64, r *pbexternal.OrderIDRequest) (*pbexternal.OrderAndFulfillments, error) {
-	orderQuery := &model.GetOrderQuery{
+	orderQuery := &modelx.GetOrderQuery{
 		ShopID:             shopID,
 		OrderID:            r.Id,
 		ExternalID:         r.ExternalId,
@@ -232,7 +233,7 @@ func GetOrder(ctx context.Context, shopID int64, r *pbexternal.OrderIDRequest) (
 }
 
 func GetFulfillment(ctx context.Context, shopID int64, r *pbexternal.FulfillmentIDRequest) (*pbexternal.Fulfillment, error) {
-	s := sqlstore.Fulfillment(ctx).ShopID(shopID)
+	s := fulfillmentStore.WithContext(ctx).ShopID(shopID)
 	if r.Id != 0 {
 		s = s.ID(r.Id)
 	} else if r.ShippingCode != "" {

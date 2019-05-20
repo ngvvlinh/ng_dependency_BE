@@ -12,6 +12,7 @@ import (
 	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/backend/pkg/etop/sqlstore"
 	vtpostclient "etop.vn/backend/pkg/integration/vtpost/client"
+	shipmodel "etop.vn/backend/pkg/services/shipping/model"
 )
 
 var _ shippingprovider.ShippingProvider = &Carrier{}
@@ -111,7 +112,7 @@ func CreateShippingSource(code byte, client vtpostclient.Client) error {
 	return nil
 }
 
-func (c *Carrier) CreateFulfillment(ctx context.Context, order *model.Order, ffm *model.Fulfillment, args shippingprovider.GetShippingServicesArgs, service *model.AvailableShippingService) (ffmToUpdate *model.Fulfillment, _err error) {
+func (c *Carrier) CreateFulfillment(ctx context.Context, order *model.Order, ffm *shipmodel.Fulfillment, args shippingprovider.GetShippingServicesArgs, service *model.AvailableShippingService) (ffmToUpdate *shipmodel.Fulfillment, _err error) {
 	if ffm.AddressReturn != nil {
 		// vtpost does not support address_return
 		return nil, cm.Error(cm.ExternalServiceError, "VTPost không hỗ trợ địa chỉ trả hàng. Vui lòng để trống thông tin này.", nil)
@@ -232,7 +233,7 @@ func (c *Carrier) CreateFulfillment(ctx context.Context, order *model.Order, ffm
 	r := vtpostCmd.Result
 
 	now := time.Now()
-	updateFfm := &model.Fulfillment{
+	updateFfm := &shipmodel.Fulfillment{
 		ID:                        ffm.ID,
 		Status:                    model.S5SuperPos, // Now processing
 		ShippingStatus:            model.S5SuperPos,
@@ -276,7 +277,7 @@ func (c *Carrier) CreateFulfillment(ctx context.Context, order *model.Order, ffm
 	return updateFfm, nil
 }
 
-func (c *Carrier) CancelFulfillment(ctx context.Context, ffm *model.Fulfillment, action model.FfmAction) error {
+func (c *Carrier) CancelFulfillment(ctx context.Context, ffm *shipmodel.Fulfillment, action model.FfmAction) error {
 	code := ffm.ExternalShippingCode
 	cmd := &CancelOrderCommand{
 		ServiceID: ffm.ProviderServiceID,
@@ -325,7 +326,7 @@ func (c *Carrier) GetAllShippingServices(ctx context.Context, args shipping_prov
 	return c.GetShippingServices(ctx, args)
 }
 
-func (c *Carrier) GetShippingService(ffm *model.Fulfillment, order *model.Order, weight int, valueInsurance int) (providerService *model.AvailableShippingService, etopService *model.AvailableShippingService, err error) {
+func (c *Carrier) GetShippingService(ffm *shipmodel.Fulfillment, order *model.Order, weight int, valueInsurance int) (providerService *model.AvailableShippingService, etopService *model.AvailableShippingService, err error) {
 	return nil, nil, cm.ErrTODO
 }
 

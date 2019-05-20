@@ -263,7 +263,7 @@ func handleImportOrder(ctx context.Context, c *httpx.Context, shop *model.Shop, 
 
 	resp := &orderP.ImportOrdersResponse{
 		Data:         imp.toSpreadsheetData(idx),
-		Orders:       orderP.PbOrders(orders, model.TagShop, nil),
+		Orders:       orderP.PbOrders(orders, model.TagShop),
 		ImportErrors: cmP.PbErrors(_errs),
 	}
 	// Remove failed order from the response
@@ -784,7 +784,6 @@ func parseRowToModel(idx imcsv.Indexer, mode Mode, shop *model.Shop, rowOrder *R
 		ReferenceURL:              "",
 		ShopShipping:              nil,
 		IsOutsideEtop:             false, // will be filled later
-		Fulfillments:              nil,
 		ExternalData:              nil,
 		GhnNoteCode:               rowOrder.GHNNoteCode,
 		TryOn:                     model.TryOnFromGHNNoteCode(rowOrder.GHNNoteCode),

@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"time"
 
+	"etop.vn/backend/pkg/services/shipping/modelx"
+
 	"etop.vn/backend/cmd/etop-server/config"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
@@ -75,7 +77,7 @@ func (wh *Webhook) Callback(c *httpx.Context) error {
 		}
 	}
 
-	query := &model.GetFulfillmentQuery{
+	query := &modelx.GetFulfillmentQuery{
 		ShippingProvider:     model.TypeVTPost,
 		ExternalShippingCode: orderData.OrderNumber,
 	}
@@ -113,7 +115,7 @@ func (wh *Webhook) Callback(c *httpx.Context) error {
 	updateFfm = shipping.CalcOtherTimeBaseOnState(updateFfm, ffm, t0)
 	note := orderData.Note
 	subState := vtpostClient.SubStateMap[statusCode]
-	updateCmd := &model.UpdateFulfillmentCommand{
+	updateCmd := &modelx.UpdateFulfillmentCommand{
 		Fulfillment:              updateFfm,
 		ExternalShippingNote:     cm.PString(note),
 		ExternalShippingSubState: cm.PString(subState),

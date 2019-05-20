@@ -7,6 +7,8 @@ import (
 	"strings"
 	"time"
 
+	"etop.vn/backend/pkg/services/selling/modelx"
+
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/l"
@@ -89,7 +91,7 @@ func CreateOrder(ctx context.Context, claim *claims.ShopClaim, authPartner *mode
 			case strings.Contains(msg, "order_shop_external_id_idx"):
 				newErr := cm.Errorf(cm.AlreadyExists, nil, "Mã đơn hàng external_id đã tồn tại. Vui lòng kiểm tra lại.").
 					WithMeta("duplicated", "external_id")
-				orderQuery := &model.GetOrderQuery{
+				orderQuery := &modelx.GetOrderQuery{
 					ShopID:     shop.ID,
 					ExternalID: r.ExternalId, // TODO: external id may be normalized, this won't work
 				}
@@ -102,7 +104,7 @@ func CreateOrder(ctx context.Context, claim *claims.ShopClaim, authPartner *mode
 			case strings.Contains(msg, "order_partner_external_id_idx"):
 				newErr := cm.Errorf(cm.AlreadyExists, nil, "Mã đơn hàng external_id đã tồn tại. Vui lòng kiểm tra lại.").
 					WithMeta("duplicated", "external_id")
-				orderQuery := &model.GetOrderQuery{
+				orderQuery := &modelx.GetOrderQuery{
 					PartnerID:  shop.ID,
 					ExternalID: r.ExternalId,
 				}
@@ -212,7 +214,7 @@ func PrepareOrderLines(ctx context.Context, shopID int64, lines []*pborder.Creat
 }
 
 func UpdateOrder(ctx context.Context, claim *claims.ShopClaim, authPartner *model.Partner, q *pborder.UpdateOrderRequest) (*pborder.Order, error) {
-	query := &model.GetOrderQuery{
+	query := &modelx.GetOrderQuery{
 		OrderID: q.Id,
 		ShopID:  claim.Shop.ID,
 	}
@@ -639,7 +641,6 @@ func PrepareOrder(m *pborder.CreateOrderRequest, lines []*model.OrderLine) (*mod
 		ExternalURL:                m.ExternalUrl,
 		ShopShipping:               nil, // will be filled later
 		IsOutsideEtop:              false,
-		Fulfillments:               nil,
 		ExternalData:               nil,
 		GhnNoteCode:                m.GhnNoteCode.ToModel(),
 		TryOn:                      tryOn,
@@ -671,7 +672,7 @@ func PrepareOrder(m *pborder.CreateOrderRequest, lines []*model.OrderLine) (*mod
 }
 
 func CancelOrder(ctx context.Context, shopID int64, authPartnerID int64, orderID int64, cancelReason string) (*pborder.OrderWithErrorsResponse, error) {
-	getOrderQuery := &model.GetOrderQuery{
+	getOrderQuery := &modelx.GetOrderQuery{
 		ShopID:             shopID,
 		PartnerID:          authPartnerID,
 		OrderID:            orderID,

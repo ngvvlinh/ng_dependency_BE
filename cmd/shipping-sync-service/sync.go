@@ -11,6 +11,8 @@ import (
 	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/backend/pkg/integration/ghn/update"
 	"etop.vn/backend/pkg/integration/ghtk"
+	shipmodel "etop.vn/backend/pkg/services/shipping/model"
+	shipmodelx "etop.vn/backend/pkg/services/shipping/modelx"
 )
 
 var (
@@ -61,7 +63,7 @@ func syncUnCompleteFfms(id interface{}, p scheduler.Planner) (_err error) {
 	}()
 
 	ctx := context.Background()
-	cmd := &model.GetUnCompleteFulfillmentsQuery{
+	cmd := &shipmodelx.GetUnCompleteFulfillmentsQuery{
 		ShippingProviders: []model.ShippingProvider{
 			model.TypeGHN, model.TypeGHTK,
 		},
@@ -69,7 +71,7 @@ func syncUnCompleteFfms(id interface{}, p scheduler.Planner) (_err error) {
 	if err := bus.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
-	var updateFfms, updateFfmsGHN, updateFfmsGHTK []*model.Fulfillment
+	var updateFfms, updateFfmsGHN, updateFfmsGHTK []*shipmodel.Fulfillment
 	ll.S.Info("uncomplete order :: ", len(cmd.Result))
 	for _, ffm := range cmd.Result {
 		switch ffm.ShippingProvider {
@@ -85,7 +87,7 @@ func syncUnCompleteFfms(id interface{}, p scheduler.Planner) (_err error) {
 	if len(updateFfmsGHN) > 0 {
 		ffms, _ := update.SyncTrackingOrders(updateFfmsGHN)
 		for _, ffm := range ffms {
-			updateFfms = append(updateFfms, &model.Fulfillment{
+			updateFfms = append(updateFfms, &shipmodel.Fulfillment{
 				ID:                   ffm.ID,
 				ExternalShippingLogs: ffm.ExternalShippingLogs,
 			})
@@ -98,7 +100,7 @@ func syncUnCompleteFfms(id interface{}, p scheduler.Planner) (_err error) {
 		}
 	}
 	if len(updateFfms) > 0 {
-		cmdUpdate := &model.UpdateFulfillmentsWithoutTransactionCommand{
+		cmdUpdate := &shipmodelx.UpdateFulfillmentsWithoutTransactionCommand{
 			Fulfillments: updateFfms,
 		}
 		if err := bus.Dispatch(ctx, cmdUpdate); err != nil {

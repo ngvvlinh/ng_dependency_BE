@@ -4,6 +4,8 @@ import (
 	"context"
 	"flag"
 
+	"etop.vn/backend/pkg/services/shipping/modelx"
+
 	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/backend/pkg/etop/sqlstore"
 	"etop.vn/backend/pkg/integration/ghtk"
@@ -46,7 +48,7 @@ func main() {
 	}
 
 	ctx := context.Background()
-	cmd := &model.GetUnCompleteFulfillmentsQuery{
+	cmd := &modelx.GetUnCompleteFulfillmentsQuery{
 		ShippingProviders: []model.ShippingProvider{
 			model.TypeGHTK,
 		},
@@ -63,7 +65,7 @@ func main() {
 	}
 	ll.Info("len :: ", l.Int("len", len(updateFfms)))
 	if len(updateFfms) > 0 {
-		cmdUpdate := &model.UpdateFulfillmentsWithoutTransactionCommand{
+		cmdUpdate := &modelx.UpdateFulfillmentsWithoutTransactionCommand{
 			Fulfillments: updateFfms,
 		}
 		if err := bus.Dispatch(ctx, cmdUpdate); err != nil {

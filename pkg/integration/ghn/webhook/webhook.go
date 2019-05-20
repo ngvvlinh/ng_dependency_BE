@@ -6,6 +6,8 @@ import (
 	"strconv"
 	"time"
 
+	"etop.vn/backend/pkg/services/shipping/modelx"
+
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/cmsql"
@@ -76,7 +78,7 @@ func (wh *Webhook) Callback(c *httpx.Context) error {
 	}
 
 	ctx := c.Req.Context()
-	query := &model.GetFulfillmentQuery{
+	query := &modelx.GetFulfillmentQuery{
 		FulfillmentID: ffmID,
 	}
 	if err := bus.Dispatch(ctx, query); err != nil {
@@ -102,7 +104,7 @@ func (wh *Webhook) Callback(c *httpx.Context) error {
 	updateFfm.LastSyncAt = t0
 	// Update other time
 	updateFfm = shipping.CalcOtherTimeBaseOnState(updateFfm, ffm, t0)
-	updateCmd := &model.UpdateFulfillmentCommand{
+	updateCmd := &modelx.UpdateFulfillmentCommand{
 		Fulfillment: updateFfm,
 	}
 	if err := bus.Dispatch(ctx, updateCmd); err != nil {

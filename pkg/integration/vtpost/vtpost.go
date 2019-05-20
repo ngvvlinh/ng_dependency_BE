@@ -14,6 +14,7 @@ import (
 	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/backend/pkg/integration/shipping"
 	vtpostclient "etop.vn/backend/pkg/integration/vtpost/client"
+	shipmodel "etop.vn/backend/pkg/services/shipping/model"
 )
 
 var ll = l.New()
@@ -206,7 +207,7 @@ func (c *Carrier) cancelOrder(ctx context.Context, cmd *CancelOrderCommand) erro
 	return err
 }
 
-func CalcUpdateFulfillment(ffm *model.Fulfillment, orderMsg vtpostclient.CallbackOrderData) *model.Fulfillment {
+func CalcUpdateFulfillment(ffm *shipmodel.Fulfillment, orderMsg vtpostclient.CallbackOrderData) *shipmodel.Fulfillment {
 	if !shipping.CanUpdateFulfillmentFromWebhook(ffm) {
 		return ffm
 	}
@@ -215,7 +216,7 @@ func CalcUpdateFulfillment(ffm *model.Fulfillment, orderMsg vtpostclient.Callbac
 	data, _ := json.Marshal(orderMsg)
 	statusCode := orderMsg.OrderStatus
 	vtpostStatus := vtpostclient.ToVTPostShippingState(statusCode)
-	update := &model.Fulfillment{
+	update := &shipmodel.Fulfillment{
 		ID:                        ffm.ID,
 		ExternalShippingUpdatedAt: now,
 		ExternalShippingData:      data,

@@ -7,6 +7,7 @@ import (
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/etop/model"
 	locationutil "etop.vn/backend/pkg/services/location/util"
+	shipmodel "etop.vn/backend/pkg/services/shipping/model"
 )
 
 func CalcPickTime(shippingProvider model.ShippingProvider, t time.Time) time.Time {
@@ -105,7 +106,7 @@ func CalcDeliveryTime(shippingProvider model.ShippingProvider, toDistrict *mdloc
 	return deliveryAt
 }
 
-func CalcOtherTimeBaseOnState(update *model.Fulfillment, oldFfm *model.Fulfillment, t time.Time) *model.Fulfillment {
+func CalcOtherTimeBaseOnState(update *shipmodel.Fulfillment, oldFfm *shipmodel.Fulfillment, t time.Time) *shipmodel.Fulfillment {
 	state := update.ShippingState
 	switch state {
 	case model.StateCreated:
@@ -154,7 +155,7 @@ func CalcOtherTimeBaseOnState(update *model.Fulfillment, oldFfm *model.Fulfillme
 	return update
 }
 
-func CanUpdateFulfillmentFromWebhook(ffm *model.Fulfillment) bool {
+func CanUpdateFulfillmentFromWebhook(ffm *shipmodel.Fulfillment) bool {
 	return ffm.Status == model.S5Zero ||
 		ffm.Status == model.S5SuperPos ||
 

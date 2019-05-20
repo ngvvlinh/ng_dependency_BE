@@ -12,6 +12,7 @@ import (
 	"etop.vn/backend/pkg/etop/model"
 	ghtkclient "etop.vn/backend/pkg/integration/ghtk/client"
 	"etop.vn/backend/pkg/integration/shipping"
+	shipmodel "etop.vn/backend/pkg/services/shipping/model"
 )
 
 var _ shipping_provider.ShippingProvider = &Carrier{}
@@ -46,7 +47,7 @@ func (c *Carrier) InitAllClients(ctx context.Context) error {
 	return nil
 }
 
-func (p *Carrier) CreateFulfillment(ctx context.Context, order *model.Order, ffm *model.Fulfillment, args shipping_provider.GetShippingServicesArgs, service *model.AvailableShippingService) (ffmToUpdate *model.Fulfillment, _err error) {
+func (p *Carrier) CreateFulfillment(ctx context.Context, order *model.Order, ffm *shipmodel.Fulfillment, args shipping_provider.GetShippingServicesArgs, service *model.AvailableShippingService) (ffmToUpdate *shipmodel.Fulfillment, _err error) {
 
 	note := shipping_provider.GetShippingProviderNote(order, ffm)
 	weight := order.TotalWeight
@@ -139,7 +140,7 @@ func (p *Carrier) CreateFulfillment(ctx context.Context, order *model.Order, ffm
 	r := ghtkCmd.Result
 
 	now := time.Now()
-	updateFfm := &model.Fulfillment{
+	updateFfm := &shipmodel.Fulfillment{
 		ID:                        ffm.ID,
 		ProviderServiceID:         service.ProviderServiceID,
 		Status:                    model.S5SuperPos, // Now processing
@@ -187,7 +188,7 @@ func (p *Carrier) CreateFulfillment(ctx context.Context, order *model.Order, ffm
 	return updateFfm, nil
 }
 
-func (p *Carrier) CancelFulfillment(ctx context.Context, ffm *model.Fulfillment, action model.FfmAction) error {
+func (p *Carrier) CancelFulfillment(ctx context.Context, ffm *shipmodel.Fulfillment, action model.FfmAction) error {
 	code := ffm.ExternalShippingCode
 	cmd := &CancelOrderCommand{
 		ServiceID: ffm.ProviderServiceID,

@@ -6,6 +6,8 @@ import (
 	"strconv"
 	"time"
 
+	"etop.vn/backend/pkg/services/shipping/modelx"
+
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/cmsql"
@@ -79,7 +81,7 @@ func (wh *Webhook) Callback(c *httpx.Context) error {
 	}
 
 	ctx := c.Req.Context()
-	query := &model.GetFulfillmentQuery{
+	query := &modelx.GetFulfillmentQuery{
 		FulfillmentID: ffmID,
 	}
 	if err := bus.Dispatch(ctx, query); err != nil {
@@ -110,7 +112,7 @@ func (wh *Webhook) Callback(c *httpx.Context) error {
 	// Thêm trạng thái đơn vào note
 	note, _ := strconv.Unquote("\"" + msg.Reason.String() + "\"")
 	subState := ghtkClient.SubStateMapping[stateID]
-	updateCmd := &model.UpdateFulfillmentCommand{
+	updateCmd := &modelx.UpdateFulfillmentCommand{
 		Fulfillment:              updateFfm,
 		ExternalShippingNote:     cm.PString(note),
 		ExternalShippingSubState: cm.PString(subState),

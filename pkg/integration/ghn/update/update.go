@@ -11,6 +11,7 @@ import (
 	"etop.vn/backend/pkg/etop/model"
 	ghnclient "etop.vn/backend/pkg/integration/ghn/client"
 	"etop.vn/backend/pkg/integration/shipping"
+	shipmodel "etop.vn/backend/pkg/services/shipping/model"
 
 	"github.com/PuerkitoBio/goquery"
 )
@@ -44,7 +45,7 @@ type ResultOrder struct {
 	} `json:"result"`
 }
 
-func CalcUpdateFulfillment(ffm *model.Fulfillment, msg *ghnclient.CallbackOrder, orderGHN *ghnclient.Order) *model.Fulfillment {
+func CalcUpdateFulfillment(ffm *shipmodel.Fulfillment, msg *ghnclient.CallbackOrder, orderGHN *ghnclient.Order) *shipmodel.Fulfillment {
 	if !shipping.CanUpdateFulfillmentFromWebhook(ffm) {
 		return ffm
 	}
@@ -56,7 +57,7 @@ func CalcUpdateFulfillment(ffm *model.Fulfillment, msg *ghnclient.CallbackOrder,
 	// GET LOGS
 	ffm, _ = SyncTrackingOrder(ffm)
 
-	update := &model.Fulfillment{
+	update := &shipmodel.Fulfillment{
 		ID:                        ffm.ID,
 		ExternalShippingUpdatedAt: time.Now(),
 		ExternalShippingState:     msg.CurrentStatus.String(),
@@ -75,7 +76,7 @@ func CalcUpdateFulfillment(ffm *model.Fulfillment, msg *ghnclient.CallbackOrder,
 		shippingFeeShop += int(line.Cost)
 	}
 	update.ShippingFeeShopLines = shippingFeeShopLines
-	update.ShippingFeeShop = model.CalcShopShippingFee(shippingFeeShop, ffm)
+	update.ShippingFeeShop = shipmodel.CalcShopShippingFee(shippingFeeShop, ffm)
 
 	// Only update status4 if the current status is not ending status
 	newStatus := state.ToStatus5(ffm.ShippingState)
@@ -93,7 +94,7 @@ func CalcUpdateFulfillment(ffm *model.Fulfillment, msg *ghnclient.CallbackOrder,
 }
 
 // TODO: refactor, make new client for this method
-func SyncTrackingOrders(ffms []*model.Fulfillment) ([]*model.Fulfillment, error) {
+func SyncTrackingOrders(ffms []*shipmodel.Fulfillment) ([]*shipmodel.Fulfillment, error) {
 	rate := time.Second / 30
 	burstLimit := 30
 	tick := time.NewTicker(rate)
@@ -110,7 +111,7 @@ func SyncTrackingOrders(ffms []*model.Fulfillment) ([]*model.Fulfillment, error)
 
 	ch := make(chan error, burstLimit)
 	ll.Info("length GHN ffms :: ", l.Int("len", len(ffms)))
-	var _ffms []*model.Fulfillment
+	var _ffms []*shipmodel.Fulfillment
 	count := 0
 	for _, ffm := range ffms {
 		<-throttle // rate limit our Service.Method RPCs
@@ -119,7 +120,7 @@ func SyncTrackingOrders(ffms []*model.Fulfillment) ([]*model.Fulfillment, error)
 			time.Sleep(1 * time.Minute)
 			count = 0
 		}
-		go func(ffm *model.Fulfillment) (_err error) {
+		go func(ffm *shipmodel.Fulfillment) (_err error) {
 			defer func() {
 				ch <- _err
 			}()
@@ -146,7 +147,7 @@ func SyncTrackingOrders(ffms []*model.Fulfillment) ([]*model.Fulfillment, error)
 	return _ffms, nil
 }
 
-func SyncTrackingOrder(ffm *model.Fulfillment) (*model.Fulfillment, error) {
+func SyncTrackingOrder(ffm *shipmodel.Fulfillment) (*shipmodel.Fulfillment, error) {
 	url := fmt.Sprintf("https://track.ghn.vn/order/tracking?code=%v", ffm.ShippingCode)
 	res, err := http.Get(url)
 	if err != nil {

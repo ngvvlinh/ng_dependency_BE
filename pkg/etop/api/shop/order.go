@@ -6,8 +6,6 @@ import (
 	"strings"
 	"time"
 
-	"etop.vn/backend/pkg/services/shipping/modelx"
-
 	pbcm "etop.vn/backend/pb/common"
 	pborder "etop.vn/backend/pb/etop/order"
 	cm "etop.vn/backend/pkg/common"
@@ -15,6 +13,8 @@ import (
 	"etop.vn/backend/pkg/etop/api"
 	logicorder "etop.vn/backend/pkg/etop/logic/orders"
 	"etop.vn/backend/pkg/etop/model"
+	ordermodelx "etop.vn/backend/pkg/services/selling/modelx"
+	shipmodelx "etop.vn/backend/pkg/services/shipping/modelx"
 	wrapshop "etop.vn/backend/wrapper/etop/shop"
 )
 
@@ -42,7 +42,7 @@ func init() {
 }
 
 func GetOrder(ctx context.Context, q *wrapshop.GetOrderEndpoint) error {
-	query := &model.GetOrderQuery{
+	query := &ordermodelx.GetOrderQuery{
 		OrderID:            q.Id,
 		ShopID:             q.Context.Shop.ID,
 		PartnerID:          q.CtxPartner.GetID(),
@@ -65,7 +65,7 @@ func GetOrders(ctx context.Context, q *wrapshop.GetOrdersEndpoint) error {
 	}
 
 	paging := q.Paging.CMPaging()
-	query := &model.GetOrdersQuery{
+	query := &ordermodelx.GetOrdersQuery{
 		ShopIDs:   shopIDs,
 		PartnerID: q.CtxPartner.GetID(),
 		Paging:    paging,
@@ -76,7 +76,7 @@ func GetOrders(ctx context.Context, q *wrapshop.GetOrdersEndpoint) error {
 	}
 	q.Result = &pborder.OrdersResponse{
 		Paging: pbcm.PbPageInfo(paging, query.Result.Total),
-		Orders: pborder.PbOrders(query.Result.Orders, model.TagShop, query.Result.Shops),
+		Orders: pborder.PbOrdersWithFulfillments(query.Result.Orders, model.TagShop, query.Result.Shops),
 	}
 	return nil
 }
@@ -87,7 +87,7 @@ func GetOrdersByIDs(ctx context.Context, q *wrapshop.GetOrdersByIDsEndpoint) err
 		return err
 	}
 
-	query := &model.GetOrdersQuery{
+	query := &ordermodelx.GetOrdersQuery{
 		ShopIDs:   shopIDs,
 		PartnerID: q.CtxPartner.GetID(),
 		IDs:       q.Ids,
@@ -96,7 +96,7 @@ func GetOrdersByIDs(ctx context.Context, q *wrapshop.GetOrdersByIDsEndpoint) err
 		return err
 	}
 	q.Result = &pborder.OrdersResponse{
-		Orders: pborder.PbOrders(query.Result.Orders, model.TagShop, query.Result.Shops),
+		Orders: pborder.PbOrdersWithFulfillments(query.Result.Orders, model.TagShop, query.Result.Shops),
 	}
 	return nil
 }
@@ -219,7 +219,7 @@ func CreateFulfillmentsForOrder(ctx context.Context, q *wrapshop.CreateFulfillme
 }
 
 func GetFulfillment(ctx context.Context, q *wrapshop.GetFulfillmentEndpoint) error {
-	query := &modelx.GetFulfillmentExtendedQuery{
+	query := &shipmodelx.GetFulfillmentExtendedQuery{
 		ShopID:        q.Context.Shop.ID,
 		PartnerID:     q.CtxPartner.GetID(),
 		FulfillmentID: q.Id,
@@ -238,7 +238,7 @@ func GetFulfillments(ctx context.Context, q *wrapshop.GetFulfillmentsEndpoint) e
 	}
 
 	paging := q.Paging.CMPaging()
-	query := &modelx.GetFulfillmentExtendedsQuery{
+	query := &shipmodelx.GetFulfillmentExtendedsQuery{
 		ShopIDs:   shopIDs,
 		PartnerID: q.CtxPartner.GetID(),
 		OrderID:   q.OrderId,
@@ -273,7 +273,7 @@ func GetPublicExternalShippingServices(ctx context.Context, q *wrapshop.GetPubli
 }
 
 func GetPublicFulfillment(ctx context.Context, q *wrapshop.GetPublicFulfillmentEndpoint) error {
-	query := &model.GetFulfillmentQuery{
+	query := &shipmodelx.GetFulfillmentQuery{
 		ShippingCode: q.Code,
 	}
 	if err := bus.Dispatch(ctx, query); err != nil {
@@ -285,7 +285,7 @@ func GetPublicFulfillment(ctx context.Context, q *wrapshop.GetPublicFulfillmentE
 
 func UpdateFulfillmentsShippingState(ctx context.Context, q *wrapshop.UpdateFulfillmentsShippingStateEndpoint) error {
 	shopID := q.Context.Shop.ID
-	cmd := &model.UpdateFulfillmentsShippingStateCommand{
+	cmd := &shipmodelx.UpdateFulfillmentsShippingStateCommand{
 		ShopID:        shopID,
 		IDs:           q.Ids,
 		ShippingState: q.ShippingState.ToModel(),

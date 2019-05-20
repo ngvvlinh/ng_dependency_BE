@@ -5,6 +5,7 @@ import (
 
 	sq "etop.vn/backend/pkg/common/sql"
 	"etop.vn/backend/pkg/etop/model"
+	shipmodel "etop.vn/backend/pkg/services/shipping/model"
 )
 
 //go:generate $ETOPDIR/backend/scripts/derive.sh
@@ -15,7 +16,7 @@ var _ = sqlgenMoneyTransactionShippingExternalLine(&MoneyTransactionShippingExte
 
 var _ = sqlgenMoneyTransactionShippingExternalLineExtended(
 	&MoneyTransactionShippingExternalLineExtended{}, &MoneyTransactionShippingExternalLine{}, sq.AS("m"),
-	sq.LEFT_JOIN, &model.Fulfillment{}, sq.AS("f"), "f.id = m.etop_fulfillment_id",
+	sq.LEFT_JOIN, &shipmodel.Fulfillment{}, sq.AS("f"), "f.id = m.etop_fulfillment_id",
 	sq.LEFT_JOIN, &model.Shop{}, sq.AS("s"), "s.id = f.shop_id",
 	sq.LEFT_JOIN, &model.Order{}, sq.AS("o"), "o.id = f.order_id",
 )
@@ -64,7 +65,7 @@ type MoneyTransactionShippingExternalLine struct {
 
 type MoneyTransactionShippingExternalLineExtended struct {
 	*MoneyTransactionShippingExternalLine
-	Fulfillment *model.Fulfillment
+	Fulfillment *shipmodel.Fulfillment
 	Shop        *model.Shop
 	Order       *model.Order
 }

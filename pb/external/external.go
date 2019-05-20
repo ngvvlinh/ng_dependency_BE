@@ -4,6 +4,7 @@ import (
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/etop-handler/webhook/sender"
 	"etop.vn/backend/pkg/etop/model"
+	shipmodel "etop.vn/backend/pkg/services/shipping/model"
 
 	pbcm "etop.vn/backend/pb/common"
 	pbetop "etop.vn/backend/pb/etop"
@@ -363,7 +364,7 @@ func (m *OrderCustomer) ToPbOrder() *pborder.OrderCustomer {
 	}
 }
 
-func PbFulfillments(items []*model.Fulfillment) []*Fulfillment {
+func PbFulfillments(items []*shipmodel.Fulfillment) []*Fulfillment {
 	res := make([]*Fulfillment, len(items))
 	for i, item := range items {
 		res[i] = PbFulfillment(item)
@@ -371,7 +372,7 @@ func PbFulfillments(items []*model.Fulfillment) []*Fulfillment {
 	return res
 }
 
-func PbFulfillment(m *model.Fulfillment) *Fulfillment {
+func PbFulfillment(m *shipmodel.Fulfillment) *Fulfillment {
 	return &Fulfillment{
 		Id:                       m.ID,
 		OrderId:                  m.OrderID,
@@ -409,7 +410,7 @@ func PbFulfillment(m *model.Fulfillment) *Fulfillment {
 	}
 }
 
-func PbFulfillmentHistories(items []model.FulfillmentHistory) []*Fulfillment {
+func PbFulfillmentHistories(items []shipmodel.FulfillmentHistory) []*Fulfillment {
 	res := make([]*Fulfillment, len(items))
 	for i, item := range items {
 		res[i] = PbFulfillmentHistory(item)
@@ -417,7 +418,7 @@ func PbFulfillmentHistories(items []model.FulfillmentHistory) []*Fulfillment {
 	return res
 }
 
-func PbFulfillmentHistory(m model.FulfillmentHistory) *Fulfillment {
+func PbFulfillmentHistory(m shipmodel.FulfillmentHistory) *Fulfillment {
 	var addressTo, addressFrom, addressReturn *model.OrderAddress
 	_ = m.AddressTo().Unmarshal(&addressTo)
 	_ = m.AddressFrom().Unmarshal(&addressFrom)
@@ -520,7 +521,7 @@ func OrderLineToCreateOrderLine(m *OrderLine) (*pborder.CreateOrderLine, error) 
 	}, nil
 }
 
-func PbOrderAndFulfillments(order *model.Order, fulfillments []*model.Fulfillment) *OrderAndFulfillments {
+func PbOrderAndFulfillments(order *model.Order, fulfillments []*shipmodel.Fulfillment) *OrderAndFulfillments {
 	return &OrderAndFulfillments{
 		Order:        PbOrder(order),
 		Fulfillments: PbFulfillments(fulfillments),

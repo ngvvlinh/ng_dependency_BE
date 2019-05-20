@@ -13,8 +13,10 @@ import (
 	"etop.vn/backend/pkg/common/l"
 	"etop.vn/backend/pkg/common/syncgroup"
 	"etop.vn/backend/pkg/etop/model"
-	"etop.vn/backend/pkg/services/shipping/modelx"
-	"etop.vn/backend/pkg/services/shipping/modely"
+	ordermodelx "etop.vn/backend/pkg/services/selling/modelx"
+	shipmodel "etop.vn/backend/pkg/services/shipping/model"
+	shipmodelx "etop.vn/backend/pkg/services/shipping/modelx"
+	shipmodely "etop.vn/backend/pkg/services/shipping/modely"
 )
 
 func init() {
@@ -167,7 +169,7 @@ var filterFulfillmentWhitelist = FilterWhitelist{
 	},
 }
 
-func GetOrder(ctx context.Context, query *model.GetOrderQuery) error {
+func GetOrder(ctx context.Context, query *ordermodelx.GetOrderQuery) error {
 	if query.OrderID == 0 && query.ExternalID == "" && query.Code == "" {
 		return cm.Error(cm.InvalidArgument, "Missing id or code", nil)
 	}
@@ -230,7 +232,7 @@ func GetOrder(ctx context.Context, query *model.GetOrderQuery) error {
 			s = s.Where("supplier_id = ?", query.SupplierID)
 		}
 
-		if err := s.Find((*model.Fulfillments)(&query.Result.Fulfillments)); err != nil {
+		if err := s.Find((*shipmodel.Fulfillments)(&query.Result.Fulfillments)); err != nil {
 			return err
 		}
 	}
@@ -247,7 +249,7 @@ func GetOrder(ctx context.Context, query *model.GetOrderQuery) error {
 	return nil
 }
 
-func GetOrders(ctx context.Context, query *model.GetOrdersQuery) error {
+func GetOrders(ctx context.Context, query *ordermodelx.GetOrdersQuery) error {
 	s := x.Table("order")
 	if query.SupplierID != 0 {
 		s = s.Where("supplier_ids @> ?", pq.Int64Array{query.SupplierID})
@@ -266,7 +268,10 @@ func GetOrders(ctx context.Context, query *model.GetOrdersQuery) error {
 	if query.Paging != nil && len(query.Paging.Sort) == 0 {
 		query.Paging.Sort = []string{"-updated_at"}
 	}
+
+	var orders model.Orders
 	{
+
 		s2 := s.Clone()
 		s2, err := LimitSort(s2, query.Paging, Ms{"id": "", "created_at": "", "updated_at": ""})
 		if err != nil {
@@ -275,8 +280,12 @@ func GetOrders(ctx context.Context, query *model.GetOrdersQuery) error {
 		if query.IDs != nil {
 			s2 = s2.In("id", query.IDs)
 		}
-		if err := s2.Find((*model.Orders)(&query.Result.Orders)); err != nil {
+		if err := s2.Find(&orders); err != nil {
 			return err
+		}
+		query.Result.Orders = make([]ordermodelx.OrderWithFulfillments, len(orders))
+		for i, order := range orders {
+			query.Result.Orders[i] = ordermodelx.OrderWithFulfillments{Order: order}
 		}
 	}
 	if len(query.Filters) == 0 {
@@ -286,7 +295,7 @@ func GetOrders(ctx context.Context, query *model.GetOrdersQuery) error {
 		}
 		query.Result.Total = int(total)
 	}
-	maskOrdersSupplier(query.AllSuppliers, query.SupplierID, query.Result.Orders)
+	// maskOrdersSupplier(query.AllSuppliers, query.SupplierID, &orders)
 
 	orderIds := make([]int64, len(query.Result.Orders))
 	shopIdsMap := make(map[int64]int64)
@@ -294,11 +303,11 @@ func GetOrders(ctx context.Context, query *model.GetOrdersQuery) error {
 		orderIds[i] = o.ID
 		shopIdsMap[o.ShopID] = o.ShopID
 	}
-	var fulfillments []*model.Fulfillment
-	if err := x.Table("fulfillment").In("order_id", orderIds).Find((*model.Fulfillments)(&fulfillments)); err != nil {
+	var fulfillments []*shipmodel.Fulfillment
+	if err := x.Table("fulfillment").In("order_id", orderIds).Find((*shipmodel.Fulfillments)(&fulfillments)); err != nil {
 		return err
 	}
-	orderFulfillments := make(map[int64][]*model.Fulfillment)
+	orderFulfillments := make(map[int64][]*shipmodel.Fulfillment)
 	for _, ffm := range fulfillments {
 		if query.SupplierID != 0 {
 			if query.SupplierID == ffm.SupplierID {
@@ -649,7 +658,7 @@ func UpdateOrder(ctx context.Context, cmd *model.UpdateOrderCommand) error {
 	if cmd.ShopID == 0 {
 		return cm.Error(cm.InvalidArgument, "Missing AccountID", nil)
 	}
-	query := &model.GetOrderQuery{
+	query := &ordermodelx.GetOrderQuery{
 		OrderID: cmd.ID,
 		ShopID:  cmd.ShopID,
 	}
@@ -682,7 +691,7 @@ func UpdateOrder(ctx context.Context, cmd *model.UpdateOrderCommand) error {
 
 	// only update order_lines if order's fulfillment does not exist
 	if len(cmd.Lines) > 0 {
-		var ffm = new(model.Fulfillment)
+		var ffm = new(shipmodel.Fulfillment)
 		has, _ := x.Table("fulfillment").Where("order_id = ? AND status != ?", cmd.ID, model.S5Zero).Get(ffm)
 		if has {
 			return cm.Error(cm.FailedPrecondition, "Đơn giao hàng đã được tạo. Không thể cập nhật đơn hàng này.", nil)
@@ -752,7 +761,7 @@ func UpdateOrder(ctx context.Context, cmd *model.UpdateOrderCommand) error {
 	})
 }
 
-func GetFulfillment(ctx context.Context, query *model.GetFulfillmentQuery) error {
+func GetFulfillment(ctx context.Context, query *shipmodelx.GetFulfillmentQuery) error {
 	if query.FulfillmentID == 0 && query.ShippingCode == "" && query.ExternalShippingCode == "" {
 		return cm.Error(cm.InvalidArgument, "You must provide fulfillment's id or code", nil)
 	}
@@ -783,12 +792,12 @@ func GetFulfillment(ctx context.Context, query *model.GetFulfillmentQuery) error
 			OrderBy("created_at DESC")
 	}
 
-	query.Result = new(model.Fulfillment)
+	query.Result = new(shipmodel.Fulfillment)
 	err := s.ShouldGet(query.Result)
 	return err
 }
 
-func GetFulfillmentExtended(ctx context.Context, cmd *modelx.GetFulfillmentExtendedQuery) error {
+func GetFulfillmentExtended(ctx context.Context, cmd *shipmodelx.GetFulfillmentExtendedQuery) error {
 	if cmd.FulfillmentID == 0 {
 		return cm.Error(cm.InvalidArgument, "Missing FulfillmentID", nil)
 	}
@@ -805,7 +814,7 @@ func GetFulfillmentExtended(ctx context.Context, cmd *modelx.GetFulfillmentExten
 	if cmd.ExternalShippingCode != "" {
 		s = s.Where("f.external_shipping_code = ?", cmd.ExternalShippingCode)
 	}
-	ffm := new(modely.FulfillmentExtended)
+	ffm := new(shipmodely.FulfillmentExtended)
 	err := s.
 		Where("f.id = ?", cmd.FulfillmentID).
 		ShouldGet(ffm)
@@ -813,7 +822,7 @@ func GetFulfillmentExtended(ctx context.Context, cmd *modelx.GetFulfillmentExten
 	return err
 }
 
-func GetFulfillments(ctx context.Context, query *model.GetFulfillmentsQuery) error {
+func GetFulfillments(ctx context.Context, query *shipmodelx.GetFulfillmentsQuery) error {
 	s := x.Table("fulfillment")
 	// ignore failed ffm (missing shipping_code)
 	s = s.Where("shipping_code is not null")
@@ -853,12 +862,12 @@ func GetFulfillments(ctx context.Context, query *model.GetFulfillmentsQuery) err
 		if err != nil {
 			return err
 		}
-		if err := s2.Find((*model.Fulfillments)(&query.Result.Fulfillments)); err != nil {
+		if err := s2.Find((*shipmodel.Fulfillments)(&query.Result.Fulfillments)); err != nil {
 			return err
 		}
 	}
 	if len(query.Filters) == 0 {
-		total, err := s.Count(&model.Fulfillment{})
+		total, err := s.Count(&shipmodel.Fulfillment{})
 		if err != nil {
 			return err
 		}
@@ -867,20 +876,20 @@ func GetFulfillments(ctx context.Context, query *model.GetFulfillmentsQuery) err
 	return nil
 }
 
-func GetUnCompleteFulfillments(ctx context.Context, query *model.GetUnCompleteFulfillmentsQuery) error {
+func GetUnCompleteFulfillments(ctx context.Context, query *shipmodelx.GetUnCompleteFulfillmentsQuery) error {
 	s := x.Table("fulfillment").Where("status = 2 AND shipping_status not in (1, -2, -1)").OrderBy("created_at DESC")
 	if len(query.ShippingProviders) != 0 {
 		s = s.In("shipping_provider ", query.ShippingProviders)
 	}
-	var fulfillments []*model.Fulfillment
-	if err := s.Find((*model.Fulfillments)(&fulfillments)); err != nil {
+	var fulfillments []*shipmodel.Fulfillment
+	if err := s.Find((*shipmodel.Fulfillments)(&fulfillments)); err != nil {
 		return err
 	}
 	query.Result = fulfillments
 	return nil
 }
 
-func GetFulfillmentsCallbackLogs(ctx context.Context, query *model.GetFulfillmentsCallbackLogs) error {
+func GetFulfillmentsCallbackLogs(ctx context.Context, query *shipmodelx.GetFulfillmentsCallbackLogs) error {
 	s := x.Table("fulfillment")
 	if query.FromID != 0 {
 		s.Where("id > ?", query.FromID)
@@ -892,13 +901,13 @@ func GetFulfillmentsCallbackLogs(ctx context.Context, query *model.GetFulfillmen
 	if err != nil {
 		return err
 	}
-	if err := s.Find((*model.Fulfillments)(&query.Result.Fulfillments)); err != nil {
+	if err := s.Find((*shipmodel.Fulfillments)(&query.Result.Fulfillments)); err != nil {
 		return err
 	}
 	return nil
 }
 
-func GetFulfillmentExtendeds(ctx context.Context, query *modelx.GetFulfillmentExtendedsQuery) error {
+func GetFulfillmentExtendeds(ctx context.Context, query *shipmodelx.GetFulfillmentExtendedsQuery) error {
 	s := x.Table("fulfillment")
 	// ignore failed ffm (missing shipping_code)
 	s = s.Where("f.shipping_code is not null")
@@ -937,7 +946,7 @@ func GetFulfillmentExtendeds(ctx context.Context, query *modelx.GetFulfillmentEx
 	if query.ResultAsRows {
 		{
 			s2 := s.Clone()
-			total, err := s2.Count((*modely.FulfillmentExtendeds)(nil))
+			total, err := s2.Count((*shipmodely.FulfillmentExtendeds)(nil))
 			if err != nil {
 				return err
 			}
@@ -950,7 +959,7 @@ func GetFulfillmentExtendeds(ctx context.Context, query *modelx.GetFulfillmentEx
 				s = s.OrderBy("f.created_at")
 			}
 
-			opts, rows, err := s.FindRows((*modely.FulfillmentExtendeds)(nil))
+			opts, rows, err := s.FindRows((*shipmodely.FulfillmentExtendeds)(nil))
 			if err != nil {
 				return err
 			}
@@ -969,12 +978,12 @@ func GetFulfillmentExtendeds(ctx context.Context, query *modelx.GetFulfillmentEx
 		if err != nil {
 			return err
 		}
-		if err := s2.Find((*modely.FulfillmentExtendeds)(&query.Result.Fulfillments)); err != nil {
+		if err := s2.Find((*shipmodely.FulfillmentExtendeds)(&query.Result.Fulfillments)); err != nil {
 			return err
 		}
 	}
 	if len(query.Filters) == 0 {
-		total, err := s.Count(&modely.FulfillmentExtended{})
+		total, err := s.Count(&shipmodely.FulfillmentExtended{})
 		if err != nil {
 			return err
 		}
@@ -983,7 +992,7 @@ func GetFulfillmentExtendeds(ctx context.Context, query *modelx.GetFulfillmentEx
 	return nil
 }
 
-func CreateFulfillments(ctx context.Context, cmd *model.CreateFulfillmentsCommand) error {
+func CreateFulfillments(ctx context.Context, cmd *shipmodelx.CreateFulfillmentsCommand) error {
 	for _, ffm := range cmd.Fulfillments {
 		if ffm.ID == 0 {
 			return cm.Error(cm.InvalidArgument, "Missing FulfillmentID", nil)
@@ -1003,7 +1012,7 @@ func CreateFulfillments(ctx context.Context, cmd *model.CreateFulfillmentsComman
 	})
 }
 
-func UpdateFulfillment(ctx context.Context, cmd *model.UpdateFulfillmentCommand) error {
+func UpdateFulfillment(ctx context.Context, cmd *shipmodelx.UpdateFulfillmentCommand) error {
 	if cmd.Fulfillment.ID == 0 {
 		return cm.Error(cm.InvalidArgument, "Missing ID", nil)
 	}
@@ -1033,7 +1042,7 @@ func UpdateFulfillment(ctx context.Context, cmd *model.UpdateFulfillmentCommand)
 	return nil
 }
 
-func UpdateFulfillments(ctx context.Context, cmd *model.UpdateFulfillmentsCommand) error {
+func UpdateFulfillments(ctx context.Context, cmd *shipmodelx.UpdateFulfillmentsCommand) error {
 	for _, ffm := range cmd.Fulfillments {
 		if ffm.ID == 0 {
 			return cm.Error(cm.InvalidArgument, "Missing ID", nil)
@@ -1056,14 +1065,14 @@ func UpdateFulfillments(ctx context.Context, cmd *model.UpdateFulfillmentsComman
 	})
 }
 
-func UpdateFulfillmentsWithoutTransaction(ctx context.Context, cmd *model.UpdateFulfillmentsWithoutTransactionCommand) error {
+func UpdateFulfillmentsWithoutTransaction(ctx context.Context, cmd *shipmodelx.UpdateFulfillmentsWithoutTransactionCommand) error {
 	maxGoroutines := 8
 	chUpdate := make(chan error, maxGoroutines)
 	guard := make(chan int, maxGoroutines)
 
 	for i, ffm := range cmd.Fulfillments {
 		guard <- i
-		go func(ffm *model.Fulfillment) (_err error) {
+		go func(ffm *shipmodel.Fulfillment) (_err error) {
 			defer func() {
 				<-guard
 				chUpdate <- _err
@@ -1099,7 +1108,7 @@ func UpdateFulfillmentsWithoutTransaction(ctx context.Context, cmd *model.Update
 	return nil
 }
 
-func UpdateFulfillmentsStatus(ctx context.Context, cmd *model.UpdateFulfillmentsStatusCommand) error {
+func UpdateFulfillmentsStatus(ctx context.Context, cmd *shipmodelx.UpdateFulfillmentsStatusCommand) error {
 	if len(cmd.FulfillmentIDs) == 0 || cmd.FulfillmentIDs[0] == 0 {
 		return cm.Error(cm.InvalidArgument, "Missing ID", nil)
 	}
@@ -1125,7 +1134,7 @@ func UpdateFulfillmentsStatus(ctx context.Context, cmd *model.UpdateFulfillments
 		ShouldUpdateMap(m)
 }
 
-func SyncUpdateFulfillments(ctx context.Context, cmd *model.SyncUpdateFulfillmentsCommand) error {
+func SyncUpdateFulfillments(ctx context.Context, cmd *shipmodelx.SyncUpdateFulfillmentsCommand) error {
 	if cmd.ShippingSourceID == 0 {
 		return cm.Error(cm.InvalidArgument, "Missing ShippingSourceID", nil)
 	}
@@ -1137,7 +1146,7 @@ func SyncUpdateFulfillments(ctx context.Context, cmd *model.SyncUpdateFulfillmen
 	guard := make(chan int, maxGoroutines)
 	for i, ffm := range cmd.Fulfillments {
 		guard <- i
-		go func(ffm *model.Fulfillment) (_err error) {
+		go func(ffm *shipmodel.Fulfillment) (_err error) {
 			defer func() {
 				<-guard
 				chUpdate <- _err
@@ -1182,7 +1191,7 @@ func SyncUpdateFulfillments(ctx context.Context, cmd *model.SyncUpdateFulfillmen
 	return err
 }
 
-func UpdateFulfillmentsShippingState(ctx context.Context, cmd *model.UpdateFulfillmentsShippingStateCommand) error {
+func UpdateFulfillmentsShippingState(ctx context.Context, cmd *shipmodelx.UpdateFulfillmentsShippingStateCommand) error {
 	if cmd.ShopID == 0 {
 		return cm.Error(cm.InvalidArgument, "Missing AccountID", nil)
 	}
@@ -1190,16 +1199,16 @@ func UpdateFulfillmentsShippingState(ctx context.Context, cmd *model.UpdateFulfi
 		return cm.Error(cm.InvalidArgument, "Missing Fulfillment IDs", nil)
 	}
 
-	var ffms []*model.Fulfillment
+	var ffms []*shipmodel.Fulfillment
 	s := x.Table("fulfillment").Where("shop_id = ?", cmd.ShopID)
 	if cmd.PartnerID != 0 {
 		s = s.Where("partner_id = ?", cmd.PartnerID)
 	}
 	if err := s.In("id", cmd.IDs).
-		Find((*model.Fulfillments)(&ffms)); err != nil {
+		Find((*shipmodel.Fulfillments)(&ffms)); err != nil {
 		return err
 	}
-	ffmsMap := make(map[int64]*model.Fulfillment)
+	ffmsMap := make(map[int64]*shipmodel.Fulfillment)
 	for _, ffm := range ffms {
 		ffmsMap[ffm.ID] = ffm
 	}
@@ -1299,7 +1308,7 @@ func canUpdateOrder(order *model.Order) (bool, error) {
 	return true, nil
 }
 
-func canUpdateFulfillment(ffm *model.Fulfillment) (bool, error) {
+func canUpdateFulfillment(ffm *shipmodel.Fulfillment) (bool, error) {
 	if ffm.Status == model.S5Positive {
 		return false, cm.Errorf(cm.FailedPrecondition, nil, "Đơn vận chuyển đã hoàn thành")
 	}
@@ -1315,14 +1324,14 @@ func canUpdateFulfillment(ffm *model.Fulfillment) (bool, error) {
 	return true, nil
 }
 
-func AdminUpdateFulfillment(ctx context.Context, cmd *model.AdminUpdateFulfillmentCommand) error {
+func AdminUpdateFulfillment(ctx context.Context, cmd *shipmodelx.AdminUpdateFulfillmentCommand) error {
 	if cmd.FulfillmentID == 0 {
 		return cm.Error(cm.InvalidArgument, "Thiếu ID đơn vận chuyển", nil)
 	}
 	if cmd.AdminNote == "" {
 		return cm.Error(cm.InvalidArgument, "Ghi chú chỉnh sửa không được để trống", nil)
 	}
-	query := &modelx.GetFulfillmentExtendedQuery{
+	query := &shipmodelx.GetFulfillmentExtendedQuery{
 		FulfillmentID: cmd.FulfillmentID,
 	}
 	if err := bus.Dispatch(ctx, query); err != nil {
@@ -1335,7 +1344,7 @@ func AdminUpdateFulfillment(ctx context.Context, cmd *model.AdminUpdateFulfillme
 	if ok, err := canUpdateFulfillment(ffm); err != nil || !ok {
 		return err
 	}
-	updateFfm := &model.Fulfillment{
+	updateFfm := &shipmodel.Fulfillment{
 		ID:        ffm.ID,
 		AdminNote: cmd.AdminNote,
 	}

@@ -12,6 +12,7 @@ import (
 	"etop.vn/backend/pkg/etop/model"
 	ghnclient "etop.vn/backend/pkg/integration/ghn/client"
 	"etop.vn/backend/pkg/integration/shipping"
+	shipmodel "etop.vn/backend/pkg/services/shipping/model"
 )
 
 var _ shipping_provider.ShippingProvider = &Carrier{}
@@ -53,10 +54,10 @@ func (c *Carrier) InitAllClients(ctx context.Context) error {
 func (p *Carrier) CreateFulfillment(
 	ctx context.Context,
 	order *model.Order,
-	ffm *model.Fulfillment,
+	ffm *shipmodel.Fulfillment,
 	args shipping_provider.GetShippingServicesArgs,
 	service *model.AvailableShippingService,
-) (ffmToUpdate *model.Fulfillment, _err error) {
+) (ffmToUpdate *shipmodel.Fulfillment, _err error) {
 
 	note := shipping_provider.GetShippingProviderNote(order, ffm)
 	noteCode := order.GhnNoteCode
@@ -119,7 +120,7 @@ func (p *Carrier) CreateFulfillment(
 
 	now := time.Now()
 	expectedDeliveryAt := shipping.CalcDeliveryTime(model.TypeGHN, toDistrict, r.ExpectedDeliveryTime.ToTime())
-	updateFfm := &model.Fulfillment{
+	updateFfm := &shipmodel.Fulfillment{
 		ID:     ffm.ID,
 		Status: model.S5SuperPos, // Now processing
 
@@ -155,7 +156,7 @@ func (p *Carrier) CreateFulfillment(
 	return updateFfm, nil
 }
 
-func (p *Carrier) CancelFulfillment(ctx context.Context, ffm *model.Fulfillment, action model.FfmAction) error {
+func (p *Carrier) CancelFulfillment(ctx context.Context, ffm *shipmodel.Fulfillment, action model.FfmAction) error {
 	code := ffm.ExternalShippingCode
 	var ghnErr error
 	providerServiceID := ffm.ProviderServiceID
@@ -216,11 +217,11 @@ func (c *Carrier) GetAllShippingServices(ctx context.Context, args shipping_prov
 	return c.GetShippingServices(ctx, args)
 }
 
-func (p *Carrier) GetShippingService(ffm *model.Fulfillment, order *model.Order, weight int, valueInsurance int) (providerService *model.AvailableShippingService, etopService *model.AvailableShippingService, err error) {
+func (p *Carrier) GetShippingService(ffm *shipmodel.Fulfillment, order *model.Order, weight int, valueInsurance int) (providerService *model.AvailableShippingService, etopService *model.AvailableShippingService, err error) {
 	return nil, nil, cm.ErrTODO
 }
 
-func calcGHNService(order *model.Order, ffm *model.Fulfillment, cmd *RequestFindAvailableServicesCommand) (serviceID string, service *model.AvailableShippingService, err error) {
+func calcGHNService(order *model.Order, ffm *shipmodel.Fulfillment, cmd *RequestFindAvailableServicesCommand) (serviceID string, service *model.AvailableShippingService, err error) {
 
 	// Always choose the fastest possible service
 	var minTime time.Time

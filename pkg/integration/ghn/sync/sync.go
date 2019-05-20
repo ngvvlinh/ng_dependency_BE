@@ -16,6 +16,8 @@ import (
 	"etop.vn/backend/pkg/integration/ghn"
 	ghnclient "etop.vn/backend/pkg/integration/ghn/client"
 	"etop.vn/backend/pkg/integration/ghn/update"
+	shipmodel "etop.vn/backend/pkg/services/shipping/model"
+	shippingmodelx "etop.vn/backend/pkg/services/shipping/modelx"
 )
 
 var ll = l.New()
@@ -144,7 +146,7 @@ func (s *Synchronizer) syncCallbackLogs(id interface{}, p scheduler.Planner) (_e
 	// externalCode = ffm ID (in Etop)
 	ffmIDs := make([]int64, 0, len(ghnOrderLogs))
 	ffmIDMap := make(map[int64]int64)
-	ffmsMap := make(map[int64]*model.Fulfillment)
+	ffmsMap := make(map[int64]*shipmodel.Fulfillment)
 	for _, log := range ghnOrderLogs {
 		if log.OrderInfo.ExternalCode != "" {
 			externalCode, err := strconv.ParseInt(log.OrderInfo.ExternalCode.String(), 10, 64)
@@ -158,7 +160,7 @@ func (s *Synchronizer) syncCallbackLogs(id interface{}, p scheduler.Planner) (_e
 	}
 
 	ll.Info("Callback Logs ", l.Int("len ghnOrderLogs", len(ghnOrderLogs)))
-	ffmsQuery := &model.GetFulfillmentsQuery{
+	ffmsQuery := &shippingmodelx.GetFulfillmentsQuery{
 		IDs: ffmIDs,
 	}
 	if err := bus.Dispatch(ctx, ffmsQuery); err != nil {
@@ -168,7 +170,7 @@ func (s *Synchronizer) syncCallbackLogs(id interface{}, p scheduler.Planner) (_e
 		ffmsMap[ffm.ID] = ffm
 	}
 
-	updateFfmMap := make(map[int64]*model.Fulfillment)
+	updateFfmMap := make(map[int64]*shipmodel.Fulfillment)
 	for _, oLog := range ghnOrderLogs {
 		externalCode, err := strconv.ParseInt(oLog.OrderInfo.ExternalCode.String(), 10, 64)
 		if err != nil {
@@ -191,12 +193,12 @@ func (s *Synchronizer) syncCallbackLogs(id interface{}, p scheduler.Planner) (_e
 			updateFfmMap[ffm.ID] = ffm
 		}
 	}
-	updateFfms := make([]*model.Fulfillment, 0, len(updateFfmMap))
+	updateFfms := make([]*shipmodel.Fulfillment, 0, len(updateFfmMap))
 	for _, ffm := range updateFfmMap {
 		updateFfms = append(updateFfms, ffm)
 	}
 	ll.Info("Callback Logs ", l.Int("len updateFfms", len(updateFfms)))
-	cmd := &model.SyncUpdateFulfillmentsCommand{
+	cmd := &shippingmodelx.SyncUpdateFulfillmentsCommand{
 		ShippingSourceID: shippingSourceID,
 		LastSyncAt:       ghnOrderLogs[len(ghnOrderLogs)-1].UpdateTime.ToTime(),
 		Fulfillments:     updateFfms,

@@ -3,6 +3,10 @@ package supplier
 import (
 	"context"
 
+	modelx2 "etop.vn/backend/pkg/services/selling/modelx"
+
+	"etop.vn/backend/pkg/services/shipping/modelx"
+
 	cmP "etop.vn/backend/pb/common"
 	orderP "etop.vn/backend/pb/etop/order"
 	supplierP "etop.vn/backend/pb/etop/supplier"
@@ -22,7 +26,7 @@ func init() {
 }
 
 func GetOrder(ctx context.Context, q *supplierW.GetOrderEndpoint) error {
-	query := &model.GetOrderQuery{
+	query := &modelx2.GetOrderQuery{
 		OrderID:    q.Id,
 		SupplierID: q.Context.Supplier.ID,
 	}
@@ -44,7 +48,7 @@ func GetOrder(ctx context.Context, q *supplierW.GetOrderEndpoint) error {
 }
 
 func GetOrdersByIDs(ctx context.Context, q *supplierW.GetOrdersByIDsEndpoint) error {
-	query := &model.GetOrdersQuery{
+	query := &modelx2.GetOrdersQuery{
 		SupplierID: q.Context.Supplier.ID,
 		IDs:        q.Ids,
 	}
@@ -52,14 +56,14 @@ func GetOrdersByIDs(ctx context.Context, q *supplierW.GetOrdersByIDsEndpoint) er
 		return err
 	}
 	q.Result = &supplierP.OrdersResponse{
-		Orders: supplierP.PbOrders(query.Result.Orders),
+		// Orders: supplierP.PbOrders(query.Result.Orders),
 	}
 	return nil
 }
 
 func GetOrders(ctx context.Context, q *supplierW.GetOrdersEndpoint) error {
 	paging := q.Paging.CMPaging()
-	query := &model.GetOrdersQuery{
+	query := &modelx2.GetOrdersQuery{
 		SupplierID: q.Context.Supplier.ID,
 		Paging:     paging,
 		Filters:    cmP.ToFilters(q.Filters),
@@ -69,7 +73,7 @@ func GetOrders(ctx context.Context, q *supplierW.GetOrdersEndpoint) error {
 	}
 	q.Result = &supplierP.OrdersResponse{
 		Paging: cmP.PbPageInfo(paging, query.Result.Total),
-		Orders: supplierP.PbOrders(query.Result.Orders),
+		// Orders: supplierP.PbOrders(query.Result.Orders),
 	}
 	return nil
 }
@@ -104,7 +108,7 @@ func UpdateOrdersStatus(ctx context.Context, q *supplierW.UpdateOrdersStatusEndp
 }
 
 func GetFulfillment(ctx context.Context, q *supplierW.GetFulfillmentEndpoint) error {
-	query := &model.GetFulfillmentQuery{
+	query := &modelx.GetFulfillmentQuery{
 		SupplierID:    q.Context.Supplier.ID,
 		FulfillmentID: q.Id,
 	}
@@ -117,7 +121,7 @@ func GetFulfillment(ctx context.Context, q *supplierW.GetFulfillmentEndpoint) er
 
 func GetFulfillments(ctx context.Context, q *supplierW.GetFulfillmentsEndpoint) error {
 	paging := q.Paging.CMPaging()
-	query := &model.GetFulfillmentsQuery{
+	query := &modelx.GetFulfillmentsQuery{
 		SupplierID: q.Context.Supplier.ID,
 		OrderID:    q.OrderId,
 		Status:     q.Status.ToModel(),

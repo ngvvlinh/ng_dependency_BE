@@ -7,7 +7,6 @@ import (
 	"etop.vn/backend/pkg/etop/model"
 )
 
-//go:generate bash -c "rm derived.gen.go || true"
 //go:generate ../../../scripts/derive.sh
 
 var _ = sqlgenNotification(&Notification{})

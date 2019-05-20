@@ -4,11 +4,12 @@ import (
 	"context"
 
 	"etop.vn/backend/pkg/etop/model"
+	shipmodel "etop.vn/backend/pkg/services/shipping/model"
 )
 
 type ShippingProvider interface {
-	CreateFulfillment(context.Context, *model.Order, *model.Fulfillment, GetShippingServicesArgs, *model.AvailableShippingService) (ffmToUpdate *model.Fulfillment, _ error)
-	CancelFulfillment(context.Context, *model.Fulfillment, model.FfmAction) error
+	CreateFulfillment(context.Context, *model.Order, *shipmodel.Fulfillment, GetShippingServicesArgs, *model.AvailableShippingService) (ffmToUpdate *shipmodel.Fulfillment, _ error)
+	CancelFulfillment(context.Context, *shipmodel.Fulfillment, model.FfmAction) error
 	GetShippingServices(ctx context.Context, args GetShippingServicesArgs) ([]*model.AvailableShippingService, error)
 	// combine with ETOP services
 	GetAllShippingServices(ctx context.Context, args GetShippingServicesArgs) ([]*model.AvailableShippingService, error)

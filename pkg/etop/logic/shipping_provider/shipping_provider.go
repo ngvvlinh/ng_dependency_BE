@@ -11,6 +11,8 @@ import (
 	"etop.vn/backend/pkg/common/syncgroup"
 	"etop.vn/backend/pkg/etop/logic/etop_shipping_price"
 	"etop.vn/backend/pkg/etop/model"
+	shipmodel "etop.vn/backend/pkg/services/shipping/model"
+	shipmodelx "etop.vn/backend/pkg/services/shipping/modelx"
 )
 
 const MinShopBalance = -200000
@@ -30,11 +32,11 @@ func NewCtrl(locationBus location.Bus, ghnCarrier, ghtkCarrier, vtpostCarrier Sh
 	}
 }
 
-func (ctrl *ProviderManager) CreateExternalShipping(ctx context.Context, order *model.Order, ffms []*model.Fulfillment) error {
+func (ctrl *ProviderManager) CreateExternalShipping(ctx context.Context, order *model.Order, ffms []*shipmodel.Fulfillment) error {
 	return ctrl.createFulfillments(ctx, order, ffms)
 }
 
-func (ctrl *ProviderManager) createFulfillments(ctx context.Context, order *model.Order, ffms []*model.Fulfillment) error {
+func (ctrl *ProviderManager) createFulfillments(ctx context.Context, order *model.Order, ffms []*shipmodel.Fulfillment) error {
 	// check balance of shop
 	// if balance < MinShopBalance => can not create order
 	{
@@ -76,7 +78,7 @@ func (ctrl *ProviderManager) GetShippingProviderDriver(provider model.ShippingPr
 	}
 }
 
-func (ctrl *ProviderManager) createSingleFulfillment(ctx context.Context, order *model.Order, ffm *model.Fulfillment) (_err error) {
+func (ctrl *ProviderManager) createSingleFulfillment(ctx context.Context, order *model.Order, ffm *shipmodel.Fulfillment) (_err error) {
 	// TODO: handle case when ffm.shipping_provider is different with order.shipping_provider
 	provider := order.ShopShipping.ShippingProvider
 	shippingProvider := ctrl.GetShippingProviderDriver(provider)
@@ -86,7 +88,7 @@ func (ctrl *ProviderManager) createSingleFulfillment(ctx context.Context, order 
 
 	{
 		// Update status to pending
-		updateFfm := &model.Fulfillment{
+		updateFfm := &shipmodel.Fulfillment{
 			ID:         ffm.ID,
 			SyncStatus: model.S4SuperPos,
 			SyncStates: &model.FulfillmentSyncStates{
@@ -94,7 +96,7 @@ func (ctrl *ProviderManager) createSingleFulfillment(ctx context.Context, order 
 				NextShippingState: model.StateCreated,
 			},
 		}
-		cmd := &model.UpdateFulfillmentCommand{Fulfillment: updateFfm}
+		cmd := &shipmodelx.UpdateFulfillmentCommand{Fulfillment: updateFfm}
 		if err := bus.Dispatch(ctx, cmd); err != nil {
 			return err
 		}
@@ -105,7 +107,7 @@ func (ctrl *ProviderManager) createSingleFulfillment(ctx context.Context, order 
 		if _err == nil {
 			return
 		}
-		updateFfm2 := &model.Fulfillment{
+		updateFfm2 := &shipmodel.Fulfillment{
 			ID:         ffm.ID,
 			SyncStatus: model.S4Negative,
 			SyncStates: &model.FulfillmentSyncStates{
@@ -115,7 +117,7 @@ func (ctrl *ProviderManager) createSingleFulfillment(ctx context.Context, order 
 				NextShippingState: model.StateCreated,
 			},
 		}
-		cmd := &model.UpdateFulfillmentCommand{Fulfillment: updateFfm2}
+		cmd := &shipmodelx.UpdateFulfillmentCommand{Fulfillment: updateFfm2}
 
 		// Keep the original error
 		_ = bus.Dispatch(ctx, cmd)
@@ -200,7 +202,7 @@ func (ctrl *ProviderManager) createSingleFulfillment(ctx context.Context, order 
 		ffmToUpdate.ShippingFeeShopLines = model.GetShippingFeeShopLines(ffmToUpdate.ProviderShippingFeeLines, ffmToUpdate.EtopPriceRule, &ffmToUpdate.EtopAdjustedShippingFeeMain)
 	}
 
-	updateCmd := &model.UpdateFulfillmentCommand{
+	updateCmd := &shipmodelx.UpdateFulfillmentCommand{
 		Fulfillment: ffmToUpdate,
 	}
 	if err := bus.Dispatch(ctx, updateCmd); err != nil {
@@ -209,7 +211,7 @@ func (ctrl *ProviderManager) createSingleFulfillment(ctx context.Context, order 
 	return nil
 }
 
-func GetShippingProviderNote(order *model.Order, ffm *model.Fulfillment) string {
+func GetShippingProviderNote(order *model.Order, ffm *shipmodel.Fulfillment) string {
 	noteB := strings.Builder{}
 	if note := ffm.AddressFrom.Notes.GetFullNote(); note != "" {
 		noteB.WriteString("Lấy hàng: ")

@@ -16,6 +16,8 @@ import (
 	"etop.vn/backend/pkg/integration/ghtk"
 	txmodel "etop.vn/backend/pkg/services/moneytx/model"
 	txmodelx "etop.vn/backend/pkg/services/moneytx/modelx"
+	shipmodel "etop.vn/backend/pkg/services/shipping/model"
+	shipmodelx "etop.vn/backend/pkg/services/shipping/modelx"
 
 	"github.com/360EntSecGroup-Skylar/excelize"
 )
@@ -297,7 +299,7 @@ func checkHeaderIndex(headerIndexMap map[string]int) error {
 	return nil
 }
 
-func UpdateShippingFeeFulfillmentsFromImportFile(ctx context.Context, lines []*GHTKMoneyTransactionShippingExternalLine, shippingProvider model.ShippingProvider) ([]*model.Fulfillment, error) {
+func UpdateShippingFeeFulfillmentsFromImportFile(ctx context.Context, lines []*GHTKMoneyTransactionShippingExternalLine, shippingProvider model.ShippingProvider) ([]*shipmodel.Fulfillment, error) {
 	if shippingProvider != model.TypeGHTK {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Đơn vị vận chuyển phải là GHTK.").WithMeta("shipping_provider", string(shippingProvider))
 	}
@@ -305,14 +307,14 @@ func UpdateShippingFeeFulfillmentsFromImportFile(ctx context.Context, lines []*G
 	for i, line := range lines {
 		ffmShippingCodes[i] = line.ExternalCode
 	}
-	cmd := &model.GetFulfillmentsQuery{
+	cmd := &shipmodelx.GetFulfillmentsQuery{
 		ShippingCodes: ffmShippingCodes,
 	}
 	if err := bus.Dispatch(ctx, cmd); err != nil {
 		return nil, err
 	}
-	updatesMap := make(map[string]*model.Fulfillment, len(cmd.Result.Fulfillments))
-	ffmsByShippingCode := make(map[string]*model.Fulfillment, len(cmd.Result.Fulfillments))
+	updatesMap := make(map[string]*shipmodel.Fulfillment, len(cmd.Result.Fulfillments))
+	ffmsByShippingCode := make(map[string]*shipmodel.Fulfillment, len(cmd.Result.Fulfillments))
 	for _, ffm := range cmd.Result.Fulfillments {
 		// ignore ffms that finished
 		if (ffm.Status != model.S5Zero && ffm.Status != model.S5SuperPos) ||
@@ -329,7 +331,7 @@ func UpdateShippingFeeFulfillmentsFromImportFile(ctx context.Context, lines []*G
 				break
 			}
 		}
-		updatesMap[ffm.ShippingCode] = &model.Fulfillment{
+		updatesMap[ffm.ShippingCode] = &shipmodel.Fulfillment{
 			ID:                       ffm.ID,
 			ShippingFeeShopLines:     newFeeLines,
 			ProviderShippingFeeLines: newFeeLines,
@@ -373,11 +375,11 @@ func UpdateShippingFeeFulfillmentsFromImportFile(ctx context.Context, lines []*G
 		}
 		update.ShippingFeeShopLines = model.GetShippingFeeShopLines(update.ProviderShippingFeeLines, ffm.EtopPriceRule, &ffm.EtopAdjustedShippingFeeMain)
 		totalFee := calcTotalFee(update.ShippingFeeShopLines)
-		update.ShippingFeeShop = model.CalcShopShippingFee(totalFee, update)
+		update.ShippingFeeShop = shipmodel.CalcShopShippingFee(totalFee, update)
 
 		updatesMap[line.ExternalCode] = update
 	}
-	fulfillments := make([]*model.Fulfillment, 0, len(updatesMap))
+	fulfillments := make([]*shipmodel.Fulfillment, 0, len(updatesMap))
 	for _, ffm := range updatesMap {
 		fulfillments = append(fulfillments, ffm)
 	}
@@ -392,8 +394,8 @@ func calcTotalFee(lines []*model.ShippingFeeLine) int {
 	return res
 }
 
-func updateFulfillments(ctx context.Context, fulfillments []*model.Fulfillment) error {
-	cmd := &model.UpdateFulfillmentsCommand{
+func updateFulfillments(ctx context.Context, fulfillments []*shipmodel.Fulfillment) error {
+	cmd := &shipmodelx.UpdateFulfillmentsCommand{
 		Fulfillments: fulfillments,
 	}
 	if err := bus.Dispatch(ctx, cmd); err != nil {

@@ -7,6 +7,8 @@ import (
 	"sync"
 	"time"
 
+	"github.com/Shopify/sarama"
+
 	"etop.vn/backend/pkg/common/cmsql"
 	"etop.vn/backend/pkg/common/l"
 	"etop.vn/backend/pkg/common/mq"
@@ -16,7 +18,7 @@ import (
 	"etop.vn/backend/pkg/etop-handler/webhook/sender"
 	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/backend/pkg/pgevent"
-	"github.com/Shopify/sarama"
+	shipmodel "etop.vn/backend/pkg/services/shipping/model"
 
 	pbcm "etop.vn/backend/pb/common"
 	pbexternal "etop.vn/backend/pb/external"
@@ -226,7 +228,7 @@ func (h *Handler) HandleOrderEvent(ctx context.Context, event *pgevent.PgEvent) 
 
 func (h *Handler) HandleFulfillmentEvent(ctx context.Context, event *pgevent.PgEvent) (mq.Code, error) {
 	ll.Info("HandleFulfillmentEvent", l.Object("pgevent", event))
-	var history model.FulfillmentHistory
+	var history shipmodel.FulfillmentHistory
 	if ok, err := h.db.Where("rid = ?", event.RID).Get(&history); err != nil {
 		return mq.CodeStop, nil
 	} else if !ok {
@@ -241,7 +243,7 @@ func (h *Handler) HandleFulfillmentEvent(ctx context.Context, event *pgevent.PgE
 	}
 
 	id := *history.ID().Int64()
-	var ffm model.Fulfillment
+	var ffm shipmodel.Fulfillment
 	if ok, err := h.db.Where("id = ?", id).Get(&ffm); err != nil {
 		return mq.CodeStop, nil
 	} else if !ok {

@@ -1982,8 +1982,8 @@ type Order struct {
 	ExternalURL     string
 	ShopShipping    *OrderShipping
 	IsOutsideEtop   bool
-	Fulfillments    []*Fulfillment `sq:"-"`
-	ExternalData    *OrderExternal `sq:"-"`
+	// Fulfillments    []*Fulfillment `sq:"-"`
+	ExternalData *OrderExternal `sq:"-"`
 
 	// @deprecated: use try_on instead
 	GhnNoteCode string
@@ -2612,183 +2612,10 @@ func (m *OrderAddress) GetFullName() string {
 	return m.FirstName + " " + m.LastName
 }
 
-var _ = sqlgenFulfillment(&Fulfillment{})
-
-type Fulfillment struct {
-	ID         int64
-	OrderID    int64
-	ShopID     int64
-	SupplierID int64
-	PartnerID  int64
-
-	SupplierConfirm Status3
-	ShopConfirm     Status3
-	ConfirmStatus   Status3
-
-	TotalItems        int
-	TotalWeight       int
-	BasketValue       int
-	TotalDiscount     int
-	TotalAmount       int
-	TotalCODAmount    int
-	OriginalCODAmount int
-
-	// If a fulfillment is compensated, this field contains the actual amount
-	// that carrier payback to shop.
-	ActualCompensationAmount int
-
-	ShippingFeeCustomer      int // shop charges customer/shop
-	ShippingFeeShop          int // etop charges shop, actual_shipping_service_fee
-	ShippingFeeShopLines     []*ShippingFeeLine
-	ShippingServiceFee       int // copy from order
-	ExternalShippingFee      int // provider charges eTop
-	ProviderShippingFeeLines []*ShippingFeeLine
-	EtopDiscount             int
-	EtopFeeAdjustment        int // eTop điều chỉnh phi (phần thêm)
-
-	ShippingFeeMain       int
-	ShippingFeeReturn     int
-	ShippingFeeInsurance  int
-	ShippingFeeAdjustment int
-	ShippingFeeCODS       int
-	ShippingFeeInfoChange int
-	ShippingFeeOther      int
-
-	// EtopAdjustedShippingFeeMain: eTop điều chỉnh cước phí chính
-	EtopAdjustedShippingFeeMain int
-	// EtopPriceRule: true khi áp dụng bảng giá eTop, với giá `EtopAdjustedShippingFeeMain`
-	EtopPriceRule bool
-
-	VariantIDs []int64
-	Lines      OrderLinesList
-
-	TypeFrom      FulfillmentEndpoint
-	TypeTo        FulfillmentEndpoint
-	AddressFrom   *Address
-	AddressTo     *Address
-	AddressReturn *Address
-
-	AddressToProvinceCode string
-	AddressToDistrictCode string
-	AddressToWardCode     string
-
-	CreatedAt                   time.Time `sq:"create"`
-	UpdatedAt                   time.Time `sq:"update"`
-	ClosedAt                    time.Time
-	ExpectedDeliveryAt          time.Time
-	ExpectedPickAt              time.Time
-	CODEtopTransferedAt         time.Time
-	ShippingFeeShopTransferedAt time.Time
-	ShippingCancelledAt         time.Time
-	ShippingDeliveredAt         time.Time
-	ShippingReturnedAt          time.Time
-	ShippingCreatedAt           time.Time
-	ShippingPickingAt           time.Time
-	ShippingHoldingAt           time.Time
-	ShippingDeliveringAt        time.Time
-	ShippingReturningAt         time.Time
-
-	MoneyTransactionID                 int64
-	MoneyTransactionShippingExternalID int64
-
-	CancelReason string
-
-	//CreatedBy   int64
-	//UpdatedBy   int64
-	//CancelledBy int64
-
-	ShippingProvider  ShippingProvider
-	ProviderServiceID string
-	ShippingCode      string
-	ShippingNote      string
-	TryOn             TryOn
-	IncludeInsurance  bool
-
-	ExternalShippingName        string
-	ExternalShippingID          string // it's shipping_service_code
-	ExternalShippingCode        string // it's shipping_code
-	ExternalShippingCreatedAt   time.Time
-	ExternalShippingUpdatedAt   time.Time
-	ExternalShippingCancelledAt time.Time
-	ExternalShippingDeliveredAt time.Time
-	ExternalShippingReturnedAt  time.Time
-	ExternalShippingClosedAt    time.Time
-	ExternalShippingState       string
-	ExternalShippingStateCode   string
-	ExternalShippingStatus      Status5
-	ExternalShippingNote        string
-	ExternalShippingSubState    string
-
-	ExternalShippingData json.RawMessage
-
-	ShippingState     ShippingState
-	ShippingStatus    Status5
-	EtopPaymentStatus Status4
-
-	// -1:cancelled, 0:default, 1:delivered, 2:processing
-	//
-	// 0: just created, still error, can be edited
-	// 2: processing, can not be edited
-	// 1: done
-	//-1: cancelled
-	//-2: returned
-	Status Status5
-
-	SyncStatus Status4 // -1:error, 0:new, 1:created, 2:pending
-	SyncStates *FulfillmentSyncStates
-
-	// Updated by webhook or querying GHN API
-	LastSyncAt time.Time
-
-	ExternalShippingLogs []*ExternalShippingLog
-	AdminNote            string
-	IsPartialDelivery    bool
-}
-
-func (f *Fulfillment) SelfURL(baseURL string, accType int) string {
-	switch accType {
-	case TagEtop, TagSupplier:
-		return ""
-
-	case TagShop:
-		if baseURL == "" || f.ShopID == 0 || f.ID == 0 {
-			return ""
-		}
-		return fmt.Sprintf("%v/s/%v/fulfillments/%v", baseURL, f.ShopID, f.ID)
-
-	default:
-		panic(fmt.Sprintf("unsupported account type: %v", accType))
-	}
-}
-
 type ExternalShippingLog struct {
 	StateText string
 	Time      string
 	Message   string
-}
-
-func (f *Fulfillment) BeforeInsert() error {
-	return f.BeforeUpdate()
-}
-
-func (f *Fulfillment) BeforeUpdate() error {
-	if f.AddressTo != nil {
-		f.AddressToProvinceCode = f.AddressTo.ProvinceCode
-		f.AddressToDistrictCode = f.AddressTo.DistrictCode
-		f.AddressToWardCode = f.AddressTo.WardCode
-	}
-	return nil
-}
-
-func CalcShopShippingFee(externalFee int, ffm *Fulfillment) int {
-	if ffm == nil {
-		return externalFee
-	}
-	fee := externalFee + ffm.EtopFeeAdjustment - ffm.EtopDiscount
-	if fee < 0 {
-		return 0
-	}
-	return fee
 }
 
 type FulfillmentSyncStates struct {
@@ -3300,10 +3127,4 @@ type Callback struct {
 	CreatedAt time.Time `sq:"create"`
 	Changes   json.RawMessage
 	Result    json.RawMessage // WebhookStatesError
-}
-
-func (f *Fulfillment) ApplyEtopPrice(price int) error {
-	f.EtopPriceRule = true
-	f.EtopAdjustedShippingFeeMain = price
-	return nil
 }

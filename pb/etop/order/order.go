@@ -10,6 +10,8 @@ import (
 	servicelocation "etop.vn/backend/pkg/services/location"
 	txmodel "etop.vn/backend/pkg/services/moneytx/model"
 	txmodely "etop.vn/backend/pkg/services/moneytx/modely"
+	ordermodelx "etop.vn/backend/pkg/services/selling/modelx"
+	shipmodel "etop.vn/backend/pkg/services/shipping/model"
 	"etop.vn/backend/pkg/services/shipping/modely"
 
 	pbcm "etop.vn/backend/pb/common"
@@ -29,15 +31,23 @@ import (
 
 var locationBus = servicelocation.New().MessageBus()
 
-func PbOrders(items []*model.Order, accType int, shops []*model.Shop) []*Order {
+func PbOrdersWithFulfillments(items []ordermodelx.OrderWithFulfillments, accType int, shops []*model.Shop) []*Order {
 	res := make([]*Order, len(items))
 	shopsMap := make(map[int64]*model.Shop)
 	for _, shop := range shops {
 		shopsMap[shop.ID] = shop
 	}
 	for i, item := range items {
-		res[i] = PbOrder(item, item.Fulfillments, accType)
+		res[i] = PbOrder(item.Order, item.Fulfillments, accType)
 		res[i].ShopName = shopsMap[item.ShopID].GetShopName()
+	}
+	return res
+}
+
+func PbOrders(items []*model.Order, accType int) []*Order {
+	res := make([]*Order, len(items))
+	for i, order := range items {
+		res[i] = PbOrder(order, nil, accType)
 	}
 	return res
 }
@@ -51,7 +61,7 @@ var exportedOrder = cm.SortStrings([]string{
 	"basket_value", "order_discount", "total_discount", "total_fee",
 })
 
-func PbOrder(m *model.Order, fulfillments []*model.Fulfillment, accType int) *Order {
+func PbOrder(m *model.Order, fulfillments []*shipmodel.Fulfillment, accType int) *Order {
 	order := &Order{
 		ExportedFields: exportedOrder,
 
@@ -546,7 +556,7 @@ func PbAttributes(as []model.ProductAttribute) []*Attribute {
 	return attrs
 }
 
-func PbFulfillments(items []*model.Fulfillment, accType int) []*Fulfillment {
+func PbFulfillments(items []*shipmodel.Fulfillment, accType int) []*Fulfillment {
 	if items == nil {
 		return nil
 	}
@@ -579,7 +589,7 @@ var exportedFulfillment = cm.SortStrings([]string{
 	"estimated_delivery_at", "estimated_pickup_at",
 })
 
-func PbFulfillment(m *model.Fulfillment, accType int, shop *model.Shop, order *model.Order) *Fulfillment {
+func PbFulfillment(m *shipmodel.Fulfillment, accType int, shop *model.Shop, order *model.Order) *Fulfillment {
 	ff := &Fulfillment{
 		ExportedFields: exportedFulfillment,
 
@@ -855,7 +865,7 @@ func (m *ImportOrdersResponse) HasErrors() []*pbcm.Error {
 	return m.ImportErrors
 }
 
-func PbPublicFulfillment(item *model.Fulfillment) *PublicFulfillment {
+func PbPublicFulfillment(item *shipmodel.Fulfillment) *PublicFulfillment {
 	timeLayout := "15:04 02/01/2006"
 
 	// use for manychat

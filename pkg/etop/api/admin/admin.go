@@ -3,6 +3,8 @@ package admin
 import (
 	"context"
 
+	modelx2 "etop.vn/backend/pkg/services/shipping/modelx"
+
 	"etop.vn/backend/pkg/services/moneytx/modelx"
 
 	cm "etop.vn/backend/pkg/common"
@@ -937,7 +939,7 @@ func CreatePartner(ctx context.Context, q *wrapadmin.CreatePartnerEndpoint) erro
 }
 
 func UpdateFulfillment(ctx context.Context, q *wrapadmin.UpdateFulfillmentEndpoint) error {
-	cmd := &model.AdminUpdateFulfillmentCommand{
+	cmd := &modelx2.AdminUpdateFulfillmentCommand{
 		FulfillmentID:            q.Id,
 		FullName:                 q.FullName,
 		Phone:                    q.Phone,

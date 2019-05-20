@@ -18,6 +18,7 @@ import (
 	"etop.vn/backend/pkg/etop/model"
 	ghtkClient "etop.vn/backend/pkg/integration/ghtk/client"
 	"etop.vn/backend/pkg/integration/shipping"
+	shipmodel "etop.vn/backend/pkg/services/shipping/model"
 )
 
 var ll = l.New()
@@ -213,7 +214,7 @@ func (c *Carrier) CancelOrder(ctx context.Context, cmd *CancelOrderCommand) erro
 	return err
 }
 
-func CalcUpdateFulfillment(ffm *model.Fulfillment, msg *ghtkClient.CallbackOrder, ghtkOrder *ghtkClient.OrderInfo) *model.Fulfillment {
+func CalcUpdateFulfillment(ffm *shipmodel.Fulfillment, msg *ghtkClient.CallbackOrder, ghtkOrder *ghtkClient.OrderInfo) *shipmodel.Fulfillment {
 	if !shipping.CanUpdateFulfillmentFromWebhook(ffm) {
 		return ffm
 	}
@@ -227,7 +228,7 @@ func CalcUpdateFulfillment(ffm *model.Fulfillment, msg *ghtkClient.CallbackOrder
 		statusID = int(msg.StatusID)
 	}
 	stateID := ghtkClient.StateID(statusID)
-	update := &model.Fulfillment{
+	update := &shipmodel.Fulfillment{
 		ID:                        ffm.ID,
 		ExternalShippingUpdatedAt: now,
 		ExternalShippingData:      data,
@@ -249,7 +250,7 @@ func CalcUpdateFulfillment(ffm *model.Fulfillment, msg *ghtkClient.CallbackOrder
 			shippingFeeShop += int(line.Cost)
 		}
 		update.ShippingFeeShopLines = shippingFeeShopLines
-		update.ShippingFeeShop = model.CalcShopShippingFee(shippingFeeShop, ffm)
+		update.ShippingFeeShop = shipmodel.CalcShopShippingFee(shippingFeeShop, ffm)
 	}
 
 	// Only update status4 if the current status is not ending status
@@ -459,7 +460,7 @@ func CalcDeliveryDuration(transport ghtkClient.TransportType, from, to *location
 	}
 }
 
-func SyncOrders(ffms []*model.Fulfillment) ([]*model.Fulfillment, error) {
+func SyncOrders(ffms []*shipmodel.Fulfillment) ([]*shipmodel.Fulfillment, error) {
 	rate := time.Second / 30
 	burstLimit := 30
 	ctx := context.Background()
@@ -476,7 +477,7 @@ func SyncOrders(ffms []*model.Fulfillment) ([]*model.Fulfillment, error) {
 	}()
 	ch := make(chan error, burstLimit)
 	ll.Info("Length GHTK SyncOrders", l.Int("len", len(ffms)))
-	var _ffms []*model.Fulfillment
+	var _ffms []*shipmodel.Fulfillment
 	count := 0
 	for _, ffm := range ffms {
 		<-throttle
@@ -485,7 +486,7 @@ func SyncOrders(ffms []*model.Fulfillment) ([]*model.Fulfillment, error) {
 			time.Sleep(20 * time.Second)
 			count = 0
 		}
-		go func(ffm *model.Fulfillment) (_err error) {
+		go func(ffm *shipmodel.Fulfillment) (_err error) {
 			defer func() {
 				ch <- _err
 			}()
