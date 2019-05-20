@@ -25,6 +25,7 @@ const __sqlNotification_UpdateAll = "UPDATE \"notification\" SET (" + __sqlNotif
 
 func (m *Notification) SQLTableName() string  { return "notification" }
 func (m *Notifications) SQLTableName() string { return "notification" }
+func (m *Notification) SQLListCols() string   { return __sqlNotification_ListCols }
 
 func (m *Notification) SQLArgs(opts core.Opts, create bool) []interface{} {
 	now := time.Now()
@@ -371,7 +372,7 @@ func sqlgenDevice(_ *Device) bool { return true }
 type Devices []*Device
 
 const __sqlDevice_Table = "device"
-const __sqlDevice_ListCols = "\"id\",\"device_id\",\"device_name\",\"external_device_id\",\"external_service_id\",\"account_id\",\"created_at\",\"updated_at\""
+const __sqlDevice_ListCols = "\"id\",\"device_id\",\"device_name\",\"external_device_id\",\"external_service_id\",\"account_id\",\"user_id\",\"created_at\",\"updated_at\",\"deleted_at\",\"config\""
 const __sqlDevice_Insert = "INSERT INTO \"device\" (" + __sqlDevice_ListCols + ") VALUES"
 const __sqlDevice_Select = "SELECT " + __sqlDevice_ListCols + " FROM \"device\""
 const __sqlDevice_Select_history = "SELECT " + __sqlDevice_ListCols + " FROM history.\"device\""
@@ -379,6 +380,7 @@ const __sqlDevice_UpdateAll = "UPDATE \"device\" SET (" + __sqlDevice_ListCols +
 
 func (m *Device) SQLTableName() string  { return "device" }
 func (m *Devices) SQLTableName() string { return "device" }
+func (m *Device) SQLListCols() string   { return __sqlDevice_ListCols }
 
 func (m *Device) SQLArgs(opts core.Opts, create bool) []interface{} {
 	now := time.Now()
@@ -389,8 +391,11 @@ func (m *Device) SQLArgs(opts core.Opts, create bool) []interface{} {
 		core.String(m.ExternalDeviceID),
 		core.Int(m.ExternalServiceID),
 		core.Int64(m.AccountID),
+		core.Int64(m.UserID),
 		core.Now(m.CreatedAt, now, create),
 		core.Now(m.UpdatedAt, now, true),
+		core.Time(m.DeletedAt),
+		core.JSON{m.Config},
 	}
 }
 
@@ -402,8 +407,11 @@ func (m *Device) SQLScanArgs(opts core.Opts) []interface{} {
 		(*core.String)(&m.ExternalDeviceID),
 		(*core.Int)(&m.ExternalServiceID),
 		(*core.Int64)(&m.AccountID),
+		(*core.Int64)(&m.UserID),
 		(*core.Time)(&m.CreatedAt),
 		(*core.Time)(&m.UpdatedAt),
+		(*core.Time)(&m.DeletedAt),
+		core.JSON{&m.Config},
 	}
 }
 
@@ -441,7 +449,7 @@ func (_ *Devices) SQLSelect(w SQLWriter) error {
 func (m *Device) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlDevice_Insert)
 	w.WriteRawString(" (")
-	w.WriteMarkers(8)
+	w.WriteMarkers(11)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), true))
 	return nil
@@ -451,7 +459,7 @@ func (ms Devices) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlDevice_Insert)
 	w.WriteRawString(" (")
 	for i := 0; i < len(ms); i++ {
-		w.WriteMarkers(8)
+		w.WriteMarkers(11)
 		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
 		w.WriteRawString("),(")
 	}
@@ -514,6 +522,14 @@ func (m *Device) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(m.AccountID)
 	}
+	if m.UserID != 0 {
+		flag = true
+		w.WriteName("user_id")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.UserID)
+	}
 	if !m.CreatedAt.IsZero() {
 		flag = true
 		w.WriteName("created_at")
@@ -530,6 +546,22 @@ func (m *Device) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(core.Now(m.UpdatedAt, time.Now(), true))
 	}
+	if !m.DeletedAt.IsZero() {
+		flag = true
+		w.WriteName("deleted_at")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.DeletedAt)
+	}
+	if m.Config != nil {
+		flag = true
+		w.WriteName("config")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(core.JSON{m.Config})
+	}
 	if !flag {
 		return core.ErrNoColumn
 	}
@@ -540,7 +572,7 @@ func (m *Device) SQLUpdate(w SQLWriter) error {
 func (m *Device) SQLUpdateAll(w SQLWriter) error {
 	w.WriteQueryString(__sqlDevice_UpdateAll)
 	w.WriteRawString(" = (")
-	w.WriteMarkers(8)
+	w.WriteMarkers(11)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), false))
 	return nil
@@ -572,35 +604,41 @@ func (m DeviceHistory) ExternalServiceID() core.Interface {
 	return core.Interface{m["external_service_id"]}
 }
 func (m DeviceHistory) AccountID() core.Interface { return core.Interface{m["account_id"]} }
+func (m DeviceHistory) UserID() core.Interface    { return core.Interface{m["user_id"]} }
 func (m DeviceHistory) CreatedAt() core.Interface { return core.Interface{m["created_at"]} }
 func (m DeviceHistory) UpdatedAt() core.Interface { return core.Interface{m["updated_at"]} }
+func (m DeviceHistory) DeletedAt() core.Interface { return core.Interface{m["deleted_at"]} }
+func (m DeviceHistory) Config() core.Interface    { return core.Interface{m["config"]} }
 
 func (m *DeviceHistory) SQLScan(opts core.Opts, row *sql.Row) error {
-	data := make([]interface{}, 8)
-	args := make([]interface{}, 8)
-	for i := 0; i < 8; i++ {
+	data := make([]interface{}, 11)
+	args := make([]interface{}, 11)
+	for i := 0; i < 11; i++ {
 		args[i] = &data[i]
 	}
 	if err := row.Scan(args...); err != nil {
 		return err
 	}
-	res := make(DeviceHistory, 8)
+	res := make(DeviceHistory, 11)
 	res["id"] = data[0]
 	res["device_id"] = data[1]
 	res["device_name"] = data[2]
 	res["external_device_id"] = data[3]
 	res["external_service_id"] = data[4]
 	res["account_id"] = data[5]
-	res["created_at"] = data[6]
-	res["updated_at"] = data[7]
+	res["user_id"] = data[6]
+	res["created_at"] = data[7]
+	res["updated_at"] = data[8]
+	res["deleted_at"] = data[9]
+	res["config"] = data[10]
 	*m = res
 	return nil
 }
 
 func (ms *DeviceHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	data := make([]interface{}, 8)
-	args := make([]interface{}, 8)
-	for i := 0; i < 8; i++ {
+	data := make([]interface{}, 11)
+	args := make([]interface{}, 11)
+	for i := 0; i < 11; i++ {
 		args[i] = &data[i]
 	}
 	res := make(DeviceHistories, 0, 128)
@@ -615,8 +653,11 @@ func (ms *DeviceHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
 		m["external_device_id"] = data[3]
 		m["external_service_id"] = data[4]
 		m["account_id"] = data[5]
-		m["created_at"] = data[6]
-		m["updated_at"] = data[7]
+		m["user_id"] = data[6]
+		m["created_at"] = data[7]
+		m["updated_at"] = data[8]
+		m["deleted_at"] = data[9]
+		m["config"] = data[10]
 		res = append(res, m)
 	}
 	if err := rows.Err(); err != nil {

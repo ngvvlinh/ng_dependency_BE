@@ -2317,6 +2317,9 @@
       "properties": {
         "device_id": {
           "type": "string"
+        },
+        "external_device_id": {
+          "type": "string"
         }
       }
     },

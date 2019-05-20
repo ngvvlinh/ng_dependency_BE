@@ -2,6 +2,7 @@ package sqlstore
 
 import (
 	"context"
+	"sync"
 
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
@@ -17,6 +18,7 @@ func init() {
 		UpdateRole,
 		CreateAccountUser,
 		UpdateAccountUser,
+		GetAllAccountUsers,
 	)
 }
 
@@ -54,7 +56,7 @@ func updateRole(ctx context.Context, s Qx, cmd *model.UpdateRoleCommand) error {
 }
 
 func GetAccountUser(ctx context.Context, query *model.GetAccountUserQuery) error {
-	if query.UserID == 0 {
+	if query.UserID == 0 && !query.FindByAccountID {
 		return cm.Error(cm.InvalidArgument, "Missing UserID", nil)
 	}
 	if query.AccountID == 0 {
@@ -62,11 +64,13 @@ func GetAccountUser(ctx context.Context, query *model.GetAccountUserQuery) error
 	}
 
 	query.Result = new(model.AccountUser)
-	return x.
+	s := x.
 		Where("deleted_at is NULL").
-		Where("account_id = ?", query.AccountID).
-		Where("user_id = ?", query.UserID).
-		ShouldGet(query.Result)
+		Where("account_id = ?", query.AccountID)
+	if query.UserID != 0 && !query.FindByAccountID {
+		s = s.Where("user_id = ?", query.UserID)
+	}
+	return s.ShouldGet(query.Result)
 }
 
 func GetAccountUserExtended(ctx context.Context, query *model.GetAccountUserExtendedQuery) error {
@@ -146,4 +150,35 @@ func UpdateAccountUser(ctx context.Context, cmd *model.UpdateAccountUserCommand)
 		Where("user_id = ?", accUser.UserID).
 		Where("account_id = ?", accUser.AccountID).
 		ShouldUpdate(accUser)
+}
+
+func GetAllAccountUsers(ctx context.Context, query *model.GetAllAccountUsersQuery) error {
+	if len(query.UserIDs) == 0 {
+		return cm.Error(cm.InvalidArgument, "Missing UserIDs", nil)
+	}
+	var res []*model.AccountUser
+	guard := make(chan int, 8)
+	var m sync.Mutex
+	for i, userID := range query.UserIDs {
+		guard <- i
+		go func(uID int64) {
+			defer func() {
+				<-guard
+			}()
+			var _res []*model.AccountUser
+			s := x.Table("account_user").
+				Where("au.user_id = ? AND au.deleted_at is NULL", uID)
+			if query.Type != "" {
+				s = s.Where("type = ?", query.Type)
+			}
+			if err := s.Find((*model.AccountUsers)(&_res)); err == nil {
+				m.Lock()
+				res = append(res, _res...)
+				m.Unlock()
+			}
+		}(userID)
+	}
+
+	query.Result = res
+	return nil
 }

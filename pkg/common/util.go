@@ -239,7 +239,19 @@ func URL(baseUrl, path string) string {
 	return baseUrl + path
 }
 
+func Abs(num int) int {
+	if num >= 0 {
+		return num
+	}
+	return -num
+}
+
 func FormatCurrency(num int) string {
+	sign := ""
+	if num < 0 {
+		sign += "-"
+	}
+	num = Abs(num)
 	str := strconv.Itoa(num)
 	var res []string
 	for {
@@ -254,5 +266,5 @@ func FormatCurrency(num int) string {
 		res = append([]string{str[index:]}, res...)
 		str = str[:index]
 	}
-	return strings.Join(res, ".")
+	return sign + strings.Join(res, ".")
 }

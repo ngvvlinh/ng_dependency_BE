@@ -3,8 +3,9 @@ package model
 import cm "etop.vn/backend/pkg/common"
 
 type GetAccountUserQuery struct {
-	UserID    int64
-	AccountID int64
+	UserID          int64
+	AccountID       int64
+	FindByAccountID bool
 
 	Result *AccountUser
 }
@@ -67,4 +68,11 @@ type GetAllAccountRolesQuery struct {
 	Type   AccountType
 
 	Result []*AccountUserExtended
+}
+
+type GetAllAccountUsersQuery struct {
+	UserIDs []int64
+	Type    AccountType
+
+	Result []*AccountUser
 }

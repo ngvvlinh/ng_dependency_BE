@@ -41,23 +41,35 @@ type Notification struct {
 var _ = sqlgenDevice(&Device{})
 
 type Device struct {
-	ID                int64
+	ID int64
+	// DeviceID: deprecated
 	DeviceID          string
 	DeviceName        string
 	ExternalDeviceID  string
 	ExternalServiceID int
-	AccountID         int64
-	CreatedAt         time.Time `sq:"create"`
-	UpdatedAt         time.Time `sq:"update"`
+	// AccountID: deprecated
+	AccountID int64
+	UserID    int64
+	CreatedAt time.Time `sq:"create"`
+	UpdatedAt time.Time `sq:"update"`
+	DeletedAt time.Time
+	Config    *DeviceConfig
 }
 
 type NotiDataAddition struct {
 	Entity   NotiEntity
 	EntityID string
 	NotiID   string
+	ShopID   string
 }
 
 func PrepareNotiData(args NotiDataAddition) json.RawMessage {
 	dataRaw, _ := json.Marshal(args)
 	return dataRaw
+}
+
+type DeviceConfig struct {
+	SubcribeAllShop bool    `json:"subcribe_all_shop"`
+	SubcribeShopIDs []int64 `json:"subcribe_shop_ids"`
+	Mute            bool    `json:"mute"`
 }

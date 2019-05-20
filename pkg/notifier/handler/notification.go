@@ -49,21 +49,31 @@ func SendNotification(ctx context.Context, noti *model.Notification) error {
 }
 
 func sendToOneSignal(ctx context.Context, noti *model.Notification) error {
+	cmdUser := &etopmodel.GetAccountUserQuery{
+		AccountID:       noti.AccountID,
+		FindByAccountID: true,
+	}
+	if err := bus.Dispatch(ctx, cmdUser); err != nil {
+		return err
+	}
 	args := &model.GetDevicesArgs{
-		AccountID:         noti.AccountID,
+		UserID:            cmdUser.Result.UserID,
 		ExternalServiceID: model.ExternalServiceOneSignalID,
 	}
-	deviceIDs, err := deviceStore.GetExternalDeviceIDs(args)
+	devices, err := deviceStore.GetDevices(args)
 	if err != nil {
 		return err
 	}
-	if len(deviceIDs) == 0 {
+	if len(devices) == 0 {
 		return nil
 	}
+	deviceIDs := FilterDevicesByConfig(devices, noti.AccountID)
+
 	data := model.PrepareNotiData(model.NotiDataAddition{
 		Entity:   noti.Entity,
 		EntityID: strconv.FormatInt(noti.EntityID, 10),
 		NotiID:   strconv.FormatInt(noti.ID, 10),
+		ShopID:   strconv.FormatInt(noti.AccountID, 10),
 	})
 
 	webUrl := buildNotificationURL(noti)
@@ -94,6 +104,22 @@ func sendToOneSignal(ctx context.Context, noti *model.Notification) error {
 	return nil
 }
 
+func FilterDevicesByConfig(devices []*model.Device, accountID int64) (deviceIDs []string) {
+	for _, device := range devices {
+		if device.Config == nil {
+			deviceIDs = append(deviceIDs, device.ExternalDeviceID)
+			continue
+		}
+		if device.Config.Mute {
+			continue
+		}
+		if device.Config.SubcribeAllShop || cm.ContainInt64(device.Config.SubcribeShopIDs, accountID) {
+			deviceIDs = append(deviceIDs, device.ExternalDeviceID)
+		}
+	}
+	return
+}
+
 func buildNotificationURL(noti *model.Notification) string {
-	return fmt.Sprintf("%v/notifications/%v", cm.MainSiteBaseURL(), noti.ID)
+	return fmt.Sprintf("%v/notifications/%v?shop_id=%v", cm.MainSiteBaseURL(), noti.ID, noti.AccountID)
 }

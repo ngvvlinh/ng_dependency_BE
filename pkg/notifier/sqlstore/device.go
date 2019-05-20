@@ -2,6 +2,7 @@ package sqlstore
 
 import (
 	"fmt"
+	"time"
 
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/cmsql"
@@ -13,6 +14,8 @@ type DeviceStore struct {
 	db cmsql.Database
 }
 
+type M map[string]interface{}
+
 func NewDeviceStore(db cmsql.Database) *DeviceStore {
 	return &DeviceStore{
 		db: db,
@@ -20,71 +23,115 @@ func NewDeviceStore(db cmsql.Database) *DeviceStore {
 }
 
 func (s *DeviceStore) CreateDevice(args *model.CreateDeviceArgs) (*model.Device, error) {
+	if args.UserID == 0 {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing User ID")
+	}
 	if args.AccountID == 0 {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing Account ID")
 	}
-	if args.DeviceID == "" || args.DeviceName == "" {
-		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing Device ID or Device Name")
-	}
 	if args.ExternalDeviceID == "" {
-		return nil, cm.Errorf(cm.Internal, nil, "Missing External Device ID")
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing External Device ID")
 	}
+	externalServiceID := args.ExternalServiceID
+	if externalServiceID == 0 {
+		// Use Onesignal by default
+		externalServiceID = model.ExternalServiceOneSignalID
+	}
+
 	var dbDevice = new(model.Device)
-	ok, err := s.db.Table("device").Where("device_id = ? AND account_id = ?", args.DeviceID, args.AccountID).Get(dbDevice)
+	ok, err := s.db.Table("device").Where("external_device_id = ? AND user_id = ? AND external_service_id = ?", args.ExternalDeviceID, args.UserID, externalServiceID).Get(dbDevice)
 	if err != nil {
 		return nil, err
 	}
 	device := &model.Device{
-		AccountID:        args.AccountID,
-		DeviceID:         args.DeviceID,
-		DeviceName:       args.DeviceName,
-		ExternalDeviceID: args.ExternalDeviceID,
+		AccountID:         args.AccountID,
+		UserID:            args.UserID,
+		DeviceName:        args.DeviceName,
+		DeviceID:          args.DeviceID,
+		ExternalDeviceID:  args.ExternalDeviceID,
+		ExternalServiceID: externalServiceID,
+	}
+	defaultConfig := &model.DeviceConfig{
+		SubcribeAllShop: true,
+		Mute:            false,
 	}
 	var id int64
 	if ok && dbDevice.ID != 0 {
-		// update this device
-		id = dbDevice.ID
-		if err := s.db.Table("device").Where("id = ?", id).ShouldUpdate(device); err != nil {
+		if !dbDevice.DeletedAt.IsZero() {
+			// active this device
+			if err := s.db.Table("device").Where("id = ?", dbDevice.ID).ShouldUpdateMap(M{"deleted_at": nil}); err != nil {
+				return nil, err
+			}
+		}
+		// update it
+		if err := s.db.Table("device").Where("id = ?", dbDevice.ID).ShouldUpdate(device); err != nil {
 			return nil, err
 		}
 	} else {
+		// create new device and make sure only one external_device_id is actived at a time
+		if _, err := s.db.Table("device").Where("external_device_id = ? AND deleted_at IS NULL", args.ExternalDeviceID).UpdateMap(M{"deleted_at": time.Now()}); err != nil {
+			return nil, err
+		}
 		id = cm.NewID()
 		device.ID = id
-		// Use Onesignal by default
-		device.ExternalServiceID = model.ExternalServiceOneSignalID
+		device.Config = defaultConfig
 		if err := s.db.Table("device").ShouldInsert(device); err != nil {
 			return nil, err
 		}
 	}
 	res, err := s.GetDevice(&model.GetDeviceArgs{
-		AccountID: args.AccountID,
-		ID:        id,
+		UserID:           args.UserID,
+		ExternalDeviceID: device.ExternalDeviceID,
+	})
+	return res, err
+}
+
+func (s *DeviceStore) UpdateDevice(args *model.UpdateDeviceArgs) (*model.Device, error) {
+	if args.UserID == 0 {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing User ID")
+	}
+	if args.ExternalDeviceID == "" {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing External Device ID")
+	}
+
+	device := &model.Device{
+		ExternalDeviceID: args.ExternalDeviceID,
+		UserID:           args.UserID,
+		Config:           args.Config,
+	}
+	if err := s.db.Table("device").Where("user_id = ? AND external_device_id = ?", args.UserID, args.ExternalDeviceID).
+		ShouldUpdate(device); err != nil {
+		return nil, err
+	}
+	res, err := s.GetDevice(&model.GetDeviceArgs{
+		UserID:           args.UserID,
+		ExternalDeviceID: args.ExternalDeviceID,
 	})
 	return res, err
 }
 
 func (s *DeviceStore) GetDevice(args *model.GetDeviceArgs) (*model.Device, error) {
-	if args.AccountID == 0 {
-		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing Account ID")
+	if args.UserID == 0 {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing User ID")
 	}
-	if args.ID == 0 {
-		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing ID")
+	if args.ExternalDeviceID == "" {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing External Device ID")
 	}
 	var device = new(model.Device)
-	err := s.db.Table("device").Where("account_id = ? AND id = ?", args.AccountID, args.ID).ShouldGet(device)
+	err := s.db.Table("device").Where("user_id = ? AND external_device_id = ? AND deleted_at IS NULL", args.UserID, args.ExternalDeviceID).ShouldGet(device)
 	return device, err
 }
 
 func (s *DeviceStore) GetDevices(args *model.GetDevicesArgs) ([]*model.Device, error) {
-	if args.AccountID == 0 {
-		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing Account ID")
+	if args.UserID == 0 {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing User ID")
 	}
 	if args.ExternalServiceID == 0 {
 		args.ExternalServiceID = model.ExternalServiceOneSignalID
 	}
 
 	var res []*model.Device
-	if err := s.db.Table("device").Where("account_id = ? AND external_service_id = ?", args.AccountID, args.ExternalServiceID).Find((*model.Devices)(&res)); err != nil {
+	if err := s.db.Table("device").Where("user_id = ? AND external_service_id = ? AND deleted_at IS NULL", args.UserID, args.ExternalServiceID).Find((*model.Devices)(&res)); err != nil {
 		return nil, err
 	}
 	return res, nil
@@ -105,28 +152,38 @@ func (s *DeviceStore) GetExternalDeviceIDs(arg *model.GetDevicesArgs) ([]string,
 }
 
 func (s *DeviceStore) DeleteDevice(device *model.Device) error {
-	if device.AccountID == 0 {
-		return cm.Errorf(cm.InvalidArgument, nil, "Missing Account ID")
+	if device.UserID == 0 {
+		return cm.Errorf(cm.InvalidArgument, nil, "Missing User ID")
 	}
-	if device.DeviceID == "" {
-		return cm.Errorf(cm.InvalidArgument, nil, "Missing Device ID")
+	// deprecated `device.DeviceID` soon
+	if device.ExternalDeviceID == "" && device.DeviceID == "" {
+		return cm.Errorf(cm.InvalidArgument, nil, "Missing External ID")
 	}
-	err := s.db.Table("device").Where("device_id = ? AND account_id = ?", device.DeviceID, device.AccountID).ShouldDelete(&model.Device{})
+	x := s.db.Table("device").Where("user_id = ?", device.UserID)
+	if device.DeviceID != "" {
+		x = x.Where("device_id = ?", device.DeviceID)
+	}
+	if device.ExternalDeviceID != "" {
+		x = x.Where("external_device_id = ?", device.ExternalDeviceID)
+	}
+	err := x.ShouldUpdate(&model.Device{
+		DeletedAt: time.Now(),
+	})
 	return err
 }
 
-func (s *DeviceStore) GetAllAccounts() ([]int64, error) {
-	var accountIDs []int64
-	x := s.db.SQL(`SELECT DISTINCT account_id FROM device`)
+func (s *DeviceStore) GetAllUsers() ([]int64, error) {
+	var userIDs []int64
+	x := s.db.SQL(`SELECT DISTINCT user_id FROM device`)
 	sql, args, err := x.Build()
 	if err != nil {
 		return nil, err
 	}
 
 	sql2 := fmt.Sprintf(
-		"SELECT array_agg(account_id) FROM (%v) AS s",
+		"SELECT array_agg(user_id) FROM (%v) AS s",
 		sql,
 	)
-	err = s.db.QueryRow(sql2, args...).Scan((*pq.Int64Array)(&accountIDs))
-	return accountIDs, err
+	err = s.db.QueryRow(sql2, args...).Scan((*pq.Int64Array)(&userIDs))
+	return userIDs, err
 }

@@ -1,18 +1,27 @@
 package model
 
 type GetDeviceArgs struct {
-	AccountID int64
-	ID        int64
+	UserID           int64
+	ExternalDeviceID string
 }
 
 type GetDevicesArgs struct {
-	AccountID         int64
+	UserID            int64
 	ExternalServiceID int
 }
 
 type CreateDeviceArgs struct {
-	AccountID        int64
-	DeviceID         string
-	DeviceName       string
+	UserID            int64
+	AccountID         int64
+	DeviceID          string
+	DeviceName        string
+	ExternalDeviceID  string
+	ExternalServiceID int
+	Config            *DeviceConfig
+}
+
+type UpdateDeviceArgs struct {
+	UserID           int64
 	ExternalDeviceID string
+	Config           *DeviceConfig
 }

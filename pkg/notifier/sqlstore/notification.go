@@ -1,10 +1,14 @@
 package sqlstore
 
 import (
+	"context"
 	"time"
+
+	"etop.vn/backend/pkg/common/bus"
 
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/cmsql"
+	etopmodel "etop.vn/backend/pkg/etop/model"
 	"etop.vn/backend/pkg/notifier/model"
 )
 
@@ -62,10 +66,21 @@ func (s *NotificationStore) CreateNotifications(args *model.CreateNotificationsA
 
 	accountIDs := args.AccountIDs
 	if args.SendAll {
+		accountIDs = []int64{}
 		deviceStore := NewDeviceStore(s.db)
-		accountIDs, err = deviceStore.GetAllAccounts()
-		if err != nil {
+		userIDs, _err := deviceStore.GetAllUsers()
+		if _err != nil {
+			return 0, 0, _err
+		}
+		query := &etopmodel.GetAllAccountUsersQuery{
+			UserIDs: userIDs,
+			Type:    etopmodel.TypeShop,
+		}
+		if err := bus.Dispatch(context.Background(), query); err != nil {
 			return 0, 0, err
+		}
+		for _, accountUser := range query.Result {
+			accountIDs = append(accountIDs, accountUser.AccountID)
 		}
 	}
 

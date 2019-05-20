@@ -868,6 +868,7 @@ message CreateDeviceRequest {
 
 message DeleteDeviceRequest {
     optional string device_id = 1 [(gogoproto.nullable) = false];
+    optional string external_device_id = 2 [(gogoproto.nullable) = false];
 }
 
 message GetNotificationsRequest {

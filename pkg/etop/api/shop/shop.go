@@ -774,6 +774,7 @@ func CalcBalance(ctx context.Context, q *wrapshop.CalcBalanceShopEndpoint) error
 
 func CreateDevice(ctx context.Context, q *wrapshop.CreateDeviceEndpoint) error {
 	cmd := &notimodel.CreateDeviceArgs{
+		UserID:           q.Context.UserID,
 		AccountID:        q.Context.Shop.ID,
 		DeviceID:         q.DeviceId,
 		DeviceName:       q.DeviceName,
@@ -789,8 +790,10 @@ func CreateDevice(ctx context.Context, q *wrapshop.CreateDeviceEndpoint) error {
 
 func DeleteDevice(ctx context.Context, q *wrapshop.DeleteDeviceEndpoint) error {
 	device := &notimodel.Device{
-		DeviceID:  q.DeviceId,
-		AccountID: q.Context.Shop.ID,
+		DeviceID:         q.DeviceId,
+		ExternalDeviceID: q.ExternalDeviceId,
+		AccountID:        q.Context.Shop.ID,
+		UserID:           q.Context.UserID,
 	}
 	if err := sqlstore.DeleteDevice(ctx, device); err != nil {
 		return err
