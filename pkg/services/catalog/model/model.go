@@ -20,7 +20,6 @@ type Product struct {
 	SupplierID              int64
 	ProductSourceCategoryID string
 	EtopCategoryID          int64
-	ProductBrandID          int64
 
 	Name          string
 	ShortDesc     string
@@ -103,14 +102,12 @@ type ProductExternalCommon struct {
 var _ = sqlgenProductExtended(
 	&ProductExtended{}, &Product{}, sq.AS("p"),
 	sq.LEFT_JOIN, &ProductExternal{}, sq.AS("px"), "p.id = px.id",
-	sq.LEFT_JOIN, &model.ProductBrand{}, sq.AS("pb"), "p.product_brand_id = pb.id",
 	sq.LEFT_JOIN, &model.ProductSource{}, sq.AS("ps"), "p.product_source_id = ps.id",
 )
 
 type ProductExtended struct {
 	*Product
 	*ProductExternal
-	*model.ProductBrand
 	*model.ProductSource
 }
 
@@ -130,7 +127,6 @@ type Variant struct {
 
 	ProductSourceCategoryID int64
 	EtopCategoryID          int64
-	ProductBrandID          int64
 
 	// Name          string
 	ShortDesc     string

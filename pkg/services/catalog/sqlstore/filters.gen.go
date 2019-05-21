@@ -118,25 +118,6 @@ func (ft ProductFilters) ByEtopCategoryIDPtr(EtopCategoryID *int64) *sq.ColumnFi
 	}
 }
 
-func (ft ProductFilters) ByProductBrandID(ProductBrandID int64) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
-		Prefix: ft.prefix,
-		Column: "product_brand_id",
-		Value:  ProductBrandID,
-		IsNil:  ProductBrandID == 0,
-	}
-}
-
-func (ft ProductFilters) ByProductBrandIDPtr(ProductBrandID *int64) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
-		Prefix: ft.prefix,
-		Column: "product_brand_id",
-		Value:  ProductBrandID,
-		IsNil:  ProductBrandID == nil,
-		IsZero: ProductBrandID != nil && (*ProductBrandID) == 0,
-	}
-}
-
 func (ft ProductFilters) ByName(Name string) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: ft.prefix,
@@ -903,25 +884,6 @@ func (ft VariantFilters) ByEtopCategoryIDPtr(EtopCategoryID *int64) *sq.ColumnFi
 		Value:  EtopCategoryID,
 		IsNil:  EtopCategoryID == nil,
 		IsZero: EtopCategoryID != nil && (*EtopCategoryID) == 0,
-	}
-}
-
-func (ft VariantFilters) ByProductBrandID(ProductBrandID int64) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
-		Prefix: ft.prefix,
-		Column: "product_brand_id",
-		Value:  ProductBrandID,
-		IsNil:  ProductBrandID == 0,
-	}
-}
-
-func (ft VariantFilters) ByProductBrandIDPtr(ProductBrandID *int64) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
-		Prefix: ft.prefix,
-		Column: "product_brand_id",
-		Value:  ProductBrandID,
-		IsNil:  ProductBrandID == nil,
-		IsZero: ProductBrandID != nil && (*ProductBrandID) == 0,
 	}
 }
 

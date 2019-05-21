@@ -86,7 +86,7 @@ func sqlgenProduct(_ *Product) bool { return true }
 type Products []*Product
 
 const __sqlProduct_Table = "product"
-const __sqlProduct_ListCols = "\"id\",\"product_source_id\",\"supplier_id\",\"product_source_category_id\",\"etop_category_id\",\"product_brand_id\",\"name\",\"short_desc\",\"description\",\"desc_html\",\"ed_name\",\"ed_short_desc\",\"ed_description\",\"ed_desc_html\",\"ed_tags\",\"unit\",\"status\",\"code\",\"ed_code\",\"quantity_available\",\"quantity_on_hand\",\"quantity_reserved\",\"image_urls\",\"created_at\",\"updated_at\",\"name_norm\",\"name_norm_ua\""
+const __sqlProduct_ListCols = "\"id\",\"product_source_id\",\"supplier_id\",\"product_source_category_id\",\"etop_category_id\",\"name\",\"short_desc\",\"description\",\"desc_html\",\"ed_name\",\"ed_short_desc\",\"ed_description\",\"ed_desc_html\",\"ed_tags\",\"unit\",\"status\",\"code\",\"ed_code\",\"quantity_available\",\"quantity_on_hand\",\"quantity_reserved\",\"image_urls\",\"created_at\",\"updated_at\",\"name_norm\",\"name_norm_ua\""
 const __sqlProduct_Insert = "INSERT INTO \"product\" (" + __sqlProduct_ListCols + ") VALUES"
 const __sqlProduct_Select = "SELECT " + __sqlProduct_ListCols + " FROM \"product\""
 const __sqlProduct_Select_history = "SELECT " + __sqlProduct_ListCols + " FROM history.\"product\""
@@ -104,7 +104,6 @@ func (m *Product) SQLArgs(opts core.Opts, create bool) []interface{} {
 		core.Int64(m.SupplierID),
 		core.String(m.ProductSourceCategoryID),
 		core.Int64(m.EtopCategoryID),
-		core.Int64(m.ProductBrandID),
 		core.String(m.Name),
 		core.String(m.ShortDesc),
 		core.String(m.Description),
@@ -136,7 +135,6 @@ func (m *Product) SQLScanArgs(opts core.Opts) []interface{} {
 		(*core.Int64)(&m.SupplierID),
 		(*core.String)(&m.ProductSourceCategoryID),
 		(*core.Int64)(&m.EtopCategoryID),
-		(*core.Int64)(&m.ProductBrandID),
 		(*core.String)(&m.Name),
 		(*core.String)(&m.ShortDesc),
 		(*core.String)(&m.Description),
@@ -195,7 +193,7 @@ func (_ *Products) SQLSelect(w SQLWriter) error {
 func (m *Product) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlProduct_Insert)
 	w.WriteRawString(" (")
-	w.WriteMarkers(27)
+	w.WriteMarkers(26)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), true))
 	return nil
@@ -205,7 +203,7 @@ func (ms Products) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlProduct_Insert)
 	w.WriteRawString(" (")
 	for i := 0; i < len(ms); i++ {
-		w.WriteMarkers(27)
+		w.WriteMarkers(26)
 		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
 		w.WriteRawString("),(")
 	}
@@ -259,14 +257,6 @@ func (m *Product) SQLUpdate(w SQLWriter) error {
 		w.WriteMarker()
 		w.WriteByte(',')
 		w.WriteArg(m.EtopCategoryID)
-	}
-	if m.ProductBrandID != 0 {
-		flag = true
-		w.WriteName("product_brand_id")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(m.ProductBrandID)
 	}
 	if m.Name != "" {
 		flag = true
@@ -446,7 +436,7 @@ func (m *Product) SQLUpdate(w SQLWriter) error {
 func (m *Product) SQLUpdateAll(w SQLWriter) error {
 	w.WriteQueryString(__sqlProduct_UpdateAll)
 	w.WriteRawString(" = (")
-	w.WriteMarkers(27)
+	w.WriteMarkers(26)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), false))
 	return nil
@@ -477,7 +467,6 @@ func (m ProductHistory) ProductSourceCategoryID() core.Interface {
 	return core.Interface{m["product_source_category_id"]}
 }
 func (m ProductHistory) EtopCategoryID() core.Interface { return core.Interface{m["etop_category_id"]} }
-func (m ProductHistory) ProductBrandID() core.Interface { return core.Interface{m["product_brand_id"]} }
 func (m ProductHistory) Name() core.Interface           { return core.Interface{m["name"]} }
 func (m ProductHistory) ShortDesc() core.Interface      { return core.Interface{m["short_desc"]} }
 func (m ProductHistory) Description() core.Interface    { return core.Interface{m["description"]} }
@@ -505,50 +494,49 @@ func (m ProductHistory) NameNorm() core.Interface   { return core.Interface{m["n
 func (m ProductHistory) NameNormUa() core.Interface { return core.Interface{m["name_norm_ua"]} }
 
 func (m *ProductHistory) SQLScan(opts core.Opts, row *sql.Row) error {
-	data := make([]interface{}, 27)
-	args := make([]interface{}, 27)
-	for i := 0; i < 27; i++ {
+	data := make([]interface{}, 26)
+	args := make([]interface{}, 26)
+	for i := 0; i < 26; i++ {
 		args[i] = &data[i]
 	}
 	if err := row.Scan(args...); err != nil {
 		return err
 	}
-	res := make(ProductHistory, 27)
+	res := make(ProductHistory, 26)
 	res["id"] = data[0]
 	res["product_source_id"] = data[1]
 	res["supplier_id"] = data[2]
 	res["product_source_category_id"] = data[3]
 	res["etop_category_id"] = data[4]
-	res["product_brand_id"] = data[5]
-	res["name"] = data[6]
-	res["short_desc"] = data[7]
-	res["description"] = data[8]
-	res["desc_html"] = data[9]
-	res["ed_name"] = data[10]
-	res["ed_short_desc"] = data[11]
-	res["ed_description"] = data[12]
-	res["ed_desc_html"] = data[13]
-	res["ed_tags"] = data[14]
-	res["unit"] = data[15]
-	res["status"] = data[16]
-	res["code"] = data[17]
-	res["ed_code"] = data[18]
-	res["quantity_available"] = data[19]
-	res["quantity_on_hand"] = data[20]
-	res["quantity_reserved"] = data[21]
-	res["image_urls"] = data[22]
-	res["created_at"] = data[23]
-	res["updated_at"] = data[24]
-	res["name_norm"] = data[25]
-	res["name_norm_ua"] = data[26]
+	res["name"] = data[5]
+	res["short_desc"] = data[6]
+	res["description"] = data[7]
+	res["desc_html"] = data[8]
+	res["ed_name"] = data[9]
+	res["ed_short_desc"] = data[10]
+	res["ed_description"] = data[11]
+	res["ed_desc_html"] = data[12]
+	res["ed_tags"] = data[13]
+	res["unit"] = data[14]
+	res["status"] = data[15]
+	res["code"] = data[16]
+	res["ed_code"] = data[17]
+	res["quantity_available"] = data[18]
+	res["quantity_on_hand"] = data[19]
+	res["quantity_reserved"] = data[20]
+	res["image_urls"] = data[21]
+	res["created_at"] = data[22]
+	res["updated_at"] = data[23]
+	res["name_norm"] = data[24]
+	res["name_norm_ua"] = data[25]
 	*m = res
 	return nil
 }
 
 func (ms *ProductHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	data := make([]interface{}, 27)
-	args := make([]interface{}, 27)
-	for i := 0; i < 27; i++ {
+	data := make([]interface{}, 26)
+	args := make([]interface{}, 26)
+	for i := 0; i < 26; i++ {
 		args[i] = &data[i]
 	}
 	res := make(ProductHistories, 0, 128)
@@ -562,28 +550,27 @@ func (ms *ProductHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
 		m["supplier_id"] = data[2]
 		m["product_source_category_id"] = data[3]
 		m["etop_category_id"] = data[4]
-		m["product_brand_id"] = data[5]
-		m["name"] = data[6]
-		m["short_desc"] = data[7]
-		m["description"] = data[8]
-		m["desc_html"] = data[9]
-		m["ed_name"] = data[10]
-		m["ed_short_desc"] = data[11]
-		m["ed_description"] = data[12]
-		m["ed_desc_html"] = data[13]
-		m["ed_tags"] = data[14]
-		m["unit"] = data[15]
-		m["status"] = data[16]
-		m["code"] = data[17]
-		m["ed_code"] = data[18]
-		m["quantity_available"] = data[19]
-		m["quantity_on_hand"] = data[20]
-		m["quantity_reserved"] = data[21]
-		m["image_urls"] = data[22]
-		m["created_at"] = data[23]
-		m["updated_at"] = data[24]
-		m["name_norm"] = data[25]
-		m["name_norm_ua"] = data[26]
+		m["name"] = data[5]
+		m["short_desc"] = data[6]
+		m["description"] = data[7]
+		m["desc_html"] = data[8]
+		m["ed_name"] = data[9]
+		m["ed_short_desc"] = data[10]
+		m["ed_description"] = data[11]
+		m["ed_desc_html"] = data[12]
+		m["ed_tags"] = data[13]
+		m["unit"] = data[14]
+		m["status"] = data[15]
+		m["code"] = data[16]
+		m["ed_code"] = data[17]
+		m["quantity_available"] = data[18]
+		m["quantity_on_hand"] = data[19]
+		m["quantity_reserved"] = data[20]
+		m["image_urls"] = data[21]
+		m["created_at"] = data[22]
+		m["updated_at"] = data[23]
+		m["name_norm"] = data[24]
+		m["name_norm_ua"] = data[25]
 		res = append(res, m)
 	}
 	if err := rows.Err(); err != nil {
@@ -996,11 +983,11 @@ func (ms *ProductExternalHistories) SQLScan(opts core.Opts, rows *sql.Rows) erro
 }
 
 // Type ProductExtended represents a join
-func sqlgenProductExtended(_ *ProductExtended, _ *Product, as sq.AS, t0 sq.JOIN_TYPE, _ *ProductExternal, a0 sq.AS, c0 string, t1 sq.JOIN_TYPE, _ *model.ProductBrand, a1 sq.AS, c1 string, t2 sq.JOIN_TYPE, _ *model.ProductSource, a2 sq.AS, c2 string) bool {
-	__sqlProductExtended_JoinTypes = []sq.JOIN_TYPE{t0, t1, t2}
+func sqlgenProductExtended(_ *ProductExtended, _ *Product, as sq.AS, t0 sq.JOIN_TYPE, _ *ProductExternal, a0 sq.AS, c0 string, t1 sq.JOIN_TYPE, _ *model.ProductSource, a1 sq.AS, c1 string) bool {
+	__sqlProductExtended_JoinTypes = []sq.JOIN_TYPE{t0, t1}
 	__sqlProductExtended_As = as
-	__sqlProductExtended_JoinAs = []sq.AS{a0, a1, a2}
-	__sqlProductExtended_JoinConds = []string{c0, c1, c2}
+	__sqlProductExtended_JoinAs = []sq.AS{a0, a1}
+	__sqlProductExtended_JoinConds = []string{c0, c1}
 	return true
 }
 
@@ -1064,14 +1051,12 @@ func (m *ProductExtended) __sqlSelect(w SQLWriter) {
 	w.WriteByte(',')
 	core.WriteCols(w, string(__sqlProductExtended_JoinAs[0]), (*ProductExternal)(nil).SQLListCols())
 	w.WriteByte(',')
-	core.WriteCols(w, string(__sqlProductExtended_JoinAs[1]), (*model.ProductBrand)(nil).SQLListCols())
-	w.WriteByte(',')
-	core.WriteCols(w, string(__sqlProductExtended_JoinAs[2]), (*model.ProductSource)(nil).SQLListCols())
+	core.WriteCols(w, string(__sqlProductExtended_JoinAs[1]), (*model.ProductSource)(nil).SQLListCols())
 }
 
 func (m *ProductExtended) __sqlJoin(w SQLWriter, types []sq.JOIN_TYPE) {
-	if len(types) != 3 {
-		panic("common/sql: expect 3 types to join")
+	if len(types) != 2 {
+		panic("common/sql: expect 2 types to join")
 	}
 	w.WriteRawString("FROM ")
 	w.WriteName("product")
@@ -1088,19 +1073,11 @@ func (m *ProductExtended) __sqlJoin(w SQLWriter, types []sq.JOIN_TYPE) {
 	w.WriteByte(' ')
 	w.WriteRawString(string(types[1]))
 	w.WriteRawString(" JOIN ")
-	w.WriteName((*model.ProductBrand)(nil).SQLTableName())
+	w.WriteName((*model.ProductSource)(nil).SQLTableName())
 	w.WriteRawString(" AS ")
 	w.WriteRawString(string(__sqlProductExtended_JoinAs[1]))
 	w.WriteRawString(" ON ")
 	w.WriteQueryString(__sqlProductExtended_JoinConds[1])
-	w.WriteByte(' ')
-	w.WriteRawString(string(types[2]))
-	w.WriteRawString(" JOIN ")
-	w.WriteName((*model.ProductSource)(nil).SQLTableName())
-	w.WriteRawString(" AS ")
-	w.WriteRawString(string(__sqlProductExtended_JoinAs[2]))
-	w.WriteRawString(" ON ")
-	w.WriteQueryString(__sqlProductExtended_JoinConds[2])
 }
 
 func (m *ProductExtended) SQLScanArgs(opts core.Opts) []interface{} {
@@ -1109,8 +1086,6 @@ func (m *ProductExtended) SQLScanArgs(opts core.Opts) []interface{} {
 	args = append(args, m.Product.SQLScanArgs(opts)...)
 	m.ProductExternal = new(ProductExternal)
 	args = append(args, m.ProductExternal.SQLScanArgs(opts)...)
-	m.ProductBrand = new(model.ProductBrand)
-	args = append(args, m.ProductBrand.SQLScanArgs(opts)...)
 	m.ProductSource = new(model.ProductSource)
 	args = append(args, m.ProductSource.SQLScanArgs(opts)...)
 
@@ -1123,7 +1098,7 @@ func sqlgenVariant(_ *Variant) bool { return true }
 type Variants []*Variant
 
 const __sqlVariant_Table = "variant"
-const __sqlVariant_ListCols = "\"id\",\"product_id\",\"product_source_id\",\"supplier_id\",\"product_source_category_id\",\"etop_category_id\",\"product_brand_id\",\"short_desc\",\"description\",\"desc_html\",\"ed_name\",\"ed_short_desc\",\"ed_description\",\"ed_desc_html\",\"desc_norm\",\"attr_norm_kv\",\"status\",\"etop_status\",\"ed_status\",\"code\",\"ed_code\",\"wholesale_price_0\",\"wholesale_price\",\"list_price\",\"retail_price_min\",\"retail_price_max\",\"ed_wholesale_price_0\",\"ed_wholesale_price\",\"ed_list_price\",\"ed_retail_price_min\",\"ed_retail_price_max\",\"quantity_available\",\"quantity_on_hand\",\"quantity_reserved\",\"image_urls\",\"supplier_meta\",\"cost_price\",\"attributes\",\"created_at\",\"updated_at\""
+const __sqlVariant_ListCols = "\"id\",\"product_id\",\"product_source_id\",\"supplier_id\",\"product_source_category_id\",\"etop_category_id\",\"short_desc\",\"description\",\"desc_html\",\"ed_name\",\"ed_short_desc\",\"ed_description\",\"ed_desc_html\",\"desc_norm\",\"attr_norm_kv\",\"status\",\"etop_status\",\"ed_status\",\"code\",\"ed_code\",\"wholesale_price_0\",\"wholesale_price\",\"list_price\",\"retail_price_min\",\"retail_price_max\",\"ed_wholesale_price_0\",\"ed_wholesale_price\",\"ed_list_price\",\"ed_retail_price_min\",\"ed_retail_price_max\",\"quantity_available\",\"quantity_on_hand\",\"quantity_reserved\",\"image_urls\",\"supplier_meta\",\"cost_price\",\"attributes\",\"created_at\",\"updated_at\""
 const __sqlVariant_Insert = "INSERT INTO \"variant\" (" + __sqlVariant_ListCols + ") VALUES"
 const __sqlVariant_Select = "SELECT " + __sqlVariant_ListCols + " FROM \"variant\""
 const __sqlVariant_Select_history = "SELECT " + __sqlVariant_ListCols + " FROM history.\"variant\""
@@ -1142,7 +1117,6 @@ func (m *Variant) SQLArgs(opts core.Opts, create bool) []interface{} {
 		core.Int64(m.SupplierID),
 		core.Int64(m.ProductSourceCategoryID),
 		core.Int64(m.EtopCategoryID),
-		core.Int64(m.ProductBrandID),
 		core.String(m.ShortDesc),
 		core.String(m.Description),
 		core.String(m.DescHTML),
@@ -1187,7 +1161,6 @@ func (m *Variant) SQLScanArgs(opts core.Opts) []interface{} {
 		(*core.Int64)(&m.SupplierID),
 		(*core.Int64)(&m.ProductSourceCategoryID),
 		(*core.Int64)(&m.EtopCategoryID),
-		(*core.Int64)(&m.ProductBrandID),
 		(*core.String)(&m.ShortDesc),
 		(*core.String)(&m.Description),
 		(*core.String)(&m.DescHTML),
@@ -1258,7 +1231,7 @@ func (_ *Variants) SQLSelect(w SQLWriter) error {
 func (m *Variant) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlVariant_Insert)
 	w.WriteRawString(" (")
-	w.WriteMarkers(40)
+	w.WriteMarkers(39)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), true))
 	return nil
@@ -1268,7 +1241,7 @@ func (ms Variants) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlVariant_Insert)
 	w.WriteRawString(" (")
 	for i := 0; i < len(ms); i++ {
-		w.WriteMarkers(40)
+		w.WriteMarkers(39)
 		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
 		w.WriteRawString("),(")
 	}
@@ -1330,14 +1303,6 @@ func (m *Variant) SQLUpdate(w SQLWriter) error {
 		w.WriteMarker()
 		w.WriteByte(',')
 		w.WriteArg(m.EtopCategoryID)
-	}
-	if m.ProductBrandID != 0 {
-		flag = true
-		w.WriteName("product_brand_id")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(m.ProductBrandID)
 	}
 	if m.ShortDesc != "" {
 		flag = true
@@ -1613,7 +1578,7 @@ func (m *Variant) SQLUpdate(w SQLWriter) error {
 func (m *Variant) SQLUpdateAll(w SQLWriter) error {
 	w.WriteQueryString(__sqlVariant_UpdateAll)
 	w.WriteRawString(" = (")
-	w.WriteMarkers(40)
+	w.WriteMarkers(39)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), false))
 	return nil
@@ -1645,7 +1610,6 @@ func (m VariantHistory) ProductSourceCategoryID() core.Interface {
 	return core.Interface{m["product_source_category_id"]}
 }
 func (m VariantHistory) EtopCategoryID() core.Interface { return core.Interface{m["etop_category_id"]} }
-func (m VariantHistory) ProductBrandID() core.Interface { return core.Interface{m["product_brand_id"]} }
 func (m VariantHistory) ShortDesc() core.Interface      { return core.Interface{m["short_desc"]} }
 func (m VariantHistory) Description() core.Interface    { return core.Interface{m["description"]} }
 func (m VariantHistory) DescHTML() core.Interface       { return core.Interface{m["desc_html"]} }
@@ -1695,63 +1659,62 @@ func (m VariantHistory) CreatedAt() core.Interface    { return core.Interface{m[
 func (m VariantHistory) UpdatedAt() core.Interface    { return core.Interface{m["updated_at"]} }
 
 func (m *VariantHistory) SQLScan(opts core.Opts, row *sql.Row) error {
-	data := make([]interface{}, 40)
-	args := make([]interface{}, 40)
-	for i := 0; i < 40; i++ {
+	data := make([]interface{}, 39)
+	args := make([]interface{}, 39)
+	for i := 0; i < 39; i++ {
 		args[i] = &data[i]
 	}
 	if err := row.Scan(args...); err != nil {
 		return err
 	}
-	res := make(VariantHistory, 40)
+	res := make(VariantHistory, 39)
 	res["id"] = data[0]
 	res["product_id"] = data[1]
 	res["product_source_id"] = data[2]
 	res["supplier_id"] = data[3]
 	res["product_source_category_id"] = data[4]
 	res["etop_category_id"] = data[5]
-	res["product_brand_id"] = data[6]
-	res["short_desc"] = data[7]
-	res["description"] = data[8]
-	res["desc_html"] = data[9]
-	res["ed_name"] = data[10]
-	res["ed_short_desc"] = data[11]
-	res["ed_description"] = data[12]
-	res["ed_desc_html"] = data[13]
-	res["desc_norm"] = data[14]
-	res["attr_norm_kv"] = data[15]
-	res["status"] = data[16]
-	res["etop_status"] = data[17]
-	res["ed_status"] = data[18]
-	res["code"] = data[19]
-	res["ed_code"] = data[20]
-	res["wholesale_price_0"] = data[21]
-	res["wholesale_price"] = data[22]
-	res["list_price"] = data[23]
-	res["retail_price_min"] = data[24]
-	res["retail_price_max"] = data[25]
-	res["ed_wholesale_price_0"] = data[26]
-	res["ed_wholesale_price"] = data[27]
-	res["ed_list_price"] = data[28]
-	res["ed_retail_price_min"] = data[29]
-	res["ed_retail_price_max"] = data[30]
-	res["quantity_available"] = data[31]
-	res["quantity_on_hand"] = data[32]
-	res["quantity_reserved"] = data[33]
-	res["image_urls"] = data[34]
-	res["supplier_meta"] = data[35]
-	res["cost_price"] = data[36]
-	res["attributes"] = data[37]
-	res["created_at"] = data[38]
-	res["updated_at"] = data[39]
+	res["short_desc"] = data[6]
+	res["description"] = data[7]
+	res["desc_html"] = data[8]
+	res["ed_name"] = data[9]
+	res["ed_short_desc"] = data[10]
+	res["ed_description"] = data[11]
+	res["ed_desc_html"] = data[12]
+	res["desc_norm"] = data[13]
+	res["attr_norm_kv"] = data[14]
+	res["status"] = data[15]
+	res["etop_status"] = data[16]
+	res["ed_status"] = data[17]
+	res["code"] = data[18]
+	res["ed_code"] = data[19]
+	res["wholesale_price_0"] = data[20]
+	res["wholesale_price"] = data[21]
+	res["list_price"] = data[22]
+	res["retail_price_min"] = data[23]
+	res["retail_price_max"] = data[24]
+	res["ed_wholesale_price_0"] = data[25]
+	res["ed_wholesale_price"] = data[26]
+	res["ed_list_price"] = data[27]
+	res["ed_retail_price_min"] = data[28]
+	res["ed_retail_price_max"] = data[29]
+	res["quantity_available"] = data[30]
+	res["quantity_on_hand"] = data[31]
+	res["quantity_reserved"] = data[32]
+	res["image_urls"] = data[33]
+	res["supplier_meta"] = data[34]
+	res["cost_price"] = data[35]
+	res["attributes"] = data[36]
+	res["created_at"] = data[37]
+	res["updated_at"] = data[38]
 	*m = res
 	return nil
 }
 
 func (ms *VariantHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	data := make([]interface{}, 40)
-	args := make([]interface{}, 40)
-	for i := 0; i < 40; i++ {
+	data := make([]interface{}, 39)
+	args := make([]interface{}, 39)
+	for i := 0; i < 39; i++ {
 		args[i] = &data[i]
 	}
 	res := make(VariantHistories, 0, 128)
@@ -1766,40 +1729,39 @@ func (ms *VariantHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
 		m["supplier_id"] = data[3]
 		m["product_source_category_id"] = data[4]
 		m["etop_category_id"] = data[5]
-		m["product_brand_id"] = data[6]
-		m["short_desc"] = data[7]
-		m["description"] = data[8]
-		m["desc_html"] = data[9]
-		m["ed_name"] = data[10]
-		m["ed_short_desc"] = data[11]
-		m["ed_description"] = data[12]
-		m["ed_desc_html"] = data[13]
-		m["desc_norm"] = data[14]
-		m["attr_norm_kv"] = data[15]
-		m["status"] = data[16]
-		m["etop_status"] = data[17]
-		m["ed_status"] = data[18]
-		m["code"] = data[19]
-		m["ed_code"] = data[20]
-		m["wholesale_price_0"] = data[21]
-		m["wholesale_price"] = data[22]
-		m["list_price"] = data[23]
-		m["retail_price_min"] = data[24]
-		m["retail_price_max"] = data[25]
-		m["ed_wholesale_price_0"] = data[26]
-		m["ed_wholesale_price"] = data[27]
-		m["ed_list_price"] = data[28]
-		m["ed_retail_price_min"] = data[29]
-		m["ed_retail_price_max"] = data[30]
-		m["quantity_available"] = data[31]
-		m["quantity_on_hand"] = data[32]
-		m["quantity_reserved"] = data[33]
-		m["image_urls"] = data[34]
-		m["supplier_meta"] = data[35]
-		m["cost_price"] = data[36]
-		m["attributes"] = data[37]
-		m["created_at"] = data[38]
-		m["updated_at"] = data[39]
+		m["short_desc"] = data[6]
+		m["description"] = data[7]
+		m["desc_html"] = data[8]
+		m["ed_name"] = data[9]
+		m["ed_short_desc"] = data[10]
+		m["ed_description"] = data[11]
+		m["ed_desc_html"] = data[12]
+		m["desc_norm"] = data[13]
+		m["attr_norm_kv"] = data[14]
+		m["status"] = data[15]
+		m["etop_status"] = data[16]
+		m["ed_status"] = data[17]
+		m["code"] = data[18]
+		m["ed_code"] = data[19]
+		m["wholesale_price_0"] = data[20]
+		m["wholesale_price"] = data[21]
+		m["list_price"] = data[22]
+		m["retail_price_min"] = data[23]
+		m["retail_price_max"] = data[24]
+		m["ed_wholesale_price_0"] = data[25]
+		m["ed_wholesale_price"] = data[26]
+		m["ed_list_price"] = data[27]
+		m["ed_retail_price_min"] = data[28]
+		m["ed_retail_price_max"] = data[29]
+		m["quantity_available"] = data[30]
+		m["quantity_on_hand"] = data[31]
+		m["quantity_reserved"] = data[32]
+		m["image_urls"] = data[33]
+		m["supplier_meta"] = data[34]
+		m["cost_price"] = data[35]
+		m["attributes"] = data[36]
+		m["created_at"] = data[37]
+		m["updated_at"] = data[38]
 		res = append(res, m)
 	}
 	if err := rows.Err(); err != nil {

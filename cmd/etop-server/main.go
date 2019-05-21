@@ -33,7 +33,6 @@ import (
 	"etop.vn/backend/pkg/etop/apix/webhook"
 	"etop.vn/backend/pkg/etop/authorize/middleware"
 	"etop.vn/backend/pkg/etop/authorize/tokens"
-	"etop.vn/backend/pkg/etop/cache"
 	"etop.vn/backend/pkg/etop/eventstream"
 	ffmexport "etop.vn/backend/pkg/etop/logic/fulfillments/export"
 	orderS "etop.vn/backend/pkg/etop/logic/orders"
@@ -167,11 +166,6 @@ func main() {
 			ll.Fatal("Unable to connect to Postgres Notifier", l.Error(err))
 		}
 		sqlstore.InitDBNotifier(dbNotifier)
-	}
-
-	err = cache.NewRedisCache(redisStore, "") // TODO: cloudsql
-	if err != nil {
-		ll.Fatal("Unable to initialize cache", l.Error(err))
 	}
 
 	locationBus := servicelocation.New().MessageBus()
