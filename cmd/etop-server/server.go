@@ -82,21 +82,9 @@ func startEtopServer() *http.Server {
 		// Register import handlers
 		{
 			rt := httpx.New()
-			mux.Handle("/api/import/", middleware.ForwardHeaders(rt))
-			rt.Use(httpx.RecoverAndLog(botImport, false))
-			rt.Use(httpx.Auth(permission.EtopAdmin))
-
-			// @deprecated
-			rt.POST("/api/import/MoneyTransactions", imcsvghn.HandleImportMoneyTransactions)
-		}
-		{
-			rt := httpx.New()
 			mux.Handle("/api/admin.Import/", middleware.ForwardHeaders(rt))
 			rt.Use(httpx.RecoverAndLog(botImport, false))
 			rt.Use(httpx.Auth(permission.EtopAdmin))
-
-			// @deprecated
-			rt.POST("/api/admin.Import/MoneyTransactions", imcsvghn.HandleImportMoneyTransactions)
 
 			rt.POST("/api/admin.Import/ghn/MoneyTransactions", imcsvghn.HandleImportMoneyTransactions)
 			rt.POST("/api/admin.Import/ghtk/MoneyTransactions", imcsvghtk.HandleImportMoneyTransactions)

@@ -294,7 +294,8 @@ func GetOrders(ctx context.Context, query *ordermodelx.GetOrdersQuery) error {
 	}
 	query.Result.Shops = shopQuery.Result.Shops
 
-	for _, order := range query.Result.Orders {
+	for i := range query.Result.Orders {
+		order := &query.Result.Orders[i] // it's not a pointer
 		order.Fulfillments = orderFulfillments[order.ID]
 		order.ExternalData = orderExternalsHash[order.ID]
 		for i, line := range order.Lines {
