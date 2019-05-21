@@ -7,8 +7,6 @@ import (
 	"strings"
 	"time"
 
-	"etop.vn/backend/pkg/services/selling/modelx"
-
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/l"
@@ -17,6 +15,8 @@ import (
 	"etop.vn/backend/pkg/etop/logic/etop_shipping_price"
 	"etop.vn/backend/pkg/etop/logic/shipping_provider"
 	"etop.vn/backend/pkg/etop/model"
+	ordermodel "etop.vn/backend/pkg/services/ordering/model"
+	ordermodelx "etop.vn/backend/pkg/services/ordering/modelx"
 
 	pbcm "etop.vn/backend/pb/common"
 	pborder "etop.vn/backend/pb/etop/order"
@@ -80,7 +80,7 @@ func CreateOrder(ctx context.Context, claim *claims.ShopClaim, authPartner *mode
 
 	order.ShopID = shop.ID
 	order.OrderSourceType = src
-	cmd := &model.CreateOrderCommand{
+	cmd := &ordermodelx.CreateOrderCommand{
 		Order: order,
 	}
 	if err := bus.Dispatch(ctx, cmd); err != nil {
@@ -91,7 +91,7 @@ func CreateOrder(ctx context.Context, claim *claims.ShopClaim, authPartner *mode
 			case strings.Contains(msg, "order_shop_external_id_idx"):
 				newErr := cm.Errorf(cm.AlreadyExists, nil, "Mã đơn hàng external_id đã tồn tại. Vui lòng kiểm tra lại.").
 					WithMeta("duplicated", "external_id")
-				orderQuery := &modelx.GetOrderQuery{
+				orderQuery := &ordermodelx.GetOrderQuery{
 					ShopID:     shop.ID,
 					ExternalID: r.ExternalId, // TODO: external id may be normalized, this won't work
 				}
@@ -104,7 +104,7 @@ func CreateOrder(ctx context.Context, claim *claims.ShopClaim, authPartner *mode
 			case strings.Contains(msg, "order_partner_external_id_idx"):
 				newErr := cm.Errorf(cm.AlreadyExists, nil, "Mã đơn hàng external_id đã tồn tại. Vui lòng kiểm tra lại.").
 					WithMeta("duplicated", "external_id")
-				orderQuery := &modelx.GetOrderQuery{
+				orderQuery := &ordermodelx.GetOrderQuery{
 					PartnerID:  shop.ID,
 					ExternalID: r.ExternalId,
 				}
@@ -134,7 +134,7 @@ func CreateOrder(ctx context.Context, claim *claims.ShopClaim, authPartner *mode
 	return result, nil
 }
 
-func PrepareOrderLines(ctx context.Context, shopID int64, lines []*pborder.CreateOrderLine) ([]*model.OrderLine, error) {
+func PrepareOrderLines(ctx context.Context, shopID int64, lines []*pborder.CreateOrderLine) ([]*ordermodel.OrderLine, error) {
 	variantIDs := make([]int64, len(lines))
 	if len(lines) > 40 {
 		return nil, cm.Error(cm.InvalidArgument, "Đơn hàng có quá nhiều sản phẩm", nil)
@@ -177,7 +177,7 @@ func PrepareOrderLines(ctx context.Context, shopID int64, lines []*pborder.Creat
 		variants = variantsQuery.Result.Variants
 	}
 
-	res := make([]*model.OrderLine, len(lines))
+	res := make([]*ordermodel.OrderLine, len(lines))
 	for i, line := range lines {
 		if line.VariantId == 0 {
 			item, err := prepareOrderLine(line, shopID, nil, nil)
@@ -214,7 +214,7 @@ func PrepareOrderLines(ctx context.Context, shopID int64, lines []*pborder.Creat
 }
 
 func UpdateOrder(ctx context.Context, claim *claims.ShopClaim, authPartner *model.Partner, q *pborder.UpdateOrderRequest) (*pborder.Order, error) {
-	query := &modelx.GetOrderQuery{
+	query := &ordermodelx.GetOrderQuery{
 		OrderID: q.Id,
 		ShopID:  claim.Shop.ID,
 	}
@@ -243,7 +243,7 @@ func UpdateOrder(ctx context.Context, claim *claims.ShopClaim, authPartner *mode
 		feeLines = oldOrder.FeeLines
 	} else {
 		// calculate fee lines from shop_shipping_fee
-		feeLines = model.GetFeeLinesWithFallback(feeLines, nil, q.ShopShippingFee)
+		feeLines = ordermodel.GetFeeLinesWithFallback(feeLines, nil, q.ShopShippingFee)
 	}
 
 	var basketValue, totalDiscount, totalAmount, totalItems int
@@ -251,12 +251,12 @@ func UpdateOrder(ctx context.Context, claim *claims.ShopClaim, authPartner *mode
 		basketValue += line.LineAmount
 		totalItems += line.Quantity
 	}
-	totalLineDiscount := model.SumOrderLineDiscount(lines)
+	totalLineDiscount := ordermodelx.SumOrderLineDiscount(lines)
 	totalDiscount = totalLineDiscount + orderDiscount
-	totalFee := model.CalcTotalFee(feeLines)
+	totalFee := ordermodel.CalcTotalFee(feeLines)
 
 	// calculate shop_cod back from fee_lines
-	shopShippingFee := model.GetShippingFeeFromFeeLines(feeLines)
+	shopShippingFee := ordermodel.GetShippingFeeFromFeeLines(feeLines)
 	if q.ShopShippingFee != nil {
 		if int(*q.ShopShippingFee) != shopShippingFee {
 			return nil, cm.Errorf(cm.InvalidArgument, nil, "Phí giao hàng không đúng").
@@ -303,12 +303,12 @@ func UpdateOrder(ctx context.Context, claim *claims.ShopClaim, authPartner *mode
 		shipping = q.Shipping
 		shopCod = shipping.CodAmount
 	}
-	fakeOrder := &model.Order{}
+	fakeOrder := &ordermodel.Order{}
 	if err := shipping.ToModel(fakeOrder); err != nil {
 		return nil, err
 	}
 
-	cmd := &model.UpdateOrderCommand{
+	cmd := &ordermodelx.UpdateOrderCommand{
 		ID:              q.Id,
 		ShopID:          claim.Shop.ID,
 		Customer:        q.Customer.ToModel(),
@@ -352,7 +352,7 @@ func UpdateOrder(ctx context.Context, claim *claims.ShopClaim, authPartner *mode
 func PrepareOrderLine(
 	m *pborder.CreateOrderLine,
 	v *model.VariantExtended, sp *model.ShopVariantExtended,
-) (*model.OrderLine, error) {
+) (*ordermodel.OrderLine, error) {
 	if int(m.RetailPrice) != sp.ShopVariant.RetailPrice {
 		return nil, cm.Error(cm.FailedPrecondition, cm.F(
 			`Có sự khác biệt về giá của sản phẩm "%v". Vui lòng kiểm tra lại. Giá đăng bán %v, giá đơn hàng %v`,
@@ -366,7 +366,7 @@ func PrepareOrderLine(
 	return prepareOrderLine(m, sp.ShopVariant.ShopID, v, sp)
 }
 
-func prepareOrderLine(m *pborder.CreateOrderLine, shopID int64, v *model.VariantExtended, sp *model.ShopVariantExtended) (*model.OrderLine, error) {
+func prepareOrderLine(m *pborder.CreateOrderLine, shopID int64, v *model.VariantExtended, sp *model.ShopVariantExtended) (*ordermodel.OrderLine, error) {
 	productName, ok := validate.NormalizeGenericName(m.ProductName)
 	if !ok {
 		return nil, cm.Errorf(cm.InvalidArgument, nil,
@@ -385,7 +385,7 @@ func prepareOrderLine(m *pborder.CreateOrderLine, shopID int64, v *model.Variant
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Cần cung cấp product_name hoặc variant_id")
 	}
 
-	line := &model.OrderLine{
+	line := &ordermodel.OrderLine{
 		ShopID:          shopID,
 		IsOutsideEtop:   m.VariantId == 0,
 		Quantity:        int(m.Quantity),
@@ -442,7 +442,7 @@ func prepareOrderLine(m *pborder.CreateOrderLine, shopID int64, v *model.Variant
 	return line, nil
 }
 
-func PrepareOrder(m *pborder.CreateOrderRequest, lines []*model.OrderLine) (*model.Order, error) {
+func PrepareOrder(m *pborder.CreateOrderRequest, lines []*ordermodel.OrderLine) (*ordermodel.Order, error) {
 	if m.Customer == nil {
 		return nil, cm.Error(cm.InvalidArgument, "Missing Customer", nil)
 	}
@@ -475,7 +475,7 @@ func PrepareOrder(m *pborder.CreateOrderRequest, lines []*model.OrderLine) (*mod
 
 	// calculate fee lines from shop_shipping_fee
 	feeLines := pborder.PbOrderFeeLinesToModel(m.FeeLines)
-	feeLines = model.GetFeeLinesWithFallback(feeLines, &m.TotalFee, &m.ShopShippingFee)
+	feeLines = ordermodel.GetFeeLinesWithFallback(feeLines, &m.TotalFee, &m.ShopShippingFee)
 	totalFee := 0
 	for _, line := range feeLines {
 		totalFee += line.Amount
@@ -488,7 +488,7 @@ func PrepareOrder(m *pborder.CreateOrderRequest, lines []*model.OrderLine) (*mod
 	// calculate shop_cod back from fee_lines
 	shopShippingFee := 0
 	for _, line := range feeLines {
-		if line.Type == model.OrderFeeShipping {
+		if line.Type == ordermodel.OrderFeeShipping {
 			shopShippingFee += line.Amount
 			if line.Amount < 0 {
 				return nil, cm.Errorf(cm.InvalidArgument, nil, "Phí không được nhỏ hơn 0")
@@ -511,7 +511,7 @@ func PrepareOrder(m *pborder.CreateOrderRequest, lines []*model.OrderLine) (*mod
 		basketValue = int(m.BasketValue)
 		totalItems = int(m.TotalItems)
 	}
-	totalLineDiscount := model.SumOrderLineDiscount(lines)
+	totalLineDiscount := ordermodelx.SumOrderLineDiscount(lines)
 	orderDiscount := int(m.OrderDiscount)
 	totalDiscount = totalLineDiscount + orderDiscount
 	if m.TotalDiscount != nil {
@@ -582,7 +582,7 @@ func PrepareOrder(m *pborder.CreateOrderRequest, lines []*model.OrderLine) (*mod
 		return nil, cm.Error(cm.InvalidArgument, "Mã đơn hàng external_id không hợp lệ", nil)
 	}
 
-	order := &model.Order{
+	order := &ordermodel.Order{
 		ID:          0,
 		ShopID:      0,
 		Code:        "", // will be filled by sqlstore
@@ -672,7 +672,7 @@ func PrepareOrder(m *pborder.CreateOrderRequest, lines []*model.OrderLine) (*mod
 }
 
 func CancelOrder(ctx context.Context, shopID int64, authPartnerID int64, orderID int64, cancelReason string) (*pborder.OrderWithErrorsResponse, error) {
-	getOrderQuery := &modelx.GetOrderQuery{
+	getOrderQuery := &ordermodelx.GetOrderQuery{
 		ShopID:             shopID,
 		PartnerID:          authPartnerID,
 		OrderID:            orderID,
@@ -699,7 +699,7 @@ func CancelOrder(ctx context.Context, shopID int64, authPartnerID int64, orderID
 	//	return cm.Error(cm.FailedPrecondition, "Đơn hàng đã huỷ.", nil)
 	//}
 
-	updateOrderCmd := &model.UpdateOrdersStatusCommand{
+	updateOrderCmd := &ordermodelx.UpdateOrdersStatusCommand{
 		ShopID:        shopID,
 		PartnerID:     authPartnerID,
 		OrderIDs:      []int64{orderID},

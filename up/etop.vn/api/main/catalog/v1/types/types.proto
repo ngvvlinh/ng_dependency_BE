@@ -1,14 +1,6 @@
 syntax = "proto2";
-package etop.vn.api.main.order.v1;
-option go_package = "v1";
-
-import "protoc-gen-swagger/options/annotations.proto";
-option (grpc.gateway.protoc_gen_swagger.options.openapiv2_swagger) = {
-    info: {
-        title: "Order";
-        version:"v1";
-    };
-};
+package etop.vn.api.main.catalog.v1.types;
+option go_package = "types";
 
 import "gogoproto/gogo.proto";
 option (gogoproto.equal_all)                = false;
@@ -26,6 +18,10 @@ option (gogoproto.testgen_all)              = false;
 option (gogoproto.unmarshaler_all)          = false;
 option (gogoproto.verbose_equal_all)        = false;
 
-message Order {
+import "etop.vn/api/meta/v1/api.proto";
 
+message Attribute {
+    optional string name = 1 [(gogoproto.nullable)=false];
+
+    optional string value = 2 [(gogoproto.nullable)=false];
 }

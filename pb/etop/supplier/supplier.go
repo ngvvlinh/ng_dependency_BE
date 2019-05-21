@@ -9,6 +9,7 @@ import (
 	"etop.vn/backend/pb/etop/order/source"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/etop/model"
+	ordermodel "etop.vn/backend/pkg/services/ordering/model"
 )
 
 func PbBranches(bs []*model.KiotvietBranch) []*KiotvietBranch {
@@ -381,7 +382,7 @@ func PbPriceRuleToModel(p *PriceRule) *model.SupplierPriceRule {
 	}
 }
 
-func PbOrders(items []*model.Order) []*SupplierOrder {
+func PbOrders(items []*ordermodel.Order) []*SupplierOrder {
 	res := make([]*SupplierOrder, len(items))
 	for i, item := range items {
 		res[i] = PbOrder(item, nil)
@@ -389,7 +390,7 @@ func PbOrders(items []*model.Order) []*SupplierOrder {
 	return res
 }
 
-func PbOrder(m *model.Order, shop *model.ShopExtended) *SupplierOrder {
+func PbOrder(m *ordermodel.Order, shop *model.ShopExtended) *SupplierOrder {
 	totalItems, basketValue := 0, 0
 	for _, line := range m.Lines {
 		totalItems += line.Quantity
@@ -432,7 +433,7 @@ func PbOrder(m *model.Order, shop *model.ShopExtended) *SupplierOrder {
 	}
 }
 
-func PbOrderLines(items []*model.OrderLine) []*SupplierOrderLine {
+func PbOrderLines(items []*ordermodel.OrderLine) []*SupplierOrderLine {
 	res := make([]*SupplierOrderLine, len(items))
 	for i, item := range items {
 		res[i] = PbOrderLine(item)
@@ -440,7 +441,7 @@ func PbOrderLines(items []*model.OrderLine) []*SupplierOrderLine {
 	return res
 }
 
-func PbOrderLine(m *model.OrderLine) *SupplierOrderLine {
+func PbOrderLine(m *ordermodel.OrderLine) *SupplierOrderLine {
 	return &SupplierOrderLine{
 		OrderId:   m.OrderID,
 		VariantId: m.VariantID,

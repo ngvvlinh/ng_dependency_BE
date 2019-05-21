@@ -1,6 +1,6 @@
 package fee
 
-import "etop.vn/backend/pkg/etop/model"
+import "etop.vn/backend/pkg/services/ordering/model"
 
 func Pb(s model.OrderFeeType) FeeType {
 	st, ok := FeeType_value[string(s)]

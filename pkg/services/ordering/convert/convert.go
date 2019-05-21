@@ -3,10 +3,10 @@ package convert
 import (
 	"time"
 
-	"etop.vn/api/main/order"
-
-	"etop.vn/api/main/order/v1/types"
+	"etop.vn/api/main/ordering"
+	"etop.vn/api/main/ordering/v1/types"
 	"etop.vn/backend/pkg/etop/model"
+	ordermodel "etop.vn/backend/pkg/services/ordering/model"
 )
 
 func AddressToModel(in *types.Address) (out *model.Address) {
@@ -62,11 +62,11 @@ func Address(in *model.Address) (out *types.Address) {
 	return out
 }
 
-func Order(in *model.Order) (out *order.Order) {
+func Order(in *ordermodel.Order) (out *ordering.Order) {
 	if in == nil {
 		return nil
 	}
-	out = &order.Order{
+	out = &ordering.Order{
 		ID: in.ID,
 	}
 	return out

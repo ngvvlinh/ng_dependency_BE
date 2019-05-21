@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"etop.vn/backend/pkg/etop/model"
+	ordermodel "etop.vn/backend/pkg/services/ordering/model"
 )
 
 //go:generate $ETOPDIR/backend/scripts/derive.sh
@@ -58,7 +59,7 @@ type Fulfillment struct {
 	EtopPriceRule bool
 
 	VariantIDs []int64
-	Lines      model.OrderLinesList
+	Lines      ordermodel.OrderLinesList
 
 	TypeFrom      model.FulfillmentEndpoint
 	TypeTo        model.FulfillmentEndpoint

@@ -12,6 +12,7 @@ import (
 	"etop.vn/backend/pkg/etop/model"
 	ghnclient "etop.vn/backend/pkg/integration/ghn/client"
 	"etop.vn/backend/pkg/integration/shipping"
+	ordermodel "etop.vn/backend/pkg/services/ordering/model"
 	shipmodel "etop.vn/backend/pkg/services/shipping/model"
 )
 
@@ -53,7 +54,7 @@ func (c *Carrier) InitAllClients(ctx context.Context) error {
 
 func (p *Carrier) CreateFulfillment(
 	ctx context.Context,
-	order *model.Order,
+	order *ordermodel.Order,
 	ffm *shipmodel.Fulfillment,
 	args shipping_provider.GetShippingServicesArgs,
 	service *model.AvailableShippingService,
@@ -217,11 +218,11 @@ func (c *Carrier) GetAllShippingServices(ctx context.Context, args shipping_prov
 	return c.GetShippingServices(ctx, args)
 }
 
-func (p *Carrier) GetShippingService(ffm *shipmodel.Fulfillment, order *model.Order, weight int, valueInsurance int) (providerService *model.AvailableShippingService, etopService *model.AvailableShippingService, err error) {
+func (p *Carrier) GetShippingService(ffm *shipmodel.Fulfillment, order *ordermodel.Order, weight int, valueInsurance int) (providerService *model.AvailableShippingService, etopService *model.AvailableShippingService, err error) {
 	return nil, nil, cm.ErrTODO
 }
 
-func calcGHNService(order *model.Order, ffm *shipmodel.Fulfillment, cmd *RequestFindAvailableServicesCommand) (serviceID string, service *model.AvailableShippingService, err error) {
+func calcGHNService(order *ordermodel.Order, ffm *shipmodel.Fulfillment, cmd *RequestFindAvailableServicesCommand) (serviceID string, service *model.AvailableShippingService, err error) {
 
 	// Always choose the fastest possible service
 	var minTime time.Time

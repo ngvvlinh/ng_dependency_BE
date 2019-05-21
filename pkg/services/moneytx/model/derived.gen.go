@@ -9,6 +9,7 @@ import (
 	sq "etop.vn/backend/pkg/common/sql"
 	core "etop.vn/backend/pkg/common/sql/core"
 	model "etop.vn/backend/pkg/etop/model"
+	etop_vn_backend_pkg_services_ordering_model "etop.vn/backend/pkg/services/ordering/model"
 	etop_vn_backend_pkg_services_shipping_model "etop.vn/backend/pkg/services/shipping/model"
 )
 
@@ -748,7 +749,7 @@ func (ms *MoneyTransactionShippingExternalLineHistories) SQLScan(opts core.Opts,
 }
 
 // Type MoneyTransactionShippingExternalLineExtended represents a join
-func sqlgenMoneyTransactionShippingExternalLineExtended(_ *MoneyTransactionShippingExternalLineExtended, _ *MoneyTransactionShippingExternalLine, as sq.AS, t0 sq.JOIN_TYPE, _ *etop_vn_backend_pkg_services_shipping_model.Fulfillment, a0 sq.AS, c0 string, t1 sq.JOIN_TYPE, _ *model.Shop, a1 sq.AS, c1 string, t2 sq.JOIN_TYPE, _ *model.Order, a2 sq.AS, c2 string) bool {
+func sqlgenMoneyTransactionShippingExternalLineExtended(_ *MoneyTransactionShippingExternalLineExtended, _ *MoneyTransactionShippingExternalLine, as sq.AS, t0 sq.JOIN_TYPE, _ *etop_vn_backend_pkg_services_shipping_model.Fulfillment, a0 sq.AS, c0 string, t1 sq.JOIN_TYPE, _ *model.Shop, a1 sq.AS, c1 string, t2 sq.JOIN_TYPE, _ *etop_vn_backend_pkg_services_ordering_model.Order, a2 sq.AS, c2 string) bool {
 	__sqlMoneyTransactionShippingExternalLineExtended_JoinTypes = []sq.JOIN_TYPE{t0, t1, t2}
 	__sqlMoneyTransactionShippingExternalLineExtended_As = as
 	__sqlMoneyTransactionShippingExternalLineExtended_JoinAs = []sq.AS{a0, a1, a2}
@@ -822,7 +823,7 @@ func (m *MoneyTransactionShippingExternalLineExtended) __sqlSelect(w SQLWriter) 
 	w.WriteByte(',')
 	core.WriteCols(w, string(__sqlMoneyTransactionShippingExternalLineExtended_JoinAs[1]), (*model.Shop)(nil).SQLListCols())
 	w.WriteByte(',')
-	core.WriteCols(w, string(__sqlMoneyTransactionShippingExternalLineExtended_JoinAs[2]), (*model.Order)(nil).SQLListCols())
+	core.WriteCols(w, string(__sqlMoneyTransactionShippingExternalLineExtended_JoinAs[2]), (*etop_vn_backend_pkg_services_ordering_model.Order)(nil).SQLListCols())
 }
 
 func (m *MoneyTransactionShippingExternalLineExtended) __sqlJoin(w SQLWriter, types []sq.JOIN_TYPE) {
@@ -852,7 +853,7 @@ func (m *MoneyTransactionShippingExternalLineExtended) __sqlJoin(w SQLWriter, ty
 	w.WriteByte(' ')
 	w.WriteRawString(string(types[2]))
 	w.WriteRawString(" JOIN ")
-	w.WriteName((*model.Order)(nil).SQLTableName())
+	w.WriteName((*etop_vn_backend_pkg_services_ordering_model.Order)(nil).SQLTableName())
 	w.WriteRawString(" AS ")
 	w.WriteRawString(string(__sqlMoneyTransactionShippingExternalLineExtended_JoinAs[2]))
 	w.WriteRawString(" ON ")
@@ -867,7 +868,7 @@ func (m *MoneyTransactionShippingExternalLineExtended) SQLScanArgs(opts core.Opt
 	args = append(args, m.Fulfillment.SQLScanArgs(opts)...)
 	m.Shop = new(model.Shop)
 	args = append(args, m.Shop.SQLScanArgs(opts)...)
-	m.Order = new(model.Order)
+	m.Order = new(etop_vn_backend_pkg_services_ordering_model.Order)
 	args = append(args, m.Order.SQLScanArgs(opts)...)
 
 	return args

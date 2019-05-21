@@ -3,7 +3,7 @@ package supplier
 import (
 	"context"
 
-	modelx2 "etop.vn/backend/pkg/services/selling/modelx"
+	modelx2 "etop.vn/backend/pkg/services/ordering/modelx"
 
 	"etop.vn/backend/pkg/services/shipping/modelx"
 
@@ -83,12 +83,12 @@ func UpdateOrdersStatus(ctx context.Context, q *supplierW.UpdateOrdersStatusEndp
 		return cm.Error(cm.InvalidArgument, "Nothing to update", nil)
 	}
 
-	updates := make([]model.UpdateOrderLinesStatus, len(q.Updates))
+	updates := make([]modelx2.UpdateOrderLinesStatus, len(q.Updates))
 	for i, update := range q.Updates {
 		if update == nil {
 			return cm.Error(cm.InvalidArgument, "Empty update", nil)
 		}
-		updates[i] = model.UpdateOrderLinesStatus{
+		updates[i] = modelx2.UpdateOrderLinesStatus{
 			OrderID:         update.OrderId,
 			ProductIDs:      update.ProductIds,
 			SupplierConfirm: update.SConfirm.ToModel(),
@@ -96,7 +96,7 @@ func UpdateOrdersStatus(ctx context.Context, q *supplierW.UpdateOrdersStatusEndp
 		}
 	}
 
-	cmd := &model.UpdateOrderLinesStatusCommand{
+	cmd := &modelx2.UpdateOrderLinesStatusCommand{
 		SupplierID: q.Context.Supplier.ID,
 		Updates:    updates,
 	}

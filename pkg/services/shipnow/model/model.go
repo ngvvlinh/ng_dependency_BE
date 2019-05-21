@@ -7,6 +7,7 @@ import (
 
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/etop/model"
+	ordermodel "etop.vn/backend/pkg/services/ordering/model"
 )
 
 //go:generate ../../../../scripts/derive.sh
@@ -54,7 +55,7 @@ func (m *ShipnowFulfillment) Validate() error {
 
 type DeliveryPoint struct {
 	ShippingAddress *model.Address
-	Items           []*model.OrderLine
+	Items           []*ordermodel.OrderLine
 
 	GrossWeight      int32
 	ChargeableWeight int32

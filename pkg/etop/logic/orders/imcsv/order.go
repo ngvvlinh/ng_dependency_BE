@@ -3,6 +3,8 @@ package imcsv
 import (
 	"context"
 
+	"etop.vn/backend/pkg/services/ordering/modelx"
+
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/imcsv"
@@ -51,7 +53,7 @@ func VerifyOrders(ctx context.Context, shop *model.Shop, idx imcsv.Indexer, code
 	}
 
 	// Verify order codes
-	orderCodeQuery := &model.VerifyOrdersByEdCodeQuery{
+	orderCodeQuery := &modelx.VerifyOrdersByEdCodeQuery{
 		ShopID:           shop.ID,
 		EdCodes:          codes,
 		OnlyActiveOrders: true,

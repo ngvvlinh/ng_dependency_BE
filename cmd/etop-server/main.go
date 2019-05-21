@@ -50,6 +50,7 @@ import (
 	"etop.vn/backend/pkg/integration/sms"
 	"etop.vn/backend/pkg/integration/vtpost"
 	servicelocation "etop.vn/backend/pkg/services/location"
+	ordersqlstore "etop.vn/backend/pkg/services/ordering/sqlstore"
 	shipsqlstore "etop.vn/backend/pkg/services/shipping/sqlstore"
 )
 
@@ -227,7 +228,7 @@ func main() {
 	xshop.Init(shutdowner, redisStore, authStore)
 	integration.Init(shutdowner, redisStore, authStore)
 	webhook.Init(ctlProducer, redisStore)
-	xshipping.Init(shippingManager, shipsqlstore.NewFulfillmentStore(db))
+	xshipping.Init(shippingManager, ordersqlstore.NewOrderStore(db), shipsqlstore.NewFulfillmentStore(db))
 	orderS.Init(shippingManager)
 
 	svrs := startServers()

@@ -18,7 +18,7 @@ option (gogoproto.testgen_all)              = false;
 option (gogoproto.unmarshaler_all)          = false;
 option (gogoproto.verbose_equal_all)        = false;
 
-import "etop.vn/api/main/order/v1/types/types.proto";
+import "etop.vn/api/main/ordering/v1/types/types.proto";
 import "etop.vn/api/main/shipping/v1/types/tryon.proto";
 import "etop.vn/api/main/shipping/v1/types/types.proto";
 import "etop.vn/api/meta/v1/api.proto";
@@ -42,7 +42,7 @@ message ShipnowFulfillment {
 
     optional int64 partner_id = 3 [(gogoproto.nullable)=false];
 
-    optional order.v1.types.Address pickup_address = 4;
+    optional ordering.v1.types.Address pickup_address = 4;
 
     repeated DeliveryPoint delivery_points = 5;
 
@@ -62,9 +62,9 @@ message ShipnowFulfillment {
 }
 
 message DeliveryPoint {
-    optional order.v1.types.Address shipping_address = 1;
+    optional ordering.v1.types.Address shipping_address = 1;
 
-    repeated order.v1.types.ItemLine lines = 2;
+    repeated ordering.v1.types.ItemLine lines = 2;
 
     optional string shipping_note = 3 [(gogoproto.nullable)=false];
 

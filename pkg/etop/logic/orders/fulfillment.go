@@ -5,7 +5,8 @@ import (
 	"sync"
 	"time"
 
-	ordermodelx "etop.vn/backend/pkg/services/selling/modelx"
+	ordermodel "etop.vn/backend/pkg/services/ordering/model"
+	ordermodelx "etop.vn/backend/pkg/services/ordering/modelx"
 	shipmodel "etop.vn/backend/pkg/services/shipping/model"
 	shipmodelx "etop.vn/backend/pkg/services/shipping/modelx"
 
@@ -101,7 +102,7 @@ func ConfirmOrderAndCreateFulfillments(ctx context.Context, shop *model.Shop, pa
 	// This disallow updating order.
 	if order.ConfirmStatus != model.S3Positive ||
 		order.ShopConfirm != model.S3Positive {
-		cmd := &model.UpdateOrdersStatusCommand{
+		cmd := &ordermodelx.UpdateOrdersStatusCommand{
 			OrderIDs:      []int64{r.OrderId},
 			ConfirmStatus: model.S3Positive.P(),
 			ShopConfirm:   model.S3Positive.P(),
@@ -147,7 +148,7 @@ func ConfirmOrderAndCreateFulfillments(ctx context.Context, shop *model.Shop, pa
 	return resp, nil
 }
 
-func prepareFulfillmentsFromOrder(ctx context.Context, order *model.Order, shop *model.Shop) ([]*shipmodel.Fulfillment, error) {
+func prepareFulfillmentsFromOrder(ctx context.Context, order *ordermodel.Order, shop *model.Shop) ([]*shipmodel.Fulfillment, error) {
 	if order.ShopShipping != nil && order.ShopShipping.ShippingProvider == model.TypeGHN {
 		if order.GhnNoteCode == "" {
 			return nil, cm.Error(cm.FailedPrecondition, "Vui lòng chọn ghi chú xem hàng!", nil)
@@ -220,7 +221,7 @@ func blockRachGiaDistrict(shopAddress *model.Address) error {
 	return nil
 }
 
-func prepareSingleFulfillment(order *model.Order, shop *model.Shop, lines []*model.OrderLine, addressTo *model.Address) *shipmodel.Fulfillment {
+func prepareSingleFulfillment(order *ordermodel.Order, shop *model.Shop, lines []*ordermodel.OrderLine, addressTo *model.Address) *shipmodel.Fulfillment {
 
 	var variantIDs []int64
 	totalItems, totalWeight, basketValue, totalAmount := 0, 0, 0, 0
@@ -343,7 +344,7 @@ func prepareSingleFulfillment(order *model.Order, shop *model.Shop, lines []*mod
 // - Missing/cancelled fulfillments: create
 // - Error fulfillments: update
 // - Processing fulfillments: ignore
-func compareFulfillments(order *model.Order, olds, fulfillments []*shipmodel.Fulfillment) (creates, updates []*shipmodel.Fulfillment, err error) {
+func compareFulfillments(order *ordermodel.Order, olds, fulfillments []*shipmodel.Fulfillment) (creates, updates []*shipmodel.Fulfillment, err error) {
 	// active ffm: Those which are not cancelled
 	mapActiveSupplier := make(map[int64]*shipmodel.Fulfillment)
 	for _, ffm := range olds {
@@ -371,7 +372,7 @@ func compareFulfillments(order *model.Order, olds, fulfillments []*shipmodel.Ful
 	return creates, updates, nil
 }
 
-func orderAddressToShippingAddress(orderAddr *model.OrderAddress) (*model.Address, error) {
+func orderAddressToShippingAddress(orderAddr *ordermodel.OrderAddress) (*model.Address, error) {
 	if orderAddr == nil || orderAddr.DistrictCode == "" {
 		return nil, cm.Error(cm.InvalidArgument, "Thiếu thông tin địa chỉ.", nil)
 	}
@@ -409,7 +410,7 @@ func orderAddressToShippingAddress(orderAddr *model.OrderAddress) (*model.Addres
 	}, nil
 }
 
-func TryCancellingFulfillments(ctx context.Context, order *model.Order, fulfillments []*shipmodel.Fulfillment) (error, []error) {
+func TryCancellingFulfillments(ctx context.Context, order *ordermodel.Order, fulfillments []*shipmodel.Fulfillment) (error, []error) {
 	var ffmToCancel []*shipmodel.Fulfillment
 	ffmSendToProvider := make([]model.FfmAction, len(fulfillments))
 	count := 0

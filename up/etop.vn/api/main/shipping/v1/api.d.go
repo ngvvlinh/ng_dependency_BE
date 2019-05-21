@@ -3,7 +3,7 @@
 package v1
 
 import (
-	types "etop.vn/api/main/order/v1/types"
+	types "etop.vn/api/main/ordering/v1/types"
 )
 
 type Fulfillment struct {

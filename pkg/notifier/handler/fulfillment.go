@@ -9,14 +9,15 @@ import (
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/l"
 	"etop.vn/backend/pkg/common/mq"
-	etopmodel "etop.vn/backend/pkg/etop/model"
+	"etop.vn/backend/pkg/etop/model"
 	ghtkclient "etop.vn/backend/pkg/integration/ghtk/client"
-	"etop.vn/backend/pkg/notifier/model"
+	notifiermodel "etop.vn/backend/pkg/notifier/model"
 	"etop.vn/backend/pkg/pgevent"
+	ordermodel "etop.vn/backend/pkg/services/ordering/model"
 	shipmodel "etop.vn/backend/pkg/services/shipping/model"
 )
 
-var acceptNotifyStates = []string{string(etopmodel.StateReturning), string(etopmodel.StateReturned), string(etopmodel.StateUndeliverable)}
+var acceptNotifyStates = []string{string(model.StateReturning), string(model.StateReturned), string(model.StateUndeliverable)}
 
 func HandleFulfillmentEvent(ctx context.Context, event *pgevent.PgEvent) (mq.Code, error) {
 	var history shipmodel.FulfillmentHistory
@@ -43,8 +44,8 @@ func HandleFulfillmentEvent(ctx context.Context, event *pgevent.PgEvent) (mq.Cod
 	return mq.CodeOK, nil
 }
 
-func prepareNotiFfmCommands(history shipmodel.FulfillmentHistory, ffm *shipmodel.Fulfillment) []*model.CreateNotificationArgs {
-	var res []*model.CreateNotificationArgs
+func prepareNotiFfmCommands(history shipmodel.FulfillmentHistory, ffm *shipmodel.Fulfillment) []*notifiermodel.CreateNotificationArgs {
+	var res []*notifiermodel.CreateNotificationArgs
 	externalShippingNote := history.ExternalShippingNote().String()
 	externalSubState := history.ExternalShippingSubState().String()
 	if (externalShippingNote != nil && ffm.ExternalShippingNote != "") || (externalSubState != nil && ffm.ExternalShippingSubState != "") {
@@ -62,7 +63,7 @@ func prepareNotiFfmCommands(history shipmodel.FulfillmentHistory, ffm *shipmodel
 	return res
 }
 
-func templateFfmChangedNote(ffm *shipmodel.Fulfillment) *model.CreateNotificationArgs {
+func templateFfmChangedNote(ffm *shipmodel.Fulfillment) *notifiermodel.CreateNotificationArgs {
 	title, content := "", ""
 	totalCODAmount := cm.FormatCurrency(ffm.TotalCODAmount)
 	subState := ffm.ExternalShippingSubState
@@ -80,48 +81,48 @@ func templateFfmChangedNote(ffm *shipmodel.Fulfillment) *model.CreateNotificatio
 	if subState == ghtkclient.SubStateMapping[ghtkclient.StateIDShipperDelivered] {
 		sendNotification = false
 	}
-	return &model.CreateNotificationArgs{
+	return &notifiermodel.CreateNotificationArgs{
 		AccountID:        ffm.ShopID,
 		Title:            title,
 		Message:          content,
-		Entity:           model.NotiFulfillment,
+		Entity:           notifiermodel.NotiFulfillment,
 		EntityID:         ffm.ID,
 		SendNotification: sendNotification,
 	}
 }
 
-func templateFfmChangedFee(ffm *shipmodel.Fulfillment) *model.CreateNotificationArgs {
+func templateFfmChangedFee(ffm *shipmodel.Fulfillment) *notifiermodel.CreateNotificationArgs {
 	title := fmt.Sprintf("Thay đổi phí vận chuyển - %v %v - %v", Uppercase(ffm.ShippingProvider), ffm.ShippingCode, ffm.AddressTo.FullName)
 	totalCODAmount := cm.FormatCurrency(ffm.TotalCODAmount)
 	content := fmt.Sprintf("Cước phí thay đổi thành %v. Đơn hàng thuộc người nhận %v, %v, %v. Thu hộ %vđ", ffm.ShippingFeeShop, ffm.AddressTo.FullName, ffm.AddressTo.Phone, ffm.AddressTo.Province, totalCODAmount)
-	return &model.CreateNotificationArgs{
+	return &notifiermodel.CreateNotificationArgs{
 		AccountID:        ffm.ShopID,
 		Title:            title,
 		Message:          content,
-		Entity:           model.NotiFulfillment,
+		Entity:           notifiermodel.NotiFulfillment,
 		EntityID:         ffm.ID,
 		SendNotification: true,
 	}
 }
 
-func templateFfmChangedStatus(ffm *shipmodel.Fulfillment) *model.CreateNotificationArgs {
+func templateFfmChangedStatus(ffm *shipmodel.Fulfillment) *notifiermodel.CreateNotificationArgs {
 	content := ""
 	totalCODAmount := cm.FormatCurrency(ffm.TotalCODAmount)
 	switch ffm.ShippingState {
-	case etopmodel.StatePicking, etopmodel.StateHolding:
+	case model.StatePicking, model.StateHolding:
 		content = fmt.Sprintf("Dự kiến giao vào %v. Đơn hàng thuộc người nhận %v, %v, %v. Thu hộ %vđ", cm.FormatDateVN(ffm.ExpectedDeliveryAt), ffm.AddressTo.FullName, ffm.AddressTo.Phone, ffm.AddressTo.Province, totalCODAmount)
-	case etopmodel.StateDelivering, etopmodel.StateDelivered, etopmodel.StateReturned:
+	case model.StateDelivering, model.StateDelivered, model.StateReturned:
 		content = fmt.Sprintf("Đơn hàng thuộc người nhận %v, %v, %v. Thu hộ %vđ", ffm.AddressTo.FullName, ffm.AddressTo.Phone, ffm.AddressTo.Province, totalCODAmount)
-	case etopmodel.StateReturning:
+	case model.StateReturning:
 		content = fmt.Sprintf("Dự kiến trả hàng trong vòng 3-5 ngày tới. Đơn hàng thuộc người nhận %v, %v, %v. Thu hộ %vđ", ffm.AddressTo.FullName, ffm.AddressTo.Phone, ffm.AddressTo.Province, totalCODAmount)
-	case etopmodel.StateUndeliverable:
+	case model.StateUndeliverable:
 		compensationAmount := ffm.ActualCompensationAmount
 		if compensationAmount == 0 {
 			compensationAmount = ffm.BasketValue
 		}
 		content = fmt.Sprintf("Giá trị bồi hoàn %vđ. Đơn hàng thuộc người nhận %v, %v, %v. Thu hộ %vđ", cm.FormatCurrency(compensationAmount), ffm.AddressTo.FullName, ffm.AddressTo.Phone, ffm.AddressTo.Province, totalCODAmount)
-	case etopmodel.StateCancelled:
-		var order = new(etopmodel.Order)
+	case model.StateCancelled:
+		var order = new(ordermodel.Order)
 		_ = x.Table("order").Where("id = ?", ffm.OrderID).ShouldGet(order)
 		cancelReason := ffm.CancelReason
 		if cancelReason == "" && order != nil {
@@ -131,22 +132,22 @@ func templateFfmChangedStatus(ffm *shipmodel.Fulfillment) *model.CreateNotificat
 	default:
 	}
 
-	title := fmt.Sprintf("%v - %v %v - %v", etopmodel.ShippingStateMap[ffm.ShippingState], Uppercase(ffm.ShippingProvider), ffm.ShippingCode, ffm.AddressTo.FullName)
+	title := fmt.Sprintf("%v - %v %v - %v", model.ShippingStateMap[ffm.ShippingState], Uppercase(ffm.ShippingProvider), ffm.ShippingCode, ffm.AddressTo.FullName)
 
 	sendNotification := false
 	if cm.StringsContain(acceptNotifyStates, string(ffm.ShippingState)) {
 		sendNotification = true
 	}
-	return &model.CreateNotificationArgs{
+	return &notifiermodel.CreateNotificationArgs{
 		AccountID:        ffm.ShopID,
 		Title:            title,
 		Message:          content,
-		Entity:           model.NotiFulfillment,
+		Entity:           notifiermodel.NotiFulfillment,
 		EntityID:         ffm.ID,
 		SendNotification: sendNotification,
 	}
 }
 
-func Uppercase(provider etopmodel.ShippingProvider) string {
+func Uppercase(provider model.ShippingProvider) string {
 	return strings.ToUpper(string(provider))
 }

@@ -10,7 +10,8 @@ import (
 	servicelocation "etop.vn/backend/pkg/services/location"
 	txmodel "etop.vn/backend/pkg/services/moneytx/model"
 	txmodely "etop.vn/backend/pkg/services/moneytx/modely"
-	ordermodelx "etop.vn/backend/pkg/services/selling/modelx"
+	ordermodel "etop.vn/backend/pkg/services/ordering/model"
+	ordermodelx "etop.vn/backend/pkg/services/ordering/modelx"
 	shipmodel "etop.vn/backend/pkg/services/shipping/model"
 	"etop.vn/backend/pkg/services/shipping/modely"
 
@@ -44,7 +45,7 @@ func PbOrdersWithFulfillments(items []ordermodelx.OrderWithFulfillments, accType
 	return res
 }
 
-func PbOrders(items []*model.Order, accType int) []*Order {
+func PbOrders(items []*ordermodel.Order, accType int) []*Order {
 	res := make([]*Order, len(items))
 	for i, order := range items {
 		res[i] = PbOrder(order, nil, accType)
@@ -61,7 +62,7 @@ var exportedOrder = cm.SortStrings([]string{
 	"basket_value", "order_discount", "total_discount", "total_fee",
 })
 
-func PbOrder(m *model.Order, fulfillments []*shipmodel.Fulfillment, accType int) *Order {
+func PbOrder(m *ordermodel.Order, fulfillments []*shipmodel.Fulfillment, accType int) *Order {
 	order := &Order{
 		ExportedFields: exportedOrder,
 
@@ -124,7 +125,7 @@ func PbOrder(m *model.Order, fulfillments []*shipmodel.Fulfillment, accType int)
 	return order
 }
 
-func PbOrderExternal(item *model.OrderExternal) *OrderExternal {
+func PbOrderExternal(item *ordermodel.OrderExternal) *OrderExternal {
 	if item == nil {
 		return nil
 	}
@@ -142,13 +143,13 @@ var exportedOrderShipping = cm.SortStrings([]string{
 	"weight", "gross_weight", "length", "width", "height", "chargeable_weight",
 })
 
-func PbOrderShipping(order *model.Order) *OrderShipping {
+func PbOrderShipping(order *ordermodel.Order) *OrderShipping {
 	if order == nil {
 		return nil
 	}
 	item := order.ShopShipping
 	if item == nil {
-		item = &model.OrderShipping{}
+		item = &ordermodel.OrderShipping{}
 	}
 	return &OrderShipping{
 		ExportedFields: exportedOrderShipping,
@@ -181,7 +182,7 @@ var exportedOrderCustomer = cm.SortStrings([]string{
 	"full_name", "email", "phone", "gender",
 })
 
-func PbOrderCustomer(m *model.OrderCustomer) *OrderCustomer {
+func PbOrderCustomer(m *ordermodel.OrderCustomer) *OrderCustomer {
 	if m == nil {
 		return nil
 	}
@@ -197,11 +198,11 @@ func PbOrderCustomer(m *model.OrderCustomer) *OrderCustomer {
 	}
 }
 
-func (m *OrderCustomer) ToModel() *model.OrderCustomer {
+func (m *OrderCustomer) ToModel() *ordermodel.OrderCustomer {
 	if m == nil {
 		return nil
 	}
-	return &model.OrderCustomer{
+	return &ordermodel.OrderCustomer{
 		FirstName: m.FirstName,
 		LastName:  m.LastName,
 		FullName:  m.FullName,
@@ -216,7 +217,7 @@ var exportedOrderAddress = cm.SortStrings([]string{
 	"ward", "company", "address1", "address2",
 })
 
-func PbOrderAddress(m *model.OrderAddress) *OrderAddress {
+func PbOrderAddress(m *ordermodel.OrderAddress) *OrderAddress {
 	if m == nil {
 		return nil
 	}
@@ -242,11 +243,11 @@ func PbOrderAddress(m *model.OrderAddress) *OrderAddress {
 	}
 }
 
-func (m *OrderAddress) ToModel() (*model.OrderAddress, error) {
+func (m *OrderAddress) ToModel() (*ordermodel.OrderAddress, error) {
 	if m == nil {
 		return nil, nil
 	}
-	res := &model.OrderAddress{
+	res := &ordermodel.OrderAddress{
 		FullName:     m.FullName,
 		FirstName:    m.FirstName,
 		LastName:     m.LastName,
@@ -318,7 +319,7 @@ func PbOrderAddressFromAddress(m *model.Address) *OrderAddress {
 	}
 }
 
-func (item *OrderShipping) ToModel(order *model.Order) error {
+func (item *OrderShipping) ToModel(order *ordermodel.Order) error {
 	if item == nil {
 		return nil
 	}
@@ -380,7 +381,7 @@ func (item *OrderShipping) ToModel(order *model.Order) error {
 		return cm.Errorf(cm.InvalidArgument, err, "Mã dịch vụ không hợp lệ. Vui lòng F5 thử lại hoặc liên hệ hotro@etop.vn")
 	}
 
-	orderShipping := &model.OrderShipping{
+	orderShipping := &ordermodel.OrderShipping{
 		ShopAddress:         modelPickupAddress,
 		ReturnAddress:       modelReturnAddress,
 		ExternalServiceID:   shippingServiceCode,
@@ -413,7 +414,7 @@ func (item *OrderShipping) ToModel(order *model.Order) error {
 	return nil
 }
 
-func PbDiscounts(items []*model.OrderDiscount) []*OrderDiscount {
+func PbDiscounts(items []*ordermodel.OrderDiscount) []*OrderDiscount {
 	res := make([]*OrderDiscount, len(items))
 	for i, item := range items {
 		res[i] = PbDiscount(item)
@@ -421,7 +422,7 @@ func PbDiscounts(items []*model.OrderDiscount) []*OrderDiscount {
 	return res
 }
 
-func PbDiscount(m *model.OrderDiscount) *OrderDiscount {
+func PbDiscount(m *ordermodel.OrderDiscount) *OrderDiscount {
 	return &OrderDiscount{
 		Code:   m.Code,
 		Type:   m.Type,
@@ -429,29 +430,29 @@ func PbDiscount(m *model.OrderDiscount) *OrderDiscount {
 	}
 }
 
-func (m *OrderDiscount) ToModel() *model.OrderDiscount {
-	return &model.OrderDiscount{
+func (m *OrderDiscount) ToModel() *ordermodel.OrderDiscount {
+	return &ordermodel.OrderDiscount{
 		Code:   m.Code,
 		Type:   m.Type,
 		Amount: int(m.Amount),
 	}
 }
 
-func PbOrderDiscountsToModel(discounts []*OrderDiscount) []*model.OrderDiscount {
-	res := make([]*model.OrderDiscount, len(discounts))
+func PbOrderDiscountsToModel(discounts []*OrderDiscount) []*ordermodel.OrderDiscount {
+	res := make([]*ordermodel.OrderDiscount, len(discounts))
 	for i, d := range discounts {
 		res[i] = d.ToModel()
 	}
 	return res
 }
 
-func PbOrderFeeLinesToModel(items []*OrderFeeLine) []model.OrderFeeLine {
-	res := make([]model.OrderFeeLine, 0, len(items))
+func PbOrderFeeLinesToModel(items []*OrderFeeLine) []ordermodel.OrderFeeLine {
+	res := make([]ordermodel.OrderFeeLine, 0, len(items))
 	for _, item := range items {
 		if item == nil {
 			continue
 		}
-		res = append(res, model.OrderFeeLine{
+		res = append(res, ordermodel.OrderFeeLine{
 			Amount: int(item.Amount),
 			Desc:   item.Desc,
 			Code:   item.Code,
@@ -462,7 +463,7 @@ func PbOrderFeeLinesToModel(items []*OrderFeeLine) []model.OrderFeeLine {
 	return res
 }
 
-func PbOrderFeeLines(items []model.OrderFeeLine) []*OrderFeeLine {
+func PbOrderFeeLines(items []ordermodel.OrderFeeLine) []*OrderFeeLine {
 	res := make([]*OrderFeeLine, len(items))
 	for i, item := range items {
 		res[i] = &OrderFeeLine{
@@ -476,7 +477,7 @@ func PbOrderFeeLines(items []model.OrderFeeLine) []*OrderFeeLine {
 	return res
 }
 
-func PbOrderLines(items []*model.OrderLine) []*OrderLine {
+func PbOrderLines(items []*ordermodel.OrderLine) []*OrderLine {
 	res := make([]*OrderLine, 0, len(items))
 	for _, item := range items {
 		if item == nil {
@@ -494,7 +495,7 @@ var exportedOrderLine = cm.SortStrings([]string{
 	"created_at", "updated_at",
 })
 
-func PbOrderLine(m *model.OrderLine) *OrderLine {
+func PbOrderLine(m *ordermodel.OrderLine) *OrderLine {
 	if m == nil {
 		return nil
 	}
@@ -589,7 +590,7 @@ var exportedFulfillment = cm.SortStrings([]string{
 	"estimated_delivery_at", "estimated_pickup_at",
 })
 
-func PbFulfillment(m *shipmodel.Fulfillment, accType int, shop *model.Shop, order *model.Order) *Fulfillment {
+func PbFulfillment(m *shipmodel.Fulfillment, accType int, shop *model.Shop, order *ordermodel.Order) *Fulfillment {
 	ff := &Fulfillment{
 		ExportedFields: exportedFulfillment,
 

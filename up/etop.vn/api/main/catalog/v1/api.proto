@@ -1,5 +1,5 @@
 syntax = "proto2";
-package etop.vn.api.main.order.v1.types;
+package etop.vn.api.main.catalog.v1;
 option go_package = "types";
 
 import "gogoproto/gogo.proto";

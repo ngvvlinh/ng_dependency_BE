@@ -13,7 +13,8 @@ import (
 	"etop.vn/backend/pkg/common/l"
 	"etop.vn/backend/pkg/common/syncgroup"
 	"etop.vn/backend/pkg/etop/model"
-	ordermodelx "etop.vn/backend/pkg/services/selling/modelx"
+	ordermodel "etop.vn/backend/pkg/services/ordering/model"
+	ordermodelx "etop.vn/backend/pkg/services/ordering/modelx"
 	shipmodel "etop.vn/backend/pkg/services/shipping/model"
 	shipmodelx "etop.vn/backend/pkg/services/shipping/modelx"
 	shipmodely "etop.vn/backend/pkg/services/shipping/modely"
@@ -46,63 +47,6 @@ func init() {
 		UpdateFulfillmentsWithoutTransaction,
 		AdminUpdateFulfillment,
 	)
-}
-
-type OrderStore struct {
-	ctx   context.Context
-	ft    OrderFilters
-	preds []interface{}
-}
-
-func Order(ctx context.Context) *OrderStore {
-	return &OrderStore{ctx: ctx}
-}
-
-func (s *OrderStore) ID(id int64) *OrderStore {
-	s.preds = append(s.preds, s.ft.ByID(id))
-	return s
-}
-
-func (s *OrderStore) ShopID(id int64) *OrderStore {
-	s.preds = append(s.preds, s.ft.ByShopID(id))
-	return s
-}
-
-func (s *OrderStore) PartnerID(id int64) *OrderStore {
-	s.preds = append(s.preds, s.ft.ByPartnerID(id))
-	return s
-}
-
-func (s *OrderStore) ExternalID(id string) *OrderStore {
-	s.preds = append(s.preds, s.ft.ByExternalOrderID(id))
-	return s
-}
-
-func (s *OrderStore) Code(code string) *OrderStore {
-	s.preds = append(s.preds, s.ft.ByCode(code))
-	return s
-}
-
-func (s *OrderStore) ExternalShopID(shopID int64, externalID string) *OrderStore {
-	s.preds = append(s.preds,
-		s.ft.ByShopID(shopID),
-		s.ft.ByExternalOrderID(externalID),
-	)
-	return s
-}
-
-func (s *OrderStore) ExternalPartnerID(partnerID int64, externalID string) *OrderStore {
-	s.preds = append(s.preds,
-		s.ft.ByPartnerID(partnerID),
-		s.ft.ByExternalOrderID(externalID),
-	)
-	return s
-}
-
-func (s *OrderStore) Get() (*model.Order, error) {
-	var order model.Order
-	err := x.Where(s.preds...).ShouldGet(&order)
-	return &order, err
 }
 
 var filterOrderWhitelist = FilterWhitelist{
@@ -194,16 +138,16 @@ func GetOrder(ctx context.Context, query *ordermodelx.GetOrderQuery) error {
 		s = s.Where("code = ?", query.Code)
 	}
 
-	order := new(model.Order)
+	order := new(ordermodel.Order)
 	if err := s.ShouldGet(order); err != nil {
 		return err
 	}
 
 	// Populate order_line
-	var lines []*model.OrderLineExtended
+	var lines []*ordermodel.OrderLineExtended
 	if err := x.Table("order_line").
 		Where("ol.order_id = ?", order.ID).
-		Find((*model.OrderLineExtendeds)(&lines)); err != nil {
+		Find((*ordermodel.OrderLineExtendeds)(&lines)); err != nil {
 		return err
 	}
 
@@ -237,13 +181,13 @@ func GetOrder(ctx context.Context, query *ordermodelx.GetOrderQuery) error {
 		}
 	}
 
-	orderExternal := new(model.OrderExternal)
+	orderExternal := new(ordermodel.OrderExternal)
 	if has, err := x.Table("order_external").Where("id = ?", query.OrderID).Get(orderExternal); err != nil {
 		return err
 	} else if has {
 		order.ExternalData = orderExternal
 	}
-	maskOrdersSupplier(query.AllSuppliers, query.SupplierID, []*model.Order{order})
+	maskOrdersSupplier(query.AllSuppliers, query.SupplierID, []*ordermodel.Order{order})
 
 	query.Result.Order = order
 	return nil
@@ -269,7 +213,7 @@ func GetOrders(ctx context.Context, query *ordermodelx.GetOrdersQuery) error {
 		query.Paging.Sort = []string{"-updated_at"}
 	}
 
-	var orders model.Orders
+	var orders ordermodel.Orders
 	{
 
 		s2 := s.Clone()
@@ -289,7 +233,7 @@ func GetOrders(ctx context.Context, query *ordermodelx.GetOrdersQuery) error {
 		}
 	}
 	if len(query.Filters) == 0 {
-		total, err := s.Count(&model.Order{})
+		total, err := s.Count(&ordermodel.Order{})
 		if err != nil {
 			return err
 		}
@@ -318,21 +262,21 @@ func GetOrders(ctx context.Context, query *ordermodelx.GetOrdersQuery) error {
 		}
 	}
 
-	var orderlines []*model.OrderLineExtended
-	if err := x.Table("order_line").In("order_id", orderIds).Find((*model.OrderLineExtendeds)(&orderlines)); err != nil {
+	var orderlines []*ordermodel.OrderLineExtended
+	if err := x.Table("order_line").In("order_id", orderIds).Find((*ordermodel.OrderLineExtendeds)(&orderlines)); err != nil {
 		return err
 	}
-	orderlinesHash := make(map[string]*model.OrderLine)
+	orderlinesHash := make(map[string]*ordermodel.OrderLine)
 	for _, ol := range orderlines {
 		key := strconv.Itoa(int(ol.OrderID)) + "_" + strconv.Itoa(int(ol.VariantID)) + "_" + ol.ExternalVariantID
 		orderlinesHash[key] = ol.ToOrderLine()
 	}
 
-	var orderExternals []*model.OrderExternal
-	if err := x.Table("order_external").In("id", orderIds).Find((*model.OrderExternals)(&orderExternals)); err != nil {
+	var orderExternals []*ordermodel.OrderExternal
+	if err := x.Table("order_external").In("id", orderIds).Find((*ordermodel.OrderExternals)(&orderExternals)); err != nil {
 		return err
 	}
-	orderExternalsHash := make(map[int64]*model.OrderExternal)
+	orderExternalsHash := make(map[int64]*ordermodel.OrderExternal)
 	for _, ox := range orderExternals {
 		orderExternalsHash[ox.ID] = ox
 	}
@@ -365,7 +309,7 @@ func GetOrders(ctx context.Context, query *ordermodelx.GetOrdersQuery) error {
 	return nil
 }
 
-func maskOrdersSupplier(showAll bool, supplierID int64, orders []*model.Order) {
+func maskOrdersSupplier(showAll bool, supplierID int64, orders []*ordermodel.Order) {
 	if showAll || supplierID == 0 {
 		return
 	}
@@ -374,8 +318,8 @@ func maskOrdersSupplier(showAll bool, supplierID int64, orders []*model.Order) {
 	}
 }
 
-func maskOrderLines(supplierID int64, lines []*model.OrderLine) []*model.OrderLine {
-	res := make([]*model.OrderLine, 0, len(lines))
+func maskOrderLines(supplierID int64, lines []*ordermodel.OrderLine) []*ordermodel.OrderLine {
+	res := make([]*ordermodel.OrderLine, 0, len(lines))
 	for _, line := range lines {
 		if line.SupplierID == supplierID {
 			res = append(res, line)
@@ -387,7 +331,7 @@ func maskOrderLines(supplierID int64, lines []*model.OrderLine) []*model.OrderLi
 	return res
 }
 
-func VerifyOrdersByEdCode(ctx context.Context, query *model.VerifyOrdersByEdCodeQuery) error {
+func VerifyOrdersByEdCode(ctx context.Context, query *ordermodelx.VerifyOrdersByEdCodeQuery) error {
 	if query.ShopID == 0 {
 		return cm.Error(cm.InvalidArgument, "Missing AccountID", nil)
 	}
@@ -416,7 +360,7 @@ func VerifyOrdersByEdCode(ctx context.Context, query *model.VerifyOrdersByEdCode
 	return x.QueryRow(sql2, args...).Scan((*pq.StringArray)(&query.Result.EdCodes))
 }
 
-func SimpleGetOrdersByIDs(ctx context.Context, query *model.SimpleGetOrdersByExternalIDsQuery) error {
+func SimpleGetOrdersByIDs(ctx context.Context, query *ordermodelx.SimpleGetOrdersByExternalIDsQuery) error {
 	if query.SourceType == "" {
 		return cm.Error(cm.InvalidArgument, "Missing ExternalProvider", nil)
 	}
@@ -428,10 +372,10 @@ func SimpleGetOrdersByIDs(ctx context.Context, query *model.SimpleGetOrdersByExt
 	}
 
 	s = s.In("external_order_id", query.ExternalIDs)
-	return s.Find((*model.Orders)(&query.Result.Orders))
+	return s.Find((*ordermodel.Orders)(&query.Result.Orders))
 }
 
-func UpdateOrdersStatus(ctx context.Context, cmd *model.UpdateOrdersStatusCommand) error {
+func UpdateOrdersStatus(ctx context.Context, cmd *ordermodelx.UpdateOrdersStatusCommand) error {
 	if cmd.ShopConfirm != nil && *cmd.ShopConfirm != -1 && cmd.CancelReason != "" {
 		return cm.Error(cm.InvalidArgument, "Cancel reason provided but confirm status is not cancel", nil)
 	}
@@ -477,7 +421,7 @@ func UpdateOrdersStatus(ctx context.Context, cmd *model.UpdateOrdersStatusComman
 	return nil
 }
 
-func UpdateOrderLinesStatus(ctx context.Context, cmd *model.UpdateOrderLinesStatusCommand) error {
+func UpdateOrderLinesStatus(ctx context.Context, cmd *ordermodelx.UpdateOrderLinesStatusCommand) error {
 	if len(cmd.Updates) == 0 {
 		return cm.Error(cm.InvalidArgument, "Nothing to update", nil)
 	}
@@ -532,7 +476,7 @@ func UpdateOrderLinesStatus(ctx context.Context, cmd *model.UpdateOrderLinesStat
 	return err
 }
 
-func CreateOrder(ctx context.Context, cmd *model.CreateOrderCommand) error {
+func CreateOrder(ctx context.Context, cmd *ordermodelx.CreateOrderCommand) error {
 	order := cmd.Order
 	if order.ShopID == 0 {
 		return cm.Error(cm.InvalidArgument, "Missing AccountID", nil)
@@ -575,7 +519,7 @@ func CreateOrder(ctx context.Context, cmd *model.CreateOrderCommand) error {
 	})
 }
 
-func CreateOrders(ctx context.Context, cmd *model.CreateOrdersCommand) error {
+func CreateOrders(ctx context.Context, cmd *ordermodelx.CreateOrdersCommand) error {
 	if cmd.ShopID == 0 {
 		return cm.Error(cm.InvalidArgument, "Missing AccountID", nil)
 	}
@@ -654,7 +598,7 @@ func generateShopCode(ctx context.Context, shopID int64) (*model.Shop, error) {
 	return shop, nil
 }
 
-func UpdateOrder(ctx context.Context, cmd *model.UpdateOrderCommand) error {
+func UpdateOrder(ctx context.Context, cmd *ordermodelx.UpdateOrderCommand) error {
 	if cmd.ShopID == 0 {
 		return cm.Error(cm.InvalidArgument, "Missing AccountID", nil)
 	}
@@ -667,7 +611,7 @@ func UpdateOrder(ctx context.Context, cmd *model.UpdateOrderCommand) error {
 	}
 	oldOrder := query.Result.Order
 
-	order := &model.Order{
+	order := &ordermodel.Order{
 		ID:              cmd.ID,
 		ShopID:          cmd.ShopID,
 		Customer:        cmd.Customer,
@@ -702,7 +646,7 @@ func UpdateOrder(ctx context.Context, cmd *model.UpdateOrderCommand) error {
 	return inTransaction(func(x Qx) error {
 		if len(cmd.Lines) > 0 {
 			// delete old lines + insert new lines
-			if _, err := x.Table("order_line").Where("order_id = ?", cmd.ID).Delete(&model.OrderLine{}); err != nil {
+			if _, err := x.Table("order_line").Where("order_id = ?", cmd.ID).Delete(&ordermodel.OrderLine{}); err != nil {
 				return err
 			}
 			fn := gencode.GenerateLineCode(oldOrder.Code, len(cmd.Lines))
@@ -1217,7 +1161,7 @@ func UpdateFulfillmentsShippingState(ctx context.Context, cmd *shipmodelx.Update
 		if ffm == nil {
 			return cm.Errorf(cm.NotFound, nil, "Không tìm thấy đơn giao hàng").WithMetap("id", id)
 		}
-		var order = new(model.Order)
+		var order = new(ordermodel.Order)
 		if err := x.Table("order").Where("id = ?", ffm.OrderID).ShouldGet(order); err != nil {
 			return cm.Errorf(cm.NotFound, nil, "Không tìm thấy đơn hàng của đơn giao hàng").WithMetap("id", id)
 		}
@@ -1259,14 +1203,14 @@ func UpdateFulfillmentsShippingState(ctx context.Context, cmd *shipmodelx.Update
 	return nil
 }
 
-func UpdateOrderPaymentStatus(ctx context.Context, cmd *model.UpdateOrderPaymentStatusCommand) error {
+func UpdateOrderPaymentStatus(ctx context.Context, cmd *ordermodelx.UpdateOrderPaymentStatusCommand) error {
 	if cmd.ShopID == 0 {
 		return cm.Error(cm.InvalidArgument, "Missing AccountID", nil)
 	}
 	if cmd.OrderID == 0 {
 		return cm.Error(cm.InvalidArgument, "Missing OrderID", nil)
 	}
-	var order = new(model.Order)
+	var order = new(ordermodel.Order)
 	if err := x.Table("order").Where("shop_id = ? AND id = ?", cmd.ShopID, cmd.OrderID).ShouldGet(order); err != nil {
 		return err
 	}
@@ -1289,7 +1233,7 @@ func UpdateOrderPaymentStatus(ctx context.Context, cmd *model.UpdateOrderPayment
 	return nil
 }
 
-func canUpdateOrder(order *model.Order) (bool, error) {
+func canUpdateOrder(order *ordermodel.Order) (bool, error) {
 	if order == nil {
 		return false, cm.Error(cm.FailedPrecondition, "Đơn hàng không tồn tại", nil)
 	}
@@ -1364,7 +1308,7 @@ func AdminUpdateFulfillment(ctx context.Context, cmd *shipmodelx.AdminUpdateFulf
 	}
 
 	order := query.Result.Order
-	updateOrder := &model.Order{
+	updateOrder := &ordermodel.Order{
 		ID: ffm.OrderID,
 	}
 	updateFfmMap := M{}

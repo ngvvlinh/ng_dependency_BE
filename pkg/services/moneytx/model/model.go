@@ -5,6 +5,7 @@ import (
 
 	sq "etop.vn/backend/pkg/common/sql"
 	"etop.vn/backend/pkg/etop/model"
+	ordermodel "etop.vn/backend/pkg/services/ordering/model"
 	shipmodel "etop.vn/backend/pkg/services/shipping/model"
 )
 
@@ -18,7 +19,7 @@ var _ = sqlgenMoneyTransactionShippingExternalLineExtended(
 	&MoneyTransactionShippingExternalLineExtended{}, &MoneyTransactionShippingExternalLine{}, sq.AS("m"),
 	sq.LEFT_JOIN, &shipmodel.Fulfillment{}, sq.AS("f"), "f.id = m.etop_fulfillment_id",
 	sq.LEFT_JOIN, &model.Shop{}, sq.AS("s"), "s.id = f.shop_id",
-	sq.LEFT_JOIN, &model.Order{}, sq.AS("o"), "o.id = f.order_id",
+	sq.LEFT_JOIN, &ordermodel.Order{}, sq.AS("o"), "o.id = f.order_id",
 )
 
 var _ = sqlgenMoneyTransactionShipping(&MoneyTransactionShipping{})
@@ -67,7 +68,7 @@ type MoneyTransactionShippingExternalLineExtended struct {
 	*MoneyTransactionShippingExternalLine
 	Fulfillment *shipmodel.Fulfillment
 	Shop        *model.Shop
-	Order       *model.Order
+	Order       *ordermodel.Order
 }
 
 type MoneyTransactionShippingExternalExtended struct {

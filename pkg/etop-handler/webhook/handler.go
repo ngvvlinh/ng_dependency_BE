@@ -16,8 +16,8 @@ import (
 	"etop.vn/backend/pkg/etop-handler/intctl"
 	"etop.vn/backend/pkg/etop-handler/pgrid"
 	"etop.vn/backend/pkg/etop-handler/webhook/sender"
-	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/backend/pkg/pgevent"
+	ordermodel "etop.vn/backend/pkg/services/ordering/model"
 	shipmodel "etop.vn/backend/pkg/services/shipping/model"
 
 	pbcm "etop.vn/backend/pb/common"
@@ -191,7 +191,7 @@ func (h *Handler) handleReloadWebhook(ctx context.Context, msg *sarama.ConsumerM
 // TODO: handle soft delete
 
 func (h *Handler) HandleOrderEvent(ctx context.Context, event *pgevent.PgEvent) (mq.Code, error) {
-	var history model.OrderHistory
+	var history ordermodel.OrderHistory
 	if ok, err := h.db.Where("rid = ?", event.RID).Get(&history); err != nil {
 		return mq.CodeStop, nil
 	} else if !ok {
@@ -206,7 +206,7 @@ func (h *Handler) HandleOrderEvent(ctx context.Context, event *pgevent.PgEvent) 
 	}
 
 	id := *history.ID().Int64()
-	var order model.Order
+	var order ordermodel.Order
 	if ok, err := h.db.Where("id = ?", id).Get(&order); err != nil {
 		return mq.CodeStop, nil
 	} else if !ok {

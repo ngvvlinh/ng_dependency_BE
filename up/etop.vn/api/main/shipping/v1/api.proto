@@ -27,7 +27,7 @@ option (gogoproto.unmarshaler_all)          = false;
 option (gogoproto.verbose_equal_all)        = false;
 
 import "etop.vn/api/main/shipping/v1/types/types.proto";
-import "etop.vn/api/main/order/v1/types/types.proto";
+import "etop.vn/api/main/ordering/v1/types/types.proto";
 
 message Fulfillment {
     optional int64 id = 1 [(gogoproto.nullable)=false];
@@ -40,5 +40,5 @@ message Fulfillment {
 
     optional int64 partner_id = 5 [(gogoproto.nullable)=false];
 
-    optional order.v1.types.ItemLine lines = 6 [(gogoproto.nullable)=false];
+    optional ordering.v1.types.ItemLine lines = 6 [(gogoproto.nullable)=false];
 }

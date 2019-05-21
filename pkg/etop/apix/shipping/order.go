@@ -6,8 +6,6 @@ import (
 	"fmt"
 	"strings"
 
-	"etop.vn/backend/pkg/services/selling/modelx"
-
 	pbcm "etop.vn/backend/pb/common"
 	pborder "etop.vn/backend/pb/etop/order"
 	pbsource "etop.vn/backend/pb/etop/order/source"
@@ -20,7 +18,8 @@ import (
 	"etop.vn/backend/pkg/etop/authorize/claims"
 	logicorder "etop.vn/backend/pkg/etop/logic/orders"
 	"etop.vn/backend/pkg/etop/model"
-	"etop.vn/backend/pkg/etop/sqlstore"
+	"etop.vn/backend/pkg/services/ordering/modelx"
+	ordersqlstore "etop.vn/backend/pkg/services/ordering/sqlstore"
 )
 
 var ll = l.New()
@@ -176,7 +175,7 @@ func CreateAndConfirmOrder(ctx context.Context, accountID int64, shopClaim *clai
 
 func CancelOrder(ctx context.Context, shopID int64, r *pbexternal.CancelOrderRequest) (*pbexternal.OrderAndFulfillments, error) {
 	var orderID int64
-	var sqlQuery *sqlstore.OrderStore
+	var sqlQuery *ordersqlstore.OrderStore
 
 	count := 0
 	if r.Id != 0 {
@@ -185,11 +184,11 @@ func CancelOrder(ctx context.Context, shopID int64, r *pbexternal.CancelOrderReq
 	}
 	if r.ExternalId != "" {
 		count++
-		sqlQuery = sqlstore.Order(ctx).ShopID(shopID).ExternalID(r.ExternalId)
+		sqlQuery = orderStore.WithContext(ctx).ShopID(shopID).ExternalID(r.ExternalId)
 	}
 	if r.Code != "" {
 		count++
-		sqlQuery = sqlstore.Order(ctx).ShopID(shopID).Code(r.Code)
+		sqlQuery = orderStore.WithContext(ctx).ShopID(shopID).Code(r.Code)
 	}
 	if count != 1 {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Cần cung cấp id, code hoặc external_code")

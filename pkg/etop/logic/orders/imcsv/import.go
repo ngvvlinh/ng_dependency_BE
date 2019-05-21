@@ -26,6 +26,8 @@ import (
 	"etop.vn/backend/pkg/common/validate"
 	"etop.vn/backend/pkg/etop/authorize/claims"
 	"etop.vn/backend/pkg/etop/model"
+	ordermodel "etop.vn/backend/pkg/services/ordering/model"
+	"etop.vn/backend/pkg/services/ordering/modelx"
 )
 
 func HandleImportOrders(c *httpx.Context) error {
@@ -196,7 +198,7 @@ func handleImportOrder(ctx context.Context, c *httpx.Context, shop *model.Shop, 
 	}
 
 	now := time.Now()
-	orders := make([]*model.Order, len(rowOrders))
+	orders := make([]*ordermodel.Order, len(rowOrders))
 	for i, rowOrder := range rowOrders {
 		order, errs := parseRowToModel(idx, imp.Mode, shop, rowOrder, now)
 		if len(errs) > 0 {
@@ -251,7 +253,7 @@ func handleImportOrder(ctx context.Context, c *httpx.Context, shop *model.Shop, 
 			continue
 		}
 
-		cmd := &model.CreateOrderCommand{
+		cmd := &modelx.CreateOrderCommand{
 			Order: order,
 		}
 		err := bus.Dispatch(ctx, cmd)
@@ -706,7 +708,7 @@ func parseAsGHNNoteCode(v string) (string, error) {
 	}
 }
 
-func parseRowToModel(idx imcsv.Indexer, mode Mode, shop *model.Shop, rowOrder *RowOrder, now time.Time) (_ *model.Order, _errs []error) {
+func parseRowToModel(idx imcsv.Indexer, mode Mode, shop *model.Shop, rowOrder *RowOrder, now time.Time) (_ *ordermodel.Order, _errs []error) {
 	_errs = rowOrder.Validate(idx, mode)
 	address, err := parseAddress(rowOrder)
 	if err != nil {
@@ -715,7 +717,7 @@ func parseRowToModel(idx imcsv.Indexer, mode Mode, shop *model.Shop, rowOrder *R
 	}
 
 	totalItems, basketValue, totalLineDiscount := 0, 0, 0
-	lines := make([]*model.OrderLine, len(rowOrder.Lines))
+	lines := make([]*ordermodel.OrderLine, len(rowOrder.Lines))
 	for i, rowOrderLine := range rowOrder.Lines {
 		line, errs := parseLineToModel(idx, mode, rowOrderLine)
 		if len(errs) > 0 {
@@ -733,7 +735,7 @@ func parseRowToModel(idx imcsv.Indexer, mode Mode, shop *model.Shop, rowOrder *R
 		return nil, _errs
 	}
 
-	order := &model.Order{
+	order := &ordermodel.Order{
 		ID:                        0, // will be filled by sqlstore
 		ShopID:                    shop.ID,
 		Code:                      "",
@@ -796,13 +798,13 @@ func parseRowToModel(idx imcsv.Indexer, mode Mode, shop *model.Shop, rowOrder *R
 	return order, _errs
 }
 
-func parseLineToModel(idx imcsv.Indexer, mode Mode, rowOrderLine *RowOrderLine) (*model.OrderLine, []error) {
+func parseLineToModel(idx imcsv.Indexer, mode Mode, rowOrderLine *RowOrderLine) (*ordermodel.OrderLine, []error) {
 	errs := rowOrderLine.Validate(idx, mode)
 	if len(errs) > 0 {
 		return nil, errs
 	}
 
-	line := &model.OrderLine{
+	line := &ordermodel.OrderLine{
 		OrderID:                 0, // will be filled when insert
 		VariantID:               0,
 		ProductName:             rowOrderLine.VariantName,
@@ -842,8 +844,8 @@ func parseLineToModel(idx imcsv.Indexer, mode Mode, rowOrderLine *RowOrderLine) 
 	return line, nil
 }
 
-func parseCustomer(rowOrder *RowOrder) *model.OrderCustomer {
-	return &model.OrderCustomer{
+func parseCustomer(rowOrder *RowOrder) *ordermodel.OrderCustomer {
+	return &ordermodel.OrderCustomer{
 		FirstName:     "",
 		LastName:      "",
 		FullName:      rowOrder.CustomerName,
@@ -855,7 +857,7 @@ func parseCustomer(rowOrder *RowOrder) *model.OrderCustomer {
 	}
 }
 
-func parseAddress(rowOrder *RowOrder) (*model.OrderAddress, error) {
+func parseAddress(rowOrder *RowOrder) (*ordermodel.OrderAddress, error) {
 	var loc *location.LocationQueryResult
 	var err error
 	if rowOrder.ShippingProvince != "" || rowOrder.ShippingDistrict != "" || rowOrder.ShippingWard != "" {
@@ -865,7 +867,7 @@ func parseAddress(rowOrder *RowOrder) (*model.OrderAddress, error) {
 		}
 	}
 
-	address := &model.OrderAddress{
+	address := &ordermodel.OrderAddress{
 		FullName:     rowOrder.CustomerName,
 		FirstName:    "",
 		LastName:     "",

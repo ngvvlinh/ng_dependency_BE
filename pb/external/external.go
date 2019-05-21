@@ -4,6 +4,7 @@ import (
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/etop-handler/webhook/sender"
 	"etop.vn/backend/pkg/etop/model"
+	ordermodel "etop.vn/backend/pkg/services/ordering/model"
 	shipmodel "etop.vn/backend/pkg/services/shipping/model"
 
 	pbcm "etop.vn/backend/pb/common"
@@ -87,7 +88,7 @@ func PbWebhookError(m *sender.WebhookStatesError) *WebhookError {
 	}
 }
 
-func PbOrders(items []*model.Order) []*Order {
+func PbOrders(items []*ordermodel.Order) []*Order {
 	res := make([]*Order, len(items))
 	for i, item := range items {
 		res[i] = PbOrder(item)
@@ -95,7 +96,7 @@ func PbOrders(items []*model.Order) []*Order {
 	return res
 }
 
-func PbOrder(m *model.Order) *Order {
+func PbOrder(m *ordermodel.Order) *Order {
 	res := &Order{
 		Id:                        m.ID,
 		ShopId:                    m.ShopID,
@@ -131,10 +132,10 @@ func PbOrder(m *model.Order) *Order {
 	return res
 }
 
-func PbOrderShipping(m *model.Order) *OrderShipping {
+func PbOrderShipping(m *ordermodel.Order) *OrderShipping {
 	shipping := m.ShopShipping
 	if shipping == nil {
-		shipping = &model.OrderShipping{}
+		shipping = &ordermodel.OrderShipping{}
 	}
 	return &OrderShipping{
 		PickupAddress:       PbOrderAddress(shipping.GetPickupAddress()),
@@ -155,7 +156,7 @@ func PbOrderShipping(m *model.Order) *OrderShipping {
 	}
 }
 
-func PbOrderHistories(items []model.OrderHistory) []*Order {
+func PbOrderHistories(items []ordermodel.OrderHistory) []*Order {
 	res := make([]*Order, len(items))
 	for i, item := range items {
 		res[i] = PbOrderHistory(item)
@@ -163,17 +164,17 @@ func PbOrderHistories(items []model.OrderHistory) []*Order {
 	return res
 }
 
-func PbOrderHistory(order model.OrderHistory) *Order {
-	var customer *model.OrderCustomer
+func PbOrderHistory(order ordermodel.OrderHistory) *Order {
+	var customer *ordermodel.OrderCustomer
 	_ = order.Customer().Unmarshal(&customer)
-	var customerAddress, shippingAddress *model.OrderAddress
+	var customerAddress, shippingAddress *ordermodel.OrderAddress
 	_ = order.CustomerAddress().Unmarshal(&customerAddress)
 	_ = order.ShippingAddress().Unmarshal(&shippingAddress)
-	var lines []*model.OrderLine
+	var lines []*ordermodel.OrderLine
 	_ = order.Lines().Unmarshal(&lines)
-	var shopShipping *model.OrderShipping
+	var shopShipping *ordermodel.OrderShipping
 	_ = order.ShopShipping().Unmarshal(&shopShipping)
-	var feeLines []model.OrderFeeLine
+	var feeLines []ordermodel.OrderFeeLine
 	_ = order.FeeLines().Unmarshal(&feeLines)
 
 	res := &Order{
@@ -210,7 +211,7 @@ func PbOrderHistory(order model.OrderHistory) *Order {
 	if shopShipping != nil {
 		res.ShippingAddress = PbOrderAddress(shopShipping.ShopAddress)
 	}
-	res.FeeLines = pborder.PbOrderFeeLines(model.GetFeeLinesWithFallback(feeLines, res.TotalDiscount, order.ShopShippingFee().Int32()))
+	res.FeeLines = pborder.PbOrderFeeLines(ordermodel.GetFeeLinesWithFallback(feeLines, res.TotalDiscount, order.ShopShippingFee().Int32()))
 	return res
 }
 
@@ -225,9 +226,9 @@ func (m *Order) HasChanged() bool {
 		m.CustomerAddress != nil || m.ShippingAddress != nil
 }
 
-func PbOrderShippingHistory(order model.OrderHistory, shipping *model.OrderShipping) *OrderShipping {
+func PbOrderShippingHistory(order ordermodel.OrderHistory, shipping *ordermodel.OrderShipping) *OrderShipping {
 	if shipping == nil {
-		shipping = &model.OrderShipping{}
+		shipping = &ordermodel.OrderShipping{}
 	}
 	res := &OrderShipping{
 		PickupAddress:       nil,
@@ -248,7 +249,7 @@ func PbOrderShippingHistory(order model.OrderHistory, shipping *model.OrderShipp
 	return res
 }
 
-func PbOrderLines(items []*model.OrderLine) []*OrderLine {
+func PbOrderLines(items []*ordermodel.OrderLine) []*OrderLine {
 	// send changes as empty instead of "[]"
 	if len(items) == 0 {
 		return nil
@@ -260,7 +261,7 @@ func PbOrderLines(items []*model.OrderLine) []*OrderLine {
 	return res
 }
 
-func PbOrderLine(m *model.OrderLine) *OrderLine {
+func PbOrderLine(m *ordermodel.OrderLine) *OrderLine {
 	if m == nil {
 		return nil
 	}
@@ -277,7 +278,7 @@ func PbOrderLine(m *model.OrderLine) *OrderLine {
 	}
 }
 
-func PbOrderAddress(m *model.OrderAddress) *OrderAddress {
+func PbOrderAddress(m *ordermodel.OrderAddress) *OrderAddress {
 	if m == nil {
 		return nil
 	}
@@ -338,7 +339,7 @@ func PbOrderAddressFromAddress(m *model.Address) *OrderAddress {
 	}
 }
 
-func PbOrderCustomer(m *model.OrderCustomer) *OrderCustomer {
+func PbOrderCustomer(m *ordermodel.OrderCustomer) *OrderCustomer {
 	if m == nil {
 		return nil
 	}
@@ -419,7 +420,7 @@ func PbFulfillmentHistories(items []shipmodel.FulfillmentHistory) []*Fulfillment
 }
 
 func PbFulfillmentHistory(m shipmodel.FulfillmentHistory) *Fulfillment {
-	var addressTo, addressFrom, addressReturn *model.OrderAddress
+	var addressTo, addressFrom, addressReturn *ordermodel.OrderAddress
 	_ = m.AddressTo().Unmarshal(&addressTo)
 	_ = m.AddressFrom().Unmarshal(&addressFrom)
 	_ = m.AddressReturn().Unmarshal(&addressReturn)
@@ -521,7 +522,7 @@ func OrderLineToCreateOrderLine(m *OrderLine) (*pborder.CreateOrderLine, error) 
 	}, nil
 }
 
-func PbOrderAndFulfillments(order *model.Order, fulfillments []*shipmodel.Fulfillment) *OrderAndFulfillments {
+func PbOrderAndFulfillments(order *ordermodel.Order, fulfillments []*shipmodel.Fulfillment) *OrderAndFulfillments {
 	return &OrderAndFulfillments{
 		Order:        PbOrder(order),
 		Fulfillments: PbFulfillments(fulfillments),

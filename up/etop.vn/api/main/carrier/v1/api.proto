@@ -20,7 +20,7 @@ option (gogoproto.verbose_equal_all)        = false;
 
 import "etop.vn/api/meta/v1/api.proto";
 import "etop.vn/api/main/shipping/v1/types/types.proto";
-import "etop.vn/api/main/order/v1/types/types.proto";
+import "etop.vn/api/main/ordering/v1/types/types.proto";
 
 service CarrierQueryService {
     rpc GetShippingServices(GetShippingServicesQueryArgs) returns (ShippingServicesQueryResult);
@@ -80,11 +80,11 @@ message CreateExternalShipmentCommand {
 
     optional int64 fulfillment_id = 3 [(gogoproto.nullable)=false];
 
-    optional order.v1.types.Address pickup_address = 4 [(gogoproto.nullable)=false];
+    optional ordering.v1.types.Address pickup_address = 4 [(gogoproto.nullable)=false];
 
-    optional order.v1.types.Address shipping_address = 5 [(gogoproto.nullable)=false];
+    optional ordering.v1.types.Address shipping_address = 5 [(gogoproto.nullable)=false];
 
-    optional order.v1.types.Address return_address = 6 [(gogoproto.nullable)=false];
+    optional ordering.v1.types.Address return_address = 6 [(gogoproto.nullable)=false];
 
     optional string shipping_note = 7 [(gogoproto.nullable)=false];
 }

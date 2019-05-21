@@ -3,6 +3,7 @@ package imcsv
 import (
 	"etop.vn/backend/pkg/common/imcsv"
 	"etop.vn/backend/pkg/etop/model"
+	ordermodel "etop.vn/backend/pkg/services/ordering/model"
 )
 
 var schema = imcsv.Schema{
@@ -299,30 +300,30 @@ func (m *RowOrder) Validate(idx imcsv.Indexer, mode Mode) (errs []error) {
 	return errs
 }
 
-func (m *RowOrder) GetFeeLines() []model.OrderFeeLine {
-	var lines []model.OrderFeeLine
+func (m *RowOrder) GetFeeLines() []ordermodel.OrderFeeLine {
+	var lines []ordermodel.OrderFeeLine
 	if m.FeeLineShipping != 0 {
-		lines = append(lines, model.OrderFeeLine{
+		lines = append(lines, ordermodel.OrderFeeLine{
 			Amount: m.FeeLineShipping,
 			Desc:   "Phí giao hàng tính cho khách",
 			Name:   "Phí giao hàng tính cho khách",
-			Type:   model.OrderFeeShipping,
+			Type:   ordermodel.OrderFeeShipping,
 		})
 	}
 	if m.FeeLineTax != 0 {
-		lines = append(lines, model.OrderFeeLine{
+		lines = append(lines, ordermodel.OrderFeeLine{
 			Amount: m.FeeLineTax,
 			Desc:   "Thuế",
 			Name:   "Thuế",
-			Type:   model.OrderFeeTax,
+			Type:   ordermodel.OrderFeeTax,
 		})
 	}
 	if m.FeeLineOther != 0 {
-		lines = append(lines, model.OrderFeeLine{
+		lines = append(lines, ordermodel.OrderFeeLine{
 			Amount: m.FeeLineOther,
 			Desc:   "Phí khác",
 			Name:   "Phí khác",
-			Type:   model.OrderFeeOther,
+			Type:   ordermodel.OrderFeeOther,
 		})
 	}
 	return lines

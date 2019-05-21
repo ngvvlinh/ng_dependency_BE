@@ -11,6 +11,7 @@ import (
 	"etop.vn/backend/pkg/common/syncgroup"
 	"etop.vn/backend/pkg/etop/logic/etop_shipping_price"
 	"etop.vn/backend/pkg/etop/model"
+	ordermodel "etop.vn/backend/pkg/services/ordering/model"
 	shipmodel "etop.vn/backend/pkg/services/shipping/model"
 	shipmodelx "etop.vn/backend/pkg/services/shipping/modelx"
 )
@@ -32,11 +33,11 @@ func NewCtrl(locationBus location.Bus, ghnCarrier, ghtkCarrier, vtpostCarrier Sh
 	}
 }
 
-func (ctrl *ProviderManager) CreateExternalShipping(ctx context.Context, order *model.Order, ffms []*shipmodel.Fulfillment) error {
+func (ctrl *ProviderManager) CreateExternalShipping(ctx context.Context, order *ordermodel.Order, ffms []*shipmodel.Fulfillment) error {
 	return ctrl.createFulfillments(ctx, order, ffms)
 }
 
-func (ctrl *ProviderManager) createFulfillments(ctx context.Context, order *model.Order, ffms []*shipmodel.Fulfillment) error {
+func (ctrl *ProviderManager) createFulfillments(ctx context.Context, order *ordermodel.Order, ffms []*shipmodel.Fulfillment) error {
 	// check balance of shop
 	// if balance < MinShopBalance => can not create order
 	{
@@ -78,7 +79,7 @@ func (ctrl *ProviderManager) GetShippingProviderDriver(provider model.ShippingPr
 	}
 }
 
-func (ctrl *ProviderManager) createSingleFulfillment(ctx context.Context, order *model.Order, ffm *shipmodel.Fulfillment) (_err error) {
+func (ctrl *ProviderManager) createSingleFulfillment(ctx context.Context, order *ordermodel.Order, ffm *shipmodel.Fulfillment) (_err error) {
 	// TODO: handle case when ffm.shipping_provider is different with order.shipping_provider
 	provider := order.ShopShipping.ShippingProvider
 	shippingProvider := ctrl.GetShippingProviderDriver(provider)
@@ -211,7 +212,7 @@ func (ctrl *ProviderManager) createSingleFulfillment(ctx context.Context, order 
 	return nil
 }
 
-func GetShippingProviderNote(order *model.Order, ffm *shipmodel.Fulfillment) string {
+func GetShippingProviderNote(order *ordermodel.Order, ffm *shipmodel.Fulfillment) string {
 	noteB := strings.Builder{}
 	if note := ffm.AddressFrom.Notes.GetFullNote(); note != "" {
 		noteB.WriteString("Lấy hàng: ")
@@ -231,7 +232,7 @@ func GetShippingProviderNote(order *model.Order, ffm *shipmodel.Fulfillment) str
 	return noteB.String()
 }
 
-func checkShippingService(order *model.Order, services []*model.AvailableShippingService) (service *model.AvailableShippingService, _err error) {
+func checkShippingService(order *ordermodel.Order, services []*model.AvailableShippingService) (service *model.AvailableShippingService, _err error) {
 	if order.ShopShipping != nil {
 		providerServiceID := cm.Coalesce(order.ShopShipping.ProviderServiceID, order.ShopShipping.ExternalServiceID)
 		if providerServiceID == "" {
@@ -369,7 +370,7 @@ func CheckShippingFeeWithinDelta(providerShippingFee int, shippingFee int) bool 
 	return abs(providerShippingFee-shippingFee) < 10
 }
 
-func GetEtopServiceFromShopShipping(shopShipping *model.OrderShipping, services []*model.AvailableShippingService) (etopService *model.AvailableShippingService, err error) {
+func GetEtopServiceFromShopShipping(shopShipping *ordermodel.OrderShipping, services []*model.AvailableShippingService) (etopService *model.AvailableShippingService, err error) {
 	if shopShipping == nil || shopShipping.ProviderServiceID == "" {
 		return nil, cm.Error(cm.InvalidArgument, "ShopShipping is invalid", nil)
 	}

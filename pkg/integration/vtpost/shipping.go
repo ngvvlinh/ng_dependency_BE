@@ -12,6 +12,7 @@ import (
 	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/backend/pkg/etop/sqlstore"
 	vtpostclient "etop.vn/backend/pkg/integration/vtpost/client"
+	ordermodel "etop.vn/backend/pkg/services/ordering/model"
 	shipmodel "etop.vn/backend/pkg/services/shipping/model"
 )
 
@@ -112,7 +113,7 @@ func CreateShippingSource(code byte, client vtpostclient.Client) error {
 	return nil
 }
 
-func (c *Carrier) CreateFulfillment(ctx context.Context, order *model.Order, ffm *shipmodel.Fulfillment, args shippingprovider.GetShippingServicesArgs, service *model.AvailableShippingService) (ffmToUpdate *shipmodel.Fulfillment, _err error) {
+func (c *Carrier) CreateFulfillment(ctx context.Context, order *ordermodel.Order, ffm *shipmodel.Fulfillment, args shippingprovider.GetShippingServicesArgs, service *model.AvailableShippingService) (ffmToUpdate *shipmodel.Fulfillment, _err error) {
 	if ffm.AddressReturn != nil {
 		// vtpost does not support address_return
 		return nil, cm.Error(cm.ExternalServiceError, "VTPost không hỗ trợ địa chỉ trả hàng. Vui lòng để trống thông tin này.", nil)
@@ -326,7 +327,7 @@ func (c *Carrier) GetAllShippingServices(ctx context.Context, args shipping_prov
 	return c.GetShippingServices(ctx, args)
 }
 
-func (c *Carrier) GetShippingService(ffm *shipmodel.Fulfillment, order *model.Order, weight int, valueInsurance int) (providerService *model.AvailableShippingService, etopService *model.AvailableShippingService, err error) {
+func (c *Carrier) GetShippingService(ffm *shipmodel.Fulfillment, order *ordermodel.Order, weight int, valueInsurance int) (providerService *model.AvailableShippingService, etopService *model.AvailableShippingService, err error) {
 	return nil, nil, cm.ErrTODO
 }
 

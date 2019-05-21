@@ -13,7 +13,7 @@ import (
 	"etop.vn/backend/pkg/etop/api"
 	logicorder "etop.vn/backend/pkg/etop/logic/orders"
 	"etop.vn/backend/pkg/etop/model"
-	ordermodelx "etop.vn/backend/pkg/services/selling/modelx"
+	ordermodelx "etop.vn/backend/pkg/services/ordering/modelx"
 	shipmodelx "etop.vn/backend/pkg/services/shipping/modelx"
 	wrapshop "etop.vn/backend/wrapper/etop/shop"
 )
@@ -102,7 +102,7 @@ func GetOrdersByIDs(ctx context.Context, q *wrapshop.GetOrdersByIDsEndpoint) err
 }
 
 func UpdateOrdersStatus(ctx context.Context, q *wrapshop.UpdateOrdersStatusEndpoint) error {
-	cmd := &model.UpdateOrdersStatusCommand{
+	cmd := &ordermodelx.UpdateOrdersStatusCommand{
 		ShopID:       q.Context.Shop.ID,
 		PartnerID:    q.CtxPartner.GetID(),
 		OrderIDs:     q.Ids,
@@ -300,7 +300,7 @@ func UpdateFulfillmentsShippingState(ctx context.Context, q *wrapshop.UpdateFulf
 }
 
 func UpdateOrderPaymentStatus(ctx context.Context, q *wrapshop.UpdateOrderPaymentStatusEndpoint) error {
-	cmd := &model.UpdateOrderPaymentStatusCommand{
+	cmd := &ordermodelx.UpdateOrderPaymentStatusCommand{
 		ShopID:  q.Context.Shop.ID,
 		OrderID: q.OrderId,
 		Status:  q.Status.ToModel(),

@@ -3,15 +3,15 @@ package shipnow
 import (
 	"context"
 
-	"etop.vn/api/main/order"
+	"etop.vn/api/main/ordering"
 	"etop.vn/api/main/shipnow"
 )
 
 type ProcessManager struct {
-	order order.Aggregate
+	order ordering.Aggregate
 }
 
-func NewProcessManager(order order.Aggregate) ProcessManager {
+func NewProcessManager(order ordering.Aggregate) ProcessManager {
 	return ProcessManager{
 		order: order,
 	}

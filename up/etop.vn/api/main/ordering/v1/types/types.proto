@@ -1,5 +1,5 @@
 syntax = "proto2";
-package etop.vn.api.main.order.v1.types;
+package etop.vn.api.main.ordering.v1.types;
 option go_package = "types";
 
 import "gogoproto/gogo.proto";
@@ -19,7 +19,7 @@ option (gogoproto.unmarshaler_all)          = false;
 option (gogoproto.verbose_equal_all)        = false;
 
 import "etop.vn/api/meta/v1/api.proto";
-import "etop.vn/api/main/product/v1/types/types.proto";
+import "etop.vn/api/main/catalog/v1/types/types.proto";
 
 message ItemLine {
    optional int64 order_id = 1 [(gogoproto.nullable)=false];
@@ -40,7 +40,7 @@ message ProductInfo {
 
    optional string image_url = 2 [(gogoproto.nullable)=false];
 
-   repeated product.v1.types.Attribute attributes = 3;
+   repeated catalog.v1.types.Attribute attributes = 3;
 }
 
 message Address {

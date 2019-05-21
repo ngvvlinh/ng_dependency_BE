@@ -3,7 +3,7 @@
 package types
 
 import (
-	types "etop.vn/api/main/product/v1/types"
+	types "etop.vn/api/main/catalog/v1/types"
 )
 
 type ItemLine struct {
