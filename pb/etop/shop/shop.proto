@@ -292,7 +292,6 @@ message RemoveProductsCollectionRequest {
 message EtopVariant {
     // @required
     optional int64 id = 1 [(gogoproto.nullable)=false];
-    optional int64 supplier_id = 2 [(gogoproto.nullable)=false];
     optional int64 category_id = 3 [(gogoproto.nullable)=false];
 
     optional string name  = 4 [(gogoproto.nullable)=false];
@@ -341,7 +340,6 @@ message BrowseVariantsRequest {
 message EtopProduct {
     // @required
     optional int64 id = 1 [(gogoproto.nullable)=false];
-    optional int64 supplier_id = 2 [(gogoproto.nullable)=false];
     optional int64 category_id = 3 [(gogoproto.nullable)=false];
     optional string product_source_category_id = 31 [(gogoproto.nullable)=false];
 
@@ -617,7 +615,6 @@ message OrderIDsRequest {
 
 message CreateFulfillmentsForOrderRequest {
     optional int64 order_id = 1 [(gogoproto.nullable)=false];
-    optional int64 supplier_id = 2 [(gogoproto.nullable)=false];
     repeated int64 variant_ids = 3;
 }
 
@@ -689,7 +686,6 @@ message ProductSourceCategory {
     optional int64 id = 1 [(gogoproto.nullable)=false];
     optional int64 product_source_id = 2 [(gogoproto.nullable)=false];
     optional string product_source_type =  3 [(gogoproto.nullable)=false];
-    optional int64 supplier_id = 4 [(gogoproto.nullable)=false];
     optional int64 parent_id = 5 [(gogoproto.nullable)=false];
     optional int64 shop_id = 6 [(gogoproto.nullable)=false];
     optional string name = 7 [(gogoproto.nullable)=false];
@@ -903,7 +899,6 @@ message Category {
     optional string name   = 2 [(gogoproto.nullable)=false];
     optional int64 product_source_id = 3 [(gogoproto.nullable)=false];
     optional string product_source_type =  4 [(gogoproto.nullable)=false];
-    optional int64 supplier_id = 5 [(gogoproto.nullable)=false];
     optional int64 parent_id = 6 [(gogoproto.nullable)=false];
     optional int64 shop_id = 7 [(gogoproto.nullable)=false];
 

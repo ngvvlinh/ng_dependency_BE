@@ -73,13 +73,6 @@ type ShopClaim struct {
 	Shop *model.Shop
 }
 
-type SupplierClaim struct {
-	UserClaim
-	CommonAccountClaim
-
-	Supplier *model.Supplier
-}
-
 type AdminClaim struct {
 	UserClaim
 	CommonAccountClaim

@@ -2057,862 +2057,6 @@ func (ms *EtopCategoryHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
 	return nil
 }
 
-// Type Supplier represents table supplier
-func sqlgenSupplier(_ *Supplier) bool { return true }
-
-type Suppliers []*Supplier
-
-const __sqlSupplier_Table = "supplier"
-const __sqlSupplier_ListCols = "\"id\",\"status\",\"created_at\",\"updated_at\",\"is_test\",\"name\",\"owner_id\",\"image_url\",\"rules\",\"company_info\",\"warehouse_address_id\",\"bank_account\",\"contact_persons\",\"ship_from_address_id\",\"product_source_id\""
-const __sqlSupplier_Insert = "INSERT INTO \"supplier\" (" + __sqlSupplier_ListCols + ") VALUES"
-const __sqlSupplier_Select = "SELECT " + __sqlSupplier_ListCols + " FROM \"supplier\""
-const __sqlSupplier_Select_history = "SELECT " + __sqlSupplier_ListCols + " FROM history.\"supplier\""
-const __sqlSupplier_UpdateAll = "UPDATE \"supplier\" SET (" + __sqlSupplier_ListCols + ")"
-
-func (m *Supplier) SQLTableName() string  { return "supplier" }
-func (m *Suppliers) SQLTableName() string { return "supplier" }
-func (m *Supplier) SQLListCols() string   { return __sqlSupplier_ListCols }
-
-func (m *Supplier) SQLArgs(opts core.Opts, create bool) []interface{} {
-	now := time.Now()
-	return []interface{}{
-		core.Int64(m.ID),
-		core.Int(m.Status),
-		core.Now(m.CreatedAt, now, create),
-		core.Now(m.UpdatedAt, now, true),
-		core.Int(m.IsTest),
-		core.String(m.Name),
-		core.Int64(m.OwnerID),
-		core.String(m.ImageURL),
-		core.JSON{m.Rules},
-		core.JSON{m.CompanyInfo},
-		core.Int64(m.WarehouseAddressID),
-		core.JSON{m.BankAccount},
-		core.JSON{m.ContactPersons},
-		core.Int64(m.ShipFromAddressID),
-		core.Int64(m.ProductSourceID),
-	}
-}
-
-func (m *Supplier) SQLScanArgs(opts core.Opts) []interface{} {
-	return []interface{}{
-		(*core.Int64)(&m.ID),
-		(*core.Int)(&m.Status),
-		(*core.Time)(&m.CreatedAt),
-		(*core.Time)(&m.UpdatedAt),
-		(*core.Int)(&m.IsTest),
-		(*core.String)(&m.Name),
-		(*core.Int64)(&m.OwnerID),
-		(*core.String)(&m.ImageURL),
-		core.JSON{&m.Rules},
-		core.JSON{&m.CompanyInfo},
-		(*core.Int64)(&m.WarehouseAddressID),
-		core.JSON{&m.BankAccount},
-		core.JSON{&m.ContactPersons},
-		(*core.Int64)(&m.ShipFromAddressID),
-		(*core.Int64)(&m.ProductSourceID),
-	}
-}
-
-func (m *Supplier) SQLScan(opts core.Opts, row *sql.Row) error {
-	return row.Scan(m.SQLScanArgs(opts)...)
-}
-
-func (ms *Suppliers) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	res := make(Suppliers, 0, 128)
-	for rows.Next() {
-		m := new(Supplier)
-		args := m.SQLScanArgs(opts)
-		if err := rows.Scan(args...); err != nil {
-			return err
-		}
-		res = append(res, m)
-	}
-	if err := rows.Err(); err != nil {
-		return err
-	}
-	*ms = res
-	return nil
-}
-
-func (_ *Supplier) SQLSelect(w SQLWriter) error {
-	w.WriteQueryString(__sqlSupplier_Select)
-	return nil
-}
-
-func (_ *Suppliers) SQLSelect(w SQLWriter) error {
-	w.WriteQueryString(__sqlSupplier_Select)
-	return nil
-}
-
-func (m *Supplier) SQLInsert(w SQLWriter) error {
-	w.WriteQueryString(__sqlSupplier_Insert)
-	w.WriteRawString(" (")
-	w.WriteMarkers(15)
-	w.WriteByte(')')
-	w.WriteArgs(m.SQLArgs(w.Opts(), true))
-	return nil
-}
-
-func (ms Suppliers) SQLInsert(w SQLWriter) error {
-	w.WriteQueryString(__sqlSupplier_Insert)
-	w.WriteRawString(" (")
-	for i := 0; i < len(ms); i++ {
-		w.WriteMarkers(15)
-		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
-		w.WriteRawString("),(")
-	}
-	w.TrimLast(2)
-	return nil
-}
-
-func (m *Supplier) SQLUpdate(w SQLWriter) error {
-	now, opts := time.Now(), w.Opts()
-	_, _ = now, opts // suppress unuse error
-	var flag bool
-	w.WriteRawString("UPDATE ")
-	w.WriteName("supplier")
-	w.WriteRawString(" SET ")
-	if m.ID != 0 {
-		flag = true
-		w.WriteName("id")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(m.ID)
-	}
-	if m.Status != 0 {
-		flag = true
-		w.WriteName("status")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(int(m.Status))
-	}
-	if !m.CreatedAt.IsZero() {
-		flag = true
-		w.WriteName("created_at")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(m.CreatedAt)
-	}
-	if !m.UpdatedAt.IsZero() {
-		flag = true
-		w.WriteName("updated_at")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(core.Now(m.UpdatedAt, time.Now(), true))
-	}
-	if m.IsTest != 0 {
-		flag = true
-		w.WriteName("is_test")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(m.IsTest)
-	}
-	if m.Name != "" {
-		flag = true
-		w.WriteName("name")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(m.Name)
-	}
-	if m.OwnerID != 0 {
-		flag = true
-		w.WriteName("owner_id")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(m.OwnerID)
-	}
-	if m.ImageURL != "" {
-		flag = true
-		w.WriteName("image_url")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(m.ImageURL)
-	}
-	if m.Rules != nil {
-		flag = true
-		w.WriteName("rules")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(core.JSON{m.Rules})
-	}
-	if m.CompanyInfo != nil {
-		flag = true
-		w.WriteName("company_info")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(core.JSON{m.CompanyInfo})
-	}
-	if m.WarehouseAddressID != 0 {
-		flag = true
-		w.WriteName("warehouse_address_id")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(m.WarehouseAddressID)
-	}
-	if m.BankAccount != nil {
-		flag = true
-		w.WriteName("bank_account")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(core.JSON{m.BankAccount})
-	}
-	if m.ContactPersons != nil {
-		flag = true
-		w.WriteName("contact_persons")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(core.JSON{m.ContactPersons})
-	}
-	if m.ShipFromAddressID != 0 {
-		flag = true
-		w.WriteName("ship_from_address_id")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(m.ShipFromAddressID)
-	}
-	if m.ProductSourceID != 0 {
-		flag = true
-		w.WriteName("product_source_id")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(m.ProductSourceID)
-	}
-	if !flag {
-		return core.ErrNoColumn
-	}
-	w.TrimLast(1)
-	return nil
-}
-
-func (m *Supplier) SQLUpdateAll(w SQLWriter) error {
-	w.WriteQueryString(__sqlSupplier_UpdateAll)
-	w.WriteRawString(" = (")
-	w.WriteMarkers(15)
-	w.WriteByte(')')
-	w.WriteArgs(m.SQLArgs(w.Opts(), false))
-	return nil
-}
-
-type SupplierHistory map[string]interface{}
-type SupplierHistories []map[string]interface{}
-
-func (m *SupplierHistory) SQLTableName() string  { return "history.\"supplier\"" }
-func (m SupplierHistories) SQLTableName() string { return "history.\"supplier\"" }
-
-func (m *SupplierHistory) SQLSelect(w SQLWriter) error {
-	w.WriteQueryString(__sqlSupplier_Select_history)
-	return nil
-}
-
-func (m SupplierHistories) SQLSelect(w SQLWriter) error {
-	w.WriteQueryString(__sqlSupplier_Select_history)
-	return nil
-}
-
-func (m SupplierHistory) ID() core.Interface          { return core.Interface{m["id"]} }
-func (m SupplierHistory) Status() core.Interface      { return core.Interface{m["status"]} }
-func (m SupplierHistory) CreatedAt() core.Interface   { return core.Interface{m["created_at"]} }
-func (m SupplierHistory) UpdatedAt() core.Interface   { return core.Interface{m["updated_at"]} }
-func (m SupplierHistory) IsTest() core.Interface      { return core.Interface{m["is_test"]} }
-func (m SupplierHistory) Name() core.Interface        { return core.Interface{m["name"]} }
-func (m SupplierHistory) OwnerID() core.Interface     { return core.Interface{m["owner_id"]} }
-func (m SupplierHistory) ImageURL() core.Interface    { return core.Interface{m["image_url"]} }
-func (m SupplierHistory) Rules() core.Interface       { return core.Interface{m["rules"]} }
-func (m SupplierHistory) CompanyInfo() core.Interface { return core.Interface{m["company_info"]} }
-func (m SupplierHistory) WarehouseAddressID() core.Interface {
-	return core.Interface{m["warehouse_address_id"]}
-}
-func (m SupplierHistory) BankAccount() core.Interface    { return core.Interface{m["bank_account"]} }
-func (m SupplierHistory) ContactPersons() core.Interface { return core.Interface{m["contact_persons"]} }
-func (m SupplierHistory) ShipFromAddressID() core.Interface {
-	return core.Interface{m["ship_from_address_id"]}
-}
-func (m SupplierHistory) ProductSourceID() core.Interface {
-	return core.Interface{m["product_source_id"]}
-}
-
-func (m *SupplierHistory) SQLScan(opts core.Opts, row *sql.Row) error {
-	data := make([]interface{}, 15)
-	args := make([]interface{}, 15)
-	for i := 0; i < 15; i++ {
-		args[i] = &data[i]
-	}
-	if err := row.Scan(args...); err != nil {
-		return err
-	}
-	res := make(SupplierHistory, 15)
-	res["id"] = data[0]
-	res["status"] = data[1]
-	res["created_at"] = data[2]
-	res["updated_at"] = data[3]
-	res["is_test"] = data[4]
-	res["name"] = data[5]
-	res["owner_id"] = data[6]
-	res["image_url"] = data[7]
-	res["rules"] = data[8]
-	res["company_info"] = data[9]
-	res["warehouse_address_id"] = data[10]
-	res["bank_account"] = data[11]
-	res["contact_persons"] = data[12]
-	res["ship_from_address_id"] = data[13]
-	res["product_source_id"] = data[14]
-	*m = res
-	return nil
-}
-
-func (ms *SupplierHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	data := make([]interface{}, 15)
-	args := make([]interface{}, 15)
-	for i := 0; i < 15; i++ {
-		args[i] = &data[i]
-	}
-	res := make(SupplierHistories, 0, 128)
-	for rows.Next() {
-		if err := rows.Scan(args...); err != nil {
-			return err
-		}
-		m := make(SupplierHistory)
-		m["id"] = data[0]
-		m["status"] = data[1]
-		m["created_at"] = data[2]
-		m["updated_at"] = data[3]
-		m["is_test"] = data[4]
-		m["name"] = data[5]
-		m["owner_id"] = data[6]
-		m["image_url"] = data[7]
-		m["rules"] = data[8]
-		m["company_info"] = data[9]
-		m["warehouse_address_id"] = data[10]
-		m["bank_account"] = data[11]
-		m["contact_persons"] = data[12]
-		m["ship_from_address_id"] = data[13]
-		m["product_source_id"] = data[14]
-		res = append(res, m)
-	}
-	if err := rows.Err(); err != nil {
-		return err
-	}
-	*ms = res
-	return nil
-}
-
-// *SupplierInfo is a substruct of *Supplier
-func substructSupplierInfo(_ *SupplierInfo, _ *Supplier) bool { return true }
-
-func SupplierInfoesFromSuppliers(ps []*Supplier) []*SupplierInfo {
-	ss := make([]*SupplierInfo, len(ps))
-	for i, p := range ps {
-		ss[i] = NewSupplierInfoFromSupplier(p)
-	}
-	return ss
-}
-
-func SupplierInfoesToSuppliers(ss []*SupplierInfo) []*Supplier {
-	ps := make([]*Supplier, len(ss))
-	for i, s := range ss {
-		ps[i] = s.ToSupplier()
-	}
-	return ps
-}
-
-func NewSupplierInfoFromSupplier(sp *Supplier) *SupplierInfo {
-	if sp == nil {
-		return nil
-	}
-	s := new(SupplierInfo)
-	s.CopyFrom(sp)
-	return s
-}
-
-func (s *SupplierInfo) ToSupplier() *Supplier {
-	if s == nil {
-		return nil
-	}
-	sp := new(Supplier)
-	s.AssignTo(sp)
-	return sp
-}
-
-func (s *SupplierInfo) CopyFrom(sp *Supplier) {
-	s.Name = sp.Name
-	s.ImageURL = sp.ImageURL
-	s.Rules = sp.Rules
-	s.CompanyInfo = sp.CompanyInfo
-	s.WarehouseAddressID = sp.WarehouseAddressID
-	s.BankAccount = sp.BankAccount
-	s.ContactPersons = sp.ContactPersons
-}
-
-func (s *SupplierInfo) AssignTo(sp *Supplier) {
-	sp.Name = s.Name
-	sp.ImageURL = s.ImageURL
-	sp.Rules = s.Rules
-	sp.CompanyInfo = s.CompanyInfo
-	sp.WarehouseAddressID = s.WarehouseAddressID
-	sp.BankAccount = s.BankAccount
-	sp.ContactPersons = s.ContactPersons
-}
-
-// Type SupplierInfo represents table supplier
-func sqlgenSupplierInfo(_ *SupplierInfo, _ *Supplier) bool { return true }
-
-type SupplierInfoes []*SupplierInfo
-
-const __sqlSupplierInfo_Table = "supplier"
-const __sqlSupplierInfo_ListCols = "\"name\",\"image_url\",\"rules\",\"company_info\",\"warehouse_address_id\",\"bank_account\",\"contact_persons\""
-const __sqlSupplierInfo_Insert = "INSERT INTO \"supplier\" (" + __sqlSupplierInfo_ListCols + ") VALUES"
-const __sqlSupplierInfo_Select = "SELECT " + __sqlSupplierInfo_ListCols + " FROM \"supplier\""
-const __sqlSupplierInfo_Select_history = "SELECT " + __sqlSupplierInfo_ListCols + " FROM history.\"supplier\""
-const __sqlSupplierInfo_UpdateAll = "UPDATE \"supplier\" SET (" + __sqlSupplierInfo_ListCols + ")"
-
-func (m *SupplierInfo) SQLTableName() string   { return "supplier" }
-func (m *SupplierInfoes) SQLTableName() string { return "supplier" }
-func (m *SupplierInfo) SQLListCols() string    { return __sqlSupplierInfo_ListCols }
-
-func (m *SupplierInfo) SQLArgs(opts core.Opts, create bool) []interface{} {
-	return []interface{}{
-		core.String(m.Name),
-		core.String(m.ImageURL),
-		core.JSON{m.Rules},
-		core.JSON{m.CompanyInfo},
-		core.Int64(m.WarehouseAddressID),
-		core.JSON{m.BankAccount},
-		core.JSON{m.ContactPersons},
-	}
-}
-
-func (m *SupplierInfo) SQLScanArgs(opts core.Opts) []interface{} {
-	return []interface{}{
-		(*core.String)(&m.Name),
-		(*core.String)(&m.ImageURL),
-		core.JSON{&m.Rules},
-		core.JSON{&m.CompanyInfo},
-		(*core.Int64)(&m.WarehouseAddressID),
-		core.JSON{&m.BankAccount},
-		core.JSON{&m.ContactPersons},
-	}
-}
-
-func (m *SupplierInfo) SQLScan(opts core.Opts, row *sql.Row) error {
-	return row.Scan(m.SQLScanArgs(opts)...)
-}
-
-func (ms *SupplierInfoes) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	res := make(SupplierInfoes, 0, 128)
-	for rows.Next() {
-		m := new(SupplierInfo)
-		args := m.SQLScanArgs(opts)
-		if err := rows.Scan(args...); err != nil {
-			return err
-		}
-		res = append(res, m)
-	}
-	if err := rows.Err(); err != nil {
-		return err
-	}
-	*ms = res
-	return nil
-}
-
-func (_ *SupplierInfo) SQLSelect(w SQLWriter) error {
-	w.WriteQueryString(__sqlSupplierInfo_Select)
-	return nil
-}
-
-func (_ *SupplierInfoes) SQLSelect(w SQLWriter) error {
-	w.WriteQueryString(__sqlSupplierInfo_Select)
-	return nil
-}
-
-func (m *SupplierInfo) SQLInsert(w SQLWriter) error {
-	w.WriteQueryString(__sqlSupplierInfo_Insert)
-	w.WriteRawString(" (")
-	w.WriteMarkers(7)
-	w.WriteByte(')')
-	w.WriteArgs(m.SQLArgs(w.Opts(), true))
-	return nil
-}
-
-func (ms SupplierInfoes) SQLInsert(w SQLWriter) error {
-	w.WriteQueryString(__sqlSupplierInfo_Insert)
-	w.WriteRawString(" (")
-	for i := 0; i < len(ms); i++ {
-		w.WriteMarkers(7)
-		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
-		w.WriteRawString("),(")
-	}
-	w.TrimLast(2)
-	return nil
-}
-
-func (m *SupplierInfo) SQLUpdate(w SQLWriter) error {
-	now, opts := time.Now(), w.Opts()
-	_, _ = now, opts // suppress unuse error
-	var flag bool
-	w.WriteRawString("UPDATE ")
-	w.WriteName("supplier")
-	w.WriteRawString(" SET ")
-	if m.Name != "" {
-		flag = true
-		w.WriteName("name")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(m.Name)
-	}
-	if m.ImageURL != "" {
-		flag = true
-		w.WriteName("image_url")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(m.ImageURL)
-	}
-	if m.Rules != nil {
-		flag = true
-		w.WriteName("rules")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(core.JSON{m.Rules})
-	}
-	if m.CompanyInfo != nil {
-		flag = true
-		w.WriteName("company_info")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(core.JSON{m.CompanyInfo})
-	}
-	if m.WarehouseAddressID != 0 {
-		flag = true
-		w.WriteName("warehouse_address_id")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(m.WarehouseAddressID)
-	}
-	if m.BankAccount != nil {
-		flag = true
-		w.WriteName("bank_account")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(core.JSON{m.BankAccount})
-	}
-	if m.ContactPersons != nil {
-		flag = true
-		w.WriteName("contact_persons")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(core.JSON{m.ContactPersons})
-	}
-	if !flag {
-		return core.ErrNoColumn
-	}
-	w.TrimLast(1)
-	return nil
-}
-
-func (m *SupplierInfo) SQLUpdateAll(w SQLWriter) error {
-	w.WriteQueryString(__sqlSupplierInfo_UpdateAll)
-	w.WriteRawString(" = (")
-	w.WriteMarkers(7)
-	w.WriteByte(')')
-	w.WriteArgs(m.SQLArgs(w.Opts(), false))
-	return nil
-}
-
-type SupplierInfoHistory map[string]interface{}
-type SupplierInfoHistories []map[string]interface{}
-
-func (m *SupplierInfoHistory) SQLTableName() string  { return "history.\"supplier\"" }
-func (m SupplierInfoHistories) SQLTableName() string { return "history.\"supplier\"" }
-
-func (m *SupplierInfoHistory) SQLSelect(w SQLWriter) error {
-	w.WriteQueryString(__sqlSupplierInfo_Select_history)
-	return nil
-}
-
-func (m SupplierInfoHistories) SQLSelect(w SQLWriter) error {
-	w.WriteQueryString(__sqlSupplierInfo_Select_history)
-	return nil
-}
-
-func (m SupplierInfoHistory) Name() core.Interface        { return core.Interface{m["name"]} }
-func (m SupplierInfoHistory) ImageURL() core.Interface    { return core.Interface{m["image_url"]} }
-func (m SupplierInfoHistory) Rules() core.Interface       { return core.Interface{m["rules"]} }
-func (m SupplierInfoHistory) CompanyInfo() core.Interface { return core.Interface{m["company_info"]} }
-func (m SupplierInfoHistory) WarehouseAddressID() core.Interface {
-	return core.Interface{m["warehouse_address_id"]}
-}
-func (m SupplierInfoHistory) BankAccount() core.Interface { return core.Interface{m["bank_account"]} }
-func (m SupplierInfoHistory) ContactPersons() core.Interface {
-	return core.Interface{m["contact_persons"]}
-}
-
-func (m *SupplierInfoHistory) SQLScan(opts core.Opts, row *sql.Row) error {
-	data := make([]interface{}, 7)
-	args := make([]interface{}, 7)
-	for i := 0; i < 7; i++ {
-		args[i] = &data[i]
-	}
-	if err := row.Scan(args...); err != nil {
-		return err
-	}
-	res := make(SupplierInfoHistory, 7)
-	res["name"] = data[0]
-	res["image_url"] = data[1]
-	res["rules"] = data[2]
-	res["company_info"] = data[3]
-	res["warehouse_address_id"] = data[4]
-	res["bank_account"] = data[5]
-	res["contact_persons"] = data[6]
-	*m = res
-	return nil
-}
-
-func (ms *SupplierInfoHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	data := make([]interface{}, 7)
-	args := make([]interface{}, 7)
-	for i := 0; i < 7; i++ {
-		args[i] = &data[i]
-	}
-	res := make(SupplierInfoHistories, 0, 128)
-	for rows.Next() {
-		if err := rows.Scan(args...); err != nil {
-			return err
-		}
-		m := make(SupplierInfoHistory)
-		m["name"] = data[0]
-		m["image_url"] = data[1]
-		m["rules"] = data[2]
-		m["company_info"] = data[3]
-		m["warehouse_address_id"] = data[4]
-		m["bank_account"] = data[5]
-		m["contact_persons"] = data[6]
-		res = append(res, m)
-	}
-	if err := rows.Err(); err != nil {
-		return err
-	}
-	*ms = res
-	return nil
-}
-
-// Type SupplierExtended represents a join
-func sqlgenSupplierExtended(_ *SupplierExtended, _ *Supplier, as sq.AS, t0 sq.JOIN_TYPE, _ *Address, a0 sq.AS, c0 string) bool {
-	__sqlSupplierExtended_JoinTypes = []sq.JOIN_TYPE{t0}
-	__sqlSupplierExtended_As = as
-	__sqlSupplierExtended_JoinAs = []sq.AS{a0}
-	__sqlSupplierExtended_JoinConds = []string{c0}
-	return true
-}
-
-type SupplierExtendeds []*SupplierExtended
-
-var __sqlSupplierExtended_JoinTypes []sq.JOIN_TYPE
-var __sqlSupplierExtended_As sq.AS
-var __sqlSupplierExtended_JoinAs []sq.AS
-var __sqlSupplierExtended_JoinConds []string
-
-func (m *SupplierExtended) SQLTableName() string  { return "supplier" }
-func (m *SupplierExtendeds) SQLTableName() string { return "supplier" }
-
-func (m *SupplierExtended) SQLScan(opts core.Opts, row *sql.Row) error {
-	return row.Scan(m.SQLScanArgs(opts)...)
-}
-
-func (ms *SupplierExtendeds) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	res := make(SupplierExtendeds, 0, 128)
-	for rows.Next() {
-		m := new(SupplierExtended)
-		args := m.SQLScanArgs(opts)
-		if err := rows.Scan(args...); err != nil {
-			return err
-		}
-		res = append(res, m)
-	}
-	if err := rows.Err(); err != nil {
-		return err
-	}
-	*ms = res
-	return nil
-}
-
-func (m *SupplierExtended) SQLSelect(w SQLWriter) error {
-	(*SupplierExtended)(nil).__sqlSelect(w)
-	w.WriteByte(' ')
-	(*SupplierExtended)(nil).__sqlJoin(w, __sqlSupplierExtended_JoinTypes)
-	return nil
-}
-
-func (m *SupplierExtendeds) SQLSelect(w SQLWriter) error {
-	return (*SupplierExtended)(nil).SQLSelect(w)
-}
-
-func (m *SupplierExtended) SQLJoin(w SQLWriter, types []sq.JOIN_TYPE) error {
-	if len(types) == 0 {
-		types = __sqlSupplierExtended_JoinTypes
-	}
-	m.__sqlJoin(w, types)
-	return nil
-}
-
-func (m *SupplierExtendeds) SQLJoin(w SQLWriter, types []sq.JOIN_TYPE) error {
-	return (*SupplierExtended)(nil).SQLJoin(w, types)
-}
-
-func (m *SupplierExtended) __sqlSelect(w SQLWriter) {
-	w.WriteRawString("SELECT ")
-	core.WriteCols(w, string(__sqlSupplierExtended_As), (*Supplier)(nil).SQLListCols())
-	w.WriteByte(',')
-	core.WriteCols(w, string(__sqlSupplierExtended_JoinAs[0]), (*Address)(nil).SQLListCols())
-}
-
-func (m *SupplierExtended) __sqlJoin(w SQLWriter, types []sq.JOIN_TYPE) {
-	if len(types) != 1 {
-		panic("common/sql: expect 1 type to join")
-	}
-	w.WriteRawString("FROM ")
-	w.WriteName("supplier")
-	w.WriteRawString(" AS ")
-	w.WriteRawString(string(__sqlSupplierExtended_As))
-	w.WriteByte(' ')
-	w.WriteRawString(string(types[0]))
-	w.WriteRawString(" JOIN ")
-	w.WriteName((*Address)(nil).SQLTableName())
-	w.WriteRawString(" AS ")
-	w.WriteRawString(string(__sqlSupplierExtended_JoinAs[0]))
-	w.WriteRawString(" ON ")
-	w.WriteQueryString(__sqlSupplierExtended_JoinConds[0])
-}
-
-func (m *SupplierExtended) SQLScanArgs(opts core.Opts) []interface{} {
-	args := make([]interface{}, 0, 64) // TODO: pre-calculate length
-	m.Supplier = new(Supplier)
-	args = append(args, m.Supplier.SQLScanArgs(opts)...)
-	m.Address = new(Address)
-	args = append(args, m.Address.SQLScanArgs(opts)...)
-
-	return args
-}
-
-// Type SupplierShipFromAddress represents a join
-func sqlgenSupplierShipFromAddress(_ *SupplierShipFromAddress, _ *Supplier, as sq.AS, t0 sq.JOIN_TYPE, _ *Address, a0 sq.AS, c0 string) bool {
-	__sqlSupplierShipFromAddress_JoinTypes = []sq.JOIN_TYPE{t0}
-	__sqlSupplierShipFromAddress_As = as
-	__sqlSupplierShipFromAddress_JoinAs = []sq.AS{a0}
-	__sqlSupplierShipFromAddress_JoinConds = []string{c0}
-	return true
-}
-
-type SupplierShipFromAddresses []*SupplierShipFromAddress
-
-var __sqlSupplierShipFromAddress_JoinTypes []sq.JOIN_TYPE
-var __sqlSupplierShipFromAddress_As sq.AS
-var __sqlSupplierShipFromAddress_JoinAs []sq.AS
-var __sqlSupplierShipFromAddress_JoinConds []string
-
-func (m *SupplierShipFromAddress) SQLTableName() string   { return "supplier" }
-func (m *SupplierShipFromAddresses) SQLTableName() string { return "supplier" }
-
-func (m *SupplierShipFromAddress) SQLScan(opts core.Opts, row *sql.Row) error {
-	return row.Scan(m.SQLScanArgs(opts)...)
-}
-
-func (ms *SupplierShipFromAddresses) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	res := make(SupplierShipFromAddresses, 0, 128)
-	for rows.Next() {
-		m := new(SupplierShipFromAddress)
-		args := m.SQLScanArgs(opts)
-		if err := rows.Scan(args...); err != nil {
-			return err
-		}
-		res = append(res, m)
-	}
-	if err := rows.Err(); err != nil {
-		return err
-	}
-	*ms = res
-	return nil
-}
-
-func (m *SupplierShipFromAddress) SQLSelect(w SQLWriter) error {
-	(*SupplierShipFromAddress)(nil).__sqlSelect(w)
-	w.WriteByte(' ')
-	(*SupplierShipFromAddress)(nil).__sqlJoin(w, __sqlSupplierShipFromAddress_JoinTypes)
-	return nil
-}
-
-func (m *SupplierShipFromAddresses) SQLSelect(w SQLWriter) error {
-	return (*SupplierShipFromAddress)(nil).SQLSelect(w)
-}
-
-func (m *SupplierShipFromAddress) SQLJoin(w SQLWriter, types []sq.JOIN_TYPE) error {
-	if len(types) == 0 {
-		types = __sqlSupplierShipFromAddress_JoinTypes
-	}
-	m.__sqlJoin(w, types)
-	return nil
-}
-
-func (m *SupplierShipFromAddresses) SQLJoin(w SQLWriter, types []sq.JOIN_TYPE) error {
-	return (*SupplierShipFromAddress)(nil).SQLJoin(w, types)
-}
-
-func (m *SupplierShipFromAddress) __sqlSelect(w SQLWriter) {
-	w.WriteRawString("SELECT ")
-	core.WriteCols(w, string(__sqlSupplierShipFromAddress_As), (*Supplier)(nil).SQLListCols())
-	w.WriteByte(',')
-	core.WriteCols(w, string(__sqlSupplierShipFromAddress_JoinAs[0]), (*Address)(nil).SQLListCols())
-}
-
-func (m *SupplierShipFromAddress) __sqlJoin(w SQLWriter, types []sq.JOIN_TYPE) {
-	if len(types) != 1 {
-		panic("common/sql: expect 1 type to join")
-	}
-	w.WriteRawString("FROM ")
-	w.WriteName("supplier")
-	w.WriteRawString(" AS ")
-	w.WriteRawString(string(__sqlSupplierShipFromAddress_As))
-	w.WriteByte(' ')
-	w.WriteRawString(string(types[0]))
-	w.WriteRawString(" JOIN ")
-	w.WriteName((*Address)(nil).SQLTableName())
-	w.WriteRawString(" AS ")
-	w.WriteRawString(string(__sqlSupplierShipFromAddress_JoinAs[0]))
-	w.WriteRawString(" ON ")
-	w.WriteQueryString(__sqlSupplierShipFromAddress_JoinConds[0])
-}
-
-func (m *SupplierShipFromAddress) SQLScanArgs(opts core.Opts) []interface{} {
-	args := make([]interface{}, 0, 64) // TODO: pre-calculate length
-	m.Supplier = new(Supplier)
-	args = append(args, m.Supplier.SQLScanArgs(opts)...)
-	m.Address = new(Address)
-	args = append(args, m.Address.SQLScanArgs(opts)...)
-
-	return args
-}
-
 // Type Partner represents table partner
 func sqlgenPartner(_ *Partner) bool { return true }
 
@@ -4187,7 +3331,7 @@ func sqlgenProductSource(_ *ProductSource) bool { return true }
 type ProductSources []*ProductSource
 
 const __sqlProductSource_Table = "product_source"
-const __sqlProductSource_ListCols = "\"id\",\"supplier_id\",\"type\",\"name\",\"status\",\"external_status\",\"external_key\",\"external_info\",\"extra_info\",\"created_at\",\"updated_at\",\"last_sync_at\",\"sync_state_products\",\"sync_state_categories\""
+const __sqlProductSource_ListCols = "\"id\",\"supplier_id\",\"type\",\"name\",\"status\",\"external_status\",\"external_key\",\"created_at\",\"updated_at\",\"last_sync_at\",\"sync_state_products\",\"sync_state_categories\""
 const __sqlProductSource_Insert = "INSERT INTO \"product_source\" (" + __sqlProductSource_ListCols + ") VALUES"
 const __sqlProductSource_Select = "SELECT " + __sqlProductSource_ListCols + " FROM \"product_source\""
 const __sqlProductSource_Select_history = "SELECT " + __sqlProductSource_ListCols + " FROM history.\"product_source\""
@@ -4207,8 +3351,6 @@ func (m *ProductSource) SQLArgs(opts core.Opts, create bool) []interface{} {
 		core.Int(m.Status),
 		core.Int(m.ExternalStatus),
 		core.String(m.ExternalKey),
-		core.JSON{m.ExternalInfo},
-		core.JSON{m.ExtraInfo},
 		core.Now(m.CreatedAt, now, create),
 		core.Now(m.UpdatedAt, now, true),
 		core.Time(m.LastSyncAt),
@@ -4226,8 +3368,6 @@ func (m *ProductSource) SQLScanArgs(opts core.Opts) []interface{} {
 		(*core.Int)(&m.Status),
 		(*core.Int)(&m.ExternalStatus),
 		(*core.String)(&m.ExternalKey),
-		core.JSON{&m.ExternalInfo},
-		core.JSON{&m.ExtraInfo},
 		(*core.Time)(&m.CreatedAt),
 		(*core.Time)(&m.UpdatedAt),
 		(*core.Time)(&m.LastSyncAt),
@@ -4270,7 +3410,7 @@ func (_ *ProductSources) SQLSelect(w SQLWriter) error {
 func (m *ProductSource) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlProductSource_Insert)
 	w.WriteRawString(" (")
-	w.WriteMarkers(14)
+	w.WriteMarkers(12)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), true))
 	return nil
@@ -4280,7 +3420,7 @@ func (ms ProductSources) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlProductSource_Insert)
 	w.WriteRawString(" (")
 	for i := 0; i < len(ms); i++ {
-		w.WriteMarkers(14)
+		w.WriteMarkers(12)
 		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
 		w.WriteRawString("),(")
 	}
@@ -4351,22 +3491,6 @@ func (m *ProductSource) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(m.ExternalKey)
 	}
-	if m.ExternalInfo != nil {
-		flag = true
-		w.WriteName("external_info")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(core.JSON{m.ExternalInfo})
-	}
-	if m.ExtraInfo != nil {
-		flag = true
-		w.WriteName("extra_info")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(core.JSON{m.ExtraInfo})
-	}
 	if !m.CreatedAt.IsZero() {
 		flag = true
 		w.WriteName("created_at")
@@ -4417,7 +3541,7 @@ func (m *ProductSource) SQLUpdate(w SQLWriter) error {
 func (m *ProductSource) SQLUpdateAll(w SQLWriter) error {
 	w.WriteQueryString(__sqlProductSource_UpdateAll)
 	w.WriteRawString(" = (")
-	w.WriteMarkers(14)
+	w.WriteMarkers(12)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), false))
 	return nil
@@ -4447,12 +3571,10 @@ func (m ProductSourceHistory) Status() core.Interface     { return core.Interfac
 func (m ProductSourceHistory) ExternalStatus() core.Interface {
 	return core.Interface{m["external_status"]}
 }
-func (m ProductSourceHistory) ExternalKey() core.Interface  { return core.Interface{m["external_key"]} }
-func (m ProductSourceHistory) ExternalInfo() core.Interface { return core.Interface{m["external_info"]} }
-func (m ProductSourceHistory) ExtraInfo() core.Interface    { return core.Interface{m["extra_info"]} }
-func (m ProductSourceHistory) CreatedAt() core.Interface    { return core.Interface{m["created_at"]} }
-func (m ProductSourceHistory) UpdatedAt() core.Interface    { return core.Interface{m["updated_at"]} }
-func (m ProductSourceHistory) LastSyncAt() core.Interface   { return core.Interface{m["last_sync_at"]} }
+func (m ProductSourceHistory) ExternalKey() core.Interface { return core.Interface{m["external_key"]} }
+func (m ProductSourceHistory) CreatedAt() core.Interface   { return core.Interface{m["created_at"]} }
+func (m ProductSourceHistory) UpdatedAt() core.Interface   { return core.Interface{m["updated_at"]} }
+func (m ProductSourceHistory) LastSyncAt() core.Interface  { return core.Interface{m["last_sync_at"]} }
 func (m ProductSourceHistory) SyncStateProducts() core.Interface {
 	return core.Interface{m["sync_state_products"]}
 }
@@ -4461,15 +3583,15 @@ func (m ProductSourceHistory) SyncStateCategories() core.Interface {
 }
 
 func (m *ProductSourceHistory) SQLScan(opts core.Opts, row *sql.Row) error {
-	data := make([]interface{}, 14)
-	args := make([]interface{}, 14)
-	for i := 0; i < 14; i++ {
+	data := make([]interface{}, 12)
+	args := make([]interface{}, 12)
+	for i := 0; i < 12; i++ {
 		args[i] = &data[i]
 	}
 	if err := row.Scan(args...); err != nil {
 		return err
 	}
-	res := make(ProductSourceHistory, 14)
+	res := make(ProductSourceHistory, 12)
 	res["id"] = data[0]
 	res["supplier_id"] = data[1]
 	res["type"] = data[2]
@@ -4477,21 +3599,19 @@ func (m *ProductSourceHistory) SQLScan(opts core.Opts, row *sql.Row) error {
 	res["status"] = data[4]
 	res["external_status"] = data[5]
 	res["external_key"] = data[6]
-	res["external_info"] = data[7]
-	res["extra_info"] = data[8]
-	res["created_at"] = data[9]
-	res["updated_at"] = data[10]
-	res["last_sync_at"] = data[11]
-	res["sync_state_products"] = data[12]
-	res["sync_state_categories"] = data[13]
+	res["created_at"] = data[7]
+	res["updated_at"] = data[8]
+	res["last_sync_at"] = data[9]
+	res["sync_state_products"] = data[10]
+	res["sync_state_categories"] = data[11]
 	*m = res
 	return nil
 }
 
 func (ms *ProductSourceHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	data := make([]interface{}, 14)
-	args := make([]interface{}, 14)
-	for i := 0; i < 14; i++ {
+	data := make([]interface{}, 12)
+	args := make([]interface{}, 12)
+	for i := 0; i < 12; i++ {
 		args[i] = &data[i]
 	}
 	res := make(ProductSourceHistories, 0, 128)
@@ -4507,13 +3627,11 @@ func (ms *ProductSourceHistories) SQLScan(opts core.Opts, rows *sql.Rows) error 
 		m["status"] = data[4]
 		m["external_status"] = data[5]
 		m["external_key"] = data[6]
-		m["external_info"] = data[7]
-		m["extra_info"] = data[8]
-		m["created_at"] = data[9]
-		m["updated_at"] = data[10]
-		m["last_sync_at"] = data[11]
-		m["sync_state_products"] = data[12]
-		m["sync_state_categories"] = data[13]
+		m["created_at"] = data[7]
+		m["updated_at"] = data[8]
+		m["last_sync_at"] = data[9]
+		m["sync_state_products"] = data[10]
+		m["sync_state_categories"] = data[11]
 		res = append(res, m)
 	}
 	if err := rows.Err(); err != nil {
@@ -5366,202 +4484,6 @@ func (m *ProductSourceExtended) SQLScanArgs(opts core.Opts) []interface{} {
 	args = append(args, m.ProductSource.SQLScanArgs(opts)...)
 	m.ProductSourceInternal = new(ProductSourceInternal)
 	args = append(args, m.ProductSourceInternal.SQLScanArgs(opts)...)
-
-	return args
-}
-
-// Type SupplierFtProductSource represents a join
-func sqlgenSupplierFtProductSource(_ *SupplierFtProductSource, _ *Supplier, as sq.AS, t0 sq.JOIN_TYPE, _ *ProductSource, a0 sq.AS, c0 string) bool {
-	__sqlSupplierFtProductSource_JoinTypes = []sq.JOIN_TYPE{t0}
-	__sqlSupplierFtProductSource_As = as
-	__sqlSupplierFtProductSource_JoinAs = []sq.AS{a0}
-	__sqlSupplierFtProductSource_JoinConds = []string{c0}
-	return true
-}
-
-type SupplierFtProductSources []*SupplierFtProductSource
-
-var __sqlSupplierFtProductSource_JoinTypes []sq.JOIN_TYPE
-var __sqlSupplierFtProductSource_As sq.AS
-var __sqlSupplierFtProductSource_JoinAs []sq.AS
-var __sqlSupplierFtProductSource_JoinConds []string
-
-func (m *SupplierFtProductSource) SQLTableName() string  { return "supplier" }
-func (m *SupplierFtProductSources) SQLTableName() string { return "supplier" }
-
-func (m *SupplierFtProductSource) SQLScan(opts core.Opts, row *sql.Row) error {
-	return row.Scan(m.SQLScanArgs(opts)...)
-}
-
-func (ms *SupplierFtProductSources) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	res := make(SupplierFtProductSources, 0, 128)
-	for rows.Next() {
-		m := new(SupplierFtProductSource)
-		args := m.SQLScanArgs(opts)
-		if err := rows.Scan(args...); err != nil {
-			return err
-		}
-		res = append(res, m)
-	}
-	if err := rows.Err(); err != nil {
-		return err
-	}
-	*ms = res
-	return nil
-}
-
-func (m *SupplierFtProductSource) SQLSelect(w SQLWriter) error {
-	(*SupplierFtProductSource)(nil).__sqlSelect(w)
-	w.WriteByte(' ')
-	(*SupplierFtProductSource)(nil).__sqlJoin(w, __sqlSupplierFtProductSource_JoinTypes)
-	return nil
-}
-
-func (m *SupplierFtProductSources) SQLSelect(w SQLWriter) error {
-	return (*SupplierFtProductSource)(nil).SQLSelect(w)
-}
-
-func (m *SupplierFtProductSource) SQLJoin(w SQLWriter, types []sq.JOIN_TYPE) error {
-	if len(types) == 0 {
-		types = __sqlSupplierFtProductSource_JoinTypes
-	}
-	m.__sqlJoin(w, types)
-	return nil
-}
-
-func (m *SupplierFtProductSources) SQLJoin(w SQLWriter, types []sq.JOIN_TYPE) error {
-	return (*SupplierFtProductSource)(nil).SQLJoin(w, types)
-}
-
-func (m *SupplierFtProductSource) __sqlSelect(w SQLWriter) {
-	w.WriteRawString("SELECT ")
-	core.WriteCols(w, string(__sqlSupplierFtProductSource_As), (*Supplier)(nil).SQLListCols())
-	w.WriteByte(',')
-	core.WriteCols(w, string(__sqlSupplierFtProductSource_JoinAs[0]), (*ProductSource)(nil).SQLListCols())
-}
-
-func (m *SupplierFtProductSource) __sqlJoin(w SQLWriter, types []sq.JOIN_TYPE) {
-	if len(types) != 1 {
-		panic("common/sql: expect 1 type to join")
-	}
-	w.WriteRawString("FROM ")
-	w.WriteName("supplier")
-	w.WriteRawString(" AS ")
-	w.WriteRawString(string(__sqlSupplierFtProductSource_As))
-	w.WriteByte(' ')
-	w.WriteRawString(string(types[0]))
-	w.WriteRawString(" JOIN ")
-	w.WriteName((*ProductSource)(nil).SQLTableName())
-	w.WriteRawString(" AS ")
-	w.WriteRawString(string(__sqlSupplierFtProductSource_JoinAs[0]))
-	w.WriteRawString(" ON ")
-	w.WriteQueryString(__sqlSupplierFtProductSource_JoinConds[0])
-}
-
-func (m *SupplierFtProductSource) SQLScanArgs(opts core.Opts) []interface{} {
-	args := make([]interface{}, 0, 64) // TODO: pre-calculate length
-	m.Supplier = new(Supplier)
-	args = append(args, m.Supplier.SQLScanArgs(opts)...)
-	m.ProductSource = new(ProductSource)
-	args = append(args, m.ProductSource.SQLScanArgs(opts)...)
-
-	return args
-}
-
-// Type ProductSourceFtSupplier represents a join
-func sqlgenProductSourceFtSupplier(_ *ProductSourceFtSupplier, _ *ProductSource, as sq.AS, t0 sq.JOIN_TYPE, _ *Supplier, a0 sq.AS, c0 string) bool {
-	__sqlProductSourceFtSupplier_JoinTypes = []sq.JOIN_TYPE{t0}
-	__sqlProductSourceFtSupplier_As = as
-	__sqlProductSourceFtSupplier_JoinAs = []sq.AS{a0}
-	__sqlProductSourceFtSupplier_JoinConds = []string{c0}
-	return true
-}
-
-type ProductSourceFtSuppliers []*ProductSourceFtSupplier
-
-var __sqlProductSourceFtSupplier_JoinTypes []sq.JOIN_TYPE
-var __sqlProductSourceFtSupplier_As sq.AS
-var __sqlProductSourceFtSupplier_JoinAs []sq.AS
-var __sqlProductSourceFtSupplier_JoinConds []string
-
-func (m *ProductSourceFtSupplier) SQLTableName() string  { return "product_source" }
-func (m *ProductSourceFtSuppliers) SQLTableName() string { return "product_source" }
-
-func (m *ProductSourceFtSupplier) SQLScan(opts core.Opts, row *sql.Row) error {
-	return row.Scan(m.SQLScanArgs(opts)...)
-}
-
-func (ms *ProductSourceFtSuppliers) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	res := make(ProductSourceFtSuppliers, 0, 128)
-	for rows.Next() {
-		m := new(ProductSourceFtSupplier)
-		args := m.SQLScanArgs(opts)
-		if err := rows.Scan(args...); err != nil {
-			return err
-		}
-		res = append(res, m)
-	}
-	if err := rows.Err(); err != nil {
-		return err
-	}
-	*ms = res
-	return nil
-}
-
-func (m *ProductSourceFtSupplier) SQLSelect(w SQLWriter) error {
-	(*ProductSourceFtSupplier)(nil).__sqlSelect(w)
-	w.WriteByte(' ')
-	(*ProductSourceFtSupplier)(nil).__sqlJoin(w, __sqlProductSourceFtSupplier_JoinTypes)
-	return nil
-}
-
-func (m *ProductSourceFtSuppliers) SQLSelect(w SQLWriter) error {
-	return (*ProductSourceFtSupplier)(nil).SQLSelect(w)
-}
-
-func (m *ProductSourceFtSupplier) SQLJoin(w SQLWriter, types []sq.JOIN_TYPE) error {
-	if len(types) == 0 {
-		types = __sqlProductSourceFtSupplier_JoinTypes
-	}
-	m.__sqlJoin(w, types)
-	return nil
-}
-
-func (m *ProductSourceFtSuppliers) SQLJoin(w SQLWriter, types []sq.JOIN_TYPE) error {
-	return (*ProductSourceFtSupplier)(nil).SQLJoin(w, types)
-}
-
-func (m *ProductSourceFtSupplier) __sqlSelect(w SQLWriter) {
-	w.WriteRawString("SELECT ")
-	core.WriteCols(w, string(__sqlProductSourceFtSupplier_As), (*ProductSource)(nil).SQLListCols())
-	w.WriteByte(',')
-	core.WriteCols(w, string(__sqlProductSourceFtSupplier_JoinAs[0]), (*Supplier)(nil).SQLListCols())
-}
-
-func (m *ProductSourceFtSupplier) __sqlJoin(w SQLWriter, types []sq.JOIN_TYPE) {
-	if len(types) != 1 {
-		panic("common/sql: expect 1 type to join")
-	}
-	w.WriteRawString("FROM ")
-	w.WriteName("product_source")
-	w.WriteRawString(" AS ")
-	w.WriteRawString(string(__sqlProductSourceFtSupplier_As))
-	w.WriteByte(' ')
-	w.WriteRawString(string(types[0]))
-	w.WriteRawString(" JOIN ")
-	w.WriteName((*Supplier)(nil).SQLTableName())
-	w.WriteRawString(" AS ")
-	w.WriteRawString(string(__sqlProductSourceFtSupplier_JoinAs[0]))
-	w.WriteRawString(" ON ")
-	w.WriteQueryString(__sqlProductSourceFtSupplier_JoinConds[0])
-}
-
-func (m *ProductSourceFtSupplier) SQLScanArgs(opts core.Opts) []interface{} {
-	args := make([]interface{}, 0, 64) // TODO: pre-calculate length
-	m.ProductSource = new(ProductSource)
-	args = append(args, m.ProductSource.SQLScanArgs(opts)...)
-	m.Supplier = new(Supplier)
-	args = append(args, m.Supplier.SQLScanArgs(opts)...)
 
 	return args
 }

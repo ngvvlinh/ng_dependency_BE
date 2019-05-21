@@ -2,7 +2,7 @@
   "swagger": "2.0",
   "info": {
     "title": "eTop API",
-    "description": "API Documentation:\n- [/doc/etop](/doc/etop) Shared API for managing login and account\n- [/doc/shop](/doc/shop) API for shops\n- [/doc/supplier](/doc/supplier) API for suppliers\n- [/doc/admin](/doc/admin) API for eTop admins\n- [/doc/integration](/doc/integration) API for integrating into partner sites\n- [/doc/ext/shop](/doc/ext/shop) External API for shops\n- [/doc/ext/partner](/doc/ext/partner) External API for partners\n- [/doc/sadmin](/doc/sadmin) Special API for super admins",
+    "description": "API Documentation:\n- [/doc/etop](/doc/etop) Shared API for managing login and account\n- [/doc/shop](/doc/shop) API for shops\n- [/doc/admin](/doc/admin) API for eTop admins\n- [/doc/ext/shop](/doc/ext/shop) External API for shops\n- [/doc/ext/partner](/doc/ext/partner) External API for partners\n- [/doc/sadmin](/doc/sadmin) Special API for super admins",
     "version": "v1"
   },
   "schemes": [
@@ -1108,9 +1108,6 @@
         "shop": {
           "$ref": "#/definitions/etopShop"
         },
-        "supplier": {
-          "$ref": "#/definitions/etopSupplier"
-        },
         "stoken": {
           "type": "boolean",
           "format": "boolean"
@@ -1768,9 +1765,6 @@
         "shop": {
           "$ref": "#/definitions/etopShop"
         },
-        "supplier": {
-          "$ref": "#/definitions/etopSupplier"
-        },
         "available_accounts": {
           "type": "array",
           "items": {
@@ -2103,44 +2097,6 @@
         },
         "code": {
           "type": "string"
-        }
-      }
-    },
-    "etopSupplier": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "string",
-          "format": "int64"
-        },
-        "name": {
-          "type": "string"
-        },
-        "status": {
-          "$ref": "#/definitions/status3Status"
-        },
-        "is_test": {
-          "type": "boolean",
-          "format": "boolean"
-        },
-        "company_info": {
-          "$ref": "#/definitions/etopCompanyInfo"
-        },
-        "warehouse_address": {
-          "$ref": "#/definitions/etopAddress"
-        },
-        "bank_account": {
-          "$ref": "#/definitions/etopBankAccount"
-        },
-        "contact_persons": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/etopContactPerson"
-          }
-        },
-        "ship_from_address_id": {
-          "type": "string",
-          "format": "int64"
         }
       }
     },

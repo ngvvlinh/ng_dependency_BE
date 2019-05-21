@@ -13,7 +13,6 @@ import (
 
 type GetFulfillmentExtendedsQuery struct {
 	ShopIDs       []int64 // MixedAccount
-	SupplierID    int64
 	PartnerID     int64
 	OrderID       int64
 	Status        *model.Status3

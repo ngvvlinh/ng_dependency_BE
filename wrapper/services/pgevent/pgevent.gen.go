@@ -68,12 +68,11 @@ func MustConnectPgeventService(addr string, client *http.Client, secret string) 
 }
 
 type (
-	EmptyClaim    = claims.EmptyClaim
-	UserClaim     = claims.UserClaim
-	AdminClaim    = claims.AdminClaim
-	PartnerClaim  = claims.PartnerClaim
-	ShopClaim     = claims.ShopClaim
-	SupplierClaim = claims.SupplierClaim
+	EmptyClaim   = claims.EmptyClaim
+	UserClaim    = claims.UserClaim
+	AdminClaim   = claims.AdminClaim
+	PartnerClaim = claims.PartnerClaim
+	ShopClaim    = claims.ShopClaim
 )
 
 func (c *PgeventClient) VersionInfo(ctx context.Context, in *cm.Empty) (*cm.VersionInfoResponse, error) {

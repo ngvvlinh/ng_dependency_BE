@@ -3281,10 +3281,6 @@
           "type": "string",
           "format": "int64"
         },
-        "supplier_id": {
-          "type": "string",
-          "format": "int64"
-        },
         "partner_id": {
           "type": "string",
           "format": "int64"
@@ -3671,10 +3667,6 @@
           "format": "int64"
         },
         "shop_id": {
-          "type": "string",
-          "format": "int64"
-        },
-        "supplier_id": {
           "type": "string",
           "format": "int64"
         },
@@ -4119,10 +4111,6 @@
           "format": "int64"
         },
         "variant_id": {
-          "type": "string",
-          "format": "int64"
-        },
-        "supplier_id": {
           "type": "string",
           "format": "int64"
         },
@@ -4711,10 +4699,6 @@
         "product_source_type": {
           "type": "string"
         },
-        "supplier_id": {
-          "type": "string",
-          "format": "int64"
-        },
         "parent_id": {
           "type": "string",
           "format": "int64"
@@ -4813,10 +4797,6 @@
       "type": "object",
       "properties": {
         "order_id": {
-          "type": "string",
-          "format": "int64"
-        },
-        "supplier_id": {
           "type": "string",
           "format": "int64"
         },
@@ -4949,10 +4929,6 @@
           "type": "string",
           "format": "int64"
         },
-        "supplier_id": {
-          "type": "string",
-          "format": "int64"
-        },
         "category_id": {
           "type": "string",
           "format": "int64"
@@ -5041,10 +5017,6 @@
       "type": "object",
       "properties": {
         "id": {
-          "type": "string",
-          "format": "int64"
-        },
-        "supplier_id": {
           "type": "string",
           "format": "int64"
         },
@@ -5472,10 +5444,6 @@
         },
         "product_source_type": {
           "type": "string"
-        },
-        "supplier_id": {
-          "type": "string",
-          "format": "int64"
         },
         "parent_id": {
           "type": "string",

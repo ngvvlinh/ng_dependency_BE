@@ -27,12 +27,6 @@ type GetAllProductSourcesQuery struct {
 	}
 }
 
-type GetAllSupplierFtProductSourcesQuery struct {
-	Result struct {
-		Sources []*SupplierFtProductSource
-	}
-}
-
 type GetOrderSourceProps struct {
 	ID          int64
 	ShopID      int64

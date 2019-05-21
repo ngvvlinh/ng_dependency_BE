@@ -293,37 +293,6 @@ func PbShopExtendeds(items []*model.ShopExtended) []*Shop {
 	return result
 }
 
-func PbSuppliers(items []*model.Supplier) []*Supplier {
-	res := make([]*Supplier, len(items))
-	for i, item := range items {
-		res[i] = PbSupplier(item)
-	}
-	return res
-}
-
-func PbSupplierExtended(m *model.SupplierExtended) *Supplier {
-	return &Supplier{
-		Id:                m.ID,
-		Name:              m.Name,
-		Status:            status3.Pb(m.Status),
-		IsTest:            m.IsTest > 0,
-		WarehouseAddress:  PbAddress(m.Address),
-		BankAccount:       PbBankAccount(m.BankAccount),
-		ContactPersons:    PbContactPersons(m.ContactPersons),
-		CompanyInfo:       PbCompanyInfo(m.CompanyInfo),
-		ShipFromAddressId: m.ShipFromAddressID,
-	}
-}
-
-func PbSupplier(m *model.Supplier) *Supplier {
-	return &Supplier{
-		Id:     m.ID,
-		Name:   m.Name,
-		Status: status3.Pb(m.Status),
-		IsTest: m.IsTest > 0,
-	}
-}
-
 func PbCategories(items []*model.EtopCategory) []*Category {
 	res := make([]*Category, len(items))
 	for i, item := range items {
@@ -615,16 +584,15 @@ func PbCreditExtended(item *model.CreditExtended) *Credit {
 	}
 
 	return &Credit{
-		Id:         item.ID,
-		Amount:     int64(item.Amount),
-		ShopId:     item.ShopID,
-		SupplierId: item.SupplierID,
-		Type:       item.Type,
-		Shop:       PbShop(item.Shop),
-		CreatedAt:  common.PbTime(item.CreatedAt),
-		UpdatedAt:  common.PbTime(item.UpdatedAt),
-		PaidAt:     common.PbTime(item.PaidAt),
-		Status:     status3.Pb(item.Status),
+		Id:        item.ID,
+		Amount:    int64(item.Amount),
+		ShopId:    item.ShopID,
+		Type:      item.Type,
+		Shop:      PbShop(item.Shop),
+		CreatedAt: common.PbTime(item.CreatedAt),
+		UpdatedAt: common.PbTime(item.UpdatedAt),
+		PaidAt:    common.PbTime(item.PaidAt),
+		Status:    status3.Pb(item.Status),
 	}
 }
 

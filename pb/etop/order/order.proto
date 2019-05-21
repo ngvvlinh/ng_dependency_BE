@@ -141,7 +141,6 @@ message OrderLine {
 
     optional int64 order_id = 2 [(gogoproto.nullable)=false];
     optional int64 variant_id = 3 [(gogoproto.nullable)=false];
-    optional int64 supplier_id = 4 [(gogoproto.nullable)=false];
 
     // optional int64 shop_id = 5 [(gogoproto.nullable)=false];
 
@@ -392,7 +391,6 @@ message Fulfillment {
     optional int64 id          = 1 [(gogoproto.nullable)=false];
     optional int64 order_id    = 2 [(gogoproto.nullable)=false];
     optional int64 shop_id     = 3 [(gogoproto.nullable)=false];
-    optional int64 supplier_id = 4 [(gogoproto.nullable)=false];
     optional int64 partner_id  = 55 [(gogoproto.nullable)=false];
     optional string self_url   = 59 [(gogoproto.nullable)=false];
 
@@ -626,7 +624,6 @@ message OrderExternal {
 message MoneyTransaction {
     optional int64 id = 1 [(gogoproto.nullable)=false];
     optional int64 shop_id = 2 [(gogoproto.nullable)=false];
-    optional int64 supplier_id = 3 [(gogoproto.nullable)=false];
     optional status3.Status status       = 4 [(gogoproto.nullable)=false];
     optional int64 total_cod = 5 [(gogoproto.nullable)=false];
     optional int64 total_orders = 6 [(gogoproto.nullable)=false];

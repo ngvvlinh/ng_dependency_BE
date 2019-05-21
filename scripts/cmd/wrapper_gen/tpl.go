@@ -87,7 +87,6 @@ type (
 	AdminClaim    = claims.AdminClaim
 	PartnerClaim  = claims.PartnerClaim
 	ShopClaim     = claims.ShopClaim
-	SupplierClaim = claims.SupplierClaim
 )
 
 {{range $s := .Services -}}
@@ -172,7 +171,6 @@ func (s {{$s.Name}}) {{$m.Name}}(ctx context.Context, req {{$m.InputType}}) (res
 {{end}} {{if requireAPIPartnerShopKey     $m}}RequireAPIPartnerShopKey:     true,
 {{end}} {{if requirePartner    $m}}RequirePartner:    true,
 {{end}}	{{if requireShop       $m}}RequireShop:       true,
-{{end}}	{{if requireSupplier   $m}}RequireSupplier:   true,
 {{end}}	{{if requireEtopAdmin  $m}}RequireEtopAdmin:  true,
 {{end}}	{{if requireSuperAdmin $m}}RequireSuperAdmin: true,
 {{end}} {{if authPartner       $m}}AuthPartner: {{authPartner $m}}, 
@@ -196,9 +194,6 @@ func (s {{$s.Name}}) {{$m.Name}}(ctx context.Context, req {{$m.InputType}}) (res
 	{{end -}}
 	{{if requireShop $m -}}
 	query.Context.Shop = session.Shop
-	{{end -}}
-	{{if requireSupplier $m -}}
-	query.Context.Supplier = session.Supplier
 	{{end -}}
 	{{if requireEtopAdmin $m -}}
 	query.Context.IsEtopAdmin = session.IsEtopAdmin

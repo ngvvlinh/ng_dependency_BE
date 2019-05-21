@@ -48,7 +48,6 @@ func PbCategory(m *model.ProductSourceCategoryExtended) *pbshop.Category {
 		ProductSourceType: m.ProductSourceCategory.ProductSourceType,
 		ParentId:          m.ParentID,
 		ShopId:            m.ShopID,
-		SupplierId:        m.SupplierID,
 		XId:               m.ExternalID,
 		XName:             m.ExternalName,
 		XParentId:         m.ExternalParentID,
@@ -78,7 +77,6 @@ func PbVariant(m *catalogmodel.VariantExtended) *pbadmin.Variant {
 
 	return &pbadmin.Variant{
 		Id:         m.ID,
-		SupplierId: m.SupplierID,
 		CategoryId: m.Product.EtopCategoryID,
 
 		// SCategoryId:  m.ProductSourceCategoryExtendedID, // unused
@@ -141,7 +139,6 @@ func PbProducts(items []*catalogmodel.ProductFtVariant) []*pbadmin.Product {
 func PbProduct(m *catalogmodel.ProductFtVariant) *pbadmin.Product {
 	return &pbadmin.Product{
 		Id:         m.Product.ID,
-		SupplierId: m.Product.SupplierID,
 		CategoryId: m.EtopCategoryID,
 
 		SName:        cm.Coalesce(m.EdName, m.Product.Name),
@@ -190,7 +187,6 @@ func PbVariantFromExternals(items []*catalogmodel.VariantExternalExtended, p *ca
 func PbVariantFromExternal(m *catalogmodel.VariantExternalExtended, p *catalogmodel.Product) *pbadmin.Variant {
 	return &pbadmin.Variant{
 		Id:         m.Variant.ID,
-		SupplierId: m.SupplierID,
 		CategoryId: p.EtopCategoryID,
 
 		// SCategoryId: p.ProductSourceCategoryID, // unused

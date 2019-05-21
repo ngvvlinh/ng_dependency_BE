@@ -14,14 +14,6 @@ func PbCreateCategoryToModel(pb *pbadmin.CreateCategoryRequest) *model.EtopCateg
 	}
 }
 
-func PbVariantsWithSupplier(items []*catalogmodel.VariantExtended) []*pbadmin.VariantWithSupplier {
-	res := make([]*pbadmin.VariantWithSupplier, len(items))
-	for i, item := range items {
-		res[i] = PbVariantWithSupplier(item)
-	}
-	return res
-}
-
 func PbVariantWithSupplier(m *catalogmodel.VariantExtended) *pbadmin.VariantWithSupplier {
 	return &pbadmin.VariantWithSupplier{
 		Variant: convertpb.PbVariant(m),

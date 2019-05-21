@@ -410,9 +410,6 @@
         "shop": {
           "$ref": "#/definitions/etopShop"
         },
-        "supplier": {
-          "$ref": "#/definitions/etopSupplier"
-        },
         "available_accounts": {
           "type": "array",
           "items": {
@@ -573,44 +570,6 @@
         },
         "code": {
           "type": "string"
-        }
-      }
-    },
-    "etopSupplier": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "string",
-          "format": "int64"
-        },
-        "name": {
-          "type": "string"
-        },
-        "status": {
-          "$ref": "#/definitions/status3Status"
-        },
-        "is_test": {
-          "type": "boolean",
-          "format": "boolean"
-        },
-        "company_info": {
-          "$ref": "#/definitions/etopCompanyInfo"
-        },
-        "warehouse_address": {
-          "$ref": "#/definitions/etopAddress"
-        },
-        "bank_account": {
-          "$ref": "#/definitions/etopBankAccount"
-        },
-        "contact_persons": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/etopContactPerson"
-          }
-        },
-        "ship_from_address_id": {
-          "type": "string",
-          "format": "int64"
         }
       }
     },

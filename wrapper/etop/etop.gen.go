@@ -116,12 +116,11 @@ func MustConnectEtopService(addr string, client *http.Client) {
 }
 
 type (
-	EmptyClaim    = claims.EmptyClaim
-	UserClaim     = claims.UserClaim
-	AdminClaim    = claims.AdminClaim
-	PartnerClaim  = claims.PartnerClaim
-	ShopClaim     = claims.ShopClaim
-	SupplierClaim = claims.SupplierClaim
+	EmptyClaim   = claims.EmptyClaim
+	UserClaim    = claims.UserClaim
+	AdminClaim   = claims.AdminClaim
+	PartnerClaim = claims.PartnerClaim
+	ShopClaim    = claims.ShopClaim
 )
 
 func (c *EtopClient) VersionInfo(ctx context.Context, in *cm.Empty) (*cm.VersionInfoResponse, error) {

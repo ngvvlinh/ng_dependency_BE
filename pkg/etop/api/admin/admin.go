@@ -15,7 +15,6 @@ import (
 	catalogmodelx "etop.vn/backend/pkg/services/catalog/modelx"
 	"etop.vn/backend/pkg/services/moneytx/modelx"
 	shippingmodelx "etop.vn/backend/pkg/services/shipping/modelx"
-	suppliermodelx "etop.vn/backend/pkg/zdeprecated/supplier/modelx"
 
 	pbcm "etop.vn/backend/pb/common"
 	pbetop "etop.vn/backend/pb/etop"
@@ -34,8 +33,6 @@ func init() {
 		GetVariant,
 		GetVariants,
 		GetVariantsByIDs,
-		GetSuppliers,
-		GetSuppliersByIDs,
 		RemoveProductsCategory,
 		UpdateProductsCategory,
 		UpdateVariantsStatus,
@@ -235,9 +232,8 @@ func GetVariant(ctx context.Context, q *wrapadmin.GetVariantEndpoint) error {
 func GetVariants(ctx context.Context, q *wrapadmin.GetVariantsEndpoint) error {
 	paging := q.Paging.CMPaging()
 	query := &catalogmodelx.GetVariantsExtendedQuery{
-		SupplierID: q.SupplierId,
-		Paging:     paging,
-		Filters:    pbcm.ToFilters(q.Filters),
+		Paging:  paging,
+		Filters: pbcm.ToFilters(q.Filters),
 		StatusQuery: model.StatusQuery{
 			Status:         q.Status.ToModel(),
 			ExternalStatus: q.EStatus.ToModel(),
@@ -266,35 +262,6 @@ func GetVariantsByIDs(ctx context.Context, q *wrapadmin.GetVariantsByIDsEndpoint
 	products := query.Result.Variants
 	q.Result = &pbadmin.VariantsResponse{
 		Variants: convertpb.PbVariants(products),
-	}
-	return nil
-}
-
-func GetSuppliers(ctx context.Context, q *wrapadmin.GetSuppliersEndpoint) error {
-	paging := q.Paging.CMPaging()
-	query := &suppliermodelx.GetSuppliersQuery{
-		Paging: paging,
-		Status: q.Status.ToModel(),
-	}
-	if err := bus.Dispatch(ctx, query); err != nil {
-		return err
-	}
-	q.Result = &pbetop.SuppliersResponse{
-		Paging:    pbcm.PbPageInfo(paging, query.Result.Total),
-		Suppliers: pbetop.PbSuppliers(query.Result.Suppliers),
-	}
-	return nil
-}
-
-func GetSuppliersByIDs(ctx context.Context, q *wrapadmin.GetSuppliersByIDsEndpoint) error {
-	query := &suppliermodelx.GetSuppliersQuery{
-		IDs: q.Ids,
-	}
-	if err := bus.Dispatch(ctx, query); err != nil {
-		return err
-	}
-	q.Result = &pbetop.SuppliersResponse{
-		Suppliers: pbetop.PbSuppliers(query.Result.Suppliers),
 	}
 	return nil
 }

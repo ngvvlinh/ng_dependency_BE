@@ -30,7 +30,6 @@ type Admin interface {
 	admin.AccountService
 	admin.CategoryService
 	admin.ProductService
-	admin.SupplierService
 	admin.OrderService
 	admin.FulfillmentService
 	admin.MoneyTransactionService
@@ -44,7 +43,6 @@ type AdminClient struct {
 	_AccountService          admin.AccountService
 	_CategoryService         admin.CategoryService
 	_ProductService          admin.ProductService
-	_SupplierService         admin.SupplierService
 	_OrderService            admin.OrderService
 	_FulfillmentService      admin.FulfillmentService
 	_MoneyTransactionService admin.MoneyTransactionService
@@ -66,7 +64,6 @@ func NewAdminClient(addr string, client *http.Client) Admin {
 		_AccountService:          admin.NewAccountServiceProtobufClient(addr, client),
 		_CategoryService:         admin.NewCategoryServiceProtobufClient(addr, client),
 		_ProductService:          admin.NewProductServiceProtobufClient(addr, client),
-		_SupplierService:         admin.NewSupplierServiceProtobufClient(addr, client),
 		_OrderService:            admin.NewOrderServiceProtobufClient(addr, client),
 		_FulfillmentService:      admin.NewFulfillmentServiceProtobufClient(addr, client),
 		_MoneyTransactionService: admin.NewMoneyTransactionServiceProtobufClient(addr, client),
@@ -98,8 +95,6 @@ func ConnectAdminService(addr string, client *http.Client) error {
 	bus.AddHandler("client", func(ctx context.Context, q *UpdateVariantEndpoint) error { panic("Unexpected") })
 	bus.AddHandler("client", func(ctx context.Context, q *UpdateVariantImagesEndpoint) error { panic("Unexpected") })
 	bus.AddHandler("client", func(ctx context.Context, q *UpdateVariantsStatusEndpoint) error { panic("Unexpected") })
-	bus.AddHandler("client", func(ctx context.Context, q *GetSuppliersEndpoint) error { panic("Unexpected") })
-	bus.AddHandler("client", func(ctx context.Context, q *GetSuppliersByIDsEndpoint) error { panic("Unexpected") })
 	bus.AddHandler("client", func(ctx context.Context, q *GetOrderEndpoint) error { panic("Unexpected") })
 	bus.AddHandler("client", func(ctx context.Context, q *GetOrdersEndpoint) error { panic("Unexpected") })
 	bus.AddHandler("client", func(ctx context.Context, q *GetOrdersByIDsEndpoint) error { panic("Unexpected") })
@@ -158,12 +153,11 @@ func MustConnectAdminService(addr string, client *http.Client) {
 }
 
 type (
-	EmptyClaim    = claims.EmptyClaim
-	UserClaim     = claims.UserClaim
-	AdminClaim    = claims.AdminClaim
-	PartnerClaim  = claims.PartnerClaim
-	ShopClaim     = claims.ShopClaim
-	SupplierClaim = claims.SupplierClaim
+	EmptyClaim   = claims.EmptyClaim
+	UserClaim    = claims.UserClaim
+	AdminClaim   = claims.AdminClaim
+	PartnerClaim = claims.PartnerClaim
+	ShopClaim    = claims.ShopClaim
 )
 
 func (c *AdminClient) AdminLoginAsAccount(ctx context.Context, in *admin.LoginAsAccountRequest) (*etop.LoginResponse, error) {
@@ -434,34 +428,6 @@ func (c *AdminClient) UpdateVariantImages(ctx context.Context, in *shop.UpdateVa
 }
 func (c *AdminClient) UpdateVariantsStatus(ctx context.Context, in *admin.UpdateVariantsStatusRequest) (*cm.UpdatedResponse, error) {
 	resp, err := c._ProductService.UpdateVariantsStatus(ctx, in)
-
-	node, ok := ctx.(*bus.NodeContext)
-	if !ok {
-		return resp, err
-	}
-	newNode := node.WithMessage(map[string]interface{}{
-		"Request": in,
-		"Result":  resp,
-	})
-	newNode.Error = err
-	return resp, err
-}
-func (c *AdminClient) GetSuppliers(ctx context.Context, in *admin.GetSuppliersRequest) (*etop.SuppliersResponse, error) {
-	resp, err := c._SupplierService.GetSuppliers(ctx, in)
-
-	node, ok := ctx.(*bus.NodeContext)
-	if !ok {
-		return resp, err
-	}
-	newNode := node.WithMessage(map[string]interface{}{
-		"Request": in,
-		"Result":  resp,
-	})
-	newNode.Error = err
-	return resp, err
-}
-func (c *AdminClient) GetSuppliersByIDs(ctx context.Context, in *cm.IDsRequest) (*etop.SuppliersResponse, error) {
-	resp, err := c._SupplierService.GetSuppliersByIDs(ctx, in)
 
 	node, ok := ctx.(*bus.NodeContext)
 	if !ok {
@@ -948,8 +914,6 @@ func NewAdminServer(mux Muxer, hooks *twirp.ServerHooks) {
 	bus.Expect(&UpdateVariantEndpoint{})
 	bus.Expect(&UpdateVariantImagesEndpoint{})
 	bus.Expect(&UpdateVariantsStatusEndpoint{})
-	bus.Expect(&GetSuppliersEndpoint{})
-	bus.Expect(&GetSuppliersByIDsEndpoint{})
 	bus.Expect(&GetOrderEndpoint{})
 	bus.Expect(&GetOrdersEndpoint{})
 	bus.Expect(&GetOrdersByIDsEndpoint{})
@@ -986,7 +950,6 @@ func NewAdminServer(mux Muxer, hooks *twirp.ServerHooks) {
 	mux.Handle(admin.AccountServicePathPrefix, admin.NewAccountServiceServer(AccountService{}, hooks))
 	mux.Handle(admin.CategoryServicePathPrefix, admin.NewCategoryServiceServer(CategoryService{}, hooks))
 	mux.Handle(admin.ProductServicePathPrefix, admin.NewProductServiceServer(ProductService{}, hooks))
-	mux.Handle(admin.SupplierServicePathPrefix, admin.NewSupplierServiceServer(SupplierService{}, hooks))
 	mux.Handle(admin.OrderServicePathPrefix, admin.NewOrderServiceServer(OrderService{}, hooks))
 	mux.Handle(admin.FulfillmentServicePathPrefix, admin.NewFulfillmentServiceServer(FulfillmentService{}, hooks))
 	mux.Handle(admin.MoneyTransactionServicePathPrefix, admin.NewMoneyTransactionServiceServer(MoneyTransactionService{}, hooks))
@@ -1000,7 +963,6 @@ type AdminImpl struct {
 	AccountService
 	CategoryService
 	ProductService
-	SupplierService
 	OrderService
 	FulfillmentService
 	MoneyTransactionService
@@ -1849,94 +1811,6 @@ func (s ProductService) UpdateVariantsStatus(ctx context.Context, req *admin.Upd
 	}
 	session = sessionQuery.Result
 	query := &UpdateVariantsStatusEndpoint{UpdateVariantsStatusRequest: req}
-	query.Context.Claim = session.Claim
-	query.Context.IsEtopAdmin = session.IsEtopAdmin
-	query.Context.IsOwner = session.IsOwner
-	query.Context.Roles = session.Roles
-	query.Context.Permissions = session.Permissions
-	ctx = bus.NewRootContext(ctx)
-	err = bus.Dispatch(ctx, query)
-	resp = query.Result
-	if err == nil {
-		if resp == nil {
-			return nil, common.Error(common.Internal, "", nil).Log("nil response")
-		}
-		errs = cmWrapper.HasErrors(resp)
-	}
-	return resp, err
-}
-
-type SupplierService struct{}
-
-type GetSuppliersEndpoint struct {
-	*admin.GetSuppliersRequest
-	Result  *etop.SuppliersResponse
-	Context AdminClaim
-}
-
-func (s SupplierService) GetSuppliers(ctx context.Context, req *admin.GetSuppliersRequest) (resp *etop.SuppliersResponse, err error) {
-	t0 := time.Now()
-	var session *middleware.Session
-	var errs []*cm.Error
-	const rpcName = "admin.Supplier/GetSuppliers"
-	defer func() {
-		recovered := recover()
-		err = cmWrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
-	}()
-	defer cmWrapper.Censor(req)
-	sessionQuery := &middleware.StartSessionQuery{
-		Context:          ctx,
-		RequireAuth:      true,
-		RequireEtopAdmin: true,
-	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
-		return nil, err
-	}
-	session = sessionQuery.Result
-	query := &GetSuppliersEndpoint{GetSuppliersRequest: req}
-	query.Context.Claim = session.Claim
-	query.Context.IsEtopAdmin = session.IsEtopAdmin
-	query.Context.IsOwner = session.IsOwner
-	query.Context.Roles = session.Roles
-	query.Context.Permissions = session.Permissions
-	ctx = bus.NewRootContext(ctx)
-	err = bus.Dispatch(ctx, query)
-	resp = query.Result
-	if err == nil {
-		if resp == nil {
-			return nil, common.Error(common.Internal, "", nil).Log("nil response")
-		}
-		errs = cmWrapper.HasErrors(resp)
-	}
-	return resp, err
-}
-
-type GetSuppliersByIDsEndpoint struct {
-	*cm.IDsRequest
-	Result  *etop.SuppliersResponse
-	Context AdminClaim
-}
-
-func (s SupplierService) GetSuppliersByIDs(ctx context.Context, req *cm.IDsRequest) (resp *etop.SuppliersResponse, err error) {
-	t0 := time.Now()
-	var session *middleware.Session
-	var errs []*cm.Error
-	const rpcName = "admin.Supplier/GetSuppliersByIDs"
-	defer func() {
-		recovered := recover()
-		err = cmWrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
-	}()
-	defer cmWrapper.Censor(req)
-	sessionQuery := &middleware.StartSessionQuery{
-		Context:          ctx,
-		RequireAuth:      true,
-		RequireEtopAdmin: true,
-	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
-		return nil, err
-	}
-	session = sessionQuery.Result
-	query := &GetSuppliersByIDsEndpoint{IDsRequest: req}
 	query.Context.Claim = session.Claim
 	query.Context.IsEtopAdmin = session.IsEtopAdmin
 	query.Context.IsOwner = session.IsOwner

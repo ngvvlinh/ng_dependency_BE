@@ -23,8 +23,7 @@ func PbEtopVariants(items []*catalogmodel.VariantExtended) []*shopP.EtopVariant 
 
 func PbEtopVariant(m *catalogmodel.VariantExtended) *shopP.EtopVariant {
 	res := &shopP.EtopVariant{
-		Id:         m.ID,
-		SupplierId: m.SupplierID,
+		Id: m.ID,
 		// ShortName:         strings.Join([]string{m.Product.Name, m.Name}, " - "),
 		Name:              m.GetName(),
 		Description:       coalesce(m.Description, m.EdDescription),
@@ -78,7 +77,6 @@ func PbEtopProducts(items []*catalogmodel.ProductFtVariant) []*shopP.EtopProduct
 func PbEtopProduct(m *catalogmodel.ProductFtVariant) *shopP.EtopProduct {
 	return &shopP.EtopProduct{
 		Id:         m.Product.ID,
-		SupplierId: m.Product.SupplierID,
 		CategoryId: m.Product.EtopCategoryID,
 
 		ProductSourceCategoryId: m.Product.ProductSourceCategoryID,
@@ -271,6 +269,5 @@ func PbProductSourceCategory(m *model.ProductSourceCategory) *shopP.ProductSourc
 		ProductSourceType: m.ProductSourceType,
 		ParentId:          m.ParentID,
 		ShopId:            m.ShopID,
-		SupplierId:        m.SupplierID,
 	}
 }

@@ -3,7 +3,6 @@ package model
 import (
 	"encoding/json"
 	"fmt"
-	"math"
 	"strconv"
 	"strings"
 	"time"
@@ -387,9 +386,8 @@ type AccountInterface interface {
 	_account()
 }
 
-func (s *Shop) _account()     {}
-func (s *Supplier) _account() {}
-func (s *Partner) _account()  {}
+func (s *Shop) _account()    {}
+func (s *Partner) _account() {}
 
 func (s *Shop) GetAccount() *Account {
 	return &Account{
@@ -402,16 +400,6 @@ func (s *Shop) GetAccount() *Account {
 	}
 }
 
-func (s *Supplier) GetAccount() *Account {
-	return &Account{
-		ID:       s.ID,
-		OwnerID:  s.OwnerID,
-		Name:     s.Name,
-		Type:     TypeSupplier,
-		ImageURL: s.ImageURL,
-		URLSlug:  "",
-	}
-}
 func (s *Partner) GetAccount() *Account {
 	return &Account{
 		ID:       s.ID,
@@ -543,267 +531,6 @@ type EtopCategory struct {
 	CreatedAt time.Time `sq:"create"`
 	UpdatedAt time.Time `sq:"update"`
 }
-
-var _ = sqlgenSupplier(&Supplier{})
-
-type Supplier struct {
-	ID        int64
-	Status    Status3
-	CreatedAt time.Time `sq:"create"`
-	UpdatedAt time.Time `sq:"update"`
-	IsTest    int
-
-	Name     string
-	OwnerID  int64
-	ImageURL string
-
-	Rules              *SupplierPriceRules
-	CompanyInfo        *CompanyInfo
-	WarehouseAddressID int64
-	BankAccount        *BankAccount
-	ContactPersons     []*ContactPerson
-	ShipFromAddressID  int64
-
-	ProductSourceID int64
-}
-
-var _ = sqlgenSupplierInfo(&SupplierInfo{}, &Supplier{})
-
-type SupplierInfo struct {
-	Name     string
-	ImageURL string
-
-	Rules              *SupplierPriceRules
-	CompanyInfo        *CompanyInfo
-	WarehouseAddressID int64
-	BankAccount        *BankAccount
-	ContactPersons     []*ContactPerson
-}
-
-var _ = sqlgenSupplierExtended(
-	&SupplierExtended{}, &Supplier{}, sq.AS("s"),
-	sq.LEFT_JOIN, &Address{}, sq.AS("a"), "s.warehouse_address_id = a.id",
-)
-
-type SupplierExtended struct {
-	*Supplier
-	Address *Address
-}
-
-var _ = sqlgenSupplierShipFromAddress(
-	&SupplierShipFromAddress{}, &Supplier{}, sq.AS("s"),
-	sq.LEFT_JOIN, &Address{}, sq.AS("a"), "s.ship_from_address_id = a.id",
-)
-
-type SupplierShipFromAddress struct {
-	*Supplier
-	Address *Address
-}
-
-func (s *Supplier) GetPriceRules() (*SupplierPriceRules, bool) {
-	priceRules := s.Rules
-	if priceRules == nil {
-		priceRules = &SupplierPriceRules{
-			General: DefaultSupplierPriceRule(),
-		}
-	} else if priceRules.General == nil {
-		priceRules.General = DefaultSupplierPriceRule()
-	}
-	return priceRules, s.Rules != nil
-}
-
-type SupplierPriceRules struct {
-	General *SupplierPriceRule   `json:"general"`
-	Rules   []*SupplierPriceRule `json:"rules"`
-}
-
-func (rules *SupplierPriceRules) Validate() error {
-	if rules == nil {
-		return cm.Error(cm.FailedPrecondition, "Empty rules", nil)
-	}
-	if !rules.General.IsZeroIdentifier() {
-		return cm.Error(cm.FailedPrecondition, "General rule must have no identifier", nil)
-	}
-	if err := rules.General.Validate(); err != nil {
-		return cm.Error(cm.FailedPrecondition, "General rule is not valid", err)
-	}
-	for i, r := range rules.Rules {
-		if r.IsZeroIdentifier() {
-			return cm.Error(cm.FailedPrecondition, fmt.Sprintf("Rule #%v must have identifier", i+1), nil)
-		}
-		if err := r.Validate(); err != nil {
-			return cm.Error(cm.FailedPrecondition, fmt.Sprintf("Rule #%v is not valid", i+1), err)
-		}
-	}
-	return nil
-}
-
-type SupplierPriceRule struct {
-	SupplierCategoryID int64  `json:"supplier_category_id"`
-	ExternalCategoryID string `json:"external_category_id"`
-	Tag                string `json:"tag"`
-
-	ListPriceA      float64 `json:"list_price_a"`
-	ListPriceB      float64 `json:"list_price_b"`
-	WholesalePriceA float64 `json:"wholesale_price_a"`
-	WholesalePriceB float64 `json:"wholesale_price_b"`
-	RetailPriceMinA float64 `json:"retail_price_min_a"`
-	RetailPriceMinB float64 `json:"retail_price_min_b"`
-	RetailPriceMaxA float64 `json:"retail_price_max_a"`
-	RetailPriceMaxB float64 `json:"retail_price_max_b"`
-}
-
-func (r *SupplierPriceRule) GetListPriceA() float64 {
-	if r == nil {
-		return 0
-	}
-	return r.ListPriceA
-}
-
-func (r *SupplierPriceRule) GetListPriceB() float64 {
-	if r == nil {
-		return 0
-	}
-	return r.ListPriceB
-}
-
-func (r *SupplierPriceRule) GetWholesalePriceA() float64 {
-	if r == nil {
-		return 0
-	}
-	return r.WholesalePriceA
-}
-
-func (r *SupplierPriceRule) GetWholesalePriceB() float64 {
-	if r == nil {
-		return 0
-	}
-	return r.WholesalePriceB
-}
-
-func (r *SupplierPriceRule) GetRetailPriceMinA() float64 {
-	if r == nil {
-		return 0
-	}
-	return r.RetailPriceMinA
-}
-
-func (r *SupplierPriceRule) GetRetailPriceMinB() float64 {
-	if r == nil {
-		return 0
-	}
-	return r.RetailPriceMinB
-}
-
-func (r *SupplierPriceRule) GetRetailPriceMaxA() float64 {
-	if r == nil {
-		return 0
-	}
-	return r.RetailPriceMaxA
-}
-
-func (r *SupplierPriceRule) GetRetailPriceMaxB() float64 {
-	if r == nil {
-		return 0
-	}
-	return r.RetailPriceMaxB
-}
-
-func DefaultSupplierPriceRule() *SupplierPriceRule {
-	return &SupplierPriceRule{
-		ListPriceA:      1,
-		WholesalePriceA: 0.5,
-		RetailPriceMinA: 0.8,
-		RetailPriceMaxA: 1.5,
-	}
-}
-
-func (r *SupplierPriceRule) IsZeroIdentifier() bool {
-	return r != nil && r.ExternalCategoryID == "" && r.SupplierCategoryID == 0 && r.Tag == ""
-}
-
-func (r *SupplierPriceRule) Validate() error {
-	if r == nil {
-		return cm.Error(cm.InvalidArgument, "Empty rule", nil)
-	}
-	if err := validatePrice("WholesalePrice", r.WholesalePriceA, r.WholesalePriceB); err != nil {
-		return err
-	}
-	if err := validatePrice("ListPrice", r.ListPriceA, r.ListPriceB); err != nil {
-		return err
-	}
-	if err := validatePrice("RetailPriceMin", r.RetailPriceMinA, r.RetailPriceMinB); err != nil {
-		return err
-	}
-	if err := validatePrice("RetailPriceMax", r.RetailPriceMaxA, r.RetailPriceMaxB); err != nil {
-		return err
-	}
-
-	if r.WholesalePriceA == 0 && r.ListPriceA == 0 &&
-		r.RetailPriceMinA == 0 && r.RetailPriceMaxA == 0 {
-		return cm.Error(cm.InvalidArgument, "All primary variables are zero", nil)
-	}
-
-	r.WholesalePriceB = math.Floor(r.WholesalePriceB)
-	r.ListPriceB = math.Floor(r.ListPriceB)
-	r.RetailPriceMinB = math.Floor(r.RetailPriceMinB)
-	r.RetailPriceMaxB = math.Floor(r.RetailPriceMaxB)
-	return nil
-}
-
-func validatePrice(name string, a, b float64) error {
-	if a < 0 {
-		return cm.Error(cm.InvalidArgument, "Invalid "+name, nil)
-	}
-	if a == 0 && b == 0 {
-		return cm.Error(cm.InvalidArgument, "Invalid "+name+" (both a and b must not be zero)", nil)
-	}
-	if a >= 0 && a <= 5 && b >= -5e7 && b <= 5e7 {
-		return nil
-	}
-	return cm.Error(cm.InvalidArgument, "Invalid "+name+" (a must be between 0 and 5, b must be between -5e7 and 5e7)", nil)
-}
-
-type KiotvietBranch struct {
-	ID            string    `json:"id"`
-	Name          string    `json:"name"`
-	Code          string    `json:"code"`
-	ContactNumber string    `json:"contact_number"`
-	RetailerID    string    `json:"retailer_id"`
-	Address       string    `json:"address"`
-	UpdatedAt     time.Time `json:"updated_at"`
-	CreatedAt     time.Time `json:"created_at"`
-}
-
-type SupplierKiotviet struct {
-	RetailerID     string
-	ClientID       string
-	ClientSecret   string
-	ClientToken    string
-	ExpiresAt      time.Time
-	KiotvietStatus int
-
-	Branches []*KiotvietBranch
-}
-
-// var _ = sqlgenSupplierKiotviet(&SupplierKiotviet{})
-
-// type SupplierKiotviet struct {
-// 	SupplierID int64
-
-// 	Status    int
-// 	CreatedAt time.Time `sq:"create"`
-// 	UpdatedAt time.Time `sq:"update"`
-
-// 	SupplierKiotvietInner `sq:"inline"`
-
-// 	DefaultBranchID string
-
-// 	// We have to define  here, because the builder will use it to
-// 	// generate correct query.
-// 	SyncStateProducts   json.RawMessage
-// 	SyncStateCategories json.RawMessage
-// }
 
 var _ = sqlgenPartner(&Partner{})
 
@@ -953,8 +680,6 @@ type ProductSource struct {
 
 	ExternalStatus Status3
 	ExternalKey    string
-	ExternalInfo   *KiotvietExternalInfo
-	ExtraInfo      *KiotvietExtraInfo
 
 	CreatedAt  time.Time `sq:"create"`
 	UpdatedAt  time.Time `sq:"update"`
@@ -970,14 +695,6 @@ type ProductSourceSyncStates struct {
 	LastSyncAt          time.Time
 	SyncStateProducts   json.RawMessage
 	SyncStateCategories json.RawMessage
-}
-
-type KiotvietExternalInfo struct {
-	Branches []*KiotvietBranch `json:"branches"`
-}
-
-type KiotvietExtraInfo struct {
-	DefaultBranchID string `json:"default_branch_id"`
 }
 
 var _ = sqlgenProductSourceInternal(&ProductSourceInternal{})
@@ -1015,26 +732,6 @@ var _ = sqlgenProductSourceExtended(
 type ProductSourceExtended struct {
 	*ProductSource
 	*ProductSourceInternal
-}
-
-var _ = sqlgenSupplierFtProductSource(
-	&SupplierFtProductSource{}, &Supplier{}, sq.AS("s"),
-	sq.LEFT_JOIN, &ProductSource{}, sq.AS("ps"), "s.product_source_id = ps.id",
-)
-
-type SupplierFtProductSource struct {
-	*Supplier
-	*ProductSource
-}
-
-var _ = sqlgenProductSourceFtSupplier(
-	&ProductSourceFtSupplier{}, &ProductSource{}, sq.AS("ps"),
-	sq.LEFT_JOIN, &Supplier{}, sq.AS("s"), "s.product_source_id = ps.id",
-)
-
-type ProductSourceFtSupplier struct {
-	*ProductSource
-	*Supplier
 }
 
 var _ = sqlgenShopFtProductSource(

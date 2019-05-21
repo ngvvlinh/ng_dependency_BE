@@ -19,7 +19,6 @@ var funcs = template.FuncMap{
 	"requireAPIKey":            requireAPIKey,
 	"requireAPIPartnerShopKey": requireAPIPartnerShopKey,
 	"requireShop":              requireShop,
-	"requireSupplier":          requireSupplier,
 	"requireEtopAdmin":         requireEtopAdmin,
 	"requireSuperAdmin":        requireSuperAdmin,
 	"requireRole":              requireRole,
@@ -82,11 +81,6 @@ func requirePartner(m *g.Method) bool {
 func requireShop(m *g.Method) bool {
 	p := getPermission(m)
 	return p.Type == Shop
-}
-
-func requireSupplier(m *g.Method) bool {
-	p := getPermission(m)
-	return p.Type == Supplier
 }
 
 func requireEtopAdmin(m *g.Method) bool {

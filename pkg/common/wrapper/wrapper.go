@@ -114,12 +114,6 @@ func SendErrorToBot(bot *telebot.Channel, rpcName string, session *middleware.Se
 			buf.WriteString(strconv.Itoa(int(shop.ID)))
 			buf.WriteString(")")
 		}
-		if supplier := session.Supplier; supplier != nil {
-			buf.WriteString("\n–– Supplier: ")
-			buf.WriteString(" (")
-			buf.WriteString(strconv.Itoa(int(supplier.ID)))
-			buf.WriteString(")")
-		}
 	}
 	buf.WriteString("\n→")
 

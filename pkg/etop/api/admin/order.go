@@ -83,11 +83,10 @@ func GetFulfillment(ctx context.Context, q *wrapadmin.GetFulfillmentEndpoint) er
 func GetFulfillments(ctx context.Context, q *wrapadmin.GetFulfillmentsEndpoint) error {
 	paging := q.Paging.CMPaging()
 	query := &modelx.GetFulfillmentExtendedsQuery{
-		SupplierID: q.SupplierId,
-		OrderID:    q.OrderId,
-		Status:     q.Status.ToModel(),
-		Paging:     paging,
-		Filters:    pbcm.ToFilters(q.Filters),
+		OrderID: q.OrderId,
+		Status:  q.Status.ToModel(),
+		Paging:  paging,
+		Filters: pbcm.ToFilters(q.Filters),
 	}
 	if q.ShopId != 0 {
 		query.ShopIDs = []int64{q.ShopId}

@@ -269,9 +269,6 @@ func GetVariantsExtended(ctx context.Context, query *modelx.GetVariantsExtendedQ
 	}
 
 	s := x.Table("variant").Where("v.deleted_at is NULL")
-	if query.SupplierID != 0 {
-		s = s.Where("v.supplier_id = ?", query.SupplierID)
-	}
 	s = FilterStatus(s, "v.", query.StatusQuery)
 
 	s, _, err := Filters(s, query.Filters, filterProductWhitelist)

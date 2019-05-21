@@ -5,8 +5,6 @@ import (
 	"strings"
 	"time"
 
-	"etop.vn/backend/pkg/zdeprecated/supplier/modelx"
-
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/validate"
@@ -15,91 +13,13 @@ import (
 
 func init() {
 	bus.AddHandlers("sql",
-		CreateSupplierKiotviet,
 		CreateShop,
 		UpdateShop,
 		DeleteShop,
 		SetDefaultAddressShop,
-		SetDefaultAddressSupplier,
 		UpdateAccountURLSlug,
 		GetAccountAuth,
 	)
-}
-
-func CreateSupplierKiotviet(ctx context.Context, cmd *modelx.CreateSupplierKiotvietCommand) error {
-	if cmd.Kiotviet.RetailerID == "" {
-		return cm.Error(cm.InvalidArgument, "Missing ID", nil)
-	}
-	if cmd.OwnerID == 0 {
-		return cm.Error(cm.Internal, "Missing OwnerID", nil)
-	}
-
-	var ps model.ProductSource
-	if has, err := x.
-		Where("external_key = ?", cmd.Kiotviet.RetailerID).
-		Get(&ps); err != nil {
-		return err
-	} else if has {
-		return cm.Error(cm.AlreadyExists,
-			"Tài khoản Kiotviet đã được đăng ký. Vui lòng kiểm tra lại.", nil)
-	}
-
-	return inTransaction(func(s Qx) error {
-		supplierID := model.NewSupplierID()
-		sourceID := model.NewID()
-
-		account := &model.Account{
-			ID:       supplierID,
-			Name:     cmd.Name,
-			Type:     model.TypeSupplier,
-			ImageURL: cmd.ImageURL,
-			URLSlug:  cmd.URLSlug,
-		}
-
-		supplier := &model.Supplier{
-			ID:              supplierID,
-			ProductSourceID: sourceID,
-			OwnerID:         cmd.OwnerID,
-		}
-		if cmd.IsTest {
-			supplier.IsTest = 1
-		}
-		cmd.SupplierInfo.AssignTo(supplier)
-
-		accountUser := &model.AccountUser{
-			AccountID: supplierID,
-			UserID:    cmd.OwnerID,
-			Status:    model.StatusActive,
-		}
-
-		productSource := &model.ProductSource{
-			ID:         sourceID,
-			Type:       model.TypeKiotviet,
-			Name:       cmd.Kiotviet.RetailerID,
-			SupplierID: supplierID,
-		}
-
-		kv := cmd.Kiotviet
-		productSourceInternal := &model.ProductSourceInternal{
-			ID: sourceID,
-			Secret: &model.KiotvietSecret{
-				RetailerID:   kv.RetailerID,
-				ClientID:     kv.ClientID,
-				ClientSecret: kv.ClientSecret,
-			},
-			AccessToken: kv.ClientToken,
-			ExpiresAt:   kv.ExpiresAt,
-		}
-
-		cmd.Result.Supplier = supplier
-		cmd.Result.ProductSource = productSource
-		cmd.Result.ProductSourceInternal = productSourceInternal
-
-		_, err := s.Insert(
-			account, supplier, accountUser,
-			productSource, productSourceInternal)
-		return err
-	})
 }
 
 func CreateShop(ctx context.Context, cmd *model.CreateShopCommand) error {
@@ -363,43 +283,6 @@ func SetDefaultAddressShop(ctx context.Context, cmd *model.SetDefaultAddressShop
 		Shop: shopObj,
 	}
 	if err := bus.Dispatch(ctx, cmdUpdateShop); err != nil {
-		return err
-	}
-	cmd.Result.Updated = 1
-	return nil
-}
-
-func SetDefaultAddressSupplier(ctx context.Context, cmd *modelx.SetDefaultAddressSupplierCommand) error {
-	if cmd.SupplierID == 0 {
-		return cm.Error(cm.InvalidArgument, "Missing SupplierID", nil)
-	}
-	if cmd.Type == "" {
-		return cm.Error(cm.InvalidArgument, "Missing Address Type", nil)
-	}
-	if cmd.AddressID == 0 {
-		return cm.Error(cm.InvalidArgument, "Missing AddressID", nil)
-	}
-
-	var address = new(model.Address)
-	if err := x.Table("address").Where("id = ? AND account_id = ? and type = ?", cmd.AddressID, cmd.SupplierID, cmd.Type).
-		ShouldGet(address); err != nil {
-		return err
-	}
-	supplierObj := &model.Supplier{
-		ID: cmd.SupplierID,
-	}
-
-	switch cmd.Type {
-	case model.AddressTypeShipFrom:
-		supplierObj.ShipFromAddressID = cmd.AddressID
-	default:
-		return cm.Error(cm.Unimplemented, "Address type does not valid", nil)
-	}
-
-	cmdUpdateSupplier := &modelx.UpdateSupplierCommand{
-		Supplier: supplierObj,
-	}
-	if err := bus.Dispatch(ctx, cmdUpdateSupplier); err != nil {
 		return err
 	}
 	cmd.Result.Updated = 1

@@ -504,7 +504,6 @@ func PbOrderLine(m *ordermodel.OrderLine) *OrderLine {
 
 		OrderId:       m.OrderID,
 		VariantId:     m.VariantID,
-		SupplierId:    m.SupplierID,
 		XVariantId:    m.ExternalVariantID,
 		ProductName:   m.ProductName,
 		IsOutsideEtop: m.IsOutsideEtop,
@@ -597,7 +596,6 @@ func PbFulfillment(m *shipmodel.Fulfillment, accType int, shop *model.Shop, orde
 		Id:                                 m.ID,
 		OrderId:                            m.OrderID,
 		ShopId:                             m.ShopID,
-		SupplierId:                         m.SupplierID,
 		PartnerId:                          m.PartnerID,
 		SelfUrl:                            m.SelfURL(cm.MainSiteBaseURL(), accType),
 		Lines:                              PbOrderLines(m.Lines),
@@ -742,7 +740,6 @@ func PbMoneyTransactionExtended(m *txmodely.MoneyTransactionExtended) *MoneyTran
 	return &MoneyTransaction{
 		Id:                                 m.ID,
 		ShopId:                             m.ShopID,
-		SupplierId:                         m.SupplierID,
 		Status:                             pbs3.Pb(m.Status),
 		TotalCod:                           int64(m.TotalCOD),
 		TotalOrders:                        int64(m.TotalOrders),
@@ -766,7 +763,6 @@ func PbMoneyTransaction(m *txmodel.MoneyTransactionShipping) *MoneyTransaction {
 	return &MoneyTransaction{
 		Id:                                 m.ID,
 		ShopId:                             m.ShopID,
-		SupplierId:                         m.SupplierID,
 		Status:                             pbs3.Pb(m.Status),
 		TotalCod:                           int64(m.TotalCOD),
 		TotalOrders:                        int64(m.TotalOrders),

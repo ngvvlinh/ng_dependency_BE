@@ -1368,58 +1368,6 @@
           "Shop"
         ]
       }
-    },
-    "/api/admin.Supplier/GetSuppliers": {
-      "post": {
-        "operationId": "GetSuppliers",
-        "responses": {
-          "200": {
-            "description": "",
-            "schema": {
-              "$ref": "#/definitions/etopSuppliersResponse"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/adminGetSuppliersRequest"
-            }
-          }
-        ],
-        "tags": [
-          "Supplier"
-        ]
-      }
-    },
-    "/api/admin.Supplier/GetSuppliersByIDs": {
-      "post": {
-        "operationId": "GetSuppliersByIDs",
-        "responses": {
-          "200": {
-            "description": "",
-            "schema": {
-              "$ref": "#/definitions/etopSuppliersResponse"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/cmIDsRequest"
-            }
-          }
-        ],
-        "tags": [
-          "Supplier"
-        ]
-      }
     }
   },
   "definitions": {
@@ -1632,10 +1580,6 @@
           "type": "string",
           "format": "int64"
         },
-        "supplier_id": {
-          "type": "string",
-          "format": "int64"
-        },
         "order_id": {
           "type": "string",
           "format": "int64"
@@ -1751,10 +1695,6 @@
             "$ref": "#/definitions/cmFilter"
           }
         },
-        "supplier_id": {
-          "type": "string",
-          "format": "int64"
-        },
         "status": {
           "$ref": "#/definitions/status3Status"
         }
@@ -1782,17 +1722,6 @@
         }
       }
     },
-    "adminGetSuppliersRequest": {
-      "type": "object",
-      "properties": {
-        "paging": {
-          "$ref": "#/definitions/cmPaging"
-        },
-        "status": {
-          "$ref": "#/definitions/status3Status"
-        }
-      }
-    },
     "adminGetVariantsRequest": {
       "type": "object",
       "properties": {
@@ -1804,10 +1733,6 @@
           "items": {
             "$ref": "#/definitions/cmFilter"
           }
-        },
-        "supplier_id": {
-          "type": "string",
-          "format": "int64"
         },
         "s_status": {
           "$ref": "#/definitions/status3Status"
@@ -1844,10 +1769,6 @@
       "type": "object",
       "properties": {
         "id": {
-          "type": "string",
-          "format": "int64"
-        },
-        "supplier_id": {
           "type": "string",
           "format": "int64"
         },
@@ -1971,9 +1892,6 @@
       "properties": {
         "product": {
           "$ref": "#/definitions/adminProduct"
-        },
-        "supplier": {
-          "$ref": "#/definitions/etopSupplier"
         }
       }
     },
@@ -2277,10 +2195,6 @@
           "type": "string",
           "format": "int64"
         },
-        "supplier_id": {
-          "type": "string",
-          "format": "int64"
-        },
         "category_id": {
           "type": "string",
           "format": "int64"
@@ -2450,9 +2364,6 @@
       "properties": {
         "variant": {
           "$ref": "#/definitions/adminVariant"
-        },
-        "supplier": {
-          "$ref": "#/definitions/etopSupplier"
         }
       }
     },
@@ -2833,10 +2744,6 @@
           "type": "string",
           "format": "int64"
         },
-        "supplier_id": {
-          "type": "string",
-          "format": "int64"
-        },
         "type": {
           "type": "string"
         },
@@ -2937,9 +2844,6 @@
         },
         "shop": {
           "$ref": "#/definitions/etopShop"
-        },
-        "supplier": {
-          "$ref": "#/definitions/etopSupplier"
         },
         "available_accounts": {
           "type": "array",
@@ -3137,58 +3041,6 @@
         },
         "code": {
           "type": "string"
-        }
-      }
-    },
-    "etopSupplier": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "string",
-          "format": "int64"
-        },
-        "name": {
-          "type": "string"
-        },
-        "status": {
-          "$ref": "#/definitions/status3Status"
-        },
-        "is_test": {
-          "type": "boolean",
-          "format": "boolean"
-        },
-        "company_info": {
-          "$ref": "#/definitions/etopCompanyInfo"
-        },
-        "warehouse_address": {
-          "$ref": "#/definitions/etopAddress"
-        },
-        "bank_account": {
-          "$ref": "#/definitions/etopBankAccount"
-        },
-        "contact_persons": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/etopContactPerson"
-          }
-        },
-        "ship_from_address_id": {
-          "type": "string",
-          "format": "int64"
-        }
-      }
-    },
-    "etopSuppliersResponse": {
-      "type": "object",
-      "properties": {
-        "paging": {
-          "$ref": "#/definitions/cmPageInfo"
-        },
-        "suppliers": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/etopSupplier"
-          }
         }
       }
     },
@@ -3406,10 +3258,6 @@
           "format": "int64"
         },
         "shop_id": {
-          "type": "string",
-          "format": "int64"
-        },
-        "supplier_id": {
           "type": "string",
           "format": "int64"
         },
@@ -3705,10 +3553,6 @@
           "format": "int64"
         },
         "shop_id": {
-          "type": "string",
-          "format": "int64"
-        },
-        "supplier_id": {
           "type": "string",
           "format": "int64"
         },
@@ -4357,10 +4201,6 @@
           "type": "string",
           "format": "int64"
         },
-        "supplier_id": {
-          "type": "string",
-          "format": "int64"
-        },
         "x_variant_id": {
           "type": "string"
         },
@@ -4736,9 +4576,6 @@
     },
     {
       "name": "Shop"
-    },
-    {
-      "name": "Supplier"
     }
   ]
 }

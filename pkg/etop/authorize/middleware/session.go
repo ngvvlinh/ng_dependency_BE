@@ -5,8 +5,6 @@ import (
 	"net/http"
 	"time"
 
-	"etop.vn/backend/pkg/zdeprecated/supplier/modelx"
-
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/auth"
 	"etop.vn/backend/pkg/common/bus"
@@ -58,7 +56,6 @@ type Session struct {
 	Partner    *model.Partner
 	CtxPartner *model.Partner
 	Shop       *model.Shop
-	Supplier   *model.Supplier
 	model.Permission
 
 	IsOwner      bool
@@ -165,7 +162,6 @@ func StartSession(ctx context.Context, q *StartSessionQuery) error {
 	ok := startSessionUser(ctx, q.RequireUser, session) &&
 		startSessionPartner(ctx, q.RequirePartner, session, account) &&
 		startSessionShop(ctx, q.RequireShop, session, account) &&
-		startSessionSupplier(ctx, q.RequireSupplier, session) &&
 		startSessionEtopAdmin(ctx, q.RequireEtopAdmin, session) &&
 		startSessionAuthPartner(ctx, q.AuthPartner, session)
 	if !ok {
@@ -273,28 +269,6 @@ func startSessionShop(ctx context.Context, require bool, s *Session, account mod
 			}
 			s.Shop = query.Result
 		}
-	}
-	return true
-}
-
-func startSessionSupplier(ctx context.Context, require bool, s *Session) bool {
-	if require {
-		if !model.IsSupplierID(s.Claim.AccountID) {
-			return false
-		}
-		// TODO: handle UserID == 0
-		query := &modelx.GetSupplierWithPermissionQuery{
-			SupplierID: s.Claim.AccountID,
-			UserID:     s.Claim.UserID,
-		}
-		if err := bus.Dispatch(ctx, query); err != nil {
-			ll.Error("Invalid SupplierID", l.Error(err))
-			return false
-		}
-
-		s.Supplier = query.Result.Supplier
-		s.Permission = query.Result.Permission
-		s.IsOwner = s.Supplier.OwnerID == s.Claim.UserID
 	}
 	return true
 }

@@ -187,7 +187,6 @@ func GetOrder(ctx context.Context, query *ordermodelx.GetOrderQuery) error {
 	} else if has {
 		order.ExternalData = orderExternal
 	}
-	maskOrdersSupplier(query.AllSuppliers, query.SupplierID, []*ordermodel.Order{order})
 
 	query.Result.Order = order
 	return nil
@@ -308,28 +307,6 @@ func GetOrders(ctx context.Context, query *ordermodelx.GetOrdersQuery) error {
 	}
 
 	return nil
-}
-
-func maskOrdersSupplier(showAll bool, supplierID int64, orders []*ordermodel.Order) {
-	if showAll || supplierID == 0 {
-		return
-	}
-	for _, order := range orders {
-		order.Lines = maskOrderLines(supplierID, order.Lines)
-	}
-}
-
-func maskOrderLines(supplierID int64, lines []*ordermodel.OrderLine) []*ordermodel.OrderLine {
-	res := make([]*ordermodel.OrderLine, 0, len(lines))
-	for _, line := range lines {
-		if line.SupplierID == supplierID {
-			res = append(res, line)
-		}
-	}
-	if len(res) == 0 {
-		return nil
-	}
-	return res
 }
 
 func VerifyOrdersByEdCode(ctx context.Context, query *ordermodelx.VerifyOrdersByEdCodeQuery) error {
@@ -859,9 +836,6 @@ func GetFulfillmentExtendeds(ctx context.Context, query *shipmodelx.GetFulfillme
 
 	if query.ShopIDs != nil {
 		s = s.InOrEqIDs("f.shop_id", query.ShopIDs)
-	}
-	if query.SupplierID != 0 {
-		s = s.Where("f.supplier_id = ?", query.SupplierID)
 	}
 	if query.PartnerID != 0 {
 		s = s.Where("f.partner_id = ?", query.PartnerID)

@@ -67,11 +67,6 @@ service ProductService {
     rpc UpdateVariantImages(shop.UpdateVariantImagesRequest) returns (Variant);
 }
 
-service SupplierService {
-    rpc GetSuppliers(GetSuppliersRequest) returns (etop.SuppliersResponse);
-    rpc GetSuppliersByIDs(cm.IDsRequest) returns (etop.SuppliersResponse);
-}
-
 service OrderService {
     rpc GetOrder(cm.IDRequest) returns (order.Order);
     rpc GetOrders(GetOrdersRequest) returns (order.OrdersResponse);
@@ -163,7 +158,6 @@ message UpdateProductsStatusRequest {
 message GetVariantsRequest {
     optional cm.Paging paging   = 1;
     repeated cm.Filter filters  = 2;
-    optional int64 supplier_id  = 3 [(gogoproto.nullable)=false];
     optional status3.Status s_status = 4;
     optional status3.Status x_status = 5;
     optional status3.Status e_status = 6;
@@ -173,28 +167,19 @@ message GetVariantsRequest {
 message GetProductsRequest {
     optional cm.Paging paging   = 1;
     repeated cm.Filter filters  = 2;
-    optional int64 supplier_id  = 3 [(gogoproto.nullable)=false];
     optional status3.Status   status = 7;
-}
-
-message GetSuppliersRequest {
-    optional cm.Paging paging = 1;
-    optional status3.Status status = 2;
 }
 
 message VariantWithSupplier {
     optional Variant variant = 1;
-    optional etop.Supplier supplier   = 2;
 }
 
 message ProductWithSupplier {
     optional Product product = 1;
-    optional etop.Supplier supplier   = 2;
 }
 
 message ProductsWithSupplierResponse {
     optional cm.PageInfo paging = 1;
-    repeated ProductWithSupplier products = 2;
 }
 
 message GetOrdersRequest {
@@ -225,7 +210,6 @@ message UpdateVariantRequest {
 message GetFulfillmentsRequest {
     optional cm.Paging paging = 1;
     optional int64 shop_id = 2 [(gogoproto.nullable)=false];
-    optional int64 supplier_id = 3 [(gogoproto.nullable)=false];
     optional int64 order_id = 4 [(gogoproto.nullable)=false];
     optional status3.Status status  = 5;
     repeated cm.Filter filters = 6;
@@ -416,7 +400,6 @@ message Unit {
 
 message Variant {
     optional int64  id            = 1 [(gogoproto.nullable)=false];
-    optional int64 supplier_id    = 2 [(gogoproto.nullable)=false];
     optional int64 category_id    = 3 [(gogoproto.nullable)=false];
 
     // optional string s_short_name  = 5 [(gogoproto.nullable)=false];
@@ -478,7 +461,6 @@ message Variant {
 
 message Product {
     optional int64  id            = 1 [(gogoproto.nullable)=false];
-    optional int64 supplier_id    = 2 [(gogoproto.nullable)=false];
     optional int64 category_id    = 3 [(gogoproto.nullable)=false];
 
 

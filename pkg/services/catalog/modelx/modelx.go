@@ -69,7 +69,6 @@ type GetProductsExtendedQuery struct {
 }
 
 type GetVariantsExtendedQuery struct {
-	SupplierID      int64
 	ProductSourceID int64
 
 	Paging  *cm.Paging

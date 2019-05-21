@@ -8,8 +8,6 @@ import (
 	"strings"
 	"time"
 
-	"etop.vn/backend/pkg/zdeprecated/supplier/modelx"
-
 	"etop.vn/backend/cmd/etop-server/config"
 	cmP "etop.vn/backend/pb/common"
 	etopP "etop.vn/backend/pb/etop"
@@ -508,7 +506,6 @@ func CreateSessionResponse(ctx context.Context, claim *claims.ClaimInfo, token s
 		User:            resp.User,
 		Account:         resp.Account,
 		Shop:            resp.Shop,
-		Supplier:        resp.Supplier,
 		Stoken:          resp.Stoken,
 		StokenExpiresAt: resp.StokenExpiresAt,
 	}, nil
@@ -575,13 +572,6 @@ func CreateLoginResponse2(ctx context.Context, claim *claims.ClaimInfo, token st
 			}
 			resp.Shop = etopP.PbShopExtended(query.Result)
 			respShop = query.Result.Shop
-
-		case model.IsSupplierID(currentAccountID):
-			query := &modelx.GetSupplierExtendedQuery{SupplierID: currentAccountID}
-			if err := bus.Dispatch(ctx, query); err != nil {
-				return nil, nil, cm.ErrorTrace(cm.Internal, "", err)
-			}
-			resp.Supplier = etopP.PbSupplierExtended(query.Result)
 
 		case model.IsEtopAccountID(currentAccountID):
 			// nothing
