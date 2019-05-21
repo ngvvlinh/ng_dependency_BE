@@ -4,12 +4,13 @@ import (
 	cmP "etop.vn/backend/pb/common"
 	"etop.vn/backend/pb/etop/etc/status3"
 	shopP "etop.vn/backend/pb/etop/shop"
-	"etop.vn/backend/pb/etop/supplier"
 	"etop.vn/backend/pkg/etop/api/admin"
+	"etop.vn/backend/pkg/etop/api/convertpb"
 	"etop.vn/backend/pkg/etop/model"
+	catalogmodel "etop.vn/backend/pkg/services/catalog/model"
 )
 
-func PbEtopVariants(items []*model.VariantExtended) []*shopP.EtopVariant {
+func PbEtopVariants(items []*catalogmodel.VariantExtended) []*shopP.EtopVariant {
 	if items == nil || len(items) == 0 {
 		return nil
 	}
@@ -20,7 +21,7 @@ func PbEtopVariants(items []*model.VariantExtended) []*shopP.EtopVariant {
 	return res
 }
 
-func PbEtopVariant(m *model.VariantExtended) *shopP.EtopVariant {
+func PbEtopVariant(m *catalogmodel.VariantExtended) *shopP.EtopVariant {
 	res := &shopP.EtopVariant{
 		Id:         m.ID,
 		SupplierId: m.SupplierID,
@@ -49,15 +50,14 @@ func PbEtopVariant(m *model.VariantExtended) *shopP.EtopVariant {
 		// XAttributes: supplier.PbAttributes(m.VariantExternal.ExternalAttributes),
 
 		SMeta:      cmP.RawJSONObjectMsg(m.SupplierMeta),
-		SBrandId:   int64(m.ProductBrandID),
 		CostPrice:  int32(m.CostPrice),
-		Attributes: supplier.PbAttributes(m.Attributes),
+		Attributes: convertpb.PbAttributes(m.Attributes),
 		UpdatedAt:  cmP.PbTime(m.Product.UpdatedAt),
 		CreatedAt:  cmP.PbTime(m.Product.CreatedAt),
 	}
 
 	if m.VariantExternal != nil {
-		res.XAttributes = supplier.PbAttributes(m.VariantExternal.ExternalAttributes)
+		res.XAttributes = convertpb.PbAttributes(m.VariantExternal.ExternalAttributes)
 	}
 
 	if m.Product != nil {
@@ -67,7 +67,7 @@ func PbEtopVariant(m *model.VariantExtended) *shopP.EtopVariant {
 	return res
 }
 
-func PbEtopProducts(items []*model.ProductFtVariant) []*shopP.EtopProduct {
+func PbEtopProducts(items []*catalogmodel.ProductFtVariant) []*shopP.EtopProduct {
 	res := make([]*shopP.EtopProduct, len(items))
 	for i, item := range items {
 		res[i] = PbEtopProduct(item)
@@ -75,7 +75,7 @@ func PbEtopProducts(items []*model.ProductFtVariant) []*shopP.EtopProduct {
 	return res
 }
 
-func PbEtopProduct(m *model.ProductFtVariant) *shopP.EtopProduct {
+func PbEtopProduct(m *catalogmodel.ProductFtVariant) *shopP.EtopProduct {
 	return &shopP.EtopProduct{
 		Id:         m.Product.ID,
 		SupplierId: m.Product.SupplierID,
@@ -97,14 +97,13 @@ func PbEtopProduct(m *model.ProductFtVariant) *shopP.EtopProduct {
 
 		// XId:         m.ExternalID,
 
-		SBrandId:  int64(m.Product.ProductBrandID),
 		Variants:  PbEtopVariants(admin.VExternalExtendedToVExtended(m.Variants)),
 		UpdatedAt: cmP.PbTime(m.Product.UpdatedAt),
 		CreatedAt: cmP.PbTime(m.Product.CreatedAt),
 	}
 }
 
-func PbShopVariants(items []*model.ShopVariantExtended) []*shopP.ShopVariant {
+func PbShopVariants(items []*catalogmodel.ShopVariantExtended) []*shopP.ShopVariant {
 	res := make([]*shopP.ShopVariant, len(items))
 	for i, item := range items {
 		res[i] = PbShopVariant(item)
@@ -112,7 +111,7 @@ func PbShopVariants(items []*model.ShopVariantExtended) []*shopP.ShopVariant {
 	return res
 }
 
-func PbShopVariant(m *model.ShopVariantExtended) *shopP.ShopVariant {
+func PbShopVariant(m *catalogmodel.ShopVariantExtended) *shopP.ShopVariant {
 	sv := m.ShopVariant
 	res := &shopP.ShopVariant{
 		Id:           sv.VariantID,
@@ -133,7 +132,7 @@ func PbShopVariant(m *model.ShopVariantExtended) *shopP.ShopVariant {
 	return res
 }
 
-func PbShopProducts(items []*model.ShopProduct) []*shopP.ShopProduct {
+func PbShopProducts(items []*catalogmodel.ShopProduct) []*shopP.ShopProduct {
 	res := make([]*shopP.ShopProduct, len(items))
 	for i, item := range items {
 		res[i] = PbShopProduct(item)
@@ -141,7 +140,7 @@ func PbShopProducts(items []*model.ShopProduct) []*shopP.ShopProduct {
 	return res
 }
 
-func PbShopProduct(m *model.ShopProduct) *shopP.ShopProduct {
+func PbShopProduct(m *catalogmodel.ShopProduct) *shopP.ShopProduct {
 	res := &shopP.ShopProduct{
 		Id:            m.ProductID,
 		Name:          m.Name,
@@ -156,7 +155,7 @@ func PbShopProduct(m *model.ShopProduct) *shopP.ShopProduct {
 	return res
 }
 
-func PbShopProductsFtVariant(items []*model.ShopProductFtVariant) []*shopP.ShopProduct {
+func PbShopProductsFtVariant(items []*catalogmodel.ShopProductFtVariant) []*shopP.ShopProduct {
 	res := make([]*shopP.ShopProduct, len(items))
 	for i, item := range items {
 		res[i] = PbShopProductFtVariant(item)
@@ -164,7 +163,7 @@ func PbShopProductsFtVariant(items []*model.ShopProductFtVariant) []*shopP.ShopP
 	return res
 }
 
-func PbShopProductFtVariant(m *model.ShopProductFtVariant) *shopP.ShopProduct {
+func PbShopProductFtVariant(m *catalogmodel.ShopProductFtVariant) *shopP.ShopProduct {
 	res := &shopP.ShopProduct{
 		Id:                m.ShopProduct.ProductID,
 		Name:              m.ShopProduct.Name,
@@ -181,8 +180,8 @@ func PbShopProductFtVariant(m *model.ShopProductFtVariant) *shopP.ShopProduct {
 		ProductSourceType: m.ShopProduct.ProductSourceType,
 	}
 
-	res.Info = PbEtopProduct(&model.ProductFtVariant{
-		ProductExtended: model.ProductExtended{
+	res.Info = PbEtopProduct(&catalogmodel.ProductFtVariant{
+		ProductExtended: catalogmodel.ProductExtended{
 			Product: m.Product,
 		},
 	})

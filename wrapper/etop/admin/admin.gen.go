@@ -12,7 +12,7 @@ import (
 	etop "etop.vn/backend/pb/etop"
 	admin "etop.vn/backend/pb/etop/admin"
 	order "etop.vn/backend/pb/etop/order"
-	supplier "etop.vn/backend/pb/etop/supplier"
+	shop "etop.vn/backend/pb/etop/shop"
 	common "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/l"
@@ -33,7 +33,6 @@ type Admin interface {
 	admin.SupplierService
 	admin.OrderService
 	admin.FulfillmentService
-	admin.BrandService
 	admin.MoneyTransactionService
 	admin.ShopService
 	admin.CreditService
@@ -48,7 +47,6 @@ type AdminClient struct {
 	_SupplierService         admin.SupplierService
 	_OrderService            admin.OrderService
 	_FulfillmentService      admin.FulfillmentService
-	_BrandService            admin.BrandService
 	_MoneyTransactionService admin.MoneyTransactionService
 	_ShopService             admin.ShopService
 	_CreditService           admin.CreditService
@@ -71,7 +69,6 @@ func NewAdminClient(addr string, client *http.Client) Admin {
 		_SupplierService:         admin.NewSupplierServiceProtobufClient(addr, client),
 		_OrderService:            admin.NewOrderServiceProtobufClient(addr, client),
 		_FulfillmentService:      admin.NewFulfillmentServiceProtobufClient(addr, client),
-		_BrandService:            admin.NewBrandServiceProtobufClient(addr, client),
 		_MoneyTransactionService: admin.NewMoneyTransactionServiceProtobufClient(addr, client),
 		_ShopService:             admin.NewShopServiceProtobufClient(addr, client),
 		_CreditService:           admin.NewCreditServiceProtobufClient(addr, client),
@@ -109,7 +106,6 @@ func ConnectAdminService(addr string, client *http.Client) error {
 	bus.AddHandler("client", func(ctx context.Context, q *GetFulfillmentEndpoint) error { panic("Unexpected") })
 	bus.AddHandler("client", func(ctx context.Context, q *GetFulfillmentsEndpoint) error { panic("Unexpected") })
 	bus.AddHandler("client", func(ctx context.Context, q *UpdateFulfillmentEndpoint) error { panic("Unexpected") })
-	bus.AddHandler("client", func(ctx context.Context, q *GetBrandsEndpoint) error { panic("Unexpected") })
 	bus.AddHandler("client", func(ctx context.Context, q *ConfirmMoneyTransactionEndpoint) error { panic("Unexpected") })
 	bus.AddHandler("client", func(ctx context.Context, q *ConfirmMoneyTransactionShippingEtopEndpoint) error { panic("Unexpected") })
 	bus.AddHandler("client", func(ctx context.Context, q *ConfirmMoneyTransactionShippingExternalEndpoint) error {
@@ -296,7 +292,7 @@ func (c *AdminClient) GetProduct(ctx context.Context, in *cm.IDRequest) (*admin.
 	newNode.Error = err
 	return resp, err
 }
-func (c *AdminClient) GetProducts(ctx context.Context, in *admin.GetProductsRequest) (*supplier.ProductsResponse, error) {
+func (c *AdminClient) GetProducts(ctx context.Context, in *admin.GetProductsRequest) (*admin.ProductsResponse, error) {
 	resp, err := c._ProductService.GetProducts(ctx, in)
 
 	node, ok := ctx.(*bus.NodeContext)
@@ -310,7 +306,7 @@ func (c *AdminClient) GetProducts(ctx context.Context, in *admin.GetProductsRequ
 	newNode.Error = err
 	return resp, err
 }
-func (c *AdminClient) GetProductsByIDs(ctx context.Context, in *cm.IDsRequest) (*supplier.ProductsResponse, error) {
+func (c *AdminClient) GetProductsByIDs(ctx context.Context, in *cm.IDsRequest) (*admin.ProductsResponse, error) {
 	resp, err := c._ProductService.GetProductsByIDs(ctx, in)
 
 	node, ok := ctx.(*bus.NodeContext)
@@ -338,7 +334,7 @@ func (c *AdminClient) GetVariant(ctx context.Context, in *cm.IDRequest) (*admin.
 	newNode.Error = err
 	return resp, err
 }
-func (c *AdminClient) GetVariants(ctx context.Context, in *admin.GetVariantsRequest) (*supplier.VariantsResponse, error) {
+func (c *AdminClient) GetVariants(ctx context.Context, in *admin.GetVariantsRequest) (*admin.VariantsResponse, error) {
 	resp, err := c._ProductService.GetVariants(ctx, in)
 
 	node, ok := ctx.(*bus.NodeContext)
@@ -352,7 +348,7 @@ func (c *AdminClient) GetVariants(ctx context.Context, in *admin.GetVariantsRequ
 	newNode.Error = err
 	return resp, err
 }
-func (c *AdminClient) GetVariantsByIDs(ctx context.Context, in *cm.IDsRequest) (*supplier.VariantsResponse, error) {
+func (c *AdminClient) GetVariantsByIDs(ctx context.Context, in *cm.IDsRequest) (*admin.VariantsResponse, error) {
 	resp, err := c._ProductService.GetVariantsByIDs(ctx, in)
 
 	node, ok := ctx.(*bus.NodeContext)
@@ -366,7 +362,7 @@ func (c *AdminClient) GetVariantsByIDs(ctx context.Context, in *cm.IDsRequest) (
 	newNode.Error = err
 	return resp, err
 }
-func (c *AdminClient) UpdateProduct(ctx context.Context, in *admin.UpdateProductRequest) (*supplier.Product, error) {
+func (c *AdminClient) UpdateProduct(ctx context.Context, in *admin.UpdateProductRequest) (*admin.Product, error) {
 	resp, err := c._ProductService.UpdateProduct(ctx, in)
 
 	node, ok := ctx.(*bus.NodeContext)
@@ -380,7 +376,7 @@ func (c *AdminClient) UpdateProduct(ctx context.Context, in *admin.UpdateProduct
 	newNode.Error = err
 	return resp, err
 }
-func (c *AdminClient) UpdateProductImages(ctx context.Context, in *supplier.UpdateVariantImagesRequest) (*supplier.Product, error) {
+func (c *AdminClient) UpdateProductImages(ctx context.Context, in *shop.UpdateVariantImagesRequest) (*admin.Product, error) {
 	resp, err := c._ProductService.UpdateProductImages(ctx, in)
 
 	node, ok := ctx.(*bus.NodeContext)
@@ -408,7 +404,7 @@ func (c *AdminClient) UpdateProductsStatus(ctx context.Context, in *admin.Update
 	newNode.Error = err
 	return resp, err
 }
-func (c *AdminClient) UpdateVariant(ctx context.Context, in *admin.UpdateVariantRequest) (*supplier.Variant, error) {
+func (c *AdminClient) UpdateVariant(ctx context.Context, in *admin.UpdateVariantRequest) (*admin.Variant, error) {
 	resp, err := c._ProductService.UpdateVariant(ctx, in)
 
 	node, ok := ctx.(*bus.NodeContext)
@@ -422,7 +418,7 @@ func (c *AdminClient) UpdateVariant(ctx context.Context, in *admin.UpdateVariant
 	newNode.Error = err
 	return resp, err
 }
-func (c *AdminClient) UpdateVariantImages(ctx context.Context, in *supplier.UpdateVariantImagesRequest) (*supplier.Variant, error) {
+func (c *AdminClient) UpdateVariantImages(ctx context.Context, in *shop.UpdateVariantImagesRequest) (*admin.Variant, error) {
 	resp, err := c._ProductService.UpdateVariantImages(ctx, in)
 
 	node, ok := ctx.(*bus.NodeContext)
@@ -550,20 +546,6 @@ func (c *AdminClient) GetFulfillments(ctx context.Context, in *admin.GetFulfillm
 }
 func (c *AdminClient) UpdateFulfillment(ctx context.Context, in *admin.UpdateFulfillmentRequest) (*cm.UpdatedResponse, error) {
 	resp, err := c._FulfillmentService.UpdateFulfillment(ctx, in)
-
-	node, ok := ctx.(*bus.NodeContext)
-	if !ok {
-		return resp, err
-	}
-	newNode := node.WithMessage(map[string]interface{}{
-		"Request": in,
-		"Result":  resp,
-	})
-	newNode.Error = err
-	return resp, err
-}
-func (c *AdminClient) GetBrands(ctx context.Context, in *cm.Empty) (*supplier.BrandsResponse, error) {
-	resp, err := c._BrandService.GetBrands(ctx, in)
 
 	node, ok := ctx.(*bus.NodeContext)
 	if !ok {
@@ -974,7 +956,6 @@ func NewAdminServer(mux Muxer, hooks *twirp.ServerHooks) {
 	bus.Expect(&GetFulfillmentEndpoint{})
 	bus.Expect(&GetFulfillmentsEndpoint{})
 	bus.Expect(&UpdateFulfillmentEndpoint{})
-	bus.Expect(&GetBrandsEndpoint{})
 	bus.Expect(&ConfirmMoneyTransactionEndpoint{})
 	bus.Expect(&ConfirmMoneyTransactionShippingEtopEndpoint{})
 	bus.Expect(&ConfirmMoneyTransactionShippingExternalEndpoint{})
@@ -1008,7 +989,6 @@ func NewAdminServer(mux Muxer, hooks *twirp.ServerHooks) {
 	mux.Handle(admin.SupplierServicePathPrefix, admin.NewSupplierServiceServer(SupplierService{}, hooks))
 	mux.Handle(admin.OrderServicePathPrefix, admin.NewOrderServiceServer(OrderService{}, hooks))
 	mux.Handle(admin.FulfillmentServicePathPrefix, admin.NewFulfillmentServiceServer(FulfillmentService{}, hooks))
-	mux.Handle(admin.BrandServicePathPrefix, admin.NewBrandServiceServer(BrandService{}, hooks))
 	mux.Handle(admin.MoneyTransactionServicePathPrefix, admin.NewMoneyTransactionServiceServer(MoneyTransactionService{}, hooks))
 	mux.Handle(admin.ShopServicePathPrefix, admin.NewShopServiceServer(ShopService{}, hooks))
 	mux.Handle(admin.CreditServicePathPrefix, admin.NewCreditServiceServer(CreditService{}, hooks))
@@ -1023,7 +1003,6 @@ type AdminImpl struct {
 	SupplierService
 	OrderService
 	FulfillmentService
-	BrandService
 	MoneyTransactionService
 	ShopService
 	CreditService
@@ -1416,11 +1395,11 @@ func (s ProductService) GetProduct(ctx context.Context, req *cm.IDRequest) (resp
 
 type GetProductsEndpoint struct {
 	*admin.GetProductsRequest
-	Result  *supplier.ProductsResponse
+	Result  *admin.ProductsResponse
 	Context AdminClaim
 }
 
-func (s ProductService) GetProducts(ctx context.Context, req *admin.GetProductsRequest) (resp *supplier.ProductsResponse, err error) {
+func (s ProductService) GetProducts(ctx context.Context, req *admin.GetProductsRequest) (resp *admin.ProductsResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -1459,11 +1438,11 @@ func (s ProductService) GetProducts(ctx context.Context, req *admin.GetProductsR
 
 type GetProductsByIDsEndpoint struct {
 	*cm.IDsRequest
-	Result  *supplier.ProductsResponse
+	Result  *admin.ProductsResponse
 	Context AdminClaim
 }
 
-func (s ProductService) GetProductsByIDs(ctx context.Context, req *cm.IDsRequest) (resp *supplier.ProductsResponse, err error) {
+func (s ProductService) GetProductsByIDs(ctx context.Context, req *cm.IDsRequest) (resp *admin.ProductsResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -1545,11 +1524,11 @@ func (s ProductService) GetVariant(ctx context.Context, req *cm.IDRequest) (resp
 
 type GetVariantsEndpoint struct {
 	*admin.GetVariantsRequest
-	Result  *supplier.VariantsResponse
+	Result  *admin.VariantsResponse
 	Context AdminClaim
 }
 
-func (s ProductService) GetVariants(ctx context.Context, req *admin.GetVariantsRequest) (resp *supplier.VariantsResponse, err error) {
+func (s ProductService) GetVariants(ctx context.Context, req *admin.GetVariantsRequest) (resp *admin.VariantsResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -1588,11 +1567,11 @@ func (s ProductService) GetVariants(ctx context.Context, req *admin.GetVariantsR
 
 type GetVariantsByIDsEndpoint struct {
 	*cm.IDsRequest
-	Result  *supplier.VariantsResponse
+	Result  *admin.VariantsResponse
 	Context AdminClaim
 }
 
-func (s ProductService) GetVariantsByIDs(ctx context.Context, req *cm.IDsRequest) (resp *supplier.VariantsResponse, err error) {
+func (s ProductService) GetVariantsByIDs(ctx context.Context, req *cm.IDsRequest) (resp *admin.VariantsResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -1631,11 +1610,11 @@ func (s ProductService) GetVariantsByIDs(ctx context.Context, req *cm.IDsRequest
 
 type UpdateProductEndpoint struct {
 	*admin.UpdateProductRequest
-	Result  *supplier.Product
+	Result  *admin.Product
 	Context AdminClaim
 }
 
-func (s ProductService) UpdateProduct(ctx context.Context, req *admin.UpdateProductRequest) (resp *supplier.Product, err error) {
+func (s ProductService) UpdateProduct(ctx context.Context, req *admin.UpdateProductRequest) (resp *admin.Product, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -1673,12 +1652,12 @@ func (s ProductService) UpdateProduct(ctx context.Context, req *admin.UpdateProd
 }
 
 type UpdateProductImagesEndpoint struct {
-	*supplier.UpdateVariantImagesRequest
-	Result  *supplier.Product
+	*shop.UpdateVariantImagesRequest
+	Result  *admin.Product
 	Context AdminClaim
 }
 
-func (s ProductService) UpdateProductImages(ctx context.Context, req *supplier.UpdateVariantImagesRequest) (resp *supplier.Product, err error) {
+func (s ProductService) UpdateProductImages(ctx context.Context, req *shop.UpdateVariantImagesRequest) (resp *admin.Product, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -1760,11 +1739,11 @@ func (s ProductService) UpdateProductsStatus(ctx context.Context, req *admin.Upd
 
 type UpdateVariantEndpoint struct {
 	*admin.UpdateVariantRequest
-	Result  *supplier.Variant
+	Result  *admin.Variant
 	Context AdminClaim
 }
 
-func (s ProductService) UpdateVariant(ctx context.Context, req *admin.UpdateVariantRequest) (resp *supplier.Variant, err error) {
+func (s ProductService) UpdateVariant(ctx context.Context, req *admin.UpdateVariantRequest) (resp *admin.Variant, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -1802,12 +1781,12 @@ func (s ProductService) UpdateVariant(ctx context.Context, req *admin.UpdateVari
 }
 
 type UpdateVariantImagesEndpoint struct {
-	*supplier.UpdateVariantImagesRequest
-	Result  *supplier.Variant
+	*shop.UpdateVariantImagesRequest
+	Result  *admin.Variant
 	Context AdminClaim
 }
 
-func (s ProductService) UpdateVariantImages(ctx context.Context, req *supplier.UpdateVariantImagesRequest) (resp *supplier.Variant, err error) {
+func (s ProductService) UpdateVariantImages(ctx context.Context, req *shop.UpdateVariantImagesRequest) (resp *admin.Variant, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -2220,51 +2199,6 @@ func (s FulfillmentService) UpdateFulfillment(ctx context.Context, req *admin.Up
 	}
 	session = sessionQuery.Result
 	query := &UpdateFulfillmentEndpoint{UpdateFulfillmentRequest: req}
-	query.Context.Claim = session.Claim
-	query.Context.IsEtopAdmin = session.IsEtopAdmin
-	query.Context.IsOwner = session.IsOwner
-	query.Context.Roles = session.Roles
-	query.Context.Permissions = session.Permissions
-	ctx = bus.NewRootContext(ctx)
-	err = bus.Dispatch(ctx, query)
-	resp = query.Result
-	if err == nil {
-		if resp == nil {
-			return nil, common.Error(common.Internal, "", nil).Log("nil response")
-		}
-		errs = cmWrapper.HasErrors(resp)
-	}
-	return resp, err
-}
-
-type BrandService struct{}
-
-type GetBrandsEndpoint struct {
-	*cm.Empty
-	Result  *supplier.BrandsResponse
-	Context AdminClaim
-}
-
-func (s BrandService) GetBrands(ctx context.Context, req *cm.Empty) (resp *supplier.BrandsResponse, err error) {
-	t0 := time.Now()
-	var session *middleware.Session
-	var errs []*cm.Error
-	const rpcName = "admin.Brand/GetBrands"
-	defer func() {
-		recovered := recover()
-		err = cmWrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
-	}()
-	defer cmWrapper.Censor(req)
-	sessionQuery := &middleware.StartSessionQuery{
-		Context:          ctx,
-		RequireAuth:      true,
-		RequireEtopAdmin: true,
-	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
-		return nil, err
-	}
-	session = sessionQuery.Result
-	query := &GetBrandsEndpoint{Empty: req}
 	query.Context.Claim = session.Claim
 	query.Context.IsEtopAdmin = session.IsEtopAdmin
 	query.Context.IsOwner = session.IsOwner

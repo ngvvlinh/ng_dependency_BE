@@ -14,8 +14,8 @@ import (
 	"github.com/360EntSecGroup-Skylar/excelize"
 
 	cmP "etop.vn/backend/pb/common"
+	pbshop "etop.vn/backend/pb/etop/shop"
 	shopP "etop.vn/backend/pb/etop/shop"
-	supplierP "etop.vn/backend/pb/etop/supplier"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/httpx"
@@ -23,6 +23,7 @@ import (
 	"etop.vn/backend/pkg/common/validate"
 	"etop.vn/backend/pkg/etop/authorize/claims"
 	"etop.vn/backend/pkg/etop/model"
+	"etop.vn/backend/pkg/services/catalog/modelx"
 )
 
 func HandleShopImportSampleProducts(c *httpx.Context) error {
@@ -52,7 +53,7 @@ func HandleShopImportSampleProducts(c *httpx.Context) error {
 func handleShopImportSampleProducts(ctx context.Context, c *httpx.Context, shop *model.Shop, userID int64) (_resp *shopP.ImportProductsResponse, _err error) {
 	if shop.ProductSourceID != 0 {
 		// check if shop already imports sample data
-		query := &model.GetProductsQuery{
+		query := &modelx.GetProductsQuery{
 			ProductSourceID: shop.ProductSourceID,
 			EdCodes:         []string{"TEST-SP-01"},
 		}
@@ -622,13 +623,13 @@ func variantNameFromAttributes(attrs []model.ProductAttribute) string {
 	return s.String()
 }
 
-func attributesToModel(attrs []model.ProductAttribute) []*supplierP.Attribute {
+func attributesToModel(attrs []model.ProductAttribute) []*pbshop.Attribute {
 	if len(attrs) == 0 {
 		return nil
 	}
-	res := make([]*supplierP.Attribute, len(attrs))
+	res := make([]*pbshop.Attribute, len(attrs))
 	for i, attr := range attrs {
-		res[i] = &supplierP.Attribute{
+		res[i] = &pbshop.Attribute{
 			Name:  attr.Name,
 			Value: attr.Value,
 		}

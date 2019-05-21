@@ -3,25 +3,25 @@ package shop
 import (
 	"context"
 
-	"etop.vn/backend/pkg/services/moneytx/modelx"
-
-	cmP "etop.vn/backend/pb/common"
 	pbcm "etop.vn/backend/pb/common"
-	etopP "etop.vn/backend/pb/etop"
-	orderP "etop.vn/backend/pb/etop/order"
-	shopP "etop.vn/backend/pb/etop/shop"
-	supplierP "etop.vn/backend/pb/etop/supplier"
+	pbetop "etop.vn/backend/pb/etop"
+	pborder "etop.vn/backend/pb/etop/order"
+	pbshop "etop.vn/backend/pb/etop/shop"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/idemp"
 	"etop.vn/backend/pkg/common/l"
 	"etop.vn/backend/pkg/common/redis"
-	cmService "etop.vn/backend/pkg/common/service"
+	cmservice "etop.vn/backend/pkg/common/service"
+	"etop.vn/backend/pkg/etop/api/convertpb"
 	"etop.vn/backend/pkg/etop/logic/shipping_provider"
 	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/backend/pkg/etop/sqlstore"
 	notimodel "etop.vn/backend/pkg/notifier/model"
-	shopW "etop.vn/backend/wrapper/etop/shop"
+	catalogmodel "etop.vn/backend/pkg/services/catalog/model"
+	catalogmodelx "etop.vn/backend/pkg/services/catalog/modelx"
+	moneymodelx "etop.vn/backend/pkg/services/moneytx/modelx"
+	wrapshop "etop.vn/backend/wrapper/etop/shop"
 )
 
 var ll = l.New()
@@ -47,8 +47,6 @@ func init() {
 	bus.AddHandler("api", UpdateVariantsStatus)
 	bus.AddHandler("api", UpdateVariantsTags)
 	bus.AddHandler("api", VersionInfo)
-	bus.AddHandler("api", GetBrand)
-	bus.AddHandler("api", GetBrands)
 
 	bus.AddHandler("api", AddProducts)
 	bus.AddHandler("api", GetProduct)
@@ -89,61 +87,61 @@ const PrefixIdemp = "IdempOrder"
 var idempgroup *idemp.RedisGroup
 var shippingCtrl *shipping_provider.ProviderManager
 
-func Init(shippingProviderCtrl *shipping_provider.ProviderManager, sd cmService.Shutdowner, rd redis.Store) {
+func Init(shippingProviderCtrl *shipping_provider.ProviderManager, sd cmservice.Shutdowner, rd redis.Store) {
 	shippingCtrl = shippingProviderCtrl
 	idempgroup = idemp.NewRedisGroup(rd, PrefixIdemp, 5*60)
 	sd.Register(idempgroup.Shutdown)
 }
 
-func VersionInfo(ctx context.Context, q *shopW.VersionInfoEndpoint) error {
-	q.Result = &cmP.VersionInfoResponse{
+func VersionInfo(ctx context.Context, q *wrapshop.VersionInfoEndpoint) error {
+	q.Result = &pbcm.VersionInfoResponse{
 		Service: "etop.Shop",
 		Version: "0.1",
 	}
 	return nil
 }
 
-func GetCollection(ctx context.Context, q *shopW.GetCollectionEndpoint) error {
-	query := &model.GetShopCollectionQuery{
+func GetCollection(ctx context.Context, q *wrapshop.GetCollectionEndpoint) error {
+	query := &catalogmodelx.GetShopCollectionQuery{
 		ShopID:       q.Context.Shop.ID,
 		CollectionID: q.Id,
 	}
 	if err := bus.Dispatch(ctx, query); err != nil {
 		return err
 	}
-	q.Result = shopP.PbCollection(query.Result)
+	q.Result = pbshop.PbCollection(query.Result)
 	return nil
 }
 
-func GetCollectionsByIDs(ctx context.Context, q *shopW.GetCollectionsByIDsEndpoint) error {
-	query := &model.GetShopCollectionsQuery{
+func GetCollectionsByIDs(ctx context.Context, q *wrapshop.GetCollectionsByIDsEndpoint) error {
+	query := &catalogmodelx.GetShopCollectionsQuery{
 		ShopID:        q.Context.Shop.ID,
 		CollectionIDs: q.Ids,
 	}
 	if err := bus.Dispatch(ctx, query); err != nil {
 		return err
 	}
-	q.Result = &shopP.CollectionsResponse{
-		Collections: shopP.PbCollections(query.Result.Collections),
+	q.Result = &pbshop.CollectionsResponse{
+		Collections: pbshop.PbCollections(query.Result.Collections),
 	}
 	return nil
 }
 
-func GetCollections(ctx context.Context, q *shopW.GetCollectionsEndpoint) error {
-	query := &model.GetShopCollectionsQuery{
+func GetCollections(ctx context.Context, q *wrapshop.GetCollectionsEndpoint) error {
+	query := &catalogmodelx.GetShopCollectionsQuery{
 		ShopID: q.Context.Shop.ID,
 	}
 	if err := bus.Dispatch(ctx, query); err != nil {
 		return err
 	}
-	q.Result = &shopP.CollectionsResponse{
-		Collections: shopP.PbCollections(query.Result.Collections),
+	q.Result = &pbshop.CollectionsResponse{
+		Collections: pbshop.PbCollections(query.Result.Collections),
 	}
 	return nil
 }
 
-func GetVariant(ctx context.Context, q *shopW.GetVariantEndpoint) error {
-	query := &model.GetShopVariantQuery{
+func GetVariant(ctx context.Context, q *wrapshop.GetVariantEndpoint) error {
+	query := &catalogmodelx.GetShopVariantQuery{
 		ShopID:    q.Context.Shop.ID,
 		VariantID: q.Id,
 	}
@@ -154,47 +152,47 @@ func GetVariant(ctx context.Context, q *shopW.GetVariantEndpoint) error {
 	return nil
 }
 
-func GetVariantsByIDs(ctx context.Context, q *shopW.GetVariantsByIDsEndpoint) error {
-	query := &model.GetShopVariantsQuery{
+func GetVariantsByIDs(ctx context.Context, q *wrapshop.GetVariantsByIDsEndpoint) error {
+	query := &catalogmodelx.GetShopVariantsQuery{
 		ShopID:     q.Context.Shop.ID,
 		VariantIDs: q.Ids,
 	}
 	if err := bus.Dispatch(ctx, query); err != nil {
 		return err
 	}
-	q.Result = &shopP.ShopVariantsResponse{
+	q.Result = &pbshop.ShopVariantsResponse{
 		Variants: PbShopVariants(query.Result.Variants),
 	}
 	return nil
 }
 
-func GetVariants(ctx context.Context, q *shopW.GetVariantsEndpoint) error {
+func GetVariants(ctx context.Context, q *wrapshop.GetVariantsEndpoint) error {
 	paging := q.Paging.CMPaging()
-	query := &model.GetShopVariantsQuery{
+	query := &catalogmodelx.GetShopVariantsQuery{
 		ShopID:  q.Context.Shop.ID,
 		Paging:  paging,
-		Filters: cmP.ToFilters(q.Filters),
+		Filters: pbcm.ToFilters(q.Filters),
 	}
 	if err := bus.Dispatch(ctx, query); err != nil {
 		return err
 	}
-	q.Result = &shopP.ShopVariantsResponse{
-		Paging:   cmP.PbPageInfo(paging, query.Result.Total),
+	q.Result = &pbshop.ShopVariantsResponse{
+		Paging:   pbcm.PbPageInfo(paging, query.Result.Total),
 		Variants: PbShopVariants(query.Result.Variants),
 	}
 	return nil
 }
 
-func UpdateVariant(ctx context.Context, q *shopW.UpdateVariantEndpoint) error {
+func UpdateVariant(ctx context.Context, q *wrapshop.UpdateVariantEndpoint) error {
 	shopID := q.Context.Shop.ID
 	productSourceID := q.Context.Shop.ProductSourceID
-	cmd := &model.UpdateShopVariantCommand{
+	cmd := &catalogmodelx.UpdateShopVariantCommand{
 		ShopID:          shopID,
-		Variant:         shopP.PbUpdateVariantToModel(shopID, q.UpdateVariantRequest),
+		Variant:         pbshop.PbUpdateVariantToModel(shopID, q.UpdateVariantRequest),
 		CostPrice:       int(q.CostPrice),
 		Inventory:       int(q.Inventory),
 		EdCode:          q.Sku,
-		Attributes:      supplierP.AttributesTomodel(q.Attributes),
+		Attributes:      convertpb.AttributesTomodel(q.Attributes),
 		ProductSourceID: productSourceID,
 	}
 	if err := bus.Dispatch(ctx, cmd); err != nil {
@@ -204,18 +202,18 @@ func UpdateVariant(ctx context.Context, q *shopW.UpdateVariantEndpoint) error {
 	return nil
 }
 
-func UpdateProducts(ctx context.Context, q *shopW.UpdateVariantsEndpoint) error {
+func UpdateProducts(ctx context.Context, q *wrapshop.UpdateVariantsEndpoint) error {
 	return cm.ErrTODO
 }
 
-func UpdateVariantsStatus(ctx context.Context, q *shopW.UpdateVariantsStatusEndpoint) error {
+func UpdateVariantsStatus(ctx context.Context, q *wrapshop.UpdateVariantsStatusEndpoint) error {
 	if q.Status == nil {
 		return cm.Error(cm.InvalidArgument, "Missing status", nil)
 	}
 
 	shopID := q.Context.Shop.ID
 	productSourceID := q.Context.Shop.ProductSourceID
-	cmd := &model.UpdateShopVariantsStatusCommand{
+	cmd := &catalogmodelx.UpdateShopVariantsStatusCommand{
 		ShopID:          shopID,
 		VariantIDs:      q.Ids,
 		ProductSourceID: productSourceID,
@@ -224,16 +222,16 @@ func UpdateVariantsStatus(ctx context.Context, q *shopW.UpdateVariantsStatusEndp
 	if err := bus.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
-	q.Result = &cmP.UpdatedResponse{
+	q.Result = &pbcm.UpdatedResponse{
 		Updated: int32(cmd.Result.Updated),
 	}
 	return nil
 }
 
-func UpdateVariantsTags(ctx context.Context, q *shopW.UpdateVariantsTagsEndpoint) error {
+func UpdateVariantsTags(ctx context.Context, q *wrapshop.UpdateVariantsTagsEndpoint) error {
 	shopID := q.Context.Shop.ID
 	productSourceID := q.Context.Shop.ProductSourceID
-	cmd := &model.UpdateShopVariantsTagsCommand{
+	cmd := &catalogmodelx.UpdateShopVariantsTagsCommand{
 		ShopID:     shopID,
 		VariantIDs: q.Ids,
 		Update: &model.UpdateListRequest{
@@ -248,62 +246,62 @@ func UpdateVariantsTags(ctx context.Context, q *shopW.UpdateVariantsTagsEndpoint
 	if err := bus.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
-	q.Result = &cmP.UpdatedResponse{
+	q.Result = &pbcm.UpdatedResponse{
 		Updated: int32(cmd.Result.Updated),
 	}
 	return nil
 }
 
-func AddVariants(ctx context.Context, q *shopW.AddVariantsEndpoint) error {
-	cmd := &model.AddShopVariantsCommand{
+func AddVariants(ctx context.Context, q *wrapshop.AddVariantsEndpoint) error {
+	cmd := &catalogmodelx.AddShopVariantsCommand{
 		ShopID: q.Context.Shop.ID,
 		IDs:    q.Ids,
 	}
 	if err := bus.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
-	q.Result = &shopP.AddVariantsResponse{
+	q.Result = &pbshop.AddVariantsResponse{
 		Variants: PbShopVariants(cmd.Result.Variants),
-		Errors:   cmP.PbErrors(cmd.Result.Errors),
+		Errors:   pbcm.PbErrors(cmd.Result.Errors),
 	}
 	return nil
 }
 
-func GetPriceRules(ctx context.Context, q *shopW.GetPriceRulesEndpoint) error {
+func GetPriceRules(ctx context.Context, q *wrapshop.GetPriceRulesEndpoint) error {
 	return cm.ErrTODO
 }
 
-func UpdatePriceRules(ctx context.Context, q *shopW.UpdatePriceRulesEndpoint) error {
+func UpdatePriceRules(ctx context.Context, q *wrapshop.UpdatePriceRulesEndpoint) error {
 	return cm.ErrTODO
 }
 
-func CreateCollection(ctx context.Context, q *shopW.CreateCollectionEndpoint) error {
-	cmd := &model.CreateShopCollectionCommand{
-		Collection: shopP.PbCreateCollection(q.Context.Shop.ID, q.CreateCollectionRequest),
+func CreateCollection(ctx context.Context, q *wrapshop.CreateCollectionEndpoint) error {
+	cmd := &catalogmodelx.CreateShopCollectionCommand{
+		Collection: pbshop.PbCreateCollection(q.Context.Shop.ID, q.CreateCollectionRequest),
 	}
 	if err := bus.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
-	q.Result = shopP.PbCollection(cmd.Result)
+	q.Result = pbshop.PbCollection(cmd.Result)
 	return nil
 }
 
-func DeleteCollection(ctx context.Context, q *shopW.DeleteCollectionEndpoint) error {
-	cmd := &model.RemoveShopCollectionCommand{
+func DeleteCollection(ctx context.Context, q *wrapshop.DeleteCollectionEndpoint) error {
+	cmd := &catalogmodelx.RemoveShopCollectionCommand{
 		ShopID:       q.Context.Shop.ID,
 		CollectionID: q.Id,
 	}
 	if err := bus.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
-	q.Result = &cmP.RemovedResponse{
+	q.Result = &pbcm.RemovedResponse{
 		Removed: int32(cmd.Result.Deleted),
 	}
 	return nil
 }
 
-func RemoveVariants(ctx context.Context, q *shopW.RemoveVariantsEndpoint) error {
-	cmd := &model.RemoveShopVariantsCommand{
+func RemoveVariants(ctx context.Context, q *wrapshop.RemoveVariantsEndpoint) error {
+	cmd := &catalogmodelx.RemoveShopVariantsCommand{
 		ShopID:          q.Context.Shop.ID,
 		IDs:             q.Ids,
 		ProductSourceID: q.Context.Shop.ProductSourceID,
@@ -311,25 +309,25 @@ func RemoveVariants(ctx context.Context, q *shopW.RemoveVariantsEndpoint) error 
 	if err := bus.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
-	q.Result = &cmP.RemovedResponse{
+	q.Result = &pbcm.RemovedResponse{
 		Removed: int32(cmd.Result.Removed),
 	}
 	return nil
 }
 
-func UpdateCollection(ctx context.Context, q *shopW.UpdateCollectionEndpoint) error {
-	cmd := &model.UpdateShopCollectionCommand{
-		Collection: shopP.PbUpdateCollection(q.Context.Shop.ID, q.UpdateCollectionRequest),
+func UpdateCollection(ctx context.Context, q *wrapshop.UpdateCollectionEndpoint) error {
+	cmd := &catalogmodelx.UpdateShopCollectionCommand{
+		Collection: pbshop.PbUpdateCollection(q.Context.Shop.ID, q.UpdateCollectionRequest),
 	}
 	if err := bus.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
-	q.Result = shopP.PbCollection(cmd.Result)
+	q.Result = pbshop.PbCollection(cmd.Result)
 	return nil
 }
 
-func UpdateProductsCollection(ctx context.Context, q *shopW.UpdateProductsCollectionEndpoint) error {
-	cmd := &model.AddProductsToShopCollectionCommand{
+func UpdateProductsCollection(ctx context.Context, q *wrapshop.UpdateProductsCollectionEndpoint) error {
+	cmd := &catalogmodelx.AddProductsToShopCollectionCommand{
 		ShopID:       q.Context.Shop.ID,
 		ProductIDs:   q.ProductIds,
 		CollectionID: q.CollectionId,
@@ -337,15 +335,15 @@ func UpdateProductsCollection(ctx context.Context, q *shopW.UpdateProductsCollec
 	if err := bus.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
-	q.Result = &shopP.UpdateProductsCollectionResponse{
+	q.Result = &pbshop.UpdateProductsCollectionResponse{
 		Updated: int32(cmd.Result.Updated),
-		Errors:  cmP.PbErrors(cmd.Result.Errors),
+		Errors:  pbcm.PbErrors(cmd.Result.Errors),
 	}
 	return nil
 }
 
-func RemoveProductsCollection(ctx context.Context, q *shopW.RemoveProductsCollectionEndpoint) error {
-	cmd := &model.RemoveProductsFromShopCollectionCommand{
+func RemoveProductsCollection(ctx context.Context, q *wrapshop.RemoveProductsCollectionEndpoint) error {
+	cmd := &catalogmodelx.RemoveProductsFromShopCollectionCommand{
 		ShopID:       q.Context.Shop.ID,
 		ProductIDs:   q.ProductIds,
 		CollectionID: q.CollectionId,
@@ -353,52 +351,28 @@ func RemoveProductsCollection(ctx context.Context, q *shopW.RemoveProductsCollec
 	if err := bus.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
-	q.Result = cmP.Updated(cmd.Result.Updated)
+	q.Result = pbcm.Updated(cmd.Result.Updated)
 	return nil
 }
 
-func GetBrand(ctx context.Context, q *shopW.GetBrandEndpoint) error {
-	query := &model.GetProductBrandQuery{
-		ID: q.Id,
-	}
-	if err := bus.Dispatch(ctx, query); err != nil {
-		return err
-	}
-
-	q.Result = supplierP.PbBrandExt(query.Result)
-	return nil
-}
-
-func GetBrands(ctx context.Context, q *shopW.GetBrandsEndpoint) error {
-	query := &model.GetProductBrandsQuery{}
-	if err := bus.Dispatch(ctx, query); err != nil {
-		return err
-	}
-
-	q.Result = &supplierP.BrandsResponse{
-		Brands: supplierP.PbBrandsExt(query.Result.Brands),
-	}
-	return nil
-}
-
-func AddProducts(ctx context.Context, q *shopW.AddProductsEndpoint) error {
-	cmd := &model.AddShopProductsCommand{
+func AddProducts(ctx context.Context, q *wrapshop.AddProductsEndpoint) error {
+	cmd := &catalogmodelx.AddShopProductsCommand{
 		ShopID: q.Context.Shop.ID,
 		IDs:    q.Ids,
 	}
 	if err := bus.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
-	q.Result = &shopP.AddProductsResponse{
+	q.Result = &pbshop.AddProductsResponse{
 		Products: PbShopProducts(cmd.Result.Products),
-		Errors:   cmP.PbErrors(cmd.Result.Errors),
+		Errors:   pbcm.PbErrors(cmd.Result.Errors),
 	}
 	return nil
 }
 
-func GetProduct(ctx context.Context, q *shopW.GetProductEndpoint) error {
+func GetProduct(ctx context.Context, q *wrapshop.GetProductEndpoint) error {
 	productSourceID := q.Context.Shop.ProductSourceID
-	query := &model.GetShopProductQuery{
+	query := &catalogmodelx.GetShopProductQuery{
 		ShopID:          q.Context.Shop.ID,
 		ProductID:       q.Id,
 		ProductSourceID: productSourceID,
@@ -410,9 +384,9 @@ func GetProduct(ctx context.Context, q *shopW.GetProductEndpoint) error {
 	return nil
 }
 
-func GetProductsByIDs(ctx context.Context, q *shopW.GetProductsByIDsEndpoint) error {
+func GetProductsByIDs(ctx context.Context, q *wrapshop.GetProductsByIDsEndpoint) error {
 	productSourceID := q.Context.Shop.ProductSourceID
-	query := &model.GetShopProductsQuery{
+	query := &catalogmodelx.GetShopProductsQuery{
 		ShopID:          q.Context.Shop.ID,
 		ProductIDs:      q.Ids,
 		ProductSourceID: productSourceID,
@@ -420,34 +394,34 @@ func GetProductsByIDs(ctx context.Context, q *shopW.GetProductsByIDsEndpoint) er
 	if err := bus.Dispatch(ctx, query); err != nil {
 		return err
 	}
-	q.Result = &shopP.ShopProductsResponse{
+	q.Result = &pbshop.ShopProductsResponse{
 		Products: PbShopProductsFtVariant(query.Result.Products),
 	}
 	return nil
 }
 
-func GetProducts(ctx context.Context, q *shopW.GetProductsEndpoint) error {
+func GetProducts(ctx context.Context, q *wrapshop.GetProductsEndpoint) error {
 	paging := q.Paging.CMPaging()
 	productSourceID := q.Context.Shop.ProductSourceID
-	query := &model.GetShopProductsQuery{
+	query := &catalogmodelx.GetShopProductsQuery{
 		ShopID:          q.Context.Shop.ID,
 		Paging:          paging,
-		Filters:         cmP.ToFilters(q.Filters),
+		Filters:         pbcm.ToFilters(q.Filters),
 		ProductSourceID: productSourceID,
 	}
 	if err := bus.Dispatch(ctx, query); err != nil {
 		return err
 	}
-	q.Result = &shopP.ShopProductsResponse{
-		Paging:   cmP.PbPageInfo(paging, query.Result.Total),
+	q.Result = &pbshop.ShopProductsResponse{
+		Paging:   pbcm.PbPageInfo(paging, query.Result.Total),
 		Products: PbShopProductsFtVariant(query.Result.Products),
 	}
 	return nil
 }
 
-func RemoveProducts(ctx context.Context, q *shopW.RemoveProductsEndpoint) error {
+func RemoveProducts(ctx context.Context, q *wrapshop.RemoveProductsEndpoint) error {
 	productSourceID := q.Context.Shop.ProductSourceID
-	cmd := &model.RemoveShopProductsCommand{
+	cmd := &catalogmodelx.RemoveShopProductsCommand{
 		ShopID:          q.Context.Shop.ID,
 		IDs:             q.Ids,
 		ProductSourceID: productSourceID,
@@ -455,18 +429,18 @@ func RemoveProducts(ctx context.Context, q *shopW.RemoveProductsEndpoint) error 
 	if err := bus.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
-	q.Result = &cmP.RemovedResponse{
+	q.Result = &pbcm.RemovedResponse{
 		Removed: int32(cmd.Result.Removed),
 	}
 	return nil
 }
 
-func UpdateProduct(ctx context.Context, q *shopW.UpdateProductEndpoint) error {
+func UpdateProduct(ctx context.Context, q *wrapshop.UpdateProductEndpoint) error {
 	shopID := q.Context.Shop.ID
 	productSourceID := q.Context.Shop.ProductSourceID
-	cmd := &model.UpdateShopProductCommand{
+	cmd := &catalogmodelx.UpdateShopProductCommand{
 		ShopID:          shopID,
-		Product:         shopP.PbUpdateProductToModel(shopID, q.UpdateProductRequest),
+		Product:         pbshop.PbUpdateProductToModel(shopID, q.UpdateProductRequest),
 		Code:            q.Code,
 		ProductSourceID: productSourceID,
 	}
@@ -477,14 +451,14 @@ func UpdateProduct(ctx context.Context, q *shopW.UpdateProductEndpoint) error {
 	return nil
 }
 
-func UpdateProductsStatus(ctx context.Context, q *shopW.UpdateProductsStatusEndpoint) error {
+func UpdateProductsStatus(ctx context.Context, q *wrapshop.UpdateProductsStatusEndpoint) error {
 	if q.Status == nil {
 		return cm.Error(cm.InvalidArgument, "Missing status", nil)
 	}
 
 	shopID := q.Context.Shop.ID
 	productSourceID := q.Context.Shop.ProductSourceID
-	cmd := &model.UpdateShopProductsStatusCommand{
+	cmd := &catalogmodelx.UpdateShopProductsStatusCommand{
 		ShopID:          shopID,
 		ProductIDs:      q.Ids,
 		ProductSourceID: productSourceID,
@@ -493,16 +467,16 @@ func UpdateProductsStatus(ctx context.Context, q *shopW.UpdateProductsStatusEndp
 	if err := bus.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
-	q.Result = &cmP.UpdatedResponse{
+	q.Result = &pbcm.UpdatedResponse{
 		Updated: int32(cmd.Result.Updated),
 	}
 	return nil
 }
 
-func UpdateProductsTags(ctx context.Context, q *shopW.UpdateProductsTagsEndpoint) error {
+func UpdateProductsTags(ctx context.Context, q *wrapshop.UpdateProductsTagsEndpoint) error {
 	shopID := q.Context.Shop.ID
 	productSourceID := q.Context.Shop.ProductSourceID
-	cmd := &model.UpdateShopProductsTagsCommand{
+	cmd := &catalogmodelx.UpdateShopProductsTagsCommand{
 		ShopID:     shopID,
 		ProductIDs: q.Ids,
 		Update: &model.UpdateListRequest{
@@ -517,13 +491,13 @@ func UpdateProductsTags(ctx context.Context, q *shopW.UpdateProductsTagsEndpoint
 	if err := bus.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
-	q.Result = &cmP.UpdatedResponse{
+	q.Result = &pbcm.UpdatedResponse{
 		Updated: int32(cmd.Result.Updated),
 	}
 	return nil
 }
 
-func CreateProductSource(ctx context.Context, q *shopW.CreateProductSourceEndpoint) error {
+func CreateProductSource(ctx context.Context, q *wrapshop.CreateProductSourceEndpoint) error {
 	shopID := q.Context.Shop.ID
 	cmd := &model.CreateProductSourceCommand{
 		ShopID: shopID,
@@ -537,8 +511,8 @@ func CreateProductSource(ctx context.Context, q *shopW.CreateProductSourceEndpoi
 	return nil
 }
 
-func CreateVariant(ctx context.Context, q *shopW.CreateVariantEndpoint) error {
-	cmd := &model.CreateVariantCommand{
+func CreateVariant(ctx context.Context, q *wrapshop.CreateVariantEndpoint) error {
+	cmd := &catalogmodelx.CreateVariantCommand{
 		ShopID:            q.Context.Shop.ID,
 		ProductSourceID:   q.ProductSourceId,
 		ProductID:         q.ProductId,
@@ -556,7 +530,7 @@ func CreateVariant(ctx context.Context, q *shopW.CreateVariantEndpoint) error {
 		QuantityOnHand:    int(q.QuantityOnHand),
 		QuantityReserved:  int(q.QuantityReserved),
 		CostPrice:         int(q.CostPrice),
-		Attributes:        supplierP.AttributesTomodel(q.Attributes),
+		Attributes:        convertpb.AttributesTomodel(q.Attributes),
 		DescHTML:          q.DescHtml,
 	}
 
@@ -568,7 +542,7 @@ func CreateVariant(ctx context.Context, q *shopW.CreateVariantEndpoint) error {
 	return nil
 }
 
-func GetShopProductSources(ctx context.Context, q *shopW.GetShopProductSourcesEndpoint) error {
+func GetShopProductSources(ctx context.Context, q *wrapshop.GetShopProductSourcesEndpoint) error {
 	query := &model.GetShopProductSourcesCommand{}
 	if q.Context.User != nil {
 		query.UserID = q.Context.User.ID
@@ -579,13 +553,13 @@ func GetShopProductSources(ctx context.Context, q *shopW.GetShopProductSourcesEn
 		return err
 	}
 
-	q.Result = &shopP.ProductSourcesResponse{
+	q.Result = &pbshop.ProductSourcesResponse{
 		ProductSources: PbProductSources(query.Result),
 	}
 	return nil
 }
 
-func ConnectProductSource(ctx context.Context, q *shopW.ConnectProductSourceEndpoint) error {
+func ConnectProductSource(ctx context.Context, q *wrapshop.ConnectProductSourceEndpoint) error {
 	cmd := &model.ConnectProductSourceCommand{
 		ShopID:          q.Context.Shop.ID,
 		ProductSourceID: q.ProductSourceId,
@@ -594,13 +568,13 @@ func ConnectProductSource(ctx context.Context, q *shopW.ConnectProductSourceEndp
 		return err
 	}
 
-	q.Result = &cmP.UpdatedResponse{
+	q.Result = &pbcm.UpdatedResponse{
 		Updated: int32(cmd.Result.Updated),
 	}
 	return nil
 }
 
-// func RemoveProductSource(ctx context.Context, q *shopW.RemoveProductSourceEndpoint) error {
+// func RemoveProductSource(ctx context.Context, q *wrapshop.RemoveProductSourceEndpoint) error {
 // 	cmd := &model.RemoveProductSourceCommand{
 // 		AccountID: q.Context.Shop.ID,
 // 	}
@@ -609,14 +583,14 @@ func ConnectProductSource(ctx context.Context, q *shopW.ConnectProductSourceEndp
 // 		return err
 // 	}
 
-// 	q.Result = &cmP.UpdatedResponse{
+// 	q.Result = &pbcm.UpdatedResponse{
 // 		Updated: int32(cmd.Result.Updated),
 // 	}
 
 // 	return nil
 // }
 
-func CreateProductSourceCategory(ctx context.Context, q *shopW.CreateProductSourceCategoryEndpoint) error {
+func CreateProductSourceCategory(ctx context.Context, q *wrapshop.CreateProductSourceCategoryEndpoint) error {
 	cmd := &model.CreateProductSourceCategoryCommand{
 		ShopID:            q.Context.Shop.ID,
 		Name:              q.Name,
@@ -632,7 +606,7 @@ func CreateProductSourceCategory(ctx context.Context, q *shopW.CreateProductSour
 	return nil
 }
 
-func UpdateProductsPSCategory(ctx context.Context, q *shopW.UpdateProductsPSCategoryEndpoint) error {
+func UpdateProductsPSCategory(ctx context.Context, q *wrapshop.UpdateProductsPSCategoryEndpoint) error {
 	cmd := &model.UpdateProductsProductSourceCategoryCommand{
 		CategoryID:      q.CategoryId,
 		ProductIDs:      q.ProductIds,
@@ -642,13 +616,13 @@ func UpdateProductsPSCategory(ctx context.Context, q *shopW.UpdateProductsPSCate
 	if err := bus.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
-	q.Result = &cmP.UpdatedResponse{
+	q.Result = &pbcm.UpdatedResponse{
 		Updated: int32(cmd.Result.Updated),
 	}
 	return nil
 }
 
-func GetProductSourceCategory(ctx context.Context, q *shopW.GetProductSourceCategoryEndpoint) error {
+func GetProductSourceCategory(ctx context.Context, q *wrapshop.GetProductSourceCategoryEndpoint) error {
 	cmd := &model.GetProductSourceCategoryQuery{
 		ShopID:     q.Context.Shop.ID,
 		CategoryID: q.Id,
@@ -658,11 +632,11 @@ func GetProductSourceCategory(ctx context.Context, q *shopW.GetProductSourceCate
 		return err
 	}
 
-	q.Result = supplierP.PbCategory(cmd.Result)
+	q.Result = convertpb.PbCategory(cmd.Result)
 	return nil
 }
 
-func GetProductSourceCategories(ctx context.Context, q *shopW.GetProductSourceCategoriesEndpoint) error {
+func GetProductSourceCategories(ctx context.Context, q *wrapshop.GetProductSourceCategoriesEndpoint) error {
 	cmd := &model.GetProductSourceCategoriesExtendedQuery{
 		ProductSourceType: q.Type.ToModel(),
 		ShopID:            q.Context.Shop.ID,
@@ -672,13 +646,13 @@ func GetProductSourceCategories(ctx context.Context, q *shopW.GetProductSourceCa
 		return err
 	}
 
-	q.Result = &supplierP.CategoriesResponse{
-		Categories: supplierP.PbCategories(cmd.Result.Categories),
+	q.Result = &pbshop.CategoriesResponse{
+		Categories: convertpb.PbCategories(cmd.Result.Categories),
 	}
 	return nil
 }
 
-func UpdateProductSourceCategory(ctx context.Context, q *shopW.UpdateProductSourceCategoryEndpoint) error {
+func UpdateProductSourceCategory(ctx context.Context, q *wrapshop.UpdateProductSourceCategoryEndpoint) error {
 	cmd := &model.UpdateShopProductSourceCategoryCommand{
 		ID:       q.Id,
 		ShopID:   q.Context.Shop.ID,
@@ -688,11 +662,11 @@ func UpdateProductSourceCategory(ctx context.Context, q *shopW.UpdateProductSour
 	if err := bus.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
-	q.Result = supplierP.PbCategory(cmd.Result)
+	q.Result = convertpb.PbCategory(cmd.Result)
 	return nil
 }
 
-func RemoveProductSourceCategory(ctx context.Context, q *shopW.RemoveProductSourceCategoryEndpoint) error {
+func RemoveProductSourceCategory(ctx context.Context, q *wrapshop.RemoveProductSourceCategoryEndpoint) error {
 	cmd := &model.RemoveShopProductSourceCategoryCommand{
 		ID:     q.Id,
 		ShopID: q.Context.Shop.ID,
@@ -700,15 +674,15 @@ func RemoveProductSourceCategory(ctx context.Context, q *shopW.RemoveProductSour
 	if err := bus.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
-	q.Result = &cmP.RemovedResponse{
+	q.Result = &pbcm.RemovedResponse{
 		Removed: int32(cmd.Result.Removed),
 	}
 	return nil
 }
 
-func UpdateProductImages(ctx context.Context, q *shopW.UpdateProductImagesEndpoint) error {
+func UpdateProductImages(ctx context.Context, q *wrapshop.UpdateProductImagesEndpoint) error {
 	shopID := q.Context.Shop.ID
-	query := &model.GetShopProductQuery{
+	query := &catalogmodelx.GetShopProductQuery{
 		ShopID:    shopID,
 		ProductID: q.Id,
 	}
@@ -723,14 +697,14 @@ func UpdateProductImages(ctx context.Context, q *shopW.UpdateProductImagesEndpoi
 		DeleteAll:  q.DeleteAll,
 	}
 
-	imageURLs, err := cmP.PatchImage(query.Result.ShopProduct.ImageURLs, r)
+	imageURLs, err := pbcm.PatchImage(query.Result.ShopProduct.ImageURLs, r)
 	if err != nil {
 		return err
 	}
 
-	cmd := &model.UpdateShopProductCommand{
+	cmd := &catalogmodelx.UpdateShopProductCommand{
 		ShopID: shopID,
-		Product: &model.ShopProduct{
+		Product: &catalogmodel.ShopProduct{
 			ProductID: q.Id,
 			ShopID:    shopID,
 			ImageURLs: imageURLs,
@@ -743,9 +717,9 @@ func UpdateProductImages(ctx context.Context, q *shopW.UpdateProductImagesEndpoi
 	return nil
 }
 
-func UpdateVariantImages(ctx context.Context, q *shopW.UpdateVariantImagesEndpoint) error {
+func UpdateVariantImages(ctx context.Context, q *wrapshop.UpdateVariantImagesEndpoint) error {
 	shopID := q.Context.Shop.ID
-	query := &model.GetShopVariantQuery{
+	query := &catalogmodelx.GetShopVariantQuery{
 		ShopID:    shopID,
 		VariantID: q.Id,
 	}
@@ -760,14 +734,14 @@ func UpdateVariantImages(ctx context.Context, q *shopW.UpdateVariantImagesEndpoi
 		ReplaceAll: q.ReplaceAll,
 		DeleteAll:  q.DeleteAll,
 	}
-	imageURLs, err := cmP.PatchImage(sourceImages, r)
+	imageURLs, err := pbcm.PatchImage(sourceImages, r)
 	if err != nil {
 		return err
 	}
 
-	cmd := &model.UpdateShopVariantCommand{
+	cmd := &catalogmodelx.UpdateShopVariantCommand{
 		ShopID: shopID,
-		Variant: &model.ShopVariant{
+		Variant: &catalogmodel.ShopVariant{
 			VariantID: q.Id,
 			ShopID:    shopID,
 			ImageURLs: imageURLs,
@@ -781,21 +755,21 @@ func UpdateVariantImages(ctx context.Context, q *shopW.UpdateVariantImagesEndpoi
 	return nil
 }
 
-func GetMoneyTransaction(ctx context.Context, q *shopW.GetMoneyTransactionEndpoint) error {
-	query := &modelx.GetMoneyTransaction{
+func GetMoneyTransaction(ctx context.Context, q *wrapshop.GetMoneyTransactionEndpoint) error {
+	query := &moneymodelx.GetMoneyTransaction{
 		ShopID: q.Context.Shop.ID,
 		ID:     q.Id,
 	}
 	if err := bus.Dispatch(ctx, query); err != nil {
 		return err
 	}
-	q.Result = orderP.PbMoneyTransactionExtended(query.Result)
+	q.Result = pborder.PbMoneyTransactionExtended(query.Result)
 	return nil
 }
 
-func GetMoneyTransactions(ctx context.Context, q *shopW.GetMoneyTransactionsEndpoint) error {
+func GetMoneyTransactions(ctx context.Context, q *wrapshop.GetMoneyTransactionsEndpoint) error {
 	paging := q.Paging.CMPaging()
-	query := &modelx.GetMoneyTransactions{
+	query := &moneymodelx.GetMoneyTransactions{
 		ShopID:  q.Context.Shop.ID,
 		Paging:  paging,
 		Filters: pbcm.ToFilters(q.Filters),
@@ -803,14 +777,14 @@ func GetMoneyTransactions(ctx context.Context, q *shopW.GetMoneyTransactionsEndp
 	if err := bus.Dispatch(ctx, query); err != nil {
 		return err
 	}
-	q.Result = &orderP.MoneyTransactionsResponse{
-		MoneyTransactions: orderP.PbMoneyTransactionExtendeds(query.Result.MoneyTransactions),
-		Paging:            cmP.PbPageInfo(paging, query.Result.Total),
+	q.Result = &pborder.MoneyTransactionsResponse{
+		MoneyTransactions: pborder.PbMoneyTransactionExtendeds(query.Result.MoneyTransactions),
+		Paging:            pbcm.PbPageInfo(paging, query.Result.Total),
 	}
 	return nil
 }
 
-func SummarizeFulfillments(ctx context.Context, q *shopW.SummarizeFulfillmentsEndpoint) error {
+func SummarizeFulfillments(ctx context.Context, q *wrapshop.SummarizeFulfillmentsEndpoint) error {
 	query := &model.SummarizeFulfillmentsRequest{
 		ShopID:   q.Context.Shop.ID,
 		DateFrom: q.DateFrom,
@@ -820,13 +794,13 @@ func SummarizeFulfillments(ctx context.Context, q *shopW.SummarizeFulfillmentsEn
 		return err
 	}
 
-	q.Result = &shopP.SummarizeFulfillmentsResponse{
-		Tables: shopP.PbSummaryTables(query.Result.Tables),
+	q.Result = &pbshop.SummarizeFulfillmentsResponse{
+		Tables: pbshop.PbSummaryTables(query.Result.Tables),
 	}
 	return nil
 }
 
-func CalcBalance(ctx context.Context, q *shopW.CalcBalanceShopEndpoint) error {
+func CalcBalance(ctx context.Context, q *wrapshop.CalcBalanceShopEndpoint) error {
 	query := &model.GetBalanceShopCommand{
 		ShopID: q.Context.Shop.ID,
 	}
@@ -834,13 +808,13 @@ func CalcBalance(ctx context.Context, q *shopW.CalcBalanceShopEndpoint) error {
 	if err := bus.Dispatch(ctx, query); err != nil {
 		return err
 	}
-	q.Result = &shopP.CalcBalanceShopResponse{
+	q.Result = &pbshop.CalcBalanceShopResponse{
 		Balance: int32(query.Result.Amount),
 	}
 	return nil
 }
 
-func CreateDevice(ctx context.Context, q *shopW.CreateDeviceEndpoint) error {
+func CreateDevice(ctx context.Context, q *wrapshop.CreateDeviceEndpoint) error {
 	cmd := &notimodel.CreateDeviceArgs{
 		AccountID:        q.Context.Shop.ID,
 		DeviceID:         q.DeviceId,
@@ -851,11 +825,11 @@ func CreateDevice(ctx context.Context, q *shopW.CreateDeviceEndpoint) error {
 	if err != nil {
 		return err
 	}
-	q.Result = etopP.PbDevice(device)
+	q.Result = pbetop.PbDevice(device)
 	return nil
 }
 
-func DeleteDevice(ctx context.Context, q *shopW.DeleteDeviceEndpoint) error {
+func DeleteDevice(ctx context.Context, q *wrapshop.DeleteDeviceEndpoint) error {
 	device := &notimodel.Device{
 		DeviceID:  q.DeviceId,
 		AccountID: q.Context.Shop.ID,
@@ -869,7 +843,7 @@ func DeleteDevice(ctx context.Context, q *shopW.DeleteDeviceEndpoint) error {
 	return nil
 }
 
-func GetNotification(ctx context.Context, q *shopW.GetNotificationEndpoint) error {
+func GetNotification(ctx context.Context, q *wrapshop.GetNotificationEndpoint) error {
 	query := &notimodel.GetNotificationArgs{
 		AccountID: q.Context.Shop.ID,
 		ID:        q.Id,
@@ -878,11 +852,11 @@ func GetNotification(ctx context.Context, q *shopW.GetNotificationEndpoint) erro
 	if err != nil {
 		return err
 	}
-	q.Result = etopP.PbNotification(noti)
+	q.Result = pbetop.PbNotification(noti)
 	return nil
 }
 
-func GetNotifications(ctx context.Context, q *shopW.GetNotificationsEndpoint) error {
+func GetNotifications(ctx context.Context, q *wrapshop.GetNotificationsEndpoint) error {
 	paging := q.Paging.CMPaging()
 	query := &notimodel.GetNotificationsArgs{
 		Paging:    paging,
@@ -892,14 +866,14 @@ func GetNotifications(ctx context.Context, q *shopW.GetNotificationsEndpoint) er
 	if err != nil {
 		return err
 	}
-	q.Result = &etopP.NotificationsResponse{
-		Notifications: etopP.PbNotifications(notis),
-		Paging:        cmP.PbPageInfo(paging, total),
+	q.Result = &pbetop.NotificationsResponse{
+		Notifications: pbetop.PbNotifications(notis),
+		Paging:        pbcm.PbPageInfo(paging, total),
 	}
 	return nil
 }
 
-func UpdateNotifications(ctx context.Context, q *shopW.UpdateNotificationsEndpoint) error {
+func UpdateNotifications(ctx context.Context, q *wrapshop.UpdateNotificationsEndpoint) error {
 	cmd := &notimodel.UpdateNotificationsArgs{
 		IDs:    q.Ids,
 		IsRead: q.IsRead,

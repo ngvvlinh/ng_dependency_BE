@@ -3,25 +3,24 @@ package admin
 import (
 	"context"
 
-	modelx2 "etop.vn/backend/pkg/services/shipping/modelx"
-
-	"etop.vn/backend/pkg/services/moneytx/modelx"
-
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/l"
 	"etop.vn/backend/pkg/etop/api"
+	"etop.vn/backend/pkg/etop/api/convertpb"
 	"etop.vn/backend/pkg/etop/authorize/login"
-	"etop.vn/backend/pkg/etop/cache"
-	"etop.vn/backend/pkg/etop/logic/pricing"
 	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/backend/pkg/etop/sqlstore"
+	catalogmodel "etop.vn/backend/pkg/services/catalog/model"
+	catalogmodelx "etop.vn/backend/pkg/services/catalog/modelx"
+	"etop.vn/backend/pkg/services/moneytx/modelx"
+	shippingmodelx "etop.vn/backend/pkg/services/shipping/modelx"
+	suppliermodelx "etop.vn/backend/pkg/zdeprecated/supplier/modelx"
 
 	pbcm "etop.vn/backend/pb/common"
 	pbetop "etop.vn/backend/pb/etop"
 	pbadmin "etop.vn/backend/pb/etop/admin"
 	pborder "etop.vn/backend/pb/etop/order"
-	pbsupplier "etop.vn/backend/pb/etop/supplier"
 	notimodel "etop.vn/backend/pkg/notifier/model"
 	wrapadmin "etop.vn/backend/wrapper/etop/admin"
 )
@@ -41,7 +40,6 @@ func init() {
 		UpdateProductsCategory,
 		UpdateVariantsStatus,
 		VersionInfo,
-		GetBrands,
 		GetProduct,
 		GetProducts,
 		GetProductsByIDs,
@@ -148,7 +146,7 @@ func GetCategories(ctx context.Context, q *wrapadmin.GetCategoriesEndpoint) erro
 }
 
 func UpdateProductsCategory(ctx context.Context, q *wrapadmin.UpdateProductsCategoryEndpoint) error {
-	cmd := &model.UpdateProductsEtopCategoryCommand{
+	cmd := &catalogmodelx.UpdateProductsEtopCategoryCommand{
 		EtopCategoryID: q.CategoryId,
 		ProductIDs:     q.Ids,
 	}
@@ -160,7 +158,7 @@ func UpdateProductsCategory(ctx context.Context, q *wrapadmin.UpdateProductsCate
 }
 
 func RemoveProductsCategory(ctx context.Context, q *wrapadmin.RemoveProductsCategoryEndpoint) error {
-	cmd := &model.RemoveProductsEtopCategoryCommand{
+	cmd := &catalogmodelx.RemoveProductsEtopCategoryCommand{
 		ProductIDs: q.Ids,
 	}
 	if err := bus.Dispatch(ctx, cmd); err != nil {
@@ -176,9 +174,8 @@ func UpdateVariantsStatus(ctx context.Context, q *wrapadmin.UpdateVariantsStatus
 		return cm.Error(cm.InvalidArgument, "Estatus can not be nil", nil)
 	}
 	eStatus := q.EStatus.ToModel()
-	var productUpdates []*model.VariantExtended
 	if *eStatus == 1 {
-		query := &model.GetVariantsExtendedQuery{
+		query := &catalogmodelx.GetVariantsExtendedQuery{
 			IDs: q.Ids,
 			Filters: []cm.Filter{
 				{
@@ -192,11 +189,9 @@ func UpdateVariantsStatus(ctx context.Context, q *wrapadmin.UpdateVariantsStatus
 		if err := bus.Dispatch(ctx, query); err != nil {
 			return err
 		}
-
-		productUpdates = query.Result.Variants
 	}
 
-	cmd := &model.UpdateVariantsStatusCommand{
+	cmd := &catalogmodelx.UpdateVariantsStatusCommand{
 		IDs: q.Ids,
 	}
 	cmd.Update.EtopStatus = q.EStatus.ToModel()
@@ -205,17 +200,10 @@ func UpdateVariantsStatus(ctx context.Context, q *wrapadmin.UpdateVariantsStatus
 	}
 	q.Result = pbcm.Updated(cmd.Result.Updated)
 
-	// if e_status = 1 => calc product price and update
-	if len(productUpdates) > 0 {
-		if err := calcProductsPriceAndUpdate(ctx, productUpdates); err != nil {
-			ll.Error("Error while calculating price and update", l.Error(err))
-		}
-	}
-
 	// If admin disable products, we also update supplier_status to 0 (default).
 	// The supplier can submit again by changing supplier_status to 1.
 	if q.EStatus != nil && *q.EStatus.ToModel() == model.StatusDisabled {
-		cmd := &model.UpdateVariantsStatusCommand{
+		cmd := &catalogmodelx.UpdateVariantsStatusCommand{
 			IDs: q.Ids,
 		}
 		cmd.StatusQuery.SupplierStatus = model.S3Positive.P()
@@ -228,19 +216,15 @@ func UpdateVariantsStatus(ctx context.Context, q *wrapadmin.UpdateVariantsStatus
 }
 
 func GetVariant(ctx context.Context, q *wrapadmin.GetVariantEndpoint) error {
-	query := &model.GetVariantQuery{
+	query := &catalogmodelx.GetVariantQuery{
 		VariantID: q.Id,
 	}
 	if err := bus.Dispatch(ctx, query); err != nil {
 		return err
 	}
 
-	products := []*model.VariantExtended{query.Result}
-	if err := calcProductsPrice(ctx, products); err != nil {
-		ll.Error("Error while calculating price", l.Error(err))
-	}
-
-	q.Result = PbVariantWithSupplier(&model.VariantExtended{
+	products := []*catalogmodel.VariantExtended{query.Result}
+	q.Result = PbVariantWithSupplier(&catalogmodel.VariantExtended{
 		Variant:         products[0].Variant,
 		VariantExternal: products[0].VariantExternal,
 		Product:         query.Result.Product,
@@ -250,7 +234,7 @@ func GetVariant(ctx context.Context, q *wrapadmin.GetVariantEndpoint) error {
 
 func GetVariants(ctx context.Context, q *wrapadmin.GetVariantsEndpoint) error {
 	paging := q.Paging.CMPaging()
-	query := &model.GetVariantsExtendedQuery{
+	query := &catalogmodelx.GetVariantsExtendedQuery{
 		SupplierID: q.SupplierId,
 		Paging:     paging,
 		Filters:    pbcm.ToFilters(q.Filters),
@@ -266,37 +250,29 @@ func GetVariants(ctx context.Context, q *wrapadmin.GetVariantsEndpoint) error {
 	}
 
 	products := query.Result.Variants
-	if err := calcProductsPrice(ctx, products); err != nil {
-		ll.Error("Error while calculating price", l.Error(err))
-	}
-
-	q.Result = &pbsupplier.VariantsResponse{
+	q.Result = &pbadmin.VariantsResponse{
 		Paging:   pbcm.PbPageInfo(paging, query.Result.Total),
-		Variants: pbsupplier.PbVariants(products),
+		Variants: convertpb.PbVariants(products),
 	}
 	return nil
 }
 
 func GetVariantsByIDs(ctx context.Context, q *wrapadmin.GetVariantsByIDsEndpoint) error {
-	query := &model.GetVariantsExtendedQuery{IDs: q.Ids}
+	query := &catalogmodelx.GetVariantsExtendedQuery{IDs: q.Ids}
 	if err := bus.Dispatch(ctx, query); err != nil {
 		return err
 	}
 
 	products := query.Result.Variants
-	if err := calcProductsPrice(ctx, products); err != nil {
-		ll.Error("Error while calculating price", l.Error(err))
-	}
-
-	q.Result = &pbsupplier.VariantsResponse{
-		Variants: pbsupplier.PbVariants(products),
+	q.Result = &pbadmin.VariantsResponse{
+		Variants: convertpb.PbVariants(products),
 	}
 	return nil
 }
 
 func GetSuppliers(ctx context.Context, q *wrapadmin.GetSuppliersEndpoint) error {
 	paging := q.Paging.CMPaging()
-	query := &model.GetSuppliersQuery{
+	query := &suppliermodelx.GetSuppliersQuery{
 		Paging: paging,
 		Status: q.Status.ToModel(),
 	}
@@ -311,7 +287,7 @@ func GetSuppliers(ctx context.Context, q *wrapadmin.GetSuppliersEndpoint) error 
 }
 
 func GetSuppliersByIDs(ctx context.Context, q *wrapadmin.GetSuppliersByIDsEndpoint) error {
-	query := &model.GetSuppliersQuery{
+	query := &suppliermodelx.GetSuppliersQuery{
 		IDs: q.Ids,
 	}
 	if err := bus.Dispatch(ctx, query); err != nil {
@@ -323,124 +299,8 @@ func GetSuppliersByIDs(ctx context.Context, q *wrapadmin.GetSuppliersByIDsEndpoi
 	return nil
 }
 
-func calcProductsPriceAndUpdate(ctx context.Context, products []*model.VariantExtended) error {
-	updatePrices, err := calcProductsPriceWithDiff(ctx, products, true)
-	if err != nil {
-		return err
-	}
-
-	var errs cm.ErrorCollector
-	for id, p := range updatePrices {
-		cmd := &model.UpdateVariantPriceCommand{
-			VariantID: id,
-			PriceDef:  p,
-		}
-		err := bus.Dispatch(ctx, cmd)
-		errs.Collect(err)
-		if err != nil {
-			ll.Error("Unable to update price", l.Int64("id", id), l.Error(err))
-			continue
-		}
-	}
-	return errs.All()
-}
-
-func calcProductsPrice(ctx context.Context, variants []*model.VariantExtended) error {
-	_, err := calcProductsPriceWithDiff(ctx, variants, false)
-	return err
-}
-
-func calcProductsPriceWithDiff(ctx context.Context, products []*model.VariantExtended, withDiff bool) (map[int64]*model.PriceDef, error) {
-	ruleMap, err := getSupplierRules(ctx, products)
-	if err != nil {
-		return nil, err
-	}
-	if ruleMap == nil {
-		return nil, cm.Error(cm.InvalidArgument, "Can not get rules price", nil)
-	}
-
-	var updatePrices map[int64]*model.PriceDef
-	for _, product := range products {
-		// Only caclulate price when etop_status != 1
-		if product.EtopStatus == model.StatusActive {
-			continue
-		}
-		rules := ruleMap[product.SupplierID]
-		if rules == nil {
-			continue
-		}
-
-		newRule, err := pricing.NewSupplierPriceRules(rules)
-		if err != nil {
-			ll.Error("Error with price rule from supplier", l.Int64("supplier", product.SupplierID), l.Error(err))
-			continue
-		}
-		p, diff := newRule.Apply(product.Variant, product.VariantExternal)
-		p.ApplyTo(product.Variant)
-
-		// prices need to update
-		if withDiff && diff {
-			if updatePrices == nil {
-				updatePrices = make(map[int64]*model.PriceDef)
-			}
-			updatePrices[product.ID] = p
-		}
-	}
-	return updatePrices, nil
-}
-
-func getSupplierRules(ctx context.Context, products []*model.VariantExtended) (map[int64]*model.SupplierPriceRules, error) {
-	if len(products) == 0 {
-		return nil, nil
-	}
-
-	fallBack :=
-		func(ids []int64) ([]*cache.SupplierPriceRulesWithID, error) {
-			query := &model.GetSuppliersQuery{IDs: ids}
-			if err := bus.Dispatch(ctx, query); err != nil {
-				return nil, err
-			}
-			res := make([]*cache.SupplierPriceRulesWithID, len(query.Result.Suppliers))
-			for i, supplier := range query.Result.Suppliers {
-				res[i] = &cache.SupplierPriceRulesWithID{
-					ID:    supplier.ID,
-					Rules: supplier.Rules,
-				}
-			}
-			return res, nil
-		}
-
-	supplierIDs := make([]int64, len(products))
-	for i, product := range products {
-		supplierIDs[i] = product.SupplierID
-	}
-
-	query := &cache.GetSuppliersRulesQuery{
-		SupplierIDs: supplierIDs,
-		Fallback:    fallBack,
-	}
-	err := cache.GetSuppliersRules(ctx, query)
-	if err != nil {
-		ll.Error("Error with GetSuppliersRules in cache", l.Error(err))
-		return nil, err
-	}
-	return query.Result.SupplierRules, nil
-}
-
-func GetBrands(ctx context.Context, q *wrapadmin.GetBrandsEndpoint) error {
-	query := &model.GetProductBrandsQuery{}
-	if err := bus.Dispatch(ctx, query); err != nil {
-		return err
-	}
-
-	q.Result = &pbsupplier.BrandsResponse{
-		Brands: pbsupplier.PbBrandsExt(query.Result.Brands),
-	}
-	return nil
-}
-
 func GetProduct(ctx context.Context, q *wrapadmin.GetProductEndpoint) error {
-	query := &model.GetProductQuery{
+	query := &catalogmodelx.GetProductQuery{
 		ProductID: q.Id,
 	}
 	if err := bus.Dispatch(ctx, query); err != nil {
@@ -449,12 +309,9 @@ func GetProduct(ctx context.Context, q *wrapadmin.GetProductEndpoint) error {
 
 	p := query.Result
 	variants := VExternalExtendedToVExtended(p.Variants)
-	if err := calcProductsPrice(ctx, variants); err != nil {
-		ll.Error("Error while calculating price", l.Error(err))
-	}
 
 	variantExternals := VExtendedToVExternalExtended(variants)
-	q.Result = PbProductWithSupplier(&model.ProductFtVariant{
+	q.Result = PbProductWithSupplier(&catalogmodel.ProductFtVariant{
 		ProductExtended: p.ProductExtended,
 		Variants:        variantExternals,
 	})
@@ -463,7 +320,7 @@ func GetProduct(ctx context.Context, q *wrapadmin.GetProductEndpoint) error {
 
 func GetProducts(ctx context.Context, q *wrapadmin.GetProductsEndpoint) error {
 	paging := q.Paging.CMPaging()
-	query := &model.GetProductsExtendedQuery{
+	query := &catalogmodelx.GetProductsExtendedQuery{
 		Paging:  paging,
 		Filters: pbcm.ToFilters(q.Filters),
 		StatusQuery: model.StatusQuery{
@@ -481,23 +338,19 @@ func GetProducts(ctx context.Context, q *wrapadmin.GetProductsEndpoint) error {
 	products := query.Result.Products
 	for _, p := range products {
 		variants := VExternalExtendedToVExtended(p.Variants)
-		if err := calcProductsPrice(ctx, variants); err != nil {
-			ll.Error("Error while calculating price", l.Error(err))
-		}
-
 		variantExternals := VExtendedToVExternalExtended(variants)
 		p.Variants = variantExternals
 	}
 
-	q.Result = &pbsupplier.ProductsResponse{
+	q.Result = &pbadmin.ProductsResponse{
 		Paging:   pbcm.PbPageInfo(paging, query.Result.Total),
-		Products: pbsupplier.PbProducts(products),
+		Products: convertpb.PbProducts(products),
 	}
 	return nil
 }
 
 func GetProductsByIDs(ctx context.Context, q *wrapadmin.GetProductsByIDsEndpoint) error {
-	query := &model.GetProductsExtendedQuery{
+	query := &catalogmodelx.GetProductsExtendedQuery{
 		IDs:               q.Ids,
 		ProductSourceType: model.ProductSourceKiotViet,
 	}
@@ -508,16 +361,12 @@ func GetProductsByIDs(ctx context.Context, q *wrapadmin.GetProductsByIDsEndpoint
 	products := query.Result.Products
 	for _, p := range products {
 		variants := VExternalExtendedToVExtended(p.Variants)
-		if err := calcProductsPrice(ctx, variants); err != nil {
-			ll.Error("Error while calculating price", l.Error(err))
-		}
-
 		variantExternals := VExtendedToVExternalExtended(variants)
 		p.Variants = variantExternals
 	}
 
-	q.Result = &pbsupplier.ProductsResponse{
-		Products: pbsupplier.PbProducts(products),
+	q.Result = &pbadmin.ProductsResponse{
+		Products: convertpb.PbProducts(products),
 	}
 	return nil
 }
@@ -528,9 +377,9 @@ func UpdateProductsStatus(ctx context.Context, q *wrapadmin.UpdateProductsStatus
 		return cm.Error(cm.InvalidArgument, "Estatus can not be nil", nil)
 	}
 	eStatus := q.Status.ToModel()
-	var productUpdates []*model.ProductFtVariant
+	var productUpdates []*catalogmodel.ProductFtVariant
 	if *eStatus == 1 {
-		query := &model.GetProductsExtendedQuery{
+		query := &catalogmodelx.GetProductsExtendedQuery{
 			IDs: q.Ids,
 			Filters: []cm.Filter{
 				{
@@ -548,7 +397,7 @@ func UpdateProductsStatus(ctx context.Context, q *wrapadmin.UpdateProductsStatus
 		productUpdates = query.Result.Products
 	}
 
-	cmd := &model.UpdateProductsStatusCommand{
+	cmd := &catalogmodelx.UpdateProductsStatusCommand{
 		IDs: q.Ids,
 	}
 	cmd.Update.EtopStatus = q.Status.ToModel()
@@ -561,10 +410,6 @@ func UpdateProductsStatus(ctx context.Context, q *wrapadmin.UpdateProductsStatus
 	if len(productUpdates) > 0 {
 		for _, p := range productUpdates {
 			variants := VExternalExtendedToVExtended(p.Variants)
-			if err := calcProductsPrice(ctx, variants); err != nil {
-				ll.Error("Error while calculating price", l.Error(err))
-			}
-
 			variantExternals := VExtendedToVExternalExtended(variants)
 			p.Variants = variantExternals
 		}
@@ -573,18 +418,18 @@ func UpdateProductsStatus(ctx context.Context, q *wrapadmin.UpdateProductsStatus
 }
 
 func UpdateProduct(ctx context.Context, q *wrapadmin.UpdateProductEndpoint) error {
-	cmd := &model.UpdateProductCommand{
+	cmd := &catalogmodelx.UpdateProductCommand{
 		Product: PbUpdateProductToModel(q.UpdateProductRequest),
 	}
 	if err := bus.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
-	q.Result = pbsupplier.PbProduct(cmd.Result)
+	q.Result = convertpb.PbProduct(cmd.Result)
 	return nil
 }
 
 func UpdateProductImages(ctx context.Context, q *wrapadmin.UpdateProductImagesEndpoint) error {
-	query := &model.GetProductQuery{
+	query := &catalogmodelx.GetProductQuery{
 		ProductID: q.Id,
 	}
 	if err := bus.Dispatch(ctx, query); err != nil {
@@ -606,30 +451,30 @@ func UpdateProductImages(ctx context.Context, q *wrapadmin.UpdateProductImagesEn
 		return err
 	}
 
-	cmd := &model.UpdateProductImagesCommand{
+	cmd := &catalogmodelx.UpdateProductImagesCommand{
 		ProductID: q.Id,
 		ImageURLs: imageURLs,
 	}
 	if err := bus.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
-	q.Result = pbsupplier.PbProduct(cmd.Result)
+	q.Result = convertpb.PbProduct(cmd.Result)
 	return nil
 }
 
 func UpdateVariant(ctx context.Context, q *wrapadmin.UpdateVariantEndpoint) error {
-	cmd := &model.UpdateVariantCommand{
+	cmd := &catalogmodelx.UpdateVariantCommand{
 		Variant: PbUpdateVariantToModel(q.UpdateVariantRequest),
 	}
 	if err := bus.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
-	q.Result = pbsupplier.PbVariant(cmd.Result)
+	q.Result = convertpb.PbVariant(cmd.Result)
 	return nil
 }
 
 func UpdateVariantImages(ctx context.Context, q *wrapadmin.UpdateVariantImagesEndpoint) error {
-	query := &model.GetVariantQuery{
+	query := &catalogmodelx.GetVariantQuery{
 		VariantID: q.Id,
 	}
 	if err := bus.Dispatch(ctx, query); err != nil {
@@ -651,14 +496,14 @@ func UpdateVariantImages(ctx context.Context, q *wrapadmin.UpdateVariantImagesEn
 		return err
 	}
 
-	cmd := &model.UpdateVariantImagesCommand{
+	cmd := &catalogmodelx.UpdateVariantImagesCommand{
 		VariantID: q.Id,
 		ImageURLs: imageURLs,
 	}
 	if err := bus.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
-	q.Result = pbsupplier.PbVariant(cmd.Result)
+	q.Result = convertpb.PbVariant(cmd.Result)
 	return nil
 }
 
@@ -939,7 +784,7 @@ func CreatePartner(ctx context.Context, q *wrapadmin.CreatePartnerEndpoint) erro
 }
 
 func UpdateFulfillment(ctx context.Context, q *wrapadmin.UpdateFulfillmentEndpoint) error {
-	cmd := &modelx2.AdminUpdateFulfillmentCommand{
+	cmd := &shippingmodelx.AdminUpdateFulfillmentCommand{
 		FulfillmentID:            q.Id,
 		FullName:                 q.FullName,
 		Phone:                    q.Phone,

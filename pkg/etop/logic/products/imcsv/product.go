@@ -11,6 +11,8 @@ import (
 	"etop.vn/backend/pkg/common/imcsv"
 	"etop.vn/backend/pkg/common/validate"
 	"etop.vn/backend/pkg/etop/model"
+	catalogmodel "etop.vn/backend/pkg/services/catalog/model"
+	catalogmodelx "etop.vn/backend/pkg/services/catalog/modelx"
 	shopW "etop.vn/backend/wrapper/etop/shop"
 )
 
@@ -31,9 +33,9 @@ func loadAndCreateProducts(
 ) (msgs []string, _errs []error, _cellErrs []error, _err error) {
 
 	var categories *Categories
-	var collections map[string]*model.ShopCollection
-	var products map[string]*model.Product
-	var variantByCode, variantByAttr map[string]*model.Variant
+	var collections map[string]*catalogmodel.ShopCollection
+	var products map[string]*catalogmodel.Product
+	var variantByCode, variantByAttr map[string]*catalogmodel.Variant
 	chErr := make(chan error)
 	go func() {
 		var err error
@@ -170,11 +172,11 @@ func loadAndCreateProducts(
 				nameNorm := validate.NormalizeSearch(name)
 				collection := collections[nameNorm]
 				if collection == nil {
-					collection = &model.ShopCollection{
+					collection = &catalogmodel.ShopCollection{
 						ShopID: shop.ID,
 						Name:   name,
 					}
-					createCollectionCmd := &model.CreateShopCollectionCommand{
+					createCollectionCmd := &catalogmodelx.CreateShopCollectionCommand{
 						Collection: collection,
 					}
 					if err := bus.Dispatch(ctx, createCollectionCmd); err != nil {
@@ -222,7 +224,7 @@ func loadAndCreateProducts(
 		}
 
 		// Fake the product, so subsequent create variant requests reuse the created product
-		products[rowProduct.GetProductKey()] = &model.Product{
+		products[rowProduct.GetProductKey()] = &catalogmodel.Product{
 			ID: createVariantCmd.Result.Info.Id,
 		}
 
@@ -252,7 +254,7 @@ func loadAndCreateProducts(
 			}
 		}
 		for _, collectionID := range rowProduct.collectionIDs {
-			updateProductsCollectionCmd := &model.AddProductsToShopCollectionCommand{
+			updateProductsCollectionCmd := &catalogmodelx.AddProductsToShopCollectionCommand{
 				ShopID:       shop.ID,
 				ProductIDs:   productIDs,
 				CollectionID: collectionID,
@@ -334,14 +336,14 @@ func buildCategoryHierarchy(mapCategory map[int64]*model.ProductSourceCategory, 
 }
 
 // Load all collections and sort them into normalized map
-func loadCollections(ctx context.Context, shopID int64) (map[string]*model.ShopCollection, error) {
-	query := &model.GetShopCollectionsQuery{
+func loadCollections(ctx context.Context, shopID int64) (map[string]*catalogmodel.ShopCollection, error) {
+	query := &catalogmodelx.GetShopCollectionsQuery{
 		ShopID: shopID,
 	}
 	if err := bus.Dispatch(ctx, query); err != nil {
 		return nil, err
 	}
-	mapCollection := make(map[string]*model.ShopCollection)
+	mapCollection := make(map[string]*catalogmodel.ShopCollection)
 	for _, collection := range query.Result.Collections {
 		name := validate.NormalizeSearch(collection.Name)
 		mapCollection[name] = collection
@@ -349,8 +351,8 @@ func loadCollections(ctx context.Context, shopID int64) (map[string]*model.ShopC
 	return mapCollection, nil
 }
 
-func loadProducts(ctx context.Context, codeMode CodeMode, productSourceID int64, keys []string) (map[string]*model.Product, error) {
-	query := &model.GetProductsQuery{
+func loadProducts(ctx context.Context, codeMode CodeMode, productSourceID int64, keys []string) (map[string]*catalogmodel.Product, error) {
+	query := &catalogmodelx.GetProductsQuery{
 		ProductSourceID: productSourceID,
 	}
 	useCode := codeMode == CodeModeUseCode
@@ -365,7 +367,7 @@ func loadProducts(ctx context.Context, codeMode CodeMode, productSourceID int64,
 		return nil, err
 	}
 
-	mapProducts := make(map[string]*model.Product)
+	mapProducts := make(map[string]*catalogmodel.Product)
 	for _, p := range query.Result.Products {
 		if useCode {
 			mapProducts[p.EdCode] = p
@@ -387,11 +389,11 @@ func loadVariants(
 	codes []string,
 	attrNorms []interface{},
 ) (
-	variantByCode map[string]*model.Variant,
-	variantByAttr map[string]*model.Variant,
+	variantByCode map[string]*catalogmodel.Variant,
+	variantByAttr map[string]*catalogmodel.Variant,
 	_ error,
 ) {
-	query := &model.GetVariantsQuery{
+	query := &catalogmodelx.GetVariantsQuery{
 		ProductSourceID: productSourceID,
 		AttrNorms:       attrNorms,
 	}
@@ -404,8 +406,8 @@ func loadVariants(
 		return nil, nil, err
 	}
 
-	variantByCode = make(map[string]*model.Variant)
-	variantByAttr = make(map[string]*model.Variant)
+	variantByCode = make(map[string]*catalogmodel.Variant)
+	variantByAttr = make(map[string]*catalogmodel.Variant)
 	for _, v := range query.Result.Variants {
 		if useCode && v.EdCode != "" {
 			variantByCode[v.EdCode] = v

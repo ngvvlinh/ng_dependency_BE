@@ -15,6 +15,8 @@ import (
 	"etop.vn/backend/pkg/etop/logic/etop_shipping_price"
 	"etop.vn/backend/pkg/etop/logic/shipping_provider"
 	"etop.vn/backend/pkg/etop/model"
+	catalogmodel "etop.vn/backend/pkg/services/catalog/model"
+	catalogmodelx "etop.vn/backend/pkg/services/catalog/modelx"
 	ordermodel "etop.vn/backend/pkg/services/ordering/model"
 	ordermodelx "etop.vn/backend/pkg/services/ordering/modelx"
 
@@ -164,9 +166,9 @@ func PrepareOrderLines(ctx context.Context, shopID int64, lines []*pborder.Creat
 	}
 	shop := shopQuery.Result
 
-	var variants []*model.ShopVariantExtended
+	var variants []*catalogmodel.ShopVariantExtended
 	if len(variantIDs) > 0 {
-		variantsQuery := &model.GetAllShopVariantsQuery{
+		variantsQuery := &catalogmodelx.GetAllShopVariantsQuery{
 			ShopID:          shop.ID,
 			VariantIDs:      variantIDs,
 			ProductSourceID: shop.ProductSourceID,
@@ -188,7 +190,7 @@ func PrepareOrderLines(ctx context.Context, shopID int64, lines []*pborder.Creat
 			continue
 		}
 
-		var prod *model.ShopVariantExtended
+		var prod *catalogmodel.ShopVariantExtended
 		for _, p := range variants {
 			if line.VariantId == p.VariantID {
 				prod = p
@@ -201,7 +203,7 @@ func PrepareOrderLines(ctx context.Context, shopID int64, lines []*pborder.Creat
 					line.ProductName), nil)
 		}
 
-		item, err := PrepareOrderLine(line, &model.VariantExtended{
+		item, err := PrepareOrderLine(line, &catalogmodel.VariantExtended{
 			Variant: prod.Variant,
 			Product: prod.Product,
 		}, prod)
@@ -351,7 +353,7 @@ func UpdateOrder(ctx context.Context, claim *claims.ShopClaim, authPartner *mode
 
 func PrepareOrderLine(
 	m *pborder.CreateOrderLine,
-	v *model.VariantExtended, sp *model.ShopVariantExtended,
+	v *catalogmodel.VariantExtended, sp *catalogmodel.ShopVariantExtended,
 ) (*ordermodel.OrderLine, error) {
 	if int(m.RetailPrice) != sp.ShopVariant.RetailPrice {
 		return nil, cm.Error(cm.FailedPrecondition, cm.F(
@@ -366,7 +368,7 @@ func PrepareOrderLine(
 	return prepareOrderLine(m, sp.ShopVariant.ShopID, v, sp)
 }
 
-func prepareOrderLine(m *pborder.CreateOrderLine, shopID int64, v *model.VariantExtended, sp *model.ShopVariantExtended) (*ordermodel.OrderLine, error) {
+func prepareOrderLine(m *pborder.CreateOrderLine, shopID int64, v *catalogmodel.VariantExtended, sp *catalogmodel.ShopVariantExtended) (*ordermodel.OrderLine, error) {
 	productName, ok := validate.NormalizeGenericName(m.ProductName)
 	if !ok {
 		return nil, cm.Errorf(cm.InvalidArgument, nil,

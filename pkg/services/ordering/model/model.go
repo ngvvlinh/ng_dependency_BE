@@ -10,6 +10,7 @@ import (
 	sq "etop.vn/backend/pkg/common/sql"
 	"etop.vn/backend/pkg/common/validate"
 	"etop.vn/backend/pkg/etop/model"
+	catalogmodel "etop.vn/backend/pkg/services/catalog/model"
 )
 
 //go:generate $ETOPDIR/backend/scripts/derive.sh
@@ -512,12 +513,12 @@ func (l *OrderLine) GetTotalDiscount() int {
 
 var _ = sqlgenOrderLineExtended(&OrderLineExtended{},
 	&OrderLine{}, sq.AS("ol"), sq.LEFT_JOIN,
-	&model.Variant{}, sq.AS("v"), "v.id = ol.variant_id",
+	&catalogmodel.Variant{}, sq.AS("v"), "v.id = ol.variant_id",
 )
 
 type OrderLineExtended struct {
 	*OrderLine
-	*model.Variant
+	*catalogmodel.Variant
 }
 
 func (olExtended *OrderLineExtended) ToOrderLine() *OrderLine {

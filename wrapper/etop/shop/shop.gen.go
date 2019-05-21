@@ -12,7 +12,6 @@ import (
 	etop "etop.vn/backend/pb/etop"
 	order "etop.vn/backend/pb/etop/order"
 	shop "etop.vn/backend/pb/etop/shop"
-	supplier "etop.vn/backend/pb/etop/supplier"
 	common "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/l"
@@ -37,7 +36,6 @@ type Shop interface {
 	shop.PriceService
 	shop.OrderService
 	shop.FulfillmentService
-	shop.BrandService
 	shop.HistoryService
 	shop.MoneyTransactionService
 	shop.SummaryService
@@ -56,7 +54,6 @@ type ShopClient struct {
 	_PriceService            shop.PriceService
 	_OrderService            shop.OrderService
 	_FulfillmentService      shop.FulfillmentService
-	_BrandService            shop.BrandService
 	_HistoryService          shop.HistoryService
 	_MoneyTransactionService shop.MoneyTransactionService
 	_SummaryService          shop.SummaryService
@@ -83,7 +80,6 @@ func NewShopClient(addr string, client *http.Client) Shop {
 		_PriceService:            shop.NewPriceServiceProtobufClient(addr, client),
 		_OrderService:            shop.NewOrderServiceProtobufClient(addr, client),
 		_FulfillmentService:      shop.NewFulfillmentServiceProtobufClient(addr, client),
-		_BrandService:            shop.NewBrandServiceProtobufClient(addr, client),
 		_HistoryService:          shop.NewHistoryServiceProtobufClient(addr, client),
 		_MoneyTransactionService: shop.NewMoneyTransactionServiceProtobufClient(addr, client),
 		_SummaryService:          shop.NewSummaryServiceProtobufClient(addr, client),
@@ -165,8 +161,6 @@ func ConnectShopService(addr string, client *http.Client) error {
 	bus.AddHandler("client", func(ctx context.Context, q *GetPublicExternalShippingServicesEndpoint) error { panic("Unexpected") })
 	bus.AddHandler("client", func(ctx context.Context, q *GetPublicFulfillmentEndpoint) error { panic("Unexpected") })
 	bus.AddHandler("client", func(ctx context.Context, q *UpdateFulfillmentsShippingStateEndpoint) error { panic("Unexpected") })
-	bus.AddHandler("client", func(ctx context.Context, q *GetBrandEndpoint) error { panic("Unexpected") })
-	bus.AddHandler("client", func(ctx context.Context, q *GetBrandsEndpoint) error { panic("Unexpected") })
 	bus.AddHandler("client", func(ctx context.Context, q *GetFulfillmentHistoryEndpoint) error { panic("Unexpected") })
 	bus.AddHandler("client", func(ctx context.Context, q *GetMoneyTransactionEndpoint) error { panic("Unexpected") })
 	bus.AddHandler("client", func(ctx context.Context, q *GetMoneyTransactionsEndpoint) error { panic("Unexpected") })
@@ -654,7 +648,7 @@ func (c *ShopClient) UpdateProduct(ctx context.Context, in *shop.UpdateProductRe
 	newNode.Error = err
 	return resp, err
 }
-func (c *ShopClient) UpdateProductImages(ctx context.Context, in *supplier.UpdateVariantImagesRequest) (*shop.ShopProduct, error) {
+func (c *ShopClient) UpdateProductImages(ctx context.Context, in *shop.UpdateVariantImagesRequest) (*shop.ShopProduct, error) {
 	resp, err := c._ProductService.UpdateProductImages(ctx, in)
 
 	node, ok := ctx.(*bus.NodeContext)
@@ -710,7 +704,7 @@ func (c *ShopClient) UpdateVariant(ctx context.Context, in *shop.UpdateVariantRe
 	newNode.Error = err
 	return resp, err
 }
-func (c *ShopClient) UpdateVariantImages(ctx context.Context, in *supplier.UpdateVariantImagesRequest) (*shop.ShopVariant, error) {
+func (c *ShopClient) UpdateVariantImages(ctx context.Context, in *shop.UpdateVariantImagesRequest) (*shop.ShopVariant, error) {
 	resp, err := c._ProductService.UpdateVariantImages(ctx, in)
 
 	node, ok := ctx.(*bus.NodeContext)
@@ -822,7 +816,7 @@ func (c *ShopClient) CreateVariant(ctx context.Context, in *shop.CreateVariantRe
 	newNode.Error = err
 	return resp, err
 }
-func (c *ShopClient) GetProductSourceCategories(ctx context.Context, in *shop.GetProductSourceCategoriesRequest) (*supplier.CategoriesResponse, error) {
+func (c *ShopClient) GetProductSourceCategories(ctx context.Context, in *shop.GetProductSourceCategoriesRequest) (*shop.CategoriesResponse, error) {
 	resp, err := c._ProductSourceService.GetProductSourceCategories(ctx, in)
 
 	node, ok := ctx.(*bus.NodeContext)
@@ -836,7 +830,7 @@ func (c *ShopClient) GetProductSourceCategories(ctx context.Context, in *shop.Ge
 	newNode.Error = err
 	return resp, err
 }
-func (c *ShopClient) GetProductSourceCategory(ctx context.Context, in *cm.IDRequest) (*supplier.Category, error) {
+func (c *ShopClient) GetProductSourceCategory(ctx context.Context, in *cm.IDRequest) (*shop.Category, error) {
 	resp, err := c._ProductSourceService.GetProductSourceCategory(ctx, in)
 
 	node, ok := ctx.(*bus.NodeContext)
@@ -878,7 +872,7 @@ func (c *ShopClient) RemoveProductSourceCategory(ctx context.Context, in *cm.IDR
 	newNode.Error = err
 	return resp, err
 }
-func (c *ShopClient) UpdateProductSourceCategory(ctx context.Context, in *shop.UpdateProductSourceCategoryRequest) (*supplier.Category, error) {
+func (c *ShopClient) UpdateProductSourceCategory(ctx context.Context, in *shop.UpdateProductSourceCategoryRequest) (*shop.Category, error) {
 	resp, err := c._ProductSourceService.UpdateProductSourceCategory(ctx, in)
 
 	node, ok := ctx.(*bus.NodeContext)
@@ -1186,34 +1180,6 @@ func (c *ShopClient) UpdateFulfillmentsShippingState(ctx context.Context, in *sh
 	newNode.Error = err
 	return resp, err
 }
-func (c *ShopClient) GetBrand(ctx context.Context, in *cm.IDRequest) (*supplier.Brand, error) {
-	resp, err := c._BrandService.GetBrand(ctx, in)
-
-	node, ok := ctx.(*bus.NodeContext)
-	if !ok {
-		return resp, err
-	}
-	newNode := node.WithMessage(map[string]interface{}{
-		"Request": in,
-		"Result":  resp,
-	})
-	newNode.Error = err
-	return resp, err
-}
-func (c *ShopClient) GetBrands(ctx context.Context, in *cm.Empty) (*supplier.BrandsResponse, error) {
-	resp, err := c._BrandService.GetBrands(ctx, in)
-
-	node, ok := ctx.(*bus.NodeContext)
-	if !ok {
-		return resp, err
-	}
-	newNode := node.WithMessage(map[string]interface{}{
-		"Request": in,
-		"Result":  resp,
-	})
-	newNode.Error = err
-	return resp, err
-}
 func (c *ShopClient) GetFulfillmentHistory(ctx context.Context, in *shop.GetFulfillmentHistoryRequest) (*etop.HistoryResponse, error) {
 	resp, err := c._HistoryService.GetFulfillmentHistory(ctx, in)
 
@@ -1500,8 +1466,6 @@ func NewShopServer(mux Muxer, hooks *twirp.ServerHooks) {
 	bus.Expect(&GetPublicExternalShippingServicesEndpoint{})
 	bus.Expect(&GetPublicFulfillmentEndpoint{})
 	bus.Expect(&UpdateFulfillmentsShippingStateEndpoint{})
-	bus.Expect(&GetBrandEndpoint{})
-	bus.Expect(&GetBrandsEndpoint{})
 	bus.Expect(&GetFulfillmentHistoryEndpoint{})
 	bus.Expect(&GetMoneyTransactionEndpoint{})
 	bus.Expect(&GetMoneyTransactionsEndpoint{})
@@ -1526,7 +1490,6 @@ func NewShopServer(mux Muxer, hooks *twirp.ServerHooks) {
 	mux.Handle(shop.PriceServicePathPrefix, shop.NewPriceServiceServer(PriceService{}, hooks))
 	mux.Handle(shop.OrderServicePathPrefix, shop.NewOrderServiceServer(OrderService{}, hooks))
 	mux.Handle(shop.FulfillmentServicePathPrefix, shop.NewFulfillmentServiceServer(FulfillmentService{}, hooks))
-	mux.Handle(shop.BrandServicePathPrefix, shop.NewBrandServiceServer(BrandService{}, hooks))
 	mux.Handle(shop.HistoryServicePathPrefix, shop.NewHistoryServiceServer(HistoryService{}, hooks))
 	mux.Handle(shop.MoneyTransactionServicePathPrefix, shop.NewMoneyTransactionServiceServer(MoneyTransactionService{}, hooks))
 	mux.Handle(shop.SummaryServicePathPrefix, shop.NewSummaryServiceServer(SummaryService{}, hooks))
@@ -1545,7 +1508,6 @@ type ShopImpl struct {
 	PriceService
 	OrderService
 	FulfillmentService
-	BrandService
 	HistoryService
 	MoneyTransactionService
 	SummaryService
@@ -3011,12 +2973,12 @@ func (s ProductService) UpdateProduct(ctx context.Context, req *shop.UpdateProdu
 }
 
 type UpdateProductImagesEndpoint struct {
-	*supplier.UpdateVariantImagesRequest
+	*shop.UpdateVariantImagesRequest
 	Result  *shop.ShopProduct
 	Context ShopClaim
 }
 
-func (s ProductService) UpdateProductImages(ctx context.Context, req *supplier.UpdateVariantImagesRequest) (resp *shop.ShopProduct, err error) {
+func (s ProductService) UpdateProductImages(ctx context.Context, req *shop.UpdateVariantImagesRequest) (resp *shop.ShopProduct, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -3199,12 +3161,12 @@ func (s ProductService) UpdateVariant(ctx context.Context, req *shop.UpdateVaria
 }
 
 type UpdateVariantImagesEndpoint struct {
-	*supplier.UpdateVariantImagesRequest
+	*shop.UpdateVariantImagesRequest
 	Result  *shop.ShopVariant
 	Context ShopClaim
 }
 
-func (s ProductService) UpdateVariantImages(ctx context.Context, req *supplier.UpdateVariantImagesRequest) (resp *shop.ShopVariant, err error) {
+func (s ProductService) UpdateVariantImages(ctx context.Context, req *shop.UpdateVariantImagesRequest) (resp *shop.ShopVariant, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -3581,12 +3543,12 @@ func (s ProductSourceService) CreateVariant(ctx context.Context, req *shop.Creat
 
 type GetProductSourceCategoriesEndpoint struct {
 	*shop.GetProductSourceCategoriesRequest
-	Result     *supplier.CategoriesResponse
+	Result     *shop.CategoriesResponse
 	Context    ShopClaim
 	CtxPartner *model.Partner
 }
 
-func (s ProductSourceService) GetProductSourceCategories(ctx context.Context, req *shop.GetProductSourceCategoriesRequest) (resp *supplier.CategoriesResponse, err error) {
+func (s ProductSourceService) GetProductSourceCategories(ctx context.Context, req *shop.GetProductSourceCategoriesRequest) (resp *shop.CategoriesResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -3627,12 +3589,12 @@ func (s ProductSourceService) GetProductSourceCategories(ctx context.Context, re
 
 type GetProductSourceCategoryEndpoint struct {
 	*cm.IDRequest
-	Result     *supplier.Category
+	Result     *shop.Category
 	Context    ShopClaim
 	CtxPartner *model.Partner
 }
 
-func (s ProductSourceService) GetProductSourceCategory(ctx context.Context, req *cm.IDRequest) (resp *supplier.Category, err error) {
+func (s ProductSourceService) GetProductSourceCategory(ctx context.Context, req *cm.IDRequest) (resp *shop.Category, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -3766,11 +3728,11 @@ func (s ProductSourceService) RemoveProductSourceCategory(ctx context.Context, r
 
 type UpdateProductSourceCategoryEndpoint struct {
 	*shop.UpdateProductSourceCategoryRequest
-	Result  *supplier.Category
+	Result  *shop.Category
 	Context ShopClaim
 }
 
-func (s ProductSourceService) UpdateProductSourceCategory(ctx context.Context, req *shop.UpdateProductSourceCategoryRequest) (resp *supplier.Category, err error) {
+func (s ProductSourceService) UpdateProductSourceCategory(ctx context.Context, req *shop.UpdateProductSourceCategoryRequest) (resp *shop.Category, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -4764,100 +4726,6 @@ func (s FulfillmentService) UpdateFulfillmentsShippingState(ctx context.Context,
 	if !session.IsOwner && permission.MaxRoleLevel(session.Roles) < 2 {
 		return nil, common.ErrPermissionDenied
 	}
-	ctx = bus.NewRootContext(ctx)
-	err = bus.Dispatch(ctx, query)
-	resp = query.Result
-	if err == nil {
-		if resp == nil {
-			return nil, common.Error(common.Internal, "", nil).Log("nil response")
-		}
-		errs = cmWrapper.HasErrors(resp)
-	}
-	return resp, err
-}
-
-type BrandService struct{}
-
-type GetBrandEndpoint struct {
-	*cm.IDRequest
-	Result     *supplier.Brand
-	Context    ShopClaim
-	CtxPartner *model.Partner
-}
-
-func (s BrandService) GetBrand(ctx context.Context, req *cm.IDRequest) (resp *supplier.Brand, err error) {
-	t0 := time.Now()
-	var session *middleware.Session
-	var errs []*cm.Error
-	const rpcName = "shop.Brand/GetBrand"
-	defer func() {
-		recovered := recover()
-		err = cmWrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
-	}()
-	defer cmWrapper.Censor(req)
-	sessionQuery := &middleware.StartSessionQuery{
-		Context:     ctx,
-		RequireAuth: true,
-		RequireShop: true,
-		AuthPartner: 1,
-	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
-		return nil, err
-	}
-	session = sessionQuery.Result
-	query := &GetBrandEndpoint{IDRequest: req}
-	query.Context.Claim = session.Claim
-	query.Context.Shop = session.Shop
-	query.CtxPartner = session.CtxPartner
-	query.Context.IsOwner = session.IsOwner
-	query.Context.Roles = session.Roles
-	query.Context.Permissions = session.Permissions
-	ctx = bus.NewRootContext(ctx)
-	err = bus.Dispatch(ctx, query)
-	resp = query.Result
-	if err == nil {
-		if resp == nil {
-			return nil, common.Error(common.Internal, "", nil).Log("nil response")
-		}
-		errs = cmWrapper.HasErrors(resp)
-	}
-	return resp, err
-}
-
-type GetBrandsEndpoint struct {
-	*cm.Empty
-	Result     *supplier.BrandsResponse
-	Context    ShopClaim
-	CtxPartner *model.Partner
-}
-
-func (s BrandService) GetBrands(ctx context.Context, req *cm.Empty) (resp *supplier.BrandsResponse, err error) {
-	t0 := time.Now()
-	var session *middleware.Session
-	var errs []*cm.Error
-	const rpcName = "shop.Brand/GetBrands"
-	defer func() {
-		recovered := recover()
-		err = cmWrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
-	}()
-	defer cmWrapper.Censor(req)
-	sessionQuery := &middleware.StartSessionQuery{
-		Context:     ctx,
-		RequireAuth: true,
-		RequireShop: true,
-		AuthPartner: 1,
-	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
-		return nil, err
-	}
-	session = sessionQuery.Result
-	query := &GetBrandsEndpoint{Empty: req}
-	query.Context.Claim = session.Claim
-	query.Context.Shop = session.Shop
-	query.CtxPartner = session.CtxPartner
-	query.Context.IsOwner = session.IsOwner
-	query.Context.Roles = session.Roles
-	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
 	err = bus.Dispatch(ctx, query)
 	resp = query.Result

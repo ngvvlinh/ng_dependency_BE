@@ -3,12 +3,13 @@ package imcsv
 import (
 	"context"
 
-	"etop.vn/backend/pkg/services/ordering/modelx"
-
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/imcsv"
 	"etop.vn/backend/pkg/etop/model"
+	catalogmodel "etop.vn/backend/pkg/services/catalog/model"
+	catalogmodelx "etop.vn/backend/pkg/services/catalog/modelx"
+	"etop.vn/backend/pkg/services/ordering/modelx"
 )
 
 // - Duplicated code
@@ -73,7 +74,7 @@ func VerifyOrders(ctx context.Context, shop *model.Shop, idx imcsv.Indexer, code
 		return nil, cm.Errorf(cm.FailedPrecondition, nil, "Cửa hàng chưa tạo sản phẩm nhưng vẫn điền mã sản phẩm. Vui lòng thêm sản phẩm vào cửa hàng hoặc xóa mã sản phẩm khỏi file import (ô %v). Nếu cần thêm thông tin vui lòng liên hệ hotro@etop.vn.", imcsv.CellName(line.RowIndex, idxVariantEdCode))
 	}
 
-	var variantMap map[string]*model.VariantExtended
+	var variantMap map[string]*catalogmodel.VariantExtended
 
 	// Verify variant codes
 	if len(variantCodesMap) != 0 {
@@ -82,7 +83,7 @@ func VerifyOrders(ctx context.Context, shop *model.Shop, idx imcsv.Indexer, code
 			variantCodes = append(variantCodes, code)
 		}
 
-		variantCodeQuery := &model.GetVariantsExtendedQuery{
+		variantCodeQuery := &catalogmodelx.GetVariantsExtendedQuery{
 			ProductSourceID: shop.ProductSourceID,
 		}
 		switch codeMode {
@@ -97,7 +98,7 @@ func VerifyOrders(ctx context.Context, shop *model.Shop, idx imcsv.Indexer, code
 			return nil, err
 		}
 
-		variantMap = make(map[string]*model.VariantExtended)
+		variantMap = make(map[string]*catalogmodel.VariantExtended)
 		for _, v := range variantCodeQuery.Result.Variants {
 			if codeMode == ModeEtopCode {
 				variantMap[v.Code] = v

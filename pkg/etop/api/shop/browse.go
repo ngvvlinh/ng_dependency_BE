@@ -8,6 +8,7 @@ import (
 	shopP "etop.vn/backend/pb/etop/shop"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/etop/model"
+	catalogmodelx "etop.vn/backend/pkg/services/catalog/modelx"
 	shopW "etop.vn/backend/wrapper/etop/shop"
 )
 
@@ -33,7 +34,7 @@ func BrowseCategories(ctx context.Context, q *shopW.BrowseCategoriesEndpoint) er
 }
 
 func BrowseProduct(ctx context.Context, q *shopW.BrowseProductEndpoint) error {
-	query := &model.GetProductQuery{
+	query := &catalogmodelx.GetProductQuery{
 		ProductID: q.Id,
 	}
 	query.Status = model.S3Positive.P()
@@ -46,7 +47,7 @@ func BrowseProduct(ctx context.Context, q *shopW.BrowseProductEndpoint) error {
 }
 
 func BrowseProductsByIDs(ctx context.Context, q *shopW.BrowseProductsByIDsEndpoint) error {
-	query := &model.GetProductsExtendedQuery{
+	query := &catalogmodelx.GetProductsExtendedQuery{
 		IDs:               q.Ids,
 		ProductSourceType: model.ProductSourceKiotViet,
 	}
@@ -62,7 +63,7 @@ func BrowseProductsByIDs(ctx context.Context, q *shopW.BrowseProductsByIDsEndpoi
 }
 
 func BrowseProducts(ctx context.Context, q *shopW.BrowseProductsEndpoint) error {
-	query := &model.GetProductsExtendedQuery{
+	query := &catalogmodelx.GetProductsExtendedQuery{
 		Paging:            q.Paging.CMPaging(),
 		Filters:           cmP.ToFilters(q.Filters),
 		ProductSourceType: model.ProductSourceKiotViet,
@@ -80,7 +81,7 @@ func BrowseProducts(ctx context.Context, q *shopW.BrowseProductsEndpoint) error 
 }
 
 func BrowseVariant(ctx context.Context, q *shopW.BrowseVariantEndpoint) error {
-	query := &model.GetVariantQuery{
+	query := &catalogmodelx.GetVariantQuery{
 		VariantID: q.Id,
 	}
 	query.Status = model.S3Positive.P()
@@ -93,7 +94,7 @@ func BrowseVariant(ctx context.Context, q *shopW.BrowseVariantEndpoint) error {
 }
 
 func BrowseVariantsByIDs(ctx context.Context, q *shopW.BrowseVariantsByIDsEndpoint) error {
-	query := &model.GetVariantsExtendedQuery{
+	query := &catalogmodelx.GetVariantsExtendedQuery{
 		IDs: q.Ids,
 	}
 	query.Status = model.S3Positive.P()
@@ -108,7 +109,7 @@ func BrowseVariantsByIDs(ctx context.Context, q *shopW.BrowseVariantsByIDsEndpoi
 }
 
 func BrowseVariants(ctx context.Context, q *shopW.BrowseVariantsEndpoint) error {
-	query := &model.GetVariantsExtendedQuery{
+	query := &catalogmodelx.GetVariantsExtendedQuery{
 		Paging:  q.Paging.CMPaging(),
 		Filters: cmP.ToFilters(q.Filters),
 	}

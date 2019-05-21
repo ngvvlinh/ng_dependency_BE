@@ -27,18 +27,14 @@ import (
 	wrapadmin "etop.vn/backend/wrapper/etop/admin"
 	wrapsadmin "etop.vn/backend/wrapper/etop/sadmin"
 	wrapshop "etop.vn/backend/wrapper/etop/shop"
-	wrapsupplier "etop.vn/backend/wrapper/etop/supplier"
 
 	_ "etop.vn/backend/pkg/etop/api"
 	_ "etop.vn/backend/pkg/etop/api/admin"
 	_ "etop.vn/backend/pkg/etop/api/sadmin"
 	_ "etop.vn/backend/pkg/etop/api/shop"
-	_ "etop.vn/backend/pkg/etop/api/supplier"
 	_ "etop.vn/backend/pkg/etop/apix/partner"
 	orderimcsv "etop.vn/backend/pkg/etop/logic/orders/imcsv"
 	productimcsv "etop.vn/backend/pkg/etop/logic/products/imcsv"
-	_ "etop.vn/backend/pkg/integration/kiotviet"
-	_ "etop.vn/backend/pkg/integration/kiotviet/api"
 )
 
 func startServers() []*http.Server {
@@ -51,7 +47,6 @@ func startServers() []*http.Server {
 }
 
 func startEtopServer() *http.Server {
-
 	mux := http.NewServeMux()
 	healthservice.RegisterHTTP(mux)
 
@@ -70,7 +65,6 @@ func startEtopServer() *http.Server {
 		wrapetop.NewEtopServer(apiMux, nil)
 		wrapsadmin.NewSadminServer(apiMux, nil)
 		wrapadmin.NewAdminServer(apiMux, nil)
-		wrapsupplier.NewSupplierServer(apiMux, nil)
 		wrapshop.NewShopServer(apiMux, nil)
 		wrapintegration.NewIntegrationServer(apiMux, nil)
 
@@ -169,7 +163,7 @@ func startEtopServer() *http.Server {
 	if cfg.ServeDoc || *flDocOnly {
 		mux.Handle("/", http.RedirectHandler("/doc/etop", http.StatusTemporaryRedirect))
 		mux.Handle("/doc", http.RedirectHandler("/doc/etop", http.StatusTemporaryRedirect))
-		for _, s := range strings.Split("sadmin,admin,shop,supplier,integration", ",") {
+		for _, s := range strings.Split("sadmin,admin,shop", ",") {
 			mux.Handle("/doc/"+s, cmService.RedocHandler())
 			mux.Handle("/doc/"+s+"/swagger.json", cmService.SwaggerHandler("etop/"+s+"/"+s+".swagger.json"))
 		}

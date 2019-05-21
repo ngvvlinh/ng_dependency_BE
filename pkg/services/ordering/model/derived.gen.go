@@ -8,7 +8,7 @@ import (
 
 	sq "etop.vn/backend/pkg/common/sql"
 	core "etop.vn/backend/pkg/common/sql/core"
-	model "etop.vn/backend/pkg/etop/model"
+	etop_vn_backend_pkg_services_catalog_model "etop.vn/backend/pkg/services/catalog/model"
 )
 
 type SQLWriter = core.SQLWriter
@@ -3654,7 +3654,7 @@ func (ms *OrderLineHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
 }
 
 // Type OrderLineExtended represents a join
-func sqlgenOrderLineExtended(_ *OrderLineExtended, _ *OrderLine, as sq.AS, t0 sq.JOIN_TYPE, _ *model.Variant, a0 sq.AS, c0 string) bool {
+func sqlgenOrderLineExtended(_ *OrderLineExtended, _ *OrderLine, as sq.AS, t0 sq.JOIN_TYPE, _ *etop_vn_backend_pkg_services_catalog_model.Variant, a0 sq.AS, c0 string) bool {
 	__sqlOrderLineExtended_JoinTypes = []sq.JOIN_TYPE{t0}
 	__sqlOrderLineExtended_As = as
 	__sqlOrderLineExtended_JoinAs = []sq.AS{a0}
@@ -3720,7 +3720,7 @@ func (m *OrderLineExtended) __sqlSelect(w SQLWriter) {
 	w.WriteRawString("SELECT ")
 	core.WriteCols(w, string(__sqlOrderLineExtended_As), (*OrderLine)(nil).SQLListCols())
 	w.WriteByte(',')
-	core.WriteCols(w, string(__sqlOrderLineExtended_JoinAs[0]), (*model.Variant)(nil).SQLListCols())
+	core.WriteCols(w, string(__sqlOrderLineExtended_JoinAs[0]), (*etop_vn_backend_pkg_services_catalog_model.Variant)(nil).SQLListCols())
 }
 
 func (m *OrderLineExtended) __sqlJoin(w SQLWriter, types []sq.JOIN_TYPE) {
@@ -3734,7 +3734,7 @@ func (m *OrderLineExtended) __sqlJoin(w SQLWriter, types []sq.JOIN_TYPE) {
 	w.WriteByte(' ')
 	w.WriteRawString(string(types[0]))
 	w.WriteRawString(" JOIN ")
-	w.WriteName((*model.Variant)(nil).SQLTableName())
+	w.WriteName((*etop_vn_backend_pkg_services_catalog_model.Variant)(nil).SQLTableName())
 	w.WriteRawString(" AS ")
 	w.WriteRawString(string(__sqlOrderLineExtended_JoinAs[0]))
 	w.WriteRawString(" ON ")
@@ -3745,7 +3745,7 @@ func (m *OrderLineExtended) SQLScanArgs(opts core.Opts) []interface{} {
 	args := make([]interface{}, 0, 64) // TODO: pre-calculate length
 	m.OrderLine = new(OrderLine)
 	args = append(args, m.OrderLine.SQLScanArgs(opts)...)
-	m.Variant = new(model.Variant)
+	m.Variant = new(etop_vn_backend_pkg_services_catalog_model.Variant)
 	args = append(args, m.Variant.SQLScanArgs(opts)...)
 
 	return args

@@ -2,8 +2,9 @@ package admin
 
 import (
 	pbadmin "etop.vn/backend/pb/etop/admin"
-	pbsupplier "etop.vn/backend/pb/etop/supplier"
+	"etop.vn/backend/pkg/etop/api/convertpb"
 	"etop.vn/backend/pkg/etop/model"
+	catalogmodel "etop.vn/backend/pkg/services/catalog/model"
 )
 
 func PbCreateCategoryToModel(pb *pbadmin.CreateCategoryRequest) *model.EtopCategory {
@@ -13,7 +14,7 @@ func PbCreateCategoryToModel(pb *pbadmin.CreateCategoryRequest) *model.EtopCateg
 	}
 }
 
-func PbVariantsWithSupplier(items []*model.VariantExtended) []*pbadmin.VariantWithSupplier {
+func PbVariantsWithSupplier(items []*catalogmodel.VariantExtended) []*pbadmin.VariantWithSupplier {
 	res := make([]*pbadmin.VariantWithSupplier, len(items))
 	for i, item := range items {
 		res[i] = PbVariantWithSupplier(item)
@@ -21,25 +22,25 @@ func PbVariantsWithSupplier(items []*model.VariantExtended) []*pbadmin.VariantWi
 	return res
 }
 
-func PbVariantWithSupplier(m *model.VariantExtended) *pbadmin.VariantWithSupplier {
+func PbVariantWithSupplier(m *catalogmodel.VariantExtended) *pbadmin.VariantWithSupplier {
 	return &pbadmin.VariantWithSupplier{
-		Variant: pbsupplier.PbVariant(m),
+		Variant: convertpb.PbVariant(m),
 	}
 }
 
-func PbProductWithSupplier(m *model.ProductFtVariant) *pbadmin.ProductWithSupplier {
+func PbProductWithSupplier(m *catalogmodel.ProductFtVariant) *pbadmin.ProductWithSupplier {
 	return &pbadmin.ProductWithSupplier{
-		Product: pbsupplier.PbProduct(m),
+		Product: convertpb.PbProduct(m),
 	}
 }
 
-func VExternalExtendedToVExtended(vxs []*model.VariantExternalExtended) []*model.VariantExtended {
+func VExternalExtendedToVExtended(vxs []*catalogmodel.VariantExternalExtended) []*catalogmodel.VariantExtended {
 	if len(vxs) == 0 {
 		return nil
 	}
-	variants := make([]*model.VariantExtended, len(vxs))
+	variants := make([]*catalogmodel.VariantExtended, len(vxs))
 	for i, v := range vxs {
-		variants[i] = &model.VariantExtended{
+		variants[i] = &catalogmodel.VariantExtended{
 			Variant:         v.Variant,
 			VariantExternal: v.VariantExternal,
 		}
@@ -47,13 +48,13 @@ func VExternalExtendedToVExtended(vxs []*model.VariantExternalExtended) []*model
 	return variants
 }
 
-func VExtendedToVExternalExtended(vs []*model.VariantExtended) []*model.VariantExternalExtended {
+func VExtendedToVExternalExtended(vs []*catalogmodel.VariantExtended) []*catalogmodel.VariantExternalExtended {
 	if len(vs) == 0 {
 		return nil
 	}
-	variantExternals := make([]*model.VariantExternalExtended, len(vs))
+	variantExternals := make([]*catalogmodel.VariantExternalExtended, len(vs))
 	for i, v := range vs {
-		variantExternals[i] = &model.VariantExternalExtended{
+		variantExternals[i] = &catalogmodel.VariantExternalExtended{
 			Variant:         v.Variant,
 			VariantExternal: v.VariantExternal,
 		}
@@ -61,8 +62,8 @@ func VExtendedToVExternalExtended(vs []*model.VariantExtended) []*model.VariantE
 	return variantExternals
 }
 
-func PbUpdateProductToModel(p *pbadmin.UpdateProductRequest) *model.Product {
-	res := &model.Product{
+func PbUpdateProductToModel(p *pbadmin.UpdateProductRequest) *catalogmodel.Product {
+	res := &catalogmodel.Product{
 		ID:            p.Id,
 		EdName:        p.Name,
 		EdShortDesc:   p.ShortDesc,
@@ -72,8 +73,8 @@ func PbUpdateProductToModel(p *pbadmin.UpdateProductRequest) *model.Product {
 	return res
 }
 
-func PbUpdateVariantToModel(p *pbadmin.UpdateVariantRequest) *model.Variant {
-	res := &model.Variant{
+func PbUpdateVariantToModel(p *pbadmin.UpdateVariantRequest) *catalogmodel.Variant {
+	res := &catalogmodel.Variant{
 		ID:            p.Id,
 		EdName:        p.Name,
 		EdShortDesc:   p.ShortDesc,

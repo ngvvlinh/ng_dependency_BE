@@ -88,7 +88,8 @@ const (
 )
 
 var (
-	ErrTODO = Error(Unimplemented, "TODO", nil)
+	ErrTODO    = Error(Unimplemented, "TODO", nil)
+	ErrREMOVED = Error(Unavailable, "The function is no longer available", nil)
 
 	ErrUnauthenticated  = Error(Unauthenticated, "", nil).MarkTrivial()
 	ErrPermissionDenied = Error(PermissionDenied, "", nil).MarkTrivial()

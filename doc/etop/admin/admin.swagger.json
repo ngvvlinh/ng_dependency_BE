@@ -67,32 +67,6 @@
         ]
       }
     },
-    "/api/admin.Brand/GetBrands": {
-      "post": {
-        "operationId": "GetBrands",
-        "responses": {
-          "200": {
-            "description": "",
-            "schema": {
-              "$ref": "#/definitions/supplierBrandsResponse"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/cmEmpty"
-            }
-          }
-        ],
-        "tags": [
-          "Brand"
-        ]
-      }
-    },
     "/api/admin.Category/CreateCategory": {
       "post": {
         "operationId": "CreateCategory",
@@ -1064,7 +1038,7 @@
           "200": {
             "description": "",
             "schema": {
-              "$ref": "#/definitions/supplierProductsResponse"
+              "$ref": "#/definitions/adminProductsResponse"
             }
           }
         },
@@ -1090,7 +1064,7 @@
           "200": {
             "description": "",
             "schema": {
-              "$ref": "#/definitions/supplierProductsResponse"
+              "$ref": "#/definitions/adminProductsResponse"
             }
           }
         },
@@ -1142,7 +1116,7 @@
           "200": {
             "description": "",
             "schema": {
-              "$ref": "#/definitions/supplierVariantsResponse"
+              "$ref": "#/definitions/adminVariantsResponse"
             }
           }
         },
@@ -1168,7 +1142,7 @@
           "200": {
             "description": "",
             "schema": {
-              "$ref": "#/definitions/supplierVariantsResponse"
+              "$ref": "#/definitions/adminVariantsResponse"
             }
           }
         },
@@ -1194,7 +1168,7 @@
           "200": {
             "description": "",
             "schema": {
-              "$ref": "#/definitions/supplierProduct"
+              "$ref": "#/definitions/adminProduct"
             }
           }
         },
@@ -1220,7 +1194,7 @@
           "200": {
             "description": "",
             "schema": {
-              "$ref": "#/definitions/supplierProduct"
+              "$ref": "#/definitions/adminProduct"
             }
           }
         },
@@ -1230,7 +1204,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/supplierUpdateVariantImagesRequest"
+              "$ref": "#/definitions/shopUpdateVariantImagesRequest"
             }
           }
         ],
@@ -1272,7 +1246,7 @@
           "200": {
             "description": "",
             "schema": {
-              "$ref": "#/definitions/supplierVariant"
+              "$ref": "#/definitions/adminVariant"
             }
           }
         },
@@ -1298,7 +1272,7 @@
           "200": {
             "description": "",
             "schema": {
-              "$ref": "#/definitions/supplierVariant"
+              "$ref": "#/definitions/adminVariant"
             }
           }
         },
@@ -1308,7 +1282,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/supplierUpdateVariantImagesRequest"
+              "$ref": "#/definitions/shopUpdateVariantImagesRequest"
             }
           }
         ],
@@ -1866,14 +1840,154 @@
         }
       }
     },
+    "adminProduct": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "supplier_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "category_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "s_name": {
+          "type": "string"
+        },
+        "s_description": {
+          "type": "string"
+        },
+        "s_short_desc": {
+          "type": "string"
+        },
+        "s_desc_html": {
+          "type": "string"
+        },
+        "s_meta": {
+          "$ref": "#/definitions/cmRawJSONObject"
+        },
+        "image_urls": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "x_id": {
+          "type": "string"
+        },
+        "x_category_id": {
+          "type": "string"
+        },
+        "x_code": {
+          "type": "string"
+        },
+        "x_name": {
+          "type": "string"
+        },
+        "x_description": {
+          "type": "string"
+        },
+        "x_image_urls": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "x_unit": {
+          "type": "string"
+        },
+        "x_unit_conv": {
+          "type": "number",
+          "format": "float"
+        },
+        "x_price": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "x_units": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/adminUnit"
+          }
+        },
+        "x_created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "x_updated_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "x_sync_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "x_status": {
+          "$ref": "#/definitions/status3Status"
+        },
+        "status": {
+          "$ref": "#/definitions/status3Status"
+        },
+        "s_tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "quantity_available": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "quantity_on_hand": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "quantity_reserved": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "variants": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/adminVariant"
+          }
+        }
+      }
+    },
     "adminProductWithSupplier": {
       "type": "object",
       "properties": {
         "product": {
-          "$ref": "#/definitions/supplierProduct"
+          "$ref": "#/definitions/adminProduct"
         },
         "supplier": {
           "$ref": "#/definitions/etopSupplier"
+        }
+      }
+    },
+    "adminProductsResponse": {
+      "type": "object",
+      "properties": {
+        "paging": {
+          "$ref": "#/definitions/cmPageInfo"
+        },
+        "products": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/adminProduct"
+          }
         }
       }
     },
@@ -1890,6 +2004,31 @@
         "money_transaction_shipping_external_id": {
           "type": "string",
           "format": "int64"
+        }
+      }
+    },
+    "adminUnit": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "full_name": {
+          "type": "string"
+        },
+        "unit": {
+          "type": "string"
+        },
+        "unit_conv": {
+          "type": "number",
+          "format": "float"
+        },
+        "price": {
+          "type": "integer",
+          "format": "int32"
         }
       }
     },
@@ -2131,14 +2270,203 @@
         "e_status"
       ]
     },
+    "adminVariant": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "supplier_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "category_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "s_name": {
+          "type": "string",
+          "title": "optional string s_short_name  = 5 [(gogoproto.nullable)=false];"
+        },
+        "s_description": {
+          "type": "string"
+        },
+        "s_short_desc": {
+          "type": "string"
+        },
+        "s_desc_html": {
+          "type": "string"
+        },
+        "s_note": {
+          "type": "string"
+        },
+        "s_meta": {
+          "$ref": "#/definitions/cmRawJSONObject"
+        },
+        "image_urls": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "x_id": {
+          "type": "string"
+        },
+        "x_base_id": {
+          "type": "string"
+        },
+        "x_category_id": {
+          "type": "string"
+        },
+        "x_code": {
+          "type": "string"
+        },
+        "x_name": {
+          "type": "string"
+        },
+        "x_full_name": {
+          "type": "string"
+        },
+        "x_description": {
+          "type": "string"
+        },
+        "x_image_urls": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "x_unit": {
+          "type": "string"
+        },
+        "x_unit_conv": {
+          "type": "number",
+          "format": "float"
+        },
+        "x_price": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "x_attributes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/shopAttribute"
+          },
+          "title": "repeated Unit      x_units       = 24;"
+        },
+        "x_updated_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "x_sync_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "s_status": {
+          "$ref": "#/definitions/status3Status"
+        },
+        "x_status": {
+          "$ref": "#/definitions/status3Status"
+        },
+        "e_status": {
+          "$ref": "#/definitions/status3Status"
+        },
+        "status": {
+          "$ref": "#/definitions/status3Status"
+        },
+        "s_tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "quantity_available": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "quantity_on_hand": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "quantity_reserved": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "s_wholesale_price": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "s_list_price": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "s_retail_price_min": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "s_retail_price_max": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "wholesale_price_0": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "wholesale_price": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "list_price": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "retail_price_min": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "retail_price_max": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "attributes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/shopAttribute"
+          }
+        }
+      }
+    },
     "adminVariantWithSupplier": {
       "type": "object",
       "properties": {
         "variant": {
-          "$ref": "#/definitions/supplierVariant"
+          "$ref": "#/definitions/adminVariant"
         },
         "supplier": {
           "$ref": "#/definitions/etopSupplier"
+        }
+      }
+    },
+    "adminVariantsResponse": {
+      "type": "object",
+      "properties": {
+        "paging": {
+          "$ref": "#/definitions/cmPageInfo"
+        },
+        "variants": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/adminVariant"
+          }
         }
       }
     },
@@ -4278,6 +4606,51 @@
       ],
       "default": "unknown"
     },
+    "shopAttribute": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "value": {
+          "type": "string"
+        }
+      }
+    },
+    "shopUpdateVariantImagesRequest": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "adds": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "deletes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "replace_all": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "delete_all": {
+          "type": "boolean",
+          "format": "boolean"
+        }
+      },
+      "required": [
+        "id"
+      ]
+    },
     "sourceSource": {
       "type": "string",
       "enum": [
@@ -4322,466 +4695,6 @@
       ],
       "default": "Z"
     },
-    "supplierAttribute": {
-      "type": "object",
-      "properties": {
-        "name": {
-          "type": "string"
-        },
-        "value": {
-          "type": "string"
-        }
-      }
-    },
-    "supplierBrand": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "string",
-          "format": "int64"
-        },
-        "supplier_id": {
-          "type": "string",
-          "format": "int64"
-        },
-        "name": {
-          "type": "string"
-        },
-        "description": {
-          "type": "string"
-        },
-        "policy": {
-          "type": "string"
-        },
-        "image_urls": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "updated_at": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "created_at": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "supplier_name": {
-          "type": "string"
-        }
-      }
-    },
-    "supplierBrandsResponse": {
-      "type": "object",
-      "properties": {
-        "brands": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/supplierBrand"
-          }
-        }
-      }
-    },
-    "supplierProduct": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "string",
-          "format": "int64"
-        },
-        "supplier_id": {
-          "type": "string",
-          "format": "int64"
-        },
-        "category_id": {
-          "type": "string",
-          "format": "int64"
-        },
-        "s_name": {
-          "type": "string"
-        },
-        "s_description": {
-          "type": "string"
-        },
-        "s_short_desc": {
-          "type": "string"
-        },
-        "s_desc_html": {
-          "type": "string"
-        },
-        "s_meta": {
-          "$ref": "#/definitions/cmRawJSONObject"
-        },
-        "image_urls": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "x_id": {
-          "type": "string"
-        },
-        "x_category_id": {
-          "type": "string"
-        },
-        "x_code": {
-          "type": "string"
-        },
-        "x_name": {
-          "type": "string"
-        },
-        "x_description": {
-          "type": "string"
-        },
-        "x_image_urls": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "x_unit": {
-          "type": "string"
-        },
-        "x_unit_conv": {
-          "type": "number",
-          "format": "float"
-        },
-        "x_price": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "x_units": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/supplierUnit"
-          }
-        },
-        "x_created_at": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "x_updated_at": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "x_sync_at": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "updated_at": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "created_at": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "x_status": {
-          "$ref": "#/definitions/status3Status"
-        },
-        "status": {
-          "$ref": "#/definitions/status3Status"
-        },
-        "s_tags": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "quantity_available": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "quantity_on_hand": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "quantity_reserved": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "variants": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/supplierVariant"
-          }
-        },
-        "s_brand_id": {
-          "type": "string",
-          "format": "int64"
-        },
-        "brand": {
-          "$ref": "#/definitions/supplierBrand"
-        }
-      }
-    },
-    "supplierProductsResponse": {
-      "type": "object",
-      "properties": {
-        "paging": {
-          "$ref": "#/definitions/cmPageInfo"
-        },
-        "products": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/supplierProduct"
-          }
-        }
-      }
-    },
-    "supplierUnit": {
-      "type": "object",
-      "properties": {
-        "code": {
-          "type": "string"
-        },
-        "name": {
-          "type": "string"
-        },
-        "full_name": {
-          "type": "string"
-        },
-        "unit": {
-          "type": "string"
-        },
-        "unit_conv": {
-          "type": "number",
-          "format": "float"
-        },
-        "price": {
-          "type": "integer",
-          "format": "int32"
-        }
-      }
-    },
-    "supplierUpdateVariantImagesRequest": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "string",
-          "format": "int64"
-        },
-        "adds": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "deletes": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "replace_all": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "delete_all": {
-          "type": "boolean",
-          "format": "boolean"
-        }
-      },
-      "required": [
-        "id"
-      ]
-    },
-    "supplierVariant": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "string",
-          "format": "int64"
-        },
-        "supplier_id": {
-          "type": "string",
-          "format": "int64"
-        },
-        "category_id": {
-          "type": "string",
-          "format": "int64"
-        },
-        "s_name": {
-          "type": "string",
-          "title": "optional string s_short_name  = 5 [(gogoproto.nullable)=false];"
-        },
-        "s_description": {
-          "type": "string"
-        },
-        "s_short_desc": {
-          "type": "string"
-        },
-        "s_desc_html": {
-          "type": "string"
-        },
-        "s_note": {
-          "type": "string"
-        },
-        "s_meta": {
-          "$ref": "#/definitions/cmRawJSONObject"
-        },
-        "image_urls": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "x_id": {
-          "type": "string"
-        },
-        "x_base_id": {
-          "type": "string"
-        },
-        "x_category_id": {
-          "type": "string"
-        },
-        "x_code": {
-          "type": "string"
-        },
-        "x_name": {
-          "type": "string"
-        },
-        "x_full_name": {
-          "type": "string"
-        },
-        "x_description": {
-          "type": "string"
-        },
-        "x_image_urls": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "x_unit": {
-          "type": "string"
-        },
-        "x_unit_conv": {
-          "type": "number",
-          "format": "float"
-        },
-        "x_price": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "x_attributes": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/supplierAttribute"
-          },
-          "title": "repeated Unit      x_units       = 24;"
-        },
-        "x_updated_at": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "x_sync_at": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "updated_at": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "created_at": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "s_status": {
-          "$ref": "#/definitions/status3Status"
-        },
-        "x_status": {
-          "$ref": "#/definitions/status3Status"
-        },
-        "e_status": {
-          "$ref": "#/definitions/status3Status"
-        },
-        "status": {
-          "$ref": "#/definitions/status3Status"
-        },
-        "s_tags": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "quantity_available": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "quantity_on_hand": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "quantity_reserved": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "s_wholesale_price": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "s_list_price": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "s_retail_price_min": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "s_retail_price_max": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "wholesale_price_0": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "wholesale_price": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "list_price": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "retail_price_min": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "retail_price_max": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "s_brand_id": {
-          "type": "string",
-          "format": "int64"
-        },
-        "attributes": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/supplierAttribute"
-          }
-        }
-      }
-    },
-    "supplierVariantsResponse": {
-      "type": "object",
-      "properties": {
-        "paging": {
-          "$ref": "#/definitions/cmPageInfo"
-        },
-        "variants": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/supplierVariant"
-          }
-        }
-      }
-    },
     "try_onTryOnCode": {
       "type": "string",
       "enum": [
@@ -4796,9 +4709,6 @@
   "tags": [
     {
       "name": "Account"
-    },
-    {
-      "name": "Brand"
     },
     {
       "name": "Category"

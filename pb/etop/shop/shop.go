@@ -10,10 +10,11 @@ import (
 	"etop.vn/backend/pb/common"
 	etopP "etop.vn/backend/pb/etop"
 	"etop.vn/backend/pkg/etop/model"
+	catalogmodel "etop.vn/backend/pkg/services/catalog/model"
 )
 
-func PbUpdateVariantToModel(shopID int64, p *UpdateVariantRequest) *model.ShopVariant {
-	return &model.ShopVariant{
+func PbUpdateVariantToModel(shopID int64, p *UpdateVariantRequest) *catalogmodel.ShopVariant {
+	return &catalogmodel.ShopVariant{
 		ShopID:      shopID,
 		VariantID:   p.Id,
 		Name:        p.Name,
@@ -25,8 +26,8 @@ func PbUpdateVariantToModel(shopID int64, p *UpdateVariantRequest) *model.ShopVa
 	}
 }
 
-func PbUpdateProductToModel(shopID int64, p *UpdateProductRequest) *model.ShopProduct {
-	return &model.ShopProduct{
+func PbUpdateProductToModel(shopID int64, p *UpdateProductRequest) *catalogmodel.ShopProduct {
+	return &catalogmodel.ShopProduct{
 		ShopID:      shopID,
 		ProductID:   p.Id,
 		Name:        p.Name,
@@ -36,7 +37,7 @@ func PbUpdateProductToModel(shopID int64, p *UpdateProductRequest) *model.ShopPr
 	}
 }
 
-func PbCollections(items []*model.ShopCollection) []*Collection {
+func PbCollections(items []*catalogmodel.ShopCollection) []*Collection {
 	res := make([]*Collection, len(items))
 	for i, item := range items {
 		res[i] = PbCollection(item)
@@ -44,7 +45,7 @@ func PbCollections(items []*model.ShopCollection) []*Collection {
 	return res
 }
 
-func PbCollection(c *model.ShopCollection) *Collection {
+func PbCollection(c *catalogmodel.ShopCollection) *Collection {
 	return &Collection{
 		Id:          c.ID,
 		Name:        c.Name,
@@ -56,8 +57,8 @@ func PbCollection(c *model.ShopCollection) *Collection {
 	}
 }
 
-func PbCreateCollection(shopID int64, p *CreateCollectionRequest) *model.ShopCollection {
-	return &model.ShopCollection{
+func PbCreateCollection(shopID int64, p *CreateCollectionRequest) *catalogmodel.ShopCollection {
+	return &catalogmodel.ShopCollection{
 		ShopID:      shopID,
 		Name:        p.Name,
 		DescHTML:    p.DescHtml,
@@ -66,8 +67,8 @@ func PbCreateCollection(shopID int64, p *CreateCollectionRequest) *model.ShopCol
 	}
 }
 
-func PbUpdateCollection(shopID int64, p *UpdateCollectionRequest) *model.ShopCollection {
-	return &model.ShopCollection{
+func PbUpdateCollection(shopID int64, p *UpdateCollectionRequest) *catalogmodel.ShopCollection {
+	return &catalogmodel.ShopCollection{
 		ID:          p.Id,
 		ShopID:      shopID,
 		Name:        p.Name,
@@ -226,4 +227,14 @@ func GenerateRedirectAuthorizedPartnerURL(redirectUrl string, shop *model.Shop) 
 	u.RawQuery = query.Encode()
 	res, _ := url.QueryUnescape(u.String())
 	return res
+}
+
+func (a *Attribute) ToModel() model.ProductAttribute {
+	if a == nil {
+		return model.ProductAttribute{}
+	}
+	return model.ProductAttribute{
+		Name:  a.Name,
+		Value: a.Value,
+	}
 }

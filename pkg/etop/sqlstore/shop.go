@@ -8,6 +8,8 @@ import (
 	"etop.vn/backend/pkg/common/bus"
 	sq "etop.vn/backend/pkg/common/sql"
 	"etop.vn/backend/pkg/etop/model"
+	catalogmodel "etop.vn/backend/pkg/services/catalog/model"
+	catalogmodelx "etop.vn/backend/pkg/services/catalog/modelx"
 )
 
 func init() {
@@ -130,7 +132,7 @@ func GetShopWithPermission(ctx context.Context, query *model.GetShopWithPermissi
 	return nil
 }
 
-func GetShopCollection(ctx context.Context, query *model.GetShopCollectionQuery) error {
+func GetShopCollection(ctx context.Context, query *catalogmodelx.GetShopCollectionQuery) error {
 	if query.CollectionID == 0 {
 		return cm.Error(cm.InvalidArgument, "Thiếu CollectionID", nil)
 	}
@@ -140,7 +142,7 @@ func GetShopCollection(ctx context.Context, query *model.GetShopCollectionQuery)
 		s = s.Where("shop_id = ?", query.ShopID)
 	}
 
-	collection := new(model.ShopCollection)
+	collection := new(catalogmodel.ShopCollection)
 	if has, err := s.Get(collection); err != nil {
 		return err
 	} else if !has {
@@ -151,7 +153,7 @@ func GetShopCollection(ctx context.Context, query *model.GetShopCollectionQuery)
 	return nil
 }
 
-func GetShopCollections(ctx context.Context, query *model.GetShopCollectionsQuery) error {
+func GetShopCollections(ctx context.Context, query *catalogmodelx.GetShopCollectionsQuery) error {
 	if query.ShopID == 0 {
 		return cm.Error(cm.InvalidArgument, "Missing AccountID", nil)
 	}
@@ -162,13 +164,13 @@ func GetShopCollections(ctx context.Context, query *model.GetShopCollectionsQuer
 		s = s.In("id", query.CollectionIDs)
 	}
 
-	if err := s.Find((*model.ShopCollections)(&query.Result.Collections)); err != nil {
+	if err := s.Find((*catalogmodel.ShopCollections)(&query.Result.Collections)); err != nil {
 		return err
 	}
 	return nil
 }
 
-func CreateShopCollection(ctx context.Context, cmd *model.CreateShopCollectionCommand) error {
+func CreateShopCollection(ctx context.Context, cmd *catalogmodelx.CreateShopCollectionCommand) error {
 	collection := cmd.Collection
 	if collection.ShopID == 0 {
 		return cm.Error(cm.InvalidArgument, "Missing AccountID", nil)
@@ -182,7 +184,7 @@ func CreateShopCollection(ctx context.Context, cmd *model.CreateShopCollectionCo
 	return nil
 }
 
-func UpdateShopCollection(ctx context.Context, cmd *model.UpdateShopCollectionCommand) error {
+func UpdateShopCollection(ctx context.Context, cmd *catalogmodelx.UpdateShopCollectionCommand) error {
 	collection := cmd.Collection
 	if collection.ID == 0 {
 		return cm.Error(cm.InvalidArgument, "Missing CollectionID", nil)
@@ -202,7 +204,7 @@ func UpdateShopCollection(ctx context.Context, cmd *model.UpdateShopCollectionCo
 	return nil
 }
 
-func RemoveShopCollection(ctx context.Context, cmd *model.RemoveShopCollectionCommand) error {
+func RemoveShopCollection(ctx context.Context, cmd *catalogmodelx.RemoveShopCollectionCommand) error {
 	return inTransaction(func(s Qx) error {
 		if cmd.CollectionID == 0 {
 			return cm.Error(cm.InvalidArgument, "Missing CollectionID", nil)
@@ -212,7 +214,7 @@ func RemoveShopCollection(ctx context.Context, cmd *model.RemoveShopCollectionCo
 			if cmd.ShopID != 0 {
 				s2 = s2.Where("shop_id = ?", cmd.ShopID)
 			}
-			if _, err := s2.Delete(&model.ProductShopCollection{}); err != nil {
+			if _, err := s2.Delete(&catalogmodel.ProductShopCollection{}); err != nil {
 				return err
 			}
 		}
@@ -222,7 +224,7 @@ func RemoveShopCollection(ctx context.Context, cmd *model.RemoveShopCollectionCo
 				s2 = s2.Where("shop_id = ?", cmd.ShopID)
 			}
 
-			if deleted, err := s2.Delete(&model.ShopCollection{}); err != nil {
+			if deleted, err := s2.Delete(&catalogmodel.ShopCollection{}); err != nil {
 				return err
 			} else if deleted == 0 {
 				return cm.Error(cm.NotFound, "", nil)
@@ -278,7 +280,7 @@ func CreateProductSource(ctx context.Context, cmd *model.CreateProductSourceComm
 	})
 }
 
-func CreateVariant(ctx context.Context, cmd *model.CreateVariantCommand) error {
+func CreateVariant(ctx context.Context, cmd *catalogmodelx.CreateVariantCommand) error {
 	if cmd.ProductSourceID == 0 {
 		return cm.Error(cm.InvalidArgument, "Missing ProductSourceID", nil)
 	}
@@ -294,7 +296,7 @@ func CreateVariant(ctx context.Context, cmd *model.CreateVariantCommand) error {
 		return cm.Error(cm.InvalidArgument, "Missing ProductName", nil)
 	}
 
-	variant := &model.Variant{
+	variant := &catalogmodel.Variant{
 		ID:              cm.NewID(),
 		ProductID:       cmd.ProductID,
 		ProductSourceID: cmd.ProductSourceID,
@@ -328,7 +330,7 @@ func CreateVariant(ctx context.Context, cmd *model.CreateVariantCommand) error {
 	} else {
 		// create product + shop_product + variant
 		errInsert := inTransaction(func(s Qx) error {
-			product := &model.Product{
+			product := &catalogmodel.Product{
 				ID:                cm.NewID(),
 				ProductSourceID:   cmd.ProductSourceID,
 				Name:              cmd.ProductName,
@@ -370,7 +372,7 @@ func CreateVariant(ctx context.Context, cmd *model.CreateVariantCommand) error {
 			return errInsert
 		}
 	}
-	query := &model.GetShopProductQuery{
+	query := &catalogmodelx.GetShopProductQuery{
 		ProductID:       productID,
 		ShopID:          cmd.ShopID,
 		ProductSourceID: cmd.ProductSourceID,

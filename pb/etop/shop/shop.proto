@@ -35,7 +35,6 @@ import "etop/etc/status3/status.proto";
 import "etop/etc/status4/status.proto";
 import "etop/etop.proto";
 import "etop/order/order.proto";
-import "etop/supplier/supplier.proto";
 import "etop/integration/integration.proto";
 
 service MiscService {
@@ -91,7 +90,7 @@ service ProductService {
     rpc UpdateVariants(UpdateVariantsRequest) returns (UpdateVariantsResponse);
     rpc UpdateVariantsStatus(UpdateVariantsStatusRequest) returns (cm.UpdatedResponse);
     rpc UpdateVariantsTags(UpdateVariantsTagsRequest) returns (cm.UpdatedResponse);
-    rpc UpdateVariantImages(supplier.UpdateVariantImagesRequest) returns (ShopVariant);
+    rpc UpdateVariantImages(UpdateVariantImagesRequest) returns (ShopVariant);
 
     rpc AddProducts(AddProductsRequest) returns (AddProductsResponse);
     rpc GetProduct(cm.IDRequest) returns (ShopProduct);
@@ -101,7 +100,7 @@ service ProductService {
     rpc UpdateProduct (UpdateProductRequest)  returns (ShopProduct);
     rpc UpdateProductsStatus(UpdateVariantsStatusRequest) returns (cm.UpdatedResponse);
     rpc UpdateProductsTags(UpdateVariantsTagsRequest) returns (cm.UpdatedResponse);
-    rpc UpdateProductImages(supplier.UpdateVariantImagesRequest) returns (ShopProduct);
+    rpc UpdateProductImages(UpdateVariantImagesRequest) returns (ShopProduct);
 }
 
 service ProductSourceService {
@@ -111,9 +110,9 @@ service ProductSourceService {
     rpc CreateVariant(CreateVariantRequest) returns (ShopProduct);
     rpc CreateProductSourceCategory(CreatePSCategoryRequest) returns (ProductSourceCategory);
     rpc UpdateProductsPSCategory(UpdateProductsPSCategoryRequest) returns (cm.UpdatedResponse);
-    rpc GetProductSourceCategory(cm.IDRequest) returns (supplier.Category);
-    rpc GetProductSourceCategories(GetProductSourceCategoriesRequest) returns (supplier.CategoriesResponse);
-    rpc UpdateProductSourceCategory(UpdateProductSourceCategoryRequest) returns (supplier.Category);
+    rpc GetProductSourceCategory(cm.IDRequest) returns (Category);
+    rpc GetProductSourceCategories(GetProductSourceCategoriesRequest) returns (CategoriesResponse);
+    rpc UpdateProductSourceCategory(UpdateProductSourceCategoryRequest) returns (Category);
     rpc RemoveProductSourceCategory(cm.IDRequest) returns (cm.RemovedResponse);
 }
 
@@ -148,11 +147,6 @@ service FulfillmentService {
     rpc GetExternalShippingServices(order.GetExternalShippingServicesRequest) returns (order.GetExternalShippingServicesResponse);
     rpc GetPublicFulfillment(GetPublicFulfillmentRequest) returns (order.PublicFulfillment);
     rpc UpdateFulfillmentsShippingState(UpdateFulfillmentsShippingStateRequest) returns (cm.UpdatedResponse);
-}
-
-service BrandService {
-    rpc GetBrand(cm.IDRequest) returns (supplier.Brand);
-    rpc GetBrands(cm.Empty) returns (supplier.BrandsResponse);
 }
 
 service HistoryService {
@@ -319,10 +313,10 @@ message EtopVariant {
 
     optional string x_id = 20 [(gogoproto.nullable)=false];
     optional string x_base_id = 21 [(gogoproto.nullable)=false];
-    repeated supplier.Attribute x_attributes = 22;
-    optional int64 s_brand_id = 23 [(gogoproto.nullable)=false];
+    repeated Attribute x_attributes = 22;
+
     optional int32 cost_price = 25 [(gogoproto.nullable)=false];
-    repeated supplier.Attribute attributes = 24;
+    repeated Attribute attributes = 24;
 
     // @deprecated
     optional string sku = 26 [(gogoproto.nullable)=false];
@@ -363,7 +357,6 @@ message EtopProduct {
     optional status3.Status status       = 17 [(gogoproto.nullable)=false];
 
     optional string x_id = 20 [(gogoproto.nullable)=false];
-    optional int64 s_brand_id = 23 [(gogoproto.nullable)=false];
 
     repeated EtopVariant variants = 24;
     optional string unit = 25 [(gogoproto.nullable)=false];
@@ -397,7 +390,7 @@ message ShopVariant {
 
     optional int32  retail_price = 15 [(gogoproto.nullable)=false];
     optional int64 collection_id = 17 [(gogoproto.nullable)=false];
-    repeated supplier.Attribute attributes = 18;
+    repeated Attribute attributes = 18;
 }
 
 message ShopProduct {
@@ -441,8 +434,8 @@ message ShopProductSquashed {
     optional int32 retail_price = 15 [(gogoproto.nullable)=false];
     repeated int64 collection_ids = 17;
 
-    repeated supplier.Attribute x_attributes = 22;
-    optional int64 s_brand_id = 23 [(gogoproto.nullable)=false];
+    repeated Attribute x_attributes = 22;
+
     repeated ShopVariantSquashed variants = 50;
 }
 
@@ -466,9 +459,9 @@ message ShopVariantSquashed {
     optional int32 retail_price = 15 [(gogoproto.nullable)=false];
     optional int64 collection_id = 17 [(gogoproto.nullable)=false];
 
-    repeated supplier.Attribute x_attributes = 22;
-    optional int64 s_brand_id = 23 [(gogoproto.nullable)=false];
-    repeated supplier.Attribute attributes = 24;
+    repeated Attribute x_attributes = 22;
+
+    repeated Attribute attributes = 24;
 }
 
 message GetVariantsRequest {
@@ -499,7 +492,7 @@ message UpdateVariantRequest {
     optional int32  retail_price  = 11 [(gogoproto.nullable)=false];
     optional int32  cost_price  = 12 [(gogoproto.nullable)=false];
     optional int32  inventory  = 13 [(gogoproto.nullable)=false];
-    repeated supplier.Attribute attributes = 14;
+    repeated Attribute attributes = 14;
     optional string sku        = 15 [(gogoproto.nullable)=false];
 }
 
@@ -680,7 +673,7 @@ message CreateVariantRequest {
     optional int32 quantity_available = 20 [(gogoproto.nullable)=false];
     optional int32 quantity_on_hand = 21 [(gogoproto.nullable)=false];
     optional int32 quantity_reserved = 22 [(gogoproto.nullable)=false];
-    repeated supplier.Attribute attributes = 24;
+    repeated Attribute attributes = 24;
     optional string unit = 25 [(gogoproto.nullable)=false];
 }
 
@@ -883,4 +876,38 @@ message AuthorizedPartnerResponse {
 
 message GetAuthorizedPartnersResponse {
     repeated AuthorizedPartnerResponse partners = 1;
+}
+
+//-- copied from supplier.proto
+
+message Attribute {
+    optional string name      = 1 [(gogoproto.nullable)=false];
+    optional string value     = 2 [(gogoproto.nullable)=false];
+}
+
+message UpdateVariantImagesRequest {
+    // @required
+    optional int64  id          = 1 [(gogoproto.nullable)=false];
+    repeated string adds        = 2;
+    repeated string deletes     = 3;
+    repeated string replace_all = 4;
+    optional bool   delete_all  = 5 [(gogoproto.nullable)=false];
+}
+
+message CategoriesResponse {
+    repeated Category categories = 1;
+}
+
+message Category {
+    optional int64  id     = 1 [(gogoproto.nullable)=false];
+    optional string name   = 2 [(gogoproto.nullable)=false];
+    optional int64 product_source_id = 3 [(gogoproto.nullable)=false];
+    optional string product_source_type =  4 [(gogoproto.nullable)=false];
+    optional int64 supplier_id = 5 [(gogoproto.nullable)=false];
+    optional int64 parent_id = 6 [(gogoproto.nullable)=false];
+    optional int64 shop_id = 7 [(gogoproto.nullable)=false];
+
+    optional string x_id        = 8 [(gogoproto.nullable)=false];
+    optional string x_name      = 9 [(gogoproto.nullable)=false];
+    optional string x_parent_id = 10 [(gogoproto.nullable)=false];
 }

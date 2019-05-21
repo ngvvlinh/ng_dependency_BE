@@ -7,6 +7,7 @@ package sqlstore
 
 import (
     "etop.vn/backend/pkg/common/sql"
+    "etop.vn/backend/pkg/etop/model"
     {{.OrigPackage}}
 )
 

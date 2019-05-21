@@ -91,43 +91,6 @@ type GetShopWithPermissionQuery struct {
 	}
 }
 
-type GetShopCollectionQuery struct {
-	ShopID       int64
-	CollectionID int64
-
-	Result *ShopCollection
-}
-
-type GetShopCollectionsQuery struct {
-	ShopID        int64
-	CollectionIDs []int64
-
-	Result struct {
-		Collections []*ShopCollection
-	}
-}
-
-type CreateShopCollectionCommand struct {
-	Collection *ShopCollection
-
-	Result *ShopCollection
-}
-
-type UpdateShopCollectionCommand struct {
-	Collection *ShopCollection
-
-	Result *ShopCollection
-}
-
-type RemoveShopCollectionCommand struct {
-	ShopID       int64
-	CollectionID int64
-
-	Result struct {
-		Deleted int
-	}
-}
-
 type CreateProductSourceCommand struct {
 	ShopID int64
 	Name   string
@@ -141,32 +104,6 @@ type GetShopProductSourcesCommand struct {
 	ShopID int64
 
 	Result []*ProductSource
-}
-
-type CreateVariantCommand struct {
-	ShopID          int64
-	ProductSourceID int64
-	ProductID       int64
-	// In `Dép Adidas Adilette Slides - Full Đỏ`, product_name is "Dép Adidas Adilette Slides"
-	ProductName string
-	// In `Dép Adidas Adilette Slides - Full Đỏ`, name is "Full Đỏ"
-	Name              string
-	Description       string
-	ShortDesc         string
-	ImageURLs         []string
-	Tags              []string
-	Status            Status3
-	ListPrice         int
-	SKU               string
-	Code              string
-	QuantityAvailable int
-	QuantityOnHand    int
-	QuantityReserved  int
-	CostPrice         int
-	Attributes        []ProductAttribute
-	DescHTML          string
-
-	Result *ShopProductFtVariant
 }
 
 type ConnectProductSourceCommand struct {

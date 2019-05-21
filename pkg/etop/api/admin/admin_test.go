@@ -4,6 +4,8 @@ import (
 	"context"
 	"testing"
 
+	"etop.vn/backend/pkg/zdeprecated/supplier/modelx"
+
 	"etop.vn/backend/cmd/etop-server/config"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/redis"
@@ -102,7 +104,7 @@ func TestCalcProducts(t *testing.T) {
 			},
 		}
 
-		bus.MockHandler(func(query *model.GetSuppliersQuery) error {
+		bus.MockHandler(func(query *modelx.GetSuppliersQuery) error {
 			suppliers := []*model.Supplier{
 				{
 					ID: 1001,

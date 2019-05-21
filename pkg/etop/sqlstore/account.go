@@ -5,6 +5,8 @@ import (
 	"strings"
 	"time"
 
+	"etop.vn/backend/pkg/zdeprecated/supplier/modelx"
+
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/validate"
@@ -24,7 +26,7 @@ func init() {
 	)
 }
 
-func CreateSupplierKiotviet(ctx context.Context, cmd *model.CreateSupplierKiotvietCommand) error {
+func CreateSupplierKiotviet(ctx context.Context, cmd *modelx.CreateSupplierKiotvietCommand) error {
 	if cmd.Kiotviet.RetailerID == "" {
 		return cm.Error(cm.InvalidArgument, "Missing ID", nil)
 	}
@@ -367,7 +369,7 @@ func SetDefaultAddressShop(ctx context.Context, cmd *model.SetDefaultAddressShop
 	return nil
 }
 
-func SetDefaultAddressSupplier(ctx context.Context, cmd *model.SetDefaultAddressSupplierCommand) error {
+func SetDefaultAddressSupplier(ctx context.Context, cmd *modelx.SetDefaultAddressSupplierCommand) error {
 	if cmd.SupplierID == 0 {
 		return cm.Error(cm.InvalidArgument, "Missing SupplierID", nil)
 	}
@@ -394,7 +396,7 @@ func SetDefaultAddressSupplier(ctx context.Context, cmd *model.SetDefaultAddress
 		return cm.Error(cm.Unimplemented, "Address type does not valid", nil)
 	}
 
-	cmdUpdateSupplier := &model.UpdateSupplierCommand{
+	cmdUpdateSupplier := &modelx.UpdateSupplierCommand{
 		Supplier: supplierObj,
 	}
 	if err := bus.Dispatch(ctx, cmdUpdateSupplier); err != nil {

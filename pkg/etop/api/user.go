@@ -8,6 +8,8 @@ import (
 	"strings"
 	"time"
 
+	"etop.vn/backend/pkg/zdeprecated/supplier/modelx"
+
 	"etop.vn/backend/cmd/etop-server/config"
 	cmP "etop.vn/backend/pb/common"
 	etopP "etop.vn/backend/pb/etop"
@@ -575,7 +577,7 @@ func CreateLoginResponse2(ctx context.Context, claim *claims.ClaimInfo, token st
 			respShop = query.Result.Shop
 
 		case model.IsSupplierID(currentAccountID):
-			query := &model.GetSupplierExtendedQuery{SupplierID: currentAccountID}
+			query := &modelx.GetSupplierExtendedQuery{SupplierID: currentAccountID}
 			if err := bus.Dispatch(ctx, query); err != nil {
 				return nil, nil, cm.ErrorTrace(cm.Internal, "", err)
 			}

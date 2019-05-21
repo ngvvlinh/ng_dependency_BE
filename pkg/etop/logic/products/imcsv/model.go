@@ -4,6 +4,7 @@ import (
 	"etop.vn/backend/pkg/common/imcsv"
 	"etop.vn/backend/pkg/common/validate"
 	"etop.vn/backend/pkg/etop/model"
+	catalogmodel "etop.vn/backend/pkg/services/catalog/model"
 )
 
 var schemaV0 = imcsv.Schema{
@@ -272,7 +273,7 @@ func (m *RowProduct) GetVariantAttrNorm() string {
 	if m.attrNormKv != "" {
 		return m.attrNormKv
 	}
-	_, m.attrNormKv = model.NormalizeAttributes(m.Attributes)
+	_, m.attrNormKv = catalogmodel.NormalizeAttributes(m.Attributes)
 	if m.attrNormKv != "_" {
 		m.attrNormKv = validate.NormalizedSearchToTsVector(m.attrNormKv)
 	}

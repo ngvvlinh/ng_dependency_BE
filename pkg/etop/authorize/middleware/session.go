@@ -5,6 +5,8 @@ import (
 	"net/http"
 	"time"
 
+	"etop.vn/backend/pkg/zdeprecated/supplier/modelx"
+
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/auth"
 	"etop.vn/backend/pkg/common/bus"
@@ -281,7 +283,7 @@ func startSessionSupplier(ctx context.Context, require bool, s *Session) bool {
 			return false
 		}
 		// TODO: handle UserID == 0
-		query := &model.GetSupplierWithPermissionQuery{
+		query := &modelx.GetSupplierWithPermissionQuery{
 			SupplierID: s.Claim.AccountID,
 			UserID:     s.Claim.UserID,
 		}
