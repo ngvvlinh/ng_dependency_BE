@@ -3,13 +3,13 @@ package shop
 import (
 	"context"
 
-	cmP "etop.vn/backend/pb/common"
-	etopP "etop.vn/backend/pb/etop"
-	shopP "etop.vn/backend/pb/etop/shop"
+	pbcm "etop.vn/backend/pb/common"
+	pbetop "etop.vn/backend/pb/etop"
+	pbshop "etop.vn/backend/pb/etop/shop"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/etop/model"
 	catalogmodelx "etop.vn/backend/pkg/services/catalog/modelx"
-	shopW "etop.vn/backend/wrapper/etop/shop"
+	wrapshop "etop.vn/backend/wrapper/etop/shop"
 )
 
 func init() {
@@ -22,18 +22,18 @@ func init() {
 	bus.AddHandler("api", BrowseProducts)
 }
 
-func BrowseCategories(ctx context.Context, q *shopW.BrowseCategoriesEndpoint) error {
+func BrowseCategories(ctx context.Context, q *wrapshop.BrowseCategoriesEndpoint) error {
 	query := &model.GetEtopCategoriesQuery{Status: model.S3Positive.P()}
 	if err := bus.Dispatch(ctx, query); err != nil {
 		return err
 	}
-	q.Result = &etopP.CategoriesResponse{
-		Categories: etopP.PbCategories(query.Result.Categories),
+	q.Result = &pbetop.CategoriesResponse{
+		Categories: pbetop.PbCategories(query.Result.Categories),
 	}
 	return nil
 }
 
-func BrowseProduct(ctx context.Context, q *shopW.BrowseProductEndpoint) error {
+func BrowseProduct(ctx context.Context, q *wrapshop.BrowseProductEndpoint) error {
 	query := &catalogmodelx.GetProductQuery{
 		ProductID: q.Id,
 	}
@@ -46,7 +46,7 @@ func BrowseProduct(ctx context.Context, q *shopW.BrowseProductEndpoint) error {
 	return nil
 }
 
-func BrowseProductsByIDs(ctx context.Context, q *shopW.BrowseProductsByIDsEndpoint) error {
+func BrowseProductsByIDs(ctx context.Context, q *wrapshop.BrowseProductsByIDsEndpoint) error {
 	query := &catalogmodelx.GetProductsExtendedQuery{
 		IDs:               q.Ids,
 		ProductSourceType: model.ProductSourceKiotViet,
@@ -56,16 +56,16 @@ func BrowseProductsByIDs(ctx context.Context, q *shopW.BrowseProductsByIDsEndpoi
 		return err
 	}
 
-	q.Result = &shopP.EtopProductsResponse{
+	q.Result = &pbshop.EtopProductsResponse{
 		Products: PbEtopProducts(query.Result.Products),
 	}
 	return nil
 }
 
-func BrowseProducts(ctx context.Context, q *shopW.BrowseProductsEndpoint) error {
+func BrowseProducts(ctx context.Context, q *wrapshop.BrowseProductsEndpoint) error {
 	query := &catalogmodelx.GetProductsExtendedQuery{
 		Paging:            q.Paging.CMPaging(),
-		Filters:           cmP.ToFilters(q.Filters),
+		Filters:           pbcm.ToFilters(q.Filters),
 		ProductSourceType: model.ProductSourceKiotViet,
 	}
 	query.Status = model.S3Positive.P()
@@ -73,14 +73,14 @@ func BrowseProducts(ctx context.Context, q *shopW.BrowseProductsEndpoint) error 
 		return err
 	}
 
-	q.Result = &shopP.EtopProductsResponse{
+	q.Result = &pbshop.EtopProductsResponse{
 		Products: PbEtopProducts(query.Result.Products),
-		Paging:   cmP.PbPageInfo(query.Paging, query.Result.Total),
+		Paging:   pbcm.PbPageInfo(query.Paging, query.Result.Total),
 	}
 	return nil
 }
 
-func BrowseVariant(ctx context.Context, q *shopW.BrowseVariantEndpoint) error {
+func BrowseVariant(ctx context.Context, q *wrapshop.BrowseVariantEndpoint) error {
 	query := &catalogmodelx.GetVariantQuery{
 		VariantID: q.Id,
 	}
@@ -93,7 +93,7 @@ func BrowseVariant(ctx context.Context, q *shopW.BrowseVariantEndpoint) error {
 	return nil
 }
 
-func BrowseVariantsByIDs(ctx context.Context, q *shopW.BrowseVariantsByIDsEndpoint) error {
+func BrowseVariantsByIDs(ctx context.Context, q *wrapshop.BrowseVariantsByIDsEndpoint) error {
 	query := &catalogmodelx.GetVariantsExtendedQuery{
 		IDs: q.Ids,
 	}
@@ -102,25 +102,25 @@ func BrowseVariantsByIDs(ctx context.Context, q *shopW.BrowseVariantsByIDsEndpoi
 		return err
 	}
 
-	q.Result = &shopP.EtopVariantsResponse{
+	q.Result = &pbshop.EtopVariantsResponse{
 		Variants: PbEtopVariants(query.Result.Variants),
 	}
 	return nil
 }
 
-func BrowseVariants(ctx context.Context, q *shopW.BrowseVariantsEndpoint) error {
+func BrowseVariants(ctx context.Context, q *wrapshop.BrowseVariantsEndpoint) error {
 	query := &catalogmodelx.GetVariantsExtendedQuery{
 		Paging:  q.Paging.CMPaging(),
-		Filters: cmP.ToFilters(q.Filters),
+		Filters: pbcm.ToFilters(q.Filters),
 	}
 	query.Status = model.S3Positive.P()
 	if err := bus.Dispatch(ctx, query); err != nil {
 		return err
 	}
 
-	q.Result = &shopP.EtopVariantsResponse{
+	q.Result = &pbshop.EtopVariantsResponse{
 		Variants: PbEtopVariants(query.Result.Variants),
-		Paging:   cmP.PbPageInfo(query.Paging, query.Result.Total),
+		Paging:   pbcm.PbPageInfo(query.Paging, query.Result.Total),
 	}
 	return nil
 }

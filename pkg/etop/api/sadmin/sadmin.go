@@ -3,13 +3,13 @@ package admin
 import (
 	"context"
 
-	cmP "etop.vn/backend/pb/common"
+	pbcm "etop.vn/backend/pb/common"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/etop/api"
 	"etop.vn/backend/pkg/etop/model"
-	etopW "etop.vn/backend/wrapper/etop"
-	sadminW "etop.vn/backend/wrapper/etop/sadmin"
+	wrapetop "etop.vn/backend/wrapper/etop"
+	wrapadmin "etop.vn/backend/wrapper/etop/sadmin"
 )
 
 func init() {
@@ -22,16 +22,16 @@ func init() {
 	bus.Expect(&model.SetPasswordCommand{})
 }
 
-func VersionInfo(ctx context.Context, q *sadminW.VersionInfoEndpoint) error {
-	q.Result = &cmP.VersionInfoResponse{
+func VersionInfo(ctx context.Context, q *wrapadmin.VersionInfoEndpoint) error {
+	q.Result = &pbcm.VersionInfoResponse{
 		Service: "etop.SuperAdmin",
 		Version: "0.1",
 	}
 	return nil
 }
 
-func CreateUser(ctx context.Context, r *sadminW.CreateUserEndpoint) error {
-	r2 := &etopW.RegisterEndpoint{
+func CreateUser(ctx context.Context, r *wrapadmin.CreateUserEndpoint) error {
+	r2 := &wrapetop.RegisterEndpoint{
 		CreateUserRequest: r.Info,
 	}
 	if err := bus.Dispatch(ctx, r2); err != nil {
@@ -58,7 +58,7 @@ func CreateUser(ctx context.Context, r *sadminW.CreateUserEndpoint) error {
 	return nil
 }
 
-func ResetPassword(ctx context.Context, r *sadminW.ResetPasswordEndpoint) error {
+func ResetPassword(ctx context.Context, r *wrapadmin.ResetPasswordEndpoint) error {
 	if len(r.Password) < 8 {
 		return cm.Error(cm.InvalidArgument, "Password is too short", nil)
 	}
@@ -74,11 +74,11 @@ func ResetPassword(ctx context.Context, r *sadminW.ResetPasswordEndpoint) error 
 		return err
 	}
 
-	r.Result = &cmP.Empty{}
+	r.Result = &pbcm.Empty{}
 	return nil
 }
 
-func LoginAsAccount(ctx context.Context, r *sadminW.LoginAsAccountEndpoint) error {
+func LoginAsAccount(ctx context.Context, r *wrapadmin.LoginAsAccountEndpoint) error {
 	resp, err := api.CreateLoginResponse(ctx, nil, "", r.UserId, nil, r.AccountId, 0, true, 0)
 	r.Result = resp
 	return err

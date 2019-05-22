@@ -3,7 +3,6 @@ package imcsv
 import (
 	"etop.vn/backend/pkg/common/imcsv"
 	"etop.vn/backend/pkg/common/validate"
-	"etop.vn/backend/pkg/etop/model"
 	catalogmodel "etop.vn/backend/pkg/services/catalog/model"
 )
 
@@ -209,7 +208,7 @@ type RowProduct struct {
 	ProductCode   string
 	VariantCode   string
 	ProductName   string
-	Attributes    []model.ProductAttribute
+	Attributes    []catalogmodel.ProductAttribute
 	ListPrice     int
 	CostPrice     int
 	QuantityAvail int

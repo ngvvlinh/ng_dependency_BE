@@ -167,7 +167,7 @@ type Variant struct {
 	SupplierMeta      json.RawMessage
 
 	CostPrice  int
-	Attributes model.ProductAttributes
+	Attributes ProductAttributes
 
 	CreatedAt time.Time `sq:"create"`
 	UpdatedAt time.Time `sq:"update"`
@@ -177,7 +177,7 @@ func (v *Variant) GetName() string {
 	if len(v.Attributes) == 0 {
 		return ""
 	}
-	return model.ProductAttributes(v.Attributes).ShortLabel()
+	return ProductAttributes(v.Attributes).ShortLabel()
 }
 
 func (v *Variant) IsAvailable() bool {
@@ -195,7 +195,7 @@ func (v *Variant) BeforeUpdate() error {
 }
 
 // Normalize attributes, do not sort them. Empty attributes is '_'.
-func NormalizeAttributes(attrs []model.ProductAttribute) ([]model.ProductAttribute, string) {
+func NormalizeAttributes(attrs []ProductAttribute) ([]ProductAttribute, string) {
 	if len(attrs) == 0 {
 		return nil, "_"
 	}
@@ -204,7 +204,7 @@ func NormalizeAttributes(attrs []model.ProductAttribute) ([]model.ProductAttribu
 		attrs = attrs[:maxAttrs]
 	}
 
-	normAttrs := make([]model.ProductAttribute, 0, len(attrs))
+	normAttrs := make([]ProductAttribute, 0, len(attrs))
 	b := make([]byte, 0, 256)
 	for _, attr := range attrs {
 		attr.Name, _ = validate.NormalizeName(attr.Name)
@@ -220,7 +220,7 @@ func NormalizeAttributes(attrs []model.ProductAttribute) ([]model.ProductAttribu
 			continue
 		}
 
-		normAttrs = append(normAttrs, model.ProductAttribute{Name: attr.Name, Value: attr.Value})
+		normAttrs = append(normAttrs, ProductAttribute{Name: attr.Name, Value: attr.Value})
 		if len(b) > 0 {
 			b = append(b, ' ')
 		}
@@ -265,7 +265,7 @@ type VariantExternal struct {
 	ExternalPrice      int
 	ExternalBaseUnitID string
 	ExternalUnitConv   float64
-	ExternalAttributes []model.ProductAttribute
+	ExternalAttributes []ProductAttribute
 }
 
 var _ = sqlgenVariantExternalExtended(
@@ -528,4 +528,54 @@ type ProductShopCollection struct {
 	Status       int
 	CreatedAt    time.Time `sq:"create"`
 	UpdatedAt    time.Time `sq:"update"`
+}
+
+type ProductAttributes []ProductAttribute
+
+func (attrs ProductAttributes) Name() string {
+	if len(attrs) == 0 {
+		return ""
+	}
+	return attrs.ShortLabel()
+}
+
+func (attrs ProductAttributes) Label() string {
+	if len(attrs) == 0 {
+		return "Mặc định"
+	}
+	b := make([]byte, 0, 64)
+	for _, attr := range attrs {
+		if attr.Name == "" || attr.Value == "" {
+			continue
+		}
+		if len(b) > 0 {
+			b = append(b, ", "...)
+		}
+		b = append(b, attr.Name...)
+		b = append(b, ": "...)
+		b = append(b, attr.Value...)
+	}
+	return string(b)
+}
+
+func (attrs ProductAttributes) ShortLabel() string {
+	if len(attrs) == 0 {
+		return "Mặc định"
+	}
+	b := make([]byte, 0, 64)
+	for _, attr := range attrs {
+		if attr.Name == "" || attr.Value == "" {
+			continue
+		}
+		if len(b) > 0 {
+			b = append(b, ' ')
+		}
+		b = append(b, attr.Value...)
+	}
+	return string(b)
+}
+
+type ProductAttribute struct {
+	Name  string `json:"name"`
+	Value string `json:"value"`
 }

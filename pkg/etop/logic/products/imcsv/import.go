@@ -23,7 +23,8 @@ import (
 	"etop.vn/backend/pkg/common/validate"
 	"etop.vn/backend/pkg/etop/authorize/claims"
 	"etop.vn/backend/pkg/etop/model"
-	"etop.vn/backend/pkg/services/catalog/modelx"
+	catalogmodel "etop.vn/backend/pkg/services/catalog/model"
+	catalogmodelx "etop.vn/backend/pkg/services/catalog/modelx"
 )
 
 func HandleShopImportSampleProducts(c *httpx.Context) error {
@@ -53,7 +54,7 @@ func HandleShopImportSampleProducts(c *httpx.Context) error {
 func handleShopImportSampleProducts(ctx context.Context, c *httpx.Context, shop *model.Shop, userID int64) (_resp *shopP.ImportProductsResponse, _err error) {
 	if shop.ProductSourceID != 0 {
 		// check if shop already imports sample data
-		query := &modelx.GetProductsQuery{
+		query := &catalogmodelx.GetProductsQuery{
 			ProductSourceID: shop.ProductSourceID,
 			EdCodes:         []string{"TEST-SP-01"},
 		}
@@ -497,12 +498,12 @@ func parseCollections(v string) ([]string, error) {
 	return parts, nil
 }
 
-func parseAttributes(v string) ([]model.ProductAttribute, error) {
+func parseAttributes(v string) ([]catalogmodel.ProductAttribute, error) {
 	items := split(v)
 	if len(items) >= 7 {
 		return nil, fmt.Errorf(`Quá nhiều thuộc tính.`)
 	}
-	res := make([]model.ProductAttribute, len(items))
+	res := make([]catalogmodel.ProductAttribute, len(items))
 	for i, p := range items {
 		parts := strings.Split(p, ":")
 		if len(parts) != 2 {
@@ -513,7 +514,7 @@ func parseAttributes(v string) ([]model.ProductAttribute, error) {
 		if key == "" || value == "" {
 			return nil, fmt.Errorf(`Thuộc tính không hợp lệ (%v). Cần sử dụng cấu trúc "Tên thuộc tính: giá trị thuộc tính".`, p)
 		}
-		res[i] = model.ProductAttribute{Name: key, Value: value}
+		res[i] = catalogmodel.ProductAttribute{Name: key, Value: value}
 	}
 	return res, nil
 }
@@ -609,7 +610,7 @@ func parseRowToModel(rowProduct *RowProduct, productSourceID int64, now time.Tim
 	}
 }
 
-func variantNameFromAttributes(attrs []model.ProductAttribute) string {
+func variantNameFromAttributes(attrs []catalogmodel.ProductAttribute) string {
 	if len(attrs) == 0 {
 		return ""
 	}
@@ -623,7 +624,7 @@ func variantNameFromAttributes(attrs []model.ProductAttribute) string {
 	return s.String()
 }
 
-func attributesToModel(attrs []model.ProductAttribute) []*pbshop.Attribute {
+func attributesToModel(attrs []catalogmodel.ProductAttribute) []*pbshop.Attribute {
 	if len(attrs) == 0 {
 		return nil
 	}

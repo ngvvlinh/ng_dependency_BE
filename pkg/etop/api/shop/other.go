@@ -3,13 +3,13 @@ package shop
 import (
 	"context"
 
-	cmP "etop.vn/backend/pb/common"
-	etopP "etop.vn/backend/pb/etop"
-	shopP "etop.vn/backend/pb/etop/shop"
+	pbcm "etop.vn/backend/pb/common"
+	pbetop "etop.vn/backend/pb/etop"
+	pbshop "etop.vn/backend/pb/etop/shop"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/etop/model"
-	shopW "etop.vn/backend/wrapper/etop/shop"
+	wrapshop "etop.vn/backend/wrapper/etop/shop"
 )
 
 func init() {
@@ -22,7 +22,7 @@ func init() {
 	)
 }
 
-func GetFulfillmentHistory(ctx context.Context, r *shopW.GetFulfillmentHistoryEndpoint) error {
+func GetFulfillmentHistory(ctx context.Context, r *wrapshop.GetFulfillmentHistoryEndpoint) error {
 
 	filters := map[string]interface{}{
 		"shop_id": r.Context.Shop.ID,
@@ -53,14 +53,14 @@ func GetFulfillmentHistory(ctx context.Context, r *shopW.GetFulfillmentHistoryEn
 		return err
 	}
 
-	r.Result = &etopP.HistoryResponse{
-		Paging: cmP.PbPageInfo(paging, 0),
-		Data:   cmP.RawJSONObjectMsg(query.Result.Data),
+	r.Result = &pbetop.HistoryResponse{
+		Paging: pbcm.PbPageInfo(paging, 0),
+		Data:   pbcm.RawJSONObjectMsg(query.Result.Data),
 	}
 	return nil
 }
 
-func GetBalanceShop(ctx context.Context, q *shopW.GetBalanceShopEndpoint) error {
+func GetBalanceShop(ctx context.Context, q *wrapshop.GetBalanceShopEndpoint) error {
 	shopID := q.Context.Shop.ID
 	cmd := &model.GetBalanceShopCommand{
 		ShopID: shopID,
@@ -69,13 +69,13 @@ func GetBalanceShop(ctx context.Context, q *shopW.GetBalanceShopEndpoint) error 
 	if err := bus.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
-	q.Result = &shopP.GetBalanceShopResponse{
+	q.Result = &pbshop.GetBalanceShopResponse{
 		Amount: int32(cmd.Result.Amount),
 	}
 	return nil
 }
 
-func AuthorizePartner(ctx context.Context, q *shopW.AuthorizePartnerEndpoint) error {
+func AuthorizePartner(ctx context.Context, q *wrapshop.AuthorizePartnerEndpoint) error {
 	shopID := q.Context.Shop.ID
 	partnerID := q.PartnerId
 
@@ -107,35 +107,35 @@ func AuthorizePartner(ctx context.Context, q *shopW.AuthorizePartnerEndpoint) er
 		if err := bus.Dispatch(ctx, cmd); err != nil {
 			return err
 		}
-		q.Result = shopP.PbAuthorizedPartner(partner, q.Context.Shop)
+		q.Result = pbshop.PbAuthorizedPartner(partner, q.Context.Shop)
 	default:
 		return err
 	}
 	return nil
 }
 
-func GetAvailablePartners(ctx context.Context, q *shopW.GetAvailablePartnersEndpoint) error {
+func GetAvailablePartners(ctx context.Context, q *wrapshop.GetAvailablePartnersEndpoint) error {
 	query := &model.GetPartnersQuery{
 		AvailableFromEtop: true,
 	}
 	if err := bus.Dispatch(ctx, query); err != nil {
 		return err
 	}
-	q.Result = &shopP.GetPartnersResponse{
-		Partners: etopP.PbPublicPartners(query.Result.Partners),
+	q.Result = &pbshop.GetPartnersResponse{
+		Partners: pbetop.PbPublicPartners(query.Result.Partners),
 	}
 	return nil
 }
 
-func GetAuthorizedPartners(ctx context.Context, q *shopW.GetAuthorizedPartnersEndpoint) error {
+func GetAuthorizedPartners(ctx context.Context, q *wrapshop.GetAuthorizedPartnersEndpoint) error {
 	query := &model.GetPartnersFromRelationQuery{
 		AccountIDs: []int64{q.Context.Shop.ID},
 	}
 	if err := bus.Dispatch(ctx, query); err != nil {
 		return err
 	}
-	q.Result = &shopP.GetAuthorizedPartnersResponse{
-		Partners: shopP.PbAuthorizedPartners(query.Result.Partners, q.Context.Shop),
+	q.Result = &pbshop.GetAuthorizedPartnersResponse{
+		Partners: pbshop.PbAuthorizedPartners(query.Result.Partners, q.Context.Shop),
 	}
 	return nil
 }

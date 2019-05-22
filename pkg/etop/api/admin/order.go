@@ -3,15 +3,12 @@ package admin
 import (
 	"context"
 
-	modelx2 "etop.vn/backend/pkg/services/ordering/modelx"
-
-	"etop.vn/backend/pkg/services/shipping/modelx"
-
-	"etop.vn/backend/pkg/common/bus"
-	"etop.vn/backend/pkg/etop/model"
-
 	pbcm "etop.vn/backend/pb/common"
 	pborder "etop.vn/backend/pb/etop/order"
+	"etop.vn/backend/pkg/common/bus"
+	"etop.vn/backend/pkg/etop/model"
+	ordermodelx "etop.vn/backend/pkg/services/ordering/modelx"
+	shipmodelx "etop.vn/backend/pkg/services/shipping/modelx"
 	wrapadmin "etop.vn/backend/wrapper/etop/admin"
 )
 
@@ -24,7 +21,7 @@ func init() {
 }
 
 func GetOrder(ctx context.Context, q *wrapadmin.GetOrderEndpoint) error {
-	query := &modelx2.GetOrderQuery{
+	query := &ordermodelx.GetOrderQuery{
 		OrderID:            q.Id,
 		IncludeFulfillment: true,
 	}
@@ -42,7 +39,7 @@ func GetOrder(ctx context.Context, q *wrapadmin.GetOrderEndpoint) error {
 
 func GetOrders(ctx context.Context, q *wrapadmin.GetOrdersEndpoint) error {
 	paging := q.Paging.CMPaging()
-	query := &modelx2.GetOrdersQuery{
+	query := &ordermodelx.GetOrdersQuery{
 		Paging:  paging,
 		Filters: pbcm.ToFilters(q.Filters),
 	}
@@ -57,7 +54,7 @@ func GetOrders(ctx context.Context, q *wrapadmin.GetOrdersEndpoint) error {
 }
 
 func GetOrdersByIDs(ctx context.Context, q *wrapadmin.GetOrdersByIDsEndpoint) error {
-	query := &modelx2.GetOrdersQuery{
+	query := &ordermodelx.GetOrdersQuery{
 		IDs: q.Ids,
 	}
 	if err := bus.Dispatch(ctx, query); err != nil {
@@ -70,7 +67,7 @@ func GetOrdersByIDs(ctx context.Context, q *wrapadmin.GetOrdersByIDsEndpoint) er
 }
 
 func GetFulfillment(ctx context.Context, q *wrapadmin.GetFulfillmentEndpoint) error {
-	query := &modelx.GetFulfillmentExtendedQuery{
+	query := &shipmodelx.GetFulfillmentExtendedQuery{
 		FulfillmentID: q.Id,
 	}
 	if err := bus.Dispatch(ctx, query); err != nil {
@@ -82,7 +79,7 @@ func GetFulfillment(ctx context.Context, q *wrapadmin.GetFulfillmentEndpoint) er
 
 func GetFulfillments(ctx context.Context, q *wrapadmin.GetFulfillmentsEndpoint) error {
 	paging := q.Paging.CMPaging()
-	query := &modelx.GetFulfillmentExtendedsQuery{
+	query := &shipmodelx.GetFulfillmentExtendedsQuery{
 		OrderID: q.OrderId,
 		Status:  q.Status.ToModel(),
 		Paging:  paging,

@@ -8,9 +8,9 @@ import (
 	"strings"
 	"time"
 
-	cmP "etop.vn/backend/pb/common"
-	etopP "etop.vn/backend/pb/etop"
-	integrationP "etop.vn/backend/pb/etop/integration"
+	pbcm "etop.vn/backend/pb/common"
+	pbetop "etop.vn/backend/pb/etop"
+	pbintegration "etop.vn/backend/pb/etop/integration"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/auth"
 	"etop.vn/backend/pkg/common/bus"
@@ -18,7 +18,7 @@ import (
 	"etop.vn/backend/pkg/common/idemp"
 	"etop.vn/backend/pkg/common/l"
 	"etop.vn/backend/pkg/common/redis"
-	cmService "etop.vn/backend/pkg/common/service"
+	cmservice "etop.vn/backend/pkg/common/service"
 	"etop.vn/backend/pkg/common/validate"
 	"etop.vn/backend/pkg/etop/api"
 	apipartner "etop.vn/backend/pkg/etop/apix/partner"
@@ -29,7 +29,7 @@ import (
 	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/backend/pkg/integration/email"
 	"etop.vn/backend/pkg/integration/sms"
-	integrationW "etop.vn/backend/wrapper/etop/integration"
+	wrapintegration "etop.vn/backend/wrapper/etop/integration"
 )
 
 var ll = l.New()
@@ -48,21 +48,21 @@ func init() {
 	)
 }
 
-func Init(sd cmService.Shutdowner, rd redis.Store, s auth.Generator) {
+func Init(sd cmservice.Shutdowner, rd redis.Store, s auth.Generator) {
 	authStore = s
 	idempgroup = idemp.NewRedisGroup(rd, api.PrefixIdempUser, 0)
 	sd.Register(idempgroup.Shutdown)
 }
 
-func VersionInfo(ctx context.Context, q *integrationW.VersionInfoEndpoint) error {
-	q.Result = &cmP.VersionInfoResponse{
+func VersionInfo(ctx context.Context, q *wrapintegration.VersionInfoEndpoint) error {
+	q.Result = &pbcm.VersionInfoResponse{
 		Service: "etop.Integration",
 		Version: "0.1",
 	}
 	return nil
 }
 
-func InitIntegration(ctx context.Context, q *integrationW.InitEndpoint) error {
+func InitIntegration(ctx context.Context, q *wrapintegration.InitEndpoint) error {
 	authToken := q.AuthToken
 	if authToken == "" {
 		return cm.Errorf(cm.InvalidArgument, nil, "Missing token")
@@ -173,7 +173,7 @@ func validatePartner(ctx context.Context, partnerID int64) (*model.Partner, erro
 	return partner, nil
 }
 
-func actionRequestLogin(ctx context.Context, partner *model.Partner, info apipartner.PartnerShopToken) (*integrationP.LoginResponse, error) {
+func actionRequestLogin(ctx context.Context, partner *model.Partner, info apipartner.PartnerShopToken) (*pbintegration.LoginResponse, error) {
 	tokenCmd := &tokens.GenerateTokenCommand{
 		ClaimInfo: claims.ClaimInfo{
 			Token:         "",
@@ -190,7 +190,7 @@ func actionRequestLogin(ctx context.Context, partner *model.Partner, info apipar
 	}
 
 	meta := map[string]string{}
-	action := &integrationP.Action{
+	action := &pbintegration.Action{
 		Name:  "request_login",
 		Label: fmt.Sprintf(`Kết nối với %v`, partner.PublicName),
 		Meta:  meta,
@@ -211,17 +211,17 @@ func actionRequestLogin(ctx context.Context, partner *model.Partner, info apipar
 	}
 
 	action.Msg = fmt.Sprintf("Nhập số điện thoại hoặc email để kết nối với %v", partner.PublicName)
-	resp := &integrationP.LoginResponse{
+	resp := &pbintegration.LoginResponse{
 		AccessToken: tokenCmd.Result.TokenStr,
 		ExpiresIn:   int32(tokenCmd.Result.ExpiresIn),
-		Actions:     []*integrationP.Action{action},
-		AuthPartner: etopP.PbPublicAccountInfo(partner),
+		Actions:     []*pbintegration.Action{action},
+		AuthPartner: pbetop.PbPublicAccountInfo(partner),
 		RedirectUrl: info.RedirectURL,
 	}
 	return resp, nil
 }
 
-func generateNewSession(ctx context.Context, user *model.User, partner *model.Partner, shop *model.Shop) (*integrationP.LoginResponse, error) {
+func generateNewSession(ctx context.Context, user *model.User, partner *model.Partner, shop *model.Shop) (*pbintegration.LoginResponse, error) {
 	tokenCmd := &tokens.GenerateTokenCommand{
 		ClaimInfo: claims.ClaimInfo{
 			Token:         "",
@@ -233,7 +233,7 @@ func generateNewSession(ctx context.Context, user *model.User, partner *model.Pa
 		return nil, cm.Errorf(cm.Internal, err, "")
 	}
 
-	actions := []*integrationP.Action{
+	actions := []*pbintegration.Action{
 		{
 			Name: "create_order",
 		},
@@ -245,7 +245,7 @@ func generateNewSession(ctx context.Context, user *model.User, partner *model.Pa
 	return resp, nil
 }
 
-func RequestLogin(ctx context.Context, r *integrationW.RequestLoginEndpoint) error {
+func RequestLogin(ctx context.Context, r *wrapintegration.RequestLoginEndpoint) error {
 	key := fmt.Sprintf("RequestLogin %v", r.Login)
 	res, err := idempgroup.DoAndWrap(key, 15*time.Second,
 		func() (interface{}, error) {
@@ -255,7 +255,7 @@ func RequestLogin(ctx context.Context, r *integrationW.RequestLoginEndpoint) err
 	if err != nil {
 		return err
 	}
-	r.Result = res.(*integrationW.RequestLoginEndpoint).Result
+	r.Result = res.(*wrapintegration.RequestLoginEndpoint).Result
 	return err
 }
 
@@ -263,7 +263,7 @@ func RequestLogin(ctx context.Context, r *integrationW.RequestLoginEndpoint) err
 // - Check whether the user exists in our database
 // - Generate verification code and send to email/phone
 // - Response action login_using_token
-func requestLogin(ctx context.Context, r *integrationW.RequestLoginEndpoint) (*integrationW.RequestLoginEndpoint, error) {
+func requestLogin(ctx context.Context, r *wrapintegration.RequestLoginEndpoint) (*wrapintegration.RequestLoginEndpoint, error) {
 	partner := r.CtxPartner
 	if partner == nil {
 		return r, cm.Errorf(cm.Internal, nil, "")
@@ -375,10 +375,10 @@ func requestLogin(ctx context.Context, r *integrationW.RequestLoginEndpoint) (*i
 		panic("unexpected")
 	}
 
-	r.Result = &integrationP.RequestLoginResponse{
+	r.Result = &pbintegration.RequestLoginResponse{
 		Code: "ok",
 		Msg:  msg,
-		Actions: []*integrationP.Action{
+		Actions: []*pbintegration.Action{
 			{
 				Name:  "login_using_token",
 				Label: "Nhập mã xác nhận",
@@ -440,7 +440,7 @@ func generateTokenWithVerificationCode(partnerID int64, login string, extra map[
 	return tok, code, v, nil
 }
 
-func LoginUsingToken(ctx context.Context, r *integrationW.LoginUsingTokenEndpoint) (_err error) {
+func LoginUsingToken(ctx context.Context, r *wrapintegration.LoginUsingTokenEndpoint) (_err error) {
 	if r.Login == "" || r.VerificationCode == "" {
 		return cm.Errorf(cm.InvalidArgument, nil, "Thiếu thông tin")
 	}
@@ -515,20 +515,20 @@ func LoginUsingToken(ctx context.Context, r *integrationW.LoginUsingTokenEndpoin
 			meta["email"] = emailNorm
 		}
 		// user can create new account
-		actions := []*integrationP.Action{
+		actions := []*pbintegration.Action{
 			{
 				Name: "register",
 				Meta: meta,
 			},
 		}
-		r.Result = &integrationP.LoginResponse{
+		r.Result = &pbintegration.LoginResponse{
 			AccessToken:       tokenCmd.Result.TokenStr,
 			ExpiresIn:         int32(tokenCmd.Result.ExpiresIn),
 			User:              nil,
 			Account:           nil,
 			Shop:              nil,
 			AvailableAccounts: nil,
-			AuthPartner:       etopP.PbPublicAccountInfo(partner),
+			AuthPartner:       pbetop.PbPublicAccountInfo(partner),
 			Actions:           actions,
 		}
 		return nil
@@ -570,7 +570,7 @@ func LoginUsingToken(ctx context.Context, r *integrationW.LoginUsingTokenEndpoin
 	}
 
 	// we map from all accounts to partner relations and generate tokens for each one
-	availableAccounts := make([]*integrationP.PartnerShopLoginAccount, 0, len(accQuery.Result))
+	availableAccounts := make([]*pbintegration.PartnerShopLoginAccount, 0, len(accQuery.Result))
 	for _, acc := range accQuery.Result {
 		if acc.Account.Type != model.TypeShop {
 			continue
@@ -581,10 +581,10 @@ func LoginUsingToken(ctx context.Context, r *integrationW.LoginUsingTokenEndpoin
 			continue
 		}
 
-		availAcc := &integrationP.PartnerShopLoginAccount{
+		availAcc := &pbintegration.PartnerShopLoginAccount{
 			Id:       acc.Account.ID,
 			Name:     acc.Account.Name,
-			Type:     etopP.PbAccountType(acc.Account.Type),
+			Type:     pbetop.PbAccountType(acc.Account.Type),
 			ImageUrl: acc.Account.ImageURL,
 		}
 		for _, rel := range relationQuery.Result.Relations {
@@ -619,7 +619,7 @@ func LoginUsingToken(ctx context.Context, r *integrationW.LoginUsingTokenEndpoin
 		// automatically select external_shop_id:
 		// 1. if there is account with that, use it
 		// 2. otherwise, clear all token and wait for the user to grant access
-		var aa *integrationP.PartnerShopLoginAccount
+		var aa *pbintegration.PartnerShopLoginAccount
 		for _, acc := range availableAccounts {
 			if acc.ExternalId == requestInfo.ExternalShopID {
 				aa = acc
@@ -629,11 +629,11 @@ func LoginUsingToken(ctx context.Context, r *integrationW.LoginUsingTokenEndpoin
 
 		if aa != nil {
 			// found, respond the only account that match
-			availableAccounts = []*integrationP.PartnerShopLoginAccount{aa}
+			availableAccounts = []*pbintegration.PartnerShopLoginAccount{aa}
 
 		} else {
 			var externalIDs []string
-			avails := make([]*integrationP.PartnerShopLoginAccount, 0, len(availableAccounts))
+			avails := make([]*pbintegration.PartnerShopLoginAccount, 0, len(availableAccounts))
 			// not found, only list the accounts with external_shop_id empty,
 			// clear all tokens and wait for the user to grant access because we
 			// don't know which shop will map to external_shop_id
@@ -653,20 +653,20 @@ func LoginUsingToken(ctx context.Context, r *integrationW.LoginUsingTokenEndpoin
 		}
 	}
 
-	r.Result = &integrationP.LoginResponse{
+	r.Result = &pbintegration.LoginResponse{
 		AccessToken:       userTokenCmd.Result.TokenStr,
 		ExpiresIn:         int32(userTokenCmd.Result.ExpiresIn),
-		User:              integrationP.PbPartnerUserInfo(userQuery.Result.User),
+		User:              pbintegration.PbPartnerUserInfo(userQuery.Result.User),
 		Account:           nil,
 		Shop:              nil,
 		AvailableAccounts: availableAccounts,
-		AuthPartner:       etopP.PbPublicAccountInfo(partner),
+		AuthPartner:       pbetop.PbPublicAccountInfo(partner),
 		Actions:           nil,
 	}
 	return nil
 }
 
-func Register(ctx context.Context, r *integrationW.RegisterEndpoint) error {
+func Register(ctx context.Context, r *wrapintegration.RegisterEndpoint) error {
 	partner := r.CtxPartner
 	claim := r.Context.ClaimInfo
 	if claim.Extra == nil || claim.Extra["action:register"] == "" {
@@ -785,15 +785,15 @@ func Register(ctx context.Context, r *integrationW.RegisterEndpoint) error {
 		}
 	}
 
-	r.Result = &integrationP.RegisterResponse{
-		User:        etopP.PbUser(user),
+	r.Result = &pbintegration.RegisterResponse{
+		User:        pbetop.PbUser(user),
 		AccessToken: tokenCmd.Result.TokenStr,
 		ExpiresIn:   int32(tokenCmd.Result.ExpiresIn),
 	}
 	return nil
 }
 
-func GrantAccess(ctx context.Context, r *integrationW.GrantAccessEndpoint) error {
+func GrantAccess(ctx context.Context, r *wrapintegration.GrantAccessEndpoint) error {
 	var requestInfo apipartner.PartnerShopToken
 	if err := json.Unmarshal([]byte(r.Context.Extra["request_login"]), &requestInfo); err != nil {
 		return cm.Errorf(cm.FailedPrecondition, nil, "Yêu cầu đăng nhập không còn hiệu lực")
@@ -870,14 +870,14 @@ func GrantAccess(ctx context.Context, r *integrationW.GrantAccessEndpoint) error
 		return err
 	}
 
-	r.Result = &integrationP.GrantAccessResponse{
+	r.Result = &pbintegration.GrantAccessResponse{
 		AccessToken: tokenCmd.Result.TokenStr,
 		ExpiresIn:   int32(tokenCmd.Result.ExpiresIn),
 	}
 	return nil
 }
 
-func SessionInfo(ctx context.Context, q *integrationW.SessionInfoEndpoint) error {
+func SessionInfo(ctx context.Context, q *wrapintegration.SessionInfoEndpoint) error {
 	var shop *model.Shop
 	if q.Context.Claim.AccountID != 0 {
 		query := &model.GetShopQuery{
@@ -899,30 +899,30 @@ func SessionInfo(ctx context.Context, q *integrationW.SessionInfoEndpoint) error
 	return nil
 }
 
-func generateShopLoginResponse(accessToken string, expiresIn int, user *model.User, partner *model.Partner, shop *model.Shop, actions []*integrationP.Action) *integrationP.LoginResponse {
-	resp := &integrationP.LoginResponse{
+func generateShopLoginResponse(accessToken string, expiresIn int, user *model.User, partner *model.Partner, shop *model.Shop, actions []*pbintegration.Action) *pbintegration.LoginResponse {
+	resp := &pbintegration.LoginResponse{
 		AccessToken:       accessToken,
 		ExpiresIn:         int32(expiresIn),
 		Account:           nil,
 		AvailableAccounts: nil,
-		User:              integrationP.PbPartnerUserInfo(user),
+		User:              pbintegration.PbPartnerUserInfo(user),
 		Shop:              nil,
-		AuthPartner:       etopP.PbPublicAccountInfo(partner),
+		AuthPartner:       pbetop.PbPublicAccountInfo(partner),
 		Actions:           actions,
 	}
 
 	if shop != nil {
-		account := &integrationP.PartnerShopLoginAccount{
+		account := &pbintegration.PartnerShopLoginAccount{
 			Id:          shop.ID,
 			Name:        shop.Name,
-			Type:        etopP.PbAccountType(model.TypeShop),
+			Type:        pbetop.PbAccountType(model.TypeShop),
 			AccessToken: accessToken,
 			ExpiresIn:   int32(expiresIn),
 			ImageUrl:    shop.ImageURL,
 		}
 		resp.Account = account
-		resp.AvailableAccounts = []*integrationP.PartnerShopLoginAccount{account}
-		resp.Shop = integrationP.PbPartnerShopInfo(shop)
+		resp.AvailableAccounts = []*pbintegration.PartnerShopLoginAccount{account}
+		resp.Shop = pbintegration.PbPartnerShopInfo(shop)
 	}
 	return resp
 }

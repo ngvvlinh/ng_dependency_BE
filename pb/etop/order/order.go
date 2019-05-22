@@ -7,13 +7,14 @@ import (
 	"etop.vn/api/main/location"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/etop/model"
+	catalogmodel "etop.vn/backend/pkg/services/catalog/model"
 	servicelocation "etop.vn/backend/pkg/services/location"
 	txmodel "etop.vn/backend/pkg/services/moneytx/model"
 	txmodely "etop.vn/backend/pkg/services/moneytx/modely"
 	ordermodel "etop.vn/backend/pkg/services/ordering/model"
 	ordermodelx "etop.vn/backend/pkg/services/ordering/modelx"
 	shipmodel "etop.vn/backend/pkg/services/shipping/model"
-	"etop.vn/backend/pkg/services/shipping/modely"
+	shipmodely "etop.vn/backend/pkg/services/shipping/modely"
 
 	pbcm "etop.vn/backend/pb/common"
 	"etop.vn/backend/pb/etop"
@@ -524,11 +525,11 @@ func PbOrderLine(m *ordermodel.OrderLine) *OrderLine {
 	}
 }
 
-func PbAttributesToModel(items []*Attribute) []model.ProductAttribute {
+func PbAttributesToModel(items []*Attribute) []catalogmodel.ProductAttribute {
 	if len(items) == 0 {
 		return nil
 	}
-	res := make([]model.ProductAttribute, 0, len(items))
+	res := make([]catalogmodel.ProductAttribute, 0, len(items))
 	for _, item := range items {
 		if item == nil {
 			continue
@@ -538,14 +539,14 @@ func PbAttributesToModel(items []*Attribute) []model.ProductAttribute {
 	return res
 }
 
-func (m *Attribute) ToModel() model.ProductAttribute {
-	return model.ProductAttribute{
+func (m *Attribute) ToModel() catalogmodel.ProductAttribute {
+	return catalogmodel.ProductAttribute{
 		Name:  m.Name,
 		Value: m.Value,
 	}
 }
 
-func PbAttributes(as []model.ProductAttribute) []*Attribute {
+func PbAttributes(as []catalogmodel.ProductAttribute) []*Attribute {
 	attrs := make([]*Attribute, len(as))
 	for i, a := range as {
 		attrs[i] = &Attribute{
@@ -567,7 +568,7 @@ func PbFulfillments(items []*shipmodel.Fulfillment, accType int) []*Fulfillment 
 	return res
 }
 
-func PbFulfillmentExtendeds(items []*modely.FulfillmentExtended, accType int) []*Fulfillment {
+func PbFulfillmentExtendeds(items []*shipmodely.FulfillmentExtended, accType int) []*Fulfillment {
 	if items == nil {
 		return nil
 	}

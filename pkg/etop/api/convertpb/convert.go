@@ -10,7 +10,7 @@ import (
 	catalogmodel "etop.vn/backend/pkg/services/catalog/model"
 )
 
-func PbAttributes(as []model.ProductAttribute) []*pbshop.Attribute {
+func PbAttributes(as []catalogmodel.ProductAttribute) []*pbshop.Attribute {
 	attrs := make([]*pbshop.Attribute, len(as))
 	for i, a := range as {
 		attrs[i] = &pbshop.Attribute{
@@ -21,8 +21,8 @@ func PbAttributes(as []model.ProductAttribute) []*pbshop.Attribute {
 	return attrs
 }
 
-func AttributesTomodel(items []*pbshop.Attribute) []model.ProductAttribute {
-	result := make([]model.ProductAttribute, 0, len(items))
+func AttributesTomodel(items []*pbshop.Attribute) []catalogmodel.ProductAttribute {
+	result := make([]catalogmodel.ProductAttribute, 0, len(items))
 	for _, item := range items {
 		if item.Name == "" {
 			continue

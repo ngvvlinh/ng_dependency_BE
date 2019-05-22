@@ -1,28 +1,28 @@
 package shop
 
 import (
-	cmP "etop.vn/backend/pb/common"
-	"etop.vn/backend/pb/etop/etc/status3"
-	shopP "etop.vn/backend/pb/etop/shop"
+	pbcm "etop.vn/backend/pb/common"
+	pbs3 "etop.vn/backend/pb/etop/etc/status3"
+	pbshop "etop.vn/backend/pb/etop/shop"
 	"etop.vn/backend/pkg/etop/api/admin"
 	"etop.vn/backend/pkg/etop/api/convertpb"
 	"etop.vn/backend/pkg/etop/model"
 	catalogmodel "etop.vn/backend/pkg/services/catalog/model"
 )
 
-func PbEtopVariants(items []*catalogmodel.VariantExtended) []*shopP.EtopVariant {
+func PbEtopVariants(items []*catalogmodel.VariantExtended) []*pbshop.EtopVariant {
 	if items == nil || len(items) == 0 {
 		return nil
 	}
-	res := make([]*shopP.EtopVariant, len(items))
+	res := make([]*pbshop.EtopVariant, len(items))
 	for i, item := range items {
 		res[i] = PbEtopVariant(item)
 	}
 	return res
 }
 
-func PbEtopVariant(m *catalogmodel.VariantExtended) *shopP.EtopVariant {
-	res := &shopP.EtopVariant{
+func PbEtopVariant(m *catalogmodel.VariantExtended) *pbshop.EtopVariant {
+	res := &pbshop.EtopVariant{
 		Id: m.ID,
 		// ShortName:         strings.Join([]string{m.Product.Name, m.Name}, " - "),
 		Name:              m.GetName(),
@@ -36,7 +36,7 @@ func PbEtopVariant(m *catalogmodel.VariantExtended) *shopP.EtopVariant {
 		RetailPriceMax:    int32(m.RetailPriceMax),
 		IsAvailable:       m.IsAvailable(),
 		QuantityAvailable: int32(m.QuantityAvailable),
-		Status:            status3.Pb(m.Status),
+		Status:            pbs3.Pb(m.Status),
 
 		Code:   m.Code,
 		EdCode: m.EdCode,
@@ -48,11 +48,11 @@ func PbEtopVariant(m *catalogmodel.VariantExtended) *shopP.EtopVariant {
 		// XBaseId:     m.ExternalBaseID,
 		// XAttributes: supplier.PbAttributes(m.VariantExternal.ExternalAttributes),
 
-		SMeta:      cmP.RawJSONObjectMsg(m.SupplierMeta),
+		SMeta:      pbcm.RawJSONObjectMsg(m.SupplierMeta),
 		CostPrice:  int32(m.CostPrice),
 		Attributes: convertpb.PbAttributes(m.Attributes),
-		UpdatedAt:  cmP.PbTime(m.Product.UpdatedAt),
-		CreatedAt:  cmP.PbTime(m.Product.CreatedAt),
+		UpdatedAt:  pbcm.PbTime(m.Product.UpdatedAt),
+		CreatedAt:  pbcm.PbTime(m.Product.CreatedAt),
 	}
 
 	if m.VariantExternal != nil {
@@ -66,16 +66,16 @@ func PbEtopVariant(m *catalogmodel.VariantExtended) *shopP.EtopVariant {
 	return res
 }
 
-func PbEtopProducts(items []*catalogmodel.ProductFtVariant) []*shopP.EtopProduct {
-	res := make([]*shopP.EtopProduct, len(items))
+func PbEtopProducts(items []*catalogmodel.ProductFtVariant) []*pbshop.EtopProduct {
+	res := make([]*pbshop.EtopProduct, len(items))
 	for i, item := range items {
 		res[i] = PbEtopProduct(item)
 	}
 	return res
 }
 
-func PbEtopProduct(m *catalogmodel.ProductFtVariant) *shopP.EtopProduct {
-	return &shopP.EtopProduct{
+func PbEtopProduct(m *catalogmodel.ProductFtVariant) *pbshop.EtopProduct {
+	return &pbshop.EtopProduct{
 		Id:         m.Product.ID,
 		CategoryId: m.Product.EtopCategoryID,
 
@@ -88,7 +88,7 @@ func PbEtopProduct(m *catalogmodel.ProductFtVariant) *shopP.EtopProduct {
 		ImageUrls:         m.Product.ImageURLs,
 		IsAvailable:       m.IsAvailable(),
 		QuantityAvailable: int32(m.QuantityAvailable),
-		Status:            status3.Pb(m.Product.Status),
+		Status:            pbs3.Pb(m.Product.Status),
 		Code:              m.Product.Code,
 		EdCode:            m.Product.EdCode,
 		Unit:              m.Product.Unit,
@@ -96,22 +96,22 @@ func PbEtopProduct(m *catalogmodel.ProductFtVariant) *shopP.EtopProduct {
 		// XId:         m.ExternalID,
 
 		Variants:  PbEtopVariants(admin.VExternalExtendedToVExtended(m.Variants)),
-		UpdatedAt: cmP.PbTime(m.Product.UpdatedAt),
-		CreatedAt: cmP.PbTime(m.Product.CreatedAt),
+		UpdatedAt: pbcm.PbTime(m.Product.UpdatedAt),
+		CreatedAt: pbcm.PbTime(m.Product.CreatedAt),
 	}
 }
 
-func PbShopVariants(items []*catalogmodel.ShopVariantExtended) []*shopP.ShopVariant {
-	res := make([]*shopP.ShopVariant, len(items))
+func PbShopVariants(items []*catalogmodel.ShopVariantExtended) []*pbshop.ShopVariant {
+	res := make([]*pbshop.ShopVariant, len(items))
 	for i, item := range items {
 		res[i] = PbShopVariant(item)
 	}
 	return res
 }
 
-func PbShopVariant(m *catalogmodel.ShopVariantExtended) *shopP.ShopVariant {
+func PbShopVariant(m *catalogmodel.ShopVariantExtended) *pbshop.ShopVariant {
 	sv := m.ShopVariant
-	res := &shopP.ShopVariant{
+	res := &pbshop.ShopVariant{
 		Id:           sv.VariantID,
 		Name:         sv.Name,
 		Description:  sv.Description,
@@ -119,7 +119,7 @@ func PbShopVariant(m *catalogmodel.ShopVariantExtended) *shopP.ShopVariant {
 		DescHtml:     sv.DescHTML,
 		ImageUrls:    sv.ImageURLs,
 		Tags:         sv.Tags,
-		Status:       status3.Pb(sv.Status),
+		Status:       pbs3.Pb(sv.Status),
 		IsAvailable:  m.VariantExtended.IsAvailable(),
 		RetailPrice:  int32(sv.RetailPrice),
 		CollectionId: sv.CollectionID,
@@ -130,46 +130,46 @@ func PbShopVariant(m *catalogmodel.ShopVariantExtended) *shopP.ShopVariant {
 	return res
 }
 
-func PbShopProducts(items []*catalogmodel.ShopProduct) []*shopP.ShopProduct {
-	res := make([]*shopP.ShopProduct, len(items))
+func PbShopProducts(items []*catalogmodel.ShopProduct) []*pbshop.ShopProduct {
+	res := make([]*pbshop.ShopProduct, len(items))
 	for i, item := range items {
 		res[i] = PbShopProduct(item)
 	}
 	return res
 }
 
-func PbShopProduct(m *catalogmodel.ShopProduct) *shopP.ShopProduct {
-	res := &shopP.ShopProduct{
+func PbShopProduct(m *catalogmodel.ShopProduct) *pbshop.ShopProduct {
+	res := &pbshop.ShopProduct{
 		Id:            m.ProductID,
 		Name:          m.Name,
 		Description:   m.Description,
 		DescHtml:      m.DescHTML,
 		ShortDesc:     m.ShortDesc,
 		ImageUrls:     m.ImageURLs,
-		Status:        status3.Pb(m.Status),
+		Status:        pbs3.Pb(m.Status),
 		Tags:          m.Tags,
 		CollectionIds: m.CollectionIDs,
 	}
 	return res
 }
 
-func PbShopProductsFtVariant(items []*catalogmodel.ShopProductFtVariant) []*shopP.ShopProduct {
-	res := make([]*shopP.ShopProduct, len(items))
+func PbShopProductsFtVariant(items []*catalogmodel.ShopProductFtVariant) []*pbshop.ShopProduct {
+	res := make([]*pbshop.ShopProduct, len(items))
 	for i, item := range items {
 		res[i] = PbShopProductFtVariant(item)
 	}
 	return res
 }
 
-func PbShopProductFtVariant(m *catalogmodel.ShopProductFtVariant) *shopP.ShopProduct {
-	res := &shopP.ShopProduct{
+func PbShopProductFtVariant(m *catalogmodel.ShopProductFtVariant) *pbshop.ShopProduct {
+	res := &pbshop.ShopProduct{
 		Id:                m.ShopProduct.ProductID,
 		Name:              m.ShopProduct.Name,
 		Description:       m.ShopProduct.Description,
 		DescHtml:          m.ShopProduct.DescHTML,
 		ShortDesc:         m.ShopProduct.ShortDesc,
 		ImageUrls:         m.ShopProduct.ImageURLs,
-		Status:            status3.Pb(m.ShopProduct.Status),
+		Status:            pbs3.Pb(m.ShopProduct.Status),
 		Tags:              m.Tags,
 		CollectionIds:     m.CollectionIDs,
 		Variants:          PbShopVariants(m.Variants),
@@ -234,35 +234,35 @@ func contain(ss []string, s string) bool {
 	return false
 }
 
-func PbProductSources(items []*model.ProductSource) []*shopP.ProductSource {
-	result := make([]*shopP.ProductSource, len(items))
+func PbProductSources(items []*model.ProductSource) []*pbshop.ProductSource {
+	result := make([]*pbshop.ProductSource, len(items))
 	for i, item := range items {
 		result[i] = PbProductSource(item)
 	}
 	return result
 }
 
-func PbProductSource(m *model.ProductSource) *shopP.ProductSource {
-	return &shopP.ProductSource{
+func PbProductSource(m *model.ProductSource) *pbshop.ProductSource {
+	return &pbshop.ProductSource{
 		Id:        m.ID,
 		Type:      m.Type,
 		Name:      m.Name,
-		Status:    status3.Pb(m.Status),
-		CreatedAt: cmP.PbTime(m.CreatedAt),
-		UpdatedAt: cmP.PbTime(m.UpdatedAt),
+		Status:    pbs3.Pb(m.Status),
+		CreatedAt: pbcm.PbTime(m.CreatedAt),
+		UpdatedAt: pbcm.PbTime(m.UpdatedAt),
 	}
 }
 
-func PbProductSourceCategories(items []*model.ProductSourceCategory) []*shopP.ProductSourceCategory {
-	result := make([]*shopP.ProductSourceCategory, len(items))
+func PbProductSourceCategories(items []*model.ProductSourceCategory) []*pbshop.ProductSourceCategory {
+	result := make([]*pbshop.ProductSourceCategory, len(items))
 	for i, item := range items {
 		result[i] = PbProductSourceCategory(item)
 	}
 	return result
 }
 
-func PbProductSourceCategory(m *model.ProductSourceCategory) *shopP.ProductSourceCategory {
-	return &shopP.ProductSourceCategory{
+func PbProductSourceCategory(m *model.ProductSourceCategory) *pbshop.ProductSourceCategory {
+	return &pbshop.ProductSourceCategory{
 		Id:                m.ID,
 		Name:              m.Name,
 		ProductSourceId:   m.ProductSourceID,

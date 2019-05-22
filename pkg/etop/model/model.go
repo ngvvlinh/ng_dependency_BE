@@ -702,18 +702,12 @@ var _ = sqlgenProductSourceInternal(&ProductSourceInternal{})
 type ProductSourceInternal struct {
 	ID int64
 
-	Secret      *KiotvietSecret
+	Secret      json.RawMessage
 	AccessToken string
 	ExpiresAt   time.Time
 
 	CreatedAt time.Time `sq:"create"`
 	UpdatedAt time.Time `sq:"update"`
-}
-
-type KiotvietSecret struct {
-	RetailerID   string `json:"retailer_id"`
-	ClientID     string `json:"client_id"`
-	ClientSecret string `json:"client_secret"`
 }
 
 var _ = sqlgenProductSourceInternalAccessToken(&ProductSourceInternalAccessToken{}, &ProductSourceInternal{})
@@ -852,56 +846,6 @@ var _ = sqlgenProductSourceCategoryExtended(&ProductSourceCategoryExtended{},
 type ProductSourceCategoryExtended struct {
 	*ProductSourceCategory
 	*ProductSourceCategoryExternal
-}
-
-type ProductAttributes []ProductAttribute
-
-func (attrs ProductAttributes) Name() string {
-	if len(attrs) == 0 {
-		return ""
-	}
-	return attrs.ShortLabel()
-}
-
-func (attrs ProductAttributes) Label() string {
-	if len(attrs) == 0 {
-		return "Mặc định"
-	}
-	b := make([]byte, 0, 64)
-	for _, attr := range attrs {
-		if attr.Name == "" || attr.Value == "" {
-			continue
-		}
-		if len(b) > 0 {
-			b = append(b, ", "...)
-		}
-		b = append(b, attr.Name...)
-		b = append(b, ": "...)
-		b = append(b, attr.Value...)
-	}
-	return string(b)
-}
-
-func (attrs ProductAttributes) ShortLabel() string {
-	if len(attrs) == 0 {
-		return "Mặc định"
-	}
-	b := make([]byte, 0, 64)
-	for _, attr := range attrs {
-		if attr.Name == "" || attr.Value == "" {
-			continue
-		}
-		if len(b) > 0 {
-			b = append(b, ' ')
-		}
-		b = append(b, attr.Value...)
-	}
-	return string(b)
-}
-
-type ProductAttribute struct {
-	Name  string `json:"name"`
-	Value string `json:"value"`
 }
 
 type Unit struct {

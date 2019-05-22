@@ -5,14 +5,14 @@ import (
 	"fmt"
 	"time"
 
-	cmP "etop.vn/backend/pb/common"
-	etopP "etop.vn/backend/pb/etop"
+	pbcm "etop.vn/backend/pb/common"
+	pbetop "etop.vn/backend/pb/etop"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/l"
 	"etop.vn/backend/pkg/etop/logic/relationship"
 	"etop.vn/backend/pkg/etop/model"
-	etopW "etop.vn/backend/wrapper/etop"
+	wrapetop "etop.vn/backend/wrapper/etop"
 )
 
 func init() {
@@ -25,7 +25,7 @@ func init() {
 	)
 }
 
-func AnswerInvitation(ctx context.Context, r *etopW.AnswerInvitationEndpoint) error {
+func AnswerInvitation(ctx context.Context, r *wrapetop.AnswerInvitationEndpoint) error {
 	resp, err := answerInvitation(ctx, r)
 	if err != nil {
 		return err
@@ -34,7 +34,7 @@ func AnswerInvitation(ctx context.Context, r *etopW.AnswerInvitationEndpoint) er
 	return nil
 }
 
-func answerInvitation(ctx context.Context, r *etopW.AnswerInvitationEndpoint) (*etopW.AnswerInvitationEndpoint, error) {
+func answerInvitation(ctx context.Context, r *wrapetop.AnswerInvitationEndpoint) (*wrapetop.AnswerInvitationEndpoint, error) {
 	if r.AccountId == 0 {
 		return r, cm.Error(cm.InvalidArgument, "Missing AccountID", nil)
 	}
@@ -72,7 +72,7 @@ func answerInvitation(ctx context.Context, r *etopW.AnswerInvitationEndpoint) (*
 	case model.S3Positive, model.S3Negative:
 		// If the response is the same as the status, just respond it
 		if response == accUser.Status {
-			r.Result = etopP.PbUserAccount(&accUserQuery.Result)
+			r.Result = pbetop.PbUserAccount(&accUserQuery.Result)
 			return r, nil
 		}
 
@@ -103,11 +103,11 @@ func answerInvitation(ctx context.Context, r *etopW.AnswerInvitationEndpoint) (*
 		return r, cm.Error(cm.Internal, "", err).
 			Log("unexpected")
 	}
-	r.Result = etopP.PbUserAccount(&accUserQuery.Result)
+	r.Result = pbetop.PbUserAccount(&accUserQuery.Result)
 	return r, nil
 }
 
-func GetUsersInCurrentAccounts(ctx context.Context, r *etopW.GetUsersInCurrentAccountsEndpoint) error {
+func GetUsersInCurrentAccounts(ctx context.Context, r *wrapetop.GetUsersInCurrentAccountsEndpoint) error {
 	accountIDs, err := MixAccount(r.Context.Claim, r.Mixed)
 	if err != nil {
 		return err
@@ -117,20 +117,20 @@ func GetUsersInCurrentAccounts(ctx context.Context, r *etopW.GetUsersInCurrentAc
 	query := &model.GetAccountUserExtendedsQuery{
 		AccountIDs: accountIDs,
 		Paging:     paging,
-		Filters:    cmP.ToFilters(r.Filters),
+		Filters:    pbcm.ToFilters(r.Filters),
 	}
 	if err := bus.Dispatch(ctx, query); err != nil {
 		return err
 	}
 
-	r.Result = &etopP.ProtectedUsersResponse{
-		Paging: cmP.PbPageInfo(paging, query.Result.Total),
-		Users:  etopP.PbUserAccounts(query.Result.AccountUsers),
+	r.Result = &pbetop.ProtectedUsersResponse{
+		Paging: pbcm.PbPageInfo(paging, query.Result.Total),
+		Users:  pbetop.PbUserAccounts(query.Result.AccountUsers),
 	}
 	return nil
 }
 
-func InviteUserToAccount(ctx context.Context, r *etopW.InviteUserToAccountEndpoint) error {
+func InviteUserToAccount(ctx context.Context, r *wrapetop.InviteUserToAccountEndpoint) error {
 	key := fmt.Sprintf("InviteUserToAccount %v-%v", r.Context.User.ID, r.InviteeIdentifier)
 	resp, err := idempgroup.DoAndWrap(key, 10*time.Second, func() (interface{}, error) {
 		return inviteUserToAccount(ctx, r)
@@ -139,11 +139,11 @@ func InviteUserToAccount(ctx context.Context, r *etopW.InviteUserToAccountEndpoi
 	if err != nil {
 		return err
 	}
-	r.Result = resp.(*etopW.InviteUserToAccountEndpoint).Result
+	r.Result = resp.(*wrapetop.InviteUserToAccountEndpoint).Result
 	return nil
 }
 
-func inviteUserToAccount(ctx context.Context, r *etopW.InviteUserToAccountEndpoint) (*etopW.InviteUserToAccountEndpoint, error) {
+func inviteUserToAccount(ctx context.Context, r *wrapetop.InviteUserToAccountEndpoint) (*wrapetop.InviteUserToAccountEndpoint, error) {
 
 	inviter := r.Context.User.User
 	accountQuery := &model.GetAccountRolesQuery{
@@ -180,14 +180,14 @@ func inviteUserToAccount(ctx context.Context, r *etopW.InviteUserToAccountEndpoi
 		return r, err
 	}
 	accUser := inviteCmd.Result.AccountUser
-	r.Result = etopP.PbUserAccountIncomplete(accUser, account)
+	r.Result = pbetop.PbUserAccountIncomplete(accUser, account)
 	return r, nil
 }
 
-func LeaveAccount(ctx context.Context, r *etopW.LeaveAccountEndpoint) error {
+func LeaveAccount(ctx context.Context, r *wrapetop.LeaveAccountEndpoint) error {
 	return nil
 }
 
-func RemoveUserFromCurrentAccount(ctx context.Context, r *etopW.RemoveUserFromCurrentAccountEndpoint) error {
+func RemoveUserFromCurrentAccount(ctx context.Context, r *wrapetop.RemoveUserFromCurrentAccountEndpoint) error {
 	return nil
 }

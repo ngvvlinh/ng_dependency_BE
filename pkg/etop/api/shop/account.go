@@ -10,7 +10,6 @@ import (
 	"etop.vn/backend/pkg/etop/sqlstore"
 
 	pbcm "etop.vn/backend/pb/common"
-	"etop.vn/backend/pb/etop"
 	pbetop "etop.vn/backend/pb/etop"
 	pbshop "etop.vn/backend/pb/etop/shop"
 	wrapetop "etop.vn/backend/wrapper/etop"
@@ -43,8 +42,8 @@ func RegisterShop(ctx context.Context, q *wrapshop.RegisterShopEndpoint) error {
 		IsTest:                      q.Context.User.IsTest != 0,
 		CompanyInfo:                 q.CompanyInfo.ToModel(),
 		MoneyTransactionRRule:       q.MoneyTransactionRrule,
-		SurveyInfo:                  etop.SurveyInfosToModel(q.SurveyInfo),
-		ShippingServicePickStrategy: etop.ShippingServiceSelectStrategyToModel(q.ShippingServiceSelectStrategy),
+		SurveyInfo:                  pbetop.SurveyInfosToModel(q.SurveyInfo),
+		ShippingServicePickStrategy: pbetop.ShippingServiceSelectStrategyToModel(q.ShippingServiceSelectStrategy),
 	}
 
 	if err := bus.Dispatch(ctx, cmd); err != nil {
@@ -97,8 +96,8 @@ func UpdateShop(ctx context.Context, q *wrapshop.UpdateShopEndpoint) error {
 			GhnNoteCode:                   q.GhnNoteCode.ToModel(),
 			CompanyInfo:                   q.CompanyInfo.ToModel(),
 			MoneyTransactionRRule:         q.MoneyTransactionRrule,
-			SurveyInfo:                    etop.SurveyInfosToModel(q.SurveyInfo),
-			ShippingServiceSelectStrategy: etop.ShippingServiceSelectStrategyToModel(q.ShippingServiceSelectStrategy),
+			SurveyInfo:                    pbetop.SurveyInfosToModel(q.SurveyInfo),
+			ShippingServiceSelectStrategy: pbetop.ShippingServiceSelectStrategyToModel(q.ShippingServiceSelectStrategy),
 		},
 	}
 

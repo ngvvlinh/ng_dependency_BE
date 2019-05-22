@@ -290,7 +290,7 @@ type UpdateShopVariantCommand struct {
 	CostPrice       int
 	Inventory       int
 	EdCode          string
-	Attributes      []model.ProductAttribute
+	Attributes      []catalogmodel.ProductAttribute
 	ProductSourceID int64
 
 	Result *catalogmodel.ShopVariantExtended
@@ -484,7 +484,7 @@ type CreateVariantCommand struct {
 	QuantityOnHand    int
 	QuantityReserved  int
 	CostPrice         int
-	Attributes        []model.ProductAttribute
+	Attributes        []catalogmodel.ProductAttribute
 	DescHTML          string
 
 	Result *catalogmodel.ShopProductFtVariant
