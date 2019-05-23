@@ -6,6 +6,8 @@ import (
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/etop/model"
+	catalogmodel "etop.vn/backend/pkg/services/catalog/model"
+	catalogmodelx "etop.vn/backend/pkg/services/catalog/modelx"
 )
 
 func init() {
@@ -19,11 +21,11 @@ func init() {
 	bus.AddHandler("sql", RemoveShopProductSourceCategory)
 }
 
-func GetProductSourceCategory(ctx context.Context, query *model.GetProductSourceCategoryQuery) error {
+func GetProductSourceCategory(ctx context.Context, query *catalogmodelx.GetProductSourceCategoryQuery) error {
 	if query.CategoryID == 0 {
 		return cm.Error(cm.NotFound, "", nil)
 	}
-	p := new(model.ProductSourceCategoryExtended)
+	p := new(catalogmodel.ProductSourceCategory)
 
 	s := x.Table("product_source_category").Where("psc.id = ?", query.CategoryID)
 	if query.SupplierID != 0 {
@@ -40,7 +42,7 @@ func GetProductSourceCategory(ctx context.Context, query *model.GetProductSource
 	return nil
 }
 
-func GetProductSourceCategoriesExtended(ctx context.Context, query *model.GetProductSourceCategoriesExtendedQuery) error {
+func GetProductSourceCategoriesExtended(ctx context.Context, query *catalogmodelx.GetProductSourceCategoriesExtendedQuery) error {
 	s := x.Table("product_source_category")
 	if query.SupplierID != 0 {
 		s = s.Where("psc.supplier_id = ?", query.SupplierID)
@@ -55,11 +57,11 @@ func GetProductSourceCategoriesExtended(ctx context.Context, query *model.GetPro
 		s = s.Where("psc.product_source_type = ?", query.ProductSourceType)
 	}
 
-	err := s.Find((*model.ProductSourceCategoryExtendeds)(&query.Result.Categories))
+	err := s.Find((*catalogmodel.ProductSourceCategories)(&query.Result.Categories))
 	return err
 }
 
-func GetProductSourceCategories(ctx context.Context, query *model.GetProductSourceCategoriesQuery) error {
+func GetProductSourceCategories(ctx context.Context, query *catalogmodelx.GetProductSourceCategoriesQuery) error {
 	s := x.Table("product_source_category")
 	if query.SupplierID != 0 {
 		s = s.Where("supplier_id = ?", query.SupplierID)
@@ -74,7 +76,7 @@ func GetProductSourceCategories(ctx context.Context, query *model.GetProductSour
 		s = s.Where("product_source_type = ?", query.ProductSourceType)
 	}
 
-	err := s.Find((*model.ProductSourceCategories)(&query.Result.Categories))
+	err := s.Find((*catalogmodel.ProductSourceCategories)(&query.Result.Categories))
 	return err
 }
 
@@ -98,8 +100,8 @@ func GetEtopCategories(ctx context.Context, query *model.GetEtopCategoriesQuery)
 	return err
 }
 
-func UpdateShopProductSourceCategory(ctx context.Context, cmd *model.UpdateShopProductSourceCategoryCommand) error {
-	cat := &model.ProductSourceCategory{
+func UpdateShopProductSourceCategory(ctx context.Context, cmd *catalogmodelx.UpdateShopProductSourceCategoryCommand) error {
+	cat := &catalogmodel.ProductSourceCategory{
 		ParentID: cmd.ParentID,
 		Name:     cmd.Name,
 	}
@@ -107,7 +109,7 @@ func UpdateShopProductSourceCategory(ctx context.Context, cmd *model.UpdateShopP
 		return err
 	}
 
-	query := &model.GetProductSourceCategoryQuery{
+	query := &catalogmodelx.GetProductSourceCategoryQuery{
 		CategoryID: cmd.ID,
 		ShopID:     cmd.ShopID,
 	}
@@ -119,7 +121,7 @@ func UpdateShopProductSourceCategory(ctx context.Context, cmd *model.UpdateShopP
 	return nil
 }
 
-func RemoveShopProductSourceCategory(ctx context.Context, cmd *model.RemoveShopProductSourceCategoryCommand) error {
+func RemoveShopProductSourceCategory(ctx context.Context, cmd *catalogmodelx.RemoveShopProductSourceCategoryCommand) error {
 	if cmd.ID == 0 {
 		return cm.Error(cm.InvalidArgument, "Missing ID", nil)
 	}
@@ -134,7 +136,7 @@ func RemoveShopProductSourceCategory(ctx context.Context, cmd *model.RemoveShopP
 		}
 
 		if err := s.Table("product_source_category").Where("id = ? AND shop_id = ?", cmd.ID, cmd.ShopID).
-			ShouldDelete(&model.ProductSourceCategory{}); err != nil {
+			ShouldDelete(&catalogmodel.ProductSourceCategory{}); err != nil {
 			return err
 		}
 		cmd.Result.Removed = 1

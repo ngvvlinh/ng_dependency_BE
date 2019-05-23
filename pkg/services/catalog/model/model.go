@@ -69,51 +69,19 @@ func (p *Product) GetFullName() string {
 	return coalesce(p.Name, p.EdName)
 }
 
-var _ = sqlgenProductExternal(&ProductExternal{})
-
-type ProductExternal struct {
-	ID int64
-
-	ProductExternalCommon `sq:"inline"`
-
-	ExternalUnits []*model.Unit
-}
-
-type ProductExternalCommon struct {
-	ProductSourceID   int64
-	ProductSourceType string
-
-	ExternalID          string
-	ExternalName        string
-	ExternalCode        string
-	ExternalCategoryID  string
-	ExternalDescription string
-	ExternalImageURLs   []string
-	ExternalUnit        string
-
-	ExternalData      json.RawMessage
-	ExternalStatus    model.Status3
-	ExternalCreatedAt time.Time
-	ExternalUpdatedAt time.Time
-	ExternalDeletedAt time.Time
-	LastSyncAt        time.Time
-}
-
 var _ = sqlgenProductExtended(
 	&ProductExtended{}, &Product{}, sq.AS("p"),
-	sq.LEFT_JOIN, &ProductExternal{}, sq.AS("px"), "p.id = px.id",
-	sq.LEFT_JOIN, &model.ProductSource{}, sq.AS("ps"), "p.product_source_id = ps.id",
+	sq.LEFT_JOIN, &ProductSource{}, sq.AS("ps"), "p.product_source_id = ps.id",
 )
 
 type ProductExtended struct {
 	*Product
-	*ProductExternal
-	*model.ProductSource
+	*ProductSource
 }
 
 type ProductFtVariant struct {
 	ProductExtended
-	Variants []*VariantExternalExtended
+	Variants []*Variant
 }
 
 var _ = sqlgenVariant(&Variant{})
@@ -238,13 +206,11 @@ func NormalizeAttributes(attrs []ProductAttribute) ([]ProductAttribute, string) 
 var _ = sqlgenVariantExtended(
 	&VariantExtended{}, &Variant{}, sq.AS("v"),
 	sq.LEFT_JOIN, &Product{}, sq.AS("p"), "v.product_id = p.id",
-	sq.LEFT_JOIN, &VariantExternal{}, sq.AS("vx"), "v.id = vx.id",
 )
 
 type VariantExtended struct {
 	*Variant
-	Product         *Product
-	VariantExternal *VariantExternal
+	Product *Product
 }
 
 func (v *VariantExtended) GetFullName() string {
@@ -252,30 +218,6 @@ func (v *VariantExtended) GetFullName() string {
 		return v.Product.Name + " - " + v.GetName()
 	}
 	return v.GetName()
-}
-
-var _ = sqlgenVariantExternal(&VariantExternal{})
-
-type VariantExternal struct {
-	ID int64
-
-	ProductExternalCommon `sq:"inline"`
-
-	ExternalProductID  string
-	ExternalPrice      int
-	ExternalBaseUnitID string
-	ExternalUnitConv   float64
-	ExternalAttributes []ProductAttribute
-}
-
-var _ = sqlgenVariantExternalExtended(
-	&VariantExternalExtended{}, &Variant{}, sq.AS("v"),
-	sq.LEFT_JOIN, &VariantExternal{}, sq.AS("vx"), "v.id = vx.id",
-)
-
-type VariantExternalExtended struct {
-	*Variant
-	*VariantExternal
 }
 
 var _ = sqlgenPriceDef(&PriceDef{}, &Variant{})
@@ -439,7 +381,6 @@ var _ = sqlgenShopProductFtProductFtVariantFtShopVariant(
 	&ShopProductFtProductFtVariantFtShopVariant{}, &ShopProduct{}, sq.AS("sp"),
 	sq.LEFT_JOIN, &Product{}, sq.AS("p"), "sp.product_id = p.id",
 	sq.LEFT_JOIN, &Variant{}, sq.AS("v"), "sp.product_id = v.product_id",
-	sq.LEFT_JOIN, &VariantExternal{}, sq.AS("vx"), "vx.id = v.id",
 	sq.LEFT_JOIN, &ShopVariant{}, sq.AS("sv"), "sp.shop_id = sv.shop_id and sv.variant_id = v.id",
 )
 
@@ -447,7 +388,6 @@ type ShopProductFtProductFtVariantFtShopVariant struct {
 	*ShopProduct
 	*Product
 	*Variant
-	*VariantExternal
 	*ShopVariant
 }
 
@@ -465,26 +405,22 @@ type ShopProductExtended struct {
 var _ = sqlgenShopVariantExt(
 	&ShopVariantExt{}, &ShopVariant{}, sq.AS("sv"),
 	sq.JOIN, &Variant{}, sq.AS("v"), "sp.product_id = v.product_id",
-	sq.LEFT_JOIN, &VariantExternal{}, sq.AS("vx"), "vx.id = v.id",
 )
 
 type ShopVariantExt struct {
 	*ShopVariant
 	*Variant
-	*VariantExternal
 }
 
 var _ = sqlgenProductFtVariantFtShopProduct(
 	&ProductFtVariantFtShopProduct{}, &Product{}, sq.AS("p"),
 	sq.LEFT_JOIN, &Variant{}, sq.AS("v"), "v.product_id = p.id",
-	sq.LEFT_JOIN, &VariantExternal{}, sq.AS("vx"), "vx.id = v.id",
 	sq.LEFT_JOIN, &ShopProduct{}, sq.AS("sp"), "sp.product_id = p.id",
 )
 
 type ProductFtVariantFtShopProduct struct {
 	*Product
 	*Variant
-	*VariantExternal
 	*ShopProduct
 }
 
@@ -578,4 +514,42 @@ func (attrs ProductAttributes) ShortLabel() string {
 type ProductAttribute struct {
 	Name  string `json:"name"`
 	Value string `json:"value"`
+}
+
+var _ = sqlgenProductSource(&ProductSource{})
+
+const ProductSourceCustom = "custom"
+
+type ProductSource struct {
+	ID         int64
+	SupplierID int64
+	Type       string
+	Name       string
+	Status     model.Status3
+
+	CreatedAt  time.Time `sq:"create"`
+	UpdatedAt  time.Time `sq:"update"`
+	LastSyncAt time.Time
+
+	SyncStateProducts   json.RawMessage
+	SyncStateCategories json.RawMessage
+}
+
+var _ = sqlgenProductSourceCategory(&ProductSourceCategory{})
+
+type ProductSourceCategory struct {
+	ID int64
+
+	ProductSourceID   int64
+	ProductSourceType string
+	SupplierID        int64
+	ParentID          int64
+	ShopID            int64
+
+	Name string
+
+	Status    int
+	CreatedAt time.Time `sq:"create"`
+	UpdatedAt time.Time `sq:"update"`
+	DeletedAt time.Time
 }

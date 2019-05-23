@@ -2,13 +2,13 @@ package shop
 
 import (
 	"encoding/json"
-	url "net/url"
+	"net/url"
 	"strconv"
 
 	"github.com/golang/protobuf/jsonpb"
 
 	"etop.vn/backend/pb/common"
-	etopP "etop.vn/backend/pb/etop"
+	pbetop "etop.vn/backend/pb/etop"
 	"etop.vn/backend/pkg/etop/model"
 	catalogmodel "etop.vn/backend/pkg/services/catalog/model"
 )
@@ -203,7 +203,7 @@ func PbAuthorizedPartner(item *model.Partner, shop *model.Shop) *AuthorizedPartn
 	}
 	rUrl := GenerateRedirectAuthorizedPartnerURL(redirectUrl, shop)
 	return &AuthorizedPartnerResponse{
-		Partner:     etopP.PbPublicAccountInfo(item),
+		Partner:     pbetop.PbPublicAccountInfo(item),
 		RedirectUrl: rUrl,
 	}
 }

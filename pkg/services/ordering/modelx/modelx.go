@@ -32,12 +32,8 @@ type OrderWithFulfillments struct {
 }
 
 type GetOrdersQuery struct {
-	ShopIDs    []int64 // MixedAccount
-	SupplierID int64
-	PartnerID  int64
-
-	// If true, don't filter order lines from other suppliers
-	AllSuppliers bool
+	ShopIDs   []int64 // MixedAccount
+	PartnerID int64
 
 	Paging  *cm.Paging
 	Filters []cm.Filter

@@ -1,7 +1,6 @@
 package model
 
 import (
-	"encoding/json"
 	"fmt"
 	"strings"
 	"time"
@@ -26,14 +25,13 @@ const (
 var _ = sqlgenOrder(&Order{})
 
 type Order struct {
-	ID          int64
-	ShopID      int64
-	Code        string
-	EdCode      string
-	ProductIDs  []int64
-	VariantIDs  []int64
-	SupplierIDs []int64
-	PartnerID   int64
+	ID         int64
+	ShopID     int64
+	Code       string
+	EdCode     string
+	ProductIDs []int64
+	VariantIDs []int64
+	PartnerID  int64
 
 	Currency      string
 	PaymentMethod string
@@ -55,7 +53,6 @@ type Order struct {
 	CancelReason string
 
 	CustomerConfirm model.Status3
-	ExternalConfirm model.Status3
 	ShopConfirm     model.Status3
 	ConfirmStatus   model.Status3
 
@@ -99,8 +96,6 @@ type Order struct {
 	ExternalURL     string
 	ShopShipping    *OrderShipping
 	IsOutsideEtop   bool
-	// Fulfillments    []*Fulfillment `sq:"-"`
-	ExternalData *OrderExternal `sq:"-"`
 
 	// @deprecated: use try_on instead
 	GhnNoteCode string
@@ -112,7 +107,7 @@ type Order struct {
 
 func (m *Order) SelfURL(baseURL string, accType int) string {
 	switch accType {
-	case model.TagEtop, model.TagSupplier:
+	case model.TagEtop:
 		return ""
 
 	case model.TagShop:
@@ -264,123 +259,6 @@ type OrderDiscount struct {
 	Amount int    `json:"amount"`
 }
 
-var _ = sqlgenOrderExternal(&OrderExternal{})
-
-type OrderExternal struct {
-	ID                   int64
-	OrderSourceID        int64
-	ExternalOrderSource  string
-	ExternalProvider     string
-	ExternalOrderID      string
-	ExternalOrderCode    string
-	ExternalUserID       string
-	ExternalCustomerID   string
-	ExternalCreatedAt    time.Time
-	ExternalProcessedAt  time.Time
-	ExternalUpdatedAt    time.Time
-	ExternalClosedAt     time.Time
-	ExternalCancelledAt  time.Time
-	ExternalCancelReason string
-	ExternalLines        []*ExternalOrderLine
-	ExternalData         json.RawMessage
-}
-
-type OrderExternalCreate struct {
-	ID int64
-
-	OrderExternalCreateOrder
-	OrderExternalCreateExternal
-}
-
-var _ = sqlgenOrderExternalCreateOrder(&OrderExternalCreateOrder{}, &Order{})
-
-type OrderExternalCreateOrder struct {
-	ShopID          int64
-	Code            string
-	SupplierIDs     []int64 `sq:"'supplier_ids'"`
-	Currency        string
-	PaymentMethod   string
-	Customer        *OrderCustomer
-	CustomerAddress *OrderAddress
-	BillingAddress  *OrderAddress
-	ShippingAddress *OrderAddress
-	CustomerPhone   string
-	CustomerEmail   string
-
-	CreatedAt time.Time `sq:"create"`
-
-	ProcessedAt  time.Time
-	UpdatedAt    time.Time `sq:"update"`
-	ClosedAt     time.Time
-	ConfirmedAt  time.Time
-	CancelledAt  time.Time
-	CancelReason string
-
-	Lines         OrderLinesList
-	VariantIDs    []int64 `sq:"'variant_ids'"`
-	Discounts     []*OrderDiscount
-	TotalItems    int
-	BasketValue   int
-	TotalWeight   int
-	TotalTax      int
-	TotalDiscount int
-	TotalAmount   int
-	ShopCOD       int
-
-	ExternalConfirm model.Status3
-
-	OrderSourceType model.OrderSourceType
-	OrderSourceID   int64
-	ExternalOrderID string
-	IsOutsideEtop   bool
-}
-
-var _ = sqlgenOrderExternalCreateExternal(&OrderExternalCreateExternal{}, &OrderExternal{})
-
-type OrderExternalCreateExternal struct {
-	OrderSourceID        int64
-	ExternalOrderSource  string
-	ExternalOrderID      string
-	ExternalOrderCode    string
-	ExternalUserID       string
-	ExternalCustomerID   string
-	ExternalCreatedAt    time.Time `sq:"create"`
-	ExternalProcessedAt  time.Time
-	ExternalUpdatedAt    time.Time `sq:"update"`
-	ExternalClosedAt     time.Time
-	ExternalCancelledAt  time.Time
-	ExternalCancelReason string
-	ExternalLines        []*ExternalOrderLine
-
-	ExternalData json.RawMessage
-}
-
-type OrderExternalUpdate struct {
-	ID int64
-
-	OrderExternalUpdateOrder
-	OrderExternalUpdateExternal
-}
-
-var _ = sqlgenOrderExternalUpdateOrder(&OrderExternalUpdateOrder{}, &Order{})
-
-type OrderExternalUpdateOrder struct {
-	UpdatedAt    time.Time `sq:"update"`
-	ClosedAt     time.Time
-	CancelledAt  time.Time
-	CancelReason string
-
-	ExternalConfirm model.Status3
-}
-
-var _ = sqlgenOrderExternalUpdateExternal(&OrderExternalUpdateExternal{}, &OrderExternal{})
-
-type OrderExternalUpdateExternal struct {
-	ExternalUpdatedAt    time.Time `sq:"update"`
-	ExternalCancelledAt  time.Time
-	ExternalCancelReason string
-}
-
 type OrderLinesList []*OrderLine
 
 func (lines OrderLinesList) GetTotalItems() int {
@@ -444,15 +322,7 @@ type OrderLine struct {
 	ProductName string `json:"product_name"`
 	ProductID   int64  `json:"product_id"`
 
-	SupplierID int64 `json:"supplier_id"`
-	ShopID     int64 `json:"shop_id"`
-
-	ExternalVariantID       string `json:"x_variant_id"`
-	ExternalSupplierOrderID string `json:"-"`
-
-	SupplierName string `json:"supplier_name"`
-
-	// Vendor      string `json:"vendor"` // supplier?
+	ShopID int64 `json:"shop_id"`
 
 	// CreatedAt    time.Time `json:"-"`
 	// CreatedBy    int64     `json:"-"`
@@ -464,10 +334,6 @@ type OrderLine struct {
 	CancelledAt time.Time `json:"-" `
 	// CancelledBy  int64     `json:"-"`
 	CancelReason string `json:"-"`
-
-	SupplierConfirm model.Status3 `json:"-"`
-	// EtopConfirm     int `json:"etop_confirm"`
-	// ConfirmStatus int `json:"confirm_status"`
 
 	Status model.Status3 `json:"-"`
 
@@ -523,57 +389,33 @@ type OrderLineExtended struct {
 
 func (olExtended *OrderLineExtended) ToOrderLine() *OrderLine {
 	return &OrderLine{
-		OrderID:                 olExtended.OrderID,
-		VariantID:               olExtended.VariantID,
-		ProductName:             olExtended.ProductName,
-		ProductID:               olExtended.OrderLine.ProductID,
-		SupplierID:              olExtended.OrderLine.SupplierID,
-		ShopID:                  olExtended.OrderLine.ShopID,
-		ExternalVariantID:       olExtended.ExternalVariantID,
-		ExternalSupplierOrderID: olExtended.ExternalSupplierOrderID,
-		SupplierName:            olExtended.SupplierName,
-		UpdatedAt:               olExtended.OrderLine.UpdatedAt,
-		ClosedAt:                olExtended.OrderLine.ClosedAt,
-		ConfirmedAt:             olExtended.OrderLine.ConfirmedAt,
-		CancelledAt:             olExtended.OrderLine.CancelledAt,
-		CancelReason:            olExtended.OrderLine.CancelReason,
-		SupplierConfirm:         olExtended.OrderLine.SupplierConfirm,
-		Status:                  olExtended.OrderLine.Status,
-		Weight:                  olExtended.OrderLine.Weight,
-		Quantity:                olExtended.OrderLine.Quantity,
-		WholesalePrice0:         olExtended.OrderLine.WholesalePrice0,
-		WholesalePrice:          olExtended.OrderLine.WholesalePrice,
-		ListPrice:               olExtended.OrderLine.ListPrice,
-		RetailPrice:             olExtended.OrderLine.RetailPrice,
-		PaymentPrice:            olExtended.OrderLine.PaymentPrice,
-		LineAmount:              olExtended.OrderLine.LineAmount,
-		TotalDiscount:           olExtended.OrderLine.TotalDiscount,
-		TotalLineAmount:         olExtended.OrderLine.TotalLineAmount,
-		RequiresShipping:        olExtended.OrderLine.RequiresShipping,
-		ImageURL:                olExtended.OrderLine.ImageURL,
-		Attributes:              olExtended.Variant.Attributes,
-		IsOutsideEtop:           olExtended.OrderLine.IsOutsideEtop,
-		Code:                    olExtended.OrderLine.Code,
+		OrderID:          olExtended.OrderID,
+		VariantID:        olExtended.VariantID,
+		ProductName:      olExtended.ProductName,
+		ProductID:        olExtended.OrderLine.ProductID,
+		ShopID:           olExtended.OrderLine.ShopID,
+		UpdatedAt:        olExtended.OrderLine.UpdatedAt,
+		ClosedAt:         olExtended.OrderLine.ClosedAt,
+		ConfirmedAt:      olExtended.OrderLine.ConfirmedAt,
+		CancelledAt:      olExtended.OrderLine.CancelledAt,
+		CancelReason:     olExtended.OrderLine.CancelReason,
+		Status:           olExtended.OrderLine.Status,
+		Weight:           olExtended.OrderLine.Weight,
+		Quantity:         olExtended.OrderLine.Quantity,
+		WholesalePrice0:  olExtended.OrderLine.WholesalePrice0,
+		WholesalePrice:   olExtended.OrderLine.WholesalePrice,
+		ListPrice:        olExtended.OrderLine.ListPrice,
+		RetailPrice:      olExtended.OrderLine.RetailPrice,
+		PaymentPrice:     olExtended.OrderLine.PaymentPrice,
+		LineAmount:       olExtended.OrderLine.LineAmount,
+		TotalDiscount:    olExtended.OrderLine.TotalDiscount,
+		TotalLineAmount:  olExtended.OrderLine.TotalLineAmount,
+		RequiresShipping: olExtended.OrderLine.RequiresShipping,
+		ImageURL:         olExtended.OrderLine.ImageURL,
+		Attributes:       olExtended.Variant.Attributes,
+		IsOutsideEtop:    olExtended.OrderLine.IsOutsideEtop,
+		Code:             olExtended.OrderLine.Code,
 	}
-}
-
-type ExternalOrderLine struct {
-	ID        string `json:"id"`
-	ProductID string `json:"product_id"`
-	VariantID string `json:"variant_id"`
-	SKU       string `json:"sku"`
-
-	Name        string `json:"name"`
-	Title       string `json:"title"`
-	VariantName string `json:"variant_name"`
-	Vendor      string `json:"vendor"`
-	Type        string `json:"type"`
-
-	Weight         int `json:"weight"`
-	Quantity       int `json:"quantity"`
-	Price          int `json:"price"`
-	PriceOriginal  int `json:"price_original"`
-	PricePromotion int `json:"price_promotion"`
 }
 
 type OrderFeeLine struct {

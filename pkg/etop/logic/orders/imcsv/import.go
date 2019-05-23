@@ -15,9 +15,9 @@ import (
 	"github.com/360EntSecGroup-Skylar/excelize"
 
 	"etop.vn/api/main/location"
-	cmP "etop.vn/backend/pb/common"
+	pbcm "etop.vn/backend/pb/common"
 	"etop.vn/backend/pb/etop/etc/ghn_note_code"
-	orderP "etop.vn/backend/pb/etop/order"
+	pborder "etop.vn/backend/pb/etop/order"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/httpx"
@@ -43,7 +43,7 @@ func HandleImportOrders(c *httpx.Context) error {
 		return err
 	}
 
-	respMsg := resp.(*orderP.ImportOrdersResponse)
+	respMsg := resp.(*pborder.ImportOrdersResponse)
 	if len(respMsg.CellErrors) > 0 {
 		// Allow re-uploading immediately after error
 		idempgroup.ReleaseKey(key, claim.Token)
@@ -52,7 +52,7 @@ func HandleImportOrders(c *httpx.Context) error {
 	return nil
 }
 
-func handleImportOrder(ctx context.Context, c *httpx.Context, shop *model.Shop, userID int64) (_resp *orderP.ImportOrdersResponse, _err error) {
+func handleImportOrder(ctx context.Context, c *httpx.Context, shop *model.Shop, userID int64) (_resp *pborder.ImportOrdersResponse, _err error) {
 	var debugOpts Debug
 	if cm.NotProd() {
 		var err error
@@ -125,11 +125,11 @@ func handleImportOrder(ctx context.Context, c *httpx.Context, shop *model.Shop, 
 		case len(_resp.CellErrors) > 0:
 			attempt.Status = model.S4Negative
 			attempt.ErrorType = "cell_errors"
-			attempt.Errors = cmP.ErrorsToModel(_resp.CellErrors)
+			attempt.Errors = pbcm.ErrorsToModel(_resp.CellErrors)
 			attempt.NError = len(_resp.CellErrors)
 
 		case len(_resp.ImportErrors) > 0:
-			count := cmP.CountErrors(_resp.ImportErrors)
+			count := pbcm.CountErrors(_resp.ImportErrors)
 			if count == 0 {
 				attempt.Status = model.S4Positive
 				attempt.NCreated = len(_resp.ImportErrors)
@@ -137,7 +137,7 @@ func handleImportOrder(ctx context.Context, c *httpx.Context, shop *model.Shop, 
 			} else {
 				attempt.Status = model.S4SuperPos // partially error
 				attempt.ErrorType = "import_errors"
-				attempt.Errors = cmP.ErrorsToModel(_resp.ImportErrors)
+				attempt.Errors = pbcm.ErrorsToModel(_resp.ImportErrors)
 				attempt.NError = count
 				attempt.NCreated = len(_resp.ImportErrors) - count
 			}
@@ -263,10 +263,10 @@ func handleImportOrder(ctx context.Context, c *httpx.Context, shop *model.Shop, 
 		return nil, cm.Errorf(cm.Internal, _errs[0], "Không thể import đơn hàng. Vui lòng liên hệ hotro@etop.vn.")
 	}
 
-	resp := &orderP.ImportOrdersResponse{
+	resp := &pborder.ImportOrdersResponse{
 		Data:         imp.toSpreadsheetData(idx),
-		Orders:       orderP.PbOrders(orders, model.TagShop),
-		ImportErrors: cmP.PbErrors(_errs),
+		Orders:       pborder.PbOrders(orders, model.TagShop),
+		ImportErrors: pbcm.PbErrors(_errs),
 	}
 	// Remove failed order from the response
 	for i, err := range _errs {
@@ -742,7 +742,6 @@ func parseRowToModel(idx imcsv.Indexer, mode Mode, shop *model.Shop, rowOrder *R
 		EdCode:                    rowOrder.OrderEdCode,
 		ProductIDs:                nil, // will be filled later
 		VariantIDs:                nil, // will be filled later
-		SupplierIDs:               nil,
 		Currency:                  model.CurrencyVND,
 		PaymentMethod:             "",
 		Customer:                  parseCustomer(rowOrder),
@@ -759,7 +758,6 @@ func parseRowToModel(idx imcsv.Indexer, mode Mode, shop *model.Shop, rowOrder *R
 		CancelledAt:               time.Time{},
 		CancelReason:              "",
 		CustomerConfirm:           0,
-		ExternalConfirm:           0,
 		ShopConfirm:               0,
 		ConfirmStatus:             0,
 		FulfillmentShippingStatus: 0,
@@ -786,7 +784,6 @@ func parseRowToModel(idx imcsv.Indexer, mode Mode, shop *model.Shop, rowOrder *R
 		ReferenceURL:              "",
 		ShopShipping:              nil,
 		IsOutsideEtop:             false, // will be filled later
-		ExternalData:              nil,
 		GhnNoteCode:               rowOrder.GHNNoteCode,
 		TryOn:                     model.TryOnFromGHNNoteCode(rowOrder.GHNNoteCode),
 	}
@@ -805,37 +802,32 @@ func parseLineToModel(idx imcsv.Indexer, mode Mode, rowOrderLine *RowOrderLine) 
 	}
 
 	line := &ordermodel.OrderLine{
-		OrderID:                 0, // will be filled when insert
-		VariantID:               0,
-		ProductName:             rowOrderLine.VariantName,
-		ProductID:               0,
-		SupplierID:              0,
-		ShopID:                  0, // will be filled later
-		ExternalVariantID:       "",
-		ExternalSupplierOrderID: "",
-		SupplierName:            "",
-		UpdatedAt:               time.Time{},
-		ClosedAt:                time.Time{},
-		ConfirmedAt:             time.Time{},
-		CancelledAt:             time.Time{},
-		CancelReason:            "",
-		SupplierConfirm:         0,
-		Status:                  0,
-		Weight:                  0,
-		Quantity:                rowOrderLine.Quantity,
-		WholesalePrice0:         0,
-		WholesalePrice:          0,
-		ListPrice:               0,
-		RetailPrice:             rowOrderLine.RetailPrice,
-		PaymentPrice:            rowOrderLine.PaymentPrice,
-		LineAmount:              rowOrderLine.LineAmount,
-		TotalDiscount:           rowOrderLine.LineAmount - rowOrderLine.LineTotalAmount,
-		TotalLineAmount:         rowOrderLine.LineTotalAmount,
-		RequiresShipping:        false,
-		ImageURL:                "",
-		Attributes:              nil,
-		IsOutsideEtop:           false,
-		Code:                    rowOrderLine.VariantEdCode,
+		OrderID:          0, // will be filled when insert
+		VariantID:        0,
+		ProductName:      rowOrderLine.VariantName,
+		ProductID:        0,
+		ShopID:           0, // will be filled later
+		UpdatedAt:        time.Time{},
+		ClosedAt:         time.Time{},
+		ConfirmedAt:      time.Time{},
+		CancelledAt:      time.Time{},
+		CancelReason:     "",
+		Status:           0,
+		Weight:           0,
+		Quantity:         rowOrderLine.Quantity,
+		WholesalePrice0:  0,
+		WholesalePrice:   0,
+		ListPrice:        0,
+		RetailPrice:      rowOrderLine.RetailPrice,
+		PaymentPrice:     rowOrderLine.PaymentPrice,
+		LineAmount:       rowOrderLine.LineAmount,
+		TotalDiscount:    rowOrderLine.LineAmount - rowOrderLine.LineTotalAmount,
+		TotalLineAmount:  rowOrderLine.LineTotalAmount,
+		RequiresShipping: false,
+		ImageURL:         "",
+		Attributes:       nil,
+		IsOutsideEtop:    false,
+		Code:             rowOrderLine.VariantEdCode,
 	}
 	if rowOrderLine.VariantExtended != nil {
 		line.ProductID = rowOrderLine.Product.ID

@@ -1,7 +1,7 @@
 package admin
 
 import (
-	etopP "etop.vn/backend/pb/etop"
+	pbetop "etop.vn/backend/pb/etop"
 	"etop.vn/backend/pkg/etop/model"
 )
 
@@ -22,6 +22,6 @@ func (m *CreatePartnerRequest) ToModel() *model.Partner {
 		Email:          p.Email,
 		ImageURL:       p.ImageUrl,
 		WebsiteURL:     p.WebsiteUrl,
-		ContactPersons: etopP.ContactPersonsToModel(p.ContactPersons),
+		ContactPersons: pbetop.ContactPersonsToModel(p.ContactPersons),
 	}
 }

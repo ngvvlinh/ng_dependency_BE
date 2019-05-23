@@ -90,40 +90,6 @@ func (g *GetVariantsExtendedQuery) IsPaging() bool {
 	return !g.SkipPaging
 }
 
-type GetVariantExternalsQuery struct {
-	SupplierID int64
-
-	Paging  *cm.Paging
-	Filters []cm.Filter
-	IDs     []int64
-	model.StatusQuery
-
-	Result struct {
-		Variants []*catalogmodel.VariantExternalExtended
-		Total    int
-	}
-}
-
-type GetVariantExternalsFromIDQuery struct {
-	FromID int64
-	Limit  int
-
-	Result ScanVariantExternalsResult
-}
-
-type ScanVariantExternalsQuery struct {
-	FromID   int64
-	Limit    int
-	PageSize int
-
-	Result chan ScanVariantExternalsResult
-}
-
-type ScanVariantExternalsResult struct {
-	MaxID    int64
-	Variants []*catalogmodel.VariantExternalExtended
-}
-
 type UpdateProductCommand struct {
 	SupplierID int64
 
@@ -488,4 +454,125 @@ type CreateVariantCommand struct {
 	DescHTML          string
 
 	Result *catalogmodel.ShopProductFtVariant
+}
+
+type CreateProductSourceCommand struct {
+	ShopID int64
+	Name   string
+	Type   string
+
+	Result *catalogmodel.ProductSource
+}
+
+type GetShopProductSourcesCommand struct {
+	UserID int64
+	ShopID int64
+
+	Result []*catalogmodel.ProductSource
+}
+
+type GetProductSourceQuery struct {
+	GetProductSourceProps
+	Result *catalogmodel.ProductSource
+}
+
+type GetAllProductSourcesQuery struct {
+	External *bool
+	Supplier *bool
+
+	Result struct {
+		Sources []*catalogmodel.ProductSource
+	}
+}
+
+type GetProductSourceProps struct {
+	ID          int64
+	Type        string
+	ExternalKey string
+}
+
+type RemoveProductSourceCommand struct {
+	ShopID int64
+
+	Result struct {
+		Updated int
+	}
+}
+
+type CreateProductSourceCategoryCommand struct {
+	ShopID            int64
+	Name              string
+	ProductSourceID   int64
+	ProductSourceType string
+	ParentID          int64
+
+	Result *catalogmodel.ProductSourceCategory
+}
+
+type UpdateProductsProductSourceCategoryCommand struct {
+	CategoryID      int64
+	ProductIDs      []int64
+	ShopID          int64
+	ProductSourceID int64
+
+	Result struct {
+		Updated int
+	}
+}
+
+type ConnectProductSourceCommand struct {
+	ProductSourceID int64
+	ShopID          int64
+
+	Result struct {
+		Updated int
+	}
+}
+
+type GetProductSourceCategoryQuery struct {
+	SupplierID int64
+	ShopID     int64
+	CategoryID int64
+
+	Result *catalogmodel.ProductSourceCategory
+}
+
+type GetProductSourceCategoriesExtendedQuery struct {
+	SupplierID        int64
+	ShopID            int64
+	IDs               []int64
+	ProductSourceType string
+
+	Result struct {
+		Categories []*catalogmodel.ProductSourceCategory
+	}
+}
+
+type GetProductSourceCategoriesQuery struct {
+	SupplierID        int64
+	ShopID            int64
+	IDs               []int64
+	ProductSourceType string
+
+	Result struct {
+		Categories []*catalogmodel.ProductSourceCategory
+	}
+}
+
+type UpdateShopProductSourceCategoryCommand struct {
+	ID       int64
+	ShopID   int64
+	ParentID int64
+	Name     string
+
+	Result *catalogmodel.ProductSourceCategory
+}
+
+type RemoveShopProductSourceCategoryCommand struct {
+	ID     int64
+	ShopID int64
+
+	Result struct {
+		Removed int
+	}
 }

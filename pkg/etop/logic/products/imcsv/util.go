@@ -8,16 +8,16 @@ import (
 	"mime/multipart"
 	"net/http"
 
-	cmP "etop.vn/backend/pb/common"
-	spreadsheetP "etop.vn/backend/pb/common/spreadsheet"
-	shopP "etop.vn/backend/pb/etop/shop"
+	pbcm "etop.vn/backend/pb/common"
+	pbsheet "etop.vn/backend/pb/common/spreadsheet"
+	pbshop "etop.vn/backend/pb/etop/shop"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/httpx"
 	"etop.vn/backend/pkg/common/idemp"
 	"etop.vn/backend/pkg/common/imcsv"
 	"etop.vn/backend/pkg/common/l"
 	"etop.vn/backend/pkg/common/redis"
-	cmService "etop.vn/backend/pkg/common/service"
+	cmservice "etop.vn/backend/pkg/common/service"
 	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/backend/pkg/etop/upload"
 )
@@ -28,7 +28,7 @@ var uploader *upload.Uploader
 
 const PrefixIdemp = "IdempImportProduct"
 
-func Init(sd cmService.Shutdowner, rd redis.Store, ul *upload.Uploader) {
+func Init(sd cmservice.Shutdowner, rd redis.Store, ul *upload.Uploader) {
 	idempgroup = idemp.NewRedisGroup(rd, PrefixIdemp, 5*60) // 5 minutes
 	sd.Register(idempgroup.Shutdown)
 
@@ -92,16 +92,16 @@ func parseRequest(c *httpx.Context) (Mode, *multipart.FileHeader, error) {
 	return mode, files[0], nil
 }
 
-func (imp *Importer) generateErrorResponse(errs []error) (*shopP.ImportProductsResponse, error) {
-	resp := &shopP.ImportProductsResponse{
+func (imp *Importer) generateErrorResponse(errs []error) (*pbshop.ImportProductsResponse, error) {
+	resp := &pbshop.ImportProductsResponse{
 		Data:       imp.toSpreadsheetData(imcsv.Indexer{}),
-		CellErrors: cmP.PbErrors(errs),
+		CellErrors: pbcm.PbErrors(errs),
 	}
 	return resp, nil
 }
 
-func (imp *Importer) toSpreadsheetData(idx imcsv.Indexer) *spreadsheetP.SpreadsheetData {
-	return spreadsheetP.ToSpreadsheetData(imp.Schema, idx, imp.Rows, imp.LastRow)
+func (imp *Importer) toSpreadsheetData(idx imcsv.Indexer) *pbsheet.SpreadsheetData {
+	return pbsheet.ToSpreadsheetData(imp.Schema, idx, imp.Rows, imp.LastRow)
 }
 
 func uploadFile(id int64, data []byte) (*upload.StoreFileCommand, error) {

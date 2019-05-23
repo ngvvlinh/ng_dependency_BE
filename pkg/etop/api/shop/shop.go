@@ -33,14 +33,12 @@ func init() {
 	bus.AddHandler("api", GetCollection)
 	bus.AddHandler("api", GetCollections)
 	bus.AddHandler("api", GetCollectionsByIDs)
-	bus.AddHandler("api", GetPriceRules)
 	bus.AddHandler("api", GetVariant)
 	bus.AddHandler("api", GetVariants)
 	bus.AddHandler("api", GetVariantsByIDs)
 	bus.AddHandler("api", RemoveVariants)
 	bus.AddHandler("api", RemoveProductsCollection)
 	bus.AddHandler("api", UpdateCollection)
-	bus.AddHandler("api", UpdatePriceRules)
 	bus.AddHandler("api", UpdateVariant)
 	bus.AddHandler("api", UpdateProducts)
 	bus.AddHandler("api", UpdateProductsCollection)
@@ -60,7 +58,6 @@ func init() {
 	bus.AddHandler("api", CreateProductSource)
 	bus.AddHandler("api", CreateVariant)
 	bus.AddHandler("api", GetShopProductSources)
-	bus.AddHandler("api", ConnectProductSource)
 	bus.AddHandler("api", CreateProductSourceCategory)
 	bus.AddHandler("api", UpdateProductsPSCategory)
 	bus.AddHandler("api", UpdateProductImages)
@@ -265,14 +262,6 @@ func AddVariants(ctx context.Context, q *wrapshop.AddVariantsEndpoint) error {
 		Errors:   pbcm.PbErrors(cmd.Result.Errors),
 	}
 	return nil
-}
-
-func GetPriceRules(ctx context.Context, q *wrapshop.GetPriceRulesEndpoint) error {
-	return cm.ErrTODO
-}
-
-func UpdatePriceRules(ctx context.Context, q *wrapshop.UpdatePriceRulesEndpoint) error {
-	return cm.ErrTODO
 }
 
 func CreateCollection(ctx context.Context, q *wrapshop.CreateCollectionEndpoint) error {
@@ -499,7 +488,7 @@ func UpdateProductsTags(ctx context.Context, q *wrapshop.UpdateProductsTagsEndpo
 
 func CreateProductSource(ctx context.Context, q *wrapshop.CreateProductSourceEndpoint) error {
 	shopID := q.Context.Shop.ID
-	cmd := &model.CreateProductSourceCommand{
+	cmd := &catalogmodelx.CreateProductSourceCommand{
 		ShopID: shopID,
 		Name:   q.Name,
 		Type:   q.Type.ToModel(),
@@ -543,7 +532,7 @@ func CreateVariant(ctx context.Context, q *wrapshop.CreateVariantEndpoint) error
 }
 
 func GetShopProductSources(ctx context.Context, q *wrapshop.GetShopProductSourcesEndpoint) error {
-	query := &model.GetShopProductSourcesCommand{}
+	query := &catalogmodelx.GetShopProductSourcesCommand{}
 	if q.Context.User != nil {
 		query.UserID = q.Context.User.ID
 	} else {
@@ -559,39 +548,8 @@ func GetShopProductSources(ctx context.Context, q *wrapshop.GetShopProductSource
 	return nil
 }
 
-func ConnectProductSource(ctx context.Context, q *wrapshop.ConnectProductSourceEndpoint) error {
-	cmd := &model.ConnectProductSourceCommand{
-		ShopID:          q.Context.Shop.ID,
-		ProductSourceID: q.ProductSourceId,
-	}
-	if err := bus.Dispatch(ctx, cmd); err != nil {
-		return err
-	}
-
-	q.Result = &pbcm.UpdatedResponse{
-		Updated: int32(cmd.Result.Updated),
-	}
-	return nil
-}
-
-// func RemoveProductSource(ctx context.Context, q *wrapshop.RemoveProductSourceEndpoint) error {
-// 	cmd := &model.RemoveProductSourceCommand{
-// 		AccountID: q.Context.Shop.ID,
-// 	}
-
-// 	if err := bus.Dispatch(ctx, cmd); err != nil {
-// 		return err
-// 	}
-
-// 	q.Result = &pbcm.UpdatedResponse{
-// 		Updated: int32(cmd.Result.Updated),
-// 	}
-
-// 	return nil
-// }
-
 func CreateProductSourceCategory(ctx context.Context, q *wrapshop.CreateProductSourceCategoryEndpoint) error {
-	cmd := &model.CreateProductSourceCategoryCommand{
+	cmd := &catalogmodelx.CreateProductSourceCategoryCommand{
 		ShopID:            q.Context.Shop.ID,
 		Name:              q.Name,
 		ParentID:          q.ParentId,
@@ -602,12 +560,12 @@ func CreateProductSourceCategory(ctx context.Context, q *wrapshop.CreateProductS
 	if err := bus.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
-	q.Result = PbProductSourceCategory(cmd.Result)
+	q.Result = convertpb.PbCategory(cmd.Result)
 	return nil
 }
 
 func UpdateProductsPSCategory(ctx context.Context, q *wrapshop.UpdateProductsPSCategoryEndpoint) error {
-	cmd := &model.UpdateProductsProductSourceCategoryCommand{
+	cmd := &catalogmodelx.UpdateProductsProductSourceCategoryCommand{
 		CategoryID:      q.CategoryId,
 		ProductIDs:      q.ProductIds,
 		ShopID:          q.Context.Shop.ID,
@@ -623,7 +581,7 @@ func UpdateProductsPSCategory(ctx context.Context, q *wrapshop.UpdateProductsPSC
 }
 
 func GetProductSourceCategory(ctx context.Context, q *wrapshop.GetProductSourceCategoryEndpoint) error {
-	cmd := &model.GetProductSourceCategoryQuery{
+	cmd := &catalogmodelx.GetProductSourceCategoryQuery{
 		ShopID:     q.Context.Shop.ID,
 		CategoryID: q.Id,
 	}
@@ -637,7 +595,7 @@ func GetProductSourceCategory(ctx context.Context, q *wrapshop.GetProductSourceC
 }
 
 func GetProductSourceCategories(ctx context.Context, q *wrapshop.GetProductSourceCategoriesEndpoint) error {
-	cmd := &model.GetProductSourceCategoriesExtendedQuery{
+	cmd := &catalogmodelx.GetProductSourceCategoriesExtendedQuery{
 		ProductSourceType: q.Type.ToModel(),
 		ShopID:            q.Context.Shop.ID,
 	}
@@ -653,7 +611,7 @@ func GetProductSourceCategories(ctx context.Context, q *wrapshop.GetProductSourc
 }
 
 func UpdateProductSourceCategory(ctx context.Context, q *wrapshop.UpdateProductSourceCategoryEndpoint) error {
-	cmd := &model.UpdateShopProductSourceCategoryCommand{
+	cmd := &catalogmodelx.UpdateShopProductSourceCategoryCommand{
 		ID:       q.Id,
 		ShopID:   q.Context.Shop.ID,
 		ParentID: q.ParentId,
@@ -667,7 +625,7 @@ func UpdateProductSourceCategory(ctx context.Context, q *wrapshop.UpdateProductS
 }
 
 func RemoveProductSourceCategory(ctx context.Context, q *wrapshop.RemoveProductSourceCategoryEndpoint) error {
-	cmd := &model.RemoveShopProductSourceCategoryCommand{
+	cmd := &catalogmodelx.RemoveShopProductSourceCategoryCommand{
 		ID:     q.Id,
 		ShopID: q.Context.Shop.ID,
 	}

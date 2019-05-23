@@ -117,24 +117,12 @@ func PbOrder(m *ordermodel.Order, fulfillments []*shipmodel.Fulfillment, accType
 		Fulfillments:              PbFulfillments(fulfillments, accType),
 		ShopShipping:              nil,
 		Shipping:                  nil,
-		ExternalData:              PbOrderExternal(m.ExternalData),
 		GhnNoteCode:               m.GhnNoteCode,
 	}
 	shipping := PbOrderShipping(m)
 	order.ShopShipping = shipping
 	order.Shipping = shipping
 	return order
-}
-
-func PbOrderExternal(item *ordermodel.OrderExternal) *OrderExternal {
-	if item == nil {
-		return nil
-	}
-	return &OrderExternal{
-		OrderId:           item.ID,
-		ExternalOrderId:   item.ExternalOrderID,
-		ExternalOrderCode: item.ExternalOrderCode,
-	}
 }
 
 var exportedOrderShipping = cm.SortStrings([]string{
@@ -493,7 +481,6 @@ var exportedOrderLine = cm.SortStrings([]string{
 	"order_id", "product_id", "variant_id",
 	"product_name", "image_url", "attributes",
 	"quantity", "list_price", "retail_price", "payment_price",
-	"created_at", "updated_at",
 })
 
 func PbOrderLine(m *ordermodel.OrderLine) *OrderLine {
@@ -505,15 +492,8 @@ func PbOrderLine(m *ordermodel.OrderLine) *OrderLine {
 
 		OrderId:       m.OrderID,
 		VariantId:     m.VariantID,
-		XVariantId:    m.ExternalVariantID,
 		ProductName:   m.ProductName,
 		IsOutsideEtop: m.IsOutsideEtop,
-		UpdatedAt:     pbcm.PbTime(m.UpdatedAt),
-		ClosedAt:      pbcm.PbTime(m.ClosedAt),
-		ConfirmedAt:   pbcm.PbTime(m.ConfirmedAt),
-		CancelledAt:   pbcm.PbTime(m.CancelledAt),
-		CancelReason:  m.CancelReason,
-		SConfirm:      pbs3.Pb(m.SupplierConfirm),
 		Quantity:      int32(m.Quantity),
 		ListPrice:     int32(m.ListPrice),
 		RetailPrice:   int32(m.RetailPrice),
@@ -622,7 +602,6 @@ func PbFulfillment(m *shipmodel.Fulfillment, accType int, shop *model.Shop, orde
 		TryOn:                              pbtryon.PbTryOn(m.TryOn),
 		IncludeInsurance:                   m.IncludeInsurance,
 		ShConfirm:                          pbs3.Pb(m.ShopConfirm),
-		SConfirm:                           pbs3.Pb(m.SupplierConfirm),
 		ShippingState:                      pbshipping.Pb(m.ShippingState),
 		Status:                             pbs5.Pb(m.Status),
 		ShippingStatus:                     pbs5.Pb(m.ShippingStatus),

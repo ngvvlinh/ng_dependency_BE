@@ -4,9 +4,6 @@ import (
 	pbcm "etop.vn/backend/pb/common"
 	pbs3 "etop.vn/backend/pb/etop/etc/status3"
 	pbshop "etop.vn/backend/pb/etop/shop"
-	"etop.vn/backend/pkg/etop/api/admin"
-	"etop.vn/backend/pkg/etop/api/convertpb"
-	"etop.vn/backend/pkg/etop/model"
 	catalogmodel "etop.vn/backend/pkg/services/catalog/model"
 )
 
@@ -23,53 +20,18 @@ func PbEtopVariants(items []*catalogmodel.VariantExtended) []*pbshop.EtopVariant
 
 func PbEtopVariant(m *catalogmodel.VariantExtended) *pbshop.EtopVariant {
 	res := &pbshop.EtopVariant{
-		Id: m.ID,
-		// ShortName:         strings.Join([]string{m.Product.Name, m.Name}, " - "),
-		Name:              m.GetName(),
-		Description:       coalesce(m.Description, m.EdDescription),
-		ShortDesc:         coalesce(m.ShortDesc, m.EdShortDesc),
-		DescHtml:          coalesce(m.DescHTML, m.EdDescHTML),
-		ImageUrls:         coalesceStrings(m.ImageURLs),
-		WholesalePrice:    int32(m.WholesalePrice),
-		ListPrice:         int32(m.ListPrice),
-		RetailPriceMin:    int32(m.RetailPriceMin),
-		RetailPriceMax:    int32(m.RetailPriceMax),
-		IsAvailable:       m.IsAvailable(),
-		QuantityAvailable: int32(m.QuantityAvailable),
-		Status:            pbs3.Pb(m.Status),
-
-		Code:   m.Code,
-		EdCode: m.EdCode,
-
-		// deprecated
-		Sku: m.Code,
-
-		// XId:         m.ExternalID,
-		// XBaseId:     m.ExternalBaseID,
-		// XAttributes: supplier.PbAttributes(m.VariantExternal.ExternalAttributes),
-
-		SMeta:      pbcm.RawJSONObjectMsg(m.SupplierMeta),
-		CostPrice:  int32(m.CostPrice),
-		Attributes: convertpb.PbAttributes(m.Attributes),
-		UpdatedAt:  pbcm.PbTime(m.Product.UpdatedAt),
-		CreatedAt:  pbcm.PbTime(m.Product.CreatedAt),
-	}
-
-	if m.VariantExternal != nil {
-		res.XAttributes = convertpb.PbAttributes(m.VariantExternal.ExternalAttributes)
-	}
-
-	if m.Product != nil {
-		res.CategoryId = m.Product.EtopCategoryID
-	}
-
-	return res
-}
-
-func PbEtopProducts(items []*catalogmodel.ProductFtVariant) []*pbshop.EtopProduct {
-	res := make([]*pbshop.EtopProduct, len(items))
-	for i, item := range items {
-		res[i] = PbEtopProduct(item)
+		Id:             m.ID,
+		Code:           m.EdCode, // yes, it's EdCode
+		ListPrice:      int32(m.ListPrice),
+		CostPrice:      int32(m.CostPrice),
+		WholesalePrice: 0,
+		RetailPriceMin: 0,
+		RetailPriceMax: 0,
+		Name:           m.GetName(),
+		Description:    coalesce(m.Description, m.EdDescription),
+		ShortDesc:      coalesce(m.ShortDesc, m.EdShortDesc),
+		DescHtml:       coalesce(m.DescHTML, m.EdDescHTML),
+		ImageUrls:      coalesceStrings(m.ImageURLs),
 	}
 	return res
 }
@@ -86,18 +48,8 @@ func PbEtopProduct(m *catalogmodel.ProductFtVariant) *pbshop.EtopProduct {
 		ShortDesc:         coalesce(m.EdShortDesc, m.ShortDesc, m.Product.ShortDesc),
 		DescHtml:          coalesce(m.EdDescHTML, m.DescHTML, m.Product.DescHTML),
 		ImageUrls:         m.Product.ImageURLs,
-		IsAvailable:       m.IsAvailable(),
-		QuantityAvailable: int32(m.QuantityAvailable),
-		Status:            pbs3.Pb(m.Product.Status),
-		Code:              m.Product.Code,
-		EdCode:            m.Product.EdCode,
-		Unit:              m.Product.Unit,
-
-		// XId:         m.ExternalID,
-
-		Variants:  PbEtopVariants(admin.VExternalExtendedToVExtended(m.Variants)),
-		UpdatedAt: pbcm.PbTime(m.Product.UpdatedAt),
-		CreatedAt: pbcm.PbTime(m.Product.CreatedAt),
+		QuantityAvailable: 100,
+		Code:              m.Product.EdCode, // yes, it's EdCode
 	}
 }
 
@@ -234,7 +186,7 @@ func contain(ss []string, s string) bool {
 	return false
 }
 
-func PbProductSources(items []*model.ProductSource) []*pbshop.ProductSource {
+func PbProductSources(items []*catalogmodel.ProductSource) []*pbshop.ProductSource {
 	result := make([]*pbshop.ProductSource, len(items))
 	for i, item := range items {
 		result[i] = PbProductSource(item)
@@ -242,7 +194,7 @@ func PbProductSources(items []*model.ProductSource) []*pbshop.ProductSource {
 	return result
 }
 
-func PbProductSource(m *model.ProductSource) *pbshop.ProductSource {
+func PbProductSource(m *catalogmodel.ProductSource) *pbshop.ProductSource {
 	return &pbshop.ProductSource{
 		Id:        m.ID,
 		Type:      m.Type,
@@ -250,24 +202,5 @@ func PbProductSource(m *model.ProductSource) *pbshop.ProductSource {
 		Status:    pbs3.Pb(m.Status),
 		CreatedAt: pbcm.PbTime(m.CreatedAt),
 		UpdatedAt: pbcm.PbTime(m.UpdatedAt),
-	}
-}
-
-func PbProductSourceCategories(items []*model.ProductSourceCategory) []*pbshop.ProductSourceCategory {
-	result := make([]*pbshop.ProductSourceCategory, len(items))
-	for i, item := range items {
-		result[i] = PbProductSourceCategory(item)
-	}
-	return result
-}
-
-func PbProductSourceCategory(m *model.ProductSourceCategory) *pbshop.ProductSourceCategory {
-	return &pbshop.ProductSourceCategory{
-		Id:                m.ID,
-		Name:              m.Name,
-		ProductSourceId:   m.ProductSourceID,
-		ProductSourceType: m.ProductSourceType,
-		ParentId:          m.ParentID,
-		ShopId:            m.ShopID,
 	}
 }

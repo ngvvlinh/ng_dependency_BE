@@ -223,188 +223,6 @@
         ]
       }
     },
-    "/api/shop.Browse/BrowseCategories": {
-      "post": {
-        "operationId": "BrowseCategories",
-        "responses": {
-          "200": {
-            "description": "",
-            "schema": {
-              "$ref": "#/definitions/etopCategoriesResponse"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/cmEmpty"
-            }
-          }
-        ],
-        "tags": [
-          "Browse"
-        ]
-      }
-    },
-    "/api/shop.Browse/BrowseProduct": {
-      "post": {
-        "operationId": "BrowseProduct",
-        "responses": {
-          "200": {
-            "description": "",
-            "schema": {
-              "$ref": "#/definitions/shopEtopProduct"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/cmIDRequest"
-            }
-          }
-        ],
-        "tags": [
-          "Browse"
-        ]
-      }
-    },
-    "/api/shop.Browse/BrowseProducts": {
-      "post": {
-        "operationId": "BrowseProducts",
-        "responses": {
-          "200": {
-            "description": "",
-            "schema": {
-              "$ref": "#/definitions/shopEtopProductsResponse"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/shopBrowseVariantsRequest"
-            }
-          }
-        ],
-        "tags": [
-          "Browse"
-        ]
-      }
-    },
-    "/api/shop.Browse/BrowseProductsByIDs": {
-      "post": {
-        "operationId": "BrowseProductsByIDs",
-        "responses": {
-          "200": {
-            "description": "",
-            "schema": {
-              "$ref": "#/definitions/shopEtopProductsResponse"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/cmIDsRequest"
-            }
-          }
-        ],
-        "tags": [
-          "Browse"
-        ]
-      }
-    },
-    "/api/shop.Browse/BrowseVariant": {
-      "post": {
-        "operationId": "BrowseVariant",
-        "responses": {
-          "200": {
-            "description": "",
-            "schema": {
-              "$ref": "#/definitions/shopEtopVariant"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/cmIDRequest"
-            }
-          }
-        ],
-        "tags": [
-          "Browse"
-        ]
-      }
-    },
-    "/api/shop.Browse/BrowseVariants": {
-      "post": {
-        "operationId": "BrowseVariants",
-        "responses": {
-          "200": {
-            "description": "",
-            "schema": {
-              "$ref": "#/definitions/shopEtopVariantsResponse"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/shopBrowseVariantsRequest"
-            }
-          }
-        ],
-        "tags": [
-          "Browse"
-        ]
-      }
-    },
-    "/api/shop.Browse/BrowseVariantsByIDs": {
-      "post": {
-        "operationId": "BrowseVariantsByIDs",
-        "responses": {
-          "200": {
-            "description": "",
-            "schema": {
-              "$ref": "#/definitions/shopEtopVariantsResponse"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/cmIDsRequest"
-            }
-          }
-        ],
-        "tags": [
-          "Browse"
-        ]
-      }
-    },
     "/api/shop.Collection/CreateCollection": {
       "post": {
         "operationId": "CreateCollection",
@@ -1368,58 +1186,6 @@
         ]
       }
     },
-    "/api/shop.Price/GetPriceRules": {
-      "post": {
-        "operationId": "GetPriceRules",
-        "responses": {
-          "200": {
-            "description": "",
-            "schema": {
-              "$ref": "#/definitions/shopPriceRulesResponse"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/cmEmpty"
-            }
-          }
-        ],
-        "tags": [
-          "Price"
-        ]
-      }
-    },
-    "/api/shop.Price/UpdatePriceRules": {
-      "post": {
-        "operationId": "UpdatePriceRules",
-        "responses": {
-          "200": {
-            "description": "",
-            "schema": {
-              "$ref": "#/definitions/shopUpdatePriceRulesResponse"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/shopUpdatePriceRulesRequest"
-            }
-          }
-        ],
-        "tags": [
-          "Price"
-        ]
-      }
-    },
     "/api/shop.Product/AddProducts": {
       "post": {
         "operationId": "AddProducts",
@@ -1579,7 +1345,7 @@
     "/api/shop.Product/GetVariants": {
       "post": {
         "summary": "GetVariants",
-        "description": "Return list of variant.\n\nFilters: The same as supplier.GetVariants, plus\n  - Text or set: name, tags (not s_tags)\n  - Exactly: collection_id\n  - Numeric: retail_price",
+        "description": "Return list of variant.\n\nFilters: The same as supplier.GetVariants, plus\n  - Exactly: collection_id\n  - Numeric: retail_price",
         "operationId": "GetVariants",
         "responses": {
           "200": {
@@ -1916,32 +1682,6 @@
         ]
       }
     },
-    "/api/shop.ProductSource/ConnectProductSource": {
-      "post": {
-        "operationId": "ConnectProductSource",
-        "responses": {
-          "200": {
-            "description": "",
-            "schema": {
-              "$ref": "#/definitions/cmUpdatedResponse"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/shopConnectProductSourceResquest"
-            }
-          }
-        ],
-        "tags": [
-          "ProductSource"
-        ]
-      }
-    },
     "/api/shop.ProductSource/CreateProductSource": {
       "post": {
         "operationId": "CreateProductSource",
@@ -1975,7 +1715,7 @@
           "200": {
             "description": "",
             "schema": {
-              "$ref": "#/definitions/shopProductSourceCategory"
+              "$ref": "#/definitions/shopCategory"
             }
           }
         },
@@ -2520,41 +2260,6 @@
           "type": "string"
         }
       }
-    },
-    "etopCategoriesResponse": {
-      "type": "object",
-      "properties": {
-        "categories": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/etopCategory"
-          }
-        }
-      }
-    },
-    "etopCategory": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "string",
-          "format": "int64"
-        },
-        "name": {
-          "type": "string"
-        },
-        "status": {
-          "$ref": "#/definitions/status3Status"
-        },
-        "parent_id": {
-          "type": "string",
-          "format": "int64"
-        }
-      },
-      "required": [
-        "id",
-        "name",
-        "status"
-      ]
     },
     "etopCompanyInfo": {
       "type": "object",
@@ -3377,9 +3082,6 @@
         "sh_confirm": {
           "$ref": "#/definitions/status3Status"
         },
-        "s_confirm": {
-          "$ref": "#/definitions/status3Status"
-        },
         "shipping_state": {
           "$ref": "#/definitions/shippingState"
         },
@@ -3942,9 +3644,6 @@
         "shipping": {
           "$ref": "#/definitions/orderOrderShipping"
         },
-        "external_data": {
-          "$ref": "#/definitions/orderOrderExternal"
-        },
         "ghn_note_code": {
           "type": "string",
           "title": "@deprecated use try_on_code instead"
@@ -4057,21 +3756,6 @@
         }
       }
     },
-    "orderOrderExternal": {
-      "type": "object",
-      "properties": {
-        "order_id": {
-          "type": "string",
-          "format": "int64"
-        },
-        "external_order_id": {
-          "type": "string"
-        },
-        "external_order_code": {
-          "type": "string"
-        }
-      }
-    },
     "orderOrderFeeLine": {
       "type": "object",
       "properties": {
@@ -4114,37 +3798,12 @@
           "type": "string",
           "format": "int64"
         },
-        "x_variant_id": {
-          "type": "string"
-        },
         "product_name": {
           "type": "string"
         },
         "is_outside_etop": {
           "type": "boolean",
           "format": "boolean"
-        },
-        "updated_at": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "closed_at": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "confirmed_at": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "cancelled_at": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "cancel_reason": {
-          "type": "string"
-        },
-        "s_confirm": {
-          "$ref": "#/definitions/status3Status"
         },
         "quantity": {
           "type": "integer",
@@ -4636,20 +4295,6 @@
         }
       }
     },
-    "shopBrowseVariantsRequest": {
-      "type": "object",
-      "properties": {
-        "paging": {
-          "$ref": "#/definitions/cmPaging"
-        },
-        "filters": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/cmFilter"
-          }
-        }
-      }
-    },
     "shopCalcBalanceShopResponse": {
       "type": "object",
       "properties": {
@@ -4706,15 +4351,6 @@
         "shop_id": {
           "type": "string",
           "format": "int64"
-        },
-        "x_id": {
-          "type": "string"
-        },
-        "x_name": {
-          "type": "string"
-        },
-        "x_parent_id": {
-          "type": "string"
         }
       }
     },
@@ -4761,15 +4397,6 @@
           "items": {
             "$ref": "#/definitions/shopCollection"
           }
-        }
-      }
-    },
-    "shopConnectProductSourceResquest": {
-      "type": "object",
-      "properties": {
-        "product_source_id": {
-          "type": "string",
-          "format": "int64"
         }
       }
     },
@@ -4929,6 +4556,9 @@
           "type": "string",
           "format": "int64"
         },
+        "code": {
+          "type": "string"
+        },
         "category_id": {
           "type": "string",
           "format": "int64"
@@ -4954,62 +4584,13 @@
             "type": "string"
           }
         },
-        "s_meta": {
-          "$ref": "#/definitions/cmRawJSONObject"
-        },
-        "is_available": {
-          "type": "boolean",
-          "format": "boolean"
-        },
         "quantity_available": {
           "type": "integer",
           "format": "int32"
         },
-        "status": {
-          "$ref": "#/definitions/status3Status"
-        },
-        "x_id": {
-          "type": "string"
-        },
-        "variants": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/shopEtopVariant"
-          }
-        },
-        "unit": {
-          "type": "string"
-        },
-        "code": {
-          "type": "string"
-        },
-        "ed_code": {
-          "type": "string"
-        },
-        "updated_at": {
+        "s_brand_id": {
           "type": "string",
-          "format": "date-time"
-        },
-        "created_at": {
-          "type": "string",
-          "format": "date-time"
-        }
-      },
-      "required": [
-        "id"
-      ]
-    },
-    "shopEtopProductsResponse": {
-      "type": "object",
-      "properties": {
-        "paging": {
-          "$ref": "#/definitions/cmPageInfo"
-        },
-        "products": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/shopEtopProduct"
-          }
+          "format": "int64"
         }
       }
     },
@@ -5020,9 +4601,28 @@
           "type": "string",
           "format": "int64"
         },
-        "category_id": {
-          "type": "string",
-          "format": "int64"
+        "code": {
+          "type": "string"
+        },
+        "list_price": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "cost_price": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "wholesale_price": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "retail_price_min": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "retail_price_max": {
+          "type": "integer",
+          "format": "int32"
         },
         "name": {
           "type": "string"
@@ -5040,93 +4640,6 @@
           "type": "array",
           "items": {
             "type": "string"
-          }
-        },
-        "s_meta": {
-          "$ref": "#/definitions/cmRawJSONObject"
-        },
-        "wholesale_price": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "list_price": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "retail_price_min": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "retail_price_max": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "is_available": {
-          "type": "boolean",
-          "format": "boolean"
-        },
-        "quantity_available": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "status": {
-          "$ref": "#/definitions/status3Status"
-        },
-        "x_id": {
-          "type": "string"
-        },
-        "x_base_id": {
-          "type": "string"
-        },
-        "x_attributes": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/shopAttribute"
-          }
-        },
-        "cost_price": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "attributes": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/shopAttribute"
-          }
-        },
-        "sku": {
-          "type": "string",
-          "title": "@deprecated"
-        },
-        "code": {
-          "type": "string"
-        },
-        "ed_code": {
-          "type": "string"
-        },
-        "updated_at": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "created_at": {
-          "type": "string",
-          "format": "date-time"
-        }
-      },
-      "required": [
-        "id"
-      ]
-    },
-    "shopEtopVariantsResponse": {
-      "type": "object",
-      "properties": {
-        "paging": {
-          "$ref": "#/definitions/cmPageInfo"
-        },
-        "variants": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/shopEtopVariant"
           }
         }
       }
@@ -5355,56 +4868,6 @@
         }
       }
     },
-    "shopPriceRule": {
-      "type": "object",
-      "properties": {
-        "collection_id": {
-          "type": "string",
-          "format": "int64"
-        },
-        "tag": {
-          "type": "string"
-        },
-        "retail_price_a": {
-          "type": "number",
-          "format": "double"
-        },
-        "retail_price_b": {
-          "type": "number",
-          "format": "double"
-        },
-        "retail_price_min_a": {
-          "type": "number",
-          "format": "double"
-        },
-        "retail_price_min_b": {
-          "type": "number",
-          "format": "double"
-        },
-        "retail_price_max_a": {
-          "type": "number",
-          "format": "double"
-        },
-        "retail_price_max_b": {
-          "type": "number",
-          "format": "double"
-        }
-      }
-    },
-    "shopPriceRulesResponse": {
-      "type": "object",
-      "properties": {
-        "general": {
-          "$ref": "#/definitions/shopPriceRule"
-        },
-        "rules": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/shopPriceRule"
-          }
-        }
-      }
-    },
     "shopProductSource": {
       "type": "object",
       "properties": {
@@ -5428,33 +4891,6 @@
         "created_at": {
           "type": "string",
           "format": "date-time"
-        }
-      }
-    },
-    "shopProductSourceCategory": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "string",
-          "format": "int64"
-        },
-        "product_source_id": {
-          "type": "string",
-          "format": "int64"
-        },
-        "product_source_type": {
-          "type": "string"
-        },
-        "parent_id": {
-          "type": "string",
-          "format": "int64"
-        },
-        "shop_id": {
-          "type": "string",
-          "format": "int64"
-        },
-        "name": {
-          "type": "string"
         }
       }
     },
@@ -5618,6 +5054,12 @@
         "info": {
           "$ref": "#/definitions/shopEtopProduct"
         },
+        "code": {
+          "type": "string"
+        },
+        "ed_code": {
+          "type": "string"
+        },
         "name": {
           "type": "string"
         },
@@ -5701,6 +5143,12 @@
         "info": {
           "$ref": "#/definitions/shopEtopVariant"
         },
+        "code": {
+          "type": "string"
+        },
+        "ed_code": {
+          "type": "string"
+        },
         "name": {
           "type": "string"
         },
@@ -5735,7 +5183,15 @@
           "type": "boolean",
           "format": "boolean"
         },
+        "list_price": {
+          "type": "integer",
+          "format": "int32"
+        },
         "retail_price": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "cost_price": {
           "type": "integer",
           "format": "int32"
         },
@@ -5935,52 +5391,6 @@
         "ids",
         "confirm"
       ]
-    },
-    "shopUpdatePriceRulesRequest": {
-      "type": "object",
-      "properties": {
-        "general": {
-          "$ref": "#/definitions/shopPriceRule"
-        },
-        "updates": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/shopPriceRule"
-          }
-        },
-        "deletes": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/shopPriceRule"
-          }
-        }
-      }
-    },
-    "shopUpdatePriceRulesResponse": {
-      "type": "object",
-      "properties": {
-        "general": {
-          "$ref": "#/definitions/shopPriceRule"
-        },
-        "rules": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/shopPriceRule"
-          }
-        },
-        "update_errors": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/cmError"
-          }
-        },
-        "delete_errors": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/cmError"
-          }
-        }
-      }
     },
     "shopUpdateProductRequest": {
       "type": "object",
@@ -6368,9 +5778,6 @@
       "name": "Authorize"
     },
     {
-      "name": "Browse"
-    },
-    {
       "name": "Collection"
     },
     {
@@ -6393,9 +5800,6 @@
     },
     {
       "name": "Order"
-    },
-    {
-      "name": "Price"
     },
     {
       "name": "Product"

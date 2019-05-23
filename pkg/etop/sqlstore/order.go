@@ -143,28 +143,6 @@ func GetOrder(ctx context.Context, query *ordermodelx.GetOrderQuery) error {
 		return err
 	}
 
-	// Populate order_line
-	var lines []*ordermodel.OrderLineExtended
-	if err := x.Table("order_line").
-		Where("ol.order_id = ?", order.ID).
-		Find((*ordermodel.OrderLineExtendeds)(&lines)); err != nil {
-		return err
-	}
-
-	for i, line := range order.Lines {
-		// don't populate line without variant id (there is no supplier)
-		if line.VariantID == 0 {
-			continue
-		}
-		for _, refLine := range lines {
-			lineKey := strconv.Itoa(int(line.VariantID)) + "_" + line.ExternalVariantID
-			refLineKey := strconv.Itoa(int(refLine.VariantID)) + "_" + refLine.ExternalVariantID
-			if lineKey == refLineKey {
-				order.Lines[i] = refLine.ToOrderLine()
-			}
-		}
-	}
-
 	if query.IncludeFulfillment {
 		s := x.Table("fulfillment").
 			Where("order_id = ?", order.ID).
@@ -181,22 +159,12 @@ func GetOrder(ctx context.Context, query *ordermodelx.GetOrderQuery) error {
 		}
 	}
 
-	orderExternal := new(ordermodel.OrderExternal)
-	if has, err := x.Table("order_external").Where("id = ?", query.OrderID).Get(orderExternal); err != nil {
-		return err
-	} else if has {
-		order.ExternalData = orderExternal
-	}
-
 	query.Result.Order = order
 	return nil
 }
 
 func GetOrders(ctx context.Context, query *ordermodelx.GetOrdersQuery) error {
 	s := x.Table("order")
-	if query.SupplierID != 0 {
-		s = s.Where("supplier_ids @> ?", pq.Int64Array{query.SupplierID})
-	}
 	if query.ShopIDs != nil {
 		s = s.InOrEqIDs("shop_id", query.ShopIDs)
 	}
@@ -238,7 +206,6 @@ func GetOrders(ctx context.Context, query *ordermodelx.GetOrdersQuery) error {
 		}
 		query.Result.Total = int(total)
 	}
-	// maskOrdersSupplier(query.AllSuppliers, query.SupplierID, &orders)
 
 	orderIds := make([]int64, len(query.Result.Orders))
 	shopIdsMap := make(map[int64]int64)
@@ -252,32 +219,7 @@ func GetOrders(ctx context.Context, query *ordermodelx.GetOrdersQuery) error {
 	}
 	orderFulfillments := make(map[int64][]*shipmodel.Fulfillment)
 	for _, ffm := range fulfillments {
-		if query.SupplierID != 0 {
-			if query.SupplierID == ffm.SupplierID {
-				orderFulfillments[ffm.OrderID] = append(orderFulfillments[ffm.OrderID], ffm)
-			}
-		} else {
-			orderFulfillments[ffm.OrderID] = append(orderFulfillments[ffm.OrderID], ffm)
-		}
-	}
-
-	var orderlines []*ordermodel.OrderLineExtended
-	if err := x.Table("order_line").In("order_id", orderIds).Find((*ordermodel.OrderLineExtendeds)(&orderlines)); err != nil {
-		return err
-	}
-	orderlinesHash := make(map[string]*ordermodel.OrderLine)
-	for _, ol := range orderlines {
-		key := strconv.Itoa(int(ol.OrderID)) + "_" + strconv.Itoa(int(ol.VariantID)) + "_" + ol.ExternalVariantID
-		orderlinesHash[key] = ol.ToOrderLine()
-	}
-
-	var orderExternals []*ordermodel.OrderExternal
-	if err := x.Table("order_external").In("id", orderIds).Find((*ordermodel.OrderExternals)(&orderExternals)); err != nil {
-		return err
-	}
-	orderExternalsHash := make(map[int64]*ordermodel.OrderExternal)
-	for _, ox := range orderExternals {
-		orderExternalsHash[ox.ID] = ox
+		orderFulfillments[ffm.OrderID] = append(orderFulfillments[ffm.OrderID], ffm)
 	}
 
 	// getShop
@@ -296,14 +238,6 @@ func GetOrders(ctx context.Context, query *ordermodelx.GetOrdersQuery) error {
 	for i := range query.Result.Orders {
 		order := &query.Result.Orders[i] // it's not a pointer
 		order.Fulfillments = orderFulfillments[order.ID]
-		order.ExternalData = orderExternalsHash[order.ID]
-		for i, line := range order.Lines {
-			key := strconv.Itoa(int(order.ID)) + "_" + strconv.Itoa(int(line.VariantID)) + "_" + line.ExternalVariantID
-			if line.VariantID != 0 && orderlinesHash[key] != nil {
-				// only care about product in etop
-				order.Lines[i] = orderlinesHash[key]
-			}
-		}
 	}
 
 	return nil

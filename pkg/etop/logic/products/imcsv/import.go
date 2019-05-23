@@ -13,9 +13,8 @@ import (
 
 	"github.com/360EntSecGroup-Skylar/excelize"
 
-	cmP "etop.vn/backend/pb/common"
+	pbcm "etop.vn/backend/pb/common"
 	pbshop "etop.vn/backend/pb/etop/shop"
-	shopP "etop.vn/backend/pb/etop/shop"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/httpx"
@@ -42,7 +41,7 @@ func HandleShopImportSampleProducts(c *httpx.Context) error {
 		return err
 	}
 
-	respMsg := resp.(*shopP.ImportProductsResponse)
+	respMsg := resp.(*pbshop.ImportProductsResponse)
 	if len(respMsg.CellErrors) > 0 {
 		// Allow re-uploading immediately after error
 		idempgroup.ReleaseKey(key, claim.Token)
@@ -51,7 +50,7 @@ func HandleShopImportSampleProducts(c *httpx.Context) error {
 	return nil
 }
 
-func handleShopImportSampleProducts(ctx context.Context, c *httpx.Context, shop *model.Shop, userID int64) (_resp *shopP.ImportProductsResponse, _err error) {
+func handleShopImportSampleProducts(ctx context.Context, c *httpx.Context, shop *model.Shop, userID int64) (_resp *pbshop.ImportProductsResponse, _err error) {
 	if shop.ProductSourceID != 0 {
 		// check if shop already imports sample data
 		query := &catalogmodelx.GetProductsQuery{
@@ -62,8 +61,8 @@ func handleShopImportSampleProducts(ctx context.Context, c *httpx.Context, shop 
 			return nil, cm.Error(cm.Internal, "Không thể tạo sản phẩm mẫu", err)
 		}
 		if len(query.Result.Products) != 0 {
-			_resp = &shopP.ImportProductsResponse{
-				ImportErrors: []*cmP.Error{{Code: "ok", Msg: "Sản phẩm mẫu đã được import"}},
+			_resp = &pbshop.ImportProductsResponse{
+				ImportErrors: []*pbcm.Error{{Code: "ok", Msg: "Sản phẩm mẫu đã được import"}},
 			}
 			return
 		}
@@ -88,7 +87,7 @@ func HandleShopImportProducts(c *httpx.Context) error {
 		return err
 	}
 
-	respMsg := resp.(*shopP.ImportProductsResponse)
+	respMsg := resp.(*pbshop.ImportProductsResponse)
 	if len(respMsg.CellErrors) > 0 {
 		// Allow re-uploading immediately after error
 		idempgroup.ReleaseKey(key, claim.Token)
@@ -97,7 +96,7 @@ func HandleShopImportProducts(c *httpx.Context) error {
 	return nil
 }
 
-func handleShopImportProducts(ctx context.Context, c *httpx.Context, shop *model.Shop, userID int64) (_resp *shopP.ImportProductsResponse, _err error) {
+func handleShopImportProducts(ctx context.Context, c *httpx.Context, shop *model.Shop, userID int64) (_resp *pbshop.ImportProductsResponse, _err error) {
 	mode, fileHeader, err := parseRequest(c)
 	if err != nil {
 		return nil, err
@@ -110,7 +109,7 @@ func handleShopImportProducts(ctx context.Context, c *httpx.Context, shop *model
 	return handleShopImportProductsFromFile(ctx, c, shop, userID, mode, file, fileHeader.Filename)
 }
 
-func handleShopImportProductsFromFile(ctx context.Context, c *httpx.Context, shop *model.Shop, userID int64, mode Mode, file io.ReadCloser, filename string) (_resp *shopP.ImportProductsResponse, _err error) {
+func handleShopImportProductsFromFile(ctx context.Context, c *httpx.Context, shop *model.Shop, userID int64, mode Mode, file io.ReadCloser, filename string) (_resp *pbshop.ImportProductsResponse, _err error) {
 	defer file.Close()
 	var debugOpts Debug
 	if cm.NotProd() {
@@ -175,11 +174,11 @@ func handleShopImportProductsFromFile(ctx context.Context, c *httpx.Context, sho
 		case len(_resp.CellErrors) > 0:
 			attempt.Status = model.S4Negative
 			attempt.ErrorType = "cell_errors"
-			attempt.Errors = cmP.ErrorsToModel(_resp.CellErrors)
+			attempt.Errors = pbcm.ErrorsToModel(_resp.CellErrors)
 			attempt.NError = len(_resp.CellErrors)
 
 		case len(_resp.ImportErrors) > 0:
-			count := cmP.CountErrors(_resp.ImportErrors)
+			count := pbcm.CountErrors(_resp.ImportErrors)
 			if count == 0 {
 				attempt.Status = model.S4Positive
 				attempt.NCreated = len(_resp.ImportErrors)
@@ -187,7 +186,7 @@ func handleShopImportProductsFromFile(ctx context.Context, c *httpx.Context, sho
 			} else {
 				attempt.Status = model.S4SuperPos // partially error
 				attempt.ErrorType = "import_errors"
-				attempt.Errors = cmP.ErrorsToModel(_resp.ImportErrors)
+				attempt.Errors = pbcm.ErrorsToModel(_resp.ImportErrors)
 				attempt.NError = count
 				attempt.NCreated = len(_resp.ImportErrors) - count
 			}
@@ -250,10 +249,10 @@ func handleShopImportProductsFromFile(ctx context.Context, c *httpx.Context, sho
 
 	// create new product source if not exist
 	if shop.ProductSourceID == 0 {
-		createProductSourceCmd := &model.CreateProductSourceCommand{
+		createProductSourceCmd := &catalogmodelx.CreateProductSourceCommand{
 			ShopID: shop.ID,
 			Name:   shop.Name,
-			Type:   model.ProductSourceCustom,
+			Type:   catalogmodel.ProductSourceCustom,
 		}
 		if err := bus.Dispatch(ctx, createProductSourceCmd); err != nil {
 			_err = cm.Error(cm.Internal, "", err).
@@ -277,18 +276,18 @@ func handleShopImportProductsFromFile(ctx context.Context, c *httpx.Context, sho
 		return imp.generateErrorResponse(_cellErrs)
 	}
 
-	resp := &shopP.ImportProductsResponse{
+	resp := &pbshop.ImportProductsResponse{
 		Data: imp.toSpreadsheetData(idx.indexer),
 	}
-	importErrors := make([]*cmP.Error, 0, len(msgs)+len(_errs))
+	importErrors := make([]*pbcm.Error, 0, len(msgs)+len(_errs))
 	for _, msg := range msgs {
-		importErrors = append(importErrors, &cmP.Error{
+		importErrors = append(importErrors, &pbcm.Error{
 			Code: "ok",
 			Msg:  msg,
 		})
 	}
 	for _, err := range _errs {
-		importErrors = append(importErrors, cmP.PbError(err))
+		importErrors = append(importErrors, pbcm.PbError(err))
 	}
 	resp.ImportErrors = importErrors
 	return resp, nil
@@ -567,10 +566,10 @@ func split(v string) []string {
 	return strings.Split(v, ",")
 }
 
-func parseRowsToModel(schema imcsv.Schema, idx indexes, mode Mode, rowProducts []*RowProduct, shop *model.Shop) (requests []*shopP.CreateVariantRequest, _errs []error,
+func parseRowsToModel(schema imcsv.Schema, idx indexes, mode Mode, rowProducts []*RowProduct, shop *model.Shop) (requests []*pbshop.CreateVariantRequest, _errs []error,
 ) {
 	now := time.Now()
-	requests = make([]*shopP.CreateVariantRequest, len(rowProducts))
+	requests = make([]*pbshop.CreateVariantRequest, len(rowProducts))
 
 	for i, rowProduct := range rowProducts {
 		errs := rowProduct.Validate(schema, idx, mode)
@@ -586,8 +585,8 @@ func parseRowsToModel(schema imcsv.Schema, idx indexes, mode Mode, rowProducts [
 	return
 }
 
-func parseRowToModel(rowProduct *RowProduct, productSourceID int64, now time.Time) *shopP.CreateVariantRequest {
-	return &shopP.CreateVariantRequest{
+func parseRowToModel(rowProduct *RowProduct, productSourceID int64, now time.Time) *pbshop.CreateVariantRequest {
+	return &pbshop.CreateVariantRequest{
 		ProductSourceId:   productSourceID, // it may be empty, will be filled later
 		ProductId:         0,               // will be filled later
 		ProductName:       rowProduct.ProductName,

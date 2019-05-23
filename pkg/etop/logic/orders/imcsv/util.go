@@ -9,17 +9,16 @@ import (
 	"net/http"
 
 	"etop.vn/api/main/location"
-
-	cmP "etop.vn/backend/pb/common"
-	spreadsheetP "etop.vn/backend/pb/common/spreadsheet"
-	orderP "etop.vn/backend/pb/etop/order"
+	pbcm "etop.vn/backend/pb/common"
+	pbsheet "etop.vn/backend/pb/common/spreadsheet"
+	pborder "etop.vn/backend/pb/etop/order"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/httpx"
 	"etop.vn/backend/pkg/common/idemp"
 	"etop.vn/backend/pkg/common/imcsv"
 	"etop.vn/backend/pkg/common/l"
 	"etop.vn/backend/pkg/common/redis"
-	cmService "etop.vn/backend/pkg/common/service"
+	cmservice "etop.vn/backend/pkg/common/service"
 	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/backend/pkg/etop/upload"
 )
@@ -31,7 +30,7 @@ var locationBus location.Bus
 
 const PrefixIdemp = "IdempImportOrder"
 
-func Init(_locationBus location.Bus, sd cmService.Shutdowner, rd redis.Store, ul *upload.Uploader) {
+func Init(_locationBus location.Bus, sd cmservice.Shutdowner, rd redis.Store, ul *upload.Uploader) {
 	locationBus = _locationBus
 	idempgroup = idemp.NewRedisGroup(rd, PrefixIdemp, 5*60) // 5 minutes
 	sd.Register(idempgroup.Shutdown)
@@ -136,16 +135,16 @@ func parseRequest(c *httpx.Context) (*Importer, error) {
 	return req, nil
 }
 
-func (imp *Importer) generateErrorResponse(idx imcsv.Indexer, errs []error) (*orderP.ImportOrdersResponse, error) {
-	resp := &orderP.ImportOrdersResponse{
+func (imp *Importer) generateErrorResponse(idx imcsv.Indexer, errs []error) (*pborder.ImportOrdersResponse, error) {
+	resp := &pborder.ImportOrdersResponse{
 		Data:       imp.toSpreadsheetData(idx),
-		CellErrors: cmP.PbErrors(errs),
+		CellErrors: pbcm.PbErrors(errs),
 	}
 	return resp, nil
 }
 
-func (imp *Importer) toSpreadsheetData(idx imcsv.Indexer) *spreadsheetP.SpreadsheetData {
-	return spreadsheetP.ToSpreadsheetData(imp.Schema, idx, imp.Rows, imp.LastRow)
+func (imp *Importer) toSpreadsheetData(idx imcsv.Indexer) *pbsheet.SpreadsheetData {
+	return pbsheet.ToSpreadsheetData(imp.Schema, idx, imp.Rows, imp.LastRow)
 }
 
 func uploadFile(id int64, data []byte) (*upload.StoreFileCommand, error) {

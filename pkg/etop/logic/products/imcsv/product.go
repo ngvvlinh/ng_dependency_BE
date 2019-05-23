@@ -5,7 +5,7 @@ import (
 	"errors"
 	"fmt"
 
-	shopP "etop.vn/backend/pb/etop/shop"
+	pbshop "etop.vn/backend/pb/etop/shop"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/imcsv"
@@ -13,7 +13,7 @@ import (
 	"etop.vn/backend/pkg/etop/model"
 	catalogmodel "etop.vn/backend/pkg/services/catalog/model"
 	catalogmodelx "etop.vn/backend/pkg/services/catalog/modelx"
-	shopW "etop.vn/backend/wrapper/etop/shop"
+	wrapshop "etop.vn/backend/wrapper/etop/shop"
 )
 
 // - check if product code exists
@@ -28,7 +28,7 @@ func loadAndCreateProducts(
 	codeMode CodeMode,
 	shop *model.Shop,
 	rowProducts []*RowProduct,
-	requests []*shopP.CreateVariantRequest,
+	requests []*pbshop.CreateVariantRequest,
 	debug Debug,
 ) (msgs []string, _errs []error, _cellErrs []error, _err error) {
 
@@ -147,7 +147,7 @@ func loadAndCreateProducts(
 	// Create new categories and collections
 	for _, rowProduct := range rowProducts {
 		{
-			var category *model.ProductSourceCategory
+			var category *catalogmodel.ProductSourceCategory
 			var err error
 			cc := normalizeCategory(rowProduct.Category)
 			category, msgs, err = ensureCategory(ctx, msgs, categories.Sort, shop, rowProduct.Category, cc)
@@ -209,7 +209,7 @@ func loadAndCreateProducts(
 			req.ProductId = p.ID
 		}
 
-		createVariantCmd := &shopW.CreateVariantEndpoint{
+		createVariantCmd := &wrapshop.CreateVariantEndpoint{
 			CreateVariantRequest: req,
 		}
 		createVariantCmd.Context.Shop = shop
@@ -238,7 +238,7 @@ func loadAndCreateProducts(
 
 		productIDs := []int64{createVariantCmd.Result.Info.Id}
 		if rowProduct.categoryID != 0 {
-			updateProductsCategoryCmd := &model.UpdateProductsProductSourceCategoryCommand{
+			updateProductsCategoryCmd := &catalogmodelx.UpdateProductsProductSourceCategoryCommand{
 				CategoryID:      rowProduct.categoryID,
 				ProductIDs:      productIDs,
 				ShopID:          shop.ID,
@@ -273,9 +273,9 @@ func loadAndCreateProducts(
 }
 
 type Categories struct {
-	List []*model.ProductSourceCategory
-	Map  map[int64]*model.ProductSourceCategory
-	Sort map[[3]string]*model.ProductSourceCategory
+	List []*catalogmodel.ProductSourceCategory
+	Map  map[int64]*catalogmodel.ProductSourceCategory
+	Sort map[[3]string]*catalogmodel.ProductSourceCategory
 }
 
 func normalizeCategory(cc [3]string) (res [3]string) {
@@ -286,7 +286,7 @@ func normalizeCategory(cc [3]string) (res [3]string) {
 }
 
 func loadCategories(ctx context.Context, shopID int64) (*Categories, error) {
-	query := &model.GetProductSourceCategoriesQuery{
+	query := &catalogmodelx.GetProductSourceCategoriesQuery{
 		ShopID: shopID,
 	}
 	if err := bus.Dispatch(ctx, query); err != nil {
@@ -294,7 +294,7 @@ func loadCategories(ctx context.Context, shopID int64) (*Categories, error) {
 	}
 	categories := query.Result.Categories
 
-	mapCategory := make(map[int64]*model.ProductSourceCategory)
+	mapCategory := make(map[int64]*catalogmodel.ProductSourceCategory)
 	for _, c := range categories {
 		mapCategory[c.ID] = c
 	}
@@ -305,8 +305,8 @@ func loadCategories(ctx context.Context, shopID int64) (*Categories, error) {
 	}, nil
 }
 
-func sortCategories(mapCategory map[int64]*model.ProductSourceCategory) map[[3]string]*model.ProductSourceCategory {
-	categories := make(map[[3]string]*model.ProductSourceCategory)
+func sortCategories(mapCategory map[int64]*catalogmodel.ProductSourceCategory) map[[3]string]*catalogmodel.ProductSourceCategory {
+	categories := make(map[[3]string]*catalogmodel.ProductSourceCategory)
 	for _, c := range mapCategory {
 		cc, ok := buildCategoryHierarchy(mapCategory, c)
 		if ok {
@@ -316,7 +316,7 @@ func sortCategories(mapCategory map[int64]*model.ProductSourceCategory) map[[3]s
 	return categories
 }
 
-func buildCategoryHierarchy(mapCategory map[int64]*model.ProductSourceCategory, category *model.ProductSourceCategory) (res [3]string, ok bool) {
+func buildCategoryHierarchy(mapCategory map[int64]*catalogmodel.ProductSourceCategory, category *catalogmodel.ProductSourceCategory) (res [3]string, ok bool) {
 	i := 0
 	res[0] = validate.NormalizeSearch(category.Name)
 	for category.ParentID != 0 {
@@ -420,11 +420,11 @@ func loadVariants(
 func ensureCategory(
 	ctx context.Context,
 	msgs []string,
-	categories map[[3]string]*model.ProductSourceCategory,
+	categories map[[3]string]*catalogmodel.ProductSourceCategory,
 	shop *model.Shop,
 	names [3]string,
 	cc [3]string,
-) (*model.ProductSourceCategory, []string, error) {
+) (*catalogmodel.ProductSourceCategory, []string, error) {
 	if cc == [3]string{} {
 		return nil, msgs, nil
 	}
@@ -433,18 +433,18 @@ func ensureCategory(
 		ccParent := [3]string{cc[1], cc[2]}
 		namesNext := [3]string{names[1], names[2]}
 
-		var parent *model.ProductSourceCategory
+		var parent *catalogmodel.ProductSourceCategory
 		var err error
 		parent, msgs, err = ensureCategory(ctx, msgs, categories, shop, namesNext, ccParent)
 		if err != nil {
 			return nil, msgs, err
 		}
 
-		cmd := &model.CreateProductSourceCategoryCommand{
+		cmd := &catalogmodelx.CreateProductSourceCategoryCommand{
 			ShopID:            shop.ID,
 			Name:              names[0],
 			ProductSourceID:   shop.ProductSourceID,
-			ProductSourceType: model.ProductSourceCustom,
+			ProductSourceType: catalogmodel.ProductSourceCustom,
 		}
 		if parent != nil {
 			cmd.ParentID = parent.ID

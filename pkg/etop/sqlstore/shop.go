@@ -235,7 +235,7 @@ func RemoveShopCollection(ctx context.Context, cmd *catalogmodelx.RemoveShopColl
 	})
 }
 
-func CreateProductSource(ctx context.Context, cmd *model.CreateProductSourceCommand) error {
+func CreateProductSource(ctx context.Context, cmd *catalogmodelx.CreateProductSourceCommand) error {
 	if cmd.Type == "" {
 		return cm.Error(cm.InvalidArgument, "Type can not be nil", nil)
 	}
@@ -252,7 +252,7 @@ func CreateProductSource(ctx context.Context, cmd *model.CreateProductSourceComm
 
 		// Reuse the existing product source
 		if shop.ProductSourceID != 0 {
-			var productSource model.ProductSource
+			var productSource catalogmodel.ProductSource
 			if err := s.Table("product_source").
 				Where("id = ?", shop.ProductSourceID).
 				ShouldGet(&productSource); err != nil {
@@ -262,7 +262,7 @@ func CreateProductSource(ctx context.Context, cmd *model.CreateProductSourceComm
 			return nil
 		}
 
-		source := &model.ProductSource{
+		source := &catalogmodel.ProductSource{
 			Type:   cmd.Type,
 			Name:   cmd.Name,
 			Status: model.StatusActive,
@@ -288,7 +288,7 @@ func CreateVariant(ctx context.Context, cmd *catalogmodelx.CreateVariantCommand)
 		return cm.Error(cm.InvalidArgument, "Missing AccountID", nil)
 	}
 
-	var productSource = new(model.ProductSource)
+	var productSource = new(catalogmodel.ProductSource)
 	if err := x.Table("product_source").Where("id = ?", cmd.ProductSourceID).ShouldGet(productSource); err != nil {
 		return cm.Error(cm.InvalidArgument, "ProductSource does not existed", nil)
 	}
@@ -385,7 +385,7 @@ func CreateVariant(ctx context.Context, cmd *catalogmodelx.CreateVariantCommand)
 	return nil
 }
 
-func GetShopProductSources(ctx context.Context, query *model.GetShopProductSourcesCommand) error {
+func GetShopProductSources(ctx context.Context, query *catalogmodelx.GetShopProductSourcesCommand) error {
 	if query.UserID == 0 && query.ShopID == 0 {
 		return cm.Error(cm.InvalidArgument, "Missing required params", nil)
 	}
@@ -419,15 +419,15 @@ func GetShopProductSources(ctx context.Context, query *model.GetShopProductSourc
 		return nil
 	}
 
-	var productSources []*model.ProductSource
-	if err := x.Table("product_source").In("id", productSourceIds).Find((*model.ProductSources)(&productSources)); err != nil {
+	var productSources []*catalogmodel.ProductSource
+	if err := x.Table("product_source").In("id", productSourceIds).Find((*catalogmodel.ProductSources)(&productSources)); err != nil {
 		return err
 	}
 	query.Result = productSources
 	return nil
 }
 
-func ConnectProductSource(ctx context.Context, cmd *model.ConnectProductSourceCommand) error {
+func ConnectProductSource(ctx context.Context, cmd *catalogmodelx.ConnectProductSourceCommand) error {
 	if cmd.ShopID == 0 {
 		return cm.Error(cm.InvalidArgument, "Missing AccountID", nil)
 	}
@@ -435,7 +435,7 @@ func ConnectProductSource(ctx context.Context, cmd *model.ConnectProductSourceCo
 		return cm.Error(cm.InvalidArgument, "Missing ProductSourceID", nil)
 	}
 
-	var productSource = new(model.ProductSource)
+	var productSource = new(catalogmodel.ProductSource)
 	if err := x.Table("product_source").Where("id = ?", cmd.ProductSourceID).ShouldGet(productSource); err != nil {
 		return err
 	}
@@ -457,7 +457,7 @@ func ConnectProductSource(ctx context.Context, cmd *model.ConnectProductSourceCo
 	return nil
 }
 
-func RemoveProductSource(ctx context.Context, cmd *model.RemoveProductSourceCommand) error {
+func RemoveProductSource(ctx context.Context, cmd *catalogmodelx.RemoveProductSourceCommand) error {
 	if cmd.ShopID == 0 {
 		return cm.Error(cm.InvalidArgument, "Missing AccountID", nil)
 	}
@@ -470,7 +470,7 @@ func RemoveProductSource(ctx context.Context, cmd *model.RemoveProductSourceComm
 	return nil
 }
 
-func CreateProductSourceCategory(ctx context.Context, cmd *model.CreateProductSourceCategoryCommand) error {
+func CreateProductSourceCategory(ctx context.Context, cmd *catalogmodelx.CreateProductSourceCategoryCommand) error {
 	if cmd.ShopID == 0 {
 		return cm.Error(cm.InvalidArgument, "Missing AccountID", nil)
 	}
@@ -486,7 +486,7 @@ func CreateProductSourceCategory(ctx context.Context, cmd *model.CreateProductSo
 	name := strings.ToLower(cmd.Name)
 	name = strings.Title(name)
 
-	var productSourceCategory = new(model.ProductSourceCategory)
+	var productSourceCategory = new(catalogmodel.ProductSourceCategory)
 	s := x.Table("product_source_category").Where("shop_id = ? AND name = ?", cmd.ShopID, name)
 	if cmd.ParentID != 0 {
 		s = s.Where("parent_id = ?", cmd.ParentID)
@@ -500,7 +500,7 @@ func CreateProductSourceCategory(ctx context.Context, cmd *model.CreateProductSo
 		return nil
 	}
 
-	psCategory := &model.ProductSourceCategory{
+	psCategory := &catalogmodel.ProductSourceCategory{
 		ID:                cm.NewID(),
 		ProductSourceID:   cmd.ProductSourceID,
 		ProductSourceType: cmd.ProductSourceType,
@@ -516,7 +516,7 @@ func CreateProductSourceCategory(ctx context.Context, cmd *model.CreateProductSo
 	return nil
 }
 
-func UpdateProductsPSCategory(ctx context.Context, cmd *model.UpdateProductsProductSourceCategoryCommand) error {
+func UpdateProductsPSCategory(ctx context.Context, cmd *catalogmodelx.UpdateProductsProductSourceCategoryCommand) error {
 	if cmd.ShopID == 0 {
 		return cm.Error(cm.InvalidArgument, "Missing AccountID", nil)
 	}
@@ -527,7 +527,7 @@ func UpdateProductsPSCategory(ctx context.Context, cmd *model.UpdateProductsProd
 		return cm.Error(cm.InvalidArgument, "Missing ProductSourceID", nil)
 	}
 
-	category := new(model.ProductSourceCategory)
+	category := new(catalogmodel.ProductSourceCategory)
 	if has, err := x.Table("product_source_category").
 		Where("id = ? AND shop_id = ?", cmd.CategoryID, cmd.ShopID).
 		Get(category); err != nil {

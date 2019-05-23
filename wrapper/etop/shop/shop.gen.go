@@ -29,11 +29,9 @@ var Client Shop
 type Shop interface {
 	shop.MiscService
 	shop.AccountService
-	shop.BrowseService
 	shop.CollectionService
 	shop.ProductService
 	shop.ProductSourceService
-	shop.PriceService
 	shop.OrderService
 	shop.FulfillmentService
 	shop.HistoryService
@@ -47,11 +45,9 @@ type Shop interface {
 type ShopClient struct {
 	_MiscService             shop.MiscService
 	_AccountService          shop.AccountService
-	_BrowseService           shop.BrowseService
 	_CollectionService       shop.CollectionService
 	_ProductService          shop.ProductService
 	_ProductSourceService    shop.ProductSourceService
-	_PriceService            shop.PriceService
 	_OrderService            shop.OrderService
 	_FulfillmentService      shop.FulfillmentService
 	_HistoryService          shop.HistoryService
@@ -73,11 +69,9 @@ func NewShopClient(addr string, client *http.Client) Shop {
 	return &ShopClient{
 		_MiscService:             shop.NewMiscServiceProtobufClient(addr, client),
 		_AccountService:          shop.NewAccountServiceProtobufClient(addr, client),
-		_BrowseService:           shop.NewBrowseServiceProtobufClient(addr, client),
 		_CollectionService:       shop.NewCollectionServiceProtobufClient(addr, client),
 		_ProductService:          shop.NewProductServiceProtobufClient(addr, client),
 		_ProductSourceService:    shop.NewProductSourceServiceProtobufClient(addr, client),
-		_PriceService:            shop.NewPriceServiceProtobufClient(addr, client),
 		_OrderService:            shop.NewOrderServiceProtobufClient(addr, client),
 		_FulfillmentService:      shop.NewFulfillmentServiceProtobufClient(addr, client),
 		_HistoryService:          shop.NewHistoryServiceProtobufClient(addr, client),
@@ -97,13 +91,6 @@ func ConnectShopService(addr string, client *http.Client) error {
 	bus.AddHandler("client", func(ctx context.Context, q *RegisterShopEndpoint) error { panic("Unexpected") })
 	bus.AddHandler("client", func(ctx context.Context, q *SetDefaultAddressEndpoint) error { panic("Unexpected") })
 	bus.AddHandler("client", func(ctx context.Context, q *UpdateShopEndpoint) error { panic("Unexpected") })
-	bus.AddHandler("client", func(ctx context.Context, q *BrowseCategoriesEndpoint) error { panic("Unexpected") })
-	bus.AddHandler("client", func(ctx context.Context, q *BrowseProductEndpoint) error { panic("Unexpected") })
-	bus.AddHandler("client", func(ctx context.Context, q *BrowseProductsEndpoint) error { panic("Unexpected") })
-	bus.AddHandler("client", func(ctx context.Context, q *BrowseProductsByIDsEndpoint) error { panic("Unexpected") })
-	bus.AddHandler("client", func(ctx context.Context, q *BrowseVariantEndpoint) error { panic("Unexpected") })
-	bus.AddHandler("client", func(ctx context.Context, q *BrowseVariantsEndpoint) error { panic("Unexpected") })
-	bus.AddHandler("client", func(ctx context.Context, q *BrowseVariantsByIDsEndpoint) error { panic("Unexpected") })
 	bus.AddHandler("client", func(ctx context.Context, q *CreateCollectionEndpoint) error { panic("Unexpected") })
 	bus.AddHandler("client", func(ctx context.Context, q *DeleteCollectionEndpoint) error { panic("Unexpected") })
 	bus.AddHandler("client", func(ctx context.Context, q *GetCollectionEndpoint) error { panic("Unexpected") })
@@ -131,7 +118,6 @@ func ConnectShopService(addr string, client *http.Client) error {
 	bus.AddHandler("client", func(ctx context.Context, q *UpdateVariantsEndpoint) error { panic("Unexpected") })
 	bus.AddHandler("client", func(ctx context.Context, q *UpdateVariantsStatusEndpoint) error { panic("Unexpected") })
 	bus.AddHandler("client", func(ctx context.Context, q *UpdateVariantsTagsEndpoint) error { panic("Unexpected") })
-	bus.AddHandler("client", func(ctx context.Context, q *ConnectProductSourceEndpoint) error { panic("Unexpected") })
 	bus.AddHandler("client", func(ctx context.Context, q *CreateProductSourceEndpoint) error { panic("Unexpected") })
 	bus.AddHandler("client", func(ctx context.Context, q *CreateProductSourceCategoryEndpoint) error { panic("Unexpected") })
 	bus.AddHandler("client", func(ctx context.Context, q *CreateVariantEndpoint) error { panic("Unexpected") })
@@ -141,8 +127,6 @@ func ConnectShopService(addr string, client *http.Client) error {
 	bus.AddHandler("client", func(ctx context.Context, q *RemoveProductSourceCategoryEndpoint) error { panic("Unexpected") })
 	bus.AddHandler("client", func(ctx context.Context, q *UpdateProductSourceCategoryEndpoint) error { panic("Unexpected") })
 	bus.AddHandler("client", func(ctx context.Context, q *UpdateProductsPSCategoryEndpoint) error { panic("Unexpected") })
-	bus.AddHandler("client", func(ctx context.Context, q *GetPriceRulesEndpoint) error { panic("Unexpected") })
-	bus.AddHandler("client", func(ctx context.Context, q *UpdatePriceRulesEndpoint) error { panic("Unexpected") })
 	bus.AddHandler("client", func(ctx context.Context, q *CancelOrderEndpoint) error { panic("Unexpected") })
 	bus.AddHandler("client", func(ctx context.Context, q *ConfirmOrderAndCreateFulfillmentsEndpoint) error { panic("Unexpected") })
 	bus.AddHandler("client", func(ctx context.Context, q *ConfirmOrdersAndCreateFulfillmentsEndpoint) error { panic("Unexpected") })
@@ -271,104 +255,6 @@ func (c *ShopClient) SetDefaultAddress(ctx context.Context, in *etop.SetDefaultA
 }
 func (c *ShopClient) UpdateShop(ctx context.Context, in *shop.UpdateShopRequest) (*shop.UpdateShopResponse, error) {
 	resp, err := c._AccountService.UpdateShop(ctx, in)
-
-	node, ok := ctx.(*bus.NodeContext)
-	if !ok {
-		return resp, err
-	}
-	newNode := node.WithMessage(map[string]interface{}{
-		"Request": in,
-		"Result":  resp,
-	})
-	newNode.Error = err
-	return resp, err
-}
-func (c *ShopClient) BrowseCategories(ctx context.Context, in *cm.Empty) (*etop.CategoriesResponse, error) {
-	resp, err := c._BrowseService.BrowseCategories(ctx, in)
-
-	node, ok := ctx.(*bus.NodeContext)
-	if !ok {
-		return resp, err
-	}
-	newNode := node.WithMessage(map[string]interface{}{
-		"Request": in,
-		"Result":  resp,
-	})
-	newNode.Error = err
-	return resp, err
-}
-func (c *ShopClient) BrowseProduct(ctx context.Context, in *cm.IDRequest) (*shop.EtopProduct, error) {
-	resp, err := c._BrowseService.BrowseProduct(ctx, in)
-
-	node, ok := ctx.(*bus.NodeContext)
-	if !ok {
-		return resp, err
-	}
-	newNode := node.WithMessage(map[string]interface{}{
-		"Request": in,
-		"Result":  resp,
-	})
-	newNode.Error = err
-	return resp, err
-}
-func (c *ShopClient) BrowseProducts(ctx context.Context, in *shop.BrowseVariantsRequest) (*shop.EtopProductsResponse, error) {
-	resp, err := c._BrowseService.BrowseProducts(ctx, in)
-
-	node, ok := ctx.(*bus.NodeContext)
-	if !ok {
-		return resp, err
-	}
-	newNode := node.WithMessage(map[string]interface{}{
-		"Request": in,
-		"Result":  resp,
-	})
-	newNode.Error = err
-	return resp, err
-}
-func (c *ShopClient) BrowseProductsByIDs(ctx context.Context, in *cm.IDsRequest) (*shop.EtopProductsResponse, error) {
-	resp, err := c._BrowseService.BrowseProductsByIDs(ctx, in)
-
-	node, ok := ctx.(*bus.NodeContext)
-	if !ok {
-		return resp, err
-	}
-	newNode := node.WithMessage(map[string]interface{}{
-		"Request": in,
-		"Result":  resp,
-	})
-	newNode.Error = err
-	return resp, err
-}
-func (c *ShopClient) BrowseVariant(ctx context.Context, in *cm.IDRequest) (*shop.EtopVariant, error) {
-	resp, err := c._BrowseService.BrowseVariant(ctx, in)
-
-	node, ok := ctx.(*bus.NodeContext)
-	if !ok {
-		return resp, err
-	}
-	newNode := node.WithMessage(map[string]interface{}{
-		"Request": in,
-		"Result":  resp,
-	})
-	newNode.Error = err
-	return resp, err
-}
-func (c *ShopClient) BrowseVariants(ctx context.Context, in *shop.BrowseVariantsRequest) (*shop.EtopVariantsResponse, error) {
-	resp, err := c._BrowseService.BrowseVariants(ctx, in)
-
-	node, ok := ctx.(*bus.NodeContext)
-	if !ok {
-		return resp, err
-	}
-	newNode := node.WithMessage(map[string]interface{}{
-		"Request": in,
-		"Result":  resp,
-	})
-	newNode.Error = err
-	return resp, err
-}
-func (c *ShopClient) BrowseVariantsByIDs(ctx context.Context, in *cm.IDsRequest) (*shop.EtopVariantsResponse, error) {
-	resp, err := c._BrowseService.BrowseVariantsByIDs(ctx, in)
 
 	node, ok := ctx.(*bus.NodeContext)
 	if !ok {
@@ -759,20 +645,6 @@ func (c *ShopClient) UpdateVariantsTags(ctx context.Context, in *shop.UpdateVari
 	newNode.Error = err
 	return resp, err
 }
-func (c *ShopClient) ConnectProductSource(ctx context.Context, in *shop.ConnectProductSourceResquest) (*cm.UpdatedResponse, error) {
-	resp, err := c._ProductSourceService.ConnectProductSource(ctx, in)
-
-	node, ok := ctx.(*bus.NodeContext)
-	if !ok {
-		return resp, err
-	}
-	newNode := node.WithMessage(map[string]interface{}{
-		"Request": in,
-		"Result":  resp,
-	})
-	newNode.Error = err
-	return resp, err
-}
 func (c *ShopClient) CreateProductSource(ctx context.Context, in *shop.CreateProductSourceRequest) (*shop.ProductSource, error) {
 	resp, err := c._ProductSourceService.CreateProductSource(ctx, in)
 
@@ -787,7 +659,7 @@ func (c *ShopClient) CreateProductSource(ctx context.Context, in *shop.CreatePro
 	newNode.Error = err
 	return resp, err
 }
-func (c *ShopClient) CreateProductSourceCategory(ctx context.Context, in *shop.CreatePSCategoryRequest) (*shop.ProductSourceCategory, error) {
+func (c *ShopClient) CreateProductSourceCategory(ctx context.Context, in *shop.CreatePSCategoryRequest) (*shop.Category, error) {
 	resp, err := c._ProductSourceService.CreateProductSourceCategory(ctx, in)
 
 	node, ok := ctx.(*bus.NodeContext)
@@ -887,34 +759,6 @@ func (c *ShopClient) UpdateProductSourceCategory(ctx context.Context, in *shop.U
 }
 func (c *ShopClient) UpdateProductsPSCategory(ctx context.Context, in *shop.UpdateProductsPSCategoryRequest) (*cm.UpdatedResponse, error) {
 	resp, err := c._ProductSourceService.UpdateProductsPSCategory(ctx, in)
-
-	node, ok := ctx.(*bus.NodeContext)
-	if !ok {
-		return resp, err
-	}
-	newNode := node.WithMessage(map[string]interface{}{
-		"Request": in,
-		"Result":  resp,
-	})
-	newNode.Error = err
-	return resp, err
-}
-func (c *ShopClient) GetPriceRules(ctx context.Context, in *cm.Empty) (*shop.PriceRulesResponse, error) {
-	resp, err := c._PriceService.GetPriceRules(ctx, in)
-
-	node, ok := ctx.(*bus.NodeContext)
-	if !ok {
-		return resp, err
-	}
-	newNode := node.WithMessage(map[string]interface{}{
-		"Request": in,
-		"Result":  resp,
-	})
-	newNode.Error = err
-	return resp, err
-}
-func (c *ShopClient) UpdatePriceRules(ctx context.Context, in *shop.UpdatePriceRulesRequest) (*shop.UpdatePriceRulesResponse, error) {
-	resp, err := c._PriceService.UpdatePriceRules(ctx, in)
 
 	node, ok := ctx.(*bus.NodeContext)
 	if !ok {
@@ -1401,13 +1245,6 @@ func NewShopServer(mux Muxer, hooks *twirp.ServerHooks) {
 	bus.Expect(&RegisterShopEndpoint{})
 	bus.Expect(&SetDefaultAddressEndpoint{})
 	bus.Expect(&UpdateShopEndpoint{})
-	bus.Expect(&BrowseCategoriesEndpoint{})
-	bus.Expect(&BrowseProductEndpoint{})
-	bus.Expect(&BrowseProductsEndpoint{})
-	bus.Expect(&BrowseProductsByIDsEndpoint{})
-	bus.Expect(&BrowseVariantEndpoint{})
-	bus.Expect(&BrowseVariantsEndpoint{})
-	bus.Expect(&BrowseVariantsByIDsEndpoint{})
 	bus.Expect(&CreateCollectionEndpoint{})
 	bus.Expect(&DeleteCollectionEndpoint{})
 	bus.Expect(&GetCollectionEndpoint{})
@@ -1435,7 +1272,6 @@ func NewShopServer(mux Muxer, hooks *twirp.ServerHooks) {
 	bus.Expect(&UpdateVariantsEndpoint{})
 	bus.Expect(&UpdateVariantsStatusEndpoint{})
 	bus.Expect(&UpdateVariantsTagsEndpoint{})
-	bus.Expect(&ConnectProductSourceEndpoint{})
 	bus.Expect(&CreateProductSourceEndpoint{})
 	bus.Expect(&CreateProductSourceCategoryEndpoint{})
 	bus.Expect(&CreateVariantEndpoint{})
@@ -1445,8 +1281,6 @@ func NewShopServer(mux Muxer, hooks *twirp.ServerHooks) {
 	bus.Expect(&RemoveProductSourceCategoryEndpoint{})
 	bus.Expect(&UpdateProductSourceCategoryEndpoint{})
 	bus.Expect(&UpdateProductsPSCategoryEndpoint{})
-	bus.Expect(&GetPriceRulesEndpoint{})
-	bus.Expect(&UpdatePriceRulesEndpoint{})
 	bus.Expect(&CancelOrderEndpoint{})
 	bus.Expect(&ConfirmOrderAndCreateFulfillmentsEndpoint{})
 	bus.Expect(&ConfirmOrdersAndCreateFulfillmentsEndpoint{})
@@ -1482,11 +1316,9 @@ func NewShopServer(mux Muxer, hooks *twirp.ServerHooks) {
 	bus.Expect(&GetAvailablePartnersEndpoint{})
 	mux.Handle(shop.MiscServicePathPrefix, shop.NewMiscServiceServer(MiscService{}, hooks))
 	mux.Handle(shop.AccountServicePathPrefix, shop.NewAccountServiceServer(AccountService{}, hooks))
-	mux.Handle(shop.BrowseServicePathPrefix, shop.NewBrowseServiceServer(BrowseService{}, hooks))
 	mux.Handle(shop.CollectionServicePathPrefix, shop.NewCollectionServiceServer(CollectionService{}, hooks))
 	mux.Handle(shop.ProductServicePathPrefix, shop.NewProductServiceServer(ProductService{}, hooks))
 	mux.Handle(shop.ProductSourceServicePathPrefix, shop.NewProductSourceServiceServer(ProductSourceService{}, hooks))
-	mux.Handle(shop.PriceServicePathPrefix, shop.NewPriceServiceServer(PriceService{}, hooks))
 	mux.Handle(shop.OrderServicePathPrefix, shop.NewOrderServiceServer(OrderService{}, hooks))
 	mux.Handle(shop.FulfillmentServicePathPrefix, shop.NewFulfillmentServiceServer(FulfillmentService{}, hooks))
 	mux.Handle(shop.HistoryServicePathPrefix, shop.NewHistoryServiceServer(HistoryService{}, hooks))
@@ -1500,11 +1332,9 @@ func NewShopServer(mux Muxer, hooks *twirp.ServerHooks) {
 type ShopImpl struct {
 	MiscService
 	AccountService
-	BrowseService
 	CollectionService
 	ProductService
 	ProductSourceService
-	PriceService
 	OrderService
 	FulfillmentService
 	HistoryService
@@ -1771,309 +1601,6 @@ func (s AccountService) UpdateShop(ctx context.Context, req *shop.UpdateShopRequ
 	if !session.IsOwner && permission.MaxRoleLevel(session.Roles) < 4 {
 		return nil, common.ErrPermissionDenied
 	}
-	ctx = bus.NewRootContext(ctx)
-	err = bus.Dispatch(ctx, query)
-	resp = query.Result
-	if err == nil {
-		if resp == nil {
-			return nil, common.Error(common.Internal, "", nil).Log("nil response")
-		}
-		errs = cmWrapper.HasErrors(resp)
-	}
-	return resp, err
-}
-
-type BrowseService struct{}
-
-type BrowseCategoriesEndpoint struct {
-	*cm.Empty
-	Result  *etop.CategoriesResponse
-	Context ShopClaim
-}
-
-func (s BrowseService) BrowseCategories(ctx context.Context, req *cm.Empty) (resp *etop.CategoriesResponse, err error) {
-	t0 := time.Now()
-	var session *middleware.Session
-	var errs []*cm.Error
-	const rpcName = "shop.Browse/BrowseCategories"
-	defer func() {
-		recovered := recover()
-		err = cmWrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
-	}()
-	defer cmWrapper.Censor(req)
-	sessionQuery := &middleware.StartSessionQuery{
-		Context:     ctx,
-		RequireAuth: true,
-		RequireShop: true,
-	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
-		return nil, err
-	}
-	session = sessionQuery.Result
-	query := &BrowseCategoriesEndpoint{Empty: req}
-	query.Context.Claim = session.Claim
-	query.Context.Shop = session.Shop
-	query.Context.IsOwner = session.IsOwner
-	query.Context.Roles = session.Roles
-	query.Context.Permissions = session.Permissions
-	ctx = bus.NewRootContext(ctx)
-	err = bus.Dispatch(ctx, query)
-	resp = query.Result
-	if err == nil {
-		if resp == nil {
-			return nil, common.Error(common.Internal, "", nil).Log("nil response")
-		}
-		errs = cmWrapper.HasErrors(resp)
-	}
-	return resp, err
-}
-
-type BrowseProductEndpoint struct {
-	*cm.IDRequest
-	Result  *shop.EtopProduct
-	Context ShopClaim
-}
-
-func (s BrowseService) BrowseProduct(ctx context.Context, req *cm.IDRequest) (resp *shop.EtopProduct, err error) {
-	t0 := time.Now()
-	var session *middleware.Session
-	var errs []*cm.Error
-	const rpcName = "shop.Browse/BrowseProduct"
-	defer func() {
-		recovered := recover()
-		err = cmWrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
-	}()
-	defer cmWrapper.Censor(req)
-	sessionQuery := &middleware.StartSessionQuery{
-		Context:     ctx,
-		RequireAuth: true,
-		RequireShop: true,
-	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
-		return nil, err
-	}
-	session = sessionQuery.Result
-	query := &BrowseProductEndpoint{IDRequest: req}
-	query.Context.Claim = session.Claim
-	query.Context.Shop = session.Shop
-	query.Context.IsOwner = session.IsOwner
-	query.Context.Roles = session.Roles
-	query.Context.Permissions = session.Permissions
-	ctx = bus.NewRootContext(ctx)
-	err = bus.Dispatch(ctx, query)
-	resp = query.Result
-	if err == nil {
-		if resp == nil {
-			return nil, common.Error(common.Internal, "", nil).Log("nil response")
-		}
-		errs = cmWrapper.HasErrors(resp)
-	}
-	return resp, err
-}
-
-type BrowseProductsEndpoint struct {
-	*shop.BrowseVariantsRequest
-	Result  *shop.EtopProductsResponse
-	Context ShopClaim
-}
-
-func (s BrowseService) BrowseProducts(ctx context.Context, req *shop.BrowseVariantsRequest) (resp *shop.EtopProductsResponse, err error) {
-	t0 := time.Now()
-	var session *middleware.Session
-	var errs []*cm.Error
-	const rpcName = "shop.Browse/BrowseProducts"
-	defer func() {
-		recovered := recover()
-		err = cmWrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
-	}()
-	defer cmWrapper.Censor(req)
-	sessionQuery := &middleware.StartSessionQuery{
-		Context:     ctx,
-		RequireAuth: true,
-		RequireShop: true,
-	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
-		return nil, err
-	}
-	session = sessionQuery.Result
-	query := &BrowseProductsEndpoint{BrowseVariantsRequest: req}
-	query.Context.Claim = session.Claim
-	query.Context.Shop = session.Shop
-	query.Context.IsOwner = session.IsOwner
-	query.Context.Roles = session.Roles
-	query.Context.Permissions = session.Permissions
-	ctx = bus.NewRootContext(ctx)
-	err = bus.Dispatch(ctx, query)
-	resp = query.Result
-	if err == nil {
-		if resp == nil {
-			return nil, common.Error(common.Internal, "", nil).Log("nil response")
-		}
-		errs = cmWrapper.HasErrors(resp)
-	}
-	return resp, err
-}
-
-type BrowseProductsByIDsEndpoint struct {
-	*cm.IDsRequest
-	Result  *shop.EtopProductsResponse
-	Context ShopClaim
-}
-
-func (s BrowseService) BrowseProductsByIDs(ctx context.Context, req *cm.IDsRequest) (resp *shop.EtopProductsResponse, err error) {
-	t0 := time.Now()
-	var session *middleware.Session
-	var errs []*cm.Error
-	const rpcName = "shop.Browse/BrowseProductsByIDs"
-	defer func() {
-		recovered := recover()
-		err = cmWrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
-	}()
-	defer cmWrapper.Censor(req)
-	sessionQuery := &middleware.StartSessionQuery{
-		Context:     ctx,
-		RequireAuth: true,
-		RequireShop: true,
-	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
-		return nil, err
-	}
-	session = sessionQuery.Result
-	query := &BrowseProductsByIDsEndpoint{IDsRequest: req}
-	query.Context.Claim = session.Claim
-	query.Context.Shop = session.Shop
-	query.Context.IsOwner = session.IsOwner
-	query.Context.Roles = session.Roles
-	query.Context.Permissions = session.Permissions
-	ctx = bus.NewRootContext(ctx)
-	err = bus.Dispatch(ctx, query)
-	resp = query.Result
-	if err == nil {
-		if resp == nil {
-			return nil, common.Error(common.Internal, "", nil).Log("nil response")
-		}
-		errs = cmWrapper.HasErrors(resp)
-	}
-	return resp, err
-}
-
-type BrowseVariantEndpoint struct {
-	*cm.IDRequest
-	Result  *shop.EtopVariant
-	Context ShopClaim
-}
-
-func (s BrowseService) BrowseVariant(ctx context.Context, req *cm.IDRequest) (resp *shop.EtopVariant, err error) {
-	t0 := time.Now()
-	var session *middleware.Session
-	var errs []*cm.Error
-	const rpcName = "shop.Browse/BrowseVariant"
-	defer func() {
-		recovered := recover()
-		err = cmWrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
-	}()
-	defer cmWrapper.Censor(req)
-	sessionQuery := &middleware.StartSessionQuery{
-		Context:     ctx,
-		RequireAuth: true,
-		RequireShop: true,
-	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
-		return nil, err
-	}
-	session = sessionQuery.Result
-	query := &BrowseVariantEndpoint{IDRequest: req}
-	query.Context.Claim = session.Claim
-	query.Context.Shop = session.Shop
-	query.Context.IsOwner = session.IsOwner
-	query.Context.Roles = session.Roles
-	query.Context.Permissions = session.Permissions
-	ctx = bus.NewRootContext(ctx)
-	err = bus.Dispatch(ctx, query)
-	resp = query.Result
-	if err == nil {
-		if resp == nil {
-			return nil, common.Error(common.Internal, "", nil).Log("nil response")
-		}
-		errs = cmWrapper.HasErrors(resp)
-	}
-	return resp, err
-}
-
-type BrowseVariantsEndpoint struct {
-	*shop.BrowseVariantsRequest
-	Result  *shop.EtopVariantsResponse
-	Context ShopClaim
-}
-
-func (s BrowseService) BrowseVariants(ctx context.Context, req *shop.BrowseVariantsRequest) (resp *shop.EtopVariantsResponse, err error) {
-	t0 := time.Now()
-	var session *middleware.Session
-	var errs []*cm.Error
-	const rpcName = "shop.Browse/BrowseVariants"
-	defer func() {
-		recovered := recover()
-		err = cmWrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
-	}()
-	defer cmWrapper.Censor(req)
-	sessionQuery := &middleware.StartSessionQuery{
-		Context:     ctx,
-		RequireAuth: true,
-		RequireShop: true,
-	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
-		return nil, err
-	}
-	session = sessionQuery.Result
-	query := &BrowseVariantsEndpoint{BrowseVariantsRequest: req}
-	query.Context.Claim = session.Claim
-	query.Context.Shop = session.Shop
-	query.Context.IsOwner = session.IsOwner
-	query.Context.Roles = session.Roles
-	query.Context.Permissions = session.Permissions
-	ctx = bus.NewRootContext(ctx)
-	err = bus.Dispatch(ctx, query)
-	resp = query.Result
-	if err == nil {
-		if resp == nil {
-			return nil, common.Error(common.Internal, "", nil).Log("nil response")
-		}
-		errs = cmWrapper.HasErrors(resp)
-	}
-	return resp, err
-}
-
-type BrowseVariantsByIDsEndpoint struct {
-	*cm.IDsRequest
-	Result  *shop.EtopVariantsResponse
-	Context ShopClaim
-}
-
-func (s BrowseService) BrowseVariantsByIDs(ctx context.Context, req *cm.IDsRequest) (resp *shop.EtopVariantsResponse, err error) {
-	t0 := time.Now()
-	var session *middleware.Session
-	var errs []*cm.Error
-	const rpcName = "shop.Browse/BrowseVariantsByIDs"
-	defer func() {
-		recovered := recover()
-		err = cmWrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
-	}()
-	defer cmWrapper.Censor(req)
-	sessionQuery := &middleware.StartSessionQuery{
-		Context:     ctx,
-		RequireAuth: true,
-		RequireShop: true,
-	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
-		return nil, err
-	}
-	session = sessionQuery.Result
-	query := &BrowseVariantsByIDsEndpoint{IDsRequest: req}
-	query.Context.Claim = session.Claim
-	query.Context.Shop = session.Shop
-	query.Context.IsOwner = session.IsOwner
-	query.Context.Roles = session.Roles
-	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
 	err = bus.Dispatch(ctx, query)
 	resp = query.Result
@@ -3349,53 +2876,6 @@ func (s ProductService) UpdateVariantsTags(ctx context.Context, req *shop.Update
 
 type ProductSourceService struct{}
 
-type ConnectProductSourceEndpoint struct {
-	*shop.ConnectProductSourceResquest
-	Result  *cm.UpdatedResponse
-	Context ShopClaim
-}
-
-func (s ProductSourceService) ConnectProductSource(ctx context.Context, req *shop.ConnectProductSourceResquest) (resp *cm.UpdatedResponse, err error) {
-	t0 := time.Now()
-	var session *middleware.Session
-	var errs []*cm.Error
-	const rpcName = "shop.ProductSource/ConnectProductSource"
-	defer func() {
-		recovered := recover()
-		err = cmWrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
-	}()
-	defer cmWrapper.Censor(req)
-	sessionQuery := &middleware.StartSessionQuery{
-		Context:     ctx,
-		RequireAuth: true,
-		RequireShop: true,
-	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
-		return nil, err
-	}
-	session = sessionQuery.Result
-	query := &ConnectProductSourceEndpoint{ConnectProductSourceResquest: req}
-	query.Context.Claim = session.Claim
-	query.Context.Shop = session.Shop
-	query.Context.IsOwner = session.IsOwner
-	query.Context.Roles = session.Roles
-	query.Context.Permissions = session.Permissions
-	// Verify that the user has role "staff"
-	if !session.IsOwner && permission.MaxRoleLevel(session.Roles) < 2 {
-		return nil, common.ErrPermissionDenied
-	}
-	ctx = bus.NewRootContext(ctx)
-	err = bus.Dispatch(ctx, query)
-	resp = query.Result
-	if err == nil {
-		if resp == nil {
-			return nil, common.Error(common.Internal, "", nil).Log("nil response")
-		}
-		errs = cmWrapper.HasErrors(resp)
-	}
-	return resp, err
-}
-
 type CreateProductSourceEndpoint struct {
 	*shop.CreateProductSourceRequest
 	Result  *shop.ProductSource
@@ -3445,11 +2925,11 @@ func (s ProductSourceService) CreateProductSource(ctx context.Context, req *shop
 
 type CreateProductSourceCategoryEndpoint struct {
 	*shop.CreatePSCategoryRequest
-	Result  *shop.ProductSourceCategory
+	Result  *shop.Category
 	Context ShopClaim
 }
 
-func (s ProductSourceService) CreateProductSourceCategory(ctx context.Context, req *shop.CreatePSCategoryRequest) (resp *shop.ProductSourceCategory, err error) {
+func (s ProductSourceService) CreateProductSourceCategory(ctx context.Context, req *shop.CreatePSCategoryRequest) (resp *shop.Category, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -3807,94 +3287,6 @@ func (s ProductSourceService) UpdateProductsPSCategory(ctx context.Context, req 
 	if !session.IsOwner && permission.MaxRoleLevel(session.Roles) < 2 {
 		return nil, common.ErrPermissionDenied
 	}
-	ctx = bus.NewRootContext(ctx)
-	err = bus.Dispatch(ctx, query)
-	resp = query.Result
-	if err == nil {
-		if resp == nil {
-			return nil, common.Error(common.Internal, "", nil).Log("nil response")
-		}
-		errs = cmWrapper.HasErrors(resp)
-	}
-	return resp, err
-}
-
-type PriceService struct{}
-
-type GetPriceRulesEndpoint struct {
-	*cm.Empty
-	Result  *shop.PriceRulesResponse
-	Context ShopClaim
-}
-
-func (s PriceService) GetPriceRules(ctx context.Context, req *cm.Empty) (resp *shop.PriceRulesResponse, err error) {
-	t0 := time.Now()
-	var session *middleware.Session
-	var errs []*cm.Error
-	const rpcName = "shop.Price/GetPriceRules"
-	defer func() {
-		recovered := recover()
-		err = cmWrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
-	}()
-	defer cmWrapper.Censor(req)
-	sessionQuery := &middleware.StartSessionQuery{
-		Context:     ctx,
-		RequireAuth: true,
-		RequireShop: true,
-	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
-		return nil, err
-	}
-	session = sessionQuery.Result
-	query := &GetPriceRulesEndpoint{Empty: req}
-	query.Context.Claim = session.Claim
-	query.Context.Shop = session.Shop
-	query.Context.IsOwner = session.IsOwner
-	query.Context.Roles = session.Roles
-	query.Context.Permissions = session.Permissions
-	ctx = bus.NewRootContext(ctx)
-	err = bus.Dispatch(ctx, query)
-	resp = query.Result
-	if err == nil {
-		if resp == nil {
-			return nil, common.Error(common.Internal, "", nil).Log("nil response")
-		}
-		errs = cmWrapper.HasErrors(resp)
-	}
-	return resp, err
-}
-
-type UpdatePriceRulesEndpoint struct {
-	*shop.UpdatePriceRulesRequest
-	Result  *shop.UpdatePriceRulesResponse
-	Context ShopClaim
-}
-
-func (s PriceService) UpdatePriceRules(ctx context.Context, req *shop.UpdatePriceRulesRequest) (resp *shop.UpdatePriceRulesResponse, err error) {
-	t0 := time.Now()
-	var session *middleware.Session
-	var errs []*cm.Error
-	const rpcName = "shop.Price/UpdatePriceRules"
-	defer func() {
-		recovered := recover()
-		err = cmWrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
-	}()
-	defer cmWrapper.Censor(req)
-	sessionQuery := &middleware.StartSessionQuery{
-		Context:     ctx,
-		RequireAuth: true,
-		RequireShop: true,
-	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
-		return nil, err
-	}
-	session = sessionQuery.Result
-	query := &UpdatePriceRulesEndpoint{UpdatePriceRulesRequest: req}
-	query.Context.Claim = session.Claim
-	query.Context.Shop = session.Shop
-	query.Context.IsOwner = session.IsOwner
-	query.Context.Roles = session.Roles
-	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
 	err = bus.Dispatch(ctx, query)
 	resp = query.Result

@@ -67,110 +67,6 @@
         ]
       }
     },
-    "/api/admin.Category/CreateCategory": {
-      "post": {
-        "operationId": "CreateCategory",
-        "responses": {
-          "200": {
-            "description": "",
-            "schema": {
-              "$ref": "#/definitions/etopCategory"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/adminCreateCategoryRequest"
-            }
-          }
-        ],
-        "tags": [
-          "Category"
-        ]
-      }
-    },
-    "/api/admin.Category/GetCategories": {
-      "post": {
-        "operationId": "GetCategories",
-        "responses": {
-          "200": {
-            "description": "",
-            "schema": {
-              "$ref": "#/definitions/etopCategoriesResponse"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/cmEmpty"
-            }
-          }
-        ],
-        "tags": [
-          "Category"
-        ]
-      }
-    },
-    "/api/admin.Category/RemoveProductsCategory": {
-      "post": {
-        "operationId": "RemoveProductsCategory",
-        "responses": {
-          "200": {
-            "description": "",
-            "schema": {
-              "$ref": "#/definitions/cmUpdatedResponse"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/cmIDsRequest"
-            }
-          }
-        ],
-        "tags": [
-          "Category"
-        ]
-      }
-    },
-    "/api/admin.Category/UpdateProductsCategory": {
-      "post": {
-        "operationId": "UpdateProductsCategory",
-        "responses": {
-          "200": {
-            "description": "",
-            "schema": {
-              "$ref": "#/definitions/cmUpdatedResponse"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/adminUpdateProductsCategoryRequest"
-            }
-          }
-        ],
-        "tags": [
-          "Category"
-        ]
-      }
-    },
     "/api/admin.Credit/ConfirmCredit": {
       "post": {
         "operationId": "ConfirmCredit",
@@ -1005,318 +901,6 @@
         ]
       }
     },
-    "/api/admin.Product/GetProduct": {
-      "post": {
-        "operationId": "GetProduct",
-        "responses": {
-          "200": {
-            "description": "",
-            "schema": {
-              "$ref": "#/definitions/adminProductWithSupplier"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/cmIDRequest"
-            }
-          }
-        ],
-        "tags": [
-          "Product"
-        ]
-      }
-    },
-    "/api/admin.Product/GetProducts": {
-      "post": {
-        "operationId": "GetProducts",
-        "responses": {
-          "200": {
-            "description": "",
-            "schema": {
-              "$ref": "#/definitions/adminProductsResponse"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/adminGetProductsRequest"
-            }
-          }
-        ],
-        "tags": [
-          "Product"
-        ]
-      }
-    },
-    "/api/admin.Product/GetProductsByIDs": {
-      "post": {
-        "operationId": "GetProductsByIDs",
-        "responses": {
-          "200": {
-            "description": "",
-            "schema": {
-              "$ref": "#/definitions/adminProductsResponse"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/cmIDsRequest"
-            }
-          }
-        ],
-        "tags": [
-          "Product"
-        ]
-      }
-    },
-    "/api/admin.Product/GetVariant": {
-      "post": {
-        "operationId": "GetVariant",
-        "responses": {
-          "200": {
-            "description": "",
-            "schema": {
-              "$ref": "#/definitions/adminVariantWithSupplier"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/cmIDRequest"
-            }
-          }
-        ],
-        "tags": [
-          "Product"
-        ]
-      }
-    },
-    "/api/admin.Product/GetVariants": {
-      "post": {
-        "operationId": "GetVariants",
-        "responses": {
-          "200": {
-            "description": "",
-            "schema": {
-              "$ref": "#/definitions/adminVariantsResponse"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/adminGetVariantsRequest"
-            }
-          }
-        ],
-        "tags": [
-          "Product"
-        ]
-      }
-    },
-    "/api/admin.Product/GetVariantsByIDs": {
-      "post": {
-        "operationId": "GetVariantsByIDs",
-        "responses": {
-          "200": {
-            "description": "",
-            "schema": {
-              "$ref": "#/definitions/adminVariantsResponse"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/cmIDsRequest"
-            }
-          }
-        ],
-        "tags": [
-          "Product"
-        ]
-      }
-    },
-    "/api/admin.Product/UpdateProduct": {
-      "post": {
-        "operationId": "UpdateProduct",
-        "responses": {
-          "200": {
-            "description": "",
-            "schema": {
-              "$ref": "#/definitions/adminProduct"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/adminUpdateProductRequest"
-            }
-          }
-        ],
-        "tags": [
-          "Product"
-        ]
-      }
-    },
-    "/api/admin.Product/UpdateProductImages": {
-      "post": {
-        "operationId": "UpdateProductImages",
-        "responses": {
-          "200": {
-            "description": "",
-            "schema": {
-              "$ref": "#/definitions/adminProduct"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/shopUpdateVariantImagesRequest"
-            }
-          }
-        ],
-        "tags": [
-          "Product"
-        ]
-      }
-    },
-    "/api/admin.Product/UpdateProductsStatus": {
-      "post": {
-        "operationId": "UpdateProductsStatus",
-        "responses": {
-          "200": {
-            "description": "",
-            "schema": {
-              "$ref": "#/definitions/cmUpdatedResponse"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/adminUpdateProductsStatusRequest"
-            }
-          }
-        ],
-        "tags": [
-          "Product"
-        ]
-      }
-    },
-    "/api/admin.Product/UpdateVariant": {
-      "post": {
-        "operationId": "UpdateVariant",
-        "responses": {
-          "200": {
-            "description": "",
-            "schema": {
-              "$ref": "#/definitions/adminVariant"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/adminUpdateVariantRequest"
-            }
-          }
-        ],
-        "tags": [
-          "Product"
-        ]
-      }
-    },
-    "/api/admin.Product/UpdateVariantImages": {
-      "post": {
-        "operationId": "UpdateVariantImages",
-        "responses": {
-          "200": {
-            "description": "",
-            "schema": {
-              "$ref": "#/definitions/adminVariant"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/shopUpdateVariantImagesRequest"
-            }
-          }
-        ],
-        "tags": [
-          "Product"
-        ]
-      }
-    },
-    "/api/admin.Product/UpdateVariantsStatus": {
-      "post": {
-        "operationId": "UpdateVariantsStatus",
-        "responses": {
-          "200": {
-            "description": "",
-            "schema": {
-              "$ref": "#/definitions/cmUpdatedResponse"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/adminUpdateVariantsStatusRequest"
-            }
-          }
-        ],
-        "tags": [
-          "Product"
-        ]
-      }
-    },
     "/api/admin.Shop/GetShop": {
       "post": {
         "operationId": "GetShop",
@@ -1436,18 +1020,6 @@
           "format": "int64"
         },
         "total_orders": {
-          "type": "string",
-          "format": "int64"
-        }
-      }
-    },
-    "adminCreateCategoryRequest": {
-      "type": "object",
-      "properties": {
-        "name": {
-          "type": "string"
-        },
-        "parent_id": {
           "type": "string",
           "format": "int64"
         }
@@ -1683,23 +1255,6 @@
         }
       }
     },
-    "adminGetProductsRequest": {
-      "type": "object",
-      "properties": {
-        "paging": {
-          "$ref": "#/definitions/cmPaging"
-        },
-        "filters": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/cmFilter"
-          }
-        },
-        "status": {
-          "$ref": "#/definitions/status3Status"
-        }
-      }
-    },
     "adminGetShopsRequest": {
       "type": "object",
       "properties": {
@@ -1722,32 +1277,6 @@
         }
       }
     },
-    "adminGetVariantsRequest": {
-      "type": "object",
-      "properties": {
-        "paging": {
-          "$ref": "#/definitions/cmPaging"
-        },
-        "filters": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/cmFilter"
-          }
-        },
-        "s_status": {
-          "$ref": "#/definitions/status3Status"
-        },
-        "x_status": {
-          "$ref": "#/definitions/status3Status"
-        },
-        "e_status": {
-          "$ref": "#/definitions/status3Status"
-        },
-        "status": {
-          "$ref": "#/definitions/status3Status"
-        }
-      }
-    },
     "adminLoginAsAccountRequest": {
       "type": "object",
       "properties": {
@@ -1765,150 +1294,6 @@
         }
       }
     },
-    "adminProduct": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "string",
-          "format": "int64"
-        },
-        "category_id": {
-          "type": "string",
-          "format": "int64"
-        },
-        "s_name": {
-          "type": "string"
-        },
-        "s_description": {
-          "type": "string"
-        },
-        "s_short_desc": {
-          "type": "string"
-        },
-        "s_desc_html": {
-          "type": "string"
-        },
-        "s_meta": {
-          "$ref": "#/definitions/cmRawJSONObject"
-        },
-        "image_urls": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "x_id": {
-          "type": "string"
-        },
-        "x_category_id": {
-          "type": "string"
-        },
-        "x_code": {
-          "type": "string"
-        },
-        "x_name": {
-          "type": "string"
-        },
-        "x_description": {
-          "type": "string"
-        },
-        "x_image_urls": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "x_unit": {
-          "type": "string"
-        },
-        "x_unit_conv": {
-          "type": "number",
-          "format": "float"
-        },
-        "x_price": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "x_units": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/adminUnit"
-          }
-        },
-        "x_created_at": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "x_updated_at": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "x_sync_at": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "updated_at": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "created_at": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "x_status": {
-          "$ref": "#/definitions/status3Status"
-        },
-        "status": {
-          "$ref": "#/definitions/status3Status"
-        },
-        "s_tags": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "quantity_available": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "quantity_on_hand": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "quantity_reserved": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "variants": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/adminVariant"
-          }
-        }
-      }
-    },
-    "adminProductWithSupplier": {
-      "type": "object",
-      "properties": {
-        "product": {
-          "$ref": "#/definitions/adminProduct"
-        }
-      }
-    },
-    "adminProductsResponse": {
-      "type": "object",
-      "properties": {
-        "paging": {
-          "$ref": "#/definitions/cmPageInfo"
-        },
-        "products": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/adminProduct"
-          }
-        }
-      }
-    },
     "adminRemoveMoneyTransactionShippingExternalLinesRequest": {
       "type": "object",
       "properties": {
@@ -1922,31 +1307,6 @@
         "money_transaction_shipping_external_id": {
           "type": "string",
           "format": "int64"
-        }
-      }
-    },
-    "adminUnit": {
-      "type": "object",
-      "properties": {
-        "code": {
-          "type": "string"
-        },
-        "name": {
-          "type": "string"
-        },
-        "full_name": {
-          "type": "string"
-        },
-        "unit": {
-          "type": "string"
-        },
-        "unit_conv": {
-          "type": "number",
-          "format": "float"
-        },
-        "price": {
-          "type": "integer",
-          "format": "int32"
         }
       }
     },
@@ -2082,305 +1442,6 @@
         }
       }
     },
-    "adminUpdateProductRequest": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "string",
-          "format": "int64"
-        },
-        "name": {
-          "type": "string"
-        },
-        "description": {
-          "type": "string"
-        },
-        "short_desc": {
-          "type": "string"
-        },
-        "desc_html": {
-          "type": "string"
-        }
-      },
-      "required": [
-        "id"
-      ]
-    },
-    "adminUpdateProductsCategoryRequest": {
-      "type": "object",
-      "properties": {
-        "ids": {
-          "type": "array",
-          "items": {
-            "type": "string",
-            "format": "int64"
-          }
-        },
-        "category_id": {
-          "type": "string",
-          "format": "int64"
-        }
-      },
-      "required": [
-        "ids",
-        "category_id"
-      ]
-    },
-    "adminUpdateProductsStatusRequest": {
-      "type": "object",
-      "properties": {
-        "ids": {
-          "type": "array",
-          "items": {
-            "type": "string",
-            "format": "int64"
-          }
-        },
-        "status": {
-          "$ref": "#/definitions/status3Status"
-        }
-      },
-      "required": [
-        "ids",
-        "status"
-      ]
-    },
-    "adminUpdateVariantRequest": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "string",
-          "format": "int64"
-        },
-        "name": {
-          "type": "string"
-        },
-        "description": {
-          "type": "string"
-        },
-        "short_desc": {
-          "type": "string"
-        },
-        "desc_html": {
-          "type": "string"
-        }
-      },
-      "required": [
-        "id"
-      ]
-    },
-    "adminUpdateVariantsStatusRequest": {
-      "type": "object",
-      "properties": {
-        "ids": {
-          "type": "array",
-          "items": {
-            "type": "string",
-            "format": "int64"
-          }
-        },
-        "e_status": {
-          "$ref": "#/definitions/status3Status"
-        }
-      },
-      "required": [
-        "ids",
-        "e_status"
-      ]
-    },
-    "adminVariant": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "string",
-          "format": "int64"
-        },
-        "category_id": {
-          "type": "string",
-          "format": "int64"
-        },
-        "s_name": {
-          "type": "string",
-          "title": "optional string s_short_name  = 5 [(gogoproto.nullable)=false];"
-        },
-        "s_description": {
-          "type": "string"
-        },
-        "s_short_desc": {
-          "type": "string"
-        },
-        "s_desc_html": {
-          "type": "string"
-        },
-        "s_note": {
-          "type": "string"
-        },
-        "s_meta": {
-          "$ref": "#/definitions/cmRawJSONObject"
-        },
-        "image_urls": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "x_id": {
-          "type": "string"
-        },
-        "x_base_id": {
-          "type": "string"
-        },
-        "x_category_id": {
-          "type": "string"
-        },
-        "x_code": {
-          "type": "string"
-        },
-        "x_name": {
-          "type": "string"
-        },
-        "x_full_name": {
-          "type": "string"
-        },
-        "x_description": {
-          "type": "string"
-        },
-        "x_image_urls": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "x_unit": {
-          "type": "string"
-        },
-        "x_unit_conv": {
-          "type": "number",
-          "format": "float"
-        },
-        "x_price": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "x_attributes": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/shopAttribute"
-          },
-          "title": "repeated Unit      x_units       = 24;"
-        },
-        "x_updated_at": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "x_sync_at": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "updated_at": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "created_at": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "s_status": {
-          "$ref": "#/definitions/status3Status"
-        },
-        "x_status": {
-          "$ref": "#/definitions/status3Status"
-        },
-        "e_status": {
-          "$ref": "#/definitions/status3Status"
-        },
-        "status": {
-          "$ref": "#/definitions/status3Status"
-        },
-        "s_tags": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "quantity_available": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "quantity_on_hand": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "quantity_reserved": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "s_wholesale_price": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "s_list_price": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "s_retail_price_min": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "s_retail_price_max": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "wholesale_price_0": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "wholesale_price": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "list_price": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "retail_price_min": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "retail_price_max": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "attributes": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/shopAttribute"
-          }
-        }
-      }
-    },
-    "adminVariantWithSupplier": {
-      "type": "object",
-      "properties": {
-        "variant": {
-          "$ref": "#/definitions/adminVariant"
-        }
-      }
-    },
-    "adminVariantsResponse": {
-      "type": "object",
-      "properties": {
-        "paging": {
-          "$ref": "#/definitions/cmPageInfo"
-        },
-        "variants": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/adminVariant"
-          }
-        }
-      }
-    },
     "cmDeletedResponse": {
       "type": "object",
       "properties": {
@@ -2487,15 +1548,6 @@
         },
         "sort": {
           "type": "string"
-        }
-      }
-    },
-    "cmRawJSONObject": {
-      "type": "object",
-      "properties": {
-        "data": {
-          "type": "string",
-          "format": "byte"
         }
       }
     },
@@ -2656,41 +1708,6 @@
           "type": "string"
         }
       }
-    },
-    "etopCategoriesResponse": {
-      "type": "object",
-      "properties": {
-        "categories": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/etopCategory"
-          }
-        }
-      }
-    },
-    "etopCategory": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "string",
-          "format": "int64"
-        },
-        "name": {
-          "type": "string"
-        },
-        "status": {
-          "$ref": "#/definitions/status3Status"
-        },
-        "parent_id": {
-          "type": "string",
-          "format": "int64"
-        }
-      },
-      "required": [
-        "id",
-        "name",
-        "status"
-      ]
     },
     "etopCompanyInfo": {
       "type": "object",
@@ -3355,9 +2372,6 @@
           "format": "boolean"
         },
         "sh_confirm": {
-          "$ref": "#/definitions/status3Status"
-        },
-        "s_confirm": {
           "$ref": "#/definitions/status3Status"
         },
         "shipping_state": {
@@ -4029,9 +3043,6 @@
         "shipping": {
           "$ref": "#/definitions/orderOrderShipping"
         },
-        "external_data": {
-          "$ref": "#/definitions/orderOrderExternal"
-        },
         "ghn_note_code": {
           "type": "string",
           "title": "@deprecated use try_on_code instead"
@@ -4144,21 +3155,6 @@
         }
       }
     },
-    "orderOrderExternal": {
-      "type": "object",
-      "properties": {
-        "order_id": {
-          "type": "string",
-          "format": "int64"
-        },
-        "external_order_id": {
-          "type": "string"
-        },
-        "external_order_code": {
-          "type": "string"
-        }
-      }
-    },
     "orderOrderFeeLine": {
       "type": "object",
       "properties": {
@@ -4201,37 +3197,12 @@
           "type": "string",
           "format": "int64"
         },
-        "x_variant_id": {
-          "type": "string"
-        },
         "product_name": {
           "type": "string"
         },
         "is_outside_etop": {
           "type": "boolean",
           "format": "boolean"
-        },
-        "updated_at": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "closed_at": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "confirmed_at": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "cancelled_at": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "cancel_reason": {
-          "type": "string"
-        },
-        "s_confirm": {
-          "$ref": "#/definitions/status3Status"
         },
         "quantity": {
           "type": "integer",
@@ -4446,51 +3417,6 @@
       ],
       "default": "unknown"
     },
-    "shopAttribute": {
-      "type": "object",
-      "properties": {
-        "name": {
-          "type": "string"
-        },
-        "value": {
-          "type": "string"
-        }
-      }
-    },
-    "shopUpdateVariantImagesRequest": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "string",
-          "format": "int64"
-        },
-        "adds": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "deletes": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "replace_all": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "delete_all": {
-          "type": "boolean",
-          "format": "boolean"
-        }
-      },
-      "required": [
-        "id"
-      ]
-    },
     "sourceSource": {
       "type": "string",
       "enum": [
@@ -4551,9 +3477,6 @@
       "name": "Account"
     },
     {
-      "name": "Category"
-    },
-    {
       "name": "Credit"
     },
     {
@@ -4570,9 +3493,6 @@
     },
     {
       "name": "Order"
-    },
-    {
-      "name": "Product"
     },
     {
       "name": "Shop"

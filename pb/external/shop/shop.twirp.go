@@ -23,9 +23,9 @@ import proto "github.com/golang/protobuf/proto"
 import twirp "github.com/twitchtv/twirp"
 import ctxsetters "github.com/twitchtv/twirp/ctxsetters"
 
-import etop "etop.vn/backend/pb/etop"
 import external "etop.vn/backend/pb/external"
 import cm "etop.vn/backend/pb/common"
+import etop "etop.vn/backend/pb/etop"
 
 // Imports only used by utility functions:
 import io "io"

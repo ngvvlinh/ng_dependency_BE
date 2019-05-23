@@ -8,7 +8,6 @@ import (
 
 	sq "etop.vn/backend/pkg/common/sql"
 	core "etop.vn/backend/pkg/common/sql/core"
-	model "etop.vn/backend/pkg/etop/model"
 )
 
 // *EtopProduct is a substruct of *Product
@@ -580,414 +579,12 @@ func (ms *ProductHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
 	return nil
 }
 
-// Type ProductExternal represents table product_external
-func sqlgenProductExternal(_ *ProductExternal) bool { return true }
-
-type ProductExternals []*ProductExternal
-
-const __sqlProductExternal_Table = "product_external"
-const __sqlProductExternal_ListCols = "\"id\",\"product_source_id\",\"product_source_type\",\"external_id\",\"external_name\",\"external_code\",\"external_category_id\",\"external_description\",\"external_image_urls\",\"external_unit\",\"external_data\",\"external_status\",\"external_created_at\",\"external_updated_at\",\"external_deleted_at\",\"last_sync_at\",\"external_units\""
-const __sqlProductExternal_Insert = "INSERT INTO \"product_external\" (" + __sqlProductExternal_ListCols + ") VALUES"
-const __sqlProductExternal_Select = "SELECT " + __sqlProductExternal_ListCols + " FROM \"product_external\""
-const __sqlProductExternal_Select_history = "SELECT " + __sqlProductExternal_ListCols + " FROM history.\"product_external\""
-const __sqlProductExternal_UpdateAll = "UPDATE \"product_external\" SET (" + __sqlProductExternal_ListCols + ")"
-
-func (m *ProductExternal) SQLTableName() string  { return "product_external" }
-func (m *ProductExternals) SQLTableName() string { return "product_external" }
-func (m *ProductExternal) SQLListCols() string   { return __sqlProductExternal_ListCols }
-
-func (m *ProductExternal) SQLArgs(opts core.Opts, create bool) []interface{} {
-	return []interface{}{
-		core.Int64(m.ID),
-		core.Int64(m.ProductExternalCommon.ProductSourceID),
-		core.String(m.ProductExternalCommon.ProductSourceType),
-		core.String(m.ProductExternalCommon.ExternalID),
-		core.String(m.ProductExternalCommon.ExternalName),
-		core.String(m.ProductExternalCommon.ExternalCode),
-		core.String(m.ProductExternalCommon.ExternalCategoryID),
-		core.String(m.ProductExternalCommon.ExternalDescription),
-		core.Array{m.ProductExternalCommon.ExternalImageURLs, opts},
-		core.String(m.ProductExternalCommon.ExternalUnit),
-		core.JSON{m.ProductExternalCommon.ExternalData},
-		core.Int(m.ProductExternalCommon.ExternalStatus),
-		core.Time(m.ProductExternalCommon.ExternalCreatedAt),
-		core.Time(m.ProductExternalCommon.ExternalUpdatedAt),
-		core.Time(m.ProductExternalCommon.ExternalDeletedAt),
-		core.Time(m.ProductExternalCommon.LastSyncAt),
-		core.JSON{m.ExternalUnits},
-	}
-}
-
-func (m *ProductExternal) SQLScanArgs(opts core.Opts) []interface{} {
-	return []interface{}{
-		(*core.Int64)(&m.ID),
-		(*core.Int64)(&m.ProductExternalCommon.ProductSourceID),
-		(*core.String)(&m.ProductExternalCommon.ProductSourceType),
-		(*core.String)(&m.ProductExternalCommon.ExternalID),
-		(*core.String)(&m.ProductExternalCommon.ExternalName),
-		(*core.String)(&m.ProductExternalCommon.ExternalCode),
-		(*core.String)(&m.ProductExternalCommon.ExternalCategoryID),
-		(*core.String)(&m.ProductExternalCommon.ExternalDescription),
-		core.Array{&m.ProductExternalCommon.ExternalImageURLs, opts},
-		(*core.String)(&m.ProductExternalCommon.ExternalUnit),
-		core.JSON{&m.ProductExternalCommon.ExternalData},
-		(*core.Int)(&m.ProductExternalCommon.ExternalStatus),
-		(*core.Time)(&m.ProductExternalCommon.ExternalCreatedAt),
-		(*core.Time)(&m.ProductExternalCommon.ExternalUpdatedAt),
-		(*core.Time)(&m.ProductExternalCommon.ExternalDeletedAt),
-		(*core.Time)(&m.ProductExternalCommon.LastSyncAt),
-		core.JSON{&m.ExternalUnits},
-	}
-}
-
-func (m *ProductExternal) SQLScan(opts core.Opts, row *sql.Row) error {
-	return row.Scan(m.SQLScanArgs(opts)...)
-}
-
-func (ms *ProductExternals) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	res := make(ProductExternals, 0, 128)
-	for rows.Next() {
-		m := new(ProductExternal)
-		args := m.SQLScanArgs(opts)
-		if err := rows.Scan(args...); err != nil {
-			return err
-		}
-		res = append(res, m)
-	}
-	if err := rows.Err(); err != nil {
-		return err
-	}
-	*ms = res
-	return nil
-}
-
-func (_ *ProductExternal) SQLSelect(w SQLWriter) error {
-	w.WriteQueryString(__sqlProductExternal_Select)
-	return nil
-}
-
-func (_ *ProductExternals) SQLSelect(w SQLWriter) error {
-	w.WriteQueryString(__sqlProductExternal_Select)
-	return nil
-}
-
-func (m *ProductExternal) SQLInsert(w SQLWriter) error {
-	w.WriteQueryString(__sqlProductExternal_Insert)
-	w.WriteRawString(" (")
-	w.WriteMarkers(17)
-	w.WriteByte(')')
-	w.WriteArgs(m.SQLArgs(w.Opts(), true))
-	return nil
-}
-
-func (ms ProductExternals) SQLInsert(w SQLWriter) error {
-	w.WriteQueryString(__sqlProductExternal_Insert)
-	w.WriteRawString(" (")
-	for i := 0; i < len(ms); i++ {
-		w.WriteMarkers(17)
-		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
-		w.WriteRawString("),(")
-	}
-	w.TrimLast(2)
-	return nil
-}
-
-func (m *ProductExternal) SQLUpdate(w SQLWriter) error {
-	now, opts := time.Now(), w.Opts()
-	_, _ = now, opts // suppress unuse error
-	var flag bool
-	w.WriteRawString("UPDATE ")
-	w.WriteName("product_external")
-	w.WriteRawString(" SET ")
-	if m.ID != 0 {
-		flag = true
-		w.WriteName("id")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(m.ID)
-	}
-	if m.ProductExternalCommon.ProductSourceID != 0 {
-		flag = true
-		w.WriteName("product_source_id")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(m.ProductExternalCommon.ProductSourceID)
-	}
-	if m.ProductExternalCommon.ProductSourceType != "" {
-		flag = true
-		w.WriteName("product_source_type")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(m.ProductExternalCommon.ProductSourceType)
-	}
-	if m.ProductExternalCommon.ExternalID != "" {
-		flag = true
-		w.WriteName("external_id")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(m.ProductExternalCommon.ExternalID)
-	}
-	if m.ProductExternalCommon.ExternalName != "" {
-		flag = true
-		w.WriteName("external_name")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(m.ProductExternalCommon.ExternalName)
-	}
-	if m.ProductExternalCommon.ExternalCode != "" {
-		flag = true
-		w.WriteName("external_code")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(m.ProductExternalCommon.ExternalCode)
-	}
-	if m.ProductExternalCommon.ExternalCategoryID != "" {
-		flag = true
-		w.WriteName("external_category_id")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(m.ProductExternalCommon.ExternalCategoryID)
-	}
-	if m.ProductExternalCommon.ExternalDescription != "" {
-		flag = true
-		w.WriteName("external_description")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(m.ProductExternalCommon.ExternalDescription)
-	}
-	if m.ProductExternalCommon.ExternalImageURLs != nil {
-		flag = true
-		w.WriteName("external_image_urls")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(core.Array{m.ProductExternalCommon.ExternalImageURLs, opts})
-	}
-	if m.ProductExternalCommon.ExternalUnit != "" {
-		flag = true
-		w.WriteName("external_unit")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(m.ProductExternalCommon.ExternalUnit)
-	}
-	if m.ProductExternalCommon.ExternalData != nil {
-		flag = true
-		w.WriteName("external_data")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(core.JSON{m.ProductExternalCommon.ExternalData})
-	}
-	if m.ProductExternalCommon.ExternalStatus != 0 {
-		flag = true
-		w.WriteName("external_status")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(int(m.ProductExternalCommon.ExternalStatus))
-	}
-	if !m.ProductExternalCommon.ExternalCreatedAt.IsZero() {
-		flag = true
-		w.WriteName("external_created_at")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(m.ProductExternalCommon.ExternalCreatedAt)
-	}
-	if !m.ProductExternalCommon.ExternalUpdatedAt.IsZero() {
-		flag = true
-		w.WriteName("external_updated_at")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(m.ProductExternalCommon.ExternalUpdatedAt)
-	}
-	if !m.ProductExternalCommon.ExternalDeletedAt.IsZero() {
-		flag = true
-		w.WriteName("external_deleted_at")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(m.ProductExternalCommon.ExternalDeletedAt)
-	}
-	if !m.ProductExternalCommon.LastSyncAt.IsZero() {
-		flag = true
-		w.WriteName("last_sync_at")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(m.ProductExternalCommon.LastSyncAt)
-	}
-	if m.ExternalUnits != nil {
-		flag = true
-		w.WriteName("external_units")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(core.JSON{m.ExternalUnits})
-	}
-	if !flag {
-		return core.ErrNoColumn
-	}
-	w.TrimLast(1)
-	return nil
-}
-
-func (m *ProductExternal) SQLUpdateAll(w SQLWriter) error {
-	w.WriteQueryString(__sqlProductExternal_UpdateAll)
-	w.WriteRawString(" = (")
-	w.WriteMarkers(17)
-	w.WriteByte(')')
-	w.WriteArgs(m.SQLArgs(w.Opts(), false))
-	return nil
-}
-
-type ProductExternalHistory map[string]interface{}
-type ProductExternalHistories []map[string]interface{}
-
-func (m *ProductExternalHistory) SQLTableName() string  { return "history.\"product_external\"" }
-func (m ProductExternalHistories) SQLTableName() string { return "history.\"product_external\"" }
-
-func (m *ProductExternalHistory) SQLSelect(w SQLWriter) error {
-	w.WriteQueryString(__sqlProductExternal_Select_history)
-	return nil
-}
-
-func (m ProductExternalHistories) SQLSelect(w SQLWriter) error {
-	w.WriteQueryString(__sqlProductExternal_Select_history)
-	return nil
-}
-
-func (m ProductExternalHistory) ID() core.Interface { return core.Interface{m["id"]} }
-func (m ProductExternalHistory) ProductSourceID() core.Interface {
-	return core.Interface{m["product_source_id"]}
-}
-func (m ProductExternalHistory) ProductSourceType() core.Interface {
-	return core.Interface{m["product_source_type"]}
-}
-func (m ProductExternalHistory) ExternalID() core.Interface { return core.Interface{m["external_id"]} }
-func (m ProductExternalHistory) ExternalName() core.Interface {
-	return core.Interface{m["external_name"]}
-}
-func (m ProductExternalHistory) ExternalCode() core.Interface {
-	return core.Interface{m["external_code"]}
-}
-func (m ProductExternalHistory) ExternalCategoryID() core.Interface {
-	return core.Interface{m["external_category_id"]}
-}
-func (m ProductExternalHistory) ExternalDescription() core.Interface {
-	return core.Interface{m["external_description"]}
-}
-func (m ProductExternalHistory) ExternalImageURLs() core.Interface {
-	return core.Interface{m["external_image_urls"]}
-}
-func (m ProductExternalHistory) ExternalUnit() core.Interface {
-	return core.Interface{m["external_unit"]}
-}
-func (m ProductExternalHistory) ExternalData() core.Interface {
-	return core.Interface{m["external_data"]}
-}
-func (m ProductExternalHistory) ExternalStatus() core.Interface {
-	return core.Interface{m["external_status"]}
-}
-func (m ProductExternalHistory) ExternalCreatedAt() core.Interface {
-	return core.Interface{m["external_created_at"]}
-}
-func (m ProductExternalHistory) ExternalUpdatedAt() core.Interface {
-	return core.Interface{m["external_updated_at"]}
-}
-func (m ProductExternalHistory) ExternalDeletedAt() core.Interface {
-	return core.Interface{m["external_deleted_at"]}
-}
-func (m ProductExternalHistory) LastSyncAt() core.Interface { return core.Interface{m["last_sync_at"]} }
-func (m ProductExternalHistory) ExternalUnits() core.Interface {
-	return core.Interface{m["external_units"]}
-}
-
-func (m *ProductExternalHistory) SQLScan(opts core.Opts, row *sql.Row) error {
-	data := make([]interface{}, 17)
-	args := make([]interface{}, 17)
-	for i := 0; i < 17; i++ {
-		args[i] = &data[i]
-	}
-	if err := row.Scan(args...); err != nil {
-		return err
-	}
-	res := make(ProductExternalHistory, 17)
-	res["id"] = data[0]
-	res["product_source_id"] = data[1]
-	res["product_source_type"] = data[2]
-	res["external_id"] = data[3]
-	res["external_name"] = data[4]
-	res["external_code"] = data[5]
-	res["external_category_id"] = data[6]
-	res["external_description"] = data[7]
-	res["external_image_urls"] = data[8]
-	res["external_unit"] = data[9]
-	res["external_data"] = data[10]
-	res["external_status"] = data[11]
-	res["external_created_at"] = data[12]
-	res["external_updated_at"] = data[13]
-	res["external_deleted_at"] = data[14]
-	res["last_sync_at"] = data[15]
-	res["external_units"] = data[16]
-	*m = res
-	return nil
-}
-
-func (ms *ProductExternalHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	data := make([]interface{}, 17)
-	args := make([]interface{}, 17)
-	for i := 0; i < 17; i++ {
-		args[i] = &data[i]
-	}
-	res := make(ProductExternalHistories, 0, 128)
-	for rows.Next() {
-		if err := rows.Scan(args...); err != nil {
-			return err
-		}
-		m := make(ProductExternalHistory)
-		m["id"] = data[0]
-		m["product_source_id"] = data[1]
-		m["product_source_type"] = data[2]
-		m["external_id"] = data[3]
-		m["external_name"] = data[4]
-		m["external_code"] = data[5]
-		m["external_category_id"] = data[6]
-		m["external_description"] = data[7]
-		m["external_image_urls"] = data[8]
-		m["external_unit"] = data[9]
-		m["external_data"] = data[10]
-		m["external_status"] = data[11]
-		m["external_created_at"] = data[12]
-		m["external_updated_at"] = data[13]
-		m["external_deleted_at"] = data[14]
-		m["last_sync_at"] = data[15]
-		m["external_units"] = data[16]
-		res = append(res, m)
-	}
-	if err := rows.Err(); err != nil {
-		return err
-	}
-	*ms = res
-	return nil
-}
-
 // Type ProductExtended represents a join
-func sqlgenProductExtended(_ *ProductExtended, _ *Product, as sq.AS, t0 sq.JOIN_TYPE, _ *ProductExternal, a0 sq.AS, c0 string, t1 sq.JOIN_TYPE, _ *model.ProductSource, a1 sq.AS, c1 string) bool {
-	__sqlProductExtended_JoinTypes = []sq.JOIN_TYPE{t0, t1}
+func sqlgenProductExtended(_ *ProductExtended, _ *Product, as sq.AS, t0 sq.JOIN_TYPE, _ *ProductSource, a0 sq.AS, c0 string) bool {
+	__sqlProductExtended_JoinTypes = []sq.JOIN_TYPE{t0}
 	__sqlProductExtended_As = as
-	__sqlProductExtended_JoinAs = []sq.AS{a0, a1}
-	__sqlProductExtended_JoinConds = []string{c0, c1}
+	__sqlProductExtended_JoinAs = []sq.AS{a0}
+	__sqlProductExtended_JoinConds = []string{c0}
 	return true
 }
 
@@ -1049,14 +646,12 @@ func (m *ProductExtended) __sqlSelect(w SQLWriter) {
 	w.WriteRawString("SELECT ")
 	core.WriteCols(w, string(__sqlProductExtended_As), (*Product)(nil).SQLListCols())
 	w.WriteByte(',')
-	core.WriteCols(w, string(__sqlProductExtended_JoinAs[0]), (*ProductExternal)(nil).SQLListCols())
-	w.WriteByte(',')
-	core.WriteCols(w, string(__sqlProductExtended_JoinAs[1]), (*model.ProductSource)(nil).SQLListCols())
+	core.WriteCols(w, string(__sqlProductExtended_JoinAs[0]), (*ProductSource)(nil).SQLListCols())
 }
 
 func (m *ProductExtended) __sqlJoin(w SQLWriter, types []sq.JOIN_TYPE) {
-	if len(types) != 2 {
-		panic("common/sql: expect 2 types to join")
+	if len(types) != 1 {
+		panic("common/sql: expect 1 type to join")
 	}
 	w.WriteRawString("FROM ")
 	w.WriteName("product")
@@ -1065,28 +660,18 @@ func (m *ProductExtended) __sqlJoin(w SQLWriter, types []sq.JOIN_TYPE) {
 	w.WriteByte(' ')
 	w.WriteRawString(string(types[0]))
 	w.WriteRawString(" JOIN ")
-	w.WriteName((*ProductExternal)(nil).SQLTableName())
+	w.WriteName((*ProductSource)(nil).SQLTableName())
 	w.WriteRawString(" AS ")
 	w.WriteRawString(string(__sqlProductExtended_JoinAs[0]))
 	w.WriteRawString(" ON ")
 	w.WriteQueryString(__sqlProductExtended_JoinConds[0])
-	w.WriteByte(' ')
-	w.WriteRawString(string(types[1]))
-	w.WriteRawString(" JOIN ")
-	w.WriteName((*model.ProductSource)(nil).SQLTableName())
-	w.WriteRawString(" AS ")
-	w.WriteRawString(string(__sqlProductExtended_JoinAs[1]))
-	w.WriteRawString(" ON ")
-	w.WriteQueryString(__sqlProductExtended_JoinConds[1])
 }
 
 func (m *ProductExtended) SQLScanArgs(opts core.Opts) []interface{} {
 	args := make([]interface{}, 0, 64) // TODO: pre-calculate length
 	m.Product = new(Product)
 	args = append(args, m.Product.SQLScanArgs(opts)...)
-	m.ProductExternal = new(ProductExternal)
-	args = append(args, m.ProductExternal.SQLScanArgs(opts)...)
-	m.ProductSource = new(model.ProductSource)
+	m.ProductSource = new(ProductSource)
 	args = append(args, m.ProductSource.SQLScanArgs(opts)...)
 
 	return args
@@ -1772,11 +1357,11 @@ func (ms *VariantHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
 }
 
 // Type VariantExtended represents a join
-func sqlgenVariantExtended(_ *VariantExtended, _ *Variant, as sq.AS, t0 sq.JOIN_TYPE, _ *Product, a0 sq.AS, c0 string, t1 sq.JOIN_TYPE, _ *VariantExternal, a1 sq.AS, c1 string) bool {
-	__sqlVariantExtended_JoinTypes = []sq.JOIN_TYPE{t0, t1}
+func sqlgenVariantExtended(_ *VariantExtended, _ *Variant, as sq.AS, t0 sq.JOIN_TYPE, _ *Product, a0 sq.AS, c0 string) bool {
+	__sqlVariantExtended_JoinTypes = []sq.JOIN_TYPE{t0}
 	__sqlVariantExtended_As = as
-	__sqlVariantExtended_JoinAs = []sq.AS{a0, a1}
-	__sqlVariantExtended_JoinConds = []string{c0, c1}
+	__sqlVariantExtended_JoinAs = []sq.AS{a0}
+	__sqlVariantExtended_JoinConds = []string{c0}
 	return true
 }
 
@@ -1839,13 +1424,11 @@ func (m *VariantExtended) __sqlSelect(w SQLWriter) {
 	core.WriteCols(w, string(__sqlVariantExtended_As), (*Variant)(nil).SQLListCols())
 	w.WriteByte(',')
 	core.WriteCols(w, string(__sqlVariantExtended_JoinAs[0]), (*Product)(nil).SQLListCols())
-	w.WriteByte(',')
-	core.WriteCols(w, string(__sqlVariantExtended_JoinAs[1]), (*VariantExternal)(nil).SQLListCols())
 }
 
 func (m *VariantExtended) __sqlJoin(w SQLWriter, types []sq.JOIN_TYPE) {
-	if len(types) != 2 {
-		panic("common/sql: expect 2 types to join")
+	if len(types) != 1 {
+		panic("common/sql: expect 1 type to join")
 	}
 	w.WriteRawString("FROM ")
 	w.WriteName("variant")
@@ -1859,14 +1442,6 @@ func (m *VariantExtended) __sqlJoin(w SQLWriter, types []sq.JOIN_TYPE) {
 	w.WriteRawString(string(__sqlVariantExtended_JoinAs[0]))
 	w.WriteRawString(" ON ")
 	w.WriteQueryString(__sqlVariantExtended_JoinConds[0])
-	w.WriteByte(' ')
-	w.WriteRawString(string(types[1]))
-	w.WriteRawString(" JOIN ")
-	w.WriteName((*VariantExternal)(nil).SQLTableName())
-	w.WriteRawString(" AS ")
-	w.WriteRawString(string(__sqlVariantExtended_JoinAs[1]))
-	w.WriteRawString(" ON ")
-	w.WriteQueryString(__sqlVariantExtended_JoinConds[1])
 }
 
 func (m *VariantExtended) SQLScanArgs(opts core.Opts) []interface{} {
@@ -1875,568 +1450,6 @@ func (m *VariantExtended) SQLScanArgs(opts core.Opts) []interface{} {
 	args = append(args, m.Variant.SQLScanArgs(opts)...)
 	m.Product = new(Product)
 	args = append(args, m.Product.SQLScanArgs(opts)...)
-	m.VariantExternal = new(VariantExternal)
-	args = append(args, m.VariantExternal.SQLScanArgs(opts)...)
-
-	return args
-}
-
-// Type VariantExternal represents table variant_external
-func sqlgenVariantExternal(_ *VariantExternal) bool { return true }
-
-type VariantExternals []*VariantExternal
-
-const __sqlVariantExternal_Table = "variant_external"
-const __sqlVariantExternal_ListCols = "\"id\",\"product_source_id\",\"product_source_type\",\"external_id\",\"external_name\",\"external_code\",\"external_category_id\",\"external_description\",\"external_image_urls\",\"external_unit\",\"external_data\",\"external_status\",\"external_created_at\",\"external_updated_at\",\"external_deleted_at\",\"last_sync_at\",\"external_product_id\",\"external_price\",\"external_base_unit_id\",\"external_unit_conv\",\"external_attributes\""
-const __sqlVariantExternal_Insert = "INSERT INTO \"variant_external\" (" + __sqlVariantExternal_ListCols + ") VALUES"
-const __sqlVariantExternal_Select = "SELECT " + __sqlVariantExternal_ListCols + " FROM \"variant_external\""
-const __sqlVariantExternal_Select_history = "SELECT " + __sqlVariantExternal_ListCols + " FROM history.\"variant_external\""
-const __sqlVariantExternal_UpdateAll = "UPDATE \"variant_external\" SET (" + __sqlVariantExternal_ListCols + ")"
-
-func (m *VariantExternal) SQLTableName() string  { return "variant_external" }
-func (m *VariantExternals) SQLTableName() string { return "variant_external" }
-func (m *VariantExternal) SQLListCols() string   { return __sqlVariantExternal_ListCols }
-
-func (m *VariantExternal) SQLArgs(opts core.Opts, create bool) []interface{} {
-	return []interface{}{
-		core.Int64(m.ID),
-		core.Int64(m.ProductExternalCommon.ProductSourceID),
-		core.String(m.ProductExternalCommon.ProductSourceType),
-		core.String(m.ProductExternalCommon.ExternalID),
-		core.String(m.ProductExternalCommon.ExternalName),
-		core.String(m.ProductExternalCommon.ExternalCode),
-		core.String(m.ProductExternalCommon.ExternalCategoryID),
-		core.String(m.ProductExternalCommon.ExternalDescription),
-		core.Array{m.ProductExternalCommon.ExternalImageURLs, opts},
-		core.String(m.ProductExternalCommon.ExternalUnit),
-		core.JSON{m.ProductExternalCommon.ExternalData},
-		core.Int(m.ProductExternalCommon.ExternalStatus),
-		core.Time(m.ProductExternalCommon.ExternalCreatedAt),
-		core.Time(m.ProductExternalCommon.ExternalUpdatedAt),
-		core.Time(m.ProductExternalCommon.ExternalDeletedAt),
-		core.Time(m.ProductExternalCommon.LastSyncAt),
-		core.String(m.ExternalProductID),
-		core.Int(m.ExternalPrice),
-		core.String(m.ExternalBaseUnitID),
-		core.Float64(m.ExternalUnitConv),
-		core.JSON{m.ExternalAttributes},
-	}
-}
-
-func (m *VariantExternal) SQLScanArgs(opts core.Opts) []interface{} {
-	return []interface{}{
-		(*core.Int64)(&m.ID),
-		(*core.Int64)(&m.ProductExternalCommon.ProductSourceID),
-		(*core.String)(&m.ProductExternalCommon.ProductSourceType),
-		(*core.String)(&m.ProductExternalCommon.ExternalID),
-		(*core.String)(&m.ProductExternalCommon.ExternalName),
-		(*core.String)(&m.ProductExternalCommon.ExternalCode),
-		(*core.String)(&m.ProductExternalCommon.ExternalCategoryID),
-		(*core.String)(&m.ProductExternalCommon.ExternalDescription),
-		core.Array{&m.ProductExternalCommon.ExternalImageURLs, opts},
-		(*core.String)(&m.ProductExternalCommon.ExternalUnit),
-		core.JSON{&m.ProductExternalCommon.ExternalData},
-		(*core.Int)(&m.ProductExternalCommon.ExternalStatus),
-		(*core.Time)(&m.ProductExternalCommon.ExternalCreatedAt),
-		(*core.Time)(&m.ProductExternalCommon.ExternalUpdatedAt),
-		(*core.Time)(&m.ProductExternalCommon.ExternalDeletedAt),
-		(*core.Time)(&m.ProductExternalCommon.LastSyncAt),
-		(*core.String)(&m.ExternalProductID),
-		(*core.Int)(&m.ExternalPrice),
-		(*core.String)(&m.ExternalBaseUnitID),
-		(*core.Float64)(&m.ExternalUnitConv),
-		core.JSON{&m.ExternalAttributes},
-	}
-}
-
-func (m *VariantExternal) SQLScan(opts core.Opts, row *sql.Row) error {
-	return row.Scan(m.SQLScanArgs(opts)...)
-}
-
-func (ms *VariantExternals) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	res := make(VariantExternals, 0, 128)
-	for rows.Next() {
-		m := new(VariantExternal)
-		args := m.SQLScanArgs(opts)
-		if err := rows.Scan(args...); err != nil {
-			return err
-		}
-		res = append(res, m)
-	}
-	if err := rows.Err(); err != nil {
-		return err
-	}
-	*ms = res
-	return nil
-}
-
-func (_ *VariantExternal) SQLSelect(w SQLWriter) error {
-	w.WriteQueryString(__sqlVariantExternal_Select)
-	return nil
-}
-
-func (_ *VariantExternals) SQLSelect(w SQLWriter) error {
-	w.WriteQueryString(__sqlVariantExternal_Select)
-	return nil
-}
-
-func (m *VariantExternal) SQLInsert(w SQLWriter) error {
-	w.WriteQueryString(__sqlVariantExternal_Insert)
-	w.WriteRawString(" (")
-	w.WriteMarkers(21)
-	w.WriteByte(')')
-	w.WriteArgs(m.SQLArgs(w.Opts(), true))
-	return nil
-}
-
-func (ms VariantExternals) SQLInsert(w SQLWriter) error {
-	w.WriteQueryString(__sqlVariantExternal_Insert)
-	w.WriteRawString(" (")
-	for i := 0; i < len(ms); i++ {
-		w.WriteMarkers(21)
-		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
-		w.WriteRawString("),(")
-	}
-	w.TrimLast(2)
-	return nil
-}
-
-func (m *VariantExternal) SQLUpdate(w SQLWriter) error {
-	now, opts := time.Now(), w.Opts()
-	_, _ = now, opts // suppress unuse error
-	var flag bool
-	w.WriteRawString("UPDATE ")
-	w.WriteName("variant_external")
-	w.WriteRawString(" SET ")
-	if m.ID != 0 {
-		flag = true
-		w.WriteName("id")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(m.ID)
-	}
-	if m.ProductExternalCommon.ProductSourceID != 0 {
-		flag = true
-		w.WriteName("product_source_id")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(m.ProductExternalCommon.ProductSourceID)
-	}
-	if m.ProductExternalCommon.ProductSourceType != "" {
-		flag = true
-		w.WriteName("product_source_type")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(m.ProductExternalCommon.ProductSourceType)
-	}
-	if m.ProductExternalCommon.ExternalID != "" {
-		flag = true
-		w.WriteName("external_id")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(m.ProductExternalCommon.ExternalID)
-	}
-	if m.ProductExternalCommon.ExternalName != "" {
-		flag = true
-		w.WriteName("external_name")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(m.ProductExternalCommon.ExternalName)
-	}
-	if m.ProductExternalCommon.ExternalCode != "" {
-		flag = true
-		w.WriteName("external_code")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(m.ProductExternalCommon.ExternalCode)
-	}
-	if m.ProductExternalCommon.ExternalCategoryID != "" {
-		flag = true
-		w.WriteName("external_category_id")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(m.ProductExternalCommon.ExternalCategoryID)
-	}
-	if m.ProductExternalCommon.ExternalDescription != "" {
-		flag = true
-		w.WriteName("external_description")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(m.ProductExternalCommon.ExternalDescription)
-	}
-	if m.ProductExternalCommon.ExternalImageURLs != nil {
-		flag = true
-		w.WriteName("external_image_urls")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(core.Array{m.ProductExternalCommon.ExternalImageURLs, opts})
-	}
-	if m.ProductExternalCommon.ExternalUnit != "" {
-		flag = true
-		w.WriteName("external_unit")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(m.ProductExternalCommon.ExternalUnit)
-	}
-	if m.ProductExternalCommon.ExternalData != nil {
-		flag = true
-		w.WriteName("external_data")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(core.JSON{m.ProductExternalCommon.ExternalData})
-	}
-	if m.ProductExternalCommon.ExternalStatus != 0 {
-		flag = true
-		w.WriteName("external_status")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(int(m.ProductExternalCommon.ExternalStatus))
-	}
-	if !m.ProductExternalCommon.ExternalCreatedAt.IsZero() {
-		flag = true
-		w.WriteName("external_created_at")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(m.ProductExternalCommon.ExternalCreatedAt)
-	}
-	if !m.ProductExternalCommon.ExternalUpdatedAt.IsZero() {
-		flag = true
-		w.WriteName("external_updated_at")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(m.ProductExternalCommon.ExternalUpdatedAt)
-	}
-	if !m.ProductExternalCommon.ExternalDeletedAt.IsZero() {
-		flag = true
-		w.WriteName("external_deleted_at")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(m.ProductExternalCommon.ExternalDeletedAt)
-	}
-	if !m.ProductExternalCommon.LastSyncAt.IsZero() {
-		flag = true
-		w.WriteName("last_sync_at")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(m.ProductExternalCommon.LastSyncAt)
-	}
-	if m.ExternalProductID != "" {
-		flag = true
-		w.WriteName("external_product_id")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(m.ExternalProductID)
-	}
-	if m.ExternalPrice != 0 {
-		flag = true
-		w.WriteName("external_price")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(m.ExternalPrice)
-	}
-	if m.ExternalBaseUnitID != "" {
-		flag = true
-		w.WriteName("external_base_unit_id")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(m.ExternalBaseUnitID)
-	}
-	if m.ExternalUnitConv != 0 {
-		flag = true
-		w.WriteName("external_unit_conv")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(m.ExternalUnitConv)
-	}
-	if m.ExternalAttributes != nil {
-		flag = true
-		w.WriteName("external_attributes")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(core.JSON{m.ExternalAttributes})
-	}
-	if !flag {
-		return core.ErrNoColumn
-	}
-	w.TrimLast(1)
-	return nil
-}
-
-func (m *VariantExternal) SQLUpdateAll(w SQLWriter) error {
-	w.WriteQueryString(__sqlVariantExternal_UpdateAll)
-	w.WriteRawString(" = (")
-	w.WriteMarkers(21)
-	w.WriteByte(')')
-	w.WriteArgs(m.SQLArgs(w.Opts(), false))
-	return nil
-}
-
-type VariantExternalHistory map[string]interface{}
-type VariantExternalHistories []map[string]interface{}
-
-func (m *VariantExternalHistory) SQLTableName() string  { return "history.\"variant_external\"" }
-func (m VariantExternalHistories) SQLTableName() string { return "history.\"variant_external\"" }
-
-func (m *VariantExternalHistory) SQLSelect(w SQLWriter) error {
-	w.WriteQueryString(__sqlVariantExternal_Select_history)
-	return nil
-}
-
-func (m VariantExternalHistories) SQLSelect(w SQLWriter) error {
-	w.WriteQueryString(__sqlVariantExternal_Select_history)
-	return nil
-}
-
-func (m VariantExternalHistory) ID() core.Interface { return core.Interface{m["id"]} }
-func (m VariantExternalHistory) ProductSourceID() core.Interface {
-	return core.Interface{m["product_source_id"]}
-}
-func (m VariantExternalHistory) ProductSourceType() core.Interface {
-	return core.Interface{m["product_source_type"]}
-}
-func (m VariantExternalHistory) ExternalID() core.Interface { return core.Interface{m["external_id"]} }
-func (m VariantExternalHistory) ExternalName() core.Interface {
-	return core.Interface{m["external_name"]}
-}
-func (m VariantExternalHistory) ExternalCode() core.Interface {
-	return core.Interface{m["external_code"]}
-}
-func (m VariantExternalHistory) ExternalCategoryID() core.Interface {
-	return core.Interface{m["external_category_id"]}
-}
-func (m VariantExternalHistory) ExternalDescription() core.Interface {
-	return core.Interface{m["external_description"]}
-}
-func (m VariantExternalHistory) ExternalImageURLs() core.Interface {
-	return core.Interface{m["external_image_urls"]}
-}
-func (m VariantExternalHistory) ExternalUnit() core.Interface {
-	return core.Interface{m["external_unit"]}
-}
-func (m VariantExternalHistory) ExternalData() core.Interface {
-	return core.Interface{m["external_data"]}
-}
-func (m VariantExternalHistory) ExternalStatus() core.Interface {
-	return core.Interface{m["external_status"]}
-}
-func (m VariantExternalHistory) ExternalCreatedAt() core.Interface {
-	return core.Interface{m["external_created_at"]}
-}
-func (m VariantExternalHistory) ExternalUpdatedAt() core.Interface {
-	return core.Interface{m["external_updated_at"]}
-}
-func (m VariantExternalHistory) ExternalDeletedAt() core.Interface {
-	return core.Interface{m["external_deleted_at"]}
-}
-func (m VariantExternalHistory) LastSyncAt() core.Interface { return core.Interface{m["last_sync_at"]} }
-func (m VariantExternalHistory) ExternalProductID() core.Interface {
-	return core.Interface{m["external_product_id"]}
-}
-func (m VariantExternalHistory) ExternalPrice() core.Interface {
-	return core.Interface{m["external_price"]}
-}
-func (m VariantExternalHistory) ExternalBaseUnitID() core.Interface {
-	return core.Interface{m["external_base_unit_id"]}
-}
-func (m VariantExternalHistory) ExternalUnitConv() core.Interface {
-	return core.Interface{m["external_unit_conv"]}
-}
-func (m VariantExternalHistory) ExternalAttributes() core.Interface {
-	return core.Interface{m["external_attributes"]}
-}
-
-func (m *VariantExternalHistory) SQLScan(opts core.Opts, row *sql.Row) error {
-	data := make([]interface{}, 21)
-	args := make([]interface{}, 21)
-	for i := 0; i < 21; i++ {
-		args[i] = &data[i]
-	}
-	if err := row.Scan(args...); err != nil {
-		return err
-	}
-	res := make(VariantExternalHistory, 21)
-	res["id"] = data[0]
-	res["product_source_id"] = data[1]
-	res["product_source_type"] = data[2]
-	res["external_id"] = data[3]
-	res["external_name"] = data[4]
-	res["external_code"] = data[5]
-	res["external_category_id"] = data[6]
-	res["external_description"] = data[7]
-	res["external_image_urls"] = data[8]
-	res["external_unit"] = data[9]
-	res["external_data"] = data[10]
-	res["external_status"] = data[11]
-	res["external_created_at"] = data[12]
-	res["external_updated_at"] = data[13]
-	res["external_deleted_at"] = data[14]
-	res["last_sync_at"] = data[15]
-	res["external_product_id"] = data[16]
-	res["external_price"] = data[17]
-	res["external_base_unit_id"] = data[18]
-	res["external_unit_conv"] = data[19]
-	res["external_attributes"] = data[20]
-	*m = res
-	return nil
-}
-
-func (ms *VariantExternalHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	data := make([]interface{}, 21)
-	args := make([]interface{}, 21)
-	for i := 0; i < 21; i++ {
-		args[i] = &data[i]
-	}
-	res := make(VariantExternalHistories, 0, 128)
-	for rows.Next() {
-		if err := rows.Scan(args...); err != nil {
-			return err
-		}
-		m := make(VariantExternalHistory)
-		m["id"] = data[0]
-		m["product_source_id"] = data[1]
-		m["product_source_type"] = data[2]
-		m["external_id"] = data[3]
-		m["external_name"] = data[4]
-		m["external_code"] = data[5]
-		m["external_category_id"] = data[6]
-		m["external_description"] = data[7]
-		m["external_image_urls"] = data[8]
-		m["external_unit"] = data[9]
-		m["external_data"] = data[10]
-		m["external_status"] = data[11]
-		m["external_created_at"] = data[12]
-		m["external_updated_at"] = data[13]
-		m["external_deleted_at"] = data[14]
-		m["last_sync_at"] = data[15]
-		m["external_product_id"] = data[16]
-		m["external_price"] = data[17]
-		m["external_base_unit_id"] = data[18]
-		m["external_unit_conv"] = data[19]
-		m["external_attributes"] = data[20]
-		res = append(res, m)
-	}
-	if err := rows.Err(); err != nil {
-		return err
-	}
-	*ms = res
-	return nil
-}
-
-// Type VariantExternalExtended represents a join
-func sqlgenVariantExternalExtended(_ *VariantExternalExtended, _ *Variant, as sq.AS, t0 sq.JOIN_TYPE, _ *VariantExternal, a0 sq.AS, c0 string) bool {
-	__sqlVariantExternalExtended_JoinTypes = []sq.JOIN_TYPE{t0}
-	__sqlVariantExternalExtended_As = as
-	__sqlVariantExternalExtended_JoinAs = []sq.AS{a0}
-	__sqlVariantExternalExtended_JoinConds = []string{c0}
-	return true
-}
-
-type VariantExternalExtendeds []*VariantExternalExtended
-
-var __sqlVariantExternalExtended_JoinTypes []sq.JOIN_TYPE
-var __sqlVariantExternalExtended_As sq.AS
-var __sqlVariantExternalExtended_JoinAs []sq.AS
-var __sqlVariantExternalExtended_JoinConds []string
-
-func (m *VariantExternalExtended) SQLTableName() string  { return "variant" }
-func (m *VariantExternalExtendeds) SQLTableName() string { return "variant" }
-
-func (m *VariantExternalExtended) SQLScan(opts core.Opts, row *sql.Row) error {
-	return row.Scan(m.SQLScanArgs(opts)...)
-}
-
-func (ms *VariantExternalExtendeds) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	res := make(VariantExternalExtendeds, 0, 128)
-	for rows.Next() {
-		m := new(VariantExternalExtended)
-		args := m.SQLScanArgs(opts)
-		if err := rows.Scan(args...); err != nil {
-			return err
-		}
-		res = append(res, m)
-	}
-	if err := rows.Err(); err != nil {
-		return err
-	}
-	*ms = res
-	return nil
-}
-
-func (m *VariantExternalExtended) SQLSelect(w SQLWriter) error {
-	(*VariantExternalExtended)(nil).__sqlSelect(w)
-	w.WriteByte(' ')
-	(*VariantExternalExtended)(nil).__sqlJoin(w, __sqlVariantExternalExtended_JoinTypes)
-	return nil
-}
-
-func (m *VariantExternalExtendeds) SQLSelect(w SQLWriter) error {
-	return (*VariantExternalExtended)(nil).SQLSelect(w)
-}
-
-func (m *VariantExternalExtended) SQLJoin(w SQLWriter, types []sq.JOIN_TYPE) error {
-	if len(types) == 0 {
-		types = __sqlVariantExternalExtended_JoinTypes
-	}
-	m.__sqlJoin(w, types)
-	return nil
-}
-
-func (m *VariantExternalExtendeds) SQLJoin(w SQLWriter, types []sq.JOIN_TYPE) error {
-	return (*VariantExternalExtended)(nil).SQLJoin(w, types)
-}
-
-func (m *VariantExternalExtended) __sqlSelect(w SQLWriter) {
-	w.WriteRawString("SELECT ")
-	core.WriteCols(w, string(__sqlVariantExternalExtended_As), (*Variant)(nil).SQLListCols())
-	w.WriteByte(',')
-	core.WriteCols(w, string(__sqlVariantExternalExtended_JoinAs[0]), (*VariantExternal)(nil).SQLListCols())
-}
-
-func (m *VariantExternalExtended) __sqlJoin(w SQLWriter, types []sq.JOIN_TYPE) {
-	if len(types) != 1 {
-		panic("common/sql: expect 1 type to join")
-	}
-	w.WriteRawString("FROM ")
-	w.WriteName("variant")
-	w.WriteRawString(" AS ")
-	w.WriteRawString(string(__sqlVariantExternalExtended_As))
-	w.WriteByte(' ')
-	w.WriteRawString(string(types[0]))
-	w.WriteRawString(" JOIN ")
-	w.WriteName((*VariantExternal)(nil).SQLTableName())
-	w.WriteRawString(" AS ")
-	w.WriteRawString(string(__sqlVariantExternalExtended_JoinAs[0]))
-	w.WriteRawString(" ON ")
-	w.WriteQueryString(__sqlVariantExternalExtended_JoinConds[0])
-}
-
-func (m *VariantExternalExtended) SQLScanArgs(opts core.Opts) []interface{} {
-	args := make([]interface{}, 0, 64) // TODO: pre-calculate length
-	m.Variant = new(Variant)
-	args = append(args, m.Variant.SQLScanArgs(opts)...)
-	m.VariantExternal = new(VariantExternal)
-	args = append(args, m.VariantExternal.SQLScanArgs(opts)...)
 
 	return args
 }
@@ -3782,11 +2795,11 @@ func (ms *ShopProductHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
 }
 
 // Type ShopProductFtProductFtVariantFtShopVariant represents a join
-func sqlgenShopProductFtProductFtVariantFtShopVariant(_ *ShopProductFtProductFtVariantFtShopVariant, _ *ShopProduct, as sq.AS, t0 sq.JOIN_TYPE, _ *Product, a0 sq.AS, c0 string, t1 sq.JOIN_TYPE, _ *Variant, a1 sq.AS, c1 string, t2 sq.JOIN_TYPE, _ *VariantExternal, a2 sq.AS, c2 string, t3 sq.JOIN_TYPE, _ *ShopVariant, a3 sq.AS, c3 string) bool {
-	__sqlShopProductFtProductFtVariantFtShopVariant_JoinTypes = []sq.JOIN_TYPE{t0, t1, t2, t3}
+func sqlgenShopProductFtProductFtVariantFtShopVariant(_ *ShopProductFtProductFtVariantFtShopVariant, _ *ShopProduct, as sq.AS, t0 sq.JOIN_TYPE, _ *Product, a0 sq.AS, c0 string, t1 sq.JOIN_TYPE, _ *Variant, a1 sq.AS, c1 string, t2 sq.JOIN_TYPE, _ *ShopVariant, a2 sq.AS, c2 string) bool {
+	__sqlShopProductFtProductFtVariantFtShopVariant_JoinTypes = []sq.JOIN_TYPE{t0, t1, t2}
 	__sqlShopProductFtProductFtVariantFtShopVariant_As = as
-	__sqlShopProductFtProductFtVariantFtShopVariant_JoinAs = []sq.AS{a0, a1, a2, a3}
-	__sqlShopProductFtProductFtVariantFtShopVariant_JoinConds = []string{c0, c1, c2, c3}
+	__sqlShopProductFtProductFtVariantFtShopVariant_JoinAs = []sq.AS{a0, a1, a2}
+	__sqlShopProductFtProductFtVariantFtShopVariant_JoinConds = []string{c0, c1, c2}
 	return true
 }
 
@@ -3852,14 +2865,12 @@ func (m *ShopProductFtProductFtVariantFtShopVariant) __sqlSelect(w SQLWriter) {
 	w.WriteByte(',')
 	core.WriteCols(w, string(__sqlShopProductFtProductFtVariantFtShopVariant_JoinAs[1]), (*Variant)(nil).SQLListCols())
 	w.WriteByte(',')
-	core.WriteCols(w, string(__sqlShopProductFtProductFtVariantFtShopVariant_JoinAs[2]), (*VariantExternal)(nil).SQLListCols())
-	w.WriteByte(',')
-	core.WriteCols(w, string(__sqlShopProductFtProductFtVariantFtShopVariant_JoinAs[3]), (*ShopVariant)(nil).SQLListCols())
+	core.WriteCols(w, string(__sqlShopProductFtProductFtVariantFtShopVariant_JoinAs[2]), (*ShopVariant)(nil).SQLListCols())
 }
 
 func (m *ShopProductFtProductFtVariantFtShopVariant) __sqlJoin(w SQLWriter, types []sq.JOIN_TYPE) {
-	if len(types) != 4 {
-		panic("common/sql: expect 4 types to join")
+	if len(types) != 3 {
+		panic("common/sql: expect 3 types to join")
 	}
 	w.WriteRawString("FROM ")
 	w.WriteName("shop_product")
@@ -3884,19 +2895,11 @@ func (m *ShopProductFtProductFtVariantFtShopVariant) __sqlJoin(w SQLWriter, type
 	w.WriteByte(' ')
 	w.WriteRawString(string(types[2]))
 	w.WriteRawString(" JOIN ")
-	w.WriteName((*VariantExternal)(nil).SQLTableName())
+	w.WriteName((*ShopVariant)(nil).SQLTableName())
 	w.WriteRawString(" AS ")
 	w.WriteRawString(string(__sqlShopProductFtProductFtVariantFtShopVariant_JoinAs[2]))
 	w.WriteRawString(" ON ")
 	w.WriteQueryString(__sqlShopProductFtProductFtVariantFtShopVariant_JoinConds[2])
-	w.WriteByte(' ')
-	w.WriteRawString(string(types[3]))
-	w.WriteRawString(" JOIN ")
-	w.WriteName((*ShopVariant)(nil).SQLTableName())
-	w.WriteRawString(" AS ")
-	w.WriteRawString(string(__sqlShopProductFtProductFtVariantFtShopVariant_JoinAs[3]))
-	w.WriteRawString(" ON ")
-	w.WriteQueryString(__sqlShopProductFtProductFtVariantFtShopVariant_JoinConds[3])
 }
 
 func (m *ShopProductFtProductFtVariantFtShopVariant) SQLScanArgs(opts core.Opts) []interface{} {
@@ -3907,8 +2910,6 @@ func (m *ShopProductFtProductFtVariantFtShopVariant) SQLScanArgs(opts core.Opts)
 	args = append(args, m.Product.SQLScanArgs(opts)...)
 	m.Variant = new(Variant)
 	args = append(args, m.Variant.SQLScanArgs(opts)...)
-	m.VariantExternal = new(VariantExternal)
-	args = append(args, m.VariantExternal.SQLScanArgs(opts)...)
 	m.ShopVariant = new(ShopVariant)
 	args = append(args, m.ShopVariant.SQLScanArgs(opts)...)
 
@@ -4014,11 +3015,11 @@ func (m *ShopProductExtended) SQLScanArgs(opts core.Opts) []interface{} {
 }
 
 // Type ShopVariantExt represents a join
-func sqlgenShopVariantExt(_ *ShopVariantExt, _ *ShopVariant, as sq.AS, t0 sq.JOIN_TYPE, _ *Variant, a0 sq.AS, c0 string, t1 sq.JOIN_TYPE, _ *VariantExternal, a1 sq.AS, c1 string) bool {
-	__sqlShopVariantExt_JoinTypes = []sq.JOIN_TYPE{t0, t1}
+func sqlgenShopVariantExt(_ *ShopVariantExt, _ *ShopVariant, as sq.AS, t0 sq.JOIN_TYPE, _ *Variant, a0 sq.AS, c0 string) bool {
+	__sqlShopVariantExt_JoinTypes = []sq.JOIN_TYPE{t0}
 	__sqlShopVariantExt_As = as
-	__sqlShopVariantExt_JoinAs = []sq.AS{a0, a1}
-	__sqlShopVariantExt_JoinConds = []string{c0, c1}
+	__sqlShopVariantExt_JoinAs = []sq.AS{a0}
+	__sqlShopVariantExt_JoinConds = []string{c0}
 	return true
 }
 
@@ -4081,13 +3082,11 @@ func (m *ShopVariantExt) __sqlSelect(w SQLWriter) {
 	core.WriteCols(w, string(__sqlShopVariantExt_As), (*ShopVariant)(nil).SQLListCols())
 	w.WriteByte(',')
 	core.WriteCols(w, string(__sqlShopVariantExt_JoinAs[0]), (*Variant)(nil).SQLListCols())
-	w.WriteByte(',')
-	core.WriteCols(w, string(__sqlShopVariantExt_JoinAs[1]), (*VariantExternal)(nil).SQLListCols())
 }
 
 func (m *ShopVariantExt) __sqlJoin(w SQLWriter, types []sq.JOIN_TYPE) {
-	if len(types) != 2 {
-		panic("common/sql: expect 2 types to join")
+	if len(types) != 1 {
+		panic("common/sql: expect 1 type to join")
 	}
 	w.WriteRawString("FROM ")
 	w.WriteName("shop_variant")
@@ -4101,14 +3100,6 @@ func (m *ShopVariantExt) __sqlJoin(w SQLWriter, types []sq.JOIN_TYPE) {
 	w.WriteRawString(string(__sqlShopVariantExt_JoinAs[0]))
 	w.WriteRawString(" ON ")
 	w.WriteQueryString(__sqlShopVariantExt_JoinConds[0])
-	w.WriteByte(' ')
-	w.WriteRawString(string(types[1]))
-	w.WriteRawString(" JOIN ")
-	w.WriteName((*VariantExternal)(nil).SQLTableName())
-	w.WriteRawString(" AS ")
-	w.WriteRawString(string(__sqlShopVariantExt_JoinAs[1]))
-	w.WriteRawString(" ON ")
-	w.WriteQueryString(__sqlShopVariantExt_JoinConds[1])
 }
 
 func (m *ShopVariantExt) SQLScanArgs(opts core.Opts) []interface{} {
@@ -4117,18 +3108,16 @@ func (m *ShopVariantExt) SQLScanArgs(opts core.Opts) []interface{} {
 	args = append(args, m.ShopVariant.SQLScanArgs(opts)...)
 	m.Variant = new(Variant)
 	args = append(args, m.Variant.SQLScanArgs(opts)...)
-	m.VariantExternal = new(VariantExternal)
-	args = append(args, m.VariantExternal.SQLScanArgs(opts)...)
 
 	return args
 }
 
 // Type ProductFtVariantFtShopProduct represents a join
-func sqlgenProductFtVariantFtShopProduct(_ *ProductFtVariantFtShopProduct, _ *Product, as sq.AS, t0 sq.JOIN_TYPE, _ *Variant, a0 sq.AS, c0 string, t1 sq.JOIN_TYPE, _ *VariantExternal, a1 sq.AS, c1 string, t2 sq.JOIN_TYPE, _ *ShopProduct, a2 sq.AS, c2 string) bool {
-	__sqlProductFtVariantFtShopProduct_JoinTypes = []sq.JOIN_TYPE{t0, t1, t2}
+func sqlgenProductFtVariantFtShopProduct(_ *ProductFtVariantFtShopProduct, _ *Product, as sq.AS, t0 sq.JOIN_TYPE, _ *Variant, a0 sq.AS, c0 string, t1 sq.JOIN_TYPE, _ *ShopProduct, a1 sq.AS, c1 string) bool {
+	__sqlProductFtVariantFtShopProduct_JoinTypes = []sq.JOIN_TYPE{t0, t1}
 	__sqlProductFtVariantFtShopProduct_As = as
-	__sqlProductFtVariantFtShopProduct_JoinAs = []sq.AS{a0, a1, a2}
-	__sqlProductFtVariantFtShopProduct_JoinConds = []string{c0, c1, c2}
+	__sqlProductFtVariantFtShopProduct_JoinAs = []sq.AS{a0, a1}
+	__sqlProductFtVariantFtShopProduct_JoinConds = []string{c0, c1}
 	return true
 }
 
@@ -4192,14 +3181,12 @@ func (m *ProductFtVariantFtShopProduct) __sqlSelect(w SQLWriter) {
 	w.WriteByte(',')
 	core.WriteCols(w, string(__sqlProductFtVariantFtShopProduct_JoinAs[0]), (*Variant)(nil).SQLListCols())
 	w.WriteByte(',')
-	core.WriteCols(w, string(__sqlProductFtVariantFtShopProduct_JoinAs[1]), (*VariantExternal)(nil).SQLListCols())
-	w.WriteByte(',')
-	core.WriteCols(w, string(__sqlProductFtVariantFtShopProduct_JoinAs[2]), (*ShopProduct)(nil).SQLListCols())
+	core.WriteCols(w, string(__sqlProductFtVariantFtShopProduct_JoinAs[1]), (*ShopProduct)(nil).SQLListCols())
 }
 
 func (m *ProductFtVariantFtShopProduct) __sqlJoin(w SQLWriter, types []sq.JOIN_TYPE) {
-	if len(types) != 3 {
-		panic("common/sql: expect 3 types to join")
+	if len(types) != 2 {
+		panic("common/sql: expect 2 types to join")
 	}
 	w.WriteRawString("FROM ")
 	w.WriteName("product")
@@ -4216,19 +3203,11 @@ func (m *ProductFtVariantFtShopProduct) __sqlJoin(w SQLWriter, types []sq.JOIN_T
 	w.WriteByte(' ')
 	w.WriteRawString(string(types[1]))
 	w.WriteRawString(" JOIN ")
-	w.WriteName((*VariantExternal)(nil).SQLTableName())
+	w.WriteName((*ShopProduct)(nil).SQLTableName())
 	w.WriteRawString(" AS ")
 	w.WriteRawString(string(__sqlProductFtVariantFtShopProduct_JoinAs[1]))
 	w.WriteRawString(" ON ")
 	w.WriteQueryString(__sqlProductFtVariantFtShopProduct_JoinConds[1])
-	w.WriteByte(' ')
-	w.WriteRawString(string(types[2]))
-	w.WriteRawString(" JOIN ")
-	w.WriteName((*ShopProduct)(nil).SQLTableName())
-	w.WriteRawString(" AS ")
-	w.WriteRawString(string(__sqlProductFtVariantFtShopProduct_JoinAs[2]))
-	w.WriteRawString(" ON ")
-	w.WriteQueryString(__sqlProductFtVariantFtShopProduct_JoinConds[2])
 }
 
 func (m *ProductFtVariantFtShopProduct) SQLScanArgs(opts core.Opts) []interface{} {
@@ -4237,8 +3216,6 @@ func (m *ProductFtVariantFtShopProduct) SQLScanArgs(opts core.Opts) []interface{
 	args = append(args, m.Product.SQLScanArgs(opts)...)
 	m.Variant = new(Variant)
 	args = append(args, m.Variant.SQLScanArgs(opts)...)
-	m.VariantExternal = new(VariantExternal)
-	args = append(args, m.VariantExternal.SQLScanArgs(opts)...)
 	m.ShopProduct = new(ShopProduct)
 	args = append(args, m.ShopProduct.SQLScanArgs(opts)...)
 
@@ -4836,6 +3813,607 @@ func (ms *ProductShopCollectionHistories) SQLScan(opts core.Opts, rows *sql.Rows
 		m["status"] = data[3]
 		m["created_at"] = data[4]
 		m["updated_at"] = data[5]
+		res = append(res, m)
+	}
+	if err := rows.Err(); err != nil {
+		return err
+	}
+	*ms = res
+	return nil
+}
+
+// Type ProductSource represents table product_source
+func sqlgenProductSource(_ *ProductSource) bool { return true }
+
+type ProductSources []*ProductSource
+
+const __sqlProductSource_Table = "product_source"
+const __sqlProductSource_ListCols = "\"id\",\"supplier_id\",\"type\",\"name\",\"status\",\"created_at\",\"updated_at\",\"last_sync_at\",\"sync_state_products\",\"sync_state_categories\""
+const __sqlProductSource_Insert = "INSERT INTO \"product_source\" (" + __sqlProductSource_ListCols + ") VALUES"
+const __sqlProductSource_Select = "SELECT " + __sqlProductSource_ListCols + " FROM \"product_source\""
+const __sqlProductSource_Select_history = "SELECT " + __sqlProductSource_ListCols + " FROM history.\"product_source\""
+const __sqlProductSource_UpdateAll = "UPDATE \"product_source\" SET (" + __sqlProductSource_ListCols + ")"
+
+func (m *ProductSource) SQLTableName() string  { return "product_source" }
+func (m *ProductSources) SQLTableName() string { return "product_source" }
+func (m *ProductSource) SQLListCols() string   { return __sqlProductSource_ListCols }
+
+func (m *ProductSource) SQLArgs(opts core.Opts, create bool) []interface{} {
+	now := time.Now()
+	return []interface{}{
+		core.Int64(m.ID),
+		core.Int64(m.SupplierID),
+		core.String(m.Type),
+		core.String(m.Name),
+		core.Int(m.Status),
+		core.Now(m.CreatedAt, now, create),
+		core.Now(m.UpdatedAt, now, true),
+		core.Time(m.LastSyncAt),
+		core.JSON{m.SyncStateProducts},
+		core.JSON{m.SyncStateCategories},
+	}
+}
+
+func (m *ProductSource) SQLScanArgs(opts core.Opts) []interface{} {
+	return []interface{}{
+		(*core.Int64)(&m.ID),
+		(*core.Int64)(&m.SupplierID),
+		(*core.String)(&m.Type),
+		(*core.String)(&m.Name),
+		(*core.Int)(&m.Status),
+		(*core.Time)(&m.CreatedAt),
+		(*core.Time)(&m.UpdatedAt),
+		(*core.Time)(&m.LastSyncAt),
+		core.JSON{&m.SyncStateProducts},
+		core.JSON{&m.SyncStateCategories},
+	}
+}
+
+func (m *ProductSource) SQLScan(opts core.Opts, row *sql.Row) error {
+	return row.Scan(m.SQLScanArgs(opts)...)
+}
+
+func (ms *ProductSources) SQLScan(opts core.Opts, rows *sql.Rows) error {
+	res := make(ProductSources, 0, 128)
+	for rows.Next() {
+		m := new(ProductSource)
+		args := m.SQLScanArgs(opts)
+		if err := rows.Scan(args...); err != nil {
+			return err
+		}
+		res = append(res, m)
+	}
+	if err := rows.Err(); err != nil {
+		return err
+	}
+	*ms = res
+	return nil
+}
+
+func (_ *ProductSource) SQLSelect(w SQLWriter) error {
+	w.WriteQueryString(__sqlProductSource_Select)
+	return nil
+}
+
+func (_ *ProductSources) SQLSelect(w SQLWriter) error {
+	w.WriteQueryString(__sqlProductSource_Select)
+	return nil
+}
+
+func (m *ProductSource) SQLInsert(w SQLWriter) error {
+	w.WriteQueryString(__sqlProductSource_Insert)
+	w.WriteRawString(" (")
+	w.WriteMarkers(10)
+	w.WriteByte(')')
+	w.WriteArgs(m.SQLArgs(w.Opts(), true))
+	return nil
+}
+
+func (ms ProductSources) SQLInsert(w SQLWriter) error {
+	w.WriteQueryString(__sqlProductSource_Insert)
+	w.WriteRawString(" (")
+	for i := 0; i < len(ms); i++ {
+		w.WriteMarkers(10)
+		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
+		w.WriteRawString("),(")
+	}
+	w.TrimLast(2)
+	return nil
+}
+
+func (m *ProductSource) SQLUpdate(w SQLWriter) error {
+	now, opts := time.Now(), w.Opts()
+	_, _ = now, opts // suppress unuse error
+	var flag bool
+	w.WriteRawString("UPDATE ")
+	w.WriteName("product_source")
+	w.WriteRawString(" SET ")
+	if m.ID != 0 {
+		flag = true
+		w.WriteName("id")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.ID)
+	}
+	if m.SupplierID != 0 {
+		flag = true
+		w.WriteName("supplier_id")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.SupplierID)
+	}
+	if m.Type != "" {
+		flag = true
+		w.WriteName("type")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.Type)
+	}
+	if m.Name != "" {
+		flag = true
+		w.WriteName("name")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.Name)
+	}
+	if m.Status != 0 {
+		flag = true
+		w.WriteName("status")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(int(m.Status))
+	}
+	if !m.CreatedAt.IsZero() {
+		flag = true
+		w.WriteName("created_at")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.CreatedAt)
+	}
+	if !m.UpdatedAt.IsZero() {
+		flag = true
+		w.WriteName("updated_at")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(core.Now(m.UpdatedAt, time.Now(), true))
+	}
+	if !m.LastSyncAt.IsZero() {
+		flag = true
+		w.WriteName("last_sync_at")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.LastSyncAt)
+	}
+	if m.SyncStateProducts != nil {
+		flag = true
+		w.WriteName("sync_state_products")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(core.JSON{m.SyncStateProducts})
+	}
+	if m.SyncStateCategories != nil {
+		flag = true
+		w.WriteName("sync_state_categories")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(core.JSON{m.SyncStateCategories})
+	}
+	if !flag {
+		return core.ErrNoColumn
+	}
+	w.TrimLast(1)
+	return nil
+}
+
+func (m *ProductSource) SQLUpdateAll(w SQLWriter) error {
+	w.WriteQueryString(__sqlProductSource_UpdateAll)
+	w.WriteRawString(" = (")
+	w.WriteMarkers(10)
+	w.WriteByte(')')
+	w.WriteArgs(m.SQLArgs(w.Opts(), false))
+	return nil
+}
+
+type ProductSourceHistory map[string]interface{}
+type ProductSourceHistories []map[string]interface{}
+
+func (m *ProductSourceHistory) SQLTableName() string  { return "history.\"product_source\"" }
+func (m ProductSourceHistories) SQLTableName() string { return "history.\"product_source\"" }
+
+func (m *ProductSourceHistory) SQLSelect(w SQLWriter) error {
+	w.WriteQueryString(__sqlProductSource_Select_history)
+	return nil
+}
+
+func (m ProductSourceHistories) SQLSelect(w SQLWriter) error {
+	w.WriteQueryString(__sqlProductSource_Select_history)
+	return nil
+}
+
+func (m ProductSourceHistory) ID() core.Interface         { return core.Interface{m["id"]} }
+func (m ProductSourceHistory) SupplierID() core.Interface { return core.Interface{m["supplier_id"]} }
+func (m ProductSourceHistory) Type() core.Interface       { return core.Interface{m["type"]} }
+func (m ProductSourceHistory) Name() core.Interface       { return core.Interface{m["name"]} }
+func (m ProductSourceHistory) Status() core.Interface     { return core.Interface{m["status"]} }
+func (m ProductSourceHistory) CreatedAt() core.Interface  { return core.Interface{m["created_at"]} }
+func (m ProductSourceHistory) UpdatedAt() core.Interface  { return core.Interface{m["updated_at"]} }
+func (m ProductSourceHistory) LastSyncAt() core.Interface { return core.Interface{m["last_sync_at"]} }
+func (m ProductSourceHistory) SyncStateProducts() core.Interface {
+	return core.Interface{m["sync_state_products"]}
+}
+func (m ProductSourceHistory) SyncStateCategories() core.Interface {
+	return core.Interface{m["sync_state_categories"]}
+}
+
+func (m *ProductSourceHistory) SQLScan(opts core.Opts, row *sql.Row) error {
+	data := make([]interface{}, 10)
+	args := make([]interface{}, 10)
+	for i := 0; i < 10; i++ {
+		args[i] = &data[i]
+	}
+	if err := row.Scan(args...); err != nil {
+		return err
+	}
+	res := make(ProductSourceHistory, 10)
+	res["id"] = data[0]
+	res["supplier_id"] = data[1]
+	res["type"] = data[2]
+	res["name"] = data[3]
+	res["status"] = data[4]
+	res["created_at"] = data[5]
+	res["updated_at"] = data[6]
+	res["last_sync_at"] = data[7]
+	res["sync_state_products"] = data[8]
+	res["sync_state_categories"] = data[9]
+	*m = res
+	return nil
+}
+
+func (ms *ProductSourceHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
+	data := make([]interface{}, 10)
+	args := make([]interface{}, 10)
+	for i := 0; i < 10; i++ {
+		args[i] = &data[i]
+	}
+	res := make(ProductSourceHistories, 0, 128)
+	for rows.Next() {
+		if err := rows.Scan(args...); err != nil {
+			return err
+		}
+		m := make(ProductSourceHistory)
+		m["id"] = data[0]
+		m["supplier_id"] = data[1]
+		m["type"] = data[2]
+		m["name"] = data[3]
+		m["status"] = data[4]
+		m["created_at"] = data[5]
+		m["updated_at"] = data[6]
+		m["last_sync_at"] = data[7]
+		m["sync_state_products"] = data[8]
+		m["sync_state_categories"] = data[9]
+		res = append(res, m)
+	}
+	if err := rows.Err(); err != nil {
+		return err
+	}
+	*ms = res
+	return nil
+}
+
+// Type ProductSourceCategory represents table product_source_category
+func sqlgenProductSourceCategory(_ *ProductSourceCategory) bool { return true }
+
+type ProductSourceCategories []*ProductSourceCategory
+
+const __sqlProductSourceCategory_Table = "product_source_category"
+const __sqlProductSourceCategory_ListCols = "\"id\",\"product_source_id\",\"product_source_type\",\"supplier_id\",\"parent_id\",\"shop_id\",\"name\",\"status\",\"created_at\",\"updated_at\",\"deleted_at\""
+const __sqlProductSourceCategory_Insert = "INSERT INTO \"product_source_category\" (" + __sqlProductSourceCategory_ListCols + ") VALUES"
+const __sqlProductSourceCategory_Select = "SELECT " + __sqlProductSourceCategory_ListCols + " FROM \"product_source_category\""
+const __sqlProductSourceCategory_Select_history = "SELECT " + __sqlProductSourceCategory_ListCols + " FROM history.\"product_source_category\""
+const __sqlProductSourceCategory_UpdateAll = "UPDATE \"product_source_category\" SET (" + __sqlProductSourceCategory_ListCols + ")"
+
+func (m *ProductSourceCategory) SQLTableName() string   { return "product_source_category" }
+func (m *ProductSourceCategories) SQLTableName() string { return "product_source_category" }
+func (m *ProductSourceCategory) SQLListCols() string    { return __sqlProductSourceCategory_ListCols }
+
+func (m *ProductSourceCategory) SQLArgs(opts core.Opts, create bool) []interface{} {
+	now := time.Now()
+	return []interface{}{
+		core.Int64(m.ID),
+		core.Int64(m.ProductSourceID),
+		core.String(m.ProductSourceType),
+		core.Int64(m.SupplierID),
+		core.Int64(m.ParentID),
+		core.Int64(m.ShopID),
+		core.String(m.Name),
+		core.Int(m.Status),
+		core.Now(m.CreatedAt, now, create),
+		core.Now(m.UpdatedAt, now, true),
+		core.Time(m.DeletedAt),
+	}
+}
+
+func (m *ProductSourceCategory) SQLScanArgs(opts core.Opts) []interface{} {
+	return []interface{}{
+		(*core.Int64)(&m.ID),
+		(*core.Int64)(&m.ProductSourceID),
+		(*core.String)(&m.ProductSourceType),
+		(*core.Int64)(&m.SupplierID),
+		(*core.Int64)(&m.ParentID),
+		(*core.Int64)(&m.ShopID),
+		(*core.String)(&m.Name),
+		(*core.Int)(&m.Status),
+		(*core.Time)(&m.CreatedAt),
+		(*core.Time)(&m.UpdatedAt),
+		(*core.Time)(&m.DeletedAt),
+	}
+}
+
+func (m *ProductSourceCategory) SQLScan(opts core.Opts, row *sql.Row) error {
+	return row.Scan(m.SQLScanArgs(opts)...)
+}
+
+func (ms *ProductSourceCategories) SQLScan(opts core.Opts, rows *sql.Rows) error {
+	res := make(ProductSourceCategories, 0, 128)
+	for rows.Next() {
+		m := new(ProductSourceCategory)
+		args := m.SQLScanArgs(opts)
+		if err := rows.Scan(args...); err != nil {
+			return err
+		}
+		res = append(res, m)
+	}
+	if err := rows.Err(); err != nil {
+		return err
+	}
+	*ms = res
+	return nil
+}
+
+func (_ *ProductSourceCategory) SQLSelect(w SQLWriter) error {
+	w.WriteQueryString(__sqlProductSourceCategory_Select)
+	return nil
+}
+
+func (_ *ProductSourceCategories) SQLSelect(w SQLWriter) error {
+	w.WriteQueryString(__sqlProductSourceCategory_Select)
+	return nil
+}
+
+func (m *ProductSourceCategory) SQLInsert(w SQLWriter) error {
+	w.WriteQueryString(__sqlProductSourceCategory_Insert)
+	w.WriteRawString(" (")
+	w.WriteMarkers(11)
+	w.WriteByte(')')
+	w.WriteArgs(m.SQLArgs(w.Opts(), true))
+	return nil
+}
+
+func (ms ProductSourceCategories) SQLInsert(w SQLWriter) error {
+	w.WriteQueryString(__sqlProductSourceCategory_Insert)
+	w.WriteRawString(" (")
+	for i := 0; i < len(ms); i++ {
+		w.WriteMarkers(11)
+		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
+		w.WriteRawString("),(")
+	}
+	w.TrimLast(2)
+	return nil
+}
+
+func (m *ProductSourceCategory) SQLUpdate(w SQLWriter) error {
+	now, opts := time.Now(), w.Opts()
+	_, _ = now, opts // suppress unuse error
+	var flag bool
+	w.WriteRawString("UPDATE ")
+	w.WriteName("product_source_category")
+	w.WriteRawString(" SET ")
+	if m.ID != 0 {
+		flag = true
+		w.WriteName("id")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.ID)
+	}
+	if m.ProductSourceID != 0 {
+		flag = true
+		w.WriteName("product_source_id")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.ProductSourceID)
+	}
+	if m.ProductSourceType != "" {
+		flag = true
+		w.WriteName("product_source_type")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.ProductSourceType)
+	}
+	if m.SupplierID != 0 {
+		flag = true
+		w.WriteName("supplier_id")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.SupplierID)
+	}
+	if m.ParentID != 0 {
+		flag = true
+		w.WriteName("parent_id")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.ParentID)
+	}
+	if m.ShopID != 0 {
+		flag = true
+		w.WriteName("shop_id")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.ShopID)
+	}
+	if m.Name != "" {
+		flag = true
+		w.WriteName("name")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.Name)
+	}
+	if m.Status != 0 {
+		flag = true
+		w.WriteName("status")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.Status)
+	}
+	if !m.CreatedAt.IsZero() {
+		flag = true
+		w.WriteName("created_at")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.CreatedAt)
+	}
+	if !m.UpdatedAt.IsZero() {
+		flag = true
+		w.WriteName("updated_at")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(core.Now(m.UpdatedAt, time.Now(), true))
+	}
+	if !m.DeletedAt.IsZero() {
+		flag = true
+		w.WriteName("deleted_at")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.DeletedAt)
+	}
+	if !flag {
+		return core.ErrNoColumn
+	}
+	w.TrimLast(1)
+	return nil
+}
+
+func (m *ProductSourceCategory) SQLUpdateAll(w SQLWriter) error {
+	w.WriteQueryString(__sqlProductSourceCategory_UpdateAll)
+	w.WriteRawString(" = (")
+	w.WriteMarkers(11)
+	w.WriteByte(')')
+	w.WriteArgs(m.SQLArgs(w.Opts(), false))
+	return nil
+}
+
+type ProductSourceCategoryHistory map[string]interface{}
+type ProductSourceCategoryHistories []map[string]interface{}
+
+func (m *ProductSourceCategoryHistory) SQLTableName() string {
+	return "history.\"product_source_category\""
+}
+func (m ProductSourceCategoryHistories) SQLTableName() string {
+	return "history.\"product_source_category\""
+}
+
+func (m *ProductSourceCategoryHistory) SQLSelect(w SQLWriter) error {
+	w.WriteQueryString(__sqlProductSourceCategory_Select_history)
+	return nil
+}
+
+func (m ProductSourceCategoryHistories) SQLSelect(w SQLWriter) error {
+	w.WriteQueryString(__sqlProductSourceCategory_Select_history)
+	return nil
+}
+
+func (m ProductSourceCategoryHistory) ID() core.Interface { return core.Interface{m["id"]} }
+func (m ProductSourceCategoryHistory) ProductSourceID() core.Interface {
+	return core.Interface{m["product_source_id"]}
+}
+func (m ProductSourceCategoryHistory) ProductSourceType() core.Interface {
+	return core.Interface{m["product_source_type"]}
+}
+func (m ProductSourceCategoryHistory) SupplierID() core.Interface {
+	return core.Interface{m["supplier_id"]}
+}
+func (m ProductSourceCategoryHistory) ParentID() core.Interface { return core.Interface{m["parent_id"]} }
+func (m ProductSourceCategoryHistory) ShopID() core.Interface   { return core.Interface{m["shop_id"]} }
+func (m ProductSourceCategoryHistory) Name() core.Interface     { return core.Interface{m["name"]} }
+func (m ProductSourceCategoryHistory) Status() core.Interface   { return core.Interface{m["status"]} }
+func (m ProductSourceCategoryHistory) CreatedAt() core.Interface {
+	return core.Interface{m["created_at"]}
+}
+func (m ProductSourceCategoryHistory) UpdatedAt() core.Interface {
+	return core.Interface{m["updated_at"]}
+}
+func (m ProductSourceCategoryHistory) DeletedAt() core.Interface {
+	return core.Interface{m["deleted_at"]}
+}
+
+func (m *ProductSourceCategoryHistory) SQLScan(opts core.Opts, row *sql.Row) error {
+	data := make([]interface{}, 11)
+	args := make([]interface{}, 11)
+	for i := 0; i < 11; i++ {
+		args[i] = &data[i]
+	}
+	if err := row.Scan(args...); err != nil {
+		return err
+	}
+	res := make(ProductSourceCategoryHistory, 11)
+	res["id"] = data[0]
+	res["product_source_id"] = data[1]
+	res["product_source_type"] = data[2]
+	res["supplier_id"] = data[3]
+	res["parent_id"] = data[4]
+	res["shop_id"] = data[5]
+	res["name"] = data[6]
+	res["status"] = data[7]
+	res["created_at"] = data[8]
+	res["updated_at"] = data[9]
+	res["deleted_at"] = data[10]
+	*m = res
+	return nil
+}
+
+func (ms *ProductSourceCategoryHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
+	data := make([]interface{}, 11)
+	args := make([]interface{}, 11)
+	for i := 0; i < 11; i++ {
+		args[i] = &data[i]
+	}
+	res := make(ProductSourceCategoryHistories, 0, 128)
+	for rows.Next() {
+		if err := rows.Scan(args...); err != nil {
+			return err
+		}
+		m := make(ProductSourceCategoryHistory)
+		m["id"] = data[0]
+		m["product_source_id"] = data[1]
+		m["product_source_type"] = data[2]
+		m["supplier_id"] = data[3]
+		m["parent_id"] = data[4]
+		m["shop_id"] = data[5]
+		m["name"] = data[6]
+		m["status"] = data[7]
+		m["created_at"] = data[8]
+		m["updated_at"] = data[9]
+		m["deleted_at"] = data[10]
 		res = append(res, m)
 	}
 	if err := rows.Err(); err != nil {

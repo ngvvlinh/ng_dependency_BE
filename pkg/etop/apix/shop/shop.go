@@ -8,11 +8,11 @@ import (
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/idemp"
 	"etop.vn/backend/pkg/common/redis"
-	cmService "etop.vn/backend/pkg/common/service"
+	cmservice "etop.vn/backend/pkg/common/service"
 
-	cmP "etop.vn/backend/pb/common"
-	etopP "etop.vn/backend/pb/etop"
-	shopW "etop.vn/backend/wrapper/external/shop"
+	pbcm "etop.vn/backend/pb/common"
+	pbetop "etop.vn/backend/pb/etop"
+	wrapshop "etop.vn/backend/wrapper/external/shop"
 )
 
 var (
@@ -29,25 +29,25 @@ func init() {
 	)
 }
 
-func Init(sd cmService.Shutdowner, rd redis.Store, s auth.Generator) {
+func Init(sd cmservice.Shutdowner, rd redis.Store, s auth.Generator) {
 	authStore = s
 
 	idempgroup = idemp.NewRedisGroup(rd, PrefixIdempShopAPI, 0)
 	sd.Register(idempgroup.Shutdown)
 }
 
-func VersionInfo(ctx context.Context, q *shopW.VersionInfoEndpoint) error {
-	q.Result = &cmP.VersionInfoResponse{
+func VersionInfo(ctx context.Context, q *wrapshop.VersionInfoEndpoint) error {
+	q.Result = &pbcm.VersionInfoResponse{
 		Service: "shop",
 		Version: "1.0.0",
 	}
 	return nil
 }
 
-func CurrentAccount(ctx context.Context, q *shopW.CurrentAccountEndpoint) error {
+func CurrentAccount(ctx context.Context, q *wrapshop.CurrentAccountEndpoint) error {
 	if q.Context.Shop == nil {
 		return cm.Errorf(cm.Internal, nil, "")
 	}
-	q.Result = etopP.PbPublicAccountInfo(q.Context.Shop)
+	q.Result = pbetop.PbPublicAccountInfo(q.Context.Shop)
 	return nil
 }

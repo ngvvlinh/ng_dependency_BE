@@ -8,7 +8,7 @@ import (
 	"strings"
 	"time"
 
-	orderP "etop.vn/backend/pb/etop/order"
+	pborder "etop.vn/backend/pb/etop/order"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/httpx"
@@ -200,7 +200,7 @@ func HandleImportMoneyTransactions(c *httpx.Context) error {
 	if err := bus.Dispatch(ctx, cmd); err != nil {
 		return cm.Error(cm.InvalidArgument, "unexpected error", err)
 	}
-	c.SetResultPb(orderP.PbMoneyTransactionShippingExternalExtended(cmd.Result))
+	c.SetResultPb(pborder.PbMoneyTransactionShippingExternalExtended(cmd.Result))
 	return nil
 }
 

@@ -403,14 +403,7 @@ func prepareOrderLine(m *pborder.CreateOrderLine, shopID int64, v *catalogmodel.
 
 	originalPrice := int(m.RetailPrice)
 	if v != nil && sp != nil {
-		var externalVariantID string
-		if v.VariantExternal != nil {
-			externalVariantID = v.VariantExternal.ExternalID
-		}
-
 		line.VariantID = m.VariantId
-		line.SupplierID = v.SupplierID
-		line.ExternalVariantID = externalVariantID
 		line.ProductID = sp.Product.ID
 		line.ProductName = model.CoalesceString2(sp.ShopProduct.Name, sp.Product.Name)
 
@@ -585,15 +578,14 @@ func PrepareOrder(m *pborder.CreateOrderRequest, lines []*ordermodel.OrderLine) 
 	}
 
 	order := &ordermodel.Order{
-		ID:          0,
-		ShopID:      0,
-		Code:        "", // will be filled by sqlstore
-		EdCode:      m.ExternalCode,
-		ProductIDs:  productIDs,
-		VariantIDs:  variantIDs,
-		SupplierIDs: nil,
-		PartnerID:   0,
-		Currency:    "",
+		ID:         0,
+		ShopID:     0,
+		Code:       "", // will be filled by sqlstore
+		EdCode:     m.ExternalCode,
+		ProductIDs: productIDs,
+		VariantIDs: variantIDs,
+		PartnerID:  0,
+		Currency:   "",
 		// Source:          m.Source.ToModel(),
 		PaymentMethod:              paymentMethod,
 		Customer:                   m.Customer.ToModel(),
@@ -611,7 +603,6 @@ func PrepareOrder(m *pborder.CreateOrderRequest, lines []*ordermodel.OrderLine) 
 		CancelledAt:                time.Time{},
 		CancelReason:               "",
 		CustomerConfirm:            0,
-		ExternalConfirm:            0,
 		ShopConfirm:                confirm,
 		ConfirmStatus:              0,
 		FulfillmentShippingStatus:  0,
@@ -643,7 +634,6 @@ func PrepareOrder(m *pborder.CreateOrderRequest, lines []*ordermodel.OrderLine) 
 		ExternalURL:                m.ExternalUrl,
 		ShopShipping:               nil, // will be filled later
 		IsOutsideEtop:              false,
-		ExternalData:               nil,
 		GhnNoteCode:                m.GhnNoteCode.ToModel(),
 		TryOn:                      tryOn,
 		CustomerNameNorm:           "",
@@ -693,13 +683,6 @@ func CancelOrder(ctx context.Context, shopID int64, authPartnerID int64, orderID
 	case model.S5NegSuper:
 		return nil, cm.Error(cm.FailedPrecondition, "Đơn hàng đã trả hàng.", nil)
 	}
-
-	// MUSTDO: Handle confirm status
-
-	//if order.ConfirmStatus == model.S3Negative ||
-	//	order.ShopConfirm == model.S3Negative {
-	//	return cm.Error(cm.FailedPrecondition, "Đơn hàng đã huỷ.", nil)
-	//}
 
 	updateOrderCmd := &ordermodelx.UpdateOrdersStatusCommand{
 		ShopID:        shopID,
