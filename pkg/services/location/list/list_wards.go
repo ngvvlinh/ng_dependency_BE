@@ -40605,14 +40605,14 @@ var Wards = []*locationtypes.Ward{
 		Code:         "00625",
 		DistrictCode: "019",
 		Name:         "Phường Mỹ Đình 1",
-		VTPostID:     0,
+		VTPostID:     491,
 		Alias:        []string{"1"},
 	}, {
 		Code:         "00626",
 		DistrictCode: "019",
 		Name:         "Phường Mỹ Đình 2",
-		VTPostID:     0,
-		Alias:        []string{"2"},
+		VTPostID:     494,
+		Alias:        []string{"2", "Phường Mỹ Đình II"},
 	}, {
 		Code:         "00628",
 		DistrictCode: "019",
