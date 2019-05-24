@@ -7,7 +7,8 @@ import (
 	"etop.vn/backend/pkg/etop/model"
 )
 
-//go:generate ../../../scripts/derive.sh
+//go:generate $ETOPDIR/backend/scripts/derive.sh
+//go:generate rm ../sqlstore/filters.gen.go
 
 var _ = sqlgenNotification(&Notification{})
 
@@ -48,12 +49,12 @@ type Device struct {
 	ExternalDeviceID  string
 	ExternalServiceID int
 	// AccountID: deprecated
-	AccountID int64
-	UserID    int64
-	CreatedAt time.Time `sq:"create"`
-	UpdatedAt time.Time `sq:"update"`
-	DeletedAt time.Time
-	Config    *DeviceConfig
+	AccountID     int64
+	UserID        int64
+	CreatedAt     time.Time `sq:"create"`
+	UpdatedAt     time.Time `sq:"update"`
+	DeactivatedAt time.Time
+	Config        *DeviceConfig
 }
 
 type NotiDataAddition struct {

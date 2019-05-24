@@ -372,7 +372,7 @@ func sqlgenDevice(_ *Device) bool { return true }
 type Devices []*Device
 
 const __sqlDevice_Table = "device"
-const __sqlDevice_ListCols = "\"id\",\"device_id\",\"device_name\",\"external_device_id\",\"external_service_id\",\"account_id\",\"user_id\",\"created_at\",\"updated_at\",\"deleted_at\",\"config\""
+const __sqlDevice_ListCols = "\"id\",\"device_id\",\"device_name\",\"external_device_id\",\"external_service_id\",\"account_id\",\"user_id\",\"created_at\",\"updated_at\",\"deactivated_at\",\"config\""
 const __sqlDevice_Insert = "INSERT INTO \"device\" (" + __sqlDevice_ListCols + ") VALUES"
 const __sqlDevice_Select = "SELECT " + __sqlDevice_ListCols + " FROM \"device\""
 const __sqlDevice_Select_history = "SELECT " + __sqlDevice_ListCols + " FROM history.\"device\""
@@ -394,7 +394,7 @@ func (m *Device) SQLArgs(opts core.Opts, create bool) []interface{} {
 		core.Int64(m.UserID),
 		core.Now(m.CreatedAt, now, create),
 		core.Now(m.UpdatedAt, now, true),
-		core.Time(m.DeletedAt),
+		core.Time(m.DeactivatedAt),
 		core.JSON{m.Config},
 	}
 }
@@ -410,7 +410,7 @@ func (m *Device) SQLScanArgs(opts core.Opts) []interface{} {
 		(*core.Int64)(&m.UserID),
 		(*core.Time)(&m.CreatedAt),
 		(*core.Time)(&m.UpdatedAt),
-		(*core.Time)(&m.DeletedAt),
+		(*core.Time)(&m.DeactivatedAt),
 		core.JSON{&m.Config},
 	}
 }
@@ -546,13 +546,13 @@ func (m *Device) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(core.Now(m.UpdatedAt, time.Now(), true))
 	}
-	if !m.DeletedAt.IsZero() {
+	if !m.DeactivatedAt.IsZero() {
 		flag = true
-		w.WriteName("deleted_at")
+		w.WriteName("deactivated_at")
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(m.DeletedAt)
+		w.WriteArg(m.DeactivatedAt)
 	}
 	if m.Config != nil {
 		flag = true
@@ -603,12 +603,12 @@ func (m DeviceHistory) ExternalDeviceID() core.Interface {
 func (m DeviceHistory) ExternalServiceID() core.Interface {
 	return core.Interface{m["external_service_id"]}
 }
-func (m DeviceHistory) AccountID() core.Interface { return core.Interface{m["account_id"]} }
-func (m DeviceHistory) UserID() core.Interface    { return core.Interface{m["user_id"]} }
-func (m DeviceHistory) CreatedAt() core.Interface { return core.Interface{m["created_at"]} }
-func (m DeviceHistory) UpdatedAt() core.Interface { return core.Interface{m["updated_at"]} }
-func (m DeviceHistory) DeletedAt() core.Interface { return core.Interface{m["deleted_at"]} }
-func (m DeviceHistory) Config() core.Interface    { return core.Interface{m["config"]} }
+func (m DeviceHistory) AccountID() core.Interface     { return core.Interface{m["account_id"]} }
+func (m DeviceHistory) UserID() core.Interface        { return core.Interface{m["user_id"]} }
+func (m DeviceHistory) CreatedAt() core.Interface     { return core.Interface{m["created_at"]} }
+func (m DeviceHistory) UpdatedAt() core.Interface     { return core.Interface{m["updated_at"]} }
+func (m DeviceHistory) DeactivatedAt() core.Interface { return core.Interface{m["deactivated_at"]} }
+func (m DeviceHistory) Config() core.Interface        { return core.Interface{m["config"]} }
 
 func (m *DeviceHistory) SQLScan(opts core.Opts, row *sql.Row) error {
 	data := make([]interface{}, 11)
@@ -629,7 +629,7 @@ func (m *DeviceHistory) SQLScan(opts core.Opts, row *sql.Row) error {
 	res["user_id"] = data[6]
 	res["created_at"] = data[7]
 	res["updated_at"] = data[8]
-	res["deleted_at"] = data[9]
+	res["deactivated_at"] = data[9]
 	res["config"] = data[10]
 	*m = res
 	return nil
@@ -656,7 +656,7 @@ func (ms *DeviceHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
 		m["user_id"] = data[6]
 		m["created_at"] = data[7]
 		m["updated_at"] = data[8]
-		m["deleted_at"] = data[9]
+		m["deactivated_at"] = data[9]
 		m["config"] = data[10]
 		res = append(res, m)
 	}

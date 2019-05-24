@@ -57,9 +57,9 @@ func (s *DeviceStore) CreateDevice(args *model.CreateDeviceArgs) (*model.Device,
 	}
 	var id int64
 	if ok && dbDevice.ID != 0 {
-		if !dbDevice.DeletedAt.IsZero() {
+		if !dbDevice.DeactivatedAt.IsZero() {
 			// active this device
-			if err := s.db.Table("device").Where("id = ?", dbDevice.ID).ShouldUpdateMap(M{"deleted_at": nil}); err != nil {
+			if err := s.db.Table("device").Where("id = ?", dbDevice.ID).ShouldUpdateMap(M{"deactivated_at": nil}); err != nil {
 				return nil, err
 			}
 		}
@@ -69,7 +69,7 @@ func (s *DeviceStore) CreateDevice(args *model.CreateDeviceArgs) (*model.Device,
 		}
 	} else {
 		// create new device and make sure only one external_device_id is actived at a time
-		if _, err := s.db.Table("device").Where("external_device_id = ? AND deleted_at IS NULL", args.ExternalDeviceID).UpdateMap(M{"deleted_at": time.Now()}); err != nil {
+		if _, err := s.db.Table("device").Where("external_device_id = ? AND deactivated_at IS NULL", args.ExternalDeviceID).UpdateMap(M{"deactivated_at": time.Now()}); err != nil {
 			return nil, err
 		}
 		id = cm.NewID()
@@ -118,7 +118,7 @@ func (s *DeviceStore) GetDevice(args *model.GetDeviceArgs) (*model.Device, error
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing External Device ID")
 	}
 	var device = new(model.Device)
-	err := s.db.Table("device").Where("user_id = ? AND external_device_id = ? AND deleted_at IS NULL", args.UserID, args.ExternalDeviceID).ShouldGet(device)
+	err := s.db.Table("device").Where("user_id = ? AND external_device_id = ? AND deactivated_at IS NULL", args.UserID, args.ExternalDeviceID).ShouldGet(device)
 	return device, err
 }
 
@@ -131,7 +131,7 @@ func (s *DeviceStore) GetDevices(args *model.GetDevicesArgs) ([]*model.Device, e
 	}
 
 	var res []*model.Device
-	if err := s.db.Table("device").Where("user_id = ? AND external_service_id = ? AND deleted_at IS NULL", args.UserID, args.ExternalServiceID).Find((*model.Devices)(&res)); err != nil {
+	if err := s.db.Table("device").Where("user_id = ? AND external_service_id = ? AND deactivated_at IS NULL", args.UserID, args.ExternalServiceID).Find((*model.Devices)(&res)); err != nil {
 		return nil, err
 	}
 	return res, nil
@@ -167,7 +167,7 @@ func (s *DeviceStore) DeleteDevice(device *model.Device) error {
 		x = x.Where("external_device_id = ?", device.ExternalDeviceID)
 	}
 	err := x.ShouldUpdate(&model.Device{
-		DeletedAt: time.Now(),
+		DeactivatedAt: time.Now(),
 	})
 	return err
 }
