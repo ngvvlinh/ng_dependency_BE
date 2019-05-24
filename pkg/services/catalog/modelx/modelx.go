@@ -537,17 +537,6 @@ type GetProductSourceCategoryQuery struct {
 	Result *catalogmodel.ProductSourceCategory
 }
 
-type GetProductSourceCategoriesExtendedQuery struct {
-	SupplierID        int64
-	ShopID            int64
-	IDs               []int64
-	ProductSourceType string
-
-	Result struct {
-		Categories []*catalogmodel.ProductSourceCategory
-	}
-}
-
 type GetProductSourceCategoriesQuery struct {
 	SupplierID        int64
 	ShopID            int64

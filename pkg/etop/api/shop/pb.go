@@ -4,6 +4,7 @@ import (
 	pbcm "etop.vn/backend/pb/common"
 	pbs3 "etop.vn/backend/pb/etop/etc/status3"
 	pbshop "etop.vn/backend/pb/etop/shop"
+	"etop.vn/backend/pkg/etop/api/convertpb"
 	catalogmodel "etop.vn/backend/pkg/services/catalog/model"
 )
 
@@ -65,18 +66,23 @@ func PbShopVariant(m *catalogmodel.ShopVariantExtended) *pbshop.ShopVariant {
 	sv := m.ShopVariant
 	res := &pbshop.ShopVariant{
 		Id:           sv.VariantID,
+		Info:         PbEtopVariant(&m.VariantExtended),
+		Code:         m.EdCode, // yes, it's EdCode
+		EdCode:       m.EdCode,
 		Name:         sv.Name,
 		Description:  sv.Description,
 		ShortDesc:    sv.ShortDesc,
 		DescHtml:     sv.DescHTML,
 		ImageUrls:    sv.ImageURLs,
 		Tags:         sv.Tags,
+		Note:         sv.Note,
 		Status:       pbs3.Pb(sv.Status),
 		IsAvailable:  m.VariantExtended.IsAvailable(),
+		ListPrice:    int32(m.ListPrice),
 		RetailPrice:  int32(sv.RetailPrice),
+		CostPrice:    int32(m.CostPrice),
 		CollectionId: sv.CollectionID,
-
-		Note: sv.Note,
+		Attributes:   convertpb.PbAttributes(m.Attributes),
 	}
 	res.Info = PbEtopVariant(&m.VariantExtended)
 	return res
@@ -92,15 +98,23 @@ func PbShopProducts(items []*catalogmodel.ShopProduct) []*pbshop.ShopProduct {
 
 func PbShopProduct(m *catalogmodel.ShopProduct) *pbshop.ShopProduct {
 	res := &pbshop.ShopProduct{
-		Id:            m.ProductID,
-		Name:          m.Name,
-		Description:   m.Description,
-		DescHtml:      m.DescHTML,
-		ShortDesc:     m.ShortDesc,
-		ImageUrls:     m.ImageURLs,
-		Status:        pbs3.Pb(m.Status),
-		Tags:          m.Tags,
-		CollectionIds: m.CollectionIDs,
+		Id:                m.ProductID,
+		Info:              nil,
+		Code:              "",
+		EdCode:            "",
+		Name:              m.Name,
+		Description:       m.Description,
+		ShortDesc:         m.ShortDesc,
+		DescHtml:          m.DescHTML,
+		ImageUrls:         m.ImageURLs,
+		Tags:              m.Tags,
+		Status:            pbs3.Pb(m.Status),
+		IsAvailable:       true,
+		CollectionIds:     m.CollectionIDs,
+		Variants:          nil,
+		ProductSourceId:   0,
+		ProductSourceType: "",
+		ProductSourceName: "",
 	}
 	return res
 }

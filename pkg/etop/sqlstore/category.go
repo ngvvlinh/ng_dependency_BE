@@ -16,7 +16,6 @@ func init() {
 	bus.AddHandler("sql", CreateEtopCategory)
 	bus.AddHandler("sql", GetEtopCategories)
 	bus.AddHandler("sql", GetProductSourceCategories)
-	bus.AddHandler("sql", GetProductSourceCategoriesExtended)
 	bus.AddHandler("sql", UpdateShopProductSourceCategory)
 	bus.AddHandler("sql", RemoveShopProductSourceCategory)
 }
@@ -40,25 +39,6 @@ func GetProductSourceCategory(ctx context.Context, query *catalogmodelx.GetProdu
 
 	query.Result = p
 	return nil
-}
-
-func GetProductSourceCategoriesExtended(ctx context.Context, query *catalogmodelx.GetProductSourceCategoriesExtendedQuery) error {
-	s := x.Table("product_source_category")
-	if query.SupplierID != 0 {
-		s = s.Where("psc.supplier_id = ?", query.SupplierID)
-	}
-	if query.ShopID != 0 {
-		s = s.Where("psc.shop_id = ?", query.ShopID)
-	}
-	if query.IDs != nil {
-		s = s.In("psc.id", query.IDs)
-	}
-	if query.ProductSourceType != "" {
-		s = s.Where("psc.product_source_type = ?", query.ProductSourceType)
-	}
-
-	err := s.Find((*catalogmodel.ProductSourceCategories)(&query.Result.Categories))
-	return err
 }
 
 func GetProductSourceCategories(ctx context.Context, query *catalogmodelx.GetProductSourceCategoriesQuery) error {

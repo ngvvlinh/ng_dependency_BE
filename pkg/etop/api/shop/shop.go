@@ -595,7 +595,7 @@ func GetProductSourceCategory(ctx context.Context, q *wrapshop.GetProductSourceC
 }
 
 func GetProductSourceCategories(ctx context.Context, q *wrapshop.GetProductSourceCategoriesEndpoint) error {
-	cmd := &catalogmodelx.GetProductSourceCategoriesExtendedQuery{
+	cmd := &catalogmodelx.GetProductSourceCategoriesQuery{
 		ProductSourceType: q.Type.ToModel(),
 		ShopID:            q.Context.Shop.ID,
 	}
