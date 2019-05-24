@@ -31,6 +31,7 @@ import "etop/etc/try_on/code.proto";
 import "etop/etc/status3/status.proto";
 import "etop/etc/address_type/type.proto";
 import "etop/etc/shipping_provider/provider.proto";
+import "etop/etc/user_source/user_source.proto";
 
 service MiscService {
     rpc VersionInfo(cm.Empty) returns (cm.VersionInfoResponse);
@@ -170,6 +171,8 @@ message User {
     optional google.protobuf.Timestamp email_verification_sent_at = 10;
 
     optional google.protobuf.Timestamp phone_verification_sent_at = 11;
+
+    optional user_source.UserSource source = 12 [(gogoproto.nullable) = false];
 }
 
 message IDsRequest {
@@ -291,6 +294,8 @@ message CreateUserRequest {
     // This field must be set if the user uses generated password to register.
     // Automatically set phone_verified if it's sent within a specific time.
     optional string register_token = 8 [(gogoproto.nullable) = false];
+
+    optional user_source.UserSource source = 9 [(gogoproto.nullable) =  false];
 }
 
 message RegisterResponse {

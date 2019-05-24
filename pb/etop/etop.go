@@ -7,6 +7,7 @@ import (
 	"etop.vn/backend/pb/etop/etc/status3"
 	pbs3 "etop.vn/backend/pb/etop/etc/status3"
 	"etop.vn/backend/pb/etop/etc/try_on"
+	"etop.vn/backend/pb/etop/etc/user_source"
 	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/backend/pkg/integration/bank"
 	notimodel "etop.vn/backend/pkg/notifier/model"
@@ -118,6 +119,7 @@ func PbUser(m *model.User) *User {
 
 		EmailVerificationSentAt: common.PbTime(m.EmailVerificationSentAt),
 		PhoneVerificationSentAt: common.PbTime(m.PhoneVerificationSentAt),
+		Source:                  user_source.PbUserSource(m.Source),
 	}
 }
 

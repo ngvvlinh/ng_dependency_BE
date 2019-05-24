@@ -3331,7 +3331,7 @@ func sqlgenUser(_ *User) bool { return true }
 type Users []*User
 
 const __sqlUser_Table = "user"
-const __sqlUser_ListCols = "\"id\",\"full_name\",\"short_name\",\"email\",\"phone\",\"status\",\"identifying\",\"created_at\",\"updated_at\",\"agreed_tos_at\",\"agreed_email_info_at\",\"email_verified_at\",\"phone_verified_at\",\"email_verification_sent_at\",\"phone_verification_sent_at\",\"is_test\""
+const __sqlUser_ListCols = "\"id\",\"full_name\",\"short_name\",\"email\",\"phone\",\"status\",\"identifying\",\"created_at\",\"updated_at\",\"agreed_tos_at\",\"agreed_email_info_at\",\"email_verified_at\",\"phone_verified_at\",\"email_verification_sent_at\",\"phone_verification_sent_at\",\"is_test\",\"source\""
 const __sqlUser_Insert = "INSERT INTO \"user\" (" + __sqlUser_ListCols + ") VALUES"
 const __sqlUser_Select = "SELECT " + __sqlUser_ListCols + " FROM \"user\""
 const __sqlUser_Select_history = "SELECT " + __sqlUser_ListCols + " FROM history.\"user\""
@@ -3360,6 +3360,7 @@ func (m *User) SQLArgs(opts core.Opts, create bool) []interface{} {
 		core.Time(m.EmailVerificationSentAt),
 		core.Time(m.PhoneVerificationSentAt),
 		core.Int(m.IsTest),
+		core.String(m.Source),
 	}
 }
 
@@ -3381,6 +3382,7 @@ func (m *User) SQLScanArgs(opts core.Opts) []interface{} {
 		(*core.Time)(&m.EmailVerificationSentAt),
 		(*core.Time)(&m.PhoneVerificationSentAt),
 		(*core.Int)(&m.IsTest),
+		(*core.String)(&m.Source),
 	}
 }
 
@@ -3418,7 +3420,7 @@ func (_ *Users) SQLSelect(w SQLWriter) error {
 func (m *User) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlUser_Insert)
 	w.WriteRawString(" (")
-	w.WriteMarkers(16)
+	w.WriteMarkers(17)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), true))
 	return nil
@@ -3428,7 +3430,7 @@ func (ms Users) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlUser_Insert)
 	w.WriteRawString(" (")
 	for i := 0; i < len(ms); i++ {
-		w.WriteMarkers(16)
+		w.WriteMarkers(17)
 		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
 		w.WriteRawString("),(")
 	}
@@ -3571,6 +3573,14 @@ func (m *User) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(m.IsTest)
 	}
+	if m.Source != "" {
+		flag = true
+		w.WriteName("source")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(string(m.Source))
+	}
 	if !flag {
 		return core.ErrNoColumn
 	}
@@ -3581,7 +3591,7 @@ func (m *User) SQLUpdate(w SQLWriter) error {
 func (m *User) SQLUpdateAll(w SQLWriter) error {
 	w.WriteQueryString(__sqlUser_UpdateAll)
 	w.WriteRawString(" = (")
-	w.WriteMarkers(16)
+	w.WriteMarkers(17)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), false))
 	return nil
@@ -3625,17 +3635,18 @@ func (m UserHistory) PhoneVerificationSentAt() core.Interface {
 	return core.Interface{m["phone_verification_sent_at"]}
 }
 func (m UserHistory) IsTest() core.Interface { return core.Interface{m["is_test"]} }
+func (m UserHistory) Source() core.Interface { return core.Interface{m["source"]} }
 
 func (m *UserHistory) SQLScan(opts core.Opts, row *sql.Row) error {
-	data := make([]interface{}, 16)
-	args := make([]interface{}, 16)
-	for i := 0; i < 16; i++ {
+	data := make([]interface{}, 17)
+	args := make([]interface{}, 17)
+	for i := 0; i < 17; i++ {
 		args[i] = &data[i]
 	}
 	if err := row.Scan(args...); err != nil {
 		return err
 	}
-	res := make(UserHistory, 16)
+	res := make(UserHistory, 17)
 	res["id"] = data[0]
 	res["full_name"] = data[1]
 	res["short_name"] = data[2]
@@ -3652,14 +3663,15 @@ func (m *UserHistory) SQLScan(opts core.Opts, row *sql.Row) error {
 	res["email_verification_sent_at"] = data[13]
 	res["phone_verification_sent_at"] = data[14]
 	res["is_test"] = data[15]
+	res["source"] = data[16]
 	*m = res
 	return nil
 }
 
 func (ms *UserHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	data := make([]interface{}, 16)
-	args := make([]interface{}, 16)
-	for i := 0; i < 16; i++ {
+	data := make([]interface{}, 17)
+	args := make([]interface{}, 17)
+	for i := 0; i < 17; i++ {
 		args[i] = &data[i]
 	}
 	res := make(UserHistories, 0, 128)
@@ -3684,6 +3696,7 @@ func (ms *UserHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
 		m["email_verification_sent_at"] = data[13]
 		m["phone_verification_sent_at"] = data[14]
 		m["is_test"] = data[15]
+		m["source"] = data[16]
 		res = append(res, m)
 	}
 	if err := rows.Err(); err != nil {

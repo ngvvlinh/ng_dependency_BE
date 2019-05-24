@@ -35,8 +35,8 @@ type CreateUserCommand struct {
 	AgreeEmailInfo bool
 	IsTest         bool
 	IsStub         bool
-
-	Result struct {
+	Source         UserSource
+	Result         struct {
 		User         *User
 		UserInternal *UserInternal
 	}

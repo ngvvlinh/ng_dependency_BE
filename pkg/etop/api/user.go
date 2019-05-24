@@ -129,6 +129,7 @@ func Register(ctx context.Context, r *wrapetop.RegisterEndpoint) error {
 			Status:         model.StatusActive,
 			AgreeTOS:       r.AgreeTos,
 			AgreeEmailInfo: *r.AgreeEmailInfo,
+			Source:         r.Source.ToModel(),
 		}
 		if err := bus.Dispatch(ctx, cmd); err != nil {
 			return err

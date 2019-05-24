@@ -214,6 +214,7 @@ func createUser(ctx context.Context, s Qx, cmd *model.CreateUserCommand) error {
 		ID:        userID,
 		UserInner: cmd.UserInner,
 		Status:    cmd.Status,
+		Source:    cmd.Source,
 	}
 	if cmd.IsStub {
 		user.Identifying = model.UserIdentifyingStub

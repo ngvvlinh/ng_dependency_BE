@@ -698,6 +698,9 @@ func Register(ctx context.Context, r *wrapintegration.RegisterEndpoint) error {
 	}
 
 	generatedPassword := gencode.GenerateCode(gencode.Alphabet32, 8)
+	// set default source: "partner"
+	source := model.UserSourcePartner
+
 	cmd := &usering.CreateUserCommand{
 		UserInner: model.UserInner{
 			FullName:  r.FullName,
@@ -709,6 +712,7 @@ func Register(ctx context.Context, r *wrapintegration.RegisterEndpoint) error {
 		Status:         model.StatusActive,
 		AgreeTOS:       r.AgreeTos,
 		AgreeEmailInfo: *r.AgreeEmailInfo,
+		Source:         source,
 	}
 	if err := bus.Dispatch(ctx, cmd); err != nil {
 		return err

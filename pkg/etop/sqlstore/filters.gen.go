@@ -2277,6 +2277,25 @@ func (ft UserFilters) ByIsTestPtr(IsTest *int) *sq.ColumnFilterPtr {
 	}
 }
 
+func (ft UserFilters) BySource(Source m.UserSource) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: ft.prefix,
+		Column: "source",
+		Value:  Source,
+		IsNil:  Source == "",
+	}
+}
+
+func (ft UserFilters) BySourcePtr(Source *m.UserSource) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: ft.prefix,
+		Column: "source",
+		Value:  Source,
+		IsNil:  Source == nil,
+		IsZero: Source != nil && (*Source) == "",
+	}
+}
+
 type AccountUserFilters struct{ prefix string }
 
 func NewAccountUserFilters(prefix string) AccountUserFilters {

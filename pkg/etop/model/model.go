@@ -76,6 +76,7 @@ type (
 	ShippingRouteType    string
 	ShippingDistrictType string
 	DBName               string
+	UserSource           string
 )
 
 // Type constants
@@ -220,6 +221,14 @@ const (
 	ShippingDistrictTypeUrban     ShippingDistrictType = "noi_thanh"
 	ShippingDistrictTypeSubUrban1 ShippingDistrictType = "ngoai_thanh_1"
 	ShippingDistrictTypeSubUrban2 ShippingDistrictType = "ngoai_thanh_2"
+
+	UserSourcePSX          UserSource = "psx"
+	UserSourceEtop         UserSource = "etop"
+	UserSourceTopship      UserSource = "topship"
+	UserSourceTsAppAndroid UserSource = "ts_app_android"
+	UserSourceTsAppIOS     UserSource = "ts_app_ios"
+	UserSourceTsAppWeb     UserSource = "ts_app_web"
+	UserSourcePartner      UserSource = "partner"
 )
 
 type NormalizedPhone = validate.NormalizedPhone
@@ -724,6 +733,7 @@ type User struct {
 	PhoneVerificationSentAt time.Time
 
 	IsTest int
+	Source UserSource
 }
 
 type UserExtended struct {

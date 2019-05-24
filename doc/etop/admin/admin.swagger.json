@@ -2117,6 +2117,9 @@
         "phone_verification_sent_at": {
           "type": "string",
           "format": "date-time"
+        },
+        "source": {
+          "$ref": "#/definitions/user_sourceUserSource"
         }
       },
       "description": "Represents a user in eTop system. The user may or may not have associated accounts.",
@@ -3468,6 +3471,20 @@
         "none",
         "open",
         "try"
+      ],
+      "default": "unknown"
+    },
+    "user_sourceUserSource": {
+      "type": "string",
+      "enum": [
+        "unknown",
+        "psx",
+        "etop",
+        "topship",
+        "ts_app_android",
+        "ts_app_ios",
+        "ts_app_web",
+        "partner"
       ],
       "default": "unknown"
     }
