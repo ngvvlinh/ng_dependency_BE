@@ -85,12 +85,11 @@ type Location struct {
 }
 
 type Fulfillment struct {
-	ID         int64
-	OrderID    int64
-	ShopID     int64
-	SupplierID int64
-	PartnerID  int64
-	SelfURL    string
+	ID        int64
+	OrderID   int64
+	ShopID    int64
+	PartnerID int64
+	SelfURL   string
 
 	Lines []*ItemLine
 
@@ -102,8 +101,7 @@ type Fulfillment struct {
 }
 
 type ItemLine struct {
-	OrderID    int64
-	SupplierID int64
+	OrderID int64
 
 	ProductName string
 	ProductID   int64

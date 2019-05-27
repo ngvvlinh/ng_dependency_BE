@@ -7,16 +7,14 @@ import (
 )
 
 type GetProductQuery struct {
-	SupplierID int64
-	ProductID  int64
+	ProductID int64
 	model.StatusQuery
 
 	Result *catalogmodel.ProductFtVariant
 }
 
 type GetVariantQuery struct {
-	SupplierID int64
-	VariantID  int64
+	VariantID int64
 	model.StatusQuery
 
 	Result *catalogmodel.VariantExtended
@@ -54,8 +52,6 @@ type GetVariantsQuery struct {
 }
 
 type GetProductsExtendedQuery struct {
-	SupplierID int64
-
 	Paging  *cm.Paging
 	Filters []cm.Filter
 	IDs     []int64
@@ -91,33 +87,27 @@ func (g *GetVariantsExtendedQuery) IsPaging() bool {
 }
 
 type UpdateProductCommand struct {
-	SupplierID int64
-
 	Product *catalogmodel.Product
 
 	Result *catalogmodel.ProductFtVariant
 }
 
 type UpdateVariantCommand struct {
-	SupplierID int64
-
 	Variant *catalogmodel.Variant
 
 	Result *catalogmodel.VariantExtended
 }
 
 type UpdateProductImagesCommand struct {
-	SupplierID int64
-	ProductID  int64
-	ImageURLs  []string
+	ProductID int64
+	ImageURLs []string
 
 	Result *catalogmodel.ProductFtVariant
 }
 
 type UpdateVariantImagesCommand struct {
-	SupplierID int64
-	VariantID  int64
-	ImageURLs  []string
+	VariantID int64
+	ImageURLs []string
 
 	Result *catalogmodel.VariantExtended
 }
@@ -128,8 +118,7 @@ type UpdateVariantPriceCommand struct {
 }
 
 type UpdateProductsCommand struct {
-	SupplierID int64
-	Products   []*catalogmodel.Product
+	Products []*catalogmodel.Product
 
 	Result struct {
 		Products []*catalogmodel.Product
@@ -138,8 +127,7 @@ type UpdateProductsCommand struct {
 }
 
 type UpdateVariantsCommand struct {
-	SupplierID int64
-	Variants   []*catalogmodel.Variant
+	Variants []*catalogmodel.Variant
 
 	Result struct {
 		Variants []*catalogmodel.VariantExtended
@@ -148,7 +136,6 @@ type UpdateVariantsCommand struct {
 }
 
 type UpdateVariantsStatusCommand struct {
-	SupplierID  int64
 	IDs         []int64
 	StatusQuery model.StatusQuery
 	Update      model.ProductStatusUpdate
@@ -159,7 +146,6 @@ type UpdateVariantsStatusCommand struct {
 }
 
 type UpdateProductsStatusCommand struct {
-	SupplierID  int64
 	IDs         []int64
 	StatusQuery model.StatusQuery
 	Update      model.ProductStatusUpdate
@@ -478,7 +464,6 @@ type GetProductSourceQuery struct {
 
 type GetAllProductSourcesQuery struct {
 	External *bool
-	Supplier *bool
 
 	Result struct {
 		Sources []*catalogmodel.ProductSource
@@ -530,7 +515,6 @@ type ConnectProductSourceCommand struct {
 }
 
 type GetProductSourceCategoryQuery struct {
-	SupplierID int64
 	ShopID     int64
 	CategoryID int64
 
@@ -538,7 +522,6 @@ type GetProductSourceCategoryQuery struct {
 }
 
 type GetProductSourceCategoriesQuery struct {
-	SupplierID        int64
 	ShopID            int64
 	IDs               []int64
 	ProductSourceType string

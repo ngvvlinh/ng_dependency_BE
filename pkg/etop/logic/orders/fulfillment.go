@@ -68,18 +68,18 @@ func ConfirmOrderAndCreateFulfillments(ctx context.Context, shop *model.Shop, pa
 	}()
 
 	// Create fulfillments
-	_fulfillments, err := prepareFulfillmentsFromOrder(ctx, order, shop)
+	ffm, err := prepareFulfillmentFromOrder(ctx, order, shop)
 	if err != nil {
 		return resp, err
 	}
 
 	// Compare fulfillments for retry/update
-	creates, updates, err := compareFulfillments(order, query.Result.Fulfillments, _fulfillments)
+	creates, updates, err := compareFulfillments(order, query.Result.Fulfillments, ffm)
 	if err != nil {
 		return resp, err
 	}
 
-	if len(creates) > 0 {
+	if creates != nil {
 		ffmCmd := &shipmodelx.CreateFulfillmentsCommand{
 			Fulfillments: creates,
 		}
@@ -87,7 +87,7 @@ func ConfirmOrderAndCreateFulfillments(ctx context.Context, shop *model.Shop, pa
 			return resp, err
 		}
 	}
-	if len(updates) > 0 {
+	if updates != nil {
 		ffmCmd := &shipmodelx.UpdateFulfillmentsCommand{
 			Fulfillments: updates,
 		}
@@ -148,7 +148,7 @@ func ConfirmOrderAndCreateFulfillments(ctx context.Context, shop *model.Shop, pa
 	return resp, nil
 }
 
-func prepareFulfillmentsFromOrder(ctx context.Context, order *ordermodel.Order, shop *model.Shop) ([]*shipmodel.Fulfillment, error) {
+func prepareFulfillmentFromOrder(ctx context.Context, order *ordermodel.Order, shop *model.Shop) (*shipmodel.Fulfillment, error) {
 	if order.ShopShipping != nil && order.ShopShipping.ShippingProvider == model.TypeGHN {
 		if order.GhnNoteCode == "" {
 			return nil, cm.Error(cm.FailedPrecondition, "Vui lòng chọn ghi chú xem hàng!", nil)
@@ -210,7 +210,7 @@ func prepareFulfillmentsFromOrder(ctx context.Context, order *ordermodel.Order, 
 	if order.ShopShipping == nil {
 		return nil, cm.Error(cm.InvalidArgument, "Vui lòng chọn dịch vụ giao hàng.", nil)
 	}
-	return []*shipmodel.Fulfillment{ffm}, nil
+	return ffm, nil
 }
 
 // block create ffm from Rach Gia District: district_code = 899
@@ -258,9 +258,7 @@ func prepareSingleFulfillment(order *ordermodel.Order, shop *model.Shop, lines [
 		ID:                ffmID,
 		OrderID:           order.ID,
 		ShopID:            shop.ID,
-		SupplierID:        0,
 		PartnerID:         order.PartnerID,
-		SupplierConfirm:   0,
 		ShopConfirm:       model.S3Positive, // Always set shop_confirm to 1
 		ConfirmStatus:     0,
 		TotalItems:        totalItems,
@@ -344,32 +342,26 @@ func prepareSingleFulfillment(order *ordermodel.Order, shop *model.Shop, lines [
 // - Missing/cancelled fulfillments: create
 // - Error fulfillments: update
 // - Processing fulfillments: ignore
-func compareFulfillments(order *ordermodel.Order, olds, fulfillments []*shipmodel.Fulfillment) (creates, updates []*shipmodel.Fulfillment, err error) {
+func compareFulfillments(order *ordermodel.Order, olds []*shipmodel.Fulfillment, ffm *shipmodel.Fulfillment) (creates, updates []*shipmodel.Fulfillment, err error) {
 	// active ffm: Those which are not cancelled
-	mapActiveSupplier := make(map[int64]*shipmodel.Fulfillment)
-	for _, ffm := range olds {
-		if ffm.Status != model.S5Negative && ffm.Status != model.S5NegSuper &&
-			ffm.ShopConfirm != model.S3Negative {
-			mapActiveSupplier[ffm.SupplierID] = ffm
+	var old *shipmodel.Fulfillment
+	for _, oldFfm := range olds {
+		if oldFfm.Status != model.S5Negative && oldFfm.Status != model.S5NegSuper &&
+			oldFfm.ShopConfirm != model.S3Negative {
+			old = oldFfm
 		}
 	}
 
-	for _, ffm := range fulfillments {
-		// Find missing fulfillments to create, include ffm with SupplierID == 0
-		old := mapActiveSupplier[ffm.SupplierID]
-		if old == nil {
-			creates = append(creates, ffm)
-			continue
-		}
-
-		// Update error fulfillments
-		if old.Status == model.S5Zero {
-			ffm.ID = old.ID
-			updates = append(updates, ffm)
-		}
+	if old == nil {
+		return []*shipmodel.Fulfillment{ffm}, nil, nil
 	}
-
-	return creates, updates, nil
+	// update error fulfillments
+	if old.Status == model.S5Zero {
+		ffm.ID = old.ID
+		return nil, []*shipmodel.Fulfillment{ffm}, nil
+	}
+	// ignore
+	return nil, nil, nil
 }
 
 func orderAddressToShippingAddress(orderAddr *ordermodel.OrderAddress) (*model.Address, error) {
@@ -475,7 +467,7 @@ func TryCancellingFulfillments(ctx context.Context, order *ordermodel.Order, ful
 		}
 
 		wg.Add(1)
-		go func() (_err error) {
+		go ignoreError(func() (_err error) {
 			defer func() {
 				wg.Done()
 				errs[i] = _err
@@ -545,8 +537,10 @@ func TryCancellingFulfillments(ctx context.Context, order *ordermodel.Order, ful
 				return err
 			}
 			return nil
-		}()
+		}())
 	}
 	wg.Wait()
 	return nil, errs
 }
+
+func ignoreError(err error) {}

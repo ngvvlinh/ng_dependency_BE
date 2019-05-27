@@ -5515,7 +5515,7 @@ func sqlgenCredit(_ *Credit) bool { return true }
 type Credits []*Credit
 
 const __sqlCredit_Table = "credit"
-const __sqlCredit_ListCols = "\"id\",\"amount\",\"shop_id\",\"supplier_id\",\"type\",\"status\",\"created_at\",\"updated_at\",\"paid_at\""
+const __sqlCredit_ListCols = "\"id\",\"amount\",\"shop_id\",\"type\",\"status\",\"created_at\",\"updated_at\",\"paid_at\""
 const __sqlCredit_Insert = "INSERT INTO \"credit\" (" + __sqlCredit_ListCols + ") VALUES"
 const __sqlCredit_Select = "SELECT " + __sqlCredit_ListCols + " FROM \"credit\""
 const __sqlCredit_Select_history = "SELECT " + __sqlCredit_ListCols + " FROM history.\"credit\""
@@ -5531,7 +5531,6 @@ func (m *Credit) SQLArgs(opts core.Opts, create bool) []interface{} {
 		core.Int64(m.ID),
 		core.Int(m.Amount),
 		core.Int64(m.ShopID),
-		core.Int64(m.SupplierID),
 		core.String(m.Type),
 		core.Int(m.Status),
 		core.Now(m.CreatedAt, now, create),
@@ -5545,7 +5544,6 @@ func (m *Credit) SQLScanArgs(opts core.Opts) []interface{} {
 		(*core.Int64)(&m.ID),
 		(*core.Int)(&m.Amount),
 		(*core.Int64)(&m.ShopID),
-		(*core.Int64)(&m.SupplierID),
 		(*core.String)(&m.Type),
 		(*core.Int)(&m.Status),
 		(*core.Time)(&m.CreatedAt),
@@ -5588,7 +5586,7 @@ func (_ *Credits) SQLSelect(w SQLWriter) error {
 func (m *Credit) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlCredit_Insert)
 	w.WriteRawString(" (")
-	w.WriteMarkers(9)
+	w.WriteMarkers(8)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), true))
 	return nil
@@ -5598,7 +5596,7 @@ func (ms Credits) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlCredit_Insert)
 	w.WriteRawString(" (")
 	for i := 0; i < len(ms); i++ {
-		w.WriteMarkers(9)
+		w.WriteMarkers(8)
 		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
 		w.WriteRawString("),(")
 	}
@@ -5636,14 +5634,6 @@ func (m *Credit) SQLUpdate(w SQLWriter) error {
 		w.WriteMarker()
 		w.WriteByte(',')
 		w.WriteArg(m.ShopID)
-	}
-	if m.SupplierID != 0 {
-		flag = true
-		w.WriteName("supplier_id")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(m.SupplierID)
 	}
 	if m.Type != "" {
 		flag = true
@@ -5695,7 +5685,7 @@ func (m *Credit) SQLUpdate(w SQLWriter) error {
 func (m *Credit) SQLUpdateAll(w SQLWriter) error {
 	w.WriteQueryString(__sqlCredit_UpdateAll)
 	w.WriteRawString(" = (")
-	w.WriteMarkers(9)
+	w.WriteMarkers(8)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), false))
 	return nil
@@ -5717,43 +5707,41 @@ func (m CreditHistories) SQLSelect(w SQLWriter) error {
 	return nil
 }
 
-func (m CreditHistory) ID() core.Interface         { return core.Interface{m["id"]} }
-func (m CreditHistory) Amount() core.Interface     { return core.Interface{m["amount"]} }
-func (m CreditHistory) ShopID() core.Interface     { return core.Interface{m["shop_id"]} }
-func (m CreditHistory) SupplierID() core.Interface { return core.Interface{m["supplier_id"]} }
-func (m CreditHistory) Type() core.Interface       { return core.Interface{m["type"]} }
-func (m CreditHistory) Status() core.Interface     { return core.Interface{m["status"]} }
-func (m CreditHistory) CreatedAt() core.Interface  { return core.Interface{m["created_at"]} }
-func (m CreditHistory) UpdatedAt() core.Interface  { return core.Interface{m["updated_at"]} }
-func (m CreditHistory) PaidAt() core.Interface     { return core.Interface{m["paid_at"]} }
+func (m CreditHistory) ID() core.Interface        { return core.Interface{m["id"]} }
+func (m CreditHistory) Amount() core.Interface    { return core.Interface{m["amount"]} }
+func (m CreditHistory) ShopID() core.Interface    { return core.Interface{m["shop_id"]} }
+func (m CreditHistory) Type() core.Interface      { return core.Interface{m["type"]} }
+func (m CreditHistory) Status() core.Interface    { return core.Interface{m["status"]} }
+func (m CreditHistory) CreatedAt() core.Interface { return core.Interface{m["created_at"]} }
+func (m CreditHistory) UpdatedAt() core.Interface { return core.Interface{m["updated_at"]} }
+func (m CreditHistory) PaidAt() core.Interface    { return core.Interface{m["paid_at"]} }
 
 func (m *CreditHistory) SQLScan(opts core.Opts, row *sql.Row) error {
-	data := make([]interface{}, 9)
-	args := make([]interface{}, 9)
-	for i := 0; i < 9; i++ {
+	data := make([]interface{}, 8)
+	args := make([]interface{}, 8)
+	for i := 0; i < 8; i++ {
 		args[i] = &data[i]
 	}
 	if err := row.Scan(args...); err != nil {
 		return err
 	}
-	res := make(CreditHistory, 9)
+	res := make(CreditHistory, 8)
 	res["id"] = data[0]
 	res["amount"] = data[1]
 	res["shop_id"] = data[2]
-	res["supplier_id"] = data[3]
-	res["type"] = data[4]
-	res["status"] = data[5]
-	res["created_at"] = data[6]
-	res["updated_at"] = data[7]
-	res["paid_at"] = data[8]
+	res["type"] = data[3]
+	res["status"] = data[4]
+	res["created_at"] = data[5]
+	res["updated_at"] = data[6]
+	res["paid_at"] = data[7]
 	*m = res
 	return nil
 }
 
 func (ms *CreditHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	data := make([]interface{}, 9)
-	args := make([]interface{}, 9)
-	for i := 0; i < 9; i++ {
+	data := make([]interface{}, 8)
+	args := make([]interface{}, 8)
+	for i := 0; i < 8; i++ {
 		args[i] = &data[i]
 	}
 	res := make(CreditHistories, 0, 128)
@@ -5765,12 +5753,11 @@ func (ms *CreditHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
 		m["id"] = data[0]
 		m["amount"] = data[1]
 		m["shop_id"] = data[2]
-		m["supplier_id"] = data[3]
-		m["type"] = data[4]
-		m["status"] = data[5]
-		m["created_at"] = data[6]
-		m["updated_at"] = data[7]
-		m["paid_at"] = data[8]
+		m["type"] = data[3]
+		m["status"] = data[4]
+		m["created_at"] = data[5]
+		m["updated_at"] = data[6]
+		m["paid_at"] = data[7]
 		res = append(res, m)
 	}
 	if err := rows.Err(); err != nil {

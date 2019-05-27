@@ -564,25 +564,6 @@ func (ft MoneyTransactionShippingFilters) ByShopIDPtr(ShopID *int64) *sq.ColumnF
 	}
 }
 
-func (ft MoneyTransactionShippingFilters) BySupplierID(SupplierID int64) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
-		Prefix: ft.prefix,
-		Column: "supplier_id",
-		Value:  SupplierID,
-		IsNil:  SupplierID == 0,
-	}
-}
-
-func (ft MoneyTransactionShippingFilters) BySupplierIDPtr(SupplierID *int64) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
-		Prefix: ft.prefix,
-		Column: "supplier_id",
-		Value:  SupplierID,
-		IsNil:  SupplierID == nil,
-		IsZero: SupplierID != nil && (*SupplierID) == 0,
-	}
-}
-
 func (ft MoneyTransactionShippingFilters) ByCreatedAt(CreatedAt time.Time) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: ft.prefix,

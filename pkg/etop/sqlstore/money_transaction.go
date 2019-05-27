@@ -1191,11 +1191,6 @@ func CreateCredit(ctx context.Context, cmd *model.CreateCreditCommand) error {
 			return cm.Error(cm.InvalidArgument, "Missing AccountID", nil)
 		}
 
-	case model.TypeSupplier:
-		if cmd.SupplierID == 0 {
-			return cm.Error(cm.InvalidArgument, "Missing SupplierID", nil)
-		}
-
 	default:
 		return cm.Error(cm.InvalidArgument, "Type does not support", nil)
 	}
@@ -1203,12 +1198,11 @@ func CreateCredit(ctx context.Context, cmd *model.CreateCreditCommand) error {
 		return cm.Error(cm.InvalidArgument, "Missing amount", nil)
 	}
 	credit := &model.Credit{
-		ID:         cm.NewID(),
-		Amount:     cmd.Amount,
-		ShopID:     cmd.ShopID,
-		SupplierID: cmd.SupplierID,
-		Type:       string(cmd.Type),
-		PaidAt:     cmd.PaidAt,
+		ID:     cm.NewID(),
+		Amount: cmd.Amount,
+		ShopID: cmd.ShopID,
+		Type:   string(cmd.Type),
+		PaidAt: cmd.PaidAt,
 	}
 	if err := x.Table("credit").ShouldInsert(credit); err != nil {
 		return err
@@ -1231,9 +1225,6 @@ func GetCredit(ctx context.Context, query *model.GetCreditQuery) error {
 	s := x.Table("credit").Where("c.id = ?", query.ID)
 	if query.ShopID != 0 {
 		s = s.Where("c.shop_id = ?", query.ShopID)
-	}
-	if query.SupplierID != 0 {
-		s = s.Where("c.supplier_id = ?", query.SupplierID)
 	}
 	credit := new(model.CreditExtended)
 	if err := s.ShouldGet(credit); err != nil {

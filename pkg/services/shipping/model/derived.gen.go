@@ -17,7 +17,7 @@ func sqlgenFulfillment(_ *Fulfillment) bool { return true }
 type Fulfillments []*Fulfillment
 
 const __sqlFulfillment_Table = "fulfillment"
-const __sqlFulfillment_ListCols = "\"id\",\"order_id\",\"shop_id\",\"supplier_id\",\"partner_id\",\"supplier_confirm\",\"shop_confirm\",\"confirm_status\",\"total_items\",\"total_weight\",\"basket_value\",\"total_discount\",\"total_amount\",\"total_cod_amount\",\"original_cod_amount\",\"actual_compensation_amount\",\"shipping_fee_customer\",\"shipping_fee_shop\",\"shipping_fee_shop_lines\",\"shipping_service_fee\",\"external_shipping_fee\",\"provider_shipping_fee_lines\",\"etop_discount\",\"etop_fee_adjustment\",\"shipping_fee_main\",\"shipping_fee_return\",\"shipping_fee_insurance\",\"shipping_fee_adjustment\",\"shipping_fee_cods\",\"shipping_fee_info_change\",\"shipping_fee_other\",\"etop_adjusted_shipping_fee_main\",\"etop_price_rule\",\"variant_ids\",\"lines\",\"type_from\",\"type_to\",\"address_from\",\"address_to\",\"address_return\",\"address_to_province_code\",\"address_to_district_code\",\"address_to_ward_code\",\"created_at\",\"updated_at\",\"closed_at\",\"expected_delivery_at\",\"expected_pick_at\",\"cod_etop_transfered_at\",\"shipping_fee_shop_transfered_at\",\"shipping_cancelled_at\",\"shipping_delivered_at\",\"shipping_returned_at\",\"shipping_created_at\",\"shipping_picking_at\",\"shipping_holding_at\",\"shipping_delivering_at\",\"shipping_returning_at\",\"money_transaction_id\",\"money_transaction_shipping_external_id\",\"cancel_reason\",\"shipping_provider\",\"provider_service_id\",\"shipping_code\",\"shipping_note\",\"try_on\",\"include_insurance\",\"external_shipping_name\",\"external_shipping_id\",\"external_shipping_code\",\"external_shipping_created_at\",\"external_shipping_updated_at\",\"external_shipping_cancelled_at\",\"external_shipping_delivered_at\",\"external_shipping_returned_at\",\"external_shipping_closed_at\",\"external_shipping_state\",\"external_shipping_state_code\",\"external_shipping_status\",\"external_shipping_note\",\"external_shipping_sub_state\",\"external_shipping_data\",\"shipping_state\",\"shipping_status\",\"etop_payment_status\",\"status\",\"sync_status\",\"sync_states\",\"last_sync_at\",\"external_shipping_logs\",\"admin_note\",\"is_partial_delivery\""
+const __sqlFulfillment_ListCols = "\"id\",\"order_id\",\"shop_id\",\"partner_id\",\"shop_confirm\",\"confirm_status\",\"total_items\",\"total_weight\",\"basket_value\",\"total_discount\",\"total_amount\",\"total_cod_amount\",\"original_cod_amount\",\"actual_compensation_amount\",\"shipping_fee_customer\",\"shipping_fee_shop\",\"shipping_fee_shop_lines\",\"shipping_service_fee\",\"external_shipping_fee\",\"provider_shipping_fee_lines\",\"etop_discount\",\"etop_fee_adjustment\",\"shipping_fee_main\",\"shipping_fee_return\",\"shipping_fee_insurance\",\"shipping_fee_adjustment\",\"shipping_fee_cods\",\"shipping_fee_info_change\",\"shipping_fee_other\",\"etop_adjusted_shipping_fee_main\",\"etop_price_rule\",\"variant_ids\",\"lines\",\"type_from\",\"type_to\",\"address_from\",\"address_to\",\"address_return\",\"address_to_province_code\",\"address_to_district_code\",\"address_to_ward_code\",\"created_at\",\"updated_at\",\"closed_at\",\"expected_delivery_at\",\"expected_pick_at\",\"cod_etop_transfered_at\",\"shipping_fee_shop_transfered_at\",\"shipping_cancelled_at\",\"shipping_delivered_at\",\"shipping_returned_at\",\"shipping_created_at\",\"shipping_picking_at\",\"shipping_holding_at\",\"shipping_delivering_at\",\"shipping_returning_at\",\"money_transaction_id\",\"money_transaction_shipping_external_id\",\"cancel_reason\",\"shipping_provider\",\"provider_service_id\",\"shipping_code\",\"shipping_note\",\"try_on\",\"include_insurance\",\"external_shipping_name\",\"external_shipping_id\",\"external_shipping_code\",\"external_shipping_created_at\",\"external_shipping_updated_at\",\"external_shipping_cancelled_at\",\"external_shipping_delivered_at\",\"external_shipping_returned_at\",\"external_shipping_closed_at\",\"external_shipping_state\",\"external_shipping_state_code\",\"external_shipping_status\",\"external_shipping_note\",\"external_shipping_sub_state\",\"external_shipping_data\",\"shipping_state\",\"shipping_status\",\"etop_payment_status\",\"status\",\"sync_status\",\"sync_states\",\"last_sync_at\",\"external_shipping_logs\",\"admin_note\",\"is_partial_delivery\""
 const __sqlFulfillment_Insert = "INSERT INTO \"fulfillment\" (" + __sqlFulfillment_ListCols + ") VALUES"
 const __sqlFulfillment_Select = "SELECT " + __sqlFulfillment_ListCols + " FROM \"fulfillment\""
 const __sqlFulfillment_Select_history = "SELECT " + __sqlFulfillment_ListCols + " FROM history.\"fulfillment\""
@@ -33,9 +33,7 @@ func (m *Fulfillment) SQLArgs(opts core.Opts, create bool) []interface{} {
 		core.Int64(m.ID),
 		core.Int64(m.OrderID),
 		core.Int64(m.ShopID),
-		core.Int64(m.SupplierID),
 		core.Int64(m.PartnerID),
-		core.Int(m.SupplierConfirm),
 		core.Int(m.ShopConfirm),
 		core.Int(m.ConfirmStatus),
 		core.Int(m.TotalItems),
@@ -130,9 +128,7 @@ func (m *Fulfillment) SQLScanArgs(opts core.Opts) []interface{} {
 		(*core.Int64)(&m.ID),
 		(*core.Int64)(&m.OrderID),
 		(*core.Int64)(&m.ShopID),
-		(*core.Int64)(&m.SupplierID),
 		(*core.Int64)(&m.PartnerID),
-		(*core.Int)(&m.SupplierConfirm),
 		(*core.Int)(&m.ShopConfirm),
 		(*core.Int)(&m.ConfirmStatus),
 		(*core.Int)(&m.TotalItems),
@@ -256,7 +252,7 @@ func (_ *Fulfillments) SQLSelect(w SQLWriter) error {
 func (m *Fulfillment) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlFulfillment_Insert)
 	w.WriteRawString(" (")
-	w.WriteMarkers(92)
+	w.WriteMarkers(90)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), true))
 	return nil
@@ -266,7 +262,7 @@ func (ms Fulfillments) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlFulfillment_Insert)
 	w.WriteRawString(" (")
 	for i := 0; i < len(ms); i++ {
-		w.WriteMarkers(92)
+		w.WriteMarkers(90)
 		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
 		w.WriteRawString("),(")
 	}
@@ -305,14 +301,6 @@ func (m *Fulfillment) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(m.ShopID)
 	}
-	if m.SupplierID != 0 {
-		flag = true
-		w.WriteName("supplier_id")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(m.SupplierID)
-	}
 	if m.PartnerID != 0 {
 		flag = true
 		w.WriteName("partner_id")
@@ -320,14 +308,6 @@ func (m *Fulfillment) SQLUpdate(w SQLWriter) error {
 		w.WriteMarker()
 		w.WriteByte(',')
 		w.WriteArg(m.PartnerID)
-	}
-	if m.SupplierConfirm != 0 {
-		flag = true
-		w.WriteName("supplier_confirm")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(int(m.SupplierConfirm))
 	}
 	if m.ShopConfirm != 0 {
 		flag = true
@@ -1027,7 +1007,7 @@ func (m *Fulfillment) SQLUpdate(w SQLWriter) error {
 func (m *Fulfillment) SQLUpdateAll(w SQLWriter) error {
 	w.WriteQueryString(__sqlFulfillment_UpdateAll)
 	w.WriteRawString(" = (")
-	w.WriteMarkers(92)
+	w.WriteMarkers(90)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), false))
 	return nil
@@ -1049,14 +1029,10 @@ func (m FulfillmentHistories) SQLSelect(w SQLWriter) error {
 	return nil
 }
 
-func (m FulfillmentHistory) ID() core.Interface         { return core.Interface{m["id"]} }
-func (m FulfillmentHistory) OrderID() core.Interface    { return core.Interface{m["order_id"]} }
-func (m FulfillmentHistory) ShopID() core.Interface     { return core.Interface{m["shop_id"]} }
-func (m FulfillmentHistory) SupplierID() core.Interface { return core.Interface{m["supplier_id"]} }
-func (m FulfillmentHistory) PartnerID() core.Interface  { return core.Interface{m["partner_id"]} }
-func (m FulfillmentHistory) SupplierConfirm() core.Interface {
-	return core.Interface{m["supplier_confirm"]}
-}
+func (m FulfillmentHistory) ID() core.Interface            { return core.Interface{m["id"]} }
+func (m FulfillmentHistory) OrderID() core.Interface       { return core.Interface{m["order_id"]} }
+func (m FulfillmentHistory) ShopID() core.Interface        { return core.Interface{m["shop_id"]} }
+func (m FulfillmentHistory) PartnerID() core.Interface     { return core.Interface{m["partner_id"]} }
 func (m FulfillmentHistory) ShopConfirm() core.Interface   { return core.Interface{m["shop_confirm"]} }
 func (m FulfillmentHistory) ConfirmStatus() core.Interface { return core.Interface{m["confirm_status"]} }
 func (m FulfillmentHistory) TotalItems() core.Interface    { return core.Interface{m["total_items"]} }
@@ -1261,115 +1237,113 @@ func (m FulfillmentHistory) IsPartialDelivery() core.Interface {
 }
 
 func (m *FulfillmentHistory) SQLScan(opts core.Opts, row *sql.Row) error {
-	data := make([]interface{}, 92)
-	args := make([]interface{}, 92)
-	for i := 0; i < 92; i++ {
+	data := make([]interface{}, 90)
+	args := make([]interface{}, 90)
+	for i := 0; i < 90; i++ {
 		args[i] = &data[i]
 	}
 	if err := row.Scan(args...); err != nil {
 		return err
 	}
-	res := make(FulfillmentHistory, 92)
+	res := make(FulfillmentHistory, 90)
 	res["id"] = data[0]
 	res["order_id"] = data[1]
 	res["shop_id"] = data[2]
-	res["supplier_id"] = data[3]
-	res["partner_id"] = data[4]
-	res["supplier_confirm"] = data[5]
-	res["shop_confirm"] = data[6]
-	res["confirm_status"] = data[7]
-	res["total_items"] = data[8]
-	res["total_weight"] = data[9]
-	res["basket_value"] = data[10]
-	res["total_discount"] = data[11]
-	res["total_amount"] = data[12]
-	res["total_cod_amount"] = data[13]
-	res["original_cod_amount"] = data[14]
-	res["actual_compensation_amount"] = data[15]
-	res["shipping_fee_customer"] = data[16]
-	res["shipping_fee_shop"] = data[17]
-	res["shipping_fee_shop_lines"] = data[18]
-	res["shipping_service_fee"] = data[19]
-	res["external_shipping_fee"] = data[20]
-	res["provider_shipping_fee_lines"] = data[21]
-	res["etop_discount"] = data[22]
-	res["etop_fee_adjustment"] = data[23]
-	res["shipping_fee_main"] = data[24]
-	res["shipping_fee_return"] = data[25]
-	res["shipping_fee_insurance"] = data[26]
-	res["shipping_fee_adjustment"] = data[27]
-	res["shipping_fee_cods"] = data[28]
-	res["shipping_fee_info_change"] = data[29]
-	res["shipping_fee_other"] = data[30]
-	res["etop_adjusted_shipping_fee_main"] = data[31]
-	res["etop_price_rule"] = data[32]
-	res["variant_ids"] = data[33]
-	res["lines"] = data[34]
-	res["type_from"] = data[35]
-	res["type_to"] = data[36]
-	res["address_from"] = data[37]
-	res["address_to"] = data[38]
-	res["address_return"] = data[39]
-	res["address_to_province_code"] = data[40]
-	res["address_to_district_code"] = data[41]
-	res["address_to_ward_code"] = data[42]
-	res["created_at"] = data[43]
-	res["updated_at"] = data[44]
-	res["closed_at"] = data[45]
-	res["expected_delivery_at"] = data[46]
-	res["expected_pick_at"] = data[47]
-	res["cod_etop_transfered_at"] = data[48]
-	res["shipping_fee_shop_transfered_at"] = data[49]
-	res["shipping_cancelled_at"] = data[50]
-	res["shipping_delivered_at"] = data[51]
-	res["shipping_returned_at"] = data[52]
-	res["shipping_created_at"] = data[53]
-	res["shipping_picking_at"] = data[54]
-	res["shipping_holding_at"] = data[55]
-	res["shipping_delivering_at"] = data[56]
-	res["shipping_returning_at"] = data[57]
-	res["money_transaction_id"] = data[58]
-	res["money_transaction_shipping_external_id"] = data[59]
-	res["cancel_reason"] = data[60]
-	res["shipping_provider"] = data[61]
-	res["provider_service_id"] = data[62]
-	res["shipping_code"] = data[63]
-	res["shipping_note"] = data[64]
-	res["try_on"] = data[65]
-	res["include_insurance"] = data[66]
-	res["external_shipping_name"] = data[67]
-	res["external_shipping_id"] = data[68]
-	res["external_shipping_code"] = data[69]
-	res["external_shipping_created_at"] = data[70]
-	res["external_shipping_updated_at"] = data[71]
-	res["external_shipping_cancelled_at"] = data[72]
-	res["external_shipping_delivered_at"] = data[73]
-	res["external_shipping_returned_at"] = data[74]
-	res["external_shipping_closed_at"] = data[75]
-	res["external_shipping_state"] = data[76]
-	res["external_shipping_state_code"] = data[77]
-	res["external_shipping_status"] = data[78]
-	res["external_shipping_note"] = data[79]
-	res["external_shipping_sub_state"] = data[80]
-	res["external_shipping_data"] = data[81]
-	res["shipping_state"] = data[82]
-	res["shipping_status"] = data[83]
-	res["etop_payment_status"] = data[84]
-	res["status"] = data[85]
-	res["sync_status"] = data[86]
-	res["sync_states"] = data[87]
-	res["last_sync_at"] = data[88]
-	res["external_shipping_logs"] = data[89]
-	res["admin_note"] = data[90]
-	res["is_partial_delivery"] = data[91]
+	res["partner_id"] = data[3]
+	res["shop_confirm"] = data[4]
+	res["confirm_status"] = data[5]
+	res["total_items"] = data[6]
+	res["total_weight"] = data[7]
+	res["basket_value"] = data[8]
+	res["total_discount"] = data[9]
+	res["total_amount"] = data[10]
+	res["total_cod_amount"] = data[11]
+	res["original_cod_amount"] = data[12]
+	res["actual_compensation_amount"] = data[13]
+	res["shipping_fee_customer"] = data[14]
+	res["shipping_fee_shop"] = data[15]
+	res["shipping_fee_shop_lines"] = data[16]
+	res["shipping_service_fee"] = data[17]
+	res["external_shipping_fee"] = data[18]
+	res["provider_shipping_fee_lines"] = data[19]
+	res["etop_discount"] = data[20]
+	res["etop_fee_adjustment"] = data[21]
+	res["shipping_fee_main"] = data[22]
+	res["shipping_fee_return"] = data[23]
+	res["shipping_fee_insurance"] = data[24]
+	res["shipping_fee_adjustment"] = data[25]
+	res["shipping_fee_cods"] = data[26]
+	res["shipping_fee_info_change"] = data[27]
+	res["shipping_fee_other"] = data[28]
+	res["etop_adjusted_shipping_fee_main"] = data[29]
+	res["etop_price_rule"] = data[30]
+	res["variant_ids"] = data[31]
+	res["lines"] = data[32]
+	res["type_from"] = data[33]
+	res["type_to"] = data[34]
+	res["address_from"] = data[35]
+	res["address_to"] = data[36]
+	res["address_return"] = data[37]
+	res["address_to_province_code"] = data[38]
+	res["address_to_district_code"] = data[39]
+	res["address_to_ward_code"] = data[40]
+	res["created_at"] = data[41]
+	res["updated_at"] = data[42]
+	res["closed_at"] = data[43]
+	res["expected_delivery_at"] = data[44]
+	res["expected_pick_at"] = data[45]
+	res["cod_etop_transfered_at"] = data[46]
+	res["shipping_fee_shop_transfered_at"] = data[47]
+	res["shipping_cancelled_at"] = data[48]
+	res["shipping_delivered_at"] = data[49]
+	res["shipping_returned_at"] = data[50]
+	res["shipping_created_at"] = data[51]
+	res["shipping_picking_at"] = data[52]
+	res["shipping_holding_at"] = data[53]
+	res["shipping_delivering_at"] = data[54]
+	res["shipping_returning_at"] = data[55]
+	res["money_transaction_id"] = data[56]
+	res["money_transaction_shipping_external_id"] = data[57]
+	res["cancel_reason"] = data[58]
+	res["shipping_provider"] = data[59]
+	res["provider_service_id"] = data[60]
+	res["shipping_code"] = data[61]
+	res["shipping_note"] = data[62]
+	res["try_on"] = data[63]
+	res["include_insurance"] = data[64]
+	res["external_shipping_name"] = data[65]
+	res["external_shipping_id"] = data[66]
+	res["external_shipping_code"] = data[67]
+	res["external_shipping_created_at"] = data[68]
+	res["external_shipping_updated_at"] = data[69]
+	res["external_shipping_cancelled_at"] = data[70]
+	res["external_shipping_delivered_at"] = data[71]
+	res["external_shipping_returned_at"] = data[72]
+	res["external_shipping_closed_at"] = data[73]
+	res["external_shipping_state"] = data[74]
+	res["external_shipping_state_code"] = data[75]
+	res["external_shipping_status"] = data[76]
+	res["external_shipping_note"] = data[77]
+	res["external_shipping_sub_state"] = data[78]
+	res["external_shipping_data"] = data[79]
+	res["shipping_state"] = data[80]
+	res["shipping_status"] = data[81]
+	res["etop_payment_status"] = data[82]
+	res["status"] = data[83]
+	res["sync_status"] = data[84]
+	res["sync_states"] = data[85]
+	res["last_sync_at"] = data[86]
+	res["external_shipping_logs"] = data[87]
+	res["admin_note"] = data[88]
+	res["is_partial_delivery"] = data[89]
 	*m = res
 	return nil
 }
 
 func (ms *FulfillmentHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	data := make([]interface{}, 92)
-	args := make([]interface{}, 92)
-	for i := 0; i < 92; i++ {
+	data := make([]interface{}, 90)
+	args := make([]interface{}, 90)
+	for i := 0; i < 90; i++ {
 		args[i] = &data[i]
 	}
 	res := make(FulfillmentHistories, 0, 128)
@@ -1381,95 +1355,93 @@ func (ms *FulfillmentHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
 		m["id"] = data[0]
 		m["order_id"] = data[1]
 		m["shop_id"] = data[2]
-		m["supplier_id"] = data[3]
-		m["partner_id"] = data[4]
-		m["supplier_confirm"] = data[5]
-		m["shop_confirm"] = data[6]
-		m["confirm_status"] = data[7]
-		m["total_items"] = data[8]
-		m["total_weight"] = data[9]
-		m["basket_value"] = data[10]
-		m["total_discount"] = data[11]
-		m["total_amount"] = data[12]
-		m["total_cod_amount"] = data[13]
-		m["original_cod_amount"] = data[14]
-		m["actual_compensation_amount"] = data[15]
-		m["shipping_fee_customer"] = data[16]
-		m["shipping_fee_shop"] = data[17]
-		m["shipping_fee_shop_lines"] = data[18]
-		m["shipping_service_fee"] = data[19]
-		m["external_shipping_fee"] = data[20]
-		m["provider_shipping_fee_lines"] = data[21]
-		m["etop_discount"] = data[22]
-		m["etop_fee_adjustment"] = data[23]
-		m["shipping_fee_main"] = data[24]
-		m["shipping_fee_return"] = data[25]
-		m["shipping_fee_insurance"] = data[26]
-		m["shipping_fee_adjustment"] = data[27]
-		m["shipping_fee_cods"] = data[28]
-		m["shipping_fee_info_change"] = data[29]
-		m["shipping_fee_other"] = data[30]
-		m["etop_adjusted_shipping_fee_main"] = data[31]
-		m["etop_price_rule"] = data[32]
-		m["variant_ids"] = data[33]
-		m["lines"] = data[34]
-		m["type_from"] = data[35]
-		m["type_to"] = data[36]
-		m["address_from"] = data[37]
-		m["address_to"] = data[38]
-		m["address_return"] = data[39]
-		m["address_to_province_code"] = data[40]
-		m["address_to_district_code"] = data[41]
-		m["address_to_ward_code"] = data[42]
-		m["created_at"] = data[43]
-		m["updated_at"] = data[44]
-		m["closed_at"] = data[45]
-		m["expected_delivery_at"] = data[46]
-		m["expected_pick_at"] = data[47]
-		m["cod_etop_transfered_at"] = data[48]
-		m["shipping_fee_shop_transfered_at"] = data[49]
-		m["shipping_cancelled_at"] = data[50]
-		m["shipping_delivered_at"] = data[51]
-		m["shipping_returned_at"] = data[52]
-		m["shipping_created_at"] = data[53]
-		m["shipping_picking_at"] = data[54]
-		m["shipping_holding_at"] = data[55]
-		m["shipping_delivering_at"] = data[56]
-		m["shipping_returning_at"] = data[57]
-		m["money_transaction_id"] = data[58]
-		m["money_transaction_shipping_external_id"] = data[59]
-		m["cancel_reason"] = data[60]
-		m["shipping_provider"] = data[61]
-		m["provider_service_id"] = data[62]
-		m["shipping_code"] = data[63]
-		m["shipping_note"] = data[64]
-		m["try_on"] = data[65]
-		m["include_insurance"] = data[66]
-		m["external_shipping_name"] = data[67]
-		m["external_shipping_id"] = data[68]
-		m["external_shipping_code"] = data[69]
-		m["external_shipping_created_at"] = data[70]
-		m["external_shipping_updated_at"] = data[71]
-		m["external_shipping_cancelled_at"] = data[72]
-		m["external_shipping_delivered_at"] = data[73]
-		m["external_shipping_returned_at"] = data[74]
-		m["external_shipping_closed_at"] = data[75]
-		m["external_shipping_state"] = data[76]
-		m["external_shipping_state_code"] = data[77]
-		m["external_shipping_status"] = data[78]
-		m["external_shipping_note"] = data[79]
-		m["external_shipping_sub_state"] = data[80]
-		m["external_shipping_data"] = data[81]
-		m["shipping_state"] = data[82]
-		m["shipping_status"] = data[83]
-		m["etop_payment_status"] = data[84]
-		m["status"] = data[85]
-		m["sync_status"] = data[86]
-		m["sync_states"] = data[87]
-		m["last_sync_at"] = data[88]
-		m["external_shipping_logs"] = data[89]
-		m["admin_note"] = data[90]
-		m["is_partial_delivery"] = data[91]
+		m["partner_id"] = data[3]
+		m["shop_confirm"] = data[4]
+		m["confirm_status"] = data[5]
+		m["total_items"] = data[6]
+		m["total_weight"] = data[7]
+		m["basket_value"] = data[8]
+		m["total_discount"] = data[9]
+		m["total_amount"] = data[10]
+		m["total_cod_amount"] = data[11]
+		m["original_cod_amount"] = data[12]
+		m["actual_compensation_amount"] = data[13]
+		m["shipping_fee_customer"] = data[14]
+		m["shipping_fee_shop"] = data[15]
+		m["shipping_fee_shop_lines"] = data[16]
+		m["shipping_service_fee"] = data[17]
+		m["external_shipping_fee"] = data[18]
+		m["provider_shipping_fee_lines"] = data[19]
+		m["etop_discount"] = data[20]
+		m["etop_fee_adjustment"] = data[21]
+		m["shipping_fee_main"] = data[22]
+		m["shipping_fee_return"] = data[23]
+		m["shipping_fee_insurance"] = data[24]
+		m["shipping_fee_adjustment"] = data[25]
+		m["shipping_fee_cods"] = data[26]
+		m["shipping_fee_info_change"] = data[27]
+		m["shipping_fee_other"] = data[28]
+		m["etop_adjusted_shipping_fee_main"] = data[29]
+		m["etop_price_rule"] = data[30]
+		m["variant_ids"] = data[31]
+		m["lines"] = data[32]
+		m["type_from"] = data[33]
+		m["type_to"] = data[34]
+		m["address_from"] = data[35]
+		m["address_to"] = data[36]
+		m["address_return"] = data[37]
+		m["address_to_province_code"] = data[38]
+		m["address_to_district_code"] = data[39]
+		m["address_to_ward_code"] = data[40]
+		m["created_at"] = data[41]
+		m["updated_at"] = data[42]
+		m["closed_at"] = data[43]
+		m["expected_delivery_at"] = data[44]
+		m["expected_pick_at"] = data[45]
+		m["cod_etop_transfered_at"] = data[46]
+		m["shipping_fee_shop_transfered_at"] = data[47]
+		m["shipping_cancelled_at"] = data[48]
+		m["shipping_delivered_at"] = data[49]
+		m["shipping_returned_at"] = data[50]
+		m["shipping_created_at"] = data[51]
+		m["shipping_picking_at"] = data[52]
+		m["shipping_holding_at"] = data[53]
+		m["shipping_delivering_at"] = data[54]
+		m["shipping_returning_at"] = data[55]
+		m["money_transaction_id"] = data[56]
+		m["money_transaction_shipping_external_id"] = data[57]
+		m["cancel_reason"] = data[58]
+		m["shipping_provider"] = data[59]
+		m["provider_service_id"] = data[60]
+		m["shipping_code"] = data[61]
+		m["shipping_note"] = data[62]
+		m["try_on"] = data[63]
+		m["include_insurance"] = data[64]
+		m["external_shipping_name"] = data[65]
+		m["external_shipping_id"] = data[66]
+		m["external_shipping_code"] = data[67]
+		m["external_shipping_created_at"] = data[68]
+		m["external_shipping_updated_at"] = data[69]
+		m["external_shipping_cancelled_at"] = data[70]
+		m["external_shipping_delivered_at"] = data[71]
+		m["external_shipping_returned_at"] = data[72]
+		m["external_shipping_closed_at"] = data[73]
+		m["external_shipping_state"] = data[74]
+		m["external_shipping_state_code"] = data[75]
+		m["external_shipping_status"] = data[76]
+		m["external_shipping_note"] = data[77]
+		m["external_shipping_sub_state"] = data[78]
+		m["external_shipping_data"] = data[79]
+		m["shipping_state"] = data[80]
+		m["shipping_status"] = data[81]
+		m["etop_payment_status"] = data[82]
+		m["status"] = data[83]
+		m["sync_status"] = data[84]
+		m["sync_states"] = data[85]
+		m["last_sync_at"] = data[86]
+		m["external_shipping_logs"] = data[87]
+		m["admin_note"] = data[88]
+		m["is_partial_delivery"] = data[89]
 		res = append(res, m)
 	}
 	if err := rows.Err(); err != nil {

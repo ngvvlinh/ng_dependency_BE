@@ -11,7 +11,6 @@ import (
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/gencode"
 	"etop.vn/backend/pkg/common/l"
-	"etop.vn/backend/pkg/common/syncgroup"
 	"etop.vn/backend/pkg/etop/model"
 	ordermodel "etop.vn/backend/pkg/services/ordering/model"
 	ordermodelx "etop.vn/backend/pkg/services/ordering/modelx"
@@ -33,7 +32,6 @@ func init() {
 		UpdateFulfillments,
 		UpdateFulfillmentsStatus,
 		UpdateOrder,
-		UpdateOrderLinesStatus,
 		UpdateOrdersStatus,
 		GetFulfillments,
 		GetFulfillmentExtended,
@@ -125,9 +123,6 @@ func GetOrder(ctx context.Context, query *ordermodelx.GetOrderQuery) error {
 	if query.ShopID != 0 {
 		s = s.Where("shop_id = ?", query.ShopID)
 	}
-	if query.SupplierID != 0 {
-		s = s.Where("supplier_ids @> ?", pq.Int64Array{query.SupplierID})
-	}
 	if query.PartnerID != 0 {
 		s = s.Where("partner_id = ?", query.PartnerID)
 	}
@@ -149,9 +144,6 @@ func GetOrder(ctx context.Context, query *ordermodelx.GetOrderQuery) error {
 			OrderBy("id")
 		if query.ShopID != 0 {
 			s = s.Where("shop_id = ?", query.ShopID)
-		}
-		if query.SupplierID != 0 {
-			s = s.Where("supplier_id = ?", query.SupplierID)
 		}
 
 		if err := s.Find((*shipmodel.Fulfillments)(&query.Result.Fulfillments)); err != nil {
@@ -331,61 +323,6 @@ func UpdateOrdersStatus(ctx context.Context, cmd *ordermodelx.UpdateOrdersStatus
 		cmd.Result.Updated = int(updated)
 	}
 	return nil
-}
-
-func UpdateOrderLinesStatus(ctx context.Context, cmd *ordermodelx.UpdateOrderLinesStatusCommand) error {
-	if len(cmd.Updates) == 0 {
-		return cm.Error(cm.InvalidArgument, "Nothing to update", nil)
-	}
-
-	supplierID := cmd.SupplierID
-	var g syncgroup.Group
-
-	for i := range cmd.Updates {
-		for j := range cmd.Updates[i].ProductIDs {
-			// https://golang.org/doc/faq#closures_and_goroutines
-			update := cmd.Updates[i]
-			productID := update.ProductIDs[j]
-			orderID := update.OrderID
-			status := *update.SupplierConfirm
-
-			g.Go(func() error {
-				if update.SupplierConfirm == nil {
-					return cm.Error(cm.InvalidArgument, "Missing status", nil)
-				}
-				if len(update.ProductIDs) == 0 {
-					return cm.Error(cm.InvalidArgument, "Missing ProductIDs", nil)
-				}
-				for _, p := range update.ProductIDs {
-					if p == 0 {
-						return cm.Error(cm.InvalidArgument, "Empty ProductID", nil)
-					}
-				}
-
-				s := x.Table("order_line").
-					Where("order_id = ? AND product_id = ?", orderID, productID)
-				if supplierID != 0 {
-					s = s.Where("supplier_id = ?", supplierID)
-				}
-
-				m := M{"supplier_confirm": status}
-				if status == -1 {
-					m["cancel_reason"] = update.CancelReason
-				}
-				if err := s.ShouldUpdateMap(m); err != nil {
-					return err
-				}
-				return nil
-			})
-		}
-	}
-
-	errs := g.Wait()
-	if errs.NErrors() > 0 {
-		ll.Error("Error updating status", l.Error(errs.Any()))
-	}
-	err := errs.All()
-	return err
 }
 
 func CreateOrder(ctx context.Context, cmd *ordermodelx.CreateOrderCommand) error {
@@ -629,9 +566,6 @@ func GetFulfillment(ctx context.Context, query *shipmodelx.GetFulfillmentQuery) 
 	if query.ShopID != 0 {
 		s = s.Where("shop_id = ?", query.ShopID)
 	}
-	if query.SupplierID != 0 {
-		s = s.Where("supplier_id = ?", query.SupplierID)
-	}
 	if query.PartnerID != 0 {
 		s = s.Where("partner_id = ?", query.PartnerID)
 	}
@@ -661,9 +595,6 @@ func GetFulfillmentExtended(ctx context.Context, cmd *shipmodelx.GetFulfillmentE
 	if cmd.ShopID != 0 {
 		s = s.Where("f.shop_id = ?", cmd.ShopID)
 	}
-	if cmd.SupplierID != 0 {
-		s = s.Where("f.supplier_id = ?", cmd.SupplierID)
-	}
 	if cmd.PartnerID != 0 {
 		s = s.Where("f.partner_id = ?", cmd.PartnerID)
 	}
@@ -685,9 +616,6 @@ func GetFulfillments(ctx context.Context, query *shipmodelx.GetFulfillmentsQuery
 
 	if query.ShopIDs != nil {
 		s = s.InOrEqIDs("shop_id", query.ShopIDs)
-	}
-	if query.SupplierID != 0 {
-		s = s.Where("supplier_id = ?", query.SupplierID)
 	}
 	if query.PartnerID != 0 {
 		s = s.Where("partner_id = ?", query.PartnerID)
@@ -925,7 +853,7 @@ func UpdateFulfillmentsWithoutTransaction(ctx context.Context, cmd *shipmodelx.U
 
 	for i, ffm := range cmd.Fulfillments {
 		guard <- i
-		go func(ffm *shipmodel.Fulfillment) (_err error) {
+		go ignoreError(func(ffm *shipmodel.Fulfillment) (_err error) {
 			defer func() {
 				<-guard
 				chUpdate <- _err
@@ -941,11 +869,11 @@ func UpdateFulfillmentsWithoutTransaction(ctx context.Context, cmd *shipmodelx.U
 				return cm.Error(cm.NotFound, "", nil)
 			}
 			return nil
-		}(ffm)
+		}(ffm))
 	}
 
 	var updated, errors int
-	for i, l := 0, len(cmd.Fulfillments); i < l; i++ {
+	for i, n := 0, len(cmd.Fulfillments); i < n; i++ {
 		err := <-chUpdate
 		if err == nil {
 			updated++
@@ -973,9 +901,6 @@ func UpdateFulfillmentsStatus(ctx context.Context, cmd *shipmodelx.UpdateFulfill
 	if cmd.ShopConfirm != nil {
 		m["shop_confirm"] = *cmd.ShopConfirm
 	}
-	if cmd.SupplierConfirm != nil {
-		m["shop_confirm"] = *cmd.SupplierConfirm
-	}
 	if cmd.SyncStatus != nil {
 		m["sync_status"] = *cmd.SyncStatus
 	}
@@ -999,7 +924,7 @@ func SyncUpdateFulfillments(ctx context.Context, cmd *shipmodelx.SyncUpdateFulfi
 	guard := make(chan int, maxGoroutines)
 	for i, ffm := range cmd.Fulfillments {
 		guard <- i
-		go func(ffm *shipmodel.Fulfillment) (_err error) {
+		go ignoreError(func(ffm *shipmodel.Fulfillment) (_err error) {
 			defer func() {
 				<-guard
 				chUpdate <- _err
@@ -1015,7 +940,7 @@ func SyncUpdateFulfillments(ctx context.Context, cmd *shipmodelx.SyncUpdateFulfi
 				return cm.Error(cm.NotFound, "", nil)
 			}
 			return nil
-		}(ffm)
+		}(ffm))
 	}
 
 	var errs cm.ErrorCollector

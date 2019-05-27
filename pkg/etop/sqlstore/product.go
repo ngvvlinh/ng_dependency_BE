@@ -63,9 +63,9 @@ var (
 	filterProductWhitelist = FilterWhitelist{
 		Arrays:   []string{},
 		Contains: []string{"name"},
-		Equals:   []string{"supplier_id", "etop_category_id", "name"},
+		Equals:   []string{"etop_category_id", "name"},
 		Status:   []string{"ed_status", "status", "etop_status"},
-		Numbers:  []string{"wholesale_price", "list_price", "retail_price_min", "retail_price_max", "ed_wholesale_price", "ed_list_price", "supplier_retail_price_min", "ed_retail_price_max"},
+		Numbers:  []string{"wholesale_price", "list_price", "retail_price_min", "retail_price_max", "ed_wholesale_price", "ed_list_price", "ed_retail_price_max"},
 		Dates:    []string{"created_at", "updated_at"},
 		Unaccent: []string{"name"},
 		PrefixOrRename: map[string]string{
@@ -74,29 +74,28 @@ var (
 			"created_at": "p",
 			"updated_at": "p",
 
-			"wholesale_price":           "v",
-			"list_price":                "v",
-			"retail_price_min":          "v",
-			"retail_price_max":          "v",
-			"ed_wholesale_price":        "v",
-			"ed_list_price":             "v",
-			"supplier_retail_price_min": "v",
-			"ed_retail_price_max":       "v",
+			"wholesale_price":     "v",
+			"list_price":          "v",
+			"retail_price_min":    "v",
+			"retail_price_max":    "v",
+			"ed_wholesale_price":  "v",
+			"ed_list_price":       "v",
+			"ed_retail_price_max": "v",
 		},
 	}
 
 	filterVariantWhitelist = FilterWhitelist{
 		Arrays:   []string{},
 		Contains: []string{"name"},
-		Equals:   []string{"supplier_id", "name"},
+		Equals:   []string{"name"},
 		Status:   []string{"ed_status", "status", "etop_status"},
-		Numbers:  []string{"wholesale_price", "list_price", "retail_price_min", "retail_price_max", "ed_wholesale_price", "ed_list_price", "supplier_retail_price_min", "ed_retail_price_max"},
+		Numbers:  []string{"wholesale_price", "list_price", "retail_price_min", "retail_price_max", "ed_wholesale_price", "ed_list_price", "ed_retail_price_max"},
 	}
 
 	filterShopProductWhitelist = FilterWhitelist{
 		Arrays:   []string{"tags"},
-		Contains: []string{"supplier_name", "external_name", "name"},
-		Equals:   []string{"external_code", "external_base_id", "external_id", "supplier_id", "collection_id"},
+		Contains: []string{"external_name", "name"},
+		Equals:   []string{"external_code", "external_base_id", "external_id", "collection_id"},
 		Status:   []string{"external_status", "ed_status", "status", "etop_status"},
 		Numbers:  []string{"retail_price"},
 		Dates:    []string{"created_at", "updated_at"},
@@ -133,10 +132,6 @@ func GetProduct(ctx context.Context, query *modelx.GetProductQuery) error {
 	}
 
 	s := x.Table("product").Where("p.deleted_at is NULL")
-	if query.SupplierID != 0 {
-		s = s.Where("p.supplier_id = ?", query.SupplierID)
-	}
-
 	p := new(catalogmodel.ProductExtended)
 	has, err := s.Where("p.id = ?", query.ProductID).Get(p)
 	if err != nil {
@@ -160,9 +155,6 @@ func GetProduct(ctx context.Context, query *modelx.GetProductQuery) error {
 
 func GetProductsExtended(ctx context.Context, query *modelx.GetProductsExtendedQuery) error {
 	s := x.Table("product").Where("p.deleted_at is NULL")
-	if query.SupplierID != 0 {
-		s = s.Where("p.supplier_id = ?", query.SupplierID)
-	}
 	if query.ProductSourceType != "" {
 		s = s.Where("ps.type = ?", query.ProductSourceType)
 	}
@@ -241,10 +233,6 @@ func GetVariant(ctx context.Context, query *modelx.GetVariantQuery) error {
 	}
 
 	s := x.Table("variant")
-	if query.SupplierID != 0 {
-		s = s.Where("v.supplier_id = ?", query.SupplierID)
-	}
-
 	v := new(catalogmodel.VariantExtended)
 	has, err := s.Where("v.id = ? AND v.deleted_at is NULL", query.VariantID).Get(v)
 	if err != nil {
@@ -318,7 +306,6 @@ func UpdateProduct(ctx context.Context, cmd *modelx.UpdateProductCommand) error 
 		Where(
 			ft.NotDeleted(),
 			ft.ByID(cmd.Product.ID),
-			ft.BySupplierID(cmd.SupplierID).Optional(),
 		).
 		ShouldUpdate(cmd.Product); err != nil {
 		return err
@@ -344,9 +331,6 @@ func UpdateVariant(ctx context.Context, cmd *modelx.UpdateVariantCommand) error 
 	}
 
 	s := x.Where("id = ?", cmd.Variant.ID)
-	if cmd.SupplierID != 0 {
-		s = s.Where("supplier_id = ?", cmd.SupplierID)
-	}
 
 	// cmd.Product.BeforeUpdate()
 	updated, err := s.Update(cmd.Variant)
@@ -371,9 +355,6 @@ func UpdateVariantImages(ctx context.Context, cmd *modelx.UpdateVariantImagesCom
 	}
 
 	s := x.Table("variant").Where("id = ? AND deleted_at is NULL", cmd.VariantID)
-	if cmd.SupplierID != 0 {
-		s = s.Where("supplier_id = ?", cmd.SupplierID)
-	}
 
 	if err := s.
 		ShouldUpdateMap(M{
@@ -396,9 +377,6 @@ func UpdateProductImages(ctx context.Context, cmd *modelx.UpdateProductImagesCom
 	}
 
 	s := x.Table("product").Where("id = ? AND deleted_at is NULL", cmd.ProductID)
-	if cmd.SupplierID != 0 {
-		s = s.Where("supplier_id = ?", cmd.SupplierID)
-	}
 
 	if err := s.
 		ShouldUpdateMap(M{
@@ -461,9 +439,6 @@ func UpdateVariants(ctx context.Context, cmd *modelx.UpdateVariantsCommand) erro
 		go func(i int, p *catalogmodel.Variant) {
 			defer wg.Done()
 			s := x.Where("id = ?", p.ID)
-			if cmd.SupplierID != 0 {
-				s = s.Where("supplier_id = ?", cmd.SupplierID)
-			}
 
 			// p.BeforeUpdate()
 			count, err := s.Update(p)
@@ -499,15 +474,9 @@ func UpdateVariants(ctx context.Context, cmd *modelx.UpdateVariantsCommand) erro
 
 func UpdateVariantsStatus(ctx context.Context, cmd *modelx.UpdateVariantsStatusCommand) error {
 	s := x.Table("variant").In("id", cmd.IDs).Where("v.deleted_at is NULL")
-	if cmd.SupplierID != 0 {
-		s = s.Where("supplier_id = ?", cmd.SupplierID)
-	}
 	s = FilterStatus(s, "", cmd.StatusQuery)
 
 	m := make(map[string]interface{})
-	if cmd.Update.SupplierStatus != nil {
-		m["ed_status"] = cmd.Update.SupplierStatus
-	}
 	if cmd.Update.EtopStatus != nil {
 		m["etop_status"] = cmd.Update.EtopStatus
 	}
@@ -1036,9 +1005,6 @@ func RemoveProductsEtopCategory(ctx context.Context, cmd *modelx.RemoveProductsE
 
 func UpdateProductsStatus(ctx context.Context, cmd *modelx.UpdateProductsStatusCommand) error {
 	s := x.Table("product").In("id", cmd.IDs).Where("deleted_at is NULL")
-	if cmd.SupplierID != 0 {
-		s = s.Where("supplier_id = ?", cmd.SupplierID)
-	}
 	s = FilterStatus(s, "", cmd.StatusQuery)
 
 	m := make(map[string]interface{})

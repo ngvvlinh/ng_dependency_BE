@@ -26,12 +26,9 @@ func GetProductSourceCategory(ctx context.Context, query *catalogmodelx.GetProdu
 	}
 	p := new(catalogmodel.ProductSourceCategory)
 
-	s := x.Table("product_source_category").Where("psc.id = ?", query.CategoryID)
-	if query.SupplierID != 0 {
-		s = s.Where("psc.supplier_id = ?", query.SupplierID)
-	}
+	s := x.Table("product_source_category").Where("id = ?", query.CategoryID)
 	if query.ShopID != 0 {
-		s = s.Where("psc.shop_id = ?", query.ShopID)
+		s = s.Where("shop_id = ?", query.ShopID)
 	}
 	if err := s.ShouldGet(p); err != nil {
 		return err
@@ -43,9 +40,6 @@ func GetProductSourceCategory(ctx context.Context, query *catalogmodelx.GetProdu
 
 func GetProductSourceCategories(ctx context.Context, query *catalogmodelx.GetProductSourceCategoriesQuery) error {
 	s := x.Table("product_source_category")
-	if query.SupplierID != 0 {
-		s = s.Where("supplier_id = ?", query.SupplierID)
-	}
 	if query.ShopID != 0 {
 		s = s.Where("shop_id = ?", query.ShopID)
 	}

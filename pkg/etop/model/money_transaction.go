@@ -7,19 +7,17 @@ import (
 )
 
 type CreateCreditCommand struct {
-	Amount     int
-	ShopID     int64
-	SupplierID int64
-	Type       AccountType
-	PaidAt     time.Time
+	Amount int
+	ShopID int64
+	Type   AccountType
+	PaidAt time.Time
 
 	Result *CreditExtended
 }
 
 type GetCreditQuery struct {
-	ID         int64
-	ShopID     int64
-	SupplierID int64
+	ID     int64
+	ShopID int64
 
 	Result *CreditExtended
 }

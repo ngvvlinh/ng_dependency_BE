@@ -114,12 +114,6 @@ func FilterStatus(s Query, prefix string, query model.StatusQuery) Query {
 	if query.EtopStatus != nil {
 		s = s.Where(prefix+"etop_status = ?", query.EtopStatus)
 	}
-	if query.SupplierStatus != nil {
-		s = s.Where(prefix+"ed_status = ?", query.SupplierStatus)
-	}
-	// if query.ExternalStatus != nil {
-	// 	s = s.Where(prefix+"ed_status = ?", query.SupplierStatus)
-	// }
 	return s
 }
 
@@ -486,4 +480,7 @@ func appendInt(b []byte, i int) []byte {
 
 func appendInt64(b []byte, i int64) []byte {
 	return strconv.AppendInt(b, i, 10)
+}
+
+func ignoreError(err error) {
 }

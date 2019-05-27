@@ -11,12 +11,9 @@ type GetOrderQuery struct {
 	OrderID    int64
 	ExternalID string
 	ShopID     int64
-	SupplierID int64
 	PartnerID  int64
 	Code       string
 
-	// If true, don't filter order lines from other suppliers
-	AllSuppliers       bool
 	IncludeFulfillment bool
 
 	Result struct {
@@ -108,22 +105,6 @@ type UpdateOrdersStatusCommand struct {
 	Result struct {
 		Updated int
 	}
-}
-
-type UpdateOrderLinesStatusCommand struct {
-	SupplierID int64
-	Updates    []UpdateOrderLinesStatus
-
-	Result struct {
-		Updated int
-	}
-}
-
-type UpdateOrderLinesStatus struct {
-	OrderID         int64
-	ProductIDs      []int64
-	SupplierConfirm *model.Status3
-	CancelReason    string
 }
 
 type CreateOrderCommand struct {

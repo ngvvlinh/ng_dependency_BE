@@ -80,25 +80,6 @@ func (ft FulfillmentFilters) ByShopIDPtr(ShopID *int64) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft FulfillmentFilters) BySupplierID(SupplierID int64) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
-		Prefix: ft.prefix,
-		Column: "supplier_id",
-		Value:  SupplierID,
-		IsNil:  SupplierID == 0,
-	}
-}
-
-func (ft FulfillmentFilters) BySupplierIDPtr(SupplierID *int64) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
-		Prefix: ft.prefix,
-		Column: "supplier_id",
-		Value:  SupplierID,
-		IsNil:  SupplierID == nil,
-		IsZero: SupplierID != nil && (*SupplierID) == 0,
-	}
-}
-
 func (ft FulfillmentFilters) ByPartnerID(PartnerID int64) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: ft.prefix,
@@ -115,25 +96,6 @@ func (ft FulfillmentFilters) ByPartnerIDPtr(PartnerID *int64) *sq.ColumnFilterPt
 		Value:  PartnerID,
 		IsNil:  PartnerID == nil,
 		IsZero: PartnerID != nil && (*PartnerID) == 0,
-	}
-}
-
-func (ft FulfillmentFilters) BySupplierConfirm(SupplierConfirm model.Status3) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
-		Prefix: ft.prefix,
-		Column: "supplier_confirm",
-		Value:  SupplierConfirm,
-		IsNil:  SupplierConfirm == 0,
-	}
-}
-
-func (ft FulfillmentFilters) BySupplierConfirmPtr(SupplierConfirm *model.Status3) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
-		Prefix: ft.prefix,
-		Column: "supplier_confirm",
-		Value:  SupplierConfirm,
-		IsNil:  SupplierConfirm == nil,
-		IsZero: SupplierConfirm != nil && (*SupplierConfirm) == 0,
 	}
 }
 

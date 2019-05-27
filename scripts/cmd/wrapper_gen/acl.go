@@ -59,7 +59,6 @@ var ACL = map[string]*permission.PermissionDecl{
 	"       etop.Misc/VersionInfo": {Type: Public},
 	"      admin.Misc/VersionInfo": {Type: Public},
 	"       shop.Misc/VersionInfo": {Type: Public},
-	"   supplier.Misc/VersionInfo": {Type: Public},
 	"ext/partner.Misc/VersionInfo": {Type: Public},
 	"   ext/shop.Misc/VersionInfo": {Type: Partner, Auth: APIKey},
 	"integration.Misc/VersionInfo": {Type: Public},
@@ -151,50 +150,6 @@ var ACL = map[string]*permission.PermissionDecl{
 	"integration.Integration/GrantAccess":     {Type: CurUsr, AuthPartner: Req},
 	"integration.Integration/SessionInfo":     {Type: Protected, AuthPartner: Req},
 
-	//-- supplier --//
-
-	"supplier.Kiotviet/ConnectKiotvietTest": {Type: CurUsr},
-	"supplier.Kiotviet/ConnectKiotviet":     {Type: CurUsr},
-
-	"supplier.Category/GetCategory":        {Type: Supplier},
-	"supplier.Category/GetCategories":      {Type: Supplier},
-	"supplier.Category/GetCategoriesByIDs": {Type: Supplier},
-
-	"supplier.Brand/GetBrand":          {Type: Supplier},
-	"supplier.Brand/GetBrands":         {Type: Supplier},
-	"supplier.Brand/GetBrandsByIDs":    {Type: Supplier},
-	"supplier.Brand/CreateBrand":       {Type: Supplier},
-	"supplier.Brand/DeleteBrand":       {Type: Supplier},
-	"supplier.Brand/UpdateBrand":       {Type: Supplier},
-	"supplier.Brand/UpdateBrandImages": {Type: Supplier},
-
-	"supplier.Product/GetVariant":           {Type: Supplier},
-	"supplier.Product/GetProduct":           {Type: Supplier},
-	"supplier.Product/GetVariants":          {Type: Supplier},
-	"supplier.Product/GetProducts":          {Type: Supplier},
-	"supplier.Product/GetVariantsByIDs":     {Type: Supplier},
-	"supplier.Product/GetProductsByIDs":     {Type: Supplier},
-	"supplier.Product/UpdateVariant":        {Type: Supplier},
-	"supplier.Product/UpdateProduct":        {Type: Supplier},
-	"supplier.Product/UpdateVariants":       {Type: Supplier},
-	"supplier.Product/UpdateVariantsStatus": {Type: Supplier},
-	"supplier.Product/UpdateVariantImages":  {Type: Supplier},
-	"supplier.Product/UpdateProductImages":  {Type: Supplier},
-
-	"supplier.Price/GetPriceRules":    {Type: Supplier},
-	"supplier.Price/UpdatePriceRules": {Type: Supplier},
-
-	"supplier.Order/GetOrder":           {Type: Supplier},
-	"supplier.Order/GetOrders":          {Type: Supplier},
-	"supplier.Order/GetOrdersByIDs":     {Type: Supplier},
-	"supplier.Order/UpdateOrdersStatus": {Type: Supplier},
-
-	"supplier.Fulfillment/GetFulfillment":  {Type: Supplier},
-	"supplier.Fulfillment/GetFulfillments": {Type: Supplier},
-
-	"supplier.Account/UpdateSupplier":    {Type: Supplier},
-	"supplier.Account/SetDefaultAddress": {Type: Supplier},
-
 	//-- admin --//
 
 	"admin.Account/CreatePartner":  {Type: EtopAdmin},
@@ -218,9 +173,6 @@ var ACL = map[string]*permission.PermissionDecl{
 	"admin.Product/UpdateVariantImages":  {Type: EtopAdmin},
 	"admin.Product/UpdateProductImages":  {Type: EtopAdmin},
 
-	"admin.Supplier/GetSuppliers":      {Type: EtopAdmin},
-	"admin.Supplier/GetSuppliersByIDs": {Type: EtopAdmin},
-
 	"admin.Order/GetOrder":       {Type: EtopAdmin},
 	"admin.Order/GetOrders":      {Type: EtopAdmin},
 	"admin.Order/GetOrdersByIDs": {Type: EtopAdmin},
@@ -228,8 +180,6 @@ var ACL = map[string]*permission.PermissionDecl{
 	"admin.Fulfillment/GetFulfillment":    {Type: EtopAdmin},
 	"admin.Fulfillment/GetFulfillments":   {Type: EtopAdmin},
 	"admin.Fulfillment/UpdateFulfillment": {Type: EtopAdmin},
-
-	"admin.Brand/GetBrands": {Type: EtopAdmin},
 
 	"admin.MoneyTransaction/GetMoneyTransaction":                         {Type: EtopAdmin},
 	"admin.MoneyTransaction/GetMoneyTransactions":                        {Type: EtopAdmin},

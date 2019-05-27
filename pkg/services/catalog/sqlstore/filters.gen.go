@@ -61,25 +61,6 @@ func (ft ProductFilters) ByProductSourceIDPtr(ProductSourceID *int64) *sq.Column
 	}
 }
 
-func (ft ProductFilters) BySupplierID(SupplierID int64) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
-		Prefix: ft.prefix,
-		Column: "supplier_id",
-		Value:  SupplierID,
-		IsNil:  SupplierID == 0,
-	}
-}
-
-func (ft ProductFilters) BySupplierIDPtr(SupplierID *int64) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
-		Prefix: ft.prefix,
-		Column: "supplier_id",
-		Value:  SupplierID,
-		IsNil:  SupplierID == nil,
-		IsZero: SupplierID != nil && (*SupplierID) == 0,
-	}
-}
-
 func (ft ProductFilters) ByProductSourceCategoryID(ProductSourceCategoryID string) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: ft.prefix,
@@ -547,25 +528,6 @@ func (ft VariantFilters) ByProductSourceIDPtr(ProductSourceID *int64) *sq.Column
 		Value:  ProductSourceID,
 		IsNil:  ProductSourceID == nil,
 		IsZero: ProductSourceID != nil && (*ProductSourceID) == 0,
-	}
-}
-
-func (ft VariantFilters) BySupplierID(SupplierID int64) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
-		Prefix: ft.prefix,
-		Column: "supplier_id",
-		Value:  SupplierID,
-		IsNil:  SupplierID == 0,
-	}
-}
-
-func (ft VariantFilters) BySupplierIDPtr(SupplierID *int64) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
-		Prefix: ft.prefix,
-		Column: "supplier_id",
-		Value:  SupplierID,
-		IsNil:  SupplierID == nil,
-		IsZero: SupplierID != nil && (*SupplierID) == 0,
 	}
 }
 
@@ -2206,25 +2168,6 @@ func (ft ProductSourceFilters) ByIDPtr(ID *int64) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft ProductSourceFilters) BySupplierID(SupplierID int64) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
-		Prefix: ft.prefix,
-		Column: "supplier_id",
-		Value:  SupplierID,
-		IsNil:  SupplierID == 0,
-	}
-}
-
-func (ft ProductSourceFilters) BySupplierIDPtr(SupplierID *int64) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
-		Prefix: ft.prefix,
-		Column: "supplier_id",
-		Value:  SupplierID,
-		IsNil:  SupplierID == nil,
-		IsZero: SupplierID != nil && (*SupplierID) == 0,
-	}
-}
-
 func (ft ProductSourceFilters) ByType(Type string) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: ft.prefix,
@@ -2407,25 +2350,6 @@ func (ft ProductSourceCategoryFilters) ByProductSourceTypePtr(ProductSourceType 
 		Value:  ProductSourceType,
 		IsNil:  ProductSourceType == nil,
 		IsZero: ProductSourceType != nil && (*ProductSourceType) == "",
-	}
-}
-
-func (ft ProductSourceCategoryFilters) BySupplierID(SupplierID int64) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
-		Prefix: ft.prefix,
-		Column: "supplier_id",
-		Value:  SupplierID,
-		IsNil:  SupplierID == 0,
-	}
-}
-
-func (ft ProductSourceCategoryFilters) BySupplierIDPtr(SupplierID *int64) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
-		Prefix: ft.prefix,
-		Column: "supplier_id",
-		Value:  SupplierID,
-		IsNil:  SupplierID == nil,
-		IsZero: SupplierID != nil && (*SupplierID) == 0,
 	}
 }
 

@@ -20,9 +20,6 @@ func GetAllProductSources(ctx context.Context, query *catalogmodelx.GetAllProduc
 	if query.External != nil {
 		s = s.Exists("external_key", *query.External)
 	}
-	if query.Supplier != nil {
-		s = s.Exists("supplier_id", *query.Supplier)
-	}
 	return s.Find((*catalogmodel.ProductSources)(&query.Result.Sources))
 }
 

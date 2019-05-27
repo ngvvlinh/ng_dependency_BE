@@ -17,7 +17,6 @@ var _ = sqlgenProduct(&Product{})
 type Product struct {
 	ID                      int64
 	ProductSourceID         int64
-	SupplierID              int64
 	ProductSourceCategoryID string
 	EtopCategoryID          int64
 
@@ -91,7 +90,6 @@ type Variant struct {
 	ProductID       int64
 	ProductSourceID int64
 	// ProductSourceType string
-	SupplierID int64
 
 	ProductSourceCategoryID int64
 	EtopCategoryID          int64
@@ -132,7 +130,6 @@ type Variant struct {
 	QuantityOnHand    int
 	QuantityReserved  int
 	ImageURLs         []string `sq:"'image_urls'"`
-	SupplierMeta      json.RawMessage
 
 	CostPrice  int
 	Attributes ProductAttributes
@@ -255,8 +252,7 @@ type VariantQuantity struct {
 var _ = substructEtopProduct(&EtopProduct{}, &Product{})
 
 type EtopProduct struct {
-	ID         int64
-	SupplierID int64
+	ID int64
 
 	Name        string
 	Description string
@@ -521,11 +517,10 @@ var _ = sqlgenProductSource(&ProductSource{})
 const ProductSourceCustom = "custom"
 
 type ProductSource struct {
-	ID         int64
-	SupplierID int64
-	Type       string
-	Name       string
-	Status     model.Status3
+	ID     int64
+	Type   string
+	Name   string
+	Status model.Status3
 
 	CreatedAt  time.Time `sq:"create"`
 	UpdatedAt  time.Time `sq:"update"`
@@ -542,7 +537,6 @@ type ProductSourceCategory struct {
 
 	ProductSourceID   int64
 	ProductSourceType string
-	SupplierID        int64
 	ParentID          int64
 	ShopID            int64
 

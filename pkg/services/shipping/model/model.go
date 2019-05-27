@@ -14,15 +14,13 @@ import (
 var _ = sqlgenFulfillment(&Fulfillment{})
 
 type Fulfillment struct {
-	ID         int64
-	OrderID    int64
-	ShopID     int64
-	SupplierID int64
-	PartnerID  int64
+	ID        int64
+	OrderID   int64
+	ShopID    int64
+	PartnerID int64
 
-	SupplierConfirm model.Status3
-	ShopConfirm     model.Status3
-	ConfirmStatus   model.Status3
+	ShopConfirm   model.Status3
+	ConfirmStatus model.Status3
 
 	TotalItems        int
 	TotalWeight       int

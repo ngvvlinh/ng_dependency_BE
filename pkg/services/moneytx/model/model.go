@@ -79,7 +79,6 @@ type MoneyTransactionShippingExternalExtended struct {
 type MoneyTransactionShipping struct {
 	ID                                 int64
 	ShopID                             int64
-	SupplierID                         int64
 	CreatedAt                          time.Time `sq:"create"`
 	UpdatedAt                          time.Time `sq:"update"`
 	ClosedAt                           time.Time

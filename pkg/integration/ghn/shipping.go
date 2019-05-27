@@ -125,7 +125,6 @@ func (p *Carrier) CreateFulfillment(
 		ID:     ffm.ID,
 		Status: model.S5SuperPos, // Now processing
 
-		// TODO(qv): Handle shipping fee for supplier
 		ShippingFeeCustomer: order.ShopShippingFee,
 		ShippingFeeShop:     order.ShopShipping.ExternalShippingFee,
 
@@ -220,52 +219,4 @@ func (c *Carrier) GetAllShippingServices(ctx context.Context, args shipping_prov
 
 func (p *Carrier) GetShippingService(ffm *shipmodel.Fulfillment, order *ordermodel.Order, weight int, valueInsurance int) (providerService *model.AvailableShippingService, etopService *model.AvailableShippingService, err error) {
 	return nil, nil, cm.ErrTODO
-}
-
-func calcGHNService(order *ordermodel.Order, ffm *shipmodel.Fulfillment, cmd *RequestFindAvailableServicesCommand) (serviceID string, service *model.AvailableShippingService, err error) {
-
-	// Always choose the fastest possible service
-	var minTime time.Time
-	services := cmd.Result
-
-	if ffm.SupplierID != 0 {
-		if len(services) > 0 {
-			service = services[0]
-			minTime = service.ExpectedDeliveryAt
-		}
-		for _, s := range services {
-			if t := s.ExpectedDeliveryAt; t.Before(minTime) {
-				minTime = t
-				service = s
-			}
-		}
-		if service == nil {
-			return "", nil, cm.Errorf(cm.ExternalServiceError, nil,
-				"Lỗi từ Giao Hàng Nhanh: Không thể chọn được gói dịch vụ giao hàng (từ %v, %v đến %v, %v).",
-				ffm.AddressFrom.District, ffm.AddressFrom.Province,
-				ffm.AddressTo.District, ffm.AddressTo.Province,
-			)
-		}
-		return service.ProviderServiceID, service, err
-	}
-	if order.ShopShipping != nil {
-		providerServiceID := cm.Coalesce(order.ShopShipping.ProviderServiceID, order.ShopShipping.ExternalServiceID)
-		for _, s := range services {
-			if s.ProviderServiceID == providerServiceID {
-				service = s
-				minTime = service.ExpectedDeliveryAt
-				break
-			}
-		}
-		if service == nil {
-			return "", nil, cm.Errorf(cm.InvalidArgument, nil, "Gói dịch vụ giao hàng đã chọn không hợp lệ")
-		}
-		if order.ShopShipping.ExternalShippingFee != int(service.ServiceFee) {
-			return "", nil, cm.Errorf(cm.InvalidArgument, nil,
-				"Số tiền phí giao hàng không hợp lệ cho dịch vụ %v: Phí trên đơn hàng %v, phí từ Giao Hàng Nhanh: %v",
-				service.Name, order.ShopShipping.ExternalShippingFee, int(service.ServiceFee))
-		}
-		return providerServiceID, service, nil
-	}
-	return "", nil, cm.Errorf(cm.InvalidArgument, nil, "Cần chọn gói dịch vụ giao hàng")
 }

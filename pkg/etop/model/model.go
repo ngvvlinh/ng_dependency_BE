@@ -685,25 +685,6 @@ type Unit struct {
 	Price    int     `json:"price"`
 }
 
-// func (p *Product) BeforeUpdate() {
-// 	p.ExternalNameNorm = validate.NormalizeSearch(p.ExternalFullName)
-// 	p.SupplierNameNorm = validate.NormalizeSearch(p.SupplierFullName)
-// 	if p.SupplierNameNorm == "" {
-// 		p.SupplierNameNorm = p.ExternalNameNorm
-// 	}
-// }
-
-// select ... from variant join ... where v.product_id in (...)
-
-// type ShopProductExternal struct {
-// 	AccountID     int64
-// 	ProductID  int64
-// 	AccountID  int64
-// 	ExternalID string
-
-// 	CreatedAt time.Time `sq:"create"`
-// }
-
 type UserInner struct {
 	FullName  string
 	ShortName string
@@ -839,13 +820,11 @@ type UserInternal struct {
 type StatusQuery struct {
 	Status         *Status3
 	ExternalStatus *Status3
-	SupplierStatus *Status3
 	EtopStatus     *Status3
 }
 
 type ProductStatusUpdate struct {
-	SupplierStatus *Status3
-	EtopStatus     *Status3
+	EtopStatus *Status3
 }
 
 type ExternalShippingLog struct {
@@ -1106,15 +1085,14 @@ type CreateCodeCommand struct {
 var _ = sqlgenCredit(&Credit{})
 
 type Credit struct {
-	ID         int64
-	Amount     int
-	ShopID     int64
-	SupplierID int64
-	Type       string
-	Status     Status3
-	CreatedAt  time.Time `sq:"create"`
-	UpdatedAt  time.Time `sq:"update"`
-	PaidAt     time.Time
+	ID        int64
+	Amount    int
+	ShopID    int64
+	Type      string
+	Status    Status3
+	CreatedAt time.Time `sq:"create"`
+	UpdatedAt time.Time `sq:"update"`
+	PaidAt    time.Time
 }
 
 var _ = sqlgenCreditExtended(

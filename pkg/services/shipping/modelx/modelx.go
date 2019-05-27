@@ -38,7 +38,6 @@ type GetFulfillmentExtendedsQuery struct {
 
 type GetFulfillmentExtendedQuery struct {
 	ShopID               int64
-	SupplierID           int64
 	PartnerID            int64
 	FulfillmentID        int64
 	ExternalShippingCode string
@@ -48,7 +47,6 @@ type GetFulfillmentExtendedQuery struct {
 
 type GetFulfillmentQuery struct {
 	ShopID        int64
-	SupplierID    int64
 	PartnerID     int64
 	FulfillmentID int64
 
@@ -60,10 +58,9 @@ type GetFulfillmentQuery struct {
 }
 
 type GetFulfillmentsQuery struct {
-	ShopIDs    []int64 // MixedAccount
-	SupplierID int64
-	PartnerID  int64
-	OrderID    int64
+	ShopIDs   []int64 // MixedAccount
+	PartnerID int64
+	OrderID   int64
 
 	Status                *model.Status3
 	ShippingCodes         []string
@@ -127,12 +124,11 @@ type UpdateFulfillmentsWithoutTransactionCommand struct {
 }
 
 type UpdateFulfillmentsStatusCommand struct {
-	FulfillmentIDs  []int64
-	Status          *model.Status4
-	ShopConfirm     *model.Status3
-	SupplierConfirm *model.Status3
-	SyncStatus      *model.Status4
-	ShippingState   string
+	FulfillmentIDs []int64
+	Status         *model.Status4
+	ShopConfirm    *model.Status3
+	SyncStatus     *model.Status4
+	ShippingState  string
 }
 
 type SyncUpdateFulfillmentsCommand struct {

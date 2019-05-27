@@ -3439,25 +3439,6 @@ func (ft CreditFilters) ByShopIDPtr(ShopID *int64) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft CreditFilters) BySupplierID(SupplierID int64) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
-		Prefix: ft.prefix,
-		Column: "supplier_id",
-		Value:  SupplierID,
-		IsNil:  SupplierID == 0,
-	}
-}
-
-func (ft CreditFilters) BySupplierIDPtr(SupplierID *int64) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
-		Prefix: ft.prefix,
-		Column: "supplier_id",
-		Value:  SupplierID,
-		IsNil:  SupplierID == nil,
-		IsZero: SupplierID != nil && (*SupplierID) == 0,
-	}
-}
-
 func (ft CreditFilters) ByType(Type string) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: ft.prefix,
