@@ -5,6 +5,8 @@ package ordering
 import (
 	context "context"
 	unsafe "unsafe"
+
+	orderingv1types "etop.vn/api/main/ordering/v1/types"
 )
 
 type GetOrderByIDCommand struct {
@@ -20,6 +22,14 @@ type GetOrdersCommand struct {
 	Result *OrdersResponse `json:"-"`
 }
 
+type ReserveOrdersForFfmCommand struct {
+	OrderIDs   []int64
+	Fulfill    orderingv1types.Fulfill
+	FulfillIDs []int64
+
+	Result *ReserveOrdersForFfmResponse `json:"-"`
+}
+
 type ValidateOrdersCommand struct {
 	OrderIDs []int64
 
@@ -32,6 +42,9 @@ func (q *GetOrderByIDCommand) GetArgs() *GetOrderByIDArgs {
 	return (*GetOrderByIDArgs)(unsafe.Pointer(q))
 }
 func (q *GetOrdersCommand) GetArgs() *GetOrdersArgs { return (*GetOrdersArgs)(unsafe.Pointer(q)) }
+func (q *ReserveOrdersForFfmCommand) GetArgs() *ReserveOrdersForFfmArgs {
+	return (*ReserveOrdersForFfmArgs)(unsafe.Pointer(q))
+}
 func (q *ValidateOrdersCommand) GetArgs() *ValidateOrdersForShippingArgs {
 	return (*ValidateOrdersForShippingArgs)(unsafe.Pointer(q))
 }
@@ -49,6 +62,7 @@ func (h AggregateHandler) RegisterHandlers(b interface {
 }) {
 	b.AddHandler(h.HandleGetOrderByID)
 	b.AddHandler(h.HandleGetOrders)
+	b.AddHandler(h.HandleReserveOrdersForFfm)
 	b.AddHandler(h.HandleValidateOrders)
 }
 
@@ -60,6 +74,12 @@ func (h AggregateHandler) HandleGetOrderByID(ctx context.Context, cmd *GetOrderB
 
 func (h AggregateHandler) HandleGetOrders(ctx context.Context, cmd *GetOrdersCommand) error {
 	result, err := h.inner.GetOrders(ctx, cmd.GetArgs())
+	cmd.Result = result
+	return err
+}
+
+func (h AggregateHandler) HandleReserveOrdersForFfm(ctx context.Context, cmd *ReserveOrdersForFfmCommand) error {
+	result, err := h.inner.ReserveOrdersForFfm(ctx, cmd.GetArgs())
 	cmd.Result = result
 	return err
 }

@@ -303,6 +303,7 @@ var ACL = map[string]*permission.PermissionDecl{
 	"shop.Shipnow/CreateShipnowFulfillment":  {Type: Shop},
 	"shop.Shipnow/ConfirmShipnowFulfillment": {Type: Shop},
 	"shop.Shipnow/UpdateShipnowFulfillment":  {Type: Shop},
+	"shop.Shipnow/CancelShipnowFulfillment":  {Type: Shop},
 
 	"shop.Brand/GetBrand":  {Type: Shop, Role: _____, AuthPartner: Opt},
 	"shop.Brand/GetBrands": {Type: Shop, Role: _____, AuthPartner: Opt},

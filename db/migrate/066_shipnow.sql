@@ -29,3 +29,11 @@ ALTER TABLE shipnow_fulfillment
     ADD COLUMN confirm_status INT,
     ADD COLUMN shipping_status INT,
     ADD COLUMN shipping_code TEXT;
+
+ALTER TABLE "order"
+	ADD COLUMN fulfill int2,
+	ADD COLUMN fulfill_ids int8[];
+
+ALTER TABLE history."order"
+	ADD COLUMN fulfill int2,
+	ADD COLUMN fulfill_ids int8[];

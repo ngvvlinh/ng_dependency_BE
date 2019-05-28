@@ -80,7 +80,8 @@ type ConfirmShipnowFulfillmentCommand struct {
 
 type CancelShipnowFulfillmentCommand struct {
 	Id           int64  `protobuf:"varint,1,opt,name=id" json:"id"`
-	CancelReason string `protobuf:"bytes,2,opt,name=cancel_reason,json=cancelReason" json:"cancel_reason"`
+	ShopId       int64  `protobuf:"varint,2,opt,name=shop_id,json=shopId" json:"shop_id"`
+	CancelReason string `protobuf:"bytes,3,opt,name=cancel_reason,json=cancelReason" json:"cancel_reason"`
 }
 
 type GetShipnowFulfillmentQueryArgs struct {
@@ -172,4 +173,9 @@ type CancellationAcceptedData struct {
 }
 
 type CancellationRejectedData struct {
+}
+
+type ShipnowOrderReservationEvent struct {
+	OrderIds             []int64 `protobuf:"varint,1,rep,name=order_ids,json=orderIds" json:"order_ids,omitempty"`
+	ShipnowFulfillmentId int64   `protobuf:"varint,2,opt,name=shipnow_fulfillment_id,json=shipnowFulfillmentId" json:"shipnow_fulfillment_id"`
 }

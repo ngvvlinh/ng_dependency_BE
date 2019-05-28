@@ -5,17 +5,18 @@ import (
 
 	etoptypes "etop.vn/api/main/etop"
 	"etop.vn/api/main/ordering"
+	ordertypes "etop.vn/api/main/ordering/types"
 	"etop.vn/api/main/ordering/v1/types"
 	shippingtypes "etop.vn/api/main/shipping/types"
 	catalogconvert "etop.vn/backend/pkg/services/catalog/convert"
-	orderingmodel "etop.vn/backend/pkg/services/ordering/model"
+	ordermodel "etop.vn/backend/pkg/services/ordering/model"
 )
 
-func AddressToModel(in *types.Address) (out *orderingmodel.OrderAddress) {
+func AddressToModel(in *types.Address) (out *ordermodel.OrderAddress) {
 	if in == nil {
 		return nil
 	}
-	out = &orderingmodel.OrderAddress{
+	out = &ordermodel.OrderAddress{
 		FullName:     in.FullName,
 		FirstName:    "",
 		LastName:     "",
@@ -38,7 +39,7 @@ func AddressToModel(in *types.Address) (out *orderingmodel.OrderAddress) {
 	return out
 }
 
-func Address(in *orderingmodel.OrderAddress) (out *types.Address) {
+func Address(in *ordermodel.OrderAddress) (out *types.Address) {
 	if in == nil {
 		return nil
 	}
@@ -59,7 +60,7 @@ func Address(in *orderingmodel.OrderAddress) (out *types.Address) {
 	return out
 }
 
-func Order(in *orderingmodel.Order) (out *ordering.Order) {
+func Order(in *ordermodel.Order) (out *ordering.Order) {
 	if in == nil {
 		return nil
 	}
@@ -89,11 +90,13 @@ func Order(in *orderingmodel.Order) (out *ordering.Order) {
 		ClosedAt:                  in.ClosedAt,
 		ConfirmedAt:               in.ConfirmedAt,
 		CancelledAt:               in.CancelledAt,
+		FulfillIDs:                in.FulfillIDs,
+		Fulfill:                   ordertypes.Fulfill(in.Fulfill),
 	}
 	return out
 }
 
-func Orders(ins []*orderingmodel.Order) []*ordering.Order {
+func Orders(ins []*ordermodel.Order) []*ordering.Order {
 	result := make([]*ordering.Order, len(ins))
 	for i, in := range ins {
 		result[i] = Order(in)
@@ -101,11 +104,11 @@ func Orders(ins []*orderingmodel.Order) []*ordering.Order {
 	return result
 }
 
-func OrderLineToModel(in *types.ItemLine) (out *orderingmodel.OrderLine) {
+func OrderLineToModel(in *types.ItemLine) (out *ordermodel.OrderLine) {
 	if in == nil {
 		return nil
 	}
-	return &orderingmodel.OrderLine{
+	return &ordermodel.OrderLine{
 		OrderID:          in.OrderId,
 		VariantID:        in.VariantId,
 		ProductName:      in.ProductInfo.ProductName,
@@ -135,14 +138,14 @@ func OrderLineToModel(in *types.ItemLine) (out *orderingmodel.OrderLine) {
 	}
 }
 
-func OrderLinesToModel(ins []*types.ItemLine) (outs []*orderingmodel.OrderLine) {
+func OrderLinesToModel(ins []*types.ItemLine) (outs []*ordermodel.OrderLine) {
 	for _, in := range ins {
 		outs = append(outs, OrderLineToModel(in))
 	}
 	return outs
 }
 
-func OrderLine(in *orderingmodel.OrderLine) (out *types.ItemLine) {
+func OrderLine(in *ordermodel.OrderLine) (out *types.ItemLine) {
 	if in == nil {
 		return nil
 	}
@@ -159,14 +162,14 @@ func OrderLine(in *orderingmodel.OrderLine) (out *types.ItemLine) {
 	}
 }
 
-func OrderLines(ins []*orderingmodel.OrderLine) (outs []*types.ItemLine) {
+func OrderLines(ins []*ordermodel.OrderLine) (outs []*types.ItemLine) {
 	for _, in := range ins {
 		outs = append(outs, OrderLine(in))
 	}
 	return outs
 }
 
-func FeeLines(ins []orderingmodel.OrderFeeLine) (outs []ordering.OrderFeeLine) {
+func FeeLines(ins []ordermodel.OrderFeeLine) (outs []ordering.OrderFeeLine) {
 	for _, in := range ins {
 		outs = append(outs, ordering.OrderFeeLine{
 			Type:   string(in.Type),
@@ -179,7 +182,7 @@ func FeeLines(ins []orderingmodel.OrderFeeLine) (outs []ordering.OrderFeeLine) {
 	return
 }
 
-func OrderToShippingInfo(in *orderingmodel.Order) (out *shippingtypes.ShippingInfo) {
+func OrderToShippingInfo(in *ordermodel.Order) (out *shippingtypes.ShippingInfo) {
 	if in == nil || in.ShopShipping == nil {
 		return nil
 	}
@@ -204,7 +207,7 @@ func OrderToShippingInfo(in *orderingmodel.Order) (out *shippingtypes.ShippingIn
 	}
 }
 
-func Coordinates(in *orderingmodel.Coordinates) (out *types.Coordinates) {
+func Coordinates(in *ordermodel.Coordinates) (out *types.Coordinates) {
 	if in == nil {
 		return nil
 	}
@@ -214,11 +217,11 @@ func Coordinates(in *orderingmodel.Coordinates) (out *types.Coordinates) {
 	}
 }
 
-func CoordinatesToModel(in *types.Coordinates) (out *orderingmodel.Coordinates) {
+func CoordinatesToModel(in *types.Coordinates) (out *ordermodel.Coordinates) {
 	if in == nil {
 		return nil
 	}
-	return &orderingmodel.Coordinates{
+	return &ordermodel.Coordinates{
 		Latitude:  in.Latitude,
 		Longitude: in.Longitude,
 	}

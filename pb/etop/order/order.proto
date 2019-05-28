@@ -791,3 +791,8 @@ message UpdateShipnowFulfillmentRequest {
     optional google.protobuf.Timestamp request_pickup_at = 6;
     optional OrderAddress pickup_address = 7;
 }
+
+message CancelShipnowFulfillmentRequest {
+    optional int64 id = 1 [(gogoproto.nullable) = false];
+    optional string cancel_reason = 2 [(gogoproto.nullable) = false];
+}

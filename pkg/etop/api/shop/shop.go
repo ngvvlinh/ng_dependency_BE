@@ -84,6 +84,7 @@ func init() {
 	bus.AddHandler("api", GetShipNowFulfillments)
 	bus.AddHandler("api", ConfirmShipNowFulfillment)
 	bus.AddHandler("api", UpdateShipNowFulfillment)
+	bus.AddHandler("api", CancelShipNowFulfillment)
 }
 
 const PrefixIdemp = "IdempOrder"
@@ -941,5 +942,20 @@ func UpdateShipNowFulfillment(ctx context.Context, q *wrapshop.UpdateShipnowFulf
 		return err
 	}
 	q.Result = Convert_core_ShipnowFulfillment_To_api_ShipnowFulfillment(res)
+	return nil
+}
+
+func CancelShipNowFulfillment(ctx context.Context, q *wrapshop.CancelShipnowFulfillmentEndpoint) error {
+	args := &shipnow.CancelShipnowFulfillmentArgs{
+		Id:           q.Id,
+		ShopId:       q.Context.Shop.ID,
+		CancelReason: q.CancelReason,
+	}
+	if _, err := shipnowAggr.CancelShipnowFulfillment(ctx, args); err != nil {
+		return err
+	}
+	q.Result = &pbcm.UpdatedResponse{
+		Updated: 1,
+	}
 	return nil
 }

@@ -1,0 +1,13 @@
+syntax = "proto2";
+package etop.vn.api.main.ordering.v1.fulfill;
+option go_package = "types";
+
+import "gogoproto/gogo.proto";
+option (gogoproto.gogoproto_import)         = false;
+
+enum Fulfill {
+    none = 0;
+    manual = 1;
+    fulfillment = 10;
+    shipnow_fulfillment = 11;
+}

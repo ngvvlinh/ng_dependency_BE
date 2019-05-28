@@ -13,6 +13,7 @@ import (
 
 type CancelShipnowFulfillmentCommand struct {
 	Id           int64  `json:"id"`
+	ShopId       int64  `json:"shop_id"`
 	CancelReason string `json:"cancel_reason"`
 
 	Result *metav1.Empty `json:"-"`

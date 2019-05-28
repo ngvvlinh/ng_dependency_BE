@@ -1916,6 +1916,32 @@
         ]
       }
     },
+    "/api/shop.Shipnow/CancelShipnowFulfillment": {
+      "post": {
+        "operationId": "CancelShipnowFulfillment",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/cmUpdatedResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/orderCancelShipnowFulfillmentRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Shipnow"
+        ]
+      }
+    },
     "/api/shop.Shipnow/ConfirmShipnowFulfillment": {
       "post": {
         "operationId": "ConfirmShipnowFulfillment",
@@ -2874,6 +2900,18 @@
           "type": "string"
         },
         "value": {
+          "type": "string"
+        }
+      }
+    },
+    "orderCancelShipnowFulfillmentRequest": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "cancel_reason": {
           "type": "string"
         }
       }

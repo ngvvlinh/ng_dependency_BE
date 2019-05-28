@@ -10,33 +10,27 @@ import (
 	"etop.vn/backend/pkg/etop/model"
 
 	"etop.vn/backend/pkg/common/cmsql"
+	identitymodelx "etop.vn/backend/pkg/services/identity/modelx"
 )
 
+type IdentityStoreFactory func(context.Context) *IdentityStore
+
 type IdentityStore struct {
-	ctx context.Context
-	db  cmsql.Database
+	query cmsql.Query
 }
 
-func NewIdentityStore(db cmsql.Database) *IdentityStore {
-	return &IdentityStore{
-		ctx: context.Background(),
-		db:  db,
+func NewIdentityStore(db cmsql.Database) IdentityStoreFactory {
+	return func(ctx context.Context) *IdentityStore {
+		return &IdentityStore{query: db.WithContext(ctx)}
 	}
 }
 
-func (s *IdentityStore) WithContext(ctx context.Context) *IdentityStore {
-	return &IdentityStore{
-		ctx: ctx,
-		db:  s.db,
-	}
-}
-
-func (s *IdentityStore) GetByID(ID int64) (*identity.Shop, error) {
-	if ID == 0 {
+func (s *IdentityStore) GetByID(args identitymodelx.GetByIDArgs) (*identity.Shop, error) {
+	if args.ID == 0 {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "missing ID")
 	}
 
-	q := s.db.WithContext(s.ctx).Where("id = ?", ID)
+	q := s.query.Where("id = ?", args.ID)
 	result := &model.Shop{}
 	if err := q.ShouldGet(result); err != nil {
 		return nil, err

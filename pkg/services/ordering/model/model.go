@@ -15,11 +15,18 @@ import (
 //go:generate $ETOPDIR/backend/scripts/derive.sh
 
 type OrderFeeType string
+type FulfillType int32
 
 const (
 	OrderFeeOther    OrderFeeType = "other"
 	OrderFeeShipping OrderFeeType = "shipping"
 	OrderFeeTax      OrderFeeType = "tax"
+
+	// FulfillNone: Tự quản lý trên đơn hàng
+	FulfillNone               FulfillType = 0  // none
+	FulfillManual             FulfillType = 1  // manual
+	FulfillFulfillment        FulfillType = 10 // fulfillment
+	FulfillShipnowFulfillment FulfillType = 11 // shipnow_fulfillment
 )
 
 var _ = sqlgenOrder(&Order{})
@@ -103,6 +110,8 @@ type Order struct {
 
 	CustomerNameNorm string
 	ProductNameNorm  string
+	Fulfill          FulfillType
+	FulfillIDs       []int64
 }
 
 func (m *Order) SelfURL(baseURL string, accType int) string {

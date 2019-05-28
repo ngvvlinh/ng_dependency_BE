@@ -4,154 +4,111 @@ import (
 	"context"
 
 	"etop.vn/api/main/address"
+	etoptypes "etop.vn/api/main/etop"
 	"etop.vn/api/main/identity"
 	"etop.vn/api/main/ordering"
 	ordertypes "etop.vn/api/main/ordering/types"
 	"etop.vn/api/main/shipnow"
 	"etop.vn/api/main/shipnow/carrier"
+	shipnowtypes "etop.vn/api/main/shipnow/types"
 	cm "etop.vn/backend/pkg/common"
 	shipnowconvert "etop.vn/backend/pkg/services/shipnow/convert"
 )
 
 type ProcessManager struct {
-	shipnow shipnow.Aggregate
-	order   ordering.Aggregate
+	shipnowQueryBus shipnow.QueryBus
+
+	orderAggr    ordering.Aggregate
+	orderAggrBus ordering.AggregateBus
 
 	identityQuery  identity.QueryService
-	orderQuery     ordering.QueryService
 	addressQuery   address.QueryService
 	carrierManager carrier.Manager
 }
 
 func New(
-	shipnowAggr shipnow.Aggregate,
+	shipnowBus shipnow.QueryBus,
 	orderAggr ordering.Aggregate,
+	orderAggrBus ordering.AggregateBus,
 	identityQuery identity.QueryService,
-	orderQuery ordering.QueryService,
 	addressQuery address.QueryService,
 	carrierManager carrier.Manager,
 ) *ProcessManager {
 	return &ProcessManager{
-		shipnow:        shipnowAggr,
-		order:          orderAggr,
-		identityQuery:  identityQuery,
-		orderQuery:     orderQuery,
-		addressQuery:   addressQuery,
-		carrierManager: carrierManager,
+		shipnowQueryBus: shipnowBus,
+		orderAggr:       orderAggr,
+		orderAggrBus:    orderAggrBus,
+		identityQuery:   identityQuery,
+		addressQuery:    addressQuery,
+		carrierManager:  carrierManager,
 	}
 }
 
-// func (m *ProcessManager) GetActiveShipnowFulfillments(ctx context.Context, cmd *shipnow.GetActiveShipnowFulfillmentsArgs) ([]*shipnow.ShipnowFulfillment, error) {
-// 	return m.shipnow.GetActiveShipnowFulfillments(ctx, cmd)
-// }
-
-func (m *ProcessManager) HandleShipnowCreation(ctx context.Context, cmd *shipnow.CreateShipnowFulfillmentArgs) (*shipnow.ShipnowFulfillment, error) {
-	if err := m.validateOrders(ctx, cmd.OrderIds, 0); err != nil {
+func (m *ProcessManager) ShipnowOrderReservation(ctx context.Context, event *shipnow.ShipnowOrderReservationEvent) ([]*ordering.Order, error) {
+	// Call orderAggr for ReserveOrdersForFfm
+	cmd := &ordering.ReserveOrdersForFfmCommand{
+		OrderIDs:   event.OrderIds,
+		Fulfill:    ordertypes.FulfillShipnowFulfillment,
+		FulfillIDs: []int64{event.ShipnowFulfillmentId},
+	}
+	if err := m.orderAggrBus.Dispatch(ctx, cmd); err != nil {
 		return nil, err
 	}
-	cmd3 := &ordering.GetOrdersArgs{
-		ShopID: cmd.ShopId,
-		IDs:    cmd.OrderIds,
-	}
-	orders, err := m.order.GetOrders(ctx, cmd3)
-	if err != nil {
-		return nil, err
-	}
-
-	var pickupAddress *ordertypes.Address
-	if cmd.PickupAddress != nil {
-		pickupAddress = cmd.PickupAddress
-	} else {
-		// prepare pickup address from shopinfo
-		shop, err := m.identityQuery.GetShopByID(ctx, &identity.GetShopByIDQueryArgs{ID: cmd.ShopId})
-		if err != nil {
-			return nil, err
-		}
-		shopAddressID := shop.ShipFromAddressID
-		if shopAddressID == 0 {
-			return nil, cm.Error(cm.InvalidArgument, "Bán hàng: Cần cung cấp thông tin địa chỉ lấy hàng trong đơn hàng hoặc tại thông tin cửa hàng. Vui lòng cập nhật.", nil)
-		}
-		shopAddress, err := m.addressQuery.GetAddressByID(ctx, &address.GetAddressByIDQueryArgs{ID: shopAddressID})
-		if err != nil {
-			return nil, err
-		}
-		pickupAddress = shopAddress.ToOrderAddress()
-	}
-
-	var deliveryPoints []*shipnow.DeliveryPoint
-	for _, order := range orders.Orders {
-		deliveryPoints = append(deliveryPoints, shipnowconvert.OrderToDeliveryPoint(order))
-	}
-
-	_ = pickupAddress
-
-	// TODO: implement it
-	//
-	// shipnowFfm := &shipnow.ShipnowFulfillment{
-	// 	Id:                  cm.NewID(),
-	// 	ShopId:              cmd.ShopId,
-	// 	PickupAddress:       pickupAddress,
-	// 	DeliveryPoints:      deliveryPoints,
-	// 	Carrier:             cmd.Carrier,
-	// 	ShippingServiceCode: cmd.ShippingServiceCode,
-	// 	ShippingServiceFee:  cmd.ShippingServiceFee,
-	// 	WeightInfo:          shipnowconvert.GetWeightInfo(orders),
-	// 	ValueInfo:           shipnowconvert.GetValueInfo(orders),
-	// 	ShippingNote:        cmd.ShippingNote,
-	// 	RequestPickupAt:     nil,
+	// args := &ordering.ReserveOrdersForFfmArgs{
+	// 	OrderIDs: event.OrderIds,
 	// }
-	// if err := m.carrierManager.CreateExternalShipping(ctx, nil); err != nil {
+	// result, err := m.orderAggr.ReserveOrdersForFfm(ctx, args)
+	// if err != nil {
 	// 	return nil, err
 	// }
 
-	return nil, nil
+	return cmd.Result.Orders, nil
 }
 
 func (m *ProcessManager) HandleShipnowCancellation(ctx context.Context, cmd *shipnow.CancelShipnowFulfillmentArgs) error {
+	queryFfm := &shipnow.GetShipnowFulfillmentQuery{
+		Id:     cmd.Id,
+		ShopId: cmd.ShopId,
+	}
+	if err := m.shipnowQueryBus.Dispatch(ctx, queryFfm); err != nil {
+		return err
+	}
+	ffm := queryFfm.Result.ShipnowFulfillment
 
-	// TODO
-	return cm.ErrTODO
+	switch ffm.Status {
+	case etoptypes.S5Positive, etoptypes.S5Negative, etoptypes.S5NegSuper:
+		return cm.Errorf(cm.FailedPrecondition, nil, "Đơn vận chuyển không thể hủy")
+	}
 
-	// ffm, err := a.s.WithContext(ctx).GetByID(shipnowmodel.GetByIDArgs{
-	// 	ID: cmd.Id,
-	// })
-	// if err != nil {
-	// 	return &meta.Empty{}, err
+	switch ffm.ShippingState {
+	case shipnowtypes.StateCancelled:
+		return cm.Errorf(cm.FailedPrecondition, nil, "Đơn vận chuyển đã bị hủy")
+	case shipnowtypes.StateDelivering:
+		return cm.Errorf(cm.FailedPrecondition, nil, "Đơn vận chuyển đang giao. Không thể hủy đơn.")
+	case shipnowtypes.StateDelivered,
+		shipnowtypes.StateReturning, shipnowtypes.StateReturned:
+		return cm.Errorf(cm.FailedPrecondition, nil, "Không thể hủy đơn.")
+	}
+
+	// if err := m.carrierManager.CancelExternalShipping(ctx, nil); err != nil {
+	// 	return err
 	// }
-	// switch ffm.Status {
-	// case etoptypes.S5Positive, etoptypes.S5Negative, etoptypes.S5NegSuper:
-	// 	return &meta.Empty{}, cm.Errorf(cm.FailedPrecondition, nil, "Đơn vận chuyển không thể hủy")
-	// }
-	// switch ffm.ShippingState {
-	// case shipnowtypes.StateCancelled:
-	// 	return &meta.Empty{}, cm.Errorf(cm.FailedPrecondition, nil, "Đơn vận chuyển đã bị hủy")
-	// case shipnowtypes.StateDelivering:
-	// 	return &meta.Empty{}, cm.Errorf(cm.FailedPrecondition, nil, "Đơn vận chuyển đang giao. Không thể hủy đơn.")
-	// case shipnowtypes.StateDelivered,
-	// 	shipnowtypes.StateReturning, shipnowtypes.StateReturned:
-	// 	return &meta.Empty{}, cm.Errorf(cm.FailedPrecondition, nil, "Không thể hủy đơn.")
-	// }
-	//
-	// if err := ctrl.CancelExternalShipping(ctx, ffm); err != nil {
-	// 	return &meta.Empty{}, err
-	// }
-	//
+
 	// updateArgs := sqlstore.UpdateSyncStateArgs{
 	// 	ID:         ffm.Id,
 	// 	SyncStatus: etoptypes.S4Negative,
 	// 	State:      shipnowtypes.StateCancelled,
+	// 	Status:     etoptypes.S5Negative,
 	// 	SyncStates: &model.FulfillmentSyncStates{
 	// 		TrySyncAt:         time.Now(),
 	// 		NextShippingState: model.StateCreated,
 	// 	},
 	// }
-	// ffm, err = a.s.WithContext(ctx).UpdateSyncState(updateArgs)
+	// ffm, err = m.s.WithContext(ctx).UpdateSyncState(updateArgs)
 	// if err != nil {
-	// 	return &meta.Empty{}, err
+	// 	return err
 	// }
-	// return &meta.Empty{}, nil
-	//
-	// return m.carrierManager.CancelExternalShipping(ctx, nil)
+	return nil
 }
 
 func (m *ProcessManager) validateOrders(ctx context.Context, orderIDs []int64, shipnowFfmID int64) error {
@@ -161,11 +118,11 @@ func (m *ProcessManager) validateOrders(ctx context.Context, orderIDs []int64, s
 	cmd := &ordering.ValidateOrdersForShippingArgs{
 		OrderIDs: orderIDs,
 	}
-	if _, err := m.order.ValidateOrders(ctx, cmd); err != nil {
+	if _, err := m.orderAggr.ValidateOrders(ctx, cmd); err != nil {
 		return err
 	}
 	// for _, id := range orderIDs {
-	// 	cmd1 := &shipnowmodel.GetActiveShipnowFulfillmentsByOrderIDArgs{
+	// 	cmd1 := &shipnowmodelx.GetActiveShipnowFulfillmentsByOrderIDArgs{
 	// 		OrderID:                     id,
 	// 		ExcludeShipnowFulfillmentID: shipnowFfmID,
 	// 	}
@@ -178,4 +135,78 @@ func (m *ProcessManager) validateOrders(ctx context.Context, orderIDs []int64, s
 	// 	}
 	// }
 	return nil
+}
+
+func (m *ProcessManager) ValidateConfirm(ctx context.Context, ffm *shipnow.ShipnowFulfillment) error {
+	switch ffm.ConfirmStatus {
+	case etoptypes.S3Negative:
+		return cm.Errorf(cm.FailedPrecondition, nil, "Đơn giao hàng đã hủy")
+	case etoptypes.S3Positive:
+		return cm.Errorf(cm.FailedPrecondition, nil, "Đơn giao hàng đã xác nhận")
+	}
+	if ffm.Status == etoptypes.S5Negative || ffm.Status == etoptypes.S5Positive {
+		return cm.Errorf(cm.FailedPrecondition, nil, "Không thể xác nhận đơn giao hàng này")
+	}
+
+	if len(ffm.DeliveryPoints) == 0 {
+		return cm.Errorf(cm.FailedPrecondition, nil, "Số điểm giao hàng không hợp lệ.")
+	}
+	var orderIDs []int64
+	for _, point := range ffm.DeliveryPoints {
+		if point.OrderId == 0 {
+			continue
+		}
+		orderIDs = append(orderIDs, point.OrderId)
+	}
+	if err := m.validateOrders(ctx, orderIDs, ffm.Id); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (m *ProcessManager) HandleUpdate(ctx context.Context, cmd *shipnow.UpdateShipnowFulfillmentArgs) (shipnowFfm *shipnow.ShipnowFulfillment, err error) {
+	queryFfm := &shipnow.GetShipnowFulfillmentQuery{
+		Id:     cmd.Id,
+		ShopId: cmd.ShopId,
+	}
+	if err := m.shipnowQueryBus.Dispatch(ctx, queryFfm); err != nil {
+		return nil, err
+	}
+	ffm := queryFfm.Result.ShipnowFulfillment
+	if ffm.ConfirmStatus != etoptypes.S3Zero || ffm.ShippingCode != "" {
+		return nil, cm.Errorf(cm.FailedPrecondition, nil, "Không thể cập nhật đơn giao hàng này.")
+	}
+
+	shipnowFfm = &shipnow.ShipnowFulfillment{
+		Id:                  cmd.Id,
+		ShopId:              cmd.ShopId,
+		PickupAddress:       cmd.PickupAddress,
+		Carrier:             cmd.Carrier,
+		ShippingServiceCode: cmd.ShippingServiceCode,
+		ShippingServiceFee:  cmd.ShippingServiceFee,
+		ShippingNote:        cmd.ShippingNote,
+		RequestPickupAt:     nil,
+	}
+
+	if len(cmd.OrderIds) > 0 {
+		if err := m.validateOrders(ctx, cmd.OrderIds, cmd.Id); err != nil {
+			return nil, err
+		}
+		cmd3 := &ordering.GetOrdersArgs{
+			ShopID: cmd.ShopId,
+			IDs:    cmd.OrderIds,
+		}
+		orders, err := m.orderAggr.GetOrders(ctx, cmd3)
+		if err != nil {
+			return nil, err
+		}
+		shipnowFfm.WeightInfo = shipnowconvert.GetWeightInfo(orders.Orders)
+		shipnowFfm.ValueInfo = shipnowconvert.GetValueInfo(orders.Orders)
+		var deliveryPoints []*shipnow.DeliveryPoint
+		for _, order := range orders.Orders {
+			deliveryPoints = append(deliveryPoints, shipnowconvert.OrderToDeliveryPoint(order))
+		}
+		shipnowFfm.DeliveryPoints = deliveryPoints
+	}
+	return shipnowFfm, nil
 }

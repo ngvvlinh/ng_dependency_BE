@@ -3,6 +3,10 @@ package ordering
 import (
 	"context"
 
+	"github.com/k0kubun/pp"
+
+	"etop.vn/backend/pkg/common/bus"
+
 	etoptypes "etop.vn/api/main/etop"
 	"etop.vn/api/main/ordering"
 	cm "etop.vn/backend/pkg/common"
@@ -15,13 +19,13 @@ import (
 var _ ordering.Aggregate = &Aggregate{}
 
 type Aggregate struct {
-	s  *sqlstore.OrderStore
-	pm *pm.ProcessManager
+	pm    *pm.ProcessManager
+	store *sqlstore.OrderStore
 }
 
 func NewAggregate(db cmsql.Database) *Aggregate {
 	return &Aggregate{
-		s: sqlstore.NewOrderStore(db),
+		store: sqlstore.NewOrderStore(db),
 	}
 }
 
@@ -30,8 +34,14 @@ func (a *Aggregate) WithPM(pm *pm.ProcessManager) *Aggregate {
 	return a
 }
 
+func (a *Aggregate) MessageBus() ordering.AggregateBus {
+	b := bus.New()
+	ordering.NewAggregateHandler(a).RegisterHandlers(b)
+	return ordering.AggregateBus{b}
+}
+
 func (a *Aggregate) GetOrderByID(ctx context.Context, args *ordering.GetOrderByIDArgs) (*ordering.Order, error) {
-	ord, err := a.s.WithContext(ctx).ID(args.ID).Get()
+	ord, err := a.store.WithContext(ctx).ID(args.ID).Get()
 	if err != nil {
 		return nil, err
 	}
@@ -39,11 +49,11 @@ func (a *Aggregate) GetOrderByID(ctx context.Context, args *ordering.GetOrderByI
 }
 
 func (a *Aggregate) GetOrders(ctx context.Context, args *ordering.GetOrdersArgs) (*ordering.OrdersResponse, error) {
-	orders, err := a.s.GetOrdes(args)
+	orders, err := a.store.WithContext(ctx).GetOrdes(args)
 	if err != nil {
 		return nil, err
 	}
-	return &ordering.OrdersResponse{Orders: convert.Orders(orders)}, nil
+	return &ordering.OrdersResponse{Orders: orders}, nil
 }
 
 func (a *Aggregate) ValidateOrders(ctx context.Context, args *ordering.ValidateOrdersForShippingArgs) (*ordering.ValidateOrdersResponse, error) {
@@ -55,14 +65,14 @@ func (a *Aggregate) ValidateOrders(ctx context.Context, args *ordering.ValidateO
 		return nil, err
 	}
 	for _, order := range orders.Orders {
-		if err := ValidateOrder(order); err != nil {
+		if err := ValidateOrderStatus(order); err != nil {
 			return nil, err
 		}
 	}
 	return &ordering.ValidateOrdersResponse{}, nil
 }
 
-func ValidateOrder(order *ordering.Order) error {
+func ValidateOrderStatus(order *ordering.Order) error {
 	switch order.Status {
 	case etoptypes.S5Negative:
 		return cm.Error(cm.FailedPrecondition, "Đơn hàng đã huỷ.", nil).WithMetaID("orderID", order.ID)
@@ -74,6 +84,45 @@ func ValidateOrder(order *ordering.Order) error {
 
 	if order.ConfirmStatus == etoptypes.S3Negative {
 		return cm.Error(cm.FailedPrecondition, "Đơn hàng đã huỷ.", nil).WithMetaID("orderID", order.ID)
+	}
+	return nil
+}
+
+func (a *Aggregate) ReserveOrdersForFfm(ctx context.Context, args *ordering.ReserveOrdersForFfmArgs) (*ordering.ReserveOrdersForFfmResponse, error) {
+	orderIDs := args.OrderIDs
+	orders, err := a.store.WithContext(ctx).GetOrdes(&ordering.GetOrdersArgs{
+		IDs: orderIDs,
+	})
+	if err != nil {
+		return nil, err
+	}
+	for _, order := range orders {
+		if err := ValidateOrderForReserveFfm(order); err != nil {
+			return nil, err
+		}
+	}
+
+	update := sqlstore.UpdateOrdersForReserveOrdersArgs{
+		OrderIDs:   orderIDs,
+		Fulfill:    args.Fulfill,
+		FulfillIDs: args.FulfillIDs,
+	}
+	pp.Println("update :: ", update)
+	orders, err = a.store.WithContext(ctx).UpdateOrdersForReverseOrders(update)
+	if err != nil {
+		return nil, err
+	}
+	return &ordering.ReserveOrdersForFfmResponse{
+		Orders: orders,
+	}, nil
+}
+
+func ValidateOrderForReserveFfm(order *ordering.Order) error {
+	if err := ValidateOrderStatus(order); err != nil {
+		return err
+	}
+	if len(order.FulfillIDs) != 0 {
+		return cm.Errorf(cm.FailedPrecondition, nil, "Order has been reserved").WithMetaID("order_id", order.ID)
 	}
 	return nil
 }

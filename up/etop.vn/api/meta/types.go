@@ -34,3 +34,5 @@ type Filter struct {
 	Op    string
 	Value string
 }
+
+type KeyTx struct{}

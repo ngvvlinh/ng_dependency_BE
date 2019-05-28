@@ -10,7 +10,7 @@ import (
 type GetShopByIDQuery struct {
 	ID int64
 
-	Result *Shop `json:"-"`
+	Result *GetShopByIDQueryResult `json:"-"`
 }
 
 // implement conversion

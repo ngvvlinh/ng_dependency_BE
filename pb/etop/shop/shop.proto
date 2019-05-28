@@ -138,6 +138,7 @@ service ShipnowService {
     rpc CreateShipnowFulfillment (order.CreateShipnowFulfillmentRequest) returns (order.ShipnowFulfillment);
     rpc ConfirmShipnowFulfillment (cm.IDRequest) returns (order.ShipnowFulfillment);
     rpc UpdateShipnowFulfillment(order.UpdateShipnowFulfillmentRequest) returns (order.ShipnowFulfillment);
+    rpc CancelShipnowFulfillment(order.CancelShipnowFulfillmentRequest) returns (cm.UpdatedResponse);
 }
 
 service HistoryService {

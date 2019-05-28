@@ -125,8 +125,8 @@ message ConfirmShipnowFulfillmentCommand {
 
 message CancelShipnowFulfillmentCommand {
     optional int64 id = 1 [(gogoproto.nullable)=false];
-
-    optional string cancel_reason = 2 [(gogoproto.nullable)=false];
+    optional int64 shop_id = 2 [(gogoproto.nullable) = false];
+    optional string cancel_reason = 3 [(gogoproto.nullable)=false];
 }
 
 //-- Queries --//
@@ -198,4 +198,9 @@ message CancellationAcceptedData {
 }
 
 message CancellationRejectedData {
+}
+
+message ShipnowOrderReservationEvent {
+    repeated int64 order_ids = 1;
+    optional int64 shipnow_fulfillment_id = 2 [(gogoproto.nullable) = false];
 }

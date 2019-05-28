@@ -3,6 +3,8 @@ package sqlstore
 import (
 	"context"
 
+	"etop.vn/api/meta"
+
 	"etop.vn/api/main/etop"
 	"etop.vn/api/main/shipnow"
 	shipnowtypes "etop.vn/api/main/shipnow/types"
@@ -11,21 +13,35 @@ import (
 	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/backend/pkg/services/shipnow/convert"
 	shipnowmodel "etop.vn/backend/pkg/services/shipnow/model"
+	shipnowmodelx "etop.vn/backend/pkg/services/shipnow/modelx"
 )
 
 type ShipnowStoreFactory func(context.Context) *ShipnowStore
 
+type ShipnowStore struct {
+	query cmsql.QueryInterface
+	db    cmsql.Database
+}
+
 func NewShipnowStore(db cmsql.Database) ShipnowStoreFactory {
 	return func(ctx context.Context) *ShipnowStore {
-		return &ShipnowStore{query: db.WithContext(ctx)}
+		store := &ShipnowStore{
+			query: db.WithContext(ctx),
+			db:    db,
+		}
+		tx := ctx.Value(meta.KeyTx{})
+		if tx != nil {
+			store.query = tx.(cmsql.Tx)
+		}
+		return store
 	}
 }
 
-type ShipnowStore struct {
-	query cmsql.Query
+func (s *ShipnowStore) GetDb() cmsql.Database {
+	return s.db
 }
 
-func (s *ShipnowStore) GetByID(args shipnowmodel.GetByIDArgs) (*shipnow.ShipnowFulfillment, error) {
+func (s *ShipnowStore) GetByID(args shipnowmodelx.GetByIDArgs) (*shipnow.ShipnowFulfillment, error) {
 	if args.ID == 0 {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing ID")
 	}
@@ -45,7 +61,7 @@ func (s *ShipnowStore) GetByID(args shipnowmodel.GetByIDArgs) (*shipnow.ShipnowF
 	return convert.Shipnow(result), nil
 }
 
-func (s *ShipnowStore) GetShipnowFulfillments(args *shipnowmodel.GetShipnowFulfillmentsArgs) (results []*shipnowmodel.ShipnowFulfillment, err error) {
+func (s *ShipnowStore) GetShipnowFulfillments(args *shipnowmodelx.GetShipnowFulfillmentsArgs) (results []*shipnowmodel.ShipnowFulfillment, err error) {
 	if args.ShopID == 0 {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing Shop ID")
 	}
@@ -83,13 +99,15 @@ func (s *ShipnowStore) Update(shipnowFfm *shipnow.ShipnowFulfillment) (*shipnow.
 type UpdateSyncStateArgs struct {
 	ID         int64
 	SyncStatus etop.Status4
+	Status     etop.Status5
 	State      shipnowtypes.State
 	SyncStates *model.FulfillmentSyncStates
 }
 
 func (s *ShipnowStore) UpdateSyncState(args UpdateSyncStateArgs) (*shipnow.ShipnowFulfillment, error) {
 	updateFfm := &shipnowmodel.ShipnowFulfillment{
-		SyncStatus:    model.Status4(args.SyncStatus),
+		SyncStatus:    model.Status4(etop.Status4FromInt(int(args.SyncStatus))),
+		Status:        model.Status5(etop.Status5FromInt(int(args.Status))),
 		ShippingState: args.State.String(),
 		SyncStates:    args.SyncStates,
 	}
@@ -107,7 +125,7 @@ func (s *ShipnowStore) UpdateSyncState(args UpdateSyncStateArgs) (*shipnow.Shipn
 	return convert.Shipnow(&result), nil
 }
 
-func (s *ShipnowStore) GetActiveShipnowFulfillmentsByOrderID(args *shipnowmodel.GetActiveShipnowFulfillmentsByOrderIDArgs) ([]*shipnow.ShipnowFulfillment, error) {
+func (s *ShipnowStore) GetActiveShipnowFulfillmentsByOrderID(args *shipnowmodelx.GetActiveShipnowFulfillmentsByOrderIDArgs) ([]*shipnow.ShipnowFulfillment, error) {
 	var ffms []*shipnowmodel.ShipnowFulfillment
 	x := s.query.Where("? = ANY(order_ids) AND status in (?, ?)", args.OrderID, model.S5Zero, model.S5SuperPos)
 	if args.ExcludeShipnowFulfillmentID != 0 {

@@ -7,7 +7,7 @@ import (
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/cmsql"
 	shipnowconvert "etop.vn/backend/pkg/services/shipnow/convert"
-	"etop.vn/backend/pkg/services/shipnow/model"
+	shipnowmodelx "etop.vn/backend/pkg/services/shipnow/modelx"
 	"etop.vn/backend/pkg/services/shipnow/sqlstore"
 )
 
@@ -30,7 +30,7 @@ func (a *QueryService) MessageBus() shipnow.QueryBus {
 }
 
 func (q *QueryService) GetShipnowFulfillment(ctx context.Context, query *shipnow.GetShipnowFulfillmentQueryArgs) (*shipnow.GetShipnowFulfillmentQueryResult, error) {
-	ffm, err := q.store(ctx).GetByID(model.GetByIDArgs{
+	ffm, err := q.store(ctx).GetByID(shipnowmodelx.GetByIDArgs{
 		ID:     query.Id,
 		ShopID: query.ShopId,
 	})
@@ -43,7 +43,7 @@ func (q *QueryService) GetShipnowFulfillment(ctx context.Context, query *shipnow
 }
 
 func (q *QueryService) GetShipnowFulfillments(ctx context.Context, query *shipnow.GetShipnowFulfillmentsQueryArgs) (*shipnow.GetShipnowFulfillmentsQueryResult, error) {
-	args := &model.GetShipnowFulfillmentsArgs{
+	args := &shipnowmodelx.GetShipnowFulfillmentsArgs{
 		ShopID: query.ShopId,
 	}
 	ffms, err := q.store(ctx).GetShipnowFulfillments(args)

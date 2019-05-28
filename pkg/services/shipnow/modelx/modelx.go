@@ -1,15 +1,33 @@
 package modelx
 
-import "etop.vn/backend/pkg/services/shipnow/model"
+import (
+	cm "etop.vn/backend/pkg/common"
+	"etop.vn/backend/pkg/services/shipnow/model"
+)
 
-type CreateShipNowFulfillmentArgs struct {
-	ShopID              int64
-	ShopAddressID       int64
-	OrderIDs            []int64
-	ShippingNote        string
-	ShippingServiceCode string
-	ShippingServiceFee  int
-	Carrier             string
+type UpdateShipnowFulfillmentArgs struct {
+	Fulfilment *model.ShipnowFulfillment
+}
 
-	Result *model.ShipnowFulfillment
+type GetByIDArgs struct {
+	ID int64
+
+	ShopID    int64
+	PartnerID int64
+}
+
+type GetActiveShipnowFulfillmentsByOrderIDArgs struct {
+	OrderID                     int64
+	ExcludeShipnowFulfillmentID int64
+}
+
+type GetShipnowFulfillmentsArgs struct {
+	ShopID  int64
+	Paging  *cm.Paging
+	Filters []cm.Filter
+
+	Result struct {
+		Total               int
+		ShipnowFulfillments []*model.ShipnowFulfillment
+	}
 }
