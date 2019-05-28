@@ -92,8 +92,6 @@ const (
 	SubjectTypeAccount SubjectType = "account"
 	SubjectTypeUser    SubjectType = "user"
 
-	TypeKiotviet = "kiotviet"
-
 	TypeGHN                    ShippingProvider = "ghn"
 	TypeGHTK                   ShippingProvider = "ghtk"
 	TypeVTPost                 ShippingProvider = "vtpost"
@@ -818,13 +816,7 @@ type UserInternal struct {
 }
 
 type StatusQuery struct {
-	Status         *Status3
-	ExternalStatus *Status3
-	EtopStatus     *Status3
-}
-
-type ProductStatusUpdate struct {
-	EtopStatus *Status3
+	Status *Status3
 }
 
 type ExternalShippingLog struct {

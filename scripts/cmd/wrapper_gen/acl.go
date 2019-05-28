@@ -328,11 +328,6 @@ var ACL = map[string]*permission.PermissionDecl{
 	"shop.Authorize/GetAvailablePartners":  {Type: Shop},
 	"shop.Authorize/AuthorizePartner":      {Type: Shop},
 
-	//-- kiotviet-sync-service --//
-
-	"kiotviet.Misc/VersionInfo":       {Type: Secret},
-	"kiotviet.Sync/SyncProductSource": {Type: Secret},
-
 	//-- pgevent --//
 	"pgevent.Misc/VersionInfo":     {Type: Secret},
 	"pgevent.Event/GenerateEvents": {Type: Secret},

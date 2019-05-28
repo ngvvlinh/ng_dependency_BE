@@ -13,7 +13,7 @@ type GetShopByIDQuery struct {
 	Result *Shop `json:"-"`
 }
 
-// implement query conversion
+// implement conversion
 
 func (q *GetShopByIDQuery) GetArgs() *GetShopByIDQueryArgs {
 	return (*GetShopByIDQueryArgs)(unsafe.Pointer(q))

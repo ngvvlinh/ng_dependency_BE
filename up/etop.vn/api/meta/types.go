@@ -20,3 +20,17 @@ func NewUUID() UUID {
 func PbTime(t time.Time) *Timestamp {
 	return metav1.PbTime(t)
 }
+
+type Paging struct {
+	Offset int
+	Limit  int
+	Sort   []string
+}
+
+type Filters []Filter
+
+type Filter struct {
+	Name  string
+	Op    string
+	Value string
+}

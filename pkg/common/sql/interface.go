@@ -170,6 +170,7 @@ func (db *Database) Apply(funcs ...func(CommonQuery)) Query {
 type Tx interface {
 	Commit() error
 	Rollback() error
+	NewQuery() Query
 
 	DBInterface
 	CommonQuery

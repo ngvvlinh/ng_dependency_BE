@@ -50,11 +50,6 @@ type Config struct {
 	SMS              sms.Config       `yaml:"sms"`
 	Captcha          captcha.Config   `yaml:"captcha"`
 
-	KiotvietSyncService struct {
-		cc.HTTP `yaml:",inline"`
-		Token   string `yaml:"token"`
-	} `yaml:"kiotviet_sync_service"`
-
 	GHN            ghn.Config     `yaml:"ghn"`
 	GHNWebhook     cc.HTTP        `yaml:"ghn_webhook"`
 	GHTK           ghtk.Config    `yaml:"ghtk"`

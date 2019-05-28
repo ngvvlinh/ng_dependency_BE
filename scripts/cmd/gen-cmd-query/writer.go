@@ -6,7 +6,13 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"regexp"
+	"strings"
 )
+
+type Importer interface {
+	Import(path string) (alias string)
+}
 
 type Writer struct {
 	PackageName string
@@ -29,6 +35,9 @@ func NewWriter(pkgName string, pkgPath string) *Writer {
 	}
 }
 
+// /v1 /v1a, /v1beta, /v1/foo
+var reVx = regexp.MustCompile(`[a-z0-9]+/v[0-9]+[A-z]*(/[_0-9A-z]+)?$`)
+
 func (w *Writer) Import(path string) (alias string) {
 	if path == w.PackagePath {
 		return ""
@@ -41,9 +50,11 @@ func (w *Writer) Import(path string) (alias string) {
 
 	count := 0
 	base := filepath.Base(path)
-	// package/path/v1: we want to alias pathv1 instead of v1
-	if len(base) >= 2 && base[0] == 'v' && '0' <= base[1] && base[1] <= '9' {
-		base = filepath.Base(filepath.Dir(path)) + base
+	// we want to alias to pathv1 (pathv1sub) instead of v1
+	// - package/path/v1:		pathv1
+	// - package/path/v1/sub:	pathv1sub
+	if match := reVx.FindString(path); match != "" {
+		base = strings.ReplaceAll(match, "/", "")
 	}
 
 	expectAlias := base

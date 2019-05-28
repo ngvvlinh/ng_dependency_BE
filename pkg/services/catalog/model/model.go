@@ -1,7 +1,6 @@
 package model
 
 import (
-	"encoding/json"
 	"fmt"
 	"time"
 
@@ -35,10 +34,6 @@ type Product struct {
 	Code   string
 	EdCode string
 
-	QuantityAvailable int // Available = OnHand - Reserved - 3
-	QuantityOnHand    int
-	QuantityReserved  int
-
 	ImageURLs []string `sq:"'image_urls'"`
 
 	CreatedAt time.Time `sq:"create"`
@@ -58,10 +53,6 @@ func (p *Product) BeforeUpdate() error {
 	p.NameNorm = validate.NormalizeSearch(p.Name)
 	p.NameNormUa = validate.NormalizeUnaccent(p.Name)
 	return nil
-}
-
-func (p *Product) IsAvailable() bool {
-	return p.QuantityAvailable > 0
 }
 
 func (p *Product) GetFullName() string {
@@ -126,10 +117,7 @@ type Variant struct {
 	EdRetailPriceMin  int
 	EdRetailPriceMax  int
 
-	QuantityAvailable int // Available = OnHand - Reserved - 3
-	QuantityOnHand    int
-	QuantityReserved  int
-	ImageURLs         []string `sq:"'image_urls'"`
+	ImageURLs []string `sq:"'image_urls'"`
 
 	CostPrice  int
 	Attributes ProductAttributes
@@ -143,10 +131,6 @@ func (v *Variant) GetName() string {
 		return ""
 	}
 	return ProductAttributes(v.Attributes).ShortLabel()
-}
-
-func (v *Variant) IsAvailable() bool {
-	return v.QuantityAvailable > 0
 }
 
 func (v *Variant) BeforeInsert() error {
@@ -239,37 +223,6 @@ func (p *PriceDef) ApplyTo(v *Variant) {
 	v.WholesalePrice = p.WholesalePrice
 	v.RetailPriceMin = p.RetailPriceMin
 	v.RetailPriceMax = p.RetailPriceMax
-}
-
-var _ = sqlgenVariantQuantity(&VariantQuantity{}, &Variant{})
-
-type VariantQuantity struct {
-	QuantityAvailable int // Available = OnHand - Reserved - 3
-	QuantityOnHand    int
-	QuantityReserved  int
-}
-
-var _ = substructEtopProduct(&EtopProduct{}, &Product{})
-
-type EtopProduct struct {
-	ID int64
-
-	Name        string
-	Description string
-	DescHTML    string
-	ShortDesc   string
-	ImageURLs   []string `sq:"'image_urls'"`
-	Status      model.Status3
-	Code        string
-
-	// Only default branch
-	QuantityAvailable int // Available = OnHand - Reserved - 3
-	QuantityOnHand    int
-	QuantityReserved  int
-}
-
-func (p *EtopProduct) IsAvailable() bool {
-	return p.QuantityAvailable > 0
 }
 
 var _ = sqlgenShopVariantExtended(
@@ -522,12 +475,8 @@ type ProductSource struct {
 	Name   string
 	Status model.Status3
 
-	CreatedAt  time.Time `sq:"create"`
-	UpdatedAt  time.Time `sq:"update"`
-	LastSyncAt time.Time
-
-	SyncStateProducts   json.RawMessage
-	SyncStateCategories json.RawMessage
+	CreatedAt time.Time `sq:"create"`
+	UpdatedAt time.Time `sq:"update"`
 }
 
 var _ = sqlgenProductSourceCategory(&ProductSourceCategory{})

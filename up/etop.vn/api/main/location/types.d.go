@@ -44,7 +44,7 @@ type GetLocationQuery struct {
 	Result *locationv1.LocationQueryResult `json:"-"`
 }
 
-// implement query conversion
+// implement conversion
 
 func (q *FindLocationQuery) GetArgs() *locationv1.FindLocationQueryArgs {
 	return (*locationv1.FindLocationQueryArgs)(unsafe.Pointer(q))

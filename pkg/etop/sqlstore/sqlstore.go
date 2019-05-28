@@ -111,9 +111,6 @@ func FilterStatus(s Query, prefix string, query model.StatusQuery) Query {
 	if query.Status != nil {
 		s = s.Where(prefix+"status = ?", query.Status)
 	}
-	if query.EtopStatus != nil {
-		s = s.Where(prefix+"etop_status = ?", query.EtopStatus)
-	}
 	return s
 }
 

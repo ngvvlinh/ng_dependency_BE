@@ -34,7 +34,7 @@ func (a *Aggregate) WithPM(pm *pm.ProcessManager) *Aggregate {
 	return a
 }
 
-func (a *Aggregate) CreateShipnowFulfillment(ctx context.Context, cmd *shipnow.CreateShipnowFulfillmentCommand) (*shipnow.ShipnowFulfillment, error) {
+func (a *Aggregate) CreateShipnowFulfillment(ctx context.Context, cmd *shipnow.CreateShipnowFulfillmentArgs) (*shipnow.ShipnowFulfillment, error) {
 	shipnowFfm, err := a.HandleCreation(ctx, cmd)
 	if err != nil {
 		return nil, err
@@ -45,7 +45,7 @@ func (a *Aggregate) CreateShipnowFulfillment(ctx context.Context, cmd *shipnow.C
 	return shipnowFfm, err
 }
 
-func (a *Aggregate) ConfirmShipnowFulfillment(ctx context.Context, cmd *shipnow.ConfirmShipnowFulfillmentCommand) (shipnowFfm *shipnow.ShipnowFulfillment, err error) {
+func (a *Aggregate) ConfirmShipnowFulfillment(ctx context.Context, cmd *shipnow.ConfirmShipnowFulfillmentArgs) (shipnowFfm *shipnow.ShipnowFulfillment, err error) {
 	query1 := shipnowmodel.GetByIDArgs{
 		ID:     cmd.Id,
 		ShopID: cmd.ShopId,
@@ -73,20 +73,12 @@ func (a *Aggregate) ConfirmShipnowFulfillment(ctx context.Context, cmd *shipnow.
 	return shipnowFfm, nil
 }
 
-func (a *Aggregate) CancelShipnowFulfillment(ctx context.Context, cmd *shipnow.CancelShipnowFulfillmentCommand) (*meta.Empty, error) {
+func (a *Aggregate) CancelShipnowFulfillment(ctx context.Context, cmd *shipnow.CancelShipnowFulfillmentArgs) (*meta.Empty, error) {
 	err := a.pm.HandleShipnowCancellation(ctx, cmd)
 	return &meta.Empty{}, err
 }
 
-func (a *Aggregate) GetActiveShipnowFulfillments(ctx context.Context, cmd *shipnow.GetActiveShipnowFulfillmentsCommand) ([]*shipnow.ShipnowFulfillment, error) {
-	args := &shipnowmodel.GetActiveShipnowFulfillmentsByOrderIDArgs{
-		OrderID: cmd.OrderID,
-	}
-	ffms, err := a.s.WithContext(ctx).GetActiveShipnowFulfillmentsByOrderID(args)
-	return ffms, err
-}
-
-func (a *Aggregate) HandleCreation(ctx context.Context, cmd *shipnow.CreateShipnowFulfillmentCommand) (shipnowFfm *shipnow.ShipnowFulfillment, err error) {
+func (a *Aggregate) HandleCreation(ctx context.Context, cmd *shipnow.CreateShipnowFulfillmentArgs) (shipnowFfm *shipnow.ShipnowFulfillment, err error) {
 	return a.pm.HandleShipnowCreation(ctx, cmd)
 }
 
@@ -121,7 +113,7 @@ func (a *Aggregate) ValidateConfirm(ctx context.Context, ffm *shipnow.ShipnowFul
 	// return nil
 }
 
-func (a *Aggregate) UpdateShipnowFulfillment(ctx context.Context, cmd *shipnow.UpdateShipnowFulfillmentCommand) (shipnowFfm *shipnow.ShipnowFulfillment, err error) {
+func (a *Aggregate) UpdateShipnowFulfillment(ctx context.Context, cmd *shipnow.UpdateShipnowFulfillmentArgs) (shipnowFfm *shipnow.ShipnowFulfillment, err error) {
 	shipnowFfm, err = a.HandleUpdate(ctx, cmd)
 	if err != nil {
 		return nil, err
@@ -133,7 +125,7 @@ func (a *Aggregate) UpdateShipnowFulfillment(ctx context.Context, cmd *shipnow.U
 	return result, err
 }
 
-func (a *Aggregate) HandleUpdate(ctx context.Context, cmd *shipnow.UpdateShipnowFulfillmentCommand) (shipnowFfm *shipnow.ShipnowFulfillment, err error) {
+func (a *Aggregate) HandleUpdate(ctx context.Context, cmd *shipnow.UpdateShipnowFulfillmentArgs) (shipnowFfm *shipnow.ShipnowFulfillment, err error) {
 	return nil, cm.ErrTODO
 
 	// query1 := shipnowmodel.GetByIDArgs{

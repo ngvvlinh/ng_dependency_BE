@@ -15,9 +15,9 @@ type ProcessManagerBus struct {
 type Aggregate interface {
 	GetFulfillmentByID(ctx context.Context, query *GetFulfillmentByIDQuery) (*Fulfillment, error)
 
-	CreateFulfillment(ctx context.Context, cmd *CreateFulfillmentCommand) error
-	ConfirmFulfillment(ctx context.Context, cmd *ConfirmFulfillmentCommand) error
-	CancelFulfillment(ctx context.Context, cmd *CancelFulfillmentCommand) error
+	CreateFulfillment(ctx context.Context, cmd *CreateFulfillmentCommand) (*meta.Empty, error)
+	ConfirmFulfillment(ctx context.Context, cmd *ConfirmFulfillmentCommand) (*meta.Empty, error)
+	CancelFulfillment(ctx context.Context, cmd *CancelFulfillmentCommand) (*meta.Empty, error)
 }
 
 type ProcessManager interface {

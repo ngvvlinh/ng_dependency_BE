@@ -30,7 +30,7 @@ func (a *Aggregate) WithPM(pm *pm.ProcessManager) *Aggregate {
 	return a
 }
 
-func (a *Aggregate) GetOrderByID(ctx context.Context, args ordering.GetOrderByIDArgs) (*ordering.Order, error) {
+func (a *Aggregate) GetOrderByID(ctx context.Context, args *ordering.GetOrderByIDArgs) (*ordering.Order, error) {
 	ord, err := a.s.WithContext(ctx).ID(args.ID).Get()
 	if err != nil {
 		return nil, err
@@ -38,28 +38,28 @@ func (a *Aggregate) GetOrderByID(ctx context.Context, args ordering.GetOrderByID
 	return convert.Order(ord), nil
 }
 
-func (a *Aggregate) GetOrders(ctx context.Context, args *ordering.GetOrdersArgs) ([]*ordering.Order, error) {
+func (a *Aggregate) GetOrders(ctx context.Context, args *ordering.GetOrdersArgs) (*ordering.OrdersResponse, error) {
 	orders, err := a.s.GetOrdes(args)
 	if err != nil {
 		return nil, err
 	}
-	return convert.Orders(orders), nil
+	return &ordering.OrdersResponse{Orders: convert.Orders(orders)}, nil
 }
 
-func (a *Aggregate) ValidateOrders(ctx context.Context, args *ordering.ValidateOrdersForShippingCommand) error {
+func (a *Aggregate) ValidateOrders(ctx context.Context, args *ordering.ValidateOrdersForShippingArgs) (*ordering.ValidateOrdersResponse, error) {
 	args1 := &ordering.GetOrdersArgs{
 		IDs: args.OrderIDs,
 	}
 	orders, err := a.GetOrders(ctx, args1)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	for _, order := range orders {
+	for _, order := range orders.Orders {
 		if err := ValidateOrder(order); err != nil {
-			return err
+			return nil, err
 		}
 	}
-	return nil
+	return &ordering.ValidateOrdersResponse{}, nil
 }
 
 func ValidateOrder(order *ordering.Order) error {

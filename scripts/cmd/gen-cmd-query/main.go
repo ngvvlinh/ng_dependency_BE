@@ -11,6 +11,8 @@ import (
 	"os"
 	"os/exec"
 	"path/filepath"
+	"regexp"
+	"sort"
 	"strings"
 
 	"k8s.io/code-generator/third_party/forked/golang/reflect"
@@ -41,12 +43,12 @@ func init() {
 
 func debugf(format string, args ...interface{}) {
 	if *flV {
-		fmt.Fprintf(os.Stderr, format, args...)
+		_, _ = fmt.Fprintf(os.Stderr, format, args...)
 	}
 }
 
 func fatalf(format string, args ...interface{}) {
-	fmt.Fprintf(os.Stderr, format, args...)
+	_, _ = fmt.Fprintf(os.Stderr, format, args...)
 	os.Exit(1)
 }
 
@@ -63,10 +65,10 @@ func mustNoError(format string, args ...interface{}) {
 		return
 	}
 
-	fmt.Fprintf(os.Stderr, format, args...)
+	_, _ = fmt.Fprintf(os.Stderr, format, args...)
 	for _, msg := range storedErrors {
 		msg = strings.TrimRight(msg, "\n")
-		fmt.Fprintf(os.Stderr, "    %v\n", msg)
+		_, _ = fmt.Fprintf(os.Stderr, "    %v\n", msg)
 	}
 	switch {
 	case count == 1:
@@ -80,6 +82,11 @@ func must(err error) {
 	if err != nil {
 		fatalf("%v\n", err)
 	}
+}
+
+func mustWrite(w io.Writer, p []byte) {
+	_, err := w.Write(p)
+	must(err)
 }
 
 func formatFileName(format string, fileName string) string {
@@ -97,10 +104,22 @@ func p(w io.Writer, format string, args ...interface{}) {
 	must(err)
 }
 
+const QueryService = "QueryService"
+const Aggregate = "Aggregate"
+
 type ServiceDef struct {
+	Kind    string
 	Package *packages.Package
 	Ident   *ast.Ident
 	Type    *types.Interface
+}
+
+type HandlerDef struct {
+	Method  *types.Func
+	Request *types.Struct
+
+	RequestNamed  *types.Named
+	ResponseNamed *types.Named
 }
 
 type MultiWriter struct {
@@ -130,11 +149,12 @@ func main() {
 		os.Exit(1)
 	}
 
-	var queryServices []ServiceDef
+	var services []ServiceDef
 	var generatedFiles []string
+	kinds := []string{QueryService, Aggregate}
 	for _, pkg := range pkgs {
 		debugf("processing package %v\n", pkg.PkgPath)
-		queryServices = nil
+		services = nil
 
 		defs := pkg.TypesInfo.Defs
 		for ident, obj := range defs {
@@ -143,13 +163,14 @@ func main() {
 			} else {
 				debugf("    %v : nil", ident.Name)
 			}
-			svc, err := checkQueryService(ident, obj)
+			kind, svc, err := checkService(kinds, ident, obj)
 			if err != nil {
 				errorf("%v\n", err)
 				continue
 			}
 			if svc != nil {
-				queryServices = append(queryServices, ServiceDef{
+				services = append(services, ServiceDef{
+					Kind:    kind,
 					Package: pkg,
 					Ident:   ident,
 					Type:    svc,
@@ -157,21 +178,26 @@ func main() {
 			}
 		}
 		mustNoError("package %v:\n", pkg.PkgPath)
-		if len(queryServices) == 0 {
+		if len(services) == 0 {
 			fmt.Printf("  skipped %v\n", pkg.PkgPath)
 			continue
 		}
 
+		sort.Slice(services, func(i, j int) bool {
+			return services[i].Ident.Name < services[j].Ident.Name
+		})
+
 		w := NewWriter(pkg.Name, pkg.PkgPath)
 		ws := &MultiWriter{Writer: w}
-		for _, item := range queryServices {
-			processQueryService(ws, item.Package, item.Ident, item.Type)
+		for _, item := range services {
+			debugf("processing service %v\n", item.Ident.Name)
+			processService(ws, item)
 		}
 
-		p(w, "\n// implement query conversion\n\n")
-		w.Write(ws.WriteArgs.Bytes())
+		p(w, "\n// implement conversion\n\n")
+		mustWrite(w, ws.WriteArgs.Bytes())
 		p(w, "\n// implement dispatching\n\n")
-		w.Write(ws.WriteDispatch.Bytes())
+		mustWrite(w, ws.WriteDispatch.Bytes())
 
 		fileName := formatFileName(formatOut, pkg.Name)
 		dirPath := filepath.Dir(pkg.GoFiles[0])
@@ -184,35 +210,58 @@ func main() {
 	execGoimport(generatedFiles)
 }
 
-func checkQueryService(ident *ast.Ident, obj types.Object) (*types.Interface, error) {
-	if !strings.HasSuffix(ident.Name, "QueryService") {
-		return nil, nil
+func checkService(
+	suffixes []string, ident *ast.Ident, obj types.Object,
+) (kind string, _ *types.Interface, _ error) {
+	for _, suffix := range suffixes {
+		if strings.HasSuffix(ident.Name, suffix) {
+			kind = suffix
+			break
+		}
 	}
+	if kind == "" {
+		return
+	}
+
 	if obj == nil {
-		return nil, fmt.Errorf("%v: can not load definition", ident.Name)
+		return "", nil, fmt.Errorf("%v: can not load definition", ident.Name)
 	}
 	typ := obj.Type()
 	if typ == nil {
-		return nil, fmt.Errorf("%v: can not load type information", ident.Name)
+		return "", nil, fmt.Errorf("%v: can not load type information", ident.Name)
 	}
 	if typ, ok := typ.(*types.Named); ok {
 		if typ, ok := typ.Underlying().(*types.Interface); ok {
-			return typ, nil
+			return kind, typ, nil
 		}
 	}
-	return nil, fmt.Errorf("%v: must be an interface", ident.Name)
+	return "", nil, fmt.Errorf("%v: must be an interface", ident.Name)
 }
 
-type QueryDef struct {
-	Method  *types.Func
-	Request *types.Struct
-
-	RequestNamed  *types.Named
-	ResponseNamed *types.Named
+func processService(w *MultiWriter, def ServiceDef) {
+	switch def.Kind {
+	case QueryService:
+		processQueryService(w, def.Package, def.Ident, def.Type)
+	case Aggregate:
+		processAggregate(w, def.Package, def.Ident, def.Type)
+	default:
+		panic("unexpected")
+	}
 }
 
 func processQueryService(w *MultiWriter, pkg *packages.Package, ident *ast.Ident, typ *types.Interface) {
-	var defs []QueryDef
+	defs := extractHandlerDefs(pkg, ident, typ)
+	generateQueries(w, ident.Name, defs)
+	mustNoError("type %v.%v:\n", pkg.PkgPath, ident.Name)
+}
+
+func processAggregate(w *MultiWriter, pkg *packages.Package, ident *ast.Ident, typ *types.Interface) {
+	defs := extractHandlerDefs(pkg, ident, typ)
+	generateCommands(w, ident.Name, defs)
+	mustNoError("type %v.%v:\n", pkg.PkgPath, ident.Name)
+}
+
+func extractHandlerDefs(pkg *packages.Package, ident *ast.Ident, typ *types.Interface) (defs []HandlerDef) {
 	n := typ.NumMethods()
 	for i := 0; i < n; i++ {
 		method := typ.Method(i)
@@ -224,12 +273,12 @@ func processQueryService(w *MultiWriter, pkg *packages.Package, ident *ast.Ident
 		styp := mtyp.(*types.Signature)
 		params := styp.Params()
 		results := styp.Results()
-		req, _, err := checkQuerySignature(params, results)
+		req, _, err := checkMethodSignature(params, results)
 		if err != nil {
 			errorf("%v: %v\n", method.Name(), err)
 			continue
 		}
-		defs = append(defs, QueryDef{
+		defs = append(defs, HandlerDef{
 			Method:  method,
 			Request: req,
 
@@ -238,11 +287,10 @@ func processQueryService(w *MultiWriter, pkg *packages.Package, ident *ast.Ident
 		})
 	}
 	mustNoError("type %v.%v:\n", pkg.PkgPath, ident.Name)
-	generateQuery(w, ident.Name, defs)
-	mustNoError("type %v.%v:\n", pkg.PkgPath, ident.Name)
+	return defs
 }
 
-func checkQuerySignature(params *types.Tuple, results *types.Tuple) (request *types.Struct, response *types.Struct, err error) {
+func checkMethodSignature(params *types.Tuple, results *types.Tuple) (request *types.Struct, response *types.Struct, err error) {
 	if params.Len() != 2 {
 		err = errors.New("expect 2 params")
 		return
@@ -311,7 +359,7 @@ func checkPtrStruct(t types.Type) (*types.Struct, error) {
 	}
 }
 
-func generateQuery(w *MultiWriter, serviceName string, defs []QueryDef) {
+func generateQueries(w *MultiWriter, serviceName string, defs []HandlerDef) {
 	w.Import("context")
 	w.Import("unsafe")
 
@@ -369,13 +417,94 @@ func (h %v) Handle%v(ctx context.Context, query *%v) error {
 	}
 }
 
-func renderNamed(w *Writer, named *types.Named) string {
+func generateCommands(w *MultiWriter, serviceName string, defs []HandlerDef) {
+	w.Import("context")
+	w.Import("unsafe")
+
+	genHandlerName := serviceName + "Handler"
+	{
+		tmpl := `
+type %v struct {
+	inner %v
+}
+
+func New%v(service %v) %v { return %v{service} } 
+
+func (h %v) RegisterHandlers(b interface{
+	AddHandler(handler interface{})
+}) {
+`
+		w2 := &w.WriteDispatch
+		p(w2, tmpl, genHandlerName, serviceName, genHandlerName, serviceName, genHandlerName, genHandlerName, genHandlerName)
+		for _, item := range defs {
+			p(w2, "\tb.AddHandler(h.Handle%v)\n", item.Method.Name())
+		}
+		p(w2, "}\n")
+	}
+
+	for _, item := range defs {
+		methodName := item.Method.Name()
+		genQueryName := item.Method.Name() + "Command"
+		genRequestName := renderNamed(w.Writer, item.RequestNamed)
+		genResponseName := renderNamed(w.Writer, item.ResponseNamed)
+
+		p(w, "type %v struct {\n", genQueryName)
+		generateStruct(w.Writer, item.Request)
+		mustNoError("method %v:\n", item.Method)
+		p(w, "\nResult *%v `json:\"-\"`\n", genResponseName)
+		p(w, "}\n\n")
+
+		// implement GetArgs()
+		{
+			w2 := &w.WriteArgs
+			p(w2, "func (q *%v) GetArgs() *%v { return (*%v)(unsafe.Pointer(q)) }\n",
+				genQueryName, genRequestName, genRequestName)
+		}
+		// implement Handle()
+		{
+			const tmpl = `
+func (h %v) Handle%v(ctx context.Context, cmd *%v) error {
+	result, err := h.inner.%v(ctx, cmd.GetArgs())
+	cmd.Result = result
+	return err
+}
+`
+			w2 := &w.WriteDispatch
+			p(w2, tmpl, genHandlerName, methodName, genQueryName, methodName)
+		}
+	}
+}
+
+func renderNamed(w Importer, named *types.Named) string {
 	obj := named.Obj()
 	pkgAlias := w.Import(obj.Pkg().Path())
 	if pkgAlias == "" {
 		return obj.Name()
 	}
 	return pkgAlias + "." + obj.Name()
+}
+
+var reTypeImport = regexp.MustCompile(`([0-9A-z/._-]+)\.([0-9A-z]+)`)
+
+func renderType(w Importer, typ types.Type) (string, error) {
+	s := typ.String()
+
+	result := reTypeImport.ReplaceAllStringFunc(s,
+		func(match string) string {
+			parts := reTypeImport.FindStringSubmatch(match)
+			if parts == nil {
+				panic("unexpected")
+			}
+
+			pkgPath := parts[1]
+			typeName := parts[2]
+			pkgAlias := w.Import(pkgPath)
+			if pkgAlias == "" {
+				return typeName
+			}
+			return pkgAlias + "." + typeName
+		})
+	return result, nil
 }
 
 func generateStruct(w *Writer, s *types.Struct) {
@@ -397,17 +526,12 @@ func generateStruct(w *Writer, s *types.Struct) {
 		}
 
 		ftyp := field.Type()
-		switch ftyp := ftyp.(type) {
-		case *types.Basic:
-			p(w, "%v %v\n", ftyp.String(), processedTag)
-
-		case *types.Named:
-			p(w, "%v %v\n", renderNamed(w, ftyp), processedTag)
-
-		default:
-			errorf("field %v: unsupported type %v\n", field.Name(), ftyp.String())
+		renderedType, err := renderType(w, ftyp)
+		if err != nil {
+			errorf("field %v: %v\n", field.Name(), err)
 			continue
 		}
+		p(w, "%v %v\n", renderedType, processedTag)
 	}
 }
 

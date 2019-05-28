@@ -77,7 +77,6 @@ func PbShopVariant(m *catalogmodel.ShopVariantExtended) *pbshop.ShopVariant {
 		Tags:         sv.Tags,
 		Note:         sv.Note,
 		Status:       pbs3.Pb(sv.Status),
-		IsAvailable:  m.VariantExtended.IsAvailable(),
 		ListPrice:    int32(m.ListPrice),
 		RetailPrice:  int32(sv.RetailPrice),
 		CostPrice:    int32(m.CostPrice),

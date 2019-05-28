@@ -301,19 +301,16 @@ func CreateVariant(ctx context.Context, cmd *catalogmodelx.CreateVariantCommand)
 		ProductID:       cmd.ProductID,
 		ProductSourceID: cmd.ProductSourceID,
 		// Name:              cmd.Name,
-		ShortDesc:         cmd.ShortDesc,
-		Description:       cmd.Description,
-		Status:            model.StatusActive,
-		EdStatus:          model.StatusActive,
-		EtopStatus:        model.StatusActive,
-		EdCode:            cmd.SKU,
-		ListPrice:         cmd.ListPrice,
-		QuantityAvailable: cmd.QuantityAvailable,
-		QuantityOnHand:    cmd.QuantityOnHand,
-		QuantityReserved:  cmd.QuantityReserved,
-		ImageURLs:         cmd.ImageURLs,
-		CostPrice:         cmd.CostPrice,
-		Attributes:        cmd.Attributes,
+		ShortDesc:   cmd.ShortDesc,
+		Description: cmd.Description,
+		Status:      model.StatusActive,
+		EdStatus:    model.StatusActive,
+		EtopStatus:  model.StatusActive,
+		EdCode:      cmd.SKU,
+		ListPrice:   cmd.ListPrice,
+		ImageURLs:   cmd.ImageURLs,
+		CostPrice:   cmd.CostPrice,
+		Attributes:  cmd.Attributes,
 	}
 	if err := variant.BeforeInsert(); err != nil {
 		return err
@@ -331,18 +328,15 @@ func CreateVariant(ctx context.Context, cmd *catalogmodelx.CreateVariantCommand)
 		// create product + shop_product + variant
 		errInsert := inTransaction(func(s Qx) error {
 			product := &catalogmodel.Product{
-				ID:                cm.NewID(),
-				ProductSourceID:   cmd.ProductSourceID,
-				Name:              cmd.ProductName,
-				ShortDesc:         cmd.ShortDesc,
-				Description:       cmd.Description,
-				Status:            model.StatusActive,
-				EdCode:            cmd.Code,
-				QuantityAvailable: cmd.QuantityAvailable,
-				QuantityOnHand:    cmd.QuantityOnHand,
-				QuantityReserved:  cmd.QuantityReserved,
-				ImageURLs:         cmd.ImageURLs,
-				DescHTML:          cmd.DescHTML,
+				ID:              cm.NewID(),
+				ProductSourceID: cmd.ProductSourceID,
+				Name:            cmd.ProductName,
+				ShortDesc:       cmd.ShortDesc,
+				Description:     cmd.Description,
+				Status:          model.StatusActive,
+				EdCode:          cmd.Code,
+				ImageURLs:       cmd.ImageURLs,
+				DescHTML:        cmd.DescHTML,
 			}
 			if err := product.BeforeInsert(); err != nil {
 				return err

@@ -6,6 +6,7 @@ import (
 	"strings"
 	"sync"
 
+	"etop.vn/api/meta"
 	"etop.vn/backend/pkg/common/l"
 )
 
@@ -111,21 +112,5 @@ func Parallel(ctx context.Context, jobs ...func(context.Context) error) []error 
 	return errors
 }
 
-// Paging ...
-type Paging struct {
-	// After   string
-	// Before  string
-	// First   int
-	// Last    int
-	// Reverse bool
-
-	Offset int
-	Limit  int
-	Sort   []string
-}
-
-type Filter struct {
-	Name  string
-	Op    string
-	Value string
-}
+type Paging = meta.Paging
+type Filter = meta.Filter

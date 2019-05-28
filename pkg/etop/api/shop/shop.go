@@ -198,7 +198,6 @@ func UpdateVariant(ctx context.Context, q *wrapshop.UpdateVariantEndpoint) error
 		ShopID:          shopID,
 		Variant:         pbshop.PbUpdateVariantToModel(shopID, q.UpdateVariantRequest),
 		CostPrice:       int(q.CostPrice),
-		Inventory:       int(q.Inventory),
 		EdCode:          q.Sku,
 		Attributes:      convertpb.AttributesTomodel(q.Attributes),
 		ProductSourceID: productSourceID,
@@ -890,7 +889,7 @@ func CreateShipNowFulfillment(ctx context.Context, q *wrapshop.CreateShipnowFulf
 	if err != nil {
 		return err
 	}
-	args := &shipnow.CreateShipnowFulfillmentCommand{
+	args := &shipnow.CreateShipnowFulfillmentArgs{
 		OrderIds:            q.OrderIds,
 		Carrier:             q.Carrier,
 		ShopId:              q.Context.Shop.ID,
@@ -909,7 +908,7 @@ func CreateShipNowFulfillment(ctx context.Context, q *wrapshop.CreateShipnowFulf
 }
 
 func ConfirmShipNowFulfillment(ctx context.Context, q *wrapshop.ConfirmShipnowFulfillmentEndpoint) error {
-	args := &shipnow.ConfirmShipnowFulfillmentCommand{
+	args := &shipnow.ConfirmShipnowFulfillmentArgs{
 		Id:     q.Id,
 		ShopId: q.Context.Shop.ID,
 	}
@@ -926,7 +925,7 @@ func UpdateShipNowFulfillment(ctx context.Context, q *wrapshop.UpdateShipnowFulf
 	if err != nil {
 		return err
 	}
-	args := &shipnow.UpdateShipnowFulfillmentCommand{
+	args := &shipnow.UpdateShipnowFulfillmentArgs{
 		Id:                  q.Id,
 		OrderIds:            q.OrderIds,
 		Carrier:             q.Carrier,

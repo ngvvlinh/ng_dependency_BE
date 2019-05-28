@@ -47,15 +47,23 @@ type QueryInterface interface {
 	Apply(funcs ...func(core.CommonQuery)) Query
 }
 
+type DBX interface {
+	NewQuery() Query
+	QueryInterface
+}
+
 // Tx rexports common/sql.Tx
 type Tx interface {
 	Commit() error
 	Rollback() error
+	NewQuery() Query
 
 	sq.DBInterface
 	QueryInterface
 }
 
+var _ DBX = Database{}
+var _ DBX = tx{}
 var _ QueryInterface = Query{}
 var _ QueryInterface = tx{}
 
@@ -330,6 +338,10 @@ func (db Database) Apply(funcs ...func(core.CommonQuery)) Query {
 }
 
 //-- Tx --//
+
+func (tx tx) NewQuery() Query {
+	return Query{tx.tx.NewQuery()}
+}
 
 // Get ...
 func (tx tx) Get(obj core.IGet, preds ...interface{}) (bool, error) {

@@ -13,7 +13,7 @@ type GetAddressByIDQuery struct {
 	Result *Address `json:"-"`
 }
 
-// implement query conversion
+// implement conversion
 
 func (q *GetAddressByIDQuery) GetArgs() *GetAddressByIDQueryArgs {
 	return (*GetAddressByIDQueryArgs)(unsafe.Pointer(q))

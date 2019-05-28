@@ -327,63 +327,6 @@ func (ft ProductFilters) ByEdCodePtr(EdCode *string) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft ProductFilters) ByQuantityAvailable(QuantityAvailable int) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
-		Prefix: ft.prefix,
-		Column: "quantity_available",
-		Value:  QuantityAvailable,
-		IsNil:  QuantityAvailable == 0,
-	}
-}
-
-func (ft ProductFilters) ByQuantityAvailablePtr(QuantityAvailable *int) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
-		Prefix: ft.prefix,
-		Column: "quantity_available",
-		Value:  QuantityAvailable,
-		IsNil:  QuantityAvailable == nil,
-		IsZero: QuantityAvailable != nil && (*QuantityAvailable) == 0,
-	}
-}
-
-func (ft ProductFilters) ByQuantityOnHand(QuantityOnHand int) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
-		Prefix: ft.prefix,
-		Column: "quantity_on_hand",
-		Value:  QuantityOnHand,
-		IsNil:  QuantityOnHand == 0,
-	}
-}
-
-func (ft ProductFilters) ByQuantityOnHandPtr(QuantityOnHand *int) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
-		Prefix: ft.prefix,
-		Column: "quantity_on_hand",
-		Value:  QuantityOnHand,
-		IsNil:  QuantityOnHand == nil,
-		IsZero: QuantityOnHand != nil && (*QuantityOnHand) == 0,
-	}
-}
-
-func (ft ProductFilters) ByQuantityReserved(QuantityReserved int) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
-		Prefix: ft.prefix,
-		Column: "quantity_reserved",
-		Value:  QuantityReserved,
-		IsNil:  QuantityReserved == 0,
-	}
-}
-
-func (ft ProductFilters) ByQuantityReservedPtr(QuantityReserved *int) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
-		Prefix: ft.prefix,
-		Column: "quantity_reserved",
-		Value:  QuantityReserved,
-		IsNil:  QuantityReserved == nil,
-		IsZero: QuantityReserved != nil && (*QuantityReserved) == 0,
-	}
-}
-
 func (ft ProductFilters) ByCreatedAt(CreatedAt time.Time) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: ft.prefix,
@@ -1025,63 +968,6 @@ func (ft VariantFilters) ByEdRetailPriceMaxPtr(EdRetailPriceMax *int) *sq.Column
 	}
 }
 
-func (ft VariantFilters) ByQuantityAvailable(QuantityAvailable int) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
-		Prefix: ft.prefix,
-		Column: "quantity_available",
-		Value:  QuantityAvailable,
-		IsNil:  QuantityAvailable == 0,
-	}
-}
-
-func (ft VariantFilters) ByQuantityAvailablePtr(QuantityAvailable *int) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
-		Prefix: ft.prefix,
-		Column: "quantity_available",
-		Value:  QuantityAvailable,
-		IsNil:  QuantityAvailable == nil,
-		IsZero: QuantityAvailable != nil && (*QuantityAvailable) == 0,
-	}
-}
-
-func (ft VariantFilters) ByQuantityOnHand(QuantityOnHand int) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
-		Prefix: ft.prefix,
-		Column: "quantity_on_hand",
-		Value:  QuantityOnHand,
-		IsNil:  QuantityOnHand == 0,
-	}
-}
-
-func (ft VariantFilters) ByQuantityOnHandPtr(QuantityOnHand *int) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
-		Prefix: ft.prefix,
-		Column: "quantity_on_hand",
-		Value:  QuantityOnHand,
-		IsNil:  QuantityOnHand == nil,
-		IsZero: QuantityOnHand != nil && (*QuantityOnHand) == 0,
-	}
-}
-
-func (ft VariantFilters) ByQuantityReserved(QuantityReserved int) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
-		Prefix: ft.prefix,
-		Column: "quantity_reserved",
-		Value:  QuantityReserved,
-		IsNil:  QuantityReserved == 0,
-	}
-}
-
-func (ft VariantFilters) ByQuantityReservedPtr(QuantityReserved *int) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
-		Prefix: ft.prefix,
-		Column: "quantity_reserved",
-		Value:  QuantityReserved,
-		IsNil:  QuantityReserved == nil,
-		IsZero: QuantityReserved != nil && (*QuantityReserved) == 0,
-	}
-}
-
 func (ft VariantFilters) ByCostPrice(CostPrice int) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: ft.prefix,
@@ -1245,77 +1131,6 @@ func (ft PriceDefFilters) ByRetailPriceMaxPtr(RetailPriceMax *int) *sq.ColumnFil
 		Value:  RetailPriceMax,
 		IsNil:  RetailPriceMax == nil,
 		IsZero: RetailPriceMax != nil && (*RetailPriceMax) == 0,
-	}
-}
-
-type VariantQuantityFilters struct{ prefix string }
-
-func NewVariantQuantityFilters(prefix string) VariantQuantityFilters {
-	return VariantQuantityFilters{prefix}
-}
-
-func (ft VariantQuantityFilters) Filter(pred string, args ...interface{}) sq.WriterTo {
-	return sq.Filter(ft.prefix, pred, args...)
-}
-
-func (ft VariantQuantityFilters) Prefix() string {
-	return ft.prefix
-}
-
-func (ft VariantQuantityFilters) ByQuantityAvailable(QuantityAvailable int) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
-		Prefix: ft.prefix,
-		Column: "quantity_available",
-		Value:  QuantityAvailable,
-		IsNil:  QuantityAvailable == 0,
-	}
-}
-
-func (ft VariantQuantityFilters) ByQuantityAvailablePtr(QuantityAvailable *int) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
-		Prefix: ft.prefix,
-		Column: "quantity_available",
-		Value:  QuantityAvailable,
-		IsNil:  QuantityAvailable == nil,
-		IsZero: QuantityAvailable != nil && (*QuantityAvailable) == 0,
-	}
-}
-
-func (ft VariantQuantityFilters) ByQuantityOnHand(QuantityOnHand int) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
-		Prefix: ft.prefix,
-		Column: "quantity_on_hand",
-		Value:  QuantityOnHand,
-		IsNil:  QuantityOnHand == 0,
-	}
-}
-
-func (ft VariantQuantityFilters) ByQuantityOnHandPtr(QuantityOnHand *int) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
-		Prefix: ft.prefix,
-		Column: "quantity_on_hand",
-		Value:  QuantityOnHand,
-		IsNil:  QuantityOnHand == nil,
-		IsZero: QuantityOnHand != nil && (*QuantityOnHand) == 0,
-	}
-}
-
-func (ft VariantQuantityFilters) ByQuantityReserved(QuantityReserved int) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
-		Prefix: ft.prefix,
-		Column: "quantity_reserved",
-		Value:  QuantityReserved,
-		IsNil:  QuantityReserved == 0,
-	}
-}
-
-func (ft VariantQuantityFilters) ByQuantityReservedPtr(QuantityReserved *int) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
-		Prefix: ft.prefix,
-		Column: "quantity_reserved",
-		Value:  QuantityReserved,
-		IsNil:  QuantityReserved == nil,
-		IsZero: QuantityReserved != nil && (*QuantityReserved) == 0,
 	}
 }
 
@@ -2260,25 +2075,6 @@ func (ft ProductSourceFilters) ByUpdatedAtPtr(UpdatedAt *time.Time) *sq.ColumnFi
 		Value:  UpdatedAt,
 		IsNil:  UpdatedAt == nil,
 		IsZero: UpdatedAt != nil && (*UpdatedAt).IsZero(),
-	}
-}
-
-func (ft ProductSourceFilters) ByLastSyncAt(LastSyncAt time.Time) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
-		Prefix: ft.prefix,
-		Column: "last_sync_at",
-		Value:  LastSyncAt,
-		IsNil:  LastSyncAt.IsZero(),
-	}
-}
-
-func (ft ProductSourceFilters) ByLastSyncAtPtr(LastSyncAt *time.Time) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
-		Prefix: ft.prefix,
-		Column: "last_sync_at",
-		Value:  LastSyncAt,
-		IsNil:  LastSyncAt == nil,
-		IsZero: LastSyncAt != nil && (*LastSyncAt).IsZero(),
 	}
 }
 

@@ -41,11 +41,11 @@ func New(
 	}
 }
 
-func (m *ProcessManager) GetActiveShipnowFulfillments(ctx context.Context, cmd *shipnow.GetActiveShipnowFulfillmentsCommand) ([]*shipnow.ShipnowFulfillment, error) {
-	return m.shipnow.GetActiveShipnowFulfillments(ctx, cmd)
-}
+// func (m *ProcessManager) GetActiveShipnowFulfillments(ctx context.Context, cmd *shipnow.GetActiveShipnowFulfillmentsArgs) ([]*shipnow.ShipnowFulfillment, error) {
+// 	return m.shipnow.GetActiveShipnowFulfillments(ctx, cmd)
+// }
 
-func (m *ProcessManager) HandleShipnowCreation(ctx context.Context, cmd *shipnow.CreateShipnowFulfillmentCommand) (*shipnow.ShipnowFulfillment, error) {
+func (m *ProcessManager) HandleShipnowCreation(ctx context.Context, cmd *shipnow.CreateShipnowFulfillmentArgs) (*shipnow.ShipnowFulfillment, error) {
 	if err := m.validateOrders(ctx, cmd.OrderIds, 0); err != nil {
 		return nil, err
 	}
@@ -79,7 +79,7 @@ func (m *ProcessManager) HandleShipnowCreation(ctx context.Context, cmd *shipnow
 	}
 
 	var deliveryPoints []*shipnow.DeliveryPoint
-	for _, order := range orders {
+	for _, order := range orders.Orders {
 		deliveryPoints = append(deliveryPoints, shipnowconvert.OrderToDeliveryPoint(order))
 	}
 
@@ -107,7 +107,7 @@ func (m *ProcessManager) HandleShipnowCreation(ctx context.Context, cmd *shipnow
 	return nil, nil
 }
 
-func (m *ProcessManager) HandleShipnowCancellation(ctx context.Context, cmd *shipnow.CancelShipnowFulfillmentCommand) error {
+func (m *ProcessManager) HandleShipnowCancellation(ctx context.Context, cmd *shipnow.CancelShipnowFulfillmentArgs) error {
 
 	// TODO
 	return cm.ErrTODO
@@ -158,10 +158,10 @@ func (m *ProcessManager) validateOrders(ctx context.Context, orderIDs []int64, s
 	if len(orderIDs) == 0 {
 		return cm.Errorf(cm.InvalidArgument, nil, "Vui lòng chọn đơn hàng")
 	}
-	cmd := &ordering.ValidateOrdersForShippingCommand{
+	cmd := &ordering.ValidateOrdersForShippingArgs{
 		OrderIDs: orderIDs,
 	}
-	if err := m.order.ValidateOrders(ctx, cmd); err != nil {
+	if _, err := m.order.ValidateOrders(ctx, cmd); err != nil {
 		return err
 	}
 	// for _, id := range orderIDs {

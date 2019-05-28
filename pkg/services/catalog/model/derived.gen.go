@@ -10,71 +10,6 @@ import (
 	core "etop.vn/backend/pkg/common/sql/core"
 )
 
-// *EtopProduct is a substruct of *Product
-func substructEtopProduct(_ *EtopProduct, _ *Product) bool { return true }
-
-func EtopProductsFromProducts(ps []*Product) []*EtopProduct {
-	ss := make([]*EtopProduct, len(ps))
-	for i, p := range ps {
-		ss[i] = NewEtopProductFromProduct(p)
-	}
-	return ss
-}
-
-func EtopProductsToProducts(ss []*EtopProduct) []*Product {
-	ps := make([]*Product, len(ss))
-	for i, s := range ss {
-		ps[i] = s.ToProduct()
-	}
-	return ps
-}
-
-func NewEtopProductFromProduct(sp *Product) *EtopProduct {
-	if sp == nil {
-		return nil
-	}
-	s := new(EtopProduct)
-	s.CopyFrom(sp)
-	return s
-}
-
-func (s *EtopProduct) ToProduct() *Product {
-	if s == nil {
-		return nil
-	}
-	sp := new(Product)
-	s.AssignTo(sp)
-	return sp
-}
-
-func (s *EtopProduct) CopyFrom(sp *Product) {
-	s.ID = sp.ID
-	s.Name = sp.Name
-	s.Description = sp.Description
-	s.DescHTML = sp.DescHTML
-	s.ShortDesc = sp.ShortDesc
-	s.ImageURLs = sp.ImageURLs
-	s.Status = sp.Status
-	s.Code = sp.Code
-	s.QuantityAvailable = sp.QuantityAvailable
-	s.QuantityOnHand = sp.QuantityOnHand
-	s.QuantityReserved = sp.QuantityReserved
-}
-
-func (s *EtopProduct) AssignTo(sp *Product) {
-	sp.ID = s.ID
-	sp.Name = s.Name
-	sp.Description = s.Description
-	sp.DescHTML = s.DescHTML
-	sp.ShortDesc = s.ShortDesc
-	sp.ImageURLs = s.ImageURLs
-	sp.Status = s.Status
-	sp.Code = s.Code
-	sp.QuantityAvailable = s.QuantityAvailable
-	sp.QuantityOnHand = s.QuantityOnHand
-	sp.QuantityReserved = s.QuantityReserved
-}
-
 type SQLWriter = core.SQLWriter
 
 // Type Product represents table product
@@ -83,7 +18,7 @@ func sqlgenProduct(_ *Product) bool { return true }
 type Products []*Product
 
 const __sqlProduct_Table = "product"
-const __sqlProduct_ListCols = "\"id\",\"product_source_id\",\"product_source_category_id\",\"etop_category_id\",\"name\",\"short_desc\",\"description\",\"desc_html\",\"ed_name\",\"ed_short_desc\",\"ed_description\",\"ed_desc_html\",\"ed_tags\",\"unit\",\"status\",\"code\",\"ed_code\",\"quantity_available\",\"quantity_on_hand\",\"quantity_reserved\",\"image_urls\",\"created_at\",\"updated_at\",\"name_norm\",\"name_norm_ua\""
+const __sqlProduct_ListCols = "\"id\",\"product_source_id\",\"product_source_category_id\",\"etop_category_id\",\"name\",\"short_desc\",\"description\",\"desc_html\",\"ed_name\",\"ed_short_desc\",\"ed_description\",\"ed_desc_html\",\"ed_tags\",\"unit\",\"status\",\"code\",\"ed_code\",\"image_urls\",\"created_at\",\"updated_at\",\"name_norm\",\"name_norm_ua\""
 const __sqlProduct_Insert = "INSERT INTO \"product\" (" + __sqlProduct_ListCols + ") VALUES"
 const __sqlProduct_Select = "SELECT " + __sqlProduct_ListCols + " FROM \"product\""
 const __sqlProduct_Select_history = "SELECT " + __sqlProduct_ListCols + " FROM history.\"product\""
@@ -113,9 +48,6 @@ func (m *Product) SQLArgs(opts core.Opts, create bool) []interface{} {
 		core.Int(m.Status),
 		core.String(m.Code),
 		core.String(m.EdCode),
-		core.Int(m.QuantityAvailable),
-		core.Int(m.QuantityOnHand),
-		core.Int(m.QuantityReserved),
 		core.Array{m.ImageURLs, opts},
 		core.Now(m.CreatedAt, now, create),
 		core.Now(m.UpdatedAt, now, true),
@@ -143,9 +75,6 @@ func (m *Product) SQLScanArgs(opts core.Opts) []interface{} {
 		(*core.Int)(&m.Status),
 		(*core.String)(&m.Code),
 		(*core.String)(&m.EdCode),
-		(*core.Int)(&m.QuantityAvailable),
-		(*core.Int)(&m.QuantityOnHand),
-		(*core.Int)(&m.QuantityReserved),
 		core.Array{&m.ImageURLs, opts},
 		(*core.Time)(&m.CreatedAt),
 		(*core.Time)(&m.UpdatedAt),
@@ -188,7 +117,7 @@ func (_ *Products) SQLSelect(w SQLWriter) error {
 func (m *Product) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlProduct_Insert)
 	w.WriteRawString(" (")
-	w.WriteMarkers(25)
+	w.WriteMarkers(22)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), true))
 	return nil
@@ -198,7 +127,7 @@ func (ms Products) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlProduct_Insert)
 	w.WriteRawString(" (")
 	for i := 0; i < len(ms); i++ {
-		w.WriteMarkers(25)
+		w.WriteMarkers(22)
 		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
 		w.WriteRawString("),(")
 	}
@@ -349,30 +278,6 @@ func (m *Product) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(m.EdCode)
 	}
-	if m.QuantityAvailable != 0 {
-		flag = true
-		w.WriteName("quantity_available")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(m.QuantityAvailable)
-	}
-	if m.QuantityOnHand != 0 {
-		flag = true
-		w.WriteName("quantity_on_hand")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(m.QuantityOnHand)
-	}
-	if m.QuantityReserved != 0 {
-		flag = true
-		w.WriteName("quantity_reserved")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(m.QuantityReserved)
-	}
 	if m.ImageURLs != nil {
 		flag = true
 		w.WriteName("image_urls")
@@ -423,7 +328,7 @@ func (m *Product) SQLUpdate(w SQLWriter) error {
 func (m *Product) SQLUpdateAll(w SQLWriter) error {
 	w.WriteQueryString(__sqlProduct_UpdateAll)
 	w.WriteRawString(" = (")
-	w.WriteMarkers(25)
+	w.WriteMarkers(22)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), false))
 	return nil
@@ -466,29 +371,22 @@ func (m ProductHistory) Unit() core.Interface           { return core.Interface{
 func (m ProductHistory) Status() core.Interface         { return core.Interface{m["status"]} }
 func (m ProductHistory) Code() core.Interface           { return core.Interface{m["code"]} }
 func (m ProductHistory) EdCode() core.Interface         { return core.Interface{m["ed_code"]} }
-func (m ProductHistory) QuantityAvailable() core.Interface {
-	return core.Interface{m["quantity_available"]}
-}
-func (m ProductHistory) QuantityOnHand() core.Interface { return core.Interface{m["quantity_on_hand"]} }
-func (m ProductHistory) QuantityReserved() core.Interface {
-	return core.Interface{m["quantity_reserved"]}
-}
-func (m ProductHistory) ImageURLs() core.Interface  { return core.Interface{m["image_urls"]} }
-func (m ProductHistory) CreatedAt() core.Interface  { return core.Interface{m["created_at"]} }
-func (m ProductHistory) UpdatedAt() core.Interface  { return core.Interface{m["updated_at"]} }
-func (m ProductHistory) NameNorm() core.Interface   { return core.Interface{m["name_norm"]} }
-func (m ProductHistory) NameNormUa() core.Interface { return core.Interface{m["name_norm_ua"]} }
+func (m ProductHistory) ImageURLs() core.Interface      { return core.Interface{m["image_urls"]} }
+func (m ProductHistory) CreatedAt() core.Interface      { return core.Interface{m["created_at"]} }
+func (m ProductHistory) UpdatedAt() core.Interface      { return core.Interface{m["updated_at"]} }
+func (m ProductHistory) NameNorm() core.Interface       { return core.Interface{m["name_norm"]} }
+func (m ProductHistory) NameNormUa() core.Interface     { return core.Interface{m["name_norm_ua"]} }
 
 func (m *ProductHistory) SQLScan(opts core.Opts, row *sql.Row) error {
-	data := make([]interface{}, 25)
-	args := make([]interface{}, 25)
-	for i := 0; i < 25; i++ {
+	data := make([]interface{}, 22)
+	args := make([]interface{}, 22)
+	for i := 0; i < 22; i++ {
 		args[i] = &data[i]
 	}
 	if err := row.Scan(args...); err != nil {
 		return err
 	}
-	res := make(ProductHistory, 25)
+	res := make(ProductHistory, 22)
 	res["id"] = data[0]
 	res["product_source_id"] = data[1]
 	res["product_source_category_id"] = data[2]
@@ -506,22 +404,19 @@ func (m *ProductHistory) SQLScan(opts core.Opts, row *sql.Row) error {
 	res["status"] = data[14]
 	res["code"] = data[15]
 	res["ed_code"] = data[16]
-	res["quantity_available"] = data[17]
-	res["quantity_on_hand"] = data[18]
-	res["quantity_reserved"] = data[19]
-	res["image_urls"] = data[20]
-	res["created_at"] = data[21]
-	res["updated_at"] = data[22]
-	res["name_norm"] = data[23]
-	res["name_norm_ua"] = data[24]
+	res["image_urls"] = data[17]
+	res["created_at"] = data[18]
+	res["updated_at"] = data[19]
+	res["name_norm"] = data[20]
+	res["name_norm_ua"] = data[21]
 	*m = res
 	return nil
 }
 
 func (ms *ProductHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	data := make([]interface{}, 25)
-	args := make([]interface{}, 25)
-	for i := 0; i < 25; i++ {
+	data := make([]interface{}, 22)
+	args := make([]interface{}, 22)
+	for i := 0; i < 22; i++ {
 		args[i] = &data[i]
 	}
 	res := make(ProductHistories, 0, 128)
@@ -547,14 +442,11 @@ func (ms *ProductHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
 		m["status"] = data[14]
 		m["code"] = data[15]
 		m["ed_code"] = data[16]
-		m["quantity_available"] = data[17]
-		m["quantity_on_hand"] = data[18]
-		m["quantity_reserved"] = data[19]
-		m["image_urls"] = data[20]
-		m["created_at"] = data[21]
-		m["updated_at"] = data[22]
-		m["name_norm"] = data[23]
-		m["name_norm_ua"] = data[24]
+		m["image_urls"] = data[17]
+		m["created_at"] = data[18]
+		m["updated_at"] = data[19]
+		m["name_norm"] = data[20]
+		m["name_norm_ua"] = data[21]
 		res = append(res, m)
 	}
 	if err := rows.Err(); err != nil {
@@ -668,7 +560,7 @@ func sqlgenVariant(_ *Variant) bool { return true }
 type Variants []*Variant
 
 const __sqlVariant_Table = "variant"
-const __sqlVariant_ListCols = "\"id\",\"product_id\",\"product_source_id\",\"product_source_category_id\",\"etop_category_id\",\"short_desc\",\"description\",\"desc_html\",\"ed_name\",\"ed_short_desc\",\"ed_description\",\"ed_desc_html\",\"desc_norm\",\"attr_norm_kv\",\"status\",\"etop_status\",\"ed_status\",\"code\",\"ed_code\",\"wholesale_price_0\",\"wholesale_price\",\"list_price\",\"retail_price_min\",\"retail_price_max\",\"ed_wholesale_price_0\",\"ed_wholesale_price\",\"ed_list_price\",\"ed_retail_price_min\",\"ed_retail_price_max\",\"quantity_available\",\"quantity_on_hand\",\"quantity_reserved\",\"image_urls\",\"cost_price\",\"attributes\",\"created_at\",\"updated_at\""
+const __sqlVariant_ListCols = "\"id\",\"product_id\",\"product_source_id\",\"product_source_category_id\",\"etop_category_id\",\"short_desc\",\"description\",\"desc_html\",\"ed_name\",\"ed_short_desc\",\"ed_description\",\"ed_desc_html\",\"desc_norm\",\"attr_norm_kv\",\"status\",\"etop_status\",\"ed_status\",\"code\",\"ed_code\",\"wholesale_price_0\",\"wholesale_price\",\"list_price\",\"retail_price_min\",\"retail_price_max\",\"ed_wholesale_price_0\",\"ed_wholesale_price\",\"ed_list_price\",\"ed_retail_price_min\",\"ed_retail_price_max\",\"image_urls\",\"cost_price\",\"attributes\",\"created_at\",\"updated_at\""
 const __sqlVariant_Insert = "INSERT INTO \"variant\" (" + __sqlVariant_ListCols + ") VALUES"
 const __sqlVariant_Select = "SELECT " + __sqlVariant_ListCols + " FROM \"variant\""
 const __sqlVariant_Select_history = "SELECT " + __sqlVariant_ListCols + " FROM history.\"variant\""
@@ -710,9 +602,6 @@ func (m *Variant) SQLArgs(opts core.Opts, create bool) []interface{} {
 		core.Int(m.EdListPrice),
 		core.Int(m.EdRetailPriceMin),
 		core.Int(m.EdRetailPriceMax),
-		core.Int(m.QuantityAvailable),
-		core.Int(m.QuantityOnHand),
-		core.Int(m.QuantityReserved),
 		core.Array{m.ImageURLs, opts},
 		core.Int(m.CostPrice),
 		core.JSON{m.Attributes},
@@ -752,9 +641,6 @@ func (m *Variant) SQLScanArgs(opts core.Opts) []interface{} {
 		(*core.Int)(&m.EdListPrice),
 		(*core.Int)(&m.EdRetailPriceMin),
 		(*core.Int)(&m.EdRetailPriceMax),
-		(*core.Int)(&m.QuantityAvailable),
-		(*core.Int)(&m.QuantityOnHand),
-		(*core.Int)(&m.QuantityReserved),
 		core.Array{&m.ImageURLs, opts},
 		(*core.Int)(&m.CostPrice),
 		core.JSON{&m.Attributes},
@@ -797,7 +683,7 @@ func (_ *Variants) SQLSelect(w SQLWriter) error {
 func (m *Variant) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlVariant_Insert)
 	w.WriteRawString(" (")
-	w.WriteMarkers(37)
+	w.WriteMarkers(34)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), true))
 	return nil
@@ -807,7 +693,7 @@ func (ms Variants) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlVariant_Insert)
 	w.WriteRawString(" (")
 	for i := 0; i < len(ms); i++ {
-		w.WriteMarkers(37)
+		w.WriteMarkers(34)
 		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
 		w.WriteRawString("),(")
 	}
@@ -1054,30 +940,6 @@ func (m *Variant) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(m.EdRetailPriceMax)
 	}
-	if m.QuantityAvailable != 0 {
-		flag = true
-		w.WriteName("quantity_available")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(m.QuantityAvailable)
-	}
-	if m.QuantityOnHand != 0 {
-		flag = true
-		w.WriteName("quantity_on_hand")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(m.QuantityOnHand)
-	}
-	if m.QuantityReserved != 0 {
-		flag = true
-		w.WriteName("quantity_reserved")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(m.QuantityReserved)
-	}
 	if m.ImageURLs != nil {
 		flag = true
 		w.WriteName("image_urls")
@@ -1128,7 +990,7 @@ func (m *Variant) SQLUpdate(w SQLWriter) error {
 func (m *Variant) SQLUpdateAll(w SQLWriter) error {
 	w.WriteQueryString(__sqlVariant_UpdateAll)
 	w.WriteRawString(" = (")
-	w.WriteMarkers(37)
+	w.WriteMarkers(34)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), false))
 	return nil
@@ -1193,13 +1055,6 @@ func (m VariantHistory) EdRetailPriceMin() core.Interface {
 func (m VariantHistory) EdRetailPriceMax() core.Interface {
 	return core.Interface{m["ed_retail_price_max"]}
 }
-func (m VariantHistory) QuantityAvailable() core.Interface {
-	return core.Interface{m["quantity_available"]}
-}
-func (m VariantHistory) QuantityOnHand() core.Interface { return core.Interface{m["quantity_on_hand"]} }
-func (m VariantHistory) QuantityReserved() core.Interface {
-	return core.Interface{m["quantity_reserved"]}
-}
 func (m VariantHistory) ImageURLs() core.Interface  { return core.Interface{m["image_urls"]} }
 func (m VariantHistory) CostPrice() core.Interface  { return core.Interface{m["cost_price"]} }
 func (m VariantHistory) Attributes() core.Interface { return core.Interface{m["attributes"]} }
@@ -1207,15 +1062,15 @@ func (m VariantHistory) CreatedAt() core.Interface  { return core.Interface{m["c
 func (m VariantHistory) UpdatedAt() core.Interface  { return core.Interface{m["updated_at"]} }
 
 func (m *VariantHistory) SQLScan(opts core.Opts, row *sql.Row) error {
-	data := make([]interface{}, 37)
-	args := make([]interface{}, 37)
-	for i := 0; i < 37; i++ {
+	data := make([]interface{}, 34)
+	args := make([]interface{}, 34)
+	for i := 0; i < 34; i++ {
 		args[i] = &data[i]
 	}
 	if err := row.Scan(args...); err != nil {
 		return err
 	}
-	res := make(VariantHistory, 37)
+	res := make(VariantHistory, 34)
 	res["id"] = data[0]
 	res["product_id"] = data[1]
 	res["product_source_id"] = data[2]
@@ -1245,22 +1100,19 @@ func (m *VariantHistory) SQLScan(opts core.Opts, row *sql.Row) error {
 	res["ed_list_price"] = data[26]
 	res["ed_retail_price_min"] = data[27]
 	res["ed_retail_price_max"] = data[28]
-	res["quantity_available"] = data[29]
-	res["quantity_on_hand"] = data[30]
-	res["quantity_reserved"] = data[31]
-	res["image_urls"] = data[32]
-	res["cost_price"] = data[33]
-	res["attributes"] = data[34]
-	res["created_at"] = data[35]
-	res["updated_at"] = data[36]
+	res["image_urls"] = data[29]
+	res["cost_price"] = data[30]
+	res["attributes"] = data[31]
+	res["created_at"] = data[32]
+	res["updated_at"] = data[33]
 	*m = res
 	return nil
 }
 
 func (ms *VariantHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	data := make([]interface{}, 37)
-	args := make([]interface{}, 37)
-	for i := 0; i < 37; i++ {
+	data := make([]interface{}, 34)
+	args := make([]interface{}, 34)
+	for i := 0; i < 34; i++ {
 		args[i] = &data[i]
 	}
 	res := make(VariantHistories, 0, 128)
@@ -1298,14 +1150,11 @@ func (ms *VariantHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
 		m["ed_list_price"] = data[26]
 		m["ed_retail_price_min"] = data[27]
 		m["ed_retail_price_max"] = data[28]
-		m["quantity_available"] = data[29]
-		m["quantity_on_hand"] = data[30]
-		m["quantity_reserved"] = data[31]
-		m["image_urls"] = data[32]
-		m["cost_price"] = data[33]
-		m["attributes"] = data[34]
-		m["created_at"] = data[35]
-		m["updated_at"] = data[36]
+		m["image_urls"] = data[29]
+		m["cost_price"] = data[30]
+		m["attributes"] = data[31]
+		m["created_at"] = data[32]
+		m["updated_at"] = data[33]
 		res = append(res, m)
 	}
 	if err := rows.Err(); err != nil {
@@ -1677,253 +1526,6 @@ func (ms *PriceDefHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
 		m["list_price"] = data[2]
 		m["retail_price_min"] = data[3]
 		m["retail_price_max"] = data[4]
-		res = append(res, m)
-	}
-	if err := rows.Err(); err != nil {
-		return err
-	}
-	*ms = res
-	return nil
-}
-
-// *VariantQuantity is a substruct of *Variant
-func substructVariantQuantity(_ *VariantQuantity, _ *Variant) bool { return true }
-
-func VariantQuantitiesFromVariants(ps []*Variant) []*VariantQuantity {
-	ss := make([]*VariantQuantity, len(ps))
-	for i, p := range ps {
-		ss[i] = NewVariantQuantityFromVariant(p)
-	}
-	return ss
-}
-
-func VariantQuantitiesToVariants(ss []*VariantQuantity) []*Variant {
-	ps := make([]*Variant, len(ss))
-	for i, s := range ss {
-		ps[i] = s.ToVariant()
-	}
-	return ps
-}
-
-func NewVariantQuantityFromVariant(sp *Variant) *VariantQuantity {
-	if sp == nil {
-		return nil
-	}
-	s := new(VariantQuantity)
-	s.CopyFrom(sp)
-	return s
-}
-
-func (s *VariantQuantity) ToVariant() *Variant {
-	if s == nil {
-		return nil
-	}
-	sp := new(Variant)
-	s.AssignTo(sp)
-	return sp
-}
-
-func (s *VariantQuantity) CopyFrom(sp *Variant) {
-	s.QuantityAvailable = sp.QuantityAvailable
-	s.QuantityOnHand = sp.QuantityOnHand
-	s.QuantityReserved = sp.QuantityReserved
-}
-
-func (s *VariantQuantity) AssignTo(sp *Variant) {
-	sp.QuantityAvailable = s.QuantityAvailable
-	sp.QuantityOnHand = s.QuantityOnHand
-	sp.QuantityReserved = s.QuantityReserved
-}
-
-// Type VariantQuantity represents table variant
-func sqlgenVariantQuantity(_ *VariantQuantity, _ *Variant) bool { return true }
-
-type VariantQuantities []*VariantQuantity
-
-const __sqlVariantQuantity_Table = "variant"
-const __sqlVariantQuantity_ListCols = "\"quantity_available\",\"quantity_on_hand\",\"quantity_reserved\""
-const __sqlVariantQuantity_Insert = "INSERT INTO \"variant\" (" + __sqlVariantQuantity_ListCols + ") VALUES"
-const __sqlVariantQuantity_Select = "SELECT " + __sqlVariantQuantity_ListCols + " FROM \"variant\""
-const __sqlVariantQuantity_Select_history = "SELECT " + __sqlVariantQuantity_ListCols + " FROM history.\"variant\""
-const __sqlVariantQuantity_UpdateAll = "UPDATE \"variant\" SET (" + __sqlVariantQuantity_ListCols + ")"
-
-func (m *VariantQuantity) SQLTableName() string   { return "variant" }
-func (m *VariantQuantities) SQLTableName() string { return "variant" }
-func (m *VariantQuantity) SQLListCols() string    { return __sqlVariantQuantity_ListCols }
-
-func (m *VariantQuantity) SQLArgs(opts core.Opts, create bool) []interface{} {
-	return []interface{}{
-		core.Int(m.QuantityAvailable),
-		core.Int(m.QuantityOnHand),
-		core.Int(m.QuantityReserved),
-	}
-}
-
-func (m *VariantQuantity) SQLScanArgs(opts core.Opts) []interface{} {
-	return []interface{}{
-		(*core.Int)(&m.QuantityAvailable),
-		(*core.Int)(&m.QuantityOnHand),
-		(*core.Int)(&m.QuantityReserved),
-	}
-}
-
-func (m *VariantQuantity) SQLScan(opts core.Opts, row *sql.Row) error {
-	return row.Scan(m.SQLScanArgs(opts)...)
-}
-
-func (ms *VariantQuantities) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	res := make(VariantQuantities, 0, 128)
-	for rows.Next() {
-		m := new(VariantQuantity)
-		args := m.SQLScanArgs(opts)
-		if err := rows.Scan(args...); err != nil {
-			return err
-		}
-		res = append(res, m)
-	}
-	if err := rows.Err(); err != nil {
-		return err
-	}
-	*ms = res
-	return nil
-}
-
-func (_ *VariantQuantity) SQLSelect(w SQLWriter) error {
-	w.WriteQueryString(__sqlVariantQuantity_Select)
-	return nil
-}
-
-func (_ *VariantQuantities) SQLSelect(w SQLWriter) error {
-	w.WriteQueryString(__sqlVariantQuantity_Select)
-	return nil
-}
-
-func (m *VariantQuantity) SQLInsert(w SQLWriter) error {
-	w.WriteQueryString(__sqlVariantQuantity_Insert)
-	w.WriteRawString(" (")
-	w.WriteMarkers(3)
-	w.WriteByte(')')
-	w.WriteArgs(m.SQLArgs(w.Opts(), true))
-	return nil
-}
-
-func (ms VariantQuantities) SQLInsert(w SQLWriter) error {
-	w.WriteQueryString(__sqlVariantQuantity_Insert)
-	w.WriteRawString(" (")
-	for i := 0; i < len(ms); i++ {
-		w.WriteMarkers(3)
-		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
-		w.WriteRawString("),(")
-	}
-	w.TrimLast(2)
-	return nil
-}
-
-func (m *VariantQuantity) SQLUpdate(w SQLWriter) error {
-	now, opts := time.Now(), w.Opts()
-	_, _ = now, opts // suppress unuse error
-	var flag bool
-	w.WriteRawString("UPDATE ")
-	w.WriteName("variant")
-	w.WriteRawString(" SET ")
-	if m.QuantityAvailable != 0 {
-		flag = true
-		w.WriteName("quantity_available")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(m.QuantityAvailable)
-	}
-	if m.QuantityOnHand != 0 {
-		flag = true
-		w.WriteName("quantity_on_hand")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(m.QuantityOnHand)
-	}
-	if m.QuantityReserved != 0 {
-		flag = true
-		w.WriteName("quantity_reserved")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(m.QuantityReserved)
-	}
-	if !flag {
-		return core.ErrNoColumn
-	}
-	w.TrimLast(1)
-	return nil
-}
-
-func (m *VariantQuantity) SQLUpdateAll(w SQLWriter) error {
-	w.WriteQueryString(__sqlVariantQuantity_UpdateAll)
-	w.WriteRawString(" = (")
-	w.WriteMarkers(3)
-	w.WriteByte(')')
-	w.WriteArgs(m.SQLArgs(w.Opts(), false))
-	return nil
-}
-
-type VariantQuantityHistory map[string]interface{}
-type VariantQuantityHistories []map[string]interface{}
-
-func (m *VariantQuantityHistory) SQLTableName() string  { return "history.\"variant\"" }
-func (m VariantQuantityHistories) SQLTableName() string { return "history.\"variant\"" }
-
-func (m *VariantQuantityHistory) SQLSelect(w SQLWriter) error {
-	w.WriteQueryString(__sqlVariantQuantity_Select_history)
-	return nil
-}
-
-func (m VariantQuantityHistories) SQLSelect(w SQLWriter) error {
-	w.WriteQueryString(__sqlVariantQuantity_Select_history)
-	return nil
-}
-
-func (m VariantQuantityHistory) QuantityAvailable() core.Interface {
-	return core.Interface{m["quantity_available"]}
-}
-func (m VariantQuantityHistory) QuantityOnHand() core.Interface {
-	return core.Interface{m["quantity_on_hand"]}
-}
-func (m VariantQuantityHistory) QuantityReserved() core.Interface {
-	return core.Interface{m["quantity_reserved"]}
-}
-
-func (m *VariantQuantityHistory) SQLScan(opts core.Opts, row *sql.Row) error {
-	data := make([]interface{}, 3)
-	args := make([]interface{}, 3)
-	for i := 0; i < 3; i++ {
-		args[i] = &data[i]
-	}
-	if err := row.Scan(args...); err != nil {
-		return err
-	}
-	res := make(VariantQuantityHistory, 3)
-	res["quantity_available"] = data[0]
-	res["quantity_on_hand"] = data[1]
-	res["quantity_reserved"] = data[2]
-	*m = res
-	return nil
-}
-
-func (ms *VariantQuantityHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	data := make([]interface{}, 3)
-	args := make([]interface{}, 3)
-	for i := 0; i < 3; i++ {
-		args[i] = &data[i]
-	}
-	res := make(VariantQuantityHistories, 0, 128)
-	for rows.Next() {
-		if err := rows.Scan(args...); err != nil {
-			return err
-		}
-		m := make(VariantQuantityHistory)
-		m["quantity_available"] = data[0]
-		m["quantity_on_hand"] = data[1]
-		m["quantity_reserved"] = data[2]
 		res = append(res, m)
 	}
 	if err := rows.Err(); err != nil {
@@ -3787,7 +3389,7 @@ func sqlgenProductSource(_ *ProductSource) bool { return true }
 type ProductSources []*ProductSource
 
 const __sqlProductSource_Table = "product_source"
-const __sqlProductSource_ListCols = "\"id\",\"type\",\"name\",\"status\",\"created_at\",\"updated_at\",\"last_sync_at\",\"sync_state_products\",\"sync_state_categories\""
+const __sqlProductSource_ListCols = "\"id\",\"type\",\"name\",\"status\",\"created_at\",\"updated_at\""
 const __sqlProductSource_Insert = "INSERT INTO \"product_source\" (" + __sqlProductSource_ListCols + ") VALUES"
 const __sqlProductSource_Select = "SELECT " + __sqlProductSource_ListCols + " FROM \"product_source\""
 const __sqlProductSource_Select_history = "SELECT " + __sqlProductSource_ListCols + " FROM history.\"product_source\""
@@ -3806,9 +3408,6 @@ func (m *ProductSource) SQLArgs(opts core.Opts, create bool) []interface{} {
 		core.Int(m.Status),
 		core.Now(m.CreatedAt, now, create),
 		core.Now(m.UpdatedAt, now, true),
-		core.Time(m.LastSyncAt),
-		core.JSON{m.SyncStateProducts},
-		core.JSON{m.SyncStateCategories},
 	}
 }
 
@@ -3820,9 +3419,6 @@ func (m *ProductSource) SQLScanArgs(opts core.Opts) []interface{} {
 		(*core.Int)(&m.Status),
 		(*core.Time)(&m.CreatedAt),
 		(*core.Time)(&m.UpdatedAt),
-		(*core.Time)(&m.LastSyncAt),
-		core.JSON{&m.SyncStateProducts},
-		core.JSON{&m.SyncStateCategories},
 	}
 }
 
@@ -3860,7 +3456,7 @@ func (_ *ProductSources) SQLSelect(w SQLWriter) error {
 func (m *ProductSource) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlProductSource_Insert)
 	w.WriteRawString(" (")
-	w.WriteMarkers(9)
+	w.WriteMarkers(6)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), true))
 	return nil
@@ -3870,7 +3466,7 @@ func (ms ProductSources) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlProductSource_Insert)
 	w.WriteRawString(" (")
 	for i := 0; i < len(ms); i++ {
-		w.WriteMarkers(9)
+		w.WriteMarkers(6)
 		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
 		w.WriteRawString("),(")
 	}
@@ -3933,30 +3529,6 @@ func (m *ProductSource) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(core.Now(m.UpdatedAt, time.Now(), true))
 	}
-	if !m.LastSyncAt.IsZero() {
-		flag = true
-		w.WriteName("last_sync_at")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(m.LastSyncAt)
-	}
-	if m.SyncStateProducts != nil {
-		flag = true
-		w.WriteName("sync_state_products")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(core.JSON{m.SyncStateProducts})
-	}
-	if m.SyncStateCategories != nil {
-		flag = true
-		w.WriteName("sync_state_categories")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(core.JSON{m.SyncStateCategories})
-	}
 	if !flag {
 		return core.ErrNoColumn
 	}
@@ -3967,7 +3539,7 @@ func (m *ProductSource) SQLUpdate(w SQLWriter) error {
 func (m *ProductSource) SQLUpdateAll(w SQLWriter) error {
 	w.WriteQueryString(__sqlProductSource_UpdateAll)
 	w.WriteRawString(" = (")
-	w.WriteMarkers(9)
+	w.WriteMarkers(6)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), false))
 	return nil
@@ -3989,47 +3561,37 @@ func (m ProductSourceHistories) SQLSelect(w SQLWriter) error {
 	return nil
 }
 
-func (m ProductSourceHistory) ID() core.Interface         { return core.Interface{m["id"]} }
-func (m ProductSourceHistory) Type() core.Interface       { return core.Interface{m["type"]} }
-func (m ProductSourceHistory) Name() core.Interface       { return core.Interface{m["name"]} }
-func (m ProductSourceHistory) Status() core.Interface     { return core.Interface{m["status"]} }
-func (m ProductSourceHistory) CreatedAt() core.Interface  { return core.Interface{m["created_at"]} }
-func (m ProductSourceHistory) UpdatedAt() core.Interface  { return core.Interface{m["updated_at"]} }
-func (m ProductSourceHistory) LastSyncAt() core.Interface { return core.Interface{m["last_sync_at"]} }
-func (m ProductSourceHistory) SyncStateProducts() core.Interface {
-	return core.Interface{m["sync_state_products"]}
-}
-func (m ProductSourceHistory) SyncStateCategories() core.Interface {
-	return core.Interface{m["sync_state_categories"]}
-}
+func (m ProductSourceHistory) ID() core.Interface        { return core.Interface{m["id"]} }
+func (m ProductSourceHistory) Type() core.Interface      { return core.Interface{m["type"]} }
+func (m ProductSourceHistory) Name() core.Interface      { return core.Interface{m["name"]} }
+func (m ProductSourceHistory) Status() core.Interface    { return core.Interface{m["status"]} }
+func (m ProductSourceHistory) CreatedAt() core.Interface { return core.Interface{m["created_at"]} }
+func (m ProductSourceHistory) UpdatedAt() core.Interface { return core.Interface{m["updated_at"]} }
 
 func (m *ProductSourceHistory) SQLScan(opts core.Opts, row *sql.Row) error {
-	data := make([]interface{}, 9)
-	args := make([]interface{}, 9)
-	for i := 0; i < 9; i++ {
+	data := make([]interface{}, 6)
+	args := make([]interface{}, 6)
+	for i := 0; i < 6; i++ {
 		args[i] = &data[i]
 	}
 	if err := row.Scan(args...); err != nil {
 		return err
 	}
-	res := make(ProductSourceHistory, 9)
+	res := make(ProductSourceHistory, 6)
 	res["id"] = data[0]
 	res["type"] = data[1]
 	res["name"] = data[2]
 	res["status"] = data[3]
 	res["created_at"] = data[4]
 	res["updated_at"] = data[5]
-	res["last_sync_at"] = data[6]
-	res["sync_state_products"] = data[7]
-	res["sync_state_categories"] = data[8]
 	*m = res
 	return nil
 }
 
 func (ms *ProductSourceHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	data := make([]interface{}, 9)
-	args := make([]interface{}, 9)
-	for i := 0; i < 9; i++ {
+	data := make([]interface{}, 6)
+	args := make([]interface{}, 6)
+	for i := 0; i < 6; i++ {
 		args[i] = &data[i]
 	}
 	res := make(ProductSourceHistories, 0, 128)
@@ -4044,9 +3606,6 @@ func (ms *ProductSourceHistories) SQLScan(opts core.Opts, rows *sql.Rows) error 
 		m["status"] = data[3]
 		m["created_at"] = data[4]
 		m["updated_at"] = data[5]
-		m["last_sync_at"] = data[6]
-		m["sync_state_products"] = data[7]
-		m["sync_state_categories"] = data[8]
 		res = append(res, m)
 	}
 	if err := rows.Err(); err != nil {

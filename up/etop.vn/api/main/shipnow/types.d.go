@@ -6,8 +6,51 @@ import (
 	context "context"
 	unsafe "unsafe"
 
+	orderingv1types "etop.vn/api/main/ordering/v1/types"
 	shipnowv1 "etop.vn/api/main/shipnow/v1"
+	metav1 "etop.vn/api/meta/v1"
 )
+
+type CancelShipnowFulfillmentCommand struct {
+	Id           int64  `json:"id"`
+	CancelReason string `json:"cancel_reason"`
+
+	Result *metav1.Empty `json:"-"`
+}
+
+type ConfirmShipnowFulfillmentCommand struct {
+	Id     int64 `json:"id"`
+	ShopId int64 `json:"shop_id"`
+
+	Result *shipnowv1.ShipnowFulfillment `json:"-"`
+}
+
+type CreateShipnowFulfillmentCommand struct {
+	OrderIds            []int64                  `json:"order_ids,omitempty"`
+	Carrier             string                   `json:"carrier"`
+	ShopId              int64                    `json:"shop_id"`
+	ShippingServiceCode string                   `json:"shipping_service_code"`
+	ShippingServiceFee  int32                    `json:"shipping_service_fee"`
+	ShippingNote        string                   `json:"shipping_note"`
+	RequestPickupAt     *metav1.Timestamp        `json:"request_pickup_at,omitempty"`
+	PickupAddress       *orderingv1types.Address `json:"pickup_address,omitempty"`
+
+	Result *shipnowv1.ShipnowFulfillment `json:"-"`
+}
+
+type UpdateShipnowFulfillmentCommand struct {
+	Id                  int64                    `json:"id"`
+	OrderIds            []int64                  `json:"order_ids,omitempty"`
+	Carrier             string                   `json:"carrier"`
+	ShopId              int64                    `json:"shop_id"`
+	ShippingServiceCode string                   `json:"shipping_service_code"`
+	ShippingServiceFee  int32                    `json:"shipping_service_fee"`
+	ShippingNote        string                   `json:"shipping_note"`
+	RequestPickupAt     *metav1.Timestamp        `json:"request_pickup_at,omitempty"`
+	PickupAddress       *orderingv1types.Address `json:"pickup_address,omitempty"`
+
+	Result *shipnowv1.ShipnowFulfillment `json:"-"`
+}
 
 type GetShipnowFulfillmentQuery struct {
 	Id     int64 `json:"id"`
@@ -22,8 +65,20 @@ type GetShipnowFulfillmentsQuery struct {
 	Result *shipnowv1.GetShipnowFulfillmentsQueryResult `json:"-"`
 }
 
-// implement query conversion
+// implement conversion
 
+func (q *CancelShipnowFulfillmentCommand) GetArgs() *shipnowv1.CancelShipnowFulfillmentCommand {
+	return (*shipnowv1.CancelShipnowFulfillmentCommand)(unsafe.Pointer(q))
+}
+func (q *ConfirmShipnowFulfillmentCommand) GetArgs() *shipnowv1.ConfirmShipnowFulfillmentCommand {
+	return (*shipnowv1.ConfirmShipnowFulfillmentCommand)(unsafe.Pointer(q))
+}
+func (q *CreateShipnowFulfillmentCommand) GetArgs() *shipnowv1.CreateShipnowFulfillmentCommand {
+	return (*shipnowv1.CreateShipnowFulfillmentCommand)(unsafe.Pointer(q))
+}
+func (q *UpdateShipnowFulfillmentCommand) GetArgs() *shipnowv1.UpdateShipnowFulfillmentCommand {
+	return (*shipnowv1.UpdateShipnowFulfillmentCommand)(unsafe.Pointer(q))
+}
 func (q *GetShipnowFulfillmentQuery) GetArgs() *shipnowv1.GetShipnowFulfillmentQueryArgs {
 	return (*shipnowv1.GetShipnowFulfillmentQueryArgs)(unsafe.Pointer(q))
 }
@@ -32,6 +87,45 @@ func (q *GetShipnowFulfillmentsQuery) GetArgs() *shipnowv1.GetShipnowFulfillment
 }
 
 // implement dispatching
+
+type AggregateHandler struct {
+	inner Aggregate
+}
+
+func NewAggregateHandler(service Aggregate) AggregateHandler { return AggregateHandler{service} }
+
+func (h AggregateHandler) RegisterHandlers(b interface {
+	AddHandler(handler interface{})
+}) {
+	b.AddHandler(h.HandleCancelShipnowFulfillment)
+	b.AddHandler(h.HandleConfirmShipnowFulfillment)
+	b.AddHandler(h.HandleCreateShipnowFulfillment)
+	b.AddHandler(h.HandleUpdateShipnowFulfillment)
+}
+
+func (h AggregateHandler) HandleCancelShipnowFulfillment(ctx context.Context, cmd *CancelShipnowFulfillmentCommand) error {
+	result, err := h.inner.CancelShipnowFulfillment(ctx, cmd.GetArgs())
+	cmd.Result = result
+	return err
+}
+
+func (h AggregateHandler) HandleConfirmShipnowFulfillment(ctx context.Context, cmd *ConfirmShipnowFulfillmentCommand) error {
+	result, err := h.inner.ConfirmShipnowFulfillment(ctx, cmd.GetArgs())
+	cmd.Result = result
+	return err
+}
+
+func (h AggregateHandler) HandleCreateShipnowFulfillment(ctx context.Context, cmd *CreateShipnowFulfillmentCommand) error {
+	result, err := h.inner.CreateShipnowFulfillment(ctx, cmd.GetArgs())
+	cmd.Result = result
+	return err
+}
+
+func (h AggregateHandler) HandleUpdateShipnowFulfillment(ctx context.Context, cmd *UpdateShipnowFulfillmentCommand) error {
+	result, err := h.inner.UpdateShipnowFulfillment(ctx, cmd.GetArgs())
+	cmd.Result = result
+	return err
+}
 
 type QueryServiceHandler struct {
 	inner QueryService

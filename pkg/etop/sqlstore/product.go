@@ -14,7 +14,7 @@ import (
 	"etop.vn/backend/pkg/common/validate"
 	"etop.vn/backend/pkg/etop/model"
 	catalogmodel "etop.vn/backend/pkg/services/catalog/model"
-	"etop.vn/backend/pkg/services/catalog/modelx"
+	catalogmodelx "etop.vn/backend/pkg/services/catalog/modelx"
 	catalogsqlstore "etop.vn/backend/pkg/services/catalog/sqlstore"
 )
 
@@ -34,7 +34,6 @@ func init() {
 		UpdateVariantPrice,
 		UpdateVariants,
 		UpdateProductsEtopCategory,
-		UpdateVariantsStatus,
 		UpdateShopVariant,
 		UpdateShopVariantsStatus,
 		UpdateShopVariantsTags,
@@ -43,7 +42,6 @@ func init() {
 		GetVariantsExtended,
 		UpdateVariant,
 		UpdateProductImages,
-		UpdateProductsStatus,
 
 		AddShopProducts,
 		GetShopProduct,
@@ -126,7 +124,7 @@ func GetVariantByProductIDs(productIds []int64, filters []cm.Filter) ([]*catalog
 	return variants, nil
 }
 
-func GetProduct(ctx context.Context, query *modelx.GetProductQuery) error {
+func GetProduct(ctx context.Context, query *catalogmodelx.GetProductQuery) error {
 	if query.ProductID == 0 {
 		return cm.Error(cm.NotFound, "", nil)
 	}
@@ -153,7 +151,7 @@ func GetProduct(ctx context.Context, query *modelx.GetProductQuery) error {
 	return nil
 }
 
-func GetProductsExtended(ctx context.Context, query *modelx.GetProductsExtendedQuery) error {
+func GetProductsExtended(ctx context.Context, query *catalogmodelx.GetProductsExtendedQuery) error {
 	s := x.Table("product").Where("p.deleted_at is NULL")
 	if query.ProductSourceType != "" {
 		s = s.Where("ps.type = ?", query.ProductSourceType)
@@ -227,7 +225,7 @@ func GetProductsExtended(ctx context.Context, query *modelx.GetProductsExtendedQ
 	return nil
 }
 
-func GetVariant(ctx context.Context, query *modelx.GetVariantQuery) error {
+func GetVariant(ctx context.Context, query *catalogmodelx.GetVariantQuery) error {
 	if query.VariantID == 0 {
 		return cm.Error(cm.NotFound, "", nil)
 	}
@@ -246,7 +244,7 @@ func GetVariant(ctx context.Context, query *modelx.GetVariantQuery) error {
 	return nil
 }
 
-func GetVariantsExtended(ctx context.Context, query *modelx.GetVariantsExtendedQuery) error {
+func GetVariantsExtended(ctx context.Context, query *catalogmodelx.GetVariantsExtendedQuery) error {
 	if query.SkipPaging {
 		// IDs, Codes or EdCodes mut be provided
 		if query.IDs == nil && query.EdCodes == nil && query.Codes == nil {
@@ -296,7 +294,7 @@ func GetVariantsExtended(ctx context.Context, query *modelx.GetVariantsExtendedQ
 	return nil
 }
 
-func UpdateProduct(ctx context.Context, cmd *modelx.UpdateProductCommand) error {
+func UpdateProduct(ctx context.Context, cmd *catalogmodelx.UpdateProductCommand) error {
 	if err := cmd.Product.BeforeUpdate(); err != nil {
 		return err
 	}
@@ -311,7 +309,7 @@ func UpdateProduct(ctx context.Context, cmd *modelx.UpdateProductCommand) error 
 		return err
 	}
 
-	query := &modelx.GetProductQuery{
+	query := &catalogmodelx.GetProductQuery{
 		ProductID: cmd.Product.ID,
 	}
 	if pErr := GetProduct(ctx, query); pErr != nil {
@@ -322,7 +320,7 @@ func UpdateProduct(ctx context.Context, cmd *modelx.UpdateProductCommand) error 
 	return nil
 }
 
-func UpdateVariant(ctx context.Context, cmd *modelx.UpdateVariantCommand) error {
+func UpdateVariant(ctx context.Context, cmd *catalogmodelx.UpdateVariantCommand) error {
 	if cmd.Variant == nil || cmd.Variant.ID == 0 {
 		return cm.Error(cm.InvalidArgument, "Thiếu VariantID", nil)
 	}
@@ -349,7 +347,7 @@ func UpdateVariant(ctx context.Context, cmd *modelx.UpdateVariantCommand) error 
 	return nil
 }
 
-func UpdateVariantImages(ctx context.Context, cmd *modelx.UpdateVariantImagesCommand) error {
+func UpdateVariantImages(ctx context.Context, cmd *catalogmodelx.UpdateVariantImagesCommand) error {
 	if cmd.VariantID == 0 {
 		return cm.Error(cm.InvalidArgument, "Thiếu VariantID", nil)
 	}
@@ -371,7 +369,7 @@ func UpdateVariantImages(ctx context.Context, cmd *modelx.UpdateVariantImagesCom
 	return nil
 }
 
-func UpdateProductImages(ctx context.Context, cmd *modelx.UpdateProductImagesCommand) error {
+func UpdateProductImages(ctx context.Context, cmd *catalogmodelx.UpdateProductImagesCommand) error {
 	if cmd.ProductID == 0 {
 		return cm.Error(cm.InvalidArgument, "Thiếu ProductID", nil)
 	}
@@ -385,7 +383,7 @@ func UpdateProductImages(ctx context.Context, cmd *modelx.UpdateProductImagesCom
 		return err
 	}
 
-	query := &modelx.GetProductQuery{
+	query := &catalogmodelx.GetProductQuery{
 		ProductID: cmd.ProductID,
 	}
 	if pErr := GetProduct(ctx, query); pErr != nil {
@@ -396,7 +394,7 @@ func UpdateProductImages(ctx context.Context, cmd *modelx.UpdateProductImagesCom
 	return nil
 }
 
-func UpdateVariantPrice(ctx context.Context, cmd *modelx.UpdateVariantPriceCommand) error {
+func UpdateVariantPrice(ctx context.Context, cmd *catalogmodelx.UpdateVariantPriceCommand) error {
 	if cmd.VariantID == 0 {
 		return cm.Error(cm.InvalidArgument, "Missing VariantID", nil)
 	}
@@ -414,7 +412,7 @@ func UpdateVariantPrice(ctx context.Context, cmd *modelx.UpdateVariantPriceComma
 	return nil
 }
 
-func UpdateVariants(ctx context.Context, cmd *modelx.UpdateVariantsCommand) error {
+func UpdateVariants(ctx context.Context, cmd *catalogmodelx.UpdateVariantsCommand) error {
 	toUpdates := 0
 	ids := make([]int64, len(cmd.Variants))
 	errs := make([]error, len(cmd.Variants))
@@ -472,24 +470,7 @@ func UpdateVariants(ctx context.Context, cmd *modelx.UpdateVariantsCommand) erro
 	return nil
 }
 
-func UpdateVariantsStatus(ctx context.Context, cmd *modelx.UpdateVariantsStatusCommand) error {
-	s := x.Table("variant").In("id", cmd.IDs).Where("v.deleted_at is NULL")
-	s = FilterStatus(s, "", cmd.StatusQuery)
-
-	m := make(map[string]interface{})
-	if cmd.Update.EtopStatus != nil {
-		m["etop_status"] = cmd.Update.EtopStatus
-	}
-
-	updated, err := s.UpdateMap(m)
-	if err != nil {
-		return cm.Error(cm.Unknown, "Unable to update status", err)
-	}
-	cmd.Result.Updated = int(updated)
-	return nil
-}
-
-func GetShopVariant(ctx context.Context, query *modelx.GetShopVariantQuery) error {
+func GetShopVariant(ctx context.Context, query *catalogmodelx.GetShopVariantQuery) error {
 	if query.ShopID == 0 {
 		return cm.Error(cm.InvalidArgument, "Missing AccountID", nil)
 	}
@@ -504,7 +485,7 @@ func GetShopVariant(ctx context.Context, query *modelx.GetShopVariantQuery) erro
 	return nil
 }
 
-func GetShopVariants(ctx context.Context, query *modelx.GetShopVariantsQuery) error {
+func GetShopVariants(ctx context.Context, query *catalogmodelx.GetShopVariantsQuery) error {
 	if query.ShopID == 0 {
 		return cm.Error(cm.InvalidArgument, "Missing AccountID", nil)
 	}
@@ -543,7 +524,7 @@ func GetShopVariants(ctx context.Context, query *modelx.GetShopVariantsQuery) er
 	return nil
 }
 
-func AddProductsToShopCollection(ctx context.Context, cmd *modelx.AddProductsToShopCollectionCommand) error {
+func AddProductsToShopCollection(ctx context.Context, cmd *catalogmodelx.AddProductsToShopCollectionCommand) error {
 	if cmd.ShopID == 0 {
 		return cm.Error(cm.InvalidArgument, "Missing AccountID", nil)
 	}
@@ -580,7 +561,7 @@ func AddProductsToShopCollection(ctx context.Context, cmd *modelx.AddProductsToS
 	return nil
 }
 
-func RemoveProductsFromShopCollection(ctx context.Context, cmd *modelx.RemoveProductsFromShopCollectionCommand) error {
+func RemoveProductsFromShopCollection(ctx context.Context, cmd *catalogmodelx.RemoveProductsFromShopCollectionCommand) error {
 	if cmd.ShopID == 0 {
 		return cm.Error(cm.InvalidArgument, "Missing AccountID", nil)
 	}
@@ -596,7 +577,7 @@ func RemoveProductsFromShopCollection(ctx context.Context, cmd *modelx.RemovePro
 	return nil
 }
 
-func AddShopVariants(ctx context.Context, cmd *modelx.AddShopVariantsCommand) error {
+func AddShopVariants(ctx context.Context, cmd *catalogmodelx.AddShopVariantsCommand) error {
 	if cmd.ShopID == 0 {
 		return cm.Error(cm.InvalidArgument, "Missing AccountID", nil)
 	}
@@ -604,7 +585,7 @@ func AddShopVariants(ctx context.Context, cmd *modelx.AddShopVariantsCommand) er
 		return cm.Error(cm.InvalidArgument, "Missing ids", nil)
 	}
 
-	query := &modelx.GetVariantsExtendedQuery{
+	query := &catalogmodelx.GetVariantsExtendedQuery{
 		IDs: cmd.IDs,
 	}
 	query.Status = model.S3Positive.P()
@@ -784,7 +765,7 @@ func buildShopVariant(v *catalogmodel.Variant, sv *catalogmodel.ShopVariant) *ca
 	}
 }
 
-func UpdateShopVariant(ctx context.Context, cmd *modelx.UpdateShopVariantCommand) error {
+func UpdateShopVariant(ctx context.Context, cmd *catalogmodelx.UpdateShopVariantCommand) error {
 	if cmd.ShopID == 0 {
 		return cm.Error(cm.InvalidArgument, "Missing AccountID", nil)
 	}
@@ -812,10 +793,6 @@ func UpdateShopVariant(ctx context.Context, cmd *modelx.UpdateShopVariantCommand
 			if cmd.CostPrice != 0 {
 				variant.CostPrice = cmd.CostPrice
 			}
-			if cmd.Inventory != 0 {
-				variant.QuantityAvailable = cmd.Inventory
-				variant.QuantityOnHand = cmd.Inventory
-			}
 			if len(cmd.Attributes) > 0 {
 				variant.Attributes = cmd.Attributes
 			}
@@ -833,7 +810,7 @@ func UpdateShopVariant(ctx context.Context, cmd *modelx.UpdateShopVariantCommand
 		return updateErr
 	}
 
-	query := &modelx.GetShopVariantQuery{
+	query := &catalogmodelx.GetShopVariantQuery{
 		ShopID:    cmd.ShopID,
 		VariantID: cmd.Variant.VariantID,
 	}
@@ -845,11 +822,11 @@ func UpdateShopVariant(ctx context.Context, cmd *modelx.UpdateShopVariantCommand
 	return nil
 }
 
-func UpdateShopVariants(ctx context.Context, cmd *modelx.UpdateShopVariantsCommand) error {
+func UpdateShopVariants(ctx context.Context, cmd *catalogmodelx.UpdateShopVariantsCommand) error {
 	return cm.ErrTODO
 }
 
-func RemoveShopVariants(ctx context.Context, cmd *modelx.RemoveShopVariantsCommand) error {
+func RemoveShopVariants(ctx context.Context, cmd *catalogmodelx.RemoveShopVariantsCommand) error {
 	if cmd.ShopID == 0 {
 		return cm.Error(cm.InvalidArgument, "Missing AccountID", nil)
 	}
@@ -873,7 +850,7 @@ func RemoveShopVariants(ctx context.Context, cmd *modelx.RemoveShopVariantsComma
 	})
 }
 
-func UpdateShopVariantsStatus(ctx context.Context, cmd *modelx.UpdateShopVariantsStatusCommand) error {
+func UpdateShopVariantsStatus(ctx context.Context, cmd *catalogmodelx.UpdateShopVariantsStatusCommand) error {
 	if cmd.ShopID == 0 {
 		return cm.Error(cm.InvalidArgument, "Missing AccountID", nil)
 	}
@@ -899,7 +876,7 @@ func UpdateShopVariantsStatus(ctx context.Context, cmd *modelx.UpdateShopVariant
 	return nil
 }
 
-func UpdateShopVariantsTags(ctx context.Context, cmd *modelx.UpdateShopVariantsTagsCommand) error {
+func UpdateShopVariantsTags(ctx context.Context, cmd *catalogmodelx.UpdateShopVariantsTagsCommand) error {
 	if cmd.ShopID == 0 {
 		return cm.Error(cm.InvalidArgument, "Missing AccountID", nil)
 	}
@@ -962,7 +939,7 @@ func UpdateShopVariantsTags(ctx context.Context, cmd *modelx.UpdateShopVariantsT
 	return cm.Error(cm.NotFound, "No product updated", nil)
 }
 
-func UpdateProductsEtopCategory(ctx context.Context, cmd *modelx.UpdateProductsEtopCategoryCommand) error {
+func UpdateProductsEtopCategory(ctx context.Context, cmd *catalogmodelx.UpdateProductsEtopCategoryCommand) error {
 	if cmd.EtopCategoryID == 0 {
 		return cm.Error(cm.InvalidArgument, "Missing CategoryID", nil)
 	}
@@ -984,7 +961,7 @@ func UpdateProductsEtopCategory(ctx context.Context, cmd *modelx.UpdateProductsE
 	return nil
 }
 
-func RemoveProductsEtopCategory(ctx context.Context, cmd *modelx.RemoveProductsEtopCategoryCommand) error {
+func RemoveProductsEtopCategory(ctx context.Context, cmd *catalogmodelx.RemoveProductsEtopCategoryCommand) error {
 	if len(cmd.ProductIDs) == 0 {
 		return cm.Error(cm.InvalidArgument, "Nothing to remove", nil)
 	}
@@ -1003,24 +980,7 @@ func RemoveProductsEtopCategory(ctx context.Context, cmd *modelx.RemoveProductsE
 	return nil
 }
 
-func UpdateProductsStatus(ctx context.Context, cmd *modelx.UpdateProductsStatusCommand) error {
-	s := x.Table("product").In("id", cmd.IDs).Where("deleted_at is NULL")
-	s = FilterStatus(s, "", cmd.StatusQuery)
-
-	m := make(map[string]interface{})
-	if cmd.Update.EtopStatus != nil {
-		m["status"] = cmd.Update.EtopStatus
-	}
-
-	updated, err := s.UpdateMap(m)
-	if err != nil {
-		return cm.Error(cm.Unknown, "Unable to update status", err)
-	}
-	cmd.Result.Updated = int(updated)
-	return nil
-}
-
-func AddShopProducts(ctx context.Context, cmd *modelx.AddShopProductsCommand) error {
+func AddShopProducts(ctx context.Context, cmd *catalogmodelx.AddShopProductsCommand) error {
 	if cmd.ShopID == 0 {
 		return cm.Error(cm.InvalidArgument, "Missing AccountID", nil)
 	}
@@ -1028,7 +988,7 @@ func AddShopProducts(ctx context.Context, cmd *modelx.AddShopProductsCommand) er
 		return cm.Error(cm.InvalidArgument, "Missing ids", nil)
 	}
 
-	query := &modelx.GetProductsExtendedQuery{
+	query := &catalogmodelx.GetProductsExtendedQuery{
 		IDs: cmd.IDs,
 	}
 	query.Status = model.S3Positive.P()
@@ -1119,7 +1079,7 @@ func GetShopVariantByProductIDs(productIds []int64) ([]*catalogmodel.ShopVariant
 	return variants, nil
 }
 
-func GetShopProduct(ctx context.Context, query *modelx.GetShopProductQuery) error {
+func GetShopProduct(ctx context.Context, query *catalogmodelx.GetShopProductQuery) error {
 	if query.ShopID == 0 {
 		return cm.Error(cm.InvalidArgument, "Missing AccountID", nil)
 	}
@@ -1296,7 +1256,7 @@ func ConvertProductToShopProduct(p *catalogmodel.Product) *catalogmodel.ShopProd
 	}
 }
 
-func GetShopProducts(ctx context.Context, query *modelx.GetShopProductsQuery) error {
+func GetShopProducts(ctx context.Context, query *catalogmodelx.GetShopProductsQuery) error {
 	if query.ShopID == 0 {
 		return cm.Error(cm.InvalidArgument, "Missing AccountID", nil)
 	}
@@ -1372,8 +1332,7 @@ func GetShopProducts(ctx context.Context, query *modelx.GetShopProductsQuery) er
 	return nil
 }
 
-// Get all from source kiotviet + source shop
-func GetAllShopVariants(ctx context.Context, query *modelx.GetAllShopVariantsQuery) error {
+func GetAllShopVariants(ctx context.Context, query *catalogmodelx.GetAllShopVariantsQuery) error {
 	if query.ShopID == 0 {
 		return cm.Error(cm.InvalidArgument, "Missing AccountID", nil)
 	}
@@ -1440,7 +1399,7 @@ func GetAllShopVariants(ctx context.Context, query *modelx.GetAllShopVariantsQue
 	return nil
 }
 
-func RemoveShopProducts(ctx context.Context, cmd *modelx.RemoveShopProductsCommand) error {
+func RemoveShopProducts(ctx context.Context, cmd *catalogmodelx.RemoveShopProductsCommand) error {
 	if cmd.ShopID == 0 {
 		return cm.Error(cm.InvalidArgument, "Missing AccountID", nil)
 	}
@@ -1534,7 +1493,7 @@ func updateOrInsertShopProduct(sp *catalogmodel.ShopProduct, productSourceID int
 	return nil
 }
 
-func UpdateShopProduct(ctx context.Context, cmd *modelx.UpdateShopProductCommand) error {
+func UpdateShopProduct(ctx context.Context, cmd *catalogmodelx.UpdateShopProductCommand) error {
 	if cmd.ShopID == 0 {
 		return cm.Error(cm.InvalidArgument, "Missing AccountID", nil)
 	}
@@ -1574,7 +1533,7 @@ func UpdateShopProduct(ctx context.Context, cmd *modelx.UpdateShopProductCommand
 		return errUpdate
 	}
 
-	query := &modelx.GetShopProductQuery{
+	query := &catalogmodelx.GetShopProductQuery{
 		ShopID:    cmd.ShopID,
 		ProductID: cmd.Product.ProductID,
 	}
@@ -1586,7 +1545,7 @@ func UpdateShopProduct(ctx context.Context, cmd *modelx.UpdateShopProductCommand
 	return nil
 }
 
-func UpdateShopProductsStatus(ctx context.Context, cmd *modelx.UpdateShopProductsStatusCommand) error {
+func UpdateShopProductsStatus(ctx context.Context, cmd *catalogmodelx.UpdateShopProductsStatusCommand) error {
 	if cmd.ShopID == 0 {
 		return cm.Error(cm.InvalidArgument, "Missing AccountID", nil)
 	}
@@ -1612,7 +1571,7 @@ func UpdateShopProductsStatus(ctx context.Context, cmd *modelx.UpdateShopProduct
 	return nil
 }
 
-func UpdateShopProductsTags(ctx context.Context, cmd *modelx.UpdateShopProductsTagsCommand) error {
+func UpdateShopProductsTags(ctx context.Context, cmd *catalogmodelx.UpdateShopProductsTagsCommand) error {
 	if cmd.ShopID == 0 {
 		return cm.Error(cm.InvalidArgument, "Missing AccountID", nil)
 	}
@@ -1668,7 +1627,7 @@ func UpdateShopProductsTags(ctx context.Context, cmd *modelx.UpdateShopProductsT
 	return cm.Error(cm.NotFound, "No product updated", nil)
 }
 
-func GetProducts(ctx context.Context, query *modelx.GetProductsQuery) error {
+func GetProducts(ctx context.Context, query *catalogmodelx.GetProductsQuery) error {
 	if query.ProductSourceID == 0 {
 		return cm.Error(cm.InvalidArgument, "Missing ProductSourceID", nil)
 	}
@@ -1698,7 +1657,7 @@ func GetProducts(ctx context.Context, query *modelx.GetProductsQuery) error {
 	return s.Find((*catalogmodel.Products)(&query.Result.Products))
 }
 
-func GetVariants(ctx context.Context, query *modelx.GetVariantsQuery) error {
+func GetVariants(ctx context.Context, query *catalogmodelx.GetVariantsQuery) error {
 	if query.ProductSourceID == 0 {
 		return cm.Error(cm.InvalidArgument, "Missing ProductSourceID", nil)
 	}

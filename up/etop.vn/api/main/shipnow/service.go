@@ -7,28 +7,18 @@ import (
 	"etop.vn/api/meta"
 )
 
-type Bus struct {
-	meta.Bus
-}
-
-type EventBus struct {
-	meta.EventBus
-}
-
 type ShipnowProcessManager interface {
 	HandleConfirmationRequested(ctx context.Context, event ShipnowEvent) error
 }
 
 type Aggregate interface {
-	CreateShipnowFulfillment(ctx context.Context, cmd *CreateShipnowFulfillmentCommand) (*ShipnowFulfillment, error)
+	CreateShipnowFulfillment(ctx context.Context, cmd *CreateShipnowFulfillmentArgs) (*ShipnowFulfillment, error)
 
-	ConfirmShipnowFulfillment(ctx context.Context, cmd *ConfirmShipnowFulfillmentCommand) (*ShipnowFulfillment, error)
+	ConfirmShipnowFulfillment(ctx context.Context, cmd *ConfirmShipnowFulfillmentArgs) (*ShipnowFulfillment, error)
 
-	CancelShipnowFulfillment(ctx context.Context, cmd *CancelShipnowFulfillmentCommand) (*meta.Empty, error)
+	CancelShipnowFulfillment(ctx context.Context, cmd *CancelShipnowFulfillmentArgs) (*meta.Empty, error)
 
-	GetActiveShipnowFulfillments(ctx context.Context, cmd *GetActiveShipnowFulfillmentsCommand) ([]*ShipnowFulfillment, error)
-
-	UpdateShipnowFulfillment(ctx context.Context, cmd *UpdateShipnowFulfillmentCommand) (*ShipnowFulfillment, error)
+	UpdateShipnowFulfillment(ctx context.Context, cmd *UpdateShipnowFulfillmentArgs) (*ShipnowFulfillment, error)
 }
 
 type QueryService interface {
@@ -38,20 +28,20 @@ type QueryService interface {
 
 //-- Commands --//
 
-type CreateShipnowFulfillmentCommand = shipnowv1.CreateShipnowFulfillmentCommand
-type ConfirmShipnowFulfillmentCommand = shipnowv1.ConfirmShipnowFulfillmentCommand
-type CancelShipnowFulfillmentCommand = shipnowv1.CancelShipnowFulfillmentCommand
-type UpdateShipnowFulfillmentCommand = shipnowv1.UpdateShipnowFulfillmentCommand
+type CreateShipnowFulfillmentArgs = shipnowv1.CreateShipnowFulfillmentCommand
+type ConfirmShipnowFulfillmentArgs = shipnowv1.ConfirmShipnowFulfillmentCommand
+type CancelShipnowFulfillmentArgs = shipnowv1.CancelShipnowFulfillmentCommand
+type UpdateShipnowFulfillmentArgs = shipnowv1.UpdateShipnowFulfillmentCommand
 
-type CommitCreateShipnowFulfillmentCommand struct {
+type CommitCreateShipnowFulfillmentArgs struct {
 	ID int64
 }
 
-type RejectCreateShipnowFulfillmentCommand struct {
+type RejectCreateShipnowFulfillmentArgs struct {
 	ID int64
 }
 
-type GetActiveShipnowFulfillmentsCommand struct {
+type GetActiveShipnowFulfillmentsArgs struct {
 	OrderID int64
 }
 

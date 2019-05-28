@@ -135,26 +135,6 @@ type UpdateVariantsCommand struct {
 	}
 }
 
-type UpdateVariantsStatusCommand struct {
-	IDs         []int64
-	StatusQuery model.StatusQuery
-	Update      model.ProductStatusUpdate
-
-	Result struct {
-		Updated int
-	}
-}
-
-type UpdateProductsStatusCommand struct {
-	IDs         []int64
-	StatusQuery model.StatusQuery
-	Update      model.ProductStatusUpdate
-
-	Result struct {
-		Updated int
-	}
-}
-
 type UpdateProductsEtopCategoryCommand struct {
 	ProductIDs     []int64
 	EtopCategoryID int64
@@ -240,7 +220,6 @@ type UpdateShopVariantCommand struct {
 	ShopID          int64
 	Variant         *catalogmodel.ShopVariant
 	CostPrice       int
-	Inventory       int
 	EdCode          string
 	Attributes      []catalogmodel.ProductAttribute
 	ProductSourceID int64

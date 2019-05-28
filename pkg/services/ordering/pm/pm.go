@@ -1,8 +1,6 @@
 package pm
 
 import (
-	"context"
-
 	"etop.vn/api/main/ordering"
 	"etop.vn/api/main/shipnow"
 )
@@ -20,12 +18,4 @@ func New(
 		order:   orderAggr,
 		shipnow: shipnowAggr,
 	}
-}
-
-func (pm *ProcessManager) ValidateOrders(ctx context.Context, args *ordering.ValidateOrdersForShippingCommand) error {
-	return pm.order.ValidateOrders(ctx, args)
-}
-
-func (pm *ProcessManager) GetOrders(ctx context.Context, args *ordering.GetOrdersArgs) ([]*ordering.Order, error) {
-	return pm.order.GetOrders(ctx, args)
 }

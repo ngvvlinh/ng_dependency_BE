@@ -5,14 +5,14 @@ import (
 	"time"
 
 	etoptypes "etop.vn/api/main/etop"
-	"etop.vn/api/main/ordering/v1/types"
+	"etop.vn/api/main/ordering/types"
 	shippingtypes "etop.vn/api/main/shipping/types"
 )
 
 type Aggregate interface {
-	GetOrderByID(ctx context.Context, args GetOrderByIDArgs) (*Order, error)
-	GetOrders(ctx context.Context, args *GetOrdersArgs) ([]*Order, error)
-	ValidateOrders(ctx context.Context, args *ValidateOrdersForShippingCommand) error
+	GetOrderByID(ctx context.Context, args *GetOrderByIDArgs) (*Order, error)
+	GetOrders(ctx context.Context, args *GetOrdersArgs) (*OrdersResponse, error)
+	ValidateOrders(ctx context.Context, args *ValidateOrdersForShippingArgs) (*ValidateOrdersResponse, error)
 }
 
 type QueryService interface {
@@ -25,6 +25,13 @@ type GetOrderByIDArgs struct {
 type GetOrdersArgs struct {
 	ShopID int64
 	IDs    []int64
+}
+
+type OrdersResponse struct {
+	Orders []*Order
+}
+
+type ValidateOrdersResponse struct {
 }
 
 type Order struct {
@@ -69,6 +76,6 @@ type OrderFeeLine struct {
 }
 
 // shipping means manually fulfill, Fulfillment or ShipnowFulfillment
-type ValidateOrdersForShippingCommand struct {
+type ValidateOrdersForShippingArgs struct {
 	OrderIDs []int64
 }

@@ -2,9 +2,73 @@
 
 package ordering
 
-// implement query conversion
+import (
+	context "context"
+	unsafe "unsafe"
+)
+
+type GetOrderByIDCommand struct {
+	ID int64
+
+	Result *Order `json:"-"`
+}
+
+type GetOrdersCommand struct {
+	ShopID int64
+	IDs    []int64
+
+	Result *OrdersResponse `json:"-"`
+}
+
+type ValidateOrdersCommand struct {
+	OrderIDs []int64
+
+	Result *ValidateOrdersResponse `json:"-"`
+}
+
+// implement conversion
+
+func (q *GetOrderByIDCommand) GetArgs() *GetOrderByIDArgs {
+	return (*GetOrderByIDArgs)(unsafe.Pointer(q))
+}
+func (q *GetOrdersCommand) GetArgs() *GetOrdersArgs { return (*GetOrdersArgs)(unsafe.Pointer(q)) }
+func (q *ValidateOrdersCommand) GetArgs() *ValidateOrdersForShippingArgs {
+	return (*ValidateOrdersForShippingArgs)(unsafe.Pointer(q))
+}
 
 // implement dispatching
+
+type AggregateHandler struct {
+	inner Aggregate
+}
+
+func NewAggregateHandler(service Aggregate) AggregateHandler { return AggregateHandler{service} }
+
+func (h AggregateHandler) RegisterHandlers(b interface {
+	AddHandler(handler interface{})
+}) {
+	b.AddHandler(h.HandleGetOrderByID)
+	b.AddHandler(h.HandleGetOrders)
+	b.AddHandler(h.HandleValidateOrders)
+}
+
+func (h AggregateHandler) HandleGetOrderByID(ctx context.Context, cmd *GetOrderByIDCommand) error {
+	result, err := h.inner.GetOrderByID(ctx, cmd.GetArgs())
+	cmd.Result = result
+	return err
+}
+
+func (h AggregateHandler) HandleGetOrders(ctx context.Context, cmd *GetOrdersCommand) error {
+	result, err := h.inner.GetOrders(ctx, cmd.GetArgs())
+	cmd.Result = result
+	return err
+}
+
+func (h AggregateHandler) HandleValidateOrders(ctx context.Context, cmd *ValidateOrdersCommand) error {
+	result, err := h.inner.ValidateOrders(ctx, cmd.GetArgs())
+	cmd.Result = result
+	return err
+}
 
 type QueryServiceHandler struct {
 	inner QueryService
