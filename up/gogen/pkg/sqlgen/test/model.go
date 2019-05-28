@@ -1,4 +1,4 @@
-package test
+package model
 
 import (
 	"time"
@@ -6,7 +6,7 @@ import (
 	sq "etop.vn/backend/pkg/common/sql"
 )
 
-//go:generate ../../../../scripts/derive.sh
+//go:generate $ETOPDIR/backend/scripts/derive.sh
 var _ = sqlgenUser(&User{})
 
 // User ...

@@ -1,4 +1,4 @@
-package sq
+package sql
 
 import (
 	"context"

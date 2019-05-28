@@ -3,6 +3,7 @@ package sqlgen
 import (
 	"fmt"
 	"go/types"
+	"os"
 	"reflect"
 	"regexp"
 	"strconv"
@@ -28,6 +29,10 @@ var gt derive.TypesMap
 // This generator should be reconstructed for each package.
 func New(typesMap derive.TypesMap, p derive.Printer, deps map[string]derive.Dependency) derive.Generator {
 	gt = typesMap
+
+	p.NewImport("sq", "etop.vn/backend/pkg/common/sql")()
+	p.NewImport("core", "etop.vn/backend/pkg/common/sql/core")()
+	p.NewImport("", "database/sql")()
 	return &gen{
 		TypesMap: typesMap,
 		printer:  p,
@@ -189,10 +194,6 @@ type preloadDef struct {
 	Fkey          string
 }
 
-var mapFilterPackages = map[string]bool{
-	"etop.vn/backend/pkg/etop/model": true,
-}
-
 func (g *gen) Add(name string, typs []types.Type) (string, error) {
 	if len(typs) == 0 {
 		return "", fmt.Errorf("%s must have at least one argument", name)
@@ -260,10 +261,10 @@ func (g *gen) Add(name string, typs []types.Type) (string, error) {
 		def.base = typs[1]
 		def.all = false
 
-		if g.TypeString(typs[2]) != "sq.AS" {
+		if g.TypeString(typs[2]) != "sql.AS" {
 			fmt.Println(helpJoin)
 			return "", fmt.Errorf(
-				"JOIN %v: The third param must be sq.AS (got %v)",
+				"JOIN %v: The third param must be sql.AS (got %v)",
 				g.TypeString(typs[0]), g.TypeString(typs[2]))
 		}
 
@@ -291,9 +292,20 @@ func (g *gen) Add(name string, typs []types.Type) (string, error) {
 				pkgName = p.Name()
 				return p.Path()
 			})
-			// TODO: remove hard-code
+
+			// generate sqlstore/filter.gen.go
 			if pkgName == "model" {
-				g.genFilter = filtergen.NewGen("etop.vn/backend/pkg/etop/model")
+				wd, err := os.Getwd()
+				if err != nil {
+					panic(err)
+				}
+				// get package path using current working directory
+				idx := strings.LastIndex(wd, "etop.vn/")
+				if idx < 0 {
+					panic(fmt.Sprintf("unexpected: invalid path %v", wd))
+				}
+				pkgPath := wd[idx:]
+				g.genFilter = filtergen.NewGen(pkgPath)
 			}
 		}
 
@@ -547,8 +559,8 @@ const helpJoin = `
 
 	Example:
         sqlgenUserFullInfo(
-            &UserFullInfo{}, &User{}, sq.AS("u"),
-            sq.FULL_JOIN, &UserInfo{}, sq.AS("ui"), "$L.id = $R.user_id",
+            &UserFullInfo{}, &User{}, sql.AS("u"),
+            sql.FULL_JOIN, &UserInfo{}, sql.AS("ui"), "$L.id = $R.user_id",
         )
         type UserFullInfo struct {
             User     *User
@@ -583,9 +595,9 @@ func (g *gen) parseJoinLine(typs []types.Type) (*joinDef, error) {
 	}
 
 	as := typs[2]
-	if gt.TypeString(as) != "sq.AS" {
+	if gt.TypeString(as) != "sql.AS" {
 		return nil, fmt.Errorf(
-			"Invalid AS: must be sq.AS (got %v)", g.TypeString(as))
+			"Invalid AS: must be sql.AS (got %v)", g.TypeString(as))
 	}
 
 	cond := typs[3]

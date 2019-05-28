@@ -1,4 +1,4 @@
-package sq_test
+package sql_test
 
 import (
 	"testing"

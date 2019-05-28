@@ -2,15 +2,25 @@
 
 package mq
 
-import "fmt"
+import "strconv"
 
-const _Code_name = "CodeOKCodeNotFoundCodeServiceUnavailableCodeMalformMessageCodeNoHandlerCodeNoTubeCodeTimeoutCodeInternalCodeUnknown"
+func _() {
+	// An "invalid array index" compiler error signifies that the constant values have changed.
+	// Re-run the stringer command to generate them again.
+	var x [1]struct{}
+	_ = x[CodeOK-0]
+	_ = x[CodeIgnore-1]
+	_ = x[CodeRetry-2]
+	_ = x[CodeStop-3]
+}
 
-var _Code_index = [...]uint8{0, 6, 18, 40, 58, 71, 81, 92, 104, 115}
+const _Code_name = "CodeOKCodeIgnoreCodeRetryCodeStop"
+
+var _Code_index = [...]uint8{0, 6, 16, 25, 33}
 
 func (i Code) String() string {
 	if i < 0 || i >= Code(len(_Code_index)-1) {
-		return fmt.Sprintf("Code(%d)", i)
+		return "Code(" + strconv.FormatInt(int64(i), 10) + ")"
 	}
 	return _Code_name[_Code_index[i]:_Code_index[i+1]]
 }

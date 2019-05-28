@@ -100,14 +100,10 @@ func (g *gen) generateCommon() {
 	}
 	g.init = true
 
-	p := g.printer
-	p.NewImport("sq", "etop.vn/backend/pkg/common/sql")()
-	p.NewImport("core", "etop.vn/backend/pkg/common/sql/core")()
-	p.NewImport("", "database/sql")()
-
 	str := `
 type SQLWriter = core.SQLWriter
 `
+	p := g.printer
 	p.P(str)
 }
 

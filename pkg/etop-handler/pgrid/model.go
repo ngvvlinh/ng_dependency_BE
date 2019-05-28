@@ -7,7 +7,7 @@ import (
 	"etop.vn/backend/pkg/pgevent"
 )
 
-//go:generate ../../scripts/derive.sh
+//go:generate $ETOPDIR/backend/scripts/derive.sh
 
 var _ = selModel(
 	&UserEvent{},

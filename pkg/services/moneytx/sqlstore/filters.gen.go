@@ -25,7 +25,7 @@ func (ft MoneyTransactionShippingExternalFilters) Prefix() string {
 
 func (ft MoneyTransactionShippingExternalFilters) ByID(ID int64) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
-		Prefix: ft.prefix,
+		Prefix: &ft.prefix,
 		Column: "id",
 		Value:  ID,
 		IsNil:  ID == 0,
@@ -34,7 +34,7 @@ func (ft MoneyTransactionShippingExternalFilters) ByID(ID int64) *sq.ColumnFilte
 
 func (ft MoneyTransactionShippingExternalFilters) ByIDPtr(ID *int64) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
-		Prefix: ft.prefix,
+		Prefix: &ft.prefix,
 		Column: "id",
 		Value:  ID,
 		IsNil:  ID == nil,
@@ -44,7 +44,7 @@ func (ft MoneyTransactionShippingExternalFilters) ByIDPtr(ID *int64) *sq.ColumnF
 
 func (ft MoneyTransactionShippingExternalFilters) ByCode(Code string) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
-		Prefix: ft.prefix,
+		Prefix: &ft.prefix,
 		Column: "code",
 		Value:  Code,
 		IsNil:  Code == "",
@@ -53,7 +53,7 @@ func (ft MoneyTransactionShippingExternalFilters) ByCode(Code string) *sq.Column
 
 func (ft MoneyTransactionShippingExternalFilters) ByCodePtr(Code *string) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
-		Prefix: ft.prefix,
+		Prefix: &ft.prefix,
 		Column: "code",
 		Value:  Code,
 		IsNil:  Code == nil,
@@ -63,7 +63,7 @@ func (ft MoneyTransactionShippingExternalFilters) ByCodePtr(Code *string) *sq.Co
 
 func (ft MoneyTransactionShippingExternalFilters) ByTotalCOD(TotalCOD int) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
-		Prefix: ft.prefix,
+		Prefix: &ft.prefix,
 		Column: "total_cod",
 		Value:  TotalCOD,
 		IsNil:  TotalCOD == 0,
@@ -72,7 +72,7 @@ func (ft MoneyTransactionShippingExternalFilters) ByTotalCOD(TotalCOD int) *sq.C
 
 func (ft MoneyTransactionShippingExternalFilters) ByTotalCODPtr(TotalCOD *int) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
-		Prefix: ft.prefix,
+		Prefix: &ft.prefix,
 		Column: "total_cod",
 		Value:  TotalCOD,
 		IsNil:  TotalCOD == nil,
@@ -82,7 +82,7 @@ func (ft MoneyTransactionShippingExternalFilters) ByTotalCODPtr(TotalCOD *int) *
 
 func (ft MoneyTransactionShippingExternalFilters) ByTotalOrders(TotalOrders int) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
-		Prefix: ft.prefix,
+		Prefix: &ft.prefix,
 		Column: "total_orders",
 		Value:  TotalOrders,
 		IsNil:  TotalOrders == 0,
@@ -91,7 +91,7 @@ func (ft MoneyTransactionShippingExternalFilters) ByTotalOrders(TotalOrders int)
 
 func (ft MoneyTransactionShippingExternalFilters) ByTotalOrdersPtr(TotalOrders *int) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
-		Prefix: ft.prefix,
+		Prefix: &ft.prefix,
 		Column: "total_orders",
 		Value:  TotalOrders,
 		IsNil:  TotalOrders == nil,
@@ -101,7 +101,7 @@ func (ft MoneyTransactionShippingExternalFilters) ByTotalOrdersPtr(TotalOrders *
 
 func (ft MoneyTransactionShippingExternalFilters) ByCreatedAt(CreatedAt time.Time) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
-		Prefix: ft.prefix,
+		Prefix: &ft.prefix,
 		Column: "created_at",
 		Value:  CreatedAt,
 		IsNil:  CreatedAt.IsZero(),
@@ -110,7 +110,7 @@ func (ft MoneyTransactionShippingExternalFilters) ByCreatedAt(CreatedAt time.Tim
 
 func (ft MoneyTransactionShippingExternalFilters) ByCreatedAtPtr(CreatedAt *time.Time) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
-		Prefix: ft.prefix,
+		Prefix: &ft.prefix,
 		Column: "created_at",
 		Value:  CreatedAt,
 		IsNil:  CreatedAt == nil,
@@ -120,7 +120,7 @@ func (ft MoneyTransactionShippingExternalFilters) ByCreatedAtPtr(CreatedAt *time
 
 func (ft MoneyTransactionShippingExternalFilters) ByUpdatedAt(UpdatedAt time.Time) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
-		Prefix: ft.prefix,
+		Prefix: &ft.prefix,
 		Column: "updated_at",
 		Value:  UpdatedAt,
 		IsNil:  UpdatedAt.IsZero(),
@@ -129,7 +129,7 @@ func (ft MoneyTransactionShippingExternalFilters) ByUpdatedAt(UpdatedAt time.Tim
 
 func (ft MoneyTransactionShippingExternalFilters) ByUpdatedAtPtr(UpdatedAt *time.Time) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
-		Prefix: ft.prefix,
+		Prefix: &ft.prefix,
 		Column: "updated_at",
 		Value:  UpdatedAt,
 		IsNil:  UpdatedAt == nil,
@@ -139,7 +139,7 @@ func (ft MoneyTransactionShippingExternalFilters) ByUpdatedAtPtr(UpdatedAt *time
 
 func (ft MoneyTransactionShippingExternalFilters) ByStatus(Status model.Status3) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
-		Prefix: ft.prefix,
+		Prefix: &ft.prefix,
 		Column: "status",
 		Value:  Status,
 		IsNil:  Status == 0,
@@ -148,7 +148,7 @@ func (ft MoneyTransactionShippingExternalFilters) ByStatus(Status model.Status3)
 
 func (ft MoneyTransactionShippingExternalFilters) ByStatusPtr(Status *model.Status3) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
-		Prefix: ft.prefix,
+		Prefix: &ft.prefix,
 		Column: "status",
 		Value:  Status,
 		IsNil:  Status == nil,
@@ -158,7 +158,7 @@ func (ft MoneyTransactionShippingExternalFilters) ByStatusPtr(Status *model.Stat
 
 func (ft MoneyTransactionShippingExternalFilters) ByExternalPaidAt(ExternalPaidAt time.Time) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
-		Prefix: ft.prefix,
+		Prefix: &ft.prefix,
 		Column: "external_paid_at",
 		Value:  ExternalPaidAt,
 		IsNil:  ExternalPaidAt.IsZero(),
@@ -167,7 +167,7 @@ func (ft MoneyTransactionShippingExternalFilters) ByExternalPaidAt(ExternalPaidA
 
 func (ft MoneyTransactionShippingExternalFilters) ByExternalPaidAtPtr(ExternalPaidAt *time.Time) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
-		Prefix: ft.prefix,
+		Prefix: &ft.prefix,
 		Column: "external_paid_at",
 		Value:  ExternalPaidAt,
 		IsNil:  ExternalPaidAt == nil,
@@ -177,7 +177,7 @@ func (ft MoneyTransactionShippingExternalFilters) ByExternalPaidAtPtr(ExternalPa
 
 func (ft MoneyTransactionShippingExternalFilters) ByProvider(Provider string) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
-		Prefix: ft.prefix,
+		Prefix: &ft.prefix,
 		Column: "provider",
 		Value:  Provider,
 		IsNil:  Provider == "",
@@ -186,7 +186,7 @@ func (ft MoneyTransactionShippingExternalFilters) ByProvider(Provider string) *s
 
 func (ft MoneyTransactionShippingExternalFilters) ByProviderPtr(Provider *string) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
-		Prefix: ft.prefix,
+		Prefix: &ft.prefix,
 		Column: "provider",
 		Value:  Provider,
 		IsNil:  Provider == nil,
@@ -196,7 +196,7 @@ func (ft MoneyTransactionShippingExternalFilters) ByProviderPtr(Provider *string
 
 func (ft MoneyTransactionShippingExternalFilters) ByNote(Note string) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
-		Prefix: ft.prefix,
+		Prefix: &ft.prefix,
 		Column: "note",
 		Value:  Note,
 		IsNil:  Note == "",
@@ -205,7 +205,7 @@ func (ft MoneyTransactionShippingExternalFilters) ByNote(Note string) *sq.Column
 
 func (ft MoneyTransactionShippingExternalFilters) ByNotePtr(Note *string) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
-		Prefix: ft.prefix,
+		Prefix: &ft.prefix,
 		Column: "note",
 		Value:  Note,
 		IsNil:  Note == nil,
@@ -215,7 +215,7 @@ func (ft MoneyTransactionShippingExternalFilters) ByNotePtr(Note *string) *sq.Co
 
 func (ft MoneyTransactionShippingExternalFilters) ByInvoiceNumber(InvoiceNumber string) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
-		Prefix: ft.prefix,
+		Prefix: &ft.prefix,
 		Column: "invoice_number",
 		Value:  InvoiceNumber,
 		IsNil:  InvoiceNumber == "",
@@ -224,7 +224,7 @@ func (ft MoneyTransactionShippingExternalFilters) ByInvoiceNumber(InvoiceNumber 
 
 func (ft MoneyTransactionShippingExternalFilters) ByInvoiceNumberPtr(InvoiceNumber *string) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
-		Prefix: ft.prefix,
+		Prefix: &ft.prefix,
 		Column: "invoice_number",
 		Value:  InvoiceNumber,
 		IsNil:  InvoiceNumber == nil,
@@ -248,7 +248,7 @@ func (ft MoneyTransactionShippingExternalLineFilters) Prefix() string {
 
 func (ft MoneyTransactionShippingExternalLineFilters) ByID(ID int64) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
-		Prefix: ft.prefix,
+		Prefix: &ft.prefix,
 		Column: "id",
 		Value:  ID,
 		IsNil:  ID == 0,
@@ -257,7 +257,7 @@ func (ft MoneyTransactionShippingExternalLineFilters) ByID(ID int64) *sq.ColumnF
 
 func (ft MoneyTransactionShippingExternalLineFilters) ByIDPtr(ID *int64) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
-		Prefix: ft.prefix,
+		Prefix: &ft.prefix,
 		Column: "id",
 		Value:  ID,
 		IsNil:  ID == nil,
@@ -267,7 +267,7 @@ func (ft MoneyTransactionShippingExternalLineFilters) ByIDPtr(ID *int64) *sq.Col
 
 func (ft MoneyTransactionShippingExternalLineFilters) ByExternalCode(ExternalCode string) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
-		Prefix: ft.prefix,
+		Prefix: &ft.prefix,
 		Column: "external_code",
 		Value:  ExternalCode,
 		IsNil:  ExternalCode == "",
@@ -276,7 +276,7 @@ func (ft MoneyTransactionShippingExternalLineFilters) ByExternalCode(ExternalCod
 
 func (ft MoneyTransactionShippingExternalLineFilters) ByExternalCodePtr(ExternalCode *string) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
-		Prefix: ft.prefix,
+		Prefix: &ft.prefix,
 		Column: "external_code",
 		Value:  ExternalCode,
 		IsNil:  ExternalCode == nil,
@@ -286,7 +286,7 @@ func (ft MoneyTransactionShippingExternalLineFilters) ByExternalCodePtr(External
 
 func (ft MoneyTransactionShippingExternalLineFilters) ByExternalCustomer(ExternalCustomer string) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
-		Prefix: ft.prefix,
+		Prefix: &ft.prefix,
 		Column: "external_customer",
 		Value:  ExternalCustomer,
 		IsNil:  ExternalCustomer == "",
@@ -295,7 +295,7 @@ func (ft MoneyTransactionShippingExternalLineFilters) ByExternalCustomer(Externa
 
 func (ft MoneyTransactionShippingExternalLineFilters) ByExternalCustomerPtr(ExternalCustomer *string) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
-		Prefix: ft.prefix,
+		Prefix: &ft.prefix,
 		Column: "external_customer",
 		Value:  ExternalCustomer,
 		IsNil:  ExternalCustomer == nil,
@@ -305,7 +305,7 @@ func (ft MoneyTransactionShippingExternalLineFilters) ByExternalCustomerPtr(Exte
 
 func (ft MoneyTransactionShippingExternalLineFilters) ByExternalAddress(ExternalAddress string) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
-		Prefix: ft.prefix,
+		Prefix: &ft.prefix,
 		Column: "external_address",
 		Value:  ExternalAddress,
 		IsNil:  ExternalAddress == "",
@@ -314,7 +314,7 @@ func (ft MoneyTransactionShippingExternalLineFilters) ByExternalAddress(External
 
 func (ft MoneyTransactionShippingExternalLineFilters) ByExternalAddressPtr(ExternalAddress *string) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
-		Prefix: ft.prefix,
+		Prefix: &ft.prefix,
 		Column: "external_address",
 		Value:  ExternalAddress,
 		IsNil:  ExternalAddress == nil,
@@ -324,7 +324,7 @@ func (ft MoneyTransactionShippingExternalLineFilters) ByExternalAddressPtr(Exter
 
 func (ft MoneyTransactionShippingExternalLineFilters) ByExternalTotalCOD(ExternalTotalCOD int) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
-		Prefix: ft.prefix,
+		Prefix: &ft.prefix,
 		Column: "external_total_cod",
 		Value:  ExternalTotalCOD,
 		IsNil:  ExternalTotalCOD == 0,
@@ -333,7 +333,7 @@ func (ft MoneyTransactionShippingExternalLineFilters) ByExternalTotalCOD(Externa
 
 func (ft MoneyTransactionShippingExternalLineFilters) ByExternalTotalCODPtr(ExternalTotalCOD *int) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
-		Prefix: ft.prefix,
+		Prefix: &ft.prefix,
 		Column: "external_total_cod",
 		Value:  ExternalTotalCOD,
 		IsNil:  ExternalTotalCOD == nil,
@@ -343,7 +343,7 @@ func (ft MoneyTransactionShippingExternalLineFilters) ByExternalTotalCODPtr(Exte
 
 func (ft MoneyTransactionShippingExternalLineFilters) ByExternalCreatedAt(ExternalCreatedAt time.Time) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
-		Prefix: ft.prefix,
+		Prefix: &ft.prefix,
 		Column: "external_created_at",
 		Value:  ExternalCreatedAt,
 		IsNil:  ExternalCreatedAt.IsZero(),
@@ -352,7 +352,7 @@ func (ft MoneyTransactionShippingExternalLineFilters) ByExternalCreatedAt(Extern
 
 func (ft MoneyTransactionShippingExternalLineFilters) ByExternalCreatedAtPtr(ExternalCreatedAt *time.Time) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
-		Prefix: ft.prefix,
+		Prefix: &ft.prefix,
 		Column: "external_created_at",
 		Value:  ExternalCreatedAt,
 		IsNil:  ExternalCreatedAt == nil,
@@ -362,7 +362,7 @@ func (ft MoneyTransactionShippingExternalLineFilters) ByExternalCreatedAtPtr(Ext
 
 func (ft MoneyTransactionShippingExternalLineFilters) ByExternalClosedAt(ExternalClosedAt time.Time) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
-		Prefix: ft.prefix,
+		Prefix: &ft.prefix,
 		Column: "external_closed_at",
 		Value:  ExternalClosedAt,
 		IsNil:  ExternalClosedAt.IsZero(),
@@ -371,7 +371,7 @@ func (ft MoneyTransactionShippingExternalLineFilters) ByExternalClosedAt(Externa
 
 func (ft MoneyTransactionShippingExternalLineFilters) ByExternalClosedAtPtr(ExternalClosedAt *time.Time) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
-		Prefix: ft.prefix,
+		Prefix: &ft.prefix,
 		Column: "external_closed_at",
 		Value:  ExternalClosedAt,
 		IsNil:  ExternalClosedAt == nil,
@@ -381,7 +381,7 @@ func (ft MoneyTransactionShippingExternalLineFilters) ByExternalClosedAtPtr(Exte
 
 func (ft MoneyTransactionShippingExternalLineFilters) ByEtopFulfillmentIdRaw(EtopFulfillmentIdRaw string) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
-		Prefix: ft.prefix,
+		Prefix: &ft.prefix,
 		Column: "etop_fulfillment_id_raw",
 		Value:  EtopFulfillmentIdRaw,
 		IsNil:  EtopFulfillmentIdRaw == "",
@@ -390,7 +390,7 @@ func (ft MoneyTransactionShippingExternalLineFilters) ByEtopFulfillmentIdRaw(Eto
 
 func (ft MoneyTransactionShippingExternalLineFilters) ByEtopFulfillmentIdRawPtr(EtopFulfillmentIdRaw *string) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
-		Prefix: ft.prefix,
+		Prefix: &ft.prefix,
 		Column: "etop_fulfillment_id_raw",
 		Value:  EtopFulfillmentIdRaw,
 		IsNil:  EtopFulfillmentIdRaw == nil,
@@ -400,7 +400,7 @@ func (ft MoneyTransactionShippingExternalLineFilters) ByEtopFulfillmentIdRawPtr(
 
 func (ft MoneyTransactionShippingExternalLineFilters) ByEtopFulfillmentID(EtopFulfillmentID int64) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
-		Prefix: ft.prefix,
+		Prefix: &ft.prefix,
 		Column: "etop_fulfillment_id",
 		Value:  EtopFulfillmentID,
 		IsNil:  EtopFulfillmentID == 0,
@@ -409,7 +409,7 @@ func (ft MoneyTransactionShippingExternalLineFilters) ByEtopFulfillmentID(EtopFu
 
 func (ft MoneyTransactionShippingExternalLineFilters) ByEtopFulfillmentIDPtr(EtopFulfillmentID *int64) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
-		Prefix: ft.prefix,
+		Prefix: &ft.prefix,
 		Column: "etop_fulfillment_id",
 		Value:  EtopFulfillmentID,
 		IsNil:  EtopFulfillmentID == nil,
@@ -419,7 +419,7 @@ func (ft MoneyTransactionShippingExternalLineFilters) ByEtopFulfillmentIDPtr(Eto
 
 func (ft MoneyTransactionShippingExternalLineFilters) ByNote(Note string) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
-		Prefix: ft.prefix,
+		Prefix: &ft.prefix,
 		Column: "note",
 		Value:  Note,
 		IsNil:  Note == "",
@@ -428,7 +428,7 @@ func (ft MoneyTransactionShippingExternalLineFilters) ByNote(Note string) *sq.Co
 
 func (ft MoneyTransactionShippingExternalLineFilters) ByNotePtr(Note *string) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
-		Prefix: ft.prefix,
+		Prefix: &ft.prefix,
 		Column: "note",
 		Value:  Note,
 		IsNil:  Note == nil,
@@ -438,7 +438,7 @@ func (ft MoneyTransactionShippingExternalLineFilters) ByNotePtr(Note *string) *s
 
 func (ft MoneyTransactionShippingExternalLineFilters) ByMoneyTransactionShippingExternalID(MoneyTransactionShippingExternalID int64) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
-		Prefix: ft.prefix,
+		Prefix: &ft.prefix,
 		Column: "money_transaction_shipping_external_id",
 		Value:  MoneyTransactionShippingExternalID,
 		IsNil:  MoneyTransactionShippingExternalID == 0,
@@ -447,7 +447,7 @@ func (ft MoneyTransactionShippingExternalLineFilters) ByMoneyTransactionShipping
 
 func (ft MoneyTransactionShippingExternalLineFilters) ByMoneyTransactionShippingExternalIDPtr(MoneyTransactionShippingExternalID *int64) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
-		Prefix: ft.prefix,
+		Prefix: &ft.prefix,
 		Column: "money_transaction_shipping_external_id",
 		Value:  MoneyTransactionShippingExternalID,
 		IsNil:  MoneyTransactionShippingExternalID == nil,
@@ -457,7 +457,7 @@ func (ft MoneyTransactionShippingExternalLineFilters) ByMoneyTransactionShipping
 
 func (ft MoneyTransactionShippingExternalLineFilters) ByCreatedAt(CreatedAt time.Time) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
-		Prefix: ft.prefix,
+		Prefix: &ft.prefix,
 		Column: "created_at",
 		Value:  CreatedAt,
 		IsNil:  CreatedAt.IsZero(),
@@ -466,7 +466,7 @@ func (ft MoneyTransactionShippingExternalLineFilters) ByCreatedAt(CreatedAt time
 
 func (ft MoneyTransactionShippingExternalLineFilters) ByCreatedAtPtr(CreatedAt *time.Time) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
-		Prefix: ft.prefix,
+		Prefix: &ft.prefix,
 		Column: "created_at",
 		Value:  CreatedAt,
 		IsNil:  CreatedAt == nil,
@@ -476,7 +476,7 @@ func (ft MoneyTransactionShippingExternalLineFilters) ByCreatedAtPtr(CreatedAt *
 
 func (ft MoneyTransactionShippingExternalLineFilters) ByUpdatedAt(UpdatedAt time.Time) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
-		Prefix: ft.prefix,
+		Prefix: &ft.prefix,
 		Column: "updated_at",
 		Value:  UpdatedAt,
 		IsNil:  UpdatedAt.IsZero(),
@@ -485,7 +485,7 @@ func (ft MoneyTransactionShippingExternalLineFilters) ByUpdatedAt(UpdatedAt time
 
 func (ft MoneyTransactionShippingExternalLineFilters) ByUpdatedAtPtr(UpdatedAt *time.Time) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
-		Prefix: ft.prefix,
+		Prefix: &ft.prefix,
 		Column: "updated_at",
 		Value:  UpdatedAt,
 		IsNil:  UpdatedAt == nil,
@@ -495,7 +495,7 @@ func (ft MoneyTransactionShippingExternalLineFilters) ByUpdatedAtPtr(UpdatedAt *
 
 func (ft MoneyTransactionShippingExternalLineFilters) ByExternalTotalShippingFee(ExternalTotalShippingFee int) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
-		Prefix: ft.prefix,
+		Prefix: &ft.prefix,
 		Column: "external_total_shipping_fee",
 		Value:  ExternalTotalShippingFee,
 		IsNil:  ExternalTotalShippingFee == 0,
@@ -504,7 +504,7 @@ func (ft MoneyTransactionShippingExternalLineFilters) ByExternalTotalShippingFee
 
 func (ft MoneyTransactionShippingExternalLineFilters) ByExternalTotalShippingFeePtr(ExternalTotalShippingFee *int) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
-		Prefix: ft.prefix,
+		Prefix: &ft.prefix,
 		Column: "external_total_shipping_fee",
 		Value:  ExternalTotalShippingFee,
 		IsNil:  ExternalTotalShippingFee == nil,
@@ -528,7 +528,7 @@ func (ft MoneyTransactionShippingFilters) Prefix() string {
 
 func (ft MoneyTransactionShippingFilters) ByID(ID int64) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
-		Prefix: ft.prefix,
+		Prefix: &ft.prefix,
 		Column: "id",
 		Value:  ID,
 		IsNil:  ID == 0,
@@ -537,7 +537,7 @@ func (ft MoneyTransactionShippingFilters) ByID(ID int64) *sq.ColumnFilter {
 
 func (ft MoneyTransactionShippingFilters) ByIDPtr(ID *int64) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
-		Prefix: ft.prefix,
+		Prefix: &ft.prefix,
 		Column: "id",
 		Value:  ID,
 		IsNil:  ID == nil,
@@ -547,7 +547,7 @@ func (ft MoneyTransactionShippingFilters) ByIDPtr(ID *int64) *sq.ColumnFilterPtr
 
 func (ft MoneyTransactionShippingFilters) ByShopID(ShopID int64) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
-		Prefix: ft.prefix,
+		Prefix: &ft.prefix,
 		Column: "shop_id",
 		Value:  ShopID,
 		IsNil:  ShopID == 0,
@@ -556,7 +556,7 @@ func (ft MoneyTransactionShippingFilters) ByShopID(ShopID int64) *sq.ColumnFilte
 
 func (ft MoneyTransactionShippingFilters) ByShopIDPtr(ShopID *int64) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
-		Prefix: ft.prefix,
+		Prefix: &ft.prefix,
 		Column: "shop_id",
 		Value:  ShopID,
 		IsNil:  ShopID == nil,
@@ -566,7 +566,7 @@ func (ft MoneyTransactionShippingFilters) ByShopIDPtr(ShopID *int64) *sq.ColumnF
 
 func (ft MoneyTransactionShippingFilters) ByCreatedAt(CreatedAt time.Time) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
-		Prefix: ft.prefix,
+		Prefix: &ft.prefix,
 		Column: "created_at",
 		Value:  CreatedAt,
 		IsNil:  CreatedAt.IsZero(),
@@ -575,7 +575,7 @@ func (ft MoneyTransactionShippingFilters) ByCreatedAt(CreatedAt time.Time) *sq.C
 
 func (ft MoneyTransactionShippingFilters) ByCreatedAtPtr(CreatedAt *time.Time) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
-		Prefix: ft.prefix,
+		Prefix: &ft.prefix,
 		Column: "created_at",
 		Value:  CreatedAt,
 		IsNil:  CreatedAt == nil,
@@ -585,7 +585,7 @@ func (ft MoneyTransactionShippingFilters) ByCreatedAtPtr(CreatedAt *time.Time) *
 
 func (ft MoneyTransactionShippingFilters) ByUpdatedAt(UpdatedAt time.Time) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
-		Prefix: ft.prefix,
+		Prefix: &ft.prefix,
 		Column: "updated_at",
 		Value:  UpdatedAt,
 		IsNil:  UpdatedAt.IsZero(),
@@ -594,7 +594,7 @@ func (ft MoneyTransactionShippingFilters) ByUpdatedAt(UpdatedAt time.Time) *sq.C
 
 func (ft MoneyTransactionShippingFilters) ByUpdatedAtPtr(UpdatedAt *time.Time) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
-		Prefix: ft.prefix,
+		Prefix: &ft.prefix,
 		Column: "updated_at",
 		Value:  UpdatedAt,
 		IsNil:  UpdatedAt == nil,
@@ -604,7 +604,7 @@ func (ft MoneyTransactionShippingFilters) ByUpdatedAtPtr(UpdatedAt *time.Time) *
 
 func (ft MoneyTransactionShippingFilters) ByClosedAt(ClosedAt time.Time) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
-		Prefix: ft.prefix,
+		Prefix: &ft.prefix,
 		Column: "closed_at",
 		Value:  ClosedAt,
 		IsNil:  ClosedAt.IsZero(),
@@ -613,7 +613,7 @@ func (ft MoneyTransactionShippingFilters) ByClosedAt(ClosedAt time.Time) *sq.Col
 
 func (ft MoneyTransactionShippingFilters) ByClosedAtPtr(ClosedAt *time.Time) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
-		Prefix: ft.prefix,
+		Prefix: &ft.prefix,
 		Column: "closed_at",
 		Value:  ClosedAt,
 		IsNil:  ClosedAt == nil,
@@ -623,7 +623,7 @@ func (ft MoneyTransactionShippingFilters) ByClosedAtPtr(ClosedAt *time.Time) *sq
 
 func (ft MoneyTransactionShippingFilters) ByStatus(Status model.Status3) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
-		Prefix: ft.prefix,
+		Prefix: &ft.prefix,
 		Column: "status",
 		Value:  Status,
 		IsNil:  Status == 0,
@@ -632,7 +632,7 @@ func (ft MoneyTransactionShippingFilters) ByStatus(Status model.Status3) *sq.Col
 
 func (ft MoneyTransactionShippingFilters) ByStatusPtr(Status *model.Status3) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
-		Prefix: ft.prefix,
+		Prefix: &ft.prefix,
 		Column: "status",
 		Value:  Status,
 		IsNil:  Status == nil,
@@ -642,7 +642,7 @@ func (ft MoneyTransactionShippingFilters) ByStatusPtr(Status *model.Status3) *sq
 
 func (ft MoneyTransactionShippingFilters) ByTotalCOD(TotalCOD int) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
-		Prefix: ft.prefix,
+		Prefix: &ft.prefix,
 		Column: "total_cod",
 		Value:  TotalCOD,
 		IsNil:  TotalCOD == 0,
@@ -651,7 +651,7 @@ func (ft MoneyTransactionShippingFilters) ByTotalCOD(TotalCOD int) *sq.ColumnFil
 
 func (ft MoneyTransactionShippingFilters) ByTotalCODPtr(TotalCOD *int) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
-		Prefix: ft.prefix,
+		Prefix: &ft.prefix,
 		Column: "total_cod",
 		Value:  TotalCOD,
 		IsNil:  TotalCOD == nil,
@@ -661,7 +661,7 @@ func (ft MoneyTransactionShippingFilters) ByTotalCODPtr(TotalCOD *int) *sq.Colum
 
 func (ft MoneyTransactionShippingFilters) ByTotalAmount(TotalAmount int) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
-		Prefix: ft.prefix,
+		Prefix: &ft.prefix,
 		Column: "total_amount",
 		Value:  TotalAmount,
 		IsNil:  TotalAmount == 0,
@@ -670,7 +670,7 @@ func (ft MoneyTransactionShippingFilters) ByTotalAmount(TotalAmount int) *sq.Col
 
 func (ft MoneyTransactionShippingFilters) ByTotalAmountPtr(TotalAmount *int) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
-		Prefix: ft.prefix,
+		Prefix: &ft.prefix,
 		Column: "total_amount",
 		Value:  TotalAmount,
 		IsNil:  TotalAmount == nil,
@@ -680,7 +680,7 @@ func (ft MoneyTransactionShippingFilters) ByTotalAmountPtr(TotalAmount *int) *sq
 
 func (ft MoneyTransactionShippingFilters) ByTotalOrders(TotalOrders int) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
-		Prefix: ft.prefix,
+		Prefix: &ft.prefix,
 		Column: "total_orders",
 		Value:  TotalOrders,
 		IsNil:  TotalOrders == 0,
@@ -689,7 +689,7 @@ func (ft MoneyTransactionShippingFilters) ByTotalOrders(TotalOrders int) *sq.Col
 
 func (ft MoneyTransactionShippingFilters) ByTotalOrdersPtr(TotalOrders *int) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
-		Prefix: ft.prefix,
+		Prefix: &ft.prefix,
 		Column: "total_orders",
 		Value:  TotalOrders,
 		IsNil:  TotalOrders == nil,
@@ -699,7 +699,7 @@ func (ft MoneyTransactionShippingFilters) ByTotalOrdersPtr(TotalOrders *int) *sq
 
 func (ft MoneyTransactionShippingFilters) ByCode(Code string) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
-		Prefix: ft.prefix,
+		Prefix: &ft.prefix,
 		Column: "code",
 		Value:  Code,
 		IsNil:  Code == "",
@@ -708,7 +708,7 @@ func (ft MoneyTransactionShippingFilters) ByCode(Code string) *sq.ColumnFilter {
 
 func (ft MoneyTransactionShippingFilters) ByCodePtr(Code *string) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
-		Prefix: ft.prefix,
+		Prefix: &ft.prefix,
 		Column: "code",
 		Value:  Code,
 		IsNil:  Code == nil,
@@ -718,7 +718,7 @@ func (ft MoneyTransactionShippingFilters) ByCodePtr(Code *string) *sq.ColumnFilt
 
 func (ft MoneyTransactionShippingFilters) ByMoneyTransactionShippingExternalID(MoneyTransactionShippingExternalID int64) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
-		Prefix: ft.prefix,
+		Prefix: &ft.prefix,
 		Column: "money_transaction_shipping_external_id",
 		Value:  MoneyTransactionShippingExternalID,
 		IsNil:  MoneyTransactionShippingExternalID == 0,
@@ -727,7 +727,7 @@ func (ft MoneyTransactionShippingFilters) ByMoneyTransactionShippingExternalID(M
 
 func (ft MoneyTransactionShippingFilters) ByMoneyTransactionShippingExternalIDPtr(MoneyTransactionShippingExternalID *int64) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
-		Prefix: ft.prefix,
+		Prefix: &ft.prefix,
 		Column: "money_transaction_shipping_external_id",
 		Value:  MoneyTransactionShippingExternalID,
 		IsNil:  MoneyTransactionShippingExternalID == nil,
@@ -737,7 +737,7 @@ func (ft MoneyTransactionShippingFilters) ByMoneyTransactionShippingExternalIDPt
 
 func (ft MoneyTransactionShippingFilters) ByMoneyTransactionShippingEtopID(MoneyTransactionShippingEtopID int64) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
-		Prefix: ft.prefix,
+		Prefix: &ft.prefix,
 		Column: "money_transaction_shipping_etop_id",
 		Value:  MoneyTransactionShippingEtopID,
 		IsNil:  MoneyTransactionShippingEtopID == 0,
@@ -746,7 +746,7 @@ func (ft MoneyTransactionShippingFilters) ByMoneyTransactionShippingEtopID(Money
 
 func (ft MoneyTransactionShippingFilters) ByMoneyTransactionShippingEtopIDPtr(MoneyTransactionShippingEtopID *int64) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
-		Prefix: ft.prefix,
+		Prefix: &ft.prefix,
 		Column: "money_transaction_shipping_etop_id",
 		Value:  MoneyTransactionShippingEtopID,
 		IsNil:  MoneyTransactionShippingEtopID == nil,
@@ -756,7 +756,7 @@ func (ft MoneyTransactionShippingFilters) ByMoneyTransactionShippingEtopIDPtr(Mo
 
 func (ft MoneyTransactionShippingFilters) ByProvider(Provider string) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
-		Prefix: ft.prefix,
+		Prefix: &ft.prefix,
 		Column: "provider",
 		Value:  Provider,
 		IsNil:  Provider == "",
@@ -765,7 +765,7 @@ func (ft MoneyTransactionShippingFilters) ByProvider(Provider string) *sq.Column
 
 func (ft MoneyTransactionShippingFilters) ByProviderPtr(Provider *string) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
-		Prefix: ft.prefix,
+		Prefix: &ft.prefix,
 		Column: "provider",
 		Value:  Provider,
 		IsNil:  Provider == nil,
@@ -775,7 +775,7 @@ func (ft MoneyTransactionShippingFilters) ByProviderPtr(Provider *string) *sq.Co
 
 func (ft MoneyTransactionShippingFilters) ByConfirmedAt(ConfirmedAt time.Time) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
-		Prefix: ft.prefix,
+		Prefix: &ft.prefix,
 		Column: "confirmed_at",
 		Value:  ConfirmedAt,
 		IsNil:  ConfirmedAt.IsZero(),
@@ -784,7 +784,7 @@ func (ft MoneyTransactionShippingFilters) ByConfirmedAt(ConfirmedAt time.Time) *
 
 func (ft MoneyTransactionShippingFilters) ByConfirmedAtPtr(ConfirmedAt *time.Time) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
-		Prefix: ft.prefix,
+		Prefix: &ft.prefix,
 		Column: "confirmed_at",
 		Value:  ConfirmedAt,
 		IsNil:  ConfirmedAt == nil,
@@ -794,7 +794,7 @@ func (ft MoneyTransactionShippingFilters) ByConfirmedAtPtr(ConfirmedAt *time.Tim
 
 func (ft MoneyTransactionShippingFilters) ByEtopTransferedAt(EtopTransferedAt time.Time) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
-		Prefix: ft.prefix,
+		Prefix: &ft.prefix,
 		Column: "etop_transfered_at",
 		Value:  EtopTransferedAt,
 		IsNil:  EtopTransferedAt.IsZero(),
@@ -803,7 +803,7 @@ func (ft MoneyTransactionShippingFilters) ByEtopTransferedAt(EtopTransferedAt ti
 
 func (ft MoneyTransactionShippingFilters) ByEtopTransferedAtPtr(EtopTransferedAt *time.Time) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
-		Prefix: ft.prefix,
+		Prefix: &ft.prefix,
 		Column: "etop_transfered_at",
 		Value:  EtopTransferedAt,
 		IsNil:  EtopTransferedAt == nil,
@@ -813,7 +813,7 @@ func (ft MoneyTransactionShippingFilters) ByEtopTransferedAtPtr(EtopTransferedAt
 
 func (ft MoneyTransactionShippingFilters) ByNote(Note string) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
-		Prefix: ft.prefix,
+		Prefix: &ft.prefix,
 		Column: "note",
 		Value:  Note,
 		IsNil:  Note == "",
@@ -822,7 +822,7 @@ func (ft MoneyTransactionShippingFilters) ByNote(Note string) *sq.ColumnFilter {
 
 func (ft MoneyTransactionShippingFilters) ByNotePtr(Note *string) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
-		Prefix: ft.prefix,
+		Prefix: &ft.prefix,
 		Column: "note",
 		Value:  Note,
 		IsNil:  Note == nil,
@@ -832,7 +832,7 @@ func (ft MoneyTransactionShippingFilters) ByNotePtr(Note *string) *sq.ColumnFilt
 
 func (ft MoneyTransactionShippingFilters) ByInvoiceNumber(InvoiceNumber string) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
-		Prefix: ft.prefix,
+		Prefix: &ft.prefix,
 		Column: "invoice_number",
 		Value:  InvoiceNumber,
 		IsNil:  InvoiceNumber == "",
@@ -841,7 +841,7 @@ func (ft MoneyTransactionShippingFilters) ByInvoiceNumber(InvoiceNumber string) 
 
 func (ft MoneyTransactionShippingFilters) ByInvoiceNumberPtr(InvoiceNumber *string) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
-		Prefix: ft.prefix,
+		Prefix: &ft.prefix,
 		Column: "invoice_number",
 		Value:  InvoiceNumber,
 		IsNil:  InvoiceNumber == nil,
@@ -865,7 +865,7 @@ func (ft MoneyTransactionShippingEtopFilters) Prefix() string {
 
 func (ft MoneyTransactionShippingEtopFilters) ByID(ID int64) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
-		Prefix: ft.prefix,
+		Prefix: &ft.prefix,
 		Column: "id",
 		Value:  ID,
 		IsNil:  ID == 0,
@@ -874,7 +874,7 @@ func (ft MoneyTransactionShippingEtopFilters) ByID(ID int64) *sq.ColumnFilter {
 
 func (ft MoneyTransactionShippingEtopFilters) ByIDPtr(ID *int64) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
-		Prefix: ft.prefix,
+		Prefix: &ft.prefix,
 		Column: "id",
 		Value:  ID,
 		IsNil:  ID == nil,
@@ -884,7 +884,7 @@ func (ft MoneyTransactionShippingEtopFilters) ByIDPtr(ID *int64) *sq.ColumnFilte
 
 func (ft MoneyTransactionShippingEtopFilters) ByCode(Code string) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
-		Prefix: ft.prefix,
+		Prefix: &ft.prefix,
 		Column: "code",
 		Value:  Code,
 		IsNil:  Code == "",
@@ -893,7 +893,7 @@ func (ft MoneyTransactionShippingEtopFilters) ByCode(Code string) *sq.ColumnFilt
 
 func (ft MoneyTransactionShippingEtopFilters) ByCodePtr(Code *string) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
-		Prefix: ft.prefix,
+		Prefix: &ft.prefix,
 		Column: "code",
 		Value:  Code,
 		IsNil:  Code == nil,
@@ -903,7 +903,7 @@ func (ft MoneyTransactionShippingEtopFilters) ByCodePtr(Code *string) *sq.Column
 
 func (ft MoneyTransactionShippingEtopFilters) ByTotalCOD(TotalCOD int) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
-		Prefix: ft.prefix,
+		Prefix: &ft.prefix,
 		Column: "total_cod",
 		Value:  TotalCOD,
 		IsNil:  TotalCOD == 0,
@@ -912,7 +912,7 @@ func (ft MoneyTransactionShippingEtopFilters) ByTotalCOD(TotalCOD int) *sq.Colum
 
 func (ft MoneyTransactionShippingEtopFilters) ByTotalCODPtr(TotalCOD *int) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
-		Prefix: ft.prefix,
+		Prefix: &ft.prefix,
 		Column: "total_cod",
 		Value:  TotalCOD,
 		IsNil:  TotalCOD == nil,
@@ -922,7 +922,7 @@ func (ft MoneyTransactionShippingEtopFilters) ByTotalCODPtr(TotalCOD *int) *sq.C
 
 func (ft MoneyTransactionShippingEtopFilters) ByTotalOrders(TotalOrders int) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
-		Prefix: ft.prefix,
+		Prefix: &ft.prefix,
 		Column: "total_orders",
 		Value:  TotalOrders,
 		IsNil:  TotalOrders == 0,
@@ -931,7 +931,7 @@ func (ft MoneyTransactionShippingEtopFilters) ByTotalOrders(TotalOrders int) *sq
 
 func (ft MoneyTransactionShippingEtopFilters) ByTotalOrdersPtr(TotalOrders *int) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
-		Prefix: ft.prefix,
+		Prefix: &ft.prefix,
 		Column: "total_orders",
 		Value:  TotalOrders,
 		IsNil:  TotalOrders == nil,
@@ -941,7 +941,7 @@ func (ft MoneyTransactionShippingEtopFilters) ByTotalOrdersPtr(TotalOrders *int)
 
 func (ft MoneyTransactionShippingEtopFilters) ByTotalAmount(TotalAmount int) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
-		Prefix: ft.prefix,
+		Prefix: &ft.prefix,
 		Column: "total_amount",
 		Value:  TotalAmount,
 		IsNil:  TotalAmount == 0,
@@ -950,7 +950,7 @@ func (ft MoneyTransactionShippingEtopFilters) ByTotalAmount(TotalAmount int) *sq
 
 func (ft MoneyTransactionShippingEtopFilters) ByTotalAmountPtr(TotalAmount *int) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
-		Prefix: ft.prefix,
+		Prefix: &ft.prefix,
 		Column: "total_amount",
 		Value:  TotalAmount,
 		IsNil:  TotalAmount == nil,
@@ -960,7 +960,7 @@ func (ft MoneyTransactionShippingEtopFilters) ByTotalAmountPtr(TotalAmount *int)
 
 func (ft MoneyTransactionShippingEtopFilters) ByTotalFee(TotalFee int) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
-		Prefix: ft.prefix,
+		Prefix: &ft.prefix,
 		Column: "total_fee",
 		Value:  TotalFee,
 		IsNil:  TotalFee == 0,
@@ -969,7 +969,7 @@ func (ft MoneyTransactionShippingEtopFilters) ByTotalFee(TotalFee int) *sq.Colum
 
 func (ft MoneyTransactionShippingEtopFilters) ByTotalFeePtr(TotalFee *int) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
-		Prefix: ft.prefix,
+		Prefix: &ft.prefix,
 		Column: "total_fee",
 		Value:  TotalFee,
 		IsNil:  TotalFee == nil,
@@ -979,7 +979,7 @@ func (ft MoneyTransactionShippingEtopFilters) ByTotalFeePtr(TotalFee *int) *sq.C
 
 func (ft MoneyTransactionShippingEtopFilters) ByTotalMoneyTransaction(TotalMoneyTransaction int) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
-		Prefix: ft.prefix,
+		Prefix: &ft.prefix,
 		Column: "total_money_transaction",
 		Value:  TotalMoneyTransaction,
 		IsNil:  TotalMoneyTransaction == 0,
@@ -988,7 +988,7 @@ func (ft MoneyTransactionShippingEtopFilters) ByTotalMoneyTransaction(TotalMoney
 
 func (ft MoneyTransactionShippingEtopFilters) ByTotalMoneyTransactionPtr(TotalMoneyTransaction *int) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
-		Prefix: ft.prefix,
+		Prefix: &ft.prefix,
 		Column: "total_money_transaction",
 		Value:  TotalMoneyTransaction,
 		IsNil:  TotalMoneyTransaction == nil,
@@ -998,7 +998,7 @@ func (ft MoneyTransactionShippingEtopFilters) ByTotalMoneyTransactionPtr(TotalMo
 
 func (ft MoneyTransactionShippingEtopFilters) ByCreatedAt(CreatedAt time.Time) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
-		Prefix: ft.prefix,
+		Prefix: &ft.prefix,
 		Column: "created_at",
 		Value:  CreatedAt,
 		IsNil:  CreatedAt.IsZero(),
@@ -1007,7 +1007,7 @@ func (ft MoneyTransactionShippingEtopFilters) ByCreatedAt(CreatedAt time.Time) *
 
 func (ft MoneyTransactionShippingEtopFilters) ByCreatedAtPtr(CreatedAt *time.Time) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
-		Prefix: ft.prefix,
+		Prefix: &ft.prefix,
 		Column: "created_at",
 		Value:  CreatedAt,
 		IsNil:  CreatedAt == nil,
@@ -1017,7 +1017,7 @@ func (ft MoneyTransactionShippingEtopFilters) ByCreatedAtPtr(CreatedAt *time.Tim
 
 func (ft MoneyTransactionShippingEtopFilters) ByUpdatedAt(UpdatedAt time.Time) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
-		Prefix: ft.prefix,
+		Prefix: &ft.prefix,
 		Column: "updated_at",
 		Value:  UpdatedAt,
 		IsNil:  UpdatedAt.IsZero(),
@@ -1026,7 +1026,7 @@ func (ft MoneyTransactionShippingEtopFilters) ByUpdatedAt(UpdatedAt time.Time) *
 
 func (ft MoneyTransactionShippingEtopFilters) ByUpdatedAtPtr(UpdatedAt *time.Time) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
-		Prefix: ft.prefix,
+		Prefix: &ft.prefix,
 		Column: "updated_at",
 		Value:  UpdatedAt,
 		IsNil:  UpdatedAt == nil,
@@ -1036,7 +1036,7 @@ func (ft MoneyTransactionShippingEtopFilters) ByUpdatedAtPtr(UpdatedAt *time.Tim
 
 func (ft MoneyTransactionShippingEtopFilters) ByConfirmedAt(ConfirmedAt time.Time) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
-		Prefix: ft.prefix,
+		Prefix: &ft.prefix,
 		Column: "confirmed_at",
 		Value:  ConfirmedAt,
 		IsNil:  ConfirmedAt.IsZero(),
@@ -1045,7 +1045,7 @@ func (ft MoneyTransactionShippingEtopFilters) ByConfirmedAt(ConfirmedAt time.Tim
 
 func (ft MoneyTransactionShippingEtopFilters) ByConfirmedAtPtr(ConfirmedAt *time.Time) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
-		Prefix: ft.prefix,
+		Prefix: &ft.prefix,
 		Column: "confirmed_at",
 		Value:  ConfirmedAt,
 		IsNil:  ConfirmedAt == nil,
@@ -1055,7 +1055,7 @@ func (ft MoneyTransactionShippingEtopFilters) ByConfirmedAtPtr(ConfirmedAt *time
 
 func (ft MoneyTransactionShippingEtopFilters) ByStatus(Status model.Status3) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
-		Prefix: ft.prefix,
+		Prefix: &ft.prefix,
 		Column: "status",
 		Value:  Status,
 		IsNil:  Status == 0,
@@ -1064,7 +1064,7 @@ func (ft MoneyTransactionShippingEtopFilters) ByStatus(Status model.Status3) *sq
 
 func (ft MoneyTransactionShippingEtopFilters) ByStatusPtr(Status *model.Status3) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
-		Prefix: ft.prefix,
+		Prefix: &ft.prefix,
 		Column: "status",
 		Value:  Status,
 		IsNil:  Status == nil,
@@ -1074,7 +1074,7 @@ func (ft MoneyTransactionShippingEtopFilters) ByStatusPtr(Status *model.Status3)
 
 func (ft MoneyTransactionShippingEtopFilters) ByNote(Note string) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
-		Prefix: ft.prefix,
+		Prefix: &ft.prefix,
 		Column: "note",
 		Value:  Note,
 		IsNil:  Note == "",
@@ -1083,7 +1083,7 @@ func (ft MoneyTransactionShippingEtopFilters) ByNote(Note string) *sq.ColumnFilt
 
 func (ft MoneyTransactionShippingEtopFilters) ByNotePtr(Note *string) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
-		Prefix: ft.prefix,
+		Prefix: &ft.prefix,
 		Column: "note",
 		Value:  Note,
 		IsNil:  Note == nil,
@@ -1093,7 +1093,7 @@ func (ft MoneyTransactionShippingEtopFilters) ByNotePtr(Note *string) *sq.Column
 
 func (ft MoneyTransactionShippingEtopFilters) ByInvoiceNumber(InvoiceNumber string) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
-		Prefix: ft.prefix,
+		Prefix: &ft.prefix,
 		Column: "invoice_number",
 		Value:  InvoiceNumber,
 		IsNil:  InvoiceNumber == "",
@@ -1102,7 +1102,7 @@ func (ft MoneyTransactionShippingEtopFilters) ByInvoiceNumber(InvoiceNumber stri
 
 func (ft MoneyTransactionShippingEtopFilters) ByInvoiceNumberPtr(InvoiceNumber *string) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
-		Prefix: ft.prefix,
+		Prefix: &ft.prefix,
 		Column: "invoice_number",
 		Value:  InvoiceNumber,
 		IsNil:  InvoiceNumber == nil,

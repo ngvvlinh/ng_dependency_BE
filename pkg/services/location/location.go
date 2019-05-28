@@ -315,16 +315,16 @@ func normalizeLower(name string) string {
 // a space or a special character.
 func normalizePrefix(name string, prefixes ...string) string {
 	for _, prefix := range prefixes {
-		norm := strings.TrimPrefix(name, prefix)
-		if norm != name && norm != "" {
-			next := norm[0]
+		normName := strings.TrimPrefix(name, prefix)
+		if normName != name && normName != "" {
+			next := normName[0]
 			switch {
 			case next >= 'a' && next <= 'z':
 				continue // do not trim prefix
 			case next >= '0' && next <= '9':
-				return norm
+				return normName
 			default:
-				return strings.TrimSpace(norm[1:])
+				return strings.TrimSpace(normName[1:])
 			}
 		}
 	}
@@ -437,16 +437,16 @@ func findLocation(province, district, ward string) (L Location) {
 		prov := provinceIndexName[province]
 		writeDebug(0, province, prov != nil)
 
-		var norm string
+		var normName string
 		if prov == nil {
-			norm = validate.NormalizeSearchSimple(province)
-			prov = provinceIndexNamN[norm]
-			writeDebug(0, norm, prov != nil)
+			normName = validate.NormalizeSearchSimple(province)
+			prov = provinceIndexNamN[normName]
+			writeDebug(0, normName, prov != nil)
 		}
 		if prov == nil {
-			norm = normalizeProvince(norm)
-			prov = provinceIndexNamX[norm]
-			writeDebug(0, norm, prov != nil)
+			normName = normalizeProvince(normName)
+			prov = provinceIndexNamX[normName]
+			writeDebug(0, normName, prov != nil)
 		}
 		if prov == nil {
 			return L
@@ -462,16 +462,16 @@ func findLocation(province, district, ward string) (L Location) {
 		districts := districtIndexName[district]
 		writeDebug(1, district, len(districts) > 0)
 
-		var norm string
+		var normName string
 		if len(districts) == 0 {
-			norm = validate.NormalizeSearchSimple(district)
-			districts = districtIndexNamN[norm]
-			writeDebug(1, norm, len(districts) > 0)
+			normName = validate.NormalizeSearchSimple(district)
+			districts = districtIndexNamN[normName]
+			writeDebug(1, normName, len(districts) > 0)
 		}
 		if len(districts) == 0 {
-			norm = normalizeDistrict(norm)
-			districts = districtIndexNamX[norm]
-			writeDebug(1, norm, len(districts) > 0)
+			normName = normalizeDistrict(normName)
+			districts = districtIndexNamX[normName]
+			writeDebug(1, normName, len(districts) > 0)
 		}
 
 		switch len(districts) {
@@ -506,9 +506,9 @@ func findLocation(province, district, ward string) (L Location) {
 		}
 
 		// Because of "Phường 3" and "Phường 03", we only do normalization search on ward.
-		norm := normalizeWard(validate.NormalizeSearchSimple(ward))
-		wards := wardIndexNamX[norm]
-		writeDebug(2, norm, len(wards) > 0)
+		normName := normalizeWard(validate.NormalizeSearchSimple(ward))
+		wards := wardIndexNamX[normName]
+		writeDebug(2, normName, len(wards) > 0)
 
 		switch len(wards) {
 		case 0:
@@ -558,14 +558,14 @@ func FindWardByDistrictCode(name string, districtCode string) *types.Ward {
 	name = normalizeLower(name)
 	wards := wardIndexName[name]
 
-	var norm string
+	var normName string
 	if len(wards) == 0 {
-		norm = validate.NormalizeSearchSimple(name)
-		wards = wardIndexNamN[norm]
+		normName = validate.NormalizeSearchSimple(name)
+		wards = wardIndexNamN[normName]
 	}
 	if len(wards) == 0 {
-		norm = normalizeWard(norm)
-		wards = wardIndexNamX[norm]
+		normName = normalizeWard(normName)
+		wards = wardIndexNamX[normName]
 	}
 	for _, w := range wards {
 		if districtCode == w.DistrictCode {

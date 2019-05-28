@@ -1,4 +1,4 @@
-package sq
+package sql
 
 import (
 	"errors"
@@ -376,6 +376,15 @@ Explaination of different modes:
     | OptionalZero | (skip)    | id == 0           | id = ?   |                                                                                     |
     | OptionalNull | (skip)    | IS NULL           | id = ?   |                                                                                     |
 */
+type FilterQuery interface {
+	WriterTo
+
+	filter()
+}
+
+func (p *ColumnFilter) filter()    {}
+func (p *ColumnFilterPtr) filter() {}
+
 type ColumnFilter ColumnFilterPtr
 
 func (p *ColumnFilter) Optional() *ColumnFilter {
@@ -393,7 +402,7 @@ func (p *ColumnFilter) WriteSQLTo(w core.SQLWriter) error {
 }
 
 type ColumnFilterPtr struct {
-	Prefix string
+	Prefix *string // allow changing prefix later
 	Column string
 	Value  interface{}
 	IsNil  bool
@@ -434,11 +443,16 @@ func (p *ColumnFilterPtr) OptionalNull() *ColumnFilterPtr {
 	return p
 }
 
+var emptyString = ""
+
 func (p *ColumnFilterPtr) WriteSQLTo(w core.SQLWriter) error {
+	if p.Prefix == nil {
+		p.Prefix = &emptyString
+	}
 	if p.IsNil {
 		switch {
 		case p.mode == ModeNullable:
-			w.WritePrefixedName(p.Prefix, p.Column)
+			w.WritePrefixedName(*p.Prefix, p.Column)
 			if p.op == "" {
 				w.WriteRawString(" IS NULL")
 			} else {
@@ -459,7 +473,7 @@ func (p *ColumnFilterPtr) WriteSQLTo(w core.SQLWriter) error {
 	if p.IsZero {
 		switch {
 		case p.mode&2 != 0: // equal to null
-			w.WritePrefixedName(p.Prefix, p.Column)
+			w.WritePrefixedName(*p.Prefix, p.Column)
 			if p.op == "" {
 				w.WriteRawString(" IS NULL")
 			} else {
@@ -471,7 +485,7 @@ func (p *ColumnFilterPtr) WriteSQLTo(w core.SQLWriter) error {
 			return nil
 
 		case p.mode&1 != 0: // equal to zero
-			w.WritePrefixedName(p.Prefix, p.Column)
+			w.WritePrefixedName(*p.Prefix, p.Column)
 			if p.op == "" {
 				w.WriteRawString(" = ")
 			} else {
@@ -484,10 +498,10 @@ func (p *ColumnFilterPtr) WriteSQLTo(w core.SQLWriter) error {
 			return nil
 
 		default: // is null or zero
-			w.WritePrefixedName(p.Prefix, p.Column)
+			w.WritePrefixedName(*p.Prefix, p.Column)
 			if p.op == "" {
 				w.WriteRawString(" IS NULL OR ")
-				w.WritePrefixedName(p.Prefix, p.Column)
+				w.WritePrefixedName(*p.Prefix, p.Column)
 				w.WriteRawString(" = ")
 				w.WriteMarker()
 			} else {
@@ -501,7 +515,7 @@ func (p *ColumnFilterPtr) WriteSQLTo(w core.SQLWriter) error {
 		}
 	}
 
-	w.WritePrefixedName(p.Prefix, p.Column)
+	w.WritePrefixedName(*p.Prefix, p.Column)
 	w.WriteRawString(" = ")
 	w.WriteMarker()
 	w.WriteArg(p.Value)

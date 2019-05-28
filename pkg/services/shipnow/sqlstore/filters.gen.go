@@ -6,7 +6,7 @@ import (
 	"time"
 
 	sq "etop.vn/backend/pkg/common/sql"
-	m "etop.vn/backend/pkg/etop/model"
+	"etop.vn/backend/pkg/etop/model"
 	shipnowmodel "etop.vn/backend/pkg/services/shipnow/model"
 )
 
@@ -26,7 +26,7 @@ func (ft ShipnowFulfillmentFilters) Prefix() string {
 
 func (ft ShipnowFulfillmentFilters) ByID(ID int64) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
-		Prefix: ft.prefix,
+		Prefix: &ft.prefix,
 		Column: "id",
 		Value:  ID,
 		IsNil:  ID == 0,
@@ -35,7 +35,7 @@ func (ft ShipnowFulfillmentFilters) ByID(ID int64) *sq.ColumnFilter {
 
 func (ft ShipnowFulfillmentFilters) ByIDPtr(ID *int64) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
-		Prefix: ft.prefix,
+		Prefix: &ft.prefix,
 		Column: "id",
 		Value:  ID,
 		IsNil:  ID == nil,
@@ -45,7 +45,7 @@ func (ft ShipnowFulfillmentFilters) ByIDPtr(ID *int64) *sq.ColumnFilterPtr {
 
 func (ft ShipnowFulfillmentFilters) ByShopID(ShopID int64) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
-		Prefix: ft.prefix,
+		Prefix: &ft.prefix,
 		Column: "shop_id",
 		Value:  ShopID,
 		IsNil:  ShopID == 0,
@@ -54,7 +54,7 @@ func (ft ShipnowFulfillmentFilters) ByShopID(ShopID int64) *sq.ColumnFilter {
 
 func (ft ShipnowFulfillmentFilters) ByShopIDPtr(ShopID *int64) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
-		Prefix: ft.prefix,
+		Prefix: &ft.prefix,
 		Column: "shop_id",
 		Value:  ShopID,
 		IsNil:  ShopID == nil,
@@ -64,7 +64,7 @@ func (ft ShipnowFulfillmentFilters) ByShopIDPtr(ShopID *int64) *sq.ColumnFilterP
 
 func (ft ShipnowFulfillmentFilters) ByPartnerID(PartnerID int64) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
-		Prefix: ft.prefix,
+		Prefix: &ft.prefix,
 		Column: "partner_id",
 		Value:  PartnerID,
 		IsNil:  PartnerID == 0,
@@ -73,7 +73,7 @@ func (ft ShipnowFulfillmentFilters) ByPartnerID(PartnerID int64) *sq.ColumnFilte
 
 func (ft ShipnowFulfillmentFilters) ByPartnerIDPtr(PartnerID *int64) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
-		Prefix: ft.prefix,
+		Prefix: &ft.prefix,
 		Column: "partner_id",
 		Value:  PartnerID,
 		IsNil:  PartnerID == nil,
@@ -83,7 +83,7 @@ func (ft ShipnowFulfillmentFilters) ByPartnerIDPtr(PartnerID *int64) *sq.ColumnF
 
 func (ft ShipnowFulfillmentFilters) ByCarrier(Carrier shipnowmodel.Carrier) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
-		Prefix: ft.prefix,
+		Prefix: &ft.prefix,
 		Column: "carrier",
 		Value:  Carrier,
 		IsNil:  Carrier == "",
@@ -92,7 +92,7 @@ func (ft ShipnowFulfillmentFilters) ByCarrier(Carrier shipnowmodel.Carrier) *sq.
 
 func (ft ShipnowFulfillmentFilters) ByCarrierPtr(Carrier *shipnowmodel.Carrier) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
-		Prefix: ft.prefix,
+		Prefix: &ft.prefix,
 		Column: "carrier",
 		Value:  Carrier,
 		IsNil:  Carrier == nil,
@@ -102,7 +102,7 @@ func (ft ShipnowFulfillmentFilters) ByCarrierPtr(Carrier *shipnowmodel.Carrier) 
 
 func (ft ShipnowFulfillmentFilters) ByShippingServiceCode(ShippingServiceCode string) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
-		Prefix: ft.prefix,
+		Prefix: &ft.prefix,
 		Column: "shipping_service_code",
 		Value:  ShippingServiceCode,
 		IsNil:  ShippingServiceCode == "",
@@ -111,7 +111,7 @@ func (ft ShipnowFulfillmentFilters) ByShippingServiceCode(ShippingServiceCode st
 
 func (ft ShipnowFulfillmentFilters) ByShippingServiceCodePtr(ShippingServiceCode *string) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
-		Prefix: ft.prefix,
+		Prefix: &ft.prefix,
 		Column: "shipping_service_code",
 		Value:  ShippingServiceCode,
 		IsNil:  ShippingServiceCode == nil,
@@ -121,7 +121,7 @@ func (ft ShipnowFulfillmentFilters) ByShippingServiceCodePtr(ShippingServiceCode
 
 func (ft ShipnowFulfillmentFilters) ByShippingServiceFee(ShippingServiceFee int32) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
-		Prefix: ft.prefix,
+		Prefix: &ft.prefix,
 		Column: "shipping_service_fee",
 		Value:  ShippingServiceFee,
 		IsNil:  ShippingServiceFee == 0,
@@ -130,7 +130,7 @@ func (ft ShipnowFulfillmentFilters) ByShippingServiceFee(ShippingServiceFee int3
 
 func (ft ShipnowFulfillmentFilters) ByShippingServiceFeePtr(ShippingServiceFee *int32) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
-		Prefix: ft.prefix,
+		Prefix: &ft.prefix,
 		Column: "shipping_service_fee",
 		Value:  ShippingServiceFee,
 		IsNil:  ShippingServiceFee == nil,
@@ -140,7 +140,7 @@ func (ft ShipnowFulfillmentFilters) ByShippingServiceFeePtr(ShippingServiceFee *
 
 func (ft ShipnowFulfillmentFilters) ByChargeableWeight(ChargeableWeight int32) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
-		Prefix: ft.prefix,
+		Prefix: &ft.prefix,
 		Column: "chargeable_weight",
 		Value:  ChargeableWeight,
 		IsNil:  ChargeableWeight == 0,
@@ -149,7 +149,7 @@ func (ft ShipnowFulfillmentFilters) ByChargeableWeight(ChargeableWeight int32) *
 
 func (ft ShipnowFulfillmentFilters) ByChargeableWeightPtr(ChargeableWeight *int32) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
-		Prefix: ft.prefix,
+		Prefix: &ft.prefix,
 		Column: "chargeable_weight",
 		Value:  ChargeableWeight,
 		IsNil:  ChargeableWeight == nil,
@@ -159,7 +159,7 @@ func (ft ShipnowFulfillmentFilters) ByChargeableWeightPtr(ChargeableWeight *int3
 
 func (ft ShipnowFulfillmentFilters) ByGrossWeight(GrossWeight int32) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
-		Prefix: ft.prefix,
+		Prefix: &ft.prefix,
 		Column: "gross_weight",
 		Value:  GrossWeight,
 		IsNil:  GrossWeight == 0,
@@ -168,7 +168,7 @@ func (ft ShipnowFulfillmentFilters) ByGrossWeight(GrossWeight int32) *sq.ColumnF
 
 func (ft ShipnowFulfillmentFilters) ByGrossWeightPtr(GrossWeight *int32) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
-		Prefix: ft.prefix,
+		Prefix: &ft.prefix,
 		Column: "gross_weight",
 		Value:  GrossWeight,
 		IsNil:  GrossWeight == nil,
@@ -178,7 +178,7 @@ func (ft ShipnowFulfillmentFilters) ByGrossWeightPtr(GrossWeight *int32) *sq.Col
 
 func (ft ShipnowFulfillmentFilters) ByBasketValue(BasketValue int32) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
-		Prefix: ft.prefix,
+		Prefix: &ft.prefix,
 		Column: "basket_value",
 		Value:  BasketValue,
 		IsNil:  BasketValue == 0,
@@ -187,7 +187,7 @@ func (ft ShipnowFulfillmentFilters) ByBasketValue(BasketValue int32) *sq.ColumnF
 
 func (ft ShipnowFulfillmentFilters) ByBasketValuePtr(BasketValue *int32) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
-		Prefix: ft.prefix,
+		Prefix: &ft.prefix,
 		Column: "basket_value",
 		Value:  BasketValue,
 		IsNil:  BasketValue == nil,
@@ -197,7 +197,7 @@ func (ft ShipnowFulfillmentFilters) ByBasketValuePtr(BasketValue *int32) *sq.Col
 
 func (ft ShipnowFulfillmentFilters) ByCODAmount(CODAmount int32) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
-		Prefix: ft.prefix,
+		Prefix: &ft.prefix,
 		Column: "cod_amount",
 		Value:  CODAmount,
 		IsNil:  CODAmount == 0,
@@ -206,7 +206,7 @@ func (ft ShipnowFulfillmentFilters) ByCODAmount(CODAmount int32) *sq.ColumnFilte
 
 func (ft ShipnowFulfillmentFilters) ByCODAmountPtr(CODAmount *int32) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
-		Prefix: ft.prefix,
+		Prefix: &ft.prefix,
 		Column: "cod_amount",
 		Value:  CODAmount,
 		IsNil:  CODAmount == nil,
@@ -216,7 +216,7 @@ func (ft ShipnowFulfillmentFilters) ByCODAmountPtr(CODAmount *int32) *sq.ColumnF
 
 func (ft ShipnowFulfillmentFilters) ByShippingNote(ShippingNote string) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
-		Prefix: ft.prefix,
+		Prefix: &ft.prefix,
 		Column: "shipping_note",
 		Value:  ShippingNote,
 		IsNil:  ShippingNote == "",
@@ -225,7 +225,7 @@ func (ft ShipnowFulfillmentFilters) ByShippingNote(ShippingNote string) *sq.Colu
 
 func (ft ShipnowFulfillmentFilters) ByShippingNotePtr(ShippingNote *string) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
-		Prefix: ft.prefix,
+		Prefix: &ft.prefix,
 		Column: "shipping_note",
 		Value:  ShippingNote,
 		IsNil:  ShippingNote == nil,
@@ -235,7 +235,7 @@ func (ft ShipnowFulfillmentFilters) ByShippingNotePtr(ShippingNote *string) *sq.
 
 func (ft ShipnowFulfillmentFilters) ByRequestPickupAt(RequestPickupAt time.Time) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
-		Prefix: ft.prefix,
+		Prefix: &ft.prefix,
 		Column: "request_pickup_at",
 		Value:  RequestPickupAt,
 		IsNil:  RequestPickupAt.IsZero(),
@@ -244,7 +244,7 @@ func (ft ShipnowFulfillmentFilters) ByRequestPickupAt(RequestPickupAt time.Time)
 
 func (ft ShipnowFulfillmentFilters) ByRequestPickupAtPtr(RequestPickupAt *time.Time) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
-		Prefix: ft.prefix,
+		Prefix: &ft.prefix,
 		Column: "request_pickup_at",
 		Value:  RequestPickupAt,
 		IsNil:  RequestPickupAt == nil,
@@ -252,18 +252,18 @@ func (ft ShipnowFulfillmentFilters) ByRequestPickupAtPtr(RequestPickupAt *time.T
 	}
 }
 
-func (ft ShipnowFulfillmentFilters) ByStatus(Status m.Status5) *sq.ColumnFilter {
+func (ft ShipnowFulfillmentFilters) ByStatus(Status model.Status5) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
-		Prefix: ft.prefix,
+		Prefix: &ft.prefix,
 		Column: "status",
 		Value:  Status,
 		IsNil:  Status == 0,
 	}
 }
 
-func (ft ShipnowFulfillmentFilters) ByStatusPtr(Status *m.Status5) *sq.ColumnFilterPtr {
+func (ft ShipnowFulfillmentFilters) ByStatusPtr(Status *model.Status5) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
-		Prefix: ft.prefix,
+		Prefix: &ft.prefix,
 		Column: "status",
 		Value:  Status,
 		IsNil:  Status == nil,
@@ -271,18 +271,18 @@ func (ft ShipnowFulfillmentFilters) ByStatusPtr(Status *m.Status5) *sq.ColumnFil
 	}
 }
 
-func (ft ShipnowFulfillmentFilters) ByConfirmStatus(ConfirmStatus m.Status3) *sq.ColumnFilter {
+func (ft ShipnowFulfillmentFilters) ByConfirmStatus(ConfirmStatus model.Status3) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
-		Prefix: ft.prefix,
+		Prefix: &ft.prefix,
 		Column: "confirm_status",
 		Value:  ConfirmStatus,
 		IsNil:  ConfirmStatus == 0,
 	}
 }
 
-func (ft ShipnowFulfillmentFilters) ByConfirmStatusPtr(ConfirmStatus *m.Status3) *sq.ColumnFilterPtr {
+func (ft ShipnowFulfillmentFilters) ByConfirmStatusPtr(ConfirmStatus *model.Status3) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
-		Prefix: ft.prefix,
+		Prefix: &ft.prefix,
 		Column: "confirm_status",
 		Value:  ConfirmStatus,
 		IsNil:  ConfirmStatus == nil,
@@ -290,18 +290,18 @@ func (ft ShipnowFulfillmentFilters) ByConfirmStatusPtr(ConfirmStatus *m.Status3)
 	}
 }
 
-func (ft ShipnowFulfillmentFilters) ByShippingStatus(ShippingStatus m.Status5) *sq.ColumnFilter {
+func (ft ShipnowFulfillmentFilters) ByShippingStatus(ShippingStatus model.Status5) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
-		Prefix: ft.prefix,
+		Prefix: &ft.prefix,
 		Column: "shipping_status",
 		Value:  ShippingStatus,
 		IsNil:  ShippingStatus == 0,
 	}
 }
 
-func (ft ShipnowFulfillmentFilters) ByShippingStatusPtr(ShippingStatus *m.Status5) *sq.ColumnFilterPtr {
+func (ft ShipnowFulfillmentFilters) ByShippingStatusPtr(ShippingStatus *model.Status5) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
-		Prefix: ft.prefix,
+		Prefix: &ft.prefix,
 		Column: "shipping_status",
 		Value:  ShippingStatus,
 		IsNil:  ShippingStatus == nil,
@@ -311,7 +311,7 @@ func (ft ShipnowFulfillmentFilters) ByShippingStatusPtr(ShippingStatus *m.Status
 
 func (ft ShipnowFulfillmentFilters) ByShippingState(ShippingState string) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
-		Prefix: ft.prefix,
+		Prefix: &ft.prefix,
 		Column: "shipping_state",
 		Value:  ShippingState,
 		IsNil:  ShippingState == "",
@@ -320,7 +320,7 @@ func (ft ShipnowFulfillmentFilters) ByShippingState(ShippingState string) *sq.Co
 
 func (ft ShipnowFulfillmentFilters) ByShippingStatePtr(ShippingState *string) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
-		Prefix: ft.prefix,
+		Prefix: &ft.prefix,
 		Column: "shipping_state",
 		Value:  ShippingState,
 		IsNil:  ShippingState == nil,
@@ -330,7 +330,7 @@ func (ft ShipnowFulfillmentFilters) ByShippingStatePtr(ShippingState *string) *s
 
 func (ft ShipnowFulfillmentFilters) ByShippingCode(ShippingCode string) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
-		Prefix: ft.prefix,
+		Prefix: &ft.prefix,
 		Column: "shipping_code",
 		Value:  ShippingCode,
 		IsNil:  ShippingCode == "",
@@ -339,7 +339,7 @@ func (ft ShipnowFulfillmentFilters) ByShippingCode(ShippingCode string) *sq.Colu
 
 func (ft ShipnowFulfillmentFilters) ByShippingCodePtr(ShippingCode *string) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
-		Prefix: ft.prefix,
+		Prefix: &ft.prefix,
 		Column: "shipping_code",
 		Value:  ShippingCode,
 		IsNil:  ShippingCode == nil,
@@ -347,18 +347,18 @@ func (ft ShipnowFulfillmentFilters) ByShippingCodePtr(ShippingCode *string) *sq.
 	}
 }
 
-func (ft ShipnowFulfillmentFilters) BySyncStatus(SyncStatus m.Status4) *sq.ColumnFilter {
+func (ft ShipnowFulfillmentFilters) BySyncStatus(SyncStatus model.Status4) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
-		Prefix: ft.prefix,
+		Prefix: &ft.prefix,
 		Column: "sync_status",
 		Value:  SyncStatus,
 		IsNil:  SyncStatus == 0,
 	}
 }
 
-func (ft ShipnowFulfillmentFilters) BySyncStatusPtr(SyncStatus *m.Status4) *sq.ColumnFilterPtr {
+func (ft ShipnowFulfillmentFilters) BySyncStatusPtr(SyncStatus *model.Status4) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
-		Prefix: ft.prefix,
+		Prefix: &ft.prefix,
 		Column: "sync_status",
 		Value:  SyncStatus,
 		IsNil:  SyncStatus == nil,
@@ -368,7 +368,7 @@ func (ft ShipnowFulfillmentFilters) BySyncStatusPtr(SyncStatus *m.Status4) *sq.C
 
 func (ft ShipnowFulfillmentFilters) ByLastSyncAt(LastSyncAt time.Time) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
-		Prefix: ft.prefix,
+		Prefix: &ft.prefix,
 		Column: "last_sync_at",
 		Value:  LastSyncAt,
 		IsNil:  LastSyncAt.IsZero(),
@@ -377,7 +377,7 @@ func (ft ShipnowFulfillmentFilters) ByLastSyncAt(LastSyncAt time.Time) *sq.Colum
 
 func (ft ShipnowFulfillmentFilters) ByLastSyncAtPtr(LastSyncAt *time.Time) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
-		Prefix: ft.prefix,
+		Prefix: &ft.prefix,
 		Column: "last_sync_at",
 		Value:  LastSyncAt,
 		IsNil:  LastSyncAt == nil,
@@ -387,7 +387,7 @@ func (ft ShipnowFulfillmentFilters) ByLastSyncAtPtr(LastSyncAt *time.Time) *sq.C
 
 func (ft ShipnowFulfillmentFilters) ByCreatedAt(CreatedAt time.Time) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
-		Prefix: ft.prefix,
+		Prefix: &ft.prefix,
 		Column: "created_at",
 		Value:  CreatedAt,
 		IsNil:  CreatedAt.IsZero(),
@@ -396,7 +396,7 @@ func (ft ShipnowFulfillmentFilters) ByCreatedAt(CreatedAt time.Time) *sq.ColumnF
 
 func (ft ShipnowFulfillmentFilters) ByCreatedAtPtr(CreatedAt *time.Time) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
-		Prefix: ft.prefix,
+		Prefix: &ft.prefix,
 		Column: "created_at",
 		Value:  CreatedAt,
 		IsNil:  CreatedAt == nil,
@@ -406,7 +406,7 @@ func (ft ShipnowFulfillmentFilters) ByCreatedAtPtr(CreatedAt *time.Time) *sq.Col
 
 func (ft ShipnowFulfillmentFilters) ByUpdatedAt(UpdatedAt time.Time) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
-		Prefix: ft.prefix,
+		Prefix: &ft.prefix,
 		Column: "updated_at",
 		Value:  UpdatedAt,
 		IsNil:  UpdatedAt.IsZero(),
@@ -415,7 +415,7 @@ func (ft ShipnowFulfillmentFilters) ByUpdatedAt(UpdatedAt time.Time) *sq.ColumnF
 
 func (ft ShipnowFulfillmentFilters) ByUpdatedAtPtr(UpdatedAt *time.Time) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
-		Prefix: ft.prefix,
+		Prefix: &ft.prefix,
 		Column: "updated_at",
 		Value:  UpdatedAt,
 		IsNil:  UpdatedAt == nil,

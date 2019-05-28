@@ -1,6 +1,6 @@
 package test
 
-//go:generate ../../../../scripts/derive.sh
+//go:generate $ETOPDIR/backend/scripts/derive.sh
 var _ = substructFoo1(&Foo1{}, &Foo{})
 
 // Foo ...

@@ -23,8 +23,9 @@ const __sqlShippingProviderWebhook_Select = "SELECT " + __sqlShippingProviderWeb
 const __sqlShippingProviderWebhook_Select_history = "SELECT " + __sqlShippingProviderWebhook_ListCols + " FROM history.\"shipping_provider_webhook\""
 const __sqlShippingProviderWebhook_UpdateAll = "UPDATE \"shipping_provider_webhook\" SET (" + __sqlShippingProviderWebhook_ListCols + ")"
 
-func (m *ShippingProviderWebhook) SQLTableName() string { return "shipping_provider_webhook" }
-func (m ShippingProviderWebhooks) SQLTableName() string { return "shipping_provider_webhook" }
+func (m *ShippingProviderWebhook) SQLTableName() string  { return "shipping_provider_webhook" }
+func (m *ShippingProviderWebhooks) SQLTableName() string { return "shipping_provider_webhook" }
+func (m *ShippingProviderWebhook) SQLListCols() string   { return __sqlShippingProviderWebhook_ListCols }
 
 func (m *ShippingProviderWebhook) SQLArgs(opts core.Opts, create bool) []interface{} {
 	now := time.Now()
@@ -81,7 +82,7 @@ func (_ *ShippingProviderWebhook) SQLSelect(w SQLWriter) error {
 	return nil
 }
 
-func (_ ShippingProviderWebhooks) SQLSelect(w SQLWriter) error {
+func (_ *ShippingProviderWebhooks) SQLSelect(w SQLWriter) error {
 	w.WriteQueryString(__sqlShippingProviderWebhook_Select)
 	return nil
 }
@@ -236,6 +237,9 @@ func (m ShippingProviderWebhookHistory) ShippingState() core.Interface {
 func (m ShippingProviderWebhookHistory) ExternalShippingState() core.Interface {
 	return core.Interface{m["external_shipping_state"]}
 }
+func (m ShippingProviderWebhookHistory) ExternalShippingSubState() core.Interface {
+	return core.Interface{m["external_shipping_sub_state"]}
+}
 func (m ShippingProviderWebhookHistory) CreatedAt() core.Interface {
 	return core.Interface{m["created_at"]}
 }
@@ -244,31 +248,32 @@ func (m ShippingProviderWebhookHistory) UpdatedAt() core.Interface {
 }
 
 func (m *ShippingProviderWebhookHistory) SQLScan(opts core.Opts, row *sql.Row) error {
-	data := make([]interface{}, 8)
-	args := make([]interface{}, 8)
-	for i := 0; i < 8; i++ {
+	data := make([]interface{}, 9)
+	args := make([]interface{}, 9)
+	for i := 0; i < 9; i++ {
 		args[i] = &data[i]
 	}
 	if err := row.Scan(args...); err != nil {
 		return err
 	}
-	res := make(ShippingProviderWebhookHistory, 8)
+	res := make(ShippingProviderWebhookHistory, 9)
 	res["id"] = data[0]
 	res["shipping_provider"] = data[1]
 	res["data"] = data[2]
 	res["shipping_code"] = data[3]
 	res["shipping_state"] = data[4]
 	res["external_shipping_state"] = data[5]
-	res["created_at"] = data[6]
-	res["updated_at"] = data[7]
+	res["external_shipping_sub_state"] = data[6]
+	res["created_at"] = data[7]
+	res["updated_at"] = data[8]
 	*m = res
 	return nil
 }
 
 func (ms *ShippingProviderWebhookHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	data := make([]interface{}, 8)
-	args := make([]interface{}, 8)
-	for i := 0; i < 8; i++ {
+	data := make([]interface{}, 9)
+	args := make([]interface{}, 9)
+	for i := 0; i < 9; i++ {
 		args[i] = &data[i]
 	}
 	res := make(ShippingProviderWebhookHistories, 0, 128)
@@ -283,8 +288,9 @@ func (ms *ShippingProviderWebhookHistories) SQLScan(opts core.Opts, rows *sql.Ro
 		m["shipping_code"] = data[3]
 		m["shipping_state"] = data[4]
 		m["external_shipping_state"] = data[5]
-		m["created_at"] = data[6]
-		m["updated_at"] = data[7]
+		m["external_shipping_sub_state"] = data[6]
+		m["created_at"] = data[7]
+		m["updated_at"] = data[8]
 		res = append(res, m)
 	}
 	if err := rows.Err(); err != nil {
