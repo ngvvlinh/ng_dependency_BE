@@ -6,16 +6,14 @@ import (
 	"etop.vn/backend/pkg/common/cmsql"
 )
 
-type ProductStore struct {
-	db cmsql.Database
-}
+type ProductStoreFactory func(context.Context) *ProductStoreWithContext
 
-func NewProductStore(db cmsql.Database) *ProductStore {
-	return &ProductStore{db}
-}
-
-func (s *ProductStore) WithContext(ctx context.Context) *ProductStoreWithContext {
-	return &ProductStoreWithContext{query: s.db.WithContext(ctx)}
+func NewProductStore(db cmsql.Database) ProductStoreFactory {
+	return func(ctx context.Context) *ProductStoreWithContext {
+		return &ProductStoreWithContext{
+			query: db.WithContext(ctx),
+		}
+	}
 }
 
 type ProductStoreWithContext struct {

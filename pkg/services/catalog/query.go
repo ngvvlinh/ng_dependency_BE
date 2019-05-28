@@ -10,7 +10,7 @@ import (
 var _ catalog.QueryService = &QueryService{}
 
 type QueryService struct {
-	s *sqlstore.ProductStore
+	s *sqlstore.ProductStoreFactory
 }
 
 func (s *QueryService) GetProductByID(

@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"etop.vn/api/main/shipnow"
+	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/cmsql"
 	shipnowconvert "etop.vn/backend/pkg/services/shipnow/convert"
 	"etop.vn/backend/pkg/services/shipnow/model"
@@ -13,17 +14,23 @@ import (
 var _ shipnow.QueryService = &QueryService{}
 
 type QueryService struct {
-	s *sqlstore.ShipnowStore
+	store sqlstore.ShipnowStoreFactory
 }
 
 func NewQueryService(db cmsql.Database) *QueryService {
 	return &QueryService{
-		s: sqlstore.NewShipnowStore(db),
+		store: sqlstore.NewShipnowStore(db),
 	}
 }
 
+func (a *QueryService) MessageBus() shipnow.QueryBus {
+	b := bus.New()
+	shipnow.NewQueryServiceHandler(a).RegisterHandlers(bus.New())
+	return shipnow.QueryBus{b}
+}
+
 func (q *QueryService) GetShipnowFulfillment(ctx context.Context, query *shipnow.GetShipnowFulfillmentQueryArgs) (*shipnow.GetShipnowFulfillmentQueryResult, error) {
-	ffm, err := q.s.WithContext(ctx).GetByID(model.GetByIDArgs{
+	ffm, err := q.store(ctx).GetByID(model.GetByIDArgs{
 		ID:     query.Id,
 		ShopID: query.ShopId,
 	})
@@ -39,7 +46,7 @@ func (q *QueryService) GetShipnowFulfillments(ctx context.Context, query *shipno
 	args := &model.GetShipnowFulfillmentsArgs{
 		ShopID: query.ShopId,
 	}
-	ffms, err := q.s.WithContext(ctx).GetShipnowFulfillments(args)
+	ffms, err := q.store(ctx).GetShipnowFulfillments(args)
 	if err != nil {
 		return nil, err
 	}

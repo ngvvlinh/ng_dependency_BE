@@ -7,9 +7,8 @@ import (
 	"etop.vn/api/meta"
 )
 
-type ShipnowProcessManager interface {
-	HandleConfirmationRequested(ctx context.Context, event ShipnowEvent) error
-}
+type AggregateBus struct{ meta.Bus }
+type QueryBus struct{ meta.Bus }
 
 type Aggregate interface {
 	CreateShipnowFulfillment(ctx context.Context, cmd *CreateShipnowFulfillmentArgs) (*ShipnowFulfillment, error)

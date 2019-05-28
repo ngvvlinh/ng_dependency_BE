@@ -8,19 +8,15 @@ import (
 	"etop.vn/api/meta"
 )
 
-type ProcessManagerBus struct {
-	meta.Bus
-}
+type AggregateBus struct{ meta.Bus }
+type QueryBus struct{ meta.Bus }
 
 type Aggregate interface {
-	GetFulfillmentByID(ctx context.Context, query *GetFulfillmentByIDQuery) (*Fulfillment, error)
+	GetFulfillmentByID(ctx context.Context, query *GetFulfillmentByIDQueryArgs) (*Fulfillment, error)
 
-	CreateFulfillment(ctx context.Context, cmd *CreateFulfillmentCommand) (*meta.Empty, error)
-	ConfirmFulfillment(ctx context.Context, cmd *ConfirmFulfillmentCommand) (*meta.Empty, error)
-	CancelFulfillment(ctx context.Context, cmd *CancelFulfillmentCommand) (*meta.Empty, error)
-}
-
-type ProcessManager interface {
+	CreateFulfillment(ctx context.Context, cmd *CreateFulfillmentArgs) (*meta.Empty, error)
+	ConfirmFulfillment(ctx context.Context, cmd *ConfirmFulfillmentArgs) (*meta.Empty, error)
+	CancelFulfillment(ctx context.Context, cmd *CancelFulfillmentArgs) (*meta.Empty, error)
 }
 
 //-- Types --//
@@ -162,7 +158,7 @@ type ShippingFeeLine struct {
 
 //-- Commands --//
 
-type CreateFulfillmentCommand struct {
+type CreateFulfillmentArgs struct {
 	OrderID int64
 
 	PickupAddress *Address
@@ -184,15 +180,13 @@ type CreateFulfillmentCommand struct {
 	TryOn types.TryOn
 
 	ShippingNote string
-
-	Result *Fulfillment
 }
 
-type ConfirmFulfillmentCommand struct {
+type ConfirmFulfillmentArgs struct {
 	FulfillmentID int64
 }
 
-type CancelFulfillmentCommand struct {
+type CancelFulfillmentArgs struct {
 	FulfillmentID int64
 
 	CancelReason string
@@ -200,8 +194,6 @@ type CancelFulfillmentCommand struct {
 
 //-- Queries --//
 
-type GetFulfillmentByIDQuery struct {
+type GetFulfillmentByIDQueryArgs struct {
 	FulfillmentID int64
-
-	Result *Fulfillment
 }

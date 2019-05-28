@@ -16,7 +16,7 @@ var _ carrier.Manager = &ShipnowManager{}
 type ShipnowManager struct {
 	ahamove  ShipnowCarrier
 	location location.Bus
-	s        *sqlstore.ShipnowStore
+	s        sqlstore.ShipnowStoreFactory
 }
 
 func NewManager(db cmsql.Database, locationBus location.Bus, ahamoveCarrier ShipnowCarrier) *ShipnowManager {

@@ -8,6 +8,7 @@ import (
 	"etop.vn/api/main/shipnow"
 	"etop.vn/api/meta"
 	cm "etop.vn/backend/pkg/common"
+	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/cmsql"
 	shipnowmodel "etop.vn/backend/pkg/services/shipnow/model"
 	"etop.vn/backend/pkg/services/shipnow/pm"
@@ -18,14 +19,14 @@ var _ shipnow.Aggregate = &Aggregate{}
 
 type Aggregate struct {
 	location location.Bus
-	s        *sqlstore.ShipnowStore
+	store    sqlstore.ShipnowStoreFactory
 	pm       *pm.ProcessManager
 }
 
 func NewAggregate(db cmsql.Database, location location.Bus) *Aggregate {
 	return &Aggregate{
 		location: location,
-		s:        sqlstore.NewShipnowStore(db),
+		store:    sqlstore.NewShipnowStore(db),
 	}
 }
 
@@ -34,12 +35,18 @@ func (a *Aggregate) WithPM(pm *pm.ProcessManager) *Aggregate {
 	return a
 }
 
+func (a *Aggregate) MessageBus() shipnow.AggregateBus {
+	b := bus.New()
+	shipnow.NewAggregateHandler(a).RegisterHandlers(bus.New())
+	return shipnow.AggregateBus{b}
+}
+
 func (a *Aggregate) CreateShipnowFulfillment(ctx context.Context, cmd *shipnow.CreateShipnowFulfillmentArgs) (*shipnow.ShipnowFulfillment, error) {
 	shipnowFfm, err := a.HandleCreation(ctx, cmd)
 	if err != nil {
 		return nil, err
 	}
-	if err := a.s.WithContext(ctx).Create(shipnowFfm); err != nil {
+	if err := a.store(ctx).Create(shipnowFfm); err != nil {
 		return nil, err
 	}
 	return shipnowFfm, err
@@ -50,7 +57,7 @@ func (a *Aggregate) ConfirmShipnowFulfillment(ctx context.Context, cmd *shipnow.
 		ID:     cmd.Id,
 		ShopID: cmd.ShopId,
 	}
-	shipnowFfm, err = a.s.WithContext(ctx).GetByID(query1)
+	shipnowFfm, err = a.store(ctx).GetByID(query1)
 	if err != nil {
 		return nil, err
 	}
@@ -61,7 +68,7 @@ func (a *Aggregate) ConfirmShipnowFulfillment(ctx context.Context, cmd *shipnow.
 		Id:            cmd.Id,
 		ConfirmStatus: etoptypes.S3Positive,
 	}
-	shipnowFfm, err = a.s.WithContext(ctx).Update(shipnowFfmUpdate)
+	shipnowFfm, err = a.store(ctx).Update(shipnowFfmUpdate)
 	if err != nil {
 		return nil, err
 	}
@@ -118,7 +125,7 @@ func (a *Aggregate) UpdateShipnowFulfillment(ctx context.Context, cmd *shipnow.U
 	if err != nil {
 		return nil, err
 	}
-	result, err := a.s.WithContext(ctx).Update(shipnowFfm)
+	result, err := a.store(ctx).Update(shipnowFfm)
 	if err != nil {
 		return nil, err
 	}
@@ -132,7 +139,7 @@ func (a *Aggregate) HandleUpdate(ctx context.Context, cmd *shipnow.UpdateShipnow
 	// 	ID:     cmd.Id,
 	// 	ShopID: cmd.ShopId,
 	// }
-	// dbFfm, err := a.s.WithContext(ctx).GetByID(query1)
+	// dbFfm, err := a.store(ctx).GetByID(query1)
 	// if err != nil {
 	// 	return nil, err
 	// }
