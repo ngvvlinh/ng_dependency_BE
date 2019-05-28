@@ -37,7 +37,7 @@ func (a *Aggregate) WithPM(pm *pm.ProcessManager) *Aggregate {
 
 func (a *Aggregate) MessageBus() shipnow.AggregateBus {
 	b := bus.New()
-	shipnow.NewAggregateHandler(a).RegisterHandlers(bus.New())
+	shipnow.NewAggregateHandler(a).RegisterHandlers(b)
 	return shipnow.AggregateBus{b}
 }
 

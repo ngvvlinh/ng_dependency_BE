@@ -25,7 +25,7 @@ func NewQueryService(db cmsql.Database) *QueryService {
 
 func (a *QueryService) MessageBus() shipnow.QueryBus {
 	b := bus.New()
-	shipnow.NewQueryServiceHandler(a).RegisterHandlers(bus.New())
+	shipnow.NewQueryServiceHandler(a).RegisterHandlers(b)
 	return shipnow.QueryBus{b}
 }
 
