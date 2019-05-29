@@ -240,6 +240,8 @@ func main() {
 		DirExport: cfg.Export.DirExport,
 	})
 
+	eventBus := bus.New()
+
 	shipnowCarrierManager := shipnow_carrier.NewManager(db, locationBus, ahamoveCarrier)
 	// create aggregate, query service
 	identityQuery := identity.NewQueryService(db)
@@ -247,13 +249,13 @@ func main() {
 	shipnowQuery := shipnow.NewQueryService(db)
 
 	orderAggregate := ordering.NewAggregate(db)
-	shipnowAggregate := shipnow.NewAggregate(db, locationBus, identityQuery, addressQuery)
+	shipnowAggregate := shipnow.NewAggregate(eventBus, db, locationBus, identityQuery, addressQuery)
 
 	orderingPM := orderingpm.New(orderAggregate, shipnowAggregate)
-	shipnowPM := shipnowpm.New(shipnowQuery.MessageBus(), orderAggregate, orderAggregate.MessageBus(), identityQuery, addressQuery, shipnowCarrierManager)
+	shipnowPM := shipnowpm.New(eventBus, shipnowQuery.MessageBus(), orderAggregate, orderAggregate.MessageBus(), identityQuery, addressQuery, shipnowCarrierManager)
+	shipnowPM.RegisterEventHandlers(eventBus)
 
 	orderAggregate.WithPM(orderingPM)
-	shipnowAggregate.WithPM(shipnowPM)
 
 	shop.Init(shipnowAggregate, shipnowQuery, shippingManager, shutdowner, redisStore)
 	partner.Init(shutdowner, redisStore, authStore, cfg.URL.Auth)

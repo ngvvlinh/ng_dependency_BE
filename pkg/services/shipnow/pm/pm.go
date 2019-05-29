@@ -3,6 +3,10 @@ package pm
 import (
 	"context"
 
+	"etop.vn/api/meta"
+
+	"etop.vn/backend/pkg/common/bus"
+
 	"etop.vn/api/main/address"
 	etoptypes "etop.vn/api/main/etop"
 	"etop.vn/api/main/identity"
@@ -16,7 +20,9 @@ import (
 )
 
 type ProcessManager struct {
-	shipnowQueryBus shipnow.QueryBus
+	eventBus meta.EventBus
+
+	shipnowQuery shipnow.QueryBus
 
 	orderAggr    ordering.Aggregate
 	orderAggrBus ordering.AggregateBus
@@ -27,6 +33,7 @@ type ProcessManager struct {
 }
 
 func New(
+	eventBus meta.EventBus,
 	shipnowBus shipnow.QueryBus,
 	orderAggr ordering.Aggregate,
 	orderAggrBus ordering.AggregateBus,
@@ -35,13 +42,19 @@ func New(
 	carrierManager carrier.Manager,
 ) *ProcessManager {
 	return &ProcessManager{
-		shipnowQueryBus: shipnowBus,
-		orderAggr:       orderAggr,
-		orderAggrBus:    orderAggrBus,
-		identityQuery:   identityQuery,
-		addressQuery:    addressQuery,
-		carrierManager:  carrierManager,
+		eventBus:       eventBus,
+		shipnowQuery:   shipnowBus,
+		orderAggr:      orderAggr,
+		orderAggrBus:   orderAggrBus,
+		identityQuery:  identityQuery,
+		addressQuery:   addressQuery,
+		carrierManager: carrierManager,
 	}
+}
+
+func (m *ProcessManager) RegisterEventHandlers(eventBus bus.EventRegistry) {
+	eventBus.AddEventListener(m.ShipnowOrderReservation)
+	// TODO: add more
 }
 
 func (m *ProcessManager) ShipnowOrderReservation(ctx context.Context, event *shipnow.ShipnowOrderReservationEvent) ([]*ordering.Order, error) {
@@ -70,7 +83,7 @@ func (m *ProcessManager) HandleShipnowCancellation(ctx context.Context, cmd *shi
 		Id:     cmd.Id,
 		ShopId: cmd.ShopId,
 	}
-	if err := m.shipnowQueryBus.Dispatch(ctx, queryFfm); err != nil {
+	if err := m.shipnowQuery.Dispatch(ctx, queryFfm); err != nil {
 		return err
 	}
 	ffm := queryFfm.Result.ShipnowFulfillment
@@ -169,7 +182,7 @@ func (m *ProcessManager) HandleUpdate(ctx context.Context, cmd *shipnow.UpdateSh
 		Id:     cmd.Id,
 		ShopId: cmd.ShopId,
 	}
-	if err := m.shipnowQueryBus.Dispatch(ctx, queryFfm); err != nil {
+	if err := m.shipnowQuery.Dispatch(ctx, queryFfm); err != nil {
 		return nil, err
 	}
 	ffm := queryFfm.Result.ShipnowFulfillment

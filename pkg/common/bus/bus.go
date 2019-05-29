@@ -31,6 +31,11 @@ type Bus interface {
 	AddWildcardListener(handler HandlerFunc)
 }
 
+type EventRegistry interface {
+	Publish(ctx context.Context, msg Msg) error
+	AddEventListener(handler interface{})
+}
+
 type InProcBus struct {
 	handlers          map[reflect.Type]HandlerFunc
 	serviceHandlers   map[reflect.Type]interface{}

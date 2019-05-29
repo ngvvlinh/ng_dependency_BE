@@ -4,14 +4,13 @@ import (
 	"context"
 
 	"etop.vn/api/main/address"
-	"etop.vn/api/main/identity"
-	cm "etop.vn/backend/pkg/common"
-
 	etoptypes "etop.vn/api/main/etop"
+	"etop.vn/api/main/identity"
 	"etop.vn/api/main/location"
 	ordertypes "etop.vn/api/main/ordering/types"
 	"etop.vn/api/main/shipnow"
 	"etop.vn/api/meta"
+	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/cmsql"
 	shipnowconvert "etop.vn/backend/pkg/services/shipnow/convert"
@@ -27,25 +26,22 @@ type Aggregate struct {
 	identityQuery identity.QueryService
 	addressQuery  address.QueryService
 
-	db    cmsql.Transactioner
-	store sqlstore.ShipnowStoreFactory
-	pm    *pm.ProcessManager
+	db       cmsql.Transactioner
+	store    sqlstore.ShipnowStoreFactory
+	eventBus meta.EventBus
+	pm       *pm.ProcessManager // nil
 }
 
-func NewAggregate(db cmsql.Database, location location.Bus, identityQuery identity.QueryService, addressQuery address.QueryService) *Aggregate {
+func NewAggregate(eventBus meta.EventBus, db cmsql.Database, location location.Bus, identityQuery identity.QueryService, addressQuery address.QueryService) *Aggregate {
 	return &Aggregate{
-		db:    db,
-		store: sqlstore.NewShipnowStore(db),
+		db:       db,
+		store:    sqlstore.NewShipnowStore(db),
+		eventBus: eventBus,
 
 		location:      location,
 		identityQuery: identityQuery,
 		addressQuery:  addressQuery,
 	}
-}
-
-func (a *Aggregate) WithPM(pm *pm.ProcessManager) *Aggregate {
-	a.pm = pm
-	return a
 }
 
 func (a *Aggregate) MessageBus() shipnow.AggregateBus {
