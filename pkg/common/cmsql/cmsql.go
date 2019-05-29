@@ -395,7 +395,7 @@ func (db Database) InTransaction(ctx context.Context, callback func(QueryInterfa
 	return callback(tx)
 }
 
-func GetTxOrQuery(ctx context.Context, db Database) QueryInterface {
+func GetTxOrNewQuery(ctx context.Context, db Database) QueryInterface {
 	tx := ctx.Value(TxKey{})
 	if tx == nil {
 		return db.WithContext(ctx)

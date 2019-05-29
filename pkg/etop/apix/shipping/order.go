@@ -184,11 +184,11 @@ func CancelOrder(ctx context.Context, shopID int64, r *pbexternal.CancelOrderReq
 	}
 	if r.ExternalId != "" {
 		count++
-		sqlQuery = orderStore.WithContext(ctx).ShopID(shopID).ExternalID(r.ExternalId)
+		sqlQuery = orderStore(ctx).ShopID(shopID).ExternalID(r.ExternalId)
 	}
 	if r.Code != "" {
 		count++
-		sqlQuery = orderStore.WithContext(ctx).ShopID(shopID).Code(r.Code)
+		sqlQuery = orderStore(ctx).ShopID(shopID).Code(r.Code)
 	}
 	if count != 1 {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Cần cung cấp id, code hoặc external_code")
@@ -232,7 +232,7 @@ func GetOrder(ctx context.Context, shopID int64, r *pbexternal.OrderIDRequest) (
 }
 
 func GetFulfillment(ctx context.Context, shopID int64, r *pbexternal.FulfillmentIDRequest) (*pbexternal.Fulfillment, error) {
-	s := fulfillmentStore.WithContext(ctx).ShopID(shopID)
+	s := fulfillmentStore(ctx).ShopID(shopID)
 	if r.Id != 0 {
 		s = s.ID(r.Id)
 	} else if r.ShippingCode != "" {

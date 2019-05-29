@@ -3,8 +3,6 @@ package sqlstore
 import (
 	"context"
 
-	"etop.vn/api/meta"
-
 	"etop.vn/api/main/etop"
 	"etop.vn/api/main/shipnow"
 	shipnowtypes "etop.vn/api/main/shipnow/types"
@@ -18,27 +16,18 @@ import (
 
 type ShipnowStoreFactory func(context.Context) *ShipnowStore
 
-type ShipnowStore struct {
-	query cmsql.QueryInterface
-	db    cmsql.Database
-}
-
 func NewShipnowStore(db cmsql.Database) ShipnowStoreFactory {
 	return func(ctx context.Context) *ShipnowStore {
-		store := &ShipnowStore{
-			query: db.WithContext(ctx),
-			db:    db,
+		return &ShipnowStore{
+			query: func() cmsql.QueryInterface {
+				return cmsql.GetTxOrNewQuery(ctx, db)
+			},
 		}
-		tx := ctx.Value(meta.KeyTx{})
-		if tx != nil {
-			store.query = tx.(cmsql.Tx)
-		}
-		return store
 	}
 }
 
-func (s *ShipnowStore) GetDb() cmsql.Database {
-	return s.db
+type ShipnowStore struct {
+	query func() cmsql.QueryInterface
 }
 
 func (s *ShipnowStore) GetByID(args shipnowmodelx.GetByIDArgs) (*shipnow.ShipnowFulfillment, error) {
@@ -46,7 +35,7 @@ func (s *ShipnowStore) GetByID(args shipnowmodelx.GetByIDArgs) (*shipnow.Shipnow
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing ID")
 	}
 
-	q := s.query.Where("id = ?", args.ID)
+	q := s.query().Where("id = ?", args.ID)
 	if args.ShopID != 0 {
 		q = q.Where("shop_id = ?", args.ShopID)
 	}
@@ -65,7 +54,7 @@ func (s *ShipnowStore) GetShipnowFulfillments(args *shipnowmodelx.GetShipnowFulf
 	if args.ShopID == 0 {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing Shop ID")
 	}
-	err = s.query.Where("shop_id = ?", args.ShopID).Find((*shipnowmodel.ShipnowFulfillments)(&results))
+	err = s.query().Where("shop_id = ?", args.ShopID).Find((*shipnowmodel.ShipnowFulfillments)(&results))
 	return
 }
 
@@ -77,7 +66,7 @@ func (s *ShipnowStore) Create(shipnowFfm *shipnow.ShipnowFulfillment) error {
 	if modelShipnowFfm.ID == 0 {
 		return cm.Errorf(cm.InvalidArgument, nil, "Missing ID")
 	}
-	err := s.query.ShouldInsert(modelShipnowFfm)
+	err := s.query().ShouldInsert(modelShipnowFfm)
 	return err
 }
 
@@ -86,10 +75,10 @@ func (s *ShipnowStore) Update(shipnowFfm *shipnow.ShipnowFulfillment) (*shipnow.
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing ID")
 	}
 	modelShipnowFfm := convert.ShipnowToModel(shipnowFfm)
-	err := s.query.Where("id = ?", shipnowFfm.Id).ShouldUpdate(modelShipnowFfm)
+	err := s.query().Where("id = ?", shipnowFfm.Id).ShouldUpdate(modelShipnowFfm)
 
 	var result shipnowmodel.ShipnowFulfillment
-	err = s.query.Where("id = ?", shipnowFfm.Id).ShouldGet(&result)
+	err = s.query().Where("id = ?", shipnowFfm.Id).ShouldGet(&result)
 	if err != nil {
 		return nil, err
 	}
@@ -112,13 +101,13 @@ func (s *ShipnowStore) UpdateSyncState(args UpdateSyncStateArgs) (*shipnow.Shipn
 		SyncStates:    args.SyncStates,
 	}
 	var ft ShipnowFulfillmentFilters
-	err := s.query.Where(ft.ByID(args.ID)).ShouldUpdate(updateFfm)
+	err := s.query().Where(ft.ByID(args.ID)).ShouldUpdate(updateFfm)
 	if err != nil {
 		return nil, err
 	}
 
 	var result shipnowmodel.ShipnowFulfillment
-	err = s.query.Where(ft.ByID(updateFfm.ID)).ShouldGet(&result)
+	err = s.query().Where(ft.ByID(updateFfm.ID)).ShouldGet(&result)
 	if err != nil {
 		return nil, err
 	}
@@ -127,7 +116,7 @@ func (s *ShipnowStore) UpdateSyncState(args UpdateSyncStateArgs) (*shipnow.Shipn
 
 func (s *ShipnowStore) GetActiveShipnowFulfillmentsByOrderID(args *shipnowmodelx.GetActiveShipnowFulfillmentsByOrderIDArgs) ([]*shipnow.ShipnowFulfillment, error) {
 	var ffms []*shipnowmodel.ShipnowFulfillment
-	x := s.query.Where("? = ANY(order_ids) AND status in (?, ?)", args.OrderID, model.S5Zero, model.S5SuperPos)
+	x := s.query().Where("? = ANY(order_ids) AND status in (?, ?)", args.OrderID, model.S5Zero, model.S5SuperPos)
 	if args.ExcludeShipnowFulfillmentID != 0 {
 		x = x.Where("id != ?", args.ExcludeShipnowFulfillmentID)
 	}

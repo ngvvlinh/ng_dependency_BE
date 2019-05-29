@@ -5,11 +5,10 @@ import (
 
 	"github.com/k0kubun/pp"
 
-	"etop.vn/backend/pkg/common/bus"
-
 	etoptypes "etop.vn/api/main/etop"
 	"etop.vn/api/main/ordering"
 	cm "etop.vn/backend/pkg/common"
+	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/cmsql"
 	"etop.vn/backend/pkg/services/ordering/convert"
 	"etop.vn/backend/pkg/services/ordering/pm"
@@ -20,7 +19,7 @@ var _ ordering.Aggregate = &Aggregate{}
 
 type Aggregate struct {
 	pm    *pm.ProcessManager
-	store *sqlstore.OrderStore
+	store sqlstore.OrderStoreFactory
 }
 
 func NewAggregate(db cmsql.Database) *Aggregate {
@@ -41,7 +40,7 @@ func (a *Aggregate) MessageBus() ordering.AggregateBus {
 }
 
 func (a *Aggregate) GetOrderByID(ctx context.Context, args *ordering.GetOrderByIDArgs) (*ordering.Order, error) {
-	ord, err := a.store.WithContext(ctx).ID(args.ID).Get()
+	ord, err := a.store(ctx).ID(args.ID).Get()
 	if err != nil {
 		return nil, err
 	}
@@ -49,7 +48,7 @@ func (a *Aggregate) GetOrderByID(ctx context.Context, args *ordering.GetOrderByI
 }
 
 func (a *Aggregate) GetOrders(ctx context.Context, args *ordering.GetOrdersArgs) (*ordering.OrdersResponse, error) {
-	orders, err := a.store.WithContext(ctx).GetOrdes(args)
+	orders, err := a.store(ctx).GetOrders(args)
 	if err != nil {
 		return nil, err
 	}
@@ -90,7 +89,7 @@ func ValidateOrderStatus(order *ordering.Order) error {
 
 func (a *Aggregate) ReserveOrdersForFfm(ctx context.Context, args *ordering.ReserveOrdersForFfmArgs) (*ordering.ReserveOrdersForFfmResponse, error) {
 	orderIDs := args.OrderIDs
-	orders, err := a.store.WithContext(ctx).GetOrdes(&ordering.GetOrdersArgs{
+	orders, err := a.store(ctx).GetOrders(&ordering.GetOrdersArgs{
 		IDs: orderIDs,
 	})
 	if err != nil {
@@ -108,7 +107,7 @@ func (a *Aggregate) ReserveOrdersForFfm(ctx context.Context, args *ordering.Rese
 		FulfillIDs: args.FulfillIDs,
 	}
 	pp.Println("update :: ", update)
-	orders, err = a.store.WithContext(ctx).UpdateOrdersForReverseOrders(update)
+	orders, err = a.store(ctx).UpdateOrdersForReverseOrders(update)
 	if err != nil {
 		return nil, err
 	}

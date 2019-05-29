@@ -18,10 +18,10 @@ import (
 var shippingCtrl *shipping_provider.ProviderManager
 var locationBus = servicelocation.New().MessageBus()
 var locationList = buildLocationList()
-var orderStore *ordersqlstore.OrderStore
-var fulfillmentStore *shipsqlstore.FulfillmentStore
+var orderStore ordersqlstore.OrderStoreFactory
+var fulfillmentStore shipsqlstore.FulfillmentStoreFactory
 
-func Init(_shippingCtrl *shipping_provider.ProviderManager, orderStore *ordersqlstore.OrderStore, ffmStore *shipsqlstore.FulfillmentStore) {
+func Init(_shippingCtrl *shipping_provider.ProviderManager, orderStore ordersqlstore.OrderStoreFactory, ffmStore shipsqlstore.FulfillmentStoreFactory) {
 	shippingCtrl = _shippingCtrl
 	orderStore = orderStore
 	fulfillmentStore = ffmStore

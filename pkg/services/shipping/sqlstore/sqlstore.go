@@ -8,23 +8,25 @@ import (
 	shipmodel "etop.vn/backend/pkg/services/shipping/model"
 )
 
+type FulfillmentStoreFactory func(context.Context) *FulfillmentStore
+
+func NewFulfillmentStore(db cmsql.Database) FulfillmentStoreFactory {
+	return func(ctx context.Context) *FulfillmentStore {
+		return &FulfillmentStore{
+			query: func() cmsql.QueryInterface {
+				return cmsql.GetTxOrNewQuery(ctx, db)
+			},
+		}
+	}
+}
+
 type FulfillmentStore struct {
-	db    cmsql.Database
-	ctx   context.Context
-	ft    FulfillmentFilters
+	ft FulfillmentFilters
+
+	query func() cmsql.QueryInterface
 	preds []interface{}
-}
 
-func NewFulfillmentStore(db cmsql.Database) *FulfillmentStore {
-	return &FulfillmentStore{db: db, ctx: context.Background()}
-}
-
-func Fulfillment(ctx context.Context, db cmsql.Database) *FulfillmentStore {
-	return &FulfillmentStore{ctx: ctx, db: db}
-}
-
-func (s *FulfillmentStore) WithContext(ctx context.Context) *FulfillmentStore {
-	return &FulfillmentStore{ctx: ctx, db: s.db}
+	includeDeleted bool
 }
 
 func (s *FulfillmentStore) ID(id int64) *FulfillmentStore {
@@ -57,10 +59,10 @@ func (s *FulfillmentStore) PartnerID(id int64) *FulfillmentStore {
 
 func (s *FulfillmentStore) Get() (*shipmodel.Fulfillment, error) {
 	var ffm shipmodel.Fulfillment
-	err := s.db.Where(s.preds...).ShouldGet(&ffm)
+	err := s.query().Where(s.preds...).ShouldGet(&ffm)
 	return &ffm, err
 }
 
 func (s *FulfillmentStore) Insert(ffm *shipmodel.Fulfillment) error {
-	return s.db.ShouldInsert(ffm)
+	return s.query().ShouldInsert(ffm)
 }

@@ -27,14 +27,17 @@ type Aggregate struct {
 	identityQuery identity.QueryService
 	addressQuery  address.QueryService
 
+	db    cmsql.Transactioner
 	store sqlstore.ShipnowStoreFactory
 	pm    *pm.ProcessManager
 }
 
 func NewAggregate(db cmsql.Database, location location.Bus, identityQuery identity.QueryService, addressQuery address.QueryService) *Aggregate {
 	return &Aggregate{
+		db:    db,
+		store: sqlstore.NewShipnowStore(db),
+
 		location:      location,
-		store:         sqlstore.NewShipnowStore(db),
 		identityQuery: identityQuery,
 		addressQuery:  addressQuery,
 	}
@@ -51,73 +54,66 @@ func (a *Aggregate) MessageBus() shipnow.AggregateBus {
 	return shipnow.AggregateBus{b}
 }
 
-func (a *Aggregate) CreateShipnowFulfillment(ctx context.Context, cmd *shipnow.CreateShipnowFulfillmentArgs) (*shipnow.ShipnowFulfillment, error) {
-	tx, err := a.store(ctx).GetDb().Begin()
-	if err != nil {
-		return nil, err
-	}
-	ctx = context.WithValue(ctx, meta.KeyTx{}, tx)
-	ffmID := cm.NewID()
-	// ShipnowOrderReservationEvent
-	event := &shipnow.ShipnowOrderReservationEvent{
-		OrderIds:             cmd.OrderIds,
-		ShipnowFulfillmentId: ffmID,
-	}
-	orders, err := a.pm.ShipnowOrderReservation(ctx, event)
-	if err != nil {
-		return nil, err
-	}
-
-	var pickupAddress *ordertypes.Address
-	if cmd.PickupAddress != nil {
-		pickupAddress = cmd.PickupAddress
-	} else {
-		// prepare pickup address from shopinfo
-		shopResult, err := a.identityQuery.GetShopByID(ctx, &identity.GetShopByIDQueryArgs{ID: cmd.ShopId})
+func (a *Aggregate) CreateShipnowFulfillment(ctx context.Context, cmd *shipnow.CreateShipnowFulfillmentArgs) (_result *shipnow.ShipnowFulfillment, _ error) {
+	err := a.db.InTransaction(ctx, func(tx cmsql.QueryInterface) error {
+		ffmID := cm.NewID()
+		// ShipnowOrderReservationEvent
+		event := &shipnow.ShipnowOrderReservationEvent{
+			OrderIds:             cmd.OrderIds,
+			ShipnowFulfillmentId: ffmID,
+		}
+		orders, err := a.pm.ShipnowOrderReservation(ctx, event)
 		if err != nil {
-			return nil, err
+			return err
 		}
-		shop := shopResult.Shop
-		shopAddressID := shop.ShipFromAddressID
-		if shopAddressID == 0 {
-			return nil, cm.Error(cm.InvalidArgument, "Bán hàng: Cần cung cấp thông tin địa chỉ lấy hàng trong đơn hàng hoặc tại thông tin cửa hàng. Vui lòng cập nhật.", nil)
+
+		var pickupAddress *ordertypes.Address
+		if cmd.PickupAddress != nil {
+			pickupAddress = cmd.PickupAddress
+		} else {
+			// prepare pickup address from shopinfo
+			shopResult, err := a.identityQuery.GetShopByID(ctx, &identity.GetShopByIDQueryArgs{ID: cmd.ShopId})
+			if err != nil {
+				return err
+			}
+			shop := shopResult.Shop
+			shopAddressID := shop.ShipFromAddressID
+			if shopAddressID == 0 {
+				return cm.Error(cm.InvalidArgument, "Bán hàng: Cần cung cấp thông tin địa chỉ lấy hàng trong đơn hàng hoặc tại thông tin cửa hàng. Vui lòng cập nhật.", nil)
+			}
+			shopAddress, err := a.addressQuery.GetAddressByID(ctx, &address.GetAddressByIDQueryArgs{ID: shopAddressID})
+			if err != nil {
+				return err
+			}
+			pickupAddress = shopAddress.ToOrderAddress()
 		}
-		shopAddress, err := a.addressQuery.GetAddressByID(ctx, &address.GetAddressByIDQueryArgs{ID: shopAddressID})
-		if err != nil {
-			return nil, err
+
+		var deliveryPoints []*shipnow.DeliveryPoint
+		for _, order := range orders {
+			deliveryPoints = append(deliveryPoints, shipnowconvert.OrderToDeliveryPoint(order))
 		}
-		pickupAddress = shopAddress.ToOrderAddress()
-	}
 
-	var deliveryPoints []*shipnow.DeliveryPoint
-	for _, order := range orders {
-		deliveryPoints = append(deliveryPoints, shipnowconvert.OrderToDeliveryPoint(order))
-	}
+		shipnowFfm := &shipnow.ShipnowFulfillment{
+			Id:                  ffmID,
+			ShopId:              cmd.ShopId,
+			PickupAddress:       pickupAddress,
+			DeliveryPoints:      deliveryPoints,
+			Carrier:             cmd.Carrier,
+			ShippingServiceCode: cmd.ShippingServiceCode,
+			ShippingServiceFee:  cmd.ShippingServiceFee,
+			WeightInfo:          shipnowconvert.GetWeightInfo(orders),
+			ValueInfo:           shipnowconvert.GetValueInfo(orders),
+			ShippingNote:        cmd.ShippingNote,
+			RequestPickupAt:     nil,
+		}
 
-	shipnowFfm := &shipnow.ShipnowFulfillment{
-		Id:                  ffmID,
-		ShopId:              cmd.ShopId,
-		PickupAddress:       pickupAddress,
-		DeliveryPoints:      deliveryPoints,
-		Carrier:             cmd.Carrier,
-		ShippingServiceCode: cmd.ShippingServiceCode,
-		ShippingServiceFee:  cmd.ShippingServiceFee,
-		WeightInfo:          shipnowconvert.GetWeightInfo(orders),
-		ValueInfo:           shipnowconvert.GetValueInfo(orders),
-		ShippingNote:        cmd.ShippingNote,
-		RequestPickupAt:     nil,
-	}
-
-	if err := a.store(ctx).Create(shipnowFfm); err != nil {
-		return nil, err
-	}
-
-	// tx commit
-	if err := tx.Commit(); err != nil {
-		_ = tx.Rollback()
-		return nil, err
-	}
-	return shipnowFfm, err
+		if err := a.store(ctx).Create(shipnowFfm); err != nil {
+			return err
+		}
+		_result = shipnowFfm
+		return nil
+	})
+	return _result, err
 }
 
 func (a *Aggregate) ConfirmShipnowFulfillment(ctx context.Context, cmd *shipnow.ConfirmShipnowFulfillmentArgs) (shipnowFfm *shipnow.ShipnowFulfillment, err error) {
