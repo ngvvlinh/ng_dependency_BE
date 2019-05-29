@@ -17,21 +17,14 @@ type Product struct {
 	ID                      int64
 	ProductSourceID         int64
 	ProductSourceCategoryID string
-	EtopCategoryID          int64
 
-	Name          string
-	ShortDesc     string
-	Description   string
-	DescHTML      string `sq:"'desc_html'"`
-	EdName        string
-	EdShortDesc   string
-	EdDescription string
-	EdDescHTML    string `sq:"'ed_desc_html'"`
-	EdTags        []string
-	Unit          string
+	Name        string
+	ShortDesc   string
+	Description string
+	DescHTML    string `sq:"'desc_html'"`
+	Unit        string
 
 	Status model.Status3
-	Code   string
 	EdCode string
 
 	ImageURLs []string `sq:"'image_urls'"`
@@ -56,7 +49,7 @@ func (p *Product) BeforeUpdate() error {
 }
 
 func (p *Product) GetFullName() string {
-	return coalesce(p.Name, p.EdName)
+	return coalesce(p.Name)
 }
 
 var _ = sqlgenProductExtended(
@@ -70,7 +63,7 @@ type ProductExtended struct {
 }
 
 type ProductFtVariant struct {
-	ProductExtended
+	*Product
 	Variants []*Variant
 }
 
@@ -80,42 +73,40 @@ type Variant struct {
 	ID              int64
 	ProductID       int64
 	ProductSourceID int64
-	// ProductSourceType string
 
 	ProductSourceCategoryID int64
-	EtopCategoryID          int64
 
 	// Name          string
-	ShortDesc     string
-	Description   string
-	DescHTML      string `sq:"'desc_html'"`
-	EdName        string
-	EdShortDesc   string
-	EdDescription string
-	EdDescHTML    string `sq:"'ed_desc_html'"`
+	ShortDesc   string
+	Description string
+	DescHTML    string `sq:"'desc_html'"`
+	EdName      string
+	// EdShortDesc   string
+	// EdDescription string
+	// EdDescHTML    string `sq:"'ed_desc_html'"`
 
 	DescNorm string
 
 	// key-value normalization, must be non-null. Empty attributes is '_'.
 	AttrNormKv string
 
-	Status     model.Status3
-	EtopStatus model.Status3
-	EdStatus   model.Status3
-	Code       string
-	EdCode     string
+	Status model.Status3
+	// EtopStatus model.Status3
+	// EdStatus model.Status3
+	// Code       string
+	EdCode string
 
-	WholesalePrice0 int `sq:"'wholesale_price_0'"`
-	WholesalePrice  int
-	ListPrice       int
-	RetailPriceMin  int
-	RetailPriceMax  int
+	// WholesalePrice0 int `sq:"'wholesale_price_0'"`
+	// WholesalePrice  int
+	ListPrice int
+	// RetailPriceMin  int
+	// RetailPriceMax  int
 
-	EdWholesalePrice0 int `sq:"'ed_wholesale_price_0'"`
-	EdWholesalePrice  int
-	EdListPrice       int
-	EdRetailPriceMin  int
-	EdRetailPriceMax  int
+	// EdWholesalePrice0 int `sq:"'ed_wholesale_price_0'"`
+	// EdWholesalePrice  int
+	// EdListPrice       int
+	// EdRetailPriceMin  int
+	// EdRetailPriceMax  int
 
 	ImageURLs []string `sq:"'image_urls'"`
 
@@ -199,30 +190,6 @@ func (v *VariantExtended) GetFullName() string {
 		return v.Product.Name + " - " + v.GetName()
 	}
 	return v.GetName()
-}
-
-var _ = sqlgenPriceDef(&PriceDef{}, &Variant{})
-
-type PriceDef struct {
-	WholesalePrice0 int `sq:"'wholesale_price_0'"`
-	WholesalePrice  int
-	ListPrice       int
-	RetailPriceMin  int
-	RetailPriceMax  int
-}
-
-func (p *PriceDef) IsValid() bool {
-	return p.ListPrice > 0 &&
-		p.WholesalePrice > 0 && p.WholesalePrice0 > 0 &&
-		p.RetailPriceMin > 0 && p.RetailPriceMax > 0
-}
-
-func (p *PriceDef) ApplyTo(v *Variant) {
-	v.ListPrice = p.ListPrice
-	v.WholesalePrice0 = p.WholesalePrice0
-	v.WholesalePrice = p.WholesalePrice
-	v.RetailPriceMin = p.RetailPriceMin
-	v.RetailPriceMax = p.RetailPriceMax
 }
 
 var _ = sqlgenShopVariantExtended(

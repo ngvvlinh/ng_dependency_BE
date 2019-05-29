@@ -1,8 +1,6 @@
 package convert
 
 import (
-	"time"
-
 	etoptypes "etop.vn/api/main/etop"
 	"etop.vn/api/main/ordering"
 	ordertypes "etop.vn/api/main/ordering/types"
@@ -109,32 +107,23 @@ func OrderLineToModel(in *types.ItemLine) (out *ordermodel.OrderLine) {
 		return nil
 	}
 	return &ordermodel.OrderLine{
-		OrderID:          in.OrderId,
-		VariantID:        in.VariantId,
-		ProductName:      in.ProductInfo.ProductName,
-		ProductID:        in.ProductId,
-		ShopID:           0,
-		UpdatedAt:        time.Time{},
-		ClosedAt:         time.Time{},
-		ConfirmedAt:      time.Time{},
-		CancelledAt:      time.Time{},
-		CancelReason:     "",
-		Status:           0,
-		Weight:           0,
-		Quantity:         0,
-		WholesalePrice0:  0,
-		WholesalePrice:   0,
-		ListPrice:        0,
-		RetailPrice:      0,
-		PaymentPrice:     0,
-		LineAmount:       0,
-		TotalDiscount:    0,
-		TotalLineAmount:  0,
-		RequiresShipping: false,
-		ImageURL:         in.ProductInfo.ImageUrl,
-		Attributes:       catalogconvert.AttributesToModel(in.ProductInfo.Attributes),
-		IsOutsideEtop:    in.IsOutside,
-		Code:             "",
+		OrderID:         in.OrderId,
+		VariantID:       in.VariantId,
+		ProductName:     in.ProductInfo.ProductName,
+		ProductID:       in.ProductId,
+		ShopID:          0,
+		Weight:          0,
+		Quantity:        0,
+		ListPrice:       0,
+		RetailPrice:     0,
+		PaymentPrice:    0,
+		LineAmount:      0,
+		TotalDiscount:   0,
+		TotalLineAmount: 0,
+		ImageURL:        in.ProductInfo.ImageUrl,
+		Attributes:      catalogconvert.AttributesToModel(in.ProductInfo.Attributes),
+		IsOutsideEtop:   in.IsOutside,
+		Code:            "",
 	}
 }
 

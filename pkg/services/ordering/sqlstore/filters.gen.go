@@ -1025,120 +1025,6 @@ func (ft OrderLineFilters) ByShopIDPtr(ShopID *int64) *sql.ColumnFilterPtr {
 	}
 }
 
-func (ft OrderLineFilters) ByUpdatedAt(UpdatedAt time.Time) *sql.ColumnFilter {
-	return &sql.ColumnFilter{
-		Prefix: &ft.prefix,
-		Column: "updated_at",
-		Value:  UpdatedAt,
-		IsNil:  UpdatedAt.IsZero(),
-	}
-}
-
-func (ft OrderLineFilters) ByUpdatedAtPtr(UpdatedAt *time.Time) *sql.ColumnFilterPtr {
-	return &sql.ColumnFilterPtr{
-		Prefix: &ft.prefix,
-		Column: "updated_at",
-		Value:  UpdatedAt,
-		IsNil:  UpdatedAt == nil,
-		IsZero: UpdatedAt != nil && (*UpdatedAt).IsZero(),
-	}
-}
-
-func (ft OrderLineFilters) ByClosedAt(ClosedAt time.Time) *sql.ColumnFilter {
-	return &sql.ColumnFilter{
-		Prefix: &ft.prefix,
-		Column: "closed_at",
-		Value:  ClosedAt,
-		IsNil:  ClosedAt.IsZero(),
-	}
-}
-
-func (ft OrderLineFilters) ByClosedAtPtr(ClosedAt *time.Time) *sql.ColumnFilterPtr {
-	return &sql.ColumnFilterPtr{
-		Prefix: &ft.prefix,
-		Column: "closed_at",
-		Value:  ClosedAt,
-		IsNil:  ClosedAt == nil,
-		IsZero: ClosedAt != nil && (*ClosedAt).IsZero(),
-	}
-}
-
-func (ft OrderLineFilters) ByConfirmedAt(ConfirmedAt time.Time) *sql.ColumnFilter {
-	return &sql.ColumnFilter{
-		Prefix: &ft.prefix,
-		Column: "confirmed_at",
-		Value:  ConfirmedAt,
-		IsNil:  ConfirmedAt.IsZero(),
-	}
-}
-
-func (ft OrderLineFilters) ByConfirmedAtPtr(ConfirmedAt *time.Time) *sql.ColumnFilterPtr {
-	return &sql.ColumnFilterPtr{
-		Prefix: &ft.prefix,
-		Column: "confirmed_at",
-		Value:  ConfirmedAt,
-		IsNil:  ConfirmedAt == nil,
-		IsZero: ConfirmedAt != nil && (*ConfirmedAt).IsZero(),
-	}
-}
-
-func (ft OrderLineFilters) ByCancelledAt(CancelledAt time.Time) *sql.ColumnFilter {
-	return &sql.ColumnFilter{
-		Prefix: &ft.prefix,
-		Column: "cancelled_at",
-		Value:  CancelledAt,
-		IsNil:  CancelledAt.IsZero(),
-	}
-}
-
-func (ft OrderLineFilters) ByCancelledAtPtr(CancelledAt *time.Time) *sql.ColumnFilterPtr {
-	return &sql.ColumnFilterPtr{
-		Prefix: &ft.prefix,
-		Column: "cancelled_at",
-		Value:  CancelledAt,
-		IsNil:  CancelledAt == nil,
-		IsZero: CancelledAt != nil && (*CancelledAt).IsZero(),
-	}
-}
-
-func (ft OrderLineFilters) ByCancelReason(CancelReason string) *sql.ColumnFilter {
-	return &sql.ColumnFilter{
-		Prefix: &ft.prefix,
-		Column: "cancel_reason",
-		Value:  CancelReason,
-		IsNil:  CancelReason == "",
-	}
-}
-
-func (ft OrderLineFilters) ByCancelReasonPtr(CancelReason *string) *sql.ColumnFilterPtr {
-	return &sql.ColumnFilterPtr{
-		Prefix: &ft.prefix,
-		Column: "cancel_reason",
-		Value:  CancelReason,
-		IsNil:  CancelReason == nil,
-		IsZero: CancelReason != nil && (*CancelReason) == "",
-	}
-}
-
-func (ft OrderLineFilters) ByStatus(Status model.Status3) *sql.ColumnFilter {
-	return &sql.ColumnFilter{
-		Prefix: &ft.prefix,
-		Column: "status",
-		Value:  Status,
-		IsNil:  Status == 0,
-	}
-}
-
-func (ft OrderLineFilters) ByStatusPtr(Status *model.Status3) *sql.ColumnFilterPtr {
-	return &sql.ColumnFilterPtr{
-		Prefix: &ft.prefix,
-		Column: "status",
-		Value:  Status,
-		IsNil:  Status == nil,
-		IsZero: Status != nil && (*Status) == 0,
-	}
-}
-
 func (ft OrderLineFilters) ByWeight(Weight int) *sql.ColumnFilter {
 	return &sql.ColumnFilter{
 		Prefix: &ft.prefix,
@@ -1174,44 +1060,6 @@ func (ft OrderLineFilters) ByQuantityPtr(Quantity *int) *sql.ColumnFilterPtr {
 		Value:  Quantity,
 		IsNil:  Quantity == nil,
 		IsZero: Quantity != nil && (*Quantity) == 0,
-	}
-}
-
-func (ft OrderLineFilters) ByWholesalePrice0(WholesalePrice0 int) *sql.ColumnFilter {
-	return &sql.ColumnFilter{
-		Prefix: &ft.prefix,
-		Column: "wholesale_price_0",
-		Value:  WholesalePrice0,
-		IsNil:  WholesalePrice0 == 0,
-	}
-}
-
-func (ft OrderLineFilters) ByWholesalePrice0Ptr(WholesalePrice0 *int) *sql.ColumnFilterPtr {
-	return &sql.ColumnFilterPtr{
-		Prefix: &ft.prefix,
-		Column: "wholesale_price_0",
-		Value:  WholesalePrice0,
-		IsNil:  WholesalePrice0 == nil,
-		IsZero: WholesalePrice0 != nil && (*WholesalePrice0) == 0,
-	}
-}
-
-func (ft OrderLineFilters) ByWholesalePrice(WholesalePrice int) *sql.ColumnFilter {
-	return &sql.ColumnFilter{
-		Prefix: &ft.prefix,
-		Column: "wholesale_price",
-		Value:  WholesalePrice,
-		IsNil:  WholesalePrice == 0,
-	}
-}
-
-func (ft OrderLineFilters) ByWholesalePricePtr(WholesalePrice *int) *sql.ColumnFilterPtr {
-	return &sql.ColumnFilterPtr{
-		Prefix: &ft.prefix,
-		Column: "wholesale_price",
-		Value:  WholesalePrice,
-		IsNil:  WholesalePrice == nil,
-		IsZero: WholesalePrice != nil && (*WholesalePrice) == 0,
 	}
 }
 
@@ -1326,25 +1174,6 @@ func (ft OrderLineFilters) ByTotalLineAmountPtr(TotalLineAmount *int) *sql.Colum
 		Value:  TotalLineAmount,
 		IsNil:  TotalLineAmount == nil,
 		IsZero: TotalLineAmount != nil && (*TotalLineAmount) == 0,
-	}
-}
-
-func (ft OrderLineFilters) ByRequiresShipping(RequiresShipping bool) *sql.ColumnFilter {
-	return &sql.ColumnFilter{
-		Prefix: &ft.prefix,
-		Column: "requires_shipping",
-		Value:  RequiresShipping,
-		IsNil:  bool(!RequiresShipping),
-	}
-}
-
-func (ft OrderLineFilters) ByRequiresShippingPtr(RequiresShipping *bool) *sql.ColumnFilterPtr {
-	return &sql.ColumnFilterPtr{
-		Prefix: &ft.prefix,
-		Column: "requires_shipping",
-		Value:  RequiresShipping,
-		IsNil:  RequiresShipping == nil,
-		IsZero: RequiresShipping != nil && bool(!(*RequiresShipping)),
 	}
 }
 

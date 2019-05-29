@@ -18,7 +18,7 @@ func sqlgenProduct(_ *Product) bool { return true }
 type Products []*Product
 
 const __sqlProduct_Table = "product"
-const __sqlProduct_ListCols = "\"id\",\"product_source_id\",\"product_source_category_id\",\"etop_category_id\",\"name\",\"short_desc\",\"description\",\"desc_html\",\"ed_name\",\"ed_short_desc\",\"ed_description\",\"ed_desc_html\",\"ed_tags\",\"unit\",\"status\",\"code\",\"ed_code\",\"image_urls\",\"created_at\",\"updated_at\",\"name_norm\",\"name_norm_ua\""
+const __sqlProduct_ListCols = "\"id\",\"product_source_id\",\"product_source_category_id\",\"name\",\"short_desc\",\"description\",\"desc_html\",\"unit\",\"status\",\"ed_code\",\"image_urls\",\"created_at\",\"updated_at\",\"name_norm\",\"name_norm_ua\""
 const __sqlProduct_Insert = "INSERT INTO \"product\" (" + __sqlProduct_ListCols + ") VALUES"
 const __sqlProduct_Select = "SELECT " + __sqlProduct_ListCols + " FROM \"product\""
 const __sqlProduct_Select_history = "SELECT " + __sqlProduct_ListCols + " FROM history.\"product\""
@@ -34,19 +34,12 @@ func (m *Product) SQLArgs(opts core.Opts, create bool) []interface{} {
 		core.Int64(m.ID),
 		core.Int64(m.ProductSourceID),
 		core.String(m.ProductSourceCategoryID),
-		core.Int64(m.EtopCategoryID),
 		core.String(m.Name),
 		core.String(m.ShortDesc),
 		core.String(m.Description),
 		core.String(m.DescHTML),
-		core.String(m.EdName),
-		core.String(m.EdShortDesc),
-		core.String(m.EdDescription),
-		core.String(m.EdDescHTML),
-		core.Array{m.EdTags, opts},
 		core.String(m.Unit),
 		core.Int(m.Status),
-		core.String(m.Code),
 		core.String(m.EdCode),
 		core.Array{m.ImageURLs, opts},
 		core.Now(m.CreatedAt, now, create),
@@ -61,19 +54,12 @@ func (m *Product) SQLScanArgs(opts core.Opts) []interface{} {
 		(*core.Int64)(&m.ID),
 		(*core.Int64)(&m.ProductSourceID),
 		(*core.String)(&m.ProductSourceCategoryID),
-		(*core.Int64)(&m.EtopCategoryID),
 		(*core.String)(&m.Name),
 		(*core.String)(&m.ShortDesc),
 		(*core.String)(&m.Description),
 		(*core.String)(&m.DescHTML),
-		(*core.String)(&m.EdName),
-		(*core.String)(&m.EdShortDesc),
-		(*core.String)(&m.EdDescription),
-		(*core.String)(&m.EdDescHTML),
-		core.Array{&m.EdTags, opts},
 		(*core.String)(&m.Unit),
 		(*core.Int)(&m.Status),
-		(*core.String)(&m.Code),
 		(*core.String)(&m.EdCode),
 		core.Array{&m.ImageURLs, opts},
 		(*core.Time)(&m.CreatedAt),
@@ -117,7 +103,7 @@ func (_ *Products) SQLSelect(w SQLWriter) error {
 func (m *Product) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlProduct_Insert)
 	w.WriteRawString(" (")
-	w.WriteMarkers(22)
+	w.WriteMarkers(15)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), true))
 	return nil
@@ -127,7 +113,7 @@ func (ms Products) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlProduct_Insert)
 	w.WriteRawString(" (")
 	for i := 0; i < len(ms); i++ {
-		w.WriteMarkers(22)
+		w.WriteMarkers(15)
 		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
 		w.WriteRawString("),(")
 	}
@@ -166,14 +152,6 @@ func (m *Product) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(m.ProductSourceCategoryID)
 	}
-	if m.EtopCategoryID != 0 {
-		flag = true
-		w.WriteName("etop_category_id")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(m.EtopCategoryID)
-	}
 	if m.Name != "" {
 		flag = true
 		w.WriteName("name")
@@ -206,46 +184,6 @@ func (m *Product) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(m.DescHTML)
 	}
-	if m.EdName != "" {
-		flag = true
-		w.WriteName("ed_name")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(m.EdName)
-	}
-	if m.EdShortDesc != "" {
-		flag = true
-		w.WriteName("ed_short_desc")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(m.EdShortDesc)
-	}
-	if m.EdDescription != "" {
-		flag = true
-		w.WriteName("ed_description")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(m.EdDescription)
-	}
-	if m.EdDescHTML != "" {
-		flag = true
-		w.WriteName("ed_desc_html")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(m.EdDescHTML)
-	}
-	if m.EdTags != nil {
-		flag = true
-		w.WriteName("ed_tags")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(core.Array{m.EdTags, opts})
-	}
 	if m.Unit != "" {
 		flag = true
 		w.WriteName("unit")
@@ -261,14 +199,6 @@ func (m *Product) SQLUpdate(w SQLWriter) error {
 		w.WriteMarker()
 		w.WriteByte(',')
 		w.WriteArg(int(m.Status))
-	}
-	if m.Code != "" {
-		flag = true
-		w.WriteName("code")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(m.Code)
 	}
 	if m.EdCode != "" {
 		flag = true
@@ -328,7 +258,7 @@ func (m *Product) SQLUpdate(w SQLWriter) error {
 func (m *Product) SQLUpdateAll(w SQLWriter) error {
 	w.WriteQueryString(__sqlProduct_UpdateAll)
 	w.WriteRawString(" = (")
-	w.WriteMarkers(22)
+	w.WriteMarkers(15)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), false))
 	return nil
@@ -357,66 +287,52 @@ func (m ProductHistory) ProductSourceID() core.Interface {
 func (m ProductHistory) ProductSourceCategoryID() core.Interface {
 	return core.Interface{m["product_source_category_id"]}
 }
-func (m ProductHistory) EtopCategoryID() core.Interface { return core.Interface{m["etop_category_id"]} }
-func (m ProductHistory) Name() core.Interface           { return core.Interface{m["name"]} }
-func (m ProductHistory) ShortDesc() core.Interface      { return core.Interface{m["short_desc"]} }
-func (m ProductHistory) Description() core.Interface    { return core.Interface{m["description"]} }
-func (m ProductHistory) DescHTML() core.Interface       { return core.Interface{m["desc_html"]} }
-func (m ProductHistory) EdName() core.Interface         { return core.Interface{m["ed_name"]} }
-func (m ProductHistory) EdShortDesc() core.Interface    { return core.Interface{m["ed_short_desc"]} }
-func (m ProductHistory) EdDescription() core.Interface  { return core.Interface{m["ed_description"]} }
-func (m ProductHistory) EdDescHTML() core.Interface     { return core.Interface{m["ed_desc_html"]} }
-func (m ProductHistory) EdTags() core.Interface         { return core.Interface{m["ed_tags"]} }
-func (m ProductHistory) Unit() core.Interface           { return core.Interface{m["unit"]} }
-func (m ProductHistory) Status() core.Interface         { return core.Interface{m["status"]} }
-func (m ProductHistory) Code() core.Interface           { return core.Interface{m["code"]} }
-func (m ProductHistory) EdCode() core.Interface         { return core.Interface{m["ed_code"]} }
-func (m ProductHistory) ImageURLs() core.Interface      { return core.Interface{m["image_urls"]} }
-func (m ProductHistory) CreatedAt() core.Interface      { return core.Interface{m["created_at"]} }
-func (m ProductHistory) UpdatedAt() core.Interface      { return core.Interface{m["updated_at"]} }
-func (m ProductHistory) NameNorm() core.Interface       { return core.Interface{m["name_norm"]} }
-func (m ProductHistory) NameNormUa() core.Interface     { return core.Interface{m["name_norm_ua"]} }
+func (m ProductHistory) Name() core.Interface        { return core.Interface{m["name"]} }
+func (m ProductHistory) ShortDesc() core.Interface   { return core.Interface{m["short_desc"]} }
+func (m ProductHistory) Description() core.Interface { return core.Interface{m["description"]} }
+func (m ProductHistory) DescHTML() core.Interface    { return core.Interface{m["desc_html"]} }
+func (m ProductHistory) Unit() core.Interface        { return core.Interface{m["unit"]} }
+func (m ProductHistory) Status() core.Interface      { return core.Interface{m["status"]} }
+func (m ProductHistory) EdCode() core.Interface      { return core.Interface{m["ed_code"]} }
+func (m ProductHistory) ImageURLs() core.Interface   { return core.Interface{m["image_urls"]} }
+func (m ProductHistory) CreatedAt() core.Interface   { return core.Interface{m["created_at"]} }
+func (m ProductHistory) UpdatedAt() core.Interface   { return core.Interface{m["updated_at"]} }
+func (m ProductHistory) NameNorm() core.Interface    { return core.Interface{m["name_norm"]} }
+func (m ProductHistory) NameNormUa() core.Interface  { return core.Interface{m["name_norm_ua"]} }
 
 func (m *ProductHistory) SQLScan(opts core.Opts, row *sql.Row) error {
-	data := make([]interface{}, 22)
-	args := make([]interface{}, 22)
-	for i := 0; i < 22; i++ {
+	data := make([]interface{}, 15)
+	args := make([]interface{}, 15)
+	for i := 0; i < 15; i++ {
 		args[i] = &data[i]
 	}
 	if err := row.Scan(args...); err != nil {
 		return err
 	}
-	res := make(ProductHistory, 22)
+	res := make(ProductHistory, 15)
 	res["id"] = data[0]
 	res["product_source_id"] = data[1]
 	res["product_source_category_id"] = data[2]
-	res["etop_category_id"] = data[3]
-	res["name"] = data[4]
-	res["short_desc"] = data[5]
-	res["description"] = data[6]
-	res["desc_html"] = data[7]
-	res["ed_name"] = data[8]
-	res["ed_short_desc"] = data[9]
-	res["ed_description"] = data[10]
-	res["ed_desc_html"] = data[11]
-	res["ed_tags"] = data[12]
-	res["unit"] = data[13]
-	res["status"] = data[14]
-	res["code"] = data[15]
-	res["ed_code"] = data[16]
-	res["image_urls"] = data[17]
-	res["created_at"] = data[18]
-	res["updated_at"] = data[19]
-	res["name_norm"] = data[20]
-	res["name_norm_ua"] = data[21]
+	res["name"] = data[3]
+	res["short_desc"] = data[4]
+	res["description"] = data[5]
+	res["desc_html"] = data[6]
+	res["unit"] = data[7]
+	res["status"] = data[8]
+	res["ed_code"] = data[9]
+	res["image_urls"] = data[10]
+	res["created_at"] = data[11]
+	res["updated_at"] = data[12]
+	res["name_norm"] = data[13]
+	res["name_norm_ua"] = data[14]
 	*m = res
 	return nil
 }
 
 func (ms *ProductHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	data := make([]interface{}, 22)
-	args := make([]interface{}, 22)
-	for i := 0; i < 22; i++ {
+	data := make([]interface{}, 15)
+	args := make([]interface{}, 15)
+	for i := 0; i < 15; i++ {
 		args[i] = &data[i]
 	}
 	res := make(ProductHistories, 0, 128)
@@ -428,25 +344,18 @@ func (ms *ProductHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
 		m["id"] = data[0]
 		m["product_source_id"] = data[1]
 		m["product_source_category_id"] = data[2]
-		m["etop_category_id"] = data[3]
-		m["name"] = data[4]
-		m["short_desc"] = data[5]
-		m["description"] = data[6]
-		m["desc_html"] = data[7]
-		m["ed_name"] = data[8]
-		m["ed_short_desc"] = data[9]
-		m["ed_description"] = data[10]
-		m["ed_desc_html"] = data[11]
-		m["ed_tags"] = data[12]
-		m["unit"] = data[13]
-		m["status"] = data[14]
-		m["code"] = data[15]
-		m["ed_code"] = data[16]
-		m["image_urls"] = data[17]
-		m["created_at"] = data[18]
-		m["updated_at"] = data[19]
-		m["name_norm"] = data[20]
-		m["name_norm_ua"] = data[21]
+		m["name"] = data[3]
+		m["short_desc"] = data[4]
+		m["description"] = data[5]
+		m["desc_html"] = data[6]
+		m["unit"] = data[7]
+		m["status"] = data[8]
+		m["ed_code"] = data[9]
+		m["image_urls"] = data[10]
+		m["created_at"] = data[11]
+		m["updated_at"] = data[12]
+		m["name_norm"] = data[13]
+		m["name_norm_ua"] = data[14]
 		res = append(res, m)
 	}
 	if err := rows.Err(); err != nil {
@@ -560,7 +469,7 @@ func sqlgenVariant(_ *Variant) bool { return true }
 type Variants []*Variant
 
 const __sqlVariant_Table = "variant"
-const __sqlVariant_ListCols = "\"id\",\"product_id\",\"product_source_id\",\"product_source_category_id\",\"etop_category_id\",\"short_desc\",\"description\",\"desc_html\",\"ed_name\",\"ed_short_desc\",\"ed_description\",\"ed_desc_html\",\"desc_norm\",\"attr_norm_kv\",\"status\",\"etop_status\",\"ed_status\",\"code\",\"ed_code\",\"wholesale_price_0\",\"wholesale_price\",\"list_price\",\"retail_price_min\",\"retail_price_max\",\"ed_wholesale_price_0\",\"ed_wholesale_price\",\"ed_list_price\",\"ed_retail_price_min\",\"ed_retail_price_max\",\"image_urls\",\"cost_price\",\"attributes\",\"created_at\",\"updated_at\""
+const __sqlVariant_ListCols = "\"id\",\"product_id\",\"product_source_id\",\"product_source_category_id\",\"short_desc\",\"description\",\"desc_html\",\"ed_name\",\"desc_norm\",\"attr_norm_kv\",\"status\",\"ed_code\",\"list_price\",\"image_urls\",\"cost_price\",\"attributes\",\"created_at\",\"updated_at\""
 const __sqlVariant_Insert = "INSERT INTO \"variant\" (" + __sqlVariant_ListCols + ") VALUES"
 const __sqlVariant_Select = "SELECT " + __sqlVariant_ListCols + " FROM \"variant\""
 const __sqlVariant_Select_history = "SELECT " + __sqlVariant_ListCols + " FROM history.\"variant\""
@@ -577,31 +486,15 @@ func (m *Variant) SQLArgs(opts core.Opts, create bool) []interface{} {
 		core.Int64(m.ProductID),
 		core.Int64(m.ProductSourceID),
 		core.Int64(m.ProductSourceCategoryID),
-		core.Int64(m.EtopCategoryID),
 		core.String(m.ShortDesc),
 		core.String(m.Description),
 		core.String(m.DescHTML),
 		core.String(m.EdName),
-		core.String(m.EdShortDesc),
-		core.String(m.EdDescription),
-		core.String(m.EdDescHTML),
 		core.String(m.DescNorm),
 		core.String(m.AttrNormKv),
 		core.Int(m.Status),
-		core.Int(m.EtopStatus),
-		core.Int(m.EdStatus),
-		core.String(m.Code),
 		core.String(m.EdCode),
-		core.Int(m.WholesalePrice0),
-		core.Int(m.WholesalePrice),
 		core.Int(m.ListPrice),
-		core.Int(m.RetailPriceMin),
-		core.Int(m.RetailPriceMax),
-		core.Int(m.EdWholesalePrice0),
-		core.Int(m.EdWholesalePrice),
-		core.Int(m.EdListPrice),
-		core.Int(m.EdRetailPriceMin),
-		core.Int(m.EdRetailPriceMax),
 		core.Array{m.ImageURLs, opts},
 		core.Int(m.CostPrice),
 		core.JSON{m.Attributes},
@@ -616,31 +509,15 @@ func (m *Variant) SQLScanArgs(opts core.Opts) []interface{} {
 		(*core.Int64)(&m.ProductID),
 		(*core.Int64)(&m.ProductSourceID),
 		(*core.Int64)(&m.ProductSourceCategoryID),
-		(*core.Int64)(&m.EtopCategoryID),
 		(*core.String)(&m.ShortDesc),
 		(*core.String)(&m.Description),
 		(*core.String)(&m.DescHTML),
 		(*core.String)(&m.EdName),
-		(*core.String)(&m.EdShortDesc),
-		(*core.String)(&m.EdDescription),
-		(*core.String)(&m.EdDescHTML),
 		(*core.String)(&m.DescNorm),
 		(*core.String)(&m.AttrNormKv),
 		(*core.Int)(&m.Status),
-		(*core.Int)(&m.EtopStatus),
-		(*core.Int)(&m.EdStatus),
-		(*core.String)(&m.Code),
 		(*core.String)(&m.EdCode),
-		(*core.Int)(&m.WholesalePrice0),
-		(*core.Int)(&m.WholesalePrice),
 		(*core.Int)(&m.ListPrice),
-		(*core.Int)(&m.RetailPriceMin),
-		(*core.Int)(&m.RetailPriceMax),
-		(*core.Int)(&m.EdWholesalePrice0),
-		(*core.Int)(&m.EdWholesalePrice),
-		(*core.Int)(&m.EdListPrice),
-		(*core.Int)(&m.EdRetailPriceMin),
-		(*core.Int)(&m.EdRetailPriceMax),
 		core.Array{&m.ImageURLs, opts},
 		(*core.Int)(&m.CostPrice),
 		core.JSON{&m.Attributes},
@@ -683,7 +560,7 @@ func (_ *Variants) SQLSelect(w SQLWriter) error {
 func (m *Variant) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlVariant_Insert)
 	w.WriteRawString(" (")
-	w.WriteMarkers(34)
+	w.WriteMarkers(18)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), true))
 	return nil
@@ -693,7 +570,7 @@ func (ms Variants) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlVariant_Insert)
 	w.WriteRawString(" (")
 	for i := 0; i < len(ms); i++ {
-		w.WriteMarkers(34)
+		w.WriteMarkers(18)
 		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
 		w.WriteRawString("),(")
 	}
@@ -740,14 +617,6 @@ func (m *Variant) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(m.ProductSourceCategoryID)
 	}
-	if m.EtopCategoryID != 0 {
-		flag = true
-		w.WriteName("etop_category_id")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(m.EtopCategoryID)
-	}
 	if m.ShortDesc != "" {
 		flag = true
 		w.WriteName("short_desc")
@@ -780,30 +649,6 @@ func (m *Variant) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(m.EdName)
 	}
-	if m.EdShortDesc != "" {
-		flag = true
-		w.WriteName("ed_short_desc")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(m.EdShortDesc)
-	}
-	if m.EdDescription != "" {
-		flag = true
-		w.WriteName("ed_description")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(m.EdDescription)
-	}
-	if m.EdDescHTML != "" {
-		flag = true
-		w.WriteName("ed_desc_html")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(m.EdDescHTML)
-	}
 	if m.DescNorm != "" {
 		flag = true
 		w.WriteName("desc_norm")
@@ -828,30 +673,6 @@ func (m *Variant) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(int(m.Status))
 	}
-	if m.EtopStatus != 0 {
-		flag = true
-		w.WriteName("etop_status")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(int(m.EtopStatus))
-	}
-	if m.EdStatus != 0 {
-		flag = true
-		w.WriteName("ed_status")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(int(m.EdStatus))
-	}
-	if m.Code != "" {
-		flag = true
-		w.WriteName("code")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(m.Code)
-	}
 	if m.EdCode != "" {
 		flag = true
 		w.WriteName("ed_code")
@@ -860,22 +681,6 @@ func (m *Variant) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(m.EdCode)
 	}
-	if m.WholesalePrice0 != 0 {
-		flag = true
-		w.WriteName("wholesale_price_0")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(m.WholesalePrice0)
-	}
-	if m.WholesalePrice != 0 {
-		flag = true
-		w.WriteName("wholesale_price")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(m.WholesalePrice)
-	}
 	if m.ListPrice != 0 {
 		flag = true
 		w.WriteName("list_price")
@@ -883,62 +688,6 @@ func (m *Variant) SQLUpdate(w SQLWriter) error {
 		w.WriteMarker()
 		w.WriteByte(',')
 		w.WriteArg(m.ListPrice)
-	}
-	if m.RetailPriceMin != 0 {
-		flag = true
-		w.WriteName("retail_price_min")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(m.RetailPriceMin)
-	}
-	if m.RetailPriceMax != 0 {
-		flag = true
-		w.WriteName("retail_price_max")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(m.RetailPriceMax)
-	}
-	if m.EdWholesalePrice0 != 0 {
-		flag = true
-		w.WriteName("ed_wholesale_price_0")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(m.EdWholesalePrice0)
-	}
-	if m.EdWholesalePrice != 0 {
-		flag = true
-		w.WriteName("ed_wholesale_price")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(m.EdWholesalePrice)
-	}
-	if m.EdListPrice != 0 {
-		flag = true
-		w.WriteName("ed_list_price")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(m.EdListPrice)
-	}
-	if m.EdRetailPriceMin != 0 {
-		flag = true
-		w.WriteName("ed_retail_price_min")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(m.EdRetailPriceMin)
-	}
-	if m.EdRetailPriceMax != 0 {
-		flag = true
-		w.WriteName("ed_retail_price_max")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(m.EdRetailPriceMax)
 	}
 	if m.ImageURLs != nil {
 		flag = true
@@ -990,7 +739,7 @@ func (m *Variant) SQLUpdate(w SQLWriter) error {
 func (m *Variant) SQLUpdateAll(w SQLWriter) error {
 	w.WriteQueryString(__sqlVariant_UpdateAll)
 	w.WriteRawString(" = (")
-	w.WriteMarkers(34)
+	w.WriteMarkers(18)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), false))
 	return nil
@@ -1020,99 +769,57 @@ func (m VariantHistory) ProductSourceID() core.Interface {
 func (m VariantHistory) ProductSourceCategoryID() core.Interface {
 	return core.Interface{m["product_source_category_id"]}
 }
-func (m VariantHistory) EtopCategoryID() core.Interface { return core.Interface{m["etop_category_id"]} }
-func (m VariantHistory) ShortDesc() core.Interface      { return core.Interface{m["short_desc"]} }
-func (m VariantHistory) Description() core.Interface    { return core.Interface{m["description"]} }
-func (m VariantHistory) DescHTML() core.Interface       { return core.Interface{m["desc_html"]} }
-func (m VariantHistory) EdName() core.Interface         { return core.Interface{m["ed_name"]} }
-func (m VariantHistory) EdShortDesc() core.Interface    { return core.Interface{m["ed_short_desc"]} }
-func (m VariantHistory) EdDescription() core.Interface  { return core.Interface{m["ed_description"]} }
-func (m VariantHistory) EdDescHTML() core.Interface     { return core.Interface{m["ed_desc_html"]} }
-func (m VariantHistory) DescNorm() core.Interface       { return core.Interface{m["desc_norm"]} }
-func (m VariantHistory) AttrNormKv() core.Interface     { return core.Interface{m["attr_norm_kv"]} }
-func (m VariantHistory) Status() core.Interface         { return core.Interface{m["status"]} }
-func (m VariantHistory) EtopStatus() core.Interface     { return core.Interface{m["etop_status"]} }
-func (m VariantHistory) EdStatus() core.Interface       { return core.Interface{m["ed_status"]} }
-func (m VariantHistory) Code() core.Interface           { return core.Interface{m["code"]} }
-func (m VariantHistory) EdCode() core.Interface         { return core.Interface{m["ed_code"]} }
-func (m VariantHistory) WholesalePrice0() core.Interface {
-	return core.Interface{m["wholesale_price_0"]}
-}
-func (m VariantHistory) WholesalePrice() core.Interface { return core.Interface{m["wholesale_price"]} }
-func (m VariantHistory) ListPrice() core.Interface      { return core.Interface{m["list_price"]} }
-func (m VariantHistory) RetailPriceMin() core.Interface { return core.Interface{m["retail_price_min"]} }
-func (m VariantHistory) RetailPriceMax() core.Interface { return core.Interface{m["retail_price_max"]} }
-func (m VariantHistory) EdWholesalePrice0() core.Interface {
-	return core.Interface{m["ed_wholesale_price_0"]}
-}
-func (m VariantHistory) EdWholesalePrice() core.Interface {
-	return core.Interface{m["ed_wholesale_price"]}
-}
-func (m VariantHistory) EdListPrice() core.Interface { return core.Interface{m["ed_list_price"]} }
-func (m VariantHistory) EdRetailPriceMin() core.Interface {
-	return core.Interface{m["ed_retail_price_min"]}
-}
-func (m VariantHistory) EdRetailPriceMax() core.Interface {
-	return core.Interface{m["ed_retail_price_max"]}
-}
-func (m VariantHistory) ImageURLs() core.Interface  { return core.Interface{m["image_urls"]} }
-func (m VariantHistory) CostPrice() core.Interface  { return core.Interface{m["cost_price"]} }
-func (m VariantHistory) Attributes() core.Interface { return core.Interface{m["attributes"]} }
-func (m VariantHistory) CreatedAt() core.Interface  { return core.Interface{m["created_at"]} }
-func (m VariantHistory) UpdatedAt() core.Interface  { return core.Interface{m["updated_at"]} }
+func (m VariantHistory) ShortDesc() core.Interface   { return core.Interface{m["short_desc"]} }
+func (m VariantHistory) Description() core.Interface { return core.Interface{m["description"]} }
+func (m VariantHistory) DescHTML() core.Interface    { return core.Interface{m["desc_html"]} }
+func (m VariantHistory) EdName() core.Interface      { return core.Interface{m["ed_name"]} }
+func (m VariantHistory) DescNorm() core.Interface    { return core.Interface{m["desc_norm"]} }
+func (m VariantHistory) AttrNormKv() core.Interface  { return core.Interface{m["attr_norm_kv"]} }
+func (m VariantHistory) Status() core.Interface      { return core.Interface{m["status"]} }
+func (m VariantHistory) EdCode() core.Interface      { return core.Interface{m["ed_code"]} }
+func (m VariantHistory) ListPrice() core.Interface   { return core.Interface{m["list_price"]} }
+func (m VariantHistory) ImageURLs() core.Interface   { return core.Interface{m["image_urls"]} }
+func (m VariantHistory) CostPrice() core.Interface   { return core.Interface{m["cost_price"]} }
+func (m VariantHistory) Attributes() core.Interface  { return core.Interface{m["attributes"]} }
+func (m VariantHistory) CreatedAt() core.Interface   { return core.Interface{m["created_at"]} }
+func (m VariantHistory) UpdatedAt() core.Interface   { return core.Interface{m["updated_at"]} }
 
 func (m *VariantHistory) SQLScan(opts core.Opts, row *sql.Row) error {
-	data := make([]interface{}, 34)
-	args := make([]interface{}, 34)
-	for i := 0; i < 34; i++ {
+	data := make([]interface{}, 18)
+	args := make([]interface{}, 18)
+	for i := 0; i < 18; i++ {
 		args[i] = &data[i]
 	}
 	if err := row.Scan(args...); err != nil {
 		return err
 	}
-	res := make(VariantHistory, 34)
+	res := make(VariantHistory, 18)
 	res["id"] = data[0]
 	res["product_id"] = data[1]
 	res["product_source_id"] = data[2]
 	res["product_source_category_id"] = data[3]
-	res["etop_category_id"] = data[4]
-	res["short_desc"] = data[5]
-	res["description"] = data[6]
-	res["desc_html"] = data[7]
-	res["ed_name"] = data[8]
-	res["ed_short_desc"] = data[9]
-	res["ed_description"] = data[10]
-	res["ed_desc_html"] = data[11]
-	res["desc_norm"] = data[12]
-	res["attr_norm_kv"] = data[13]
-	res["status"] = data[14]
-	res["etop_status"] = data[15]
-	res["ed_status"] = data[16]
-	res["code"] = data[17]
-	res["ed_code"] = data[18]
-	res["wholesale_price_0"] = data[19]
-	res["wholesale_price"] = data[20]
-	res["list_price"] = data[21]
-	res["retail_price_min"] = data[22]
-	res["retail_price_max"] = data[23]
-	res["ed_wholesale_price_0"] = data[24]
-	res["ed_wholesale_price"] = data[25]
-	res["ed_list_price"] = data[26]
-	res["ed_retail_price_min"] = data[27]
-	res["ed_retail_price_max"] = data[28]
-	res["image_urls"] = data[29]
-	res["cost_price"] = data[30]
-	res["attributes"] = data[31]
-	res["created_at"] = data[32]
-	res["updated_at"] = data[33]
+	res["short_desc"] = data[4]
+	res["description"] = data[5]
+	res["desc_html"] = data[6]
+	res["ed_name"] = data[7]
+	res["desc_norm"] = data[8]
+	res["attr_norm_kv"] = data[9]
+	res["status"] = data[10]
+	res["ed_code"] = data[11]
+	res["list_price"] = data[12]
+	res["image_urls"] = data[13]
+	res["cost_price"] = data[14]
+	res["attributes"] = data[15]
+	res["created_at"] = data[16]
+	res["updated_at"] = data[17]
 	*m = res
 	return nil
 }
 
 func (ms *VariantHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	data := make([]interface{}, 34)
-	args := make([]interface{}, 34)
-	for i := 0; i < 34; i++ {
+	data := make([]interface{}, 18)
+	args := make([]interface{}, 18)
+	for i := 0; i < 18; i++ {
 		args[i] = &data[i]
 	}
 	res := make(VariantHistories, 0, 128)
@@ -1125,36 +832,20 @@ func (ms *VariantHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
 		m["product_id"] = data[1]
 		m["product_source_id"] = data[2]
 		m["product_source_category_id"] = data[3]
-		m["etop_category_id"] = data[4]
-		m["short_desc"] = data[5]
-		m["description"] = data[6]
-		m["desc_html"] = data[7]
-		m["ed_name"] = data[8]
-		m["ed_short_desc"] = data[9]
-		m["ed_description"] = data[10]
-		m["ed_desc_html"] = data[11]
-		m["desc_norm"] = data[12]
-		m["attr_norm_kv"] = data[13]
-		m["status"] = data[14]
-		m["etop_status"] = data[15]
-		m["ed_status"] = data[16]
-		m["code"] = data[17]
-		m["ed_code"] = data[18]
-		m["wholesale_price_0"] = data[19]
-		m["wholesale_price"] = data[20]
-		m["list_price"] = data[21]
-		m["retail_price_min"] = data[22]
-		m["retail_price_max"] = data[23]
-		m["ed_wholesale_price_0"] = data[24]
-		m["ed_wholesale_price"] = data[25]
-		m["ed_list_price"] = data[26]
-		m["ed_retail_price_min"] = data[27]
-		m["ed_retail_price_max"] = data[28]
-		m["image_urls"] = data[29]
-		m["cost_price"] = data[30]
-		m["attributes"] = data[31]
-		m["created_at"] = data[32]
-		m["updated_at"] = data[33]
+		m["short_desc"] = data[4]
+		m["description"] = data[5]
+		m["desc_html"] = data[6]
+		m["ed_name"] = data[7]
+		m["desc_norm"] = data[8]
+		m["attr_norm_kv"] = data[9]
+		m["status"] = data[10]
+		m["ed_code"] = data[11]
+		m["list_price"] = data[12]
+		m["image_urls"] = data[13]
+		m["cost_price"] = data[14]
+		m["attributes"] = data[15]
+		m["created_at"] = data[16]
+		m["updated_at"] = data[17]
 		res = append(res, m)
 	}
 	if err := rows.Err(); err != nil {
@@ -1260,279 +951,6 @@ func (m *VariantExtended) SQLScanArgs(opts core.Opts) []interface{} {
 	args = append(args, m.Product.SQLScanArgs(opts)...)
 
 	return args
-}
-
-// *PriceDef is a substruct of *Variant
-func substructPriceDef(_ *PriceDef, _ *Variant) bool { return true }
-
-func PriceDefsFromVariants(ps []*Variant) []*PriceDef {
-	ss := make([]*PriceDef, len(ps))
-	for i, p := range ps {
-		ss[i] = NewPriceDefFromVariant(p)
-	}
-	return ss
-}
-
-func PriceDefsToVariants(ss []*PriceDef) []*Variant {
-	ps := make([]*Variant, len(ss))
-	for i, s := range ss {
-		ps[i] = s.ToVariant()
-	}
-	return ps
-}
-
-func NewPriceDefFromVariant(sp *Variant) *PriceDef {
-	if sp == nil {
-		return nil
-	}
-	s := new(PriceDef)
-	s.CopyFrom(sp)
-	return s
-}
-
-func (s *PriceDef) ToVariant() *Variant {
-	if s == nil {
-		return nil
-	}
-	sp := new(Variant)
-	s.AssignTo(sp)
-	return sp
-}
-
-func (s *PriceDef) CopyFrom(sp *Variant) {
-	s.WholesalePrice0 = sp.WholesalePrice0
-	s.WholesalePrice = sp.WholesalePrice
-	s.ListPrice = sp.ListPrice
-	s.RetailPriceMin = sp.RetailPriceMin
-	s.RetailPriceMax = sp.RetailPriceMax
-}
-
-func (s *PriceDef) AssignTo(sp *Variant) {
-	sp.WholesalePrice0 = s.WholesalePrice0
-	sp.WholesalePrice = s.WholesalePrice
-	sp.ListPrice = s.ListPrice
-	sp.RetailPriceMin = s.RetailPriceMin
-	sp.RetailPriceMax = s.RetailPriceMax
-}
-
-// Type PriceDef represents table variant
-func sqlgenPriceDef(_ *PriceDef, _ *Variant) bool { return true }
-
-type PriceDefs []*PriceDef
-
-const __sqlPriceDef_Table = "variant"
-const __sqlPriceDef_ListCols = "\"wholesale_price_0\",\"wholesale_price\",\"list_price\",\"retail_price_min\",\"retail_price_max\""
-const __sqlPriceDef_Insert = "INSERT INTO \"variant\" (" + __sqlPriceDef_ListCols + ") VALUES"
-const __sqlPriceDef_Select = "SELECT " + __sqlPriceDef_ListCols + " FROM \"variant\""
-const __sqlPriceDef_Select_history = "SELECT " + __sqlPriceDef_ListCols + " FROM history.\"variant\""
-const __sqlPriceDef_UpdateAll = "UPDATE \"variant\" SET (" + __sqlPriceDef_ListCols + ")"
-
-func (m *PriceDef) SQLTableName() string  { return "variant" }
-func (m *PriceDefs) SQLTableName() string { return "variant" }
-func (m *PriceDef) SQLListCols() string   { return __sqlPriceDef_ListCols }
-
-func (m *PriceDef) SQLArgs(opts core.Opts, create bool) []interface{} {
-	return []interface{}{
-		core.Int(m.WholesalePrice0),
-		core.Int(m.WholesalePrice),
-		core.Int(m.ListPrice),
-		core.Int(m.RetailPriceMin),
-		core.Int(m.RetailPriceMax),
-	}
-}
-
-func (m *PriceDef) SQLScanArgs(opts core.Opts) []interface{} {
-	return []interface{}{
-		(*core.Int)(&m.WholesalePrice0),
-		(*core.Int)(&m.WholesalePrice),
-		(*core.Int)(&m.ListPrice),
-		(*core.Int)(&m.RetailPriceMin),
-		(*core.Int)(&m.RetailPriceMax),
-	}
-}
-
-func (m *PriceDef) SQLScan(opts core.Opts, row *sql.Row) error {
-	return row.Scan(m.SQLScanArgs(opts)...)
-}
-
-func (ms *PriceDefs) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	res := make(PriceDefs, 0, 128)
-	for rows.Next() {
-		m := new(PriceDef)
-		args := m.SQLScanArgs(opts)
-		if err := rows.Scan(args...); err != nil {
-			return err
-		}
-		res = append(res, m)
-	}
-	if err := rows.Err(); err != nil {
-		return err
-	}
-	*ms = res
-	return nil
-}
-
-func (_ *PriceDef) SQLSelect(w SQLWriter) error {
-	w.WriteQueryString(__sqlPriceDef_Select)
-	return nil
-}
-
-func (_ *PriceDefs) SQLSelect(w SQLWriter) error {
-	w.WriteQueryString(__sqlPriceDef_Select)
-	return nil
-}
-
-func (m *PriceDef) SQLInsert(w SQLWriter) error {
-	w.WriteQueryString(__sqlPriceDef_Insert)
-	w.WriteRawString(" (")
-	w.WriteMarkers(5)
-	w.WriteByte(')')
-	w.WriteArgs(m.SQLArgs(w.Opts(), true))
-	return nil
-}
-
-func (ms PriceDefs) SQLInsert(w SQLWriter) error {
-	w.WriteQueryString(__sqlPriceDef_Insert)
-	w.WriteRawString(" (")
-	for i := 0; i < len(ms); i++ {
-		w.WriteMarkers(5)
-		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
-		w.WriteRawString("),(")
-	}
-	w.TrimLast(2)
-	return nil
-}
-
-func (m *PriceDef) SQLUpdate(w SQLWriter) error {
-	now, opts := time.Now(), w.Opts()
-	_, _ = now, opts // suppress unuse error
-	var flag bool
-	w.WriteRawString("UPDATE ")
-	w.WriteName("variant")
-	w.WriteRawString(" SET ")
-	if m.WholesalePrice0 != 0 {
-		flag = true
-		w.WriteName("wholesale_price_0")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(m.WholesalePrice0)
-	}
-	if m.WholesalePrice != 0 {
-		flag = true
-		w.WriteName("wholesale_price")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(m.WholesalePrice)
-	}
-	if m.ListPrice != 0 {
-		flag = true
-		w.WriteName("list_price")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(m.ListPrice)
-	}
-	if m.RetailPriceMin != 0 {
-		flag = true
-		w.WriteName("retail_price_min")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(m.RetailPriceMin)
-	}
-	if m.RetailPriceMax != 0 {
-		flag = true
-		w.WriteName("retail_price_max")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(m.RetailPriceMax)
-	}
-	if !flag {
-		return core.ErrNoColumn
-	}
-	w.TrimLast(1)
-	return nil
-}
-
-func (m *PriceDef) SQLUpdateAll(w SQLWriter) error {
-	w.WriteQueryString(__sqlPriceDef_UpdateAll)
-	w.WriteRawString(" = (")
-	w.WriteMarkers(5)
-	w.WriteByte(')')
-	w.WriteArgs(m.SQLArgs(w.Opts(), false))
-	return nil
-}
-
-type PriceDefHistory map[string]interface{}
-type PriceDefHistories []map[string]interface{}
-
-func (m *PriceDefHistory) SQLTableName() string  { return "history.\"variant\"" }
-func (m PriceDefHistories) SQLTableName() string { return "history.\"variant\"" }
-
-func (m *PriceDefHistory) SQLSelect(w SQLWriter) error {
-	w.WriteQueryString(__sqlPriceDef_Select_history)
-	return nil
-}
-
-func (m PriceDefHistories) SQLSelect(w SQLWriter) error {
-	w.WriteQueryString(__sqlPriceDef_Select_history)
-	return nil
-}
-
-func (m PriceDefHistory) WholesalePrice0() core.Interface {
-	return core.Interface{m["wholesale_price_0"]}
-}
-func (m PriceDefHistory) WholesalePrice() core.Interface { return core.Interface{m["wholesale_price"]} }
-func (m PriceDefHistory) ListPrice() core.Interface      { return core.Interface{m["list_price"]} }
-func (m PriceDefHistory) RetailPriceMin() core.Interface { return core.Interface{m["retail_price_min"]} }
-func (m PriceDefHistory) RetailPriceMax() core.Interface { return core.Interface{m["retail_price_max"]} }
-
-func (m *PriceDefHistory) SQLScan(opts core.Opts, row *sql.Row) error {
-	data := make([]interface{}, 5)
-	args := make([]interface{}, 5)
-	for i := 0; i < 5; i++ {
-		args[i] = &data[i]
-	}
-	if err := row.Scan(args...); err != nil {
-		return err
-	}
-	res := make(PriceDefHistory, 5)
-	res["wholesale_price_0"] = data[0]
-	res["wholesale_price"] = data[1]
-	res["list_price"] = data[2]
-	res["retail_price_min"] = data[3]
-	res["retail_price_max"] = data[4]
-	*m = res
-	return nil
-}
-
-func (ms *PriceDefHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	data := make([]interface{}, 5)
-	args := make([]interface{}, 5)
-	for i := 0; i < 5; i++ {
-		args[i] = &data[i]
-	}
-	res := make(PriceDefHistories, 0, 128)
-	for rows.Next() {
-		if err := rows.Scan(args...); err != nil {
-			return err
-		}
-		m := make(PriceDefHistory)
-		m["wholesale_price_0"] = data[0]
-		m["wholesale_price"] = data[1]
-		m["list_price"] = data[2]
-		m["retail_price_min"] = data[3]
-		m["retail_price_max"] = data[4]
-		res = append(res, m)
-	}
-	if err := rows.Err(); err != nil {
-		return err
-	}
-	*ms = res
-	return nil
 }
 
 // Type ShopVariantExtended represents a join

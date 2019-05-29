@@ -802,32 +802,23 @@ func parseLineToModel(idx imcsv.Indexer, mode Mode, rowOrderLine *RowOrderLine) 
 	}
 
 	line := &ordermodel.OrderLine{
-		OrderID:          0, // will be filled when insert
-		VariantID:        0,
-		ProductName:      rowOrderLine.VariantName,
-		ProductID:        0,
-		ShopID:           0, // will be filled later
-		UpdatedAt:        time.Time{},
-		ClosedAt:         time.Time{},
-		ConfirmedAt:      time.Time{},
-		CancelledAt:      time.Time{},
-		CancelReason:     "",
-		Status:           0,
-		Weight:           0,
-		Quantity:         rowOrderLine.Quantity,
-		WholesalePrice0:  0,
-		WholesalePrice:   0,
-		ListPrice:        0,
-		RetailPrice:      rowOrderLine.RetailPrice,
-		PaymentPrice:     rowOrderLine.PaymentPrice,
-		LineAmount:       rowOrderLine.LineAmount,
-		TotalDiscount:    rowOrderLine.LineAmount - rowOrderLine.LineTotalAmount,
-		TotalLineAmount:  rowOrderLine.LineTotalAmount,
-		RequiresShipping: false,
-		ImageURL:         "",
-		Attributes:       nil,
-		IsOutsideEtop:    false,
-		Code:             rowOrderLine.VariantEdCode,
+		OrderID:         0, // will be filled when insert
+		VariantID:       0,
+		ProductName:     rowOrderLine.VariantName,
+		ProductID:       0,
+		ShopID:          0, // will be filled later
+		Weight:          0,
+		Quantity:        rowOrderLine.Quantity,
+		ListPrice:       0,
+		RetailPrice:     rowOrderLine.RetailPrice,
+		PaymentPrice:    rowOrderLine.PaymentPrice,
+		LineAmount:      rowOrderLine.LineAmount,
+		TotalDiscount:   rowOrderLine.LineAmount - rowOrderLine.LineTotalAmount,
+		TotalLineAmount: rowOrderLine.LineTotalAmount,
+		ImageURL:        "",
+		Attributes:      nil,
+		IsOutsideEtop:   false,
+		Code:            rowOrderLine.VariantEdCode,
 	}
 	if rowOrderLine.VariantExtended != nil {
 		line.ProductID = rowOrderLine.Product.ID

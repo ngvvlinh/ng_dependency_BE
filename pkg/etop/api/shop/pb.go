@@ -29,9 +29,9 @@ func PbEtopVariant(m *catalogmodel.VariantExtended) *pbshop.EtopVariant {
 		RetailPriceMin: 0,
 		RetailPriceMax: 0,
 		Name:           m.GetName(),
-		Description:    coalesce(m.Description, m.EdDescription),
-		ShortDesc:      coalesce(m.ShortDesc, m.EdShortDesc),
-		DescHtml:       coalesce(m.DescHTML, m.EdDescHTML),
+		Description:    m.Description,
+		ShortDesc:      m.ShortDesc,
+		DescHtml:       m.DescHTML,
 		ImageUrls:      coalesceStrings(m.ImageURLs),
 	}
 	return res
@@ -39,15 +39,14 @@ func PbEtopVariant(m *catalogmodel.VariantExtended) *pbshop.EtopVariant {
 
 func PbEtopProduct(m *catalogmodel.ProductFtVariant) *pbshop.EtopProduct {
 	return &pbshop.EtopProduct{
-		Id:         m.Product.ID,
-		CategoryId: m.Product.EtopCategoryID,
+		Id: m.Product.ID,
 
 		ProductSourceCategoryId: m.Product.ProductSourceCategoryID,
 
-		Name:              coalesce(m.Product.EdName, m.Product.Name),
+		Name:              m.Product.Name,
 		Description:       m.Product.Description,
-		ShortDesc:         coalesce(m.EdShortDesc, m.ShortDesc, m.Product.ShortDesc),
-		DescHtml:          coalesce(m.EdDescHTML, m.DescHTML, m.Product.DescHTML),
+		ShortDesc:         coalesce(m.ShortDesc, m.Product.ShortDesc),
+		DescHtml:          coalesce(m.DescHTML, m.Product.DescHTML),
 		ImageUrls:         m.Product.ImageURLs,
 		QuantityAvailable: 100,
 		Code:              m.Product.EdCode, // yes, it's EdCode
@@ -144,9 +143,7 @@ func PbShopProductFtVariant(m *catalogmodel.ShopProductFtVariant) *pbshop.ShopPr
 	}
 
 	res.Info = PbEtopProduct(&catalogmodel.ProductFtVariant{
-		ProductExtended: catalogmodel.ProductExtended{
-			Product: m.Product,
-		},
+		Product: m.Product,
 	})
 	return res
 }

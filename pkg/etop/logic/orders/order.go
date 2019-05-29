@@ -407,8 +407,6 @@ func prepareOrderLine(m *pborder.CreateOrderLine, shopID int64, v *catalogmodel.
 		line.ProductID = sp.Product.ID
 		line.ProductName = model.CoalesceString2(sp.ShopProduct.Name, sp.Product.Name)
 
-		line.WholesalePrice = int(v.WholesalePrice)
-		line.WholesalePrice0 = int(v.WholesalePrice0)
 		line.ListPrice = int(v.ListPrice)
 
 		if len(sp.ShopVariant.ImageURLs) > 0 {
@@ -422,8 +420,6 @@ func prepareOrderLine(m *pborder.CreateOrderLine, shopID int64, v *catalogmodel.
 		if sp.ShopVariant != nil {
 			line.RetailPrice = int(sp.ShopVariant.RetailPrice)
 			originalPrice = sp.ShopVariant.RetailPrice
-		} else {
-			originalPrice = v.WholesalePrice
 		}
 		line.Attributes = v.Attributes
 	}

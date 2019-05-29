@@ -330,34 +330,17 @@ type OrderLine struct {
 	VariantID   int64  `json:"variant_id"`
 	ProductName string `json:"product_name"`
 	ProductID   int64  `json:"product_id"`
+	ShopID      int64  `json:"shop_id"`
 
-	ShopID int64 `json:"shop_id"`
+	Weight       int `json:"weight"`
+	Quantity     int `json:"quantity"`
+	ListPrice    int `json:"list_price"`
+	RetailPrice  int `json:"retail_price"`
+	PaymentPrice int `json:"payment_price"`
 
-	// CreatedAt    time.Time `json:"-"`
-	// CreatedBy    int64     `json:"-"`
-	UpdatedAt time.Time `json:"-" `
-	// UpdatedBy int64     `json:"-"`
-	ClosedAt    time.Time `json:"-" `
-	ConfirmedAt time.Time `json:"-" `
-	// ConfirmedBy  int64     `json:"-"`
-	CancelledAt time.Time `json:"-" `
-	// CancelledBy  int64     `json:"-"`
-	CancelReason string `json:"-"`
-
-	Status model.Status3 `json:"-"`
-
-	Weight          int `json:"weight"`
-	Quantity        int `json:"quantity"`
-	WholesalePrice0 int `json:"wholesale_price_0" sq:"'wholesale_price_0'"`
-	WholesalePrice  int `json:"wholesale_price"`
-	ListPrice       int `json:"list_price"`
-	RetailPrice     int `json:"retail_price"`
-	PaymentPrice    int `json:"payment_price"`
-
-	LineAmount       int  `json:"line_amount"`
-	TotalDiscount    int  `json:"discount"`
-	TotalLineAmount  int  `json:"total_line_amount"`
-	RequiresShipping bool `json:"requires_shipping"`
+	LineAmount      int `json:"line_amount"`
+	TotalDiscount   int `json:"discount"`
+	TotalLineAmount int `json:"total_line_amount"`
 
 	ImageURL      string                          `json:"image_url" `
 	Attributes    []catalogmodel.ProductAttribute `json:"attributes" sq:"-"`
@@ -398,32 +381,23 @@ type OrderLineExtended struct {
 
 func (olExtended *OrderLineExtended) ToOrderLine() *OrderLine {
 	return &OrderLine{
-		OrderID:          olExtended.OrderID,
-		VariantID:        olExtended.VariantID,
-		ProductName:      olExtended.ProductName,
-		ProductID:        olExtended.OrderLine.ProductID,
-		ShopID:           olExtended.OrderLine.ShopID,
-		UpdatedAt:        olExtended.OrderLine.UpdatedAt,
-		ClosedAt:         olExtended.OrderLine.ClosedAt,
-		ConfirmedAt:      olExtended.OrderLine.ConfirmedAt,
-		CancelledAt:      olExtended.OrderLine.CancelledAt,
-		CancelReason:     olExtended.OrderLine.CancelReason,
-		Status:           olExtended.OrderLine.Status,
-		Weight:           olExtended.OrderLine.Weight,
-		Quantity:         olExtended.OrderLine.Quantity,
-		WholesalePrice0:  olExtended.OrderLine.WholesalePrice0,
-		WholesalePrice:   olExtended.OrderLine.WholesalePrice,
-		ListPrice:        olExtended.OrderLine.ListPrice,
-		RetailPrice:      olExtended.OrderLine.RetailPrice,
-		PaymentPrice:     olExtended.OrderLine.PaymentPrice,
-		LineAmount:       olExtended.OrderLine.LineAmount,
-		TotalDiscount:    olExtended.OrderLine.TotalDiscount,
-		TotalLineAmount:  olExtended.OrderLine.TotalLineAmount,
-		RequiresShipping: olExtended.OrderLine.RequiresShipping,
-		ImageURL:         olExtended.OrderLine.ImageURL,
-		Attributes:       olExtended.Variant.Attributes,
-		IsOutsideEtop:    olExtended.OrderLine.IsOutsideEtop,
-		Code:             olExtended.OrderLine.Code,
+		OrderID:         olExtended.OrderID,
+		VariantID:       olExtended.VariantID,
+		ProductName:     olExtended.ProductName,
+		ProductID:       olExtended.OrderLine.ProductID,
+		ShopID:          olExtended.OrderLine.ShopID,
+		Weight:          olExtended.OrderLine.Weight,
+		Quantity:        olExtended.OrderLine.Quantity,
+		ListPrice:       olExtended.OrderLine.ListPrice,
+		RetailPrice:     olExtended.OrderLine.RetailPrice,
+		PaymentPrice:    olExtended.OrderLine.PaymentPrice,
+		LineAmount:      olExtended.OrderLine.LineAmount,
+		TotalDiscount:   olExtended.OrderLine.TotalDiscount,
+		TotalLineAmount: olExtended.OrderLine.TotalLineAmount,
+		ImageURL:        olExtended.OrderLine.ImageURL,
+		Attributes:      olExtended.Variant.Attributes,
+		IsOutsideEtop:   olExtended.OrderLine.IsOutsideEtop,
+		Code:            olExtended.OrderLine.Code,
 	}
 }
 

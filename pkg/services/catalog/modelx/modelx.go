@@ -112,11 +112,6 @@ type UpdateVariantImagesCommand struct {
 	Result *catalogmodel.VariantExtended
 }
 
-type UpdateVariantPriceCommand struct {
-	VariantID int64
-	PriceDef  *catalogmodel.PriceDef
-}
-
 type UpdateProductsCommand struct {
 	Products []*catalogmodel.Product
 

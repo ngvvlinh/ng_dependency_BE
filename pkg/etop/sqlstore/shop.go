@@ -304,8 +304,6 @@ func CreateVariant(ctx context.Context, cmd *catalogmodelx.CreateVariantCommand)
 		ShortDesc:   cmd.ShortDesc,
 		Description: cmd.Description,
 		Status:      model.StatusActive,
-		EdStatus:    model.StatusActive,
-		EtopStatus:  model.StatusActive,
 		EdCode:      cmd.SKU,
 		ListPrice:   cmd.ListPrice,
 		ImageURLs:   cmd.ImageURLs,

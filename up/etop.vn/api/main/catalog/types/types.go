@@ -1,11 +1,10 @@
 package types
 
-type Attribute struct {
-	Name  string
-	Value string
-}
+import catalogv1types "etop.vn/api/main/catalog/v1/types"
 
-type Attributes []Attribute
+type Attribute = catalogv1types.Attribute
+
+type Attributes []*Attribute
 
 func (attrs Attributes) Name() string {
 	if len(attrs) == 0 {

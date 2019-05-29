@@ -952,7 +952,7 @@ func sqlgenOrderLine(_ *OrderLine) bool { return true }
 type OrderLines []*OrderLine
 
 const __sqlOrderLine_Table = "order_line"
-const __sqlOrderLine_ListCols = "\"order_id\",\"variant_id\",\"product_name\",\"product_id\",\"shop_id\",\"updated_at\",\"closed_at\",\"confirmed_at\",\"cancelled_at\",\"cancel_reason\",\"status\",\"weight\",\"quantity\",\"wholesale_price_0\",\"wholesale_price\",\"list_price\",\"retail_price\",\"payment_price\",\"line_amount\",\"total_discount\",\"total_line_amount\",\"requires_shipping\",\"image_url\",\"is_outside_etop\",\"code\""
+const __sqlOrderLine_ListCols = "\"order_id\",\"variant_id\",\"product_name\",\"product_id\",\"shop_id\",\"weight\",\"quantity\",\"list_price\",\"retail_price\",\"payment_price\",\"line_amount\",\"total_discount\",\"total_line_amount\",\"image_url\",\"is_outside_etop\",\"code\""
 const __sqlOrderLine_Insert = "INSERT INTO \"order_line\" (" + __sqlOrderLine_ListCols + ") VALUES"
 const __sqlOrderLine_Select = "SELECT " + __sqlOrderLine_ListCols + " FROM \"order_line\""
 const __sqlOrderLine_Select_history = "SELECT " + __sqlOrderLine_ListCols + " FROM history.\"order_line\""
@@ -969,23 +969,14 @@ func (m *OrderLine) SQLArgs(opts core.Opts, create bool) []interface{} {
 		core.String(m.ProductName),
 		core.Int64(m.ProductID),
 		core.Int64(m.ShopID),
-		core.Time(m.UpdatedAt),
-		core.Time(m.ClosedAt),
-		core.Time(m.ConfirmedAt),
-		core.Time(m.CancelledAt),
-		core.String(m.CancelReason),
-		core.Int(m.Status),
 		core.Int(m.Weight),
 		core.Int(m.Quantity),
-		core.Int(m.WholesalePrice0),
-		core.Int(m.WholesalePrice),
 		core.Int(m.ListPrice),
 		core.Int(m.RetailPrice),
 		core.Int(m.PaymentPrice),
 		core.Int(m.LineAmount),
 		core.Int(m.TotalDiscount),
 		core.Int(m.TotalLineAmount),
-		core.Bool(m.RequiresShipping),
 		core.String(m.ImageURL),
 		core.Bool(m.IsOutsideEtop),
 		core.String(m.Code),
@@ -999,23 +990,14 @@ func (m *OrderLine) SQLScanArgs(opts core.Opts) []interface{} {
 		(*core.String)(&m.ProductName),
 		(*core.Int64)(&m.ProductID),
 		(*core.Int64)(&m.ShopID),
-		(*core.Time)(&m.UpdatedAt),
-		(*core.Time)(&m.ClosedAt),
-		(*core.Time)(&m.ConfirmedAt),
-		(*core.Time)(&m.CancelledAt),
-		(*core.String)(&m.CancelReason),
-		(*core.Int)(&m.Status),
 		(*core.Int)(&m.Weight),
 		(*core.Int)(&m.Quantity),
-		(*core.Int)(&m.WholesalePrice0),
-		(*core.Int)(&m.WholesalePrice),
 		(*core.Int)(&m.ListPrice),
 		(*core.Int)(&m.RetailPrice),
 		(*core.Int)(&m.PaymentPrice),
 		(*core.Int)(&m.LineAmount),
 		(*core.Int)(&m.TotalDiscount),
 		(*core.Int)(&m.TotalLineAmount),
-		(*core.Bool)(&m.RequiresShipping),
 		(*core.String)(&m.ImageURL),
 		(*core.Bool)(&m.IsOutsideEtop),
 		(*core.String)(&m.Code),
@@ -1056,7 +1038,7 @@ func (_ *OrderLines) SQLSelect(w SQLWriter) error {
 func (m *OrderLine) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlOrderLine_Insert)
 	w.WriteRawString(" (")
-	w.WriteMarkers(25)
+	w.WriteMarkers(16)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), true))
 	return nil
@@ -1066,7 +1048,7 @@ func (ms OrderLines) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlOrderLine_Insert)
 	w.WriteRawString(" (")
 	for i := 0; i < len(ms); i++ {
-		w.WriteMarkers(25)
+		w.WriteMarkers(16)
 		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
 		w.WriteRawString("),(")
 	}
@@ -1121,54 +1103,6 @@ func (m *OrderLine) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(m.ShopID)
 	}
-	if !m.UpdatedAt.IsZero() {
-		flag = true
-		w.WriteName("updated_at")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(m.UpdatedAt)
-	}
-	if !m.ClosedAt.IsZero() {
-		flag = true
-		w.WriteName("closed_at")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(m.ClosedAt)
-	}
-	if !m.ConfirmedAt.IsZero() {
-		flag = true
-		w.WriteName("confirmed_at")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(m.ConfirmedAt)
-	}
-	if !m.CancelledAt.IsZero() {
-		flag = true
-		w.WriteName("cancelled_at")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(m.CancelledAt)
-	}
-	if m.CancelReason != "" {
-		flag = true
-		w.WriteName("cancel_reason")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(m.CancelReason)
-	}
-	if m.Status != 0 {
-		flag = true
-		w.WriteName("status")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(int(m.Status))
-	}
 	if m.Weight != 0 {
 		flag = true
 		w.WriteName("weight")
@@ -1184,22 +1118,6 @@ func (m *OrderLine) SQLUpdate(w SQLWriter) error {
 		w.WriteMarker()
 		w.WriteByte(',')
 		w.WriteArg(m.Quantity)
-	}
-	if m.WholesalePrice0 != 0 {
-		flag = true
-		w.WriteName("wholesale_price_0")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(m.WholesalePrice0)
-	}
-	if m.WholesalePrice != 0 {
-		flag = true
-		w.WriteName("wholesale_price")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(m.WholesalePrice)
 	}
 	if m.ListPrice != 0 {
 		flag = true
@@ -1249,14 +1167,6 @@ func (m *OrderLine) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(m.TotalLineAmount)
 	}
-	if m.RequiresShipping {
-		flag = true
-		w.WriteName("requires_shipping")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(m.RequiresShipping)
-	}
 	if m.ImageURL != "" {
 		flag = true
 		w.WriteName("image_url")
@@ -1291,7 +1201,7 @@ func (m *OrderLine) SQLUpdate(w SQLWriter) error {
 func (m *OrderLine) SQLUpdateAll(w SQLWriter) error {
 	w.WriteQueryString(__sqlOrderLine_UpdateAll)
 	w.WriteRawString(" = (")
-	w.WriteMarkers(25)
+	w.WriteMarkers(16)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), false))
 	return nil
@@ -1313,81 +1223,59 @@ func (m OrderLineHistories) SQLSelect(w SQLWriter) error {
 	return nil
 }
 
-func (m OrderLineHistory) OrderID() core.Interface      { return core.Interface{m["order_id"]} }
-func (m OrderLineHistory) VariantID() core.Interface    { return core.Interface{m["variant_id"]} }
-func (m OrderLineHistory) ProductName() core.Interface  { return core.Interface{m["product_name"]} }
-func (m OrderLineHistory) ProductID() core.Interface    { return core.Interface{m["product_id"]} }
-func (m OrderLineHistory) ShopID() core.Interface       { return core.Interface{m["shop_id"]} }
-func (m OrderLineHistory) UpdatedAt() core.Interface    { return core.Interface{m["updated_at"]} }
-func (m OrderLineHistory) ClosedAt() core.Interface     { return core.Interface{m["closed_at"]} }
-func (m OrderLineHistory) ConfirmedAt() core.Interface  { return core.Interface{m["confirmed_at"]} }
-func (m OrderLineHistory) CancelledAt() core.Interface  { return core.Interface{m["cancelled_at"]} }
-func (m OrderLineHistory) CancelReason() core.Interface { return core.Interface{m["cancel_reason"]} }
-func (m OrderLineHistory) Status() core.Interface       { return core.Interface{m["status"]} }
-func (m OrderLineHistory) Weight() core.Interface       { return core.Interface{m["weight"]} }
-func (m OrderLineHistory) Quantity() core.Interface     { return core.Interface{m["quantity"]} }
-func (m OrderLineHistory) WholesalePrice0() core.Interface {
-	return core.Interface{m["wholesale_price_0"]}
-}
-func (m OrderLineHistory) WholesalePrice() core.Interface { return core.Interface{m["wholesale_price"]} }
-func (m OrderLineHistory) ListPrice() core.Interface      { return core.Interface{m["list_price"]} }
-func (m OrderLineHistory) RetailPrice() core.Interface    { return core.Interface{m["retail_price"]} }
-func (m OrderLineHistory) PaymentPrice() core.Interface   { return core.Interface{m["payment_price"]} }
-func (m OrderLineHistory) LineAmount() core.Interface     { return core.Interface{m["line_amount"]} }
-func (m OrderLineHistory) TotalDiscount() core.Interface  { return core.Interface{m["total_discount"]} }
+func (m OrderLineHistory) OrderID() core.Interface       { return core.Interface{m["order_id"]} }
+func (m OrderLineHistory) VariantID() core.Interface     { return core.Interface{m["variant_id"]} }
+func (m OrderLineHistory) ProductName() core.Interface   { return core.Interface{m["product_name"]} }
+func (m OrderLineHistory) ProductID() core.Interface     { return core.Interface{m["product_id"]} }
+func (m OrderLineHistory) ShopID() core.Interface        { return core.Interface{m["shop_id"]} }
+func (m OrderLineHistory) Weight() core.Interface        { return core.Interface{m["weight"]} }
+func (m OrderLineHistory) Quantity() core.Interface      { return core.Interface{m["quantity"]} }
+func (m OrderLineHistory) ListPrice() core.Interface     { return core.Interface{m["list_price"]} }
+func (m OrderLineHistory) RetailPrice() core.Interface   { return core.Interface{m["retail_price"]} }
+func (m OrderLineHistory) PaymentPrice() core.Interface  { return core.Interface{m["payment_price"]} }
+func (m OrderLineHistory) LineAmount() core.Interface    { return core.Interface{m["line_amount"]} }
+func (m OrderLineHistory) TotalDiscount() core.Interface { return core.Interface{m["total_discount"]} }
 func (m OrderLineHistory) TotalLineAmount() core.Interface {
 	return core.Interface{m["total_line_amount"]}
-}
-func (m OrderLineHistory) RequiresShipping() core.Interface {
-	return core.Interface{m["requires_shipping"]}
 }
 func (m OrderLineHistory) ImageURL() core.Interface      { return core.Interface{m["image_url"]} }
 func (m OrderLineHistory) IsOutsideEtop() core.Interface { return core.Interface{m["is_outside_etop"]} }
 func (m OrderLineHistory) Code() core.Interface          { return core.Interface{m["code"]} }
 
 func (m *OrderLineHistory) SQLScan(opts core.Opts, row *sql.Row) error {
-	data := make([]interface{}, 25)
-	args := make([]interface{}, 25)
-	for i := 0; i < 25; i++ {
+	data := make([]interface{}, 16)
+	args := make([]interface{}, 16)
+	for i := 0; i < 16; i++ {
 		args[i] = &data[i]
 	}
 	if err := row.Scan(args...); err != nil {
 		return err
 	}
-	res := make(OrderLineHistory, 25)
+	res := make(OrderLineHistory, 16)
 	res["order_id"] = data[0]
 	res["variant_id"] = data[1]
 	res["product_name"] = data[2]
 	res["product_id"] = data[3]
 	res["shop_id"] = data[4]
-	res["updated_at"] = data[5]
-	res["closed_at"] = data[6]
-	res["confirmed_at"] = data[7]
-	res["cancelled_at"] = data[8]
-	res["cancel_reason"] = data[9]
-	res["status"] = data[10]
-	res["weight"] = data[11]
-	res["quantity"] = data[12]
-	res["wholesale_price_0"] = data[13]
-	res["wholesale_price"] = data[14]
-	res["list_price"] = data[15]
-	res["retail_price"] = data[16]
-	res["payment_price"] = data[17]
-	res["line_amount"] = data[18]
-	res["total_discount"] = data[19]
-	res["total_line_amount"] = data[20]
-	res["requires_shipping"] = data[21]
-	res["image_url"] = data[22]
-	res["is_outside_etop"] = data[23]
-	res["code"] = data[24]
+	res["weight"] = data[5]
+	res["quantity"] = data[6]
+	res["list_price"] = data[7]
+	res["retail_price"] = data[8]
+	res["payment_price"] = data[9]
+	res["line_amount"] = data[10]
+	res["total_discount"] = data[11]
+	res["total_line_amount"] = data[12]
+	res["image_url"] = data[13]
+	res["is_outside_etop"] = data[14]
+	res["code"] = data[15]
 	*m = res
 	return nil
 }
 
 func (ms *OrderLineHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	data := make([]interface{}, 25)
-	args := make([]interface{}, 25)
-	for i := 0; i < 25; i++ {
+	data := make([]interface{}, 16)
+	args := make([]interface{}, 16)
+	for i := 0; i < 16; i++ {
 		args[i] = &data[i]
 	}
 	res := make(OrderLineHistories, 0, 128)
@@ -1401,26 +1289,17 @@ func (ms *OrderLineHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
 		m["product_name"] = data[2]
 		m["product_id"] = data[3]
 		m["shop_id"] = data[4]
-		m["updated_at"] = data[5]
-		m["closed_at"] = data[6]
-		m["confirmed_at"] = data[7]
-		m["cancelled_at"] = data[8]
-		m["cancel_reason"] = data[9]
-		m["status"] = data[10]
-		m["weight"] = data[11]
-		m["quantity"] = data[12]
-		m["wholesale_price_0"] = data[13]
-		m["wholesale_price"] = data[14]
-		m["list_price"] = data[15]
-		m["retail_price"] = data[16]
-		m["payment_price"] = data[17]
-		m["line_amount"] = data[18]
-		m["total_discount"] = data[19]
-		m["total_line_amount"] = data[20]
-		m["requires_shipping"] = data[21]
-		m["image_url"] = data[22]
-		m["is_outside_etop"] = data[23]
-		m["code"] = data[24]
+		m["weight"] = data[5]
+		m["quantity"] = data[6]
+		m["list_price"] = data[7]
+		m["retail_price"] = data[8]
+		m["payment_price"] = data[9]
+		m["line_amount"] = data[10]
+		m["total_discount"] = data[11]
+		m["total_line_amount"] = data[12]
+		m["image_url"] = data[13]
+		m["is_outside_etop"] = data[14]
+		m["code"] = data[15]
 		res = append(res, m)
 	}
 	if err := rows.Err(); err != nil {

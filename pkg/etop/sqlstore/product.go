@@ -31,7 +31,6 @@ func init() {
 		RemoveShopVariants,
 		UpdateProduct,
 		UpdateVariantImages,
-		UpdateVariantPrice,
 		UpdateVariants,
 		UpdateProductsEtopCategory,
 		UpdateShopVariant,
@@ -130,7 +129,7 @@ func GetProduct(ctx context.Context, query *catalogmodelx.GetProductQuery) error
 	}
 
 	s := x.Table("product").Where("p.deleted_at is NULL")
-	p := new(catalogmodel.ProductExtended)
+	p := new(catalogmodel.Product)
 	has, err := s.Where("p.id = ?", query.ProductID).Get(p)
 	if err != nil {
 		return err
@@ -139,14 +138,14 @@ func GetProduct(ctx context.Context, query *catalogmodelx.GetProductQuery) error
 		return cm.Error(cm.NotFound, "", nil)
 	}
 
-	variants, err := GetVariantByProductIDs([]int64{p.Product.ID}, []cm.Filter{})
+	variants, err := GetVariantByProductIDs([]int64{p.ID}, []cm.Filter{})
 	if err != nil {
 		return err
 	}
 
 	query.Result = &catalogmodel.ProductFtVariant{
-		ProductExtended: *p,
-		Variants:        variants,
+		Product:  p,
+		Variants: variants,
 	}
 	return nil
 }
@@ -173,7 +172,7 @@ func GetProductsExtended(ctx context.Context, query *catalogmodelx.GetProductsEx
 		return err
 	}
 
-	var products []*catalogmodel.ProductExtended
+	var products []*catalogmodel.Product
 	if query.Paging != nil && len(query.Paging.Sort) == 0 {
 		query.Paging.Sort = []string{"-updated_at"}
 	}
@@ -186,12 +185,12 @@ func GetProductsExtended(ctx context.Context, query *catalogmodelx.GetProductsEx
 		if query.IDs != nil {
 			s2 = s2.In("p.id", query.IDs)
 		}
-		if err := s2.Find((*catalogmodel.ProductExtendeds)(&products)); err != nil {
+		if err := s2.Find((*catalogmodel.Products)(&products)); err != nil {
 			return err
 		}
 	}
 	{
-		total, err := s.Count(&catalogmodel.ProductExtended{})
+		total, err := s.Count(&catalogmodel.Product{})
 		if err != nil {
 			return err
 		}
@@ -200,7 +199,7 @@ func GetProductsExtended(ctx context.Context, query *catalogmodelx.GetProductsEx
 
 	productIDs := make([]int64, len(products))
 	for i, p := range products {
-		productIDs[i] = p.Product.ID
+		productIDs[i] = p.ID
 	}
 	variants, err := GetVariantByProductIDs(productIDs, filtersVariant)
 	if err != nil {
@@ -216,8 +215,8 @@ func GetProductsExtended(ctx context.Context, query *catalogmodelx.GetProductsEx
 
 	for i, p := range products {
 		result[i] = &catalogmodel.ProductFtVariant{
-			ProductExtended: *p,
-			Variants:        hashProductVariant[p.Product.ID],
+			Product:  p,
+			Variants: hashProductVariant[p.ID],
 		}
 	}
 
@@ -391,24 +390,6 @@ func UpdateProductImages(ctx context.Context, cmd *catalogmodelx.UpdateProductIm
 	}
 
 	cmd.Result = query.Result
-	return nil
-}
-
-func UpdateVariantPrice(ctx context.Context, cmd *catalogmodelx.UpdateVariantPriceCommand) error {
-	if cmd.VariantID == 0 {
-		return cm.Error(cm.InvalidArgument, "Missing VariantID", nil)
-	}
-
-	// Always update price even if price is 0
-	if updated, err := x.
-		Table("variant").
-		Where("id = ?", cmd.VariantID).
-		UpdateAll().
-		Update(cmd.PriceDef); err != nil {
-		return err
-	} else if updated == 0 {
-		return cm.Error(cm.NotFound, "", nil)
-	}
 	return nil
 }
 
@@ -753,9 +734,9 @@ func buildShopVariant(v *catalogmodel.Variant, sv *catalogmodel.ShopVariant) *ca
 	return &catalogmodel.ShopVariant{
 		VariantID:   v.ID,
 		Name:        v.GetName(),
-		Description: cm.Coalesce(sv.Description, v.Description, v.EdDescription),
-		DescHTML:    cm.Coalesce(sv.DescHTML, v.DescHTML, v.EdDescHTML),
-		ShortDesc:   cm.Coalesce(sv.ShortDesc, v.ShortDesc, v.EdShortDesc),
+		Description: cm.Coalesce(sv.Description, v.Description),
+		DescHTML:    cm.Coalesce(sv.DescHTML, v.DescHTML),
+		ShortDesc:   cm.Coalesce(sv.ShortDesc, v.ShortDesc),
 		ImageURLs:   cm.CoalesceStrings(sv.ImageURLs, v.ImageURLs),
 		Note:        sv.Note,
 		RetailPrice: cm.CoalesceInt(sv.RetailPrice, v.ListPrice),
@@ -1234,9 +1215,9 @@ func convertVariantToShopVariant(shopID int64, v *catalogmodel.Variant) *catalog
 		ShopID:      shopID,
 		VariantID:   v.ID,
 		Name:        v.GetName(),
-		Description: cm.Coalesce(v.Description, v.EdDescription),
-		DescHTML:    cm.Coalesce(v.DescHTML, v.EdDescHTML),
-		ShortDesc:   cm.Coalesce(v.ShortDesc, v.EdShortDesc),
+		Description: v.Description,
+		DescHTML:    v.DescHTML,
+		ShortDesc:   v.ShortDesc,
 		ImageURLs:   v.ImageURLs,
 		Note:        "",
 		RetailPrice: v.ListPrice,
@@ -1247,10 +1228,10 @@ func convertVariantToShopVariant(shopID int64, v *catalogmodel.Variant) *catalog
 func ConvertProductToShopProduct(p *catalogmodel.Product) *catalogmodel.ShopProduct {
 	return &catalogmodel.ShopProduct{
 		ProductID:   p.ID,
-		Name:        cm.Coalesce(p.Name, p.EdName),
-		Description: cm.Coalesce(p.Description, p.EdDescription),
-		DescHTML:    cm.Coalesce(p.DescHTML, p.EdDescHTML),
-		ShortDesc:   cm.Coalesce(p.ShortDesc, p.EdShortDesc),
+		Name:        p.Name,
+		Description: p.Description,
+		DescHTML:    p.DescHTML,
+		ShortDesc:   p.ShortDesc,
 		ImageURLs:   p.ImageURLs,
 		Status:      p.Status,
 	}

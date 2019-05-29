@@ -5,7 +5,7 @@ package sqlstore
 import (
 	"time"
 
-	sq "etop.vn/backend/pkg/common/sql"
+	"etop.vn/backend/pkg/common/sql"
 	"etop.vn/backend/pkg/etop/model"
 )
 
@@ -15,16 +15,16 @@ func NewProductFilters(prefix string) ProductFilters {
 	return ProductFilters{prefix}
 }
 
-func (ft ProductFilters) Filter(pred string, args ...interface{}) sq.WriterTo {
-	return sq.Filter(ft.prefix, pred, args...)
+func (ft ProductFilters) Filter(pred string, args ...interface{}) sql.WriterTo {
+	return sql.Filter(ft.prefix, pred, args...)
 }
 
 func (ft ProductFilters) Prefix() string {
 	return ft.prefix
 }
 
-func (ft ProductFilters) ByID(ID int64) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
+func (ft ProductFilters) ByID(ID int64) *sql.ColumnFilter {
+	return &sql.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "id",
 		Value:  ID,
@@ -32,8 +32,8 @@ func (ft ProductFilters) ByID(ID int64) *sq.ColumnFilter {
 	}
 }
 
-func (ft ProductFilters) ByIDPtr(ID *int64) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
+func (ft ProductFilters) ByIDPtr(ID *int64) *sql.ColumnFilterPtr {
+	return &sql.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "id",
 		Value:  ID,
@@ -42,8 +42,8 @@ func (ft ProductFilters) ByIDPtr(ID *int64) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft ProductFilters) ByProductSourceID(ProductSourceID int64) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
+func (ft ProductFilters) ByProductSourceID(ProductSourceID int64) *sql.ColumnFilter {
+	return &sql.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "product_source_id",
 		Value:  ProductSourceID,
@@ -51,8 +51,8 @@ func (ft ProductFilters) ByProductSourceID(ProductSourceID int64) *sq.ColumnFilt
 	}
 }
 
-func (ft ProductFilters) ByProductSourceIDPtr(ProductSourceID *int64) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
+func (ft ProductFilters) ByProductSourceIDPtr(ProductSourceID *int64) *sql.ColumnFilterPtr {
+	return &sql.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "product_source_id",
 		Value:  ProductSourceID,
@@ -61,8 +61,8 @@ func (ft ProductFilters) ByProductSourceIDPtr(ProductSourceID *int64) *sq.Column
 	}
 }
 
-func (ft ProductFilters) ByProductSourceCategoryID(ProductSourceCategoryID string) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
+func (ft ProductFilters) ByProductSourceCategoryID(ProductSourceCategoryID string) *sql.ColumnFilter {
+	return &sql.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "product_source_category_id",
 		Value:  ProductSourceCategoryID,
@@ -70,8 +70,8 @@ func (ft ProductFilters) ByProductSourceCategoryID(ProductSourceCategoryID strin
 	}
 }
 
-func (ft ProductFilters) ByProductSourceCategoryIDPtr(ProductSourceCategoryID *string) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
+func (ft ProductFilters) ByProductSourceCategoryIDPtr(ProductSourceCategoryID *string) *sql.ColumnFilterPtr {
+	return &sql.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "product_source_category_id",
 		Value:  ProductSourceCategoryID,
@@ -80,27 +80,8 @@ func (ft ProductFilters) ByProductSourceCategoryIDPtr(ProductSourceCategoryID *s
 	}
 }
 
-func (ft ProductFilters) ByEtopCategoryID(EtopCategoryID int64) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
-		Prefix: &ft.prefix,
-		Column: "etop_category_id",
-		Value:  EtopCategoryID,
-		IsNil:  EtopCategoryID == 0,
-	}
-}
-
-func (ft ProductFilters) ByEtopCategoryIDPtr(EtopCategoryID *int64) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
-		Prefix: &ft.prefix,
-		Column: "etop_category_id",
-		Value:  EtopCategoryID,
-		IsNil:  EtopCategoryID == nil,
-		IsZero: EtopCategoryID != nil && (*EtopCategoryID) == 0,
-	}
-}
-
-func (ft ProductFilters) ByName(Name string) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
+func (ft ProductFilters) ByName(Name string) *sql.ColumnFilter {
+	return &sql.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "name",
 		Value:  Name,
@@ -108,8 +89,8 @@ func (ft ProductFilters) ByName(Name string) *sq.ColumnFilter {
 	}
 }
 
-func (ft ProductFilters) ByNamePtr(Name *string) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
+func (ft ProductFilters) ByNamePtr(Name *string) *sql.ColumnFilterPtr {
+	return &sql.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "name",
 		Value:  Name,
@@ -118,8 +99,8 @@ func (ft ProductFilters) ByNamePtr(Name *string) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft ProductFilters) ByShortDesc(ShortDesc string) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
+func (ft ProductFilters) ByShortDesc(ShortDesc string) *sql.ColumnFilter {
+	return &sql.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "short_desc",
 		Value:  ShortDesc,
@@ -127,8 +108,8 @@ func (ft ProductFilters) ByShortDesc(ShortDesc string) *sq.ColumnFilter {
 	}
 }
 
-func (ft ProductFilters) ByShortDescPtr(ShortDesc *string) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
+func (ft ProductFilters) ByShortDescPtr(ShortDesc *string) *sql.ColumnFilterPtr {
+	return &sql.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "short_desc",
 		Value:  ShortDesc,
@@ -137,8 +118,8 @@ func (ft ProductFilters) ByShortDescPtr(ShortDesc *string) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft ProductFilters) ByDescription(Description string) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
+func (ft ProductFilters) ByDescription(Description string) *sql.ColumnFilter {
+	return &sql.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "description",
 		Value:  Description,
@@ -146,8 +127,8 @@ func (ft ProductFilters) ByDescription(Description string) *sq.ColumnFilter {
 	}
 }
 
-func (ft ProductFilters) ByDescriptionPtr(Description *string) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
+func (ft ProductFilters) ByDescriptionPtr(Description *string) *sql.ColumnFilterPtr {
+	return &sql.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "description",
 		Value:  Description,
@@ -156,8 +137,8 @@ func (ft ProductFilters) ByDescriptionPtr(Description *string) *sq.ColumnFilterP
 	}
 }
 
-func (ft ProductFilters) ByDescHTML(DescHTML string) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
+func (ft ProductFilters) ByDescHTML(DescHTML string) *sql.ColumnFilter {
+	return &sql.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "desc_html",
 		Value:  DescHTML,
@@ -165,8 +146,8 @@ func (ft ProductFilters) ByDescHTML(DescHTML string) *sq.ColumnFilter {
 	}
 }
 
-func (ft ProductFilters) ByDescHTMLPtr(DescHTML *string) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
+func (ft ProductFilters) ByDescHTMLPtr(DescHTML *string) *sql.ColumnFilterPtr {
+	return &sql.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "desc_html",
 		Value:  DescHTML,
@@ -175,84 +156,8 @@ func (ft ProductFilters) ByDescHTMLPtr(DescHTML *string) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft ProductFilters) ByEdName(EdName string) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
-		Prefix: &ft.prefix,
-		Column: "ed_name",
-		Value:  EdName,
-		IsNil:  EdName == "",
-	}
-}
-
-func (ft ProductFilters) ByEdNamePtr(EdName *string) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
-		Prefix: &ft.prefix,
-		Column: "ed_name",
-		Value:  EdName,
-		IsNil:  EdName == nil,
-		IsZero: EdName != nil && (*EdName) == "",
-	}
-}
-
-func (ft ProductFilters) ByEdShortDesc(EdShortDesc string) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
-		Prefix: &ft.prefix,
-		Column: "ed_short_desc",
-		Value:  EdShortDesc,
-		IsNil:  EdShortDesc == "",
-	}
-}
-
-func (ft ProductFilters) ByEdShortDescPtr(EdShortDesc *string) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
-		Prefix: &ft.prefix,
-		Column: "ed_short_desc",
-		Value:  EdShortDesc,
-		IsNil:  EdShortDesc == nil,
-		IsZero: EdShortDesc != nil && (*EdShortDesc) == "",
-	}
-}
-
-func (ft ProductFilters) ByEdDescription(EdDescription string) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
-		Prefix: &ft.prefix,
-		Column: "ed_description",
-		Value:  EdDescription,
-		IsNil:  EdDescription == "",
-	}
-}
-
-func (ft ProductFilters) ByEdDescriptionPtr(EdDescription *string) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
-		Prefix: &ft.prefix,
-		Column: "ed_description",
-		Value:  EdDescription,
-		IsNil:  EdDescription == nil,
-		IsZero: EdDescription != nil && (*EdDescription) == "",
-	}
-}
-
-func (ft ProductFilters) ByEdDescHTML(EdDescHTML string) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
-		Prefix: &ft.prefix,
-		Column: "ed_desc_html",
-		Value:  EdDescHTML,
-		IsNil:  EdDescHTML == "",
-	}
-}
-
-func (ft ProductFilters) ByEdDescHTMLPtr(EdDescHTML *string) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
-		Prefix: &ft.prefix,
-		Column: "ed_desc_html",
-		Value:  EdDescHTML,
-		IsNil:  EdDescHTML == nil,
-		IsZero: EdDescHTML != nil && (*EdDescHTML) == "",
-	}
-}
-
-func (ft ProductFilters) ByUnit(Unit string) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
+func (ft ProductFilters) ByUnit(Unit string) *sql.ColumnFilter {
+	return &sql.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "unit",
 		Value:  Unit,
@@ -260,8 +165,8 @@ func (ft ProductFilters) ByUnit(Unit string) *sq.ColumnFilter {
 	}
 }
 
-func (ft ProductFilters) ByUnitPtr(Unit *string) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
+func (ft ProductFilters) ByUnitPtr(Unit *string) *sql.ColumnFilterPtr {
+	return &sql.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "unit",
 		Value:  Unit,
@@ -270,8 +175,8 @@ func (ft ProductFilters) ByUnitPtr(Unit *string) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft ProductFilters) ByStatus(Status model.Status3) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
+func (ft ProductFilters) ByStatus(Status model.Status3) *sql.ColumnFilter {
+	return &sql.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "status",
 		Value:  Status,
@@ -279,8 +184,8 @@ func (ft ProductFilters) ByStatus(Status model.Status3) *sq.ColumnFilter {
 	}
 }
 
-func (ft ProductFilters) ByStatusPtr(Status *model.Status3) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
+func (ft ProductFilters) ByStatusPtr(Status *model.Status3) *sql.ColumnFilterPtr {
+	return &sql.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "status",
 		Value:  Status,
@@ -289,27 +194,8 @@ func (ft ProductFilters) ByStatusPtr(Status *model.Status3) *sq.ColumnFilterPtr 
 	}
 }
 
-func (ft ProductFilters) ByCode(Code string) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
-		Prefix: &ft.prefix,
-		Column: "code",
-		Value:  Code,
-		IsNil:  Code == "",
-	}
-}
-
-func (ft ProductFilters) ByCodePtr(Code *string) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
-		Prefix: &ft.prefix,
-		Column: "code",
-		Value:  Code,
-		IsNil:  Code == nil,
-		IsZero: Code != nil && (*Code) == "",
-	}
-}
-
-func (ft ProductFilters) ByEdCode(EdCode string) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
+func (ft ProductFilters) ByEdCode(EdCode string) *sql.ColumnFilter {
+	return &sql.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "ed_code",
 		Value:  EdCode,
@@ -317,8 +203,8 @@ func (ft ProductFilters) ByEdCode(EdCode string) *sq.ColumnFilter {
 	}
 }
 
-func (ft ProductFilters) ByEdCodePtr(EdCode *string) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
+func (ft ProductFilters) ByEdCodePtr(EdCode *string) *sql.ColumnFilterPtr {
+	return &sql.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "ed_code",
 		Value:  EdCode,
@@ -327,8 +213,8 @@ func (ft ProductFilters) ByEdCodePtr(EdCode *string) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft ProductFilters) ByCreatedAt(CreatedAt time.Time) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
+func (ft ProductFilters) ByCreatedAt(CreatedAt time.Time) *sql.ColumnFilter {
+	return &sql.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "created_at",
 		Value:  CreatedAt,
@@ -336,8 +222,8 @@ func (ft ProductFilters) ByCreatedAt(CreatedAt time.Time) *sq.ColumnFilter {
 	}
 }
 
-func (ft ProductFilters) ByCreatedAtPtr(CreatedAt *time.Time) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
+func (ft ProductFilters) ByCreatedAtPtr(CreatedAt *time.Time) *sql.ColumnFilterPtr {
+	return &sql.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "created_at",
 		Value:  CreatedAt,
@@ -346,8 +232,8 @@ func (ft ProductFilters) ByCreatedAtPtr(CreatedAt *time.Time) *sq.ColumnFilterPt
 	}
 }
 
-func (ft ProductFilters) ByUpdatedAt(UpdatedAt time.Time) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
+func (ft ProductFilters) ByUpdatedAt(UpdatedAt time.Time) *sql.ColumnFilter {
+	return &sql.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "updated_at",
 		Value:  UpdatedAt,
@@ -355,8 +241,8 @@ func (ft ProductFilters) ByUpdatedAt(UpdatedAt time.Time) *sq.ColumnFilter {
 	}
 }
 
-func (ft ProductFilters) ByUpdatedAtPtr(UpdatedAt *time.Time) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
+func (ft ProductFilters) ByUpdatedAtPtr(UpdatedAt *time.Time) *sql.ColumnFilterPtr {
+	return &sql.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "updated_at",
 		Value:  UpdatedAt,
@@ -365,8 +251,8 @@ func (ft ProductFilters) ByUpdatedAtPtr(UpdatedAt *time.Time) *sq.ColumnFilterPt
 	}
 }
 
-func (ft ProductFilters) ByNameNorm(NameNorm string) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
+func (ft ProductFilters) ByNameNorm(NameNorm string) *sql.ColumnFilter {
+	return &sql.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "name_norm",
 		Value:  NameNorm,
@@ -374,8 +260,8 @@ func (ft ProductFilters) ByNameNorm(NameNorm string) *sq.ColumnFilter {
 	}
 }
 
-func (ft ProductFilters) ByNameNormPtr(NameNorm *string) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
+func (ft ProductFilters) ByNameNormPtr(NameNorm *string) *sql.ColumnFilterPtr {
+	return &sql.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "name_norm",
 		Value:  NameNorm,
@@ -384,8 +270,8 @@ func (ft ProductFilters) ByNameNormPtr(NameNorm *string) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft ProductFilters) ByNameNormUa(NameNormUa string) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
+func (ft ProductFilters) ByNameNormUa(NameNormUa string) *sql.ColumnFilter {
+	return &sql.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "name_norm_ua",
 		Value:  NameNormUa,
@@ -393,8 +279,8 @@ func (ft ProductFilters) ByNameNormUa(NameNormUa string) *sq.ColumnFilter {
 	}
 }
 
-func (ft ProductFilters) ByNameNormUaPtr(NameNormUa *string) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
+func (ft ProductFilters) ByNameNormUaPtr(NameNormUa *string) *sql.ColumnFilterPtr {
+	return &sql.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "name_norm_ua",
 		Value:  NameNormUa,
@@ -409,16 +295,16 @@ func NewVariantFilters(prefix string) VariantFilters {
 	return VariantFilters{prefix}
 }
 
-func (ft VariantFilters) Filter(pred string, args ...interface{}) sq.WriterTo {
-	return sq.Filter(ft.prefix, pred, args...)
+func (ft VariantFilters) Filter(pred string, args ...interface{}) sql.WriterTo {
+	return sql.Filter(ft.prefix, pred, args...)
 }
 
 func (ft VariantFilters) Prefix() string {
 	return ft.prefix
 }
 
-func (ft VariantFilters) ByID(ID int64) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
+func (ft VariantFilters) ByID(ID int64) *sql.ColumnFilter {
+	return &sql.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "id",
 		Value:  ID,
@@ -426,8 +312,8 @@ func (ft VariantFilters) ByID(ID int64) *sq.ColumnFilter {
 	}
 }
 
-func (ft VariantFilters) ByIDPtr(ID *int64) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
+func (ft VariantFilters) ByIDPtr(ID *int64) *sql.ColumnFilterPtr {
+	return &sql.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "id",
 		Value:  ID,
@@ -436,8 +322,8 @@ func (ft VariantFilters) ByIDPtr(ID *int64) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft VariantFilters) ByProductID(ProductID int64) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
+func (ft VariantFilters) ByProductID(ProductID int64) *sql.ColumnFilter {
+	return &sql.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "product_id",
 		Value:  ProductID,
@@ -445,8 +331,8 @@ func (ft VariantFilters) ByProductID(ProductID int64) *sq.ColumnFilter {
 	}
 }
 
-func (ft VariantFilters) ByProductIDPtr(ProductID *int64) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
+func (ft VariantFilters) ByProductIDPtr(ProductID *int64) *sql.ColumnFilterPtr {
+	return &sql.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "product_id",
 		Value:  ProductID,
@@ -455,8 +341,8 @@ func (ft VariantFilters) ByProductIDPtr(ProductID *int64) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft VariantFilters) ByProductSourceID(ProductSourceID int64) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
+func (ft VariantFilters) ByProductSourceID(ProductSourceID int64) *sql.ColumnFilter {
+	return &sql.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "product_source_id",
 		Value:  ProductSourceID,
@@ -464,8 +350,8 @@ func (ft VariantFilters) ByProductSourceID(ProductSourceID int64) *sq.ColumnFilt
 	}
 }
 
-func (ft VariantFilters) ByProductSourceIDPtr(ProductSourceID *int64) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
+func (ft VariantFilters) ByProductSourceIDPtr(ProductSourceID *int64) *sql.ColumnFilterPtr {
+	return &sql.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "product_source_id",
 		Value:  ProductSourceID,
@@ -474,8 +360,8 @@ func (ft VariantFilters) ByProductSourceIDPtr(ProductSourceID *int64) *sq.Column
 	}
 }
 
-func (ft VariantFilters) ByProductSourceCategoryID(ProductSourceCategoryID int64) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
+func (ft VariantFilters) ByProductSourceCategoryID(ProductSourceCategoryID int64) *sql.ColumnFilter {
+	return &sql.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "product_source_category_id",
 		Value:  ProductSourceCategoryID,
@@ -483,8 +369,8 @@ func (ft VariantFilters) ByProductSourceCategoryID(ProductSourceCategoryID int64
 	}
 }
 
-func (ft VariantFilters) ByProductSourceCategoryIDPtr(ProductSourceCategoryID *int64) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
+func (ft VariantFilters) ByProductSourceCategoryIDPtr(ProductSourceCategoryID *int64) *sql.ColumnFilterPtr {
+	return &sql.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "product_source_category_id",
 		Value:  ProductSourceCategoryID,
@@ -493,27 +379,8 @@ func (ft VariantFilters) ByProductSourceCategoryIDPtr(ProductSourceCategoryID *i
 	}
 }
 
-func (ft VariantFilters) ByEtopCategoryID(EtopCategoryID int64) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
-		Prefix: &ft.prefix,
-		Column: "etop_category_id",
-		Value:  EtopCategoryID,
-		IsNil:  EtopCategoryID == 0,
-	}
-}
-
-func (ft VariantFilters) ByEtopCategoryIDPtr(EtopCategoryID *int64) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
-		Prefix: &ft.prefix,
-		Column: "etop_category_id",
-		Value:  EtopCategoryID,
-		IsNil:  EtopCategoryID == nil,
-		IsZero: EtopCategoryID != nil && (*EtopCategoryID) == 0,
-	}
-}
-
-func (ft VariantFilters) ByShortDesc(ShortDesc string) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
+func (ft VariantFilters) ByShortDesc(ShortDesc string) *sql.ColumnFilter {
+	return &sql.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "short_desc",
 		Value:  ShortDesc,
@@ -521,8 +388,8 @@ func (ft VariantFilters) ByShortDesc(ShortDesc string) *sq.ColumnFilter {
 	}
 }
 
-func (ft VariantFilters) ByShortDescPtr(ShortDesc *string) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
+func (ft VariantFilters) ByShortDescPtr(ShortDesc *string) *sql.ColumnFilterPtr {
+	return &sql.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "short_desc",
 		Value:  ShortDesc,
@@ -531,8 +398,8 @@ func (ft VariantFilters) ByShortDescPtr(ShortDesc *string) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft VariantFilters) ByDescription(Description string) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
+func (ft VariantFilters) ByDescription(Description string) *sql.ColumnFilter {
+	return &sql.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "description",
 		Value:  Description,
@@ -540,8 +407,8 @@ func (ft VariantFilters) ByDescription(Description string) *sq.ColumnFilter {
 	}
 }
 
-func (ft VariantFilters) ByDescriptionPtr(Description *string) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
+func (ft VariantFilters) ByDescriptionPtr(Description *string) *sql.ColumnFilterPtr {
+	return &sql.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "description",
 		Value:  Description,
@@ -550,8 +417,8 @@ func (ft VariantFilters) ByDescriptionPtr(Description *string) *sq.ColumnFilterP
 	}
 }
 
-func (ft VariantFilters) ByDescHTML(DescHTML string) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
+func (ft VariantFilters) ByDescHTML(DescHTML string) *sql.ColumnFilter {
+	return &sql.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "desc_html",
 		Value:  DescHTML,
@@ -559,8 +426,8 @@ func (ft VariantFilters) ByDescHTML(DescHTML string) *sq.ColumnFilter {
 	}
 }
 
-func (ft VariantFilters) ByDescHTMLPtr(DescHTML *string) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
+func (ft VariantFilters) ByDescHTMLPtr(DescHTML *string) *sql.ColumnFilterPtr {
+	return &sql.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "desc_html",
 		Value:  DescHTML,
@@ -569,8 +436,8 @@ func (ft VariantFilters) ByDescHTMLPtr(DescHTML *string) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft VariantFilters) ByEdName(EdName string) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
+func (ft VariantFilters) ByEdName(EdName string) *sql.ColumnFilter {
+	return &sql.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "ed_name",
 		Value:  EdName,
@@ -578,8 +445,8 @@ func (ft VariantFilters) ByEdName(EdName string) *sq.ColumnFilter {
 	}
 }
 
-func (ft VariantFilters) ByEdNamePtr(EdName *string) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
+func (ft VariantFilters) ByEdNamePtr(EdName *string) *sql.ColumnFilterPtr {
+	return &sql.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "ed_name",
 		Value:  EdName,
@@ -588,65 +455,8 @@ func (ft VariantFilters) ByEdNamePtr(EdName *string) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft VariantFilters) ByEdShortDesc(EdShortDesc string) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
-		Prefix: &ft.prefix,
-		Column: "ed_short_desc",
-		Value:  EdShortDesc,
-		IsNil:  EdShortDesc == "",
-	}
-}
-
-func (ft VariantFilters) ByEdShortDescPtr(EdShortDesc *string) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
-		Prefix: &ft.prefix,
-		Column: "ed_short_desc",
-		Value:  EdShortDesc,
-		IsNil:  EdShortDesc == nil,
-		IsZero: EdShortDesc != nil && (*EdShortDesc) == "",
-	}
-}
-
-func (ft VariantFilters) ByEdDescription(EdDescription string) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
-		Prefix: &ft.prefix,
-		Column: "ed_description",
-		Value:  EdDescription,
-		IsNil:  EdDescription == "",
-	}
-}
-
-func (ft VariantFilters) ByEdDescriptionPtr(EdDescription *string) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
-		Prefix: &ft.prefix,
-		Column: "ed_description",
-		Value:  EdDescription,
-		IsNil:  EdDescription == nil,
-		IsZero: EdDescription != nil && (*EdDescription) == "",
-	}
-}
-
-func (ft VariantFilters) ByEdDescHTML(EdDescHTML string) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
-		Prefix: &ft.prefix,
-		Column: "ed_desc_html",
-		Value:  EdDescHTML,
-		IsNil:  EdDescHTML == "",
-	}
-}
-
-func (ft VariantFilters) ByEdDescHTMLPtr(EdDescHTML *string) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
-		Prefix: &ft.prefix,
-		Column: "ed_desc_html",
-		Value:  EdDescHTML,
-		IsNil:  EdDescHTML == nil,
-		IsZero: EdDescHTML != nil && (*EdDescHTML) == "",
-	}
-}
-
-func (ft VariantFilters) ByDescNorm(DescNorm string) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
+func (ft VariantFilters) ByDescNorm(DescNorm string) *sql.ColumnFilter {
+	return &sql.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "desc_norm",
 		Value:  DescNorm,
@@ -654,8 +464,8 @@ func (ft VariantFilters) ByDescNorm(DescNorm string) *sq.ColumnFilter {
 	}
 }
 
-func (ft VariantFilters) ByDescNormPtr(DescNorm *string) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
+func (ft VariantFilters) ByDescNormPtr(DescNorm *string) *sql.ColumnFilterPtr {
+	return &sql.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "desc_norm",
 		Value:  DescNorm,
@@ -664,8 +474,8 @@ func (ft VariantFilters) ByDescNormPtr(DescNorm *string) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft VariantFilters) ByAttrNormKv(AttrNormKv string) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
+func (ft VariantFilters) ByAttrNormKv(AttrNormKv string) *sql.ColumnFilter {
+	return &sql.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "attr_norm_kv",
 		Value:  AttrNormKv,
@@ -673,8 +483,8 @@ func (ft VariantFilters) ByAttrNormKv(AttrNormKv string) *sq.ColumnFilter {
 	}
 }
 
-func (ft VariantFilters) ByAttrNormKvPtr(AttrNormKv *string) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
+func (ft VariantFilters) ByAttrNormKvPtr(AttrNormKv *string) *sql.ColumnFilterPtr {
+	return &sql.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "attr_norm_kv",
 		Value:  AttrNormKv,
@@ -683,8 +493,8 @@ func (ft VariantFilters) ByAttrNormKvPtr(AttrNormKv *string) *sq.ColumnFilterPtr
 	}
 }
 
-func (ft VariantFilters) ByStatus(Status model.Status3) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
+func (ft VariantFilters) ByStatus(Status model.Status3) *sql.ColumnFilter {
+	return &sql.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "status",
 		Value:  Status,
@@ -692,8 +502,8 @@ func (ft VariantFilters) ByStatus(Status model.Status3) *sq.ColumnFilter {
 	}
 }
 
-func (ft VariantFilters) ByStatusPtr(Status *model.Status3) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
+func (ft VariantFilters) ByStatusPtr(Status *model.Status3) *sql.ColumnFilterPtr {
+	return &sql.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "status",
 		Value:  Status,
@@ -702,65 +512,8 @@ func (ft VariantFilters) ByStatusPtr(Status *model.Status3) *sq.ColumnFilterPtr 
 	}
 }
 
-func (ft VariantFilters) ByEtopStatus(EtopStatus model.Status3) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
-		Prefix: &ft.prefix,
-		Column: "etop_status",
-		Value:  EtopStatus,
-		IsNil:  EtopStatus == 0,
-	}
-}
-
-func (ft VariantFilters) ByEtopStatusPtr(EtopStatus *model.Status3) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
-		Prefix: &ft.prefix,
-		Column: "etop_status",
-		Value:  EtopStatus,
-		IsNil:  EtopStatus == nil,
-		IsZero: EtopStatus != nil && (*EtopStatus) == 0,
-	}
-}
-
-func (ft VariantFilters) ByEdStatus(EdStatus model.Status3) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
-		Prefix: &ft.prefix,
-		Column: "ed_status",
-		Value:  EdStatus,
-		IsNil:  EdStatus == 0,
-	}
-}
-
-func (ft VariantFilters) ByEdStatusPtr(EdStatus *model.Status3) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
-		Prefix: &ft.prefix,
-		Column: "ed_status",
-		Value:  EdStatus,
-		IsNil:  EdStatus == nil,
-		IsZero: EdStatus != nil && (*EdStatus) == 0,
-	}
-}
-
-func (ft VariantFilters) ByCode(Code string) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
-		Prefix: &ft.prefix,
-		Column: "code",
-		Value:  Code,
-		IsNil:  Code == "",
-	}
-}
-
-func (ft VariantFilters) ByCodePtr(Code *string) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
-		Prefix: &ft.prefix,
-		Column: "code",
-		Value:  Code,
-		IsNil:  Code == nil,
-		IsZero: Code != nil && (*Code) == "",
-	}
-}
-
-func (ft VariantFilters) ByEdCode(EdCode string) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
+func (ft VariantFilters) ByEdCode(EdCode string) *sql.ColumnFilter {
+	return &sql.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "ed_code",
 		Value:  EdCode,
@@ -768,8 +521,8 @@ func (ft VariantFilters) ByEdCode(EdCode string) *sq.ColumnFilter {
 	}
 }
 
-func (ft VariantFilters) ByEdCodePtr(EdCode *string) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
+func (ft VariantFilters) ByEdCodePtr(EdCode *string) *sql.ColumnFilterPtr {
+	return &sql.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "ed_code",
 		Value:  EdCode,
@@ -778,46 +531,8 @@ func (ft VariantFilters) ByEdCodePtr(EdCode *string) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft VariantFilters) ByWholesalePrice0(WholesalePrice0 int) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
-		Prefix: &ft.prefix,
-		Column: "wholesale_price_0",
-		Value:  WholesalePrice0,
-		IsNil:  WholesalePrice0 == 0,
-	}
-}
-
-func (ft VariantFilters) ByWholesalePrice0Ptr(WholesalePrice0 *int) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
-		Prefix: &ft.prefix,
-		Column: "wholesale_price_0",
-		Value:  WholesalePrice0,
-		IsNil:  WholesalePrice0 == nil,
-		IsZero: WholesalePrice0 != nil && (*WholesalePrice0) == 0,
-	}
-}
-
-func (ft VariantFilters) ByWholesalePrice(WholesalePrice int) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
-		Prefix: &ft.prefix,
-		Column: "wholesale_price",
-		Value:  WholesalePrice,
-		IsNil:  WholesalePrice == 0,
-	}
-}
-
-func (ft VariantFilters) ByWholesalePricePtr(WholesalePrice *int) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
-		Prefix: &ft.prefix,
-		Column: "wholesale_price",
-		Value:  WholesalePrice,
-		IsNil:  WholesalePrice == nil,
-		IsZero: WholesalePrice != nil && (*WholesalePrice) == 0,
-	}
-}
-
-func (ft VariantFilters) ByListPrice(ListPrice int) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
+func (ft VariantFilters) ByListPrice(ListPrice int) *sql.ColumnFilter {
+	return &sql.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "list_price",
 		Value:  ListPrice,
@@ -825,8 +540,8 @@ func (ft VariantFilters) ByListPrice(ListPrice int) *sq.ColumnFilter {
 	}
 }
 
-func (ft VariantFilters) ByListPricePtr(ListPrice *int) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
+func (ft VariantFilters) ByListPricePtr(ListPrice *int) *sql.ColumnFilterPtr {
+	return &sql.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "list_price",
 		Value:  ListPrice,
@@ -835,141 +550,8 @@ func (ft VariantFilters) ByListPricePtr(ListPrice *int) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft VariantFilters) ByRetailPriceMin(RetailPriceMin int) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
-		Prefix: &ft.prefix,
-		Column: "retail_price_min",
-		Value:  RetailPriceMin,
-		IsNil:  RetailPriceMin == 0,
-	}
-}
-
-func (ft VariantFilters) ByRetailPriceMinPtr(RetailPriceMin *int) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
-		Prefix: &ft.prefix,
-		Column: "retail_price_min",
-		Value:  RetailPriceMin,
-		IsNil:  RetailPriceMin == nil,
-		IsZero: RetailPriceMin != nil && (*RetailPriceMin) == 0,
-	}
-}
-
-func (ft VariantFilters) ByRetailPriceMax(RetailPriceMax int) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
-		Prefix: &ft.prefix,
-		Column: "retail_price_max",
-		Value:  RetailPriceMax,
-		IsNil:  RetailPriceMax == 0,
-	}
-}
-
-func (ft VariantFilters) ByRetailPriceMaxPtr(RetailPriceMax *int) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
-		Prefix: &ft.prefix,
-		Column: "retail_price_max",
-		Value:  RetailPriceMax,
-		IsNil:  RetailPriceMax == nil,
-		IsZero: RetailPriceMax != nil && (*RetailPriceMax) == 0,
-	}
-}
-
-func (ft VariantFilters) ByEdWholesalePrice0(EdWholesalePrice0 int) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
-		Prefix: &ft.prefix,
-		Column: "ed_wholesale_price_0",
-		Value:  EdWholesalePrice0,
-		IsNil:  EdWholesalePrice0 == 0,
-	}
-}
-
-func (ft VariantFilters) ByEdWholesalePrice0Ptr(EdWholesalePrice0 *int) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
-		Prefix: &ft.prefix,
-		Column: "ed_wholesale_price_0",
-		Value:  EdWholesalePrice0,
-		IsNil:  EdWholesalePrice0 == nil,
-		IsZero: EdWholesalePrice0 != nil && (*EdWholesalePrice0) == 0,
-	}
-}
-
-func (ft VariantFilters) ByEdWholesalePrice(EdWholesalePrice int) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
-		Prefix: &ft.prefix,
-		Column: "ed_wholesale_price",
-		Value:  EdWholesalePrice,
-		IsNil:  EdWholesalePrice == 0,
-	}
-}
-
-func (ft VariantFilters) ByEdWholesalePricePtr(EdWholesalePrice *int) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
-		Prefix: &ft.prefix,
-		Column: "ed_wholesale_price",
-		Value:  EdWholesalePrice,
-		IsNil:  EdWholesalePrice == nil,
-		IsZero: EdWholesalePrice != nil && (*EdWholesalePrice) == 0,
-	}
-}
-
-func (ft VariantFilters) ByEdListPrice(EdListPrice int) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
-		Prefix: &ft.prefix,
-		Column: "ed_list_price",
-		Value:  EdListPrice,
-		IsNil:  EdListPrice == 0,
-	}
-}
-
-func (ft VariantFilters) ByEdListPricePtr(EdListPrice *int) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
-		Prefix: &ft.prefix,
-		Column: "ed_list_price",
-		Value:  EdListPrice,
-		IsNil:  EdListPrice == nil,
-		IsZero: EdListPrice != nil && (*EdListPrice) == 0,
-	}
-}
-
-func (ft VariantFilters) ByEdRetailPriceMin(EdRetailPriceMin int) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
-		Prefix: &ft.prefix,
-		Column: "ed_retail_price_min",
-		Value:  EdRetailPriceMin,
-		IsNil:  EdRetailPriceMin == 0,
-	}
-}
-
-func (ft VariantFilters) ByEdRetailPriceMinPtr(EdRetailPriceMin *int) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
-		Prefix: &ft.prefix,
-		Column: "ed_retail_price_min",
-		Value:  EdRetailPriceMin,
-		IsNil:  EdRetailPriceMin == nil,
-		IsZero: EdRetailPriceMin != nil && (*EdRetailPriceMin) == 0,
-	}
-}
-
-func (ft VariantFilters) ByEdRetailPriceMax(EdRetailPriceMax int) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
-		Prefix: &ft.prefix,
-		Column: "ed_retail_price_max",
-		Value:  EdRetailPriceMax,
-		IsNil:  EdRetailPriceMax == 0,
-	}
-}
-
-func (ft VariantFilters) ByEdRetailPriceMaxPtr(EdRetailPriceMax *int) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
-		Prefix: &ft.prefix,
-		Column: "ed_retail_price_max",
-		Value:  EdRetailPriceMax,
-		IsNil:  EdRetailPriceMax == nil,
-		IsZero: EdRetailPriceMax != nil && (*EdRetailPriceMax) == 0,
-	}
-}
-
-func (ft VariantFilters) ByCostPrice(CostPrice int) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
+func (ft VariantFilters) ByCostPrice(CostPrice int) *sql.ColumnFilter {
+	return &sql.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "cost_price",
 		Value:  CostPrice,
@@ -977,8 +559,8 @@ func (ft VariantFilters) ByCostPrice(CostPrice int) *sq.ColumnFilter {
 	}
 }
 
-func (ft VariantFilters) ByCostPricePtr(CostPrice *int) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
+func (ft VariantFilters) ByCostPricePtr(CostPrice *int) *sql.ColumnFilterPtr {
+	return &sql.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "cost_price",
 		Value:  CostPrice,
@@ -987,8 +569,8 @@ func (ft VariantFilters) ByCostPricePtr(CostPrice *int) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft VariantFilters) ByCreatedAt(CreatedAt time.Time) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
+func (ft VariantFilters) ByCreatedAt(CreatedAt time.Time) *sql.ColumnFilter {
+	return &sql.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "created_at",
 		Value:  CreatedAt,
@@ -996,8 +578,8 @@ func (ft VariantFilters) ByCreatedAt(CreatedAt time.Time) *sq.ColumnFilter {
 	}
 }
 
-func (ft VariantFilters) ByCreatedAtPtr(CreatedAt *time.Time) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
+func (ft VariantFilters) ByCreatedAtPtr(CreatedAt *time.Time) *sql.ColumnFilterPtr {
+	return &sql.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "created_at",
 		Value:  CreatedAt,
@@ -1006,8 +588,8 @@ func (ft VariantFilters) ByCreatedAtPtr(CreatedAt *time.Time) *sq.ColumnFilterPt
 	}
 }
 
-func (ft VariantFilters) ByUpdatedAt(UpdatedAt time.Time) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
+func (ft VariantFilters) ByUpdatedAt(UpdatedAt time.Time) *sql.ColumnFilter {
+	return &sql.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "updated_at",
 		Value:  UpdatedAt,
@@ -1015,122 +597,13 @@ func (ft VariantFilters) ByUpdatedAt(UpdatedAt time.Time) *sq.ColumnFilter {
 	}
 }
 
-func (ft VariantFilters) ByUpdatedAtPtr(UpdatedAt *time.Time) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
+func (ft VariantFilters) ByUpdatedAtPtr(UpdatedAt *time.Time) *sql.ColumnFilterPtr {
+	return &sql.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "updated_at",
 		Value:  UpdatedAt,
 		IsNil:  UpdatedAt == nil,
 		IsZero: UpdatedAt != nil && (*UpdatedAt).IsZero(),
-	}
-}
-
-type PriceDefFilters struct{ prefix string }
-
-func NewPriceDefFilters(prefix string) PriceDefFilters {
-	return PriceDefFilters{prefix}
-}
-
-func (ft PriceDefFilters) Filter(pred string, args ...interface{}) sq.WriterTo {
-	return sq.Filter(ft.prefix, pred, args...)
-}
-
-func (ft PriceDefFilters) Prefix() string {
-	return ft.prefix
-}
-
-func (ft PriceDefFilters) ByWholesalePrice0(WholesalePrice0 int) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
-		Prefix: &ft.prefix,
-		Column: "wholesale_price_0",
-		Value:  WholesalePrice0,
-		IsNil:  WholesalePrice0 == 0,
-	}
-}
-
-func (ft PriceDefFilters) ByWholesalePrice0Ptr(WholesalePrice0 *int) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
-		Prefix: &ft.prefix,
-		Column: "wholesale_price_0",
-		Value:  WholesalePrice0,
-		IsNil:  WholesalePrice0 == nil,
-		IsZero: WholesalePrice0 != nil && (*WholesalePrice0) == 0,
-	}
-}
-
-func (ft PriceDefFilters) ByWholesalePrice(WholesalePrice int) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
-		Prefix: &ft.prefix,
-		Column: "wholesale_price",
-		Value:  WholesalePrice,
-		IsNil:  WholesalePrice == 0,
-	}
-}
-
-func (ft PriceDefFilters) ByWholesalePricePtr(WholesalePrice *int) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
-		Prefix: &ft.prefix,
-		Column: "wholesale_price",
-		Value:  WholesalePrice,
-		IsNil:  WholesalePrice == nil,
-		IsZero: WholesalePrice != nil && (*WholesalePrice) == 0,
-	}
-}
-
-func (ft PriceDefFilters) ByListPrice(ListPrice int) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
-		Prefix: &ft.prefix,
-		Column: "list_price",
-		Value:  ListPrice,
-		IsNil:  ListPrice == 0,
-	}
-}
-
-func (ft PriceDefFilters) ByListPricePtr(ListPrice *int) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
-		Prefix: &ft.prefix,
-		Column: "list_price",
-		Value:  ListPrice,
-		IsNil:  ListPrice == nil,
-		IsZero: ListPrice != nil && (*ListPrice) == 0,
-	}
-}
-
-func (ft PriceDefFilters) ByRetailPriceMin(RetailPriceMin int) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
-		Prefix: &ft.prefix,
-		Column: "retail_price_min",
-		Value:  RetailPriceMin,
-		IsNil:  RetailPriceMin == 0,
-	}
-}
-
-func (ft PriceDefFilters) ByRetailPriceMinPtr(RetailPriceMin *int) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
-		Prefix: &ft.prefix,
-		Column: "retail_price_min",
-		Value:  RetailPriceMin,
-		IsNil:  RetailPriceMin == nil,
-		IsZero: RetailPriceMin != nil && (*RetailPriceMin) == 0,
-	}
-}
-
-func (ft PriceDefFilters) ByRetailPriceMax(RetailPriceMax int) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
-		Prefix: &ft.prefix,
-		Column: "retail_price_max",
-		Value:  RetailPriceMax,
-		IsNil:  RetailPriceMax == 0,
-	}
-}
-
-func (ft PriceDefFilters) ByRetailPriceMaxPtr(RetailPriceMax *int) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
-		Prefix: &ft.prefix,
-		Column: "retail_price_max",
-		Value:  RetailPriceMax,
-		IsNil:  RetailPriceMax == nil,
-		IsZero: RetailPriceMax != nil && (*RetailPriceMax) == 0,
 	}
 }
 
@@ -1140,16 +613,16 @@ func NewShopVariantFilters(prefix string) ShopVariantFilters {
 	return ShopVariantFilters{prefix}
 }
 
-func (ft ShopVariantFilters) Filter(pred string, args ...interface{}) sq.WriterTo {
-	return sq.Filter(ft.prefix, pred, args...)
+func (ft ShopVariantFilters) Filter(pred string, args ...interface{}) sql.WriterTo {
+	return sql.Filter(ft.prefix, pred, args...)
 }
 
 func (ft ShopVariantFilters) Prefix() string {
 	return ft.prefix
 }
 
-func (ft ShopVariantFilters) ByShopID(ShopID int64) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
+func (ft ShopVariantFilters) ByShopID(ShopID int64) *sql.ColumnFilter {
+	return &sql.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "shop_id",
 		Value:  ShopID,
@@ -1157,8 +630,8 @@ func (ft ShopVariantFilters) ByShopID(ShopID int64) *sq.ColumnFilter {
 	}
 }
 
-func (ft ShopVariantFilters) ByShopIDPtr(ShopID *int64) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
+func (ft ShopVariantFilters) ByShopIDPtr(ShopID *int64) *sql.ColumnFilterPtr {
+	return &sql.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "shop_id",
 		Value:  ShopID,
@@ -1167,8 +640,8 @@ func (ft ShopVariantFilters) ByShopIDPtr(ShopID *int64) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft ShopVariantFilters) ByVariantID(VariantID int64) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
+func (ft ShopVariantFilters) ByVariantID(VariantID int64) *sql.ColumnFilter {
+	return &sql.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "variant_id",
 		Value:  VariantID,
@@ -1176,8 +649,8 @@ func (ft ShopVariantFilters) ByVariantID(VariantID int64) *sq.ColumnFilter {
 	}
 }
 
-func (ft ShopVariantFilters) ByVariantIDPtr(VariantID *int64) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
+func (ft ShopVariantFilters) ByVariantIDPtr(VariantID *int64) *sql.ColumnFilterPtr {
+	return &sql.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "variant_id",
 		Value:  VariantID,
@@ -1186,8 +659,8 @@ func (ft ShopVariantFilters) ByVariantIDPtr(VariantID *int64) *sq.ColumnFilterPt
 	}
 }
 
-func (ft ShopVariantFilters) ByCollectionID(CollectionID int64) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
+func (ft ShopVariantFilters) ByCollectionID(CollectionID int64) *sql.ColumnFilter {
+	return &sql.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "collection_id",
 		Value:  CollectionID,
@@ -1195,8 +668,8 @@ func (ft ShopVariantFilters) ByCollectionID(CollectionID int64) *sq.ColumnFilter
 	}
 }
 
-func (ft ShopVariantFilters) ByCollectionIDPtr(CollectionID *int64) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
+func (ft ShopVariantFilters) ByCollectionIDPtr(CollectionID *int64) *sql.ColumnFilterPtr {
+	return &sql.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "collection_id",
 		Value:  CollectionID,
@@ -1205,8 +678,8 @@ func (ft ShopVariantFilters) ByCollectionIDPtr(CollectionID *int64) *sq.ColumnFi
 	}
 }
 
-func (ft ShopVariantFilters) ByProductID(ProductID int64) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
+func (ft ShopVariantFilters) ByProductID(ProductID int64) *sql.ColumnFilter {
+	return &sql.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "product_id",
 		Value:  ProductID,
@@ -1214,8 +687,8 @@ func (ft ShopVariantFilters) ByProductID(ProductID int64) *sq.ColumnFilter {
 	}
 }
 
-func (ft ShopVariantFilters) ByProductIDPtr(ProductID *int64) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
+func (ft ShopVariantFilters) ByProductIDPtr(ProductID *int64) *sql.ColumnFilterPtr {
+	return &sql.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "product_id",
 		Value:  ProductID,
@@ -1224,8 +697,8 @@ func (ft ShopVariantFilters) ByProductIDPtr(ProductID *int64) *sq.ColumnFilterPt
 	}
 }
 
-func (ft ShopVariantFilters) ByName(Name string) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
+func (ft ShopVariantFilters) ByName(Name string) *sql.ColumnFilter {
+	return &sql.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "name",
 		Value:  Name,
@@ -1233,8 +706,8 @@ func (ft ShopVariantFilters) ByName(Name string) *sq.ColumnFilter {
 	}
 }
 
-func (ft ShopVariantFilters) ByNamePtr(Name *string) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
+func (ft ShopVariantFilters) ByNamePtr(Name *string) *sql.ColumnFilterPtr {
+	return &sql.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "name",
 		Value:  Name,
@@ -1243,8 +716,8 @@ func (ft ShopVariantFilters) ByNamePtr(Name *string) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft ShopVariantFilters) ByDescription(Description string) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
+func (ft ShopVariantFilters) ByDescription(Description string) *sql.ColumnFilter {
+	return &sql.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "description",
 		Value:  Description,
@@ -1252,8 +725,8 @@ func (ft ShopVariantFilters) ByDescription(Description string) *sq.ColumnFilter 
 	}
 }
 
-func (ft ShopVariantFilters) ByDescriptionPtr(Description *string) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
+func (ft ShopVariantFilters) ByDescriptionPtr(Description *string) *sql.ColumnFilterPtr {
+	return &sql.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "description",
 		Value:  Description,
@@ -1262,8 +735,8 @@ func (ft ShopVariantFilters) ByDescriptionPtr(Description *string) *sq.ColumnFil
 	}
 }
 
-func (ft ShopVariantFilters) ByDescHTML(DescHTML string) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
+func (ft ShopVariantFilters) ByDescHTML(DescHTML string) *sql.ColumnFilter {
+	return &sql.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "desc_html",
 		Value:  DescHTML,
@@ -1271,8 +744,8 @@ func (ft ShopVariantFilters) ByDescHTML(DescHTML string) *sq.ColumnFilter {
 	}
 }
 
-func (ft ShopVariantFilters) ByDescHTMLPtr(DescHTML *string) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
+func (ft ShopVariantFilters) ByDescHTMLPtr(DescHTML *string) *sql.ColumnFilterPtr {
+	return &sql.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "desc_html",
 		Value:  DescHTML,
@@ -1281,8 +754,8 @@ func (ft ShopVariantFilters) ByDescHTMLPtr(DescHTML *string) *sq.ColumnFilterPtr
 	}
 }
 
-func (ft ShopVariantFilters) ByShortDesc(ShortDesc string) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
+func (ft ShopVariantFilters) ByShortDesc(ShortDesc string) *sql.ColumnFilter {
+	return &sql.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "short_desc",
 		Value:  ShortDesc,
@@ -1290,8 +763,8 @@ func (ft ShopVariantFilters) ByShortDesc(ShortDesc string) *sq.ColumnFilter {
 	}
 }
 
-func (ft ShopVariantFilters) ByShortDescPtr(ShortDesc *string) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
+func (ft ShopVariantFilters) ByShortDescPtr(ShortDesc *string) *sql.ColumnFilterPtr {
+	return &sql.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "short_desc",
 		Value:  ShortDesc,
@@ -1300,8 +773,8 @@ func (ft ShopVariantFilters) ByShortDescPtr(ShortDesc *string) *sq.ColumnFilterP
 	}
 }
 
-func (ft ShopVariantFilters) ByNote(Note string) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
+func (ft ShopVariantFilters) ByNote(Note string) *sql.ColumnFilter {
+	return &sql.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "note",
 		Value:  Note,
@@ -1309,8 +782,8 @@ func (ft ShopVariantFilters) ByNote(Note string) *sq.ColumnFilter {
 	}
 }
 
-func (ft ShopVariantFilters) ByNotePtr(Note *string) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
+func (ft ShopVariantFilters) ByNotePtr(Note *string) *sql.ColumnFilterPtr {
+	return &sql.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "note",
 		Value:  Note,
@@ -1319,8 +792,8 @@ func (ft ShopVariantFilters) ByNotePtr(Note *string) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft ShopVariantFilters) ByRetailPrice(RetailPrice int) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
+func (ft ShopVariantFilters) ByRetailPrice(RetailPrice int) *sql.ColumnFilter {
+	return &sql.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "retail_price",
 		Value:  RetailPrice,
@@ -1328,8 +801,8 @@ func (ft ShopVariantFilters) ByRetailPrice(RetailPrice int) *sq.ColumnFilter {
 	}
 }
 
-func (ft ShopVariantFilters) ByRetailPricePtr(RetailPrice *int) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
+func (ft ShopVariantFilters) ByRetailPricePtr(RetailPrice *int) *sql.ColumnFilterPtr {
+	return &sql.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "retail_price",
 		Value:  RetailPrice,
@@ -1338,8 +811,8 @@ func (ft ShopVariantFilters) ByRetailPricePtr(RetailPrice *int) *sq.ColumnFilter
 	}
 }
 
-func (ft ShopVariantFilters) ByStatus(Status model.Status3) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
+func (ft ShopVariantFilters) ByStatus(Status model.Status3) *sql.ColumnFilter {
+	return &sql.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "status",
 		Value:  Status,
@@ -1347,8 +820,8 @@ func (ft ShopVariantFilters) ByStatus(Status model.Status3) *sq.ColumnFilter {
 	}
 }
 
-func (ft ShopVariantFilters) ByStatusPtr(Status *model.Status3) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
+func (ft ShopVariantFilters) ByStatusPtr(Status *model.Status3) *sql.ColumnFilterPtr {
+	return &sql.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "status",
 		Value:  Status,
@@ -1357,8 +830,8 @@ func (ft ShopVariantFilters) ByStatusPtr(Status *model.Status3) *sq.ColumnFilter
 	}
 }
 
-func (ft ShopVariantFilters) ByCreatedAt(CreatedAt time.Time) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
+func (ft ShopVariantFilters) ByCreatedAt(CreatedAt time.Time) *sql.ColumnFilter {
+	return &sql.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "created_at",
 		Value:  CreatedAt,
@@ -1366,8 +839,8 @@ func (ft ShopVariantFilters) ByCreatedAt(CreatedAt time.Time) *sq.ColumnFilter {
 	}
 }
 
-func (ft ShopVariantFilters) ByCreatedAtPtr(CreatedAt *time.Time) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
+func (ft ShopVariantFilters) ByCreatedAtPtr(CreatedAt *time.Time) *sql.ColumnFilterPtr {
+	return &sql.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "created_at",
 		Value:  CreatedAt,
@@ -1376,8 +849,8 @@ func (ft ShopVariantFilters) ByCreatedAtPtr(CreatedAt *time.Time) *sq.ColumnFilt
 	}
 }
 
-func (ft ShopVariantFilters) ByUpdatedAt(UpdatedAt time.Time) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
+func (ft ShopVariantFilters) ByUpdatedAt(UpdatedAt time.Time) *sql.ColumnFilter {
+	return &sql.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "updated_at",
 		Value:  UpdatedAt,
@@ -1385,8 +858,8 @@ func (ft ShopVariantFilters) ByUpdatedAt(UpdatedAt time.Time) *sq.ColumnFilter {
 	}
 }
 
-func (ft ShopVariantFilters) ByUpdatedAtPtr(UpdatedAt *time.Time) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
+func (ft ShopVariantFilters) ByUpdatedAtPtr(UpdatedAt *time.Time) *sql.ColumnFilterPtr {
+	return &sql.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "updated_at",
 		Value:  UpdatedAt,
@@ -1395,8 +868,8 @@ func (ft ShopVariantFilters) ByUpdatedAtPtr(UpdatedAt *time.Time) *sq.ColumnFilt
 	}
 }
 
-func (ft ShopVariantFilters) ByNameNorm(NameNorm string) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
+func (ft ShopVariantFilters) ByNameNorm(NameNorm string) *sql.ColumnFilter {
+	return &sql.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "name_norm",
 		Value:  NameNorm,
@@ -1404,8 +877,8 @@ func (ft ShopVariantFilters) ByNameNorm(NameNorm string) *sq.ColumnFilter {
 	}
 }
 
-func (ft ShopVariantFilters) ByNameNormPtr(NameNorm *string) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
+func (ft ShopVariantFilters) ByNameNormPtr(NameNorm *string) *sql.ColumnFilterPtr {
+	return &sql.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "name_norm",
 		Value:  NameNorm,
@@ -1420,16 +893,16 @@ func NewShopProductFilters(prefix string) ShopProductFilters {
 	return ShopProductFilters{prefix}
 }
 
-func (ft ShopProductFilters) Filter(pred string, args ...interface{}) sq.WriterTo {
-	return sq.Filter(ft.prefix, pred, args...)
+func (ft ShopProductFilters) Filter(pred string, args ...interface{}) sql.WriterTo {
+	return sql.Filter(ft.prefix, pred, args...)
 }
 
 func (ft ShopProductFilters) Prefix() string {
 	return ft.prefix
 }
 
-func (ft ShopProductFilters) ByShopID(ShopID int64) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
+func (ft ShopProductFilters) ByShopID(ShopID int64) *sql.ColumnFilter {
+	return &sql.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "shop_id",
 		Value:  ShopID,
@@ -1437,8 +910,8 @@ func (ft ShopProductFilters) ByShopID(ShopID int64) *sq.ColumnFilter {
 	}
 }
 
-func (ft ShopProductFilters) ByShopIDPtr(ShopID *int64) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
+func (ft ShopProductFilters) ByShopIDPtr(ShopID *int64) *sql.ColumnFilterPtr {
+	return &sql.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "shop_id",
 		Value:  ShopID,
@@ -1447,8 +920,8 @@ func (ft ShopProductFilters) ByShopIDPtr(ShopID *int64) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft ShopProductFilters) ByProductID(ProductID int64) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
+func (ft ShopProductFilters) ByProductID(ProductID int64) *sql.ColumnFilter {
+	return &sql.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "product_id",
 		Value:  ProductID,
@@ -1456,8 +929,8 @@ func (ft ShopProductFilters) ByProductID(ProductID int64) *sq.ColumnFilter {
 	}
 }
 
-func (ft ShopProductFilters) ByProductIDPtr(ProductID *int64) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
+func (ft ShopProductFilters) ByProductIDPtr(ProductID *int64) *sql.ColumnFilterPtr {
+	return &sql.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "product_id",
 		Value:  ProductID,
@@ -1466,8 +939,8 @@ func (ft ShopProductFilters) ByProductIDPtr(ProductID *int64) *sq.ColumnFilterPt
 	}
 }
 
-func (ft ShopProductFilters) ByName(Name string) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
+func (ft ShopProductFilters) ByName(Name string) *sql.ColumnFilter {
+	return &sql.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "name",
 		Value:  Name,
@@ -1475,8 +948,8 @@ func (ft ShopProductFilters) ByName(Name string) *sq.ColumnFilter {
 	}
 }
 
-func (ft ShopProductFilters) ByNamePtr(Name *string) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
+func (ft ShopProductFilters) ByNamePtr(Name *string) *sql.ColumnFilterPtr {
+	return &sql.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "name",
 		Value:  Name,
@@ -1485,8 +958,8 @@ func (ft ShopProductFilters) ByNamePtr(Name *string) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft ShopProductFilters) ByDescription(Description string) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
+func (ft ShopProductFilters) ByDescription(Description string) *sql.ColumnFilter {
+	return &sql.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "description",
 		Value:  Description,
@@ -1494,8 +967,8 @@ func (ft ShopProductFilters) ByDescription(Description string) *sq.ColumnFilter 
 	}
 }
 
-func (ft ShopProductFilters) ByDescriptionPtr(Description *string) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
+func (ft ShopProductFilters) ByDescriptionPtr(Description *string) *sql.ColumnFilterPtr {
+	return &sql.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "description",
 		Value:  Description,
@@ -1504,8 +977,8 @@ func (ft ShopProductFilters) ByDescriptionPtr(Description *string) *sq.ColumnFil
 	}
 }
 
-func (ft ShopProductFilters) ByDescHTML(DescHTML string) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
+func (ft ShopProductFilters) ByDescHTML(DescHTML string) *sql.ColumnFilter {
+	return &sql.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "desc_html",
 		Value:  DescHTML,
@@ -1513,8 +986,8 @@ func (ft ShopProductFilters) ByDescHTML(DescHTML string) *sq.ColumnFilter {
 	}
 }
 
-func (ft ShopProductFilters) ByDescHTMLPtr(DescHTML *string) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
+func (ft ShopProductFilters) ByDescHTMLPtr(DescHTML *string) *sql.ColumnFilterPtr {
+	return &sql.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "desc_html",
 		Value:  DescHTML,
@@ -1523,8 +996,8 @@ func (ft ShopProductFilters) ByDescHTMLPtr(DescHTML *string) *sq.ColumnFilterPtr
 	}
 }
 
-func (ft ShopProductFilters) ByShortDesc(ShortDesc string) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
+func (ft ShopProductFilters) ByShortDesc(ShortDesc string) *sql.ColumnFilter {
+	return &sql.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "short_desc",
 		Value:  ShortDesc,
@@ -1532,8 +1005,8 @@ func (ft ShopProductFilters) ByShortDesc(ShortDesc string) *sq.ColumnFilter {
 	}
 }
 
-func (ft ShopProductFilters) ByShortDescPtr(ShortDesc *string) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
+func (ft ShopProductFilters) ByShortDescPtr(ShortDesc *string) *sql.ColumnFilterPtr {
+	return &sql.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "short_desc",
 		Value:  ShortDesc,
@@ -1542,8 +1015,8 @@ func (ft ShopProductFilters) ByShortDescPtr(ShortDesc *string) *sq.ColumnFilterP
 	}
 }
 
-func (ft ShopProductFilters) ByNote(Note string) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
+func (ft ShopProductFilters) ByNote(Note string) *sql.ColumnFilter {
+	return &sql.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "note",
 		Value:  Note,
@@ -1551,8 +1024,8 @@ func (ft ShopProductFilters) ByNote(Note string) *sq.ColumnFilter {
 	}
 }
 
-func (ft ShopProductFilters) ByNotePtr(Note *string) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
+func (ft ShopProductFilters) ByNotePtr(Note *string) *sql.ColumnFilterPtr {
+	return &sql.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "note",
 		Value:  Note,
@@ -1561,8 +1034,8 @@ func (ft ShopProductFilters) ByNotePtr(Note *string) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft ShopProductFilters) ByRetailPrice(RetailPrice int) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
+func (ft ShopProductFilters) ByRetailPrice(RetailPrice int) *sql.ColumnFilter {
+	return &sql.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "retail_price",
 		Value:  RetailPrice,
@@ -1570,8 +1043,8 @@ func (ft ShopProductFilters) ByRetailPrice(RetailPrice int) *sq.ColumnFilter {
 	}
 }
 
-func (ft ShopProductFilters) ByRetailPricePtr(RetailPrice *int) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
+func (ft ShopProductFilters) ByRetailPricePtr(RetailPrice *int) *sql.ColumnFilterPtr {
+	return &sql.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "retail_price",
 		Value:  RetailPrice,
@@ -1580,8 +1053,8 @@ func (ft ShopProductFilters) ByRetailPricePtr(RetailPrice *int) *sq.ColumnFilter
 	}
 }
 
-func (ft ShopProductFilters) ByStatus(Status model.Status3) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
+func (ft ShopProductFilters) ByStatus(Status model.Status3) *sql.ColumnFilter {
+	return &sql.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "status",
 		Value:  Status,
@@ -1589,8 +1062,8 @@ func (ft ShopProductFilters) ByStatus(Status model.Status3) *sq.ColumnFilter {
 	}
 }
 
-func (ft ShopProductFilters) ByStatusPtr(Status *model.Status3) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
+func (ft ShopProductFilters) ByStatusPtr(Status *model.Status3) *sql.ColumnFilterPtr {
+	return &sql.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "status",
 		Value:  Status,
@@ -1599,8 +1072,8 @@ func (ft ShopProductFilters) ByStatusPtr(Status *model.Status3) *sq.ColumnFilter
 	}
 }
 
-func (ft ShopProductFilters) ByCreatedAt(CreatedAt time.Time) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
+func (ft ShopProductFilters) ByCreatedAt(CreatedAt time.Time) *sql.ColumnFilter {
+	return &sql.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "created_at",
 		Value:  CreatedAt,
@@ -1608,8 +1081,8 @@ func (ft ShopProductFilters) ByCreatedAt(CreatedAt time.Time) *sq.ColumnFilter {
 	}
 }
 
-func (ft ShopProductFilters) ByCreatedAtPtr(CreatedAt *time.Time) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
+func (ft ShopProductFilters) ByCreatedAtPtr(CreatedAt *time.Time) *sql.ColumnFilterPtr {
+	return &sql.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "created_at",
 		Value:  CreatedAt,
@@ -1618,8 +1091,8 @@ func (ft ShopProductFilters) ByCreatedAtPtr(CreatedAt *time.Time) *sq.ColumnFilt
 	}
 }
 
-func (ft ShopProductFilters) ByUpdatedAt(UpdatedAt time.Time) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
+func (ft ShopProductFilters) ByUpdatedAt(UpdatedAt time.Time) *sql.ColumnFilter {
+	return &sql.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "updated_at",
 		Value:  UpdatedAt,
@@ -1627,8 +1100,8 @@ func (ft ShopProductFilters) ByUpdatedAt(UpdatedAt time.Time) *sq.ColumnFilter {
 	}
 }
 
-func (ft ShopProductFilters) ByUpdatedAtPtr(UpdatedAt *time.Time) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
+func (ft ShopProductFilters) ByUpdatedAtPtr(UpdatedAt *time.Time) *sql.ColumnFilterPtr {
+	return &sql.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "updated_at",
 		Value:  UpdatedAt,
@@ -1637,8 +1110,8 @@ func (ft ShopProductFilters) ByUpdatedAtPtr(UpdatedAt *time.Time) *sq.ColumnFilt
 	}
 }
 
-func (ft ShopProductFilters) ByNameNorm(NameNorm string) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
+func (ft ShopProductFilters) ByNameNorm(NameNorm string) *sql.ColumnFilter {
+	return &sql.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "name_norm",
 		Value:  NameNorm,
@@ -1646,8 +1119,8 @@ func (ft ShopProductFilters) ByNameNorm(NameNorm string) *sq.ColumnFilter {
 	}
 }
 
-func (ft ShopProductFilters) ByNameNormPtr(NameNorm *string) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
+func (ft ShopProductFilters) ByNameNormPtr(NameNorm *string) *sql.ColumnFilterPtr {
+	return &sql.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "name_norm",
 		Value:  NameNorm,
@@ -1662,16 +1135,16 @@ func NewShopCollectionFilters(prefix string) ShopCollectionFilters {
 	return ShopCollectionFilters{prefix}
 }
 
-func (ft ShopCollectionFilters) Filter(pred string, args ...interface{}) sq.WriterTo {
-	return sq.Filter(ft.prefix, pred, args...)
+func (ft ShopCollectionFilters) Filter(pred string, args ...interface{}) sql.WriterTo {
+	return sql.Filter(ft.prefix, pred, args...)
 }
 
 func (ft ShopCollectionFilters) Prefix() string {
 	return ft.prefix
 }
 
-func (ft ShopCollectionFilters) ByID(ID int64) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
+func (ft ShopCollectionFilters) ByID(ID int64) *sql.ColumnFilter {
+	return &sql.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "id",
 		Value:  ID,
@@ -1679,8 +1152,8 @@ func (ft ShopCollectionFilters) ByID(ID int64) *sq.ColumnFilter {
 	}
 }
 
-func (ft ShopCollectionFilters) ByIDPtr(ID *int64) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
+func (ft ShopCollectionFilters) ByIDPtr(ID *int64) *sql.ColumnFilterPtr {
+	return &sql.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "id",
 		Value:  ID,
@@ -1689,8 +1162,8 @@ func (ft ShopCollectionFilters) ByIDPtr(ID *int64) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft ShopCollectionFilters) ByShopID(ShopID int64) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
+func (ft ShopCollectionFilters) ByShopID(ShopID int64) *sql.ColumnFilter {
+	return &sql.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "shop_id",
 		Value:  ShopID,
@@ -1698,8 +1171,8 @@ func (ft ShopCollectionFilters) ByShopID(ShopID int64) *sq.ColumnFilter {
 	}
 }
 
-func (ft ShopCollectionFilters) ByShopIDPtr(ShopID *int64) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
+func (ft ShopCollectionFilters) ByShopIDPtr(ShopID *int64) *sql.ColumnFilterPtr {
+	return &sql.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "shop_id",
 		Value:  ShopID,
@@ -1708,8 +1181,8 @@ func (ft ShopCollectionFilters) ByShopIDPtr(ShopID *int64) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft ShopCollectionFilters) ByName(Name string) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
+func (ft ShopCollectionFilters) ByName(Name string) *sql.ColumnFilter {
+	return &sql.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "name",
 		Value:  Name,
@@ -1717,8 +1190,8 @@ func (ft ShopCollectionFilters) ByName(Name string) *sq.ColumnFilter {
 	}
 }
 
-func (ft ShopCollectionFilters) ByNamePtr(Name *string) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
+func (ft ShopCollectionFilters) ByNamePtr(Name *string) *sql.ColumnFilterPtr {
+	return &sql.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "name",
 		Value:  Name,
@@ -1727,8 +1200,8 @@ func (ft ShopCollectionFilters) ByNamePtr(Name *string) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft ShopCollectionFilters) ByDescription(Description string) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
+func (ft ShopCollectionFilters) ByDescription(Description string) *sql.ColumnFilter {
+	return &sql.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "description",
 		Value:  Description,
@@ -1736,8 +1209,8 @@ func (ft ShopCollectionFilters) ByDescription(Description string) *sq.ColumnFilt
 	}
 }
 
-func (ft ShopCollectionFilters) ByDescriptionPtr(Description *string) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
+func (ft ShopCollectionFilters) ByDescriptionPtr(Description *string) *sql.ColumnFilterPtr {
+	return &sql.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "description",
 		Value:  Description,
@@ -1746,8 +1219,8 @@ func (ft ShopCollectionFilters) ByDescriptionPtr(Description *string) *sq.Column
 	}
 }
 
-func (ft ShopCollectionFilters) ByDescHTML(DescHTML string) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
+func (ft ShopCollectionFilters) ByDescHTML(DescHTML string) *sql.ColumnFilter {
+	return &sql.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "desc_html",
 		Value:  DescHTML,
@@ -1755,8 +1228,8 @@ func (ft ShopCollectionFilters) ByDescHTML(DescHTML string) *sq.ColumnFilter {
 	}
 }
 
-func (ft ShopCollectionFilters) ByDescHTMLPtr(DescHTML *string) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
+func (ft ShopCollectionFilters) ByDescHTMLPtr(DescHTML *string) *sql.ColumnFilterPtr {
+	return &sql.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "desc_html",
 		Value:  DescHTML,
@@ -1765,8 +1238,8 @@ func (ft ShopCollectionFilters) ByDescHTMLPtr(DescHTML *string) *sq.ColumnFilter
 	}
 }
 
-func (ft ShopCollectionFilters) ByShortDesc(ShortDesc string) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
+func (ft ShopCollectionFilters) ByShortDesc(ShortDesc string) *sql.ColumnFilter {
+	return &sql.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "short_desc",
 		Value:  ShortDesc,
@@ -1774,8 +1247,8 @@ func (ft ShopCollectionFilters) ByShortDesc(ShortDesc string) *sq.ColumnFilter {
 	}
 }
 
-func (ft ShopCollectionFilters) ByShortDescPtr(ShortDesc *string) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
+func (ft ShopCollectionFilters) ByShortDescPtr(ShortDesc *string) *sql.ColumnFilterPtr {
+	return &sql.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "short_desc",
 		Value:  ShortDesc,
@@ -1784,8 +1257,8 @@ func (ft ShopCollectionFilters) ByShortDescPtr(ShortDesc *string) *sq.ColumnFilt
 	}
 }
 
-func (ft ShopCollectionFilters) ByCreatedAt(CreatedAt time.Time) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
+func (ft ShopCollectionFilters) ByCreatedAt(CreatedAt time.Time) *sql.ColumnFilter {
+	return &sql.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "created_at",
 		Value:  CreatedAt,
@@ -1793,8 +1266,8 @@ func (ft ShopCollectionFilters) ByCreatedAt(CreatedAt time.Time) *sq.ColumnFilte
 	}
 }
 
-func (ft ShopCollectionFilters) ByCreatedAtPtr(CreatedAt *time.Time) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
+func (ft ShopCollectionFilters) ByCreatedAtPtr(CreatedAt *time.Time) *sql.ColumnFilterPtr {
+	return &sql.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "created_at",
 		Value:  CreatedAt,
@@ -1803,8 +1276,8 @@ func (ft ShopCollectionFilters) ByCreatedAtPtr(CreatedAt *time.Time) *sq.ColumnF
 	}
 }
 
-func (ft ShopCollectionFilters) ByUpdatedAt(UpdatedAt time.Time) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
+func (ft ShopCollectionFilters) ByUpdatedAt(UpdatedAt time.Time) *sql.ColumnFilter {
+	return &sql.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "updated_at",
 		Value:  UpdatedAt,
@@ -1812,8 +1285,8 @@ func (ft ShopCollectionFilters) ByUpdatedAt(UpdatedAt time.Time) *sq.ColumnFilte
 	}
 }
 
-func (ft ShopCollectionFilters) ByUpdatedAtPtr(UpdatedAt *time.Time) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
+func (ft ShopCollectionFilters) ByUpdatedAtPtr(UpdatedAt *time.Time) *sql.ColumnFilterPtr {
+	return &sql.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "updated_at",
 		Value:  UpdatedAt,
@@ -1828,16 +1301,16 @@ func NewProductShopCollectionFilters(prefix string) ProductShopCollectionFilters
 	return ProductShopCollectionFilters{prefix}
 }
 
-func (ft ProductShopCollectionFilters) Filter(pred string, args ...interface{}) sq.WriterTo {
-	return sq.Filter(ft.prefix, pred, args...)
+func (ft ProductShopCollectionFilters) Filter(pred string, args ...interface{}) sql.WriterTo {
+	return sql.Filter(ft.prefix, pred, args...)
 }
 
 func (ft ProductShopCollectionFilters) Prefix() string {
 	return ft.prefix
 }
 
-func (ft ProductShopCollectionFilters) ByCollectionID(CollectionID int64) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
+func (ft ProductShopCollectionFilters) ByCollectionID(CollectionID int64) *sql.ColumnFilter {
+	return &sql.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "collection_id",
 		Value:  CollectionID,
@@ -1845,8 +1318,8 @@ func (ft ProductShopCollectionFilters) ByCollectionID(CollectionID int64) *sq.Co
 	}
 }
 
-func (ft ProductShopCollectionFilters) ByCollectionIDPtr(CollectionID *int64) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
+func (ft ProductShopCollectionFilters) ByCollectionIDPtr(CollectionID *int64) *sql.ColumnFilterPtr {
+	return &sql.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "collection_id",
 		Value:  CollectionID,
@@ -1855,8 +1328,8 @@ func (ft ProductShopCollectionFilters) ByCollectionIDPtr(CollectionID *int64) *s
 	}
 }
 
-func (ft ProductShopCollectionFilters) ByProductID(ProductID int64) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
+func (ft ProductShopCollectionFilters) ByProductID(ProductID int64) *sql.ColumnFilter {
+	return &sql.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "product_id",
 		Value:  ProductID,
@@ -1864,8 +1337,8 @@ func (ft ProductShopCollectionFilters) ByProductID(ProductID int64) *sq.ColumnFi
 	}
 }
 
-func (ft ProductShopCollectionFilters) ByProductIDPtr(ProductID *int64) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
+func (ft ProductShopCollectionFilters) ByProductIDPtr(ProductID *int64) *sql.ColumnFilterPtr {
+	return &sql.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "product_id",
 		Value:  ProductID,
@@ -1874,8 +1347,8 @@ func (ft ProductShopCollectionFilters) ByProductIDPtr(ProductID *int64) *sq.Colu
 	}
 }
 
-func (ft ProductShopCollectionFilters) ByShopID(ShopID int64) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
+func (ft ProductShopCollectionFilters) ByShopID(ShopID int64) *sql.ColumnFilter {
+	return &sql.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "shop_id",
 		Value:  ShopID,
@@ -1883,8 +1356,8 @@ func (ft ProductShopCollectionFilters) ByShopID(ShopID int64) *sq.ColumnFilter {
 	}
 }
 
-func (ft ProductShopCollectionFilters) ByShopIDPtr(ShopID *int64) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
+func (ft ProductShopCollectionFilters) ByShopIDPtr(ShopID *int64) *sql.ColumnFilterPtr {
+	return &sql.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "shop_id",
 		Value:  ShopID,
@@ -1893,8 +1366,8 @@ func (ft ProductShopCollectionFilters) ByShopIDPtr(ShopID *int64) *sq.ColumnFilt
 	}
 }
 
-func (ft ProductShopCollectionFilters) ByStatus(Status int) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
+func (ft ProductShopCollectionFilters) ByStatus(Status int) *sql.ColumnFilter {
+	return &sql.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "status",
 		Value:  Status,
@@ -1902,8 +1375,8 @@ func (ft ProductShopCollectionFilters) ByStatus(Status int) *sq.ColumnFilter {
 	}
 }
 
-func (ft ProductShopCollectionFilters) ByStatusPtr(Status *int) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
+func (ft ProductShopCollectionFilters) ByStatusPtr(Status *int) *sql.ColumnFilterPtr {
+	return &sql.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "status",
 		Value:  Status,
@@ -1912,8 +1385,8 @@ func (ft ProductShopCollectionFilters) ByStatusPtr(Status *int) *sq.ColumnFilter
 	}
 }
 
-func (ft ProductShopCollectionFilters) ByCreatedAt(CreatedAt time.Time) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
+func (ft ProductShopCollectionFilters) ByCreatedAt(CreatedAt time.Time) *sql.ColumnFilter {
+	return &sql.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "created_at",
 		Value:  CreatedAt,
@@ -1921,8 +1394,8 @@ func (ft ProductShopCollectionFilters) ByCreatedAt(CreatedAt time.Time) *sq.Colu
 	}
 }
 
-func (ft ProductShopCollectionFilters) ByCreatedAtPtr(CreatedAt *time.Time) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
+func (ft ProductShopCollectionFilters) ByCreatedAtPtr(CreatedAt *time.Time) *sql.ColumnFilterPtr {
+	return &sql.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "created_at",
 		Value:  CreatedAt,
@@ -1931,8 +1404,8 @@ func (ft ProductShopCollectionFilters) ByCreatedAtPtr(CreatedAt *time.Time) *sq.
 	}
 }
 
-func (ft ProductShopCollectionFilters) ByUpdatedAt(UpdatedAt time.Time) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
+func (ft ProductShopCollectionFilters) ByUpdatedAt(UpdatedAt time.Time) *sql.ColumnFilter {
+	return &sql.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "updated_at",
 		Value:  UpdatedAt,
@@ -1940,8 +1413,8 @@ func (ft ProductShopCollectionFilters) ByUpdatedAt(UpdatedAt time.Time) *sq.Colu
 	}
 }
 
-func (ft ProductShopCollectionFilters) ByUpdatedAtPtr(UpdatedAt *time.Time) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
+func (ft ProductShopCollectionFilters) ByUpdatedAtPtr(UpdatedAt *time.Time) *sql.ColumnFilterPtr {
+	return &sql.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "updated_at",
 		Value:  UpdatedAt,
@@ -1956,16 +1429,16 @@ func NewProductSourceFilters(prefix string) ProductSourceFilters {
 	return ProductSourceFilters{prefix}
 }
 
-func (ft ProductSourceFilters) Filter(pred string, args ...interface{}) sq.WriterTo {
-	return sq.Filter(ft.prefix, pred, args...)
+func (ft ProductSourceFilters) Filter(pred string, args ...interface{}) sql.WriterTo {
+	return sql.Filter(ft.prefix, pred, args...)
 }
 
 func (ft ProductSourceFilters) Prefix() string {
 	return ft.prefix
 }
 
-func (ft ProductSourceFilters) ByID(ID int64) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
+func (ft ProductSourceFilters) ByID(ID int64) *sql.ColumnFilter {
+	return &sql.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "id",
 		Value:  ID,
@@ -1973,8 +1446,8 @@ func (ft ProductSourceFilters) ByID(ID int64) *sq.ColumnFilter {
 	}
 }
 
-func (ft ProductSourceFilters) ByIDPtr(ID *int64) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
+func (ft ProductSourceFilters) ByIDPtr(ID *int64) *sql.ColumnFilterPtr {
+	return &sql.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "id",
 		Value:  ID,
@@ -1983,8 +1456,8 @@ func (ft ProductSourceFilters) ByIDPtr(ID *int64) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft ProductSourceFilters) ByType(Type string) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
+func (ft ProductSourceFilters) ByType(Type string) *sql.ColumnFilter {
+	return &sql.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "type",
 		Value:  Type,
@@ -1992,8 +1465,8 @@ func (ft ProductSourceFilters) ByType(Type string) *sq.ColumnFilter {
 	}
 }
 
-func (ft ProductSourceFilters) ByTypePtr(Type *string) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
+func (ft ProductSourceFilters) ByTypePtr(Type *string) *sql.ColumnFilterPtr {
+	return &sql.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "type",
 		Value:  Type,
@@ -2002,8 +1475,8 @@ func (ft ProductSourceFilters) ByTypePtr(Type *string) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft ProductSourceFilters) ByName(Name string) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
+func (ft ProductSourceFilters) ByName(Name string) *sql.ColumnFilter {
+	return &sql.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "name",
 		Value:  Name,
@@ -2011,8 +1484,8 @@ func (ft ProductSourceFilters) ByName(Name string) *sq.ColumnFilter {
 	}
 }
 
-func (ft ProductSourceFilters) ByNamePtr(Name *string) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
+func (ft ProductSourceFilters) ByNamePtr(Name *string) *sql.ColumnFilterPtr {
+	return &sql.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "name",
 		Value:  Name,
@@ -2021,8 +1494,8 @@ func (ft ProductSourceFilters) ByNamePtr(Name *string) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft ProductSourceFilters) ByStatus(Status model.Status3) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
+func (ft ProductSourceFilters) ByStatus(Status model.Status3) *sql.ColumnFilter {
+	return &sql.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "status",
 		Value:  Status,
@@ -2030,8 +1503,8 @@ func (ft ProductSourceFilters) ByStatus(Status model.Status3) *sq.ColumnFilter {
 	}
 }
 
-func (ft ProductSourceFilters) ByStatusPtr(Status *model.Status3) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
+func (ft ProductSourceFilters) ByStatusPtr(Status *model.Status3) *sql.ColumnFilterPtr {
+	return &sql.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "status",
 		Value:  Status,
@@ -2040,8 +1513,8 @@ func (ft ProductSourceFilters) ByStatusPtr(Status *model.Status3) *sq.ColumnFilt
 	}
 }
 
-func (ft ProductSourceFilters) ByCreatedAt(CreatedAt time.Time) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
+func (ft ProductSourceFilters) ByCreatedAt(CreatedAt time.Time) *sql.ColumnFilter {
+	return &sql.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "created_at",
 		Value:  CreatedAt,
@@ -2049,8 +1522,8 @@ func (ft ProductSourceFilters) ByCreatedAt(CreatedAt time.Time) *sq.ColumnFilter
 	}
 }
 
-func (ft ProductSourceFilters) ByCreatedAtPtr(CreatedAt *time.Time) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
+func (ft ProductSourceFilters) ByCreatedAtPtr(CreatedAt *time.Time) *sql.ColumnFilterPtr {
+	return &sql.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "created_at",
 		Value:  CreatedAt,
@@ -2059,8 +1532,8 @@ func (ft ProductSourceFilters) ByCreatedAtPtr(CreatedAt *time.Time) *sq.ColumnFi
 	}
 }
 
-func (ft ProductSourceFilters) ByUpdatedAt(UpdatedAt time.Time) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
+func (ft ProductSourceFilters) ByUpdatedAt(UpdatedAt time.Time) *sql.ColumnFilter {
+	return &sql.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "updated_at",
 		Value:  UpdatedAt,
@@ -2068,8 +1541,8 @@ func (ft ProductSourceFilters) ByUpdatedAt(UpdatedAt time.Time) *sq.ColumnFilter
 	}
 }
 
-func (ft ProductSourceFilters) ByUpdatedAtPtr(UpdatedAt *time.Time) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
+func (ft ProductSourceFilters) ByUpdatedAtPtr(UpdatedAt *time.Time) *sql.ColumnFilterPtr {
+	return &sql.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "updated_at",
 		Value:  UpdatedAt,
@@ -2084,16 +1557,16 @@ func NewProductSourceCategoryFilters(prefix string) ProductSourceCategoryFilters
 	return ProductSourceCategoryFilters{prefix}
 }
 
-func (ft ProductSourceCategoryFilters) Filter(pred string, args ...interface{}) sq.WriterTo {
-	return sq.Filter(ft.prefix, pred, args...)
+func (ft ProductSourceCategoryFilters) Filter(pred string, args ...interface{}) sql.WriterTo {
+	return sql.Filter(ft.prefix, pred, args...)
 }
 
 func (ft ProductSourceCategoryFilters) Prefix() string {
 	return ft.prefix
 }
 
-func (ft ProductSourceCategoryFilters) ByID(ID int64) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
+func (ft ProductSourceCategoryFilters) ByID(ID int64) *sql.ColumnFilter {
+	return &sql.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "id",
 		Value:  ID,
@@ -2101,8 +1574,8 @@ func (ft ProductSourceCategoryFilters) ByID(ID int64) *sq.ColumnFilter {
 	}
 }
 
-func (ft ProductSourceCategoryFilters) ByIDPtr(ID *int64) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
+func (ft ProductSourceCategoryFilters) ByIDPtr(ID *int64) *sql.ColumnFilterPtr {
+	return &sql.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "id",
 		Value:  ID,
@@ -2111,8 +1584,8 @@ func (ft ProductSourceCategoryFilters) ByIDPtr(ID *int64) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft ProductSourceCategoryFilters) ByProductSourceID(ProductSourceID int64) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
+func (ft ProductSourceCategoryFilters) ByProductSourceID(ProductSourceID int64) *sql.ColumnFilter {
+	return &sql.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "product_source_id",
 		Value:  ProductSourceID,
@@ -2120,8 +1593,8 @@ func (ft ProductSourceCategoryFilters) ByProductSourceID(ProductSourceID int64) 
 	}
 }
 
-func (ft ProductSourceCategoryFilters) ByProductSourceIDPtr(ProductSourceID *int64) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
+func (ft ProductSourceCategoryFilters) ByProductSourceIDPtr(ProductSourceID *int64) *sql.ColumnFilterPtr {
+	return &sql.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "product_source_id",
 		Value:  ProductSourceID,
@@ -2130,8 +1603,8 @@ func (ft ProductSourceCategoryFilters) ByProductSourceIDPtr(ProductSourceID *int
 	}
 }
 
-func (ft ProductSourceCategoryFilters) ByProductSourceType(ProductSourceType string) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
+func (ft ProductSourceCategoryFilters) ByProductSourceType(ProductSourceType string) *sql.ColumnFilter {
+	return &sql.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "product_source_type",
 		Value:  ProductSourceType,
@@ -2139,8 +1612,8 @@ func (ft ProductSourceCategoryFilters) ByProductSourceType(ProductSourceType str
 	}
 }
 
-func (ft ProductSourceCategoryFilters) ByProductSourceTypePtr(ProductSourceType *string) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
+func (ft ProductSourceCategoryFilters) ByProductSourceTypePtr(ProductSourceType *string) *sql.ColumnFilterPtr {
+	return &sql.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "product_source_type",
 		Value:  ProductSourceType,
@@ -2149,8 +1622,8 @@ func (ft ProductSourceCategoryFilters) ByProductSourceTypePtr(ProductSourceType 
 	}
 }
 
-func (ft ProductSourceCategoryFilters) ByParentID(ParentID int64) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
+func (ft ProductSourceCategoryFilters) ByParentID(ParentID int64) *sql.ColumnFilter {
+	return &sql.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "parent_id",
 		Value:  ParentID,
@@ -2158,8 +1631,8 @@ func (ft ProductSourceCategoryFilters) ByParentID(ParentID int64) *sq.ColumnFilt
 	}
 }
 
-func (ft ProductSourceCategoryFilters) ByParentIDPtr(ParentID *int64) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
+func (ft ProductSourceCategoryFilters) ByParentIDPtr(ParentID *int64) *sql.ColumnFilterPtr {
+	return &sql.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "parent_id",
 		Value:  ParentID,
@@ -2168,8 +1641,8 @@ func (ft ProductSourceCategoryFilters) ByParentIDPtr(ParentID *int64) *sq.Column
 	}
 }
 
-func (ft ProductSourceCategoryFilters) ByShopID(ShopID int64) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
+func (ft ProductSourceCategoryFilters) ByShopID(ShopID int64) *sql.ColumnFilter {
+	return &sql.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "shop_id",
 		Value:  ShopID,
@@ -2177,8 +1650,8 @@ func (ft ProductSourceCategoryFilters) ByShopID(ShopID int64) *sq.ColumnFilter {
 	}
 }
 
-func (ft ProductSourceCategoryFilters) ByShopIDPtr(ShopID *int64) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
+func (ft ProductSourceCategoryFilters) ByShopIDPtr(ShopID *int64) *sql.ColumnFilterPtr {
+	return &sql.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "shop_id",
 		Value:  ShopID,
@@ -2187,8 +1660,8 @@ func (ft ProductSourceCategoryFilters) ByShopIDPtr(ShopID *int64) *sq.ColumnFilt
 	}
 }
 
-func (ft ProductSourceCategoryFilters) ByName(Name string) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
+func (ft ProductSourceCategoryFilters) ByName(Name string) *sql.ColumnFilter {
+	return &sql.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "name",
 		Value:  Name,
@@ -2196,8 +1669,8 @@ func (ft ProductSourceCategoryFilters) ByName(Name string) *sq.ColumnFilter {
 	}
 }
 
-func (ft ProductSourceCategoryFilters) ByNamePtr(Name *string) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
+func (ft ProductSourceCategoryFilters) ByNamePtr(Name *string) *sql.ColumnFilterPtr {
+	return &sql.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "name",
 		Value:  Name,
@@ -2206,8 +1679,8 @@ func (ft ProductSourceCategoryFilters) ByNamePtr(Name *string) *sq.ColumnFilterP
 	}
 }
 
-func (ft ProductSourceCategoryFilters) ByStatus(Status int) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
+func (ft ProductSourceCategoryFilters) ByStatus(Status int) *sql.ColumnFilter {
+	return &sql.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "status",
 		Value:  Status,
@@ -2215,8 +1688,8 @@ func (ft ProductSourceCategoryFilters) ByStatus(Status int) *sq.ColumnFilter {
 	}
 }
 
-func (ft ProductSourceCategoryFilters) ByStatusPtr(Status *int) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
+func (ft ProductSourceCategoryFilters) ByStatusPtr(Status *int) *sql.ColumnFilterPtr {
+	return &sql.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "status",
 		Value:  Status,
@@ -2225,8 +1698,8 @@ func (ft ProductSourceCategoryFilters) ByStatusPtr(Status *int) *sq.ColumnFilter
 	}
 }
 
-func (ft ProductSourceCategoryFilters) ByCreatedAt(CreatedAt time.Time) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
+func (ft ProductSourceCategoryFilters) ByCreatedAt(CreatedAt time.Time) *sql.ColumnFilter {
+	return &sql.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "created_at",
 		Value:  CreatedAt,
@@ -2234,8 +1707,8 @@ func (ft ProductSourceCategoryFilters) ByCreatedAt(CreatedAt time.Time) *sq.Colu
 	}
 }
 
-func (ft ProductSourceCategoryFilters) ByCreatedAtPtr(CreatedAt *time.Time) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
+func (ft ProductSourceCategoryFilters) ByCreatedAtPtr(CreatedAt *time.Time) *sql.ColumnFilterPtr {
+	return &sql.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "created_at",
 		Value:  CreatedAt,
@@ -2244,8 +1717,8 @@ func (ft ProductSourceCategoryFilters) ByCreatedAtPtr(CreatedAt *time.Time) *sq.
 	}
 }
 
-func (ft ProductSourceCategoryFilters) ByUpdatedAt(UpdatedAt time.Time) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
+func (ft ProductSourceCategoryFilters) ByUpdatedAt(UpdatedAt time.Time) *sql.ColumnFilter {
+	return &sql.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "updated_at",
 		Value:  UpdatedAt,
@@ -2253,8 +1726,8 @@ func (ft ProductSourceCategoryFilters) ByUpdatedAt(UpdatedAt time.Time) *sq.Colu
 	}
 }
 
-func (ft ProductSourceCategoryFilters) ByUpdatedAtPtr(UpdatedAt *time.Time) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
+func (ft ProductSourceCategoryFilters) ByUpdatedAtPtr(UpdatedAt *time.Time) *sql.ColumnFilterPtr {
+	return &sql.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "updated_at",
 		Value:  UpdatedAt,
@@ -2263,8 +1736,8 @@ func (ft ProductSourceCategoryFilters) ByUpdatedAtPtr(UpdatedAt *time.Time) *sq.
 	}
 }
 
-func (ft ProductSourceCategoryFilters) ByDeletedAt(DeletedAt time.Time) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
+func (ft ProductSourceCategoryFilters) ByDeletedAt(DeletedAt time.Time) *sql.ColumnFilter {
+	return &sql.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "deleted_at",
 		Value:  DeletedAt,
@@ -2272,8 +1745,8 @@ func (ft ProductSourceCategoryFilters) ByDeletedAt(DeletedAt time.Time) *sq.Colu
 	}
 }
 
-func (ft ProductSourceCategoryFilters) ByDeletedAtPtr(DeletedAt *time.Time) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
+func (ft ProductSourceCategoryFilters) ByDeletedAtPtr(DeletedAt *time.Time) *sql.ColumnFilterPtr {
+	return &sql.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "deleted_at",
 		Value:  DeletedAt,
