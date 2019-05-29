@@ -6,6 +6,8 @@ import (
 	"strings"
 	"time"
 
+	"etop.vn/backend/pkg/common/bus"
+
 	"github.com/go-xorm/builder"
 	"github.com/lib/pq"
 
@@ -84,7 +86,7 @@ func (m multiplelity) ensureMultiplelity(countable interface{ Count() (uint64, e
 }
 
 func inTransaction(callback func(cmsql.QueryInterface) error) (err error) {
-	return x.InTransaction(callback)
+	return x.InTransaction(bus.Ctx(), callback)
 }
 
 func LimitSort(s Query, p *cm.Paging, sortWhitelist map[string]string) (Query, error) {

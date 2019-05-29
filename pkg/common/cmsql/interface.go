@@ -1,6 +1,7 @@
 package cmsql
 
 import (
+	"context"
 	"database/sql"
 
 	cm "etop.vn/backend/pkg/common"
@@ -50,6 +51,12 @@ type QueryInterface interface {
 type DBX interface {
 	NewQuery() Query
 	QueryInterface
+}
+
+type TxKey struct{}
+
+type Transactioner interface {
+	InTransaction(ctx context.Context, callback func(QueryInterface) error) (err error)
 }
 
 // Tx rexports common/sql.Tx

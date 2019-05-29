@@ -361,11 +361,17 @@ func DefaultErrorMapper(err error, entry *sq.LogEntry) error {
 }
 
 // InTransaction ...
-func (db Database) InTransaction(callback func(QueryInterface) error) (err error) {
-	tx, err := db.Begin()
+func (db Database) InTransaction(ctx context.Context, callback func(QueryInterface) error) (err error) {
+	tx, err := db.BeginContext(ctx)
 	if err != nil {
 		return err
 	}
+	ctx2, ok := ctx.(bus.WithValuer)
+	if !ok {
+		panic("cmsql: InTransaction only accepts bus.NodeContext")
+	}
+	ctx2.WithValue(TxKey{}, tx)
+
 	defer func() {
 		e := recover()
 		if e != nil {
@@ -377,8 +383,17 @@ func (db Database) InTransaction(callback func(QueryInterface) error) (err error
 		} else {
 			err = tx.Commit()
 		}
+		ctx2.ResetValue(TxKey{})
 	}()
 	return callback(tx)
+}
+
+func GetTxOrQuery(ctx context.Context, db Database) QueryInterface {
+	tx := ctx.Value(TxKey{})
+	if tx == nil {
+		return db.WithContext(ctx)
+	}
+	return tx.(Tx)
 }
 
 func DefaultListenerProblemReport(ev pq.ListenerEventType, err error) {

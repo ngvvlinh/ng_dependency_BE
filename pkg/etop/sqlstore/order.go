@@ -830,7 +830,7 @@ func UpdateFulfillments(ctx context.Context, cmd *shipmodelx.UpdateFulfillmentsC
 		}
 	}
 
-	return x.InTransaction(func(x Qx) error {
+	return x.InTransaction(ctx, func(x Qx) error {
 		for _, ffm := range cmd.Fulfillments {
 			if err := ffm.BeforeUpdate(); err != nil {
 				return err

@@ -106,7 +106,7 @@ func TestEventListeners(t *testing.T) {
 		return nil
 	})
 
-	err := bus.Publish(&TestQuery{})
+	err := bus.Publish(Ctx(), &TestQuery{})
 
 	if err != nil {
 		t.Fatal("Publish event failed " + err.Error())

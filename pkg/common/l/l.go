@@ -36,7 +36,7 @@ type Logger struct {
 
 // XError appends error to current context
 func XError(ctx context.Context, msg string, fields ...zapcore.Field) {
-	if ctx, ok := ctx.(bus.NodeContext); ok {
+	if ctx, ok := ctx.(*bus.NodeContext); ok {
 		_, file, line, _ := runtime.Caller(1)
 		ctx.Logs = append(ctx.Logs, logline.LogLine{
 			//Level:  "error",
@@ -51,7 +51,7 @@ func XError(ctx context.Context, msg string, fields ...zapcore.Field) {
 
 // XWarn appends debug to current context
 func XWarn(ctx context.Context, msg string, fields ...zapcore.Field) {
-	if ctx, ok := ctx.(bus.NodeContext); ok {
+	if ctx, ok := ctx.(*bus.NodeContext); ok {
 		_, file, line, _ := runtime.Caller(1)
 		ctx.Logs = append(ctx.Logs, logline.LogLine{
 			//Level:  "warn",
@@ -66,7 +66,7 @@ func XWarn(ctx context.Context, msg string, fields ...zapcore.Field) {
 
 // XInfo appends debug to current context
 func XInfo(ctx context.Context, msg string, fields ...zapcore.Field) {
-	if ctx, ok := ctx.(bus.NodeContext); ok {
+	if ctx, ok := ctx.(*bus.NodeContext); ok {
 		_, file, line, _ := runtime.Caller(1)
 		ctx.Logs = append(ctx.Logs, logline.LogLine{
 			//Level:   "info",
@@ -82,7 +82,7 @@ func XInfo(ctx context.Context, msg string, fields ...zapcore.Field) {
 
 // XDebug appends debug to current context
 func XDebug(ctx context.Context, msg string, fields ...zapcore.Field) {
-	if ctx, ok := ctx.(bus.NodeContext); ok {
+	if ctx, ok := ctx.(*bus.NodeContext); ok {
 		_, file, line, _ := runtime.Caller(1)
 		ctx.Logs = append(ctx.Logs, logline.LogLine{
 			//Level:   "debug",

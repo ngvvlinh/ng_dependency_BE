@@ -13,9 +13,17 @@ import (
 	"etop.vn/backend/pkg/common/logline"
 )
 
+type WithValuer interface {
+	WithValue(key, val interface{})
+	ResetValue(key interface{})
+}
+
+type KV struct{ key, val interface{} }
+
 type NodeContext struct {
 	context.Context `json:"-"`
 
+	Values      *[]KV
 	Nodes       *[]*NodeContext `json:"-"`
 	Index       int             `json:"-"`
 	Parent      *NodeContext    `json:"-"`
@@ -38,8 +46,10 @@ func Ctx() *NodeContext {
 
 func NewRootContext(ctx context.Context) *NodeContext {
 	nodes := make([]*NodeContext, 1, 16)
+	values := make([]KV, 0, 16)
 	node := &NodeContext{
 		Context:     ctx,
+		Values:      &values,
 		Nodes:       &nodes,
 		ParentIndex: -1,
 	}
@@ -50,6 +60,7 @@ func NewRootContext(ctx context.Context) *NodeContext {
 func (n *NodeContext) WithMessage(msg interface{}) *NodeContext {
 	node := &NodeContext{
 		Context:     n.Context,
+		Values:      n.Values,
 		Nodes:       n.Nodes,
 		Parent:      n,
 		Message:     msg,
@@ -59,6 +70,30 @@ func (n *NodeContext) WithMessage(msg interface{}) *NodeContext {
 	}
 	*node.Nodes = append(*node.Nodes, node)
 	return node
+}
+
+func (n *NodeContext) Value(key interface{}) interface{} {
+	values := *n.Values
+	for i := len(values) - 1; i >= 0; i-- {
+		kv := values[i]
+		if kv.key == key {
+			return kv.val
+		}
+	}
+	return n.Context.Value(key)
+}
+
+func (n *NodeContext) WithValue(key, val interface{}) {
+	*n.Values = append(*n.Values, KV{key, val})
+}
+
+func (n *NodeContext) ResetValue(key, val interface{}) {
+	values := *n.Values
+	for i := range values {
+		if values[i].key == key {
+			values[i].val = nil
+		}
+	}
 }
 
 func GetStack(ctx context.Context) []*NodeContext {
