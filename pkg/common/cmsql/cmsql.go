@@ -362,6 +362,13 @@ func DefaultErrorMapper(err error, entry *sq.LogEntry) error {
 
 // InTransaction ...
 func (db Database) InTransaction(ctx context.Context, callback func(QueryInterface) error) (err error) {
+	{
+		tx := ctx.Value(TxKey{})
+		if tx != nil {
+			return callback(tx.(Tx))
+		}
+	}
+
 	tx, err := db.BeginContext(ctx)
 	if err != nil {
 		return err
