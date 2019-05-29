@@ -64,7 +64,7 @@ func (b *InProcBus) DispatchAll(ctx context.Context, msgs ...Msg) error {
 	return nil
 }
 
-func (b *InProcBus) Dispatch(ctx context.Context, msg Msg) error {
+func (b *InProcBus) Dispatch(ctx context.Context, msg Msg) (_err error) {
 	var msgType = reflect.TypeOf(msg).Elem()
 	var handler = b.handlers[msgType]
 	if handler == nil {
@@ -74,30 +74,42 @@ func (b *InProcBus) Dispatch(ctx context.Context, msg Msg) error {
 	var params = make([]reflect.Value, 2)
 	params[1] = reflect.ValueOf(msg)
 
-	var newNode *NodeContext
 	node, ok := ctx.(*NodeContext)
 	if ok {
-		newNode = node.WithMessage(msg)
+		newNode := node.WithMessage(msg)
 		params[0] = reflect.ValueOf(newNode) // Append new message
+		defer func() {
+			newNode.Error = _err
+			newNode.Time = time.Now().Sub(newNode.Start)
+		}()
+
 	} else {
 		params[0] = reflect.ValueOf(ctx)
 	}
 
 	ret := reflect.ValueOf(handler).Call(params)
 	err, _ := ret[0].Interface().(error)
-	if ok {
-		newNode.Error = err
-		newNode.Time = time.Now().Sub(newNode.Start)
-	}
 	return err
 }
 
-func (b *InProcBus) Publish(ctx context.Context, msg Msg) error {
+func (b *InProcBus) Publish(ctx context.Context, msg Msg) (_err error) {
 	var msgType = reflect.TypeOf(msg).Elem()
 	var listeners = b.listeners[msgType]
+	var params = make([]reflect.Value, 2)
+	params[1] = reflect.ValueOf(msg)
 
-	var params = make([]reflect.Value, 1)
-	params[0] = reflect.ValueOf(msg)
+	node, ok := ctx.(*NodeContext)
+	if ok {
+		newNode := node.WithMessage(msg)
+		params[0] = reflect.ValueOf(newNode) // Append new message
+		defer func() {
+			newNode.Error = _err
+			newNode.Time = time.Now().Sub(newNode.Start)
+		}()
+
+	} else {
+		params[0] = reflect.ValueOf(ctx)
+	}
 
 	for _, listenerHandler := range listeners {
 		ret := reflect.ValueOf(listenerHandler).Call(params)
@@ -106,7 +118,6 @@ func (b *InProcBus) Publish(ctx context.Context, msg Msg) error {
 			return err.(error)
 		}
 	}
-
 	for _, listenerHandler := range b.wildcardListeners {
 		ret := reflect.ValueOf(listenerHandler).Call(params)
 		err := ret[0].Interface()
@@ -114,7 +125,6 @@ func (b *InProcBus) Publish(ctx context.Context, msg Msg) error {
 			return err.(error)
 		}
 	}
-
 	return nil
 }
 
@@ -173,11 +183,11 @@ func (b *InProcBus) MockHandler(handler HandlerFunc) {
 
 func (b *InProcBus) AddEventListener(handler HandlerFunc) {
 	handlerType := reflect.TypeOf(handler)
-	if handlerType.NumIn() != 1 || handlerType.NumOut() != 1 {
-		panic("bus: Handler must receive 1 params and return error")
+	if handlerType.NumIn() != 2 || handlerType.NumOut() != 1 {
+		panic("bus: Handler must receive 2 params and return error")
 	}
 
-	eventType := handlerType.In(0).Elem()
+	eventType := handlerType.In(1).Elem()
 	_, exists := b.listeners[eventType]
 	if !exists {
 		b.listeners[eventType] = make([]HandlerFunc, 0)

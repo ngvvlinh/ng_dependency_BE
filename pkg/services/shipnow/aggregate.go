@@ -3,6 +3,8 @@ package shipnow
 import (
 	"context"
 
+	"etop.vn/api/main/ordering"
+
 	"etop.vn/api/main/address"
 	etoptypes "etop.vn/api/main/etop"
 	"etop.vn/api/main/identity"
@@ -58,10 +60,11 @@ func (a *Aggregate) CreateShipnowFulfillment(ctx context.Context, cmd *shipnow.C
 			OrderIds:             cmd.OrderIds,
 			ShipnowFulfillmentId: ffmID,
 		}
-		orders, err := a.pm.ShipnowOrderReservation(ctx, event)
+		err := a.pm.ShipnowOrderReservation(ctx, event)
 		if err != nil {
 			return err
 		}
+		var orders []*ordering.Order // TODO: fix it
 
 		var pickupAddress *ordertypes.Address
 		if cmd.PickupAddress != nil {

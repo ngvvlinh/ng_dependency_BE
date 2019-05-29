@@ -3,10 +3,6 @@ package pm
 import (
 	"context"
 
-	"etop.vn/api/meta"
-
-	"etop.vn/backend/pkg/common/bus"
-
 	"etop.vn/api/main/address"
 	etoptypes "etop.vn/api/main/etop"
 	"etop.vn/api/main/identity"
@@ -15,7 +11,9 @@ import (
 	"etop.vn/api/main/shipnow"
 	"etop.vn/api/main/shipnow/carrier"
 	shipnowtypes "etop.vn/api/main/shipnow/types"
+	"etop.vn/api/meta"
 	cm "etop.vn/backend/pkg/common"
+	"etop.vn/backend/pkg/common/bus"
 	shipnowconvert "etop.vn/backend/pkg/services/shipnow/convert"
 )
 
@@ -57,7 +55,7 @@ func (m *ProcessManager) RegisterEventHandlers(eventBus bus.EventRegistry) {
 	// TODO: add more
 }
 
-func (m *ProcessManager) ShipnowOrderReservation(ctx context.Context, event *shipnow.ShipnowOrderReservationEvent) ([]*ordering.Order, error) {
+func (m *ProcessManager) ShipnowOrderReservation(ctx context.Context, event *shipnow.ShipnowOrderReservationEvent) error {
 	// Call orderAggr for ReserveOrdersForFfm
 	cmd := &ordering.ReserveOrdersForFfmCommand{
 		OrderIDs:   event.OrderIds,
@@ -65,7 +63,7 @@ func (m *ProcessManager) ShipnowOrderReservation(ctx context.Context, event *shi
 		FulfillIDs: []int64{event.ShipnowFulfillmentId},
 	}
 	if err := m.orderAggrBus.Dispatch(ctx, cmd); err != nil {
-		return nil, err
+		return err
 	}
 	// args := &ordering.ReserveOrdersForFfmArgs{
 	// 	OrderIDs: event.OrderIds,
@@ -75,7 +73,7 @@ func (m *ProcessManager) ShipnowOrderReservation(ctx context.Context, event *shi
 	// 	return nil, err
 	// }
 
-	return cmd.Result.Orders, nil
+	return nil
 }
 
 func (m *ProcessManager) HandleShipnowCancellation(ctx context.Context, cmd *shipnow.CancelShipnowFulfillmentArgs) error {

@@ -38,6 +38,8 @@ type NodeContext struct {
 	Error error `json:"-"`
 }
 
+var _ WithValuer = &NodeContext{}
+
 // Ctx is shorthand for NewRootContext(context.Background()) for quickly insert
 // context to code.
 func Ctx() *NodeContext {
@@ -87,7 +89,7 @@ func (n *NodeContext) WithValue(key, val interface{}) {
 	*n.Values = append(*n.Values, KV{key, val})
 }
 
-func (n *NodeContext) ResetValue(key, val interface{}) {
+func (n *NodeContext) ResetValue(key interface{}) {
 	values := *n.Values
 	for i := range values {
 		if values[i].key == key {
