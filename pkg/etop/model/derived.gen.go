@@ -4856,7 +4856,7 @@ func sqlgenAddress(_ *Address) bool { return true }
 type Addresses []*Address
 
 const __sqlAddress_Table = "address"
-const __sqlAddress_ListCols = "\"id\",\"full_name\",\"first_name\",\"last_name\",\"phone\",\"position\",\"email\",\"country\",\"city\",\"province\",\"district\",\"ward\",\"zip\",\"district_code\",\"province_code\",\"ward_code\",\"company\",\"address1\",\"address2\",\"type\",\"account_id\",\"notes\",\"created_at\",\"updated_at\",\"coordinates\""
+const __sqlAddress_ListCols = "\"id\",\"full_name\",\"first_name\",\"last_name\",\"phone\",\"position\",\"email\",\"country\",\"city\",\"province\",\"district\",\"ward\",\"zip\",\"district_code\",\"province_code\",\"ward_code\",\"company\",\"address1\",\"address2\",\"type\",\"account_id\",\"notes\",\"created_at\",\"updated_at\""
 const __sqlAddress_Insert = "INSERT INTO \"address\" (" + __sqlAddress_ListCols + ") VALUES"
 const __sqlAddress_Select = "SELECT " + __sqlAddress_ListCols + " FROM \"address\""
 const __sqlAddress_Select_history = "SELECT " + __sqlAddress_ListCols + " FROM history.\"address\""
@@ -4893,7 +4893,6 @@ func (m *Address) SQLArgs(opts core.Opts, create bool) []interface{} {
 		core.JSON{m.Notes},
 		core.Now(m.CreatedAt, now, create),
 		core.Now(m.UpdatedAt, now, true),
-		core.JSON{m.Coordinates},
 	}
 }
 
@@ -4923,7 +4922,6 @@ func (m *Address) SQLScanArgs(opts core.Opts) []interface{} {
 		core.JSON{&m.Notes},
 		(*core.Time)(&m.CreatedAt),
 		(*core.Time)(&m.UpdatedAt),
-		core.JSON{&m.Coordinates},
 	}
 }
 
@@ -4961,7 +4959,7 @@ func (_ *Addresses) SQLSelect(w SQLWriter) error {
 func (m *Address) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlAddress_Insert)
 	w.WriteRawString(" (")
-	w.WriteMarkers(25)
+	w.WriteMarkers(24)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), true))
 	return nil
@@ -4971,7 +4969,7 @@ func (ms Addresses) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlAddress_Insert)
 	w.WriteRawString(" (")
 	for i := 0; i < len(ms); i++ {
-		w.WriteMarkers(25)
+		w.WriteMarkers(24)
 		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
 		w.WriteRawString("),(")
 	}
@@ -5178,14 +5176,6 @@ func (m *Address) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(core.Now(m.UpdatedAt, time.Now(), true))
 	}
-	if m.Coordinates != nil {
-		flag = true
-		w.WriteName("coordinates")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(core.JSON{m.Coordinates})
-	}
 	if !flag {
 		return core.ErrNoColumn
 	}
@@ -5196,7 +5186,7 @@ func (m *Address) SQLUpdate(w SQLWriter) error {
 func (m *Address) SQLUpdateAll(w SQLWriter) error {
 	w.WriteQueryString(__sqlAddress_UpdateAll)
 	w.WriteRawString(" = (")
-	w.WriteMarkers(25)
+	w.WriteMarkers(24)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), false))
 	return nil
@@ -5242,18 +5232,17 @@ func (m AddressHistory) AccountID() core.Interface    { return core.Interface{m[
 func (m AddressHistory) Notes() core.Interface        { return core.Interface{m["notes"]} }
 func (m AddressHistory) CreatedAt() core.Interface    { return core.Interface{m["created_at"]} }
 func (m AddressHistory) UpdatedAt() core.Interface    { return core.Interface{m["updated_at"]} }
-func (m AddressHistory) Coordinates() core.Interface  { return core.Interface{m["coordinates"]} }
 
 func (m *AddressHistory) SQLScan(opts core.Opts, row *sql.Row) error {
-	data := make([]interface{}, 25)
-	args := make([]interface{}, 25)
-	for i := 0; i < 25; i++ {
+	data := make([]interface{}, 24)
+	args := make([]interface{}, 24)
+	for i := 0; i < 24; i++ {
 		args[i] = &data[i]
 	}
 	if err := row.Scan(args...); err != nil {
 		return err
 	}
-	res := make(AddressHistory, 25)
+	res := make(AddressHistory, 24)
 	res["id"] = data[0]
 	res["full_name"] = data[1]
 	res["first_name"] = data[2]
@@ -5278,15 +5267,14 @@ func (m *AddressHistory) SQLScan(opts core.Opts, row *sql.Row) error {
 	res["notes"] = data[21]
 	res["created_at"] = data[22]
 	res["updated_at"] = data[23]
-	res["coordinates"] = data[24]
 	*m = res
 	return nil
 }
 
 func (ms *AddressHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	data := make([]interface{}, 25)
-	args := make([]interface{}, 25)
-	for i := 0; i < 25; i++ {
+	data := make([]interface{}, 24)
+	args := make([]interface{}, 24)
+	for i := 0; i < 24; i++ {
 		args[i] = &data[i]
 	}
 	res := make(AddressHistories, 0, 128)
@@ -5319,7 +5307,6 @@ func (ms *AddressHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
 		m["notes"] = data[21]
 		m["created_at"] = data[22]
 		m["updated_at"] = data[23]
-		m["coordinates"] = data[24]
 		res = append(res, m)
 	}
 	if err := rows.Err(); err != nil {

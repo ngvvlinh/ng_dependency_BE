@@ -110,8 +110,8 @@ type Order struct {
 
 	CustomerNameNorm string
 	ProductNameNorm  string
-	Fulfill          FulfillType
-	FulfillIDs       []int64
+	Fulfill          FulfillType `sq:"-"`
+	FulfillIDs       []int64     `sq:"-"`
 }
 
 func (m *Order) SelfURL(baseURL string, accType int) string {
