@@ -11,8 +11,18 @@ import (
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/cmsql"
 	"etop.vn/backend/pkg/common/httpreq"
+	"etop.vn/backend/pkg/common/sq"
 	"etop.vn/backend/pkg/common/validate"
 )
+
+type IncludeDeleted bool
+
+func (includeDeleted IncludeDeleted) Check(query cmsql.Query, ft sq.WriterTo) cmsql.Query {
+	if includeDeleted {
+		return query
+	}
+	return query.Where(ft)
+}
 
 type FilterWhitelist struct {
 	Arrays   []string
@@ -39,19 +49,19 @@ func (f *FilterWhitelist) ToCol(col, suffix string) string {
 	return `"` + col + suffix + `" `
 }
 
-func LimitSort(s cmsql.QueryInterface, p *cm.Paging, sortWhitelist map[string]string) (cmsql.QueryInterface, error) {
+func LimitSort(s cmsql.Query, p *cm.Paging, sortWhitelist map[string]string) (cmsql.Query, error) {
 	if p == nil {
-		s = s.Limit(10000)
+		s = s.Limit(100)
 		return s, nil
 	}
 	if p.Limit <= 0 {
-		p.Limit = 10000
+		p.Limit = 100
 	}
 	s = s.Limit(uint64(p.Limit)).Offset(uint64(p.Offset))
 	return Sort(s, p.Sort, sortWhitelist)
 }
 
-func Sort(s cmsql.QueryInterface, sorts []string, whitelist map[string]string) (cmsql.QueryInterface, error) {
+func Sort(s cmsql.Query, sorts []string, whitelist map[string]string) (cmsql.Query, error) {
 	for _, sort := range sorts {
 		sort = strings.TrimSpace(sort)
 		if sort == "" {
@@ -77,14 +87,14 @@ func Sort(s cmsql.QueryInterface, sorts []string, whitelist map[string]string) (
 	return s, nil
 }
 
-func Filters(s cmsql.QueryInterface, filters []cm.Filter, whitelist FilterWhitelist) (cmsql.QueryInterface, bool, error) {
+func Filters(s cmsql.Query, filters []cm.Filter, whitelist FilterWhitelist) (cmsql.Query, bool, error) {
 	ok := false
 	for _, filter := range filters {
 		filter.Name = strings.TrimSpace(filter.Name)
 		names := reList.Split(filter.Name, -1)
 		for i, name := range names {
 			if name == "" {
-				return nil, false, cm.Error(cm.InvalidArgument, "Invalid property name: "+filter.Name, nil)
+				return cmsql.Query{}, false, cm.Error(cm.InvalidArgument, "Invalid property name: "+filter.Name, nil)
 			}
 
 			if strings.HasPrefix(name, "s_") {
@@ -110,17 +120,17 @@ func Filters(s cmsql.QueryInterface, filters []cm.Filter, whitelist FilterWhitel
 			isNullable := containsAll(whitelist.Nullable, names)
 			isBool := containsAll(whitelist.Bools, names)
 			if !isString && !isNumber && !isStatus && !isBool && !isNullable {
-				return nil, false, cm.Error(cm.InvalidArgument, "Exactly filter is not allowed for "+filter.Name, nil)
+				return cmsql.Query{}, false, cm.Error(cm.InvalidArgument, "Exactly filter is not allowed for "+filter.Name, nil)
 			}
 			if countBool(isNumber, isStatus, isString, isBool, isNullable) != 1 {
-				return nil, false, cm.Error(cm.InvalidArgument, "Exactly filter must contain the same type "+filter.Name, nil)
+				return cmsql.Query{}, false, cm.Error(cm.InvalidArgument, "Exactly filter must contain the same type "+filter.Name, nil)
 			}
 
 			cfg := valueConfig{isNumber: isNumber, isStatus: isStatus, isBool: isBool, isNullable: isNullable}
 			if op == "=" || op == "!=" {
 				value, err := parseValue(filter.Value, cfg)
 				if err != nil {
-					return nil, false, err
+					return cmsql.Query{}, false, err
 				}
 				if isNullable {
 					s = buildQuery(s, names, value, func(name string) string {
@@ -138,11 +148,11 @@ func Filters(s cmsql.QueryInterface, filters []cm.Filter, whitelist FilterWhitel
 
 			} else {
 				if isBool || isNullable {
-					return nil, false, cm.Errorf(cm.InvalidArgument, nil, "Element filter is not allowed for "+filter.Name)
+					return cmsql.Query{}, false, cm.Errorf(cm.InvalidArgument, nil, "Element filter is not allowed for "+filter.Name)
 				}
 				value, err := parseValueAsList(filter.Value, cfg)
 				if err != nil {
-					return nil, false, err
+					return cmsql.Query{}, false, err
 				}
 				ors := make([]builder.Cond, len(names))
 				for i, name := range names {
@@ -151,7 +161,7 @@ func Filters(s cmsql.QueryInterface, filters []cm.Filter, whitelist FilterWhitel
 				}
 				sql, args, err := builder.ToSQL(builder.Or(ors...))
 				if err != nil {
-					return nil, false, err
+					return cmsql.Query{}, false, err
 				}
 				s = s.Where(combineArgs(sql, args)...)
 			}
@@ -166,15 +176,15 @@ func Filters(s cmsql.QueryInterface, filters []cm.Filter, whitelist FilterWhitel
 			isNumber := containsAll(whitelist.Numbers, names)
 			isDate := containsAll(whitelist.Dates, names)
 			if !isNumber && !isDate {
-				return nil, false, cm.Error(cm.InvalidArgument, "Compare filter is not allowed for "+filter.Name, nil)
+				return cmsql.Query{}, false, cm.Error(cm.InvalidArgument, "Compare filter is not allowed for "+filter.Name, nil)
 			}
 			if countBool(isNumber, isDate) != 1 {
-				return nil, false, cm.Error(cm.InvalidArgument, "Compare filter must contain the same type "+filter.Name, nil)
+				return cmsql.Query{}, false, cm.Error(cm.InvalidArgument, "Compare filter must contain the same type "+filter.Name, nil)
 			}
 
 			value, err := parseValue(filter.Value, valueConfig{isNumber: isNumber, isDate: isDate})
 			if err != nil {
-				return nil, false, err
+				return cmsql.Query{}, false, err
 			}
 			s = buildQuery(s, names, value, func(name string) string {
 				return whitelist.ToCol(name, "") + ` ` + op + ` ?`
@@ -185,7 +195,7 @@ func Filters(s cmsql.QueryInterface, filters []cm.Filter, whitelist FilterWhitel
 			isText := containsAll(whitelist.Contains, names)
 			isArray := containsAll(whitelist.Arrays, names)
 			if !isText && !isArray {
-				return nil, false, cm.Error(cm.InvalidArgument, "Contains or intersect filter is not allowed for "+filter.Name, nil)
+				return cmsql.Query{}, false, cm.Error(cm.InvalidArgument, "Contains or intersect filter is not allowed for "+filter.Name, nil)
 			}
 
 			if isText {
@@ -203,7 +213,7 @@ func Filters(s cmsql.QueryInterface, filters []cm.Filter, whitelist FilterWhitel
 			} else {
 				value, err := parseValueAsList(filter.Value, valueConfig{})
 				if err != nil {
-					return nil, false, err
+					return cmsql.Query{}, false, err
 				}
 
 				var op string
@@ -220,7 +230,7 @@ func Filters(s cmsql.QueryInterface, filters []cm.Filter, whitelist FilterWhitel
 		case "~=", "≃":
 			isUnaccent := containsAll(whitelist.Unaccent, names)
 			if !isUnaccent {
-				return nil, false, cm.Errorf(cm.InvalidArgument, nil, "Almost equal is not allowed for %v", filter.Name)
+				return cmsql.Query{}, false, cm.Errorf(cm.InvalidArgument, nil, "Almost equal is not allowed for %v", filter.Name)
 			}
 			value := validate.NormalizeUnaccent(filter.Value)
 			s = buildQuery(s, names, value, func(name string) string {
@@ -228,7 +238,7 @@ func Filters(s cmsql.QueryInterface, filters []cm.Filter, whitelist FilterWhitel
 			})
 
 		default:
-			return nil, false, cm.Error(cm.InvalidArgument, "Invalid filter operation", nil)
+			return cmsql.Query{}, false, cm.Error(cm.InvalidArgument, "Invalid filter operation", nil)
 		}
 	}
 	return s, ok, nil
@@ -241,7 +251,7 @@ func combineArgs(sql string, args []interface{}) []interface{} {
 	return res
 }
 
-func buildQuery(s cmsql.QueryInterface, names []string, value interface{}, fn func(name string) string) cmsql.QueryInterface {
+func buildQuery(s cmsql.Query, names []string, value interface{}, fn func(name string) string) cmsql.Query {
 	if len(names) == 1 {
 		return s.Where(fn(names[0]), value)
 	}

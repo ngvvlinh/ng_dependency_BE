@@ -6,8 +6,8 @@ import "protoc-gen-swagger/options/annotations.proto";
 option (grpc.gateway.protoc_gen_swagger.options.openapiv2_swagger) = {
     info: {
         title: "eTop API: Shop";
-version:"v1";
-};
+        version:"v1";
+    };
 };
 
 import "gogoproto/gogo.proto";
@@ -285,34 +285,33 @@ message EtopVariant {
     optional int64 id = 1 [(gogoproto.nullable)=false];
     optional string code   = 2 [(gogoproto.nullable)=false];
 
-    optional int32  list_price = 15 [(gogoproto.nullable)=false];
-    optional int32  cost_price = 16 [(gogoproto.nullable)=false];
-    optional int32 wholesale_price  = 11 [(gogoproto.nullable)=false];
-    optional int32 retail_price_min = 13 [(gogoproto.nullable)=false];
-    optional int32 retail_price_max = 14 [(gogoproto.nullable)=false];
-
     optional string name  = 4 [(gogoproto.nullable)=false];
     optional string description = 6 [(gogoproto.nullable)=false];
     optional string short_desc  = 7 [(gogoproto.nullable)=false];
     optional string desc_html   = 8 [(gogoproto.nullable)=false];
     repeated string image_urls  = 9;
+
+    optional int32  list_price = 15 [(gogoproto.nullable)=false];
+    optional int32  cost_price = 16 [(gogoproto.nullable)=false];
 }
 
 message EtopProduct {
     optional int64 id = 1 [(gogoproto.nullable)=false];
     optional string code   = 2 [(gogoproto.nullable)=false];
 
-    optional int64  category_id = 10 [(gogoproto.nullable)=false];
-    optional string product_source_category_id = 11 [(gogoproto.nullable)=false];
-
     optional string name  = 4 [(gogoproto.nullable)=false];
     optional string description = 6 [(gogoproto.nullable)=false];
     optional string short_desc  = 7 [(gogoproto.nullable)=false];
     optional string desc_html   = 8 [(gogoproto.nullable)=false];
+    optional string unit        = 12 [(gogoproto.nullable)=false];
     repeated string image_urls  = 9;
 
-    optional int32 quantity_available  = 20 [(gogoproto.nullable)=false];
-    optional int64 s_brand_id = 21 [(gogoproto.nullable)=false];
+    optional int32  list_price = 15 [(gogoproto.nullable)=false];
+    optional int32  cost_price = 16 [(gogoproto.nullable)=false];
+
+    optional int64  category_id = 10 [(gogoproto.nullable)=false];
+    // @deprecated
+    optional int64 product_source_category_id = 11 [(gogoproto.nullable)=false];
 }
 
 message ShopVariant {
@@ -321,6 +320,7 @@ message ShopVariant {
     optional EtopVariant info = 8;
 
     optional string code   = 2 [(gogoproto.nullable)=false];
+    // @deprecated use code instead
     optional string ed_code   = 3 [(gogoproto.nullable)=false];
 
     optional string name        = 4 [(gogoproto.nullable)=false];
@@ -328,13 +328,19 @@ message ShopVariant {
     optional string short_desc  = 6 [(gogoproto.nullable)=false];
     optional string desc_html   = 7 [(gogoproto.nullable)=false];
     repeated string image_urls  = 9;
-    repeated string tags        = 10;
-    optional string note        = 11 [(gogoproto.nullable)=false];
-    optional status3.Status status = 12 [(gogoproto.nullable)=false];
-    optional bool is_available  = 13 [(gogoproto.nullable)=false];
+
     optional int32  list_price = 14 [(gogoproto.nullable)=false];
     optional int32  retail_price = 15 [(gogoproto.nullable)=false];
     optional int32  cost_price = 16 [(gogoproto.nullable)=false];
+
+    optional string note        = 11 [(gogoproto.nullable)=false];
+    optional status3.Status status = 12 [(gogoproto.nullable)=false];
+    optional bool is_available  = 13 [(gogoproto.nullable)=false];
+
+    // @deprecated use stags instead
+    repeated string  tags = 10;
+    repeated Tag    stags = 22;
+
     optional int64 collection_id = 17 [(gogoproto.nullable)=false];
     repeated Attribute attributes = 18;
 }
@@ -345,6 +351,7 @@ message ShopProduct {
     optional EtopProduct info = 8;
 
     optional string code   = 2 [(gogoproto.nullable)=false];
+    // @deprecated use code instead
     optional string ed_code   = 3 [(gogoproto.nullable)=false];
 
     optional string name        = 4 [(gogoproto.nullable)=false];
@@ -352,12 +359,22 @@ message ShopProduct {
     optional string short_desc  = 6 [(gogoproto.nullable)=false];
     optional string desc_html   = 7 [(gogoproto.nullable)=false];
     repeated string image_urls  = 9;
-    repeated string tags        = 10;
+
+    // @deprecated use stags instead
+    repeated string  tags = 10;
+    repeated Tag    stags = 22;
+
+    optional string note        = 11 [(gogoproto.nullable)=false];
     optional status3.Status status = 12 [(gogoproto.nullable)=false];
     optional bool is_available  = 13 [(gogoproto.nullable)=false];
 
+    optional int32  list_price = 14 [(gogoproto.nullable)=false];
+    optional int32  retail_price = 15 [(gogoproto.nullable)=false];
+    optional int32  cost_price = 16 [(gogoproto.nullable)=false];
+
     repeated int64 collection_ids = 17;
     repeated ShopVariant variants = 18;
+
     optional int64 product_source_id = 19 [(gogoproto.nullable)=false];
     optional string product_source_type = 20 [(gogoproto.nullable)=false];
     optional string product_source_name = 21 [(gogoproto.nullable)=false];
@@ -759,4 +776,9 @@ message Category {
     optional string product_source_type =  4 [(gogoproto.nullable)=false];
     optional int64 parent_id = 6 [(gogoproto.nullable)=false];
     optional int64 shop_id = 7 [(gogoproto.nullable)=false];
+}
+
+message Tag {
+    optional int64 id = 1 [(gogoproto.nullable)=false];
+    optional string label = 2 [(gogoproto.nullable)=false];
 }

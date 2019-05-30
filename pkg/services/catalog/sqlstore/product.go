@@ -6,7 +6,8 @@ import (
 	"etop.vn/api/main/catalog"
 	"etop.vn/api/meta"
 	"etop.vn/backend/pkg/common/cmsql"
-	sq "etop.vn/backend/pkg/common/sq"
+	"etop.vn/backend/pkg/common/sq"
+	"etop.vn/backend/pkg/common/sqlstore"
 	"etop.vn/backend/pkg/services/catalog/convert"
 	catalogmodel "etop.vn/backend/pkg/services/catalog/model"
 )
@@ -33,7 +34,7 @@ type ProductStore struct {
 	preds   []interface{}
 	filters meta.Filters
 
-	includeDeleted bool
+	includeDeleted sqlstore.IncludeDeleted
 }
 
 func (s *ProductStore) Where(pred sq.FilterQuery) *ProductStore {
@@ -65,12 +66,18 @@ func (s *ProductStore) IncludeDeleted() *ProductStore {
 	return s
 }
 
+func (s *ProductStore) Count() (uint64, error) {
+	query := s.query().Where(s.preds)
+	query = s.includeDeleted.Check(query, s.FtProduct.NotDeleted())
+	return query.Count((*catalogmodel.Product)(nil))
+}
+
 func (s *ProductStore) GetProductDB() (*catalogmodel.Product, error) {
-	if !s.includeDeleted {
-		s.preds = append(s.preds, s.FtProduct.NotDeleted())
-	}
+	query := s.query().Where(s.preds)
+	query = s.includeDeleted.Check(query, s.FtProduct.NotDeleted())
+
 	var product catalogmodel.Product
-	err := s.query().Where(s.preds).ShouldGet(&product)
+	err := query.ShouldGet(&product)
 	return &product, err
 }
 
@@ -82,14 +89,15 @@ func (s *ProductStore) GetProduct() (*catalog.Product, error) {
 	return convert.Product(product), nil
 }
 
-func (s *ProductStore) GetProductWithVariantsDB(paging meta.Paging) (*catalogmodel.ProductFtVariant, error) {
-	if !s.includeDeleted {
-		s.preds = append(s.preds, s.FtProduct.NotDeleted())
-	}
+func (s *ProductStore) GetProductWithVariantsDB() (*catalogmodel.ProductFtVariant, error) {
+	query := s.query().Where(s.preds)
+	query = s.includeDeleted.Check(query, s.FtProduct.NotDeleted())
+
 	var product catalogmodel.Product
-	if err := s.query().Where(s.preds...).ShouldGet(&product); err != nil {
+	if err := query.ShouldGet(&product); err != nil {
 		return nil, err
 	}
+
 	var variants catalogmodel.Variants
 	{
 		q := s.query().Where(s.ftVariant.ByProductID(product.ID))
@@ -106,43 +114,60 @@ func (s *ProductStore) GetProductWithVariantsDB(paging meta.Paging) (*catalogmod
 	}, nil
 }
 
-func (s *ProductStore) GetProductWithVariants(paging meta.Paging) (*catalog.ProductWithVariants, error) {
-	product, err := s.GetProductWithVariantsDB(paging)
+func (s *ProductStore) GetProductWithVariants() (*catalog.ProductWithVariants, error) {
+	product, err := s.GetProductWithVariantsDB()
 	if err != nil {
 		return nil, err
 	}
 	return convert.ProductWithVariants(product), nil
 }
 
-func (s *ProductStore) GetProductsDB(paging meta.Paging) ([]*catalogmodel.Product, error) {
-	if !s.includeDeleted {
-		s.preds = append(s.preds, "deleted_at IS NULL")
+func (s *ProductStore) ListProductsDB(paging meta.Paging) ([]*catalogmodel.Product, error) {
+	query := s.query().Where(s.preds)
+	query = s.includeDeleted.Check(query, s.FtProduct.NotDeleted())
+	query, err := sqlstore.LimitSort(query, &paging, SortProduct)
+	if err != nil {
+		return nil, err
 	}
+	query, _, err = sqlstore.Filters(query, s.filters, FilterProductWhitelist)
+	if err != nil {
+		return nil, err
+	}
+
 	var products catalogmodel.Products
-	err := s.query().Where(s.preds).Find(&products)
+	err = query.Find(&products)
 	return products, err
 }
 
-func (s *ProductStore) GetProducts(paging meta.Paging) ([]*catalog.Product, error) {
-	products, err := s.GetProductsDB(paging)
+func (s *ProductStore) ListProducts(paging meta.Paging) ([]*catalog.Product, error) {
+	products, err := s.ListProductsDB(paging)
 	if err != nil {
 		return nil, err
 	}
 	return convert.Products(products), nil
 }
 
-func (s *ProductStore) GetProductsWithVariantsDB(paging meta.Paging) ([]*catalogmodel.ProductFtVariant, error) {
-	if !s.includeDeleted {
-		s.preds = append(s.preds, s.FtProduct.NotDeleted())
+func (s *ProductStore) ListProductsWithVariantsDB(paging meta.Paging) ([]*catalogmodel.ProductFtVariant, error) {
+	query := s.query().Where(s.preds)
+	query = s.includeDeleted.Check(query, s.FtProduct.NotDeleted())
+	query, err := sqlstore.LimitSort(query, &paging, SortProduct)
+	if err != nil {
+		return nil, err
 	}
+	query, _, err = sqlstore.Filters(query, s.filters, FilterProductWhitelist)
+	if err != nil {
+		return nil, err
+	}
+
 	var products catalogmodel.Products
-	if err := s.query().Where(s.preds...).Find(&products); err != nil {
+	if err := query.Find(&products); err != nil {
 		return nil, err
 	}
 	productIDs := make([]int64, len(products))
 	for i, p := range products {
 		productIDs[i] = p.ID
 	}
+
 	var variants catalogmodel.Variants
 	{
 		q := s.query().In("product_id", productIDs)
@@ -169,8 +194,8 @@ func (s *ProductStore) GetProductsWithVariantsDB(paging meta.Paging) ([]*catalog
 	return result, nil
 }
 
-func (s *ProductStore) GetProductsWithVariants(paging meta.Paging) ([]*catalog.ProductWithVariants, error) {
-	products, err := s.GetProductsWithVariantsDB(paging)
+func (s *ProductStore) ListProductsWithVariants(paging meta.Paging) ([]*catalog.ProductWithVariants, error) {
+	products, err := s.ListProductsWithVariantsDB(paging)
 	if err != nil {
 		return nil, err
 	}

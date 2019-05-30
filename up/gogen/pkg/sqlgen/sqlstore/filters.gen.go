@@ -5,7 +5,7 @@ package sqlstore
 import (
 	"time"
 
-	sq "etop.vn/backend/pkg/common/sq"
+	"etop.vn/backend/pkg/common/sq"
 	m "etop.vn/backend/up/gogen/pkg/sqlgen/test"
 )
 

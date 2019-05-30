@@ -5,7 +5,7 @@ import (
 	"database/sql"
 
 	cm "etop.vn/backend/pkg/common"
-	sq "etop.vn/backend/pkg/common/sq"
+	"etop.vn/backend/pkg/common/sq"
 	"etop.vn/backend/pkg/common/sq/core"
 )
 

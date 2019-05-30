@@ -4969,13 +4969,6 @@
         "code": {
           "type": "string"
         },
-        "category_id": {
-          "type": "string",
-          "format": "int64"
-        },
-        "product_source_category_id": {
-          "type": "string"
-        },
         "name": {
           "type": "string"
         },
@@ -4988,19 +4981,31 @@
         "desc_html": {
           "type": "string"
         },
+        "unit": {
+          "type": "string"
+        },
         "image_urls": {
           "type": "array",
           "items": {
             "type": "string"
           }
         },
-        "quantity_available": {
+        "list_price": {
           "type": "integer",
           "format": "int32"
         },
-        "s_brand_id": {
+        "cost_price": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "category_id": {
           "type": "string",
           "format": "int64"
+        },
+        "product_source_category_id": {
+          "type": "string",
+          "format": "int64",
+          "title": "@deprecated"
         }
       }
     },
@@ -5014,26 +5019,6 @@
         "code": {
           "type": "string"
         },
-        "list_price": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "cost_price": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "wholesale_price": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "retail_price_min": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "retail_price_max": {
-          "type": "integer",
-          "format": "int32"
-        },
         "name": {
           "type": "string"
         },
@@ -5051,6 +5036,14 @@
           "items": {
             "type": "string"
           }
+        },
+        "list_price": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "cost_price": {
+          "type": "integer",
+          "format": "int32"
         }
       }
     },
@@ -5468,7 +5461,8 @@
           "type": "string"
         },
         "ed_code": {
-          "type": "string"
+          "type": "string",
+          "title": "@deprecated use code instead"
         },
         "name": {
           "type": "string"
@@ -5492,7 +5486,17 @@
           "type": "array",
           "items": {
             "type": "string"
+          },
+          "title": "@deprecated use stags instead"
+        },
+        "stags": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/shopTag"
           }
+        },
+        "note": {
+          "type": "string"
         },
         "status": {
           "$ref": "#/definitions/status3Status"
@@ -5500,6 +5504,18 @@
         "is_available": {
           "type": "boolean",
           "format": "boolean"
+        },
+        "list_price": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "retail_price": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "cost_price": {
+          "type": "integer",
+          "format": "int32"
         },
         "collection_ids": {
           "type": "array",
@@ -5557,7 +5573,8 @@
           "type": "string"
         },
         "ed_code": {
-          "type": "string"
+          "type": "string",
+          "title": "@deprecated use code instead"
         },
         "name": {
           "type": "string"
@@ -5577,22 +5594,6 @@
             "type": "string"
           }
         },
-        "tags": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "note": {
-          "type": "string"
-        },
-        "status": {
-          "$ref": "#/definitions/status3Status"
-        },
-        "is_available": {
-          "type": "boolean",
-          "format": "boolean"
-        },
         "list_price": {
           "type": "integer",
           "format": "int32"
@@ -5604,6 +5605,29 @@
         "cost_price": {
           "type": "integer",
           "format": "int32"
+        },
+        "note": {
+          "type": "string"
+        },
+        "status": {
+          "$ref": "#/definitions/status3Status"
+        },
+        "is_available": {
+          "type": "boolean",
+          "format": "boolean"
+        },
+        "tags": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "title": "@deprecated use stags instead"
+        },
+        "stags": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/shopTag"
+          }
         },
         "collection_id": {
           "type": "string",
@@ -5718,6 +5742,18 @@
           "items": {
             "$ref": "#/definitions/shopSummaryItem"
           }
+        }
+      }
+    },
+    "shopTag": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "label": {
+          "type": "string"
         }
       }
     },

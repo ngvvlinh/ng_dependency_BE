@@ -100,7 +100,7 @@ func VerifyOrders(ctx context.Context, shop *model.Shop, idx imcsv.Indexer, code
 
 		variantMap = make(map[string]*catalogmodel.VariantExtended)
 		for _, v := range variantCodeQuery.Result.Variants {
-			variantMap[v.EdCode] = v
+			variantMap[v.Code] = v
 		}
 	}
 

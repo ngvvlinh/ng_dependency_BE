@@ -10,7 +10,7 @@ import (
 	"etop.vn/backend/pkg/common/cmsql"
 	"etop.vn/backend/pkg/common/httpreq"
 	"etop.vn/backend/pkg/common/l"
-	sq "etop.vn/backend/pkg/common/sq"
+	"etop.vn/backend/pkg/common/sq"
 	"etop.vn/backend/pkg/common/sqlstore"
 	"etop.vn/backend/pkg/etop/model"
 	notisqlstore "etop.vn/backend/pkg/notifier/sqlstore"
@@ -28,7 +28,7 @@ type (
 	M  map[string]interface{}
 	Ms map[string]string
 
-	Query = cmsql.QueryInterface
+	Query = cmsql.Query
 	Qx    = cmsql.QueryInterface
 )
 
@@ -89,15 +89,15 @@ func LimitSort(s Query, p *cm.Paging, sortWhitelist map[string]string) (cmsql.Qu
 	if err != nil {
 		return cmsql.Query{}, err
 	}
-	return query.(cmsql.Query), nil
+	return query, nil
 }
 
-func Filters(s cmsql.QueryInterface, filters []cm.Filter, whitelist FilterWhitelist) (cmsql.Query, bool, error) {
+func Filters(s cmsql.Query, filters []cm.Filter, whitelist FilterWhitelist) (cmsql.Query, bool, error) {
 	query, ok, err := sqlstore.Filters(s, filters, whitelist)
 	if err != nil {
 		return cmsql.Query{}, ok, err
 	}
-	return query.(cmsql.Query), ok, nil
+	return query, ok, nil
 }
 
 func IDs(items []int64) []interface{} {

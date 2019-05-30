@@ -1,6 +1,6 @@
 package sqlstore
 
-import sq "etop.vn/backend/pkg/common/sq"
+import "etop.vn/backend/pkg/common/sq"
 
 func (ft FulfillmentFilters) NotDeleted() sq.WriterTo {
 	return ft.Filter("$.deleted_at IS NULL")

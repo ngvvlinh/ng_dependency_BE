@@ -97,6 +97,12 @@ func (ps Parts) WriteSQLTo(w core.SQLWriter, sep string) error {
 }
 
 func (ps *Parts) Append(preds ...interface{}) Parts {
+	if len(preds) == 1 {
+		if preds, ok := preds[0].([]interface{}); ok {
+			return ps.Append(preds...)
+		}
+	}
+
 	if len(preds) == 0 || preds[0] == nil {
 		return *ps
 	}

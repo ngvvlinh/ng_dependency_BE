@@ -370,7 +370,7 @@ func loadProducts(ctx context.Context, codeMode CodeMode, productSourceID int64,
 	mapProducts := make(map[string]*catalogmodel.Product)
 	for _, p := range query.Result.Products {
 		if useCode {
-			mapProducts[p.EdCode] = p
+			mapProducts[p.Code] = p
 		} else {
 			// Use p.NameNormUa here instead of p.NameNorm because NameNorm
 			// is sorted by Postgres while normalizing keeps the word order.
@@ -409,8 +409,8 @@ func loadVariants(
 	variantByCode = make(map[string]*catalogmodel.Variant)
 	variantByAttr = make(map[string]*catalogmodel.Variant)
 	for _, v := range query.Result.Variants {
-		if useCode && v.EdCode != "" {
-			variantByCode[v.EdCode] = v
+		if useCode && v.Code != "" {
+			variantByCode[v.Code] = v
 		}
 		variantByAttr[v.AttrNormKv] = v
 	}

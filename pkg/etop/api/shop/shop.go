@@ -199,7 +199,7 @@ func UpdateVariant(ctx context.Context, q *wrapshop.UpdateVariantEndpoint) error
 		ShopID:          shopID,
 		Variant:         pbshop.PbUpdateVariantToModel(shopID, q.UpdateVariantRequest),
 		CostPrice:       int(q.CostPrice),
-		EdCode:          q.Sku,
+		Code:            q.Sku,
 		Attributes:      convertpb.AttributesTomodel(q.Attributes),
 		ProductSourceID: productSourceID,
 	}

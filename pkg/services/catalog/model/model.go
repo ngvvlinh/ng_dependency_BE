@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	sq "etop.vn/backend/pkg/common/sq"
+	"etop.vn/backend/pkg/common/sq"
 	"etop.vn/backend/pkg/common/validate"
 	"etop.vn/backend/pkg/etop/model"
 )
@@ -16,18 +16,17 @@ var _ = sqlgenProduct(&Product{})
 type Product struct {
 	ID                      int64
 	ProductSourceID         int64
-	ProductSourceCategoryID string
+	ProductSourceCategoryID int64
 
 	Name        string
 	ShortDesc   string
 	Description string
 	DescHTML    string `sq:"'desc_html'"`
 	Unit        string
+	ImageURLs   []string `sq:"'image_urls'"`
 
 	Status model.Status3
-	EdCode string
-
-	ImageURLs []string `sq:"'image_urls'"`
+	Code   string `sq:"'ed_code'"`
 
 	CreatedAt time.Time `sq:"create"`
 	UpdatedAt time.Time `sq:"update"`
@@ -70,51 +69,29 @@ type ProductFtVariant struct {
 var _ = sqlgenVariant(&Variant{})
 
 type Variant struct {
-	ID              int64
-	ProductID       int64
-	ProductSourceID int64
+	ID        int64
+	ProductID int64
 
-	ProductSourceCategoryID int64
+	// ProductSourceID int64
+	// ProductSourceCategoryID int64
 
-	// Name          string
+	Code        string `sq:"'ed_code'"`
 	ShortDesc   string
 	Description string
-	DescHTML    string `sq:"'desc_html'"`
-	EdName      string
-	// EdShortDesc   string
-	// EdDescription string
-	// EdDescHTML    string `sq:"'ed_desc_html'"`
+	DescHTML    string   `sq:"'desc_html'"`
+	ImageURLs   []string `sq:"'image_urls'"`
 
-	DescNorm string
-
-	// key-value normalization, must be non-null. Empty attributes is '_'.
-	AttrNormKv string
-
-	Status model.Status3
-	// EtopStatus model.Status3
-	// EdStatus model.Status3
-	// Code       string
-	EdCode string
-
-	// WholesalePrice0 int `sq:"'wholesale_price_0'"`
-	// WholesalePrice  int
-	ListPrice int
-	// RetailPriceMin  int
-	// RetailPriceMax  int
-
-	// EdWholesalePrice0 int `sq:"'ed_wholesale_price_0'"`
-	// EdWholesalePrice  int
-	// EdListPrice       int
-	// EdRetailPriceMin  int
-	// EdRetailPriceMax  int
-
-	ImageURLs []string `sq:"'image_urls'"`
-
-	CostPrice  int
 	Attributes ProductAttributes
 
+	CostPrice int
+	ListPrice int
+
+	Status    model.Status3
 	CreatedAt time.Time `sq:"create"`
 	UpdatedAt time.Time `sq:"update"`
+
+	// key-value normalization, must be non-null. Empty attributes is '_'
+	AttrNormKv string
 }
 
 func (v *Variant) GetName() string {

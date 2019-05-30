@@ -6,7 +6,7 @@ import (
 
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
-	sq "etop.vn/backend/pkg/common/sq"
+	"etop.vn/backend/pkg/common/sq"
 	"etop.vn/backend/pkg/etop/model"
 	catalogmodel "etop.vn/backend/pkg/services/catalog/model"
 	catalogmodelx "etop.vn/backend/pkg/services/catalog/modelx"
@@ -297,14 +297,13 @@ func CreateVariant(ctx context.Context, cmd *catalogmodelx.CreateVariantCommand)
 	}
 
 	variant := &catalogmodel.Variant{
-		ID:              cm.NewID(),
-		ProductID:       cmd.ProductID,
-		ProductSourceID: cmd.ProductSourceID,
-		// Name:              cmd.Name,
+		ID:          cm.NewID(),
+		ProductID:   cmd.ProductID,
 		ShortDesc:   cmd.ShortDesc,
 		Description: cmd.Description,
+		DescHTML:    cmd.DescHTML,
 		Status:      model.StatusActive,
-		EdCode:      cmd.SKU,
+		Code:        cmd.SKU,
 		ListPrice:   cmd.ListPrice,
 		ImageURLs:   cmd.ImageURLs,
 		CostPrice:   cmd.CostPrice,
@@ -332,7 +331,7 @@ func CreateVariant(ctx context.Context, cmd *catalogmodelx.CreateVariantCommand)
 				ShortDesc:       cmd.ShortDesc,
 				Description:     cmd.Description,
 				Status:          model.StatusActive,
-				EdCode:          cmd.Code,
+				Code:            cmd.Code,
 				ImageURLs:       cmd.ImageURLs,
 				DescHTML:        cmd.DescHTML,
 			}

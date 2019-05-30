@@ -5,7 +5,7 @@ package sqlstore
 import (
 	"time"
 
-	sq "etop.vn/backend/pkg/common/sq"
+	"etop.vn/backend/pkg/common/sq"
 	"etop.vn/backend/pkg/etop/model"
 )
 
@@ -61,22 +61,22 @@ func (ft ProductFilters) ByProductSourceIDPtr(ProductSourceID *int64) *sq.Column
 	}
 }
 
-func (ft ProductFilters) ByProductSourceCategoryID(ProductSourceCategoryID string) *sq.ColumnFilter {
+func (ft ProductFilters) ByProductSourceCategoryID(ProductSourceCategoryID int64) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "product_source_category_id",
 		Value:  ProductSourceCategoryID,
-		IsNil:  ProductSourceCategoryID == "",
+		IsNil:  ProductSourceCategoryID == 0,
 	}
 }
 
-func (ft ProductFilters) ByProductSourceCategoryIDPtr(ProductSourceCategoryID *string) *sq.ColumnFilterPtr {
+func (ft ProductFilters) ByProductSourceCategoryIDPtr(ProductSourceCategoryID *int64) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "product_source_category_id",
 		Value:  ProductSourceCategoryID,
 		IsNil:  ProductSourceCategoryID == nil,
-		IsZero: ProductSourceCategoryID != nil && (*ProductSourceCategoryID) == "",
+		IsZero: ProductSourceCategoryID != nil && (*ProductSourceCategoryID) == 0,
 	}
 }
 
@@ -194,22 +194,22 @@ func (ft ProductFilters) ByStatusPtr(Status *model.Status3) *sq.ColumnFilterPtr 
 	}
 }
 
-func (ft ProductFilters) ByEdCode(EdCode string) *sq.ColumnFilter {
+func (ft ProductFilters) ByCode(Code string) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "ed_code",
-		Value:  EdCode,
-		IsNil:  EdCode == "",
+		Value:  Code,
+		IsNil:  Code == "",
 	}
 }
 
-func (ft ProductFilters) ByEdCodePtr(EdCode *string) *sq.ColumnFilterPtr {
+func (ft ProductFilters) ByCodePtr(Code *string) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "ed_code",
-		Value:  EdCode,
-		IsNil:  EdCode == nil,
-		IsZero: EdCode != nil && (*EdCode) == "",
+		Value:  Code,
+		IsNil:  Code == nil,
+		IsZero: Code != nil && (*Code) == "",
 	}
 }
 
@@ -341,41 +341,22 @@ func (ft VariantFilters) ByProductIDPtr(ProductID *int64) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft VariantFilters) ByProductSourceID(ProductSourceID int64) *sq.ColumnFilter {
+func (ft VariantFilters) ByCode(Code string) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
-		Column: "product_source_id",
-		Value:  ProductSourceID,
-		IsNil:  ProductSourceID == 0,
+		Column: "ed_code",
+		Value:  Code,
+		IsNil:  Code == "",
 	}
 }
 
-func (ft VariantFilters) ByProductSourceIDPtr(ProductSourceID *int64) *sq.ColumnFilterPtr {
+func (ft VariantFilters) ByCodePtr(Code *string) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
-		Column: "product_source_id",
-		Value:  ProductSourceID,
-		IsNil:  ProductSourceID == nil,
-		IsZero: ProductSourceID != nil && (*ProductSourceID) == 0,
-	}
-}
-
-func (ft VariantFilters) ByProductSourceCategoryID(ProductSourceCategoryID int64) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
-		Prefix: &ft.prefix,
-		Column: "product_source_category_id",
-		Value:  ProductSourceCategoryID,
-		IsNil:  ProductSourceCategoryID == 0,
-	}
-}
-
-func (ft VariantFilters) ByProductSourceCategoryIDPtr(ProductSourceCategoryID *int64) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
-		Prefix: &ft.prefix,
-		Column: "product_source_category_id",
-		Value:  ProductSourceCategoryID,
-		IsNil:  ProductSourceCategoryID == nil,
-		IsZero: ProductSourceCategoryID != nil && (*ProductSourceCategoryID) == 0,
+		Column: "ed_code",
+		Value:  Code,
+		IsNil:  Code == nil,
+		IsZero: Code != nil && (*Code) == "",
 	}
 }
 
@@ -436,98 +417,22 @@ func (ft VariantFilters) ByDescHTMLPtr(DescHTML *string) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft VariantFilters) ByEdName(EdName string) *sq.ColumnFilter {
+func (ft VariantFilters) ByCostPrice(CostPrice int) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
-		Column: "ed_name",
-		Value:  EdName,
-		IsNil:  EdName == "",
+		Column: "cost_price",
+		Value:  CostPrice,
+		IsNil:  CostPrice == 0,
 	}
 }
 
-func (ft VariantFilters) ByEdNamePtr(EdName *string) *sq.ColumnFilterPtr {
+func (ft VariantFilters) ByCostPricePtr(CostPrice *int) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
-		Column: "ed_name",
-		Value:  EdName,
-		IsNil:  EdName == nil,
-		IsZero: EdName != nil && (*EdName) == "",
-	}
-}
-
-func (ft VariantFilters) ByDescNorm(DescNorm string) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
-		Prefix: &ft.prefix,
-		Column: "desc_norm",
-		Value:  DescNorm,
-		IsNil:  DescNorm == "",
-	}
-}
-
-func (ft VariantFilters) ByDescNormPtr(DescNorm *string) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
-		Prefix: &ft.prefix,
-		Column: "desc_norm",
-		Value:  DescNorm,
-		IsNil:  DescNorm == nil,
-		IsZero: DescNorm != nil && (*DescNorm) == "",
-	}
-}
-
-func (ft VariantFilters) ByAttrNormKv(AttrNormKv string) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
-		Prefix: &ft.prefix,
-		Column: "attr_norm_kv",
-		Value:  AttrNormKv,
-		IsNil:  AttrNormKv == "",
-	}
-}
-
-func (ft VariantFilters) ByAttrNormKvPtr(AttrNormKv *string) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
-		Prefix: &ft.prefix,
-		Column: "attr_norm_kv",
-		Value:  AttrNormKv,
-		IsNil:  AttrNormKv == nil,
-		IsZero: AttrNormKv != nil && (*AttrNormKv) == "",
-	}
-}
-
-func (ft VariantFilters) ByStatus(Status model.Status3) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
-		Prefix: &ft.prefix,
-		Column: "status",
-		Value:  Status,
-		IsNil:  Status == 0,
-	}
-}
-
-func (ft VariantFilters) ByStatusPtr(Status *model.Status3) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
-		Prefix: &ft.prefix,
-		Column: "status",
-		Value:  Status,
-		IsNil:  Status == nil,
-		IsZero: Status != nil && (*Status) == 0,
-	}
-}
-
-func (ft VariantFilters) ByEdCode(EdCode string) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
-		Prefix: &ft.prefix,
-		Column: "ed_code",
-		Value:  EdCode,
-		IsNil:  EdCode == "",
-	}
-}
-
-func (ft VariantFilters) ByEdCodePtr(EdCode *string) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
-		Prefix: &ft.prefix,
-		Column: "ed_code",
-		Value:  EdCode,
-		IsNil:  EdCode == nil,
-		IsZero: EdCode != nil && (*EdCode) == "",
+		Column: "cost_price",
+		Value:  CostPrice,
+		IsNil:  CostPrice == nil,
+		IsZero: CostPrice != nil && (*CostPrice) == 0,
 	}
 }
 
@@ -550,22 +455,22 @@ func (ft VariantFilters) ByListPricePtr(ListPrice *int) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft VariantFilters) ByCostPrice(CostPrice int) *sq.ColumnFilter {
+func (ft VariantFilters) ByStatus(Status model.Status3) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
-		Column: "cost_price",
-		Value:  CostPrice,
-		IsNil:  CostPrice == 0,
+		Column: "status",
+		Value:  Status,
+		IsNil:  Status == 0,
 	}
 }
 
-func (ft VariantFilters) ByCostPricePtr(CostPrice *int) *sq.ColumnFilterPtr {
+func (ft VariantFilters) ByStatusPtr(Status *model.Status3) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
-		Column: "cost_price",
-		Value:  CostPrice,
-		IsNil:  CostPrice == nil,
-		IsZero: CostPrice != nil && (*CostPrice) == 0,
+		Column: "status",
+		Value:  Status,
+		IsNil:  Status == nil,
+		IsZero: Status != nil && (*Status) == 0,
 	}
 }
 
@@ -604,6 +509,25 @@ func (ft VariantFilters) ByUpdatedAtPtr(UpdatedAt *time.Time) *sq.ColumnFilterPt
 		Value:  UpdatedAt,
 		IsNil:  UpdatedAt == nil,
 		IsZero: UpdatedAt != nil && (*UpdatedAt).IsZero(),
+	}
+}
+
+func (ft VariantFilters) ByAttrNormKv(AttrNormKv string) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "attr_norm_kv",
+		Value:  AttrNormKv,
+		IsNil:  AttrNormKv == "",
+	}
+}
+
+func (ft VariantFilters) ByAttrNormKvPtr(AttrNormKv *string) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "attr_norm_kv",
+		Value:  AttrNormKv,
+		IsNil:  AttrNormKv == nil,
+		IsZero: AttrNormKv != nil && (*AttrNormKv) == "",
 	}
 }
 

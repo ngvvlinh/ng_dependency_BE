@@ -5,7 +5,7 @@ import (
 
 	"etop.vn/api/meta"
 	"etop.vn/backend/pkg/common/cmsql"
-	sq "etop.vn/backend/pkg/common/sq"
+	"etop.vn/backend/pkg/common/sq"
 )
 
 type ShopProductStoreFactory func(context.Context) *ShopProductStore

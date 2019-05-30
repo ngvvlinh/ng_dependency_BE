@@ -9,7 +9,7 @@ import (
 
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
-	sq "etop.vn/backend/pkg/common/sq"
+	"etop.vn/backend/pkg/common/sq"
 	"etop.vn/backend/pkg/common/sq/core"
 	"etop.vn/backend/pkg/common/validate"
 	"etop.vn/backend/pkg/etop/model"
@@ -57,56 +57,9 @@ func init() {
 }
 
 var (
-	filterProductWhitelist = FilterWhitelist{
-		Arrays:   []string{},
-		Contains: []string{"name"},
-		Equals:   []string{"etop_category_id", "name"},
-		Status:   []string{"ed_status", "status", "etop_status"},
-		Numbers:  []string{"wholesale_price", "list_price", "retail_price_min", "retail_price_max", "ed_wholesale_price", "ed_list_price", "ed_retail_price_max"},
-		Dates:    []string{"created_at", "updated_at"},
-		Unaccent: []string{"name"},
-		PrefixOrRename: map[string]string{
-			"name":       "p",
-			"status":     "p",
-			"created_at": "p",
-			"updated_at": "p",
-
-			"wholesale_price":     "v",
-			"list_price":          "v",
-			"retail_price_min":    "v",
-			"retail_price_max":    "v",
-			"ed_wholesale_price":  "v",
-			"ed_list_price":       "v",
-			"ed_retail_price_max": "v",
-		},
-	}
-
-	filterVariantWhitelist = FilterWhitelist{
-		Arrays:   []string{},
-		Contains: []string{"name"},
-		Equals:   []string{"name"},
-		Status:   []string{"ed_status", "status", "etop_status"},
-		Numbers:  []string{"wholesale_price", "list_price", "retail_price_min", "retail_price_max", "ed_wholesale_price", "ed_list_price", "ed_retail_price_max"},
-	}
-
-	filterShopProductWhitelist = FilterWhitelist{
-		Arrays:   []string{"tags"},
-		Contains: []string{"external_name", "name"},
-		Equals:   []string{"external_code", "external_base_id", "external_id", "collection_id"},
-		Status:   []string{"external_status", "ed_status", "status", "etop_status"},
-		Numbers:  []string{"retail_price"},
-		Dates:    []string{"created_at", "updated_at"},
-		Unaccent: []string{"product.name"},
-
-		PrefixOrRename: map[string]string{
-			"name":       "sp",
-			"status":     "sp",
-			"created_at": "sp",
-			"updated_at": "sp",
-
-			"product.name": "p.name_norm_ua",
-		},
-	}
+	filterProductWhitelist     = catalogsqlstore.FilterProductWhitelist
+	filterVariantWhitelist     = catalogsqlstore.FilterVariantWhitelist
+	filterShopProductWhitelist = catalogsqlstore.FilterShopProductWhitelist
 )
 
 func GetVariantByProductIDs(productIds []int64, filters []cm.Filter) ([]*catalogmodel.Variant, error) {
@@ -768,8 +721,7 @@ func UpdateShopVariant(ctx context.Context, cmd *catalogmodelx.UpdateShopVariant
 		if has, _ := x.Table("product_source").Where("id = ? AND type = ?", cmd.ProductSourceID, catalogmodel.ProductSourceCustom).
 			Get(productSource); has {
 			variant := &catalogmodel.Variant{
-				ID:              sv.VariantID,
-				ProductSourceID: cmd.ProductSourceID,
+				ID: sv.VariantID,
 			}
 			if cmd.CostPrice != 0 {
 				variant.CostPrice = cmd.CostPrice
@@ -777,8 +729,8 @@ func UpdateShopVariant(ctx context.Context, cmd *catalogmodelx.UpdateShopVariant
 			if len(cmd.Attributes) > 0 {
 				variant.Attributes = cmd.Attributes
 			}
-			if cmd.EdCode != "" {
-				variant.EdCode = cmd.EdCode
+			if cmd.Code != "" {
+				variant.Code = cmd.Code
 			}
 			_, err := x.Table("variant").Where("id = ? AND product_source_id = ?", sv.VariantID, cmd.ProductSourceID).Update(variant)
 			if _err := CheckErrorProductCode(err); _err != nil {
@@ -801,10 +753,6 @@ func UpdateShopVariant(ctx context.Context, cmd *catalogmodelx.UpdateShopVariant
 
 	cmd.Result = query.Result
 	return nil
-}
-
-func UpdateShopVariants(ctx context.Context, cmd *catalogmodelx.UpdateShopVariantsCommand) error {
-	return cm.ErrTODO
 }
 
 func RemoveShopVariants(ctx context.Context, cmd *catalogmodelx.RemoveShopVariantsCommand) error {

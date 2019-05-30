@@ -1,7 +1,7 @@
 package modely
 
 import (
-	sq "etop.vn/backend/pkg/common/sq"
+	"etop.vn/backend/pkg/common/sq"
 	"etop.vn/backend/pkg/etop/model"
 	txmodel "etop.vn/backend/pkg/services/moneytx/model"
 	ordermodel "etop.vn/backend/pkg/services/ordering/model"

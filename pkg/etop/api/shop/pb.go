@@ -21,35 +21,34 @@ func PbEtopVariants(items []*catalogmodel.VariantExtended) []*pbshop.EtopVariant
 
 func PbEtopVariant(m *catalogmodel.VariantExtended) *pbshop.EtopVariant {
 	res := &pbshop.EtopVariant{
-		Id:             m.ID,
-		Code:           m.EdCode, // yes, it's EdCode
-		ListPrice:      int32(m.ListPrice),
-		CostPrice:      int32(m.CostPrice),
-		WholesalePrice: 0,
-		RetailPriceMin: 0,
-		RetailPriceMax: 0,
-		Name:           m.GetName(),
-		Description:    m.Description,
-		ShortDesc:      m.ShortDesc,
-		DescHtml:       m.DescHTML,
-		ImageUrls:      coalesceStrings(m.ImageURLs),
+		Id:          m.ID,
+		Code:        m.Code, // yes, it's Code
+		Name:        m.GetName(),
+		Description: m.Description,
+		ShortDesc:   m.ShortDesc,
+		DescHtml:    m.DescHTML,
+		ImageUrls:   coalesceStrings(m.ImageURLs),
+		ListPrice:   int32(m.ListPrice),
+		CostPrice:   int32(m.CostPrice),
 	}
 	return res
 }
 
 func PbEtopProduct(m *catalogmodel.ProductFtVariant) *pbshop.EtopProduct {
 	return &pbshop.EtopProduct{
-		Id: m.Product.ID,
+		Id:          m.ID,
+		Code:        m.Code,
+		Name:        m.Name,
+		Description: m.Description,
+		ShortDesc:   m.ShortDesc,
+		DescHtml:    m.DescHTML,
+		ImageUrls:   m.Product.ImageURLs,
+		ListPrice:   0,
+		CostPrice:   0,
 
+		CategoryId: m.Product.ProductSourceCategoryID,
+		// @deprecated
 		ProductSourceCategoryId: m.Product.ProductSourceCategoryID,
-
-		Name:              m.Product.Name,
-		Description:       m.Product.Description,
-		ShortDesc:         coalesce(m.ShortDesc, m.Product.ShortDesc),
-		DescHtml:          coalesce(m.DescHTML, m.Product.DescHTML),
-		ImageUrls:         m.Product.ImageURLs,
-		QuantityAvailable: 100,
-		Code:              m.Product.EdCode, // yes, it's EdCode
 	}
 }
 
@@ -66,8 +65,8 @@ func PbShopVariant(m *catalogmodel.ShopVariantExtended) *pbshop.ShopVariant {
 	res := &pbshop.ShopVariant{
 		Id:           sv.VariantID,
 		Info:         PbEtopVariant(&m.VariantExtended),
-		Code:         m.EdCode, // yes, it's EdCode
-		EdCode:       m.EdCode,
+		Code:         m.Code,
+		EdCode:       m.Code,
 		Name:         sv.Name,
 		Description:  sv.Description,
 		ShortDesc:    sv.ShortDesc,

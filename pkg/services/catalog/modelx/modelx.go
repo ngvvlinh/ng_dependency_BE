@@ -215,7 +215,7 @@ type UpdateShopVariantCommand struct {
 	ShopID          int64
 	Variant         *catalogmodel.ShopVariant
 	CostPrice       int
-	EdCode          string
+	Code            string
 	Attributes      []catalogmodel.ProductAttribute
 	ProductSourceID int64
 

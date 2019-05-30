@@ -129,7 +129,7 @@ func CheckErrorProductCode(err error) error {
 
 		case strings.Contains(msg, VariantCodeKey):
 			return cm.Error(cm.FailedPrecondition,
-				"Mã phiên bản sản phẩm (SKU) đã tồn tại", nil)
+				"Mã phiên bản sản phẩm (Code) đã tồn tại", nil)
 
 		case strings.Contains(msg, ProductNameNormKey):
 			return cm.Error(cm.FailedPrecondition,
