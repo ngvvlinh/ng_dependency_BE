@@ -3,6 +3,7 @@ package sqlstore
 import (
 	"context"
 
+	"etop.vn/api/meta"
 	"etop.vn/backend/pkg/common/cmsql"
 	"etop.vn/backend/pkg/common/sql"
 )
@@ -26,14 +27,24 @@ type ShopProductStore struct {
 	ftVariant     VariantFilters
 	ftShopVariant ShopVariantFilters
 
-	query func() cmsql.QueryInterface
-	preds []interface{}
+	query   func() cmsql.QueryInterface
+	preds   []interface{}
+	filters meta.Filters
 
 	includeDeleted bool
 }
 
 func (s *ShopProductStore) Where(pred sql.FilterQuery) *ShopProductStore {
 	s.preds = append(s.preds, pred)
+	return s
+}
+
+func (s *ShopProductStore) Filters(filters meta.Filters) *ShopProductStore {
+	if s.filters == nil {
+		s.filters = filters
+	} else {
+		s.filters = append(s.filters, filters...)
+	}
 	return s
 }
 

@@ -1,22 +1,17 @@
 package sqlstore
 
 import (
-	"regexp"
 	"strconv"
 	"strings"
 	"time"
 
-	"etop.vn/backend/pkg/common/bus"
-
-	"github.com/go-xorm/builder"
-	"github.com/lib/pq"
-
 	cm "etop.vn/backend/pkg/common"
+	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/cmsql"
 	"etop.vn/backend/pkg/common/httpreq"
 	"etop.vn/backend/pkg/common/l"
 	sq "etop.vn/backend/pkg/common/sql"
-	"etop.vn/backend/pkg/common/validate"
+	"etop.vn/backend/pkg/common/sqlstore"
 	"etop.vn/backend/pkg/etop/model"
 	notisqlstore "etop.vn/backend/pkg/notifier/sqlstore"
 )
@@ -33,7 +28,7 @@ type (
 	M  map[string]interface{}
 	Ms map[string]string
 
-	Query = cmsql.Query
+	Query = cmsql.QueryInterface
 	Qx    = cmsql.QueryInterface
 )
 
@@ -89,16 +84,20 @@ func inTransaction(callback func(cmsql.QueryInterface) error) (err error) {
 	return x.InTransaction(bus.Ctx(), callback)
 }
 
-func LimitSort(s Query, p *cm.Paging, sortWhitelist map[string]string) (Query, error) {
-	if p == nil {
-		s = s.Limit(10000)
-		return s, nil
+func LimitSort(s Query, p *cm.Paging, sortWhitelist map[string]string) (cmsql.Query, error) {
+	query, err := sqlstore.LimitSort(s, p, sortWhitelist)
+	if err != nil {
+		return cmsql.Query{}, err
 	}
-	if p.Limit <= 0 {
-		p.Limit = 10000
+	return query.(cmsql.Query), nil
+}
+
+func Filters(s cmsql.QueryInterface, filters []cm.Filter, whitelist FilterWhitelist) (cmsql.Query, bool, error) {
+	query, ok, err := sqlstore.Filters(s, filters, whitelist)
+	if err != nil {
+		return cmsql.Query{}, ok, err
 	}
-	s = s.Limit(uint64(p.Limit)).Offset(uint64(p.Offset))
-	return Sort(s, p.Sort, sortWhitelist)
+	return query.(cmsql.Query), ok, nil
 }
 
 func IDs(items []int64) []interface{} {
@@ -109,7 +108,7 @@ func IDs(items []int64) []interface{} {
 	return res
 }
 
-func FilterStatus(s Query, prefix string, query model.StatusQuery) Query {
+func FilterStatus(s cmsql.Query, prefix string, query model.StatusQuery) cmsql.Query {
 	if query.Status != nil {
 		s = s.Where(prefix+"status = ?", query.Status)
 	}
@@ -142,213 +141,7 @@ func Sort(s Query, sorts []string, whitelist map[string]string) (Query, error) {
 	return s, nil
 }
 
-type FilterWhitelist struct {
-	Arrays   []string
-	Bools    []string
-	Contains []string
-	Dates    []string
-	Equals   []string
-	Nullable []string
-	Numbers  []string
-	Status   []string
-	Unaccent []string
-
-	PrefixOrRename map[string]string
-}
-
-func (f *FilterWhitelist) ToCol(col, suffix string) string {
-	if p, ok := f.PrefixOrRename[col]; ok {
-		// put a dot to rename (for example: "shop_name": "s.name")
-		if strings.Contains(p, ".") {
-			return p
-		}
-		return p + `."` + col + suffix + `" `
-	}
-	return `"` + col + suffix + `" `
-}
-
-func Filters(s Query, filters []cm.Filter, whitelist FilterWhitelist) (Query, bool, error) {
-	ok := false
-	for _, filter := range filters {
-		filter.Name = strings.TrimSpace(filter.Name)
-		names := reList.Split(filter.Name, -1)
-		for i, name := range names {
-			if name == "" {
-				return Query{}, false, cm.Error(cm.InvalidArgument, "Invalid property name: "+filter.Name, nil)
-			}
-
-			if strings.HasPrefix(name, "s_") {
-				name = "ed_" + name[2:]
-			} else if strings.HasPrefix(name, "x_") {
-				name = "external_" + name[2:]
-			} else if strings.HasPrefix(name, "e_") {
-				name = "etop_" + name[2:]
-			}
-			names[i] = name
-		}
-		ok = true
-
-		switch filter.Op {
-		case "=", "≠", "!=", "∈", "in":
-			op := filter.Op
-			if op == "≠" {
-				op = "!="
-			}
-			isNumber := containsAll(whitelist.Numbers, names)
-			isStatus := containsAll(whitelist.Status, names)
-			isString := containsAll(whitelist.Equals, names)
-			isNullable := containsAll(whitelist.Nullable, names)
-			isBool := containsAll(whitelist.Bools, names)
-			if !isString && !isNumber && !isStatus && !isBool && !isNullable {
-				return Query{}, false, cm.Error(cm.InvalidArgument, "Exactly filter is not allowed for "+filter.Name, nil)
-			}
-			if countBool(isNumber, isStatus, isString, isBool, isNullable) != 1 {
-				return Query{}, false, cm.Error(cm.InvalidArgument, "Exactly filter must contain the same type "+filter.Name, nil)
-			}
-
-			cfg := valueConfig{isNumber: isNumber, isStatus: isStatus, isBool: isBool, isNullable: isNullable}
-			if op == "=" || op == "!=" {
-				value, err := parseValue(filter.Value, cfg)
-				if err != nil {
-					return Query{}, false, err
-				}
-				if isNullable {
-					s = buildQuery(s, names, value, func(name string) string {
-						query := "IS NULL"
-						if value.(bool) {
-							query = "IS NOT NULL"
-						}
-						return whitelist.ToCol(name, "") + query
-					})
-				} else {
-					s = buildQuery(s, names, value, func(name string) string {
-						return whitelist.ToCol(name, "") + op + ` ?`
-					})
-				}
-
-			} else {
-				if isBool || isNullable {
-					return Query{}, false, cm.Errorf(cm.InvalidArgument, nil, "Element filter is not allowed for "+filter.Name)
-				}
-				value, err := parseValueAsList(filter.Value, cfg)
-				if err != nil {
-					return Query{}, false, err
-				}
-				ors := make([]builder.Cond, len(names))
-				for i, name := range names {
-					col := whitelist.ToCol(name, "")
-					ors[i] = builder.In(col, value)
-				}
-				sql, args, err := builder.ToSQL(builder.Or(ors...))
-				if err != nil {
-					return Query{}, false, err
-				}
-				s = s.Where(combineArgs(sql, args)...)
-			}
-
-		case "<", ">", "<=", ">=", "≤", "≥":
-			op := filter.Op
-			if op == "≤" {
-				op = "<="
-			} else if op == "≥" {
-				op = ">="
-			}
-			isNumber := containsAll(whitelist.Numbers, names)
-			isDate := containsAll(whitelist.Dates, names)
-			if !isNumber && !isDate {
-				return Query{}, false, cm.Error(cm.InvalidArgument, "Compare filter is not allowed for "+filter.Name, nil)
-			}
-			if countBool(isNumber, isDate) != 1 {
-				return Query{}, false, cm.Error(cm.InvalidArgument, "Compare filter must contain the same type "+filter.Name, nil)
-			}
-
-			value, err := parseValue(filter.Value, valueConfig{isNumber: isNumber, isDate: isDate})
-			if err != nil {
-				return Query{}, false, err
-			}
-			s = buildQuery(s, names, value, func(name string) string {
-				return whitelist.ToCol(name, "") + ` ` + op + ` ?`
-			})
-
-		case "⊃", "c", "∩", "n":
-			isContains := filter.Op == "⊃" || filter.Op == "c"
-			isText := containsAll(whitelist.Contains, names)
-			isArray := containsAll(whitelist.Arrays, names)
-			if !isText && !isArray {
-				return Query{}, false, cm.Error(cm.InvalidArgument, "Contains or intersect filter is not allowed for "+filter.Name, nil)
-			}
-
-			if isText {
-				var value string
-				if isContains {
-					value = validate.NormalizeSearchQueryAnd(filter.Value)
-				} else {
-					value = validate.NormalizeSearchQueryOr(filter.Value)
-				}
-
-				s = buildQuery(s, names, value, func(name string) string {
-					return whitelist.ToCol(name, "_norm") + ` @@ ?::tsquery`
-				})
-
-			} else {
-				value, err := parseValueAsList(filter.Value, valueConfig{})
-				if err != nil {
-					return Query{}, false, err
-				}
-
-				var op string
-				if isContains {
-					op = "@>"
-				} else {
-					op = "&&"
-				}
-				s = buildQuery(s, names, pq.Array(value), func(name string) string {
-					return whitelist.ToCol(name, "") + ` ` + op + ` ?`
-				})
-			}
-
-		case "~=", "≃":
-			isUnaccent := containsAll(whitelist.Unaccent, names)
-			if !isUnaccent {
-				return Query{}, false, cm.Errorf(cm.InvalidArgument, nil, "Almost equal is not allowed for %v", filter.Name)
-			}
-			value := validate.NormalizeUnaccent(filter.Value)
-			s = buildQuery(s, names, value, func(name string) string {
-				return whitelist.ToCol(name, "_norm_ua") + ` = ?`
-			})
-
-		default:
-			return Query{}, false, cm.Error(cm.InvalidArgument, "Invalid filter operation", nil)
-		}
-	}
-	return s, ok, nil
-}
-
-func combineArgs(sql string, args []interface{}) []interface{} {
-	res := make([]interface{}, len(args)+1)
-	res[0] = sql
-	copy(res[1:], args)
-	return res
-}
-
-func buildQuery(s Query, names []string, value interface{}, fn func(name string) string) Query {
-	if len(names) == 1 {
-		return s.Where(fn(names[0]), value)
-	}
-
-	buf := make([]byte, 0, 64)
-	args := make([]interface{}, len(names))
-	for i, name := range names {
-		if i > 0 {
-			buf = append(buf, " OR "...)
-		}
-		buf = append(buf, fn(name)...)
-		args[i] = value
-	}
-
-	s = s.Where(combineArgs(string(buf), args)...)
-	return s
-}
+type FilterWhitelist = sqlstore.FilterWhitelist
 
 func countBool(A ...bool) int {
 	c := 0
@@ -413,54 +206,6 @@ func parseValue(v string, cfg valueConfig) (interface{}, error) {
 		}
 	}
 	return v, nil
-}
-
-var reList = regexp.MustCompile(`[\s,]+`)
-
-func parseValueAsList(v string, cfg valueConfig) ([]interface{}, error) {
-	ss := reList.Split(v, -1)
-	res := make([]interface{}, 0, len(ss))
-	for _, s := range ss {
-		if s == "" {
-			continue
-		}
-		resi, err := parseValue(s, cfg)
-		if err != nil {
-			return nil, err
-		}
-		res = append(res, resi)
-	}
-	if len(res) == 0 {
-		return nil, cm.Error(cm.InvalidArgument, "Empty value", nil)
-	}
-	return res, nil
-}
-
-func contains(ss []string, item string) bool {
-	for _, s := range ss {
-		if s == item {
-			return true
-		}
-	}
-	return false
-}
-
-func containsAll(ss []string, items []string) bool {
-	for _, item := range items {
-		if !contains(ss, item) {
-			return false
-		}
-	}
-	return true
-}
-
-func containsID(ss []int64, item int64) bool {
-	for _, s := range ss {
-		if s == item {
-			return true
-		}
-	}
-	return false
 }
 
 func sqlPlaceholder(counter int) (*int, func(sql []byte) []byte) {

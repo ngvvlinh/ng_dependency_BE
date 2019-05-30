@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"etop.vn/api/main/catalog"
+	"etop.vn/api/meta"
 	"etop.vn/backend/pkg/common/cmsql"
 	"etop.vn/backend/pkg/common/sql"
 	"etop.vn/backend/pkg/services/catalog/convert"
@@ -28,14 +29,24 @@ type ProductStore struct {
 	// unexported
 	ftVariant VariantFilters
 
-	query func() cmsql.QueryInterface
-	preds []interface{}
+	query   func() cmsql.QueryInterface
+	preds   []interface{}
+	filters meta.Filters
 
 	includeDeleted bool
 }
 
 func (s *ProductStore) Where(pred sql.FilterQuery) *ProductStore {
 	s.preds = append(s.preds, pred)
+	return s
+}
+
+func (s *ProductStore) Filters(filters meta.Filters) *ProductStore {
+	if s.filters == nil {
+		s.filters = filters
+	} else {
+		s.filters = append(s.filters, filters...)
+	}
 	return s
 }
 
@@ -71,7 +82,7 @@ func (s *ProductStore) GetProduct() (*catalog.Product, error) {
 	return convert.Product(product), nil
 }
 
-func (s *ProductStore) GetProductWithVariantsDB() (*catalogmodel.ProductFtVariant, error) {
+func (s *ProductStore) GetProductWithVariantsDB(paging meta.Paging) (*catalogmodel.ProductFtVariant, error) {
 	if !s.includeDeleted {
 		s.preds = append(s.preds, s.FtProduct.NotDeleted())
 	}
@@ -95,15 +106,15 @@ func (s *ProductStore) GetProductWithVariantsDB() (*catalogmodel.ProductFtVarian
 	}, nil
 }
 
-func (s *ProductStore) GetProductWithVariants() (*catalog.ProductWithVariants, error) {
-	product, err := s.GetProductWithVariantsDB()
+func (s *ProductStore) GetProductWithVariants(paging meta.Paging) (*catalog.ProductWithVariants, error) {
+	product, err := s.GetProductWithVariantsDB(paging)
 	if err != nil {
 		return nil, err
 	}
 	return convert.ProductWithVariants(product), nil
 }
 
-func (s *ProductStore) GetProductsDB() ([]*catalogmodel.Product, error) {
+func (s *ProductStore) GetProductsDB(paging meta.Paging) ([]*catalogmodel.Product, error) {
 	if !s.includeDeleted {
 		s.preds = append(s.preds, "deleted_at IS NULL")
 	}
@@ -112,15 +123,15 @@ func (s *ProductStore) GetProductsDB() ([]*catalogmodel.Product, error) {
 	return products, err
 }
 
-func (s *ProductStore) GetProducts() ([]*catalog.Product, error) {
-	products, err := s.GetProductsDB()
+func (s *ProductStore) GetProducts(paging meta.Paging) ([]*catalog.Product, error) {
+	products, err := s.GetProductsDB(paging)
 	if err != nil {
 		return nil, err
 	}
 	return convert.Products(products), nil
 }
 
-func (s *ProductStore) GetProductsWithVariantsDB() ([]*catalogmodel.ProductFtVariant, error) {
+func (s *ProductStore) GetProductsWithVariantsDB(paging meta.Paging) ([]*catalogmodel.ProductFtVariant, error) {
 	if !s.includeDeleted {
 		s.preds = append(s.preds, s.FtProduct.NotDeleted())
 	}
@@ -158,8 +169,8 @@ func (s *ProductStore) GetProductsWithVariantsDB() ([]*catalogmodel.ProductFtVar
 	return result, nil
 }
 
-func (s *ProductStore) GetProductsWithVariants() ([]*catalog.ProductWithVariants, error) {
-	products, err := s.GetProductsWithVariantsDB()
+func (s *ProductStore) GetProductsWithVariants(paging meta.Paging) ([]*catalog.ProductWithVariants, error) {
+	products, err := s.GetProductsWithVariantsDB(paging)
 	if err != nil {
 		return nil, err
 	}
