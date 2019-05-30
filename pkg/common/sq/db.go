@@ -1,11 +1,11 @@
-package sql
+package sq
 
 import (
 	"context"
 	"database/sql"
 	"time"
 
-	"etop.vn/backend/pkg/common/sql/core"
+	"etop.vn/backend/pkg/common/sq/core"
 )
 
 // Database ...

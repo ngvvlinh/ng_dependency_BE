@@ -6,8 +6,8 @@ import (
 	"database/sql"
 	"time"
 
-	sq "etop.vn/backend/pkg/common/sql"
-	core "etop.vn/backend/pkg/common/sql/core"
+	sq "etop.vn/backend/pkg/common/sq"
+	core "etop.vn/backend/pkg/common/sq/core"
 	etop_vn_backend_pkg_services_catalog_model "etop.vn/backend/pkg/services/catalog/model"
 )
 

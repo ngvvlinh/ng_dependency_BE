@@ -1,11 +1,11 @@
-package sql
+package sq
 
 import (
 	"errors"
 	"fmt"
 	"reflect"
 
-	"etop.vn/backend/pkg/common/sql/core"
+	"etop.vn/backend/pkg/common/sq/core"
 )
 
 type (
@@ -332,9 +332,9 @@ ColumnFilter and ColumnFilterPtr are shorthand for quickly writting predication.
 Sample code:
 
     db.Where(
-        FilterByID(1234),
-        FilterByState(state).Optional(),
-        FilterByPartnerID(5678).Optional(),
+        filter.ByID(1234),
+        filter.ByState(state).Nullable(),
+        filter.ByPartnerID(partnerID).Optional(),
     )
 
 	func FilterByID(id int64) *ColumnFilter {

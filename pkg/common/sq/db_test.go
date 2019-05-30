@@ -1,4 +1,4 @@
-package sql_test
+package sq_test
 
 import (
 	"database/sql"
@@ -7,9 +7,9 @@ import (
 	_ "github.com/lib/pq"
 	. "github.com/smartystreets/goconvey/convey"
 
-	. "etop.vn/backend/pkg/common/sql"
-	core "etop.vn/backend/pkg/common/sql/core"
-	"etop.vn/backend/pkg/common/sql/mock"
+	. "etop.vn/backend/pkg/common/sq"
+	core "etop.vn/backend/pkg/common/sq/core"
+	"etop.vn/backend/pkg/common/sq/mock"
 )
 
 var (

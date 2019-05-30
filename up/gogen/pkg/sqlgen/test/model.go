@@ -3,7 +3,7 @@ package model
 import (
 	"time"
 
-	sq "etop.vn/backend/pkg/common/sql"
+	sq "etop.vn/backend/pkg/common/sq"
 )
 
 //go:generate $ETOPDIR/backend/scripts/derive.sh

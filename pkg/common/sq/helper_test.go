@@ -1,10 +1,10 @@
-package sql_test
+package sq_test
 
 import (
 	"testing"
 
-	. "etop.vn/backend/pkg/common/sql"
-	"etop.vn/backend/pkg/common/sql/core"
+	. "etop.vn/backend/pkg/common/sq"
+	"etop.vn/backend/pkg/common/sq/core"
 
 	. "github.com/smartystreets/goconvey/convey"
 )

@@ -7,7 +7,7 @@ import (
 
 	cm "etop.vn/backend/pkg/common"
 
-	sq "etop.vn/backend/pkg/common/sql"
+	sq "etop.vn/backend/pkg/common/sq"
 )
 
 func startOfDay(dayFromToday int) time.Time {

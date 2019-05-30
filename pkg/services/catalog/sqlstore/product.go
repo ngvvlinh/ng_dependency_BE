@@ -6,7 +6,7 @@ import (
 	"etop.vn/api/main/catalog"
 	"etop.vn/api/meta"
 	"etop.vn/backend/pkg/common/cmsql"
-	"etop.vn/backend/pkg/common/sql"
+	sq "etop.vn/backend/pkg/common/sq"
 	"etop.vn/backend/pkg/services/catalog/convert"
 	catalogmodel "etop.vn/backend/pkg/services/catalog/model"
 )
@@ -36,7 +36,7 @@ type ProductStore struct {
 	includeDeleted bool
 }
 
-func (s *ProductStore) Where(pred sql.FilterQuery) *ProductStore {
+func (s *ProductStore) Where(pred sq.FilterQuery) *ProductStore {
 	s.preds = append(s.preds, pred)
 	return s
 }
@@ -56,7 +56,7 @@ func (s *ProductStore) ID(id int64) *ProductStore {
 }
 
 func (s *ProductStore) IDs(ids ...int64) *ProductStore {
-	s.preds = append(s.preds, sql.In("id", ids))
+	s.preds = append(s.preds, sq.In("id", ids))
 	return s
 }
 

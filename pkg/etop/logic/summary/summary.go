@@ -11,7 +11,7 @@ import (
 	"etop.vn/backend/pkg/common/cmsql"
 	"etop.vn/backend/pkg/common/idemp"
 	"etop.vn/backend/pkg/common/l"
-	"etop.vn/backend/pkg/common/sql/core"
+	"etop.vn/backend/pkg/common/sq/core"
 	"etop.vn/backend/pkg/etop/model"
 	txmodel "etop.vn/backend/pkg/services/moneytx/model"
 )

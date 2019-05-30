@@ -10,8 +10,8 @@ import (
 	. "github.com/smartystreets/goconvey/convey"
 
 	"etop.vn/backend/pkg/common/l"
-	sq "etop.vn/backend/pkg/common/sql"
-	"etop.vn/backend/pkg/common/sql/mock"
+	sq "etop.vn/backend/pkg/common/sq"
+	"etop.vn/backend/pkg/common/sq/mock"
 	. "etop.vn/backend/pkg/common/testing"
 )
 

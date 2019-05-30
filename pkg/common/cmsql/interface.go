@@ -5,8 +5,8 @@ import (
 	"database/sql"
 
 	cm "etop.vn/backend/pkg/common"
-	sq "etop.vn/backend/pkg/common/sql"
-	"etop.vn/backend/pkg/common/sql/core"
+	sq "etop.vn/backend/pkg/common/sq"
+	"etop.vn/backend/pkg/common/sq/core"
 )
 
 // QueryInterface wraps common/sql.QueryInterface

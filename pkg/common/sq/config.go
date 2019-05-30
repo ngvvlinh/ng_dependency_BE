@@ -1,4 +1,4 @@
-package sql
+package sq
 
 import (
 	"context"
@@ -8,7 +8,7 @@ import (
 	"sync"
 	"time"
 
-	core "etop.vn/backend/pkg/common/sql/core"
+	core "etop.vn/backend/pkg/common/sq/core"
 )
 
 // Error ...

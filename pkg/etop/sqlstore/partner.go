@@ -6,8 +6,8 @@ import (
 
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
-	sq "etop.vn/backend/pkg/common/sql"
-	"etop.vn/backend/pkg/common/sql/core"
+	sq "etop.vn/backend/pkg/common/sq"
+	"etop.vn/backend/pkg/common/sq/core"
 	"etop.vn/backend/pkg/etop/authorize/authkey"
 	"etop.vn/backend/pkg/etop/model"
 )

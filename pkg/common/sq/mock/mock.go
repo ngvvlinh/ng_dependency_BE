@@ -3,7 +3,7 @@ package mock
 import (
 	"fmt"
 
-	sq "etop.vn/backend/pkg/common/sql"
+	sq "etop.vn/backend/pkg/common/sq"
 )
 
 // ErrorMock ...

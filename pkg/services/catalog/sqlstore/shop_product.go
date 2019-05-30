@@ -5,7 +5,7 @@ import (
 
 	"etop.vn/api/meta"
 	"etop.vn/backend/pkg/common/cmsql"
-	"etop.vn/backend/pkg/common/sql"
+	sq "etop.vn/backend/pkg/common/sq"
 )
 
 type ShopProductStoreFactory func(context.Context) *ShopProductStore
@@ -34,7 +34,7 @@ type ShopProductStore struct {
 	includeDeleted bool
 }
 
-func (s *ShopProductStore) Where(pred sql.FilterQuery) *ShopProductStore {
+func (s *ShopProductStore) Where(pred sq.FilterQuery) *ShopProductStore {
 	s.preds = append(s.preds, pred)
 	return s
 }

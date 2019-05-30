@@ -181,13 +181,16 @@ func (g *Gen) Generate() {
 	}
 	var b bytes.Buffer
 	vars := map[string]interface{}{
-		"Tables":     g.tables,
-		"JoinTables": g.joinTables,
+		"Tables":      g.tables,
+		"JoinTables":  g.joinTables,
+		"Imports":     "",
+		"OrigPackage": "",
 	}
 	if g.importOrigPkg {
 		vars["OrigPackage"] = `m "` + g.pkgPath + `"`
-	} else {
-		vars["OrigPackage"] = ""
+	}
+	if g.pkgPath != "etop.vn/backend/pkg/etop/model" {
+		vars["Imports"] = `"etop.vn/backend/pkg/etop/model"`
 	}
 
 	err := tpl.Execute(&b, vars)

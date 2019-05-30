@@ -5,8 +5,8 @@ package modely
 import (
 	"database/sql"
 
-	sq "etop.vn/backend/pkg/common/sql"
-	core "etop.vn/backend/pkg/common/sql/core"
+	sq "etop.vn/backend/pkg/common/sq"
+	core "etop.vn/backend/pkg/common/sq/core"
 	etop_vn_backend_pkg_etop_model "etop.vn/backend/pkg/etop/model"
 	etop_vn_backend_pkg_services_moneytx_model "etop.vn/backend/pkg/services/moneytx/model"
 	etop_vn_backend_pkg_services_ordering_model "etop.vn/backend/pkg/services/ordering/model"

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	sq "etop.vn/backend/pkg/common/sql"
+	sq "etop.vn/backend/pkg/common/sq"
 	"etop.vn/backend/pkg/common/validate"
 	"etop.vn/backend/pkg/etop/model"
 )

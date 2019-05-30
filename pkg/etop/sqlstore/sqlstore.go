@@ -10,7 +10,7 @@ import (
 	"etop.vn/backend/pkg/common/cmsql"
 	"etop.vn/backend/pkg/common/httpreq"
 	"etop.vn/backend/pkg/common/l"
-	sq "etop.vn/backend/pkg/common/sql"
+	sq "etop.vn/backend/pkg/common/sq"
 	"etop.vn/backend/pkg/common/sqlstore"
 	"etop.vn/backend/pkg/etop/model"
 	notisqlstore "etop.vn/backend/pkg/notifier/sqlstore"

@@ -5,7 +5,7 @@ import (
 	"time"
 
 	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/sql/core"
+	"etop.vn/backend/pkg/common/sq/core"
 	"etop.vn/backend/pkg/etop/model"
 	shipmodel "etop.vn/backend/pkg/services/shipping/model"
 	"etop.vn/backend/pkg/services/shipping/modely"

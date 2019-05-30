@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"etop.vn/backend/pkg/common/cmsql"
-	sq "etop.vn/backend/pkg/common/sql"
+	sq "etop.vn/backend/pkg/common/sq"
 	shipmodel "etop.vn/backend/pkg/services/shipping/model"
 )
 

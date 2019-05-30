@@ -1,10 +1,10 @@
-package sql
+package sq
 
 import (
 	"strconv"
 	"unsafe"
 
-	"etop.vn/backend/pkg/common/sql/core"
+	"etop.vn/backend/pkg/common/sq/core"
 )
 
 var _ core.SQLWriter = &Writer{}

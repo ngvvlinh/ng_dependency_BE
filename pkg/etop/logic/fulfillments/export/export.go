@@ -23,7 +23,7 @@ import (
 	"etop.vn/backend/pkg/common/l"
 	"etop.vn/backend/pkg/common/redis"
 	cmService "etop.vn/backend/pkg/common/service"
-	"etop.vn/backend/pkg/common/sql/core"
+	"etop.vn/backend/pkg/common/sq/core"
 	"etop.vn/backend/pkg/etop/eventstream"
 	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/backend/pkg/etop/sqlstore"
