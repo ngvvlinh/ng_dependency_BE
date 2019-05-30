@@ -96,12 +96,12 @@ func TestEventListeners(t *testing.T) {
 	bus := New()
 	count := 0
 
-	bus.AddEventListener(func(query *TestQuery) error {
+	bus.AddEventListener(func(_ context.Context, query *TestQuery) error {
 		count += 1
 		return nil
 	})
 
-	bus.AddEventListener(func(query *TestQuery) error {
+	bus.AddEventListener(func(_ context.Context, query *TestQuery) error {
 		count += 10
 		return nil
 	})

@@ -2,13 +2,11 @@ package meta
 
 import "context"
 
-type Msg interface{}
-
 type Bus interface {
-	Dispatch(ctx context.Context, msg Msg) error
-	DispatchAll(ctx context.Context, msgs ...Msg) error
+	Dispatch(ctx context.Context, msg interface{}) error
+	DispatchAll(ctx context.Context, msgs ...interface{}) error
 }
 
 type EventBus interface {
-	Publish(ctx context.Context, msg Msg) error
+	Publish(ctx context.Context, msg interface{}) error
 }

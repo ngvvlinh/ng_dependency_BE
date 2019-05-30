@@ -9,15 +9,13 @@ import (
 	"reflect"
 	"sort"
 	"time"
-
-	"etop.vn/api/meta"
 )
 
 var isTest = flag.Lookup("test.v") != nil
 
 type HandlerFunc = interface{}
 type CtxHandlerFunc func()
-type Msg = meta.Msg
+type Msg = interface{}
 
 type Bus interface {
 	Dispatch(ctx context.Context, msg Msg) error
@@ -72,60 +70,46 @@ func (b *InProcBus) Dispatch(ctx context.Context, msg Msg) (_err error) {
 	}
 
 	var params = make([]reflect.Value, 2)
+	params[0] = reflect.ValueOf(ctx)
 	params[1] = reflect.ValueOf(msg)
 
-	node, ok := ctx.(*NodeContext)
-	if ok {
-		newNode := node.WithMessage(msg)
-		params[0] = reflect.ValueOf(newNode) // Append new message
-		defer func() {
-			newNode.Error = _err
-			newNode.Time = time.Now().Sub(newNode.Start)
-		}()
-
-	} else {
-		params[0] = reflect.ValueOf(ctx)
-	}
-
-	ret := reflect.ValueOf(handler).Call(params)
-	err, _ := ret[0].Interface().(error)
-	return err
+	node, _ := ctx.(*NodeContext)
+	return call(node, msg, params, handler)
 }
 
 func (b *InProcBus) Publish(ctx context.Context, msg Msg) (_err error) {
 	var msgType = reflect.TypeOf(msg).Elem()
 	var listeners = b.listeners[msgType]
 	var params = make([]reflect.Value, 2)
+	params[0] = reflect.ValueOf(ctx)
 	params[1] = reflect.ValueOf(msg)
 
-	node, ok := ctx.(*NodeContext)
-	if ok {
+	node, _ := ctx.(*NodeContext)
+	for _, listenerHandler := range listeners {
+		if err := call(node, msg, params, listenerHandler); err != nil {
+			return err
+		}
+	}
+	for _, listenerHandler := range b.wildcardListeners {
+		if err := call(node, msg, params, listenerHandler); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+func call(node *NodeContext, msg Msg, params []reflect.Value, handler HandlerFunc) (_err error) {
+	if node != nil {
 		newNode := node.WithMessage(msg)
-		params[0] = reflect.ValueOf(newNode) // Append new message
+		params[0] = reflect.ValueOf(newNode)
 		defer func() {
 			newNode.Error = _err
 			newNode.Time = time.Now().Sub(newNode.Start)
 		}()
-
-	} else {
-		params[0] = reflect.ValueOf(ctx)
 	}
-
-	for _, listenerHandler := range listeners {
-		ret := reflect.ValueOf(listenerHandler).Call(params)
-		err := ret[0].Interface()
-		if err != nil {
-			return err.(error)
-		}
-	}
-	for _, listenerHandler := range b.wildcardListeners {
-		ret := reflect.ValueOf(listenerHandler).Call(params)
-		err := ret[0].Interface()
-		if err != nil {
-			return err.(error)
-		}
-	}
-	return nil
+	ret := reflect.ValueOf(handler).Call(params)
+	err, _ := ret[0].Interface().(error)
+	return err
 }
 
 func (b *InProcBus) AddWildcardListener(handler HandlerFunc) {
