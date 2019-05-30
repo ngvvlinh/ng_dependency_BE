@@ -90,7 +90,7 @@ func sendToOneSignal(ctx context.Context, noti *model.Notification) error {
 	if err := bus.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
-	// Update external_noti_id and sync_status
+	// UpdateInfo external_noti_id and sync_status
 	updateNoti := &model.Notification{
 		ID:                noti.ID,
 		SyncStatus:        etopmodel.S3Positive,

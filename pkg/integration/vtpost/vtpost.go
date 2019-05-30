@@ -230,7 +230,7 @@ func CalcUpdateFulfillment(ffm *shipmodel.Fulfillment, orderMsg vtpostclient.Cal
 
 	// Only update status4 if the current status is not ending status
 	newStatus := vtpostStatus.ToStatus5()
-	// Update ClosedAt
+	// UpdateInfo ClosedAt
 	if newStatus == model.S5Negative || newStatus == model.S5NegSuper || newStatus == model.S5Positive {
 		if ffm.ExternalShippingClosedAt.IsZero() {
 			update.ClosedAt = now

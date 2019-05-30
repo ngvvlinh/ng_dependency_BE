@@ -26,6 +26,9 @@ func Convert_api_ShipnowFulfillment_To_core_ShipnowFulfillment(in *orderP.Shipno
 }
 
 func Convert_core_ShipnowFulfillment_To_api_ShipnowFulfillment(in *shipnow.ShipnowFulfillment) *orderP.ShipnowFulfillment {
+	if in == nil {
+		return nil
+	}
 	return &orderP.ShipnowFulfillment{
 		Id:                  in.Id,
 		ShopId:              in.ShopId,
@@ -208,6 +211,9 @@ func Convert_api_OrderAddress_To_core_OrderAddress(in *orderP.OrderAddress) *ord
 }
 
 func Convert_core_OrderAddress_To_api_OrderAddress(in *orderingv1types.Address) *orderP.OrderAddress {
+	if in == nil {
+		return nil
+	}
 	return &orderP.OrderAddress{
 		FullName:     in.FullName,
 		Phone:        in.Phone,

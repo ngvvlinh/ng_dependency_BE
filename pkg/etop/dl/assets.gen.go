@@ -83,11 +83,12 @@ func AssetNames() []string {
 
 // _bindata is a table, holding each asset generator, mapped to its name.
 var _bindata = map[string]func() ([]byte, error){
-	"imports/.DS_Store": imports_ds_store,
-	"imports/shop_orders.v1.xlsx": imports_shop_orders_v1_xlsx,
+	"imports/.DS_Store":                        imports_ds_store,
+	"imports/shop_orders.v1.xlsx":              imports_shop_orders_v1_xlsx,
 	"imports/shop_products.v1.simplified.xlsx": imports_shop_products_v1_simplified_xlsx,
-	"imports/shop_products.v1.xlsx": imports_shop_products_v1_xlsx,
+	"imports/shop_products.v1.xlsx":            imports_shop_products_v1_xlsx,
 }
+
 // AssetDir returns the file names below a certain
 // directory embedded in the file by go-bindata.
 // For example if you run go-bindata on data/... and data contains the
@@ -124,18 +125,15 @@ func AssetDir(name string) ([]string, error) {
 }
 
 type _bintree_t struct {
-	Func func() ([]byte, error)
+	Func     func() ([]byte, error)
 	Children map[string]*_bintree_t
 }
+
 var _bintree = &_bintree_t{nil, map[string]*_bintree_t{
 	"imports": &_bintree_t{nil, map[string]*_bintree_t{
-		".DS_Store": &_bintree_t{imports_ds_store, map[string]*_bintree_t{
-		}},
-		"shop_orders.v1.xlsx": &_bintree_t{imports_shop_orders_v1_xlsx, map[string]*_bintree_t{
-		}},
-		"shop_products.v1.simplified.xlsx": &_bintree_t{imports_shop_products_v1_simplified_xlsx, map[string]*_bintree_t{
-		}},
-		"shop_products.v1.xlsx": &_bintree_t{imports_shop_products_v1_xlsx, map[string]*_bintree_t{
-		}},
+		".DS_Store":                        &_bintree_t{imports_ds_store, map[string]*_bintree_t{}},
+		"shop_orders.v1.xlsx":              &_bintree_t{imports_shop_orders_v1_xlsx, map[string]*_bintree_t{}},
+		"shop_products.v1.simplified.xlsx": &_bintree_t{imports_shop_products_v1_simplified_xlsx, map[string]*_bintree_t{}},
+		"shop_products.v1.xlsx":            &_bintree_t{imports_shop_products_v1_xlsx, map[string]*_bintree_t{}},
 	}},
 }}

@@ -88,7 +88,7 @@ func (ctrl *ProviderManager) createSingleFulfillment(ctx context.Context, order 
 	}
 
 	{
-		// Update status to pending
+		// UpdateInfo status to pending
 		updateFfm := &shipmodel.Fulfillment{
 			ID:         ffm.ID,
 			SyncStatus: model.S4SuperPos,
@@ -103,7 +103,7 @@ func (ctrl *ProviderManager) createSingleFulfillment(ctx context.Context, order 
 		}
 	}
 
-	// Update status to error
+	// UpdateInfo status to error
 	defer func() {
 		if _err == nil {
 			return

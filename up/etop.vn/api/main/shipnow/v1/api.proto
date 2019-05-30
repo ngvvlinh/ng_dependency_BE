@@ -76,6 +76,8 @@ message ShipnowFulfillment {
     optional shipnow.v1.state.State shipping_state = 16 [(gogoproto.nullable) = false];
 
     optional etop.v1.status3.Status3 confirm_status = 17 [(gogoproto.nullable) = false];
+
+    repeated int64 order_ids = 18;
 }
 
 //-- Commands --//
@@ -201,6 +203,22 @@ message CancellationRejectedData {
 }
 
 message ShipnowOrderReservationEvent {
-    repeated int64 order_ids = 1;
-    optional int64 shipnow_fulfillment_id = 2 [(gogoproto.nullable) = false];
+    optional int64 shipnow_fulfillment_id = 1 [(gogoproto.nullable) = false];
+    repeated int64 order_ids = 2;
+}
+
+message ShipnowOrderChangedEvent {
+    optional int64 shipnow_fulfillment_id = 1 [(gogoproto.nullable) = false];
+    repeated int64 old_order_ids = 2;
+    repeated int64 order_ids = 3;
+}
+
+message ShipnowCancelledEvent {
+    optional int64 shipnow_fulfillment_id = 1 [(gogoproto.nullable) = false];
+    repeated int64 order_ids = 2;
+}
+
+message ShipnowValidatedEvent {
+    optional int64 shipnow_fulfillment_id = 1 [(gogoproto.nullable) = false];
+    repeated int64 order_ids = 3;
 }

@@ -94,7 +94,7 @@ func (s TokenStore) Validate(tokenStr string) (*claims.Claim, error) {
 		return nil, err
 	}
 
-	// Update LastLoginAt every 1 minute
+	// UpdateInfo LastLoginAt every 1 minute
 	now := time.Now()
 	if now.Sub(v.LastLoginAt) > 1*time.Minute {
 		vv := v

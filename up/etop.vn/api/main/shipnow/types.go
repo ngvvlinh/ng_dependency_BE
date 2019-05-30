@@ -39,3 +39,6 @@ type CancellationRejectedData = shipnowv1.CancellationRejectedData
 const Ahamove = "ahamove"
 
 type ShipnowOrderReservationEvent = shipnowv1.ShipnowOrderReservationEvent
+type ShipnowOrderChangedEvent = shipnowv1.ShipnowOrderChangedEvent
+type ShipnowCancelledEvent = shipnowv1.ShipnowCancelledEvent
+type ShipnowValidatedEvent = shipnowv1.ShipnowValidatedEvent

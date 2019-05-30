@@ -48,6 +48,7 @@ type ShipnowFulfillment struct {
 	ShippingCode        string           `protobuf:"bytes,15,opt,name=shipping_code,json=shippingCode" json:"shipping_code"`
 	ShippingState       types1.State     `protobuf:"varint,16,opt,name=shipping_state,json=shippingState,enum=etop.vn.api.main.shipnow.v1.state.State" json:"shipping_state"`
 	ConfirmStatus       v11.Status3      `protobuf:"varint,17,opt,name=confirm_status,json=confirmStatus,enum=etop.vn.api.main.etop.v1.status3.Status3" json:"confirm_status"`
+	OrderIds            []int64          `protobuf:"varint,18,rep,name=order_ids,json=orderIds" json:"order_ids,omitempty"`
 }
 
 type CreateShipnowFulfillmentCommand struct {
@@ -176,6 +177,22 @@ type CancellationRejectedData struct {
 }
 
 type ShipnowOrderReservationEvent struct {
-	OrderIds             []int64 `protobuf:"varint,1,rep,name=order_ids,json=orderIds" json:"order_ids,omitempty"`
-	ShipnowFulfillmentId int64   `protobuf:"varint,2,opt,name=shipnow_fulfillment_id,json=shipnowFulfillmentId" json:"shipnow_fulfillment_id"`
+	ShipnowFulfillmentId int64   `protobuf:"varint,1,opt,name=shipnow_fulfillment_id,json=shipnowFulfillmentId" json:"shipnow_fulfillment_id"`
+	OrderIds             []int64 `protobuf:"varint,2,rep,name=order_ids,json=orderIds" json:"order_ids,omitempty"`
+}
+
+type ShipnowOrderChangedEvent struct {
+	ShipnowFulfillmentId int64   `protobuf:"varint,1,opt,name=shipnow_fulfillment_id,json=shipnowFulfillmentId" json:"shipnow_fulfillment_id"`
+	OldOrderIds          []int64 `protobuf:"varint,2,rep,name=old_order_ids,json=oldOrderIds" json:"old_order_ids,omitempty"`
+	OrderIds             []int64 `protobuf:"varint,3,rep,name=order_ids,json=orderIds" json:"order_ids,omitempty"`
+}
+
+type ShipnowCancelledEvent struct {
+	ShipnowFulfillmentId int64   `protobuf:"varint,1,opt,name=shipnow_fulfillment_id,json=shipnowFulfillmentId" json:"shipnow_fulfillment_id"`
+	OrderIds             []int64 `protobuf:"varint,2,rep,name=order_ids,json=orderIds" json:"order_ids,omitempty"`
+}
+
+type ShipnowValidatedEvent struct {
+	ShipnowFulfillmentId int64   `protobuf:"varint,1,opt,name=shipnow_fulfillment_id,json=shipnowFulfillmentId" json:"shipnow_fulfillment_id"`
+	OrderIds             []int64 `protobuf:"varint,3,rep,name=order_ids,json=orderIds" json:"order_ids,omitempty"`
 }

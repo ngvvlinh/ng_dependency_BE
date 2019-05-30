@@ -30,7 +30,7 @@ kafka-topics --create --zookeeper zookeeper:2181 --replication-factor 1 --partit
 kafka-topics --create --zookeeper zookeeper:2181 --replication-factor 1 --partitions   8 --topic ${PREFIX}pgrid_money_transaction_shipping
 kafka-topics --create --zookeeper zookeeper:2181 --replication-factor 1 --partitions   64 --topic ${PREFIX}pgrid_notification
 
-# Update 2018-06-12
+# UpdateInfo 2018-06-12
 
 # Internal control channel
 kafka-topics --create --zookeeper zookeeper:2181 --replication-factor 1 --partitions   1 --topic ${PREFIX}intctl

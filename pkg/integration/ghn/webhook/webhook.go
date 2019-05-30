@@ -102,7 +102,7 @@ func (wh *Webhook) Callback(c *httpx.Context) error {
 
 	updateFfm := update.CalcUpdateFulfillment(ffm, &msg, ghnCmd.Result)
 	updateFfm.LastSyncAt = t0
-	// Update other time
+	// UpdateInfo other time
 	updateFfm = shipping.CalcOtherTimeBaseOnState(updateFfm, ffm, t0)
 	updateCmd := &modelx.UpdateFulfillmentCommand{
 		Fulfillment: updateFfm,

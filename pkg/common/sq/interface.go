@@ -58,7 +58,7 @@ func (db *Database) Insert(objs ...core.IInsert) (int64, error) {
 	return db.NewQuery().Insert(objs...)
 }
 
-// Update ...
+// UpdateInfo ...
 func (db *Database) Update(objs ...core.IUpdate) (int64, error) {
 	return db.NewQuery().Update(objs...)
 }
@@ -311,7 +311,7 @@ func (tx *tx) Insert(objs ...core.IInsert) (int64, error) {
 	return tx.NewQuery().Insert(objs...)
 }
 
-// Update ...
+// UpdateInfo ...
 func (tx *tx) Update(objs ...core.IUpdate) (int64, error) {
 	return tx.NewQuery().Update(objs...)
 }

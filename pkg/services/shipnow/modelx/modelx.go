@@ -16,11 +16,6 @@ type GetByIDArgs struct {
 	PartnerID int64
 }
 
-type GetActiveShipnowFulfillmentsByOrderIDArgs struct {
-	OrderID                     int64
-	ExcludeShipnowFulfillmentID int64
-}
-
 type GetShipnowFulfillmentsArgs struct {
 	ShopID  int64
 	Paging  *cm.Paging

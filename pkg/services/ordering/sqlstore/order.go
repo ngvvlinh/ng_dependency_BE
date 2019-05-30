@@ -23,6 +23,8 @@ func NewOrderStore(db cmsql.Database) OrderStoreFactory {
 	}
 }
 
+type M map[string]interface{}
+
 type OrderStore struct {
 	query func() cmsql.QueryInterface
 	ft    OrderFilters
@@ -89,13 +91,13 @@ func (s *OrderStore) GetOrders(args *ordering.GetOrdersArgs) (orders []*ordering
 	return orderconvert.Orders(results), err
 }
 
-type UpdateOrdersForReserveOrdersArgs struct {
+type UpdateOrdersForReserveOrdersFfmArgs struct {
 	OrderIDs   []int64
 	Fulfill    ordertypes.Fulfill
 	FulfillIDs []int64
 }
 
-func (s *OrderStore) UpdateOrdersForReverseOrders(args UpdateOrdersForReserveOrdersArgs) ([]*ordering.Order, error) {
+func (s *OrderStore) UpdateOrdersForReserveOrdersFfm(args UpdateOrdersForReserveOrdersFfmArgs) ([]*ordering.Order, error) {
 	if len(args.OrderIDs) == 0 {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing OrderIDs")
 	}
@@ -113,4 +115,21 @@ func (s *OrderStore) UpdateOrdersForReverseOrders(args UpdateOrdersForReserveOrd
 	return s.GetOrders(&ordering.GetOrdersArgs{
 		IDs: args.OrderIDs,
 	})
+}
+
+type UpdateOrdersForReleaseOrderFfmArgs struct {
+	OrderIDs []int64
+}
+
+func (s *OrderStore) UpdateOrdersForReleaseOrdersFfm(args UpdateOrdersForReleaseOrderFfmArgs) error {
+	if len(args.OrderIDs) == 0 {
+		return cm.Errorf(cm.InvalidArgument, nil, "Missing OrderIDs")
+	}
+	if err := s.query().Table("order").In("id", args.OrderIDs).ShouldUpdateMap(M{
+		"fulfill":     nil,
+		"fulfill_ids": nil,
+	}); err != nil {
+		return err
+	}
+	return nil
 }

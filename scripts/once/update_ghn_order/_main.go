@@ -49,7 +49,7 @@ func main() {
 		// for _, ffm := range ffms {
 		// 	err := updateEtopDiscount(ffm)
 		// 	if err != nil {
-		// 		ll.S.Fatalf("Update etop discount fail %v", ffm.ID)
+		// 		ll.S.Fatalf("UpdateInfo etop discount fail %v", ffm.ID)
 		// 	}
 		// 	updated++
 		// }
@@ -163,7 +163,7 @@ func getInfoAndUpdate() {
 		if err := db.Table("fulfillment").
 			Where("id = ?", updateFfm.ID).
 			ShouldUpdate(updateFfm); err != nil {
-			ll.Fatal("Error: Update ffm error", l.Error(err))
+			ll.Fatal("Error: UpdateInfo ffm error", l.Error(err))
 		}
 		updated++
 	}
@@ -204,7 +204,7 @@ func syncOrderLogsGHN(ffm *model.Fulfillment) (_err error) {
 		if err := db.Table("fulfillment").
 			Where("id = ?", ffm.ID).
 			ShouldUpdate(ffm); err != nil {
-			ll.Fatal("Error: Update ffm error", l.Error(err))
+			ll.Fatal("Error: UpdateInfo ffm error", l.Error(err))
 		}
 	}
 	return nil

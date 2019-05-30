@@ -37,17 +37,10 @@ func (c QueryBus) DispatchAll(ctx context.Context, msgs ...Query) error {
 	return nil
 }
 
-type GetOrderByIDCommand struct {
-	ID int64
+type ReleaseOrdersForFfmCommand struct {
+	OrderIDs []int64
 
-	Result *Order `json:"-"`
-}
-
-type GetOrdersCommand struct {
-	ShopID int64
-	IDs    []int64
-
-	Result *OrdersResponse `json:"-"`
+	Result *ReleaseOrdersForFfmResponse `json:"-"`
 }
 
 type ReserveOrdersForFfmCommand struct {
@@ -58,30 +51,38 @@ type ReserveOrdersForFfmCommand struct {
 	Result *ReserveOrdersForFfmResponse `json:"-"`
 }
 
-type ValidateOrdersCommand struct {
+type ValidateOrdersForShippingCommand struct {
 	OrderIDs []int64
 
-	Result *ValidateOrdersResponse `json:"-"`
+	Result *ValidateOrdersForShippingResponse `json:"-"`
+}
+
+type GetOrderByIDQuery struct {
+	ID int64
+
+	Result *Order `json:"-"`
+}
+
+type GetOrdersQuery struct {
+	ShopID int64
+	IDs    []int64
+
+	Result *OrdersResponse `json:"-"`
 }
 
 // implement interfaces
 
-func (q *GetOrderByIDCommand) command()        {}
-func (q *GetOrdersCommand) command()           {}
-func (q *ReserveOrdersForFfmCommand) command() {}
-func (q *ValidateOrdersCommand) command()      {}
+func (q *ReleaseOrdersForFfmCommand) command()       {}
+func (q *ReserveOrdersForFfmCommand) command()       {}
+func (q *ValidateOrdersForShippingCommand) command() {}
+func (q *GetOrderByIDQuery) query()                  {}
+func (q *GetOrdersQuery) query()                     {}
 
 // implement conversion
 
-func (q *GetOrderByIDCommand) GetArgs() *GetOrderByIDArgs {
-	return &GetOrderByIDArgs{
-		ID: q.ID,
-	}
-}
-func (q *GetOrdersCommand) GetArgs() *GetOrdersArgs {
-	return &GetOrdersArgs{
-		ShopID: q.ShopID,
-		IDs:    q.IDs,
+func (q *ReleaseOrdersForFfmCommand) GetArgs() *ReleaseOrdersForFfmArgs {
+	return &ReleaseOrdersForFfmArgs{
+		OrderIDs: q.OrderIDs,
 	}
 }
 func (q *ReserveOrdersForFfmCommand) GetArgs() *ReserveOrdersForFfmArgs {
@@ -91,9 +92,20 @@ func (q *ReserveOrdersForFfmCommand) GetArgs() *ReserveOrdersForFfmArgs {
 		FulfillIDs: q.FulfillIDs,
 	}
 }
-func (q *ValidateOrdersCommand) GetArgs() *ValidateOrdersForShippingArgs {
+func (q *ValidateOrdersForShippingCommand) GetArgs() *ValidateOrdersForShippingArgs {
 	return &ValidateOrdersForShippingArgs{
 		OrderIDs: q.OrderIDs,
+	}
+}
+func (q *GetOrderByIDQuery) GetArgs() *GetOrderByIDArgs {
+	return &GetOrderByIDArgs{
+		ID: q.ID,
+	}
+}
+func (q *GetOrdersQuery) GetArgs() *GetOrdersArgs {
+	return &GetOrdersArgs{
+		ShopID: q.ShopID,
+		IDs:    q.IDs,
 	}
 }
 
@@ -109,21 +121,14 @@ func (h AggregateHandler) RegisterHandlers(b interface {
 	meta.Bus
 	AddHandler(handler interface{})
 }) CommandBus {
-	b.AddHandler(h.HandleGetOrderByID)
-	b.AddHandler(h.HandleGetOrders)
+	b.AddHandler(h.HandleReleaseOrdersForFfm)
 	b.AddHandler(h.HandleReserveOrdersForFfm)
-	b.AddHandler(h.HandleValidateOrders)
+	b.AddHandler(h.HandleValidateOrdersForShipping)
 	return CommandBus{b}
 }
 
-func (h AggregateHandler) HandleGetOrderByID(ctx context.Context, cmd *GetOrderByIDCommand) error {
-	result, err := h.inner.GetOrderByID(ctx, cmd.GetArgs())
-	cmd.Result = result
-	return err
-}
-
-func (h AggregateHandler) HandleGetOrders(ctx context.Context, cmd *GetOrdersCommand) error {
-	result, err := h.inner.GetOrders(ctx, cmd.GetArgs())
+func (h AggregateHandler) HandleReleaseOrdersForFfm(ctx context.Context, cmd *ReleaseOrdersForFfmCommand) error {
+	result, err := h.inner.ReleaseOrdersForFfm(ctx, cmd.GetArgs())
 	cmd.Result = result
 	return err
 }
@@ -134,8 +139,8 @@ func (h AggregateHandler) HandleReserveOrdersForFfm(ctx context.Context, cmd *Re
 	return err
 }
 
-func (h AggregateHandler) HandleValidateOrders(ctx context.Context, cmd *ValidateOrdersCommand) error {
-	result, err := h.inner.ValidateOrders(ctx, cmd.GetArgs())
+func (h AggregateHandler) HandleValidateOrdersForShipping(ctx context.Context, cmd *ValidateOrdersForShippingCommand) error {
+	result, err := h.inner.ValidateOrdersForShipping(ctx, cmd.GetArgs())
 	cmd.Result = result
 	return err
 }
@@ -152,5 +157,19 @@ func (h QueryServiceHandler) RegisterHandlers(b interface {
 	meta.Bus
 	AddHandler(handler interface{})
 }) QueryBus {
+	b.AddHandler(h.HandleGetOrderByID)
+	b.AddHandler(h.HandleGetOrders)
 	return QueryBus{b}
+}
+
+func (h QueryServiceHandler) HandleGetOrderByID(ctx context.Context, query *GetOrderByIDQuery) error {
+	result, err := h.inner.GetOrderByID(ctx, query.GetArgs())
+	query.Result = result
+	return err
+}
+
+func (h QueryServiceHandler) HandleGetOrders(ctx context.Context, query *GetOrdersQuery) error {
+	result, err := h.inner.GetOrders(ctx, query.GetArgs())
+	query.Result = result
+	return err
 }

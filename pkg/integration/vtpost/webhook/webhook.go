@@ -106,7 +106,7 @@ func (wh *Webhook) Callback(c *httpx.Context) error {
 
 	updateFfm := vtpost.CalcUpdateFulfillment(ffm, orderData)
 	updateFfm.LastSyncAt = t0
-	// Update other time
+	// UpdateInfo other time
 	updateFfm = shipping.CalcOtherTimeBaseOnState(updateFfm, ffm, t0)
 	note := orderData.Note
 	subState := vtpostClient.SubStateMap[statusCode]

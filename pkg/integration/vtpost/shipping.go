@@ -90,7 +90,7 @@ func CreateShippingSource(code byte, client vtpostclient.Client) error {
 		}
 	}
 
-	// Update GroupAddressID (use for create order api)
+	// UpdateInfo GroupAddressID (use for create order api)
 	warehouseResponse, err := client.GetWarehouses(ctx)
 	if err != nil {
 		return err

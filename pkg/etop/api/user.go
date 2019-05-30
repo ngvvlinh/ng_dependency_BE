@@ -637,7 +637,7 @@ func CreateLoginResponse2(ctx context.Context, claim *claims.ClaimInfo, token st
 	resp.AccessToken = token
 	resp.ExpiresIn = ttl
 
-	// Update response from claim
+	// UpdateInfo response from claim
 	//
 	// TODO: refactor due to duplicated with token generation above
 	if claim != nil && claim.STokenExpiresAt != nil {

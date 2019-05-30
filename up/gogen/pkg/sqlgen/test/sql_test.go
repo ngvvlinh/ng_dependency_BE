@@ -223,7 +223,7 @@ func TestUser(t *testing.T) {
 					So(&user, ShouldDeepEqual, users[1])
 				}
 			})
-			Convey("Update", func() {
+			Convey("UpdateInfo", func() {
 				update := &User{
 					Name: "Alice in wonderland",
 					Int:  100,
@@ -240,12 +240,12 @@ func TestUser(t *testing.T) {
 						"1000",
 					})
 				})
-				Convey("Update no column", func() {
+				Convey("UpdateInfo no column", func() {
 					update := &User{}
 					_, _, err := db.Where("id = ?", "1000").BuildUpdate(update)
 					So(err, ShouldBeError, "common/sql: no column to update")
 				})
-				Convey("Update data", func() {
+				Convey("UpdateInfo data", func() {
 					n, err := db.Where("id = ?", "1000").Update(update)
 					So(err, ShouldBeNil)
 					So(n, ShouldEqual, 1)
@@ -260,7 +260,7 @@ func TestUser(t *testing.T) {
 						So(actual, ShouldResembleByKey("id"), expectedUsers)
 					})
 				})
-				Convey("Update all: Build", func() {
+				Convey("UpdateInfo all: Build", func() {
 					query, args, err := db.Where("id = ?", "1000").UpdateAll().BuildUpdate(update)
 					So(err, ShouldBeNil)
 

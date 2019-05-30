@@ -476,7 +476,7 @@ func TryCancellingFulfillments(ctx context.Context, order *ordermodel.Order, ful
 				errs[i] = _err
 			}()
 
-			// Update to pending
+			// UpdateInfo to pending
 			update := &shipmodel.Fulfillment{
 				ID:         ffm.ID,
 				SyncStatus: model.S4SuperPos,
@@ -505,7 +505,7 @@ func TryCancellingFulfillments(ctx context.Context, order *ordermodel.Order, ful
 
 			// Send
 			if shippingProviderErr != nil {
-				// Update to error
+				// UpdateInfo to error
 				update2 := &shipmodel.Fulfillment{
 					ID:         ffm.ID,
 					SyncStatus: model.S4Negative,
@@ -523,7 +523,7 @@ func TryCancellingFulfillments(ctx context.Context, order *ordermodel.Order, ful
 				return shippingProviderErr
 			}
 
-			// Update to ok
+			// UpdateInfo to ok
 			update2 := &shipmodel.Fulfillment{
 				ID:            ffm.ID,
 				ShippingState: update.SyncStates.NextShippingState,

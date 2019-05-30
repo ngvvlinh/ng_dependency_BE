@@ -11,13 +11,14 @@ import (
 )
 
 type Aggregate interface {
-	GetOrderByID(ctx context.Context, args *GetOrderByIDArgs) (*Order, error)
-	GetOrders(ctx context.Context, args *GetOrdersArgs) (*OrdersResponse, error)
-	ValidateOrders(ctx context.Context, args *ValidateOrdersForShippingArgs) (*ValidateOrdersResponse, error)
+	ValidateOrdersForShipping(ctx context.Context, args *ValidateOrdersForShippingArgs) (*ValidateOrdersForShippingResponse, error)
 	ReserveOrdersForFfm(ctx context.Context, args *ReserveOrdersForFfmArgs) (*ReserveOrdersForFfmResponse, error)
+	ReleaseOrdersForFfm(ctx context.Context, args *ReleaseOrdersForFfmArgs) (*ReleaseOrdersForFfmResponse, error)
 }
 
 type QueryService interface {
+	GetOrderByID(ctx context.Context, args *GetOrderByIDArgs) (*Order, error)
+	GetOrders(ctx context.Context, args *GetOrdersArgs) (*OrdersResponse, error)
 }
 
 type GetOrderByIDArgs struct {
@@ -33,7 +34,7 @@ type OrdersResponse struct {
 	Orders []*Order
 }
 
-type ValidateOrdersResponse struct {
+type ValidateOrdersForShippingResponse struct {
 }
 
 type Order struct {
@@ -93,4 +94,12 @@ type ReserveOrdersForFfmArgs struct {
 
 type ReserveOrdersForFfmResponse struct {
 	Orders []*Order
+}
+
+type ReleaseOrdersForFfmArgs struct {
+	OrderIDs []int64
+}
+
+type ReleaseOrdersForFfmResponse struct {
+	Updated int
 }

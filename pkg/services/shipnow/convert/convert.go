@@ -5,7 +5,7 @@ import (
 	"etop.vn/api/main/ordering"
 	"etop.vn/api/main/shipnow"
 	shipnowtypes "etop.vn/api/main/shipnow/types"
-	"etop.vn/api/main/shipping/types"
+	shippingtypes "etop.vn/api/main/shipping/types"
 	"etop.vn/api/meta"
 	"etop.vn/backend/pkg/etop/model"
 	orderconvert "etop.vn/backend/pkg/services/ordering/convert"
@@ -17,7 +17,7 @@ func ShipnowToModel(in *shipnow.ShipnowFulfillment) (out *shipnowmodel.ShipnowFu
 		ID:                  in.Id,
 		ShopID:              in.ShopId,
 		PartnerID:           in.PartnerId,
-		OrderIDs:            nil,
+		OrderIDs:            in.OrderIds,
 		PickupAddress:       orderconvert.AddressToModel(in.PickupAddress),
 		Carrier:             shipnowmodel.Carrier(in.Carrier),
 		ShippingServiceCode: in.ShippingServiceCode,
@@ -54,14 +54,14 @@ func Shipnow(in *shipnowmodel.ShipnowFulfillment) (out *shipnow.ShipnowFulfillme
 		Carrier:             string(in.Carrier),
 		ShippingServiceCode: in.ShippingServiceCode,
 		ShippingServiceFee:  in.ShippingServiceFee,
-		WeightInfo: types.WeightInfo{
+		WeightInfo: shippingtypes.WeightInfo{
 			GrossWeight:      in.GrossWeight,
 			ChargeableWeight: in.ChargeableWeight,
 			Length:           0,
 			Width:            0,
 			Height:           0,
 		},
-		ValueInfo: types.ValueInfo{
+		ValueInfo: shippingtypes.ValueInfo{
 			BasketValue:      in.BasketValue,
 			CodAmount:        in.CODAmount,
 			IncludeInsurance: false,
@@ -72,6 +72,7 @@ func Shipnow(in *shipnowmodel.ShipnowFulfillment) (out *shipnow.ShipnowFulfillme
 		Status:          etoptypes.Status5FromInt(int(in.Status)),
 		ShippingState:   shipnowtypes.StateFromString(string(in.ShippingState)),
 		ShippingCode:    in.ShippingCode,
+		OrderIds:        in.OrderIDs,
 	}
 	return out
 }
@@ -92,14 +93,14 @@ func DeliveryPoint(in *shipnowmodel.DeliveryPoint) (outs *shipnowtypes.DeliveryP
 		Lines:           orderconvert.OrderLines(in.Items),
 		ShippingNote:    in.ShippingNote,
 		OrderId:         in.OrderID,
-		WeightInfo: types.WeightInfo{
+		WeightInfo: shippingtypes.WeightInfo{
 			GrossWeight:      in.GrossWeight,
 			ChargeableWeight: in.ChargeableWeight,
 			Length:           in.Length,
 			Width:            in.Width,
 			Height:           in.Height,
 		},
-		ValueInfo: types.ValueInfo{
+		ValueInfo: shippingtypes.ValueInfo{
 			BasketValue:      in.BasketValue,
 			CodAmount:        in.CODAmount,
 			IncludeInsurance: false,
@@ -148,14 +149,14 @@ func OrderToDeliveryPoint(in *ordering.Order) *shipnowtypes.DeliveryPoint {
 		Lines:           in.Lines,
 		ShippingNote:    in.OrderNote,
 		OrderId:         in.ID,
-		WeightInfo: types.WeightInfo{
+		WeightInfo: shippingtypes.WeightInfo{
 			GrossWeight:      int32(in.Shipping.GrossWeight),
 			ChargeableWeight: int32(in.Shipping.ChargeableWeight),
 			Length:           int32(in.Shipping.Length),
 			Width:            0,
 			Height:           int32(in.Shipping.Height),
 		},
-		ValueInfo: types.ValueInfo{
+		ValueInfo: shippingtypes.ValueInfo{
 			BasketValue:      int32(in.BasketValue),
 			CodAmount:        int32(in.Shipping.CODAmount),
 			IncludeInsurance: in.Shipping.IncludeInsurance,
@@ -164,25 +165,25 @@ func OrderToDeliveryPoint(in *ordering.Order) *shipnowtypes.DeliveryPoint {
 	}
 }
 
-func GetWeightInfo(orders []*ordering.Order) types.WeightInfo {
+func GetWeightInfo(orders []*ordering.Order) shippingtypes.WeightInfo {
 	grossWeight, chargeableWeight := 0, 0
 	for _, o := range orders {
 		grossWeight += o.Shipping.GrossWeight
 		chargeableWeight += o.Shipping.ChargeableWeight
 	}
-	return types.WeightInfo{
+	return shippingtypes.WeightInfo{
 		GrossWeight:      int32(grossWeight),
 		ChargeableWeight: int32(chargeableWeight),
 	}
 }
 
-func GetValueInfo(orders []*ordering.Order) types.ValueInfo {
+func GetValueInfo(orders []*ordering.Order) shippingtypes.ValueInfo {
 	basketValue, codAmount := 0, 0
 	for _, o := range orders {
 		basketValue += o.BasketValue
 		codAmount += o.Shipping.CODAmount
 	}
-	return types.ValueInfo{
+	return shippingtypes.ValueInfo{
 		BasketValue: int32(basketValue),
 		CodAmount:   int32(codAmount),
 	}

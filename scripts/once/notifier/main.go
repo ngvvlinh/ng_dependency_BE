@@ -83,5 +83,5 @@ func main() {
 			successCount++
 		}
 	}
-	ll.S.Infof("Update device: successs %v/%v, error %v/%v", successCount, len(devices), errCount, len(devices))
+	ll.S.Infof("UpdateInfo device: successs %v/%v, error %v/%v", successCount, len(devices), errCount, len(devices))
 }

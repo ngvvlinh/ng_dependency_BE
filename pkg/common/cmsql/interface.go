@@ -96,7 +96,7 @@ func (q Query) Insert(objs ...core.IInsert) (int64, error) {
 	return q.query.Insert(objs...)
 }
 
-// Update ...
+// UpdateInfo ...
 func (q Query) Update(objs ...core.IUpdate) (int64, error) {
 	return q.query.Update(objs...)
 }
@@ -231,7 +231,7 @@ func (db Database) Insert(objs ...core.IInsert) (int64, error) {
 	return db.db.Insert(objs...)
 }
 
-// Update ...
+// UpdateInfo ...
 func (db Database) Update(objs ...core.IUpdate) (int64, error) {
 	return db.db.Update(objs...)
 }
@@ -370,7 +370,7 @@ func (tx tx) Insert(objs ...core.IInsert) (int64, error) {
 	return tx.tx.Insert(objs...)
 }
 
-// Update ...
+// UpdateInfo ...
 func (tx tx) Update(objs ...core.IUpdate) (int64, error) {
 	return tx.tx.Update(objs...)
 }

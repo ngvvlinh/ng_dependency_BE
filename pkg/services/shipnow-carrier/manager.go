@@ -71,7 +71,7 @@ func (ShipnowManager) CancelExternalShipping(ctx context.Context, ffm *carrier.C
 // 				NextShippingState: etopmodel.StateCreated,
 // 			},
 // 		}
-// 		if err := ctrl.s.Update(shipnowconvert.Shipnow(updateFfm)); err != nil {
+// 		if err := ctrl.s.UpdateInfo(shipnowconvert.Shipnow(updateFfm)); err != nil {
 // 			return err
 // 		}
 // 	}
@@ -88,7 +88,7 @@ func (ShipnowManager) CancelExternalShipping(ctx context.Context, ffm *carrier.C
 // 				NextShippingState: etopmodel.StateCreated,
 // 			},
 // 		}
-// 		if err := ctrl.s.Update(shipnowconvert.Shipnow(updateFfm)); err != nil {
+// 		if err := ctrl.s.UpdateInfo(shipnowconvert.Shipnow(updateFfm)); err != nil {
 // 			return
 // 		}
 // 	}()
@@ -107,7 +107,7 @@ func (ShipnowManager) CancelExternalShipping(ctx context.Context, ffm *carrier.C
 // 		return err
 // 	}
 // 	ffmToUpdate, err := shipnowCarrier.CreateFulfillment(ctx, ffm, service)
-// 	if err := ctrl.s.Update(shipnowconvert.Shipnow(ffmToUpdate)); err != nil {
+// 	if err := ctrl.s.UpdateInfo(shipnowconvert.Shipnow(ffmToUpdate)); err != nil {
 // 		return err
 // 	}
 // 	return nil

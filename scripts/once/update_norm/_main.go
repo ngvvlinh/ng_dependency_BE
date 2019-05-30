@@ -61,7 +61,7 @@ func main() {
 							"name_norm_ua": nameNormUa,
 						})
 					if err != nil {
-						ll.S.Fatalf("Update product id=%v", p.ID)
+						ll.S.Fatalf("UpdateInfo product id=%v", p.ID)
 					}
 					updated++
 				}
@@ -96,7 +96,7 @@ func main() {
 							"name_norm": nameNorm,
 						})
 					if err != nil {
-						ll.S.Fatalf("Update shop product %v-%v", p.ShopID, p.ProductID)
+						ll.S.Fatalf("UpdateInfo shop product %v-%v", p.ShopID, p.ProductID)
 					}
 					updated++
 				}
@@ -135,7 +135,7 @@ func main() {
 						Where("id = ?", v.ID).
 						ShouldUpdateMap(update)
 					if err != nil {
-						ll.S.Fatalf("Update variant id=%v", v.ID)
+						ll.S.Fatalf("UpdateInfo variant id=%v", v.ID)
 					}
 					updated++
 				}

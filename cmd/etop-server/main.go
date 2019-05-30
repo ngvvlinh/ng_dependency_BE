@@ -249,12 +249,13 @@ func main() {
 	addressQuery := address.NewQueryService(db)
 	shipnowQuery := shipnow.NewQueryService(db)
 	catalogQuery := catalogquery.New(db).MessageBus()
+	orderQueryBus := ordering.NewQueryService(db).MessageBus()
 
 	orderAggregate := ordering.NewAggregate(db)
-	shipnowAggregate := shipnow.NewAggregate(eventBus, db, locationBus, identityQuery, addressQuery)
+	shipnowAggregate := shipnow.NewAggregate(eventBus, db, locationBus, identityQuery, addressQuery, orderQueryBus)
 
 	orderingPM := orderingpm.New(orderAggregate, shipnowAggregate)
-	shipnowPM := shipnowpm.New(eventBus, shipnowQuery.MessageBus(), orderAggregate, orderAggregate.MessageBus(), identityQuery, addressQuery, shipnowCarrierManager)
+	shipnowPM := shipnowpm.New(eventBus, shipnowQuery.MessageBus(), orderAggregate.MessageBus(), shipnowCarrierManager)
 	shipnowPM.RegisterEventHandlers(eventBus)
 
 	orderAggregate.WithPM(orderingPM)

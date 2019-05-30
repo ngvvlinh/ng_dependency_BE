@@ -4,11 +4,15 @@ import (
 	"context"
 
 	"etop.vn/api/main/etop"
+	ordertypes "etop.vn/api/main/ordering/types"
 	"etop.vn/api/main/shipnow"
 	shipnowtypes "etop.vn/api/main/shipnow/types"
+	shippingtypes "etop.vn/api/main/shipping/types"
+	metav1 "etop.vn/api/meta/v1"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/cmsql"
 	"etop.vn/backend/pkg/etop/model"
+	etopconvert "etop.vn/backend/pkg/services/etop/convert"
 	"etop.vn/backend/pkg/services/shipnow/convert"
 	shipnowmodel "etop.vn/backend/pkg/services/shipnow/model"
 	shipnowmodelx "etop.vn/backend/pkg/services/shipnow/modelx"
@@ -70,33 +74,61 @@ func (s *ShipnowStore) Create(shipnowFfm *shipnow.ShipnowFulfillment) error {
 	return err
 }
 
-func (s *ShipnowStore) Update(shipnowFfm *shipnow.ShipnowFulfillment) (*shipnow.ShipnowFulfillment, error) {
-	if shipnowFfm.Id == 0 {
+type UpdateInfoArgs struct {
+	ID                  int64
+	PickupAddress       *ordertypes.Address
+	Carrier             string
+	ShippingServiceCode string
+	ShippingServiceFee  int32
+	ShippingNote        string
+	RequestPickupAt     *metav1.Timestamp
+	DeliveryPoints      []*shipnow.DeliveryPoint
+	WeightInfo          shippingtypes.WeightInfo
+	ValueInfo           shippingtypes.ValueInfo
+}
+
+func (s *ShipnowStore) UpdateInfo(args UpdateInfoArgs) (*shipnow.ShipnowFulfillment, error) {
+	if args.ID == 0 {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing ID")
 	}
-	modelShipnowFfm := convert.ShipnowToModel(shipnowFfm)
-	err := s.query().Where("id = ?", shipnowFfm.Id).ShouldUpdate(modelShipnowFfm)
+	update := &shipnow.ShipnowFulfillment{
+		Id:                  args.ID,
+		PickupAddress:       args.PickupAddress,
+		DeliveryPoints:      args.DeliveryPoints,
+		Carrier:             args.Carrier,
+		ShippingServiceCode: args.ShippingServiceCode,
+		ShippingServiceFee:  args.ShippingServiceFee,
+		WeightInfo:          args.WeightInfo,
+		ValueInfo:           args.ValueInfo,
+		ShippingNote:        args.ShippingNote,
+		RequestPickupAt:     args.RequestPickupAt,
+	}
+
+	modelShipnowFfm := convert.ShipnowToModel(update)
+	err := s.query().Where("id = ?", args.ID).ShouldUpdate(modelShipnowFfm)
 
 	var result shipnowmodel.ShipnowFulfillment
-	err = s.query().Where("id = ?", shipnowFfm.Id).ShouldGet(&result)
+	err = s.query().Where("id = ?", args.ID).ShouldGet(&result)
 	if err != nil {
 		return nil, err
 	}
 	return convert.Shipnow(&result), nil
 }
 
-type UpdateSyncStateArgs struct {
-	ID         int64
-	SyncStatus etop.Status4
-	Status     etop.Status5
-	State      shipnowtypes.State
-	SyncStates *model.FulfillmentSyncStates
+type UpdateStateArgs struct {
+	ID            int64
+	SyncStatus    etop.Status4
+	Status        etop.Status5
+	State         shipnowtypes.State
+	SyncStates    *model.FulfillmentSyncStates
+	ConfirmStatus etop.Status3
 }
 
-func (s *ShipnowStore) UpdateSyncState(args UpdateSyncStateArgs) (*shipnow.ShipnowFulfillment, error) {
+func (s *ShipnowStore) UpdateSyncState(args UpdateStateArgs) (*shipnow.ShipnowFulfillment, error) {
 	updateFfm := &shipnowmodel.ShipnowFulfillment{
-		SyncStatus:    model.Status4(etop.Status4FromInt(int(args.SyncStatus))),
-		Status:        model.Status5(etop.Status5FromInt(int(args.Status))),
+		SyncStatus:    etopconvert.Status4ToModel(args.SyncStatus),
+		Status:        etopconvert.Status5ToModel(args.Status),
+		ConfirmStatus: etopconvert.Status3ToModel(args.ConfirmStatus),
 		ShippingState: args.State.String(),
 		SyncStates:    args.SyncStates,
 	}
@@ -107,22 +139,9 @@ func (s *ShipnowStore) UpdateSyncState(args UpdateSyncStateArgs) (*shipnow.Shipn
 	}
 
 	var result shipnowmodel.ShipnowFulfillment
-	err = s.query().Where(ft.ByID(updateFfm.ID)).ShouldGet(&result)
+	err = s.query().Where(ft.ByID(args.ID)).ShouldGet(&result)
 	if err != nil {
 		return nil, err
 	}
 	return convert.Shipnow(&result), nil
-}
-
-func (s *ShipnowStore) GetActiveShipnowFulfillmentsByOrderID(args *shipnowmodelx.GetActiveShipnowFulfillmentsByOrderIDArgs) ([]*shipnow.ShipnowFulfillment, error) {
-	var ffms []*shipnowmodel.ShipnowFulfillment
-	x := s.query().Where("? = ANY(order_ids) AND status in (?, ?)", args.OrderID, model.S5Zero, model.S5SuperPos)
-	if args.ExcludeShipnowFulfillmentID != 0 {
-		x = x.Where("id != ?", args.ExcludeShipnowFulfillmentID)
-	}
-	if err := x.Find((*shipnowmodel.ShipnowFulfillments)(&ffms)); err != nil {
-		return nil, err
-	}
-
-	return convert.Shipnows(ffms), nil
 }

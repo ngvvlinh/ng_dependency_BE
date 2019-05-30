@@ -177,14 +177,14 @@ func cancelOrder(ctx context.Context, q *wrapshop.CancelOrderEndpoint) (*wrapsho
 /*
 	0. Check idempotent
 	1. Get order
-	2. Update order to confirm
+	2. UpdateInfo order to confirm
 	3. Check if fulfillment exists
 	   no:  Create fulfillments with status sync_status 0
 	   yes: Check existing fullfillments sync_status
 			if any sync_status 0:
 				Create fulfillments with status sync_status 0
 
-	4. Update fulfillment information and status from GHN
+	4. UpdateInfo fulfillment information and status from GHN
 */
 
 func ConfirmOrderAndCreateFulfillments(ctx context.Context, q *wrapshop.ConfirmOrderAndCreateFulfillmentsEndpoint) (_err error) {

@@ -106,7 +106,7 @@ package ahamoveWebhook
 //
 // 	updateFfm := ghtk.CalcUpdateFulfillment(ffm, &msg, &ghtkCmd.Result.Order)
 // 	updateFfm.LastSyncAt = t0
-// 	// Update other time
+// 	// UpdateInfo other time
 // 	updateFfm = shipping.CalcOtherTimeBaseOnState(updateFfm, ffm, t0)
 // 	// Thêm trạng thái đơn vào note
 // 	note, _ := strconv.Unquote("\"" + msg.Reason.String() + "\"")

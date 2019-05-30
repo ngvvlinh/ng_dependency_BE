@@ -493,7 +493,7 @@ func (q *queryImpl) Insert(objs ...core.IInsert) (int64, error) {
 	}
 }
 
-// Update ...
+// UpdateInfo ...
 func (q *queryImpl) Update(objs ...core.IUpdate) (int64, error) {
 	switch len(objs) {
 	case 1:
