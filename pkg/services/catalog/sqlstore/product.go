@@ -4,10 +4,12 @@ import (
 	"context"
 
 	"etop.vn/api/main/catalog"
+	"etop.vn/api/main/etop"
 	"etop.vn/api/meta"
 	"etop.vn/backend/pkg/common/cmsql"
 	"etop.vn/backend/pkg/common/sq"
 	"etop.vn/backend/pkg/common/sqlstore"
+	etopconvert "etop.vn/backend/pkg/etop/convert"
 	"etop.vn/backend/pkg/services/catalog/convert"
 	catalogmodel "etop.vn/backend/pkg/services/catalog/model"
 )
@@ -58,6 +60,12 @@ func (s *ProductStore) ID(id int64) *ProductStore {
 
 func (s *ProductStore) IDs(ids ...int64) *ProductStore {
 	s.preds = append(s.preds, sq.In("id", ids))
+	return s
+}
+
+func (s *ProductStore) Status(status etop.Status3) *ProductStore {
+	s.preds = append(s.preds,
+		s.FtProduct.ByStatus(etopconvert.Status3ToModel(status)))
 	return s
 }
 

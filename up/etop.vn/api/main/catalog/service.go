@@ -13,20 +13,20 @@ type Aggregate interface {
 }
 
 type QueryService interface {
-	GetProductByID(context.Context, *GetProductByIDQueryArgs) (*Product, error)
-	GetProducts(context.Context, *GetProductsQueryArgs) (*ProductsResonse, error)
-	GetProductsWithVariants(context.Context, *GetProductsQueryArgs) (*ProductsWithVariantsResponse, error)
+	GetProductByID(context.Context, *GetProductByIDQueryArgs) (*ProductWithVariants, error)
+	ListProducts(context.Context, *GetProductsQueryArgs) (*ProductsResonse, error)
+	ListProductsWithVariants(context.Context, *GetProductsQueryArgs) (*ProductsWithVariantsResponse, error)
 
 	GetVariantByID(context.Context, *GetVariantByIDQueryArgs) (*VariantWithProduct, error)
-	GetVariants(context.Context, *GetVariantsQueryArgs) (*VariantsResponse, error)
-	GetVariantsWithProduct(context.Context, *GetVariantsQueryArgs) (*VariantsWithProductResponse, error)
+	ListVariants(context.Context, *GetVariantsQueryArgs) (*VariantsResponse, error)
+	ListVariantsWithProduct(context.Context, *GetVariantsQueryArgs) (*VariantsWithProductResponse, error)
 
 	GetShopProductByID(context.Context, *GetShopProductByIDQueryArgs) (*ShopProductExtended, error)
-	GetShopProducts(context.Context, *GetShopProductsQueryArgs) (*ShopProductsResponse, error)
-	GetShopProductsWithVariants(context.Context, *GetShopProductsQueryArgs) (*ShopProductsWithVariantsResponse, error)
+	ListShopProducts(context.Context, *GetShopProductsQueryArgs) (*ShopProductsResponse, error)
+	ListShopProductsWithVariants(context.Context, *GetShopProductsQueryArgs) (*ShopProductsWithVariantsResponse, error)
 
 	GetShopVariantByID(context.Context, *GetShopVariantsByIDQueryArgs) (*ShopVariantExtended, error)
-	GetShopVariants(context.Context, *GetShopVariantsQueryArgs) (*ShopVariantsResponse, error)
+	ListShopVariants(context.Context, *GetShopVariantsQueryArgs) (*ShopVariantsResponse, error)
 }
 
 //-- query --//
@@ -48,7 +48,7 @@ type GetShopVariantsByIDQueryArgs struct {
 }
 
 type GetProductsQueryArgs struct {
-	IDs             int64
+	IDs             []int64
 	ProductSourceID int64
 
 	Paging  meta.Paging
@@ -75,6 +75,7 @@ type GetShopVariantsQueryArgs struct {
 
 type ProductsResonse struct {
 	Products []*Product
+	Count    int32
 }
 
 type VariantsResponse struct {
@@ -83,6 +84,7 @@ type VariantsResponse struct {
 
 type ProductsWithVariantsResponse struct {
 	Products []*ProductWithVariants
+	Count    int32
 }
 
 type VariantsWithProductResponse struct {
