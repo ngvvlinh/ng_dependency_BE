@@ -55,7 +55,7 @@ func (wh *Webhook) Callback(c *httpx.Context) error {
 		enc.SetEscapeHTML(false)
 		webhookData := &model_log.ShippingProviderWebhook{
 			ID:                       cm.NewID(),
-			ShippingProvider:         model.TypeGHTK,
+			ShippingProvider:         model.TypeGHTK.ToString(),
 			ShippingCode:             ghtk.NormalizeGHTKCode(msg.LabelID.String()),
 			ExternalShippingState:    ghtkClient.StateMapping[stateID],
 			ExternalShippingSubState: ghtkClient.SubStateMapping[stateID],

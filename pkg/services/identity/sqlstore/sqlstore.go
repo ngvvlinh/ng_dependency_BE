@@ -15,14 +15,19 @@ import (
 
 type IdentityStoreFactory func(context.Context) *IdentityStore
 
-type IdentityStore struct {
-	query cmsql.Query
-}
-
 func NewIdentityStore(db cmsql.Database) IdentityStoreFactory {
 	return func(ctx context.Context) *IdentityStore {
-		return &IdentityStore{query: db.WithContext(ctx)}
+		return &IdentityStore{
+			query: func() cmsql.QueryInterface {
+				return cmsql.GetTxOrNewQuery(ctx, db)
+			},
+		}
 	}
+}
+
+type IdentityStore struct {
+	query func() cmsql.QueryInterface
+	preds []interface{}
 }
 
 func (s *IdentityStore) GetByID(args identitymodelx.GetByIDArgs) (*identity.Shop, error) {
@@ -30,7 +35,7 @@ func (s *IdentityStore) GetByID(args identitymodelx.GetByIDArgs) (*identity.Shop
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "missing ID")
 	}
 
-	q := s.query.Where("id = ?", args.ID)
+	q := s.query().Where("id = ?", args.ID)
 	result := &model.Shop{}
 	if err := q.ShouldGet(result); err != nil {
 		return nil, err

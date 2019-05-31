@@ -20,6 +20,10 @@ const (
 	Ahamove Carrier = "ahamove"
 )
 
+func (c Carrier) ToString() string {
+	return string(c)
+}
+
 type ShipnowFulfillment struct {
 	ID int64
 
@@ -43,17 +47,27 @@ type ShipnowFulfillment struct {
 
 	DeliveryPoints []*DeliveryPoint
 
-	Status         model.Status5
-	ConfirmStatus  model.Status3
-	ShippingStatus model.Status5
-	ShippingState  string
-	ShippingCode   string
+	Status            model.Status5
+	ConfirmStatus     model.Status3
+	ShippingStatus    model.Status5
+	EtopPaymentStatus model.Status4
 
-	SyncStatus model.Status4
-	SyncStates *model.FulfillmentSyncStates
-	LastSyncAt time.Time
-	CreatedAt  time.Time `sq:"create"`
-	UpdatedAt  time.Time `sq:"update"`
+	ShippingState        string
+	ShippingCode         string
+	FeeLines             []*model.ShippingFeeLine
+	CarrierFeeLines      []*model.ShippingFeeLine
+	TotalFee             int
+	ShippingCreatedAt    time.Time
+	ShippingPickingAt    time.Time
+	ShippingDeliveringAt time.Time
+	ShippingDeliveredAt  time.Time
+	ShippingCancelledAt  time.Time
+
+	SyncStatus          model.Status4
+	SyncStates          *model.FulfillmentSyncStates
+	CreatedAt           time.Time `sq:"create"`
+	UpdatedAt           time.Time `sq:"update"`
+	CODEtopTransferedAt time.Time
 }
 
 func (m *ShipnowFulfillment) Validate() error {

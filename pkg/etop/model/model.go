@@ -79,6 +79,10 @@ type (
 	UserSource           string
 )
 
+func (s ShippingProvider) ToString() string {
+	return string(s)
+}
+
 // Type constants
 const (
 	DBMain     DBName = "main"
@@ -614,7 +618,7 @@ type AccountAuth struct {
 
 func (m *AccountAuth) BeforeInsert() error {
 	if m.AccountID == 0 {
-		return cm.Errorf(cm.InvalidArgument, nil, "missing AccountID")
+		return cm.Errorf(cm.InvalidArgument, nil, "missing Name")
 	}
 	if m.AuthKey == "" {
 		code := gencode.GenerateCode(gencode.Alphabet54, 32)
@@ -1294,7 +1298,7 @@ func (m *Webhook) BeforeInsert() error {
 		return cm.Errorf(cm.InvalidArgument, nil, "empty data")
 	}
 	if m.AccountID == 0 {
-		return cm.Errorf(cm.InvalidArgument, nil, "missing AccountID")
+		return cm.Errorf(cm.InvalidArgument, nil, "missing Name")
 	}
 	if !validate.URL(m.URL) {
 		return cm.Errorf(cm.InvalidArgument, nil, "Địa chỉ url không hợp lệ")

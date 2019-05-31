@@ -13,12 +13,14 @@ type ItemLine struct {
 	VariantId   int64       `protobuf:"varint,4,opt,name=variant_id,json=variantId" json:"variant_id"`
 	IsOutside   bool        `protobuf:"varint,5,opt,name=is_outside,json=isOutside" json:"is_outside"`
 	ProductInfo ProductInfo `protobuf:"bytes,6,opt,name=product_info,json=productInfo" json:"product_info"`
+	TotalPrice  int32       `protobuf:"varint,7,opt,name=total_price,json=totalPrice" json:"total_price"`
 }
 
 type ProductInfo struct {
 	ProductName string             `protobuf:"bytes,1,opt,name=product_name,json=productName" json:"product_name"`
 	ImageUrl    string             `protobuf:"bytes,2,opt,name=image_url,json=imageUrl" json:"image_url"`
 	Attributes  []*types.Attribute `protobuf:"bytes,3,rep,name=attributes" json:"attributes,omitempty"`
+	ListPrice   int32              `protobuf:"varint,4,opt,name=list_price,json=listPrice" json:"list_price"`
 }
 
 type Address struct {

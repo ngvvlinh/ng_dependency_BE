@@ -37,3 +37,10 @@ message Timestamp {
     // inclusive.
     optional int32 nanos = 2 [(gogoproto.nullable)=false];
 }
+
+
+message Error {
+    optional string code = 1 [(gogoproto.nullable) = false];
+    optional string msg = 2 [(gogoproto.nullable) = false];
+    map<string, string> meta = 3;
+}

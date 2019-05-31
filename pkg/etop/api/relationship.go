@@ -36,7 +36,7 @@ func AnswerInvitation(ctx context.Context, r *wrapetop.AnswerInvitationEndpoint)
 
 func answerInvitation(ctx context.Context, r *wrapetop.AnswerInvitationEndpoint) (*wrapetop.AnswerInvitationEndpoint, error) {
 	if r.AccountId == 0 {
-		return r, cm.Error(cm.InvalidArgument, "Missing AccountID", nil)
+		return r, cm.Error(cm.InvalidArgument, "Missing Name", nil)
 	}
 	if r.Response == nil {
 		return r, cm.Error(cm.InvalidArgument, "Invalid response", nil)

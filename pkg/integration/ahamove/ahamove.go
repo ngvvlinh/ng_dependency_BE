@@ -4,29 +4,16 @@ import (
 	"context"
 	"sync"
 
+	shipnowtypes "etop.vn/api/main/shipnow/types"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/l"
-	"etop.vn/backend/pkg/etop/model"
 	ahamoveclient "etop.vn/backend/pkg/integration/ahamove/client"
 )
 
 var ll = l.New()
 
-func (c *Carrier) getClient(code byte) (*ahamoveclient.Client, error) {
-	client := c.clients[code]
-	if client != nil {
-		return client, nil
-	}
-
-	if cm.IsDev() {
-		return nil, cm.Error(cm.InvalidArgument, "DEVELOPMENT: No client for ahamove", nil)
-	}
-	return nil, cm.Error(cm.InvalidArgument, "ahamove: invalid client code", nil)
-}
-
 func (c *Carrier) CalcShippingFee(ctx context.Context, cmd *CalcShippingFeeCommand) error {
 	type Result struct {
-		Code      byte
 		ServiceID ServiceCode
 		Result    *ahamoveclient.CalcShippingFeeResponse
 		Error     error
@@ -39,22 +26,20 @@ func (c *Carrier) CalcShippingFee(ctx context.Context, cmd *CalcShippingFeeComma
 	if len(services) == 0 {
 		return cm.Error(cm.ExternalServiceError, "ahamove: Không có gói cước phù hợp", nil)
 	}
-	wg.Add(len(c.clients) * len(services))
-	for code, c := range c.clients {
-		for _, s := range services {
-			go func(code byte, s *ShippingService, c *ahamoveclient.Client) {
-				defer wg.Done()
-				req := *cmd.Request
-				req.ServiceID = string(s.ID)
-				resp, err := c.CalcShippingFee(ctx, &req)
-				m.Lock()
-				result := Result{
-					code, s.ID, resp, err,
-				}
-				results = append(results, result)
-				m.Unlock()
-			}(code, s, c)
-		}
+	wg.Add(len(services))
+	for _, s := range services {
+		go func(s *ShippingService) {
+			defer wg.Done()
+			req := *cmd.Request
+			req.ServiceID = string(s.ID)
+			resp, err := c.client.CalcShippingFee(ctx, &req)
+			m.Lock()
+			result := Result{
+				s.ID, resp, err,
+			}
+			results = append(results, result)
+			m.Unlock()
+		}(s)
 	}
 	wg.Wait()
 	if len(results) == 0 {
@@ -62,9 +47,9 @@ func (c *Carrier) CalcShippingFee(ctx context.Context, cmd *CalcShippingFeeComma
 	}
 
 	generator := newServiceIDGenerator(cmd.ArbitraryID)
-	var res []*model.AvailableShippingService
+	var res []*shipnowtypes.ShipnowService
 	for _, result := range results {
-		providerServiceID, err := generator.GenerateServiceID(result.Code, result.ServiceID)
+		providerServiceID, err := generator.GenerateServiceID(result.ServiceID)
 		if err != nil {
 			return err
 		}
@@ -84,46 +69,32 @@ func (c *Carrier) CalcSingleShippingFee(ctx context.Context, cmd *CalcSingleShip
 }
 
 func (c *Carrier) CreateOrder(ctx context.Context, cmd *CreateOrderCommand) error {
-	clientCode, serviceID, err := ParseServiceID(cmd.ServiceID)
+	serviceID, err := ParseServiceID(cmd.ServiceID)
 	if err != nil {
 		return err
 	}
 
-	client, err := c.getClient(clientCode)
-	if err != nil {
-		return err
-	}
-
-	// detect transport from ServiceID
 	cmd.Request.ServiceID = string(serviceID)
-	cmd.Result, err = client.CreateOrder(ctx, cmd.Request)
+	cmd.Result, err = c.client.CreateOrder(ctx, cmd.Request)
 	return err
 }
 
-func (c *Carrier) GetOrder(ctx context.Context, cmd *GetOrderCommand) error {
-	clientCode, _, err := ParseServiceID(cmd.ServiceID)
-	if err != nil {
-		return err
-	}
-
-	client, err := c.getClient(clientCode)
-	if err != nil {
-		return err
-	}
-	cmd.Result, err = client.GetOrder(ctx, cmd.Request)
+func (c *Carrier) GetOrder(ctx context.Context, cmd *GetOrderCommand) (err error) {
+	cmd.Result, err = c.client.GetOrder(ctx, cmd.Request)
 	return err
 }
 
-func (c *Carrier) CancelOrder(ctx context.Context, cmd *CancelOrderCommand) error {
-	clientCode, _, err := ParseServiceID(cmd.ServiceID)
-	if err != nil {
-		return err
-	}
+func (c *Carrier) CancelOrder(ctx context.Context, cmd *CancelOrderCommand) (err error) {
+	err = c.client.CancelOrder(ctx, cmd.Request)
+	return err
+}
 
-	client, err := c.getClient(clientCode)
-	if err != nil {
-		return err
-	}
-	err = client.CancelOrder(ctx, cmd.Request)
+func (c *CarrierAccount) RegisterAccount(ctx context.Context, cmd *RegisterAccountCommand) (err error) {
+	cmd.Result, err = c.client.RegisterAccount(ctx, cmd.Request)
+	return err
+}
+
+func (c *CarrierAccount) GetAccount(ctx context.Context, cmd *GetAccountCommand) (err error) {
+	cmd.Result, err = c.client.GetAccount(ctx, cmd.Request)
 	return err
 }

@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"strconv"
 
+	"etop.vn/api/main/shipnow"
+
 	"github.com/lib/pq"
 
 	cm "etop.vn/backend/pkg/common"
@@ -14,6 +16,8 @@ import (
 	"etop.vn/backend/pkg/etop/model"
 	ordermodel "etop.vn/backend/pkg/services/ordering/model"
 	ordermodelx "etop.vn/backend/pkg/services/ordering/modelx"
+	shipnowconvert "etop.vn/backend/pkg/services/shipnow/convert"
+	shipnowmodel "etop.vn/backend/pkg/services/shipnow/model"
 	shipmodel "etop.vn/backend/pkg/services/shipping/model"
 	shipmodelx "etop.vn/backend/pkg/services/shipping/modelx"
 	shipmodely "etop.vn/backend/pkg/services/shipping/modely"
@@ -139,16 +143,32 @@ func GetOrder(ctx context.Context, query *ordermodelx.GetOrderQuery) error {
 	}
 
 	if query.IncludeFulfillment {
+		var ffms []*ordermodelx.Fulfillment
+
 		s := x.Table("fulfillment").
 			Where("order_id = ?", order.ID).
 			OrderBy("id")
 		if query.ShopID != 0 {
 			s = s.Where("shop_id = ?", query.ShopID)
 		}
-
-		if err := s.Find((*shipmodel.Fulfillments)(&query.Result.Fulfillments)); err != nil {
+		var shipments []*shipmodel.Fulfillment
+		if err := s.Find((*shipmodel.Fulfillments)(&shipments)); err != nil {
 			return err
 		}
+		for _, sm := range shipments {
+			ffms = append(ffms, &ordermodelx.Fulfillment{Shipment: sm})
+		}
+		query.Result.Fulfillments = shipments
+
+		var shipnows []*shipnowmodel.ShipnowFulfillment
+		if err := x.Table("shipnow_fulfillment").In("id", order.FulfillIDs).Find((*shipnowmodel.ShipnowFulfillments)(&shipnows)); err != nil {
+			return err
+		}
+		for _, sn := range shipnows {
+			_snCore := shipnowconvert.Shipnow(sn)
+			ffms = append(ffms, &ordermodelx.Fulfillment{Shipnow: _snCore})
+		}
+		query.Result.XFulfillments = ffms
 	}
 
 	query.Result.Order = order
@@ -206,12 +226,30 @@ func GetOrders(ctx context.Context, query *ordermodelx.GetOrdersQuery) error {
 		shopIdsMap[o.ShopID] = o.ShopID
 	}
 	var fulfillments []*shipmodel.Fulfillment
-	if err := x.Table("fulfillment").In("order_id", orderIds).Find((*shipmodel.Fulfillments)(&fulfillments)); err != nil {
+	if err := x.Table("fulfillment").
+		In("order_id", orderIds).
+		Find((*shipmodel.Fulfillments)(&fulfillments)); err != nil {
 		return err
 	}
-	orderFulfillments := make(map[int64][]*shipmodel.Fulfillment)
+
+	var shipnows []*shipnowmodel.ShipnowFulfillment
+	if err := x.Table("shipnow_fulfillment").
+		Where("status != ?", model.S5Negative).
+		Where("order_ids && ?", pq.Int64Array(orderIds)).
+		Find((*shipnowmodel.ShipnowFulfillments)(&shipnows)); err != nil {
+		return err
+	}
+
+	orderShipments := make(map[int64][]*shipmodel.Fulfillment)
 	for _, ffm := range fulfillments {
-		orderFulfillments[ffm.OrderID] = append(orderFulfillments[ffm.OrderID], ffm)
+		orderShipments[ffm.OrderID] = append(orderShipments[ffm.OrderID], ffm)
+	}
+	orderShipnows := make(map[int64][]*shipnow.ShipnowFulfillment)
+	for _, ffm := range shipnows {
+		for _, orderID := range ffm.OrderIDs {
+			sn := shipnowconvert.Shipnow(ffm)
+			orderShipnows[orderID] = append(orderShipnows[orderID], sn)
+		}
 	}
 
 	// getShop
@@ -229,7 +267,15 @@ func GetOrders(ctx context.Context, query *ordermodelx.GetOrdersQuery) error {
 
 	for i := range query.Result.Orders {
 		order := &query.Result.Orders[i] // it's not a pointer
-		order.Fulfillments = orderFulfillments[order.ID]
+
+		shipnows := orderShipnows[order.ID]
+		for _, sn := range shipnows {
+			order.Fulfillments = append(order.Fulfillments, &ordermodelx.Fulfillment{Shipnow: sn})
+		}
+		shipments := orderShipments[order.ID]
+		for _, sm := range shipments {
+			order.Fulfillments = append(order.Fulfillments, &ordermodelx.Fulfillment{Shipment: sm})
+		}
 	}
 
 	return nil
@@ -237,7 +283,7 @@ func GetOrders(ctx context.Context, query *ordermodelx.GetOrdersQuery) error {
 
 func VerifyOrdersByEdCode(ctx context.Context, query *ordermodelx.VerifyOrdersByEdCodeQuery) error {
 	if query.ShopID == 0 {
-		return cm.Error(cm.InvalidArgument, "Missing AccountID", nil)
+		return cm.Error(cm.InvalidArgument, "Missing Name", nil)
 	}
 	if len(query.EdCodes) == 0 {
 		return cm.Error(cm.InvalidArgument, "Missing codes", nil)
@@ -328,7 +374,7 @@ func UpdateOrdersStatus(ctx context.Context, cmd *ordermodelx.UpdateOrdersStatus
 func CreateOrder(ctx context.Context, cmd *ordermodelx.CreateOrderCommand) error {
 	order := cmd.Order
 	if order.ShopID == 0 {
-		return cm.Error(cm.InvalidArgument, "Missing AccountID", nil)
+		return cm.Error(cm.InvalidArgument, "Missing Name", nil)
 	}
 
 	shop, err := generateShopCode(ctx, order.ShopID)
@@ -370,14 +416,14 @@ func CreateOrder(ctx context.Context, cmd *ordermodelx.CreateOrderCommand) error
 
 func CreateOrders(ctx context.Context, cmd *ordermodelx.CreateOrdersCommand) error {
 	if cmd.ShopID == 0 {
-		return cm.Error(cm.InvalidArgument, "Missing AccountID", nil)
+		return cm.Error(cm.InvalidArgument, "Missing Name", nil)
 	}
 	if len(cmd.Orders) == 0 {
 		return cm.Error(cm.InvalidArgument, "Nothing to create", nil)
 	}
 	for _, order := range cmd.Orders {
 		if order.ShopID != cmd.ShopID {
-			return cm.Error(cm.InvalidArgument, "Invalid AccountID", nil)
+			return cm.Error(cm.InvalidArgument, "Invalid Name", nil)
 		}
 	}
 
@@ -449,7 +495,7 @@ func generateShopCode(ctx context.Context, shopID int64) (*model.Shop, error) {
 
 func UpdateOrder(ctx context.Context, cmd *ordermodelx.UpdateOrderCommand) error {
 	if cmd.ShopID == 0 {
-		return cm.Error(cm.InvalidArgument, "Missing AccountID", nil)
+		return cm.Error(cm.InvalidArgument, "Missing Name", nil)
 	}
 	query := &ordermodelx.GetOrderQuery{
 		OrderID: cmd.ID,
@@ -971,7 +1017,7 @@ func SyncUpdateFulfillments(ctx context.Context, cmd *shipmodelx.SyncUpdateFulfi
 
 func UpdateFulfillmentsShippingState(ctx context.Context, cmd *shipmodelx.UpdateFulfillmentsShippingStateCommand) error {
 	if cmd.ShopID == 0 {
-		return cm.Error(cm.InvalidArgument, "Missing AccountID", nil)
+		return cm.Error(cm.InvalidArgument, "Missing Name", nil)
 	}
 	if len(cmd.IDs) == 0 {
 		return cm.Error(cm.InvalidArgument, "Missing Fulfillment IDs", nil)
@@ -1039,7 +1085,7 @@ func UpdateFulfillmentsShippingState(ctx context.Context, cmd *shipmodelx.Update
 
 func UpdateOrderPaymentStatus(ctx context.Context, cmd *ordermodelx.UpdateOrderPaymentStatusCommand) error {
 	if cmd.ShopID == 0 {
-		return cm.Error(cm.InvalidArgument, "Missing AccountID", nil)
+		return cm.Error(cm.InvalidArgument, "Missing Name", nil)
 	}
 	if cmd.OrderID == 0 {
 		return cm.Error(cm.InvalidArgument, "Missing OrderID", nil)

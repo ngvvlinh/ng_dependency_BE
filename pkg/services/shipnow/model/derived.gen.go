@@ -17,7 +17,7 @@ func sqlgenShipnowFulfillment(_ *ShipnowFulfillment) bool { return true }
 type ShipnowFulfillments []*ShipnowFulfillment
 
 const __sqlShipnowFulfillment_Table = "shipnow_fulfillment"
-const __sqlShipnowFulfillment_ListCols = "\"id\",\"shop_id\",\"partner_id\",\"order_ids\",\"pickup_address\",\"carrier\",\"shipping_service_code\",\"shipping_service_fee\",\"chargeable_weight\",\"gross_weight\",\"basket_value\",\"cod_amount\",\"shipping_note\",\"request_pickup_at\",\"delivery_points\",\"status\",\"confirm_status\",\"shipping_status\",\"shipping_state\",\"shipping_code\",\"sync_status\",\"sync_states\",\"last_sync_at\",\"created_at\",\"updated_at\""
+const __sqlShipnowFulfillment_ListCols = "\"id\",\"shop_id\",\"partner_id\",\"order_ids\",\"pickup_address\",\"carrier\",\"shipping_service_code\",\"shipping_service_fee\",\"chargeable_weight\",\"gross_weight\",\"basket_value\",\"cod_amount\",\"shipping_note\",\"request_pickup_at\",\"delivery_points\",\"status\",\"confirm_status\",\"shipping_status\",\"etop_payment_status\",\"shipping_state\",\"shipping_code\",\"fee_lines\",\"carrier_fee_lines\",\"total_fee\",\"shipping_created_at\",\"shipping_picking_at\",\"shipping_delivering_at\",\"shipping_delivered_at\",\"shipping_cancelled_at\",\"sync_status\",\"sync_states\",\"created_at\",\"updated_at\",\"cod_etop_transfered_at\""
 const __sqlShipnowFulfillment_Insert = "INSERT INTO \"shipnow_fulfillment\" (" + __sqlShipnowFulfillment_ListCols + ") VALUES"
 const __sqlShipnowFulfillment_Select = "SELECT " + __sqlShipnowFulfillment_ListCols + " FROM \"shipnow_fulfillment\""
 const __sqlShipnowFulfillment_Select_history = "SELECT " + __sqlShipnowFulfillment_ListCols + " FROM history.\"shipnow_fulfillment\""
@@ -48,13 +48,22 @@ func (m *ShipnowFulfillment) SQLArgs(opts core.Opts, create bool) []interface{} 
 		core.Int(m.Status),
 		core.Int(m.ConfirmStatus),
 		core.Int(m.ShippingStatus),
+		core.Int(m.EtopPaymentStatus),
 		core.String(m.ShippingState),
 		core.String(m.ShippingCode),
+		core.JSON{m.FeeLines},
+		core.JSON{m.CarrierFeeLines},
+		core.Int(m.TotalFee),
+		core.Time(m.ShippingCreatedAt),
+		core.Time(m.ShippingPickingAt),
+		core.Time(m.ShippingDeliveringAt),
+		core.Time(m.ShippingDeliveredAt),
+		core.Time(m.ShippingCancelledAt),
 		core.Int(m.SyncStatus),
 		core.JSON{m.SyncStates},
-		core.Time(m.LastSyncAt),
 		core.Now(m.CreatedAt, now, create),
 		core.Now(m.UpdatedAt, now, true),
+		core.Time(m.CODEtopTransferedAt),
 	}
 }
 
@@ -78,13 +87,22 @@ func (m *ShipnowFulfillment) SQLScanArgs(opts core.Opts) []interface{} {
 		(*core.Int)(&m.Status),
 		(*core.Int)(&m.ConfirmStatus),
 		(*core.Int)(&m.ShippingStatus),
+		(*core.Int)(&m.EtopPaymentStatus),
 		(*core.String)(&m.ShippingState),
 		(*core.String)(&m.ShippingCode),
+		core.JSON{&m.FeeLines},
+		core.JSON{&m.CarrierFeeLines},
+		(*core.Int)(&m.TotalFee),
+		(*core.Time)(&m.ShippingCreatedAt),
+		(*core.Time)(&m.ShippingPickingAt),
+		(*core.Time)(&m.ShippingDeliveringAt),
+		(*core.Time)(&m.ShippingDeliveredAt),
+		(*core.Time)(&m.ShippingCancelledAt),
 		(*core.Int)(&m.SyncStatus),
 		core.JSON{&m.SyncStates},
-		(*core.Time)(&m.LastSyncAt),
 		(*core.Time)(&m.CreatedAt),
 		(*core.Time)(&m.UpdatedAt),
+		(*core.Time)(&m.CODEtopTransferedAt),
 	}
 }
 
@@ -122,7 +140,7 @@ func (_ *ShipnowFulfillments) SQLSelect(w SQLWriter) error {
 func (m *ShipnowFulfillment) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlShipnowFulfillment_Insert)
 	w.WriteRawString(" (")
-	w.WriteMarkers(25)
+	w.WriteMarkers(34)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), true))
 	return nil
@@ -132,7 +150,7 @@ func (ms ShipnowFulfillments) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlShipnowFulfillment_Insert)
 	w.WriteRawString(" (")
 	for i := 0; i < len(ms); i++ {
-		w.WriteMarkers(25)
+		w.WriteMarkers(34)
 		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
 		w.WriteRawString("),(")
 	}
@@ -291,6 +309,14 @@ func (m *ShipnowFulfillment) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(int(m.ShippingStatus))
 	}
+	if m.EtopPaymentStatus != 0 {
+		flag = true
+		w.WriteName("etop_payment_status")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(int(m.EtopPaymentStatus))
+	}
 	if m.ShippingState != "" {
 		flag = true
 		w.WriteName("shipping_state")
@@ -306,6 +332,70 @@ func (m *ShipnowFulfillment) SQLUpdate(w SQLWriter) error {
 		w.WriteMarker()
 		w.WriteByte(',')
 		w.WriteArg(m.ShippingCode)
+	}
+	if m.FeeLines != nil {
+		flag = true
+		w.WriteName("fee_lines")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(core.JSON{m.FeeLines})
+	}
+	if m.CarrierFeeLines != nil {
+		flag = true
+		w.WriteName("carrier_fee_lines")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(core.JSON{m.CarrierFeeLines})
+	}
+	if m.TotalFee != 0 {
+		flag = true
+		w.WriteName("total_fee")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.TotalFee)
+	}
+	if !m.ShippingCreatedAt.IsZero() {
+		flag = true
+		w.WriteName("shipping_created_at")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.ShippingCreatedAt)
+	}
+	if !m.ShippingPickingAt.IsZero() {
+		flag = true
+		w.WriteName("shipping_picking_at")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.ShippingPickingAt)
+	}
+	if !m.ShippingDeliveringAt.IsZero() {
+		flag = true
+		w.WriteName("shipping_delivering_at")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.ShippingDeliveringAt)
+	}
+	if !m.ShippingDeliveredAt.IsZero() {
+		flag = true
+		w.WriteName("shipping_delivered_at")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.ShippingDeliveredAt)
+	}
+	if !m.ShippingCancelledAt.IsZero() {
+		flag = true
+		w.WriteName("shipping_cancelled_at")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.ShippingCancelledAt)
 	}
 	if m.SyncStatus != 0 {
 		flag = true
@@ -323,14 +413,6 @@ func (m *ShipnowFulfillment) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(core.JSON{m.SyncStates})
 	}
-	if !m.LastSyncAt.IsZero() {
-		flag = true
-		w.WriteName("last_sync_at")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(m.LastSyncAt)
-	}
 	if !m.CreatedAt.IsZero() {
 		flag = true
 		w.WriteName("created_at")
@@ -347,6 +429,14 @@ func (m *ShipnowFulfillment) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(core.Now(m.UpdatedAt, time.Now(), true))
 	}
+	if !m.CODEtopTransferedAt.IsZero() {
+		flag = true
+		w.WriteName("cod_etop_transfered_at")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.CODEtopTransferedAt)
+	}
 	if !flag {
 		return core.ErrNoColumn
 	}
@@ -357,7 +447,7 @@ func (m *ShipnowFulfillment) SQLUpdate(w SQLWriter) error {
 func (m *ShipnowFulfillment) SQLUpdateAll(w SQLWriter) error {
 	w.WriteQueryString(__sqlShipnowFulfillment_UpdateAll)
 	w.WriteRawString(" = (")
-	w.WriteMarkers(25)
+	w.WriteMarkers(34)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), false))
 	return nil
@@ -419,11 +509,34 @@ func (m ShipnowFulfillmentHistory) ConfirmStatus() core.Interface {
 func (m ShipnowFulfillmentHistory) ShippingStatus() core.Interface {
 	return core.Interface{m["shipping_status"]}
 }
+func (m ShipnowFulfillmentHistory) EtopPaymentStatus() core.Interface {
+	return core.Interface{m["etop_payment_status"]}
+}
 func (m ShipnowFulfillmentHistory) ShippingState() core.Interface {
 	return core.Interface{m["shipping_state"]}
 }
 func (m ShipnowFulfillmentHistory) ShippingCode() core.Interface {
 	return core.Interface{m["shipping_code"]}
+}
+func (m ShipnowFulfillmentHistory) FeeLines() core.Interface { return core.Interface{m["fee_lines"]} }
+func (m ShipnowFulfillmentHistory) CarrierFeeLines() core.Interface {
+	return core.Interface{m["carrier_fee_lines"]}
+}
+func (m ShipnowFulfillmentHistory) TotalFee() core.Interface { return core.Interface{m["total_fee"]} }
+func (m ShipnowFulfillmentHistory) ShippingCreatedAt() core.Interface {
+	return core.Interface{m["shipping_created_at"]}
+}
+func (m ShipnowFulfillmentHistory) ShippingPickingAt() core.Interface {
+	return core.Interface{m["shipping_picking_at"]}
+}
+func (m ShipnowFulfillmentHistory) ShippingDeliveringAt() core.Interface {
+	return core.Interface{m["shipping_delivering_at"]}
+}
+func (m ShipnowFulfillmentHistory) ShippingDeliveredAt() core.Interface {
+	return core.Interface{m["shipping_delivered_at"]}
+}
+func (m ShipnowFulfillmentHistory) ShippingCancelledAt() core.Interface {
+	return core.Interface{m["shipping_cancelled_at"]}
 }
 func (m ShipnowFulfillmentHistory) SyncStatus() core.Interface {
 	return core.Interface{m["sync_status"]}
@@ -431,22 +544,22 @@ func (m ShipnowFulfillmentHistory) SyncStatus() core.Interface {
 func (m ShipnowFulfillmentHistory) SyncStates() core.Interface {
 	return core.Interface{m["sync_states"]}
 }
-func (m ShipnowFulfillmentHistory) LastSyncAt() core.Interface {
-	return core.Interface{m["last_sync_at"]}
-}
 func (m ShipnowFulfillmentHistory) CreatedAt() core.Interface { return core.Interface{m["created_at"]} }
 func (m ShipnowFulfillmentHistory) UpdatedAt() core.Interface { return core.Interface{m["updated_at"]} }
+func (m ShipnowFulfillmentHistory) CODEtopTransferedAt() core.Interface {
+	return core.Interface{m["cod_etop_transfered_at"]}
+}
 
 func (m *ShipnowFulfillmentHistory) SQLScan(opts core.Opts, row *sql.Row) error {
-	data := make([]interface{}, 25)
-	args := make([]interface{}, 25)
-	for i := 0; i < 25; i++ {
+	data := make([]interface{}, 34)
+	args := make([]interface{}, 34)
+	for i := 0; i < 34; i++ {
 		args[i] = &data[i]
 	}
 	if err := row.Scan(args...); err != nil {
 		return err
 	}
-	res := make(ShipnowFulfillmentHistory, 25)
+	res := make(ShipnowFulfillmentHistory, 34)
 	res["id"] = data[0]
 	res["shop_id"] = data[1]
 	res["partner_id"] = data[2]
@@ -465,21 +578,30 @@ func (m *ShipnowFulfillmentHistory) SQLScan(opts core.Opts, row *sql.Row) error 
 	res["status"] = data[15]
 	res["confirm_status"] = data[16]
 	res["shipping_status"] = data[17]
-	res["shipping_state"] = data[18]
-	res["shipping_code"] = data[19]
-	res["sync_status"] = data[20]
-	res["sync_states"] = data[21]
-	res["last_sync_at"] = data[22]
-	res["created_at"] = data[23]
-	res["updated_at"] = data[24]
+	res["etop_payment_status"] = data[18]
+	res["shipping_state"] = data[19]
+	res["shipping_code"] = data[20]
+	res["fee_lines"] = data[21]
+	res["carrier_fee_lines"] = data[22]
+	res["total_fee"] = data[23]
+	res["shipping_created_at"] = data[24]
+	res["shipping_picking_at"] = data[25]
+	res["shipping_delivering_at"] = data[26]
+	res["shipping_delivered_at"] = data[27]
+	res["shipping_cancelled_at"] = data[28]
+	res["sync_status"] = data[29]
+	res["sync_states"] = data[30]
+	res["created_at"] = data[31]
+	res["updated_at"] = data[32]
+	res["cod_etop_transfered_at"] = data[33]
 	*m = res
 	return nil
 }
 
 func (ms *ShipnowFulfillmentHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	data := make([]interface{}, 25)
-	args := make([]interface{}, 25)
-	for i := 0; i < 25; i++ {
+	data := make([]interface{}, 34)
+	args := make([]interface{}, 34)
+	for i := 0; i < 34; i++ {
 		args[i] = &data[i]
 	}
 	res := make(ShipnowFulfillmentHistories, 0, 128)
@@ -506,13 +628,22 @@ func (ms *ShipnowFulfillmentHistories) SQLScan(opts core.Opts, rows *sql.Rows) e
 		m["status"] = data[15]
 		m["confirm_status"] = data[16]
 		m["shipping_status"] = data[17]
-		m["shipping_state"] = data[18]
-		m["shipping_code"] = data[19]
-		m["sync_status"] = data[20]
-		m["sync_states"] = data[21]
-		m["last_sync_at"] = data[22]
-		m["created_at"] = data[23]
-		m["updated_at"] = data[24]
+		m["etop_payment_status"] = data[18]
+		m["shipping_state"] = data[19]
+		m["shipping_code"] = data[20]
+		m["fee_lines"] = data[21]
+		m["carrier_fee_lines"] = data[22]
+		m["total_fee"] = data[23]
+		m["shipping_created_at"] = data[24]
+		m["shipping_picking_at"] = data[25]
+		m["shipping_delivering_at"] = data[26]
+		m["shipping_delivered_at"] = data[27]
+		m["shipping_cancelled_at"] = data[28]
+		m["sync_status"] = data[29]
+		m["sync_states"] = data[30]
+		m["created_at"] = data[31]
+		m["updated_at"] = data[32]
+		m["cod_etop_transfered_at"] = data[33]
 		res = append(res, m)
 	}
 	if err := rows.Err(); err != nil {

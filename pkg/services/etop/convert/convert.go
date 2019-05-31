@@ -2,6 +2,7 @@ package convert
 
 import (
 	"etop.vn/api/main/etop"
+	"etop.vn/api/meta"
 	"etop.vn/backend/pkg/etop/model"
 )
 
@@ -48,4 +49,26 @@ func Status5ToModel(in etop.Status5) (out model.Status5) {
 		out -= 128
 	}
 	return out
+}
+
+func ErrorToModel(in *meta.Error) (out *model.Error) {
+	if in == nil {
+		return nil
+	}
+	return &model.Error{
+		Code: in.Code,
+		Msg:  in.Msg,
+		Meta: in.Meta,
+	}
+}
+
+func Error(in *model.Error) (out *meta.Error) {
+	if in == nil {
+		return nil
+	}
+	return &meta.Error{
+		Code: in.Code,
+		Msg:  in.Msg,
+		Meta: in.Meta,
+	}
 }

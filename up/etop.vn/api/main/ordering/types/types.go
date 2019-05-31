@@ -2,7 +2,9 @@ package types
 
 import (
 	"errors"
+	"strings"
 
+	location "etop.vn/api/main/location"
 	v1types "etop.vn/api/main/ordering/v1/types"
 )
 
@@ -15,10 +17,10 @@ type Coordinates = v1types.Coordinates
 type Fulfill = v1types.Fulfill
 
 const (
-	FulfillNone               = v1types.Fulfill_none
-	FulfillManual             = v1types.Fulfill_manual
-	FulfillFulfillment        = v1types.Fulfill_fulfillment
-	FulfillShipnowFulfillment = v1types.Fulfill_shipnow_fulfillment
+	FulfillNone     = v1types.Fulfill_none
+	FulfillManual   = v1types.Fulfill_manual
+	FulfillShipment = v1types.Fulfill_shipment
+	FulfillShipnow  = v1types.Fulfill_shipnow
 )
 
 func FulfillFromInt(s int32) (Fulfill, error) {
@@ -27,4 +29,39 @@ func FulfillFromInt(s int32) (Fulfill, error) {
 		return 0, errors.New("invalid fulfill code")
 	}
 	return Fulfill(s), nil
+}
+
+func GetFullAddress(a *Address, location *location.LocationQueryResult) string {
+	b := strings.Builder{}
+	if a.Address1 != "" {
+		b.WriteString(a.Address1)
+		b.WriteByte('\n')
+	}
+	if a.Address2 != "" {
+		b.WriteString(a.Address2)
+		b.WriteByte('\n')
+	}
+	if a.Company != "" {
+		b.WriteString(a.Company)
+		b.WriteByte('\n')
+	}
+	flag := false
+	if location.Ward != nil && location.Ward.Name != "" {
+		b.WriteString(location.Ward.Name)
+		flag = true
+	}
+	if location.District != nil && location.District.Name != "" {
+		if flag {
+			b.WriteString(", ")
+		}
+		b.WriteString(location.District.Name)
+		flag = true
+	}
+	if location.Province != nil && location.Province.Name != "" {
+		if flag {
+			b.WriteString(", ")
+		}
+		b.WriteString(location.Province.Name)
+	}
+	return b.String()
 }

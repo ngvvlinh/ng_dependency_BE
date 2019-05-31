@@ -299,7 +299,7 @@ func (c *ClientImpl) sendGetRequest(ctx context.Context, path string, params int
 func (c *ClientImpl) sendPostRequest(ctx context.Context, path string, body interface{}, resp interface{}, msg string) error {
 	res, err := c.rclient.R().
 		SetBody(body).
-		SetHeader("Token", c.AccessToken).
+		SetHeader("ApiKey", c.AccessToken).
 		Post(model.URL(c.baseUrl, path))
 	if err != nil {
 		return cm.Errorf(cm.ExternalServiceError, err, "Lỗi kết nối với VTPost: %v (%v)", msg, err)

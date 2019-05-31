@@ -57,7 +57,7 @@ func createAddress(ctx context.Context, x Qx, cmd *model.CreateAddressCommand) e
 		return cm.Error(cm.InvalidArgument, "Missing ward information", nil)
 	}
 	if address.AccountID == 0 {
-		return cm.Error(cm.InvalidArgument, "Missing AccountID", nil)
+		return cm.Error(cm.InvalidArgument, "Missing Name", nil)
 	}
 
 	// if err := location.CheckValidLocation(address.ProvinceCode, "province"); err != nil {
@@ -121,7 +121,7 @@ func DeleteAddress(ctx context.Context, cmd *model.DeleteAddressCommand) error {
 	}
 
 	if cmd.AccountID == 0 {
-		return cm.Error(cm.InvalidArgument, "Missing AccountID", nil)
+		return cm.Error(cm.InvalidArgument, "Missing Name", nil)
 	}
 
 	s := x.Table("address").Where("id = ? AND account_id = ?", cmd.ID, cmd.AccountID)

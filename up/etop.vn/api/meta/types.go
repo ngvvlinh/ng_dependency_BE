@@ -48,3 +48,5 @@ type Filter struct {
 }
 
 type KeyTx struct{}
+
+type Error = metav1.Error

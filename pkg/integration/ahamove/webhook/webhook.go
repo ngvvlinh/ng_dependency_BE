@@ -1,125 +1,209 @@
-package ahamoveWebhook
+package ahamovewebhook
 
-//
-// import (
-// 	"bytes"
-// 	"encoding/json"
-// 	"strconv"
-// 	"time"
-//
-// 	cm "etop.vn/backend/pkg/common"
-// 	"etop.vn/backend/pkg/common/bus"
-// 	"etop.vn/backend/pkg/common/cmsql"
-// 	"etop.vn/backend/pkg/common/httpx"
-// 	"etop.vn/backend/pkg/common/l"
-// 	"etop.vn/backend/pkg/etop/model"
-// 	"etop.vn/backend/pkg/etop/model_log"
-// 	"etop.vn/backend/pkg/integration/ghtk"
-// 	ghtkClient "etop.vn/backend/pkg/integration/ghtk/client"
-// 	"etop.vn/backend/pkg/integration/shipping"
-// )
-//
-// var ll = l.New()
-//
-// type Webhook struct {
-// 	dbLogs  cmsql.Database
-// 	carrier *ghtk.Carrier
-// }
-//
-// func New(dbLogs cmsql.Database, carrier *ghtk.Carrier) *Webhook {
-// 	wh := &Webhook{
-// 		dbLogs:  dbLogs,
-// 		carrier: carrier,
-// 	}
-// 	return wh
-// }
-//
-// func (wh *Webhook) Register(rt *httpx.Router) {
-// 	rt.POST("/webhook/ghn/callback/:id", wh.Callback)
-// }
-//
-// func (wh *Webhook) Callback(c *httpx.Context) error {
-// 	t0 := time.Now()
-// 	var msg ghtkClient.CallbackOrder
-// 	if err := c.DecodeJson(&msg); err != nil {
-// 		return cm.Errorf(cm.InvalidArgument, err, "Can not decode JSON callback")
-// 	}
-// 	statusID := int(msg.StatusID)
-// 	stateID := ghtkClient.StateID(statusID)
-// 	shippingState := string(stateID.ToModel())
-// 	{
-// 		// save to database etop_log
-// 		buf := new(bytes.Buffer)
-// 		enc := json.NewEncoder(buf)
-// 		enc.SetEscapeHTML(false)
-// 		webhookData := &model_log.ShippingProviderWebhook{
-// 			ID:                       cm.NewID(),
-// 			ShippingProvider:         model.TypeGHTK,
-// 			ShippingCode:             ghtk.NormalizeGHTKCode(msg.LabelID.String()),
-// 			ExternalShippingState:    ghtkClient.StateMapping[stateID],
-// 			ExternalShippingSubState: ghtkClient.SubStateMapping[stateID],
-// 			ShippingState:            shippingState,
-// 		}
-// 		if err := enc.Encode(msg); err == nil {
-// 			webhookData.Data = buf.Bytes()
-// 		}
-// 		if _, err := wh.dbLogs.Insert(webhookData); err != nil {
-// 			ll.Error("Insert db etop_log error", l.Error(err))
-// 		}
-// 	}
-//
-// 	if msg.PartnerID == "" {
-// 		return cm.Errorf(cm.FailedPrecondition, nil, "PartnerID is empty").WithMeta("result", "ignore")
-// 	}
-// 	ffmID, err := strconv.ParseInt(msg.PartnerID.String(), 10, 64)
-// 	if err != nil {
-// 		return cm.Errorf(cm.FailedPrecondition, nil, "PartnerID is invalid: %v", msg.PartnerID).WithMeta("result", "ignore")
-// 	}
-// 	if ffmID == 0 {
-// 		return cm.Errorf(cm.FailedPrecondition, nil, "PartnerID is zero").WithMeta("result", "ignore")
-// 	}
-//
-// 	ctx := c.Req.Context()
-// 	query := &model.GetFulfillmentQuery{
-// 		FulfillmentID: ffmID,
-// 	}
-// 	if err := bus.Dispatch(ctx, query); err != nil {
-// 		return cm.MapError(err).
-// 			Wrapf(cm.NotFound, "Fulfillment not found: %v", ffmID).
-// 			DefaultInternal().WithMeta("result", "ignore")
-// 	}
-//
-// 	ffm := query.Result
-// 	providerServiceID := ffm.ProviderServiceID
-// 	_, _, err = ghtk.ParseServiceID(providerServiceID)
-// 	if err != nil {
-// 		return cm.Errorf(cm.FailedPrecondition, err, "Can not parse ProviderServiceID in fulfillment.").WithMeta("result", "ignore")
-// 	}
-// 	// get order info to update service fee
-// 	ghtkCmd := &ghtk.GetOrderCommand{
-// 		ServiceID: ffm.ProviderServiceID,
-// 		LabelID:   msg.LabelID.String(),
-// 	}
-// 	if ghtkErr := bus.Dispatch(ctx, ghtkCmd); ghtkErr != nil {
-// 		return ghtkErr
-// 	}
-//
-// 	updateFfm := ghtk.CalcUpdateFulfillment(ffm, &msg, &ghtkCmd.Result.Order)
-// 	updateFfm.LastSyncAt = t0
-// 	// UpdateInfo other time
-// 	updateFfm = shipping.CalcOtherTimeBaseOnState(updateFfm, ffm, t0)
-// 	// Thêm trạng thái đơn vào note
-// 	note, _ := strconv.Unquote("\"" + msg.Reason.String() + "\"")
-// 	subState := ghtkClient.SubStateMapping[stateID]
-// 	updateCmd := &model.UpdateFulfillmentCommand{
-// 		Fulfillment:              updateFfm,
-// 		ExternalShippingNote:     cm.PString(note),
-// 		ExternalShippingSubState: cm.PString(subState),
-// 	}
-// 	if err := bus.Dispatch(ctx, updateCmd); err != nil {
-// 		return err
-// 	}
-//
-// 	c.SetResult(map[string]string{"code": "ok"})
-// 	return nil
-// }
+import (
+	"bytes"
+	"context"
+	"encoding/json"
+	"strconv"
+	"strings"
+	"time"
+
+	"etop.vn/backend/pkg/integration/shipping"
+
+	"etop.vn/api/meta"
+
+	"etop.vn/api/main/etop"
+	"etop.vn/api/main/ordering"
+
+	"etop.vn/api/main/shipnow"
+
+	ahamoveclient "etop.vn/backend/pkg/integration/ahamove/client"
+
+	shipnowtypes "etop.vn/api/main/shipnow/types"
+	cm "etop.vn/backend/pkg/common"
+	"etop.vn/backend/pkg/common/cmsql"
+	"etop.vn/backend/pkg/common/httpx"
+	"etop.vn/backend/pkg/common/l"
+	"etop.vn/backend/pkg/etop/model_log"
+	"etop.vn/backend/pkg/integration/ahamove"
+	shipnowmodel "etop.vn/backend/pkg/services/shipnow/model"
+)
+
+var ll = l.New()
+var PaymentStates = []shipnowtypes.State{shipnowtypes.StateDelivering, shipnowtypes.StateDelivered, shipnowtypes.StateReturning, shipnowtypes.StateReturned}
+
+type Webhook struct {
+	db           cmsql.Transactioner
+	dbLogs       cmsql.Database
+	carrier      *ahamove.Carrier
+	shipnowQuery shipnow.QueryBus
+	shipnow      shipnow.CommandBus
+	order        ordering.CommandBus
+}
+
+func New(db cmsql.Database, dbLogs cmsql.Database, carrier *ahamove.Carrier, shipnowQuery shipnow.QueryBus, shipnowAggr shipnow.CommandBus, orderAggr ordering.CommandBus) *Webhook {
+	wh := &Webhook{
+		db:           db,
+		dbLogs:       dbLogs,
+		carrier:      carrier,
+		shipnowQuery: shipnowQuery,
+		shipnow:      shipnowAggr,
+		order:        orderAggr,
+	}
+	return wh
+}
+
+func (wh *Webhook) Register(rt *httpx.Router) {
+	rt.POST("/webhook/ahamove/callback/:id", wh.Callback)
+}
+
+func (wh *Webhook) Callback(c *httpx.Context) error {
+	// t0 := time.Now()
+	var msg ahamoveclient.Order
+	if err := c.DecodeJson(&msg); err != nil {
+		return cm.Errorf(cm.InvalidArgument, err, "Can not decode JSON callback")
+	}
+	ll.Logger.Info("ahamove order webhook", l.Object("msg", msg))
+	status := ahamoveclient.OrderState(msg.Status)
+	shippingState := status.ToCoreState().String()
+	{
+		// save to database etop_log
+		buf := new(bytes.Buffer)
+		enc := json.NewEncoder(buf)
+		enc.SetEscapeHTML(false)
+		webhookData := &model_log.ShippingProviderWebhook{
+			ID:                    cm.NewID(),
+			ShippingProvider:      shipnowmodel.Ahamove.ToString(),
+			ShippingCode:          msg.ID,
+			ExternalShippingState: msg.Status,
+			ShippingState:         shippingState,
+		}
+		if err := enc.Encode(msg); err == nil {
+			webhookData.Data = buf.Bytes()
+		}
+		if _, err := wh.dbLogs.Insert(webhookData); err != nil {
+			ll.Error("Insert db etop_log error", l.Error(err))
+		}
+	}
+
+	ctx := c.Req.Context()
+	// 1JFU54-1
+	code := strings.Split(msg.ID, "-")[0]
+	query := &shipnow.GetShipnowFulfillmentByShippingCodeQuery{
+		ShippingCode: code,
+	}
+	if err := wh.shipnowQuery.Dispatch(ctx, query); err != nil {
+		return cm.MapError(err).
+			Wrapf(cm.NotFound, "Ahamove: Fulfillment not found: %v", code).DefaultInternal().WithMeta("result", "ignore")
+	}
+	if err := wh.ProcessAhamoveWebhook(ctx, query.Result.ShipnowFulfillment, msg); err != nil {
+		return err
+	}
+	c.SetResult(map[string]string{"code": "ok"})
+	return nil
+}
+
+func (wh *Webhook) ProcessAhamoveWebhook(ctx context.Context, ffm *shipnow.ShipnowFulfillment, orderMsg ahamoveclient.Order) error {
+	if ffm.Status != etop.S5Zero && ffm.Status != etop.S5SuperPos {
+		return cm.Errorf(cm.FailedPrecondition, nil, "Can not update this shipnow").WithMeta("result", "ignore")
+	}
+	err := wh.db.InTransaction(ctx, func(tx cmsql.QueryInterface) error {
+		updateFfm, err := wh.ProcessShipnowFulfillment(ctx, ffm, orderMsg)
+		if err != nil {
+			return err
+		}
+		for i, point := range orderMsg.Path {
+			if i == 0 {
+				// ignore first path: pickup address
+				continue
+			}
+			if err := wh.ProcessOrder(ctx, point, updateFfm.ShippingState, updateFfm.EtopPaymentStatus); err != nil {
+				return err
+			}
+		}
+
+		return nil
+	})
+
+	return err
+}
+
+func IsPaymentState(s shipnowtypes.State) bool {
+	for _, state := range PaymentStates {
+		if state == s {
+			return true
+		}
+	}
+	return false
+}
+
+func (wh *Webhook) ProcessShipnowFulfillment(ctx context.Context, ffm *shipnow.ShipnowFulfillment, orderMsg ahamoveclient.Order) (*shipnow.ShipnowFulfillment, error) {
+	t0 := time.Now()
+	status := ahamoveclient.OrderState(orderMsg.Status)
+	shippingState := status.ToCoreState()
+	shipnowTimestamp := shipping.CalcShipnowTimeBaseOnState(ffm, shippingState, t0)
+	paymentStatus := ffm.EtopPaymentStatus
+
+	update := &shipnow.UpdateShipnowFulfillmentCarrierInfoCommand{
+		Id:                   ffm.Id,
+		ShippingState:        shippingState,
+		ShippingStatus:       shipnowtypes.StateToStatus5(shippingState),
+		TotalFee:             int32(orderMsg.TotalFee),
+		ShippingPickingAt:    meta.PbTime(shipnowTimestamp.ShippingPickingAt),
+		ShippingDeliveringAt: meta.PbTime(shipnowTimestamp.ShippingDeliveringAt),
+		ShippingDeliveredAt:  meta.PbTime(shipnowTimestamp.ShippingDeliveredAt),
+		ShippingCancelledAt:  meta.PbTime(shipnowTimestamp.ShippingCancelledAt),
+		FeeLines:             nil, // update if needed
+		CarrierFeeLines:      nil, // update if needed
+	}
+	if IsPaymentState(shippingState) && ffm.EtopPaymentStatus != etop.S4Positive {
+		// EtopPaymentStatus: Ahamove khong doi soat, thanh toán ngay khi lấy hàng
+		update.CodEtopTransferedAt = meta.PbTime(time.Now())
+		update.EtopPaymentStatus = etop.S4Positive
+		paymentStatus = update.EtopPaymentStatus
+	}
+	update.Status = shipnow.ShipnowStatus(update.ShippingState, paymentStatus)
+
+	if err := wh.shipnow.Dispatch(ctx, update); err != nil {
+		return nil, err
+	}
+	return update.Result, nil
+}
+
+func (wh *Webhook) ProcessOrder(ctx context.Context, point *ahamoveclient.DeliveryPoint, shippingState shipnowtypes.State, paymentStatus etop.Status4) error {
+	trackingNumber := point.TrackingNumber
+	if trackingNumber == "" {
+		return cm.Errorf(cm.InvalidArgument, nil, "Missing tracking number (order_id)").WithMeta("result", "ignore")
+	}
+	orderID, err := strconv.ParseInt(trackingNumber, 10, 64)
+	if err != nil {
+		return cm.Errorf(cm.InvalidArgument, nil, "Tracking number (order_id) is not valid").WithMeta("order_id", trackingNumber).WithMeta("result", "ignore")
+	}
+
+	// case shipnow does not assign to any driver
+	// => release order (ETOP)
+	if point.Status == "" && shippingState == shipnowtypes.StateCancelled {
+		cmd := &ordering.ReleaseOrdersForFfmCommand{
+			OrderIDs: []int64{orderID},
+		}
+		if err := wh.order.Dispatch(ctx, cmd); err != nil {
+			return err
+		}
+		return nil
+	}
+
+	dStatus := ahamoveclient.DeliveryStatus(point.Status)
+	orderState := dStatus.ToCoreState(shippingState)
+	updateOrder := &ordering.UpdateOrderShippingStatusCommand{
+		ID:                         orderID,
+		FulfillmentShippingStates:  []string{orderState.String()},
+		FulfillmentShippingStatus:  dStatus.ToStatus5(),
+		FulfillmentPaymentStatuses: []int{int(paymentStatus)},
+		EtopPaymentStatus:          paymentStatus,
+	}
+
+	if err := wh.order.Dispatch(ctx, updateOrder); err != nil {
+		return err
+	}
+	return nil
+}

@@ -3,35 +3,93 @@ package carrier
 import (
 	"context"
 	"time"
+
+	ordertypes "etop.vn/api/main/ordering/types"
+	"etop.vn/api/main/shipnow"
+	carrierv1 "etop.vn/api/main/shipnow/carrier/v1"
+	shipnowtypes "etop.vn/api/main/shipnow/types"
+	shippingtypes "etop.vn/api/main/shipping/types"
 )
 
+type Carrier = carrierv1.Carrier
+
+const (
+	Ahamove = carrierv1.Carrier_ahamove
+)
+
+func CarrierToString(s Carrier) string {
+	if s == 0 {
+		return ""
+	}
+	return s.String()
+}
+
+func CarrierFromString(s string) Carrier {
+	st := carrierv1.Carrier_value[s]
+	return Carrier(st)
+}
+
 type Manager interface {
-	CreateExternalShipping(ctx context.Context, ffm *CreateExternalShipnowCommand) error
-	CancelExternalShipping(ctx context.Context, ffm *CancelExternalShipnowCommand) error
+	CreateExternalShipping(ctx context.Context, cmd *CreateExternalShipnowCommand) (*ExternalShipnow, error)
+	CancelExternalShipping(ctx context.Context, cmd *CancelExternalShipnowCommand) error
+	GetExternalShippingServices(ctx context.Context, cmd *GetExternalShipnowServicesCommand) ([]*shipnowtypes.ShipnowService, error)
+
+	RegisterExternalAccount(ctx context.Context, cmd *RegisterExternalAccountCommand) (*RegisterExternalAccountResult, error)
+	GetExternalAccount(ctx context.Context, cmd *GetExternalAccountCommand) (*ExternalAccount, error)
 }
 
 type CreateExternalShipnowCommand struct {
-	// TODO
+	ShopID               int64
+	ShipnowFulfillmentID int64
+	PickupAddress        *ordertypes.Address
+	DeliveryPoints       []*shipnow.DeliveryPoint
+	ShippingNote         string
 }
 
 type CancelExternalShipnowCommand struct {
+	ShopID               int64
 	ShipnowFulfillmentID int64
-	ExternalShipnowID    int64
+	ExternalShipnowID    string
+	CarrierServiceCode   string
+	CancelReason         string
+	Carrier              Carrier
 }
 
 type ExternalShipnow struct {
-	// TODO
+	ID        string
+	UserID    string
+	Duration  int
+	Distance  float32
+	State     shipnowtypes.State
+	TotalFee  int
+	FeeLines  []*shippingtypes.FeeLine
+	CreatedAt time.Time
 }
 
-type AvailableShippingService struct {
-	Name string
-	// ServiceFee: Tổng phí giao hàng (đã bao gồm phí chính + các phụ phí khác)
-	ServiceFee int
-	// ShippingFeeMain: Phí chính giao hàng
-	ShippingFeeMain  int
-	Carrier          string
-	CarrierServiceID string
+type GetExternalShipnowServicesCommand struct {
+	ShopID         int64
+	PickupAddress  *ordertypes.Address
+	DeliveryPoints []*shipnow.DeliveryPoint
+}
 
-	ExpectedPickAt     time.Time
-	ExpectedDeliveryAt time.Time
+type RegisterExternalAccountCommand struct {
+	Phone   string
+	Name    string
+	Carrier Carrier
+}
+
+type RegisterExternalAccountResult struct {
+	Token string
+}
+
+type GetExternalAccountCommand struct {
+	ShopID  int64
+	Carrier Carrier
+}
+
+type ExternalAccount struct {
+	ID       string
+	Name     string
+	Email    string
+	Verified bool
 }

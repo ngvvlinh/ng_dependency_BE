@@ -47,6 +47,9 @@ service AccountService {
     rpc DeleteShop(cm.IDRequest) returns (cm.Empty);
     rpc SetDefaultAddress(etop.SetDefaultAddressRequest) returns (cm.UpdatedResponse);
     rpc GetBalanceShop(cm.Empty) returns (GetBalanceShopResponse);
+
+    rpc CreateExternalAccountAhamove(cm.Empty) returns (ExternalAccountAhamove);
+    rpc GetExternalAccountAhamove(cm.Empty) returns (ExternalAccountAhamove);
 }
 
 service CollectionService {
@@ -124,6 +127,8 @@ service ShipnowService {
     rpc ConfirmShipnowFulfillment (cm.IDRequest) returns (order.ShipnowFulfillment);
     rpc UpdateShipnowFulfillment(order.UpdateShipnowFulfillmentRequest) returns (order.ShipnowFulfillment);
     rpc CancelShipnowFulfillment(order.CancelShipnowFulfillmentRequest) returns (cm.UpdatedResponse);
+
+    rpc GetShipnowServices(order.GetShipnowServicesRequest) returns (order.GetShipnowServicesResponse);
 }
 
 service HistoryService {
@@ -760,4 +765,15 @@ message Category {
 message Tag {
     optional int64 id = 1 [(gogoproto.nullable)=false];
     optional string label = 2 [(gogoproto.nullable)=false];
+}
+
+message ExternalAccountAhamove {
+    optional int64 id = 1 [(gogoproto.nullable) = false];
+    optional string phone = 2 [(gogoproto.nullable) = false];
+    optional string name = 3 [(gogoproto.nullable) = false];
+    optional bool external_verified = 4 [(gogoproto.nullable) = false];
+//    optional string external_token = 5 [(gogoproto.nullable) = false];
+    optional google.protobuf.Timestamp external_created_at = 6;
+    optional google.protobuf.Timestamp created_at = 7;
+    optional google.protobuf.Timestamp updated_at = 8;
 }

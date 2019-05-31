@@ -228,7 +228,7 @@ func startSessionPartner(ctx context.Context, require bool, s *Session, account 
 			PartnerID: s.Claim.AccountID,
 		}
 		if err := bus.Dispatch(ctx, query); err != nil {
-			ll.Error("Invalid AccountID", l.Error(err))
+			ll.Error("Invalid Name", l.Error(err))
 			return false
 		}
 		s.Partner = query.Result.Partner
@@ -252,7 +252,7 @@ func startSessionShop(ctx context.Context, require bool, s *Session, account mod
 				UserID: s.Claim.UserID,
 			}
 			if err := bus.Dispatch(ctx, query); err != nil {
-				ll.Error("Invalid AccountID", l.Error(err))
+				ll.Error("Invalid Name", l.Error(err))
 				return false
 			}
 
@@ -264,7 +264,7 @@ func startSessionShop(ctx context.Context, require bool, s *Session, account mod
 				ShopID: s.Claim.AccountID,
 			}
 			if err := bus.Dispatch(ctx, query); err != nil {
-				ll.Error("Invalid AccountID", l.Error(err))
+				ll.Error("Invalid Name", l.Error(err))
 				return false
 			}
 			s.Shop = query.Result

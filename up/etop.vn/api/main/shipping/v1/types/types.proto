@@ -19,6 +19,7 @@ option (gogoproto.unmarshaler_all)          = false;
 option (gogoproto.verbose_equal_all)        = false;
 
 import "etop.vn/api/meta/v1/api.proto";
+import "etop.vn/api/main/shipping/v1/types/feeline.proto";
 
 message ShippingService {
     optional string carrier = 1 [(gogoproto.nullable)=false];
@@ -52,4 +53,11 @@ message ValueInfo {
     optional int32 cod_amount = 2 [(gogoproto.nullable)=false];
 
     optional bool include_insurance = 3 [(gogoproto.nullable)=false];
+}
+
+message FeeLine {
+    optional shipping.v1.feeline.FeeLineType shipping_fee_type = 1 [(gogoproto.nullable) = false];
+    optional int32 cost = 2 [(gogoproto.nullable) = false];
+    optional string external_service_name = 3 [(gogoproto.nullable) = false];
+    optional string external_service_type = 4 [(gogoproto.nullable) = false];
 }

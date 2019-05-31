@@ -62,7 +62,7 @@ func TestCreateLoginResponse(t *testing.T) {
 		}
 		for _, acc := range accounts {
 			acc.User.ID = cm.NewIDWithTag(model.TagUser)
-			acc.AccountUser.AccountID = acc.Account.ID
+			acc.AccountUser.Name = acc.Account.ID
 			acc.AccountUser.UserID = acc.User.ID
 		}
 
@@ -90,7 +90,7 @@ func TestCreateLoginResponse(t *testing.T) {
 			So(resp, ShouldDeepEqual, loginResp)
 		})
 
-		Convey("Login user with preferred AccountID (shop)", func() {
+		Convey("Login user with preferred Name (shop)", func() {
 			shop := &model.ShopExtended{
 				Shop: &model.Shop{
 					ID:        accounts[1].Account.ID,
@@ -124,7 +124,7 @@ func TestCreateLoginResponse(t *testing.T) {
 			So(resp, ShouldDeepEqual, loginResp)
 		})
 
-		Convey("Login user with preferred AccountID (supplier)", func() {
+		Convey("Login user with preferred Name (supplier)", func() {
 			supplier := &model.SupplierExtended{
 				Supplier: &model.Supplier{
 					ID:        accounts[0].Account.ID,

@@ -111,15 +111,8 @@ func OrderLineToModel(in *types.ItemLine) (out *ordermodel.OrderLine) {
 		VariantID:       in.VariantId,
 		ProductName:     in.ProductInfo.ProductName,
 		ProductID:       in.ProductId,
-		ShopID:          0,
-		Weight:          0,
-		Quantity:        0,
-		ListPrice:       0,
-		RetailPrice:     0,
-		PaymentPrice:    0,
-		LineAmount:      0,
-		TotalDiscount:   0,
-		TotalLineAmount: 0,
+		Quantity:        int(in.Quantity),
+		TotalLineAmount: int(in.TotalPrice),
 		ImageURL:        in.ProductInfo.ImageUrl,
 		Attributes:      catalogconvert.AttributesToModel(in.ProductInfo.Attributes),
 		IsOutsideEtop:   in.IsOutside,
@@ -140,6 +133,7 @@ func OrderLine(in *ordermodel.OrderLine) (out *types.ItemLine) {
 	}
 	return &types.ItemLine{
 		OrderId:   in.OrderID,
+		Quantity:  int32(in.Quantity),
 		ProductId: in.ProductID,
 		VariantId: in.VariantID,
 		IsOutside: in.IsOutsideEtop,
@@ -148,6 +142,7 @@ func OrderLine(in *ordermodel.OrderLine) (out *types.ItemLine) {
 			ImageUrl:    in.ImageURL,
 			Attributes:  catalogconvert.Attributes(in.Attributes),
 		},
+		TotalPrice: int32(in.TotalLineAmount),
 	}
 }
 
@@ -214,4 +209,9 @@ func CoordinatesToModel(in *types.Coordinates) (out *ordermodel.Coordinates) {
 		Latitude:  in.Latitude,
 		Longitude: in.Longitude,
 	}
+}
+
+func Fulfill(in ordermodel.FulfillType) ordertypes.Fulfill {
+	res, _ := ordertypes.FulfillFromInt(int32(in))
+	return res
 }

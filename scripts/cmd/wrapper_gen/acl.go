@@ -225,6 +225,9 @@ var ACL = map[string]*permission.PermissionDecl{
 	"shop.Account/SetDefaultAddress": {Type: Shop, Role: Staff},
 	"shop.Account/GetBalanceShop":    {Type: Shop, Role: Staff},
 
+	"shop.Account/CreateExternalAccountAhamove": {Type: Shop},
+	"shop.Account/GetExternalAccountAhamove":    {Type: Shop},
+
 	"shop.Browse/BrowseCategories":    {Type: Shop},
 	"shop.Browse/BrowseProduct":       {Type: Shop},
 	"shop.Browse/BrowseVariant":       {Type: Shop},
@@ -304,6 +307,7 @@ var ACL = map[string]*permission.PermissionDecl{
 	"shop.Shipnow/ConfirmShipnowFulfillment": {Type: Shop},
 	"shop.Shipnow/UpdateShipnowFulfillment":  {Type: Shop},
 	"shop.Shipnow/CancelShipnowFulfillment":  {Type: Shop},
+	"shop.Shipnow/GetShipnowServices":        {Type: Shop},
 
 	"shop.Brand/GetBrand":  {Type: Shop, Role: _____, AuthPartner: Opt},
 	"shop.Brand/GetBrands": {Type: Shop, Role: _____, AuthPartner: Opt},

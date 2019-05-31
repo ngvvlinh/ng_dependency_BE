@@ -631,7 +631,7 @@ type CancelOrderRequest struct {
 
 type CallbackOrder struct {
 	Data CallbackOrderData `json:"DATA"`
-	// Token đối tác/ partner’s token
+	// ApiKey đối tác/ partner’s token
 	Token string `json:"TOKEN"`
 }
 

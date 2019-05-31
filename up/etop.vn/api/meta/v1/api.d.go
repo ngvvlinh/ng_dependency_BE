@@ -20,3 +20,9 @@ type Timestamp struct {
 	// inclusive.
 	Nanos int32 `protobuf:"varint,2,opt,name=nanos" json:"nanos"`
 }
+
+type Error struct {
+	Code string            `protobuf:"bytes,1,opt,name=code" json:"code"`
+	Msg  string            `protobuf:"bytes,2,opt,name=msg" json:"msg"`
+	Meta map[string]string `protobuf:"bytes,3,rep,name=meta" json:"meta,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+}

@@ -365,7 +365,7 @@ func UpdateMoneyTransaction(ctx context.Context, cmd *modelx.UpdateMoneyTransact
 
 func RemoveFfmsMoneyTransaction(ctx context.Context, cmd *modelx.RemoveFfmsMoneyTransaction) error {
 	if cmd.ShopID == 0 {
-		return cm.Error(cm.InvalidArgument, "Mising AccountID", nil)
+		return cm.Error(cm.InvalidArgument, "Mising Name", nil)
 	}
 	if cmd.MoneyTransactionID == 0 {
 		return cm.Error(cm.InvalidArgument, "Missing Money Transaction ID", nil)
@@ -1188,7 +1188,7 @@ func CreateCredit(ctx context.Context, cmd *model.CreateCreditCommand) error {
 	switch cmd.Type {
 	case model.TypeShop:
 		if cmd.ShopID == 0 {
-			return cm.Error(cm.InvalidArgument, "Missing AccountID", nil)
+			return cm.Error(cm.InvalidArgument, "Missing Name", nil)
 		}
 
 	default:

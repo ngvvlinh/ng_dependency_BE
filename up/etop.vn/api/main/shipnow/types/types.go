@@ -1,10 +1,12 @@
 package types
 
 import (
+	"etop.vn/api/main/etop"
 	shipnowv1types "etop.vn/api/main/shipnow/v1/types"
 )
 
 type DeliveryPoint = shipnowv1types.DeliveryPoint
+type ShipnowService = shipnowv1types.ShipnowService
 
 type State = shipnowv1types.State
 
@@ -29,3 +31,28 @@ const (
 	StateUndeliverable = shipnowv1types.State_undeliverable
 	StateCancelled     = shipnowv1types.State_cancelled
 )
+
+func StateToString(s State) string {
+	if s == 0 {
+		return ""
+	}
+	return s.String()
+}
+
+func StateToStatus5(s State) etop.Status5 {
+	switch s {
+	case StateDefault:
+	case StateCreated:
+		return etop.S5Zero
+	case StateCancelled:
+		return etop.S5Negative
+	case StateReturned:
+	case StateReturning:
+		return etop.S5NegSuper
+	case StateDelivered:
+		return etop.S5Positive
+	default:
+		return etop.S5SuperPos
+	}
+	return etop.S5SuperPos
+}

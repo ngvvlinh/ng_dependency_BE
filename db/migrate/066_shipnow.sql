@@ -37,3 +37,29 @@ ALTER TABLE "order"
 ALTER TABLE history."order"
 	ADD COLUMN fulfill int2,
 	ADD COLUMN fulfill_ids int8[];
+
+ALTER table  shipnow_fulfillment
+    ADD COLUMN fee_lines JSONB,
+    ADD COLUMN carrier_fee_lines JSONB,
+    ADD COLUMN total_fee INT,
+    ADD COLUMN shipping_created_at TIMESTAMP WITH TIME ZONE,
+    ADD COLUMN etop_payment_status INT,
+    ADD COLUMN cod_etop_transfered_at TIMESTAMP WITH TIME ZONE,
+    ADD COLUMN shipping_picking_at TIMESTAMP WITH TIME ZONE,
+    ADD COLUMN shipping_delivering_at TIMESTAMP WITH TIME ZONE,
+    ADD COLUMN shipping_delivered_at TIMESTAMP WITH TIME ZONE,
+    ADD COLUMN shipping_cancelled_at TIMESTAMP WITH TIME ZONE;
+
+CREATE INDEX ON shipnow_fulfillment USING gin(order_ids);
+
+CREATE TABLE  external_account_ahamove (
+    id INT8 PRIMARY KEY
+    , owner_id INT8 NOT NULL REFERENCES "user"(id)
+    , phone TEXT NOT NULL UNIQUE
+    , name TEXT NOT NULL
+    , external_token TEXT
+    , external_verified BOOLEAN
+    , created_at TIMESTAMP WITH TIME ZONE
+    , updated_at TIMESTAMP WITH TIME ZONE
+    , external_created_at TIMESTAMP WITH TIME ZONE
+);

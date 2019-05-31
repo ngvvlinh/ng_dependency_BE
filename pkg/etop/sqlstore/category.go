@@ -100,7 +100,7 @@ func RemoveShopProductSourceCategory(ctx context.Context, cmd *catalogmodelx.Rem
 		return cm.Error(cm.InvalidArgument, "Missing ID", nil)
 	}
 	if cmd.ShopID == 0 {
-		return cm.Error(cm.InvalidArgument, "Missing AccountID", nil)
+		return cm.Error(cm.InvalidArgument, "Missing Name", nil)
 	}
 
 	return inTransaction(func(s Qx) error {

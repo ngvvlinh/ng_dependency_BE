@@ -2259,6 +2259,36 @@
         }
       }
     },
+    "orderDeliveryPoint": {
+      "type": "object",
+      "properties": {
+        "shipping_address": {
+          "$ref": "#/definitions/orderOrderAddress"
+        },
+        "lines": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/orderOrderLine"
+          }
+        },
+        "shipping_note": {
+          "type": "string"
+        },
+        "order_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "weight_info": {
+          "$ref": "#/definitions/orderWeightInfo"
+        },
+        "value_info": {
+          "$ref": "#/definitions/orderValueInfo"
+        },
+        "try_on": {
+          "$ref": "#/definitions/try_onTryOnCode"
+        }
+      }
+    },
     "orderExternalShippingLog": {
       "type": "object",
       "properties": {
@@ -3049,7 +3079,7 @@
         "fulfillments": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/orderFulfillment"
+            "$ref": "#/definitions/order_Fulfillment"
           }
         },
         "shop_shipping": {
@@ -3062,6 +3092,16 @@
         "ghn_note_code": {
           "type": "string",
           "title": "@deprecated use try_on_code instead"
+        },
+        "fulfill": {
+          "type": "string"
+        },
+        "fulfill_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          }
         }
       }
     },
@@ -3362,6 +3402,112 @@
         }
       }
     },
+    "orderShipnowFulfillment": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "shop_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "partner_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "pickup_address": {
+          "$ref": "#/definitions/orderOrderAddress"
+        },
+        "delivery_points": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/orderDeliveryPoint"
+          }
+        },
+        "carrier": {
+          "type": "string"
+        },
+        "shipping_service_code": {
+          "type": "string"
+        },
+        "shipping_service_fee": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "weight_info": {
+          "$ref": "#/definitions/orderWeightInfo"
+        },
+        "value_info": {
+          "$ref": "#/definitions/orderValueInfo"
+        },
+        "shipping_note": {
+          "type": "string"
+        },
+        "request_pickup_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "status": {
+          "$ref": "#/definitions/status5Status"
+        },
+        "shipping_status": {
+          "$ref": "#/definitions/status5Status"
+        },
+        "shipping_state": {
+          "type": "string"
+        },
+        "confirm_status": {
+          "$ref": "#/definitions/status3Status"
+        },
+        "order_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          }
+        },
+        "shipping_created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "shipping_code": {
+          "type": "string"
+        },
+        "etop_payment_status": {
+          "$ref": "#/definitions/status4Status"
+        },
+        "cod_etop_transfered_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "shipping_picking_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "shipping_delivering_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "shipping_delivered_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "shipping_cancelled_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
     "orderShippingFeeLine": {
       "type": "object",
       "properties": {
@@ -3386,6 +3532,322 @@
         },
         "external_payment_channel_id": {
           "type": "string"
+        }
+      }
+    },
+    "orderValueInfo": {
+      "type": "object",
+      "properties": {
+        "basket_value": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "cod_amount": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "include_insurance": {
+          "type": "boolean",
+          "format": "boolean"
+        }
+      }
+    },
+    "orderWeightInfo": {
+      "type": "object",
+      "properties": {
+        "gross_weight": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "chargeable_weight": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "length": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "width": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "height": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "order_Fulfillment": {
+      "type": "object",
+      "properties": {
+        "shipnow": {
+          "$ref": "#/definitions/orderShipnowFulfillment"
+        },
+        "shipment": {
+          "$ref": "#/definitions/orderFulfillment"
+        },
+        "id": {
+          "type": "string",
+          "format": "int64",
+          "title": "backward-compatible fields from shipment"
+        },
+        "order_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "shop_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "partner_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "self_url": {
+          "type": "string"
+        },
+        "lines": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/orderOrderLine"
+          }
+        },
+        "total_items": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "total_weight": {
+          "type": "integer",
+          "format": "int32",
+          "title": "@deprecated use chargeable_weight"
+        },
+        "basket_value": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "total_cod_amount": {
+          "type": "integer",
+          "format": "int32",
+          "title": "@deprecated use cod_amount"
+        },
+        "cod_amount": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "total_amount": {
+          "type": "integer",
+          "format": "int32",
+          "title": "@deprecated"
+        },
+        "chargeable_weight": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "closed_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "cancelled_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "cancel_reason": {
+          "type": "string"
+        },
+        "shipping_provider": {
+          "type": "string",
+          "title": "@deprecated use carrier instead"
+        },
+        "carrier": {
+          "$ref": "#/definitions/shipping_providerShippingProvider"
+        },
+        "shipping_service_name": {
+          "type": "string"
+        },
+        "shipping_service_fee": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "shipping_service_code": {
+          "type": "string"
+        },
+        "shipping_code": {
+          "type": "string"
+        },
+        "shipping_note": {
+          "type": "string"
+        },
+        "try_on": {
+          "$ref": "#/definitions/try_onTryOnCode"
+        },
+        "include_insurance": {
+          "type": "boolean",
+          "format": "boolean"
+        },
+        "sh_confirm": {
+          "$ref": "#/definitions/status3Status"
+        },
+        "shipping_state": {
+          "$ref": "#/definitions/shippingState"
+        },
+        "status": {
+          "$ref": "#/definitions/status5Status"
+        },
+        "shipping_status": {
+          "$ref": "#/definitions/status5Status"
+        },
+        "etop_payment_status": {
+          "$ref": "#/definitions/status4Status"
+        },
+        "shipping_fee_customer": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "shipping_fee_shop": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "x_shipping_fee": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "x_shipping_id": {
+          "type": "string"
+        },
+        "x_shipping_code": {
+          "type": "string"
+        },
+        "x_shipping_created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "x_shipping_updated_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "x_shipping_cancelled_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "x_shipping_delivered_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "x_shipping_returned_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "expected_delivery_at": {
+          "type": "string",
+          "format": "date-time",
+          "title": "@deprecated use estimated_delivery_at"
+        },
+        "expected_pick_at": {
+          "type": "string",
+          "format": "date-time",
+          "title": "@deprecated use estimated_pickup_at"
+        },
+        "estimated_delivery_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "estimated_pickup_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "cod_etop_transfered_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "shipping_fee_shop_transfered_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "x_shipping_state": {
+          "type": "string"
+        },
+        "x_shipping_status": {
+          "$ref": "#/definitions/status5Status"
+        },
+        "x_sync_status": {
+          "$ref": "#/definitions/status4Status"
+        },
+        "x_sync_states": {
+          "$ref": "#/definitions/orderFulfillmentSyncStates"
+        },
+        "address_to": {
+          "$ref": "#/definitions/etopAddress",
+          "title": "@deprecated use shipping_address instead"
+        },
+        "address_from": {
+          "$ref": "#/definitions/etopAddress",
+          "title": "@deprecated use pickup_address instead"
+        },
+        "pickup_address": {
+          "$ref": "#/definitions/orderOrderAddress"
+        },
+        "return_address": {
+          "$ref": "#/definitions/orderOrderAddress"
+        },
+        "shipping_address": {
+          "$ref": "#/definitions/orderOrderAddress"
+        },
+        "shop": {
+          "$ref": "#/definitions/etopShop"
+        },
+        "order": {
+          "$ref": "#/definitions/orderOrder"
+        },
+        "provider_shipping_fee_lines": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/orderShippingFeeLine"
+          }
+        },
+        "shipping_fee_shop_lines": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/orderShippingFeeLine"
+          }
+        },
+        "etop_discount": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "money_transaction_shipping_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "money_transaction_shipping_external_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "x_shipping_logs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/orderExternalShippingLog"
+          }
+        },
+        "x_shipping_note": {
+          "type": "string"
+        },
+        "x_shipping_sub_state": {
+          "type": "string"
+        },
+        "code": {
+          "type": "string"
+        },
+        "actual_compensation_amount": {
+          "type": "integer",
+          "format": "int32"
         }
       }
     },

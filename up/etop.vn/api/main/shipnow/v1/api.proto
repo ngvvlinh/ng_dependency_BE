@@ -21,25 +21,19 @@ option (gogoproto.verbose_equal_all)        = false;
 import "etop.vn/api/main/ordering/v1/types/types.proto";
 import "etop.vn/api/main/shipping/v1/types/tryon.proto";
 import "etop.vn/api/main/shipping/v1/types/types.proto";
+import "etop.vn/api/main/shipping/v1/types/feeline.proto";
 import "etop.vn/api/meta/v1/api.proto";
 import "etop.vn/api/main/etop/v1/status5.proto";
 import "etop.vn/api/main/etop/v1/status3.proto";
+import "etop.vn/api/main/etop/v1/status4.proto";
 import "etop.vn/api/main/shipnow/v1/types/state.proto";
 import "etop.vn/api/main/shipnow/v1/types/types.proto";
-
-service ShipnowManager {
-    rpc CreateShipnowFulfillment (CreateShipnowFulfillmentCommand) returns (ShipnowFulfillment);
-
-    rpc ConfirmShipnowFulfillment (ConfirmShipnowFulfillmentCommand) returns (ShipnowFulfillment);
-
-    rpc CancelShipnowFulfillment (CancelShipnowFulfillmentCommand) returns (meta.v1.Empty);
-
-    rpc UpdateShipnowFulfillment (UpdateShipnowFulfillmentCommand) returns (ShipnowFulfillment);
-}
+import "etop.vn/api/main/shipnow/carrier/v1/carrier.proto";
 
 service ShipnowQueryService {
     rpc GetShipnowFulfillment (GetShipnowFulfillmentQueryArgs) returns (GetShipnowFulfillmentQueryResult);
     rpc GetShipnowFulfillments (GetShipnowFulfillmentsQueryArgs) returns (GetShipnowFulfillmentsQueryResult);
+    rpc GetShipnowFulfillmentByShippingCode(GetShipnowFulfillmentByShippingCodeQueryArgs) returns (GetShipnowFulfillmentQueryResult);
 }
 
 message ShipnowFulfillment {
@@ -53,7 +47,7 @@ message ShipnowFulfillment {
 
     repeated types.DeliveryPoint delivery_points = 5;
 
-    optional string carrier = 6 [(gogoproto.nullable)=false];
+    optional shipnow.carrier.v1.carrier.Carrier carrier = 6 [(gogoproto.nullable)=false];
 
     optional string shipping_service_code = 7 [(gogoproto.nullable)=false];
 
@@ -78,6 +72,24 @@ message ShipnowFulfillment {
     optional etop.v1.status3.Status3 confirm_status = 17 [(gogoproto.nullable) = false];
 
     repeated int64 order_ids = 18;
+
+    optional meta.v1.Timestamp shipping_created_at = 19;
+
+    optional meta.v1.Timestamp created_at = 20;
+
+    optional meta.v1.Timestamp updated_at = 21;
+
+    optional etop.v1.status4.Status4 etop_payment_status = 22 [(gogoproto.nullable) = false];
+
+    optional meta.v1.Timestamp cod_etop_transfered_at = 23;
+
+    optional meta.v1.Timestamp shipping_picking_at = 24;
+
+    optional meta.v1.Timestamp shipping_delivering_at = 25;
+
+    optional meta.v1.Timestamp shipping_delivered_at = 26;
+
+    optional meta.v1.Timestamp shipping_cancelled_at = 27;
 }
 
 //-- Commands --//
@@ -85,7 +97,7 @@ message ShipnowFulfillment {
 message CreateShipnowFulfillmentCommand {
     repeated int64 order_ids = 1 [(gogoproto.nullable) = false];
 
-    optional string carrier = 2 [(gogoproto.nullable)=false];
+    optional shipnow.carrier.v1.carrier.Carrier carrier = 2 [(gogoproto.nullable)=false];
 
     optional int64 shop_id = 3 [(gogoproto.nullable) = false];
 
@@ -105,7 +117,7 @@ message UpdateShipnowFulfillmentCommand {
 
     repeated int64 order_ids = 2 [(gogoproto.nullable) = false];
 
-    optional string carrier = 3 [(gogoproto.nullable)=false];
+    optional shipnow.carrier.v1.carrier.Carrier carrier = 3 [(gogoproto.nullable)=false];
 
     optional int64 shop_id = 4 [(gogoproto.nullable) = false];
 
@@ -131,13 +143,58 @@ message CancelShipnowFulfillmentCommand {
     optional string cancel_reason = 3 [(gogoproto.nullable)=false];
 }
 
+message UpdateShipnowFulfillmentCarrierInfoCommand {
+    optional int64 id = 1 [(gogoproto.nullable) = false];
+    optional string shipping_code = 2 [(gogoproto.nullable) = false];
+    optional shipnow.v1.state.State shipping_state = 3 [(gogoproto.nullable) = false];
+    optional int32 total_fee = 4 [(gogoproto.nullable) = false];
+    repeated shipping.v1.types.FeeLine fee_lines = 5;
+    repeated shipping.v1.types.FeeLine carrier_fee_lines = 6;
+    optional meta.v1.Timestamp shipping_created_at = 7;
+    optional etop.v1.status4.Status4 etop_payment_status = 8 [(gogoproto.nullable) = false];
+    optional etop.v1.status5.Status5 shipping_status = 9 [(gogoproto.nullable) = false];
+    optional etop.v1.status5.Status5 status = 10 [(gogoproto.nullable) = false];
+
+    optional meta.v1.Timestamp cod_etop_transfered_at = 11;
+    optional meta.v1.Timestamp shipping_picking_at = 12;
+    optional meta.v1.Timestamp shipping_delivering_at = 13;
+    optional meta.v1.Timestamp shipping_delivered_at = 14;
+    optional meta.v1.Timestamp shipping_cancelled_at = 15;
+}
+
+message UpdateShipnowFulfullmentStateCommand {
+    optional int64 id = 1 [(gogoproto.nullable) = false];
+    optional etop.v1.status4.Status4 sync_status = 2 [(gogoproto.nullable)= false];
+    optional etop.v1.status5.Status5 status = 3 [(gogoproto.nullable) = false];
+    optional etop.v1.status3.Status3 confirm_status = 4 [(gogoproto.nullable) = false];
+    optional etop.v1.status5.Status5 shipping_status = 5 [(gogoproto.nullable) = false];
+    optional SyncStates sync_states = 6;
+    optional shipnow.v1.state.State shipping_state = 7 [(gogoproto.nullable) = false];
+}
+
+message SyncStates {
+    optional meta.v1.Timestamp sync_at = 1;
+    optional meta.v1.Timestamp try_sync_at = 2;
+    optional meta.v1.Error error = 3;
+}
+
+message GetShipnowServicesCommand {
+    optional int64 shop_id = 1 [(gogoproto.nullable) = false];
+    repeated int64 order_ids = 2;
+    optional ordering.v1.types.Address pickup_address = 3;
+    repeated types.DeliveryPoint delivery_points = 4;
+}
+
+message GetShipnowServicesCommandResult {
+    repeated shipnow.v1.types.ShipnowService services = 1;
+}
+
 //-- Queries --//
 
 message GetShipnowFulfillmentQueryArgs {
     optional int64 id = 1 [(gogoproto.nullable)=false];
     optional int64 shop_id = 2 [(gogoproto.nullable) = false];
 }
-
 
 message GetShipnowFulfillmentsQueryArgs {
     optional int64 shop_id = 1 [(gogoproto.nullable) = false];
@@ -149,6 +206,10 @@ message GetShipnowFulfillmentQueryResult {
 
 message GetShipnowFulfillmentsQueryResult {
     repeated ShipnowFulfillment shipnow_fulfillments = 1;
+}
+
+message GetShipnowFulfillmentByShippingCodeQueryArgs {
+    optional string shipping_code = 1 [(gogoproto.nullable) = false];
 }
 
 //-- Events --//
@@ -216,9 +277,16 @@ message ShipnowOrderChangedEvent {
 message ShipnowCancelledEvent {
     optional int64 shipnow_fulfillment_id = 1 [(gogoproto.nullable) = false];
     repeated int64 order_ids = 2;
+    optional string external_shipnow_id = 3 [(gogoproto.nullable) = false];
+    optional string carrier_service_code = 4 [(gogoproto.nullable) = false];
+    optional string cancel_reason = 5 [(gogoproto.nullable) = false];
 }
 
-message ShipnowValidatedEvent {
+message ShipnowValidatedConfirmedEvent {
     optional int64 shipnow_fulfillment_id = 1 [(gogoproto.nullable) = false];
     repeated int64 order_ids = 3;
+}
+
+message ShipnowCreateExternalEvent {
+    optional int64 shipnow_fulfillment_id = 1 [(gogoproto.nullable) = false];
 }

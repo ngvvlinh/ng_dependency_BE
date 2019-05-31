@@ -1,6 +1,7 @@
 package modelx
 
 import (
+	"etop.vn/api/main/shipnow"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/etop/model"
 	ordermodel "etop.vn/backend/pkg/services/ordering/model"
@@ -17,15 +18,16 @@ type GetOrderQuery struct {
 	IncludeFulfillment bool
 
 	Result struct {
-		Order        *ordermodel.Order
-		Fulfillments []*shipmodel.Fulfillment
+		Order         *ordermodel.Order
+		Fulfillments  []*shipmodel.Fulfillment
+		XFulfillments []*Fulfillment
 	}
 }
 
 type OrderWithFulfillments struct {
 	*ordermodel.Order
 
-	Fulfillments []*shipmodel.Fulfillment
+	Fulfillments []*Fulfillment
 }
 
 type GetOrdersQuery struct {
@@ -136,4 +138,9 @@ type UpdateOrderPaymentStatusCommand struct {
 	Result struct {
 		Updated int
 	}
+}
+
+type Fulfillment struct {
+	Shipment *shipmodel.Fulfillment
+	Shipnow  *shipnow.ShipnowFulfillment
 }

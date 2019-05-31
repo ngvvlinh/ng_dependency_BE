@@ -1,6 +1,7 @@
 package shipnow
 
 import (
+	"etop.vn/api/main/etop"
 	shipnowtypes "etop.vn/api/main/shipnow/types"
 	shipnowv1 "etop.vn/api/main/shipnow/v1"
 	"etop.vn/api/meta"
@@ -12,6 +13,7 @@ type DeliveryPoint = shipnowtypes.DeliveryPoint // re-export
 type ShipnowEvent = shipnowv1.ShipnowEvent
 type IsEventData = shipnowv1.IsEventData
 type EventType = shipnowv1.EventType
+type SyncStates = shipnowv1.SyncStates
 
 func NewShipnowEvent(
 	correlationID meta.UUID,
@@ -36,9 +38,29 @@ type CancellationRequestedData = shipnowv1.CancellationRequestedData
 type CancellationAcceptedData = shipnowv1.CancellationAcceptedData
 type CancellationRejectedData = shipnowv1.CancellationRejectedData
 
-const Ahamove = "ahamove"
-
 type ShipnowOrderReservationEvent = shipnowv1.ShipnowOrderReservationEvent
 type ShipnowOrderChangedEvent = shipnowv1.ShipnowOrderChangedEvent
 type ShipnowCancelledEvent = shipnowv1.ShipnowCancelledEvent
-type ShipnowValidatedEvent = shipnowv1.ShipnowValidatedEvent
+type ShipnowValidateConfirmedEvent = shipnowv1.ShipnowValidatedConfirmedEvent
+type ShipnowCreateExternalEvent = shipnowv1.ShipnowCreateExternalEvent
+
+func ShipnowStatus(state shipnowtypes.State, paymentStatus etop.Status4) etop.Status5 {
+	switch state {
+	case shipnowtypes.StateDefault:
+	case shipnowtypes.StateCreated:
+	case shipnowtypes.StateAssigning:
+	case shipnowtypes.StatePicking:
+	case shipnowtypes.StateDelivering:
+		return etop.S5SuperPos
+	case shipnowtypes.StateCancelled:
+		return etop.S5Negative
+	case shipnowtypes.StateDelivered:
+		if paymentStatus == etop.S4Positive {
+			return etop.S5Positive
+		}
+		return etop.S5SuperPos
+	default:
+		return etop.S5Zero
+	}
+	return etop.S5Zero
+}

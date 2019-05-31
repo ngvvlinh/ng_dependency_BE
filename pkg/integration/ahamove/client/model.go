@@ -3,30 +3,37 @@ package ahamoveclient
 import (
 	"encoding/json"
 
+	cc "etop.vn/backend/pkg/common/config"
+
+	"etop.vn/api/main/etop"
+
 	shipnowtypes "etop.vn/api/main/shipnow/types"
-	"etop.vn/backend/pkg/etop/model"
 )
 
-type TransportType string
-
-const (
-	TransportRoad TransportType = "road"
-	TransportFly  TransportType = "fly"
-)
-
-func (t TransportType) Name() string {
-	switch t {
-	case TransportRoad:
-		return model.ShippingServiceNameStandard
-	case TransportFly:
-		return model.ShippingServiceNameFaster
-	}
-	return string(t)
+type Config struct {
+	Env    string `yaml:"env"`
+	Name   string `yaml:"name"`
+	ApiKey string `yaml:"api_key"`
 }
 
-type AhamoveAccount struct {
-	AccountID string `yaml:"account_id"`
-	Token     string `yaml:"token"`
+func (c *Config) MustLoadEnv(prefix ...string) {
+	p := "ET_AHAMOVE"
+	if len(prefix) > 0 {
+		p = prefix[0]
+	}
+	cc.EnvMap{
+		p + "_ENV":     &c.Env,
+		p + "_NAME":    &c.Name,
+		p + "_API_KEY": &c.ApiKey,
+	}.MustLoad()
+}
+
+func DefaultConfig() Config {
+	return Config{
+		Env:    "",
+		Name:   "ahamove_test",
+		ApiKey: "860160f707a7a8afc7bffa3e54630f40",
+	}
 }
 
 type OrderState string
@@ -46,11 +53,11 @@ const (
 	StateBoarded    OrderSubState = "BOARDED"    // When the supplier has arrived at the pickup location (restaurant), our system will set sub_status of the order to BOARDED
 	StateCompleting OrderSubState = "COMPLETING" // When the supplier location is nearby drop-off location, our system will set sub_status of the order to COMPLETING
 
-	StateFfmCompleted DeliveryStatus = "COMPLETED" // When the supplier gives the order to recipient & collects cash, he will choose Complete and the according stop point status will be changed to COMPLETED
-	StateFfmFailed    DeliveryStatus = "FAILED"    // When the supplier arrives at the recipient point, but the recipient does not show up, he will choose Fail and the according stop point status will be changed to FAILED
+	StateDeliveryCompleted DeliveryStatus = "COMPLETED" // When the supplier gives the order to recipient & collects cash, he will choose Complete and the according stop point status will be changed to COMPLETED
+	StateDeliveryFailed    DeliveryStatus = "FAILED"    // When the supplier arrives at the recipient point, but the recipient does not show up, he will choose Fail and the according stop point status will be changed to FAILED
 )
 
-func (orderState OrderState) ToModel() shipnowtypes.State {
+func (orderState OrderState) ToCoreState() shipnowtypes.State {
 	switch orderState {
 	case StateConfirmed:
 		return shipnowtypes.StateCreated
@@ -69,14 +76,36 @@ func (orderState OrderState) ToModel() shipnowtypes.State {
 	}
 }
 
-func (orderState OrderState) ToStatus5() model.Status5 {
+func (orderState OrderState) ToStatus5() etop.Status5 {
 	switch orderState {
 	case StateCancelled:
-		return model.S5Negative
+		return etop.S5Negative
 	case StateCompleted:
-		return model.S5Positive
+		return etop.S5Positive
 	default:
-		return model.S5SuperPos
+		return etop.S5SuperPos
+	}
+}
+
+func (s DeliveryStatus) ToCoreState(currentState shipnowtypes.State) shipnowtypes.State {
+	switch s {
+	case StateDeliveryCompleted:
+		return shipnowtypes.StateDelivered
+	case StateDeliveryFailed:
+		return shipnowtypes.StateReturned
+	default:
+		return currentState
+	}
+}
+
+func (s DeliveryStatus) ToStatus5() etop.Status5 {
+	switch s {
+	case StateDeliveryCompleted:
+		return etop.S5Positive
+	case StateDeliveryFailed:
+		return etop.S5Negative
+	default:
+		return etop.S5SuperPos
 	}
 }
 
@@ -102,7 +131,7 @@ type DeliveryPointRequest struct {
 	Lng            float32 `json:"lng"`
 	Mobile         string  `json:"mobile"`
 	Name           string  `json:"name"`
-	COD            int     `json:"cod"`
+	COD            int32   `json:"cod"`
 	TrackingNumber string  `json:"tracking_number"`
 	Remarks        string  `json:"remarks"`
 	SenderName     string  `json:"sender_name"`
@@ -120,30 +149,30 @@ func ConvertDeliveryPointsRequestToString(points []*DeliveryPointRequest) string
 type DeliveryPoint struct {
 	// Supported address in template bellow, without lat, lng in parameters
 	// {user_free_text_input},{ward},{province/district},{city}
-	Address        string  `url:"address"`
-	Mobile         string  `url:"mobile"`
-	Name           string  `url:"name"`
-	COD            int     `url:"cod"`
-	TrackingNumber string  `url:"tracking_number"`
-	Remarks        string  `url:"remarks"`
-	SenderName     string  `url:"sender_name"`
-	SenderMobile   string  `url:"sender_mobile"`
-	Lat            float32 `url:"lat"`
-	Lng            float32 `url:"lng"`
+	Address        string  `json:"address"`
+	Mobile         string  `json:"mobile"`
+	Name           string  `json:"name"`
+	COD            int     `json:"cod"`
+	TrackingNumber string  `json:"tracking_number"`
+	Remarks        string  `json:"remarks"`
+	SenderName     string  `json:"sender_name"`
+	SenderMobile   string  `json:"sender_mobile"`
+	Lat            float32 `json:"lat"`
+	Lng            float32 `json:"lng"`
 
-	RequirePod          bool `url:"require_pod"`          // True, # If true, supplier will be required proof of delivery before complete the transaction
-	RequireVerification bool `url:"require_verification"` // True, # If true, a verification code will be sent to the receiver, then the supplier will need to enter this code to complete the transaction
+	RequirePod          bool `json:"require_pod"`          // True, # If true, supplier will be required proof of delivery before complete the transaction
+	RequireVerification bool `json:"require_verification"` // True, # If true, a verification code will be sent to the receiver, then the supplier will need to enter this code to complete the transaction
 
-	RatingByReceiver  int    `url:"rating_by_receiver"`  // 4,
-	CommentByReceiver string `url:"comment_by_receiver"` // "Good",
+	RatingByReceiver  int    `json:"rating_by_receiver"`  // 4,
+	CommentByReceiver string `json:"comment_by_receiver"` // "Good",
 
-	CompleteTime    float32 `url:"complete_time"`    // 1426671164,
-	CompleteLat     float32 `url:"complete_lat"`     // 10.7890462,
-	CompleteLng     float32 `url:"complete_lng"`     // 106.7763078,
-	CompleteComment string  `url:"complete_comment"` // "Nice receiver",
-	ImageUrl        string  `url:"image_url"`        // "//i.imgur.com/lchC2xz.jpg", # Image to show that the supplier has already completed the order, uploaded by the supplier
-	PodInfo         string  `url:"pod_info"`         // "024792155", # Proof of delivery information that supplier has collected, can be recipient's ID number or image URL
-	Status          string  `url:"status"`           // "COMPLETED"
+	CompleteTime    float32 `json:"complete_time"`    // 1426671164,
+	CompleteLat     float32 `json:"complete_lat"`     // 10.7890462,
+	CompleteLng     float32 `json:"complete_lng"`     // 106.7763078,
+	CompleteComment string  `json:"complete_comment"` // "Nice receiver",
+	ImageUrl        string  `json:"image_url"`        // "//i.imgur.com/lchC2xz.jpg", # Image to show that the supplier has already completed the order, uploaded by the supplier
+	PodInfo         string  `json:"pod_info"`         // "024792155", # Proof of delivery information that supplier has collected, can be recipient's ID number or image URL
+	Status          string  `json:"status"`           // "COMPLETED"
 }
 
 type CalcShippingFeeResponse struct {
@@ -173,15 +202,15 @@ type CreateOrderRequest struct {
 	Remarks        string                  `url:"remarks"`
 	// Payment method chose by user (BALANCE or CASH) - Optional
 	PaymentMethod string `url:"payment_method"`
-	Products      []Item `url:"-"`
-	Items         string `url:"items"`
+	// Products      []Item `url:"-"`
+	// Items         string `url:"items"`
 }
 
 type Item struct {
-	ID    string `url:"_id"`   // "TS",
-	Num   int    `url:"num"`   // 2,
-	Name  string `url:"name"`  // "Sua tuoi",
-	Price int    `url:"price"` // 15000
+	ID    string `json:"_id"`   // "TS",
+	Num   int    `json:"num"`   // 2,
+	Name  string `json:"name"`  // "Sua tuoi",
+	Price int    `json:"price"` // 15000
 }
 
 func ConvertItemsToString(items []Item) string {
@@ -263,6 +292,8 @@ type Order struct {
 	Remind     bool   `json:"remind"`      // True, # If this is advance booking and the system already reminds users
 	AssignedBy string `json:"assigned_by"` // "84908842285", # If this order is assigned by a user or "auto" if by the system
 	Index      int    `json:"index"`       // 1, # 0 if first order request from the user, 1 for second...
+	// Items: chỉ sử dụng cho food, tài xế dựa vào đây để mua hàng
+	// Items      []Item `json:"items"`
 }
 
 type GetOrderRequest struct {
@@ -271,8 +302,41 @@ type GetOrderRequest struct {
 }
 
 type CancelOrderRequest struct {
-	Token    string `url:"token"`     // Token (User token or Supplier token, Admin if want to cancel a completed order)
+	Token    string `url:"token"`     // ApiKey (User token or Supplier token, Admin if want to cancel a completed order)
 	OrderId  string `url:"order_id"`  // Order ID
 	Comment  string `url:"comment"`   // Optional
 	ImageUrl string `url:"image_url"` // Optional, image URL to show the reason why supplier cancel an order
+}
+
+type RegisterAccountRequest struct {
+	ApiKey  string `url:"api_key"`
+	Mobile  string `url:"mobile"`
+	Name    string `url:"name"`
+	Address string `url:"address"`
+}
+
+type RegisterAccountResponse struct {
+	Token string `json:"token"`
+}
+
+type GetAccountRequest struct {
+	Token string `url:"token"`
+}
+
+type Account struct {
+	ID            string   `json:"_id"`
+	Name          string   `json:"name"`
+	Partner       string   `json:"partner"`
+	Email         string   `json:"email"`
+	ReferralCode  string   `json:"referral_code"`
+	CountryCode   string   `json:"country_code"`
+	Currency      string   `json:"currency"`
+	AccountStatus string   `json:"account_status"`
+	CreateTime    float32  `json:"create_time"`
+	LastActivity  float32  `json:"last_activity"`
+	Points        float32  `json:"points"`
+	BannedList    []string `json:"banned_list"`
+	NumRating     float32  `json:"num_rating"`
+	Rating        float32  `json:"rating"`
+	Verified      bool     `json:"verified"`
 }

@@ -15,11 +15,18 @@ type Aggregate interface {
 	CancelShipnowFulfillment(ctx context.Context, cmd *CancelShipnowFulfillmentArgs) (*meta.Empty, error)
 
 	UpdateShipnowFulfillment(ctx context.Context, cmd *UpdateShipnowFulfillmentArgs) (*ShipnowFulfillment, error)
+
+	UpdateShipnowFulfillmentCarrierInfo(ctx context.Context, cmd *UpdateShipnowFulfillmentCarrierInfoArgs) (*ShipnowFulfillment, error)
+
+	UpdateShipnowFulfillmentState(ctx context.Context, cmd *UpdateShipnowFulfillmentStateArgs) (*ShipnowFulfillment, error)
+
+	GetShipnowServices(ctx context.Context, cmd *GetShipnowServicesArgs) (*GetShipnowServicesResult, error)
 }
 
 type QueryService interface {
 	GetShipnowFulfillment(context.Context, *GetShipnowFulfillmentQueryArgs) (*GetShipnowFulfillmentQueryResult, error)
 	GetShipnowFulfillments(context.Context, *GetShipnowFulfillmentsQueryArgs) (*GetShipnowFulfillmentsQueryResult, error)
+	GetShipnowFulfillmentByShippingCode(context.Context, *GetShipnowFulfillmentByShippingCodeQueryArgs) (*GetShipnowFulfillmentQueryResult, error)
 }
 
 //-- Commands --//
@@ -28,6 +35,10 @@ type CreateShipnowFulfillmentArgs = shipnowv1.CreateShipnowFulfillmentCommand
 type ConfirmShipnowFulfillmentArgs = shipnowv1.ConfirmShipnowFulfillmentCommand
 type CancelShipnowFulfillmentArgs = shipnowv1.CancelShipnowFulfillmentCommand
 type UpdateShipnowFulfillmentArgs = shipnowv1.UpdateShipnowFulfillmentCommand
+type UpdateShipnowFulfillmentCarrierInfoArgs = shipnowv1.UpdateShipnowFulfillmentCarrierInfoCommand
+type UpdateShipnowFulfillmentStateArgs = shipnowv1.UpdateShipnowFulfullmentStateCommand
+type GetShipnowServicesArgs = shipnowv1.GetShipnowServicesCommand
+type GetShipnowServicesResult = shipnowv1.GetShipnowServicesCommandResult
 
 type CommitCreateShipnowFulfillmentArgs struct {
 	ID int64
@@ -47,3 +58,4 @@ type GetShipnowFulfillmentQueryArgs = shipnowv1.GetShipnowFulfillmentQueryArgs
 type GetShipnowFulfillmentQueryResult = shipnowv1.GetShipnowFulfillmentQueryResult
 type GetShipnowFulfillmentsQueryArgs = shipnowv1.GetShipnowFulfillmentsQueryArgs
 type GetShipnowFulfillmentsQueryResult = shipnowv1.GetShipnowFulfillmentsQueryResult
+type GetShipnowFulfillmentByShippingCodeQueryArgs = shipnowv1.GetShipnowFulfillmentByShippingCodeQueryArgs

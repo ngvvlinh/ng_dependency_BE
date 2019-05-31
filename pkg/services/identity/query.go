@@ -15,12 +15,14 @@ import (
 var _ identity.QueryService = &QueryService{}
 
 type QueryService struct {
-	store sqlstore.IdentityStoreFactory
+	store           sqlstore.IdentityStoreFactory
+	xAccountAhamove sqlstore.XAccountAhamoveStoreFactory
 }
 
 func NewQueryService(db cmsql.Database) *QueryService {
 	return &QueryService{
-		store: sqlstore.NewIdentityStore(db),
+		store:           sqlstore.NewIdentityStore(db),
+		xAccountAhamove: sqlstore.NewXAccountAhamoveStore(db),
 	}
 }
 
@@ -39,4 +41,8 @@ func (q *QueryService) GetShopByID(ctx context.Context, query *identity.GetShopB
 	return &identity.GetShopByIDQueryResult{
 		Shop: shop,
 	}, nil
+}
+
+func (q *QueryService) GetExternalAccountAhamoveByPhone(ctx context.Context, args *identity.GetExternalAccountAhamoveByPhoneArgs) (*identity.ExternalAccountAhamove, error) {
+	return q.xAccountAhamove(ctx).Phone(args.Phone).OwnerID(args.OwnerID).GetXAccountAhamove()
 }

@@ -1,48 +1,17 @@
 package ahamove
 
 import (
-	"time"
+	"etop.vn/api/main/shipnow/carrier"
 
-	"etop.vn/api/main/shipnow"
-
-	cc "etop.vn/backend/pkg/common/config"
-	"etop.vn/backend/pkg/etop/model"
+	shipnowtypes "etop.vn/api/main/shipnow/types"
 	ahamoveClient "etop.vn/backend/pkg/integration/ahamove/client"
 )
-
-type Config struct {
-	Env string `yaml:"env"`
-
-	AccountDefault ahamoveClient.AhamoveAccount `yaml:"account_default"`
-}
-
-func (c *Config) MustLoadEnv(prefix ...string) {
-	p := "ET_AHAMOVE"
-	if len(prefix) > 0 {
-		p = prefix[0]
-	}
-	cc.EnvMap{
-		p + "_ENV":                &c.Env,
-		p + "_DEFAULT_ACCOUNT_ID": &c.AccountDefault.AccountID,
-		p + "_DEFAULT_TOKEN":      &c.AccountDefault.Token,
-	}.MustLoad()
-}
-
-func DefaultConfig() Config {
-	return Config{
-		Env: "test",
-		AccountDefault: ahamoveClient.AhamoveAccount{
-			AccountID: "ahamove_default",
-			Token:     "5cd40775eb44d75715c3b97a",
-		},
-	}
-}
 
 type CalcShippingFeeCommand struct {
 	ArbitraryID int64 // This is provided as a seed, for stable randomization
 
 	Request *ahamoveClient.CalcShippingFeeRequest
-	Result  []*model.AvailableShippingService
+	Result  []*shipnowtypes.ShipnowService
 }
 
 type CalcSingleShippingFeeCommand struct {
@@ -53,7 +22,7 @@ type CalcSingleShippingFeeCommand struct {
 
 	Request *ahamoveClient.CalcShippingFeeRequest
 
-	Result *model.AvailableShippingService
+	Result *shipnowtypes.ShipnowService
 }
 
 type CreateOrderCommand struct {
@@ -76,18 +45,27 @@ type CancelOrderCommand struct {
 	Request *ahamoveClient.CancelOrderRequest
 }
 
-func ToShippingService(sfResp *ahamoveClient.CalcShippingFeeResponse, serviceID ServiceCode, providerServiceID string) *model.AvailableShippingService {
+func ToShippingService(sfResp *ahamoveClient.CalcShippingFeeResponse, serviceID ServiceCode, providerServiceID string) *shipnowtypes.ShipnowService {
 	if sfResp == nil {
 		return nil
 	}
 	service := ServicesIndexID[serviceID]
-	return &model.AvailableShippingService{
+	return &shipnowtypes.ShipnowService{
+		Carrier:            carrier.Ahamove,
 		Name:               service.Name,
-		ServiceFee:         sfResp.TotalFee,
-		ShippingFeeMain:    0,
-		Provider:           shipnow.Ahamove,
-		ProviderServiceID:  providerServiceID,
-		ExpectedPickAt:     time.Now(),
-		ExpectedDeliveryAt: time.Now(),
+		Code:               providerServiceID,
+		Fee:                int32(sfResp.TotalFee),
+		ExpectedPickupAt:   nil,
+		ExpectedDeliveryAt: nil,
 	}
+}
+
+type RegisterAccountCommand struct {
+	Request *ahamoveClient.RegisterAccountRequest
+	Result  *ahamoveClient.RegisterAccountResponse
+}
+
+type GetAccountCommand struct {
+	Request *ahamoveClient.GetAccountRequest
+	Result  *ahamoveClient.Account
 }

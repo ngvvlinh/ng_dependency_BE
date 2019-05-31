@@ -38,7 +38,7 @@ type Validator interface {
 	Validate(usage, tokenStr string, v interface{}) (*Token, error)
 }
 
-// Token represents a token used in request/response
+// ApiKey represents a token used in request/response
 type Token struct {
 	TokenStr  string
 	Usage     string

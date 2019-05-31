@@ -54,7 +54,7 @@ func (wh *Webhook) Callback(c *httpx.Context) error {
 		enc.SetEscapeHTML(false)
 		webhookData := &model_log.ShippingProviderWebhook{
 			ID:                    cm.NewID(),
-			ShippingProvider:      model.TypeGHN,
+			ShippingProvider:      model.TypeGHN.ToString(),
 			ShippingCode:          msg.OrderCode.String(),
 			ExternalShippingState: msg.CurrentStatus.String(),
 		}

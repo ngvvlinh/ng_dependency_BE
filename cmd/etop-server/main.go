@@ -10,6 +10,8 @@ import (
 	"syscall"
 	"time"
 
+	"etop.vn/backend/pkg/services/shipnow"
+
 	"etop.vn/backend/cmd/etop-server/config"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/auth"
@@ -56,7 +58,8 @@ import (
 	"etop.vn/backend/pkg/services/ordering"
 	orderingpm "etop.vn/backend/pkg/services/ordering/pm"
 	ordersqlstore "etop.vn/backend/pkg/services/ordering/sqlstore"
-	"etop.vn/backend/pkg/services/shipnow"
+
+	shipnowtypes "etop.vn/api/main/shipnow"
 	shipnow_carrier "etop.vn/backend/pkg/services/shipnow-carrier"
 	shipnowpm "etop.vn/backend/pkg/services/shipnow/pm"
 	shipsqlstore "etop.vn/backend/pkg/services/shipping/sqlstore"
@@ -75,12 +78,18 @@ var (
 	ctxCancel     context.CancelFunc
 	healthservice = health.New()
 
-	eventStreamer  *eventstream.EventStreamer
-	dbLogs         cmsql.Database
-	ghnCarrier     *ghn.Carrier
-	ghtkCarrier    *ghtk.Carrier
-	vtpostCarrier  *vtpost.Carrier
-	ahamoveCarrier *ahamove.Carrier
+	eventStreamer         *eventstream.EventStreamer
+	db                    cmsql.Database
+	dbLogs                cmsql.Database
+	ghnCarrier            *ghn.Carrier
+	ghtkCarrier           *ghtk.Carrier
+	vtpostCarrier         *vtpost.Carrier
+	ahamoveCarrier        *ahamove.Carrier
+	ahamoveCarrierAccount *ahamove.CarrierAccount
+
+	shipnowQuery shipnowtypes.QueryBus
+	shipnowAggr  shipnowtypes.CommandBus
+	orderAggr    *ordering.Aggregate
 )
 
 func main() {
@@ -157,7 +166,7 @@ func main() {
 	redisStore := redis.Connect(cfg.Redis.ConnectionString())
 	tokens.Init(redisStore)
 	middleware.Init(cfg.SAdminToken)
-	db, err := cmsql.Connect(cfg.Postgres)
+	db, err = cmsql.Connect(cfg.Postgres)
 	if err != nil {
 		ll.Fatal("Unable to connect to Postgres", l.Error(err))
 	}
@@ -179,6 +188,7 @@ func main() {
 	}
 
 	locationBus := servicelocation.New().MessageBus()
+	identityQuery := identity.NewQueryService(db).MessageBus()
 	if cfg.GHN.AccountDefault.Token != "" {
 		ghnCarrier = ghn.New(cfg.GHN, locationBus)
 		if err := ghnCarrier.InitAllClients(ctx); err != nil {
@@ -216,10 +226,9 @@ func main() {
 			ll.Fatal("VTPost: No token")
 		}
 	}
-
-	if cfg.Ahamove.AccountDefault.Token != "" {
-		ahamoveCarrier = ahamove.New(cfg.Ahamove, locationBus)
-		if err := ahamoveCarrier.InitAllClients(ctx); err != nil {
+	if cfg.Ahamove.ApiKey != "" {
+		ahamoveCarrier, ahamoveCarrierAccount = ahamove.New(cfg.Ahamove, locationBus, identityQuery)
+		if err := ahamoveCarrier.InitClient(ctx); err != nil {
 			ll.Fatal("Unable to connect to ahamove", l.Error(err))
 		}
 	} else {
@@ -243,24 +252,28 @@ func main() {
 
 	eventBus := bus.New()
 
-	shipnowCarrierManager := shipnow_carrier.NewManager(db, locationBus, ahamoveCarrier)
 	// create aggregate, query service
-	identityQuery := identity.NewQueryService(db)
-	addressQuery := address.NewQueryService(db)
-	shipnowQuery := shipnow.NewQueryService(db)
+	identityQuery = identity.NewQueryService(db).MessageBus()
 	catalogQuery := catalogquery.New(db).MessageBus()
+	addressQuery := address.NewQueryService(db).MessageBus()
+	shipnowQuery = shipnow.NewQueryService(db).MessageBus()
 	orderQueryBus := ordering.NewQueryService(db).MessageBus()
 
-	orderAggregate := ordering.NewAggregate(db)
-	shipnowAggregate := shipnow.NewAggregate(eventBus, db, locationBus, identityQuery, addressQuery, orderQueryBus)
+	orderAggr = ordering.NewAggregate(db)
+	shipnowCarrierManager := shipnow_carrier.NewManager(db, locationBus, &shipnow_carrier.Carrier{
+		ShipnowCarrier:        ahamoveCarrier,
+		ShipnowCarrierAccount: ahamoveCarrierAccount,
+	}, shipnowQuery)
+	identityAggr := identity.NewAggregate(db, shipnowCarrierManager).MessageBus()
+	shipnowAggr = shipnow.NewAggregate(eventBus, db, locationBus, identityQuery, addressQuery, orderQueryBus, shipnowCarrierManager).MessageBus()
 
-	orderingPM := orderingpm.New(orderAggregate, shipnowAggregate)
-	shipnowPM := shipnowpm.New(eventBus, shipnowQuery.MessageBus(), orderAggregate.MessageBus(), shipnowCarrierManager)
+	orderingPM := orderingpm.New(orderAggr)
+	shipnowPM := shipnowpm.New(eventBus, shipnowQuery, shipnowAggr, orderAggr.MessageBus(), shipnowCarrierManager)
 	shipnowPM.RegisterEventHandlers(eventBus)
 
-	orderAggregate.WithPM(orderingPM)
+	orderAggr.WithPM(orderingPM)
 
-	shop.Init(catalogQuery, shipnowAggregate, shipnowQuery, shippingManager, shutdowner, redisStore)
+	shop.Init(catalogQuery, shipnowAggr, shipnowQuery, identityAggr, shippingManager, shutdowner, redisStore)
 	partner.Init(shutdowner, redisStore, authStore, cfg.URL.Auth)
 	xshop.Init(shutdowner, redisStore, authStore)
 	integration.Init(shutdowner, redisStore, authStore)

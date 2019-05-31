@@ -3,6 +3,8 @@ package shipnow
 import (
 	"context"
 
+	"etop.vn/api/main/shipnow/carrier"
+
 	shippingtypes "etop.vn/api/main/shipping/types"
 
 	"etop.vn/api/main/ordering"
@@ -19,7 +21,6 @@ import (
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/cmsql"
 	shipnowconvert "etop.vn/backend/pkg/services/shipnow/convert"
-	shipnowmodelx "etop.vn/backend/pkg/services/shipnow/modelx"
 	"etop.vn/backend/pkg/services/shipnow/sqlstore"
 )
 
@@ -27,16 +28,17 @@ var _ shipnow.Aggregate = &Aggregate{}
 
 type Aggregate struct {
 	location      location.QueryBus
-	identityQuery identity.QueryService
-	addressQuery  address.QueryService
+	identityQuery identity.QueryBus
+	addressQuery  address.QueryBus
 	order         ordering.QueryBus
 
-	db       cmsql.Transactioner
-	store    sqlstore.ShipnowStoreFactory
-	eventBus meta.EventBus
+	db             cmsql.Transactioner
+	store          sqlstore.ShipnowStoreFactory
+	eventBus       meta.EventBus
+	carrierManager carrier.Manager
 }
 
-func NewAggregate(eventBus meta.EventBus, db cmsql.Database, location location.QueryBus, identityQuery identity.QueryService, addressQuery address.QueryService, order ordering.QueryBus) *Aggregate {
+func NewAggregate(eventBus meta.EventBus, db cmsql.Database, location location.QueryBus, identityQuery identity.QueryBus, addressQuery address.QueryBus, order ordering.QueryBus, carrierManager carrier.Manager) *Aggregate {
 	return &Aggregate{
 		db:       db,
 		store:    sqlstore.NewShipnowStore(db),
@@ -46,6 +48,8 @@ func NewAggregate(eventBus meta.EventBus, db cmsql.Database, location location.Q
 		identityQuery: identityQuery,
 		addressQuery:  addressQuery,
 		order:         order,
+
+		carrierManager: carrierManager,
 	}
 }
 
@@ -98,11 +102,7 @@ func (a *Aggregate) CreateShipnowFulfillment(ctx context.Context, cmd *shipnow.C
 
 func (a *Aggregate) UpdateShipnowFulfillment(ctx context.Context, cmd *shipnow.UpdateShipnowFulfillmentArgs) (_result *shipnow.ShipnowFulfillment, _ error) {
 	err := a.db.InTransaction(ctx, func(tx cmsql.QueryInterface) error {
-		args := shipnowmodelx.GetByIDArgs{
-			ID:     cmd.Id,
-			ShopID: cmd.ShopId,
-		}
-		ffm, err := a.store(ctx).GetByID(args)
+		ffm, err := a.store(ctx).ID(cmd.Id).ShopID(cmd.ShopId).GetShipnow()
 		if err != nil {
 			return err
 		}
@@ -151,11 +151,7 @@ func (a *Aggregate) UpdateShipnowFulfillment(ctx context.Context, cmd *shipnow.U
 
 func (a *Aggregate) CancelShipnowFulfillment(ctx context.Context, cmd *shipnow.CancelShipnowFulfillmentArgs) (*meta.Empty, error) {
 	err := a.db.InTransaction(ctx, func(tx cmsql.QueryInterface) error {
-		args := shipnowmodelx.GetByIDArgs{
-			ID:     cmd.Id,
-			ShopID: cmd.ShopId,
-		}
-		ffm, err := a.store(ctx).GetByID(args)
+		ffm, err := a.store(ctx).ID(cmd.Id).ShopID(cmd.ShopId).GetShipnow()
 		if err != nil {
 			return err
 		}
@@ -178,25 +174,17 @@ func (a *Aggregate) CancelShipnowFulfillment(ctx context.Context, cmd *shipnow.C
 		event := &shipnow.ShipnowCancelledEvent{
 			ShipnowFulfillmentId: ffm.Id,
 			OrderIds:             ffm.OrderIds,
+			CancelReason:         cmd.CancelReason,
 		}
 		if err := a.eventBus.Publish(ctx, event); err != nil {
 			return err
 		}
 
-		// if err := m.carrierManager.CancelExternalShipping(ctx, nil); err != nil {
-		// 	return err
-		// }
-
 		updateArgs := sqlstore.UpdateStateArgs{
-			ID: ffm.Id,
-			// SyncStatus: etoptypes.S4Negative,
-			State:         shipnowtypes.StateCancelled,
+			ID:            ffm.Id,
+			ShippingState: shipnowtypes.StateCancelled,
 			Status:        etoptypes.S5Negative,
 			ConfirmStatus: etoptypes.S3Negative,
-			// SyncStates: &model.FulfillmentSyncStates{
-			// 	TrySyncAt:         time.Now(),
-			// 	NextShippingState: model.StateCreated,
-			// },
 		}
 		ffm, err = a.store(ctx).UpdateSyncState(updateArgs)
 		if err != nil {
@@ -207,13 +195,9 @@ func (a *Aggregate) CancelShipnowFulfillment(ctx context.Context, cmd *shipnow.C
 	return &meta.Empty{}, err
 }
 
-func (a *Aggregate) ConfirmShipnowFulfillment(ctx context.Context, cmd *shipnow.ConfirmShipnowFulfillmentArgs) (_result *shipnow.ShipnowFulfillment, _ error) {
+func (a *Aggregate) ConfirmShipnowFulfillment(ctx context.Context, cmd *shipnow.ConfirmShipnowFulfillmentArgs) (_result *shipnow.ShipnowFulfillment, _err error) {
 	err := a.db.InTransaction(ctx, func(tx cmsql.QueryInterface) error {
-		query := shipnowmodelx.GetByIDArgs{
-			ID:     cmd.Id,
-			ShopID: cmd.ShopId,
-		}
-		ffm, err := a.store(ctx).GetByID(query)
+		ffm, err := a.store(ctx).ID(cmd.Id).ShopID(cmd.ShopId).GetShipnow()
 		if err != nil {
 			return err
 		}
@@ -221,7 +205,7 @@ func (a *Aggregate) ConfirmShipnowFulfillment(ctx context.Context, cmd *shipnow.
 			return err
 		}
 
-		event := &shipnow.ShipnowValidatedEvent{
+		event := &shipnow.ShipnowValidateConfirmedEvent{
 			ShipnowFulfillmentId: ffm.Id,
 			OrderIds:             ffm.OrderIds,
 		}
@@ -229,20 +213,24 @@ func (a *Aggregate) ConfirmShipnowFulfillment(ctx context.Context, cmd *shipnow.
 			return err
 		}
 
+		event2 := &shipnow.ShipnowCreateExternalEvent{
+			ShipnowFulfillmentId: ffm.Id,
+		}
+		if err := a.eventBus.Publish(ctx, event2); err != nil {
+			return err
+		}
+
 		update := sqlstore.UpdateStateArgs{
-			ID:            cmd.Id,
-			ConfirmStatus: etoptypes.S3Positive,
+			ID:             cmd.Id,
+			ConfirmStatus:  etoptypes.S3Positive,
+			ShippingStatus: etoptypes.S5SuperPos,
+			Status:         etoptypes.S5SuperPos,
 		}
 		shipnowFfm, err := a.store(ctx).UpdateSyncState(update)
 		if err != nil {
 			return err
 		}
 		_result = shipnowFfm
-
-		// if err := a.shipnowManagerCtrl.CreateExternalShipping(ctx, ffm); err != nil {
-		// 	return &meta.Empty{}, err
-		// }
-
 		return nil
 	})
 	return _result, err
@@ -252,19 +240,22 @@ func (a *Aggregate) PreparePickupAddress(ctx context.Context, shopID int64, pick
 	if pickupAddress != nil {
 		return pickupAddress, nil
 	}
-	shopResult, err := a.identityQuery.GetShopByID(ctx, &identity.GetShopByIDQueryArgs{ID: shopID})
-	if err != nil {
+	query := &identity.GetShopByIDQuery{ID: shopID}
+	if err := a.identityQuery.Dispatch(ctx, query); err != nil {
 		return nil, err
 	}
-	shop := shopResult.Shop
+	shop := query.Result.Shop
 	shopAddressID := shop.ShipFromAddressID
 	if shopAddressID == 0 {
 		return nil, cm.Error(cm.InvalidArgument, "Bán hàng: Cần cung cấp thông tin địa chỉ lấy hàng trong đơn hàng hoặc tại thông tin cửa hàng. Vui lòng cập nhật.", nil)
 	}
-	shopAddress, err := a.addressQuery.GetAddressByID(ctx, &address.GetAddressByIDQueryArgs{ID: shopAddressID})
-	if err != nil {
+	query2 := &address.GetAddressByIDQuery{
+		ID: shopAddressID,
+	}
+	if err := a.addressQuery.Dispatch(ctx, query2); err != nil {
 		return nil, err
 	}
+	shopAddress := query2.Result
 	pickupAddress = shopAddress.ToOrderAddress()
 	return pickupAddress, nil
 }
@@ -278,7 +269,18 @@ func (a *Aggregate) PrepareDeliveryPoints(ctx context.Context, orderIDs []int64)
 		return
 	}
 	orders := query.Result.Orders
+
+	// Note: Không thay đổi thứ tự đơn hàng vì nó ảnh hưởng tới giá
+	mapOrders := make(map[int64]*ordering.Order)
 	for _, order := range orders {
+		if order.Shipping == nil {
+			_err = cm.Errorf(cm.InvalidArgument, nil, "Đơn hàng thiếu thông tin giao hàng: khối lượng, COD,...")
+			return
+		}
+		mapOrders[order.ID] = order
+	}
+	for _, orderID := range orderIDs {
+		order := mapOrders[orderID]
 		points = append(points, shipnowconvert.OrderToDeliveryPoint(order))
 	}
 	weightInfo = shipnowconvert.GetWeightInfo(orders)
@@ -298,7 +300,74 @@ func ValidateConfirmFulfillment(ffm *shipnow.ShipnowFulfillment) error {
 	}
 
 	if len(ffm.DeliveryPoints) == 0 || len(ffm.OrderIds) == 0 {
-		return cm.Errorf(cm.FailedPrecondition, nil, "Số điểm giao hàng không hợp lệ.")
+		return cm.Errorf(cm.FailedPrecondition, nil, "Số điểm giao hàng không hợp lệ")
 	}
 	return nil
+}
+
+func (a *Aggregate) UpdateShipnowFulfillmentCarrierInfo(ctx context.Context, args *shipnow.UpdateShipnowFulfillmentCarrierInfoArgs) (*shipnow.ShipnowFulfillment, error) {
+	updateArgs := sqlstore.UpdateCarrierInfoArgs{
+		ID:                  args.Id,
+		FeeLines:            args.FeeLines,
+		CarrierFeeLines:     args.CarrierFeeLines,
+		ShippingCode:        args.ShippingCode,
+		ShippingCreatedAt:   args.ShippingCreatedAt.ToTime(),
+		ShippingState:       args.ShippingState,
+		ShippingStatus:      args.ShippingStatus,
+		EtopPaymentStatus:   args.EtopPaymentStatus,
+		CODEtopTransferedAt: args.CodEtopTransferedAt,
+		Status:              args.Status,
+
+		ShippingPickingAt:    args.ShippingPickingAt,
+		ShippingDeliveringAt: args.ShippingDeliveringAt,
+		ShippingDeliveredAt:  args.ShippingDeliveredAt,
+		ShippingCancelledAt:  args.ShippingCancelledAt,
+	}
+	updateArgs.TotalFee = shippingtypes.TotalFee(args.FeeLines)
+	ffm, err := a.store(ctx).UpdateCarrierInfo(updateArgs)
+	return ffm, err
+}
+
+func (a *Aggregate) UpdateShipnowFulfillmentState(ctx context.Context, args *shipnow.UpdateShipnowFulfillmentStateArgs) (*shipnow.ShipnowFulfillment, error) {
+	updateArgs := sqlstore.UpdateStateArgs{
+		ID:             args.Id,
+		SyncStatus:     args.SyncStatus,
+		Status:         args.Status,
+		ShippingState:  args.ShippingState,
+		SyncStates:     args.SyncStates,
+		ConfirmStatus:  args.ConfirmStatus,
+		ShippingStatus: args.ShippingStatus,
+	}
+	ffm, err := a.store(ctx).UpdateSyncState(updateArgs)
+	return ffm, err
+}
+
+func (a *Aggregate) GetShipnowServices(ctx context.Context, args *shipnow.GetShipnowServicesArgs) (*shipnow.GetShipnowServicesResult, error) {
+	if len(args.OrderIds) == 0 && len(args.DeliveryPoints) == 0 {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "Vui lòng cung cấp địa chỉ giao hàng")
+	}
+
+	pickupAddress, err := a.PreparePickupAddress(ctx, args.ShopId, args.PickupAddress)
+	if err != nil {
+		return nil, err
+	}
+
+	var points = args.DeliveryPoints
+	if len(args.OrderIds) > 0 {
+		points, _, _, err = a.PrepareDeliveryPoints(ctx, args.OrderIds)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	cmd := &carrier.GetExternalShipnowServicesCommand{
+		ShopID:         args.ShopId,
+		PickupAddress:  pickupAddress,
+		DeliveryPoints: points,
+	}
+
+	services, err := a.carrierManager.GetExternalShippingServices(ctx, cmd)
+	return &shipnow.GetShipnowServicesResult{
+		Services: services,
+	}, nil
 }

@@ -60,7 +60,7 @@ func GetAccountUser(ctx context.Context, query *model.GetAccountUserQuery) error
 		return cm.Error(cm.InvalidArgument, "Missing UserID", nil)
 	}
 	if query.AccountID == 0 {
-		return cm.Error(cm.InvalidArgument, "Missing AccountID", nil)
+		return cm.Error(cm.InvalidArgument, "Missing Name", nil)
 	}
 
 	query.Result = new(model.AccountUser)
@@ -78,7 +78,7 @@ func GetAccountUserExtended(ctx context.Context, query *model.GetAccountUserExte
 		return cm.Error(cm.InvalidArgument, "Missing UserID", nil)
 	}
 	if query.AccountID == 0 {
-		return cm.Error(cm.InvalidArgument, "Missing AccountID", nil)
+		return cm.Error(cm.InvalidArgument, "Missing Name", nil)
 	}
 
 	return x.

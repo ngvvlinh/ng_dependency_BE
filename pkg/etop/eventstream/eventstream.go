@@ -81,7 +81,7 @@ func (s *EventStreamer) forward(event *Event) {
 		if ShouldSendEvent(event, subscriber) {
 			select {
 			case subscriber.ch <- event:
-				ll.Debug("send event to", l.Int64("AccountID", subscriber.AccountID), l.Int64("UserID", subscriber.UserID), l.Any("event", event))
+				ll.Debug("send event to", l.Int64("Name", subscriber.AccountID), l.Int64("UserID", subscriber.UserID), l.Any("event", event))
 
 			default:
 				ll.Info("out of channel buffer, drop event")

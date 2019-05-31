@@ -14,6 +14,7 @@ import (
 	cmWrapper "etop.vn/backend/pkg/common/wrapper"
 	"etop.vn/backend/pkg/etop/authorize/middleware"
 	"etop.vn/backend/pkg/etop/authorize/permission"
+	webhookahamove "etop.vn/backend/pkg/integration/ahamove/webhook"
 	webhookghn "etop.vn/backend/pkg/integration/ghn/webhook"
 	webhookghtk "etop.vn/backend/pkg/integration/ghtk/webhook"
 	webhookvtpost "etop.vn/backend/pkg/integration/vtpost/webhook"
@@ -44,6 +45,7 @@ func startServers() []*http.Server {
 		startGHNWebhookServer(),
 		startGHTKWebhookServer(),
 		startVTPostWebhookServer(),
+		startAhamoveWebhookServer(),
 	}
 }
 
@@ -263,6 +265,31 @@ func startVTPostWebhookServer() *http.Server {
 		err := svr.ListenAndServe()
 		if err != http.ErrServerClosed {
 			ll.Error("Webhook VTPost server", l.Error(err))
+		}
+		ll.Sync()
+	}()
+	return svr
+}
+
+func startAhamoveWebhookServer() *http.Server {
+	botWebhook := cfg.TelegramBot.MustConnectChannel(config.ChannelWebhook)
+
+	rt := httpx.New()
+	rt.Use(httpx.RecoverAndLog(botWebhook, true))
+
+	webhook := webhookahamove.New(db, dbLogs, ahamoveCarrier, shipnowQuery, shipnowAggr, orderAggr.MessageBus())
+	webhook.Register(rt)
+	svr := &http.Server{
+		Addr:    cfg.AhamoveWebhook.Address(),
+		Handler: rt,
+	}
+	ll.S.Infof("VTPost Webhook server listening at %v", cfg.AhamoveWebhook.Address())
+
+	go func() {
+		defer ctxCancel()
+		err := svr.ListenAndServe()
+		if err != http.ErrServerClosed {
+			ll.Error("Webhook Ahamove server", l.Error(err))
 		}
 		ll.Sync()
 	}()

@@ -18,11 +18,15 @@ type GetByIDArgs struct {
 
 type GetShipnowFulfillmentsArgs struct {
 	ShopID  int64
-	Paging  *cm.Paging
+	Paging  cm.Paging
 	Filters []cm.Filter
 
 	Result struct {
 		Total               int
 		ShipnowFulfillments []*model.ShipnowFulfillment
 	}
+}
+
+type GetByShippingCodeArgs struct {
+	ShippingCode string
 }

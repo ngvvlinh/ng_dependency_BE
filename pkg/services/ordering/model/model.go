@@ -23,10 +23,10 @@ const (
 	OrderFeeTax      OrderFeeType = "tax"
 
 	// FulfillNone: Tự quản lý trên đơn hàng
-	FulfillNone               FulfillType = 0  // none
-	FulfillManual             FulfillType = 1  // manual
-	FulfillFulfillment        FulfillType = 10 // fulfillment
-	FulfillShipnowFulfillment FulfillType = 11 // shipnow_fulfillment
+	FulfillNone     FulfillType = 0  // none
+	FulfillManual   FulfillType = 1  // manual
+	FulfillShipment FulfillType = 10 // shipment
+	FulfillShipnow  FulfillType = 11 // shipnow
 )
 
 var _ = sqlgenOrder(&Order{})
@@ -110,8 +110,8 @@ type Order struct {
 
 	CustomerNameNorm string
 	ProductNameNorm  string
-	Fulfill          FulfillType `sq:"-"`
-	FulfillIDs       []int64     `sq:"-"`
+	Fulfill          FulfillType
+	FulfillIDs       []int64
 }
 
 func (m *Order) SelfURL(baseURL string, accType int) string {

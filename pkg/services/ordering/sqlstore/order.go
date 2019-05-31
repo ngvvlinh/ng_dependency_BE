@@ -3,10 +3,13 @@ package sqlstore
 import (
 	"context"
 
+	"etop.vn/api/main/etop"
+
 	"etop.vn/api/main/ordering"
 	ordertypes "etop.vn/api/main/ordering/types"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/cmsql"
+	etopconvert "etop.vn/backend/pkg/services/etop/convert"
 	orderconvert "etop.vn/backend/pkg/services/ordering/convert"
 	ordermodel "etop.vn/backend/pkg/services/ordering/model"
 )
@@ -129,6 +132,51 @@ func (s *OrderStore) UpdateOrdersForReleaseOrdersFfm(args UpdateOrdersForRelease
 		"fulfill":     nil,
 		"fulfill_ids": nil,
 	}); err != nil {
+		return err
+	}
+	return nil
+}
+
+type UpdateOrderShippingStatusArgs struct {
+	ID                        int64
+	FulfillmentShippingStatus etop.Status5
+	EtopPaymentStatus         etop.Status4
+
+	FulfillmentShippingStates  []string
+	FulfillmentPaymentStatuses []int
+}
+
+func (s *OrderStore) UpdateOrderShippingStatus(args UpdateOrderShippingStatusArgs) error {
+	if args.ID == 0 {
+		return cm.Errorf(cm.InvalidArgument, nil, "Mising Order ID")
+	}
+	update := &ordermodel.Order{
+		FulfillmentShippingStatus:  etopconvert.Status5ToModel(args.FulfillmentShippingStatus),
+		EtopPaymentStatus:          etopconvert.Status4ToModel(args.EtopPaymentStatus),
+		FulfillmentShippingStates:  args.FulfillmentShippingStates,
+		FulfillmentPaymentStatuses: args.FulfillmentPaymentStatuses,
+	}
+	if err := s.query().Where("id = ?", args.ID).ShouldUpdate(update); err != nil {
+		return err
+	}
+	return nil
+}
+
+type UpdateOrdersConfirmStatusArgs struct {
+	IDs           []int64
+	ShopConfirm   etop.Status3
+	ConfirmStatus etop.Status3
+}
+
+func (s *OrderStore) UpdateOrdersConfirmStatus(args UpdateOrdersConfirmStatusArgs) error {
+	if len(args.IDs) == 0 {
+		return cm.Errorf(cm.InvalidArgument, nil, "Missing OrderIDs")
+	}
+	update := &ordermodel.Order{
+		ShopConfirm:   etopconvert.Status3ToModel(args.ShopConfirm),
+		ConfirmStatus: etopconvert.Status3ToModel(args.ConfirmStatus),
+	}
+	if _, err := s.query().Table("order").In("id", args.IDs).Update(update); err != nil {
 		return err
 	}
 	return nil

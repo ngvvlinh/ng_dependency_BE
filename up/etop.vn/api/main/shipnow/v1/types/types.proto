@@ -22,6 +22,7 @@ import "etop.vn/api/meta/v1/api.proto";
 import "etop.vn/api/main/ordering/v1/types/types.proto";
 import "etop.vn/api/main/shipping/v1/types/types.proto";
 import "etop.vn/api/main/shipping/v1/types/tryon.proto";
+import "etop.vn/api/main/shipnow/carrier/v1/carrier.proto";
 
 message DeliveryPoint {
     optional ordering.v1.types.Address shipping_address = 1;
@@ -37,4 +38,18 @@ message DeliveryPoint {
     optional shipping.v1.types.ValueInfo value_info = 6 [(gogoproto.nullable)=false, (gogoproto.embed)=true];
 
     optional shipping.v1.tryon.TryOnCode try_on = 11 [(gogoproto.nullable)=false];
+}
+
+message ShipnowService {
+    optional shipnow.carrier.v1.carrier.Carrier carrier = 1 [(gogoproto.nullable)=false];
+
+    optional string name = 2 [(gogoproto.nullable) = false];
+
+    optional string code = 3 [(gogoproto.nullable) = false];
+
+    optional int32 fee = 4 [(gogoproto.nullable) = false];
+
+    optional meta.v1.Timestamp expected_pickup_at = 5;
+
+    optional meta.v1.Timestamp expected_delivery_at = 6;
 }

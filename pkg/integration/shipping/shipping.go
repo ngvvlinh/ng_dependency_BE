@@ -3,7 +3,10 @@ package shipping
 import (
 	"time"
 
+	"etop.vn/api/main/shipnow"
+
 	mdlocation "etop.vn/api/main/location"
+	shipnowtypes "etop.vn/api/main/shipnow/types"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/etop/model"
 	locationutil "etop.vn/backend/pkg/services/location/util"
@@ -161,4 +164,39 @@ func CanUpdateFulfillmentFromWebhook(ffm *shipmodel.Fulfillment) bool {
 
 		// returning has status -2 (NS) and we allow updating it via webhook
 		ffm.ShippingState == model.StateReturning
+}
+
+type ShipnowTimestamp struct {
+	ShippingCreatedAt    time.Time
+	ShippingPickingAt    time.Time
+	ShippingDeliveringAt time.Time
+	ShippingDeliveredAt  time.Time
+	ShippingCancelledAt  time.Time
+}
+
+func CalcShipnowTimeBaseOnState(ffm *shipnow.ShipnowFulfillment, state shipnowtypes.State, t time.Time) (res ShipnowTimestamp) {
+	switch state {
+	case shipnowtypes.StateCreated:
+		if ffm.ShippingCreatedAt == nil || ffm.ShippingCreatedAt.ToTime().IsZero() {
+			res.ShippingCreatedAt = t
+		}
+	case shipnowtypes.StatePicking:
+		if ffm.ShippingPickingAt == nil || ffm.ShippingPickingAt.ToTime().IsZero() {
+			res.ShippingPickingAt = t
+		}
+	case shipnowtypes.StateDelivering:
+		if ffm.ShippingDeliveringAt == nil || ffm.ShippingDeliveringAt.ToTime().IsZero() {
+			res.ShippingDeliveringAt = t
+		}
+	case shipnowtypes.StateDelivered:
+		if ffm.ShippingDeliveredAt == nil || ffm.ShippingDeliveredAt.ToTime().IsZero() {
+			res.ShippingDeliveredAt = t
+		}
+	case shipnowtypes.StateCancelled:
+		if ffm.ShippingCancelledAt == nil || ffm.ShippingCancelledAt.ToTime().IsZero() {
+			res.ShippingCancelledAt = t
+		}
+	default:
+	}
+	return
 }

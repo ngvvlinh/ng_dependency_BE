@@ -33,6 +33,8 @@ message ItemLine {
    optional bool is_outside = 5 [(gogoproto.nullable)=false];
 
    optional ProductInfo product_info = 6 [(gogoproto.nullable)=false];
+
+   optional int32 total_price = 7 [(gogoproto.nullable) = false];
 }
 
 message ProductInfo {
@@ -41,6 +43,8 @@ message ProductInfo {
    optional string image_url = 2 [(gogoproto.nullable)=false];
 
    repeated catalog.v1.types.Attribute attributes = 3;
+
+   optional int32 list_price = 4 [(gogoproto.nullable) = false];
 }
 
 message Address {

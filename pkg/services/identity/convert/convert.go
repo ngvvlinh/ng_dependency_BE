@@ -4,6 +4,7 @@ import (
 	etoptypes "etop.vn/api/main/etop"
 	"etop.vn/api/main/identity"
 	"etop.vn/backend/pkg/etop/model"
+	identitymodel "etop.vn/backend/pkg/services/identity/model"
 )
 
 func ShopToModel(in *identity.Shop) (out *model.Shop) {
@@ -65,4 +66,17 @@ func Shop(in *model.Shop) (out *identity.Shop) {
 		DeletedAt:         in.DeletedAt,
 	}
 	return
+}
+
+func XAccountAhamove(in *identitymodel.ExternalAccountAhamove) *identity.ExternalAccountAhamove {
+	return &identity.ExternalAccountAhamove{
+		ID:                in.ID,
+		Phone:             in.Phone,
+		Name:              in.Name,
+		ExternalToken:     in.ExternalToken,
+		ExternalVerified:  in.ExternalVerified,
+		CreatedAt:         in.CreatedAt,
+		UpdatedAt:         in.UpdatedAt,
+		ExternalCreatedAt: in.ExternalCreatedAt,
+	}
 }

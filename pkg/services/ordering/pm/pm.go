@@ -12,10 +12,8 @@ type ProcessManager struct {
 
 func New(
 	orderAggr ordering.Aggregate,
-	shipnowAggr shipnow.Aggregate,
 ) *ProcessManager {
 	return &ProcessManager{
-		order:   orderAggr,
-		shipnow: shipnowAggr,
+		order: orderAggr,
 	}
 }

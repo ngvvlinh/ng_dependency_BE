@@ -27,3 +27,14 @@ type Shop struct {
 	UpdatedAt time.Time
 	DeletedAt time.Time
 }
+
+type ExternalAccountAhamove struct {
+	ID                int64
+	Phone             string
+	Name              string
+	ExternalToken     string
+	ExternalVerified  bool
+	CreatedAt         time.Time
+	UpdatedAt         time.Time
+	ExternalCreatedAt time.Time
+}

@@ -11,6 +11,7 @@ import (
 	servicelocation "etop.vn/backend/pkg/services/location"
 	txmodel "etop.vn/backend/pkg/services/moneytx/model"
 	txmodely "etop.vn/backend/pkg/services/moneytx/modely"
+	orderconvert "etop.vn/backend/pkg/services/ordering/convert"
 	ordermodel "etop.vn/backend/pkg/services/ordering/model"
 	ordermodelx "etop.vn/backend/pkg/services/ordering/modelx"
 	shipmodel "etop.vn/backend/pkg/services/shipping/model"
@@ -40,7 +41,7 @@ func PbOrdersWithFulfillments(items []ordermodelx.OrderWithFulfillments, accType
 		shopsMap[shop.ID] = shop
 	}
 	for i, item := range items {
-		res[i] = PbOrder(item.Order, item.Fulfillments, accType)
+		res[i] = XPbOrder(item.Order, item.Fulfillments, accType)
 		res[i].ShopName = shopsMap[item.ShopID].GetShopName()
 	}
 	return res
@@ -64,6 +65,13 @@ var exportedOrder = cm.SortStrings([]string{
 })
 
 func PbOrder(m *ordermodel.Order, fulfillments []*shipmodel.Fulfillment, accType int) *Order {
+	ffms := make([]*ordermodelx.Fulfillment, len(fulfillments))
+	for i, ffm := range fulfillments {
+		ffms[i] = &ordermodelx.Fulfillment{
+			Shipment: ffm,
+		}
+	}
+
 	order := &Order{
 		ExportedFields: exportedOrder,
 
@@ -114,10 +122,76 @@ func PbOrder(m *ordermodel.Order, fulfillments []*shipmodel.Fulfillment, accType
 		ShippingNote:              m.ShippingNote,
 		ShopCod:                   int32(m.ShopCOD),
 		ReferenceUrl:              m.ReferenceURL,
-		Fulfillments:              PbFulfillments(fulfillments, accType),
+		Fulfillments:              XPbFulfillments(ffms, accType),
 		ShopShipping:              nil,
 		Shipping:                  nil,
 		GhnNoteCode:               m.GhnNoteCode,
+		Fulfill:                   orderconvert.Fulfill(m.Fulfill).String(),
+		FulfillIds:                m.FulfillIDs,
+	}
+	shipping := PbOrderShipping(m)
+	order.ShopShipping = shipping
+	order.Shipping = shipping
+	return order
+}
+
+func XPbOrder(m *ordermodel.Order, fulfillments []*ordermodelx.Fulfillment, accType int) *Order {
+	order := &Order{
+		ExportedFields: exportedOrder,
+
+		Id:                        m.ID,
+		ShopId:                    m.ShopID,
+		ShopName:                  "",
+		Code:                      m.Code,
+		EdCode:                    m.EdCode,
+		ExternalCode:              m.EdCode,
+		Source:                    pbsource.PbSource(m.OrderSourceType),
+		PartnerId:                 m.PartnerID,
+		ExternalId:                m.ExternalOrderID,
+		ExternalUrl:               m.ExternalURL,
+		SelfUrl:                   m.SelfURL(cm.MainSiteBaseURL(), accType),
+		PaymentMethod:             m.PaymentMethod,
+		Customer:                  PbOrderCustomer(m.Customer),
+		CustomerAddress:           PbOrderAddress(m.CustomerAddress),
+		BillingAddress:            PbOrderAddress(m.BillingAddress),
+		ShippingAddress:           PbOrderAddress(m.ShippingAddress),
+		CreatedAt:                 pbcm.PbTime(m.CreatedAt),
+		ProcessedAt:               pbcm.PbTime(m.ProcessedAt),
+		UpdatedAt:                 pbcm.PbTime(m.UpdatedAt),
+		ClosedAt:                  pbcm.PbTime(m.ClosedAt),
+		ConfirmedAt:               pbcm.PbTime(m.ConfirmedAt),
+		CancelledAt:               pbcm.PbTime(m.CancelledAt),
+		CancelReason:              m.CancelReason,
+		ShConfirm:                 pbs3.Pb(m.ShopConfirm),
+		Confirm:                   pbs3.Pb(m.ConfirmStatus),
+		ConfirmStatus:             pbs3.Pb(m.ConfirmStatus),
+		Status:                    pbs5.Pb(m.Status),
+		FulfillmentStatus:         pbs5.Pb(m.FulfillmentShippingStatus),
+		FulfillmentShippingStatus: pbs5.Pb(m.FulfillmentShippingStatus),
+		CustomerPaymentStatus:     pbs3.Pb(m.CustomerPaymentStatus),
+		EtopPaymentStatus:         pbs4.Pb(m.EtopPaymentStatus),
+		Lines:                     PbOrderLines(m.Lines),
+		Discounts:                 PbDiscounts(m.Discounts),
+		TotalItems:                int32(m.TotalItems),
+		BasketValue:               int32(m.BasketValue),
+		TotalWeight:               int32(m.TotalWeight),
+		OrderDiscount:             int32(m.OrderDiscount),
+		TotalDiscount:             int32(m.TotalDiscount),
+		TotalAmount:               int32(m.TotalAmount),
+		OrderNote:                 m.OrderNote,
+		ShippingFee:               int32(m.ShopShippingFee),
+		TotalFee:                  int32(m.GetTotalFee()),
+		FeeLines:                  PbOrderFeeLines(m.FeeLines),
+		ShopShippingFee:           int32(m.ShopShippingFee),
+		ShippingNote:              m.ShippingNote,
+		ShopCod:                   int32(m.ShopCOD),
+		ReferenceUrl:              m.ReferenceURL,
+		Fulfillments:              XPbFulfillments(fulfillments, accType),
+		ShopShipping:              nil,
+		Shipping:                  nil,
+		GhnNoteCode:               m.GhnNoteCode,
+		Fulfill:                   orderconvert.Fulfill(m.Fulfill).String(),
+		FulfillIds:                m.FulfillIDs,
 	}
 	shipping := PbOrderShipping(m)
 	order.ShopShipping = shipping
@@ -210,7 +284,7 @@ func PbOrderAddress(m *ordermodel.OrderAddress) *OrderAddress {
 	if m == nil {
 		return nil
 	}
-	return &OrderAddress{
+	res := &OrderAddress{
 		ExportedFields: exportedOrderAddress,
 		FullName:       m.GetFullName(),
 		FirstName:      m.FirstName,
@@ -230,6 +304,14 @@ func PbOrderAddress(m *ordermodel.OrderAddress) *OrderAddress {
 		DistrictCode:   m.DistrictCode,
 		WardCode:       m.WardCode,
 	}
+
+	if m.Coordinates != nil {
+		res.Coordinates = &Coordinates{
+			Latitude:  m.Coordinates.Latitude,
+			Longitude: m.Coordinates.Longitude,
+		}
+	}
+	return res
 }
 
 func (m *OrderAddress) ToModel() (*ordermodel.OrderAddress, error) {
@@ -278,6 +360,12 @@ func (m *OrderAddress) ToModel() (*ordermodel.OrderAddress, error) {
 	if loc.Ward != nil {
 		res.Ward = loc.Ward.Name
 		res.WardCode = loc.Ward.Code
+	}
+	if m.Coordinates != nil {
+		res.Coordinates = &ordermodel.Coordinates{
+			Latitude:  m.Coordinates.Latitude,
+			Longitude: m.Coordinates.Longitude,
+		}
 	}
 	return res, nil
 }
@@ -602,6 +690,9 @@ var exportedFulfillment = cm.SortStrings([]string{
 })
 
 func PbFulfillment(m *shipmodel.Fulfillment, accType int, shop *model.Shop, order *ordermodel.Order) *Fulfillment {
+	if m == nil {
+		return nil
+	}
 	ff := &Fulfillment{
 		ExportedFields: exportedFulfillment,
 
@@ -681,6 +772,105 @@ func PbFulfillment(m *shipmodel.Fulfillment, accType int, shop *model.Shop, orde
 		ff.Order = PbOrder(order, nil, accType)
 	}
 	return ff
+}
+
+func XPbFulfillments(items []*ordermodelx.Fulfillment, accType int) []*XFulfillment {
+	if items == nil {
+		return nil
+	}
+	res := make([]*XFulfillment, len(items))
+	for i, item := range items {
+		res[i] = XPbFulfillment(item, accType, nil, nil)
+	}
+	return res
+}
+
+func XPbFulfillment(m *ordermodelx.Fulfillment, accType int, shop *model.Shop, order *ordermodel.Order) *XFulfillment {
+	res := &XFulfillment{}
+	shipment := PbFulfillment(m.Shipment, accType, shop, order)
+	if shipment != nil {
+		res = &XFulfillment{
+			Fulfill: &XFulfillment_Shipment{
+				Shipment: shipment,
+			},
+			Id:                                 shipment.Id,
+			OrderId:                            shipment.OrderId,
+			ShopId:                             shipment.ShopId,
+			PartnerId:                          shipment.PartnerId,
+			SelfUrl:                            shipment.SelfUrl,
+			Lines:                              shipment.Lines,
+			TotalItems:                         shipment.TotalItems,
+			TotalWeight:                        shipment.TotalWeight,
+			BasketValue:                        shipment.BasketValue,
+			TotalCodAmount:                     shipment.TotalCodAmount,
+			CodAmount:                          shipment.CodAmount,
+			TotalAmount:                        shipment.TotalAmount,
+			ChargeableWeight:                   shipment.ChargeableWeight,
+			CreatedAt:                          shipment.CreatedAt,
+			UpdatedAt:                          shipment.UpdatedAt,
+			ClosedAt:                           shipment.ClosedAt,
+			CancelledAt:                        shipment.CancelledAt,
+			CancelReason:                       shipment.CancelReason,
+			ShippingProvider:                   shipment.ShippingProvider,
+			Carrier:                            shipment.Carrier,
+			ShippingServiceName:                shipment.ShippingServiceName,
+			ShippingServiceFee:                 shipment.ShippingServiceFee,
+			ShippingServiceCode:                shipment.ShippingServiceCode,
+			ShippingCode:                       shipment.ShippingCode,
+			ShippingNote:                       shipment.ShippingNote,
+			TryOn:                              shipment.TryOn,
+			IncludeInsurance:                   shipment.IncludeInsurance,
+			ShConfirm:                          shipment.ShConfirm,
+			ShippingState:                      shipment.ShippingState,
+			Status:                             shipment.Status,
+			ShippingStatus:                     shipment.ShippingStatus,
+			EtopPaymentStatus:                  shipment.EtopPaymentStatus,
+			ShippingFeeCustomer:                shipment.ShippingFeeCustomer,
+			ShippingFeeShop:                    shipment.ShippingFeeShop,
+			XShippingFee:                       shipment.XShippingFee,
+			XShippingId:                        shipment.XShippingId,
+			XShippingCode:                      shipment.XShippingCode,
+			XShippingCreatedAt:                 shipment.XShippingCreatedAt,
+			XShippingUpdatedAt:                 shipment.XShippingUpdatedAt,
+			XShippingCancelledAt:               shipment.XShippingCancelledAt,
+			XShippingDeliveredAt:               shipment.XShippingDeliveredAt,
+			XShippingReturnedAt:                shipment.XShippingReturnedAt,
+			ExpectedDeliveryAt:                 shipment.ExpectedDeliveryAt,
+			ExpectedPickAt:                     shipment.ExpectedPickAt,
+			EstimatedDeliveryAt:                shipment.EstimatedDeliveryAt,
+			EstimatedPickupAt:                  shipment.EstimatedPickupAt,
+			CodEtopTransferedAt:                shipment.CodEtopTransferedAt,
+			ShippingFeeShopTransferedAt:        shipment.ShippingFeeShopTransferedAt,
+			XShippingState:                     shipment.XShippingState,
+			XShippingStatus:                    shipment.XShippingStatus,
+			XSyncStatus:                        shipment.XSyncStatus,
+			XSyncStates:                        shipment.XSyncStates,
+			AddressTo:                          shipment.AddressTo,
+			AddressFrom:                        shipment.AddressFrom,
+			PickupAddress:                      shipment.PickupAddress,
+			ReturnAddress:                      shipment.ReturnAddress,
+			ShippingAddress:                    shipment.ShippingAddress,
+			Shop:                               shipment.Shop,
+			Order:                              shipment.Order,
+			ProviderShippingFeeLines:           shipment.ProviderShippingFeeLines,
+			ShippingFeeShopLines:               shipment.ShippingFeeShopLines,
+			EtopDiscount:                       shipment.EtopDiscount,
+			MoneyTransactionShippingId:         shipment.MoneyTransactionShippingId,
+			MoneyTransactionShippingExternalId: shipment.MoneyTransactionShippingExternalId,
+			XShippingLogs:                      shipment.XShippingLogs,
+			XShippingNote:                      shipment.XShippingNote,
+			XShippingSubState:                  shipment.XShippingSubState,
+			Code:                               shipment.Code,
+			ActualCompensationAmount:           shipment.ActualCompensationAmount,
+		}
+	}
+	if m.Shipnow != nil {
+		res.Fulfill = &XFulfillment_Shipnow{
+			Shipnow: Convert_core_ShipnowFulfillment_To_api_ShipnowFulfillment(m.Shipnow),
+		}
+	}
+
+	return res
 }
 
 func PbAvailableShippingServices(items []*model.AvailableShippingService) []*ExternalShippingService {

@@ -36,6 +36,21 @@ func (c QueryBus) DispatchAll(ctx context.Context, msgs ...Query) error {
 	return nil
 }
 
+type CreateExternalAccountAhamoveCommand struct {
+	OwnerID int64
+	Phone   string
+	Name    string
+
+	Result *ExternalAccountAhamove `json:"-"`
+}
+
+type GetExternalAccountAhamoveByPhoneQuery struct {
+	Phone   string
+	OwnerID int64
+
+	Result *ExternalAccountAhamove `json:"-"`
+}
+
 type GetShopByIDQuery struct {
 	ID int64
 
@@ -44,10 +59,25 @@ type GetShopByIDQuery struct {
 
 // implement interfaces
 
-func (q *GetShopByIDQuery) query() {}
+func (q *CreateExternalAccountAhamoveCommand) command() {}
+func (q *GetExternalAccountAhamoveByPhoneQuery) query() {}
+func (q *GetShopByIDQuery) query()                      {}
 
 // implement conversion
 
+func (q *CreateExternalAccountAhamoveCommand) GetArgs() *CreateExternalAccountAhamoveArgs {
+	return &CreateExternalAccountAhamoveArgs{
+		OwnerID: q.OwnerID,
+		Phone:   q.Phone,
+		Name:    q.Name,
+	}
+}
+func (q *GetExternalAccountAhamoveByPhoneQuery) GetArgs() *GetExternalAccountAhamoveByPhoneArgs {
+	return &GetExternalAccountAhamoveByPhoneArgs{
+		Phone:   q.Phone,
+		OwnerID: q.OwnerID,
+	}
+}
 func (q *GetShopByIDQuery) GetArgs() *GetShopByIDQueryArgs {
 	return &GetShopByIDQueryArgs{
 		ID: q.ID,
@@ -55,6 +85,26 @@ func (q *GetShopByIDQuery) GetArgs() *GetShopByIDQueryArgs {
 }
 
 // implement dispatching
+
+type AggregateHandler struct {
+	inner Aggregate
+}
+
+func NewAggregateHandler(service Aggregate) AggregateHandler { return AggregateHandler{service} }
+
+func (h AggregateHandler) RegisterHandlers(b interface {
+	meta.Bus
+	AddHandler(handler interface{})
+}) CommandBus {
+	b.AddHandler(h.HandleCreateExternalAccountAhamove)
+	return CommandBus{b}
+}
+
+func (h AggregateHandler) HandleCreateExternalAccountAhamove(ctx context.Context, cmd *CreateExternalAccountAhamoveCommand) error {
+	result, err := h.inner.CreateExternalAccountAhamove(ctx, cmd.GetArgs())
+	cmd.Result = result
+	return err
+}
 
 type QueryServiceHandler struct {
 	inner QueryService
@@ -68,8 +118,15 @@ func (h QueryServiceHandler) RegisterHandlers(b interface {
 	meta.Bus
 	AddHandler(handler interface{})
 }) QueryBus {
+	b.AddHandler(h.HandleGetExternalAccountAhamoveByPhone)
 	b.AddHandler(h.HandleGetShopByID)
 	return QueryBus{b}
+}
+
+func (h QueryServiceHandler) HandleGetExternalAccountAhamoveByPhone(ctx context.Context, query *GetExternalAccountAhamoveByPhoneQuery) error {
+	result, err := h.inner.GetExternalAccountAhamoveByPhone(ctx, query.GetArgs())
+	query.Result = result
+	return err
 }
 
 func (h QueryServiceHandler) HandleGetShopByID(ctx context.Context, query *GetShopByIDQuery) error {

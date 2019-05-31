@@ -252,7 +252,7 @@ func updateOrCreateAddress(ctx context.Context, x Qx, address *model.Address, ac
 
 func SetDefaultAddressShop(ctx context.Context, cmd *model.SetDefaultAddressShopCommand) error {
 	if cmd.ShopID == 0 {
-		return cm.Error(cm.InvalidArgument, "Missing AccountID", nil)
+		return cm.Error(cm.InvalidArgument, "Missing Name", nil)
 	}
 	if cmd.Type == "" {
 		return cm.Error(cm.InvalidArgument, "Missing Address Type", nil)

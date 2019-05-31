@@ -3,8 +3,6 @@ package model_log
 import (
 	"encoding/json"
 	"time"
-
-	"etop.vn/backend/pkg/etop/model"
 )
 
 //go:generate $ETOPDIR/backend/scripts/derive.sh
@@ -13,7 +11,7 @@ var _ = sqlgenShippingProviderWebhook(&ShippingProviderWebhook{})
 
 type ShippingProviderWebhook struct {
 	ID                       int64
-	ShippingProvider         model.ShippingProvider
+	ShippingProvider         string
 	Data                     json.RawMessage
 	ShippingCode             string
 	ShippingState            string

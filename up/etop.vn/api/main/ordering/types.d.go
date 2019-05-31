@@ -4,7 +4,9 @@ package ordering
 
 import (
 	context "context"
+	time "time"
 
+	etopv1 "etop.vn/api/main/etop/v1"
 	orderingv1types "etop.vn/api/main/ordering/v1/types"
 	meta "etop.vn/api/meta"
 )
@@ -51,6 +53,25 @@ type ReserveOrdersForFfmCommand struct {
 	Result *ReserveOrdersForFfmResponse `json:"-"`
 }
 
+type UpdateOrderShippingStatusCommand struct {
+	ID                         int64
+	FulfillmentShippingStates  []string
+	FulfillmentShippingStatus  etopv1.Status5
+	FulfillmentPaymentStatuses []int
+	EtopPaymentStatus          etopv1.Status4
+	CODEtopPaidAt              time.Time
+
+	Result *UpdateOrderShippingStatusResponse `json:"-"`
+}
+
+type UpdateOrdersConfirmStatusCommand struct {
+	IDs           []int64
+	ShopConfirm   etopv1.Status3
+	ConfirmStatus etopv1.Status3
+
+	Result *UpdateOrdersConfirmStatusResponse `json:"-"`
+}
+
 type ValidateOrdersForShippingCommand struct {
 	OrderIDs []int64
 
@@ -74,6 +95,8 @@ type GetOrdersQuery struct {
 
 func (q *ReleaseOrdersForFfmCommand) command()       {}
 func (q *ReserveOrdersForFfmCommand) command()       {}
+func (q *UpdateOrderShippingStatusCommand) command() {}
+func (q *UpdateOrdersConfirmStatusCommand) command() {}
 func (q *ValidateOrdersForShippingCommand) command() {}
 func (q *GetOrderByIDQuery) query()                  {}
 func (q *GetOrdersQuery) query()                     {}
@@ -90,6 +113,23 @@ func (q *ReserveOrdersForFfmCommand) GetArgs() *ReserveOrdersForFfmArgs {
 		OrderIDs:   q.OrderIDs,
 		Fulfill:    q.Fulfill,
 		FulfillIDs: q.FulfillIDs,
+	}
+}
+func (q *UpdateOrderShippingStatusCommand) GetArgs() *UpdateOrderShippingStatusArgs {
+	return &UpdateOrderShippingStatusArgs{
+		ID:                         q.ID,
+		FulfillmentShippingStates:  q.FulfillmentShippingStates,
+		FulfillmentShippingStatus:  q.FulfillmentShippingStatus,
+		FulfillmentPaymentStatuses: q.FulfillmentPaymentStatuses,
+		EtopPaymentStatus:          q.EtopPaymentStatus,
+		CODEtopPaidAt:              q.CODEtopPaidAt,
+	}
+}
+func (q *UpdateOrdersConfirmStatusCommand) GetArgs() *UpdateOrdersConfirmStatusArgs {
+	return &UpdateOrdersConfirmStatusArgs{
+		IDs:           q.IDs,
+		ShopConfirm:   q.ShopConfirm,
+		ConfirmStatus: q.ConfirmStatus,
 	}
 }
 func (q *ValidateOrdersForShippingCommand) GetArgs() *ValidateOrdersForShippingArgs {
@@ -123,6 +163,8 @@ func (h AggregateHandler) RegisterHandlers(b interface {
 }) CommandBus {
 	b.AddHandler(h.HandleReleaseOrdersForFfm)
 	b.AddHandler(h.HandleReserveOrdersForFfm)
+	b.AddHandler(h.HandleUpdateOrderShippingStatus)
+	b.AddHandler(h.HandleUpdateOrdersConfirmStatus)
 	b.AddHandler(h.HandleValidateOrdersForShipping)
 	return CommandBus{b}
 }
@@ -135,6 +177,18 @@ func (h AggregateHandler) HandleReleaseOrdersForFfm(ctx context.Context, cmd *Re
 
 func (h AggregateHandler) HandleReserveOrdersForFfm(ctx context.Context, cmd *ReserveOrdersForFfmCommand) error {
 	result, err := h.inner.ReserveOrdersForFfm(ctx, cmd.GetArgs())
+	cmd.Result = result
+	return err
+}
+
+func (h AggregateHandler) HandleUpdateOrderShippingStatus(ctx context.Context, cmd *UpdateOrderShippingStatusCommand) error {
+	result, err := h.inner.UpdateOrderShippingStatus(ctx, cmd.GetArgs())
+	cmd.Result = result
+	return err
+}
+
+func (h AggregateHandler) HandleUpdateOrdersConfirmStatus(ctx context.Context, cmd *UpdateOrdersConfirmStatusCommand) error {
+	result, err := h.inner.UpdateOrdersConfirmStatus(ctx, cmd.GetArgs())
 	cmd.Result = result
 	return err
 }

@@ -6,8 +6,6 @@ import (
 	"etop.vn/api/main/shipnow"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/cmsql"
-	shipnowconvert "etop.vn/backend/pkg/services/shipnow/convert"
-	shipnowmodelx "etop.vn/backend/pkg/services/shipnow/modelx"
 	"etop.vn/backend/pkg/services/shipnow/sqlstore"
 )
 
@@ -29,10 +27,11 @@ func (a *QueryService) MessageBus() shipnow.QueryBus {
 }
 
 func (q *QueryService) GetShipnowFulfillment(ctx context.Context, query *shipnow.GetShipnowFulfillmentQueryArgs) (*shipnow.GetShipnowFulfillmentQueryResult, error) {
-	ffm, err := q.store(ctx).GetByID(shipnowmodelx.GetByIDArgs{
-		ID:     query.Id,
-		ShopID: query.ShopId,
-	})
+	s := q.store(ctx).ID(query.Id)
+	if query.ShopId != 0 {
+		s = s.ShopID(query.ShopId)
+	}
+	ffm, err := s.GetShipnow()
 	if err != nil {
 		return nil, err
 	}
@@ -42,14 +41,27 @@ func (q *QueryService) GetShipnowFulfillment(ctx context.Context, query *shipnow
 }
 
 func (q *QueryService) GetShipnowFulfillments(ctx context.Context, query *shipnow.GetShipnowFulfillmentsQueryArgs) (*shipnow.GetShipnowFulfillmentsQueryResult, error) {
-	args := &shipnowmodelx.GetShipnowFulfillmentsArgs{
-		ShopID: query.ShopId,
-	}
-	ffms, err := q.store(ctx).GetShipnowFulfillments(args)
+	s := q.store(ctx).ShopID(query.ShopId).Filters(nil)
+	ffms, err := s.ListShipnows(nil)
 	if err != nil {
 		return nil, err
 	}
+	// count, err := s.Count()
+	// if err != nil {
+	// 	return nil, err
+	// }
+
 	return &shipnow.GetShipnowFulfillmentsQueryResult{
-		ShipnowFulfillments: shipnowconvert.Shipnows(ffms),
+		ShipnowFulfillments: ffms,
+	}, nil
+}
+
+func (q *QueryService) GetShipnowFulfillmentByShippingCode(ctx context.Context, query *shipnow.GetShipnowFulfillmentByShippingCodeQueryArgs) (*shipnow.GetShipnowFulfillmentQueryResult, error) {
+	ffm, err := q.store(ctx).ShippingCode(query.ShippingCode).GetShipnow()
+	if err != nil {
+		return nil, err
+	}
+	return &shipnow.GetShipnowFulfillmentQueryResult{
+		ShipnowFulfillment: ffm,
 	}, nil
 }

@@ -48,7 +48,7 @@ type Device struct {
 	DeviceName        string
 	ExternalDeviceID  string
 	ExternalServiceID int
-	// AccountID: deprecated
+	// Name: deprecated
 	AccountID     int64
 	UserID        int64
 	CreatedAt     time.Time `sq:"create"`

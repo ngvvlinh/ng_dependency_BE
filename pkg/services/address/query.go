@@ -3,6 +3,8 @@ package address
 import (
 	"context"
 
+	"etop.vn/backend/pkg/common/bus"
+
 	"etop.vn/api/main/address"
 	"etop.vn/backend/pkg/common/cmsql"
 	"etop.vn/backend/pkg/services/address/sqlstore"
@@ -18,6 +20,11 @@ func NewQueryService(db cmsql.Database) *QueryService {
 	return &QueryService{
 		s: sqlstore.NewAddressStore(db),
 	}
+}
+
+func (q *QueryService) MessageBus() address.QueryBus {
+	b := bus.New()
+	return address.NewQueryServiceHandler(q).RegisterHandlers(b)
 }
 
 func (q *QueryService) GetAddressByID(ctx context.Context, query *address.GetAddressByIDQueryArgs) (*address.Address, error) {

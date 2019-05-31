@@ -28,3 +28,10 @@ type ValueInfo struct {
 	CodAmount        int32 `protobuf:"varint,2,opt,name=cod_amount,json=codAmount" json:"cod_amount"`
 	IncludeInsurance bool  `protobuf:"varint,3,opt,name=include_insurance,json=includeInsurance" json:"include_insurance"`
 }
+
+type FeeLine struct {
+	ShippingFeeType     FeeLineType `protobuf:"varint,1,opt,name=shipping_fee_type,json=shippingFeeType,enum=etop.vn.api.main.shipping.v1.feeline.FeeLineType" json:"shipping_fee_type"`
+	Cost                int32       `protobuf:"varint,2,opt,name=cost" json:"cost"`
+	ExternalServiceName string      `protobuf:"bytes,3,opt,name=external_service_name,json=externalServiceName" json:"external_service_name"`
+	ExternalServiceType string      `protobuf:"bytes,4,opt,name=external_service_type,json=externalServiceType" json:"external_service_type"`
+}

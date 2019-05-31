@@ -97,7 +97,7 @@ func TestGenerateWithValueToken(T *testing.T) {
 	}
 
 	if v["hello"] != "foo" {
-		T.Fatal("Token value was not set correctly")
+		T.Fatal("ApiKey value was not set correctly")
 	}
 }
 

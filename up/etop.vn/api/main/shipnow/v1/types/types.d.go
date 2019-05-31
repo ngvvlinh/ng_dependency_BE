@@ -4,7 +4,9 @@ package types
 
 import (
 	types "etop.vn/api/main/ordering/v1/types"
+	v1 "etop.vn/api/main/shipnow/carrier/v1"
 	types1 "etop.vn/api/main/shipping/v1/types"
+	v11 "etop.vn/api/meta/v1"
 )
 
 type DeliveryPoint struct {
@@ -15,4 +17,13 @@ type DeliveryPoint struct {
 	types1.WeightInfo `protobuf:"bytes,5,opt,name=weight_info,json=weightInfo,embedded=weight_info" json:"weight_info"`
 	types1.ValueInfo  `protobuf:"bytes,6,opt,name=value_info,json=valueInfo,embedded=value_info" json:"value_info"`
 	TryOn             types1.TryOnCode `protobuf:"varint,11,opt,name=try_on,json=tryOn,enum=etop.vn.api.main.shipping.v1.tryon.TryOnCode" json:"try_on"`
+}
+
+type ShipnowService struct {
+	Carrier            v1.Carrier     `protobuf:"varint,1,opt,name=carrier,enum=etop.vn.api.main.shipnow.carrier.v1.carrier.Carrier" json:"carrier"`
+	Name               string         `protobuf:"bytes,2,opt,name=name" json:"name"`
+	Code               string         `protobuf:"bytes,3,opt,name=code" json:"code"`
+	Fee                int32          `protobuf:"varint,4,opt,name=fee" json:"fee"`
+	ExpectedPickupAt   *v11.Timestamp `protobuf:"bytes,5,opt,name=expected_pickup_at,json=expectedPickupAt" json:"expected_pickup_at,omitempty"`
+	ExpectedDeliveryAt *v11.Timestamp `protobuf:"bytes,6,opt,name=expected_delivery_at,json=expectedDeliveryAt" json:"expected_delivery_at,omitempty"`
 }

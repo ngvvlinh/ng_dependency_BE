@@ -8,11 +8,21 @@ import (
 )
 
 type TryOn = shippingv1types.TryOnCode
+type FeeLineType = shippingv1types.FeeLineType
 
 const (
 	TryOnOpen = shippingv1types.TryOnCode_open
 	TryOnNone = shippingv1types.TryOnCode_none
 	TryOnTry  = shippingv1types.TryOnCode_try
+
+	FeeLineTypeOther         = shippingv1types.FeeLineType_other
+	FeeLineTypeMain          = shippingv1types.FeeLineType_main
+	FeeLineTypeReturn        = shippingv1types.FeeLineType_return
+	FeeLineTypeAdjustment    = shippingv1types.FeeLineType_adjustment
+	FeeLineTypeCods          = shippingv1types.FeeLineType_cods
+	FeeLineTypeInsurance     = shippingv1types.FeeLineType_insurance
+	FeeLineTypeAddressChange = shippingv1types.FeeLineType_address_change
+	FeeLineDiscount          = shippingv1types.FeeLineType_discount
 )
 
 func TryOnFromString(s string) (TryOn, error) {
@@ -21,6 +31,14 @@ func TryOnFromString(s string) (TryOn, error) {
 		return 0, errors.New("invalid tryon code")
 	}
 	return TryOn(t), nil
+}
+
+func FeelineTypeFromString(s string) FeeLineType {
+	f, ok := shippingv1types.FeeLineType_value[s]
+	if !ok {
+		f = 0
+	}
+	return FeeLineType(f)
 }
 
 type ShippingInfo struct {
@@ -42,3 +60,13 @@ type ShippingInfo struct {
 
 type WeightInfo = shippingv1types.WeightInfo
 type ValueInfo = shippingv1types.ValueInfo
+
+type FeeLine = shippingv1types.FeeLine
+
+func TotalFee(lines []*FeeLine) int {
+	res := 0
+	for _, line := range lines {
+		res += int(line.Cost)
+	}
+	return res
+}

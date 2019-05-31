@@ -26,7 +26,7 @@ func init() {
 
 type Client struct {
 	baseUrl string
-	token   string
+	apiKey  string
 	rclient *resty.Client
 }
 
@@ -35,9 +35,11 @@ const (
 	PathCreateOrder     = "/order/create"
 	PathGetOrder        = "/order/detail"
 	PathCancelOrder     = "/order/cancel"
+	PathRegisterAccount = "/partner/register_account"
+	PathGetAccount      = "/user/profile"
 )
 
-func New(env string, cfg AhamoveAccount) *Client {
+func New(cfg Config) *Client {
 	client := &http.Client{
 		Timeout: 30 * time.Second,
 		Transport: &http.Transport{
@@ -45,10 +47,10 @@ func New(env string, cfg AhamoveAccount) *Client {
 		},
 	}
 	c := &Client{
-		token:   cfg.Token,
+		apiKey:  cfg.ApiKey,
 		rclient: resty.NewWithClient(client).SetDebug(true),
 	}
-	switch env {
+	switch cfg.Env {
 	case "test":
 		c.baseUrl = "http://apistg.ahamove.com/v1/"
 	case "prod":
@@ -127,20 +129,12 @@ func (c *Client) TestCancelOrder() error {
 }
 
 func (c *Client) TestCreateOrder() error {
-	products := []Item{{
-		ID:    "123",
-		Num:   1,
-		Name:  "Test P1",
-		Price: 200000,
-	}}
-
 	req := &CreateOrderRequest{
 		OrderTime:      0,
 		DeliveryPoints: points,
 		ServiceID:      "SGN-BIKE",
 		Remarks:        "test order",
 		PaymentMethod:  "CASH",
-		Products:       products,
 	}
 	_, err := c.CreateOrder(context.Background(), req)
 	return err
@@ -156,24 +150,33 @@ func (c *Client) CalcShippingFee(ctx context.Context, req *CalcShippingFeeReques
 
 func (c *Client) CreateOrder(ctx context.Context, req *CreateOrderRequest) (*CreateOrderResponse, error) {
 	req.Path = ConvertDeliveryPointsRequestToString(req.DeliveryPoints)
-	req.Items = ConvertItemsToString(req.Products)
-	req.Token = c.token
 	var resp CreateOrderResponse
 	err := c.sendGetRequest(ctx, PathCreateOrder, req, &resp, "Không thể tạo đơn hàng")
 	return &resp, err
 }
 
 func (c *Client) GetOrder(ctx context.Context, req *GetOrderRequest) (*Order, error) {
-	req.Token = c.token
 	var resp Order
 	err := c.sendGetRequest(ctx, PathGetOrder, req, &resp, "Không thể lấy thông tin đơn hàng")
 	return &resp, err
 }
 
 func (c *Client) CancelOrder(ctx context.Context, req *CancelOrderRequest) error {
-	req.Token = c.token
-	err := c.sendGetRequest(ctx, PathCancelOrder, nil, nil, "Không thể hủy đơn hàng")
+	err := c.sendGetRequest(ctx, PathCancelOrder, req, nil, "Không thể hủy đơn hàng")
 	return err
+}
+
+func (c *Client) RegisterAccount(ctx context.Context, req *RegisterAccountRequest) (*RegisterAccountResponse, error) {
+	req.ApiKey = c.apiKey
+	var resp RegisterAccountResponse
+	err := c.sendGetRequest(ctx, PathRegisterAccount, req, &resp, "Không thể tạo tài khoản Ahamove")
+	return &resp, err
+}
+
+func (c *Client) GetAccount(ctx context.Context, req *GetAccountRequest) (*Account, error) {
+	var resp Account
+	err := c.sendGetRequest(ctx, PathGetAccount, req, &resp, "Không thể lấy thông tin tài khoản")
+	return &resp, err
 }
 
 func (c *Client) sendGetRequest(ctx context.Context, path string, req interface{}, resp interface{}, msg string) error {
@@ -188,18 +191,6 @@ func (c *Client) sendGetRequest(ctx context.Context, path string, req interface{
 	res, err := c.rclient.R().
 		SetQueryString(queryString.Encode()).
 		Get(buildUrl(c.baseUrl, path))
-	if err != nil {
-		return cm.Error(cm.ExternalServiceError, "Lỗi kết nối với ahamove", err)
-	}
-	err = handleResponse(res, resp, msg)
-	return err
-}
-
-func (c *Client) sendPostRequest(ctx context.Context, path string, req interface{}, resp interface{}, msg string) error {
-	res, err := c.rclient.R().
-		SetBody(req).
-		SetHeader("token", c.token).
-		Post(buildUrl(c.baseUrl, path))
 	if err != nil {
 		return cm.Error(cm.ExternalServiceError, "Lỗi kết nối với ahamove", err)
 	}

@@ -5,8 +5,8 @@ package types
 type Fulfill int32
 
 const (
-	Fulfill_none                Fulfill = 0
-	Fulfill_manual              Fulfill = 1
-	Fulfill_fulfillment         Fulfill = 10
-	Fulfill_shipnow_fulfillment Fulfill = 11
+	Fulfill_none     Fulfill = 0
+	Fulfill_manual   Fulfill = 1
+	Fulfill_shipment Fulfill = 10
+	Fulfill_shipnow  Fulfill = 11
 )

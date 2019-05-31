@@ -14,6 +14,8 @@ type Aggregate interface {
 	ValidateOrdersForShipping(ctx context.Context, args *ValidateOrdersForShippingArgs) (*ValidateOrdersForShippingResponse, error)
 	ReserveOrdersForFfm(ctx context.Context, args *ReserveOrdersForFfmArgs) (*ReserveOrdersForFfmResponse, error)
 	ReleaseOrdersForFfm(ctx context.Context, args *ReleaseOrdersForFfmArgs) (*ReleaseOrdersForFfmResponse, error)
+	UpdateOrderShippingStatus(ctx context.Context, args *UpdateOrderShippingStatusArgs) (*UpdateOrderShippingStatusResponse, error)
+	UpdateOrdersConfirmStatus(ctx context.Context, args *UpdateOrdersConfirmStatusArgs) (*UpdateOrdersConfirmStatusResponse, error)
 }
 
 type QueryService interface {
@@ -36,6 +38,10 @@ type OrdersResponse struct {
 
 type ValidateOrdersForShippingResponse struct {
 }
+
+type UpdateOrderShippingStatusResponse struct{}
+
+type UpdateOrdersConfirmStatusResponse struct{}
 
 type Order struct {
 	ID              int64
@@ -102,4 +108,19 @@ type ReleaseOrdersForFfmArgs struct {
 
 type ReleaseOrdersForFfmResponse struct {
 	Updated int
+}
+
+type UpdateOrderShippingStatusArgs struct {
+	ID                         int64
+	FulfillmentShippingStates  []string
+	FulfillmentShippingStatus  etoptypes.Status5
+	FulfillmentPaymentStatuses []int
+	EtopPaymentStatus          etoptypes.Status4
+	CODEtopPaidAt              time.Time
+}
+
+type UpdateOrdersConfirmStatusArgs struct {
+	IDs           []int64
+	ShopConfirm   etoptypes.Status3
+	ConfirmStatus etoptypes.Status3
 }

@@ -90,8 +90,10 @@ func NewShopClient(addr string, client *http.Client) Shop {
 func ConnectShopService(addr string, client *http.Client) error {
 	Client = NewShopClient(addr, client)
 	bus.AddHandler("client", func(ctx context.Context, q *VersionInfoEndpoint) error { panic("Unexpected") })
+	bus.AddHandler("client", func(ctx context.Context, q *CreateExternalAccountAhamoveEndpoint) error { panic("Unexpected") })
 	bus.AddHandler("client", func(ctx context.Context, q *DeleteShopEndpoint) error { panic("Unexpected") })
 	bus.AddHandler("client", func(ctx context.Context, q *GetBalanceShopEndpoint) error { panic("Unexpected") })
+	bus.AddHandler("client", func(ctx context.Context, q *GetExternalAccountAhamoveEndpoint) error { panic("Unexpected") })
 	bus.AddHandler("client", func(ctx context.Context, q *RegisterShopEndpoint) error { panic("Unexpected") })
 	bus.AddHandler("client", func(ctx context.Context, q *SetDefaultAddressEndpoint) error { panic("Unexpected") })
 	bus.AddHandler("client", func(ctx context.Context, q *UpdateShopEndpoint) error { panic("Unexpected") })
@@ -147,6 +149,7 @@ func ConnectShopService(addr string, client *http.Client) error {
 	bus.AddHandler("client", func(ctx context.Context, q *CreateShipnowFulfillmentEndpoint) error { panic("Unexpected") })
 	bus.AddHandler("client", func(ctx context.Context, q *GetShipnowFulfillmentEndpoint) error { panic("Unexpected") })
 	bus.AddHandler("client", func(ctx context.Context, q *GetShipnowFulfillmentsEndpoint) error { panic("Unexpected") })
+	bus.AddHandler("client", func(ctx context.Context, q *GetShipnowServicesEndpoint) error { panic("Unexpected") })
 	bus.AddHandler("client", func(ctx context.Context, q *UpdateShipnowFulfillmentEndpoint) error { panic("Unexpected") })
 	bus.AddHandler("client", func(ctx context.Context, q *GetFulfillmentHistoryEndpoint) error { panic("Unexpected") })
 	bus.AddHandler("client", func(ctx context.Context, q *GetMoneyTransactionEndpoint) error { panic("Unexpected") })
@@ -200,6 +203,20 @@ func (c *ShopClient) VersionInfo(ctx context.Context, in *cm.Empty) (*cm.Version
 	newNode.Error = err
 	return resp, err
 }
+func (c *ShopClient) CreateExternalAccountAhamove(ctx context.Context, in *cm.Empty) (*shop.ExternalAccountAhamove, error) {
+	resp, err := c._AccountService.CreateExternalAccountAhamove(ctx, in)
+
+	node, ok := ctx.(*bus.NodeContext)
+	if !ok {
+		return resp, err
+	}
+	newNode := node.WithMessage(map[string]interface{}{
+		"Request": in,
+		"Result":  resp,
+	})
+	newNode.Error = err
+	return resp, err
+}
 func (c *ShopClient) DeleteShop(ctx context.Context, in *cm.IDRequest) (*cm.Empty, error) {
 	resp, err := c._AccountService.DeleteShop(ctx, in)
 
@@ -216,6 +233,20 @@ func (c *ShopClient) DeleteShop(ctx context.Context, in *cm.IDRequest) (*cm.Empt
 }
 func (c *ShopClient) GetBalanceShop(ctx context.Context, in *cm.Empty) (*shop.GetBalanceShopResponse, error) {
 	resp, err := c._AccountService.GetBalanceShop(ctx, in)
+
+	node, ok := ctx.(*bus.NodeContext)
+	if !ok {
+		return resp, err
+	}
+	newNode := node.WithMessage(map[string]interface{}{
+		"Request": in,
+		"Result":  resp,
+	})
+	newNode.Error = err
+	return resp, err
+}
+func (c *ShopClient) GetExternalAccountAhamove(ctx context.Context, in *cm.Empty) (*shop.ExternalAccountAhamove, error) {
+	resp, err := c._AccountService.GetExternalAccountAhamove(ctx, in)
 
 	node, ok := ctx.(*bus.NodeContext)
 	if !ok {
@@ -998,6 +1029,20 @@ func (c *ShopClient) GetShipnowFulfillments(ctx context.Context, in *order.GetSh
 	newNode.Error = err
 	return resp, err
 }
+func (c *ShopClient) GetShipnowServices(ctx context.Context, in *order.GetShipnowServicesRequest) (*order.GetShipnowServicesResponse, error) {
+	resp, err := c._ShipnowService.GetShipnowServices(ctx, in)
+
+	node, ok := ctx.(*bus.NodeContext)
+	if !ok {
+		return resp, err
+	}
+	newNode := node.WithMessage(map[string]interface{}{
+		"Request": in,
+		"Result":  resp,
+	})
+	newNode.Error = err
+	return resp, err
+}
 func (c *ShopClient) UpdateShipnowFulfillment(ctx context.Context, in *order.UpdateShipnowFulfillmentRequest) (*order.ShipnowFulfillment, error) {
 	resp, err := c._ShipnowService.UpdateShipnowFulfillment(ctx, in)
 
@@ -1229,8 +1274,10 @@ type Muxer interface {
 
 func NewShopServer(mux Muxer, hooks *twirp.ServerHooks) {
 	bus.Expect(&VersionInfoEndpoint{})
+	bus.Expect(&CreateExternalAccountAhamoveEndpoint{})
 	bus.Expect(&DeleteShopEndpoint{})
 	bus.Expect(&GetBalanceShopEndpoint{})
+	bus.Expect(&GetExternalAccountAhamoveEndpoint{})
 	bus.Expect(&RegisterShopEndpoint{})
 	bus.Expect(&SetDefaultAddressEndpoint{})
 	bus.Expect(&UpdateShopEndpoint{})
@@ -1286,6 +1333,7 @@ func NewShopServer(mux Muxer, hooks *twirp.ServerHooks) {
 	bus.Expect(&CreateShipnowFulfillmentEndpoint{})
 	bus.Expect(&GetShipnowFulfillmentEndpoint{})
 	bus.Expect(&GetShipnowFulfillmentsEndpoint{})
+	bus.Expect(&GetShipnowServicesEndpoint{})
 	bus.Expect(&UpdateShipnowFulfillmentEndpoint{})
 	bus.Expect(&GetFulfillmentHistoryEndpoint{})
 	bus.Expect(&GetMoneyTransactionEndpoint{})
@@ -1372,6 +1420,50 @@ func (s MiscService) VersionInfo(ctx context.Context, req *cm.Empty) (resp *cm.V
 
 type AccountService struct{}
 
+type CreateExternalAccountAhamoveEndpoint struct {
+	*cm.Empty
+	Result  *shop.ExternalAccountAhamove
+	Context ShopClaim
+}
+
+func (s AccountService) CreateExternalAccountAhamove(ctx context.Context, req *cm.Empty) (resp *shop.ExternalAccountAhamove, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "shop.Account/CreateExternalAccountAhamove"
+	defer func() {
+		recovered := recover()
+		err = cmWrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
+	}()
+	defer cmWrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:     ctx,
+		RequireAuth: true,
+		RequireShop: true,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &CreateExternalAccountAhamoveEndpoint{Empty: req}
+	query.Context.Claim = session.Claim
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = bus.Dispatch(ctx, query)
+	resp = query.Result
+	if err == nil {
+		if resp == nil {
+			return nil, common.Error(common.Internal, "", nil).Log("nil response")
+		}
+		errs = cmWrapper.HasErrors(resp)
+	}
+	return resp, err
+}
+
 type DeleteShopEndpoint struct {
 	*cm.IDRequest
 	Result  *cm.Empty
@@ -1456,6 +1548,50 @@ func (s AccountService) GetBalanceShop(ctx context.Context, req *cm.Empty) (resp
 	if !session.IsOwner && permission.MaxRoleLevel(session.Roles) < 2 {
 		return nil, common.ErrPermissionDenied
 	}
+	ctx = bus.NewRootContext(ctx)
+	err = bus.Dispatch(ctx, query)
+	resp = query.Result
+	if err == nil {
+		if resp == nil {
+			return nil, common.Error(common.Internal, "", nil).Log("nil response")
+		}
+		errs = cmWrapper.HasErrors(resp)
+	}
+	return resp, err
+}
+
+type GetExternalAccountAhamoveEndpoint struct {
+	*cm.Empty
+	Result  *shop.ExternalAccountAhamove
+	Context ShopClaim
+}
+
+func (s AccountService) GetExternalAccountAhamove(ctx context.Context, req *cm.Empty) (resp *shop.ExternalAccountAhamove, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "shop.Account/GetExternalAccountAhamove"
+	defer func() {
+		recovered := recover()
+		err = cmWrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
+	}()
+	defer cmWrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:     ctx,
+		RequireAuth: true,
+		RequireShop: true,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &GetExternalAccountAhamoveEndpoint{Empty: req}
+	query.Context.Claim = session.Claim
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
 	err = bus.Dispatch(ctx, query)
 	resp = query.Result
@@ -4048,6 +4184,50 @@ func (s ShipnowService) GetShipnowFulfillments(ctx context.Context, req *order.G
 	}
 	session = sessionQuery.Result
 	query := &GetShipnowFulfillmentsEndpoint{GetShipnowFulfillmentsRequest: req}
+	query.Context.Claim = session.Claim
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = bus.Dispatch(ctx, query)
+	resp = query.Result
+	if err == nil {
+		if resp == nil {
+			return nil, common.Error(common.Internal, "", nil).Log("nil response")
+		}
+		errs = cmWrapper.HasErrors(resp)
+	}
+	return resp, err
+}
+
+type GetShipnowServicesEndpoint struct {
+	*order.GetShipnowServicesRequest
+	Result  *order.GetShipnowServicesResponse
+	Context ShopClaim
+}
+
+func (s ShipnowService) GetShipnowServices(ctx context.Context, req *order.GetShipnowServicesRequest) (resp *order.GetShipnowServicesResponse, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "shop.Shipnow/GetShipnowServices"
+	defer func() {
+		recovered := recover()
+		err = cmWrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
+	}()
+	defer cmWrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:     ctx,
+		RequireAuth: true,
+		RequireShop: true,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &GetShipnowServicesEndpoint{GetShipnowServicesRequest: req}
 	query.Context.Claim = session.Claim
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner

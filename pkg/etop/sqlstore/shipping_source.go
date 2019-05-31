@@ -124,7 +124,7 @@ func vtpostRequestInternalInfo(ctx context.Context, x Qx, cmd *model.VTPostReque
 	}
 	res := loginCmd.Result.Data
 	customerID := res.UserId
-	token := res.Token
+	token := res.ApiKey
 	// Try getting expiresAt from JWT first, then from response
 	expiresAt := cm.GetJWTExpires(token)
 	if expiresAt.IsZero() {

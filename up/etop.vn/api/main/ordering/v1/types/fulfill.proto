@@ -8,6 +8,6 @@ option (gogoproto.gogoproto_import)         = false;
 enum Fulfill {
     none = 0;
     manual = 1;
-    fulfillment = 10;
-    shipnow_fulfillment = 11;
+    shipment = 10;
+    shipnow = 11;
 }

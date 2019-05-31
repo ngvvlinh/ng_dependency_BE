@@ -61,7 +61,7 @@ func (wh *Webhook) Callback(c *httpx.Context) error {
 		data, _ := json.Marshal(orderData)
 		webhookData := &model_log.ShippingProviderWebhook{
 			ID:                       logID,
-			ShippingProvider:         model.TypeVTPost,
+			ShippingProvider:         model.TypeVTPost.ToString(),
 			Data:                     data,
 			ShippingCode:             orderData.OrderNumber,
 			ExternalShippingState:    orderData.StatusName,

@@ -122,3 +122,25 @@ func (a *Aggregate) ReleaseOrdersForFfm(ctx context.Context, args *ordering.Rele
 		Updated: len(orderIDs),
 	}, nil
 }
+
+func (a *Aggregate) UpdateOrderShippingStatus(ctx context.Context, args *ordering.UpdateOrderShippingStatusArgs) (*ordering.UpdateOrderShippingStatusResponse, error) {
+	update := sqlstore.UpdateOrderShippingStatusArgs{
+		ID:                         args.ID,
+		FulfillmentShippingStates:  args.FulfillmentShippingStates,
+		FulfillmentShippingStatus:  args.FulfillmentShippingStatus,
+		FulfillmentPaymentStatuses: args.FulfillmentPaymentStatuses,
+		EtopPaymentStatus:          args.EtopPaymentStatus,
+	}
+	err := a.store(ctx).UpdateOrderShippingStatus(update)
+	return &ordering.UpdateOrderShippingStatusResponse{}, err
+}
+
+func (a *Aggregate) UpdateOrdersConfirmStatus(ctx context.Context, args *ordering.UpdateOrdersConfirmStatusArgs) (*ordering.UpdateOrdersConfirmStatusResponse, error) {
+	update := sqlstore.UpdateOrdersConfirmStatusArgs{
+		IDs:           args.IDs,
+		ShopConfirm:   args.ShopConfirm,
+		ConfirmStatus: args.ConfirmStatus,
+	}
+	err := a.store(ctx).UpdateOrdersConfirmStatus(update)
+	return &ordering.UpdateOrdersConfirmStatusResponse{}, err
+}
