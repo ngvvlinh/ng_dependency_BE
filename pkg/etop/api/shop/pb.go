@@ -30,6 +30,7 @@ func PbEtopVariant(m *catalogmodel.VariantExtended) *pbshop.EtopVariant {
 		ImageUrls:   coalesceStrings(m.ImageURLs),
 		ListPrice:   int32(m.ListPrice),
 		CostPrice:   int32(m.CostPrice),
+		Attributes:  convertpb.PbAttributes(m.Attributes),
 	}
 	return res
 }

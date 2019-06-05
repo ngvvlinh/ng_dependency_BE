@@ -5044,6 +5044,12 @@
         "cost_price": {
           "type": "integer",
           "format": "int32"
+        },
+        "attributes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/shopAttribute"
+          }
         }
       }
     },
