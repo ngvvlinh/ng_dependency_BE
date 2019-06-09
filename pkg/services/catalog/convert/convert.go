@@ -107,6 +107,8 @@ func Variant(in *catalogmodel.Variant) (out *catalog.Variant) {
 		CostPrice:   in.CostPrice,
 		RetailPrice: 0,
 		Attributes:  Attributes(in.Attributes),
+		CreatedAt:   in.CreatedAt,
+		UpdatedAt:   in.UpdatedAt,
 	}
 	return out
 }
@@ -115,6 +117,68 @@ func Variants(ins []*catalogmodel.Variant) (outs []*catalog.Variant) {
 	outs = make([]*catalog.Variant, len(ins))
 	for i, in := range ins {
 		outs[i] = Variant(in)
+	}
+	return outs
+}
+
+func VariantWithProduct(in *catalogmodel.VariantExtended) (out *catalog.VariantWithProduct) {
+	if in == nil {
+		return nil
+	}
+	out = &catalog.VariantWithProduct{
+		Variant: Variant(in.Variant),
+		Product: Product(in.Product),
+	}
+	return out
+}
+
+func VariantsWithProduct(ins []*catalogmodel.VariantExtended) (outs []*catalog.VariantWithProduct) {
+	outs = make([]*catalog.VariantWithProduct, len(ins))
+	for i, in := range ins {
+		outs[i] = VariantWithProduct(in)
+	}
+	return outs
+}
+
+func ShopProduct(in *catalogmodel.ShopProduct) (out *catalog.ShopProduct) {
+	if in == nil {
+		return nil
+	}
+	out = &catalog.ShopProduct{
+		ShopID:    in.ShopID,
+		ProductID: in.ProductID,
+		Name:      in.Name,
+		DescriptionInfo: catalog.DescriptionInfo{
+			ShortDesc:   in.ShortDesc,
+			Description: in.Description,
+			DescHTML:    in.DescHTML,
+		},
+		ImageURLs:   in.ImageURLs,
+		Note:        in.Note,
+		Tags:        in.Tags,
+		RetailPrice: in.RetailPrice,
+		Status:      int32(in.Status),
+		CreatedAt:   in.CreatedAt,
+		UpdatedAt:   in.UpdatedAt,
+	}
+	return out
+}
+
+func ShopProductExtended(in *catalogmodel.ShopProductExtended) (out *catalog.ShopProductExtended) {
+	if in == nil {
+		return nil
+	}
+	out = &catalog.ShopProductExtended{
+		ShopProduct: ShopProduct(in.ShopProduct),
+		Product:     Product(in.Product),
+	}
+	return out
+}
+
+func ShopProductExtendeds(ins []*catalogmodel.ShopProductExtended) (outs []*catalog.ShopProductExtended) {
+	outs = make([]*catalog.ShopProductExtended, len(ins))
+	for i, in := range ins {
+		outs[i] = ShopProductExtended(in)
 	}
 	return outs
 }

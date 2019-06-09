@@ -60,7 +60,7 @@ type ShopProduct struct {
 
 	CreatedAt time.Time
 
-	DeletedAt time.Time
+	UpdatedAt time.Time
 }
 
 type Variant struct {
@@ -84,6 +84,10 @@ type Variant struct {
 	RetailPrice int
 
 	Attributes
+
+	CreatedAt time.Time
+
+	UpdatedAt time.Time
 }
 
 type ShopVariant struct {
@@ -98,6 +102,10 @@ type ShopVariant struct {
 	DescriptionInfo
 
 	Status int16
+
+	CreatedAt time.Time
+
+	UpdatedAt time.Time
 }
 
 type DescriptionInfo struct {

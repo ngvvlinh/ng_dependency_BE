@@ -351,6 +351,7 @@ func CreateVariant(ctx context.Context, cmd *catalogmodelx.CreateVariantCommand)
 			}
 
 			variant.ProductID = product.ID
+			variant.ProductSourceID = product.ProductSourceID
 			productID = product.ID
 			_, err2 := s.Table("variant").Insert(variant)
 			if _err := CheckErrorProductCode(err2); _err != nil {

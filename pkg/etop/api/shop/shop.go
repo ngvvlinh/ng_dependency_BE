@@ -34,9 +34,6 @@ func init() {
 	bus.AddHandler("api", GetCollection)
 	bus.AddHandler("api", GetCollections)
 	bus.AddHandler("api", GetCollectionsByIDs)
-	bus.AddHandler("api", GetVariant)
-	bus.AddHandler("api", GetVariants)
-	bus.AddHandler("api", GetVariantsByIDs)
 	bus.AddHandler("api", RemoveVariants)
 	bus.AddHandler("api", RemoveProductsCollection)
 	bus.AddHandler("api", UpdateCollection)
@@ -145,49 +142,6 @@ func GetCollections(ctx context.Context, q *wrapshop.GetCollectionsEndpoint) err
 	}
 	q.Result = &pbshop.CollectionsResponse{
 		Collections: pbshop.PbCollections(query.Result.Collections),
-	}
-	return nil
-}
-
-func GetVariant(ctx context.Context, q *wrapshop.GetVariantEndpoint) error {
-	query := &catalogmodelx.GetShopVariantQuery{
-		ShopID:    q.Context.Shop.ID,
-		VariantID: q.Id,
-	}
-	if err := bus.Dispatch(ctx, query); err != nil {
-		return err
-	}
-	q.Result = PbShopVariant(query.Result)
-	return nil
-}
-
-func GetVariantsByIDs(ctx context.Context, q *wrapshop.GetVariantsByIDsEndpoint) error {
-	query := &catalogmodelx.GetShopVariantsQuery{
-		ShopID:     q.Context.Shop.ID,
-		VariantIDs: q.Ids,
-	}
-	if err := bus.Dispatch(ctx, query); err != nil {
-		return err
-	}
-	q.Result = &pbshop.ShopVariantsResponse{
-		Variants: PbShopVariants(query.Result.Variants),
-	}
-	return nil
-}
-
-func GetVariants(ctx context.Context, q *wrapshop.GetVariantsEndpoint) error {
-	paging := q.Paging.CMPaging()
-	query := &catalogmodelx.GetShopVariantsQuery{
-		ShopID:  q.Context.Shop.ID,
-		Paging:  paging,
-		Filters: pbcm.ToFilters(q.Filters),
-	}
-	if err := bus.Dispatch(ctx, query); err != nil {
-		return err
-	}
-	q.Result = &pbshop.ShopVariantsResponse{
-		Paging:   pbcm.PbPageInfo(paging, query.Result.Total),
-		Variants: PbShopVariants(query.Result.Variants),
 	}
 	return nil
 }

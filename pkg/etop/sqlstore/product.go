@@ -9,7 +9,6 @@ import (
 
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
-	"etop.vn/backend/pkg/common/sq"
 	"etop.vn/backend/pkg/common/sq/core"
 	"etop.vn/backend/pkg/common/validate"
 	"etop.vn/backend/pkg/etop/model"
@@ -37,7 +36,6 @@ func init() {
 		UpdateShopVariantsStatus,
 		UpdateShopVariantsTags,
 
-		GetVariant,
 		GetVariantsExtended,
 		UpdateVariant,
 		UpdateProductImages,
@@ -50,9 +48,6 @@ func init() {
 		UpdateShopProductsStatus,
 		UpdateShopProductsTags,
 		GetAllShopVariants,
-
-		GetProducts,
-		GetVariants,
 	)
 }
 
@@ -76,7 +71,7 @@ func GetVariantByProductIDs(productIds []int64, filters []cm.Filter) ([]*catalog
 	return variants, nil
 }
 
-func GetProduct(ctx context.Context, query *catalogmodelx.GetProductQuery) error {
+func GetProduct(ctx context.Context, query *catalogmodelx.DeprecatedGetProductQuery) error {
 	if query.ProductID == 0 {
 		return cm.Error(cm.NotFound, "", nil)
 	}
@@ -103,7 +98,7 @@ func GetProduct(ctx context.Context, query *catalogmodelx.GetProductQuery) error
 	return nil
 }
 
-func GetProductsExtended(ctx context.Context, query *catalogmodelx.GetProductsExtendedQuery) error {
+func GetProductsExtended(ctx context.Context, query *catalogmodelx.DeprecatedGetProductsExtendedQuery) error {
 	s := x.Table("product").Where("p.deleted_at is NULL")
 	if query.ProductSourceType != "" {
 		s = s.Where("ps.type = ?", query.ProductSourceType)
@@ -177,25 +172,6 @@ func GetProductsExtended(ctx context.Context, query *catalogmodelx.GetProductsEx
 	return nil
 }
 
-func GetVariant(ctx context.Context, query *catalogmodelx.GetVariantQuery) error {
-	if query.VariantID == 0 {
-		return cm.Error(cm.NotFound, "", nil)
-	}
-
-	s := x.Table("variant")
-	v := new(catalogmodel.VariantExtended)
-	has, err := s.Where("v.id = ? AND v.deleted_at is NULL", query.VariantID).Get(v)
-	if err != nil {
-		return err
-	}
-	if !has {
-		return cm.Error(cm.NotFound, "", nil)
-	}
-
-	query.Result = v
-	return nil
-}
-
 func GetVariantsExtended(ctx context.Context, query *catalogmodelx.GetVariantsExtendedQuery) error {
 	if query.SkipPaging {
 		// IDs, Codes or EdCodes mut be provided
@@ -261,7 +237,7 @@ func UpdateProduct(ctx context.Context, cmd *catalogmodelx.UpdateProductCommand)
 		return err
 	}
 
-	query := &catalogmodelx.GetProductQuery{
+	query := &catalogmodelx.DeprecatedGetProductQuery{
 		ProductID: cmd.Product.ID,
 	}
 	if pErr := GetProduct(ctx, query); pErr != nil {
@@ -335,7 +311,7 @@ func UpdateProductImages(ctx context.Context, cmd *catalogmodelx.UpdateProductIm
 		return err
 	}
 
-	query := &catalogmodelx.GetProductQuery{
+	query := &catalogmodelx.DeprecatedGetProductQuery{
 		ProductID: cmd.ProductID,
 	}
 	if pErr := GetProduct(ctx, query); pErr != nil {
@@ -917,7 +893,7 @@ func AddShopProducts(ctx context.Context, cmd *catalogmodelx.AddShopProductsComm
 		return cm.Error(cm.InvalidArgument, "Missing ids", nil)
 	}
 
-	query := &catalogmodelx.GetProductsExtendedQuery{
+	query := &catalogmodelx.DeprecatedGetProductsExtendedQuery{
 		IDs: cmd.IDs,
 	}
 	query.Status = model.S3Positive.P()
@@ -1554,72 +1530,4 @@ func UpdateShopProductsTags(ctx context.Context, cmd *catalogmodelx.UpdateShopPr
 		return savedError
 	}
 	return cm.Error(cm.NotFound, "No product updated", nil)
-}
-
-func GetProducts(ctx context.Context, query *catalogmodelx.GetProductsQuery) error {
-	if query.ProductSourceID == 0 {
-		return cm.Error(cm.InvalidArgument, "Missing ProductSourceID", nil)
-	}
-
-	s := x.Table("product").
-		Where("product_source_id = ?", query.ProductSourceID)
-
-	count := 0
-	if query.EdCodes != nil {
-		s = s.In("ed_code", query.EdCodes)
-		count++
-	}
-	if query.NameNormUas != nil {
-		s = s.In("name_norm_ua", query.NameNormUas)
-		count++
-	}
-	if count == 0 {
-		return cm.Error(cm.InvalidArgument, "Missing required params", nil)
-	}
-
-	if !query.IncludeDeleted {
-		s = s.Where("deleted_at IS NULL")
-	}
-	if query.ExcludeEdCode {
-		s = s.Where("ed_code IS NULL")
-	}
-	return s.Find((*catalogmodel.Products)(&query.Result.Products))
-}
-
-func GetVariants(ctx context.Context, query *catalogmodelx.GetVariantsQuery) error {
-	if query.ProductSourceID == 0 {
-		return cm.Error(cm.InvalidArgument, "Missing ProductSourceID", nil)
-	}
-
-	s := x.Table("variant").
-		Where("product_source_id = ?", query.ProductSourceID)
-
-	if query.Inclusive {
-		if query.EdCodes == nil && query.AttrNorms == nil {
-			return cm.Error(cm.InvalidArgument, "Must provide both params when using with inclusive", nil)
-		}
-		s = s.Where(sq.Or{
-			sq.In("ed_code", query.EdCodes),
-			sq.Ins([]string{"product_id", "attr_norm_kv"}, query.AttrNorms...),
-		})
-
-	} else {
-		count := 0
-		if query.EdCodes != nil {
-			s = s.In("ed_code", query.EdCodes)
-			count++
-		}
-		if query.AttrNorms != nil {
-			s = s.In("attr_norm_kv", query.AttrNorms)
-			count++
-		}
-		if count == 0 {
-			return cm.Error(cm.InvalidArgument, "Missing required params", nil)
-		}
-	}
-
-	if !query.IncludeDeleted {
-		s = s.Where("deleted_at IS NULL")
-	}
-	return s.Find((*catalogmodel.Variants)(&query.Result.Variants))
 }

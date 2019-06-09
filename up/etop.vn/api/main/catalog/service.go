@@ -13,23 +13,38 @@ type Aggregate interface {
 }
 
 type QueryService interface {
-	GetProductByID(context.Context, *GetProductByIDQueryArgs) (*ProductWithVariants, error)
-	ListProducts(context.Context, *GetProductsQueryArgs) (*ProductsResonse, error)
-	ListProductsWithVariants(context.Context, *GetProductsQueryArgs) (*ProductsWithVariantsResponse, error)
+	GetProductByID(context.Context, *GetProductByIDQueryArgs) (*Product, error)
+	GetProductWithVariantsByID(context.Context, *GetProductByIDQueryArgs) (*ProductWithVariants, error)
+	ListProducts(context.Context, *ListProductsQueryArgs) (*ProductsResonse, error)
+	ListProductsByIDs(context.Context, *IDsArgs) (*ProductsResonse, error)
+	ListProductsWithVariants(context.Context, *ListProductsQueryArgs) (*ProductsWithVariantsResponse, error)
+	ListProductsWithVariantsByIDs(context.Context, *IDsArgs) (*ProductsResonse, error)
 
-	GetVariantByID(context.Context, *GetVariantByIDQueryArgs) (*VariantWithProduct, error)
-	ListVariants(context.Context, *GetVariantsQueryArgs) (*VariantsResponse, error)
-	ListVariantsWithProduct(context.Context, *GetVariantsQueryArgs) (*VariantsWithProductResponse, error)
+	GetVariantByID(context.Context, *GetVariantByIDQueryArgs) (*Variant, error)
+	GetVariantWithProductByID(context.Context, *GetVariantByIDQueryArgs) (*VariantWithProduct, error)
+	ListVariants(context.Context, *ListVariantsQueryArgs) (*VariantsResponse, error)
+	ListVariantsByIDs(context.Context, *IDsArgs) (*VariantsResponse, error)
+	ListVariantsWithProduct(context.Context, *ListVariantsQueryArgs) (*VariantsWithProductResponse, error)
+	ListVariantsWithProductByIDs(context.Context, *IDsArgs) (*VariantsWithProductResponse, error)
 
 	GetShopProductByID(context.Context, *GetShopProductByIDQueryArgs) (*ShopProductExtended, error)
-	ListShopProducts(context.Context, *GetShopProductsQueryArgs) (*ShopProductsResponse, error)
-	ListShopProductsWithVariants(context.Context, *GetShopProductsQueryArgs) (*ShopProductsWithVariantsResponse, error)
+	GetShopProductWithVariantsByID(context.Context, *GetShopProductByIDQueryArgs) (*ShopProductWithVariants, error)
+	ListShopProducts(context.Context, *ListShopProductsQueryArgs) (*ShopProductsResponse, error)
+	ListShopProductsByIDs(context.Context, *IDsArgs) (*ShopProductsResponse, error)
+	ListShopProductsWithVariants(context.Context, *ListShopProductsQueryArgs) (*ShopProductsWithVariantsResponse, error)
+	ListShopProductsWithVariantsByIDs(context.Context, *IDsArgs) (*ShopProductsWithVariantsResponse, error)
 
-	GetShopVariantByID(context.Context, *GetShopVariantsByIDQueryArgs) (*ShopVariantExtended, error)
-	ListShopVariants(context.Context, *GetShopVariantsQueryArgs) (*ShopVariantsResponse, error)
+	GetShopVariantByID(context.Context, *GetShopVariantByIDQueryArgs) (*ShopVariantExtended, error)
+	ListShopVariants(context.Context, *ListShopVariantsQueryArgs) (*ShopVariantsResponse, error)
+	ListShopVariantsByIDs(context.Context, *IDsArgs) (*ShopVariantsResponse, error)
 }
 
 //-- query --//
+
+type IDsArgs struct {
+	IDs    []int64
+	ShopID int64
+}
 
 type GetProductByIDQueryArgs struct {
 	ProductID int64
@@ -44,33 +59,37 @@ type GetShopProductByIDQueryArgs struct {
 	ShopID    int64
 }
 
-type GetShopVariantsByIDQueryArgs struct {
+type GetShopVariantByIDQueryArgs struct {
+	VariantID int64
+	ShopID    int64
 }
 
-type GetProductsQueryArgs struct {
-	IDs             []int64
+type ListProductsQueryArgs struct {
 	ProductSourceID int64
 
 	Paging  meta.Paging
 	Filters meta.Filters
 }
 
-type GetVariantsQueryArgs struct {
-	IDs             int64
+type ListVariantsQueryArgs struct {
 	ProductSourceID int64
 
 	Paging  meta.Paging
 	Filters meta.Filters
 }
 
-type GetShopProductsQueryArgs struct {
-	IDs    int64
+type ListShopProductsQueryArgs struct {
 	ShopID int64
+
+	Paging  meta.Paging
+	Filters meta.Filters
 }
 
-type GetShopVariantsQueryArgs struct {
-	IDs    int64
+type ListShopVariantsQueryArgs struct {
 	ShopID int64
+
+	Paging  meta.Paging
+	Filters meta.Filters
 }
 
 type ProductsResonse struct {
@@ -89,6 +108,7 @@ type ProductsWithVariantsResponse struct {
 
 type VariantsWithProductResponse struct {
 	Variants []*VariantWithProduct
+	Count    int32
 }
 
 type ShopProductsResponse struct {

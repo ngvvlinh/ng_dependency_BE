@@ -61,18 +61,6 @@ service CollectionService {
 }
 
 service ProductService {
-    rpc AddVariants(AddVariantsRequest) returns (AddVariantsResponse);
-    rpc GetVariant(cm.IDRequest) returns (ShopVariant);
-
-    // GetVariants
-    //
-    // Return list of variant.
-    //
-    // Filters: The same as supplier.GetVariants, plus
-    //   - Exactly: collection_id
-    //   - Numeric: retail_price
-    rpc GetVariants(GetVariantsRequest) returns (ShopVariantsResponse);
-    rpc GetVariantsByIDs(cm.IDsRequest) returns (ShopVariantsResponse);
     rpc RemoveVariants(RemoveVariantsRequest) returns (cm.RemovedResponse);
     rpc UpdateVariant (UpdateVariantRequest)  returns (ShopVariant);
     rpc UpdateVariants(UpdateVariantsRequest) returns (UpdateVariantsResponse);

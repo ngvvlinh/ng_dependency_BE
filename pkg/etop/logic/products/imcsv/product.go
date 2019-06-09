@@ -5,14 +5,18 @@ import (
 	"errors"
 	"fmt"
 
+	"etop.vn/api/main/catalog"
+	"etop.vn/api/meta"
 	pbshop "etop.vn/backend/pb/etop/shop"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/imcsv"
 	"etop.vn/backend/pkg/common/validate"
 	"etop.vn/backend/pkg/etop/model"
+	"etop.vn/backend/pkg/services/catalog/convert"
 	catalogmodel "etop.vn/backend/pkg/services/catalog/model"
 	catalogmodelx "etop.vn/backend/pkg/services/catalog/modelx"
+	catalogsqlstore "etop.vn/backend/pkg/services/catalog/sqlstore"
 	wrapshop "etop.vn/backend/wrapper/etop/shop"
 )
 
@@ -34,7 +38,7 @@ func loadAndCreateProducts(
 
 	var categories *Categories
 	var collections map[string]*catalogmodel.ShopCollection
-	var products map[string]*catalogmodel.Product
+	var products map[string]*catalog.Product
 	var variantByCode, variantByAttr map[string]*catalogmodel.Variant
 	chErr := make(chan error)
 	go func() {
@@ -224,7 +228,7 @@ func loadAndCreateProducts(
 		}
 
 		// Fake the product, so subsequent create variant requests reuse the created product
-		products[rowProduct.GetProductKey()] = &catalogmodel.Product{
+		products[rowProduct.GetProductKey()] = &catalog.Product{
 			ID: createVariantCmd.Result.Info.Id,
 		}
 
@@ -351,30 +355,30 @@ func loadCollections(ctx context.Context, shopID int64) (map[string]*catalogmode
 	return mapCollection, nil
 }
 
-func loadProducts(ctx context.Context, codeMode CodeMode, productSourceID int64, keys []string) (map[string]*catalogmodel.Product, error) {
-	query := &catalogmodelx.GetProductsQuery{
-		ProductSourceID: productSourceID,
-	}
+func loadProducts(ctx context.Context, codeMode CodeMode, productSourceID int64, keys []string) (map[string]*catalog.Product, error) {
+	s := productStore(ctx).ProductSourceID(productSourceID)
 	useCode := codeMode == CodeModeUseCode
 	if useCode {
-		query.EdCodes = keys
+		s = s.Codes(keys...)
 	} else {
 		// only query products with ed_code is null
-		query.ExcludeEdCode = true
-		query.NameNormUas = keys
+		s = s.Where(s.FtProduct.ByCode("").Nullable())
+		s = s.ByNameNormUas(keys...)
 	}
-	if err := bus.Dispatch(ctx, query); err != nil {
+	products, err := s.ListProductsDB(meta.Paging{})
+	if err != nil {
 		return nil, err
 	}
 
-	mapProducts := make(map[string]*catalogmodel.Product)
-	for _, p := range query.Result.Products {
+	mapProducts := make(map[string]*catalog.Product)
+	for _, p := range products {
+		product := convert.Product(p)
 		if useCode {
-			mapProducts[p.Code] = p
+			mapProducts[p.Code] = product
 		} else {
 			// Use p.NameNormUa here instead of p.NameNorm because NameNorm
 			// is sorted by Postgres while normalizing keeps the word order.
-			mapProducts[p.NameNormUa] = p
+			mapProducts[p.NameNormUa] = product
 		}
 	}
 	return mapProducts, nil
@@ -393,22 +397,23 @@ func loadVariants(
 	variantByAttr map[string]*catalogmodel.Variant,
 	_ error,
 ) {
-	query := &catalogmodelx.GetVariantsQuery{
-		ProductSourceID: productSourceID,
-		AttrNorms:       attrNorms,
+	s := variantStore(ctx).ProductSourceID(productSourceID)
+	args := catalogsqlstore.ListVariantsForImportArgs{
+		Codes:     codes,
+		AttrNorms: attrNorms,
 	}
 	useCode := codeMode == CodeModeUseCode
 	if useCode {
-		query.Inclusive = true
-		query.EdCodes = codes
+		args.Codes = codes
 	}
-	if err := bus.Dispatch(ctx, query); err != nil {
+	variants, err := s.ListVariantsDB(meta.Paging{})
+	if err != nil {
 		return nil, nil, err
 	}
 
 	variantByCode = make(map[string]*catalogmodel.Variant)
 	variantByAttr = make(map[string]*catalogmodel.Variant)
-	for _, v := range query.Result.Variants {
+	for _, v := range variants {
 		if useCode && v.Code != "" {
 			variantByCode[v.Code] = v
 		}

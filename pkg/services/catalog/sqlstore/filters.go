@@ -31,6 +31,10 @@ var (
 		"name":       "",
 	}
 
+	SortVariant = map[string]string{
+		"id": "",
+	}
+
 	FilterProductWhitelist = sqlstore.FilterWhitelist{
 		Arrays:   []string{},
 		Contains: []string{"name"},

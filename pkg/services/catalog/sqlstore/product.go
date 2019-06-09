@@ -69,6 +69,26 @@ func (s *ProductStore) Status(status etop.Status3) *ProductStore {
 	return s
 }
 
+func (s *ProductStore) ProductSourceID(id int64) *ProductStore {
+	s.preds = append(s.preds, s.FtProduct.ByProductSourceID(id))
+	return s
+}
+
+func (s *ProductStore) Code(code string) *ProductStore {
+	s.preds = append(s.preds, s.FtProduct.ByCode(code))
+	return s
+}
+
+func (s *ProductStore) Codes(codes ...string) *ProductStore {
+	s.preds = append(s.preds, sq.In("ed_code", codes))
+	return s
+}
+
+func (s *ProductStore) ByNameNormUas(names ...string) *ProductStore {
+	s.preds = append(s.preds, sq.In("name_norm_ua", names))
+	return s
+}
+
 func (s *ProductStore) IncludeDeleted() *ProductStore {
 	s.includeDeleted = true
 	return s

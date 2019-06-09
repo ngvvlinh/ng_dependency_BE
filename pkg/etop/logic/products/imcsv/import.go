@@ -13,6 +13,7 @@ import (
 
 	"github.com/360EntSecGroup-Skylar/excelize"
 
+	"etop.vn/api/meta"
 	pbcm "etop.vn/backend/pb/common"
 	pbshop "etop.vn/backend/pb/etop/shop"
 	cm "etop.vn/backend/pkg/common"
@@ -53,14 +54,15 @@ func HandleShopImportSampleProducts(c *httpx.Context) error {
 func handleShopImportSampleProducts(ctx context.Context, c *httpx.Context, shop *model.Shop, userID int64) (_resp *pbshop.ImportProductsResponse, _err error) {
 	if shop.ProductSourceID != 0 {
 		// check if shop already imports sample data
-		query := &catalogmodelx.GetProductsQuery{
-			ProductSourceID: shop.ProductSourceID,
-			EdCodes:         []string{"TEST-SP-01"},
-		}
-		if err := bus.Dispatch(ctx, query); err != nil {
+		s := productStore(ctx).
+			ProductSourceID(shop.ProductSourceID).
+			Code("TEST-SP-01")
+		products, err := s.ListProducts(meta.Paging{})
+		if err != nil {
 			return nil, cm.Error(cm.Internal, "Không thể tạo sản phẩm mẫu", err)
 		}
-		if len(query.Result.Products) != 0 {
+
+		if len(products) != 0 {
 			_resp = &pbshop.ImportProductsResponse{
 				ImportErrors: []*pbcm.Error{{Code: "ok", Msg: "Sản phẩm mẫu đã được import"}},
 			}

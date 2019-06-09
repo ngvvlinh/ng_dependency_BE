@@ -6,52 +6,14 @@ import (
 	catalogmodel "etop.vn/backend/pkg/services/catalog/model"
 )
 
-type GetProductQuery struct {
+type DeprecatedGetProductQuery struct {
 	ProductID int64
 	model.StatusQuery
 
 	Result *catalogmodel.ProductFtVariant
 }
 
-type GetVariantQuery struct {
-	VariantID int64
-	model.StatusQuery
-
-	Result *catalogmodel.VariantExtended
-}
-
-type GetProductsQuery struct {
-	ProductSourceID int64
-	IncludeDeleted  bool
-	ExcludeEdCode   bool
-
-	EdCodes []string
-
-	// must be normalized names
-	NameNormUas []string
-
-	Result struct {
-		Products []*catalogmodel.Product
-	}
-}
-
-type GetVariantsQuery struct {
-	ProductSourceID int64
-	IncludeDeleted  bool
-	Inclusive       bool // Include both ed_code and attr_norm_kv
-
-	EdCodes []string
-
-	// must be group of (product_id, attr_norm_kv)
-	// the default variant's attr_norm_kv is '_'
-	AttrNorms []interface{}
-
-	Result struct {
-		Variants []*catalogmodel.Variant
-	}
-}
-
-type GetProductsExtendedQuery struct {
+type DeprecatedGetProductsExtendedQuery struct {
 	Paging  *cm.Paging
 	Filters []cm.Filter
 	IDs     []int64

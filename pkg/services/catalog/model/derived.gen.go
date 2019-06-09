@@ -469,7 +469,7 @@ func sqlgenVariant(_ *Variant) bool { return true }
 type Variants []*Variant
 
 const __sqlVariant_Table = "variant"
-const __sqlVariant_ListCols = "\"id\",\"product_id\",\"ed_code\",\"short_desc\",\"description\",\"desc_html\",\"image_urls\",\"attributes\",\"cost_price\",\"list_price\",\"status\",\"created_at\",\"updated_at\",\"attr_norm_kv\""
+const __sqlVariant_ListCols = "\"id\",\"product_id\",\"product_source_id\",\"ed_code\",\"short_desc\",\"description\",\"desc_html\",\"image_urls\",\"attributes\",\"cost_price\",\"list_price\",\"status\",\"created_at\",\"updated_at\",\"attr_norm_kv\""
 const __sqlVariant_Insert = "INSERT INTO \"variant\" (" + __sqlVariant_ListCols + ") VALUES"
 const __sqlVariant_Select = "SELECT " + __sqlVariant_ListCols + " FROM \"variant\""
 const __sqlVariant_Select_history = "SELECT " + __sqlVariant_ListCols + " FROM history.\"variant\""
@@ -484,6 +484,7 @@ func (m *Variant) SQLArgs(opts core.Opts, create bool) []interface{} {
 	return []interface{}{
 		core.Int64(m.ID),
 		core.Int64(m.ProductID),
+		core.Int64(m.ProductSourceID),
 		core.String(m.Code),
 		core.String(m.ShortDesc),
 		core.String(m.Description),
@@ -503,6 +504,7 @@ func (m *Variant) SQLScanArgs(opts core.Opts) []interface{} {
 	return []interface{}{
 		(*core.Int64)(&m.ID),
 		(*core.Int64)(&m.ProductID),
+		(*core.Int64)(&m.ProductSourceID),
 		(*core.String)(&m.Code),
 		(*core.String)(&m.ShortDesc),
 		(*core.String)(&m.Description),
@@ -552,7 +554,7 @@ func (_ *Variants) SQLSelect(w SQLWriter) error {
 func (m *Variant) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlVariant_Insert)
 	w.WriteRawString(" (")
-	w.WriteMarkers(14)
+	w.WriteMarkers(15)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), true))
 	return nil
@@ -562,7 +564,7 @@ func (ms Variants) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlVariant_Insert)
 	w.WriteRawString(" (")
 	for i := 0; i < len(ms); i++ {
-		w.WriteMarkers(14)
+		w.WriteMarkers(15)
 		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
 		w.WriteRawString("),(")
 	}
@@ -592,6 +594,14 @@ func (m *Variant) SQLUpdate(w SQLWriter) error {
 		w.WriteMarker()
 		w.WriteByte(',')
 		w.WriteArg(m.ProductID)
+	}
+	if m.ProductSourceID != 0 {
+		flag = true
+		w.WriteName("product_source_id")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.ProductSourceID)
 	}
 	if m.Code != "" {
 		flag = true
@@ -699,7 +709,7 @@ func (m *Variant) SQLUpdate(w SQLWriter) error {
 func (m *Variant) SQLUpdateAll(w SQLWriter) error {
 	w.WriteQueryString(__sqlVariant_UpdateAll)
 	w.WriteRawString(" = (")
-	w.WriteMarkers(14)
+	w.WriteMarkers(15)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), false))
 	return nil
@@ -721,8 +731,11 @@ func (m VariantHistories) SQLSelect(w SQLWriter) error {
 	return nil
 }
 
-func (m VariantHistory) ID() core.Interface          { return core.Interface{m["id"]} }
-func (m VariantHistory) ProductID() core.Interface   { return core.Interface{m["product_id"]} }
+func (m VariantHistory) ID() core.Interface        { return core.Interface{m["id"]} }
+func (m VariantHistory) ProductID() core.Interface { return core.Interface{m["product_id"]} }
+func (m VariantHistory) ProductSourceID() core.Interface {
+	return core.Interface{m["product_source_id"]}
+}
 func (m VariantHistory) Code() core.Interface        { return core.Interface{m["ed_code"]} }
 func (m VariantHistory) ShortDesc() core.Interface   { return core.Interface{m["short_desc"]} }
 func (m VariantHistory) Description() core.Interface { return core.Interface{m["description"]} }
@@ -737,37 +750,38 @@ func (m VariantHistory) UpdatedAt() core.Interface   { return core.Interface{m["
 func (m VariantHistory) AttrNormKv() core.Interface  { return core.Interface{m["attr_norm_kv"]} }
 
 func (m *VariantHistory) SQLScan(opts core.Opts, row *sql.Row) error {
-	data := make([]interface{}, 14)
-	args := make([]interface{}, 14)
-	for i := 0; i < 14; i++ {
+	data := make([]interface{}, 15)
+	args := make([]interface{}, 15)
+	for i := 0; i < 15; i++ {
 		args[i] = &data[i]
 	}
 	if err := row.Scan(args...); err != nil {
 		return err
 	}
-	res := make(VariantHistory, 14)
+	res := make(VariantHistory, 15)
 	res["id"] = data[0]
 	res["product_id"] = data[1]
-	res["ed_code"] = data[2]
-	res["short_desc"] = data[3]
-	res["description"] = data[4]
-	res["desc_html"] = data[5]
-	res["image_urls"] = data[6]
-	res["attributes"] = data[7]
-	res["cost_price"] = data[8]
-	res["list_price"] = data[9]
-	res["status"] = data[10]
-	res["created_at"] = data[11]
-	res["updated_at"] = data[12]
-	res["attr_norm_kv"] = data[13]
+	res["product_source_id"] = data[2]
+	res["ed_code"] = data[3]
+	res["short_desc"] = data[4]
+	res["description"] = data[5]
+	res["desc_html"] = data[6]
+	res["image_urls"] = data[7]
+	res["attributes"] = data[8]
+	res["cost_price"] = data[9]
+	res["list_price"] = data[10]
+	res["status"] = data[11]
+	res["created_at"] = data[12]
+	res["updated_at"] = data[13]
+	res["attr_norm_kv"] = data[14]
 	*m = res
 	return nil
 }
 
 func (ms *VariantHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	data := make([]interface{}, 14)
-	args := make([]interface{}, 14)
-	for i := 0; i < 14; i++ {
+	data := make([]interface{}, 15)
+	args := make([]interface{}, 15)
+	for i := 0; i < 15; i++ {
 		args[i] = &data[i]
 	}
 	res := make(VariantHistories, 0, 128)
@@ -778,18 +792,19 @@ func (ms *VariantHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
 		m := make(VariantHistory)
 		m["id"] = data[0]
 		m["product_id"] = data[1]
-		m["ed_code"] = data[2]
-		m["short_desc"] = data[3]
-		m["description"] = data[4]
-		m["desc_html"] = data[5]
-		m["image_urls"] = data[6]
-		m["attributes"] = data[7]
-		m["cost_price"] = data[8]
-		m["list_price"] = data[9]
-		m["status"] = data[10]
-		m["created_at"] = data[11]
-		m["updated_at"] = data[12]
-		m["attr_norm_kv"] = data[13]
+		m["product_source_id"] = data[2]
+		m["ed_code"] = data[3]
+		m["short_desc"] = data[4]
+		m["description"] = data[5]
+		m["desc_html"] = data[6]
+		m["image_urls"] = data[7]
+		m["attributes"] = data[8]
+		m["cost_price"] = data[9]
+		m["list_price"] = data[10]
+		m["status"] = data[11]
+		m["created_at"] = data[12]
+		m["updated_at"] = data[13]
+		m["attr_norm_kv"] = data[14]
 		res = append(res, m)
 	}
 	if err := rows.Err(); err != nil {

@@ -341,6 +341,25 @@ func (ft VariantFilters) ByProductIDPtr(ProductID *int64) *sq.ColumnFilterPtr {
 	}
 }
 
+func (ft VariantFilters) ByProductSourceID(ProductSourceID int64) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "product_source_id",
+		Value:  ProductSourceID,
+		IsNil:  ProductSourceID == 0,
+	}
+}
+
+func (ft VariantFilters) ByProductSourceIDPtr(ProductSourceID *int64) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "product_source_id",
+		Value:  ProductSourceID,
+		IsNil:  ProductSourceID == nil,
+		IsZero: ProductSourceID != nil && (*ProductSourceID) == 0,
+	}
+}
+
 func (ft VariantFilters) ByCode(Code string) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,

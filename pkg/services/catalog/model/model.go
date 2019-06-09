@@ -69,11 +69,9 @@ type ProductFtVariant struct {
 var _ = sqlgenVariant(&Variant{})
 
 type Variant struct {
-	ID        int64
-	ProductID int64
-
-	// ProductSourceID int64
-	// ProductSourceCategoryID int64
+	ID              int64
+	ProductID       int64
+	ProductSourceID int64
 
 	Code        string `sq:"'ed_code'"`
 	ShortDesc   string
