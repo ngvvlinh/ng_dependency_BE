@@ -199,14 +199,14 @@ func TestGetEtopShippingServices(t *testing.T) {
 		{model.TypeGHTK, _hcm, _hn, _bavi, 100, []string{model.ShippingServiceNameFaster, model.ShippingServiceNameStandard}, []int{24000, 27500}},
 		{model.TypeGHTK, _hcm, _ag, _longxuyen, 200, []string{model.ShippingServiceNameStandard}, []int{26000}},
 		{model.TypeGHTK, _hcm, _dn, _camle, 400, []string{model.ShippingServiceNameFaster, model.ShippingServiceNameStandard}, []int{29000, 34000}},
-		{model.TypeGHTK, _hcm, _dn, _camle, 1400, []string{model.ShippingServiceNameStandard}, []int{38000}},
-		{model.TypeGHTK, _hcm, _hcm, _binhthanh, 3400, []string{model.ShippingServiceNameFaster}, []int{24500}},
+		{model.TypeGHTK, _hcm, _dn, _camle, 1400, []string{model.ShippingServiceNameStandard}, []int{39000}},
+		{model.TypeGHTK, _hcm, _hcm, _binhthanh, 3400, []string{model.ShippingServiceNameFaster}, []int{25000}},
 		{model.TypeGHTK, _dn, _hcm, _quan10, 700, nil, nil},
 		{model.TypeGHTK, _dn, _hn, _bavi, 1200, nil, nil},
 		{model.TypeGHTK, _ag, _dn, _longxuyen, 400, nil, nil},
 		{model.TypeGHTK, _ag, _hn, _bavi, 400, nil, nil},
-		{model.TypeGHTK, _hn, _dn, _camle, 3400, []string{model.ShippingServiceNameStandard}, []int{56000}},
-		{model.TypeGHTK, _hn, _ag, _longxuyen, 3400, []string{model.ShippingServiceNameStandard}, []int{56000}},
+		{model.TypeGHTK, _hn, _dn, _camle, 3400, []string{model.ShippingServiceNameStandard}, []int{59000}},
+		{model.TypeGHTK, _hn, _ag, _longxuyen, 3400, []string{model.ShippingServiceNameStandard}, []int{59000}},
 	} {
 		t.Run("GetEtopShippingServices", func(t *testing.T) {
 			eServices := GetEtopShippingServices(tt.carrier, tt.fromProvince, tt.toProvince, tt.toDistrict, tt.weight)
