@@ -20,10 +20,10 @@ const MinShopBalance = -200000
 
 type ProviderManager struct {
 	GHN, GHTK, VTPost ShippingProvider
-	location          location.Bus
+	location          location.QueryBus
 }
 
-func NewCtrl(locationBus location.Bus, ghnCarrier, ghtkCarrier, vtpostCarrier ShippingProvider) *ProviderManager {
+func NewCtrl(locationBus location.QueryBus, ghnCarrier, ghtkCarrier, vtpostCarrier ShippingProvider) *ProviderManager {
 	return &ProviderManager{
 		GHN:    ghnCarrier,
 		GHTK:   ghtkCarrier,

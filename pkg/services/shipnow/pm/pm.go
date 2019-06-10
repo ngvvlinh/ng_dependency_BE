@@ -23,7 +23,7 @@ type ProcessManager struct {
 	shipnowQuery shipnow.QueryBus
 
 	orderAggr    ordering.Aggregate
-	orderAggrBus ordering.AggregateBus
+	orderAggrBus ordering.CommandBus
 
 	identityQuery  identity.QueryService
 	addressQuery   address.QueryService
@@ -34,7 +34,7 @@ func New(
 	eventBus meta.EventBus,
 	shipnowBus shipnow.QueryBus,
 	orderAggr ordering.Aggregate,
-	orderAggrBus ordering.AggregateBus,
+	orderAggrBus ordering.CommandBus,
 	identityQuery identity.QueryService,
 	addressQuery address.QueryService,
 	carrierManager carrier.Manager,

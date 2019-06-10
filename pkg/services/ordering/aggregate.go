@@ -33,10 +33,9 @@ func (a *Aggregate) WithPM(pm *pm.ProcessManager) *Aggregate {
 	return a
 }
 
-func (a *Aggregate) MessageBus() ordering.AggregateBus {
+func (a *Aggregate) MessageBus() ordering.CommandBus {
 	b := bus.New()
-	ordering.NewAggregateHandler(a).RegisterHandlers(b)
-	return ordering.AggregateBus{b}
+	return ordering.NewAggregateHandler(a).RegisterHandlers(b)
 }
 
 func (a *Aggregate) GetOrderByID(ctx context.Context, args *ordering.GetOrderByIDArgs) (*ordering.Order, error) {

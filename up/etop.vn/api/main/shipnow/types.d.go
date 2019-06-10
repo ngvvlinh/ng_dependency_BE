@@ -8,8 +8,37 @@ import (
 
 	orderingv1types "etop.vn/api/main/ordering/v1/types"
 	shipnowv1 "etop.vn/api/main/shipnow/v1"
+	meta "etop.vn/api/meta"
 	metav1 "etop.vn/api/meta/v1"
 )
+
+type Command interface{ command() }
+type Query interface{ query() }
+type CommandBus struct{ bus meta.Bus }
+type QueryBus struct{ bus meta.Bus }
+
+func (c CommandBus) Dispatch(ctx context.Context, msg Command) error {
+	return c.bus.Dispatch(ctx, msg)
+}
+func (c QueryBus) Dispatch(ctx context.Context, msg Query) error {
+	return c.bus.Dispatch(ctx, msg)
+}
+func (c CommandBus) DispatchAll(ctx context.Context, msgs ...Command) error {
+	for _, msg := range msgs {
+		if err := c.bus.Dispatch(ctx, msg); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+func (c QueryBus) DispatchAll(ctx context.Context, msgs ...Query) error {
+	for _, msg := range msgs {
+		if err := c.bus.Dispatch(ctx, msg); err != nil {
+			return err
+		}
+	}
+	return nil
+}
 
 type CancelShipnowFulfillmentCommand struct {
 	Id           int64  `json:"id"`
@@ -66,6 +95,15 @@ type GetShipnowFulfillmentsQuery struct {
 	Result *shipnowv1.GetShipnowFulfillmentsQueryResult `json:"-"`
 }
 
+// implement interfaces
+
+func (q *CancelShipnowFulfillmentCommand) command()  {}
+func (q *ConfirmShipnowFulfillmentCommand) command() {}
+func (q *CreateShipnowFulfillmentCommand) command()  {}
+func (q *UpdateShipnowFulfillmentCommand) command()  {}
+func (q *GetShipnowFulfillmentQuery) query()         {}
+func (q *GetShipnowFulfillmentsQuery) query()        {}
+
 // implement conversion
 
 func (q *CancelShipnowFulfillmentCommand) GetArgs() *shipnowv1.CancelShipnowFulfillmentCommand {
@@ -96,12 +134,14 @@ type AggregateHandler struct {
 func NewAggregateHandler(service Aggregate) AggregateHandler { return AggregateHandler{service} }
 
 func (h AggregateHandler) RegisterHandlers(b interface {
+	meta.Bus
 	AddHandler(handler interface{})
-}) {
+}) CommandBus {
 	b.AddHandler(h.HandleCancelShipnowFulfillment)
 	b.AddHandler(h.HandleConfirmShipnowFulfillment)
 	b.AddHandler(h.HandleCreateShipnowFulfillment)
 	b.AddHandler(h.HandleUpdateShipnowFulfillment)
+	return CommandBus{b}
 }
 
 func (h AggregateHandler) HandleCancelShipnowFulfillment(ctx context.Context, cmd *CancelShipnowFulfillmentCommand) error {
@@ -137,10 +177,12 @@ func NewQueryServiceHandler(service QueryService) QueryServiceHandler {
 }
 
 func (h QueryServiceHandler) RegisterHandlers(b interface {
+	meta.Bus
 	AddHandler(handler interface{})
-}) {
+}) QueryBus {
 	b.AddHandler(h.HandleGetShipnowFulfillment)
 	b.AddHandler(h.HandleGetShipnowFulfillments)
+	return QueryBus{b}
 }
 
 func (h QueryServiceHandler) HandleGetShipnowFulfillment(ctx context.Context, query *GetShipnowFulfillmentQuery) error {

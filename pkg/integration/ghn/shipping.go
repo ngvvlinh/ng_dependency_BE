@@ -20,10 +20,10 @@ var _ shipping_provider.ShippingProvider = &Carrier{}
 
 type Carrier struct {
 	clients  map[ClientType]*ghnclient.Client
-	location location.Bus
+	location location.QueryBus
 }
 
-func New(cfg Config, location location.Bus) *Carrier {
+func New(cfg Config, location location.QueryBus) *Carrier {
 	clientDefault := ghnclient.New(cfg.Env, cfg.AccountDefault.AccountID, cfg.AccountDefault.Token)
 	clients := map[ClientType]*ghnclient.Client{
 		GHNCodeDefault: clientDefault,

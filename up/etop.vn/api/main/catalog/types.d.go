@@ -9,6 +9,34 @@ import (
 	meta "etop.vn/api/meta"
 )
 
+type Command interface{ command() }
+type Query interface{ query() }
+type CommandBus struct{ bus meta.Bus }
+type QueryBus struct{ bus meta.Bus }
+
+func (c CommandBus) Dispatch(ctx context.Context, msg Command) error {
+	return c.bus.Dispatch(ctx, msg)
+}
+func (c QueryBus) Dispatch(ctx context.Context, msg Query) error {
+	return c.bus.Dispatch(ctx, msg)
+}
+func (c CommandBus) DispatchAll(ctx context.Context, msgs ...Command) error {
+	for _, msg := range msgs {
+		if err := c.bus.Dispatch(ctx, msg); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+func (c QueryBus) DispatchAll(ctx context.Context, msgs ...Query) error {
+	for _, msg := range msgs {
+		if err := c.bus.Dispatch(ctx, msg); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 type UpdateProductCommand struct {
 	Result *Product `json:"-"`
 }
@@ -44,6 +72,13 @@ type GetShopVariantByIDQuery struct {
 	ShopID    int64
 
 	Result *ShopVariantExtended `json:"-"`
+}
+
+type GetShopVariantWithProductByIDQuery struct {
+	VariantID int64
+	ShopID    int64
+
+	Result *ShopVariantWithProduct `json:"-"`
 }
 
 type GetVariantByIDQuery struct {
@@ -133,6 +168,14 @@ type ListShopVariantsByIDsQuery struct {
 	Result *ShopVariantsResponse `json:"-"`
 }
 
+type ListShopVariantsWithProductByIDsQuery struct {
+	ShopID  int64
+	Paging  meta.Paging
+	Filters meta.Filters
+
+	Result *ShopVariantsWithProductResponse `json:"-"`
+}
+
 type ListVariantsQuery struct {
 	ProductSourceID int64
 	Paging          meta.Paging
@@ -163,6 +206,33 @@ type ListVariantsWithProductByIDsQuery struct {
 	Result *VariantsWithProductResponse `json:"-"`
 }
 
+// implement interfaces
+
+func (q *UpdateProductCommand) command()                 {}
+func (q *GetProductByIDQuery) query()                    {}
+func (q *GetProductWithVariantsByIDQuery) query()        {}
+func (q *GetShopProductByIDQuery) query()                {}
+func (q *GetShopProductWithVariantsByIDQuery) query()    {}
+func (q *GetShopVariantByIDQuery) query()                {}
+func (q *GetShopVariantWithProductByIDQuery) query()     {}
+func (q *GetVariantByIDQuery) query()                    {}
+func (q *GetVariantWithProductByIDQuery) query()         {}
+func (q *ListProductsQuery) query()                      {}
+func (q *ListProductsByIDsQuery) query()                 {}
+func (q *ListProductsWithVariantsQuery) query()          {}
+func (q *ListProductsWithVariantsByIDsQuery) query()     {}
+func (q *ListShopProductsQuery) query()                  {}
+func (q *ListShopProductsByIDsQuery) query()             {}
+func (q *ListShopProductsWithVariantsQuery) query()      {}
+func (q *ListShopProductsWithVariantsByIDsQuery) query() {}
+func (q *ListShopVariantsQuery) query()                  {}
+func (q *ListShopVariantsByIDsQuery) query()             {}
+func (q *ListShopVariantsWithProductByIDsQuery) query()  {}
+func (q *ListVariantsQuery) query()                      {}
+func (q *ListVariantsByIDsQuery) query()                 {}
+func (q *ListVariantsWithProductQuery) query()           {}
+func (q *ListVariantsWithProductByIDsQuery) query()      {}
+
 // implement conversion
 
 func (q *UpdateProductCommand) GetArgs() *UpdateProductArgs {
@@ -181,6 +251,9 @@ func (q *GetShopProductWithVariantsByIDQuery) GetArgs() *GetShopProductByIDQuery
 	return (*GetShopProductByIDQueryArgs)(unsafe.Pointer(q))
 }
 func (q *GetShopVariantByIDQuery) GetArgs() *GetShopVariantByIDQueryArgs {
+	return (*GetShopVariantByIDQueryArgs)(unsafe.Pointer(q))
+}
+func (q *GetShopVariantWithProductByIDQuery) GetArgs() *GetShopVariantByIDQueryArgs {
 	return (*GetShopVariantByIDQueryArgs)(unsafe.Pointer(q))
 }
 func (q *GetVariantByIDQuery) GetArgs() *GetVariantByIDQueryArgs {
@@ -211,6 +284,9 @@ func (q *ListShopVariantsQuery) GetArgs() *ListShopVariantsQueryArgs {
 	return (*ListShopVariantsQueryArgs)(unsafe.Pointer(q))
 }
 func (q *ListShopVariantsByIDsQuery) GetArgs() *IDsArgs { return (*IDsArgs)(unsafe.Pointer(q)) }
+func (q *ListShopVariantsWithProductByIDsQuery) GetArgs() *ListShopVariantsQueryArgs {
+	return (*ListShopVariantsQueryArgs)(unsafe.Pointer(q))
+}
 func (q *ListVariantsQuery) GetArgs() *ListVariantsQueryArgs {
 	return (*ListVariantsQueryArgs)(unsafe.Pointer(q))
 }
@@ -229,9 +305,11 @@ type AggregateHandler struct {
 func NewAggregateHandler(service Aggregate) AggregateHandler { return AggregateHandler{service} }
 
 func (h AggregateHandler) RegisterHandlers(b interface {
+	meta.Bus
 	AddHandler(handler interface{})
-}) {
+}) CommandBus {
 	b.AddHandler(h.HandleUpdateProduct)
+	return CommandBus{b}
 }
 
 func (h AggregateHandler) HandleUpdateProduct(ctx context.Context, cmd *UpdateProductCommand) error {
@@ -249,13 +327,15 @@ func NewQueryServiceHandler(service QueryService) QueryServiceHandler {
 }
 
 func (h QueryServiceHandler) RegisterHandlers(b interface {
+	meta.Bus
 	AddHandler(handler interface{})
-}) {
+}) QueryBus {
 	b.AddHandler(h.HandleGetProductByID)
 	b.AddHandler(h.HandleGetProductWithVariantsByID)
 	b.AddHandler(h.HandleGetShopProductByID)
 	b.AddHandler(h.HandleGetShopProductWithVariantsByID)
 	b.AddHandler(h.HandleGetShopVariantByID)
+	b.AddHandler(h.HandleGetShopVariantWithProductByID)
 	b.AddHandler(h.HandleGetVariantByID)
 	b.AddHandler(h.HandleGetVariantWithProductByID)
 	b.AddHandler(h.HandleListProducts)
@@ -268,10 +348,12 @@ func (h QueryServiceHandler) RegisterHandlers(b interface {
 	b.AddHandler(h.HandleListShopProductsWithVariantsByIDs)
 	b.AddHandler(h.HandleListShopVariants)
 	b.AddHandler(h.HandleListShopVariantsByIDs)
+	b.AddHandler(h.HandleListShopVariantsWithProductByIDs)
 	b.AddHandler(h.HandleListVariants)
 	b.AddHandler(h.HandleListVariantsByIDs)
 	b.AddHandler(h.HandleListVariantsWithProduct)
 	b.AddHandler(h.HandleListVariantsWithProductByIDs)
+	return QueryBus{b}
 }
 
 func (h QueryServiceHandler) HandleGetProductByID(ctx context.Context, query *GetProductByIDQuery) error {
@@ -300,6 +382,12 @@ func (h QueryServiceHandler) HandleGetShopProductWithVariantsByID(ctx context.Co
 
 func (h QueryServiceHandler) HandleGetShopVariantByID(ctx context.Context, query *GetShopVariantByIDQuery) error {
 	result, err := h.inner.GetShopVariantByID(ctx, query.GetArgs())
+	query.Result = result
+	return err
+}
+
+func (h QueryServiceHandler) HandleGetShopVariantWithProductByID(ctx context.Context, query *GetShopVariantWithProductByIDQuery) error {
+	result, err := h.inner.GetShopVariantWithProductByID(ctx, query.GetArgs())
 	query.Result = result
 	return err
 }
@@ -372,6 +460,12 @@ func (h QueryServiceHandler) HandleListShopVariants(ctx context.Context, query *
 
 func (h QueryServiceHandler) HandleListShopVariantsByIDs(ctx context.Context, query *ListShopVariantsByIDsQuery) error {
 	result, err := h.inner.ListShopVariantsByIDs(ctx, query.GetArgs())
+	query.Result = result
+	return err
+}
+
+func (h QueryServiceHandler) HandleListShopVariantsWithProductByIDs(ctx context.Context, query *ListShopVariantsWithProductByIDsQuery) error {
+	result, err := h.inner.ListShopVariantsWithProductByIDs(ctx, query.GetArgs())
 	query.Result = result
 	return err
 }

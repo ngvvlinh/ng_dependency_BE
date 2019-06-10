@@ -16,7 +16,7 @@ func NewOrderFilters(prefix string) OrderFilters {
 }
 
 func (ft OrderFilters) Filter(pred string, args ...interface{}) sq.WriterTo {
-	return sq.Filter(ft.prefix, pred, args...)
+	return sq.Filter(&ft.prefix, pred, args...)
 }
 
 func (ft OrderFilters) Prefix() string {
@@ -923,7 +923,7 @@ func NewOrderLineFilters(prefix string) OrderLineFilters {
 }
 
 func (ft OrderLineFilters) Filter(pred string, args ...interface{}) sq.WriterTo {
-	return sq.Filter(ft.prefix, pred, args...)
+	return sq.Filter(&ft.prefix, pred, args...)
 }
 
 func (ft OrderLineFilters) Prefix() string {

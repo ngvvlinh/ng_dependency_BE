@@ -125,6 +125,7 @@ type HandlerDef struct {
 type MultiWriter struct {
 	*Writer
 	WriteArgs     bytes.Buffer
+	WriteIface    bytes.Buffer
 	WriteDispatch bytes.Buffer
 }
 
@@ -189,11 +190,14 @@ func main() {
 
 		w := NewWriter(pkg.Name, pkg.PkgPath)
 		ws := &MultiWriter{Writer: w}
+		writeCommonDeclaration(ws)
 		for _, item := range services {
 			debugf("processing service %v\n", item.Ident.Name)
 			processService(ws, item)
 		}
 
+		p(w, "\n// implement interfaces\n\n")
+		mustWrite(w, ws.WriteIface.Bytes())
 		p(w, "\n// implement conversion\n\n")
 		mustWrite(w, ws.WriteArgs.Bytes())
 		p(w, "\n// implement dispatching\n\n")
@@ -359,6 +363,41 @@ func checkPtrStruct(t types.Type) (*types.Struct, error) {
 	}
 }
 
+func writeCommonDeclaration(w *MultiWriter) {
+	w.Import("etop.vn/api/meta")
+
+	tmpl := `
+type Command interface { command() }
+type Query interface { query() }
+type CommandBus struct { bus meta.Bus }
+type QueryBus struct { bus meta.Bus }
+
+func (c CommandBus) Dispatch(ctx context.Context, msg Command) error {
+	return c.bus.Dispatch(ctx, msg)
+}
+func (c QueryBus) Dispatch(ctx context.Context, msg Query) error {
+	return c.bus.Dispatch(ctx, msg)
+}
+func (c CommandBus) DispatchAll(ctx context.Context, msgs ...Command) error {
+	for _, msg := range msgs {
+		if err := c.bus.Dispatch(ctx, msg); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+func (c QueryBus) DispatchAll(ctx context.Context, msgs ...Query) error {
+	for _, msg := range msgs {
+		if err := c.bus.Dispatch(ctx, msg); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+`
+	mustWrite(w, []byte(tmpl))
+}
+
 func generateQueries(w *MultiWriter, serviceName string, defs []HandlerDef) {
 	w.Import("context")
 	w.Import("unsafe")
@@ -373,14 +412,16 @@ type %v struct {
 func New%v(service %v) %v { return %v{service} } 
 
 func (h %v) RegisterHandlers(b interface{
+	meta.Bus
 	AddHandler(handler interface{})
-}) {
+}) QueryBus {
 `
 		w2 := &w.WriteDispatch
 		p(w2, tmpl, genHandlerName, serviceName, genHandlerName, serviceName, genHandlerName, genHandlerName, genHandlerName)
 		for _, item := range defs {
 			p(w2, "\tb.AddHandler(h.Handle%v)\n", item.Method.Name())
 		}
+		p(w2, "\treturn QueryBus{b}\n")
 		p(w2, "}\n")
 	}
 
@@ -401,6 +442,11 @@ func (h %v) RegisterHandlers(b interface{
 			w2 := &w.WriteArgs
 			p(w2, "func (q *%v) GetArgs() *%v { return (*%v)(unsafe.Pointer(q)) }\n",
 				genQueryName, genRequestName, genRequestName)
+		}
+		// implement Query
+		{
+			w2 := &w.WriteIface
+			p(w2, "func (q *%v) query() {}\n", genQueryName)
 		}
 		// implement Handle()
 		{
@@ -431,24 +477,26 @@ type %v struct {
 func New%v(service %v) %v { return %v{service} } 
 
 func (h %v) RegisterHandlers(b interface{
+	meta.Bus
 	AddHandler(handler interface{})
-}) {
+}) CommandBus {
 `
 		w2 := &w.WriteDispatch
 		p(w2, tmpl, genHandlerName, serviceName, genHandlerName, serviceName, genHandlerName, genHandlerName, genHandlerName)
 		for _, item := range defs {
 			p(w2, "\tb.AddHandler(h.Handle%v)\n", item.Method.Name())
 		}
+		p(w2, "\treturn CommandBus{b}")
 		p(w2, "}\n")
 	}
 
 	for _, item := range defs {
 		methodName := item.Method.Name()
-		genQueryName := item.Method.Name() + "Command"
+		genCommandName := item.Method.Name() + "Command"
 		genRequestName := renderNamed(w.Writer, item.RequestNamed)
 		genResponseName := renderNamed(w.Writer, item.ResponseNamed)
 
-		p(w, "type %v struct {\n", genQueryName)
+		p(w, "type %v struct {\n", genCommandName)
 		generateStruct(w.Writer, item.Request)
 		mustNoError("method %v:\n", item.Method)
 		p(w, "\nResult *%v `json:\"-\"`\n", genResponseName)
@@ -458,7 +506,12 @@ func (h %v) RegisterHandlers(b interface{
 		{
 			w2 := &w.WriteArgs
 			p(w2, "func (q *%v) GetArgs() *%v { return (*%v)(unsafe.Pointer(q)) }\n",
-				genQueryName, genRequestName, genRequestName)
+				genCommandName, genRequestName, genRequestName)
+		}
+		// implement Command
+		{
+			w2 := &w.WriteIface
+			p(w2, "func (q *%v) command() {}\n", genCommandName)
 		}
 		// implement Handle()
 		{
@@ -470,7 +523,7 @@ func (h %v) Handle%v(ctx context.Context, cmd *%v) error {
 }
 `
 			w2 := &w.WriteDispatch
-			p(w2, tmpl, genHandlerName, methodName, genQueryName, methodName)
+			p(w2, tmpl, genHandlerName, methodName, genCommandName, methodName)
 		}
 	}
 }

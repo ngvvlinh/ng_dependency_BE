@@ -4,16 +4,11 @@ import (
 	"context"
 	"time"
 
-	"etop.vn/api/meta"
-
 	etoptypes "etop.vn/api/main/etop"
 	"etop.vn/api/main/ordering/types"
 	ordertypes "etop.vn/api/main/ordering/types"
 	shippingtypes "etop.vn/api/main/shipping/types"
 )
-
-type AggregateBus struct{ meta.Bus }
-type QueryBus struct{ meta.Bus }
 
 type Aggregate interface {
 	GetOrderByID(ctx context.Context, args *GetOrderByIDArgs) (*Order, error)

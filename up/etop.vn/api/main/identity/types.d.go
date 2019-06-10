@@ -5,13 +5,47 @@ package identity
 import (
 	context "context"
 	unsafe "unsafe"
+
+	meta "etop.vn/api/meta"
 )
+
+type Command interface{ command() }
+type Query interface{ query() }
+type CommandBus struct{ bus meta.Bus }
+type QueryBus struct{ bus meta.Bus }
+
+func (c CommandBus) Dispatch(ctx context.Context, msg Command) error {
+	return c.bus.Dispatch(ctx, msg)
+}
+func (c QueryBus) Dispatch(ctx context.Context, msg Query) error {
+	return c.bus.Dispatch(ctx, msg)
+}
+func (c CommandBus) DispatchAll(ctx context.Context, msgs ...Command) error {
+	for _, msg := range msgs {
+		if err := c.bus.Dispatch(ctx, msg); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+func (c QueryBus) DispatchAll(ctx context.Context, msgs ...Query) error {
+	for _, msg := range msgs {
+		if err := c.bus.Dispatch(ctx, msg); err != nil {
+			return err
+		}
+	}
+	return nil
+}
 
 type GetShopByIDQuery struct {
 	ID int64
 
 	Result *GetShopByIDQueryResult `json:"-"`
 }
+
+// implement interfaces
+
+func (q *GetShopByIDQuery) query() {}
 
 // implement conversion
 
@@ -30,9 +64,11 @@ func NewQueryServiceHandler(service QueryService) QueryServiceHandler {
 }
 
 func (h QueryServiceHandler) RegisterHandlers(b interface {
+	meta.Bus
 	AddHandler(handler interface{})
-}) {
+}) QueryBus {
 	b.AddHandler(h.HandleGetShopByID)
+	return QueryBus{b}
 }
 
 func (h QueryServiceHandler) HandleGetShopByID(ctx context.Context, query *GetShopByIDQuery) error {

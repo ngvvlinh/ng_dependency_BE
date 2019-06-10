@@ -355,7 +355,7 @@ func PrepareOrderLine(
 	m *pborder.CreateOrderLine,
 	v *catalogmodel.VariantExtended, sp *catalogmodel.ShopVariantExtended,
 ) (*ordermodel.OrderLine, error) {
-	if int(m.RetailPrice) != sp.ShopVariant.RetailPrice {
+	if m.RetailPrice != sp.ShopVariant.RetailPrice {
 		return nil, cm.Error(cm.FailedPrecondition, cm.F(
 			`Có sự khác biệt về giá của sản phẩm "%v". Vui lòng kiểm tra lại. Giá đăng bán %v, giá đơn hàng %v`,
 			v.GetFullName(), sp.ShopVariant.RetailPrice, m.RetailPrice), nil)
@@ -401,7 +401,7 @@ func prepareOrderLine(m *pborder.CreateOrderLine, shopID int64, v *catalogmodel.
 		TotalLineAmount: 0, // will be filled later
 	}
 
-	originalPrice := int(m.RetailPrice)
+	originalPrice := m.RetailPrice
 	if v != nil && sp != nil {
 		line.VariantID = m.VariantId
 		line.ProductID = sp.Product.ID
@@ -428,7 +428,7 @@ func prepareOrderLine(m *pborder.CreateOrderLine, shopID int64, v *catalogmodel.
 			`Giá bán lẻ của sản phẩm "%v" không hợp lệ. Vui lòng kiểm tra lại.`,
 			m.ProductName), nil)
 	}
-	line.TotalDiscount = int(m.Quantity) * (originalPrice - int(m.PaymentPrice))
+	line.TotalDiscount = int(m.Quantity * (originalPrice - m.PaymentPrice))
 	line.TotalLineAmount = int(m.Quantity) * int(m.PaymentPrice)
 	return line, nil
 }

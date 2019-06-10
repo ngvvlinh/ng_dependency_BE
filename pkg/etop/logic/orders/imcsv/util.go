@@ -26,11 +26,11 @@ import (
 var ll = l.New()
 var idempgroup *idemp.RedisGroup
 var uploader *upload.Uploader
-var locationBus location.Bus
+var locationBus location.QueryBus
 
 const PrefixIdemp = "IdempImportOrder"
 
-func Init(_locationBus location.Bus, sd cmservice.Shutdowner, rd redis.Store, ul *upload.Uploader) {
+func Init(_locationBus location.QueryBus, sd cmservice.Shutdowner, rd redis.Store, ul *upload.Uploader) {
 	locationBus = _locationBus
 	idempgroup = idemp.NewRedisGroup(rd, PrefixIdemp, 5*60) // 5 minutes
 	sd.Register(idempgroup.Shutdown)

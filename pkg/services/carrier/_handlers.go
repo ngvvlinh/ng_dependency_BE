@@ -17,10 +17,10 @@ var _ carrier.Utilities = &Impl{}
 
 type Impl struct {
 	self     shipping.ProcessManagerBus
-	location location.Bus
+	location location.QueryBus
 }
 
-func New(locationBus location.Bus) *Impl {
+func New(locationBus location.QueryBus) *Impl {
 	im := &Impl{
 		location: locationBus,
 	}

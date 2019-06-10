@@ -16,7 +16,7 @@ func NewImportAttemptFilters(prefix string) ImportAttemptFilters {
 }
 
 func (ft ImportAttemptFilters) Filter(pred string, args ...interface{}) sq.WriterTo {
-	return sq.Filter(ft.prefix, pred, args...)
+	return sq.Filter(&ft.prefix, pred, args...)
 }
 
 func (ft ImportAttemptFilters) Prefix() string {
@@ -277,7 +277,7 @@ func NewExportAttemptFilters(prefix string) ExportAttemptFilters {
 }
 
 func (ft ExportAttemptFilters) Filter(pred string, args ...interface{}) sq.WriterTo {
-	return sq.Filter(ft.prefix, pred, args...)
+	return sq.Filter(&ft.prefix, pred, args...)
 }
 
 func (ft ExportAttemptFilters) Prefix() string {
@@ -633,7 +633,7 @@ func NewAccountFilters(prefix string) AccountFilters {
 }
 
 func (ft AccountFilters) Filter(pred string, args ...interface{}) sq.WriterTo {
-	return sq.Filter(ft.prefix, pred, args...)
+	return sq.Filter(&ft.prefix, pred, args...)
 }
 
 func (ft AccountFilters) Prefix() string {
@@ -761,7 +761,7 @@ func NewShopFilters(prefix string) ShopFilters {
 }
 
 func (ft ShopFilters) Filter(pred string, args ...interface{}) sq.WriterTo {
-	return sq.Filter(ft.prefix, pred, args...)
+	return sq.Filter(&ft.prefix, pred, args...)
 }
 
 func (ft ShopFilters) Prefix() string {
@@ -1193,7 +1193,7 @@ func NewShopDeleteFilters(prefix string) ShopDeleteFilters {
 }
 
 func (ft ShopDeleteFilters) Filter(pred string, args ...interface{}) sq.WriterTo {
-	return sq.Filter(ft.prefix, pred, args...)
+	return sq.Filter(&ft.prefix, pred, args...)
 }
 
 func (ft ShopDeleteFilters) Prefix() string {
@@ -1226,7 +1226,7 @@ func NewEtopCategoryFilters(prefix string) EtopCategoryFilters {
 }
 
 func (ft EtopCategoryFilters) Filter(pred string, args ...interface{}) sq.WriterTo {
-	return sq.Filter(ft.prefix, pred, args...)
+	return sq.Filter(&ft.prefix, pred, args...)
 }
 
 func (ft EtopCategoryFilters) Prefix() string {
@@ -1354,7 +1354,7 @@ func NewPartnerFilters(prefix string) PartnerFilters {
 }
 
 func (ft PartnerFilters) Filter(pred string, args ...interface{}) sq.WriterTo {
-	return sq.Filter(ft.prefix, pred, args...)
+	return sq.Filter(&ft.prefix, pred, args...)
 }
 
 func (ft PartnerFilters) Prefix() string {
@@ -1634,7 +1634,7 @@ func NewAccountAuthFilters(prefix string) AccountAuthFilters {
 }
 
 func (ft AccountAuthFilters) Filter(pred string, args ...interface{}) sq.WriterTo {
-	return sq.Filter(ft.prefix, pred, args...)
+	return sq.Filter(&ft.prefix, pred, args...)
 }
 
 func (ft AccountAuthFilters) Prefix() string {
@@ -1762,7 +1762,7 @@ func NewPartnerRelationFilters(prefix string) PartnerRelationFilters {
 }
 
 func (ft PartnerRelationFilters) Filter(pred string, args ...interface{}) sq.WriterTo {
-	return sq.Filter(ft.prefix, pred, args...)
+	return sq.Filter(&ft.prefix, pred, args...)
 }
 
 func (ft PartnerRelationFilters) Prefix() string {
@@ -1966,7 +1966,7 @@ func NewUserFilters(prefix string) UserFilters {
 }
 
 func (ft UserFilters) Filter(pred string, args ...interface{}) sq.WriterTo {
-	return sq.Filter(ft.prefix, pred, args...)
+	return sq.Filter(&ft.prefix, pred, args...)
 }
 
 func (ft UserFilters) Prefix() string {
@@ -2303,7 +2303,7 @@ func NewAccountUserFilters(prefix string) AccountUserFilters {
 }
 
 func (ft AccountUserFilters) Filter(pred string, args ...interface{}) sq.WriterTo {
-	return sq.Filter(ft.prefix, pred, args...)
+	return sq.Filter(&ft.prefix, pred, args...)
 }
 
 func (ft AccountUserFilters) Prefix() string {
@@ -2640,7 +2640,7 @@ func NewAccountUserDeleteFilters(prefix string) AccountUserDeleteFilters {
 }
 
 func (ft AccountUserDeleteFilters) Filter(pred string, args ...interface{}) sq.WriterTo {
-	return sq.Filter(ft.prefix, pred, args...)
+	return sq.Filter(&ft.prefix, pred, args...)
 }
 
 func (ft AccountUserDeleteFilters) Prefix() string {
@@ -2673,7 +2673,7 @@ func NewUserAuthFilters(prefix string) UserAuthFilters {
 }
 
 func (ft UserAuthFilters) Filter(pred string, args ...interface{}) sq.WriterTo {
-	return sq.Filter(ft.prefix, pred, args...)
+	return sq.Filter(&ft.prefix, pred, args...)
 }
 
 func (ft UserAuthFilters) Prefix() string {
@@ -2782,7 +2782,7 @@ func NewUserInternalFilters(prefix string) UserInternalFilters {
 }
 
 func (ft UserInternalFilters) Filter(pred string, args ...interface{}) sq.WriterTo {
-	return sq.Filter(ft.prefix, pred, args...)
+	return sq.Filter(&ft.prefix, pred, args...)
 }
 
 func (ft UserInternalFilters) Prefix() string {
@@ -2853,7 +2853,7 @@ func NewAddressFilters(prefix string) AddressFilters {
 }
 
 func (ft AddressFilters) Filter(pred string, args ...interface{}) sq.WriterTo {
-	return sq.Filter(ft.prefix, pred, args...)
+	return sq.Filter(&ft.prefix, pred, args...)
 }
 
 func (ft AddressFilters) Prefix() string {
@@ -3304,7 +3304,7 @@ func NewCodeFilters(prefix string) CodeFilters {
 }
 
 func (ft CodeFilters) Filter(pred string, args ...interface{}) sq.WriterTo {
-	return sq.Filter(ft.prefix, pred, args...)
+	return sq.Filter(&ft.prefix, pred, args...)
 }
 
 func (ft CodeFilters) Prefix() string {
@@ -3375,7 +3375,7 @@ func NewCreditFilters(prefix string) CreditFilters {
 }
 
 func (ft CreditFilters) Filter(pred string, args ...interface{}) sq.WriterTo {
-	return sq.Filter(ft.prefix, pred, args...)
+	return sq.Filter(&ft.prefix, pred, args...)
 }
 
 func (ft CreditFilters) Prefix() string {
@@ -3541,7 +3541,7 @@ func NewShippingSourceFilters(prefix string) ShippingSourceFilters {
 }
 
 func (ft ShippingSourceFilters) Filter(pred string, args ...interface{}) sq.WriterTo {
-	return sq.Filter(ft.prefix, pred, args...)
+	return sq.Filter(&ft.prefix, pred, args...)
 }
 
 func (ft ShippingSourceFilters) Prefix() string {
@@ -3669,7 +3669,7 @@ func NewShippingSourceInternalFilters(prefix string) ShippingSourceInternalFilte
 }
 
 func (ft ShippingSourceInternalFilters) Filter(pred string, args ...interface{}) sq.WriterTo {
-	return sq.Filter(ft.prefix, pred, args...)
+	return sq.Filter(&ft.prefix, pred, args...)
 }
 
 func (ft ShippingSourceInternalFilters) Prefix() string {
@@ -3797,7 +3797,7 @@ func NewWebhookFilters(prefix string) WebhookFilters {
 }
 
 func (ft WebhookFilters) Filter(pred string, args ...interface{}) sq.WriterTo {
-	return sq.Filter(ft.prefix, pred, args...)
+	return sq.Filter(&ft.prefix, pred, args...)
 }
 
 func (ft WebhookFilters) Prefix() string {
@@ -3944,7 +3944,7 @@ func NewCallbackFilters(prefix string) CallbackFilters {
 }
 
 func (ft CallbackFilters) Filter(pred string, args ...interface{}) sq.WriterTo {
-	return sq.Filter(ft.prefix, pred, args...)
+	return sq.Filter(&ft.prefix, pred, args...)
 }
 
 func (ft CallbackFilters) Prefix() string {

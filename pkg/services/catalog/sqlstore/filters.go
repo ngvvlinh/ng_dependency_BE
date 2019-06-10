@@ -35,6 +35,12 @@ var (
 		"id": "",
 	}
 
+	SortShopProduct = map[string]string{
+		"product_id": "sp.product_id",
+		"created_at": "sp.created_at",
+		"updated_at": "sp.updated_at",
+	}
+
 	FilterProductWhitelist = sqlstore.FilterWhitelist{
 		Arrays:   []string{},
 		Contains: []string{"name"},

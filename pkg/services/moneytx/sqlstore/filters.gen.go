@@ -17,7 +17,7 @@ func NewMoneyTransactionShippingExternalFilters(prefix string) MoneyTransactionS
 }
 
 func (ft MoneyTransactionShippingExternalFilters) Filter(pred string, args ...interface{}) sq.WriterTo {
-	return sq.Filter(ft.prefix, pred, args...)
+	return sq.Filter(&ft.prefix, pred, args...)
 }
 
 func (ft MoneyTransactionShippingExternalFilters) Prefix() string {
@@ -240,7 +240,7 @@ func NewMoneyTransactionShippingExternalLineFilters(prefix string) MoneyTransact
 }
 
 func (ft MoneyTransactionShippingExternalLineFilters) Filter(pred string, args ...interface{}) sq.WriterTo {
-	return sq.Filter(ft.prefix, pred, args...)
+	return sq.Filter(&ft.prefix, pred, args...)
 }
 
 func (ft MoneyTransactionShippingExternalLineFilters) Prefix() string {
@@ -520,7 +520,7 @@ func NewMoneyTransactionShippingFilters(prefix string) MoneyTransactionShippingF
 }
 
 func (ft MoneyTransactionShippingFilters) Filter(pred string, args ...interface{}) sq.WriterTo {
-	return sq.Filter(ft.prefix, pred, args...)
+	return sq.Filter(&ft.prefix, pred, args...)
 }
 
 func (ft MoneyTransactionShippingFilters) Prefix() string {
@@ -857,7 +857,7 @@ func NewMoneyTransactionShippingEtopFilters(prefix string) MoneyTransactionShipp
 }
 
 func (ft MoneyTransactionShippingEtopFilters) Filter(pred string, args ...interface{}) sq.WriterTo {
-	return sq.Filter(ft.prefix, pred, args...)
+	return sq.Filter(&ft.prefix, pred, args...)
 }
 
 func (ft MoneyTransactionShippingEtopFilters) Prefix() string {

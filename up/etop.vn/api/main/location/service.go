@@ -4,10 +4,7 @@ import (
 	"context"
 
 	locationv1 "etop.vn/api/main/location/v1"
-	"etop.vn/api/meta"
 )
-
-type Bus struct{ meta.Bus }
 
 type LocationQueryService interface {
 	GetAllLocations(ctx context.Context, args *GetAllLocationsQueryArgs) (*locationv1.GetAllLocationsQueryResult, error)

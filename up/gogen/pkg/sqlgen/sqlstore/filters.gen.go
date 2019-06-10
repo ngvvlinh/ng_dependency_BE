@@ -16,7 +16,7 @@ func NewUserFilters(prefix string) UserFilters {
 }
 
 func (ft UserFilters) Filter(pred string, args ...interface{}) sq.WriterTo {
-	return sq.Filter(ft.prefix, pred, args...)
+	return sq.Filter(&ft.prefix, pred, args...)
 }
 
 func (ft UserFilters) Prefix() string {
@@ -242,7 +242,7 @@ func NewUserSubsetFilters(prefix string) UserSubsetFilters {
 }
 
 func (ft UserSubsetFilters) Filter(pred string, args ...interface{}) sq.WriterTo {
-	return sq.Filter(ft.prefix, pred, args...)
+	return sq.Filter(&ft.prefix, pred, args...)
 }
 
 func (ft UserSubsetFilters) Prefix() string {
@@ -420,7 +420,7 @@ func NewUserInfoFilters(prefix string) UserInfoFilters {
 }
 
 func (ft UserInfoFilters) Filter(pred string, args ...interface{}) sq.WriterTo {
-	return sq.Filter(ft.prefix, pred, args...)
+	return sq.Filter(&ft.prefix, pred, args...)
 }
 
 func (ft UserInfoFilters) Prefix() string {
@@ -617,7 +617,7 @@ func NewComplexInfoFilters(prefix string) ComplexInfoFilters {
 }
 
 func (ft ComplexInfoFilters) Filter(pred string, args ...interface{}) sq.WriterTo {
-	return sq.Filter(ft.prefix, pred, args...)
+	return sq.Filter(&ft.prefix, pred, args...)
 }
 
 func (ft ComplexInfoFilters) Prefix() string {
@@ -795,7 +795,7 @@ func NewUserTagFilters(prefix string) UserTagFilters {
 }
 
 func (ft UserTagFilters) Filter(pred string, args ...interface{}) sq.WriterTo {
-	return sq.Filter(ft.prefix, pred, args...)
+	return sq.Filter(&ft.prefix, pred, args...)
 }
 
 func (ft UserTagFilters) Prefix() string {
@@ -847,7 +847,7 @@ func NewUserInlineFilters(prefix string) UserInlineFilters {
 }
 
 func (ft UserInlineFilters) Filter(pred string, args ...interface{}) sq.WriterTo {
-	return sq.Filter(ft.prefix, pred, args...)
+	return sq.Filter(&ft.prefix, pred, args...)
 }
 
 func (ft UserInlineFilters) Prefix() string {
@@ -899,7 +899,7 @@ func NewProfileFilters(prefix string) ProfileFilters {
 }
 
 func (ft ProfileFilters) Filter(pred string, args ...interface{}) sq.WriterTo {
-	return sq.Filter(ft.prefix, pred, args...)
+	return sq.Filter(&ft.prefix, pred, args...)
 }
 
 func (ft ProfileFilters) Prefix() string {

@@ -15,11 +15,11 @@ var _ carrier.Manager = &ShipnowManager{}
 
 type ShipnowManager struct {
 	ahamove  ShipnowCarrier
-	location location.Bus
+	location location.QueryBus
 	s        sqlstore.ShipnowStoreFactory
 }
 
-func NewManager(db cmsql.Database, locationBus location.Bus, ahamoveCarrier ShipnowCarrier) *ShipnowManager {
+func NewManager(db cmsql.Database, locationBus location.QueryBus, ahamoveCarrier ShipnowCarrier) *ShipnowManager {
 	return &ShipnowManager{
 		ahamove:  ahamoveCarrier,
 		location: locationBus,

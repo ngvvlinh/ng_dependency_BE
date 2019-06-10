@@ -27,7 +27,7 @@ func New{{$table.StructName}}Filters(prefix string) {{$table.StructName}}Filters
 }
 
 func (ft {{$table.StructName}}Filters) Filter(pred string, args ...interface{}) sq.WriterTo {
-    return sq.Filter(ft.prefix, pred, args...)
+    return sq.Filter(&ft.prefix, pred, args...)
 }
 
 func (ft {{$table.StructName}}Filters) Prefix() string {

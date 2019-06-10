@@ -7,7 +7,36 @@ import (
 	unsafe "unsafe"
 
 	locationv1 "etop.vn/api/main/location/v1"
+	meta "etop.vn/api/meta"
 )
+
+type Command interface{ command() }
+type Query interface{ query() }
+type CommandBus struct{ bus meta.Bus }
+type QueryBus struct{ bus meta.Bus }
+
+func (c CommandBus) Dispatch(ctx context.Context, msg Command) error {
+	return c.bus.Dispatch(ctx, msg)
+}
+func (c QueryBus) Dispatch(ctx context.Context, msg Query) error {
+	return c.bus.Dispatch(ctx, msg)
+}
+func (c CommandBus) DispatchAll(ctx context.Context, msgs ...Command) error {
+	for _, msg := range msgs {
+		if err := c.bus.Dispatch(ctx, msg); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+func (c QueryBus) DispatchAll(ctx context.Context, msgs ...Query) error {
+	for _, msg := range msgs {
+		if err := c.bus.Dispatch(ctx, msg); err != nil {
+			return err
+		}
+	}
+	return nil
+}
 
 type FindLocationQuery struct {
 	Province string `json:"province"`
@@ -44,6 +73,13 @@ type GetLocationQuery struct {
 	Result *locationv1.LocationQueryResult `json:"-"`
 }
 
+// implement interfaces
+
+func (q *FindLocationQuery) query()      {}
+func (q *FindOrGetLocationQuery) query() {}
+func (q *GetAllLocationsQuery) query()   {}
+func (q *GetLocationQuery) query()       {}
+
 // implement conversion
 
 func (q *FindLocationQuery) GetArgs() *locationv1.FindLocationQueryArgs {
@@ -70,12 +106,14 @@ func NewLocationQueryServiceHandler(service LocationQueryService) LocationQueryS
 }
 
 func (h LocationQueryServiceHandler) RegisterHandlers(b interface {
+	meta.Bus
 	AddHandler(handler interface{})
-}) {
+}) QueryBus {
 	b.AddHandler(h.HandleFindLocation)
 	b.AddHandler(h.HandleFindOrGetLocation)
 	b.AddHandler(h.HandleGetAllLocations)
 	b.AddHandler(h.HandleGetLocation)
+	return QueryBus{b}
 }
 
 func (h LocationQueryServiceHandler) HandleFindLocation(ctx context.Context, query *FindLocationQuery) error {

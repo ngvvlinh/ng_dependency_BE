@@ -7,7 +7,36 @@ import (
 	unsafe "unsafe"
 
 	orderingv1types "etop.vn/api/main/ordering/v1/types"
+	meta "etop.vn/api/meta"
 )
+
+type Command interface{ command() }
+type Query interface{ query() }
+type CommandBus struct{ bus meta.Bus }
+type QueryBus struct{ bus meta.Bus }
+
+func (c CommandBus) Dispatch(ctx context.Context, msg Command) error {
+	return c.bus.Dispatch(ctx, msg)
+}
+func (c QueryBus) Dispatch(ctx context.Context, msg Query) error {
+	return c.bus.Dispatch(ctx, msg)
+}
+func (c CommandBus) DispatchAll(ctx context.Context, msgs ...Command) error {
+	for _, msg := range msgs {
+		if err := c.bus.Dispatch(ctx, msg); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+func (c QueryBus) DispatchAll(ctx context.Context, msgs ...Query) error {
+	for _, msg := range msgs {
+		if err := c.bus.Dispatch(ctx, msg); err != nil {
+			return err
+		}
+	}
+	return nil
+}
 
 type GetOrderByIDCommand struct {
 	ID int64
@@ -36,6 +65,13 @@ type ValidateOrdersCommand struct {
 	Result *ValidateOrdersResponse `json:"-"`
 }
 
+// implement interfaces
+
+func (q *GetOrderByIDCommand) command()        {}
+func (q *GetOrdersCommand) command()           {}
+func (q *ReserveOrdersForFfmCommand) command() {}
+func (q *ValidateOrdersCommand) command()      {}
+
 // implement conversion
 
 func (q *GetOrderByIDCommand) GetArgs() *GetOrderByIDArgs {
@@ -58,12 +94,14 @@ type AggregateHandler struct {
 func NewAggregateHandler(service Aggregate) AggregateHandler { return AggregateHandler{service} }
 
 func (h AggregateHandler) RegisterHandlers(b interface {
+	meta.Bus
 	AddHandler(handler interface{})
-}) {
+}) CommandBus {
 	b.AddHandler(h.HandleGetOrderByID)
 	b.AddHandler(h.HandleGetOrders)
 	b.AddHandler(h.HandleReserveOrdersForFfm)
 	b.AddHandler(h.HandleValidateOrders)
+	return CommandBus{b}
 }
 
 func (h AggregateHandler) HandleGetOrderByID(ctx context.Context, cmd *GetOrderByIDCommand) error {
@@ -99,6 +137,8 @@ func NewQueryServiceHandler(service QueryService) QueryServiceHandler {
 }
 
 func (h QueryServiceHandler) RegisterHandlers(b interface {
+	meta.Bus
 	AddHandler(handler interface{})
-}) {
+}) QueryBus {
+	return QueryBus{b}
 }

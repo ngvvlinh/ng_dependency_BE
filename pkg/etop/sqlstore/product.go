@@ -668,7 +668,7 @@ func buildShopVariant(v *catalogmodel.Variant, sv *catalogmodel.ShopVariant) *ca
 		ShortDesc:   cm.Coalesce(sv.ShortDesc, v.ShortDesc),
 		ImageURLs:   cm.CoalesceStrings(sv.ImageURLs, v.ImageURLs),
 		Note:        sv.Note,
-		RetailPrice: cm.CoalesceInt(sv.RetailPrice, v.ListPrice),
+		RetailPrice: cm.CoalesceInt32(sv.RetailPrice, v.ListPrice),
 		Status:      model.CoalesceStatus3(sv.Status, v.Status),
 		ProductID:   cm.CoalesceInt64(sv.ProductID, v.ProductID),
 		ShopID:      sv.ShopID,

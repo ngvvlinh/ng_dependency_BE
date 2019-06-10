@@ -22,7 +22,7 @@ func PbUpdateVariantToModel(shopID int64, p *UpdateVariantRequest) *catalogmodel
 		ShortDesc:   p.ShortDesc,
 		DescHTML:    p.DescHtml,
 		Note:        p.Note,
-		RetailPrice: int(p.RetailPrice),
+		RetailPrice: p.RetailPrice,
 	}
 }
 

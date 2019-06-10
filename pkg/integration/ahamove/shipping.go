@@ -20,10 +20,10 @@ const (
 
 type Carrier struct {
 	clients  map[byte]*ahamoveclient.Client
-	location location.Bus
+	location location.QueryBus
 }
 
-func New(cfg Config, locationBus location.Bus) *Carrier {
+func New(cfg Config, locationBus location.QueryBus) *Carrier {
 	clientDefault := ahamoveclient.New(cfg.Env, cfg.AccountDefault)
 	clients := map[byte]*ahamoveclient.Client{
 		AhamoveCodePublic: clientDefault,

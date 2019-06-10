@@ -20,9 +20,13 @@ type Product struct {
 
 	ProductSourceID int64
 
+	Code string
+
 	Name string
 
 	DescriptionInfo
+
+	ImageURLs []string
 
 	Tags []string
 
@@ -30,13 +34,11 @@ type Product struct {
 
 	Status int16
 
-	Code string
-
-	ImageURLs []string
-
 	CreatedAt time.Time
 
 	UpdatedAt time.Time
+
+	PriceDeclareInfo
 }
 
 type ShopProduct struct {
@@ -44,19 +46,21 @@ type ShopProduct struct {
 
 	ProductID int64
 
+	Code string
+
 	Name string
 
 	DescriptionInfo
 
 	ImageURLs []string
 
-	Note string
-
 	Tags []string
 
-	RetailPrice int
-
 	Status int32
+
+	PriceInfo
+
+	Note string // only in ShopProduct and ShopVariant
 
 	CreatedAt time.Time
 
@@ -68,22 +72,21 @@ type Variant struct {
 
 	ProductID int64
 
+	// Code is also known as sku
+	Code string
+
+	Name string
+
 	DescriptionInfo
+
+	ImageURLs []string
 
 	Status int16
 
-	// editable code
-	Code string
+	Attributes // only in Variant, not in ShopVariant
 
 	// TODO: price shoule be managed in pricing service
-
-	ListPrice int
-
-	CostPrice int
-
-	RetailPrice int
-
-	Attributes
+	PriceDeclareInfo
 
 	CreatedAt time.Time
 
@@ -93,15 +96,24 @@ type Variant struct {
 type ShopVariant struct {
 	ShopID int64
 
+	ProductID int64
+
 	VariantID int64
 
-	// also known as sku
-
+	// Code is also known as sku
 	Code string
+
+	Name string
 
 	DescriptionInfo
 
+	ImageURLs []string
+
 	Status int16
+
+	PriceInfo
+
+	Note string // only in ShopProduct and ShopVariant
 
 	CreatedAt time.Time
 
@@ -114,6 +126,22 @@ type DescriptionInfo struct {
 	Description string
 
 	DescHTML string
+}
+
+type PriceDeclareInfo struct {
+	ListPrice int32
+
+	CostPrice int32
+
+	RetailPrice int32
+}
+
+type PriceInfo struct {
+	ListPrice int32
+
+	CostPrice int32
+
+	RetailPrice int32
 }
 
 type Attribute = types.Attribute

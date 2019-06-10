@@ -17,7 +17,7 @@ func NewFulfillmentFilters(prefix string) FulfillmentFilters {
 }
 
 func (ft FulfillmentFilters) Filter(pred string, args ...interface{}) sq.WriterTo {
-	return sq.Filter(ft.prefix, pred, args...)
+	return sq.Filter(&ft.prefix, pred, args...)
 }
 
 func (ft FulfillmentFilters) Prefix() string {

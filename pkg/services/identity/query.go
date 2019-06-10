@@ -26,8 +26,7 @@ func NewQueryService(db cmsql.Database) *QueryService {
 
 func (a *QueryService) MessageBus() identity.QueryBus {
 	b := bus.New()
-	identity.NewQueryServiceHandler(a).RegisterHandlers(b)
-	return identity.QueryBus{b}
+	return identity.NewQueryServiceHandler(a).RegisterHandlers(b)
 }
 
 func (q *QueryService) GetShopByID(ctx context.Context, query *identity.GetShopByIDQueryArgs) (*identity.GetShopByIDQueryResult, error) {

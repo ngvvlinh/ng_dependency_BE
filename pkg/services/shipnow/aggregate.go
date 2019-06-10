@@ -24,7 +24,7 @@ import (
 var _ shipnow.Aggregate = &Aggregate{}
 
 type Aggregate struct {
-	location      location.Bus
+	location      location.QueryBus
 	identityQuery identity.QueryService
 	addressQuery  address.QueryService
 
@@ -34,7 +34,7 @@ type Aggregate struct {
 	pm       *pm.ProcessManager // nil
 }
 
-func NewAggregate(eventBus meta.EventBus, db cmsql.Database, location location.Bus, identityQuery identity.QueryService, addressQuery address.QueryService) *Aggregate {
+func NewAggregate(eventBus meta.EventBus, db cmsql.Database, location location.QueryBus, identityQuery identity.QueryService, addressQuery address.QueryService) *Aggregate {
 	return &Aggregate{
 		db:       db,
 		store:    sqlstore.NewShipnowStore(db),
@@ -46,10 +46,9 @@ func NewAggregate(eventBus meta.EventBus, db cmsql.Database, location location.B
 	}
 }
 
-func (a *Aggregate) MessageBus() shipnow.AggregateBus {
+func (a *Aggregate) MessageBus() shipnow.CommandBus {
 	b := bus.New()
-	shipnow.NewAggregateHandler(a).RegisterHandlers(b)
-	return shipnow.AggregateBus{b}
+	return shipnow.NewAggregateHandler(a).RegisterHandlers(b)
 }
 
 func (a *Aggregate) CreateShipnowFulfillment(ctx context.Context, cmd *shipnow.CreateShipnowFulfillmentArgs) (_result *shipnow.ShipnowFulfillment, _ error) {

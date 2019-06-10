@@ -35,8 +35,10 @@ type QueryService interface {
 	ListShopProductsWithVariantsByIDs(context.Context, *IDsArgs) (*ShopProductsWithVariantsResponse, error)
 
 	GetShopVariantByID(context.Context, *GetShopVariantByIDQueryArgs) (*ShopVariantExtended, error)
+	GetShopVariantWithProductByID(context.Context, *GetShopVariantByIDQueryArgs) (*ShopVariantWithProduct, error)
 	ListShopVariants(context.Context, *ListShopVariantsQueryArgs) (*ShopVariantsResponse, error)
 	ListShopVariantsByIDs(context.Context, *IDsArgs) (*ShopVariantsResponse, error)
+	ListShopVariantsWithProductByIDs(context.Context, *ListShopVariantsQueryArgs) (*ShopVariantsWithProductResponse, error)
 }
 
 //-- query --//
@@ -113,14 +115,22 @@ type VariantsWithProductResponse struct {
 
 type ShopProductsResponse struct {
 	Products []*ShopProductExtended
+	Count    int32
 }
 
 type ShopProductsWithVariantsResponse struct {
 	Products []*ShopProductWithVariants
+	Count    int32
 }
 
 type ShopVariantsResponse struct {
 	Variants []*ShopVariantExtended
+	Count    int32
+}
+
+type ShopVariantsWithProductResponse struct {
+	Variants []*ShopVariantWithProduct
+	Count    int32
 }
 
 //-- command --//

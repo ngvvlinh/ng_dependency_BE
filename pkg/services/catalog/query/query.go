@@ -96,6 +96,10 @@ func (s *QueryService) GetShopVariantByID(
 	panic("implement me")
 }
 
+func (s *QueryService) GetShopVariantWithProductByID(context.Context, *catalog.GetShopVariantByIDQueryArgs) (*catalog.ShopVariantWithProduct, error) {
+	panic("implement me")
+}
+
 func (s *QueryService) ListProducts(
 	ctx context.Context, args *catalog.ListProductsQueryArgs,
 ) (*catalog.ProductsResonse, error) {
@@ -118,13 +122,13 @@ func (s *QueryService) ListProducts(
 func (s *QueryService) ListProductsWithVariants(
 	ctx context.Context, args *catalog.ListProductsQueryArgs,
 ) (*catalog.ProductsWithVariantsResponse, error) {
-	ps := s.product(ctx).Filters(args.Filters)
-	products, err := ps.ListProductsWithVariants(args.Paging)
+	q := s.product(ctx).Filters(args.Filters)
+	products, err := q.ListProductsWithVariants(args.Paging)
 	if err != nil {
 		return nil, err
 	}
 
-	count, err := ps.Count()
+	count, err := q.Count()
 	if err != nil {
 		return nil, err
 	}
@@ -149,7 +153,21 @@ func (s *QueryService) ListVariantsWithProduct(
 func (s *QueryService) ListShopProducts(
 	ctx context.Context, args *catalog.ListShopProductsQueryArgs,
 ) (*catalog.ShopProductsResponse, error) {
-	panic("implement me")
+	q := s.shopProduct(ctx).Filters(args.Filters)
+	q = q.Where(q.FtShopProduct.ByShopID(args.ShopID).Optional())
+	products, err := q.ListShopProducts(args.Paging)
+	if err != nil {
+		return nil, err
+	}
+
+	count, err := q.Count()
+	if err != nil {
+		return nil, err
+	}
+	return &catalog.ShopProductsResponse{
+		Products: products,
+		Count:    int32(count),
+	}, nil
 }
 
 func (s *QueryService) ListShopProductsWithVariants(
@@ -203,5 +221,9 @@ func (s *QueryService) ListShopProductsWithVariantsByIDs(
 func (s *QueryService) ListShopVariantsByIDs(
 	context.Context, *catalog.IDsArgs,
 ) (*catalog.ShopVariantsResponse, error) {
+	panic("implement me")
+}
+
+func (s *QueryService) ListShopVariantsWithProductByIDs(context.Context, *catalog.ListShopVariantsQueryArgs) (*catalog.ShopVariantsWithProductResponse, error) {
 	panic("implement me")
 }

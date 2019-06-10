@@ -16,7 +16,7 @@ func NewProductFilters(prefix string) ProductFilters {
 }
 
 func (ft ProductFilters) Filter(pred string, args ...interface{}) sq.WriterTo {
-	return sq.Filter(ft.prefix, pred, args...)
+	return sq.Filter(&ft.prefix, pred, args...)
 }
 
 func (ft ProductFilters) Prefix() string {
@@ -296,7 +296,7 @@ func NewVariantFilters(prefix string) VariantFilters {
 }
 
 func (ft VariantFilters) Filter(pred string, args ...interface{}) sq.WriterTo {
-	return sq.Filter(ft.prefix, pred, args...)
+	return sq.Filter(&ft.prefix, pred, args...)
 }
 
 func (ft VariantFilters) Prefix() string {
@@ -436,7 +436,7 @@ func (ft VariantFilters) ByDescHTMLPtr(DescHTML *string) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft VariantFilters) ByCostPrice(CostPrice int) *sq.ColumnFilter {
+func (ft VariantFilters) ByCostPrice(CostPrice int32) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "cost_price",
@@ -445,7 +445,7 @@ func (ft VariantFilters) ByCostPrice(CostPrice int) *sq.ColumnFilter {
 	}
 }
 
-func (ft VariantFilters) ByCostPricePtr(CostPrice *int) *sq.ColumnFilterPtr {
+func (ft VariantFilters) ByCostPricePtr(CostPrice *int32) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "cost_price",
@@ -455,7 +455,7 @@ func (ft VariantFilters) ByCostPricePtr(CostPrice *int) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft VariantFilters) ByListPrice(ListPrice int) *sq.ColumnFilter {
+func (ft VariantFilters) ByListPrice(ListPrice int32) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "list_price",
@@ -464,7 +464,7 @@ func (ft VariantFilters) ByListPrice(ListPrice int) *sq.ColumnFilter {
 	}
 }
 
-func (ft VariantFilters) ByListPricePtr(ListPrice *int) *sq.ColumnFilterPtr {
+func (ft VariantFilters) ByListPricePtr(ListPrice *int32) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "list_price",
@@ -557,7 +557,7 @@ func NewShopVariantFilters(prefix string) ShopVariantFilters {
 }
 
 func (ft ShopVariantFilters) Filter(pred string, args ...interface{}) sq.WriterTo {
-	return sq.Filter(ft.prefix, pred, args...)
+	return sq.Filter(&ft.prefix, pred, args...)
 }
 
 func (ft ShopVariantFilters) Prefix() string {
@@ -735,7 +735,7 @@ func (ft ShopVariantFilters) ByNotePtr(Note *string) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft ShopVariantFilters) ByRetailPrice(RetailPrice int) *sq.ColumnFilter {
+func (ft ShopVariantFilters) ByRetailPrice(RetailPrice int32) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "retail_price",
@@ -744,7 +744,7 @@ func (ft ShopVariantFilters) ByRetailPrice(RetailPrice int) *sq.ColumnFilter {
 	}
 }
 
-func (ft ShopVariantFilters) ByRetailPricePtr(RetailPrice *int) *sq.ColumnFilterPtr {
+func (ft ShopVariantFilters) ByRetailPricePtr(RetailPrice *int32) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "retail_price",
@@ -837,7 +837,7 @@ func NewShopProductFilters(prefix string) ShopProductFilters {
 }
 
 func (ft ShopProductFilters) Filter(pred string, args ...interface{}) sq.WriterTo {
-	return sq.Filter(ft.prefix, pred, args...)
+	return sq.Filter(&ft.prefix, pred, args...)
 }
 
 func (ft ShopProductFilters) Prefix() string {
@@ -977,7 +977,7 @@ func (ft ShopProductFilters) ByNotePtr(Note *string) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft ShopProductFilters) ByRetailPrice(RetailPrice int) *sq.ColumnFilter {
+func (ft ShopProductFilters) ByRetailPrice(RetailPrice int32) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "retail_price",
@@ -986,7 +986,7 @@ func (ft ShopProductFilters) ByRetailPrice(RetailPrice int) *sq.ColumnFilter {
 	}
 }
 
-func (ft ShopProductFilters) ByRetailPricePtr(RetailPrice *int) *sq.ColumnFilterPtr {
+func (ft ShopProductFilters) ByRetailPricePtr(RetailPrice *int32) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "retail_price",
@@ -1079,7 +1079,7 @@ func NewShopCollectionFilters(prefix string) ShopCollectionFilters {
 }
 
 func (ft ShopCollectionFilters) Filter(pred string, args ...interface{}) sq.WriterTo {
-	return sq.Filter(ft.prefix, pred, args...)
+	return sq.Filter(&ft.prefix, pred, args...)
 }
 
 func (ft ShopCollectionFilters) Prefix() string {
@@ -1245,7 +1245,7 @@ func NewProductShopCollectionFilters(prefix string) ProductShopCollectionFilters
 }
 
 func (ft ProductShopCollectionFilters) Filter(pred string, args ...interface{}) sq.WriterTo {
-	return sq.Filter(ft.prefix, pred, args...)
+	return sq.Filter(&ft.prefix, pred, args...)
 }
 
 func (ft ProductShopCollectionFilters) Prefix() string {
@@ -1373,7 +1373,7 @@ func NewProductSourceFilters(prefix string) ProductSourceFilters {
 }
 
 func (ft ProductSourceFilters) Filter(pred string, args ...interface{}) sq.WriterTo {
-	return sq.Filter(ft.prefix, pred, args...)
+	return sq.Filter(&ft.prefix, pred, args...)
 }
 
 func (ft ProductSourceFilters) Prefix() string {
@@ -1501,7 +1501,7 @@ func NewProductSourceCategoryFilters(prefix string) ProductSourceCategoryFilters
 }
 
 func (ft ProductSourceCategoryFilters) Filter(pred string, args ...interface{}) sq.WriterTo {
-	return sq.Filter(ft.prefix, pred, args...)
+	return sq.Filter(&ft.prefix, pred, args...)
 }
 
 func (ft ProductSourceCategoryFilters) Prefix() string {

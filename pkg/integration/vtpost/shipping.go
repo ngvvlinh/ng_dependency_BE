@@ -20,10 +20,10 @@ var _ shippingprovider.ShippingProvider = &Carrier{}
 
 type Carrier struct {
 	clients  map[byte]vtpostclient.Client
-	location location.Bus
+	location location.QueryBus
 }
 
-func New(cfg Config, locationBus location.Bus) *Carrier {
+func New(cfg Config, locationBus location.QueryBus) *Carrier {
 	clientDefault := vtpostclient.New(cfg.Env, cfg.AccountDefault)
 	clients := map[byte]vtpostclient.Client{
 		VTPostCodePublic: clientDefault,

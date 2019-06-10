@@ -7,8 +7,37 @@ import (
 	unsafe "unsafe"
 
 	shippingv1types "etop.vn/api/main/shipping/v1/types"
+	meta "etop.vn/api/meta"
 	metav1 "etop.vn/api/meta/v1"
 )
+
+type Command interface{ command() }
+type Query interface{ query() }
+type CommandBus struct{ bus meta.Bus }
+type QueryBus struct{ bus meta.Bus }
+
+func (c CommandBus) Dispatch(ctx context.Context, msg Command) error {
+	return c.bus.Dispatch(ctx, msg)
+}
+func (c QueryBus) Dispatch(ctx context.Context, msg Query) error {
+	return c.bus.Dispatch(ctx, msg)
+}
+func (c CommandBus) DispatchAll(ctx context.Context, msgs ...Command) error {
+	for _, msg := range msgs {
+		if err := c.bus.Dispatch(ctx, msg); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+func (c QueryBus) DispatchAll(ctx context.Context, msgs ...Query) error {
+	for _, msg := range msgs {
+		if err := c.bus.Dispatch(ctx, msg); err != nil {
+			return err
+		}
+	}
+	return nil
+}
 
 type CancelFulfillmentCommand struct {
 	FulfillmentID int64
@@ -45,6 +74,13 @@ type GetFulfillmentByIDCommand struct {
 	Result *Fulfillment `json:"-"`
 }
 
+// implement interfaces
+
+func (q *CancelFulfillmentCommand) command()  {}
+func (q *ConfirmFulfillmentCommand) command() {}
+func (q *CreateFulfillmentCommand) command()  {}
+func (q *GetFulfillmentByIDCommand) command() {}
+
 // implement conversion
 
 func (q *CancelFulfillmentCommand) GetArgs() *CancelFulfillmentArgs {
@@ -69,12 +105,14 @@ type AggregateHandler struct {
 func NewAggregateHandler(service Aggregate) AggregateHandler { return AggregateHandler{service} }
 
 func (h AggregateHandler) RegisterHandlers(b interface {
+	meta.Bus
 	AddHandler(handler interface{})
-}) {
+}) CommandBus {
 	b.AddHandler(h.HandleCancelFulfillment)
 	b.AddHandler(h.HandleConfirmFulfillment)
 	b.AddHandler(h.HandleCreateFulfillment)
 	b.AddHandler(h.HandleGetFulfillmentByID)
+	return CommandBus{b}
 }
 
 func (h AggregateHandler) HandleCancelFulfillment(ctx context.Context, cmd *CancelFulfillmentCommand) error {

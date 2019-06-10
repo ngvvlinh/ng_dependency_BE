@@ -22,10 +22,9 @@ func New() *Impl {
 	return &Impl{}
 }
 
-func (im *Impl) MessageBus() location.Bus {
+func (im *Impl) MessageBus() location.QueryBus {
 	b := bus.New()
-	location.NewLocationQueryServiceHandler(im).RegisterHandlers(b)
-	return location.Bus{b}
+	return location.NewLocationQueryServiceHandler(im).RegisterHandlers(b)
 }
 
 func (im *Impl) GetAllLocations(ctx context.Context, query *location.GetAllLocationsQueryArgs) (result *location.GetAllLocationsQueryResult, err error) {

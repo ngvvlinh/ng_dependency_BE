@@ -81,8 +81,8 @@ type Variant struct {
 
 	Attributes ProductAttributes
 
-	CostPrice int
-	ListPrice int
+	CostPrice int32
+	ListPrice int32
 
 	Status    model.Status3
 	CreatedAt time.Time `sq:"create"`
@@ -180,21 +180,6 @@ type ShopVariantExtended struct {
 	*ShopProduct
 }
 
-func (v *ShopVariantExtended) GetFullName() string {
-	var productName, variantName string
-	if v.ShopProduct != nil && v.ShopProduct.Name != "" {
-		productName = v.ShopProduct.Name
-	} else {
-		productName = v.Product.Name
-	}
-	if v.ShopVariant != nil && v.ShopVariant.Name != "" {
-		variantName = v.ShopVariant.Name
-	} else {
-		variantName = v.Variant.GetName()
-	}
-	return productName + " - " + variantName
-}
-
 var _ = sqlgenShopVariant(&ShopVariant{})
 
 type ShopVariant struct {
@@ -211,7 +196,7 @@ type ShopVariant struct {
 	Note        string
 	Tags        []string
 
-	RetailPrice int
+	RetailPrice int32
 	Status      model.Status3
 
 	CreatedAt time.Time `sq:"create"`
@@ -245,7 +230,7 @@ type ShopProduct struct {
 	Note        string
 	Tags        []string
 
-	RetailPrice int
+	RetailPrice int32
 	Status      model.Status3
 
 	CreatedAt time.Time `sq:"create"`

@@ -17,7 +17,7 @@ func NewShipnowFulfillmentFilters(prefix string) ShipnowFulfillmentFilters {
 }
 
 func (ft ShipnowFulfillmentFilters) Filter(pred string, args ...interface{}) sq.WriterTo {
-	return sq.Filter(ft.prefix, pred, args...)
+	return sq.Filter(&ft.prefix, pred, args...)
 }
 
 func (ft ShipnowFulfillmentFilters) Prefix() string {

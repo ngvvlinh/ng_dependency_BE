@@ -3,14 +3,12 @@ package sqlstore
 import (
 	"context"
 
-	"etop.vn/backend/pkg/common/sq"
-
 	"etop.vn/api/main/catalog"
-	"etop.vn/backend/pkg/services/catalog/convert"
-
 	"etop.vn/api/meta"
 	"etop.vn/backend/pkg/common/cmsql"
+	"etop.vn/backend/pkg/common/sq"
 	"etop.vn/backend/pkg/common/sqlstore"
+	"etop.vn/backend/pkg/services/catalog/convert"
 	catalogmodel "etop.vn/backend/pkg/services/catalog/model"
 )
 
@@ -39,8 +37,19 @@ type VariantStore struct {
 	includeDeleted sqlstore.IncludeDeleted
 }
 
+func (s *VariantStore) extend() *VariantStore {
+	s.FtProduct.prefix = "p"
+	s.ftVariant.prefix = "v"
+	return s
+}
+
 func (s *VariantStore) ID(id int64) *VariantStore {
 	s.preds = append(s.preds, s.ftVariant.ByID(id))
+	return s
+}
+
+func (s *VariantStore) IDs(ids ...int64) *VariantStore {
+	s.preds = append(s.preds, sq.PrefixedIn(&s.ftVariant.prefix, "id", ids))
 	return s
 }
 
@@ -49,7 +58,7 @@ func (s *VariantStore) ProductSourceID(id int64) *VariantStore {
 	return s
 }
 func (s *VariantStore) ByAttrNorms(attrNorms ...string) *VariantStore {
-	s.preds = append(s.preds, sq.In("attr_norm_kv", attrNorms))
+	s.preds = append(s.preds, sq.PrefixedIn(&s.ftVariant.prefix, "attr_norm_kv", attrNorms))
 	return s
 }
 
@@ -85,11 +94,9 @@ func (s *VariantStore) GetVariant() (*catalog.Variant, error) {
 }
 
 func (s *VariantStore) GetVariantWithProductDB() (*catalogmodel.VariantExtended, error) {
-	query := s.query().Where(s.preds)
+	query := s.extend().query().Where(s.preds)
 	query = s.includeDeleted.Check(query, s.ftVariant.NotDeleted())
 	query = s.includeDeleted.Check(query, s.FtProduct.NotDeleted())
-	s.ftVariant.prefix = "v"
-	s.FtProduct.prefix = "p"
 
 	var variant catalogmodel.VariantExtended
 	err := query.ShouldGet(&variant)
@@ -122,4 +129,24 @@ func (s *VariantStore) ListVariants(paging meta.Paging) ([]*catalog.Variant, err
 		return nil, err
 	}
 	return convert.Variants(variants), nil
+}
+
+func (s *VariantStore) ListVariantsWithProductDB(paging meta.Paging) ([]*catalogmodel.VariantExtended, error) {
+	query := s.extend().query().Where(s.preds)
+	query = s.includeDeleted.Check(query, s.ftVariant.NotDeleted())
+	query, err := sqlstore.LimitSort(query, &paging, SortVariant)
+	if err != nil {
+		return nil, err
+	}
+	var variants catalogmodel.VariantExtendeds
+	err = query.Find(&variants)
+	return variants, err
+}
+
+func (s *VariantStore) ListVariantsWithProduct(paging meta.Paging) ([]*catalog.VariantWithProduct, error) {
+	variants, err := s.ListVariantsWithProductDB(paging)
+	if err != nil {
+		return nil, err
+	}
+	return convert.VariantsWithProduct(variants), nil
 }

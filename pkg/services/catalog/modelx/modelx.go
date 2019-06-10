@@ -176,7 +176,7 @@ type RemoveShopVariantsCommand struct {
 type UpdateShopVariantCommand struct {
 	ShopID          int64
 	Variant         *catalogmodel.ShopVariant
-	CostPrice       int
+	CostPrice       int32
 	Code            string
 	Attributes      []catalogmodel.ProductAttribute
 	ProductSourceID int64
@@ -365,13 +365,13 @@ type CreateVariantCommand struct {
 	ImageURLs         []string
 	Tags              []string
 	Status            model.Status3
-	ListPrice         int
+	ListPrice         int32
 	SKU               string
 	Code              string
 	QuantityAvailable int
 	QuantityOnHand    int
 	QuantityReserved  int
-	CostPrice         int
+	CostPrice         int32
 	Attributes        []catalogmodel.ProductAttribute
 	DescHTML          string
 

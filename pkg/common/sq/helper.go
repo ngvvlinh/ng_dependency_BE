@@ -34,6 +34,8 @@ type (
 	DEL int
 )
 
+var emptyString = ""
+
 func NewExpr(preds ...interface{}) WriterTo {
 	if len(preds) == 0 {
 		panic("common/sql: no param")
@@ -130,20 +132,29 @@ func (ps *Parts) Append(preds ...interface{}) Parts {
 }
 
 type InPart struct {
+	prefix *string
 	in     bool
 	column string
 	args   []interface{} // len(args) must be greater than 0
 }
 
+func PrefixedIn(prefix *string, column string, args ...interface{}) WriterTo {
+	return newInPart(true, prefix, column, args...)
+}
+
 func In(column string, args ...interface{}) WriterTo {
-	return NewInPart(true, column, args...)
+	return newInPart(true, &emptyString, column, args...)
 }
 
 func NotIn(column string, args ...interface{}) WriterTo {
-	return NewInPart(false, column, args...)
+	return newInPart(false, &emptyString, column, args...)
 }
 
 func NewInPart(in bool, column string, args ...interface{}) WriterTo {
+	return newInPart(in, &emptyString, column, args...)
+}
+
+func newInPart(in bool, prefix *string, column string, args ...interface{}) WriterTo {
 	switch len(args) {
 	case 0:
 		return NewExpr("FALSE")
@@ -162,6 +173,7 @@ func NewInPart(in bool, column string, args ...interface{}) WriterTo {
 		// no-op
 	}
 	return InPart{
+		prefix: prefix,
 		in:     in,
 		column: column,
 		args:   args,
@@ -173,7 +185,7 @@ func (p InPart) WriteSQLTo(w core.SQLWriter) error {
 		return fmt.Errorf("common/sql: unexpected len(args)")
 	}
 
-	w.WriteQueryName(p.column)
+	w.WritePrefixedName(*p.prefix, p.column)
 	if !p.in {
 		w.WriteRawString(" NOT")
 	}
@@ -449,8 +461,6 @@ func (p *ColumnFilterPtr) OptionalNull() *ColumnFilterPtr {
 	return p
 }
 
-var emptyString = ""
-
 func (p *ColumnFilterPtr) WriteSQLTo(w core.SQLWriter) error {
 	if p.Prefix == nil {
 		p.Prefix = &emptyString
@@ -566,9 +576,9 @@ func (op *op) Lte() {
 	*op = "<="
 }
 
-func Filter(prefix, pred string, args ...interface{}) WriterTo {
+func Filter(prefix *string, pred string, args ...interface{}) WriterTo {
 	return WriterToFunc(func(w SQLWriter) error {
-		w.WriteQueryStringWithPrefix(prefix, pred)
+		w.WriteQueryStringWithPrefix(*prefix, pred)
 		w.WriteArgs(args)
 		return nil
 	})

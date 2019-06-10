@@ -20,10 +20,10 @@ var _ shipping_provider.ShippingProvider = &Carrier{}
 
 type Carrier struct {
 	clients  map[byte]*ghtkclient.Client
-	location location.Bus
+	location location.QueryBus
 }
 
-func New(cfg Config, locationBus location.Bus) *Carrier {
+func New(cfg Config, locationBus location.QueryBus) *Carrier {
 	clientDefault := ghtkclient.New(cfg.Env, cfg.AccountDefault)
 	clientSamePrice := ghtkclient.New(cfg.Env, cfg.AccountSamePrice)
 	clientSamePrice2 := ghtkclient.New(cfg.Env, cfg.AccountSamePrice2)
