@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"reflect"
+	"strings"
 
 	"etop.vn/backend/pkg/common/sq/core"
 )
@@ -185,7 +186,12 @@ func (p InPart) WriteSQLTo(w core.SQLWriter) error {
 		return fmt.Errorf("common/sql: unexpected len(args)")
 	}
 
-	w.WritePrefixedName(*p.prefix, p.column)
+	// TODO: remove this workaround
+	if *p.prefix == "" && strings.Contains(p.column, ".") {
+		w.WriteQueryName(p.column)
+	} else {
+		w.WritePrefixedName(*p.prefix, p.column)
+	}
 	if !p.in {
 		w.WriteRawString(" NOT")
 	}
