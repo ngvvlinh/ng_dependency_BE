@@ -261,10 +261,10 @@ func (ctrl *ProviderManager) VerifyDistrictCode(addr *model.Address) (*location.
 		return nil, nil, cm.Errorf(cm.Internal, nil, "Địa chỉ không tồn tại")
 	}
 	if addr.DistrictCode == "" {
-		return nil, nil, cm.Error(cm.InvalidArgument, cm.F(
+		return nil, nil, cm.Errorf(cm.InvalidArgument, nil,
 			`Địa chỉ %v, %v không thể được xác định bởi hệ thống.`,
 			addr.District, addr.Province,
-		), nil)
+		)
 	}
 
 	query := &location.GetLocationQuery{DistrictCode: addr.DistrictCode}

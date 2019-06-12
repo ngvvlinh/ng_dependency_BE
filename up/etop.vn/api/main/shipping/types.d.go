@@ -4,7 +4,6 @@ package shipping
 
 import (
 	context "context"
-	unsafe "unsafe"
 
 	shippingv1types "etop.vn/api/main/shipping/v1/types"
 	meta "etop.vn/api/meta"
@@ -84,16 +83,35 @@ func (q *GetFulfillmentByIDCommand) command() {}
 // implement conversion
 
 func (q *CancelFulfillmentCommand) GetArgs() *CancelFulfillmentArgs {
-	return (*CancelFulfillmentArgs)(unsafe.Pointer(q))
+	return &CancelFulfillmentArgs{
+		FulfillmentID: q.FulfillmentID,
+		CancelReason:  q.CancelReason,
+	}
 }
 func (q *ConfirmFulfillmentCommand) GetArgs() *ConfirmFulfillmentArgs {
-	return (*ConfirmFulfillmentArgs)(unsafe.Pointer(q))
+	return &ConfirmFulfillmentArgs{
+		FulfillmentID: q.FulfillmentID,
+	}
 }
 func (q *CreateFulfillmentCommand) GetArgs() *CreateFulfillmentArgs {
-	return (*CreateFulfillmentArgs)(unsafe.Pointer(q))
+	return &CreateFulfillmentArgs{
+		OrderID:             q.OrderID,
+		PickupAddress:       q.PickupAddress,
+		ShippingAddress:     q.ShippingAddress,
+		ReturnAddress:       q.ReturnAddress,
+		Carrier:             q.Carrier,
+		ShippingServiceCode: q.ShippingServiceCode,
+		ShippingServiceFee:  q.ShippingServiceFee,
+		WeightInfo:          q.WeightInfo,
+		ValueInfo:           q.ValueInfo,
+		TryOn:               q.TryOn,
+		ShippingNote:        q.ShippingNote,
+	}
 }
 func (q *GetFulfillmentByIDCommand) GetArgs() *GetFulfillmentByIDQueryArgs {
-	return (*GetFulfillmentByIDQueryArgs)(unsafe.Pointer(q))
+	return &GetFulfillmentByIDQueryArgs{
+		FulfillmentID: q.FulfillmentID,
+	}
 }
 
 // implement dispatching

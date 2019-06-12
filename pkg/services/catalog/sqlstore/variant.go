@@ -33,6 +33,7 @@ type VariantStore struct {
 	query   func() cmsql.QueryInterface
 	preds   []interface{}
 	filters meta.Filters
+	paging  meta.Paging
 
 	includeDeleted sqlstore.IncludeDeleted
 }
@@ -41,6 +42,15 @@ func (s *VariantStore) extend() *VariantStore {
 	s.FtProduct.prefix = "p"
 	s.ftVariant.prefix = "v"
 	return s
+}
+
+func (s *VariantStore) Paging(paging meta.Paging) *VariantStore {
+	s.paging = paging
+	return s
+}
+
+func (s *VariantStore) GetPaging() meta.PageInfo {
+	return meta.FromPaging(s.paging)
 }
 
 func (s *VariantStore) ID(id int64) *VariantStore {
@@ -111,10 +121,10 @@ func (s *VariantStore) GetVariantWithProduct() (*catalog.VariantWithProduct, err
 	return convert.VariantWithProduct(variant), nil
 }
 
-func (s *VariantStore) ListVariantsDB(paging meta.Paging) ([]*catalogmodel.Variant, error) {
+func (s *VariantStore) ListVariantsDB() ([]*catalogmodel.Variant, error) {
 	query := s.query().Where(s.preds)
 	query = s.includeDeleted.Check(query, s.ftVariant.NotDeleted())
-	query, err := sqlstore.LimitSort(query, &paging, SortVariant)
+	query, err := sqlstore.LimitSort(query, &s.paging, SortVariant)
 	if err != nil {
 		return nil, err
 	}
@@ -123,18 +133,19 @@ func (s *VariantStore) ListVariantsDB(paging meta.Paging) ([]*catalogmodel.Varia
 	return variants, err
 }
 
-func (s *VariantStore) ListVariants(paging meta.Paging) ([]*catalog.Variant, error) {
-	variants, err := s.ListVariantsDB(paging)
+func (s *VariantStore) ListVariants() ([]*catalog.Variant, error) {
+	variants, err := s.ListVariantsDB()
 	if err != nil {
 		return nil, err
 	}
 	return convert.Variants(variants), nil
 }
 
-func (s *VariantStore) ListVariantsWithProductDB(paging meta.Paging) ([]*catalogmodel.VariantExtended, error) {
+func (s *VariantStore) ListVariantsWithProductDB() ([]*catalogmodel.VariantExtended, error) {
 	query := s.extend().query().Where(s.preds)
 	query = s.includeDeleted.Check(query, s.ftVariant.NotDeleted())
-	query, err := sqlstore.LimitSort(query, &paging, SortVariant)
+	query = s.includeDeleted.Check(query, s.FtProduct.NotDeleted())
+	query, err := sqlstore.LimitSort(query, &s.paging, SortVariant)
 	if err != nil {
 		return nil, err
 	}
@@ -143,8 +154,8 @@ func (s *VariantStore) ListVariantsWithProductDB(paging meta.Paging) ([]*catalog
 	return variants, err
 }
 
-func (s *VariantStore) ListVariantsWithProduct(paging meta.Paging) ([]*catalog.VariantWithProduct, error) {
-	variants, err := s.ListVariantsWithProductDB(paging)
+func (s *VariantStore) ListVariantsWithProduct() ([]*catalog.VariantWithProduct, error) {
+	variants, err := s.ListVariantsWithProductDB()
 	if err != nil {
 		return nil, err
 	}

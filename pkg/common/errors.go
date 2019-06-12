@@ -982,7 +982,3 @@ func ToErrorJSON(twerr twirp.Error) *ErrorJSON {
 		Meta: twerr.MetaMap(),
 	}
 }
-
-func F(format string, args ...interface{}) string {
-	return fmt.Sprintf(format, args...)
-}

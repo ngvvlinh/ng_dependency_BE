@@ -1,11 +1,12 @@
 package convertpb
 
 import (
+	"etop.vn/api/main/catalog"
 	pbshop "etop.vn/backend/pb/etop/shop"
 	catalogmodel "etop.vn/backend/pkg/services/catalog/model"
 )
 
-func PbAttributes(as []catalogmodel.ProductAttribute) []*pbshop.Attribute {
+func PbAttributes(as catalog.Attributes) []*pbshop.Attribute {
 	attrs := make([]*pbshop.Attribute, len(as))
 	for i, a := range as {
 		attrs[i] = &pbshop.Attribute{

@@ -4,7 +4,6 @@ package shipnow
 
 import (
 	context "context"
-	unsafe "unsafe"
 
 	orderingv1types "etop.vn/api/main/ordering/v1/types"
 	shipnowv1 "etop.vn/api/main/shipnow/v1"
@@ -107,22 +106,53 @@ func (q *GetShipnowFulfillmentsQuery) query()        {}
 // implement conversion
 
 func (q *CancelShipnowFulfillmentCommand) GetArgs() *shipnowv1.CancelShipnowFulfillmentCommand {
-	return (*shipnowv1.CancelShipnowFulfillmentCommand)(unsafe.Pointer(q))
+	return &shipnowv1.CancelShipnowFulfillmentCommand{
+		Id:           q.Id,
+		ShopId:       q.ShopId,
+		CancelReason: q.CancelReason,
+	}
 }
 func (q *ConfirmShipnowFulfillmentCommand) GetArgs() *shipnowv1.ConfirmShipnowFulfillmentCommand {
-	return (*shipnowv1.ConfirmShipnowFulfillmentCommand)(unsafe.Pointer(q))
+	return &shipnowv1.ConfirmShipnowFulfillmentCommand{
+		Id:     q.Id,
+		ShopId: q.ShopId,
+	}
 }
 func (q *CreateShipnowFulfillmentCommand) GetArgs() *shipnowv1.CreateShipnowFulfillmentCommand {
-	return (*shipnowv1.CreateShipnowFulfillmentCommand)(unsafe.Pointer(q))
+	return &shipnowv1.CreateShipnowFulfillmentCommand{
+		OrderIds:            q.OrderIds,
+		Carrier:             q.Carrier,
+		ShopId:              q.ShopId,
+		ShippingServiceCode: q.ShippingServiceCode,
+		ShippingServiceFee:  q.ShippingServiceFee,
+		ShippingNote:        q.ShippingNote,
+		RequestPickupAt:     q.RequestPickupAt,
+		PickupAddress:       q.PickupAddress,
+	}
 }
 func (q *UpdateShipnowFulfillmentCommand) GetArgs() *shipnowv1.UpdateShipnowFulfillmentCommand {
-	return (*shipnowv1.UpdateShipnowFulfillmentCommand)(unsafe.Pointer(q))
+	return &shipnowv1.UpdateShipnowFulfillmentCommand{
+		Id:                  q.Id,
+		OrderIds:            q.OrderIds,
+		Carrier:             q.Carrier,
+		ShopId:              q.ShopId,
+		ShippingServiceCode: q.ShippingServiceCode,
+		ShippingServiceFee:  q.ShippingServiceFee,
+		ShippingNote:        q.ShippingNote,
+		RequestPickupAt:     q.RequestPickupAt,
+		PickupAddress:       q.PickupAddress,
+	}
 }
 func (q *GetShipnowFulfillmentQuery) GetArgs() *shipnowv1.GetShipnowFulfillmentQueryArgs {
-	return (*shipnowv1.GetShipnowFulfillmentQueryArgs)(unsafe.Pointer(q))
+	return &shipnowv1.GetShipnowFulfillmentQueryArgs{
+		Id:     q.Id,
+		ShopId: q.ShopId,
+	}
 }
 func (q *GetShipnowFulfillmentsQuery) GetArgs() *shipnowv1.GetShipnowFulfillmentsQueryArgs {
-	return (*shipnowv1.GetShipnowFulfillmentsQueryArgs)(unsafe.Pointer(q))
+	return &shipnowv1.GetShipnowFulfillmentsQueryArgs{
+		ShopId: q.ShopId,
+	}
 }
 
 // implement dispatching

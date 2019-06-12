@@ -3,6 +3,8 @@ package shop
 import (
 	"context"
 
+	"etop.vn/api/main/catalog"
+
 	"etop.vn/api/main/shipnow"
 	pbcm "etop.vn/backend/pb/common"
 	pbetop "etop.vn/backend/pb/etop"
@@ -90,10 +92,12 @@ var idempgroup *idemp.RedisGroup
 var shippingCtrl *shipping_provider.ProviderManager
 var shipnowAggr shipnow.Aggregate
 var shipnowQuery shipnow.QueryService
+var catalogQuery catalog.QueryBus
 
-func Init(shipnowAggregate shipnow.Aggregate, shipnowQueryService shipnow.QueryService, shippingProviderCtrl *shipping_provider.ProviderManager, sd cmservice.Shutdowner, rd redis.Store) {
+func Init(catalogQueryBus catalog.QueryBus, shipnowAggregate shipnow.Aggregate, shipnowQueryService shipnow.QueryService, shippingProviderCtrl *shipping_provider.ProviderManager, sd cmservice.Shutdowner, rd redis.Store) {
 	shippingCtrl = shippingProviderCtrl
 	idempgroup = idemp.NewRedisGroup(rd, PrefixIdemp, 5*60)
+	catalogQuery = catalogQueryBus
 	shipnowAggr = shipnowAggregate
 	shipnowQuery = shipnowQueryService
 	sd.Register(idempgroup.Shutdown)
@@ -325,50 +329,45 @@ func AddProducts(ctx context.Context, q *wrapshop.AddProductsEndpoint) error {
 }
 
 func GetProduct(ctx context.Context, q *wrapshop.GetProductEndpoint) error {
-	productSourceID := q.Context.Shop.ProductSourceID
-	query := &catalogmodelx.GetShopProductQuery{
-		ShopID:          q.Context.Shop.ID,
-		ProductID:       q.Id,
-		ProductSourceID: productSourceID,
+	query := &catalog.GetShopProductWithVariantsByIDQuery{
+		ProductID: q.Id,
+		ShopID:    q.Context.Shop.ID,
 	}
-	if err := bus.Dispatch(ctx, query); err != nil {
+	if err := catalogQuery.Dispatch(ctx, query); err != nil {
 		return err
 	}
-	q.Result = PbShopProductFtVariant(query.Result)
+	q.Result = PbShopProductWithVariants(query.Result)
 	return nil
 }
 
 func GetProductsByIDs(ctx context.Context, q *wrapshop.GetProductsByIDsEndpoint) error {
-	productSourceID := q.Context.Shop.ProductSourceID
-	query := &catalogmodelx.GetShopProductsQuery{
-		ShopID:          q.Context.Shop.ID,
-		ProductIDs:      q.Ids,
-		ProductSourceID: productSourceID,
+	query := &catalog.ListShopProductsWithVariantsByIDsQuery{
+		IDs:    q.Ids,
+		ShopID: q.Context.Shop.ID,
 	}
-	if err := bus.Dispatch(ctx, query); err != nil {
+	if err := catalogQuery.Dispatch(ctx, query); err != nil {
 		return err
 	}
 	q.Result = &pbshop.ShopProductsResponse{
-		Products: PbShopProductsFtVariant(query.Result.Products),
+		Products: PbShopProductsWithVariants(query.Result.Products),
 	}
 	return nil
 }
 
 func GetProducts(ctx context.Context, q *wrapshop.GetProductsEndpoint) error {
 	paging := q.Paging.CMPaging()
-	productSourceID := q.Context.Shop.ProductSourceID
-	query := &catalogmodelx.GetShopProductsQuery{
-		ShopID:          q.Context.Shop.ID,
-		Paging:          paging,
-		Filters:         pbcm.ToFilters(q.Filters),
-		ProductSourceID: productSourceID,
+	query := &catalog.ListShopProductsWithVariantsQuery{
+		ShopID:  q.Context.Shop.ID,
+		Paging:  *paging,
+		Filters: pbcm.ToFilters(q.Filters),
 	}
-	if err := bus.Dispatch(ctx, query); err != nil {
+	if err := catalogQuery.Dispatch(ctx, query); err != nil {
 		return err
 	}
+
 	q.Result = &pbshop.ShopProductsResponse{
-		Paging:   pbcm.PbPageInfo(paging, query.Result.Total),
-		Products: PbShopProductsFtVariant(query.Result.Products),
+		Paging:   pbcm.PbPageInfo(paging, query.Result.Count),
+		Products: PbShopProductsWithVariants(query.Result.Products),
 	}
 	return nil
 }
@@ -401,7 +400,7 @@ func UpdateProduct(ctx context.Context, q *wrapshop.UpdateProductEndpoint) error
 	if err := bus.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
-	q.Result = PbShopProductFtVariant(cmd.Result)
+	q.Result = PbShopProductWithVariants(cmd.Result)
 	return nil
 }
 
@@ -492,7 +491,7 @@ func CreateVariant(ctx context.Context, q *wrapshop.CreateVariantEndpoint) error
 		return err
 	}
 
-	q.Result = PbShopProductFtVariant(cmd.Result)
+	q.Result = PbShopProductWithVariants(cmd.Result)
 	return nil
 }
 
@@ -605,11 +604,11 @@ func RemoveProductSourceCategory(ctx context.Context, q *wrapshop.RemoveProductS
 
 func UpdateProductImages(ctx context.Context, q *wrapshop.UpdateProductImagesEndpoint) error {
 	shopID := q.Context.Shop.ID
-	query := &catalogmodelx.GetShopProductQuery{
-		ShopID:    shopID,
+	query := &catalog.GetShopProductByIDQuery{
 		ProductID: q.Id,
+		ShopID:    shopID,
 	}
-	if err := bus.Dispatch(ctx, query); err != nil {
+	if err := catalogQuery.Dispatch(ctx, query); err != nil {
 		return err
 	}
 
@@ -636,7 +635,7 @@ func UpdateProductImages(ctx context.Context, q *wrapshop.UpdateProductImagesEnd
 	if err := bus.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
-	q.Result = PbShopProductFtVariant(cmd.Result)
+	q.Result = PbShopProductWithVariants(cmd.Result)
 	return nil
 }
 
@@ -702,7 +701,7 @@ func GetMoneyTransactions(ctx context.Context, q *wrapshop.GetMoneyTransactionsE
 	}
 	q.Result = &pborder.MoneyTransactionsResponse{
 		MoneyTransactions: pborder.PbMoneyTransactionExtendeds(query.Result.MoneyTransactions),
-		Paging:            pbcm.PbPageInfo(paging, query.Result.Total),
+		Paging:            pbcm.PbPageInfo(paging, int32(query.Result.Total)),
 	}
 	return nil
 }
@@ -794,7 +793,7 @@ func GetNotifications(ctx context.Context, q *wrapshop.GetNotificationsEndpoint)
 	}
 	q.Result = &pbetop.NotificationsResponse{
 		Notifications: pbetop.PbNotifications(notis),
-		Paging:        pbcm.PbPageInfo(paging, total),
+		Paging:        pbcm.PbPageInfo(paging, int32(total)),
 	}
 	return nil
 }

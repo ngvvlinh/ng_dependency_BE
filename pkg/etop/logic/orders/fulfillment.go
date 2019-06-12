@@ -5,6 +5,7 @@ import (
 	"sync"
 	"time"
 
+	"etop.vn/api/main/catalog"
 	ordermodel "etop.vn/backend/pkg/services/ordering/model"
 	ordermodelx "etop.vn/backend/pkg/services/ordering/modelx"
 	shipmodel "etop.vn/backend/pkg/services/shipping/model"
@@ -22,9 +23,11 @@ import (
 )
 
 var ctrl *shipping_provider.ProviderManager
+var catalogQuery catalog.QueryBus
 
-func Init(shippingProviderCtrl *shipping_provider.ProviderManager) {
+func Init(shippingProviderCtrl *shipping_provider.ProviderManager, catalogQueryBus catalog.QueryBus) {
 	ctrl = shippingProviderCtrl
+	catalogQuery = catalogQueryBus
 }
 
 func ConfirmOrderAndCreateFulfillments(ctx context.Context, shop *model.Shop, partnerID int64, r *shop.OrderIDRequest) (resp *pborder.OrderWithErrorsResponse, _err error) {

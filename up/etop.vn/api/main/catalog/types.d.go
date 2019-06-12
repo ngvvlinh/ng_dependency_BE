@@ -4,7 +4,6 @@ package catalog
 
 import (
 	context "context"
-	unsafe "unsafe"
 
 	meta "etop.vn/api/meta"
 )
@@ -102,8 +101,7 @@ type ListProductsQuery struct {
 }
 
 type ListProductsByIDsQuery struct {
-	IDs    []int64
-	ShopID int64
+	IDs []int64
 
 	Result *ProductsResonse `json:"-"`
 }
@@ -117,10 +115,9 @@ type ListProductsWithVariantsQuery struct {
 }
 
 type ListProductsWithVariantsByIDsQuery struct {
-	IDs    []int64
-	ShopID int64
+	IDs []int64
 
-	Result *ProductsResonse `json:"-"`
+	Result *ProductsWithVariantsResponse `json:"-"`
 }
 
 type ListShopProductsQuery struct {
@@ -169,9 +166,8 @@ type ListShopVariantsByIDsQuery struct {
 }
 
 type ListShopVariantsWithProductByIDsQuery struct {
-	ShopID  int64
-	Paging  meta.Paging
-	Filters meta.Filters
+	IDs    []int64
+	ShopID int64
 
 	Result *ShopVariantsWithProductResponse `json:"-"`
 }
@@ -185,8 +181,7 @@ type ListVariantsQuery struct {
 }
 
 type ListVariantsByIDsQuery struct {
-	IDs    []int64
-	ShopID int64
+	IDs []int64
 
 	Result *VariantsResponse `json:"-"`
 }
@@ -200,8 +195,7 @@ type ListVariantsWithProductQuery struct {
 }
 
 type ListVariantsWithProductByIDsQuery struct {
-	IDs    []int64
-	ShopID int64
+	IDs []int64
 
 	Result *VariantsWithProductResponse `json:"-"`
 }
@@ -236,65 +230,145 @@ func (q *ListVariantsWithProductByIDsQuery) query()      {}
 // implement conversion
 
 func (q *UpdateProductCommand) GetArgs() *UpdateProductArgs {
-	return (*UpdateProductArgs)(unsafe.Pointer(q))
+	return &UpdateProductArgs{}
 }
 func (q *GetProductByIDQuery) GetArgs() *GetProductByIDQueryArgs {
-	return (*GetProductByIDQueryArgs)(unsafe.Pointer(q))
+	return &GetProductByIDQueryArgs{
+		ProductID: q.ProductID,
+	}
 }
 func (q *GetProductWithVariantsByIDQuery) GetArgs() *GetProductByIDQueryArgs {
-	return (*GetProductByIDQueryArgs)(unsafe.Pointer(q))
+	return &GetProductByIDQueryArgs{
+		ProductID: q.ProductID,
+	}
 }
 func (q *GetShopProductByIDQuery) GetArgs() *GetShopProductByIDQueryArgs {
-	return (*GetShopProductByIDQueryArgs)(unsafe.Pointer(q))
+	return &GetShopProductByIDQueryArgs{
+		ProductID: q.ProductID,
+		ShopID:    q.ShopID,
+	}
 }
 func (q *GetShopProductWithVariantsByIDQuery) GetArgs() *GetShopProductByIDQueryArgs {
-	return (*GetShopProductByIDQueryArgs)(unsafe.Pointer(q))
+	return &GetShopProductByIDQueryArgs{
+		ProductID: q.ProductID,
+		ShopID:    q.ShopID,
+	}
 }
 func (q *GetShopVariantByIDQuery) GetArgs() *GetShopVariantByIDQueryArgs {
-	return (*GetShopVariantByIDQueryArgs)(unsafe.Pointer(q))
+	return &GetShopVariantByIDQueryArgs{
+		VariantID: q.VariantID,
+		ShopID:    q.ShopID,
+	}
 }
 func (q *GetShopVariantWithProductByIDQuery) GetArgs() *GetShopVariantByIDQueryArgs {
-	return (*GetShopVariantByIDQueryArgs)(unsafe.Pointer(q))
+	return &GetShopVariantByIDQueryArgs{
+		VariantID: q.VariantID,
+		ShopID:    q.ShopID,
+	}
 }
 func (q *GetVariantByIDQuery) GetArgs() *GetVariantByIDQueryArgs {
-	return (*GetVariantByIDQueryArgs)(unsafe.Pointer(q))
+	return &GetVariantByIDQueryArgs{
+		VariantID: q.VariantID,
+	}
 }
 func (q *GetVariantWithProductByIDQuery) GetArgs() *GetVariantByIDQueryArgs {
-	return (*GetVariantByIDQueryArgs)(unsafe.Pointer(q))
+	return &GetVariantByIDQueryArgs{
+		VariantID: q.VariantID,
+	}
 }
 func (q *ListProductsQuery) GetArgs() *ListProductsQueryArgs {
-	return (*ListProductsQueryArgs)(unsafe.Pointer(q))
+	return &ListProductsQueryArgs{
+		ProductSourceID: q.ProductSourceID,
+		Paging:          q.Paging,
+		Filters:         q.Filters,
+	}
 }
-func (q *ListProductsByIDsQuery) GetArgs() *IDsArgs { return (*IDsArgs)(unsafe.Pointer(q)) }
+func (q *ListProductsByIDsQuery) GetArgs() *IDsArgs {
+	return &IDsArgs{
+		IDs: q.IDs,
+	}
+}
 func (q *ListProductsWithVariantsQuery) GetArgs() *ListProductsQueryArgs {
-	return (*ListProductsQueryArgs)(unsafe.Pointer(q))
+	return &ListProductsQueryArgs{
+		ProductSourceID: q.ProductSourceID,
+		Paging:          q.Paging,
+		Filters:         q.Filters,
+	}
 }
-func (q *ListProductsWithVariantsByIDsQuery) GetArgs() *IDsArgs { return (*IDsArgs)(unsafe.Pointer(q)) }
+func (q *ListProductsWithVariantsByIDsQuery) GetArgs() *IDsArgs {
+	return &IDsArgs{
+		IDs: q.IDs,
+	}
+}
 func (q *ListShopProductsQuery) GetArgs() *ListShopProductsQueryArgs {
-	return (*ListShopProductsQueryArgs)(unsafe.Pointer(q))
+	return &ListShopProductsQueryArgs{
+		ShopID:  q.ShopID,
+		Paging:  q.Paging,
+		Filters: q.Filters,
+	}
 }
-func (q *ListShopProductsByIDsQuery) GetArgs() *IDsArgs { return (*IDsArgs)(unsafe.Pointer(q)) }
+func (q *ListShopProductsByIDsQuery) GetArgs() *IDsShopArgs {
+	return &IDsShopArgs{
+		IDs:    q.IDs,
+		ShopID: q.ShopID,
+	}
+}
 func (q *ListShopProductsWithVariantsQuery) GetArgs() *ListShopProductsQueryArgs {
-	return (*ListShopProductsQueryArgs)(unsafe.Pointer(q))
+	return &ListShopProductsQueryArgs{
+		ShopID:  q.ShopID,
+		Paging:  q.Paging,
+		Filters: q.Filters,
+	}
 }
-func (q *ListShopProductsWithVariantsByIDsQuery) GetArgs() *IDsArgs {
-	return (*IDsArgs)(unsafe.Pointer(q))
+func (q *ListShopProductsWithVariantsByIDsQuery) GetArgs() *IDsShopArgs {
+	return &IDsShopArgs{
+		IDs:    q.IDs,
+		ShopID: q.ShopID,
+	}
 }
 func (q *ListShopVariantsQuery) GetArgs() *ListShopVariantsQueryArgs {
-	return (*ListShopVariantsQueryArgs)(unsafe.Pointer(q))
+	return &ListShopVariantsQueryArgs{
+		ShopID:  q.ShopID,
+		Paging:  q.Paging,
+		Filters: q.Filters,
+	}
 }
-func (q *ListShopVariantsByIDsQuery) GetArgs() *IDsArgs { return (*IDsArgs)(unsafe.Pointer(q)) }
-func (q *ListShopVariantsWithProductByIDsQuery) GetArgs() *ListShopVariantsQueryArgs {
-	return (*ListShopVariantsQueryArgs)(unsafe.Pointer(q))
+func (q *ListShopVariantsByIDsQuery) GetArgs() *IDsShopArgs {
+	return &IDsShopArgs{
+		IDs:    q.IDs,
+		ShopID: q.ShopID,
+	}
+}
+func (q *ListShopVariantsWithProductByIDsQuery) GetArgs() *IDsShopArgs {
+	return &IDsShopArgs{
+		IDs:    q.IDs,
+		ShopID: q.ShopID,
+	}
 }
 func (q *ListVariantsQuery) GetArgs() *ListVariantsQueryArgs {
-	return (*ListVariantsQueryArgs)(unsafe.Pointer(q))
+	return &ListVariantsQueryArgs{
+		ProductSourceID: q.ProductSourceID,
+		Paging:          q.Paging,
+		Filters:         q.Filters,
+	}
 }
-func (q *ListVariantsByIDsQuery) GetArgs() *IDsArgs { return (*IDsArgs)(unsafe.Pointer(q)) }
+func (q *ListVariantsByIDsQuery) GetArgs() *IDsArgs {
+	return &IDsArgs{
+		IDs: q.IDs,
+	}
+}
 func (q *ListVariantsWithProductQuery) GetArgs() *ListVariantsQueryArgs {
-	return (*ListVariantsQueryArgs)(unsafe.Pointer(q))
+	return &ListVariantsQueryArgs{
+		ProductSourceID: q.ProductSourceID,
+		Paging:          q.Paging,
+		Filters:         q.Filters,
+	}
 }
-func (q *ListVariantsWithProductByIDsQuery) GetArgs() *IDsArgs { return (*IDsArgs)(unsafe.Pointer(q)) }
+func (q *ListVariantsWithProductByIDsQuery) GetArgs() *IDsArgs {
+	return &IDsArgs{
+		IDs: q.IDs,
+	}
+}
 
 // implement dispatching
 

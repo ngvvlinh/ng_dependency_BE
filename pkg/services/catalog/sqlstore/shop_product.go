@@ -35,6 +35,7 @@ type ShopProductStore struct {
 	query   func() cmsql.QueryInterface
 	preds   []interface{}
 	filters meta.Filters
+	paging  meta.Paging
 
 	includeDeleted sqlstore.IncludeDeleted
 }
@@ -45,6 +46,15 @@ func (s *ShopProductStore) extend() *ShopProductStore {
 	s.ftVariant.prefix = "v"
 	s.ftShopVariant.prefix = "sv"
 	return s
+}
+
+func (s *ShopProductStore) Paging(paging meta.Paging) *ShopProductStore {
+	s.paging = paging
+	return s
+}
+
+func (s *ShopProductStore) GetPaging() meta.PageInfo {
+	return meta.FromPaging(s.paging)
 }
 
 func (s *ShopProductStore) Where(pred sq.FilterQuery) *ShopProductStore {
@@ -76,10 +86,15 @@ func (s *ShopProductStore) ShopID(id int64) *ShopProductStore {
 	return s
 }
 
+func (s *ShopProductStore) OptionalShopID(id int64) *ShopProductStore {
+	s.preds = append(s.preds, s.FtShopProduct.ByShopID(id).Optional())
+	return s
+}
+
 func (s *ShopProductStore) Count() (uint64, error) {
-	query := s.query().Where(s.preds)
+	query := s.extend().query().Where(s.preds)
 	query = s.includeDeleted.Check(query, s.FtProduct.NotDeleted())
-	return query.Count((*catalogmodel.ShopProduct)(nil))
+	return query.Count((*catalogmodel.ShopProductExtendeds)(nil))
 }
 
 func (s *ShopProductStore) GetShopProductDB() (*catalogmodel.ShopProductExtended, error) {
@@ -100,11 +115,42 @@ func (s *ShopProductStore) GetShopProduct() (*catalog.ShopProductExtended, error
 	return convert.ShopProductExtended(product), nil
 }
 
-func (s *ShopProductStore) ListShopProductsDB(paging meta.Paging) ([]*catalogmodel.ShopProductExtended, error) {
+func (s *ShopProductStore) GetShopProductWithVariantsDB() (*catalogmodel.ShopProductFtVariant, error) {
+	product, err := s.GetShopProductDB()
+	if err != nil {
+		return nil, err
+	}
+
+	var variants catalogmodel.ShopVariantExtendeds
+	{
+		q := s.extend().query().OrderBy("v.id").
+			Where(s.ftVariant.ByProductID(product.ID))
+		q = s.includeDeleted.Check(q, s.ftVariant.NotDeleted())
+		q = s.includeDeleted.Check(q, s.ftShopVariant.NotDeleted())
+		if err := q.Find(&variants); err != nil {
+			return nil, err
+		}
+	}
+	return &catalogmodel.ShopProductFtVariant{
+		ShopProduct: product.ShopProduct,
+		Product:     product.Product,
+		Variants:    variants,
+	}, nil
+}
+
+func (s *ShopProductStore) GetShopProductWithVariants() (*catalog.ShopProductWithVariants, error) {
+	product, err := s.GetShopProductWithVariantsDB()
+	if err != nil {
+		return nil, err
+	}
+	return convert.ShopProductWithVariants(product), nil
+}
+
+func (s *ShopProductStore) ListShopProductsDB() ([]*catalogmodel.ShopProductExtended, error) {
 	query := s.extend().query().Where(s.preds)
 	query = s.includeDeleted.Check(query, s.FtProduct.NotDeleted())
 	query = s.includeDeleted.Check(query, s.FtShopProduct.NotDeleted())
-	query, err := sqlstore.LimitSort(query, &paging, SortProduct)
+	query, err := sqlstore.LimitSort(query, &s.paging, SortShopProduct)
 	if err != nil {
 		return nil, err
 	}
@@ -118,16 +164,16 @@ func (s *ShopProductStore) ListShopProductsDB(paging meta.Paging) ([]*catalogmod
 	return products, err
 }
 
-func (s *ShopProductStore) ListShopProducts(paging meta.Paging) ([]*catalog.ShopProductExtended, error) {
-	products, err := s.ListShopProductsDB(paging)
+func (s *ShopProductStore) ListShopProducts() ([]*catalog.ShopProductExtended, error) {
+	products, err := s.ListShopProductsDB()
 	if err != nil {
 		return nil, err
 	}
 	return convert.ShopProductExtendeds(products), nil
 }
 
-func (s *ShopProductStore) ListShopProductsWithVariantsDB(paging meta.Paging) ([]*catalogmodel.ShopProductFtVariant, error) {
-	products, err := s.ListShopProductsDB(paging)
+func (s *ShopProductStore) ListShopProductsWithVariantsDB() ([]*catalogmodel.ShopProductFtVariant, error) {
+	products, err := s.ListShopProductsDB()
 	if err != nil {
 		return nil, err
 	}
@@ -165,8 +211,8 @@ func (s *ShopProductStore) ListShopProductsWithVariantsDB(paging meta.Paging) ([
 	return result, nil
 }
 
-func (s *ShopProductStore) ListShopProductsWithVariants(paging meta.Paging) ([]*catalog.ShopProductWithVariants, error) {
-	products, err := s.ListShopProductsWithVariantsDB(paging)
+func (s *ShopProductStore) ListShopProductsWithVariants() ([]*catalog.ShopProductWithVariants, error) {
+	products, err := s.ListShopProductsWithVariantsDB()
 	if err != nil {
 		return nil, err
 	}

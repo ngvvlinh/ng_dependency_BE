@@ -202,7 +202,7 @@ func (p InPart) WriteSQLTo(w core.SQLWriter) error {
 	return nil
 }
 
-// In with multple columns
+// In with multiple columns
 type InsPart struct {
 	in      bool
 	columns []string

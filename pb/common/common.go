@@ -94,8 +94,8 @@ func (p *Paging) CMPaging(sorts ...string) *cm.Paging {
 		}
 	}
 	res := &cm.Paging{
-		Offset: int(p.Offset),
-		Limit:  int(p.Limit),
+		Offset: p.Offset,
+		Limit:  p.Limit,
 	}
 	if res.Limit <= 0 {
 		res.Limit = 100
@@ -113,10 +113,10 @@ func (p *Paging) CMPaging(sorts ...string) *cm.Paging {
 	return res
 }
 
-func PbPageInfo(p *cm.Paging, total int) *PageInfo {
+func PbPageInfo(p *cm.Paging, total int32) *PageInfo {
 	return &PageInfo{
-		Total: int32(total),
-		Limit: int32(p.Limit),
+		Total: total,
+		Limit: p.Limit,
 		Sort:  p.Sort,
 	}
 }

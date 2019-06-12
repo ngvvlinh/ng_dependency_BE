@@ -20,6 +20,8 @@ type Product struct {
 
 	ProductSourceID int64
 
+	ProductSourceCategoryID int64
+
 	Code string
 
 	Name string
@@ -45,6 +47,8 @@ type ShopProduct struct {
 	ShopID int64
 
 	ProductID int64
+
+	CollectionIDs []int64
 
 	Code string
 
@@ -83,7 +87,7 @@ type Variant struct {
 
 	Status int16
 
-	Attributes // only in Variant, not in ShopVariant
+	Attributes Attributes // only in Variant, not in ShopVariant
 
 	// TODO: price shoule be managed in pricing service
 	PriceDeclareInfo
@@ -99,6 +103,8 @@ type ShopVariant struct {
 	ProductID int64
 
 	VariantID int64
+
+	CollectionID int64
 
 	// Code is also known as sku
 	Code string

@@ -50,6 +50,7 @@ import (
 	"etop.vn/backend/pkg/integration/sms"
 	"etop.vn/backend/pkg/integration/vtpost"
 	"etop.vn/backend/pkg/services/address"
+	catalogquery "etop.vn/backend/pkg/services/catalog/query"
 	"etop.vn/backend/pkg/services/identity"
 	servicelocation "etop.vn/backend/pkg/services/location"
 	"etop.vn/backend/pkg/services/ordering"
@@ -247,6 +248,7 @@ func main() {
 	identityQuery := identity.NewQueryService(db)
 	addressQuery := address.NewQueryService(db)
 	shipnowQuery := shipnow.NewQueryService(db)
+	catalogQuery := catalogquery.New(db).MessageBus()
 
 	orderAggregate := ordering.NewAggregate(db)
 	shipnowAggregate := shipnow.NewAggregate(eventBus, db, locationBus, identityQuery, addressQuery)
@@ -257,13 +259,13 @@ func main() {
 
 	orderAggregate.WithPM(orderingPM)
 
-	shop.Init(shipnowAggregate, shipnowQuery, shippingManager, shutdowner, redisStore)
+	shop.Init(catalogQuery, shipnowAggregate, shipnowQuery, shippingManager, shutdowner, redisStore)
 	partner.Init(shutdowner, redisStore, authStore, cfg.URL.Auth)
 	xshop.Init(shutdowner, redisStore, authStore)
 	integration.Init(shutdowner, redisStore, authStore)
 	webhook.Init(ctlProducer, redisStore)
 	xshipping.Init(shippingManager, ordersqlstore.NewOrderStore(db), shipsqlstore.NewFulfillmentStore(db))
-	orderS.Init(shippingManager)
+	orderS.Init(shippingManager, catalogQuery)
 
 	svrs := startServers()
 	if bot != nil {

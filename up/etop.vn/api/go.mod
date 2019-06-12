@@ -2,6 +2,8 @@ module etop.vn/api
 
 go 1.12
 
+replace etop.vn/common => ../common
+
 require (
 	github.com/gogo/protobuf v1.2.2-0.20190415061611-67e450fba694
 	github.com/golang/protobuf v1.3.1

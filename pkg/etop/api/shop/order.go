@@ -75,7 +75,7 @@ func GetOrders(ctx context.Context, q *wrapshop.GetOrdersEndpoint) error {
 		return err
 	}
 	q.Result = &pborder.OrdersResponse{
-		Paging: pbcm.PbPageInfo(paging, query.Result.Total),
+		Paging: pbcm.PbPageInfo(paging, int32(query.Result.Total)),
 		Orders: pborder.PbOrdersWithFulfillments(query.Result.Orders, model.TagShop, query.Result.Shops),
 	}
 	return nil
@@ -251,7 +251,7 @@ func GetFulfillments(ctx context.Context, q *wrapshop.GetFulfillmentsEndpoint) e
 	}
 	q.Result = &pborder.FulfillmentsResponse{
 		Fulfillments: pborder.PbFulfillmentExtendeds(query.Result.Fulfillments, model.TagShop),
-		Paging:       pbcm.PbPageInfo(paging, query.Result.Total),
+		Paging:       pbcm.PbPageInfo(paging, int32(query.Result.Total)),
 	}
 	return nil
 }

@@ -7,16 +7,16 @@ import (
 	"strings"
 	"time"
 
+	"etop.vn/backend/pkg/services/catalog/convert"
+
+	"etop.vn/api/main/catalog"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/l"
 	"etop.vn/backend/pkg/common/validate"
 	"etop.vn/backend/pkg/etop/authorize/claims"
 	"etop.vn/backend/pkg/etop/logic/etop_shipping_price"
-	"etop.vn/backend/pkg/etop/logic/shipping_provider"
 	"etop.vn/backend/pkg/etop/model"
-	catalogmodel "etop.vn/backend/pkg/services/catalog/model"
-	catalogmodelx "etop.vn/backend/pkg/services/catalog/modelx"
 	ordermodel "etop.vn/backend/pkg/services/ordering/model"
 	ordermodelx "etop.vn/backend/pkg/services/ordering/modelx"
 
@@ -25,7 +25,6 @@ import (
 )
 
 var ll = l.New()
-var shippingManager *shipping_provider.ProviderManager
 
 func CreateOrder(ctx context.Context, claim *claims.ShopClaim, authPartner *model.Partner, r *pborder.CreateOrderRequest) (*pborder.Order, error) {
 	shipping := r.ShopShipping
@@ -52,15 +51,6 @@ func CreateOrder(ctx context.Context, claim *claims.ShopClaim, authPartner *mode
 			return nil, err
 		}
 	}
-
-	// if r.GhnNoteCode.ToModel() == "" && shipping.TryOn == 0 {
-	// 	return nil, cm.Error(cm.InvalidArgument, "Vui lòng chọn ghi chú xem hàng cho đơn hàng.", nil)
-	// }
-	// if shipping.TryOn == 0 {
-	// 	shipping.TryOn = r.GhnNoteCode.ToTryOn()
-	// } else if r.GhnNoteCode == 0 {
-	// 	r.GhnNoteCode = ghn_note_code.FromTryOn(shipping.TryOn)
-	// }
 
 	src := r.Source.ToModel()
 	if !model.VerifyOrderSource(src) {
@@ -152,26 +142,17 @@ func PrepareOrderLines(ctx context.Context, shopID int64, lines []*pborder.Creat
 
 		for j := 0; j < i; j++ {
 			if line.VariantId == lines[j].VariantId {
-				return nil, cm.Error(cm.InvalidArgument,
-					cm.F(`Sản phẩm "%v" đã được nhập nhiều lần. Vui lòng kiểm tra lại.`, line.ProductName), nil)
+				return nil, cm.Errorf(cm.InvalidArgument, nil,
+					`Sản phẩm "%v" đã được nhập nhiều lần. Vui lòng kiểm tra lại.`, line.ProductName)
 			}
 		}
 	}
 
-	shopQuery := &model.GetShopQuery{
-		ShopID: shopID,
-	}
-	if err := bus.Dispatch(ctx, shopQuery); err != nil {
-		return nil, err
-	}
-	shop := shopQuery.Result
-
-	var variants []*catalogmodel.ShopVariantExtended
+	var variants []*catalog.ShopVariantWithProduct
 	if len(variantIDs) > 0 {
-		variantsQuery := &catalogmodelx.GetAllShopVariantsQuery{
-			ShopID:          shop.ID,
-			VariantIDs:      variantIDs,
-			ProductSourceID: shop.ProductSourceID,
+		variantsQuery := &catalog.ListShopVariantsWithProductByIDsQuery{
+			IDs:    variantIDs,
+			ShopID: shopID,
 		}
 		if err := bus.Dispatch(ctx, variantsQuery); err != nil {
 			return nil, err
@@ -182,7 +163,7 @@ func PrepareOrderLines(ctx context.Context, shopID int64, lines []*pborder.Creat
 	res := make([]*ordermodel.OrderLine, len(lines))
 	for i, line := range lines {
 		if line.VariantId == 0 {
-			item, err := prepareOrderLine(line, shopID, nil, nil)
+			item, err := prepareOrderLine(line, shopID, nil)
 			if err != nil {
 				return nil, err
 			}
@@ -190,23 +171,20 @@ func PrepareOrderLines(ctx context.Context, shopID int64, lines []*pborder.Creat
 			continue
 		}
 
-		var prod *catalogmodel.ShopVariantExtended
-		for _, p := range variants {
-			if line.VariantId == p.VariantID {
-				prod = p
+		var variant *catalog.ShopVariantWithProduct
+		for _, v := range variants {
+			if line.VariantId == v.VariantID {
+				variant = v
 				break
 			}
 		}
-		if prod == nil {
-			return nil, cm.Error(cm.InvalidArgument,
-				cm.F(`Sản phẩm "%v" không được đăng bán. Vui lòng kiểm tra lại`,
-					line.ProductName), nil)
+		if variant == nil {
+			return nil, cm.Errorf(cm.InvalidArgument, nil,
+				`Sản phẩm "%v" không được đăng bán. Vui lòng kiểm tra lại`,
+				line.ProductName)
 		}
 
-		item, err := PrepareOrderLine(line, &catalogmodel.VariantExtended{
-			Variant: prod.Variant,
-			Product: prod.Product,
-		}, prod)
+		item, err := PrepareOrderLine(shopID, line, variant)
 		if err != nil {
 			return nil, err
 		}
@@ -352,23 +330,28 @@ func UpdateOrder(ctx context.Context, claim *claims.ShopClaim, authPartner *mode
 }
 
 func PrepareOrderLine(
+	shopID int64,
 	m *pborder.CreateOrderLine,
-	v *catalogmodel.VariantExtended, sp *catalogmodel.ShopVariantExtended,
+	v *catalog.ShopVariantWithProduct,
 ) (*ordermodel.OrderLine, error) {
-	if m.RetailPrice != sp.ShopVariant.RetailPrice {
-		return nil, cm.Error(cm.FailedPrecondition, cm.F(
+	if m.RetailPrice != v.ShopVariant.RetailPrice {
+		return nil, cm.Errorf(cm.FailedPrecondition, nil,
 			`Có sự khác biệt về giá của sản phẩm "%v". Vui lòng kiểm tra lại. Giá đăng bán %v, giá đơn hàng %v`,
-			v.GetFullName(), sp.ShopVariant.RetailPrice, m.RetailPrice), nil)
+			v.ProductWithVariantName(), v.ShopVariant.RetailPrice, m.RetailPrice)
 	}
 	if m.PaymentPrice > m.RetailPrice {
-		return nil, cm.Error(cm.InvalidArgument, cm.F(
+		return nil, cm.Errorf(cm.InvalidArgument, nil,
 			`Giá phải trả của sản phẩm "%v" không được lớn hơn giá đăng bán. Vui lòng kiểm tra lại.`,
-			m.ProductName), nil)
+			m.ProductName)
 	}
-	return prepareOrderLine(m, sp.ShopVariant.ShopID, v, sp)
+	return prepareOrderLine(m, shopID, v)
 }
 
-func prepareOrderLine(m *pborder.CreateOrderLine, shopID int64, v *catalogmodel.VariantExtended, sp *catalogmodel.ShopVariantExtended) (*ordermodel.OrderLine, error) {
+func prepareOrderLine(
+	m *pborder.CreateOrderLine,
+	shopID int64,
+	v *catalog.ShopVariantWithProduct,
+) (*ordermodel.OrderLine, error) {
 	productName, ok := validate.NormalizeGenericName(m.ProductName)
 	if !ok {
 		return nil, cm.Errorf(cm.InvalidArgument, nil,
@@ -402,31 +385,31 @@ func prepareOrderLine(m *pborder.CreateOrderLine, shopID int64, v *catalogmodel.
 	}
 
 	originalPrice := m.RetailPrice
-	if v != nil && sp != nil {
+	if v != nil {
 		line.VariantID = m.VariantId
-		line.ProductID = sp.Product.ID
-		line.ProductName = model.CoalesceString2(sp.ShopProduct.Name, sp.Product.Name)
+		line.ProductID = v.Product.ID
+		line.ProductName = model.CoalesceString2(v.ShopProduct.Name, v.Product.Name)
 
-		line.ListPrice = int(v.ListPrice)
+		line.ListPrice = int(v.GetListPrice())
 
-		if len(sp.ShopVariant.ImageURLs) > 0 {
-			line.ImageURL = sp.ShopProduct.ImageURLs[0]
-		} else if sp.ShopProduct != nil && len(sp.ShopProduct.ImageURLs) > 0 {
-			line.ImageURL = sp.ShopProduct.ImageURLs[0]
-		} else if sp.Product != nil && len(sp.Product.ImageURLs) > 0 {
-			line.ImageURL = sp.Product.ImageURLs[0]
+		if len(v.ShopVariant.ImageURLs) > 0 {
+			line.ImageURL = v.ShopProduct.ImageURLs[0]
+		} else if v.ShopProduct != nil && len(v.ShopProduct.ImageURLs) > 0 {
+			line.ImageURL = v.ShopProduct.ImageURLs[0]
+		} else if v.Product != nil && len(v.Product.ImageURLs) > 0 {
+			line.ImageURL = v.Product.ImageURLs[0]
 		}
 
-		if sp.ShopVariant != nil {
-			line.RetailPrice = int(sp.ShopVariant.RetailPrice)
-			originalPrice = sp.ShopVariant.RetailPrice
+		if v.ShopVariant != nil {
+			line.RetailPrice = int(v.ShopVariant.RetailPrice)
+			originalPrice = v.ShopVariant.RetailPrice
 		}
-		line.Attributes = v.Attributes
+		line.Attributes = convert.AttributesToModel(v.Variant.Attributes)
 	}
 	if line.RetailPrice <= 0 {
-		return nil, cm.Error(cm.InvalidArgument, cm.F(
+		return nil, cm.Errorf(cm.InvalidArgument, nil,
 			`Giá bán lẻ của sản phẩm "%v" không hợp lệ. Vui lòng kiểm tra lại.`,
-			m.ProductName), nil)
+			m.ProductName)
 	}
 	line.TotalDiscount = int(m.Quantity * (originalPrice - m.PaymentPrice))
 	line.TotalLineAmount = int(m.Quantity) * int(m.PaymentPrice)

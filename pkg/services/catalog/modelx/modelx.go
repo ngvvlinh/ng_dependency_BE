@@ -1,6 +1,7 @@
 package modelx
 
 import (
+	"etop.vn/api/main/catalog"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/etop/model"
 	catalogmodel "etop.vn/backend/pkg/services/catalog/model"
@@ -115,21 +116,7 @@ type GetShopVariantQuery struct {
 
 	ShopVariantStatus *int
 
-	Result *catalogmodel.ShopVariantExtended
-}
-
-type GetShopVariantsQuery struct {
-	ShopID     int64
-	Paging     *cm.Paging
-	Filters    []cm.Filter
-	VariantIDs []int64
-
-	ShopVariantStatus *int
-
-	Result struct {
-		Total    int
-		Variants []*catalogmodel.ShopVariantExtended
-	}
+	Result *catalog.ShopVariantExtended
 }
 
 type AddProductsToShopCollectionCommand struct {
@@ -158,7 +145,7 @@ type AddShopVariantsCommand struct {
 	IDs    []int64
 
 	Result struct {
-		Variants []*catalogmodel.ShopVariantExtended
+		Variants []*catalog.ShopVariantExtended
 		Errors   []error
 	}
 }
@@ -181,7 +168,7 @@ type UpdateShopVariantCommand struct {
 	Attributes      []catalogmodel.ProductAttribute
 	ProductSourceID int64
 
-	Result *catalogmodel.ShopVariantExtended
+	Result *catalog.ShopVariantExtended
 }
 
 type UpdateShopVariantsCommand struct {
@@ -229,31 +216,6 @@ type AddShopProductsCommand struct {
 	}
 }
 
-type GetShopProductQuery struct {
-	ShopID          int64
-	ProductID       int64
-	ProductSourceID int64
-
-	ShopProductStatus *model.Status3
-
-	Result *catalogmodel.ShopProductFtVariant
-}
-
-type GetShopProductsQuery struct {
-	ShopID          int64
-	Paging          *cm.Paging
-	Filters         []cm.Filter
-	ProductIDs      []int64
-	ProductSourceID int64
-
-	ShopProductStatus *model.Status3
-
-	Result struct {
-		Total    int
-		Products []*catalogmodel.ShopProductFtVariant
-	}
-}
-
 type RemoveShopProductsCommand struct {
 	ShopID          int64
 	IDs             []int64
@@ -270,7 +232,7 @@ type UpdateShopProductCommand struct {
 	Code            string
 	ProductSourceID int64
 
-	Result *catalogmodel.ShopProductFtVariant
+	Result *catalog.ShopProductWithVariants
 }
 
 type UpdateShopProductsStatusCommand struct {
@@ -294,16 +256,6 @@ type UpdateShopProductsTagsCommand struct {
 
 	Result struct {
 		Updated int
-	}
-}
-
-type GetAllShopVariantsQuery struct {
-	ShopID          int64
-	VariantIDs      []int64
-	ProductSourceID int64
-
-	Result struct {
-		Variants []*catalogmodel.ShopVariantExtended
 	}
 }
 
@@ -375,7 +327,7 @@ type CreateVariantCommand struct {
 	Attributes        []catalogmodel.ProductAttribute
 	DescHTML          string
 
-	Result *catalogmodel.ShopProductFtVariant
+	Result *catalog.ShopProductWithVariants
 }
 
 type CreateProductSourceCommand struct {

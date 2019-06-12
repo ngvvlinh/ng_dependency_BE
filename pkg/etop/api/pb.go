@@ -41,8 +41,7 @@ func MixAccount(claim *claims.Claim, m *pbetop.MixedAccount) ([]int64, error) {
 		accountIDs := claim.AccountIDs
 		for _, id := range m.Ids {
 			if accountIDs[id] == 0 {
-				return nil, cm.Error(cm.InvalidArgument,
-					cm.F("Invalid MixedAccount.ids (%v)", id), nil)
+				return nil, cm.Errorf(cm.InvalidArgument, nil, "Invalid MixedAccount.ids (%v)", id)
 			}
 		}
 		return m.Ids, nil

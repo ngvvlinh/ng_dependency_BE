@@ -124,7 +124,7 @@ func GetUsersInCurrentAccounts(ctx context.Context, r *wrapetop.GetUsersInCurren
 	}
 
 	r.Result = &pbetop.ProtectedUsersResponse{
-		Paging: pbcm.PbPageInfo(paging, query.Result.Total),
+		Paging: pbcm.PbPageInfo(paging, int32(query.Result.Total)),
 		Users:  pbetop.PbUserAccounts(query.Result.AccountUsers),
 	}
 	return nil

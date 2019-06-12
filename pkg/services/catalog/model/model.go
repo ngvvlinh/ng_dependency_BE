@@ -167,17 +167,28 @@ func (v *VariantExtended) GetFullName() string {
 	return v.GetName()
 }
 
-var _ = sqlgenShopVariantExtended(
-	&ShopVariantExtended{}, &ShopVariant{}, sq.AS("sv"),
-	sq.LEFT_JOIN, &Variant{}, sq.AS("v"), "sv.variant_id = v.id",
+var _ = sqlgenShopVariantWithProduct(
+	&ShopVariantWithProduct{}, &Variant{}, sq.AS("v"),
 	sq.LEFT_JOIN, &Product{}, sq.AS("p"), "v.product_id = p.id",
 	sq.LEFT_JOIN, &ShopProduct{}, sq.AS("sp"), "sp.product_id = p.id",
+	sq.LEFT_JOIN, &ShopVariant{}, sq.AS("v"), "sv.variant_id = v.id",
+)
+
+type ShopVariantWithProduct struct {
+	*ShopVariant
+	*Variant
+	*Product
+	*ShopProduct
+}
+
+var _ = sqlgenShopVariantExtended(
+	&ShopVariantExtended{}, &Variant{}, sq.AS("v"),
+	sq.LEFT_JOIN, &ShopVariant{}, sq.AS("sv"), "sv.variant_id = v.id",
 )
 
 type ShopVariantExtended struct {
 	*ShopVariant
-	VariantExtended
-	*ShopProduct
+	*Variant
 }
 
 var _ = sqlgenShopVariant(&ShopVariant{})
@@ -268,8 +279,8 @@ type ShopProductFtProductFtVariantFtShopVariant struct {
 }
 
 var _ = sqlgenShopProductExtended(
-	&ShopProductExtended{}, &ShopProduct{}, sq.AS("sp"),
-	sq.LEFT_JOIN, &Product{}, sq.AS("p"), "sp.product_id = p.id",
+	&ShopProductExtended{}, &Product{}, sq.AS("p"),
+	sq.LEFT_JOIN, &ShopProduct{}, sq.AS("sp"), "sp.product_id = p.id",
 )
 
 type ShopProductExtended struct {
@@ -279,8 +290,8 @@ type ShopProductExtended struct {
 }
 
 var _ = sqlgenShopVariantExt(
-	&ShopVariantExt{}, &ShopVariant{}, sq.AS("sv"),
-	sq.JOIN, &Variant{}, sq.AS("v"), "sp.product_id = v.product_id",
+	&ShopVariantExt{}, &Variant{}, sq.AS("v"),
+	sq.JOIN, &ShopVariant{}, sq.AS("sv"), "sp.product_id = v.product_id",
 )
 
 type ShopVariantExt struct {

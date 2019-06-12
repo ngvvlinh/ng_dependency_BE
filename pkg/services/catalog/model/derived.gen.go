@@ -912,12 +912,134 @@ func (m *VariantExtended) SQLScanArgs(opts core.Opts) []interface{} {
 	return args
 }
 
+// Type ShopVariantWithProduct represents a join
+func sqlgenShopVariantWithProduct(_ *ShopVariantWithProduct, _ *Variant, as sq.AS, t0 sq.JOIN_TYPE, _ *Product, a0 sq.AS, c0 string, t1 sq.JOIN_TYPE, _ *ShopProduct, a1 sq.AS, c1 string, t2 sq.JOIN_TYPE, _ *ShopVariant, a2 sq.AS, c2 string) bool {
+	__sqlShopVariantWithProduct_JoinTypes = []sq.JOIN_TYPE{t0, t1, t2}
+	__sqlShopVariantWithProduct_As = as
+	__sqlShopVariantWithProduct_JoinAs = []sq.AS{a0, a1, a2}
+	__sqlShopVariantWithProduct_JoinConds = []string{c0, c1, c2}
+	return true
+}
+
+type ShopVariantWithProducts []*ShopVariantWithProduct
+
+var __sqlShopVariantWithProduct_JoinTypes []sq.JOIN_TYPE
+var __sqlShopVariantWithProduct_As sq.AS
+var __sqlShopVariantWithProduct_JoinAs []sq.AS
+var __sqlShopVariantWithProduct_JoinConds []string
+
+func (m *ShopVariantWithProduct) SQLTableName() string  { return "variant" }
+func (m *ShopVariantWithProducts) SQLTableName() string { return "variant" }
+
+func (m *ShopVariantWithProduct) SQLScan(opts core.Opts, row *sql.Row) error {
+	return row.Scan(m.SQLScanArgs(opts)...)
+}
+
+func (ms *ShopVariantWithProducts) SQLScan(opts core.Opts, rows *sql.Rows) error {
+	res := make(ShopVariantWithProducts, 0, 128)
+	for rows.Next() {
+		m := new(ShopVariantWithProduct)
+		args := m.SQLScanArgs(opts)
+		if err := rows.Scan(args...); err != nil {
+			return err
+		}
+		res = append(res, m)
+	}
+	if err := rows.Err(); err != nil {
+		return err
+	}
+	*ms = res
+	return nil
+}
+
+func (m *ShopVariantWithProduct) SQLSelect(w SQLWriter) error {
+	(*ShopVariantWithProduct)(nil).__sqlSelect(w)
+	w.WriteByte(' ')
+	(*ShopVariantWithProduct)(nil).__sqlJoin(w, __sqlShopVariantWithProduct_JoinTypes)
+	return nil
+}
+
+func (m *ShopVariantWithProducts) SQLSelect(w SQLWriter) error {
+	return (*ShopVariantWithProduct)(nil).SQLSelect(w)
+}
+
+func (m *ShopVariantWithProduct) SQLJoin(w SQLWriter, types []sq.JOIN_TYPE) error {
+	if len(types) == 0 {
+		types = __sqlShopVariantWithProduct_JoinTypes
+	}
+	m.__sqlJoin(w, types)
+	return nil
+}
+
+func (m *ShopVariantWithProducts) SQLJoin(w SQLWriter, types []sq.JOIN_TYPE) error {
+	return (*ShopVariantWithProduct)(nil).SQLJoin(w, types)
+}
+
+func (m *ShopVariantWithProduct) __sqlSelect(w SQLWriter) {
+	w.WriteRawString("SELECT ")
+	core.WriteCols(w, string(__sqlShopVariantWithProduct_As), (*Variant)(nil).SQLListCols())
+	w.WriteByte(',')
+	core.WriteCols(w, string(__sqlShopVariantWithProduct_JoinAs[0]), (*Product)(nil).SQLListCols())
+	w.WriteByte(',')
+	core.WriteCols(w, string(__sqlShopVariantWithProduct_JoinAs[1]), (*ShopProduct)(nil).SQLListCols())
+	w.WriteByte(',')
+	core.WriteCols(w, string(__sqlShopVariantWithProduct_JoinAs[2]), (*ShopVariant)(nil).SQLListCols())
+}
+
+func (m *ShopVariantWithProduct) __sqlJoin(w SQLWriter, types []sq.JOIN_TYPE) {
+	if len(types) != 3 {
+		panic("common/sql: expect 3 types to join")
+	}
+	w.WriteRawString("FROM ")
+	w.WriteName("variant")
+	w.WriteRawString(" AS ")
+	w.WriteRawString(string(__sqlShopVariantWithProduct_As))
+	w.WriteByte(' ')
+	w.WriteRawString(string(types[0]))
+	w.WriteRawString(" JOIN ")
+	w.WriteName((*Product)(nil).SQLTableName())
+	w.WriteRawString(" AS ")
+	w.WriteRawString(string(__sqlShopVariantWithProduct_JoinAs[0]))
+	w.WriteRawString(" ON ")
+	w.WriteQueryString(__sqlShopVariantWithProduct_JoinConds[0])
+	w.WriteByte(' ')
+	w.WriteRawString(string(types[1]))
+	w.WriteRawString(" JOIN ")
+	w.WriteName((*ShopProduct)(nil).SQLTableName())
+	w.WriteRawString(" AS ")
+	w.WriteRawString(string(__sqlShopVariantWithProduct_JoinAs[1]))
+	w.WriteRawString(" ON ")
+	w.WriteQueryString(__sqlShopVariantWithProduct_JoinConds[1])
+	w.WriteByte(' ')
+	w.WriteRawString(string(types[2]))
+	w.WriteRawString(" JOIN ")
+	w.WriteName((*ShopVariant)(nil).SQLTableName())
+	w.WriteRawString(" AS ")
+	w.WriteRawString(string(__sqlShopVariantWithProduct_JoinAs[2]))
+	w.WriteRawString(" ON ")
+	w.WriteQueryString(__sqlShopVariantWithProduct_JoinConds[2])
+}
+
+func (m *ShopVariantWithProduct) SQLScanArgs(opts core.Opts) []interface{} {
+	args := make([]interface{}, 0, 64) // TODO: pre-calculate length
+	m.Variant = new(Variant)
+	args = append(args, m.Variant.SQLScanArgs(opts)...)
+	m.Product = new(Product)
+	args = append(args, m.Product.SQLScanArgs(opts)...)
+	m.ShopProduct = new(ShopProduct)
+	args = append(args, m.ShopProduct.SQLScanArgs(opts)...)
+	m.ShopVariant = new(ShopVariant)
+	args = append(args, m.ShopVariant.SQLScanArgs(opts)...)
+
+	return args
+}
+
 // Type ShopVariantExtended represents a join
-func sqlgenShopVariantExtended(_ *ShopVariantExtended, _ *ShopVariant, as sq.AS, t0 sq.JOIN_TYPE, _ *Variant, a0 sq.AS, c0 string, t1 sq.JOIN_TYPE, _ *Product, a1 sq.AS, c1 string, t2 sq.JOIN_TYPE, _ *ShopProduct, a2 sq.AS, c2 string) bool {
-	__sqlShopVariantExtended_JoinTypes = []sq.JOIN_TYPE{t0, t1, t2}
+func sqlgenShopVariantExtended(_ *ShopVariantExtended, _ *Variant, as sq.AS, t0 sq.JOIN_TYPE, _ *ShopVariant, a0 sq.AS, c0 string) bool {
+	__sqlShopVariantExtended_JoinTypes = []sq.JOIN_TYPE{t0}
 	__sqlShopVariantExtended_As = as
-	__sqlShopVariantExtended_JoinAs = []sq.AS{a0, a1, a2}
-	__sqlShopVariantExtended_JoinConds = []string{c0, c1, c2}
+	__sqlShopVariantExtended_JoinAs = []sq.AS{a0}
+	__sqlShopVariantExtended_JoinConds = []string{c0}
 	return true
 }
 
@@ -928,8 +1050,8 @@ var __sqlShopVariantExtended_As sq.AS
 var __sqlShopVariantExtended_JoinAs []sq.AS
 var __sqlShopVariantExtended_JoinConds []string
 
-func (m *ShopVariantExtended) SQLTableName() string  { return "shop_variant" }
-func (m *ShopVariantExtendeds) SQLTableName() string { return "shop_variant" }
+func (m *ShopVariantExtended) SQLTableName() string  { return "variant" }
+func (m *ShopVariantExtendeds) SQLTableName() string { return "variant" }
 
 func (m *ShopVariantExtended) SQLScan(opts core.Opts, row *sql.Row) error {
 	return row.Scan(m.SQLScanArgs(opts)...)
@@ -977,59 +1099,35 @@ func (m *ShopVariantExtendeds) SQLJoin(w SQLWriter, types []sq.JOIN_TYPE) error 
 
 func (m *ShopVariantExtended) __sqlSelect(w SQLWriter) {
 	w.WriteRawString("SELECT ")
-	core.WriteCols(w, string(__sqlShopVariantExtended_As), (*ShopVariant)(nil).SQLListCols())
+	core.WriteCols(w, string(__sqlShopVariantExtended_As), (*Variant)(nil).SQLListCols())
 	w.WriteByte(',')
-	core.WriteCols(w, string(__sqlShopVariantExtended_JoinAs[0]), (*Variant)(nil).SQLListCols())
-	w.WriteByte(',')
-	core.WriteCols(w, string(__sqlShopVariantExtended_JoinAs[1]), (*Product)(nil).SQLListCols())
-	w.WriteByte(',')
-	core.WriteCols(w, string(__sqlShopVariantExtended_JoinAs[2]), (*ShopProduct)(nil).SQLListCols())
+	core.WriteCols(w, string(__sqlShopVariantExtended_JoinAs[0]), (*ShopVariant)(nil).SQLListCols())
 }
 
 func (m *ShopVariantExtended) __sqlJoin(w SQLWriter, types []sq.JOIN_TYPE) {
-	if len(types) != 3 {
-		panic("common/sql: expect 3 types to join")
+	if len(types) != 1 {
+		panic("common/sql: expect 1 type to join")
 	}
 	w.WriteRawString("FROM ")
-	w.WriteName("shop_variant")
+	w.WriteName("variant")
 	w.WriteRawString(" AS ")
 	w.WriteRawString(string(__sqlShopVariantExtended_As))
 	w.WriteByte(' ')
 	w.WriteRawString(string(types[0]))
 	w.WriteRawString(" JOIN ")
-	w.WriteName((*Variant)(nil).SQLTableName())
+	w.WriteName((*ShopVariant)(nil).SQLTableName())
 	w.WriteRawString(" AS ")
 	w.WriteRawString(string(__sqlShopVariantExtended_JoinAs[0]))
 	w.WriteRawString(" ON ")
 	w.WriteQueryString(__sqlShopVariantExtended_JoinConds[0])
-	w.WriteByte(' ')
-	w.WriteRawString(string(types[1]))
-	w.WriteRawString(" JOIN ")
-	w.WriteName((*Product)(nil).SQLTableName())
-	w.WriteRawString(" AS ")
-	w.WriteRawString(string(__sqlShopVariantExtended_JoinAs[1]))
-	w.WriteRawString(" ON ")
-	w.WriteQueryString(__sqlShopVariantExtended_JoinConds[1])
-	w.WriteByte(' ')
-	w.WriteRawString(string(types[2]))
-	w.WriteRawString(" JOIN ")
-	w.WriteName((*ShopProduct)(nil).SQLTableName())
-	w.WriteRawString(" AS ")
-	w.WriteRawString(string(__sqlShopVariantExtended_JoinAs[2]))
-	w.WriteRawString(" ON ")
-	w.WriteQueryString(__sqlShopVariantExtended_JoinConds[2])
 }
 
 func (m *ShopVariantExtended) SQLScanArgs(opts core.Opts) []interface{} {
 	args := make([]interface{}, 0, 64) // TODO: pre-calculate length
-	m.ShopVariant = new(ShopVariant)
-	args = append(args, m.ShopVariant.SQLScanArgs(opts)...)
 	m.Variant = new(Variant)
 	args = append(args, m.Variant.SQLScanArgs(opts)...)
-	m.Product = new(Product)
-	args = append(args, m.Product.SQLScanArgs(opts)...)
-	m.ShopProduct = new(ShopProduct)
-	args = append(args, m.ShopProduct.SQLScanArgs(opts)...)
+	m.ShopVariant = new(ShopVariant)
+	args = append(args, m.ShopVariant.SQLScanArgs(opts)...)
 
 	return args
 }
@@ -1855,7 +1953,7 @@ func (m *ShopProductFtProductFtVariantFtShopVariant) SQLScanArgs(opts core.Opts)
 }
 
 // Type ShopProductExtended represents a join
-func sqlgenShopProductExtended(_ *ShopProductExtended, _ *ShopProduct, as sq.AS, t0 sq.JOIN_TYPE, _ *Product, a0 sq.AS, c0 string) bool {
+func sqlgenShopProductExtended(_ *ShopProductExtended, _ *Product, as sq.AS, t0 sq.JOIN_TYPE, _ *ShopProduct, a0 sq.AS, c0 string) bool {
 	__sqlShopProductExtended_JoinTypes = []sq.JOIN_TYPE{t0}
 	__sqlShopProductExtended_As = as
 	__sqlShopProductExtended_JoinAs = []sq.AS{a0}
@@ -1870,8 +1968,8 @@ var __sqlShopProductExtended_As sq.AS
 var __sqlShopProductExtended_JoinAs []sq.AS
 var __sqlShopProductExtended_JoinConds []string
 
-func (m *ShopProductExtended) SQLTableName() string  { return "shop_product" }
-func (m *ShopProductExtendeds) SQLTableName() string { return "shop_product" }
+func (m *ShopProductExtended) SQLTableName() string  { return "product" }
+func (m *ShopProductExtendeds) SQLTableName() string { return "product" }
 
 func (m *ShopProductExtended) SQLScan(opts core.Opts, row *sql.Row) error {
 	return row.Scan(m.SQLScanArgs(opts)...)
@@ -1919,9 +2017,9 @@ func (m *ShopProductExtendeds) SQLJoin(w SQLWriter, types []sq.JOIN_TYPE) error 
 
 func (m *ShopProductExtended) __sqlSelect(w SQLWriter) {
 	w.WriteRawString("SELECT ")
-	core.WriteCols(w, string(__sqlShopProductExtended_As), (*ShopProduct)(nil).SQLListCols())
+	core.WriteCols(w, string(__sqlShopProductExtended_As), (*Product)(nil).SQLListCols())
 	w.WriteByte(',')
-	core.WriteCols(w, string(__sqlShopProductExtended_JoinAs[0]), (*Product)(nil).SQLListCols())
+	core.WriteCols(w, string(__sqlShopProductExtended_JoinAs[0]), (*ShopProduct)(nil).SQLListCols())
 }
 
 func (m *ShopProductExtended) __sqlJoin(w SQLWriter, types []sq.JOIN_TYPE) {
@@ -1929,13 +2027,13 @@ func (m *ShopProductExtended) __sqlJoin(w SQLWriter, types []sq.JOIN_TYPE) {
 		panic("common/sql: expect 1 type to join")
 	}
 	w.WriteRawString("FROM ")
-	w.WriteName("shop_product")
+	w.WriteName("product")
 	w.WriteRawString(" AS ")
 	w.WriteRawString(string(__sqlShopProductExtended_As))
 	w.WriteByte(' ')
 	w.WriteRawString(string(types[0]))
 	w.WriteRawString(" JOIN ")
-	w.WriteName((*Product)(nil).SQLTableName())
+	w.WriteName((*ShopProduct)(nil).SQLTableName())
 	w.WriteRawString(" AS ")
 	w.WriteRawString(string(__sqlShopProductExtended_JoinAs[0]))
 	w.WriteRawString(" ON ")
@@ -1944,16 +2042,16 @@ func (m *ShopProductExtended) __sqlJoin(w SQLWriter, types []sq.JOIN_TYPE) {
 
 func (m *ShopProductExtended) SQLScanArgs(opts core.Opts) []interface{} {
 	args := make([]interface{}, 0, 64) // TODO: pre-calculate length
-	m.ShopProduct = new(ShopProduct)
-	args = append(args, m.ShopProduct.SQLScanArgs(opts)...)
 	m.Product = new(Product)
 	args = append(args, m.Product.SQLScanArgs(opts)...)
+	m.ShopProduct = new(ShopProduct)
+	args = append(args, m.ShopProduct.SQLScanArgs(opts)...)
 
 	return args
 }
 
 // Type ShopVariantExt represents a join
-func sqlgenShopVariantExt(_ *ShopVariantExt, _ *ShopVariant, as sq.AS, t0 sq.JOIN_TYPE, _ *Variant, a0 sq.AS, c0 string) bool {
+func sqlgenShopVariantExt(_ *ShopVariantExt, _ *Variant, as sq.AS, t0 sq.JOIN_TYPE, _ *ShopVariant, a0 sq.AS, c0 string) bool {
 	__sqlShopVariantExt_JoinTypes = []sq.JOIN_TYPE{t0}
 	__sqlShopVariantExt_As = as
 	__sqlShopVariantExt_JoinAs = []sq.AS{a0}
@@ -1968,8 +2066,8 @@ var __sqlShopVariantExt_As sq.AS
 var __sqlShopVariantExt_JoinAs []sq.AS
 var __sqlShopVariantExt_JoinConds []string
 
-func (m *ShopVariantExt) SQLTableName() string  { return "shop_variant" }
-func (m *ShopVariantExts) SQLTableName() string { return "shop_variant" }
+func (m *ShopVariantExt) SQLTableName() string  { return "variant" }
+func (m *ShopVariantExts) SQLTableName() string { return "variant" }
 
 func (m *ShopVariantExt) SQLScan(opts core.Opts, row *sql.Row) error {
 	return row.Scan(m.SQLScanArgs(opts)...)
@@ -2017,9 +2115,9 @@ func (m *ShopVariantExts) SQLJoin(w SQLWriter, types []sq.JOIN_TYPE) error {
 
 func (m *ShopVariantExt) __sqlSelect(w SQLWriter) {
 	w.WriteRawString("SELECT ")
-	core.WriteCols(w, string(__sqlShopVariantExt_As), (*ShopVariant)(nil).SQLListCols())
+	core.WriteCols(w, string(__sqlShopVariantExt_As), (*Variant)(nil).SQLListCols())
 	w.WriteByte(',')
-	core.WriteCols(w, string(__sqlShopVariantExt_JoinAs[0]), (*Variant)(nil).SQLListCols())
+	core.WriteCols(w, string(__sqlShopVariantExt_JoinAs[0]), (*ShopVariant)(nil).SQLListCols())
 }
 
 func (m *ShopVariantExt) __sqlJoin(w SQLWriter, types []sq.JOIN_TYPE) {
@@ -2027,13 +2125,13 @@ func (m *ShopVariantExt) __sqlJoin(w SQLWriter, types []sq.JOIN_TYPE) {
 		panic("common/sql: expect 1 type to join")
 	}
 	w.WriteRawString("FROM ")
-	w.WriteName("shop_variant")
+	w.WriteName("variant")
 	w.WriteRawString(" AS ")
 	w.WriteRawString(string(__sqlShopVariantExt_As))
 	w.WriteByte(' ')
 	w.WriteRawString(string(types[0]))
 	w.WriteRawString(" JOIN ")
-	w.WriteName((*Variant)(nil).SQLTableName())
+	w.WriteName((*ShopVariant)(nil).SQLTableName())
 	w.WriteRawString(" AS ")
 	w.WriteRawString(string(__sqlShopVariantExt_JoinAs[0]))
 	w.WriteRawString(" ON ")
@@ -2042,10 +2140,10 @@ func (m *ShopVariantExt) __sqlJoin(w SQLWriter, types []sq.JOIN_TYPE) {
 
 func (m *ShopVariantExt) SQLScanArgs(opts core.Opts) []interface{} {
 	args := make([]interface{}, 0, 64) // TODO: pre-calculate length
-	m.ShopVariant = new(ShopVariant)
-	args = append(args, m.ShopVariant.SQLScanArgs(opts)...)
 	m.Variant = new(Variant)
 	args = append(args, m.Variant.SQLScanArgs(opts)...)
+	m.ShopVariant = new(ShopVariant)
+	args = append(args, m.ShopVariant.SQLScanArgs(opts)...)
 
 	return args
 }

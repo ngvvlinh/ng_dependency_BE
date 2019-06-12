@@ -1,29 +1,20 @@
 package shop
 
 import (
+	"etop.vn/api/main/catalog"
 	pbcm "etop.vn/backend/pb/common"
 	pbs3 "etop.vn/backend/pb/etop/etc/status3"
 	pbshop "etop.vn/backend/pb/etop/shop"
 	"etop.vn/backend/pkg/etop/api/convertpb"
+	"etop.vn/backend/pkg/etop/model"
 	catalogmodel "etop.vn/backend/pkg/services/catalog/model"
 )
 
-func PbEtopVariants(items []*catalogmodel.VariantExtended) []*pbshop.EtopVariant {
-	if items == nil || len(items) == 0 {
-		return nil
-	}
-	res := make([]*pbshop.EtopVariant, len(items))
-	for i, item := range items {
-		res[i] = PbEtopVariant(item)
-	}
-	return res
-}
-
-func PbEtopVariant(m *catalogmodel.VariantExtended) *pbshop.EtopVariant {
+func PbEtopVariant(m *catalog.Variant) *pbshop.EtopVariant {
 	res := &pbshop.EtopVariant{
 		Id:          m.ID,
-		Code:        m.Code, // yes, it's Code
-		Name:        m.GetName(),
+		Code:        m.Code,
+		Name:        m.Name,
 		Description: m.Description,
 		ShortDesc:   m.ShortDesc,
 		DescHtml:    m.DescHTML,
@@ -35,7 +26,7 @@ func PbEtopVariant(m *catalogmodel.VariantExtended) *pbshop.EtopVariant {
 	return res
 }
 
-func PbEtopProduct(m *catalogmodel.ProductFtVariant) *pbshop.EtopProduct {
+func PbEtopProduct(m *catalog.Product) *pbshop.EtopProduct {
 	return &pbshop.EtopProduct{
 		Id:          m.ID,
 		Code:        m.Code,
@@ -43,17 +34,17 @@ func PbEtopProduct(m *catalogmodel.ProductFtVariant) *pbshop.EtopProduct {
 		Description: m.Description,
 		ShortDesc:   m.ShortDesc,
 		DescHtml:    m.DescHTML,
-		ImageUrls:   m.Product.ImageURLs,
+		ImageUrls:   m.ImageURLs,
 		ListPrice:   0,
 		CostPrice:   0,
 
-		CategoryId: m.Product.ProductSourceCategoryID,
+		CategoryId: m.ProductSourceCategoryID,
 		// @deprecated
-		ProductSourceCategoryId: m.Product.ProductSourceCategoryID,
+		ProductSourceCategoryId: m.ProductSourceCategoryID,
 	}
 }
 
-func PbShopVariants(items []*catalogmodel.ShopVariantExtended) []*pbshop.ShopVariant {
+func PbShopVariants(items []*catalog.ShopVariantExtended) []*pbshop.ShopVariant {
 	res := make([]*pbshop.ShopVariant, len(items))
 	for i, item := range items {
 		res[i] = PbShopVariant(item)
@@ -61,28 +52,28 @@ func PbShopVariants(items []*catalogmodel.ShopVariantExtended) []*pbshop.ShopVar
 	return res
 }
 
-func PbShopVariant(m *catalogmodel.ShopVariantExtended) *pbshop.ShopVariant {
+func PbShopVariant(m *catalog.ShopVariantExtended) *pbshop.ShopVariant {
 	sv := m.ShopVariant
 	res := &pbshop.ShopVariant{
 		Id:           sv.VariantID,
-		Info:         PbEtopVariant(&m.VariantExtended),
-		Code:         m.Code,
-		EdCode:       m.Code,
+		Info:         PbEtopVariant(m.Variant),
+		Code:         m.ShopVariant.Code,
+		EdCode:       m.ShopVariant.Code,
 		Name:         sv.Name,
 		Description:  sv.Description,
 		ShortDesc:    sv.ShortDesc,
 		DescHtml:     sv.DescHTML,
 		ImageUrls:    sv.ImageURLs,
-		Tags:         sv.Tags,
+		Tags:         nil,
 		Note:         sv.Note,
-		Status:       pbs3.Pb(sv.Status),
-		ListPrice:    int32(m.ListPrice),
+		Status:       pbs3.Pb(model.Status3(sv.Status)),
+		ListPrice:    int32(m.ShopVariant.ListPrice),
 		RetailPrice:  int32(sv.RetailPrice),
-		CostPrice:    int32(m.CostPrice),
+		CostPrice:    int32(m.ShopVariant.CostPrice),
 		CollectionId: sv.CollectionID,
 		Attributes:   convertpb.PbAttributes(m.Attributes),
 	}
-	res.Info = PbEtopVariant(&m.VariantExtended)
+	res.Info = PbEtopVariant(m.Variant)
 	return res
 }
 
@@ -117,34 +108,30 @@ func PbShopProduct(m *catalogmodel.ShopProduct) *pbshop.ShopProduct {
 	return res
 }
 
-func PbShopProductsFtVariant(items []*catalogmodel.ShopProductFtVariant) []*pbshop.ShopProduct {
+func PbShopProductsWithVariants(items []*catalog.ShopProductWithVariants) []*pbshop.ShopProduct {
 	res := make([]*pbshop.ShopProduct, len(items))
 	for i, item := range items {
-		res[i] = PbShopProductFtVariant(item)
+		res[i] = PbShopProductWithVariants(item)
 	}
 	return res
 }
 
-func PbShopProductFtVariant(m *catalogmodel.ShopProductFtVariant) *pbshop.ShopProduct {
+func PbShopProductWithVariants(m *catalog.ShopProductWithVariants) *pbshop.ShopProduct {
 	res := &pbshop.ShopProduct{
-		Id:                m.ShopProduct.ProductID,
-		Name:              m.ShopProduct.Name,
-		Description:       m.ShopProduct.Description,
-		DescHtml:          m.ShopProduct.DescHTML,
-		ShortDesc:         m.ShopProduct.ShortDesc,
-		ImageUrls:         m.ShopProduct.ImageURLs,
-		Status:            pbs3.Pb(m.ShopProduct.Status),
-		Tags:              m.Tags,
-		CollectionIds:     m.CollectionIDs,
-		Variants:          PbShopVariants(m.Variants),
-		ProductSourceId:   m.ShopProduct.ProductSourceID,
-		ProductSourceName: m.ShopProduct.ProductSourceName,
-		ProductSourceType: m.ShopProduct.ProductSourceType,
+		Id:              m.ShopProduct.ProductID,
+		Name:            m.ShopProduct.Name,
+		Description:     m.ShopProduct.Description,
+		DescHtml:        m.ShopProduct.DescHTML,
+		ShortDesc:       m.ShopProduct.ShortDesc,
+		ImageUrls:       m.ShopProduct.ImageURLs,
+		Status:          pbs3.Pb(model.Status3(m.ShopProduct.Status)),
+		Tags:            m.ShopProduct.Tags,
+		CollectionIds:   m.ShopProduct.CollectionIDs,
+		Variants:        PbShopVariants(m.Variants),
+		ProductSourceId: m.Product.ProductSourceID,
 	}
 
-	res.Info = PbEtopProduct(&catalogmodel.ProductFtVariant{
-		Product: m.Product,
-	})
+	res.Info = PbEtopProduct(m.Product)
 	return res
 }
 

@@ -20,6 +20,8 @@ import (
 	wrapshop "etop.vn/backend/wrapper/etop/shop"
 )
 
+var maxPaging = meta.Paging{Limit: 5000}
+
 // - check if product code exists
 //   + if not exist, product information must not be empty
 // - load all categories and collections from database
@@ -365,7 +367,7 @@ func loadProducts(ctx context.Context, codeMode CodeMode, productSourceID int64,
 		s = s.Where(s.FtProduct.ByCode("").Nullable())
 		s = s.ByNameNormUas(keys...)
 	}
-	products, err := s.ListProductsDB(meta.Paging{})
+	products, err := s.Paging(maxPaging).ListProductsDB()
 	if err != nil {
 		return nil, err
 	}
@@ -406,7 +408,7 @@ func loadVariants(
 	if useCode {
 		args.Codes = codes
 	}
-	variants, err := s.ListVariantsDB(meta.Paging{})
+	variants, err := s.Paging(maxPaging).ListVariantsDB()
 	if err != nil {
 		return nil, nil, err
 	}

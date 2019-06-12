@@ -364,16 +364,14 @@ func CreateVariant(ctx context.Context, cmd *catalogmodelx.CreateVariantCommand)
 			return errInsert
 		}
 	}
-	query := &catalogmodelx.GetShopProductQuery{
-		ProductID:       productID,
-		ShopID:          cmd.ShopID,
-		ProductSourceID: cmd.ProductSourceID,
+	{
+		q := shopProductStore(ctx).ShopID(cmd.ShopID).ID(productID)
+		product, err := q.GetShopProductWithVariants()
+		if err != nil {
+			return err
+		}
+		cmd.Result = product
 	}
-	if err := bus.Dispatch(ctx, query); err != nil {
-		return err
-	}
-
-	cmd.Result = query.Result
 	return nil
 }
 

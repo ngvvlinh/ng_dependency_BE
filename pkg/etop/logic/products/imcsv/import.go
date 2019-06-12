@@ -13,7 +13,6 @@ import (
 
 	"github.com/360EntSecGroup-Skylar/excelize"
 
-	"etop.vn/api/meta"
 	pbcm "etop.vn/backend/pb/common"
 	pbshop "etop.vn/backend/pb/etop/shop"
 	cm "etop.vn/backend/pkg/common"
@@ -57,7 +56,7 @@ func handleShopImportSampleProducts(ctx context.Context, c *httpx.Context, shop 
 		s := productStore(ctx).
 			ProductSourceID(shop.ProductSourceID).
 			Code("TEST-SP-01")
-		products, err := s.ListProducts(meta.Paging{})
+		products, err := s.ListProducts()
 		if err != nil {
 			return nil, cm.Error(cm.Internal, "Không thể tạo sản phẩm mẫu", err)
 		}

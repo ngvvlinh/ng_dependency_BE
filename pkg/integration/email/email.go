@@ -117,7 +117,7 @@ func (s *Client) Dial() (*smtp.Client, error) {
 		return client, err
 
 	default:
-		return nil, cm.Error(cm.InvalidArgument, cm.F("Unknown encryption: %v", encrypt), nil)
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "Unknown encryption: %v", encrypt)
 	}
 }
 

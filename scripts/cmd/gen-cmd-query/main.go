@@ -400,7 +400,6 @@ func (c QueryBus) DispatchAll(ctx context.Context, msgs ...Query) error {
 
 func generateQueries(w *MultiWriter, serviceName string, defs []HandlerDef) {
 	w.Import("context")
-	w.Import("unsafe")
 
 	genHandlerName := serviceName + "Handler"
 	{
@@ -440,8 +439,7 @@ func (h %v) RegisterHandlers(b interface{
 		// implement GetArgs()
 		{
 			w2 := &w.WriteArgs
-			p(w2, "func (q *%v) GetArgs() *%v { return (*%v)(unsafe.Pointer(q)) }\n",
-				genQueryName, genRequestName, genRequestName)
+			generateGetArgs(w2, genQueryName, genRequestName, item.Request)
 		}
 		// implement Query
 		{
@@ -465,7 +463,6 @@ func (h %v) Handle%v(ctx context.Context, query *%v) error {
 
 func generateCommands(w *MultiWriter, serviceName string, defs []HandlerDef) {
 	w.Import("context")
-	w.Import("unsafe")
 
 	genHandlerName := serviceName + "Handler"
 	{
@@ -505,8 +502,7 @@ func (h %v) RegisterHandlers(b interface{
 		// implement GetArgs()
 		{
 			w2 := &w.WriteArgs
-			p(w2, "func (q *%v) GetArgs() *%v { return (*%v)(unsafe.Pointer(q)) }\n",
-				genCommandName, genRequestName, genRequestName)
+			generateGetArgs(w2, genCommandName, genRequestName, item.Request)
 		}
 		// implement Command
 		{
@@ -526,6 +522,17 @@ func (h %v) Handle%v(ctx context.Context, cmd *%v) error {
 			p(w2, tmpl, genHandlerName, methodName, genCommandName, methodName)
 		}
 	}
+}
+
+func generateGetArgs(w io.Writer, wrapperName, requestName string, request *types.Struct) {
+	p(w, "func (q *%v) GetArgs() *%v {\n", wrapperName, requestName)
+	p(w, "\treturn &%v{\n", requestName)
+	for i, n := 0, request.NumFields(); i < n; i++ {
+		field := request.Field(i)
+		p(w, "\t\t%v: q.%v,\n", field.Name(), field.Name())
+	}
+	p(w, "\t}\n")
+	p(w, "}\n")
 }
 
 func renderNamed(w Importer, named *types.Named) string {

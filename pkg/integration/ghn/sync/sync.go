@@ -113,7 +113,7 @@ func (s *Synchronizer) syncCallbackLogs(id interface{}, p scheduler.Planner) (_e
 	defer func() {
 		err := recover()
 		if err != nil {
-			_err = cm.ErrorTrace(cm.Internal, cm.F("Panic: %v", err), nil)
+			_err = cm.ErrorTrace(cm.Internal, fmt.Sprintf("Panic: %v", err), nil)
 		}
 		if cm.IsTrace(_err) {
 			bus.PrintAllStack(ctx, true)

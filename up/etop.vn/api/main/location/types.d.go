@@ -4,7 +4,6 @@ package location
 
 import (
 	context "context"
-	unsafe "unsafe"
 
 	locationv1 "etop.vn/api/main/location/v1"
 	meta "etop.vn/api/meta"
@@ -83,16 +82,35 @@ func (q *GetLocationQuery) query()       {}
 // implement conversion
 
 func (q *FindLocationQuery) GetArgs() *locationv1.FindLocationQueryArgs {
-	return (*locationv1.FindLocationQueryArgs)(unsafe.Pointer(q))
+	return &locationv1.FindLocationQueryArgs{
+		Province: q.Province,
+		District: q.District,
+		Ward:     q.Ward,
+	}
 }
 func (q *FindOrGetLocationQuery) GetArgs() *locationv1.FindOrGetLocationQueryArgs {
-	return (*locationv1.FindOrGetLocationQueryArgs)(unsafe.Pointer(q))
+	return &locationv1.FindOrGetLocationQueryArgs{
+		Province:     q.Province,
+		District:     q.District,
+		Ward:         q.Ward,
+		ProvinceCode: q.ProvinceCode,
+		DistrictCode: q.DistrictCode,
+		WardCode:     q.WardCode,
+	}
 }
 func (q *GetAllLocationsQuery) GetArgs() *locationv1.GetAllLocationsQueryArgs {
-	return (*locationv1.GetAllLocationsQueryArgs)(unsafe.Pointer(q))
+	return &locationv1.GetAllLocationsQueryArgs{
+		All:          q.All,
+		ProvinceCode: q.ProvinceCode,
+		DistrictCode: q.DistrictCode,
+	}
 }
 func (q *GetLocationQuery) GetArgs() *locationv1.GetLocationQueryArgs {
-	return (*locationv1.GetLocationQueryArgs)(unsafe.Pointer(q))
+	return &locationv1.GetLocationQueryArgs{
+		ProvinceCode: q.ProvinceCode,
+		DistrictCode: q.DistrictCode,
+		WardCode:     q.WardCode,
+	}
 }
 
 // implement dispatching

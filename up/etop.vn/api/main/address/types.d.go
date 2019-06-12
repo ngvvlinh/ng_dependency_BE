@@ -4,7 +4,6 @@ package address
 
 import (
 	context "context"
-	unsafe "unsafe"
 
 	meta "etop.vn/api/meta"
 )
@@ -50,7 +49,9 @@ func (q *GetAddressByIDQuery) query() {}
 // implement conversion
 
 func (q *GetAddressByIDQuery) GetArgs() *GetAddressByIDQueryArgs {
-	return (*GetAddressByIDQueryArgs)(unsafe.Pointer(q))
+	return &GetAddressByIDQueryArgs{
+		ID: q.ID,
+	}
 }
 
 // implement dispatching

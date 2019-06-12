@@ -1,5 +1,7 @@
 package catalog
 
+import cmutil "etop.vn/common/util"
+
 type VariantWithProduct struct {
 	*Variant
 	*Product
@@ -12,14 +14,38 @@ type ShopVariantWithProduct struct {
 	*ShopVariant
 }
 
+func (v ShopVariantWithProduct) GetListPrice() int32 {
+	return cmutil.CoalesceInt32(
+		v.ShopVariant.ListPrice, v.Variant.ListPrice,
+		v.ShopProduct.ListPrice, v.Product.ListPrice,
+	)
+}
+
+func (v ShopVariantWithProduct) ProductWithVariantName() string {
+	productName := ShopProductExtended{
+		Product:     v.Product,
+		ShopProduct: v.ShopProduct,
+	}.ProductName()
+
+	variantLabel := v.Variant.Attributes.Label()
+	if variantLabel == "" {
+		return productName
+	}
+	return productName + " - " + variantLabel
+}
+
 type ShopVariantExtended struct {
 	*ShopVariant
 	*Variant
 }
 
 type ShopProductExtended struct {
-	*ShopProduct
 	*Product
+	*ShopProduct
+}
+
+func (p ShopProductExtended) ProductName() string {
+	return cmutil.CoalesceString(p.ShopProduct.Name, p.Product.Name)
 }
 
 type ProductWithVariants struct {

@@ -613,12 +613,12 @@ func (q *queryImpl) UpdateAll() Query {
 }
 
 func (q *queryImpl) In(column string, args ...interface{}) Query {
-	q.whereParts = append(q.whereParts, NewInPart(true, column, args...))
+	q.whereParts = append(q.whereParts, In(column, args...))
 	return q
 }
 
 func (q *queryImpl) NotIn(column string, args ...interface{}) Query {
-	q.whereParts = append(q.whereParts, NewInPart(false, column, args...))
+	q.whereParts = append(q.whereParts, NotIn(column, args...))
 	return q
 }
 

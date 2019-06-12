@@ -27,7 +27,7 @@ type GetAccountUserExtendedsQuery struct {
 	Result struct {
 		AccountUsers []*AccountUserExtended
 
-		Total int
+		Total int32
 	}
 }
 

@@ -126,7 +126,7 @@ func GetMoneyTransactions(ctx context.Context, q *wrapadmin.GetMoneyTransactions
 	}
 	q.Result = &pborder.MoneyTransactionsResponse{
 		MoneyTransactions: pborder.PbMoneyTransactionExtendeds(query.Result.MoneyTransactions),
-		Paging:            pbcm.PbPageInfo(paging, query.Result.Total),
+		Paging:            pbcm.PbPageInfo(paging, int32(query.Result.Total)),
 	}
 	return nil
 }
@@ -185,7 +185,7 @@ func GetMoneyTransactionShippingExternals(ctx context.Context, q *wrapadmin.GetM
 	}
 	q.Result = &pborder.MoneyTransactionShippingExternalsResponse{
 		MoneyTransactions: pborder.PbMoneyTransactionShippingExternalExtendeds(query.Result.MoneyTransactionShippingExternals),
-		Paging:            pbcm.PbPageInfo(paging, query.Result.Total),
+		Paging:            pbcm.PbPageInfo(paging, int32(query.Result.Total)),
 	}
 	return nil
 }
@@ -277,7 +277,7 @@ func GetShops(ctx context.Context, q *wrapadmin.GetShopsEndpoint) error {
 		return err
 	}
 	q.Result = &pbadmin.GetShopsResponse{
-		Paging: pbcm.PbPageInfo(paging, query.Result.Total),
+		Paging: pbcm.PbPageInfo(paging, int32(query.Result.Total)),
 		Shops:  pbetop.PbShopExtendeds(query.Result.Shops),
 	}
 	return nil
@@ -320,7 +320,7 @@ func GetCredits(ctx context.Context, q *wrapadmin.GetCreditsEndpoint) error {
 	}
 	q.Result = &pbetop.CreditsResponse{
 		Credits: pbetop.PbCreditExtendeds(query.Result.Credits),
-		Paging:  pbcm.PbPageInfo(paging, query.Result.Total),
+		Paging:  pbcm.PbPageInfo(paging, int32(query.Result.Total)),
 	}
 	return nil
 }
@@ -442,7 +442,7 @@ func GetMoneyTransactionShippingEtops(ctx context.Context, q *wrapadmin.GetMoney
 		return err
 	}
 	q.Result = &pborder.MoneyTransactionShippingEtopsResponse{
-		Paging:                        pbcm.PbPageInfo(paging, query.Result.Total),
+		Paging:                        pbcm.PbPageInfo(paging, int32(query.Result.Total)),
 		MoneyTransactionShippingEtops: pborder.PbMoneyTransactionShippingEtopExtendeds(query.Result.MoneyTransactionShippingEtops),
 	}
 	return nil

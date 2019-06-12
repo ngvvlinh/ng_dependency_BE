@@ -22,9 +22,21 @@ func PbTime(t time.Time) *Timestamp {
 }
 
 type Paging struct {
-	Offset int
-	Limit  int
+	Offset int32
+	Limit  int32
 	Sort   []string
+}
+
+type PageInfo struct {
+	Offset int32
+	Limit  int32
+	Sort   []string
+
+	// TODO: next, prev
+}
+
+func FromPaging(paging Paging) PageInfo {
+	return PageInfo(paging)
 }
 
 type Filters []Filter

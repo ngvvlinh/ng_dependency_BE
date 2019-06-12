@@ -4,7 +4,6 @@ package ordering
 
 import (
 	context "context"
-	unsafe "unsafe"
 
 	orderingv1types "etop.vn/api/main/ordering/v1/types"
 	meta "etop.vn/api/meta"
@@ -75,14 +74,27 @@ func (q *ValidateOrdersCommand) command()      {}
 // implement conversion
 
 func (q *GetOrderByIDCommand) GetArgs() *GetOrderByIDArgs {
-	return (*GetOrderByIDArgs)(unsafe.Pointer(q))
+	return &GetOrderByIDArgs{
+		ID: q.ID,
+	}
 }
-func (q *GetOrdersCommand) GetArgs() *GetOrdersArgs { return (*GetOrdersArgs)(unsafe.Pointer(q)) }
+func (q *GetOrdersCommand) GetArgs() *GetOrdersArgs {
+	return &GetOrdersArgs{
+		ShopID: q.ShopID,
+		IDs:    q.IDs,
+	}
+}
 func (q *ReserveOrdersForFfmCommand) GetArgs() *ReserveOrdersForFfmArgs {
-	return (*ReserveOrdersForFfmArgs)(unsafe.Pointer(q))
+	return &ReserveOrdersForFfmArgs{
+		OrderIDs:   q.OrderIDs,
+		Fulfill:    q.Fulfill,
+		FulfillIDs: q.FulfillIDs,
+	}
 }
 func (q *ValidateOrdersCommand) GetArgs() *ValidateOrdersForShippingArgs {
-	return (*ValidateOrdersForShippingArgs)(unsafe.Pointer(q))
+	return &ValidateOrdersForShippingArgs{
+		OrderIDs: q.OrderIDs,
+	}
 }
 
 // implement dispatching

@@ -9,7 +9,6 @@ import (
 )
 
 type AggregateBus struct{ meta.Bus }
-type QueryBus struct{ meta.Bus }
 
 type Aggregate interface {
 	GetFulfillmentByID(ctx context.Context, query *GetFulfillmentByIDQueryArgs) (*Fulfillment, error)

@@ -4,7 +4,6 @@ package identity
 
 import (
 	context "context"
-	unsafe "unsafe"
 
 	meta "etop.vn/api/meta"
 )
@@ -50,7 +49,9 @@ func (q *GetShopByIDQuery) query() {}
 // implement conversion
 
 func (q *GetShopByIDQuery) GetArgs() *GetShopByIDQueryArgs {
-	return (*GetShopByIDQueryArgs)(unsafe.Pointer(q))
+	return &GetShopByIDQueryArgs{
+		ID: q.ID,
+	}
 }
 
 // implement dispatching

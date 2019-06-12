@@ -14,6 +14,7 @@ import (
 	"etop.vn/backend/pkg/common/sqlstore"
 	"etop.vn/backend/pkg/etop/model"
 	notisqlstore "etop.vn/backend/pkg/notifier/sqlstore"
+	catalogsqlstore "etop.vn/backend/pkg/services/catalog/sqlstore"
 )
 
 var (
@@ -37,6 +38,9 @@ func Init(db cmsql.Database) {
 		ll.Panic("Already initialized")
 	}
 	x = db
+
+	shopProductStore = catalogsqlstore.NewShopProductStore(db)
+	shopVariantStore = catalogsqlstore.NewShopVariantStore(db)
 }
 
 func InitDBNotifier(db cmsql.Database) {
