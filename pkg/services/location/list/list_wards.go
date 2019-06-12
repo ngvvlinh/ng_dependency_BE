@@ -39710,7 +39710,7 @@ var Wards = []*locationtypes.Ward{
 		Code:         "00067",
 		DistrictCode: "002",
 		Name:         "Phường Chương Dương",
-		VTPostID:     0,
+		VTPostID:     11,
 	}, {
 		Code:         "00070",
 		DistrictCode: "002",
