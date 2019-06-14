@@ -273,7 +273,7 @@ func main() {
 
 	orderAggr.WithPM(orderingPM)
 
-	shop.Init(catalogQuery, shipnowAggr, shipnowQuery, identityAggr, shippingManager, shutdowner, redisStore)
+	shop.Init(catalogQuery, shipnowAggr, shipnowQuery, identityAggr, identityQuery, shippingManager, shutdowner, redisStore)
 	partner.Init(shutdowner, redisStore, authStore, cfg.URL.Auth)
 	xshop.Init(shutdowner, redisStore, authStore)
 	integration.Init(shutdowner, redisStore, authStore)

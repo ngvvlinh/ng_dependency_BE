@@ -98,6 +98,25 @@ func (ft ExternalAccountAhamoveFilters) ByNamePtr(Name *string) *sq.ColumnFilter
 	}
 }
 
+func (ft ExternalAccountAhamoveFilters) ByExternalID(ExternalID string) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "external_id",
+		Value:  ExternalID,
+		IsNil:  ExternalID == "",
+	}
+}
+
+func (ft ExternalAccountAhamoveFilters) ByExternalIDPtr(ExternalID *string) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "external_id",
+		Value:  ExternalID,
+		IsNil:  ExternalID == nil,
+		IsZero: ExternalID != nil && (*ExternalID) == "",
+	}
+}
+
 func (ft ExternalAccountAhamoveFilters) ByExternalVerified(ExternalVerified bool) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
@@ -190,5 +209,119 @@ func (ft ExternalAccountAhamoveFilters) ByUpdatedAtPtr(UpdatedAt *time.Time) *sq
 		Value:  UpdatedAt,
 		IsNil:  UpdatedAt == nil,
 		IsZero: UpdatedAt != nil && (*UpdatedAt).IsZero(),
+	}
+}
+
+func (ft ExternalAccountAhamoveFilters) ByLastSendVerifiedAt(LastSendVerifiedAt time.Time) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "last_send_verified_at",
+		Value:  LastSendVerifiedAt,
+		IsNil:  LastSendVerifiedAt.IsZero(),
+	}
+}
+
+func (ft ExternalAccountAhamoveFilters) ByLastSendVerifiedAtPtr(LastSendVerifiedAt *time.Time) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "last_send_verified_at",
+		Value:  LastSendVerifiedAt,
+		IsNil:  LastSendVerifiedAt == nil,
+		IsZero: LastSendVerifiedAt != nil && (*LastSendVerifiedAt).IsZero(),
+	}
+}
+
+func (ft ExternalAccountAhamoveFilters) ByExternalTicketID(ExternalTicketID string) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "external_ticket_id",
+		Value:  ExternalTicketID,
+		IsNil:  ExternalTicketID == "",
+	}
+}
+
+func (ft ExternalAccountAhamoveFilters) ByExternalTicketIDPtr(ExternalTicketID *string) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "external_ticket_id",
+		Value:  ExternalTicketID,
+		IsNil:  ExternalTicketID == nil,
+		IsZero: ExternalTicketID != nil && (*ExternalTicketID) == "",
+	}
+}
+
+func (ft ExternalAccountAhamoveFilters) ByIDCardFrontImg(IDCardFrontImg string) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "id_card_front_img",
+		Value:  IDCardFrontImg,
+		IsNil:  IDCardFrontImg == "",
+	}
+}
+
+func (ft ExternalAccountAhamoveFilters) ByIDCardFrontImgPtr(IDCardFrontImg *string) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "id_card_front_img",
+		Value:  IDCardFrontImg,
+		IsNil:  IDCardFrontImg == nil,
+		IsZero: IDCardFrontImg != nil && (*IDCardFrontImg) == "",
+	}
+}
+
+func (ft ExternalAccountAhamoveFilters) ByIDCardBackImg(IDCardBackImg string) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "id_card_back_img",
+		Value:  IDCardBackImg,
+		IsNil:  IDCardBackImg == "",
+	}
+}
+
+func (ft ExternalAccountAhamoveFilters) ByIDCardBackImgPtr(IDCardBackImg *string) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "id_card_back_img",
+		Value:  IDCardBackImg,
+		IsNil:  IDCardBackImg == nil,
+		IsZero: IDCardBackImg != nil && (*IDCardBackImg) == "",
+	}
+}
+
+func (ft ExternalAccountAhamoveFilters) ByPortraitImg(PortraitImg string) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "portrait_img",
+		Value:  PortraitImg,
+		IsNil:  PortraitImg == "",
+	}
+}
+
+func (ft ExternalAccountAhamoveFilters) ByPortraitImgPtr(PortraitImg *string) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "portrait_img",
+		Value:  PortraitImg,
+		IsNil:  PortraitImg == nil,
+		IsZero: PortraitImg != nil && (*PortraitImg) == "",
+	}
+}
+
+func (ft ExternalAccountAhamoveFilters) ByUploadedAt(UploadedAt time.Time) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "uploaded_at",
+		Value:  UploadedAt,
+		IsNil:  UploadedAt.IsZero(),
+	}
+}
+
+func (ft ExternalAccountAhamoveFilters) ByUploadedAtPtr(UploadedAt *time.Time) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "uploaded_at",
+		Value:  UploadedAt,
+		IsNil:  UploadedAt == nil,
+		IsZero: UploadedAt != nil && (*UploadedAt).IsZero(),
 	}
 }

@@ -69,3 +69,8 @@ type GetAccountCommand struct {
 	Request *ahamoveClient.GetAccountRequest
 	Result  *ahamoveClient.Account
 }
+
+type VerifyAccountCommand struct {
+	Request *ahamoveClient.VerifyAccountRequest
+	Result  *ahamoveClient.VerifyAccountResponse
+}

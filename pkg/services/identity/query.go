@@ -3,6 +3,9 @@ package identity
 import (
 	"context"
 
+	cm "etop.vn/backend/pkg/common"
+	"etop.vn/backend/pkg/common/validate"
+
 	"etop.vn/backend/pkg/common/bus"
 
 	"etop.vn/backend/pkg/common/cmsql"
@@ -15,13 +18,15 @@ import (
 var _ identity.QueryService = &QueryService{}
 
 type QueryService struct {
-	store           sqlstore.IdentityStoreFactory
+	store           sqlstore.ShopStoreFactory
+	userStore       sqlstore.UserStoreFactory
 	xAccountAhamove sqlstore.XAccountAhamoveStoreFactory
 }
 
 func NewQueryService(db cmsql.Database) *QueryService {
 	return &QueryService{
 		store:           sqlstore.NewIdentityStore(db),
+		userStore:       sqlstore.NewUserStore(db),
 		xAccountAhamove: sqlstore.NewXAccountAhamoveStore(db),
 	}
 }
@@ -31,9 +36,9 @@ func (a *QueryService) MessageBus() identity.QueryBus {
 	return identity.NewQueryServiceHandler(a).RegisterHandlers(b)
 }
 
-func (q *QueryService) GetShopByID(ctx context.Context, query *identity.GetShopByIDQueryArgs) (*identity.GetShopByIDQueryResult, error) {
+func (q *QueryService) GetShopByID(ctx context.Context, args *identity.GetShopByIDQueryArgs) (*identity.GetShopByIDQueryResult, error) {
 	shop, err := q.store(ctx).GetByID(identitymodelx.GetByIDArgs{
-		ID: query.ID,
+		ID: args.ID,
 	})
 	if err != nil {
 		return nil, err
@@ -43,6 +48,16 @@ func (q *QueryService) GetShopByID(ctx context.Context, query *identity.GetShopB
 	}, nil
 }
 
-func (q *QueryService) GetExternalAccountAhamoveByPhone(ctx context.Context, args *identity.GetExternalAccountAhamoveByPhoneArgs) (*identity.ExternalAccountAhamove, error) {
-	return q.xAccountAhamove(ctx).Phone(args.Phone).OwnerID(args.OwnerID).GetXAccountAhamove()
+func (q *QueryService) GetUserByID(ctx context.Context, args *identity.GetUserByIDQueryArgs) (*identity.User, error) {
+	return q.userStore(ctx).GetUserByID(sqlstore.GetUserByIDArgs{
+		ID: args.UserID,
+	})
+}
+
+func (q *QueryService) GetExternalAccountAhamove(ctx context.Context, args *identity.GetExternalAccountAhamoveArgs) (*identity.ExternalAccountAhamove, error) {
+	phone := args.Phone
+	if cm.IsDev() {
+		phone, _, _ = validate.TrimTest(phone)
+	}
+	return q.xAccountAhamove(ctx).Phone(phone).OwnerID(args.OwnerID).GetXAccountAhamove()
 }

@@ -19,6 +19,7 @@ type ShipnowCarrier interface {
 type ShipnowCarrierAccount interface {
 	RegisterExternalAccount(context.Context, *RegisterExternalAccountArgs) (*carrier.RegisterExternalAccountResult, error)
 	GetExternalAccount(context.Context, *GetExternalAccountArgs) (*carrier.ExternalAccount, error)
+	VerifyExternalAccount(context.Context, *VerifyExternalAccountArgs) (*carrier.VerifyExternalAccountResult, error)
 }
 
 type GetShippingServiceArgs struct {
@@ -34,5 +35,9 @@ type RegisterExternalAccountArgs struct {
 }
 
 type GetExternalAccountArgs struct {
-	ShopID int64
+	OwnerID int64
+}
+
+type VerifyExternalAccountArgs struct {
+	OwnerID int64
 }

@@ -36,6 +36,7 @@ type Manager interface {
 
 	RegisterExternalAccount(ctx context.Context, cmd *RegisterExternalAccountCommand) (*RegisterExternalAccountResult, error)
 	GetExternalAccount(ctx context.Context, cmd *GetExternalAccountCommand) (*ExternalAccount, error)
+	VerifyExternalAccount(ctx context.Context, cmd *VerifyExternalAccountCommand) (*VerifyExternalAccountResult, error)
 }
 
 type CreateExternalShipnowCommand struct {
@@ -83,13 +84,23 @@ type RegisterExternalAccountResult struct {
 }
 
 type GetExternalAccountCommand struct {
-	ShopID  int64
+	OwnerID int64
 	Carrier Carrier
 }
 
 type ExternalAccount struct {
-	ID       string
-	Name     string
-	Email    string
-	Verified bool
+	ID        string
+	Name      string
+	Email     string
+	Verified  bool
+	CreatedAt time.Time
+}
+
+type VerifyExternalAccountCommand struct {
+	OwnerID int64
+	Carrier Carrier
+}
+
+type VerifyExternalAccountResult struct {
+	TicketID string
 }

@@ -17,11 +17,11 @@ import (
 )
 
 const (
-	minSize      = 100
-	maxSize      = 1024 * 1024 // 1MB
-	minWH        = 200
-	maxWH        = 2000
-	identityType = "identity"
+	minSize                 = 100
+	maxSize                 = 1024 * 1024 // 1MB
+	minWH                   = 200
+	maxWH                   = 2000
+	AhamoveVerificationType = "ahamove_verification"
 )
 
 func NewUploadError(code cm.Code, msg, filename string) error {
@@ -43,9 +43,9 @@ func UploadHandler(c *httpx.Context) error {
 		return cm.Error(cm.InvalidArgument, "No file", nil)
 	}
 	imgType := form.Value["type"]
-	if imgType != nil && imgType[0] == identityType {
-		path = cfg.UploadIdentityDirImg
-		urlPrefix = cfg.URLIdentityPrefix
+	if imgType != nil && imgType[0] == AhamoveVerificationType {
+		path = cfg.UploadAhamoveVerificationDirImg
+		urlPrefix = cfg.URLAhamoveVerificationPrefix
 	}
 
 	exts := make([]string, len(files))

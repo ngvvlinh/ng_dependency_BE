@@ -25,9 +25,11 @@ func init() {
 }
 
 type Client struct {
-	baseUrl string
-	apiKey  string
-	rclient *resty.Client
+	baseUrl          string
+	verifyAccountUrl string
+	apiKey           string
+	rclient          *resty.Client
+	env              string
 }
 
 const (
@@ -49,12 +51,15 @@ func New(cfg Config) *Client {
 	c := &Client{
 		apiKey:  cfg.ApiKey,
 		rclient: resty.NewWithClient(client).SetDebug(true),
+		env:     cfg.Env,
 	}
 	switch cfg.Env {
 	case "test":
 		c.baseUrl = "http://apistg.ahamove.com/v1/"
+		c.verifyAccountUrl = "https://ws.ahamove.com/partner/create_ticket_stg"
 	case "prod":
 		c.baseUrl = "http://apistg.ahamove.com/v1"
+		c.verifyAccountUrl = "https://ws.ahamove.com/partner/create_ticket"
 	default:
 		ll.Fatal("ahamove: Invalid ENV")
 	}
@@ -173,6 +178,34 @@ func (c *Client) RegisterAccount(ctx context.Context, req *RegisterAccountReques
 	return &resp, err
 }
 
+func (c *Client) VerifyAccount(ctx context.Context, req *VerifyAccountRequest) (*VerifyAccountResponse, error) {
+	switch c.env {
+	case "test":
+		req.Description = "[TEST-TOPSHIP] " + req.Description
+	case "prod":
+		req.Description = "[TOPSHIP] " + req.Description
+	}
+	// default value
+	req.Subject = "VERIFY USER - COD SERVICE"
+	req.Type = "ahamove_verify_user"
+
+	queryString := url.Values{}
+	err := encoder.Encode(req, queryString)
+	if err != nil {
+		return nil, cm.Error(cm.Internal, "", err)
+	}
+
+	res, err := c.rclient.R().
+		SetQueryString(queryString.Encode()).
+		Get(c.verifyAccountUrl)
+	if err != nil {
+		return nil, cm.Error(cm.ExternalServiceError, "Lỗi kết nối với ahamove", err)
+	}
+	var resp VerifyAccountResponse
+	err = handleResponse(res, &resp, "Không thể gửi yêu cầu xác thực tài khoản")
+	return &resp, err
+}
+
 func (c *Client) GetAccount(ctx context.Context, req *GetAccountRequest) (*Account, error) {
 	var resp Account
 	err := c.sendGetRequest(ctx, PathGetAccount, req, &resp, "Không thể lấy thông tin tài khoản")
@@ -187,7 +220,6 @@ func (c *Client) sendGetRequest(ctx context.Context, path string, req interface{
 			return cm.Error(cm.Internal, "", err)
 		}
 	}
-	// query, _ := url.QueryUnescape(queryString.Encode())
 	res, err := c.rclient.R().
 		SetQueryString(queryString.Encode()).
 		Get(buildUrl(c.baseUrl, path))

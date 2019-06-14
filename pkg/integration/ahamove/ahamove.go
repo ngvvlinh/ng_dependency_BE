@@ -98,3 +98,8 @@ func (c *CarrierAccount) GetAccount(ctx context.Context, cmd *GetAccountCommand)
 	cmd.Result, err = c.client.GetAccount(ctx, cmd.Request)
 	return err
 }
+
+func (c *CarrierAccount) VerifyAccount(ctx context.Context, cmd *VerifyAccountCommand) (err error) {
+	cmd.Result, err = c.client.VerifyAccount(ctx, cmd.Request)
+	return err
+}

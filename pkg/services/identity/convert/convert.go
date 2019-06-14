@@ -68,15 +68,39 @@ func Shop(in *model.Shop) (out *identity.Shop) {
 	return
 }
 
+func User(in *model.User) (out *identity.User) {
+	if in == nil {
+		return nil
+	}
+	out = &identity.User{
+		ID:        in.ID,
+		FullName:  in.FullName,
+		ShortName: in.ShortName,
+		Email:     in.Email,
+		Phone:     in.Phone,
+		Status:    etoptypes.Status3(in.Status),
+		CreatedAt: in.CreatedAt,
+		UpdatedAt: in.UpdatedAt,
+	}
+	return
+}
+
 func XAccountAhamove(in *identitymodel.ExternalAccountAhamove) *identity.ExternalAccountAhamove {
 	return &identity.ExternalAccountAhamove{
-		ID:                in.ID,
-		Phone:             in.Phone,
-		Name:              in.Name,
-		ExternalToken:     in.ExternalToken,
-		ExternalVerified:  in.ExternalVerified,
-		CreatedAt:         in.CreatedAt,
-		UpdatedAt:         in.UpdatedAt,
-		ExternalCreatedAt: in.ExternalCreatedAt,
+		ID:                 in.ID,
+		Phone:              in.Phone,
+		Name:               in.Name,
+		ExternalID:         in.ExternalID,
+		ExternalToken:      in.ExternalToken,
+		ExternalVerified:   in.ExternalVerified,
+		CreatedAt:          in.CreatedAt,
+		UpdatedAt:          in.UpdatedAt,
+		ExternalCreatedAt:  in.ExternalCreatedAt,
+		LastSendVerifiedAt: in.LastSendVerifiedAt,
+		ExternalTicketID:   in.ExternalTicketID,
+		IDCardFrontImg:     in.IDCardFrontImg,
+		IDCardBackImg:      in.IDCardBackImg,
+		PortraitImg:        in.PortraitImg,
+		UploadedAt:         in.UploadedAt,
 	}
 }

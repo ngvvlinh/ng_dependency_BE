@@ -2,13 +2,14 @@ package ahamove
 
 import (
 	"context"
+	"fmt"
+	"net/url"
+	"path/filepath"
 	"strconv"
 	"strings"
 	"time"
 
 	"etop.vn/api/main/identity"
-
-	"etop.vn/backend/pkg/common/bus"
 
 	"github.com/k0kubun/pp"
 
@@ -56,7 +57,20 @@ func (c *Carrier) InitClient(ctx context.Context) error {
 }
 
 func (c *Carrier) CreateExternalShipnow(ctx context.Context, cmd *carrier.CreateExternalShipnowCommand, service *shipnowtypes.ShipnowService) (xshipnow *carrier.ExternalShipnow, _err error) {
-	token, err := getToken(ctx, cmd.ShopID)
+	queryShop := &identity.GetShopByIDQuery{
+		ID: cmd.ShopID,
+	}
+	if err := identityQuery.Dispatch(ctx, queryShop); err != nil {
+		return nil, err
+	}
+	userID := queryShop.Result.Shop.OwnerID
+	if ok, err := isXAccountAhamoveVerified(ctx, userID); err != nil {
+		return nil, err
+	} else if !ok {
+		return nil, cm.Errorf(cm.FailedPrecondition, nil, "Vui lòng gửi yêu cầu xác thực tài khoản Ahamove trước khi tạo đơn.")
+	}
+
+	token, err := getToken(ctx, userID)
 	if err != nil {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Token không được để trống. Vui lòng tạo tài khoản Ahamove")
 	}
@@ -104,7 +118,15 @@ func (c *Carrier) CreateExternalShipnow(ctx context.Context, cmd *carrier.Create
 }
 
 func (c *Carrier) CancelExternalShipnow(ctx context.Context, cmd *carrier.CancelExternalShipnowCommand) error {
-	token, err := getToken(ctx, cmd.ShopID)
+	queryShop := &identity.GetShopByIDQuery{
+		ID: cmd.ShopID,
+	}
+	if err := identityQuery.Dispatch(ctx, queryShop); err != nil {
+		return err
+	}
+	userID := queryShop.Result.Shop.OwnerID
+
+	token, err := getToken(ctx, userID)
 	if err != nil {
 		return cm.Errorf(cm.InvalidArgument, nil, "Token không được để trống. Vui lòng tạo tài khoản Ahamove")
 	}
@@ -241,7 +263,7 @@ func (c *CarrierAccount) RegisterExternalAccount(ctx context.Context, args *ship
 }
 
 func (c *CarrierAccount) GetExternalAccount(ctx context.Context, args *shipnow_carrier.GetExternalAccountArgs) (*carrier.ExternalAccount, error) {
-	token, err := getToken(ctx, args.ShopID)
+	token, err := getToken(ctx, args.OwnerID)
 	if err != nil {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Token không được để trống. Vui lòng tạo tài khoản Ahamove")
 	}
@@ -255,24 +277,55 @@ func (c *CarrierAccount) GetExternalAccount(ctx context.Context, args *shipnow_c
 		return nil, err
 	}
 	account := cmd.Result
+	createAt := time.Unix(int64(account.CreateTime), 0)
+
 	res := &carrier.ExternalAccount{
-		ID:       account.ID,
-		Name:     account.Name,
-		Email:    account.Email,
-		Verified: account.Verified,
+		ID:        account.ID,
+		Name:      account.Name,
+		Email:     account.Email,
+		Verified:  account.Verified,
+		CreatedAt: createAt,
 	}
 	return res, nil
 }
 
-func getToken(ctx context.Context, shopID int64) (token string, _err error) {
-	queryShop := &model.GetShopExtendedQuery{
-		ShopID: shopID,
+func (c *CarrierAccount) VerifyExternalAccount(ctx context.Context, args *shipnow_carrier.VerifyExternalAccountArgs) (*carrier.VerifyExternalAccountResult, error) {
+	token, err := getToken(ctx, args.OwnerID)
+	if err != nil {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "Token không được để trống. Vui lòng tạo tài khoản Ahamove")
 	}
-	if err := bus.Dispatch(ctx, queryShop); err != nil {
+
+	description, err := getDescriptionForVerification(ctx, args.OwnerID)
+	if err != nil {
+		return nil, err
+	}
+
+	cmd := &VerifyAccountCommand{
+		Request: &ahamoveclient.VerifyAccountRequest{
+			Token:       token,
+			Description: description,
+		},
+	}
+
+	if err := c.VerifyAccount(ctx, cmd); err != nil {
+		return nil, err
+	}
+	res := &carrier.VerifyExternalAccountResult{
+		TicketID: strconv.Itoa(cmd.Result.Ticket.ID),
+	}
+	return res, nil
+}
+
+func getToken(ctx context.Context, userID int64) (token string, _err error) {
+	queryUser := &identity.GetUserByIDQuery{
+		UserID: userID,
+	}
+	if err := identityQuery.Dispatch(ctx, queryUser); err != nil {
 		return "", err
 	}
-	user := queryShop.Result.User
-	query := &identity.GetExternalAccountAhamoveByPhoneQuery{
+	user := queryUser.Result
+
+	query := &identity.GetExternalAccountAhamoveQuery{
 		Phone:   user.Phone,
 		OwnerID: user.ID,
 	}
@@ -280,4 +333,84 @@ func getToken(ctx context.Context, shopID int64) (token string, _err error) {
 		return "", err
 	}
 	return query.Result.ExternalToken, nil
+}
+
+func prepareAhamovePhotoUrl(ahamoveAccount *identity.ExternalAccountAhamove, uri string, typeImg string) string {
+	ext := filepath.Ext(uri)
+	filename := strings.TrimSuffix(filepath.Base(uri), ext)
+
+	u, err := url.Parse(uri)
+	if err != nil {
+		return ""
+	}
+
+	newName := ""
+	switch typeImg {
+	case "front":
+		newName = fmt.Sprintf("user_id_front_%v_%v", ahamoveAccount.ExternalID, ahamoveAccount.ExternalCreatedAt.Unix())
+	case "back":
+		newName = fmt.Sprintf("user_id_back_%v_%v", ahamoveAccount.ExternalID, ahamoveAccount.ExternalCreatedAt.Unix())
+	case "portrait":
+		newName = fmt.Sprintf("user_portrait_%v_%v", ahamoveAccount.ExternalID, ahamoveAccount.ExternalCreatedAt.Unix())
+	}
+
+	newUrl := &url.URL{
+		Scheme: u.Scheme,
+		Host:   u.Host,
+		Path:   fmt.Sprintf("ahamove/user_verification/%v/%v%v", filename, newName, ext),
+	}
+
+	return newUrl.String()
+}
+
+// description format: <user._id>, <user.name>, <photo_urls>
+// photo_url format: <topship_domain>/user_id_front<user.id>_<user.create_time>.jpg
+
+func getDescriptionForVerification(ctx context.Context, userID int64) (des string, _err error) {
+	queryUser := &identity.GetUserByIDQuery{
+		UserID: userID,
+	}
+	if err := identityQuery.Dispatch(ctx, queryUser); err != nil {
+		return "", err
+	}
+	user := queryUser.Result
+
+	query := &identity.GetExternalAccountAhamoveQuery{
+		Phone:   user.Phone,
+		OwnerID: user.ID,
+	}
+	if err := identityQuery.Dispatch(ctx, query); err != nil {
+		return "", err
+	}
+	account := query.Result
+
+	front := prepareAhamovePhotoUrl(account, account.IDCardFrontImg, "front")
+	back := prepareAhamovePhotoUrl(account, account.IDCardBackImg, "back")
+	portrait := prepareAhamovePhotoUrl(account, account.PortraitImg, "portrait")
+
+	des = fmt.Sprintf("%v, %v, %v, %v, %v", account.ExternalID, account.Name, front, back, portrait)
+	return des, nil
+}
+
+func isXAccountAhamoveVerified(ctx context.Context, userID int64) (bool, error) {
+	queryUser := &identity.GetUserByIDQuery{
+		UserID: userID,
+	}
+	if err := identityQuery.Dispatch(ctx, queryUser); err != nil {
+		return false, err
+	}
+	user := queryUser.Result
+
+	query := &identity.GetExternalAccountAhamoveQuery{
+		OwnerID: user.ID,
+		Phone:   user.Phone,
+	}
+	if err := identityQuery.Dispatch(ctx, query); err != nil {
+		return false, err
+	}
+	account := query.Result
+	if !account.ExternalVerified {
+		return false, nil
+	}
+	return true, nil
 }

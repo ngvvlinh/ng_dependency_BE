@@ -19,7 +19,8 @@ var _ identity.Aggregate = &Aggregate{}
 
 type Aggregate struct {
 	db                    cmsql.Transactioner
-	store                 sqlstore.IdentityStoreFactory
+	shopStore             sqlstore.ShopStoreFactory
+	userStore             sqlstore.UserStoreFactory
 	xAccountAhamove       sqlstore.XAccountAhamoveStoreFactory
 	shipnowCarrierManager carrier.Manager
 }
@@ -27,8 +28,9 @@ type Aggregate struct {
 func NewAggregate(db cmsql.Database, carrierManager carrier.Manager) *Aggregate {
 	return &Aggregate{
 		db:                    db,
-		store:                 sqlstore.NewIdentityStore(db),
+		shopStore:             sqlstore.NewIdentityStore(db),
 		xAccountAhamove:       sqlstore.NewXAccountAhamoveStore(db),
+		userStore:             sqlstore.NewUserStore(db),
 		shipnowCarrierManager: carrierManager,
 	}
 }
@@ -40,7 +42,6 @@ func (a *Aggregate) MessageBus() identity.CommandBus {
 
 func (a *Aggregate) CreateExternalAccountAhamove(ctx context.Context, args *identity.CreateExternalAccountAhamoveArgs) (_result *identity.ExternalAccountAhamove, _err error) {
 	err := a.db.InTransaction(ctx, func(tx cmsql.QueryInterface) error {
-		var id int64
 		account, err := a.xAccountAhamove(ctx).Phone(args.Phone).OwnerID(args.OwnerID).GetXAccountAhamove()
 		if err != nil && cm.ErrorCode(err) != cm.NotFound {
 			return err
@@ -51,13 +52,15 @@ func (a *Aggregate) CreateExternalAccountAhamove(ctx context.Context, args *iden
 			return nil
 		}
 
+		var id int64
+		phone := args.Phone
 		if account == nil {
 			// create new account
 			id = cm.NewID()
 			args1 := &sqlstore.CreateXAccountAhamoveArgs{
 				ID:      id,
 				OwnerID: args.OwnerID,
-				Phone:   args.Phone,
+				Phone:   phone,
 				Name:    args.Name,
 			}
 			if _, err := a.xAccountAhamove(ctx).CreateXAccountAhamove(args1); err != nil {
@@ -69,27 +72,158 @@ func (a *Aggregate) CreateExternalAccountAhamove(ctx context.Context, args *iden
 
 		// Ahamove register account
 		args2 := &carrier.RegisterExternalAccountCommand{
-			Phone:   args.Phone,
+			Phone:   phone,
 			Name:    args.Name,
 			Carrier: carrier.Ahamove,
 		}
-		xAccount, err := a.shipnowCarrierManager.RegisterExternalAccount(ctx, args2)
+		regisResult, err := a.shipnowCarrierManager.RegisterExternalAccount(ctx, args2)
 		if err != nil {
 			return err
 		}
-		if xAccount.Token == "" {
-			return cm.Errorf(cm.ExternalServiceError, nil, "Tài khoản Ahamove không hợp lệ.")
+
+		// Re-get external account and Update external info
+		// First, update token
+		_, err = a.xAccountAhamove(ctx).UpdateXAccountAhamove(&sqlstore.UpdateXAccountAhamoveInfoArgs{
+			ID:            id,
+			ExternalToken: regisResult.Token,
+		})
+		if err != nil {
+			return err
 		}
 
-		// Update token
+		xAccount, err := a.shipnowCarrierManager.GetExternalAccount(ctx, &carrier.GetExternalAccountCommand{
+			OwnerID: args.OwnerID,
+			Carrier: carrier.Ahamove,
+		})
+		if err != nil {
+			return err
+		}
+		// update another info
 		args3 := &sqlstore.UpdateXAccountAhamoveInfoArgs{
 			ID:                id,
-			ExternalToken:     xAccount.Token,
-			ExternalCreatedAt: time.Now(),
+			ExternalID:        xAccount.ID,
+			ExternalCreatedAt: xAccount.CreatedAt,
 		}
 		_result, err = a.xAccountAhamove(ctx).UpdateXAccountAhamove(args3)
 		return err
 	})
 
 	return _result, err
+}
+
+func (a *Aggregate) RequestVerifyExternalAccountAhamove(ctx context.Context, args *identity.RequestVerifyExternalAccountAhamoveArgs) (*identity.RequestVerifyExternalAccountAhamoveResult, error) {
+	err := a.db.InTransaction(ctx, func(tx cmsql.QueryInterface) error {
+		account, err := a.xAccountAhamove(ctx).Phone(args.Phone).OwnerID(args.OwnerID).GetXAccountAhamove()
+		if err != nil {
+			return err
+		}
+
+		if account.ExternalVerified {
+			return cm.Errorf(cm.FailedPrecondition, nil, "Tài khoản đã được xác thực.")
+		}
+
+		now := time.Now()
+		lastSendVerify := account.LastSendVerifiedAt
+		if now.Sub(lastSendVerify) < 2*24*time.Hour {
+			return cm.Errorf(cm.FailedPrecondition, nil, "Yêu cầu xác thực tài khoản đã được gửi và sẽ được xử lý trong vòng 2 ngày làm việc kể từ ngày đăng ký xác thực. Vui lòng chờ.")
+		}
+
+		// check external account ahamove verification images
+		if account.IDCardFrontImg == "" || account.IDCardBackImg == "" || account.PortraitImg == "" {
+			return cm.Errorf(cm.InvalidArgument, nil, "Thiếu thông tin người dùng. Vui lòng cung cấp ảnh 2 mặt CMND và 1 ảnh chân dung.")
+		}
+
+		args1 := &carrier.GetExternalAccountCommand{
+			OwnerID: args.OwnerID,
+			Carrier: carrier.Ahamove,
+		}
+		xAccount, err := a.shipnowCarrierManager.GetExternalAccount(ctx, args1)
+		if err != nil {
+			return err
+		}
+		if xAccount.Verified {
+			update := &sqlstore.UpdateXAccountAhamoveInfoArgs{
+				ID:               account.ID,
+				ExternalID:       xAccount.ID,
+				ExternalVerified: xAccount.Verified,
+			}
+			if _, err := a.xAccountAhamove(ctx).UpdateXAccountAhamove(update); err != nil {
+				return err
+			}
+			return nil
+		}
+
+		// send verify request to Ahamove
+		args2 := &carrier.VerifyExternalAccountCommand{
+			OwnerID: args.OwnerID,
+			Carrier: carrier.Ahamove,
+		}
+		res, err := a.shipnowCarrierManager.VerifyExternalAccount(ctx, args2)
+		if err != nil {
+			return err
+		}
+		// update external_ticket_id
+		update := &sqlstore.UpdateXAccountAhamoveVerifiedInfoArgs{
+			ID:                 account.ID,
+			ExternalTickerID:   res.TicketID,
+			LastSendVerifiedAt: time.Now(),
+		}
+		_, err = a.xAccountAhamove(ctx).UpdateXAccountAhamoveVerifiedInfo(update)
+		return err
+	})
+	return nil, err
+}
+
+func (a *Aggregate) UpdateVerifiedExternalAccountAhamove(ctx context.Context, args *identity.UpdateVerifiedExternalAccountAhamoveArgs) (*identity.ExternalAccountAhamove, error) {
+	account, err := a.xAccountAhamove(ctx).Phone(args.Phone).OwnerID(args.OwnerID).GetXAccountAhamove()
+	if err != nil {
+		return nil, err
+	}
+	if account.ExternalVerified {
+		return account, nil
+	}
+
+	xAccount, err := a.shipnowCarrierManager.GetExternalAccount(ctx, &carrier.GetExternalAccountCommand{
+		OwnerID: args.OwnerID,
+		Carrier: carrier.Ahamove,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	if !xAccount.Verified {
+		return account, nil
+	}
+
+	update := &sqlstore.UpdateXAccountAhamoveVerifiedInfoArgs{
+		ID:               account.ID,
+		ExternalVerified: xAccount.Verified,
+	}
+	return a.xAccountAhamove(ctx).UpdateXAccountAhamoveVerifiedInfo(update)
+}
+
+func (a *Aggregate) UpdateExternalAccountAhamoveVerificationImages(ctx context.Context, args *identity.UpdateExternalAccountAhamoveVerificationImagesArgs) (*identity.ExternalAccountAhamove, error) {
+	user, err := a.userStore(ctx).GetUserByID(sqlstore.GetUserByIDArgs{
+		ID: args.UserID,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	account, err := a.xAccountAhamove(ctx).Phone(user.Phone).OwnerID(user.ID).GetXAccountAhamove()
+	if err != nil {
+		return nil, err
+	}
+	if account.ExternalVerified {
+		return account, nil
+	}
+
+	update := &sqlstore.UpdateXAccountAhamoveVerificationImageArgs{
+		ID:             account.ID,
+		IDCardFrontImg: args.IDCardFrontImg,
+		IDCardBackImg:  args.IDCardBackImg,
+		PortraitImg:    args.PortraitImg,
+	}
+
+	return a.xAccountAhamove(ctx).UpdateVerificationImages(update)
 }

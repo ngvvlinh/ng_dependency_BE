@@ -5400,6 +5400,26 @@
         "updated_at": {
           "type": "string",
           "format": "date-time"
+        },
+        "last_send_verify_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "external_ticket_id": {
+          "type": "string"
+        },
+        "id_card_front_img": {
+          "type": "string"
+        },
+        "id_card_back_img": {
+          "type": "string"
+        },
+        "portrait_img": {
+          "type": "string"
+        },
+        "uploaded_at": {
+          "type": "string",
+          "format": "date-time"
         }
       }
     },

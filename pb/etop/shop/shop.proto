@@ -776,4 +776,17 @@ message ExternalAccountAhamove {
     optional google.protobuf.Timestamp external_created_at = 6;
     optional google.protobuf.Timestamp created_at = 7;
     optional google.protobuf.Timestamp updated_at = 8;
+    optional google.protobuf.Timestamp last_send_verify_at = 9;
+    optional string external_ticket_id = 10 [(gogoproto.nullable) = false];
+    optional string id_card_front_img = 11 [(gogoproto.nullable) = false];
+    optional string id_card_back_img = 12 [(gogoproto.nullable) = false];
+    optional string portrait_img = 13 [(gogoproto.nullable) = false];
+    optional google.protobuf.Timestamp uploaded_at = 14;
+}
+
+message UpdateXAccountAhamoveVerificationImagesRequest {
+    optional int64 id = 1 [(gogoproto.nullable) = false];
+    optional string id_card_front_img = 2 [(gogoproto.nullable) = false];
+    optional string id_card_back_img = 3 [(gogoproto.nullable) = false];
+    optional string portrait_img = 4 [(gogoproto.nullable) = false];
 }

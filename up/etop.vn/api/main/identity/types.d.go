@@ -44,9 +44,32 @@ type CreateExternalAccountAhamoveCommand struct {
 	Result *ExternalAccountAhamove `json:"-"`
 }
 
-type GetExternalAccountAhamoveByPhoneQuery struct {
-	Phone   string
+type RequestVerifyExternalAccountAhamoveCommand struct {
 	OwnerID int64
+	Phone   string
+
+	Result *RequestVerifyExternalAccountAhamoveResult `json:"-"`
+}
+
+type UpdateExternalAccountAhamoveVerificationImagesCommand struct {
+	UserID         int64
+	IDCardFrontImg string
+	IDCardBackImg  string
+	PortraitImg    string
+
+	Result *ExternalAccountAhamove `json:"-"`
+}
+
+type UpdateVerifiedExternalAccountAhamoveCommand struct {
+	OwnerID int64
+	Phone   string
+
+	Result *ExternalAccountAhamove `json:"-"`
+}
+
+type GetExternalAccountAhamoveQuery struct {
+	OwnerID int64
+	Phone   string
 
 	Result *ExternalAccountAhamove `json:"-"`
 }
@@ -57,11 +80,21 @@ type GetShopByIDQuery struct {
 	Result *GetShopByIDQueryResult `json:"-"`
 }
 
+type GetUserByIDQuery struct {
+	UserID int64
+
+	Result *User `json:"-"`
+}
+
 // implement interfaces
 
-func (q *CreateExternalAccountAhamoveCommand) command() {}
-func (q *GetExternalAccountAhamoveByPhoneQuery) query() {}
-func (q *GetShopByIDQuery) query()                      {}
+func (q *CreateExternalAccountAhamoveCommand) command()                   {}
+func (q *RequestVerifyExternalAccountAhamoveCommand) command()            {}
+func (q *UpdateExternalAccountAhamoveVerificationImagesCommand) command() {}
+func (q *UpdateVerifiedExternalAccountAhamoveCommand) command()           {}
+func (q *GetExternalAccountAhamoveQuery) query()                          {}
+func (q *GetShopByIDQuery) query()                                        {}
+func (q *GetUserByIDQuery) query()                                        {}
 
 // implement conversion
 
@@ -72,15 +105,40 @@ func (q *CreateExternalAccountAhamoveCommand) GetArgs() *CreateExternalAccountAh
 		Name:    q.Name,
 	}
 }
-func (q *GetExternalAccountAhamoveByPhoneQuery) GetArgs() *GetExternalAccountAhamoveByPhoneArgs {
-	return &GetExternalAccountAhamoveByPhoneArgs{
-		Phone:   q.Phone,
+func (q *RequestVerifyExternalAccountAhamoveCommand) GetArgs() *RequestVerifyExternalAccountAhamoveArgs {
+	return &RequestVerifyExternalAccountAhamoveArgs{
 		OwnerID: q.OwnerID,
+		Phone:   q.Phone,
+	}
+}
+func (q *UpdateExternalAccountAhamoveVerificationImagesCommand) GetArgs() *UpdateExternalAccountAhamoveVerificationImagesArgs {
+	return &UpdateExternalAccountAhamoveVerificationImagesArgs{
+		UserID:         q.UserID,
+		IDCardFrontImg: q.IDCardFrontImg,
+		IDCardBackImg:  q.IDCardBackImg,
+		PortraitImg:    q.PortraitImg,
+	}
+}
+func (q *UpdateVerifiedExternalAccountAhamoveCommand) GetArgs() *UpdateVerifiedExternalAccountAhamoveArgs {
+	return &UpdateVerifiedExternalAccountAhamoveArgs{
+		OwnerID: q.OwnerID,
+		Phone:   q.Phone,
+	}
+}
+func (q *GetExternalAccountAhamoveQuery) GetArgs() *GetExternalAccountAhamoveArgs {
+	return &GetExternalAccountAhamoveArgs{
+		OwnerID: q.OwnerID,
+		Phone:   q.Phone,
 	}
 }
 func (q *GetShopByIDQuery) GetArgs() *GetShopByIDQueryArgs {
 	return &GetShopByIDQueryArgs{
 		ID: q.ID,
+	}
+}
+func (q *GetUserByIDQuery) GetArgs() *GetUserByIDQueryArgs {
+	return &GetUserByIDQueryArgs{
+		UserID: q.UserID,
 	}
 }
 
@@ -97,11 +155,32 @@ func (h AggregateHandler) RegisterHandlers(b interface {
 	AddHandler(handler interface{})
 }) CommandBus {
 	b.AddHandler(h.HandleCreateExternalAccountAhamove)
+	b.AddHandler(h.HandleRequestVerifyExternalAccountAhamove)
+	b.AddHandler(h.HandleUpdateExternalAccountAhamoveVerificationImages)
+	b.AddHandler(h.HandleUpdateVerifiedExternalAccountAhamove)
 	return CommandBus{b}
 }
 
 func (h AggregateHandler) HandleCreateExternalAccountAhamove(ctx context.Context, cmd *CreateExternalAccountAhamoveCommand) error {
 	result, err := h.inner.CreateExternalAccountAhamove(ctx, cmd.GetArgs())
+	cmd.Result = result
+	return err
+}
+
+func (h AggregateHandler) HandleRequestVerifyExternalAccountAhamove(ctx context.Context, cmd *RequestVerifyExternalAccountAhamoveCommand) error {
+	result, err := h.inner.RequestVerifyExternalAccountAhamove(ctx, cmd.GetArgs())
+	cmd.Result = result
+	return err
+}
+
+func (h AggregateHandler) HandleUpdateExternalAccountAhamoveVerificationImages(ctx context.Context, cmd *UpdateExternalAccountAhamoveVerificationImagesCommand) error {
+	result, err := h.inner.UpdateExternalAccountAhamoveVerificationImages(ctx, cmd.GetArgs())
+	cmd.Result = result
+	return err
+}
+
+func (h AggregateHandler) HandleUpdateVerifiedExternalAccountAhamove(ctx context.Context, cmd *UpdateVerifiedExternalAccountAhamoveCommand) error {
+	result, err := h.inner.UpdateVerifiedExternalAccountAhamove(ctx, cmd.GetArgs())
 	cmd.Result = result
 	return err
 }
@@ -118,19 +197,26 @@ func (h QueryServiceHandler) RegisterHandlers(b interface {
 	meta.Bus
 	AddHandler(handler interface{})
 }) QueryBus {
-	b.AddHandler(h.HandleGetExternalAccountAhamoveByPhone)
+	b.AddHandler(h.HandleGetExternalAccountAhamove)
 	b.AddHandler(h.HandleGetShopByID)
+	b.AddHandler(h.HandleGetUserByID)
 	return QueryBus{b}
 }
 
-func (h QueryServiceHandler) HandleGetExternalAccountAhamoveByPhone(ctx context.Context, query *GetExternalAccountAhamoveByPhoneQuery) error {
-	result, err := h.inner.GetExternalAccountAhamoveByPhone(ctx, query.GetArgs())
+func (h QueryServiceHandler) HandleGetExternalAccountAhamove(ctx context.Context, query *GetExternalAccountAhamoveQuery) error {
+	result, err := h.inner.GetExternalAccountAhamove(ctx, query.GetArgs())
 	query.Result = result
 	return err
 }
 
 func (h QueryServiceHandler) HandleGetShopByID(ctx context.Context, query *GetShopByIDQuery) error {
 	result, err := h.inner.GetShopByID(ctx, query.GetArgs())
+	query.Result = result
+	return err
+}
+
+func (h QueryServiceHandler) HandleGetUserByID(ctx context.Context, query *GetUserByIDQuery) error {
+	result, err := h.inner.GetUserByID(ctx, query.GetArgs())
 	query.Result = result
 	return err
 }

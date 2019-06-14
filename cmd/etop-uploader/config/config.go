@@ -16,23 +16,23 @@ type Config struct {
 	HTTP           cc.HTTP  `yaml:"http"`
 	cc.TelegramBot `yaml:"telegram_bot"`
 
-	UploadDirImg         string `yaml:"upload_dir_img"`
-	URLPrefix            string `yaml:"url_prefix"`
-	UploadIdentityDirImg string `yaml:"upload_identity_dir_img"`
-	URLIdentityPrefix    string `yaml:"url_identity_prefix"`
+	UploadDirImg                    string `yaml:"upload_dir_img"`
+	URLPrefix                       string `yaml:"url_prefix"`
+	UploadAhamoveVerificationDirImg string `yaml:"upload_ahamove_verification_dir_img"`
+	URLAhamoveVerificationPrefix    string `yaml:"url_ahamove_verification_prefix"`
 
 	Env string `yaml:"env"`
 }
 
 func Default() Config {
 	cfg := Config{
-		HTTP:                 cc.HTTP{Port: 8180},
-		Redis:                cc.DefaultRedis(),
-		UploadDirImg:         "/tmp/upload",
-		UploadIdentityDirImg: "/tmp/identity",
-		URLPrefix:            "http://localhost:8180/img",
-		URLIdentityPrefix:    "http://localhost:8180/identity",
-		Env:                  cm.EnvDev,
+		HTTP:                            cc.HTTP{Port: 8180},
+		Redis:                           cc.DefaultRedis(),
+		UploadDirImg:                    "/tmp/upload",
+		URLPrefix:                       "http://localhost:8180/img",
+		UploadAhamoveVerificationDirImg: "/tmp/ahamove_verification",
+		URLAhamoveVerificationPrefix:    "http://localhost:8180/identity",
+		Env:                             cm.EnvDev,
 	}
 	return cfg
 }

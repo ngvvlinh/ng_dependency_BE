@@ -28,13 +28,34 @@ type Shop struct {
 	DeletedAt time.Time
 }
 
+type User struct {
+	ID int64
+
+	FullName  string
+	ShortName string
+	Email     string
+	Phone     string
+
+	Status etoptypes.Status3 // 1: actual user, 0: stub, -1: disabled
+
+	CreatedAt time.Time
+	UpdatedAt time.Time
+}
+
 type ExternalAccountAhamove struct {
-	ID                int64
-	Phone             string
-	Name              string
-	ExternalToken     string
-	ExternalVerified  bool
-	CreatedAt         time.Time
-	UpdatedAt         time.Time
-	ExternalCreatedAt time.Time
+	ID                 int64
+	Phone              string
+	Name               string
+	ExternalID         string
+	ExternalToken      string
+	ExternalVerified   bool
+	CreatedAt          time.Time
+	UpdatedAt          time.Time
+	ExternalCreatedAt  time.Time
+	LastSendVerifiedAt time.Time
+	ExternalTicketID   string
+	IDCardFrontImg     string
+	IDCardBackImg      string
+	PortraitImg        string
+	UploadedAt         time.Time
 }

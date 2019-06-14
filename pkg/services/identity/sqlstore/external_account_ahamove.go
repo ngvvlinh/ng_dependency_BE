@@ -88,6 +88,7 @@ func (s *XAccountAhamoveStore) CreateXAccountAhamove(args *CreateXAccountAhamove
 
 type UpdateXAccountAhamoveInfoArgs struct {
 	ID                int64
+	ExternalID        string
 	ExternalVerified  bool
 	ExternalToken     string
 	ExternalCreatedAt time.Time
@@ -98,6 +99,7 @@ func (s *XAccountAhamoveStore) UpdateXAccountAhamove(args *UpdateXAccountAhamove
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "UpdateXAccountAhamove: Missing ID")
 	}
 	account := &identitymodel.ExternalAccountAhamove{
+		ExternalID:        args.ExternalID,
 		ExternalVerified:  args.ExternalVerified,
 		ExternalCreatedAt: args.ExternalCreatedAt,
 		ExternalToken:     args.ExternalToken,
@@ -105,5 +107,45 @@ func (s *XAccountAhamoveStore) UpdateXAccountAhamove(args *UpdateXAccountAhamove
 	if err := s.query().Where("id = ?", args.ID).ShouldUpdate(account); err != nil {
 		return nil, err
 	}
+	return s.ID(args.ID).GetXAccountAhamove()
+}
+
+type UpdateXAccountAhamoveVerifiedInfoArgs struct {
+	ID                 int64
+	ExternalTickerID   string
+	LastSendVerifiedAt time.Time
+	ExternalVerified   bool
+}
+
+func (s *XAccountAhamoveStore) UpdateXAccountAhamoveVerifiedInfo(args *UpdateXAccountAhamoveVerifiedInfoArgs) (*identity.ExternalAccountAhamove, error) {
+	account := &identitymodel.ExternalAccountAhamove{
+		ExternalTicketID:   args.ExternalTickerID,
+		LastSendVerifiedAt: args.LastSendVerifiedAt,
+		ExternalVerified:   args.ExternalVerified,
+	}
+	if err := s.query().Where("id = ?", args.ID).ShouldUpdate(account); err != nil {
+		return nil, err
+	}
+	return s.ID(args.ID).GetXAccountAhamove()
+}
+
+type UpdateXAccountAhamoveVerificationImageArgs struct {
+	ID             int64
+	IDCardFrontImg string
+	IDCardBackImg  string
+	PortraitImg    string
+}
+
+func (s *XAccountAhamoveStore) UpdateVerificationImages(args *UpdateXAccountAhamoveVerificationImageArgs) (*identity.ExternalAccountAhamove, error) {
+	account := &identitymodel.ExternalAccountAhamove{
+		IDCardFrontImg: args.IDCardFrontImg,
+		IDCardBackImg:  args.IDCardBackImg,
+		PortraitImg:    args.PortraitImg,
+		UploadedAt:     time.Now(),
+	}
+	if err := s.query().Where("id = ?", args.ID).ShouldUpdate(account); err != nil {
+		return nil, err
+	}
+
 	return s.ID(args.ID).GetXAccountAhamove()
 }

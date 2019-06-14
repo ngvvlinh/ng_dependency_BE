@@ -323,6 +323,21 @@ type GetAccountRequest struct {
 	Token string `url:"token"`
 }
 
+type VerifyAccountRequest struct {
+	Token       string `url:"token"`
+	Description string `url:"description"'`
+	Subject     string `url:"subject"`
+	Type        string `url:"type"`
+}
+
+type VerifyAccountResponse struct {
+	Ticket Ticket `json:"ticket"`
+}
+
+type Ticket struct {
+	ID int `json:"id"'`
+}
+
 type Account struct {
 	ID            string   `json:"_id"`
 	Name          string   `json:"name"`

@@ -17,5 +17,11 @@ func Convert_core_XAhamoveAccount_To_api_XAhamoveAccount(in *identity.ExternalAc
 		ExternalCreatedAt: pbcm.PbTime(in.ExternalCreatedAt),
 		CreatedAt:         pbcm.PbTime(in.CreatedAt),
 		UpdatedAt:         pbcm.PbTime(in.UpdatedAt),
+		LastSendVerifyAt:  pbcm.PbTime(in.LastSendVerifiedAt),
+		ExternalTicketId:  in.ExternalTicketID,
+		IdCardFrontImg:    in.IDCardFrontImg,
+		IdCardBackImg:     in.IDCardBackImg,
+		PortraitImg:       in.PortraitImg,
+		UploadedAt:        pbcm.PbTime(in.UploadedAt),
 	}
 }

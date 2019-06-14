@@ -237,11 +237,21 @@ func (ctrl *ShipnowManager) RegisterExternalAccount(ctx context.Context, cmd *ca
 func (ctrl *ShipnowManager) GetExternalAccount(ctx context.Context, cmd *carrier.GetExternalAccountCommand) (*carrier.ExternalAccount, error) {
 	shipnowCarrier, err := ctrl.GetShipnowCarrierDriver(cmd.Carrier)
 	if err != nil {
-		return nil, nil
+		return nil, err
 	}
-
 	args := &GetExternalAccountArgs{
-		ShopID: cmd.ShopID,
+		OwnerID: cmd.OwnerID,
 	}
 	return shipnowCarrier.GetExternalAccount(ctx, args)
+}
+
+func (ctrl *ShipnowManager) VerifyExternalAccount(ctx context.Context, cmd *carrier.VerifyExternalAccountCommand) (*carrier.VerifyExternalAccountResult, error) {
+	shipnowCarrier, err := ctrl.GetShipnowCarrierDriver(cmd.Carrier)
+	if err != nil {
+		return nil, err
+	}
+	args := &VerifyExternalAccountArgs{
+		OwnerID: cmd.OwnerID,
+	}
+	return shipnowCarrier.VerifyExternalAccount(ctx, args)
 }

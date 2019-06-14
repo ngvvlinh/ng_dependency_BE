@@ -62,4 +62,13 @@ CREATE TABLE  external_account_ahamove (
     , created_at TIMESTAMP WITH TIME ZONE
     , updated_at TIMESTAMP WITH TIME ZONE
     , external_created_at TIMESTAMP WITH TIME ZONE
+    , last_send_verified_at TIMESTAMP WITH TIME ZONE
+    , external_ticket_id TEXT
+    , external_id TEXT
 );
+
+ALTER TABLE "external_account_ahamove"
+    ADD COLUMN id_card_front_img TEXT
+    , ADD COLUMN id_card_back_img TEXT
+    , ADD COLUMN portrait_img TEXT
+    , ADD COLUMN uploaded_at TIMESTAMP WITH TIME ZONE;

@@ -3,9 +3,15 @@ package shop
 import (
 	"context"
 
+	"etop.vn/backend/pkg/common/validate"
+
+	"etop.vn/backend/pkg/etop/logic/shipping_provider"
+
 	"etop.vn/api/main/identity"
-	"etop.vn/api/main/shipnow/carrier"
+
 	"etop.vn/api/main/shipping/v1/types"
+
+	"etop.vn/api/main/shipnow/carrier"
 
 	"etop.vn/api/main/catalog"
 
@@ -21,7 +27,6 @@ import (
 	"etop.vn/backend/pkg/common/redis"
 	cmservice "etop.vn/backend/pkg/common/service"
 	"etop.vn/backend/pkg/etop/api/convertpb"
-	"etop.vn/backend/pkg/etop/logic/shipping_provider"
 	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/backend/pkg/etop/sqlstore"
 	notimodel "etop.vn/backend/pkg/notifier/model"
@@ -89,14 +94,14 @@ var identityQuery identity.QueryBus
 var shippingCtrl *shipping_provider.ProviderManager
 var catalogQuery catalog.QueryBus
 
-func Init(catalogQueryBus catalog.QueryBus, shipnowAggregate shipnow.CommandBus, shipnowQueryService shipnow.QueryBus, identityAggregate identity.CommandBus, shippingProviderCtrl *shipping_provider.ProviderManager, sd cmservice.Shutdowner, rd redis.Store) {
+func Init(catalogQueryBus catalog.QueryBus, shipnowAggregate shipnow.CommandBus, shipnowQueryService shipnow.QueryBus, identityAggregate identity.CommandBus, identityQueryService identity.QueryBus, shippingProviderCtrl *shipping_provider.ProviderManager, sd cmservice.Shutdowner, rd redis.Store) {
 	shippingCtrl = shippingProviderCtrl
 	idempgroup = idemp.NewRedisGroup(rd, PrefixIdemp, 5*60)
 	catalogQuery = catalogQueryBus
 	shipnowAggr = shipnowAggregate
 	shipnowQuery = shipnowQueryService
 	identityAggr = identityAggregate
-	identityQuery = identityQuery
+	identityQuery = identityQueryService
 	sd.Register(idempgroup.Shutdown)
 }
 
@@ -730,6 +735,7 @@ func GetShipnowFulfillment(ctx context.Context, q *wrapshop.GetShipnowFulfillmen
 	query := &shipnow.GetShipnowFulfillmentQuery{
 		Id:     q.Id,
 		ShopId: q.Context.Shop.ID,
+		Result: nil,
 	}
 	if err := shipnowQuery.Dispatch(ctx, query); err != nil {
 		return err
@@ -862,17 +868,22 @@ func GetShipnowServices(ctx context.Context, q *wrapshop.GetShipnowServicesEndpo
 }
 
 func CreateExternalAccountAhamove(ctx context.Context, q *wrapshop.CreateExternalAccountAhamoveEndpoint) error {
-	query := &model.GetUserByIDQuery{
+	query := &identity.GetUserByIDQuery{
 		UserID: q.Context.Shop.OwnerID,
 	}
-	if err := bus.Dispatch(ctx, query); err != nil {
+	if err := identityQuery.Dispatch(ctx, query); err != nil {
 		return err
 	}
 	user := query.Result
 
+	phone := user.Phone
+	if cm.IsDev() {
+		phone, _, _ = validate.TrimTest(phone)
+	}
+
 	cmd := &identity.CreateExternalAccountAhamoveCommand{
 		OwnerID: user.ID,
-		Phone:   user.Phone,
+		Phone:   phone,
 		Name:    user.FullName,
 	}
 	if err := identityAggr.Dispatch(ctx, cmd); err != nil {
@@ -883,19 +894,99 @@ func CreateExternalAccountAhamove(ctx context.Context, q *wrapshop.CreateExterna
 }
 
 func GetExternalAccountAhamove(ctx context.Context, q *wrapshop.GetExternalAccountAhamoveEndpoint) error {
-	queryUser := &model.GetUserByIDQuery{
+	queryUser := &identity.GetUserByIDQuery{
 		UserID: q.Context.Shop.OwnerID,
 	}
-	if err := bus.Dispatch(ctx, queryUser); err != nil {
+	if err := identityQuery.Dispatch(ctx, queryUser); err != nil {
 		return err
 	}
 	user := queryUser.Result
-	query := &identity.GetExternalAccountAhamoveByPhoneQuery{
-		Phone: user.Phone,
+	phone := user.Phone
+	if cm.IsDev() {
+		phone, _, _ = validate.TrimTest(phone)
+	}
+
+	query := &identity.GetExternalAccountAhamoveQuery{
+		Phone:   phone,
+		OwnerID: user.ID,
 	}
 	if err := identityQuery.Dispatch(ctx, query); err != nil {
 		return err
 	}
-	q.Result = pbshop.Convert_core_XAhamoveAccount_To_api_XAhamoveAccount(query.Result)
+
+	account := query.Result
+	if !account.ExternalVerified && account.ExternalTicketID != "" {
+		cmd := &identity.UpdateVerifiedExternalAccountAhamoveCommand{
+			OwnerID: user.ID,
+			Phone:   phone,
+		}
+		if err := identityAggr.Dispatch(ctx, cmd); err != nil {
+			return err
+		}
+		account = cmd.Result
+	}
+
+	q.Result = pbshop.Convert_core_XAhamoveAccount_To_api_XAhamoveAccount(account)
 	return nil
 }
+
+// func RequestVerifyExternalAccountAhamove(ctx context.Context, q *wrapshop.RequestVerifyExternalAccountAhamoveEndpoint) error {
+// 	query := &model.GetUserByIDQuery{
+// 		UserID: q.Context.Shop.OwnerID,
+// 	}
+// 	if err := bus.Dispatch(ctx, query); err != nil {
+// 		return err
+// 	}
+// 	user := query.Result
+//
+// 	phone := user.Phone
+// 	if cm.IsDev() {
+// 		phone, _, _ = validate.TrimTest(phone)
+// 	}
+//
+// 	cmd := &identity.RequestVerifyExternalAccountAhamoveCommand{
+// 		OwnerID: user.ID,
+// 		Phone:   phone,
+// 	}
+// 	if err := identityAggr.Dispatch(ctx, cmd); err != nil {
+// 		return err
+// 	}
+//
+// 	q.Result = &pbcm.UpdatedResponse{
+// 		Updated: 1,
+// 	}
+// 	return nil
+// }
+//
+// func UpdateExternalAccountAhamoveVerificationImages(ctx context.Context, r *wrapshop.UpdateExternalAccountAhamoveVerificationImagesEndpoint) error {
+// 	if err := validateImagesUrl(r.IdCardFrontImg, r.IdCardBackImg, r.PortraitImg); err != nil {
+// 		return err
+// 	}
+//
+// 	cmd := &identity.UpdateExternalAccountAhamoveVerificationImagesCommand{
+// 		UserID:         r.Context.UserID,
+// 		IDCardFrontImg: r.IdCardFrontImg,
+// 		IDCardBackImg:  r.IdCardBackImg,
+// 		PortraitImg:    r.PortraitImg,
+// 	}
+// 	if err := identityAggr.Dispatch(ctx, cmd); err != nil {
+// 		return err
+// 	}
+//
+// 	r.Result = &pbcm.UpdatedResponse{
+// 		Updated: 1,
+// 	}
+// 	return nil
+// }
+//
+// func validateImagesUrl(imgsUrl ...string) error {
+// 	for _, url := range imgsUrl {
+// 		if url == "" {
+// 			continue
+// 		}
+// 		if !govalidator.IsURL(url) {
+// 			return cm.Errorf(cm.InvalidArgument, nil, "Invalid url: %v", url)
+// 		}
+// 	}
+// 	return nil
+// }

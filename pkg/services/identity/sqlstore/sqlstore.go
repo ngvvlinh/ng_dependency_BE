@@ -13,11 +13,11 @@ import (
 	identitymodelx "etop.vn/backend/pkg/services/identity/modelx"
 )
 
-type IdentityStoreFactory func(context.Context) *IdentityStore
+type ShopStoreFactory func(context.Context) *ShopStore
 
-func NewIdentityStore(db cmsql.Database) IdentityStoreFactory {
-	return func(ctx context.Context) *IdentityStore {
-		return &IdentityStore{
+func NewIdentityStore(db cmsql.Database) ShopStoreFactory {
+	return func(ctx context.Context) *ShopStore {
+		return &ShopStore{
 			query: func() cmsql.QueryInterface {
 				return cmsql.GetTxOrNewQuery(ctx, db)
 			},
@@ -25,12 +25,12 @@ func NewIdentityStore(db cmsql.Database) IdentityStoreFactory {
 	}
 }
 
-type IdentityStore struct {
+type ShopStore struct {
 	query func() cmsql.QueryInterface
 	preds []interface{}
 }
 
-func (s *IdentityStore) GetByID(args identitymodelx.GetByIDArgs) (*identity.Shop, error) {
+func (s *ShopStore) GetByID(args identitymodelx.GetByIDArgs) (*identity.Shop, error) {
 	if args.ID == 0 {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "missing ID")
 	}
