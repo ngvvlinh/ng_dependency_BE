@@ -3,13 +3,16 @@ package main
 import (
 	"context"
 	"flag"
+	"fmt"
 	"net/http"
 	"os"
 	"os/signal"
+	"strings"
 	"syscall"
 	"time"
 
 	"etop.vn/backend/pkg/common/metrics"
+	"github.com/julienschmidt/httprouter"
 
 	"etop.vn/backend/cmd/etop-uploader/config"
 	cm "etop.vn/backend/pkg/common"
@@ -48,6 +51,15 @@ func main() {
 	_, err = os.Stat(cfg.UploadDirImg)
 	if err != nil {
 		ll.Fatal("Unable to open", l.String("upload_dir", cfg.UploadDirImg), l.Error(err))
+	}
+
+	_, err = os.Stat(cfg.UploadIdentityDirImg)
+	if err != nil {
+		ll.Fatal("Unable to open", l.String("upload_identity_dir_img", cfg.UploadIdentityDirImg), l.Error(err))
+	}
+
+	if cfg.URLIdentityPrefix == "" {
+		ll.Fatal("Missing config: url_identity_prefix")
 	}
 
 	ll.Info("Service started with config", l.String("commit", cm.Commit()))
@@ -93,7 +105,9 @@ func main() {
 
 	rt.Use(httpx.RecoverAndLog(bot, false))
 	rt.ServeFiles("/img/*filepath", http.Dir(cfg.UploadDirImg))
+	rt.ServeFiles("/identity/*filepath", http.Dir(cfg.UploadIdentityDirImg))
 	rt.POST("/upload", UploadHandler, authMiddleware)
+	ServeAhamoveIdentityFiles(rt.Router, "/ahamove/:filename/:filepath", http.Dir(cfg.UploadIdentityDirImg))
 
 	svr := &http.Server{
 		Addr:    cfg.HTTP.Address(),
@@ -140,4 +154,18 @@ func authMiddleware(next httpx.Handler) httpx.Handler {
 
 		return next(c)
 	}
+}
+
+func ServeAhamoveIdentityFiles(rt *httprouter.Router, path string, root http.FileSystem) {
+	// path: ahamove/<filename>/<filepath>.jpg
+
+	fileServer := http.FileServer(root)
+	rt.GET(path, func(w http.ResponseWriter, req *http.Request, ps httprouter.Params) {
+		fileName := ps.ByName("filename")
+		filePath := ps.ByName("filepath")
+		exts := strings.Split(filePath, ".")
+
+		req.URL.Path = fmt.Sprintf("%v.%v", fileName, exts[len(exts)-1])
+		fileServer.ServeHTTP(w, req)
+	})
 }

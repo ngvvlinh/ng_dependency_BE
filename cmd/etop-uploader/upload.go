@@ -17,10 +17,11 @@ import (
 )
 
 const (
-	minSize = 100
-	maxSize = 1024 * 1024 // 1MB
-	minWH   = 200
-	maxWH   = 2000
+	minSize      = 100
+	maxSize      = 1024 * 1024 // 1MB
+	minWH        = 200
+	maxWH        = 2000
+	identityType = "identity"
 )
 
 func NewUploadError(code cm.Code, msg, filename string) error {
@@ -29,7 +30,8 @@ func NewUploadError(code cm.Code, msg, filename string) error {
 }
 
 func UploadHandler(c *httpx.Context) error {
-
+	path := cfg.UploadDirImg
+	urlPrefix := cfg.URLPrefix
 	// Multipart form
 	form, err := c.MultipartForm()
 	if err != nil {
@@ -39,6 +41,11 @@ func UploadHandler(c *httpx.Context) error {
 	files := form.File["files"]
 	if len(files) == 0 {
 		return cm.Error(cm.InvalidArgument, "No file", nil)
+	}
+	imgType := form.Value["type"]
+	if imgType != nil && imgType[0] == identityType {
+		path = cfg.UploadIdentityDirImg
+		urlPrefix = cfg.URLIdentityPrefix
 	}
 
 	exts := make([]string, len(files))
@@ -67,7 +74,7 @@ func UploadHandler(c *httpx.Context) error {
 			return cm.Error(cm.InvalidArgument, "", err)
 		}
 
-		dst, err := os.Create(filepath.Join(cfg.UploadDirImg, genName))
+		dst, err := os.Create(filepath.Join(path, genName))
 		if err != nil {
 			errors[i] = NewUploadError(cm.Internal, cm.Internal.String(), file.Filename)
 			continue
@@ -85,8 +92,8 @@ func UploadHandler(c *httpx.Context) error {
 			"id":       id,
 			"filename": file.Filename,
 		}
-		if cfg.URLPrefix != "" {
-			resp["url"] = cfg.URLPrefix + "/" + genName
+		if urlPrefix != "" {
+			resp["url"] = urlPrefix + "/" + genName
 		}
 		result[i] = resp
 		errors[i] = NewUploadError(cm.NoError, "", file.Filename)
