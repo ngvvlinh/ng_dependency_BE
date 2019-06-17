@@ -44,8 +44,8 @@ func UploadHandler(c *httpx.Context) error {
 	}
 	imgType := form.Value["type"]
 	if imgType != nil && imgType[0] == AhamoveVerificationType {
-		path = cfg.UploadAhamoveVerificationDirImg
-		urlPrefix = cfg.URLAhamoveVerificationPrefix
+		path = cfg.UploadDirAhamoveVerification
+		urlPrefix = cfg.URLPrefixAhamoveVerification
 	}
 
 	exts := make([]string, len(files))

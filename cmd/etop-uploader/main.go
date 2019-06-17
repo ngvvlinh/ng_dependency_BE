@@ -53,12 +53,12 @@ func main() {
 		ll.Fatal("Unable to open", l.String("upload_dir", cfg.UploadDirImg), l.Error(err))
 	}
 
-	_, err = os.Stat(cfg.UploadAhamoveVerificationDirImg)
+	_, err = os.Stat(cfg.UploadDirAhamoveVerification)
 	if err != nil {
-		ll.Fatal("Unable to open", l.String("upload_identity_dir_img", cfg.UploadAhamoveVerificationDirImg), l.Error(err))
+		ll.Fatal("Unable to open", l.String("upload_identity_dir_img", cfg.UploadDirAhamoveVerification), l.Error(err))
 	}
 
-	if cfg.URLAhamoveVerificationPrefix == "" {
+	if cfg.URLPrefixAhamoveVerification == "" {
 		ll.Fatal("Missing config: url_identity_prefix")
 	}
 
@@ -105,8 +105,7 @@ func main() {
 
 	rt.Use(httpx.RecoverAndLog(bot, false))
 	rt.ServeFiles("/img/*filepath", http.Dir(cfg.UploadDirImg))
-	rt.ServeFiles("/ahamove_verification/*filepath", http.Dir(cfg.UploadAhamoveVerificationDirImg))
-	ServeAhamoveIdentityFiles(rt.Router, "/ahamove/user_verification/:filename/:filepath", http.Dir(cfg.UploadAhamoveVerificationDirImg))
+	ServeAhamoveVerificationFiles(rt.Router, config.PathAhamoveUserVerification+"/:filename/:filepath", http.Dir(cfg.UploadDirAhamoveVerification))
 
 	rt.POST("/upload", UploadHandler, authMiddleware)
 
@@ -157,7 +156,7 @@ func authMiddleware(next httpx.Handler) httpx.Handler {
 	}
 }
 
-func ServeAhamoveIdentityFiles(rt *httprouter.Router, path string, root http.FileSystem) {
+func ServeAhamoveVerificationFiles(rt *httprouter.Router, path string, root http.FileSystem) {
 	// path: ahamove/user_verification/<filename>/<filepath>.jpg
 
 	fileServer := http.FileServer(root)
