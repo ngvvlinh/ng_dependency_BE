@@ -6,7 +6,6 @@ import (
 
 	"etop.vn/backend/pkg/services/shipping/modelx"
 
-	"etop.vn/backend/cmd/etop-server/config"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/cmsql"
@@ -25,12 +24,8 @@ type (
 	Int    = httpreq.Int
 )
 
-var (
-	ll            = l.New()
-	db            cmsql.Database
-	cfg           config.Config
-	EndStatesCode = []string{"501", "503", "504", "201", "107"}
-)
+var ll = l.New()
+var EndStatesCode = []string{"501", "503", "504", "201", "107"}
 
 type Webhook struct {
 	dbLogs  cmsql.Database

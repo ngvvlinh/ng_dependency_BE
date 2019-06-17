@@ -115,7 +115,7 @@ func (g *generator) generate(t *Token, ttl int) (*Token, error) {
 	if t.TokenStr != "" {
 		key := t.ToKey()
 		if g.redisStore.IsExist(key) {
-			return t, errors.New("Key already exist")
+			return t, errors.New("key already exists")
 		}
 		err := g.redisStore.SetStringWithTTL(key, value, ttl)
 		return t, err

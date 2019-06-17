@@ -271,7 +271,7 @@ func RecoverAndLog(bot *telebot.Channel, logRequest bool) func(Handler) Handler 
 
 			var reqData []byte
 			defer func() {
-				d := time.Now().Sub(t0)
+				d := time.Since(t0)
 				if r := recover(); r != nil {
 					err, ok := r.(error)
 					if !ok {

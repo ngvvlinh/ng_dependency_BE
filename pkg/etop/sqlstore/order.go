@@ -1149,7 +1149,7 @@ func AdminUpdateFulfillment(ctx context.Context, cmd *shipmodelx.AdminUpdateFulf
 	updateOrderMap := M{}
 	if cmd.TotalCODAmount != nil {
 		updateFfmMap["total_cod_amount"] = cmd.TotalCODAmount
-		if cmd.IsPartialDelivery == true {
+		if cmd.IsPartialDelivery {
 			updateFfmMap["is_partial_delivery"] = true
 		} else {
 			updateOrderMap["shop_cod"] = cmd.TotalCODAmount

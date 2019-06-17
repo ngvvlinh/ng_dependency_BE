@@ -36,7 +36,7 @@ func (a Alphabet) Parse(s string) (int, error) {
 	for i := 0; i < len(s); i++ {
 		index := a.Index(s[i])
 		if index < 0 {
-			return v, errors.New("Invalid character")
+			return v, errors.New("invalid character")
 		}
 
 		v *= len(a)
@@ -57,9 +57,6 @@ func (a Alphabet) Encode(v uint64, minLen int) []byte {
 // EncodeReverse ...
 func (a Alphabet) EncodeReverse(v uint64, minLen int) []byte {
 	var s []byte
-	if v < 0 {
-		ll.Panic("alphabet: Unsupport negative value")
-	}
 	for v > 0 || len(s) < minLen {
 		l := uint64(len(a))
 		s = append(s, a[v%l])

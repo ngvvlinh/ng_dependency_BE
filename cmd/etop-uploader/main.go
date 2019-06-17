@@ -9,6 +9,8 @@ import (
 	"syscall"
 	"time"
 
+	"etop.vn/backend/pkg/common/metrics"
+
 	"etop.vn/backend/cmd/etop-uploader/config"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/auth"
@@ -81,8 +83,14 @@ func main() {
 	redisStore := redis.Connect(cfg.Redis.ConnectionString())
 	tokenStore = auth.NewGenerator(redisStore)
 
+	mux := http.NewServeMux()
 	rt := httpx.New()
-	rt.RawHandle("GET", health.DefaultRoute, healthservice)
+	mux.Handle("/", rt)
+
+	metrics.RegisterHTTPHandler(mux)
+	healthservice.RegisterHTTPHandler(mux)
+	healthservice.MarkReady()
+
 	rt.Use(httpx.RecoverAndLog(bot, false))
 	rt.ServeFiles("/img/*filepath", http.Dir(cfg.UploadDirImg))
 	rt.POST("/upload", UploadHandler, authMiddleware)
@@ -105,8 +113,6 @@ func main() {
 		bot.SendMessage("–––\n✨ etop-uploader started ✨\n" + cm.Commit())
 		defer bot.SendMessage("👻 etop-uploader stopped 👻\n–––")
 	}
-
-	healthservice.MarkReady()
 
 	// Wait for OS signal or any error from services
 	<-ctx.Done()

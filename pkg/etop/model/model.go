@@ -1273,7 +1273,6 @@ type AvailableShippingService struct {
 func (service *AvailableShippingService) ApplyFeeMain(feeMain int) {
 	service.ServiceFee = service.ServiceFee - service.ShippingFeeMain + feeMain
 	service.ShippingFeeMain = feeMain
-	return
 }
 
 var _ = sqlgenWebhook(&Webhook{})

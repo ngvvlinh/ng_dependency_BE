@@ -13,6 +13,7 @@ import (
 	common "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/l"
+	"etop.vn/backend/pkg/common/metrics"
 	cmWrapper "etop.vn/backend/pkg/common/wrapper"
 	"etop.vn/backend/pkg/etop/authorize/claims"
 	"etop.vn/backend/pkg/etop/authorize/middleware"
@@ -218,6 +219,7 @@ func (s MiscService) VersionInfo(ctx context.Context, req *cm.Empty) (resp *cm.V
 	defer func() {
 		recovered := recover()
 		err = cmWrapper.RecoverAndLog(ctx, rpcName, nil, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmWrapper.Censor(req)
 	query := &VersionInfoEndpoint{Empty: req}
@@ -250,6 +252,7 @@ func (s IntegrationService) GrantAccess(ctx context.Context, req *integration.Gr
 	defer func() {
 		recovered := recover()
 		err = cmWrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmWrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
@@ -292,6 +295,7 @@ func (s IntegrationService) Init(ctx context.Context, req *integration.InitReque
 	defer func() {
 		recovered := recover()
 		err = cmWrapper.RecoverAndLog(ctx, rpcName, nil, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmWrapper.Censor(req)
 	query := &InitEndpoint{InitRequest: req}
@@ -322,6 +326,7 @@ func (s IntegrationService) LoginUsingToken(ctx context.Context, req *integratio
 	defer func() {
 		recovered := recover()
 		err = cmWrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmWrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
@@ -363,6 +368,7 @@ func (s IntegrationService) Register(ctx context.Context, req *integration.Regis
 	defer func() {
 		recovered := recover()
 		err = cmWrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmWrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
@@ -404,6 +410,7 @@ func (s IntegrationService) RequestLogin(ctx context.Context, req *integration.R
 	defer func() {
 		recovered := recover()
 		err = cmWrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmWrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
@@ -449,6 +456,7 @@ func (s IntegrationService) SessionInfo(ctx context.Context, req *cm.Empty) (res
 	defer func() {
 		recovered := recover()
 		err = cmWrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmWrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{

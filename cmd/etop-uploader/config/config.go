@@ -44,10 +44,10 @@ func Load() (cfg Config, err error) {
 	cfg.TelegramBot.MustLoadEnv()
 
 	if cfg.UploadDirImg == "" {
-		return cfg, errors.New("Empty upload_dir")
+		return cfg, errors.New("empty upload_dir")
 	}
 	if cfg.URLPrefix == "" {
-		return cfg, errors.New("Empty url_prefix")
+		return cfg, errors.New("empty url_prefix")
 	}
 	cfg.URLPrefix = strings.TrimSuffix(cfg.URLPrefix, "/")
 	return cfg, err

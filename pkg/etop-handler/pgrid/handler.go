@@ -31,7 +31,7 @@ func WrapHandlerFunc(fn HandlerFunc) mq.EventHandler {
 
 		// Skip event too far in the past
 		t := time.Unix(event.Timestamp, 0)
-		if delta := time.Now().Sub(t); delta > 24*time.Hour && delta < tenYears {
+		if delta := time.Since(t); delta > 24*time.Hour && delta < tenYears {
 			ll.Warn("Skip event",
 				l.String("topic", msg.Topic),
 				l.Int32("p", msg.Partition),

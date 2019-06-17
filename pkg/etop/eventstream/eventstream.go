@@ -139,7 +139,8 @@ func (s *EventStreamer) HandleEventStream(c *httpx.Context) error {
 
 	// flushTimer is not init, as nil channel will be blocked
 	var flushTimer <-chan time.Time
-	pingTimer := time.Tick(10 * time.Second)
+	pingTimer := time.NewTicker(10 * time.Second)
+	defer pingTimer.Stop()
 
 	for {
 		select {
@@ -160,7 +161,7 @@ func (s *EventStreamer) HandleEventStream(c *httpx.Context) error {
 				flushTimer = t.C
 			}
 
-		case <-pingTimer:
+		case <-pingTimer.C:
 			writeEvent(w, &Event{Type: "ping", Payload: "{}"})
 			if flushTimer == nil {
 				t := time.NewTimer(100 * time.Millisecond)

@@ -4,13 +4,10 @@ import (
 	"context"
 	"strconv"
 	"strings"
-	"sync"
 	"time"
 
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
-	"etop.vn/backend/pkg/common/sq/core"
-	"etop.vn/backend/pkg/common/validate"
 	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/backend/pkg/services/catalog/convert"
 	catalogmodel "etop.vn/backend/pkg/services/catalog/model"
@@ -21,29 +18,18 @@ import (
 func init() {
 	bus.AddHandlers("sql",
 		AddProductsToShopCollection,
-		GetProduct,
 		GetProductsExtended,
 		GetShopVariant,
-		RemoveProductsEtopCategory,
 		RemoveProductsFromShopCollection,
 		RemoveShopVariants,
-		UpdateProduct,
-		UpdateVariantImages,
-		UpdateVariants,
-		UpdateProductsEtopCategory,
 		UpdateShopVariant,
-		UpdateShopVariantsStatus,
-		UpdateShopVariantsTags,
 
 		GetVariantsExtended,
-		UpdateVariant,
-		UpdateProductImages,
 
 		AddShopVariants,
 		AddShopProducts,
 		RemoveShopProducts,
 		UpdateShopProduct,
-		UpdateShopProductsStatus,
 		UpdateShopProductsTags,
 	)
 }
@@ -67,33 +53,6 @@ func GetVariantByProductIDs(productIds []int64, filters []cm.Filter) ([]*catalog
 		return nil, err
 	}
 	return variants, nil
-}
-
-func GetProduct(ctx context.Context, query *catalogmodelx.DeprecatedGetProductQuery) error {
-	if query.ProductID == 0 {
-		return cm.Error(cm.NotFound, "", nil)
-	}
-
-	s := x.Table("product").Where("p.deleted_at is NULL")
-	p := new(catalogmodel.Product)
-	has, err := s.Where("p.id = ?", query.ProductID).Get(p)
-	if err != nil {
-		return err
-	}
-	if !has {
-		return cm.Error(cm.NotFound, "", nil)
-	}
-
-	variants, err := GetVariantByProductIDs([]int64{p.ID}, []cm.Filter{})
-	if err != nil {
-		return err
-	}
-
-	query.Result = &catalogmodel.ProductFtVariant{
-		Product:  p,
-		Variants: variants,
-	}
-	return nil
 }
 
 func GetProductsExtended(ctx context.Context, query *catalogmodelx.DeprecatedGetProductsExtendedQuery) error {
@@ -216,164 +175,6 @@ func GetVariantsExtended(ctx context.Context, query *catalogmodelx.GetVariantsEx
 			return err
 		}
 		query.Result.Total = int(total)
-	}
-	return nil
-}
-
-func UpdateProduct(ctx context.Context, cmd *catalogmodelx.UpdateProductCommand) error {
-	if err := cmd.Product.BeforeUpdate(); err != nil {
-		return err
-	}
-
-	ft := catalogsqlstore.NewProductFilters("")
-	if err := x.
-		Where(
-			ft.NotDeleted(),
-			ft.ByID(cmd.Product.ID),
-		).
-		ShouldUpdate(cmd.Product); err != nil {
-		return err
-	}
-
-	query := &catalogmodelx.DeprecatedGetProductQuery{
-		ProductID: cmd.Product.ID,
-	}
-	if pErr := GetProduct(ctx, query); pErr != nil {
-		return pErr
-	}
-
-	cmd.Result = query.Result
-	return nil
-}
-
-func UpdateVariant(ctx context.Context, cmd *catalogmodelx.UpdateVariantCommand) error {
-	if cmd.Variant == nil || cmd.Variant.ID == 0 {
-		return cm.Error(cm.InvalidArgument, "Thiếu VariantID", nil)
-	}
-	if err := cmd.Variant.BeforeUpdate(); err != nil {
-		return err
-	}
-
-	s := x.Where("id = ?", cmd.Variant.ID)
-
-	// cmd.Product.BeforeUpdate()
-	updated, err := s.Update(cmd.Variant)
-	if _err := CheckErrorProductCode(err); _err != nil {
-		return _err
-	}
-	if updated == 0 {
-		return cm.Error(cm.NotFound, "", nil)
-	}
-
-	cmd.Result = new(catalogmodel.VariantExtended)
-	if has, err := x.Where("v.id = ?", cmd.Variant.ID).
-		Get(cmd.Result); err != nil || !has {
-		return cm.Error(cm.Internal, "", err)
-	}
-	return nil
-}
-
-func UpdateVariantImages(ctx context.Context, cmd *catalogmodelx.UpdateVariantImagesCommand) error {
-	if cmd.VariantID == 0 {
-		return cm.Error(cm.InvalidArgument, "Thiếu VariantID", nil)
-	}
-
-	s := x.Table("variant").Where("id = ? AND deleted_at is NULL", cmd.VariantID)
-
-	if err := s.
-		ShouldUpdateMap(M{
-			"image_urls": core.Array{V: cmd.ImageURLs},
-		}); err != nil {
-		return err
-	}
-
-	cmd.Result = new(catalogmodel.VariantExtended)
-	if has, err := x.Where("v.id = ?", cmd.VariantID).
-		Get(cmd.Result); err != nil || !has {
-		return cm.Error(cm.Internal, "", err)
-	}
-	return nil
-}
-
-func UpdateProductImages(ctx context.Context, cmd *catalogmodelx.UpdateProductImagesCommand) error {
-	if cmd.ProductID == 0 {
-		return cm.Error(cm.InvalidArgument, "Thiếu ProductID", nil)
-	}
-
-	s := x.Table("product").Where("id = ? AND deleted_at is NULL", cmd.ProductID)
-
-	if err := s.
-		ShouldUpdateMap(M{
-			"image_urls": core.Array{V: cmd.ImageURLs},
-		}); err != nil {
-		return err
-	}
-
-	query := &catalogmodelx.DeprecatedGetProductQuery{
-		ProductID: cmd.ProductID,
-	}
-	if pErr := GetProduct(ctx, query); pErr != nil {
-		return pErr
-	}
-
-	cmd.Result = query.Result
-	return nil
-}
-
-func UpdateVariants(ctx context.Context, cmd *catalogmodelx.UpdateVariantsCommand) error {
-	toUpdates := 0
-	ids := make([]int64, len(cmd.Variants))
-	errs := make([]error, len(cmd.Variants))
-	cmd.Result.Errors = errs
-
-	for _, v := range cmd.Variants {
-		if err := v.BeforeUpdate(); err != nil {
-			return err
-		}
-	}
-
-	var wg sync.WaitGroup
-	for i, p := range cmd.Variants {
-		ids[i] = p.ID
-		if p.ID == 0 {
-			errs[i] = cm.Error(cm.NotFound, "", nil)
-			continue
-		}
-		toUpdates++
-
-		wg.Add(1)
-		go func(i int, p *catalogmodel.Variant) {
-			defer wg.Done()
-			s := x.Where("id = ?", p.ID)
-
-			// p.BeforeUpdate()
-			count, err := s.Update(p)
-			if err != nil {
-				errs[i] = err
-			} else if count <= 0 {
-				errs[i] = cm.Error(cm.NotFound, "", nil)
-			}
-		}(i, p)
-	}
-	wg.Wait()
-
-	if toUpdates == 0 {
-		return cm.Error(cm.NotFound, "Nothing to update", nil)
-	}
-
-	countErrors := 0
-	for _, err := range errs {
-		if err != nil {
-			countErrors++
-		}
-	}
-	if countErrors == len(errs) {
-		return cm.Error(cm.Unknown, "Can not update variants", errs[0])
-	}
-
-	if err := x.In("id", ids).
-		Find((*catalogmodel.VariantExtendeds)(&cmd.Result.Variants)); err != nil {
-		return cm.Error(cm.Unknown, "Can not retrieve variants", err)
 	}
 	return nil
 }
@@ -535,10 +336,6 @@ INSERT INTO shop_variant("shop_id", "variant_id", "product_id", "retail_price", 
 	return nil
 }
 
-func UpdateOrInsertShopVariant(sv *catalogmodel.ShopVariant, productSourceID int64) error {
-	return updateOrInsertShopVariant(sv, productSourceID, x)
-}
-
 func updateOrInsertShopVariant(sv *catalogmodel.ShopVariant, productSourceID int64, x Qx) error {
 	if sv.VariantID == 0 {
 		return cm.Error(cm.InvalidArgument, "Missing VariantID", nil)
@@ -576,7 +373,7 @@ func updateOrInsertShopVariant(sv *catalogmodel.ShopVariant, productSourceID int
 				return err
 			}
 
-			err, variant := getVariant(sv.VariantID, x)
+			variant, err := getVariant(sv.VariantID, x)
 			if err != nil {
 				return err
 			}
@@ -596,7 +393,7 @@ func updateOrInsertShopVariant(sv *catalogmodel.ShopVariant, productSourceID int
 		}
 	} else {
 		// case: variant not in table shop_variant, but product is in table shop_product
-		err, variant := getVariant(sv.VariantID, x)
+		variant, err := getVariant(sv.VariantID, x)
 		if err != nil {
 			return err
 		}
@@ -608,12 +405,12 @@ func updateOrInsertShopVariant(sv *catalogmodel.ShopVariant, productSourceID int
 	return nil
 }
 
-func getVariant(id int64, x Qx) (error, *catalogmodel.Variant) {
+func getVariant(id int64, x Qx) (*catalogmodel.Variant, error) {
 	var variant = new(catalogmodel.Variant)
 	if err := x.Table("variant").Where("id = ?", id).ShouldGet(variant); err != nil {
-		return err, nil
+		return nil, err
 	}
-	return nil, variant
+	return variant, nil
 }
 
 func buildShopVariant(v *catalogmodel.Variant, sv *catalogmodel.ShopVariant) *catalogmodel.ShopVariant {
@@ -715,136 +512,6 @@ func RemoveShopVariants(ctx context.Context, cmd *catalogmodelx.RemoveShopVarian
 	})
 }
 
-func UpdateShopVariantsStatus(ctx context.Context, cmd *catalogmodelx.UpdateShopVariantsStatusCommand) error {
-	if cmd.ShopID == 0 {
-		return cm.Error(cm.InvalidArgument, "Missing AccountID", nil)
-	}
-
-	updated := 0
-	for _, id := range cmd.VariantIDs {
-		sp := &catalogmodel.ShopVariant{
-			ShopID:    cmd.ShopID,
-			VariantID: id,
-			Status:    *cmd.Update.Status,
-		}
-
-		if err := UpdateOrInsertShopVariant(sp, cmd.ProductSourceID); err == nil {
-			updated++
-		}
-	}
-
-	if updated == 0 {
-		return cm.Error(cm.NotFound, "", nil)
-	}
-
-	cmd.Result.Updated = updated
-	return nil
-}
-
-func UpdateShopVariantsTags(ctx context.Context, cmd *catalogmodelx.UpdateShopVariantsTagsCommand) error {
-	if cmd.ShopID == 0 {
-		return cm.Error(cm.InvalidArgument, "Missing AccountID", nil)
-	}
-	req := cmd.Update
-	if err := req.Verify(); err != nil {
-		return err
-	}
-
-	for i, tag := range req.Adds {
-		tag, ok := validate.NormalizeTag(tag)
-		if !ok {
-			return cm.Error(cm.InvalidArgument, "Invalid tag: "+tag, nil)
-		}
-		req.Adds[i] = tag
-	}
-	for i, tag := range req.ReplaceAll {
-		tag, ok := validate.NormalizeTag(tag)
-		if !ok {
-			return cm.Error(cm.InvalidArgument, "Invalid tag: "+tag, nil)
-		}
-		req.ReplaceAll[i] = tag
-	}
-
-	var products []*catalogmodel.ShopVariant
-	if err := x.Where("shop_id = ?", cmd.ShopID).
-		In("variant_id", cmd.VariantIDs).
-		Find((*catalogmodel.ShopVariants)(&products)); err != nil {
-		return err
-	}
-
-	if len(products) == 0 {
-		return cm.Error(cm.NotFound, "", nil)
-	}
-
-	countUpdated := 0
-	var savedError error
-	for _, p := range products {
-		tags := req.Patch(p.Tags)
-		updated, err := x.
-			Table("shop_variant").
-			Where("shop_id = ? AND variant_id = ?", cmd.ShopID, p.VariantID).
-			UpdateMap(M{
-				"tags": x.Opts().Array(model.TagsJoin(tags)),
-			})
-		if err != nil {
-			savedError = err
-			continue
-		}
-		if updated > 0 {
-			countUpdated++
-		}
-	}
-	if countUpdated > 0 {
-		cmd.Result.Updated = countUpdated
-		return nil
-	}
-	if savedError != nil {
-		return savedError
-	}
-	return cm.Error(cm.NotFound, "No product updated", nil)
-}
-
-func UpdateProductsEtopCategory(ctx context.Context, cmd *catalogmodelx.UpdateProductsEtopCategoryCommand) error {
-	if cmd.EtopCategoryID == 0 {
-		return cm.Error(cm.InvalidArgument, "Missing CategoryID", nil)
-	}
-	if len(cmd.ProductIDs) == 0 {
-		return cm.Error(cm.InvalidArgument, "Nothing to update", nil)
-	}
-
-	updated, err := x.Table("product").
-		In("id", cmd.ProductIDs).
-		Where("deleted_at is NULL").
-		UpdateMap(M{"category_id": cmd.EtopCategoryID})
-	if err != nil {
-		return err
-	}
-	if updated == 0 {
-		return cm.Error(cm.NotFound, "", nil)
-	}
-	cmd.Result.Updated = int(updated)
-	return nil
-}
-
-func RemoveProductsEtopCategory(ctx context.Context, cmd *catalogmodelx.RemoveProductsEtopCategoryCommand) error {
-	if len(cmd.ProductIDs) == 0 {
-		return cm.Error(cm.InvalidArgument, "Nothing to remove", nil)
-	}
-
-	updated, err := x.Table("product").
-		In("id", cmd.ProductIDs).
-		Where("deleted_at is NULL").
-		UpdateMap(M{"category_id": 0})
-	if err != nil {
-		return err
-	}
-	if updated == 0 {
-		return cm.Error(cm.NotFound, "", nil)
-	}
-	cmd.Result.Updated = int(updated)
-	return nil
-}
-
 func AddShopProducts(ctx context.Context, cmd *catalogmodelx.AddShopProductsCommand) error {
 	if cmd.ShopID == 0 {
 		return cm.Error(cm.InvalidArgument, "Missing AccountID", nil)
@@ -931,17 +598,6 @@ INSERT INTO shop_product("shop_id", "product_id", "name", "description", "short_
 	}
 	cmd.Result.Errors = errors
 	return nil
-}
-
-func GetShopVariantByProductIDs(productIds []int64) ([]*catalogmodel.ShopVariantExtended, error) {
-	s := x.Table("shop_variant")
-	var variants []*catalogmodel.ShopVariantExtended
-
-	if err := s.In("sv.product_id", productIds).Find((*catalogmodel.ShopVariantExtendeds)(&variants)); err != nil {
-		return nil, err
-	}
-
-	return variants, nil
 }
 
 func ConvertProductToShopProduct(p *catalogmodel.Product) *catalogmodel.ShopProduct {
@@ -1098,32 +754,6 @@ func UpdateShopProduct(ctx context.Context, cmd *catalogmodelx.UpdateShopProduct
 		}
 		cmd.Result = product
 	}
-	return nil
-}
-
-func UpdateShopProductsStatus(ctx context.Context, cmd *catalogmodelx.UpdateShopProductsStatusCommand) error {
-	if cmd.ShopID == 0 {
-		return cm.Error(cm.InvalidArgument, "Missing AccountID", nil)
-	}
-
-	updated := 0
-	for _, id := range cmd.ProductIDs {
-		sp := &catalogmodel.ShopProduct{
-			ShopID:    cmd.ShopID,
-			ProductID: id,
-			Status:    *cmd.Update.Status,
-		}
-
-		if err := UpdateOrInsertShopProduct(sp, cmd.ProductSourceID); err == nil {
-			updated++
-		}
-	}
-
-	if updated == 0 {
-		return cm.Error(cm.NotFound, "", nil)
-	}
-
-	cmd.Result.Updated = updated
 	return nil
 }
 

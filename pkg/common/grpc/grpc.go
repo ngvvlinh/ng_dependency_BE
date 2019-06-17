@@ -13,6 +13,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/grpc/status"
 
 	"etop.vn/backend/pkg/common/auth"
 	"etop.vn/backend/pkg/common/l"
@@ -106,7 +107,7 @@ func Authentication(authorizer auth.Authorizer, exceptions []string) AuthFunc {
 		ctx, err = authorizer.Authorize(ctx, tokenStr)
 		if err != nil && !ignore {
 			ll.Warn("Invalid token", l.String("token", tokenStr), l.Error(err))
-			return ctx, grpc.Errorf(codes.Unauthenticated, "Request unauthenticated")
+			return ctx, status.Errorf(codes.Unauthenticated, "Request unauthenticated")
 		}
 		return ctx, nil
 	}

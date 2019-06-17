@@ -21,7 +21,7 @@ func startServers() []*http.Server {
 
 func startServiceServer() *http.Server {
 	mux := http.NewServeMux()
-	healthservice.RegisterHTTP(mux)
+	healthservice.RegisterHTTPHandler(mux)
 
 	db, err := cmsql.Connect(cfg.Postgres)
 	if err != nil {

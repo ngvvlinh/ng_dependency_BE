@@ -137,7 +137,7 @@ func handleShopImportProductsFromFile(ctx context.Context, c *httpx.Context, sho
 
 	defer func() {
 		rerr := recover()
-		duration := time.Now().Sub(startAt)
+		duration := time.Since(startAt)
 		attempt := &model.ImportAttempt{
 			ID:           importID,
 			UserID:       userID,

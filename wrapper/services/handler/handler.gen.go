@@ -14,6 +14,7 @@ import (
 	"etop.vn/backend/pkg/common/bus"
 	cmGrpc "etop.vn/backend/pkg/common/grpc"
 	"etop.vn/backend/pkg/common/l"
+	"etop.vn/backend/pkg/common/metrics"
 	cmWrapper "etop.vn/backend/pkg/common/wrapper"
 	"etop.vn/backend/pkg/etop/authorize/claims"
 	"etop.vn/backend/pkg/etop/authorize/middleware"
@@ -142,6 +143,7 @@ func (s MiscService) VersionInfo(ctx context.Context, req *cm.Empty) (resp *cm.V
 	defer func() {
 		recovered := recover()
 		err = cmWrapper.RecoverAndLog(ctx, rpcName, nil, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmWrapper.Censor(req)
 	query := &VersionInfoEndpoint{Empty: req}
@@ -177,6 +179,7 @@ func (s WebhookService) ResetState(ctx context.Context, req *handler.ResetStateR
 	defer func() {
 		recovered := recover()
 		err = cmWrapper.RecoverAndLog(ctx, rpcName, nil, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmWrapper.Censor(req)
 	query := &ResetStateEndpoint{ResetStateRequest: req}

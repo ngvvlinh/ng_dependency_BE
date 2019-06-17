@@ -9,6 +9,7 @@ import (
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/httpx"
 	"etop.vn/backend/pkg/common/l"
+	"etop.vn/backend/pkg/common/metrics"
 	cmService "etop.vn/backend/pkg/common/service"
 	cmWrapper "etop.vn/backend/pkg/common/wrapper"
 	"etop.vn/backend/pkg/etop/authorize/middleware"
@@ -48,7 +49,8 @@ func startServers() []*http.Server {
 
 func startEtopServer() *http.Server {
 	mux := http.NewServeMux()
-	healthservice.RegisterHTTP(mux)
+	healthservice.RegisterHTTPHandler(mux)
+	metrics.RegisterHTTPHandler(mux)
 
 	if *flDocOnly {
 		ll.Warn("API IS DISABLED (-doc-only)")

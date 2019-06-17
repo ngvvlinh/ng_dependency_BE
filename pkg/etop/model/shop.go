@@ -67,10 +67,6 @@ type GetShopExtendedQuery struct {
 	Result *ShopExtended
 }
 
-type GetAllShopsQuery struct {
-	Result []*Shop
-}
-
 type GetAllShopExtendedsQuery struct {
 	Paging *cm.Paging
 

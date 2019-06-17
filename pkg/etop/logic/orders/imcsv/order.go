@@ -67,8 +67,8 @@ func VerifyOrders(ctx context.Context, shop *model.Shop, idx imcsv.Indexer, code
 	// Shop has not created any product source yet
 	if len(variantCodesMap) != 0 && shop.ProductSourceID == 0 {
 		var line *RowOrderLine
-		for _, line := range variantCodesMap {
-			line = line
+		for _, ln := range variantCodesMap {
+			line = ln
 			break
 		}
 		return nil, cm.Errorf(cm.FailedPrecondition, nil, "Cửa hàng chưa tạo sản phẩm nhưng vẫn điền mã sản phẩm. Vui lòng thêm sản phẩm vào cửa hàng hoặc xóa mã sản phẩm khỏi file import (ô %v). Nếu cần thêm thông tin vui lòng liên hệ hotro@etop.vn.", imcsv.CellName(line.RowIndex, idxVariantEdCode))

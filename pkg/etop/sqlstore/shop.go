@@ -14,13 +14,11 @@ import (
 
 func init() {
 	bus.AddHandlers("sql",
-		ConnectProductSource,
 		CreateProductSource,
 		CreateProductSourceCategory,
 		CreateShopCollection,
 		CreateVariant,
 		GetAllShopExtendedsQuery,
-		GetAllShops,
 		GetShop,
 		GetShopCollection,
 		GetShopCollections,
@@ -28,17 +26,10 @@ func init() {
 		GetShopProductSources,
 		GetShops,
 		GetShopWithPermission,
-		RemoveProductSource,
 		RemoveShopCollection,
 		UpdateProductsPSCategory,
 		UpdateShopCollection,
 	)
-}
-
-func GetAllShops(ctx context.Context, query *model.GetAllShopsQuery) error {
-	err := x.Where("deleted_at is NULL").
-		Find((*model.Shops)(&query.Result))
-	return err
 }
 
 func GetAllShopExtendedsQuery(ctx context.Context, query *model.GetAllShopExtendedsQuery) error {
@@ -414,49 +405,6 @@ func GetShopProductSources(ctx context.Context, query *catalogmodelx.GetShopProd
 		return err
 	}
 	query.Result = productSources
-	return nil
-}
-
-func ConnectProductSource(ctx context.Context, cmd *catalogmodelx.ConnectProductSourceCommand) error {
-	if cmd.ShopID == 0 {
-		return cm.Error(cm.InvalidArgument, "Missing AccountID", nil)
-	}
-	if cmd.ProductSourceID == 0 {
-		return cm.Error(cm.InvalidArgument, "Missing ProductSourceID", nil)
-	}
-
-	var productSource = new(catalogmodel.ProductSource)
-	if err := x.Table("product_source").Where("id = ?", cmd.ProductSourceID).ShouldGet(productSource); err != nil {
-		return err
-	}
-
-	var shop = new(model.Shop)
-	if err := x.Table("shop").Where("id = ?", cmd.ShopID).ShouldGet(shop); err != nil {
-		return err
-	}
-
-	if shop.ProductSourceID != 0 {
-		return cm.Error(cm.AlreadyExists, "The Shop has already product source", nil)
-	}
-
-	if _, err := x.Table("shop").Where("id = ?", cmd.ShopID).
-		UpdateMap(M{"product_source_id": cmd.ProductSourceID}); err != nil {
-		return err
-	}
-	cmd.Result.Updated = 1
-	return nil
-}
-
-func RemoveProductSource(ctx context.Context, cmd *catalogmodelx.RemoveProductSourceCommand) error {
-	if cmd.ShopID == 0 {
-		return cm.Error(cm.InvalidArgument, "Missing AccountID", nil)
-	}
-
-	updated, err := x.Table("shop").Where("id = ?", cmd.ShopID).UpdateMap(M{"product_source_id": nil})
-	if err != nil {
-		return err
-	}
-	cmd.Result.Updated = int(updated)
 	return nil
 }
 

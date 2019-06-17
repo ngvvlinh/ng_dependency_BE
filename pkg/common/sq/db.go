@@ -135,7 +135,7 @@ func (db *Database) QueryRow(query string, args ...interface{}) Row {
 
 func (db *Database) log(entry *LogEntry) (err error) {
 	err = entry.Error
-	entry.Duration = time.Now().Sub(entry.Time)
+	entry.Duration = time.Since(entry.Time)
 	if db.mapper != nil {
 		entry.OrigError = err
 		err = db.mapper(err, entry)

@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+
 	"flag"
 	"net/http"
 	"os"
@@ -17,6 +18,7 @@ import (
 	cc "etop.vn/backend/pkg/common/config"
 	"etop.vn/backend/pkg/common/health"
 	"etop.vn/backend/pkg/common/l"
+	"etop.vn/backend/pkg/common/metrics"
 	"etop.vn/backend/pkg/common/mq"
 	"etop.vn/backend/pkg/common/telebot"
 	"etop.vn/backend/pkg/etop/authorize/middleware"
@@ -119,7 +121,8 @@ func main() {
 		Handler: mux,
 	}
 
-	healthservice.RegisterHTTP(mux)
+	metrics.RegisterHTTPHandler(mux)
+	healthservice.RegisterHTTPHandler(mux)
 	healthservice.MarkReady()
 	go func() {
 		defer ctxCancel()

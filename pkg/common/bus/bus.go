@@ -36,7 +36,6 @@ type EventRegistry interface {
 
 type InProcBus struct {
 	handlers          map[reflect.Type]HandlerFunc
-	serviceHandlers   map[reflect.Type]interface{}
 	listeners         map[reflect.Type][]HandlerFunc
 	wildcardListeners []HandlerFunc
 
@@ -104,7 +103,7 @@ func call(node *NodeContext, msg Msg, params []reflect.Value, handler HandlerFun
 		params[0] = reflect.ValueOf(newNode)
 		defer func() {
 			newNode.Error = _err
-			newNode.Time = time.Now().Sub(newNode.Start)
+			newNode.Time = time.Since(newNode.Start)
 		}()
 	}
 	ret := reflect.ValueOf(handler).Call(params)

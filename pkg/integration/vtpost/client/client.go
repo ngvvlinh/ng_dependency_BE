@@ -153,7 +153,7 @@ func (c *ClientImpl) LoginAndRefreshToken(ctx context.Context) error {
 }
 
 func (c *ClientImpl) AutoLoginAndRefreshToken(ctx context.Context) (bool, error) {
-	if c.ExpiresAt.Sub(time.Now()) < 30*time.Minute {
+	if time.Until(c.ExpiresAt) < 30*time.Minute {
 		return true, c.LoginAndRefreshToken(ctx)
 	}
 	return false, nil

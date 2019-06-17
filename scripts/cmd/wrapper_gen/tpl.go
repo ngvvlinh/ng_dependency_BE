@@ -12,6 +12,7 @@ import (
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/grpc"
 	"etop.vn/backend/pkg/common/l"
+	"etop.vn/backend/pkg/common/metrics"
 	"etop.vn/backend/pkg/common/telebot"
 	"etop.vn/backend/pkg/common/wrapper"
 	"etop.vn/backend/pkg/etop/authorize/claims"
@@ -160,6 +161,7 @@ func (s {{$s.Name}}) {{$m.Name}}(ctx context.Context, req {{$m.InputType}}) (res
 	defer func() {
 		recovered := recover()
 		err = cmWrapper.RecoverAndLog(ctx, rpcName, {{if requireAuth $m}}session{{else}}nil{{end}}, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmWrapper.Censor(req)
 	{{- if requireAuth $m}}

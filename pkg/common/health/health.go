@@ -26,8 +26,8 @@ func (s *Service) Register(grpcServer *grpc.Server) {
 	grpc_health_v1.RegisterHealthServer(grpcServer, s)
 }
 
-// RegisterHTTP registers health service.
-func (s *Service) RegisterHTTP(mux *http.ServeMux) {
+// RegisterHTTPHandler registers health service.
+func (s *Service) RegisterHTTPHandler(mux *http.ServeMux) {
 	mux.Handle(DefaultRoute, s)
 }
 

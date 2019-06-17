@@ -45,7 +45,7 @@ func main() {
 	}
 
 	var err error
-	cfg, err := config.Load()
+	cfg, err = config.Load()
 	if err != nil {
 		ll.Fatal("Error while loading config", l.Error(err))
 	}
@@ -109,7 +109,7 @@ func main() {
 		}
 		ll.Sync()
 	}()
-	healthservice.RegisterHTTP(mux)
+	healthservice.RegisterHTTPHandler(mux)
 	healthservice.MarkReady()
 
 	ll.Info("Start forwarding events from Postgres to Kafka")

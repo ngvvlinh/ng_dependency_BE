@@ -1212,32 +1212,6 @@
         ]
       }
     },
-    "/api/shop.Product/AddVariants": {
-      "post": {
-        "operationId": "AddVariants",
-        "responses": {
-          "200": {
-            "description": "",
-            "schema": {
-              "$ref": "#/definitions/shopAddVariantsResponse"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/shopAddVariantsRequest"
-            }
-          }
-        ],
-        "tags": [
-          "Product"
-        ]
-      }
-    },
     "/api/shop.Product/GetProduct": {
       "post": {
         "operationId": "GetProduct",
@@ -1298,86 +1272,6 @@
             "description": "",
             "schema": {
               "$ref": "#/definitions/shopShopProductsResponse"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/cmIDsRequest"
-            }
-          }
-        ],
-        "tags": [
-          "Product"
-        ]
-      }
-    },
-    "/api/shop.Product/GetVariant": {
-      "post": {
-        "operationId": "GetVariant",
-        "responses": {
-          "200": {
-            "description": "",
-            "schema": {
-              "$ref": "#/definitions/shopShopVariant"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/cmIDRequest"
-            }
-          }
-        ],
-        "tags": [
-          "Product"
-        ]
-      }
-    },
-    "/api/shop.Product/GetVariants": {
-      "post": {
-        "summary": "GetVariants",
-        "description": "Return list of variant.\n\nFilters: The same as supplier.GetVariants, plus\n  - Exactly: collection_id\n  - Numeric: retail_price",
-        "operationId": "GetVariants",
-        "responses": {
-          "200": {
-            "description": "",
-            "schema": {
-              "$ref": "#/definitions/shopShopVariantsResponse"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/shopGetVariantsRequest"
-            }
-          }
-        ],
-        "tags": [
-          "Product"
-        ]
-      }
-    },
-    "/api/shop.Product/GetVariantsByIDs": {
-      "post": {
-        "operationId": "GetVariantsByIDs",
-        "responses": {
-          "200": {
-            "description": "",
-            "schema": {
-              "$ref": "#/definitions/shopShopVariantsResponse"
             }
           }
         },
@@ -1500,32 +1394,6 @@
         ]
       }
     },
-    "/api/shop.Product/UpdateProductsStatus": {
-      "post": {
-        "operationId": "UpdateProductsStatus",
-        "responses": {
-          "200": {
-            "description": "",
-            "schema": {
-              "$ref": "#/definitions/cmUpdatedResponse"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/shopUpdateVariantsStatusRequest"
-            }
-          }
-        ],
-        "tags": [
-          "Product"
-        ]
-      }
-    },
     "/api/shop.Product/UpdateProductsTags": {
       "post": {
         "operationId": "UpdateProductsTags",
@@ -1543,7 +1411,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/shopUpdateVariantsTagsRequest"
+              "$ref": "#/definitions/shopUpdateProductsTagsRequest"
             }
           }
         ],
@@ -1622,58 +1490,6 @@
             "required": true,
             "schema": {
               "$ref": "#/definitions/shopUpdateVariantsRequest"
-            }
-          }
-        ],
-        "tags": [
-          "Product"
-        ]
-      }
-    },
-    "/api/shop.Product/UpdateVariantsStatus": {
-      "post": {
-        "operationId": "UpdateVariantsStatus",
-        "responses": {
-          "200": {
-            "description": "",
-            "schema": {
-              "$ref": "#/definitions/cmUpdatedResponse"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/shopUpdateVariantsStatusRequest"
-            }
-          }
-        ],
-        "tags": [
-          "Product"
-        ]
-      }
-    },
-    "/api/shop.Product/UpdateVariantsTags": {
-      "post": {
-        "operationId": "UpdateVariantsTags",
-        "responses": {
-          "200": {
-            "description": "",
-            "schema": {
-              "$ref": "#/definitions/cmUpdatedResponse"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/shopUpdateVariantsTagsRequest"
             }
           }
         ],
@@ -4635,45 +4451,6 @@
         }
       }
     },
-    "shopAddVariantsRequest": {
-      "type": "object",
-      "properties": {
-        "ids": {
-          "type": "array",
-          "items": {
-            "type": "string",
-            "format": "int64"
-          }
-        },
-        "tags": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "collection_id": {
-          "type": "string",
-          "format": "int64"
-        }
-      }
-    },
-    "shopAddVariantsResponse": {
-      "type": "object",
-      "properties": {
-        "variants": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/shopShopVariant"
-          }
-        },
-        "errors": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/cmError"
-          }
-        }
-      }
-    },
     "shopAttribute": {
       "type": "object",
       "properties": {
@@ -5650,20 +5427,6 @@
         "id"
       ]
     },
-    "shopShopVariantsResponse": {
-      "type": "object",
-      "properties": {
-        "paging": {
-          "$ref": "#/definitions/cmPageInfo"
-        },
-        "variants": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/shopShopVariant"
-          }
-        }
-      }
-    },
     "shopSummarizeFulfillmentsRequest": {
       "type": "object",
       "properties": {
@@ -5937,6 +5700,43 @@
         }
       }
     },
+    "shopUpdateProductsTagsRequest": {
+      "type": "object",
+      "properties": {
+        "ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          }
+        },
+        "adds": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "deletes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "replace_all": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "delete_all": {
+          "type": "boolean",
+          "format": "boolean"
+        }
+      },
+      "required": [
+        "ids"
+      ]
+    },
     "shopUpdateShopRequest": {
       "type": "object",
       "properties": {
@@ -6110,62 +5910,6 @@
           }
         }
       }
-    },
-    "shopUpdateVariantsStatusRequest": {
-      "type": "object",
-      "properties": {
-        "ids": {
-          "type": "array",
-          "items": {
-            "type": "string",
-            "format": "int64"
-          }
-        },
-        "status": {
-          "$ref": "#/definitions/status3Status"
-        }
-      },
-      "required": [
-        "ids",
-        "status"
-      ]
-    },
-    "shopUpdateVariantsTagsRequest": {
-      "type": "object",
-      "properties": {
-        "ids": {
-          "type": "array",
-          "items": {
-            "type": "string",
-            "format": "int64"
-          }
-        },
-        "adds": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "deletes": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "replace_all": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "delete_all": {
-          "type": "boolean",
-          "format": "boolean"
-        }
-      },
-      "required": [
-        "ids"
-      ]
     },
     "sourceSource": {
       "type": "string",

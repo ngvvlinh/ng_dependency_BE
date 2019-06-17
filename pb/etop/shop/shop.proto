@@ -6,7 +6,7 @@ import "protoc-gen-swagger/options/annotations.proto";
 option (grpc.gateway.protoc_gen_swagger.options.openapiv2_swagger) = {
     info: {
         title: "eTop API: Shop";
-        version:"v1";
+        version:"v1"
     };
 };
 
@@ -61,22 +61,19 @@ service CollectionService {
 }
 
 service ProductService {
-    rpc RemoveVariants(RemoveVariantsRequest) returns (cm.RemovedResponse);
-    rpc UpdateVariant (UpdateVariantRequest)  returns (ShopVariant);
-    rpc UpdateVariants(UpdateVariantsRequest) returns (UpdateVariantsResponse);
-    rpc UpdateVariantsStatus(UpdateVariantsStatusRequest) returns (cm.UpdatedResponse);
-    rpc UpdateVariantsTags(UpdateVariantsTagsRequest) returns (cm.UpdatedResponse);
-    rpc UpdateVariantImages(UpdateVariantImagesRequest) returns (ShopVariant);
+    rpc RemoveVariants (RemoveVariantsRequest) returns (cm.RemovedResponse);
+    rpc UpdateVariant (UpdateVariantRequest) returns (ShopVariant);
+    rpc UpdateVariants (UpdateVariantsRequest) returns (UpdateVariantsResponse);
+    rpc UpdateVariantImages (UpdateVariantImagesRequest) returns (ShopVariant);
 
-    rpc AddProducts(AddProductsRequest) returns (AddProductsResponse);
-    rpc GetProduct(cm.IDRequest) returns (ShopProduct);
-    rpc GetProducts(GetVariantsRequest) returns (ShopProductsResponse);
-    rpc GetProductsByIDs(cm.IDsRequest) returns (ShopProductsResponse);
-    rpc RemoveProducts(RemoveVariantsRequest) returns (cm.RemovedResponse);
-    rpc UpdateProduct (UpdateProductRequest)  returns (ShopProduct);
-    rpc UpdateProductsStatus(UpdateVariantsStatusRequest) returns (cm.UpdatedResponse);
-    rpc UpdateProductsTags(UpdateVariantsTagsRequest) returns (cm.UpdatedResponse);
-    rpc UpdateProductImages(UpdateVariantImagesRequest) returns (ShopProduct);
+    rpc AddProducts (AddProductsRequest) returns (AddProductsResponse);
+    rpc GetProduct (cm.IDRequest) returns (ShopProduct);
+    rpc GetProducts (GetVariantsRequest) returns (ShopProductsResponse);
+    rpc GetProductsByIDs (cm.IDsRequest) returns (ShopProductsResponse);
+    rpc RemoveProducts (RemoveVariantsRequest) returns (cm.RemovedResponse);
+    rpc UpdateProduct (UpdateProductRequest) returns (ShopProduct);
+    rpc UpdateProductsTags (UpdateProductsTagsRequest) returns (cm.UpdatedResponse);
+    rpc UpdateProductImages (UpdateVariantImagesRequest) returns (ShopProduct);
 }
 
 service ProductSourceService {
@@ -417,15 +414,7 @@ message UpdateVariantsRequest {
     repeated UpdateVariantRequest updates = 1;
 }
 
-message UpdateVariantsStatusRequest {
-    // @required
-    repeated int64 ids = 1;
-
-    // @required
-    optional status3.Status status = 2;
-}
-
-message UpdateVariantsTagsRequest {
+message UpdateProductsTagsRequest {
     // @required
     repeated int64  ids         = 1;
     repeated string adds        = 2;

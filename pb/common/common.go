@@ -242,7 +242,7 @@ func (m *RawJSONObject) MarshalJSONPB(_ *jsonpb.Marshaler) ([]byte, error) {
 // UnmarshalJSONPB implements JSONPBUnmarshaler
 func (m *RawJSONObject) UnmarshalJSONPB(_ *jsonpb.Unmarshaler, data []byte) error {
 	if len(data) < 2 || data[0] != '{' || data[len(data)-1] != '}' {
-		return errors.New("Expect JSON object")
+		return errors.New("expect JSON object")
 	}
 	m.Data = data
 	return nil
@@ -251,12 +251,12 @@ func (m *RawJSONObject) UnmarshalJSONPB(_ *jsonpb.Unmarshaler, data []byte) erro
 func PatchImage(sourceImages []string, cmd *model.UpdateListRequest) ([]string, error) {
 	for _, imgURL := range cmd.Adds {
 		if !govalidator.IsURL(imgURL) {
-			return nil, cm.Error(cm.InvalidArgument, "Invalid url: "+imgURL, nil)
+			return nil, cm.Error(cm.InvalidArgument, "invalid url: "+imgURL, nil)
 		}
 	}
 	for _, imgURL := range cmd.ReplaceAll {
 		if !govalidator.IsURL(imgURL) {
-			return nil, cm.Error(cm.InvalidArgument, "Invalid url: "+imgURL, nil)
+			return nil, cm.Error(cm.InvalidArgument, "invalid url: "+imgURL, nil)
 		}
 	}
 

@@ -7,13 +7,6 @@ import (
 	catalogmodel "etop.vn/backend/pkg/services/catalog/model"
 )
 
-type DeprecatedGetProductQuery struct {
-	ProductID int64
-	model.StatusQuery
-
-	Result *catalogmodel.ProductFtVariant
-}
-
 type DeprecatedGetProductsExtendedQuery struct {
 	Paging  *cm.Paging
 	Filters []cm.Filter
@@ -47,67 +40,6 @@ type GetVariantsExtendedQuery struct {
 
 func (g *GetVariantsExtendedQuery) IsPaging() bool {
 	return !g.SkipPaging
-}
-
-type UpdateProductCommand struct {
-	Product *catalogmodel.Product
-
-	Result *catalogmodel.ProductFtVariant
-}
-
-type UpdateVariantCommand struct {
-	Variant *catalogmodel.Variant
-
-	Result *catalogmodel.VariantExtended
-}
-
-type UpdateProductImagesCommand struct {
-	ProductID int64
-	ImageURLs []string
-
-	Result *catalogmodel.ProductFtVariant
-}
-
-type UpdateVariantImagesCommand struct {
-	VariantID int64
-	ImageURLs []string
-
-	Result *catalogmodel.VariantExtended
-}
-
-type UpdateProductsCommand struct {
-	Products []*catalogmodel.Product
-
-	Result struct {
-		Products []*catalogmodel.Product
-		Errors   []error
-	}
-}
-
-type UpdateVariantsCommand struct {
-	Variants []*catalogmodel.Variant
-
-	Result struct {
-		Variants []*catalogmodel.VariantExtended
-		Errors   []error
-	}
-}
-
-type UpdateProductsEtopCategoryCommand struct {
-	ProductIDs     []int64
-	EtopCategoryID int64
-
-	Result struct {
-		Updated int
-	}
-}
-
-type RemoveProductsEtopCategoryCommand struct {
-	ProductIDs []int64
-
-	Result struct {
-		Updated int
-	}
 }
 
 type GetShopVariantQuery struct {
@@ -182,30 +114,6 @@ type UpdateShopVariantsCommand struct {
 	}
 }
 
-type UpdateShopVariantsStatusCommand struct {
-	ShopID          int64
-	VariantIDs      []int64
-	ProductSourceID int64
-	Update          struct {
-		Status *model.Status3
-	}
-
-	Result struct {
-		Updated int
-	}
-}
-
-type UpdateShopVariantsTagsCommand struct {
-	ShopID          int64
-	VariantIDs      []int64
-	Update          *model.UpdateListRequest
-	ProductSourceID int64
-
-	Result struct {
-		Updated int
-	}
-}
-
 type AddShopProductsCommand struct {
 	ShopID int64
 	IDs    []int64
@@ -233,19 +141,6 @@ type UpdateShopProductCommand struct {
 	ProductSourceID int64
 
 	Result *catalog.ShopProductWithVariants
-}
-
-type UpdateShopProductsStatusCommand struct {
-	ShopID          int64
-	ProductIDs      []int64
-	ProductSourceID int64
-	Update          struct {
-		Status *model.Status3
-	}
-
-	Result struct {
-		Updated int
-	}
 }
 
 type UpdateShopProductsTagsCommand struct {
@@ -345,33 +240,6 @@ type GetShopProductSourcesCommand struct {
 	Result []*catalogmodel.ProductSource
 }
 
-type GetProductSourceQuery struct {
-	GetProductSourceProps
-	Result *catalogmodel.ProductSource
-}
-
-type GetAllProductSourcesQuery struct {
-	External *bool
-
-	Result struct {
-		Sources []*catalogmodel.ProductSource
-	}
-}
-
-type GetProductSourceProps struct {
-	ID          int64
-	Type        string
-	ExternalKey string
-}
-
-type RemoveProductSourceCommand struct {
-	ShopID int64
-
-	Result struct {
-		Updated int
-	}
-}
-
 type CreateProductSourceCategoryCommand struct {
 	ShopID            int64
 	Name              string
@@ -387,15 +255,6 @@ type UpdateProductsProductSourceCategoryCommand struct {
 	ProductIDs      []int64
 	ShopID          int64
 	ProductSourceID int64
-
-	Result struct {
-		Updated int
-	}
-}
-
-type ConnectProductSourceCommand struct {
-	ProductSourceID int64
-	ShopID          int64
 
 	Result struct {
 		Updated int

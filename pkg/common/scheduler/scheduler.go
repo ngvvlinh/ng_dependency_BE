@@ -208,13 +208,13 @@ func (s *Scheduler) execTask(item *taskItem) {
 	defer func() {
 		err := recover()
 		if err != nil {
-			d := time.Now().Sub(t)
+			d := time.Since(t)
 			ll.Error("Task panic", l.Any("id", item.id), l.Duration("d", d), l.Any("err", err), l.Stack())
 		}
 	}()
 
 	err := item.task(item.id, s)
-	d := time.Now().Sub(t)
+	d := time.Since(t)
 	if err != nil {
 		ll.Error("Task error", l.Any("id", item.id), l.Duration("d", d), l.Error(err))
 	} else {

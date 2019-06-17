@@ -15,6 +15,7 @@ import (
 	common "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/l"
+	"etop.vn/backend/pkg/common/metrics"
 	cmWrapper "etop.vn/backend/pkg/common/wrapper"
 	"etop.vn/backend/pkg/etop/authorize/claims"
 	"etop.vn/backend/pkg/etop/authorize/middleware"
@@ -103,24 +104,17 @@ func ConnectShopService(addr string, client *http.Client) error {
 	bus.AddHandler("client", func(ctx context.Context, q *UpdateCollectionEndpoint) error { panic("Unexpected") })
 	bus.AddHandler("client", func(ctx context.Context, q *UpdateProductsCollectionEndpoint) error { panic("Unexpected") })
 	bus.AddHandler("client", func(ctx context.Context, q *AddProductsEndpoint) error { panic("Unexpected") })
-	bus.AddHandler("client", func(ctx context.Context, q *AddVariantsEndpoint) error { panic("Unexpected") })
 	bus.AddHandler("client", func(ctx context.Context, q *GetProductEndpoint) error { panic("Unexpected") })
 	bus.AddHandler("client", func(ctx context.Context, q *GetProductsEndpoint) error { panic("Unexpected") })
 	bus.AddHandler("client", func(ctx context.Context, q *GetProductsByIDsEndpoint) error { panic("Unexpected") })
-	bus.AddHandler("client", func(ctx context.Context, q *GetVariantEndpoint) error { panic("Unexpected") })
-	bus.AddHandler("client", func(ctx context.Context, q *GetVariantsEndpoint) error { panic("Unexpected") })
-	bus.AddHandler("client", func(ctx context.Context, q *GetVariantsByIDsEndpoint) error { panic("Unexpected") })
 	bus.AddHandler("client", func(ctx context.Context, q *RemoveProductsEndpoint) error { panic("Unexpected") })
 	bus.AddHandler("client", func(ctx context.Context, q *RemoveVariantsEndpoint) error { panic("Unexpected") })
 	bus.AddHandler("client", func(ctx context.Context, q *UpdateProductEndpoint) error { panic("Unexpected") })
 	bus.AddHandler("client", func(ctx context.Context, q *UpdateProductImagesEndpoint) error { panic("Unexpected") })
-	bus.AddHandler("client", func(ctx context.Context, q *UpdateProductsStatusEndpoint) error { panic("Unexpected") })
 	bus.AddHandler("client", func(ctx context.Context, q *UpdateProductsTagsEndpoint) error { panic("Unexpected") })
 	bus.AddHandler("client", func(ctx context.Context, q *UpdateVariantEndpoint) error { panic("Unexpected") })
 	bus.AddHandler("client", func(ctx context.Context, q *UpdateVariantImagesEndpoint) error { panic("Unexpected") })
 	bus.AddHandler("client", func(ctx context.Context, q *UpdateVariantsEndpoint) error { panic("Unexpected") })
-	bus.AddHandler("client", func(ctx context.Context, q *UpdateVariantsStatusEndpoint) error { panic("Unexpected") })
-	bus.AddHandler("client", func(ctx context.Context, q *UpdateVariantsTagsEndpoint) error { panic("Unexpected") })
 	bus.AddHandler("client", func(ctx context.Context, q *CreateProductSourceEndpoint) error { panic("Unexpected") })
 	bus.AddHandler("client", func(ctx context.Context, q *CreateProductSourceCategoryEndpoint) error { panic("Unexpected") })
 	bus.AddHandler("client", func(ctx context.Context, q *CreateVariantEndpoint) error { panic("Unexpected") })
@@ -402,20 +396,6 @@ func (c *ShopClient) AddProducts(ctx context.Context, in *shop.AddProductsReques
 	newNode.Error = err
 	return resp, err
 }
-func (c *ShopClient) AddVariants(ctx context.Context, in *shop.AddVariantsRequest) (*shop.AddVariantsResponse, error) {
-	resp, err := c._ProductService.AddVariants(ctx, in)
-
-	node, ok := ctx.(*bus.NodeContext)
-	if !ok {
-		return resp, err
-	}
-	newNode := node.WithMessage(map[string]interface{}{
-		"Request": in,
-		"Result":  resp,
-	})
-	newNode.Error = err
-	return resp, err
-}
 func (c *ShopClient) GetProduct(ctx context.Context, in *cm.IDRequest) (*shop.ShopProduct, error) {
 	resp, err := c._ProductService.GetProduct(ctx, in)
 
@@ -446,48 +426,6 @@ func (c *ShopClient) GetProducts(ctx context.Context, in *shop.GetVariantsReques
 }
 func (c *ShopClient) GetProductsByIDs(ctx context.Context, in *cm.IDsRequest) (*shop.ShopProductsResponse, error) {
 	resp, err := c._ProductService.GetProductsByIDs(ctx, in)
-
-	node, ok := ctx.(*bus.NodeContext)
-	if !ok {
-		return resp, err
-	}
-	newNode := node.WithMessage(map[string]interface{}{
-		"Request": in,
-		"Result":  resp,
-	})
-	newNode.Error = err
-	return resp, err
-}
-func (c *ShopClient) GetVariant(ctx context.Context, in *cm.IDRequest) (*shop.ShopVariant, error) {
-	resp, err := c._ProductService.GetVariant(ctx, in)
-
-	node, ok := ctx.(*bus.NodeContext)
-	if !ok {
-		return resp, err
-	}
-	newNode := node.WithMessage(map[string]interface{}{
-		"Request": in,
-		"Result":  resp,
-	})
-	newNode.Error = err
-	return resp, err
-}
-func (c *ShopClient) GetVariants(ctx context.Context, in *shop.GetVariantsRequest) (*shop.ShopVariantsResponse, error) {
-	resp, err := c._ProductService.GetVariants(ctx, in)
-
-	node, ok := ctx.(*bus.NodeContext)
-	if !ok {
-		return resp, err
-	}
-	newNode := node.WithMessage(map[string]interface{}{
-		"Request": in,
-		"Result":  resp,
-	})
-	newNode.Error = err
-	return resp, err
-}
-func (c *ShopClient) GetVariantsByIDs(ctx context.Context, in *cm.IDsRequest) (*shop.ShopVariantsResponse, error) {
-	resp, err := c._ProductService.GetVariantsByIDs(ctx, in)
 
 	node, ok := ctx.(*bus.NodeContext)
 	if !ok {
@@ -556,21 +494,7 @@ func (c *ShopClient) UpdateProductImages(ctx context.Context, in *shop.UpdateVar
 	newNode.Error = err
 	return resp, err
 }
-func (c *ShopClient) UpdateProductsStatus(ctx context.Context, in *shop.UpdateVariantsStatusRequest) (*cm.UpdatedResponse, error) {
-	resp, err := c._ProductService.UpdateProductsStatus(ctx, in)
-
-	node, ok := ctx.(*bus.NodeContext)
-	if !ok {
-		return resp, err
-	}
-	newNode := node.WithMessage(map[string]interface{}{
-		"Request": in,
-		"Result":  resp,
-	})
-	newNode.Error = err
-	return resp, err
-}
-func (c *ShopClient) UpdateProductsTags(ctx context.Context, in *shop.UpdateVariantsTagsRequest) (*cm.UpdatedResponse, error) {
+func (c *ShopClient) UpdateProductsTags(ctx context.Context, in *shop.UpdateProductsTagsRequest) (*cm.UpdatedResponse, error) {
 	resp, err := c._ProductService.UpdateProductsTags(ctx, in)
 
 	node, ok := ctx.(*bus.NodeContext)
@@ -614,34 +538,6 @@ func (c *ShopClient) UpdateVariantImages(ctx context.Context, in *shop.UpdateVar
 }
 func (c *ShopClient) UpdateVariants(ctx context.Context, in *shop.UpdateVariantsRequest) (*shop.UpdateVariantsResponse, error) {
 	resp, err := c._ProductService.UpdateVariants(ctx, in)
-
-	node, ok := ctx.(*bus.NodeContext)
-	if !ok {
-		return resp, err
-	}
-	newNode := node.WithMessage(map[string]interface{}{
-		"Request": in,
-		"Result":  resp,
-	})
-	newNode.Error = err
-	return resp, err
-}
-func (c *ShopClient) UpdateVariantsStatus(ctx context.Context, in *shop.UpdateVariantsStatusRequest) (*cm.UpdatedResponse, error) {
-	resp, err := c._ProductService.UpdateVariantsStatus(ctx, in)
-
-	node, ok := ctx.(*bus.NodeContext)
-	if !ok {
-		return resp, err
-	}
-	newNode := node.WithMessage(map[string]interface{}{
-		"Request": in,
-		"Result":  resp,
-	})
-	newNode.Error = err
-	return resp, err
-}
-func (c *ShopClient) UpdateVariantsTags(ctx context.Context, in *shop.UpdateVariantsTagsRequest) (*cm.UpdatedResponse, error) {
-	resp, err := c._ProductService.UpdateVariantsTags(ctx, in)
 
 	node, ok := ctx.(*bus.NodeContext)
 	if !ok {
@@ -1347,24 +1243,17 @@ func NewShopServer(mux Muxer, hooks *twirp.ServerHooks) {
 	bus.Expect(&UpdateCollectionEndpoint{})
 	bus.Expect(&UpdateProductsCollectionEndpoint{})
 	bus.Expect(&AddProductsEndpoint{})
-	bus.Expect(&AddVariantsEndpoint{})
 	bus.Expect(&GetProductEndpoint{})
 	bus.Expect(&GetProductsEndpoint{})
 	bus.Expect(&GetProductsByIDsEndpoint{})
-	bus.Expect(&GetVariantEndpoint{})
-	bus.Expect(&GetVariantsEndpoint{})
-	bus.Expect(&GetVariantsByIDsEndpoint{})
 	bus.Expect(&RemoveProductsEndpoint{})
 	bus.Expect(&RemoveVariantsEndpoint{})
 	bus.Expect(&UpdateProductEndpoint{})
 	bus.Expect(&UpdateProductImagesEndpoint{})
-	bus.Expect(&UpdateProductsStatusEndpoint{})
 	bus.Expect(&UpdateProductsTagsEndpoint{})
 	bus.Expect(&UpdateVariantEndpoint{})
 	bus.Expect(&UpdateVariantImagesEndpoint{})
 	bus.Expect(&UpdateVariantsEndpoint{})
-	bus.Expect(&UpdateVariantsStatusEndpoint{})
-	bus.Expect(&UpdateVariantsTagsEndpoint{})
 	bus.Expect(&CreateProductSourceEndpoint{})
 	bus.Expect(&CreateProductSourceCategoryEndpoint{})
 	bus.Expect(&CreateVariantEndpoint{})
@@ -1465,6 +1354,7 @@ func (s MiscService) VersionInfo(ctx context.Context, req *cm.Empty) (resp *cm.V
 	defer func() {
 		recovered := recover()
 		err = cmWrapper.RecoverAndLog(ctx, rpcName, nil, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmWrapper.Censor(req)
 	query := &VersionInfoEndpoint{Empty: req}
@@ -1496,6 +1386,7 @@ func (s AccountService) DeleteShop(ctx context.Context, req *cm.IDRequest) (resp
 	defer func() {
 		recovered := recover()
 		err = cmWrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmWrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
@@ -1543,6 +1434,7 @@ func (s AccountService) GetBalanceShop(ctx context.Context, req *cm.Empty) (resp
 	defer func() {
 		recovered := recover()
 		err = cmWrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmWrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
@@ -1591,6 +1483,7 @@ func (s AccountService) RegisterShop(ctx context.Context, req *shop.RegisterShop
 	defer func() {
 		recovered := recover()
 		err = cmWrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmWrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
@@ -1634,6 +1527,7 @@ func (s AccountService) SetDefaultAddress(ctx context.Context, req *etop.SetDefa
 	defer func() {
 		recovered := recover()
 		err = cmWrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmWrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
@@ -1681,6 +1575,7 @@ func (s AccountService) UpdateShop(ctx context.Context, req *shop.UpdateShopRequ
 	defer func() {
 		recovered := recover()
 		err = cmWrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmWrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
@@ -1730,6 +1625,7 @@ func (s CollectionService) CreateCollection(ctx context.Context, req *shop.Creat
 	defer func() {
 		recovered := recover()
 		err = cmWrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmWrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
@@ -1777,6 +1673,7 @@ func (s CollectionService) DeleteCollection(ctx context.Context, req *cm.IDReque
 	defer func() {
 		recovered := recover()
 		err = cmWrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmWrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
@@ -1824,6 +1721,7 @@ func (s CollectionService) GetCollection(ctx context.Context, req *cm.IDRequest)
 	defer func() {
 		recovered := recover()
 		err = cmWrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmWrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
@@ -1867,6 +1765,7 @@ func (s CollectionService) GetCollections(ctx context.Context, req *cm.Empty) (r
 	defer func() {
 		recovered := recover()
 		err = cmWrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmWrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
@@ -1910,6 +1809,7 @@ func (s CollectionService) GetCollectionsByIDs(ctx context.Context, req *cm.IDsR
 	defer func() {
 		recovered := recover()
 		err = cmWrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmWrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
@@ -1953,6 +1853,7 @@ func (s CollectionService) RemoveProductsCollection(ctx context.Context, req *sh
 	defer func() {
 		recovered := recover()
 		err = cmWrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmWrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
@@ -2000,6 +1901,7 @@ func (s CollectionService) UpdateCollection(ctx context.Context, req *shop.Updat
 	defer func() {
 		recovered := recover()
 		err = cmWrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmWrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
@@ -2047,6 +1949,7 @@ func (s CollectionService) UpdateProductsCollection(ctx context.Context, req *sh
 	defer func() {
 		recovered := recover()
 		err = cmWrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmWrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
@@ -2097,6 +2000,7 @@ func (s ProductService) AddProducts(ctx context.Context, req *shop.AddProductsRe
 	defer func() {
 		recovered := recover()
 		err = cmWrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmWrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
@@ -2110,56 +2014,6 @@ func (s ProductService) AddProducts(ctx context.Context, req *shop.AddProductsRe
 	}
 	session = sessionQuery.Result
 	query := &AddProductsEndpoint{AddProductsRequest: req}
-	query.Context.Claim = session.Claim
-	query.Context.Shop = session.Shop
-	query.CtxPartner = session.CtxPartner
-	query.Context.IsOwner = session.IsOwner
-	query.Context.Roles = session.Roles
-	query.Context.Permissions = session.Permissions
-	// Verify that the user has role "staff"
-	if !session.IsOwner && permission.MaxRoleLevel(session.Roles) < 2 {
-		return nil, common.ErrPermissionDenied
-	}
-	ctx = bus.NewRootContext(ctx)
-	err = bus.Dispatch(ctx, query)
-	resp = query.Result
-	if err == nil {
-		if resp == nil {
-			return nil, common.Error(common.Internal, "", nil).Log("nil response")
-		}
-		errs = cmWrapper.HasErrors(resp)
-	}
-	return resp, err
-}
-
-type AddVariantsEndpoint struct {
-	*shop.AddVariantsRequest
-	Result     *shop.AddVariantsResponse
-	Context    ShopClaim
-	CtxPartner *model.Partner
-}
-
-func (s ProductService) AddVariants(ctx context.Context, req *shop.AddVariantsRequest) (resp *shop.AddVariantsResponse, err error) {
-	t0 := time.Now()
-	var session *middleware.Session
-	var errs []*cm.Error
-	const rpcName = "shop.Product/AddVariants"
-	defer func() {
-		recovered := recover()
-		err = cmWrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
-	}()
-	defer cmWrapper.Censor(req)
-	sessionQuery := &middleware.StartSessionQuery{
-		Context:     ctx,
-		RequireAuth: true,
-		RequireShop: true,
-		AuthPartner: 1,
-	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
-		return nil, err
-	}
-	session = sessionQuery.Result
-	query := &AddVariantsEndpoint{AddVariantsRequest: req}
 	query.Context.Claim = session.Claim
 	query.Context.Shop = session.Shop
 	query.CtxPartner = session.CtxPartner
@@ -2197,6 +2051,7 @@ func (s ProductService) GetProduct(ctx context.Context, req *cm.IDRequest) (resp
 	defer func() {
 		recovered := recover()
 		err = cmWrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmWrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
@@ -2243,6 +2098,7 @@ func (s ProductService) GetProducts(ctx context.Context, req *shop.GetVariantsRe
 	defer func() {
 		recovered := recover()
 		err = cmWrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmWrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
@@ -2289,6 +2145,7 @@ func (s ProductService) GetProductsByIDs(ctx context.Context, req *cm.IDsRequest
 	defer func() {
 		recovered := recover()
 		err = cmWrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmWrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
@@ -2302,144 +2159,6 @@ func (s ProductService) GetProductsByIDs(ctx context.Context, req *cm.IDsRequest
 	}
 	session = sessionQuery.Result
 	query := &GetProductsByIDsEndpoint{IDsRequest: req}
-	query.Context.Claim = session.Claim
-	query.Context.Shop = session.Shop
-	query.CtxPartner = session.CtxPartner
-	query.Context.IsOwner = session.IsOwner
-	query.Context.Roles = session.Roles
-	query.Context.Permissions = session.Permissions
-	ctx = bus.NewRootContext(ctx)
-	err = bus.Dispatch(ctx, query)
-	resp = query.Result
-	if err == nil {
-		if resp == nil {
-			return nil, common.Error(common.Internal, "", nil).Log("nil response")
-		}
-		errs = cmWrapper.HasErrors(resp)
-	}
-	return resp, err
-}
-
-type GetVariantEndpoint struct {
-	*cm.IDRequest
-	Result     *shop.ShopVariant
-	Context    ShopClaim
-	CtxPartner *model.Partner
-}
-
-func (s ProductService) GetVariant(ctx context.Context, req *cm.IDRequest) (resp *shop.ShopVariant, err error) {
-	t0 := time.Now()
-	var session *middleware.Session
-	var errs []*cm.Error
-	const rpcName = "shop.Product/GetVariant"
-	defer func() {
-		recovered := recover()
-		err = cmWrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
-	}()
-	defer cmWrapper.Censor(req)
-	sessionQuery := &middleware.StartSessionQuery{
-		Context:     ctx,
-		RequireAuth: true,
-		RequireShop: true,
-		AuthPartner: 1,
-	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
-		return nil, err
-	}
-	session = sessionQuery.Result
-	query := &GetVariantEndpoint{IDRequest: req}
-	query.Context.Claim = session.Claim
-	query.Context.Shop = session.Shop
-	query.CtxPartner = session.CtxPartner
-	query.Context.IsOwner = session.IsOwner
-	query.Context.Roles = session.Roles
-	query.Context.Permissions = session.Permissions
-	ctx = bus.NewRootContext(ctx)
-	err = bus.Dispatch(ctx, query)
-	resp = query.Result
-	if err == nil {
-		if resp == nil {
-			return nil, common.Error(common.Internal, "", nil).Log("nil response")
-		}
-		errs = cmWrapper.HasErrors(resp)
-	}
-	return resp, err
-}
-
-type GetVariantsEndpoint struct {
-	*shop.GetVariantsRequest
-	Result     *shop.ShopVariantsResponse
-	Context    ShopClaim
-	CtxPartner *model.Partner
-}
-
-func (s ProductService) GetVariants(ctx context.Context, req *shop.GetVariantsRequest) (resp *shop.ShopVariantsResponse, err error) {
-	t0 := time.Now()
-	var session *middleware.Session
-	var errs []*cm.Error
-	const rpcName = "shop.Product/GetVariants"
-	defer func() {
-		recovered := recover()
-		err = cmWrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
-	}()
-	defer cmWrapper.Censor(req)
-	sessionQuery := &middleware.StartSessionQuery{
-		Context:     ctx,
-		RequireAuth: true,
-		RequireShop: true,
-		AuthPartner: 1,
-	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
-		return nil, err
-	}
-	session = sessionQuery.Result
-	query := &GetVariantsEndpoint{GetVariantsRequest: req}
-	query.Context.Claim = session.Claim
-	query.Context.Shop = session.Shop
-	query.CtxPartner = session.CtxPartner
-	query.Context.IsOwner = session.IsOwner
-	query.Context.Roles = session.Roles
-	query.Context.Permissions = session.Permissions
-	ctx = bus.NewRootContext(ctx)
-	err = bus.Dispatch(ctx, query)
-	resp = query.Result
-	if err == nil {
-		if resp == nil {
-			return nil, common.Error(common.Internal, "", nil).Log("nil response")
-		}
-		errs = cmWrapper.HasErrors(resp)
-	}
-	return resp, err
-}
-
-type GetVariantsByIDsEndpoint struct {
-	*cm.IDsRequest
-	Result     *shop.ShopVariantsResponse
-	Context    ShopClaim
-	CtxPartner *model.Partner
-}
-
-func (s ProductService) GetVariantsByIDs(ctx context.Context, req *cm.IDsRequest) (resp *shop.ShopVariantsResponse, err error) {
-	t0 := time.Now()
-	var session *middleware.Session
-	var errs []*cm.Error
-	const rpcName = "shop.Product/GetVariantsByIDs"
-	defer func() {
-		recovered := recover()
-		err = cmWrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
-	}()
-	defer cmWrapper.Censor(req)
-	sessionQuery := &middleware.StartSessionQuery{
-		Context:     ctx,
-		RequireAuth: true,
-		RequireShop: true,
-		AuthPartner: 1,
-	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
-		return nil, err
-	}
-	session = sessionQuery.Result
-	query := &GetVariantsByIDsEndpoint{IDsRequest: req}
 	query.Context.Claim = session.Claim
 	query.Context.Shop = session.Shop
 	query.CtxPartner = session.CtxPartner
@@ -2472,6 +2191,7 @@ func (s ProductService) RemoveProducts(ctx context.Context, req *shop.RemoveVari
 	defer func() {
 		recovered := recover()
 		err = cmWrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmWrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
@@ -2519,6 +2239,7 @@ func (s ProductService) RemoveVariants(ctx context.Context, req *shop.RemoveVari
 	defer func() {
 		recovered := recover()
 		err = cmWrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmWrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
@@ -2566,6 +2287,7 @@ func (s ProductService) UpdateProduct(ctx context.Context, req *shop.UpdateProdu
 	defer func() {
 		recovered := recover()
 		err = cmWrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmWrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
@@ -2613,6 +2335,7 @@ func (s ProductService) UpdateProductImages(ctx context.Context, req *shop.Updat
 	defer func() {
 		recovered := recover()
 		err = cmWrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmWrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
@@ -2646,60 +2369,13 @@ func (s ProductService) UpdateProductImages(ctx context.Context, req *shop.Updat
 	return resp, err
 }
 
-type UpdateProductsStatusEndpoint struct {
-	*shop.UpdateVariantsStatusRequest
-	Result  *cm.UpdatedResponse
-	Context ShopClaim
-}
-
-func (s ProductService) UpdateProductsStatus(ctx context.Context, req *shop.UpdateVariantsStatusRequest) (resp *cm.UpdatedResponse, err error) {
-	t0 := time.Now()
-	var session *middleware.Session
-	var errs []*cm.Error
-	const rpcName = "shop.Product/UpdateProductsStatus"
-	defer func() {
-		recovered := recover()
-		err = cmWrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
-	}()
-	defer cmWrapper.Censor(req)
-	sessionQuery := &middleware.StartSessionQuery{
-		Context:     ctx,
-		RequireAuth: true,
-		RequireShop: true,
-	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
-		return nil, err
-	}
-	session = sessionQuery.Result
-	query := &UpdateProductsStatusEndpoint{UpdateVariantsStatusRequest: req}
-	query.Context.Claim = session.Claim
-	query.Context.Shop = session.Shop
-	query.Context.IsOwner = session.IsOwner
-	query.Context.Roles = session.Roles
-	query.Context.Permissions = session.Permissions
-	// Verify that the user has role "staff"
-	if !session.IsOwner && permission.MaxRoleLevel(session.Roles) < 2 {
-		return nil, common.ErrPermissionDenied
-	}
-	ctx = bus.NewRootContext(ctx)
-	err = bus.Dispatch(ctx, query)
-	resp = query.Result
-	if err == nil {
-		if resp == nil {
-			return nil, common.Error(common.Internal, "", nil).Log("nil response")
-		}
-		errs = cmWrapper.HasErrors(resp)
-	}
-	return resp, err
-}
-
 type UpdateProductsTagsEndpoint struct {
-	*shop.UpdateVariantsTagsRequest
+	*shop.UpdateProductsTagsRequest
 	Result  *cm.UpdatedResponse
 	Context ShopClaim
 }
 
-func (s ProductService) UpdateProductsTags(ctx context.Context, req *shop.UpdateVariantsTagsRequest) (resp *cm.UpdatedResponse, err error) {
+func (s ProductService) UpdateProductsTags(ctx context.Context, req *shop.UpdateProductsTagsRequest) (resp *cm.UpdatedResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -2707,6 +2383,7 @@ func (s ProductService) UpdateProductsTags(ctx context.Context, req *shop.Update
 	defer func() {
 		recovered := recover()
 		err = cmWrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmWrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
@@ -2718,7 +2395,7 @@ func (s ProductService) UpdateProductsTags(ctx context.Context, req *shop.Update
 		return nil, err
 	}
 	session = sessionQuery.Result
-	query := &UpdateProductsTagsEndpoint{UpdateVariantsTagsRequest: req}
+	query := &UpdateProductsTagsEndpoint{UpdateProductsTagsRequest: req}
 	query.Context.Claim = session.Claim
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
@@ -2754,6 +2431,7 @@ func (s ProductService) UpdateVariant(ctx context.Context, req *shop.UpdateVaria
 	defer func() {
 		recovered := recover()
 		err = cmWrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmWrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
@@ -2801,6 +2479,7 @@ func (s ProductService) UpdateVariantImages(ctx context.Context, req *shop.Updat
 	defer func() {
 		recovered := recover()
 		err = cmWrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmWrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
@@ -2848,6 +2527,7 @@ func (s ProductService) UpdateVariants(ctx context.Context, req *shop.UpdateVari
 	defer func() {
 		recovered := recover()
 		err = cmWrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmWrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
@@ -2860,100 +2540,6 @@ func (s ProductService) UpdateVariants(ctx context.Context, req *shop.UpdateVari
 	}
 	session = sessionQuery.Result
 	query := &UpdateVariantsEndpoint{UpdateVariantsRequest: req}
-	query.Context.Claim = session.Claim
-	query.Context.Shop = session.Shop
-	query.Context.IsOwner = session.IsOwner
-	query.Context.Roles = session.Roles
-	query.Context.Permissions = session.Permissions
-	// Verify that the user has role "staff"
-	if !session.IsOwner && permission.MaxRoleLevel(session.Roles) < 2 {
-		return nil, common.ErrPermissionDenied
-	}
-	ctx = bus.NewRootContext(ctx)
-	err = bus.Dispatch(ctx, query)
-	resp = query.Result
-	if err == nil {
-		if resp == nil {
-			return nil, common.Error(common.Internal, "", nil).Log("nil response")
-		}
-		errs = cmWrapper.HasErrors(resp)
-	}
-	return resp, err
-}
-
-type UpdateVariantsStatusEndpoint struct {
-	*shop.UpdateVariantsStatusRequest
-	Result  *cm.UpdatedResponse
-	Context ShopClaim
-}
-
-func (s ProductService) UpdateVariantsStatus(ctx context.Context, req *shop.UpdateVariantsStatusRequest) (resp *cm.UpdatedResponse, err error) {
-	t0 := time.Now()
-	var session *middleware.Session
-	var errs []*cm.Error
-	const rpcName = "shop.Product/UpdateVariantsStatus"
-	defer func() {
-		recovered := recover()
-		err = cmWrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
-	}()
-	defer cmWrapper.Censor(req)
-	sessionQuery := &middleware.StartSessionQuery{
-		Context:     ctx,
-		RequireAuth: true,
-		RequireShop: true,
-	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
-		return nil, err
-	}
-	session = sessionQuery.Result
-	query := &UpdateVariantsStatusEndpoint{UpdateVariantsStatusRequest: req}
-	query.Context.Claim = session.Claim
-	query.Context.Shop = session.Shop
-	query.Context.IsOwner = session.IsOwner
-	query.Context.Roles = session.Roles
-	query.Context.Permissions = session.Permissions
-	// Verify that the user has role "staff"
-	if !session.IsOwner && permission.MaxRoleLevel(session.Roles) < 2 {
-		return nil, common.ErrPermissionDenied
-	}
-	ctx = bus.NewRootContext(ctx)
-	err = bus.Dispatch(ctx, query)
-	resp = query.Result
-	if err == nil {
-		if resp == nil {
-			return nil, common.Error(common.Internal, "", nil).Log("nil response")
-		}
-		errs = cmWrapper.HasErrors(resp)
-	}
-	return resp, err
-}
-
-type UpdateVariantsTagsEndpoint struct {
-	*shop.UpdateVariantsTagsRequest
-	Result  *cm.UpdatedResponse
-	Context ShopClaim
-}
-
-func (s ProductService) UpdateVariantsTags(ctx context.Context, req *shop.UpdateVariantsTagsRequest) (resp *cm.UpdatedResponse, err error) {
-	t0 := time.Now()
-	var session *middleware.Session
-	var errs []*cm.Error
-	const rpcName = "shop.Product/UpdateVariantsTags"
-	defer func() {
-		recovered := recover()
-		err = cmWrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
-	}()
-	defer cmWrapper.Censor(req)
-	sessionQuery := &middleware.StartSessionQuery{
-		Context:     ctx,
-		RequireAuth: true,
-		RequireShop: true,
-	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
-		return nil, err
-	}
-	session = sessionQuery.Result
-	query := &UpdateVariantsTagsEndpoint{UpdateVariantsTagsRequest: req}
 	query.Context.Claim = session.Claim
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
@@ -2991,6 +2577,7 @@ func (s ProductSourceService) CreateProductSource(ctx context.Context, req *shop
 	defer func() {
 		recovered := recover()
 		err = cmWrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmWrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
@@ -3038,6 +2625,7 @@ func (s ProductSourceService) CreateProductSourceCategory(ctx context.Context, r
 	defer func() {
 		recovered := recover()
 		err = cmWrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmWrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
@@ -3086,6 +2674,7 @@ func (s ProductSourceService) CreateVariant(ctx context.Context, req *shop.Creat
 	defer func() {
 		recovered := recover()
 		err = cmWrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmWrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
@@ -3136,6 +2725,7 @@ func (s ProductSourceService) GetProductSourceCategories(ctx context.Context, re
 	defer func() {
 		recovered := recover()
 		err = cmWrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmWrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
@@ -3182,6 +2772,7 @@ func (s ProductSourceService) GetProductSourceCategory(ctx context.Context, req 
 	defer func() {
 		recovered := recover()
 		err = cmWrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmWrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
@@ -3228,6 +2819,7 @@ func (s ProductSourceService) GetShopProductSources(ctx context.Context, req *cm
 	defer func() {
 		recovered := recover()
 		err = cmWrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmWrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
@@ -3273,6 +2865,7 @@ func (s ProductSourceService) RemoveProductSourceCategory(ctx context.Context, r
 	defer func() {
 		recovered := recover()
 		err = cmWrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmWrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
@@ -3320,6 +2913,7 @@ func (s ProductSourceService) UpdateProductSourceCategory(ctx context.Context, r
 	defer func() {
 		recovered := recover()
 		err = cmWrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmWrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
@@ -3367,6 +2961,7 @@ func (s ProductSourceService) UpdateProductsPSCategory(ctx context.Context, req 
 	defer func() {
 		recovered := recover()
 		err = cmWrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmWrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
@@ -3417,6 +3012,7 @@ func (s OrderService) CancelOrder(ctx context.Context, req *shop.CancelOrderRequ
 	defer func() {
 		recovered := recover()
 		err = cmWrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmWrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
@@ -3467,6 +3063,7 @@ func (s OrderService) ConfirmOrderAndCreateFulfillments(ctx context.Context, req
 	defer func() {
 		recovered := recover()
 		err = cmWrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmWrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
@@ -3517,6 +3114,7 @@ func (s OrderService) ConfirmOrdersAndCreateFulfillments(ctx context.Context, re
 	defer func() {
 		recovered := recover()
 		err = cmWrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmWrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
@@ -3567,6 +3165,7 @@ func (s OrderService) CreateOrder(ctx context.Context, req *order.CreateOrderReq
 	defer func() {
 		recovered := recover()
 		err = cmWrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmWrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
@@ -3617,6 +3216,7 @@ func (s OrderService) GetOrder(ctx context.Context, req *cm.IDRequest) (resp *or
 	defer func() {
 		recovered := recover()
 		err = cmWrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmWrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
@@ -3663,6 +3263,7 @@ func (s OrderService) GetOrders(ctx context.Context, req *shop.GetOrdersRequest)
 	defer func() {
 		recovered := recover()
 		err = cmWrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmWrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
@@ -3709,6 +3310,7 @@ func (s OrderService) GetOrdersByIDs(ctx context.Context, req *etop.IDsRequest) 
 	defer func() {
 		recovered := recover()
 		err = cmWrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmWrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
@@ -3755,6 +3357,7 @@ func (s OrderService) UpdateOrder(ctx context.Context, req *order.UpdateOrderReq
 	defer func() {
 		recovered := recover()
 		err = cmWrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmWrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
@@ -3805,6 +3408,7 @@ func (s OrderService) UpdateOrderPaymentStatus(ctx context.Context, req *shop.Up
 	defer func() {
 		recovered := recover()
 		err = cmWrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmWrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
@@ -3855,6 +3459,7 @@ func (s OrderService) UpdateOrdersStatus(ctx context.Context, req *shop.UpdateOr
 	defer func() {
 		recovered := recover()
 		err = cmWrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmWrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
@@ -3907,6 +3512,7 @@ func (s FulfillmentService) CancelFulfillment(ctx context.Context, req *cm.IDReq
 	defer func() {
 		recovered := recover()
 		err = cmWrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmWrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
@@ -3956,6 +3562,7 @@ func (s FulfillmentService) CreateFulfillmentsForOrder(ctx context.Context, req 
 	defer func() {
 		recovered := recover()
 		err = cmWrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmWrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
@@ -4004,6 +3611,7 @@ func (s FulfillmentService) GetExternalShippingServices(ctx context.Context, req
 	defer func() {
 		recovered := recover()
 		err = cmWrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmWrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
@@ -4050,6 +3658,7 @@ func (s FulfillmentService) GetFulfillment(ctx context.Context, req *cm.IDReques
 	defer func() {
 		recovered := recover()
 		err = cmWrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmWrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
@@ -4096,6 +3705,7 @@ func (s FulfillmentService) GetFulfillments(ctx context.Context, req *shop.GetFu
 	defer func() {
 		recovered := recover()
 		err = cmWrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmWrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
@@ -4140,6 +3750,7 @@ func (s FulfillmentService) GetPublicExternalShippingServices(ctx context.Contex
 	defer func() {
 		recovered := recover()
 		err = cmWrapper.RecoverAndLog(ctx, rpcName, nil, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmWrapper.Censor(req)
 	query := &GetPublicExternalShippingServicesEndpoint{GetExternalShippingServicesRequest: req}
@@ -4168,6 +3779,7 @@ func (s FulfillmentService) GetPublicFulfillment(ctx context.Context, req *shop.
 	defer func() {
 		recovered := recover()
 		err = cmWrapper.RecoverAndLog(ctx, rpcName, nil, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmWrapper.Censor(req)
 	query := &GetPublicFulfillmentEndpoint{GetPublicFulfillmentRequest: req}
@@ -4197,6 +3809,7 @@ func (s FulfillmentService) UpdateFulfillmentsShippingState(ctx context.Context,
 	defer func() {
 		recovered := recover()
 		err = cmWrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmWrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
@@ -4246,6 +3859,7 @@ func (s ShipnowService) CancelShipnowFulfillment(ctx context.Context, req *order
 	defer func() {
 		recovered := recover()
 		err = cmWrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmWrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
@@ -4289,6 +3903,7 @@ func (s ShipnowService) ConfirmShipnowFulfillment(ctx context.Context, req *cm.I
 	defer func() {
 		recovered := recover()
 		err = cmWrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmWrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
@@ -4332,6 +3947,7 @@ func (s ShipnowService) CreateShipnowFulfillment(ctx context.Context, req *order
 	defer func() {
 		recovered := recover()
 		err = cmWrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmWrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
@@ -4375,6 +3991,7 @@ func (s ShipnowService) GetShipnowFulfillment(ctx context.Context, req *cm.IDReq
 	defer func() {
 		recovered := recover()
 		err = cmWrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmWrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
@@ -4418,6 +4035,7 @@ func (s ShipnowService) GetShipnowFulfillments(ctx context.Context, req *order.G
 	defer func() {
 		recovered := recover()
 		err = cmWrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmWrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
@@ -4461,6 +4079,7 @@ func (s ShipnowService) UpdateShipnowFulfillment(ctx context.Context, req *order
 	defer func() {
 		recovered := recover()
 		err = cmWrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmWrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
@@ -4507,6 +4126,7 @@ func (s HistoryService) GetFulfillmentHistory(ctx context.Context, req *shop.Get
 	defer func() {
 		recovered := recover()
 		err = cmWrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmWrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
@@ -4554,6 +4174,7 @@ func (s MoneyTransactionService) GetMoneyTransaction(ctx context.Context, req *c
 	defer func() {
 		recovered := recover()
 		err = cmWrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmWrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
@@ -4597,6 +4218,7 @@ func (s MoneyTransactionService) GetMoneyTransactions(ctx context.Context, req *
 	defer func() {
 		recovered := recover()
 		err = cmWrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmWrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
@@ -4643,6 +4265,7 @@ func (s SummaryService) CalcBalanceShop(ctx context.Context, req *cm.Empty) (res
 	defer func() {
 		recovered := recover()
 		err = cmWrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmWrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
@@ -4688,6 +4311,7 @@ func (s SummaryService) SummarizeFulfillments(ctx context.Context, req *shop.Sum
 	defer func() {
 		recovered := recover()
 		err = cmWrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmWrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
@@ -4737,6 +4361,7 @@ func (s ExportService) GetExports(ctx context.Context, req *shop.GetExportsReque
 	defer func() {
 		recovered := recover()
 		err = cmWrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmWrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
@@ -4780,6 +4405,7 @@ func (s ExportService) RequestExport(ctx context.Context, req *shop.RequestExpor
 	defer func() {
 		recovered := recover()
 		err = cmWrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmWrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
@@ -4825,6 +4451,7 @@ func (s NotificationService) CreateDevice(ctx context.Context, req *etop.CreateD
 	defer func() {
 		recovered := recover()
 		err = cmWrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmWrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
@@ -4868,6 +4495,7 @@ func (s NotificationService) DeleteDevice(ctx context.Context, req *etop.DeleteD
 	defer func() {
 		recovered := recover()
 		err = cmWrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmWrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
@@ -4911,6 +4539,7 @@ func (s NotificationService) GetNotification(ctx context.Context, req *cm.IDRequ
 	defer func() {
 		recovered := recover()
 		err = cmWrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmWrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
@@ -4954,6 +4583,7 @@ func (s NotificationService) GetNotifications(ctx context.Context, req *etop.Get
 	defer func() {
 		recovered := recover()
 		err = cmWrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmWrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
@@ -4997,6 +4627,7 @@ func (s NotificationService) UpdateNotifications(ctx context.Context, req *etop.
 	defer func() {
 		recovered := recover()
 		err = cmWrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmWrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
@@ -5042,6 +4673,7 @@ func (s AuthorizeService) AuthorizePartner(ctx context.Context, req *shop.Author
 	defer func() {
 		recovered := recover()
 		err = cmWrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmWrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
@@ -5085,6 +4717,7 @@ func (s AuthorizeService) GetAuthorizedPartners(ctx context.Context, req *cm.Emp
 	defer func() {
 		recovered := recover()
 		err = cmWrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmWrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
@@ -5128,6 +4761,7 @@ func (s AuthorizeService) GetAvailablePartners(ctx context.Context, req *cm.Empt
 	defer func() {
 		recovered := recover()
 		err = cmWrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
 	}()
 	defer cmWrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{

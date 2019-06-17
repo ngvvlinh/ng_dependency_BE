@@ -131,7 +131,7 @@ func (s *Synchronizer) syncCallbackLogs(id interface{}, p scheduler.Planner) (_e
 			msg := fmt.Sprintf(`
 		ERROR: shipping-sync-service (%vms)
 		%v
-		`, time.Now().Sub(t0)/time.Millisecond, _err)
+		`, time.Since(t0)/time.Millisecond, _err)
 			bus.Dispatch(ctx, &telebot.SendMessageCommand{Message: msg})
 		}
 	}()

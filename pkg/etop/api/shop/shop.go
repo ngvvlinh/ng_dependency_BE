@@ -30,7 +30,6 @@ import (
 var ll = l.New()
 
 func init() {
-	bus.AddHandler("api", AddVariants)
 	bus.AddHandler("api", CreateCollection)
 	bus.AddHandler("api", DeleteCollection)
 	bus.AddHandler("api", GetCollection)
@@ -42,8 +41,6 @@ func init() {
 	bus.AddHandler("api", UpdateVariant)
 	bus.AddHandler("api", UpdateProducts)
 	bus.AddHandler("api", UpdateProductsCollection)
-	bus.AddHandler("api", UpdateVariantsStatus)
-	bus.AddHandler("api", UpdateVariantsTags)
 	bus.AddHandler("api", VersionInfo)
 
 	bus.AddHandler("api", AddProducts)
@@ -51,7 +48,6 @@ func init() {
 	bus.AddHandler("api", GetProducts)
 	bus.AddHandler("api", GetProductsByIDs)
 	bus.AddHandler("api", UpdateProduct)
-	bus.AddHandler("api", UpdateProductsStatus)
 	bus.AddHandler("api", UpdateProductsTags)
 	bus.AddHandler("api", RemoveProducts)
 
@@ -170,67 +166,6 @@ func UpdateVariant(ctx context.Context, q *wrapshop.UpdateVariantEndpoint) error
 
 func UpdateProducts(ctx context.Context, q *wrapshop.UpdateVariantsEndpoint) error {
 	return cm.ErrTODO
-}
-
-func UpdateVariantsStatus(ctx context.Context, q *wrapshop.UpdateVariantsStatusEndpoint) error {
-	if q.Status == nil {
-		return cm.Error(cm.InvalidArgument, "Missing status", nil)
-	}
-
-	shopID := q.Context.Shop.ID
-	productSourceID := q.Context.Shop.ProductSourceID
-	cmd := &catalogmodelx.UpdateShopVariantsStatusCommand{
-		ShopID:          shopID,
-		VariantIDs:      q.Ids,
-		ProductSourceID: productSourceID,
-	}
-	cmd.Update.Status = q.Status.ToModel()
-	if err := bus.Dispatch(ctx, cmd); err != nil {
-		return err
-	}
-	q.Result = &pbcm.UpdatedResponse{
-		Updated: int32(cmd.Result.Updated),
-	}
-	return nil
-}
-
-func UpdateVariantsTags(ctx context.Context, q *wrapshop.UpdateVariantsTagsEndpoint) error {
-	shopID := q.Context.Shop.ID
-	productSourceID := q.Context.Shop.ProductSourceID
-	cmd := &catalogmodelx.UpdateShopVariantsTagsCommand{
-		ShopID:     shopID,
-		VariantIDs: q.Ids,
-		Update: &model.UpdateListRequest{
-			Adds:       q.Adds,
-			Deletes:    q.Deletes,
-			ReplaceAll: q.ReplaceAll,
-			DeleteAll:  q.DeleteAll,
-		},
-		ProductSourceID: productSourceID,
-	}
-
-	if err := bus.Dispatch(ctx, cmd); err != nil {
-		return err
-	}
-	q.Result = &pbcm.UpdatedResponse{
-		Updated: int32(cmd.Result.Updated),
-	}
-	return nil
-}
-
-func AddVariants(ctx context.Context, q *wrapshop.AddVariantsEndpoint) error {
-	cmd := &catalogmodelx.AddShopVariantsCommand{
-		ShopID: q.Context.Shop.ID,
-		IDs:    q.Ids,
-	}
-	if err := bus.Dispatch(ctx, cmd); err != nil {
-		return err
-	}
-	q.Result = &pbshop.AddVariantsResponse{
-		Variants: PbShopVariants(cmd.Result.Variants),
-		Errors:   pbcm.PbErrors(cmd.Result.Errors),
-	}
-	return nil
 }
 
 func CreateCollection(ctx context.Context, q *wrapshop.CreateCollectionEndpoint) error {
@@ -401,28 +336,6 @@ func UpdateProduct(ctx context.Context, q *wrapshop.UpdateProductEndpoint) error
 		return err
 	}
 	q.Result = PbShopProductWithVariants(cmd.Result)
-	return nil
-}
-
-func UpdateProductsStatus(ctx context.Context, q *wrapshop.UpdateProductsStatusEndpoint) error {
-	if q.Status == nil {
-		return cm.Error(cm.InvalidArgument, "Missing status", nil)
-	}
-
-	shopID := q.Context.Shop.ID
-	productSourceID := q.Context.Shop.ProductSourceID
-	cmd := &catalogmodelx.UpdateShopProductsStatusCommand{
-		ShopID:          shopID,
-		ProductIDs:      q.Ids,
-		ProductSourceID: productSourceID,
-	}
-	cmd.Update.Status = q.Status.ToModel()
-	if err := bus.Dispatch(ctx, cmd); err != nil {
-		return err
-	}
-	q.Result = &pbcm.UpdatedResponse{
-		Updated: int32(cmd.Result.Updated),
-	}
 	return nil
 }
 

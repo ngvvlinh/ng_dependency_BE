@@ -10,10 +10,6 @@ import (
 	"etop.vn/backend/pkg/common/l"
 )
 
-const (
-	defaultOrderCodeLength = 7
-)
-
 var (
 	startDate time.Time
 	startCode int

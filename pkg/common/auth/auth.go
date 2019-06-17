@@ -34,10 +34,10 @@ func FromHTTPHeader(h http.Header) (string, error) {
 func FromHeaderString(s string) (string, error) {
 	splits := strings.SplitN(s, " ", 2)
 	if len(splits) < 2 {
-		return "", errors.New("Bad authorization string")
+		return "", errors.New("bad authorization string")
 	}
 	if splits[0] != "Bearer" && splits[0] != "bearer" {
-		return "", errors.New("Request unauthenticated with " + AuthorizationScheme)
+		return "", errors.New("request unauthenticated with " + AuthorizationScheme)
 	}
 	return splits[1], nil
 }
