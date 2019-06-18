@@ -250,8 +250,9 @@ func (c *Carrier) GetAllShippingServices(ctx context.Context, args shipping_prov
 func (c *CarrierAccount) RegisterExternalAccount(ctx context.Context, args *shipnow_carrier.RegisterExternalAccountArgs) (*carrier.RegisterExternalAccountResult, error) {
 	cmd := &RegisterAccountCommand{
 		Request: &ahamoveclient.RegisterAccountRequest{
-			Mobile: args.Phone,
-			Name:   args.Name,
+			Mobile:  args.Phone,
+			Name:    args.Name,
+			Address: args.Address,
 		},
 	}
 

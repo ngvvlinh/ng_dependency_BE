@@ -228,8 +228,9 @@ func (ctrl *ShipnowManager) RegisterExternalAccount(ctx context.Context, cmd *ca
 		return nil, err
 	}
 	args := &RegisterExternalAccountArgs{
-		Phone: cmd.Phone,
-		Name:  cmd.Name,
+		Phone:   cmd.Phone,
+		Name:    cmd.Name,
+		Address: cmd.Address,
 	}
 	return shipnowCarrier.RegisterExternalAccount(ctx, args)
 }

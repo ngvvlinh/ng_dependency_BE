@@ -76,6 +76,7 @@ type GetExternalShipnowServicesCommand struct {
 type RegisterExternalAccountCommand struct {
 	Phone   string
 	Name    string
+	Address string
 	Carrier Carrier
 }
 

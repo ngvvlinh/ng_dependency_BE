@@ -40,6 +40,7 @@ type CreateExternalAccountAhamoveCommand struct {
 	OwnerID int64
 	Phone   string
 	Name    string
+	Address string
 
 	Result *ExternalAccountAhamove `json:"-"`
 }
@@ -52,7 +53,8 @@ type RequestVerifyExternalAccountAhamoveCommand struct {
 }
 
 type UpdateExternalAccountAhamoveVerificationImagesCommand struct {
-	UserID         int64
+	OwnerID        int64
+	Phone          string
 	IDCardFrontImg string
 	IDCardBackImg  string
 	PortraitImg    string
@@ -110,6 +112,7 @@ func (q *CreateExternalAccountAhamoveCommand) GetArgs() *CreateExternalAccountAh
 		OwnerID: q.OwnerID,
 		Phone:   q.Phone,
 		Name:    q.Name,
+		Address: q.Address,
 	}
 }
 func (q *RequestVerifyExternalAccountAhamoveCommand) GetArgs() *RequestVerifyExternalAccountAhamoveArgs {
@@ -120,7 +123,8 @@ func (q *RequestVerifyExternalAccountAhamoveCommand) GetArgs() *RequestVerifyExt
 }
 func (q *UpdateExternalAccountAhamoveVerificationImagesCommand) GetArgs() *UpdateExternalAccountAhamoveVerificationImagesArgs {
 	return &UpdateExternalAccountAhamoveVerificationImagesArgs{
-		UserID:         q.UserID,
+		OwnerID:        q.OwnerID,
+		Phone:          q.Phone,
 		IDCardFrontImg: q.IDCardFrontImg,
 		IDCardBackImg:  q.IDCardBackImg,
 		PortraitImg:    q.PortraitImg,

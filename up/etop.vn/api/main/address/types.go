@@ -1,6 +1,7 @@
 package address
 
 import (
+	"strings"
 	"time"
 
 	orderingv1types "etop.vn/api/main/ordering/v1/types"
@@ -54,4 +55,35 @@ func (a *Address) ToOrderAddress() *orderingv1types.Address {
 			Coordinates:  a.Coordinates,
 		},
 	}
+}
+
+func (a *Address) GetFullAddress() string {
+	b := strings.Builder{}
+	if a.Address1 != "" {
+		b.WriteString(a.Address1)
+		b.WriteByte('\n')
+	}
+	if a.Address2 != "" {
+		b.WriteString(a.Address2)
+		b.WriteByte('\n')
+	}
+	flag := false
+	if a.Ward != "" {
+		b.WriteString(a.Ward)
+		flag = true
+	}
+	if a.District != "" {
+		if flag {
+			b.WriteString(", ")
+		}
+		b.WriteString(a.District)
+		flag = true
+	}
+	if a.Province != "" {
+		if flag {
+			b.WriteString(", ")
+		}
+		b.WriteString(a.Province)
+	}
+	return b.String()
 }

@@ -32,7 +32,7 @@ type ShopStore struct {
 
 func (s *ShopStore) GetByID(args identitymodelx.GetByIDArgs) (*identity.Shop, error) {
 	if args.ID == 0 {
-		return nil, cm.Errorf(cm.InvalidArgument, nil, "missing ID")
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing ID")
 	}
 
 	q := s.query().Where("id = ?", args.ID)

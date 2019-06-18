@@ -71,9 +71,11 @@ func (a *Aggregate) CreateExternalAccountAhamove(ctx context.Context, args *iden
 		}
 
 		// Ahamove register account
+
 		args2 := &carrier.RegisterExternalAccountCommand{
 			Phone:   phone,
 			Name:    args.Name,
+			Address: args.Address,
 			Carrier: carrier.Ahamove,
 		}
 		regisResult, err := a.shipnowCarrierManager.RegisterExternalAccount(ctx, args2)
@@ -203,14 +205,7 @@ func (a *Aggregate) UpdateVerifiedExternalAccountAhamove(ctx context.Context, ar
 }
 
 func (a *Aggregate) UpdateExternalAccountAhamoveVerificationImages(ctx context.Context, args *identity.UpdateExternalAccountAhamoveVerificationImagesArgs) (*identity.ExternalAccountAhamove, error) {
-	user, err := a.userStore(ctx).GetUserByID(sqlstore.GetUserByIDArgs{
-		ID: args.UserID,
-	})
-	if err != nil {
-		return nil, err
-	}
-
-	account, err := a.xAccountAhamove(ctx).Phone(user.Phone).OwnerID(user.ID).GetXAccountAhamove()
+	account, err := a.xAccountAhamove(ctx).Phone(args.Phone).OwnerID(args.OwnerID).GetXAccountAhamove()
 	if err != nil {
 		return nil, err
 	}

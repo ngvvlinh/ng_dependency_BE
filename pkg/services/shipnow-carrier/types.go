@@ -30,8 +30,9 @@ type GetShippingServiceArgs struct {
 }
 
 type RegisterExternalAccountArgs struct {
-	Phone string
-	Name  string
+	Phone   string
+	Name    string
+	Address string
 }
 
 type GetExternalAccountArgs struct {

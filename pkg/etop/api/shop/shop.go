@@ -3,6 +3,8 @@ package shop
 import (
 	"context"
 
+	"etop.vn/api/main/address"
+
 	"etop.vn/backend/pkg/common/validate"
 
 	"etop.vn/backend/pkg/etop/logic/shipping_provider"
@@ -91,17 +93,19 @@ var shipnowAggr shipnow.CommandBus
 var shipnowQuery shipnow.QueryBus
 var identityAggr identity.CommandBus
 var identityQuery identity.QueryBus
+var addressQuery address.QueryBus
 var shippingCtrl *shipping_provider.ProviderManager
 var catalogQuery catalog.QueryBus
 
-func Init(catalogQueryBus catalog.QueryBus, shipnowAggregate shipnow.CommandBus, shipnowQueryService shipnow.QueryBus, identityAggregate identity.CommandBus, identityQueryService identity.QueryBus, shippingProviderCtrl *shipping_provider.ProviderManager, sd cmservice.Shutdowner, rd redis.Store) {
-	shippingCtrl = shippingProviderCtrl
+func Init(catalogQueryBus catalog.QueryBus, shipnow shipnow.CommandBus, shipnowQS shipnow.QueryBus, identity identity.CommandBus, identityQS identity.QueryBus, addressQS address.QueryBus, shippingCtrl *shipping_provider.ProviderManager, sd cmservice.Shutdowner, rd redis.Store) {
 	idempgroup = idemp.NewRedisGroup(rd, PrefixIdemp, 5*60)
 	catalogQuery = catalogQueryBus
-	shipnowAggr = shipnowAggregate
-	shipnowQuery = shipnowQueryService
-	identityAggr = identityAggregate
-	identityQuery = identityQueryService
+	shippingCtrl = shippingCtrl
+	shipnowAggr = shipnow
+	shipnowQuery = shipnowQS
+	identityAggr = identity
+	identityQuery = identityQS
+	addressQuery = addressQS
 	sd.Register(idempgroup.Shutdown)
 }
 
@@ -881,10 +885,18 @@ func CreateExternalAccountAhamove(ctx context.Context, q *wrapshop.CreateExterna
 		phone, _, _ = validate.TrimTest(phone)
 	}
 
+	queryAddress := &address.GetAddressByIDQuery{
+		ID: q.Context.Shop.AddressID,
+	}
+	if err := addressQuery.Dispatch(ctx, queryAddress); err != nil {
+		return cm.Errorf(cm.FailedPrecondition, err, "Thiếu thông tin địa chỉ cửa hàng")
+	}
+	address := queryAddress.Result
 	cmd := &identity.CreateExternalAccountAhamoveCommand{
 		OwnerID: user.ID,
 		Phone:   phone,
 		Name:    user.FullName,
+		Address: address.GetFullAddress(),
 	}
 	if err := identityAggr.Dispatch(ctx, cmd); err != nil {
 		return err
@@ -963,8 +975,21 @@ func GetExternalAccountAhamove(ctx context.Context, q *wrapshop.GetExternalAccou
 // 		return err
 // 	}
 //
+// 	query := &model.GetUserByIDQuery{
+// 		UserID: r.Context.Shop.OwnerID,
+// 	}
+// 	if err := bus.Dispatch(ctx, query); err != nil {
+// 		return err
+// 	}
+// 	user := query.Result
+// 	phone := user.Phone
+// 	if cm.IsDev() {
+// 		phone, _, _ = validate.TrimTest(phone)
+// 	}
+//
 // 	cmd := &identity.UpdateExternalAccountAhamoveVerificationImagesCommand{
-// 		UserID:         r.Context.UserID,
+// 		OwnerID:        user.ID,
+// 		Phone:          user.Phone,
 // 		IDCardFrontImg: r.IdCardFrontImg,
 // 		IDCardBackImg:  r.IdCardBackImg,
 // 		PortraitImg:    r.PortraitImg,

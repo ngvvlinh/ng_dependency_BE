@@ -52,6 +52,7 @@ type CreateExternalAccountAhamoveArgs struct {
 	OwnerID int64 // user id
 	Phone   string
 	Name    string
+	Address string
 }
 
 type RequestVerifyExternalAccountAhamoveArgs struct {
@@ -68,7 +69,8 @@ type UpdateVerifiedExternalAccountAhamoveArgs struct {
 }
 
 type UpdateExternalAccountAhamoveVerificationImagesArgs struct {
-	UserID         int64
+	OwnerID        int64
+	Phone          string
 	IDCardFrontImg string
 	IDCardBackImg  string
 	PortraitImg    string
