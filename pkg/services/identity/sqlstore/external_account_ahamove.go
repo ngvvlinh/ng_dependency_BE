@@ -40,6 +40,11 @@ func (s *XAccountAhamoveStore) Phone(phone string) *XAccountAhamoveStore {
 	return s
 }
 
+func (s *XAccountAhamoveStore) ExternalID(externalID string) *XAccountAhamoveStore {
+	s.preds = append(s.preds, s.ft.ByExternalID(externalID))
+	return s
+}
+
 func (s *XAccountAhamoveStore) OwnerID(id int64) *XAccountAhamoveStore {
 	s.preds = append(s.preds, s.ft.ByOwnerID(id))
 	return s

@@ -22,6 +22,7 @@ type QueryService interface {
 	GetUserByID(context.Context, *GetUserByIDQueryArgs) (*User, error)
 
 	GetExternalAccountAhamove(context.Context, *GetExternalAccountAhamoveArgs) (*ExternalAccountAhamove, error)
+	GetExternalAccountAhamoveByExternalID(context.Context, *GetExternalAccountAhamoveByExternalIDQueryArgs) (*ExternalAccountAhamove, error)
 }
 
 //-- queries --//
@@ -40,6 +41,10 @@ type GetUserByIDQueryArgs struct {
 type GetExternalAccountAhamoveArgs struct {
 	OwnerID int64
 	Phone   string
+}
+
+type GetExternalAccountAhamoveByExternalIDQueryArgs struct {
+	ExternalID string
 }
 
 //-- commands --//

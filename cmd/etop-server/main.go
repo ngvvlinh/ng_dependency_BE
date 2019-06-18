@@ -59,7 +59,8 @@ import (
 	orderingpm "etop.vn/backend/pkg/services/ordering/pm"
 	ordersqlstore "etop.vn/backend/pkg/services/ordering/sqlstore"
 
-	shipnowtypes "etop.vn/api/main/shipnow"
+	identitycore "etop.vn/api/main/identity"
+	shipnowcore "etop.vn/api/main/shipnow"
 	shipnow_carrier "etop.vn/backend/pkg/services/shipnow-carrier"
 	shipnowpm "etop.vn/backend/pkg/services/shipnow/pm"
 	shipsqlstore "etop.vn/backend/pkg/services/shipping/sqlstore"
@@ -87,9 +88,10 @@ var (
 	ahamoveCarrier        *ahamove.Carrier
 	ahamoveCarrierAccount *ahamove.CarrierAccount
 
-	shipnowQuery shipnowtypes.QueryBus
-	shipnowAggr  shipnowtypes.CommandBus
-	orderAggr    *ordering.Aggregate
+	shipnowQuery  shipnowcore.QueryBus
+	shipnowAggr   shipnowcore.CommandBus
+	orderAggr     *ordering.Aggregate
+	identityQuery identitycore.QueryBus
 )
 
 func main() {
@@ -188,7 +190,7 @@ func main() {
 	}
 
 	locationBus := servicelocation.New().MessageBus()
-	identityQuery := identity.NewQueryService(db).MessageBus()
+	identityQuery = identity.NewQueryService(db).MessageBus()
 	if cfg.GHN.AccountDefault.Token != "" {
 		ghnCarrier = ghn.New(cfg.GHN, locationBus)
 		if err := ghnCarrier.InitAllClients(ctx); err != nil {
@@ -227,7 +229,12 @@ func main() {
 		}
 	}
 	if cfg.Ahamove.ApiKey != "" {
-		ahamoveCarrier, ahamoveCarrierAccount = ahamove.New(cfg.Ahamove, locationBus, identityQuery)
+		_, err = os.Stat(cfg.UploadDirAhamoveVerification)
+		if !cm.IsDev() && err != nil {
+			ll.Fatal("Unable to open", l.String("upload_dir_ahamove_verification", cfg.UploadDirAhamoveVerification), l.Error(err))
+		}
+
+		ahamoveCarrier, ahamoveCarrierAccount = ahamove.New(cfg.Ahamove, locationBus, identityQuery, cfg.UploadDirAhamoveVerification)
 		if err := ahamoveCarrier.InitClient(ctx); err != nil {
 			ll.Fatal("Unable to connect to ahamove", l.Error(err))
 		}

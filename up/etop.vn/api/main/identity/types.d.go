@@ -74,6 +74,12 @@ type GetExternalAccountAhamoveQuery struct {
 	Result *ExternalAccountAhamove `json:"-"`
 }
 
+type GetExternalAccountAhamoveByExternalIDQuery struct {
+	ExternalID string
+
+	Result *ExternalAccountAhamove `json:"-"`
+}
+
 type GetShopByIDQuery struct {
 	ID int64
 
@@ -93,6 +99,7 @@ func (q *RequestVerifyExternalAccountAhamoveCommand) command()            {}
 func (q *UpdateExternalAccountAhamoveVerificationImagesCommand) command() {}
 func (q *UpdateVerifiedExternalAccountAhamoveCommand) command()           {}
 func (q *GetExternalAccountAhamoveQuery) query()                          {}
+func (q *GetExternalAccountAhamoveByExternalIDQuery) query()              {}
 func (q *GetShopByIDQuery) query()                                        {}
 func (q *GetUserByIDQuery) query()                                        {}
 
@@ -129,6 +136,11 @@ func (q *GetExternalAccountAhamoveQuery) GetArgs() *GetExternalAccountAhamoveArg
 	return &GetExternalAccountAhamoveArgs{
 		OwnerID: q.OwnerID,
 		Phone:   q.Phone,
+	}
+}
+func (q *GetExternalAccountAhamoveByExternalIDQuery) GetArgs() *GetExternalAccountAhamoveByExternalIDQueryArgs {
+	return &GetExternalAccountAhamoveByExternalIDQueryArgs{
+		ExternalID: q.ExternalID,
 	}
 }
 func (q *GetShopByIDQuery) GetArgs() *GetShopByIDQueryArgs {
@@ -198,6 +210,7 @@ func (h QueryServiceHandler) RegisterHandlers(b interface {
 	AddHandler(handler interface{})
 }) QueryBus {
 	b.AddHandler(h.HandleGetExternalAccountAhamove)
+	b.AddHandler(h.HandleGetExternalAccountAhamoveByExternalID)
 	b.AddHandler(h.HandleGetShopByID)
 	b.AddHandler(h.HandleGetUserByID)
 	return QueryBus{b}
@@ -205,6 +218,12 @@ func (h QueryServiceHandler) RegisterHandlers(b interface {
 
 func (h QueryServiceHandler) HandleGetExternalAccountAhamove(ctx context.Context, query *GetExternalAccountAhamoveQuery) error {
 	result, err := h.inner.GetExternalAccountAhamove(ctx, query.GetArgs())
+	query.Result = result
+	return err
+}
+
+func (h QueryServiceHandler) HandleGetExternalAccountAhamoveByExternalID(ctx context.Context, query *GetExternalAccountAhamoveByExternalIDQuery) error {
+	result, err := h.inner.GetExternalAccountAhamoveByExternalID(ctx, query.GetArgs())
 	query.Result = result
 	return err
 }

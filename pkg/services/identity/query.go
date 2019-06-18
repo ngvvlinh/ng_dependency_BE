@@ -61,3 +61,7 @@ func (q *QueryService) GetExternalAccountAhamove(ctx context.Context, args *iden
 	}
 	return q.xAccountAhamove(ctx).Phone(phone).OwnerID(args.OwnerID).GetXAccountAhamove()
 }
+
+func (q *QueryService) GetExternalAccountAhamoveByExternalID(ctx context.Context, args *identity.GetExternalAccountAhamoveByExternalIDQueryArgs) (*identity.ExternalAccountAhamove, error) {
+	return q.xAccountAhamove(ctx).ExternalID(args.ExternalID).GetXAccountAhamove()
+}

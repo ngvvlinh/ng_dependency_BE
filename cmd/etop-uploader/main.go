@@ -3,16 +3,13 @@ package main
 import (
 	"context"
 	"flag"
-	"fmt"
 	"net/http"
 	"os"
 	"os/signal"
-	"strings"
 	"syscall"
 	"time"
 
 	"etop.vn/backend/pkg/common/metrics"
-	"github.com/julienschmidt/httprouter"
 
 	"etop.vn/backend/cmd/etop-uploader/config"
 	cm "etop.vn/backend/pkg/common"
@@ -55,11 +52,11 @@ func main() {
 
 	_, err = os.Stat(cfg.UploadDirAhamoveVerification)
 	if err != nil {
-		ll.Fatal("Unable to open", l.String("upload_identity_dir_img", cfg.UploadDirAhamoveVerification), l.Error(err))
+		ll.Fatal("Unable to open", l.String("upload_dir_ahamove_verification", cfg.UploadDirAhamoveVerification), l.Error(err))
 	}
 
 	if cfg.URLPrefixAhamoveVerification == "" {
-		ll.Fatal("Missing config: url_identity_prefix")
+		ll.Fatal("Missing config: url_prefix_ahamove_verification")
 	}
 
 	ll.Info("Service started with config", l.String("commit", cm.Commit()))
@@ -105,7 +102,7 @@ func main() {
 
 	rt.Use(httpx.RecoverAndLog(bot, false))
 	rt.ServeFiles("/img/*filepath", http.Dir(cfg.UploadDirImg))
-	ServeAhamoveVerificationFiles(rt.Router, config.PathAhamoveUserVerification+"/:filename/:filepath", http.Dir(cfg.UploadDirAhamoveVerification))
+	rt.ServeFiles("/ahamove/user_verification/*filepath", http.Dir(cfg.UploadDirAhamoveVerification))
 
 	rt.POST("/upload", UploadHandler, authMiddleware)
 
@@ -154,18 +151,4 @@ func authMiddleware(next httpx.Handler) httpx.Handler {
 
 		return next(c)
 	}
-}
-
-func ServeAhamoveVerificationFiles(rt *httprouter.Router, path string, root http.FileSystem) {
-	// path: ahamove/user_verification/<filename>/<filepath>.jpg
-
-	fileServer := http.FileServer(root)
-	rt.GET(path, func(w http.ResponseWriter, req *http.Request, ps httprouter.Params) {
-		fileName := ps.ByName("filename")
-		filePath := ps.ByName("filepath")
-		exts := strings.Split(filePath, ".")
-
-		req.URL.Path = fmt.Sprintf("%v.%v", fileName, exts[len(exts)-1])
-		fileServer.ServeHTTP(w, req)
-	})
 }

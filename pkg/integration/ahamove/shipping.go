@@ -30,6 +30,7 @@ import (
 var _ shipnow_carrier.ShipnowCarrier = &Carrier{}
 var _ shipnow_carrier.ShipnowCarrierAccount = &CarrierAccount{}
 var identityQuery identity.QueryBus
+var uploadDirAhamoveVerification string
 
 type Carrier struct {
 	client   *ahamoveclient.Client
@@ -40,9 +41,10 @@ type CarrierAccount struct {
 	client *ahamoveclient.Client
 }
 
-func New(cfg ahamoveclient.Config, locationBus location.QueryBus, identityBus identity.QueryBus) (*Carrier, *CarrierAccount) {
+func New(cfg ahamoveclient.Config, locationBus location.QueryBus, identityBus identity.QueryBus, uploadDir string) (*Carrier, *CarrierAccount) {
 	client := ahamoveclient.New(cfg)
 	identityQuery = identityBus
+	uploadDirAhamoveVerification = uploadDir
 	return &Carrier{
 		client:   client,
 		location: locationBus,
@@ -357,14 +359,15 @@ func prepareAhamovePhotoUrl(ahamoveAccount *identity.ExternalAccountAhamove, uri
 	newUrl := &url.URL{
 		Scheme: u.Scheme,
 		Host:   u.Host,
-		Path:   fmt.Sprintf("ahamove/user_verification/%v/%v%v", filename, newName, ext),
+		Path: fmt.Sprintf(
+			"%v/%v/%v%v", uploadDirAhamoveVerification, filename, newName, ext),
 	}
 
 	return newUrl.String()
 }
 
 // description format: <user._id>, <user.name>, <photo_urls>
-// photo_url format: <topship_domain>/user_id_front<user.id>_<user.create_time>.jpg
+// photo_url format: <topship_domain>/upload/ahamove/user_verification/user_id_front<user.id>_<user.create_time>.jpg
 
 func getDescriptionForVerification(ctx context.Context, userID int64) (des string, _err error) {
 	queryUser := &identity.GetUserByIDQuery{

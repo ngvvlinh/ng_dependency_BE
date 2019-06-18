@@ -1,9 +1,15 @@
 package main
 
 import (
+	"fmt"
 	"net/http"
+	"regexp"
+	"strconv"
 	"strings"
 	"time"
+
+	"etop.vn/api/main/identity"
+	"github.com/julienschmidt/httprouter"
 
 	"etop.vn/backend/cmd/etop-server/config"
 	cm "etop.vn/backend/pkg/common"
@@ -149,6 +155,15 @@ func startEtopServer() *http.Server {
 					cmService.MIMEExcel,
 				),
 			)
+		}
+
+		{
+			// serve ahamove verification files
+			ahamoveRouter := httpx.New()
+			path := cfg.UploadDirAhamoveVerification + "/:originname/:filename"
+			serveAhamoveVerificationFiles(ahamoveRouter.Router, path, http.Dir(cfg.UploadDirAhamoveVerification))
+
+			mux.Handle(cfg.UploadDirAhamoveVerification+"/", ahamoveRouter)
 		}
 	}
 
@@ -304,4 +319,36 @@ func tryOnDev(err error) {
 			ll.S.Fatal(err)
 		}
 	}
+}
+
+func serveAhamoveVerificationFiles(rt *httprouter.Router, path string, root http.FileSystem) {
+	// path: <UploadDirAhamoveVerification>/<originname>/<filename>.jpg
+	// filepath:
+	// user_id_front_<user.id>_<user.create_time>.jpg
+	// user_portrait_<user.id>_<user.create_time>.jpg
+	fileServer := http.FileServer(root)
+	rt.GET(path, func(w http.ResponseWriter, req *http.Request, ps httprouter.Params) {
+		originname := ps.ByName("originname")
+		fileName := ps.ByName("filename")
+		exts := strings.Split(fileName, ".")
+
+		regex := regexp.MustCompile(`([0-9]+)_([0-9]+)`)
+		parts := regex.FindStringSubmatch(fileName)
+		userID := parts[1]
+		createTime := parts[2]
+
+		query := &identity.GetExternalAccountAhamoveByExternalIDQuery{
+			ExternalID: userID,
+		}
+		if err := identityQuery.Dispatch(ctx, query); err != nil {
+			return
+		}
+		xCreatedAt := query.Result.ExternalCreatedAt
+		if strconv.FormatInt(xCreatedAt.Unix(), 10) != createTime {
+			return
+		}
+
+		req.URL.Path = fmt.Sprintf("%v.%v", originname, exts[len(exts)-1])
+		fileServer.ServeHTTP(w, req)
+	})
 }

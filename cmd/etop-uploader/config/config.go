@@ -11,8 +11,6 @@ import (
 
 var ll = l.New()
 
-const PathAhamoveUserVerification = "/upload/ahamove/user_verification"
-
 type Config struct {
 	Redis          cc.Redis `yaml:"redis"`
 	HTTP           cc.HTTP  `yaml:"http"`
