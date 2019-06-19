@@ -5,8 +5,6 @@ import (
 
 	"etop.vn/api/main/address"
 
-	"etop.vn/backend/pkg/common/validate"
-
 	"etop.vn/backend/pkg/etop/logic/shipping_provider"
 
 	"etop.vn/api/main/identity"
@@ -879,11 +877,7 @@ func CreateExternalAccountAhamove(ctx context.Context, q *wrapshop.CreateExterna
 		return err
 	}
 	user := query.Result
-
 	phone := user.Phone
-	if cm.IsDev() {
-		phone, _, _ = validate.TrimTest(phone)
-	}
 
 	queryAddress := &address.GetAddressByIDQuery{
 		ID: q.Context.Shop.AddressID,
@@ -914,9 +908,6 @@ func GetExternalAccountAhamove(ctx context.Context, q *wrapshop.GetExternalAccou
 	}
 	user := queryUser.Result
 	phone := user.Phone
-	if cm.IsDev() {
-		phone, _, _ = validate.TrimTest(phone)
-	}
 
 	query := &identity.GetExternalAccountAhamoveQuery{
 		Phone:   phone,
@@ -950,11 +941,7 @@ func GetExternalAccountAhamove(ctx context.Context, q *wrapshop.GetExternalAccou
 // 		return err
 // 	}
 // 	user := query.Result
-//
 // 	phone := user.Phone
-// 	if cm.IsDev() {
-// 		phone, _, _ = validate.TrimTest(phone)
-// 	}
 //
 // 	cmd := &identity.RequestVerifyExternalAccountAhamoveCommand{
 // 		OwnerID: user.ID,
@@ -983,13 +970,10 @@ func GetExternalAccountAhamove(ctx context.Context, q *wrapshop.GetExternalAccou
 // 	}
 // 	user := query.Result
 // 	phone := user.Phone
-// 	if cm.IsDev() {
-// 		phone, _, _ = validate.TrimTest(phone)
-// 	}
 //
 // 	cmd := &identity.UpdateExternalAccountAhamoveVerificationImagesCommand{
 // 		OwnerID:        user.ID,
-// 		Phone:          user.Phone,
+// 		Phone:          phone,
 // 		IDCardFrontImg: r.IdCardFrontImg,
 // 		IDCardBackImg:  r.IdCardBackImg,
 // 		PortraitImg:    r.PortraitImg,

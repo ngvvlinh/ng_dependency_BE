@@ -23,6 +23,19 @@ import (
 	"etop.vn/backend/pkg/etop/authorize/tokens"
 )
 
+const (
+	ImageTypeDefault             ImageType = "default"
+	ImageTypeAhamoveVerification ImageType = "ahamove_verification"
+)
+
+type ImageType string
+type ImageConfig struct {
+	Path      string
+	URLPrefix string
+}
+
+var imageConfigs = map[ImageType]*ImageConfig{}
+
 var (
 	ll  = l.New()
 	cfg config.Config
@@ -43,6 +56,17 @@ func main() {
 	if err != nil {
 		ll.Fatal("Unable to load config", l.Error(err))
 	}
+	imageConfigs = map[ImageType]*ImageConfig{
+		ImageTypeDefault: {
+			Path:      cfg.UploadDirImg,
+			URLPrefix: cfg.URLPrefix,
+		},
+		ImageTypeAhamoveVerification: {
+			Path:      cfg.UploadDirAhamoveVerification,
+			URLPrefix: cfg.URLPrefixAhamoveVerification,
+		},
+	}
+
 	cm.SetEnvironment(cfg.Env)
 
 	_, err = os.Stat(cfg.UploadDirImg)
@@ -53,10 +77,6 @@ func main() {
 	_, err = os.Stat(cfg.UploadDirAhamoveVerification)
 	if err != nil {
 		ll.Fatal("Unable to open", l.String("upload_dir_ahamove_verification", cfg.UploadDirAhamoveVerification), l.Error(err))
-	}
-
-	if cfg.URLPrefixAhamoveVerification == "" {
-		ll.Fatal("Missing config: url_prefix_ahamove_verification")
 	}
 
 	ll.Info("Service started with config", l.String("commit", cm.Commit()))

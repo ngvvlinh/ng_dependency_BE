@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"image"
 	"io"
 	"mime/multipart"
@@ -17,12 +18,24 @@ import (
 )
 
 const (
-	minSize                 = 100
-	maxSize                 = 1024 * 1024 // 1MB
-	minWH                   = 200
-	maxWH                   = 2000
-	AhamoveVerificationType = "ahamove_verification"
+	minSize = 100
+	maxSize = 1024 * 1024 // 1MB
+	minWH   = 200
+	maxWH   = 2000
 )
+
+func getImageConfig(imgType string) (*ImageConfig, error) {
+	_type := ImageType(imgType)
+	switch _type {
+	case "":
+		_type = ImageTypeDefault
+	case ImageTypeAhamoveVerification:
+		_type = ImageTypeAhamoveVerification
+	default:
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "Invalid image type")
+	}
+	return imageConfigs[_type], nil
+}
 
 func NewUploadError(code cm.Code, msg, filename string) error {
 	return cm.Error(code, msg, nil).
@@ -30,22 +43,27 @@ func NewUploadError(code cm.Code, msg, filename string) error {
 }
 
 func UploadHandler(c *httpx.Context) error {
-	path := cfg.UploadDirImg
-	urlPrefix := cfg.URLPrefix
 	// Multipart form
 	form, err := c.MultipartForm()
 	if err != nil {
 		return err
 	}
 
+	types := form.Value["type"]
+	imgType := ""
+	if types != nil {
+		imgType = types[0]
+	}
+	imgConfig, err := getImageConfig(imgType)
+	if err != nil {
+		return err
+	}
+	path := imgConfig.Path
+	urlPrefix := imgConfig.URLPrefix
+
 	files := form.File["files"]
 	if len(files) == 0 {
 		return cm.Error(cm.InvalidArgument, "No file", nil)
-	}
-	imgType := form.Value["type"]
-	if imgType != nil && imgType[0] == AhamoveVerificationType {
-		path = cfg.UploadDirAhamoveVerification
-		urlPrefix = cfg.URLPrefixAhamoveVerification
 	}
 
 	exts := make([]string, len(files))
@@ -68,13 +86,18 @@ func UploadHandler(c *httpx.Context) error {
 	for i, file := range files {
 		id := cm.NewBase54ID()
 		genName := id + "." + exts[i]
+		subFolder := genName[:3]
 		src, err := file.Open()
 		if err != nil {
 			ll.Info("Unexpected", l.Error(err))
 			return cm.Error(cm.InvalidArgument, "", err)
 		}
 
-		dst, err := os.Create(filepath.Join(path, genName))
+		dirPath := filepath.Join(path, subFolder)
+		if err := ensureDir(dirPath); err != nil {
+			return err
+		}
+		dst, err := os.Create(filepath.Join(dirPath, genName))
 		if err != nil {
 			errors[i] = NewUploadError(cm.Internal, cm.Internal.String(), file.Filename)
 			continue
@@ -93,7 +116,7 @@ func UploadHandler(c *httpx.Context) error {
 			"filename": file.Filename,
 		}
 		if urlPrefix != "" {
-			resp["url"] = urlPrefix + "/" + genName
+			resp["url"] = fmt.Sprintf("%v/%v/%v", urlPrefix, subFolder, genName)
 		}
 		result[i] = resp
 		errors[i] = NewUploadError(cm.NoError, "", file.Filename)
@@ -135,4 +158,8 @@ func verifyImage(file *multipart.FileHeader) (string, error) {
 	}
 
 	return format, nil
+}
+
+func ensureDir(dir string) error {
+	return os.MkdirAll(dir, 0755)
 }

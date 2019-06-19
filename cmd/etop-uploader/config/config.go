@@ -54,5 +54,14 @@ func Load() (cfg Config, err error) {
 		return cfg, errors.New("empty url_prefix")
 	}
 	cfg.URLPrefix = strings.TrimSuffix(cfg.URLPrefix, "/")
+
+	if cfg.UploadDirAhamoveVerification == "" {
+		return cfg, errors.New("Empty upload_dir_ahamove_verification")
+	}
+	if cfg.URLPrefixAhamoveVerification == "" {
+		return cfg, errors.New("Empty url_prefix_ahamove_verification")
+	}
+	cfg.URLPrefixAhamoveVerification = strings.TrimSuffix(cfg.URLPrefixAhamoveVerification, "/")
+
 	return cfg, err
 }

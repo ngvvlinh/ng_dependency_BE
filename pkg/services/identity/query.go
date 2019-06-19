@@ -3,9 +3,6 @@ package identity
 import (
 	"context"
 
-	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/validate"
-
 	"etop.vn/backend/pkg/common/bus"
 
 	"etop.vn/backend/pkg/common/cmsql"
@@ -56,9 +53,6 @@ func (q *QueryService) GetUserByID(ctx context.Context, args *identity.GetUserBy
 
 func (q *QueryService) GetExternalAccountAhamove(ctx context.Context, args *identity.GetExternalAccountAhamoveArgs) (*identity.ExternalAccountAhamove, error) {
 	phone := args.Phone
-	if cm.IsDev() {
-		phone, _, _ = validate.TrimTest(phone)
-	}
 	return q.xAccountAhamove(ctx).Phone(phone).OwnerID(args.OwnerID).GetXAccountAhamove()
 }
 

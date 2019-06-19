@@ -15,7 +15,7 @@ import (
 const (
 	ChannelWebhook              = "webhook"
 	ChannelImport               = "import"
-	PathAhamoveUserVerification = "/upload/ahamove/user_verification"
+	PathAhamoveUserVerification = "/ahamove/user_verification"
 )
 
 type Upload struct {
