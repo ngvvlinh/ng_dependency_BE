@@ -9,6 +9,8 @@ import (
 	"strings"
 	"time"
 
+	"etop.vn/backend/cmd/etop-server/config"
+
 	"etop.vn/api/main/identity"
 
 	"github.com/k0kubun/pp"
@@ -30,7 +32,6 @@ import (
 var _ shipnow_carrier.ShipnowCarrier = &Carrier{}
 var _ shipnow_carrier.ShipnowCarrierAccount = &CarrierAccount{}
 var identityQuery identity.QueryBus
-var uploadDirAhamoveVerification string
 
 type Carrier struct {
 	client   *ahamoveclient.Client
@@ -41,10 +42,9 @@ type CarrierAccount struct {
 	client *ahamoveclient.Client
 }
 
-func New(cfg ahamoveclient.Config, locationBus location.QueryBus, identityBus identity.QueryBus, uploadDir string) (*Carrier, *CarrierAccount) {
+func New(cfg ahamoveclient.Config, locationBus location.QueryBus, identityBus identity.QueryBus) (*Carrier, *CarrierAccount) {
 	client := ahamoveclient.New(cfg)
 	identityQuery = identityBus
-	uploadDirAhamoveVerification = uploadDir
 	return &Carrier{
 		client:   client,
 		location: locationBus,
@@ -309,7 +309,6 @@ func (c *CarrierAccount) VerifyExternalAccount(ctx context.Context, args *shipno
 			Description: description,
 		},
 	}
-
 	if err := c.VerifyAccount(ctx, cmd); err != nil {
 		return nil, err
 	}
@@ -361,7 +360,7 @@ func prepareAhamovePhotoUrl(ahamoveAccount *identity.ExternalAccountAhamove, uri
 		Scheme: u.Scheme,
 		Host:   u.Host,
 		Path: fmt.Sprintf(
-			"%v/%v/%v%v", uploadDirAhamoveVerification, filename, newName, ext),
+			"%v/%v/%v%v", config.PathAhamoveUserVerification, filename, newName, ext),
 	}
 
 	return newUrl.String()

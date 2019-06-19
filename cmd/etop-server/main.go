@@ -191,18 +191,18 @@ func main() {
 
 	locationBus := servicelocation.New().MessageBus()
 	identityQuery = identity.NewQueryService(db).MessageBus()
-	if cfg.GHN.AccountDefault.Token != "" {
-		ghnCarrier = ghn.New(cfg.GHN, locationBus)
-		if err := ghnCarrier.InitAllClients(ctx); err != nil {
-			ll.Fatal("Unable to connect to GHN", l.Error(err))
-		}
-	} else {
-		if cm.IsDev() {
-			ll.Warn("DEVELOPMENT. Skip connecting to GHN")
-		} else {
-			ll.Fatal("GHN: No token")
-		}
-	}
+	// if cfg.GHN.AccountDefault.Token != "" {
+	// 	ghnCarrier = ghn.New(cfg.GHN, locationBus)
+	// 	if err := ghnCarrier.InitAllClients(ctx); err != nil {
+	// 		ll.Fatal("Unable to connect to GHN", l.Error(err))
+	// 	}
+	// } else {
+	// 	if cm.IsDev() {
+	// 		ll.Warn("DEVELOPMENT. Skip connecting to GHN")
+	// 	} else {
+	// 		ll.Fatal("GHN: No token")
+	// 	}
+	// }
 	if cfg.GHTK.AccountDefault.Token != "" {
 		ghtkCarrier = ghtk.New(cfg.GHTK, locationBus)
 		if err := ghtkCarrier.InitAllClients(ctx); err != nil {
@@ -229,12 +229,7 @@ func main() {
 		}
 	}
 	if cfg.Ahamove.ApiKey != "" {
-		_, err = os.Stat(cfg.UploadDirAhamoveVerification)
-		if !cm.IsDev() && err != nil {
-			ll.Fatal("Unable to open", l.String("upload_dir_ahamove_verification", cfg.UploadDirAhamoveVerification), l.Error(err))
-		}
-
-		ahamoveCarrier, ahamoveCarrierAccount = ahamove.New(cfg.Ahamove, locationBus, identityQuery, cfg.UploadDirAhamoveVerification)
+		ahamoveCarrier, ahamoveCarrierAccount = ahamove.New(cfg.Ahamove, locationBus, identityQuery)
 		if err := ahamoveCarrier.InitClient(ctx); err != nil {
 			ll.Fatal("Unable to connect to ahamove", l.Error(err))
 		}

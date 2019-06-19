@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"net/http"
 	"regexp"
 	"strconv"
@@ -160,10 +159,10 @@ func startEtopServer() *http.Server {
 		{
 			// serve ahamove verification files
 			ahamoveRouter := httpx.New()
-			path := cfg.UploadDirAhamoveVerification + "/:originname/:filename"
-			serveAhamoveVerificationFiles(ahamoveRouter.Router, path, http.Dir(cfg.UploadDirAhamoveVerification))
+			path := config.PathAhamoveUserVerification + "/:originname/:filename"
+			serveAhamoveVerificationFiles(ahamoveRouter.Router, path, http.Dir(config.PathAhamoveUserVerification))
 
-			mux.Handle(cfg.UploadDirAhamoveVerification+"/", ahamoveRouter)
+			mux.Handle(config.PathAhamoveUserVerification+"/", ahamoveRouter)
 		}
 	}
 
@@ -326,14 +325,15 @@ func serveAhamoveVerificationFiles(rt *httprouter.Router, path string, root http
 	// filepath:
 	// user_id_front_<user.id>_<user.create_time>.jpg
 	// user_portrait_<user.id>_<user.create_time>.jpg
-	fileServer := http.FileServer(root)
+	regex := regexp.MustCompile(`([0-9]+)_([0-9]+)`)
 	rt.GET(path, func(w http.ResponseWriter, req *http.Request, ps httprouter.Params) {
 		originname := ps.ByName("originname")
 		fileName := ps.ByName("filename")
-		exts := strings.Split(fileName, ".")
-
-		regex := regexp.MustCompile(`([0-9]+)_([0-9]+)`)
 		parts := regex.FindStringSubmatch(fileName)
+		if len(parts) == 0 {
+			http.NotFound(w, req)
+			return
+		}
 		userID := parts[1]
 		createTime := parts[2]
 
@@ -341,14 +341,28 @@ func serveAhamoveVerificationFiles(rt *httprouter.Router, path string, root http
 			ExternalID: userID,
 		}
 		if err := identityQuery.Dispatch(ctx, query); err != nil {
+			http.NotFound(w, req)
 			return
 		}
-		xCreatedAt := query.Result.ExternalCreatedAt
+		accountAhamove := query.Result
+		xCreatedAt := accountAhamove.ExternalCreatedAt
 		if strconv.FormatInt(xCreatedAt.Unix(), 10) != createTime {
+			http.NotFound(w, req)
 			return
 		}
 
-		req.URL.Path = fmt.Sprintf("%v.%v", originname, exts[len(exts)-1])
-		fileServer.ServeHTTP(w, req)
+		url := ""
+		if strings.Contains(fileName, "user_id_front") {
+			url = accountAhamove.IDCardFrontImg
+		} else if strings.Contains(fileName, "user_id_back") {
+			url = accountAhamove.IDCardBackImg
+		} else if strings.Contains(fileName, "user_portrait") {
+			url = accountAhamove.PortraitImg
+		}
+		if strings.Contains(url, originname) {
+			http.Redirect(w, req, url, http.StatusSeeOther)
+			return
+		}
+		http.NotFound(w, req)
 	})
 }

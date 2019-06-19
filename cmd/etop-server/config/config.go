@@ -13,8 +13,9 @@ import (
 )
 
 const (
-	ChannelWebhook = "webhook"
-	ChannelImport  = "import"
+	ChannelWebhook              = "webhook"
+	ChannelImport               = "import"
+	PathAhamoveUserVerification = "/upload/ahamove/user_verification"
 )
 
 type Upload struct {
@@ -63,8 +64,6 @@ type Config struct {
 	ServeDoc    bool   `yaml:"serve_doc"`
 	Env         string `yaml:"env"`
 
-	UploadDirAhamoveVerification string `yaml:"upload_dir_ahamove_verification"`
-
 	URL struct {
 		Auth     string `yaml:"auth"`
 		MainSite string `yaml:"main_site"`
@@ -103,8 +102,7 @@ func Default() Config {
 			Secret:        "6LcVOnkUAAAAALKlDJY_IYfQUmBfD_36azKtCv9P",
 			LocalPasscode: "recaptcha_token",
 		},
-		Env:                          cm.EnvDev,
-		UploadDirAhamoveVerification: "/tmp/upload",
+		Env: cm.EnvDev,
 	}
 	cfg.Postgres.Database = "etop_dev"
 	cfg.Email = EmailConfig{
