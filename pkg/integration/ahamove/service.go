@@ -132,12 +132,12 @@ func DecodeShippingServiceName(code string) (name string, ok bool) {
 	if len(code) != 8 {
 		return "", false
 	}
-	shortCode := name[6:]
+	shortCode := code[6:]
 	service := ServicesIndexShortCode[shortCode]
 	if service == nil {
 		return "", false
 	}
-	return service.Name, false
+	return service.Name, true
 }
 
 func (c *Carrier) GetServiceName(code string) (serviceName string, ok bool) {

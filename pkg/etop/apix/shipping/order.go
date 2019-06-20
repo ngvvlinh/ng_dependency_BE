@@ -194,7 +194,7 @@ func CancelOrder(ctx context.Context, shopID int64, r *pbexternal.CancelOrderReq
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Cần cung cấp id, code hoặc external_code")
 	}
 	if sqlQuery != nil {
-		order, err := sqlQuery.Get()
+		order, err := sqlQuery.GetOrderDB()
 		if err != nil {
 			return nil, err
 		}

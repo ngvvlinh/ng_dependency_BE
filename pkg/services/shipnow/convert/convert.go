@@ -49,6 +49,9 @@ func ShipnowToModel(in *shipnow.ShipnowFulfillment) (out *shipnowmodel.ShipnowFu
 		UpdatedAt:            in.UpdatedAt.ToTime(),
 		CODEtopTransferedAt:  in.CodEtopTransferedAt.ToTime(),
 		EtopPaymentStatus:    model.Status4(in.EtopPaymentStatus),
+		ShippingServiceName:  in.ShippingServiceName,
+		ShippingSharedLink:   in.ShippingSharedLink,
+		CancelReason:         in.CancelReason,
 	}
 	var orderIDs []int64
 	for _, point := range in.DeliveryPoints {
@@ -99,6 +102,9 @@ func Shipnow(in *shipnowmodel.ShipnowFulfillment) (out *shipnow.ShipnowFulfillme
 		ShippingCancelledAt:  meta.PbTime(in.ShippingCancelledAt),
 		CodEtopTransferedAt:  meta.PbTime(in.CODEtopTransferedAt),
 		EtopPaymentStatus:    etoptypes.Status4FromInt(int(in.EtopPaymentStatus)),
+		ShippingServiceName:  in.ShippingServiceName,
+		ShippingSharedLink:   in.ShippingSharedLink,
+		CancelReason:         in.CancelReason,
 	}
 	return out
 }
@@ -119,6 +125,7 @@ func DeliveryPoint(in *shipnowmodel.DeliveryPoint) (outs *shipnowtypes.DeliveryP
 		Lines:           orderconvert.OrderLines(in.Items),
 		ShippingNote:    in.ShippingNote,
 		OrderId:         in.OrderID,
+		OrderCode:       in.OrderCode,
 		WeightInfo: shippingtypes.WeightInfo{
 			GrossWeight:      in.GrossWeight,
 			ChargeableWeight: in.ChargeableWeight,
@@ -159,6 +166,7 @@ func DeliveryPointToModel(in *shipnowtypes.DeliveryPoint) (out *shipnowmodel.Del
 		TryOn:            "",
 		ShippingNote:     in.ShippingNote,
 		OrderID:          in.OrderId,
+		OrderCode:        in.OrderCode,
 	}
 }
 
@@ -187,6 +195,7 @@ func OrderToDeliveryPoint(in *ordering.Order) *shipnowtypes.DeliveryPoint {
 		Lines:           in.Lines,
 		ShippingNote:    shippingNote,
 		OrderId:         in.ID,
+		OrderCode:       in.Code,
 		WeightInfo: shippingtypes.WeightInfo{
 			GrossWeight:      int32(grossWeight),
 			ChargeableWeight: int32(chargeableWeight),

@@ -127,9 +127,9 @@ message Order {
     // @deprecated use try_on_code instead
     optional string ghn_note_code = 68 [(gogoproto.nullable)=false];
 
-    optional string fulfill = 72 [(gogoproto.nullable) = false];
+    optional string fulfillment_type = 72 [(gogoproto.nullable) = false];
 
-    repeated int64 fulfill_ids = 73;
+    repeated int64 fulfillment_ids = 73;
 }
 
 message OrderLine {
@@ -736,6 +736,7 @@ message ShipnowFulfillment {
     optional string carrier = 6 [(gogoproto.nullable)=false];
     optional string shipping_service_code = 7 [(gogoproto.nullable)=false];
     optional int32 shipping_service_fee = 8 [(gogoproto.nullable)=false];
+    optional string shipping_service_name = 28 [(gogoproto.nullable) = false];
     optional WeightInfo weight_info = 9 [(gogoproto.nullable)=false, (gogoproto.embed)=true];
     optional ValueInfo value_info = 10 [(gogoproto.nullable)=false];
     optional string shipping_note = 11 [(gogoproto.nullable)=false];
@@ -755,6 +756,8 @@ message ShipnowFulfillment {
     optional google.protobuf.Timestamp shipping_delivering_at = 25;
     optional google.protobuf.Timestamp shipping_delivered_at = 26;
     optional google.protobuf.Timestamp shipping_cancelled_at = 27;
+    optional string shipping_shared_link = 29 [(gogoproto.nullable) = false];
+    optional string cancel_reason = 30 [(gogoproto.nullable) = false];
 }
 
 message GetShipnowFulfillmentsRequest {

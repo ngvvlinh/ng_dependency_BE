@@ -133,6 +133,18 @@ func ToFilters(filters []*Filter) []cm.Filter {
 	return res
 }
 
+func ToFiltersPtr(filters []*Filter) []*cm.Filter {
+	res := make([]*cm.Filter, len(filters))
+	for i, filter := range filters {
+		res[i] = &cm.Filter{
+			Name:  filter.Name,
+			Op:    filter.Op,
+			Value: filter.Value,
+		}
+	}
+	return res
+}
+
 func PbError(err error) *Error {
 	if err == nil {
 		return &Error{

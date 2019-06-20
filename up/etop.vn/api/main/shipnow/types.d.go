@@ -110,6 +110,9 @@ type UpdateShipnowFulfillmentCarrierInfoCommand struct {
 	ShippingDeliveringAt *metav1.Timestamp          `json:"shipping_delivering_at,omitempty"`
 	ShippingDeliveredAt  *metav1.Timestamp          `json:"shipping_delivered_at,omitempty"`
 	ShippingCancelledAt  *metav1.Timestamp          `json:"shipping_cancelled_at,omitempty"`
+	ShippingServiceName  string                     `json:"shipping_service_name"`
+	CancelReason         string                     `json:"cancel_reason"`
+	ShippingSharedLink   string                     `json:"shipping_shared_link"`
 
 	Result *shipnowv1.ShipnowFulfillment `json:"-"`
 }
@@ -140,7 +143,9 @@ type GetShipnowFulfillmentByShippingCodeQuery struct {
 }
 
 type GetShipnowFulfillmentsQuery struct {
-	ShopId int64 `json:"shop_id"`
+	ShopIds []int64          `json:"shop_ids,omitempty"`
+	Paging  *metav1.Paging   `json:"paging,omitempty"`
+	Filters []*metav1.Filter `json:"filters,omitempty"`
 
 	Result *shipnowv1.GetShipnowFulfillmentsQueryResult `json:"-"`
 }
@@ -223,6 +228,9 @@ func (q *UpdateShipnowFulfillmentCarrierInfoCommand) GetArgs() *shipnowv1.Update
 		ShippingDeliveringAt: q.ShippingDeliveringAt,
 		ShippingDeliveredAt:  q.ShippingDeliveredAt,
 		ShippingCancelledAt:  q.ShippingCancelledAt,
+		ShippingServiceName:  q.ShippingServiceName,
+		CancelReason:         q.CancelReason,
+		ShippingSharedLink:   q.ShippingSharedLink,
 	}
 }
 func (q *UpdateShipnowFulfillmentStateCommand) GetArgs() *shipnowv1.UpdateShipnowFulfullmentStateCommand {
@@ -249,7 +257,9 @@ func (q *GetShipnowFulfillmentByShippingCodeQuery) GetArgs() *shipnowv1.GetShipn
 }
 func (q *GetShipnowFulfillmentsQuery) GetArgs() *shipnowv1.GetShipnowFulfillmentsQueryArgs {
 	return &shipnowv1.GetShipnowFulfillmentsQueryArgs{
-		ShopId: q.ShopId,
+		ShopIds: q.ShopIds,
+		Paging:  q.Paging,
+		Filters: q.Filters,
 	}
 }
 

@@ -65,6 +65,7 @@ func Order(in *ordermodel.Order) (out *ordering.Order) {
 	out = &ordering.Order{
 		ID:                        in.ID,
 		ShopID:                    in.ShopID,
+		Code:                      in.Code,
 		CustomerAddress:           Address(in.CustomerAddress),
 		ShippingAddress:           Address(in.ShippingAddress),
 		CancelReason:              in.CancelReason,
@@ -88,8 +89,8 @@ func Order(in *ordermodel.Order) (out *ordering.Order) {
 		ClosedAt:                  in.ClosedAt,
 		ConfirmedAt:               in.ConfirmedAt,
 		CancelledAt:               in.CancelledAt,
-		FulfillIDs:                in.FulfillIDs,
-		Fulfill:                   ordertypes.Fulfill(in.Fulfill),
+		FulfillmentIDs:            in.FulfillmentIDs,
+		FulfillmentType:           ordertypes.Fulfill(in.FulfillmentType),
 	}
 	return out
 }

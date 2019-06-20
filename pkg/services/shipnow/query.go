@@ -41,18 +41,23 @@ func (q *QueryService) GetShipnowFulfillment(ctx context.Context, query *shipnow
 }
 
 func (q *QueryService) GetShipnowFulfillments(ctx context.Context, query *shipnow.GetShipnowFulfillmentsQueryArgs) (*shipnow.GetShipnowFulfillmentsQueryResult, error) {
-	s := q.store(ctx).ShopID(query.ShopId).Filters(nil)
-	ffms, err := s.ListShipnows(nil)
+	s := q.store(ctx).ShopIDs(query.ShopIds...).Filters(query.Filters)
+	if query.Paging != nil && len(query.Paging.Sort) == 0 {
+		query.Paging.Sort = []string{"-created_at"}
+	}
+
+	ffms, err := s.ListShipnows(query.Paging)
 	if err != nil {
 		return nil, err
 	}
-	// count, err := s.Count()
-	// if err != nil {
-	// 	return nil, err
-	// }
+	count, err := s.Count()
+	if err != nil {
+		return nil, err
+	}
 
 	return &shipnow.GetShipnowFulfillmentsQueryResult{
 		ShipnowFulfillments: ffms,
+		Count:               int32(count),
 	}, nil
 }
 

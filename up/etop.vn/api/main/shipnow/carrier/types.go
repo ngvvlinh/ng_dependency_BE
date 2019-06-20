@@ -33,6 +33,7 @@ type Manager interface {
 	CreateExternalShipping(ctx context.Context, cmd *CreateExternalShipnowCommand) (*ExternalShipnow, error)
 	CancelExternalShipping(ctx context.Context, cmd *CancelExternalShipnowCommand) error
 	GetExternalShippingServices(ctx context.Context, cmd *GetExternalShipnowServicesCommand) ([]*shipnowtypes.ShipnowService, error)
+	GetExternalServiceName(ctx context.Context, cmd *GetExternalServiceNameCommand) (string, error)
 
 	RegisterExternalAccount(ctx context.Context, cmd *RegisterExternalAccountCommand) (*RegisterExternalAccountResult, error)
 	GetExternalAccount(ctx context.Context, cmd *GetExternalAccountCommand) (*ExternalAccount, error)
@@ -57,14 +58,15 @@ type CancelExternalShipnowCommand struct {
 }
 
 type ExternalShipnow struct {
-	ID        string
-	UserID    string
-	Duration  int
-	Distance  float32
-	State     shipnowtypes.State
-	TotalFee  int
-	FeeLines  []*shippingtypes.FeeLine
-	CreatedAt time.Time
+	ID         string
+	UserID     string
+	Duration   int
+	Distance   float32
+	State      shipnowtypes.State
+	TotalFee   int
+	FeeLines   []*shippingtypes.FeeLine
+	CreatedAt  time.Time
+	SharedLink string
 }
 
 type GetExternalShipnowServicesCommand struct {
@@ -77,6 +79,11 @@ type RegisterExternalAccountCommand struct {
 	Phone   string
 	Name    string
 	Address string
+	Carrier Carrier
+}
+
+type GetExternalServiceNameCommand struct {
+	Code    string
 	Carrier Carrier
 }
 

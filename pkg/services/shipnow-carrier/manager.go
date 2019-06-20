@@ -256,3 +256,15 @@ func (ctrl *ShipnowManager) VerifyExternalAccount(ctx context.Context, cmd *carr
 	}
 	return shipnowCarrier.VerifyExternalAccount(ctx, args)
 }
+
+func (ctrl *ShipnowManager) GetExternalServiceName(ctx context.Context, cmd *carrier.GetExternalServiceNameCommand) (string, error) {
+	shipnowCarrier, err := ctrl.GetShipnowCarrierDriver(cmd.Carrier)
+	if err != nil {
+		return "", err
+	}
+	serviceName, ok := shipnowCarrier.GetServiceName(cmd.Code)
+	if !ok {
+		return "", cm.Errorf(cm.InvalidArgument, nil, "Mã dịch vụ không hợp lệ")
+	}
+	return serviceName, nil
+}

@@ -180,13 +180,14 @@ func (a *Aggregate) CancelShipnowFulfillment(ctx context.Context, cmd *shipnow.C
 			return err
 		}
 
-		updateArgs := sqlstore.UpdateStateArgs{
+		updateArgs := sqlstore.UpdateCancelArgs{
 			ID:            ffm.Id,
 			ShippingState: shipnowtypes.StateCancelled,
 			Status:        etoptypes.S5Negative,
 			ConfirmStatus: etoptypes.S3Negative,
+			CancelReason:  cmd.CancelReason,
 		}
-		ffm, err = a.store(ctx).UpdateSyncState(updateArgs)
+		ffm, err = a.store(ctx).UpdateCancelled(updateArgs)
 		if err != nil {
 			return err
 		}
@@ -322,6 +323,9 @@ func (a *Aggregate) UpdateShipnowFulfillmentCarrierInfo(ctx context.Context, arg
 		ShippingDeliveringAt: args.ShippingDeliveringAt,
 		ShippingDeliveredAt:  args.ShippingDeliveredAt,
 		ShippingCancelledAt:  args.ShippingCancelledAt,
+		ShippingServiceName:  args.ShippingServiceName,
+		CancelReason:         args.CancelReason,
+		ShippingSharedLink:   args.ShippingSharedLink,
 	}
 	updateArgs.TotalFee = shippingtypes.TotalFee(args.FeeLines)
 	ffm, err := a.store(ctx).UpdateCarrierInfo(updateArgs)

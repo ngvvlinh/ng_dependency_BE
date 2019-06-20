@@ -99,7 +99,7 @@ func ValidateOrderForReserveFfm(order *ordering.Order) error {
 	if err := ValidateOrderStatus(order); err != nil {
 		return err
 	}
-	if len(order.FulfillIDs) != 0 {
+	if len(order.FulfillmentIDs) != 0 {
 		return cm.Errorf(cm.FailedPrecondition, nil, "Order has been reserved").WithMetaID("order_id", order.ID)
 	}
 	return nil

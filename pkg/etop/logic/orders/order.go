@@ -663,6 +663,11 @@ func CancelOrder(ctx context.Context, shopID int64, authPartnerID int64, orderID
 		return nil, cm.Error(cm.FailedPrecondition, "Đơn hàng đã trả hàng.", nil)
 	}
 
+	// Do not allow cancel order if it had a shipnow fulfillment
+	if order.FulfillmentType == ordermodel.FulfillShipnow {
+		return nil, cm.Errorf(cm.FailedPrecondition, nil, "Đơn hàng đã tạo đơn giao hàng tức thì. Không thể hủy đơn.")
+	}
+
 	updateOrderCmd := &ordermodelx.UpdateOrdersStatusCommand{
 		ShopID:        shopID,
 		PartnerID:     authPartnerID,

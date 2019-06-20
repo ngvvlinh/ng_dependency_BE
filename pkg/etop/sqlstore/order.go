@@ -161,7 +161,7 @@ func GetOrder(ctx context.Context, query *ordermodelx.GetOrderQuery) error {
 		query.Result.Fulfillments = shipments
 
 		var shipnows []*shipnowmodel.ShipnowFulfillment
-		if err := x.Table("shipnow_fulfillment").In("id", order.FulfillIDs).Find((*shipnowmodel.ShipnowFulfillments)(&shipnows)); err != nil {
+		if err := x.Table("shipnow_fulfillment").In("id", order.FulfillmentIDs).Find((*shipnowmodel.ShipnowFulfillments)(&shipnows)); err != nil {
 			return err
 		}
 		for _, sn := range shipnows {

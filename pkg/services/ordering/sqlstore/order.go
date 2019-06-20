@@ -75,10 +75,18 @@ func (s *OrderStore) ExternalPartnerID(partnerID int64, externalID string) *Orde
 	return s
 }
 
-func (s *OrderStore) Get() (*ordermodel.Order, error) {
+func (s *OrderStore) GetOrderDB() (*ordermodel.Order, error) {
 	var order ordermodel.Order
 	err := s.query().Where(s.preds...).ShouldGet(&order)
 	return &order, err
+}
+
+func (s *OrderStore) GetOrder() (*ordering.Order, error) {
+	order, err := s.GetOrderDB()
+	if err != nil {
+		return nil, err
+	}
+	return orderconvert.Order(order), nil
 }
 
 func (s *OrderStore) GetOrders(args *ordering.GetOrdersArgs) (orders []*ordering.Order, err error) {
@@ -105,11 +113,11 @@ func (s *OrderStore) UpdateOrdersForReserveOrdersFfm(args UpdateOrdersForReserve
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing OrderIDs")
 	}
 	if len(args.FulfillIDs) == 0 {
-		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing FulfillIDs")
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing FulfillmentIDs")
 	}
 	update := &ordermodel.Order{
-		Fulfill:    ordermodel.FulfillType(args.Fulfill),
-		FulfillIDs: args.FulfillIDs,
+		FulfillmentType: ordermodel.FulfillType(args.Fulfill),
+		FulfillmentIDs:  args.FulfillIDs,
 	}
 	if err := s.query().In("id", args.OrderIDs).ShouldUpdate(update); err != nil {
 		return nil, err
@@ -129,8 +137,14 @@ func (s *OrderStore) UpdateOrdersForReleaseOrdersFfm(args UpdateOrdersForRelease
 		return cm.Errorf(cm.InvalidArgument, nil, "Missing OrderIDs")
 	}
 	if err := s.query().Table("order").In("id", args.OrderIDs).ShouldUpdateMap(M{
-		"fulfill":     nil,
-		"fulfill_ids": nil,
+		"fulfillment_type":            nil,
+		"fulfillment_ids":             nil,
+		"fulfillment_shipping_state":  nil,
+		"fulfillment_shipping_status": etop.S5Zero,
+		"etop_payment_status":         etop.S5Zero,
+		"confirm_status":              etop.S5Zero,
+		"shop_confirm":                etop.S5Zero,
+		"status":                      etop.S5Zero,
 	}); err != nil {
 		return err
 	}

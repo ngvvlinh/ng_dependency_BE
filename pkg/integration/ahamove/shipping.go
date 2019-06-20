@@ -106,14 +106,15 @@ func (c *Carrier) CreateExternalShipnow(ctx context.Context, cmd *carrier.Create
 		},
 	}
 	xshipnow = &carrier.ExternalShipnow{
-		ID:        res.OrderId,
-		UserID:    res.Order.UserId,
-		Duration:  res.Order.Duration,
-		Distance:  res.Order.Distance,
-		State:     ahamoveclient.OrderState(res.Status).ToCoreState(),
-		TotalFee:  res.Order.TotalFee,
-		FeeLines:  feelines,
-		CreatedAt: time.Now(),
+		ID:         res.OrderId,
+		UserID:     res.Order.UserId,
+		Duration:   res.Order.Duration,
+		Distance:   res.Order.Distance,
+		State:      ahamoveclient.OrderState(res.Status).ToCoreState(),
+		TotalFee:   res.Order.TotalFee,
+		FeeLines:   feelines,
+		CreatedAt:  time.Now(),
+		SharedLink: res.SharedLink,
 	}
 
 	return xshipnow, nil
@@ -194,7 +195,7 @@ func (c *Carrier) PrepareDeliveryPoints(ctx context.Context, pickupAddress *orde
 			Mobile:         address.Phone,
 			Name:           address.FullName,
 			COD:            point.CodAmount,
-			TrackingNumber: strconv.FormatInt(point.OrderId, 10),
+			TrackingNumber: point.OrderCode,
 			Remarks:        prepareRemarksForDeliveryPoint(point),
 			ProvinceCode:   address.ProvinceCode,
 			DistrictCode:   address.DistrictCode,

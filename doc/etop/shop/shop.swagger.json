@@ -3852,10 +3852,10 @@
           "type": "string",
           "title": "@deprecated use try_on_code instead"
         },
-        "fulfill": {
+        "fulfillment_type": {
           "type": "string"
         },
-        "fulfill_ids": {
+        "fulfillment_ids": {
           "type": "array",
           "items": {
             "type": "string",
@@ -4263,6 +4263,9 @@
           "type": "integer",
           "format": "int32"
         },
+        "shipping_service_name": {
+          "type": "string"
+        },
         "weight_info": {
           "$ref": "#/definitions/orderWeightInfo"
         },
@@ -4332,6 +4335,12 @@
         "shipping_cancelled_at": {
           "type": "string",
           "format": "date-time"
+        },
+        "shipping_shared_link": {
+          "type": "string"
+        },
+        "cancel_reason": {
+          "type": "string"
         }
       }
     },

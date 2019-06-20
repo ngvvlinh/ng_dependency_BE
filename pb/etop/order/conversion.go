@@ -25,10 +25,13 @@ func Convert_api_ShipnowFulfillment_To_core_ShipnowFulfillment(in *ShipnowFulfil
 		Carrier:             carrier.CarrierFromString(in.Carrier),
 		ShippingServiceCode: in.ShippingServiceCode,
 		ShippingServiceFee:  in.ShippingServiceFee,
+		ShippingServiceName: in.ShippingServiceName,
 		WeightInfo:          Convert_api_WeightInfo_To_core_WeightInfo(in.WeightInfo),
 		ValueInfo:           Convert_api_ValueInfo_To_core_ValueInfo(in.ValueInfo),
 		ShippingNote:        in.ShippingNote,
 		RequestPickupAt:     meta.PbTime(pbcm.PbTimeToModel(in.RequestPickupAt)),
+		ShippingSharedLink:  in.ShippingSharedLink,
+		CancelReason:        in.CancelReason,
 	}
 }
 
@@ -45,6 +48,7 @@ func Convert_core_ShipnowFulfillment_To_api_ShipnowFulfillment(in *shipnow.Shipn
 		Carrier:              in.Carrier.String(),
 		ShippingServiceCode:  in.ShippingServiceCode,
 		ShippingServiceFee:   in.ShippingServiceFee,
+		ShippingServiceName:  in.ShippingServiceName,
 		WeightInfo:           Convert_core_WeightInfo_To_api_WeightInfo(in.WeightInfo),
 		ValueInfo:            Convert_core_ValueInfo_To_api_ValueInfo(in.ValueInfo),
 		ShippingNote:         in.ShippingNote,
@@ -64,6 +68,8 @@ func Convert_core_ShipnowFulfillment_To_api_ShipnowFulfillment(in *shipnow.Shipn
 		ShippingDeliveringAt: pbcm.PbTime(in.ShippingDeliveringAt.ToTime()),
 		ShippingDeliveredAt:  pbcm.PbTime(in.ShippingDeliveredAt.ToTime()),
 		ShippingCancelledAt:  pbcm.PbTime(in.ShippingCancelledAt.ToTime()),
+		ShippingSharedLink:   in.ShippingSharedLink,
+		CancelReason:         in.CancelReason,
 	}
 }
 

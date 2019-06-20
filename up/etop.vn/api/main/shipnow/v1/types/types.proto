@@ -33,11 +33,13 @@ message DeliveryPoint {
 
     optional int64 order_id = 4 [(gogoproto.nullable)=false];
 
+    optional string order_code = 8 [(gogoproto.nullable) = false];
+
     optional shipping.v1.types.WeightInfo weight_info = 5 [(gogoproto.nullable)=false, (gogoproto.embed)=true];
 
     optional shipping.v1.types.ValueInfo value_info = 6 [(gogoproto.nullable)=false, (gogoproto.embed)=true];
 
-    optional shipping.v1.tryon.TryOnCode try_on = 11 [(gogoproto.nullable)=false];
+    optional shipping.v1.tryon.TryOnCode try_on = 7 [(gogoproto.nullable)=false];
 }
 
 message ShipnowService {

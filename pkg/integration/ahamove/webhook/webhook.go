@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"context"
 	"encoding/json"
-	"strconv"
 	"strings"
 	"time"
 
@@ -39,16 +38,18 @@ type Webhook struct {
 	shipnowQuery shipnow.QueryBus
 	shipnow      shipnow.CommandBus
 	order        ordering.CommandBus
+	orderQuery   ordering.QueryBus
 }
 
-func New(db cmsql.Database, dbLogs cmsql.Database, carrier *ahamove.Carrier, shipnowQuery shipnow.QueryBus, shipnowAggr shipnow.CommandBus, orderAggr ordering.CommandBus) *Webhook {
+func New(db cmsql.Database, dbLogs cmsql.Database, carrier *ahamove.Carrier, shipnowQS shipnow.QueryBus, shipnowAggr shipnow.CommandBus, orderAggr ordering.CommandBus, orderQS ordering.QueryBus) *Webhook {
 	wh := &Webhook{
 		db:           db,
 		dbLogs:       dbLogs,
 		carrier:      carrier,
-		shipnowQuery: shipnowQuery,
+		shipnowQuery: shipnowQS,
 		shipnow:      shipnowAggr,
 		order:        orderAggr,
+		orderQuery:   orderQS,
 	}
 	return wh
 }
@@ -155,6 +156,7 @@ func (wh *Webhook) ProcessShipnowFulfillment(ctx context.Context, ffm *shipnow.S
 		ShippingCancelledAt:  meta.PbTime(shipnowTimestamp.ShippingCancelledAt),
 		FeeLines:             nil, // update if needed
 		CarrierFeeLines:      nil, // update if needed
+		CancelReason:         orderMsg.CancelComment,
 	}
 	if IsPaymentState(shippingState) && ffm.EtopPaymentStatus != etop.S4Positive {
 		// EtopPaymentStatus: Ahamove khong doi soat, thanh toán ngay khi lấy hàng
@@ -173,12 +175,18 @@ func (wh *Webhook) ProcessShipnowFulfillment(ctx context.Context, ffm *shipnow.S
 func (wh *Webhook) ProcessOrder(ctx context.Context, point *ahamoveclient.DeliveryPoint, shippingState shipnowtypes.State, paymentStatus etop.Status4) error {
 	trackingNumber := point.TrackingNumber
 	if trackingNumber == "" {
-		return cm.Errorf(cm.InvalidArgument, nil, "Missing tracking number (order_id)").WithMeta("result", "ignore")
+		return cm.Errorf(cm.InvalidArgument, nil, "Missing tracking number (order_code)").WithMeta("result", "ignore")
 	}
-	orderID, err := strconv.ParseInt(trackingNumber, 10, 64)
-	if err != nil {
-		return cm.Errorf(cm.InvalidArgument, nil, "Tracking number (order_id) is not valid").WithMeta("order_id", trackingNumber).WithMeta("result", "ignore")
+	query := &ordering.GetOrderByCodeQuery{
+		Code: trackingNumber,
 	}
+	if err := wh.orderQuery.Dispatch(ctx, query); err != nil {
+		if cm.ErrorCode(err) == cm.NotFound {
+			return cm.Errorf(cm.NotFound, nil, "NotFound: order does not exist (order_code: %v)", trackingNumber).WithMeta("result", "ignore")
+		}
+		return err
+	}
+	orderID := query.Result.ID
 
 	// case shipnow does not assign to any driver
 	// => release order (ETOP)

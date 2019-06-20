@@ -31,12 +31,12 @@ ALTER TABLE shipnow_fulfillment
     ADD COLUMN shipping_code TEXT;
 
 ALTER TABLE "order"
-	ADD COLUMN fulfill int2,
-	ADD COLUMN fulfill_ids int8[];
+	ADD COLUMN fulfillment_type int2,
+	ADD COLUMN fulfillment_ids int8[];
 
 ALTER TABLE history."order"
-	ADD COLUMN fulfill int2,
-	ADD COLUMN fulfill_ids int8[];
+	ADD COLUMN fulfillment_type int2,
+	ADD COLUMN fulfillment_ids int8[];
 
 ALTER table  shipnow_fulfillment
     ADD COLUMN fee_lines JSONB,
@@ -72,3 +72,8 @@ ALTER TABLE "external_account_ahamove"
     , ADD COLUMN id_card_back_img TEXT
     , ADD COLUMN portrait_img TEXT
     , ADD COLUMN uploaded_at TIMESTAMP WITH TIME ZONE;
+
+ALTER TABLE shipnow_fulfillment
+    ADD COLUMN shipping_service_name TEXT
+    , ADD COLUMN cancel_reason TEXT
+    , ADD COLUMN shipping_shared_link TEXT;

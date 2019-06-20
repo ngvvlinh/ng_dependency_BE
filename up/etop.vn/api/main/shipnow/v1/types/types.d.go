@@ -14,9 +14,10 @@ type DeliveryPoint struct {
 	Lines             []*types.ItemLine `protobuf:"bytes,2,rep,name=lines" json:"lines,omitempty"`
 	ShippingNote      string            `protobuf:"bytes,3,opt,name=shipping_note,json=shippingNote" json:"shipping_note"`
 	OrderId           int64             `protobuf:"varint,4,opt,name=order_id,json=orderId" json:"order_id"`
+	OrderCode         string            `protobuf:"bytes,8,opt,name=order_code,json=orderCode" json:"order_code"`
 	types1.WeightInfo `protobuf:"bytes,5,opt,name=weight_info,json=weightInfo,embedded=weight_info" json:"weight_info"`
 	types1.ValueInfo  `protobuf:"bytes,6,opt,name=value_info,json=valueInfo,embedded=value_info" json:"value_info"`
-	TryOn             types1.TryOnCode `protobuf:"varint,11,opt,name=try_on,json=tryOn,enum=etop.vn.api.main.shipping.v1.tryon.TryOnCode" json:"try_on"`
+	TryOn             types1.TryOnCode `protobuf:"varint,7,opt,name=try_on,json=tryOn,enum=etop.vn.api.main.shipping.v1.tryon.TryOnCode" json:"try_on"`
 }
 
 type ShipnowService struct {

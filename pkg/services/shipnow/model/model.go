@@ -37,6 +37,7 @@ type ShipnowFulfillment struct {
 
 	ShippingServiceCode string
 	ShippingServiceFee  int32
+	ShippingServiceName string
 
 	ChargeableWeight int32
 	GrossWeight      int32
@@ -46,6 +47,7 @@ type ShipnowFulfillment struct {
 	RequestPickupAt  time.Time
 
 	DeliveryPoints []*DeliveryPoint
+	CancelReason   string
 
 	Status            model.Status5
 	ConfirmStatus     model.Status3
@@ -68,6 +70,7 @@ type ShipnowFulfillment struct {
 	CreatedAt           time.Time `sq:"create"`
 	UpdatedAt           time.Time `sq:"update"`
 	CODEtopTransferedAt time.Time
+	ShippingSharedLink  string
 }
 
 func (m *ShipnowFulfillment) Validate() error {
@@ -86,6 +89,7 @@ type DeliveryPoint struct {
 	Items           []*ordermodel.OrderLine  `json:"items"`
 
 	OrderID          int64       `json:"order_id"`
+	OrderCode        string      `json:"order_code"`
 	GrossWeight      int32       `json:"gross_weight"`
 	ChargeableWeight int32       `json:"chargeable_weight"`
 	Length           int32       `json:"lenght"`

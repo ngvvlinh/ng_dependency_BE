@@ -44,3 +44,24 @@ message Error {
     optional string msg = 2 [(gogoproto.nullable) = false];
     map<string, string> meta = 3;
 }
+
+message Paging {
+    optional int32  offset  = 5 [(gogoproto.nullable)=false];
+    optional int32  limit   = 6 [(gogoproto.nullable)=false];
+    repeated string sort    = 7 [(gogoproto.nullable)=false];
+}
+
+message Filter {
+    // Comma separated properties: "name,s_name"
+    optional string name  = 1 [(gogoproto.nullable)=false];
+
+    // Can be = ≠ (!=) < ≤ (<=) > ≥ (>=) ⊃ (c) ∈ (in) ∩ (n)
+    //
+    // - Text or set: ⊃ ∩
+    // - Exactly: = ≠ ∈
+    // - Numeric: = ≠ ∈ < ≤ > ≥
+    optional string op    = 2 [(gogoproto.nullable)=false];
+
+    // Must always be string
+    optional string value = 3 [(gogoproto.nullable)=false];
+}

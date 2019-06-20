@@ -40,14 +40,12 @@ type ShipnowStore struct {
 	query   func() cmsql.QueryInterface
 	ft      ShipnowFulfillmentFilters
 	preds   []interface{}
-	filters meta.Filters
+	filters []meta.Filter
 }
 
-func (s *ShipnowStore) Filters(filters meta.Filters) *ShipnowStore {
-	if s.filters == nil {
-		s.filters = filters
-	} else {
-		s.filters = append(s.filters, filters...)
+func (s *ShipnowStore) Filters(filters []*meta.Filter) *ShipnowStore {
+	for _, filter := range filters {
+		s.filters = append(s.filters, *filter)
 	}
 	return s
 }
@@ -69,6 +67,11 @@ func (s *ShipnowStore) IDs(ids ...int64) *ShipnowStore {
 
 func (s *ShipnowStore) ShopID(id int64) *ShipnowStore {
 	s.preds = append(s.preds, s.ft.ByShopID(id))
+	return s
+}
+
+func (s *ShipnowStore) ShopIDs(ids ...int64) *ShipnowStore {
+	s.preds = append(s.preds, sq.In("shop_id", ids))
 	return s
 }
 
@@ -186,8 +189,30 @@ func (s *ShipnowStore) UpdateSyncState(args UpdateStateArgs) (*shipnow.ShipnowFu
 		SyncStates:     shipnowconvert.SyncStateToModel(args.SyncStates),
 		ShippingStatus: etopconvert.Status5ToModel(args.ShippingStatus),
 	}
-	var ft ShipnowFulfillmentFilters
-	err := s.query().Where(ft.ByID(args.ID)).ShouldUpdate(updateFfm)
+	err := s.query().Where(s.ft.ByID(args.ID)).ShouldUpdate(updateFfm)
+	if err != nil {
+		return nil, err
+	}
+
+	return s.ID(args.ID).GetShipnow()
+}
+
+type UpdateCancelArgs struct {
+	ID            int64
+	ConfirmStatus etop.Status3
+	Status        etop.Status5
+	ShippingState shipnowtypes.State
+	CancelReason  string
+}
+
+func (s *ShipnowStore) UpdateCancelled(args UpdateCancelArgs) (*shipnow.ShipnowFulfillment, error) {
+	updateFfm := &shipnowmodel.ShipnowFulfillment{
+		ConfirmStatus: etopconvert.Status3ToModel(args.ConfirmStatus),
+		ShippingState: shipnowtypes.StateToString(args.ShippingState),
+		Status:        etopconvert.Status5ToModel(args.Status),
+		CancelReason:  args.CancelReason,
+	}
+	err := s.query().Where(s.ft.ByID(args.ID)).ShouldUpdate(updateFfm)
 	if err != nil {
 		return nil, err
 	}
@@ -212,6 +237,9 @@ type UpdateCarrierInfoArgs struct {
 	ShippingDeliveringAt *metav1.Timestamp
 	ShippingDeliveredAt  *metav1.Timestamp
 	ShippingCancelledAt  *metav1.Timestamp
+	ShippingServiceName  string
+	CancelReason         string
+	ShippingSharedLink   string
 }
 
 func (s *ShipnowStore) UpdateCarrierInfo(args UpdateCarrierInfoArgs) (*shipnow.ShipnowFulfillment, error) {
@@ -231,6 +259,9 @@ func (s *ShipnowStore) UpdateCarrierInfo(args UpdateCarrierInfoArgs) (*shipnow.S
 		ShippingDeliveringAt: args.ShippingDeliveringAt.ToTime(),
 		ShippingDeliveredAt:  args.ShippingDeliveredAt.ToTime(),
 		ShippingCancelledAt:  args.ShippingCancelledAt.ToTime(),
+		ShippingServiceName:  args.ShippingServiceName,
+		CancelReason:         args.CancelReason,
+		ShippingSharedLink:   args.ShippingSharedLink,
 	}
 	if err := s.query().Where("id = ?", args.ID).ShouldUpdate(updateFfm); err != nil {
 		return nil, err

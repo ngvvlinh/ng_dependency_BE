@@ -78,6 +78,12 @@ type ValidateOrdersForShippingCommand struct {
 	Result *ValidateOrdersForShippingResponse `json:"-"`
 }
 
+type GetOrderByCodeQuery struct {
+	Code string
+
+	Result *Order `json:"-"`
+}
+
 type GetOrderByIDQuery struct {
 	ID int64
 
@@ -98,6 +104,7 @@ func (q *ReserveOrdersForFfmCommand) command()       {}
 func (q *UpdateOrderShippingStatusCommand) command() {}
 func (q *UpdateOrdersConfirmStatusCommand) command() {}
 func (q *ValidateOrdersForShippingCommand) command() {}
+func (q *GetOrderByCodeQuery) query()                {}
 func (q *GetOrderByIDQuery) query()                  {}
 func (q *GetOrdersQuery) query()                     {}
 
@@ -135,6 +142,11 @@ func (q *UpdateOrdersConfirmStatusCommand) GetArgs() *UpdateOrdersConfirmStatusA
 func (q *ValidateOrdersForShippingCommand) GetArgs() *ValidateOrdersForShippingArgs {
 	return &ValidateOrdersForShippingArgs{
 		OrderIDs: q.OrderIDs,
+	}
+}
+func (q *GetOrderByCodeQuery) GetArgs() *GetOrderByCodeArgs {
+	return &GetOrderByCodeArgs{
+		Code: q.Code,
 	}
 }
 func (q *GetOrderByIDQuery) GetArgs() *GetOrderByIDArgs {
@@ -211,9 +223,16 @@ func (h QueryServiceHandler) RegisterHandlers(b interface {
 	meta.Bus
 	AddHandler(handler interface{})
 }) QueryBus {
+	b.AddHandler(h.HandleGetOrderByCode)
 	b.AddHandler(h.HandleGetOrderByID)
 	b.AddHandler(h.HandleGetOrders)
 	return QueryBus{b}
+}
+
+func (h QueryServiceHandler) HandleGetOrderByCode(ctx context.Context, query *GetOrderByCodeQuery) error {
+	result, err := h.inner.GetOrderByCode(ctx, query.GetArgs())
+	query.Result = result
+	return err
 }
 
 func (h QueryServiceHandler) HandleGetOrderByID(ctx context.Context, query *GetOrderByIDQuery) error {

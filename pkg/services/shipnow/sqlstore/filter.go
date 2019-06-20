@@ -12,5 +12,9 @@ var (
 		"name":       "",
 	}
 
-	FilterShipnowWhitelist = sqlstore.FilterWhitelist{}
+	FilterShipnowWhitelist = sqlstore.FilterWhitelist{
+		Equals: []string{"shipping_code", "carrier", "shipping_state"},
+		Dates:  []string{"created_at", "updated_at"},
+		Status: []string{"status", "shipping_status"},
+	}
 )

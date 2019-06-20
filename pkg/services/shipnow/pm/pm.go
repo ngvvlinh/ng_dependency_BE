@@ -185,14 +185,23 @@ func (m *ProcessManager) ShipnowCreateExternal(ctx context.Context, event *shipn
 	if err != nil {
 		return err
 	}
+
+	cmd1 := &shipnowcarrier.GetExternalServiceNameCommand{
+		Code:    ffm.ShippingServiceCode,
+		Carrier: ffm.Carrier,
+	}
+	serviceName, _ := m.carrierManager.GetExternalServiceName(ctx, cmd1)
+
 	cmd2 := &shipnow.UpdateShipnowFulfillmentCarrierInfoCommand{
-		Id:                ffm.Id,
-		ShippingCode:      xShipnow.ID,
-		ShippingState:     xShipnow.State,
-		TotalFee:          int32(xShipnow.TotalFee),
-		FeeLines:          xShipnow.FeeLines,
-		CarrierFeeLines:   xShipnow.FeeLines,
-		ShippingCreatedAt: meta.PbTime(xShipnow.CreatedAt),
+		Id:                  ffm.Id,
+		ShippingCode:        xShipnow.ID,
+		ShippingState:       xShipnow.State,
+		TotalFee:            int32(xShipnow.TotalFee),
+		FeeLines:            xShipnow.FeeLines,
+		CarrierFeeLines:     xShipnow.FeeLines,
+		ShippingCreatedAt:   meta.PbTime(xShipnow.CreatedAt),
+		ShippingServiceName: serviceName,
+		ShippingSharedLink:  xShipnow.SharedLink,
 	}
 	if err := m.shipnow.Dispatch(ctx, cmd2); err != nil {
 		return nil

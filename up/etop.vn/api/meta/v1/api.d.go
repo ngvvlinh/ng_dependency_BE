@@ -26,3 +26,22 @@ type Error struct {
 	Msg  string            `protobuf:"bytes,2,opt,name=msg" json:"msg"`
 	Meta map[string]string `protobuf:"bytes,3,rep,name=meta" json:"meta,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
 }
+
+type Paging struct {
+	Offset int32    `protobuf:"varint,5,opt,name=offset" json:"offset"`
+	Limit  int32    `protobuf:"varint,6,opt,name=limit" json:"limit"`
+	Sort   []string `protobuf:"bytes,7,rep,name=sort" json:"sort,omitempty"`
+}
+
+type Filter struct {
+	// Comma separated properties: "name,s_name"
+	Name string `protobuf:"bytes,1,opt,name=name" json:"name"`
+	// Can be = ≠ (!=) < ≤ (<=) > ≥ (>=) ⊃ (c) ∈ (in) ∩ (n)
+	//
+	// - Text or set: ⊃ ∩
+	// - Exactly: = ≠ ∈
+	// - Numeric: = ≠ ∈ < ≤ > ≥
+	Op string `protobuf:"bytes,2,opt,name=op" json:"op"`
+	// Must always be string
+	Value string `protobuf:"bytes,3,opt,name=value" json:"value"`
+}

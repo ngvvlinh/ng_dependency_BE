@@ -21,12 +21,6 @@ func PbTime(t time.Time) *Timestamp {
 	return metav1.PbTime(t)
 }
 
-type Paging struct {
-	Offset int32
-	Limit  int32
-	Sort   []string
-}
-
 type PageInfo struct {
 	Offset int32
 	Limit  int32
@@ -39,14 +33,8 @@ func FromPaging(paging Paging) PageInfo {
 	return PageInfo(paging)
 }
 
+type Paging = metav1.Paging
+type Filter = metav1.Filter
 type Filters []Filter
-
-type Filter struct {
-	Name  string
-	Op    string
-	Value string
-}
-
-type KeyTx struct{}
 
 type Error = metav1.Error

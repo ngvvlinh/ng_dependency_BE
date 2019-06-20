@@ -3,6 +3,8 @@ package shop
 import (
 	"context"
 
+	"etop.vn/backend/pkg/etop/api"
+
 	"etop.vn/api/main/address"
 
 	"etop.vn/backend/pkg/etop/logic/shipping_provider"
@@ -748,14 +750,23 @@ func GetShipnowFulfillment(ctx context.Context, q *wrapshop.GetShipnowFulfillmen
 }
 
 func GetShipnowFulfillments(ctx context.Context, q *wrapshop.GetShipnowFulfillmentsEndpoint) error {
+	shopIDs, err := api.MixAccount(q.Context.Claim, q.Mixed)
+	if err != nil {
+		return err
+	}
+	paging := q.Paging.CMPaging()
+
 	query := &shipnow.GetShipnowFulfillmentsQuery{
-		ShopId: q.Context.Shop.ID,
+		ShopIds: shopIDs,
+		Paging:  paging,
+		Filters: pbcm.ToFiltersPtr(q.Filters),
 	}
 	if err := shipnowQuery.Dispatch(ctx, query); err != nil {
 		return err
 	}
 	q.Result = &pborder.ShipnowFulfillments{
 		ShipnowFulfillments: pborder.Convert_core_ShipnowFulfillments_To_api_ShipnowFulfillments(query.Result.ShipnowFulfillments),
+		Paging:              pbcm.PbPageInfo(paging, query.Result.Count),
 	}
 	return nil
 }

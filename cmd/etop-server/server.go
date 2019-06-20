@@ -291,7 +291,7 @@ func startAhamoveWebhookServer() *http.Server {
 	rt := httpx.New()
 	rt.Use(httpx.RecoverAndLog(botWebhook, true))
 
-	webhook := webhookahamove.New(db, dbLogs, ahamoveCarrier, shipnowQuery, shipnowAggr, orderAggr.MessageBus())
+	webhook := webhookahamove.New(db, dbLogs, ahamoveCarrier, shipnowQuery, shipnowAggr, orderAggr.MessageBus(), orderQuery)
 	webhook.Register(rt)
 	svr := &http.Server{
 		Addr:    cfg.AhamoveWebhook.Address(),

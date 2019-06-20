@@ -40,6 +40,7 @@ type ShipnowFulfillment struct {
 	Carrier              v1.Carrier              `protobuf:"varint,6,opt,name=carrier,enum=etop.vn.api.main.shipnow.carrier.v1.carrier.Carrier" json:"carrier"`
 	ShippingServiceCode  string                  `protobuf:"bytes,7,opt,name=shipping_service_code,json=shippingServiceCode" json:"shipping_service_code"`
 	ShippingServiceFee   int32                   `protobuf:"varint,8,opt,name=shipping_service_fee,json=shippingServiceFee" json:"shipping_service_fee"`
+	ShippingServiceName  string                  `protobuf:"bytes,28,opt,name=shipping_service_name,json=shippingServiceName" json:"shipping_service_name"`
 	types2.WeightInfo    `protobuf:"bytes,9,opt,name=weight_info,json=weightInfo,embedded=weight_info" json:"weight_info"`
 	ValueInfo            types2.ValueInfo `protobuf:"bytes,10,opt,name=value_info,json=valueInfo" json:"value_info"`
 	ShippingNote         string           `protobuf:"bytes,11,opt,name=shipping_note,json=shippingNote" json:"shipping_note"`
@@ -59,6 +60,8 @@ type ShipnowFulfillment struct {
 	ShippingDeliveringAt *v11.Timestamp   `protobuf:"bytes,25,opt,name=shipping_delivering_at,json=shippingDeliveringAt" json:"shipping_delivering_at,omitempty"`
 	ShippingDeliveredAt  *v11.Timestamp   `protobuf:"bytes,26,opt,name=shipping_delivered_at,json=shippingDeliveredAt" json:"shipping_delivered_at,omitempty"`
 	ShippingCancelledAt  *v11.Timestamp   `protobuf:"bytes,27,opt,name=shipping_cancelled_at,json=shippingCancelledAt" json:"shipping_cancelled_at,omitempty"`
+	ShippingSharedLink   string           `protobuf:"bytes,29,opt,name=shipping_shared_link,json=shippingSharedLink" json:"shipping_shared_link"`
+	CancelReason         string           `protobuf:"bytes,30,opt,name=cancel_reason,json=cancelReason" json:"cancel_reason"`
 }
 
 type CreateShipnowFulfillmentCommand struct {
@@ -111,6 +114,9 @@ type UpdateShipnowFulfillmentCarrierInfoCommand struct {
 	ShippingDeliveringAt *v11.Timestamp    `protobuf:"bytes,13,opt,name=shipping_delivering_at,json=shippingDeliveringAt" json:"shipping_delivering_at,omitempty"`
 	ShippingDeliveredAt  *v11.Timestamp    `protobuf:"bytes,14,opt,name=shipping_delivered_at,json=shippingDeliveredAt" json:"shipping_delivered_at,omitempty"`
 	ShippingCancelledAt  *v11.Timestamp    `protobuf:"bytes,15,opt,name=shipping_cancelled_at,json=shippingCancelledAt" json:"shipping_cancelled_at,omitempty"`
+	ShippingServiceName  string            `protobuf:"bytes,16,opt,name=shipping_service_name,json=shippingServiceName" json:"shipping_service_name"`
+	CancelReason         string            `protobuf:"bytes,17,opt,name=cancel_reason,json=cancelReason" json:"cancel_reason"`
+	ShippingSharedLink   string            `protobuf:"bytes,18,opt,name=shipping_shared_link,json=shippingSharedLink" json:"shipping_shared_link"`
 }
 
 type UpdateShipnowFulfullmentStateCommand struct {
@@ -146,7 +152,9 @@ type GetShipnowFulfillmentQueryArgs struct {
 }
 
 type GetShipnowFulfillmentsQueryArgs struct {
-	ShopId int64 `protobuf:"varint,1,opt,name=shop_id,json=shopId" json:"shop_id"`
+	ShopIds []int64       `protobuf:"varint,1,rep,name=shop_ids,json=shopIds" json:"shop_ids,omitempty"`
+	Paging  *v11.Paging   `protobuf:"bytes,2,opt,name=paging" json:"paging,omitempty"`
+	Filters []*v11.Filter `protobuf:"bytes,3,rep,name=filters" json:"filters,omitempty"`
 }
 
 type GetShipnowFulfillmentQueryResult struct {
@@ -155,6 +163,7 @@ type GetShipnowFulfillmentQueryResult struct {
 
 type GetShipnowFulfillmentsQueryResult struct {
 	ShipnowFulfillments []*ShipnowFulfillment `protobuf:"bytes,1,rep,name=shipnow_fulfillments,json=shipnowFulfillments" json:"shipnow_fulfillments,omitempty"`
+	Count               int32                 `protobuf:"varint,2,opt,name=count" json:"count"`
 }
 
 type GetShipnowFulfillmentByShippingCodeQueryArgs struct {

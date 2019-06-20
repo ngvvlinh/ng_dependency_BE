@@ -53,6 +53,8 @@ message ShipnowFulfillment {
 
     optional int32 shipping_service_fee = 8 [(gogoproto.nullable)=false];
 
+    optional string shipping_service_name = 28 [(gogoproto.nullable) = false];
+
     optional shipping.v1.types.WeightInfo weight_info = 9 [(gogoproto.nullable)=false, (gogoproto.embed)=true];
 
     optional shipping.v1.types.ValueInfo value_info = 10 [(gogoproto.nullable)=false];
@@ -90,6 +92,10 @@ message ShipnowFulfillment {
     optional meta.v1.Timestamp shipping_delivered_at = 26;
 
     optional meta.v1.Timestamp shipping_cancelled_at = 27;
+
+    optional string shipping_shared_link = 29 [(gogoproto.nullable) = false];
+
+    optional string cancel_reason = 30 [(gogoproto.nullable) = false];
 }
 
 //-- Commands --//
@@ -160,6 +166,10 @@ message UpdateShipnowFulfillmentCarrierInfoCommand {
     optional meta.v1.Timestamp shipping_delivering_at = 13;
     optional meta.v1.Timestamp shipping_delivered_at = 14;
     optional meta.v1.Timestamp shipping_cancelled_at = 15;
+
+    optional string shipping_service_name = 16 [(gogoproto.nullable) = false];
+    optional string cancel_reason = 17 [(gogoproto.nullable) = false];
+    optional string shipping_shared_link = 18 [(gogoproto.nullable) = false];
 }
 
 message UpdateShipnowFulfullmentStateCommand {
@@ -197,7 +207,9 @@ message GetShipnowFulfillmentQueryArgs {
 }
 
 message GetShipnowFulfillmentsQueryArgs {
-    optional int64 shop_id = 1 [(gogoproto.nullable) = false];
+    repeated int64 shop_ids = 1 [(gogoproto.nullable) = false];
+    optional meta.v1.Paging paging = 2;
+    repeated meta.v1.Filter filters = 3;
 }
 
 message GetShipnowFulfillmentQueryResult {
@@ -206,6 +218,7 @@ message GetShipnowFulfillmentQueryResult {
 
 message GetShipnowFulfillmentsQueryResult {
     repeated ShipnowFulfillment shipnow_fulfillments = 1;
+    optional int32 count = 2 [(gogoproto.nullable) = false];
 }
 
 message GetShipnowFulfillmentByShippingCodeQueryArgs {

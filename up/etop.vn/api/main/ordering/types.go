@@ -21,6 +21,7 @@ type Aggregate interface {
 type QueryService interface {
 	GetOrderByID(ctx context.Context, args *GetOrderByIDArgs) (*Order, error)
 	GetOrders(ctx context.Context, args *GetOrdersArgs) (*OrdersResponse, error)
+	GetOrderByCode(ctx context.Context, args *GetOrderByCodeArgs) (*Order, error)
 }
 
 type GetOrderByIDArgs struct {
@@ -30,6 +31,10 @@ type GetOrderByIDArgs struct {
 type GetOrdersArgs struct {
 	ShopID int64
 	IDs    []int64
+}
+
+type GetOrderByCodeArgs struct {
+	Code string
 }
 
 type OrdersResponse struct {
@@ -46,6 +51,7 @@ type UpdateOrdersConfirmStatusResponse struct{}
 type Order struct {
 	ID              int64
 	ShopID          int64
+	Code            string
 	CustomerAddress *types.Address
 	ShippingAddress *types.Address
 	CancelReason    string
@@ -68,8 +74,8 @@ type Order struct {
 	FeeLines  []OrderFeeLine
 	Shipping  *shippingtypes.ShippingInfo
 
-	Fulfill    ordertypes.Fulfill
-	FulfillIDs []int64
+	FulfillmentType ordertypes.Fulfill
+	FulfillmentIDs  []int64
 
 	CreatedAt   time.Time
 	UpdatedAt   time.Time

@@ -6,6 +6,7 @@ import (
 	context "context"
 
 	meta "etop.vn/api/meta"
+	metav1 "etop.vn/api/meta/v1"
 )
 
 type Command interface{ command() }
@@ -94,7 +95,7 @@ type GetVariantWithProductByIDQuery struct {
 
 type ListProductsQuery struct {
 	ProductSourceID int64
-	Paging          meta.Paging
+	Paging          metav1.Paging
 	Filters         meta.Filters
 
 	Result *ProductsResonse `json:"-"`
@@ -108,7 +109,7 @@ type ListProductsByIDsQuery struct {
 
 type ListProductsWithVariantsQuery struct {
 	ProductSourceID int64
-	Paging          meta.Paging
+	Paging          metav1.Paging
 	Filters         meta.Filters
 
 	Result *ProductsWithVariantsResponse `json:"-"`
@@ -122,7 +123,7 @@ type ListProductsWithVariantsByIDsQuery struct {
 
 type ListShopProductsQuery struct {
 	ShopID  int64
-	Paging  meta.Paging
+	Paging  metav1.Paging
 	Filters meta.Filters
 
 	Result *ShopProductsResponse `json:"-"`
@@ -137,7 +138,7 @@ type ListShopProductsByIDsQuery struct {
 
 type ListShopProductsWithVariantsQuery struct {
 	ShopID  int64
-	Paging  meta.Paging
+	Paging  metav1.Paging
 	Filters meta.Filters
 
 	Result *ShopProductsWithVariantsResponse `json:"-"`
@@ -152,7 +153,7 @@ type ListShopProductsWithVariantsByIDsQuery struct {
 
 type ListShopVariantsQuery struct {
 	ShopID  int64
-	Paging  meta.Paging
+	Paging  metav1.Paging
 	Filters meta.Filters
 
 	Result *ShopVariantsResponse `json:"-"`
@@ -174,7 +175,7 @@ type ListShopVariantsWithProductByIDsQuery struct {
 
 type ListVariantsQuery struct {
 	ProductSourceID int64
-	Paging          meta.Paging
+	Paging          metav1.Paging
 	Filters         meta.Filters
 
 	Result *VariantsResponse `json:"-"`
@@ -188,7 +189,7 @@ type ListVariantsByIDsQuery struct {
 
 type ListVariantsWithProductQuery struct {
 	ProductSourceID int64
-	Paging          meta.Paging
+	Paging          metav1.Paging
 	Filters         meta.Filters
 
 	Result *VariantsWithProductResponse `json:"-"`

@@ -60,6 +60,7 @@ import (
 	ordersqlstore "etop.vn/backend/pkg/services/ordering/sqlstore"
 
 	identitycore "etop.vn/api/main/identity"
+	ordercore "etop.vn/api/main/ordering"
 	shipnowcore "etop.vn/api/main/shipnow"
 	shipnow_carrier "etop.vn/backend/pkg/services/shipnow-carrier"
 	shipnowpm "etop.vn/backend/pkg/services/shipnow/pm"
@@ -91,6 +92,7 @@ var (
 	shipnowQuery  shipnowcore.QueryBus
 	shipnowAggr   shipnowcore.CommandBus
 	orderAggr     *ordering.Aggregate
+	orderQuery    ordercore.QueryBus
 	identityQuery identitycore.QueryBus
 )
 
@@ -191,18 +193,18 @@ func main() {
 
 	locationBus := servicelocation.New().MessageBus()
 	identityQuery = identity.NewQueryService(db).MessageBus()
-	// if cfg.GHN.AccountDefault.Token != "" {
-	// 	ghnCarrier = ghn.New(cfg.GHN, locationBus)
-	// 	if err := ghnCarrier.InitAllClients(ctx); err != nil {
-	// 		ll.Fatal("Unable to connect to GHN", l.Error(err))
-	// 	}
-	// } else {
-	// 	if cm.IsDev() {
-	// 		ll.Warn("DEVELOPMENT. Skip connecting to GHN")
-	// 	} else {
-	// 		ll.Fatal("GHN: No token")
-	// 	}
-	// }
+	if cfg.GHN.AccountDefault.Token != "" {
+		ghnCarrier = ghn.New(cfg.GHN, locationBus)
+		if err := ghnCarrier.InitAllClients(ctx); err != nil {
+			ll.Fatal("Unable to connect to GHN", l.Error(err))
+		}
+	} else {
+		if cm.IsDev() {
+			ll.Warn("DEVELOPMENT. Skip connecting to GHN")
+		} else {
+			ll.Fatal("GHN: No token")
+		}
+	}
 	if cfg.GHTK.AccountDefault.Token != "" {
 		ghtkCarrier = ghtk.New(cfg.GHTK, locationBus)
 		if err := ghtkCarrier.InitAllClients(ctx); err != nil {
@@ -259,7 +261,7 @@ func main() {
 	catalogQuery := catalogquery.New(db).MessageBus()
 	addressQuery := address.NewQueryService(db).MessageBus()
 	shipnowQuery = shipnow.NewQueryService(db).MessageBus()
-	orderQueryBus := ordering.NewQueryService(db).MessageBus()
+	orderQuery = ordering.NewQueryService(db).MessageBus()
 
 	orderAggr = ordering.NewAggregate(db)
 	shipnowCarrierManager := shipnow_carrier.NewManager(db, locationBus, &shipnow_carrier.Carrier{
@@ -267,7 +269,7 @@ func main() {
 		ShipnowCarrierAccount: ahamoveCarrierAccount,
 	}, shipnowQuery)
 	identityAggr := identity.NewAggregate(db, shipnowCarrierManager).MessageBus()
-	shipnowAggr = shipnow.NewAggregate(eventBus, db, locationBus, identityQuery, addressQuery, orderQueryBus, shipnowCarrierManager).MessageBus()
+	shipnowAggr = shipnow.NewAggregate(eventBus, db, locationBus, identityQuery, addressQuery, orderQuery, shipnowCarrierManager).MessageBus()
 
 	orderingPM := orderingpm.New(orderAggr)
 	shipnowPM := shipnowpm.New(eventBus, shipnowQuery, shipnowAggr, orderAggr.MessageBus(), shipnowCarrierManager)

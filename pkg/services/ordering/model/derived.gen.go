@@ -19,7 +19,7 @@ func sqlgenOrder(_ *Order) bool { return true }
 type Orders []*Order
 
 const __sqlOrder_Table = "order"
-const __sqlOrder_ListCols = "\"id\",\"shop_id\",\"code\",\"ed_code\",\"product_ids\",\"variant_ids\",\"partner_id\",\"currency\",\"payment_method\",\"customer\",\"customer_address\",\"billing_address\",\"shipping_address\",\"customer_name\",\"customer_phone\",\"customer_email\",\"created_at\",\"processed_at\",\"updated_at\",\"closed_at\",\"confirmed_at\",\"cancelled_at\",\"cancel_reason\",\"customer_confirm\",\"shop_confirm\",\"confirm_status\",\"fulfillment_shipping_status\",\"customer_payment_status\",\"etop_payment_status\",\"status\",\"fulfillment_shipping_states\",\"fulfillment_payment_statuses\",\"lines\",\"discounts\",\"total_items\",\"basket_value\",\"total_weight\",\"total_tax\",\"order_discount\",\"total_discount\",\"shop_shipping_fee\",\"total_fee\",\"fee_lines\",\"shop_cod\",\"total_amount\",\"order_note\",\"shop_note\",\"shipping_note\",\"order_source_type\",\"order_source_id\",\"external_order_id\",\"reference_url\",\"external_url\",\"shop_shipping\",\"is_outside_etop\",\"ghn_note_code\",\"try_on\",\"customer_name_norm\",\"product_name_norm\",\"fulfill\",\"fulfill_ids\""
+const __sqlOrder_ListCols = "\"id\",\"shop_id\",\"code\",\"ed_code\",\"product_ids\",\"variant_ids\",\"partner_id\",\"currency\",\"payment_method\",\"customer\",\"customer_address\",\"billing_address\",\"shipping_address\",\"customer_name\",\"customer_phone\",\"customer_email\",\"created_at\",\"processed_at\",\"updated_at\",\"closed_at\",\"confirmed_at\",\"cancelled_at\",\"cancel_reason\",\"customer_confirm\",\"shop_confirm\",\"confirm_status\",\"fulfillment_shipping_status\",\"customer_payment_status\",\"etop_payment_status\",\"status\",\"fulfillment_shipping_states\",\"fulfillment_payment_statuses\",\"lines\",\"discounts\",\"total_items\",\"basket_value\",\"total_weight\",\"total_tax\",\"order_discount\",\"total_discount\",\"shop_shipping_fee\",\"total_fee\",\"fee_lines\",\"shop_cod\",\"total_amount\",\"order_note\",\"shop_note\",\"shipping_note\",\"order_source_type\",\"order_source_id\",\"external_order_id\",\"reference_url\",\"external_url\",\"shop_shipping\",\"is_outside_etop\",\"ghn_note_code\",\"try_on\",\"customer_name_norm\",\"product_name_norm\",\"fulfillment_type\",\"fulfillment_ids\""
 const __sqlOrder_Insert = "INSERT INTO \"order\" (" + __sqlOrder_ListCols + ") VALUES"
 const __sqlOrder_Select = "SELECT " + __sqlOrder_ListCols + " FROM \"order\""
 const __sqlOrder_Select_history = "SELECT " + __sqlOrder_ListCols + " FROM history.\"order\""
@@ -91,8 +91,8 @@ func (m *Order) SQLArgs(opts core.Opts, create bool) []interface{} {
 		core.String(m.TryOn),
 		core.String(m.CustomerNameNorm),
 		core.String(m.ProductNameNorm),
-		core.Int32(m.Fulfill),
-		core.Array{m.FulfillIDs, opts},
+		core.Int32(m.FulfillmentType),
+		core.Array{m.FulfillmentIDs, opts},
 	}
 }
 
@@ -157,8 +157,8 @@ func (m *Order) SQLScanArgs(opts core.Opts) []interface{} {
 		(*core.String)(&m.TryOn),
 		(*core.String)(&m.CustomerNameNorm),
 		(*core.String)(&m.ProductNameNorm),
-		(*core.Int32)(&m.Fulfill),
-		core.Array{&m.FulfillIDs, opts},
+		(*core.Int32)(&m.FulfillmentType),
+		core.Array{&m.FulfillmentIDs, opts},
 	}
 }
 
@@ -693,21 +693,21 @@ func (m *Order) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(m.ProductNameNorm)
 	}
-	if m.Fulfill != 0 {
+	if m.FulfillmentType != 0 {
 		flag = true
-		w.WriteName("fulfill")
+		w.WriteName("fulfillment_type")
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(int32(m.Fulfill))
+		w.WriteArg(int32(m.FulfillmentType))
 	}
-	if m.FulfillIDs != nil {
+	if m.FulfillmentIDs != nil {
 		flag = true
-		w.WriteName("fulfill_ids")
+		w.WriteName("fulfillment_ids")
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(core.Array{m.FulfillIDs, opts})
+		w.WriteArg(core.Array{m.FulfillmentIDs, opts})
 	}
 	if !flag {
 		return core.ErrNoColumn
@@ -812,8 +812,8 @@ func (m OrderHistory) CustomerNameNorm() core.Interface {
 	return core.Interface{m["customer_name_norm"]}
 }
 func (m OrderHistory) ProductNameNorm() core.Interface { return core.Interface{m["product_name_norm"]} }
-func (m OrderHistory) Fulfill() core.Interface         { return core.Interface{m["fulfill"]} }
-func (m OrderHistory) FulfillIDs() core.Interface      { return core.Interface{m["fulfill_ids"]} }
+func (m OrderHistory) FulfillmentType() core.Interface { return core.Interface{m["fulfillment_type"]} }
+func (m OrderHistory) FulfillmentIDs() core.Interface  { return core.Interface{m["fulfillment_ids"]} }
 
 func (m *OrderHistory) SQLScan(opts core.Opts, row *sql.Row) error {
 	data := make([]interface{}, 61)
@@ -884,8 +884,8 @@ func (m *OrderHistory) SQLScan(opts core.Opts, row *sql.Row) error {
 	res["try_on"] = data[56]
 	res["customer_name_norm"] = data[57]
 	res["product_name_norm"] = data[58]
-	res["fulfill"] = data[59]
-	res["fulfill_ids"] = data[60]
+	res["fulfillment_type"] = data[59]
+	res["fulfillment_ids"] = data[60]
 	*m = res
 	return nil
 }
@@ -961,8 +961,8 @@ func (ms *OrderHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
 		m["try_on"] = data[56]
 		m["customer_name_norm"] = data[57]
 		m["product_name_norm"] = data[58]
-		m["fulfill"] = data[59]
-		m["fulfill_ids"] = data[60]
+		m["fulfillment_type"] = data[59]
+		m["fulfillment_ids"] = data[60]
 		res = append(res, m)
 	}
 	if err := rows.Err(); err != nil {
