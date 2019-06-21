@@ -845,9 +845,7 @@ message ShippnowService {
 
     optional int32  fee = 4 [(gogoproto.nullable)  = false];
 
-    optional google.protobuf.Timestamp estimated_pickup_at = 5;
-
-    optional google.protobuf.Timestamp estimated_delivery_at = 6;
+    optional string description = 5 [(gogoproto.nullable) = false];
 }
 
 message _Fulfillment {

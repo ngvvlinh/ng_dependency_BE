@@ -280,12 +280,11 @@ func Convert_core_ShipnowService_To_api_ShipnowService(in *shipnowtypes.ShipnowS
 		return nil
 	}
 	return &ShippnowService{
-		Carrier:             string(carrier.CarrierToString(in.Carrier)),
-		Name:                in.Name,
-		Code:                in.Code,
-		Fee:                 in.Fee,
-		EstimatedPickupAt:   pbcm.PbTime(in.ExpectedPickupAt.ToTime()),
-		EstimatedDeliveryAt: pbcm.PbTime(in.ExpectedDeliveryAt.ToTime()),
+		Carrier:     string(carrier.CarrierToString(in.Carrier)),
+		Name:        in.Name,
+		Code:        in.Code,
+		Fee:         in.Fee,
+		Description: in.Description,
 	}
 }
 

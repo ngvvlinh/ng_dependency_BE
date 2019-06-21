@@ -4401,13 +4401,8 @@
           "type": "integer",
           "format": "int32"
         },
-        "estimated_pickup_at": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "estimated_delivery_at": {
-          "type": "string",
-          "format": "date-time"
+        "description": {
+          "type": "string"
         }
       }
     },

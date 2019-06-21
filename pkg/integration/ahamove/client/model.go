@@ -189,6 +189,9 @@ type CalcShippingFeeResponse struct {
 	Surcharge           string  `json:"surcharge"`             // 1.1 # 110% compared to normal fee, only returned if surcharge > 1,
 	BookingTimeError    string  `json:"booking_time_error"`    // "Booking time not valid" #If booking time is not in opening hours period,
 	PaymentErrorMessage string  `json:"payment_error_message"` // "Not enough credit" #If user does not have enough credit in balance
+	PartnerFee          int     `json:"partner_fee"`
+	PartnerDistanceFee  int     `json:"partner_distance_fee"`
+	PartnerDiscount     int     `json:"partner_discount"`
 }
 
 type CreateOrderRequest struct {
@@ -354,4 +357,21 @@ type Account struct {
 	NumRating     float32  `json:"num_rating"`
 	Rating        float32  `json:"rating"`
 	Verified      bool     `json:"verified"`
+}
+
+type GetServicesRequest struct {
+	CityID string `url:"city_id"`
+}
+
+type ServiceType struct {
+	ID              string `json:"_id"`               // "SGN-TRICYCLE"
+	Name            string `json:"name"`              // "Xe ba gac (1.8 x 1.3m)"
+	NameViVn        string `json:"name_vi_vn"`        // "Xe ba gac (1.8 x 1.3m)"
+	Currency        string `json:"currency"`          // "VND"
+	CityID          string `json:"city_id"`           // "SGN"
+	IconUrl         string `json:"icon_url"`          // "http//apistg.ahamove.com/images/tricycle.png"
+	DistanceFee     string `json:"distance_fee"`      // "120000 if x <= 4 else 120000 + (x - 4)  14000",
+	StopFee         int    `json:"stop_fee"`          // 10000
+	MaxStopPoints   int    `json:"max_stop_points"`   // 5
+	DescriptionViVn string `json:"description_vi_vn"` // "Giao hàng trong 1h"
 }

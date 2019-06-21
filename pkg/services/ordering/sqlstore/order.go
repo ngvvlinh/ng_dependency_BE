@@ -139,7 +139,7 @@ func (s *OrderStore) UpdateOrdersForReleaseOrdersFfm(args UpdateOrdersForRelease
 	if err := s.query().Table("order").In("id", args.OrderIDs).ShouldUpdateMap(M{
 		"fulfillment_type":            nil,
 		"fulfillment_ids":             nil,
-		"fulfillment_shipping_state":  nil,
+		"fulfillment_shipping_states": nil,
 		"fulfillment_shipping_status": etop.S5Zero,
 		"etop_payment_status":         etop.S5Zero,
 		"confirm_status":              etop.S5Zero,

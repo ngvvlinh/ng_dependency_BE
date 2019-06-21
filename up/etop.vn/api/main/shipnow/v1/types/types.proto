@@ -54,4 +54,6 @@ message ShipnowService {
     optional meta.v1.Timestamp expected_pickup_at = 5;
 
     optional meta.v1.Timestamp expected_delivery_at = 6;
+
+    optional string description = 7 [(gogoproto.nullable) = false];
 }

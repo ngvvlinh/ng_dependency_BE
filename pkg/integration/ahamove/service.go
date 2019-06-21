@@ -1,7 +1,10 @@
 package ahamove
 
 import (
+	"context"
+	"fmt"
 	"math/rand"
+	"strings"
 
 	"etop.vn/backend/pkg/services/location"
 
@@ -15,80 +18,48 @@ type (
 	ServiceCode string
 	CityCode    string
 )
+
 type ShippingService struct {
-	ID            ServiceCode
+	Code          string
 	Name          string
 	MinStopPoints int
 	MaxStopPoints int
 	MaxWeight     int
 	City          CityCode
-	ShortCode     string
+	Description   string
+}
+
+type Service struct {
+	Code      ServiceCode
+	ShortCode byte
+	Name      string
 }
 
 var (
-	SGNBIKE ServiceCode = "SGN-BIKE"
-	SGNPOOL ServiceCode = "SGN-POOL"
-	SGNDG   ServiceCode = "SGN-DG"
-	HANBIKE ServiceCode = "HAN-BIKE"
-	HANPOOL ServiceCode = "HAN-POOL"
-	HANDG   ServiceCode = "HAN-DG"
+	BIKE    ServiceCode = "BIKE"
+	POOL    ServiceCode = "POOL"
+	SAMEDAY ServiceCode = "SAMEDAY"
 
 	SGNCode CityCode = "SGN"
 	HANCode CityCode = "HAN"
 
-	ServicesIndexID        = make(map[ServiceCode]*ShippingService)
-	ServicesIndexShortCode = make(map[string]*ShippingService)
-	ServicesIndexCity      = make(map[CityCode][]*ShippingService)
+	ServicesIndexCode      = make(map[ServiceCode]*Service)
+	ServicesIndexShortCode = make(map[byte]*Service)
 )
-var Services = []*ShippingService{
+
+var Services = []*Service{
 	{
-		ID:            SGNBIKE,
-		Name:          "Siêu tốc",
-		MinStopPoints: 1,
-		MaxStopPoints: 5,
-		MaxWeight:     0,
-		City:          SGNCode,
-		ShortCode:     "SB",
+		Code:      BIKE,
+		ShortCode: 'B',
+		Name:      "Siêu Tốc",
 	}, {
-		ID:            SGNPOOL,
-		Name:          "Siêu rẻ",
-		MinStopPoints: 1,
-		MaxStopPoints: 1,
-		MaxWeight:     0,
-		City:          SGNCode,
-		ShortCode:     "SP",
+		Code:      POOL,
+		ShortCode: 'P',
+		Name:      "Siêu Rẻ",
 	}, {
-		ID:            SGNDG,
-		Name:          "Đồng giá",
-		MinStopPoints: 4,
-		MaxStopPoints: 10,
-		MaxWeight:     0,
-		City:          SGNCode,
-		ShortCode:     "SD",
-	}, {
-		ID:            HANBIKE,
-		Name:          "Siêu tốc",
-		MinStopPoints: 1,
-		MaxStopPoints: 5,
-		MaxWeight:     0,
-		City:          HANCode,
-		ShortCode:     "HB",
-	}, {
-		ID:            HANPOOL,
-		Name:          "Siêu rẻ",
-		MinStopPoints: 1,
-		MaxStopPoints: 1,
-		MaxWeight:     0,
-		City:          HANCode,
-		ShortCode:     "HP",
-	}, {
-		ID:            HANDG,
-		Name:          "Đồng giá",
-		MinStopPoints: 3,
-		MaxStopPoints: 10,
-		MaxWeight:     0,
-		City:          HANCode,
-		ShortCode:     "HD",
+		Code:      SAMEDAY,
+		ShortCode: 'S',
+		Name:      "Trong ngày",
 	},
 }
 
@@ -98,9 +69,8 @@ type serviceIDGenerator struct {
 
 func init() {
 	for _, service := range Services {
-		ServicesIndexID[service.ID] = service
+		ServicesIndexCode[service.Code] = service
 		ServicesIndexShortCode[service.ShortCode] = service
-		ServicesIndexCity[service.City] = append(ServicesIndexCity[service.City], service)
 	}
 }
 
@@ -112,31 +82,43 @@ func newServiceIDGenerator(seed int64) serviceIDGenerator {
 
 // GenerateServiceID generate new service id for using with ahamove. The generated
 // id is always 8 character in length.
-func (c serviceIDGenerator) GenerateServiceID(serviceID ServiceCode) (string, error) {
-	if serviceID == "" {
-		return "", cm.Errorf(cm.InvalidArgument, nil, "ahamove: Missing service ID")
+func (c serviceIDGenerator) GenerateServiceID(serviceCode string) (string, error) {
+	city, code, err := ParseInfoAhamoveServiceCode(serviceCode)
+	if err != nil {
+		return "", err
 	}
-	service := ServicesIndexID[serviceID]
+
+	service := ServicesIndexCode[code]
 	if service == nil {
-		return "", cm.Errorf(cm.InvalidArgument, nil, "ahamove: Service not found")
+		return "", cm.Errorf(cm.InvalidArgument, nil, "Ahamove: Service not found")
 	}
+
 	n := c.rd.Uint64()
 	v := gencode.Alphabet32.EncodeReverse(n, 8)
+	v = v[:8]
 
-	code := string(v)
-	code = code[:6] + service.ShortCode
-	return code, nil
+	switch city {
+	case SGNCode:
+		v[6] = 'S'
+	case HANCode:
+		v[6] = 'H'
+	default:
+		return "", cm.Errorf(cm.InvalidArgument, nil, "Ahamove: Invalid city code")
+	}
+	v[7] = service.ShortCode
+
+	return string(v), nil
 }
 
 func DecodeShippingServiceName(code string) (name string, ok bool) {
 	if len(code) != 8 {
 		return "", false
 	}
-	shortCode := code[6:]
-	service := ServicesIndexShortCode[shortCode]
+	service := ServicesIndexShortCode[code[6]]
 	if service == nil {
 		return "", false
 	}
+
 	return service.Name, true
 }
 
@@ -144,33 +126,18 @@ func (c *Carrier) GetServiceName(code string) (serviceName string, ok bool) {
 	return DecodeShippingServiceName(code)
 }
 
-func (c *Carrier) ParseServiceCode(code string) (serviceID string, _err error) {
-	sID, err := ParseServiceID(code)
-	return string(sID), err
+func (c *Carrier) ParseServiceCode(code string) (serviceCode string, _err error) {
+	sCode, err := parseServiceCode(code)
+	return sCode, err
 }
 
-func ParseServiceID(code string) (serviceID ServiceCode, err error) {
-	if code == "" {
-		err = cm.Errorf(cm.InvalidArgument, nil, "ahamove: missing service id")
-		return
-	}
-	if len(code) != 8 {
-		err = cm.Errorf(cm.InvalidArgument, nil, "ahamove: invalid service id")
-		return
-	}
-
-	shortCode := code[6:]
-	service := ServicesIndexShortCode[shortCode]
-
-	if service == nil {
-		err = cm.Errorf(cm.InvalidArgument, nil, "ahamove: invalid service id")
-	}
-	serviceID = service.ID
-	return
-}
-
-func GetAvailableServices(points []*ahamoveClient.DeliveryPointRequest) []*ShippingService {
+func (c *Carrier) GetAvailableServices(ctx context.Context, points []*ahamoveClient.DeliveryPointRequest) (res []*ShippingService) {
 	pointCount := len(points) - 1
+	// min stop point = 1
+	if pointCount < 1 {
+		return nil
+	}
+
 	provinceCode := ""
 	for i, point := range points {
 		if i == 0 {
@@ -193,12 +160,81 @@ func GetAvailableServices(points []*ahamoveClient.DeliveryPointRequest) []*Shipp
 	default:
 		return nil
 	}
-	services := ServicesIndexCity[cityCode]
-	var result = make([]*ShippingService, 0, len(services))
-	for _, s := range services {
-		if pointCount >= s.MinStopPoints && pointCount <= s.MaxStopPoints {
-			result = append(result, s)
+
+	cmd := &GetServiceCommand{
+		Request: &ahamoveClient.GetServicesRequest{
+			CityID: string(cityCode),
+		},
+	}
+	if err := c.GetServices(ctx, cmd); err != nil {
+		return nil
+	}
+	for _, service := range cmd.Result {
+		s := ToService(service)
+		if s != nil && pointCount >= s.MinStopPoints && pointCount <= s.MaxStopPoints {
+			res = append(res, s)
 		}
 	}
-	return result
+	return res
+}
+
+func ToService(service *ahamoveClient.ServiceType) *ShippingService {
+	if service == nil {
+		return nil
+	}
+
+	return &ShippingService{
+		Code:          service.ID,
+		Name:          service.NameViVn,
+		MinStopPoints: 1,
+		MaxStopPoints: service.MaxStopPoints,
+		City:          CityCode(service.CityID),
+		Description:   service.DescriptionViVn,
+	}
+}
+
+func parseServiceCode(code string) (serviceCode string, err error) {
+	if code == "" {
+		err = cm.Errorf(cm.InvalidArgument, nil, "Ahamove: Missing service code")
+		return
+	}
+	if len(code) != 8 {
+		err = cm.Errorf(cm.InvalidArgument, nil, "Ahamove: Invalid service code")
+		return
+	}
+
+	service := ServicesIndexShortCode[code[7]]
+	if service == nil {
+		err = cm.Errorf(cm.InvalidArgument, nil, "Ahamove: Invalid service code")
+	}
+
+	var city CityCode
+	switch {
+	case code[6] == 'S':
+		city = SGNCode
+	case code[6] == 'H':
+		city = HANCode
+	default:
+		return "", cm.Errorf(cm.InvalidArgument, nil, "Ahamove: Invalid city code")
+	}
+
+	return AhamoveServiceCodeFormat(city, service.Code), nil
+}
+
+func AhamoveServiceCodeFormat(city CityCode, code ServiceCode) string {
+	return fmt.Sprintf("%v-%v", city, code)
+}
+
+func ParseInfoAhamoveServiceCode(code string) (CityCode, ServiceCode, error) {
+	// Ahamove service code format: SGN-BIKE
+	if code == "" {
+		return "", "", cm.Errorf(cm.InvalidArgument, nil, "Ahamove: Missing service ID")
+	}
+
+	arr := strings.Split(code, "-")
+	if len(arr) != 2 {
+		return "", "", cm.Errorf(cm.InvalidArgument, nil, "Ahamove: Invalid service code")
+	}
+	city, code := arr[0], arr[1]
+	return CityCode(city), ServiceCode(code), nil
 }

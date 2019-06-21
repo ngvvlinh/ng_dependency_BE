@@ -15,7 +15,7 @@ func TestGenerateServiceID(t *testing.T) {
 		assert.Equal(t, len(id), 8)
 		assert.Equal(t, id[1], byte('D'))
 
-		code, serviceID, err := ParseServiceID(id)
+		code, serviceID, err := parseServiceCode(id)
 		assert.NoError(t, err)
 		assert.Equal(t, code, byte('D'))
 		assert.Equal(t, serviceID, SGNBIKE)

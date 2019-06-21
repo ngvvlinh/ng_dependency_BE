@@ -27,4 +27,5 @@ type ShipnowService struct {
 	Fee                int32          `protobuf:"varint,4,opt,name=fee" json:"fee"`
 	ExpectedPickupAt   *v11.Timestamp `protobuf:"bytes,5,opt,name=expected_pickup_at,json=expectedPickupAt" json:"expected_pickup_at,omitempty"`
 	ExpectedDeliveryAt *v11.Timestamp `protobuf:"bytes,6,opt,name=expected_delivery_at,json=expectedDeliveryAt" json:"expected_delivery_at,omitempty"`
+	Description        string         `protobuf:"bytes,7,opt,name=description" json:"description"`
 }

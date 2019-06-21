@@ -39,6 +39,7 @@ const (
 	PathCancelOrder     = "/order/cancel"
 	PathRegisterAccount = "/partner/register_account"
 	PathGetAccount      = "/user/profile"
+	PathGetServices     = "/order/service_types"
 )
 
 func New(cfg Config) *Client {
@@ -67,7 +68,7 @@ func New(cfg Config) *Client {
 }
 
 func (c *Client) Ping() error {
-	return c.TestCalcShippingFee()
+	return c.TestGetServices()
 }
 
 var points = []*DeliveryPointRequest{
@@ -145,12 +146,26 @@ func (c *Client) TestCreateOrder() error {
 	return err
 }
 
+func (c *Client) TestGetServices() error {
+	req := &GetServicesRequest{
+		CityID: "SGN",
+	}
+	_, err := c.GetServices(context.Background(), req)
+	return err
+}
+
 func (c *Client) CalcShippingFee(ctx context.Context, req *CalcShippingFeeRequest) (*CalcShippingFeeResponse, error) {
 	req.Path = ConvertDeliveryPointsRequestToString(req.DeliveryPoints)
 	var resp CalcShippingFeeResponse
 	err := c.sendGetRequest(ctx, PathCalcShippingFee, req, &resp,
 		"Không thể tính phí giao hàng")
 	return &resp, err
+}
+
+func (c *Client) GetServices(ctx context.Context, req *GetServicesRequest) ([]*ServiceType, error) {
+	var resp []*ServiceType
+	err := c.sendGetRequest(ctx, PathGetServices, req, &resp, "Không thể lấy danh sách dịch vụ")
+	return resp, err
 }
 
 func (c *Client) CreateOrder(ctx context.Context, req *CreateOrderRequest) (*CreateOrderResponse, error) {
