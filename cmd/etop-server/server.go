@@ -155,15 +155,6 @@ func startEtopServer() *http.Server {
 				),
 			)
 		}
-
-		{
-			// serve ahamove verification files
-			ahamoveRouter := httpx.New()
-			path := config.PathAhamoveUserVerification + "/:originname/:filename"
-			serveAhamoveVerificationFiles(ahamoveRouter.Router, path, http.Dir(config.PathAhamoveUserVerification))
-
-			mux.Handle(config.PathAhamoveUserVerification+"/", ahamoveRouter)
-		}
 	}
 
 	if cfg.ServeDoc || *flDocOnly {
@@ -288,16 +279,29 @@ func startVTPostWebhookServer() *http.Server {
 func startAhamoveWebhookServer() *http.Server {
 	botWebhook := cfg.TelegramBot.MustConnectChannel(config.ChannelWebhook)
 
-	rt := httpx.New()
-	rt.Use(httpx.RecoverAndLog(botWebhook, true))
+	mux := http.NewServeMux()
+	{
+		rt := httpx.New()
+		rt.Use(httpx.RecoverAndLog(botWebhook, true))
+		webhook := webhookahamove.New(db, dbLogs, ahamoveCarrier, shipnowQuery, shipnowAggr, orderAggr.MessageBus(), orderQuery)
+		webhook.Register(rt)
 
-	webhook := webhookahamove.New(db, dbLogs, ahamoveCarrier, shipnowQuery, shipnowAggr, orderAggr.MessageBus(), orderQuery)
-	webhook.Register(rt)
+		mux.Handle("/webhook/", rt)
+	}
+	{
+		// serve ahamove verification files
+		ahamoveRouter := httpx.New()
+		path := config.PathAhamoveUserVerification + "/:originname/:filename"
+		serveAhamoveVerificationFiles(ahamoveRouter.Router, path, http.Dir(config.PathAhamoveUserVerification))
+
+		mux.Handle(config.PathAhamoveUserVerification+"/", ahamoveRouter)
+	}
+
 	svr := &http.Server{
 		Addr:    cfg.AhamoveWebhook.Address(),
-		Handler: rt,
+		Handler: mux,
 	}
-	ll.S.Infof("VTPost Webhook server listening at %v", cfg.AhamoveWebhook.Address())
+	ll.S.Infof("Ahamove server listening at %v", cfg.AhamoveWebhook.Address())
 
 	go func() {
 		defer ctxCancel()
