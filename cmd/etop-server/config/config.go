@@ -1,6 +1,9 @@
 package config
 
 import (
+	"errors"
+	"strings"
+
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/captcha"
 	cc "etop.vn/backend/pkg/common/config"
@@ -68,6 +71,8 @@ type Config struct {
 		Auth     string `yaml:"auth"`
 		MainSite string `yaml:"main_site"`
 	} `yaml:"url"`
+
+	ThirdPartyHost string `yaml:"third_party_host"`
 }
 
 // Default ...
@@ -146,5 +151,10 @@ func Load(isTest bool) (Config, error) {
 	cfg.VTPost.MustLoadEnv()
 	cfg.Ahamove.MustLoadEnv()
 	cc.MustLoadEnv("ET_SADMIN_TOKEN", &cfg.SAdminToken)
+
+	if cfg.ThirdPartyHost == "" && !cm.IsDev() {
+		return cfg, errors.New("Empty third_party_host")
+	}
+	cfg.ThirdPartyHost = strings.TrimSuffix(cfg.ThirdPartyHost, "/")
 	return cfg, err
 }

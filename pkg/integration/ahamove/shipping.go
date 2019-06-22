@@ -3,7 +3,6 @@ package ahamove
 import (
 	"context"
 	"fmt"
-	"net/url"
 	"path/filepath"
 	"strconv"
 	"strings"
@@ -32,6 +31,7 @@ import (
 var _ shipnow_carrier.ShipnowCarrier = &Carrier{}
 var _ shipnow_carrier.ShipnowCarrierAccount = &CarrierAccount{}
 var identityQuery identity.QueryBus
+var thirdPartyHost string
 
 type Carrier struct {
 	client   *ahamoveclient.Client
@@ -42,9 +42,10 @@ type CarrierAccount struct {
 	client *ahamoveclient.Client
 }
 
-func New(cfg ahamoveclient.Config, locationBus location.QueryBus, identityBus identity.QueryBus) (*Carrier, *CarrierAccount) {
+func New(cfg ahamoveclient.Config, locationBus location.QueryBus, identityBus identity.QueryBus, thirdParty string) (*Carrier, *CarrierAccount) {
 	client := ahamoveclient.New(cfg)
 	identityQuery = identityBus
+	thirdPartyHost = thirdParty
 	return &Carrier{
 		client:   client,
 		location: locationBus,
@@ -342,11 +343,6 @@ func prepareAhamovePhotoUrl(ahamoveAccount *identity.ExternalAccountAhamove, uri
 	ext := filepath.Ext(uri)
 	filename := strings.TrimSuffix(filepath.Base(uri), ext)
 
-	u, err := url.Parse(uri)
-	if err != nil {
-		return ""
-	}
-
 	newName := ""
 	switch typeImg {
 	case "front":
@@ -357,14 +353,9 @@ func prepareAhamovePhotoUrl(ahamoveAccount *identity.ExternalAccountAhamove, uri
 		newName = fmt.Sprintf("user_portrait_%v_%v", ahamoveAccount.ExternalID, ahamoveAccount.ExternalCreatedAt.Unix())
 	}
 
-	newUrl := &url.URL{
-		Scheme: u.Scheme,
-		Host:   u.Host,
-		Path: fmt.Sprintf(
-			"%v/%v/%v%v", config.PathAhamoveUserVerification, filename, newName, ext),
-	}
-
-	return newUrl.String()
+	// expected result:
+	// https://3rd.d.etop.vn/ahamove/user_verification/BdVzaWz6ssamNKrRV7W8/user_id_front_84909090999_1444118656.jpg
+	return fmt.Sprintf("%v%v/%v/%v%v", thirdPartyHost, config.PathAhamoveUserVerification, filename, newName, ext)
 }
 
 // description format: <user._id>, <user.name>, <photo_urls>

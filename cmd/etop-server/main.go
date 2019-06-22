@@ -231,7 +231,7 @@ func main() {
 		}
 	}
 	if cfg.Ahamove.ApiKey != "" {
-		ahamoveCarrier, ahamoveCarrierAccount = ahamove.New(cfg.Ahamove, locationBus, identityQuery)
+		ahamoveCarrier, ahamoveCarrierAccount = ahamove.New(cfg.Ahamove, locationBus, identityQuery, cfg.ThirdPartyHost)
 		if err := ahamoveCarrier.InitClient(ctx); err != nil {
 			ll.Fatal("Unable to connect to ahamove", l.Error(err))
 		}
