@@ -55,6 +55,8 @@ message ShipnowFulfillment {
 
     optional string shipping_service_name = 28 [(gogoproto.nullable) = false];
 
+    optional string shipping_service_description = 31 [(gogoproto.nullable) = false];
+
     optional shipping.v1.types.WeightInfo weight_info = 9 [(gogoproto.nullable)=false, (gogoproto.embed)=true];
 
     optional shipping.v1.types.ValueInfo value_info = 10 [(gogoproto.nullable)=false];
@@ -170,6 +172,7 @@ message UpdateShipnowFulfillmentCarrierInfoCommand {
     optional string shipping_service_name = 16 [(gogoproto.nullable) = false];
     optional string cancel_reason = 17 [(gogoproto.nullable) = false];
     optional string shipping_shared_link = 18 [(gogoproto.nullable) = false];
+    optional string shipping_service_description = 19 [(gogoproto.nullable) = false];
 }
 
 message UpdateShipnowFulfullmentStateCommand {

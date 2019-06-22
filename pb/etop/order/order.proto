@@ -737,6 +737,7 @@ message ShipnowFulfillment {
     optional string shipping_service_code = 7 [(gogoproto.nullable)=false];
     optional int32 shipping_service_fee = 8 [(gogoproto.nullable)=false];
     optional string shipping_service_name = 28 [(gogoproto.nullable) = false];
+    optional string shipping_service_description = 31 [(gogoproto.nullable) = false];
     optional WeightInfo weight_info = 9 [(gogoproto.nullable)=false, (gogoproto.embed)=true];
     optional ValueInfo value_info = 10 [(gogoproto.nullable)=false];
     optional string shipping_note = 11 [(gogoproto.nullable)=false];

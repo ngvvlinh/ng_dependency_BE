@@ -32,36 +32,37 @@ func (_ EventData_CancellationAccepted) GetEnumTag() EventDataEnum  { return 8 }
 func (_ EventData_CancellationRejected) GetEnumTag() EventDataEnum  { return 9 }
 
 type ShipnowFulfillment struct {
-	Id                   int64                   `protobuf:"varint,1,opt,name=id" json:"id"`
-	ShopId               int64                   `protobuf:"varint,2,opt,name=shop_id,json=shopId" json:"shop_id"`
-	PartnerId            int64                   `protobuf:"varint,3,opt,name=partner_id,json=partnerId" json:"partner_id"`
-	PickupAddress        *types.Address          `protobuf:"bytes,4,opt,name=pickup_address,json=pickupAddress" json:"pickup_address,omitempty"`
-	DeliveryPoints       []*types1.DeliveryPoint `protobuf:"bytes,5,rep,name=delivery_points,json=deliveryPoints" json:"delivery_points,omitempty"`
-	Carrier              v1.Carrier              `protobuf:"varint,6,opt,name=carrier,enum=etop.vn.api.main.shipnow.carrier.v1.carrier.Carrier" json:"carrier"`
-	ShippingServiceCode  string                  `protobuf:"bytes,7,opt,name=shipping_service_code,json=shippingServiceCode" json:"shipping_service_code"`
-	ShippingServiceFee   int32                   `protobuf:"varint,8,opt,name=shipping_service_fee,json=shippingServiceFee" json:"shipping_service_fee"`
-	ShippingServiceName  string                  `protobuf:"bytes,28,opt,name=shipping_service_name,json=shippingServiceName" json:"shipping_service_name"`
-	types2.WeightInfo    `protobuf:"bytes,9,opt,name=weight_info,json=weightInfo,embedded=weight_info" json:"weight_info"`
-	ValueInfo            types2.ValueInfo `protobuf:"bytes,10,opt,name=value_info,json=valueInfo" json:"value_info"`
-	ShippingNote         string           `protobuf:"bytes,11,opt,name=shipping_note,json=shippingNote" json:"shipping_note"`
-	RequestPickupAt      *v11.Timestamp   `protobuf:"bytes,12,opt,name=request_pickup_at,json=requestPickupAt" json:"request_pickup_at,omitempty"`
-	Status               v12.Status5      `protobuf:"varint,13,opt,name=status,enum=etop.vn.api.main.etop.v1.status5.Status5" json:"status"`
-	ShippingStatus       v12.Status5      `protobuf:"varint,14,opt,name=shipping_status,json=shippingStatus,enum=etop.vn.api.main.etop.v1.status5.Status5" json:"shipping_status"`
-	ShippingCode         string           `protobuf:"bytes,15,opt,name=shipping_code,json=shippingCode" json:"shipping_code"`
-	ShippingState        types1.State     `protobuf:"varint,16,opt,name=shipping_state,json=shippingState,enum=etop.vn.api.main.shipnow.v1.state.State" json:"shipping_state"`
-	ConfirmStatus        v12.Status3      `protobuf:"varint,17,opt,name=confirm_status,json=confirmStatus,enum=etop.vn.api.main.etop.v1.status3.Status3" json:"confirm_status"`
-	OrderIds             []int64          `protobuf:"varint,18,rep,name=order_ids,json=orderIds" json:"order_ids,omitempty"`
-	ShippingCreatedAt    *v11.Timestamp   `protobuf:"bytes,19,opt,name=shipping_created_at,json=shippingCreatedAt" json:"shipping_created_at,omitempty"`
-	CreatedAt            *v11.Timestamp   `protobuf:"bytes,20,opt,name=created_at,json=createdAt" json:"created_at,omitempty"`
-	UpdatedAt            *v11.Timestamp   `protobuf:"bytes,21,opt,name=updated_at,json=updatedAt" json:"updated_at,omitempty"`
-	EtopPaymentStatus    v12.Status4      `protobuf:"varint,22,opt,name=etop_payment_status,json=etopPaymentStatus,enum=etop.vn.api.main.etop.v1.status4.Status4" json:"etop_payment_status"`
-	CodEtopTransferedAt  *v11.Timestamp   `protobuf:"bytes,23,opt,name=cod_etop_transfered_at,json=codEtopTransferedAt" json:"cod_etop_transfered_at,omitempty"`
-	ShippingPickingAt    *v11.Timestamp   `protobuf:"bytes,24,opt,name=shipping_picking_at,json=shippingPickingAt" json:"shipping_picking_at,omitempty"`
-	ShippingDeliveringAt *v11.Timestamp   `protobuf:"bytes,25,opt,name=shipping_delivering_at,json=shippingDeliveringAt" json:"shipping_delivering_at,omitempty"`
-	ShippingDeliveredAt  *v11.Timestamp   `protobuf:"bytes,26,opt,name=shipping_delivered_at,json=shippingDeliveredAt" json:"shipping_delivered_at,omitempty"`
-	ShippingCancelledAt  *v11.Timestamp   `protobuf:"bytes,27,opt,name=shipping_cancelled_at,json=shippingCancelledAt" json:"shipping_cancelled_at,omitempty"`
-	ShippingSharedLink   string           `protobuf:"bytes,29,opt,name=shipping_shared_link,json=shippingSharedLink" json:"shipping_shared_link"`
-	CancelReason         string           `protobuf:"bytes,30,opt,name=cancel_reason,json=cancelReason" json:"cancel_reason"`
+	Id                         int64                   `protobuf:"varint,1,opt,name=id" json:"id"`
+	ShopId                     int64                   `protobuf:"varint,2,opt,name=shop_id,json=shopId" json:"shop_id"`
+	PartnerId                  int64                   `protobuf:"varint,3,opt,name=partner_id,json=partnerId" json:"partner_id"`
+	PickupAddress              *types.Address          `protobuf:"bytes,4,opt,name=pickup_address,json=pickupAddress" json:"pickup_address,omitempty"`
+	DeliveryPoints             []*types1.DeliveryPoint `protobuf:"bytes,5,rep,name=delivery_points,json=deliveryPoints" json:"delivery_points,omitempty"`
+	Carrier                    v1.Carrier              `protobuf:"varint,6,opt,name=carrier,enum=etop.vn.api.main.shipnow.carrier.v1.carrier.Carrier" json:"carrier"`
+	ShippingServiceCode        string                  `protobuf:"bytes,7,opt,name=shipping_service_code,json=shippingServiceCode" json:"shipping_service_code"`
+	ShippingServiceFee         int32                   `protobuf:"varint,8,opt,name=shipping_service_fee,json=shippingServiceFee" json:"shipping_service_fee"`
+	ShippingServiceName        string                  `protobuf:"bytes,28,opt,name=shipping_service_name,json=shippingServiceName" json:"shipping_service_name"`
+	ShippingServiceDescription string                  `protobuf:"bytes,31,opt,name=shipping_service_description,json=shippingServiceDescription" json:"shipping_service_description"`
+	types2.WeightInfo          `protobuf:"bytes,9,opt,name=weight_info,json=weightInfo,embedded=weight_info" json:"weight_info"`
+	ValueInfo                  types2.ValueInfo `protobuf:"bytes,10,opt,name=value_info,json=valueInfo" json:"value_info"`
+	ShippingNote               string           `protobuf:"bytes,11,opt,name=shipping_note,json=shippingNote" json:"shipping_note"`
+	RequestPickupAt            *v11.Timestamp   `protobuf:"bytes,12,opt,name=request_pickup_at,json=requestPickupAt" json:"request_pickup_at,omitempty"`
+	Status                     v12.Status5      `protobuf:"varint,13,opt,name=status,enum=etop.vn.api.main.etop.v1.status5.Status5" json:"status"`
+	ShippingStatus             v12.Status5      `protobuf:"varint,14,opt,name=shipping_status,json=shippingStatus,enum=etop.vn.api.main.etop.v1.status5.Status5" json:"shipping_status"`
+	ShippingCode               string           `protobuf:"bytes,15,opt,name=shipping_code,json=shippingCode" json:"shipping_code"`
+	ShippingState              types1.State     `protobuf:"varint,16,opt,name=shipping_state,json=shippingState,enum=etop.vn.api.main.shipnow.v1.state.State" json:"shipping_state"`
+	ConfirmStatus              v12.Status3      `protobuf:"varint,17,opt,name=confirm_status,json=confirmStatus,enum=etop.vn.api.main.etop.v1.status3.Status3" json:"confirm_status"`
+	OrderIds                   []int64          `protobuf:"varint,18,rep,name=order_ids,json=orderIds" json:"order_ids,omitempty"`
+	ShippingCreatedAt          *v11.Timestamp   `protobuf:"bytes,19,opt,name=shipping_created_at,json=shippingCreatedAt" json:"shipping_created_at,omitempty"`
+	CreatedAt                  *v11.Timestamp   `protobuf:"bytes,20,opt,name=created_at,json=createdAt" json:"created_at,omitempty"`
+	UpdatedAt                  *v11.Timestamp   `protobuf:"bytes,21,opt,name=updated_at,json=updatedAt" json:"updated_at,omitempty"`
+	EtopPaymentStatus          v12.Status4      `protobuf:"varint,22,opt,name=etop_payment_status,json=etopPaymentStatus,enum=etop.vn.api.main.etop.v1.status4.Status4" json:"etop_payment_status"`
+	CodEtopTransferedAt        *v11.Timestamp   `protobuf:"bytes,23,opt,name=cod_etop_transfered_at,json=codEtopTransferedAt" json:"cod_etop_transfered_at,omitempty"`
+	ShippingPickingAt          *v11.Timestamp   `protobuf:"bytes,24,opt,name=shipping_picking_at,json=shippingPickingAt" json:"shipping_picking_at,omitempty"`
+	ShippingDeliveringAt       *v11.Timestamp   `protobuf:"bytes,25,opt,name=shipping_delivering_at,json=shippingDeliveringAt" json:"shipping_delivering_at,omitempty"`
+	ShippingDeliveredAt        *v11.Timestamp   `protobuf:"bytes,26,opt,name=shipping_delivered_at,json=shippingDeliveredAt" json:"shipping_delivered_at,omitempty"`
+	ShippingCancelledAt        *v11.Timestamp   `protobuf:"bytes,27,opt,name=shipping_cancelled_at,json=shippingCancelledAt" json:"shipping_cancelled_at,omitempty"`
+	ShippingSharedLink         string           `protobuf:"bytes,29,opt,name=shipping_shared_link,json=shippingSharedLink" json:"shipping_shared_link"`
+	CancelReason               string           `protobuf:"bytes,30,opt,name=cancel_reason,json=cancelReason" json:"cancel_reason"`
 }
 
 type CreateShipnowFulfillmentCommand struct {
@@ -99,24 +100,25 @@ type CancelShipnowFulfillmentCommand struct {
 }
 
 type UpdateShipnowFulfillmentCarrierInfoCommand struct {
-	Id                   int64             `protobuf:"varint,1,opt,name=id" json:"id"`
-	ShippingCode         string            `protobuf:"bytes,2,opt,name=shipping_code,json=shippingCode" json:"shipping_code"`
-	ShippingState        types1.State      `protobuf:"varint,3,opt,name=shipping_state,json=shippingState,enum=etop.vn.api.main.shipnow.v1.state.State" json:"shipping_state"`
-	TotalFee             int32             `protobuf:"varint,4,opt,name=total_fee,json=totalFee" json:"total_fee"`
-	FeeLines             []*types2.FeeLine `protobuf:"bytes,5,rep,name=fee_lines,json=feeLines" json:"fee_lines,omitempty"`
-	CarrierFeeLines      []*types2.FeeLine `protobuf:"bytes,6,rep,name=carrier_fee_lines,json=carrierFeeLines" json:"carrier_fee_lines,omitempty"`
-	ShippingCreatedAt    *v11.Timestamp    `protobuf:"bytes,7,opt,name=shipping_created_at,json=shippingCreatedAt" json:"shipping_created_at,omitempty"`
-	EtopPaymentStatus    v12.Status4       `protobuf:"varint,8,opt,name=etop_payment_status,json=etopPaymentStatus,enum=etop.vn.api.main.etop.v1.status4.Status4" json:"etop_payment_status"`
-	ShippingStatus       v12.Status5       `protobuf:"varint,9,opt,name=shipping_status,json=shippingStatus,enum=etop.vn.api.main.etop.v1.status5.Status5" json:"shipping_status"`
-	Status               v12.Status5       `protobuf:"varint,10,opt,name=status,enum=etop.vn.api.main.etop.v1.status5.Status5" json:"status"`
-	CodEtopTransferedAt  *v11.Timestamp    `protobuf:"bytes,11,opt,name=cod_etop_transfered_at,json=codEtopTransferedAt" json:"cod_etop_transfered_at,omitempty"`
-	ShippingPickingAt    *v11.Timestamp    `protobuf:"bytes,12,opt,name=shipping_picking_at,json=shippingPickingAt" json:"shipping_picking_at,omitempty"`
-	ShippingDeliveringAt *v11.Timestamp    `protobuf:"bytes,13,opt,name=shipping_delivering_at,json=shippingDeliveringAt" json:"shipping_delivering_at,omitempty"`
-	ShippingDeliveredAt  *v11.Timestamp    `protobuf:"bytes,14,opt,name=shipping_delivered_at,json=shippingDeliveredAt" json:"shipping_delivered_at,omitempty"`
-	ShippingCancelledAt  *v11.Timestamp    `protobuf:"bytes,15,opt,name=shipping_cancelled_at,json=shippingCancelledAt" json:"shipping_cancelled_at,omitempty"`
-	ShippingServiceName  string            `protobuf:"bytes,16,opt,name=shipping_service_name,json=shippingServiceName" json:"shipping_service_name"`
-	CancelReason         string            `protobuf:"bytes,17,opt,name=cancel_reason,json=cancelReason" json:"cancel_reason"`
-	ShippingSharedLink   string            `protobuf:"bytes,18,opt,name=shipping_shared_link,json=shippingSharedLink" json:"shipping_shared_link"`
+	Id                         int64             `protobuf:"varint,1,opt,name=id" json:"id"`
+	ShippingCode               string            `protobuf:"bytes,2,opt,name=shipping_code,json=shippingCode" json:"shipping_code"`
+	ShippingState              types1.State      `protobuf:"varint,3,opt,name=shipping_state,json=shippingState,enum=etop.vn.api.main.shipnow.v1.state.State" json:"shipping_state"`
+	TotalFee                   int32             `protobuf:"varint,4,opt,name=total_fee,json=totalFee" json:"total_fee"`
+	FeeLines                   []*types2.FeeLine `protobuf:"bytes,5,rep,name=fee_lines,json=feeLines" json:"fee_lines,omitempty"`
+	CarrierFeeLines            []*types2.FeeLine `protobuf:"bytes,6,rep,name=carrier_fee_lines,json=carrierFeeLines" json:"carrier_fee_lines,omitempty"`
+	ShippingCreatedAt          *v11.Timestamp    `protobuf:"bytes,7,opt,name=shipping_created_at,json=shippingCreatedAt" json:"shipping_created_at,omitempty"`
+	EtopPaymentStatus          v12.Status4       `protobuf:"varint,8,opt,name=etop_payment_status,json=etopPaymentStatus,enum=etop.vn.api.main.etop.v1.status4.Status4" json:"etop_payment_status"`
+	ShippingStatus             v12.Status5       `protobuf:"varint,9,opt,name=shipping_status,json=shippingStatus,enum=etop.vn.api.main.etop.v1.status5.Status5" json:"shipping_status"`
+	Status                     v12.Status5       `protobuf:"varint,10,opt,name=status,enum=etop.vn.api.main.etop.v1.status5.Status5" json:"status"`
+	CodEtopTransferedAt        *v11.Timestamp    `protobuf:"bytes,11,opt,name=cod_etop_transfered_at,json=codEtopTransferedAt" json:"cod_etop_transfered_at,omitempty"`
+	ShippingPickingAt          *v11.Timestamp    `protobuf:"bytes,12,opt,name=shipping_picking_at,json=shippingPickingAt" json:"shipping_picking_at,omitempty"`
+	ShippingDeliveringAt       *v11.Timestamp    `protobuf:"bytes,13,opt,name=shipping_delivering_at,json=shippingDeliveringAt" json:"shipping_delivering_at,omitempty"`
+	ShippingDeliveredAt        *v11.Timestamp    `protobuf:"bytes,14,opt,name=shipping_delivered_at,json=shippingDeliveredAt" json:"shipping_delivered_at,omitempty"`
+	ShippingCancelledAt        *v11.Timestamp    `protobuf:"bytes,15,opt,name=shipping_cancelled_at,json=shippingCancelledAt" json:"shipping_cancelled_at,omitempty"`
+	ShippingServiceName        string            `protobuf:"bytes,16,opt,name=shipping_service_name,json=shippingServiceName" json:"shipping_service_name"`
+	CancelReason               string            `protobuf:"bytes,17,opt,name=cancel_reason,json=cancelReason" json:"cancel_reason"`
+	ShippingSharedLink         string            `protobuf:"bytes,18,opt,name=shipping_shared_link,json=shippingSharedLink" json:"shipping_shared_link"`
+	ShippingServiceDescription string            `protobuf:"bytes,19,opt,name=shipping_service_description,json=shippingServiceDescription" json:"shipping_service_description"`
 }
 
 type UpdateShipnowFulfullmentStateCommand struct {

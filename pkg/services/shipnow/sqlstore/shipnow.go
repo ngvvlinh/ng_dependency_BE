@@ -233,13 +233,14 @@ type UpdateCarrierInfoArgs struct {
 	CODEtopTransferedAt *metav1.Timestamp
 	Status              etop.Status5
 
-	ShippingPickingAt    *metav1.Timestamp
-	ShippingDeliveringAt *metav1.Timestamp
-	ShippingDeliveredAt  *metav1.Timestamp
-	ShippingCancelledAt  *metav1.Timestamp
-	ShippingServiceName  string
-	CancelReason         string
-	ShippingSharedLink   string
+	ShippingPickingAt          *metav1.Timestamp
+	ShippingDeliveringAt       *metav1.Timestamp
+	ShippingDeliveredAt        *metav1.Timestamp
+	ShippingCancelledAt        *metav1.Timestamp
+	ShippingServiceName        string
+	ShippingServiceDescription string
+	CancelReason               string
+	ShippingSharedLink         string
 }
 
 func (s *ShipnowStore) UpdateCarrierInfo(args UpdateCarrierInfoArgs) (*shipnow.ShipnowFulfillment, error) {
@@ -255,13 +256,14 @@ func (s *ShipnowStore) UpdateCarrierInfo(args UpdateCarrierInfoArgs) (*shipnow.S
 		CODEtopTransferedAt: args.CODEtopTransferedAt.ToTime(),
 		Status:              etopconvert.Status5ToModel(args.Status),
 
-		ShippingPickingAt:    args.ShippingPickingAt.ToTime(),
-		ShippingDeliveringAt: args.ShippingDeliveringAt.ToTime(),
-		ShippingDeliveredAt:  args.ShippingDeliveredAt.ToTime(),
-		ShippingCancelledAt:  args.ShippingCancelledAt.ToTime(),
-		ShippingServiceName:  args.ShippingServiceName,
-		CancelReason:         args.CancelReason,
-		ShippingSharedLink:   args.ShippingSharedLink,
+		ShippingPickingAt:          args.ShippingPickingAt.ToTime(),
+		ShippingDeliveringAt:       args.ShippingDeliveringAt.ToTime(),
+		ShippingDeliveredAt:        args.ShippingDeliveredAt.ToTime(),
+		ShippingCancelledAt:        args.ShippingCancelledAt.ToTime(),
+		ShippingServiceName:        args.ShippingServiceName,
+		ShippingServiceDescription: args.ShippingServiceDescription,
+		CancelReason:               args.CancelReason,
+		ShippingSharedLink:         args.ShippingSharedLink,
 	}
 	if err := s.query().Where("id = ?", args.ID).ShouldUpdate(updateFfm); err != nil {
 		return nil, err

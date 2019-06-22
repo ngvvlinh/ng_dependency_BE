@@ -12,8 +12,6 @@ import (
 
 	"etop.vn/api/main/identity"
 
-	"github.com/k0kubun/pp"
-
 	"etop.vn/api/main/shipnow"
 
 	"etop.vn/api/main/location"
@@ -93,7 +91,6 @@ func (c *Carrier) CreateExternalShipnow(ctx context.Context, cmd *carrier.Create
 		},
 	}
 	err = c.CreateOrder(ctx, ahamoveCmd)
-	pp.Println("res :: ", ahamoveCmd.Result)
 	if err != nil {
 		return nil, err
 	}

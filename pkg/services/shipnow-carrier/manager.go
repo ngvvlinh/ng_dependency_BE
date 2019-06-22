@@ -113,6 +113,7 @@ func (ctrl *ShipnowManager) createSingleFulfillment(ctx context.Context, cmd *ca
 	if err != nil {
 		return nil, err
 	}
+	externalShipnow.Service = service
 	return externalShipnow, nil
 }
 

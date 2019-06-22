@@ -35,9 +35,10 @@ type ShipnowFulfillment struct {
 
 	Carrier Carrier
 
-	ShippingServiceCode string
-	ShippingServiceFee  int32
-	ShippingServiceName string
+	ShippingServiceCode        string
+	ShippingServiceFee         int32
+	ShippingServiceName        string
+	ShippingServiceDescription string
 
 	ChargeableWeight int32
 	GrossWeight      int32

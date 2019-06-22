@@ -95,24 +95,25 @@ type UpdateShipnowFulfillmentCommand struct {
 }
 
 type UpdateShipnowFulfillmentCarrierInfoCommand struct {
-	Id                   int64                      `json:"id"`
-	ShippingCode         string                     `json:"shipping_code"`
-	ShippingState        shipnowv1types.State       `json:"shipping_state"`
-	TotalFee             int32                      `json:"total_fee"`
-	FeeLines             []*shippingv1types.FeeLine `json:"fee_lines,omitempty"`
-	CarrierFeeLines      []*shippingv1types.FeeLine `json:"carrier_fee_lines,omitempty"`
-	ShippingCreatedAt    *metav1.Timestamp          `json:"shipping_created_at,omitempty"`
-	EtopPaymentStatus    etopv1.Status4             `json:"etop_payment_status"`
-	ShippingStatus       etopv1.Status5             `json:"shipping_status"`
-	Status               etopv1.Status5             `json:"status"`
-	CodEtopTransferedAt  *metav1.Timestamp          `json:"cod_etop_transfered_at,omitempty"`
-	ShippingPickingAt    *metav1.Timestamp          `json:"shipping_picking_at,omitempty"`
-	ShippingDeliveringAt *metav1.Timestamp          `json:"shipping_delivering_at,omitempty"`
-	ShippingDeliveredAt  *metav1.Timestamp          `json:"shipping_delivered_at,omitempty"`
-	ShippingCancelledAt  *metav1.Timestamp          `json:"shipping_cancelled_at,omitempty"`
-	ShippingServiceName  string                     `json:"shipping_service_name"`
-	CancelReason         string                     `json:"cancel_reason"`
-	ShippingSharedLink   string                     `json:"shipping_shared_link"`
+	Id                         int64                      `json:"id"`
+	ShippingCode               string                     `json:"shipping_code"`
+	ShippingState              shipnowv1types.State       `json:"shipping_state"`
+	TotalFee                   int32                      `json:"total_fee"`
+	FeeLines                   []*shippingv1types.FeeLine `json:"fee_lines,omitempty"`
+	CarrierFeeLines            []*shippingv1types.FeeLine `json:"carrier_fee_lines,omitempty"`
+	ShippingCreatedAt          *metav1.Timestamp          `json:"shipping_created_at,omitempty"`
+	EtopPaymentStatus          etopv1.Status4             `json:"etop_payment_status"`
+	ShippingStatus             etopv1.Status5             `json:"shipping_status"`
+	Status                     etopv1.Status5             `json:"status"`
+	CodEtopTransferedAt        *metav1.Timestamp          `json:"cod_etop_transfered_at,omitempty"`
+	ShippingPickingAt          *metav1.Timestamp          `json:"shipping_picking_at,omitempty"`
+	ShippingDeliveringAt       *metav1.Timestamp          `json:"shipping_delivering_at,omitempty"`
+	ShippingDeliveredAt        *metav1.Timestamp          `json:"shipping_delivered_at,omitempty"`
+	ShippingCancelledAt        *metav1.Timestamp          `json:"shipping_cancelled_at,omitempty"`
+	ShippingServiceName        string                     `json:"shipping_service_name"`
+	CancelReason               string                     `json:"cancel_reason"`
+	ShippingSharedLink         string                     `json:"shipping_shared_link"`
+	ShippingServiceDescription string                     `json:"shipping_service_description"`
 
 	Result *shipnowv1.ShipnowFulfillment `json:"-"`
 }

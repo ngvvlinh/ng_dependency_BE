@@ -67,6 +67,7 @@ type ExternalShipnow struct {
 	FeeLines   []*shippingtypes.FeeLine
 	CreatedAt  time.Time
 	SharedLink string
+	Service    *shipnowtypes.ShipnowService
 }
 
 type GetExternalShipnowServicesCommand struct {

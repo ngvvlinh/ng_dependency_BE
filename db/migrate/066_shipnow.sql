@@ -75,5 +75,6 @@ ALTER TABLE "external_account_ahamove"
 
 ALTER TABLE shipnow_fulfillment
     ADD COLUMN shipping_service_name TEXT
+    , ADD COLUMN shipping_service_description TEXT
     , ADD COLUMN cancel_reason TEXT
     , ADD COLUMN shipping_shared_link TEXT;

@@ -17,7 +17,7 @@ func sqlgenShipnowFulfillment(_ *ShipnowFulfillment) bool { return true }
 type ShipnowFulfillments []*ShipnowFulfillment
 
 const __sqlShipnowFulfillment_Table = "shipnow_fulfillment"
-const __sqlShipnowFulfillment_ListCols = "\"id\",\"shop_id\",\"partner_id\",\"order_ids\",\"pickup_address\",\"carrier\",\"shipping_service_code\",\"shipping_service_fee\",\"shipping_service_name\",\"chargeable_weight\",\"gross_weight\",\"basket_value\",\"cod_amount\",\"shipping_note\",\"request_pickup_at\",\"delivery_points\",\"cancel_reason\",\"status\",\"confirm_status\",\"shipping_status\",\"etop_payment_status\",\"shipping_state\",\"shipping_code\",\"fee_lines\",\"carrier_fee_lines\",\"total_fee\",\"shipping_created_at\",\"shipping_picking_at\",\"shipping_delivering_at\",\"shipping_delivered_at\",\"shipping_cancelled_at\",\"sync_status\",\"sync_states\",\"created_at\",\"updated_at\",\"cod_etop_transfered_at\",\"shipping_shared_link\""
+const __sqlShipnowFulfillment_ListCols = "\"id\",\"shop_id\",\"partner_id\",\"order_ids\",\"pickup_address\",\"carrier\",\"shipping_service_code\",\"shipping_service_fee\",\"shipping_service_name\",\"shipping_service_description\",\"chargeable_weight\",\"gross_weight\",\"basket_value\",\"cod_amount\",\"shipping_note\",\"request_pickup_at\",\"delivery_points\",\"cancel_reason\",\"status\",\"confirm_status\",\"shipping_status\",\"etop_payment_status\",\"shipping_state\",\"shipping_code\",\"fee_lines\",\"carrier_fee_lines\",\"total_fee\",\"shipping_created_at\",\"shipping_picking_at\",\"shipping_delivering_at\",\"shipping_delivered_at\",\"shipping_cancelled_at\",\"sync_status\",\"sync_states\",\"created_at\",\"updated_at\",\"cod_etop_transfered_at\",\"shipping_shared_link\""
 const __sqlShipnowFulfillment_Insert = "INSERT INTO \"shipnow_fulfillment\" (" + __sqlShipnowFulfillment_ListCols + ") VALUES"
 const __sqlShipnowFulfillment_Select = "SELECT " + __sqlShipnowFulfillment_ListCols + " FROM \"shipnow_fulfillment\""
 const __sqlShipnowFulfillment_Select_history = "SELECT " + __sqlShipnowFulfillment_ListCols + " FROM history.\"shipnow_fulfillment\""
@@ -39,6 +39,7 @@ func (m *ShipnowFulfillment) SQLArgs(opts core.Opts, create bool) []interface{} 
 		core.String(m.ShippingServiceCode),
 		core.Int32(m.ShippingServiceFee),
 		core.String(m.ShippingServiceName),
+		core.String(m.ShippingServiceDescription),
 		core.Int32(m.ChargeableWeight),
 		core.Int32(m.GrossWeight),
 		core.Int32(m.BasketValue),
@@ -81,6 +82,7 @@ func (m *ShipnowFulfillment) SQLScanArgs(opts core.Opts) []interface{} {
 		(*core.String)(&m.ShippingServiceCode),
 		(*core.Int32)(&m.ShippingServiceFee),
 		(*core.String)(&m.ShippingServiceName),
+		(*core.String)(&m.ShippingServiceDescription),
 		(*core.Int32)(&m.ChargeableWeight),
 		(*core.Int32)(&m.GrossWeight),
 		(*core.Int32)(&m.BasketValue),
@@ -146,7 +148,7 @@ func (_ *ShipnowFulfillments) SQLSelect(w SQLWriter) error {
 func (m *ShipnowFulfillment) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlShipnowFulfillment_Insert)
 	w.WriteRawString(" (")
-	w.WriteMarkers(37)
+	w.WriteMarkers(38)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), true))
 	return nil
@@ -156,7 +158,7 @@ func (ms ShipnowFulfillments) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlShipnowFulfillment_Insert)
 	w.WriteRawString(" (")
 	for i := 0; i < len(ms); i++ {
-		w.WriteMarkers(37)
+		w.WriteMarkers(38)
 		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
 		w.WriteRawString("),(")
 	}
@@ -242,6 +244,14 @@ func (m *ShipnowFulfillment) SQLUpdate(w SQLWriter) error {
 		w.WriteMarker()
 		w.WriteByte(',')
 		w.WriteArg(m.ShippingServiceName)
+	}
+	if m.ShippingServiceDescription != "" {
+		flag = true
+		w.WriteName("shipping_service_description")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.ShippingServiceDescription)
 	}
 	if m.ChargeableWeight != 0 {
 		flag = true
@@ -477,7 +487,7 @@ func (m *ShipnowFulfillment) SQLUpdate(w SQLWriter) error {
 func (m *ShipnowFulfillment) SQLUpdateAll(w SQLWriter) error {
 	w.WriteQueryString(__sqlShipnowFulfillment_UpdateAll)
 	w.WriteRawString(" = (")
-	w.WriteMarkers(37)
+	w.WriteMarkers(38)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), false))
 	return nil
@@ -515,6 +525,9 @@ func (m ShipnowFulfillmentHistory) ShippingServiceFee() core.Interface {
 }
 func (m ShipnowFulfillmentHistory) ShippingServiceName() core.Interface {
 	return core.Interface{m["shipping_service_name"]}
+}
+func (m ShipnowFulfillmentHistory) ShippingServiceDescription() core.Interface {
+	return core.Interface{m["shipping_service_description"]}
 }
 func (m ShipnowFulfillmentHistory) ChargeableWeight() core.Interface {
 	return core.Interface{m["chargeable_weight"]}
@@ -590,15 +603,15 @@ func (m ShipnowFulfillmentHistory) ShippingSharedLink() core.Interface {
 }
 
 func (m *ShipnowFulfillmentHistory) SQLScan(opts core.Opts, row *sql.Row) error {
-	data := make([]interface{}, 37)
-	args := make([]interface{}, 37)
-	for i := 0; i < 37; i++ {
+	data := make([]interface{}, 38)
+	args := make([]interface{}, 38)
+	for i := 0; i < 38; i++ {
 		args[i] = &data[i]
 	}
 	if err := row.Scan(args...); err != nil {
 		return err
 	}
-	res := make(ShipnowFulfillmentHistory, 37)
+	res := make(ShipnowFulfillmentHistory, 38)
 	res["id"] = data[0]
 	res["shop_id"] = data[1]
 	res["partner_id"] = data[2]
@@ -608,42 +621,43 @@ func (m *ShipnowFulfillmentHistory) SQLScan(opts core.Opts, row *sql.Row) error 
 	res["shipping_service_code"] = data[6]
 	res["shipping_service_fee"] = data[7]
 	res["shipping_service_name"] = data[8]
-	res["chargeable_weight"] = data[9]
-	res["gross_weight"] = data[10]
-	res["basket_value"] = data[11]
-	res["cod_amount"] = data[12]
-	res["shipping_note"] = data[13]
-	res["request_pickup_at"] = data[14]
-	res["delivery_points"] = data[15]
-	res["cancel_reason"] = data[16]
-	res["status"] = data[17]
-	res["confirm_status"] = data[18]
-	res["shipping_status"] = data[19]
-	res["etop_payment_status"] = data[20]
-	res["shipping_state"] = data[21]
-	res["shipping_code"] = data[22]
-	res["fee_lines"] = data[23]
-	res["carrier_fee_lines"] = data[24]
-	res["total_fee"] = data[25]
-	res["shipping_created_at"] = data[26]
-	res["shipping_picking_at"] = data[27]
-	res["shipping_delivering_at"] = data[28]
-	res["shipping_delivered_at"] = data[29]
-	res["shipping_cancelled_at"] = data[30]
-	res["sync_status"] = data[31]
-	res["sync_states"] = data[32]
-	res["created_at"] = data[33]
-	res["updated_at"] = data[34]
-	res["cod_etop_transfered_at"] = data[35]
-	res["shipping_shared_link"] = data[36]
+	res["shipping_service_description"] = data[9]
+	res["chargeable_weight"] = data[10]
+	res["gross_weight"] = data[11]
+	res["basket_value"] = data[12]
+	res["cod_amount"] = data[13]
+	res["shipping_note"] = data[14]
+	res["request_pickup_at"] = data[15]
+	res["delivery_points"] = data[16]
+	res["cancel_reason"] = data[17]
+	res["status"] = data[18]
+	res["confirm_status"] = data[19]
+	res["shipping_status"] = data[20]
+	res["etop_payment_status"] = data[21]
+	res["shipping_state"] = data[22]
+	res["shipping_code"] = data[23]
+	res["fee_lines"] = data[24]
+	res["carrier_fee_lines"] = data[25]
+	res["total_fee"] = data[26]
+	res["shipping_created_at"] = data[27]
+	res["shipping_picking_at"] = data[28]
+	res["shipping_delivering_at"] = data[29]
+	res["shipping_delivered_at"] = data[30]
+	res["shipping_cancelled_at"] = data[31]
+	res["sync_status"] = data[32]
+	res["sync_states"] = data[33]
+	res["created_at"] = data[34]
+	res["updated_at"] = data[35]
+	res["cod_etop_transfered_at"] = data[36]
+	res["shipping_shared_link"] = data[37]
 	*m = res
 	return nil
 }
 
 func (ms *ShipnowFulfillmentHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	data := make([]interface{}, 37)
-	args := make([]interface{}, 37)
-	for i := 0; i < 37; i++ {
+	data := make([]interface{}, 38)
+	args := make([]interface{}, 38)
+	for i := 0; i < 38; i++ {
 		args[i] = &data[i]
 	}
 	res := make(ShipnowFulfillmentHistories, 0, 128)
@@ -661,34 +675,35 @@ func (ms *ShipnowFulfillmentHistories) SQLScan(opts core.Opts, rows *sql.Rows) e
 		m["shipping_service_code"] = data[6]
 		m["shipping_service_fee"] = data[7]
 		m["shipping_service_name"] = data[8]
-		m["chargeable_weight"] = data[9]
-		m["gross_weight"] = data[10]
-		m["basket_value"] = data[11]
-		m["cod_amount"] = data[12]
-		m["shipping_note"] = data[13]
-		m["request_pickup_at"] = data[14]
-		m["delivery_points"] = data[15]
-		m["cancel_reason"] = data[16]
-		m["status"] = data[17]
-		m["confirm_status"] = data[18]
-		m["shipping_status"] = data[19]
-		m["etop_payment_status"] = data[20]
-		m["shipping_state"] = data[21]
-		m["shipping_code"] = data[22]
-		m["fee_lines"] = data[23]
-		m["carrier_fee_lines"] = data[24]
-		m["total_fee"] = data[25]
-		m["shipping_created_at"] = data[26]
-		m["shipping_picking_at"] = data[27]
-		m["shipping_delivering_at"] = data[28]
-		m["shipping_delivered_at"] = data[29]
-		m["shipping_cancelled_at"] = data[30]
-		m["sync_status"] = data[31]
-		m["sync_states"] = data[32]
-		m["created_at"] = data[33]
-		m["updated_at"] = data[34]
-		m["cod_etop_transfered_at"] = data[35]
-		m["shipping_shared_link"] = data[36]
+		m["shipping_service_description"] = data[9]
+		m["chargeable_weight"] = data[10]
+		m["gross_weight"] = data[11]
+		m["basket_value"] = data[12]
+		m["cod_amount"] = data[13]
+		m["shipping_note"] = data[14]
+		m["request_pickup_at"] = data[15]
+		m["delivery_points"] = data[16]
+		m["cancel_reason"] = data[17]
+		m["status"] = data[18]
+		m["confirm_status"] = data[19]
+		m["shipping_status"] = data[20]
+		m["etop_payment_status"] = data[21]
+		m["shipping_state"] = data[22]
+		m["shipping_code"] = data[23]
+		m["fee_lines"] = data[24]
+		m["carrier_fee_lines"] = data[25]
+		m["total_fee"] = data[26]
+		m["shipping_created_at"] = data[27]
+		m["shipping_picking_at"] = data[28]
+		m["shipping_delivering_at"] = data[29]
+		m["shipping_delivered_at"] = data[30]
+		m["shipping_cancelled_at"] = data[31]
+		m["sync_status"] = data[32]
+		m["sync_states"] = data[33]
+		m["created_at"] = data[34]
+		m["updated_at"] = data[35]
+		m["cod_etop_transfered_at"] = data[36]
+		m["shipping_shared_link"] = data[37]
 		res = append(res, m)
 	}
 	if err := rows.Err(); err != nil {

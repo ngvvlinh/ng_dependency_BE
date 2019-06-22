@@ -319,13 +319,14 @@ func (a *Aggregate) UpdateShipnowFulfillmentCarrierInfo(ctx context.Context, arg
 		CODEtopTransferedAt: args.CodEtopTransferedAt,
 		Status:              args.Status,
 
-		ShippingPickingAt:    args.ShippingPickingAt,
-		ShippingDeliveringAt: args.ShippingDeliveringAt,
-		ShippingDeliveredAt:  args.ShippingDeliveredAt,
-		ShippingCancelledAt:  args.ShippingCancelledAt,
-		ShippingServiceName:  args.ShippingServiceName,
-		CancelReason:         args.CancelReason,
-		ShippingSharedLink:   args.ShippingSharedLink,
+		ShippingPickingAt:          args.ShippingPickingAt,
+		ShippingDeliveringAt:       args.ShippingDeliveringAt,
+		ShippingDeliveredAt:        args.ShippingDeliveredAt,
+		ShippingCancelledAt:        args.ShippingCancelledAt,
+		ShippingServiceName:        args.ShippingServiceName,
+		ShippingServiceDescription: args.ShippingServiceDescription,
+		CancelReason:               args.CancelReason,
+		ShippingSharedLink:         args.ShippingSharedLink,
 	}
 	updateArgs.TotalFee = shippingtypes.TotalFee(args.FeeLines)
 	ffm, err := a.store(ctx).UpdateCarrierInfo(updateArgs)

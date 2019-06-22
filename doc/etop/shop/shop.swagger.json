@@ -4266,6 +4266,9 @@
         "shipping_service_name": {
           "type": "string"
         },
+        "shipping_service_description": {
+          "type": "string"
+        },
         "weight_info": {
           "$ref": "#/definitions/orderWeightInfo"
         },
