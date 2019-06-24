@@ -127,7 +127,7 @@ func CreateOrder(ctx context.Context, claim *claims.ShopClaim, authPartner *mode
 }
 
 func PrepareOrderLines(ctx context.Context, shopID int64, lines []*pborder.CreateOrderLine) ([]*ordermodel.OrderLine, error) {
-	variantIDs := make([]int64, len(lines))
+	variantIDs := make([]int64, 0, len(lines))
 	if len(lines) > 40 {
 		return nil, cm.Error(cm.InvalidArgument, "Đơn hàng có quá nhiều sản phẩm", nil)
 	}
@@ -138,7 +138,7 @@ func PrepareOrderLines(ctx context.Context, shopID int64, lines []*pborder.Creat
 		if line.VariantId == 0 {
 			continue
 		}
-		variantIDs[i] = line.VariantId
+		variantIDs = append(variantIDs, line.VariantId)
 
 		for j := 0; j < i; j++ {
 			if line.VariantId == lines[j].VariantId {
@@ -154,7 +154,7 @@ func PrepareOrderLines(ctx context.Context, shopID int64, lines []*pborder.Creat
 			IDs:    variantIDs,
 			ShopID: shopID,
 		}
-		if err := bus.Dispatch(ctx, variantsQuery); err != nil {
+		if err := catalogQuery.Dispatch(ctx, variantsQuery); err != nil {
 			return nil, err
 		}
 		variants = variantsQuery.Result.Variants

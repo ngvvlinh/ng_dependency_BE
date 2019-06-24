@@ -171,7 +171,7 @@ var _ = sqlgenShopVariantWithProduct(
 	&ShopVariantWithProduct{}, &Variant{}, sq.AS("v"),
 	sq.LEFT_JOIN, &Product{}, sq.AS("p"), "v.product_id = p.id",
 	sq.LEFT_JOIN, &ShopProduct{}, sq.AS("sp"), "sp.product_id = p.id",
-	sq.LEFT_JOIN, &ShopVariant{}, sq.AS("v"), "sv.variant_id = v.id",
+	sq.LEFT_JOIN, &ShopVariant{}, sq.AS("sv"), "sv.variant_id = v.id",
 )
 
 type ShopVariantWithProduct struct {
