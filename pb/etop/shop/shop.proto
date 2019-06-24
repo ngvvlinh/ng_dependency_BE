@@ -50,6 +50,8 @@ service AccountService {
 
     rpc CreateExternalAccountAhamove(cm.Empty) returns (ExternalAccountAhamove);
     rpc GetExternalAccountAhamove(cm.Empty) returns (ExternalAccountAhamove);
+    rpc RequestVerifyExternalAccountAhamove (cm.Empty) returns (cm.UpdatedResponse);
+    rpc UpdateExternalAccountAhamoveVerificationImages (UpdateXAccountAhamoveVerificationImagesRequest) returns (cm.UpdatedResponse);
 }
 
 service CollectionService {

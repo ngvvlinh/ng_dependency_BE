@@ -95,7 +95,11 @@ func ConnectShopService(addr string, client *http.Client) error {
 	bus.AddHandler("client", func(ctx context.Context, q *GetBalanceShopEndpoint) error { panic("Unexpected") })
 	bus.AddHandler("client", func(ctx context.Context, q *GetExternalAccountAhamoveEndpoint) error { panic("Unexpected") })
 	bus.AddHandler("client", func(ctx context.Context, q *RegisterShopEndpoint) error { panic("Unexpected") })
+	bus.AddHandler("client", func(ctx context.Context, q *RequestVerifyExternalAccountAhamoveEndpoint) error { panic("Unexpected") })
 	bus.AddHandler("client", func(ctx context.Context, q *SetDefaultAddressEndpoint) error { panic("Unexpected") })
+	bus.AddHandler("client", func(ctx context.Context, q *UpdateExternalAccountAhamoveVerificationImagesEndpoint) error {
+		panic("Unexpected")
+	})
 	bus.AddHandler("client", func(ctx context.Context, q *UpdateShopEndpoint) error { panic("Unexpected") })
 	bus.AddHandler("client", func(ctx context.Context, q *CreateCollectionEndpoint) error { panic("Unexpected") })
 	bus.AddHandler("client", func(ctx context.Context, q *DeleteCollectionEndpoint) error { panic("Unexpected") })
@@ -273,8 +277,36 @@ func (c *ShopClient) RegisterShop(ctx context.Context, in *shop.RegisterShopRequ
 	newNode.Error = err
 	return resp, err
 }
+func (c *ShopClient) RequestVerifyExternalAccountAhamove(ctx context.Context, in *cm.Empty) (*cm.UpdatedResponse, error) {
+	resp, err := c._AccountService.RequestVerifyExternalAccountAhamove(ctx, in)
+
+	node, ok := ctx.(*bus.NodeContext)
+	if !ok {
+		return resp, err
+	}
+	newNode := node.WithMessage(map[string]interface{}{
+		"Request": in,
+		"Result":  resp,
+	})
+	newNode.Error = err
+	return resp, err
+}
 func (c *ShopClient) SetDefaultAddress(ctx context.Context, in *etop.SetDefaultAddressRequest) (*cm.UpdatedResponse, error) {
 	resp, err := c._AccountService.SetDefaultAddress(ctx, in)
+
+	node, ok := ctx.(*bus.NodeContext)
+	if !ok {
+		return resp, err
+	}
+	newNode := node.WithMessage(map[string]interface{}{
+		"Request": in,
+		"Result":  resp,
+	})
+	newNode.Error = err
+	return resp, err
+}
+func (c *ShopClient) UpdateExternalAccountAhamoveVerificationImages(ctx context.Context, in *shop.UpdateXAccountAhamoveVerificationImagesRequest) (*cm.UpdatedResponse, error) {
+	resp, err := c._AccountService.UpdateExternalAccountAhamoveVerificationImages(ctx, in)
 
 	node, ok := ctx.(*bus.NodeContext)
 	if !ok {
@@ -1279,7 +1311,9 @@ func NewShopServer(mux Muxer, hooks *twirp.ServerHooks) {
 	bus.Expect(&GetBalanceShopEndpoint{})
 	bus.Expect(&GetExternalAccountAhamoveEndpoint{})
 	bus.Expect(&RegisterShopEndpoint{})
+	bus.Expect(&RequestVerifyExternalAccountAhamoveEndpoint{})
 	bus.Expect(&SetDefaultAddressEndpoint{})
+	bus.Expect(&UpdateExternalAccountAhamoveVerificationImagesEndpoint{})
 	bus.Expect(&UpdateShopEndpoint{})
 	bus.Expect(&CreateCollectionEndpoint{})
 	bus.Expect(&DeleteCollectionEndpoint{})
@@ -1649,6 +1683,50 @@ func (s AccountService) RegisterShop(ctx context.Context, req *shop.RegisterShop
 	return resp, err
 }
 
+type RequestVerifyExternalAccountAhamoveEndpoint struct {
+	*cm.Empty
+	Result  *cm.UpdatedResponse
+	Context ShopClaim
+}
+
+func (s AccountService) RequestVerifyExternalAccountAhamove(ctx context.Context, req *cm.Empty) (resp *cm.UpdatedResponse, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "shop.Account/RequestVerifyExternalAccountAhamove"
+	defer func() {
+		recovered := recover()
+		err = cmWrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
+	}()
+	defer cmWrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:     ctx,
+		RequireAuth: true,
+		RequireShop: true,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &RequestVerifyExternalAccountAhamoveEndpoint{Empty: req}
+	query.Context.Claim = session.Claim
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = bus.Dispatch(ctx, query)
+	resp = query.Result
+	if err == nil {
+		if resp == nil {
+			return nil, common.Error(common.Internal, "", nil).Log("nil response")
+		}
+		errs = cmWrapper.HasErrors(resp)
+	}
+	return resp, err
+}
+
 type SetDefaultAddressEndpoint struct {
 	*etop.SetDefaultAddressRequest
 	Result  *cm.UpdatedResponse
@@ -1685,6 +1763,50 @@ func (s AccountService) SetDefaultAddress(ctx context.Context, req *etop.SetDefa
 	if !session.IsOwner && permission.MaxRoleLevel(session.Roles) < 2 {
 		return nil, common.ErrPermissionDenied
 	}
+	ctx = bus.NewRootContext(ctx)
+	err = bus.Dispatch(ctx, query)
+	resp = query.Result
+	if err == nil {
+		if resp == nil {
+			return nil, common.Error(common.Internal, "", nil).Log("nil response")
+		}
+		errs = cmWrapper.HasErrors(resp)
+	}
+	return resp, err
+}
+
+type UpdateExternalAccountAhamoveVerificationImagesEndpoint struct {
+	*shop.UpdateXAccountAhamoveVerificationImagesRequest
+	Result  *cm.UpdatedResponse
+	Context ShopClaim
+}
+
+func (s AccountService) UpdateExternalAccountAhamoveVerificationImages(ctx context.Context, req *shop.UpdateXAccountAhamoveVerificationImagesRequest) (resp *cm.UpdatedResponse, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "shop.Account/UpdateExternalAccountAhamoveVerificationImages"
+	defer func() {
+		recovered := recover()
+		err = cmWrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
+	}()
+	defer cmWrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:     ctx,
+		RequireAuth: true,
+		RequireShop: true,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &UpdateExternalAccountAhamoveVerificationImagesEndpoint{UpdateXAccountAhamoveVerificationImagesRequest: req}
+	query.Context.Claim = session.Claim
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
 	err = bus.Dispatch(ctx, query)
 	resp = query.Result

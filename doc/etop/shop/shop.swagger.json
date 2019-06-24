@@ -145,6 +145,32 @@
         ]
       }
     },
+    "/api/shop.Account/RequestVerifyExternalAccountAhamove": {
+      "post": {
+        "operationId": "RequestVerifyExternalAccountAhamove",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/cmUpdatedResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/cmEmpty"
+            }
+          }
+        ],
+        "tags": [
+          "Account"
+        ]
+      }
+    },
     "/api/shop.Account/SetDefaultAddress": {
       "post": {
         "operationId": "SetDefaultAddress",
@@ -163,6 +189,32 @@
             "required": true,
             "schema": {
               "$ref": "#/definitions/etopSetDefaultAddressRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Account"
+        ]
+      }
+    },
+    "/api/shop.Account/UpdateExternalAccountAhamoveVerificationImages": {
+      "post": {
+        "operationId": "UpdateExternalAccountAhamoveVerificationImages",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/cmUpdatedResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/shopUpdateXAccountAhamoveVerificationImagesRequest"
             }
           }
         ],
@@ -6456,6 +6508,24 @@
           "items": {
             "$ref": "#/definitions/cmError"
           }
+        }
+      }
+    },
+    "shopUpdateXAccountAhamoveVerificationImagesRequest": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "id_card_front_img": {
+          "type": "string"
+        },
+        "id_card_back_img": {
+          "type": "string"
+        },
+        "portrait_img": {
+          "type": "string"
         }
       }
     },

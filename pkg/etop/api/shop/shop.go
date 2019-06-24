@@ -3,6 +3,8 @@ package shop
 import (
 	"context"
 
+	"github.com/asaskevich/govalidator"
+
 	"etop.vn/backend/pkg/etop/api"
 
 	"etop.vn/api/main/address"
@@ -84,6 +86,18 @@ func init() {
 	bus.AddHandler("api", GetNotifications)
 	bus.AddHandler("api", GetNotification)
 	bus.AddHandler("api", UpdateNotifications)
+
+	bus.AddHandler("api", GetShipnowFulfillment)
+	bus.AddHandler("api", GetShipnowFulfillments)
+	bus.AddHandler("api", CreateShipnowFulfillment)
+	bus.AddHandler("api", ConfirmShipnowFulfillment)
+	bus.AddHandler("api", UpdateShipnowFulfillment)
+	bus.AddHandler("api", CancelShipnowFulfillment)
+	bus.AddHandler("api", GetShipnowServices)
+	bus.AddHandler("api", CreateExternalAccountAhamove)
+	bus.AddHandler("api", GetExternalAccountAhamove)
+	bus.AddHandler("api", RequestVerifyExternalAccountAhamove)
+	bus.AddHandler("api", UpdateExternalAccountAhamoveVerificationImages)
 }
 
 const PrefixIdemp = "IdempOrder"
@@ -944,69 +958,69 @@ func GetExternalAccountAhamove(ctx context.Context, q *wrapshop.GetExternalAccou
 	return nil
 }
 
-// func RequestVerifyExternalAccountAhamove(ctx context.Context, q *wrapshop.RequestVerifyExternalAccountAhamoveEndpoint) error {
-// 	query := &model.GetUserByIDQuery{
-// 		UserID: q.Context.Shop.OwnerID,
-// 	}
-// 	if err := bus.Dispatch(ctx, query); err != nil {
-// 		return err
-// 	}
-// 	user := query.Result
-// 	phone := user.Phone
-//
-// 	cmd := &identity.RequestVerifyExternalAccountAhamoveCommand{
-// 		OwnerID: user.ID,
-// 		Phone:   phone,
-// 	}
-// 	if err := identityAggr.Dispatch(ctx, cmd); err != nil {
-// 		return err
-// 	}
-//
-// 	q.Result = &pbcm.UpdatedResponse{
-// 		Updated: 1,
-// 	}
-// 	return nil
-// }
-//
-// func UpdateExternalAccountAhamoveVerificationImages(ctx context.Context, r *wrapshop.UpdateExternalAccountAhamoveVerificationImagesEndpoint) error {
-// 	if err := validateImagesUrl(r.IdCardFrontImg, r.IdCardBackImg, r.PortraitImg); err != nil {
-// 		return err
-// 	}
-//
-// 	query := &model.GetUserByIDQuery{
-// 		UserID: r.Context.Shop.OwnerID,
-// 	}
-// 	if err := bus.Dispatch(ctx, query); err != nil {
-// 		return err
-// 	}
-// 	user := query.Result
-// 	phone := user.Phone
-//
-// 	cmd := &identity.UpdateExternalAccountAhamoveVerificationImagesCommand{
-// 		OwnerID:        user.ID,
-// 		Phone:          phone,
-// 		IDCardFrontImg: r.IdCardFrontImg,
-// 		IDCardBackImg:  r.IdCardBackImg,
-// 		PortraitImg:    r.PortraitImg,
-// 	}
-// 	if err := identityAggr.Dispatch(ctx, cmd); err != nil {
-// 		return err
-// 	}
-//
-// 	r.Result = &pbcm.UpdatedResponse{
-// 		Updated: 1,
-// 	}
-// 	return nil
-// }
-//
-// func validateImagesUrl(imgsUrl ...string) error {
-// 	for _, url := range imgsUrl {
-// 		if url == "" {
-// 			continue
-// 		}
-// 		if !govalidator.IsURL(url) {
-// 			return cm.Errorf(cm.InvalidArgument, nil, "Invalid url: %v", url)
-// 		}
-// 	}
-// 	return nil
-// }
+func RequestVerifyExternalAccountAhamove(ctx context.Context, q *wrapshop.RequestVerifyExternalAccountAhamoveEndpoint) error {
+	query := &model.GetUserByIDQuery{
+		UserID: q.Context.Shop.OwnerID,
+	}
+	if err := bus.Dispatch(ctx, query); err != nil {
+		return err
+	}
+	user := query.Result
+	phone := user.Phone
+
+	cmd := &identity.RequestVerifyExternalAccountAhamoveCommand{
+		OwnerID: user.ID,
+		Phone:   phone,
+	}
+	if err := identityAggr.Dispatch(ctx, cmd); err != nil {
+		return err
+	}
+
+	q.Result = &pbcm.UpdatedResponse{
+		Updated: 1,
+	}
+	return nil
+}
+
+func UpdateExternalAccountAhamoveVerificationImages(ctx context.Context, r *wrapshop.UpdateExternalAccountAhamoveVerificationImagesEndpoint) error {
+	if err := validateImagesUrl(r.IdCardFrontImg, r.IdCardBackImg, r.PortraitImg); err != nil {
+		return err
+	}
+
+	query := &model.GetUserByIDQuery{
+		UserID: r.Context.Shop.OwnerID,
+	}
+	if err := bus.Dispatch(ctx, query); err != nil {
+		return err
+	}
+	user := query.Result
+	phone := user.Phone
+
+	cmd := &identity.UpdateExternalAccountAhamoveVerificationImagesCommand{
+		OwnerID:        user.ID,
+		Phone:          phone,
+		IDCardFrontImg: r.IdCardFrontImg,
+		IDCardBackImg:  r.IdCardBackImg,
+		PortraitImg:    r.PortraitImg,
+	}
+	if err := identityAggr.Dispatch(ctx, cmd); err != nil {
+		return err
+	}
+
+	r.Result = &pbcm.UpdatedResponse{
+		Updated: 1,
+	}
+	return nil
+}
+
+func validateImagesUrl(imgsUrl ...string) error {
+	for _, url := range imgsUrl {
+		if url == "" {
+			continue
+		}
+		if !govalidator.IsURL(url) {
+			return cm.Errorf(cm.InvalidArgument, nil, "Invalid url: %v", url)
+		}
+	}
+	return nil
+}
