@@ -584,11 +584,14 @@ func marshal(v interface{}) []byte {
 }
 
 func ErrorCode(err error) Code {
-	if err == nil || reflect.ValueOf(err).IsNil() {
+	if err == nil {
 		return NoError
 	}
 	if err, ok := err.(*APIError); ok {
 		return err.Code
+	}
+	if v := reflect.ValueOf(err); v.Kind() == reflect.Ptr && v.IsNil() {
+		return NoError
 	}
 	return Unknown
 }
