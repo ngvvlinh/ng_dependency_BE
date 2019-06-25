@@ -111,10 +111,10 @@ var addressQuery address.QueryBus
 var shippingCtrl *shipping_provider.ProviderManager
 var catalogQuery catalog.QueryBus
 
-func Init(catalogQueryBus catalog.QueryBus, shipnow shipnow.CommandBus, shipnowQS shipnow.QueryBus, identity identity.CommandBus, identityQS identity.QueryBus, addressQS address.QueryBus, shippingCtrl *shipping_provider.ProviderManager, sd cmservice.Shutdowner, rd redis.Store) {
+func Init(catalogQueryBus catalog.QueryBus, shipnow shipnow.CommandBus, shipnowQS shipnow.QueryBus, identity identity.CommandBus, identityQS identity.QueryBus, addressQS address.QueryBus, providerManager *shipping_provider.ProviderManager, sd cmservice.Shutdowner, rd redis.Store) {
 	idempgroup = idemp.NewRedisGroup(rd, PrefixIdemp, 5*60)
 	catalogQuery = catalogQueryBus
-	shippingCtrl = shippingCtrl
+	shippingCtrl = providerManager
 	shipnowAggr = shipnow
 	shipnowQuery = shipnowQS
 	identityAggr = identity

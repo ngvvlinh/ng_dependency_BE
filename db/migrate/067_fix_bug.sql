@@ -1,0 +1,1 @@
+ALTER TABLE variant ALTER COLUMN etop_status DROP NOT NULL;
