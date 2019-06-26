@@ -54,21 +54,22 @@ func PbShopVariants(items []*catalog.ShopVariantExtended) []*pbshop.ShopVariant 
 
 func PbShopVariant(m *catalog.ShopVariantExtended) *pbshop.ShopVariant {
 	sv := m.ShopVariant
+	v := m.Variant
 	res := &pbshop.ShopVariant{
-		Id:           sv.VariantID,
+		Id:           v.ID,
 		Info:         PbEtopVariant(m.Variant),
 		Code:         m.ShopVariant.Code,
 		EdCode:       m.ShopVariant.Code,
-		Name:         sv.Name,
-		Description:  sv.Description,
-		ShortDesc:    sv.ShortDesc,
-		DescHtml:     sv.DescHTML,
-		ImageUrls:    sv.ImageURLs,
+		Name:         coalesce(sv.Name, v.Name),
+		Description:  coalesce(sv.Description, v.Description),
+		ShortDesc:    coalesce(sv.ShortDesc, v.ShortDesc),
+		DescHtml:     coalesce(sv.DescHTML, v.DescHTML),
+		ImageUrls:    coalesceStrings(sv.ImageURLs, v.ImageURLs),
 		Tags:         nil,
 		Note:         sv.Note,
 		Status:       pbs3.Pb(model.Status3(sv.Status)),
 		ListPrice:    int32(m.ShopVariant.ListPrice),
-		RetailPrice:  int32(sv.RetailPrice),
+		RetailPrice:  coalesceInt32(int32(sv.RetailPrice), v.RetailPrice),
 		CostPrice:    int32(m.ShopVariant.CostPrice),
 		CollectionId: sv.CollectionID,
 		Attributes:   convertpb.PbAttributes(m.Attributes),
@@ -119,11 +120,11 @@ func PbShopProductsWithVariants(items []*catalog.ShopProductWithVariants) []*pbs
 func PbShopProductWithVariants(m *catalog.ShopProductWithVariants) *pbshop.ShopProduct {
 	res := &pbshop.ShopProduct{
 		Id:              m.ShopProduct.ProductID,
-		Name:            m.ShopProduct.Name,
-		Description:     m.ShopProduct.Description,
-		DescHtml:        m.ShopProduct.DescHTML,
-		ShortDesc:       m.ShopProduct.ShortDesc,
-		ImageUrls:       m.ShopProduct.ImageURLs,
+		Name:            coalesce(m.ShopProduct.Name, m.Product.Name),
+		Description:     coalesce(m.ShopProduct.Description, m.Product.Description),
+		DescHtml:        coalesce(m.ShopProduct.DescHTML, m.Product.DescHTML),
+		ShortDesc:       coalesce(m.ShopProduct.ShortDesc, m.Product.ShortDesc),
+		ImageUrls:       coalesceStrings(m.ShopProduct.ImageURLs, m.Product.ImageURLs),
 		Status:          pbs3.Pb(model.Status3(m.ShopProduct.Status)),
 		Tags:            m.ShopProduct.Tags,
 		CollectionIds:   m.ShopProduct.CollectionIDs,
