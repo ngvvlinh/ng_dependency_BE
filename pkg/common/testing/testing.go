@@ -181,18 +181,17 @@ func ShouldResembleSlice(actual interface{}, expected ...interface{}) string {
 
 // ShouldDeepEqual ...
 func ShouldDeepEqual(actual interface{}, expected ...interface{}) string {
-	res := convey.ShouldResemble(actual, expected...)
-	if res == "" {
+	diff := deep.Equal(expected[0], actual)
+	if len(diff) == 0 {
 		return ""
 	}
 
-	const msg = "Expected: '%v'\nActual:   '%v'\n(Should deep equal: %v)!"
-
-	diff := deep.Equal(expected[0], actual)
 	format := "Not match %d items: %v"
 	if len(diff) == 1 {
 		format = "Not match %d item: %v"
 	}
+
+	const msg = "Expected: '%v'\nActual:   '%v'\n(Should deep equal: %v)!"
 	return fmt.Sprintf(msg, l.Dump(expected[0]), l.Dump(actual),
 		fmt.Sprintf(format, len(diff), l.Dump(diff)),
 	)

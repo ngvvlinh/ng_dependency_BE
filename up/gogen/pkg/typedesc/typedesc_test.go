@@ -45,7 +45,7 @@ func init() {
 	}
 
 	for ident, obj := range typeInfo.Defs {
-		if ident.Name != "test" {
+		if ident.Name != "test" && obj != nil {
 			typeByIdent[ident.Name] = obj.Type()
 		}
 	}
