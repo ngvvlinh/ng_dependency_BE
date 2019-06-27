@@ -80,7 +80,7 @@ func Default() Config {
 	cfg := Config{
 		Postgres:         cc.DefaultPostgres(),
 		PostgresNotifier: cc.DefaultPostgres(),
-		PostgresLogs:     cc.DefaultPostgresEtopLog(),
+		PostgresLogs:     cc.DefaultPostgres(),
 		Redis:            cc.DefaultRedis(),
 		HTTP:             cc.HTTP{Port: 8080},
 		Upload: Upload{

@@ -28,11 +28,9 @@ func TestProvinceCode(t *testing.T) {
 			}
 
 			query := &location.FindLocationQuery{Province: province}
-			loc := query.Result
 			err := locationBus.Dispatch(context.Background(), query)
 			require.NoError(t, err)
-			require.NotNil(t, query.Result, "Not found: %v", p)
-			require.Equal(t, loc.Province.Code, p.MaTinh)
+			require.Equal(t, query.Result.Province.Code, p.MaTinh)
 			mapProvinces[p.MaTinh] = true
 		}
 	})

@@ -4,8 +4,8 @@ import (
 	"encoding/json"
 	"time"
 
-	"etop.vn/backend/cmd/etop-server/config"
 	"etop.vn/backend/pkg/common/cmsql"
+	cc "etop.vn/backend/pkg/common/config"
 )
 
 func init() {
@@ -13,12 +13,12 @@ func init() {
 }
 
 func InitTest() {
-	cfg := config.DefaultTest()
-	engine, err := cmsql.Connect(cmsql.ConfigPostgres(cfg.Postgres))
+	engine, err := cmsql.Connect(cc.DefaultPostgres())
 	if err != nil {
 		panic(err)
 	}
 	Init(engine)
+	x = engine
 
 	MustExec("SELECT 1")
 }

@@ -75,7 +75,7 @@ func TestRawJSONObject(t *testing.T) {
 
 		v.Object = nil
 		err := jSON.Unmarshal([]byte(data), &v)
-		assert.EqualError(t, err, "Expect JSON object")
+		assert.EqualError(t, err, "expect JSON object")
 	})
 
 	t.Run("Unmarshal undefined", func(t *testing.T) {

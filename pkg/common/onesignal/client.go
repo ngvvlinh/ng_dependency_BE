@@ -9,10 +9,8 @@ import (
 	"net/url"
 	"time"
 
-	resty "gopkg.in/resty.v1"
-
-	"etop.vn/backend/pkg/etop/model"
 	"github.com/gorilla/schema"
+	resty "gopkg.in/resty.v1"
 
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/httpreq"
@@ -84,7 +82,7 @@ func (c *Client) sendGetRequest(ctx context.Context, path string, req interface{
 	res, err := c.rclient.R().
 		SetQueryString(queryString.Encode()).
 		SetHeader("Authorization", fmt.Sprintf("Basic %v", c.apiKey)).
-		Get(model.URL(c.baseUrl, path))
+		Get(makeURL(c.baseUrl, path))
 	if err != nil {
 		return cm.Error(cm.ExternalServiceError, "Lỗi kết nối với Onesignal", err)
 	}
@@ -145,4 +143,8 @@ func handleResponse(res *resty.Response, result ResponseInterface, msg string) e
 	default:
 		return cm.Errorf(cm.ExternalServiceError, nil, "Lỗi không xác định từ Onesignal: Invalid status (%v).", status)
 	}
+}
+
+func makeURL(baseUrl, path string) string {
+	return baseUrl + path
 }

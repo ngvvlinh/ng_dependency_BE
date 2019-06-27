@@ -57,9 +57,8 @@ func TestModel(t *testing.T) {
 		Model        IModel
 		ExpectedCode cm.Code
 	}{
-		{&UserEvent{}, cm.NotFound},
-		{&SupplierEvent{}, cm.NotFound},
-		{&ShopEvent{}, cm.NotFound},
+		// {&UserEvent{}, cm.NotFound},
+		// {&ShopEvent{}, cm.NotFound},
 		{&ShopProductEvent{}, cm.NotFound},
 		{&OrderEvent{}, cm.NotFound},
 		{&FulfillmentEvent{}, cm.NotFound},

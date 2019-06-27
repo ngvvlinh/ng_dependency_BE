@@ -2,8 +2,13 @@ package main
 
 import (
 	"flag"
+	"io/ioutil"
 	"log"
-	"os/exec"
+	"os"
+	"path/filepath"
+	"strings"
+
+	"etop.vn/backend/pkg/common/bus"
 
 	"etop.vn/backend/cmd/etop-server/config"
 	"etop.vn/backend/pkg/common/cmsql"
@@ -18,16 +23,35 @@ var (
 	ll       = l.New()
 )
 
+type Content struct {
+	Path string
+	Body []byte
+}
+
 func main() {
 	flag.Parse()
 
 	projectPath := gen.ProjectPath()
-	sqlPath := projectPath + "/db/migrate/*.sql"
-	cmd := exec.Command("bash", "-c", "cat "+sqlPath)
-	output, err := cmd.CombinedOutput()
-	if err != nil {
-		log.Fatalln(err, string(output))
-	}
+	sqlPath := filepath.Join(projectPath, "/db/migrate")
+
+	var contents []Content
+	err := filepath.Walk(sqlPath, func(path string, info os.FileInfo, err error) error {
+		baseName := filepath.Base(path)
+		if strings.HasPrefix(baseName, "_") {
+			log.Println("Skipped file", baseName)
+			return nil
+		}
+		if !strings.HasSuffix(baseName, ".sql") {
+			log.Println("Skipped file", baseName)
+			return nil
+		}
+		body, err := ioutil.ReadFile(path)
+		if err != nil {
+			return err
+		}
+		contents = append(contents, Content{path, body})
+		return nil
+	})
 
 	cfg := config.DefaultTest().Postgres
 	cfg.Database = *flDBName
@@ -47,7 +71,20 @@ func main() {
 			GRANT ALL ON SCHEMA public TO public;
 `)
 	}
-	db.MustExec(string(output))
 
+	err = db.InTransaction(bus.Ctx(), func(tx cmsql.QueryInterface) error {
+		for _, content := range contents {
+			log.Println("--- Executing", content.Path)
+			_, err := tx.SQL(string(content.Body)).Exec()
+			if err != nil {
+				ll.Error("Error while executing", l.String("script", content.Path), l.Error(err))
+				return err
+			}
+		}
+		return nil
+	})
+	if err != nil {
+		os.Exit(1)
+	}
 	log.Println("Initialized database for testing")
 }

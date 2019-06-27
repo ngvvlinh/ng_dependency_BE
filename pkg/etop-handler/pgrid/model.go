@@ -12,7 +12,6 @@ import (
 var _ = selModel(
 	&UserEvent{},
 	&ShopEvent{},
-	&SupplierEvent{},
 	&ShopProductEvent{},
 	&OrderEvent{},
 	&FulfillmentEvent{},
@@ -70,35 +69,6 @@ JOIN history.fulfillment AS h
   ON h.id = f.id
 JOIN "order" AS o
   ON f.order_id = o.id
-`
-	m.Meta = ToMeta(event)
-	return db.SQL(sql).Where("h.rid = ?", event.RID).Get(m)
-}
-
-type SupplierEvent struct {
-	Meta
-	Time      time.Time `json:"_time"      sel:"h._time"`
-	CreatedAt time.Time `json:"created_at" sel:"s.created_at"`
-
-	ID       string `json:"id"        sel:"s.id"`
-	Name     string `json:"name"      sel:"s.name"`
-	ImageURL string `json:"image_url" sel:"s.image_url"`
-
-	OwnerID        string    `json:"owner_id"    sel:"u.id"`
-	OwnerFullName  string    `json:"owner_name"  sel:"u.full_name"`
-	OwnerShortName string    `json:"owner_name"  sel:"u.short_name"`
-	OwnerEmail     string    `json:"owner_email" sel:"u.email"`
-	OwnerPhone     string    `json:"owner_phone" sel:"u.phone"`
-	OwnerCreatedAt time.Time `json:"owner_created_at" sel:"u.created_at"`
-}
-
-func (m *SupplierEvent) Query(db cmsql.Database, event *pgevent.PgEvent) (bool, error) {
-	sql := `
-FROM supplier AS s
-JOIN history.supplier AS h
-  ON h.id = s.id
-JOIN "user" AS u
-  ON s.owner_id = u.id
 `
 	m.Meta = ToMeta(event)
 	return db.SQL(sql).Where("h.rid = ?", event.RID).Get(m)

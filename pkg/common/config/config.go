@@ -169,20 +169,6 @@ func DefaultPostgres() Postgres {
 	}
 }
 
-func DefaultPostgresEtopLog() Postgres {
-	return Postgres{
-		Protocol:       "",
-		Host:           "postgres",
-		Port:           5432,
-		Username:       "postgres",
-		Password:       "postgres",
-		Database:       "etop_log",
-		SSLMode:        "",
-		Timeout:        15,
-		GoogleAuthFile: "",
-	}
-}
-
 func PostgresMustLoadEnv(c *cmsql.ConfigPostgres, prefix ...string) {
 	p := "ET_POSTGRES"
 	if len(prefix) > 0 {

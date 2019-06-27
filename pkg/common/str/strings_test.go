@@ -29,7 +29,7 @@ func Test_toTitleNorm(t *testing.T) {
 	}{
 		{"HelloWorld", "HelloWorld"},
 		{"T3PL", "T3Pl"},
-		{"Name", "AccountId"},
+		{"AccountID", "AccountId"},
 		{"AccountIDs", "AccountIds"},
 		{"ImageURLs", "ImageUrls"},
 		{"HTML", "Html"},
@@ -57,7 +57,7 @@ func Test_toSnake(t *testing.T) {
 	}{
 		{"HelloWorld", "hello_world"},
 		{"T3PL", "t3pl"},
-		{"Name", "account_id"},
+		{"AccountID", "account_id"},
 		{"AccountIDs", "account_ids"},
 		{"HTML", "html"},
 		{"HTMLs", "htmls"},

@@ -59,30 +59,6 @@ func (_ *ShopEvent) SQLSelect(w SQLWriter) error {
 	return nil
 }
 
-func (m *SupplierEvent) SQLTableName() string { return "" }
-
-func (m *SupplierEvent) SQLScan(opts core.Opts, row *sql.Row) error {
-	args := []interface{}{
-		(*core.Time)(&m.Time),
-		(*core.Time)(&m.CreatedAt),
-		(*core.String)(&m.ID),
-		(*core.String)(&m.Name),
-		(*core.String)(&m.ImageURL),
-		(*core.String)(&m.OwnerID),
-		(*core.String)(&m.OwnerFullName),
-		(*core.String)(&m.OwnerShortName),
-		(*core.String)(&m.OwnerEmail),
-		(*core.String)(&m.OwnerPhone),
-		(*core.Time)(&m.OwnerCreatedAt),
-	}
-	return row.Scan(args...)
-}
-
-func (_ *SupplierEvent) SQLSelect(w SQLWriter) error {
-	w.WriteRawString(`SELECT h._time, s.created_at, s.id, s.name, s.image_url, u.id, u.full_name, u.short_name, u.email, u.phone, u.created_at`)
-	return nil
-}
-
 func (m *ShopProductEvent) SQLTableName() string { return "" }
 
 func (m *ShopProductEvent) SQLScan(opts core.Opts, row *sql.Row) error {

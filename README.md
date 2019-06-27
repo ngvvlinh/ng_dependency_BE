@@ -1,6 +1,6 @@
 # eTop Backend
 
-[![pipeline status](http://code.eyeteam.vn/nguyenmauquangvu/etop-go/badges/master/pipeline.svg)](http://code.eyeteam.vn/nguyenmauquangvu/etop-go/commits/master) [![coverage report](http://code.eyeteam.vn/nguyenmauquangvu/etop-go/badges/master/coverage.svg)](http://code.eyeteam.vn/nguyenmauquangvu/etop-go/commits/master)
+[![pipeline status](http://code.eyeteam.vn/etop-backend/backend/badges/master/pipeline.svg)](http://code.eyeteam.vn/etop-backend/backend/commits/master) [![coverage report](http://code.eyeteam.vn/etop-backend/backend/badges/master/coverage.svg)](http://code.eyeteam.vn/etop-backend/backend/commits/master)
 
 ## Quick Start
 
@@ -43,7 +43,6 @@ To view API documentation, open these URLs in browser:
 
 - [http://localhost:8080/doc/admin](http://localhost:8080/doc/admin)
 - [http://localhost:8080/doc/shop](http://localhost:8080/doc/shop)
-- [http://localhost:8080/doc/supplier](http://localhost:8080/doc/supplier)
 
 ## Development
 

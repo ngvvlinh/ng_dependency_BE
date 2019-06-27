@@ -4,6 +4,8 @@ import (
 	"context"
 	"testing"
 
+	"etop.vn/backend/pkg/common/bus"
+
 	. "github.com/smartystreets/goconvey/convey"
 
 	"etop.vn/backend/pkg/common/cmsql"
@@ -34,7 +36,7 @@ func TestGenerateCodeWithinTransaction(t *testing.T) {
 				return "ABC"
 			}
 
-			err := x.InTransaction(func(x cmsql.QueryInterface) error {
+			err := x.InTransaction(bus.Ctx(), func(x cmsql.QueryInterface) error {
 				code, err := generateCode(ctx, x, model.CodeTypeShop, fn)
 				So(err, ShouldBeNil)
 				So(code, ShouldEqual, "ABC")
@@ -54,7 +56,7 @@ func TestGenerateCodeWithinTransaction(t *testing.T) {
 			fn := func() string {
 				return "123" // always duplicate
 			}
-			err := x.InTransaction(func(x cmsql.QueryInterface) error {
+			err := x.InTransaction(bus.Ctx(), func(x cmsql.QueryInterface) error {
 				_, err := generateCode(ctx, x, model.CodeTypeShop, fn)
 				return err
 			})

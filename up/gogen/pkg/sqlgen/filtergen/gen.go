@@ -208,7 +208,7 @@ func (g *Gen) Generate() {
 		return
 	}
 	if !fi.IsDir() {
-		panic(fmt.Sprint("%v is not a directory", sqlstorePath))
+		panic(fmt.Sprintf("%v is not a directory", sqlstorePath))
 	}
 
 	filePath := filepath.Join(sqlstorePath, "filters.gen.go")

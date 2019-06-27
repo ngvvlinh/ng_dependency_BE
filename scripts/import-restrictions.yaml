@@ -14,12 +14,6 @@
   - etop.vn/backend/pkg/common
   - etop.vn/backend/pkg/etop/authorize/tokens
 
-- baseImportPath: "./cmd/etop-exporter"
-  allowedImports:
-  - etop.vn/backend/cmd/etop-exporter
-  - etop.vn/backend/pkg/common
-  - etop.vn/backend/pkg/etop/model
-
 - baseImportPath: "./pkg/common"
   ignoredSubTrees:
   - "./pkg/common/httpx"

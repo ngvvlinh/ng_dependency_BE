@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
-set -eo pipefail
+set -eox pipefail
 
 BACKEND=$(dirname "${BASH_SOURCE}")/..
 source "${BACKEND}/scripts/lib/init.sh"
 
-importverifier=$(::get cmd k8s.io/kubernetes/cmd/importverifier)
+importverifier=$(::get cmd etop.vn/backend/scripts/cmd/importverifier)
 verifyimports=$(::get cmd etop.vn/backend/scripts/cmd/verify-imports)
 
 "$importverifier" "etop.vn/backend/" "${BACKEND}/scripts/import-restrictions.yaml"

@@ -11,9 +11,11 @@ import (
 
 type A = []interface{}
 
+var prefixUser = `"user"`
+
 func byID(ID int64) *ColumnFilter {
 	return &ColumnFilter{
-		Prefix: `"user"`,
+		Prefix: &prefixUser,
 		Column: "id",
 		Value:  ID,
 		IsNil:  ID == 0,
@@ -22,7 +24,7 @@ func byID(ID int64) *ColumnFilter {
 
 func byIDPtr(ID *int64) *ColumnFilterPtr {
 	return &ColumnFilterPtr{
-		Prefix: `"user"`,
+		Prefix: &prefixUser,
 		Column: "id",
 		Value:  ID,
 		IsNil:  ID == nil,
