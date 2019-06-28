@@ -20,7 +20,7 @@ type (
 )
 
 type ShippingService struct {
-	Code          string
+	Code          string // SGN-BIKE
 	Name          string
 	MinStopPoints int
 	MaxStopPoints int
@@ -182,13 +182,17 @@ func ToService(service *ahamoveClient.ServiceType) *ShippingService {
 	if service == nil {
 		return nil
 	}
+	city, _, err := ParseInfoAhamoveServiceCode(service.ID)
+	if err != nil {
+		return nil
+	}
 
 	return &ShippingService{
-		Code:          service.ID,
+		Code:          service.ID, // keep the original service code
 		Name:          service.NameViVn,
 		MinStopPoints: 1,
 		MaxStopPoints: service.MaxStopPoints,
-		City:          CityCode(service.CityID),
+		City:          city,
 		Description:   service.DescriptionViVn,
 	}
 }
@@ -236,5 +240,11 @@ func ParseInfoAhamoveServiceCode(code string) (CityCode, ServiceCode, error) {
 		return "", "", cm.Errorf(cm.InvalidArgument, nil, "Ahamove: Invalid service code")
 	}
 	city, code := arr[0], arr[1]
-	return CityCode(city), ServiceCode(code), nil
+
+	serviceCode := ServiceCode(code)
+	service := ServicesIndexCode[serviceCode]
+	if service == nil {
+		return "", "", cm.Errorf(cm.InvalidArgument, nil, "Ahamove: Invalid service code (%v)", serviceCode)
+	}
+	return CityCode(city), serviceCode, nil
 }
