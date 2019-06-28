@@ -1,7 +1,19 @@
 #!/usr/bin/env bash
+set -e
 
-packages="$(go list ./... | grep -v '/tests/')"
+repos="
+etop.vn/api/...
+etop.vn/apix/...
+etop.vn/apis/...
+etop.vn/backend/...
+etop.vn/common/...
+"
 
+go install ${repos}
+
+packages="$(go list ${repos} | grep -v '/tests/')"
+
+set +e
 master="$(echo $CI_COMMIT_REF_NAME | grep master)"
 cover="${COVER}${master}"
 

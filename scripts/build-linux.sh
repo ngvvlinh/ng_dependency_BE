@@ -8,7 +8,7 @@ function build() {
     NAME=$(echo $FILE | rev | cut -f1 -d'/' | rev)
     echo $NAME
     CGO_ENABLED=0 GOOS=linux go build \
-        -ldflags "-X etop.vn/backend/common.commit='${COMMIT}'" \
+        -ldflags "-X etop.vn/backend/pkg/common.commit='${COMMIT}'" \
         -o bin/$NAME $FILE
 }
 
