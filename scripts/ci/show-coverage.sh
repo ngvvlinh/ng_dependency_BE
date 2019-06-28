@@ -5,6 +5,7 @@ mode=atomic
 profile=artifacts/coverage/coverage.out
 output=artifacts/COVERAGE
 output_url=artifacts/COVERAGE_URL
+output_url_raw=artifacts/COVERAGE_URL_RAW
 output_html=artifacts/coverage.html
 
 mkdir -p artifacts/coverage
@@ -28,7 +29,8 @@ if [[ $# -gt 0 ]]; then
   go tool cover -html="$profile" -o "$output_html"
 
   if [[ -n "$CI_JOB_URL" ]]; then
-    echo "${CI_JOB_URL}/artifacts/browse/${output_html}" > "$output_url"
+    echo "${CI_JOB_URL}/artifacts/file/${output_html}" > "$output_url"
+    echo "${CI_JOB_URL}/artifacts/raw/${output_html}" > "$output_url_raw"
   fi
   echo COVERAGE: $(cat "$output")
 fi

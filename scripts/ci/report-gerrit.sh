@@ -34,7 +34,7 @@ else
   export verified="1"
   export message="Build successfully. See ${pipelines_url}"
   if [[ -f "artifacts/COVERAGE" ]] ; then
-    coverage_url="$(cat artifacts/COVERAGE_URL)"
+    coverage_url="$(head -1 artifacts/COVERAGE_URL)"
     export message="Build successfully with coverage $(cat artifacts/COVERAGE) See ${pipelines_url} and ${coverage_url}"
   fi
 fi
