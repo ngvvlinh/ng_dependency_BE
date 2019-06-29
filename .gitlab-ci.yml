@@ -24,7 +24,7 @@ report-gerrit-changes-running:
 build:
   stage: build
   tags: [go]
-  image: golang:1.12
+  image: olvrng/golang-toolbox
   services:
   - postgres:9.6-alpine
   - redis:alpine
@@ -35,22 +35,12 @@ build:
   - scripts/ci/test-all.sh
   - scripts/ci/cache-save.sh
   - touch artifacts/BUILD_SUCCESS
+  after_script:
+  - scripts/ci/report-gerrit.sh
   cache:
     key: "ci:build"
     paths:
     - .mod/
-  artifacts:
-    paths:
-    - artifacts/
-
-report-gerrit-changes:
-  stage: report
-  when: always
-  tags: [go]
-  image: olvrng/alpine-toolbox
-  before_script: []
-  script:
-  - scripts/ci/report-gerrit.sh
   artifacts:
     paths:
     - artifacts/

@@ -26,20 +26,22 @@ pipelines_url="${CI_PROJECT_URL}/commit/${revision}/pipelines (#${CI_PIPELINE_ID
 
 if [[ "$1" == "running" ]] ; then
   export verified=""
-  export message="Build running. See ${pipelines_url}"
+  export message="Build running on ${CI_COMMIT_REF_NAME}. See ${pipelines_url}"
+
 elif [[ ! -f "artifacts/BUILD_SUCCESS" ]] ; then
   export verified="-1"
-  export message="Build failure. See ${pipelines_url}"
+  export message="Build failure on ${CI_COMMIT_REF_NAME}. See ${pipelines_url}"
+
 else
   export verified="1"
-  export message="Build successfully. See ${pipelines_url}"
+  export message="Build successfully on ${CI_COMMIT_REF_NAME}. See ${pipelines_url}"
   if [[ -f "artifacts/COVERAGE" ]] ; then
     coverage_url="$(cat artifacts/ARTIFACTS_URL)/browse/artifacts/coverage/"
-    export message="Build successfully with coverage $(cat artifacts/COVERAGE) See ${pipelines_url} and ${coverage_url}"
+    export message="Build successfully on ${CI_COMMIT_REF_NAME} with coverage $(cat artifacts/COVERAGE) See ${pipelines_url} and ${coverage_url}"
   fi
 fi
 
-if [[ $(echo "$CI_COMIT_REF_NAME" | grep "^changes\/") ]]; then
+if [[ $(echo "$CI_COMMIT_REF_NAME" | grep "^changes\/") ]]; then
   scripts/ci/report-gerrit-review.sh
 else
   scripts/ci/report-gerrit-review.sh || true

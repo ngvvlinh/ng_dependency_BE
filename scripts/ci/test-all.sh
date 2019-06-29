@@ -19,13 +19,15 @@ etop.vn/common/...
 "
 
 go install ${repos}
+packages="$(go list ${repos} | grep -v '/tests/')"
 
 # execute tests in coverage mode in one of those conditions
 #   1. environment variable COVER is set
 #   2. branch name contains "master"
 #   3. commit message contains: "Flags: coverage"
+set +e
 cover="${COVER}$(check_branch master)$(check_flag coverage)"
-packages="$(go list ${repos} | grep -v '/tests/')"
+set -e
 
 if [[ -z "$cover" ]]; then
   go test -v -race ${packages}
