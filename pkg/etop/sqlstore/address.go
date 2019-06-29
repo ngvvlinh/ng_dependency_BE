@@ -90,22 +90,6 @@ func updateAddress(ctx context.Context, x Qx, cmd *model.UpdateAddressCommand) e
 		return cm.Error(cm.InvalidArgument, "Missing AddressID", nil)
 	}
 
-	// if address.ProvinceCode != "" {
-	// 	if err := location.CheckValidLocation(address.ProvinceCode, "province"); err != nil {
-	// 		return err
-	// 	}
-	// }
-	// if address.DistrictCode != "" {
-	// 	if err := location.CheckValidLocation(address.DistrictCode, "district"); err != nil {
-	// 		return err
-	// 	}
-	// }
-	// if address.WardCode != "" {
-	// 	if err := location.CheckValidLocation(address.WardCode, "ward"); err != nil {
-	// 		return err
-	// 	}
-	// }
-
 	if err := x.Table("address").
 		Where("id = ?", address.ID).
 		ShouldUpdate(address); err != nil {

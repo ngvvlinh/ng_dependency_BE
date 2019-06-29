@@ -306,7 +306,7 @@ func PbOrderAddress(m *ordermodel.OrderAddress) *OrderAddress {
 	}
 
 	if m.Coordinates != nil {
-		res.Coordinates = &Coordinates{
+		res.Coordinates = &etop.Coordinates{
 			Latitude:  m.Coordinates.Latitude,
 			Longitude: m.Coordinates.Longitude,
 		}

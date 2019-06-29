@@ -2,7 +2,6 @@ package api
 
 import (
 	"context"
-
 	"etop.vn/api/main/location"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/l"
@@ -162,8 +161,12 @@ func GetBranchesByBankProvince(ctx context.Context, q *wrapetop.GetBranchesByBan
 }
 
 func CreateAddress(ctx context.Context, q *wrapetop.CreateAddressEndpoint) error {
+	address, err := pbetop.PbCreateAddressToModel(q.Context.AccountID, q.CreateAddressRequest)
+	if err != nil {
+		return err
+	}
 	cmd := &model.CreateAddressCommand{
-		Address: pbetop.PbCreateAddressToModel(q.Context.AccountID, q.CreateAddressRequest),
+		Address: address,
 	}
 	if err := bus.Dispatch(ctx, cmd); err != nil {
 		return err
@@ -188,8 +191,12 @@ func GetAddresses(ctx context.Context, q *wrapetop.GetAddressesEndpoint) error {
 
 func UpdateAddress(ctx context.Context, q *wrapetop.UpdateAddressEndpoint) error {
 	accountID := q.Context.AccountID
+	address, err := pbetop.PbUpdateAddressToModel(accountID, q.UpdateAddressRequest)
+	if err != nil {
+		return err
+	}
 	cmd := &model.UpdateAddressCommand{
-		Address: pbetop.PbUpdateAddressToModel(accountID, q.UpdateAddressRequest),
+		Address: address,
 	}
 
 	if err := bus.Dispatch(ctx, cmd); err != nil {

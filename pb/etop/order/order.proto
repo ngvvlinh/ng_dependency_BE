@@ -211,13 +211,10 @@ message OrderAddress {
     optional string province_code    = 14 [(gogoproto.nullable)=false];
     optional string district_code    = 15 [(gogoproto.nullable)=false];
     optional string ward_code        = 16 [(gogoproto.nullable)=false];
-    optional Coordinates coordinates = 18;
+    optional etop.Coordinates coordinates = 18;
 }
 
-message Coordinates {
-    optional float latitude = 1 [(gogoproto.nullable) = false];
-    optional float longitude = 2 [(gogoproto.nullable) = false];
-}
+
 
 message OrderDiscount {
     optional string code  = 1 [(gogoproto.nullable)=false];

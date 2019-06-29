@@ -27,7 +27,10 @@ func RegisterShop(ctx context.Context, q *wrapshop.RegisterShopEndpoint) error {
 	if q.UrlSlug != "" && !validate.URLSlug(q.UrlSlug) {
 		return cm.Error(cm.InvalidArgument, "Thông tin url_slug không hợp lệ. Vui lòng kiểm tra lại.", nil)
 	}
-
+	address, err := q.Address.ToModel()
+	if err != nil {
+		return err
+	}
 	cmd := &model.CreateShopCommand{
 		Name:                        q.Name,
 		OwnerID:                     q.Context.UserID,
@@ -36,7 +39,7 @@ func RegisterShop(ctx context.Context, q *wrapshop.RegisterShopEndpoint) error {
 		WebsiteURL:                  q.WebsiteUrl,
 		ImageURL:                    q.ImageUrl,
 		Email:                       q.Email,
-		Address:                     q.Address.ToModel(),
+		Address:                     address,
 		AutoCreateFFM:               true,
 		URLSlug:                     q.UrlSlug,
 		IsTest:                      q.Context.User.IsTest != 0,
@@ -81,6 +84,10 @@ func UpdateShop(ctx context.Context, q *wrapshop.UpdateShopEndpoint) error {
 		}
 	}
 
+	address, err := q.Address.ToModel()
+	if err != nil {
+		return err
+	}
 	cmd := &model.UpdateShopCommand{
 		Shop: &model.Shop{
 			ID:                            q.Context.Shop.ID,
@@ -90,7 +97,7 @@ func UpdateShop(ctx context.Context, q *wrapshop.UpdateShopEndpoint) error {
 			WebsiteURL:                    q.WebsiteUrl,
 			ImageURL:                      q.ImageUrl,
 			Email:                         q.Email,
-			Address:                       q.Address.ToModel(),
+			Address:                       address,
 			AutoCreateFFM:                 q.AutoCreateFfm,
 			TryOn:                         q.TryOn.ToModel(),
 			GhnNoteCode:                   q.GhnNoteCode.ToModel(),

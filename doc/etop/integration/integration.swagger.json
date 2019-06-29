@@ -308,6 +308,9 @@
         },
         "notes": {
           "$ref": "#/definitions/etopAddressNote"
+        },
+        "coordinates": {
+          "$ref": "#/definitions/etopCoordinates"
         }
       }
     },
@@ -325,6 +328,19 @@
         },
         "other": {
           "type": "string"
+        }
+      }
+    },
+    "etopCoordinates": {
+      "type": "object",
+      "properties": {
+        "latitude": {
+          "type": "number",
+          "format": "float"
+        },
+        "longitude": {
+          "type": "number",
+          "format": "float"
         }
       }
     },

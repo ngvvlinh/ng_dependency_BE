@@ -1669,6 +1669,9 @@
         },
         "notes": {
           "$ref": "#/definitions/etopAddressNote"
+        },
+        "coordinates": {
+          "$ref": "#/definitions/etopCoordinates"
         }
       }
     },
@@ -1743,6 +1746,19 @@
         },
         "email": {
           "type": "string"
+        }
+      }
+    },
+    "etopCoordinates": {
+      "type": "object",
+      "properties": {
+        "latitude": {
+          "type": "number",
+          "format": "float"
+        },
+        "longitude": {
+          "type": "number",
+          "format": "float"
         }
       }
     },
@@ -2243,19 +2259,6 @@
         },
         "value": {
           "type": "string"
-        }
-      }
-    },
-    "orderCoordinates": {
-      "type": "object",
-      "properties": {
-        "latitude": {
-          "type": "number",
-          "format": "float"
-        },
-        "longitude": {
-          "type": "number",
-          "format": "float"
         }
       }
     },
@@ -3166,7 +3169,7 @@
           "type": "string"
         },
         "coordinates": {
-          "$ref": "#/definitions/orderCoordinates"
+          "$ref": "#/definitions/etopCoordinates"
         }
       }
     },

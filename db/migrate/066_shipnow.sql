@@ -24,6 +24,7 @@ CREATE TABLE shipnow_fulfillment (
 );
 
 ALTER TABLE address ADD COLUMN coordinates JSONB;
+ALTER TABLE history.address ADD COLUMN coordinates JSONB;
 
 ALTER TABLE shipnow_fulfillment
     ADD COLUMN confirm_status INT,

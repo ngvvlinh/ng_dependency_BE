@@ -1,6 +1,7 @@
 package etop
 
 import (
+	"context"
 	"etop.vn/api/main/location"
 	"etop.vn/backend/pb/common"
 	"etop.vn/backend/pb/etop/etc/address_type"
@@ -8,10 +9,14 @@ import (
 	pbs3 "etop.vn/backend/pb/etop/etc/status3"
 	"etop.vn/backend/pb/etop/etc/try_on"
 	"etop.vn/backend/pb/etop/etc/user_source"
+	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/backend/pkg/integration/bank"
 	notimodel "etop.vn/backend/pkg/notifier/model"
+	servicelocation "etop.vn/backend/pkg/services/location"
 )
+
+var locationBus = servicelocation.New().MessageBus()
 
 func (m *CreateUserRequest) Censor() {
 	if m.Password != "" {
@@ -78,11 +83,11 @@ func (b *BankAccount) ToModel() *model.BankAccount {
 	}
 }
 
-func (a *Address) ToModel() *model.Address {
+func (a *Address) ToModel() (*model.Address, error) {
 	if a == nil {
-		return nil
+		return nil, nil
 	}
-	return &model.Address{
+	res := &model.Address{
 		ID:           a.Id,
 		Province:     a.Province,
 		ProvinceCode: a.ProvinceCode,
@@ -98,7 +103,40 @@ func (a *Address) ToModel() *model.Address {
 		Phone:        a.Phone,
 		Position:     a.Position,
 		Email:        a.Email,
+		Notes: PbAddressNoteToModel(a.Notes),
+		Type: a.Type.ToModel(),
 	}
+	locationQuery := &location.FindOrGetLocationQuery{
+		ProvinceCode: a.ProvinceCode,
+		DistrictCode: a.DistrictCode,
+		WardCode:     a.WardCode,
+		Province:     a.Province,
+		District:     a.District,
+		Ward:         a.Ward,
+	}
+	if err := locationBus.Dispatch(context.TODO(), locationQuery); err != nil {
+		return nil, err
+	}
+	loc := locationQuery.Result
+	if loc.Province == nil || loc.District == nil {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "Cần cung cấp thông tin tỉnh/thành phố và quận/huyện")
+	}
+
+	res.Province = loc.Province.Name
+	res.ProvinceCode = loc.Province.Code
+	res.District = loc.District.Name
+	res.DistrictCode = loc.District.Code
+	if loc.Ward != nil {
+		res.Ward = loc.Ward.Name
+		res.WardCode = loc.Ward.Code
+	}
+	if a.Coordinates != nil {
+		res.Coordinates = &model.Coordinates{
+			Latitude:  a.Coordinates.Latitude,
+			Longitude: a.Coordinates.Longitude,
+		}
+	}
+	return res, nil
 }
 
 func PbUser(m *model.User) *User {
@@ -422,7 +460,7 @@ func PbAddress(a *model.Address) *Address {
 	if a == nil {
 		return nil
 	}
-	return &Address{
+	res := &Address{
 		Id:           a.ID,
 		Province:     a.Province,
 		ProvinceCode: a.ProvinceCode,
@@ -443,6 +481,13 @@ func PbAddress(a *model.Address) *Address {
 		Type:         address_type.PbType(a.Type),
 		Notes:        PbAddressNote(a.Notes),
 	}
+	if a.Coordinates != nil {
+		res.Coordinates = &Coordinates{
+			Latitude:  a.Coordinates.Latitude,
+			Longitude: a.Coordinates.Longitude,
+		}
+	}
+	return res
 }
 
 func PbBankAccount(b *model.BankAccount) *BankAccount {
@@ -531,8 +576,8 @@ func PbAddressNoteToModel(item *AddressNote) *model.AddressNote {
 	}
 }
 
-func PbCreateAddressToModel(accountID int64, p *CreateAddressRequest) *model.Address {
-	return &model.Address{
+func PbCreateAddressToModel(accountID int64, p *CreateAddressRequest) (*model.Address, error) {
+	address := &Address{
 		FullName:     p.FullName,
 		FirstName:    p.FirstName,
 		LastName:     p.LastName,
@@ -549,15 +594,20 @@ func PbCreateAddressToModel(accountID int64, p *CreateAddressRequest) *model.Add
 		WardCode:     p.WardCode,
 		Address1:     p.Address1,
 		Address2:     p.Address2,
-		Type:         p.Type.ToModel(),
-		AccountID:    accountID,
-		Notes:        PbAddressNoteToModel(p.Notes),
+		Type:         p.Type,
+		Notes: p.Notes,
+		Coordinates: p.Coordinates,
 	}
+	res, err := address.ToModel()
+	if err != nil {
+		return nil, err
+	}
+	res.AccountID = accountID
+	return res, nil
 }
 
-func PbUpdateAddressToModel(accountID int64, p *UpdateAddressRequest) *model.Address {
-	return &model.Address{
-		ID:           p.Id,
+func PbUpdateAddressToModel(accountID int64, p *UpdateAddressRequest) (*model.Address, error) {
+	address := &Address{
 		FullName:     p.FullName,
 		FirstName:    p.FirstName,
 		LastName:     p.LastName,
@@ -574,10 +624,17 @@ func PbUpdateAddressToModel(accountID int64, p *UpdateAddressRequest) *model.Add
 		WardCode:     p.WardCode,
 		Address1:     p.Address1,
 		Address2:     p.Address2,
-		Type:         p.Type.ToModel(),
-		AccountID:    accountID,
-		Notes:        PbAddressNoteToModel(p.Notes),
+		Type:         p.Type,
+		Notes:        p.Notes,
+		Coordinates: p.Coordinates,
 	}
+	res, err := address.ToModel()
+	if err != nil {
+		return nil, err
+	}
+	res.ID = p.Id
+	res.AccountID = accountID
+	return res, nil
 }
 
 func PbCreditExtended(item *model.CreditExtended) *Credit {

@@ -878,7 +878,7 @@ type Address struct {
 	Notes       *AddressNote `json:"notes"`
 	CreatedAt   time.Time    `sq:"create" json:"-"`
 	UpdatedAt   time.Time    `sq:"update" json:"-"`
-	Coordinates *Coordinates `sq:"-" json:"coordinates"`
+	Coordinates *Coordinates `json:"coordinates"`
 }
 
 type Coordinates struct {

@@ -699,6 +699,12 @@ message Address {
     optional string position = 17 [(gogoproto.nullable) = false];
     optional address_type.AddressType type = 18 [(gogoproto.nullable) = false];
     optional AddressNote notes = 19;
+    optional Coordinates coordinates = 20;
+}
+
+message Coordinates {
+    optional float latitude = 1 [(gogoproto.nullable) = false];
+    optional float longitude = 2 [(gogoproto.nullable) = false];
 }
 
 message BankAccount {
@@ -725,14 +731,14 @@ message CompanyInfo {
 }
 
 message CreateAddressRequest {
+    // @required
     optional string province = 2 [(gogoproto.nullable) = false];
-    // @required
     optional string province_code = 6 [(gogoproto.nullable) = false];
+    // @required
     optional string district = 3 [(gogoproto.nullable) = false];
-    // @required
     optional string district_code = 7 [(gogoproto.nullable) = false];
-    optional string ward = 4 [(gogoproto.nullable) = false];
     // @required
+    optional string ward = 4 [(gogoproto.nullable) = false];
     optional string ward_code = 8 [(gogoproto.nullable) = false];
     optional string address1 = 5 [(gogoproto.nullable) = false];
     optional string address2 = 9 [(gogoproto.nullable) = false];
@@ -747,6 +753,7 @@ message CreateAddressRequest {
     optional string position = 17 [(gogoproto.nullable) = false];
     optional address_type.AddressType type = 18 [(gogoproto.nullable) = false];
     optional AddressNote notes = 19;
+    optional Coordinates coordinates = 20;
 }
 
 message AddressNote {
@@ -762,14 +769,14 @@ message GetAddressResponse {
 
 message UpdateAddressRequest {
     optional int64 id = 1 [(gogoproto.nullable) = false];
+    // @required
     optional string province = 2 [(gogoproto.nullable) = false];
-    // @required
     optional string province_code = 6 [(gogoproto.nullable) = false];
+    // @required
     optional string district = 3 [(gogoproto.nullable) = false];
-    // @required
     optional string district_code = 7 [(gogoproto.nullable) = false];
-    optional string ward = 4 [(gogoproto.nullable) = false];
     // @required
+    optional string ward = 4 [(gogoproto.nullable) = false];
     optional string ward_code = 8 [(gogoproto.nullable) = false];
     optional string address1 = 5 [(gogoproto.nullable) = false];
     optional string address2 = 9 [(gogoproto.nullable) = false];
@@ -784,6 +791,7 @@ message UpdateAddressRequest {
     optional string position = 17 [(gogoproto.nullable) = false];
     optional address_type.AddressType type = 18 [(gogoproto.nullable) = false];
     optional AddressNote notes = 19;
+    optional Coordinates coordinates = 20;
 }
 
 message SetDefaultAddressRequest {

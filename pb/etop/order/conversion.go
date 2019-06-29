@@ -9,6 +9,7 @@ import (
 	shippingtypes "etop.vn/api/main/shipping/v1/types"
 	"etop.vn/api/meta"
 	pbcm "etop.vn/backend/pb/common"
+	"etop.vn/backend/pb/etop"
 	pbs3 "etop.vn/backend/pb/etop/etc/status3"
 	pbs4 "etop.vn/backend/pb/etop/etc/status4"
 	pbs5 "etop.vn/backend/pb/etop/etc/status5"
@@ -257,7 +258,7 @@ func Convert_core_OrderAddress_To_api_OrderAddress(in *orderingv1types.Address) 
 	}
 }
 
-func Convert_api_Coordinates_To_core_Coordinates(in *Coordinates) *orderingv1types.Coordinates {
+func Convert_api_Coordinates_To_core_Coordinates(in *etop.Coordinates) *orderingv1types.Coordinates {
 	if in == nil {
 		return nil
 	}
@@ -267,11 +268,11 @@ func Convert_api_Coordinates_To_core_Coordinates(in *Coordinates) *orderingv1typ
 	}
 }
 
-func Convert_core_Coordinates_To_api_Coordinates(in *orderingv1types.Coordinates) *Coordinates {
+func Convert_core_Coordinates_To_api_Coordinates(in *orderingv1types.Coordinates) *etop.Coordinates {
 	if in == nil {
 		return nil
 	}
-	return &Coordinates{
+	return &etop.Coordinates{
 		Latitude:  in.Latitude,
 		Longitude: in.Longitude,
 	}

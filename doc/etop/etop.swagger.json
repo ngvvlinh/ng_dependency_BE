@@ -1201,6 +1201,9 @@
         },
         "notes": {
           "$ref": "#/definitions/etopAddressNote"
+        },
+        "coordinates": {
+          "$ref": "#/definitions/etopCoordinates"
         }
       }
     },
@@ -1381,6 +1384,19 @@
         }
       }
     },
+    "etopCoordinates": {
+      "type": "object",
+      "properties": {
+        "latitude": {
+          "type": "number",
+          "format": "float"
+        },
+        "longitude": {
+          "type": "number",
+          "format": "float"
+        }
+      }
+    },
     "etopCreateAddressRequest": {
       "type": "object",
       "properties": {
@@ -1437,12 +1453,15 @@
         },
         "notes": {
           "$ref": "#/definitions/etopAddressNote"
+        },
+        "coordinates": {
+          "$ref": "#/definitions/etopCoordinates"
         }
       },
       "required": [
-        "province_code",
-        "district_code",
-        "ward_code"
+        "province",
+        "district",
+        "ward"
       ]
     },
     "etopCreateUserRequest": {
@@ -2194,12 +2213,15 @@
         },
         "notes": {
           "$ref": "#/definitions/etopAddressNote"
+        },
+        "coordinates": {
+          "$ref": "#/definitions/etopCoordinates"
         }
       },
       "required": [
-        "province_code",
-        "district_code",
-        "ward_code"
+        "province",
+        "district",
+        "ward"
       ]
     },
     "etopUpdatePermissionItem": {
