@@ -4,9 +4,9 @@ set -e
 mode=atomic
 profile=artifacts/coverage/coverage.out
 output=artifacts/COVERAGE
-output_url=artifacts/COVERAGE_URL
-output_url_raw=artifacts/COVERAGE_URL_RAW
-output_html=artifacts/coverage.html
+artifacts_url=artifacts/ARTIFACTS_URL
+output_html=artifacts/coverage/coverage.html
+output_html_gocov=artifacts/coverage/gocov.html
 
 mkdir -p artifacts/coverage
 
@@ -29,10 +29,18 @@ if [[ $# -gt 0 ]]; then
   go tool cover -html="$profile" -o "$output_html"
 
   if [[ -n "$CI_JOB_URL" ]]; then
-    echo "${CI_JOB_URL}/artifacts/file/${output_html}" > "$output_url"
-    echo "${CI_JOB_URL}/artifacts/raw/${output_html}" > "$output_url_raw"
+    echo "${CI_JOB_URL}/artifacts" > "$artifacts_url"
   fi
   echo COVERAGE: $(cat "$output")
+
+  # gocov
+  : ${ETOPDIR?Must set ETOPDIR}
+  BACKEND="${ETOPDIR}/backend"
+  source "${BACKEND}/scripts/lib/init.sh"
+
+  gocov=$(::get cmd github.com/axw/gocov/gocov)
+  gocov_html=$(::get cmd github.com/matm/gocov-html)
+  "$gocov" convert "$profile" | "$gocov_html" > "$output_html_gocov"
 fi
 
 mv *.cover artifacts/coverage

@@ -71,7 +71,7 @@ require (
 	golang.org/x/sync v0.0.0-20190423024810-112230192c58
 	golang.org/x/sys v0.0.0-20190402142545-baf5eb976a8c // indirect
 	golang.org/x/text v0.3.1-0.20181227161524-e6919f6577db
-	golang.org/x/tools v0.0.0-20190425222832-ad9eeb80039a
+	golang.org/x/tools v0.0.0-20190617190820-da514acc4774
 	google.golang.org/genproto v0.0.0-20190128161407-8ac453e89fca
 	google.golang.org/grpc v1.19.0
 	gopkg.in/resty.v1 v1.12.0

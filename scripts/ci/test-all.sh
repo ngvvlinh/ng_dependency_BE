@@ -1,6 +1,15 @@
 #!/usr/bin/env bash
 set -e
 
+check_flag() {
+  : {"$1"?Missing required param}
+  git log -1 | grep "\bFlags:" | grep "\b$1\b"
+}
+check_branch() {
+  : {"$1"?Missing required param}
+  echo "$CI_COMMIT_REF_NAME" | grep "\b$1\b"
+}
+
 repos="
 etop.vn/api/...
 etop.vn/apix/...
@@ -11,17 +20,17 @@ etop.vn/common/...
 
 go install ${repos}
 
+# execute tests in coverage mode in one of those conditions
+#   1. environment variable COVER is set
+#   2. branch name contains "master"
+#   3. commit message contains: "Flags: coverage"
+cover="${COVER}$(check_branch master)$(check_flag coverage)"
 packages="$(go list ${repos} | grep -v '/tests/')"
 
-set +e
-master="$(echo $CI_COMMIT_REF_NAME | grep master)"
-cover="${COVER}${master}"
-
 if [[ -z "$cover" ]]; then
-  set -e
   go test -v -race ${packages}
 else
-  set -e
+  echo "Executing tests in coverage mode"
   mode=atomic
   file=coverage.cover
   go test -v -race -covermode="$mode" -coverprofile="$file" ${packages}

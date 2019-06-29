@@ -101,7 +101,7 @@ cmd_cmd() {
 	if [[ $? == 0 ]]; then echo $cmdpath; exit 0; fi
 
 	# try download it
-	if [[ "$path" =~ ^k8s.io ]]; then
+	if [[ "$path" =~ ^k8s.io || "$path" =~ ^github.com ]]; then
 		GO111MODULE=off go get "$path"
 		cmdpath=$(which $name)
 		if [[ $? == 0 ]]; then echo $cmdpath; exit 0; fi
