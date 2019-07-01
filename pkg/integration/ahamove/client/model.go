@@ -374,4 +374,5 @@ type ServiceType struct {
 	StopFee         int    `json:"stop_fee"`          // 10000
 	MaxStopPoints   int    `json:"max_stop_points"`   // 5
 	DescriptionViVn string `json:"description_vi_vn"` // "Giao hàng trong 1h"
+	MaxCOD int `json:"max_cod"`
 }

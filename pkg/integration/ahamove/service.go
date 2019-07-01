@@ -25,6 +25,7 @@ type ShippingService struct {
 	MinStopPoints int
 	MaxStopPoints int
 	MaxWeight     int
+	MaxCOD 		  int
 	City          CityCode
 	Description   string
 }
@@ -133,6 +134,7 @@ func (c *Carrier) ParseServiceCode(code string) (serviceCode string, _err error)
 
 func (c *Carrier) GetAvailableServices(ctx context.Context, points []*ahamoveClient.DeliveryPointRequest) (res []*ShippingService) {
 	pointCount := len(points) - 1
+	totalCOD := 0
 	// min stop point = 1
 	if pointCount < 1 {
 		return nil
@@ -143,6 +145,7 @@ func (c *Carrier) GetAvailableServices(ctx context.Context, points []*ahamoveCli
 		if i == 0 {
 			continue
 		}
+		totalCOD += int(point.COD)
 		if provinceCode == "" {
 			provinceCode = point.ProvinceCode
 			continue
@@ -160,7 +163,6 @@ func (c *Carrier) GetAvailableServices(ctx context.Context, points []*ahamoveCli
 	default:
 		return nil
 	}
-
 	cmd := &GetServiceCommand{
 		Request: &ahamoveClient.GetServicesRequest{
 			CityID: string(cityCode),
@@ -171,11 +173,24 @@ func (c *Carrier) GetAvailableServices(ctx context.Context, points []*ahamoveCli
 	}
 	for _, service := range cmd.Result {
 		s := ToService(service)
-		if s != nil && pointCount >= s.MinStopPoints && pointCount <= s.MaxStopPoints {
+		if validateService(s, pointCount, totalCOD) {
 			res = append(res, s)
 		}
 	}
 	return res
+}
+
+func validateService(s *ShippingService, pointCount int, totalCOD int) bool {
+	if s == nil {
+		return false
+	}
+	if totalCOD > s.MaxCOD {
+		return false
+	}
+	if pointCount < s.MinStopPoints || pointCount > s. MaxStopPoints {
+		return false
+	}
+	return true
 }
 
 func ToService(service *ahamoveClient.ServiceType) *ShippingService {
@@ -194,6 +209,7 @@ func ToService(service *ahamoveClient.ServiceType) *ShippingService {
 		MaxStopPoints: service.MaxStopPoints,
 		City:          city,
 		Description:   service.DescriptionViVn,
+		MaxCOD: service.MaxCOD,
 	}
 }
 
