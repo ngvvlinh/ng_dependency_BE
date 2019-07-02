@@ -289,8 +289,8 @@ func AddProducts(ctx context.Context, q *wrapshop.AddProductsEndpoint) error {
 
 func GetProduct(ctx context.Context, q *wrapshop.GetProductEndpoint) error {
 	query := &catalog.GetShopProductWithVariantsByIDQuery{
-		ProductID: q.Id,
-		ShopID:    q.Context.Shop.ID,
+		ProductID:       q.Id,
+		ProductSourceID: q.Context.Shop.ProductSourceID,
 	}
 	if err := catalogQuery.Dispatch(ctx, query); err != nil {
 		return err
@@ -301,8 +301,8 @@ func GetProduct(ctx context.Context, q *wrapshop.GetProductEndpoint) error {
 
 func GetProductsByIDs(ctx context.Context, q *wrapshop.GetProductsByIDsEndpoint) error {
 	query := &catalog.ListShopProductsWithVariantsByIDsQuery{
-		IDs:    q.Ids,
-		ShopID: q.Context.Shop.ID,
+		IDs:             q.Ids,
+		ProductSourceID: q.Context.Shop.ProductSourceID,
 	}
 	if err := catalogQuery.Dispatch(ctx, query); err != nil {
 		return err
@@ -316,9 +316,9 @@ func GetProductsByIDs(ctx context.Context, q *wrapshop.GetProductsByIDsEndpoint)
 func GetProducts(ctx context.Context, q *wrapshop.GetProductsEndpoint) error {
 	paging := q.Paging.CMPaging()
 	query := &catalog.ListShopProductsWithVariantsQuery{
-		ShopID:  q.Context.Shop.ID,
-		Paging:  *paging,
-		Filters: pbcm.ToFilters(q.Filters),
+		ProductSourceID: q.Context.Shop.ProductSourceID,
+		Paging:          *paging,
+		Filters:         pbcm.ToFilters(q.Filters),
 	}
 	if err := catalogQuery.Dispatch(ctx, query); err != nil {
 		return err
@@ -542,8 +542,8 @@ func RemoveProductSourceCategory(ctx context.Context, q *wrapshop.RemoveProductS
 func UpdateProductImages(ctx context.Context, q *wrapshop.UpdateProductImagesEndpoint) error {
 	shopID := q.Context.Shop.ID
 	query := &catalog.GetShopProductByIDQuery{
-		ProductID: q.Id,
-		ShopID:    shopID,
+		ProductID:       q.Id,
+		ProductSourceID: q.Context.Shop.ProductSourceID,
 	}
 	if err := catalogQuery.Dispatch(ctx, query); err != nil {
 		return err

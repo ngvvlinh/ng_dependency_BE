@@ -91,6 +91,11 @@ func (s *ShopProductStore) OptionalShopID(id int64) *ShopProductStore {
 	return s
 }
 
+func (s *ShopProductStore) OptionalProductSourceID(id int64) *ShopProductStore {
+	s.preds = append(s.preds, s.FtProduct.ByProductSourceID(id).Optional())
+	return s
+}
+
 func (s *ShopProductStore) Count() (uint64, error) {
 	query := s.extend().query().Where(s.preds)
 	query = s.includeDeleted.Check(query, s.FtProduct.NotDeleted())

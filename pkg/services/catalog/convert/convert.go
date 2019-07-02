@@ -217,15 +217,24 @@ func ShopVariantExtended(in *catalogmodel.ShopVariantExtended) (out *catalog.Sho
 	}
 	sv := &catalog.ShopVariant{
 		ShopID:       in.ShopVariant.ShopID,
+		ProductID:    in.Variant.ProductID,
 		VariantID:    in.ShopVariant.VariantID,
 		CollectionID: in.ShopVariant.CollectionID,
 		Code:         in.Variant.Code,
+		Name:         "",
 		DescriptionInfo: catalog.DescriptionInfo{
 			ShortDesc:   in.ShopVariant.ShortDesc,
 			Description: in.ShopVariant.Description,
 			DescHTML:    in.ShopVariant.DescHTML,
 		},
+		ImageURLs: in.Variant.ImageURLs,
 		Status:    int16(in.ShopVariant.Status),
+		PriceInfo: catalog.PriceInfo{
+			ListPrice:   in.ListPrice,
+			CostPrice:   in.CostPrice,
+			RetailPrice: in.RetailPrice,
+		},
+		Note:      "",
 		CreatedAt: in.ShopVariant.CreatedAt,
 		UpdatedAt: in.ShopVariant.UpdatedAt,
 	}

@@ -77,8 +77,8 @@ func (s *ShopVariantStore) ShopID(id int64) *ShopVariantStore {
 	return s
 }
 
-func (s *ShopVariantStore) OptionalShopID(id int64) *ShopVariantStore {
-	s.preds = append(s.preds, s.FtShopVariant.ByShopID(id).Optional())
+func (s *ShopVariantStore) OptionalProductSourceID(id int64) *ShopVariantStore {
+	s.preds = append(s.preds, s.FtVariant.ByProductSourceID(id).Optional())
 	return s
 }
 

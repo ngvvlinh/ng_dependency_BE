@@ -15,7 +15,7 @@ func (ctrl *ProviderManager) GetShippingService(ffm *model.Fulfillment, order *m
 	}
 
 	args := GetShippingServicesArgs{
-		ArbitraryID:      order.ShopID,
+		ArbitraryID:      order.ProductSourceID,
 		FromDistrict:     fromDistrict,
 		ToDistrict:       toDistrict,
 		ChargeableWeight: weight,

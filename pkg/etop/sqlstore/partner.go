@@ -54,13 +54,13 @@ func (s *PartnerStore) IncludeDeleted() *PartnerStore {
 
 func (s *PartnerStore) Get() (*model.Partner, error) {
 	var item model.Partner
-	err := x.Where(s.preds...).Where(s.filterDeleted(s.ft)).ShouldGet(&item)
+	err := x.Where(s.preds...).Where(s.filterDeleted(&s.ft)).ShouldGet(&item)
 	return &item, err
 }
 
 func (s *PartnerStore) List() ([]*model.Partner, error) {
 	var items model.Partners
-	err := x.Where(s.preds...).Where(s.filterDeleted(s.ft)).Find(&items)
+	err := x.Where(s.preds...).Where(s.filterDeleted(&s.ft)).Find(&items)
 	return items, err
 }
 

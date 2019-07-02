@@ -129,7 +129,7 @@ func (m *ShippingProviderWebhook) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(string(m.ShippingProvider))
+		w.WriteArg(m.ShippingProvider)
 	}
 	if m.Data != nil {
 		flag = true

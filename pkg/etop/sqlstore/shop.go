@@ -288,17 +288,18 @@ func CreateVariant(ctx context.Context, cmd *catalogmodelx.CreateVariantCommand)
 	}
 
 	variant := &catalogmodel.Variant{
-		ID:          cm.NewID(),
-		ProductID:   cmd.ProductID,
-		ShortDesc:   cmd.ShortDesc,
-		Description: cmd.Description,
-		DescHTML:    cmd.DescHTML,
-		Status:      model.StatusActive,
-		Code:        cmd.SKU,
-		ListPrice:   cmd.ListPrice,
-		ImageURLs:   cmd.ImageURLs,
-		CostPrice:   cmd.CostPrice,
-		Attributes:  cmd.Attributes,
+		ID:              cm.NewID(),
+		ProductID:       cmd.ProductID,
+		ProductSourceID: cmd.ProductSourceID,
+		ShortDesc:       cmd.ShortDesc,
+		Description:     cmd.Description,
+		DescHTML:        cmd.DescHTML,
+		Status:          model.StatusActive,
+		Code:            cmd.SKU,
+		ListPrice:       cmd.ListPrice,
+		ImageURLs:       cmd.ImageURLs,
+		CostPrice:       cmd.CostPrice,
+		Attributes:      cmd.Attributes,
 	}
 	if err := variant.BeforeInsert(); err != nil {
 		return err

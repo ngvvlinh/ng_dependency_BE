@@ -13,7 +13,6 @@ replace etop.vn/common => ./up/etop.vn/common
 require (
 	cloud.google.com/go v0.35.1 // indirect
 	etop.vn/api v0.0.0-00010101000000-000000000000
-	etop.vn/common v0.0.0-00010101000000-000000000000 // indirect
 	github.com/360EntSecGroup-Skylar/excelize v1.4.1
 	github.com/DataDog/zstd v1.3.5 // indirect
 	github.com/GoogleCloudPlatform/cloudsql-proxy v0.0.0-20181215173202-6f1ecdcf9588

@@ -35,7 +35,7 @@ func (s *AccountAuthStore) IncludeDeleted() *AccountAuthStore {
 
 func (s *AccountAuthStore) Get() (*model.AccountAuth, error) {
 	var item model.AccountAuth
-	err := x.Where(s.preds...).Where(s.filterDeleted(s.ft)).ShouldGet(&item)
+	err := x.Where(s.preds...).Where(s.filterDeleted(&s.ft)).ShouldGet(&item)
 	return &item, err
 }
 

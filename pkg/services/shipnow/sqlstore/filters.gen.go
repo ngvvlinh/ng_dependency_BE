@@ -16,7 +16,7 @@ func NewShipnowFulfillmentFilters(prefix string) ShipnowFulfillmentFilters {
 	return ShipnowFulfillmentFilters{prefix}
 }
 
-func (ft ShipnowFulfillmentFilters) Filter(pred string, args ...interface{}) sq.WriterTo {
+func (ft *ShipnowFulfillmentFilters) Filter(pred string, args ...interface{}) sq.WriterTo {
 	return sq.Filter(&ft.prefix, pred, args...)
 }
 
@@ -24,7 +24,7 @@ func (ft ShipnowFulfillmentFilters) Prefix() string {
 	return ft.prefix
 }
 
-func (ft ShipnowFulfillmentFilters) ByID(ID int64) *sq.ColumnFilter {
+func (ft *ShipnowFulfillmentFilters) ByID(ID int64) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "id",
@@ -33,7 +33,7 @@ func (ft ShipnowFulfillmentFilters) ByID(ID int64) *sq.ColumnFilter {
 	}
 }
 
-func (ft ShipnowFulfillmentFilters) ByIDPtr(ID *int64) *sq.ColumnFilterPtr {
+func (ft *ShipnowFulfillmentFilters) ByIDPtr(ID *int64) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "id",
@@ -43,7 +43,7 @@ func (ft ShipnowFulfillmentFilters) ByIDPtr(ID *int64) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft ShipnowFulfillmentFilters) ByShopID(ShopID int64) *sq.ColumnFilter {
+func (ft *ShipnowFulfillmentFilters) ByShopID(ShopID int64) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "shop_id",
@@ -52,7 +52,7 @@ func (ft ShipnowFulfillmentFilters) ByShopID(ShopID int64) *sq.ColumnFilter {
 	}
 }
 
-func (ft ShipnowFulfillmentFilters) ByShopIDPtr(ShopID *int64) *sq.ColumnFilterPtr {
+func (ft *ShipnowFulfillmentFilters) ByShopIDPtr(ShopID *int64) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "shop_id",
@@ -62,7 +62,7 @@ func (ft ShipnowFulfillmentFilters) ByShopIDPtr(ShopID *int64) *sq.ColumnFilterP
 	}
 }
 
-func (ft ShipnowFulfillmentFilters) ByPartnerID(PartnerID int64) *sq.ColumnFilter {
+func (ft *ShipnowFulfillmentFilters) ByPartnerID(PartnerID int64) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "partner_id",
@@ -71,7 +71,7 @@ func (ft ShipnowFulfillmentFilters) ByPartnerID(PartnerID int64) *sq.ColumnFilte
 	}
 }
 
-func (ft ShipnowFulfillmentFilters) ByPartnerIDPtr(PartnerID *int64) *sq.ColumnFilterPtr {
+func (ft *ShipnowFulfillmentFilters) ByPartnerIDPtr(PartnerID *int64) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "partner_id",
@@ -81,7 +81,7 @@ func (ft ShipnowFulfillmentFilters) ByPartnerIDPtr(PartnerID *int64) *sq.ColumnF
 	}
 }
 
-func (ft ShipnowFulfillmentFilters) ByCarrier(Carrier m.Carrier) *sq.ColumnFilter {
+func (ft *ShipnowFulfillmentFilters) ByCarrier(Carrier m.Carrier) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "carrier",
@@ -90,7 +90,7 @@ func (ft ShipnowFulfillmentFilters) ByCarrier(Carrier m.Carrier) *sq.ColumnFilte
 	}
 }
 
-func (ft ShipnowFulfillmentFilters) ByCarrierPtr(Carrier *m.Carrier) *sq.ColumnFilterPtr {
+func (ft *ShipnowFulfillmentFilters) ByCarrierPtr(Carrier *m.Carrier) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "carrier",
@@ -100,7 +100,7 @@ func (ft ShipnowFulfillmentFilters) ByCarrierPtr(Carrier *m.Carrier) *sq.ColumnF
 	}
 }
 
-func (ft ShipnowFulfillmentFilters) ByShippingServiceCode(ShippingServiceCode string) *sq.ColumnFilter {
+func (ft *ShipnowFulfillmentFilters) ByShippingServiceCode(ShippingServiceCode string) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "shipping_service_code",
@@ -109,7 +109,7 @@ func (ft ShipnowFulfillmentFilters) ByShippingServiceCode(ShippingServiceCode st
 	}
 }
 
-func (ft ShipnowFulfillmentFilters) ByShippingServiceCodePtr(ShippingServiceCode *string) *sq.ColumnFilterPtr {
+func (ft *ShipnowFulfillmentFilters) ByShippingServiceCodePtr(ShippingServiceCode *string) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "shipping_service_code",
@@ -119,7 +119,7 @@ func (ft ShipnowFulfillmentFilters) ByShippingServiceCodePtr(ShippingServiceCode
 	}
 }
 
-func (ft ShipnowFulfillmentFilters) ByShippingServiceFee(ShippingServiceFee int32) *sq.ColumnFilter {
+func (ft *ShipnowFulfillmentFilters) ByShippingServiceFee(ShippingServiceFee int32) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "shipping_service_fee",
@@ -128,7 +128,7 @@ func (ft ShipnowFulfillmentFilters) ByShippingServiceFee(ShippingServiceFee int3
 	}
 }
 
-func (ft ShipnowFulfillmentFilters) ByShippingServiceFeePtr(ShippingServiceFee *int32) *sq.ColumnFilterPtr {
+func (ft *ShipnowFulfillmentFilters) ByShippingServiceFeePtr(ShippingServiceFee *int32) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "shipping_service_fee",
@@ -138,7 +138,45 @@ func (ft ShipnowFulfillmentFilters) ByShippingServiceFeePtr(ShippingServiceFee *
 	}
 }
 
-func (ft ShipnowFulfillmentFilters) ByChargeableWeight(ChargeableWeight int32) *sq.ColumnFilter {
+func (ft *ShipnowFulfillmentFilters) ByShippingServiceName(ShippingServiceName string) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "shipping_service_name",
+		Value:  ShippingServiceName,
+		IsNil:  ShippingServiceName == "",
+	}
+}
+
+func (ft *ShipnowFulfillmentFilters) ByShippingServiceNamePtr(ShippingServiceName *string) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "shipping_service_name",
+		Value:  ShippingServiceName,
+		IsNil:  ShippingServiceName == nil,
+		IsZero: ShippingServiceName != nil && (*ShippingServiceName) == "",
+	}
+}
+
+func (ft *ShipnowFulfillmentFilters) ByShippingServiceDescription(ShippingServiceDescription string) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "shipping_service_description",
+		Value:  ShippingServiceDescription,
+		IsNil:  ShippingServiceDescription == "",
+	}
+}
+
+func (ft *ShipnowFulfillmentFilters) ByShippingServiceDescriptionPtr(ShippingServiceDescription *string) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "shipping_service_description",
+		Value:  ShippingServiceDescription,
+		IsNil:  ShippingServiceDescription == nil,
+		IsZero: ShippingServiceDescription != nil && (*ShippingServiceDescription) == "",
+	}
+}
+
+func (ft *ShipnowFulfillmentFilters) ByChargeableWeight(ChargeableWeight int32) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "chargeable_weight",
@@ -147,7 +185,7 @@ func (ft ShipnowFulfillmentFilters) ByChargeableWeight(ChargeableWeight int32) *
 	}
 }
 
-func (ft ShipnowFulfillmentFilters) ByChargeableWeightPtr(ChargeableWeight *int32) *sq.ColumnFilterPtr {
+func (ft *ShipnowFulfillmentFilters) ByChargeableWeightPtr(ChargeableWeight *int32) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "chargeable_weight",
@@ -157,7 +195,7 @@ func (ft ShipnowFulfillmentFilters) ByChargeableWeightPtr(ChargeableWeight *int3
 	}
 }
 
-func (ft ShipnowFulfillmentFilters) ByGrossWeight(GrossWeight int32) *sq.ColumnFilter {
+func (ft *ShipnowFulfillmentFilters) ByGrossWeight(GrossWeight int32) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "gross_weight",
@@ -166,7 +204,7 @@ func (ft ShipnowFulfillmentFilters) ByGrossWeight(GrossWeight int32) *sq.ColumnF
 	}
 }
 
-func (ft ShipnowFulfillmentFilters) ByGrossWeightPtr(GrossWeight *int32) *sq.ColumnFilterPtr {
+func (ft *ShipnowFulfillmentFilters) ByGrossWeightPtr(GrossWeight *int32) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "gross_weight",
@@ -176,7 +214,7 @@ func (ft ShipnowFulfillmentFilters) ByGrossWeightPtr(GrossWeight *int32) *sq.Col
 	}
 }
 
-func (ft ShipnowFulfillmentFilters) ByBasketValue(BasketValue int32) *sq.ColumnFilter {
+func (ft *ShipnowFulfillmentFilters) ByBasketValue(BasketValue int32) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "basket_value",
@@ -185,7 +223,7 @@ func (ft ShipnowFulfillmentFilters) ByBasketValue(BasketValue int32) *sq.ColumnF
 	}
 }
 
-func (ft ShipnowFulfillmentFilters) ByBasketValuePtr(BasketValue *int32) *sq.ColumnFilterPtr {
+func (ft *ShipnowFulfillmentFilters) ByBasketValuePtr(BasketValue *int32) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "basket_value",
@@ -195,7 +233,7 @@ func (ft ShipnowFulfillmentFilters) ByBasketValuePtr(BasketValue *int32) *sq.Col
 	}
 }
 
-func (ft ShipnowFulfillmentFilters) ByCODAmount(CODAmount int32) *sq.ColumnFilter {
+func (ft *ShipnowFulfillmentFilters) ByCODAmount(CODAmount int32) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "cod_amount",
@@ -204,7 +242,7 @@ func (ft ShipnowFulfillmentFilters) ByCODAmount(CODAmount int32) *sq.ColumnFilte
 	}
 }
 
-func (ft ShipnowFulfillmentFilters) ByCODAmountPtr(CODAmount *int32) *sq.ColumnFilterPtr {
+func (ft *ShipnowFulfillmentFilters) ByCODAmountPtr(CODAmount *int32) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "cod_amount",
@@ -214,7 +252,7 @@ func (ft ShipnowFulfillmentFilters) ByCODAmountPtr(CODAmount *int32) *sq.ColumnF
 	}
 }
 
-func (ft ShipnowFulfillmentFilters) ByShippingNote(ShippingNote string) *sq.ColumnFilter {
+func (ft *ShipnowFulfillmentFilters) ByShippingNote(ShippingNote string) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "shipping_note",
@@ -223,7 +261,7 @@ func (ft ShipnowFulfillmentFilters) ByShippingNote(ShippingNote string) *sq.Colu
 	}
 }
 
-func (ft ShipnowFulfillmentFilters) ByShippingNotePtr(ShippingNote *string) *sq.ColumnFilterPtr {
+func (ft *ShipnowFulfillmentFilters) ByShippingNotePtr(ShippingNote *string) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "shipping_note",
@@ -233,7 +271,7 @@ func (ft ShipnowFulfillmentFilters) ByShippingNotePtr(ShippingNote *string) *sq.
 	}
 }
 
-func (ft ShipnowFulfillmentFilters) ByRequestPickupAt(RequestPickupAt time.Time) *sq.ColumnFilter {
+func (ft *ShipnowFulfillmentFilters) ByRequestPickupAt(RequestPickupAt time.Time) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "request_pickup_at",
@@ -242,7 +280,7 @@ func (ft ShipnowFulfillmentFilters) ByRequestPickupAt(RequestPickupAt time.Time)
 	}
 }
 
-func (ft ShipnowFulfillmentFilters) ByRequestPickupAtPtr(RequestPickupAt *time.Time) *sq.ColumnFilterPtr {
+func (ft *ShipnowFulfillmentFilters) ByRequestPickupAtPtr(RequestPickupAt *time.Time) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "request_pickup_at",
@@ -252,7 +290,26 @@ func (ft ShipnowFulfillmentFilters) ByRequestPickupAtPtr(RequestPickupAt *time.T
 	}
 }
 
-func (ft ShipnowFulfillmentFilters) ByStatus(Status model.Status5) *sq.ColumnFilter {
+func (ft *ShipnowFulfillmentFilters) ByCancelReason(CancelReason string) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "cancel_reason",
+		Value:  CancelReason,
+		IsNil:  CancelReason == "",
+	}
+}
+
+func (ft *ShipnowFulfillmentFilters) ByCancelReasonPtr(CancelReason *string) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "cancel_reason",
+		Value:  CancelReason,
+		IsNil:  CancelReason == nil,
+		IsZero: CancelReason != nil && (*CancelReason) == "",
+	}
+}
+
+func (ft *ShipnowFulfillmentFilters) ByStatus(Status model.Status5) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "status",
@@ -261,7 +318,7 @@ func (ft ShipnowFulfillmentFilters) ByStatus(Status model.Status5) *sq.ColumnFil
 	}
 }
 
-func (ft ShipnowFulfillmentFilters) ByStatusPtr(Status *model.Status5) *sq.ColumnFilterPtr {
+func (ft *ShipnowFulfillmentFilters) ByStatusPtr(Status *model.Status5) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "status",
@@ -271,7 +328,7 @@ func (ft ShipnowFulfillmentFilters) ByStatusPtr(Status *model.Status5) *sq.Colum
 	}
 }
 
-func (ft ShipnowFulfillmentFilters) ByConfirmStatus(ConfirmStatus model.Status3) *sq.ColumnFilter {
+func (ft *ShipnowFulfillmentFilters) ByConfirmStatus(ConfirmStatus model.Status3) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "confirm_status",
@@ -280,7 +337,7 @@ func (ft ShipnowFulfillmentFilters) ByConfirmStatus(ConfirmStatus model.Status3)
 	}
 }
 
-func (ft ShipnowFulfillmentFilters) ByConfirmStatusPtr(ConfirmStatus *model.Status3) *sq.ColumnFilterPtr {
+func (ft *ShipnowFulfillmentFilters) ByConfirmStatusPtr(ConfirmStatus *model.Status3) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "confirm_status",
@@ -290,7 +347,7 @@ func (ft ShipnowFulfillmentFilters) ByConfirmStatusPtr(ConfirmStatus *model.Stat
 	}
 }
 
-func (ft ShipnowFulfillmentFilters) ByShippingStatus(ShippingStatus model.Status5) *sq.ColumnFilter {
+func (ft *ShipnowFulfillmentFilters) ByShippingStatus(ShippingStatus model.Status5) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "shipping_status",
@@ -299,7 +356,7 @@ func (ft ShipnowFulfillmentFilters) ByShippingStatus(ShippingStatus model.Status
 	}
 }
 
-func (ft ShipnowFulfillmentFilters) ByShippingStatusPtr(ShippingStatus *model.Status5) *sq.ColumnFilterPtr {
+func (ft *ShipnowFulfillmentFilters) ByShippingStatusPtr(ShippingStatus *model.Status5) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "shipping_status",
@@ -309,7 +366,26 @@ func (ft ShipnowFulfillmentFilters) ByShippingStatusPtr(ShippingStatus *model.St
 	}
 }
 
-func (ft ShipnowFulfillmentFilters) ByShippingState(ShippingState string) *sq.ColumnFilter {
+func (ft *ShipnowFulfillmentFilters) ByEtopPaymentStatus(EtopPaymentStatus model.Status4) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "etop_payment_status",
+		Value:  EtopPaymentStatus,
+		IsNil:  EtopPaymentStatus == 0,
+	}
+}
+
+func (ft *ShipnowFulfillmentFilters) ByEtopPaymentStatusPtr(EtopPaymentStatus *model.Status4) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "etop_payment_status",
+		Value:  EtopPaymentStatus,
+		IsNil:  EtopPaymentStatus == nil,
+		IsZero: EtopPaymentStatus != nil && (*EtopPaymentStatus) == 0,
+	}
+}
+
+func (ft *ShipnowFulfillmentFilters) ByShippingState(ShippingState string) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "shipping_state",
@@ -318,7 +394,7 @@ func (ft ShipnowFulfillmentFilters) ByShippingState(ShippingState string) *sq.Co
 	}
 }
 
-func (ft ShipnowFulfillmentFilters) ByShippingStatePtr(ShippingState *string) *sq.ColumnFilterPtr {
+func (ft *ShipnowFulfillmentFilters) ByShippingStatePtr(ShippingState *string) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "shipping_state",
@@ -328,7 +404,7 @@ func (ft ShipnowFulfillmentFilters) ByShippingStatePtr(ShippingState *string) *s
 	}
 }
 
-func (ft ShipnowFulfillmentFilters) ByShippingCode(ShippingCode string) *sq.ColumnFilter {
+func (ft *ShipnowFulfillmentFilters) ByShippingCode(ShippingCode string) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "shipping_code",
@@ -337,7 +413,7 @@ func (ft ShipnowFulfillmentFilters) ByShippingCode(ShippingCode string) *sq.Colu
 	}
 }
 
-func (ft ShipnowFulfillmentFilters) ByShippingCodePtr(ShippingCode *string) *sq.ColumnFilterPtr {
+func (ft *ShipnowFulfillmentFilters) ByShippingCodePtr(ShippingCode *string) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "shipping_code",
@@ -347,7 +423,121 @@ func (ft ShipnowFulfillmentFilters) ByShippingCodePtr(ShippingCode *string) *sq.
 	}
 }
 
-func (ft ShipnowFulfillmentFilters) BySyncStatus(SyncStatus model.Status4) *sq.ColumnFilter {
+func (ft *ShipnowFulfillmentFilters) ByTotalFee(TotalFee int) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "total_fee",
+		Value:  TotalFee,
+		IsNil:  TotalFee == 0,
+	}
+}
+
+func (ft *ShipnowFulfillmentFilters) ByTotalFeePtr(TotalFee *int) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "total_fee",
+		Value:  TotalFee,
+		IsNil:  TotalFee == nil,
+		IsZero: TotalFee != nil && (*TotalFee) == 0,
+	}
+}
+
+func (ft *ShipnowFulfillmentFilters) ByShippingCreatedAt(ShippingCreatedAt time.Time) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "shipping_created_at",
+		Value:  ShippingCreatedAt,
+		IsNil:  ShippingCreatedAt.IsZero(),
+	}
+}
+
+func (ft *ShipnowFulfillmentFilters) ByShippingCreatedAtPtr(ShippingCreatedAt *time.Time) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "shipping_created_at",
+		Value:  ShippingCreatedAt,
+		IsNil:  ShippingCreatedAt == nil,
+		IsZero: ShippingCreatedAt != nil && (*ShippingCreatedAt).IsZero(),
+	}
+}
+
+func (ft *ShipnowFulfillmentFilters) ByShippingPickingAt(ShippingPickingAt time.Time) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "shipping_picking_at",
+		Value:  ShippingPickingAt,
+		IsNil:  ShippingPickingAt.IsZero(),
+	}
+}
+
+func (ft *ShipnowFulfillmentFilters) ByShippingPickingAtPtr(ShippingPickingAt *time.Time) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "shipping_picking_at",
+		Value:  ShippingPickingAt,
+		IsNil:  ShippingPickingAt == nil,
+		IsZero: ShippingPickingAt != nil && (*ShippingPickingAt).IsZero(),
+	}
+}
+
+func (ft *ShipnowFulfillmentFilters) ByShippingDeliveringAt(ShippingDeliveringAt time.Time) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "shipping_delivering_at",
+		Value:  ShippingDeliveringAt,
+		IsNil:  ShippingDeliveringAt.IsZero(),
+	}
+}
+
+func (ft *ShipnowFulfillmentFilters) ByShippingDeliveringAtPtr(ShippingDeliveringAt *time.Time) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "shipping_delivering_at",
+		Value:  ShippingDeliveringAt,
+		IsNil:  ShippingDeliveringAt == nil,
+		IsZero: ShippingDeliveringAt != nil && (*ShippingDeliveringAt).IsZero(),
+	}
+}
+
+func (ft *ShipnowFulfillmentFilters) ByShippingDeliveredAt(ShippingDeliveredAt time.Time) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "shipping_delivered_at",
+		Value:  ShippingDeliveredAt,
+		IsNil:  ShippingDeliveredAt.IsZero(),
+	}
+}
+
+func (ft *ShipnowFulfillmentFilters) ByShippingDeliveredAtPtr(ShippingDeliveredAt *time.Time) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "shipping_delivered_at",
+		Value:  ShippingDeliveredAt,
+		IsNil:  ShippingDeliveredAt == nil,
+		IsZero: ShippingDeliveredAt != nil && (*ShippingDeliveredAt).IsZero(),
+	}
+}
+
+func (ft *ShipnowFulfillmentFilters) ByShippingCancelledAt(ShippingCancelledAt time.Time) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "shipping_cancelled_at",
+		Value:  ShippingCancelledAt,
+		IsNil:  ShippingCancelledAt.IsZero(),
+	}
+}
+
+func (ft *ShipnowFulfillmentFilters) ByShippingCancelledAtPtr(ShippingCancelledAt *time.Time) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "shipping_cancelled_at",
+		Value:  ShippingCancelledAt,
+		IsNil:  ShippingCancelledAt == nil,
+		IsZero: ShippingCancelledAt != nil && (*ShippingCancelledAt).IsZero(),
+	}
+}
+
+func (ft *ShipnowFulfillmentFilters) BySyncStatus(SyncStatus model.Status4) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "sync_status",
@@ -356,7 +546,7 @@ func (ft ShipnowFulfillmentFilters) BySyncStatus(SyncStatus model.Status4) *sq.C
 	}
 }
 
-func (ft ShipnowFulfillmentFilters) BySyncStatusPtr(SyncStatus *model.Status4) *sq.ColumnFilterPtr {
+func (ft *ShipnowFulfillmentFilters) BySyncStatusPtr(SyncStatus *model.Status4) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "sync_status",
@@ -366,26 +556,7 @@ func (ft ShipnowFulfillmentFilters) BySyncStatusPtr(SyncStatus *model.Status4) *
 	}
 }
 
-func (ft ShipnowFulfillmentFilters) ByLastSyncAt(LastSyncAt time.Time) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
-		Prefix: &ft.prefix,
-		Column: "last_sync_at",
-		Value:  LastSyncAt,
-		IsNil:  LastSyncAt.IsZero(),
-	}
-}
-
-func (ft ShipnowFulfillmentFilters) ByLastSyncAtPtr(LastSyncAt *time.Time) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
-		Prefix: &ft.prefix,
-		Column: "last_sync_at",
-		Value:  LastSyncAt,
-		IsNil:  LastSyncAt == nil,
-		IsZero: LastSyncAt != nil && (*LastSyncAt).IsZero(),
-	}
-}
-
-func (ft ShipnowFulfillmentFilters) ByCreatedAt(CreatedAt time.Time) *sq.ColumnFilter {
+func (ft *ShipnowFulfillmentFilters) ByCreatedAt(CreatedAt time.Time) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "created_at",
@@ -394,7 +565,7 @@ func (ft ShipnowFulfillmentFilters) ByCreatedAt(CreatedAt time.Time) *sq.ColumnF
 	}
 }
 
-func (ft ShipnowFulfillmentFilters) ByCreatedAtPtr(CreatedAt *time.Time) *sq.ColumnFilterPtr {
+func (ft *ShipnowFulfillmentFilters) ByCreatedAtPtr(CreatedAt *time.Time) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "created_at",
@@ -404,7 +575,7 @@ func (ft ShipnowFulfillmentFilters) ByCreatedAtPtr(CreatedAt *time.Time) *sq.Col
 	}
 }
 
-func (ft ShipnowFulfillmentFilters) ByUpdatedAt(UpdatedAt time.Time) *sq.ColumnFilter {
+func (ft *ShipnowFulfillmentFilters) ByUpdatedAt(UpdatedAt time.Time) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "updated_at",
@@ -413,12 +584,50 @@ func (ft ShipnowFulfillmentFilters) ByUpdatedAt(UpdatedAt time.Time) *sq.ColumnF
 	}
 }
 
-func (ft ShipnowFulfillmentFilters) ByUpdatedAtPtr(UpdatedAt *time.Time) *sq.ColumnFilterPtr {
+func (ft *ShipnowFulfillmentFilters) ByUpdatedAtPtr(UpdatedAt *time.Time) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "updated_at",
 		Value:  UpdatedAt,
 		IsNil:  UpdatedAt == nil,
 		IsZero: UpdatedAt != nil && (*UpdatedAt).IsZero(),
+	}
+}
+
+func (ft *ShipnowFulfillmentFilters) ByCODEtopTransferedAt(CODEtopTransferedAt time.Time) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "cod_etop_transfered_at",
+		Value:  CODEtopTransferedAt,
+		IsNil:  CODEtopTransferedAt.IsZero(),
+	}
+}
+
+func (ft *ShipnowFulfillmentFilters) ByCODEtopTransferedAtPtr(CODEtopTransferedAt *time.Time) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "cod_etop_transfered_at",
+		Value:  CODEtopTransferedAt,
+		IsNil:  CODEtopTransferedAt == nil,
+		IsZero: CODEtopTransferedAt != nil && (*CODEtopTransferedAt).IsZero(),
+	}
+}
+
+func (ft *ShipnowFulfillmentFilters) ByShippingSharedLink(ShippingSharedLink string) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "shipping_shared_link",
+		Value:  ShippingSharedLink,
+		IsNil:  ShippingSharedLink == "",
+	}
+}
+
+func (ft *ShipnowFulfillmentFilters) ByShippingSharedLinkPtr(ShippingSharedLink *string) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "shipping_shared_link",
+		Value:  ShippingSharedLink,
+		IsNil:  ShippingSharedLink == nil,
+		IsZero: ShippingSharedLink != nil && (*ShippingSharedLink) == "",
 	}
 }

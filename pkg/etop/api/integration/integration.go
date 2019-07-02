@@ -806,7 +806,7 @@ func GrantAccess(ctx context.Context, r *wrapintegration.GrantAccessEndpoint) er
 	partner := r.CtxPartner
 	user := r.Context.User
 	if r.ShopId == 0 {
-		return cm.Errorf(cm.InvalidArgument, nil, "Missing ShopID")
+		return cm.Errorf(cm.InvalidArgument, nil, "Missing ProductSourceID")
 	}
 
 	if requestInfo.ShopID != 0 && r.ShopId != requestInfo.ShopID {

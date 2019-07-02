@@ -48,8 +48,8 @@ type IDsArgs struct {
 }
 
 type IDsShopArgs struct {
-	IDs    []int64
-	ShopID int64
+	IDs             []int64
+	ProductSourceID int64
 }
 
 type GetProductByIDQueryArgs struct {
@@ -61,13 +61,13 @@ type GetVariantByIDQueryArgs struct {
 }
 
 type GetShopProductByIDQueryArgs struct {
-	ProductID int64
-	ShopID    int64
+	ProductID       int64
+	ProductSourceID int64
 }
 
 type GetShopVariantByIDQueryArgs struct {
-	VariantID int64
-	ShopID    int64
+	VariantID       int64
+	ProductSourceID int64
 }
 
 type ListProductsQueryArgs struct {
@@ -85,7 +85,7 @@ type ListVariantsQueryArgs struct {
 }
 
 type ListShopProductsQueryArgs struct {
-	ShopID int64
+	ProductSourceID int64
 
 	Paging  meta.Paging
 	Filters meta.Filters

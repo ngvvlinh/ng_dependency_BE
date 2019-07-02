@@ -58,7 +58,7 @@ func CreateOrder(ctx context.Context, claim *claims.ShopClaim, authPartner *mode
 	}
 
 	shop := claim.Shop
-	lines, err := PrepareOrderLines(ctx, shop.ID, r.Lines)
+	lines, err := PrepareOrderLines(ctx, shop.ID, shop.ProductSourceID, r.Lines)
 	if err != nil {
 		return nil, err
 	}
@@ -126,7 +126,11 @@ func CreateOrder(ctx context.Context, claim *claims.ShopClaim, authPartner *mode
 	return result, nil
 }
 
-func PrepareOrderLines(ctx context.Context, shopID int64, lines []*pborder.CreateOrderLine) ([]*ordermodel.OrderLine, error) {
+func PrepareOrderLines(
+	ctx context.Context,
+	shopID int64, productSourceID int64,
+	lines []*pborder.CreateOrderLine,
+) ([]*ordermodel.OrderLine, error) {
 	variantIDs := make([]int64, 0, len(lines))
 	if len(lines) > 40 {
 		return nil, cm.Error(cm.InvalidArgument, "Đơn hàng có quá nhiều sản phẩm", nil)
@@ -151,8 +155,8 @@ func PrepareOrderLines(ctx context.Context, shopID int64, lines []*pborder.Creat
 	var variants []*catalog.ShopVariantWithProduct
 	if len(variantIDs) > 0 {
 		variantsQuery := &catalog.ListShopVariantsWithProductByIDsQuery{
-			IDs:    variantIDs,
-			ShopID: shopID,
+			IDs:             variantIDs,
+			ProductSourceID: productSourceID,
 		}
 		if err := catalogQuery.Dispatch(ctx, variantsQuery); err != nil {
 			return nil, err
@@ -173,7 +177,7 @@ func PrepareOrderLines(ctx context.Context, shopID int64, lines []*pborder.Creat
 
 		var variant *catalog.ShopVariantWithProduct
 		for _, v := range variants {
-			if line.VariantId == v.VariantID {
+			if line.VariantId == v.Variant.ID {
 				variant = v
 				break
 			}
@@ -204,7 +208,7 @@ func UpdateOrder(ctx context.Context, claim *claims.ShopClaim, authPartner *mode
 	oldOrder := query.Result.Order
 
 	// make sure update always has Lines and FeeLines
-	lines, err := PrepareOrderLines(ctx, claim.Shop.ID, q.Lines)
+	lines, err := PrepareOrderLines(ctx, claim.Shop.ID, claim.Shop.ProductSourceID, q.Lines)
 	if err != nil {
 		return nil, err
 	}
@@ -334,10 +338,11 @@ func PrepareOrderLine(
 	m *pborder.CreateOrderLine,
 	v *catalog.ShopVariantWithProduct,
 ) (*ordermodel.OrderLine, error) {
-	if m.RetailPrice != v.ShopVariant.RetailPrice {
+	retailPrice := v.GetRetailPrice()
+	if m.RetailPrice != retailPrice {
 		return nil, cm.Errorf(cm.FailedPrecondition, nil,
 			`Có sự khác biệt về giá của sản phẩm "%v". Vui lòng kiểm tra lại. Giá đăng bán %v, giá đơn hàng %v`,
-			v.ProductWithVariantName(), v.ShopVariant.RetailPrice, m.RetailPrice)
+			v.ProductWithVariantName(), retailPrice, m.RetailPrice)
 	}
 	if m.PaymentPrice > m.RetailPrice {
 		return nil, cm.Errorf(cm.InvalidArgument, nil,
@@ -401,8 +406,8 @@ func prepareOrderLine(
 		}
 
 		if v.ShopVariant != nil {
-			line.RetailPrice = int(v.ShopVariant.RetailPrice)
-			originalPrice = v.ShopVariant.RetailPrice
+			line.RetailPrice = int(v.GetRetailPrice())
+			originalPrice = v.GetRetailPrice()
 		}
 		line.Attributes = convert.AttributesToModel(v.Variant.Attributes)
 	}

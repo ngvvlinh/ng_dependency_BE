@@ -185,8 +185,7 @@ func GetShopVariant(ctx context.Context, query *catalogmodelx.GetShopVariantQuer
 	}
 
 	product := new(catalogmodel.ShopVariantExtended)
-	if err := x.Table("shop_variant").
-		Where("sv.shop_id = ? AND sv.variant_id = ?", query.ShopID, query.VariantID).
+	if err := x.Where("sv.shop_id = ? AND sv.variant_id = ?", query.ShopID, query.VariantID).
 		ShouldGet(product); err != nil {
 		return err
 	}

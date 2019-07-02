@@ -77,7 +77,7 @@ func (s *QueryService) GetVariantWithProductByID(
 func (s *QueryService) GetShopProductWithVariantsByID(
 	ctx context.Context, args *catalog.GetShopProductByIDQueryArgs,
 ) (*catalog.ShopProductWithVariants, error) {
-	q := s.shopProduct(ctx).ID(args.ProductID).OptionalShopID(args.ShopID)
+	q := s.shopProduct(ctx).ID(args.ProductID).OptionalProductSourceID(args.ProductSourceID)
 	product, err := q.GetShopProductWithVariants()
 	if err != nil {
 		return nil, err
@@ -88,7 +88,7 @@ func (s *QueryService) GetShopProductWithVariantsByID(
 func (s *QueryService) GetShopProductByID(
 	ctx context.Context, args *catalog.GetShopProductByIDQueryArgs,
 ) (*catalog.ShopProductExtended, error) {
-	q := s.shopProduct(ctx).ID(args.ProductID).OptionalShopID(args.ShopID)
+	q := s.shopProduct(ctx).ID(args.ProductID).OptionalProductSourceID(args.ProductSourceID)
 	product, err := q.GetShopProduct()
 	if err != nil {
 		return nil, err
@@ -99,7 +99,7 @@ func (s *QueryService) GetShopProductByID(
 func (s *QueryService) GetShopVariantByID(
 	ctx context.Context, args *catalog.GetShopVariantByIDQueryArgs,
 ) (*catalog.ShopVariantExtended, error) {
-	q := s.shopVariant(ctx).ID(args.VariantID).OptionalShopID(args.ShopID)
+	q := s.shopVariant(ctx).ID(args.VariantID).OptionalProductSourceID(args.ProductSourceID)
 	variant, err := q.GetShopVariant()
 	if err != nil {
 		return nil, err
@@ -110,7 +110,7 @@ func (s *QueryService) GetShopVariantByID(
 func (s *QueryService) GetShopVariantWithProductByID(
 	ctx context.Context, args *catalog.GetShopVariantByIDQueryArgs,
 ) (*catalog.ShopVariantWithProduct, error) {
-	q := s.shopVariant(ctx).ID(args.VariantID).OptionalShopID(args.ShopID)
+	q := s.shopVariant(ctx).ID(args.VariantID).OptionalProductSourceID(args.ProductSourceID)
 	variant, err := q.GetShopVariantWithProduct()
 	if err != nil {
 		return nil, err
@@ -171,7 +171,7 @@ func (s *QueryService) ListVariantsWithProduct(
 func (s *QueryService) ListShopProducts(
 	ctx context.Context, args *catalog.ListShopProductsQueryArgs,
 ) (*catalog.ShopProductsResponse, error) {
-	q := s.shopProduct(ctx).ShopID(args.ShopID).Filters(args.Filters)
+	q := s.shopProduct(ctx).OptionalProductSourceID(args.ProductSourceID).Filters(args.Filters)
 	products, err := q.Paging(args.Paging).ListShopProducts()
 	if err != nil {
 		return nil, err
@@ -190,7 +190,7 @@ func (s *QueryService) ListShopProducts(
 func (s *QueryService) ListShopProductsWithVariants(
 	ctx context.Context, args *catalog.ListShopProductsQueryArgs,
 ) (*catalog.ShopProductsWithVariantsResponse, error) {
-	q := s.shopProduct(ctx).ShopID(args.ShopID).Filters(args.Filters)
+	q := s.shopProduct(ctx).OptionalProductSourceID(args.ProductSourceID).Filters(args.Filters)
 	products, err := q.Paging(args.Paging).ListShopProductsWithVariants()
 	if err != nil {
 		return nil, err
@@ -271,7 +271,7 @@ func (s *QueryService) ListVariantsWithProductByIDs(
 func (s *QueryService) ListShopProductsByIDs(
 	ctx context.Context, args *catalog.IDsShopArgs,
 ) (*catalog.ShopProductsResponse, error) {
-	q := s.shopProduct(ctx).IDs(args.IDs...).OptionalShopID(args.ShopID)
+	q := s.shopProduct(ctx).IDs(args.IDs...).OptionalShopID(args.ProductSourceID)
 	products, err := q.ListShopProducts()
 	if err != nil {
 		return nil, err
@@ -285,7 +285,7 @@ func (s *QueryService) ListShopProductsByIDs(
 func (s *QueryService) ListShopProductsWithVariantsByIDs(
 	ctx context.Context, args *catalog.IDsShopArgs,
 ) (*catalog.ShopProductsWithVariantsResponse, error) {
-	q := s.shopProduct(ctx).IDs(args.IDs...).OptionalShopID(args.ShopID)
+	q := s.shopProduct(ctx).IDs(args.IDs...).OptionalShopID(args.ProductSourceID)
 	products, err := q.ListShopProductsWithVariants()
 	if err != nil {
 		return nil, err
@@ -299,7 +299,7 @@ func (s *QueryService) ListShopProductsWithVariantsByIDs(
 func (s *QueryService) ListShopVariantsByIDs(
 	ctx context.Context, args *catalog.IDsShopArgs,
 ) (*catalog.ShopVariantsResponse, error) {
-	q := s.shopVariant(ctx).IDs(args.IDs...).OptionalShopID(args.ShopID)
+	q := s.shopVariant(ctx).IDs(args.IDs...).OptionalProductSourceID(args.ProductSourceID)
 	variants, err := q.ListShopVariants()
 	if err != nil {
 		return nil, err
@@ -313,7 +313,7 @@ func (s *QueryService) ListShopVariantsByIDs(
 func (s *QueryService) ListShopVariantsWithProductByIDs(
 	ctx context.Context, args *catalog.IDsShopArgs,
 ) (*catalog.ShopVariantsWithProductResponse, error) {
-	q := s.shopVariant(ctx).IDs(args.IDs...).OptionalShopID(args.ShopID)
+	q := s.shopVariant(ctx).IDs(args.IDs...).OptionalProductSourceID(args.ProductSourceID)
 	variants, err := q.ListShopVariantsWithProduct()
 	if err != nil {
 		return nil, err

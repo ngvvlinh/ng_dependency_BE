@@ -54,29 +54,29 @@ type GetProductWithVariantsByIDQuery struct {
 }
 
 type GetShopProductByIDQuery struct {
-	ProductID int64
-	ShopID    int64
+	ProductID       int64
+	ProductSourceID int64
 
 	Result *ShopProductExtended `json:"-"`
 }
 
 type GetShopProductWithVariantsByIDQuery struct {
-	ProductID int64
-	ShopID    int64
+	ProductID       int64
+	ProductSourceID int64
 
 	Result *ShopProductWithVariants `json:"-"`
 }
 
 type GetShopVariantByIDQuery struct {
-	VariantID int64
-	ShopID    int64
+	VariantID       int64
+	ProductSourceID int64
 
 	Result *ShopVariantExtended `json:"-"`
 }
 
 type GetShopVariantWithProductByIDQuery struct {
-	VariantID int64
-	ShopID    int64
+	VariantID       int64
+	ProductSourceID int64
 
 	Result *ShopVariantWithProduct `json:"-"`
 }
@@ -122,31 +122,31 @@ type ListProductsWithVariantsByIDsQuery struct {
 }
 
 type ListShopProductsQuery struct {
-	ShopID  int64
-	Paging  metav1.Paging
-	Filters meta.Filters
+	ProductSourceID int64
+	Paging          metav1.Paging
+	Filters         meta.Filters
 
 	Result *ShopProductsResponse `json:"-"`
 }
 
 type ListShopProductsByIDsQuery struct {
-	IDs    []int64
-	ShopID int64
+	IDs             []int64
+	ProductSourceID int64
 
 	Result *ShopProductsResponse `json:"-"`
 }
 
 type ListShopProductsWithVariantsQuery struct {
-	ShopID  int64
-	Paging  metav1.Paging
-	Filters meta.Filters
+	ProductSourceID int64
+	Paging          metav1.Paging
+	Filters         meta.Filters
 
 	Result *ShopProductsWithVariantsResponse `json:"-"`
 }
 
 type ListShopProductsWithVariantsByIDsQuery struct {
-	IDs    []int64
-	ShopID int64
+	IDs             []int64
+	ProductSourceID int64
 
 	Result *ShopProductsWithVariantsResponse `json:"-"`
 }
@@ -160,15 +160,15 @@ type ListShopVariantsQuery struct {
 }
 
 type ListShopVariantsByIDsQuery struct {
-	IDs    []int64
-	ShopID int64
+	IDs             []int64
+	ProductSourceID int64
 
 	Result *ShopVariantsResponse `json:"-"`
 }
 
 type ListShopVariantsWithProductByIDsQuery struct {
-	IDs    []int64
-	ShopID int64
+	IDs             []int64
+	ProductSourceID int64
 
 	Result *ShopVariantsWithProductResponse `json:"-"`
 }
@@ -245,26 +245,26 @@ func (q *GetProductWithVariantsByIDQuery) GetArgs() *GetProductByIDQueryArgs {
 }
 func (q *GetShopProductByIDQuery) GetArgs() *GetShopProductByIDQueryArgs {
 	return &GetShopProductByIDQueryArgs{
-		ProductID: q.ProductID,
-		ShopID:    q.ShopID,
+		ProductID:       q.ProductID,
+		ProductSourceID: q.ProductSourceID,
 	}
 }
 func (q *GetShopProductWithVariantsByIDQuery) GetArgs() *GetShopProductByIDQueryArgs {
 	return &GetShopProductByIDQueryArgs{
-		ProductID: q.ProductID,
-		ShopID:    q.ShopID,
+		ProductID:       q.ProductID,
+		ProductSourceID: q.ProductSourceID,
 	}
 }
 func (q *GetShopVariantByIDQuery) GetArgs() *GetShopVariantByIDQueryArgs {
 	return &GetShopVariantByIDQueryArgs{
-		VariantID: q.VariantID,
-		ShopID:    q.ShopID,
+		VariantID:       q.VariantID,
+		ProductSourceID: q.ProductSourceID,
 	}
 }
 func (q *GetShopVariantWithProductByIDQuery) GetArgs() *GetShopVariantByIDQueryArgs {
 	return &GetShopVariantByIDQueryArgs{
-		VariantID: q.VariantID,
-		ShopID:    q.ShopID,
+		VariantID:       q.VariantID,
+		ProductSourceID: q.ProductSourceID,
 	}
 }
 func (q *GetVariantByIDQuery) GetArgs() *GetVariantByIDQueryArgs {
@@ -303,28 +303,28 @@ func (q *ListProductsWithVariantsByIDsQuery) GetArgs() *IDsArgs {
 }
 func (q *ListShopProductsQuery) GetArgs() *ListShopProductsQueryArgs {
 	return &ListShopProductsQueryArgs{
-		ShopID:  q.ShopID,
-		Paging:  q.Paging,
-		Filters: q.Filters,
+		ProductSourceID: q.ProductSourceID,
+		Paging:          q.Paging,
+		Filters:         q.Filters,
 	}
 }
 func (q *ListShopProductsByIDsQuery) GetArgs() *IDsShopArgs {
 	return &IDsShopArgs{
-		IDs:    q.IDs,
-		ShopID: q.ShopID,
+		IDs:             q.IDs,
+		ProductSourceID: q.ProductSourceID,
 	}
 }
 func (q *ListShopProductsWithVariantsQuery) GetArgs() *ListShopProductsQueryArgs {
 	return &ListShopProductsQueryArgs{
-		ShopID:  q.ShopID,
-		Paging:  q.Paging,
-		Filters: q.Filters,
+		ProductSourceID: q.ProductSourceID,
+		Paging:          q.Paging,
+		Filters:         q.Filters,
 	}
 }
 func (q *ListShopProductsWithVariantsByIDsQuery) GetArgs() *IDsShopArgs {
 	return &IDsShopArgs{
-		IDs:    q.IDs,
-		ShopID: q.ShopID,
+		IDs:             q.IDs,
+		ProductSourceID: q.ProductSourceID,
 	}
 }
 func (q *ListShopVariantsQuery) GetArgs() *ListShopVariantsQueryArgs {
@@ -336,14 +336,14 @@ func (q *ListShopVariantsQuery) GetArgs() *ListShopVariantsQueryArgs {
 }
 func (q *ListShopVariantsByIDsQuery) GetArgs() *IDsShopArgs {
 	return &IDsShopArgs{
-		IDs:    q.IDs,
-		ShopID: q.ShopID,
+		IDs:             q.IDs,
+		ProductSourceID: q.ProductSourceID,
 	}
 }
 func (q *ListShopVariantsWithProductByIDsQuery) GetArgs() *IDsShopArgs {
 	return &IDsShopArgs{
-		IDs:    q.IDs,
-		ShopID: q.ShopID,
+		IDs:             q.IDs,
+		ProductSourceID: q.ProductSourceID,
 	}
 }
 func (q *ListVariantsQuery) GetArgs() *ListVariantsQueryArgs {

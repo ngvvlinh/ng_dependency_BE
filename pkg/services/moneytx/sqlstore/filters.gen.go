@@ -16,7 +16,7 @@ func NewMoneyTransactionShippingExternalFilters(prefix string) MoneyTransactionS
 	return MoneyTransactionShippingExternalFilters{prefix}
 }
 
-func (ft MoneyTransactionShippingExternalFilters) Filter(pred string, args ...interface{}) sq.WriterTo {
+func (ft *MoneyTransactionShippingExternalFilters) Filter(pred string, args ...interface{}) sq.WriterTo {
 	return sq.Filter(&ft.prefix, pred, args...)
 }
 
@@ -24,7 +24,7 @@ func (ft MoneyTransactionShippingExternalFilters) Prefix() string {
 	return ft.prefix
 }
 
-func (ft MoneyTransactionShippingExternalFilters) ByID(ID int64) *sq.ColumnFilter {
+func (ft *MoneyTransactionShippingExternalFilters) ByID(ID int64) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "id",
@@ -33,7 +33,7 @@ func (ft MoneyTransactionShippingExternalFilters) ByID(ID int64) *sq.ColumnFilte
 	}
 }
 
-func (ft MoneyTransactionShippingExternalFilters) ByIDPtr(ID *int64) *sq.ColumnFilterPtr {
+func (ft *MoneyTransactionShippingExternalFilters) ByIDPtr(ID *int64) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "id",
@@ -43,7 +43,7 @@ func (ft MoneyTransactionShippingExternalFilters) ByIDPtr(ID *int64) *sq.ColumnF
 	}
 }
 
-func (ft MoneyTransactionShippingExternalFilters) ByCode(Code string) *sq.ColumnFilter {
+func (ft *MoneyTransactionShippingExternalFilters) ByCode(Code string) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "code",
@@ -52,7 +52,7 @@ func (ft MoneyTransactionShippingExternalFilters) ByCode(Code string) *sq.Column
 	}
 }
 
-func (ft MoneyTransactionShippingExternalFilters) ByCodePtr(Code *string) *sq.ColumnFilterPtr {
+func (ft *MoneyTransactionShippingExternalFilters) ByCodePtr(Code *string) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "code",
@@ -62,7 +62,7 @@ func (ft MoneyTransactionShippingExternalFilters) ByCodePtr(Code *string) *sq.Co
 	}
 }
 
-func (ft MoneyTransactionShippingExternalFilters) ByTotalCOD(TotalCOD int) *sq.ColumnFilter {
+func (ft *MoneyTransactionShippingExternalFilters) ByTotalCOD(TotalCOD int) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "total_cod",
@@ -71,7 +71,7 @@ func (ft MoneyTransactionShippingExternalFilters) ByTotalCOD(TotalCOD int) *sq.C
 	}
 }
 
-func (ft MoneyTransactionShippingExternalFilters) ByTotalCODPtr(TotalCOD *int) *sq.ColumnFilterPtr {
+func (ft *MoneyTransactionShippingExternalFilters) ByTotalCODPtr(TotalCOD *int) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "total_cod",
@@ -81,7 +81,7 @@ func (ft MoneyTransactionShippingExternalFilters) ByTotalCODPtr(TotalCOD *int) *
 	}
 }
 
-func (ft MoneyTransactionShippingExternalFilters) ByTotalOrders(TotalOrders int) *sq.ColumnFilter {
+func (ft *MoneyTransactionShippingExternalFilters) ByTotalOrders(TotalOrders int) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "total_orders",
@@ -90,7 +90,7 @@ func (ft MoneyTransactionShippingExternalFilters) ByTotalOrders(TotalOrders int)
 	}
 }
 
-func (ft MoneyTransactionShippingExternalFilters) ByTotalOrdersPtr(TotalOrders *int) *sq.ColumnFilterPtr {
+func (ft *MoneyTransactionShippingExternalFilters) ByTotalOrdersPtr(TotalOrders *int) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "total_orders",
@@ -100,7 +100,7 @@ func (ft MoneyTransactionShippingExternalFilters) ByTotalOrdersPtr(TotalOrders *
 	}
 }
 
-func (ft MoneyTransactionShippingExternalFilters) ByCreatedAt(CreatedAt time.Time) *sq.ColumnFilter {
+func (ft *MoneyTransactionShippingExternalFilters) ByCreatedAt(CreatedAt time.Time) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "created_at",
@@ -109,7 +109,7 @@ func (ft MoneyTransactionShippingExternalFilters) ByCreatedAt(CreatedAt time.Tim
 	}
 }
 
-func (ft MoneyTransactionShippingExternalFilters) ByCreatedAtPtr(CreatedAt *time.Time) *sq.ColumnFilterPtr {
+func (ft *MoneyTransactionShippingExternalFilters) ByCreatedAtPtr(CreatedAt *time.Time) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "created_at",
@@ -119,7 +119,7 @@ func (ft MoneyTransactionShippingExternalFilters) ByCreatedAtPtr(CreatedAt *time
 	}
 }
 
-func (ft MoneyTransactionShippingExternalFilters) ByUpdatedAt(UpdatedAt time.Time) *sq.ColumnFilter {
+func (ft *MoneyTransactionShippingExternalFilters) ByUpdatedAt(UpdatedAt time.Time) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "updated_at",
@@ -128,7 +128,7 @@ func (ft MoneyTransactionShippingExternalFilters) ByUpdatedAt(UpdatedAt time.Tim
 	}
 }
 
-func (ft MoneyTransactionShippingExternalFilters) ByUpdatedAtPtr(UpdatedAt *time.Time) *sq.ColumnFilterPtr {
+func (ft *MoneyTransactionShippingExternalFilters) ByUpdatedAtPtr(UpdatedAt *time.Time) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "updated_at",
@@ -138,7 +138,7 @@ func (ft MoneyTransactionShippingExternalFilters) ByUpdatedAtPtr(UpdatedAt *time
 	}
 }
 
-func (ft MoneyTransactionShippingExternalFilters) ByStatus(Status model.Status3) *sq.ColumnFilter {
+func (ft *MoneyTransactionShippingExternalFilters) ByStatus(Status model.Status3) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "status",
@@ -147,7 +147,7 @@ func (ft MoneyTransactionShippingExternalFilters) ByStatus(Status model.Status3)
 	}
 }
 
-func (ft MoneyTransactionShippingExternalFilters) ByStatusPtr(Status *model.Status3) *sq.ColumnFilterPtr {
+func (ft *MoneyTransactionShippingExternalFilters) ByStatusPtr(Status *model.Status3) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "status",
@@ -157,7 +157,7 @@ func (ft MoneyTransactionShippingExternalFilters) ByStatusPtr(Status *model.Stat
 	}
 }
 
-func (ft MoneyTransactionShippingExternalFilters) ByExternalPaidAt(ExternalPaidAt time.Time) *sq.ColumnFilter {
+func (ft *MoneyTransactionShippingExternalFilters) ByExternalPaidAt(ExternalPaidAt time.Time) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "external_paid_at",
@@ -166,7 +166,7 @@ func (ft MoneyTransactionShippingExternalFilters) ByExternalPaidAt(ExternalPaidA
 	}
 }
 
-func (ft MoneyTransactionShippingExternalFilters) ByExternalPaidAtPtr(ExternalPaidAt *time.Time) *sq.ColumnFilterPtr {
+func (ft *MoneyTransactionShippingExternalFilters) ByExternalPaidAtPtr(ExternalPaidAt *time.Time) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "external_paid_at",
@@ -176,7 +176,7 @@ func (ft MoneyTransactionShippingExternalFilters) ByExternalPaidAtPtr(ExternalPa
 	}
 }
 
-func (ft MoneyTransactionShippingExternalFilters) ByProvider(Provider string) *sq.ColumnFilter {
+func (ft *MoneyTransactionShippingExternalFilters) ByProvider(Provider string) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "provider",
@@ -185,7 +185,7 @@ func (ft MoneyTransactionShippingExternalFilters) ByProvider(Provider string) *s
 	}
 }
 
-func (ft MoneyTransactionShippingExternalFilters) ByProviderPtr(Provider *string) *sq.ColumnFilterPtr {
+func (ft *MoneyTransactionShippingExternalFilters) ByProviderPtr(Provider *string) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "provider",
@@ -195,7 +195,7 @@ func (ft MoneyTransactionShippingExternalFilters) ByProviderPtr(Provider *string
 	}
 }
 
-func (ft MoneyTransactionShippingExternalFilters) ByNote(Note string) *sq.ColumnFilter {
+func (ft *MoneyTransactionShippingExternalFilters) ByNote(Note string) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "note",
@@ -204,7 +204,7 @@ func (ft MoneyTransactionShippingExternalFilters) ByNote(Note string) *sq.Column
 	}
 }
 
-func (ft MoneyTransactionShippingExternalFilters) ByNotePtr(Note *string) *sq.ColumnFilterPtr {
+func (ft *MoneyTransactionShippingExternalFilters) ByNotePtr(Note *string) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "note",
@@ -214,7 +214,7 @@ func (ft MoneyTransactionShippingExternalFilters) ByNotePtr(Note *string) *sq.Co
 	}
 }
 
-func (ft MoneyTransactionShippingExternalFilters) ByInvoiceNumber(InvoiceNumber string) *sq.ColumnFilter {
+func (ft *MoneyTransactionShippingExternalFilters) ByInvoiceNumber(InvoiceNumber string) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "invoice_number",
@@ -223,7 +223,7 @@ func (ft MoneyTransactionShippingExternalFilters) ByInvoiceNumber(InvoiceNumber 
 	}
 }
 
-func (ft MoneyTransactionShippingExternalFilters) ByInvoiceNumberPtr(InvoiceNumber *string) *sq.ColumnFilterPtr {
+func (ft *MoneyTransactionShippingExternalFilters) ByInvoiceNumberPtr(InvoiceNumber *string) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "invoice_number",
@@ -239,7 +239,7 @@ func NewMoneyTransactionShippingExternalLineFilters(prefix string) MoneyTransact
 	return MoneyTransactionShippingExternalLineFilters{prefix}
 }
 
-func (ft MoneyTransactionShippingExternalLineFilters) Filter(pred string, args ...interface{}) sq.WriterTo {
+func (ft *MoneyTransactionShippingExternalLineFilters) Filter(pred string, args ...interface{}) sq.WriterTo {
 	return sq.Filter(&ft.prefix, pred, args...)
 }
 
@@ -247,7 +247,7 @@ func (ft MoneyTransactionShippingExternalLineFilters) Prefix() string {
 	return ft.prefix
 }
 
-func (ft MoneyTransactionShippingExternalLineFilters) ByID(ID int64) *sq.ColumnFilter {
+func (ft *MoneyTransactionShippingExternalLineFilters) ByID(ID int64) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "id",
@@ -256,7 +256,7 @@ func (ft MoneyTransactionShippingExternalLineFilters) ByID(ID int64) *sq.ColumnF
 	}
 }
 
-func (ft MoneyTransactionShippingExternalLineFilters) ByIDPtr(ID *int64) *sq.ColumnFilterPtr {
+func (ft *MoneyTransactionShippingExternalLineFilters) ByIDPtr(ID *int64) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "id",
@@ -266,7 +266,7 @@ func (ft MoneyTransactionShippingExternalLineFilters) ByIDPtr(ID *int64) *sq.Col
 	}
 }
 
-func (ft MoneyTransactionShippingExternalLineFilters) ByExternalCode(ExternalCode string) *sq.ColumnFilter {
+func (ft *MoneyTransactionShippingExternalLineFilters) ByExternalCode(ExternalCode string) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "external_code",
@@ -275,7 +275,7 @@ func (ft MoneyTransactionShippingExternalLineFilters) ByExternalCode(ExternalCod
 	}
 }
 
-func (ft MoneyTransactionShippingExternalLineFilters) ByExternalCodePtr(ExternalCode *string) *sq.ColumnFilterPtr {
+func (ft *MoneyTransactionShippingExternalLineFilters) ByExternalCodePtr(ExternalCode *string) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "external_code",
@@ -285,7 +285,7 @@ func (ft MoneyTransactionShippingExternalLineFilters) ByExternalCodePtr(External
 	}
 }
 
-func (ft MoneyTransactionShippingExternalLineFilters) ByExternalCustomer(ExternalCustomer string) *sq.ColumnFilter {
+func (ft *MoneyTransactionShippingExternalLineFilters) ByExternalCustomer(ExternalCustomer string) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "external_customer",
@@ -294,7 +294,7 @@ func (ft MoneyTransactionShippingExternalLineFilters) ByExternalCustomer(Externa
 	}
 }
 
-func (ft MoneyTransactionShippingExternalLineFilters) ByExternalCustomerPtr(ExternalCustomer *string) *sq.ColumnFilterPtr {
+func (ft *MoneyTransactionShippingExternalLineFilters) ByExternalCustomerPtr(ExternalCustomer *string) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "external_customer",
@@ -304,7 +304,7 @@ func (ft MoneyTransactionShippingExternalLineFilters) ByExternalCustomerPtr(Exte
 	}
 }
 
-func (ft MoneyTransactionShippingExternalLineFilters) ByExternalAddress(ExternalAddress string) *sq.ColumnFilter {
+func (ft *MoneyTransactionShippingExternalLineFilters) ByExternalAddress(ExternalAddress string) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "external_address",
@@ -313,7 +313,7 @@ func (ft MoneyTransactionShippingExternalLineFilters) ByExternalAddress(External
 	}
 }
 
-func (ft MoneyTransactionShippingExternalLineFilters) ByExternalAddressPtr(ExternalAddress *string) *sq.ColumnFilterPtr {
+func (ft *MoneyTransactionShippingExternalLineFilters) ByExternalAddressPtr(ExternalAddress *string) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "external_address",
@@ -323,7 +323,7 @@ func (ft MoneyTransactionShippingExternalLineFilters) ByExternalAddressPtr(Exter
 	}
 }
 
-func (ft MoneyTransactionShippingExternalLineFilters) ByExternalTotalCOD(ExternalTotalCOD int) *sq.ColumnFilter {
+func (ft *MoneyTransactionShippingExternalLineFilters) ByExternalTotalCOD(ExternalTotalCOD int) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "external_total_cod",
@@ -332,7 +332,7 @@ func (ft MoneyTransactionShippingExternalLineFilters) ByExternalTotalCOD(Externa
 	}
 }
 
-func (ft MoneyTransactionShippingExternalLineFilters) ByExternalTotalCODPtr(ExternalTotalCOD *int) *sq.ColumnFilterPtr {
+func (ft *MoneyTransactionShippingExternalLineFilters) ByExternalTotalCODPtr(ExternalTotalCOD *int) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "external_total_cod",
@@ -342,7 +342,7 @@ func (ft MoneyTransactionShippingExternalLineFilters) ByExternalTotalCODPtr(Exte
 	}
 }
 
-func (ft MoneyTransactionShippingExternalLineFilters) ByExternalCreatedAt(ExternalCreatedAt time.Time) *sq.ColumnFilter {
+func (ft *MoneyTransactionShippingExternalLineFilters) ByExternalCreatedAt(ExternalCreatedAt time.Time) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "external_created_at",
@@ -351,7 +351,7 @@ func (ft MoneyTransactionShippingExternalLineFilters) ByExternalCreatedAt(Extern
 	}
 }
 
-func (ft MoneyTransactionShippingExternalLineFilters) ByExternalCreatedAtPtr(ExternalCreatedAt *time.Time) *sq.ColumnFilterPtr {
+func (ft *MoneyTransactionShippingExternalLineFilters) ByExternalCreatedAtPtr(ExternalCreatedAt *time.Time) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "external_created_at",
@@ -361,7 +361,7 @@ func (ft MoneyTransactionShippingExternalLineFilters) ByExternalCreatedAtPtr(Ext
 	}
 }
 
-func (ft MoneyTransactionShippingExternalLineFilters) ByExternalClosedAt(ExternalClosedAt time.Time) *sq.ColumnFilter {
+func (ft *MoneyTransactionShippingExternalLineFilters) ByExternalClosedAt(ExternalClosedAt time.Time) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "external_closed_at",
@@ -370,7 +370,7 @@ func (ft MoneyTransactionShippingExternalLineFilters) ByExternalClosedAt(Externa
 	}
 }
 
-func (ft MoneyTransactionShippingExternalLineFilters) ByExternalClosedAtPtr(ExternalClosedAt *time.Time) *sq.ColumnFilterPtr {
+func (ft *MoneyTransactionShippingExternalLineFilters) ByExternalClosedAtPtr(ExternalClosedAt *time.Time) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "external_closed_at",
@@ -380,7 +380,7 @@ func (ft MoneyTransactionShippingExternalLineFilters) ByExternalClosedAtPtr(Exte
 	}
 }
 
-func (ft MoneyTransactionShippingExternalLineFilters) ByEtopFulfillmentIdRaw(EtopFulfillmentIdRaw string) *sq.ColumnFilter {
+func (ft *MoneyTransactionShippingExternalLineFilters) ByEtopFulfillmentIdRaw(EtopFulfillmentIdRaw string) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "etop_fulfillment_id_raw",
@@ -389,7 +389,7 @@ func (ft MoneyTransactionShippingExternalLineFilters) ByEtopFulfillmentIdRaw(Eto
 	}
 }
 
-func (ft MoneyTransactionShippingExternalLineFilters) ByEtopFulfillmentIdRawPtr(EtopFulfillmentIdRaw *string) *sq.ColumnFilterPtr {
+func (ft *MoneyTransactionShippingExternalLineFilters) ByEtopFulfillmentIdRawPtr(EtopFulfillmentIdRaw *string) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "etop_fulfillment_id_raw",
@@ -399,7 +399,7 @@ func (ft MoneyTransactionShippingExternalLineFilters) ByEtopFulfillmentIdRawPtr(
 	}
 }
 
-func (ft MoneyTransactionShippingExternalLineFilters) ByEtopFulfillmentID(EtopFulfillmentID int64) *sq.ColumnFilter {
+func (ft *MoneyTransactionShippingExternalLineFilters) ByEtopFulfillmentID(EtopFulfillmentID int64) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "etop_fulfillment_id",
@@ -408,7 +408,7 @@ func (ft MoneyTransactionShippingExternalLineFilters) ByEtopFulfillmentID(EtopFu
 	}
 }
 
-func (ft MoneyTransactionShippingExternalLineFilters) ByEtopFulfillmentIDPtr(EtopFulfillmentID *int64) *sq.ColumnFilterPtr {
+func (ft *MoneyTransactionShippingExternalLineFilters) ByEtopFulfillmentIDPtr(EtopFulfillmentID *int64) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "etop_fulfillment_id",
@@ -418,7 +418,7 @@ func (ft MoneyTransactionShippingExternalLineFilters) ByEtopFulfillmentIDPtr(Eto
 	}
 }
 
-func (ft MoneyTransactionShippingExternalLineFilters) ByNote(Note string) *sq.ColumnFilter {
+func (ft *MoneyTransactionShippingExternalLineFilters) ByNote(Note string) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "note",
@@ -427,7 +427,7 @@ func (ft MoneyTransactionShippingExternalLineFilters) ByNote(Note string) *sq.Co
 	}
 }
 
-func (ft MoneyTransactionShippingExternalLineFilters) ByNotePtr(Note *string) *sq.ColumnFilterPtr {
+func (ft *MoneyTransactionShippingExternalLineFilters) ByNotePtr(Note *string) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "note",
@@ -437,7 +437,7 @@ func (ft MoneyTransactionShippingExternalLineFilters) ByNotePtr(Note *string) *s
 	}
 }
 
-func (ft MoneyTransactionShippingExternalLineFilters) ByMoneyTransactionShippingExternalID(MoneyTransactionShippingExternalID int64) *sq.ColumnFilter {
+func (ft *MoneyTransactionShippingExternalLineFilters) ByMoneyTransactionShippingExternalID(MoneyTransactionShippingExternalID int64) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "money_transaction_shipping_external_id",
@@ -446,7 +446,7 @@ func (ft MoneyTransactionShippingExternalLineFilters) ByMoneyTransactionShipping
 	}
 }
 
-func (ft MoneyTransactionShippingExternalLineFilters) ByMoneyTransactionShippingExternalIDPtr(MoneyTransactionShippingExternalID *int64) *sq.ColumnFilterPtr {
+func (ft *MoneyTransactionShippingExternalLineFilters) ByMoneyTransactionShippingExternalIDPtr(MoneyTransactionShippingExternalID *int64) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "money_transaction_shipping_external_id",
@@ -456,7 +456,7 @@ func (ft MoneyTransactionShippingExternalLineFilters) ByMoneyTransactionShipping
 	}
 }
 
-func (ft MoneyTransactionShippingExternalLineFilters) ByCreatedAt(CreatedAt time.Time) *sq.ColumnFilter {
+func (ft *MoneyTransactionShippingExternalLineFilters) ByCreatedAt(CreatedAt time.Time) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "created_at",
@@ -465,7 +465,7 @@ func (ft MoneyTransactionShippingExternalLineFilters) ByCreatedAt(CreatedAt time
 	}
 }
 
-func (ft MoneyTransactionShippingExternalLineFilters) ByCreatedAtPtr(CreatedAt *time.Time) *sq.ColumnFilterPtr {
+func (ft *MoneyTransactionShippingExternalLineFilters) ByCreatedAtPtr(CreatedAt *time.Time) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "created_at",
@@ -475,7 +475,7 @@ func (ft MoneyTransactionShippingExternalLineFilters) ByCreatedAtPtr(CreatedAt *
 	}
 }
 
-func (ft MoneyTransactionShippingExternalLineFilters) ByUpdatedAt(UpdatedAt time.Time) *sq.ColumnFilter {
+func (ft *MoneyTransactionShippingExternalLineFilters) ByUpdatedAt(UpdatedAt time.Time) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "updated_at",
@@ -484,7 +484,7 @@ func (ft MoneyTransactionShippingExternalLineFilters) ByUpdatedAt(UpdatedAt time
 	}
 }
 
-func (ft MoneyTransactionShippingExternalLineFilters) ByUpdatedAtPtr(UpdatedAt *time.Time) *sq.ColumnFilterPtr {
+func (ft *MoneyTransactionShippingExternalLineFilters) ByUpdatedAtPtr(UpdatedAt *time.Time) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "updated_at",
@@ -494,7 +494,7 @@ func (ft MoneyTransactionShippingExternalLineFilters) ByUpdatedAtPtr(UpdatedAt *
 	}
 }
 
-func (ft MoneyTransactionShippingExternalLineFilters) ByExternalTotalShippingFee(ExternalTotalShippingFee int) *sq.ColumnFilter {
+func (ft *MoneyTransactionShippingExternalLineFilters) ByExternalTotalShippingFee(ExternalTotalShippingFee int) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "external_total_shipping_fee",
@@ -503,7 +503,7 @@ func (ft MoneyTransactionShippingExternalLineFilters) ByExternalTotalShippingFee
 	}
 }
 
-func (ft MoneyTransactionShippingExternalLineFilters) ByExternalTotalShippingFeePtr(ExternalTotalShippingFee *int) *sq.ColumnFilterPtr {
+func (ft *MoneyTransactionShippingExternalLineFilters) ByExternalTotalShippingFeePtr(ExternalTotalShippingFee *int) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "external_total_shipping_fee",
@@ -519,7 +519,7 @@ func NewMoneyTransactionShippingFilters(prefix string) MoneyTransactionShippingF
 	return MoneyTransactionShippingFilters{prefix}
 }
 
-func (ft MoneyTransactionShippingFilters) Filter(pred string, args ...interface{}) sq.WriterTo {
+func (ft *MoneyTransactionShippingFilters) Filter(pred string, args ...interface{}) sq.WriterTo {
 	return sq.Filter(&ft.prefix, pred, args...)
 }
 
@@ -527,7 +527,7 @@ func (ft MoneyTransactionShippingFilters) Prefix() string {
 	return ft.prefix
 }
 
-func (ft MoneyTransactionShippingFilters) ByID(ID int64) *sq.ColumnFilter {
+func (ft *MoneyTransactionShippingFilters) ByID(ID int64) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "id",
@@ -536,7 +536,7 @@ func (ft MoneyTransactionShippingFilters) ByID(ID int64) *sq.ColumnFilter {
 	}
 }
 
-func (ft MoneyTransactionShippingFilters) ByIDPtr(ID *int64) *sq.ColumnFilterPtr {
+func (ft *MoneyTransactionShippingFilters) ByIDPtr(ID *int64) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "id",
@@ -546,7 +546,7 @@ func (ft MoneyTransactionShippingFilters) ByIDPtr(ID *int64) *sq.ColumnFilterPtr
 	}
 }
 
-func (ft MoneyTransactionShippingFilters) ByShopID(ShopID int64) *sq.ColumnFilter {
+func (ft *MoneyTransactionShippingFilters) ByShopID(ShopID int64) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "shop_id",
@@ -555,7 +555,7 @@ func (ft MoneyTransactionShippingFilters) ByShopID(ShopID int64) *sq.ColumnFilte
 	}
 }
 
-func (ft MoneyTransactionShippingFilters) ByShopIDPtr(ShopID *int64) *sq.ColumnFilterPtr {
+func (ft *MoneyTransactionShippingFilters) ByShopIDPtr(ShopID *int64) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "shop_id",
@@ -565,7 +565,7 @@ func (ft MoneyTransactionShippingFilters) ByShopIDPtr(ShopID *int64) *sq.ColumnF
 	}
 }
 
-func (ft MoneyTransactionShippingFilters) ByCreatedAt(CreatedAt time.Time) *sq.ColumnFilter {
+func (ft *MoneyTransactionShippingFilters) ByCreatedAt(CreatedAt time.Time) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "created_at",
@@ -574,7 +574,7 @@ func (ft MoneyTransactionShippingFilters) ByCreatedAt(CreatedAt time.Time) *sq.C
 	}
 }
 
-func (ft MoneyTransactionShippingFilters) ByCreatedAtPtr(CreatedAt *time.Time) *sq.ColumnFilterPtr {
+func (ft *MoneyTransactionShippingFilters) ByCreatedAtPtr(CreatedAt *time.Time) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "created_at",
@@ -584,7 +584,7 @@ func (ft MoneyTransactionShippingFilters) ByCreatedAtPtr(CreatedAt *time.Time) *
 	}
 }
 
-func (ft MoneyTransactionShippingFilters) ByUpdatedAt(UpdatedAt time.Time) *sq.ColumnFilter {
+func (ft *MoneyTransactionShippingFilters) ByUpdatedAt(UpdatedAt time.Time) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "updated_at",
@@ -593,7 +593,7 @@ func (ft MoneyTransactionShippingFilters) ByUpdatedAt(UpdatedAt time.Time) *sq.C
 	}
 }
 
-func (ft MoneyTransactionShippingFilters) ByUpdatedAtPtr(UpdatedAt *time.Time) *sq.ColumnFilterPtr {
+func (ft *MoneyTransactionShippingFilters) ByUpdatedAtPtr(UpdatedAt *time.Time) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "updated_at",
@@ -603,7 +603,7 @@ func (ft MoneyTransactionShippingFilters) ByUpdatedAtPtr(UpdatedAt *time.Time) *
 	}
 }
 
-func (ft MoneyTransactionShippingFilters) ByClosedAt(ClosedAt time.Time) *sq.ColumnFilter {
+func (ft *MoneyTransactionShippingFilters) ByClosedAt(ClosedAt time.Time) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "closed_at",
@@ -612,7 +612,7 @@ func (ft MoneyTransactionShippingFilters) ByClosedAt(ClosedAt time.Time) *sq.Col
 	}
 }
 
-func (ft MoneyTransactionShippingFilters) ByClosedAtPtr(ClosedAt *time.Time) *sq.ColumnFilterPtr {
+func (ft *MoneyTransactionShippingFilters) ByClosedAtPtr(ClosedAt *time.Time) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "closed_at",
@@ -622,7 +622,7 @@ func (ft MoneyTransactionShippingFilters) ByClosedAtPtr(ClosedAt *time.Time) *sq
 	}
 }
 
-func (ft MoneyTransactionShippingFilters) ByStatus(Status model.Status3) *sq.ColumnFilter {
+func (ft *MoneyTransactionShippingFilters) ByStatus(Status model.Status3) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "status",
@@ -631,7 +631,7 @@ func (ft MoneyTransactionShippingFilters) ByStatus(Status model.Status3) *sq.Col
 	}
 }
 
-func (ft MoneyTransactionShippingFilters) ByStatusPtr(Status *model.Status3) *sq.ColumnFilterPtr {
+func (ft *MoneyTransactionShippingFilters) ByStatusPtr(Status *model.Status3) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "status",
@@ -641,7 +641,7 @@ func (ft MoneyTransactionShippingFilters) ByStatusPtr(Status *model.Status3) *sq
 	}
 }
 
-func (ft MoneyTransactionShippingFilters) ByTotalCOD(TotalCOD int) *sq.ColumnFilter {
+func (ft *MoneyTransactionShippingFilters) ByTotalCOD(TotalCOD int) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "total_cod",
@@ -650,7 +650,7 @@ func (ft MoneyTransactionShippingFilters) ByTotalCOD(TotalCOD int) *sq.ColumnFil
 	}
 }
 
-func (ft MoneyTransactionShippingFilters) ByTotalCODPtr(TotalCOD *int) *sq.ColumnFilterPtr {
+func (ft *MoneyTransactionShippingFilters) ByTotalCODPtr(TotalCOD *int) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "total_cod",
@@ -660,7 +660,7 @@ func (ft MoneyTransactionShippingFilters) ByTotalCODPtr(TotalCOD *int) *sq.Colum
 	}
 }
 
-func (ft MoneyTransactionShippingFilters) ByTotalAmount(TotalAmount int) *sq.ColumnFilter {
+func (ft *MoneyTransactionShippingFilters) ByTotalAmount(TotalAmount int) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "total_amount",
@@ -669,7 +669,7 @@ func (ft MoneyTransactionShippingFilters) ByTotalAmount(TotalAmount int) *sq.Col
 	}
 }
 
-func (ft MoneyTransactionShippingFilters) ByTotalAmountPtr(TotalAmount *int) *sq.ColumnFilterPtr {
+func (ft *MoneyTransactionShippingFilters) ByTotalAmountPtr(TotalAmount *int) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "total_amount",
@@ -679,7 +679,7 @@ func (ft MoneyTransactionShippingFilters) ByTotalAmountPtr(TotalAmount *int) *sq
 	}
 }
 
-func (ft MoneyTransactionShippingFilters) ByTotalOrders(TotalOrders int) *sq.ColumnFilter {
+func (ft *MoneyTransactionShippingFilters) ByTotalOrders(TotalOrders int) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "total_orders",
@@ -688,7 +688,7 @@ func (ft MoneyTransactionShippingFilters) ByTotalOrders(TotalOrders int) *sq.Col
 	}
 }
 
-func (ft MoneyTransactionShippingFilters) ByTotalOrdersPtr(TotalOrders *int) *sq.ColumnFilterPtr {
+func (ft *MoneyTransactionShippingFilters) ByTotalOrdersPtr(TotalOrders *int) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "total_orders",
@@ -698,7 +698,7 @@ func (ft MoneyTransactionShippingFilters) ByTotalOrdersPtr(TotalOrders *int) *sq
 	}
 }
 
-func (ft MoneyTransactionShippingFilters) ByCode(Code string) *sq.ColumnFilter {
+func (ft *MoneyTransactionShippingFilters) ByCode(Code string) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "code",
@@ -707,7 +707,7 @@ func (ft MoneyTransactionShippingFilters) ByCode(Code string) *sq.ColumnFilter {
 	}
 }
 
-func (ft MoneyTransactionShippingFilters) ByCodePtr(Code *string) *sq.ColumnFilterPtr {
+func (ft *MoneyTransactionShippingFilters) ByCodePtr(Code *string) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "code",
@@ -717,7 +717,7 @@ func (ft MoneyTransactionShippingFilters) ByCodePtr(Code *string) *sq.ColumnFilt
 	}
 }
 
-func (ft MoneyTransactionShippingFilters) ByMoneyTransactionShippingExternalID(MoneyTransactionShippingExternalID int64) *sq.ColumnFilter {
+func (ft *MoneyTransactionShippingFilters) ByMoneyTransactionShippingExternalID(MoneyTransactionShippingExternalID int64) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "money_transaction_shipping_external_id",
@@ -726,7 +726,7 @@ func (ft MoneyTransactionShippingFilters) ByMoneyTransactionShippingExternalID(M
 	}
 }
 
-func (ft MoneyTransactionShippingFilters) ByMoneyTransactionShippingExternalIDPtr(MoneyTransactionShippingExternalID *int64) *sq.ColumnFilterPtr {
+func (ft *MoneyTransactionShippingFilters) ByMoneyTransactionShippingExternalIDPtr(MoneyTransactionShippingExternalID *int64) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "money_transaction_shipping_external_id",
@@ -736,7 +736,7 @@ func (ft MoneyTransactionShippingFilters) ByMoneyTransactionShippingExternalIDPt
 	}
 }
 
-func (ft MoneyTransactionShippingFilters) ByMoneyTransactionShippingEtopID(MoneyTransactionShippingEtopID int64) *sq.ColumnFilter {
+func (ft *MoneyTransactionShippingFilters) ByMoneyTransactionShippingEtopID(MoneyTransactionShippingEtopID int64) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "money_transaction_shipping_etop_id",
@@ -745,7 +745,7 @@ func (ft MoneyTransactionShippingFilters) ByMoneyTransactionShippingEtopID(Money
 	}
 }
 
-func (ft MoneyTransactionShippingFilters) ByMoneyTransactionShippingEtopIDPtr(MoneyTransactionShippingEtopID *int64) *sq.ColumnFilterPtr {
+func (ft *MoneyTransactionShippingFilters) ByMoneyTransactionShippingEtopIDPtr(MoneyTransactionShippingEtopID *int64) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "money_transaction_shipping_etop_id",
@@ -755,7 +755,7 @@ func (ft MoneyTransactionShippingFilters) ByMoneyTransactionShippingEtopIDPtr(Mo
 	}
 }
 
-func (ft MoneyTransactionShippingFilters) ByProvider(Provider string) *sq.ColumnFilter {
+func (ft *MoneyTransactionShippingFilters) ByProvider(Provider string) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "provider",
@@ -764,7 +764,7 @@ func (ft MoneyTransactionShippingFilters) ByProvider(Provider string) *sq.Column
 	}
 }
 
-func (ft MoneyTransactionShippingFilters) ByProviderPtr(Provider *string) *sq.ColumnFilterPtr {
+func (ft *MoneyTransactionShippingFilters) ByProviderPtr(Provider *string) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "provider",
@@ -774,7 +774,7 @@ func (ft MoneyTransactionShippingFilters) ByProviderPtr(Provider *string) *sq.Co
 	}
 }
 
-func (ft MoneyTransactionShippingFilters) ByConfirmedAt(ConfirmedAt time.Time) *sq.ColumnFilter {
+func (ft *MoneyTransactionShippingFilters) ByConfirmedAt(ConfirmedAt time.Time) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "confirmed_at",
@@ -783,7 +783,7 @@ func (ft MoneyTransactionShippingFilters) ByConfirmedAt(ConfirmedAt time.Time) *
 	}
 }
 
-func (ft MoneyTransactionShippingFilters) ByConfirmedAtPtr(ConfirmedAt *time.Time) *sq.ColumnFilterPtr {
+func (ft *MoneyTransactionShippingFilters) ByConfirmedAtPtr(ConfirmedAt *time.Time) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "confirmed_at",
@@ -793,7 +793,7 @@ func (ft MoneyTransactionShippingFilters) ByConfirmedAtPtr(ConfirmedAt *time.Tim
 	}
 }
 
-func (ft MoneyTransactionShippingFilters) ByEtopTransferedAt(EtopTransferedAt time.Time) *sq.ColumnFilter {
+func (ft *MoneyTransactionShippingFilters) ByEtopTransferedAt(EtopTransferedAt time.Time) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "etop_transfered_at",
@@ -802,7 +802,7 @@ func (ft MoneyTransactionShippingFilters) ByEtopTransferedAt(EtopTransferedAt ti
 	}
 }
 
-func (ft MoneyTransactionShippingFilters) ByEtopTransferedAtPtr(EtopTransferedAt *time.Time) *sq.ColumnFilterPtr {
+func (ft *MoneyTransactionShippingFilters) ByEtopTransferedAtPtr(EtopTransferedAt *time.Time) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "etop_transfered_at",
@@ -812,7 +812,7 @@ func (ft MoneyTransactionShippingFilters) ByEtopTransferedAtPtr(EtopTransferedAt
 	}
 }
 
-func (ft MoneyTransactionShippingFilters) ByNote(Note string) *sq.ColumnFilter {
+func (ft *MoneyTransactionShippingFilters) ByNote(Note string) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "note",
@@ -821,7 +821,7 @@ func (ft MoneyTransactionShippingFilters) ByNote(Note string) *sq.ColumnFilter {
 	}
 }
 
-func (ft MoneyTransactionShippingFilters) ByNotePtr(Note *string) *sq.ColumnFilterPtr {
+func (ft *MoneyTransactionShippingFilters) ByNotePtr(Note *string) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "note",
@@ -831,7 +831,7 @@ func (ft MoneyTransactionShippingFilters) ByNotePtr(Note *string) *sq.ColumnFilt
 	}
 }
 
-func (ft MoneyTransactionShippingFilters) ByInvoiceNumber(InvoiceNumber string) *sq.ColumnFilter {
+func (ft *MoneyTransactionShippingFilters) ByInvoiceNumber(InvoiceNumber string) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "invoice_number",
@@ -840,7 +840,7 @@ func (ft MoneyTransactionShippingFilters) ByInvoiceNumber(InvoiceNumber string) 
 	}
 }
 
-func (ft MoneyTransactionShippingFilters) ByInvoiceNumberPtr(InvoiceNumber *string) *sq.ColumnFilterPtr {
+func (ft *MoneyTransactionShippingFilters) ByInvoiceNumberPtr(InvoiceNumber *string) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "invoice_number",
@@ -856,7 +856,7 @@ func NewMoneyTransactionShippingEtopFilters(prefix string) MoneyTransactionShipp
 	return MoneyTransactionShippingEtopFilters{prefix}
 }
 
-func (ft MoneyTransactionShippingEtopFilters) Filter(pred string, args ...interface{}) sq.WriterTo {
+func (ft *MoneyTransactionShippingEtopFilters) Filter(pred string, args ...interface{}) sq.WriterTo {
 	return sq.Filter(&ft.prefix, pred, args...)
 }
 
@@ -864,7 +864,7 @@ func (ft MoneyTransactionShippingEtopFilters) Prefix() string {
 	return ft.prefix
 }
 
-func (ft MoneyTransactionShippingEtopFilters) ByID(ID int64) *sq.ColumnFilter {
+func (ft *MoneyTransactionShippingEtopFilters) ByID(ID int64) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "id",
@@ -873,7 +873,7 @@ func (ft MoneyTransactionShippingEtopFilters) ByID(ID int64) *sq.ColumnFilter {
 	}
 }
 
-func (ft MoneyTransactionShippingEtopFilters) ByIDPtr(ID *int64) *sq.ColumnFilterPtr {
+func (ft *MoneyTransactionShippingEtopFilters) ByIDPtr(ID *int64) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "id",
@@ -883,7 +883,7 @@ func (ft MoneyTransactionShippingEtopFilters) ByIDPtr(ID *int64) *sq.ColumnFilte
 	}
 }
 
-func (ft MoneyTransactionShippingEtopFilters) ByCode(Code string) *sq.ColumnFilter {
+func (ft *MoneyTransactionShippingEtopFilters) ByCode(Code string) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "code",
@@ -892,7 +892,7 @@ func (ft MoneyTransactionShippingEtopFilters) ByCode(Code string) *sq.ColumnFilt
 	}
 }
 
-func (ft MoneyTransactionShippingEtopFilters) ByCodePtr(Code *string) *sq.ColumnFilterPtr {
+func (ft *MoneyTransactionShippingEtopFilters) ByCodePtr(Code *string) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "code",
@@ -902,7 +902,7 @@ func (ft MoneyTransactionShippingEtopFilters) ByCodePtr(Code *string) *sq.Column
 	}
 }
 
-func (ft MoneyTransactionShippingEtopFilters) ByTotalCOD(TotalCOD int) *sq.ColumnFilter {
+func (ft *MoneyTransactionShippingEtopFilters) ByTotalCOD(TotalCOD int) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "total_cod",
@@ -911,7 +911,7 @@ func (ft MoneyTransactionShippingEtopFilters) ByTotalCOD(TotalCOD int) *sq.Colum
 	}
 }
 
-func (ft MoneyTransactionShippingEtopFilters) ByTotalCODPtr(TotalCOD *int) *sq.ColumnFilterPtr {
+func (ft *MoneyTransactionShippingEtopFilters) ByTotalCODPtr(TotalCOD *int) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "total_cod",
@@ -921,7 +921,7 @@ func (ft MoneyTransactionShippingEtopFilters) ByTotalCODPtr(TotalCOD *int) *sq.C
 	}
 }
 
-func (ft MoneyTransactionShippingEtopFilters) ByTotalOrders(TotalOrders int) *sq.ColumnFilter {
+func (ft *MoneyTransactionShippingEtopFilters) ByTotalOrders(TotalOrders int) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "total_orders",
@@ -930,7 +930,7 @@ func (ft MoneyTransactionShippingEtopFilters) ByTotalOrders(TotalOrders int) *sq
 	}
 }
 
-func (ft MoneyTransactionShippingEtopFilters) ByTotalOrdersPtr(TotalOrders *int) *sq.ColumnFilterPtr {
+func (ft *MoneyTransactionShippingEtopFilters) ByTotalOrdersPtr(TotalOrders *int) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "total_orders",
@@ -940,7 +940,7 @@ func (ft MoneyTransactionShippingEtopFilters) ByTotalOrdersPtr(TotalOrders *int)
 	}
 }
 
-func (ft MoneyTransactionShippingEtopFilters) ByTotalAmount(TotalAmount int) *sq.ColumnFilter {
+func (ft *MoneyTransactionShippingEtopFilters) ByTotalAmount(TotalAmount int) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "total_amount",
@@ -949,7 +949,7 @@ func (ft MoneyTransactionShippingEtopFilters) ByTotalAmount(TotalAmount int) *sq
 	}
 }
 
-func (ft MoneyTransactionShippingEtopFilters) ByTotalAmountPtr(TotalAmount *int) *sq.ColumnFilterPtr {
+func (ft *MoneyTransactionShippingEtopFilters) ByTotalAmountPtr(TotalAmount *int) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "total_amount",
@@ -959,7 +959,7 @@ func (ft MoneyTransactionShippingEtopFilters) ByTotalAmountPtr(TotalAmount *int)
 	}
 }
 
-func (ft MoneyTransactionShippingEtopFilters) ByTotalFee(TotalFee int) *sq.ColumnFilter {
+func (ft *MoneyTransactionShippingEtopFilters) ByTotalFee(TotalFee int) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "total_fee",
@@ -968,7 +968,7 @@ func (ft MoneyTransactionShippingEtopFilters) ByTotalFee(TotalFee int) *sq.Colum
 	}
 }
 
-func (ft MoneyTransactionShippingEtopFilters) ByTotalFeePtr(TotalFee *int) *sq.ColumnFilterPtr {
+func (ft *MoneyTransactionShippingEtopFilters) ByTotalFeePtr(TotalFee *int) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "total_fee",
@@ -978,7 +978,7 @@ func (ft MoneyTransactionShippingEtopFilters) ByTotalFeePtr(TotalFee *int) *sq.C
 	}
 }
 
-func (ft MoneyTransactionShippingEtopFilters) ByTotalMoneyTransaction(TotalMoneyTransaction int) *sq.ColumnFilter {
+func (ft *MoneyTransactionShippingEtopFilters) ByTotalMoneyTransaction(TotalMoneyTransaction int) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "total_money_transaction",
@@ -987,7 +987,7 @@ func (ft MoneyTransactionShippingEtopFilters) ByTotalMoneyTransaction(TotalMoney
 	}
 }
 
-func (ft MoneyTransactionShippingEtopFilters) ByTotalMoneyTransactionPtr(TotalMoneyTransaction *int) *sq.ColumnFilterPtr {
+func (ft *MoneyTransactionShippingEtopFilters) ByTotalMoneyTransactionPtr(TotalMoneyTransaction *int) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "total_money_transaction",
@@ -997,7 +997,7 @@ func (ft MoneyTransactionShippingEtopFilters) ByTotalMoneyTransactionPtr(TotalMo
 	}
 }
 
-func (ft MoneyTransactionShippingEtopFilters) ByCreatedAt(CreatedAt time.Time) *sq.ColumnFilter {
+func (ft *MoneyTransactionShippingEtopFilters) ByCreatedAt(CreatedAt time.Time) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "created_at",
@@ -1006,7 +1006,7 @@ func (ft MoneyTransactionShippingEtopFilters) ByCreatedAt(CreatedAt time.Time) *
 	}
 }
 
-func (ft MoneyTransactionShippingEtopFilters) ByCreatedAtPtr(CreatedAt *time.Time) *sq.ColumnFilterPtr {
+func (ft *MoneyTransactionShippingEtopFilters) ByCreatedAtPtr(CreatedAt *time.Time) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "created_at",
@@ -1016,7 +1016,7 @@ func (ft MoneyTransactionShippingEtopFilters) ByCreatedAtPtr(CreatedAt *time.Tim
 	}
 }
 
-func (ft MoneyTransactionShippingEtopFilters) ByUpdatedAt(UpdatedAt time.Time) *sq.ColumnFilter {
+func (ft *MoneyTransactionShippingEtopFilters) ByUpdatedAt(UpdatedAt time.Time) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "updated_at",
@@ -1025,7 +1025,7 @@ func (ft MoneyTransactionShippingEtopFilters) ByUpdatedAt(UpdatedAt time.Time) *
 	}
 }
 
-func (ft MoneyTransactionShippingEtopFilters) ByUpdatedAtPtr(UpdatedAt *time.Time) *sq.ColumnFilterPtr {
+func (ft *MoneyTransactionShippingEtopFilters) ByUpdatedAtPtr(UpdatedAt *time.Time) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "updated_at",
@@ -1035,7 +1035,7 @@ func (ft MoneyTransactionShippingEtopFilters) ByUpdatedAtPtr(UpdatedAt *time.Tim
 	}
 }
 
-func (ft MoneyTransactionShippingEtopFilters) ByConfirmedAt(ConfirmedAt time.Time) *sq.ColumnFilter {
+func (ft *MoneyTransactionShippingEtopFilters) ByConfirmedAt(ConfirmedAt time.Time) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "confirmed_at",
@@ -1044,7 +1044,7 @@ func (ft MoneyTransactionShippingEtopFilters) ByConfirmedAt(ConfirmedAt time.Tim
 	}
 }
 
-func (ft MoneyTransactionShippingEtopFilters) ByConfirmedAtPtr(ConfirmedAt *time.Time) *sq.ColumnFilterPtr {
+func (ft *MoneyTransactionShippingEtopFilters) ByConfirmedAtPtr(ConfirmedAt *time.Time) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "confirmed_at",
@@ -1054,7 +1054,7 @@ func (ft MoneyTransactionShippingEtopFilters) ByConfirmedAtPtr(ConfirmedAt *time
 	}
 }
 
-func (ft MoneyTransactionShippingEtopFilters) ByStatus(Status model.Status3) *sq.ColumnFilter {
+func (ft *MoneyTransactionShippingEtopFilters) ByStatus(Status model.Status3) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "status",
@@ -1063,7 +1063,7 @@ func (ft MoneyTransactionShippingEtopFilters) ByStatus(Status model.Status3) *sq
 	}
 }
 
-func (ft MoneyTransactionShippingEtopFilters) ByStatusPtr(Status *model.Status3) *sq.ColumnFilterPtr {
+func (ft *MoneyTransactionShippingEtopFilters) ByStatusPtr(Status *model.Status3) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "status",
@@ -1073,7 +1073,7 @@ func (ft MoneyTransactionShippingEtopFilters) ByStatusPtr(Status *model.Status3)
 	}
 }
 
-func (ft MoneyTransactionShippingEtopFilters) ByNote(Note string) *sq.ColumnFilter {
+func (ft *MoneyTransactionShippingEtopFilters) ByNote(Note string) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "note",
@@ -1082,7 +1082,7 @@ func (ft MoneyTransactionShippingEtopFilters) ByNote(Note string) *sq.ColumnFilt
 	}
 }
 
-func (ft MoneyTransactionShippingEtopFilters) ByNotePtr(Note *string) *sq.ColumnFilterPtr {
+func (ft *MoneyTransactionShippingEtopFilters) ByNotePtr(Note *string) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "note",
@@ -1092,7 +1092,7 @@ func (ft MoneyTransactionShippingEtopFilters) ByNotePtr(Note *string) *sq.Column
 	}
 }
 
-func (ft MoneyTransactionShippingEtopFilters) ByInvoiceNumber(InvoiceNumber string) *sq.ColumnFilter {
+func (ft *MoneyTransactionShippingEtopFilters) ByInvoiceNumber(InvoiceNumber string) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "invoice_number",
@@ -1101,7 +1101,7 @@ func (ft MoneyTransactionShippingEtopFilters) ByInvoiceNumber(InvoiceNumber stri
 	}
 }
 
-func (ft MoneyTransactionShippingEtopFilters) ByInvoiceNumberPtr(InvoiceNumber *string) *sq.ColumnFilterPtr {
+func (ft *MoneyTransactionShippingEtopFilters) ByInvoiceNumberPtr(InvoiceNumber *string) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "invoice_number",

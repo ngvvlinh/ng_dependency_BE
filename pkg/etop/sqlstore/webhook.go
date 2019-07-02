@@ -42,18 +42,18 @@ func (s *WebhookStore) Multiple() *WebhookStore {
 
 func (s *WebhookStore) Get() (*model.Webhook, error) {
 	var item model.Webhook
-	err := x.Where(s.preds...).Where(s.filterDeleted(s.ft)).ShouldGet(&item)
+	err := x.Where(s.preds...).Where(s.filterDeleted(&s.ft)).ShouldGet(&item)
 	return &item, err
 }
 
 func (s *WebhookStore) List() ([]*model.Webhook, error) {
 	var items model.Webhooks
-	err := x.Where(s.preds...).Where(s.filterDeleted(s.ft)).Find(&items)
+	err := x.Where(s.preds...).Where(s.filterDeleted(&s.ft)).Find(&items)
 	return items, err
 }
 
 func (s *WebhookStore) Count() (uint64, error) {
-	return x.Where(s.preds...).Where(s.filterDeleted(s.ft)).Count((*model.Webhook)(nil))
+	return x.Where(s.preds...).Where(s.filterDeleted(&s.ft)).Count((*model.Webhook)(nil))
 }
 
 func (s *WebhookStore) Create(item *model.Webhook) error {

@@ -15,7 +15,7 @@ func NewUserFilters(prefix string) UserFilters {
 	return UserFilters{prefix}
 }
 
-func (ft UserFilters) Filter(pred string, args ...interface{}) sq.WriterTo {
+func (ft *UserFilters) Filter(pred string, args ...interface{}) sq.WriterTo {
 	return sq.Filter(&ft.prefix, pred, args...)
 }
 
@@ -23,7 +23,7 @@ func (ft UserFilters) Prefix() string {
 	return ft.prefix
 }
 
-func (ft UserFilters) ByID(ID string) *sq.ColumnFilter {
+func (ft *UserFilters) ByID(ID string) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "id",
@@ -32,7 +32,7 @@ func (ft UserFilters) ByID(ID string) *sq.ColumnFilter {
 	}
 }
 
-func (ft UserFilters) ByIDPtr(ID *string) *sq.ColumnFilterPtr {
+func (ft *UserFilters) ByIDPtr(ID *string) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "id",
@@ -42,7 +42,7 @@ func (ft UserFilters) ByIDPtr(ID *string) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft UserFilters) ByName(Name string) *sq.ColumnFilter {
+func (ft *UserFilters) ByName(Name string) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "name",
@@ -51,7 +51,7 @@ func (ft UserFilters) ByName(Name string) *sq.ColumnFilter {
 	}
 }
 
-func (ft UserFilters) ByNamePtr(Name *string) *sq.ColumnFilterPtr {
+func (ft *UserFilters) ByNamePtr(Name *string) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "name",
@@ -61,7 +61,7 @@ func (ft UserFilters) ByNamePtr(Name *string) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft UserFilters) ByCreatedAt(CreatedAt time.Time) *sq.ColumnFilter {
+func (ft *UserFilters) ByCreatedAt(CreatedAt time.Time) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "created_at",
@@ -70,7 +70,7 @@ func (ft UserFilters) ByCreatedAt(CreatedAt time.Time) *sq.ColumnFilter {
 	}
 }
 
-func (ft UserFilters) ByCreatedAtPtr(CreatedAt *time.Time) *sq.ColumnFilterPtr {
+func (ft *UserFilters) ByCreatedAtPtr(CreatedAt *time.Time) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "created_at",
@@ -80,7 +80,7 @@ func (ft UserFilters) ByCreatedAtPtr(CreatedAt *time.Time) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft UserFilters) ByUpdatedAtPtr(UpdatedAt *time.Time) *sq.ColumnFilterPtr {
+func (ft *UserFilters) ByUpdatedAtPtr(UpdatedAt *time.Time) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "updated_at",
@@ -90,7 +90,7 @@ func (ft UserFilters) ByUpdatedAtPtr(UpdatedAt *time.Time) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft UserFilters) ByBool(Bool bool) *sq.ColumnFilter {
+func (ft *UserFilters) ByBool(Bool bool) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "bool",
@@ -99,7 +99,7 @@ func (ft UserFilters) ByBool(Bool bool) *sq.ColumnFilter {
 	}
 }
 
-func (ft UserFilters) ByBoolPtr(Bool *bool) *sq.ColumnFilterPtr {
+func (ft *UserFilters) ByBoolPtr(Bool *bool) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "bool",
@@ -109,7 +109,7 @@ func (ft UserFilters) ByBoolPtr(Bool *bool) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft UserFilters) ByFloat64(Float64 float64) *sq.ColumnFilter {
+func (ft *UserFilters) ByFloat64(Float64 float64) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "float64",
@@ -118,7 +118,7 @@ func (ft UserFilters) ByFloat64(Float64 float64) *sq.ColumnFilter {
 	}
 }
 
-func (ft UserFilters) ByFloat64Ptr(Float64 *float64) *sq.ColumnFilterPtr {
+func (ft *UserFilters) ByFloat64Ptr(Float64 *float64) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "float64",
@@ -128,7 +128,7 @@ func (ft UserFilters) ByFloat64Ptr(Float64 *float64) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft UserFilters) ByInt(Int int) *sq.ColumnFilter {
+func (ft *UserFilters) ByInt(Int int) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "int",
@@ -137,7 +137,7 @@ func (ft UserFilters) ByInt(Int int) *sq.ColumnFilter {
 	}
 }
 
-func (ft UserFilters) ByIntPtr(Int *int) *sq.ColumnFilterPtr {
+func (ft *UserFilters) ByIntPtr(Int *int) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "int",
@@ -147,7 +147,7 @@ func (ft UserFilters) ByIntPtr(Int *int) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft UserFilters) ByInt64(Int64 int64) *sq.ColumnFilter {
+func (ft *UserFilters) ByInt64(Int64 int64) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "int64",
@@ -156,7 +156,7 @@ func (ft UserFilters) ByInt64(Int64 int64) *sq.ColumnFilter {
 	}
 }
 
-func (ft UserFilters) ByInt64Ptr(Int64 *int64) *sq.ColumnFilterPtr {
+func (ft *UserFilters) ByInt64Ptr(Int64 *int64) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "int64",
@@ -166,7 +166,7 @@ func (ft UserFilters) ByInt64Ptr(Int64 *int64) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft UserFilters) ByString(String string) *sq.ColumnFilter {
+func (ft *UserFilters) ByString(String string) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "string",
@@ -175,7 +175,7 @@ func (ft UserFilters) ByString(String string) *sq.ColumnFilter {
 	}
 }
 
-func (ft UserFilters) ByStringPtr(String *string) *sq.ColumnFilterPtr {
+func (ft *UserFilters) ByStringPtr(String *string) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "string",
@@ -185,7 +185,7 @@ func (ft UserFilters) ByStringPtr(String *string) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft UserFilters) ByPBoolPtr(PBool *bool) *sq.ColumnFilterPtr {
+func (ft *UserFilters) ByPBoolPtr(PBool *bool) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "p_bool",
@@ -195,7 +195,7 @@ func (ft UserFilters) ByPBoolPtr(PBool *bool) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft UserFilters) ByPFloat64Ptr(PFloat64 *float64) *sq.ColumnFilterPtr {
+func (ft *UserFilters) ByPFloat64Ptr(PFloat64 *float64) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "p_float64",
@@ -205,7 +205,7 @@ func (ft UserFilters) ByPFloat64Ptr(PFloat64 *float64) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft UserFilters) ByPIntPtr(PInt *int) *sq.ColumnFilterPtr {
+func (ft *UserFilters) ByPIntPtr(PInt *int) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "p_int",
@@ -215,7 +215,7 @@ func (ft UserFilters) ByPIntPtr(PInt *int) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft UserFilters) ByPInt64Ptr(PInt64 *int64) *sq.ColumnFilterPtr {
+func (ft *UserFilters) ByPInt64Ptr(PInt64 *int64) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "p_int64",
@@ -225,7 +225,7 @@ func (ft UserFilters) ByPInt64Ptr(PInt64 *int64) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft UserFilters) ByPStringPtr(PString *string) *sq.ColumnFilterPtr {
+func (ft *UserFilters) ByPStringPtr(PString *string) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "p_string",
@@ -241,7 +241,7 @@ func NewUserSubsetFilters(prefix string) UserSubsetFilters {
 	return UserSubsetFilters{prefix}
 }
 
-func (ft UserSubsetFilters) Filter(pred string, args ...interface{}) sq.WriterTo {
+func (ft *UserSubsetFilters) Filter(pred string, args ...interface{}) sq.WriterTo {
 	return sq.Filter(&ft.prefix, pred, args...)
 }
 
@@ -249,7 +249,7 @@ func (ft UserSubsetFilters) Prefix() string {
 	return ft.prefix
 }
 
-func (ft UserSubsetFilters) ByID(ID string) *sq.ColumnFilter {
+func (ft *UserSubsetFilters) ByID(ID string) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "id",
@@ -258,7 +258,7 @@ func (ft UserSubsetFilters) ByID(ID string) *sq.ColumnFilter {
 	}
 }
 
-func (ft UserSubsetFilters) ByIDPtr(ID *string) *sq.ColumnFilterPtr {
+func (ft *UserSubsetFilters) ByIDPtr(ID *string) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "id",
@@ -268,7 +268,7 @@ func (ft UserSubsetFilters) ByIDPtr(ID *string) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft UserSubsetFilters) ByBool(Bool bool) *sq.ColumnFilter {
+func (ft *UserSubsetFilters) ByBool(Bool bool) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "bool",
@@ -277,7 +277,7 @@ func (ft UserSubsetFilters) ByBool(Bool bool) *sq.ColumnFilter {
 	}
 }
 
-func (ft UserSubsetFilters) ByBoolPtr(Bool *bool) *sq.ColumnFilterPtr {
+func (ft *UserSubsetFilters) ByBoolPtr(Bool *bool) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "bool",
@@ -287,7 +287,7 @@ func (ft UserSubsetFilters) ByBoolPtr(Bool *bool) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft UserSubsetFilters) ByFloat64(Float64 float64) *sq.ColumnFilter {
+func (ft *UserSubsetFilters) ByFloat64(Float64 float64) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "float64",
@@ -296,7 +296,7 @@ func (ft UserSubsetFilters) ByFloat64(Float64 float64) *sq.ColumnFilter {
 	}
 }
 
-func (ft UserSubsetFilters) ByFloat64Ptr(Float64 *float64) *sq.ColumnFilterPtr {
+func (ft *UserSubsetFilters) ByFloat64Ptr(Float64 *float64) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "float64",
@@ -306,7 +306,7 @@ func (ft UserSubsetFilters) ByFloat64Ptr(Float64 *float64) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft UserSubsetFilters) ByInt(Int int) *sq.ColumnFilter {
+func (ft *UserSubsetFilters) ByInt(Int int) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "int",
@@ -315,7 +315,7 @@ func (ft UserSubsetFilters) ByInt(Int int) *sq.ColumnFilter {
 	}
 }
 
-func (ft UserSubsetFilters) ByIntPtr(Int *int) *sq.ColumnFilterPtr {
+func (ft *UserSubsetFilters) ByIntPtr(Int *int) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "int",
@@ -325,7 +325,7 @@ func (ft UserSubsetFilters) ByIntPtr(Int *int) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft UserSubsetFilters) ByInt64(Int64 int64) *sq.ColumnFilter {
+func (ft *UserSubsetFilters) ByInt64(Int64 int64) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "int64",
@@ -334,7 +334,7 @@ func (ft UserSubsetFilters) ByInt64(Int64 int64) *sq.ColumnFilter {
 	}
 }
 
-func (ft UserSubsetFilters) ByInt64Ptr(Int64 *int64) *sq.ColumnFilterPtr {
+func (ft *UserSubsetFilters) ByInt64Ptr(Int64 *int64) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "int64",
@@ -344,7 +344,7 @@ func (ft UserSubsetFilters) ByInt64Ptr(Int64 *int64) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft UserSubsetFilters) ByString(String string) *sq.ColumnFilter {
+func (ft *UserSubsetFilters) ByString(String string) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "string",
@@ -353,7 +353,7 @@ func (ft UserSubsetFilters) ByString(String string) *sq.ColumnFilter {
 	}
 }
 
-func (ft UserSubsetFilters) ByStringPtr(String *string) *sq.ColumnFilterPtr {
+func (ft *UserSubsetFilters) ByStringPtr(String *string) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "string",
@@ -363,7 +363,7 @@ func (ft UserSubsetFilters) ByStringPtr(String *string) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft UserSubsetFilters) ByPBoolPtr(PBool *bool) *sq.ColumnFilterPtr {
+func (ft *UserSubsetFilters) ByPBoolPtr(PBool *bool) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "p_bool",
@@ -373,7 +373,7 @@ func (ft UserSubsetFilters) ByPBoolPtr(PBool *bool) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft UserSubsetFilters) ByPFloat64Ptr(PFloat64 *float64) *sq.ColumnFilterPtr {
+func (ft *UserSubsetFilters) ByPFloat64Ptr(PFloat64 *float64) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "p_float64",
@@ -383,7 +383,7 @@ func (ft UserSubsetFilters) ByPFloat64Ptr(PFloat64 *float64) *sq.ColumnFilterPtr
 	}
 }
 
-func (ft UserSubsetFilters) ByPIntPtr(PInt *int) *sq.ColumnFilterPtr {
+func (ft *UserSubsetFilters) ByPIntPtr(PInt *int) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "p_int",
@@ -393,7 +393,7 @@ func (ft UserSubsetFilters) ByPIntPtr(PInt *int) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft UserSubsetFilters) ByPInt64Ptr(PInt64 *int64) *sq.ColumnFilterPtr {
+func (ft *UserSubsetFilters) ByPInt64Ptr(PInt64 *int64) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "p_int64",
@@ -403,7 +403,7 @@ func (ft UserSubsetFilters) ByPInt64Ptr(PInt64 *int64) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft UserSubsetFilters) ByPStringPtr(PString *string) *sq.ColumnFilterPtr {
+func (ft *UserSubsetFilters) ByPStringPtr(PString *string) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "p_string",
@@ -419,7 +419,7 @@ func NewUserInfoFilters(prefix string) UserInfoFilters {
 	return UserInfoFilters{prefix}
 }
 
-func (ft UserInfoFilters) Filter(pred string, args ...interface{}) sq.WriterTo {
+func (ft *UserInfoFilters) Filter(pred string, args ...interface{}) sq.WriterTo {
 	return sq.Filter(&ft.prefix, pred, args...)
 }
 
@@ -427,7 +427,7 @@ func (ft UserInfoFilters) Prefix() string {
 	return ft.prefix
 }
 
-func (ft UserInfoFilters) ByUserID(UserID int64) *sq.ColumnFilter {
+func (ft *UserInfoFilters) ByUserID(UserID int64) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "user_id",
@@ -436,7 +436,7 @@ func (ft UserInfoFilters) ByUserID(UserID int64) *sq.ColumnFilter {
 	}
 }
 
-func (ft UserInfoFilters) ByUserIDPtr(UserID *int64) *sq.ColumnFilterPtr {
+func (ft *UserInfoFilters) ByUserIDPtr(UserID *int64) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "user_id",
@@ -446,7 +446,7 @@ func (ft UserInfoFilters) ByUserIDPtr(UserID *int64) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft UserInfoFilters) ByMetadata(Metadata string) *sq.ColumnFilter {
+func (ft *UserInfoFilters) ByMetadata(Metadata string) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "metadata",
@@ -455,7 +455,7 @@ func (ft UserInfoFilters) ByMetadata(Metadata string) *sq.ColumnFilter {
 	}
 }
 
-func (ft UserInfoFilters) ByMetadataPtr(Metadata *string) *sq.ColumnFilterPtr {
+func (ft *UserInfoFilters) ByMetadataPtr(Metadata *string) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "metadata",
@@ -465,7 +465,7 @@ func (ft UserInfoFilters) ByMetadataPtr(Metadata *string) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft UserInfoFilters) ByBool(Bool bool) *sq.ColumnFilter {
+func (ft *UserInfoFilters) ByBool(Bool bool) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "bool",
@@ -474,7 +474,7 @@ func (ft UserInfoFilters) ByBool(Bool bool) *sq.ColumnFilter {
 	}
 }
 
-func (ft UserInfoFilters) ByBoolPtr(Bool *bool) *sq.ColumnFilterPtr {
+func (ft *UserInfoFilters) ByBoolPtr(Bool *bool) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "bool",
@@ -484,7 +484,7 @@ func (ft UserInfoFilters) ByBoolPtr(Bool *bool) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft UserInfoFilters) ByFloat64(Float64 float64) *sq.ColumnFilter {
+func (ft *UserInfoFilters) ByFloat64(Float64 float64) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "float64",
@@ -493,7 +493,7 @@ func (ft UserInfoFilters) ByFloat64(Float64 float64) *sq.ColumnFilter {
 	}
 }
 
-func (ft UserInfoFilters) ByFloat64Ptr(Float64 *float64) *sq.ColumnFilterPtr {
+func (ft *UserInfoFilters) ByFloat64Ptr(Float64 *float64) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "float64",
@@ -503,7 +503,7 @@ func (ft UserInfoFilters) ByFloat64Ptr(Float64 *float64) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft UserInfoFilters) ByInt(Int int) *sq.ColumnFilter {
+func (ft *UserInfoFilters) ByInt(Int int) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "int",
@@ -512,7 +512,7 @@ func (ft UserInfoFilters) ByInt(Int int) *sq.ColumnFilter {
 	}
 }
 
-func (ft UserInfoFilters) ByIntPtr(Int *int) *sq.ColumnFilterPtr {
+func (ft *UserInfoFilters) ByIntPtr(Int *int) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "int",
@@ -522,7 +522,7 @@ func (ft UserInfoFilters) ByIntPtr(Int *int) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft UserInfoFilters) ByInt64(Int64 int64) *sq.ColumnFilter {
+func (ft *UserInfoFilters) ByInt64(Int64 int64) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "int64",
@@ -531,7 +531,7 @@ func (ft UserInfoFilters) ByInt64(Int64 int64) *sq.ColumnFilter {
 	}
 }
 
-func (ft UserInfoFilters) ByInt64Ptr(Int64 *int64) *sq.ColumnFilterPtr {
+func (ft *UserInfoFilters) ByInt64Ptr(Int64 *int64) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "int64",
@@ -541,7 +541,7 @@ func (ft UserInfoFilters) ByInt64Ptr(Int64 *int64) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft UserInfoFilters) ByString(String string) *sq.ColumnFilter {
+func (ft *UserInfoFilters) ByString(String string) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "string",
@@ -550,7 +550,7 @@ func (ft UserInfoFilters) ByString(String string) *sq.ColumnFilter {
 	}
 }
 
-func (ft UserInfoFilters) ByStringPtr(String *string) *sq.ColumnFilterPtr {
+func (ft *UserInfoFilters) ByStringPtr(String *string) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "string",
@@ -560,7 +560,7 @@ func (ft UserInfoFilters) ByStringPtr(String *string) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft UserInfoFilters) ByPBoolPtr(PBool *bool) *sq.ColumnFilterPtr {
+func (ft *UserInfoFilters) ByPBoolPtr(PBool *bool) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "p_bool",
@@ -570,7 +570,7 @@ func (ft UserInfoFilters) ByPBoolPtr(PBool *bool) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft UserInfoFilters) ByPFloat64Ptr(PFloat64 *float64) *sq.ColumnFilterPtr {
+func (ft *UserInfoFilters) ByPFloat64Ptr(PFloat64 *float64) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "p_float64",
@@ -580,7 +580,7 @@ func (ft UserInfoFilters) ByPFloat64Ptr(PFloat64 *float64) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft UserInfoFilters) ByPIntPtr(PInt *int) *sq.ColumnFilterPtr {
+func (ft *UserInfoFilters) ByPIntPtr(PInt *int) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "p_int",
@@ -590,7 +590,7 @@ func (ft UserInfoFilters) ByPIntPtr(PInt *int) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft UserInfoFilters) ByPInt64Ptr(PInt64 *int64) *sq.ColumnFilterPtr {
+func (ft *UserInfoFilters) ByPInt64Ptr(PInt64 *int64) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "p_int64",
@@ -600,7 +600,7 @@ func (ft UserInfoFilters) ByPInt64Ptr(PInt64 *int64) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft UserInfoFilters) ByPStringPtr(PString *string) *sq.ColumnFilterPtr {
+func (ft *UserInfoFilters) ByPStringPtr(PString *string) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "p_string",
@@ -616,7 +616,7 @@ func NewComplexInfoFilters(prefix string) ComplexInfoFilters {
 	return ComplexInfoFilters{prefix}
 }
 
-func (ft ComplexInfoFilters) Filter(pred string, args ...interface{}) sq.WriterTo {
+func (ft *ComplexInfoFilters) Filter(pred string, args ...interface{}) sq.WriterTo {
 	return sq.Filter(&ft.prefix, pred, args...)
 }
 
@@ -624,7 +624,7 @@ func (ft ComplexInfoFilters) Prefix() string {
 	return ft.prefix
 }
 
-func (ft ComplexInfoFilters) ByID(ID string) *sq.ColumnFilter {
+func (ft *ComplexInfoFilters) ByID(ID string) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "id",
@@ -633,7 +633,7 @@ func (ft ComplexInfoFilters) ByID(ID string) *sq.ColumnFilter {
 	}
 }
 
-func (ft ComplexInfoFilters) ByIDPtr(ID *string) *sq.ColumnFilterPtr {
+func (ft *ComplexInfoFilters) ByIDPtr(ID *string) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "id",
@@ -643,7 +643,7 @@ func (ft ComplexInfoFilters) ByIDPtr(ID *string) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft ComplexInfoFilters) ByAliasString(AliasString m.AliasString) *sq.ColumnFilter {
+func (ft *ComplexInfoFilters) ByAliasString(AliasString m.AliasString) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "alias_string",
@@ -652,7 +652,7 @@ func (ft ComplexInfoFilters) ByAliasString(AliasString m.AliasString) *sq.Column
 	}
 }
 
-func (ft ComplexInfoFilters) ByAliasStringPtr(AliasString *m.AliasString) *sq.ColumnFilterPtr {
+func (ft *ComplexInfoFilters) ByAliasStringPtr(AliasString *m.AliasString) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "alias_string",
@@ -662,7 +662,7 @@ func (ft ComplexInfoFilters) ByAliasStringPtr(AliasString *m.AliasString) *sq.Co
 	}
 }
 
-func (ft ComplexInfoFilters) ByAliasInt64(AliasInt64 m.AliasInt64) *sq.ColumnFilter {
+func (ft *ComplexInfoFilters) ByAliasInt64(AliasInt64 m.AliasInt64) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "alias_int64",
@@ -671,7 +671,7 @@ func (ft ComplexInfoFilters) ByAliasInt64(AliasInt64 m.AliasInt64) *sq.ColumnFil
 	}
 }
 
-func (ft ComplexInfoFilters) ByAliasInt64Ptr(AliasInt64 *m.AliasInt64) *sq.ColumnFilterPtr {
+func (ft *ComplexInfoFilters) ByAliasInt64Ptr(AliasInt64 *m.AliasInt64) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "alias_int64",
@@ -681,7 +681,7 @@ func (ft ComplexInfoFilters) ByAliasInt64Ptr(AliasInt64 *m.AliasInt64) *sq.Colum
 	}
 }
 
-func (ft ComplexInfoFilters) ByAliasInt(AliasInt m.AliasInt) *sq.ColumnFilter {
+func (ft *ComplexInfoFilters) ByAliasInt(AliasInt m.AliasInt) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "alias_int",
@@ -690,7 +690,7 @@ func (ft ComplexInfoFilters) ByAliasInt(AliasInt m.AliasInt) *sq.ColumnFilter {
 	}
 }
 
-func (ft ComplexInfoFilters) ByAliasIntPtr(AliasInt *m.AliasInt) *sq.ColumnFilterPtr {
+func (ft *ComplexInfoFilters) ByAliasIntPtr(AliasInt *m.AliasInt) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "alias_int",
@@ -700,7 +700,7 @@ func (ft ComplexInfoFilters) ByAliasIntPtr(AliasInt *m.AliasInt) *sq.ColumnFilte
 	}
 }
 
-func (ft ComplexInfoFilters) ByAliasBool(AliasBool m.AliasBool) *sq.ColumnFilter {
+func (ft *ComplexInfoFilters) ByAliasBool(AliasBool m.AliasBool) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "alias_bool",
@@ -709,7 +709,7 @@ func (ft ComplexInfoFilters) ByAliasBool(AliasBool m.AliasBool) *sq.ColumnFilter
 	}
 }
 
-func (ft ComplexInfoFilters) ByAliasBoolPtr(AliasBool *m.AliasBool) *sq.ColumnFilterPtr {
+func (ft *ComplexInfoFilters) ByAliasBoolPtr(AliasBool *m.AliasBool) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "alias_bool",
@@ -719,7 +719,7 @@ func (ft ComplexInfoFilters) ByAliasBoolPtr(AliasBool *m.AliasBool) *sq.ColumnFi
 	}
 }
 
-func (ft ComplexInfoFilters) ByAliasFloat64(AliasFloat64 m.AliasFloat64) *sq.ColumnFilter {
+func (ft *ComplexInfoFilters) ByAliasFloat64(AliasFloat64 m.AliasFloat64) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "alias_float64",
@@ -728,7 +728,7 @@ func (ft ComplexInfoFilters) ByAliasFloat64(AliasFloat64 m.AliasFloat64) *sq.Col
 	}
 }
 
-func (ft ComplexInfoFilters) ByAliasFloat64Ptr(AliasFloat64 *m.AliasFloat64) *sq.ColumnFilterPtr {
+func (ft *ComplexInfoFilters) ByAliasFloat64Ptr(AliasFloat64 *m.AliasFloat64) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "alias_float64",
@@ -738,7 +738,7 @@ func (ft ComplexInfoFilters) ByAliasFloat64Ptr(AliasFloat64 *m.AliasFloat64) *sq
 	}
 }
 
-func (ft ComplexInfoFilters) ByAliasPStringPtr(AliasPString m.AliasPString) *sq.ColumnFilterPtr {
+func (ft *ComplexInfoFilters) ByAliasPStringPtr(AliasPString m.AliasPString) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "alias_p_string",
@@ -748,7 +748,7 @@ func (ft ComplexInfoFilters) ByAliasPStringPtr(AliasPString m.AliasPString) *sq.
 	}
 }
 
-func (ft ComplexInfoFilters) ByAliasPInt64Ptr(AliasPInt64 m.AliasPInt64) *sq.ColumnFilterPtr {
+func (ft *ComplexInfoFilters) ByAliasPInt64Ptr(AliasPInt64 m.AliasPInt64) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "alias_p_int64",
@@ -758,7 +758,7 @@ func (ft ComplexInfoFilters) ByAliasPInt64Ptr(AliasPInt64 m.AliasPInt64) *sq.Col
 	}
 }
 
-func (ft ComplexInfoFilters) ByAliasPIntPtr(AliasPInt m.AliasPInt) *sq.ColumnFilterPtr {
+func (ft *ComplexInfoFilters) ByAliasPIntPtr(AliasPInt m.AliasPInt) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "alias_p_int",
@@ -768,7 +768,7 @@ func (ft ComplexInfoFilters) ByAliasPIntPtr(AliasPInt m.AliasPInt) *sq.ColumnFil
 	}
 }
 
-func (ft ComplexInfoFilters) ByAliasPBoolPtr(AliasPBool m.AliasPBool) *sq.ColumnFilterPtr {
+func (ft *ComplexInfoFilters) ByAliasPBoolPtr(AliasPBool m.AliasPBool) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "alias_p_bool",
@@ -778,7 +778,7 @@ func (ft ComplexInfoFilters) ByAliasPBoolPtr(AliasPBool m.AliasPBool) *sq.Column
 	}
 }
 
-func (ft ComplexInfoFilters) ByAliasPFloat64Ptr(AliasPFloat64 m.AliasPFloat64) *sq.ColumnFilterPtr {
+func (ft *ComplexInfoFilters) ByAliasPFloat64Ptr(AliasPFloat64 m.AliasPFloat64) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "alias_p_float64",
@@ -794,7 +794,7 @@ func NewUserTagFilters(prefix string) UserTagFilters {
 	return UserTagFilters{prefix}
 }
 
-func (ft UserTagFilters) Filter(pred string, args ...interface{}) sq.WriterTo {
+func (ft *UserTagFilters) Filter(pred string, args ...interface{}) sq.WriterTo {
 	return sq.Filter(&ft.prefix, pred, args...)
 }
 
@@ -802,7 +802,7 @@ func (ft UserTagFilters) Prefix() string {
 	return ft.prefix
 }
 
-func (ft UserTagFilters) ByProvince(Province string) *sq.ColumnFilter {
+func (ft *UserTagFilters) ByProvince(Province string) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "province",
@@ -811,7 +811,7 @@ func (ft UserTagFilters) ByProvince(Province string) *sq.ColumnFilter {
 	}
 }
 
-func (ft UserTagFilters) ByProvincePtr(Province *string) *sq.ColumnFilterPtr {
+func (ft *UserTagFilters) ByProvincePtr(Province *string) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "province",
@@ -821,7 +821,7 @@ func (ft UserTagFilters) ByProvincePtr(Province *string) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft UserTagFilters) ByRename(Rename string) *sq.ColumnFilter {
+func (ft *UserTagFilters) ByRename(Rename string) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "new_name",
@@ -830,7 +830,7 @@ func (ft UserTagFilters) ByRename(Rename string) *sq.ColumnFilter {
 	}
 }
 
-func (ft UserTagFilters) ByRenamePtr(Rename *string) *sq.ColumnFilterPtr {
+func (ft *UserTagFilters) ByRenamePtr(Rename *string) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "new_name",
@@ -846,7 +846,7 @@ func NewUserInlineFilters(prefix string) UserInlineFilters {
 	return UserInlineFilters{prefix}
 }
 
-func (ft UserInlineFilters) Filter(pred string, args ...interface{}) sq.WriterTo {
+func (ft *UserInlineFilters) Filter(pred string, args ...interface{}) sq.WriterTo {
 	return sq.Filter(&ft.prefix, pred, args...)
 }
 
@@ -854,7 +854,7 @@ func (ft UserInlineFilters) Prefix() string {
 	return ft.prefix
 }
 
-func (ft UserInlineFilters) ByProvince(Province string) *sq.ColumnFilter {
+func (ft *UserInlineFilters) ByProvince(Province string) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "province",
@@ -863,7 +863,7 @@ func (ft UserInlineFilters) ByProvince(Province string) *sq.ColumnFilter {
 	}
 }
 
-func (ft UserInlineFilters) ByProvincePtr(Province *string) *sq.ColumnFilterPtr {
+func (ft *UserInlineFilters) ByProvincePtr(Province *string) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "province",
@@ -873,7 +873,7 @@ func (ft UserInlineFilters) ByProvincePtr(Province *string) *sq.ColumnFilterPtr 
 	}
 }
 
-func (ft UserInlineFilters) ByDistrict(District string) *sq.ColumnFilter {
+func (ft *UserInlineFilters) ByDistrict(District string) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "district",
@@ -882,7 +882,7 @@ func (ft UserInlineFilters) ByDistrict(District string) *sq.ColumnFilter {
 	}
 }
 
-func (ft UserInlineFilters) ByDistrictPtr(District *string) *sq.ColumnFilterPtr {
+func (ft *UserInlineFilters) ByDistrictPtr(District *string) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "district",
@@ -898,7 +898,7 @@ func NewProfileFilters(prefix string) ProfileFilters {
 	return ProfileFilters{prefix}
 }
 
-func (ft ProfileFilters) Filter(pred string, args ...interface{}) sq.WriterTo {
+func (ft *ProfileFilters) Filter(pred string, args ...interface{}) sq.WriterTo {
 	return sq.Filter(&ft.prefix, pred, args...)
 }
 
@@ -906,7 +906,7 @@ func (ft ProfileFilters) Prefix() string {
 	return ft.prefix
 }
 
-func (ft ProfileFilters) ByID(ID int64) *sq.ColumnFilter {
+func (ft *ProfileFilters) ByID(ID int64) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "id",
@@ -915,7 +915,7 @@ func (ft ProfileFilters) ByID(ID int64) *sq.ColumnFilter {
 	}
 }
 
-func (ft ProfileFilters) ByIDPtr(ID *int64) *sq.ColumnFilterPtr {
+func (ft *ProfileFilters) ByIDPtr(ID *int64) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "id",
@@ -925,7 +925,7 @@ func (ft ProfileFilters) ByIDPtr(ID *int64) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft ProfileFilters) ByStyle(Style string) *sq.ColumnFilter {
+func (ft *ProfileFilters) ByStyle(Style string) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "style",
@@ -934,7 +934,7 @@ func (ft ProfileFilters) ByStyle(Style string) *sq.ColumnFilter {
 	}
 }
 
-func (ft ProfileFilters) ByStylePtr(Style *string) *sq.ColumnFilterPtr {
+func (ft *ProfileFilters) ByStylePtr(Style *string) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "style",

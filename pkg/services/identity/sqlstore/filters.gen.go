@@ -14,7 +14,7 @@ func NewExternalAccountAhamoveFilters(prefix string) ExternalAccountAhamoveFilte
 	return ExternalAccountAhamoveFilters{prefix}
 }
 
-func (ft ExternalAccountAhamoveFilters) Filter(pred string, args ...interface{}) sq.WriterTo {
+func (ft *ExternalAccountAhamoveFilters) Filter(pred string, args ...interface{}) sq.WriterTo {
 	return sq.Filter(&ft.prefix, pred, args...)
 }
 
@@ -22,7 +22,7 @@ func (ft ExternalAccountAhamoveFilters) Prefix() string {
 	return ft.prefix
 }
 
-func (ft ExternalAccountAhamoveFilters) ByID(ID int64) *sq.ColumnFilter {
+func (ft *ExternalAccountAhamoveFilters) ByID(ID int64) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "id",
@@ -31,7 +31,7 @@ func (ft ExternalAccountAhamoveFilters) ByID(ID int64) *sq.ColumnFilter {
 	}
 }
 
-func (ft ExternalAccountAhamoveFilters) ByIDPtr(ID *int64) *sq.ColumnFilterPtr {
+func (ft *ExternalAccountAhamoveFilters) ByIDPtr(ID *int64) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "id",
@@ -41,7 +41,7 @@ func (ft ExternalAccountAhamoveFilters) ByIDPtr(ID *int64) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft ExternalAccountAhamoveFilters) ByOwnerID(OwnerID int64) *sq.ColumnFilter {
+func (ft *ExternalAccountAhamoveFilters) ByOwnerID(OwnerID int64) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "owner_id",
@@ -50,7 +50,7 @@ func (ft ExternalAccountAhamoveFilters) ByOwnerID(OwnerID int64) *sq.ColumnFilte
 	}
 }
 
-func (ft ExternalAccountAhamoveFilters) ByOwnerIDPtr(OwnerID *int64) *sq.ColumnFilterPtr {
+func (ft *ExternalAccountAhamoveFilters) ByOwnerIDPtr(OwnerID *int64) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "owner_id",
@@ -60,7 +60,7 @@ func (ft ExternalAccountAhamoveFilters) ByOwnerIDPtr(OwnerID *int64) *sq.ColumnF
 	}
 }
 
-func (ft ExternalAccountAhamoveFilters) ByPhone(Phone string) *sq.ColumnFilter {
+func (ft *ExternalAccountAhamoveFilters) ByPhone(Phone string) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "phone",
@@ -69,7 +69,7 @@ func (ft ExternalAccountAhamoveFilters) ByPhone(Phone string) *sq.ColumnFilter {
 	}
 }
 
-func (ft ExternalAccountAhamoveFilters) ByPhonePtr(Phone *string) *sq.ColumnFilterPtr {
+func (ft *ExternalAccountAhamoveFilters) ByPhonePtr(Phone *string) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "phone",
@@ -79,7 +79,7 @@ func (ft ExternalAccountAhamoveFilters) ByPhonePtr(Phone *string) *sq.ColumnFilt
 	}
 }
 
-func (ft ExternalAccountAhamoveFilters) ByName(Name string) *sq.ColumnFilter {
+func (ft *ExternalAccountAhamoveFilters) ByName(Name string) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "name",
@@ -88,7 +88,7 @@ func (ft ExternalAccountAhamoveFilters) ByName(Name string) *sq.ColumnFilter {
 	}
 }
 
-func (ft ExternalAccountAhamoveFilters) ByNamePtr(Name *string) *sq.ColumnFilterPtr {
+func (ft *ExternalAccountAhamoveFilters) ByNamePtr(Name *string) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "name",
@@ -98,7 +98,7 @@ func (ft ExternalAccountAhamoveFilters) ByNamePtr(Name *string) *sq.ColumnFilter
 	}
 }
 
-func (ft ExternalAccountAhamoveFilters) ByExternalID(ExternalID string) *sq.ColumnFilter {
+func (ft *ExternalAccountAhamoveFilters) ByExternalID(ExternalID string) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "external_id",
@@ -107,7 +107,7 @@ func (ft ExternalAccountAhamoveFilters) ByExternalID(ExternalID string) *sq.Colu
 	}
 }
 
-func (ft ExternalAccountAhamoveFilters) ByExternalIDPtr(ExternalID *string) *sq.ColumnFilterPtr {
+func (ft *ExternalAccountAhamoveFilters) ByExternalIDPtr(ExternalID *string) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "external_id",
@@ -117,7 +117,7 @@ func (ft ExternalAccountAhamoveFilters) ByExternalIDPtr(ExternalID *string) *sq.
 	}
 }
 
-func (ft ExternalAccountAhamoveFilters) ByExternalVerified(ExternalVerified bool) *sq.ColumnFilter {
+func (ft *ExternalAccountAhamoveFilters) ByExternalVerified(ExternalVerified bool) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "external_verified",
@@ -126,7 +126,7 @@ func (ft ExternalAccountAhamoveFilters) ByExternalVerified(ExternalVerified bool
 	}
 }
 
-func (ft ExternalAccountAhamoveFilters) ByExternalVerifiedPtr(ExternalVerified *bool) *sq.ColumnFilterPtr {
+func (ft *ExternalAccountAhamoveFilters) ByExternalVerifiedPtr(ExternalVerified *bool) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "external_verified",
@@ -136,7 +136,7 @@ func (ft ExternalAccountAhamoveFilters) ByExternalVerifiedPtr(ExternalVerified *
 	}
 }
 
-func (ft ExternalAccountAhamoveFilters) ByExternalCreatedAt(ExternalCreatedAt time.Time) *sq.ColumnFilter {
+func (ft *ExternalAccountAhamoveFilters) ByExternalCreatedAt(ExternalCreatedAt time.Time) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "external_created_at",
@@ -145,7 +145,7 @@ func (ft ExternalAccountAhamoveFilters) ByExternalCreatedAt(ExternalCreatedAt ti
 	}
 }
 
-func (ft ExternalAccountAhamoveFilters) ByExternalCreatedAtPtr(ExternalCreatedAt *time.Time) *sq.ColumnFilterPtr {
+func (ft *ExternalAccountAhamoveFilters) ByExternalCreatedAtPtr(ExternalCreatedAt *time.Time) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "external_created_at",
@@ -155,7 +155,7 @@ func (ft ExternalAccountAhamoveFilters) ByExternalCreatedAtPtr(ExternalCreatedAt
 	}
 }
 
-func (ft ExternalAccountAhamoveFilters) ByExternalToken(ExternalToken string) *sq.ColumnFilter {
+func (ft *ExternalAccountAhamoveFilters) ByExternalToken(ExternalToken string) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "external_token",
@@ -164,7 +164,7 @@ func (ft ExternalAccountAhamoveFilters) ByExternalToken(ExternalToken string) *s
 	}
 }
 
-func (ft ExternalAccountAhamoveFilters) ByExternalTokenPtr(ExternalToken *string) *sq.ColumnFilterPtr {
+func (ft *ExternalAccountAhamoveFilters) ByExternalTokenPtr(ExternalToken *string) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "external_token",
@@ -174,7 +174,7 @@ func (ft ExternalAccountAhamoveFilters) ByExternalTokenPtr(ExternalToken *string
 	}
 }
 
-func (ft ExternalAccountAhamoveFilters) ByCreatedAt(CreatedAt time.Time) *sq.ColumnFilter {
+func (ft *ExternalAccountAhamoveFilters) ByCreatedAt(CreatedAt time.Time) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "created_at",
@@ -183,7 +183,7 @@ func (ft ExternalAccountAhamoveFilters) ByCreatedAt(CreatedAt time.Time) *sq.Col
 	}
 }
 
-func (ft ExternalAccountAhamoveFilters) ByCreatedAtPtr(CreatedAt *time.Time) *sq.ColumnFilterPtr {
+func (ft *ExternalAccountAhamoveFilters) ByCreatedAtPtr(CreatedAt *time.Time) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "created_at",
@@ -193,7 +193,7 @@ func (ft ExternalAccountAhamoveFilters) ByCreatedAtPtr(CreatedAt *time.Time) *sq
 	}
 }
 
-func (ft ExternalAccountAhamoveFilters) ByUpdatedAt(UpdatedAt time.Time) *sq.ColumnFilter {
+func (ft *ExternalAccountAhamoveFilters) ByUpdatedAt(UpdatedAt time.Time) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "updated_at",
@@ -202,7 +202,7 @@ func (ft ExternalAccountAhamoveFilters) ByUpdatedAt(UpdatedAt time.Time) *sq.Col
 	}
 }
 
-func (ft ExternalAccountAhamoveFilters) ByUpdatedAtPtr(UpdatedAt *time.Time) *sq.ColumnFilterPtr {
+func (ft *ExternalAccountAhamoveFilters) ByUpdatedAtPtr(UpdatedAt *time.Time) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "updated_at",
@@ -212,7 +212,7 @@ func (ft ExternalAccountAhamoveFilters) ByUpdatedAtPtr(UpdatedAt *time.Time) *sq
 	}
 }
 
-func (ft ExternalAccountAhamoveFilters) ByLastSendVerifiedAt(LastSendVerifiedAt time.Time) *sq.ColumnFilter {
+func (ft *ExternalAccountAhamoveFilters) ByLastSendVerifiedAt(LastSendVerifiedAt time.Time) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "last_send_verified_at",
@@ -221,7 +221,7 @@ func (ft ExternalAccountAhamoveFilters) ByLastSendVerifiedAt(LastSendVerifiedAt 
 	}
 }
 
-func (ft ExternalAccountAhamoveFilters) ByLastSendVerifiedAtPtr(LastSendVerifiedAt *time.Time) *sq.ColumnFilterPtr {
+func (ft *ExternalAccountAhamoveFilters) ByLastSendVerifiedAtPtr(LastSendVerifiedAt *time.Time) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "last_send_verified_at",
@@ -231,7 +231,7 @@ func (ft ExternalAccountAhamoveFilters) ByLastSendVerifiedAtPtr(LastSendVerified
 	}
 }
 
-func (ft ExternalAccountAhamoveFilters) ByExternalTicketID(ExternalTicketID string) *sq.ColumnFilter {
+func (ft *ExternalAccountAhamoveFilters) ByExternalTicketID(ExternalTicketID string) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "external_ticket_id",
@@ -240,7 +240,7 @@ func (ft ExternalAccountAhamoveFilters) ByExternalTicketID(ExternalTicketID stri
 	}
 }
 
-func (ft ExternalAccountAhamoveFilters) ByExternalTicketIDPtr(ExternalTicketID *string) *sq.ColumnFilterPtr {
+func (ft *ExternalAccountAhamoveFilters) ByExternalTicketIDPtr(ExternalTicketID *string) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "external_ticket_id",
@@ -250,7 +250,7 @@ func (ft ExternalAccountAhamoveFilters) ByExternalTicketIDPtr(ExternalTicketID *
 	}
 }
 
-func (ft ExternalAccountAhamoveFilters) ByIDCardFrontImg(IDCardFrontImg string) *sq.ColumnFilter {
+func (ft *ExternalAccountAhamoveFilters) ByIDCardFrontImg(IDCardFrontImg string) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "id_card_front_img",
@@ -259,7 +259,7 @@ func (ft ExternalAccountAhamoveFilters) ByIDCardFrontImg(IDCardFrontImg string) 
 	}
 }
 
-func (ft ExternalAccountAhamoveFilters) ByIDCardFrontImgPtr(IDCardFrontImg *string) *sq.ColumnFilterPtr {
+func (ft *ExternalAccountAhamoveFilters) ByIDCardFrontImgPtr(IDCardFrontImg *string) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "id_card_front_img",
@@ -269,7 +269,7 @@ func (ft ExternalAccountAhamoveFilters) ByIDCardFrontImgPtr(IDCardFrontImg *stri
 	}
 }
 
-func (ft ExternalAccountAhamoveFilters) ByIDCardBackImg(IDCardBackImg string) *sq.ColumnFilter {
+func (ft *ExternalAccountAhamoveFilters) ByIDCardBackImg(IDCardBackImg string) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "id_card_back_img",
@@ -278,7 +278,7 @@ func (ft ExternalAccountAhamoveFilters) ByIDCardBackImg(IDCardBackImg string) *s
 	}
 }
 
-func (ft ExternalAccountAhamoveFilters) ByIDCardBackImgPtr(IDCardBackImg *string) *sq.ColumnFilterPtr {
+func (ft *ExternalAccountAhamoveFilters) ByIDCardBackImgPtr(IDCardBackImg *string) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "id_card_back_img",
@@ -288,7 +288,7 @@ func (ft ExternalAccountAhamoveFilters) ByIDCardBackImgPtr(IDCardBackImg *string
 	}
 }
 
-func (ft ExternalAccountAhamoveFilters) ByPortraitImg(PortraitImg string) *sq.ColumnFilter {
+func (ft *ExternalAccountAhamoveFilters) ByPortraitImg(PortraitImg string) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "portrait_img",
@@ -297,7 +297,7 @@ func (ft ExternalAccountAhamoveFilters) ByPortraitImg(PortraitImg string) *sq.Co
 	}
 }
 
-func (ft ExternalAccountAhamoveFilters) ByPortraitImgPtr(PortraitImg *string) *sq.ColumnFilterPtr {
+func (ft *ExternalAccountAhamoveFilters) ByPortraitImgPtr(PortraitImg *string) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "portrait_img",
@@ -307,7 +307,7 @@ func (ft ExternalAccountAhamoveFilters) ByPortraitImgPtr(PortraitImg *string) *s
 	}
 }
 
-func (ft ExternalAccountAhamoveFilters) ByUploadedAt(UploadedAt time.Time) *sq.ColumnFilter {
+func (ft *ExternalAccountAhamoveFilters) ByUploadedAt(UploadedAt time.Time) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "uploaded_at",
@@ -316,7 +316,7 @@ func (ft ExternalAccountAhamoveFilters) ByUploadedAt(UploadedAt time.Time) *sq.C
 	}
 }
 
-func (ft ExternalAccountAhamoveFilters) ByUploadedAtPtr(UploadedAt *time.Time) *sq.ColumnFilterPtr {
+func (ft *ExternalAccountAhamoveFilters) ByUploadedAtPtr(UploadedAt *time.Time) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "uploaded_at",
