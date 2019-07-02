@@ -568,6 +568,9 @@ func PbAddressNote(item *model.AddressNote) *AddressNote {
 }
 
 func PbAddressNoteToModel(item *AddressNote) *model.AddressNote {
+	if item == nil {
+		return nil
+	}
 	return &model.AddressNote{
 		OpenTime:   item.OpenTime,
 		LunchBreak: item.LunchBreak,
