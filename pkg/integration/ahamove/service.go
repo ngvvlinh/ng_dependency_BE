@@ -25,7 +25,7 @@ type ShippingService struct {
 	MinStopPoints int
 	MaxStopPoints int
 	MaxWeight     int
-	MaxCOD 		  int
+	MaxCOD        int
 	City          CityCode
 	Description   string
 }
@@ -184,10 +184,10 @@ func validateService(s *ShippingService, pointCount int, totalCOD int) bool {
 	if s == nil {
 		return false
 	}
-	if totalCOD > s.MaxCOD {
+	if totalCOD >= s.MaxCOD {
 		return false
 	}
-	if pointCount < s.MinStopPoints || pointCount > s. MaxStopPoints {
+	if pointCount < s.MinStopPoints || pointCount > s.MaxStopPoints {
 		return false
 	}
 	return true
@@ -209,7 +209,7 @@ func ToService(service *ahamoveClient.ServiceType) *ShippingService {
 		MaxStopPoints: service.MaxStopPoints,
 		City:          city,
 		Description:   service.DescriptionViVn,
-		MaxCOD: service.MaxCOD,
+		MaxCOD:        cm.CoalesceInt(service.MaxCOD, service.COD),
 	}
 }
 

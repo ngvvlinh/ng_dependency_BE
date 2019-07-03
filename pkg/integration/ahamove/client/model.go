@@ -176,22 +176,22 @@ type DeliveryPoint struct {
 }
 
 type CalcShippingFeeResponse struct {
-	Distance            float32 `json:"distance"`              // 1.144
-	Duration            int     `json:"duration"`              // 288
-	Currency            string  `json:"currency"`              // "VND"
-	Discount            int     `json:"discount"`              // 30000
-	DistanceFee         int     `json:"distance_fee"`          // 140000,
-	StopFee             int     `json:"stop_fee"`              // 0,
-	TotalFee            int     `json:"total_fee"`             // 275000,  # Total = Distance Fee + Request Fee + Stop Fee
-	UserMainAccount     int     `json:"user_main_account"`     // 0,
-	UserBonusAccount    int     `json:"user_bonus_account"`    // 0,
-	TotalPay            int     `json:"total_pay"`             // 275000,
-	Surcharge           string  `json:"surcharge"`             // 1.1 # 110% compared to normal fee, only returned if surcharge > 1,
-	BookingTimeError    string  `json:"booking_time_error"`    // "Booking time not valid" #If booking time is not in opening hours period,
-	PaymentErrorMessage string  `json:"payment_error_message"` // "Not enough credit" #If user does not have enough credit in balance
-	PartnerFee          int     `json:"partner_fee"`
-	PartnerDistanceFee  int     `json:"partner_distance_fee"`
-	PartnerDiscount     int     `json:"partner_discount"`
+	Distance         float32 `json:"distance"`           // 1.144
+	Duration         int     `json:"duration"`           // 288
+	Currency         string  `json:"currency"`           // "VND"
+	Discount         int     `json:"discount"`           // 30000
+	DistanceFee      int     `json:"distance_fee"`       // 140000,
+	StopFee          int     `json:"stop_fee"`           // 0,
+	TotalFee         int     `json:"total_fee"`          // 275000,  # Total = Distance Fee + Request Fee + Stop Fee
+	UserMainAccount  int     `json:"user_main_account"`  // 0,
+	UserBonusAccount int     `json:"user_bonus_account"` // 0,
+	TotalPay         int     `json:"total_pay"`          // 275000,
+	// Surcharge           string  `json:"surcharge"`             // 1.1 # 110% compared to normal fee, only returned if surcharge > 1,
+	BookingTimeError    string `json:"booking_time_error"`    // "Booking time not valid" #If booking time is not in opening hours period,
+	PaymentErrorMessage string `json:"payment_error_message"` // "Not enough credit" #If user does not have enough credit in balance
+	PartnerFee          int    `json:"partner_fee"`
+	PartnerDistanceFee  int    `json:"partner_distance_fee"`
+	PartnerDiscount     int    `json:"partner_discount"`
 }
 
 type CreateOrderRequest struct {
@@ -374,5 +374,6 @@ type ServiceType struct {
 	StopFee         int    `json:"stop_fee"`          // 10000
 	MaxStopPoints   int    `json:"max_stop_points"`   // 5
 	DescriptionViVn string `json:"description_vi_vn"` // "Giao hàng trong 1h"
-	MaxCOD int `json:"max_cod"`
+	MaxCOD          int    `json:"max_cod"`
+	COD             int    `json:"cod"`
 }
