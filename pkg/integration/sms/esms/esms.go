@@ -197,7 +197,7 @@ func (c *ESMS) SendSMS(ctx context.Context, smsType int32, phone string, content
 	q.Add("Phone", phone)
 	q.Add("Content", content)
 	q.Add("ApiKey", c.cfg.APIKey)
-	q.Add("SecretKey", c.cfg.SecretKey)
+	q.Add("Secret", c.cfg.SecretKey)
 	q.Add("SmsType", fmt.Sprintf("%d", smsType))
 	if useBrand {
 		q.Add("Brandname", c.cfg.BrandName)
@@ -214,7 +214,7 @@ func (c *ESMS) GetSendStatus(ctx context.Context, smsID string) (*GetSendStatusR
 	u, _ := url.ParseRequestURI(c.cfg.BaseURL + APIGetSendStatus)
 	q := u.Query()
 	q.Add("ApiKey", c.cfg.APIKey)
-	q.Add("SecretKey", c.cfg.SecretKey)
+	q.Add("Secret", c.cfg.SecretKey)
 	q.Add("RefId", smsID)
 	u.RawQuery = q.Encode()
 	var resp GetSendStatusResponse
@@ -227,7 +227,7 @@ func (c *ESMS) GetSMSReceiverStatus(ctx context.Context, smsID string) (*GetSMSR
 	u, _ := url.ParseRequestURI(c.cfg.BaseURL + APIGetSMSReceiverStatus)
 	q := u.Query()
 	q.Add("ApiKey", c.cfg.APIKey)
-	q.Add("SecretKey", c.cfg.SecretKey)
+	q.Add("Secret", c.cfg.SecretKey)
 	q.Add("RefId", smsID)
 	u.RawQuery = q.Encode()
 	var resp GetSMSReceiverStatusResponse

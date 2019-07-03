@@ -37,6 +37,11 @@ func PInt32(i *int32) *int {
 	return &j
 }
 
+func PIntToInt32(i int) *int32 {
+	j := int32(i)
+	return &j
+}
+
 func PString(s string) *string {
 	return &s
 }

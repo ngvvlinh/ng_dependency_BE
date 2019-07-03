@@ -30,6 +30,7 @@ var Client Shop
 type Shop interface {
 	shop.MiscService
 	shop.AccountService
+	shop.ExternalAccountService
 	shop.CollectionService
 	shop.ProductService
 	shop.ProductSourceService
@@ -47,6 +48,7 @@ type Shop interface {
 type ShopClient struct {
 	_MiscService             shop.MiscService
 	_AccountService          shop.AccountService
+	_ExternalAccountService  shop.ExternalAccountService
 	_CollectionService       shop.CollectionService
 	_ProductService          shop.ProductService
 	_ProductSourceService    shop.ProductSourceService
@@ -72,6 +74,7 @@ func NewShopClient(addr string, client *http.Client) Shop {
 	return &ShopClient{
 		_MiscService:             shop.NewMiscServiceProtobufClient(addr, client),
 		_AccountService:          shop.NewAccountServiceProtobufClient(addr, client),
+		_ExternalAccountService:  shop.NewExternalAccountServiceProtobufClient(addr, client),
 		_CollectionService:       shop.NewCollectionServiceProtobufClient(addr, client),
 		_ProductService:          shop.NewProductServiceProtobufClient(addr, client),
 		_ProductSourceService:    shop.NewProductSourceServiceProtobufClient(addr, client),
@@ -104,6 +107,12 @@ func ConnectShopService(addr string, client *http.Client) error {
 		panic("Unexpected")
 	})
 	bus.AddHandler("client", func(ctx context.Context, q *UpdateShopEndpoint) error { panic("Unexpected") })
+	bus.AddHandler("client", func(ctx context.Context, q *ConnectCarrierServiceExternalAccountHaravanEndpoint) error {
+		panic("Unexpected")
+	})
+	bus.AddHandler("client", func(ctx context.Context, q *CreateExternalAccountHaravanEndpoint) error { panic("Unexpected") })
+	bus.AddHandler("client", func(ctx context.Context, q *GetExternalAccountHaravanEndpoint) error { panic("Unexpected") })
+	bus.AddHandler("client", func(ctx context.Context, q *UpdateExternalAccountHaravanTokenEndpoint) error { panic("Unexpected") })
 	bus.AddHandler("client", func(ctx context.Context, q *CreateCollectionEndpoint) error { panic("Unexpected") })
 	bus.AddHandler("client", func(ctx context.Context, q *DeleteCollectionEndpoint) error { panic("Unexpected") })
 	bus.AddHandler("client", func(ctx context.Context, q *GetCollectionEndpoint) error { panic("Unexpected") })
@@ -338,6 +347,62 @@ func (c *ShopClient) UpdateExternalAccountAhamoveVerificationImages(ctx context.
 }
 func (c *ShopClient) UpdateShop(ctx context.Context, in *shop.UpdateShopRequest) (*shop.UpdateShopResponse, error) {
 	resp, err := c._AccountService.UpdateShop(ctx, in)
+
+	node, ok := ctx.(*bus.NodeContext)
+	if !ok {
+		return resp, err
+	}
+	newNode := node.WithMessage(map[string]interface{}{
+		"Request": in,
+		"Result":  resp,
+	})
+	newNode.Error = err
+	return resp, err
+}
+func (c *ShopClient) ConnectCarrierServiceExternalAccountHaravan(ctx context.Context, in *cm.Empty) (*cm.UpdatedResponse, error) {
+	resp, err := c._ExternalAccountService.ConnectCarrierServiceExternalAccountHaravan(ctx, in)
+
+	node, ok := ctx.(*bus.NodeContext)
+	if !ok {
+		return resp, err
+	}
+	newNode := node.WithMessage(map[string]interface{}{
+		"Request": in,
+		"Result":  resp,
+	})
+	newNode.Error = err
+	return resp, err
+}
+func (c *ShopClient) CreateExternalAccountHaravan(ctx context.Context, in *shop.ExternalAccountHaravanRequest) (*shop.ExternalAccountHaravan, error) {
+	resp, err := c._ExternalAccountService.CreateExternalAccountHaravan(ctx, in)
+
+	node, ok := ctx.(*bus.NodeContext)
+	if !ok {
+		return resp, err
+	}
+	newNode := node.WithMessage(map[string]interface{}{
+		"Request": in,
+		"Result":  resp,
+	})
+	newNode.Error = err
+	return resp, err
+}
+func (c *ShopClient) GetExternalAccountHaravan(ctx context.Context, in *cm.Empty) (*shop.ExternalAccountHaravan, error) {
+	resp, err := c._ExternalAccountService.GetExternalAccountHaravan(ctx, in)
+
+	node, ok := ctx.(*bus.NodeContext)
+	if !ok {
+		return resp, err
+	}
+	newNode := node.WithMessage(map[string]interface{}{
+		"Request": in,
+		"Result":  resp,
+	})
+	newNode.Error = err
+	return resp, err
+}
+func (c *ShopClient) UpdateExternalAccountHaravanToken(ctx context.Context, in *shop.ExternalAccountHaravanRequest) (*shop.ExternalAccountHaravan, error) {
+	resp, err := c._ExternalAccountService.UpdateExternalAccountHaravanToken(ctx, in)
 
 	node, ok := ctx.(*bus.NodeContext)
 	if !ok {
@@ -1333,6 +1398,10 @@ func NewShopServer(mux Muxer, hooks *twirp.ServerHooks) {
 	bus.Expect(&UpdateExternalAccountAhamoveVerificationEndpoint{})
 	bus.Expect(&UpdateExternalAccountAhamoveVerificationImagesEndpoint{})
 	bus.Expect(&UpdateShopEndpoint{})
+	bus.Expect(&ConnectCarrierServiceExternalAccountHaravanEndpoint{})
+	bus.Expect(&CreateExternalAccountHaravanEndpoint{})
+	bus.Expect(&GetExternalAccountHaravanEndpoint{})
+	bus.Expect(&UpdateExternalAccountHaravanTokenEndpoint{})
 	bus.Expect(&CreateCollectionEndpoint{})
 	bus.Expect(&DeleteCollectionEndpoint{})
 	bus.Expect(&GetCollectionEndpoint{})
@@ -1404,6 +1473,7 @@ func NewShopServer(mux Muxer, hooks *twirp.ServerHooks) {
 	bus.Expect(&GetAvailablePartnersEndpoint{})
 	mux.Handle(shop.MiscServicePathPrefix, shop.NewMiscServiceServer(MiscService{}, hooks))
 	mux.Handle(shop.AccountServicePathPrefix, shop.NewAccountServiceServer(AccountService{}, hooks))
+	mux.Handle(shop.ExternalAccountServicePathPrefix, shop.NewExternalAccountServiceServer(ExternalAccountService{}, hooks))
 	mux.Handle(shop.CollectionServicePathPrefix, shop.NewCollectionServiceServer(CollectionService{}, hooks))
 	mux.Handle(shop.ProductServicePathPrefix, shop.NewProductServiceServer(ProductService{}, hooks))
 	mux.Handle(shop.ProductSourceServicePathPrefix, shop.NewProductSourceServiceServer(ProductSourceService{}, hooks))
@@ -1421,6 +1491,7 @@ func NewShopServer(mux Muxer, hooks *twirp.ServerHooks) {
 type ShopImpl struct {
 	MiscService
 	AccountService
+	ExternalAccountService
 	CollectionService
 	ProductService
 	ProductSourceService
@@ -1917,6 +1988,184 @@ func (s AccountService) UpdateShop(ctx context.Context, req *shop.UpdateShopRequ
 	if !session.IsOwner && permission.MaxRoleLevel(session.Roles) < 4 {
 		return nil, common.ErrPermissionDenied
 	}
+	ctx = bus.NewRootContext(ctx)
+	err = bus.Dispatch(ctx, query)
+	resp = query.Result
+	if err == nil {
+		if resp == nil {
+			return nil, common.Error(common.Internal, "", nil).Log("nil response")
+		}
+		errs = cmWrapper.HasErrors(resp)
+	}
+	return resp, err
+}
+
+type ExternalAccountService struct{}
+
+type ConnectCarrierServiceExternalAccountHaravanEndpoint struct {
+	*cm.Empty
+	Result  *cm.UpdatedResponse
+	Context ShopClaim
+}
+
+func (s ExternalAccountService) ConnectCarrierServiceExternalAccountHaravan(ctx context.Context, req *cm.Empty) (resp *cm.UpdatedResponse, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "shop.ExternalAccount/ConnectCarrierServiceExternalAccountHaravan"
+	defer func() {
+		recovered := recover()
+		err = cmWrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
+	}()
+	defer cmWrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:     ctx,
+		RequireAuth: true,
+		RequireShop: true,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &ConnectCarrierServiceExternalAccountHaravanEndpoint{Empty: req}
+	query.Context.Claim = session.Claim
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = bus.Dispatch(ctx, query)
+	resp = query.Result
+	if err == nil {
+		if resp == nil {
+			return nil, common.Error(common.Internal, "", nil).Log("nil response")
+		}
+		errs = cmWrapper.HasErrors(resp)
+	}
+	return resp, err
+}
+
+type CreateExternalAccountHaravanEndpoint struct {
+	*shop.ExternalAccountHaravanRequest
+	Result  *shop.ExternalAccountHaravan
+	Context ShopClaim
+}
+
+func (s ExternalAccountService) CreateExternalAccountHaravan(ctx context.Context, req *shop.ExternalAccountHaravanRequest) (resp *shop.ExternalAccountHaravan, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "shop.ExternalAccount/CreateExternalAccountHaravan"
+	defer func() {
+		recovered := recover()
+		err = cmWrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
+	}()
+	defer cmWrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:     ctx,
+		RequireAuth: true,
+		RequireShop: true,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &CreateExternalAccountHaravanEndpoint{ExternalAccountHaravanRequest: req}
+	query.Context.Claim = session.Claim
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = bus.Dispatch(ctx, query)
+	resp = query.Result
+	if err == nil {
+		if resp == nil {
+			return nil, common.Error(common.Internal, "", nil).Log("nil response")
+		}
+		errs = cmWrapper.HasErrors(resp)
+	}
+	return resp, err
+}
+
+type GetExternalAccountHaravanEndpoint struct {
+	*cm.Empty
+	Result  *shop.ExternalAccountHaravan
+	Context ShopClaim
+}
+
+func (s ExternalAccountService) GetExternalAccountHaravan(ctx context.Context, req *cm.Empty) (resp *shop.ExternalAccountHaravan, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "shop.ExternalAccount/GetExternalAccountHaravan"
+	defer func() {
+		recovered := recover()
+		err = cmWrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
+	}()
+	defer cmWrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:     ctx,
+		RequireAuth: true,
+		RequireShop: true,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &GetExternalAccountHaravanEndpoint{Empty: req}
+	query.Context.Claim = session.Claim
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = bus.Dispatch(ctx, query)
+	resp = query.Result
+	if err == nil {
+		if resp == nil {
+			return nil, common.Error(common.Internal, "", nil).Log("nil response")
+		}
+		errs = cmWrapper.HasErrors(resp)
+	}
+	return resp, err
+}
+
+type UpdateExternalAccountHaravanTokenEndpoint struct {
+	*shop.ExternalAccountHaravanRequest
+	Result  *shop.ExternalAccountHaravan
+	Context ShopClaim
+}
+
+func (s ExternalAccountService) UpdateExternalAccountHaravanToken(ctx context.Context, req *shop.ExternalAccountHaravanRequest) (resp *shop.ExternalAccountHaravan, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "shop.ExternalAccount/UpdateExternalAccountHaravanToken"
+	defer func() {
+		recovered := recover()
+		err = cmWrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
+	}()
+	defer cmWrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:     ctx,
+		RequireAuth: true,
+		RequireShop: true,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &UpdateExternalAccountHaravanTokenEndpoint{ExternalAccountHaravanRequest: req}
+	query.Context.Claim = session.Claim
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
 	err = bus.Dispatch(ctx, query)
 	resp = query.Result

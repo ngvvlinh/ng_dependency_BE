@@ -1,11 +1,12 @@
 package shop
 
 import (
+	haravanidentity "etop.vn/api/external/haravan/identity"
 	"etop.vn/api/main/identity"
 	pbcm "etop.vn/backend/pb/common"
 )
 
-func Convert_core_XAhamoveAccount_To_api_XAhamoveAccount(in *identity.ExternalAccountAhamove) *ExternalAccountAhamove {
+func Convert_core_XAccountAhamove_To_api_XAccountAhamove(in *identity.ExternalAccountAhamove) *ExternalAccountAhamove {
 	if in == nil {
 		return nil
 	}
@@ -27,5 +28,19 @@ func Convert_core_XAhamoveAccount_To_api_XAhamoveAccount(in *identity.ExternalAc
 		WebsiteUrl:          in.WebsiteURL,
 		CompanyImgs:         in.CompanyImgs,
 		BusinessLicenseImgs: in.BusinessLicenseImgs,
+	}
+}
+
+func Convert_core_XAccountHaravan_To_api_XAccountHaravan(in *haravanidentity.ExternalAccountHaravan) *ExternalAccountHaravan {
+	if in == nil {
+		return nil
+	}
+	return &ExternalAccountHaravan{
+		Id:        in.ID,
+		ShopId:    in.ShopID,
+		Subdomain: in.Subdomain,
+		ExpiresAt: pbcm.PbTime(in.ExpiresAt),
+		CreatedAt: pbcm.PbTime(in.CreatedAt),
+		UpdatedAt: pbcm.PbTime(in.UpdatedAt),
 	}
 }

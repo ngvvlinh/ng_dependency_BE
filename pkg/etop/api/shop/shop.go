@@ -3,23 +3,13 @@ package shop
 import (
 	"context"
 
-	"github.com/asaskevich/govalidator"
-
-	"etop.vn/backend/pkg/etop/api"
-
+	haravanidentity "etop.vn/api/external/haravan/identity"
 	"etop.vn/api/main/address"
-
-	"etop.vn/backend/pkg/etop/logic/shipping_provider"
-
-	"etop.vn/api/main/identity"
-
-	"etop.vn/api/main/shipping/v1/types"
-
-	"etop.vn/api/main/shipnow/carrier"
-
 	"etop.vn/api/main/catalog"
-
+	"etop.vn/api/main/identity"
 	"etop.vn/api/main/shipnow"
+	"etop.vn/api/main/shipnow/carrier"
+	"etop.vn/api/main/shipping/v1/types"
 	pbcm "etop.vn/backend/pb/common"
 	pbetop "etop.vn/backend/pb/etop"
 	pborder "etop.vn/backend/pb/etop/order"
@@ -30,7 +20,9 @@ import (
 	"etop.vn/backend/pkg/common/l"
 	"etop.vn/backend/pkg/common/redis"
 	cmservice "etop.vn/backend/pkg/common/service"
+	"etop.vn/backend/pkg/etop/api"
 	"etop.vn/backend/pkg/etop/api/convertpb"
+	"etop.vn/backend/pkg/etop/logic/shipping_provider"
 	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/backend/pkg/etop/sqlstore"
 	notimodel "etop.vn/backend/pkg/notifier/model"
@@ -38,6 +30,7 @@ import (
 	catalogmodelx "etop.vn/backend/pkg/services/catalog/modelx"
 	moneymodelx "etop.vn/backend/pkg/services/moneytx/modelx"
 	wrapshop "etop.vn/backend/wrapper/etop/shop"
+	"github.com/asaskevich/govalidator"
 )
 
 var ll = l.New()
@@ -99,6 +92,11 @@ func init() {
 	bus.AddHandler("api", RequestVerifyExternalAccountAhamove)
 	bus.AddHandler("api", UpdateExternalAccountAhamoveVerificationImages)
 	bus.AddHandler("api", UpdateExternalAccountAhamoveVerification)
+
+	bus.AddHandler("api", GetExternalAccountHaravan)
+	bus.AddHandler("api", CreateExternalAccountHaravan)
+	bus.AddHandler("api", UpdateExternalAccountHaravanToken)
+	bus.AddHandler("api", ConnectCarrierServiceExternalAccountHaravan)
 }
 
 const PrefixIdemp = "IdempOrder"
@@ -111,8 +109,10 @@ var identityQuery identity.QueryBus
 var addressQuery address.QueryBus
 var shippingCtrl *shipping_provider.ProviderManager
 var catalogQuery catalog.QueryBus
+var haravanIdentityAggr haravanidentity.CommandBus
+var haravanIdentityQuery haravanidentity.QueryBus
 
-func Init(catalogQueryBus catalog.QueryBus, shipnow shipnow.CommandBus, shipnowQS shipnow.QueryBus, identity identity.CommandBus, identityQS identity.QueryBus, addressQS address.QueryBus, providerManager *shipping_provider.ProviderManager, sd cmservice.Shutdowner, rd redis.Store) {
+func Init(catalogQueryBus catalog.QueryBus, shipnow shipnow.CommandBus, shipnowQS shipnow.QueryBus, identity identity.CommandBus, identityQS identity.QueryBus, addressQS address.QueryBus, providerManager *shipping_provider.ProviderManager, haravanIdentity haravanidentity.CommandBus, haravanIdentityQS haravanidentity.QueryBus, sd cmservice.Shutdowner, rd redis.Store) {
 	idempgroup = idemp.NewRedisGroup(rd, PrefixIdemp, 5*60)
 	catalogQuery = catalogQueryBus
 	shippingCtrl = providerManager
@@ -121,6 +121,8 @@ func Init(catalogQueryBus catalog.QueryBus, shipnow shipnow.CommandBus, shipnowQ
 	identityAggr = identity
 	identityQuery = identityQS
 	addressQuery = addressQS
+	haravanIdentityAggr = haravanIdentity
+	haravanIdentityQuery = haravanIdentityQS
 	sd.Register(idempgroup.Shutdown)
 }
 
@@ -921,7 +923,7 @@ func CreateExternalAccountAhamove(ctx context.Context, q *wrapshop.CreateExterna
 	if err := identityAggr.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
-	q.Result = pbshop.Convert_core_XAhamoveAccount_To_api_XAhamoveAccount(cmd.Result)
+	q.Result = pbshop.Convert_core_XAccountAhamove_To_api_XAccountAhamove(cmd.Result)
 	return nil
 }
 
@@ -955,7 +957,7 @@ func GetExternalAccountAhamove(ctx context.Context, q *wrapshop.GetExternalAccou
 		account = cmd.Result
 	}
 
-	q.Result = pbshop.Convert_core_XAhamoveAccount_To_api_XAhamoveAccount(account)
+	q.Result = pbshop.Convert_core_XAccountAhamove_To_api_XAccountAhamove(account)
 	return nil
 }
 
@@ -1076,6 +1078,58 @@ func validateUrl(imgsUrl ...string) error {
 		if !govalidator.IsURL(url) {
 			return cm.Errorf(cm.InvalidArgument, nil, "Invalid url: %v", url)
 		}
+	}
+	return nil
+}
+
+func GetExternalAccountHaravan(ctx context.Context, r *wrapshop.GetExternalAccountHaravanEndpoint) error {
+	query := &haravanidentity.GetExternalAccountHaravanByShopIDQuery{
+		ShopID: r.Context.Shop.ID,
+	}
+	if err := haravanIdentityQuery.Dispatch(ctx, query); err != nil {
+		return err
+	}
+	r.Result = pbshop.Convert_core_XAccountHaravan_To_api_XAccountHaravan(query.Result)
+	return nil
+}
+
+func CreateExternalAccountHaravan(ctx context.Context, r *wrapshop.CreateExternalAccountHaravanEndpoint) error {
+	cmd := &haravanidentity.CreateExternalAccountHaravanCommand{
+		ShopID:      r.Context.Shop.ID,
+		Subdomain:   r.Subdomain,
+		Code:        r.Code,
+		RedirectURI: r.RedirectUri,
+	}
+	if err := haravanIdentityAggr.Dispatch(ctx, cmd); err != nil {
+		return err
+	}
+	r.Result = pbshop.Convert_core_XAccountHaravan_To_api_XAccountHaravan(cmd.Result)
+	return nil
+}
+
+func UpdateExternalAccountHaravanToken(ctx context.Context, r *wrapshop.UpdateExternalAccountHaravanTokenEndpoint) error {
+	cmd := &haravanidentity.UpdateExternalAccountHaravanTokenCommand{
+		ShopID:      r.Context.Shop.ID,
+		Subdomain:   r.Subdomain,
+		RedirectURI: r.RedirectUri,
+		Code:        r.Code,
+	}
+	if err := haravanIdentityAggr.Dispatch(ctx, cmd); err != nil {
+		return err
+	}
+	r.Result = pbshop.Convert_core_XAccountHaravan_To_api_XAccountHaravan(cmd.Result)
+	return nil
+}
+
+func ConnectCarrierServiceExternalAccountHaravan(ctx context.Context, r *wrapshop.ConnectCarrierServiceExternalAccountHaravanEndpoint) error {
+	cmd := &haravanidentity.ConnectCarrierServiceExternalAccountHaravanCommand{
+		ShopID: r.Context.Shop.ID,
+	}
+	if err := haravanIdentityAggr.Dispatch(ctx, cmd); err != nil {
+		return err
+	}
+	r.Result = &pbcm.UpdatedResponse{
+		Updated: 1,
 	}
 	return nil
 }

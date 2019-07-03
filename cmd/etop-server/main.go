@@ -45,6 +45,7 @@ import (
 	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/backend/pkg/etop/sqlstore"
 	"etop.vn/backend/pkg/etop/upload"
+	haravanidentity "etop.vn/backend/pkg/external/haravan/identity"
 	"etop.vn/backend/pkg/integration/ahamove"
 	"etop.vn/backend/pkg/integration/email"
 	"etop.vn/backend/pkg/integration/ghn"
@@ -262,6 +263,8 @@ func main() {
 	addressQuery := address.NewQueryService(db).MessageBus()
 	shipnowQuery = shipnow.NewQueryService(db).MessageBus()
 	orderQuery = ordering.NewQueryService(db).MessageBus()
+	haravanIdentityAggr := haravanidentity.NewAggregate(db, cfg.ThirdPartyHost, cfg.Haravan).MessageBus()
+	haravanIdentityQuery := haravanidentity.NewQueryService(db).MessageBus()
 
 	orderAggr = ordering.NewAggregate(db)
 	shipnowCarrierManager := shipnow_carrier.NewManager(db, locationBus, &shipnow_carrier.Carrier{
@@ -277,7 +280,7 @@ func main() {
 
 	orderAggr.WithPM(orderingPM)
 
-	shop.Init(catalogQuery, shipnowAggr, shipnowQuery, identityAggr, identityQuery, addressQuery, shippingManager, shutdowner, redisStore)
+	shop.Init(catalogQuery, shipnowAggr, shipnowQuery, identityAggr, identityQuery, addressQuery, shippingManager, haravanIdentityAggr, haravanIdentityQuery, shutdowner, redisStore)
 	partner.Init(shutdowner, redisStore, authStore, cfg.URL.Auth)
 	xshop.Init(shutdowner, redisStore, authStore)
 	integration.Init(shutdowner, redisStore, authStore)

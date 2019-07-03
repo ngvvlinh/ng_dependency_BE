@@ -11,6 +11,7 @@ import (
 	"etop.vn/backend/pkg/integration/email"
 	"etop.vn/backend/pkg/integration/ghn"
 	"etop.vn/backend/pkg/integration/ghtk"
+	haravanclient "etop.vn/backend/pkg/integration/haravan/client"
 	"etop.vn/backend/pkg/integration/sms"
 	"etop.vn/backend/pkg/integration/vtpost"
 )
@@ -62,6 +63,8 @@ type Config struct {
 	VTPostWebhook  cc.HTTP              `yaml:"vtpost_webhook"`
 	Ahamove        ahamoveclient.Config `yaml:"ahamove"`
 	AhamoveWebhook cc.HTTP              `yaml:"ahamove_webhook"`
+
+	Haravan haravanclient.Config `yaml:"haravan"`
 
 	SAdminToken string `yaml:"sadmin_token"`
 	ServeDoc    bool   `yaml:"serve_doc"`

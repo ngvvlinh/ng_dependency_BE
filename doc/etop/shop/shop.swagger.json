@@ -614,6 +614,110 @@
         ]
       }
     },
+    "/api/shop.ExternalAccount/ConnectCarrierServiceExternalAccountHaravan": {
+      "post": {
+        "operationId": "ConnectCarrierServiceExternalAccountHaravan",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/cmUpdatedResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/cmEmpty"
+            }
+          }
+        ],
+        "tags": [
+          "ExternalAccount"
+        ]
+      }
+    },
+    "/api/shop.ExternalAccount/CreateExternalAccountHaravan": {
+      "post": {
+        "operationId": "CreateExternalAccountHaravan",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/shopExternalAccountHaravan"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/shopExternalAccountHaravanRequest"
+            }
+          }
+        ],
+        "tags": [
+          "ExternalAccount"
+        ]
+      }
+    },
+    "/api/shop.ExternalAccount/GetExternalAccountHaravan": {
+      "post": {
+        "operationId": "GetExternalAccountHaravan",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/shopExternalAccountHaravan"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/cmEmpty"
+            }
+          }
+        ],
+        "tags": [
+          "ExternalAccount"
+        ]
+      }
+    },
+    "/api/shop.ExternalAccount/UpdateExternalAccountHaravanToken": {
+      "post": {
+        "operationId": "UpdateExternalAccountHaravanToken",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/shopExternalAccountHaravan"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/shopExternalAccountHaravanRequest"
+            }
+          }
+        ],
+        "tags": [
+          "ExternalAccount"
+        ]
+      }
+    },
     "/api/shop.Fulfillment/CancelFulfillment": {
       "post": {
         "operationId": "CancelFulfillment",
@@ -5530,6 +5634,57 @@
         }
       }
     },
+    "shopExternalAccountHaravan": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "shop_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "subdomain": {
+          "type": "string"
+        },
+        "access_token": {
+          "type": "string"
+        },
+        "expires_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "shopExternalAccountHaravanRequest": {
+      "type": "object",
+      "properties": {
+        "subdomain": {
+          "type": "string"
+        },
+        "code": {
+          "type": "string",
+          "title": "OAuth code"
+        },
+        "redirect_uri": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "subdomain",
+        "code",
+        "redirect_uri"
+      ]
+    },
     "shopGetAuthorizedPartnersResponse": {
       "type": "object",
       "properties": {
@@ -6676,6 +6831,9 @@
     },
     {
       "name": "Export"
+    },
+    {
+      "name": "ExternalAccount"
     },
     {
       "name": "Fulfillment"

@@ -18,3 +18,4 @@ build ./cmd/etop-uploader
 build ./cmd/pgevent-forwarder
 build ./cmd/shipping-sync-service
 build ./cmd/etop-notifier
+build ./cmd/haravan-gateway

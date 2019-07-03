@@ -53,6 +53,9 @@ func PbTime(t time.Time) *pbts.Timestamp {
 }
 
 func PbTimeToModel(t *pbts.Timestamp) time.Time {
+	if t == nil {
+		return time.Time{}
+	}
 	ts, err := ptypes.Timestamp(t)
 	if err != nil {
 		ll.Error("Invalid timestamp")
