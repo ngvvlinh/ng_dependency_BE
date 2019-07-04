@@ -70,7 +70,7 @@ func CalcUpdateFulfillment(ffm *shipmodel.Fulfillment, msg *ghnclient.CallbackOr
 		ExternalShippingLogs:      ffm.ExternalShippingLogs,
 		ShippingCode:              ffm.ShippingCode,
 	}
-	shippingFeeShopLines := model.GetShippingFeeShopLines(update.ProviderShippingFeeLines, false, nil)
+	shippingFeeShopLines := model.GetShippingFeeShopLines(update.ProviderShippingFeeLines, ffm.EtopPriceRule, &ffm.EtopAdjustedShippingFeeMain)
 	shippingFeeShop := 0
 	for _, line := range shippingFeeShopLines {
 		shippingFeeShop += int(line.Cost)

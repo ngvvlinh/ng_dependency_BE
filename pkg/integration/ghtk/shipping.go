@@ -178,12 +178,6 @@ func (p *Carrier) CreateFulfillment(ctx context.Context, order *ordermodel.Order
 		Insurance: r.Order.InsuranceFee,
 	}
 	updateFfm.ProviderShippingFeeLines = CalcAndConvertShippingFeeLines(orderInfo)
-	// if service.ShippingFeeMain != model.GetMainFee(updateFfm.ProviderShippingFeeLines) {
-	// 	updateFfm.ApplyEtopPrice(service.ShippingFeeMain)
-	// }
-	// if etopService != nil {
-	// 	updateFfm.ApplyEtopPrice(etopService.ShippingFeeMain)
-	// }
 	updateFfm.ShippingFeeShopLines = model.GetShippingFeeShopLines(updateFfm.ProviderShippingFeeLines, updateFfm.EtopPriceRule, &updateFfm.EtopAdjustedShippingFeeMain)
 
 	return updateFfm, nil

@@ -3,6 +3,7 @@ package etop_shipping_price
 import (
 	"fmt"
 	"math"
+	"sort"
 	"strings"
 
 	"etop.vn/api/main/location"
@@ -33,7 +34,7 @@ type FromProvinceDetail struct {
 
 type RouteTypeDetail struct {
 	Include model.ShippingRouteType
-	Exclude model.ShippingRouteType
+	Exclude []model.ShippingRouteType
 }
 
 type ESPricingDetail struct {
@@ -48,19 +49,9 @@ type ESPricingDetail struct {
 	PriceStep int
 }
 
-const (
-	WeightIndex100  = 100
-	WeightIndex300  = 300
-	WeightIndex500  = 500
-	WeightIndex3000 = 3000
-)
-
 var (
 	ll             = l.New()
 	priceRuleIndex = make(map[model.ShippingProvider][]*ESPricing)
-	weightIndex    = []int{
-		WeightIndex100, WeightIndex300, WeightIndex500, WeightIndex3000,
-	}
 )
 
 func init() {
@@ -79,25 +70,12 @@ func GetEtopShippingServices(carrier model.ShippingProvider, fromProvince *locat
 	var res []*model.AvailableShippingService
 	pricings := priceRuleIndex[carrier]
 	pricingsMatch := GetESPricingsMatch(pricings, fromProvince, toProvince, toDistrict)
-
 	for _, price := range pricingsMatch {
 		if service, err := price.ToService(weight, carrier); err == nil {
 			res = append(res, service)
 		}
 	}
 	return res
-}
-
-func GetWeightIndex(weight int) int {
-	if weight <= WeightIndex100 {
-		return WeightIndex100
-	} else if weight <= WeightIndex300 {
-		return WeightIndex300
-	} else if weight <= WeightIndex500 {
-		return WeightIndex500
-	} else {
-		return WeightIndex3000
-	}
 }
 
 func GetESPricingsMatch(pricings []*ESPricing, fromProvince *location.Province, toProvince *location.Province, toDistrict *location.District) []*ESPricing {
@@ -129,7 +107,7 @@ func (pricing *ESPricing) CheckESPriceMatch(fromProvince *location.Province, toP
 		if route == pricing.RouteType.Include {
 			foundRouteInclude = true
 		}
-		if route == pricing.RouteType.Exclude {
+		if ContainRouteType(pricing.RouteType.Exclude, route) {
 			foundRouteExclude = true
 		}
 	}
@@ -152,6 +130,15 @@ func (pricing *ESPricing) CheckESPriceMatch(fromProvince *location.Province, toP
 		}
 	}
 	return true
+}
+
+func ContainRouteType(types []model.ShippingRouteType, routeType model.ShippingRouteType) bool {
+	for _, rt := range types {
+		if routeType == rt {
+			return true
+		}
+	}
+	return false
 }
 
 func (pricing *ESPricing) ToService(weight int, carrier model.ShippingProvider) (*model.AvailableShippingService, error) {
@@ -178,24 +165,20 @@ func (pricing *ESPricing) ToService(weight int, carrier model.ShippingProvider) 
 }
 
 func GetPriceRuleDetail(weight int, priceRuleDetails map[int]*ESPricingDetail) *ESPricingDetail {
-	wIndex := GetWeightIndex(weight)
-	rule := priceRuleDetails[wIndex]
-	if rule != nil {
-		return rule
+	var weightIndex []int
+	for wIndex, _ := range priceRuleDetails {
+		weightIndex = append(weightIndex, wIndex)
 	}
-	for i, wIdx := range weightIndex {
-		if i != 0 && wIndex == wIdx {
-			// get Rule from previous weight index
-			j := i - 1
-			for rule == nil && j >= 0 {
-				idx := weightIndex[j]
-				rule = priceRuleDetails[idx]
-				j--
-			}
+	sort.Ints(weightIndex) // increase
+	var index int
+	for _, wIndex := range weightIndex {
+		index = wIndex
+		if weight <= wIndex {
 			break
 		}
 	}
-	return rule
+
+	return priceRuleDetails[index]
 }
 
 func GetPriceByPricingDetail(weight int, pRuleDetail *ESPricingDetail) (int, error) {

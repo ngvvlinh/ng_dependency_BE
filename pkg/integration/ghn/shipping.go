@@ -5,6 +5,8 @@ import (
 	"strconv"
 	"time"
 
+	"etop.vn/backend/pkg/etop/logic/etop_shipping_price"
+
 	"etop.vn/api/main/location"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
@@ -122,8 +124,9 @@ func (p *Carrier) CreateFulfillment(
 	now := time.Now()
 	expectedDeliveryAt := shipping.CalcDeliveryTime(model.TypeGHN, toDistrict, r.ExpectedDeliveryTime.ToTime())
 	updateFfm := &shipmodel.Fulfillment{
-		ID:     ffm.ID,
-		Status: model.S5SuperPos, // Now processing
+		ID:                ffm.ID,
+		ProviderServiceID: service.ProviderServiceID,
+		Status:            model.S5SuperPos, // Now processing
 
 		ShippingFeeCustomer: order.ShopShippingFee,
 		ShippingFeeShop:     order.ShopShipping.ExternalShippingFee,
@@ -146,13 +149,14 @@ func (p *Carrier) CreateFulfillment(
 		ExpectedDeliveryAt: expectedDeliveryAt,
 	}
 	// Fake shipping_fee_shop_lines, it will automates update later (when receive webhook)
-	updateFfm.ShippingFeeShopLines = []*model.ShippingFeeLine{
+	updateFfm.ProviderShippingFeeLines = []*model.ShippingFeeLine{
 		{
 			ShippingFeeType:      model.ShippingFeeTypeMain,
 			Cost:                 int(r.TotalServiceFee),
 			ExternalShippingCode: r.OrderCode.String(),
 		},
 	}
+	updateFfm.ShippingFeeShopLines = model.GetShippingFeeShopLines(updateFfm.ProviderShippingFeeLines, updateFfm.EtopPriceRule, &updateFfm.EtopAdjustedShippingFeeMain)
 	return updateFfm, nil
 }
 
@@ -214,7 +218,47 @@ func (p *Carrier) GetShippingServices(ctx context.Context, args shipping_provide
 }
 
 func (c *Carrier) GetAllShippingServices(ctx context.Context, args shipping_provider.GetShippingServicesArgs) ([]*model.AvailableShippingService, error) {
-	return c.GetShippingServices(ctx, args)
+	fromQuery := &location.GetLocationQuery{DistrictCode: args.FromDistrictCode}
+	toQuery := &location.GetLocationQuery{DistrictCode: args.ToDistrictCode}
+	if err := c.location.DispatchAll(ctx, fromQuery, toQuery); err != nil {
+		return nil, err
+	}
+	fromDistrict, fromProvince := fromQuery.Result.District, fromQuery.Result.Province
+	toDistrict, toProvince := toQuery.Result.District, toQuery.Result.Province
+
+	if fromDistrict.GhnId == 0 {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "GHN: Địa chỉ gửi hàng %v không được hỗ trợ bởi đơn vị vận chuyển!", fromDistrict.Name)
+	}
+	if toDistrict.GhnId == 0 {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "GHN: Địa chỉ nhận hàng %v không được hỗ trợ bởi đơn vị vận chuyển!", toDistrict.Name)
+	}
+
+	cmd := &RequestFindAvailableServicesCommand{
+		FromDistrict: fromDistrict,
+		ToDistrict:   toDistrict,
+		Request: &ghnclient.FindAvailableServicesRequest{
+			Connection:     ghnclient.Connection{},
+			Weight:         int(args.ChargeableWeight),
+			Length:         int(args.Length),
+			Width:          int(args.Width),
+			Height:         int(args.Height),
+			FromDistrictID: int(fromDistrict.GhnId),
+			ToDistrictID:   int(toDistrict.GhnId),
+			InsuranceFee:   args.GetInsuranceAmount(),
+		},
+	}
+	err := c.FindAvailableServices(ctx, cmd)
+	if err != nil {
+		return nil, err
+	}
+	providerServices := cmd.Result
+
+	// get ETOP services
+	etopServices := etop_shipping_price.GetEtopShippingServices(model.TypeGHN, fromProvince, toProvince, toDistrict, args.ChargeableWeight)
+	etopServices, _ = etop_shipping_price.FillInfoEtopServices(providerServices, etopServices)
+
+	allServices := append(providerServices, etopServices...)
+	return allServices, nil
 }
 
 func (p *Carrier) GetShippingService(ffm *shipmodel.Fulfillment, order *ordermodel.Order, weight int, valueInsurance int) (providerService *model.AvailableShippingService, etopService *model.AvailableShippingService, err error) {

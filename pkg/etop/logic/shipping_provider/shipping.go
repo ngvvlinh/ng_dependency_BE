@@ -96,7 +96,7 @@ func (ctrl *ProviderManager) GetExternalShippingServices(ctx context.Context, ac
 
 	switch q.Provider {
 	case pbsp.ShippingProvider_ghn:
-		services, err := ctrl.GHN.GetShippingServices(ctx, args)
+		services, err := ctrl.GHN.GetAllShippingServices(ctx, args)
 		if err != nil {
 			return nil, err
 		}
@@ -121,7 +121,7 @@ func (ctrl *ProviderManager) GetExternalShippingServices(ctx context.Context, ac
 			var services []*model.AvailableShippingService
 			var err error
 			defer func() { sendServices(ch, services, err) }()
-			services, err = ctrl.GHN.GetShippingServices(ctx, args)
+			services, err = ctrl.GHN.GetAllShippingServices(ctx, args)
 		}()
 		go func() {
 			defer catchAndRecover()

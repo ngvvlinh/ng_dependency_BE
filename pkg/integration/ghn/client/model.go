@@ -480,6 +480,7 @@ func (s *AvailableService) ToShippingService(providerServiceID string) *model.Av
 	return &model.AvailableShippingService{
 		Name:              s.Name.String(),
 		ServiceFee:        int(s.ServiceFee),
+		ShippingFeeMain:   int(s.ServiceFee),
 		Provider:          model.TypeGHN,
 		ProviderServiceID: providerServiceID,
 

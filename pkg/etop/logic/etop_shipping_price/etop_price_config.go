@@ -81,7 +81,7 @@ var ESPriceRules = []*ESPriceRule{
 				},
 				RouteType: RouteTypeDetail{
 					Include: model.RouteNationWide,
-					Exclude: model.RouteSameProvince,
+					Exclude: []model.ShippingRouteType{model.RouteSameProvince},
 				},
 				DistrictTypes: nil,
 				Details: map[int]*ESPricingDetail{
@@ -111,7 +111,7 @@ var ESPriceRules = []*ESPriceRule{
 				},
 				RouteType: RouteTypeDetail{
 					Include: model.RouteNationWide,
-					Exclude: model.RouteSameRegion,
+					Exclude: []model.ShippingRouteType{model.RouteSameRegion},
 				},
 				DistrictTypes: nil,
 				Details: map[int]*ESPricingDetail{
@@ -129,6 +129,29 @@ var ESPriceRules = []*ESPriceRule{
 						ID:     500,
 						Weight: 500,
 						Price:  34000,
+					},
+				},
+			},
+		},
+	},
+
+	{
+		Carrier: model.TypeGHN,
+		Pricings: []*ESPricing{
+			{
+				// gói chuẩn toàn quốc <= 1kg
+				// trừ khu vực nội tỉnh
+				Type: model.ShippingServiceNameStandard,
+				RouteType: RouteTypeDetail{
+					Include: model.RouteNationWide,
+					Exclude: []model.ShippingRouteType{model.RouteSameProvince},
+				},
+				DistrictTypes: nil,
+				Details: map[int]*ESPricingDetail{
+					1000: {
+						ID:     1000,
+						Weight: 1000,
+						Price:  32000,
 					},
 				},
 			},

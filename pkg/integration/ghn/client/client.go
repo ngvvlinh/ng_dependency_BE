@@ -122,7 +122,7 @@ func (c *Client) GetOrderLogs(ctx context.Context, req *OrderLogsRequest) (*Orde
 
 func (c *Client) CancelOrder(ctx context.Context, req *OrderCodeRequest) error {
 	req.Token = c.token
-	return c.sendRequest(ctx, "cancelOrder", req, nil)
+	return c.sendRequest(ctx, "CancelOrder", req, nil)
 }
 
 func (c *Client) ReturnOrder(ctx context.Context, req *OrderCodeRequest) error {

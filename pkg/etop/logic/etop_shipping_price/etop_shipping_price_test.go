@@ -15,29 +15,6 @@ import (
 
 var locationBus = servicelocation.New().MessageBus()
 
-func TestGetWeightIndex(t *testing.T) {
-	for _, tt := range []struct {
-		input  int
-		expect int
-	}{
-		{0, 100},
-		{100, 100},
-		{200, 300},
-		{300, 300},
-		{400, 500},
-		{500, 500},
-		{1200, 3000},
-		{1800, 3000},
-		{3000, 3000},
-		{3500, 3000},
-		{5400, 3000},
-	} {
-		t.Run("TestGetWeightIndex", func(t *testing.T) {
-			assert.EqualValues(t, tt.expect, GetWeightIndex(tt.input))
-		})
-	}
-}
-
 func TestGetPriceRuleDetail(t *testing.T) {
 	priceRuleDetail := map[int]*ESPricingDetail{
 		100: {
@@ -207,6 +184,11 @@ func TestGetEtopShippingServices(t *testing.T) {
 		{model.TypeGHTK, _ag, _hn, _bavi, 400, nil, nil},
 		{model.TypeGHTK, _hn, _dn, _camle, 3400, []string{model.ShippingServiceNameStandard}, []int{59000}},
 		{model.TypeGHTK, _hn, _ag, _longxuyen, 3400, []string{model.ShippingServiceNameStandard}, []int{59000}},
+
+		{model.TypeGHN, _hn, _dn, _camle, 200, []string{model.ShippingServiceNameStandard}, []int{32000}},
+		{model.TypeGHN, _dn, _hcm, _quan10, 700, []string{model.ShippingServiceNameStandard}, []int{32000}},
+		{model.TypeGHN, _hcm, _ag, _longxuyen, 200, []string{model.ShippingServiceNameStandard}, []int{32000}},
+		{model.TypeGHN, _hn, _dn, _camle, 2200, nil, nil},
 	} {
 		t.Run("GetEtopShippingServices", func(t *testing.T) {
 			eServices := GetEtopShippingServices(tt.carrier, tt.fromProvince, tt.toProvince, tt.toDistrict, tt.weight)
