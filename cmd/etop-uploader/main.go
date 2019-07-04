@@ -9,8 +9,6 @@ import (
 	"syscall"
 	"time"
 
-	"etop.vn/backend/pkg/common/metrics"
-
 	"etop.vn/backend/cmd/etop-uploader/config"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/auth"
@@ -18,6 +16,7 @@ import (
 	"etop.vn/backend/pkg/common/health"
 	"etop.vn/backend/pkg/common/httpx"
 	"etop.vn/backend/pkg/common/l"
+	"etop.vn/backend/pkg/common/metrics"
 	"etop.vn/backend/pkg/common/redis"
 	"etop.vn/backend/pkg/common/telebot"
 	"etop.vn/backend/pkg/etop/authorize/tokens"
@@ -128,7 +127,7 @@ func main() {
 
 	svr := &http.Server{
 		Addr:    cfg.HTTP.Address(),
-		Handler: rt,
+		Handler: mux,
 	}
 	go func() {
 		defer ctxCancel()
