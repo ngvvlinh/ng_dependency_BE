@@ -125,5 +125,10 @@ func ToShipnowService(sfResp *ahamoveclient.CalcShippingFeeResponse, service *Sh
 	if strings.Contains(service.Code, string(SAMEDAY)) {
 		res.Fee = int32(sfResp.PartnerFee)
 	}
+
+	// Avoid fee == 0
+	if res.Fee == 0 {
+		return nil
+	}
 	return res
 }
