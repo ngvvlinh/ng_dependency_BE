@@ -486,6 +486,7 @@ func (p *ColumnFilterPtr) WriteSQLTo(w core.SQLWriter) error {
 			return nil
 
 		case p.mode&ModeOptional != 0: // optional
+			w.WriteRawString("TRUE")
 			return nil
 
 		default: // required

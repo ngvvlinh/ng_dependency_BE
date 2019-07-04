@@ -61,7 +61,7 @@ func TestFilter(t *testing.T) {
 			Convey("empty (should skip)", func() {
 				sql, args, err := compose(byID(0).Optional())
 				So(err, ShouldBeNil)
-				So(sql, ShouldEqual, ``)
+				So(sql, ShouldEqual, `TRUE`)
 				So(args, ShouldResemble, A{})
 			})
 			Convey("not empty", func() {
@@ -111,7 +111,7 @@ func TestFilter(t *testing.T) {
 			Convey("nil (should skip)", func() {
 				sql, args, err := compose(byIDPtr(nil).Optional())
 				So(err, ShouldBeNil)
-				So(sql, ShouldEqual, ``)
+				So(sql, ShouldEqual, `TRUE`)
 				So(args, ShouldResemble, A{})
 			})
 			Convey("zero", func() {
@@ -195,7 +195,7 @@ func TestFilter(t *testing.T) {
 			Convey("nil (should skip)", func() {
 				sql, args, err := compose(byIDPtr(nil).OptionalZero())
 				So(err, ShouldBeNil)
-				So(sql, ShouldEqual, ``)
+				So(sql, ShouldEqual, `TRUE`)
 				So(args, ShouldResemble, A{})
 			})
 			Convey("zero", func() {
@@ -217,7 +217,7 @@ func TestFilter(t *testing.T) {
 			Convey("nil (should skip)", func() {
 				sql, args, err := compose(byIDPtr(nil).OptionalNull())
 				So(err, ShouldBeNil)
-				So(sql, ShouldEqual, ``)
+				So(sql, ShouldEqual, `TRUE`)
 				So(args, ShouldResemble, A{})
 			})
 			Convey("zero", func() {
