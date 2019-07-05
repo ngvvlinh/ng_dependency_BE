@@ -876,12 +876,12 @@ func UpdateFulfillments(ctx context.Context, cmd *shipmodelx.UpdateFulfillmentsC
 		}
 	}
 
-	return x.InTransaction(ctx, func(x Qx) error {
+	return inTransaction(func(s Qx) error {
 		for _, ffm := range cmd.Fulfillments {
 			if err := ffm.BeforeUpdate(); err != nil {
 				return err
 			}
-			if err := x.Table("fulfillment").
+			if err := s.Table("fulfillment").
 				Where("id = ?", ffm.ID).
 				Where("status = 0 OR status = 2 OR status IS NULL").
 				ShouldUpdate(ffm); err != nil {

@@ -273,12 +273,13 @@ func GetMoneyTransactions(ctx context.Context, query *modelx.GetMoneyTransaction
 	}
 	{
 		s2 := s.Clone()
-		s2, err := LimitSort(s2, query.Paging, Ms{"m.created_at": ""})
-		if err != nil {
-			return err
-		}
 		if query.IDs != nil {
 			s2 = s2.In("m.id", query.IDs)
+		} else {
+			s2, err = LimitSort(s2, query.Paging, Ms{"m.created_at": ""})
+			if err != nil {
+				return err
+			}
 		}
 		var moneyTransactions []*txmodel.MoneyTransactionShippingFtShop
 		if err := s2.Find((*txmodel.MoneyTransactionShippingFtShops)(&moneyTransactions)); err != nil {
