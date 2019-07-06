@@ -2,6 +2,7 @@ package sqlstore
 
 import (
 	"context"
+	"encoding/json"
 	"time"
 
 	"etop.vn/api/main/identity"
@@ -109,46 +110,56 @@ func (s *XAccountAhamoveStore) UpdateXAccountAhamove(args *UpdateXAccountAhamove
 		ExternalCreatedAt: args.ExternalCreatedAt,
 		ExternalToken:     args.ExternalToken,
 	}
-	if err := s.query().Where("id = ?", args.ID).ShouldUpdate(account); err != nil {
+	if err := s.query().Where(s.ft.ByID(args.ID)).ShouldUpdate(account); err != nil {
 		return nil, err
 	}
 	return s.ID(args.ID).GetXAccountAhamove()
 }
 
 type UpdateXAccountAhamoveVerifiedInfoArgs struct {
-	ID                 int64
-	ExternalTickerID   string
-	LastSendVerifiedAt time.Time
-	ExternalVerified   bool
+	ID                    int64
+	ExternalTickerID      string
+	LastSendVerifiedAt    time.Time
+	ExternalVerified      bool
+	ExternaleDataVerified json.RawMessage
 }
 
 func (s *XAccountAhamoveStore) UpdateXAccountAhamoveVerifiedInfo(args *UpdateXAccountAhamoveVerifiedInfoArgs) (*identity.ExternalAccountAhamove, error) {
 	account := &identitymodel.ExternalAccountAhamove{
-		ExternalTicketID:   args.ExternalTickerID,
-		LastSendVerifiedAt: args.LastSendVerifiedAt,
-		ExternalVerified:   args.ExternalVerified,
+		ExternalTicketID:     args.ExternalTickerID,
+		LastSendVerifiedAt:   args.LastSendVerifiedAt,
+		ExternalVerified:     args.ExternalVerified,
+		ExternalDataVerified: args.ExternaleDataVerified,
 	}
-	if err := s.query().Where("id = ?", args.ID).ShouldUpdate(account); err != nil {
+	if err := s.query().Where(s.ft.ByID(args.ID)).ShouldUpdate(account); err != nil {
 		return nil, err
 	}
 	return s.ID(args.ID).GetXAccountAhamove()
 }
 
 type UpdateXAccountAhamoveVerificationImageArgs struct {
-	ID             int64
-	IDCardFrontImg string
-	IDCardBackImg  string
-	PortraitImg    string
+	ID                  int64
+	IDCardFrontImg      string
+	IDCardBackImg       string
+	PortraitImg         string
+	WebsiteURL          string
+	FanpageURL          string
+	CompanyImgs         []string
+	BusinessLicenseImgs []string
 }
 
 func (s *XAccountAhamoveStore) UpdateVerificationImages(args *UpdateXAccountAhamoveVerificationImageArgs) (*identity.ExternalAccountAhamove, error) {
 	account := &identitymodel.ExternalAccountAhamove{
-		IDCardFrontImg: args.IDCardFrontImg,
-		IDCardBackImg:  args.IDCardBackImg,
-		PortraitImg:    args.PortraitImg,
-		UploadedAt:     time.Now(),
+		IDCardFrontImg:      args.IDCardFrontImg,
+		IDCardBackImg:       args.IDCardBackImg,
+		PortraitImg:         args.PortraitImg,
+		WebsiteURL:          args.WebsiteURL,
+		FanpageURL:          args.FanpageURL,
+		CompanyImgs:         args.CompanyImgs,
+		BusinessLicenseImgs: args.BusinessLicenseImgs,
+		UploadedAt:          time.Now(),
 	}
-	if err := s.query().Where("id = ?", args.ID).ShouldUpdate(account); err != nil {
+	if err := s.query().Where(s.ft.ByID(args.ID)).ShouldUpdate(account); err != nil {
 		return nil, err
 	}
 

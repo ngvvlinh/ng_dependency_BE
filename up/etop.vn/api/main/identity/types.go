@@ -43,19 +43,23 @@ type User struct {
 }
 
 type ExternalAccountAhamove struct {
-	ID                 int64
-	Phone              string
-	Name               string
-	ExternalID         string
-	ExternalToken      string
-	ExternalVerified   bool
-	CreatedAt          time.Time
-	UpdatedAt          time.Time
-	ExternalCreatedAt  time.Time
-	LastSendVerifiedAt time.Time
-	ExternalTicketID   string
-	IDCardFrontImg     string
-	IDCardBackImg      string
-	PortraitImg        string
-	UploadedAt         time.Time
+	ID                  int64
+	Phone               string
+	Name                string
+	ExternalID          string
+	ExternalToken       string
+	ExternalVerified    bool
+	CreatedAt           time.Time
+	UpdatedAt           time.Time
+	ExternalCreatedAt   time.Time
+	LastSendVerifiedAt  time.Time
+	ExternalTicketID    string
+	IDCardFrontImg      string
+	IDCardBackImg       string
+	PortraitImg         string
+	WebsiteURL          string
+	FanpageURL          string
+	CompanyImgs         []string
+	BusinessLicenseImgs []string
+	UploadedAt          time.Time
 }

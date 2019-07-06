@@ -197,8 +197,35 @@
         ]
       }
     },
+    "/api/shop.Account/UpdateExternalAccountAhamoveVerification": {
+      "post": {
+        "operationId": "UpdateExternalAccountAhamoveVerification",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/cmUpdatedResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/shopUpdateXAccountAhamoveVerificationRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Account"
+        ]
+      }
+    },
     "/api/shop.Account/UpdateExternalAccountAhamoveVerificationImages": {
       "post": {
+        "summary": "deprecated\nbackward-compatible\nremove later",
         "operationId": "UpdateExternalAccountAhamoveVerificationImages",
         "responses": {
           "200": {
@@ -214,7 +241,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/shopUpdateXAccountAhamoveVerificationImagesRequest"
+              "$ref": "#/definitions/shopUpdateXAccountAhamoveVerificationRequest"
             }
           }
         ],
@@ -5482,6 +5509,24 @@
         "uploaded_at": {
           "type": "string",
           "format": "date-time"
+        },
+        "fanpage_url": {
+          "type": "string"
+        },
+        "website_url": {
+          "type": "string"
+        },
+        "company_imgs": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "business_license_imgs": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },
@@ -6514,7 +6559,7 @@
         }
       }
     },
-    "shopUpdateXAccountAhamoveVerificationImagesRequest": {
+    "shopUpdateXAccountAhamoveVerificationRequest": {
       "type": "object",
       "properties": {
         "id": {
@@ -6529,6 +6574,24 @@
         },
         "portrait_img": {
           "type": "string"
+        },
+        "fanpage_url": {
+          "type": "string"
+        },
+        "website_url": {
+          "type": "string"
+        },
+        "company_imgs": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "business_license_imgs": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },

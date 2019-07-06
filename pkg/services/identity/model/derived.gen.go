@@ -17,7 +17,7 @@ func sqlgenExternalAccountAhamove(_ *ExternalAccountAhamove) bool { return true 
 type ExternalAccountAhamoves []*ExternalAccountAhamove
 
 const __sqlExternalAccountAhamove_Table = "external_account_ahamove"
-const __sqlExternalAccountAhamove_ListCols = "\"id\",\"owner_id\",\"phone\",\"name\",\"external_id\",\"external_verified\",\"external_created_at\",\"external_token\",\"created_at\",\"updated_at\",\"last_send_verified_at\",\"external_ticket_id\",\"id_card_front_img\",\"id_card_back_img\",\"portrait_img\",\"uploaded_at\""
+const __sqlExternalAccountAhamove_ListCols = "\"id\",\"owner_id\",\"phone\",\"name\",\"external_id\",\"external_verified\",\"external_created_at\",\"external_token\",\"created_at\",\"updated_at\",\"last_send_verified_at\",\"external_ticket_id\",\"id_card_front_img\",\"id_card_back_img\",\"portrait_img\",\"website_url\",\"fanpage_url\",\"company_imgs\",\"business_license_imgs\",\"external_data_verified\",\"uploaded_at\""
 const __sqlExternalAccountAhamove_Insert = "INSERT INTO \"external_account_ahamove\" (" + __sqlExternalAccountAhamove_ListCols + ") VALUES"
 const __sqlExternalAccountAhamove_Select = "SELECT " + __sqlExternalAccountAhamove_ListCols + " FROM \"external_account_ahamove\""
 const __sqlExternalAccountAhamove_Select_history = "SELECT " + __sqlExternalAccountAhamove_ListCols + " FROM history.\"external_account_ahamove\""
@@ -45,6 +45,11 @@ func (m *ExternalAccountAhamove) SQLArgs(opts core.Opts, create bool) []interfac
 		core.String(m.IDCardFrontImg),
 		core.String(m.IDCardBackImg),
 		core.String(m.PortraitImg),
+		core.String(m.WebsiteURL),
+		core.String(m.FanpageURL),
+		core.Array{m.CompanyImgs, opts},
+		core.Array{m.BusinessLicenseImgs, opts},
+		core.JSON{m.ExternalDataVerified},
 		core.Time(m.UploadedAt),
 	}
 }
@@ -66,6 +71,11 @@ func (m *ExternalAccountAhamove) SQLScanArgs(opts core.Opts) []interface{} {
 		(*core.String)(&m.IDCardFrontImg),
 		(*core.String)(&m.IDCardBackImg),
 		(*core.String)(&m.PortraitImg),
+		(*core.String)(&m.WebsiteURL),
+		(*core.String)(&m.FanpageURL),
+		core.Array{&m.CompanyImgs, opts},
+		core.Array{&m.BusinessLicenseImgs, opts},
+		core.JSON{&m.ExternalDataVerified},
 		(*core.Time)(&m.UploadedAt),
 	}
 }
@@ -104,7 +114,7 @@ func (_ *ExternalAccountAhamoves) SQLSelect(w SQLWriter) error {
 func (m *ExternalAccountAhamove) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlExternalAccountAhamove_Insert)
 	w.WriteRawString(" (")
-	w.WriteMarkers(16)
+	w.WriteMarkers(21)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), true))
 	return nil
@@ -114,7 +124,7 @@ func (ms ExternalAccountAhamoves) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlExternalAccountAhamove_Insert)
 	w.WriteRawString(" (")
 	for i := 0; i < len(ms); i++ {
-		w.WriteMarkers(16)
+		w.WriteMarkers(21)
 		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
 		w.WriteRawString("),(")
 	}
@@ -249,6 +259,46 @@ func (m *ExternalAccountAhamove) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(m.PortraitImg)
 	}
+	if m.WebsiteURL != "" {
+		flag = true
+		w.WriteName("website_url")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.WebsiteURL)
+	}
+	if m.FanpageURL != "" {
+		flag = true
+		w.WriteName("fanpage_url")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.FanpageURL)
+	}
+	if m.CompanyImgs != nil {
+		flag = true
+		w.WriteName("company_imgs")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(core.Array{m.CompanyImgs, opts})
+	}
+	if m.BusinessLicenseImgs != nil {
+		flag = true
+		w.WriteName("business_license_imgs")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(core.Array{m.BusinessLicenseImgs, opts})
+	}
+	if m.ExternalDataVerified != nil {
+		flag = true
+		w.WriteName("external_data_verified")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(core.JSON{m.ExternalDataVerified})
+	}
 	if !m.UploadedAt.IsZero() {
 		flag = true
 		w.WriteName("uploaded_at")
@@ -267,7 +317,7 @@ func (m *ExternalAccountAhamove) SQLUpdate(w SQLWriter) error {
 func (m *ExternalAccountAhamove) SQLUpdateAll(w SQLWriter) error {
 	w.WriteQueryString(__sqlExternalAccountAhamove_UpdateAll)
 	w.WriteRawString(" = (")
-	w.WriteMarkers(16)
+	w.WriteMarkers(21)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), false))
 	return nil
@@ -330,20 +380,35 @@ func (m ExternalAccountAhamoveHistory) IDCardBackImg() core.Interface {
 func (m ExternalAccountAhamoveHistory) PortraitImg() core.Interface {
 	return core.Interface{m["portrait_img"]}
 }
+func (m ExternalAccountAhamoveHistory) WebsiteURL() core.Interface {
+	return core.Interface{m["website_url"]}
+}
+func (m ExternalAccountAhamoveHistory) FanpageURL() core.Interface {
+	return core.Interface{m["fanpage_url"]}
+}
+func (m ExternalAccountAhamoveHistory) CompanyImgs() core.Interface {
+	return core.Interface{m["company_imgs"]}
+}
+func (m ExternalAccountAhamoveHistory) BusinessLicenseImgs() core.Interface {
+	return core.Interface{m["business_license_imgs"]}
+}
+func (m ExternalAccountAhamoveHistory) ExternalDataVerified() core.Interface {
+	return core.Interface{m["external_data_verified"]}
+}
 func (m ExternalAccountAhamoveHistory) UploadedAt() core.Interface {
 	return core.Interface{m["uploaded_at"]}
 }
 
 func (m *ExternalAccountAhamoveHistory) SQLScan(opts core.Opts, row *sql.Row) error {
-	data := make([]interface{}, 16)
-	args := make([]interface{}, 16)
-	for i := 0; i < 16; i++ {
+	data := make([]interface{}, 21)
+	args := make([]interface{}, 21)
+	for i := 0; i < 21; i++ {
 		args[i] = &data[i]
 	}
 	if err := row.Scan(args...); err != nil {
 		return err
 	}
-	res := make(ExternalAccountAhamoveHistory, 16)
+	res := make(ExternalAccountAhamoveHistory, 21)
 	res["id"] = data[0]
 	res["owner_id"] = data[1]
 	res["phone"] = data[2]
@@ -359,15 +424,20 @@ func (m *ExternalAccountAhamoveHistory) SQLScan(opts core.Opts, row *sql.Row) er
 	res["id_card_front_img"] = data[12]
 	res["id_card_back_img"] = data[13]
 	res["portrait_img"] = data[14]
-	res["uploaded_at"] = data[15]
+	res["website_url"] = data[15]
+	res["fanpage_url"] = data[16]
+	res["company_imgs"] = data[17]
+	res["business_license_imgs"] = data[18]
+	res["external_data_verified"] = data[19]
+	res["uploaded_at"] = data[20]
 	*m = res
 	return nil
 }
 
 func (ms *ExternalAccountAhamoveHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	data := make([]interface{}, 16)
-	args := make([]interface{}, 16)
-	for i := 0; i < 16; i++ {
+	data := make([]interface{}, 21)
+	args := make([]interface{}, 21)
+	for i := 0; i < 21; i++ {
 		args[i] = &data[i]
 	}
 	res := make(ExternalAccountAhamoveHistories, 0, 128)
@@ -391,7 +461,12 @@ func (ms *ExternalAccountAhamoveHistories) SQLScan(opts core.Opts, rows *sql.Row
 		m["id_card_front_img"] = data[12]
 		m["id_card_back_img"] = data[13]
 		m["portrait_img"] = data[14]
-		m["uploaded_at"] = data[15]
+		m["website_url"] = data[15]
+		m["fanpage_url"] = data[16]
+		m["company_imgs"] = data[17]
+		m["business_license_imgs"] = data[18]
+		m["external_data_verified"] = data[19]
+		m["uploaded_at"] = data[20]
 		res = append(res, m)
 	}
 	if err := rows.Err(); err != nil {

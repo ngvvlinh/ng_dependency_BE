@@ -338,7 +338,10 @@ type VerifyAccountResponse struct {
 }
 
 type Ticket struct {
-	ID int `json:"id"'`
+	ID          int    `json:"id"'`
+	Description string `json:"description"`
+	CreatedAt   string `json:"created_at"`
+	Subject     string `json:"subject"`
 }
 
 type Account struct {

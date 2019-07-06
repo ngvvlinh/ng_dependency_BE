@@ -111,5 +111,8 @@ type VerifyExternalAccountCommand struct {
 }
 
 type VerifyExternalAccountResult struct {
-	TicketID string
+	TicketID    string
+	Subject     string
+	Description string
+	CreatedAt   string
 }

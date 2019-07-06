@@ -2,6 +2,7 @@ package identity
 
 import (
 	"context"
+	"encoding/json"
 	"time"
 
 	"etop.vn/backend/pkg/common/bus"
@@ -165,10 +166,12 @@ func (a *Aggregate) RequestVerifyExternalAccountAhamove(ctx context.Context, arg
 			return err
 		}
 		// update external_ticket_id
+		externalData, _ := json.Marshal(res)
 		update := &sqlstore.UpdateXAccountAhamoveVerifiedInfoArgs{
-			ID:                 account.ID,
-			ExternalTickerID:   res.TicketID,
-			LastSendVerifiedAt: time.Now(),
+			ID:                    account.ID,
+			ExternalTickerID:      res.TicketID,
+			LastSendVerifiedAt:    time.Now(),
+			ExternaleDataVerified: externalData,
 		}
 		_, err = a.xAccountAhamove(ctx).UpdateXAccountAhamoveVerifiedInfo(update)
 		return err
@@ -204,7 +207,7 @@ func (a *Aggregate) UpdateVerifiedExternalAccountAhamove(ctx context.Context, ar
 	return a.xAccountAhamove(ctx).UpdateXAccountAhamoveVerifiedInfo(update)
 }
 
-func (a *Aggregate) UpdateExternalAccountAhamoveVerificationImages(ctx context.Context, args *identity.UpdateExternalAccountAhamoveVerificationImagesArgs) (*identity.ExternalAccountAhamove, error) {
+func (a *Aggregate) UpdateExternalAccountAhamoveVerification(ctx context.Context, args *identity.UpdateExternalAccountAhamoveVerificationArgs) (*identity.ExternalAccountAhamove, error) {
 	account, err := a.xAccountAhamove(ctx).Phone(args.Phone).OwnerID(args.OwnerID).GetXAccountAhamove()
 	if err != nil {
 		return nil, err
@@ -214,10 +217,14 @@ func (a *Aggregate) UpdateExternalAccountAhamoveVerificationImages(ctx context.C
 	}
 
 	update := &sqlstore.UpdateXAccountAhamoveVerificationImageArgs{
-		ID:             account.ID,
-		IDCardFrontImg: args.IDCardFrontImg,
-		IDCardBackImg:  args.IDCardBackImg,
-		PortraitImg:    args.PortraitImg,
+		ID:                  account.ID,
+		IDCardFrontImg:      args.IDCardFrontImg,
+		IDCardBackImg:       args.IDCardBackImg,
+		PortraitImg:         args.PortraitImg,
+		WebsiteURL:          args.WebsiteURL,
+		FanpageURL:          args.FanpageURL,
+		CompanyImgs:         args.CompanyImgs,
+		BusinessLicenseImgs: args.BusinessLicenseImgs,
 	}
 
 	return a.xAccountAhamove(ctx).UpdateVerificationImages(update)

@@ -311,8 +311,12 @@ func (c *CarrierAccount) VerifyExternalAccount(ctx context.Context, args *shipno
 	if err := c.VerifyAccount(ctx, cmd); err != nil {
 		return nil, err
 	}
+	externalTicket := cmd.Result.Ticket
 	res := &carrier.VerifyExternalAccountResult{
-		TicketID: strconv.Itoa(cmd.Result.Ticket.ID),
+		TicketID:    strconv.Itoa(externalTicket.ID),
+		Subject:     externalTicket.Subject,
+		Description: externalTicket.Description,
+		CreatedAt:   externalTicket.CreatedAt,
 	}
 	return res, nil
 }
@@ -376,11 +380,22 @@ func getDescriptionForVerification(ctx context.Context, userID int64) (des strin
 	}
 	account := query.Result
 
+	var photoImgs []string
 	front := prepareAhamovePhotoUrl(account, account.IDCardFrontImg, "front")
 	back := prepareAhamovePhotoUrl(account, account.IDCardBackImg, "back")
 	portrait := prepareAhamovePhotoUrl(account, account.PortraitImg, "portrait")
 
-	des = fmt.Sprintf("%v, %v, %v, %v, %v", account.ExternalID, account.Name, front, back, portrait)
+	photoImgs = append(photoImgs, front, back, portrait)
+	photoImgs = append(photoImgs, account.CompanyImgs...)
+	photoImgs = append(photoImgs, account.BusinessLicenseImgs...)
+	if account.FanpageURL != "" {
+		photoImgs = append(photoImgs, account.FanpageURL)
+	}
+	if account.WebsiteURL != "" {
+		photoImgs = append(photoImgs, account.WebsiteURL)
+	}
+
+	des = fmt.Sprintf("%v, %v, %v", account.ExternalID, account.Name, strings.Join(photoImgs, ", "))
 	return des, nil
 }
 

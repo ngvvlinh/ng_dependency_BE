@@ -98,6 +98,7 @@ func init() {
 	bus.AddHandler("api", GetExternalAccountAhamove)
 	bus.AddHandler("api", RequestVerifyExternalAccountAhamove)
 	bus.AddHandler("api", UpdateExternalAccountAhamoveVerificationImages)
+	bus.AddHandler("api", UpdateExternalAccountAhamoveVerification)
 }
 
 const PrefixIdemp = "IdempOrder"
@@ -982,8 +983,17 @@ func RequestVerifyExternalAccountAhamove(ctx context.Context, q *wrapshop.Reques
 	return nil
 }
 
+// Backward-compatible
+// Deprecated
+// Remove later
 func UpdateExternalAccountAhamoveVerificationImages(ctx context.Context, r *wrapshop.UpdateExternalAccountAhamoveVerificationImagesEndpoint) error {
-	if err := validateImagesUrl(r.IdCardFrontImg, r.IdCardBackImg, r.PortraitImg); err != nil {
+	if err := validateUrl(r.IdCardFrontImg, r.IdCardBackImg, r.PortraitImg, r.WebsiteUrl, r.FanpageUrl); err != nil {
+		return err
+	}
+	if err := validateUrl(r.BusinessLicenseImgs...); err != nil {
+		return err
+	}
+	if err := validateUrl(r.CompanyImgs...); err != nil {
 		return err
 	}
 
@@ -996,12 +1006,16 @@ func UpdateExternalAccountAhamoveVerificationImages(ctx context.Context, r *wrap
 	user := query.Result
 	phone := user.Phone
 
-	cmd := &identity.UpdateExternalAccountAhamoveVerificationImagesCommand{
-		OwnerID:        user.ID,
-		Phone:          phone,
-		IDCardFrontImg: r.IdCardFrontImg,
-		IDCardBackImg:  r.IdCardBackImg,
-		PortraitImg:    r.PortraitImg,
+	cmd := &identity.UpdateExternalAccountAhamoveVerificationCommand{
+		OwnerID:             user.ID,
+		Phone:               phone,
+		IDCardFrontImg:      r.IdCardFrontImg,
+		IDCardBackImg:       r.IdCardBackImg,
+		PortraitImg:         r.PortraitImg,
+		WebsiteURL:          r.WebsiteUrl,
+		FanpageURL:          r.FanpageUrl,
+		CompanyImgs:         r.CompanyImgs,
+		BusinessLicenseImgs: r.BusinessLicenseImgs,
 	}
 	if err := identityAggr.Dispatch(ctx, cmd); err != nil {
 		return err
@@ -1013,7 +1027,48 @@ func UpdateExternalAccountAhamoveVerificationImages(ctx context.Context, r *wrap
 	return nil
 }
 
-func validateImagesUrl(imgsUrl ...string) error {
+func UpdateExternalAccountAhamoveVerification(ctx context.Context, r *wrapshop.UpdateExternalAccountAhamoveVerificationEndpoint) error {
+	if err := validateUrl(r.IdCardFrontImg, r.IdCardBackImg, r.PortraitImg, r.WebsiteUrl, r.FanpageUrl); err != nil {
+		return err
+	}
+	if err := validateUrl(r.BusinessLicenseImgs...); err != nil {
+		return err
+	}
+	if err := validateUrl(r.CompanyImgs...); err != nil {
+		return err
+	}
+
+	query := &model.GetUserByIDQuery{
+		UserID: r.Context.Shop.OwnerID,
+	}
+	if err := bus.Dispatch(ctx, query); err != nil {
+		return err
+	}
+	user := query.Result
+	phone := user.Phone
+
+	cmd := &identity.UpdateExternalAccountAhamoveVerificationCommand{
+		OwnerID:             user.ID,
+		Phone:               phone,
+		IDCardFrontImg:      r.IdCardFrontImg,
+		IDCardBackImg:       r.IdCardBackImg,
+		PortraitImg:         r.PortraitImg,
+		WebsiteURL:          r.WebsiteUrl,
+		FanpageURL:          r.FanpageUrl,
+		CompanyImgs:         r.CompanyImgs,
+		BusinessLicenseImgs: r.BusinessLicenseImgs,
+	}
+	if err := identityAggr.Dispatch(ctx, cmd); err != nil {
+		return err
+	}
+
+	r.Result = &pbcm.UpdatedResponse{
+		Updated: 1,
+	}
+	return nil
+}
+
+func validateUrl(imgsUrl ...string) error {
 	for _, url := range imgsUrl {
 		if url == "" {
 			continue

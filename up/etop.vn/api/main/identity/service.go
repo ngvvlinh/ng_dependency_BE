@@ -13,7 +13,7 @@ type Aggregate interface {
 
 	UpdateVerifiedExternalAccountAhamove(ctx context.Context, args *UpdateVerifiedExternalAccountAhamoveArgs) (*ExternalAccountAhamove, error)
 
-	UpdateExternalAccountAhamoveVerificationImages(ctx context.Context, args *UpdateExternalAccountAhamoveVerificationImagesArgs) (*ExternalAccountAhamove, error)
+	UpdateExternalAccountAhamoveVerification(ctx context.Context, args *UpdateExternalAccountAhamoveVerificationArgs) (*ExternalAccountAhamove, error)
 }
 
 type QueryService interface {
@@ -68,10 +68,14 @@ type UpdateVerifiedExternalAccountAhamoveArgs struct {
 	Phone   string
 }
 
-type UpdateExternalAccountAhamoveVerificationImagesArgs struct {
-	OwnerID        int64
-	Phone          string
-	IDCardFrontImg string
-	IDCardBackImg  string
-	PortraitImg    string
+type UpdateExternalAccountAhamoveVerificationArgs struct {
+	OwnerID             int64
+	Phone               string
+	IDCardFrontImg      string
+	IDCardBackImg       string
+	PortraitImg         string
+	WebsiteURL          string
+	FanpageURL          string
+	CompanyImgs         []string
+	BusinessLicenseImgs []string
 }

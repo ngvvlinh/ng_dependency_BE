@@ -44,14 +44,19 @@ service MiscService {
 service AccountService {
     rpc RegisterShop(RegisterShopRequest) returns (RegisterShopResponse);
     rpc UpdateShop(UpdateShopRequest) returns (UpdateShopResponse);
-    rpc DeleteShop(cm.IDRequest) returns (cm.Empty);
-    rpc SetDefaultAddress(etop.SetDefaultAddressRequest) returns (cm.UpdatedResponse);
-    rpc GetBalanceShop(cm.Empty) returns (GetBalanceShopResponse);
+    rpc DeleteShop (cm.IDRequest) returns (cm.Empty);
+    rpc SetDefaultAddress (etop.SetDefaultAddressRequest) returns (cm.UpdatedResponse);
+    rpc GetBalanceShop (cm.Empty) returns (GetBalanceShopResponse);
 
-    rpc CreateExternalAccountAhamove(cm.Empty) returns (ExternalAccountAhamove);
-    rpc GetExternalAccountAhamove(cm.Empty) returns (ExternalAccountAhamove);
+    rpc CreateExternalAccountAhamove (cm.Empty) returns (ExternalAccountAhamove);
+    rpc GetExternalAccountAhamove (cm.Empty) returns (ExternalAccountAhamove);
     rpc RequestVerifyExternalAccountAhamove (cm.Empty) returns (cm.UpdatedResponse);
-    rpc UpdateExternalAccountAhamoveVerificationImages (UpdateXAccountAhamoveVerificationImagesRequest) returns (cm.UpdatedResponse);
+    rpc UpdateExternalAccountAhamoveVerification (UpdateXAccountAhamoveVerificationRequest) returns (cm.UpdatedResponse);
+
+    // deprecated
+    // backward-compatible
+    // remove later
+    rpc UpdateExternalAccountAhamoveVerificationImages (UpdateXAccountAhamoveVerificationRequest) returns (cm.UpdatedResponse);
 }
 
 service CollectionService {
@@ -784,11 +789,19 @@ message ExternalAccountAhamove {
     optional string id_card_back_img = 12 [(gogoproto.nullable) = false];
     optional string portrait_img = 13 [(gogoproto.nullable) = false];
     optional google.protobuf.Timestamp uploaded_at = 14;
+    optional string fanpage_url = 15 [(gogoproto.nullable) = false];
+    optional string website_url = 16 [(gogoproto.nullable) = false];
+    repeated string company_imgs = 17;
+    repeated string business_license_imgs = 18;
 }
 
-message UpdateXAccountAhamoveVerificationImagesRequest {
+message UpdateXAccountAhamoveVerificationRequest {
     optional int64 id = 1 [(gogoproto.nullable) = false];
     optional string id_card_front_img = 2 [(gogoproto.nullable) = false];
     optional string id_card_back_img = 3 [(gogoproto.nullable) = false];
     optional string portrait_img = 4 [(gogoproto.nullable) = false];
+    optional string fanpage_url = 5 [(gogoproto.nullable) = false];
+    optional string website_url = 6 [(gogoproto.nullable) = false];
+    repeated string company_imgs = 7;
+    repeated string business_license_imgs = 8;
 }

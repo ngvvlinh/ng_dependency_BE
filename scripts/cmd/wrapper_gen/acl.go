@@ -228,6 +228,7 @@ var ACL = map[string]*permission.PermissionDecl{
 	"shop.Account/CreateExternalAccountAhamove":                   {Type: Shop},
 	"shop.Account/GetExternalAccountAhamove":                      {Type: Shop},
 	"shop.Account/RequestVerifyExternalAccountAhamove":            {Type: Shop},
+	"shop.Account/UpdateExternalAccountAhamoveVerification":       {Type: Shop},
 	"shop.Account/UpdateExternalAccountAhamoveVerificationImages": {Type: Shop},
 
 	"shop.Browse/BrowseCategories":    {Type: Shop},

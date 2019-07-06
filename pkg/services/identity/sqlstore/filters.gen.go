@@ -307,6 +307,44 @@ func (ft *ExternalAccountAhamoveFilters) ByPortraitImgPtr(PortraitImg *string) *
 	}
 }
 
+func (ft *ExternalAccountAhamoveFilters) ByWebsiteURL(WebsiteURL string) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "website_url",
+		Value:  WebsiteURL,
+		IsNil:  WebsiteURL == "",
+	}
+}
+
+func (ft *ExternalAccountAhamoveFilters) ByWebsiteURLPtr(WebsiteURL *string) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "website_url",
+		Value:  WebsiteURL,
+		IsNil:  WebsiteURL == nil,
+		IsZero: WebsiteURL != nil && (*WebsiteURL) == "",
+	}
+}
+
+func (ft *ExternalAccountAhamoveFilters) ByFanpageURL(FanpageURL string) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "fanpage_url",
+		Value:  FanpageURL,
+		IsNil:  FanpageURL == "",
+	}
+}
+
+func (ft *ExternalAccountAhamoveFilters) ByFanpageURLPtr(FanpageURL *string) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "fanpage_url",
+		Value:  FanpageURL,
+		IsNil:  FanpageURL == nil,
+		IsZero: FanpageURL != nil && (*FanpageURL) == "",
+	}
+}
+
 func (ft *ExternalAccountAhamoveFilters) ByUploadedAt(UploadedAt time.Time) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,

@@ -52,12 +52,16 @@ type RequestVerifyExternalAccountAhamoveCommand struct {
 	Result *RequestVerifyExternalAccountAhamoveResult `json:"-"`
 }
 
-type UpdateExternalAccountAhamoveVerificationImagesCommand struct {
-	OwnerID        int64
-	Phone          string
-	IDCardFrontImg string
-	IDCardBackImg  string
-	PortraitImg    string
+type UpdateExternalAccountAhamoveVerificationCommand struct {
+	OwnerID             int64
+	Phone               string
+	IDCardFrontImg      string
+	IDCardBackImg       string
+	PortraitImg         string
+	WebsiteURL          string
+	FanpageURL          string
+	CompanyImgs         []string
+	BusinessLicenseImgs []string
 
 	Result *ExternalAccountAhamove `json:"-"`
 }
@@ -96,14 +100,14 @@ type GetUserByIDQuery struct {
 
 // implement interfaces
 
-func (q *CreateExternalAccountAhamoveCommand) command()                   {}
-func (q *RequestVerifyExternalAccountAhamoveCommand) command()            {}
-func (q *UpdateExternalAccountAhamoveVerificationImagesCommand) command() {}
-func (q *UpdateVerifiedExternalAccountAhamoveCommand) command()           {}
-func (q *GetExternalAccountAhamoveQuery) query()                          {}
-func (q *GetExternalAccountAhamoveByExternalIDQuery) query()              {}
-func (q *GetShopByIDQuery) query()                                        {}
-func (q *GetUserByIDQuery) query()                                        {}
+func (q *CreateExternalAccountAhamoveCommand) command()             {}
+func (q *RequestVerifyExternalAccountAhamoveCommand) command()      {}
+func (q *UpdateExternalAccountAhamoveVerificationCommand) command() {}
+func (q *UpdateVerifiedExternalAccountAhamoveCommand) command()     {}
+func (q *GetExternalAccountAhamoveQuery) query()                    {}
+func (q *GetExternalAccountAhamoveByExternalIDQuery) query()        {}
+func (q *GetShopByIDQuery) query()                                  {}
+func (q *GetUserByIDQuery) query()                                  {}
 
 // implement conversion
 
@@ -121,13 +125,17 @@ func (q *RequestVerifyExternalAccountAhamoveCommand) GetArgs() *RequestVerifyExt
 		Phone:   q.Phone,
 	}
 }
-func (q *UpdateExternalAccountAhamoveVerificationImagesCommand) GetArgs() *UpdateExternalAccountAhamoveVerificationImagesArgs {
-	return &UpdateExternalAccountAhamoveVerificationImagesArgs{
-		OwnerID:        q.OwnerID,
-		Phone:          q.Phone,
-		IDCardFrontImg: q.IDCardFrontImg,
-		IDCardBackImg:  q.IDCardBackImg,
-		PortraitImg:    q.PortraitImg,
+func (q *UpdateExternalAccountAhamoveVerificationCommand) GetArgs() *UpdateExternalAccountAhamoveVerificationArgs {
+	return &UpdateExternalAccountAhamoveVerificationArgs{
+		OwnerID:             q.OwnerID,
+		Phone:               q.Phone,
+		IDCardFrontImg:      q.IDCardFrontImg,
+		IDCardBackImg:       q.IDCardBackImg,
+		PortraitImg:         q.PortraitImg,
+		WebsiteURL:          q.WebsiteURL,
+		FanpageURL:          q.FanpageURL,
+		CompanyImgs:         q.CompanyImgs,
+		BusinessLicenseImgs: q.BusinessLicenseImgs,
 	}
 }
 func (q *UpdateVerifiedExternalAccountAhamoveCommand) GetArgs() *UpdateVerifiedExternalAccountAhamoveArgs {
@@ -172,7 +180,7 @@ func (h AggregateHandler) RegisterHandlers(b interface {
 }) CommandBus {
 	b.AddHandler(h.HandleCreateExternalAccountAhamove)
 	b.AddHandler(h.HandleRequestVerifyExternalAccountAhamove)
-	b.AddHandler(h.HandleUpdateExternalAccountAhamoveVerificationImages)
+	b.AddHandler(h.HandleUpdateExternalAccountAhamoveVerification)
 	b.AddHandler(h.HandleUpdateVerifiedExternalAccountAhamove)
 	return CommandBus{b}
 }
@@ -189,8 +197,8 @@ func (h AggregateHandler) HandleRequestVerifyExternalAccountAhamove(ctx context.
 	return err
 }
 
-func (h AggregateHandler) HandleUpdateExternalAccountAhamoveVerificationImages(ctx context.Context, cmd *UpdateExternalAccountAhamoveVerificationImagesCommand) error {
-	result, err := h.inner.UpdateExternalAccountAhamoveVerificationImages(ctx, cmd.GetArgs())
+func (h AggregateHandler) HandleUpdateExternalAccountAhamoveVerification(ctx context.Context, cmd *UpdateExternalAccountAhamoveVerificationCommand) error {
+	result, err := h.inner.UpdateExternalAccountAhamoveVerification(ctx, cmd.GetArgs())
 	cmd.Result = result
 	return err
 }
