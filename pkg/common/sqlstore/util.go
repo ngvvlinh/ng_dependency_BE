@@ -51,11 +51,11 @@ func (f *FilterWhitelist) ToCol(col, suffix string) string {
 
 func LimitSort(s cmsql.Query, p *cm.Paging, sortWhitelist map[string]string) (cmsql.Query, error) {
 	if p == nil {
-		s = s.Limit(100)
+		s = s.Limit(1000)
 		return s, nil
 	}
 	if p.Limit <= 0 {
-		p.Limit = 100
+		p.Limit = 1000
 	}
 	s = s.Limit(uint64(p.Limit)).Offset(uint64(p.Offset))
 	return Sort(s, p.Sort, sortWhitelist)

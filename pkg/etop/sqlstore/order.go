@@ -656,6 +656,7 @@ func GetFulfillmentExtended(ctx context.Context, cmd *shipmodelx.GetFulfillmentE
 }
 
 func GetFulfillments(ctx context.Context, query *shipmodelx.GetFulfillmentsQuery) error {
+	isLimitSort := true
 	s := x.Table("fulfillment")
 	// ignore failed ffm (missing shipping_code)
 	s = s.Where("shipping_code is not null")
@@ -674,12 +675,15 @@ func GetFulfillments(ctx context.Context, query *shipmodelx.GetFulfillmentsQuery
 	}
 	if len(query.ShippingCodes) > 0 {
 		s = s.In("shipping_code", query.ShippingCodes)
+		isLimitSort = false
 	}
 	if len(query.ExternalShippingCodes) > 0 {
 		s = s.In("external_shipping_code", query.ExternalShippingCodes)
+		isLimitSort = false
 	}
 	if query.IDs != nil {
 		s = s.In("id", query.IDs)
+		isLimitSort = false
 	}
 
 	s, _, err := Filters(s, query.Filters, filterFulfillmentWhitelist)
@@ -688,9 +692,11 @@ func GetFulfillments(ctx context.Context, query *shipmodelx.GetFulfillmentsQuery
 	}
 	{
 		s2 := s.Clone()
-		s2, err := LimitSort(s2, query.Paging, Ms{"updated_at": "", "created_at": "", "id": ""})
-		if err != nil {
-			return err
+		if isLimitSort {
+			s2, err = LimitSort(s2, query.Paging, Ms{"updated_at": "", "created_at": "", "id": ""})
+			if err != nil {
+				return err
+			}
 		}
 		if err := s2.Find((*shipmodel.Fulfillments)(&query.Result.Fulfillments)); err != nil {
 			return err
