@@ -95,6 +95,7 @@ type MoneyTransactionShipping struct {
 	BankAccount                        *model.BankAccount
 	Note                               string
 	InvoiceNumber                      string
+	Type                               string
 }
 
 type MoneyTransactionShippingFtShop struct {

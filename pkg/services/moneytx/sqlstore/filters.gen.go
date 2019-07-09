@@ -850,6 +850,25 @@ func (ft *MoneyTransactionShippingFilters) ByInvoiceNumberPtr(InvoiceNumber *str
 	}
 }
 
+func (ft *MoneyTransactionShippingFilters) ByType(Type string) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "type",
+		Value:  Type,
+		IsNil:  Type == "",
+	}
+}
+
+func (ft *MoneyTransactionShippingFilters) ByTypePtr(Type *string) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "type",
+		Value:  Type,
+		IsNil:  Type == nil,
+		IsZero: Type != nil && (*Type) == "",
+	}
+}
+
 type MoneyTransactionShippingEtopFilters struct{ prefix string }
 
 func NewMoneyTransactionShippingEtopFilters(prefix string) MoneyTransactionShippingEtopFilters {

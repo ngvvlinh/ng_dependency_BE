@@ -40,6 +40,7 @@ import (
 	_ "etop.vn/backend/pkg/etop/api/sadmin"
 	_ "etop.vn/backend/pkg/etop/api/shop"
 	_ "etop.vn/backend/pkg/etop/apix/partner"
+	hotfix "etop.vn/backend/pkg/etop/logic/hotfix"
 	orderimcsv "etop.vn/backend/pkg/etop/logic/orders/imcsv"
 	productimcsv "etop.vn/backend/pkg/etop/logic/products/imcsv"
 )
@@ -98,6 +99,10 @@ func startEtopServer() *http.Server {
 			rt.POST("/api/admin.Import/ghn/MoneyTransactions", imcsvghn.HandleImportMoneyTransactions)
 			rt.POST("/api/admin.Import/ghtk/MoneyTransactions", imcsvghtk.HandleImportMoneyTransactions)
 			rt.POST("/api/admin.Import/vtpost/MoneyTransactions", vtpostimxlsx.HandleImportMoneyTransactions)
+
+			// Hot-fix: trouble on 09/07/2019 (transfer money duplicate)
+			_ = hotfix.New(db)
+			rt.POST("/api/admin.Import/CreateMoneyTransactionShipping", hotfix.HandleImportMoneyTransactionManual)
 		}
 
 		// Register shop import handlers

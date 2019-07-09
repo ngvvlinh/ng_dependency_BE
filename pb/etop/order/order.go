@@ -954,6 +954,7 @@ func PbMoneyTransactionExtended(m *txmodely.MoneyTransactionExtended) *MoneyTran
 		ClosedAt:                           pbcm.PbTime(m.ClosedAt),
 		ConfirmedAt:                        pbcm.PbTime(m.ConfirmedAt),
 		EtopTransferedAt:                   pbcm.PbTime(m.EtopTransferedAt),
+		Note:                               m.Note,
 	}
 }
 

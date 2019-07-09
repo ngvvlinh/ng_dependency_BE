@@ -1651,6 +1651,10 @@ func prepairMoneyTransactionShippingEtop(ctx context.Context, mtseID int64, mtID
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "MoneyTransactionShipping does not exist. (money_transaction_shiping_id = %v)", errID)
 	}
 	var fulfillments []*shipmodel.Fulfillment
+
+	// hotfix: 09/07/2019
+	totalAmountManual := 0
+
 	for _, mt := range moneyTransactions {
 		if mt.Status != model.S3Zero {
 			return nil, cm.Errorf(cm.FailedPrecondition, nil, "MoneyTransactionShipping does not valid. (money_transaction_shipping_id = %v)", mt.ID)
@@ -1658,11 +1662,22 @@ func prepairMoneyTransactionShippingEtop(ctx context.Context, mtseID int64, mtID
 		if mt.MoneyTransactionShippingEtopID != 0 && mt.MoneyTransactionShippingEtopID != mtseID {
 			return nil, cm.Errorf(cm.FailedPrecondition, nil, "MoneyTransactionShipping belongs to another MoneyTransactionShippingEtop. (money_transaction_shipping_id = %v, money_transaction_shipping_etop_id = %v)", mt.ID, mt.MoneyTransactionShippingEtopID)
 		}
+
+		// hotfix: 09/07/2019
+		if mt.Type == "manual" {
+			totalAmountManual += mt.TotalAmount
+			continue
+		}
+
 		for _, ffm := range mt.Fulfillments {
 			fulfillments = append(fulfillments, ffm.Fulfillment)
 		}
 	}
 	totalCOD, totalAmount, totalOrders, totalShippingFee, _ := CalcFulfillmentsInfo(fulfillments)
+
+	// hotfix: 09/07/2019
+	totalAmount += totalAmountManual
+
 	mtse := &txmodel.MoneyTransactionShippingEtop{
 		TotalCOD:              totalCOD,
 		TotalOrders:           totalOrders,
@@ -1743,6 +1758,12 @@ func ConfirmMoneyTransactionShippingEtop(ctx context.Context, cmd *modelx.Confir
 			_ffms[j] = ffm.Fulfillment
 		}
 		_totalCOD, _totalAmount, _totalOrders, _totalFee, _ffmIDs := CalcFulfillmentsInfo(_ffms)
+
+		// hotfix: 09/07/2019
+		if mt.Type == "manual" {
+			_totalAmount += mt.TotalAmount
+		}
+
 		_moneyTransactions[i] = &txmodel.MoneyTransactionShipping{
 			ID:          mt.ID,
 			TotalCOD:    _totalCOD,
