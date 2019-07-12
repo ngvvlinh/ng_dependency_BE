@@ -1801,12 +1801,15 @@ func ConfirmMoneyTransactionShippingEtop(ctx context.Context, cmd *modelx.Confir
 				return err
 			}
 		}
-		if err := s.Table("fulfillment").In("id", ffmIDs).
-			ShouldUpdateMap(M{
-				"cod_etop_transfered_at": now,
-			}); err != nil {
-			return err
+		if len(ffmIDs) > 0 {
+			if err := s.Table("fulfillment").In("id", ffmIDs).
+				ShouldUpdateMap(M{
+					"cod_etop_transfered_at": now,
+				}); err != nil {
+				return err
+			}
 		}
+
 		if err := s.Table("money_transaction_shipping_etop").Where("id = ?", cmd.ID).
 			ShouldUpdateMap(M{
 				"total_orders":            totalOrders,
