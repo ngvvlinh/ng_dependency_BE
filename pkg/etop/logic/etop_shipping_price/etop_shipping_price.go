@@ -109,6 +109,7 @@ func (pricing *ESPricing) CheckESPriceMatch(fromProvince *location.Province, toP
 		}
 		if ContainRouteType(pricing.RouteType.Exclude, route) {
 			foundRouteExclude = true
+			break
 		}
 	}
 	if !foundRouteInclude || foundRouteExclude {
@@ -231,7 +232,7 @@ func DecodeShippingServiceName(code string) (name string, ok bool) {
 
 func FillInfoEtopServices(providerServices []*model.AvailableShippingService, etopServices []*model.AvailableShippingService) ([]*model.AvailableShippingService, error) {
 	if len(etopServices) == 0 {
-		return providerServices, nil
+		return nil, nil
 	}
 	if len(providerServices) == 0 {
 		return nil, cm.Error(cm.InvalidArgument, "Không đủ thông tin", nil)

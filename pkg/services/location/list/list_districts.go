@@ -4520,6 +4520,7 @@ var Districts = []*types.District{
 		Name:         "Thành phố Cao Lãnh",
 		GhnID:        1564,
 		VTPostID:     621,
+		UrbanType:    -1,
 	},
 	{
 		Code:         "867",

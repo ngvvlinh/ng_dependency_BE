@@ -173,17 +173,17 @@ func TestGetEtopShippingServices(t *testing.T) {
 		expectServiceTypes []string
 		expectPrices       []int
 	}{
-		{model.TypeGHTK, _hcm, _hn, _bavi, 100, []string{model.ShippingServiceNameFaster, model.ShippingServiceNameStandard}, []int{24000, 27500}},
-		{model.TypeGHTK, _hcm, _ag, _longxuyen, 200, []string{model.ShippingServiceNameStandard}, []int{26000}},
-		{model.TypeGHTK, _hcm, _dn, _camle, 400, []string{model.ShippingServiceNameFaster, model.ShippingServiceNameStandard}, []int{29000, 34000}},
-		{model.TypeGHTK, _hcm, _dn, _camle, 1400, []string{model.ShippingServiceNameStandard}, []int{39000}},
-		{model.TypeGHTK, _hcm, _hcm, _binhthanh, 3400, []string{model.ShippingServiceNameFaster}, []int{25000}},
+		{model.TypeGHTK, _hcm, _hn, _bavi, 100, nil, nil},
+		{model.TypeGHTK, _hcm, _ag, _longxuyen, 200, []string{model.ShippingServiceNameStandard}, []int{24000}},
+		{model.TypeGHTK, _hcm, _dn, _camle, 400, nil, nil},
+		{model.TypeGHTK, _hcm, _dn, _camle, 1400, nil, nil},
+		{model.TypeGHTK, _hcm, _hcm, _binhthanh, 3400, nil, nil},
 		{model.TypeGHTK, _dn, _hcm, _quan10, 700, nil, nil},
-		{model.TypeGHTK, _dn, _hn, _bavi, 1200, nil, nil},
+		{model.TypeGHTK, _dn, _hn, _bavi, 200, nil, nil},
 		{model.TypeGHTK, _ag, _dn, _longxuyen, 400, nil, nil},
 		{model.TypeGHTK, _ag, _hn, _bavi, 400, nil, nil},
-		{model.TypeGHTK, _hn, _dn, _camle, 3400, []string{model.ShippingServiceNameStandard}, []int{59000}},
-		{model.TypeGHTK, _hn, _ag, _longxuyen, 3400, []string{model.ShippingServiceNameStandard}, []int{59000}},
+		{model.TypeGHTK, _hn, _dn, _camle, 3400, nil, nil},
+		{model.TypeGHTK, _hn, _ag, _longxuyen, 100, []string{model.ShippingServiceNameStandard}, []int{24000}},
 
 		{model.TypeGHN, _hn, _dn, _camle, 200, []string{model.ShippingServiceNameStandard}, []int{32000}},
 		{model.TypeGHN, _dn, _hcm, _quan10, 700, []string{model.ShippingServiceNameStandard}, []int{32000}},
