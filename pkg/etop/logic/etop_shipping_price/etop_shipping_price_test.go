@@ -191,7 +191,15 @@ func TestGetEtopShippingServices(t *testing.T) {
 		{model.TypeGHN, _hn, _dn, _camle, 2200, nil, nil},
 	} {
 		t.Run("GetEtopShippingServices", func(t *testing.T) {
-			eServices := GetEtopShippingServices(tt.carrier, tt.fromProvince, tt.toProvince, tt.toDistrict, tt.weight)
+			args := &GetEtopShippingServicesArgs{
+				ArbitraryID:  0,
+				Carrier:      tt.carrier,
+				FromProvince: tt.fromProvince,
+				ToProvince:   tt.toProvince,
+				ToDistrict:   tt.toDistrict,
+				Weight:       tt.weight,
+			}
+			eServices := GetEtopShippingServices(args)
 
 			if len(tt.expectServiceTypes) > 0 {
 				assert.Contains(t, tt.expectServiceTypes, eServices[0].Name)

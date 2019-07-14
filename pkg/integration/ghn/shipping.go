@@ -254,7 +254,15 @@ func (c *Carrier) GetAllShippingServices(ctx context.Context, args shipping_prov
 	providerServices := cmd.Result
 
 	// get ETOP services
-	etopServices := etop_shipping_price.GetEtopShippingServices(model.TypeGHN, fromProvince, toProvince, toDistrict, args.ChargeableWeight)
+	etopServiceArgs := &etop_shipping_price.GetEtopShippingServicesArgs{
+		ArbitraryID:  args.AccountID,
+		Carrier:      model.TypeGHN,
+		FromProvince: fromProvince,
+		ToProvince:   toProvince,
+		ToDistrict:   toDistrict,
+		Weight:       args.ChargeableWeight,
+	}
+	etopServices := etop_shipping_price.GetEtopShippingServices(etopServiceArgs)
 	etopServices, _ = etop_shipping_price.FillInfoEtopServices(providerServices, etopServices)
 
 	allServices := append(providerServices, etopServices...)

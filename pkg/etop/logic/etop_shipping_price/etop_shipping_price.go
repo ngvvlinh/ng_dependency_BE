@@ -3,6 +3,7 @@ package etop_shipping_price
 import (
 	"fmt"
 	"math"
+	"math/rand"
 	"sort"
 	"strings"
 
@@ -66,12 +67,23 @@ func init() {
 	}
 }
 
-func GetEtopShippingServices(carrier model.ShippingProvider, fromProvince *location.Province, toProvince *location.Province, toDistrict *location.District, weight int) []*model.AvailableShippingService {
+type GetEtopShippingServicesArgs struct {
+	ArbitraryID  int64
+	Carrier      model.ShippingProvider
+	FromProvince *location.Province
+	ToProvince   *location.Province
+	ToDistrict   *location.District
+	Weight       int
+}
+
+func GetEtopShippingServices(args *GetEtopShippingServicesArgs) []*model.AvailableShippingService {
 	var res []*model.AvailableShippingService
-	pricings := priceRuleIndex[carrier]
-	pricingsMatch := GetESPricingsMatch(pricings, fromProvince, toProvince, toDistrict)
+	pricings := priceRuleIndex[args.Carrier]
+	pricingsMatch := GetESPricingsMatch(pricings, args.FromProvince, args.ToProvince, args.ToDistrict)
+
+	generator := newServiceIDGenerator(args.ArbitraryID, args.Carrier)
 	for _, price := range pricingsMatch {
-		if service, err := price.ToService(weight, carrier); err == nil {
+		if service, err := price.ToService(generator, args.Weight, args.Carrier); err == nil {
 			res = append(res, service)
 		}
 	}
@@ -142,7 +154,7 @@ func ContainRouteType(types []model.ShippingRouteType, routeType model.ShippingR
 	return false
 }
 
-func (pricing *ESPricing) ToService(weight int, carrier model.ShippingProvider) (*model.AvailableShippingService, error) {
+func (pricing *ESPricing) ToService(generator serviceIDGenerator, weight int, carrier model.ShippingProvider) (*model.AvailableShippingService, error) {
 	pRuleDetail := GetPriceRuleDetail(weight, pricing.Details)
 	if pRuleDetail == nil {
 		return nil, cm.Error(cm.Internal, "Không có bảng giá phù hợp", nil)
@@ -151,7 +163,8 @@ func (pricing *ESPricing) ToService(weight int, carrier model.ShippingProvider) 
 	if err != nil {
 		return nil, err
 	}
-	serviceID, err := GenerateEtopServiceCode(pricing.Type)
+
+	serviceID, err := generator.GenerateEtopServiceCode(pricing.Type)
 	if err != nil {
 		return nil, err
 	}
@@ -197,10 +210,33 @@ func GetPriceByPricingDetail(weight int, pRuleDetail *ESPricingDetail) (int, err
 	return price, nil
 }
 
+type serviceIDGenerator struct {
+	rd *rand.Rand
+}
+
+func newServiceIDGenerator(seed int64, carrier model.ShippingProvider) serviceIDGenerator {
+	// make sure generate difference code with difference carrier
+	switch carrier {
+	case model.TypeGHTK:
+		seed += 1
+	case model.TypeVTPost:
+		seed += 2
+	default:
+
+	}
+
+	src := rand.NewSource(seed)
+	rd := rand.New(src)
+	return serviceIDGenerator{rd}
+}
+
 // GenerateEtopServiceCode: generate service ID for ETOP shipping
 // format ex: 7ETOP20N
-func GenerateEtopServiceCode(shippingType string) (string, error) {
-	code := gencode.GenerateCode(gencode.Alphabet32, 8)
+func (c serviceIDGenerator) GenerateEtopServiceCode(shippingType string) (string, error) {
+	n := c.rd.Uint64()
+	v := gencode.Alphabet32.EncodeReverse(n, 8)
+	code := string(v[:8])
+	// code := gencode.GenerateCode(gencode.Alphabet32, 8)
 	switch shippingType {
 	case model.ShippingServiceNameStandard:
 		code = code[:7] + "C"
