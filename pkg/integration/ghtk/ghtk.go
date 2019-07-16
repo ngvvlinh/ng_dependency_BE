@@ -59,9 +59,9 @@ func (c *Carrier) CalcShippingFee(ctx context.Context, cmd *CalcShippingFeeComma
 	for code, c := range c.clients {
 		go func(code byte, c *ghtkClient.Client) {
 			defer wg.Done()
-			if code == 'S' {
+			if code == 'S' || code == 'D' {
 				// backward-compatible
-				// This account will be delete later
+				// These accounts ('S' & 'D') will be deleted later
 				return
 			}
 			req := *cmd.Request // clone the request to prevent race condition
@@ -74,9 +74,9 @@ func (c *Carrier) CalcShippingFee(ctx context.Context, cmd *CalcShippingFeeComma
 		}(code, c)
 		go func(code byte, c *ghtkClient.Client) {
 			defer wg.Done()
-			if code == 'S' {
+			if code == 'S' || code == 'D' {
 				// backward-compatible
-				// This account will be delete later
+				// These accounts ('S' & 'D') will be deleted later
 				return
 			}
 			req := *cmd.Request // clone the request to prevent race condition
