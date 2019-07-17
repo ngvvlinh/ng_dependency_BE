@@ -165,7 +165,7 @@ func startEtopServer() *http.Server {
 	if cfg.ServeDoc || *flDocOnly {
 		mux.Handle("/", http.RedirectHandler("/doc/etop", http.StatusTemporaryRedirect))
 		mux.Handle("/doc", http.RedirectHandler("/doc/etop", http.StatusTemporaryRedirect))
-		for _, s := range strings.Split("sadmin,admin,shop", ",") {
+		for _, s := range strings.Split("sadmin,admin,shop,integration", ",") {
 			mux.Handle("/doc/"+s, cmService.RedocHandler())
 			mux.Handle("/doc/"+s+"/swagger.json", cmService.SwaggerHandler("etop/"+s+"/"+s+".swagger.json"))
 		}
