@@ -65,6 +65,7 @@ service ExternalAccountService {
     rpc CreateExternalAccountHaravan(ExternalAccountHaravanRequest) returns (ExternalAccountHaravan);
     rpc UpdateExternalAccountHaravanToken(ExternalAccountHaravanRequest) returns (ExternalAccountHaravan);
     rpc ConnectCarrierServiceExternalAccountHaravan(cm.Empty) returns (cm.UpdatedResponse);
+    rpc DeleteConnectedCarrierServiceExternalAccountHaravan(cm.Empty) returns(cm.DeletedResponse);
 }
 
 service CollectionService {
@@ -818,7 +819,8 @@ message ExternalAccountHaravan {
     optional int64 id = 1 [(gogoproto.nullable) = false];
     optional int64 shop_id = 2 [(gogoproto.nullable) = false];
     optional string subdomain = 3 [(gogoproto.nullable) = false];
-    optional string access_token = 4 [(gogoproto.nullable) = false];
+    optional int32 external_carrier_service_id = 8 [(gogoproto.nullable) = false];
+    optional google.protobuf.Timestamp external_connected_carrier_service_at = 9;
     optional google.protobuf.Timestamp expires_at = 5;
     optional google.protobuf.Timestamp created_at = 6;
     optional google.protobuf.Timestamp updated_at = 7;

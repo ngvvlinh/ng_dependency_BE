@@ -53,7 +53,7 @@ func Load() (cfg Config, err error) {
 	cfg.Haravan.MustLoadEnv()
 
 	if cfg.Haravan.Secret == "" {
-		return cfg, errors.New("Empty Haravan secret key")
+		return cfg, errors.New("Empty Haravan secret")
 	}
 	if cfg.URL.MainSite == "" {
 		return cfg, errors.New("Empty MainSite URL")

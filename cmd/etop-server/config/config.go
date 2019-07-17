@@ -149,12 +149,16 @@ func Load(isTest bool) (Config, error) {
 	cfg.SMS.MustLoadEnv()
 	cfg.SMTP.MustLoadEnv()
 	cfg.Captcha.MustLoadEnv()
+	cfg.Haravan.MustLoadEnv()
 	cfg.GHN.MustLoadEnv()
 	cfg.GHTK.MustLoadEnv()
 	cfg.VTPost.MustLoadEnv()
 	cfg.Ahamove.MustLoadEnv()
 	cc.MustLoadEnv("ET_SADMIN_TOKEN", &cfg.SAdminToken)
 
+	if cfg.Haravan.Secret == "" {
+		return cfg, errors.New("Empty Haravan secret")
+	}
 	if cfg.ThirdPartyHost == "" && !cm.IsDev() {
 		return cfg, errors.New("Empty third_party_host")
 	}

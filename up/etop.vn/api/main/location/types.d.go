@@ -65,9 +65,10 @@ type GetAllLocationsQuery struct {
 }
 
 type GetLocationQuery struct {
-	ProvinceCode string `json:"province_code"`
-	DistrictCode string `json:"district_code"`
-	WardCode     string `json:"ward_code"`
+	ProvinceCode     string                      `json:"province_code"`
+	DistrictCode     string                      `json:"district_code"`
+	WardCode         string                      `json:"ward_code"`
+	LocationCodeType locationv1.LocationCodeType `json:"location_code_type"`
 
 	Result *locationv1.LocationQueryResult `json:"-"`
 }
@@ -107,9 +108,10 @@ func (q *GetAllLocationsQuery) GetArgs() *locationv1.GetAllLocationsQueryArgs {
 }
 func (q *GetLocationQuery) GetArgs() *locationv1.GetLocationQueryArgs {
 	return &locationv1.GetLocationQueryArgs{
-		ProvinceCode: q.ProvinceCode,
-		DistrictCode: q.DistrictCode,
-		WardCode:     q.WardCode,
+		ProvinceCode:     q.ProvinceCode,
+		DistrictCode:     q.DistrictCode,
+		WardCode:         q.WardCode,
+		LocationCodeType: q.LocationCodeType,
 	}
 }
 

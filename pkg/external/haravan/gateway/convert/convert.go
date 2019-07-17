@@ -2,6 +2,7 @@ package convert
 
 import (
 	"etop.vn/api/external/haravan"
+	"etop.vn/api/main/location"
 	pborder "etop.vn/backend/pb/etop/order"
 	"etop.vn/backend/pkg/etop/model"
 	shippingmodel "etop.vn/backend/pkg/services/shipping/model"
@@ -21,7 +22,7 @@ func ToPbOrderCustomer(in *haravan.Address) *pborder.OrderCustomer {
 	}
 }
 
-func ToPbOrderAddress(in *haravan.Address) *pborder.OrderAddress {
+func ToPbOrderAddress(in *haravan.Address, loc *location.LocationQueryResult) *pborder.OrderAddress {
 	if in == nil {
 		return nil
 	}
@@ -29,9 +30,9 @@ func ToPbOrderAddress(in *haravan.Address) *pborder.OrderAddress {
 		FullName: in.Name,
 		Phone:    in.Phone,
 		Country:  in.Country,
-		Province: in.Province,
-		District: in.District,
-		Ward:     in.Ward,
+		Province: loc.Province.Name,
+		District: loc.District.Name,
+		Ward:     loc.Ward.Name,
 		Zip:      in.Zip,
 		Address1: in.Address1,
 		Address2: in.Address2,

@@ -16,7 +16,7 @@ import (
 	"etop.vn/backend/pkg/etop/logic/shipping_provider"
 	"etop.vn/backend/pkg/external/haravan/gateway"
 	haravanidentity "etop.vn/backend/pkg/external/haravan/identity"
-	haravancb "etop.vn/backend/pkg/integration/haravan/callback"
+	haravangateway "etop.vn/backend/pkg/integration/haravan/gateway"
 	catalogquery "etop.vn/backend/pkg/services/catalog/query"
 	"etop.vn/backend/pkg/services/identity"
 	"etop.vn/common/l"
@@ -26,11 +26,11 @@ func startServers() *http.Server {
 	identityQuery := identity.NewQueryService(db).MessageBus()
 	haravanIdentityQuery := haravanidentity.NewQueryService(db).MessageBus()
 	shippingManager := shipping_provider.NewCtrl(locationBus, ghnCarrier, ghtkCarrier, vtpostCarrier)
-	haravan := gateway.NewAggregate(db, shippingManager, identityQuery).MessageBus()
+	haravan := gateway.NewAggregate(db, shippingManager, locationBus, identityQuery).MessageBus()
 
 	catalogQueryService := catalogquery.New(db).MessageBus()
 	orderS.Init(shippingManager, catalogQueryService)
-	cb := haravancb.New(haravan, haravanIdentityQuery)
+	gateway := haravangateway.New(haravan, haravanIdentityQuery)
 
 	mux := http.NewServeMux()
 	rt := httpx.New()
@@ -41,10 +41,10 @@ func startServers() *http.Server {
 
 	buildRoute := haravanidentity.BuildGatewayRoute
 	rt.GET("/haravan/gateway/__test", test)
-	rt.POST(buildRoute(haravanidentity.PathGetShippingRates), cb.GetShippingRates)
-	rt.POST(buildRoute(haravanidentity.PathCreateOrder), cb.CreateOrder)
-	rt.POST(buildRoute(haravanidentity.PathGetOrder), cb.GetOrder)
-	rt.DELETE(buildRoute(haravanidentity.PathCancelOrder), cb.CancelOrder)
+	rt.POST(buildRoute(haravanidentity.PathGetShippingRates), gateway.GetShippingRates)
+	rt.POST(buildRoute(haravanidentity.PathCreateOrder), gateway.CreateOrder)
+	rt.POST(buildRoute(haravanidentity.PathGetOrder), gateway.GetOrder)
+	rt.DELETE(buildRoute(haravanidentity.PathCancelOrder), gateway.CancelOrder)
 
 	metrics.RegisterHTTPHandler(mux)
 	healthservice.RegisterHTTPHandler(mux)
@@ -82,6 +82,7 @@ func authMiddleware(next httpx.Handler) httpx.Handler {
 		c.Req.Body = ioutil.NopCloser(bytes.NewBuffer(body))
 
 		hash := generateAuthorizeCode(string(body), cfg.Haravan.Secret)
+		ll.Info("hash ::", l.String("author", hash))
 		if hash != haravanHMAC {
 			return cm.Errorf(cm.Unauthenticated, nil, "Xác thực không hợp lệ. Vui lòng kiểm tra lại.")
 		}

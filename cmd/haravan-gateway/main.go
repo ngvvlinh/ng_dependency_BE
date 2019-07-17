@@ -126,8 +126,8 @@ func main() {
 
 	svr := startServers()
 	if bot != nil {
-		bot.SendMessage("–––\n✨ haravan-callback started ✨\n" + cm.Commit())
-		defer bot.SendMessage("👹 haravan-callback stopped 👹\n–––")
+		bot.SendMessage("–––\n✨ haravan-gateway started ✨\n" + cm.Commit())
+		defer bot.SendMessage("👹 haravan-gateway stopped 👹\n–––")
 	}
 
 	healthservice.MarkReady()

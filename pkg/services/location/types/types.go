@@ -33,9 +33,10 @@ type Province struct {
 	Alias    []string
 	Special  bool
 
-	Code     string
-	Region   Region
-	VTPostID int32
+	Code        string
+	Region      Region
+	VTPostID    int32
+	HaravanCode string
 }
 
 type District struct {
@@ -48,13 +49,15 @@ type District struct {
 	GhnID        int32
 	UrbanType    UrbanType
 	VTPostID     int32
+	HaravanCode  string
 }
 
 type Ward struct {
-	Name     string
-	NameNorm string
-	Alias    []string
-	VTPostID int32
+	Name        string
+	NameNorm    string
+	Alias       []string
+	VTPostID    int32
+	HaravanCode string
 
 	Code         string
 	DistrictCode string

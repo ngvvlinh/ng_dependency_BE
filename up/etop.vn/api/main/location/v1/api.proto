@@ -20,6 +20,7 @@ option (gogoproto.verbose_equal_all)        = false;
 
 import "etop.vn/api/main/location/v1/region.proto";
 import "etop.vn/api/main/location/v1/urban.proto";
+import "etop.vn/api/main/location/v1/loc_code_type.proto";
 
 service LocationQueryService {
     rpc GetAllLocations(GetAllLocationsQueryArgs) returns (GetAllLocationsQueryResult);
@@ -69,6 +70,8 @@ message Extra {
     optional int32 ghn_id = 5 [(gogoproto.nullable)=false];
 
     optional int32 vtpost_id = 6 [(gogoproto.nullable)=false];
+
+    optional string haravan_code = 7 [(gogoproto.nullable) = false];
 }
 
 message GetAllLocationsQueryArgs {
@@ -101,6 +104,8 @@ message GetLocationQueryArgs {
     optional string district_code = 2 [(gogoproto.nullable)=false];
 
     optional string ward_code = 3 [(gogoproto.nullable)=false];
+
+    optional loc_code_type.LocationCodeType location_code_type = 4 [(gogoproto.nullable) = false];
 }
 
 message FindLocationQueryArgs {

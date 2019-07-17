@@ -36,11 +36,13 @@ func Convert_core_XAccountHaravan_To_api_XAccountHaravan(in *haravanidentity.Ext
 		return nil
 	}
 	return &ExternalAccountHaravan{
-		Id:        in.ID,
-		ShopId:    in.ShopID,
-		Subdomain: in.Subdomain,
-		ExpiresAt: pbcm.PbTime(in.ExpiresAt),
-		CreatedAt: pbcm.PbTime(in.CreatedAt),
-		UpdatedAt: pbcm.PbTime(in.UpdatedAt),
+		Id:                                in.ID,
+		ShopId:                            in.ShopID,
+		Subdomain:                         in.Subdomain,
+		ExternalCarrierServiceId:          int32(in.ExternalCarrierServiceID),
+		ExternalConnectedCarrierServiceAt: pbcm.PbTime(in.ExternalConnectedCarrierServiceAt),
+		ExpiresAt:                         pbcm.PbTime(in.ExpiresAt),
+		CreatedAt:                         pbcm.PbTime(in.CreatedAt),
+		UpdatedAt:                         pbcm.PbTime(in.UpdatedAt),
 	}
 }

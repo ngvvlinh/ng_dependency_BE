@@ -49,10 +49,10 @@ type CreateOrderCommand struct {
 	Origin                *haravan.Address `json:"origin"`
 	Destination           *haravan.Address `json:"destination"`
 	Items                 []*haravan.Item  `json:"items"`
-	CodAmount             int              `json:"cod_amount"`
-	TotalGrams            int              `json:"total_grams"`
-	ExternalStoreID       int              `json:"external_store_id "`
-	ExternalOrderID       int              `json:"external_order_id "`
+	CodAmount             float32          `json:"cod_amount"`
+	TotalGrams            float32          `json:"total_grams"`
+	ExternalStoreID       int              `json:"external_store_id"`
+	ExternalOrderID       int              `json:"external_order_id"`
 	ExternalFulfillmentID int              `json:"external_fulfillment_id"`
 	ExternalCode          string           `json:"external_code"`
 	Note                  string           `json:"note"`
@@ -72,8 +72,8 @@ type GetShippingRateCommand struct {
 	EtopShopID  int64
 	Origin      *haravan.Address `json:"origin"`
 	Destination *haravan.Address `json:"destination"`
-	CodAmount   int              `json:"cod_amount"`
-	TotalGrams  int              `json:"total_grams"`
+	CodAmount   float32          `json:"cod_amount"`
+	TotalGrams  float32          `json:"total_grams"`
 
 	Result *GetShippingRateResponse `json:"-"`
 }

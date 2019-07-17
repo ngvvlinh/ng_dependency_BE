@@ -666,6 +666,32 @@
         ]
       }
     },
+    "/api/shop.ExternalAccount/DeleteConnectedCarrierServiceExternalAccountHaravan": {
+      "post": {
+        "operationId": "DeleteConnectedCarrierServiceExternalAccountHaravan",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/cmDeletedResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/cmEmpty"
+            }
+          }
+        ],
+        "tags": [
+          "ExternalAccount"
+        ]
+      }
+    },
     "/api/shop.ExternalAccount/GetExternalAccountHaravan": {
       "post": {
         "operationId": "GetExternalAccountHaravan",
@@ -5648,8 +5674,13 @@
         "subdomain": {
           "type": "string"
         },
-        "access_token": {
-          "type": "string"
+        "external_carrier_service_id": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "external_connected_carrier_service_at": {
+          "type": "string",
+          "format": "date-time"
         },
         "expires_at": {
           "type": "string",

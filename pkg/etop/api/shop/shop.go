@@ -97,6 +97,7 @@ func init() {
 	bus.AddHandler("api", CreateExternalAccountHaravan)
 	bus.AddHandler("api", UpdateExternalAccountHaravanToken)
 	bus.AddHandler("api", ConnectCarrierServiceExternalAccountHaravan)
+	bus.AddHandler("api", DeleteConnectedCarrierServiceExternalAccountHaravan)
 }
 
 const PrefixIdemp = "IdempOrder"
@@ -1130,6 +1131,19 @@ func ConnectCarrierServiceExternalAccountHaravan(ctx context.Context, r *wrapsho
 	}
 	r.Result = &pbcm.UpdatedResponse{
 		Updated: 1,
+	}
+	return nil
+}
+
+func DeleteConnectedCarrierServiceExternalAccountHaravan(ctx context.Context, r *wrapshop.DeleteConnectedCarrierServiceExternalAccountHaravanEndpoint) error {
+	cmd := &haravanidentity.DeleteConnectedCarrierServiceExternalAccountHaravanCommand{
+		ShopID: r.Context.Shop.ID,
+	}
+	if err := haravanIdentityAggr.Dispatch(ctx, cmd); err != nil {
+		return err
+	}
+	r.Result = &pbcm.DeletedResponse{
+		Deleted: 1,
 	}
 	return nil
 }

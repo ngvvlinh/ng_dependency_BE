@@ -12,6 +12,8 @@ type Aggregate interface {
 	UpdateExternalAccountHaravanToken(ctx context.Context, args *UpdateExternalAccountHaravanTokenArgs) (*ExternalAccountHaravan, error)
 
 	ConnectCarrierServiceExternalAccountHaravan(ctx context.Context, args *ConnectCarrierServiceExternalAccountHaravanArgs) (*meta.Empty, error)
+
+	DeleteConnectedCarrierServiceExternalAccountHaravan(ctx context.Context, args *DeleteConnectedCarrierServiceExternalAccountHaravanArgs) (*meta.Empty, error)
 }
 
 type QueryService interface {
@@ -49,4 +51,8 @@ type ConnectCarrierServiceExternalAccountHaravanArgs struct {
 type UpdateExternalShopIDAccountHaravanArgs struct {
 	ShopID         int64
 	ExternalShopID int
+}
+
+type DeleteConnectedCarrierServiceExternalAccountHaravanArgs struct {
+	ShopID int64
 }

@@ -20,6 +20,15 @@ const (
 	Suburban2 UrbanType = locationv1.UrbanType_suburban2
 )
 
+type LocationCodeType = locationv1.LocationCodeType
+
+const (
+	LocCodeTypeInternal LocationCodeType = locationv1.LocationCodeType_internal
+	LocCodeTypeGHN      LocationCodeType = locationv1.LocationCodeType_ghn
+	LocCodeTypeVTPOST   LocationCodeType = locationv1.LocationCodeType_vtpost
+	LocCodeTypeHaravan  LocationCodeType = locationv1.LocationCodeType_haravan
+)
+
 type Province = locationv1.Province
 
 type District = locationv1.District

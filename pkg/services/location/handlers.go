@@ -72,6 +72,12 @@ func (im *Impl) GetAllLocations(ctx context.Context, query *location.GetAllLocat
 }
 
 func (im *Impl) GetLocation(ctx context.Context, query *location.GetLocationQueryArgs) (result *location.LocationQueryResult, _err error) {
+	switch query.LocationCodeType {
+	case location.LocCodeTypeGHN, location.LocCodeTypeVTPOST:
+		return nil, cm.Error(cm.Unimplemented, "Address type does not valid", nil)
+	default:
+
+	}
 	var ward *types.Ward
 	var district *types.District
 	var province *types.Province
@@ -92,28 +98,30 @@ func (im *Impl) GetLocation(ctx context.Context, query *location.GetLocationQuer
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "empty request")
 	}
 	if query.WardCode != "" {
-		ward = GetWardByCode(query.WardCode)
+		ward = GetWardByCode(query.WardCode, query.LocationCodeType)
 		if ward == nil {
 			return nil, cm.Errorf(cm.NotFound, nil, "không tìm thấy phường/xã")
 		}
-		district = GetDistrictByCode(ward.DistrictCode)
-		province = GetProvinceByCode(district.ProvinceCode)
+		district = GetDistrictByCode(ward.DistrictCode, query.LocationCodeType)
+		if district != nil {
+			province = GetProvinceByCode(district.ProvinceCode, query.LocationCodeType)
+		}
 	}
 	if query.DistrictCode != "" {
 		if district != nil && district.Code != query.DistrictCode {
 			return nil, cm.Errorf(cm.InvalidArgument, nil, "mã quận/huyện không thống nhất")
 		}
-		district = GetDistrictByCode(query.DistrictCode)
+		district = GetDistrictByCode(query.DistrictCode, query.LocationCodeType)
 		if district == nil {
 			return nil, cm.Errorf(cm.NotFound, nil, "không tìm thấy quận/huyện")
 		}
-		province = GetProvinceByCode(district.ProvinceCode)
+		province = GetProvinceByCode(district.ProvinceCode, query.LocationCodeType)
 	}
 	if query.ProvinceCode != "" {
 		if province != nil && province.Code != query.ProvinceCode {
 			return nil, cm.Errorf(cm.InvalidArgument, nil, "mã tỉnh/thành phố không thống nhất")
 		}
-		province = GetProvinceByCode(query.ProvinceCode)
+		province = GetProvinceByCode(query.ProvinceCode, query.LocationCodeType)
 		if province == nil {
 			return nil, cm.Errorf(cm.NotFound, nil, "không tìm thấy tỉnh/thành phố")
 		}

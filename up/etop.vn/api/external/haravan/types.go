@@ -33,13 +33,13 @@ type ShippingRate struct {
 }
 
 type Item struct {
-	Name      string `json:"name"`
-	Sku       string `json:"sku"`
-	Quantity  int    `json:"quantity"`
-	Grams     int    `json:"grams"`
-	Price     int    `json:"price"`
-	ProductID int    `json:"product_id"`
-	VariantID int    `json:"variant_id"`
+	Name      string  `json:"name"`
+	Sku       string  `json:"sku"`
+	Quantity  int     `json:"quantity"`
+	Grams     float32 `json:"grams"`
+	Price     float32 `json:"price"`
+	ProductID int     `json:"product_id"`
+	VariantID int     `json:"variant_id"`
 }
 
 type FulfillmentState string

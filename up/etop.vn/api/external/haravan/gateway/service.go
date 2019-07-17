@@ -20,8 +20,8 @@ type GetShippingRateRequestArgs struct {
 	EtopShopID  int64
 	Origin      *haravan.Address `json:"origin"`
 	Destination *haravan.Address `json:"destination"`
-	CodAmount   int              `json:"cod_amount"`
-	TotalGrams  int              `json:"total_grams"`
+	CodAmount   float32          `json:"cod_amount"`
+	TotalGrams  float32          `json:"total_grams"`
 }
 
 type GetShippingRateResponse struct {
@@ -33,12 +33,12 @@ type CreateOrderRequestArgs struct {
 	Origin      *haravan.Address `json:"origin"`
 	Destination *haravan.Address `json:"destination"`
 	Items       []*haravan.Item  `json:"items"`
-	CodAmount   int              `json:"cod_amount"`
-	TotalGrams  int              `json:"total_grams"`
+	CodAmount   float32          `json:"cod_amount"`
+	TotalGrams  float32          `json:"total_grams"`
 	// ExternalStoreID: Mã shop
-	ExternalStoreID int `json:"external_store_id "`
+	ExternalStoreID int `json:"external_store_id"`
 	// ExternalOrderID: Order id của shop
-	ExternalOrderID int `json:"external_order_id "`
+	ExternalOrderID int `json:"external_order_id"`
 	// ExternalFulfillmentID: Mã vận đơn
 	ExternalFulfillmentID int `json:"external_fulfillment_id"`
 	// ExternalCode = external_store_id + ”_” + external_order_id + “_” + external_fulfillment_id

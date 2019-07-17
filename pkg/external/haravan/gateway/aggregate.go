@@ -10,6 +10,7 @@ import (
 	"etop.vn/api/external/haravan"
 	"etop.vn/api/external/haravan/gateway"
 	"etop.vn/api/main/identity"
+	"etop.vn/api/main/location"
 	pbsp "etop.vn/backend/pb/etop/etc/shipping_provider"
 	pbtryon "etop.vn/backend/pb/etop/etc/try_on"
 	pborder "etop.vn/backend/pb/etop/order"
@@ -24,6 +25,7 @@ import (
 	"etop.vn/backend/pkg/external/haravan/gateway/convert"
 	identityconvert "etop.vn/backend/pkg/services/identity/convert"
 	"etop.vn/backend/pkg/services/ordering/modelx"
+	shipmodel "etop.vn/backend/pkg/services/shipping/model"
 	shipmodelx "etop.vn/backend/pkg/services/shipping/modelx"
 	"etop.vn/common/bus"
 	"etop.vn/common/l"
@@ -36,13 +38,15 @@ var (
 
 type Aggregate struct {
 	db           cmsql.Transactioner
+	locationQS   location.QueryBus
 	ShippingCtrl *shipping_provider.ProviderManager
 	identityQS   identity.QueryBus
 }
 
-func NewAggregate(db cmsql.Database, providerManager *shipping_provider.ProviderManager, identityQuery identity.QueryBus) *Aggregate {
+func NewAggregate(db cmsql.Database, providerManager *shipping_provider.ProviderManager, locationQuery location.QueryBus, identityQuery identity.QueryBus) *Aggregate {
 	return &Aggregate{
 		db:           db,
+		locationQS:   locationQuery,
 		ShippingCtrl: providerManager,
 		identityQS:   identityQuery,
 	}
@@ -54,21 +58,23 @@ func (a *Aggregate) MessageBus() gateway.CommandBus {
 }
 
 func (a *Aggregate) GetShippingRate(ctx context.Context, args *gateway.GetShippingRateRequestArgs) (*gateway.GetShippingRateResponse, error) {
-	if args.Origin == nil {
-		return nil, cm.Errorf(cm.InvalidArgument, nil, "Cần cung cấp địa chỉ lấy hàng")
+	from, err := a.GetLocation(ctx, args.Origin)
+	if err != nil {
+		return nil, cm.Errorf(cm.InvalidArgument, err, "Lỗi địa chỉ gửi")
 	}
-	if args.Destination == nil {
-		return nil, cm.Errorf(cm.InvalidArgument, nil, "Cần cung cấp địa chỉ giao hàng")
+	to, err := a.GetLocation(ctx, args.Destination)
+	if err != nil {
+		return nil, cm.Errorf(cm.InvalidArgument, err, "Lỗi địa chỉ nhận")
 	}
 
 	// Haravan: default includeInsurance is false
 	req := &pborder.GetExternalShippingServicesRequest{
-		Provider:         0,
-		Carrier:          0,
-		FromProvince:     args.Origin.Province,
-		FromDistrict:     args.Origin.District,
-		ToProvince:       args.Destination.Province,
-		ToDistrict:       args.Destination.District,
+		Provider:         pbsp.ShippingProvider_ghn,
+		Carrier:          pbsp.ShippingProvider_ghn,
+		FromProvince:     from.Province.Name,
+		FromDistrict:     from.District.Name,
+		ToProvince:       to.Province.Name,
+		ToDistrict:       to.District.Name,
 		Weight:           int32(args.TotalGrams),
 		GrossWeight:      0,
 		ChargeableWeight: 0,
@@ -113,13 +119,22 @@ func (a *Aggregate) CreateOrder(ctx context.Context, args *gateway.CreateOrderRe
 	}
 	shop := identityconvert.ShopToModel(query.Result.Shop)
 
+	from, err := a.GetLocation(ctx, args.Origin)
+	if err != nil {
+		return nil, cm.Errorf(cm.InvalidArgument, err, "Lỗi địa chỉ gửi")
+	}
+	to, err := a.GetLocation(ctx, args.Destination)
+	if err != nil {
+		return nil, cm.Errorf(cm.InvalidArgument, err, "Lỗi địa chỉ nhận")
+	}
+
 	req := &pborder.GetExternalShippingServicesRequest{
-		Provider:         0,
-		Carrier:          0,
-		FromProvince:     args.Origin.Province,
-		FromDistrict:     args.Origin.District,
-		ToProvince:       args.Destination.Province,
-		ToDistrict:       args.Destination.District,
+		Provider:         pbsp.ShippingProvider_ghn,
+		Carrier:          pbsp.ShippingProvider_ghn,
+		FromProvince:     from.Province.Name,
+		FromDistrict:     from.District.Name,
+		ToProvince:       to.Province.Name,
+		ToDistrict:       to.District.Name,
 		Weight:           int32(args.TotalGrams),
 		GrossWeight:      0,
 		ChargeableWeight: 0,
@@ -147,17 +162,20 @@ func (a *Aggregate) CreateOrder(ctx context.Context, args *gateway.CreateOrderRe
 	}
 	externalID := strconv.FormatInt(int64(args.ExternalOrderID), 10)
 	totalValue := int32(getOrderValue(args.Items))
+	codAmount := int(args.CodAmount)
+	weight := int(args.TotalGrams)
+
 	req2 := &pborder.CreateOrderRequest{
-		Source:          pbsource.Source_etop_pos,
+		Source:          pbsource.Source_api,
 		ExternalId:      externalID,
-		ExternalCode:    args.ExternalCode,
+		ExternalCode:    externalID,
 		ExternalUrl:     "",
 		PaymentMethod:   "",
 		Customer:        convert.ToPbOrderCustomer(args.Origin),
-		CustomerAddress: convert.ToPbOrderAddress(args.Origin),
-		BillingAddress:  convert.ToPbOrderAddress(args.Origin),
-		ShippingAddress: convert.ToPbOrderAddress(args.Destination),
-		ShopAddress:     convert.ToPbOrderAddress(args.Origin),
+		CustomerAddress: convert.ToPbOrderAddress(args.Origin, from),
+		BillingAddress:  convert.ToPbOrderAddress(args.Origin, from),
+		ShippingAddress: convert.ToPbOrderAddress(args.Destination, to),
+		ShopAddress:     convert.ToPbOrderAddress(args.Origin, from),
 		ShConfirm:       nil,
 		Lines:           convert.ToPbCreateOrderLines(args.Items),
 		Discounts:       nil,
@@ -179,7 +197,7 @@ func (a *Aggregate) CreateOrder(ctx context.Context, args *gateway.CreateOrderRe
 			XServiceId:          "",
 			XShippingFee:        0,
 			XServiceName:        "",
-			PickupAddress:       convert.ToPbOrderAddress(args.Origin),
+			PickupAddress:       convert.ToPbOrderAddress(args.Origin, from),
 			ReturnAddress:       nil,
 			ShippingServiceName: "",
 			ShippingServiceCode: service.ProviderServiceID,
@@ -189,8 +207,8 @@ func (a *Aggregate) CreateOrder(ctx context.Context, args *gateway.CreateOrderRe
 			IncludeInsurance:    false,
 			TryOn:               pbtryon.TryOnCode_none,
 			ShippingNote:        args.Note,
-			CodAmount:           cm.PIntToInt32(args.CodAmount),
-			Weight:              cm.PIntToInt32(args.TotalGrams),
+			CodAmount:           cm.PIntToInt32(codAmount),
+			Weight:              cm.PIntToInt32(weight),
 			GrossWeight:         nil,
 			ChargeableWeight:    nil,
 		},
@@ -240,14 +258,14 @@ func (a *Aggregate) CreateOrder(ctx context.Context, args *gateway.CreateOrderRe
 	return &gateway.CreateOrderResponse{
 		TrackingNumber: ffm.ShippingCode,
 		ShippingFee:    int32(ffm.ShippingFeeShop),
-		TrackingURL:    ffm.SelfURL(cm.MainSiteBaseURL(), model.TagShop),
+		TrackingURL:    generateTrackingUrl(ffm),
 		CodAmount:      int32(ffm.TotalCODAmount),
 	}, nil
 }
 
 func getOrderValue(items []*haravan.Item) (total int) {
 	for _, item := range items {
-		total += item.Price * item.Quantity
+		total += int(item.Price) * item.Quantity
 	}
 	return
 }
@@ -264,7 +282,7 @@ func (a *Aggregate) GetOrder(ctx context.Context, args *gateway.GetOrderRequestA
 	return &gateway.GetOrderResponse{
 		TrackingNumber: ffm.ShippingCode,
 		ShippingFee:    int32(ffm.ShippingFeeShop),
-		TrackingURL:    ffm.SelfURL(cm.MainSiteBaseURL(), model.TagShop),
+		TrackingURL:    generateTrackingUrl(ffm),
 		CodAmount:      int32(ffm.TotalCODAmount),
 		Status:         convert.ToFulfillmentStatus(ffm.ShippingState),
 		CodStatus:      convert.ToCODStatus(ffm),
@@ -293,6 +311,22 @@ func (a *Aggregate) CancelOrder(ctx context.Context, args *gateway.CancelOrderRe
 	})
 }
 
+func (a *Aggregate) GetLocation(ctx context.Context, addr *haravan.Address) (*location.LocationQueryResult, error) {
+	if addr == nil {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "Địa chỉ không được để trống")
+	}
+	query := &location.GetLocationQuery{
+		ProvinceCode:     addr.ProvinceCode,
+		DistrictCode:     addr.DistrictCode,
+		WardCode:         addr.WardCode,
+		LocationCodeType: location.LocCodeTypeHaravan,
+	}
+	if err := a.locationQS.Dispatch(ctx, query); err != nil {
+		return nil, cm.Errorf(cm.InvalidArgument, err, "địa chỉ gửi không hợp lệ: %v", err)
+	}
+	return query.Result, nil
+}
+
 func SHA256StringToInt32(s string) int32 {
 	sha256Bytes := sha256.Sum256([]byte(s))
 	num := binary.LittleEndian.Uint32(sha256Bytes[:4])
@@ -303,4 +337,10 @@ func SHA256StringToInt32(s string) int32 {
 		return ^(res - 1)
 	}
 	return res
+}
+
+func generateTrackingUrl(ffm *shipmodel.Fulfillment) string {
+	// Haravan will concat shipping_code to this link
+	baseURL := cm.MainSiteBaseURL()
+	return fmt.Sprintf("%v/s/%v/fulfillments/", baseURL, ffm.ShopID)
 }

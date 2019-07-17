@@ -110,3 +110,8 @@ type GetAccessTokenResponse struct {
 	TokenType    string `json:"token_type"`
 	RefreshToken string `json:"refresh_token"`
 }
+
+type DeleteConnectedCarrierServiceRequest struct {
+	Connection       `json:"-"`
+	CarrierServiceID int
+}

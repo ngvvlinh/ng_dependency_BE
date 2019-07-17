@@ -63,9 +63,10 @@ func Province(in *types.Province, out *location.Province) error {
 		Code:   in.Code,
 		Region: in.Region,
 		Extra: location.LocationExtra{
-			Special:  in.Special,
-			GhnId:    0,
-			VtpostId: in.VTPostID,
+			Special:     in.Special,
+			GhnId:       0,
+			VtpostId:    in.VTPostID,
+			HaravanCode: in.HaravanCode,
 		},
 	}
 	return nil
@@ -88,8 +89,9 @@ func District(in *types.District, out *location.District) error {
 		ProvinceCode: in.ProvinceCode,
 		UrbanType:    location.UrbanType(in.UrbanType),
 		Extra: location.LocationExtra{
-			GhnId:    in.GhnID,
-			VtpostId: in.VTPostID,
+			GhnId:       in.GhnID,
+			VtpostId:    in.VTPostID,
+			HaravanCode: in.HaravanCode,
 		},
 	}
 	return nil
@@ -111,7 +113,8 @@ func Ward(in *types.Ward, out *location.Ward) error {
 		Code:         in.Code,
 		DistrictCode: in.DistrictCode,
 		Extra: location.LocationExtra{
-			VtpostId: in.VTPostID,
+			VtpostId:    in.VTPostID,
+			HaravanCode: in.HaravanCode,
 		},
 	}
 	return nil

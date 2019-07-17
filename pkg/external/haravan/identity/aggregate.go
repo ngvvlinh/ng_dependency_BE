@@ -19,6 +19,7 @@ const (
 	PathCreateOrder      = "CreateOrder"
 	PathGetOrder         = "GetOrder"
 	PathCancelOrder      = "CancelOrder"
+	CarrierServiceName   = "TOPSHIP"
 )
 
 func BuildGatewayRoute(path string) string {
@@ -173,7 +174,7 @@ func (a *Aggregate) ConnectCarrierServiceExternalAccountHaravan(ctx context.Cont
 			GetOrderDetailUrl:   buildURL(PathGetOrder),
 			GetShippingRatesUrl: buildURL(PathGetShippingRates),
 			CancelOrderUrl:      buildURL(PathCancelOrder),
-			Name:                account.Subdomain,
+			Name:                CarrierServiceName,
 		},
 	}
 	res, err := a.haravanClient.ConnectCarrierService(ctx, cmd)
@@ -186,6 +187,37 @@ func (a *Aggregate) ConnectCarrierServiceExternalAccountHaravan(ctx context.Cont
 		ExternalConnectedCarrierServiceAt: time.Now(),
 	}
 
-	a.xAccountHaravan(ctx).UpdateXCarrierServiceInfo(updateArgs)
+	if _, err := a.xAccountHaravan(ctx).UpdateXCarrierServiceInfo(updateArgs); err != nil {
+		return nil, err
+	}
+	return &meta.Empty{}, nil
+}
+
+func (a *Aggregate) DeleteConnectedCarrierServiceExternalAccountHaravan(ctx context.Context, args *identity.DeleteConnectedCarrierServiceExternalAccountHaravanArgs) (*meta.Empty, error) {
+	account, err := a.store(ctx).ShopID(args.ShopID).GetXAccountHaravan()
+	if err != nil {
+		return nil, err
+	}
+	if account.ExternalCarrierServiceID == 0 {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "Shop chưa tạo kết nối nhà vận chuyển với Haravan")
+	}
+
+	cmd := &haravanclient.DeleteConnectedCarrierServiceRequest{
+		Connection: haravanclient.Connection{
+			Subdomain: account.Subdomain,
+			TokenStr:  account.AccessToken,
+		},
+		CarrierServiceID: account.ExternalCarrierServiceID,
+	}
+	if err := a.haravanClient.DeleteConnectedCarrierService(ctx, cmd); err != nil {
+		return nil, err
+	}
+	updateArgs := &sqlstore.UpdateDeleteConnectedXCarrierSeriveArgs{
+		ShopID: args.ShopID,
+	}
+	if _, err := a.xAccountHaravan(ctx).UpdateDeleteConnectedXCarrierService(updateArgs); err != nil {
+		return nil, err
+	}
+
 	return &meta.Empty{}, nil
 }

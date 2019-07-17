@@ -25,9 +25,10 @@ type Ward struct {
 }
 
 type Extra struct {
-	Special  bool  `protobuf:"varint,1,opt,name=special" json:"special"`
-	GhnId    int32 `protobuf:"varint,5,opt,name=ghn_id,json=ghnId" json:"ghn_id"`
-	VtpostId int32 `protobuf:"varint,6,opt,name=vtpost_id,json=vtpostId" json:"vtpost_id"`
+	Special     bool   `protobuf:"varint,1,opt,name=special" json:"special"`
+	GhnId       int32  `protobuf:"varint,5,opt,name=ghn_id,json=ghnId" json:"ghn_id"`
+	VtpostId    int32  `protobuf:"varint,6,opt,name=vtpost_id,json=vtpostId" json:"vtpost_id"`
+	HaravanCode string `protobuf:"bytes,7,opt,name=haravan_code,json=haravanCode" json:"haravan_code"`
 }
 
 type GetAllLocationsQueryArgs struct {
@@ -49,9 +50,10 @@ type LocationQueryResult struct {
 }
 
 type GetLocationQueryArgs struct {
-	ProvinceCode string `protobuf:"bytes,1,opt,name=province_code,json=provinceCode" json:"province_code"`
-	DistrictCode string `protobuf:"bytes,2,opt,name=district_code,json=districtCode" json:"district_code"`
-	WardCode     string `protobuf:"bytes,3,opt,name=ward_code,json=wardCode" json:"ward_code"`
+	ProvinceCode     string           `protobuf:"bytes,1,opt,name=province_code,json=provinceCode" json:"province_code"`
+	DistrictCode     string           `protobuf:"bytes,2,opt,name=district_code,json=districtCode" json:"district_code"`
+	WardCode         string           `protobuf:"bytes,3,opt,name=ward_code,json=wardCode" json:"ward_code"`
+	LocationCodeType LocationCodeType `protobuf:"varint,4,opt,name=location_code_type,json=locationCodeType,enum=etop.vn.api.main.location.v1.loc_code_type.LocationCodeType" json:"location_code_type"`
 }
 
 type FindLocationQueryArgs struct {

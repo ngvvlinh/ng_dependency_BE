@@ -9,12 +9,11 @@ import (
 	"strconv"
 	"strings"
 
+	"etop.vn/common/xerrors/logline"
 	"github.com/pkg/errors"
 	"github.com/twitchtv/twirp"
 	"go.uber.org/zap/zapcore"
 	"google.golang.org/grpc/codes"
-
-	"etop.vn/common/xerrors/logline"
 )
 
 type TraceLevel int
@@ -983,4 +982,19 @@ func ToErrorJSON(twerr twirp.Error) *ErrorJSON {
 		Msg:  twerr.Msg(),
 		Meta: twerr.MetaMap(),
 	}
+}
+
+func (e *ErrorJSON) Error() (s string) {
+	if len(e.Meta) == 0 {
+		return e.Msg
+	}
+	b := strings.Builder{}
+	b.WriteString(e.Msg)
+	b.WriteString(" (")
+	for _, v := range e.Meta {
+		b.WriteString(v)
+		break
+	}
+	b.WriteString(")")
+	return b.String()
 }

@@ -52,6 +52,12 @@ type CreateExternalAccountHaravanCommand struct {
 	Result *ExternalAccountHaravan `json:"-"`
 }
 
+type DeleteConnectedCarrierServiceExternalAccountHaravanCommand struct {
+	ShopID int64
+
+	Result *metav1.Empty `json:"-"`
+}
+
 type UpdateExternalAccountHaravanTokenCommand struct {
 	ShopID      int64
 	Subdomain   string
@@ -75,11 +81,12 @@ type GetExternalAccountHaravanByXShopIDQuery struct {
 
 // implement interfaces
 
-func (q *ConnectCarrierServiceExternalAccountHaravanCommand) command() {}
-func (q *CreateExternalAccountHaravanCommand) command()                {}
-func (q *UpdateExternalAccountHaravanTokenCommand) command()           {}
-func (q *GetExternalAccountHaravanByShopIDQuery) query()               {}
-func (q *GetExternalAccountHaravanByXShopIDQuery) query()              {}
+func (q *ConnectCarrierServiceExternalAccountHaravanCommand) command()         {}
+func (q *CreateExternalAccountHaravanCommand) command()                        {}
+func (q *DeleteConnectedCarrierServiceExternalAccountHaravanCommand) command() {}
+func (q *UpdateExternalAccountHaravanTokenCommand) command()                   {}
+func (q *GetExternalAccountHaravanByShopIDQuery) query()                       {}
+func (q *GetExternalAccountHaravanByXShopIDQuery) query()                      {}
 
 // implement conversion
 
@@ -94,6 +101,11 @@ func (q *CreateExternalAccountHaravanCommand) GetArgs() *CreateExternalAccountHa
 		Subdomain:   q.Subdomain,
 		RedirectURI: q.RedirectURI,
 		Code:        q.Code,
+	}
+}
+func (q *DeleteConnectedCarrierServiceExternalAccountHaravanCommand) GetArgs() *DeleteConnectedCarrierServiceExternalAccountHaravanArgs {
+	return &DeleteConnectedCarrierServiceExternalAccountHaravanArgs{
+		ShopID: q.ShopID,
 	}
 }
 func (q *UpdateExternalAccountHaravanTokenCommand) GetArgs() *UpdateExternalAccountHaravanTokenArgs {
@@ -129,6 +141,7 @@ func (h AggregateHandler) RegisterHandlers(b interface {
 }) CommandBus {
 	b.AddHandler(h.HandleConnectCarrierServiceExternalAccountHaravan)
 	b.AddHandler(h.HandleCreateExternalAccountHaravan)
+	b.AddHandler(h.HandleDeleteConnectedCarrierServiceExternalAccountHaravan)
 	b.AddHandler(h.HandleUpdateExternalAccountHaravanToken)
 	return CommandBus{b}
 }
@@ -141,6 +154,12 @@ func (h AggregateHandler) HandleConnectCarrierServiceExternalAccountHaravan(ctx 
 
 func (h AggregateHandler) HandleCreateExternalAccountHaravan(ctx context.Context, cmd *CreateExternalAccountHaravanCommand) error {
 	result, err := h.inner.CreateExternalAccountHaravan(ctx, cmd.GetArgs())
+	cmd.Result = result
+	return err
+}
+
+func (h AggregateHandler) HandleDeleteConnectedCarrierServiceExternalAccountHaravan(ctx context.Context, cmd *DeleteConnectedCarrierServiceExternalAccountHaravanCommand) error {
+	result, err := h.inner.DeleteConnectedCarrierServiceExternalAccountHaravan(ctx, cmd.GetArgs())
 	cmd.Result = result
 	return err
 }

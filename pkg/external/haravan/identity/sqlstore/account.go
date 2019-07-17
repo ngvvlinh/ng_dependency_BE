@@ -156,3 +156,20 @@ func (s *XAccountHaravanStore) UpdateXCarrierServiceInfo(args *UpdateXCarrierSer
 	}
 	return s.ShopID(args.ShopID).GetXAccountHaravan()
 }
+
+type UpdateDeleteConnectedXCarrierSeriveArgs struct {
+	ShopID int64
+}
+
+func (s *XAccountHaravanStore) UpdateDeleteConnectedXCarrierService(args *UpdateDeleteConnectedXCarrierSeriveArgs) (*identity.ExternalAccountHaravan, error) {
+	if args.ShopID == 0 {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing Shop ID")
+	}
+	if err := s.query().Table("external_account_haravan").Where(s.ft.ByShopID(args.ShopID)).ShouldUpdateMap(map[string]interface{}{
+		"external_carrier_service_id":           nil,
+		"external_connected_carrier_service_at": nil,
+	}); err != nil {
+		return nil, err
+	}
+	return s.ShopID(args.ShopID).GetXAccountHaravan()
+}

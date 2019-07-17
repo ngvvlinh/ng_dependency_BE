@@ -4,6 +4,8 @@ import (
 	"regexp"
 	"strings"
 
+	"etop.vn/api/main/location"
+
 	"golang.org/x/text/unicode/norm"
 
 	cm "etop.vn/backend/pkg/common"
@@ -25,10 +27,11 @@ const (
 )
 
 var (
-	provinceIndexName = make(map[string]*types.Province)
-	provinceIndexNamN = make(map[string]*types.Province)
-	provinceIndexNamX = make(map[string]*types.Province)
-	provinceIndexCode = make(map[string]*types.Province)
+	provinceIndexName        = make(map[string]*types.Province)
+	provinceIndexNamN        = make(map[string]*types.Province)
+	provinceIndexNamX        = make(map[string]*types.Province)
+	provinceIndexCode        = make(map[string]*types.Province)
+	provinceIndexHaravanCode = make(map[string]*types.Province)
 
 	districtIndexName          = make(map[string][]*types.District)
 	districtIndexNamN          = make(map[string][]*types.District)
@@ -36,12 +39,14 @@ var (
 	districtIndexCode          = make(map[string]*types.District)
 	districtIndexGhnID         = make(map[int32]*types.District)
 	districtsIndexProvinceCode = make(map[string][]*types.District)
+	districtIndexHaravanCode   = make(map[string]*types.District)
 
 	wardIndexName          = make(map[string][]*types.Ward)
 	wardIndexNamN          = make(map[string][]*types.Ward)
 	wardIndexNamX          = make(map[string][]*types.Ward)
 	wardIndexCode          = make(map[string]*types.Ward)
 	wardsIndexDistrictCode = make(map[string][]*types.Ward)
+	wardIndexHaravanCode   = make(map[string]*types.Ward)
 
 	reNumber           = regexp.MustCompile(`[01-9]+`)
 	urbanTypeIndexNamN = make(map[string]types.UrbanType)
@@ -65,6 +70,7 @@ func init() {
 		provinceIndexName[name] = assignProvince(provinceIndexName[name], province)
 		provinceIndexNamN[namN] = assignProvince(provinceIndexNamN[namN], province)
 		provinceIndexNamX[namX] = assignProvince(provinceIndexNamX[namX], province)
+		provinceIndexHaravanCode[province.HaravanCode] = province
 
 		province.Alias = appendAlias(province.Alias, province.Name)
 		for _, alias := range province.Alias {
@@ -127,6 +133,7 @@ func init() {
 			ll.Fatal("Duplicated district code", l.String("code", code))
 		}
 		districtIndexCode[code] = district
+		districtIndexHaravanCode[district.HaravanCode] = district
 
 		// init ward list as non-nil slice
 		wardsIndexDistrictCode[code] = []*types.Ward{}
@@ -170,6 +177,7 @@ func init() {
 			ll.Fatal("Duplicated ward code", l.String("code", code))
 		}
 		wardIndexCode[code] = ward
+		wardIndexHaravanCode[ward.HaravanCode] = ward
 	}
 
 	for _, code := range strings.Split(HCMUrbanCodes, ",") {
@@ -575,16 +583,40 @@ func FindWardByDistrictCode(name string, districtCode string) *types.Ward {
 	return nil
 }
 
-func GetDistrictByCode(code string) *types.District {
-	return districtIndexCode[code]
+func GetDistrictByCode(code string, codeType location.LocationCodeType) *types.District {
+	switch codeType {
+	case location.LocCodeTypeInternal:
+		return districtIndexCode[code]
+	case location.LocCodeTypeHaravan:
+		return districtIndexHaravanCode[code]
+	default:
+		// TODO: handle other cases
+		return nil
+	}
 }
 
-func GetProvinceByCode(code string) *types.Province {
-	return provinceIndexCode[code]
+func GetProvinceByCode(code string, codeType location.LocationCodeType) *types.Province {
+	switch codeType {
+	case location.LocCodeTypeInternal:
+		return provinceIndexCode[code]
+	case location.LocCodeTypeHaravan:
+		return provinceIndexHaravanCode[code]
+	default:
+		// TODO: handle other cases
+		return nil
+	}
 }
 
-func GetWardByCode(code string) *types.Ward {
-	return wardIndexCode[code]
+func GetWardByCode(code string, codeType location.LocationCodeType) *types.Ward {
+	switch codeType {
+	case location.LocCodeTypeInternal:
+		return wardIndexCode[code]
+	case location.LocCodeTypeHaravan:
+		return wardIndexHaravanCode[code]
+	default:
+		// TODO: handle other cases
+		return nil
+	}
 }
 
 func GetDistrictByGhnID(ghnID int32) *types.District {
