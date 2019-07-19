@@ -39,9 +39,15 @@ type RouteTypeDetail struct {
 }
 
 type ESPricingDetail struct {
-	ID     int
-	Weight int
-	Price  int
+	ID         int
+	Weight     int
+	Price      int
+	Overweight []*ESPricingDetailOverweightPrice
+}
+
+type ESPricingDetailOverweightPrice struct {
+	MinWeight int
+	MaxWeight int
 	// WeightStep: trọng lượng tăng thêm (g)
 	WeightStep int
 	// PriceStep: Mức giá của phần trọng lượng tăng thêm
@@ -196,18 +202,35 @@ func GetPriceRuleDetail(weight int, priceRuleDetails map[int]*ESPricingDetail) *
 }
 
 func GetPriceByPricingDetail(weight int, pRuleDetail *ESPricingDetail) (int, error) {
-	if pRuleDetail.PriceStep == 0 && weight > pRuleDetail.Weight {
+	if (pRuleDetail.Overweight == nil || len(pRuleDetail.Overweight) == 0) && weight > pRuleDetail.Weight {
 		// can not apply this rule
 		return 0, cm.Error(cm.InvalidArgument, "Can not apply to this rule", nil)
 	}
+
 	addWeight := weight - pRuleDetail.Weight
 	if addWeight <= 0 {
 		return pRuleDetail.Price, nil
 	}
-	s := float64(addWeight) / float64(pRuleDetail.WeightStep)
-	step := int(math.Ceil(s))
-	price := pRuleDetail.Price + step*pRuleDetail.PriceStep
+
+	price := pRuleDetail.Price
+	for _, ov := range pRuleDetail.Overweight {
+		ovPrice := GetOverweightPrice(weight, ov)
+		price += ovPrice
+	}
 	return price, nil
+}
+
+func GetOverweightPrice(weight int, ov *ESPricingDetailOverweightPrice) int {
+	if weight <= ov.MinWeight {
+		return 0
+	}
+	if ov.MaxWeight != -1 && weight > ov.MaxWeight {
+		weight = ov.MaxWeight
+	}
+	additionalWeight := weight - ov.MinWeight
+	s := float64(additionalWeight) / float64(ov.WeightStep)
+	step := int(math.Ceil(s))
+	return step * ov.PriceStep
 }
 
 type serviceIDGenerator struct {
