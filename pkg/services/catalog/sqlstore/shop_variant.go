@@ -12,6 +12,11 @@ import (
 	catalogmodel "etop.vn/backend/pkg/services/catalog/model"
 )
 
+type ListShopVariantsForImportArgs struct {
+	Codes     []string
+	AttrNorms []interface{}
+}
+
 type ShopVariantStoreFactory func(context.Context) *ShopVariantStore
 
 func NewShopVariantStore(db cmsql.Database) ShopVariantStoreFactory {
@@ -25,12 +30,8 @@ func NewShopVariantStore(db cmsql.Database) ShopVariantStoreFactory {
 }
 
 type ShopVariantStore struct {
-	FtVariant     VariantFilters
 	FtShopVariant ShopVariantFilters
-
-	// unexported
-	ftProduct     ProductFilters
-	ftShopProduct ShopProductFilters
+	ftShopProduct ShopProductFilters // unexported
 
 	query   func() cmsql.QueryInterface
 	preds   []interface{}
@@ -38,14 +39,6 @@ type ShopVariantStore struct {
 	paging  meta.Paging
 
 	includeDeleted sqlstore.IncludeDeleted
-}
-
-func (s *ShopVariantStore) extend() *ShopVariantStore {
-	s.ftProduct.prefix = "p"
-	s.FtVariant.prefix = "v"
-	s.ftShopProduct.prefix = "sp"
-	s.FtShopVariant.prefix = "sv"
-	return s
 }
 
 func (s *ShopVariantStore) Paging(paging meta.Paging) *ShopVariantStore {
@@ -58,17 +51,12 @@ func (s *ShopVariantStore) GetPaging() meta.PageInfo {
 }
 
 func (s *ShopVariantStore) ID(id int64) *ShopVariantStore {
-	s.preds = append(s.preds, id)
+	s.preds = append(s.preds, s.FtShopVariant.ByVariantID(id))
 	return s
 }
 
 func (s *ShopVariantStore) IDs(ids ...int64) *ShopVariantStore {
-	s.preds = append(s.preds, sq.PrefixedIn(&s.FtVariant.prefix, "id", ids))
-	return s
-}
-
-func (s *ShopVariantStore) ProductSourceID(id int64) *ShopVariantStore {
-	s.preds = append(s.preds, s.FtVariant.ByProductSourceID(id))
+	s.preds = append(s.preds, sq.PrefixedIn(&s.FtShopVariant.prefix, "variant_id", ids))
 	return s
 }
 
@@ -77,32 +65,44 @@ func (s *ShopVariantStore) ShopID(id int64) *ShopVariantStore {
 	return s
 }
 
-func (s *ShopVariantStore) OptionalProductSourceID(id int64) *ShopVariantStore {
-	s.preds = append(s.preds, s.FtVariant.ByProductSourceID(id).Optional())
+func (s *ShopVariantStore) OptionalShopID(id int64) *ShopVariantStore {
+	s.preds = append(s.preds, s.FtShopVariant.ByShopID(id).Optional())
 	return s
 }
 
-func (s *ShopVariantStore) GetShopVariantDB() (*catalogmodel.ShopVariantExtended, error) {
-	query := s.extend().query().Where(s.preds)
-	query = s.includeDeleted.Check(query, s.FtVariant.NotDeleted())
+type ListVariantsForImportArgs struct {
+	Codes     []string
+	AttrNorms []interface{}
+}
+
+func (s *ShopVariantStore) FilterForImport(args ListVariantsForImportArgs) *ShopVariantStore {
+	pred := sq.Or{
+		sq.In("ed_code", args.Codes),
+		sq.Ins([]string{"product_id", "attr_norm_kv"}, args.AttrNorms),
+	}
+	s.preds = append(s.preds, pred)
+	return s
+}
+
+func (s *ShopVariantStore) GetShopVariantDB() (*catalogmodel.ShopVariant, error) {
+	query := s.query().Where(s.preds)
 	query = s.includeDeleted.Check(query, s.FtShopVariant.NotDeleted())
 
-	var variant catalogmodel.ShopVariantExtended
+	var variant catalogmodel.ShopVariant
 	err := query.ShouldGet(&variant)
 	return &variant, err
 }
 
-func (s *ShopVariantStore) GetShopVariant() (*catalog.ShopVariantExtended, error) {
+func (s *ShopVariantStore) GetShopVariant() (*catalog.ShopVariant, error) {
 	variant, err := s.GetShopVariantDB()
 	if err != nil {
 		return nil, err
 	}
-	return convert.ShopVariantExtended(variant), nil
+	return convert.ShopVariant(variant), nil
 }
 
 func (s *ShopVariantStore) GetShopVariantWithProductDB() (*catalogmodel.ShopVariantWithProduct, error) {
-	query := s.extend().query().Where(s.preds)
-	query = s.includeDeleted.Check(query, s.FtVariant.NotDeleted())
+	query := s.query().Where(s.preds)
 	query = s.includeDeleted.Check(query, s.FtShopVariant.NotDeleted())
 
 	var variant catalogmodel.ShopVariantWithProduct
@@ -118,34 +118,31 @@ func (s *ShopVariantStore) GetShopVariantWithProduct() (*catalog.ShopVariantWith
 	return convert.ShopVariantWithProduct(variant), nil
 }
 
-func (s *ShopVariantStore) ListShopVariantsDB() ([]*catalogmodel.ShopVariantExtended, error) {
-	query := s.extend().query().Where(s.preds)
-	query = s.includeDeleted.Check(query, s.FtVariant.NotDeleted())
+func (s *ShopVariantStore) ListShopVariantsDB() ([]*catalogmodel.ShopVariant, error) {
+	query := s.query().Where(s.preds)
 	query = s.includeDeleted.Check(query, s.FtShopVariant.NotDeleted())
 	query, err := sqlstore.LimitSort(query, &s.paging, SortVariant)
 	if err != nil {
 		return nil, err
 	}
 
-	var variants catalogmodel.ShopVariantExtendeds
+	var variants catalogmodel.ShopVariants
 	err = query.Find(&variants)
 	return variants, err
 }
 
-func (s *ShopVariantStore) ListShopVariants() ([]*catalog.ShopVariantExtended, error) {
+func (s *ShopVariantStore) ListShopVariants() ([]*catalog.ShopVariant, error) {
 	variants, err := s.ListShopVariantsDB()
 	if err != nil {
 		return nil, err
 	}
-	return convert.ShopVariantsExtended(variants), nil
+	return convert.ShopVariants(variants), nil
 
 }
 
 func (s *ShopVariantStore) ListShopVariantsWithProductDB() ([]*catalogmodel.ShopVariantWithProduct, error) {
-	query := s.extend().query().Where(s.preds)
-	query = s.includeDeleted.Check(query, s.FtVariant.NotDeleted())
+	query := s.query().Where(s.preds)
 	query = s.includeDeleted.Check(query, s.FtShopVariant.NotDeleted())
-	query = s.includeDeleted.Check(query, s.ftProduct.NotDeleted())
 	query = s.includeDeleted.Check(query, s.ftShopProduct.NotDeleted())
 	query, err := sqlstore.LimitSort(query, &s.paging, SortVariant)
 	if err != nil {

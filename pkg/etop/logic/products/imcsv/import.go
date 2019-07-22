@@ -22,7 +22,6 @@ import (
 	"etop.vn/backend/pkg/etop/authorize/claims"
 	"etop.vn/backend/pkg/etop/model"
 	catalogmodel "etop.vn/backend/pkg/services/catalog/model"
-	catalogmodelx "etop.vn/backend/pkg/services/catalog/modelx"
 	"etop.vn/common/bus"
 )
 
@@ -51,22 +50,20 @@ func HandleShopImportSampleProducts(c *httpx.Context) error {
 }
 
 func handleShopImportSampleProducts(ctx context.Context, c *httpx.Context, shop *model.Shop, userID int64) (_resp *pbshop.ImportProductsResponse, _err error) {
-	if shop.ProductSourceID != 0 {
-		// check if shop already imports sample data
-		s := productStore(ctx).
-			ProductSourceID(shop.ProductSourceID).
-			Code("TEST-SP-01")
-		products, err := s.ListProducts()
-		if err != nil {
-			return nil, cm.Error(cm.Internal, "Không thể tạo sản phẩm mẫu", err)
-		}
+	// check if shop already imports sample data
+	s := shopProductStore(ctx).
+		ShopID(shop.ID).
+		Code("TEST-SP-01")
+	products, err := s.ListShopProducts()
+	if err != nil {
+		return nil, cm.Error(cm.Internal, "Không thể tạo sản phẩm mẫu", err)
+	}
 
-		if len(products) != 0 {
-			_resp = &pbshop.ImportProductsResponse{
-				ImportErrors: []*pbcm.Error{{Code: "ok", Msg: "Sản phẩm mẫu đã được import"}},
-			}
-			return
+	if len(products) != 0 {
+		_resp = &pbshop.ImportProductsResponse{
+			ImportErrors: []*pbcm.Error{{Code: "ok", Msg: "Sản phẩm mẫu đã được import"}},
 		}
+		return
 	}
 
 	reader := ioutil.NopCloser(bytes.NewReader(dlShopProductXlsx))
@@ -246,21 +243,6 @@ func handleShopImportProductsFromFile(ctx context.Context, c *httpx.Context, sho
 	}
 	if len(_errs) > 0 {
 		return imp.generateErrorResponse(_errs)
-	}
-
-	// create new product source if not exist
-	if shop.ProductSourceID == 0 {
-		createProductSourceCmd := &catalogmodelx.CreateProductSourceCommand{
-			ShopID: shop.ID,
-			Name:   shop.Name,
-			Type:   catalogmodel.ProductSourceCustom,
-		}
-		if err := bus.Dispatch(ctx, createProductSourceCmd); err != nil {
-			_err = cm.Error(cm.Internal, "", err).
-				WithMeta("step", "create product source")
-			return
-		}
-		shop.ProductSourceID = createProductSourceCmd.Result.ID
 	}
 
 	// this function expects product source not empty
@@ -581,15 +563,14 @@ func parseRowsToModel(schema imcsv.Schema, idx indexes, mode Mode, rowProducts [
 			}
 			continue
 		}
-		requests[i] = parseRowToModel(rowProduct, shop.ProductSourceID, now)
+		requests[i] = parseRowToModel(rowProduct, now)
 	}
 	return
 }
 
-func parseRowToModel(rowProduct *RowProduct, productSourceID int64, now time.Time) *pbshop.CreateVariantRequest {
+func parseRowToModel(rowProduct *RowProduct, now time.Time) *pbshop.CreateVariantRequest {
 	return &pbshop.CreateVariantRequest{
-		ProductSourceId:   productSourceID, // it may be empty, will be filled later
-		ProductId:         0,               // will be filled later
+		ProductId:         0, // will be filled later
 		ProductName:       rowProduct.ProductName,
 		Name:              variantNameFromAttributes(rowProduct.Attributes),
 		Description:       rowProduct.Description,

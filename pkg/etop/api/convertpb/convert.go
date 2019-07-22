@@ -40,8 +40,8 @@ func PbCategory(m *catalogmodel.ProductSourceCategory) *pbshop.Category {
 	return &pbshop.Category{
 		Id:                m.ID,
 		Name:              m.Name,
-		ProductSourceId:   m.ProductSourceID,
-		ProductSourceType: m.ProductSourceType,
+		ProductSourceId:   m.ShopID,
+		ProductSourceType: "",
 		ParentId:          m.ParentID,
 		ShopId:            m.ShopID,
 	}

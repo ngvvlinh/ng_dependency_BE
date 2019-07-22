@@ -3,19 +3,16 @@ package shipnow
 import (
 	"context"
 
-	"etop.vn/api/main/shipnow/carrier"
-
-	shippingtypes "etop.vn/api/main/shipping/types"
-
-	"etop.vn/api/main/ordering"
-
 	"etop.vn/api/main/address"
 	etoptypes "etop.vn/api/main/etop"
 	"etop.vn/api/main/identity"
 	"etop.vn/api/main/location"
+	"etop.vn/api/main/ordering"
 	ordertypes "etop.vn/api/main/ordering/types"
 	"etop.vn/api/main/shipnow"
+	"etop.vn/api/main/shipnow/carrier"
 	shipnowtypes "etop.vn/api/main/shipnow/types"
+	shippingtypes "etop.vn/api/main/shipping/types"
 	"etop.vn/api/meta"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/cmsql"

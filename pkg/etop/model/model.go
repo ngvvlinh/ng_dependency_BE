@@ -138,10 +138,6 @@ const (
 
 	EtopAccountID = TagEtop
 
-	TypeEmail  = "EM"
-	TypePhone  = "PH"
-	TypeAPIKey = "AK"
-
 	StatusActive   = 1
 	StatusCreated  = 0
 	StatusDisabled = -1
@@ -285,8 +281,6 @@ func PaymentStatusLabel(s Status4) string {
 func (t AccountType) Label() string {
 	switch t {
 	case TypeShop:
-		return "tài khoản nhà cung cấp"
-	case TypeSupplier:
 		return "cửa hàng"
 	case TypePartner:
 		return "tài khoản"
@@ -438,8 +432,7 @@ type Shop struct {
 	Code              string
 	AutoCreateFFM     bool
 
-	ProductSourceID int64
-	OrderSourceID   int64
+	OrderSourceID int64
 
 	Status    Status3
 	CreatedAt time.Time `sq:"create"`

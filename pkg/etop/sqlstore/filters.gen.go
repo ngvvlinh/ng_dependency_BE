@@ -1015,25 +1015,6 @@ func (ft *ShopFilters) ByAutoCreateFFMPtr(AutoCreateFFM *bool) *sq.ColumnFilterP
 	}
 }
 
-func (ft *ShopFilters) ByProductSourceID(ProductSourceID int64) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
-		Prefix: &ft.prefix,
-		Column: "product_source_id",
-		Value:  ProductSourceID,
-		IsNil:  ProductSourceID == 0,
-	}
-}
-
-func (ft *ShopFilters) ByProductSourceIDPtr(ProductSourceID *int64) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
-		Prefix: &ft.prefix,
-		Column: "product_source_id",
-		Value:  ProductSourceID,
-		IsNil:  ProductSourceID == nil,
-		IsZero: ProductSourceID != nil && (*ProductSourceID) == 0,
-	}
-}
-
 func (ft *ShopFilters) ByOrderSourceID(OrderSourceID int64) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,

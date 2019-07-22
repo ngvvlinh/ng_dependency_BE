@@ -30,7 +30,6 @@ import "common/common.proto";
 import "etop/etc/try_on/code.proto";
 import "etop/etc/status3/status.proto";
 import "etop/etc/address_type/type.proto";
-import "etop/etc/shipping_provider/provider.proto";
 import "etop/etc/user_source/user_source.proto";
 
 service MiscService {
@@ -555,28 +554,9 @@ message ProtectedUsersResponse {
 }
 
 message LeaveAccountRequest {
-
 }
 
 message RemoveUserFromCurrentAccountRequest {
-
-}
-
-message CategoriesResponse {
-    repeated Category categories = 1;
-}
-
-message Category {
-    // @required
-    optional int64 id = 1 [(gogoproto.nullable) = false];
-
-    // @required
-    optional string name = 2 [(gogoproto.nullable) = false];
-
-    // @required
-    optional status3.Status status = 3 [(gogoproto.nullable) = false];
-
-    optional int64 parent_id = 4 [(gogoproto.nullable) = false];
 }
 
 message Province {

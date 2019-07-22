@@ -225,7 +225,7 @@
     },
     "/api/shop.Account/UpdateExternalAccountAhamoveVerificationImages": {
       "post": {
-        "summary": "deprecated\nbackward-compatible\nremove later",
+        "summary": "deprecated: backward-compatible, will be removed later",
         "operationId": "UpdateExternalAccountAhamoveVerificationImages",
         "responses": {
           "200": {
@@ -1449,6 +1449,7 @@
     },
     "/api/shop.Product/AddProducts": {
       "post": {
+        "summary": "deprecated",
         "operationId": "AddProducts",
         "responses": {
           "200": {
@@ -1725,32 +1726,6 @@
             "required": true,
             "schema": {
               "$ref": "#/definitions/shopUpdateVariantImagesRequest"
-            }
-          }
-        ],
-        "tags": [
-          "Product"
-        ]
-      }
-    },
-    "/api/shop.Product/UpdateVariants": {
-      "post": {
-        "operationId": "UpdateVariants",
-        "responses": {
-          "200": {
-            "description": "",
-            "schema": {
-              "$ref": "#/definitions/shopUpdateVariantsResponse"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/shopUpdateVariantsRequest"
             }
           }
         ],
@@ -6246,10 +6221,6 @@
             "$ref": "#/definitions/shopTag"
           }
         },
-        "collection_id": {
-          "type": "string",
-          "format": "int64"
-        },
         "attributes": {
           "type": "array",
           "items": {
@@ -6716,34 +6687,6 @@
       "required": [
         "id"
       ]
-    },
-    "shopUpdateVariantsRequest": {
-      "type": "object",
-      "properties": {
-        "updates": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/shopUpdateVariantRequest"
-          }
-        }
-      }
-    },
-    "shopUpdateVariantsResponse": {
-      "type": "object",
-      "properties": {
-        "variants": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/shopShopVariant"
-          }
-        },
-        "errors": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/cmError"
-          }
-        }
-      }
     },
     "shopUpdateXAccountAhamoveVerificationRequest": {
       "type": "object",

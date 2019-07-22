@@ -35,7 +35,6 @@ import "etop/etc/status3/status.proto";
 import "etop/etc/status4/status.proto";
 import "etop/etop.proto";
 import "etop/order/order.proto";
-import "etop/integration/integration.proto";
 
 service MiscService {
     rpc VersionInfo(cm.Empty) returns (cm.VersionInfoResponse);
@@ -53,14 +52,11 @@ service AccountService {
     rpc RequestVerifyExternalAccountAhamove (cm.Empty) returns (cm.UpdatedResponse);
     rpc UpdateExternalAccountAhamoveVerification (UpdateXAccountAhamoveVerificationRequest) returns (cm.UpdatedResponse);
 
-    // deprecated
-    // backward-compatible
-    // remove later
+    // deprecated: backward-compatible, will be removed later
     rpc UpdateExternalAccountAhamoveVerificationImages (UpdateXAccountAhamoveVerificationRequest) returns (cm.UpdatedResponse);
 }
 
 service ExternalAccountService {
-
     rpc GetExternalAccountHaravan(cm.Empty) returns (ExternalAccountHaravan);
     rpc CreateExternalAccountHaravan(ExternalAccountHaravanRequest) returns (ExternalAccountHaravan);
     rpc UpdateExternalAccountHaravanToken(ExternalAccountHaravanRequest) returns (ExternalAccountHaravan);
@@ -68,6 +64,7 @@ service ExternalAccountService {
     rpc DeleteConnectedCarrierServiceExternalAccountHaravan(cm.Empty) returns(cm.DeletedResponse);
 }
 
+// deprecated
 service CollectionService {
     rpc CreateCollection(CreateCollectionRequest) returns (Collection);
     rpc DeleteCollection(cm.IDRequest) returns (cm.RemovedResponse);
@@ -82,10 +79,8 @@ service CollectionService {
 service ProductService {
     rpc RemoveVariants (RemoveVariantsRequest) returns (cm.RemovedResponse);
     rpc UpdateVariant (UpdateVariantRequest) returns (ShopVariant);
-    rpc UpdateVariants (UpdateVariantsRequest) returns (UpdateVariantsResponse);
     rpc UpdateVariantImages (UpdateVariantImagesRequest) returns (ShopVariant);
 
-    rpc AddProducts (AddProductsRequest) returns (AddProductsResponse);
     rpc GetProduct (cm.IDRequest) returns (ShopProduct);
     rpc GetProducts (GetVariantsRequest) returns (ShopProductsResponse);
     rpc GetProductsByIDs (cm.IDsRequest) returns (ShopProductsResponse);
@@ -93,6 +88,9 @@ service ProductService {
     rpc UpdateProduct (UpdateProductRequest) returns (ShopProduct);
     rpc UpdateProductsTags (UpdateProductsTagsRequest) returns (cm.UpdatedResponse);
     rpc UpdateProductImages (UpdateVariantImagesRequest) returns (ShopProduct);
+
+    // deprecated
+    rpc AddProducts (AddProductsRequest) returns (AddProductsResponse);
 }
 
 service ProductSourceService {
@@ -349,7 +347,6 @@ message ShopVariant {
     repeated string  tags = 10;
     repeated Tag    stags = 22;
 
-    optional int64 collection_id = 17 [(gogoproto.nullable)=false];
     repeated Attribute attributes = 18;
 }
 

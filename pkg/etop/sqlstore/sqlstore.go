@@ -40,7 +40,6 @@ func Init(db cmsql.Database) {
 	x = db
 
 	shopProductStore = catalogsqlstore.NewShopProductStore(db)
-	shopVariantStore = catalogsqlstore.NewShopVariantStore(db)
 }
 
 func InitDBNotifier(db cmsql.Database) {

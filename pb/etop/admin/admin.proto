@@ -26,7 +26,6 @@ option (gogoproto.verbose_equal_all)        = false;
 
 import "common/common.proto";
 import "etop/etop.proto";
-import "etop/shop/shop.proto";
 import "etop/order/order.proto";
 import "etop/etc/status3/status.proto";
 import "etop/etc/shipping/state.proto";

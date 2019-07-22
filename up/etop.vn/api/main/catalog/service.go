@@ -6,35 +6,48 @@ import (
 	"etop.vn/api/meta"
 )
 
-type Bus struct{ meta.Bus }
-
 type Aggregate interface {
-	UpdateProduct(context.Context, *UpdateProductArgs) (*Product, error)
+
+	//-- shop_product --//
+
+	CreateShopProduct(context.Context, *CreateShopProductArgs) (*ShopProduct, error)
+
+	UpdateShopProductInfo(context.Context, *UpdateShopProductInfoArgs) (*ShopProduct, error)
+
+	UpdateShopProductStatus(context.Context, *UpdateStatusArgs) (*ShopProduct, error)
+
+	UpdateShopProductImages(context.Context, *UpdateImagesArgs) (*ShopProduct, error)
+
+	DeleteShopProducts(context.Context, *IDsShopArgs) (*meta.Empty, error)
+
+	//-- shop_variant --//
+
+	CreateShopVariant(context.Context, *CreateShopVariantArgs) (*ShopVariant, error)
+
+	UpdateShopVariantInfo(context.Context, *UpdateShopVariantInfoArgs) (*ShopVariant, error)
+
+	DeleteShopVariants(context.Context, *IDsShopArgs) (*meta.Empty, error)
+
+	UpdateShopVariantStatus(context.Context, *UpdateStatusArgs) (*ShopVariant, error)
+
+	UpdateShopVariantImages(context.Context, *UpdateImagesArgs) (*ShopVariant, error)
+
+	//-- category --//
+
+	//-- collection --//
+
+	//-- tag --//
 }
 
 type QueryService interface {
-	GetProductByID(context.Context, *GetProductByIDQueryArgs) (*Product, error)
-	GetProductWithVariantsByID(context.Context, *GetProductByIDQueryArgs) (*ProductWithVariants, error)
-	ListProducts(context.Context, *ListProductsQueryArgs) (*ProductsResonse, error)
-	ListProductsByIDs(context.Context, *IDsArgs) (*ProductsResonse, error)
-	ListProductsWithVariants(context.Context, *ListProductsQueryArgs) (*ProductsWithVariantsResponse, error)
-	ListProductsWithVariantsByIDs(context.Context, *IDsArgs) (*ProductsWithVariantsResponse, error)
-
-	GetVariantByID(context.Context, *GetVariantByIDQueryArgs) (*Variant, error)
-	GetVariantWithProductByID(context.Context, *GetVariantByIDQueryArgs) (*VariantWithProduct, error)
-	ListVariants(context.Context, *ListVariantsQueryArgs) (*VariantsResponse, error)
-	ListVariantsByIDs(context.Context, *IDsArgs) (*VariantsResponse, error)
-	ListVariantsWithProduct(context.Context, *ListVariantsQueryArgs) (*VariantsWithProductResponse, error)
-	ListVariantsWithProductByIDs(context.Context, *IDsArgs) (*VariantsWithProductResponse, error)
-
-	GetShopProductByID(context.Context, *GetShopProductByIDQueryArgs) (*ShopProductExtended, error)
+	GetShopProductByID(context.Context, *GetShopProductByIDQueryArgs) (*ShopProduct, error)
 	GetShopProductWithVariantsByID(context.Context, *GetShopProductByIDQueryArgs) (*ShopProductWithVariants, error)
 	ListShopProducts(context.Context, *ListShopProductsQueryArgs) (*ShopProductsResponse, error)
 	ListShopProductsByIDs(context.Context, *IDsShopArgs) (*ShopProductsResponse, error)
 	ListShopProductsWithVariants(context.Context, *ListShopProductsQueryArgs) (*ShopProductsWithVariantsResponse, error)
 	ListShopProductsWithVariantsByIDs(context.Context, *IDsShopArgs) (*ShopProductsWithVariantsResponse, error)
 
-	GetShopVariantByID(context.Context, *GetShopVariantByIDQueryArgs) (*ShopVariantExtended, error)
+	GetShopVariantByID(context.Context, *GetShopVariantByIDQueryArgs) (*ShopVariant, error)
 	GetShopVariantWithProductByID(context.Context, *GetShopVariantByIDQueryArgs) (*ShopVariantWithProduct, error)
 	ListShopVariants(context.Context, *ListShopVariantsQueryArgs) (*ShopVariantsResponse, error)
 	ListShopVariantsByIDs(context.Context, *IDsShopArgs) (*ShopVariantsResponse, error)
@@ -48,8 +61,8 @@ type IDsArgs struct {
 }
 
 type IDsShopArgs struct {
-	IDs             []int64
-	ProductSourceID int64
+	IDs    []int64
+	ShopID int64
 }
 
 type GetProductByIDQueryArgs struct {
@@ -61,31 +74,31 @@ type GetVariantByIDQueryArgs struct {
 }
 
 type GetShopProductByIDQueryArgs struct {
-	ProductID       int64
-	ProductSourceID int64
+	ProductID int64
+	ShopID    int64
 }
 
 type GetShopVariantByIDQueryArgs struct {
-	VariantID       int64
-	ProductSourceID int64
+	VariantID int64
+	ShopID    int64
 }
 
 type ListProductsQueryArgs struct {
-	ProductSourceID int64
+	ShopID int64
 
 	Paging  meta.Paging
 	Filters meta.Filters
 }
 
 type ListVariantsQueryArgs struct {
-	ProductSourceID int64
+	ShopID int64
 
 	Paging  meta.Paging
 	Filters meta.Filters
 }
 
 type ListShopProductsQueryArgs struct {
-	ProductSourceID int64
+	ShopID int64
 
 	Paging  meta.Paging
 	Filters meta.Filters
@@ -98,32 +111,8 @@ type ListShopVariantsQueryArgs struct {
 	Filters meta.Filters
 }
 
-type ProductsResonse struct {
-	Products []*Product
-	Count    int32
-	Paging   meta.PageInfo
-}
-
-type VariantsResponse struct {
-	Variants []*Variant
-	Count    int32
-	Paging   meta.PageInfo
-}
-
-type ProductsWithVariantsResponse struct {
-	Products []*ProductWithVariants
-	Count    int32
-	Paging   meta.PageInfo
-}
-
-type VariantsWithProductResponse struct {
-	Variants []*VariantWithProduct
-	Count    int32
-	Paging   meta.PageInfo
-}
-
 type ShopProductsResponse struct {
-	Products []*ShopProductExtended
+	Products []*ShopProduct
 	Count    int32
 	Paging   meta.PageInfo
 }
@@ -135,7 +124,7 @@ type ShopProductsWithVariantsResponse struct {
 }
 
 type ShopVariantsResponse struct {
-	Variants []*ShopVariantExtended
+	Variants []*ShopVariant
 	Count    int32
 	Paging   meta.PageInfo
 }
@@ -148,5 +137,64 @@ type ShopVariantsWithProductResponse struct {
 
 //-- command --//
 
-type UpdateProductArgs struct {
+type CreateShopProductArgs struct {
+	ShopID int64
+
+	Code      string
+	Name      string
+	Unit      string
+	ImageURLs []string
+	Note      string
+	DescriptionInfo
+	PriceInfo
+
+	TagIDs       []int64
+	CollectionID []int64
+	CategoryID   int64
+}
+
+type UpdateShopProductInfoArgs struct {
+	ShopID    int64
+	ProductID int64
+
+	Code *string
+	Name *string
+	Unit *string
+	Note *string
+	*DescriptionInfo
+}
+
+type CreateShopVariantArgs struct {
+	ShopID    int64
+	ProductID int64
+
+	Code string
+	Name string
+	DescriptionInfo
+	PriceInfo
+
+	CollectionID []int64
+}
+
+type UpdateShopVariantInfoArgs struct {
+	ShopID    int64
+	VariantID int64
+
+	Code *string
+	Name *string
+	Unit *string
+	Note *string
+	*DescriptionInfo
+}
+
+type UpdateStatusArgs struct {
+	IDs    []int64
+	ShopID int64
+	Status int16
+}
+
+type UpdateImagesArgs struct {
+	ID      int64
+	ShopID  int64
+	Updates []*meta.UpdateSet
 }

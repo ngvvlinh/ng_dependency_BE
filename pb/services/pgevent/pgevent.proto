@@ -18,7 +18,6 @@ option (gogoproto.testgen_all)              = false;
 option (gogoproto.unmarshaler_all)          = false;
 option (gogoproto.verbose_equal_all)        = false;
 
-import "google/protobuf/timestamp.proto";
 import "common/common.proto";
 
 service MiscService {

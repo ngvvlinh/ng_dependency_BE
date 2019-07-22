@@ -2,7 +2,6 @@ package shop
 
 import (
 	"etop.vn/api/main/catalog"
-	pbcm "etop.vn/backend/pb/common"
 	pbs3 "etop.vn/backend/pb/etop/etc/status3"
 	pbshop "etop.vn/backend/pb/etop/shop"
 	"etop.vn/backend/pkg/etop/api/convertpb"
@@ -10,41 +9,7 @@ import (
 	catalogmodel "etop.vn/backend/pkg/services/catalog/model"
 )
 
-func PbEtopVariant(m *catalog.Variant) *pbshop.EtopVariant {
-	res := &pbshop.EtopVariant{
-		Id:          m.ID,
-		Code:        m.Code,
-		Name:        m.Name,
-		Description: m.Description,
-		ShortDesc:   m.ShortDesc,
-		DescHtml:    m.DescHTML,
-		ImageUrls:   coalesceStrings(m.ImageURLs),
-		ListPrice:   int32(m.ListPrice),
-		CostPrice:   int32(m.CostPrice),
-		Attributes:  convertpb.PbAttributes(m.Attributes),
-	}
-	return res
-}
-
-func PbEtopProduct(m *catalog.Product) *pbshop.EtopProduct {
-	return &pbshop.EtopProduct{
-		Id:          m.ID,
-		Code:        m.Code,
-		Name:        m.Name,
-		Description: m.Description,
-		ShortDesc:   m.ShortDesc,
-		DescHtml:    m.DescHTML,
-		ImageUrls:   m.ImageURLs,
-		ListPrice:   0,
-		CostPrice:   0,
-
-		CategoryId: m.ProductSourceCategoryID,
-		// @deprecated
-		ProductSourceCategoryId: m.ProductSourceCategoryID,
-	}
-}
-
-func PbShopVariants(items []*catalog.ShopVariantExtended) []*pbshop.ShopVariant {
+func PbShopVariants(items []*catalog.ShopVariant) []*pbshop.ShopVariant {
 	res := make([]*pbshop.ShopVariant, len(items))
 	for i, item := range items {
 		res[i] = PbShopVariant(item)
@@ -52,29 +17,36 @@ func PbShopVariants(items []*catalog.ShopVariantExtended) []*pbshop.ShopVariant 
 	return res
 }
 
-func PbShopVariant(m *catalog.ShopVariantExtended) *pbshop.ShopVariant {
-	sv := m.ShopVariant
-	v := m.Variant
+func PbShopVariant(m *catalog.ShopVariant) *pbshop.ShopVariant {
 	res := &pbshop.ShopVariant{
-		Id:           v.ID,
-		Info:         PbEtopVariant(m.Variant),
-		Code:         coalesce(m.ShopVariant.Code, v.Code),
-		EdCode:       coalesce(m.ShopVariant.Code, v.Code),
-		Name:         coalesce(sv.Name, v.Name),
-		Description:  coalesce(sv.Description, v.Description),
-		ShortDesc:    coalesce(sv.ShortDesc, v.ShortDesc),
-		DescHtml:     coalesce(sv.DescHTML, v.DescHTML),
-		ImageUrls:    coalesceStrings(sv.ImageURLs, v.ImageURLs),
-		Tags:         nil,
-		Note:         sv.Note,
-		Status:       pbs3.Pb(model.Status3(sv.Status)),
-		ListPrice:    coalesceInt32(int32(m.ShopVariant.ListPrice), int32(v.ListPrice)),
-		RetailPrice:  coalesceInt32(int32(sv.RetailPrice), v.RetailPrice, v.ListPrice),
-		CostPrice:    coalesceInt32(int32(m.ShopVariant.CostPrice), int32(v.CostPrice)),
-		CollectionId: sv.CollectionID,
-		Attributes:   convertpb.PbAttributes(m.Attributes),
+		Id: m.VariantID,
+		Info: &pbshop.EtopVariant{
+			Id:          0,
+			Code:        m.Code,
+			Name:        m.Name,
+			Description: m.Description,
+			ShortDesc:   m.ShortDesc,
+			DescHtml:    m.DescHTML,
+			ImageUrls:   m.ImageURLs,
+			ListPrice:   m.ListPrice,
+			CostPrice:   m.CostPrice,
+			Attributes:  convertpb.PbAttributes(m.Attributes),
+		},
+		Code:        m.Code,
+		EdCode:      m.Code,
+		Name:        m.Name,
+		Description: m.Description,
+		ShortDesc:   m.ShortDesc,
+		DescHtml:    m.DescHTML,
+		ImageUrls:   m.ImageURLs,
+		Tags:        nil,
+		Note:        m.Note,
+		Status:      pbs3.Pb(model.Status3(m.Status)),
+		ListPrice:   m.ListPrice,
+		RetailPrice: coalesceInt32(m.RetailPrice, m.ListPrice),
+		CostPrice:   m.CostPrice,
+		Attributes:  convertpb.PbAttributes(m.Attributes),
 	}
-	res.Info = PbEtopVariant(m.Variant)
 	return res
 }
 
@@ -88,28 +60,27 @@ func PbShopProducts(items []*catalogmodel.ShopProduct) []*pbshop.ShopProduct {
 
 func PbShopProduct(m *catalogmodel.ShopProduct) *pbshop.ShopProduct {
 	res := &pbshop.ShopProduct{
-		Id:                m.ProductID,
-		Info:              nil,
-		Code:              "",
-		EdCode:            "",
-		Name:              m.Name,
-		Description:       m.Description,
-		ShortDesc:         m.ShortDesc,
-		DescHtml:          m.DescHTML,
-		ImageUrls:         m.ImageURLs,
-		Tags:              m.Tags,
-		Stags:             nil,
-		Note:              "",
-		Status:            pbs3.Pb(m.Status),
-		IsAvailable:       true,
-		ListPrice:         0,
-		RetailPrice:       m.RetailPrice,
-		CostPrice:         0,
-		CollectionIds:     m.CollectionIDs,
-		Variants:          nil,
-		ProductSourceId:   0,
-		ProductSourceType: "",
-		ProductSourceName: "",
+		Id:            m.ProductID,
+		Info:          nil,
+		Code:          "",
+		EdCode:        "",
+		Name:          m.Name,
+		Description:   m.Description,
+		ShortDesc:     m.ShortDesc,
+		DescHtml:      m.DescHTML,
+		ImageUrls:     m.ImageURLs,
+		Tags:          m.Tags,
+		Stags:         nil,
+		Note:          "",
+		Status:        pbs3.Pb(m.Status),
+		IsAvailable:   true,
+		ListPrice:     0,
+		RetailPrice:   m.RetailPrice,
+		CostPrice:     0,
+		CollectionIds: m.CollectionIDs,
+		Variants:      nil,
+
+		ProductSourceId: m.ShopID, // deprecated
 	}
 	return res
 }
@@ -123,32 +94,44 @@ func PbShopProductsWithVariants(items []*catalog.ShopProductWithVariants) []*pbs
 }
 
 func PbShopProductWithVariants(m *catalog.ShopProductWithVariants) *pbshop.ShopProduct {
+	shopID := m.ShopProduct.ShopID
 	res := &pbshop.ShopProduct{
-		Id:                m.ShopProduct.ProductID,
-		Info:              nil,
+		Id: m.ShopProduct.ProductID,
+		Info: &pbshop.EtopProduct{
+			Id:                      m.ShopProduct.ProductID,
+			Code:                    m.ShopProduct.Code,
+			Name:                    m.ShopProduct.Name,
+			Description:             m.ShopProduct.Description,
+			ShortDesc:               m.ShopProduct.ShortDesc,
+			DescHtml:                m.ShopProduct.DescHTML,
+			Unit:                    m.ShopProduct.Unit,
+			ImageUrls:               m.ShopProduct.ImageURLs,
+			ListPrice:               m.ShopProduct.ListPrice,
+			CostPrice:               m.ShopProduct.CostPrice,
+			CategoryId:              0,
+			ProductSourceCategoryId: m.ShopProduct.CategoryID,
+		},
 		Code:              m.ShopProduct.Code,
 		EdCode:            m.ShopProduct.Code,
-		Name:              coalesce(m.ShopProduct.Name, m.Product.Name),
-		Description:       coalesce(m.ShopProduct.Description, m.Product.Description),
-		ShortDesc:         coalesce(m.ShopProduct.ShortDesc, m.Product.ShortDesc),
-		DescHtml:          coalesce(m.ShopProduct.DescHTML, m.Product.DescHTML),
-		ImageUrls:         coalesceStrings(m.ShopProduct.ImageURLs, m.Product.ImageURLs),
+		Name:              m.ShopProduct.Name,
+		Description:       m.ShopProduct.Description,
+		ShortDesc:         m.ShopProduct.ShortDesc,
+		DescHtml:          m.ShopProduct.DescHTML,
+		ImageUrls:         m.ShopProduct.ImageURLs,
 		Tags:              m.ShopProduct.Tags,
 		Stags:             nil,
 		Note:              m.Note,
 		Status:            pbs3.Pb(model.Status3(m.ShopProduct.Status)),
 		IsAvailable:       false,
-		ListPrice:         coalesceInt32(m.ShopProduct.ListPrice, m.Product.ListPrice),
-		RetailPrice:       coalesceInt32(m.ShopProduct.RetailPrice, m.Product.RetailPrice),
-		CostPrice:         coalesceInt32(m.ShopProduct.RetailPrice, m.Product.CostPrice),
+		ListPrice:         m.ShopProduct.ListPrice,
+		RetailPrice:       coalesceInt32(m.ShopProduct.RetailPrice, m.ShopProduct.ListPrice),
+		CostPrice:         m.ShopProduct.CostPrice,
 		CollectionIds:     m.ShopProduct.CollectionIDs,
 		Variants:          PbShopVariants(m.Variants),
-		ProductSourceId:   m.Product.ProductSourceID,
+		ProductSourceId:   shopID, // backward-compatible: use shop_id in place of product_source_id
 		ProductSourceType: "",
 		ProductSourceName: "",
 	}
-
-	res.Info = PbEtopProduct(m.Product)
 	return res
 }
 
@@ -198,23 +181,4 @@ func contain(ss []string, s string) bool {
 		}
 	}
 	return false
-}
-
-func PbProductSources(items []*catalogmodel.ProductSource) []*pbshop.ProductSource {
-	result := make([]*pbshop.ProductSource, len(items))
-	for i, item := range items {
-		result[i] = PbProductSource(item)
-	}
-	return result
-}
-
-func PbProductSource(m *catalogmodel.ProductSource) *pbshop.ProductSource {
-	return &pbshop.ProductSource{
-		Id:        m.ID,
-		Type:      m.Type,
-		Name:      m.Name,
-		Status:    pbs3.Pb(m.Status),
-		CreatedAt: pbcm.PbTime(m.CreatedAt),
-		UpdatedAt: pbcm.PbTime(m.UpdatedAt),
-	}
 }

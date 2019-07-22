@@ -39,9 +39,9 @@ func loadAndCreateProducts(
 ) (msgs []string, _errs []error, _cellErrs []error, _err error) {
 
 	var categories *Categories
-	var collections map[string]*catalogmodel.ShopCollection
-	var products map[string]*catalog.Product
-	var variantByCode, variantByAttr map[string]*catalogmodel.Variant
+	// var collections map[string]*catalogmodel.ShopCollection
+	var products map[string]*catalog.ShopProduct
+	var variantByCode, variantByAttr map[string]*catalogmodel.ShopVariant
 	chErr := make(chan error)
 	go func() {
 		var err error
@@ -54,11 +54,11 @@ func loadAndCreateProducts(
 	}()
 	go func() {
 		var err error
-		collections, err = loadCollections(ctx, shop.ID)
-		if err != nil {
-			err = cm.Error(cm.Internal, "", err).
-				WithMeta("step", "collection")
-		}
+		// collections, err = loadCollections(ctx, shop.ID)
+		// if err != nil {
+		// 	err = cm.Error(cm.Internal, "", err).
+		// 		WithMeta("step", "collection")
+		// }
 		chErr <- err
 	}()
 	go func() {
@@ -68,7 +68,7 @@ func loadAndCreateProducts(
 			for i, p := range rowProducts {
 				productKeys[i] = p.GetProductKey()
 			}
-			products, err = loadProducts(ctx, codeMode, shop.ProductSourceID, productKeys)
+			products, err = loadProducts(ctx, codeMode, shop.ID, productKeys)
 			if err != nil {
 				err = cm.Error(cm.Internal, "", err).
 					WithMeta("step", "product")
@@ -83,10 +83,10 @@ func loadAndCreateProducts(
 
 				product := products[p.GetProductKey()]
 				if product != nil {
-					attrNorms = append(attrNorms, product.ID, p.GetVariantAttrNorm())
+					attrNorms = append(attrNorms, product.ProductID, p.GetVariantAttrNorm())
 				}
 			}
-			variantByCode, variantByAttr, err = loadVariants(ctx, codeMode, shop.ProductSourceID, codes, attrNorms)
+			variantByCode, variantByAttr, err = loadVariants(ctx, codeMode, shop.ID, codes, attrNorms)
 			if err != nil {
 				err = cm.Error(cm.Internal, "", err).
 					WithMeta("step", "variant")
@@ -165,39 +165,43 @@ func loadAndCreateProducts(
 				rowProduct.categoryID = category.ID
 			}
 		}
-		{
-			if len(rowProduct.Collections) > 0 {
-				rowProduct.collectionIDs = make([]int64, len(rowProduct.Collections))
-			}
-			for i, name := range rowProduct.Collections {
-				if debug.FailPercent != 0 && isRandomFail(debug.FailPercent) {
-					_errs = append(_errs, imcsv.CellErrorWithCode(idx.indexer, cm.Internal, errors.New("random error"), rowProduct.RowIndex, -1, "Random error for development"))
-					continue
-				}
 
-				nameNorm := validate.NormalizeSearch(name)
-				collection := collections[nameNorm]
-				if collection == nil {
-					collection = &catalogmodel.ShopCollection{
-						ShopID: shop.ID,
-						Name:   name,
-					}
-					createCollectionCmd := &catalogmodelx.CreateShopCollectionCommand{
-						Collection: collection,
-					}
-					if err := bus.Dispatch(ctx, createCollectionCmd); err != nil {
-						err = imcsv.CellErrorWithCode(idx.indexer, cm.Internal, err, rowProduct.RowIndex, -1, "Không thể tạo bộ sưu tập \"%v\": %v", name, err)
-						_errs = append(_errs, err)
-						continue
-					}
-
-					msgs = append(msgs, "Đã tạo bộ sưu tập "+name)
-					collection = createCollectionCmd.Result
-					collections[nameNorm] = collection
-				}
-				rowProduct.collectionIDs[i] = collection.ID
-			}
-		}
+		// TODO: create collection
+		//
+		// {
+		// 	if len(rowProduct.Collections) > 0 {
+		// 		rowProduct.collectionIDs = make([]int64, len(rowProduct.Collections))
+		// 	}
+		// 	for i, name := range rowProduct.Collections {
+		// 		if debug.FailPercent != 0 && isRandomFail(debug.FailPercent) {
+		// 			_errs = append(_errs, imcsv.CellErrorWithCode(idx.indexer, cm.Internal, errors.New("random error"), rowProduct.RowIndex, -1, "Random error for development"))
+		// 			continue
+		// 		}
+		//
+		// 		nameNorm := validate.NormalizeSearch(name)
+		// 		collection := collections[nameNorm]
+		// 		if collection == nil {
+		//
+		// 			collection = &catalogmodel.ShopCollection{
+		// 				ShopID: shop.ID,
+		// 				Name:   name,
+		// 			}
+		// 			createCollectionCmd := &catalogmodelx.CreateShopCollectionCommand{
+		// 				Collection: collection,
+		// 			}
+		// 			if err := bus.Dispatch(ctx, createCollectionCmd); err != nil {
+		// 				err = imcsv.CellErrorWithCode(idx.indexer, cm.Internal, err, rowProduct.RowIndex, -1, "Không thể tạo bộ sưu tập \"%v\": %v", name, err)
+		// 				_errs = append(_errs, err)
+		// 				continue
+		// 			}
+		//
+		// 			msgs = append(msgs, "Đã tạo bộ sưu tập "+name)
+		// 			collection = createCollectionCmd.Result
+		// 			collections[nameNorm] = collection
+		// 		}
+		// 		rowProduct.collectionIDs[i] = collection.ID
+		// 	}
+		// }
 	}
 	if len(_errs) > 0 {
 		return
@@ -212,7 +216,7 @@ func loadAndCreateProducts(
 
 		req := requests[i]
 		if p := products[rowProduct.GetProductKey()]; p != nil {
-			req.ProductId = p.ID
+			req.ProductId = p.ProductID
 		}
 
 		createVariantCmd := &wrapshop.CreateVariantEndpoint{
@@ -230,8 +234,8 @@ func loadAndCreateProducts(
 		}
 
 		// Fake the product, so subsequent create variant requests reuse the created product
-		products[rowProduct.GetProductKey()] = &catalog.Product{
-			ID: createVariantCmd.Result.Info.Id,
+		products[rowProduct.GetProductKey()] = &catalog.ShopProduct{
+			ProductID: createVariantCmd.Result.Info.Id,
 		}
 
 		var msg string
@@ -245,10 +249,9 @@ func loadAndCreateProducts(
 		productIDs := []int64{createVariantCmd.Result.Info.Id}
 		if rowProduct.categoryID != 0 {
 			updateProductsCategoryCmd := &catalogmodelx.UpdateProductsProductSourceCategoryCommand{
-				CategoryID:      rowProduct.categoryID,
-				ProductIDs:      productIDs,
-				ShopID:          shop.ID,
-				ProductSourceID: shop.ProductSourceID,
+				CategoryID: rowProduct.categoryID,
+				ProductIDs: productIDs,
+				ShopID:     shop.ID,
 			}
 			if err := bus.Dispatch(ctx, updateProductsCategoryCmd); err != nil {
 				err = imcsv.CellErrorWithCode(idx.indexer, cm.Internal, err, rowProduct.RowIndex, -1,
@@ -259,21 +262,24 @@ func loadAndCreateProducts(
 				_errs = append(_errs, err)
 			}
 		}
-		for _, collectionID := range rowProduct.collectionIDs {
-			updateProductsCollectionCmd := &catalogmodelx.AddProductsToShopCollectionCommand{
-				ShopID:       shop.ID,
-				ProductIDs:   productIDs,
-				CollectionID: collectionID,
-			}
-			if err := bus.Dispatch(ctx, updateProductsCollectionCmd); err != nil {
-				err = imcsv.CellErrorWithCode(idx.indexer, cm.Internal, err, rowProduct.RowIndex, -1,
-					`Không thể thêm sản phẩm "%v" vào bộ sưu tập: %v`,
-					rowProduct.GetProductNameOrCode(), err).
-					WithMeta("product_code", rowProduct.ProductCode).
-					WithMeta("variant_code", rowProduct.VariantCode)
-				_errs = append(_errs, err)
-			}
-		}
+
+		// TODO: add product to collection
+		//
+		// for _, collectionID := range rowProduct.collectionIDs {
+		// 	updateProductsCollectionCmd := &catalogmodelx.AddProductsToShopCollectionCommand{
+		// 		ShopID:       shop.ID,
+		// 		ProductIDs:   productIDs,
+		// 		CollectionID: collectionID,
+		// 	}
+		// 	if err := bus.Dispatch(ctx, updateProductsCollectionCmd); err != nil {
+		// 		err = imcsv.CellErrorWithCode(idx.indexer, cm.Internal, err, rowProduct.RowIndex, -1,
+		// 			`Không thể thêm sản phẩm "%v" vào bộ sưu tập: %v`,
+		// 			rowProduct.GetProductNameOrCode(), err).
+		// 			WithMeta("product_code", rowProduct.ProductCode).
+		// 			WithMeta("variant_code", rowProduct.VariantCode)
+		// 		_errs = append(_errs, err)
+		// 	}
+		// }
 	}
 	return
 }
@@ -342,39 +348,39 @@ func buildCategoryHierarchy(mapCategory map[int64]*catalogmodel.ProductSourceCat
 }
 
 // Load all collections and sort them into normalized map
-func loadCollections(ctx context.Context, shopID int64) (map[string]*catalogmodel.ShopCollection, error) {
-	query := &catalogmodelx.GetShopCollectionsQuery{
-		ShopID: shopID,
-	}
-	if err := bus.Dispatch(ctx, query); err != nil {
-		return nil, err
-	}
-	mapCollection := make(map[string]*catalogmodel.ShopCollection)
-	for _, collection := range query.Result.Collections {
-		name := validate.NormalizeSearch(collection.Name)
-		mapCollection[name] = collection
-	}
-	return mapCollection, nil
-}
+// func loadCollections(ctx context.Context, shopID int64) (map[string]*catalogmodel.ShopCollection, error) {
+// 	query := &catalogmodelx.GetShopCollectionsQuery{
+// 		ShopID: shopID,
+// 	}
+// 	if err := bus.Dispatch(ctx, query); err != nil {
+// 		return nil, err
+// 	}
+// 	mapCollection := make(map[string]*catalogmodel.ShopCollection)
+// 	for _, collection := range query.Result.Collections {
+// 		name := validate.NormalizeSearch(collection.Name)
+// 		mapCollection[name] = collection
+// 	}
+// 	return mapCollection, nil
+// }
 
-func loadProducts(ctx context.Context, codeMode CodeMode, productSourceID int64, keys []string) (map[string]*catalog.Product, error) {
-	s := productStore(ctx).ProductSourceID(productSourceID)
+func loadProducts(ctx context.Context, codeMode CodeMode, shopID int64, keys []string) (map[string]*catalog.ShopProduct, error) {
+	s := shopProductStore(ctx).ShopID(shopID)
 	useCode := codeMode == CodeModeUseCode
 	if useCode {
 		s = s.Codes(keys...)
 	} else {
 		// only query products with ed_code is null
-		s = s.Where(s.FtProduct.ByCode("").Nullable())
+		s = s.Where(s.FtShopProduct.ByCode("").Nullable())
 		s = s.ByNameNormUas(keys...)
 	}
-	products, err := s.Paging(maxPaging).ListProductsDB()
+	products, err := s.Paging(maxPaging).ListShopProductsDB()
 	if err != nil {
 		return nil, err
 	}
 
-	mapProducts := make(map[string]*catalog.Product)
+	mapProducts := make(map[string]*catalog.ShopProduct)
 	for _, p := range products {
-		product := convert.Product(p)
+		product := convert.ShopProduct(p)
 		if useCode {
 			mapProducts[p.Code] = product
 		} else {
@@ -391,16 +397,16 @@ func loadProducts(ctx context.Context, codeMode CodeMode, productSourceID int64,
 func loadVariants(
 	ctx context.Context,
 	codeMode CodeMode,
-	productSourceID int64,
+	shopID int64,
 	codes []string,
 	attrNorms []interface{},
 ) (
-	variantByCode map[string]*catalogmodel.Variant,
-	variantByAttr map[string]*catalogmodel.Variant,
+	variantByCode map[string]*catalogmodel.ShopVariant,
+	variantByAttr map[string]*catalogmodel.ShopVariant,
 	_ error,
 ) {
-	s := variantStore(ctx).ProductSourceID(productSourceID)
-	args := catalogsqlstore.ListVariantsForImportArgs{
+	s := shopVariantStore(ctx).ShopID(shopID)
+	args := catalogsqlstore.ListShopVariantsForImportArgs{
 		Codes:     codes,
 		AttrNorms: attrNorms,
 	}
@@ -408,13 +414,13 @@ func loadVariants(
 	if useCode {
 		args.Codes = codes
 	}
-	variants, err := s.Paging(maxPaging).ListVariantsDB()
+	variants, err := s.Paging(maxPaging).ListShopVariantsDB()
 	if err != nil {
 		return nil, nil, err
 	}
 
-	variantByCode = make(map[string]*catalogmodel.Variant)
-	variantByAttr = make(map[string]*catalogmodel.Variant)
+	variantByCode = make(map[string]*catalogmodel.ShopVariant)
+	variantByAttr = make(map[string]*catalogmodel.ShopVariant)
 	for _, v := range variants {
 		if useCode && v.Code != "" {
 			variantByCode[v.Code] = v
@@ -448,10 +454,8 @@ func ensureCategory(
 		}
 
 		cmd := &catalogmodelx.CreateProductSourceCategoryCommand{
-			ShopID:            shop.ID,
-			Name:              names[0],
-			ProductSourceID:   shop.ProductSourceID,
-			ProductSourceType: catalogmodel.ProductSourceCustom,
+			ShopID: shop.ID,
+			Name:   names[0],
 		}
 		if parent != nil {
 			cmd.ParentID = parent.ID

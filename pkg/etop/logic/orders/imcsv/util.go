@@ -13,6 +13,7 @@ import (
 	pbsheet "etop.vn/backend/pb/common/spreadsheet"
 	pborder "etop.vn/backend/pb/etop/order"
 	cm "etop.vn/backend/pkg/common"
+	"etop.vn/backend/pkg/common/cmsql"
 	"etop.vn/backend/pkg/common/httpx"
 	"etop.vn/backend/pkg/common/idemp"
 	"etop.vn/backend/pkg/common/imcsv"
@@ -20,6 +21,7 @@ import (
 	cmservice "etop.vn/backend/pkg/common/service"
 	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/backend/pkg/etop/upload"
+	catalogsqlstore "etop.vn/backend/pkg/services/catalog/sqlstore"
 	"etop.vn/common/l"
 )
 
@@ -27,13 +29,15 @@ var ll = l.New()
 var idempgroup *idemp.RedisGroup
 var uploader *upload.Uploader
 var locationBus location.QueryBus
+var shopVariantStore catalogsqlstore.ShopVariantStoreFactory
 
 const PrefixIdemp = "IdempImportOrder"
 
-func Init(_locationBus location.QueryBus, sd cmservice.Shutdowner, rd redis.Store, ul *upload.Uploader) {
+func Init(_locationBus location.QueryBus, sd cmservice.Shutdowner, rd redis.Store, ul *upload.Uploader, db cmsql.Database) {
 	locationBus = _locationBus
 	idempgroup = idemp.NewRedisGroup(rd, PrefixIdemp, 5*60) // 5 minutes
 	sd.Register(idempgroup.Shutdown)
+	shopVariantStore = catalogsqlstore.NewShopVariantStore(db)
 
 	if ul != nil {
 		uploader = ul

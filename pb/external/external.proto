@@ -25,7 +25,6 @@ option (gogoproto.unmarshaler_all)          = false;
 option (gogoproto.verbose_equal_all)        = false;
 
 import "common/common.proto";
-import "etop/etc/address_type/type.proto";
 import "etop/etc/gender/gender.proto";
 import "etop/etc/shipping/state.proto";
 import "etop/etc/shipping_provider/provider.proto";
@@ -35,8 +34,6 @@ import "etop/etc/status5/status.proto";
 import "etop/etc/try_on/code.proto";
 import "etop/etop.proto";
 import "etop/order/order.proto";
-import "external/etc/auth_mode/mode.proto";
-import "external/etc/change_type/type.proto";
 import "google/protobuf/timestamp.proto";
 
 message Partner {

@@ -6,7 +6,6 @@ import (
 	"time"
 
 	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/sq"
 	"etop.vn/backend/pkg/common/validate"
 	"etop.vn/backend/pkg/etop/model"
 	catalogmodel "etop.vn/backend/pkg/services/catalog/model"
@@ -367,38 +366,6 @@ func (l *OrderLine) GetTotalDiscount() int {
 		return 0
 	}
 	return (l.RetailPrice - l.PaymentPrice) * l.Quantity
-}
-
-var _ = sqlgenOrderLineExtended(&OrderLineExtended{},
-	&OrderLine{}, sq.AS("ol"), sq.LEFT_JOIN,
-	&catalogmodel.Variant{}, sq.AS("v"), "v.id = ol.variant_id",
-)
-
-type OrderLineExtended struct {
-	*OrderLine
-	*catalogmodel.Variant
-}
-
-func (olExtended *OrderLineExtended) ToOrderLine() *OrderLine {
-	return &OrderLine{
-		OrderID:         olExtended.OrderID,
-		VariantID:       olExtended.VariantID,
-		ProductName:     olExtended.ProductName,
-		ProductID:       olExtended.OrderLine.ProductID,
-		ShopID:          olExtended.OrderLine.ShopID,
-		Weight:          olExtended.OrderLine.Weight,
-		Quantity:        olExtended.OrderLine.Quantity,
-		ListPrice:       olExtended.OrderLine.ListPrice,
-		RetailPrice:     olExtended.OrderLine.RetailPrice,
-		PaymentPrice:    olExtended.OrderLine.PaymentPrice,
-		LineAmount:      olExtended.OrderLine.LineAmount,
-		TotalDiscount:   olExtended.OrderLine.TotalDiscount,
-		TotalLineAmount: olExtended.OrderLine.TotalLineAmount,
-		ImageURL:        olExtended.OrderLine.ImageURL,
-		Attributes:      olExtended.Variant.Attributes,
-		IsOutsideEtop:   olExtended.OrderLine.IsOutsideEtop,
-		Code:            olExtended.OrderLine.Code,
-	}
 }
 
 type OrderFeeLine struct {

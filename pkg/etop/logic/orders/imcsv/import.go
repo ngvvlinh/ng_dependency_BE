@@ -120,7 +120,7 @@ func handleImportOrder(ctx context.Context, c *httpx.Context, shop *model.Shop, 
 		case _err != nil:
 			attempt.Status = model.S4Negative
 			attempt.ErrorType = "error"
-			_err = cm.ToError(_err).WithMetaID("import_id", importID)
+			_err = xerrors.ToError(_err).WithMetaID("import_id", importID)
 			attempt.Errors = []*model.Error{model.ToError(_err)}
 
 		case len(_resp.CellErrors) > 0:
@@ -233,10 +233,10 @@ func handleImportOrder(ctx context.Context, c *httpx.Context, shop *model.Shop, 
 		for j, rowOrderLine := range rowOrder.Lines {
 			line := order.Lines[j]
 
-			if rowOrderLine.VariantExtended != nil {
-				line.ProductName = rowOrderLine.VariantExtended.GetFullName()
-				line.VariantID = rowOrderLine.Variant.ID
-				line.ProductID = rowOrderLine.Product.ID
+			if rowOrderLine.XVariant != nil {
+				line.ProductName = rowOrderLine.XVariant.GetFullName()
+				line.VariantID = rowOrderLine.XVariant.ShopVariant.VariantID
+				line.ProductID = rowOrderLine.XVariant.ShopProduct.ProductID
 				productIDs = append(productIDs, line.ProductID)
 				variantIDs = append(variantIDs, line.VariantID)
 			} else {
@@ -821,9 +821,9 @@ func parseLineToModel(idx imcsv.Indexer, mode Mode, rowOrderLine *RowOrderLine) 
 		IsOutsideEtop:   false,
 		Code:            rowOrderLine.VariantEdCode,
 	}
-	if rowOrderLine.VariantExtended != nil {
-		line.ProductID = rowOrderLine.Product.ID
-		line.VariantID = rowOrderLine.Variant.ID
+	if rowOrderLine.XVariant != nil {
+		line.ProductID = rowOrderLine.XVariant.ShopProduct.ProductID
+		line.VariantID = rowOrderLine.XVariant.ShopVariant.VariantID
 	}
 	return line, nil
 }

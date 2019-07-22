@@ -3,94 +3,43 @@ package catalog
 import (
 	"time"
 
+	cmutil "etop.vn/common/util"
+
 	"etop.vn/api/main/catalog/types"
+	"etop.vn/api/meta"
 )
 
-type ProductSource struct {
-	ID   int64
-	Type string
-	Name string
-
-	CreatedAt time.Time
-	UpdatedAt time.Time
-}
-
-type Product struct {
-	ID int64
-
-	ProductSourceID int64
-
-	ProductSourceCategoryID int64
-
-	Code string
-
-	Name string
-
-	DescriptionInfo
-
-	ImageURLs []string
-
-	Tags []string
-
-	Unit string
-
-	Status int16
-
-	CreatedAt time.Time
-
-	UpdatedAt time.Time
-
-	PriceDeclareInfo
-}
+type Bool = meta.NullBool
+type String = meta.NullString
+type Int64 = meta.NullInt64
+type Int32 = meta.NullInt32
 
 type ShopProduct struct {
 	ShopID int64
 
 	ProductID int64
 
-	CollectionIDs []int64
-
 	Code string
 
 	Name string
 
-	DescriptionInfo
+	Unit string
 
 	ImageURLs []string
+
+	Note string
+
+	DescriptionInfo
+
+	PriceInfo
+
+	CategoryID int64
+
+	CollectionIDs []int64
 
 	Tags []string
 
 	Status int32
-
-	PriceInfo
-
-	Note string // only in ShopProduct and ShopVariant
-
-	CreatedAt time.Time
-
-	UpdatedAt time.Time
-}
-
-type Variant struct {
-	ID int64
-
-	ProductID int64
-
-	// Code is also known as sku
-	Code string
-
-	Name string
-
-	DescriptionInfo
-
-	ImageURLs []string
-
-	Status int16
-
-	Attributes Attributes // only in Variant, not in ShopVariant
-
-	// TODO: price shoule be managed in pricing service
-	PriceDeclareInfo
 
 	CreatedAt time.Time
 
@@ -104,9 +53,7 @@ type ShopVariant struct {
 
 	VariantID int64
 
-	CollectionID int64
-
-	// Code is also known as sku
+	// variant.code is also known as sku
 	Code string
 
 	Name string
@@ -117,6 +64,8 @@ type ShopVariant struct {
 
 	Status int16
 
+	Attributes Attributes
+
 	PriceInfo
 
 	Note string // only in ShopProduct and ShopVariant
@@ -124,6 +73,13 @@ type ShopVariant struct {
 	CreatedAt time.Time
 
 	UpdatedAt time.Time
+}
+
+func (v *ShopVariant) GetName() string {
+	if len(v.Attributes) == 0 {
+		return ""
+	}
+	return v.Attributes.ShortLabel()
 }
 
 type DescriptionInfo struct {
@@ -143,12 +99,55 @@ type PriceDeclareInfo struct {
 }
 
 type PriceInfo struct {
-	ListPrice int32
-
 	CostPrice int32
+
+	ListPrice int32
 
 	RetailPrice int32
 }
 
 type Attribute = types.Attribute
 type Attributes = types.Attributes
+
+//-- extended --//
+
+type ShopVariantWithProduct struct {
+	*ShopVariant
+
+	ShopProduct *ShopProduct
+}
+
+func (v *ShopVariantWithProduct) GetFullName() string {
+	if v.ShopProduct.Name != "" {
+		return v.ShopProduct.Name + " - " + v.ShopVariant.GetName()
+	}
+	return v.ShopVariant.GetName()
+}
+
+func (v ShopVariantWithProduct) GetListPrice() int32 {
+	return cmutil.CoalesceInt32(
+		v.ShopVariant.ListPrice,
+		v.ShopProduct.ListPrice,
+	)
+}
+
+func (v ShopVariantWithProduct) GetRetailPrice() int32 {
+	return cmutil.CoalesceInt32(
+		v.ShopVariant.RetailPrice, v.ShopVariant.ListPrice,
+		v.ShopProduct.RetailPrice, v.ShopProduct.ListPrice,
+	)
+}
+
+func (v ShopVariantWithProduct) ProductWithVariantName() string {
+	productName := v.ShopProduct.Name
+	variantLabel := v.ShopVariant.Attributes.Label()
+	if variantLabel == "" {
+		return productName
+	}
+	return productName + " - " + variantLabel
+}
+
+type ShopProductWithVariants struct {
+	*ShopProduct
+	Variants []*ShopVariant
+}

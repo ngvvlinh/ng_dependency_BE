@@ -26,7 +26,6 @@ option (gogoproto.testgen_all)              = false;
 option (gogoproto.unmarshaler_all)          = false;
 option (gogoproto.verbose_equal_all)        = false;
 
-import "etop.vn/api/main/shipping/v1/types/types.proto";
 import "etop.vn/api/main/ordering/v1/types/types.proto";
 
 message Fulfillment {

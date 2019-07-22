@@ -4,7 +4,6 @@ import (
 	"context"
 
 	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/etop/model"
 	catalogmodel "etop.vn/backend/pkg/services/catalog/model"
 	catalogmodelx "etop.vn/backend/pkg/services/catalog/modelx"
 	"etop.vn/common/bus"
@@ -13,8 +12,6 @@ import (
 func init() {
 	bus.AddHandler("sql", GetProductSourceCategory)
 	bus.AddHandler("sql", GetProductSourceCategories)
-	bus.AddHandler("sql", CreateEtopCategory)
-	bus.AddHandler("sql", GetEtopCategories)
 	bus.AddHandler("sql", GetProductSourceCategories)
 	bus.AddHandler("sql", UpdateShopProductSourceCategory)
 	bus.AddHandler("sql", RemoveShopProductSourceCategory)
@@ -46,31 +43,8 @@ func GetProductSourceCategories(ctx context.Context, query *catalogmodelx.GetPro
 	if query.IDs != nil {
 		s = s.In("id", query.IDs)
 	}
-	if query.ProductSourceType != "" {
-		s = s.Where("product_source_type = ?", query.ProductSourceType)
-	}
 
 	err := s.Find((*catalogmodel.ProductSourceCategories)(&query.Result.Categories))
-	return err
-}
-
-func CreateEtopCategory(ctx context.Context, cmd *model.CreateEtopCategoryCommand) error {
-	category := cmd.Category
-	category.ID = cm.NewID()
-	category.Status = model.StatusActive
-
-	_, err := x.Table("etop_category").Insert(category)
-	cmd.Result = category
-	return err
-}
-
-func GetEtopCategories(ctx context.Context, query *model.GetEtopCategoriesQuery) error {
-	s := x.Table("etop_category")
-	if query.Status != nil {
-		s = s.Where("status = ?", *query.Status)
-	}
-
-	err := s.Find((*model.EtopCategories)(&query.Result.Categories))
 	return err
 }
 

@@ -2,6 +2,7 @@ package etop
 
 import (
 	"context"
+
 	"etop.vn/api/main/location"
 	"etop.vn/backend/pb/common"
 	"etop.vn/backend/pb/etop/etc/address_type"
@@ -103,8 +104,8 @@ func (a *Address) ToModel() (*model.Address, error) {
 		Phone:        a.Phone,
 		Position:     a.Position,
 		Email:        a.Email,
-		Notes: PbAddressNoteToModel(a.Notes),
-		Type: a.Type.ToModel(),
+		Notes:        PbAddressNoteToModel(a.Notes),
+		Type:         a.Type.ToModel(),
 	}
 	locationQuery := &location.FindOrGetLocationQuery{
 		ProvinceCode: a.ProvinceCode,
@@ -309,7 +310,6 @@ func PbShopExtended(m *model.ShopExtended) *Shop {
 		WebsiteUrl:                    m.WebsiteURL,
 		ImageUrl:                      m.ImageURL,
 		Email:                         m.Email,
-		ProductSourceId:               m.ProductSourceID,
 		ShipToAddressId:               m.ShipToAddressID,
 		ShipFromAddressId:             m.ShipFromAddressID,
 		AutoCreateFfm:                 m.AutoCreateFFM,
@@ -322,6 +322,9 @@ func PbShopExtended(m *model.ShopExtended) *Shop {
 		SurveyInfo:                    PbSurveyInfos(m.SurveyInfo),
 		ShippingServiceSelectStrategy: PbShippingServiceSelectStrategy(m.ShippingServiceSelectStrategy),
 		Code:                          m.Code,
+
+		// deprecated: 2018.07.24+14
+		ProductSourceId: m.ID,
 	}
 }
 
@@ -331,23 +334,6 @@ func PbShopExtendeds(items []*model.ShopExtended) []*Shop {
 		result[i] = PbShopExtended(item)
 	}
 	return result
-}
-
-func PbCategories(items []*model.EtopCategory) []*Category {
-	res := make([]*Category, len(items))
-	for i, item := range items {
-		res[i] = PbCategory(item)
-	}
-	return res
-}
-
-func PbCategory(m *model.EtopCategory) *Category {
-	return &Category{
-		Id:       m.ID,
-		Name:     m.Name,
-		Status:   status3.Pb(m.Status),
-		ParentId: m.ParentID,
-	}
 }
 
 func PbProvinces(items []*location.Province) []*Province {
@@ -598,8 +584,8 @@ func PbCreateAddressToModel(accountID int64, p *CreateAddressRequest) (*model.Ad
 		Address1:     p.Address1,
 		Address2:     p.Address2,
 		Type:         p.Type,
-		Notes: p.Notes,
-		Coordinates: p.Coordinates,
+		Notes:        p.Notes,
+		Coordinates:  p.Coordinates,
 	}
 	res, err := address.ToModel()
 	if err != nil {
@@ -629,7 +615,7 @@ func PbUpdateAddressToModel(accountID int64, p *UpdateAddressRequest) (*model.Ad
 		Address2:     p.Address2,
 		Type:         p.Type,
 		Notes:        p.Notes,
-		Coordinates: p.Coordinates,
+		Coordinates:  p.Coordinates,
 	}
 	res, err := address.ToModel()
 	if err != nil {

@@ -11,104 +11,6 @@ import (
 
 //go:generate $ETOPDIR/backend/scripts/derive.sh
 
-var _ = sqlgenProduct(&Product{})
-
-type Product struct {
-	ID                      int64
-	ProductSourceID         int64
-	ProductSourceCategoryID int64
-
-	Name        string
-	ShortDesc   string
-	Description string
-	DescHTML    string `sq:"'desc_html'"`
-	Unit        string
-	ImageURLs   []string `sq:"'image_urls'"`
-
-	Status model.Status3
-	Code   string `sq:"'ed_code'"`
-
-	CreatedAt time.Time `sq:"create"`
-	UpdatedAt time.Time `sq:"update"`
-
-	NameNorm   string // search normalization
-	NameNormUa string // unaccent normalization
-}
-
-func (p *Product) BeforeInsert() error {
-	p.NameNorm = validate.NormalizeSearch(p.Name)
-	p.NameNormUa = validate.NormalizeUnaccent(p.Name)
-	return nil
-}
-
-func (p *Product) BeforeUpdate() error {
-	p.NameNorm = validate.NormalizeSearch(p.Name)
-	p.NameNormUa = validate.NormalizeUnaccent(p.Name)
-	return nil
-}
-
-func (p *Product) GetFullName() string {
-	return coalesce(p.Name)
-}
-
-var _ = sqlgenProductExtended(
-	&ProductExtended{}, &Product{}, sq.AS("p"),
-	sq.LEFT_JOIN, &ProductSource{}, sq.AS("ps"), "p.product_source_id = ps.id",
-)
-
-type ProductExtended struct {
-	*Product
-	*ProductSource
-}
-
-type ProductFtVariant struct {
-	*Product
-	Variants []*Variant
-}
-
-var _ = sqlgenVariant(&Variant{})
-
-type Variant struct {
-	ID              int64
-	ProductID       int64
-	ProductSourceID int64
-
-	Code        string `sq:"'ed_code'"`
-	ShortDesc   string
-	Description string
-	DescHTML    string   `sq:"'desc_html'"`
-	ImageURLs   []string `sq:"'image_urls'"`
-
-	Attributes ProductAttributes
-
-	CostPrice int32
-	ListPrice int32
-
-	Status    model.Status3
-	CreatedAt time.Time `sq:"create"`
-	UpdatedAt time.Time `sq:"update"`
-
-	// key-value normalization, must be non-null. Empty attributes is '_'
-	AttrNormKv string
-}
-
-func (v *Variant) GetName() string {
-	if len(v.Attributes) == 0 {
-		return ""
-	}
-	return ProductAttributes(v.Attributes).ShortLabel()
-}
-
-func (v *Variant) BeforeInsert() error {
-	v.Attributes, v.AttrNormKv = NormalizeAttributes(v.Attributes)
-	return nil
-}
-
-func (v *Variant) BeforeUpdate() error {
-	v.Attributes, v.AttrNormKv = NormalizeAttributes(v.Attributes)
-	return nil
-}
-
 // Normalize attributes, do not sort them. Empty attributes is '_'.
 func NormalizeAttributes(attrs []ProductAttribute) ([]ProductAttribute, string) {
 	if len(attrs) == 0 {
@@ -150,45 +52,14 @@ func NormalizeAttributes(attrs []ProductAttribute) ([]ProductAttribute, string) 
 	return normAttrs, s
 }
 
-var _ = sqlgenVariantExtended(
-	&VariantExtended{}, &Variant{}, sq.AS("v"),
-	sq.LEFT_JOIN, &Product{}, sq.AS("p"), "v.product_id = p.id",
-)
-
-type VariantExtended struct {
-	*Variant
-	Product *Product
-}
-
-func (v *VariantExtended) GetFullName() string {
-	if v.Product.Name != "" {
-		return v.Product.Name + " - " + v.GetName()
-	}
-	return v.GetName()
-}
-
 var _ = sqlgenShopVariantWithProduct(
-	&ShopVariantWithProduct{}, &Variant{}, sq.AS("v"),
-	sq.LEFT_JOIN, &Product{}, sq.AS("p"), "v.product_id = p.id",
-	sq.LEFT_JOIN, &ShopProduct{}, sq.AS("sp"), "sp.product_id = p.id",
-	sq.LEFT_JOIN, &ShopVariant{}, sq.AS("sv"), "sv.variant_id = v.id",
+	&ShopVariantWithProduct{}, &ShopProduct{}, sq.AS("sp"),
+	sq.LEFT_JOIN, &ShopVariant{}, sq.AS("sv"), "sp.product_id = sv.product_id",
 )
 
 type ShopVariantWithProduct struct {
 	*ShopVariant
-	*Variant
-	*Product
 	*ShopProduct
-}
-
-var _ = sqlgenShopVariantExtended(
-	&ShopVariantExtended{}, &Variant{}, sq.AS("v"),
-	sq.LEFT_JOIN, &ShopVariant{}, sq.AS("sv"), "sv.variant_id = v.id",
-)
-
-type ShopVariantExtended struct {
-	*ShopVariant
-	*Variant
 }
 
 var _ = sqlgenShopVariant(&ShopVariant{})
@@ -199,6 +70,7 @@ type ShopVariant struct {
 	CollectionID int64
 	ProductID    int64
 
+	Code        string
 	Name        string
 	Description string
 	DescHTML    string
@@ -207,22 +79,32 @@ type ShopVariant struct {
 	Note        string
 	Tags        []string
 
+	CostPrice   int32
+	ListPrice   int32
 	RetailPrice int32
-	Status      model.Status3
+
+	Status     model.Status3
+	Attributes ProductAttributes
 
 	CreatedAt time.Time `sq:"create"`
 	UpdatedAt time.Time `sq:"update"`
+	DeletedAt time.Time
 
 	NameNorm string
+
+	// key-value normalization, must be non-null. Empty attributes is '_'
+	AttrNormKv string
 }
 
-func (p *ShopVariant) BeforeInsert() error {
-	p.NameNorm = validate.NormalizeSearch(p.Name)
+func (v *ShopVariant) BeforeInsert() error {
+	v.NameNorm = validate.NormalizeSearch(v.Name)
+	v.Attributes, v.AttrNormKv = NormalizeAttributes(v.Attributes)
 	return nil
 }
 
-func (p *ShopVariant) BeforeUpdate() error {
-	p.NameNorm = validate.NormalizeSearch(p.Name)
+func (v *ShopVariant) BeforeUpdate() error {
+	v.NameNorm = validate.NormalizeSearch(v.Name)
+	v.Attributes, v.AttrNormKv = NormalizeAttributes(v.Attributes)
 	return nil
 }
 
@@ -233,6 +115,7 @@ type ShopProduct struct {
 	ProductID     int64
 	CollectionIDs []int64 `sq:"-"`
 
+	Code        string
 	Name        string
 	Description string
 	DescHTML    string
@@ -240,91 +123,38 @@ type ShopProduct struct {
 	ImageURLs   []string `sq:"'image_urls'"`
 	Note        string
 	Tags        []string
+	Unit        string
+	CategoryID  int64
 
+	CostPrice   int32
+	ListPrice   int32
 	RetailPrice int32
-	Status      model.Status3
+
+	Status model.Status3
 
 	CreatedAt time.Time `sq:"create"`
 	UpdatedAt time.Time `sq:"update"`
+	DeletedAt time.Time
 
-	NameNorm string
-
-	ProductSourceID   int64  `sq:"-"`
-	ProductSourceName string `sq:"-"`
-	ProductSourceType string `sq:"-"`
+	NameNorm   string
+	NameNormUa string // unaccent normalization
 }
 
 func (p *ShopProduct) BeforeInsert() error {
 	p.NameNorm = validate.NormalizeSearch(p.Name)
+	p.NameNormUa = validate.NormalizeUnaccent(p.Name)
 	return nil
 }
 
 func (p *ShopProduct) BeforeUpdate() error {
 	p.NameNorm = validate.NormalizeSearch(p.Name)
+	p.NameNormUa = validate.NormalizeUnaccent(p.Name)
 	return nil
 }
 
-var _ = sqlgenShopProductFtProductFtVariantFtShopVariant(
-	&ShopProductFtProductFtVariantFtShopVariant{}, &ShopProduct{}, sq.AS("sp"),
-	sq.LEFT_JOIN, &Product{}, sq.AS("p"), "sp.product_id = p.id",
-	sq.LEFT_JOIN, &Variant{}, sq.AS("v"), "sp.product_id = v.product_id",
-	sq.LEFT_JOIN, &ShopVariant{}, sq.AS("sv"), "sp.shop_id = sv.shop_id and sv.variant_id = v.id",
-)
-
-type ShopProductFtProductFtVariantFtShopVariant struct {
+type ShopProductWithVariants struct {
 	*ShopProduct
-	*Product
-	*Variant
-	*ShopVariant
-}
-
-var _ = sqlgenShopProductExtended(
-	&ShopProductExtended{}, &Product{}, sq.AS("p"),
-	sq.LEFT_JOIN, &ShopProduct{}, sq.AS("sp"), "sp.product_id = p.id",
-)
-
-type ShopProductExtended struct {
-	*ShopProduct
-	*Product
-	Variants []*ShopVariantExt `sq:"-"`
-}
-
-var _ = sqlgenShopVariantExt(
-	&ShopVariantExt{}, &Variant{}, sq.AS("v"),
-	sq.JOIN, &ShopVariant{}, sq.AS("sv"), "sp.product_id = v.product_id",
-)
-
-type ShopVariantExt struct {
-	*ShopVariant
-	*Variant
-}
-
-var _ = sqlgenProductFtVariantFtShopProduct(
-	&ProductFtVariantFtShopProduct{}, &Product{}, sq.AS("p"),
-	sq.LEFT_JOIN, &Variant{}, sq.AS("v"), "v.product_id = p.id",
-	sq.LEFT_JOIN, &ShopProduct{}, sq.AS("sp"), "sp.product_id = p.id",
-)
-
-type ProductFtVariantFtShopProduct struct {
-	*Product
-	*Variant
-	*ShopProduct
-}
-
-var _ = sqlgenProductFtShopProduct(
-	&ProductFtShopProduct{}, &Product{}, sq.AS("p"),
-	sq.LEFT_JOIN, &ShopProduct{}, sq.AS("sp"), "sp.product_id = p.id",
-)
-
-type ProductFtShopProduct struct {
-	*Product
-	*ShopProduct
-}
-
-type ShopProductFtVariant struct {
-	*ShopProduct
-	*Product
-	Variants []*ShopVariantExtended
+	Variants []*ShopVariant
 }
 
 var _ = sqlgenShopCollection(&ShopCollection{})
@@ -403,29 +233,13 @@ type ProductAttribute struct {
 	Value string `json:"value"`
 }
 
-var _ = sqlgenProductSource(&ProductSource{})
-
-const ProductSourceCustom = "custom"
-
-type ProductSource struct {
-	ID     int64
-	Type   string
-	Name   string
-	Status model.Status3
-
-	CreatedAt time.Time `sq:"create"`
-	UpdatedAt time.Time `sq:"update"`
-}
-
 var _ = sqlgenProductSourceCategory(&ProductSourceCategory{})
 
 type ProductSourceCategory struct {
 	ID int64
 
-	ProductSourceID   int64
-	ProductSourceType string
-	ParentID          int64
-	ShopID            int64
+	ParentID int64
+	ShopID   int64
 
 	Name string
 

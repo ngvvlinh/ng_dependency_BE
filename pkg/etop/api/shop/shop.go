@@ -30,24 +30,20 @@ import (
 	wrapshop "etop.vn/backend/wrapper/etop/shop"
 	"etop.vn/common/bus"
 	"etop.vn/common/l"
+
 	"github.com/asaskevich/govalidator"
 )
 
 var ll = l.New()
 
 func init() {
-	bus.AddHandler("api", CreateCollection)
-	bus.AddHandler("api", DeleteCollection)
-	bus.AddHandler("api", GetCollection)
-	bus.AddHandler("api", GetCollections)
-	bus.AddHandler("api", GetCollectionsByIDs)
+	bus.AddHandler("api", VersionInfo)
+
 	bus.AddHandler("api", RemoveVariants)
 	bus.AddHandler("api", RemoveProductsCollection)
 	bus.AddHandler("api", UpdateCollection)
 	bus.AddHandler("api", UpdateVariant)
-	bus.AddHandler("api", UpdateProducts)
 	bus.AddHandler("api", UpdateProductsCollection)
-	bus.AddHandler("api", VersionInfo)
 
 	bus.AddHandler("api", AddProducts)
 	bus.AddHandler("api", GetProduct)
@@ -57,9 +53,7 @@ func init() {
 	bus.AddHandler("api", UpdateProductsTags)
 	bus.AddHandler("api", RemoveProducts)
 
-	bus.AddHandler("api", CreateProductSource)
 	bus.AddHandler("api", CreateVariant)
-	bus.AddHandler("api", GetShopProductSources)
 	bus.AddHandler("api", CreateProductSourceCategory)
 	bus.AddHandler("api", UpdateProductsPSCategory)
 	bus.AddHandler("api", UpdateProductImages)
@@ -90,7 +84,6 @@ func init() {
 	bus.AddHandler("api", CreateExternalAccountAhamove)
 	bus.AddHandler("api", GetExternalAccountAhamove)
 	bus.AddHandler("api", RequestVerifyExternalAccountAhamove)
-	bus.AddHandler("api", UpdateExternalAccountAhamoveVerificationImages)
 	bus.AddHandler("api", UpdateExternalAccountAhamoveVerification)
 
 	bus.AddHandler("api", GetExternalAccountHaravan)
@@ -135,55 +128,14 @@ func VersionInfo(ctx context.Context, q *wrapshop.VersionInfoEndpoint) error {
 	return nil
 }
 
-func GetCollection(ctx context.Context, q *wrapshop.GetCollectionEndpoint) error {
-	query := &catalogmodelx.GetShopCollectionQuery{
-		ShopID:       q.Context.Shop.ID,
-		CollectionID: q.Id,
-	}
-	if err := bus.Dispatch(ctx, query); err != nil {
-		return err
-	}
-	q.Result = pbshop.PbCollection(query.Result)
-	return nil
-}
-
-func GetCollectionsByIDs(ctx context.Context, q *wrapshop.GetCollectionsByIDsEndpoint) error {
-	query := &catalogmodelx.GetShopCollectionsQuery{
-		ShopID:        q.Context.Shop.ID,
-		CollectionIDs: q.Ids,
-	}
-	if err := bus.Dispatch(ctx, query); err != nil {
-		return err
-	}
-	q.Result = &pbshop.CollectionsResponse{
-		Collections: pbshop.PbCollections(query.Result.Collections),
-	}
-	return nil
-}
-
-func GetCollections(ctx context.Context, q *wrapshop.GetCollectionsEndpoint) error {
-	query := &catalogmodelx.GetShopCollectionsQuery{
-		ShopID: q.Context.Shop.ID,
-	}
-	if err := bus.Dispatch(ctx, query); err != nil {
-		return err
-	}
-	q.Result = &pbshop.CollectionsResponse{
-		Collections: pbshop.PbCollections(query.Result.Collections),
-	}
-	return nil
-}
-
 func UpdateVariant(ctx context.Context, q *wrapshop.UpdateVariantEndpoint) error {
 	shopID := q.Context.Shop.ID
-	productSourceID := q.Context.Shop.ProductSourceID
 	cmd := &catalogmodelx.UpdateShopVariantCommand{
-		ShopID:          shopID,
-		Variant:         pbshop.PbUpdateVariantToModel(shopID, q.UpdateVariantRequest),
-		CostPrice:       q.CostPrice,
-		Code:            q.Sku,
-		Attributes:      convertpb.AttributesTomodel(q.Attributes),
-		ProductSourceID: productSourceID,
+		ShopID:     shopID,
+		Variant:    pbshop.PbUpdateVariantToModel(shopID, q.UpdateVariantRequest),
+		CostPrice:  q.CostPrice,
+		Code:       q.Sku,
+		Attributes: convertpb.AttributesTomodel(q.Attributes),
 	}
 	if err := bus.Dispatch(ctx, cmd); err != nil {
 		return err
@@ -192,40 +144,10 @@ func UpdateVariant(ctx context.Context, q *wrapshop.UpdateVariantEndpoint) error
 	return nil
 }
 
-func UpdateProducts(ctx context.Context, q *wrapshop.UpdateVariantsEndpoint) error {
-	return cm.ErrTODO
-}
-
-func CreateCollection(ctx context.Context, q *wrapshop.CreateCollectionEndpoint) error {
-	cmd := &catalogmodelx.CreateShopCollectionCommand{
-		Collection: pbshop.PbCreateCollection(q.Context.Shop.ID, q.CreateCollectionRequest),
-	}
-	if err := bus.Dispatch(ctx, cmd); err != nil {
-		return err
-	}
-	q.Result = pbshop.PbCollection(cmd.Result)
-	return nil
-}
-
-func DeleteCollection(ctx context.Context, q *wrapshop.DeleteCollectionEndpoint) error {
-	cmd := &catalogmodelx.RemoveShopCollectionCommand{
-		ShopID:       q.Context.Shop.ID,
-		CollectionID: q.Id,
-	}
-	if err := bus.Dispatch(ctx, cmd); err != nil {
-		return err
-	}
-	q.Result = &pbcm.RemovedResponse{
-		Removed: int32(cmd.Result.Deleted),
-	}
-	return nil
-}
-
 func RemoveVariants(ctx context.Context, q *wrapshop.RemoveVariantsEndpoint) error {
 	cmd := &catalogmodelx.RemoveShopVariantsCommand{
-		ShopID:          q.Context.Shop.ID,
-		IDs:             q.Ids,
-		ProductSourceID: q.Context.Shop.ProductSourceID,
+		ShopID: q.Context.Shop.ID,
+		IDs:    q.Ids,
 	}
 	if err := bus.Dispatch(ctx, cmd); err != nil {
 		return err
@@ -236,65 +158,10 @@ func RemoveVariants(ctx context.Context, q *wrapshop.RemoveVariantsEndpoint) err
 	return nil
 }
 
-func UpdateCollection(ctx context.Context, q *wrapshop.UpdateCollectionEndpoint) error {
-	cmd := &catalogmodelx.UpdateShopCollectionCommand{
-		Collection: pbshop.PbUpdateCollection(q.Context.Shop.ID, q.UpdateCollectionRequest),
-	}
-	if err := bus.Dispatch(ctx, cmd); err != nil {
-		return err
-	}
-	q.Result = pbshop.PbCollection(cmd.Result)
-	return nil
-}
-
-func UpdateProductsCollection(ctx context.Context, q *wrapshop.UpdateProductsCollectionEndpoint) error {
-	cmd := &catalogmodelx.AddProductsToShopCollectionCommand{
-		ShopID:       q.Context.Shop.ID,
-		ProductIDs:   q.ProductIds,
-		CollectionID: q.CollectionId,
-	}
-	if err := bus.Dispatch(ctx, cmd); err != nil {
-		return err
-	}
-	q.Result = &pbshop.UpdateProductsCollectionResponse{
-		Updated: int32(cmd.Result.Updated),
-		Errors:  pbcm.PbErrors(cmd.Result.Errors),
-	}
-	return nil
-}
-
-func RemoveProductsCollection(ctx context.Context, q *wrapshop.RemoveProductsCollectionEndpoint) error {
-	cmd := &catalogmodelx.RemoveProductsFromShopCollectionCommand{
-		ShopID:       q.Context.Shop.ID,
-		ProductIDs:   q.ProductIds,
-		CollectionID: q.CollectionId,
-	}
-	if err := bus.Dispatch(ctx, cmd); err != nil {
-		return err
-	}
-	q.Result = pbcm.Updated(cmd.Result.Updated)
-	return nil
-}
-
-func AddProducts(ctx context.Context, q *wrapshop.AddProductsEndpoint) error {
-	cmd := &catalogmodelx.AddShopProductsCommand{
-		ShopID: q.Context.Shop.ID,
-		IDs:    q.Ids,
-	}
-	if err := bus.Dispatch(ctx, cmd); err != nil {
-		return err
-	}
-	q.Result = &pbshop.AddProductsResponse{
-		Products: PbShopProducts(cmd.Result.Products),
-		Errors:   pbcm.PbErrors(cmd.Result.Errors),
-	}
-	return nil
-}
-
 func GetProduct(ctx context.Context, q *wrapshop.GetProductEndpoint) error {
 	query := &catalog.GetShopProductWithVariantsByIDQuery{
-		ProductID:       q.Id,
-		ProductSourceID: q.Context.Shop.ProductSourceID,
+		ProductID: q.Id,
+		ShopID:    q.Context.Shop.ID,
 	}
 	if err := catalogQuery.Dispatch(ctx, query); err != nil {
 		return err
@@ -305,8 +172,8 @@ func GetProduct(ctx context.Context, q *wrapshop.GetProductEndpoint) error {
 
 func GetProductsByIDs(ctx context.Context, q *wrapshop.GetProductsByIDsEndpoint) error {
 	query := &catalog.ListShopProductsWithVariantsByIDsQuery{
-		IDs:             q.Ids,
-		ProductSourceID: q.Context.Shop.ProductSourceID,
+		IDs:    q.Ids,
+		ShopID: q.Context.Shop.ID,
 	}
 	if err := catalogQuery.Dispatch(ctx, query); err != nil {
 		return err
@@ -320,9 +187,9 @@ func GetProductsByIDs(ctx context.Context, q *wrapshop.GetProductsByIDsEndpoint)
 func GetProducts(ctx context.Context, q *wrapshop.GetProductsEndpoint) error {
 	paging := q.Paging.CMPaging()
 	query := &catalog.ListShopProductsWithVariantsQuery{
-		ProductSourceID: q.Context.Shop.ProductSourceID,
-		Paging:          *paging,
-		Filters:         pbcm.ToFilters(q.Filters),
+		ShopID:  q.Context.Shop.ID,
+		Paging:  *paging,
+		Filters: pbcm.ToFilters(q.Filters),
 	}
 	if err := catalogQuery.Dispatch(ctx, query); err != nil {
 		return err
@@ -336,11 +203,9 @@ func GetProducts(ctx context.Context, q *wrapshop.GetProductsEndpoint) error {
 }
 
 func RemoveProducts(ctx context.Context, q *wrapshop.RemoveProductsEndpoint) error {
-	productSourceID := q.Context.Shop.ProductSourceID
 	cmd := &catalogmodelx.RemoveShopProductsCommand{
-		ShopID:          q.Context.Shop.ID,
-		IDs:             q.Ids,
-		ProductSourceID: productSourceID,
+		ShopID: q.Context.Shop.ID,
+		IDs:    q.Ids,
 	}
 	if err := bus.Dispatch(ctx, cmd); err != nil {
 		return err
@@ -353,12 +218,10 @@ func RemoveProducts(ctx context.Context, q *wrapshop.RemoveProductsEndpoint) err
 
 func UpdateProduct(ctx context.Context, q *wrapshop.UpdateProductEndpoint) error {
 	shopID := q.Context.Shop.ID
-	productSourceID := q.Context.Shop.ProductSourceID
 	cmd := &catalogmodelx.UpdateShopProductCommand{
-		ShopID:          shopID,
-		Product:         pbshop.PbUpdateProductToModel(shopID, q.UpdateProductRequest),
-		Code:            q.Code,
-		ProductSourceID: productSourceID,
+		ShopID:  shopID,
+		Product: pbshop.PbUpdateProductToModel(shopID, q.UpdateProductRequest),
+		Code:    q.Code,
 	}
 	if err := bus.Dispatch(ctx, cmd); err != nil {
 		return err
@@ -369,7 +232,6 @@ func UpdateProduct(ctx context.Context, q *wrapshop.UpdateProductEndpoint) error
 
 func UpdateProductsTags(ctx context.Context, q *wrapshop.UpdateProductsTagsEndpoint) error {
 	shopID := q.Context.Shop.ID
-	productSourceID := q.Context.Shop.ProductSourceID
 	cmd := &catalogmodelx.UpdateShopProductsTagsCommand{
 		ShopID:     shopID,
 		ProductIDs: q.Ids,
@@ -379,7 +241,6 @@ func UpdateProductsTags(ctx context.Context, q *wrapshop.UpdateProductsTagsEndpo
 			ReplaceAll: q.ReplaceAll,
 			DeleteAll:  q.DeleteAll,
 		},
-		ProductSourceID: productSourceID,
 	}
 
 	if err := bus.Dispatch(ctx, cmd); err != nil {
@@ -391,24 +252,9 @@ func UpdateProductsTags(ctx context.Context, q *wrapshop.UpdateProductsTagsEndpo
 	return nil
 }
 
-func CreateProductSource(ctx context.Context, q *wrapshop.CreateProductSourceEndpoint) error {
-	shopID := q.Context.Shop.ID
-	cmd := &catalogmodelx.CreateProductSourceCommand{
-		ShopID: shopID,
-		Name:   q.Name,
-		Type:   q.Type.ToModel(),
-	}
-	if err := bus.Dispatch(ctx, cmd); err != nil {
-		return err
-	}
-	q.Result = PbProductSource(cmd.Result)
-	return nil
-}
-
 func CreateVariant(ctx context.Context, q *wrapshop.CreateVariantEndpoint) error {
 	cmd := &catalogmodelx.CreateVariantCommand{
 		ShopID:            q.Context.Shop.ID,
-		ProductSourceID:   q.ProductSourceId,
 		ProductID:         q.ProductId,
 		ProductName:       q.ProductName,
 		Name:              q.Name,
@@ -436,30 +282,11 @@ func CreateVariant(ctx context.Context, q *wrapshop.CreateVariantEndpoint) error
 	return nil
 }
 
-func GetShopProductSources(ctx context.Context, q *wrapshop.GetShopProductSourcesEndpoint) error {
-	query := &catalogmodelx.GetShopProductSourcesCommand{}
-	if q.Context.User != nil {
-		query.UserID = q.Context.User.ID
-	} else {
-		query.ShopID = q.Context.Shop.ID
-	}
-	if err := bus.Dispatch(ctx, query); err != nil {
-		return err
-	}
-
-	q.Result = &pbshop.ProductSourcesResponse{
-		ProductSources: PbProductSources(query.Result),
-	}
-	return nil
-}
-
 func CreateProductSourceCategory(ctx context.Context, q *wrapshop.CreateProductSourceCategoryEndpoint) error {
 	cmd := &catalogmodelx.CreateProductSourceCategoryCommand{
-		ShopID:            q.Context.Shop.ID,
-		Name:              q.Name,
-		ParentID:          q.ParentId,
-		ProductSourceID:   q.ProductSourceId,
-		ProductSourceType: q.ProductSourceType.ToModel(),
+		ShopID:   q.Context.Shop.ID,
+		Name:     q.Name,
+		ParentID: q.ParentId,
 	}
 
 	if err := bus.Dispatch(ctx, cmd); err != nil {
@@ -471,10 +298,9 @@ func CreateProductSourceCategory(ctx context.Context, q *wrapshop.CreateProductS
 
 func UpdateProductsPSCategory(ctx context.Context, q *wrapshop.UpdateProductsPSCategoryEndpoint) error {
 	cmd := &catalogmodelx.UpdateProductsProductSourceCategoryCommand{
-		CategoryID:      q.CategoryId,
-		ProductIDs:      q.ProductIds,
-		ShopID:          q.Context.Shop.ID,
-		ProductSourceID: q.Context.Shop.ProductSourceID,
+		CategoryID: q.CategoryId,
+		ProductIDs: q.ProductIds,
+		ShopID:     q.Context.Shop.ID,
 	}
 	if err := bus.Dispatch(ctx, cmd); err != nil {
 		return err
@@ -501,8 +327,7 @@ func GetProductSourceCategory(ctx context.Context, q *wrapshop.GetProductSourceC
 
 func GetProductSourceCategories(ctx context.Context, q *wrapshop.GetProductSourceCategoriesEndpoint) error {
 	cmd := &catalogmodelx.GetProductSourceCategoriesQuery{
-		ProductSourceType: q.Type.ToModel(),
-		ShopID:            q.Context.Shop.ID,
+		ShopID: q.Context.Shop.ID,
 	}
 
 	if err := bus.Dispatch(ctx, cmd); err != nil {
@@ -546,8 +371,8 @@ func RemoveProductSourceCategory(ctx context.Context, q *wrapshop.RemoveProductS
 func UpdateProductImages(ctx context.Context, q *wrapshop.UpdateProductImagesEndpoint) error {
 	shopID := q.Context.Shop.ID
 	query := &catalog.GetShopProductByIDQuery{
-		ProductID:       q.Id,
-		ProductSourceID: q.Context.Shop.ProductSourceID,
+		ProductID: q.Id,
+		ShopID:    q.Context.Shop.ID,
 	}
 	if err := catalogQuery.Dispatch(ctx, query); err != nil {
 		return err
@@ -560,7 +385,7 @@ func UpdateProductImages(ctx context.Context, q *wrapshop.UpdateProductImagesEnd
 		DeleteAll:  q.DeleteAll,
 	}
 
-	imageURLs, err := pbcm.PatchImage(query.Result.ShopProduct.ImageURLs, r)
+	imageURLs, err := pbcm.PatchImage(query.Result.ImageURLs, r)
 	if err != nil {
 		return err
 	}
@@ -588,7 +413,7 @@ func UpdateVariantImages(ctx context.Context, q *wrapshop.UpdateVariantImagesEnd
 	}
 	var sourceImages []string
 	if err := bus.Dispatch(ctx, query); err == nil {
-		sourceImages = query.Result.ShopVariant.ImageURLs
+		sourceImages = query.Result.ImageURLs
 	}
 
 	r := &model.UpdateListRequest{
@@ -609,7 +434,6 @@ func UpdateVariantImages(ctx context.Context, q *wrapshop.UpdateVariantImagesEnd
 			ShopID:    shopID,
 			ImageURLs: imageURLs,
 		},
-		ProductSourceID: q.Context.Shop.ProductSourceID,
 	}
 	if err := bus.Dispatch(ctx, cmd); err != nil {
 		return err
@@ -981,50 +805,6 @@ func RequestVerifyExternalAccountAhamove(ctx context.Context, q *wrapshop.Reques
 	}
 
 	q.Result = &pbcm.UpdatedResponse{
-		Updated: 1,
-	}
-	return nil
-}
-
-// Backward-compatible
-// Deprecated
-// Remove later
-func UpdateExternalAccountAhamoveVerificationImages(ctx context.Context, r *wrapshop.UpdateExternalAccountAhamoveVerificationImagesEndpoint) error {
-	if err := validateUrl(r.IdCardFrontImg, r.IdCardBackImg, r.PortraitImg, r.WebsiteUrl, r.FanpageUrl); err != nil {
-		return err
-	}
-	if err := validateUrl(r.BusinessLicenseImgs...); err != nil {
-		return err
-	}
-	if err := validateUrl(r.CompanyImgs...); err != nil {
-		return err
-	}
-
-	query := &model.GetUserByIDQuery{
-		UserID: r.Context.Shop.OwnerID,
-	}
-	if err := bus.Dispatch(ctx, query); err != nil {
-		return err
-	}
-	user := query.Result
-	phone := user.Phone
-
-	cmd := &identity.UpdateExternalAccountAhamoveVerificationCommand{
-		OwnerID:             user.ID,
-		Phone:               phone,
-		IDCardFrontImg:      r.IdCardFrontImg,
-		IDCardBackImg:       r.IdCardBackImg,
-		PortraitImg:         r.PortraitImg,
-		WebsiteURL:          r.WebsiteUrl,
-		FanpageURL:          r.FanpageUrl,
-		CompanyImgs:         r.CompanyImgs,
-		BusinessLicenseImgs: r.BusinessLicenseImgs,
-	}
-	if err := identityAggr.Dispatch(ctx, cmd); err != nil {
-		return err
-	}
-
-	r.Result = &pbcm.UpdatedResponse{
 		Updated: 1,
 	}
 	return nil

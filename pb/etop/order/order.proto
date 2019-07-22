@@ -794,7 +794,7 @@ message ValueInfo {
 }
 
 message CreateShipnowFulfillmentRequest {
-    repeated int64 order_ids = 1 [(gogoproto.nullable) = false];
+    repeated int64 order_ids = 1;
     optional string carrier = 2 [(gogoproto.nullable)=false];
     optional string shipping_service_code = 3 [(gogoproto.nullable)=false];
     optional int32 shipping_service_fee = 4 [(gogoproto.nullable)=false];
@@ -805,7 +805,7 @@ message CreateShipnowFulfillmentRequest {
 
 message UpdateShipnowFulfillmentRequest {
     optional int64 id = 8 [(gogoproto.nullable) = false];
-    repeated int64 order_ids = 1 [(gogoproto.nullable) = false];
+    repeated int64 order_ids = 1;
     optional string carrier = 2 [(gogoproto.nullable)=false];
     optional string shipping_service_code = 3 [(gogoproto.nullable)=false];
     optional int32 shipping_service_fee = 4 [(gogoproto.nullable)=false];

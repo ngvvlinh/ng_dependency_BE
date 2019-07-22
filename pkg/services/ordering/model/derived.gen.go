@@ -6,9 +6,7 @@ import (
 	"database/sql"
 	"time"
 
-	sq "etop.vn/backend/pkg/common/sq"
 	core "etop.vn/backend/pkg/common/sq/core"
-	etop_vn_backend_pkg_services_catalog_model "etop.vn/backend/pkg/services/catalog/model"
 )
 
 type SQLWriter = core.SQLWriter
@@ -1333,102 +1331,4 @@ func (ms *OrderLineHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
 	}
 	*ms = res
 	return nil
-}
-
-// Type OrderLineExtended represents a join
-func sqlgenOrderLineExtended(_ *OrderLineExtended, _ *OrderLine, as sq.AS, t0 sq.JOIN_TYPE, _ *etop_vn_backend_pkg_services_catalog_model.Variant, a0 sq.AS, c0 string) bool {
-	__sqlOrderLineExtended_JoinTypes = []sq.JOIN_TYPE{t0}
-	__sqlOrderLineExtended_As = as
-	__sqlOrderLineExtended_JoinAs = []sq.AS{a0}
-	__sqlOrderLineExtended_JoinConds = []string{c0}
-	return true
-}
-
-type OrderLineExtendeds []*OrderLineExtended
-
-var __sqlOrderLineExtended_JoinTypes []sq.JOIN_TYPE
-var __sqlOrderLineExtended_As sq.AS
-var __sqlOrderLineExtended_JoinAs []sq.AS
-var __sqlOrderLineExtended_JoinConds []string
-
-func (m *OrderLineExtended) SQLTableName() string  { return "order_line" }
-func (m *OrderLineExtendeds) SQLTableName() string { return "order_line" }
-
-func (m *OrderLineExtended) SQLScan(opts core.Opts, row *sql.Row) error {
-	return row.Scan(m.SQLScanArgs(opts)...)
-}
-
-func (ms *OrderLineExtendeds) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	res := make(OrderLineExtendeds, 0, 128)
-	for rows.Next() {
-		m := new(OrderLineExtended)
-		args := m.SQLScanArgs(opts)
-		if err := rows.Scan(args...); err != nil {
-			return err
-		}
-		res = append(res, m)
-	}
-	if err := rows.Err(); err != nil {
-		return err
-	}
-	*ms = res
-	return nil
-}
-
-func (m *OrderLineExtended) SQLSelect(w SQLWriter) error {
-	(*OrderLineExtended)(nil).__sqlSelect(w)
-	w.WriteByte(' ')
-	(*OrderLineExtended)(nil).__sqlJoin(w, __sqlOrderLineExtended_JoinTypes)
-	return nil
-}
-
-func (m *OrderLineExtendeds) SQLSelect(w SQLWriter) error {
-	return (*OrderLineExtended)(nil).SQLSelect(w)
-}
-
-func (m *OrderLineExtended) SQLJoin(w SQLWriter, types []sq.JOIN_TYPE) error {
-	if len(types) == 0 {
-		types = __sqlOrderLineExtended_JoinTypes
-	}
-	m.__sqlJoin(w, types)
-	return nil
-}
-
-func (m *OrderLineExtendeds) SQLJoin(w SQLWriter, types []sq.JOIN_TYPE) error {
-	return (*OrderLineExtended)(nil).SQLJoin(w, types)
-}
-
-func (m *OrderLineExtended) __sqlSelect(w SQLWriter) {
-	w.WriteRawString("SELECT ")
-	core.WriteCols(w, string(__sqlOrderLineExtended_As), (*OrderLine)(nil).SQLListCols())
-	w.WriteByte(',')
-	core.WriteCols(w, string(__sqlOrderLineExtended_JoinAs[0]), (*etop_vn_backend_pkg_services_catalog_model.Variant)(nil).SQLListCols())
-}
-
-func (m *OrderLineExtended) __sqlJoin(w SQLWriter, types []sq.JOIN_TYPE) {
-	if len(types) != 1 {
-		panic("common/sql: expect 1 type to join")
-	}
-	w.WriteRawString("FROM ")
-	w.WriteName("order_line")
-	w.WriteRawString(" AS ")
-	w.WriteRawString(string(__sqlOrderLineExtended_As))
-	w.WriteByte(' ')
-	w.WriteRawString(string(types[0]))
-	w.WriteRawString(" JOIN ")
-	w.WriteName((*etop_vn_backend_pkg_services_catalog_model.Variant)(nil).SQLTableName())
-	w.WriteRawString(" AS ")
-	w.WriteRawString(string(__sqlOrderLineExtended_JoinAs[0]))
-	w.WriteRawString(" ON ")
-	w.WriteQueryString(__sqlOrderLineExtended_JoinConds[0])
-}
-
-func (m *OrderLineExtended) SQLScanArgs(opts core.Opts) []interface{} {
-	args := make([]interface{}, 0, 64) // TODO: pre-calculate length
-	m.OrderLine = new(OrderLine)
-	args = append(args, m.OrderLine.SQLScanArgs(opts)...)
-	m.Variant = new(etop_vn_backend_pkg_services_catalog_model.Variant)
-	args = append(args, m.Variant.SQLScanArgs(opts)...)
-
-	return args
 }

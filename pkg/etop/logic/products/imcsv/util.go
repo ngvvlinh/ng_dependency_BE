@@ -27,16 +27,16 @@ import (
 var ll = l.New()
 var idempgroup *idemp.RedisGroup
 var uploader *upload.Uploader
-var productStore catalogsqlstore.ProductStoreFactory
-var variantStore catalogsqlstore.VariantStoreFactory
+var shopProductStore catalogsqlstore.ShopProductStoreFactory
+var shopVariantStore catalogsqlstore.ShopVariantStoreFactory
 
 const PrefixIdemp = "IdempImportProduct"
 
 func Init(sd cmservice.Shutdowner, rd redis.Store, ul *upload.Uploader, db cmsql.Database) {
 	idempgroup = idemp.NewRedisGroup(rd, PrefixIdemp, 5*60) // 5 minutes
 	sd.Register(idempgroup.Shutdown)
-	productStore = catalogsqlstore.NewProductStore(db)
-	variantStore = catalogsqlstore.NewVariantStore(db)
+	shopProductStore = catalogsqlstore.NewShopProductStore(db)
+	shopVariantStore = catalogsqlstore.NewShopVariantStore(db)
 
 	if ul != nil {
 		uploader = ul

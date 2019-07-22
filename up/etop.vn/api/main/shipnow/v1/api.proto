@@ -21,7 +21,6 @@ option (gogoproto.verbose_equal_all)        = false;
 import "etop.vn/api/main/ordering/v1/types/types.proto";
 import "etop.vn/api/main/shipping/v1/types/tryon.proto";
 import "etop.vn/api/main/shipping/v1/types/types.proto";
-import "etop.vn/api/main/shipping/v1/types/feeline.proto";
 import "etop.vn/api/meta/v1/api.proto";
 import "etop.vn/api/main/etop/v1/status5.proto";
 import "etop.vn/api/main/etop/v1/status3.proto";
@@ -103,7 +102,7 @@ message ShipnowFulfillment {
 //-- Commands --//
 
 message CreateShipnowFulfillmentCommand {
-    repeated int64 order_ids = 1 [(gogoproto.nullable) = false];
+    repeated int64 order_ids = 1;
 
     optional shipnow.carrier.v1.carrier.Carrier carrier = 2 [(gogoproto.nullable)=false];
 
@@ -123,7 +122,7 @@ message CreateShipnowFulfillmentCommand {
 message UpdateShipnowFulfillmentCommand {
     optional int64 id = 1 [(gogoproto.nullable) = false];
 
-    repeated int64 order_ids = 2 [(gogoproto.nullable) = false];
+    repeated int64 order_ids = 2;
 
     optional shipnow.carrier.v1.carrier.Carrier carrier = 3 [(gogoproto.nullable)=false];
 
@@ -210,7 +209,7 @@ message GetShipnowFulfillmentQueryArgs {
 }
 
 message GetShipnowFulfillmentsQueryArgs {
-    repeated int64 shop_ids = 1 [(gogoproto.nullable) = false];
+    repeated int64 shop_ids = 1;
     optional meta.v1.Paging paging = 2;
     repeated meta.v1.Filter filters = 3;
 }

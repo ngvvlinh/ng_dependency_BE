@@ -12,912 +12,12 @@ import (
 
 type SQLWriter = core.SQLWriter
 
-// Type Product represents table product
-func sqlgenProduct(_ *Product) bool { return true }
-
-type Products []*Product
-
-const __sqlProduct_Table = "product"
-const __sqlProduct_ListCols = "\"id\",\"product_source_id\",\"product_source_category_id\",\"name\",\"short_desc\",\"description\",\"desc_html\",\"unit\",\"image_urls\",\"status\",\"ed_code\",\"created_at\",\"updated_at\",\"name_norm\",\"name_norm_ua\""
-const __sqlProduct_Insert = "INSERT INTO \"product\" (" + __sqlProduct_ListCols + ") VALUES"
-const __sqlProduct_Select = "SELECT " + __sqlProduct_ListCols + " FROM \"product\""
-const __sqlProduct_Select_history = "SELECT " + __sqlProduct_ListCols + " FROM history.\"product\""
-const __sqlProduct_UpdateAll = "UPDATE \"product\" SET (" + __sqlProduct_ListCols + ")"
-
-func (m *Product) SQLTableName() string  { return "product" }
-func (m *Products) SQLTableName() string { return "product" }
-func (m *Product) SQLListCols() string   { return __sqlProduct_ListCols }
-
-func (m *Product) SQLArgs(opts core.Opts, create bool) []interface{} {
-	now := time.Now()
-	return []interface{}{
-		core.Int64(m.ID),
-		core.Int64(m.ProductSourceID),
-		core.Int64(m.ProductSourceCategoryID),
-		core.String(m.Name),
-		core.String(m.ShortDesc),
-		core.String(m.Description),
-		core.String(m.DescHTML),
-		core.String(m.Unit),
-		core.Array{m.ImageURLs, opts},
-		core.Int(m.Status),
-		core.String(m.Code),
-		core.Now(m.CreatedAt, now, create),
-		core.Now(m.UpdatedAt, now, true),
-		core.String(m.NameNorm),
-		core.String(m.NameNormUa),
-	}
-}
-
-func (m *Product) SQLScanArgs(opts core.Opts) []interface{} {
-	return []interface{}{
-		(*core.Int64)(&m.ID),
-		(*core.Int64)(&m.ProductSourceID),
-		(*core.Int64)(&m.ProductSourceCategoryID),
-		(*core.String)(&m.Name),
-		(*core.String)(&m.ShortDesc),
-		(*core.String)(&m.Description),
-		(*core.String)(&m.DescHTML),
-		(*core.String)(&m.Unit),
-		core.Array{&m.ImageURLs, opts},
-		(*core.Int)(&m.Status),
-		(*core.String)(&m.Code),
-		(*core.Time)(&m.CreatedAt),
-		(*core.Time)(&m.UpdatedAt),
-		(*core.String)(&m.NameNorm),
-		(*core.String)(&m.NameNormUa),
-	}
-}
-
-func (m *Product) SQLScan(opts core.Opts, row *sql.Row) error {
-	return row.Scan(m.SQLScanArgs(opts)...)
-}
-
-func (ms *Products) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	res := make(Products, 0, 128)
-	for rows.Next() {
-		m := new(Product)
-		args := m.SQLScanArgs(opts)
-		if err := rows.Scan(args...); err != nil {
-			return err
-		}
-		res = append(res, m)
-	}
-	if err := rows.Err(); err != nil {
-		return err
-	}
-	*ms = res
-	return nil
-}
-
-func (_ *Product) SQLSelect(w SQLWriter) error {
-	w.WriteQueryString(__sqlProduct_Select)
-	return nil
-}
-
-func (_ *Products) SQLSelect(w SQLWriter) error {
-	w.WriteQueryString(__sqlProduct_Select)
-	return nil
-}
-
-func (m *Product) SQLInsert(w SQLWriter) error {
-	w.WriteQueryString(__sqlProduct_Insert)
-	w.WriteRawString(" (")
-	w.WriteMarkers(15)
-	w.WriteByte(')')
-	w.WriteArgs(m.SQLArgs(w.Opts(), true))
-	return nil
-}
-
-func (ms Products) SQLInsert(w SQLWriter) error {
-	w.WriteQueryString(__sqlProduct_Insert)
-	w.WriteRawString(" (")
-	for i := 0; i < len(ms); i++ {
-		w.WriteMarkers(15)
-		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
-		w.WriteRawString("),(")
-	}
-	w.TrimLast(2)
-	return nil
-}
-
-func (m *Product) SQLUpdate(w SQLWriter) error {
-	now, opts := time.Now(), w.Opts()
-	_, _ = now, opts // suppress unuse error
-	var flag bool
-	w.WriteRawString("UPDATE ")
-	w.WriteName("product")
-	w.WriteRawString(" SET ")
-	if m.ID != 0 {
-		flag = true
-		w.WriteName("id")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(m.ID)
-	}
-	if m.ProductSourceID != 0 {
-		flag = true
-		w.WriteName("product_source_id")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(m.ProductSourceID)
-	}
-	if m.ProductSourceCategoryID != 0 {
-		flag = true
-		w.WriteName("product_source_category_id")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(m.ProductSourceCategoryID)
-	}
-	if m.Name != "" {
-		flag = true
-		w.WriteName("name")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(m.Name)
-	}
-	if m.ShortDesc != "" {
-		flag = true
-		w.WriteName("short_desc")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(m.ShortDesc)
-	}
-	if m.Description != "" {
-		flag = true
-		w.WriteName("description")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(m.Description)
-	}
-	if m.DescHTML != "" {
-		flag = true
-		w.WriteName("desc_html")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(m.DescHTML)
-	}
-	if m.Unit != "" {
-		flag = true
-		w.WriteName("unit")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(m.Unit)
-	}
-	if m.ImageURLs != nil {
-		flag = true
-		w.WriteName("image_urls")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(core.Array{m.ImageURLs, opts})
-	}
-	if m.Status != 0 {
-		flag = true
-		w.WriteName("status")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(int(m.Status))
-	}
-	if m.Code != "" {
-		flag = true
-		w.WriteName("ed_code")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(m.Code)
-	}
-	if !m.CreatedAt.IsZero() {
-		flag = true
-		w.WriteName("created_at")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(m.CreatedAt)
-	}
-	if !m.UpdatedAt.IsZero() {
-		flag = true
-		w.WriteName("updated_at")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(core.Now(m.UpdatedAt, time.Now(), true))
-	}
-	if m.NameNorm != "" {
-		flag = true
-		w.WriteName("name_norm")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(m.NameNorm)
-	}
-	if m.NameNormUa != "" {
-		flag = true
-		w.WriteName("name_norm_ua")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(m.NameNormUa)
-	}
-	if !flag {
-		return core.ErrNoColumn
-	}
-	w.TrimLast(1)
-	return nil
-}
-
-func (m *Product) SQLUpdateAll(w SQLWriter) error {
-	w.WriteQueryString(__sqlProduct_UpdateAll)
-	w.WriteRawString(" = (")
-	w.WriteMarkers(15)
-	w.WriteByte(')')
-	w.WriteArgs(m.SQLArgs(w.Opts(), false))
-	return nil
-}
-
-type ProductHistory map[string]interface{}
-type ProductHistories []map[string]interface{}
-
-func (m *ProductHistory) SQLTableName() string  { return "history.\"product\"" }
-func (m ProductHistories) SQLTableName() string { return "history.\"product\"" }
-
-func (m *ProductHistory) SQLSelect(w SQLWriter) error {
-	w.WriteQueryString(__sqlProduct_Select_history)
-	return nil
-}
-
-func (m ProductHistories) SQLSelect(w SQLWriter) error {
-	w.WriteQueryString(__sqlProduct_Select_history)
-	return nil
-}
-
-func (m ProductHistory) ID() core.Interface { return core.Interface{m["id"]} }
-func (m ProductHistory) ProductSourceID() core.Interface {
-	return core.Interface{m["product_source_id"]}
-}
-func (m ProductHistory) ProductSourceCategoryID() core.Interface {
-	return core.Interface{m["product_source_category_id"]}
-}
-func (m ProductHistory) Name() core.Interface        { return core.Interface{m["name"]} }
-func (m ProductHistory) ShortDesc() core.Interface   { return core.Interface{m["short_desc"]} }
-func (m ProductHistory) Description() core.Interface { return core.Interface{m["description"]} }
-func (m ProductHistory) DescHTML() core.Interface    { return core.Interface{m["desc_html"]} }
-func (m ProductHistory) Unit() core.Interface        { return core.Interface{m["unit"]} }
-func (m ProductHistory) ImageURLs() core.Interface   { return core.Interface{m["image_urls"]} }
-func (m ProductHistory) Status() core.Interface      { return core.Interface{m["status"]} }
-func (m ProductHistory) Code() core.Interface        { return core.Interface{m["ed_code"]} }
-func (m ProductHistory) CreatedAt() core.Interface   { return core.Interface{m["created_at"]} }
-func (m ProductHistory) UpdatedAt() core.Interface   { return core.Interface{m["updated_at"]} }
-func (m ProductHistory) NameNorm() core.Interface    { return core.Interface{m["name_norm"]} }
-func (m ProductHistory) NameNormUa() core.Interface  { return core.Interface{m["name_norm_ua"]} }
-
-func (m *ProductHistory) SQLScan(opts core.Opts, row *sql.Row) error {
-	data := make([]interface{}, 15)
-	args := make([]interface{}, 15)
-	for i := 0; i < 15; i++ {
-		args[i] = &data[i]
-	}
-	if err := row.Scan(args...); err != nil {
-		return err
-	}
-	res := make(ProductHistory, 15)
-	res["id"] = data[0]
-	res["product_source_id"] = data[1]
-	res["product_source_category_id"] = data[2]
-	res["name"] = data[3]
-	res["short_desc"] = data[4]
-	res["description"] = data[5]
-	res["desc_html"] = data[6]
-	res["unit"] = data[7]
-	res["image_urls"] = data[8]
-	res["status"] = data[9]
-	res["ed_code"] = data[10]
-	res["created_at"] = data[11]
-	res["updated_at"] = data[12]
-	res["name_norm"] = data[13]
-	res["name_norm_ua"] = data[14]
-	*m = res
-	return nil
-}
-
-func (ms *ProductHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	data := make([]interface{}, 15)
-	args := make([]interface{}, 15)
-	for i := 0; i < 15; i++ {
-		args[i] = &data[i]
-	}
-	res := make(ProductHistories, 0, 128)
-	for rows.Next() {
-		if err := rows.Scan(args...); err != nil {
-			return err
-		}
-		m := make(ProductHistory)
-		m["id"] = data[0]
-		m["product_source_id"] = data[1]
-		m["product_source_category_id"] = data[2]
-		m["name"] = data[3]
-		m["short_desc"] = data[4]
-		m["description"] = data[5]
-		m["desc_html"] = data[6]
-		m["unit"] = data[7]
-		m["image_urls"] = data[8]
-		m["status"] = data[9]
-		m["ed_code"] = data[10]
-		m["created_at"] = data[11]
-		m["updated_at"] = data[12]
-		m["name_norm"] = data[13]
-		m["name_norm_ua"] = data[14]
-		res = append(res, m)
-	}
-	if err := rows.Err(); err != nil {
-		return err
-	}
-	*ms = res
-	return nil
-}
-
-// Type ProductExtended represents a join
-func sqlgenProductExtended(_ *ProductExtended, _ *Product, as sq.AS, t0 sq.JOIN_TYPE, _ *ProductSource, a0 sq.AS, c0 string) bool {
-	__sqlProductExtended_JoinTypes = []sq.JOIN_TYPE{t0}
-	__sqlProductExtended_As = as
-	__sqlProductExtended_JoinAs = []sq.AS{a0}
-	__sqlProductExtended_JoinConds = []string{c0}
-	return true
-}
-
-type ProductExtendeds []*ProductExtended
-
-var __sqlProductExtended_JoinTypes []sq.JOIN_TYPE
-var __sqlProductExtended_As sq.AS
-var __sqlProductExtended_JoinAs []sq.AS
-var __sqlProductExtended_JoinConds []string
-
-func (m *ProductExtended) SQLTableName() string  { return "product" }
-func (m *ProductExtendeds) SQLTableName() string { return "product" }
-
-func (m *ProductExtended) SQLScan(opts core.Opts, row *sql.Row) error {
-	return row.Scan(m.SQLScanArgs(opts)...)
-}
-
-func (ms *ProductExtendeds) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	res := make(ProductExtendeds, 0, 128)
-	for rows.Next() {
-		m := new(ProductExtended)
-		args := m.SQLScanArgs(opts)
-		if err := rows.Scan(args...); err != nil {
-			return err
-		}
-		res = append(res, m)
-	}
-	if err := rows.Err(); err != nil {
-		return err
-	}
-	*ms = res
-	return nil
-}
-
-func (m *ProductExtended) SQLSelect(w SQLWriter) error {
-	(*ProductExtended)(nil).__sqlSelect(w)
-	w.WriteByte(' ')
-	(*ProductExtended)(nil).__sqlJoin(w, __sqlProductExtended_JoinTypes)
-	return nil
-}
-
-func (m *ProductExtendeds) SQLSelect(w SQLWriter) error {
-	return (*ProductExtended)(nil).SQLSelect(w)
-}
-
-func (m *ProductExtended) SQLJoin(w SQLWriter, types []sq.JOIN_TYPE) error {
-	if len(types) == 0 {
-		types = __sqlProductExtended_JoinTypes
-	}
-	m.__sqlJoin(w, types)
-	return nil
-}
-
-func (m *ProductExtendeds) SQLJoin(w SQLWriter, types []sq.JOIN_TYPE) error {
-	return (*ProductExtended)(nil).SQLJoin(w, types)
-}
-
-func (m *ProductExtended) __sqlSelect(w SQLWriter) {
-	w.WriteRawString("SELECT ")
-	core.WriteCols(w, string(__sqlProductExtended_As), (*Product)(nil).SQLListCols())
-	w.WriteByte(',')
-	core.WriteCols(w, string(__sqlProductExtended_JoinAs[0]), (*ProductSource)(nil).SQLListCols())
-}
-
-func (m *ProductExtended) __sqlJoin(w SQLWriter, types []sq.JOIN_TYPE) {
-	if len(types) != 1 {
-		panic("common/sql: expect 1 type to join")
-	}
-	w.WriteRawString("FROM ")
-	w.WriteName("product")
-	w.WriteRawString(" AS ")
-	w.WriteRawString(string(__sqlProductExtended_As))
-	w.WriteByte(' ')
-	w.WriteRawString(string(types[0]))
-	w.WriteRawString(" JOIN ")
-	w.WriteName((*ProductSource)(nil).SQLTableName())
-	w.WriteRawString(" AS ")
-	w.WriteRawString(string(__sqlProductExtended_JoinAs[0]))
-	w.WriteRawString(" ON ")
-	w.WriteQueryString(__sqlProductExtended_JoinConds[0])
-}
-
-func (m *ProductExtended) SQLScanArgs(opts core.Opts) []interface{} {
-	args := make([]interface{}, 0, 64) // TODO: pre-calculate length
-	m.Product = new(Product)
-	args = append(args, m.Product.SQLScanArgs(opts)...)
-	m.ProductSource = new(ProductSource)
-	args = append(args, m.ProductSource.SQLScanArgs(opts)...)
-
-	return args
-}
-
-// Type Variant represents table variant
-func sqlgenVariant(_ *Variant) bool { return true }
-
-type Variants []*Variant
-
-const __sqlVariant_Table = "variant"
-const __sqlVariant_ListCols = "\"id\",\"product_id\",\"product_source_id\",\"ed_code\",\"short_desc\",\"description\",\"desc_html\",\"image_urls\",\"attributes\",\"cost_price\",\"list_price\",\"status\",\"created_at\",\"updated_at\",\"attr_norm_kv\""
-const __sqlVariant_Insert = "INSERT INTO \"variant\" (" + __sqlVariant_ListCols + ") VALUES"
-const __sqlVariant_Select = "SELECT " + __sqlVariant_ListCols + " FROM \"variant\""
-const __sqlVariant_Select_history = "SELECT " + __sqlVariant_ListCols + " FROM history.\"variant\""
-const __sqlVariant_UpdateAll = "UPDATE \"variant\" SET (" + __sqlVariant_ListCols + ")"
-
-func (m *Variant) SQLTableName() string  { return "variant" }
-func (m *Variants) SQLTableName() string { return "variant" }
-func (m *Variant) SQLListCols() string   { return __sqlVariant_ListCols }
-
-func (m *Variant) SQLArgs(opts core.Opts, create bool) []interface{} {
-	now := time.Now()
-	return []interface{}{
-		core.Int64(m.ID),
-		core.Int64(m.ProductID),
-		core.Int64(m.ProductSourceID),
-		core.String(m.Code),
-		core.String(m.ShortDesc),
-		core.String(m.Description),
-		core.String(m.DescHTML),
-		core.Array{m.ImageURLs, opts},
-		core.JSON{m.Attributes},
-		core.Int32(m.CostPrice),
-		core.Int32(m.ListPrice),
-		core.Int(m.Status),
-		core.Now(m.CreatedAt, now, create),
-		core.Now(m.UpdatedAt, now, true),
-		core.String(m.AttrNormKv),
-	}
-}
-
-func (m *Variant) SQLScanArgs(opts core.Opts) []interface{} {
-	return []interface{}{
-		(*core.Int64)(&m.ID),
-		(*core.Int64)(&m.ProductID),
-		(*core.Int64)(&m.ProductSourceID),
-		(*core.String)(&m.Code),
-		(*core.String)(&m.ShortDesc),
-		(*core.String)(&m.Description),
-		(*core.String)(&m.DescHTML),
-		core.Array{&m.ImageURLs, opts},
-		core.JSON{&m.Attributes},
-		(*core.Int32)(&m.CostPrice),
-		(*core.Int32)(&m.ListPrice),
-		(*core.Int)(&m.Status),
-		(*core.Time)(&m.CreatedAt),
-		(*core.Time)(&m.UpdatedAt),
-		(*core.String)(&m.AttrNormKv),
-	}
-}
-
-func (m *Variant) SQLScan(opts core.Opts, row *sql.Row) error {
-	return row.Scan(m.SQLScanArgs(opts)...)
-}
-
-func (ms *Variants) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	res := make(Variants, 0, 128)
-	for rows.Next() {
-		m := new(Variant)
-		args := m.SQLScanArgs(opts)
-		if err := rows.Scan(args...); err != nil {
-			return err
-		}
-		res = append(res, m)
-	}
-	if err := rows.Err(); err != nil {
-		return err
-	}
-	*ms = res
-	return nil
-}
-
-func (_ *Variant) SQLSelect(w SQLWriter) error {
-	w.WriteQueryString(__sqlVariant_Select)
-	return nil
-}
-
-func (_ *Variants) SQLSelect(w SQLWriter) error {
-	w.WriteQueryString(__sqlVariant_Select)
-	return nil
-}
-
-func (m *Variant) SQLInsert(w SQLWriter) error {
-	w.WriteQueryString(__sqlVariant_Insert)
-	w.WriteRawString(" (")
-	w.WriteMarkers(15)
-	w.WriteByte(')')
-	w.WriteArgs(m.SQLArgs(w.Opts(), true))
-	return nil
-}
-
-func (ms Variants) SQLInsert(w SQLWriter) error {
-	w.WriteQueryString(__sqlVariant_Insert)
-	w.WriteRawString(" (")
-	for i := 0; i < len(ms); i++ {
-		w.WriteMarkers(15)
-		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
-		w.WriteRawString("),(")
-	}
-	w.TrimLast(2)
-	return nil
-}
-
-func (m *Variant) SQLUpdate(w SQLWriter) error {
-	now, opts := time.Now(), w.Opts()
-	_, _ = now, opts // suppress unuse error
-	var flag bool
-	w.WriteRawString("UPDATE ")
-	w.WriteName("variant")
-	w.WriteRawString(" SET ")
-	if m.ID != 0 {
-		flag = true
-		w.WriteName("id")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(m.ID)
-	}
-	if m.ProductID != 0 {
-		flag = true
-		w.WriteName("product_id")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(m.ProductID)
-	}
-	if m.ProductSourceID != 0 {
-		flag = true
-		w.WriteName("product_source_id")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(m.ProductSourceID)
-	}
-	if m.Code != "" {
-		flag = true
-		w.WriteName("ed_code")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(m.Code)
-	}
-	if m.ShortDesc != "" {
-		flag = true
-		w.WriteName("short_desc")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(m.ShortDesc)
-	}
-	if m.Description != "" {
-		flag = true
-		w.WriteName("description")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(m.Description)
-	}
-	if m.DescHTML != "" {
-		flag = true
-		w.WriteName("desc_html")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(m.DescHTML)
-	}
-	if m.ImageURLs != nil {
-		flag = true
-		w.WriteName("image_urls")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(core.Array{m.ImageURLs, opts})
-	}
-	if m.Attributes != nil {
-		flag = true
-		w.WriteName("attributes")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(core.JSON{m.Attributes})
-	}
-	if m.CostPrice != 0 {
-		flag = true
-		w.WriteName("cost_price")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(m.CostPrice)
-	}
-	if m.ListPrice != 0 {
-		flag = true
-		w.WriteName("list_price")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(m.ListPrice)
-	}
-	if m.Status != 0 {
-		flag = true
-		w.WriteName("status")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(int(m.Status))
-	}
-	if !m.CreatedAt.IsZero() {
-		flag = true
-		w.WriteName("created_at")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(m.CreatedAt)
-	}
-	if !m.UpdatedAt.IsZero() {
-		flag = true
-		w.WriteName("updated_at")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(core.Now(m.UpdatedAt, time.Now(), true))
-	}
-	if m.AttrNormKv != "" {
-		flag = true
-		w.WriteName("attr_norm_kv")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(m.AttrNormKv)
-	}
-	if !flag {
-		return core.ErrNoColumn
-	}
-	w.TrimLast(1)
-	return nil
-}
-
-func (m *Variant) SQLUpdateAll(w SQLWriter) error {
-	w.WriteQueryString(__sqlVariant_UpdateAll)
-	w.WriteRawString(" = (")
-	w.WriteMarkers(15)
-	w.WriteByte(')')
-	w.WriteArgs(m.SQLArgs(w.Opts(), false))
-	return nil
-}
-
-type VariantHistory map[string]interface{}
-type VariantHistories []map[string]interface{}
-
-func (m *VariantHistory) SQLTableName() string  { return "history.\"variant\"" }
-func (m VariantHistories) SQLTableName() string { return "history.\"variant\"" }
-
-func (m *VariantHistory) SQLSelect(w SQLWriter) error {
-	w.WriteQueryString(__sqlVariant_Select_history)
-	return nil
-}
-
-func (m VariantHistories) SQLSelect(w SQLWriter) error {
-	w.WriteQueryString(__sqlVariant_Select_history)
-	return nil
-}
-
-func (m VariantHistory) ID() core.Interface        { return core.Interface{m["id"]} }
-func (m VariantHistory) ProductID() core.Interface { return core.Interface{m["product_id"]} }
-func (m VariantHistory) ProductSourceID() core.Interface {
-	return core.Interface{m["product_source_id"]}
-}
-func (m VariantHistory) Code() core.Interface        { return core.Interface{m["ed_code"]} }
-func (m VariantHistory) ShortDesc() core.Interface   { return core.Interface{m["short_desc"]} }
-func (m VariantHistory) Description() core.Interface { return core.Interface{m["description"]} }
-func (m VariantHistory) DescHTML() core.Interface    { return core.Interface{m["desc_html"]} }
-func (m VariantHistory) ImageURLs() core.Interface   { return core.Interface{m["image_urls"]} }
-func (m VariantHistory) Attributes() core.Interface  { return core.Interface{m["attributes"]} }
-func (m VariantHistory) CostPrice() core.Interface   { return core.Interface{m["cost_price"]} }
-func (m VariantHistory) ListPrice() core.Interface   { return core.Interface{m["list_price"]} }
-func (m VariantHistory) Status() core.Interface      { return core.Interface{m["status"]} }
-func (m VariantHistory) CreatedAt() core.Interface   { return core.Interface{m["created_at"]} }
-func (m VariantHistory) UpdatedAt() core.Interface   { return core.Interface{m["updated_at"]} }
-func (m VariantHistory) AttrNormKv() core.Interface  { return core.Interface{m["attr_norm_kv"]} }
-
-func (m *VariantHistory) SQLScan(opts core.Opts, row *sql.Row) error {
-	data := make([]interface{}, 15)
-	args := make([]interface{}, 15)
-	for i := 0; i < 15; i++ {
-		args[i] = &data[i]
-	}
-	if err := row.Scan(args...); err != nil {
-		return err
-	}
-	res := make(VariantHistory, 15)
-	res["id"] = data[0]
-	res["product_id"] = data[1]
-	res["product_source_id"] = data[2]
-	res["ed_code"] = data[3]
-	res["short_desc"] = data[4]
-	res["description"] = data[5]
-	res["desc_html"] = data[6]
-	res["image_urls"] = data[7]
-	res["attributes"] = data[8]
-	res["cost_price"] = data[9]
-	res["list_price"] = data[10]
-	res["status"] = data[11]
-	res["created_at"] = data[12]
-	res["updated_at"] = data[13]
-	res["attr_norm_kv"] = data[14]
-	*m = res
-	return nil
-}
-
-func (ms *VariantHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	data := make([]interface{}, 15)
-	args := make([]interface{}, 15)
-	for i := 0; i < 15; i++ {
-		args[i] = &data[i]
-	}
-	res := make(VariantHistories, 0, 128)
-	for rows.Next() {
-		if err := rows.Scan(args...); err != nil {
-			return err
-		}
-		m := make(VariantHistory)
-		m["id"] = data[0]
-		m["product_id"] = data[1]
-		m["product_source_id"] = data[2]
-		m["ed_code"] = data[3]
-		m["short_desc"] = data[4]
-		m["description"] = data[5]
-		m["desc_html"] = data[6]
-		m["image_urls"] = data[7]
-		m["attributes"] = data[8]
-		m["cost_price"] = data[9]
-		m["list_price"] = data[10]
-		m["status"] = data[11]
-		m["created_at"] = data[12]
-		m["updated_at"] = data[13]
-		m["attr_norm_kv"] = data[14]
-		res = append(res, m)
-	}
-	if err := rows.Err(); err != nil {
-		return err
-	}
-	*ms = res
-	return nil
-}
-
-// Type VariantExtended represents a join
-func sqlgenVariantExtended(_ *VariantExtended, _ *Variant, as sq.AS, t0 sq.JOIN_TYPE, _ *Product, a0 sq.AS, c0 string) bool {
-	__sqlVariantExtended_JoinTypes = []sq.JOIN_TYPE{t0}
-	__sqlVariantExtended_As = as
-	__sqlVariantExtended_JoinAs = []sq.AS{a0}
-	__sqlVariantExtended_JoinConds = []string{c0}
-	return true
-}
-
-type VariantExtendeds []*VariantExtended
-
-var __sqlVariantExtended_JoinTypes []sq.JOIN_TYPE
-var __sqlVariantExtended_As sq.AS
-var __sqlVariantExtended_JoinAs []sq.AS
-var __sqlVariantExtended_JoinConds []string
-
-func (m *VariantExtended) SQLTableName() string  { return "variant" }
-func (m *VariantExtendeds) SQLTableName() string { return "variant" }
-
-func (m *VariantExtended) SQLScan(opts core.Opts, row *sql.Row) error {
-	return row.Scan(m.SQLScanArgs(opts)...)
-}
-
-func (ms *VariantExtendeds) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	res := make(VariantExtendeds, 0, 128)
-	for rows.Next() {
-		m := new(VariantExtended)
-		args := m.SQLScanArgs(opts)
-		if err := rows.Scan(args...); err != nil {
-			return err
-		}
-		res = append(res, m)
-	}
-	if err := rows.Err(); err != nil {
-		return err
-	}
-	*ms = res
-	return nil
-}
-
-func (m *VariantExtended) SQLSelect(w SQLWriter) error {
-	(*VariantExtended)(nil).__sqlSelect(w)
-	w.WriteByte(' ')
-	(*VariantExtended)(nil).__sqlJoin(w, __sqlVariantExtended_JoinTypes)
-	return nil
-}
-
-func (m *VariantExtendeds) SQLSelect(w SQLWriter) error {
-	return (*VariantExtended)(nil).SQLSelect(w)
-}
-
-func (m *VariantExtended) SQLJoin(w SQLWriter, types []sq.JOIN_TYPE) error {
-	if len(types) == 0 {
-		types = __sqlVariantExtended_JoinTypes
-	}
-	m.__sqlJoin(w, types)
-	return nil
-}
-
-func (m *VariantExtendeds) SQLJoin(w SQLWriter, types []sq.JOIN_TYPE) error {
-	return (*VariantExtended)(nil).SQLJoin(w, types)
-}
-
-func (m *VariantExtended) __sqlSelect(w SQLWriter) {
-	w.WriteRawString("SELECT ")
-	core.WriteCols(w, string(__sqlVariantExtended_As), (*Variant)(nil).SQLListCols())
-	w.WriteByte(',')
-	core.WriteCols(w, string(__sqlVariantExtended_JoinAs[0]), (*Product)(nil).SQLListCols())
-}
-
-func (m *VariantExtended) __sqlJoin(w SQLWriter, types []sq.JOIN_TYPE) {
-	if len(types) != 1 {
-		panic("common/sql: expect 1 type to join")
-	}
-	w.WriteRawString("FROM ")
-	w.WriteName("variant")
-	w.WriteRawString(" AS ")
-	w.WriteRawString(string(__sqlVariantExtended_As))
-	w.WriteByte(' ')
-	w.WriteRawString(string(types[0]))
-	w.WriteRawString(" JOIN ")
-	w.WriteName((*Product)(nil).SQLTableName())
-	w.WriteRawString(" AS ")
-	w.WriteRawString(string(__sqlVariantExtended_JoinAs[0]))
-	w.WriteRawString(" ON ")
-	w.WriteQueryString(__sqlVariantExtended_JoinConds[0])
-}
-
-func (m *VariantExtended) SQLScanArgs(opts core.Opts) []interface{} {
-	args := make([]interface{}, 0, 64) // TODO: pre-calculate length
-	m.Variant = new(Variant)
-	args = append(args, m.Variant.SQLScanArgs(opts)...)
-	m.Product = new(Product)
-	args = append(args, m.Product.SQLScanArgs(opts)...)
-
-	return args
-}
-
 // Type ShopVariantWithProduct represents a join
-func sqlgenShopVariantWithProduct(_ *ShopVariantWithProduct, _ *Variant, as sq.AS, t0 sq.JOIN_TYPE, _ *Product, a0 sq.AS, c0 string, t1 sq.JOIN_TYPE, _ *ShopProduct, a1 sq.AS, c1 string, t2 sq.JOIN_TYPE, _ *ShopVariant, a2 sq.AS, c2 string) bool {
-	__sqlShopVariantWithProduct_JoinTypes = []sq.JOIN_TYPE{t0, t1, t2}
+func sqlgenShopVariantWithProduct(_ *ShopVariantWithProduct, _ *ShopProduct, as sq.AS, t0 sq.JOIN_TYPE, _ *ShopVariant, a0 sq.AS, c0 string) bool {
+	__sqlShopVariantWithProduct_JoinTypes = []sq.JOIN_TYPE{t0}
 	__sqlShopVariantWithProduct_As = as
-	__sqlShopVariantWithProduct_JoinAs = []sq.AS{a0, a1, a2}
-	__sqlShopVariantWithProduct_JoinConds = []string{c0, c1, c2}
+	__sqlShopVariantWithProduct_JoinAs = []sq.AS{a0}
+	__sqlShopVariantWithProduct_JoinConds = []string{c0}
 	return true
 }
 
@@ -928,8 +28,8 @@ var __sqlShopVariantWithProduct_As sq.AS
 var __sqlShopVariantWithProduct_JoinAs []sq.AS
 var __sqlShopVariantWithProduct_JoinConds []string
 
-func (m *ShopVariantWithProduct) SQLTableName() string  { return "variant" }
-func (m *ShopVariantWithProducts) SQLTableName() string { return "variant" }
+func (m *ShopVariantWithProduct) SQLTableName() string  { return "shop_product" }
+func (m *ShopVariantWithProducts) SQLTableName() string { return "shop_product" }
 
 func (m *ShopVariantWithProduct) SQLScan(opts core.Opts, row *sql.Row) error {
 	return row.Scan(m.SQLScanArgs(opts)...)
@@ -977,155 +77,33 @@ func (m *ShopVariantWithProducts) SQLJoin(w SQLWriter, types []sq.JOIN_TYPE) err
 
 func (m *ShopVariantWithProduct) __sqlSelect(w SQLWriter) {
 	w.WriteRawString("SELECT ")
-	core.WriteCols(w, string(__sqlShopVariantWithProduct_As), (*Variant)(nil).SQLListCols())
+	core.WriteCols(w, string(__sqlShopVariantWithProduct_As), (*ShopProduct)(nil).SQLListCols())
 	w.WriteByte(',')
-	core.WriteCols(w, string(__sqlShopVariantWithProduct_JoinAs[0]), (*Product)(nil).SQLListCols())
-	w.WriteByte(',')
-	core.WriteCols(w, string(__sqlShopVariantWithProduct_JoinAs[1]), (*ShopProduct)(nil).SQLListCols())
-	w.WriteByte(',')
-	core.WriteCols(w, string(__sqlShopVariantWithProduct_JoinAs[2]), (*ShopVariant)(nil).SQLListCols())
+	core.WriteCols(w, string(__sqlShopVariantWithProduct_JoinAs[0]), (*ShopVariant)(nil).SQLListCols())
 }
 
 func (m *ShopVariantWithProduct) __sqlJoin(w SQLWriter, types []sq.JOIN_TYPE) {
-	if len(types) != 3 {
-		panic("common/sql: expect 3 types to join")
+	if len(types) != 1 {
+		panic("common/sql: expect 1 type to join")
 	}
 	w.WriteRawString("FROM ")
-	w.WriteName("variant")
+	w.WriteName("shop_product")
 	w.WriteRawString(" AS ")
 	w.WriteRawString(string(__sqlShopVariantWithProduct_As))
 	w.WriteByte(' ')
 	w.WriteRawString(string(types[0]))
 	w.WriteRawString(" JOIN ")
-	w.WriteName((*Product)(nil).SQLTableName())
+	w.WriteName((*ShopVariant)(nil).SQLTableName())
 	w.WriteRawString(" AS ")
 	w.WriteRawString(string(__sqlShopVariantWithProduct_JoinAs[0]))
 	w.WriteRawString(" ON ")
 	w.WriteQueryString(__sqlShopVariantWithProduct_JoinConds[0])
-	w.WriteByte(' ')
-	w.WriteRawString(string(types[1]))
-	w.WriteRawString(" JOIN ")
-	w.WriteName((*ShopProduct)(nil).SQLTableName())
-	w.WriteRawString(" AS ")
-	w.WriteRawString(string(__sqlShopVariantWithProduct_JoinAs[1]))
-	w.WriteRawString(" ON ")
-	w.WriteQueryString(__sqlShopVariantWithProduct_JoinConds[1])
-	w.WriteByte(' ')
-	w.WriteRawString(string(types[2]))
-	w.WriteRawString(" JOIN ")
-	w.WriteName((*ShopVariant)(nil).SQLTableName())
-	w.WriteRawString(" AS ")
-	w.WriteRawString(string(__sqlShopVariantWithProduct_JoinAs[2]))
-	w.WriteRawString(" ON ")
-	w.WriteQueryString(__sqlShopVariantWithProduct_JoinConds[2])
 }
 
 func (m *ShopVariantWithProduct) SQLScanArgs(opts core.Opts) []interface{} {
 	args := make([]interface{}, 0, 64) // TODO: pre-calculate length
-	m.Variant = new(Variant)
-	args = append(args, m.Variant.SQLScanArgs(opts)...)
-	m.Product = new(Product)
-	args = append(args, m.Product.SQLScanArgs(opts)...)
 	m.ShopProduct = new(ShopProduct)
 	args = append(args, m.ShopProduct.SQLScanArgs(opts)...)
-	m.ShopVariant = new(ShopVariant)
-	args = append(args, m.ShopVariant.SQLScanArgs(opts)...)
-
-	return args
-}
-
-// Type ShopVariantExtended represents a join
-func sqlgenShopVariantExtended(_ *ShopVariantExtended, _ *Variant, as sq.AS, t0 sq.JOIN_TYPE, _ *ShopVariant, a0 sq.AS, c0 string) bool {
-	__sqlShopVariantExtended_JoinTypes = []sq.JOIN_TYPE{t0}
-	__sqlShopVariantExtended_As = as
-	__sqlShopVariantExtended_JoinAs = []sq.AS{a0}
-	__sqlShopVariantExtended_JoinConds = []string{c0}
-	return true
-}
-
-type ShopVariantExtendeds []*ShopVariantExtended
-
-var __sqlShopVariantExtended_JoinTypes []sq.JOIN_TYPE
-var __sqlShopVariantExtended_As sq.AS
-var __sqlShopVariantExtended_JoinAs []sq.AS
-var __sqlShopVariantExtended_JoinConds []string
-
-func (m *ShopVariantExtended) SQLTableName() string  { return "variant" }
-func (m *ShopVariantExtendeds) SQLTableName() string { return "variant" }
-
-func (m *ShopVariantExtended) SQLScan(opts core.Opts, row *sql.Row) error {
-	return row.Scan(m.SQLScanArgs(opts)...)
-}
-
-func (ms *ShopVariantExtendeds) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	res := make(ShopVariantExtendeds, 0, 128)
-	for rows.Next() {
-		m := new(ShopVariantExtended)
-		args := m.SQLScanArgs(opts)
-		if err := rows.Scan(args...); err != nil {
-			return err
-		}
-		res = append(res, m)
-	}
-	if err := rows.Err(); err != nil {
-		return err
-	}
-	*ms = res
-	return nil
-}
-
-func (m *ShopVariantExtended) SQLSelect(w SQLWriter) error {
-	(*ShopVariantExtended)(nil).__sqlSelect(w)
-	w.WriteByte(' ')
-	(*ShopVariantExtended)(nil).__sqlJoin(w, __sqlShopVariantExtended_JoinTypes)
-	return nil
-}
-
-func (m *ShopVariantExtendeds) SQLSelect(w SQLWriter) error {
-	return (*ShopVariantExtended)(nil).SQLSelect(w)
-}
-
-func (m *ShopVariantExtended) SQLJoin(w SQLWriter, types []sq.JOIN_TYPE) error {
-	if len(types) == 0 {
-		types = __sqlShopVariantExtended_JoinTypes
-	}
-	m.__sqlJoin(w, types)
-	return nil
-}
-
-func (m *ShopVariantExtendeds) SQLJoin(w SQLWriter, types []sq.JOIN_TYPE) error {
-	return (*ShopVariantExtended)(nil).SQLJoin(w, types)
-}
-
-func (m *ShopVariantExtended) __sqlSelect(w SQLWriter) {
-	w.WriteRawString("SELECT ")
-	core.WriteCols(w, string(__sqlShopVariantExtended_As), (*Variant)(nil).SQLListCols())
-	w.WriteByte(',')
-	core.WriteCols(w, string(__sqlShopVariantExtended_JoinAs[0]), (*ShopVariant)(nil).SQLListCols())
-}
-
-func (m *ShopVariantExtended) __sqlJoin(w SQLWriter, types []sq.JOIN_TYPE) {
-	if len(types) != 1 {
-		panic("common/sql: expect 1 type to join")
-	}
-	w.WriteRawString("FROM ")
-	w.WriteName("variant")
-	w.WriteRawString(" AS ")
-	w.WriteRawString(string(__sqlShopVariantExtended_As))
-	w.WriteByte(' ')
-	w.WriteRawString(string(types[0]))
-	w.WriteRawString(" JOIN ")
-	w.WriteName((*ShopVariant)(nil).SQLTableName())
-	w.WriteRawString(" AS ")
-	w.WriteRawString(string(__sqlShopVariantExtended_JoinAs[0]))
-	w.WriteRawString(" ON ")
-	w.WriteQueryString(__sqlShopVariantExtended_JoinConds[0])
-}
-
-func (m *ShopVariantExtended) SQLScanArgs(opts core.Opts) []interface{} {
-	args := make([]interface{}, 0, 64) // TODO: pre-calculate length
-	m.Variant = new(Variant)
-	args = append(args, m.Variant.SQLScanArgs(opts)...)
 	m.ShopVariant = new(ShopVariant)
 	args = append(args, m.ShopVariant.SQLScanArgs(opts)...)
 
@@ -1138,7 +116,7 @@ func sqlgenShopVariant(_ *ShopVariant) bool { return true }
 type ShopVariants []*ShopVariant
 
 const __sqlShopVariant_Table = "shop_variant"
-const __sqlShopVariant_ListCols = "\"shop_id\",\"variant_id\",\"collection_id\",\"product_id\",\"name\",\"description\",\"desc_html\",\"short_desc\",\"image_urls\",\"note\",\"tags\",\"retail_price\",\"status\",\"created_at\",\"updated_at\",\"name_norm\""
+const __sqlShopVariant_ListCols = "\"shop_id\",\"variant_id\",\"collection_id\",\"product_id\",\"code\",\"name\",\"description\",\"desc_html\",\"short_desc\",\"image_urls\",\"note\",\"tags\",\"cost_price\",\"list_price\",\"retail_price\",\"status\",\"attributes\",\"created_at\",\"updated_at\",\"deleted_at\",\"name_norm\",\"attr_norm_kv\""
 const __sqlShopVariant_Insert = "INSERT INTO \"shop_variant\" (" + __sqlShopVariant_ListCols + ") VALUES"
 const __sqlShopVariant_Select = "SELECT " + __sqlShopVariant_ListCols + " FROM \"shop_variant\""
 const __sqlShopVariant_Select_history = "SELECT " + __sqlShopVariant_ListCols + " FROM history.\"shop_variant\""
@@ -1155,6 +133,7 @@ func (m *ShopVariant) SQLArgs(opts core.Opts, create bool) []interface{} {
 		core.Int64(m.VariantID),
 		core.Int64(m.CollectionID),
 		core.Int64(m.ProductID),
+		core.String(m.Code),
 		core.String(m.Name),
 		core.String(m.Description),
 		core.String(m.DescHTML),
@@ -1162,11 +141,16 @@ func (m *ShopVariant) SQLArgs(opts core.Opts, create bool) []interface{} {
 		core.Array{m.ImageURLs, opts},
 		core.String(m.Note),
 		core.Array{m.Tags, opts},
+		core.Int32(m.CostPrice),
+		core.Int32(m.ListPrice),
 		core.Int32(m.RetailPrice),
 		core.Int(m.Status),
+		core.JSON{m.Attributes},
 		core.Now(m.CreatedAt, now, create),
 		core.Now(m.UpdatedAt, now, true),
+		core.Time(m.DeletedAt),
 		core.String(m.NameNorm),
+		core.String(m.AttrNormKv),
 	}
 }
 
@@ -1176,6 +160,7 @@ func (m *ShopVariant) SQLScanArgs(opts core.Opts) []interface{} {
 		(*core.Int64)(&m.VariantID),
 		(*core.Int64)(&m.CollectionID),
 		(*core.Int64)(&m.ProductID),
+		(*core.String)(&m.Code),
 		(*core.String)(&m.Name),
 		(*core.String)(&m.Description),
 		(*core.String)(&m.DescHTML),
@@ -1183,11 +168,16 @@ func (m *ShopVariant) SQLScanArgs(opts core.Opts) []interface{} {
 		core.Array{&m.ImageURLs, opts},
 		(*core.String)(&m.Note),
 		core.Array{&m.Tags, opts},
+		(*core.Int32)(&m.CostPrice),
+		(*core.Int32)(&m.ListPrice),
 		(*core.Int32)(&m.RetailPrice),
 		(*core.Int)(&m.Status),
+		core.JSON{&m.Attributes},
 		(*core.Time)(&m.CreatedAt),
 		(*core.Time)(&m.UpdatedAt),
+		(*core.Time)(&m.DeletedAt),
 		(*core.String)(&m.NameNorm),
+		(*core.String)(&m.AttrNormKv),
 	}
 }
 
@@ -1225,7 +215,7 @@ func (_ *ShopVariants) SQLSelect(w SQLWriter) error {
 func (m *ShopVariant) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlShopVariant_Insert)
 	w.WriteRawString(" (")
-	w.WriteMarkers(16)
+	w.WriteMarkers(22)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), true))
 	return nil
@@ -1235,7 +225,7 @@ func (ms ShopVariants) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlShopVariant_Insert)
 	w.WriteRawString(" (")
 	for i := 0; i < len(ms); i++ {
-		w.WriteMarkers(16)
+		w.WriteMarkers(22)
 		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
 		w.WriteRawString("),(")
 	}
@@ -1282,6 +272,14 @@ func (m *ShopVariant) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(m.ProductID)
 	}
+	if m.Code != "" {
+		flag = true
+		w.WriteName("code")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.Code)
+	}
 	if m.Name != "" {
 		flag = true
 		w.WriteName("name")
@@ -1338,6 +336,22 @@ func (m *ShopVariant) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(core.Array{m.Tags, opts})
 	}
+	if m.CostPrice != 0 {
+		flag = true
+		w.WriteName("cost_price")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.CostPrice)
+	}
+	if m.ListPrice != 0 {
+		flag = true
+		w.WriteName("list_price")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.ListPrice)
+	}
 	if m.RetailPrice != 0 {
 		flag = true
 		w.WriteName("retail_price")
@@ -1353,6 +367,14 @@ func (m *ShopVariant) SQLUpdate(w SQLWriter) error {
 		w.WriteMarker()
 		w.WriteByte(',')
 		w.WriteArg(int(m.Status))
+	}
+	if m.Attributes != nil {
+		flag = true
+		w.WriteName("attributes")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(core.JSON{m.Attributes})
 	}
 	if !m.CreatedAt.IsZero() {
 		flag = true
@@ -1370,6 +392,14 @@ func (m *ShopVariant) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(core.Now(m.UpdatedAt, time.Now(), true))
 	}
+	if !m.DeletedAt.IsZero() {
+		flag = true
+		w.WriteName("deleted_at")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.DeletedAt)
+	}
 	if m.NameNorm != "" {
 		flag = true
 		w.WriteName("name_norm")
@@ -1377,6 +407,14 @@ func (m *ShopVariant) SQLUpdate(w SQLWriter) error {
 		w.WriteMarker()
 		w.WriteByte(',')
 		w.WriteArg(m.NameNorm)
+	}
+	if m.AttrNormKv != "" {
+		flag = true
+		w.WriteName("attr_norm_kv")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.AttrNormKv)
 	}
 	if !flag {
 		return core.ErrNoColumn
@@ -1388,7 +426,7 @@ func (m *ShopVariant) SQLUpdate(w SQLWriter) error {
 func (m *ShopVariant) SQLUpdateAll(w SQLWriter) error {
 	w.WriteQueryString(__sqlShopVariant_UpdateAll)
 	w.WriteRawString(" = (")
-	w.WriteMarkers(16)
+	w.WriteMarkers(22)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), false))
 	return nil
@@ -1414,6 +452,7 @@ func (m ShopVariantHistory) ShopID() core.Interface       { return core.Interfac
 func (m ShopVariantHistory) VariantID() core.Interface    { return core.Interface{m["variant_id"]} }
 func (m ShopVariantHistory) CollectionID() core.Interface { return core.Interface{m["collection_id"]} }
 func (m ShopVariantHistory) ProductID() core.Interface    { return core.Interface{m["product_id"]} }
+func (m ShopVariantHistory) Code() core.Interface         { return core.Interface{m["code"]} }
 func (m ShopVariantHistory) Name() core.Interface         { return core.Interface{m["name"]} }
 func (m ShopVariantHistory) Description() core.Interface  { return core.Interface{m["description"]} }
 func (m ShopVariantHistory) DescHTML() core.Interface     { return core.Interface{m["desc_html"]} }
@@ -1421,46 +460,57 @@ func (m ShopVariantHistory) ShortDesc() core.Interface    { return core.Interfac
 func (m ShopVariantHistory) ImageURLs() core.Interface    { return core.Interface{m["image_urls"]} }
 func (m ShopVariantHistory) Note() core.Interface         { return core.Interface{m["note"]} }
 func (m ShopVariantHistory) Tags() core.Interface         { return core.Interface{m["tags"]} }
+func (m ShopVariantHistory) CostPrice() core.Interface    { return core.Interface{m["cost_price"]} }
+func (m ShopVariantHistory) ListPrice() core.Interface    { return core.Interface{m["list_price"]} }
 func (m ShopVariantHistory) RetailPrice() core.Interface  { return core.Interface{m["retail_price"]} }
 func (m ShopVariantHistory) Status() core.Interface       { return core.Interface{m["status"]} }
+func (m ShopVariantHistory) Attributes() core.Interface   { return core.Interface{m["attributes"]} }
 func (m ShopVariantHistory) CreatedAt() core.Interface    { return core.Interface{m["created_at"]} }
 func (m ShopVariantHistory) UpdatedAt() core.Interface    { return core.Interface{m["updated_at"]} }
+func (m ShopVariantHistory) DeletedAt() core.Interface    { return core.Interface{m["deleted_at"]} }
 func (m ShopVariantHistory) NameNorm() core.Interface     { return core.Interface{m["name_norm"]} }
+func (m ShopVariantHistory) AttrNormKv() core.Interface   { return core.Interface{m["attr_norm_kv"]} }
 
 func (m *ShopVariantHistory) SQLScan(opts core.Opts, row *sql.Row) error {
-	data := make([]interface{}, 16)
-	args := make([]interface{}, 16)
-	for i := 0; i < 16; i++ {
+	data := make([]interface{}, 22)
+	args := make([]interface{}, 22)
+	for i := 0; i < 22; i++ {
 		args[i] = &data[i]
 	}
 	if err := row.Scan(args...); err != nil {
 		return err
 	}
-	res := make(ShopVariantHistory, 16)
+	res := make(ShopVariantHistory, 22)
 	res["shop_id"] = data[0]
 	res["variant_id"] = data[1]
 	res["collection_id"] = data[2]
 	res["product_id"] = data[3]
-	res["name"] = data[4]
-	res["description"] = data[5]
-	res["desc_html"] = data[6]
-	res["short_desc"] = data[7]
-	res["image_urls"] = data[8]
-	res["note"] = data[9]
-	res["tags"] = data[10]
-	res["retail_price"] = data[11]
-	res["status"] = data[12]
-	res["created_at"] = data[13]
-	res["updated_at"] = data[14]
-	res["name_norm"] = data[15]
+	res["code"] = data[4]
+	res["name"] = data[5]
+	res["description"] = data[6]
+	res["desc_html"] = data[7]
+	res["short_desc"] = data[8]
+	res["image_urls"] = data[9]
+	res["note"] = data[10]
+	res["tags"] = data[11]
+	res["cost_price"] = data[12]
+	res["list_price"] = data[13]
+	res["retail_price"] = data[14]
+	res["status"] = data[15]
+	res["attributes"] = data[16]
+	res["created_at"] = data[17]
+	res["updated_at"] = data[18]
+	res["deleted_at"] = data[19]
+	res["name_norm"] = data[20]
+	res["attr_norm_kv"] = data[21]
 	*m = res
 	return nil
 }
 
 func (ms *ShopVariantHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	data := make([]interface{}, 16)
-	args := make([]interface{}, 16)
-	for i := 0; i < 16; i++ {
+	data := make([]interface{}, 22)
+	args := make([]interface{}, 22)
+	for i := 0; i < 22; i++ {
 		args[i] = &data[i]
 	}
 	res := make(ShopVariantHistories, 0, 128)
@@ -1473,18 +523,24 @@ func (ms *ShopVariantHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
 		m["variant_id"] = data[1]
 		m["collection_id"] = data[2]
 		m["product_id"] = data[3]
-		m["name"] = data[4]
-		m["description"] = data[5]
-		m["desc_html"] = data[6]
-		m["short_desc"] = data[7]
-		m["image_urls"] = data[8]
-		m["note"] = data[9]
-		m["tags"] = data[10]
-		m["retail_price"] = data[11]
-		m["status"] = data[12]
-		m["created_at"] = data[13]
-		m["updated_at"] = data[14]
-		m["name_norm"] = data[15]
+		m["code"] = data[4]
+		m["name"] = data[5]
+		m["description"] = data[6]
+		m["desc_html"] = data[7]
+		m["short_desc"] = data[8]
+		m["image_urls"] = data[9]
+		m["note"] = data[10]
+		m["tags"] = data[11]
+		m["cost_price"] = data[12]
+		m["list_price"] = data[13]
+		m["retail_price"] = data[14]
+		m["status"] = data[15]
+		m["attributes"] = data[16]
+		m["created_at"] = data[17]
+		m["updated_at"] = data[18]
+		m["deleted_at"] = data[19]
+		m["name_norm"] = data[20]
+		m["attr_norm_kv"] = data[21]
 		res = append(res, m)
 	}
 	if err := rows.Err(); err != nil {
@@ -1500,7 +556,7 @@ func sqlgenShopProduct(_ *ShopProduct) bool { return true }
 type ShopProducts []*ShopProduct
 
 const __sqlShopProduct_Table = "shop_product"
-const __sqlShopProduct_ListCols = "\"shop_id\",\"product_id\",\"name\",\"description\",\"desc_html\",\"short_desc\",\"image_urls\",\"note\",\"tags\",\"retail_price\",\"status\",\"created_at\",\"updated_at\",\"name_norm\""
+const __sqlShopProduct_ListCols = "\"shop_id\",\"product_id\",\"code\",\"name\",\"description\",\"desc_html\",\"short_desc\",\"image_urls\",\"note\",\"tags\",\"unit\",\"category_id\",\"cost_price\",\"list_price\",\"retail_price\",\"status\",\"created_at\",\"updated_at\",\"deleted_at\",\"name_norm\",\"name_norm_ua\""
 const __sqlShopProduct_Insert = "INSERT INTO \"shop_product\" (" + __sqlShopProduct_ListCols + ") VALUES"
 const __sqlShopProduct_Select = "SELECT " + __sqlShopProduct_ListCols + " FROM \"shop_product\""
 const __sqlShopProduct_Select_history = "SELECT " + __sqlShopProduct_ListCols + " FROM history.\"shop_product\""
@@ -1515,6 +571,7 @@ func (m *ShopProduct) SQLArgs(opts core.Opts, create bool) []interface{} {
 	return []interface{}{
 		core.Int64(m.ShopID),
 		core.Int64(m.ProductID),
+		core.String(m.Code),
 		core.String(m.Name),
 		core.String(m.Description),
 		core.String(m.DescHTML),
@@ -1522,11 +579,17 @@ func (m *ShopProduct) SQLArgs(opts core.Opts, create bool) []interface{} {
 		core.Array{m.ImageURLs, opts},
 		core.String(m.Note),
 		core.Array{m.Tags, opts},
+		core.String(m.Unit),
+		core.Int64(m.CategoryID),
+		core.Int32(m.CostPrice),
+		core.Int32(m.ListPrice),
 		core.Int32(m.RetailPrice),
 		core.Int(m.Status),
 		core.Now(m.CreatedAt, now, create),
 		core.Now(m.UpdatedAt, now, true),
+		core.Time(m.DeletedAt),
 		core.String(m.NameNorm),
+		core.String(m.NameNormUa),
 	}
 }
 
@@ -1534,6 +597,7 @@ func (m *ShopProduct) SQLScanArgs(opts core.Opts) []interface{} {
 	return []interface{}{
 		(*core.Int64)(&m.ShopID),
 		(*core.Int64)(&m.ProductID),
+		(*core.String)(&m.Code),
 		(*core.String)(&m.Name),
 		(*core.String)(&m.Description),
 		(*core.String)(&m.DescHTML),
@@ -1541,11 +605,17 @@ func (m *ShopProduct) SQLScanArgs(opts core.Opts) []interface{} {
 		core.Array{&m.ImageURLs, opts},
 		(*core.String)(&m.Note),
 		core.Array{&m.Tags, opts},
+		(*core.String)(&m.Unit),
+		(*core.Int64)(&m.CategoryID),
+		(*core.Int32)(&m.CostPrice),
+		(*core.Int32)(&m.ListPrice),
 		(*core.Int32)(&m.RetailPrice),
 		(*core.Int)(&m.Status),
 		(*core.Time)(&m.CreatedAt),
 		(*core.Time)(&m.UpdatedAt),
+		(*core.Time)(&m.DeletedAt),
 		(*core.String)(&m.NameNorm),
+		(*core.String)(&m.NameNormUa),
 	}
 }
 
@@ -1583,7 +653,7 @@ func (_ *ShopProducts) SQLSelect(w SQLWriter) error {
 func (m *ShopProduct) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlShopProduct_Insert)
 	w.WriteRawString(" (")
-	w.WriteMarkers(14)
+	w.WriteMarkers(21)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), true))
 	return nil
@@ -1593,7 +663,7 @@ func (ms ShopProducts) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlShopProduct_Insert)
 	w.WriteRawString(" (")
 	for i := 0; i < len(ms); i++ {
-		w.WriteMarkers(14)
+		w.WriteMarkers(21)
 		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
 		w.WriteRawString("),(")
 	}
@@ -1623,6 +693,14 @@ func (m *ShopProduct) SQLUpdate(w SQLWriter) error {
 		w.WriteMarker()
 		w.WriteByte(',')
 		w.WriteArg(m.ProductID)
+	}
+	if m.Code != "" {
+		flag = true
+		w.WriteName("code")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.Code)
 	}
 	if m.Name != "" {
 		flag = true
@@ -1680,6 +758,38 @@ func (m *ShopProduct) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(core.Array{m.Tags, opts})
 	}
+	if m.Unit != "" {
+		flag = true
+		w.WriteName("unit")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.Unit)
+	}
+	if m.CategoryID != 0 {
+		flag = true
+		w.WriteName("category_id")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.CategoryID)
+	}
+	if m.CostPrice != 0 {
+		flag = true
+		w.WriteName("cost_price")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.CostPrice)
+	}
+	if m.ListPrice != 0 {
+		flag = true
+		w.WriteName("list_price")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.ListPrice)
+	}
 	if m.RetailPrice != 0 {
 		flag = true
 		w.WriteName("retail_price")
@@ -1712,6 +822,14 @@ func (m *ShopProduct) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(core.Now(m.UpdatedAt, time.Now(), true))
 	}
+	if !m.DeletedAt.IsZero() {
+		flag = true
+		w.WriteName("deleted_at")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.DeletedAt)
+	}
 	if m.NameNorm != "" {
 		flag = true
 		w.WriteName("name_norm")
@@ -1719,6 +837,14 @@ func (m *ShopProduct) SQLUpdate(w SQLWriter) error {
 		w.WriteMarker()
 		w.WriteByte(',')
 		w.WriteArg(m.NameNorm)
+	}
+	if m.NameNormUa != "" {
+		flag = true
+		w.WriteName("name_norm_ua")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.NameNormUa)
 	}
 	if !flag {
 		return core.ErrNoColumn
@@ -1730,7 +856,7 @@ func (m *ShopProduct) SQLUpdate(w SQLWriter) error {
 func (m *ShopProduct) SQLUpdateAll(w SQLWriter) error {
 	w.WriteQueryString(__sqlShopProduct_UpdateAll)
 	w.WriteRawString(" = (")
-	w.WriteMarkers(14)
+	w.WriteMarkers(21)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), false))
 	return nil
@@ -1754,6 +880,7 @@ func (m ShopProductHistories) SQLSelect(w SQLWriter) error {
 
 func (m ShopProductHistory) ShopID() core.Interface      { return core.Interface{m["shop_id"]} }
 func (m ShopProductHistory) ProductID() core.Interface   { return core.Interface{m["product_id"]} }
+func (m ShopProductHistory) Code() core.Interface        { return core.Interface{m["code"]} }
 func (m ShopProductHistory) Name() core.Interface        { return core.Interface{m["name"]} }
 func (m ShopProductHistory) Description() core.Interface { return core.Interface{m["description"]} }
 func (m ShopProductHistory) DescHTML() core.Interface    { return core.Interface{m["desc_html"]} }
@@ -1761,44 +888,57 @@ func (m ShopProductHistory) ShortDesc() core.Interface   { return core.Interface
 func (m ShopProductHistory) ImageURLs() core.Interface   { return core.Interface{m["image_urls"]} }
 func (m ShopProductHistory) Note() core.Interface        { return core.Interface{m["note"]} }
 func (m ShopProductHistory) Tags() core.Interface        { return core.Interface{m["tags"]} }
+func (m ShopProductHistory) Unit() core.Interface        { return core.Interface{m["unit"]} }
+func (m ShopProductHistory) CategoryID() core.Interface  { return core.Interface{m["category_id"]} }
+func (m ShopProductHistory) CostPrice() core.Interface   { return core.Interface{m["cost_price"]} }
+func (m ShopProductHistory) ListPrice() core.Interface   { return core.Interface{m["list_price"]} }
 func (m ShopProductHistory) RetailPrice() core.Interface { return core.Interface{m["retail_price"]} }
 func (m ShopProductHistory) Status() core.Interface      { return core.Interface{m["status"]} }
 func (m ShopProductHistory) CreatedAt() core.Interface   { return core.Interface{m["created_at"]} }
 func (m ShopProductHistory) UpdatedAt() core.Interface   { return core.Interface{m["updated_at"]} }
+func (m ShopProductHistory) DeletedAt() core.Interface   { return core.Interface{m["deleted_at"]} }
 func (m ShopProductHistory) NameNorm() core.Interface    { return core.Interface{m["name_norm"]} }
+func (m ShopProductHistory) NameNormUa() core.Interface  { return core.Interface{m["name_norm_ua"]} }
 
 func (m *ShopProductHistory) SQLScan(opts core.Opts, row *sql.Row) error {
-	data := make([]interface{}, 14)
-	args := make([]interface{}, 14)
-	for i := 0; i < 14; i++ {
+	data := make([]interface{}, 21)
+	args := make([]interface{}, 21)
+	for i := 0; i < 21; i++ {
 		args[i] = &data[i]
 	}
 	if err := row.Scan(args...); err != nil {
 		return err
 	}
-	res := make(ShopProductHistory, 14)
+	res := make(ShopProductHistory, 21)
 	res["shop_id"] = data[0]
 	res["product_id"] = data[1]
-	res["name"] = data[2]
-	res["description"] = data[3]
-	res["desc_html"] = data[4]
-	res["short_desc"] = data[5]
-	res["image_urls"] = data[6]
-	res["note"] = data[7]
-	res["tags"] = data[8]
-	res["retail_price"] = data[9]
-	res["status"] = data[10]
-	res["created_at"] = data[11]
-	res["updated_at"] = data[12]
-	res["name_norm"] = data[13]
+	res["code"] = data[2]
+	res["name"] = data[3]
+	res["description"] = data[4]
+	res["desc_html"] = data[5]
+	res["short_desc"] = data[6]
+	res["image_urls"] = data[7]
+	res["note"] = data[8]
+	res["tags"] = data[9]
+	res["unit"] = data[10]
+	res["category_id"] = data[11]
+	res["cost_price"] = data[12]
+	res["list_price"] = data[13]
+	res["retail_price"] = data[14]
+	res["status"] = data[15]
+	res["created_at"] = data[16]
+	res["updated_at"] = data[17]
+	res["deleted_at"] = data[18]
+	res["name_norm"] = data[19]
+	res["name_norm_ua"] = data[20]
 	*m = res
 	return nil
 }
 
 func (ms *ShopProductHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	data := make([]interface{}, 14)
-	args := make([]interface{}, 14)
-	for i := 0; i < 14; i++ {
+	data := make([]interface{}, 21)
+	args := make([]interface{}, 21)
+	for i := 0; i < 21; i++ {
 		args[i] = &data[i]
 	}
 	res := make(ShopProductHistories, 0, 128)
@@ -1809,18 +949,25 @@ func (ms *ShopProductHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
 		m := make(ShopProductHistory)
 		m["shop_id"] = data[0]
 		m["product_id"] = data[1]
-		m["name"] = data[2]
-		m["description"] = data[3]
-		m["desc_html"] = data[4]
-		m["short_desc"] = data[5]
-		m["image_urls"] = data[6]
-		m["note"] = data[7]
-		m["tags"] = data[8]
-		m["retail_price"] = data[9]
-		m["status"] = data[10]
-		m["created_at"] = data[11]
-		m["updated_at"] = data[12]
-		m["name_norm"] = data[13]
+		m["code"] = data[2]
+		m["name"] = data[3]
+		m["description"] = data[4]
+		m["desc_html"] = data[5]
+		m["short_desc"] = data[6]
+		m["image_urls"] = data[7]
+		m["note"] = data[8]
+		m["tags"] = data[9]
+		m["unit"] = data[10]
+		m["category_id"] = data[11]
+		m["cost_price"] = data[12]
+		m["list_price"] = data[13]
+		m["retail_price"] = data[14]
+		m["status"] = data[15]
+		m["created_at"] = data[16]
+		m["updated_at"] = data[17]
+		m["deleted_at"] = data[18]
+		m["name_norm"] = data[19]
+		m["name_norm_ua"] = data[20]
 		res = append(res, m)
 	}
 	if err := rows.Err(); err != nil {
@@ -1828,532 +975,6 @@ func (ms *ShopProductHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
 	}
 	*ms = res
 	return nil
-}
-
-// Type ShopProductFtProductFtVariantFtShopVariant represents a join
-func sqlgenShopProductFtProductFtVariantFtShopVariant(_ *ShopProductFtProductFtVariantFtShopVariant, _ *ShopProduct, as sq.AS, t0 sq.JOIN_TYPE, _ *Product, a0 sq.AS, c0 string, t1 sq.JOIN_TYPE, _ *Variant, a1 sq.AS, c1 string, t2 sq.JOIN_TYPE, _ *ShopVariant, a2 sq.AS, c2 string) bool {
-	__sqlShopProductFtProductFtVariantFtShopVariant_JoinTypes = []sq.JOIN_TYPE{t0, t1, t2}
-	__sqlShopProductFtProductFtVariantFtShopVariant_As = as
-	__sqlShopProductFtProductFtVariantFtShopVariant_JoinAs = []sq.AS{a0, a1, a2}
-	__sqlShopProductFtProductFtVariantFtShopVariant_JoinConds = []string{c0, c1, c2}
-	return true
-}
-
-type ShopProductFtProductFtVariantFtShopVariants []*ShopProductFtProductFtVariantFtShopVariant
-
-var __sqlShopProductFtProductFtVariantFtShopVariant_JoinTypes []sq.JOIN_TYPE
-var __sqlShopProductFtProductFtVariantFtShopVariant_As sq.AS
-var __sqlShopProductFtProductFtVariantFtShopVariant_JoinAs []sq.AS
-var __sqlShopProductFtProductFtVariantFtShopVariant_JoinConds []string
-
-func (m *ShopProductFtProductFtVariantFtShopVariant) SQLTableName() string  { return "shop_product" }
-func (m *ShopProductFtProductFtVariantFtShopVariants) SQLTableName() string { return "shop_product" }
-
-func (m *ShopProductFtProductFtVariantFtShopVariant) SQLScan(opts core.Opts, row *sql.Row) error {
-	return row.Scan(m.SQLScanArgs(opts)...)
-}
-
-func (ms *ShopProductFtProductFtVariantFtShopVariants) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	res := make(ShopProductFtProductFtVariantFtShopVariants, 0, 128)
-	for rows.Next() {
-		m := new(ShopProductFtProductFtVariantFtShopVariant)
-		args := m.SQLScanArgs(opts)
-		if err := rows.Scan(args...); err != nil {
-			return err
-		}
-		res = append(res, m)
-	}
-	if err := rows.Err(); err != nil {
-		return err
-	}
-	*ms = res
-	return nil
-}
-
-func (m *ShopProductFtProductFtVariantFtShopVariant) SQLSelect(w SQLWriter) error {
-	(*ShopProductFtProductFtVariantFtShopVariant)(nil).__sqlSelect(w)
-	w.WriteByte(' ')
-	(*ShopProductFtProductFtVariantFtShopVariant)(nil).__sqlJoin(w, __sqlShopProductFtProductFtVariantFtShopVariant_JoinTypes)
-	return nil
-}
-
-func (m *ShopProductFtProductFtVariantFtShopVariants) SQLSelect(w SQLWriter) error {
-	return (*ShopProductFtProductFtVariantFtShopVariant)(nil).SQLSelect(w)
-}
-
-func (m *ShopProductFtProductFtVariantFtShopVariant) SQLJoin(w SQLWriter, types []sq.JOIN_TYPE) error {
-	if len(types) == 0 {
-		types = __sqlShopProductFtProductFtVariantFtShopVariant_JoinTypes
-	}
-	m.__sqlJoin(w, types)
-	return nil
-}
-
-func (m *ShopProductFtProductFtVariantFtShopVariants) SQLJoin(w SQLWriter, types []sq.JOIN_TYPE) error {
-	return (*ShopProductFtProductFtVariantFtShopVariant)(nil).SQLJoin(w, types)
-}
-
-func (m *ShopProductFtProductFtVariantFtShopVariant) __sqlSelect(w SQLWriter) {
-	w.WriteRawString("SELECT ")
-	core.WriteCols(w, string(__sqlShopProductFtProductFtVariantFtShopVariant_As), (*ShopProduct)(nil).SQLListCols())
-	w.WriteByte(',')
-	core.WriteCols(w, string(__sqlShopProductFtProductFtVariantFtShopVariant_JoinAs[0]), (*Product)(nil).SQLListCols())
-	w.WriteByte(',')
-	core.WriteCols(w, string(__sqlShopProductFtProductFtVariantFtShopVariant_JoinAs[1]), (*Variant)(nil).SQLListCols())
-	w.WriteByte(',')
-	core.WriteCols(w, string(__sqlShopProductFtProductFtVariantFtShopVariant_JoinAs[2]), (*ShopVariant)(nil).SQLListCols())
-}
-
-func (m *ShopProductFtProductFtVariantFtShopVariant) __sqlJoin(w SQLWriter, types []sq.JOIN_TYPE) {
-	if len(types) != 3 {
-		panic("common/sql: expect 3 types to join")
-	}
-	w.WriteRawString("FROM ")
-	w.WriteName("shop_product")
-	w.WriteRawString(" AS ")
-	w.WriteRawString(string(__sqlShopProductFtProductFtVariantFtShopVariant_As))
-	w.WriteByte(' ')
-	w.WriteRawString(string(types[0]))
-	w.WriteRawString(" JOIN ")
-	w.WriteName((*Product)(nil).SQLTableName())
-	w.WriteRawString(" AS ")
-	w.WriteRawString(string(__sqlShopProductFtProductFtVariantFtShopVariant_JoinAs[0]))
-	w.WriteRawString(" ON ")
-	w.WriteQueryString(__sqlShopProductFtProductFtVariantFtShopVariant_JoinConds[0])
-	w.WriteByte(' ')
-	w.WriteRawString(string(types[1]))
-	w.WriteRawString(" JOIN ")
-	w.WriteName((*Variant)(nil).SQLTableName())
-	w.WriteRawString(" AS ")
-	w.WriteRawString(string(__sqlShopProductFtProductFtVariantFtShopVariant_JoinAs[1]))
-	w.WriteRawString(" ON ")
-	w.WriteQueryString(__sqlShopProductFtProductFtVariantFtShopVariant_JoinConds[1])
-	w.WriteByte(' ')
-	w.WriteRawString(string(types[2]))
-	w.WriteRawString(" JOIN ")
-	w.WriteName((*ShopVariant)(nil).SQLTableName())
-	w.WriteRawString(" AS ")
-	w.WriteRawString(string(__sqlShopProductFtProductFtVariantFtShopVariant_JoinAs[2]))
-	w.WriteRawString(" ON ")
-	w.WriteQueryString(__sqlShopProductFtProductFtVariantFtShopVariant_JoinConds[2])
-}
-
-func (m *ShopProductFtProductFtVariantFtShopVariant) SQLScanArgs(opts core.Opts) []interface{} {
-	args := make([]interface{}, 0, 64) // TODO: pre-calculate length
-	m.ShopProduct = new(ShopProduct)
-	args = append(args, m.ShopProduct.SQLScanArgs(opts)...)
-	m.Product = new(Product)
-	args = append(args, m.Product.SQLScanArgs(opts)...)
-	m.Variant = new(Variant)
-	args = append(args, m.Variant.SQLScanArgs(opts)...)
-	m.ShopVariant = new(ShopVariant)
-	args = append(args, m.ShopVariant.SQLScanArgs(opts)...)
-
-	return args
-}
-
-// Type ShopProductExtended represents a join
-func sqlgenShopProductExtended(_ *ShopProductExtended, _ *Product, as sq.AS, t0 sq.JOIN_TYPE, _ *ShopProduct, a0 sq.AS, c0 string) bool {
-	__sqlShopProductExtended_JoinTypes = []sq.JOIN_TYPE{t0}
-	__sqlShopProductExtended_As = as
-	__sqlShopProductExtended_JoinAs = []sq.AS{a0}
-	__sqlShopProductExtended_JoinConds = []string{c0}
-	return true
-}
-
-type ShopProductExtendeds []*ShopProductExtended
-
-var __sqlShopProductExtended_JoinTypes []sq.JOIN_TYPE
-var __sqlShopProductExtended_As sq.AS
-var __sqlShopProductExtended_JoinAs []sq.AS
-var __sqlShopProductExtended_JoinConds []string
-
-func (m *ShopProductExtended) SQLTableName() string  { return "product" }
-func (m *ShopProductExtendeds) SQLTableName() string { return "product" }
-
-func (m *ShopProductExtended) SQLScan(opts core.Opts, row *sql.Row) error {
-	return row.Scan(m.SQLScanArgs(opts)...)
-}
-
-func (ms *ShopProductExtendeds) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	res := make(ShopProductExtendeds, 0, 128)
-	for rows.Next() {
-		m := new(ShopProductExtended)
-		args := m.SQLScanArgs(opts)
-		if err := rows.Scan(args...); err != nil {
-			return err
-		}
-		res = append(res, m)
-	}
-	if err := rows.Err(); err != nil {
-		return err
-	}
-	*ms = res
-	return nil
-}
-
-func (m *ShopProductExtended) SQLSelect(w SQLWriter) error {
-	(*ShopProductExtended)(nil).__sqlSelect(w)
-	w.WriteByte(' ')
-	(*ShopProductExtended)(nil).__sqlJoin(w, __sqlShopProductExtended_JoinTypes)
-	return nil
-}
-
-func (m *ShopProductExtendeds) SQLSelect(w SQLWriter) error {
-	return (*ShopProductExtended)(nil).SQLSelect(w)
-}
-
-func (m *ShopProductExtended) SQLJoin(w SQLWriter, types []sq.JOIN_TYPE) error {
-	if len(types) == 0 {
-		types = __sqlShopProductExtended_JoinTypes
-	}
-	m.__sqlJoin(w, types)
-	return nil
-}
-
-func (m *ShopProductExtendeds) SQLJoin(w SQLWriter, types []sq.JOIN_TYPE) error {
-	return (*ShopProductExtended)(nil).SQLJoin(w, types)
-}
-
-func (m *ShopProductExtended) __sqlSelect(w SQLWriter) {
-	w.WriteRawString("SELECT ")
-	core.WriteCols(w, string(__sqlShopProductExtended_As), (*Product)(nil).SQLListCols())
-	w.WriteByte(',')
-	core.WriteCols(w, string(__sqlShopProductExtended_JoinAs[0]), (*ShopProduct)(nil).SQLListCols())
-}
-
-func (m *ShopProductExtended) __sqlJoin(w SQLWriter, types []sq.JOIN_TYPE) {
-	if len(types) != 1 {
-		panic("common/sql: expect 1 type to join")
-	}
-	w.WriteRawString("FROM ")
-	w.WriteName("product")
-	w.WriteRawString(" AS ")
-	w.WriteRawString(string(__sqlShopProductExtended_As))
-	w.WriteByte(' ')
-	w.WriteRawString(string(types[0]))
-	w.WriteRawString(" JOIN ")
-	w.WriteName((*ShopProduct)(nil).SQLTableName())
-	w.WriteRawString(" AS ")
-	w.WriteRawString(string(__sqlShopProductExtended_JoinAs[0]))
-	w.WriteRawString(" ON ")
-	w.WriteQueryString(__sqlShopProductExtended_JoinConds[0])
-}
-
-func (m *ShopProductExtended) SQLScanArgs(opts core.Opts) []interface{} {
-	args := make([]interface{}, 0, 64) // TODO: pre-calculate length
-	m.Product = new(Product)
-	args = append(args, m.Product.SQLScanArgs(opts)...)
-	m.ShopProduct = new(ShopProduct)
-	args = append(args, m.ShopProduct.SQLScanArgs(opts)...)
-
-	return args
-}
-
-// Type ShopVariantExt represents a join
-func sqlgenShopVariantExt(_ *ShopVariantExt, _ *Variant, as sq.AS, t0 sq.JOIN_TYPE, _ *ShopVariant, a0 sq.AS, c0 string) bool {
-	__sqlShopVariantExt_JoinTypes = []sq.JOIN_TYPE{t0}
-	__sqlShopVariantExt_As = as
-	__sqlShopVariantExt_JoinAs = []sq.AS{a0}
-	__sqlShopVariantExt_JoinConds = []string{c0}
-	return true
-}
-
-type ShopVariantExts []*ShopVariantExt
-
-var __sqlShopVariantExt_JoinTypes []sq.JOIN_TYPE
-var __sqlShopVariantExt_As sq.AS
-var __sqlShopVariantExt_JoinAs []sq.AS
-var __sqlShopVariantExt_JoinConds []string
-
-func (m *ShopVariantExt) SQLTableName() string  { return "variant" }
-func (m *ShopVariantExts) SQLTableName() string { return "variant" }
-
-func (m *ShopVariantExt) SQLScan(opts core.Opts, row *sql.Row) error {
-	return row.Scan(m.SQLScanArgs(opts)...)
-}
-
-func (ms *ShopVariantExts) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	res := make(ShopVariantExts, 0, 128)
-	for rows.Next() {
-		m := new(ShopVariantExt)
-		args := m.SQLScanArgs(opts)
-		if err := rows.Scan(args...); err != nil {
-			return err
-		}
-		res = append(res, m)
-	}
-	if err := rows.Err(); err != nil {
-		return err
-	}
-	*ms = res
-	return nil
-}
-
-func (m *ShopVariantExt) SQLSelect(w SQLWriter) error {
-	(*ShopVariantExt)(nil).__sqlSelect(w)
-	w.WriteByte(' ')
-	(*ShopVariantExt)(nil).__sqlJoin(w, __sqlShopVariantExt_JoinTypes)
-	return nil
-}
-
-func (m *ShopVariantExts) SQLSelect(w SQLWriter) error {
-	return (*ShopVariantExt)(nil).SQLSelect(w)
-}
-
-func (m *ShopVariantExt) SQLJoin(w SQLWriter, types []sq.JOIN_TYPE) error {
-	if len(types) == 0 {
-		types = __sqlShopVariantExt_JoinTypes
-	}
-	m.__sqlJoin(w, types)
-	return nil
-}
-
-func (m *ShopVariantExts) SQLJoin(w SQLWriter, types []sq.JOIN_TYPE) error {
-	return (*ShopVariantExt)(nil).SQLJoin(w, types)
-}
-
-func (m *ShopVariantExt) __sqlSelect(w SQLWriter) {
-	w.WriteRawString("SELECT ")
-	core.WriteCols(w, string(__sqlShopVariantExt_As), (*Variant)(nil).SQLListCols())
-	w.WriteByte(',')
-	core.WriteCols(w, string(__sqlShopVariantExt_JoinAs[0]), (*ShopVariant)(nil).SQLListCols())
-}
-
-func (m *ShopVariantExt) __sqlJoin(w SQLWriter, types []sq.JOIN_TYPE) {
-	if len(types) != 1 {
-		panic("common/sql: expect 1 type to join")
-	}
-	w.WriteRawString("FROM ")
-	w.WriteName("variant")
-	w.WriteRawString(" AS ")
-	w.WriteRawString(string(__sqlShopVariantExt_As))
-	w.WriteByte(' ')
-	w.WriteRawString(string(types[0]))
-	w.WriteRawString(" JOIN ")
-	w.WriteName((*ShopVariant)(nil).SQLTableName())
-	w.WriteRawString(" AS ")
-	w.WriteRawString(string(__sqlShopVariantExt_JoinAs[0]))
-	w.WriteRawString(" ON ")
-	w.WriteQueryString(__sqlShopVariantExt_JoinConds[0])
-}
-
-func (m *ShopVariantExt) SQLScanArgs(opts core.Opts) []interface{} {
-	args := make([]interface{}, 0, 64) // TODO: pre-calculate length
-	m.Variant = new(Variant)
-	args = append(args, m.Variant.SQLScanArgs(opts)...)
-	m.ShopVariant = new(ShopVariant)
-	args = append(args, m.ShopVariant.SQLScanArgs(opts)...)
-
-	return args
-}
-
-// Type ProductFtVariantFtShopProduct represents a join
-func sqlgenProductFtVariantFtShopProduct(_ *ProductFtVariantFtShopProduct, _ *Product, as sq.AS, t0 sq.JOIN_TYPE, _ *Variant, a0 sq.AS, c0 string, t1 sq.JOIN_TYPE, _ *ShopProduct, a1 sq.AS, c1 string) bool {
-	__sqlProductFtVariantFtShopProduct_JoinTypes = []sq.JOIN_TYPE{t0, t1}
-	__sqlProductFtVariantFtShopProduct_As = as
-	__sqlProductFtVariantFtShopProduct_JoinAs = []sq.AS{a0, a1}
-	__sqlProductFtVariantFtShopProduct_JoinConds = []string{c0, c1}
-	return true
-}
-
-type ProductFtVariantFtShopProducts []*ProductFtVariantFtShopProduct
-
-var __sqlProductFtVariantFtShopProduct_JoinTypes []sq.JOIN_TYPE
-var __sqlProductFtVariantFtShopProduct_As sq.AS
-var __sqlProductFtVariantFtShopProduct_JoinAs []sq.AS
-var __sqlProductFtVariantFtShopProduct_JoinConds []string
-
-func (m *ProductFtVariantFtShopProduct) SQLTableName() string  { return "product" }
-func (m *ProductFtVariantFtShopProducts) SQLTableName() string { return "product" }
-
-func (m *ProductFtVariantFtShopProduct) SQLScan(opts core.Opts, row *sql.Row) error {
-	return row.Scan(m.SQLScanArgs(opts)...)
-}
-
-func (ms *ProductFtVariantFtShopProducts) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	res := make(ProductFtVariantFtShopProducts, 0, 128)
-	for rows.Next() {
-		m := new(ProductFtVariantFtShopProduct)
-		args := m.SQLScanArgs(opts)
-		if err := rows.Scan(args...); err != nil {
-			return err
-		}
-		res = append(res, m)
-	}
-	if err := rows.Err(); err != nil {
-		return err
-	}
-	*ms = res
-	return nil
-}
-
-func (m *ProductFtVariantFtShopProduct) SQLSelect(w SQLWriter) error {
-	(*ProductFtVariantFtShopProduct)(nil).__sqlSelect(w)
-	w.WriteByte(' ')
-	(*ProductFtVariantFtShopProduct)(nil).__sqlJoin(w, __sqlProductFtVariantFtShopProduct_JoinTypes)
-	return nil
-}
-
-func (m *ProductFtVariantFtShopProducts) SQLSelect(w SQLWriter) error {
-	return (*ProductFtVariantFtShopProduct)(nil).SQLSelect(w)
-}
-
-func (m *ProductFtVariantFtShopProduct) SQLJoin(w SQLWriter, types []sq.JOIN_TYPE) error {
-	if len(types) == 0 {
-		types = __sqlProductFtVariantFtShopProduct_JoinTypes
-	}
-	m.__sqlJoin(w, types)
-	return nil
-}
-
-func (m *ProductFtVariantFtShopProducts) SQLJoin(w SQLWriter, types []sq.JOIN_TYPE) error {
-	return (*ProductFtVariantFtShopProduct)(nil).SQLJoin(w, types)
-}
-
-func (m *ProductFtVariantFtShopProduct) __sqlSelect(w SQLWriter) {
-	w.WriteRawString("SELECT ")
-	core.WriteCols(w, string(__sqlProductFtVariantFtShopProduct_As), (*Product)(nil).SQLListCols())
-	w.WriteByte(',')
-	core.WriteCols(w, string(__sqlProductFtVariantFtShopProduct_JoinAs[0]), (*Variant)(nil).SQLListCols())
-	w.WriteByte(',')
-	core.WriteCols(w, string(__sqlProductFtVariantFtShopProduct_JoinAs[1]), (*ShopProduct)(nil).SQLListCols())
-}
-
-func (m *ProductFtVariantFtShopProduct) __sqlJoin(w SQLWriter, types []sq.JOIN_TYPE) {
-	if len(types) != 2 {
-		panic("common/sql: expect 2 types to join")
-	}
-	w.WriteRawString("FROM ")
-	w.WriteName("product")
-	w.WriteRawString(" AS ")
-	w.WriteRawString(string(__sqlProductFtVariantFtShopProduct_As))
-	w.WriteByte(' ')
-	w.WriteRawString(string(types[0]))
-	w.WriteRawString(" JOIN ")
-	w.WriteName((*Variant)(nil).SQLTableName())
-	w.WriteRawString(" AS ")
-	w.WriteRawString(string(__sqlProductFtVariantFtShopProduct_JoinAs[0]))
-	w.WriteRawString(" ON ")
-	w.WriteQueryString(__sqlProductFtVariantFtShopProduct_JoinConds[0])
-	w.WriteByte(' ')
-	w.WriteRawString(string(types[1]))
-	w.WriteRawString(" JOIN ")
-	w.WriteName((*ShopProduct)(nil).SQLTableName())
-	w.WriteRawString(" AS ")
-	w.WriteRawString(string(__sqlProductFtVariantFtShopProduct_JoinAs[1]))
-	w.WriteRawString(" ON ")
-	w.WriteQueryString(__sqlProductFtVariantFtShopProduct_JoinConds[1])
-}
-
-func (m *ProductFtVariantFtShopProduct) SQLScanArgs(opts core.Opts) []interface{} {
-	args := make([]interface{}, 0, 64) // TODO: pre-calculate length
-	m.Product = new(Product)
-	args = append(args, m.Product.SQLScanArgs(opts)...)
-	m.Variant = new(Variant)
-	args = append(args, m.Variant.SQLScanArgs(opts)...)
-	m.ShopProduct = new(ShopProduct)
-	args = append(args, m.ShopProduct.SQLScanArgs(opts)...)
-
-	return args
-}
-
-// Type ProductFtShopProduct represents a join
-func sqlgenProductFtShopProduct(_ *ProductFtShopProduct, _ *Product, as sq.AS, t0 sq.JOIN_TYPE, _ *ShopProduct, a0 sq.AS, c0 string) bool {
-	__sqlProductFtShopProduct_JoinTypes = []sq.JOIN_TYPE{t0}
-	__sqlProductFtShopProduct_As = as
-	__sqlProductFtShopProduct_JoinAs = []sq.AS{a0}
-	__sqlProductFtShopProduct_JoinConds = []string{c0}
-	return true
-}
-
-type ProductFtShopProducts []*ProductFtShopProduct
-
-var __sqlProductFtShopProduct_JoinTypes []sq.JOIN_TYPE
-var __sqlProductFtShopProduct_As sq.AS
-var __sqlProductFtShopProduct_JoinAs []sq.AS
-var __sqlProductFtShopProduct_JoinConds []string
-
-func (m *ProductFtShopProduct) SQLTableName() string  { return "product" }
-func (m *ProductFtShopProducts) SQLTableName() string { return "product" }
-
-func (m *ProductFtShopProduct) SQLScan(opts core.Opts, row *sql.Row) error {
-	return row.Scan(m.SQLScanArgs(opts)...)
-}
-
-func (ms *ProductFtShopProducts) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	res := make(ProductFtShopProducts, 0, 128)
-	for rows.Next() {
-		m := new(ProductFtShopProduct)
-		args := m.SQLScanArgs(opts)
-		if err := rows.Scan(args...); err != nil {
-			return err
-		}
-		res = append(res, m)
-	}
-	if err := rows.Err(); err != nil {
-		return err
-	}
-	*ms = res
-	return nil
-}
-
-func (m *ProductFtShopProduct) SQLSelect(w SQLWriter) error {
-	(*ProductFtShopProduct)(nil).__sqlSelect(w)
-	w.WriteByte(' ')
-	(*ProductFtShopProduct)(nil).__sqlJoin(w, __sqlProductFtShopProduct_JoinTypes)
-	return nil
-}
-
-func (m *ProductFtShopProducts) SQLSelect(w SQLWriter) error {
-	return (*ProductFtShopProduct)(nil).SQLSelect(w)
-}
-
-func (m *ProductFtShopProduct) SQLJoin(w SQLWriter, types []sq.JOIN_TYPE) error {
-	if len(types) == 0 {
-		types = __sqlProductFtShopProduct_JoinTypes
-	}
-	m.__sqlJoin(w, types)
-	return nil
-}
-
-func (m *ProductFtShopProducts) SQLJoin(w SQLWriter, types []sq.JOIN_TYPE) error {
-	return (*ProductFtShopProduct)(nil).SQLJoin(w, types)
-}
-
-func (m *ProductFtShopProduct) __sqlSelect(w SQLWriter) {
-	w.WriteRawString("SELECT ")
-	core.WriteCols(w, string(__sqlProductFtShopProduct_As), (*Product)(nil).SQLListCols())
-	w.WriteByte(',')
-	core.WriteCols(w, string(__sqlProductFtShopProduct_JoinAs[0]), (*ShopProduct)(nil).SQLListCols())
-}
-
-func (m *ProductFtShopProduct) __sqlJoin(w SQLWriter, types []sq.JOIN_TYPE) {
-	if len(types) != 1 {
-		panic("common/sql: expect 1 type to join")
-	}
-	w.WriteRawString("FROM ")
-	w.WriteName("product")
-	w.WriteRawString(" AS ")
-	w.WriteRawString(string(__sqlProductFtShopProduct_As))
-	w.WriteByte(' ')
-	w.WriteRawString(string(types[0]))
-	w.WriteRawString(" JOIN ")
-	w.WriteName((*ShopProduct)(nil).SQLTableName())
-	w.WriteRawString(" AS ")
-	w.WriteRawString(string(__sqlProductFtShopProduct_JoinAs[0]))
-	w.WriteRawString(" ON ")
-	w.WriteQueryString(__sqlProductFtShopProduct_JoinConds[0])
-}
-
-func (m *ProductFtShopProduct) SQLScanArgs(opts core.Opts) []interface{} {
-	args := make([]interface{}, 0, 64) // TODO: pre-calculate length
-	m.Product = new(Product)
-	args = append(args, m.Product.SQLScanArgs(opts)...)
-	m.ShopProduct = new(ShopProduct)
-	args = append(args, m.ShopProduct.SQLScanArgs(opts)...)
-
-	return args
 }
 
 // Type ShopCollection represents table shop_collection
@@ -2858,245 +1479,13 @@ func (ms *ProductShopCollectionHistories) SQLScan(opts core.Opts, rows *sql.Rows
 	return nil
 }
 
-// Type ProductSource represents table product_source
-func sqlgenProductSource(_ *ProductSource) bool { return true }
-
-type ProductSources []*ProductSource
-
-const __sqlProductSource_Table = "product_source"
-const __sqlProductSource_ListCols = "\"id\",\"type\",\"name\",\"status\",\"created_at\",\"updated_at\""
-const __sqlProductSource_Insert = "INSERT INTO \"product_source\" (" + __sqlProductSource_ListCols + ") VALUES"
-const __sqlProductSource_Select = "SELECT " + __sqlProductSource_ListCols + " FROM \"product_source\""
-const __sqlProductSource_Select_history = "SELECT " + __sqlProductSource_ListCols + " FROM history.\"product_source\""
-const __sqlProductSource_UpdateAll = "UPDATE \"product_source\" SET (" + __sqlProductSource_ListCols + ")"
-
-func (m *ProductSource) SQLTableName() string  { return "product_source" }
-func (m *ProductSources) SQLTableName() string { return "product_source" }
-func (m *ProductSource) SQLListCols() string   { return __sqlProductSource_ListCols }
-
-func (m *ProductSource) SQLArgs(opts core.Opts, create bool) []interface{} {
-	now := time.Now()
-	return []interface{}{
-		core.Int64(m.ID),
-		core.String(m.Type),
-		core.String(m.Name),
-		core.Int(m.Status),
-		core.Now(m.CreatedAt, now, create),
-		core.Now(m.UpdatedAt, now, true),
-	}
-}
-
-func (m *ProductSource) SQLScanArgs(opts core.Opts) []interface{} {
-	return []interface{}{
-		(*core.Int64)(&m.ID),
-		(*core.String)(&m.Type),
-		(*core.String)(&m.Name),
-		(*core.Int)(&m.Status),
-		(*core.Time)(&m.CreatedAt),
-		(*core.Time)(&m.UpdatedAt),
-	}
-}
-
-func (m *ProductSource) SQLScan(opts core.Opts, row *sql.Row) error {
-	return row.Scan(m.SQLScanArgs(opts)...)
-}
-
-func (ms *ProductSources) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	res := make(ProductSources, 0, 128)
-	for rows.Next() {
-		m := new(ProductSource)
-		args := m.SQLScanArgs(opts)
-		if err := rows.Scan(args...); err != nil {
-			return err
-		}
-		res = append(res, m)
-	}
-	if err := rows.Err(); err != nil {
-		return err
-	}
-	*ms = res
-	return nil
-}
-
-func (_ *ProductSource) SQLSelect(w SQLWriter) error {
-	w.WriteQueryString(__sqlProductSource_Select)
-	return nil
-}
-
-func (_ *ProductSources) SQLSelect(w SQLWriter) error {
-	w.WriteQueryString(__sqlProductSource_Select)
-	return nil
-}
-
-func (m *ProductSource) SQLInsert(w SQLWriter) error {
-	w.WriteQueryString(__sqlProductSource_Insert)
-	w.WriteRawString(" (")
-	w.WriteMarkers(6)
-	w.WriteByte(')')
-	w.WriteArgs(m.SQLArgs(w.Opts(), true))
-	return nil
-}
-
-func (ms ProductSources) SQLInsert(w SQLWriter) error {
-	w.WriteQueryString(__sqlProductSource_Insert)
-	w.WriteRawString(" (")
-	for i := 0; i < len(ms); i++ {
-		w.WriteMarkers(6)
-		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
-		w.WriteRawString("),(")
-	}
-	w.TrimLast(2)
-	return nil
-}
-
-func (m *ProductSource) SQLUpdate(w SQLWriter) error {
-	now, opts := time.Now(), w.Opts()
-	_, _ = now, opts // suppress unuse error
-	var flag bool
-	w.WriteRawString("UPDATE ")
-	w.WriteName("product_source")
-	w.WriteRawString(" SET ")
-	if m.ID != 0 {
-		flag = true
-		w.WriteName("id")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(m.ID)
-	}
-	if m.Type != "" {
-		flag = true
-		w.WriteName("type")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(m.Type)
-	}
-	if m.Name != "" {
-		flag = true
-		w.WriteName("name")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(m.Name)
-	}
-	if m.Status != 0 {
-		flag = true
-		w.WriteName("status")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(int(m.Status))
-	}
-	if !m.CreatedAt.IsZero() {
-		flag = true
-		w.WriteName("created_at")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(m.CreatedAt)
-	}
-	if !m.UpdatedAt.IsZero() {
-		flag = true
-		w.WriteName("updated_at")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(core.Now(m.UpdatedAt, time.Now(), true))
-	}
-	if !flag {
-		return core.ErrNoColumn
-	}
-	w.TrimLast(1)
-	return nil
-}
-
-func (m *ProductSource) SQLUpdateAll(w SQLWriter) error {
-	w.WriteQueryString(__sqlProductSource_UpdateAll)
-	w.WriteRawString(" = (")
-	w.WriteMarkers(6)
-	w.WriteByte(')')
-	w.WriteArgs(m.SQLArgs(w.Opts(), false))
-	return nil
-}
-
-type ProductSourceHistory map[string]interface{}
-type ProductSourceHistories []map[string]interface{}
-
-func (m *ProductSourceHistory) SQLTableName() string  { return "history.\"product_source\"" }
-func (m ProductSourceHistories) SQLTableName() string { return "history.\"product_source\"" }
-
-func (m *ProductSourceHistory) SQLSelect(w SQLWriter) error {
-	w.WriteQueryString(__sqlProductSource_Select_history)
-	return nil
-}
-
-func (m ProductSourceHistories) SQLSelect(w SQLWriter) error {
-	w.WriteQueryString(__sqlProductSource_Select_history)
-	return nil
-}
-
-func (m ProductSourceHistory) ID() core.Interface        { return core.Interface{m["id"]} }
-func (m ProductSourceHistory) Type() core.Interface      { return core.Interface{m["type"]} }
-func (m ProductSourceHistory) Name() core.Interface      { return core.Interface{m["name"]} }
-func (m ProductSourceHistory) Status() core.Interface    { return core.Interface{m["status"]} }
-func (m ProductSourceHistory) CreatedAt() core.Interface { return core.Interface{m["created_at"]} }
-func (m ProductSourceHistory) UpdatedAt() core.Interface { return core.Interface{m["updated_at"]} }
-
-func (m *ProductSourceHistory) SQLScan(opts core.Opts, row *sql.Row) error {
-	data := make([]interface{}, 6)
-	args := make([]interface{}, 6)
-	for i := 0; i < 6; i++ {
-		args[i] = &data[i]
-	}
-	if err := row.Scan(args...); err != nil {
-		return err
-	}
-	res := make(ProductSourceHistory, 6)
-	res["id"] = data[0]
-	res["type"] = data[1]
-	res["name"] = data[2]
-	res["status"] = data[3]
-	res["created_at"] = data[4]
-	res["updated_at"] = data[5]
-	*m = res
-	return nil
-}
-
-func (ms *ProductSourceHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	data := make([]interface{}, 6)
-	args := make([]interface{}, 6)
-	for i := 0; i < 6; i++ {
-		args[i] = &data[i]
-	}
-	res := make(ProductSourceHistories, 0, 128)
-	for rows.Next() {
-		if err := rows.Scan(args...); err != nil {
-			return err
-		}
-		m := make(ProductSourceHistory)
-		m["id"] = data[0]
-		m["type"] = data[1]
-		m["name"] = data[2]
-		m["status"] = data[3]
-		m["created_at"] = data[4]
-		m["updated_at"] = data[5]
-		res = append(res, m)
-	}
-	if err := rows.Err(); err != nil {
-		return err
-	}
-	*ms = res
-	return nil
-}
-
 // Type ProductSourceCategory represents table product_source_category
 func sqlgenProductSourceCategory(_ *ProductSourceCategory) bool { return true }
 
 type ProductSourceCategories []*ProductSourceCategory
 
 const __sqlProductSourceCategory_Table = "product_source_category"
-const __sqlProductSourceCategory_ListCols = "\"id\",\"product_source_id\",\"product_source_type\",\"parent_id\",\"shop_id\",\"name\",\"status\",\"created_at\",\"updated_at\",\"deleted_at\""
+const __sqlProductSourceCategory_ListCols = "\"id\",\"parent_id\",\"shop_id\",\"name\",\"status\",\"created_at\",\"updated_at\",\"deleted_at\""
 const __sqlProductSourceCategory_Insert = "INSERT INTO \"product_source_category\" (" + __sqlProductSourceCategory_ListCols + ") VALUES"
 const __sqlProductSourceCategory_Select = "SELECT " + __sqlProductSourceCategory_ListCols + " FROM \"product_source_category\""
 const __sqlProductSourceCategory_Select_history = "SELECT " + __sqlProductSourceCategory_ListCols + " FROM history.\"product_source_category\""
@@ -3110,8 +1499,6 @@ func (m *ProductSourceCategory) SQLArgs(opts core.Opts, create bool) []interface
 	now := time.Now()
 	return []interface{}{
 		core.Int64(m.ID),
-		core.Int64(m.ProductSourceID),
-		core.String(m.ProductSourceType),
 		core.Int64(m.ParentID),
 		core.Int64(m.ShopID),
 		core.String(m.Name),
@@ -3125,8 +1512,6 @@ func (m *ProductSourceCategory) SQLArgs(opts core.Opts, create bool) []interface
 func (m *ProductSourceCategory) SQLScanArgs(opts core.Opts) []interface{} {
 	return []interface{}{
 		(*core.Int64)(&m.ID),
-		(*core.Int64)(&m.ProductSourceID),
-		(*core.String)(&m.ProductSourceType),
 		(*core.Int64)(&m.ParentID),
 		(*core.Int64)(&m.ShopID),
 		(*core.String)(&m.Name),
@@ -3171,7 +1556,7 @@ func (_ *ProductSourceCategories) SQLSelect(w SQLWriter) error {
 func (m *ProductSourceCategory) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlProductSourceCategory_Insert)
 	w.WriteRawString(" (")
-	w.WriteMarkers(10)
+	w.WriteMarkers(8)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), true))
 	return nil
@@ -3181,7 +1566,7 @@ func (ms ProductSourceCategories) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlProductSourceCategory_Insert)
 	w.WriteRawString(" (")
 	for i := 0; i < len(ms); i++ {
-		w.WriteMarkers(10)
+		w.WriteMarkers(8)
 		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
 		w.WriteRawString("),(")
 	}
@@ -3203,22 +1588,6 @@ func (m *ProductSourceCategory) SQLUpdate(w SQLWriter) error {
 		w.WriteMarker()
 		w.WriteByte(',')
 		w.WriteArg(m.ID)
-	}
-	if m.ProductSourceID != 0 {
-		flag = true
-		w.WriteName("product_source_id")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(m.ProductSourceID)
-	}
-	if m.ProductSourceType != "" {
-		flag = true
-		w.WriteName("product_source_type")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(m.ProductSourceType)
 	}
 	if m.ParentID != 0 {
 		flag = true
@@ -3286,7 +1655,7 @@ func (m *ProductSourceCategory) SQLUpdate(w SQLWriter) error {
 func (m *ProductSourceCategory) SQLUpdateAll(w SQLWriter) error {
 	w.WriteQueryString(__sqlProductSourceCategory_UpdateAll)
 	w.WriteRawString(" = (")
-	w.WriteMarkers(10)
+	w.WriteMarkers(8)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), false))
 	return nil
@@ -3312,13 +1681,7 @@ func (m ProductSourceCategoryHistories) SQLSelect(w SQLWriter) error {
 	return nil
 }
 
-func (m ProductSourceCategoryHistory) ID() core.Interface { return core.Interface{m["id"]} }
-func (m ProductSourceCategoryHistory) ProductSourceID() core.Interface {
-	return core.Interface{m["product_source_id"]}
-}
-func (m ProductSourceCategoryHistory) ProductSourceType() core.Interface {
-	return core.Interface{m["product_source_type"]}
-}
+func (m ProductSourceCategoryHistory) ID() core.Interface       { return core.Interface{m["id"]} }
 func (m ProductSourceCategoryHistory) ParentID() core.Interface { return core.Interface{m["parent_id"]} }
 func (m ProductSourceCategoryHistory) ShopID() core.Interface   { return core.Interface{m["shop_id"]} }
 func (m ProductSourceCategoryHistory) Name() core.Interface     { return core.Interface{m["name"]} }
@@ -3334,33 +1697,31 @@ func (m ProductSourceCategoryHistory) DeletedAt() core.Interface {
 }
 
 func (m *ProductSourceCategoryHistory) SQLScan(opts core.Opts, row *sql.Row) error {
-	data := make([]interface{}, 10)
-	args := make([]interface{}, 10)
-	for i := 0; i < 10; i++ {
+	data := make([]interface{}, 8)
+	args := make([]interface{}, 8)
+	for i := 0; i < 8; i++ {
 		args[i] = &data[i]
 	}
 	if err := row.Scan(args...); err != nil {
 		return err
 	}
-	res := make(ProductSourceCategoryHistory, 10)
+	res := make(ProductSourceCategoryHistory, 8)
 	res["id"] = data[0]
-	res["product_source_id"] = data[1]
-	res["product_source_type"] = data[2]
-	res["parent_id"] = data[3]
-	res["shop_id"] = data[4]
-	res["name"] = data[5]
-	res["status"] = data[6]
-	res["created_at"] = data[7]
-	res["updated_at"] = data[8]
-	res["deleted_at"] = data[9]
+	res["parent_id"] = data[1]
+	res["shop_id"] = data[2]
+	res["name"] = data[3]
+	res["status"] = data[4]
+	res["created_at"] = data[5]
+	res["updated_at"] = data[6]
+	res["deleted_at"] = data[7]
 	*m = res
 	return nil
 }
 
 func (ms *ProductSourceCategoryHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	data := make([]interface{}, 10)
-	args := make([]interface{}, 10)
-	for i := 0; i < 10; i++ {
+	data := make([]interface{}, 8)
+	args := make([]interface{}, 8)
+	for i := 0; i < 8; i++ {
 		args[i] = &data[i]
 	}
 	res := make(ProductSourceCategoryHistories, 0, 128)
@@ -3370,15 +1731,13 @@ func (ms *ProductSourceCategoryHistories) SQLScan(opts core.Opts, rows *sql.Rows
 		}
 		m := make(ProductSourceCategoryHistory)
 		m["id"] = data[0]
-		m["product_source_id"] = data[1]
-		m["product_source_type"] = data[2]
-		m["parent_id"] = data[3]
-		m["shop_id"] = data[4]
-		m["name"] = data[5]
-		m["status"] = data[6]
-		m["created_at"] = data[7]
-		m["updated_at"] = data[8]
-		m["deleted_at"] = data[9]
+		m["parent_id"] = data[1]
+		m["shop_id"] = data[2]
+		m["name"] = data[3]
+		m["status"] = data[4]
+		m["created_at"] = data[5]
+		m["updated_at"] = data[6]
+		m["deleted_at"] = data[7]
 		res = append(res, m)
 	}
 	if err := rows.Err(); err != nil {

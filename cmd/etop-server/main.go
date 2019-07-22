@@ -246,7 +246,7 @@ func main() {
 
 	authStore := auth.NewGenerator(redisStore)
 	api.Init(shutdowner, redisStore, authStore, cfg.Email, cfg.SMS)
-	imcsvorder.Init(locationBus, shutdowner, redisStore, uploader)
+	imcsvorder.Init(locationBus, shutdowner, redisStore, uploader, db)
 	imcsvproduct.Init(shutdowner, redisStore, uploader, db)
 	ffmexport.Init(shutdowner, redisStore, eventStreamer, ffmexport.Config{
 		UrlPrefix: cfg.Export.URLPrefix,

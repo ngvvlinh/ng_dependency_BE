@@ -6,14 +6,13 @@ import (
 	"fmt"
 	"time"
 
-	"etop.vn/common/xerrors"
-
 	"github.com/Shopify/sarama"
 
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/mq"
 	"etop.vn/backend/pkg/pgevent"
 	"etop.vn/common/l"
+	"etop.vn/common/xerrors"
 )
 
 var ll = l.New()

@@ -3,11 +3,12 @@ package imcsv
 import (
 	"context"
 
+	"etop.vn/api/main/catalog"
+
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/imcsv"
 	"etop.vn/backend/pkg/etop/model"
-	catalogmodel "etop.vn/backend/pkg/services/catalog/model"
-	catalogmodelx "etop.vn/backend/pkg/services/catalog/modelx"
+	catalogsqlstore "etop.vn/backend/pkg/services/catalog/sqlstore"
 	"etop.vn/backend/pkg/services/ordering/modelx"
 	"etop.vn/common/bus"
 )
@@ -65,7 +66,7 @@ func VerifyOrders(ctx context.Context, shop *model.Shop, idx imcsv.Indexer, code
 	existingCodes := orderCodeQuery.Result.EdCodes
 
 	// Shop has not created any product source yet
-	if len(variantCodesMap) != 0 && shop.ProductSourceID == 0 {
+	if len(variantCodesMap) != 0 {
 		var line *RowOrderLine
 		for _, ln := range variantCodesMap {
 			line = ln
@@ -74,7 +75,7 @@ func VerifyOrders(ctx context.Context, shop *model.Shop, idx imcsv.Indexer, code
 		return nil, cm.Errorf(cm.FailedPrecondition, nil, "Cửa hàng chưa tạo sản phẩm nhưng vẫn điền mã sản phẩm. Vui lòng thêm sản phẩm vào cửa hàng hoặc xóa mã sản phẩm khỏi file import (ô %v). Nếu cần thêm thông tin vui lòng liên hệ hotro@etop.vn.", imcsv.CellName(line.RowIndex, idxVariantEdCode))
 	}
 
-	var variantMap map[string]*catalogmodel.VariantExtended
+	var variantMap map[string]*catalog.ShopVariantWithProduct
 
 	// Verify variant codes
 	if len(variantCodesMap) != 0 {
@@ -83,23 +84,18 @@ func VerifyOrders(ctx context.Context, shop *model.Shop, idx imcsv.Indexer, code
 			variantCodes = append(variantCodes, code)
 		}
 
-		variantCodeQuery := &catalogmodelx.GetVariantsExtendedQuery{
-			ProductSourceID: shop.ProductSourceID,
-		}
-		switch codeMode {
-		case ModeEtopCode:
-			variantCodeQuery.Codes = variantCodes
-		case ModeEdCode:
-			variantCodeQuery.EdCodes = variantCodes
-		default:
-			return nil, cm.Errorf(cm.Internal, nil, "Unexpected code mode")
-		}
-		if err := bus.Dispatch(ctx, variantCodeQuery); err != nil {
+		existingVariants, err := shopVariantStore(ctx).
+			ShopID(shop.ID).
+			FilterForImport(catalogsqlstore.ListVariantsForImportArgs{
+				Codes: variantCodes,
+			}).
+			ListShopVariantsWithProduct()
+		if err != nil {
 			return nil, err
 		}
 
-		variantMap = make(map[string]*catalogmodel.VariantExtended)
-		for _, v := range variantCodeQuery.Result.Variants {
+		variantMap = make(map[string]*catalog.ShopVariantWithProduct)
+		for _, v := range existingVariants {
 			variantMap[v.Code] = v
 		}
 	}
@@ -145,7 +141,7 @@ func VerifyOrders(ctx context.Context, shop *model.Shop, idx imcsv.Indexer, code
 				}
 				continue
 			}
-			line.VariantExtended = v
+			line.XVariant = v
 		}
 	}
 	return

@@ -999,7 +999,7 @@ func sqlgenShop(_ *Shop) bool { return true }
 type Shops []*Shop
 
 const __sqlShop_Table = "shop"
-const __sqlShop_ListCols = "\"id\",\"name\",\"owner_id\",\"is_test\",\"address_id\",\"ship_to_address_id\",\"ship_from_address_id\",\"phone\",\"bank_account\",\"website_url\",\"image_url\",\"email\",\"code\",\"auto_create_ffm\",\"product_source_id\",\"order_source_id\",\"status\",\"created_at\",\"updated_at\",\"deleted_at\",\"recognized_hosts\",\"ghn_note_code\",\"try_on\",\"company_info\",\"money_transaction_rrule\",\"survey_info\",\"shipping_service_select_strategy\""
+const __sqlShop_ListCols = "\"id\",\"name\",\"owner_id\",\"is_test\",\"address_id\",\"ship_to_address_id\",\"ship_from_address_id\",\"phone\",\"bank_account\",\"website_url\",\"image_url\",\"email\",\"code\",\"auto_create_ffm\",\"order_source_id\",\"status\",\"created_at\",\"updated_at\",\"deleted_at\",\"recognized_hosts\",\"ghn_note_code\",\"try_on\",\"company_info\",\"money_transaction_rrule\",\"survey_info\",\"shipping_service_select_strategy\""
 const __sqlShop_Insert = "INSERT INTO \"shop\" (" + __sqlShop_ListCols + ") VALUES"
 const __sqlShop_Select = "SELECT " + __sqlShop_ListCols + " FROM \"shop\""
 const __sqlShop_Select_history = "SELECT " + __sqlShop_ListCols + " FROM history.\"shop\""
@@ -1026,7 +1026,6 @@ func (m *Shop) SQLArgs(opts core.Opts, create bool) []interface{} {
 		core.String(m.Email),
 		core.String(m.Code),
 		core.Bool(m.AutoCreateFFM),
-		core.Int64(m.ProductSourceID),
 		core.Int64(m.OrderSourceID),
 		core.Int(m.Status),
 		core.Now(m.CreatedAt, now, create),
@@ -1058,7 +1057,6 @@ func (m *Shop) SQLScanArgs(opts core.Opts) []interface{} {
 		(*core.String)(&m.Email),
 		(*core.String)(&m.Code),
 		(*core.Bool)(&m.AutoCreateFFM),
-		(*core.Int64)(&m.ProductSourceID),
 		(*core.Int64)(&m.OrderSourceID),
 		(*core.Int)(&m.Status),
 		(*core.Time)(&m.CreatedAt),
@@ -1108,7 +1106,7 @@ func (_ *Shops) SQLSelect(w SQLWriter) error {
 func (m *Shop) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlShop_Insert)
 	w.WriteRawString(" (")
-	w.WriteMarkers(27)
+	w.WriteMarkers(26)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), true))
 	return nil
@@ -1118,7 +1116,7 @@ func (ms Shops) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlShop_Insert)
 	w.WriteRawString(" (")
 	for i := 0; i < len(ms); i++ {
-		w.WriteMarkers(27)
+		w.WriteMarkers(26)
 		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
 		w.WriteRawString("),(")
 	}
@@ -1245,14 +1243,6 @@ func (m *Shop) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(m.AutoCreateFFM)
 	}
-	if m.ProductSourceID != 0 {
-		flag = true
-		w.WriteName("product_source_id")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(m.ProductSourceID)
-	}
 	if m.OrderSourceID != 0 {
 		flag = true
 		w.WriteName("order_source_id")
@@ -1359,7 +1349,7 @@ func (m *Shop) SQLUpdate(w SQLWriter) error {
 func (m *Shop) SQLUpdateAll(w SQLWriter) error {
 	w.WriteQueryString(__sqlShop_UpdateAll)
 	w.WriteRawString(" = (")
-	w.WriteMarkers(27)
+	w.WriteMarkers(26)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), false))
 	return nil
@@ -1397,7 +1387,6 @@ func (m ShopHistory) ImageURL() core.Interface        { return core.Interface{m[
 func (m ShopHistory) Email() core.Interface           { return core.Interface{m["email"]} }
 func (m ShopHistory) Code() core.Interface            { return core.Interface{m["code"]} }
 func (m ShopHistory) AutoCreateFFM() core.Interface   { return core.Interface{m["auto_create_ffm"]} }
-func (m ShopHistory) ProductSourceID() core.Interface { return core.Interface{m["product_source_id"]} }
 func (m ShopHistory) OrderSourceID() core.Interface   { return core.Interface{m["order_source_id"]} }
 func (m ShopHistory) Status() core.Interface          { return core.Interface{m["status"]} }
 func (m ShopHistory) CreatedAt() core.Interface       { return core.Interface{m["created_at"]} }
@@ -1416,15 +1405,15 @@ func (m ShopHistory) ShippingServiceSelectStrategy() core.Interface {
 }
 
 func (m *ShopHistory) SQLScan(opts core.Opts, row *sql.Row) error {
-	data := make([]interface{}, 27)
-	args := make([]interface{}, 27)
-	for i := 0; i < 27; i++ {
+	data := make([]interface{}, 26)
+	args := make([]interface{}, 26)
+	for i := 0; i < 26; i++ {
 		args[i] = &data[i]
 	}
 	if err := row.Scan(args...); err != nil {
 		return err
 	}
-	res := make(ShopHistory, 27)
+	res := make(ShopHistory, 26)
 	res["id"] = data[0]
 	res["name"] = data[1]
 	res["owner_id"] = data[2]
@@ -1439,27 +1428,26 @@ func (m *ShopHistory) SQLScan(opts core.Opts, row *sql.Row) error {
 	res["email"] = data[11]
 	res["code"] = data[12]
 	res["auto_create_ffm"] = data[13]
-	res["product_source_id"] = data[14]
-	res["order_source_id"] = data[15]
-	res["status"] = data[16]
-	res["created_at"] = data[17]
-	res["updated_at"] = data[18]
-	res["deleted_at"] = data[19]
-	res["recognized_hosts"] = data[20]
-	res["ghn_note_code"] = data[21]
-	res["try_on"] = data[22]
-	res["company_info"] = data[23]
-	res["money_transaction_rrule"] = data[24]
-	res["survey_info"] = data[25]
-	res["shipping_service_select_strategy"] = data[26]
+	res["order_source_id"] = data[14]
+	res["status"] = data[15]
+	res["created_at"] = data[16]
+	res["updated_at"] = data[17]
+	res["deleted_at"] = data[18]
+	res["recognized_hosts"] = data[19]
+	res["ghn_note_code"] = data[20]
+	res["try_on"] = data[21]
+	res["company_info"] = data[22]
+	res["money_transaction_rrule"] = data[23]
+	res["survey_info"] = data[24]
+	res["shipping_service_select_strategy"] = data[25]
 	*m = res
 	return nil
 }
 
 func (ms *ShopHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	data := make([]interface{}, 27)
-	args := make([]interface{}, 27)
-	for i := 0; i < 27; i++ {
+	data := make([]interface{}, 26)
+	args := make([]interface{}, 26)
+	for i := 0; i < 26; i++ {
 		args[i] = &data[i]
 	}
 	res := make(ShopHistories, 0, 128)
@@ -1482,19 +1470,18 @@ func (ms *ShopHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
 		m["email"] = data[11]
 		m["code"] = data[12]
 		m["auto_create_ffm"] = data[13]
-		m["product_source_id"] = data[14]
-		m["order_source_id"] = data[15]
-		m["status"] = data[16]
-		m["created_at"] = data[17]
-		m["updated_at"] = data[18]
-		m["deleted_at"] = data[19]
-		m["recognized_hosts"] = data[20]
-		m["ghn_note_code"] = data[21]
-		m["try_on"] = data[22]
-		m["company_info"] = data[23]
-		m["money_transaction_rrule"] = data[24]
-		m["survey_info"] = data[25]
-		m["shipping_service_select_strategy"] = data[26]
+		m["order_source_id"] = data[14]
+		m["status"] = data[15]
+		m["created_at"] = data[16]
+		m["updated_at"] = data[17]
+		m["deleted_at"] = data[18]
+		m["recognized_hosts"] = data[19]
+		m["ghn_note_code"] = data[20]
+		m["try_on"] = data[21]
+		m["company_info"] = data[22]
+		m["money_transaction_rrule"] = data[23]
+		m["survey_info"] = data[24]
+		m["shipping_service_select_strategy"] = data[25]
 		res = append(res, m)
 	}
 	if err := rows.Err(); err != nil {

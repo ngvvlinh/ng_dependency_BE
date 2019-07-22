@@ -24,12 +24,9 @@ option (gogoproto.testgen_all)              = false;
 option (gogoproto.unmarshaler_all)          = false;
 option (gogoproto.verbose_equal_all)        = false;
 
-import "google/protobuf/timestamp.proto";
 import "common/common.proto";
 import "etop/etc/status3/status.proto";
-import "etop/etc/address_type/type.proto";
 import "etop/etop.proto";
-import "etop/etc/user_source/user_source.proto";
 
 service MiscService {
     rpc VersionInfo(cm.Empty) returns (cm.VersionInfoResponse);

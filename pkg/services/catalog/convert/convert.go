@@ -39,110 +39,6 @@ func Attributes(ins []catalogmodel.ProductAttribute) (outs catalogtypes.Attribut
 	return outs
 }
 
-func Product(in *catalogmodel.Product) (out *catalog.Product) {
-	if in == nil {
-		return nil
-	}
-	out = &catalog.Product{
-		ID:                      in.ID,
-		ProductSourceID:         in.ProductSourceID,
-		ProductSourceCategoryID: in.ProductSourceCategoryID,
-		Name:                    in.Name,
-		DescriptionInfo: catalog.DescriptionInfo{
-			ShortDesc:   in.ShortDesc,
-			Description: in.Description,
-			DescHTML:    in.DescHTML,
-		},
-		Unit:      in.Unit,
-		Status:    int16(in.Status),
-		Code:      in.Code,
-		ImageURLs: in.ImageURLs,
-		CreatedAt: in.CreatedAt,
-		UpdatedAt: in.UpdatedAt,
-	}
-	return out
-}
-
-func Products(ins []*catalogmodel.Product) (outs []*catalog.Product) {
-	outs = make([]*catalog.Product, len(ins))
-	for i, in := range ins {
-		outs[i] = Product(in)
-	}
-	return outs
-}
-
-func ProductWithVariants(in *catalogmodel.ProductFtVariant) (out *catalog.ProductWithVariants) {
-	if in == nil {
-		return nil
-	}
-	out = &catalog.ProductWithVariants{
-		Product:  Product(in.Product),
-		Variants: Variants(in.Variants),
-	}
-	return out
-}
-
-func ProductsWithVariants(ins []*catalogmodel.ProductFtVariant) (outs []*catalog.ProductWithVariants) {
-	outs = make([]*catalog.ProductWithVariants, len(ins))
-	for i, in := range ins {
-		outs[i] = ProductWithVariants(in)
-	}
-	return outs
-}
-
-func Variant(in *catalogmodel.Variant) (out *catalog.Variant) {
-	if in == nil {
-		return nil
-	}
-	out = &catalog.Variant{
-		ID:        in.ID,
-		ProductID: in.ProductID,
-		DescriptionInfo: catalog.DescriptionInfo{
-			ShortDesc:   in.ShortDesc,
-			Description: in.Description,
-			DescHTML:    in.DescHTML,
-		},
-		Status: int16(in.Status),
-		Code:   in.Code,
-		PriceDeclareInfo: catalog.PriceDeclareInfo{
-			ListPrice:   in.ListPrice,
-			CostPrice:   in.CostPrice,
-			RetailPrice: 0,
-		},
-		Attributes: Attributes(in.Attributes),
-		CreatedAt:  in.CreatedAt,
-		UpdatedAt:  in.UpdatedAt,
-	}
-	return out
-}
-
-func Variants(ins []*catalogmodel.Variant) (outs []*catalog.Variant) {
-	outs = make([]*catalog.Variant, len(ins))
-	for i, in := range ins {
-		outs[i] = Variant(in)
-	}
-	return outs
-}
-
-func VariantWithProduct(in *catalogmodel.VariantExtended) (out *catalog.VariantWithProduct) {
-	if in == nil {
-		return nil
-	}
-	out = &catalog.VariantWithProduct{
-		Variant: Variant(in.Variant),
-		Product: Product(in.Product),
-	}
-	return out
-}
-
-func VariantsWithProduct(ins []*catalogmodel.VariantExtended) (outs []*catalog.VariantWithProduct) {
-	outs = make([]*catalog.VariantWithProduct, len(ins))
-	for i, in := range ins {
-		outs[i] = VariantWithProduct(in)
-	}
-	return outs
-}
-
 func ShopProduct(in *catalogmodel.ShopProduct) (out *catalog.ShopProduct) {
 	if in == nil {
 		return nil
@@ -172,38 +68,26 @@ func ShopProduct(in *catalogmodel.ShopProduct) (out *catalog.ShopProduct) {
 	return out
 }
 
-func ShopProductExtended(in *catalogmodel.ShopProductExtended) (out *catalog.ShopProductExtended) {
-	if in == nil {
-		return nil
-	}
-	out = &catalog.ShopProductExtended{
-		ShopProduct: ShopProduct(in.ShopProduct),
-		Product:     Product(in.Product),
-	}
-	return out
-}
-
-func ShopProductExtendeds(ins []*catalogmodel.ShopProductExtended) (outs []*catalog.ShopProductExtended) {
-	outs = make([]*catalog.ShopProductExtended, len(ins))
+func ShopProducts(ins []*catalogmodel.ShopProduct) (outs []*catalog.ShopProduct) {
+	outs = make([]*catalog.ShopProduct, len(ins))
 	for i, in := range ins {
-		outs[i] = ShopProductExtended(in)
+		outs[i] = ShopProduct(in)
 	}
 	return outs
 }
 
-func ShopProductWithVariants(in *catalogmodel.ShopProductFtVariant) (out *catalog.ShopProductWithVariants) {
+func ShopProductWithVariants(in *catalogmodel.ShopProductWithVariants) (out *catalog.ShopProductWithVariants) {
 	if in == nil {
 		return nil
 	}
 	out = &catalog.ShopProductWithVariants{
-		Product:     Product(in.Product),
 		ShopProduct: ShopProduct(in.ShopProduct),
-		Variants:    ShopVariantsExtended(in.Variants),
+		Variants:    ShopVariants(in.Variants),
 	}
 	return out
 }
 
-func ShopProductsWithVariants(ins []*catalogmodel.ShopProductFtVariant) (outs []*catalog.ShopProductWithVariants) {
+func ShopProductsWithVariants(ins []*catalogmodel.ShopProductWithVariants) (outs []*catalog.ShopProductWithVariants) {
 	outs = make([]*catalog.ShopProductWithVariants, len(ins))
 	for i, in := range ins {
 		outs[i] = ShopProductWithVariants(in)
@@ -211,44 +95,39 @@ func ShopProductsWithVariants(ins []*catalogmodel.ShopProductFtVariant) (outs []
 	return outs
 }
 
-func ShopVariantExtended(in *catalogmodel.ShopVariantExtended) (out *catalog.ShopVariantExtended) {
+func ShopVariant(in *catalogmodel.ShopVariant) (out *catalog.ShopVariant) {
 	if in == nil {
 		return nil
 	}
-	sv := &catalog.ShopVariant{
-		ShopID:       in.ShopVariant.ShopID,
-		ProductID:    in.Variant.ProductID,
-		VariantID:    in.ShopVariant.VariantID,
-		CollectionID: in.ShopVariant.CollectionID,
-		Code:         in.Variant.Code,
-		Name:         "",
+	out = &catalog.ShopVariant{
+		ShopID:    in.ShopID,
+		ProductID: in.ProductID,
+		VariantID: in.VariantID,
+		Code:      in.Code,
+		Name:      "",
 		DescriptionInfo: catalog.DescriptionInfo{
-			ShortDesc:   in.ShopVariant.ShortDesc,
-			Description: in.ShopVariant.Description,
-			DescHTML:    in.ShopVariant.DescHTML,
+			ShortDesc:   in.ShortDesc,
+			Description: in.Description,
+			DescHTML:    in.DescHTML,
 		},
-		ImageURLs: in.Variant.ImageURLs,
-		Status:    int16(in.ShopVariant.Status),
+		ImageURLs: in.ImageURLs,
+		Status:    int16(in.Status),
 		PriceInfo: catalog.PriceInfo{
 			ListPrice:   in.ListPrice,
 			CostPrice:   in.CostPrice,
 			RetailPrice: in.RetailPrice,
 		},
 		Note:      "",
-		CreatedAt: in.ShopVariant.CreatedAt,
-		UpdatedAt: in.ShopVariant.UpdatedAt,
-	}
-	out = &catalog.ShopVariantExtended{
-		ShopVariant: sv,
-		Variant:     Variant(in.Variant),
+		CreatedAt: in.CreatedAt,
+		UpdatedAt: in.UpdatedAt,
 	}
 	return out
 }
 
-func ShopVariantsExtended(ins []*catalogmodel.ShopVariantExtended) (outs []*catalog.ShopVariantExtended) {
-	outs = make([]*catalog.ShopVariantExtended, len(ins))
+func ShopVariants(ins []*catalogmodel.ShopVariant) (outs []*catalog.ShopVariant) {
+	outs = make([]*catalog.ShopVariant, len(ins))
 	for i, in := range ins {
-		outs[i] = ShopVariantExtended(in)
+		outs[i] = ShopVariant(in)
 	}
 	return outs
 }
@@ -257,15 +136,9 @@ func ShopVariantWithProduct(in *catalogmodel.ShopVariantWithProduct) (out *catal
 	if in == nil {
 		return nil
 	}
-	v := ShopVariantExtended(&catalogmodel.ShopVariantExtended{
-		ShopVariant: in.ShopVariant,
-		Variant:     in.Variant,
-	})
 	out = &catalog.ShopVariantWithProduct{
-		Product:     Product(in.Product),
-		Variant:     v.Variant,
 		ShopProduct: ShopProduct(in.ShopProduct),
-		ShopVariant: v.ShopVariant,
+		ShopVariant: ShopVariant(in.ShopVariant),
 	}
 	return out
 }

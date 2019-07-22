@@ -1,8 +1,8 @@
 package imcsv
 
 import (
+	"etop.vn/api/main/catalog"
 	"etop.vn/backend/pkg/common/imcsv"
-	catalogmodel "etop.vn/backend/pkg/services/catalog/model"
 	ordermodel "etop.vn/backend/pkg/services/ordering/model"
 )
 
@@ -344,7 +344,7 @@ type RowOrderLine struct {
 	LineTotalDiscount   int
 	LineTotalAmount     int
 
-	*catalogmodel.VariantExtended
+	XVariant *catalog.ShopVariantWithProduct
 }
 
 func (m *RowOrderLine) Validate(idx imcsv.Indexer, mode Mode) (errs []error) {

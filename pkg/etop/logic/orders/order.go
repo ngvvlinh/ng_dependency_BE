@@ -7,23 +7,20 @@ import (
 	"strings"
 	"time"
 
-	"etop.vn/common/xerrors"
-
-	"etop.vn/backend/pkg/services/catalog/convert"
-
 	"etop.vn/api/main/catalog"
+	pbcm "etop.vn/backend/pb/common"
+	pborder "etop.vn/backend/pb/etop/order"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/validate"
 	"etop.vn/backend/pkg/etop/authorize/claims"
 	"etop.vn/backend/pkg/etop/logic/etop_shipping_price"
 	"etop.vn/backend/pkg/etop/model"
+	"etop.vn/backend/pkg/services/catalog/convert"
 	ordermodel "etop.vn/backend/pkg/services/ordering/model"
 	ordermodelx "etop.vn/backend/pkg/services/ordering/modelx"
 	"etop.vn/common/bus"
 	"etop.vn/common/l"
-
-	pbcm "etop.vn/backend/pb/common"
-	pborder "etop.vn/backend/pb/etop/order"
+	"etop.vn/common/xerrors"
 )
 
 var ll = l.New()
@@ -60,7 +57,7 @@ func CreateOrder(ctx context.Context, claim *claims.ShopClaim, authPartner *mode
 	}
 
 	shop := claim.Shop
-	lines, err := PrepareOrderLines(ctx, shop.ID, shop.ProductSourceID, r.Lines)
+	lines, err := PrepareOrderLines(ctx, shop.ID, r.Lines)
 	if err != nil {
 		return nil, err
 	}
@@ -130,7 +127,7 @@ func CreateOrder(ctx context.Context, claim *claims.ShopClaim, authPartner *mode
 
 func PrepareOrderLines(
 	ctx context.Context,
-	shopID int64, productSourceID int64,
+	shopID int64,
 	lines []*pborder.CreateOrderLine,
 ) ([]*ordermodel.OrderLine, error) {
 	variantIDs := make([]int64, 0, len(lines))
@@ -157,8 +154,8 @@ func PrepareOrderLines(
 	var variants []*catalog.ShopVariantWithProduct
 	if len(variantIDs) > 0 {
 		variantsQuery := &catalog.ListShopVariantsWithProductByIDsQuery{
-			IDs:             variantIDs,
-			ProductSourceID: productSourceID,
+			IDs:    variantIDs,
+			ShopID: shopID,
 		}
 		if err := catalogQuery.Dispatch(ctx, variantsQuery); err != nil {
 			return nil, err
@@ -179,7 +176,7 @@ func PrepareOrderLines(
 
 		var variant *catalog.ShopVariantWithProduct
 		for _, v := range variants {
-			if line.VariantId == v.Variant.ID {
+			if line.VariantId == v.ShopVariant.VariantID {
 				variant = v
 				break
 			}
@@ -210,7 +207,7 @@ func UpdateOrder(ctx context.Context, claim *claims.ShopClaim, authPartner *mode
 	oldOrder := query.Result.Order
 
 	// make sure update always has Lines and FeeLines
-	lines, err := PrepareOrderLines(ctx, claim.Shop.ID, claim.Shop.ProductSourceID, q.Lines)
+	lines, err := PrepareOrderLines(ctx, claim.Shop.ID, q.Lines)
 	if err != nil {
 		return nil, err
 	}
@@ -394,8 +391,8 @@ func prepareOrderLine(
 	originalPrice := m.RetailPrice
 	if v != nil {
 		line.VariantID = m.VariantId
-		line.ProductID = v.Product.ID
-		line.ProductName = model.CoalesceString2(v.ShopProduct.Name, v.Product.Name)
+		line.ProductID = v.ShopProduct.ProductID
+		line.ProductName = model.CoalesceString2(v.ShopProduct.Name, v.ShopProduct.Name)
 
 		line.ListPrice = int(v.GetListPrice())
 
@@ -403,15 +400,13 @@ func prepareOrderLine(
 			line.ImageURL = v.ShopProduct.ImageURLs[0]
 		} else if v.ShopProduct != nil && len(v.ShopProduct.ImageURLs) > 0 {
 			line.ImageURL = v.ShopProduct.ImageURLs[0]
-		} else if v.Product != nil && len(v.Product.ImageURLs) > 0 {
-			line.ImageURL = v.Product.ImageURLs[0]
 		}
 
 		if v.ShopVariant != nil {
 			line.RetailPrice = int(v.GetRetailPrice())
 			originalPrice = v.GetRetailPrice()
 		}
-		line.Attributes = convert.AttributesToModel(v.Variant.Attributes)
+		line.Attributes = convert.AttributesToModel(v.ShopVariant.Attributes)
 	}
 	if line.RetailPrice <= 0 {
 		return nil, cm.Errorf(cm.InvalidArgument, nil,

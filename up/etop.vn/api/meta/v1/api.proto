@@ -48,7 +48,7 @@ message Error {
 message Paging {
     optional int32  offset  = 5 [(gogoproto.nullable)=false];
     optional int32  limit   = 6 [(gogoproto.nullable)=false];
-    repeated string sort    = 7 [(gogoproto.nullable)=false];
+    repeated string sort    = 7;
 }
 
 message Filter {

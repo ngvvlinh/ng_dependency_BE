@@ -135,7 +135,6 @@ func ConnectShopService(addr string, client *http.Client) error {
 	bus.AddHandler("client", func(ctx context.Context, q *UpdateProductsTagsEndpoint) error { panic("Unexpected") })
 	bus.AddHandler("client", func(ctx context.Context, q *UpdateVariantEndpoint) error { panic("Unexpected") })
 	bus.AddHandler("client", func(ctx context.Context, q *UpdateVariantImagesEndpoint) error { panic("Unexpected") })
-	bus.AddHandler("client", func(ctx context.Context, q *UpdateVariantsEndpoint) error { panic("Unexpected") })
 	bus.AddHandler("client", func(ctx context.Context, q *CreateProductSourceEndpoint) error { panic("Unexpected") })
 	bus.AddHandler("client", func(ctx context.Context, q *CreateProductSourceCategoryEndpoint) error { panic("Unexpected") })
 	bus.AddHandler("client", func(ctx context.Context, q *CreateVariantEndpoint) error { panic("Unexpected") })
@@ -686,20 +685,6 @@ func (c *ShopClient) UpdateVariant(ctx context.Context, in *shop.UpdateVariantRe
 }
 func (c *ShopClient) UpdateVariantImages(ctx context.Context, in *shop.UpdateVariantImagesRequest) (*shop.ShopVariant, error) {
 	resp, err := c._ProductService.UpdateVariantImages(ctx, in)
-
-	node, ok := ctx.(*bus.NodeContext)
-	if !ok {
-		return resp, err
-	}
-	newNode := node.WithMessage(map[string]interface{}{
-		"Request": in,
-		"Result":  resp,
-	})
-	newNode.Error = err
-	return resp, err
-}
-func (c *ShopClient) UpdateVariants(ctx context.Context, in *shop.UpdateVariantsRequest) (*shop.UpdateVariantsResponse, error) {
-	resp, err := c._ProductService.UpdateVariants(ctx, in)
 
 	node, ok := ctx.(*bus.NodeContext)
 	if !ok {
@@ -1439,7 +1424,6 @@ func NewShopServer(mux Muxer, hooks *twirp.ServerHooks) {
 	bus.Expect(&UpdateProductsTagsEndpoint{})
 	bus.Expect(&UpdateVariantEndpoint{})
 	bus.Expect(&UpdateVariantImagesEndpoint{})
-	bus.Expect(&UpdateVariantsEndpoint{})
 	bus.Expect(&CreateProductSourceEndpoint{})
 	bus.Expect(&CreateProductSourceCategoryEndpoint{})
 	bus.Expect(&CreateVariantEndpoint{})
@@ -3123,54 +3107,6 @@ func (s ProductService) UpdateVariantImages(ctx context.Context, req *shop.Updat
 	}
 	session = sessionQuery.Result
 	query := &UpdateVariantImagesEndpoint{UpdateVariantImagesRequest: req}
-	query.Context.Claim = session.Claim
-	query.Context.Shop = session.Shop
-	query.Context.IsOwner = session.IsOwner
-	query.Context.Roles = session.Roles
-	query.Context.Permissions = session.Permissions
-	// Verify that the user has role "staff"
-	if !session.IsOwner && permission.MaxRoleLevel(session.Roles) < 2 {
-		return nil, common.ErrPermissionDenied
-	}
-	ctx = bus.NewRootContext(ctx)
-	err = bus.Dispatch(ctx, query)
-	resp = query.Result
-	if err == nil {
-		if resp == nil {
-			return nil, common.Error(common.Internal, "", nil).Log("nil response")
-		}
-		errs = cmWrapper.HasErrors(resp)
-	}
-	return resp, err
-}
-
-type UpdateVariantsEndpoint struct {
-	*shop.UpdateVariantsRequest
-	Result  *shop.UpdateVariantsResponse
-	Context ShopClaim
-}
-
-func (s ProductService) UpdateVariants(ctx context.Context, req *shop.UpdateVariantsRequest) (resp *shop.UpdateVariantsResponse, err error) {
-	t0 := time.Now()
-	var session *middleware.Session
-	var errs []*cm.Error
-	const rpcName = "shop.Product/UpdateVariants"
-	defer func() {
-		recovered := recover()
-		err = cmWrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
-		metrics.CountRequest(rpcName, err)
-	}()
-	defer cmWrapper.Censor(req)
-	sessionQuery := &middleware.StartSessionQuery{
-		Context:     ctx,
-		RequireAuth: true,
-		RequireShop: true,
-	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
-		return nil, err
-	}
-	session = sessionQuery.Result
-	query := &UpdateVariantsEndpoint{UpdateVariantsRequest: req}
 	query.Context.Claim = session.Claim
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
