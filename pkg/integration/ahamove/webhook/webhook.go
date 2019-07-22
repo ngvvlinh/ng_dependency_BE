@@ -22,10 +22,10 @@ import (
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/cmsql"
 	"etop.vn/backend/pkg/common/httpx"
-	"etop.vn/backend/pkg/common/l"
 	"etop.vn/backend/pkg/etop/model_log"
 	"etop.vn/backend/pkg/integration/ahamove"
 	shipnowmodel "etop.vn/backend/pkg/services/shipnow/model"
+	"etop.vn/common/l"
 )
 
 var ll = l.New()

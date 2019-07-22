@@ -7,13 +7,13 @@ import (
 
 	"etop.vn/api/main/location"
 	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/syncgroup"
 	"etop.vn/backend/pkg/etop/logic/etop_shipping_price"
 	"etop.vn/backend/pkg/etop/model"
 	ordermodel "etop.vn/backend/pkg/services/ordering/model"
 	shipmodel "etop.vn/backend/pkg/services/shipping/model"
 	shipmodelx "etop.vn/backend/pkg/services/shipping/modelx"
+	"etop.vn/common/bus"
 )
 
 const MinShopBalance = -200000

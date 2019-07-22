@@ -5,11 +5,11 @@ import (
 	"time"
 
 	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/sq"
 	"etop.vn/backend/pkg/common/sq/core"
 	"etop.vn/backend/pkg/etop/authorize/authkey"
 	"etop.vn/backend/pkg/etop/model"
+	"etop.vn/common/bus"
 )
 
 func init() {

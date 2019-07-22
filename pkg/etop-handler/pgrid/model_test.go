@@ -8,6 +8,7 @@ import (
 	"etop.vn/backend/pkg/common/cmsql"
 	cc "etop.vn/backend/pkg/common/config"
 	"etop.vn/backend/pkg/pgevent"
+	"etop.vn/common/xerrors"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
@@ -55,7 +56,7 @@ func TestQuery(t *testing.T) {
 func TestModel(t *testing.T) {
 	cases := []struct {
 		Model        IModel
-		ExpectedCode cm.Code
+		ExpectedCode xerrors.Code
 	}{
 		// {&UserEvent{}, cm.NotFound},
 		// {&ShopEvent{}, cm.NotFound},

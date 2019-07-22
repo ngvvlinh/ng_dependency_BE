@@ -13,10 +13,8 @@ import (
 	pbetop "etop.vn/backend/pb/etop"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/auth"
-	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/gencode"
 	"etop.vn/backend/pkg/common/idemp"
-	"etop.vn/backend/pkg/common/l"
 	"etop.vn/backend/pkg/common/redis"
 	cmservice "etop.vn/backend/pkg/common/service"
 	"etop.vn/backend/pkg/common/validate"
@@ -29,6 +27,8 @@ import (
 	"etop.vn/backend/pkg/integration/email"
 	"etop.vn/backend/pkg/integration/sms"
 	wrapetop "etop.vn/backend/wrapper/etop"
+	"etop.vn/common/bus"
+	"etop.vn/common/l"
 )
 
 var (
@@ -569,7 +569,7 @@ func CreateLoginResponse2(ctx context.Context, claim *claims.ClaimInfo, token st
 		case model.IsShopID(currentAccountID):
 			query := &model.GetShopExtendedQuery{ShopID: currentAccountID}
 			if err := bus.Dispatch(ctx, query); err != nil {
-				return nil, nil, cm.ErrorTrace(cm.Internal, "", err)
+				return nil, nil, cm.ErrorTracef(cm.Internal, err, "")
 			}
 			resp.Shop = pbetop.PbShopExtended(query.Result)
 			respShop = query.Result.Shop
@@ -577,7 +577,7 @@ func CreateLoginResponse2(ctx context.Context, claim *claims.ClaimInfo, token st
 		case model.IsEtopAccountID(currentAccountID):
 			// nothing
 		default:
-			return nil, nil, cm.ErrorTrace(cm.Internal, "Invalid account", nil)
+			return nil, nil, cm.ErrorTracef(cm.Internal, nil, "Invalid account")
 		}
 	}
 

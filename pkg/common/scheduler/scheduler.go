@@ -5,7 +5,7 @@ import (
 	"sync"
 	"time"
 
-	"etop.vn/backend/pkg/common/l"
+	"etop.vn/common/l"
 )
 
 var ll = l.New()

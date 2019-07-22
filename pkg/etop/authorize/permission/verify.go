@@ -4,8 +4,8 @@ import (
 	"context"
 
 	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/etop/model"
+	"etop.vn/common/bus"
 )
 
 func init() {

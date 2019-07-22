@@ -8,8 +8,6 @@ import (
 	"time"
 
 	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/bus"
-	"etop.vn/backend/pkg/common/l"
 	"etop.vn/backend/pkg/common/scheduler"
 	"etop.vn/backend/pkg/common/telebot"
 	"etop.vn/backend/pkg/etop/model"
@@ -18,6 +16,9 @@ import (
 	"etop.vn/backend/pkg/integration/ghn/update"
 	shipmodel "etop.vn/backend/pkg/services/shipping/model"
 	shippingmodelx "etop.vn/backend/pkg/services/shipping/modelx"
+	"etop.vn/common/bus"
+	"etop.vn/common/l"
+	"etop.vn/common/xerrors"
 )
 
 var ll = l.New()
@@ -113,9 +114,9 @@ func (s *Synchronizer) syncCallbackLogs(id interface{}, p scheduler.Planner) (_e
 	defer func() {
 		err := recover()
 		if err != nil {
-			_err = cm.ErrorTrace(cm.Internal, fmt.Sprintf("Panic: %v", err), nil)
+			_err = cm.ErrorTracef(cm.Internal, nil, "panic: %v", err)
 		}
-		if cm.IsTrace(_err) {
+		if xerrors.IsTrace(_err) {
 			bus.PrintAllStack(ctx, true)
 		}
 		if _err != nil {

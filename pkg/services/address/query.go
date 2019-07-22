@@ -3,7 +3,7 @@ package address
 import (
 	"context"
 
-	"etop.vn/backend/pkg/common/bus"
+	"etop.vn/common/bus"
 
 	"etop.vn/api/main/address"
 	"etop.vn/backend/pkg/common/cmsql"

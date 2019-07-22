@@ -10,7 +10,6 @@ import (
 	"github.com/Shopify/sarama"
 
 	"etop.vn/backend/pkg/common/cmsql"
-	"etop.vn/backend/pkg/common/l"
 	"etop.vn/backend/pkg/common/mq"
 	"etop.vn/backend/pkg/common/telebot"
 	"etop.vn/backend/pkg/etop-handler/intctl"
@@ -19,6 +18,7 @@ import (
 	"etop.vn/backend/pkg/pgevent"
 	ordermodel "etop.vn/backend/pkg/services/ordering/model"
 	shipmodel "etop.vn/backend/pkg/services/shipping/model"
+	"etop.vn/common/l"
 
 	pbcm "etop.vn/backend/pb/common"
 	pbexternal "etop.vn/backend/pb/external"

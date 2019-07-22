@@ -8,11 +8,11 @@ import (
 	pbcm "etop.vn/backend/pb/common"
 	pbetop "etop.vn/backend/pb/etop"
 	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/bus"
-	"etop.vn/backend/pkg/common/l"
 	"etop.vn/backend/pkg/etop/logic/relationship"
 	"etop.vn/backend/pkg/etop/model"
 	wrapetop "etop.vn/backend/wrapper/etop"
+	"etop.vn/common/bus"
+	"etop.vn/common/l"
 )
 
 func init() {

@@ -5,6 +5,7 @@ import (
 
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/validate"
+	"etop.vn/common/xerrors"
 )
 
 type Error struct {
@@ -24,7 +25,7 @@ func ToError(err error) *Error {
 			Code: "ok",
 		}
 	}
-	xerr := cm.TwirpError(err)
+	xerr := xerrors.TwirpError(err)
 	return &Error{
 		Msg:  xerr.Msg(),
 		Code: string(xerr.Code()),

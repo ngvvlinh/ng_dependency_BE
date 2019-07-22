@@ -8,9 +8,9 @@ import (
 
 	"github.com/Shopify/sarama"
 
-	"etop.vn/backend/pkg/common/l"
 	"etop.vn/backend/pkg/common/mq"
 	"etop.vn/backend/pkg/common/telebot"
+	"etop.vn/common/l"
 )
 
 var ll = l.New()

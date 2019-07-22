@@ -4,10 +4,10 @@ import (
 	"context"
 
 	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/etop/model"
 	catalogmodel "etop.vn/backend/pkg/services/catalog/model"
 	catalogmodelx "etop.vn/backend/pkg/services/catalog/modelx"
+	"etop.vn/common/bus"
 )
 
 func init() {

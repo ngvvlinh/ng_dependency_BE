@@ -18,11 +18,12 @@ import (
 
 	cmP "etop.vn/backend/pb/common"
 	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/bus"
-	"etop.vn/backend/pkg/common/l"
-	"etop.vn/backend/pkg/common/logline"
 	"etop.vn/backend/pkg/common/telebot"
 	"etop.vn/backend/pkg/etop/authorize/middleware"
+	"etop.vn/common/bus"
+	"etop.vn/common/l"
+	"etop.vn/common/xerrors"
+	"etop.vn/common/xerrors/logline"
 )
 
 var (
@@ -85,13 +86,13 @@ func EncodeTwirpError(w io.Writer, err twirp.Error) {
 	json.NewEncoder(w).Encode(twerr)
 }
 
-func SendErrorToBot(bot *telebot.Channel, rpcName string, session *middleware.Session, req interface{}, err cm.TwError, errs []*cmP.Error, d time.Duration, lvl cm.TraceLevel, stacktrace []byte) {
+func SendErrorToBot(bot *telebot.Channel, rpcName string, session *middleware.Session, req interface{}, err xerrors.TwError, errs []*cmP.Error, d time.Duration, lvl xerrors.TraceLevel, stacktrace []byte) {
 	if bot == nil {
 		return
 	}
 
 	buf := &strings.Builder{}
-	if lvl >= cm.LevelTrace {
+	if lvl >= xerrors.LevelTrace {
 		buf.WriteString("🔥 ")
 	}
 	buf.WriteString("ERROR: ")
@@ -150,7 +151,7 @@ func SendErrorToBot(bot *telebot.Channel, rpcName string, session *middleware.Se
 			buf.WriteString(" ")
 		}
 		buf.WriteString("• ")
-		buf.WriteString(cm.TrimFilePath(err.OrigFile()))
+		buf.WriteString(xerrors.TrimFilePath(err.OrigFile()))
 		buf.WriteString(":")
 		buf.WriteString(strconv.Itoa(err.OrigLine()))
 		for _, line := range err.Logs() {
@@ -163,7 +164,7 @@ func SendErrorToBot(bot *telebot.Channel, rpcName string, session *middleware.Se
 				fmt.Fprint(buf, logline.ValueOf(field))
 			}
 			buf.WriteString(" • ")
-			buf.WriteString(cm.TrimFilePath(line.File))
+			buf.WriteString(xerrors.TrimFilePath(line.File))
 			buf.WriteString(":")
 			buf.WriteString(strconv.Itoa(line.Line))
 		}
@@ -189,7 +190,7 @@ func SendErrorToBot(bot *telebot.Channel, rpcName string, session *middleware.Se
 	bot.SendMessage(buf.String())
 }
 
-func RecoverAndLog(ctx context.Context, rpcName string, session *middleware.Session, req, resp proto.Message, recovered interface{}, err error, errs []*cmP.Error, t0 time.Time) (twError cm.TwError) {
+func RecoverAndLog(ctx context.Context, rpcName string, session *middleware.Session, req, resp proto.Message, recovered interface{}, err error, errs []*cmP.Error, t0 time.Time) (twError xerrors.TwError) {
 	var stacktrace []byte
 	if recovered != nil {
 		stacktrace = debug.Stack()
@@ -208,7 +209,7 @@ func RecoverAndLog(ctx context.Context, rpcName string, session *middleware.Sess
 				l.Duration("d", d),
 				l.Stringer("req", req),
 				l.Stringer("resp", resp))
-			go SendErrorToBot(bot, rpcName, session, req, nil, errs, d, cm.LevelPartialError, stacktrace)
+			go SendErrorToBot(bot, rpcName, session, req, nil, errs, d, xerrors.LevelPartialError, stacktrace)
 			return nil
 		}
 		ll.Debug("->"+rpcName,
@@ -217,9 +218,9 @@ func RecoverAndLog(ctx context.Context, rpcName string, session *middleware.Sess
 		return nil
 	}
 
-	twError = cm.TwirpError(err)
-	lvl := cm.GetTraceLevel(err)
-	if lvl <= cm.LevelTrival {
+	twError = xerrors.TwirpError(err)
+	lvl := xerrors.GetTraceLevel(err)
+	if lvl <= xerrors.LevelTrival {
 		if cm.IsDev() {
 			ll.Warn("->"+rpcName,
 				l.Duration("d", d),
@@ -246,7 +247,7 @@ func LogErrorAndTrace(ctx context.Context, err error, msg string, fields ...zapc
 	}
 
 	ll.Error(msg, append(fields, l.Error(err))...)
-	if cm.GetTraceLevel(err) >= cm.LevelTrace {
+	if xerrors.GetTraceLevel(err) >= xerrors.LevelTrace {
 		fmt.Printf("%+v\n", err)
 	}
 }

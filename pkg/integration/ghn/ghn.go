@@ -8,10 +8,10 @@ import (
 	"sync"
 
 	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/l"
 	"etop.vn/backend/pkg/etop/model"
 	ghnclient "etop.vn/backend/pkg/integration/ghn/client"
 	"etop.vn/backend/pkg/integration/shipping"
+	"etop.vn/common/l"
 )
 
 type ClientType byte

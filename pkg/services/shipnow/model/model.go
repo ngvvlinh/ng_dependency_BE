@@ -8,6 +8,7 @@ import (
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/etop/model"
 	ordermodel "etop.vn/backend/pkg/services/ordering/model"
+	"etop.vn/common/xerrors"
 )
 
 //go:generate $ETOPDIR/backend/scripts/derive.sh
@@ -75,7 +76,7 @@ type ShipnowFulfillment struct {
 }
 
 func (m *ShipnowFulfillment) Validate() error {
-	var errs cm.Errors
+	var errs xerrors.Errors
 	if m.ChargeableWeight <= 0 && m.GrossWeight <= 0 {
 		err := cm.Errorf(cm.InvalidArgument, nil, "tổng khối lượng tính phí không hợp lệ")
 		errs = append(errs, err)

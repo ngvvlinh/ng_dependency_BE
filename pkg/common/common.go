@@ -7,7 +7,7 @@ import (
 	"sync"
 
 	"etop.vn/api/meta"
-	"etop.vn/backend/pkg/common/l"
+	"etop.vn/common/l"
 )
 
 // Environment constants

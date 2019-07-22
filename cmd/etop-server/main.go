@@ -10,17 +10,16 @@ import (
 	"syscall"
 	"time"
 
-	"etop.vn/backend/pkg/services/shipnow"
-
+	"etop.vn/api/main/identity"
+	"etop.vn/api/main/ordering"
+	"etop.vn/api/main/shipnow"
 	"etop.vn/backend/cmd/etop-server/config"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/auth"
-	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/captcha"
 	"etop.vn/backend/pkg/common/cmsql"
 	cc "etop.vn/backend/pkg/common/config"
 	"etop.vn/backend/pkg/common/health"
-	"etop.vn/backend/pkg/common/l"
 	"etop.vn/backend/pkg/common/mq"
 	"etop.vn/backend/pkg/common/redis"
 	cmService "etop.vn/backend/pkg/common/service"
@@ -54,18 +53,17 @@ import (
 	"etop.vn/backend/pkg/integration/vtpost"
 	"etop.vn/backend/pkg/services/address"
 	catalogquery "etop.vn/backend/pkg/services/catalog/query"
-	"etop.vn/backend/pkg/services/identity"
+	serviceidentity "etop.vn/backend/pkg/services/identity"
 	servicelocation "etop.vn/backend/pkg/services/location"
-	"etop.vn/backend/pkg/services/ordering"
+	serviceordering "etop.vn/backend/pkg/services/ordering"
 	orderingpm "etop.vn/backend/pkg/services/ordering/pm"
 	ordersqlstore "etop.vn/backend/pkg/services/ordering/sqlstore"
-
-	identitycore "etop.vn/api/main/identity"
-	ordercore "etop.vn/api/main/ordering"
-	shipnowcore "etop.vn/api/main/shipnow"
-	shipnow_carrier "etop.vn/backend/pkg/services/shipnow-carrier"
+	serviceshipnow "etop.vn/backend/pkg/services/shipnow"
+	shipnowcarrier "etop.vn/backend/pkg/services/shipnow-carrier"
 	shipnowpm "etop.vn/backend/pkg/services/shipnow/pm"
 	shipsqlstore "etop.vn/backend/pkg/services/shipping/sqlstore"
+	"etop.vn/common/bus"
+	"etop.vn/common/l"
 )
 
 var (
@@ -90,11 +88,11 @@ var (
 	ahamoveCarrier        *ahamove.Carrier
 	ahamoveCarrierAccount *ahamove.CarrierAccount
 
-	shipnowQuery  shipnowcore.QueryBus
-	shipnowAggr   shipnowcore.CommandBus
-	orderAggr     *ordering.Aggregate
-	orderQuery    ordercore.QueryBus
-	identityQuery identitycore.QueryBus
+	shipnowQuery  shipnow.QueryBus
+	shipnowAggr   shipnow.CommandBus
+	orderAggr     *serviceordering.Aggregate
+	orderQuery    ordering.QueryBus
+	identityQuery identity.QueryBus
 )
 
 func main() {
@@ -193,7 +191,7 @@ func main() {
 	}
 
 	locationBus := servicelocation.New().MessageBus()
-	identityQuery = identity.NewQueryService(db).MessageBus()
+	identityQuery = serviceidentity.NewQueryService(db).MessageBus()
 	if cfg.GHN.AccountDefault.Token != "" {
 		ghnCarrier = ghn.New(cfg.GHN, locationBus)
 		if err := ghnCarrier.InitAllClients(ctx); err != nil {
@@ -258,21 +256,21 @@ func main() {
 	eventBus := bus.New()
 
 	// create aggregate, query service
-	identityQuery = identity.NewQueryService(db).MessageBus()
+	identityQuery = serviceidentity.NewQueryService(db).MessageBus()
 	catalogQuery := catalogquery.New(db).MessageBus()
 	addressQuery := address.NewQueryService(db).MessageBus()
-	shipnowQuery = shipnow.NewQueryService(db).MessageBus()
-	orderQuery = ordering.NewQueryService(db).MessageBus()
+	shipnowQuery = serviceshipnow.NewQueryService(db).MessageBus()
+	orderQuery = serviceordering.NewQueryService(db).MessageBus()
 	haravanIdentityAggr := haravanidentity.NewAggregate(db, cfg.ThirdPartyHost, cfg.Haravan).MessageBus()
 	haravanIdentityQuery := haravanidentity.NewQueryService(db).MessageBus()
 
-	orderAggr = ordering.NewAggregate(db)
-	shipnowCarrierManager := shipnow_carrier.NewManager(db, locationBus, &shipnow_carrier.Carrier{
+	orderAggr = serviceordering.NewAggregate(db)
+	shipnowCarrierManager := shipnowcarrier.NewManager(db, locationBus, &shipnowcarrier.Carrier{
 		ShipnowCarrier:        ahamoveCarrier,
 		ShipnowCarrierAccount: ahamoveCarrierAccount,
 	}, shipnowQuery)
-	identityAggr := identity.NewAggregate(db, shipnowCarrierManager).MessageBus()
-	shipnowAggr = shipnow.NewAggregate(eventBus, db, locationBus, identityQuery, addressQuery, orderQuery, shipnowCarrierManager).MessageBus()
+	identityAggr := serviceidentity.NewAggregate(db, shipnowCarrierManager).MessageBus()
+	shipnowAggr = serviceshipnow.NewAggregate(eventBus, db, locationBus, identityQuery, addressQuery, orderQuery, shipnowCarrierManager).MessageBus()
 
 	orderingPM := orderingpm.New(orderAggr)
 	shipnowPM := shipnowpm.New(eventBus, shipnowQuery, shipnowAggr, orderAggr.MessageBus(), shipnowCarrierManager)

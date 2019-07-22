@@ -5,12 +5,12 @@ import (
 	"fmt"
 
 	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/l"
 	"etop.vn/backend/pkg/common/mq"
 	etopmodel "etop.vn/backend/pkg/etop/model"
 	"etop.vn/backend/pkg/notifier/model"
 	"etop.vn/backend/pkg/pgevent"
 	txmodel "etop.vn/backend/pkg/services/moneytx/model"
+	"etop.vn/common/l"
 )
 
 func HandleMoneyTransactionShippingEvent(ctx context.Context, event *pgevent.PgEvent) (mq.Code, error) {

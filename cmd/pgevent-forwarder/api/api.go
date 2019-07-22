@@ -10,9 +10,9 @@ import (
 	"github.com/lib/pq"
 
 	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/bus"
-	"etop.vn/backend/pkg/common/l"
 	"etop.vn/backend/pkg/pgevent"
+	"etop.vn/common/bus"
+	"etop.vn/common/l"
 
 	pbcm "etop.vn/backend/pb/common"
 	wrappgevent "etop.vn/backend/wrapper/services/pgevent"

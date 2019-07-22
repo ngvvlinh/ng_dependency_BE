@@ -5,10 +5,10 @@ import (
 
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/auth"
-	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/idemp"
 	"etop.vn/backend/pkg/common/redis"
 	cmservice "etop.vn/backend/pkg/common/service"
+	"etop.vn/common/bus"
 
 	pbcm "etop.vn/backend/pb/common"
 	pbetop "etop.vn/backend/pb/etop"

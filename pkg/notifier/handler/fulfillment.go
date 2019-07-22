@@ -7,7 +7,6 @@ import (
 	"strings"
 
 	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/l"
 	"etop.vn/backend/pkg/common/mq"
 	"etop.vn/backend/pkg/etop/model"
 	ghtkclient "etop.vn/backend/pkg/integration/ghtk/client"
@@ -15,6 +14,7 @@ import (
 	"etop.vn/backend/pkg/pgevent"
 	ordermodel "etop.vn/backend/pkg/services/ordering/model"
 	shipmodel "etop.vn/backend/pkg/services/shipping/model"
+	"etop.vn/common/l"
 )
 
 var acceptNotifyStates = []string{string(model.StateReturning), string(model.StateReturned), string(model.StateUndeliverable)}

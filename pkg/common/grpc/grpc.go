@@ -16,7 +16,7 @@ import (
 	"google.golang.org/grpc/status"
 
 	"etop.vn/backend/pkg/common/auth"
-	"etop.vn/backend/pkg/common/l"
+	"etop.vn/common/l"
 )
 
 var ll = l.New()

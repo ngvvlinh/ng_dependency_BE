@@ -19,7 +19,6 @@ import (
 	"etop.vn/backend/pb/etop/etc/ghn_note_code"
 	pborder "etop.vn/backend/pb/etop/order"
 	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/httpx"
 	"etop.vn/backend/pkg/common/imcsv"
 	cmstr "etop.vn/backend/pkg/common/str"
@@ -28,6 +27,8 @@ import (
 	"etop.vn/backend/pkg/etop/model"
 	ordermodel "etop.vn/backend/pkg/services/ordering/model"
 	"etop.vn/backend/pkg/services/ordering/modelx"
+	"etop.vn/common/bus"
+	"etop.vn/common/xerrors"
 )
 
 func HandleImportOrders(c *httpx.Context) error {
@@ -259,7 +260,7 @@ func handleImportOrder(ctx context.Context, c *httpx.Context, shop *model.Shop, 
 		err := bus.Dispatch(ctx, cmd)
 		_errs[i] = err
 	}
-	if cm.AllError(_errs) {
+	if xerrors.AllError(_errs) {
 		return nil, cm.Errorf(cm.Internal, _errs[0], "Không thể import đơn hàng. Vui lòng liên hệ hotro@etop.vn.")
 	}
 

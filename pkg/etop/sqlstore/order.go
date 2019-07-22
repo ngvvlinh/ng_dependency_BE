@@ -5,14 +5,11 @@ import (
 	"fmt"
 	"strconv"
 
-	"etop.vn/api/main/shipnow"
-
 	"github.com/lib/pq"
 
+	"etop.vn/api/main/shipnow"
 	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/gencode"
-	"etop.vn/backend/pkg/common/l"
 	"etop.vn/backend/pkg/etop/model"
 	ordermodel "etop.vn/backend/pkg/services/ordering/model"
 	ordermodelx "etop.vn/backend/pkg/services/ordering/modelx"
@@ -21,6 +18,9 @@ import (
 	shipmodel "etop.vn/backend/pkg/services/shipping/model"
 	shipmodelx "etop.vn/backend/pkg/services/shipping/modelx"
 	shipmodely "etop.vn/backend/pkg/services/shipping/modely"
+	"etop.vn/common/bus"
+	"etop.vn/common/l"
+	"etop.vn/common/xerrors"
 )
 
 func init() {
@@ -995,7 +995,7 @@ func SyncUpdateFulfillments(ctx context.Context, cmd *shipmodelx.SyncUpdateFulfi
 		}(ffm))
 	}
 
-	var errs cm.ErrorCollector
+	var errs xerrors.ErrorCollector
 	var updated, errors int
 	for i, l := 0, len(cmd.Fulfillments); i < l; i++ {
 		err := <-chUpdate

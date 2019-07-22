@@ -13,6 +13,7 @@ replace etop.vn/common => ./up/etop.vn/common
 require (
 	cloud.google.com/go v0.35.1 // indirect
 	etop.vn/api v0.0.0-00010101000000-000000000000
+	etop.vn/common v0.0.0-00010101000000-000000000000
 	github.com/360EntSecGroup-Skylar/excelize v1.4.1
 	github.com/DataDog/zstd v1.3.5 // indirect
 	github.com/GoogleCloudPlatform/cloudsql-proxy v0.0.0-20181215173202-6f1ecdcf9588
@@ -40,10 +41,8 @@ require (
 	github.com/grpc-ecosystem/grpc-gateway v1.8.5
 	github.com/julienschmidt/httprouter v1.2.0
 	github.com/k0kubun/colorstring v0.0.0-20150214042306-9440f1994b88 // indirect
-	github.com/k0kubun/pp v2.3.0+incompatible
+	github.com/k0kubun/pp v3.0.1+incompatible
 	github.com/lib/pq v1.0.0
-	github.com/mattn/go-colorable v0.0.9 // indirect
-	github.com/mattn/go-isatty v0.0.4 // indirect
 	github.com/mongodb/mongo-go-driver v0.2.0
 	github.com/pierrec/lz4 v2.0.5+incompatible // indirect
 	github.com/pkg/errors v0.8.1
@@ -61,9 +60,8 @@ require (
 	github.com/valyala/tsvreader v1.0.0
 	github.com/xdg/scram v0.0.0-20180814205039-7eeb5667e42c // indirect
 	github.com/xdg/stringprep v1.0.0 // indirect
-	go.uber.org/atomic v1.3.2
-	go.uber.org/multierr v1.1.0 // indirect
-	go.uber.org/zap v1.9.1
+	go.uber.org/atomic v1.4.0
+	go.uber.org/zap v1.10.0
 	golang.org/x/crypto v0.0.0-20190325154230-a5d413f7728c // indirect
 	golang.org/x/net v0.0.0-20190328230028-74de082e2cca // indirect
 	golang.org/x/oauth2 v0.0.0-20190115181402-5dab4167f31c
@@ -72,7 +70,7 @@ require (
 	golang.org/x/text v0.3.1-0.20181227161524-e6919f6577db
 	golang.org/x/tools v0.0.0-20190617190820-da514acc4774
 	google.golang.org/genproto v0.0.0-20190128161407-8ac453e89fca
-	google.golang.org/grpc v1.19.0
+	google.golang.org/grpc v1.22.0
 	gopkg.in/resty.v1 v1.12.0
 	gopkg.in/yaml.v2 v2.2.2
 	k8s.io/apimachinery v0.0.0-20190425132440-17f84483f500

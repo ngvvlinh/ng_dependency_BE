@@ -6,12 +6,14 @@ import (
 	"fmt"
 	"time"
 
+	"etop.vn/common/xerrors"
+
 	"github.com/Shopify/sarama"
 
 	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/l"
 	"etop.vn/backend/pkg/common/mq"
 	"etop.vn/backend/pkg/pgevent"
+	"etop.vn/common/l"
 )
 
 var ll = l.New()
@@ -48,7 +50,7 @@ func WrapHandlerFunc(fn HandlerFunc) mq.EventHandler {
 	}
 }
 
-func wrapError(err error, msg *sarama.ConsumerMessage, event *pgevent.PgEvent) *cm.APIError {
+func wrapError(err error, msg *sarama.ConsumerMessage, event *pgevent.PgEvent) *xerrors.APIError {
 	return cm.MapError(err).Throw().
 		WithMeta("topic", fmt.Sprintf("%v:%v", msg.Topic, msg.Partition)).
 		WithMetaJson("event", event)

@@ -7,7 +7,7 @@ import (
 
 	"github.com/garyburd/redigo/redis"
 
-	"etop.vn/backend/pkg/common/l"
+	"etop.vn/common/l"
 )
 
 var ll = l.New()

@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"etop.vn/backend/pkg/common/gencode"
-	"etop.vn/backend/pkg/common/l"
+	"etop.vn/common/l"
 )
 
 const magicNumber = int64(1012345678909e6>>24 + 1)

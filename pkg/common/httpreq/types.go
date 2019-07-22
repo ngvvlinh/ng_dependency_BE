@@ -8,7 +8,7 @@ import (
 	"strconv"
 	"time"
 
-	"etop.vn/backend/pkg/common/l"
+	"etop.vn/common/l"
 )
 
 // Bool handles null, string and bool from json as bool

@@ -4,8 +4,8 @@ import (
 	"context"
 
 	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/etop-handler/webhook/sender"
+	"etop.vn/common/bus"
 
 	pbcm "etop.vn/backend/pb/common"
 	wraphandler "etop.vn/backend/wrapper/services/handler"

@@ -9,7 +9,6 @@ import (
 	"etop.vn/api/meta"
 	pbshop "etop.vn/backend/pb/etop/shop"
 	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/imcsv"
 	"etop.vn/backend/pkg/common/validate"
 	"etop.vn/backend/pkg/etop/model"
@@ -18,6 +17,7 @@ import (
 	catalogmodelx "etop.vn/backend/pkg/services/catalog/modelx"
 	catalogsqlstore "etop.vn/backend/pkg/services/catalog/sqlstore"
 	wrapshop "etop.vn/backend/wrapper/etop/shop"
+	"etop.vn/common/bus"
 )
 
 var maxPaging = meta.Paging{Limit: 5000}

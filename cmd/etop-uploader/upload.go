@@ -14,7 +14,8 @@ import (
 
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/httpx"
-	"etop.vn/backend/pkg/common/l"
+	"etop.vn/common/l"
+	"etop.vn/common/xerrors"
 )
 
 const (
@@ -37,7 +38,7 @@ func getImageConfig(imgType string) (*ImageConfig, error) {
 	return imageConfigs[_type], nil
 }
 
-func NewUploadError(code cm.Code, msg, filename string) error {
+func NewUploadError(code xerrors.Code, msg, filename string) error {
 	return cm.Error(code, msg, nil).
 		WithMeta("filename", filename)
 }

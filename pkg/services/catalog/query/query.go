@@ -4,9 +4,9 @@ import (
 	"context"
 
 	"etop.vn/api/main/catalog"
-	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/cmsql"
 	"etop.vn/backend/pkg/services/catalog/sqlstore"
+	"etop.vn/common/bus"
 )
 
 var _ catalog.QueryService = &QueryService{}

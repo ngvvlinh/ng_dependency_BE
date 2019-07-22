@@ -5,11 +5,12 @@ import (
 
 	"etop.vn/api/main/location"
 	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/bus"
-	"etop.vn/backend/pkg/common/l"
 	"etop.vn/backend/pkg/services/location/convert"
 	"etop.vn/backend/pkg/services/location/list"
 	"etop.vn/backend/pkg/services/location/types"
+	"etop.vn/common/bus"
+	"etop.vn/common/l"
+	"etop.vn/common/xerrors"
 )
 
 var ll = l.New()
@@ -35,7 +36,7 @@ func (im *Impl) GetAllLocations(ctx context.Context, query *location.GetAllLocat
 	if query.All {
 		count++
 		execFunc = func() error {
-			return cm.FirstError(
+			return xerrors.FirstError(
 				convert.Provinces(list.Provinces, &result.Provinces),
 				convert.Districts(list.Districts, &result.Districts),
 				convert.Wards(list.Wards, &result.Wards),
@@ -79,7 +80,7 @@ func (im *Impl) GetLocation(ctx context.Context, query *location.GetLocationQuer
 			return
 		}
 		result = &location.LocationQueryResult{}
-		_err = cm.FirstErrorWithMsg(
+		_err = xerrors.FirstErrorWithMsg(
 			"can not convert location",
 			convert.PtrWard(ward, &result.Ward),
 			convert.PtrDistrict(district, &result.District),
@@ -127,7 +128,7 @@ func (im *Impl) FindLocation(ctx context.Context, query *location.FindLocationQu
 
 	loc := FindLocation(query.Province, query.District, query.Ward)
 	result := &location.LocationQueryResult{}
-	err := cm.FirstErrorWithMsg(
+	err := xerrors.FirstErrorWithMsg(
 		"can not convert location",
 		convert.PtrProvince(loc.Province, &result.Province),
 		convert.PtrDistrict(loc.District, &result.District),

@@ -7,42 +7,41 @@ import (
 	"strings"
 	"time"
 
-	"etop.vn/api/main/identity"
 	"github.com/julienschmidt/httprouter"
 
+	"etop.vn/api/main/identity"
 	"etop.vn/backend/cmd/etop-server/config"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/httpx"
-	"etop.vn/backend/pkg/common/l"
 	"etop.vn/backend/pkg/common/metrics"
-	cmService "etop.vn/backend/pkg/common/service"
-	cmWrapper "etop.vn/backend/pkg/common/wrapper"
+	cmservice "etop.vn/backend/pkg/common/service"
+	cmwrapper "etop.vn/backend/pkg/common/wrapper"
 	"etop.vn/backend/pkg/etop/authorize/middleware"
 	"etop.vn/backend/pkg/etop/authorize/permission"
+	hotfix "etop.vn/backend/pkg/etop/logic/hotfix"
+	imcsvghtk "etop.vn/backend/pkg/etop/logic/money-transaction/ghtk-imcsv"
+	imcsvghn "etop.vn/backend/pkg/etop/logic/money-transaction/imcsv"
+	vtpostimxlsx "etop.vn/backend/pkg/etop/logic/money-transaction/vtpost-imxlsx"
+	orderimcsv "etop.vn/backend/pkg/etop/logic/orders/imcsv"
+	productimcsv "etop.vn/backend/pkg/etop/logic/products/imcsv"
 	webhookahamove "etop.vn/backend/pkg/integration/ahamove/webhook"
 	webhookghn "etop.vn/backend/pkg/integration/ghn/webhook"
 	webhookghtk "etop.vn/backend/pkg/integration/ghtk/webhook"
 	webhookvtpost "etop.vn/backend/pkg/integration/vtpost/webhook"
-	wrapintegration "etop.vn/backend/wrapper/etop/integration"
-	wrapxpartner "etop.vn/backend/wrapper/external/partner"
-	wrapxshop "etop.vn/backend/wrapper/external/shop"
-
-	imcsvghtk "etop.vn/backend/pkg/etop/logic/money-transaction/ghtk-imcsv"
-	imcsvghn "etop.vn/backend/pkg/etop/logic/money-transaction/imcsv"
-	vtpostimxlsx "etop.vn/backend/pkg/etop/logic/money-transaction/vtpost-imxlsx"
 	wrapetop "etop.vn/backend/wrapper/etop"
 	wrapadmin "etop.vn/backend/wrapper/etop/admin"
+	wrapintegration "etop.vn/backend/wrapper/etop/integration"
 	wrapsadmin "etop.vn/backend/wrapper/etop/sadmin"
 	wrapshop "etop.vn/backend/wrapper/etop/shop"
+	wrapxpartner "etop.vn/backend/wrapper/external/partner"
+	wrapxshop "etop.vn/backend/wrapper/external/shop"
+	"etop.vn/common/l"
 
 	_ "etop.vn/backend/pkg/etop/api"
 	_ "etop.vn/backend/pkg/etop/api/admin"
 	_ "etop.vn/backend/pkg/etop/api/sadmin"
 	_ "etop.vn/backend/pkg/etop/api/shop"
 	_ "etop.vn/backend/pkg/etop/apix/partner"
-	hotfix "etop.vn/backend/pkg/etop/logic/hotfix"
-	orderimcsv "etop.vn/backend/pkg/etop/logic/orders/imcsv"
-	productimcsv "etop.vn/backend/pkg/etop/logic/products/imcsv"
 )
 
 func startServers() []*http.Server {
@@ -65,7 +64,7 @@ func startEtopServer() *http.Server {
 		mux.Handle("/api/", http.NotFoundHandler())
 
 	} else {
-		cmWrapper.InitBot(bot)
+		cmwrapper.InitBot(bot)
 
 		// /api/
 		apiMux := http.NewServeMux()
@@ -130,33 +129,33 @@ func startEtopServer() *http.Server {
 			// change path for clearing browser cache and still keep the old
 			// path for backward compatible
 			mux.Handle("/dl/imports/shop_orders.v1.xlsx",
-				cmService.ServeAssetsByContentGenerator(
-					cmService.MIMEExcel,
+				cmservice.ServeAssetsByContentGenerator(
+					cmservice.MIMEExcel,
 					orderimcsv.AssetShopOrderPath,
 					5*time.Minute,
 					orderimcsv.GenerateImportFile,
 				),
 			)
 			mux.Handle("/dl/imports/shop_orders.v1b.xlsx",
-				cmService.ServeAssetsByContentGenerator(
-					cmService.MIMEExcel,
+				cmservice.ServeAssetsByContentGenerator(
+					cmservice.MIMEExcel,
 					orderimcsv.AssetShopOrderPath,
 					5*time.Minute,
 					orderimcsv.GenerateImportFile,
 				),
 			)
 			mux.Handle("/dl/imports/shop_products.v1.xlsx",
-				cmService.ServeAssetsByContentGenerator(
-					cmService.MIMEExcel,
+				cmservice.ServeAssetsByContentGenerator(
+					cmservice.MIMEExcel,
 					productimcsv.AssetShopProductPath,
 					5*time.Minute,
 					productimcsv.GenerateImportFile,
 				),
 			)
 			mux.Handle("/dl/imports/shop_products.v1.simplified.xlsx",
-				cmService.ServeAssets(
+				cmservice.ServeAssets(
 					productimcsv.AssetShopProductSimplifiedPath,
-					cmService.MIMEExcel,
+					cmservice.MIMEExcel,
 				),
 			)
 		}
@@ -166,11 +165,11 @@ func startEtopServer() *http.Server {
 		mux.Handle("/", http.RedirectHandler("/doc/etop", http.StatusTemporaryRedirect))
 		mux.Handle("/doc", http.RedirectHandler("/doc/etop", http.StatusTemporaryRedirect))
 		for _, s := range strings.Split("sadmin,admin,shop,integration", ",") {
-			mux.Handle("/doc/"+s, cmService.RedocHandler())
-			mux.Handle("/doc/"+s+"/swagger.json", cmService.SwaggerHandler("etop/"+s+"/"+s+".swagger.json"))
+			mux.Handle("/doc/"+s, cmservice.RedocHandler())
+			mux.Handle("/doc/"+s+"/swagger.json", cmservice.SwaggerHandler("etop/"+s+"/"+s+".swagger.json"))
 		}
-		mux.Handle("/doc/etop", cmService.RedocHandler())
-		mux.Handle("/doc/etop/swagger.json", cmService.SwaggerHandler("etop/etop.swagger.json"))
+		mux.Handle("/doc/etop", cmservice.RedocHandler())
+		mux.Handle("/doc/etop/swagger.json", cmservice.SwaggerHandler("etop/etop.swagger.json"))
 
 	} else {
 		ll.Warn("DOCUMENTATION IS DISABLED (config.serve_doc = false)")
@@ -180,8 +179,8 @@ func startEtopServer() *http.Server {
 	// always serve partner documentation
 	mux.Handle("/doc/ext", http.RedirectHandler("/doc", http.StatusTemporaryRedirect))
 	for _, s := range strings.Split("shop,partner", ",") {
-		mux.Handle("/doc/ext/"+s, cmService.RedocHandler())
-		mux.Handle("/doc/ext/"+s+"/swagger.json", cmService.SwaggerHandler("external/"+s+"/"+s+".swagger.json"))
+		mux.Handle("/doc/ext/"+s, cmservice.RedocHandler())
+		mux.Handle("/doc/ext/"+s+"/swagger.json", cmservice.SwaggerHandler("external/"+s+"/"+s+".swagger.json"))
 	}
 
 	var handler http.Handler = mux

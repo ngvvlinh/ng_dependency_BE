@@ -10,9 +10,9 @@ import (
 	"time"
 
 	"etop.vn/backend/pkg/common/cmsql"
-	"etop.vn/backend/pkg/common/l"
 	"etop.vn/backend/pkg/common/mq"
 	"etop.vn/backend/pkg/etop/model"
+	"etop.vn/common/l"
 
 	"github.com/lib/pq"
 )

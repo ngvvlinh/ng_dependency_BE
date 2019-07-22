@@ -7,7 +7,6 @@ import (
 	"time"
 
 	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/etop/model"
 	txmodel "etop.vn/backend/pkg/services/moneytx/model"
 	"etop.vn/backend/pkg/services/moneytx/modelx"
@@ -16,6 +15,7 @@ import (
 	shipmodelx "etop.vn/backend/pkg/services/shipping/modelx"
 	"etop.vn/backend/pkg/services/shipping/modely"
 	shipmodely "etop.vn/backend/pkg/services/shipping/modely"
+	"etop.vn/common/bus"
 )
 
 func init() {

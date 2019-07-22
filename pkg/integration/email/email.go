@@ -9,10 +9,11 @@ import (
 	"strings"
 
 	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/bus"
 	cc "etop.vn/backend/pkg/common/config"
-	"etop.vn/backend/pkg/common/l"
 	"etop.vn/backend/pkg/common/validate"
+	"etop.vn/common/bus"
+	"etop.vn/common/l"
+	"etop.vn/common/xerrors"
 )
 
 var ll = l.New()
@@ -194,5 +195,5 @@ func (s *Client) sendMail(ctx context.Context, addresses []string, cmd *SendEmai
 	if len(errs) > 0 {
 		ll.Error("Can not send email", l.Any("errs", err))
 	}
-	return cm.ConcatError(errs)
+	return xerrors.ConcatError(errs)
 }

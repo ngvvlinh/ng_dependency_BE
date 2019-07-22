@@ -7,7 +7,7 @@ import (
 	"strings"
 	"time"
 
-	"etop.vn/backend/pkg/common/l"
+	"etop.vn/common/l"
 )
 
 const DateLayout = `2006-01-02`

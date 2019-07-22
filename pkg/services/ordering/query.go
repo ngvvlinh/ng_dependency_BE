@@ -3,8 +3,8 @@ package ordering
 import (
 	"context"
 
-	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/cmsql"
+	"etop.vn/common/bus"
 
 	"etop.vn/api/main/ordering"
 	"etop.vn/backend/pkg/services/ordering/sqlstore"

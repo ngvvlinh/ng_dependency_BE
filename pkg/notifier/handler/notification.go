@@ -8,12 +8,12 @@ import (
 
 	cm "etop.vn/backend/pkg/common"
 
-	"etop.vn/backend/pkg/common/bus"
-	"etop.vn/backend/pkg/common/l"
 	"etop.vn/backend/pkg/common/mq"
 	etopmodel "etop.vn/backend/pkg/etop/model"
 	"etop.vn/backend/pkg/notifier/model"
 	"etop.vn/backend/pkg/pgevent"
+	"etop.vn/common/bus"
+	"etop.vn/common/l"
 )
 
 func HandleNotificationEvent(ctx context.Context, event *pgevent.PgEvent) (mq.Code, error) {

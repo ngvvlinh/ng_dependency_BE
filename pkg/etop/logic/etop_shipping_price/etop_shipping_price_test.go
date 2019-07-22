@@ -4,7 +4,7 @@ import (
 	"context"
 	"testing"
 
-	"etop.vn/backend/pkg/common/l"
+	"etop.vn/common/l"
 
 	"etop.vn/api/main/location"
 	"etop.vn/backend/pkg/etop/model"

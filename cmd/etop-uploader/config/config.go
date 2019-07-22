@@ -6,7 +6,7 @@ import (
 
 	cm "etop.vn/backend/pkg/common"
 	cc "etop.vn/backend/pkg/common/config"
-	"etop.vn/backend/pkg/common/l"
+	"etop.vn/common/l"
 )
 
 var ll = l.New()

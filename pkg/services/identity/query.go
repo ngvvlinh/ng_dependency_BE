@@ -3,7 +3,7 @@ package identity
 import (
 	"context"
 
-	"etop.vn/backend/pkg/common/bus"
+	"etop.vn/common/bus"
 
 	"etop.vn/backend/pkg/common/cmsql"
 

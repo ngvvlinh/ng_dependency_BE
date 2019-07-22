@@ -18,10 +18,10 @@ import (
 	shipnowtypes "etop.vn/api/main/shipnow/types"
 	"etop.vn/api/meta"
 	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/cmsql"
 	shipnowconvert "etop.vn/backend/pkg/services/shipnow/convert"
 	"etop.vn/backend/pkg/services/shipnow/sqlstore"
+	"etop.vn/common/bus"
 )
 
 var _ shipnow.Aggregate = &Aggregate{}

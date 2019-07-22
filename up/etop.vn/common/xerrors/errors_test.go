@@ -1,4 +1,4 @@
-package cm
+package xerrors
 
 import (
 	"encoding/json"
@@ -6,9 +6,10 @@ import (
 	"strings"
 	"testing"
 
-	"etop.vn/backend/pkg/common/l"
 	"github.com/pkg/errors"
 	"github.com/stretchr/testify/assert"
+
+	"etop.vn/common/l"
 )
 
 func TestCustomErrorCode(t *testing.T) {
@@ -91,7 +92,7 @@ func TestErrorJSON(t *testing.T) {
 			Stack: v.Stack,
 		}, v)
 		assert.Equal(t, 0, strings.Index(v.Stack,
-			"\netop.vn/backend/pkg/common"))
+			"\netop.vn/common/xerrors"))
 	})
 
 	t.Run("Advanced", func(t *testing.T) {

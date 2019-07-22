@@ -7,12 +7,12 @@ import (
 	"time"
 
 	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/backend/pkg/services/catalog/convert"
 	catalogmodel "etop.vn/backend/pkg/services/catalog/model"
 	catalogmodelx "etop.vn/backend/pkg/services/catalog/modelx"
 	catalogsqlstore "etop.vn/backend/pkg/services/catalog/sqlstore"
+	"etop.vn/common/bus"
 )
 
 func init() {

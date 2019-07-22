@@ -2,12 +2,13 @@ package api
 
 import (
 	"context"
+
 	"etop.vn/api/main/location"
-	"etop.vn/backend/pkg/common/bus"
-	"etop.vn/backend/pkg/common/l"
 	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/backend/pkg/integration/bank"
 	servicelocation "etop.vn/backend/pkg/services/location"
+	"etop.vn/common/bus"
+	"etop.vn/common/l"
 
 	pbcm "etop.vn/backend/pb/common"
 	pbetop "etop.vn/backend/pb/etop"

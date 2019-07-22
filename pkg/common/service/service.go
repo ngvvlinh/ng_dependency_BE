@@ -9,8 +9,8 @@ import (
 
 	"etop.vn/backend/doc"
 	"etop.vn/backend/pkg/common/idemp"
-	"etop.vn/backend/pkg/common/l"
 	"etop.vn/backend/pkg/etop/dl"
+	"etop.vn/common/l"
 )
 
 const (

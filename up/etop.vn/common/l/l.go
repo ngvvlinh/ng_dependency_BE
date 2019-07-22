@@ -17,8 +17,8 @@ import (
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 
-	"etop.vn/backend/pkg/common/bus"
-	"etop.vn/backend/pkg/common/logline"
+	"etop.vn/common/bus"
+	"etop.vn/common/xerrors/logline"
 )
 
 const prefix = "etop.vn/backend/"

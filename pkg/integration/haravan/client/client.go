@@ -10,7 +10,7 @@ import (
 
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/httpreq"
-	"etop.vn/backend/pkg/common/l"
+	"etop.vn/common/l"
 	"github.com/gorilla/schema"
 	resty "gopkg.in/resty.v1"
 )

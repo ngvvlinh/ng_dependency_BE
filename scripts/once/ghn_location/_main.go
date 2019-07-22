@@ -12,11 +12,11 @@ import (
 	locationlist "etop.vn/backend/pkg/services/location/list"
 
 	"etop.vn/backend/cmd/etop-server/config"
-	"etop.vn/backend/pkg/common/bus"
 	cc "etop.vn/backend/pkg/common/config"
-	"etop.vn/backend/pkg/common/l"
 	"etop.vn/backend/pkg/integration/vtpost"
 	vtpostClient "etop.vn/backend/pkg/integration/vtpost/client"
+	"etop.vn/common/bus"
+	"etop.vn/common/l"
 )
 
 var (

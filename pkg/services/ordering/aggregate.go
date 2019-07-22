@@ -6,10 +6,10 @@ import (
 	etoptypes "etop.vn/api/main/etop"
 	"etop.vn/api/main/ordering"
 	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/cmsql"
 	"etop.vn/backend/pkg/services/ordering/pm"
 	"etop.vn/backend/pkg/services/ordering/sqlstore"
+	"etop.vn/common/bus"
 )
 
 var _ ordering.Aggregate = &Aggregate{}

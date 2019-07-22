@@ -9,8 +9,8 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"etop.vn/backend/pkg/common/l"
 	"etop.vn/backend/pkg/common/redis"
+	"etop.vn/common/l"
 )
 
 var gFoo Generator
@@ -109,7 +109,7 @@ func TestTokenWithTTL(T *testing.T) {
 	}
 
 	// Make sure TTL passed
-	time.Sleep(1005 * time.Millisecond)
+	time.Sleep(1100 * time.Millisecond)
 
 	if _, err := gFoo.Validate(UsageAccessToken, t.TokenStr, nil); err == nil {
 		defer func() {

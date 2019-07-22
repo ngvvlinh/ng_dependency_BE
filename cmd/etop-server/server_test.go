@@ -4,11 +4,11 @@ import (
 	"net/http"
 	"testing"
 
-	"etop.vn/backend/pkg/common/bus"
 	etopW "etop.vn/backend/wrapper/etop"
 	adminW "etop.vn/backend/wrapper/etop/admin"
 	sadminW "etop.vn/backend/wrapper/etop/sadmin"
 	shopW "etop.vn/backend/wrapper/etop/shop"
+	"etop.vn/common/bus"
 )
 
 func TestWrapper(t *testing.T) {

@@ -5,8 +5,8 @@ import (
 
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/gencode"
-	"etop.vn/backend/pkg/common/l"
 	"etop.vn/backend/pkg/common/validate"
+	"etop.vn/common/l"
 )
 
 var ll = l.New()

@@ -7,11 +7,12 @@ import (
 
 	pborder "etop.vn/backend/pb/etop/order"
 	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/httpx"
 	"etop.vn/backend/pkg/etop/model"
 	txmodel "etop.vn/backend/pkg/services/moneytx/model"
 	txmodelx "etop.vn/backend/pkg/services/moneytx/modelx"
+	"etop.vn/common/bus"
+	"etop.vn/common/xerrors"
 
 	"github.com/valyala/tsvreader"
 )
@@ -27,7 +28,7 @@ func (e *Error) Error() string {
 	return e.Msg
 }
 
-func NewError(code cm.Code, msg string) error {
+func NewError(code xerrors.Code, msg string) error {
 	err := &Error{
 		Code: code.String(),
 		Msg:  msg,

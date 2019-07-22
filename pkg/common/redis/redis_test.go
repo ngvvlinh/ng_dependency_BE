@@ -3,8 +3,8 @@ package redis_test
 import (
 	"testing"
 
-	"etop.vn/backend/pkg/common/l"
 	. "etop.vn/backend/pkg/common/redis"
+	"etop.vn/common/l"
 
 	"github.com/stretchr/testify/require"
 )

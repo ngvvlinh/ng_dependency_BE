@@ -5,7 +5,7 @@ import (
 
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/cmsql"
-	"etop.vn/backend/pkg/common/l"
+	"etop.vn/common/l"
 )
 
 type (

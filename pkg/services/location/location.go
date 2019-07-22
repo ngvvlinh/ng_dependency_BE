@@ -7,10 +7,10 @@ import (
 	"golang.org/x/text/unicode/norm"
 
 	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/l"
 	"etop.vn/backend/pkg/common/validate"
 	"etop.vn/backend/pkg/services/location/list"
 	"etop.vn/backend/pkg/services/location/types"
+	"etop.vn/common/l"
 )
 
 const HCMUrbanCodes = "760,764,765,766,767,768,769,770,771,772,773,774,775,776,778"

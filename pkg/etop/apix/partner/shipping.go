@@ -3,9 +3,9 @@ package partner
 import (
 	"context"
 
-	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/etop/apix/shipping"
 	wrapxpartner "etop.vn/backend/wrapper/external/partner"
+	"etop.vn/common/bus"
 )
 
 func init() {

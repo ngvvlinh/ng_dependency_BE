@@ -8,10 +8,10 @@ import (
 	"etop.vn/api/external/haravan/identity"
 	"etop.vn/api/meta"
 	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/cmsql"
 	"etop.vn/backend/pkg/external/haravan/identity/sqlstore"
 	haravanclient "etop.vn/backend/pkg/integration/haravan/client"
+	"etop.vn/common/bus"
 )
 
 const (

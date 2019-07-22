@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	"etop.vn/backend/pkg/common/bus"
+	"etop.vn/common/bus"
 
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/cmsql"

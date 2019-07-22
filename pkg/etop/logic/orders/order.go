@@ -7,18 +7,20 @@ import (
 	"strings"
 	"time"
 
+	"etop.vn/common/xerrors"
+
 	"etop.vn/backend/pkg/services/catalog/convert"
 
 	"etop.vn/api/main/catalog"
 	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/bus"
-	"etop.vn/backend/pkg/common/l"
 	"etop.vn/backend/pkg/common/validate"
 	"etop.vn/backend/pkg/etop/authorize/claims"
 	"etop.vn/backend/pkg/etop/logic/etop_shipping_price"
 	"etop.vn/backend/pkg/etop/model"
 	ordermodel "etop.vn/backend/pkg/services/ordering/model"
 	ordermodelx "etop.vn/backend/pkg/services/ordering/modelx"
+	"etop.vn/common/bus"
+	"etop.vn/common/l"
 
 	pbcm "etop.vn/backend/pb/common"
 	pborder "etop.vn/backend/pb/etop/order"
@@ -77,7 +79,7 @@ func CreateOrder(ctx context.Context, claim *claims.ShopClaim, authPartner *mode
 	}
 	if err := bus.Dispatch(ctx, cmd); err != nil {
 		// TODO: refactor
-		if xerr, ok := err.(*cm.APIError); ok && xerr.Err != nil {
+		if xerr, ok := err.(*xerrors.APIError); ok && xerr.Err != nil {
 			msg := xerr.Err.Error()
 			switch {
 			case strings.Contains(msg, "order_shop_external_id_idx"):

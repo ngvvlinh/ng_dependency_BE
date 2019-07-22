@@ -10,7 +10,8 @@ import (
 	"github.com/stretchr/testify/assert"
 
 	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/l"
+	"etop.vn/common/l"
+	"etop.vn/common/xerrors"
 )
 
 var ll = l.New()
@@ -81,7 +82,7 @@ func shouldError(actual interface{}, expected []interface{},
 		return fmt.Sprintf("This assertion requires exactly %v comparison values (you provided %v).", 2, len(expected))
 	}
 
-	code, ok := expected[0].(cm.Code)
+	code, ok := expected[0].(xerrors.Code)
 	if !ok {
 		return fmt.Sprintf("This assertion require the first comparison value is cm.Code (you provided %v)", reflect.TypeOf(expected[0]))
 	}
@@ -95,7 +96,7 @@ func shouldError(actual interface{}, expected []interface{},
 		return fmt.Sprintf("This assertion requires the second comparison value as string or error (you provided %v).", expected)
 	}
 	if s == "" {
-		s = cm.DefaultErrorMessage(code)
+		s = xerrors.DefaultErrorMessage(code)
 	}
 
 	if actual == nil || reflect.ValueOf(actual).IsNil() {
@@ -108,7 +109,7 @@ func shouldError(actual interface{}, expected []interface{},
 			reflect.TypeOf(actual), actual,
 			fmt.Sprintf("expected type error but got %v", reflect.TypeOf(actual)))
 	}
-	if cm.ErrorCode(err) != expected[0].(cm.Code) {
+	if cm.ErrorCode(err) != expected[0].(xerrors.Code) {
 		return fmt.Sprintf(msg,
 			code, s,
 			cm.ErrorCode(err), actual,

@@ -16,7 +16,6 @@ import (
 	"etop.vn/backend/pkg/common/cmsql"
 	cc "etop.vn/backend/pkg/common/config"
 	"etop.vn/backend/pkg/common/health"
-	"etop.vn/backend/pkg/common/l"
 	"etop.vn/backend/pkg/common/metrics"
 	"etop.vn/backend/pkg/common/mq"
 	"etop.vn/backend/pkg/common/redis"
@@ -28,6 +27,7 @@ import (
 	"etop.vn/backend/pkg/etop-handler/webhook/storage"
 	"etop.vn/backend/pkg/etop/authorize/middleware"
 	"etop.vn/backend/pkg/etop/sqlstore"
+	"etop.vn/common/l"
 
 	wraphandler "etop.vn/backend/wrapper/services/handler"
 )

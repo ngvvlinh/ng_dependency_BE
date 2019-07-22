@@ -8,7 +8,7 @@ import (
 	"etop.vn/api/external/haravan/gateway"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/httpx"
-	"etop.vn/backend/pkg/common/l"
+	"etop.vn/common/l"
 )
 
 var ll = l.New()

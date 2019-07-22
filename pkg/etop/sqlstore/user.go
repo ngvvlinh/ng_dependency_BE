@@ -6,10 +6,11 @@ import (
 	"time"
 
 	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/validate"
 	"etop.vn/backend/pkg/etop/authorize/login"
 	"etop.vn/backend/pkg/etop/model"
+	"etop.vn/common/bus"
+	"etop.vn/common/xerrors"
 )
 
 func init() {
@@ -241,7 +242,7 @@ func createUser(ctx context.Context, s Qx, cmd *model.CreateUserCommand) error {
 	}
 
 	_, err := s.Insert(user, userInternal)
-	if xerr, ok := err.(*cm.APIError); ok && xerr.Err != nil {
+	if xerr, ok := err.(*xerrors.APIError); ok && xerr.Err != nil {
 		msg := xerr.Err.Error()
 		switch {
 		case strings.Contains(msg, UserEmailKey):

@@ -12,8 +12,8 @@ import (
 	yaml "gopkg.in/yaml.v2"
 
 	"etop.vn/backend/pkg/common/cmsql"
-	"etop.vn/backend/pkg/common/l"
 	"etop.vn/backend/pkg/common/telebot"
+	"etop.vn/common/l"
 )
 
 var ll = l.New()

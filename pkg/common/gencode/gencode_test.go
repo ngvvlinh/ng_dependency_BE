@@ -4,7 +4,7 @@ import (
 	"testing"
 	"time"
 
-	"etop.vn/backend/pkg/common/l"
+	"etop.vn/common/l"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )

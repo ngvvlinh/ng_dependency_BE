@@ -14,8 +14,9 @@ import (
 	pbts "github.com/golang/protobuf/ptypes/timestamp"
 
 	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/l"
 	"etop.vn/backend/pkg/etop/model"
+	"etop.vn/common/l"
+	"etop.vn/common/xerrors"
 )
 
 var ll = l.New()
@@ -169,7 +170,7 @@ func PbError(err error) *Error {
 	if xerr, ok := err.(*Error); ok {
 		return xerr
 	}
-	xerr := cm.TwirpError(err)
+	xerr := xerrors.TwirpError(err)
 	return &Error{
 		Msg:  xerr.Msg(),
 		Code: string(xerr.Code()),
@@ -191,7 +192,7 @@ func PbCustomError(err error) *Error {
 			Meta: xerr.Meta,
 		}
 	}
-	xerr := cm.TwirpError(err)
+	xerr := xerrors.TwirpError(err)
 	return &Error{
 		Msg:  xerr.Msg(),
 		Code: string(xerr.Code()),

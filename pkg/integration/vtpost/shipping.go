@@ -6,7 +6,6 @@ import (
 
 	"etop.vn/api/main/location"
 	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/etop/logic/shipping_provider"
 	shippingprovider "etop.vn/backend/pkg/etop/logic/shipping_provider"
 	"etop.vn/backend/pkg/etop/model"
@@ -14,6 +13,7 @@ import (
 	vtpostclient "etop.vn/backend/pkg/integration/vtpost/client"
 	ordermodel "etop.vn/backend/pkg/services/ordering/model"
 	shipmodel "etop.vn/backend/pkg/services/shipping/model"
+	"etop.vn/common/bus"
 )
 
 var _ shippingprovider.ShippingProvider = &Carrier{}

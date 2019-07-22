@@ -7,8 +7,9 @@ import (
 	"strings"
 
 	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/l"
 	"etop.vn/backend/pkg/common/validate"
+	"etop.vn/common/l"
+	"etop.vn/common/xerrors"
 )
 
 var ll = l.New()
@@ -154,15 +155,15 @@ func ValidateAgainstSchemas(headerRow *[]string, schemas []Schema) (_ int, idx I
 	return len(schemas) - 1, Indexer{}, errs, err
 }
 
-func CellError(idx Indexer, row, col int, msg string, args ...interface{}) *cm.APIError {
+func CellError(idx Indexer, row, col int, msg string, args ...interface{}) *xerrors.APIError {
 	return CellErrorWithCode(idx, cm.InvalidArgument, nil, row, col, msg, args...)
 }
 
-func CellErrorWithCode(idx Indexer, code cm.Code, err error, row, col int, msg string, args ...interface{}) *cm.APIError {
+func CellErrorWithCode(idx Indexer, code xerrors.Code, err error, row, col int, msg string, args ...interface{}) *xerrors.APIError {
 	return cellErrorWithCode(code, err, row, idx.MapIndex(col), msg, args...)
 }
 
-func cellErrorWithCode(code cm.Code, err error, row, col int, msg string, args ...interface{}) *cm.APIError {
+func cellErrorWithCode(code xerrors.Code, err error, row, col int, msg string, args ...interface{}) *xerrors.APIError {
 	_err := cm.NSErrorf(code, err, msg, args...).
 		WithMeta("row_index", strconv.Itoa(row)).
 		WithMeta("row", strconv.Itoa(row+1))

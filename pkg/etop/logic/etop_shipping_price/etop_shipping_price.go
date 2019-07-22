@@ -10,8 +10,8 @@ import (
 	"etop.vn/api/main/location"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/gencode"
-	"etop.vn/backend/pkg/common/l"
 	"etop.vn/backend/pkg/etop/model"
+	"etop.vn/common/l"
 )
 
 type ESPriceRule struct {

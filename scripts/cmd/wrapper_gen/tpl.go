@@ -9,9 +9,9 @@ import (
 	"github.com/twitchtv/twirp"
 
 	common "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/bus"
+	"etop.vn/common/bus"
 	"etop.vn/backend/pkg/common/grpc"
-	"etop.vn/backend/pkg/common/l"
+	"etop.vn/common/l"
 	"etop.vn/backend/pkg/common/metrics"
 	"etop.vn/backend/pkg/common/telebot"
 	"etop.vn/backend/pkg/common/wrapper"

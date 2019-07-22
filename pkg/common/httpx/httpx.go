@@ -17,13 +17,14 @@ import (
 	"github.com/twitchtv/twirp"
 
 	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/bus"
-	"etop.vn/backend/pkg/common/l"
 	"etop.vn/backend/pkg/common/telebot"
 	cmWrapper "etop.vn/backend/pkg/common/wrapper"
 	"etop.vn/backend/pkg/etop/authorize/claims"
 	"etop.vn/backend/pkg/etop/authorize/middleware"
 	"etop.vn/backend/pkg/etop/authorize/permission"
+	"etop.vn/common/bus"
+	"etop.vn/common/l"
+	"etop.vn/common/xerrors"
 )
 
 var ll = l.New()
@@ -211,9 +212,9 @@ func (rt *Router) wrapJSON(next Handler) httprouter.Handle {
 			}
 
 			if err != nil {
-				twerr := cm.TwirpError(err)
+				twerr := xerrors.TwirpError(err)
 				statusCode := twirp.ServerHTTPStatusFromErrorCode(twerr.Code())
-				jerr := cm.ToErrorJSON(twerr)
+				jerr := xerrors.ToErrorJSON(twerr)
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(statusCode)
 				json.NewEncoder(w).Encode(jerr)
@@ -225,7 +226,7 @@ func (rt *Router) wrapJSON(next Handler) httprouter.Handle {
 				var respBytes []byte
 				if respBytes, err = json.Marshal(c.result); err != nil {
 					w.WriteHeader(http.StatusInternalServerError)
-					_ = json.NewEncoder(w).Encode(&cm.ErrorJSON{
+					_ = json.NewEncoder(w).Encode(&xerrors.ErrorJSON{
 						Code: cm.Internal.String(),
 						Msg:  "failed to marshal json response",
 					})
@@ -241,7 +242,7 @@ func (rt *Router) wrapJSON(next Handler) httprouter.Handle {
 				marshaler := &jsonpb.Marshaler{OrigName: true, EmitDefaults: true}
 				if err = marshaler.Marshal(&buf, c.resultPb); err != nil {
 					w.WriteHeader(http.StatusInternalServerError)
-					_ = json.NewEncoder(w).Encode(&cm.ErrorJSON{
+					_ = json.NewEncoder(w).Encode(&xerrors.ErrorJSON{
 						Code: cm.Internal.String(),
 						Msg:  "failed to marshal json response",
 					})
@@ -286,11 +287,11 @@ func RecoverAndLog(bot *telebot.Channel, logRequest bool) func(Handler) Handler 
 					fmt.Printf("%+v", _err)
 					return
 				}
-				if parseErr, ok := _err.(*cm.APIError); ok {
+				if parseErr, ok := _err.(*xerrors.APIError); ok {
 					result := parseErr.Meta["result"]
 					if result == "ignore" {
-						twError := cm.TwirpError(_err)
-						go cmWrapper.SendErrorToBot(bot, req.RequestURI, c.Session, reqData, twError, nil, d, cm.LevelPartialError, nil)
+						twError := xerrors.TwirpError(_err)
+						go cmWrapper.SendErrorToBot(bot, req.RequestURI, c.Session, reqData, twError, nil, d, xerrors.LevelPartialError, nil)
 						c.result = map[string]string{
 							"code": "ok",
 						}
@@ -303,7 +304,7 @@ func RecoverAndLog(bot *telebot.Channel, logRequest bool) func(Handler) Handler 
 							l.Duration("d", d),
 							l.String("req", string(reqData)),
 							l.Stringer("resp", c.resultPb))
-						go cmWrapper.SendErrorToBot(bot, req.RequestURI, c.Session, reqData, nil, errs, d, cm.LevelPartialError, nil)
+						go cmWrapper.SendErrorToBot(bot, req.RequestURI, c.Session, reqData, nil, errs, d, xerrors.LevelPartialError, nil)
 						return
 					}
 
@@ -315,8 +316,8 @@ func RecoverAndLog(bot *telebot.Channel, logRequest bool) func(Handler) Handler 
 
 				}
 
-				lvl := cm.GetTraceLevel(_err)
-				if lvl <= cm.LevelTrival {
+				lvl := xerrors.GetTraceLevel(_err)
+				if lvl <= xerrors.LevelTrival {
 					if cm.IsDev() {
 						ll.Warn("->"+req.RequestURI,
 							l.Duration("d", d),
@@ -326,12 +327,12 @@ func RecoverAndLog(bot *telebot.Channel, logRequest bool) func(Handler) Handler 
 					return
 				}
 
-				twError := cm.TwirpError(_err)
+				twError := xerrors.TwirpError(_err)
 				ll.Error("->"+req.RequestURI,
 					l.Duration("d", d),
 					l.String("req", string(reqData)),
 					l.Error(_err))
-				if lvl >= cm.LevelTrace {
+				if lvl >= xerrors.LevelTrace {
 					cmWrapper.PrintErrorWithStack(ctx, _err, nil)
 				}
 				go cmWrapper.SendErrorToBot(bot, req.RequestURI, c.Session, reqData, twError, nil, d, lvl, nil)

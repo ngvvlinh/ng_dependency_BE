@@ -11,7 +11,6 @@ import (
 
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/httpx"
-	"etop.vn/backend/pkg/common/l"
 	"etop.vn/backend/pkg/common/metrics"
 	orderS "etop.vn/backend/pkg/etop/logic/orders"
 	"etop.vn/backend/pkg/etop/logic/shipping_provider"
@@ -20,6 +19,7 @@ import (
 	haravancb "etop.vn/backend/pkg/integration/haravan/callback"
 	catalogquery "etop.vn/backend/pkg/services/catalog/query"
 	"etop.vn/backend/pkg/services/identity"
+	"etop.vn/common/l"
 )
 
 func startServers() *http.Server {

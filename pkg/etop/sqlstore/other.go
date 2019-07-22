@@ -7,9 +7,10 @@ import (
 	"strings"
 
 	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/µjson"
 	"etop.vn/backend/pkg/etop/model"
+	"etop.vn/common/bus"
+	"etop.vn/common/xerrors"
 )
 
 func init() {
@@ -120,7 +121,7 @@ const (
 )
 
 func CheckErrorProductCode(err error) error {
-	if xerr, ok := err.(*cm.APIError); ok && xerr.Err != nil {
+	if xerr, ok := err.(*xerrors.APIError); ok && xerr.Err != nil {
 		msg := xerr.Err.Error()
 		switch {
 		case strings.Contains(msg, ProductCodeKey):
