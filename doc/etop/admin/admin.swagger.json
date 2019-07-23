@@ -20,7 +20,7 @@
         "operationId": "CreatePartner",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/etopPartner"
             }
@@ -46,7 +46,7 @@
         "operationId": "GenerateAPIKey",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/adminGenerateAPIKeyResponse"
             }
@@ -72,7 +72,7 @@
         "operationId": "ConfirmCredit",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/cmUpdatedResponse"
             }
@@ -98,7 +98,7 @@
         "operationId": "CreateCredit",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/etopCredit"
             }
@@ -124,7 +124,7 @@
         "operationId": "DeleteCredit",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/cmRemovedResponse"
             }
@@ -150,7 +150,7 @@
         "operationId": "GetCredit",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/etopCredit"
             }
@@ -176,7 +176,7 @@
         "operationId": "GetCredits",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/etopCreditsResponse"
             }
@@ -202,7 +202,7 @@
         "operationId": "UpdateCredit",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/etopCredit"
             }
@@ -228,7 +228,7 @@
         "operationId": "GetFulfillment",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/orderFulfillment"
             }
@@ -254,7 +254,7 @@
         "operationId": "GetFulfillments",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/orderFulfillmentsResponse"
             }
@@ -277,12 +277,10 @@
     },
     "/api/admin.Fulfillment/UpdateFulfillment": {
       "post": {
-        "summary": "UpdateFulfillment",
-        "description": "`shipping_state`\n\nOnly update from any state to `undeliverable`\nOr update from `undeliverable`to any state",
         "operationId": "UpdateFulfillment",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/cmUpdatedResponse"
             }
@@ -308,7 +306,7 @@
         "operationId": "AdminLoginAsAccount",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/etopLoginResponse"
             }
@@ -334,7 +332,7 @@
         "operationId": "VersionInfo",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/cmVersionInfoResponse"
             }
@@ -360,7 +358,7 @@
         "operationId": "ConfirmMoneyTransaction",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/cmUpdatedResponse"
             }
@@ -386,7 +384,7 @@
         "operationId": "ConfirmMoneyTransactionShippingEtop",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/cmUpdatedResponse"
             }
@@ -412,7 +410,7 @@
         "operationId": "ConfirmMoneyTransactionShippingExternal",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/cmUpdatedResponse"
             }
@@ -438,7 +436,7 @@
         "operationId": "ConfirmMoneyTransactionShippingExternals",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/cmUpdatedResponse"
             }
@@ -464,7 +462,7 @@
         "operationId": "CreateMoneyTransactionShippingEtop",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/orderMoneyTransactionShippingEtop"
             }
@@ -490,7 +488,7 @@
         "operationId": "DeleteMoneyTransactionShippingEtop",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/cmDeletedResponse"
             }
@@ -516,7 +514,7 @@
         "operationId": "DeleteMoneyTransactionShippingExternal",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/cmRemovedResponse"
             }
@@ -542,7 +540,7 @@
         "operationId": "GetMoneyTransaction",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/orderMoneyTransaction"
             }
@@ -568,7 +566,7 @@
         "operationId": "GetMoneyTransactionShippingEtop",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/orderMoneyTransactionShippingEtop"
             }
@@ -594,7 +592,7 @@
         "operationId": "GetMoneyTransactionShippingEtops",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/orderMoneyTransactionShippingEtopsResponse"
             }
@@ -620,7 +618,7 @@
         "operationId": "GetMoneyTransactionShippingExternal",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/orderMoneyTransactionShippingExternal"
             }
@@ -646,7 +644,7 @@
         "operationId": "GetMoneyTransactionShippingExternals",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/orderMoneyTransactionShippingExternalsResponse"
             }
@@ -672,7 +670,7 @@
         "operationId": "GetMoneyTransactions",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/orderMoneyTransactionsResponse"
             }
@@ -698,7 +696,7 @@
         "operationId": "RemoveMoneyTransactionShippingExternalLines",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/orderMoneyTransactionShippingExternal"
             }
@@ -724,7 +722,7 @@
         "operationId": "UpdateMoneyTransaction",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/orderMoneyTransaction"
             }
@@ -750,7 +748,7 @@
         "operationId": "UpdateMoneyTransactionShippingEtop",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/orderMoneyTransactionShippingEtop"
             }
@@ -776,7 +774,7 @@
         "operationId": "UpdateMoneyTransactionShippingExternal",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/orderMoneyTransactionShippingExternal"
             }
@@ -802,7 +800,7 @@
         "operationId": "CreateNotifications",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/adminCreateNotificationsResponse"
             }
@@ -828,7 +826,7 @@
         "operationId": "GetOrder",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/orderOrder"
             }
@@ -854,7 +852,7 @@
         "operationId": "GetOrders",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/orderOrdersResponse"
             }
@@ -880,7 +878,7 @@
         "operationId": "GetOrdersByIDs",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/orderOrdersResponse"
             }
@@ -906,7 +904,7 @@
         "operationId": "GetShop",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/etopShop"
             }
@@ -932,7 +930,7 @@
         "operationId": "GetShops",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/adminGetShopsResponse"
             }

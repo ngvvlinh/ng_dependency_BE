@@ -20,7 +20,7 @@
         "operationId": "GenerateEvents",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/cmEmpty"
             }
@@ -46,7 +46,7 @@
         "operationId": "VersionInfo",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/cmVersionInfoResponse"
             }

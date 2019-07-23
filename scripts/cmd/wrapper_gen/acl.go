@@ -367,4 +367,28 @@ var ACL = map[string]*permission.PermissionDecl{
 
 	//-- exporter --//
 	"exporter.Misc/VersionInfo": {Type: Secret},
+
+	//-- crm-service --//
+	// "crmservice.Misc/VersionInfo":             {Type: Public},
+	// "crmservice.User/GetUserInfo":             {Type: Shop},
+	// "crmservice.Vtiger/GetContacts":           {Type: EtopAdmin},
+	// "crmservice.Vtiger/CreateOrUpdateContact": {Type: Shop},
+	// "crmservice.Vtiger/GetTickets":            {Type: EtopAdmin},
+	// "crmservice.Vtiger/CreateOrUpdateTicket":  {Type: Shop},
+	// "crmservice.Vtiger/GetCategories":         {Type: Public},
+	// "crmservice.Vtiger/GetStatus":             {Type: EtopAdmin},
+	// "crmservice.Vtiger/CreateOrUpdateLead":    {Type: Shop},
+
+	//Temporary role for test
+	"crmservice.Misc/VersionInfo":             {Type: Public},
+	"crmservice.User/GetUserInfo":             {Type: CurUsr},
+	"crmservice.Vtiger/GetContacts":           {Type: CurUsr},
+	"crmservice.Vtiger/CreateOrUpdateContact": {Type: CurUsr},
+	"crmservice.Vtiger/GetTickets":            {Type: CurUsr},
+	"crmservice.Vtiger/CreateOrUpdateTicket":  {Type: CurUsr},
+	"crmservice.Vtiger/GetCategories":         {Type: CurUsr},
+	"crmservice.Vtiger/GetStatus":             {Type: CurUsr},
+	"crmservice.Vtiger/CreateOrUpdateLead":    {Type: CurUsr},
+	"crmservice.Vtiger/CountTicketByStatus":   {Type: CurUsr},
+	"crmservice.Vtiger/GetTicketStatusCount":  {Type: CurUsr},
 }

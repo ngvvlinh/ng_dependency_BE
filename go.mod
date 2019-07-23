@@ -43,9 +43,11 @@ require (
 	github.com/grpc-ecosystem/go-grpc-middleware v1.0.0
 	github.com/grpc-ecosystem/grpc-gateway v1.8.5
 	github.com/julienschmidt/httprouter v1.2.0
+	github.com/k0kubun/pp v3.0.1+incompatible
 	github.com/lib/pq v1.0.0
 	github.com/mongodb/mongo-go-driver v0.2.0
 	github.com/pierrec/lz4 v2.0.5+incompatible // indirect
+	github.com/pkg/errors v0.8.1
 	github.com/pquerna/ffjson v0.0.0-20181028064349-e517b90714f7
 	github.com/prometheus/client_golang v1.0.0
 	github.com/rcrowley/go-metrics v0.0.0-20181016184325-3113b8401b8a // indirect
