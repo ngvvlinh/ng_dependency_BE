@@ -20,9 +20,9 @@ import (
 	"etop.vn/backend/pkg/common/mq"
 	"etop.vn/backend/pkg/common/redis"
 	"etop.vn/backend/pkg/common/telebot"
+	handler "etop.vn/backend/pkg/etop-handler"
 	handlerapi "etop.vn/backend/pkg/etop-handler/api"
 	"etop.vn/backend/pkg/etop-handler/intctl"
-	handlerwebhook "etop.vn/backend/pkg/etop-handler/webhook"
 	webhooksender "etop.vn/backend/pkg/etop-handler/webhook/sender"
 	"etop.vn/backend/pkg/etop-handler/webhook/storage"
 	"etop.vn/backend/pkg/etop/authorize/middleware"
@@ -112,7 +112,7 @@ func main() {
 	}
 	{
 		// webhook handlers
-		consumer, err := mq.NewKafkaConsumer(cfg.Kafka.Brokers, handlerwebhook.ConsumerGroup, kafkaCfg)
+		consumer, err := mq.NewKafkaConsumer(cfg.Kafka.Brokers, handler.ConsumerGroup, kafkaCfg)
 		if err != nil {
 			ll.Fatal("Unable to connect to Kafka", l.Error(err))
 		}
@@ -123,7 +123,7 @@ func main() {
 			ll.Fatal("Error loading webhooks", l.Error(err))
 		}
 
-		h := handlerwebhook.New(db, webhookSender, bot, consumer, cfg.Kafka.TopicPrefix)
+		h := handler.New(db, webhookSender, bot, consumer, cfg.Kafka.TopicPrefix)
 		h.RegisterTo(intctlHandler)
 		h.ConsumeAndHandleAllTopics(ctx)
 		waiters = append(waiters, h)

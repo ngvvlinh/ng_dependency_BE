@@ -40,7 +40,6 @@ type StartSessionQuery struct {
 
 	RequirePartner    bool
 	RequireShop       bool
-	RequireSupplier   bool
 	RequireEtopAdmin  bool
 	RequireSuperAdmin bool
 

@@ -595,12 +595,6 @@ message FulfillmentSyncStates {
     optional cm.Error error = 3;
 }
 
-message OrderExternal {
-    optional int64 order_id              = 1 [(gogoproto.nullable)=false];
-    optional string external_order_id    = 2 [(gogoproto.nullable)=false];
-    optional string external_order_code  = 3 [(gogoproto.nullable)=false];
-}
-
 message MoneyTransaction {
     optional int64 id = 1 [(gogoproto.nullable)=false];
     optional int64 shop_id = 2 [(gogoproto.nullable)=false];

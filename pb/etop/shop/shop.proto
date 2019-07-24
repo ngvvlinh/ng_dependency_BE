@@ -29,7 +29,6 @@ import "common/common.proto";
 import "common/spreadsheet/spreadsheet.proto";
 import "etop/etc/ghn_note_code/code.proto";
 import "etop/etc/try_on/code.proto";
-import "etop/etc/product_source/type.proto";
 import "etop/etc/shipping/state.proto";
 import "etop/etc/status3/status.proto";
 import "etop/etc/status4/status.proto";
@@ -381,8 +380,6 @@ message ShopProduct {
     repeated ShopVariant variants = 18;
 
     optional int64 product_source_id = 19 [(gogoproto.nullable)=false];
-    optional string product_source_type = 20 [(gogoproto.nullable)=false];
-    optional string product_source_name = 21 [(gogoproto.nullable)=false];
 }
 
 message GetVariantsRequest {
@@ -410,11 +407,15 @@ message UpdateVariantRequest {
     optional string desc_html   = 6 [(gogoproto.nullable)=false];
     optional string note        = 7 [(gogoproto.nullable)=false];
 
-    optional int32  retail_price  = 11 [(gogoproto.nullable)=false];
     optional int32  cost_price  = 12 [(gogoproto.nullable)=false];
-    optional int32  inventory  = 13 [(gogoproto.nullable)=false];
+    optional int32  list_price  = 17 [(gogoproto.nullable)=false];
+    optional int32  retail_price  = 11 [(gogoproto.nullable)=false];
     repeated Attribute attributes = 14;
-    optional string sku        = 15 [(gogoproto.nullable)=false];
+
+    optional string code       = 15 [(gogoproto.nullable)=false];
+
+    // deprecated
+    optional string sku        = 16 [(gogoproto.nullable)=false];
 }
 
 message UpdateProductRequest {
@@ -522,9 +523,8 @@ message ProductSource {
     optional google.protobuf.Timestamp   created_at = 6;
 }
 
+// deprecated
 message CreateProductSourceRequest {
-    optional product_source.ProductSourceType type =  2 [(gogoproto.nullable)=false];
-    optional string name =  3 [(gogoproto.nullable)=false];
 }
 
 message ProductSourcesResponse {
@@ -546,28 +546,28 @@ message CreateVariantRequest {
     repeated string tags        = 10;
     optional status3.Status status = 12 [(gogoproto.nullable)=false];
 
-    optional int32  list_price = 15 [(gogoproto.nullable)=false];
     optional int32  cost_price = 16 [(gogoproto.nullable)=false];
-    // sku: presentation for EdCode in `variant` (Mã phiên bản sản phẩm)
-    optional string sku = 18 [(gogoproto.nullable)=false];
-    // Code: presentation for EdCode in `product` (Mã sản phẩm)
+    optional int32  list_price = 15 [(gogoproto.nullable)=false];
+    optional int32  retail_price = 26 [(gogoproto.nullable)=false];
     optional string code = 19 [(gogoproto.nullable)=false];
     optional int32 quantity_available = 20 [(gogoproto.nullable)=false];
     optional int32 quantity_on_hand = 21 [(gogoproto.nullable)=false];
     optional int32 quantity_reserved = 22 [(gogoproto.nullable)=false];
     repeated Attribute attributes = 24;
     optional string unit = 25 [(gogoproto.nullable)=false];
+
+    // deprecated: use code instead
+    optional string sku = 18 [(gogoproto.nullable)=false];
 }
 
 message ConnectProductSourceResquest {
     optional int64 product_source_id = 1 [(gogoproto.nullable)=false];
 }
 
+// deprecated
 message CreatePSCategoryRequest {
     optional string name = 1 [(gogoproto.nullable)=false];
     optional int64 parent_id = 2 [(gogoproto.nullable)=false];
-    optional int64 product_source_id = 3 [(gogoproto.nullable)=false];
-    optional product_source.ProductSourceType product_source_type =  4;
 }
 
 message UpdateProductsPSCategoryRequest {
@@ -586,8 +586,8 @@ message UpdateProductSourceCategoryRequest {
     optional string name = 3 [(gogoproto.nullable)=false];
 }
 
+// deprecated
 message GetProductSourceCategoriesRequest {
-    optional product_source.ProductSourceType type = 1;
 }
 
 message GetFulfillmentsRequest {
@@ -746,8 +746,6 @@ message GetAuthorizedPartnersResponse {
     repeated AuthorizedPartnerResponse partners = 1;
 }
 
-//-- copied from supplier.proto
-
 message Attribute {
     optional string name      = 1 [(gogoproto.nullable)=false];
     optional string value     = 2 [(gogoproto.nullable)=false];
@@ -770,7 +768,6 @@ message Category {
     optional int64  id     = 1 [(gogoproto.nullable)=false];
     optional string name   = 2 [(gogoproto.nullable)=false];
     optional int64 product_source_id = 3 [(gogoproto.nullable)=false];
-    optional string product_source_type =  4 [(gogoproto.nullable)=false];
     optional int64 parent_id = 6 [(gogoproto.nullable)=false];
     optional int64 shop_id = 7 [(gogoproto.nullable)=false];
 }

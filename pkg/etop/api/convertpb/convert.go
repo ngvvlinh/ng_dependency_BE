@@ -28,7 +28,7 @@ func AttributesTomodel(items []*pbshop.Attribute) []catalogmodel.ProductAttribut
 	return result
 }
 
-func PbCategories(cs []*catalogmodel.ProductSourceCategory) []*pbshop.Category {
+func PbCategories(cs []*catalogmodel.ShopCategory) []*pbshop.Category {
 	res := make([]*pbshop.Category, len(cs))
 	for i, c := range cs {
 		res[i] = PbCategory(c)
@@ -36,7 +36,7 @@ func PbCategories(cs []*catalogmodel.ProductSourceCategory) []*pbshop.Category {
 	return res
 }
 
-func PbCategory(m *catalogmodel.ProductSourceCategory) *pbshop.Category {
+func PbCategory(m *catalogmodel.ShopCategory) *pbshop.Category {
 	return &pbshop.Category{
 		Id:       m.ID,
 		Name:     m.Name,
@@ -44,7 +44,6 @@ func PbCategory(m *catalogmodel.ProductSourceCategory) *pbshop.Category {
 		ShopId:   m.ShopID,
 
 		// deprecated: 2019.07.24+14
-		ProductSourceId:   m.ShopID,
-		ProductSourceType: "",
+		ProductSourceId: m.ShopID,
 	}
 }

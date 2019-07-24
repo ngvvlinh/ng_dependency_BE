@@ -25,7 +25,6 @@ const (
 	CurUsr     = permission.CurUsr
 	Partner    = permission.Partner
 	Shop       = permission.Shop
-	Supplier   = permission.Supplier
 	EtopAdmin  = permission.EtopAdmin
 	SuperAdmin = permission.SuperAdmin
 	Custom     = permission.Custom

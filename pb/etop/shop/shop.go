@@ -9,6 +9,7 @@ import (
 
 	"etop.vn/backend/pb/common"
 	pbetop "etop.vn/backend/pb/etop"
+	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/etop/model"
 	catalogmodel "etop.vn/backend/pkg/services/catalog/model"
 )
@@ -18,11 +19,14 @@ func PbUpdateVariantToModel(shopID int64, p *UpdateVariantRequest) *catalogmodel
 		ShopID:      shopID,
 		VariantID:   p.Id,
 		Name:        p.Name,
+		Code:        cm.Coalesce(p.Code, p.Sku),
 		Description: p.Description,
 		ShortDesc:   p.ShortDesc,
 		DescHTML:    p.DescHtml,
 		Note:        p.Note,
 		RetailPrice: p.RetailPrice,
+		ListPrice:   p.ListPrice,
+		CostPrice:   p.CostPrice,
 	}
 }
 

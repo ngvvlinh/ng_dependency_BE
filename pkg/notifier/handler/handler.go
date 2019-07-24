@@ -6,8 +6,8 @@ import (
 	"etop.vn/backend/pkg/common/cmsql"
 	"etop.vn/backend/pkg/common/mq"
 	"etop.vn/backend/pkg/common/telebot"
+	handler "etop.vn/backend/pkg/etop-handler"
 	"etop.vn/backend/pkg/etop-handler/pgrid"
-	handlerwebhook "etop.vn/backend/pkg/etop-handler/webhook"
 	"etop.vn/backend/pkg/notifier/model"
 	"etop.vn/backend/pkg/notifier/sqlstore"
 	"etop.vn/common/l"
@@ -23,17 +23,17 @@ var (
 
 const ConsumerGroup = "handler/notifier"
 
-func New(dbMain cmsql.Database, dbNotifier cmsql.Database, bot *telebot.Channel, consumer mq.KafkaConsumer, prefix string) (handlerMain *handlerwebhook.Handler, handlerNotifier *handlerwebhook.Handler) {
+func New(dbMain cmsql.Database, dbNotifier cmsql.Database, bot *telebot.Channel, consumer mq.KafkaConsumer, prefix string) (handlerMain *handler.Handler, handlerNotifier *handler.Handler) {
 	x = dbMain
 	xNotifier = dbNotifier
 	notiStore = sqlstore.NewNotificationStore(dbNotifier)
 	deviceStore = sqlstore.NewDeviceStore(dbNotifier)
 
 	handlersMain := TopicsAndHandlersEtop()
-	handlerMain = handlerwebhook.NewWithHandlers(dbMain, nil, bot, consumer, prefix, handlersMain)
+	handlerMain = handler.NewWithHandlers(dbMain, nil, bot, consumer, prefix, handlersMain)
 
 	handlersNotifier := TopicsAndHandlerNotifier()
-	handlerNotifier = handlerwebhook.NewWithHandlers(dbNotifier, nil, bot, consumer, prefix, handlersNotifier)
+	handlerNotifier = handler.NewWithHandlers(dbNotifier, nil, bot, consumer, prefix, handlersNotifier)
 
 	return handlerMain, handlerNotifier
 }

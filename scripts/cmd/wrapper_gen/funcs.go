@@ -128,8 +128,6 @@ func getClaim(m *g.Method) string {
 		return "PartnerClaim"
 	case Shop:
 		return "ShopClaim"
-	case Supplier:
-		return "SupplierClaim"
 	case Public, Protected, Custom, Secret, SuperAdmin:
 		return "EmptyClaim"
 	}

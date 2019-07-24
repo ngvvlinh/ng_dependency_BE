@@ -131,12 +131,11 @@ service AddressService {
     rpc RemoveAddress(cm.IDRequest) returns (cm.Empty);
 }
 
-// Indicates whether given account is **etop**, **shop** or **supplier**.
+// Indicates whether given account is **etop**, **shop** or **partner**.
 enum AccountType {
     unknown  = 0;
     partner  = 21;
     shop     = 33;
-    supplier = 65;
     etop     = 101;
 }
 
@@ -185,7 +184,6 @@ message MixedAccount {
     repeated int64 ids = 1;
     optional bool  all = 2 [(gogoproto.nullable) = false];
     optional bool  all_shops = 3 [(gogoproto.nullable) = false];
-    optional bool  all_suppliers = 4 [(gogoproto.nullable) = false];
 }
 
 message Partner {

@@ -153,7 +153,7 @@ func loadAndCreateProducts(
 	// Create new categories and collections
 	for _, rowProduct := range rowProducts {
 		{
-			var category *catalogmodel.ProductSourceCategory
+			var category *catalogmodel.ShopCategory
 			var err error
 			cc := normalizeCategory(rowProduct.Category)
 			category, msgs, err = ensureCategory(ctx, msgs, categories.Sort, shop, rowProduct.Category, cc)
@@ -248,7 +248,7 @@ func loadAndCreateProducts(
 
 		productIDs := []int64{createVariantCmd.Result.Info.Id}
 		if rowProduct.categoryID != 0 {
-			updateProductsCategoryCmd := &catalogmodelx.UpdateProductsProductSourceCategoryCommand{
+			updateProductsCategoryCmd := &catalogmodelx.UpdateProductsShopCategoryCommand{
 				CategoryID: rowProduct.categoryID,
 				ProductIDs: productIDs,
 				ShopID:     shop.ID,
@@ -285,9 +285,9 @@ func loadAndCreateProducts(
 }
 
 type Categories struct {
-	List []*catalogmodel.ProductSourceCategory
-	Map  map[int64]*catalogmodel.ProductSourceCategory
-	Sort map[[3]string]*catalogmodel.ProductSourceCategory
+	List []*catalogmodel.ShopCategory
+	Map  map[int64]*catalogmodel.ShopCategory
+	Sort map[[3]string]*catalogmodel.ShopCategory
 }
 
 func normalizeCategory(cc [3]string) (res [3]string) {
@@ -306,7 +306,7 @@ func loadCategories(ctx context.Context, shopID int64) (*Categories, error) {
 	}
 	categories := query.Result.Categories
 
-	mapCategory := make(map[int64]*catalogmodel.ProductSourceCategory)
+	mapCategory := make(map[int64]*catalogmodel.ShopCategory)
 	for _, c := range categories {
 		mapCategory[c.ID] = c
 	}
@@ -317,8 +317,8 @@ func loadCategories(ctx context.Context, shopID int64) (*Categories, error) {
 	}, nil
 }
 
-func sortCategories(mapCategory map[int64]*catalogmodel.ProductSourceCategory) map[[3]string]*catalogmodel.ProductSourceCategory {
-	categories := make(map[[3]string]*catalogmodel.ProductSourceCategory)
+func sortCategories(mapCategory map[int64]*catalogmodel.ShopCategory) map[[3]string]*catalogmodel.ShopCategory {
+	categories := make(map[[3]string]*catalogmodel.ShopCategory)
 	for _, c := range mapCategory {
 		cc, ok := buildCategoryHierarchy(mapCategory, c)
 		if ok {
@@ -328,7 +328,7 @@ func sortCategories(mapCategory map[int64]*catalogmodel.ProductSourceCategory) m
 	return categories
 }
 
-func buildCategoryHierarchy(mapCategory map[int64]*catalogmodel.ProductSourceCategory, category *catalogmodel.ProductSourceCategory) (res [3]string, ok bool) {
+func buildCategoryHierarchy(mapCategory map[int64]*catalogmodel.ShopCategory, category *catalogmodel.ShopCategory) (res [3]string, ok bool) {
 	i := 0
 	res[0] = validate.NormalizeSearch(category.Name)
 	for category.ParentID != 0 {
@@ -433,11 +433,11 @@ func loadVariants(
 func ensureCategory(
 	ctx context.Context,
 	msgs []string,
-	categories map[[3]string]*catalogmodel.ProductSourceCategory,
+	categories map[[3]string]*catalogmodel.ShopCategory,
 	shop *model.Shop,
 	names [3]string,
 	cc [3]string,
-) (*catalogmodel.ProductSourceCategory, []string, error) {
+) (*catalogmodel.ShopCategory, []string, error) {
 	if cc == [3]string{} {
 		return nil, msgs, nil
 	}
@@ -446,14 +446,14 @@ func ensureCategory(
 		ccParent := [3]string{cc[1], cc[2]}
 		namesNext := [3]string{names[1], names[2]}
 
-		var parent *catalogmodel.ProductSourceCategory
+		var parent *catalogmodel.ShopCategory
 		var err error
 		parent, msgs, err = ensureCategory(ctx, msgs, categories, shop, namesNext, ccParent)
 		if err != nil {
 			return nil, msgs, err
 		}
 
-		cmd := &catalogmodelx.CreateProductSourceCategoryCommand{
+		cmd := &catalogmodelx.CreateShopCategoryCommand{
 			ShopID: shop.ID,
 			Name:   names[0],
 		}

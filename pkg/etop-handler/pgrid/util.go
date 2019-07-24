@@ -34,10 +34,6 @@ func ToMeta(e *pgevent.PgEvent) Meta {
 	}
 }
 
-func ignoreNotFound(ok bool, err error) error {
-	return err
-}
-
 type IdentifyType string
 
 type Identifier interface {
@@ -49,41 +45,6 @@ func (t IdentifyType) identifyType() IdentifyType {
 }
 
 const (
-	TypeUser     IdentifyType = "user"
-	TypeShop     IdentifyType = "shop"
-	TypeSupplier IdentifyType = "supplier"
+	TypeUser IdentifyType = "user"
+	TypeShop IdentifyType = "shop"
 )
-
-type UserData struct {
-	IdentifyType `json:"type"`
-
-	Email     string `json:"email,omitempty"`
-	Phone     string `json:"phone,omitempty"`
-	CreatedAt int64  `json:"created_at,omitempty"`
-	FullName  string `json:"full_name,omitempty"`
-	ShortName string `json:"short_name,omitempty"`
-
-	LatestShopID        string `json:"latest_shop_id,omitempty"`
-	LatestShopName      string `json:"latest_shop_name,omitempty"`
-	LatestShopCreatedAt int64  `json:"latest_shop_created_at,omitempty"`
-
-	LatestSupplierID        string `json:"latest_supplier_id,omitempty"`
-	LatestSupplierName      string `json:"latest_supplier_name,omitempty"`
-	LatestSupplierCreatedAt int64  `json:"latest_supplier_created_at,omitempty"`
-}
-
-type IdentifyData struct {
-	IdentifyType `json:"type"`
-
-	Email     string `json:"email"`
-	Phone     string `json:"phone"`
-	CreatedAt int64  `json:"created_at"`
-	Name      string `json:"name"`
-
-	OwnerID        string `json:"owner_id"`
-	OwnerEmail     string `json:"owner_email"`
-	OwnerPhone     string `json:"owner_phone"`
-	OwnerFullName  string `json:"owner_full_name"`
-	OwnerShortName string `json:"owner_short_name"`
-	OwnerCreatedAt int64  `json:"owner_created_at"`
-}

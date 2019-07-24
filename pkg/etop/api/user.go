@@ -550,7 +550,6 @@ func CreateLoginResponse2(ctx context.Context, claim *claims.ClaimInfo, token st
 		switch {
 		case preferAccountID == account.ID,
 			preferAccountType == model.TagShop && account.Type == model.TypeShop,
-			preferAccountType == model.TagSupplier && account.Type == model.TypeSupplier,
 			preferAccountType == model.TagEtop && account.Type == model.TypeEtop:
 			currentAccount = availableAccounts[i]
 			currentAccountID = currentAccount.Id
@@ -563,7 +562,7 @@ func CreateLoginResponse2(ctx context.Context, claim *claims.ClaimInfo, token st
 		AvailableAccounts: availableAccounts,
 	}
 
-	// Retrieve shop or supplier account
+	// Retrieve shop account
 	if currentAccount != nil {
 		switch {
 		case model.IsShopID(currentAccountID):
@@ -1022,7 +1021,7 @@ func sendSTokenEmail(ctx context.Context, r *wrapetop.SendSTokenEmailEndpoint) (
 		"AccountName": account.Name,
 	}
 	switch account.Type {
-	case model.TypeShop, model.TypeSupplier:
+	case model.TypeShop:
 		emailData["AccountType"] = account.Type.Label()
 	case model.TypeEtop:
 		return r, cm.Errorf(cm.FailedPrecondition, nil, "Không thể gửi email đến tài khoản %v", account.Name, account).WithMeta("type", string(account.Type))

@@ -233,9 +233,9 @@ type ProductAttribute struct {
 	Value string `json:"value"`
 }
 
-var _ = sqlgenProductSourceCategory(&ProductSourceCategory{})
+var _ = sqlgenShopCategory(&ShopCategory{})
 
-type ProductSourceCategory struct {
+type ShopCategory struct {
 	ID int64
 
 	ParentID int64

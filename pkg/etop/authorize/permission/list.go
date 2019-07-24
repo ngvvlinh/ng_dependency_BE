@@ -14,7 +14,6 @@ const (
 	CurUsr
 	Partner
 	Shop
-	Supplier
 	EtopAdmin
 
 	SuperAdmin PermType = 100

@@ -41,6 +41,12 @@ type ShopVariantStore struct {
 	includeDeleted sqlstore.IncludeDeleted
 }
 
+func (s *ShopVariantStore) extend() *ShopVariantStore {
+	s.ftShopProduct.prefix = "sp"
+	s.FtShopVariant.prefix = "sv"
+	return s
+}
+
 func (s *ShopVariantStore) Paging(paging meta.Paging) *ShopVariantStore {
 	s.paging = paging
 	return s
@@ -102,7 +108,7 @@ func (s *ShopVariantStore) GetShopVariant() (*catalog.ShopVariant, error) {
 }
 
 func (s *ShopVariantStore) GetShopVariantWithProductDB() (*catalogmodel.ShopVariantWithProduct, error) {
-	query := s.query().Where(s.preds)
+	query := s.extend().query().Where(s.preds)
 	query = s.includeDeleted.Check(query, s.FtShopVariant.NotDeleted())
 
 	var variant catalogmodel.ShopVariantWithProduct
@@ -141,7 +147,7 @@ func (s *ShopVariantStore) ListShopVariants() ([]*catalog.ShopVariant, error) {
 }
 
 func (s *ShopVariantStore) ListShopVariantsWithProductDB() ([]*catalogmodel.ShopVariantWithProduct, error) {
-	query := s.query().Where(s.preds)
+	query := s.extend().query().Where(s.preds)
 	query = s.includeDeleted.Check(query, s.FtShopVariant.NotDeleted())
 	query = s.includeDeleted.Check(query, s.ftShopProduct.NotDeleted())
 	query, err := sqlstore.LimitSort(query, &s.paging, SortVariant)

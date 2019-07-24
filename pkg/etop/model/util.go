@@ -41,20 +41,12 @@ func NewShopID() int64 {
 	return cm.NewIDWithTag(TagShop)
 }
 
-func NewSupplierID() int64 {
-	return cm.NewIDWithTag(TagSupplier)
-}
-
 func IsPartnerID(id int64) bool {
 	return cm.GetTag(id) == TagPartner
 }
 
 func IsShopID(id int64) bool {
 	return cm.GetTag(id) == TagShop
-}
-
-func IsSupplierID(id int64) bool {
-	return cm.GetTag(id) == TagSupplier
 }
 
 func IsEtopAccountID(id int64) bool {

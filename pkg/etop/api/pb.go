@@ -28,15 +28,6 @@ func MixAccount(claim *claims.Claim, m *pbetop.MixedAccount) ([]int64, error) {
 		}
 		return ids, nil
 
-	case m.AllSuppliers:
-		ids := make([]int64, 0, len(claim.AccountIDs))
-		for id, typ := range claim.AccountIDs {
-			if typ == model.TagSupplier {
-				ids = append(ids, id)
-			}
-		}
-		return ids, nil
-
 	case len(m.Ids) > 0:
 		accountIDs := claim.AccountIDs
 		for _, id := range m.Ids {

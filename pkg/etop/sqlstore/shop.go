@@ -15,7 +15,7 @@ import (
 
 func init() {
 	bus.AddHandlers("sql",
-		CreateProductSourceCategory,
+		CreateShopCategory,
 		CreateVariant,
 		GetAllShopExtendedsQuery,
 		GetShop,
@@ -129,7 +129,7 @@ func CreateVariant(ctx context.Context, cmd *catalogmodelx.CreateVariantCommand)
 		ShopID:      cmd.ShopID,
 		VariantID:   cm.NewID(),
 		ProductID:   cmd.ProductID,
-		Code:        cmd.SKU,
+		Code:        cmd.Code,
 		Name:        cmd.Name,
 		Description: cmd.Description,
 		DescHTML:    cmd.DescHTML,
@@ -137,9 +137,9 @@ func CreateVariant(ctx context.Context, cmd *catalogmodelx.CreateVariantCommand)
 		ImageURLs:   cmd.ImageURLs,
 		Note:        "",
 		Tags:        nil,
-		ListPrice:   cmd.ListPrice,
 		CostPrice:   cmd.CostPrice,
-		RetailPrice: 0,
+		ListPrice:   cmd.ListPrice,
+		RetailPrice: cmd.RetailPrice,
 		Status:      model.StatusActive,
 		Attributes:  cmd.Attributes,
 		CreatedAt:   time.Time{},
@@ -164,7 +164,7 @@ func CreateVariant(ctx context.Context, cmd *catalogmodelx.CreateVariantCommand)
 	return nil
 }
 
-func CreateProductSourceCategory(ctx context.Context, cmd *catalogmodelx.CreateProductSourceCategoryCommand) error {
+func CreateShopCategory(ctx context.Context, cmd *catalogmodelx.CreateShopCategoryCommand) error {
 	if cmd.ShopID == 0 {
 		return cm.Error(cm.InvalidArgument, "Missing AccountID", nil)
 	}
@@ -174,8 +174,8 @@ func CreateProductSourceCategory(ctx context.Context, cmd *catalogmodelx.CreateP
 	name := strings.ToLower(cmd.Name)
 	name = strings.Title(name)
 
-	var productSourceCategory = new(catalogmodel.ProductSourceCategory)
-	s := x.Table("product_source_category").Where("shop_id = ? AND name = ?", cmd.ShopID, name)
+	var productSourceCategory = new(catalogmodel.ShopCategory)
+	s := x.Table("shop_category").Where("shop_id = ? AND name = ?", cmd.ShopID, name)
 	if cmd.ParentID != 0 {
 		s = s.Where("parent_id = ?", cmd.ParentID)
 	}
@@ -188,41 +188,41 @@ func CreateProductSourceCategory(ctx context.Context, cmd *catalogmodelx.CreateP
 		return nil
 	}
 
-	psCategory := &catalogmodel.ProductSourceCategory{
+	psCategory := &catalogmodel.ShopCategory{
 		ID:       cm.NewID(),
 		ParentID: cmd.ParentID,
 		ShopID:   cmd.ShopID,
 		Name:     name,
 	}
 
-	if err := x.Table("product_source_category").ShouldInsert(psCategory); err != nil {
+	if err := x.Table("shop_category").ShouldInsert(psCategory); err != nil {
 		return err
 	}
 	cmd.Result = psCategory
 	return nil
 }
 
-func UpdateProductsPSCategory(ctx context.Context, cmd *catalogmodelx.UpdateProductsProductSourceCategoryCommand) error {
+func UpdateProductsPSCategory(ctx context.Context, cmd *catalogmodelx.UpdateProductsShopCategoryCommand) error {
 	if cmd.ShopID == 0 {
 		return cm.Error(cm.InvalidArgument, "Missing AccountID", nil)
 	}
 	if cmd.CategoryID == 0 {
-		return cm.Error(cm.InvalidArgument, "Missing ProductSourceCategoryID", nil)
+		return cm.Error(cm.InvalidArgument, "Missing ShopCategoryID", nil)
 	}
 
-	category := new(catalogmodel.ProductSourceCategory)
-	if has, err := x.Table("product_source_category").
+	category := new(catalogmodel.ShopCategory)
+	if has, err := x.Table("shop_category").
 		Where("id = ? AND shop_id = ?", cmd.CategoryID, cmd.ShopID).
 		Get(category); err != nil {
 		return nil
 	} else if !has {
-		return cm.Error(cm.NotFound, "ProductSourceCategory not found", nil)
+		return cm.Error(cm.NotFound, "ShopCategory not found", nil)
 	}
 
-	if updated, err := x.Table("product").
+	if updated, err := x.Table("shop_product").
 		Where("product_source_id = ?", cmd.ShopID).
 		In("id", cmd.ProductIDs).
-		UpdateMap(M{"product_source_category_id": cmd.CategoryID}); err != nil {
+		UpdateMap(M{"shop_category_id": cmd.CategoryID}); err != nil {
 		return err
 	} else if updated == 0 {
 		return cm.Error(cm.NotFound, "No product updated", nil)

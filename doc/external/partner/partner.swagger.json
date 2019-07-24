@@ -434,11 +434,10 @@
         "unknown",
         "partner",
         "shop",
-        "supplier",
         "etop"
       ],
       "default": "unknown",
-      "description": "Indicates whether given account is **etop**, **shop** or **supplier**."
+      "description": "Indicates whether given account is **etop**, **shop** or **partner**."
     },
     "etopPublicAccountInfo": {
       "type": "object",

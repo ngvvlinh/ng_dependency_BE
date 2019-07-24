@@ -1479,23 +1479,23 @@ func (ms *ProductShopCollectionHistories) SQLScan(opts core.Opts, rows *sql.Rows
 	return nil
 }
 
-// Type ProductSourceCategory represents table product_source_category
-func sqlgenProductSourceCategory(_ *ProductSourceCategory) bool { return true }
+// Type ShopCategory represents table shop_category
+func sqlgenShopCategory(_ *ShopCategory) bool { return true }
 
-type ProductSourceCategories []*ProductSourceCategory
+type ShopCategories []*ShopCategory
 
-const __sqlProductSourceCategory_Table = "product_source_category"
-const __sqlProductSourceCategory_ListCols = "\"id\",\"parent_id\",\"shop_id\",\"name\",\"status\",\"created_at\",\"updated_at\",\"deleted_at\""
-const __sqlProductSourceCategory_Insert = "INSERT INTO \"product_source_category\" (" + __sqlProductSourceCategory_ListCols + ") VALUES"
-const __sqlProductSourceCategory_Select = "SELECT " + __sqlProductSourceCategory_ListCols + " FROM \"product_source_category\""
-const __sqlProductSourceCategory_Select_history = "SELECT " + __sqlProductSourceCategory_ListCols + " FROM history.\"product_source_category\""
-const __sqlProductSourceCategory_UpdateAll = "UPDATE \"product_source_category\" SET (" + __sqlProductSourceCategory_ListCols + ")"
+const __sqlShopCategory_Table = "shop_category"
+const __sqlShopCategory_ListCols = "\"id\",\"parent_id\",\"shop_id\",\"name\",\"status\",\"created_at\",\"updated_at\",\"deleted_at\""
+const __sqlShopCategory_Insert = "INSERT INTO \"shop_category\" (" + __sqlShopCategory_ListCols + ") VALUES"
+const __sqlShopCategory_Select = "SELECT " + __sqlShopCategory_ListCols + " FROM \"shop_category\""
+const __sqlShopCategory_Select_history = "SELECT " + __sqlShopCategory_ListCols + " FROM history.\"shop_category\""
+const __sqlShopCategory_UpdateAll = "UPDATE \"shop_category\" SET (" + __sqlShopCategory_ListCols + ")"
 
-func (m *ProductSourceCategory) SQLTableName() string   { return "product_source_category" }
-func (m *ProductSourceCategories) SQLTableName() string { return "product_source_category" }
-func (m *ProductSourceCategory) SQLListCols() string    { return __sqlProductSourceCategory_ListCols }
+func (m *ShopCategory) SQLTableName() string   { return "shop_category" }
+func (m *ShopCategories) SQLTableName() string { return "shop_category" }
+func (m *ShopCategory) SQLListCols() string    { return __sqlShopCategory_ListCols }
 
-func (m *ProductSourceCategory) SQLArgs(opts core.Opts, create bool) []interface{} {
+func (m *ShopCategory) SQLArgs(opts core.Opts, create bool) []interface{} {
 	now := time.Now()
 	return []interface{}{
 		core.Int64(m.ID),
@@ -1509,7 +1509,7 @@ func (m *ProductSourceCategory) SQLArgs(opts core.Opts, create bool) []interface
 	}
 }
 
-func (m *ProductSourceCategory) SQLScanArgs(opts core.Opts) []interface{} {
+func (m *ShopCategory) SQLScanArgs(opts core.Opts) []interface{} {
 	return []interface{}{
 		(*core.Int64)(&m.ID),
 		(*core.Int64)(&m.ParentID),
@@ -1522,14 +1522,14 @@ func (m *ProductSourceCategory) SQLScanArgs(opts core.Opts) []interface{} {
 	}
 }
 
-func (m *ProductSourceCategory) SQLScan(opts core.Opts, row *sql.Row) error {
+func (m *ShopCategory) SQLScan(opts core.Opts, row *sql.Row) error {
 	return row.Scan(m.SQLScanArgs(opts)...)
 }
 
-func (ms *ProductSourceCategories) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	res := make(ProductSourceCategories, 0, 128)
+func (ms *ShopCategories) SQLScan(opts core.Opts, rows *sql.Rows) error {
+	res := make(ShopCategories, 0, 128)
 	for rows.Next() {
-		m := new(ProductSourceCategory)
+		m := new(ShopCategory)
 		args := m.SQLScanArgs(opts)
 		if err := rows.Scan(args...); err != nil {
 			return err
@@ -1543,18 +1543,18 @@ func (ms *ProductSourceCategories) SQLScan(opts core.Opts, rows *sql.Rows) error
 	return nil
 }
 
-func (_ *ProductSourceCategory) SQLSelect(w SQLWriter) error {
-	w.WriteQueryString(__sqlProductSourceCategory_Select)
+func (_ *ShopCategory) SQLSelect(w SQLWriter) error {
+	w.WriteQueryString(__sqlShopCategory_Select)
 	return nil
 }
 
-func (_ *ProductSourceCategories) SQLSelect(w SQLWriter) error {
-	w.WriteQueryString(__sqlProductSourceCategory_Select)
+func (_ *ShopCategories) SQLSelect(w SQLWriter) error {
+	w.WriteQueryString(__sqlShopCategory_Select)
 	return nil
 }
 
-func (m *ProductSourceCategory) SQLInsert(w SQLWriter) error {
-	w.WriteQueryString(__sqlProductSourceCategory_Insert)
+func (m *ShopCategory) SQLInsert(w SQLWriter) error {
+	w.WriteQueryString(__sqlShopCategory_Insert)
 	w.WriteRawString(" (")
 	w.WriteMarkers(8)
 	w.WriteByte(')')
@@ -1562,8 +1562,8 @@ func (m *ProductSourceCategory) SQLInsert(w SQLWriter) error {
 	return nil
 }
 
-func (ms ProductSourceCategories) SQLInsert(w SQLWriter) error {
-	w.WriteQueryString(__sqlProductSourceCategory_Insert)
+func (ms ShopCategories) SQLInsert(w SQLWriter) error {
+	w.WriteQueryString(__sqlShopCategory_Insert)
 	w.WriteRawString(" (")
 	for i := 0; i < len(ms); i++ {
 		w.WriteMarkers(8)
@@ -1574,12 +1574,12 @@ func (ms ProductSourceCategories) SQLInsert(w SQLWriter) error {
 	return nil
 }
 
-func (m *ProductSourceCategory) SQLUpdate(w SQLWriter) error {
+func (m *ShopCategory) SQLUpdate(w SQLWriter) error {
 	now, opts := time.Now(), w.Opts()
 	_, _ = now, opts // suppress unuse error
 	var flag bool
 	w.WriteRawString("UPDATE ")
-	w.WriteName("product_source_category")
+	w.WriteName("shop_category")
 	w.WriteRawString(" SET ")
 	if m.ID != 0 {
 		flag = true
@@ -1652,8 +1652,8 @@ func (m *ProductSourceCategory) SQLUpdate(w SQLWriter) error {
 	return nil
 }
 
-func (m *ProductSourceCategory) SQLUpdateAll(w SQLWriter) error {
-	w.WriteQueryString(__sqlProductSourceCategory_UpdateAll)
+func (m *ShopCategory) SQLUpdateAll(w SQLWriter) error {
+	w.WriteQueryString(__sqlShopCategory_UpdateAll)
 	w.WriteRawString(" = (")
 	w.WriteMarkers(8)
 	w.WriteByte(')')
@@ -1661,42 +1661,32 @@ func (m *ProductSourceCategory) SQLUpdateAll(w SQLWriter) error {
 	return nil
 }
 
-type ProductSourceCategoryHistory map[string]interface{}
-type ProductSourceCategoryHistories []map[string]interface{}
+type ShopCategoryHistory map[string]interface{}
+type ShopCategoryHistories []map[string]interface{}
 
-func (m *ProductSourceCategoryHistory) SQLTableName() string {
-	return "history.\"product_source_category\""
-}
-func (m ProductSourceCategoryHistories) SQLTableName() string {
-	return "history.\"product_source_category\""
-}
+func (m *ShopCategoryHistory) SQLTableName() string  { return "history.\"shop_category\"" }
+func (m ShopCategoryHistories) SQLTableName() string { return "history.\"shop_category\"" }
 
-func (m *ProductSourceCategoryHistory) SQLSelect(w SQLWriter) error {
-	w.WriteQueryString(__sqlProductSourceCategory_Select_history)
+func (m *ShopCategoryHistory) SQLSelect(w SQLWriter) error {
+	w.WriteQueryString(__sqlShopCategory_Select_history)
 	return nil
 }
 
-func (m ProductSourceCategoryHistories) SQLSelect(w SQLWriter) error {
-	w.WriteQueryString(__sqlProductSourceCategory_Select_history)
+func (m ShopCategoryHistories) SQLSelect(w SQLWriter) error {
+	w.WriteQueryString(__sqlShopCategory_Select_history)
 	return nil
 }
 
-func (m ProductSourceCategoryHistory) ID() core.Interface       { return core.Interface{m["id"]} }
-func (m ProductSourceCategoryHistory) ParentID() core.Interface { return core.Interface{m["parent_id"]} }
-func (m ProductSourceCategoryHistory) ShopID() core.Interface   { return core.Interface{m["shop_id"]} }
-func (m ProductSourceCategoryHistory) Name() core.Interface     { return core.Interface{m["name"]} }
-func (m ProductSourceCategoryHistory) Status() core.Interface   { return core.Interface{m["status"]} }
-func (m ProductSourceCategoryHistory) CreatedAt() core.Interface {
-	return core.Interface{m["created_at"]}
-}
-func (m ProductSourceCategoryHistory) UpdatedAt() core.Interface {
-	return core.Interface{m["updated_at"]}
-}
-func (m ProductSourceCategoryHistory) DeletedAt() core.Interface {
-	return core.Interface{m["deleted_at"]}
-}
+func (m ShopCategoryHistory) ID() core.Interface        { return core.Interface{m["id"]} }
+func (m ShopCategoryHistory) ParentID() core.Interface  { return core.Interface{m["parent_id"]} }
+func (m ShopCategoryHistory) ShopID() core.Interface    { return core.Interface{m["shop_id"]} }
+func (m ShopCategoryHistory) Name() core.Interface      { return core.Interface{m["name"]} }
+func (m ShopCategoryHistory) Status() core.Interface    { return core.Interface{m["status"]} }
+func (m ShopCategoryHistory) CreatedAt() core.Interface { return core.Interface{m["created_at"]} }
+func (m ShopCategoryHistory) UpdatedAt() core.Interface { return core.Interface{m["updated_at"]} }
+func (m ShopCategoryHistory) DeletedAt() core.Interface { return core.Interface{m["deleted_at"]} }
 
-func (m *ProductSourceCategoryHistory) SQLScan(opts core.Opts, row *sql.Row) error {
+func (m *ShopCategoryHistory) SQLScan(opts core.Opts, row *sql.Row) error {
 	data := make([]interface{}, 8)
 	args := make([]interface{}, 8)
 	for i := 0; i < 8; i++ {
@@ -1705,7 +1695,7 @@ func (m *ProductSourceCategoryHistory) SQLScan(opts core.Opts, row *sql.Row) err
 	if err := row.Scan(args...); err != nil {
 		return err
 	}
-	res := make(ProductSourceCategoryHistory, 8)
+	res := make(ShopCategoryHistory, 8)
 	res["id"] = data[0]
 	res["parent_id"] = data[1]
 	res["shop_id"] = data[2]
@@ -1718,18 +1708,18 @@ func (m *ProductSourceCategoryHistory) SQLScan(opts core.Opts, row *sql.Row) err
 	return nil
 }
 
-func (ms *ProductSourceCategoryHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
+func (ms *ShopCategoryHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
 	data := make([]interface{}, 8)
 	args := make([]interface{}, 8)
 	for i := 0; i < 8; i++ {
 		args[i] = &data[i]
 	}
-	res := make(ProductSourceCategoryHistories, 0, 128)
+	res := make(ShopCategoryHistories, 0, 128)
 	for rows.Next() {
 		if err := rows.Scan(args...); err != nil {
 			return err
 		}
-		m := make(ProductSourceCategoryHistory)
+		m := make(ShopCategoryHistory)
 		m["id"] = data[0]
 		m["parent_id"] = data[1]
 		m["shop_id"] = data[2]

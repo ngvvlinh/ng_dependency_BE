@@ -1,4 +1,4 @@
-package webhook
+package handler
 
 import (
 	"context"
@@ -9,6 +9,8 @@ import (
 
 	"github.com/Shopify/sarama"
 
+	pbcm "etop.vn/backend/pb/common"
+	pbexternal "etop.vn/backend/pb/external"
 	"etop.vn/backend/pkg/common/cmsql"
 	"etop.vn/backend/pkg/common/mq"
 	"etop.vn/backend/pkg/common/telebot"
@@ -19,9 +21,6 @@ import (
 	ordermodel "etop.vn/backend/pkg/services/ordering/model"
 	shipmodel "etop.vn/backend/pkg/services/shipping/model"
 	"etop.vn/common/l"
-
-	pbcm "etop.vn/backend/pb/common"
-	pbexternal "etop.vn/backend/pb/external"
 )
 
 const ConsumerGroup = "handler/webhook"
@@ -80,28 +79,9 @@ func NewWithHandlers(db cmsql.Database, sender *sender.WebhookSender, bot *teleb
 
 func (h *Handler) TopicsAndHandlers() map[string]pgrid.HandlerFunc {
 	return map[string]pgrid.HandlerFunc{
-		"account":                          nil,
-		"address":                          nil,
-		"etop_category":                    nil,
-		"fulfillment":                      h.HandleFulfillmentEvent,
-		"order_external":                   nil,
-		"order_source":                     nil,
-		"order":                            h.HandleOrderEvent,
-		"product_brand":                    nil,
-		"product_external":                 nil,
-		"product_source_category_external": nil,
-		"product_source_category":          nil,
-		"product_source":                   nil,
-		"product":                          nil,
-		"shop_collection":                  nil,
-		"shop_product":                     nil,
-		"shop":                             nil,
-		"supplier":                         nil,
-		"user":                             nil,
-		"variant_external":                 nil,
-		"variant":                          nil,
-		"money_transaction_shipping":       nil,
-		"notification":                     nil,
+		"fulfillment":  h.HandleFulfillmentEvent,
+		"order":        h.HandleOrderEvent,
+		"notification": nil,
 	}
 }
 

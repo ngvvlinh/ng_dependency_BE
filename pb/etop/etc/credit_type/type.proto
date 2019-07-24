@@ -7,5 +7,4 @@ option (gogoproto.gogoproto_import)         = false;
 
 enum CreditType {
   shop = 1;
-  supplier = 2;
 }

@@ -3,10 +3,11 @@ package etop
 import (
 	"testing"
 
+	"github.com/stretchr/testify/assert"
+
 	"etop.vn/backend/pb/etop/etc/status3"
 	"etop.vn/backend/pb/etop/etc/status4"
 	"etop.vn/backend/pkg/etop/model"
-	"github.com/stretchr/testify/assert"
 )
 
 func TestAccountType(t *testing.T) {
@@ -16,7 +17,6 @@ func TestAccountType(t *testing.T) {
 		typ model.AccountType
 	}{
 		{AccountType_shop, model.TagShop, model.TypeShop},
-		{AccountType_supplier, model.TagSupplier, model.TypeSupplier},
 		{AccountType_etop, model.EtopAccountID, model.TypeEtop},
 	}
 	for _, tt := range tests {

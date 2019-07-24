@@ -88,10 +88,9 @@ const (
 	DBMain     DBName = "main"
 	DBNotifier DBName = "notifier"
 
-	TypePartner  AccountType = "partner"
-	TypeShop     AccountType = "shop"
-	TypeSupplier AccountType = "supplier"
-	TypeEtop     AccountType = "etop"
+	TypePartner AccountType = "partner"
+	TypeShop    AccountType = "shop"
+	TypeEtop    AccountType = "etop"
 
 	SubjectTypeAccount SubjectType = "account"
 	SubjectTypeUser    SubjectType = "user"
@@ -112,7 +111,6 @@ const (
 	ShippingServiceNameFaster   = "Nhanh"
 
 	FFShop     FulfillmentEndpoint = "shop"
-	FFSupplier FulfillmentEndpoint = "supplier"
 	FFCustomer FulfillmentEndpoint = "customer"
 
 	OrderSourceUnknown OrderSourceType = "unknown"
@@ -129,12 +127,11 @@ const (
 	UserIdentifyingStub UserIdentifying = "stub"
 
 	// Don't change these values
-	TagUser     = 17
-	TagPartner  = 21
-	TagShop     = 33
-	TagSupplier = 65
-	TagEtop     = 101
-	TagImport   = 111
+	TagUser    = 17
+	TagPartner = 21
+	TagShop    = 33
+	TagEtop    = 101
+	TagImport  = 111
 
 	EtopAccountID = TagEtop
 
@@ -519,18 +516,6 @@ var _ = sqlgenShopDelete(&ShopDelete{}, &Shop{})
 
 type ShopDelete struct {
 	DeletedAt time.Time
-}
-
-var _ = sqlgenEtopCatgory(&EtopCategory{})
-
-type EtopCategory struct {
-	ID       int64
-	Name     string
-	ParentID int64
-
-	Status    Status3
-	CreatedAt time.Time `sq:"create"`
-	UpdatedAt time.Time `sq:"update"`
 }
 
 var _ = sqlgenPartner(&Partner{})

@@ -79,9 +79,9 @@ func LoginAsAccount(ctx context.Context, q *wrapadmin.AdminLoginAsAccountEndpoin
 	}
 
 	switch cm.GetTag(q.AccountId) {
-	case model.TagShop, model.TagSupplier:
+	case model.TagShop:
 	default:
-		return cm.Error(cm.InvalidArgument, "Must be shop or supplier account", nil)
+		return cm.Error(cm.InvalidArgument, "Must be shop account", nil)
 	}
 
 	resp, err := adminCreateLoginResponse(ctx, q.Context.UserID, q.UserId, q.AccountId)

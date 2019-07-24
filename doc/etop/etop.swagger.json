@@ -1129,11 +1129,10 @@
         "unknown",
         "partner",
         "shop",
-        "supplier",
         "etop"
       ],
       "default": "unknown",
-      "description": "Indicates whether given account is **etop**, **shop** or **supplier**."
+      "description": "Indicates whether given account is **etop**, **shop** or **partner**."
     },
     "etopAddress": {
       "type": "object",
@@ -1830,10 +1829,6 @@
           "format": "boolean"
         },
         "all_shops": {
-          "type": "boolean",
-          "format": "boolean"
-        },
-        "all_suppliers": {
           "type": "boolean",
           "format": "boolean"
         }

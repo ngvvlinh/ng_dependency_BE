@@ -2383,11 +2383,10 @@
         "unknown",
         "partner",
         "shop",
-        "supplier",
         "etop"
       ],
       "default": "unknown",
-      "description": "Indicates whether given account is **etop**, **shop** or **supplier**."
+      "description": "Indicates whether given account is **etop**, **shop** or **partner**."
     },
     "etopAddress": {
       "type": "object",
@@ -2659,10 +2658,6 @@
           "format": "boolean"
         },
         "all_shops": {
-          "type": "boolean",
-          "format": "boolean"
-        },
-        "all_suppliers": {
           "type": "boolean",
           "format": "boolean"
         }
@@ -5039,15 +5034,6 @@
         }
       }
     },
-    "product_sourceProductSourceType": {
-      "type": "string",
-      "enum": [
-        "unknown",
-        "custom",
-        "kiotviet"
-      ],
-      "default": "unknown"
-    },
     "shippingState": {
       "type": "string",
       "enum": [
@@ -5211,9 +5197,6 @@
           "type": "string",
           "format": "int64"
         },
-        "product_source_type": {
-          "type": "string"
-        },
         "parent_id": {
           "type": "string",
           "format": "int64"
@@ -5315,26 +5298,13 @@
         "parent_id": {
           "type": "string",
           "format": "int64"
-        },
-        "product_source_id": {
-          "type": "string",
-          "format": "int64"
-        },
-        "product_source_type": {
-          "$ref": "#/definitions/product_sourceProductSourceType"
         }
-      }
+      },
+      "title": "deprecated"
     },
     "shopCreateProductSourceRequest": {
       "type": "object",
-      "properties": {
-        "type": {
-          "$ref": "#/definitions/product_sourceProductSourceType"
-        },
-        "name": {
-          "type": "string"
-        }
-      }
+      "title": "deprecated"
     },
     "shopCreateVariantRequest": {
       "type": "object",
@@ -5380,21 +5350,20 @@
         "status": {
           "$ref": "#/definitions/status3Status"
         },
-        "list_price": {
-          "type": "integer",
-          "format": "int32"
-        },
         "cost_price": {
           "type": "integer",
           "format": "int32"
         },
-        "sku": {
-          "type": "string",
-          "title": "sku: presentation for EdCode in `variant` (Mã phiên bản sản phẩm)"
+        "list_price": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "retail_price": {
+          "type": "integer",
+          "format": "int32"
         },
         "code": {
-          "type": "string",
-          "title": "Code: presentation for EdCode in `product` (Mã sản phẩm)"
+          "type": "string"
         },
         "quantity_available": {
           "type": "integer",
@@ -5416,6 +5385,10 @@
         },
         "unit": {
           "type": "string"
+        },
+        "sku": {
+          "type": "string",
+          "title": "deprecated: use code instead"
         }
       }
     },
@@ -5813,11 +5786,7 @@
     },
     "shopGetProductSourceCategoriesRequest": {
       "type": "object",
-      "properties": {
-        "type": {
-          "$ref": "#/definitions/product_sourceProductSourceType"
-        }
-      }
+      "title": "deprecated"
     },
     "shopGetPublicFulfillmentRequest": {
       "type": "object",
@@ -6125,12 +6094,6 @@
         "product_source_id": {
           "type": "string",
           "format": "int64"
-        },
-        "product_source_type": {
-          "type": "string"
-        },
-        "product_source_name": {
-          "type": "string"
         }
       },
       "required": [
@@ -6662,15 +6625,15 @@
         "note": {
           "type": "string"
         },
-        "retail_price": {
-          "type": "integer",
-          "format": "int32"
-        },
         "cost_price": {
           "type": "integer",
           "format": "int32"
         },
-        "inventory": {
+        "list_price": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "retail_price": {
           "type": "integer",
           "format": "int32"
         },
@@ -6680,8 +6643,12 @@
             "$ref": "#/definitions/shopAttribute"
           }
         },
-        "sku": {
+        "code": {
           "type": "string"
+        },
+        "sku": {
+          "type": "string",
+          "title": "deprecated"
         }
       },
       "required": [

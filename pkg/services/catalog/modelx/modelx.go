@@ -86,36 +86,39 @@ type CreateVariantCommand struct {
 	// In `Dép Adidas Adilette Slides - Full Đỏ`, product_name is "Dép Adidas Adilette Slides"
 	ProductName string
 	// In `Dép Adidas Adilette Slides - Full Đỏ`, name is "Full Đỏ"
-	Name              string
-	Description       string
-	ShortDesc         string
-	ImageURLs         []string
-	Tags              []string
-	Status            model.Status3
-	ListPrice         int32
-	SKU               string
-	Code              string
+	Name        string
+	Description string
+	ShortDesc   string
+	ImageURLs   []string
+	Tags        []string
+	Status      model.Status3
+	Code        string
+
 	QuantityAvailable int
 	QuantityOnHand    int
 	QuantityReserved  int
-	CostPrice         int32
-	Attributes        []catalogmodel.ProductAttribute
-	DescHTML          string
+
+	ListPrice   int32
+	RetailPrice int32
+	CostPrice   int32
+
+	Attributes []catalogmodel.ProductAttribute
+	DescHTML   string
 
 	Result *catalog.ShopProductWithVariants
 }
 
 // deprecated
-type CreateProductSourceCategoryCommand struct {
+type CreateShopCategoryCommand struct {
 	ShopID   int64
 	Name     string
 	ParentID int64
 
-	Result *catalogmodel.ProductSourceCategory
+	Result *catalogmodel.ShopCategory
 }
 
 // deprecated
-type UpdateProductsProductSourceCategoryCommand struct {
+type UpdateProductsShopCategoryCommand struct {
 	CategoryID int64
 	ProductIDs []int64
 	ShopID     int64
@@ -126,11 +129,11 @@ type UpdateProductsProductSourceCategoryCommand struct {
 }
 
 // deprecated
-type GetProductSourceCategoryQuery struct {
+type GetShopCategoryQuery struct {
 	ShopID     int64
 	CategoryID int64
 
-	Result *catalogmodel.ProductSourceCategory
+	Result *catalogmodel.ShopCategory
 }
 
 // deprecated
@@ -139,22 +142,22 @@ type GetProductSourceCategoriesQuery struct {
 	IDs    []int64
 
 	Result struct {
-		Categories []*catalogmodel.ProductSourceCategory
+		Categories []*catalogmodel.ShopCategory
 	}
 }
 
 // deprecated
-type UpdateShopProductSourceCategoryCommand struct {
+type UpdateShopCategoryCommand struct {
 	ID       int64
 	ShopID   int64
 	ParentID int64
 	Name     string
 
-	Result *catalogmodel.ProductSourceCategory
+	Result *catalogmodel.ShopCategory
 }
 
 // deprecated
-type RemoveShopProductSourceCategoryCommand struct {
+type RemoveShopCategoryCommand struct {
 	ID     int64
 	ShopID int64
 

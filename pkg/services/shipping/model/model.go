@@ -144,7 +144,7 @@ type Fulfillment struct {
 
 func (f *Fulfillment) SelfURL(baseURL string, accType int) string {
 	switch accType {
-	case model.TagEtop, model.TagSupplier:
+	case model.TagEtop:
 		return ""
 
 	case model.TagShop:

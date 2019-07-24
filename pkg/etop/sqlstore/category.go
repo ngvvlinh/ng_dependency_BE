@@ -10,20 +10,20 @@ import (
 )
 
 func init() {
-	bus.AddHandler("sql", GetProductSourceCategory)
+	bus.AddHandler("sql", GetShopCategory)
 	bus.AddHandler("sql", GetProductSourceCategories)
 	bus.AddHandler("sql", GetProductSourceCategories)
-	bus.AddHandler("sql", UpdateShopProductSourceCategory)
-	bus.AddHandler("sql", RemoveShopProductSourceCategory)
+	bus.AddHandler("sql", UpdateShopShopCategory)
+	bus.AddHandler("sql", RemoveShopShopCategory)
 }
 
-func GetProductSourceCategory(ctx context.Context, query *catalogmodelx.GetProductSourceCategoryQuery) error {
+func GetShopCategory(ctx context.Context, query *catalogmodelx.GetShopCategoryQuery) error {
 	if query.CategoryID == 0 {
 		return cm.Error(cm.NotFound, "", nil)
 	}
-	p := new(catalogmodel.ProductSourceCategory)
+	p := new(catalogmodel.ShopCategory)
 
-	s := x.Table("product_source_category").Where("id = ?", query.CategoryID)
+	s := x.Table("shop_category").Where("id = ?", query.CategoryID)
 	if query.ShopID != 0 {
 		s = s.Where("shop_id = ?", query.ShopID)
 	}
@@ -36,7 +36,7 @@ func GetProductSourceCategory(ctx context.Context, query *catalogmodelx.GetProdu
 }
 
 func GetProductSourceCategories(ctx context.Context, query *catalogmodelx.GetProductSourceCategoriesQuery) error {
-	s := x.Table("product_source_category")
+	s := x.Table("shop_category")
 	if query.ShopID != 0 {
 		s = s.Where("shop_id = ?", query.ShopID)
 	}
@@ -44,32 +44,32 @@ func GetProductSourceCategories(ctx context.Context, query *catalogmodelx.GetPro
 		s = s.In("id", query.IDs)
 	}
 
-	err := s.Find((*catalogmodel.ProductSourceCategories)(&query.Result.Categories))
+	err := s.Find((*catalogmodel.ShopCategories)(&query.Result.Categories))
 	return err
 }
 
-func UpdateShopProductSourceCategory(ctx context.Context, cmd *catalogmodelx.UpdateShopProductSourceCategoryCommand) error {
-	cat := &catalogmodel.ProductSourceCategory{
+func UpdateShopShopCategory(ctx context.Context, cmd *catalogmodelx.UpdateShopCategoryCommand) error {
+	cat := &catalogmodel.ShopCategory{
 		ParentID: cmd.ParentID,
 		Name:     cmd.Name,
 	}
-	if err := x.Table("product_source_category").Where("id = ? AND shop_id = ?", cmd.ID, cmd.ShopID).ShouldUpdate(cat); err != nil {
+	if err := x.Table("shop_category").Where("id = ? AND shop_id = ?", cmd.ID, cmd.ShopID).ShouldUpdate(cat); err != nil {
 		return err
 	}
 
-	query := &catalogmodelx.GetProductSourceCategoryQuery{
+	query := &catalogmodelx.GetShopCategoryQuery{
 		CategoryID: cmd.ID,
 		ShopID:     cmd.ShopID,
 	}
 
-	if err := GetProductSourceCategory(ctx, query); err != nil {
+	if err := GetShopCategory(ctx, query); err != nil {
 		return err
 	}
 	cmd.Result = query.Result
 	return nil
 }
 
-func RemoveShopProductSourceCategory(ctx context.Context, cmd *catalogmodelx.RemoveShopProductSourceCategoryCommand) error {
+func RemoveShopShopCategory(ctx context.Context, cmd *catalogmodelx.RemoveShopCategoryCommand) error {
 	if cmd.ID == 0 {
 		return cm.Error(cm.InvalidArgument, "Missing ID", nil)
 	}
@@ -78,13 +78,13 @@ func RemoveShopProductSourceCategory(ctx context.Context, cmd *catalogmodelx.Rem
 	}
 
 	return inTransaction(func(s Qx) error {
-		if _, err := s.Table("product").Where("product_source_category_id = ?", cmd.ID).
-			UpdateMap(M{"product_source_category_id": nil}); err != nil {
+		if _, err := s.Table("shop_product").Where("shop_category_id = ?", cmd.ID).
+			UpdateMap(M{"shop_category_id": nil}); err != nil {
 			return err
 		}
 
-		if err := s.Table("product_source_category").Where("id = ? AND shop_id = ?", cmd.ID, cmd.ShopID).
-			ShouldDelete(&catalogmodel.ProductSourceCategory{}); err != nil {
+		if err := s.Table("shop_category").Where("id = ? AND shop_id = ?", cmd.ID, cmd.ShopID).
+			ShouldDelete(&catalogmodel.ShopCategory{}); err != nil {
 			return err
 		}
 		cmd.Result.Removed = 1
