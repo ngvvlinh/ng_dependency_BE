@@ -39,9 +39,9 @@ func New(env string, clientID int, token string) *Client {
 		rclient:  resty.NewWithClient(client).SetDebug(true),
 	}
 	switch env {
-	case "test":
-		c.baseUrl = "http://api.serverapi.host/api/v1/apiv3/"
-	case "prod":
+	case cm.PartnerEnvTest:
+		c.baseUrl = "https://console.ghn.vn/api/v1/apiv3/"
+	case cm.PartnerEnvProd:
 		c.baseUrl = "https://console.ghn.vn/api/v1/apiv3/"
 	default:
 		ll.Fatal("ghn: Invalid env")

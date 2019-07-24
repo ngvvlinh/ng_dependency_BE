@@ -3,6 +3,8 @@ package ghtk
 import (
 	"strings"
 
+	cm "etop.vn/backend/pkg/common"
+
 	cc "etop.vn/backend/pkg/common/config"
 	"etop.vn/backend/pkg/etop/model"
 	ghtkClient "etop.vn/backend/pkg/integration/ghtk/client"
@@ -34,7 +36,7 @@ func (c *Config) MustLoadEnv(prefix ...string) {
 
 func DefaultConfig() Config {
 	return Config{
-		Env: "test",
+		Env: cm.PartnerEnvTest,
 		AccountDefault: ghtkClient.GhtkAccount{
 			AccountID: "S1858017",
 			Token:     "877F63B8596d32e1B0b2B0FcB0cF8E2980B28777",

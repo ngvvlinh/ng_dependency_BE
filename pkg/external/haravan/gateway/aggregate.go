@@ -342,5 +342,5 @@ func SHA256StringToInt32(s string) int32 {
 func generateTrackingUrl(ffm *shipmodel.Fulfillment) string {
 	// Haravan will concat shipping_code to this link
 	baseURL := cm.MainSiteBaseURL()
-	return fmt.Sprintf("%v/s/%v/fulfillments/", baseURL, ffm.ShopID)
+	return fmt.Sprintf("%v/s/%v/fulfillment?code=", baseURL, ffm.ShopID)
 }

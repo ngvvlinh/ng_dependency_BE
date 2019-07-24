@@ -86,6 +86,11 @@ func Default() Config {
 		PostgresLogs:     cc.DefaultPostgres(),
 		Redis:            cc.DefaultRedis(),
 		HTTP:             cc.HTTP{Port: 8080},
+		Kafka: cc.Kafka{
+			Enabled:     false,
+			Brokers:     nil,
+			TopicPrefix: "etop",
+		},
 		Upload: Upload{
 			DirImportShopOrder:   "/tmp",
 			DirImportShopProduct: "/tmp",
@@ -103,6 +108,7 @@ func Default() Config {
 		VTPostWebhook:  cc.HTTP{Port: 9042},
 		Ahamove:        ahamoveclient.DefaultConfig(),
 		AhamoveWebhook: cc.HTTP{Port: 9052},
+		Haravan:        haravanclient.DefaultConfig(),
 
 		SAdminToken: "PZJvDAY2.sadmin.HXnnEkdV",
 		ServeDoc:    true,
@@ -110,7 +116,8 @@ func Default() Config {
 			Secret:        "6LcVOnkUAAAAALKlDJY_IYfQUmBfD_36azKtCv9P",
 			LocalPasscode: "recaptcha_token",
 		},
-		Env: cm.EnvDev,
+		Env:            cm.EnvDev,
+		ThirdPartyHost: "https://etop.d.etop.vn",
 	}
 	cfg.Postgres.Database = "etop_dev"
 	cfg.Email = EmailConfig{

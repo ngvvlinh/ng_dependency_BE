@@ -23,6 +23,13 @@ func (c *Config) MustLoadEnv(prefix ...string) {
 	}.MustLoad()
 }
 
+func DefaultConfig() Config {
+	return Config{
+		APIKey: "808d1d36611d40888b715bd21ef2fe5d",
+		Secret: "a467cac64daee1dc4edcce170d06e78b",
+	}
+}
+
 type GetShopRequest struct {
 	Connection `json:"-"`
 }

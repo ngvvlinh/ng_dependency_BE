@@ -2,6 +2,7 @@ package ghn
 
 import (
 	"etop.vn/api/main/location"
+	cm "etop.vn/backend/pkg/common"
 	cc "etop.vn/backend/pkg/common/config"
 	"etop.vn/backend/pkg/etop/model"
 	ghnClient "etop.vn/backend/pkg/integration/ghn/client"
@@ -35,7 +36,7 @@ func (c *Config) MustLoadEnv(prefix ...string) {
 
 func DefaultConfig() Config {
 	return Config{
-		Env: "test",
+		Env: cm.PartnerEnvTest,
 		AccountDefault: Account{
 			Token:     "5b20c7c194c06b03b2010913",
 			AccountID: 503809,

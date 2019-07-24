@@ -55,10 +55,10 @@ func New(cfg Config) *Client {
 		env:     cfg.Env,
 	}
 	switch cfg.Env {
-	case "test":
+	case cm.PartnerEnvTest:
 		c.baseUrl = "http://apistg.ahamove.com/v1/"
 		c.verifyAccountUrl = "https://ws.ahamove.com/partner/create_ticket_stg"
-	case "prod":
+	case cm.PartnerEnvProd:
 		c.baseUrl = "https://api.ahamove.com/v1/"
 		c.verifyAccountUrl = "https://ws.ahamove.com/partner/create_ticket"
 	default:

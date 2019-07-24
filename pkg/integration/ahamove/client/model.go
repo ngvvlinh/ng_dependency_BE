@@ -3,11 +3,10 @@ package ahamoveclient
 import (
 	"encoding/json"
 
-	cc "etop.vn/backend/pkg/common/config"
-
 	"etop.vn/api/main/etop"
-
 	shipnowtypes "etop.vn/api/main/shipnow/types"
+	cm "etop.vn/backend/pkg/common"
+	cc "etop.vn/backend/pkg/common/config"
 )
 
 type Config struct {
@@ -30,7 +29,7 @@ func (c *Config) MustLoadEnv(prefix ...string) {
 
 func DefaultConfig() Config {
 	return Config{
-		Env:    "",
+		Env:    cm.PartnerEnvTest,
 		Name:   "ahamove_test",
 		ApiKey: "860160f707a7a8afc7bffa3e54630f40",
 	}

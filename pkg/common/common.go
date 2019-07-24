@@ -16,6 +16,10 @@ const (
 	EnvStag    = "stag"
 	EnvSandbox = "sandbox"
 	EnvProd    = "prod"
+
+	// Environment Partner constants
+	PartnerEnvTest = "test"
+	PartnerEnvProd = "prod"
 )
 
 var (

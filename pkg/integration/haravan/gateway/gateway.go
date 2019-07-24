@@ -13,19 +13,19 @@ import (
 
 var ll = l.New()
 
-type Callback struct {
+type Gateway struct {
 	haravan           gateway.CommandBus
 	haravanIdentityQS haravanidentity.QueryBus
 }
 
-func New(haravancb gateway.CommandBus, haravanIdentityQueryService haravanidentity.QueryBus) *Callback {
-	return &Callback{
+func New(haravancb gateway.CommandBus, haravanIdentityQueryService haravanidentity.QueryBus) *Gateway {
+	return &Gateway{
 		haravan:           haravancb,
 		haravanIdentityQS: haravanIdentityQueryService,
 	}
 }
 
-func (cb *Callback) GetShippingRates(c *httpx.Context) error {
+func (cb *Gateway) GetShippingRates(c *httpx.Context) error {
 	ctx := c.Req.Context()
 	account, err := cb.GetXAccountHaravan(c)
 	if err != nil {
@@ -47,7 +47,7 @@ func (cb *Callback) GetShippingRates(c *httpx.Context) error {
 	return nil
 }
 
-func (cb *Callback) CreateOrder(c *httpx.Context) error {
+func (cb *Gateway) CreateOrder(c *httpx.Context) error {
 	ctx := c.Req.Context()
 	account, err := cb.GetXAccountHaravan(c)
 	if err != nil {
@@ -68,7 +68,7 @@ func (cb *Callback) CreateOrder(c *httpx.Context) error {
 	return nil
 }
 
-func (cb *Callback) GetOrder(c *httpx.Context) error {
+func (cb *Gateway) GetOrder(c *httpx.Context) error {
 	ctx := c.Req.Context()
 	account, err := cb.GetXAccountHaravan(c)
 	if err != nil {
@@ -89,7 +89,7 @@ func (cb *Callback) GetOrder(c *httpx.Context) error {
 	return nil
 }
 
-func (cb *Callback) CancelOrder(c *httpx.Context) error {
+func (cb *Gateway) CancelOrder(c *httpx.Context) error {
 	ctx := c.Req.Context()
 	account, err := cb.GetXAccountHaravan(c)
 	if err != nil {
@@ -110,7 +110,7 @@ func (cb *Callback) CancelOrder(c *httpx.Context) error {
 	return nil
 }
 
-func (cb *Callback) GetXAccountHaravan(c *httpx.Context) (*haravanidentity.ExternalAccountHaravan, error) {
+func (cb *Gateway) GetXAccountHaravan(c *httpx.Context) (*haravanidentity.ExternalAccountHaravan, error) {
 	id := c.Params.ByName("shopid")
 	shopID, err := strconv.Atoi(id)
 

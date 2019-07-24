@@ -9,6 +9,7 @@ import (
 	"net/url"
 	"time"
 
+	"github.com/gorilla/schema"
 	resty "gopkg.in/resty.v1"
 
 	cm "etop.vn/backend/pkg/common"
@@ -16,7 +17,6 @@ import (
 	"etop.vn/backend/pkg/common/validate"
 	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/common/l"
-	"github.com/gorilla/schema"
 )
 
 var ll = l.New()
@@ -51,9 +51,9 @@ func New(env string, cfg GhtkAccount) *Client {
 		rclient: resty.NewWithClient(client).SetDebug(true),
 	}
 	switch env {
-	case "test":
+	case cm.PartnerEnvTest:
 		c.baseUrl = "https://dev.ghtk.vn/"
-	case "prod":
+	case cm.PartnerEnvProd:
 		c.baseUrl = "https://services.giaohangtietkiem.vn/"
 	default:
 		ll.Fatal("ghtk: Invalid ENV")
