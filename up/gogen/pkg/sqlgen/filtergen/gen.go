@@ -212,7 +212,7 @@ func (g *Gen) Generate() {
 	}
 
 	filePath := filepath.Join(sqlstorePath, "filters.gen.go")
-	gen.WriteFile(filePath, b.Bytes())
+	gen.WriteFileAndFormat(filePath, b.Bytes())
 }
 
 func must(err error) {

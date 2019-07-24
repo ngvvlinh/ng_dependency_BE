@@ -6,19 +6,19 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/twitchtv/twirp"
+	twirp "github.com/twitchtv/twirp"
 
 	cm "etop.vn/backend/pb/common"
 	etop "etop.vn/backend/pb/etop"
 	external "etop.vn/backend/pb/external"
 	shop "etop.vn/backend/pb/external/shop"
 	common "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/common/metrics"
-	cmWrapper "etop.vn/backend/pkg/common/wrapper"
-	"etop.vn/backend/pkg/etop/authorize/claims"
-	"etop.vn/backend/pkg/etop/authorize/middleware"
-	"etop.vn/common/bus"
-	"etop.vn/common/l"
+	metrics "etop.vn/backend/pkg/common/metrics"
+	cmwrapper "etop.vn/backend/pkg/common/wrapper"
+	claims "etop.vn/backend/pkg/etop/authorize/claims"
+	middleware "etop.vn/backend/pkg/etop/authorize/middleware"
+	bus "etop.vn/common/bus"
+	l "etop.vn/common/l"
 )
 
 var ll = l.New()
@@ -310,10 +310,10 @@ func (s MiscService) CurrentAccount(ctx context.Context, req *cm.Empty) (resp *e
 	const rpcName = "shop.Misc/CurrentAccount"
 	defer func() {
 		recovered := recover()
-		err = cmWrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
 		metrics.CountRequest(rpcName, err)
 	}()
-	defer cmWrapper.Censor(req)
+	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
 		Context:       ctx,
 		RequireAuth:   true,
@@ -337,7 +337,7 @@ func (s MiscService) CurrentAccount(ctx context.Context, req *cm.Empty) (resp *e
 		if resp == nil {
 			return nil, common.Error(common.Internal, "", nil).Log("nil response")
 		}
-		errs = cmWrapper.HasErrors(resp)
+		errs = cmwrapper.HasErrors(resp)
 	}
 	return resp, err
 }
@@ -355,10 +355,10 @@ func (s MiscService) GetLocationList(ctx context.Context, req *cm.Empty) (resp *
 	const rpcName = "shop.Misc/GetLocationList"
 	defer func() {
 		recovered := recover()
-		err = cmWrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
 		metrics.CountRequest(rpcName, err)
 	}()
-	defer cmWrapper.Censor(req)
+	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
 		Context:       ctx,
 		RequireAuth:   true,
@@ -382,7 +382,7 @@ func (s MiscService) GetLocationList(ctx context.Context, req *cm.Empty) (resp *
 		if resp == nil {
 			return nil, common.Error(common.Internal, "", nil).Log("nil response")
 		}
-		errs = cmWrapper.HasErrors(resp)
+		errs = cmwrapper.HasErrors(resp)
 	}
 	return resp, err
 }
@@ -400,10 +400,10 @@ func (s MiscService) VersionInfo(ctx context.Context, req *cm.Empty) (resp *cm.V
 	const rpcName = "shop.Misc/VersionInfo"
 	defer func() {
 		recovered := recover()
-		err = cmWrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
 		metrics.CountRequest(rpcName, err)
 	}()
-	defer cmWrapper.Censor(req)
+	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
 		Context:        ctx,
 		RequireAuth:    true,
@@ -427,7 +427,7 @@ func (s MiscService) VersionInfo(ctx context.Context, req *cm.Empty) (resp *cm.V
 		if resp == nil {
 			return nil, common.Error(common.Internal, "", nil).Log("nil response")
 		}
-		errs = cmWrapper.HasErrors(resp)
+		errs = cmwrapper.HasErrors(resp)
 	}
 	return resp, err
 }
@@ -447,10 +447,10 @@ func (s WebhookService) CreateWebhook(ctx context.Context, req *external.CreateW
 	const rpcName = "shop.Webhook/CreateWebhook"
 	defer func() {
 		recovered := recover()
-		err = cmWrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
 		metrics.CountRequest(rpcName, err)
 	}()
-	defer cmWrapper.Censor(req)
+	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
 		Context:       ctx,
 		RequireAuth:   true,
@@ -474,7 +474,7 @@ func (s WebhookService) CreateWebhook(ctx context.Context, req *external.CreateW
 		if resp == nil {
 			return nil, common.Error(common.Internal, "", nil).Log("nil response")
 		}
-		errs = cmWrapper.HasErrors(resp)
+		errs = cmwrapper.HasErrors(resp)
 	}
 	return resp, err
 }
@@ -492,10 +492,10 @@ func (s WebhookService) DeleteWebhook(ctx context.Context, req *external.DeleteW
 	const rpcName = "shop.Webhook/DeleteWebhook"
 	defer func() {
 		recovered := recover()
-		err = cmWrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
 		metrics.CountRequest(rpcName, err)
 	}()
-	defer cmWrapper.Censor(req)
+	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
 		Context:       ctx,
 		RequireAuth:   true,
@@ -519,7 +519,7 @@ func (s WebhookService) DeleteWebhook(ctx context.Context, req *external.DeleteW
 		if resp == nil {
 			return nil, common.Error(common.Internal, "", nil).Log("nil response")
 		}
-		errs = cmWrapper.HasErrors(resp)
+		errs = cmwrapper.HasErrors(resp)
 	}
 	return resp, err
 }
@@ -537,10 +537,10 @@ func (s WebhookService) GetWebhooks(ctx context.Context, req *cm.Empty) (resp *e
 	const rpcName = "shop.Webhook/GetWebhooks"
 	defer func() {
 		recovered := recover()
-		err = cmWrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
 		metrics.CountRequest(rpcName, err)
 	}()
-	defer cmWrapper.Censor(req)
+	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
 		Context:       ctx,
 		RequireAuth:   true,
@@ -564,7 +564,7 @@ func (s WebhookService) GetWebhooks(ctx context.Context, req *cm.Empty) (resp *e
 		if resp == nil {
 			return nil, common.Error(common.Internal, "", nil).Log("nil response")
 		}
-		errs = cmWrapper.HasErrors(resp)
+		errs = cmwrapper.HasErrors(resp)
 	}
 	return resp, err
 }
@@ -584,10 +584,10 @@ func (s HistoryService) GetChanges(ctx context.Context, req *external.GetChanges
 	const rpcName = "shop.History/GetChanges"
 	defer func() {
 		recovered := recover()
-		err = cmWrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
 		metrics.CountRequest(rpcName, err)
 	}()
-	defer cmWrapper.Censor(req)
+	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
 		Context:       ctx,
 		RequireAuth:   true,
@@ -611,7 +611,7 @@ func (s HistoryService) GetChanges(ctx context.Context, req *external.GetChanges
 		if resp == nil {
 			return nil, common.Error(common.Internal, "", nil).Log("nil response")
 		}
-		errs = cmWrapper.HasErrors(resp)
+		errs = cmwrapper.HasErrors(resp)
 	}
 	return resp, err
 }
@@ -631,10 +631,10 @@ func (s ShippingService) CancelOrder(ctx context.Context, req *external.CancelOr
 	const rpcName = "shop.Shipping/CancelOrder"
 	defer func() {
 		recovered := recover()
-		err = cmWrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
 		metrics.CountRequest(rpcName, err)
 	}()
-	defer cmWrapper.Censor(req)
+	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
 		Context:       ctx,
 		RequireAuth:   true,
@@ -658,7 +658,7 @@ func (s ShippingService) CancelOrder(ctx context.Context, req *external.CancelOr
 		if resp == nil {
 			return nil, common.Error(common.Internal, "", nil).Log("nil response")
 		}
-		errs = cmWrapper.HasErrors(resp)
+		errs = cmwrapper.HasErrors(resp)
 	}
 	return resp, err
 }
@@ -676,10 +676,10 @@ func (s ShippingService) CreateAndConfirmOrder(ctx context.Context, req *externa
 	const rpcName = "shop.Shipping/CreateAndConfirmOrder"
 	defer func() {
 		recovered := recover()
-		err = cmWrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
 		metrics.CountRequest(rpcName, err)
 	}()
-	defer cmWrapper.Censor(req)
+	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
 		Context:       ctx,
 		RequireAuth:   true,
@@ -703,7 +703,7 @@ func (s ShippingService) CreateAndConfirmOrder(ctx context.Context, req *externa
 		if resp == nil {
 			return nil, common.Error(common.Internal, "", nil).Log("nil response")
 		}
-		errs = cmWrapper.HasErrors(resp)
+		errs = cmwrapper.HasErrors(resp)
 	}
 	return resp, err
 }
@@ -721,10 +721,10 @@ func (s ShippingService) GetFulfillment(ctx context.Context, req *external.Fulfi
 	const rpcName = "shop.Shipping/GetFulfillment"
 	defer func() {
 		recovered := recover()
-		err = cmWrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
 		metrics.CountRequest(rpcName, err)
 	}()
-	defer cmWrapper.Censor(req)
+	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
 		Context:       ctx,
 		RequireAuth:   true,
@@ -748,7 +748,7 @@ func (s ShippingService) GetFulfillment(ctx context.Context, req *external.Fulfi
 		if resp == nil {
 			return nil, common.Error(common.Internal, "", nil).Log("nil response")
 		}
-		errs = cmWrapper.HasErrors(resp)
+		errs = cmwrapper.HasErrors(resp)
 	}
 	return resp, err
 }
@@ -766,10 +766,10 @@ func (s ShippingService) GetOrder(ctx context.Context, req *external.OrderIDRequ
 	const rpcName = "shop.Shipping/GetOrder"
 	defer func() {
 		recovered := recover()
-		err = cmWrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
 		metrics.CountRequest(rpcName, err)
 	}()
-	defer cmWrapper.Censor(req)
+	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
 		Context:       ctx,
 		RequireAuth:   true,
@@ -793,7 +793,7 @@ func (s ShippingService) GetOrder(ctx context.Context, req *external.OrderIDRequ
 		if resp == nil {
 			return nil, common.Error(common.Internal, "", nil).Log("nil response")
 		}
-		errs = cmWrapper.HasErrors(resp)
+		errs = cmwrapper.HasErrors(resp)
 	}
 	return resp, err
 }
@@ -811,10 +811,10 @@ func (s ShippingService) GetShippingServices(ctx context.Context, req *external.
 	const rpcName = "shop.Shipping/GetShippingServices"
 	defer func() {
 		recovered := recover()
-		err = cmWrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
 		metrics.CountRequest(rpcName, err)
 	}()
-	defer cmWrapper.Censor(req)
+	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
 		Context:       ctx,
 		RequireAuth:   true,
@@ -838,7 +838,7 @@ func (s ShippingService) GetShippingServices(ctx context.Context, req *external.
 		if resp == nil {
 			return nil, common.Error(common.Internal, "", nil).Log("nil response")
 		}
-		errs = cmWrapper.HasErrors(resp)
+		errs = cmwrapper.HasErrors(resp)
 	}
 	return resp, err
 }

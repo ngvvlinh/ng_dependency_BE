@@ -2,7 +2,6 @@ package main
 
 import (
 	"bytes"
-	"flag"
 	"fmt"
 	"os"
 	"path/filepath"
@@ -15,39 +14,122 @@ import (
 
 const usage = `
 Usage:
-	wrapper_gen [FLAGS] FILENAME ...
+    wrapper_gen FLAGS FILENAME ... [FLAGS FILENAME] ...
 
 FILENAME : Protobuf file
-FLAGS	 :
+FLAGS    :
     -p   : Package prefix (for conflicting package name: etop/shop and ext/shop)
-	-s	 : Strip prefix
-	-o	 : Output directory
+    -s   : Strip prefix
+    -o   : Output directory
+
+Example:
+    wrapper_gen -p shop shop/one.go shop/two.go -p main main/a.go
 `
 
-var (
-	flPkgPrefix   = flag.String("p", "", "Package prefix (for conflicting package name: etop/shop and ext/shop)")
-	flStripPrefix = flag.String("s", "", "Strip prefix")
-	flOutputDir   = flag.String("o", "wrapper", "Output directory")
-)
-
-func main() {
-	flag.Usage = func() {
-		fmt.Println(usage)
-	}
-
-	flag.Parse()
-	filenames := flag.Args()
-	if len(filenames) == 0 {
-		flag.Usage()
-		os.Exit(1)
-	}
-
-	for _, filename := range filenames {
-		generateWrapper(filename)
-	}
+type Config struct {
+	PkgPrefix   string
+	StripPrefix string
+	OutputDir   string
 }
 
-func generateWrapper(filename string) {
+type InputGroup struct {
+	Config
+	Filenames []string
+}
+
+type InputGroups []InputGroup
+
+func main() {
+	groups := parseFlags()
+
+	var outputFilenames []string
+	for _, group := range groups {
+		for _, filename := range group.Filenames {
+			genFilename := generateWrapper(group.Config, filename)
+			outputFilenames = append(outputFilenames, genFilename)
+		}
+	}
+	gen.FormatFiles(outputFilenames...)
+}
+
+func parseFlags() (groups InputGroups) {
+	args := os.Args[1:]
+	if len(args) == 0 {
+		fmt.Println(usage)
+		os.Exit(2)
+	}
+
+	var current InputGroup
+	var lastFile bool
+
+	for i := 0; i < len(args); i++ {
+		arg := args[i]
+		if arg == "" {
+			continue
+		}
+		if arg[0] == '-' && lastFile {
+			// start a new group
+			groups = append(groups, current)
+			current = InputGroup{}
+		}
+		lastFile = arg[0] != '-'
+		if arg[0] == '-' {
+			switch arg {
+			case "-p":
+				i++
+				mustReadParamForFlag(&current.PkgPrefix, arg, args, i)
+
+			case "-s":
+				i++
+				mustReadParamForFlag(&current.StripPrefix, arg, args, i)
+
+			case "-o":
+				i++
+				mustReadParamForFlag(&current.OutputDir, arg, args, i)
+
+			default:
+				fatalf("unknown flag %v", arg)
+			}
+		} else {
+			current.Filenames = append(current.Filenames, arg)
+		}
+	}
+	groups = append(groups, current)
+	return groups
+}
+
+func fatalf(msg string, args ...interface{}) {
+	fmt.Printf(msg+"\n", args...)
+	os.Exit(2)
+}
+
+func mustReadParamForFlag(out *string, flag string, args []string, i int) {
+	if *out != "" {
+		fatalf("duplicated flag %v", flag)
+	}
+	result, err := readParamForFlag(flag, args, i)
+	if err != nil {
+		fatalf(err.Error())
+	}
+	*out = result
+}
+
+func readParamForFlag(flag string, args []string, i int) (string, error) {
+	if i >= len(args) {
+		return "", fmt.Errorf("no argument after flag %v", flag)
+	}
+	arg := args[i]
+	if arg == "" || arg[0] == '-' {
+		return "", fmt.Errorf("no argument after flag %v", flag)
+	}
+	return args[i], nil
+}
+
+func generateWrapper(cfg Config, filename string) (outputFilename string) {
+	if cfg.OutputDir == "" {
+		fatalf("no output directory")
+	}
+
 	result := grpcgen.ParseServiceFile(filename, grpcgen.Options{
 		ImportCurrentPackage: true,
 		IncludeInterface: func(name string) bool {
@@ -58,7 +140,7 @@ func generateWrapper(filename string) {
 		if !strings.HasSuffix(s.Name, "Service") {
 			gen.Fatalf("Service %v must have suffix `Service` (expected %vService)", s.Name, s.Name)
 		}
-		s.PkgPrefix = *flPkgPrefix
+		s.PkgPrefix = cfg.PkgPrefix
 	}
 
 	var buf bytes.Buffer
@@ -76,12 +158,13 @@ func generateWrapper(filename string) {
 	filename, err = filepath.Rel(gen.ProjectPath(), filename)
 	gen.NoError(err, "Unable to get relative path")
 
-	filename = strings.TrimPrefix(filename, *flStripPrefix)
+	filename = strings.TrimPrefix(filename, cfg.StripPrefix)
 	genFilename := filepath.Join(
-		*flOutputDir,
+		cfg.OutputDir,
 		filepath.Dir(filename),
 		strings.Split(filepath.Base(filename), ".")[0]+".gen.go")
 	gen.WriteFile(genFilename, buf.Bytes())
+	return genFilename
 }
 
 func toPascalCase(name string) string {

@@ -6,18 +6,18 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/twitchtv/twirp"
+	twirp "github.com/twitchtv/twirp"
 
 	cm "etop.vn/backend/pb/common"
 	pgevent "etop.vn/backend/pb/services/pgevent"
 	common "etop.vn/backend/pkg/common"
-	cmGrpc "etop.vn/backend/pkg/common/grpc"
-	"etop.vn/backend/pkg/common/metrics"
-	cmWrapper "etop.vn/backend/pkg/common/wrapper"
-	"etop.vn/backend/pkg/etop/authorize/claims"
-	"etop.vn/backend/pkg/etop/authorize/middleware"
-	"etop.vn/common/bus"
-	"etop.vn/common/l"
+	cmgrpc "etop.vn/backend/pkg/common/grpc"
+	metrics "etop.vn/backend/pkg/common/metrics"
+	cmwrapper "etop.vn/backend/pkg/common/wrapper"
+	claims "etop.vn/backend/pkg/etop/authorize/claims"
+	middleware "etop.vn/backend/pkg/etop/authorize/middleware"
+	bus "etop.vn/common/bus"
+	l "etop.vn/common/l"
 )
 
 var ll = l.New()
@@ -53,7 +53,7 @@ func ConnectPgeventService(addr string, client *http.Client, secret string) erro
 	bus.AddHandler("client", func(ctx context.Context, q *VersionInfoEndpoint) error { panic("Unexpected") })
 	bus.AddHandler("client", func(ctx context.Context, q *GenerateEventsEndpoint) error { panic("Unexpected") })
 	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
-	ctx = cmGrpc.AppendAccessToken(ctx, secret)
+	ctx = cmgrpc.AppendAccessToken(ctx, secret)
 	_, err := Client.VersionInfo(ctx, &cm.Empty{})
 	if err == nil {
 		ll.S.Infof("Connected to PgeventService at %v", addr)
@@ -142,10 +142,10 @@ func (s MiscService) VersionInfo(ctx context.Context, req *cm.Empty) (resp *cm.V
 	const rpcName = "pgevent.Misc/VersionInfo"
 	defer func() {
 		recovered := recover()
-		err = cmWrapper.RecoverAndLog(ctx, rpcName, nil, req, resp, recovered, err, errs, t0)
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, nil, req, resp, recovered, err, errs, t0)
 		metrics.CountRequest(rpcName, err)
 	}()
-	defer cmWrapper.Censor(req)
+	defer cmwrapper.Censor(req)
 	query := &VersionInfoEndpoint{Empty: req}
 	// Verify secret token
 	token := middleware.GetBearerTokenFromCtx(ctx)
@@ -159,7 +159,7 @@ func (s MiscService) VersionInfo(ctx context.Context, req *cm.Empty) (resp *cm.V
 		if resp == nil {
 			return nil, common.Error(common.Internal, "", nil).Log("nil response")
 		}
-		errs = cmWrapper.HasErrors(resp)
+		errs = cmwrapper.HasErrors(resp)
 	}
 	return resp, err
 }
@@ -178,10 +178,10 @@ func (s EventService) GenerateEvents(ctx context.Context, req *pgevent.GenerateE
 	const rpcName = "pgevent.Event/GenerateEvents"
 	defer func() {
 		recovered := recover()
-		err = cmWrapper.RecoverAndLog(ctx, rpcName, nil, req, resp, recovered, err, errs, t0)
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, nil, req, resp, recovered, err, errs, t0)
 		metrics.CountRequest(rpcName, err)
 	}()
-	defer cmWrapper.Censor(req)
+	defer cmwrapper.Censor(req)
 	query := &GenerateEventsEndpoint{GenerateEventsRequest: req}
 	// Verify secret token
 	token := middleware.GetBearerTokenFromCtx(ctx)
@@ -195,7 +195,7 @@ func (s EventService) GenerateEvents(ctx context.Context, req *pgevent.GenerateE
 		if resp == nil {
 			return nil, common.Error(common.Internal, "", nil).Log("nil response")
 		}
-		errs = cmWrapper.HasErrors(resp)
+		errs = cmwrapper.HasErrors(resp)
 	}
 	return resp, err
 }

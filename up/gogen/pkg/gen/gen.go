@@ -101,7 +101,12 @@ func RootTree() string {
 	return rootTree
 }
 
-// WriteFile ...
+// WriteFileAndFormat ...
+func WriteFileAndFormat(outputPath string, data []byte) {
+	WriteFile(outputPath, data)
+	FormatFiles(outputPath)
+}
+
 func WriteFile(outputPath string, data []byte) {
 	absPath := GetAbsPath(outputPath)
 	err := os.MkdirAll(filepath.Dir(absPath), os.ModePerm)
@@ -115,16 +120,18 @@ func WriteFile(outputPath string, data []byte) {
 		os.Exit(1)
 	}
 	fmt.Println("Generated file:", absPath)
-
-	FormatFile(outputPath)
 }
 
-// FormatFile ...
-func FormatFile(outputPath string) {
-	absPath := GetAbsPath(outputPath)
-	out, err := exec.Command("goimports", "-w", absPath).Output()
+// FormatFiles ...
+func FormatFiles(outputPath ...string) {
+	args := make([]string, 0, len(outputPath)+3)
+	args = append(args, "-local", "etop.vn", "-w")
+	for _, p := range outputPath {
+		args = append(args, GetAbsPath(p))
+	}
+	out, err := exec.Command("goimports", args...).Output()
 	if err != nil {
-		Fatalf("Unable to run `gofmt -w %v`.\n  Error: %v\n", absPath, err)
+		Fatalf("Unable to run `goimports %v`.\n  Error: %v\n", strings.Join(args, " "), err)
 	}
 	fmt.Print(string(out))
 }

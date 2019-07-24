@@ -38,11 +38,13 @@ func PbCategories(cs []*catalogmodel.ProductSourceCategory) []*pbshop.Category {
 
 func PbCategory(m *catalogmodel.ProductSourceCategory) *pbshop.Category {
 	return &pbshop.Category{
-		Id:                m.ID,
-		Name:              m.Name,
+		Id:       m.ID,
+		Name:     m.Name,
+		ParentId: m.ParentID,
+		ShopId:   m.ShopID,
+
+		// deprecated: 2019.07.24+14
 		ProductSourceId:   m.ShopID,
 		ProductSourceType: "",
-		ParentId:          m.ParentID,
-		ShopId:            m.ShopID,
 	}
 }

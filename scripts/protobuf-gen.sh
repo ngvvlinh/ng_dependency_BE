@@ -6,9 +6,10 @@ BACKEND="${ETOPDIR}/backend"
 source "${BACKEND}/scripts/lib/init.sh"
 
 # install tools
-go install $(::get mod path github.com/gogo/protobuf)/protoc-gen-gogo
-go install $(::get mod path github.com/twitchtv/twirp)/protoc-gen-twirp
-go install $(::get mod path github.com/golang/protobuf)/protoc-gen-go
+go install \
+    $(::get mod path github.com/gogo/protobuf)/protoc-gen-gogo   \
+    $(::get mod path github.com/twitchtv/twirp)/protoc-gen-twirp \
+    $(::get mod path github.com/golang/protobuf)/protoc-gen-go
 
 ROOTDIR=$ETOPDIR/.. # the root of import path
 IMPORT="-I${BACKEND}/pb \
@@ -68,6 +69,7 @@ prefixext() {
   if [[ $1 == *"external/"* ]]; then echo "-p ext" ; fi
 }
 
+GENERATED_FILES=
 for PKG in $(find "${BACKEND}/pb${filter}" -type d); do
     PKGNAME=$(basename $PKG)
     PROTO=$PKG/*.proto
@@ -77,7 +79,12 @@ for PKG in $(find "${BACKEND}/pb${filter}" -type d); do
         sedtwirp $PKG/*.twirp.go $(prefixpath $PKG)
         echo "Generated from: $PKG"
     fi
+    if ls $PKG/*.twirp.go 1>/dev/null 2>/dev/null; then
+        GENERATED_FILES="$GENERATED_FILES $PKG/*.twirp.go"
+    fi
 done
+
+if [[ -n "$GENERATED_FILES" ]]; then goimports -local etop.vn -w $GENERATED_FILES ; fi
 
 # Sort swagger tags and parse @required fields
 for FILE in $(find "${BACKEND}/doc" -name *.swagger.json); do
@@ -115,13 +122,16 @@ cd ${BACKEND}/doc
 go-bindata -pkg doc -o bindata.gen.go ./...
 
 # Generate wrapper files
-wrapper_gen=$(::get cmd etop.vn/backend/scripts/cmd/wrapper_gen)
+WRAPPER_ARGS=
 for PKG in $(find "${BACKEND}/pb${filter}" -type d | grep -v common); do
     PKGNAME=$(basename $PKG)
     FILES=$PKG/*.twirp.go
     if ls $FILES 1>/dev/null 2>/dev/null; then
-        $wrapper_gen $(prefixext $PKG) -s pb $FILES
+        WRAPPER_ARGS="$WRAPPER_ARGS $(prefixext $PKG) -s pb -o wrapper $FILES"
     fi
 done
+
+wrapper_gen=$(::get cmd etop.vn/backend/scripts/cmd/wrapper_gen)
+wrapper_gen $WRAPPER_ARGS
 
 printf "\n✔ Done\n"

@@ -6,20 +6,20 @@ package {{.PackageName}}W
 import (
 	"context"
 
-	"github.com/twitchtv/twirp"
+	twirp "github.com/twitchtv/twirp"
 
 	common "etop.vn/backend/pkg/common"
-	"etop.vn/common/bus"
-	"etop.vn/backend/pkg/common/grpc"
-	"etop.vn/common/l"
-	"etop.vn/backend/pkg/common/metrics"
-	"etop.vn/backend/pkg/common/telebot"
-	"etop.vn/backend/pkg/common/wrapper"
-	"etop.vn/backend/pkg/etop/authorize/claims"
-	"etop.vn/backend/pkg/etop/authorize/middleware"
-	"etop.vn/backend/pkg/etop/authorize/permission"
-	"etop.vn/backend/pkg/etop/model"
+	cmgrpc "etop.vn/backend/pkg/common/grpc"
+	metrics "etop.vn/backend/pkg/common/metrics"
+	telebot "etop.vn/backend/pkg/common/telebot"
+	claims "etop.vn/backend/pkg/etop/authorize/claims"
+	middleware "etop.vn/backend/pkg/etop/authorize/middleware"
+	permission "etop.vn/backend/pkg/etop/authorize/permission"
+	model "etop.vn/backend/pkg/etop/model"
 	cm "etop.vn/backend/pb/common"
+	cmwrapper "etop.vn/backend/pkg/common/wrapper"
+	bus "etop.vn/common/bus"
+	l "etop.vn/common/l"
 	{{.PackageName}} "{{.PackagePath}}"
 	{{range .Imports -}}
 	{{.Name}} "{{.Path}}"
@@ -66,7 +66,7 @@ func Connect{{.ServiceName}}Service(addr string, client *http.Client{{if $.HasSe
 	{{end -}}
 
 	ctx, _ := context.WithTimeout(context.Background(), 10 * time.Second)
-	{{if $.HasSecret}}ctx = cmGrpc.AppendAccessToken(ctx, secret)
+	{{if $.HasSecret}}ctx = cmgrpc.AppendAccessToken(ctx, secret)
 	{{end -}}
 	_, err := Client.VersionInfo(ctx, &cm.Empty{})
 	if err == nil {
@@ -160,10 +160,10 @@ func (s {{$s.Name}}) {{$m.Name}}(ctx context.Context, req {{$m.InputType}}) (res
 	const rpcName = "{{$.PackageName}}.{{trimName $s.Name}}/{{$m.Name}}"
 	defer func() {
 		recovered := recover()
-		err = cmWrapper.RecoverAndLog(ctx, rpcName, {{if requireAuth $m}}session{{else}}nil{{end}}, req, resp, recovered, err, errs, t0)
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, {{if requireAuth $m}}session{{else}}nil{{end}}, req, resp, recovered, err, errs, t0)
 		metrics.CountRequest(rpcName, err)
 	}()
-	defer cmWrapper.Censor(req)
+	defer cmwrapper.Censor(req)
 	{{- if requireAuth $m}}
 	sessionQuery := &middleware.StartSessionQuery{
 		Context: ctx,
@@ -244,7 +244,7 @@ func (s {{$s.Name}}) {{$m.Name}}(ctx context.Context, req {{$m.InputType}}) (res
 		if resp == nil { 
 			return nil, common.Error(common.Internal, "", nil).Log("nil response")
 		}
-		errs = cmWrapper.HasErrors(resp)
+		errs = cmwrapper.HasErrors(resp)
 	}
 	return resp, err
 }
