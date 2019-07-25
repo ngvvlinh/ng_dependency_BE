@@ -54,7 +54,13 @@ func LimitSort(s cmsql.Query, p *cm.Paging, sortWhitelist map[string]string) (cm
 		s = s.Limit(1000)
 		return s, nil
 	}
-	if p.Limit <= 0 {
+	if p.Offset < 0 {
+		return s, cm.Errorf(cm.InvalidArgument, nil, "invalid offset")
+	}
+	if p.Limit < 0 || p.Limit > 1000 {
+		return s, cm.Errorf(cm.InvalidArgument, nil, "invalid limit")
+	}
+	if p.Limit == 0 {
 		p.Limit = 1000
 	}
 	s = s.Limit(uint64(p.Limit)).Offset(uint64(p.Offset))
