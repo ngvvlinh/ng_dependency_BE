@@ -74,6 +74,7 @@ func sendToOneSignal(ctx context.Context, noti *model.Notification) error {
 		EntityID: strconv.FormatInt(noti.EntityID, 10),
 		NotiID:   strconv.FormatInt(noti.ID, 10),
 		ShopID:   strconv.FormatInt(noti.AccountID, 10),
+		MetaData: noti.MetaData,
 	})
 
 	webUrl := buildNotificationURL(noti)

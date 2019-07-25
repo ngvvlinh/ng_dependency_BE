@@ -271,3 +271,57 @@ func (c *Carrier) GetAllShippingServices(ctx context.Context, args shipping_prov
 func (p *Carrier) GetShippingService(ffm *shipmodel.Fulfillment, order *ordermodel.Order, weight int, valueInsurance int) (providerService *model.AvailableShippingService, etopService *model.AvailableShippingService, err error) {
 	return nil, nil, cm.ErrTODO
 }
+
+func (c *Carrier) CalcRefreshFulfillmentInfo(ctx context.Context, ffm *shipmodel.Fulfillment, orderGHN *ghnclient.Order) (*shipmodel.Fulfillment, error) {
+	if !shipping.CanUpdateFulfillmentFromWebhook(ffm) {
+		return nil, cm.Errorf(cm.FailedPrecondition, nil, "Can not update this fulfillment")
+	}
+	state := ghnclient.State(orderGHN.CurrentStatus)
+	update := &shipmodel.Fulfillment{
+		ID:                        ffm.ID,
+		ExternalShippingUpdatedAt: time.Now(),
+		ExternalShippingState:     orderGHN.CurrentStatus.String(),
+		ExternalShippingStatus:    state.ToStatus5(ffm.ShippingState),
+		ProviderShippingFeeLines:  ghnclient.CalcAndConvertShippingFeeLines(orderGHN.ShippingOrderCosts),
+		ShippingState:             state.ToModel(ffm.ShippingState, nil),
+		EtopDiscount:              ffm.EtopDiscount,
+		ShippingStatus:            state.ToShippingStatus5(ffm.ShippingState),
+		ExternalShippingLogs:      ffm.ExternalShippingLogs,
+		ShippingCode:              ffm.ShippingCode,
+	}
+	update.AddressTo = ffm.AddressTo.UpdateAddress(orderGHN.CustomerPhone.String(), orderGHN.CustomerName.String())
+	update.TotalCODAmount = int(orderGHN.CoDAmount)
+
+	shippingFeeShopLines := model.GetShippingFeeShopLines(update.ProviderShippingFeeLines, ffm.EtopPriceRule, &ffm.EtopAdjustedShippingFeeMain)
+	shippingFeeShop := 0
+	for _, line := range shippingFeeShopLines {
+		shippingFeeShop += int(line.Cost)
+	}
+	update.ShippingFeeShopLines = shippingFeeShopLines
+	update.ShippingFeeShop = shipmodel.CalcShopShippingFee(shippingFeeShop, ffm)
+
+	// Update shipping address
+	addressQuery := &location.GetLocationQuery{
+		DistrictCode:     strconv.Itoa(int(orderGHN.ToDistrictID)),
+		LocationCodeType: location.LocCodeTypeGHN,
+	}
+	if err := c.location.Dispatch(ctx, addressQuery); err != nil {
+		// ignore this error
+		return update, nil
+	}
+	province := addressQuery.Result.Province
+	district := addressQuery.Result.District
+	addressTo := update.AddressTo
+	if addressTo.DistrictCode != district.Code {
+		addressTo.ProvinceCode = province.Code
+		addressTo.Province = province.Name
+		addressTo.DistrictCode = district.Code
+		addressTo.District = district.Name
+		addressTo.Address1 = orderGHN.ShippingAddress.String()
+		// Reset ward: GHN does not require ward
+		// so when address change, we don't have information about the ward and actually we don't need it.
+		addressTo.WardCode = ""
+		addressTo.Ward = ""
+	}
+	return update, nil
+}

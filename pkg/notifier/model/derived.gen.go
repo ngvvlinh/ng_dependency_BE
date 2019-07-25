@@ -17,7 +17,7 @@ func sqlgenNotification(_ *Notification) bool { return true }
 type Notifications []*Notification
 
 const __sqlNotification_Table = "notification"
-const __sqlNotification_ListCols = "\"id\",\"title\",\"message\",\"is_read\",\"entity_id\",\"entity\",\"account_id\",\"sync_status\",\"external_service_id\",\"external_noti_id\",\"send_notification\",\"synced_at\",\"seen_at\",\"created_at\",\"updated_at\""
+const __sqlNotification_ListCols = "\"id\",\"title\",\"message\",\"is_read\",\"entity_id\",\"entity\",\"account_id\",\"sync_status\",\"external_service_id\",\"external_noti_id\",\"send_notification\",\"synced_at\",\"seen_at\",\"created_at\",\"updated_at\",\"meta_data\""
 const __sqlNotification_Insert = "INSERT INTO \"notification\" (" + __sqlNotification_ListCols + ") VALUES"
 const __sqlNotification_Select = "SELECT " + __sqlNotification_ListCols + " FROM \"notification\""
 const __sqlNotification_Select_history = "SELECT " + __sqlNotification_ListCols + " FROM history.\"notification\""
@@ -45,6 +45,7 @@ func (m *Notification) SQLArgs(opts core.Opts, create bool) []interface{} {
 		core.Time(m.SeenAt),
 		core.Now(m.CreatedAt, now, create),
 		core.Now(m.UpdatedAt, now, true),
+		core.JSON{m.MetaData},
 	}
 }
 
@@ -65,6 +66,7 @@ func (m *Notification) SQLScanArgs(opts core.Opts) []interface{} {
 		(*core.Time)(&m.SeenAt),
 		(*core.Time)(&m.CreatedAt),
 		(*core.Time)(&m.UpdatedAt),
+		core.JSON{&m.MetaData},
 	}
 }
 
@@ -102,7 +104,7 @@ func (_ *Notifications) SQLSelect(w SQLWriter) error {
 func (m *Notification) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlNotification_Insert)
 	w.WriteRawString(" (")
-	w.WriteMarkers(15)
+	w.WriteMarkers(16)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), true))
 	return nil
@@ -112,7 +114,7 @@ func (ms Notifications) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlNotification_Insert)
 	w.WriteRawString(" (")
 	for i := 0; i < len(ms); i++ {
-		w.WriteMarkers(15)
+		w.WriteMarkers(16)
 		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
 		w.WriteRawString("),(")
 	}
@@ -247,6 +249,14 @@ func (m *Notification) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(core.Now(m.UpdatedAt, time.Now(), true))
 	}
+	if m.MetaData != nil {
+		flag = true
+		w.WriteName("meta_data")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(core.JSON{m.MetaData})
+	}
 	if !flag {
 		return core.ErrNoColumn
 	}
@@ -257,7 +267,7 @@ func (m *Notification) SQLUpdate(w SQLWriter) error {
 func (m *Notification) SQLUpdateAll(w SQLWriter) error {
 	w.WriteQueryString(__sqlNotification_UpdateAll)
 	w.WriteRawString(" = (")
-	w.WriteMarkers(15)
+	w.WriteMarkers(16)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), false))
 	return nil
@@ -300,17 +310,18 @@ func (m NotificationHistory) SyncedAt() core.Interface  { return core.Interface{
 func (m NotificationHistory) SeenAt() core.Interface    { return core.Interface{m["seen_at"]} }
 func (m NotificationHistory) CreatedAt() core.Interface { return core.Interface{m["created_at"]} }
 func (m NotificationHistory) UpdatedAt() core.Interface { return core.Interface{m["updated_at"]} }
+func (m NotificationHistory) MetaData() core.Interface  { return core.Interface{m["meta_data"]} }
 
 func (m *NotificationHistory) SQLScan(opts core.Opts, row *sql.Row) error {
-	data := make([]interface{}, 15)
-	args := make([]interface{}, 15)
-	for i := 0; i < 15; i++ {
+	data := make([]interface{}, 16)
+	args := make([]interface{}, 16)
+	for i := 0; i < 16; i++ {
 		args[i] = &data[i]
 	}
 	if err := row.Scan(args...); err != nil {
 		return err
 	}
-	res := make(NotificationHistory, 15)
+	res := make(NotificationHistory, 16)
 	res["id"] = data[0]
 	res["title"] = data[1]
 	res["message"] = data[2]
@@ -326,14 +337,15 @@ func (m *NotificationHistory) SQLScan(opts core.Opts, row *sql.Row) error {
 	res["seen_at"] = data[12]
 	res["created_at"] = data[13]
 	res["updated_at"] = data[14]
+	res["meta_data"] = data[15]
 	*m = res
 	return nil
 }
 
 func (ms *NotificationHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	data := make([]interface{}, 15)
-	args := make([]interface{}, 15)
-	for i := 0; i < 15; i++ {
+	data := make([]interface{}, 16)
+	args := make([]interface{}, 16)
+	for i := 0; i < 16; i++ {
 		args[i] = &data[i]
 	}
 	res := make(NotificationHistories, 0, 128)
@@ -357,6 +369,7 @@ func (ms *NotificationHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
 		m["seen_at"] = data[12]
 		m["created_at"] = data[13]
 		m["updated_at"] = data[14]
+		m["meta_data"] = data[15]
 		res = append(res, m)
 	}
 	if err := rows.Err(); err != nil {

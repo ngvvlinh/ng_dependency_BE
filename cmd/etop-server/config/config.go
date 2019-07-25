@@ -78,6 +78,7 @@ type Config struct {
 	} `yaml:"url"`
 
 	ThirdPartyHost string `yaml:"third_party_host"`
+	Secret         string `yaml:"secret"`
 }
 
 // Default ...
@@ -119,6 +120,7 @@ func Default() Config {
 			LocalPasscode: "recaptcha_token",
 		},
 		Env:            cm.EnvDev,
+		Secret:         "secret",
 		ThirdPartyHost: "https://etop.d.etop.vn",
 	}
 	cfg.Postgres.Database = "etop_dev"
@@ -172,5 +174,8 @@ func Load(isTest bool) (Config, error) {
 		return cfg, errors.New("Empty third_party_host")
 	}
 	cfg.ThirdPartyHost = strings.TrimSuffix(cfg.ThirdPartyHost, "/")
+	cc.EnvMap{
+		"ET_SECRET": &cfg.Secret,
+	}.MustLoad()
 	return cfg, err
 }

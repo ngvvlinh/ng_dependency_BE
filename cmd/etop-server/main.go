@@ -40,6 +40,7 @@ import (
 	"etop.vn/backend/pkg/common/telebot"
 	"etop.vn/backend/pkg/etop-handler/intctl"
 	"etop.vn/backend/pkg/etop/api"
+	"etop.vn/backend/pkg/etop/api/crm"
 	"etop.vn/backend/pkg/etop/api/integration"
 	"etop.vn/backend/pkg/etop/api/shop"
 	"etop.vn/backend/pkg/etop/apix/partner"
@@ -311,6 +312,7 @@ func main() {
 	webhook.Init(ctlProducer, redisStore)
 	xshipping.Init(shippingManager, ordersqlstore.NewOrderStore(db), shipsqlstore.NewFulfillmentStore(db))
 	orderS.Init(shippingManager, catalogQuery, orderAggr.MessageBus())
+	crm.Init(ghnCarrier)
 
 	svrs := startServers()
 	if bot != nil {

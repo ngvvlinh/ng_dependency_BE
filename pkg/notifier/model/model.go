@@ -37,6 +37,7 @@ type Notification struct {
 	SeenAt            time.Time
 	CreatedAt         time.Time `sq:"create"`
 	UpdatedAt         time.Time `sq:"update"`
+	MetaData          json.RawMessage
 }
 
 var _ = sqlgenDevice(&Device{})
@@ -62,6 +63,7 @@ type NotiDataAddition struct {
 	EntityID string
 	NotiID   string
 	ShopID   string
+	MetaData json.RawMessage
 }
 
 func PrepareNotiData(args NotiDataAddition) json.RawMessage {

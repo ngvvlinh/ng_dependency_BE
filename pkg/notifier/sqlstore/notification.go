@@ -104,6 +104,7 @@ func (s *NotificationStore) CreateNotifications(args *model.CreateNotificationsA
 				IsRead:           false,
 				AccountID:        aID,
 				SendNotification: args.SendNotification,
+				MetaData:         args.MetaData,
 			}
 			return s.db.Table("notification").ShouldInsert(noti)
 		}(accountID)

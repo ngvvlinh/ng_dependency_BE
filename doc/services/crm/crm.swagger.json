@@ -1,0 +1,199 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "services/crm/crm.proto",
+    "version": "version not set"
+  },
+  "schemes": [
+    "http",
+    "https"
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/api/crm.Crm/RefreshFulfillmentFromCarrier": {
+      "post": {
+        "operationId": "RefreshFulfillmentFromCarrier",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/cmUpdatedResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/crmRefreshFulfillmentFromCarrierRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Crm"
+        ]
+      }
+    },
+    "/api/crm.Crm/SendNotification": {
+      "post": {
+        "operationId": "SendNotification",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/cmMessageResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/crmSendNotificationRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Crm"
+        ]
+      }
+    },
+    "/api/crm.Misc/VersionInfo": {
+      "post": {
+        "operationId": "VersionInfo",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/cmVersionInfoResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/cmEmpty"
+            }
+          }
+        ],
+        "tags": [
+          "Misc"
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "cmEmpty": {
+      "type": "object"
+    },
+    "cmMessageResponse": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "string"
+        },
+        "msg": {
+          "type": "string"
+        }
+      }
+    },
+    "cmRawJSONObject": {
+      "type": "object",
+      "properties": {
+        "data": {
+          "type": "string",
+          "format": "byte"
+        }
+      }
+    },
+    "cmUpdatedResponse": {
+      "type": "object",
+      "properties": {
+        "updated": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "cmVersionInfoResponse": {
+      "type": "object",
+      "properties": {
+        "service": {
+          "type": "string"
+        },
+        "version": {
+          "type": "string"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "crmRefreshFulfillmentFromCarrierRequest": {
+      "type": "object",
+      "properties": {
+        "shipping_code": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "shipping_code"
+      ]
+    },
+    "crmSendNotificationRequest": {
+      "type": "object",
+      "properties": {
+        "account_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "title": {
+          "type": "string"
+        },
+        "message": {
+          "type": "string"
+        },
+        "meta_data": {
+          "$ref": "#/definitions/cmRawJSONObject"
+        },
+        "entity": {
+          "$ref": "#/definitions/notifier_entityNotifierEntity"
+        },
+        "entity_id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "notifier_entityNotifierEntity": {
+      "type": "string",
+      "enum": [
+        "unknown",
+        "fulfillment",
+        "money_transaction_shipping"
+      ],
+      "default": "unknown"
+    }
+  },
+  "tags": [
+    {
+      "name": "Crm"
+    },
+    {
+      "name": "Misc"
+    }
+  ]
+}

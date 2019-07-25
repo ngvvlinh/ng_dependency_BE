@@ -391,4 +391,9 @@ var ACL = map[string]*permission.PermissionDecl{
 	"crmservice.Vtiger/CreateOrUpdateLead":    {Type: CurUsr},
 	"crmservice.Vtiger/CountTicketByStatus":   {Type: CurUsr},
 	"crmservice.Vtiger/GetTicketStatusCount":  {Type: CurUsr},
+
+	// -- crm -- //
+	"crm.Misc/VersionInfo":                  {Type: Secret},
+	"crm.Crm/RefreshFulfillmentFromCarrier": {Type: Secret},
+	"crm.Crm/SendNotification":              {Type: Secret},
 }

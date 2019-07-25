@@ -14,6 +14,7 @@ type CreateNotificationArgs struct {
 	EntityID         int64
 	Entity           NotiEntity
 	SendNotification bool
+	MetaData         json.RawMessage
 }
 
 type CreateNotificationsArgs struct {
@@ -24,6 +25,7 @@ type CreateNotificationsArgs struct {
 	EntityID         int64
 	Entity           NotiEntity
 	SendNotification bool
+	MetaData         json.RawMessage
 }
 
 type GetNotificationArgs struct {

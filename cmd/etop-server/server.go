@@ -35,10 +35,12 @@ import (
 	wrapshop "etop.vn/backend/wrapper/etop/shop"
 	wrapxpartner "etop.vn/backend/wrapper/external/partner"
 	wrapxshop "etop.vn/backend/wrapper/external/shop"
+	wrapcrm "etop.vn/backend/wrapper/services/crm"
 	"etop.vn/common/l"
 
 	_ "etop.vn/backend/pkg/etop/api"
 	_ "etop.vn/backend/pkg/etop/api/admin"
+	_ "etop.vn/backend/pkg/etop/api/crm"
 	_ "etop.vn/backend/pkg/etop/api/sadmin"
 	_ "etop.vn/backend/pkg/etop/api/shop"
 	_ "etop.vn/backend/pkg/etop/apix/partner"
@@ -76,6 +78,7 @@ func startEtopServer() *http.Server {
 		wrapadmin.NewAdminServer(apiMux, nil)
 		wrapshop.NewShopServer(apiMux, nil)
 		wrapintegration.NewIntegrationServer(apiMux, nil)
+		wrapcrm.NewCrmServer(apiMux, nil, cfg.Secret)
 
 		// /v1/
 		v1Mux := http.NewServeMux()

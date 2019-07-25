@@ -74,7 +74,7 @@ func (im *Impl) GetAllLocations(ctx context.Context, query *location.GetAllLocat
 
 func (im *Impl) GetLocation(ctx context.Context, query *location.GetLocationQueryArgs) (result *location.LocationQueryResult, _err error) {
 	switch query.LocationCodeType {
-	case location.LocCodeTypeGHN, location.LocCodeTypeVTPOST:
+	case location.LocCodeTypeVTPOST:
 		return nil, cm.Error(cm.Unimplemented, "Address type does not valid", nil)
 	default:
 
@@ -103,24 +103,30 @@ func (im *Impl) GetLocation(ctx context.Context, query *location.GetLocationQuer
 		if ward == nil {
 			return nil, cm.Errorf(cm.NotFound, nil, "không tìm thấy phường/xã")
 		}
-		district = GetDistrictByCode(ward.DistrictCode, query.LocationCodeType)
+		district = GetDistrictByCode(ward.DistrictCode, location.LocCodeTypeInternal)
 		if district != nil {
-			province = GetProvinceByCode(district.ProvinceCode, query.LocationCodeType)
+			province = GetProvinceByCode(district.ProvinceCode, location.LocCodeTypeInternal)
 		}
 	}
 	if query.DistrictCode != "" {
-		if district != nil && district.Code != query.DistrictCode {
-			return nil, cm.Errorf(cm.InvalidArgument, nil, "mã quận/huyện không thống nhất")
+		if district != nil {
+			districtCode := district.GetDistrictIndex(query.LocationCodeType)
+			if districtCode != query.DistrictCode {
+				return nil, cm.Errorf(cm.InvalidArgument, nil, "mã quận/huyện không thống nhất")
+			}
 		}
 		district = GetDistrictByCode(query.DistrictCode, query.LocationCodeType)
 		if district == nil {
 			return nil, cm.Errorf(cm.NotFound, nil, "không tìm thấy quận/huyện")
 		}
-		province = GetProvinceByCode(district.ProvinceCode, query.LocationCodeType)
+		province = GetProvinceByCode(district.ProvinceCode, location.LocCodeTypeInternal)
 	}
 	if query.ProvinceCode != "" {
-		if province != nil && province.Code != query.ProvinceCode {
-			return nil, cm.Errorf(cm.InvalidArgument, nil, "mã tỉnh/thành phố không thống nhất")
+		if province != nil {
+			provinceCode := province.GetProvinceIndex(query.LocationCodeType)
+			if provinceCode != query.ProvinceCode {
+				return nil, cm.Errorf(cm.InvalidArgument, nil, "mã tỉnh/thành phố không thống nhất")
+			}
 		}
 		province = GetProvinceByCode(query.ProvinceCode, query.LocationCodeType)
 		if province == nil {
