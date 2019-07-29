@@ -37,9 +37,10 @@ type Service struct {
 }
 
 var (
-	BIKE    ServiceCode = "BIKE"
-	POOL    ServiceCode = "POOL"
-	SAMEDAY ServiceCode = "SAMEDAY"
+	BIKE      ServiceCode = "BIKE"
+	POOL      ServiceCode = "POOL"
+	SAMEDAY   ServiceCode = "SAMEDAY"
+	SAMEPRICE ServiceCode = "DG"
 
 	SGNCode CityCode = "SGN"
 	HANCode CityCode = "HAN"
@@ -60,7 +61,11 @@ var Services = []*Service{
 	}, {
 		Code:      SAMEDAY,
 		ShortCode: 'S',
-		Name:      "Trong ngày",
+		Name:      "Trong Ngày",
+	}, {
+		Code:      SAMEPRICE,
+		ShortCode: 'D',
+		Name:      "Đồng Giá 25",
 	},
 }
 
@@ -201,11 +206,15 @@ func ToService(service *ahamoveClient.ServiceType) *ShippingService {
 	if err != nil {
 		return nil
 	}
+	minStopPoints := service.MinStopPoints
+	if minStopPoints == 0 {
+		minStopPoints = 1
+	}
 
 	return &ShippingService{
 		Code:          service.ID, // keep the original service code
 		Name:          service.NameViVn,
-		MinStopPoints: 1,
+		MinStopPoints: minStopPoints,
 		MaxStopPoints: service.MaxStopPoints,
 		City:          city,
 		Description:   service.DescriptionViVn,

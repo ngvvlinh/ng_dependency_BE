@@ -366,14 +366,15 @@ type GetServicesRequest struct {
 }
 
 type ServiceType struct {
-	ID              string `json:"_id"`               // "SGN-TRICYCLE"
-	Name            string `json:"name"`              // "Xe ba gac (1.8 x 1.3m)"
-	NameViVn        string `json:"name_vi_vn"`        // "Xe ba gac (1.8 x 1.3m)"
-	Currency        string `json:"currency"`          // "VND"
-	CityID          string `json:"city_id"`           // "SGN"
-	IconUrl         string `json:"icon_url"`          // "http//apistg.ahamove.com/images/tricycle.png"
-	DistanceFee     string `json:"distance_fee"`      // "120000 if x <= 4 else 120000 + (x - 4)  14000",
-	StopFee         int    `json:"stop_fee"`          // 10000
+	ID              string `json:"_id"`          // "SGN-TRICYCLE"
+	Name            string `json:"name"`         // "Xe ba gac (1.8 x 1.3m)"
+	NameViVn        string `json:"name_vi_vn"`   // "Xe ba gac (1.8 x 1.3m)"
+	Currency        string `json:"currency"`     // "VND"
+	CityID          string `json:"city_id"`      // "SGN"
+	IconUrl         string `json:"icon_url"`     // "http//apistg.ahamove.com/images/tricycle.png"
+	DistanceFee     string `json:"distance_fee"` // "120000 if x <= 4 else 120000 + (x - 4)  14000",
+	StopFee         int    `json:"stop_fee"`     // 10000
+	MinStopPoints   int    `json:"min_stop_points"`
 	MaxStopPoints   int    `json:"max_stop_points"`   // 5
 	DescriptionViVn string `json:"description_vi_vn"` // "Giao hàng trong 1h"
 	MaxCOD          int    `json:"max_cod"`
