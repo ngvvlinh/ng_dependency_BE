@@ -158,21 +158,6 @@ func (c *Carrier) CreateFulfillment(ctx context.Context, order *ordermodel.Order
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "ViettelPost không thể giao hàng tại địa chỉ này (%v, %v, %v)", toWard.Name, toDistrict.Name, toProvince.Name)
 	}
 
-	// providerResponse, err := c.GetVTPostShippingFeeLines(ctx, providerServiceID, fromDistrict, fromProvince, toDistrict, toProvince, weight, valueInsurance, ffm.TotalCODAmount)
-	// if err != nil {
-	// 	return nil, err
-	// }
-	// shopShippingFeeLines := model.GetShippingFeeShopLines(providerResponse.ShippingFeeLines, false, nil)
-	// shippingFeeShop := 0
-	// for _, line := range shopShippingFeeLines {
-	// 	shippingFeeShop += int(line.Cost)
-	// }
-	// if !shippingprovider.CheckShippingFeeWithinDelta(order.ShopShipping.ExternalShippingFee, shippingFeeShop) {
-	// 	return nil, cm.Errorf(cm.InvalidArgument, nil,
-	// 		"Số tiền phí giao hàng không hợp lệ cho dịch vụ %v: Phí trên đơn hàng %v, phí từ dịch vụ giao hàng: %v",
-	// 		providerServiceID, order.ShopShipping.ExternalShippingFee, int(shippingFeeShop))
-	// }
-
 	deliveryDate := time.Now()
 	deliveryDate.Add(30 * time.Minute)
 
@@ -325,34 +310,4 @@ func (c *Carrier) GetShippingServices(ctx context.Context, args shippingprovider
 
 func (c *Carrier) GetAllShippingServices(ctx context.Context, args shipping_provider.GetShippingServicesArgs) ([]*model.AvailableShippingService, error) {
 	return c.GetShippingServices(ctx, args)
-}
-
-func (c *Carrier) GetShippingService(ffm *shipmodel.Fulfillment, order *ordermodel.Order, weight int, valueInsurance int) (providerService *model.AvailableShippingService, etopService *model.AvailableShippingService, err error) {
-	return nil, nil, cm.ErrTODO
-}
-
-func (c *Carrier) GetVTPostShippingFeeLines(ctx context.Context, serviceID string, fromDistrict *location.District, fromProvice *location.Province,
-	toDistrict *location.District, toProvince *location.Province, weight int, value int, totalCODAmount int) (*GetShippingFeeLineResponse, error) {
-
-	cmd := &GetShippingFeeLinesCommand{
-		ServiceID:    serviceID,
-		FromProvince: fromProvice,
-		FromDistrict: fromDistrict,
-		ToProvince:   toProvince,
-		ToDistrict:   toDistrict,
-		Request: &vtpostclient.CalcShippingFeeRequest{
-			SenderProvince:   int(fromProvice.VtpostId),
-			SenderDistrict:   int(fromDistrict.VtpostId),
-			ReceiverProvince: int(toProvince.VtpostId),
-			ReceiverDistrict: int(toDistrict.VtpostId),
-			ProductWeight:    weight,
-			ProductPrice:     value,
-			MoneyCollection:  totalCODAmount,
-		},
-	}
-	err := c.GetShippingFeeLines(ctx, cmd)
-	if err != nil {
-		return nil, err
-	}
-	return cmd.Result, nil
 }

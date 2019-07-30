@@ -652,8 +652,10 @@ type CallbackOrderData struct {
 	// Phí thu hộ/ collection fee
 	MoneyFeeCOD int `json:"MONEY_FEECOD"`
 	// Tổng tiền/ total  money
-	MoneyTotal       int    `json:"MONEY_TOTAL`
+	MoneyTotal       int    `json:"MONEY_TOTAL"`
 	ExpectedDelivery string `json:"EXPECTED_DELIVERY"`
+	ProductWeight    int    `json:"PRODUCT_WEIGHT"`
+	OrderService     string `json:"ORDER_SERVICE"`
 }
 
 type ResponseInterface interface {

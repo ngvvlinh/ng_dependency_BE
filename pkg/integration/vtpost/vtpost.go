@@ -82,6 +82,10 @@ func (c *Carrier) CalcShippingFee(ctx context.Context, cmd *CalcShippingFeeAllSe
 	}
 	generator := newServiceIDGenerator(cmd.ArbitraryID)
 	var res []*model.AvailableShippingService
+	client, err := c.getClient(ctx, VTPostCodePublic)
+	if err != nil {
+		return err
+	}
 	for _, result := range results {
 		// always generate service id, even if the result is error
 		serviceCode := vtpostclient.VTPostOrderServiceCode(result.Result.MaDVChinh)
@@ -110,10 +114,6 @@ func (c *Carrier) CalcShippingFee(ctx context.Context, cmd *CalcShippingFeeAllSe
 			ProductWeight:    cmd.Request.ProductWeight,
 			ProductPrice:     cmd.Request.ProductPrice,
 			MoneyCollection:  cmd.Request.MoneyCollection,
-		}
-		client, err := c.getClient(ctx, VTPostCodePublic)
-		if err != nil {
-			continue
 		}
 		resp, err := client.CalcShippingFee(ctx, query)
 		if err != nil {
@@ -228,7 +228,33 @@ func CalcUpdateFulfillment(ffm *shipmodel.Fulfillment, orderMsg vtpostclient.Cal
 		ShippingStatus:            vtpostStatus.ToShippingStatus5(ffm.ShippingState),
 	}
 
-	// Only update status4 if the current status is not ending status
+	// Update price + weight
+	if ffm.TotalWeight != orderMsg.ProductWeight {
+		changeWeightNote := shipping.ChangeWeightNote(ffm.TotalWeight, orderMsg.ProductWeight)
+		update.TotalWeight = orderMsg.ProductWeight
+		update.AdminNote = ffm.AdminNote + "\n" + changeWeightNote
+	}
+	if ffm.ShippingFeeShop != orderMsg.MoneyTotal && ffm.MoneyTransactionID == 0 {
+		// keep all shipping fee lines except shippingFeeMain
+		mainFee := orderMsg.MoneyTotal
+		for _, line := range ffm.ProviderShippingFeeLines {
+			if line.ShippingFeeType == model.ShippingFeeTypeMain {
+				continue
+			}
+			mainFee = mainFee - line.Cost
+		}
+		if mainFee >= 0 {
+			for _, line := range ffm.ProviderShippingFeeLines {
+				if line.ShippingFeeType == model.ShippingFeeTypeMain {
+					line.Cost = mainFee
+				}
+			}
+		}
+		update.ProviderShippingFeeLines = ffm.ProviderShippingFeeLines
+		update.ShippingFeeShopLines = model.GetShippingFeeShopLines(update.ProviderShippingFeeLines, false, nil)
+	}
+
+	// Only update status5 if the current status is not ending status
 	newStatus := vtpostStatus.ToStatus5()
 	// UpdateInfo ClosedAt
 	if newStatus == model.S5Negative || newStatus == model.S5NegSuper || newStatus == model.S5Positive {

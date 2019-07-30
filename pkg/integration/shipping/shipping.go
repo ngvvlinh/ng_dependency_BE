@@ -1,11 +1,11 @@
 package shipping
 
 import (
+	"fmt"
 	"time"
 
-	"etop.vn/api/main/shipnow"
-
 	mdlocation "etop.vn/api/main/location"
+	"etop.vn/api/main/shipnow"
 	shipnowtypes "etop.vn/api/main/shipnow/types"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/etop/model"
@@ -199,4 +199,8 @@ func CalcShipnowTimeBaseOnState(ffm *shipnow.ShipnowFulfillment, state shipnowty
 	default:
 	}
 	return
+}
+
+func ChangeWeightNote(oldWeight, newWeight int) string {
+	return fmt.Sprintf("Khối lượng thay đổi từ %v thành %v", oldWeight, newWeight)
 }
