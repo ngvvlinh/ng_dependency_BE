@@ -4,10 +4,10 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"time"
 
 	"etop.vn/api/main/catalog"
 	"etop.vn/api/meta"
-	pbshop "etop.vn/backend/pb/etop/shop"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/imcsv"
 	"etop.vn/backend/pkg/common/validate"
@@ -34,7 +34,7 @@ func loadAndCreateProducts(
 	codeMode CodeMode,
 	shop *model.Shop,
 	rowProducts []*RowProduct,
-	requests []*pbshop.DeprecatedCreateVariantRequest,
+	// requests []*pbshop.DeprecatedCreateVariantRequest,
 	debug Debug,
 ) (msgs []string, _errs []error, _cellErrs []error, _err error) {
 
@@ -207,26 +207,42 @@ func loadAndCreateProducts(
 		return
 	}
 
+	now := time.Now()
 	// Create new products/variants and add them to corresponding categories/collection
-	for i, rowProduct := range rowProducts {
+	for _, rowProduct := range rowProducts {
 		if debug.FailPercent != 0 && isRandomFail(debug.FailPercent) {
 			_errs = append(_errs, imcsv.CellErrorWithCode(idx.indexer, cm.Internal, errors.New("random error"), rowProduct.RowIndex, -1, "Random error for development"))
 			continue
 		}
 
-		req := requests[i]
+		variantReq := rowToCreateVariant(rowProduct, now)
 		if p := products[rowProduct.GetProductKey()]; p != nil {
-			req.ProductId = p.ProductID
+			variantReq.ProductId = p.ProductID
+
+		} else {
+			productReq := rowToCreateProduct(rowProduct, now)
+			createProductCmd := &wrapshop.CreateProductEndpoint{
+				CreateProductRequest: productReq,
+			}
+			createProductCmd.Context.Shop = shop
+			if err := bus.Dispatch(ctx, createProductCmd); err != nil {
+				err = imcsv.CellErrorWithCode(idx.indexer, cm.Unknown, err, rowProduct.RowIndex, -1,
+					`Không thể tạo sản phẩm "%v": %v`,
+					rowProduct.GetProductNameOrCode(), err).
+					WithMeta("product_code", rowProduct.ProductCode)
+				_errs = append(_errs, err)
+				continue
+			}
 		}
 
-		createVariantCmd := &wrapshop.DeprecatedCreateVariantEndpoint{
-			DeprecatedCreateVariantRequest: req,
+		createVariantCmd := &wrapshop.CreateVariantEndpoint{
+			CreateVariantRequest: variantReq,
 		}
 		createVariantCmd.Context.Shop = shop
 		if err := bus.Dispatch(ctx, createVariantCmd); err != nil {
 			err = imcsv.CellErrorWithCode(idx.indexer, cm.Unknown, err, rowProduct.RowIndex, -1,
 				`Không thể tạo phiên bản "%v" của sản phẩm "%v": %v`,
-				req.Name, rowProduct.GetProductNameOrCode(), err).
+				variantReq.Name, rowProduct.GetProductNameOrCode(), err).
 				WithMeta("product_code", rowProduct.ProductCode).
 				WithMeta("variant_code", rowProduct.VariantCode)
 			_errs = append(_errs, err)
@@ -239,10 +255,10 @@ func loadAndCreateProducts(
 		}
 
 		var msg string
-		if req.Name != "" {
-			msg = fmt.Sprintf("Đã tạo sản phẩm \"%v\" - \"%v\"", req.ProductName, req.Name)
+		if variantReq.Name != "" {
+			msg = fmt.Sprintf("Đã tạo sản phẩm \"%v\" - \"%v\"", rowProduct.ProductName, variantReq.Name)
 		} else {
-			msg = fmt.Sprintf("Đã tạo sản phẩm \"%v\"", req.ProductName)
+			msg = fmt.Sprintf("Đã tạo sản phẩm \"%v\"", rowProduct.ProductName)
 		}
 		msgs = append(msgs, msg)
 

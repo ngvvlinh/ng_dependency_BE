@@ -115,7 +115,7 @@ func OrderLineToModel(in *types.ItemLine) (out *ordermodel.OrderLine) {
 		Quantity:        int(in.Quantity),
 		TotalLineAmount: int(in.TotalPrice),
 		ImageURL:        in.ProductInfo.ImageUrl,
-		Attributes:      catalogconvert.AttributesToModel(in.ProductInfo.Attributes),
+		Attributes:      catalogconvert.AttributesDB(in.ProductInfo.Attributes),
 		IsOutsideEtop:   in.IsOutside,
 		Code:            "",
 	}

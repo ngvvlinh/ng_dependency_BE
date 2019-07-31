@@ -245,13 +245,7 @@ func handleShopImportProductsFromFile(ctx context.Context, c *httpx.Context, sho
 		return imp.generateErrorResponse(_errs)
 	}
 
-	// this function expects product source not empty
-	requests, _errs := parseRowsToModel(schema, idx, imp.Mode, rowProducts, shop)
-	if len(_errs) > 0 {
-		return imp.generateErrorResponse(_errs)
-	}
-
-	msgs, _errs, _cellErrs, err := loadAndCreateProducts(ctx, schema, idx, imp.Mode, codeMode, shop, rowProducts, requests, debugOpts)
+	msgs, _errs, _cellErrs, err := loadAndCreateProducts(ctx, schema, idx, imp.Mode, codeMode, shop, rowProducts, debugOpts)
 	if err != nil {
 		return nil, err
 	}
@@ -447,6 +441,10 @@ func parseRow(schema imcsv.Schema, idx indexes, mode Mode, r int, row []string, 
 		}
 	}
 
+	if err == nil {
+		errs := rowProduct.Validate(schema, idx, mode)
+		_errs = append(_errs, errs...)
+	}
 	return rowProduct, _errs
 }
 
@@ -549,45 +547,35 @@ func split(v string) []string {
 	return strings.Split(v, ",")
 }
 
-func parseRowsToModel(schema imcsv.Schema, idx indexes, mode Mode, rowProducts []*RowProduct, shop *model.Shop) (requests []*pbshop.DeprecatedCreateVariantRequest, _errs []error,
-) {
-	now := time.Now()
-	requests = make([]*pbshop.DeprecatedCreateVariantRequest, len(rowProducts))
-
-	for i, rowProduct := range rowProducts {
-		errs := rowProduct.Validate(schema, idx, mode)
-		if len(errs) > 0 {
-			_errs = append(_errs, errs...)
-			if len(_errs) > MaxCellErrors {
-				return
-			}
-			continue
-		}
-		requests[i] = parseRowToModel(rowProduct, now)
+func rowToCreateVariant(row *RowProduct, now time.Time) *pbshop.CreateVariantRequest {
+	return &pbshop.CreateVariantRequest{
+		Code:        row.VariantCode,
+		Name:        variantNameFromAttributes(row.Attributes),
+		ProductId:   0, // will be filled later
+		Note:        "",
+		Description: row.Description,
+		ShortDesc:   "",
+		DescHtml:    "",
+		ImageUrls:   row.ImageURLs,
+		CostPrice:   int32(row.CostPrice),
+		ListPrice:   int32(row.ListPrice),
+		RetailPrice: int32(row.ListPrice),
 	}
-	return
 }
 
-func parseRowToModel(rowProduct *RowProduct, now time.Time) *pbshop.DeprecatedCreateVariantRequest {
-	return &pbshop.DeprecatedCreateVariantRequest{
-		ProductId:         0, // will be filled later
-		ProductName:       rowProduct.ProductName,
-		Name:              variantNameFromAttributes(rowProduct.Attributes),
-		Description:       rowProduct.Description,
-		ShortDesc:         "",
-		DescHtml:          "",
-		ImageUrls:         rowProduct.ImageURLs,
-		Tags:              nil,
-		Status:            0,
-		ListPrice:         int32(rowProduct.ListPrice),
-		CostPrice:         int32(rowProduct.CostPrice),
-		Sku:               rowProduct.VariantCode,
-		Code:              rowProduct.ProductCode,
-		QuantityAvailable: int32(rowProduct.QuantityAvail),
-		QuantityOnHand:    0,
-		QuantityReserved:  0,
-		Attributes:        attributesToModel(rowProduct.Attributes),
-		Unit:              rowProduct.Unit,
+func rowToCreateProduct(row *RowProduct, now time.Time) *pbshop.CreateProductRequest {
+	return &pbshop.CreateProductRequest{
+		Code:        row.ProductCode,
+		Name:        row.ProductName,
+		Unit:        row.Unit,
+		Note:        "",
+		Description: "",
+		ShortDesc:   "",
+		DescHtml:    "",
+		ImageUrls:   row.ImageURLs,
+		CostPrice:   int32(row.CostPrice),
+		ListPrice:   int32(row.ListPrice),
+		RetailPrice: 0,
 	}
 }
 
@@ -603,18 +591,4 @@ func variantNameFromAttributes(attrs []catalogmodel.ProductAttribute) string {
 		s.WriteString(attr.Value)
 	}
 	return s.String()
-}
-
-func attributesToModel(attrs []catalogmodel.ProductAttribute) []*pbshop.Attribute {
-	if len(attrs) == 0 {
-		return nil
-	}
-	res := make([]*pbshop.Attribute, len(attrs))
-	for i, attr := range attrs {
-		res[i] = &pbshop.Attribute{
-			Name:  attr.Name,
-			Value: attr.Value,
-		}
-	}
-	return res
 }

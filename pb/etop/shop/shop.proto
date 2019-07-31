@@ -557,16 +557,25 @@ message CreateProductRequest {
     optional string short_desc  = 6 [(gogoproto.nullable)=false];
     optional string desc_html   = 7 [(gogoproto.nullable)=false];
     repeated string image_urls  = 9;
+
+    optional int32  cost_price = 16 [(gogoproto.nullable)=false];
+    optional int32  list_price = 15 [(gogoproto.nullable)=false];
+    optional int32  retail_price = 26 [(gogoproto.nullable)=false];
 }
 
 message CreateVariantRequest {
     optional string code = 1 [(gogoproto.nullable)=false];
     optional string name = 2 [(gogoproto.nullable)=false];
+    optional int64  product_id = 3 [(gogoproto.nullable)=false];
     optional string note = 4 [(gogoproto.nullable)=false];
     optional string description = 5 [(gogoproto.nullable)=false];
     optional string short_desc  = 6 [(gogoproto.nullable)=false];
     optional string desc_html   = 7 [(gogoproto.nullable)=false];
     repeated string image_urls  = 9;
+
+    optional int32  cost_price = 16 [(gogoproto.nullable)=false];
+    optional int32  list_price = 15 [(gogoproto.nullable)=false];
+    optional int32  retail_price = 26 [(gogoproto.nullable)=false];
 }
 
 message DeprecatedCreateVariantRequest {

@@ -164,10 +164,11 @@ type CreateShopVariantArgs struct {
 	ShopID    int64
 	ProductID int64
 
-	Code      string
-	Name      string
-	ImageURLs []string
-	Note      string
+	Code       string
+	Name       string
+	ImageURLs  []string
+	Note       string
+	Attributes Attributes
 	DescriptionInfo
 	PriceInfo
 }

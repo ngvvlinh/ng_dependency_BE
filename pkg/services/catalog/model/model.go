@@ -65,10 +65,9 @@ type ShopVariantWithProduct struct {
 var _ = sqlgenShopVariant(&ShopVariant{})
 
 type ShopVariant struct {
-	ShopID       int64
-	VariantID    int64
-	CollectionID int64
-	ProductID    int64
+	ShopID    int64
+	VariantID int64
+	ProductID int64
 
 	Code        string
 	Name        string
@@ -94,18 +93,6 @@ type ShopVariant struct {
 
 	// key-value normalization, must be non-null. Empty attributes is '_'
 	AttrNormKv string
-}
-
-func (v *ShopVariant) BeforeInsert() error {
-	v.NameNorm = validate.NormalizeSearch(v.Name)
-	v.Attributes, v.AttrNormKv = NormalizeAttributes(v.Attributes)
-	return nil
-}
-
-func (v *ShopVariant) BeforeUpdate() error {
-	v.NameNorm = validate.NormalizeSearch(v.Name)
-	v.Attributes, v.AttrNormKv = NormalizeAttributes(v.Attributes)
-	return nil
 }
 
 var _ = sqlgenShopProduct(&ShopProduct{})
@@ -138,18 +125,6 @@ type ShopProduct struct {
 
 	NameNorm   string
 	NameNormUa string // unaccent normalization
-}
-
-func (p *ShopProduct) BeforeInsert() error {
-	p.NameNorm = validate.NormalizeSearch(p.Name)
-	p.NameNormUa = validate.NormalizeUnaccent(p.Name)
-	return nil
-}
-
-func (p *ShopProduct) BeforeUpdate() error {
-	p.NameNorm = validate.NormalizeSearch(p.Name)
-	p.NameNormUa = validate.NormalizeUnaccent(p.Name)
-	return nil
 }
 
 type ShopProductWithVariants struct {

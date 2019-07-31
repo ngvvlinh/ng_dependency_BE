@@ -6,7 +6,9 @@ import (
 	"time"
 
 	cm "etop.vn/backend/pkg/common"
+	"etop.vn/backend/pkg/common/cmsql"
 	"etop.vn/backend/pkg/common/sq"
+	"etop.vn/backend/pkg/common/validate"
 	"etop.vn/backend/pkg/etop/model"
 	catalogmodel "etop.vn/backend/pkg/services/catalog/model"
 	catalogmodelx "etop.vn/backend/pkg/services/catalog/modelx"
@@ -16,7 +18,7 @@ import (
 func init() {
 	bus.AddHandlers("sql",
 		CreateShopCategory,
-		CreateVariant,
+		DeprecatedCreateVariant,
 		GetAllShopExtendedsQuery,
 		GetShop,
 		GetShopExtended,
@@ -117,7 +119,7 @@ func GetShopWithPermission(ctx context.Context, query *model.GetShopWithPermissi
 	return nil
 }
 
-func CreateVariant(ctx context.Context, cmd *catalogmodelx.CreateVariantCommand) error {
+func DeprecatedCreateVariant(ctx context.Context, cmd *catalogmodelx.DeprecatedCreateVariantCommand) error {
 	if cmd.ShopID == 0 {
 		return cm.Error(cm.InvalidArgument, "Missing AccountID", nil)
 	}
@@ -125,42 +127,62 @@ func CreateVariant(ctx context.Context, cmd *catalogmodelx.CreateVariantCommand)
 		return cm.Error(cm.InvalidArgument, "Missing ProductName", nil)
 	}
 
-	variant := &catalogmodel.ShopVariant{
-		ShopID:      cmd.ShopID,
-		VariantID:   cm.NewID(),
-		ProductID:   cmd.ProductID,
-		Code:        cmd.Code,
-		Name:        cmd.Name,
-		Description: cmd.Description,
-		DescHTML:    cmd.DescHTML,
-		ShortDesc:   cmd.ShortDesc,
-		ImageURLs:   cmd.ImageURLs,
-		Note:        "",
-		Tags:        nil,
-		CostPrice:   cmd.CostPrice,
-		ListPrice:   cmd.ListPrice,
-		RetailPrice: cmd.RetailPrice,
-		Status:      model.StatusActive,
-		Attributes:  cmd.Attributes,
-		CreatedAt:   time.Time{},
-		UpdatedAt:   time.Time{},
-		NameNorm:    "",
-		AttrNormKv:  "",
-	}
-	if err := variant.BeforeInsert(); err != nil {
-		return err
-	}
-	if err := x.ShouldInsert(variant); err != nil {
-		return err
-	}
-	{
-		q := shopProductStore(ctx).ShopID(cmd.ShopID).ID(cmd.ProductID)
-		product, err := q.GetShopProductWithVariants()
-		if err != nil {
-			return err
+	productID := cmd.ProductID
+	err := x.InTransaction(ctx, func(s cmsql.QueryInterface) error {
+		variant := &catalogmodel.ShopVariant{
+			ShopID:      cmd.ShopID,
+			VariantID:   cm.NewID(),
+			ProductID:   cmd.ProductID,
+			Code:        cmd.VariantCode,
+			Name:        cmd.Name,
+			Description: cmd.Description,
+			DescHTML:    cmd.DescHTML,
+			ShortDesc:   cmd.ShortDesc,
+			ImageURLs:   cmd.ImageURLs,
+			Note:        "",
+			Tags:        nil,
+			CostPrice:   cmd.CostPrice,
+			ListPrice:   cmd.ListPrice,
+			RetailPrice: cmd.RetailPrice,
+			Status:      model.StatusActive,
+			Attributes:  cmd.Attributes,
+			CreatedAt:   time.Time{},
+			UpdatedAt:   time.Time{},
+			NameNorm:    validate.NormalizeSearch(cmd.Name),
 		}
-		cmd.Result = product
+		variant.Attributes, variant.AttrNormKv = catalogmodel.NormalizeAttributes(cmd.Attributes)
+
+		if cmd.ProductID != 0 {
+			_, err := shopProductStore(ctx).ShopID(cmd.ShopID).ID(cmd.ProductID).GetShopProductDB()
+			if err != nil {
+				return err
+			}
+
+		} else {
+			product := &catalogmodel.ShopProduct{
+				ShopID:     cmd.ShopID,
+				ProductID:  cm.NewID(),
+				Code:       cmd.ProductCode,
+				Name:       cmd.ProductName,
+				NameNorm:   validate.NormalizeSearch(cmd.ProductName),
+				NameNormUa: validate.NormalizeUnaccent(cmd.ProductName),
+			}
+			variant.ProductID = product.ProductID
+			productID = product.ProductID
+		}
+
+		return x.ShouldInsert(variant)
+	})
+	if err != nil {
+		return err
 	}
+
+	q := shopProductStore(ctx).ShopID(cmd.ShopID).ID(productID)
+	product, err := q.GetShopProductWithVariants()
+	if err != nil {
+		return err
+	}
+	cmd.Result = product
 	return nil
 }
 
@@ -221,7 +243,7 @@ func UpdateProductsPSCategory(ctx context.Context, cmd *catalogmodelx.UpdateProd
 
 	if updated, err := x.Table("shop_product").
 		Where("product_source_id = ?", cmd.ShopID).
-		In("id", cmd.ProductIDs).
+		In("product_id", cmd.ProductIDs).
 		UpdateMap(M{"shop_category_id": cmd.CategoryID}); err != nil {
 		return err
 	} else if updated == 0 {

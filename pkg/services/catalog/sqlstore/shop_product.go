@@ -85,7 +85,7 @@ func (s *ShopProductStore) Code(code string) *ShopProductStore {
 }
 
 func (s *ShopProductStore) Codes(codes ...string) *ShopProductStore {
-	s.preds = append(s.preds, sq.In("ed_code", codes))
+	s.preds = append(s.preds, sq.In("code", codes))
 	return s
 }
 
@@ -98,6 +98,13 @@ func (s *ShopProductStore) Count() (uint64, error) {
 	query := s.query().Where(s.preds)
 	query = s.includeDeleted.Check(query, s.FtShopProduct.NotDeleted())
 	return query.Count((*catalogmodel.ShopProduct)(nil))
+}
+
+func (s *ShopProductStore) CreateShopProduct(product *catalog.ShopProduct) error {
+	sqlstore.MustNoPreds(s.preds)
+	productDB := convert.ShopProductDB(product)
+	_, err := s.query().Insert(productDB)
+	return err
 }
 
 func (s *ShopProductStore) GetShopProductDB() (*catalogmodel.ShopProduct, error) {

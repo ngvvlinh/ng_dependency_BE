@@ -6,7 +6,6 @@ import (
 	pbshop "etop.vn/backend/pb/etop/shop"
 	"etop.vn/backend/pkg/etop/api/convertpb"
 	"etop.vn/backend/pkg/etop/model"
-	catalogmodel "etop.vn/backend/pkg/services/catalog/model"
 )
 
 func PbShopVariants(items []*catalog.ShopVariant) []*pbshop.ShopVariant {
@@ -50,7 +49,7 @@ func PbShopVariant(m *catalog.ShopVariant) *pbshop.ShopVariant {
 	return res
 }
 
-func PbShopProducts(items []*catalogmodel.ShopProduct) []*pbshop.ShopProduct {
+func PbShopProducts(items []*catalog.ShopProduct) []*pbshop.ShopProduct {
 	res := make([]*pbshop.ShopProduct, len(items))
 	for i, item := range items {
 		res[i] = PbShopProduct(item)
@@ -58,7 +57,7 @@ func PbShopProducts(items []*catalogmodel.ShopProduct) []*pbshop.ShopProduct {
 	return res
 }
 
-func PbShopProduct(m *catalogmodel.ShopProduct) *pbshop.ShopProduct {
+func PbShopProduct(m *catalog.ShopProduct) *pbshop.ShopProduct {
 	res := &pbshop.ShopProduct{
 		Id:            m.ProductID,
 		Info:          nil,
@@ -72,7 +71,7 @@ func PbShopProduct(m *catalogmodel.ShopProduct) *pbshop.ShopProduct {
 		Tags:          m.Tags,
 		Stags:         nil,
 		Note:          "",
-		Status:        pbs3.Pb(m.Status),
+		Status:        pbs3.Pb(model.Status3(m.Status)),
 		IsAvailable:   true,
 		ListPrice:     0,
 		RetailPrice:   m.RetailPrice,

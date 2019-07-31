@@ -1,12 +1,16 @@
 package convert
 
 import (
+	"time"
+
 	"etop.vn/api/main/catalog"
 	catalogtypes "etop.vn/api/main/catalog/types"
+	"etop.vn/backend/pkg/common/validate"
+	"etop.vn/backend/pkg/etop/model"
 	catalogmodel "etop.vn/backend/pkg/services/catalog/model"
 )
 
-func AttributeToModel(in *catalogtypes.Attribute) (out catalogmodel.ProductAttribute) {
+func AttributeDB(in *catalogtypes.Attribute) (out catalogmodel.ProductAttribute) {
 	if in == nil {
 		return catalogmodel.ProductAttribute{}
 	}
@@ -16,10 +20,10 @@ func AttributeToModel(in *catalogtypes.Attribute) (out catalogmodel.ProductAttri
 	}
 }
 
-func AttributesToModel(ins []*catalogtypes.Attribute) (outs []catalogmodel.ProductAttribute) {
+func AttributesDB(ins []*catalogtypes.Attribute) (outs []catalogmodel.ProductAttribute) {
 	outs = make([]catalogmodel.ProductAttribute, len(ins))
 	for i, in := range ins {
-		outs[i] = AttributeToModel(in)
+		outs[i] = AttributeDB(in)
 	}
 	return outs
 }
@@ -64,6 +68,37 @@ func ShopProduct(in *catalogmodel.ShopProduct) (out *catalog.ShopProduct) {
 		Status:    int32(in.Status),
 		CreatedAt: in.CreatedAt,
 		UpdatedAt: in.UpdatedAt,
+	}
+	return out
+}
+
+func ShopProductDB(in *catalog.ShopProduct) (out *catalogmodel.ShopProduct) {
+	if in == nil {
+		return nil
+	}
+	out = &catalogmodel.ShopProduct{
+		ShopID:        in.ShopID,
+		ProductID:     in.ProductID,
+		CollectionIDs: in.CollectionIDs,
+		Code:          in.Code,
+		Name:          in.Name,
+		Description:   in.Description,
+		DescHTML:      in.DescHTML,
+		ShortDesc:     in.ShortDesc,
+		ImageURLs:     in.ImageURLs,
+		Note:          in.Note,
+		Tags:          in.Tags,
+		Unit:          in.Unit,
+		CategoryID:    in.CategoryID,
+		CostPrice:     in.CostPrice,
+		ListPrice:     in.ListPrice,
+		RetailPrice:   in.RetailPrice,
+		Status:        model.Status3(in.Status),
+		CreatedAt:     in.CreatedAt,
+		UpdatedAt:     in.UpdatedAt,
+		DeletedAt:     time.Time{},
+		NameNorm:      validate.NormalizeSearch(in.Name),
+		NameNormUa:    validate.NormalizeUnaccent(in.Name),
 	}
 	return out
 }
@@ -122,6 +157,35 @@ func ShopVariant(in *catalogmodel.ShopVariant) (out *catalog.ShopVariant) {
 		CreatedAt: in.CreatedAt,
 		UpdatedAt: in.UpdatedAt,
 	}
+	return out
+}
+
+func ShopVariantDB(in *catalog.ShopVariant) (out *catalogmodel.ShopVariant) {
+	if in == nil {
+		return nil
+	}
+	out = &catalogmodel.ShopVariant{
+		ShopID:      in.ShopID,
+		VariantID:   in.VariantID,
+		ProductID:   in.ProductID,
+		Code:        in.Code,
+		Name:        in.Name,
+		Description: in.Description,
+		DescHTML:    in.DescHTML,
+		ShortDesc:   in.ShortDesc,
+		ImageURLs:   in.ImageURLs,
+		Note:        in.Note,
+		Tags:        nil,
+		CostPrice:   in.CostPrice,
+		ListPrice:   in.ListPrice,
+		RetailPrice: in.RetailPrice,
+		Status:      0,
+		CreatedAt:   in.CreatedAt,
+		UpdatedAt:   in.UpdatedAt,
+		DeletedAt:   time.Time{},
+		NameNorm:    validate.NormalizeSearch(in.Name),
+	}
+	out.Attributes, out.AttrNormKv = catalogmodel.NormalizeAttributes(AttributesDB(in.Attributes))
 	return out
 }
 

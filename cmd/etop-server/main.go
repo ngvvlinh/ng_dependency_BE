@@ -52,6 +52,7 @@ import (
 	"etop.vn/backend/pkg/integration/sms"
 	"etop.vn/backend/pkg/integration/vtpost"
 	"etop.vn/backend/pkg/services/address"
+	catalogaggregate "etop.vn/backend/pkg/services/catalog/aggregate"
 	catalogquery "etop.vn/backend/pkg/services/catalog/query"
 	serviceidentity "etop.vn/backend/pkg/services/identity"
 	servicelocation "etop.vn/backend/pkg/services/location"
@@ -258,6 +259,7 @@ func main() {
 	// create aggregate, query service
 	identityQuery = serviceidentity.NewQueryService(db).MessageBus()
 	catalogQuery := catalogquery.New(db).MessageBus()
+	catalogAggr := catalogaggregate.New(db).MessageBus()
 	addressQuery := address.NewQueryService(db).MessageBus()
 	shipnowQuery = serviceshipnow.NewQueryService(db).MessageBus()
 	orderQuery = serviceordering.NewQueryService(db).MessageBus()
@@ -278,7 +280,7 @@ func main() {
 
 	orderAggr.WithPM(orderingPM)
 
-	shop.Init(catalogQuery, shipnowAggr, shipnowQuery, identityAggr, identityQuery, addressQuery, shippingManager, haravanIdentityAggr, haravanIdentityQuery, shutdowner, redisStore)
+	shop.Init(catalogQuery, catalogAggr, shipnowAggr, shipnowQuery, identityAggr, identityQuery, addressQuery, shippingManager, haravanIdentityAggr, haravanIdentityQuery, shutdowner, redisStore)
 	partner.Init(shutdowner, redisStore, authStore, cfg.URL.Auth)
 	xshop.Init(shutdowner, redisStore, authStore)
 	integration.Init(shutdowner, redisStore, authStore)

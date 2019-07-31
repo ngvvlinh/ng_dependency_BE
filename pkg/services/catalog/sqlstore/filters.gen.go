@@ -61,25 +61,6 @@ func (ft *ShopVariantFilters) ByVariantIDPtr(VariantID *int64) *sq.ColumnFilterP
 	}
 }
 
-func (ft *ShopVariantFilters) ByCollectionID(CollectionID int64) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
-		Prefix: &ft.prefix,
-		Column: "collection_id",
-		Value:  CollectionID,
-		IsNil:  CollectionID == 0,
-	}
-}
-
-func (ft *ShopVariantFilters) ByCollectionIDPtr(CollectionID *int64) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
-		Prefix: &ft.prefix,
-		Column: "collection_id",
-		Value:  CollectionID,
-		IsNil:  CollectionID == nil,
-		IsZero: CollectionID != nil && (*CollectionID) == 0,
-	}
-}
-
 func (ft *ShopVariantFilters) ByProductID(ProductID int64) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,

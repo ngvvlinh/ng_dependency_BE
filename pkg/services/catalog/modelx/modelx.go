@@ -80,7 +80,7 @@ type UpdateShopProductsTagsCommand struct {
 }
 
 // deprecated
-type CreateVariantCommand struct {
+type DeprecatedCreateVariantCommand struct {
 	ShopID    int64
 	ProductID int64
 	// In `Dép Adidas Adilette Slides - Full Đỏ`, product_name is "Dép Adidas Adilette Slides"
@@ -92,7 +92,8 @@ type CreateVariantCommand struct {
 	ImageURLs   []string
 	Tags        []string
 	Status      model.Status3
-	Code        string
+	ProductCode string
+	VariantCode string
 
 	QuantityAvailable int
 	QuantityOnHand    int

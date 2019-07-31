@@ -83,11 +83,18 @@ type ListVariantsForImportArgs struct {
 
 func (s *ShopVariantStore) FilterForImport(args ListVariantsForImportArgs) *ShopVariantStore {
 	pred := sq.Or{
-		sq.In("ed_code", args.Codes),
+		sq.In("code", args.Codes),
 		sq.Ins([]string{"product_id", "attr_norm_kv"}, args.AttrNorms),
 	}
 	s.preds = append(s.preds, pred)
 	return s
+}
+
+func (s *ShopVariantStore) CreateShopVariant(variant *catalog.ShopVariant) error {
+	sqlstore.MustNoPreds(s.preds)
+	variantDB := convert.ShopVariantDB(variant)
+	_, err := s.query().Insert(variantDB)
+	return err
 }
 
 func (s *ShopVariantStore) GetShopVariantDB() (*catalogmodel.ShopVariant, error) {

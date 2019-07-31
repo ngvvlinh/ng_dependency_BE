@@ -4,13 +4,11 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"strings"
 
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/µjson"
 	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/common/bus"
-	"etop.vn/common/xerrors"
 )
 
 func init() {
@@ -108,40 +106,6 @@ func GetHistory(ctx context.Context, query *model.GetHistoryQuery) error {
 				ll.Error("Invalid json output")
 				fmt.Printf("-- output\n%s\n\n", data)
 			}
-		}
-	}
-	return nil
-}
-
-const (
-	ProductCodeKey     = "product_ed_code_product_source_id_idx"
-	VariantCodeKey     = "variant_ed_code_product_source_id_idx"
-	ProductNameNormKey = "product_product_source_id_name_norm_ua_idx"
-	VariantAttrKey     = "variant_product_id_attr_norm_kv_idx"
-)
-
-func CheckErrorProductCode(err error) error {
-	if xerr, ok := err.(*xerrors.APIError); ok && xerr.Err != nil {
-		msg := xerr.Err.Error()
-		switch {
-		case strings.Contains(msg, ProductCodeKey):
-			return cm.Error(cm.FailedPrecondition,
-				"Mã sản phẩm đã tồn tại", nil)
-
-		case strings.Contains(msg, VariantCodeKey):
-			return cm.Error(cm.FailedPrecondition,
-				"Mã phiên bản sản phẩm (Code) đã tồn tại", nil)
-
-		case strings.Contains(msg, ProductNameNormKey):
-			return cm.Error(cm.FailedPrecondition,
-				"Một sản phẩm cùng tên đã tồn tại (để tạo sản phẩm trùng tên, vui lòng nhập mã sản phẩm khác nhau)", nil)
-
-		case strings.Contains(msg, VariantAttrKey):
-			return cm.Error(cm.FailedPrecondition,
-				"Một phiên bản sản phẩm với cùng thuộc tính đã tồn tại", nil)
-
-		default:
-			return err
 		}
 	}
 	return nil

@@ -32,12 +32,12 @@ func GetShopVariant(ctx context.Context, query *catalogmodelx.GetShopVariantQuer
 		return cm.Error(cm.InvalidArgument, "Missing AccountID", nil)
 	}
 
-	product := new(catalogmodel.ShopVariant)
-	if err := x.Where("sv.shop_id = ? AND sv.variant_id = ?", query.ShopID, query.VariantID).
-		ShouldGet(product); err != nil {
+	var variant catalogmodel.ShopVariant
+	if err := x.Where("shop_id = ? AND variant_id = ?", query.ShopID, query.VariantID).
+		ShouldGet(&variant); err != nil {
 		return err
 	}
-	query.Result = convert.ShopVariant(product)
+	query.Result = convert.ShopVariant(&variant)
 	return nil
 }
 
@@ -75,10 +75,6 @@ func UpdateShopVariant(ctx context.Context, cmd *catalogmodelx.UpdateShopVariant
 	}
 
 	sv := *cmd.Variant
-	if err := sv.BeforeUpdate(); err != nil {
-		return err
-	}
-
 	if err := updateOrInsertShopVariant(&sv, x); err != nil {
 		return err
 	}
@@ -190,15 +186,8 @@ func UpdateShopProduct(ctx context.Context, cmd *catalogmodelx.UpdateShopProduct
 	if cmd.Product == nil || cmd.Product.ProductID == 0 {
 		return cm.Error(cm.InvalidArgument, "Missing product", nil)
 	}
-	if err := cmd.Product.BeforeUpdate(); err != nil {
-		return err
-	}
 
 	sp := *cmd.Product
-	if err := sp.BeforeUpdate(); err != nil {
-		return err
-	}
-
 	if err := updateOrInsertShopProduct(&sp, x); err != nil {
 		return err
 	}

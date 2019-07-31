@@ -107,12 +107,14 @@ var identityQuery identity.QueryBus
 var addressQuery address.QueryBus
 var shippingCtrl *shipping_provider.ProviderManager
 var catalogQuery catalog.QueryBus
+var catalogAggr catalog.CommandBus
 var haravanIdentityAggr haravanidentity.CommandBus
 var haravanIdentityQuery haravanidentity.QueryBus
 
-func Init(catalogQueryBus catalog.QueryBus, shipnow shipnow.CommandBus, shipnowQS shipnow.QueryBus, identity identity.CommandBus, identityQS identity.QueryBus, addressQS address.QueryBus, providerManager *shipping_provider.ProviderManager, haravanIdentity haravanidentity.CommandBus, haravanIdentityQS haravanidentity.QueryBus, sd cmservice.Shutdowner, rd redis.Store) {
+func Init(catalogQueryBus catalog.QueryBus, catalogCommandBus catalog.CommandBus, shipnow shipnow.CommandBus, shipnowQS shipnow.QueryBus, identity identity.CommandBus, identityQS identity.QueryBus, addressQS address.QueryBus, providerManager *shipping_provider.ProviderManager, haravanIdentity haravanidentity.CommandBus, haravanIdentityQS haravanidentity.QueryBus, sd cmservice.Shutdowner, rd redis.Store) {
 	idempgroup = idemp.NewRedisGroup(rd, PrefixIdemp, 5*60)
 	catalogQuery = catalogQueryBus
+	catalogAggr = catalogCommandBus
 	shippingCtrl = providerManager
 	shipnowAggr = shipnow
 	shipnowQuery = shipnowQS
@@ -207,7 +209,29 @@ func GetProducts(ctx context.Context, q *wrapshop.GetProductsEndpoint) error {
 }
 
 func CreateProduct(ctx context.Context, q *wrapshop.CreateProductEndpoint) error {
-	return cm.ErrTODO
+	cmd := &catalog.CreateShopProductCommand{
+		ShopID:    q.Context.Shop.ID,
+		Code:      q.Code,
+		Name:      q.Name,
+		Unit:      q.Unit,
+		ImageURLs: q.ImageUrls,
+		Note:      q.Note,
+		DescriptionInfo: catalog.DescriptionInfo{
+			ShortDesc:   q.ShortDesc,
+			Description: q.Description,
+			DescHTML:    q.DescHtml,
+		},
+		PriceInfo: catalog.PriceInfo{
+			CostPrice:   q.CostPrice,
+			ListPrice:   q.ListPrice,
+			RetailPrice: q.RetailPrice,
+		},
+	}
+	if err := catalogAggr.Dispatch(ctx, cmd); err != nil {
+		return err
+	}
+	q.Result = PbShopProduct(cmd.Result)
+	return nil
 }
 
 func RemoveProducts(ctx context.Context, q *wrapshop.RemoveProductsEndpoint) error {
@@ -269,11 +293,32 @@ func GetVariantsByIDs(ctx context.Context, q *wrapshop.GetVariantsByIDsEndpoint)
 }
 
 func CreateVariant(ctx context.Context, q *wrapshop.CreateVariantEndpoint) error {
-	return cm.ErrTODO
+	cmd := &catalog.CreateShopVariantCommand{
+		ShopID:    q.Context.Shop.ID,
+		ProductID: q.ProductId,
+		Code:      q.Code,
+		Name:      q.Name,
+		ImageURLs: q.ImageUrls,
+		Note:      q.Note,
+		DescriptionInfo: catalog.DescriptionInfo{
+			ShortDesc:   q.ShortDesc,
+			Description: q.Description,
+			DescHTML:    q.DescHtml,
+		},
+		PriceInfo: catalog.PriceInfo{
+			CostPrice:   q.CostPrice,
+			ListPrice:   q.ListPrice,
+			RetailPrice: q.RetailPrice,
+		},
+	}
+	if err := catalogAggr.Dispatch(ctx, cmd); err != nil {
+		return err
+	}
+	return nil
 }
 
 func DeprecatedCreateVariant(ctx context.Context, q *wrapshop.DeprecatedCreateVariantEndpoint) error {
-	cmd := &catalogmodelx.CreateVariantCommand{
+	cmd := &catalogmodelx.DeprecatedCreateVariantCommand{
 		ShopID:      q.Context.Shop.ID,
 		ProductID:   q.ProductId,
 		ProductName: q.ProductName,
@@ -288,7 +333,8 @@ func DeprecatedCreateVariant(ctx context.Context, q *wrapshop.DeprecatedCreateVa
 		ListPrice:   q.ListPrice,
 		RetailPrice: q.RetailPrice,
 
-		Code:              cm.Coalesce(q.Code, q.Sku),
+		ProductCode:       q.Code,
+		VariantCode:       q.Sku,
 		QuantityAvailable: int(q.QuantityAvailable),
 		QuantityOnHand:    int(q.QuantityOnHand),
 		QuantityReserved:  int(q.QuantityReserved),

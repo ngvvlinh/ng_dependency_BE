@@ -406,7 +406,7 @@ func prepareOrderLine(
 			line.RetailPrice = int(v.GetRetailPrice())
 			originalPrice = v.GetRetailPrice()
 		}
-		line.Attributes = convert.AttributesToModel(v.ShopVariant.Attributes)
+		line.Attributes = convert.AttributesDB(v.ShopVariant.Attributes)
 	}
 	if line.RetailPrice <= 0 {
 		return nil, cm.Errorf(cm.InvalidArgument, nil,

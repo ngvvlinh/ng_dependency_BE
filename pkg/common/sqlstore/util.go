@@ -388,3 +388,9 @@ func containsID(ss []int64, item int64) bool {
 	}
 	return false
 }
+
+func MustNoPreds(preds []interface{}) {
+	if len(preds) != 0 {
+		panic("must provide no preds")
+	}
+}
