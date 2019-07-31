@@ -22,53 +22,6 @@ import (
 
 var ll = l.New()
 
-var Client Sadmin
-
-type Sadmin interface {
-	sadmin.MiscService
-	sadmin.UserService
-}
-
-type SadminClient struct {
-	_MiscService sadmin.MiscService
-	_UserService sadmin.UserService
-}
-
-func NewSadminClient(addr string, client *http.Client) Sadmin {
-	if client == nil {
-		client = &http.Client{
-			Timeout: 10 * time.Second,
-		}
-	}
-
-	addr = "http://" + addr
-	return &SadminClient{
-		_MiscService: sadmin.NewMiscServiceProtobufClient(addr, client),
-		_UserService: sadmin.NewUserServiceProtobufClient(addr, client),
-	}
-}
-
-func ConnectSadminService(addr string, client *http.Client) error {
-	Client = NewSadminClient(addr, client)
-	bus.AddHandler("client", func(ctx context.Context, q *VersionInfoEndpoint) error { panic("Unexpected") })
-	bus.AddHandler("client", func(ctx context.Context, q *CreateUserEndpoint) error { panic("Unexpected") })
-	bus.AddHandler("client", func(ctx context.Context, q *LoginAsAccountEndpoint) error { panic("Unexpected") })
-	bus.AddHandler("client", func(ctx context.Context, q *ResetPasswordEndpoint) error { panic("Unexpected") })
-	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
-	_, err := Client.VersionInfo(ctx, &cm.Empty{})
-	if err == nil {
-		ll.S.Infof("Connected to SadminService at %v", addr)
-	}
-	return err
-}
-
-func MustConnectSadminService(addr string, client *http.Client) {
-	err := ConnectSadminService(addr, client)
-	if err != nil {
-		ll.Fatal("Unable to connect Sadmin", l.Error(err))
-	}
-}
-
 type (
 	EmptyClaim   = claims.EmptyClaim
 	UserClaim    = claims.UserClaim
@@ -76,63 +29,6 @@ type (
 	PartnerClaim = claims.PartnerClaim
 	ShopClaim    = claims.ShopClaim
 )
-
-func (c *SadminClient) VersionInfo(ctx context.Context, in *cm.Empty) (*cm.VersionInfoResponse, error) {
-	resp, err := c._MiscService.VersionInfo(ctx, in)
-
-	node, ok := ctx.(*bus.NodeContext)
-	if !ok {
-		return resp, err
-	}
-	newNode := node.WithMessage(map[string]interface{}{
-		"Request": in,
-		"Result":  resp,
-	})
-	newNode.Error = err
-	return resp, err
-}
-func (c *SadminClient) CreateUser(ctx context.Context, in *sadmin.SAdminCreateUserRequest) (*etop.RegisterResponse, error) {
-	resp, err := c._UserService.CreateUser(ctx, in)
-
-	node, ok := ctx.(*bus.NodeContext)
-	if !ok {
-		return resp, err
-	}
-	newNode := node.WithMessage(map[string]interface{}{
-		"Request": in,
-		"Result":  resp,
-	})
-	newNode.Error = err
-	return resp, err
-}
-func (c *SadminClient) LoginAsAccount(ctx context.Context, in *sadmin.LoginAsAccountRequest) (*etop.LoginResponse, error) {
-	resp, err := c._UserService.LoginAsAccount(ctx, in)
-
-	node, ok := ctx.(*bus.NodeContext)
-	if !ok {
-		return resp, err
-	}
-	newNode := node.WithMessage(map[string]interface{}{
-		"Request": in,
-		"Result":  resp,
-	})
-	newNode.Error = err
-	return resp, err
-}
-func (c *SadminClient) ResetPassword(ctx context.Context, in *sadmin.SAdminResetPasswordRequest) (*cm.Empty, error) {
-	resp, err := c._UserService.ResetPassword(ctx, in)
-
-	node, ok := ctx.(*bus.NodeContext)
-	if !ok {
-		return resp, err
-	}
-	newNode := node.WithMessage(map[string]interface{}{
-		"Request": in,
-		"Result":  resp,
-	})
-	newNode.Error = err
-	return resp, err
-}
 
 type Muxer interface {
 	Handle(string, http.Handler)
@@ -150,10 +46,6 @@ func NewSadminServer(mux Muxer, hooks *twirp.ServerHooks) {
 type SadminImpl struct {
 	MiscService
 	UserService
-}
-
-func NewSadmin() Sadmin {
-	return SadminImpl{}
 }
 
 type MiscService struct{}

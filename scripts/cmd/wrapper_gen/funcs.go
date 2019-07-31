@@ -12,6 +12,7 @@ import (
 var funcs = template.FuncMap{
 	"baseName":                 baseName,
 	"trimName":                 trimName,
+	"methodName":               methodName,
 	"requireAuth":              requireAuth,
 	"requireLogin":             requireLogin,
 	"requireUser":              requireUser,
@@ -46,6 +47,14 @@ func baseName(name string) string {
 
 func trimName(name string) string {
 	return name[:len(name)-len("Service")]
+}
+
+func methodName(m *g.Method) string {
+	p := getPermission(m)
+	if p.Rename != "" {
+		return p.Rename
+	}
+	return m.Name
 }
 
 func requireAuth(m *g.Method) bool {

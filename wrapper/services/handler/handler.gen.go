@@ -11,7 +11,6 @@ import (
 	cm "etop.vn/backend/pb/common"
 	handler "etop.vn/backend/pb/services/handler"
 	common "etop.vn/backend/pkg/common"
-	cmgrpc "etop.vn/backend/pkg/common/grpc"
 	metrics "etop.vn/backend/pkg/common/metrics"
 	cmwrapper "etop.vn/backend/pkg/common/wrapper"
 	claims "etop.vn/backend/pkg/etop/authorize/claims"
@@ -22,52 +21,6 @@ import (
 
 var ll = l.New()
 
-var Client Handler
-
-type Handler interface {
-	handler.MiscService
-	handler.WebhookService
-}
-
-type HandlerClient struct {
-	_MiscService    handler.MiscService
-	_WebhookService handler.WebhookService
-}
-
-func NewHandlerClient(addr string, client *http.Client) Handler {
-	if client == nil {
-		client = &http.Client{
-			Timeout: 10 * time.Second,
-		}
-	}
-
-	addr = "http://" + addr
-	return &HandlerClient{
-		_MiscService:    handler.NewMiscServiceProtobufClient(addr, client),
-		_WebhookService: handler.NewWebhookServiceProtobufClient(addr, client),
-	}
-}
-
-func ConnectHandlerService(addr string, client *http.Client, secret string) error {
-	Client = NewHandlerClient(addr, client)
-	bus.AddHandler("client", func(ctx context.Context, q *VersionInfoEndpoint) error { panic("Unexpected") })
-	bus.AddHandler("client", func(ctx context.Context, q *ResetStateEndpoint) error { panic("Unexpected") })
-	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
-	ctx = cmgrpc.AppendAccessToken(ctx, secret)
-	_, err := Client.VersionInfo(ctx, &cm.Empty{})
-	if err == nil {
-		ll.S.Infof("Connected to HandlerService at %v", addr)
-	}
-	return err
-}
-
-func MustConnectHandlerService(addr string, client *http.Client, secret string) {
-	err := ConnectHandlerService(addr, client, secret)
-	if err != nil {
-		ll.Fatal("Unable to connect Handler", l.Error(err))
-	}
-}
-
 type (
 	EmptyClaim   = claims.EmptyClaim
 	UserClaim    = claims.UserClaim
@@ -75,35 +28,6 @@ type (
 	PartnerClaim = claims.PartnerClaim
 	ShopClaim    = claims.ShopClaim
 )
-
-func (c *HandlerClient) VersionInfo(ctx context.Context, in *cm.Empty) (*cm.VersionInfoResponse, error) {
-	resp, err := c._MiscService.VersionInfo(ctx, in)
-
-	node, ok := ctx.(*bus.NodeContext)
-	if !ok {
-		return resp, err
-	}
-	newNode := node.WithMessage(map[string]interface{}{
-		"Request": in,
-		"Result":  resp,
-	})
-	newNode.Error = err
-	return resp, err
-}
-func (c *HandlerClient) ResetState(ctx context.Context, in *handler.ResetStateRequest) (*cm.Empty, error) {
-	resp, err := c._WebhookService.ResetState(ctx, in)
-
-	node, ok := ctx.(*bus.NodeContext)
-	if !ok {
-		return resp, err
-	}
-	newNode := node.WithMessage(map[string]interface{}{
-		"Request": in,
-		"Result":  resp,
-	})
-	newNode.Error = err
-	return resp, err
-}
 
 type Muxer interface {
 	Handle(string, http.Handler)
@@ -122,10 +46,6 @@ func NewHandlerServer(mux Muxer, hooks *twirp.ServerHooks, secret string) {
 type HandlerImpl struct {
 	MiscService
 	WebhookService
-}
-
-func NewHandler() Handler {
-	return HandlerImpl{}
 }
 
 type MiscService struct{ secret string }

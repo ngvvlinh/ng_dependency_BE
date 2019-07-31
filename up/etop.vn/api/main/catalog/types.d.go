@@ -38,10 +38,28 @@ func (c QueryBus) DispatchAll(ctx context.Context, msgs ...Query) error {
 }
 
 type CreateShopProductCommand struct {
+	ShopID    int64
+	Code      string
+	Name      string
+	Unit      string
+	ImageURLs []string
+	Note      string
+	DescriptionInfo
+	PriceInfo
+
 	Result *ShopProduct `json:"-"`
 }
 
 type CreateShopVariantCommand struct {
+	ShopID    int64
+	ProductID int64
+	Code      string
+	Name      string
+	ImageURLs []string
+	Note      string
+	DescriptionInfo
+	PriceInfo
+
 	Result *ShopVariant `json:"-"`
 }
 
@@ -68,6 +86,14 @@ type UpdateShopProductImagesCommand struct {
 }
 
 type UpdateShopProductInfoCommand struct {
+	ShopID    int64
+	ProductID int64
+	Code      *string
+	Name      *string
+	Unit      *string
+	Note      *string
+	*DescriptionInfo
+
 	Result *ShopProduct `json:"-"`
 }
 
@@ -88,6 +114,14 @@ type UpdateShopVariantImagesCommand struct {
 }
 
 type UpdateShopVariantInfoCommand struct {
+	ShopID    int64
+	VariantID int64
+	Code      *string
+	Name      *string
+	Unit      *string
+	Note      *string
+	*DescriptionInfo
+
 	Result *ShopVariant `json:"-"`
 }
 
@@ -206,10 +240,28 @@ func (q *ListShopVariantsWithProductByIDsQuery) query()  {}
 // implement conversion
 
 func (q *CreateShopProductCommand) GetArgs() *CreateShopProductArgs {
-	return &CreateShopProductArgs{}
+	return &CreateShopProductArgs{
+		ShopID:          q.ShopID,
+		Code:            q.Code,
+		Name:            q.Name,
+		Unit:            q.Unit,
+		ImageURLs:       q.ImageURLs,
+		Note:            q.Note,
+		DescriptionInfo: q.DescriptionInfo,
+		PriceInfo:       q.PriceInfo,
+	}
 }
 func (q *CreateShopVariantCommand) GetArgs() *CreateShopVariantArgs {
-	return &CreateShopVariantArgs{}
+	return &CreateShopVariantArgs{
+		ShopID:          q.ShopID,
+		ProductID:       q.ProductID,
+		Code:            q.Code,
+		Name:            q.Name,
+		ImageURLs:       q.ImageURLs,
+		Note:            q.Note,
+		DescriptionInfo: q.DescriptionInfo,
+		PriceInfo:       q.PriceInfo,
+	}
 }
 func (q *DeleteShopProductsCommand) GetArgs() *IDsShopArgs {
 	return &IDsShopArgs{
@@ -231,7 +283,15 @@ func (q *UpdateShopProductImagesCommand) GetArgs() *UpdateImagesArgs {
 	}
 }
 func (q *UpdateShopProductInfoCommand) GetArgs() *UpdateShopProductInfoArgs {
-	return &UpdateShopProductInfoArgs{}
+	return &UpdateShopProductInfoArgs{
+		ShopID:          q.ShopID,
+		ProductID:       q.ProductID,
+		Code:            q.Code,
+		Name:            q.Name,
+		Unit:            q.Unit,
+		Note:            q.Note,
+		DescriptionInfo: q.DescriptionInfo,
+	}
 }
 func (q *UpdateShopProductStatusCommand) GetArgs() *UpdateStatusArgs {
 	return &UpdateStatusArgs{
@@ -248,7 +308,15 @@ func (q *UpdateShopVariantImagesCommand) GetArgs() *UpdateImagesArgs {
 	}
 }
 func (q *UpdateShopVariantInfoCommand) GetArgs() *UpdateShopVariantInfoArgs {
-	return &UpdateShopVariantInfoArgs{}
+	return &UpdateShopVariantInfoArgs{
+		ShopID:          q.ShopID,
+		VariantID:       q.VariantID,
+		Code:            q.Code,
+		Name:            q.Name,
+		Unit:            q.Unit,
+		Note:            q.Note,
+		DescriptionInfo: q.DescriptionInfo,
+	}
 }
 func (q *UpdateShopVariantStatusCommand) GetArgs() *UpdateStatusArgs {
 	return &UpdateStatusArgs{

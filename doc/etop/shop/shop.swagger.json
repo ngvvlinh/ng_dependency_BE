@@ -1474,6 +1474,58 @@
         ]
       }
     },
+    "/api/shop.Product/CreateProduct": {
+      "post": {
+        "operationId": "CreateProduct",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/shopShopProduct"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/shopCreateProductRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Product"
+        ]
+      }
+    },
+    "/api/shop.Product/CreateVariant": {
+      "post": {
+        "operationId": "CreateVariant",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/shopShopVariant"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/shopCreateVariantRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Product"
+        ]
+      }
+    },
     "/api/shop.Product/GetProduct": {
       "post": {
         "operationId": "GetProduct",
@@ -1552,8 +1604,61 @@
         ]
       }
     },
+    "/api/shop.Product/GetVariant": {
+      "post": {
+        "operationId": "GetVariant",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/shopShopVariant"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/cmIDRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Product"
+        ]
+      }
+    },
+    "/api/shop.Product/GetVariantsByIDs": {
+      "post": {
+        "operationId": "GetVariantsByIDs",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/shopShopVariantsResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/cmIDsRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Product"
+        ]
+      }
+    },
     "/api/shop.Product/RemoveProducts": {
       "post": {
+        "summary": "deprecated",
         "operationId": "RemoveProducts",
         "responses": {
           "200": {
@@ -1580,6 +1685,7 @@
     },
     "/api/shop.Product/RemoveVariants": {
       "post": {
+        "summary": "deprecated",
         "operationId": "RemoveVariants",
         "responses": {
           "200": {
@@ -1788,6 +1894,7 @@
     },
     "/api/shop.ProductSource/CreateVariant": {
       "post": {
+        "summary": "deprecated: use shop.Product/CreateVariant instead",
         "operationId": "CreateVariant",
         "responses": {
           "200": {
@@ -1803,7 +1910,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/shopCreateVariantRequest"
+              "$ref": "#/definitions/shopDeprecatedCreateVariantRequest"
             }
           }
         ],
@@ -5302,11 +5409,72 @@
       },
       "title": "deprecated"
     },
+    "shopCreateProductRequest": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "unit": {
+          "type": "string"
+        },
+        "note": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "short_desc": {
+          "type": "string"
+        },
+        "desc_html": {
+          "type": "string"
+        },
+        "image_urls": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
     "shopCreateProductSourceRequest": {
       "type": "object",
       "title": "deprecated"
     },
     "shopCreateVariantRequest": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "note": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "short_desc": {
+          "type": "string"
+        },
+        "desc_html": {
+          "type": "string"
+        },
+        "image_urls": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "shopDeprecatedCreateVariantRequest": {
       "type": "object",
       "properties": {
         "product_source_id": {
@@ -6194,6 +6362,20 @@
       "required": [
         "id"
       ]
+    },
+    "shopShopVariantsResponse": {
+      "type": "object",
+      "properties": {
+        "paging": {
+          "$ref": "#/definitions/cmPageInfo"
+        },
+        "variants": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/shopShopVariant"
+          }
+        }
+      }
     },
     "shopSummarizeFulfillmentsRequest": {
       "type": "object",

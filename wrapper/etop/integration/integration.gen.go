@@ -22,56 +22,6 @@ import (
 
 var ll = l.New()
 
-var Client Integration
-
-type Integration interface {
-	integration.MiscService
-	integration.IntegrationService
-}
-
-type IntegrationClient struct {
-	_MiscService        integration.MiscService
-	_IntegrationService integration.IntegrationService
-}
-
-func NewIntegrationClient(addr string, client *http.Client) Integration {
-	if client == nil {
-		client = &http.Client{
-			Timeout: 10 * time.Second,
-		}
-	}
-
-	addr = "http://" + addr
-	return &IntegrationClient{
-		_MiscService:        integration.NewMiscServiceProtobufClient(addr, client),
-		_IntegrationService: integration.NewIntegrationServiceProtobufClient(addr, client),
-	}
-}
-
-func ConnectIntegrationService(addr string, client *http.Client) error {
-	Client = NewIntegrationClient(addr, client)
-	bus.AddHandler("client", func(ctx context.Context, q *VersionInfoEndpoint) error { panic("Unexpected") })
-	bus.AddHandler("client", func(ctx context.Context, q *GrantAccessEndpoint) error { panic("Unexpected") })
-	bus.AddHandler("client", func(ctx context.Context, q *InitEndpoint) error { panic("Unexpected") })
-	bus.AddHandler("client", func(ctx context.Context, q *LoginUsingTokenEndpoint) error { panic("Unexpected") })
-	bus.AddHandler("client", func(ctx context.Context, q *RegisterEndpoint) error { panic("Unexpected") })
-	bus.AddHandler("client", func(ctx context.Context, q *RequestLoginEndpoint) error { panic("Unexpected") })
-	bus.AddHandler("client", func(ctx context.Context, q *SessionInfoEndpoint) error { panic("Unexpected") })
-	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
-	_, err := Client.VersionInfo(ctx, &cm.Empty{})
-	if err == nil {
-		ll.S.Infof("Connected to IntegrationService at %v", addr)
-	}
-	return err
-}
-
-func MustConnectIntegrationService(addr string, client *http.Client) {
-	err := ConnectIntegrationService(addr, client)
-	if err != nil {
-		ll.Fatal("Unable to connect Integration", l.Error(err))
-	}
-}
-
 type (
 	EmptyClaim   = claims.EmptyClaim
 	UserClaim    = claims.UserClaim
@@ -79,105 +29,6 @@ type (
 	PartnerClaim = claims.PartnerClaim
 	ShopClaim    = claims.ShopClaim
 )
-
-func (c *IntegrationClient) VersionInfo(ctx context.Context, in *cm.Empty) (*cm.VersionInfoResponse, error) {
-	resp, err := c._MiscService.VersionInfo(ctx, in)
-
-	node, ok := ctx.(*bus.NodeContext)
-	if !ok {
-		return resp, err
-	}
-	newNode := node.WithMessage(map[string]interface{}{
-		"Request": in,
-		"Result":  resp,
-	})
-	newNode.Error = err
-	return resp, err
-}
-func (c *IntegrationClient) GrantAccess(ctx context.Context, in *integration.GrantAccessRequest) (*integration.GrantAccessResponse, error) {
-	resp, err := c._IntegrationService.GrantAccess(ctx, in)
-
-	node, ok := ctx.(*bus.NodeContext)
-	if !ok {
-		return resp, err
-	}
-	newNode := node.WithMessage(map[string]interface{}{
-		"Request": in,
-		"Result":  resp,
-	})
-	newNode.Error = err
-	return resp, err
-}
-func (c *IntegrationClient) Init(ctx context.Context, in *integration.InitRequest) (*integration.LoginResponse, error) {
-	resp, err := c._IntegrationService.Init(ctx, in)
-
-	node, ok := ctx.(*bus.NodeContext)
-	if !ok {
-		return resp, err
-	}
-	newNode := node.WithMessage(map[string]interface{}{
-		"Request": in,
-		"Result":  resp,
-	})
-	newNode.Error = err
-	return resp, err
-}
-func (c *IntegrationClient) LoginUsingToken(ctx context.Context, in *integration.LoginUsingTokenRequest) (*integration.LoginResponse, error) {
-	resp, err := c._IntegrationService.LoginUsingToken(ctx, in)
-
-	node, ok := ctx.(*bus.NodeContext)
-	if !ok {
-		return resp, err
-	}
-	newNode := node.WithMessage(map[string]interface{}{
-		"Request": in,
-		"Result":  resp,
-	})
-	newNode.Error = err
-	return resp, err
-}
-func (c *IntegrationClient) Register(ctx context.Context, in *integration.RegisterRequest) (*integration.RegisterResponse, error) {
-	resp, err := c._IntegrationService.Register(ctx, in)
-
-	node, ok := ctx.(*bus.NodeContext)
-	if !ok {
-		return resp, err
-	}
-	newNode := node.WithMessage(map[string]interface{}{
-		"Request": in,
-		"Result":  resp,
-	})
-	newNode.Error = err
-	return resp, err
-}
-func (c *IntegrationClient) RequestLogin(ctx context.Context, in *integration.RequestLoginRequest) (*integration.RequestLoginResponse, error) {
-	resp, err := c._IntegrationService.RequestLogin(ctx, in)
-
-	node, ok := ctx.(*bus.NodeContext)
-	if !ok {
-		return resp, err
-	}
-	newNode := node.WithMessage(map[string]interface{}{
-		"Request": in,
-		"Result":  resp,
-	})
-	newNode.Error = err
-	return resp, err
-}
-func (c *IntegrationClient) SessionInfo(ctx context.Context, in *cm.Empty) (*integration.LoginResponse, error) {
-	resp, err := c._IntegrationService.SessionInfo(ctx, in)
-
-	node, ok := ctx.(*bus.NodeContext)
-	if !ok {
-		return resp, err
-	}
-	newNode := node.WithMessage(map[string]interface{}{
-		"Request": in,
-		"Result":  resp,
-	})
-	newNode.Error = err
-	return resp, err
-}
 
 type Muxer interface {
 	Handle(string, http.Handler)
@@ -198,10 +49,6 @@ func NewIntegrationServer(mux Muxer, hooks *twirp.ServerHooks) {
 type IntegrationImpl struct {
 	MiscService
 	IntegrationService
-}
-
-func NewIntegration() Integration {
-	return IntegrationImpl{}
 }
 
 type MiscService struct{}

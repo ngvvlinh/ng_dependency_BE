@@ -11,7 +11,6 @@ import (
 	cm "etop.vn/backend/pb/common"
 	pgevent "etop.vn/backend/pb/services/pgevent"
 	common "etop.vn/backend/pkg/common"
-	cmgrpc "etop.vn/backend/pkg/common/grpc"
 	metrics "etop.vn/backend/pkg/common/metrics"
 	cmwrapper "etop.vn/backend/pkg/common/wrapper"
 	claims "etop.vn/backend/pkg/etop/authorize/claims"
@@ -22,52 +21,6 @@ import (
 
 var ll = l.New()
 
-var Client Pgevent
-
-type Pgevent interface {
-	pgevent.MiscService
-	pgevent.EventService
-}
-
-type PgeventClient struct {
-	_MiscService  pgevent.MiscService
-	_EventService pgevent.EventService
-}
-
-func NewPgeventClient(addr string, client *http.Client) Pgevent {
-	if client == nil {
-		client = &http.Client{
-			Timeout: 10 * time.Second,
-		}
-	}
-
-	addr = "http://" + addr
-	return &PgeventClient{
-		_MiscService:  pgevent.NewMiscServiceProtobufClient(addr, client),
-		_EventService: pgevent.NewEventServiceProtobufClient(addr, client),
-	}
-}
-
-func ConnectPgeventService(addr string, client *http.Client, secret string) error {
-	Client = NewPgeventClient(addr, client)
-	bus.AddHandler("client", func(ctx context.Context, q *VersionInfoEndpoint) error { panic("Unexpected") })
-	bus.AddHandler("client", func(ctx context.Context, q *GenerateEventsEndpoint) error { panic("Unexpected") })
-	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
-	ctx = cmgrpc.AppendAccessToken(ctx, secret)
-	_, err := Client.VersionInfo(ctx, &cm.Empty{})
-	if err == nil {
-		ll.S.Infof("Connected to PgeventService at %v", addr)
-	}
-	return err
-}
-
-func MustConnectPgeventService(addr string, client *http.Client, secret string) {
-	err := ConnectPgeventService(addr, client, secret)
-	if err != nil {
-		ll.Fatal("Unable to connect Pgevent", l.Error(err))
-	}
-}
-
 type (
 	EmptyClaim   = claims.EmptyClaim
 	UserClaim    = claims.UserClaim
@@ -75,35 +28,6 @@ type (
 	PartnerClaim = claims.PartnerClaim
 	ShopClaim    = claims.ShopClaim
 )
-
-func (c *PgeventClient) VersionInfo(ctx context.Context, in *cm.Empty) (*cm.VersionInfoResponse, error) {
-	resp, err := c._MiscService.VersionInfo(ctx, in)
-
-	node, ok := ctx.(*bus.NodeContext)
-	if !ok {
-		return resp, err
-	}
-	newNode := node.WithMessage(map[string]interface{}{
-		"Request": in,
-		"Result":  resp,
-	})
-	newNode.Error = err
-	return resp, err
-}
-func (c *PgeventClient) GenerateEvents(ctx context.Context, in *pgevent.GenerateEventsRequest) (*cm.Empty, error) {
-	resp, err := c._EventService.GenerateEvents(ctx, in)
-
-	node, ok := ctx.(*bus.NodeContext)
-	if !ok {
-		return resp, err
-	}
-	newNode := node.WithMessage(map[string]interface{}{
-		"Request": in,
-		"Result":  resp,
-	})
-	newNode.Error = err
-	return resp, err
-}
 
 type Muxer interface {
 	Handle(string, http.Handler)
@@ -122,10 +46,6 @@ func NewPgeventServer(mux Muxer, hooks *twirp.ServerHooks, secret string) {
 type PgeventImpl struct {
 	MiscService
 	EventService
-}
-
-func NewPgevent() Pgevent {
-	return PgeventImpl{}
 }
 
 type MiscService struct{ secret string }

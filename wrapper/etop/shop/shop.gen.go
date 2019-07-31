@@ -25,180 +25,6 @@ import (
 
 var ll = l.New()
 
-var Client Shop
-
-type Shop interface {
-	shop.MiscService
-	shop.AccountService
-	shop.ExternalAccountService
-	shop.CollectionService
-	shop.ProductService
-	shop.ProductSourceService
-	shop.OrderService
-	shop.FulfillmentService
-	shop.ShipnowService
-	shop.HistoryService
-	shop.MoneyTransactionService
-	shop.SummaryService
-	shop.ExportService
-	shop.NotificationService
-	shop.AuthorizeService
-}
-
-type ShopClient struct {
-	_MiscService             shop.MiscService
-	_AccountService          shop.AccountService
-	_ExternalAccountService  shop.ExternalAccountService
-	_CollectionService       shop.CollectionService
-	_ProductService          shop.ProductService
-	_ProductSourceService    shop.ProductSourceService
-	_OrderService            shop.OrderService
-	_FulfillmentService      shop.FulfillmentService
-	_ShipnowService          shop.ShipnowService
-	_HistoryService          shop.HistoryService
-	_MoneyTransactionService shop.MoneyTransactionService
-	_SummaryService          shop.SummaryService
-	_ExportService           shop.ExportService
-	_NotificationService     shop.NotificationService
-	_AuthorizeService        shop.AuthorizeService
-}
-
-func NewShopClient(addr string, client *http.Client) Shop {
-	if client == nil {
-		client = &http.Client{
-			Timeout: 10 * time.Second,
-		}
-	}
-
-	addr = "http://" + addr
-	return &ShopClient{
-		_MiscService:             shop.NewMiscServiceProtobufClient(addr, client),
-		_AccountService:          shop.NewAccountServiceProtobufClient(addr, client),
-		_ExternalAccountService:  shop.NewExternalAccountServiceProtobufClient(addr, client),
-		_CollectionService:       shop.NewCollectionServiceProtobufClient(addr, client),
-		_ProductService:          shop.NewProductServiceProtobufClient(addr, client),
-		_ProductSourceService:    shop.NewProductSourceServiceProtobufClient(addr, client),
-		_OrderService:            shop.NewOrderServiceProtobufClient(addr, client),
-		_FulfillmentService:      shop.NewFulfillmentServiceProtobufClient(addr, client),
-		_ShipnowService:          shop.NewShipnowServiceProtobufClient(addr, client),
-		_HistoryService:          shop.NewHistoryServiceProtobufClient(addr, client),
-		_MoneyTransactionService: shop.NewMoneyTransactionServiceProtobufClient(addr, client),
-		_SummaryService:          shop.NewSummaryServiceProtobufClient(addr, client),
-		_ExportService:           shop.NewExportServiceProtobufClient(addr, client),
-		_NotificationService:     shop.NewNotificationServiceProtobufClient(addr, client),
-		_AuthorizeService:        shop.NewAuthorizeServiceProtobufClient(addr, client),
-	}
-}
-
-func ConnectShopService(addr string, client *http.Client) error {
-	Client = NewShopClient(addr, client)
-	bus.AddHandler("client", func(ctx context.Context, q *VersionInfoEndpoint) error { panic("Unexpected") })
-	bus.AddHandler("client", func(ctx context.Context, q *CreateExternalAccountAhamoveEndpoint) error { panic("Unexpected") })
-	bus.AddHandler("client", func(ctx context.Context, q *DeleteShopEndpoint) error { panic("Unexpected") })
-	bus.AddHandler("client", func(ctx context.Context, q *GetBalanceShopEndpoint) error { panic("Unexpected") })
-	bus.AddHandler("client", func(ctx context.Context, q *GetExternalAccountAhamoveEndpoint) error { panic("Unexpected") })
-	bus.AddHandler("client", func(ctx context.Context, q *RegisterShopEndpoint) error { panic("Unexpected") })
-	bus.AddHandler("client", func(ctx context.Context, q *RequestVerifyExternalAccountAhamoveEndpoint) error { panic("Unexpected") })
-	bus.AddHandler("client", func(ctx context.Context, q *SetDefaultAddressEndpoint) error { panic("Unexpected") })
-	bus.AddHandler("client", func(ctx context.Context, q *UpdateExternalAccountAhamoveVerificationEndpoint) error {
-		panic("Unexpected")
-	})
-	bus.AddHandler("client", func(ctx context.Context, q *UpdateExternalAccountAhamoveVerificationImagesEndpoint) error {
-		panic("Unexpected")
-	})
-	bus.AddHandler("client", func(ctx context.Context, q *UpdateShopEndpoint) error { panic("Unexpected") })
-	bus.AddHandler("client", func(ctx context.Context, q *ConnectCarrierServiceExternalAccountHaravanEndpoint) error {
-		panic("Unexpected")
-	})
-	bus.AddHandler("client", func(ctx context.Context, q *CreateExternalAccountHaravanEndpoint) error { panic("Unexpected") })
-	bus.AddHandler("client", func(ctx context.Context, q *DeleteConnectedCarrierServiceExternalAccountHaravanEndpoint) error {
-		panic("Unexpected")
-	})
-	bus.AddHandler("client", func(ctx context.Context, q *GetExternalAccountHaravanEndpoint) error { panic("Unexpected") })
-	bus.AddHandler("client", func(ctx context.Context, q *UpdateExternalAccountHaravanTokenEndpoint) error { panic("Unexpected") })
-	bus.AddHandler("client", func(ctx context.Context, q *CreateCollectionEndpoint) error { panic("Unexpected") })
-	bus.AddHandler("client", func(ctx context.Context, q *DeleteCollectionEndpoint) error { panic("Unexpected") })
-	bus.AddHandler("client", func(ctx context.Context, q *GetCollectionEndpoint) error { panic("Unexpected") })
-	bus.AddHandler("client", func(ctx context.Context, q *GetCollectionsEndpoint) error { panic("Unexpected") })
-	bus.AddHandler("client", func(ctx context.Context, q *GetCollectionsByIDsEndpoint) error { panic("Unexpected") })
-	bus.AddHandler("client", func(ctx context.Context, q *RemoveProductsCollectionEndpoint) error { panic("Unexpected") })
-	bus.AddHandler("client", func(ctx context.Context, q *UpdateCollectionEndpoint) error { panic("Unexpected") })
-	bus.AddHandler("client", func(ctx context.Context, q *UpdateProductsCollectionEndpoint) error { panic("Unexpected") })
-	bus.AddHandler("client", func(ctx context.Context, q *AddProductsEndpoint) error { panic("Unexpected") })
-	bus.AddHandler("client", func(ctx context.Context, q *GetProductEndpoint) error { panic("Unexpected") })
-	bus.AddHandler("client", func(ctx context.Context, q *GetProductsEndpoint) error { panic("Unexpected") })
-	bus.AddHandler("client", func(ctx context.Context, q *GetProductsByIDsEndpoint) error { panic("Unexpected") })
-	bus.AddHandler("client", func(ctx context.Context, q *RemoveProductsEndpoint) error { panic("Unexpected") })
-	bus.AddHandler("client", func(ctx context.Context, q *RemoveVariantsEndpoint) error { panic("Unexpected") })
-	bus.AddHandler("client", func(ctx context.Context, q *UpdateProductEndpoint) error { panic("Unexpected") })
-	bus.AddHandler("client", func(ctx context.Context, q *UpdateProductImagesEndpoint) error { panic("Unexpected") })
-	bus.AddHandler("client", func(ctx context.Context, q *UpdateProductsTagsEndpoint) error { panic("Unexpected") })
-	bus.AddHandler("client", func(ctx context.Context, q *UpdateVariantEndpoint) error { panic("Unexpected") })
-	bus.AddHandler("client", func(ctx context.Context, q *UpdateVariantImagesEndpoint) error { panic("Unexpected") })
-	bus.AddHandler("client", func(ctx context.Context, q *CreateProductSourceEndpoint) error { panic("Unexpected") })
-	bus.AddHandler("client", func(ctx context.Context, q *CreateProductSourceCategoryEndpoint) error { panic("Unexpected") })
-	bus.AddHandler("client", func(ctx context.Context, q *CreateVariantEndpoint) error { panic("Unexpected") })
-	bus.AddHandler("client", func(ctx context.Context, q *GetProductSourceCategoriesEndpoint) error { panic("Unexpected") })
-	bus.AddHandler("client", func(ctx context.Context, q *GetProductSourceCategoryEndpoint) error { panic("Unexpected") })
-	bus.AddHandler("client", func(ctx context.Context, q *GetShopProductSourcesEndpoint) error { panic("Unexpected") })
-	bus.AddHandler("client", func(ctx context.Context, q *RemoveProductSourceCategoryEndpoint) error { panic("Unexpected") })
-	bus.AddHandler("client", func(ctx context.Context, q *UpdateProductSourceCategoryEndpoint) error { panic("Unexpected") })
-	bus.AddHandler("client", func(ctx context.Context, q *UpdateProductsPSCategoryEndpoint) error { panic("Unexpected") })
-	bus.AddHandler("client", func(ctx context.Context, q *CancelOrderEndpoint) error { panic("Unexpected") })
-	bus.AddHandler("client", func(ctx context.Context, q *ConfirmOrderAndCreateFulfillmentsEndpoint) error { panic("Unexpected") })
-	bus.AddHandler("client", func(ctx context.Context, q *ConfirmOrdersAndCreateFulfillmentsEndpoint) error { panic("Unexpected") })
-	bus.AddHandler("client", func(ctx context.Context, q *CreateOrderEndpoint) error { panic("Unexpected") })
-	bus.AddHandler("client", func(ctx context.Context, q *GetOrderEndpoint) error { panic("Unexpected") })
-	bus.AddHandler("client", func(ctx context.Context, q *GetOrdersEndpoint) error { panic("Unexpected") })
-	bus.AddHandler("client", func(ctx context.Context, q *GetOrdersByIDsEndpoint) error { panic("Unexpected") })
-	bus.AddHandler("client", func(ctx context.Context, q *UpdateOrderEndpoint) error { panic("Unexpected") })
-	bus.AddHandler("client", func(ctx context.Context, q *UpdateOrderPaymentStatusEndpoint) error { panic("Unexpected") })
-	bus.AddHandler("client", func(ctx context.Context, q *UpdateOrdersStatusEndpoint) error { panic("Unexpected") })
-	bus.AddHandler("client", func(ctx context.Context, q *CancelFulfillmentEndpoint) error { panic("Unexpected") })
-	bus.AddHandler("client", func(ctx context.Context, q *CreateFulfillmentsForOrderEndpoint) error { panic("Unexpected") })
-	bus.AddHandler("client", func(ctx context.Context, q *GetExternalShippingServicesEndpoint) error { panic("Unexpected") })
-	bus.AddHandler("client", func(ctx context.Context, q *GetFulfillmentEndpoint) error { panic("Unexpected") })
-	bus.AddHandler("client", func(ctx context.Context, q *GetFulfillmentsEndpoint) error { panic("Unexpected") })
-	bus.AddHandler("client", func(ctx context.Context, q *GetPublicExternalShippingServicesEndpoint) error { panic("Unexpected") })
-	bus.AddHandler("client", func(ctx context.Context, q *GetPublicFulfillmentEndpoint) error { panic("Unexpected") })
-	bus.AddHandler("client", func(ctx context.Context, q *UpdateFulfillmentsShippingStateEndpoint) error { panic("Unexpected") })
-	bus.AddHandler("client", func(ctx context.Context, q *CancelShipnowFulfillmentEndpoint) error { panic("Unexpected") })
-	bus.AddHandler("client", func(ctx context.Context, q *ConfirmShipnowFulfillmentEndpoint) error { panic("Unexpected") })
-	bus.AddHandler("client", func(ctx context.Context, q *CreateShipnowFulfillmentEndpoint) error { panic("Unexpected") })
-	bus.AddHandler("client", func(ctx context.Context, q *GetShipnowFulfillmentEndpoint) error { panic("Unexpected") })
-	bus.AddHandler("client", func(ctx context.Context, q *GetShipnowFulfillmentsEndpoint) error { panic("Unexpected") })
-	bus.AddHandler("client", func(ctx context.Context, q *GetShipnowServicesEndpoint) error { panic("Unexpected") })
-	bus.AddHandler("client", func(ctx context.Context, q *UpdateShipnowFulfillmentEndpoint) error { panic("Unexpected") })
-	bus.AddHandler("client", func(ctx context.Context, q *GetFulfillmentHistoryEndpoint) error { panic("Unexpected") })
-	bus.AddHandler("client", func(ctx context.Context, q *GetMoneyTransactionEndpoint) error { panic("Unexpected") })
-	bus.AddHandler("client", func(ctx context.Context, q *GetMoneyTransactionsEndpoint) error { panic("Unexpected") })
-	bus.AddHandler("client", func(ctx context.Context, q *CalcBalanceShopEndpoint) error { panic("Unexpected") })
-	bus.AddHandler("client", func(ctx context.Context, q *SummarizeFulfillmentsEndpoint) error { panic("Unexpected") })
-	bus.AddHandler("client", func(ctx context.Context, q *GetExportsEndpoint) error { panic("Unexpected") })
-	bus.AddHandler("client", func(ctx context.Context, q *RequestExportEndpoint) error { panic("Unexpected") })
-	bus.AddHandler("client", func(ctx context.Context, q *CreateDeviceEndpoint) error { panic("Unexpected") })
-	bus.AddHandler("client", func(ctx context.Context, q *DeleteDeviceEndpoint) error { panic("Unexpected") })
-	bus.AddHandler("client", func(ctx context.Context, q *GetNotificationEndpoint) error { panic("Unexpected") })
-	bus.AddHandler("client", func(ctx context.Context, q *GetNotificationsEndpoint) error { panic("Unexpected") })
-	bus.AddHandler("client", func(ctx context.Context, q *UpdateNotificationsEndpoint) error { panic("Unexpected") })
-	bus.AddHandler("client", func(ctx context.Context, q *AuthorizePartnerEndpoint) error { panic("Unexpected") })
-	bus.AddHandler("client", func(ctx context.Context, q *GetAuthorizedPartnersEndpoint) error { panic("Unexpected") })
-	bus.AddHandler("client", func(ctx context.Context, q *GetAvailablePartnersEndpoint) error { panic("Unexpected") })
-	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
-	_, err := Client.VersionInfo(ctx, &cm.Empty{})
-	if err == nil {
-		ll.S.Infof("Connected to ShopService at %v", addr)
-	}
-	return err
-}
-
-func MustConnectShopService(addr string, client *http.Client) {
-	err := ConnectShopService(addr, client)
-	if err != nil {
-		ll.Fatal("Unable to connect Shop", l.Error(err))
-	}
-}
-
 type (
 	EmptyClaim   = claims.EmptyClaim
 	UserClaim    = claims.UserClaim
@@ -206,1183 +32,6 @@ type (
 	PartnerClaim = claims.PartnerClaim
 	ShopClaim    = claims.ShopClaim
 )
-
-func (c *ShopClient) VersionInfo(ctx context.Context, in *cm.Empty) (*cm.VersionInfoResponse, error) {
-	resp, err := c._MiscService.VersionInfo(ctx, in)
-
-	node, ok := ctx.(*bus.NodeContext)
-	if !ok {
-		return resp, err
-	}
-	newNode := node.WithMessage(map[string]interface{}{
-		"Request": in,
-		"Result":  resp,
-	})
-	newNode.Error = err
-	return resp, err
-}
-func (c *ShopClient) CreateExternalAccountAhamove(ctx context.Context, in *cm.Empty) (*shop.ExternalAccountAhamove, error) {
-	resp, err := c._AccountService.CreateExternalAccountAhamove(ctx, in)
-
-	node, ok := ctx.(*bus.NodeContext)
-	if !ok {
-		return resp, err
-	}
-	newNode := node.WithMessage(map[string]interface{}{
-		"Request": in,
-		"Result":  resp,
-	})
-	newNode.Error = err
-	return resp, err
-}
-func (c *ShopClient) DeleteShop(ctx context.Context, in *cm.IDRequest) (*cm.Empty, error) {
-	resp, err := c._AccountService.DeleteShop(ctx, in)
-
-	node, ok := ctx.(*bus.NodeContext)
-	if !ok {
-		return resp, err
-	}
-	newNode := node.WithMessage(map[string]interface{}{
-		"Request": in,
-		"Result":  resp,
-	})
-	newNode.Error = err
-	return resp, err
-}
-func (c *ShopClient) GetBalanceShop(ctx context.Context, in *cm.Empty) (*shop.GetBalanceShopResponse, error) {
-	resp, err := c._AccountService.GetBalanceShop(ctx, in)
-
-	node, ok := ctx.(*bus.NodeContext)
-	if !ok {
-		return resp, err
-	}
-	newNode := node.WithMessage(map[string]interface{}{
-		"Request": in,
-		"Result":  resp,
-	})
-	newNode.Error = err
-	return resp, err
-}
-func (c *ShopClient) GetExternalAccountAhamove(ctx context.Context, in *cm.Empty) (*shop.ExternalAccountAhamove, error) {
-	resp, err := c._AccountService.GetExternalAccountAhamove(ctx, in)
-
-	node, ok := ctx.(*bus.NodeContext)
-	if !ok {
-		return resp, err
-	}
-	newNode := node.WithMessage(map[string]interface{}{
-		"Request": in,
-		"Result":  resp,
-	})
-	newNode.Error = err
-	return resp, err
-}
-func (c *ShopClient) RegisterShop(ctx context.Context, in *shop.RegisterShopRequest) (*shop.RegisterShopResponse, error) {
-	resp, err := c._AccountService.RegisterShop(ctx, in)
-
-	node, ok := ctx.(*bus.NodeContext)
-	if !ok {
-		return resp, err
-	}
-	newNode := node.WithMessage(map[string]interface{}{
-		"Request": in,
-		"Result":  resp,
-	})
-	newNode.Error = err
-	return resp, err
-}
-func (c *ShopClient) RequestVerifyExternalAccountAhamove(ctx context.Context, in *cm.Empty) (*cm.UpdatedResponse, error) {
-	resp, err := c._AccountService.RequestVerifyExternalAccountAhamove(ctx, in)
-
-	node, ok := ctx.(*bus.NodeContext)
-	if !ok {
-		return resp, err
-	}
-	newNode := node.WithMessage(map[string]interface{}{
-		"Request": in,
-		"Result":  resp,
-	})
-	newNode.Error = err
-	return resp, err
-}
-func (c *ShopClient) SetDefaultAddress(ctx context.Context, in *etop.SetDefaultAddressRequest) (*cm.UpdatedResponse, error) {
-	resp, err := c._AccountService.SetDefaultAddress(ctx, in)
-
-	node, ok := ctx.(*bus.NodeContext)
-	if !ok {
-		return resp, err
-	}
-	newNode := node.WithMessage(map[string]interface{}{
-		"Request": in,
-		"Result":  resp,
-	})
-	newNode.Error = err
-	return resp, err
-}
-func (c *ShopClient) UpdateExternalAccountAhamoveVerification(ctx context.Context, in *shop.UpdateXAccountAhamoveVerificationRequest) (*cm.UpdatedResponse, error) {
-	resp, err := c._AccountService.UpdateExternalAccountAhamoveVerification(ctx, in)
-
-	node, ok := ctx.(*bus.NodeContext)
-	if !ok {
-		return resp, err
-	}
-	newNode := node.WithMessage(map[string]interface{}{
-		"Request": in,
-		"Result":  resp,
-	})
-	newNode.Error = err
-	return resp, err
-}
-func (c *ShopClient) UpdateExternalAccountAhamoveVerificationImages(ctx context.Context, in *shop.UpdateXAccountAhamoveVerificationRequest) (*cm.UpdatedResponse, error) {
-	resp, err := c._AccountService.UpdateExternalAccountAhamoveVerificationImages(ctx, in)
-
-	node, ok := ctx.(*bus.NodeContext)
-	if !ok {
-		return resp, err
-	}
-	newNode := node.WithMessage(map[string]interface{}{
-		"Request": in,
-		"Result":  resp,
-	})
-	newNode.Error = err
-	return resp, err
-}
-func (c *ShopClient) UpdateShop(ctx context.Context, in *shop.UpdateShopRequest) (*shop.UpdateShopResponse, error) {
-	resp, err := c._AccountService.UpdateShop(ctx, in)
-
-	node, ok := ctx.(*bus.NodeContext)
-	if !ok {
-		return resp, err
-	}
-	newNode := node.WithMessage(map[string]interface{}{
-		"Request": in,
-		"Result":  resp,
-	})
-	newNode.Error = err
-	return resp, err
-}
-func (c *ShopClient) ConnectCarrierServiceExternalAccountHaravan(ctx context.Context, in *cm.Empty) (*cm.UpdatedResponse, error) {
-	resp, err := c._ExternalAccountService.ConnectCarrierServiceExternalAccountHaravan(ctx, in)
-
-	node, ok := ctx.(*bus.NodeContext)
-	if !ok {
-		return resp, err
-	}
-	newNode := node.WithMessage(map[string]interface{}{
-		"Request": in,
-		"Result":  resp,
-	})
-	newNode.Error = err
-	return resp, err
-}
-func (c *ShopClient) CreateExternalAccountHaravan(ctx context.Context, in *shop.ExternalAccountHaravanRequest) (*shop.ExternalAccountHaravan, error) {
-	resp, err := c._ExternalAccountService.CreateExternalAccountHaravan(ctx, in)
-
-	node, ok := ctx.(*bus.NodeContext)
-	if !ok {
-		return resp, err
-	}
-	newNode := node.WithMessage(map[string]interface{}{
-		"Request": in,
-		"Result":  resp,
-	})
-	newNode.Error = err
-	return resp, err
-}
-func (c *ShopClient) DeleteConnectedCarrierServiceExternalAccountHaravan(ctx context.Context, in *cm.Empty) (*cm.DeletedResponse, error) {
-	resp, err := c._ExternalAccountService.DeleteConnectedCarrierServiceExternalAccountHaravan(ctx, in)
-
-	node, ok := ctx.(*bus.NodeContext)
-	if !ok {
-		return resp, err
-	}
-	newNode := node.WithMessage(map[string]interface{}{
-		"Request": in,
-		"Result":  resp,
-	})
-	newNode.Error = err
-	return resp, err
-}
-func (c *ShopClient) GetExternalAccountHaravan(ctx context.Context, in *cm.Empty) (*shop.ExternalAccountHaravan, error) {
-	resp, err := c._ExternalAccountService.GetExternalAccountHaravan(ctx, in)
-
-	node, ok := ctx.(*bus.NodeContext)
-	if !ok {
-		return resp, err
-	}
-	newNode := node.WithMessage(map[string]interface{}{
-		"Request": in,
-		"Result":  resp,
-	})
-	newNode.Error = err
-	return resp, err
-}
-func (c *ShopClient) UpdateExternalAccountHaravanToken(ctx context.Context, in *shop.ExternalAccountHaravanRequest) (*shop.ExternalAccountHaravan, error) {
-	resp, err := c._ExternalAccountService.UpdateExternalAccountHaravanToken(ctx, in)
-
-	node, ok := ctx.(*bus.NodeContext)
-	if !ok {
-		return resp, err
-	}
-	newNode := node.WithMessage(map[string]interface{}{
-		"Request": in,
-		"Result":  resp,
-	})
-	newNode.Error = err
-	return resp, err
-}
-func (c *ShopClient) CreateCollection(ctx context.Context, in *shop.CreateCollectionRequest) (*shop.Collection, error) {
-	resp, err := c._CollectionService.CreateCollection(ctx, in)
-
-	node, ok := ctx.(*bus.NodeContext)
-	if !ok {
-		return resp, err
-	}
-	newNode := node.WithMessage(map[string]interface{}{
-		"Request": in,
-		"Result":  resp,
-	})
-	newNode.Error = err
-	return resp, err
-}
-func (c *ShopClient) DeleteCollection(ctx context.Context, in *cm.IDRequest) (*cm.RemovedResponse, error) {
-	resp, err := c._CollectionService.DeleteCollection(ctx, in)
-
-	node, ok := ctx.(*bus.NodeContext)
-	if !ok {
-		return resp, err
-	}
-	newNode := node.WithMessage(map[string]interface{}{
-		"Request": in,
-		"Result":  resp,
-	})
-	newNode.Error = err
-	return resp, err
-}
-func (c *ShopClient) GetCollection(ctx context.Context, in *cm.IDRequest) (*shop.Collection, error) {
-	resp, err := c._CollectionService.GetCollection(ctx, in)
-
-	node, ok := ctx.(*bus.NodeContext)
-	if !ok {
-		return resp, err
-	}
-	newNode := node.WithMessage(map[string]interface{}{
-		"Request": in,
-		"Result":  resp,
-	})
-	newNode.Error = err
-	return resp, err
-}
-func (c *ShopClient) GetCollections(ctx context.Context, in *cm.Empty) (*shop.CollectionsResponse, error) {
-	resp, err := c._CollectionService.GetCollections(ctx, in)
-
-	node, ok := ctx.(*bus.NodeContext)
-	if !ok {
-		return resp, err
-	}
-	newNode := node.WithMessage(map[string]interface{}{
-		"Request": in,
-		"Result":  resp,
-	})
-	newNode.Error = err
-	return resp, err
-}
-func (c *ShopClient) GetCollectionsByIDs(ctx context.Context, in *cm.IDsRequest) (*shop.CollectionsResponse, error) {
-	resp, err := c._CollectionService.GetCollectionsByIDs(ctx, in)
-
-	node, ok := ctx.(*bus.NodeContext)
-	if !ok {
-		return resp, err
-	}
-	newNode := node.WithMessage(map[string]interface{}{
-		"Request": in,
-		"Result":  resp,
-	})
-	newNode.Error = err
-	return resp, err
-}
-func (c *ShopClient) RemoveProductsCollection(ctx context.Context, in *shop.RemoveProductsCollectionRequest) (*cm.UpdatedResponse, error) {
-	resp, err := c._CollectionService.RemoveProductsCollection(ctx, in)
-
-	node, ok := ctx.(*bus.NodeContext)
-	if !ok {
-		return resp, err
-	}
-	newNode := node.WithMessage(map[string]interface{}{
-		"Request": in,
-		"Result":  resp,
-	})
-	newNode.Error = err
-	return resp, err
-}
-func (c *ShopClient) UpdateCollection(ctx context.Context, in *shop.UpdateCollectionRequest) (*shop.Collection, error) {
-	resp, err := c._CollectionService.UpdateCollection(ctx, in)
-
-	node, ok := ctx.(*bus.NodeContext)
-	if !ok {
-		return resp, err
-	}
-	newNode := node.WithMessage(map[string]interface{}{
-		"Request": in,
-		"Result":  resp,
-	})
-	newNode.Error = err
-	return resp, err
-}
-func (c *ShopClient) UpdateProductsCollection(ctx context.Context, in *shop.UpdateProductsCollectionRequest) (*shop.UpdateProductsCollectionResponse, error) {
-	resp, err := c._CollectionService.UpdateProductsCollection(ctx, in)
-
-	node, ok := ctx.(*bus.NodeContext)
-	if !ok {
-		return resp, err
-	}
-	newNode := node.WithMessage(map[string]interface{}{
-		"Request": in,
-		"Result":  resp,
-	})
-	newNode.Error = err
-	return resp, err
-}
-func (c *ShopClient) AddProducts(ctx context.Context, in *shop.AddProductsRequest) (*shop.AddProductsResponse, error) {
-	resp, err := c._ProductService.AddProducts(ctx, in)
-
-	node, ok := ctx.(*bus.NodeContext)
-	if !ok {
-		return resp, err
-	}
-	newNode := node.WithMessage(map[string]interface{}{
-		"Request": in,
-		"Result":  resp,
-	})
-	newNode.Error = err
-	return resp, err
-}
-func (c *ShopClient) GetProduct(ctx context.Context, in *cm.IDRequest) (*shop.ShopProduct, error) {
-	resp, err := c._ProductService.GetProduct(ctx, in)
-
-	node, ok := ctx.(*bus.NodeContext)
-	if !ok {
-		return resp, err
-	}
-	newNode := node.WithMessage(map[string]interface{}{
-		"Request": in,
-		"Result":  resp,
-	})
-	newNode.Error = err
-	return resp, err
-}
-func (c *ShopClient) GetProducts(ctx context.Context, in *shop.GetVariantsRequest) (*shop.ShopProductsResponse, error) {
-	resp, err := c._ProductService.GetProducts(ctx, in)
-
-	node, ok := ctx.(*bus.NodeContext)
-	if !ok {
-		return resp, err
-	}
-	newNode := node.WithMessage(map[string]interface{}{
-		"Request": in,
-		"Result":  resp,
-	})
-	newNode.Error = err
-	return resp, err
-}
-func (c *ShopClient) GetProductsByIDs(ctx context.Context, in *cm.IDsRequest) (*shop.ShopProductsResponse, error) {
-	resp, err := c._ProductService.GetProductsByIDs(ctx, in)
-
-	node, ok := ctx.(*bus.NodeContext)
-	if !ok {
-		return resp, err
-	}
-	newNode := node.WithMessage(map[string]interface{}{
-		"Request": in,
-		"Result":  resp,
-	})
-	newNode.Error = err
-	return resp, err
-}
-func (c *ShopClient) RemoveProducts(ctx context.Context, in *shop.RemoveVariantsRequest) (*cm.RemovedResponse, error) {
-	resp, err := c._ProductService.RemoveProducts(ctx, in)
-
-	node, ok := ctx.(*bus.NodeContext)
-	if !ok {
-		return resp, err
-	}
-	newNode := node.WithMessage(map[string]interface{}{
-		"Request": in,
-		"Result":  resp,
-	})
-	newNode.Error = err
-	return resp, err
-}
-func (c *ShopClient) RemoveVariants(ctx context.Context, in *shop.RemoveVariantsRequest) (*cm.RemovedResponse, error) {
-	resp, err := c._ProductService.RemoveVariants(ctx, in)
-
-	node, ok := ctx.(*bus.NodeContext)
-	if !ok {
-		return resp, err
-	}
-	newNode := node.WithMessage(map[string]interface{}{
-		"Request": in,
-		"Result":  resp,
-	})
-	newNode.Error = err
-	return resp, err
-}
-func (c *ShopClient) UpdateProduct(ctx context.Context, in *shop.UpdateProductRequest) (*shop.ShopProduct, error) {
-	resp, err := c._ProductService.UpdateProduct(ctx, in)
-
-	node, ok := ctx.(*bus.NodeContext)
-	if !ok {
-		return resp, err
-	}
-	newNode := node.WithMessage(map[string]interface{}{
-		"Request": in,
-		"Result":  resp,
-	})
-	newNode.Error = err
-	return resp, err
-}
-func (c *ShopClient) UpdateProductImages(ctx context.Context, in *shop.UpdateVariantImagesRequest) (*shop.ShopProduct, error) {
-	resp, err := c._ProductService.UpdateProductImages(ctx, in)
-
-	node, ok := ctx.(*bus.NodeContext)
-	if !ok {
-		return resp, err
-	}
-	newNode := node.WithMessage(map[string]interface{}{
-		"Request": in,
-		"Result":  resp,
-	})
-	newNode.Error = err
-	return resp, err
-}
-func (c *ShopClient) UpdateProductsTags(ctx context.Context, in *shop.UpdateProductsTagsRequest) (*cm.UpdatedResponse, error) {
-	resp, err := c._ProductService.UpdateProductsTags(ctx, in)
-
-	node, ok := ctx.(*bus.NodeContext)
-	if !ok {
-		return resp, err
-	}
-	newNode := node.WithMessage(map[string]interface{}{
-		"Request": in,
-		"Result":  resp,
-	})
-	newNode.Error = err
-	return resp, err
-}
-func (c *ShopClient) UpdateVariant(ctx context.Context, in *shop.UpdateVariantRequest) (*shop.ShopVariant, error) {
-	resp, err := c._ProductService.UpdateVariant(ctx, in)
-
-	node, ok := ctx.(*bus.NodeContext)
-	if !ok {
-		return resp, err
-	}
-	newNode := node.WithMessage(map[string]interface{}{
-		"Request": in,
-		"Result":  resp,
-	})
-	newNode.Error = err
-	return resp, err
-}
-func (c *ShopClient) UpdateVariantImages(ctx context.Context, in *shop.UpdateVariantImagesRequest) (*shop.ShopVariant, error) {
-	resp, err := c._ProductService.UpdateVariantImages(ctx, in)
-
-	node, ok := ctx.(*bus.NodeContext)
-	if !ok {
-		return resp, err
-	}
-	newNode := node.WithMessage(map[string]interface{}{
-		"Request": in,
-		"Result":  resp,
-	})
-	newNode.Error = err
-	return resp, err
-}
-func (c *ShopClient) CreateProductSource(ctx context.Context, in *shop.CreateProductSourceRequest) (*shop.ProductSource, error) {
-	resp, err := c._ProductSourceService.CreateProductSource(ctx, in)
-
-	node, ok := ctx.(*bus.NodeContext)
-	if !ok {
-		return resp, err
-	}
-	newNode := node.WithMessage(map[string]interface{}{
-		"Request": in,
-		"Result":  resp,
-	})
-	newNode.Error = err
-	return resp, err
-}
-func (c *ShopClient) CreateProductSourceCategory(ctx context.Context, in *shop.CreatePSCategoryRequest) (*shop.Category, error) {
-	resp, err := c._ProductSourceService.CreateProductSourceCategory(ctx, in)
-
-	node, ok := ctx.(*bus.NodeContext)
-	if !ok {
-		return resp, err
-	}
-	newNode := node.WithMessage(map[string]interface{}{
-		"Request": in,
-		"Result":  resp,
-	})
-	newNode.Error = err
-	return resp, err
-}
-func (c *ShopClient) CreateVariant(ctx context.Context, in *shop.CreateVariantRequest) (*shop.ShopProduct, error) {
-	resp, err := c._ProductSourceService.CreateVariant(ctx, in)
-
-	node, ok := ctx.(*bus.NodeContext)
-	if !ok {
-		return resp, err
-	}
-	newNode := node.WithMessage(map[string]interface{}{
-		"Request": in,
-		"Result":  resp,
-	})
-	newNode.Error = err
-	return resp, err
-}
-func (c *ShopClient) GetProductSourceCategories(ctx context.Context, in *shop.GetProductSourceCategoriesRequest) (*shop.CategoriesResponse, error) {
-	resp, err := c._ProductSourceService.GetProductSourceCategories(ctx, in)
-
-	node, ok := ctx.(*bus.NodeContext)
-	if !ok {
-		return resp, err
-	}
-	newNode := node.WithMessage(map[string]interface{}{
-		"Request": in,
-		"Result":  resp,
-	})
-	newNode.Error = err
-	return resp, err
-}
-func (c *ShopClient) GetProductSourceCategory(ctx context.Context, in *cm.IDRequest) (*shop.Category, error) {
-	resp, err := c._ProductSourceService.GetProductSourceCategory(ctx, in)
-
-	node, ok := ctx.(*bus.NodeContext)
-	if !ok {
-		return resp, err
-	}
-	newNode := node.WithMessage(map[string]interface{}{
-		"Request": in,
-		"Result":  resp,
-	})
-	newNode.Error = err
-	return resp, err
-}
-func (c *ShopClient) GetShopProductSources(ctx context.Context, in *cm.Empty) (*shop.ProductSourcesResponse, error) {
-	resp, err := c._ProductSourceService.GetShopProductSources(ctx, in)
-
-	node, ok := ctx.(*bus.NodeContext)
-	if !ok {
-		return resp, err
-	}
-	newNode := node.WithMessage(map[string]interface{}{
-		"Request": in,
-		"Result":  resp,
-	})
-	newNode.Error = err
-	return resp, err
-}
-func (c *ShopClient) RemoveProductSourceCategory(ctx context.Context, in *cm.IDRequest) (*cm.RemovedResponse, error) {
-	resp, err := c._ProductSourceService.RemoveProductSourceCategory(ctx, in)
-
-	node, ok := ctx.(*bus.NodeContext)
-	if !ok {
-		return resp, err
-	}
-	newNode := node.WithMessage(map[string]interface{}{
-		"Request": in,
-		"Result":  resp,
-	})
-	newNode.Error = err
-	return resp, err
-}
-func (c *ShopClient) UpdateProductSourceCategory(ctx context.Context, in *shop.UpdateProductSourceCategoryRequest) (*shop.Category, error) {
-	resp, err := c._ProductSourceService.UpdateProductSourceCategory(ctx, in)
-
-	node, ok := ctx.(*bus.NodeContext)
-	if !ok {
-		return resp, err
-	}
-	newNode := node.WithMessage(map[string]interface{}{
-		"Request": in,
-		"Result":  resp,
-	})
-	newNode.Error = err
-	return resp, err
-}
-func (c *ShopClient) UpdateProductsPSCategory(ctx context.Context, in *shop.UpdateProductsPSCategoryRequest) (*cm.UpdatedResponse, error) {
-	resp, err := c._ProductSourceService.UpdateProductsPSCategory(ctx, in)
-
-	node, ok := ctx.(*bus.NodeContext)
-	if !ok {
-		return resp, err
-	}
-	newNode := node.WithMessage(map[string]interface{}{
-		"Request": in,
-		"Result":  resp,
-	})
-	newNode.Error = err
-	return resp, err
-}
-func (c *ShopClient) CancelOrder(ctx context.Context, in *shop.CancelOrderRequest) (*order.OrderWithErrorsResponse, error) {
-	resp, err := c._OrderService.CancelOrder(ctx, in)
-
-	node, ok := ctx.(*bus.NodeContext)
-	if !ok {
-		return resp, err
-	}
-	newNode := node.WithMessage(map[string]interface{}{
-		"Request": in,
-		"Result":  resp,
-	})
-	newNode.Error = err
-	return resp, err
-}
-func (c *ShopClient) ConfirmOrderAndCreateFulfillments(ctx context.Context, in *shop.OrderIDRequest) (*order.OrderWithErrorsResponse, error) {
-	resp, err := c._OrderService.ConfirmOrderAndCreateFulfillments(ctx, in)
-
-	node, ok := ctx.(*bus.NodeContext)
-	if !ok {
-		return resp, err
-	}
-	newNode := node.WithMessage(map[string]interface{}{
-		"Request": in,
-		"Result":  resp,
-	})
-	newNode.Error = err
-	return resp, err
-}
-func (c *ShopClient) ConfirmOrdersAndCreateFulfillments(ctx context.Context, in *shop.OrderIDsRequest) (*cm.ErrorsResponse, error) {
-	resp, err := c._OrderService.ConfirmOrdersAndCreateFulfillments(ctx, in)
-
-	node, ok := ctx.(*bus.NodeContext)
-	if !ok {
-		return resp, err
-	}
-	newNode := node.WithMessage(map[string]interface{}{
-		"Request": in,
-		"Result":  resp,
-	})
-	newNode.Error = err
-	return resp, err
-}
-func (c *ShopClient) CreateOrder(ctx context.Context, in *order.CreateOrderRequest) (*order.Order, error) {
-	resp, err := c._OrderService.CreateOrder(ctx, in)
-
-	node, ok := ctx.(*bus.NodeContext)
-	if !ok {
-		return resp, err
-	}
-	newNode := node.WithMessage(map[string]interface{}{
-		"Request": in,
-		"Result":  resp,
-	})
-	newNode.Error = err
-	return resp, err
-}
-func (c *ShopClient) GetOrder(ctx context.Context, in *cm.IDRequest) (*order.Order, error) {
-	resp, err := c._OrderService.GetOrder(ctx, in)
-
-	node, ok := ctx.(*bus.NodeContext)
-	if !ok {
-		return resp, err
-	}
-	newNode := node.WithMessage(map[string]interface{}{
-		"Request": in,
-		"Result":  resp,
-	})
-	newNode.Error = err
-	return resp, err
-}
-func (c *ShopClient) GetOrders(ctx context.Context, in *shop.GetOrdersRequest) (*order.OrdersResponse, error) {
-	resp, err := c._OrderService.GetOrders(ctx, in)
-
-	node, ok := ctx.(*bus.NodeContext)
-	if !ok {
-		return resp, err
-	}
-	newNode := node.WithMessage(map[string]interface{}{
-		"Request": in,
-		"Result":  resp,
-	})
-	newNode.Error = err
-	return resp, err
-}
-func (c *ShopClient) GetOrdersByIDs(ctx context.Context, in *etop.IDsRequest) (*order.OrdersResponse, error) {
-	resp, err := c._OrderService.GetOrdersByIDs(ctx, in)
-
-	node, ok := ctx.(*bus.NodeContext)
-	if !ok {
-		return resp, err
-	}
-	newNode := node.WithMessage(map[string]interface{}{
-		"Request": in,
-		"Result":  resp,
-	})
-	newNode.Error = err
-	return resp, err
-}
-func (c *ShopClient) UpdateOrder(ctx context.Context, in *order.UpdateOrderRequest) (*order.Order, error) {
-	resp, err := c._OrderService.UpdateOrder(ctx, in)
-
-	node, ok := ctx.(*bus.NodeContext)
-	if !ok {
-		return resp, err
-	}
-	newNode := node.WithMessage(map[string]interface{}{
-		"Request": in,
-		"Result":  resp,
-	})
-	newNode.Error = err
-	return resp, err
-}
-func (c *ShopClient) UpdateOrderPaymentStatus(ctx context.Context, in *shop.UpdateOrderPaymentStatusRequest) (*cm.UpdatedResponse, error) {
-	resp, err := c._OrderService.UpdateOrderPaymentStatus(ctx, in)
-
-	node, ok := ctx.(*bus.NodeContext)
-	if !ok {
-		return resp, err
-	}
-	newNode := node.WithMessage(map[string]interface{}{
-		"Request": in,
-		"Result":  resp,
-	})
-	newNode.Error = err
-	return resp, err
-}
-func (c *ShopClient) UpdateOrdersStatus(ctx context.Context, in *shop.UpdateOrdersStatusRequest) (*cm.UpdatedResponse, error) {
-	resp, err := c._OrderService.UpdateOrdersStatus(ctx, in)
-
-	node, ok := ctx.(*bus.NodeContext)
-	if !ok {
-		return resp, err
-	}
-	newNode := node.WithMessage(map[string]interface{}{
-		"Request": in,
-		"Result":  resp,
-	})
-	newNode.Error = err
-	return resp, err
-}
-func (c *ShopClient) CancelFulfillment(ctx context.Context, in *cm.IDRequest) (*cm.UpdatedResponse, error) {
-	resp, err := c._FulfillmentService.CancelFulfillment(ctx, in)
-
-	node, ok := ctx.(*bus.NodeContext)
-	if !ok {
-		return resp, err
-	}
-	newNode := node.WithMessage(map[string]interface{}{
-		"Request": in,
-		"Result":  resp,
-	})
-	newNode.Error = err
-	return resp, err
-}
-func (c *ShopClient) CreateFulfillmentsForOrder(ctx context.Context, in *shop.CreateFulfillmentsForOrderRequest) (*order.Order, error) {
-	resp, err := c._FulfillmentService.CreateFulfillmentsForOrder(ctx, in)
-
-	node, ok := ctx.(*bus.NodeContext)
-	if !ok {
-		return resp, err
-	}
-	newNode := node.WithMessage(map[string]interface{}{
-		"Request": in,
-		"Result":  resp,
-	})
-	newNode.Error = err
-	return resp, err
-}
-func (c *ShopClient) GetExternalShippingServices(ctx context.Context, in *order.GetExternalShippingServicesRequest) (*order.GetExternalShippingServicesResponse, error) {
-	resp, err := c._FulfillmentService.GetExternalShippingServices(ctx, in)
-
-	node, ok := ctx.(*bus.NodeContext)
-	if !ok {
-		return resp, err
-	}
-	newNode := node.WithMessage(map[string]interface{}{
-		"Request": in,
-		"Result":  resp,
-	})
-	newNode.Error = err
-	return resp, err
-}
-func (c *ShopClient) GetFulfillment(ctx context.Context, in *cm.IDRequest) (*order.Fulfillment, error) {
-	resp, err := c._FulfillmentService.GetFulfillment(ctx, in)
-
-	node, ok := ctx.(*bus.NodeContext)
-	if !ok {
-		return resp, err
-	}
-	newNode := node.WithMessage(map[string]interface{}{
-		"Request": in,
-		"Result":  resp,
-	})
-	newNode.Error = err
-	return resp, err
-}
-func (c *ShopClient) GetFulfillments(ctx context.Context, in *shop.GetFulfillmentsRequest) (*order.FulfillmentsResponse, error) {
-	resp, err := c._FulfillmentService.GetFulfillments(ctx, in)
-
-	node, ok := ctx.(*bus.NodeContext)
-	if !ok {
-		return resp, err
-	}
-	newNode := node.WithMessage(map[string]interface{}{
-		"Request": in,
-		"Result":  resp,
-	})
-	newNode.Error = err
-	return resp, err
-}
-func (c *ShopClient) GetPublicExternalShippingServices(ctx context.Context, in *order.GetExternalShippingServicesRequest) (*order.GetExternalShippingServicesResponse, error) {
-	resp, err := c._FulfillmentService.GetPublicExternalShippingServices(ctx, in)
-
-	node, ok := ctx.(*bus.NodeContext)
-	if !ok {
-		return resp, err
-	}
-	newNode := node.WithMessage(map[string]interface{}{
-		"Request": in,
-		"Result":  resp,
-	})
-	newNode.Error = err
-	return resp, err
-}
-func (c *ShopClient) GetPublicFulfillment(ctx context.Context, in *shop.GetPublicFulfillmentRequest) (*order.PublicFulfillment, error) {
-	resp, err := c._FulfillmentService.GetPublicFulfillment(ctx, in)
-
-	node, ok := ctx.(*bus.NodeContext)
-	if !ok {
-		return resp, err
-	}
-	newNode := node.WithMessage(map[string]interface{}{
-		"Request": in,
-		"Result":  resp,
-	})
-	newNode.Error = err
-	return resp, err
-}
-func (c *ShopClient) UpdateFulfillmentsShippingState(ctx context.Context, in *shop.UpdateFulfillmentsShippingStateRequest) (*cm.UpdatedResponse, error) {
-	resp, err := c._FulfillmentService.UpdateFulfillmentsShippingState(ctx, in)
-
-	node, ok := ctx.(*bus.NodeContext)
-	if !ok {
-		return resp, err
-	}
-	newNode := node.WithMessage(map[string]interface{}{
-		"Request": in,
-		"Result":  resp,
-	})
-	newNode.Error = err
-	return resp, err
-}
-func (c *ShopClient) CancelShipnowFulfillment(ctx context.Context, in *order.CancelShipnowFulfillmentRequest) (*cm.UpdatedResponse, error) {
-	resp, err := c._ShipnowService.CancelShipnowFulfillment(ctx, in)
-
-	node, ok := ctx.(*bus.NodeContext)
-	if !ok {
-		return resp, err
-	}
-	newNode := node.WithMessage(map[string]interface{}{
-		"Request": in,
-		"Result":  resp,
-	})
-	newNode.Error = err
-	return resp, err
-}
-func (c *ShopClient) ConfirmShipnowFulfillment(ctx context.Context, in *cm.IDRequest) (*order.ShipnowFulfillment, error) {
-	resp, err := c._ShipnowService.ConfirmShipnowFulfillment(ctx, in)
-
-	node, ok := ctx.(*bus.NodeContext)
-	if !ok {
-		return resp, err
-	}
-	newNode := node.WithMessage(map[string]interface{}{
-		"Request": in,
-		"Result":  resp,
-	})
-	newNode.Error = err
-	return resp, err
-}
-func (c *ShopClient) CreateShipnowFulfillment(ctx context.Context, in *order.CreateShipnowFulfillmentRequest) (*order.ShipnowFulfillment, error) {
-	resp, err := c._ShipnowService.CreateShipnowFulfillment(ctx, in)
-
-	node, ok := ctx.(*bus.NodeContext)
-	if !ok {
-		return resp, err
-	}
-	newNode := node.WithMessage(map[string]interface{}{
-		"Request": in,
-		"Result":  resp,
-	})
-	newNode.Error = err
-	return resp, err
-}
-func (c *ShopClient) GetShipnowFulfillment(ctx context.Context, in *cm.IDRequest) (*order.ShipnowFulfillment, error) {
-	resp, err := c._ShipnowService.GetShipnowFulfillment(ctx, in)
-
-	node, ok := ctx.(*bus.NodeContext)
-	if !ok {
-		return resp, err
-	}
-	newNode := node.WithMessage(map[string]interface{}{
-		"Request": in,
-		"Result":  resp,
-	})
-	newNode.Error = err
-	return resp, err
-}
-func (c *ShopClient) GetShipnowFulfillments(ctx context.Context, in *order.GetShipnowFulfillmentsRequest) (*order.ShipnowFulfillments, error) {
-	resp, err := c._ShipnowService.GetShipnowFulfillments(ctx, in)
-
-	node, ok := ctx.(*bus.NodeContext)
-	if !ok {
-		return resp, err
-	}
-	newNode := node.WithMessage(map[string]interface{}{
-		"Request": in,
-		"Result":  resp,
-	})
-	newNode.Error = err
-	return resp, err
-}
-func (c *ShopClient) GetShipnowServices(ctx context.Context, in *order.GetShipnowServicesRequest) (*order.GetShipnowServicesResponse, error) {
-	resp, err := c._ShipnowService.GetShipnowServices(ctx, in)
-
-	node, ok := ctx.(*bus.NodeContext)
-	if !ok {
-		return resp, err
-	}
-	newNode := node.WithMessage(map[string]interface{}{
-		"Request": in,
-		"Result":  resp,
-	})
-	newNode.Error = err
-	return resp, err
-}
-func (c *ShopClient) UpdateShipnowFulfillment(ctx context.Context, in *order.UpdateShipnowFulfillmentRequest) (*order.ShipnowFulfillment, error) {
-	resp, err := c._ShipnowService.UpdateShipnowFulfillment(ctx, in)
-
-	node, ok := ctx.(*bus.NodeContext)
-	if !ok {
-		return resp, err
-	}
-	newNode := node.WithMessage(map[string]interface{}{
-		"Request": in,
-		"Result":  resp,
-	})
-	newNode.Error = err
-	return resp, err
-}
-func (c *ShopClient) GetFulfillmentHistory(ctx context.Context, in *shop.GetFulfillmentHistoryRequest) (*etop.HistoryResponse, error) {
-	resp, err := c._HistoryService.GetFulfillmentHistory(ctx, in)
-
-	node, ok := ctx.(*bus.NodeContext)
-	if !ok {
-		return resp, err
-	}
-	newNode := node.WithMessage(map[string]interface{}{
-		"Request": in,
-		"Result":  resp,
-	})
-	newNode.Error = err
-	return resp, err
-}
-func (c *ShopClient) GetMoneyTransaction(ctx context.Context, in *cm.IDRequest) (*order.MoneyTransaction, error) {
-	resp, err := c._MoneyTransactionService.GetMoneyTransaction(ctx, in)
-
-	node, ok := ctx.(*bus.NodeContext)
-	if !ok {
-		return resp, err
-	}
-	newNode := node.WithMessage(map[string]interface{}{
-		"Request": in,
-		"Result":  resp,
-	})
-	newNode.Error = err
-	return resp, err
-}
-func (c *ShopClient) GetMoneyTransactions(ctx context.Context, in *shop.GetMoneyTransactionsRequest) (*order.MoneyTransactionsResponse, error) {
-	resp, err := c._MoneyTransactionService.GetMoneyTransactions(ctx, in)
-
-	node, ok := ctx.(*bus.NodeContext)
-	if !ok {
-		return resp, err
-	}
-	newNode := node.WithMessage(map[string]interface{}{
-		"Request": in,
-		"Result":  resp,
-	})
-	newNode.Error = err
-	return resp, err
-}
-func (c *ShopClient) CalcBalanceShop(ctx context.Context, in *cm.Empty) (*shop.CalcBalanceShopResponse, error) {
-	resp, err := c._SummaryService.CalcBalanceShop(ctx, in)
-
-	node, ok := ctx.(*bus.NodeContext)
-	if !ok {
-		return resp, err
-	}
-	newNode := node.WithMessage(map[string]interface{}{
-		"Request": in,
-		"Result":  resp,
-	})
-	newNode.Error = err
-	return resp, err
-}
-func (c *ShopClient) SummarizeFulfillments(ctx context.Context, in *shop.SummarizeFulfillmentsRequest) (*shop.SummarizeFulfillmentsResponse, error) {
-	resp, err := c._SummaryService.SummarizeFulfillments(ctx, in)
-
-	node, ok := ctx.(*bus.NodeContext)
-	if !ok {
-		return resp, err
-	}
-	newNode := node.WithMessage(map[string]interface{}{
-		"Request": in,
-		"Result":  resp,
-	})
-	newNode.Error = err
-	return resp, err
-}
-func (c *ShopClient) GetExports(ctx context.Context, in *shop.GetExportsRequest) (*shop.GetExportsResponse, error) {
-	resp, err := c._ExportService.GetExports(ctx, in)
-
-	node, ok := ctx.(*bus.NodeContext)
-	if !ok {
-		return resp, err
-	}
-	newNode := node.WithMessage(map[string]interface{}{
-		"Request": in,
-		"Result":  resp,
-	})
-	newNode.Error = err
-	return resp, err
-}
-func (c *ShopClient) RequestExport(ctx context.Context, in *shop.RequestExportRequest) (*shop.RequestExportResponse, error) {
-	resp, err := c._ExportService.RequestExport(ctx, in)
-
-	node, ok := ctx.(*bus.NodeContext)
-	if !ok {
-		return resp, err
-	}
-	newNode := node.WithMessage(map[string]interface{}{
-		"Request": in,
-		"Result":  resp,
-	})
-	newNode.Error = err
-	return resp, err
-}
-func (c *ShopClient) CreateDevice(ctx context.Context, in *etop.CreateDeviceRequest) (*etop.Device, error) {
-	resp, err := c._NotificationService.CreateDevice(ctx, in)
-
-	node, ok := ctx.(*bus.NodeContext)
-	if !ok {
-		return resp, err
-	}
-	newNode := node.WithMessage(map[string]interface{}{
-		"Request": in,
-		"Result":  resp,
-	})
-	newNode.Error = err
-	return resp, err
-}
-func (c *ShopClient) DeleteDevice(ctx context.Context, in *etop.DeleteDeviceRequest) (*cm.DeletedResponse, error) {
-	resp, err := c._NotificationService.DeleteDevice(ctx, in)
-
-	node, ok := ctx.(*bus.NodeContext)
-	if !ok {
-		return resp, err
-	}
-	newNode := node.WithMessage(map[string]interface{}{
-		"Request": in,
-		"Result":  resp,
-	})
-	newNode.Error = err
-	return resp, err
-}
-func (c *ShopClient) GetNotification(ctx context.Context, in *cm.IDRequest) (*etop.Notification, error) {
-	resp, err := c._NotificationService.GetNotification(ctx, in)
-
-	node, ok := ctx.(*bus.NodeContext)
-	if !ok {
-		return resp, err
-	}
-	newNode := node.WithMessage(map[string]interface{}{
-		"Request": in,
-		"Result":  resp,
-	})
-	newNode.Error = err
-	return resp, err
-}
-func (c *ShopClient) GetNotifications(ctx context.Context, in *etop.GetNotificationsRequest) (*etop.NotificationsResponse, error) {
-	resp, err := c._NotificationService.GetNotifications(ctx, in)
-
-	node, ok := ctx.(*bus.NodeContext)
-	if !ok {
-		return resp, err
-	}
-	newNode := node.WithMessage(map[string]interface{}{
-		"Request": in,
-		"Result":  resp,
-	})
-	newNode.Error = err
-	return resp, err
-}
-func (c *ShopClient) UpdateNotifications(ctx context.Context, in *etop.UpdateNotificationsRequest) (*cm.UpdatedResponse, error) {
-	resp, err := c._NotificationService.UpdateNotifications(ctx, in)
-
-	node, ok := ctx.(*bus.NodeContext)
-	if !ok {
-		return resp, err
-	}
-	newNode := node.WithMessage(map[string]interface{}{
-		"Request": in,
-		"Result":  resp,
-	})
-	newNode.Error = err
-	return resp, err
-}
-func (c *ShopClient) AuthorizePartner(ctx context.Context, in *shop.AuthorizePartnerRequest) (*shop.AuthorizedPartnerResponse, error) {
-	resp, err := c._AuthorizeService.AuthorizePartner(ctx, in)
-
-	node, ok := ctx.(*bus.NodeContext)
-	if !ok {
-		return resp, err
-	}
-	newNode := node.WithMessage(map[string]interface{}{
-		"Request": in,
-		"Result":  resp,
-	})
-	newNode.Error = err
-	return resp, err
-}
-func (c *ShopClient) GetAuthorizedPartners(ctx context.Context, in *cm.Empty) (*shop.GetAuthorizedPartnersResponse, error) {
-	resp, err := c._AuthorizeService.GetAuthorizedPartners(ctx, in)
-
-	node, ok := ctx.(*bus.NodeContext)
-	if !ok {
-		return resp, err
-	}
-	newNode := node.WithMessage(map[string]interface{}{
-		"Request": in,
-		"Result":  resp,
-	})
-	newNode.Error = err
-	return resp, err
-}
-func (c *ShopClient) GetAvailablePartners(ctx context.Context, in *cm.Empty) (*shop.GetPartnersResponse, error) {
-	resp, err := c._AuthorizeService.GetAvailablePartners(ctx, in)
-
-	node, ok := ctx.(*bus.NodeContext)
-	if !ok {
-		return resp, err
-	}
-	newNode := node.WithMessage(map[string]interface{}{
-		"Request": in,
-		"Result":  resp,
-	})
-	newNode.Error = err
-	return resp, err
-}
 
 type Muxer interface {
 	Handle(string, http.Handler)
@@ -1414,9 +63,13 @@ func NewShopServer(mux Muxer, hooks *twirp.ServerHooks) {
 	bus.Expect(&UpdateCollectionEndpoint{})
 	bus.Expect(&UpdateProductsCollectionEndpoint{})
 	bus.Expect(&AddProductsEndpoint{})
+	bus.Expect(&CreateProductEndpoint{})
+	bus.Expect(&CreateVariantEndpoint{})
 	bus.Expect(&GetProductEndpoint{})
 	bus.Expect(&GetProductsEndpoint{})
 	bus.Expect(&GetProductsByIDsEndpoint{})
+	bus.Expect(&GetVariantEndpoint{})
+	bus.Expect(&GetVariantsByIDsEndpoint{})
 	bus.Expect(&RemoveProductsEndpoint{})
 	bus.Expect(&RemoveVariantsEndpoint{})
 	bus.Expect(&UpdateProductEndpoint{})
@@ -1426,7 +79,7 @@ func NewShopServer(mux Muxer, hooks *twirp.ServerHooks) {
 	bus.Expect(&UpdateVariantImagesEndpoint{})
 	bus.Expect(&CreateProductSourceEndpoint{})
 	bus.Expect(&CreateProductSourceCategoryEndpoint{})
-	bus.Expect(&CreateVariantEndpoint{})
+	bus.Expect(&DeprecatedCreateVariantEndpoint{})
 	bus.Expect(&GetProductSourceCategoriesEndpoint{})
 	bus.Expect(&GetProductSourceCategoryEndpoint{})
 	bus.Expect(&GetShopProductSourcesEndpoint{})
@@ -1506,10 +159,6 @@ type ShopImpl struct {
 	ExportService
 	NotificationService
 	AuthorizeService
-}
-
-func NewShop() Shop {
-	return ShopImpl{}
 }
 
 type MiscService struct{}
@@ -2651,6 +1300,102 @@ func (s ProductService) AddProducts(ctx context.Context, req *shop.AddProductsRe
 	return resp, err
 }
 
+type CreateProductEndpoint struct {
+	*shop.CreateProductRequest
+	Result  *shop.ShopProduct
+	Context ShopClaim
+}
+
+func (s ProductService) CreateProduct(ctx context.Context, req *shop.CreateProductRequest) (resp *shop.ShopProduct, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "shop.Product/CreateProduct"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:     ctx,
+		RequireAuth: true,
+		RequireShop: true,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &CreateProductEndpoint{CreateProductRequest: req}
+	query.Context.Claim = session.Claim
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	// Verify that the user has role "staff"
+	if !session.IsOwner && permission.MaxRoleLevel(session.Roles) < 2 {
+		return nil, common.ErrPermissionDenied
+	}
+	ctx = bus.NewRootContext(ctx)
+	err = bus.Dispatch(ctx, query)
+	resp = query.Result
+	if err == nil {
+		if resp == nil {
+			return nil, common.Error(common.Internal, "", nil).Log("nil response")
+		}
+		errs = cmwrapper.HasErrors(resp)
+	}
+	return resp, err
+}
+
+type CreateVariantEndpoint struct {
+	*shop.CreateVariantRequest
+	Result  *shop.ShopVariant
+	Context ShopClaim
+}
+
+func (s ProductService) CreateVariant(ctx context.Context, req *shop.CreateVariantRequest) (resp *shop.ShopVariant, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "shop.Product/CreateVariant"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:     ctx,
+		RequireAuth: true,
+		RequireShop: true,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &CreateVariantEndpoint{CreateVariantRequest: req}
+	query.Context.Claim = session.Claim
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	// Verify that the user has role "staff"
+	if !session.IsOwner && permission.MaxRoleLevel(session.Roles) < 2 {
+		return nil, common.ErrPermissionDenied
+	}
+	ctx = bus.NewRootContext(ctx)
+	err = bus.Dispatch(ctx, query)
+	resp = query.Result
+	if err == nil {
+		if resp == nil {
+			return nil, common.Error(common.Internal, "", nil).Log("nil response")
+		}
+		errs = cmwrapper.HasErrors(resp)
+	}
+	return resp, err
+}
+
 type GetProductEndpoint struct {
 	*cm.IDRequest
 	Result     *shop.ShopProduct
@@ -2774,6 +1519,100 @@ func (s ProductService) GetProductsByIDs(ctx context.Context, req *cm.IDsRequest
 	}
 	session = sessionQuery.Result
 	query := &GetProductsByIDsEndpoint{IDsRequest: req}
+	query.Context.Claim = session.Claim
+	query.Context.Shop = session.Shop
+	query.CtxPartner = session.CtxPartner
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = bus.Dispatch(ctx, query)
+	resp = query.Result
+	if err == nil {
+		if resp == nil {
+			return nil, common.Error(common.Internal, "", nil).Log("nil response")
+		}
+		errs = cmwrapper.HasErrors(resp)
+	}
+	return resp, err
+}
+
+type GetVariantEndpoint struct {
+	*cm.IDRequest
+	Result     *shop.ShopVariant
+	Context    ShopClaim
+	CtxPartner *model.Partner
+}
+
+func (s ProductService) GetVariant(ctx context.Context, req *cm.IDRequest) (resp *shop.ShopVariant, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "shop.Product/GetVariant"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:     ctx,
+		RequireAuth: true,
+		RequireShop: true,
+		AuthPartner: 1,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &GetVariantEndpoint{IDRequest: req}
+	query.Context.Claim = session.Claim
+	query.Context.Shop = session.Shop
+	query.CtxPartner = session.CtxPartner
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = bus.Dispatch(ctx, query)
+	resp = query.Result
+	if err == nil {
+		if resp == nil {
+			return nil, common.Error(common.Internal, "", nil).Log("nil response")
+		}
+		errs = cmwrapper.HasErrors(resp)
+	}
+	return resp, err
+}
+
+type GetVariantsByIDsEndpoint struct {
+	*cm.IDsRequest
+	Result     *shop.ShopVariantsResponse
+	Context    ShopClaim
+	CtxPartner *model.Partner
+}
+
+func (s ProductService) GetVariantsByIDs(ctx context.Context, req *cm.IDsRequest) (resp *shop.ShopVariantsResponse, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "shop.Product/GetVariantsByIDs"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:     ctx,
+		RequireAuth: true,
+		RequireShop: true,
+		AuthPartner: 1,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &GetVariantsByIDsEndpoint{IDsRequest: req}
 	query.Context.Claim = session.Claim
 	query.Context.Shop = session.Shop
 	query.CtxPartner = session.CtxPartner
@@ -3226,18 +2065,18 @@ func (s ProductSourceService) CreateProductSourceCategory(ctx context.Context, r
 	return resp, err
 }
 
-type CreateVariantEndpoint struct {
-	*shop.CreateVariantRequest
+type DeprecatedCreateVariantEndpoint struct {
+	*shop.DeprecatedCreateVariantRequest
 	Result     *shop.ShopProduct
 	Context    ShopClaim
 	CtxPartner *model.Partner
 }
 
-func (s ProductSourceService) CreateVariant(ctx context.Context, req *shop.CreateVariantRequest) (resp *shop.ShopProduct, err error) {
+func (s ProductSourceService) CreateVariant(ctx context.Context, req *shop.DeprecatedCreateVariantRequest) (resp *shop.ShopProduct, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
-	const rpcName = "shop.ProductSource/CreateVariant"
+	const rpcName = "shop.ProductSource/DeprecatedCreateVariant"
 	defer func() {
 		recovered := recover()
 		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
@@ -3254,7 +2093,7 @@ func (s ProductSourceService) CreateVariant(ctx context.Context, req *shop.Creat
 		return nil, err
 	}
 	session = sessionQuery.Result
-	query := &CreateVariantEndpoint{CreateVariantRequest: req}
+	query := &DeprecatedCreateVariantEndpoint{DeprecatedCreateVariantRequest: req}
 	query.Context.Claim = session.Claim
 	query.Context.Shop = session.Shop
 	query.CtxPartner = session.CtxPartner

@@ -549,10 +549,10 @@ func split(v string) []string {
 	return strings.Split(v, ",")
 }
 
-func parseRowsToModel(schema imcsv.Schema, idx indexes, mode Mode, rowProducts []*RowProduct, shop *model.Shop) (requests []*pbshop.CreateVariantRequest, _errs []error,
+func parseRowsToModel(schema imcsv.Schema, idx indexes, mode Mode, rowProducts []*RowProduct, shop *model.Shop) (requests []*pbshop.DeprecatedCreateVariantRequest, _errs []error,
 ) {
 	now := time.Now()
-	requests = make([]*pbshop.CreateVariantRequest, len(rowProducts))
+	requests = make([]*pbshop.DeprecatedCreateVariantRequest, len(rowProducts))
 
 	for i, rowProduct := range rowProducts {
 		errs := rowProduct.Validate(schema, idx, mode)
@@ -568,8 +568,8 @@ func parseRowsToModel(schema imcsv.Schema, idx indexes, mode Mode, rowProducts [
 	return
 }
 
-func parseRowToModel(rowProduct *RowProduct, now time.Time) *pbshop.CreateVariantRequest {
-	return &pbshop.CreateVariantRequest{
+func parseRowToModel(rowProduct *RowProduct, now time.Time) *pbshop.DeprecatedCreateVariantRequest {
+	return &pbshop.DeprecatedCreateVariantRequest{
 		ProductId:         0, // will be filled later
 		ProductName:       rowProduct.ProductName,
 		Name:              variantNameFromAttributes(rowProduct.Attributes),

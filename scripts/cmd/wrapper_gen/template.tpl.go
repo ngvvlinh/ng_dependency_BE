@@ -28,60 +28,6 @@ import (
 
 var ll = l.New()
 
-var Client {{.ServiceName}}
-
-type {{.ServiceName}} interface {
-{{range $s := .Services -}}
-	{{$.PackageName}}.{{$s.Name}}
-{{end -}}
-}
-
-type {{.ServiceName}}Client struct{
-{{range $s := .Services -}}
-	_{{$s.Name}} {{$.PackageName}}.{{$s.Name}}
-{{end -}}
-}
-
-func New{{.ServiceName}}Client(addr string, client *http.Client) {{.ServiceName}}{
-	if client == nil {
-		client = &http.Client{
-			Timeout: 10 * time.Second,
-		}
-	}
-
-	addr = "http://" + addr
-	return &{{.ServiceName}}Client{
-	{{range $s := .Services -}}
-		_{{$s.Name}}: {{$.PackageName}}.New{{$s.Name}}ProtobufClient(addr, client),
-	{{end -}}
-	}
-}
-
-func Connect{{.ServiceName}}Service(addr string, client *http.Client{{if $.HasSecret}}, secret string{{end}}) error {
-	Client = New{{.ServiceName}}Client(addr, client)
-	{{range $s := .Services -}}
-	{{range $m := .Methods -}}
-	bus.AddHandler("client", func(ctx context.Context, q *{{$m.Name}}Endpoint) error { panic("Unexpected") })
-	{{end -}}
-	{{end -}}
-
-	ctx, _ := context.WithTimeout(context.Background(), 10 * time.Second)
-	{{if $.HasSecret}}ctx = cmgrpc.AppendAccessToken(ctx, secret)
-	{{end -}}
-	_, err := Client.VersionInfo(ctx, &cm.Empty{})
-	if err == nil {
-		ll.S.Infof("Connected to {{.ServiceName}}Service at %v", addr)
-	}
-	return err
-}
-
-func MustConnect{{.ServiceName}}Service(addr string, client *http.Client{{if $.HasSecret}}, secret string{{end}}) {
-	err := Connect{{.ServiceName}}Service(addr, client{{if $.HasSecret}}, secret{{end}})
-	if err != nil {
-		ll.Fatal("Unable to connect {{.ServiceName}}", l.Error(err))
-	}
-}
-
 type (
 	EmptyClaim    = claims.EmptyClaim
 	UserClaim  	  = claims.UserClaim
@@ -89,24 +35,6 @@ type (
 	PartnerClaim  = claims.PartnerClaim
 	ShopClaim     = claims.ShopClaim
 )
-
-{{range $s := .Services -}}
-{{range $m := .Methods -}}
-func (c *{{$.ServiceName}}Client) {{$m.Name}}(ctx context.Context, in {{.InputType}}) ({{.OutputType}}, error) {
-	resp, err := c._{{$s.Name}}.{{$m.Name}}(ctx, in)
-
-	node, ok := ctx.(*bus.NodeContext)
-	if !ok {
-		return resp, err
-	}
-	newNode := node.WithMessage(map[string]interface{}{
-		"Request": in,
-		"Result": resp,
-	})
-	newNode.Error = err
-	return resp, err
-}
-{{end}}{{end}}
 
 type Muxer interface {
 	Handle(string, http.Handler)
@@ -121,7 +49,7 @@ func New{{.ServiceName}}Server(mux Muxer, hooks *twirp.ServerHooks{{if $.HasSecr
 
 {{range $s := .Services -}}
 {{range $m := .Methods -}}
-	bus.Expect(&{{$m.Name}}Endpoint{})
+	bus.Expect(&{{$m|methodName}}Endpoint{})
 {{end -}}
 {{end -}}
 
@@ -136,15 +64,11 @@ type {{.ServiceName}}Impl struct {
 {{end -}}
 }
 
-func New{{.ServiceName}}() {{.ServiceName}} {
-	return {{.ServiceName}}Impl{}
-}
-
 {{range $s := .Services}}
 type {{$s.Name}} struct { {{if $.HasSecret}}secret string{{end}} }
 
 {{range $m := $s.Methods}}
-type {{$m.Name}}Endpoint struct {
+type {{$m|methodName}}Endpoint struct {
 	{{$m.InputType}}
 	Result {{$m.OutputType}}
 	Context {{claim $m}}
@@ -157,7 +81,7 @@ func (s {{$s.Name}}) {{$m.Name}}(ctx context.Context, req {{$m.InputType}}) (res
 	var session *middleware.Session
 	{{end -}}
 	var errs []*cm.Error
-	const rpcName = "{{$.PackageName}}.{{trimName $s.Name}}/{{$m.Name}}"
+	const rpcName = "{{$.PackageName}}.{{trimName $s.Name}}/{{$m|methodName}}"
 	defer func() {
 		recovered := recover()
 		err = cmwrapper.RecoverAndLog(ctx, rpcName, {{if requireAuth $m}}session{{else}}nil{{end}}, req, resp, recovered, err, errs, t0)
@@ -175,7 +99,7 @@ func (s {{$s.Name}}) {{$m.Name}}(ctx context.Context, req {{$m.InputType}}) (res
 {{end}}	{{if requireShop       $m}}RequireShop:       true,
 {{end}}	{{if requireEtopAdmin  $m}}RequireEtopAdmin:  true,
 {{end}}	{{if requireSuperAdmin $m}}RequireSuperAdmin: true,
-{{end}} {{if authPartner       $m}}AuthPartner: {{authPartner $m}}, 
+{{end}} {{if authPartner       $m}}AuthPartner: {{authPartner $m}},
 {{end}}
 	}
 	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
@@ -183,7 +107,7 @@ func (s {{$s.Name}}) {{$m.Name}}(ctx context.Context, req {{$m.InputType}}) (res
 	}
 	session = sessionQuery.Result
 	{{- end}}
-	query := &{{$m.Name}}Endpoint{ {{baseName $m.InputType}}: req }
+	query := &{{$m|methodName}}Endpoint{ {{baseName $m.InputType}}: req }
 	{{if requireLogin $m -}}
 	query.Context.Claim = session.Claim
 	{{end -}}
@@ -239,9 +163,9 @@ func (s {{$s.Name}}) {{$m.Name}}(ctx context.Context, req {{$m.InputType}}) (res
 
 	ctx = bus.NewRootContext(ctx)
 	err = bus.Dispatch(ctx, query)
-	resp = query.Result 
+	resp = query.Result
 	if err == nil {
-		if resp == nil { 
+		if resp == nil {
 			return nil, common.Error(common.Internal, "", nil).Log("nil response")
 		}
 		errs = cmwrapper.HasErrors(resp)

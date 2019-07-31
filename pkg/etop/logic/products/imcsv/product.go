@@ -34,7 +34,7 @@ func loadAndCreateProducts(
 	codeMode CodeMode,
 	shop *model.Shop,
 	rowProducts []*RowProduct,
-	requests []*pbshop.CreateVariantRequest,
+	requests []*pbshop.DeprecatedCreateVariantRequest,
 	debug Debug,
 ) (msgs []string, _errs []error, _cellErrs []error, _err error) {
 
@@ -219,8 +219,8 @@ func loadAndCreateProducts(
 			req.ProductId = p.ProductID
 		}
 
-		createVariantCmd := &wrapshop.CreateVariantEndpoint{
-			CreateVariantRequest: req,
+		createVariantCmd := &wrapshop.DeprecatedCreateVariantEndpoint{
+			DeprecatedCreateVariantRequest: req,
 		}
 		createVariantCmd.Context.Shop = shop
 		if err := bus.Dispatch(ctx, createVariantCmd); err != nil {

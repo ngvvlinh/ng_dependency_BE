@@ -42,6 +42,8 @@ type PermissionDecl struct {
 	Validate    string
 	Captcha     string
 	AuthPartner AuthOpt
+
+	Rename string
 }
 
 type RoleType = model.RoleType

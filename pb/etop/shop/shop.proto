@@ -76,32 +76,49 @@ service CollectionService {
 }
 
 service ProductService {
-    rpc RemoveVariants (RemoveVariantsRequest) returns (cm.RemovedResponse);
-    rpc UpdateVariant (UpdateVariantRequest) returns (ShopVariant);
-    rpc UpdateVariantImages (UpdateVariantImagesRequest) returns (ShopVariant);
+
+    //-- product --//
 
     rpc GetProduct (cm.IDRequest) returns (ShopProduct);
     rpc GetProducts (GetVariantsRequest) returns (ShopProductsResponse);
     rpc GetProductsByIDs (cm.IDsRequest) returns (ShopProductsResponse);
-    rpc RemoveProducts (RemoveVariantsRequest) returns (cm.RemovedResponse);
+
+    rpc CreateProduct (CreateProductRequest) returns (ShopProduct);
     rpc UpdateProduct (UpdateProductRequest) returns (ShopProduct);
     rpc UpdateProductsTags (UpdateProductsTagsRequest) returns (cm.UpdatedResponse);
     rpc UpdateProductImages (UpdateVariantImagesRequest) returns (ShopProduct);
 
+    //-- variant --//
+
+    rpc GetVariant (cm.IDRequest) returns (ShopVariant);
+    rpc GetVariantsByIDs (cm.IDsRequest) returns (ShopVariantsResponse);
+
+    rpc CreateVariant (CreateVariantRequest) returns (ShopVariant);
+    rpc UpdateVariant (UpdateVariantRequest) returns (ShopVariant);
+    rpc UpdateVariantImages (UpdateVariantImagesRequest) returns (ShopVariant);
+
+    //-- deprecated --//
+
     // deprecated
     rpc AddProducts (AddProductsRequest) returns (AddProductsResponse);
+    // deprecated
+    rpc RemoveProducts (RemoveVariantsRequest) returns (cm.RemovedResponse);
+    // deprecated
+    rpc RemoveVariants (RemoveVariantsRequest) returns (cm.RemovedResponse);
 }
 
+// deprecated: 2018.07.31+14
 service ProductSourceService {
-    rpc CreateProductSource(CreateProductSourceRequest) returns (ProductSource);
-    rpc GetShopProductSources(cm.Empty) returns (ProductSourcesResponse);
-    rpc CreateVariant(CreateVariantRequest) returns (ShopProduct);
-    rpc CreateProductSourceCategory(CreatePSCategoryRequest) returns (Category);
-    rpc UpdateProductsPSCategory(UpdateProductsPSCategoryRequest) returns (cm.UpdatedResponse);
-    rpc GetProductSourceCategory(cm.IDRequest) returns (Category);
-    rpc GetProductSourceCategories(GetProductSourceCategoriesRequest) returns (CategoriesResponse);
-    rpc UpdateProductSourceCategory(UpdateProductSourceCategoryRequest) returns (Category);
-    rpc RemoveProductSourceCategory(cm.IDRequest) returns (cm.RemovedResponse);
+    rpc CreateProductSource (CreateProductSourceRequest) returns (ProductSource);
+    rpc GetShopProductSources (cm.Empty) returns (ProductSourcesResponse);
+    // deprecated: use shop.Product/CreateVariant instead
+    rpc CreateVariant (DeprecatedCreateVariantRequest) returns (ShopProduct);
+    rpc CreateProductSourceCategory (CreatePSCategoryRequest) returns (Category);
+    rpc UpdateProductsPSCategory (UpdateProductsPSCategoryRequest) returns (cm.UpdatedResponse);
+    rpc GetProductSourceCategory (cm.IDRequest) returns (Category);
+    rpc GetProductSourceCategories (GetProductSourceCategoriesRequest) returns (CategoriesResponse);
+    rpc UpdateProductSourceCategory (UpdateProductSourceCategoryRequest) returns (Category);
+    rpc RemoveProductSourceCategory (cm.IDRequest) returns (cm.RemovedResponse);
 }
 
 service OrderService {
@@ -531,7 +548,28 @@ message ProductSourcesResponse {
     repeated ProductSource product_sources = 1;
 }
 
+message CreateProductRequest {
+    optional string code = 1 [(gogoproto.nullable)=false];
+    optional string name = 2 [(gogoproto.nullable)=false];
+    optional string unit = 3 [(gogoproto.nullable)=false];
+    optional string note = 4 [(gogoproto.nullable)=false];
+    optional string description = 5 [(gogoproto.nullable)=false];
+    optional string short_desc  = 6 [(gogoproto.nullable)=false];
+    optional string desc_html   = 7 [(gogoproto.nullable)=false];
+    repeated string image_urls  = 9;
+}
+
 message CreateVariantRequest {
+    optional string code = 1 [(gogoproto.nullable)=false];
+    optional string name = 2 [(gogoproto.nullable)=false];
+    optional string note = 4 [(gogoproto.nullable)=false];
+    optional string description = 5 [(gogoproto.nullable)=false];
+    optional string short_desc  = 6 [(gogoproto.nullable)=false];
+    optional string desc_html   = 7 [(gogoproto.nullable)=false];
+    repeated string image_urls  = 9;
+}
+
+message DeprecatedCreateVariantRequest {
     // required
     optional int64 product_source_id = 23 [(gogoproto.nullable)=false];
     optional int64 product_id = 1 [(gogoproto.nullable)=false];

@@ -147,10 +147,6 @@ type CreateShopProductArgs struct {
 	Note      string
 	DescriptionInfo
 	PriceInfo
-
-	TagIDs       []int64
-	CollectionID []int64
-	CategoryID   int64
 }
 
 type UpdateShopProductInfoArgs struct {
@@ -168,12 +164,12 @@ type CreateShopVariantArgs struct {
 	ShopID    int64
 	ProductID int64
 
-	Code string
-	Name string
+	Code      string
+	Name      string
+	ImageURLs []string
+	Note      string
 	DescriptionInfo
 	PriceInfo
-
-	CollectionID []int64
 }
 
 type UpdateShopVariantInfoArgs struct {

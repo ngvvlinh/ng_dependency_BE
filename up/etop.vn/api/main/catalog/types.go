@@ -11,7 +11,7 @@ import (
 
 type Bool = meta.NullBool
 type String = meta.NullString
-type Int64 = meta.NullInt64
+type NullInt64 = meta.NullInt64
 type Int32 = meta.NullInt32
 
 type ShopProduct struct {

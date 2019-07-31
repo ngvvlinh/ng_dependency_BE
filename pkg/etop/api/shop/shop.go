@@ -49,11 +49,15 @@ func init() {
 	bus.AddHandler("api", GetProduct)
 	bus.AddHandler("api", GetProducts)
 	bus.AddHandler("api", GetProductsByIDs)
+	bus.AddHandler("api", CreateProduct)
 	bus.AddHandler("api", UpdateProduct)
 	bus.AddHandler("api", UpdateProductsTags)
 	bus.AddHandler("api", RemoveProducts)
 
 	bus.AddHandler("api", CreateVariant)
+	bus.AddHandler("api", GetVariant)
+	bus.AddHandler("api", GetVariantsByIDs)
+	bus.AddHandler("api", DeprecatedCreateVariant)
 	bus.AddHandler("api", CreateProductSourceCategory)
 	bus.AddHandler("api", UpdateProductsPSCategory)
 	bus.AddHandler("api", UpdateProductImages)
@@ -202,6 +206,10 @@ func GetProducts(ctx context.Context, q *wrapshop.GetProductsEndpoint) error {
 	return nil
 }
 
+func CreateProduct(ctx context.Context, q *wrapshop.CreateProductEndpoint) error {
+	return cm.ErrTODO
+}
+
 func RemoveProducts(ctx context.Context, q *wrapshop.RemoveProductsEndpoint) error {
 	cmd := &catalogmodelx.RemoveShopProductsCommand{
 		ShopID: q.Context.Shop.ID,
@@ -252,7 +260,19 @@ func UpdateProductsTags(ctx context.Context, q *wrapshop.UpdateProductsTagsEndpo
 	return nil
 }
 
+func GetVariant(ctx context.Context, q *wrapshop.GetVariantEndpoint) error {
+	return cm.ErrTODO
+}
+
+func GetVariantsByIDs(ctx context.Context, q *wrapshop.GetVariantsByIDsEndpoint) error {
+	return cm.ErrTODO
+}
+
 func CreateVariant(ctx context.Context, q *wrapshop.CreateVariantEndpoint) error {
+	return cm.ErrTODO
+}
+
+func DeprecatedCreateVariant(ctx context.Context, q *wrapshop.DeprecatedCreateVariantEndpoint) error {
 	cmd := &catalogmodelx.CreateVariantCommand{
 		ShopID:      q.Context.Shop.ID,
 		ProductID:   q.ProductId,
