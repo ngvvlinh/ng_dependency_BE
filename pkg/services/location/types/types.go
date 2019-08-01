@@ -1,6 +1,10 @@
 package types
 
-import "etop.vn/api/main/location"
+import (
+	"strconv"
+
+	"etop.vn/api/main/location"
+)
 
 const CountryVietnam = "Việt Nam"
 
@@ -68,4 +72,42 @@ type VTPostWard struct {
 	WardsName        string
 	DistrictID       int32
 	EtopDistrictCode string
+}
+
+func (p *Province) GetProvinceIndex(codeType location.LocationCodeType) string {
+	switch codeType {
+	case location.LocCodeTypeHaravan:
+		return p.HaravanCode
+	case location.LocCodeTypeInternal:
+		return p.Code
+	default:
+		return ""
+	}
+}
+
+func (d *District) GetDistrictIndex(codeType location.LocationCodeType) string {
+	switch codeType {
+	case location.LocCodeTypeHaravan:
+		return d.HaravanCode
+	case location.LocCodeTypeGHN:
+		if d.GhnID == 0 {
+			return ""
+		}
+		return strconv.Itoa(int(d.GhnID))
+	case location.LocCodeTypeInternal:
+		return d.Code
+	default:
+		return ""
+	}
+}
+
+func (w *Ward) GetWardIndex(codeType location.LocationCodeType) string {
+	switch codeType {
+	case location.LocCodeTypeHaravan:
+		return w.HaravanCode
+	case location.LocCodeTypeInternal:
+		return w.Code
+	default:
+		return ""
+	}
 }
