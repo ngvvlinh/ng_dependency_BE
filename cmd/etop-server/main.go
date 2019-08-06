@@ -63,6 +63,8 @@ import (
 	shipnowcarrier "etop.vn/backend/pkg/services/shipnow-carrier"
 	shipnowpm "etop.vn/backend/pkg/services/shipnow/pm"
 	shipsqlstore "etop.vn/backend/pkg/services/shipping/sqlstore"
+	customeraggregate "etop.vn/backend/pkg/shopping/customering/aggregate"
+	customerquery "etop.vn/backend/pkg/shopping/customering/query"
 	"etop.vn/common/bus"
 	"etop.vn/common/l"
 )
@@ -277,10 +279,27 @@ func main() {
 	orderingPM := orderingpm.New(orderAggr)
 	shipnowPM := shipnowpm.New(eventBus, shipnowQuery, shipnowAggr, orderAggr.MessageBus(), shipnowCarrierManager)
 	shipnowPM.RegisterEventHandlers(eventBus)
+	customerAggr := customeraggregate.New(db).MessageBus()
+	customerQuery := customerquery.New(db).MessageBus()
 
 	orderAggr.WithPM(orderingPM)
 
-	shop.Init(catalogQuery, catalogAggr, shipnowAggr, shipnowQuery, identityAggr, identityQuery, addressQuery, shippingManager, haravanIdentityAggr, haravanIdentityQuery, shutdowner, redisStore)
+	shop.Init(
+		catalogQuery,
+		catalogAggr,
+		shipnowAggr,
+		shipnowQuery,
+		identityAggr,
+		identityQuery,
+		addressQuery,
+		shippingManager,
+		haravanIdentityAggr,
+		haravanIdentityQuery,
+		customerAggr,
+		customerQuery,
+		shutdowner,
+		redisStore,
+	)
 	partner.Init(shutdowner, redisStore, authStore, cfg.URL.Auth)
 	xshop.Init(shutdowner, redisStore, authStore)
 	integration.Init(shutdowner, redisStore, authStore)

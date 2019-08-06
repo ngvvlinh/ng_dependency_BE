@@ -3333,20 +3333,22 @@ func (m *GetBranchesByBankProvinceResquest) GetProvinceName() string {
 }
 
 type Address struct {
-	ExportedFields       []string                 `protobuf:"bytes,100,rep,name=exported_fields,json=exportedFields" json:"exported_fields,omitempty"`
-	Id                   int64                    `protobuf:"varint,1,opt,name=id" json:"id"`
-	Province             string                   `protobuf:"bytes,2,opt,name=province" json:"province"`
-	ProvinceCode         string                   `protobuf:"bytes,6,opt,name=province_code,json=provinceCode" json:"province_code"`
-	District             string                   `protobuf:"bytes,3,opt,name=district" json:"district"`
-	DistrictCode         string                   `protobuf:"bytes,7,opt,name=district_code,json=districtCode" json:"district_code"`
-	Ward                 string                   `protobuf:"bytes,4,opt,name=ward" json:"ward"`
-	WardCode             string                   `protobuf:"bytes,8,opt,name=ward_code,json=wardCode" json:"ward_code"`
-	Address1             string                   `protobuf:"bytes,5,opt,name=address1" json:"address1"`
-	Address2             string                   `protobuf:"bytes,9,opt,name=address2" json:"address2"`
-	Zip                  string                   `protobuf:"bytes,10,opt,name=zip" json:"zip"`
-	Country              string                   `protobuf:"bytes,11,opt,name=country" json:"country"`
-	FullName             string                   `protobuf:"bytes,12,opt,name=full_name,json=fullName" json:"full_name"`
-	FirstName            string                   `protobuf:"bytes,13,opt,name=first_name,json=firstName" json:"first_name"`
+	ExportedFields []string `protobuf:"bytes,100,rep,name=exported_fields,json=exportedFields" json:"exported_fields,omitempty"`
+	Id             int64    `protobuf:"varint,1,opt,name=id" json:"id"`
+	Province       string   `protobuf:"bytes,2,opt,name=province" json:"province"`
+	ProvinceCode   string   `protobuf:"bytes,6,opt,name=province_code,json=provinceCode" json:"province_code"`
+	District       string   `protobuf:"bytes,3,opt,name=district" json:"district"`
+	DistrictCode   string   `protobuf:"bytes,7,opt,name=district_code,json=districtCode" json:"district_code"`
+	Ward           string   `protobuf:"bytes,4,opt,name=ward" json:"ward"`
+	WardCode       string   `protobuf:"bytes,8,opt,name=ward_code,json=wardCode" json:"ward_code"`
+	Address1       string   `protobuf:"bytes,5,opt,name=address1" json:"address1"`
+	Address2       string   `protobuf:"bytes,9,opt,name=address2" json:"address2"`
+	Zip            string   `protobuf:"bytes,10,opt,name=zip" json:"zip"`
+	Country        string   `protobuf:"bytes,11,opt,name=country" json:"country"`
+	FullName       string   `protobuf:"bytes,12,opt,name=full_name,json=fullName" json:"full_name"`
+	// deprecated: use full_name instead
+	FirstName string `protobuf:"bytes,13,opt,name=first_name,json=firstName" json:"first_name"`
+	// deprecated: use full_name instead
 	LastName             string                   `protobuf:"bytes,14,opt,name=last_name,json=lastName" json:"last_name"`
 	Phone                string                   `protobuf:"bytes,15,opt,name=phone" json:"phone"`
 	Email                string                   `protobuf:"bytes,16,opt,name=email" json:"email"`

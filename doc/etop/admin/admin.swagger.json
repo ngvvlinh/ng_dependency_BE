@@ -1648,10 +1648,12 @@
           "type": "string"
         },
         "first_name": {
-          "type": "string"
+          "type": "string",
+          "title": "deprecated: use full_name instead"
         },
         "last_name": {
-          "type": "string"
+          "type": "string",
+          "title": "deprecated: use full_name instead"
         },
         "phone": {
           "type": "string"

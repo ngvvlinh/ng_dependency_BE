@@ -7,8 +7,11 @@ import (
 
 	"github.com/golang/protobuf/jsonpb"
 
+	"etop.vn/api/shopping/customering"
 	"etop.vn/backend/pb/common"
+	pbcm "etop.vn/backend/pb/common"
 	pbetop "etop.vn/backend/pb/etop"
+	pbs3 "etop.vn/backend/pb/etop/etc/status3"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/etop/model"
 	catalogmodel "etop.vn/backend/pkg/services/catalog/model"
@@ -241,4 +244,27 @@ func (a *Attribute) ToModel() catalogmodel.ProductAttribute {
 		Name:  a.Name,
 		Value: a.Value,
 	}
+}
+
+func PbCustomer(m *customering.ShopCustomer) *Customer {
+	return &Customer{
+		Id:        m.ID,
+		ShopId:    m.ShopID,
+		Code:      m.Code,
+		FullName:  m.FullName,
+		Note:      m.Note,
+		Phone:     m.Phone,
+		Email:     m.Email,
+		CreatedAt: pbcm.PbTime(m.CreatedAt),
+		UpdatedAt: pbcm.PbTime(m.UpdatedAt),
+		Status:    pbs3.Pb(model.Status3(m.Status)),
+	}
+}
+
+func PbCustomers(ms []*customering.ShopCustomer) []*Customer {
+	res := make([]*Customer, len(ms))
+	for i, m := range ms {
+		res[i] = PbCustomer(m)
+	}
+	return res
 }

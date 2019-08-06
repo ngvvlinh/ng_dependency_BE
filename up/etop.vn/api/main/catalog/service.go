@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"etop.vn/api/meta"
+	"etop.vn/api/shopping"
 )
 
 type Aggregate interface {
@@ -18,7 +19,7 @@ type Aggregate interface {
 
 	UpdateShopProductImages(context.Context, *UpdateImagesArgs) (*ShopProduct, error)
 
-	DeleteShopProducts(context.Context, *IDsShopArgs) (*meta.Empty, error)
+	DeleteShopProducts(context.Context, *shopping.IDsQueryShopArgs) (*meta.Empty, error)
 
 	//-- shop_variant --//
 
@@ -26,7 +27,7 @@ type Aggregate interface {
 
 	UpdateShopVariantInfo(context.Context, *UpdateShopVariantInfoArgs) (*ShopVariant, error)
 
-	DeleteShopVariants(context.Context, *IDsShopArgs) (*meta.Empty, error)
+	DeleteShopVariants(context.Context, *shopping.IDsQueryShopArgs) (*meta.Empty, error)
 
 	UpdateShopVariantStatus(context.Context, *UpdateStatusArgs) (*ShopVariant, error)
 
@@ -42,35 +43,22 @@ type Aggregate interface {
 type QueryService interface {
 	GetShopProductByID(context.Context, *GetShopProductByIDQueryArgs) (*ShopProduct, error)
 	GetShopProductWithVariantsByID(context.Context, *GetShopProductByIDQueryArgs) (*ShopProductWithVariants, error)
-	ListShopProducts(context.Context, *ListShopProductsQueryArgs) (*ShopProductsResponse, error)
-	ListShopProductsByIDs(context.Context, *IDsShopArgs) (*ShopProductsResponse, error)
-	ListShopProductsWithVariants(context.Context, *ListShopProductsQueryArgs) (*ShopProductsWithVariantsResponse, error)
-	ListShopProductsWithVariantsByIDs(context.Context, *IDsShopArgs) (*ShopProductsWithVariantsResponse, error)
+	ListShopProducts(context.Context, *shopping.ListQueryShopArgs) (*ShopProductsResponse, error)
+	ListShopProductsByIDs(context.Context, *shopping.IDsQueryShopArgs) (*ShopProductsResponse, error)
+	ListShopProductsWithVariants(context.Context, *shopping.ListQueryShopArgs) (*ShopProductsWithVariantsResponse, error)
+	ListShopProductsWithVariantsByIDs(context.Context, *shopping.IDsQueryShopArgs) (*ShopProductsWithVariantsResponse, error)
 
 	GetShopVariantByID(context.Context, *GetShopVariantByIDQueryArgs) (*ShopVariant, error)
 	GetShopVariantWithProductByID(context.Context, *GetShopVariantByIDQueryArgs) (*ShopVariantWithProduct, error)
-	ListShopVariants(context.Context, *ListShopVariantsQueryArgs) (*ShopVariantsResponse, error)
-	ListShopVariantsByIDs(context.Context, *IDsShopArgs) (*ShopVariantsResponse, error)
-	ListShopVariantsWithProductByIDs(context.Context, *IDsShopArgs) (*ShopVariantsWithProductResponse, error)
+	ListShopVariants(context.Context, *shopping.ListQueryShopArgs) (*ShopVariantsResponse, error)
+	ListShopVariantsByIDs(context.Context, *shopping.IDsQueryShopArgs) (*ShopVariantsResponse, error)
+	ListShopVariantsWithProductByIDs(context.Context, *shopping.IDsQueryShopArgs) (*ShopVariantsWithProductResponse, error)
 }
 
 //-- query --//
 
 type IDsArgs struct {
 	IDs []int64
-}
-
-type IDsShopArgs struct {
-	IDs    []int64
-	ShopID int64
-}
-
-type GetProductByIDQueryArgs struct {
-	ProductID int64
-}
-
-type GetVariantByIDQueryArgs struct {
-	VariantID int64
 }
 
 type GetShopProductByIDQueryArgs struct {
@@ -81,34 +69,6 @@ type GetShopProductByIDQueryArgs struct {
 type GetShopVariantByIDQueryArgs struct {
 	VariantID int64
 	ShopID    int64
-}
-
-type ListProductsQueryArgs struct {
-	ShopID int64
-
-	Paging  meta.Paging
-	Filters meta.Filters
-}
-
-type ListVariantsQueryArgs struct {
-	ShopID int64
-
-	Paging  meta.Paging
-	Filters meta.Filters
-}
-
-type ListShopProductsQueryArgs struct {
-	ShopID int64
-
-	Paging  meta.Paging
-	Filters meta.Filters
-}
-
-type ListShopVariantsQueryArgs struct {
-	ShopID int64
-
-	Paging  meta.Paging
-	Filters meta.Filters
 }
 
 type ShopProductsResponse struct {

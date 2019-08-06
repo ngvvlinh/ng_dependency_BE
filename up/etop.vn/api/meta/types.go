@@ -1,7 +1,6 @@
 package meta
 
 import (
-	"database/sql"
 	"time"
 
 	metav1 "etop.vn/api/meta/v1"
@@ -14,6 +13,10 @@ import (
 type Empty = metav1.Empty
 type UUID = metav1.UUID
 type Timestamp = metav1.Timestamp
+
+type UpdatedResponse struct {
+	Updated int32
+}
 
 func NewUUID() UUID {
 	u := uuid.NewV4()
@@ -65,14 +68,6 @@ type UpdateListInt64 struct {
 type UpdateListInt32 struct {
 	Op      UpdateOp
 	Changes []int32
-}
-
-type NullBool sql.NullBool
-type NullString sql.NullString
-type NullInt64 sql.NullInt64
-type NullInt32 struct {
-	Int32 int32
-	Valid bool
 }
 
 func (u *UpdateSet) Update(set []string) (result []string, count int, err error) {

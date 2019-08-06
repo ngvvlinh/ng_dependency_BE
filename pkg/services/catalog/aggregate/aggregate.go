@@ -5,6 +5,7 @@ import (
 
 	"etop.vn/api/main/catalog"
 	"etop.vn/api/meta"
+	"etop.vn/api/shopping"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/cmsql"
 	"etop.vn/backend/pkg/services/catalog/sqlstore"
@@ -68,7 +69,7 @@ func (a *Aggregate) UpdateShopProductImages(ctx context.Context, args *catalog.U
 	return nil, cm.ErrTODO
 }
 
-func (a *Aggregate) DeleteShopProducts(ctx context.Context, args *catalog.IDsShopArgs) (*meta.Empty, error) {
+func (a *Aggregate) DeleteShopProducts(ctx context.Context, args *shopping.IDsQueryShopArgs) (*meta.Empty, error) {
 	panic("TODO")
 }
 
@@ -112,7 +113,7 @@ func (a *Aggregate) UpdateShopVariantInfo(ctx context.Context, args *catalog.Upd
 	panic("TODO")
 }
 
-func (a *Aggregate) DeleteShopVariants(ctx context.Context, args *catalog.IDsShopArgs) (*meta.Empty, error) {
+func (a *Aggregate) DeleteShopVariants(ctx context.Context, args *shopping.IDsQueryShopArgs) (*meta.Empty, error) {
 	panic("TODO")
 }
 

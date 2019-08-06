@@ -134,7 +134,7 @@ func (s *ShopVariantStore) GetShopVariantWithProduct() (*catalog.ShopVariantWith
 func (s *ShopVariantStore) ListShopVariantsDB() ([]*catalogmodel.ShopVariant, error) {
 	query := s.query().Where(s.preds)
 	query = s.includeDeleted.Check(query, s.FtShopVariant.NotDeleted())
-	query, err := sqlstore.LimitSort(query, &s.paging, SortVariant)
+	query, err := sqlstore.LimitSort(query, &s.paging, SortShopVariant)
 	if err != nil {
 		return nil, err
 	}
@@ -157,7 +157,7 @@ func (s *ShopVariantStore) ListShopVariantsWithProductDB() ([]*catalogmodel.Shop
 	query := s.extend().query().Where(s.preds)
 	query = s.includeDeleted.Check(query, s.FtShopVariant.NotDeleted())
 	query = s.includeDeleted.Check(query, s.ftShopProduct.NotDeleted())
-	query, err := sqlstore.LimitSort(query, &s.paging, SortVariant)
+	query, err := sqlstore.LimitSort(query, &s.paging, SortShopVariant)
 	if err != nil {
 		return nil, err
 	}

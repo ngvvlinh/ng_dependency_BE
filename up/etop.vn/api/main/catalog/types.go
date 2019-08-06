@@ -3,16 +3,9 @@ package catalog
 import (
 	"time"
 
-	cmutil "etop.vn/common/util"
-
 	"etop.vn/api/main/catalog/types"
-	"etop.vn/api/meta"
+	cmutil "etop.vn/common/util"
 )
-
-type Bool = meta.NullBool
-type String = meta.NullString
-type NullInt64 = meta.NullInt64
-type Int32 = meta.NullInt32
 
 type ShopProduct struct {
 	ShopID int64

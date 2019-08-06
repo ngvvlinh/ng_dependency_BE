@@ -383,11 +383,11 @@ func loadProducts(ctx context.Context, codeMode CodeMode, shopID int64, keys []s
 	s := shopProductStore(ctx).ShopID(shopID)
 	useCode := codeMode == CodeModeUseCode
 	if useCode {
-		s = s.Codes(keys...)
+		s.Codes(keys...)
 	} else {
 		// only query products with ed_code is null
-		s = s.Where(s.FtShopProduct.ByCode("").Nullable())
-		s = s.ByNameNormUas(keys...)
+		s.Where(s.FtShopProduct.ByCode("").Nullable())
+		s.ByNameNormUas(keys...)
 	}
 	products, err := s.Paging(maxPaging).ListShopProductsDB()
 	if err != nil {

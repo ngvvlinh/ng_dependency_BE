@@ -160,7 +160,7 @@ func (s *ShopProductStore) ListShopProductsDB() ([]*catalogmodel.ShopProduct, er
 	if err != nil {
 		return nil, err
 	}
-	query, _, err = sqlstore.Filters(query, s.filters, FilterShopProductWhitelist)
+	query, _, err = sqlstore.Filters(query, s.filters, FilterShopProduct)
 	if err != nil {
 		return nil, err
 	}

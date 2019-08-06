@@ -5,8 +5,10 @@ package catalog
 import (
 	context "context"
 
+	types "etop.vn/api/main/catalog/types"
 	meta "etop.vn/api/meta"
 	metav1 "etop.vn/api/meta/v1"
+	shopping "etop.vn/api/shopping"
 )
 
 type Command interface{ command() }
@@ -51,12 +53,13 @@ type CreateShopProductCommand struct {
 }
 
 type CreateShopVariantCommand struct {
-	ShopID    int64
-	ProductID int64
-	Code      string
-	Name      string
-	ImageURLs []string
-	Note      string
+	ShopID     int64
+	ProductID  int64
+	Code       string
+	Name       string
+	ImageURLs  []string
+	Note       string
+	Attributes types.Attributes
 	DescriptionInfo
 	PriceInfo
 
@@ -259,18 +262,19 @@ func (q *CreateShopVariantCommand) GetArgs() *CreateShopVariantArgs {
 		Name:            q.Name,
 		ImageURLs:       q.ImageURLs,
 		Note:            q.Note,
+		Attributes:      q.Attributes,
 		DescriptionInfo: q.DescriptionInfo,
 		PriceInfo:       q.PriceInfo,
 	}
 }
-func (q *DeleteShopProductsCommand) GetArgs() *IDsShopArgs {
-	return &IDsShopArgs{
+func (q *DeleteShopProductsCommand) GetArgs() *shopping.IDsQueryShopArgs {
+	return &shopping.IDsQueryShopArgs{
 		IDs:    q.IDs,
 		ShopID: q.ShopID,
 	}
 }
-func (q *DeleteShopVariantsCommand) GetArgs() *IDsShopArgs {
-	return &IDsShopArgs{
+func (q *DeleteShopVariantsCommand) GetArgs() *shopping.IDsQueryShopArgs {
+	return &shopping.IDsQueryShopArgs{
 		IDs:    q.IDs,
 		ShopID: q.ShopID,
 	}
@@ -349,47 +353,47 @@ func (q *GetShopVariantWithProductByIDQuery) GetArgs() *GetShopVariantByIDQueryA
 		ShopID:    q.ShopID,
 	}
 }
-func (q *ListShopProductsQuery) GetArgs() *ListShopProductsQueryArgs {
-	return &ListShopProductsQueryArgs{
+func (q *ListShopProductsQuery) GetArgs() *shopping.ListQueryShopArgs {
+	return &shopping.ListQueryShopArgs{
 		ShopID:  q.ShopID,
 		Paging:  q.Paging,
 		Filters: q.Filters,
 	}
 }
-func (q *ListShopProductsByIDsQuery) GetArgs() *IDsShopArgs {
-	return &IDsShopArgs{
+func (q *ListShopProductsByIDsQuery) GetArgs() *shopping.IDsQueryShopArgs {
+	return &shopping.IDsQueryShopArgs{
 		IDs:    q.IDs,
 		ShopID: q.ShopID,
 	}
 }
-func (q *ListShopProductsWithVariantsQuery) GetArgs() *ListShopProductsQueryArgs {
-	return &ListShopProductsQueryArgs{
+func (q *ListShopProductsWithVariantsQuery) GetArgs() *shopping.ListQueryShopArgs {
+	return &shopping.ListQueryShopArgs{
 		ShopID:  q.ShopID,
 		Paging:  q.Paging,
 		Filters: q.Filters,
 	}
 }
-func (q *ListShopProductsWithVariantsByIDsQuery) GetArgs() *IDsShopArgs {
-	return &IDsShopArgs{
+func (q *ListShopProductsWithVariantsByIDsQuery) GetArgs() *shopping.IDsQueryShopArgs {
+	return &shopping.IDsQueryShopArgs{
 		IDs:    q.IDs,
 		ShopID: q.ShopID,
 	}
 }
-func (q *ListShopVariantsQuery) GetArgs() *ListShopVariantsQueryArgs {
-	return &ListShopVariantsQueryArgs{
+func (q *ListShopVariantsQuery) GetArgs() *shopping.ListQueryShopArgs {
+	return &shopping.ListQueryShopArgs{
 		ShopID:  q.ShopID,
 		Paging:  q.Paging,
 		Filters: q.Filters,
 	}
 }
-func (q *ListShopVariantsByIDsQuery) GetArgs() *IDsShopArgs {
-	return &IDsShopArgs{
+func (q *ListShopVariantsByIDsQuery) GetArgs() *shopping.IDsQueryShopArgs {
+	return &shopping.IDsQueryShopArgs{
 		IDs:    q.IDs,
 		ShopID: q.ShopID,
 	}
 }
-func (q *ListShopVariantsWithProductByIDsQuery) GetArgs() *IDsShopArgs {
-	return &IDsShopArgs{
+func (q *ListShopVariantsWithProductByIDsQuery) GetArgs() *shopping.IDsQueryShopArgs {
+	return &shopping.IDsQueryShopArgs{
 		IDs:    q.IDs,
 		ShopID: q.ShopID,
 	}

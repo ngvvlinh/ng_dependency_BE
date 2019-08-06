@@ -5,13 +5,13 @@ import (
 	"time"
 
 	"etop.vn/api/main/etop"
-	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/api/main/ordering"
 	ordertypes "etop.vn/api/main/ordering/types"
 	"etop.vn/api/main/shipnow"
 	"etop.vn/api/main/shipnow/carrier"
 	shipnowcarrier "etop.vn/api/main/shipnow/carrier"
 	"etop.vn/api/meta"
+	"etop.vn/backend/pkg/etop/model"
 	etopconvert "etop.vn/backend/pkg/services/etop/convert"
 	"etop.vn/common/bus"
 )

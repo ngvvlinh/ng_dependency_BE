@@ -4,6 +4,8 @@ import (
 	"context"
 
 	"etop.vn/api/main/catalog"
+	"etop.vn/api/shopping"
+	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/cmsql"
 	"etop.vn/backend/pkg/services/catalog/sqlstore"
 	"etop.vn/common/bus"
@@ -73,7 +75,7 @@ func (s *QueryService) GetShopVariantWithProductByID(
 }
 
 func (s *QueryService) ListShopProducts(
-	ctx context.Context, args *catalog.ListShopProductsQueryArgs,
+	ctx context.Context, args *shopping.ListQueryShopArgs,
 ) (*catalog.ShopProductsResponse, error) {
 	q := s.shopProduct(ctx).OptionalShopID(args.ShopID).Filters(args.Filters)
 	products, err := q.Paging(args.Paging).ListShopProducts()
@@ -88,11 +90,12 @@ func (s *QueryService) ListShopProducts(
 	return &catalog.ShopProductsResponse{
 		Products: products,
 		Count:    int32(count),
+		Paging:   q.GetPaging(),
 	}, nil
 }
 
 func (s *QueryService) ListShopProductsWithVariants(
-	ctx context.Context, args *catalog.ListShopProductsQueryArgs,
+	ctx context.Context, args *shopping.ListQueryShopArgs,
 ) (*catalog.ShopProductsWithVariantsResponse, error) {
 	q := s.shopProduct(ctx).OptionalShopID(args.ShopID).Filters(args.Filters)
 	products, err := q.Paging(args.Paging).ListShopProductsWithVariants()
@@ -111,13 +114,13 @@ func (s *QueryService) ListShopProductsWithVariants(
 }
 
 func (s *QueryService) ListShopVariants(
-	ctx context.Context, args *catalog.ListShopVariantsQueryArgs,
+	ctx context.Context, args *shopping.ListQueryShopArgs,
 ) (*catalog.ShopVariantsResponse, error) {
-	panic("implement me")
+	return nil, cm.ErrTODO
 }
 
 func (s *QueryService) ListShopProductsByIDs(
-	ctx context.Context, args *catalog.IDsShopArgs,
+	ctx context.Context, args *shopping.IDsQueryShopArgs,
 ) (*catalog.ShopProductsResponse, error) {
 	q := s.shopProduct(ctx).IDs(args.IDs...).OptionalShopID(args.ShopID)
 	products, err := q.ListShopProducts()
@@ -131,7 +134,7 @@ func (s *QueryService) ListShopProductsByIDs(
 }
 
 func (s *QueryService) ListShopProductsWithVariantsByIDs(
-	ctx context.Context, args *catalog.IDsShopArgs,
+	ctx context.Context, args *shopping.IDsQueryShopArgs,
 ) (*catalog.ShopProductsWithVariantsResponse, error) {
 	q := s.shopProduct(ctx).IDs(args.IDs...).OptionalShopID(args.ShopID)
 	products, err := q.ListShopProductsWithVariants()
@@ -145,7 +148,7 @@ func (s *QueryService) ListShopProductsWithVariantsByIDs(
 }
 
 func (s *QueryService) ListShopVariantsByIDs(
-	ctx context.Context, args *catalog.IDsShopArgs,
+	ctx context.Context, args *shopping.IDsQueryShopArgs,
 ) (*catalog.ShopVariantsResponse, error) {
 	q := s.shopVariant(ctx).IDs(args.IDs...).OptionalShopID(args.ShopID)
 	variants, err := q.ListShopVariants()
@@ -159,7 +162,7 @@ func (s *QueryService) ListShopVariantsByIDs(
 }
 
 func (s *QueryService) ListShopVariantsWithProductByIDs(
-	ctx context.Context, args *catalog.IDsShopArgs,
+	ctx context.Context, args *shopping.IDsQueryShopArgs,
 ) (*catalog.ShopVariantsWithProductResponse, error) {
 	q := s.shopVariant(ctx).IDs(args.IDs...).OptionalShopID(args.ShopID)
 	variants, err := q.ListShopVariantsWithProduct()

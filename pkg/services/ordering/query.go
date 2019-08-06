@@ -3,11 +3,10 @@ package ordering
 import (
 	"context"
 
-	"etop.vn/backend/pkg/common/cmsql"
-	"etop.vn/common/bus"
-
 	"etop.vn/api/main/ordering"
+	"etop.vn/backend/pkg/common/cmsql"
 	"etop.vn/backend/pkg/services/ordering/sqlstore"
+	"etop.vn/common/bus"
 )
 
 var _ ordering.QueryService = &QueryService{}
@@ -22,9 +21,9 @@ func NewQueryService(db cmsql.Database) *QueryService {
 	}
 }
 
-func (a *QueryService) MessageBus() ordering.QueryBus {
+func (q *QueryService) MessageBus() ordering.QueryBus {
 	b := bus.New()
-	return ordering.NewQueryServiceHandler(a).RegisterHandlers(b)
+	return ordering.NewQueryServiceHandler(q).RegisterHandlers(b)
 }
 
 func (q *QueryService) GetOrderByID(ctx context.Context, args *ordering.GetOrderByIDArgs) (*ordering.Order, error) {

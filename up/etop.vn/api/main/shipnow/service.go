@@ -29,7 +29,7 @@ type QueryService interface {
 	GetShipnowFulfillmentByShippingCode(context.Context, *GetShipnowFulfillmentByShippingCodeQueryArgs) (*GetShipnowFulfillmentQueryResult, error)
 }
 
-//-- Commands --//
+//-- commands --//
 
 type CreateShipnowFulfillmentArgs = shipnowv1.CreateShipnowFulfillmentCommand
 type ConfirmShipnowFulfillmentArgs = shipnowv1.ConfirmShipnowFulfillmentCommand

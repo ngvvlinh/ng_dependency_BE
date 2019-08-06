@@ -4,7 +4,7 @@ import (
 	"strings"
 	"time"
 
-	orderingv1types "etop.vn/api/main/ordering/v1/types"
+	orderv1types "etop.vn/api/main/ordering/v1/types"
 )
 
 type Address struct {
@@ -34,21 +34,21 @@ type Address struct {
 	AccountID   int64
 	CreatedAt   time.Time
 	UpdatedAt   time.Time
-	Coordinates *orderingv1types.Coordinates
+	Coordinates *orderv1types.Coordinates
 }
 
-func (a *Address) ToOrderAddress() *orderingv1types.Address {
+func (a *Address) ToOrderAddress() *orderv1types.Address {
 	if a == nil {
 		return nil
 	}
-	return &orderingv1types.Address{
+	return &orderv1types.Address{
 		FullName: a.FullName,
 		Phone:    a.Phone,
 		Email:    a.Email,
 		Company:  a.Company,
 		Address1: a.Address1,
 		Address2: a.Address2,
-		Location: orderingv1types.Location{
+		Location: orderv1types.Location{
 			ProvinceCode: a.ProvinceCode,
 			DistrictCode: a.DistrictCode,
 			WardCode:     a.WardCode,

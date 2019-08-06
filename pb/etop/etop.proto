@@ -670,12 +670,18 @@ message Address {
     optional string country = 11 [(gogoproto.nullable) = false];
 
     optional string full_name = 12 [(gogoproto.nullable) = false];
+
+    // deprecated: use full_name instead
     optional string first_name = 13 [(gogoproto.nullable) = false];
+
+    // deprecated: use full_name instead
     optional string last_name = 14 [(gogoproto.nullable) = false];
+
     optional string phone = 15 [(gogoproto.nullable) = false];
     optional string email = 16 [(gogoproto.nullable) = false];
     optional string position = 17 [(gogoproto.nullable) = false];
     optional address_type.AddressType type = 18 [(gogoproto.nullable) = false];
+
     optional AddressNote notes = 19;
     optional Coordinates coordinates = 20;
 }

@@ -75,6 +75,24 @@ service CollectionService {
     rpc RemoveProductsCollection(RemoveProductsCollectionRequest) returns (cm.UpdatedResponse);
 }
 
+service CustomerService {
+    rpc CreateCustomer(CreateCustomerRequest) returns (Customer);
+    rpc UpdateCustomer(UpdateCustomerRequest) returns (Customer);
+    rpc DeleteCustomer(cm.IDRequest) returns (cm.DeletedResponse);
+    rpc GetCustomer(cm.IDRequest) returns (Customer);
+    rpc GetCustomerDetails(cm.IDRequest) returns (CustomerDetailsResponse);
+    rpc GetCustomers(GetCustomersRequest) returns (CustomersResponse);
+    rpc GetCustomersByIDs(cm.IDsRequest) returns (CustomersResponse);
+    rpc BatchSetCustomersStatus(SetCustomersStatusRequest) returns (cm.UpdatedResponse);
+
+    //-- address --//
+
+    rpc GetCustomerAddresses(GetCustomerAddressesRequest) returns (CustomerAddressesResponse);
+    rpc CreateCustomerAddress(CreateCustomerAddressRequest) returns (CustomerAddress);
+    rpc UpdateCustomerAddress(UpdateCustomerAddressRequest) returns (CustomerAddress);
+    rpc DeleteCustomerAddress(cm.IDRequest) returns (cm.DeletedResponse);
+}
+
 service ProductService {
 
     //-- product --//
@@ -874,4 +892,176 @@ message ExternalAccountHaravanRequest {
     optional string code = 2 [(gogoproto.nullable) = false];
     // @required
     optional string redirect_uri = 3 [(gogoproto.nullable) = false];
+}
+
+message Customer {
+    optional int64 id = 1 [(gogoproto.nullable) = false];
+
+    optional int64 shop_id = 2 [(gogoproto.nullable) = false];
+
+    optional string full_name = 3 [(gogoproto.nullable) = false];
+
+    optional string code = 13 [(gogoproto.nullable) = false];
+
+    optional string note = 4 [(gogoproto.nullable) = false];
+
+    optional string phone = 5 [(gogoproto.nullable) = false];
+
+    optional string email = 6 [(gogoproto.nullable) = false];
+
+    optional string gender = 7 [(gogoproto.nullable) = false];
+
+    optional string type = 8 [(gogoproto.nullable) = false];
+
+    optional string birthday = 12 [(gogoproto.nullable) = false];
+
+    optional google.protobuf.Timestamp created_at = 9;
+
+    optional google.protobuf.Timestamp updated_at = 10;
+
+    optional status3.Status status = 11 [(gogoproto.nullable) = false];
+}
+
+message CreateCustomerRequest {
+    optional string full_name = 1 [(gogoproto.nullable) = false];
+
+    optional string code = 5 [(gogoproto.nullable) = false];
+
+    optional string gender = 12 [(gogoproto.nullable) = false];
+
+    optional string birthday = 13 [(gogoproto.nullable) = false];
+
+    optional string type = 14 [(gogoproto.nullable) = false];
+
+    optional string note = 2 [(gogoproto.nullable) = false];
+
+    optional string phone = 3 [(gogoproto.nullable) = false];
+
+    optional string email = 4 [(gogoproto.nullable) = false];
+}
+
+message UpdateCustomerRequest {
+    optional int64 id = 5 [(gogoproto.nullable) = false];
+
+    optional string code = 6;
+
+    optional string full_name = 1;
+
+    optional string gender = 12;
+
+    optional string birthday = 13;
+
+    optional string type = 14;
+
+    optional string note = 2;
+
+    optional string phone = 3;
+
+    optional string email = 4;
+}
+
+message GetCustomersRequest {
+    optional cm.Paging paging = 1;
+    repeated cm.Filter filters = 2;
+}
+
+message CustomersResponse {
+    repeated Customer customers = 1;
+    optional cm.PageInfo paging = 2;
+}
+
+message SetCustomersStatusRequest {
+    repeated int64 ids = 1;
+    optional status3.Status status = 2 [(gogoproto.nullable) = false];
+}
+
+message CustomerDetailsResponse {
+    optional Customer customer = 1;
+    repeated IndependentSummaryItem summary_items = 2;
+}
+
+message IndependentSummaryItem {
+    optional string name  = 1 [(gogoproto.nullable)=false];
+    optional string label = 2 [(gogoproto.nullable)=false];
+    optional string spec  = 3 [(gogoproto.nullable)=false];
+    optional int32  value = 4 [(gogoproto.nullable)=false];
+    optional string unit  = 5 [(gogoproto.nullable)=false];
+}
+
+message GetCustomerAddressesRequest {
+    optional int64 customer_id = 1 [(gogoproto.nullable)=false];
+}
+
+message CustomerAddress {
+    optional int64 id = 1 [(gogoproto.nullable) = false];
+    optional string province = 2 [(gogoproto.nullable) = false];
+    optional string province_code = 6 [(gogoproto.nullable) = false];
+    optional string district = 3 [(gogoproto.nullable) = false];
+    optional string district_code = 7 [(gogoproto.nullable) = false];
+    optional string ward = 4 [(gogoproto.nullable) = false];
+    optional string ward_code = 8 [(gogoproto.nullable) = false];
+    optional string address1 = 5 [(gogoproto.nullable) = false];
+    optional string address2 = 9 [(gogoproto.nullable) = false];
+
+//    optional string zip = 10 [(gogoproto.nullable) = false];
+
+    optional string country = 11 [(gogoproto.nullable) = false];
+
+    optional string full_name = 12 [(gogoproto.nullable) = false];
+
+    optional string phone = 15 [(gogoproto.nullable) = false];
+
+    optional string email = 16 [(gogoproto.nullable) = false];
+
+    optional string position = 17 [(gogoproto.nullable) = false];
+}
+
+message CreateCustomerAddressRequest {
+    optional string province_code = 2 [(gogoproto.nullable) = false];
+
+    optional string district_code = 3 [(gogoproto.nullable) = false];
+
+    optional string ward_code = 4 [(gogoproto.nullable) = false];
+
+    optional string address1 = 5 [(gogoproto.nullable) = false];
+
+    optional string address2 = 6 [(gogoproto.nullable) = false];
+
+    optional string country = 7 [(gogoproto.nullable) = false];
+
+    optional string full_name = 8 [(gogoproto.nullable) = false];
+
+    optional string phone = 9 [(gogoproto.nullable) = false];
+
+    optional string email = 10 [(gogoproto.nullable) = false];
+
+    optional string position = 11 [(gogoproto.nullable) = false];
+}
+
+message UpdateCustomerAddressRequest {
+    optional int64 id = 1 [(gogoproto.nullable) = false];
+
+    optional string province_code = 2 [(gogoproto.nullable) = false];
+
+    optional string district_code = 3 [(gogoproto.nullable) = false];
+
+    optional string ward_code = 4 [(gogoproto.nullable) = false];
+
+    optional string address1 = 5 [(gogoproto.nullable) = false];
+
+    optional string address2 = 6 [(gogoproto.nullable) = false];
+
+    optional string country = 7 [(gogoproto.nullable) = false];
+
+    optional string full_name = 8 [(gogoproto.nullable) = false];
+
+    optional string phone = 9 [(gogoproto.nullable) = false];
+
+    optional string email = 10 [(gogoproto.nullable) = false];
+
+    optional string position = 11 [(gogoproto.nullable) = false];
+}
+
+message CustomerAddressesResponse {
+    repeated CustomerAddress addresses = 1 [(gogoproto.nullable) = false];
 }

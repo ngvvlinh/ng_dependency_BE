@@ -3,6 +3,8 @@ package shop
 import (
 	"context"
 
+	"etop.vn/api/shopping/customering"
+
 	haravanidentity "etop.vn/api/external/haravan/identity"
 	"etop.vn/api/main/address"
 	"etop.vn/api/main/catalog"
@@ -110,8 +112,25 @@ var catalogQuery catalog.QueryBus
 var catalogAggr catalog.CommandBus
 var haravanIdentityAggr haravanidentity.CommandBus
 var haravanIdentityQuery haravanidentity.QueryBus
+var customerQuery customering.QueryBus
+var customerAggr customering.CommandBus
 
-func Init(catalogQueryBus catalog.QueryBus, catalogCommandBus catalog.CommandBus, shipnow shipnow.CommandBus, shipnowQS shipnow.QueryBus, identity identity.CommandBus, identityQS identity.QueryBus, addressQS address.QueryBus, providerManager *shipping_provider.ProviderManager, haravanIdentity haravanidentity.CommandBus, haravanIdentityQS haravanidentity.QueryBus, sd cmservice.Shutdowner, rd redis.Store) {
+func Init(
+	catalogQueryBus catalog.QueryBus,
+	catalogCommandBus catalog.CommandBus,
+	shipnow shipnow.CommandBus,
+	shipnowQS shipnow.QueryBus,
+	identity identity.CommandBus,
+	identityQS identity.QueryBus,
+	addressQS address.QueryBus,
+	providerManager *shipping_provider.ProviderManager,
+	haravanIdentity haravanidentity.CommandBus,
+	haravanIdentityQS haravanidentity.QueryBus,
+	customerA customering.CommandBus,
+	customerQS customering.QueryBus,
+	sd cmservice.Shutdowner,
+	rd redis.Store,
+) {
 	idempgroup = idemp.NewRedisGroup(rd, PrefixIdemp, 5*60)
 	catalogQuery = catalogQueryBus
 	catalogAggr = catalogCommandBus
@@ -123,6 +142,8 @@ func Init(catalogQueryBus catalog.QueryBus, catalogCommandBus catalog.CommandBus
 	addressQuery = addressQS
 	haravanIdentityAggr = haravanIdentity
 	haravanIdentityQuery = haravanIdentityQS
+	customerQuery = customerQS
+	customerAggr = customerA
 	sd.Register(idempgroup.Shutdown)
 }
 
