@@ -19,11 +19,11 @@ import (
 	"etop.vn/api/main/shipnow/carrier"
 	shipnowtypes "etop.vn/api/main/shipnow/types"
 	shippingtypes "etop.vn/api/main/shipping/types"
+	shipnow_carrier "etop.vn/backend/com/main/shipnow-carrier"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/etop/logic/shipping_provider"
 	"etop.vn/backend/pkg/etop/model"
 	ahamoveclient "etop.vn/backend/pkg/integration/ahamove/client"
-	shipnow_carrier "etop.vn/backend/pkg/services/shipnow-carrier"
 )
 
 var _ shipnow_carrier.ShipnowCarrier = &Carrier{}

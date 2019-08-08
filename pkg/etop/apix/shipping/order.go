@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"strings"
 
+	"etop.vn/backend/com/main/ordering/modelx"
+	ordersqlstore "etop.vn/backend/com/main/ordering/sqlstore"
 	pbcm "etop.vn/backend/pb/common"
 	pborder "etop.vn/backend/pb/etop/order"
 	pbsource "etop.vn/backend/pb/etop/order/source"
@@ -16,8 +18,6 @@ import (
 	"etop.vn/backend/pkg/etop/authorize/claims"
 	logicorder "etop.vn/backend/pkg/etop/logic/orders"
 	"etop.vn/backend/pkg/etop/model"
-	"etop.vn/backend/pkg/services/ordering/modelx"
-	ordersqlstore "etop.vn/backend/pkg/services/ordering/sqlstore"
 	"etop.vn/common/bus"
 	"etop.vn/common/l"
 )

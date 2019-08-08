@@ -8,14 +8,14 @@ import (
 
 	"etop.vn/api/main/catalog"
 	"etop.vn/api/meta"
+	"etop.vn/backend/com/main/catalog/convert"
+	catalogmodel "etop.vn/backend/com/main/catalog/model"
+	catalogmodelx "etop.vn/backend/com/main/catalog/modelx"
+	catalogsqlstore "etop.vn/backend/com/main/catalog/sqlstore"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/imcsv"
 	"etop.vn/backend/pkg/common/validate"
 	"etop.vn/backend/pkg/etop/model"
-	"etop.vn/backend/pkg/services/catalog/convert"
-	catalogmodel "etop.vn/backend/pkg/services/catalog/model"
-	catalogmodelx "etop.vn/backend/pkg/services/catalog/modelx"
-	catalogsqlstore "etop.vn/backend/pkg/services/catalog/sqlstore"
 	wrapshop "etop.vn/backend/wrapper/etop/shop"
 	"etop.vn/common/bus"
 )

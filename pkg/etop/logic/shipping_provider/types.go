@@ -3,9 +3,9 @@ package shipping_provider
 import (
 	"context"
 
+	ordermodel "etop.vn/backend/com/main/ordering/model"
+	shipmodel "etop.vn/backend/com/main/shipping/model"
 	"etop.vn/backend/pkg/etop/model"
-	ordermodel "etop.vn/backend/pkg/services/ordering/model"
-	shipmodel "etop.vn/backend/pkg/services/shipping/model"
 )
 
 type ShippingProvider interface {

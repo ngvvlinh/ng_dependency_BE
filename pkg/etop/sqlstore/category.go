@@ -3,9 +3,9 @@ package sqlstore
 import (
 	"context"
 
+	catalogmodel "etop.vn/backend/com/main/catalog/model"
+	catalogmodelx "etop.vn/backend/com/main/catalog/modelx"
 	cm "etop.vn/backend/pkg/common"
-	catalogmodel "etop.vn/backend/pkg/services/catalog/model"
-	catalogmodelx "etop.vn/backend/pkg/services/catalog/modelx"
 	"etop.vn/common/bus"
 )
 

@@ -2,8 +2,8 @@ package imcsv
 
 import (
 	"etop.vn/api/main/catalog"
+	ordermodel "etop.vn/backend/com/main/ordering/model"
 	"etop.vn/backend/pkg/common/imcsv"
-	ordermodel "etop.vn/backend/pkg/services/ordering/model"
 )
 
 var schema = imcsv.Schema{

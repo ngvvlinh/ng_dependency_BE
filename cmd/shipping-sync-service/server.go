@@ -3,13 +3,13 @@ package main
 import (
 	"net/http"
 
+	servicelocation "etop.vn/backend/com/main/location"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/cmsql"
 	"etop.vn/backend/pkg/etop/logic/shipping_provider"
 	"etop.vn/backend/pkg/etop/sqlstore"
 	"etop.vn/backend/pkg/integration/ghn"
 	"etop.vn/backend/pkg/integration/ghtk"
-	servicelocation "etop.vn/backend/pkg/services/location"
 	"etop.vn/common/l"
 )
 

@@ -19,11 +19,11 @@ import (
 	"etop.vn/backend/pkg/etop/sqlstore"
 
 	"etop.vn/backend/cmd/haravan-gateway/config"
+	servicelocation "etop.vn/backend/com/main/location"
 	cm "etop.vn/backend/pkg/common"
 	cc "etop.vn/backend/pkg/common/config"
 	"etop.vn/backend/pkg/common/health"
 	"etop.vn/backend/pkg/common/telebot"
-	servicelocation "etop.vn/backend/pkg/services/location"
 	"etop.vn/common/l"
 )
 

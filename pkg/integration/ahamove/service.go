@@ -6,7 +6,7 @@ import (
 	"math/rand"
 	"strings"
 
-	"etop.vn/backend/pkg/services/location"
+	"etop.vn/backend/com/main/location"
 
 	ahamoveClient "etop.vn/backend/pkg/integration/ahamove/client"
 

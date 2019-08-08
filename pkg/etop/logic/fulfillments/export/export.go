@@ -14,7 +14,7 @@ import (
 	"time"
 	"unicode/utf8"
 
-	"etop.vn/backend/pkg/services/shipping/modely"
+	"etop.vn/backend/com/main/shipping/modely"
 
 	"github.com/golang/protobuf/jsonpb"
 

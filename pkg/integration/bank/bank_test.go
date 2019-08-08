@@ -5,8 +5,8 @@ import (
 	"testing"
 
 	"etop.vn/api/main/location"
-	servicelocation "etop.vn/backend/pkg/services/location"
-	locationlist "etop.vn/backend/pkg/services/location/list"
+	servicelocation "etop.vn/backend/com/main/location"
+	locationlist "etop.vn/backend/com/main/location/list"
 
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"

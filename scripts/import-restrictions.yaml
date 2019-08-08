@@ -39,6 +39,7 @@
   - "./pkg/etop/apix/webhook"
   - "./pkg/common"
   allowedImports:
+  - etop.vn/backend/com
   - etop.vn/backend/cmd/etop-server/config
   - etop.vn/backend/pb
   - etop.vn/backend/pkg

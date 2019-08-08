@@ -4,7 +4,7 @@ import (
 	"time"
 
 	metav1 "etop.vn/api/meta/v1"
-	cmutil "etop.vn/common/util"
+	cmutil "etop.vn/capi/util"
 	"etop.vn/common/xerrors"
 
 	uuid "github.com/satori/go.uuid"

@@ -6,14 +6,14 @@ import (
 	"strconv"
 	"strings"
 
+	ordermodel "etop.vn/backend/com/main/ordering/model"
+	shipmodel "etop.vn/backend/com/main/shipping/model"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/mq"
 	"etop.vn/backend/pkg/etop/model"
 	ghtkclient "etop.vn/backend/pkg/integration/ghtk/client"
 	notifiermodel "etop.vn/backend/pkg/notifier/model"
 	"etop.vn/backend/pkg/pgevent"
-	ordermodel "etop.vn/backend/pkg/services/ordering/model"
-	shipmodel "etop.vn/backend/pkg/services/shipping/model"
 	"etop.vn/common/l"
 )
 

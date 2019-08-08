@@ -4,14 +4,14 @@ import (
 	"context"
 
 	"etop.vn/api/main/location"
+	servicelocation "etop.vn/backend/com/main/location"
+	locationlist "etop.vn/backend/com/main/location/list"
+	ordersqlstore "etop.vn/backend/com/main/ordering/sqlstore"
+	shipsqlstore "etop.vn/backend/com/main/shipping/sqlstore"
 	pborder "etop.vn/backend/pb/etop/order"
 	pbexternal "etop.vn/backend/pb/external"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/etop/logic/shipping_provider"
-	servicelocation "etop.vn/backend/pkg/services/location"
-	locationlist "etop.vn/backend/pkg/services/location/list"
-	ordersqlstore "etop.vn/backend/pkg/services/ordering/sqlstore"
-	shipsqlstore "etop.vn/backend/pkg/services/shipping/sqlstore"
 	"etop.vn/common/l"
 )
 

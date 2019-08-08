@@ -6,10 +6,10 @@ import (
 	"time"
 
 	"etop.vn/api/main/catalog"
-	ordermodel "etop.vn/backend/pkg/services/ordering/model"
-	ordermodelx "etop.vn/backend/pkg/services/ordering/modelx"
-	shipmodel "etop.vn/backend/pkg/services/shipping/model"
-	shipmodelx "etop.vn/backend/pkg/services/shipping/modelx"
+	ordermodel "etop.vn/backend/com/main/ordering/model"
+	ordermodelx "etop.vn/backend/com/main/ordering/modelx"
+	shipmodel "etop.vn/backend/com/main/shipping/model"
+	shipmodelx "etop.vn/backend/com/main/shipping/modelx"
 
 	"etop.vn/backend/pb/etop/shop"
 	cm "etop.vn/backend/pkg/common"

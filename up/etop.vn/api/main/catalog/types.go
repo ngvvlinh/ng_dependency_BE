@@ -4,7 +4,7 @@ import (
 	"time"
 
 	"etop.vn/api/main/catalog/types"
-	cmutil "etop.vn/common/util"
+	cmutil "etop.vn/capi/util"
 )
 
 type ShopProduct struct {

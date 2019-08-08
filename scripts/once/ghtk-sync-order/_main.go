@@ -4,7 +4,7 @@ import (
 	"context"
 	"flag"
 
-	"etop.vn/backend/pkg/services/shipping/modelx"
+	"etop.vn/backend/com/main/shipping/modelx"
 
 	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/backend/pkg/etop/sqlstore"

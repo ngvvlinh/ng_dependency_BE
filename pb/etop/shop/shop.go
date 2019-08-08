@@ -8,13 +8,13 @@ import (
 	"github.com/golang/protobuf/jsonpb"
 
 	"etop.vn/api/shopping/customering"
+	catalogmodel "etop.vn/backend/com/main/catalog/model"
 	"etop.vn/backend/pb/common"
 	pbcm "etop.vn/backend/pb/common"
 	pbetop "etop.vn/backend/pb/etop"
 	pbs3 "etop.vn/backend/pb/etop/etc/status3"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/etop/model"
-	catalogmodel "etop.vn/backend/pkg/services/catalog/model"
 )
 
 func PbUpdateVariantToModel(shopID int64, p *UpdateVariantRequest) *catalogmodel.ShopVariant {

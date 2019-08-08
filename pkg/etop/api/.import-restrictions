@@ -4,7 +4,10 @@
       "SelectorRegexp": "etop[.]vn",
       "AllowedPrefixes": [
         "etop.vn/api",
+        "etop.vn/capi",
+        "etop.vn/common",
         "etop.vn/backend/cmd/etop-server/config",
+        "etop.vn/backend/com",
         "etop.vn/backend/pb",
         "etop.vn/backend/pkg/common",
         "etop.vn/backend/pkg/etop-handler/intctl",

@@ -15,6 +15,8 @@ import (
 	"github.com/360EntSecGroup-Skylar/excelize"
 
 	"etop.vn/api/main/location"
+	ordermodel "etop.vn/backend/com/main/ordering/model"
+	"etop.vn/backend/com/main/ordering/modelx"
 	pbcm "etop.vn/backend/pb/common"
 	"etop.vn/backend/pb/etop/etc/ghn_note_code"
 	pborder "etop.vn/backend/pb/etop/order"
@@ -25,8 +27,6 @@ import (
 	"etop.vn/backend/pkg/common/validate"
 	"etop.vn/backend/pkg/etop/authorize/claims"
 	"etop.vn/backend/pkg/etop/model"
-	ordermodel "etop.vn/backend/pkg/services/ordering/model"
-	"etop.vn/backend/pkg/services/ordering/modelx"
 	"etop.vn/common/bus"
 	"etop.vn/common/xerrors"
 )

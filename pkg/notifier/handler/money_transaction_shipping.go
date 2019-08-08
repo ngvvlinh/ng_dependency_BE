@@ -4,12 +4,12 @@ import (
 	"context"
 	"fmt"
 
+	txmodel "etop.vn/backend/com/main/moneytx/model"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/mq"
 	etopmodel "etop.vn/backend/pkg/etop/model"
 	"etop.vn/backend/pkg/notifier/model"
 	"etop.vn/backend/pkg/pgevent"
-	txmodel "etop.vn/backend/pkg/services/moneytx/model"
 	"etop.vn/common/l"
 )
 

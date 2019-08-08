@@ -9,6 +9,7 @@ import (
 	"net/http"
 
 	"etop.vn/api/main/location"
+	catalogsqlstore "etop.vn/backend/com/main/catalog/sqlstore"
 	pbcm "etop.vn/backend/pb/common"
 	pbsheet "etop.vn/backend/pb/common/spreadsheet"
 	pborder "etop.vn/backend/pb/etop/order"
@@ -21,7 +22,6 @@ import (
 	cmservice "etop.vn/backend/pkg/common/service"
 	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/backend/pkg/etop/upload"
-	catalogsqlstore "etop.vn/backend/pkg/services/catalog/sqlstore"
 	"etop.vn/common/l"
 )
 

@@ -13,6 +13,7 @@ import (
 
 	"github.com/360EntSecGroup-Skylar/excelize"
 
+	catalogmodel "etop.vn/backend/com/main/catalog/model"
 	pbcm "etop.vn/backend/pb/common"
 	pbshop "etop.vn/backend/pb/etop/shop"
 	cm "etop.vn/backend/pkg/common"
@@ -21,7 +22,6 @@ import (
 	"etop.vn/backend/pkg/common/validate"
 	"etop.vn/backend/pkg/etop/authorize/claims"
 	"etop.vn/backend/pkg/etop/model"
-	catalogmodel "etop.vn/backend/pkg/services/catalog/model"
 	"etop.vn/common/bus"
 )
 

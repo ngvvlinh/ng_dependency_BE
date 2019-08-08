@@ -6,13 +6,13 @@ import (
 	"time"
 
 	"etop.vn/api/main/location"
+	ordermodel "etop.vn/backend/com/main/ordering/model"
+	shipmodel "etop.vn/backend/com/main/shipping/model"
+	shipmodelx "etop.vn/backend/com/main/shipping/modelx"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/syncgroup"
 	"etop.vn/backend/pkg/etop/logic/etop_shipping_price"
 	"etop.vn/backend/pkg/etop/model"
-	ordermodel "etop.vn/backend/pkg/services/ordering/model"
-	shipmodel "etop.vn/backend/pkg/services/shipping/model"
-	shipmodelx "etop.vn/backend/pkg/services/shipping/modelx"
 	"etop.vn/common/bus"
 )
 

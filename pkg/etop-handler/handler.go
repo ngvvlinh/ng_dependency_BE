@@ -9,6 +9,8 @@ import (
 
 	"github.com/Shopify/sarama"
 
+	ordermodel "etop.vn/backend/com/main/ordering/model"
+	shipmodel "etop.vn/backend/com/main/shipping/model"
 	pbcm "etop.vn/backend/pb/common"
 	pbexternal "etop.vn/backend/pb/external"
 	"etop.vn/backend/pkg/common/cmsql"
@@ -18,8 +20,6 @@ import (
 	"etop.vn/backend/pkg/etop-handler/pgrid"
 	"etop.vn/backend/pkg/etop-handler/webhook/sender"
 	"etop.vn/backend/pkg/pgevent"
-	ordermodel "etop.vn/backend/pkg/services/ordering/model"
-	shipmodel "etop.vn/backend/pkg/services/shipping/model"
 	"etop.vn/common/l"
 )
 

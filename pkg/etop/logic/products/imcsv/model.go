@@ -1,9 +1,9 @@
 package imcsv
 
 import (
+	catalogmodel "etop.vn/backend/com/main/catalog/model"
 	"etop.vn/backend/pkg/common/imcsv"
 	"etop.vn/backend/pkg/common/validate"
-	catalogmodel "etop.vn/backend/pkg/services/catalog/model"
 )
 
 var schemaV0 = imcsv.Schema{

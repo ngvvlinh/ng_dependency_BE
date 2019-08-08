@@ -7,8 +7,8 @@ import (
 	"etop.vn/common/l"
 
 	"etop.vn/api/main/location"
+	servicelocation "etop.vn/backend/com/main/location"
 	"etop.vn/backend/pkg/etop/model"
-	servicelocation "etop.vn/backend/pkg/services/location"
 
 	"github.com/stretchr/testify/assert"
 )

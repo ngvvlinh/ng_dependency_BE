@@ -6,9 +6,9 @@ import (
 	context "context"
 
 	meta "etop.vn/api/meta"
-	prelude "etop.vn/api/meta/prelude"
 	metav1 "etop.vn/api/meta/v1"
 	shopping "etop.vn/api/shopping"
+	dot "etop.vn/capi/dot"
 )
 
 type Command interface{ command() }
@@ -71,14 +71,14 @@ type DeleteCustomerCommand struct {
 type UpdateCustomerCommand struct {
 	ID       int64
 	ShopID   int64
-	Code     prelude.NullString
-	FullName prelude.NullString
-	Gender   prelude.NullString
-	Type     prelude.NullString
-	Birthday prelude.NullString
-	Note     prelude.NullString
-	Phone    prelude.NullString
-	Email    prelude.NullString
+	Code     dot.NullString
+	FullName dot.NullString
+	Gender   dot.NullString
+	Type     dot.NullString
+	Birthday dot.NullString
+	Note     dot.NullString
+	Phone    dot.NullString
+	Email    dot.NullString
 
 	Result *ShopCustomer `json:"-"`
 }

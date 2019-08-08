@@ -6,15 +6,14 @@ import (
 	"strconv"
 	"time"
 
+	txmodel "etop.vn/backend/com/main/moneytx/model"
+	"etop.vn/backend/com/main/moneytx/modelx"
+	txmodely "etop.vn/backend/com/main/moneytx/modely"
+	shipmodel "etop.vn/backend/com/main/shipping/model"
+	shipmodelx "etop.vn/backend/com/main/shipping/modelx"
+	shipmodely "etop.vn/backend/com/main/shipping/modely"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/etop/model"
-	txmodel "etop.vn/backend/pkg/services/moneytx/model"
-	"etop.vn/backend/pkg/services/moneytx/modelx"
-	txmodely "etop.vn/backend/pkg/services/moneytx/modely"
-	shipmodel "etop.vn/backend/pkg/services/shipping/model"
-	shipmodelx "etop.vn/backend/pkg/services/shipping/modelx"
-	"etop.vn/backend/pkg/services/shipping/modely"
-	shipmodely "etop.vn/backend/pkg/services/shipping/modely"
 	"etop.vn/common/bus"
 )
 
@@ -176,7 +175,7 @@ func createMoneyTransaction(ctx context.Context, x Qx, cmd *modelx.CreateMoneyTr
 		return err
 	}
 
-	var fulfillments []*modely.FulfillmentExtended
+	var fulfillments []*shipmodely.FulfillmentExtended
 	var ffms []*shipmodel.Fulfillment
 	if err := x.Table("fulfillment").Where("f.shop_id = ? AND f.type_from = ?",
 		cmd.Shop.ID, model.FFShop).
@@ -245,7 +244,7 @@ func getMoneyTransaction(ctx context.Context, x Qx, query *modelx.GetMoneyTransa
 	if err := s.ShouldGet(transaction); err != nil {
 		return err
 	}
-	var fulfillments []*modely.FulfillmentExtended
+	var fulfillments []*shipmodely.FulfillmentExtended
 	if err := x.Table("fulfillment").Where("f.money_transaction_id = ?", query.ID).Find((*shipmodely.FulfillmentExtendeds)(&fulfillments)); err != nil {
 		return err
 	}
@@ -298,12 +297,12 @@ func GetMoneyTransactions(ctx context.Context, query *modelx.GetMoneyTransaction
 				moneyTransactionIDs[i] = transaction.ID
 			}
 
-			var fulfillments []*modely.FulfillmentExtended
+			var fulfillments []*shipmodely.FulfillmentExtended
 			if err := x.Table("fulfillment").In("f.money_transaction_id", moneyTransactionIDs).
 				Find((*shipmodely.FulfillmentExtendeds)(&fulfillments)); err != nil {
 				return err
 			}
-			ffmsByMoneyTransactionID := make(map[int64][]*modely.FulfillmentExtended)
+			ffmsByMoneyTransactionID := make(map[int64][]*shipmodely.FulfillmentExtended)
 			for _, ffm := range fulfillments {
 				ffmsByMoneyTransactionID[ffm.MoneyTransactionID] = append(ffmsByMoneyTransactionID[ffm.MoneyTransactionID], ffm)
 			}

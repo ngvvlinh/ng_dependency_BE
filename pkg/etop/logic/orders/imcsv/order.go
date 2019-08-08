@@ -5,11 +5,11 @@ import (
 
 	"etop.vn/api/main/catalog"
 
+	catalogsqlstore "etop.vn/backend/com/main/catalog/sqlstore"
+	"etop.vn/backend/com/main/ordering/modelx"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/imcsv"
 	"etop.vn/backend/pkg/etop/model"
-	catalogsqlstore "etop.vn/backend/pkg/services/catalog/sqlstore"
-	"etop.vn/backend/pkg/services/ordering/modelx"
 	"etop.vn/common/bus"
 )
 

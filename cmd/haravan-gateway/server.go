@@ -9,6 +9,8 @@ import (
 	"io/ioutil"
 	"net/http"
 
+	catalogquery "etop.vn/backend/com/main/catalog/query"
+	"etop.vn/backend/com/main/identity"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/httpx"
 	"etop.vn/backend/pkg/common/metrics"
@@ -17,8 +19,6 @@ import (
 	"etop.vn/backend/pkg/external/haravan/gateway"
 	haravanidentity "etop.vn/backend/pkg/external/haravan/identity"
 	haravangateway "etop.vn/backend/pkg/integration/haravan/gateway"
-	catalogquery "etop.vn/backend/pkg/services/catalog/query"
-	"etop.vn/backend/pkg/services/identity"
 	"etop.vn/common/l"
 )
 

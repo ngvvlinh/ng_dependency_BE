@@ -8,11 +8,14 @@ replace etop.vn/apis => ./up/etop.vn/apis
 
 replace etop.vn/apix => ./up/etop.vn/apix
 
+replace etop.vn/capi => ./up/etop.vn/capi
+
 replace etop.vn/common => ./up/etop.vn/common
 
 require (
 	cloud.google.com/go v0.35.1 // indirect
 	etop.vn/api v0.0.0-00010101000000-000000000000
+	etop.vn/capi v0.0.0-00010101000000-000000000000
 	etop.vn/common v0.0.0-00010101000000-000000000000
 	github.com/360EntSecGroup-Skylar/excelize v1.4.1
 	github.com/DataDog/zstd v1.3.5 // indirect
@@ -33,7 +36,7 @@ require (
 	github.com/go-test/deep v1.0.1
 	github.com/go-xorm/builder v0.3.4
 	github.com/gogo/protobuf v1.2.2-0.20190415061611-67e450fba694
-	github.com/golang/protobuf v1.3.1
+	github.com/golang/protobuf v1.3.2
 	github.com/golang/snappy v0.0.0-20180518054509-2e65f85255db // indirect
 	github.com/gopherjs/gopherjs v0.0.0-20190328170749-bb2674552d8f // indirect
 	github.com/gorilla/schema v1.0.2

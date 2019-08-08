@@ -3,9 +3,9 @@ package convert
 import (
 	"etop.vn/api/external/haravan"
 	"etop.vn/api/main/location"
+	shippingmodel "etop.vn/backend/com/main/shipping/model"
 	pborder "etop.vn/backend/pb/etop/order"
 	"etop.vn/backend/pkg/etop/model"
-	shippingmodel "etop.vn/backend/pkg/services/shipping/model"
 )
 
 func ToPbOrderCustomer(in *haravan.Address) *pborder.OrderCustomer {

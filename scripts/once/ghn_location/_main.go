@@ -9,7 +9,7 @@ import (
 	"os"
 	"path/filepath"
 
-	locationlist "etop.vn/backend/pkg/services/location/list"
+	locationlist "etop.vn/backend/com/main/location/list"
 
 	"etop.vn/backend/cmd/etop-server/config"
 	cc "etop.vn/backend/pkg/common/config"

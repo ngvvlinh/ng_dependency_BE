@@ -5,13 +5,13 @@ import (
 	"strings"
 	"time"
 
+	catalogmodel "etop.vn/backend/com/main/catalog/model"
+	catalogmodelx "etop.vn/backend/com/main/catalog/modelx"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/cmsql"
 	"etop.vn/backend/pkg/common/sq"
 	"etop.vn/backend/pkg/common/validate"
 	"etop.vn/backend/pkg/etop/model"
-	catalogmodel "etop.vn/backend/pkg/services/catalog/model"
-	catalogmodelx "etop.vn/backend/pkg/services/catalog/modelx"
 	"etop.vn/common/bus"
 )
 

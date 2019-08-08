@@ -2,8 +2,8 @@ package convertpb
 
 import (
 	"etop.vn/api/main/catalog"
+	catalogmodel "etop.vn/backend/com/main/catalog/model"
 	pbshop "etop.vn/backend/pb/etop/shop"
-	catalogmodel "etop.vn/backend/pkg/services/catalog/model"
 )
 
 func PbAttributes(as catalog.Attributes) []*pbshop.Attribute {

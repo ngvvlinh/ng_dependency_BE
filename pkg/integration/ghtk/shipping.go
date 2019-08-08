@@ -6,14 +6,14 @@ import (
 	"time"
 
 	"etop.vn/api/main/location"
+	ordermodel "etop.vn/backend/com/main/ordering/model"
+	shipmodel "etop.vn/backend/com/main/shipping/model"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/etop/logic/etop_shipping_price"
 	"etop.vn/backend/pkg/etop/logic/shipping_provider"
 	"etop.vn/backend/pkg/etop/model"
 	ghtkclient "etop.vn/backend/pkg/integration/ghtk/client"
 	"etop.vn/backend/pkg/integration/shipping"
-	ordermodel "etop.vn/backend/pkg/services/ordering/model"
-	shipmodel "etop.vn/backend/pkg/services/shipping/model"
 )
 
 var _ shipping_provider.ShippingProvider = &Carrier{}

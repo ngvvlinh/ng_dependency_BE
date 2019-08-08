@@ -19,12 +19,12 @@ import (
 	ahamoveclient "etop.vn/backend/pkg/integration/ahamove/client"
 
 	shipnowtypes "etop.vn/api/main/shipnow/types"
+	shipnowmodel "etop.vn/backend/com/main/shipnow/model"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/cmsql"
 	"etop.vn/backend/pkg/common/httpx"
 	"etop.vn/backend/pkg/etop/model_log"
 	"etop.vn/backend/pkg/integration/ahamove"
-	shipnowmodel "etop.vn/backend/pkg/services/shipnow/model"
 	"etop.vn/common/l"
 )
 

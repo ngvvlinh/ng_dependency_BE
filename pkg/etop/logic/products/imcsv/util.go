@@ -8,6 +8,7 @@ import (
 	"mime/multipart"
 	"net/http"
 
+	catalogsqlstore "etop.vn/backend/com/main/catalog/sqlstore"
 	pbcm "etop.vn/backend/pb/common"
 	pbsheet "etop.vn/backend/pb/common/spreadsheet"
 	pbshop "etop.vn/backend/pb/etop/shop"
@@ -20,7 +21,6 @@ import (
 	cmservice "etop.vn/backend/pkg/common/service"
 	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/backend/pkg/etop/upload"
-	catalogsqlstore "etop.vn/backend/pkg/services/catalog/sqlstore"
 	"etop.vn/common/l"
 )
 

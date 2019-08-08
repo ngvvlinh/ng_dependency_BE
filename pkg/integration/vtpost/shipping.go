@@ -5,14 +5,14 @@ import (
 	"time"
 
 	"etop.vn/api/main/location"
+	ordermodel "etop.vn/backend/com/main/ordering/model"
+	shipmodel "etop.vn/backend/com/main/shipping/model"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/etop/logic/shipping_provider"
 	shippingprovider "etop.vn/backend/pkg/etop/logic/shipping_provider"
 	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/backend/pkg/etop/sqlstore"
 	vtpostclient "etop.vn/backend/pkg/integration/vtpost/client"
-	ordermodel "etop.vn/backend/pkg/services/ordering/model"
-	shipmodel "etop.vn/backend/pkg/services/shipping/model"
 	"etop.vn/common/bus"
 )
 

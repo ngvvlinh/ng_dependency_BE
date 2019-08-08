@@ -7,6 +7,8 @@ import (
 	"strconv"
 	"time"
 
+	shipmodel "etop.vn/backend/com/main/shipping/model"
+	shippingmodelx "etop.vn/backend/com/main/shipping/modelx"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/scheduler"
 	"etop.vn/backend/pkg/common/telebot"
@@ -14,8 +16,6 @@ import (
 	"etop.vn/backend/pkg/integration/ghn"
 	ghnclient "etop.vn/backend/pkg/integration/ghn/client"
 	"etop.vn/backend/pkg/integration/ghn/update"
-	shipmodel "etop.vn/backend/pkg/services/shipping/model"
-	shippingmodelx "etop.vn/backend/pkg/services/shipping/modelx"
 	"etop.vn/common/bus"
 	"etop.vn/common/l"
 	"etop.vn/common/xerrors"

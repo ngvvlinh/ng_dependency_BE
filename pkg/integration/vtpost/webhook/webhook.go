@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"time"
 
-	"etop.vn/backend/pkg/services/shipping/modelx"
+	"etop.vn/backend/com/main/shipping/modelx"
 
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/cmsql"

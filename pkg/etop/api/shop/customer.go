@@ -3,12 +3,12 @@ package shop
 import (
 	"context"
 
-	. "etop.vn/api/meta/prelude"
 	"etop.vn/api/shopping/customering"
 	pbcm "etop.vn/backend/pb/common"
 	pbshop "etop.vn/backend/pb/etop/shop"
 	cm "etop.vn/backend/pkg/common"
 	wrapshop "etop.vn/backend/wrapper/etop/shop"
+	. "etop.vn/capi/dot"
 	"etop.vn/common/bus"
 )
 

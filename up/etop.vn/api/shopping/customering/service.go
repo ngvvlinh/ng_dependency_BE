@@ -4,8 +4,8 @@ import (
 	"context"
 
 	"etop.vn/api/meta"
-	. "etop.vn/api/meta/prelude"
 	"etop.vn/api/shopping"
+	. "etop.vn/capi/dot"
 )
 
 type Aggregate interface {

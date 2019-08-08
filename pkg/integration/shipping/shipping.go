@@ -7,10 +7,10 @@ import (
 	mdlocation "etop.vn/api/main/location"
 	"etop.vn/api/main/shipnow"
 	shipnowtypes "etop.vn/api/main/shipnow/types"
+	locationutil "etop.vn/backend/com/main/location/util"
+	shipmodel "etop.vn/backend/com/main/shipping/model"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/etop/model"
-	locationutil "etop.vn/backend/pkg/services/location/util"
-	shipmodel "etop.vn/backend/pkg/services/shipping/model"
 )
 
 func CalcPickTime(shippingProvider model.ShippingProvider, t time.Time) time.Time {

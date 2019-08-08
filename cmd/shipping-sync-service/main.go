@@ -11,13 +11,13 @@ import (
 	"time"
 
 	"etop.vn/backend/cmd/shipping-sync-service/config"
+	servicelocation "etop.vn/backend/com/main/location"
 	cm "etop.vn/backend/pkg/common"
 	cc "etop.vn/backend/pkg/common/config"
 	"etop.vn/backend/pkg/common/health"
 	"etop.vn/backend/pkg/common/telebot"
 	"etop.vn/backend/pkg/integration/ghn"
 	ghnsync "etop.vn/backend/pkg/integration/ghn/sync"
-	servicelocation "etop.vn/backend/pkg/services/location"
 	"etop.vn/common/l"
 )
 

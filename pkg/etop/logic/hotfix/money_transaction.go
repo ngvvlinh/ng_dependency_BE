@@ -12,10 +12,10 @@ import (
 
 	"github.com/360EntSecGroup-Skylar/excelize"
 
+	txmodel "etop.vn/backend/com/main/moneytx/model"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/cmsql"
 	"etop.vn/backend/pkg/common/httpx"
-	txmodel "etop.vn/backend/pkg/services/moneytx/model"
 )
 
 var db cmsql.Transactioner
