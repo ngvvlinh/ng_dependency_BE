@@ -17,7 +17,7 @@ func sqlgenOrder(_ *Order) bool { return true }
 type Orders []*Order
 
 const __sqlOrder_Table = "order"
-const __sqlOrder_ListCols = "\"id\",\"shop_id\",\"code\",\"ed_code\",\"product_ids\",\"variant_ids\",\"partner_id\",\"currency\",\"payment_method\",\"customer\",\"customer_address\",\"billing_address\",\"shipping_address\",\"customer_name\",\"customer_phone\",\"customer_email\",\"created_at\",\"processed_at\",\"updated_at\",\"closed_at\",\"confirmed_at\",\"cancelled_at\",\"cancel_reason\",\"customer_confirm\",\"shop_confirm\",\"confirm_status\",\"fulfillment_shipping_status\",\"customer_payment_status\",\"etop_payment_status\",\"status\",\"fulfillment_shipping_states\",\"fulfillment_payment_statuses\",\"lines\",\"discounts\",\"total_items\",\"basket_value\",\"total_weight\",\"total_tax\",\"order_discount\",\"total_discount\",\"shop_shipping_fee\",\"total_fee\",\"fee_lines\",\"shop_cod\",\"total_amount\",\"order_note\",\"shop_note\",\"shipping_note\",\"order_source_type\",\"order_source_id\",\"external_order_id\",\"reference_url\",\"external_url\",\"shop_shipping\",\"is_outside_etop\",\"ghn_note_code\",\"try_on\",\"customer_name_norm\",\"product_name_norm\",\"fulfillment_type\",\"fulfillment_ids\""
+const __sqlOrder_ListCols = "\"id\",\"shop_id\",\"code\",\"ed_code\",\"product_ids\",\"variant_ids\",\"partner_id\",\"currency\",\"payment_method\",\"customer\",\"customer_address\",\"billing_address\",\"shipping_address\",\"customer_name\",\"customer_phone\",\"customer_email\",\"created_at\",\"processed_at\",\"updated_at\",\"closed_at\",\"confirmed_at\",\"cancelled_at\",\"cancel_reason\",\"customer_confirm\",\"shop_confirm\",\"confirm_status\",\"fulfillment_shipping_status\",\"customer_payment_status\",\"etop_payment_status\",\"status\",\"fulfillment_shipping_states\",\"fulfillment_payment_statuses\",\"lines\",\"discounts\",\"total_items\",\"basket_value\",\"total_weight\",\"total_tax\",\"order_discount\",\"total_discount\",\"shop_shipping_fee\",\"total_fee\",\"fee_lines\",\"shop_cod\",\"total_amount\",\"order_note\",\"shop_note\",\"shipping_note\",\"order_source_type\",\"order_source_id\",\"external_order_id\",\"reference_url\",\"external_url\",\"shop_shipping\",\"is_outside_etop\",\"ghn_note_code\",\"try_on\",\"customer_name_norm\",\"product_name_norm\",\"fulfillment_type\",\"fulfillment_ids\",\"external_meta\""
 const __sqlOrder_Insert = "INSERT INTO \"order\" (" + __sqlOrder_ListCols + ") VALUES"
 const __sqlOrder_Select = "SELECT " + __sqlOrder_ListCols + " FROM \"order\""
 const __sqlOrder_Select_history = "SELECT " + __sqlOrder_ListCols + " FROM history.\"order\""
@@ -91,6 +91,7 @@ func (m *Order) SQLArgs(opts core.Opts, create bool) []interface{} {
 		core.String(m.ProductNameNorm),
 		core.Int32(m.FulfillmentType),
 		core.Array{m.FulfillmentIDs, opts},
+		core.JSON{m.ExternalMeta},
 	}
 }
 
@@ -157,6 +158,7 @@ func (m *Order) SQLScanArgs(opts core.Opts) []interface{} {
 		(*core.String)(&m.ProductNameNorm),
 		(*core.Int32)(&m.FulfillmentType),
 		core.Array{&m.FulfillmentIDs, opts},
+		core.JSON{&m.ExternalMeta},
 	}
 }
 
@@ -194,7 +196,7 @@ func (_ *Orders) SQLSelect(w SQLWriter) error {
 func (m *Order) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlOrder_Insert)
 	w.WriteRawString(" (")
-	w.WriteMarkers(61)
+	w.WriteMarkers(62)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), true))
 	return nil
@@ -204,7 +206,7 @@ func (ms Orders) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlOrder_Insert)
 	w.WriteRawString(" (")
 	for i := 0; i < len(ms); i++ {
-		w.WriteMarkers(61)
+		w.WriteMarkers(62)
 		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
 		w.WriteRawString("),(")
 	}
@@ -707,6 +709,14 @@ func (m *Order) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(core.Array{m.FulfillmentIDs, opts})
 	}
+	if m.ExternalMeta != nil {
+		flag = true
+		w.WriteName("external_meta")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(core.JSON{m.ExternalMeta})
+	}
 	if !flag {
 		return core.ErrNoColumn
 	}
@@ -717,7 +727,7 @@ func (m *Order) SQLUpdate(w SQLWriter) error {
 func (m *Order) SQLUpdateAll(w SQLWriter) error {
 	w.WriteQueryString(__sqlOrder_UpdateAll)
 	w.WriteRawString(" = (")
-	w.WriteMarkers(61)
+	w.WriteMarkers(62)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), false))
 	return nil
@@ -812,17 +822,18 @@ func (m OrderHistory) CustomerNameNorm() core.Interface {
 func (m OrderHistory) ProductNameNorm() core.Interface { return core.Interface{m["product_name_norm"]} }
 func (m OrderHistory) FulfillmentType() core.Interface { return core.Interface{m["fulfillment_type"]} }
 func (m OrderHistory) FulfillmentIDs() core.Interface  { return core.Interface{m["fulfillment_ids"]} }
+func (m OrderHistory) ExternalMeta() core.Interface    { return core.Interface{m["external_meta"]} }
 
 func (m *OrderHistory) SQLScan(opts core.Opts, row *sql.Row) error {
-	data := make([]interface{}, 61)
-	args := make([]interface{}, 61)
-	for i := 0; i < 61; i++ {
+	data := make([]interface{}, 62)
+	args := make([]interface{}, 62)
+	for i := 0; i < 62; i++ {
 		args[i] = &data[i]
 	}
 	if err := row.Scan(args...); err != nil {
 		return err
 	}
-	res := make(OrderHistory, 61)
+	res := make(OrderHistory, 62)
 	res["id"] = data[0]
 	res["shop_id"] = data[1]
 	res["code"] = data[2]
@@ -884,14 +895,15 @@ func (m *OrderHistory) SQLScan(opts core.Opts, row *sql.Row) error {
 	res["product_name_norm"] = data[58]
 	res["fulfillment_type"] = data[59]
 	res["fulfillment_ids"] = data[60]
+	res["external_meta"] = data[61]
 	*m = res
 	return nil
 }
 
 func (ms *OrderHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	data := make([]interface{}, 61)
-	args := make([]interface{}, 61)
-	for i := 0; i < 61; i++ {
+	data := make([]interface{}, 62)
+	args := make([]interface{}, 62)
+	for i := 0; i < 62; i++ {
 		args[i] = &data[i]
 	}
 	res := make(OrderHistories, 0, 128)
@@ -961,6 +973,7 @@ func (ms *OrderHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
 		m["product_name_norm"] = data[58]
 		m["fulfillment_type"] = data[59]
 		m["fulfillment_ids"] = data[60]
+		m["external_meta"] = data[61]
 		res = append(res, m)
 	}
 	if err := rows.Err(); err != nil {

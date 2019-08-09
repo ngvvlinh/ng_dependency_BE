@@ -2,6 +2,7 @@ package orderS
 
 import (
 	"context"
+	"encoding/json"
 	"net/url"
 	"regexp"
 	"strings"
@@ -551,7 +552,7 @@ func PrepareOrder(m *pborder.CreateOrderRequest, lines []*ordermodel.OrderLine) 
 	if m.ExternalId != "" && !validate.ExternalCode(m.ExternalId) {
 		return nil, cm.Error(cm.InvalidArgument, "Mã đơn hàng external_id không hợp lệ", nil)
 	}
-
+	externalMeta, _ := json.Marshal(m.ExternalMeta)
 	order := &ordermodel.Order{
 		ID:         0,
 		ShopID:     0,
@@ -613,6 +614,7 @@ func PrepareOrder(m *pborder.CreateOrderRequest, lines []*ordermodel.OrderLine) 
 		TryOn:                      tryOn,
 		CustomerNameNorm:           "",
 		ProductNameNorm:            "",
+		ExternalMeta:               externalMeta,
 	}
 	if err = shipping.ToModel(order); err != nil {
 		return nil, err

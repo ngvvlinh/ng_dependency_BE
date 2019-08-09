@@ -30,6 +30,95 @@ func DefaultConfig() Config {
 	}
 }
 
+type FulfillmentState string
+type PaymentStatus string
+
+var FulfillmentStateUpdateList = []FulfillmentState{
+	PickingState, DeliveringState, DeliveredState,
+	CancelState, ReturnState, NotMeetCustomerState,
+	WaitingForReturnState,
+}
+
+var PaymentStatusUpdateList = []PaymentStatus{PaymentPaidStatus, PaymentReceiptStatus}
+
+const (
+	PendingState          FulfillmentState = "pending"            // Chờ xử lý,
+	ReadyToPickState      FulfillmentState = "ready_to_pick"      // Chờ lấy hàng,
+	PickingState          FulfillmentState = "picking"            // Đang đi lấy,
+	DeliveringState       FulfillmentState = "delivering"         // Đang giao hàng,
+	DeliveredState        FulfillmentState = "delivered"          // Đã giao hàng,
+	CancelState           FulfillmentState = "cancel"             // Hủy giao hàng,
+	ReturnState           FulfillmentState = "return"             // Chuyển hoàn,
+	NotMeetCustomerState  FulfillmentState = "not_meet_customer"  // Không gặp khách,
+	WaitingForReturnState FulfillmentState = "waiting_for_return" // Chờ chuyển hoàn
+
+	PaymentNoneStatus       PaymentStatus = "none"        //Không thu hộ,
+	PaymentPendingStatus    PaymentStatus = "pending"     //Chờ xử lý,
+	PaymentPaidStatus       PaymentStatus = "paid"        //Đã thu hộ,
+	PaymentReceiptStatus    PaymentStatus = "receipt"     //Đã nhận tiền,
+	PaymentNotReceiptStatus PaymentStatus = "not_receipt" //Chưa nhận tiền
+)
+
+func (s FulfillmentState) Name() string {
+	switch s {
+	case PendingState:
+		return "Pending"
+	case ReadyToPickState:
+		return "ReadyToPick"
+	case PickingState:
+		return "Picking"
+	case DeliveringState:
+		return "Delivering"
+	case DeliveredState:
+		return "Delivered"
+	case CancelState:
+		return "Cancel"
+	case ReturnState:
+		return "Return"
+	case NotMeetCustomerState:
+		return "NotMeetCustomer"
+	case WaitingForReturnState:
+		return "WaitingForReturn"
+	default:
+		return ""
+	}
+}
+
+func (s PaymentStatus) Name() string {
+	switch s {
+	case PaymentNoneStatus:
+		return "None"
+	case PaymentPendingStatus:
+		return "CODPending"
+	case PaymentPaidStatus:
+		return "CODPaid"
+	case PaymentReceiptStatus:
+		return "CODReceipt"
+	case PaymentNotReceiptStatus:
+		return "CODNotReceipt"
+	default:
+		return ""
+	}
+}
+
+func (s PaymentStatus) CanUpdate() bool {
+	for _, status := range PaymentStatusUpdateList {
+		if s == status {
+			return true
+		}
+	}
+	return false
+}
+
+func (s FulfillmentState) CanUpdate() bool {
+	for _, state := range FulfillmentStateUpdateList {
+		if s == state {
+			return true
+		}
+	}
+	return false
+}
+
 type GetShopRequest struct {
 	Connection `json:"-"`
 }
@@ -121,4 +210,18 @@ type GetAccessTokenResponse struct {
 type DeleteConnectedCarrierServiceRequest struct {
 	Connection       `json:"-"`
 	CarrierServiceID int
+}
+
+type UpdateShippingStateRequest struct {
+	Connection
+	OrderID   string
+	FulfillID string
+	State     FulfillmentState
+}
+
+type UpdatePaymentStatusRequest struct {
+	Connection
+	OrderID   string
+	FulfillID string
+	Status    PaymentStatus
 }

@@ -1,6 +1,10 @@
 package haravan
 
-import "time"
+import (
+	"time"
+)
+
+var HaravanPartnerID int64 = 1000421281650350414
 
 type Address struct {
 	Country      string `json:"country"`
@@ -42,23 +46,7 @@ type Item struct {
 	VariantID int     `json:"variant_id"`
 }
 
-type FulfillmentState string
-type CODStatus string
-
-const (
-	PendingState          FulfillmentState = "Pending"          // Chờ xử lý,
-	ReadyToPickState      FulfillmentState = "ReadyToPick"      // Chờ lấy hàng,
-	PickingState          FulfillmentState = "Picking"          // Đang đi lấy,
-	DeliveringState       FulfillmentState = "Delivering"       // Đang giao hàng,
-	DeliveredState        FulfillmentState = "Delivered"        // Đã giao hàng,
-	CancelState           FulfillmentState = "Cancel"           // Hủy giao hàng,
-	ReturnState           FulfillmentState = "Return"           // Chuyển hoàn,
-	NotMeetCustomerState  FulfillmentState = "NotMeetCustomer"  // Không gặp khách,
-	WaitingForReturnState FulfillmentState = "WaitingForReturn" // Chờ chuyển hoàn
-
-	NoneStatus          CODStatus = "None"          //Không thu hộ,
-	CODPendingStatus    CODStatus = "CODPending"    //Chờ xử lý,
-	CODPaidStatus       CODStatus = "CODPaid"       //Đã thu hộ,
-	CODReceiptStatus    CODStatus = "CODReceipt"    //Đã nhận tiền,
-	CODNotReceiptStatus CODStatus = "CODNotReceipt" //Chưa nhận tiền
-)
+type ExternalMeta struct {
+	ExternalOrderID       string `json:"external_order_id"`
+	ExternalFulfillmentID string `json:"external_fulfillment_id"`
+}

@@ -277,6 +277,8 @@ message CreateOrderRequest {
 
     // @deprecated use shop_shipping.try_on instead
     optional ghn_note_code.GHNNoteCode ghn_note_code = 56 [(gogoproto.nullable)=false];
+
+    map<string,string> external_meta = 62;
 }
 
 message UpdateOrderRequest {

@@ -3577,6 +3577,12 @@
         "ghn_note_code": {
           "$ref": "#/definitions/ghn_note_codeGHNNoteCode",
           "title": "@deprecated use shop_shipping.try_on instead"
+        },
+        "external_meta": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
         }
       }
     },

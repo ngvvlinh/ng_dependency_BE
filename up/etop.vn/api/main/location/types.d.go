@@ -37,37 +37,37 @@ func (c QueryBus) DispatchAll(ctx context.Context, msgs ...Query) error {
 }
 
 type FindLocationQuery struct {
-	Province string `json:"province"`
-	District string `json:"district"`
-	Ward     string `json:"ward"`
+	Province string
+	District string
+	Ward     string
 
 	Result *LocationQueryResult `json:"-"`
 }
 
 type FindOrGetLocationQuery struct {
-	Province     string `json:"province"`
-	District     string `json:"district"`
-	Ward         string `json:"ward"`
-	ProvinceCode string `json:"province_code"`
-	DistrictCode string `json:"district_code"`
-	WardCode     string `json:"ward_code"`
+	Province     string
+	District     string
+	Ward         string
+	ProvinceCode string
+	DistrictCode string
+	WardCode     string
 
 	Result *LocationQueryResult `json:"-"`
 }
 
 type GetAllLocationsQuery struct {
-	All          bool   `json:"all"`
-	ProvinceCode string `json:"province_code"`
-	DistrictCode string `json:"district_code"`
+	All          bool
+	ProvinceCode string
+	DistrictCode string
 
 	Result *GetAllLocationsQueryResult `json:"-"`
 }
 
 type GetLocationQuery struct {
-	ProvinceCode     string           `json:"province_code"`
-	DistrictCode     string           `json:"district_code"`
-	WardCode         string           `json:"ward_code"`
-	LocationCodeType LocationCodeType `json:"location_code_type"`
+	ProvinceCode     string
+	DistrictCode     string
+	WardCode         string
+	LocationCodeType LocationCodeType
 
 	Result *LocationQueryResult `json:"-"`
 }

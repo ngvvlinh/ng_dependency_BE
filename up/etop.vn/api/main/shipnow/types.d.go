@@ -43,109 +43,109 @@ func (c QueryBus) DispatchAll(ctx context.Context, msgs ...Query) error {
 }
 
 type CancelShipnowFulfillmentCommand struct {
-	Id           int64  `json:"id"`
-	ShopId       int64  `json:"shop_id"`
-	CancelReason string `json:"cancel_reason"`
+	Id           int64
+	ShopId       int64
+	CancelReason string
 
 	Result *meta.Empty `json:"-"`
 }
 
 type ConfirmShipnowFulfillmentCommand struct {
-	Id     int64 `json:"id"`
-	ShopId int64 `json:"shop_id"`
+	Id     int64
+	ShopId int64
 
 	Result *ShipnowFulfillment `json:"-"`
 }
 
 type CreateShipnowFulfillmentCommand struct {
-	OrderIds            []int64         `json:"order_ids,omitempty"`
-	Carrier             types.Carrier   `json:"carrier"`
-	ShopId              int64           `json:"shop_id"`
-	ShippingServiceCode string          `json:"shipping_service_code"`
-	ShippingServiceFee  int32           `json:"shipping_service_fee"`
-	ShippingNote        string          `json:"shipping_note"`
-	RequestPickupAt     time.Time       `json:"request_pickup_at,omitempty"`
-	PickupAddress       *types1.Address `json:"pickup_address,omitempty"`
+	OrderIds            []int64
+	Carrier             types.Carrier
+	ShopId              int64
+	ShippingServiceCode string
+	ShippingServiceFee  int32
+	ShippingNote        string
+	RequestPickupAt     time.Time
+	PickupAddress       *types1.Address
 
 	Result *ShipnowFulfillment `json:"-"`
 }
 
 type GetShipnowServicesCommand struct {
-	ShopId         int64            `json:"shop_id"`
-	OrderIds       []int64          `json:"order_ids,omitempty"`
-	PickupAddress  *types1.Address  `json:"pickup_address,omitempty"`
-	DeliveryPoints []*DeliveryPoint `json:"delivery_points,omitempty"`
+	ShopId         int64
+	OrderIds       []int64
+	PickupAddress  *types1.Address
+	DeliveryPoints []*types2.DeliveryPoint
 
 	Result *GetShipnowServicesResult `json:"-"`
 }
 
 type UpdateShipnowFulfillmentCommand struct {
-	Id                  int64           `json:"id"`
-	OrderIds            []int64         `json:"order_ids,omitempty"`
-	Carrier             types.Carrier   `json:"carrier"`
-	ShopId              int64           `json:"shop_id"`
-	ShippingServiceCode string          `json:"shipping_service_code"`
-	ShippingServiceFee  int32           `json:"shipping_service_fee"`
-	ShippingNote        string          `json:"shipping_note"`
-	RequestPickupAt     time.Time       `json:"request_pickup_at,omitempty"`
-	PickupAddress       *types1.Address `json:"pickup_address,omitempty"`
+	Id                  int64
+	OrderIds            []int64
+	Carrier             types.Carrier
+	ShopId              int64
+	ShippingServiceCode string
+	ShippingServiceFee  int32
+	ShippingNote        string
+	RequestPickupAt     time.Time
+	PickupAddress       *types1.Address
 
 	Result *ShipnowFulfillment `json:"-"`
 }
 
 type UpdateShipnowFulfillmentCarrierInfoCommand struct {
-	Id                         int64             `json:"id"`
-	ShippingCode               string            `json:"shipping_code"`
-	ShippingState              types2.State      `json:"shipping_state"`
-	TotalFee                   int32             `json:"total_fee"`
-	FeeLines                   []*types3.FeeLine `json:"fee_lines,omitempty"`
-	CarrierFeeLines            []*types3.FeeLine `json:"carrier_fee_lines,omitempty"`
-	ShippingCreatedAt          time.Time         `json:"shipping_created_at,omitempty"`
-	EtopPaymentStatus          etop.Status4      `json:"etop_payment_status"`
-	ShippingStatus             etop.Status5      `json:"shipping_status"`
-	Status                     etop.Status5      `json:"status"`
-	CodEtopTransferedAt        time.Time         `json:"cod_etop_transfered_at,omitempty"`
-	ShippingPickingAt          time.Time         `json:"shipping_picking_at,omitempty"`
-	ShippingDeliveringAt       time.Time         `json:"shipping_delivering_at,omitempty"`
-	ShippingDeliveredAt        time.Time         `json:"shipping_delivered_at,omitempty"`
-	ShippingCancelledAt        time.Time         `json:"shipping_cancelled_at,omitempty"`
-	ShippingServiceName        string            `json:"shipping_service_name"`
-	CancelReason               string            `json:"cancel_reason"`
-	ShippingSharedLink         string            `json:"shipping_shared_link"`
-	ShippingServiceDescription string            `json:"shipping_service_description"`
+	Id                         int64
+	ShippingCode               string
+	ShippingState              types2.State
+	TotalFee                   int32
+	FeeLines                   []*types3.FeeLine
+	CarrierFeeLines            []*types3.FeeLine
+	ShippingCreatedAt          time.Time
+	EtopPaymentStatus          etop.Status4
+	ShippingStatus             etop.Status5
+	Status                     etop.Status5
+	CodEtopTransferedAt        time.Time
+	ShippingPickingAt          time.Time
+	ShippingDeliveringAt       time.Time
+	ShippingDeliveredAt        time.Time
+	ShippingCancelledAt        time.Time
+	ShippingServiceName        string
+	CancelReason               string
+	ShippingSharedLink         string
+	ShippingServiceDescription string
 
 	Result *ShipnowFulfillment `json:"-"`
 }
 
 type UpdateShipnowFulfillmentStateCommand struct {
-	Id             int64        `json:"id"`
-	SyncStatus     etop.Status4 `json:"sync_status"`
-	Status         etop.Status5 `json:"status"`
-	ConfirmStatus  etop.Status3 `json:"confirm_status"`
-	ShippingStatus etop.Status5 `json:"shipping_status"`
-	SyncStates     *SyncStates  `json:"sync_states,omitempty"`
-	ShippingState  types2.State `json:"shipping_state"`
+	Id             int64
+	SyncStatus     etop.Status4
+	Status         etop.Status5
+	ConfirmStatus  etop.Status3
+	ShippingStatus etop.Status5
+	SyncStates     *SyncStates
+	ShippingState  types2.State
 
 	Result *ShipnowFulfillment `json:"-"`
 }
 
 type GetShipnowFulfillmentQuery struct {
-	Id     int64 `json:"id"`
-	ShopId int64 `json:"shop_id"`
+	Id     int64
+	ShopId int64
 
 	Result *GetShipnowFulfillmentQueryResult `json:"-"`
 }
 
 type GetShipnowFulfillmentByShippingCodeQuery struct {
-	ShippingCode string `json:"shipping_code"`
+	ShippingCode string
 
 	Result *GetShipnowFulfillmentQueryResult `json:"-"`
 }
 
 type GetShipnowFulfillmentsQuery struct {
-	ShopIds []int64        `json:"shop_ids,omitempty"`
-	Paging  *meta.Paging   `json:"paging,omitempty"`
-	Filters []*meta.Filter `json:"filters,omitempty"`
+	ShopIds []int64
+	Paging  *meta.Paging
+	Filters []*meta.Filter
 
 	Result *GetShipnowFulfillmentsQueryResult `json:"-"`
 }

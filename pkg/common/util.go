@@ -5,6 +5,7 @@ import (
 	"crypto/sha1"
 	"encoding/hex"
 	"encoding/json"
+	"fmt"
 	"io"
 	"sort"
 	"strconv"
@@ -272,4 +273,15 @@ func FormatCurrency(num int) string {
 		str = str[:index]
 	}
 	return sign + strings.Join(res, ".")
+}
+
+func ConvertStructToMapStringString(data interface{}) map[string]string {
+	_data, _ := json.Marshal(data)
+	var metaX map[string]interface{}
+	_ = json.Unmarshal(_data, &metaX)
+	meta := make(map[string]string)
+	for k, v := range metaX {
+		meta[k] = fmt.Sprint(v)
+	}
+	return meta
 }

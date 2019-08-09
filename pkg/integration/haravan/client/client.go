@@ -102,6 +102,30 @@ func (c *Client) GetAccessToken(ctx context.Context, req *GetAccessTokenRequest)
 	return &resp, nil
 }
 
+func (c *Client) UpdateShippingState(ctx context.Context, req *UpdateShippingStateRequest) error {
+	if !FulfillmentState(req.State).CanUpdate() {
+		return cm.Errorf(cm.InvalidArgument, nil, "API Haravan không hỗ trợ cập nhật trạng thái vận chuyển (%v).", req.State)
+	}
+	url := fmt.Sprintf("https://%v.myharavan.com/admin/orders/%v/fulfillments/%v/carrier_status/%v.json", req.Subdomain, req.OrderID, req.FulfillID, string(req.State))
+
+	if err := c.SendPutRequest(ctx, req.Connection, url, req, nil, "Không thể cập nhật trạng thái giao hàng"); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (c *Client) UpdatePaymentStatus(ctx context.Context, req *UpdatePaymentStatusRequest) error {
+	if !PaymentStatus(req.Status).CanUpdate() {
+		return cm.Errorf(cm.InvalidArgument, nil, "API Haravan không hỗ trợ cập nhật trạng thái thanh toán (%v).", req.Status)
+	}
+	url := fmt.Sprintf("https://%v.myharavan.com/admin/orders/%v/fulfillments/%v/cod_status/%v.json", req.Subdomain, req.OrderID, req.FulfillID, string(req.Status))
+
+	if err := c.SendPutRequest(ctx, req.Connection, url, req, nil, "Không thể cập nhật trạng thái thanh toán"); err != nil {
+		return err
+	}
+	return nil
+}
+
 func (c *Client) sendGetRequest(ctx context.Context, connection Connection, path string, req interface{}, resp interface{}, msg string) error {
 	if connection.TokenStr == "" {
 		return cm.Errorf(cm.InvalidArgument, nil, "Thiếu shop access token")
@@ -140,6 +164,19 @@ func (c *Client) SendDeleteRequest(ctx context.Context, connection Connection, p
 		SetHeader("Authorization", fmt.Sprintf("Bearer %v", connection.TokenStr)).
 		SetBody(req).
 		Delete(url)
+	if err != nil {
+		return cm.Errorf(cm.ExternalServiceError, err, "Lỗi kết nối với Haravan")
+	}
+	return handleResponse(res, resp, msg)
+}
+
+func (c *Client) SendPutRequest(ctx context.Context, connection Connection, url string, req interface{}, resp interface{}, msg string) error {
+	if connection.TokenStr == "" {
+		return cm.Errorf(cm.InvalidArgument, nil, "Thiếu shop access token")
+	}
+	res, err := c.rclient.R().
+		SetHeader("Authorization", fmt.Sprintf("Bearer %v", connection.TokenStr)).
+		Put(url)
 	if err != nil {
 		return cm.Errorf(cm.ExternalServiceError, err, "Lỗi kết nối với Haravan")
 	}

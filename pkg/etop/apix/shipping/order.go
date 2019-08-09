@@ -66,6 +66,7 @@ func CreateAndConfirmOrder(ctx context.Context, accountID int64, shopClaim *clai
 		Source:          pbsource.Source_api,
 		ExternalId:      r.ExternalId,
 		ExternalCode:    externalCode,
+		ExternalMeta:    r.ExternalMeta,
 		ExternalUrl:     r.ExternalUrl,
 		PaymentMethod:   "", // will be set automatically
 		Customer:        r.CustomerAddress.ToPbCustomer(),

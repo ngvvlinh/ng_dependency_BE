@@ -20,6 +20,7 @@ import (
 	"etop.vn/backend/pkg/common/cmsql"
 	"etop.vn/backend/pkg/common/mq"
 	"etop.vn/backend/pkg/common/telebot"
+	historysqlstore "etop.vn/backend/pkg/etop-history/sqlstore"
 	"etop.vn/common/l"
 )
 
@@ -28,8 +29,9 @@ const ConsumerGroup = "handler/webhook"
 var ll = l.New()
 
 type Handler struct {
-	db  cmsql.Database
-	bot *telebot.Channel
+	db           cmsql.Database
+	historyStore historysqlstore.HistoryStoreFactory
+	bot          *telebot.Channel
 
 	consumer mq.KafkaConsumer
 	handlers map[string]pgrid.HandlerFunc
@@ -41,11 +43,12 @@ type Handler struct {
 
 func New(db cmsql.Database, sender *sender.WebhookSender, bot *telebot.Channel, consumer mq.KafkaConsumer, prefix string) *Handler {
 	h := &Handler{
-		db:       db,
-		bot:      bot,
-		consumer: consumer,
-		prefix:   prefix + "_pgrid_",
-		sender:   sender,
+		db:           db,
+		historyStore: historysqlstore.NewHistoryStore(db),
+		bot:          bot,
+		consumer:     consumer,
+		prefix:       prefix + "_pgrid_",
+		sender:       sender,
 	}
 	handlers := h.TopicsAndHandlers()
 	h.handlers = handlers
@@ -209,10 +212,10 @@ func (h *Handler) HandleOrderEvent(ctx context.Context, event *pgevent.PgEvent) 
 func (h *Handler) HandleFulfillmentEvent(ctx context.Context, event *pgevent.PgEvent) (mq.Code, error) {
 	ll.Info("HandleFulfillmentEvent", l.Object("pgevent", event))
 	var history shipmodel.FulfillmentHistory
-	if ok, err := h.db.Where("rid = ?", event.RID).Get(&history); err != nil {
+	if ok, err := h.historyStore(ctx).GetHistory(&history, event.RID); err != nil {
 		return mq.CodeStop, nil
 	} else if !ok {
-		ll.Warn("order not found", l.Int64("rid", event.RID))
+		ll.Warn("Fulfillment not found", l.Int64("rid", event.RID))
 		return mq.CodeIgnore, nil
 	}
 

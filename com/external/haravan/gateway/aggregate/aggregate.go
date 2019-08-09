@@ -13,20 +13,20 @@ import (
 	"etop.vn/api/main/location"
 	"etop.vn/backend/com/external/haravan/gateway/convert"
 	identityconvert "etop.vn/backend/com/main/identity/convert"
-	"etop.vn/backend/com/main/ordering/modelx"
-	shipmodel "etop.vn/backend/com/main/shipping/model"
 	shipmodelx "etop.vn/backend/com/main/shipping/modelx"
 	pbsp "etop.vn/backend/pb/etop/etc/shipping_provider"
 	pbtryon "etop.vn/backend/pb/etop/etc/try_on"
 	pborder "etop.vn/backend/pb/etop/order"
-	pbsource "etop.vn/backend/pb/etop/order/source"
-	pbshop "etop.vn/backend/pb/etop/shop"
+	pbexternal "etop.vn/backend/pb/external"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/cmsql"
+	"etop.vn/backend/pkg/etop/apix/shipping"
 	"etop.vn/backend/pkg/etop/authorize/claims"
 	logicorder "etop.vn/backend/pkg/etop/logic/orders"
 	"etop.vn/backend/pkg/etop/logic/shipping_provider"
 	"etop.vn/backend/pkg/etop/model"
+	"etop.vn/backend/pkg/etop/sqlstore"
+	haravanconvert "etop.vn/backend/pkg/external/haravan/convert"
 	"etop.vn/common/bus"
 	"etop.vn/common/l"
 )
@@ -119,6 +119,12 @@ func (a *Aggregate) CreateOrder(ctx context.Context, args *gateway.CreateOrderRe
 	}
 	shop := identityconvert.ShopToModel(query.Result.Shop)
 
+	// Get Account Haravan Partner
+	partner, err := sqlstore.Partner(ctx).ID(haravan.HaravanPartnerID).Get()
+	if err != nil {
+		return nil, err
+	}
+
 	from, err := a.GetLocation(ctx, args.Origin)
 	if err != nil {
 		return nil, cm.Errorf(cm.InvalidArgument, err, "Lỗi địa chỉ gửi")
@@ -161,105 +167,70 @@ func (a *Aggregate) CreateOrder(ctx context.Context, args *gateway.CreateOrderRe
 		return nil, cm.Errorf(cm.NotFound, nil, "Không có gói vận chuyển phù hợp")
 	}
 	externalID := strconv.FormatInt(int64(args.ExternalOrderID), 10)
+	externalFulfillmentID := strconv.FormatInt(int64(args.ExternalFulfillmentID), 10)
 	totalValue := int32(getOrderValue(args.Items))
 	codAmount := int(args.CodAmount)
 	weight := int(args.TotalGrams)
-
-	req2 := &pborder.CreateOrderRequest{
-		Source:          pbsource.Source_api,
+	carrier := pbsp.PbShippingProviderType(service.Provider)
+	// Haravan always set IncludeInsurance = false
+	includeInsurance := false
+	externalMeta := &haravan.ExternalMeta{
+		ExternalOrderID:       externalID,
+		ExternalFulfillmentID: externalFulfillmentID,
+	}
+	reqCreateOrder := &pbexternal.CreateOrderRequest{
 		ExternalId:      externalID,
 		ExternalCode:    externalID,
+		ExternalMeta:    cm.ConvertStructToMapStringString(externalMeta),
 		ExternalUrl:     "",
-		PaymentMethod:   "",
-		Customer:        convert.ToPbOrderCustomer(args.Origin),
-		CustomerAddress: convert.ToPbOrderAddress(args.Origin, from),
-		BillingAddress:  convert.ToPbOrderAddress(args.Origin, from),
-		ShippingAddress: convert.ToPbOrderAddress(args.Destination, to),
-		ShopAddress:     convert.ToPbOrderAddress(args.Origin, from),
-		ShConfirm:       nil,
-		Lines:           convert.ToPbCreateOrderLines(args.Items),
-		Discounts:       nil,
+		CustomerAddress: convert.ToPbExternalAddress(args.Origin, from),
+		ShippingAddress: convert.ToPbExternalAddress(args.Destination, to),
+		Lines:           convert.ToPbExternalCreateOrderLines(args.Items),
 		TotalItems:      int32(len(args.Items)),
 		BasketValue:     totalValue,
-		TotalWeight:     int32(args.TotalGrams),
 		OrderDiscount:   0,
-		TotalFee:        0,
+		TotalDiscount:   0,
+		TotalFee:        nil,
 		FeeLines:        nil,
-		TotalDiscount:   nil,
 		TotalAmount:     totalValue,
 		OrderNote:       args.Note,
-		ShippingNote:    args.Note,
-		ShopCod:         0,
-		ReferenceUrl:    "",
-		ShopShipping:    nil,
-		Shipping: &pborder.OrderShipping{
-			ShAddress:           nil,
-			XServiceId:          "",
-			XShippingFee:        0,
-			XServiceName:        "",
-			PickupAddress:       convert.ToPbOrderAddress(args.Origin, from),
+		Shipping: &pbexternal.OrderShipping{
+			PickupAddress:       convert.ToPbExternalAddress(args.Origin, from),
 			ReturnAddress:       nil,
-			ShippingServiceName: "",
-			ShippingServiceCode: service.ProviderServiceID,
-			ShippingServiceFee:  int32(service.ServiceFee),
-			ShippingProvider:    pbsp.PbShippingProviderType(service.Provider),
-			Carrier:             pbsp.PbShippingProviderType(service.Provider),
-			IncludeInsurance:    false,
-			TryOn:               pbtryon.TryOnCode_none,
-			ShippingNote:        args.Note,
+			ShippingServiceName: nil,
+			ShippingServiceCode: cm.PString(service.ProviderServiceID),
+			ShippingServiceFee:  cm.PIntToInt32(service.ServiceFee),
+			Carrier:             &carrier,
+			IncludeInsurance:    &includeInsurance,
+			TryOn:               pbtryon.TryOnCode_none.Enum(),
+			ShippingNote:        cm.PString(args.Note),
 			CodAmount:           cm.PIntToInt32(codAmount),
-			Weight:              cm.PIntToInt32(weight),
 			GrossWeight:         nil,
-			ChargeableWeight:    nil,
+			ChargeableWeight:    cm.PIntToInt32(weight),
 		},
-		GhnNoteCode: 0,
 	}
+
 	shopClaim := &claims.ShopClaim{
 		Shop: shop,
+		UserClaim: claims.UserClaim{
+			Claim: &claims.Claim{
+				ClaimInfo: claims.ClaimInfo{
+					AccountID:     shop.ID,
+					AuthPartnerID: partner.ID,
+				},
+			},
+		},
 	}
-	resp, err := logicorder.CreateOrder(ctx, shopClaim, nil, req2)
+	resp, err := shipping.CreateAndConfirmOrder(ctx, shop.ID, shopClaim, reqCreateOrder)
 	if err != nil {
 		return nil, err
 	}
-	orderID := resp.Id
-
-	defer func() {
-		if _err != nil {
-			// always cancel order if confirm unsuccessfully
-			_, err := logicorder.CancelOrder(ctx, args.EtopShopID, 0, orderID, fmt.Sprintf("Tạo đơn không thành công: %v", err))
-			if err != nil {
-				ll.Error("error cancelling order", l.Error(err))
-			}
-		}
-	}()
-
-	cfmResp, err := logicorder.ConfirmOrderAndCreateFulfillments(ctx, shop, 0, &pbshop.OrderIDRequest{
-		OrderId: orderID,
-	})
-	if err != nil {
-		return nil, err
-	}
-	for _, err := range cfmResp.FulfillmentErrors {
-		if err.Code != "ok" {
-			return nil, err
-		}
-	}
-
-	orderQuery := &modelx.GetOrderQuery{
-		OrderID:            orderID,
-		IncludeFulfillment: true,
-	}
-	if err := bus.Dispatch(ctx, orderQuery); err != nil {
-		return nil, cm.MapError(err).
-			Map(cm.NotFound, cm.Internal, "").
-			Throw()
-	}
-	ffm := orderQuery.Result.Fulfillments[0]
+	ffm := resp.Fulfillments[0]
 	return &gateway.CreateOrderResponse{
-		TrackingNumber: ffm.ShippingCode,
-		ShippingFee:    int32(ffm.ShippingFeeShop),
-		TrackingURL:    generateTrackingUrl(ffm),
-		CodAmount:      int32(ffm.TotalCODAmount),
+		TrackingNumber: *ffm.ShippingCode,
+		ShippingFee:    *ffm.ActualShippingServiceFee,
+		TrackingURL:    generateTrackingUrl(shop.ID),
+		CodAmount:      *ffm.ActualCodAmount,
 	}, nil
 }
 
@@ -282,10 +253,10 @@ func (a *Aggregate) GetOrder(ctx context.Context, args *gateway.GetOrderRequestA
 	return &gateway.GetOrderResponse{
 		TrackingNumber: ffm.ShippingCode,
 		ShippingFee:    int32(ffm.ShippingFeeShop),
-		TrackingURL:    generateTrackingUrl(ffm),
+		TrackingURL:    generateTrackingUrl(ffm.ShopID),
 		CodAmount:      int32(ffm.TotalCODAmount),
-		Status:         convert.ToFulfillmentStatus(ffm.ShippingState),
-		CodStatus:      convert.ToCODStatus(ffm),
+		Status:         haravanconvert.ToFulfillmentState(ffm.ShippingState).Name(),
+		CodStatus:      haravanconvert.ToCODStatus(ffm.EtopPaymentStatus).Name(),
 	}, nil
 }
 
@@ -339,8 +310,8 @@ func SHA256StringToInt32(s string) int32 {
 	return res
 }
 
-func generateTrackingUrl(ffm *shipmodel.Fulfillment) string {
+func generateTrackingUrl(shopID int64) string {
 	// Haravan will concat shipping_code to this link
 	baseURL := cm.MainSiteBaseURL()
-	return fmt.Sprintf("%v/s/%v/fulfillment?code=", baseURL, ffm.ShopID)
+	return fmt.Sprintf("%v/s/%v/fulfillment?code=", baseURL, shopID)
 }

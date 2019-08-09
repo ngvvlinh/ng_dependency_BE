@@ -38,17 +38,15 @@ var _ identity.Aggregate = &Aggregate{}
 var thirdPartyHost string
 
 type Aggregate struct {
-	store           sqlstore.XAccountHaravanStoreFactory
-	xAccountHaravan sqlstore.XAccountHaravanStoreFactory
-	haravanClient   *haravanclient.Client
+	xAccountHaravanStore sqlstore.XAccountHaravanStoreFactory
+	haravanClient        *haravanclient.Client
 }
 
 func NewAggregate(db cmsql.Database, thirdParty string, cfg haravanclient.Config) *Aggregate {
 	thirdPartyHost = thirdParty
 	return &Aggregate{
-		store:           sqlstore.NewXAccountHaravanStore(db),
-		xAccountHaravan: sqlstore.NewXAccountHaravanStore(db),
-		haravanClient:   haravanclient.New(cfg),
+		xAccountHaravanStore: sqlstore.NewXAccountHaravanStore(db),
+		haravanClient:        haravanclient.New(cfg),
 	}
 }
 
@@ -58,7 +56,7 @@ func (a *Aggregate) MessageBus() identity.CommandBus {
 }
 
 func (a *Aggregate) CreateExternalAccountHaravan(ctx context.Context, args *identity.CreateExternalAccountHaravanArgs) (*identity.ExternalAccountHaravan, error) {
-	account, err := a.xAccountHaravan(ctx).ShopID(args.ShopID).GetXAccountHaravan()
+	account, err := a.xAccountHaravanStore(ctx).ShopID(args.ShopID).GetXAccountHaravan()
 	if err != nil && cm.ErrorCode(err) != cm.NotFound {
 		return nil, err
 	}
@@ -89,7 +87,7 @@ func (a *Aggregate) CreateExternalAccountHaravan(ctx context.Context, args *iden
 			AccessToken: tokenResp.AccessToken,
 		}
 
-		return a.xAccountHaravan(ctx).CreateXAccountHaravan(createArgs)
+		return a.xAccountHaravanStore(ctx).CreateXAccountHaravan(createArgs)
 	}
 
 	args2 := &sqlstore.UpdateXAccountHaravanInfoArgs{
@@ -97,7 +95,7 @@ func (a *Aggregate) CreateExternalAccountHaravan(ctx context.Context, args *iden
 		Subdomain:   args.Subdomain,
 		AccessToken: tokenResp.AccessToken,
 	}
-	return a.xAccountHaravan(ctx).UpdateXAccountHaravan(args2)
+	return a.xAccountHaravanStore(ctx).UpdateXAccountHaravan(args2)
 }
 
 func (a *Aggregate) UpdateExternalAccountHaravanToken(ctx context.Context, args *identity.UpdateExternalAccountHaravanTokenArgs) (*identity.ExternalAccountHaravan, error) {
@@ -116,11 +114,11 @@ func (a *Aggregate) UpdateExternalAccountHaravanToken(ctx context.Context, args 
 		Subdomain:   args.Subdomain,
 		AccessToken: tokenResp.AccessToken,
 	}
-	return a.xAccountHaravan(ctx).UpdateXAccountHaravan(cmdUpdate)
+	return a.xAccountHaravanStore(ctx).UpdateXAccountHaravan(cmdUpdate)
 }
 
 func (a *Aggregate) GetExternalAccountIDHaravan(ctx context.Context, shopID int64) (int, error) {
-	account, err := a.store(ctx).ShopID(shopID).GetXAccountHaravan()
+	account, err := a.xAccountHaravanStore(ctx).ShopID(shopID).GetXAccountHaravan()
 	if err != nil {
 		return 0, nil
 	}
@@ -142,11 +140,11 @@ func (a *Aggregate) UpdateExternalShopIDAccountHaravan(ctx context.Context, args
 		ShopID:         args.ShopID,
 		ExternalShopID: args.ExternalShopID,
 	}
-	return a.xAccountHaravan(ctx).UpdateXShopIDAccountHaravan(cmd)
+	return a.xAccountHaravanStore(ctx).UpdateXShopIDAccountHaravan(cmd)
 }
 
 func (a *Aggregate) ConnectCarrierServiceExternalAccountHaravan(ctx context.Context, args *identity.ConnectCarrierServiceExternalAccountHaravanArgs) (*meta.Empty, error) {
-	account, err := a.store(ctx).ShopID(args.ShopID).GetXAccountHaravan()
+	account, err := a.xAccountHaravanStore(ctx).ShopID(args.ShopID).GetXAccountHaravan()
 	if err != nil {
 		return nil, err
 	}
@@ -187,14 +185,14 @@ func (a *Aggregate) ConnectCarrierServiceExternalAccountHaravan(ctx context.Cont
 		ExternalConnectedCarrierServiceAt: time.Now(),
 	}
 
-	if _, err := a.xAccountHaravan(ctx).UpdateXCarrierServiceInfo(updateArgs); err != nil {
+	if _, err := a.xAccountHaravanStore(ctx).UpdateXCarrierServiceInfo(updateArgs); err != nil {
 		return nil, err
 	}
 	return &meta.Empty{}, nil
 }
 
 func (a *Aggregate) DeleteConnectedCarrierServiceExternalAccountHaravan(ctx context.Context, args *identity.DeleteConnectedCarrierServiceExternalAccountHaravanArgs) (*meta.Empty, error) {
-	account, err := a.store(ctx).ShopID(args.ShopID).GetXAccountHaravan()
+	account, err := a.xAccountHaravanStore(ctx).ShopID(args.ShopID).GetXAccountHaravan()
 	if err != nil {
 		return nil, err
 	}
@@ -215,7 +213,7 @@ func (a *Aggregate) DeleteConnectedCarrierServiceExternalAccountHaravan(ctx cont
 	updateArgs := &sqlstore.UpdateDeleteConnectedXCarrierSeriveArgs{
 		ShopID: args.ShopID,
 	}
-	if _, err := a.xAccountHaravan(ctx).UpdateDeleteConnectedXCarrierService(updateArgs); err != nil {
+	if _, err := a.xAccountHaravanStore(ctx).UpdateDeleteConnectedXCarrierService(updateArgs); err != nil {
 		return nil, err
 	}
 

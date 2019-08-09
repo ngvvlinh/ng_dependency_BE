@@ -10,15 +10,17 @@ import (
 	"etop.vn/backend/pkg/common/cmsql"
 	"etop.vn/backend/pkg/common/mq"
 	"etop.vn/backend/pkg/common/telebot"
+	historysqlstore "etop.vn/backend/pkg/etop-history/sqlstore"
 	"etop.vn/common/l"
 )
 
 var (
-	x           cmsql.Database
-	xNotifier   cmsql.Database
-	ll          = l.New()
-	notiStore   *sqlstore.NotificationStore
-	deviceStore *sqlstore.DeviceStore
+	x            cmsql.Database
+	xNotifier    cmsql.Database
+	ll           = l.New()
+	notiStore    *sqlstore.NotificationStore
+	deviceStore  *sqlstore.DeviceStore
+	historyStore historysqlstore.HistoryStoreFactory
 )
 
 const ConsumerGroup = "handler/notifier"
@@ -28,6 +30,7 @@ func New(dbMain cmsql.Database, dbNotifier cmsql.Database, bot *telebot.Channel,
 	xNotifier = dbNotifier
 	notiStore = sqlstore.NewNotificationStore(dbNotifier)
 	deviceStore = sqlstore.NewDeviceStore(dbNotifier)
+	historyStore = historysqlstore.NewHistoryStore(dbMain)
 
 	handlersMain := TopicsAndHandlersEtop()
 	handlerMain = handler.NewWithHandlers(dbMain, nil, bot, consumer, prefix, handlersMain)

@@ -15,8 +15,8 @@ import (
 
 func HandleMoneyTransactionShippingEvent(ctx context.Context, event *pgevent.PgEvent) (mq.Code, error) {
 	var history txmodel.MoneyTransactionShippingHistory
-	if ok, err := x.Where("rid = ?", event.RID).Get(&history); err != nil {
-		return mq.CodeStop, err
+	if ok, err := historyStore(ctx).GetHistory(&history, event.RID); err != nil {
+		return mq.CodeStop, nil
 	} else if !ok {
 		ll.Warn("money_transaction_shipping not found", l.Int64("rid", event.RID))
 		return mq.CodeIgnore, nil

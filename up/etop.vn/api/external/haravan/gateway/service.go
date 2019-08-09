@@ -61,12 +61,12 @@ type GetOrderRequestArgs struct {
 }
 
 type GetOrderResponse struct {
-	TrackingNumber string                   `json:"tracking_number"`
-	ShippingFee    int32                    `json:"shipping_fee"`
-	TrackingURL    string                   `json:"tracking_url"`
-	CodAmount      int32                    `json:"cod_amount"`
-	Status         haravan.FulfillmentState `json:"status"`
-	CodStatus      haravan.CODStatus        `json:"cod_status"`
+	TrackingNumber string `json:"tracking_number"`
+	ShippingFee    int32  `json:"shipping_fee"`
+	TrackingURL    string `json:"tracking_url"`
+	CodAmount      int32  `json:"cod_amount"`
+	Status         string `json:"status"`
+	CodStatus      string `json:"cod_status"`
 }
 
 type CancelOrderRequestArgs struct {

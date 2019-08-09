@@ -1,6 +1,7 @@
 package model
 
 import (
+	"encoding/json"
 	"fmt"
 	"strings"
 	"time"
@@ -111,6 +112,7 @@ type Order struct {
 	ProductNameNorm  string
 	FulfillmentType  FulfillType
 	FulfillmentIDs   []int64
+	ExternalMeta     json.RawMessage
 }
 
 func (m *Order) SelfURL(baseURL string, accType int) string {

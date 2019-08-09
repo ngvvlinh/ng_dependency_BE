@@ -564,8 +564,7 @@
         },
         "total_discount": {
           "type": "integer",
-          "format": "int32",
-          "title": "total_discount = order_discount + SUM(lines[quantity * (retail_price - payment_price)])"
+          "format": "int32"
         },
         "total_fee": {
           "type": "integer",
@@ -579,14 +578,19 @@
         },
         "total_amount": {
           "type": "integer",
-          "format": "int32",
-          "title": "total_amount = basket_value - total_discount + total_fee"
+          "format": "int32"
         },
         "order_note": {
           "type": "string"
         },
         "shipping": {
           "$ref": "#/definitions/externalOrderShipping"
+        },
+        "external_meta": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
         }
       }
     },

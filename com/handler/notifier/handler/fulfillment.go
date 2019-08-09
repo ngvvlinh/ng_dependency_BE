@@ -21,7 +21,7 @@ var acceptNotifyStates = []string{string(model.StateReturning), string(model.Sta
 
 func HandleFulfillmentEvent(ctx context.Context, event *pgevent.PgEvent) (mq.Code, error) {
 	var history shipmodel.FulfillmentHistory
-	if ok, err := x.Where("rid = ?", event.RID).Get(&history); err != nil {
+	if ok, err := historyStore(ctx).GetHistory(&history, event.RID); err != nil {
 		return mq.CodeStop, nil
 	} else if !ok {
 		ll.Warn("fulfillment not found", l.Int64("rid", event.RID))
