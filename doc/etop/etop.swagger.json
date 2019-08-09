@@ -18,12 +18,10 @@
   "paths": {
     "/api/etop.Account/GetPublicPartnerInfo": {
       "post": {
-        "summary": "Login",
-        "description": "Log the user in and generate access token.",
         "operationId": "GetPublicPartnerInfo",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "",
             "schema": {
               "$ref": "#/definitions/etopPublicAccountInfo"
             }
@@ -46,12 +44,11 @@
     },
     "/api/etop.Account/GetPublicPartners": {
       "post": {
-        "summary": "SessionInfo",
-        "description": "Return current session info.",
+        "summary": "leave ids empty to get all connected partners",
         "operationId": "GetPublicPartners",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "",
             "schema": {
               "$ref": "#/definitions/etopPublicAccountsResponse"
             }
@@ -77,7 +74,7 @@
         "operationId": "UpdateURLSlug",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "",
             "schema": {
               "$ref": "#/definitions/cmEmpty"
             }
@@ -103,7 +100,7 @@
         "operationId": "CreateAddress",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "",
             "schema": {
               "$ref": "#/definitions/etopAddress"
             }
@@ -126,12 +123,10 @@
     },
     "/api/etop.Address/GetAddresses": {
       "post": {
-        "summary": "Login",
-        "description": "Log the user in and generate access token.",
         "operationId": "GetAddresses",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "",
             "schema": {
               "$ref": "#/definitions/etopGetAddressResponse"
             }
@@ -154,12 +149,10 @@
     },
     "/api/etop.Address/RemoveAddress": {
       "post": {
-        "summary": "SwitchAccount",
-        "description": "Response error if the user does not have permission to the requested account.",
         "operationId": "RemoveAddress",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "",
             "schema": {
               "$ref": "#/definitions/cmEmpty"
             }
@@ -182,12 +175,10 @@
     },
     "/api/etop.Address/UpdateAddress": {
       "post": {
-        "summary": "SessionInfo",
-        "description": "Return current session info.",
         "operationId": "UpdateAddress",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "",
             "schema": {
               "$ref": "#/definitions/etopAddress"
             }
@@ -213,7 +204,7 @@
         "operationId": "GetBanks",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "",
             "schema": {
               "$ref": "#/definitions/etopGetBanksResponse"
             }
@@ -236,12 +227,10 @@
     },
     "/api/etop.Bank/GetBranchesByBankProvince": {
       "post": {
-        "summary": "SessionInfo",
-        "description": "Return current session info.",
         "operationId": "GetBranchesByBankProvince",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "",
             "schema": {
               "$ref": "#/definitions/etopGetBranchesByBankProvinceResponse"
             }
@@ -264,12 +253,10 @@
     },
     "/api/etop.Bank/GetProvincesByBank": {
       "post": {
-        "summary": "Login",
-        "description": "Log the user in and generate access token.",
         "operationId": "GetProvincesByBank",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "",
             "schema": {
               "$ref": "#/definitions/etopGetBankProvincesResponse"
             }
@@ -292,12 +279,10 @@
     },
     "/api/etop.Location/GetDistricts": {
       "post": {
-        "summary": "Login",
-        "description": "Log the user in and generate access token.",
         "operationId": "GetDistricts",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "",
             "schema": {
               "$ref": "#/definitions/etopGetDistrictsResponse"
             }
@@ -320,12 +305,10 @@
     },
     "/api/etop.Location/GetDistrictsByProvince": {
       "post": {
-        "summary": "SessionInfo",
-        "description": "Return current session info.",
         "operationId": "GetDistrictsByProvince",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "",
             "schema": {
               "$ref": "#/definitions/etopGetDistrictsResponse"
             }
@@ -351,7 +334,7 @@
         "operationId": "GetProvinces",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "",
             "schema": {
               "$ref": "#/definitions/etopGetProvincesResponse"
             }
@@ -374,12 +357,10 @@
     },
     "/api/etop.Location/GetWards": {
       "post": {
-        "summary": "SwitchAccount",
-        "description": "Response error if the user does not have permission to the requested account.",
         "operationId": "GetWards",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "",
             "schema": {
               "$ref": "#/definitions/etopGetWardsResponse"
             }
@@ -405,7 +386,7 @@
         "operationId": "GetWardsByDistrict",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "",
             "schema": {
               "$ref": "#/definitions/etopGetWardsResponse"
             }
@@ -431,7 +412,7 @@
         "operationId": "ParseLocation",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "",
             "schema": {
               "$ref": "#/definitions/etopParseLocationResponse"
             }
@@ -457,7 +438,7 @@
         "operationId": "VersionInfo",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "",
             "schema": {
               "$ref": "#/definitions/cmVersionInfoResponse"
             }
@@ -480,12 +461,10 @@
     },
     "/api/etop.Relationship/AnswerInvitation": {
       "post": {
-        "summary": "Login",
-        "description": "Log the user in and generate access token.",
         "operationId": "AnswerInvitation",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "",
             "schema": {
               "$ref": "#/definitions/etopUserAccountInfo"
             }
@@ -508,12 +487,10 @@
     },
     "/api/etop.Relationship/GetUsersInCurrentAccounts": {
       "post": {
-        "summary": "SessionInfo",
-        "description": "Return current session info.",
         "operationId": "GetUsersInCurrentAccounts",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "",
             "schema": {
               "$ref": "#/definitions/etopProtectedUsersResponse"
             }
@@ -539,7 +516,7 @@
         "operationId": "InviteUserToAccount",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "",
             "schema": {
               "$ref": "#/definitions/etopUserAccountInfo"
             }
@@ -562,12 +539,10 @@
     },
     "/api/etop.Relationship/LeaveAccount": {
       "post": {
-        "summary": "SwitchAccount",
-        "description": "Response error if the user does not have permission to the requested account.",
         "operationId": "LeaveAccount",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "",
             "schema": {
               "$ref": "#/definitions/cmEmpty"
             }
@@ -593,7 +568,7 @@
         "operationId": "RemoveUserFromCurrentAccount",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "",
             "schema": {
               "$ref": "#/definitions/cmEmpty"
             }
@@ -621,7 +596,7 @@
         "operationId": "ChangePassword",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "",
             "schema": {
               "$ref": "#/definitions/cmEmpty"
             }
@@ -649,7 +624,7 @@
         "operationId": "ChangePasswordUsingToken",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "",
             "schema": {
               "$ref": "#/definitions/cmEmpty"
             }
@@ -677,7 +652,7 @@
         "operationId": "Login",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "",
             "schema": {
               "$ref": "#/definitions/etopLoginResponse"
             }
@@ -700,10 +675,12 @@
     },
     "/api/etop.User/Register": {
       "post": {
+        "summary": "Register",
+        "description": "Register a new user or after a user has login using generated password.",
         "operationId": "Register",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "",
             "schema": {
               "$ref": "#/definitions/etopRegisterResponse"
             }
@@ -731,7 +708,7 @@
         "operationId": "ResetPassword",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "",
             "schema": {
               "$ref": "#/definitions/cmMessageResponse"
             }
@@ -757,7 +734,7 @@
         "operationId": "SendEmailVerification",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "",
             "schema": {
               "$ref": "#/definitions/cmMessageResponse"
             }
@@ -783,7 +760,7 @@
         "operationId": "SendPhoneVerification",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "",
             "schema": {
               "$ref": "#/definitions/cmMessageResponse"
             }
@@ -809,7 +786,7 @@
         "operationId": "SendSTokenEmail",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "",
             "schema": {
               "$ref": "#/definitions/cmMessageResponse"
             }
@@ -837,7 +814,7 @@
         "operationId": "SessionInfo",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "",
             "schema": {
               "$ref": "#/definitions/etopLoginResponse"
             }
@@ -865,7 +842,7 @@
         "operationId": "SwitchAccount",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "",
             "schema": {
               "$ref": "#/definitions/etopAccessTokenResponse"
             }
@@ -891,7 +868,7 @@
         "operationId": "UpdatePermission",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "",
             "schema": {
               "$ref": "#/definitions/etopUpdatePermissionResponse"
             }
@@ -917,7 +894,7 @@
         "operationId": "UpgradeAccessToken",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "",
             "schema": {
               "$ref": "#/definitions/etopAccessTokenResponse"
             }
@@ -943,7 +920,7 @@
         "operationId": "VerifyEmailUsingToken",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "",
             "schema": {
               "$ref": "#/definitions/cmMessageResponse"
             }
@@ -969,7 +946,7 @@
         "operationId": "VerifyPhoneUsingToken",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "",
             "schema": {
               "$ref": "#/definitions/cmMessageResponse"
             }

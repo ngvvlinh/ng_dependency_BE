@@ -14,6 +14,18 @@
   - etop.vn/backend/pkg/common
   - etop.vn/backend/pkg/etop/authorize/tokens
 
+- baseImportPath: "./cmd/supporting/crm-service"
+  allowedImports:
+  - etop.vn/backend/cmd/supporting/crm-service
+  - etop.vn/backend/pb/common
+  - etop.vn/backend/pb/services/crmservice
+  - etop.vn/backend/pkg/common
+  - etop.vn/backend/pkg/etop/authorize/middleware
+  - etop.vn/backend/pkg/etop/authorize/tokens
+  - etop.vn/backend/pkg/services/crm-service
+  - etop.vn/backend/wrapper/services/crmservice
+  - etop.vn/common
+
 - baseImportPath: "./pkg/common"
   ignoredSubTrees:
   - "./pkg/common/httpx"

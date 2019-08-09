@@ -4,19 +4,15 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
-	"net/http"
 	"net/url"
-	"strings"
-	"time"
+
+	"github.com/gorilla/schema"
 
 	"etop.vn/api/meta"
 	"etop.vn/backend/pb/services/crmservice"
-	"etop.vn/backend/pkg/crm-service/mapping"
-	"etop.vn/backend/pkg/crm-service/model"
-	"etop.vn/backend/pkg/crm-service/vtiger"
-	"github.com/gorilla/schema"
-	"github.com/k0kubun/pp"
+	"etop.vn/backend/pkg/services/crm-service/mapping"
+	"etop.vn/backend/pkg/services/crm-service/model"
+	"etop.vn/backend/pkg/services/crm-service/vtiger/client"
 )
 
 var encoder = schema.NewEncoder()
@@ -26,39 +22,38 @@ func init() {
 }
 
 // CreateOrUpdateContact .
-func (v *VtigerService) CreateOrUpdateContact(ctx context.Context, ct *crmservice.Contact) (*crmservice.Contact, error) {
+func (s *VtigerService) CreateOrUpdateContact(ctx context.Context, ct *crmservice.Contact) (*crmservice.Contact, error) {
 
-	// get session
-	session, err := vtiger.GetSessionKey(v.cfg.VtigerService, v.cfg.VtigerUsername, v.cfg.VtigerAccesskey)
+	session, err := s.client.GetSessionKey(s.cfg.ServiceURL, s.cfg.Username, s.cfg.APIKey)
 	if err != nil {
 		return nil, err
 	}
 
 	// save value to db
 	contact := ConvertModelContact(ct, session.UserID)
-
 	if err := contact.BeforeInsertOrUpdate(); err != nil {
 		return nil, err
 	}
-	_, err = v.vtigerContact(ctx).ByEtopID(contact.EtopID).GetContact()
+	_, err = s.vtigerContact(ctx).ByEtopID(contact.EtopID).GetContact()
 	if err == nil {
-		err = v.vtigerContact(ctx).UpdateVtigerContact(contact)
+		err = s.vtigerContact(ctx).UpdateVtigerContact(contact)
 		if err != nil {
 			return nil, err
 		}
 	} else {
-		err = v.vtigerContact(ctx).CreateVtigerContact(contact)
+		err = s.vtigerContact(ctx).CreateVtigerContact(contact)
 		if err != nil {
 			return nil, err
 		}
 	}
+
 	// send value to vtiger service
-	fileMapData := mapping.NewMappingConfigInfo(v.fieldMap)
+	fileMapData := mapping.NewMappingConfigInfo(s.fieldMap)
 	vtigerMap, err := fileMapData.MapingContactEtop2Vtiger(ct)
 	if err != nil {
 		return nil, err
 	}
-	contactResp, err := v.CreateOrUpdateVtiger(vtigerMap, session, fileMapData, "Contacts")
+	contactResp, err := s.CreateOrUpdateVtiger(vtigerMap, session, fileMapData, "Contacts")
 	//convert
 	contactReturn, err := fileMapData.MapingContactVtiger2Etop(contactResp)
 	if err != nil {
@@ -75,17 +70,19 @@ type BodyRequestVtiger struct {
 	ElementType string `json:"elementType"`
 }
 
-// BodyResponseViter define struct body response from vtiger
-type BodyResponseViter struct {
+// BodyResponseVtiger define struct body response from vtiger
+type BodyResponseVtiger struct {
 	Success string
 	Result  map[string]string
 }
 
 // CreateOrUpdateVtiger request create or to vtiger
-func (v *VtigerService) CreateOrUpdateVtiger(etop2Vtiger map[string]string,
-	session *vtiger.VtigerSessionResult,
-	fileMapData *mapping.MappingConfigInfo,
-	moduleName string) (map[string]string, error) {
+func (s *VtigerService) CreateOrUpdateVtiger(
+	etop2Vtiger map[string]string,
+	session *client.VtigerSessionResult,
+	fileMapData *mapping.Mapper,
+	moduleName string,
+) (map[string]string, error) {
 	etop2Vtiger["assigned_user_id"] = session.UserID
 	bodyRequestVtiger := &BodyRequestVtiger{
 		ElementType: moduleName,
@@ -95,8 +92,6 @@ func (v *VtigerService) CreateOrUpdateVtiger(etop2Vtiger map[string]string,
 	//check exit id is already exit
 	bodyRequestVtiger.Operation = "create"
 
-	pp.Println("ID :: ", etop2Vtiger["id"])
-
 	if etop2Vtiger["id"] != "" {
 		sq, err := singleQuote(etop2Vtiger["id"])
 		if err != nil {
@@ -104,19 +99,13 @@ func (v *VtigerService) CreateOrUpdateVtiger(etop2Vtiger map[string]string,
 		}
 		sqlQuery := fmt.Sprintf(`SELECT * from %v where id=%v;`, moduleName, sq)
 
-		u, err := url.Parse("")
-		if err != nil {
-			return nil, err
-		}
-		queryURL := u.Query()
-		queryURL.Set("operation", "query")
-		queryURL.Set("sessionName", session.SessionName)
-		queryURL.Set("query", sqlQuery)
-		u.RawQuery = queryURL.Encode()
-		path := "?" + u.RawQuery
+		queryValues := make(url.Values)
+		queryValues.Set("operation", "query")
+		queryValues.Set("sessionName", session.SessionName)
+		queryValues.Set("query", sqlQuery)
 
-		vtigerService := vtiger.NewVigerClient(session.SessionName, v.cfg.VtigerService)
-		resultVtiger, err := vtigerService.SendRequestVtigerValue(path, nil, "GET")
+		vtigerService := client.NewVigerClient(session.SessionName, s.cfg.ServiceURL)
+		resultVtiger, err := vtigerService.RequestGet(queryValues)
 		if err != nil {
 			return nil, err
 		}
@@ -135,32 +124,21 @@ func (v *VtigerService) CreateOrUpdateVtiger(etop2Vtiger map[string]string,
 	bodyRequestVtiger.Element = string(etop2VtigerString)
 
 	// request update or create
-	data := url.Values{}
-	if err := encoder.Encode(bodyRequestVtiger, data); err != nil {
-		return nil, err
-	}
-	req, err := http.NewRequest("POST", v.cfg.VtigerService, strings.NewReader(data.Encode()))
-	if err != nil {
-		return nil, err
-	}
-	req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
-	client := &http.Client{Timeout: 10 * time.Second}
-	resp, err := client.Do(req)
-	bodyResp, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
+	requestBody := url.Values{}
+	if err := encoder.Encode(bodyRequestVtiger, requestBody); err != nil {
 		return nil, err
 	}
 
-	// get map result after update or create
-	var result BodyResponseViter
-	err = json.Unmarshal([]byte(bodyResp), &result)
-
+	var result BodyResponseVtiger
+	err = s.client.SendPost(requestBody, &result)
+	if err != nil {
+		return nil, err
+	}
 	return result.Result, nil
 }
 
 // GetContacts get contact from db
-func (v *VtigerService) GetContacts(ctx context.Context, getContactRequest *crmservice.GetContactsRequest) (*crmservice.GetContactsResponse, error) {
-	// paging
+func (s *VtigerService) GetContacts(ctx context.Context, getContactRequest *crmservice.GetContactsRequest) (*crmservice.GetContactsResponse, error) {
 	page := getContactRequest.Page
 	perpage := getContactRequest.Perpage
 	if perpage == 0 {
@@ -178,9 +156,9 @@ func (v *VtigerService) GetContacts(ctx context.Context, getContactRequest *crms
 	var dbResult []*model.VtigerContact
 	var err error
 	if textSearch != "" {
-		dbResult, err = v.vtigerContact(ctx).Paging(paging).SearchContact(textSearch)
+		dbResult, err = s.vtigerContact(ctx).Paging(paging).SearchContact(textSearch)
 	} else {
-		dbResult, err = v.vtigerContact(ctx).Paging(paging).GetContacts()
+		dbResult, err = s.vtigerContact(ctx).Paging(paging).GetContacts()
 	}
 	if err != nil {
 		return nil, err

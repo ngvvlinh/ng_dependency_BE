@@ -1,4 +1,4 @@
-package vtiger
+package client
 
 import (
 	"net/http"
@@ -79,25 +79,9 @@ type BodySessionRequest struct {
 	AccessKey string `json:"accessKey"`
 }
 
-// VtigerClient vtiger object contain information
-type VtigerClient struct {
-	BaseURL     string
-	httpClient  *http.Client
-	SessionInfo string
-}
-
-// NewVigerClient create VtigerClient
-func NewVigerClient(sessionInfo string, baseUrl string) *VtigerClient {
-	return &VtigerClient{
-		SessionInfo: sessionInfo,
-		BaseURL:     baseUrl,
-		httpClient:  &http.Client{Timeout: 10 * time.Second},
-	}
-}
-
 // VtigerResponse contain
 type VtigerResponse struct {
-	Success string              `json:"success"`
+	Success bool                `json:"success"`
 	Result  []map[string]string `json:"result"`
 }
 

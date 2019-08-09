@@ -33,6 +33,7 @@ service VtigerService {
     rpc CountTicketByStatus(CountTicketByStatusRequest) returns (CountTicketByStatusResponse);
     rpc GetTicketStatusCount(cm.Empty) returns (GetTicketStatusCountResponse);
 }
+
 message CountTicketByStatusRequest {
     optional string status = 1 [(gogoproto.nullable) = true];
 }
@@ -40,6 +41,7 @@ message CountTicketByStatusRequest {
 message GetTicketStatusCountResponse {
     repeated CountTicketByStatusResponse status_count = 1 [(gogoproto.nullable) = false];
 }
+
 message CountTicketByStatusResponse{
     optional string code = 1 [(gogoproto.nullable) = false];
     optional int32 count = 2 [(gogoproto.nullable) = false];
@@ -69,8 +71,8 @@ message Contact{
 	optional int64 etop_id = 12 [(gogoproto.nullable) = false];
 	optional string company= 13 [(gogoproto.nullable) = false];
 	optional string website= 14 [(gogoproto.nullable) = false];
-	optional string lane= 15 [(gogoproto.nullable) = false]; 
-	optional string city= 16 [(gogoproto.nullable) = false]; 
+	optional string lane= 15 [(gogoproto.nullable) = false];
+	optional string city= 16 [(gogoproto.nullable) = false];
 	optional string state= 17 [(gogoproto.nullable) = false];
 	optional string country= 18 [(gogoproto.nullable) = false];
 	optional string orders_per_day = 19 [(gogoproto.nullable) = false];
@@ -97,8 +99,8 @@ message Lead {
 	optional int64 etop_id = 12 [(gogoproto.nullable) = false];
 	optional string company= 13 [(gogoproto.nullable) = false];
 	optional string website= 14 [(gogoproto.nullable) = false];
-	optional string lane= 15 [(gogoproto.nullable) = false]; 
-	optional string city= 16 [(gogoproto.nullable) = false]; 
+	optional string lane= 15 [(gogoproto.nullable) = false];
+	optional string city= 16 [(gogoproto.nullable) = false];
 	optional string state= 17 [(gogoproto.nullable) = false];
 	optional string country= 18 [(gogoproto.nullable) = false];
 	optional string orders_per_day = 19 [(gogoproto.nullable) = false];
@@ -122,38 +124,39 @@ message OrderBy{
     optional string field = 1 [(gogoproto.nullable) = false];
     optional string sort = 2 [(gogoproto.nullable) = false];
 }
+
 message CreateOrUpdateTicketRequest{
-    optional Account account = 1 [(gogoproto.nullable) = false]; 
-    optional TicketRequest ticket = 2 [(gogoproto.nullable) = false]; 
+    optional Account account = 1 [(gogoproto.nullable) = false];
+    optional TicketRequest ticket = 2 [(gogoproto.nullable) = false];
 }
 
 message TicketRequest {
     optional string id = 1 [(gogoproto.nullable) = false];
     optional string code =  2 [(gogoproto.nullable) = false];
-    optional string title = 3 [(gogoproto.nullable) = false]; 
-    optional string value =  4 [(gogoproto.nullable) = false]; 
-    optional string old_value =  5 [(gogoproto.nullable) = false]; 
-    optional string reason =  6 [(gogoproto.nullable) = false]; 
-    optional int64 etop_id =  7 [(gogoproto.nullable) = false]; 
-    optional int64 order_id =  8 [(gogoproto.nullable) = false]; 
-    optional string order_code =  9 [(gogoproto.nullable) = false]; 
-    optional string ffm_code =  10 [(gogoproto.nullable) = false]; 
+    optional string title = 3 [(gogoproto.nullable) = false];
+    optional string value =  4 [(gogoproto.nullable) = false];
+    optional string old_value =  5 [(gogoproto.nullable) = false];
+    optional string reason =  6 [(gogoproto.nullable) = false];
+    optional int64 etop_id =  7 [(gogoproto.nullable) = false];
+    optional int64 order_id =  8 [(gogoproto.nullable) = false];
+    optional string order_code =  9 [(gogoproto.nullable) = false];
+    optional string ffm_code =  10 [(gogoproto.nullable) = false];
     optional string ffm_url =  11 [(gogoproto.nullable) = false];
-    optional int64 ffm_id =  12 [(gogoproto.nullable) = false]; 
-    optional string company =  13 [(gogoproto.nullable) = false]; 
-    optional string provider =  15 [(gogoproto.nullable) = false]; 
-    optional string note =  16 [(gogoproto.nullable) = false]; 
+    optional int64 ffm_id =  12 [(gogoproto.nullable) = false];
+    optional string company =  13 [(gogoproto.nullable) = false];
+    optional string provider =  15 [(gogoproto.nullable) = false];
+    optional string note =  16 [(gogoproto.nullable) = false];
     optional string environment =  17 [(gogoproto.nullable) = false];
     optional string from_app =  18 [(gogoproto.nullable) = false];
 }
 
 message Account {
-    optional int64 id =  1 [(gogoproto.nullable) = false]; 
-    optional string full_name =  2 [(gogoproto.nullable) = false]; 
-    optional string short_name =  3 [(gogoproto.nullable) = false];  
-    optional string phone =  4 [(gogoproto.nullable) = false];  
-    optional string email =  5 [(gogoproto.nullable) = false]; 
-    optional string company =  6 [(gogoproto.nullable) = false];  
+    optional int64 id =  1 [(gogoproto.nullable) = false];
+    optional string full_name =  2 [(gogoproto.nullable) = false];
+    optional string short_name =  3 [(gogoproto.nullable) = false];
+    optional string phone =  4 [(gogoproto.nullable) = false];
+    optional string email =  5 [(gogoproto.nullable) = false];
+    optional string company =  6 [(gogoproto.nullable) = false];
 }
 
 message Ticket {
@@ -200,10 +203,10 @@ message Ticket {
 }
 
 message GetCategoriesResponse {
-    repeated Categories categories = 1;
+    repeated Category categories = 1;
 }
 
-message Categories {
+message Category {
     optional string code = 1 [(gogoproto.nullable) = false];
     optional string label = 2 [(gogoproto.nullable) = false];
 }
@@ -212,7 +215,7 @@ message GetStatusResponse {
     repeated Status status = 1;
 }
 
-message Status{
+message Status {
     optional string code = 1 [(gogoproto.nullable) = false];
     optional string count = 2 [(gogoproto.nullable) = false];
 }

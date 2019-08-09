@@ -6,7 +6,7 @@ import (
 	"database/sql"
 	"time"
 
-	core "etop.vn/backend/pkg/common/sq/core"
+	"etop.vn/backend/pkg/common/sq/core"
 )
 
 type SQLWriter = core.SQLWriter

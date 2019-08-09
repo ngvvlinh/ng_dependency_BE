@@ -1,8 +1,6 @@
 package model
 
 import (
-	"fmt"
-	"strings"
 	"time"
 
 	"etop.vn/backend/pkg/common/validate"
@@ -55,17 +53,9 @@ type VtigerContact struct {
 }
 
 func (p *VtigerContact) BeforeInsertOrUpdate() error {
-	var b strings.Builder
-	fmt.Fprintf(&b, " %v", p.Phone)
-	fmt.Fprintf(&b, " %v", p.Email)
-	fmt.Fprintf(&b, " %v", p.Lastname)
-	fmt.Fprintf(&b, " %v", p.Firstname)
-	fmt.Fprintf(&b, " %v", p.Lane)
-	fmt.Fprintf(&b, " %v", p.State)
-	fmt.Fprintf(&b, " %v", p.City)
-	fmt.Fprintf(&b, " %v", p.Company)
-	p.SearchNorm = validate.NormalizeSearch(b.String())
-
+	s := p.Phone + p.Email + p.Lastname + p.Firstname +
+		p.Lane + p.State + p.City + p.Company
+	p.SearchNorm = validate.NormalizeSearch(s)
 	return nil
 }
 

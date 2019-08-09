@@ -4,28 +4,23 @@ import (
 	"context"
 	"log"
 
-	"github.com/gorilla/schema"
-
 	pbcm "etop.vn/backend/pb/common"
-	"etop.vn/backend/pb/services/crmservice"
 	"etop.vn/backend/pkg/common/cmsql"
-	"etop.vn/backend/pkg/crm-service/mapping"
-	vs "etop.vn/backend/pkg/crm-service/vtiger-service"
+	"etop.vn/backend/pkg/services/crm-service/mapping"
+	vtigerservice "etop.vn/backend/pkg/services/crm-service/vtiger/service"
 	wrapcrm "etop.vn/backend/wrapper/services/crmservice"
 	"etop.vn/common/bus"
 )
 
-var encoder = schema.NewEncoder()
-
 // Service contain config for service
 type Service struct {
-	vtigerService *vs.VtigerService
+	vtigerService *vtigerservice.VtigerService
 }
 
 // NewService init Service
-func NewService(db cmsql.Database, vConfig vs.VtigerConfig, fieldMap *mapping.ConfigMap) *Service {
+func NewService(db cmsql.Database, vConfig vtigerservice.Config, fieldMap mapping.ConfigMap) *Service {
 	s := &Service{
-		vtigerService: vs.NewSVtigerService(db, vConfig, fieldMap),
+		vtigerService: vtigerservice.NewSVtigerService(db, vConfig, fieldMap),
 	}
 	return s
 }
@@ -83,11 +78,6 @@ func (s *Service) CountTicketByStatus(ctx context.Context, q *wrapcrm.CountTicke
 	}
 	q.Result = result
 	return nil
-}
-
-// ReadFileCategories read file json
-func ReadFileCategories() ([]*crmservice.Categories, error) {
-	return vs.ReadFileCategories()
 }
 
 // CreateOrUpdateLead create or update lead

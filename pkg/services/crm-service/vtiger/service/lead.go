@@ -4,20 +4,18 @@ import (
 	"context"
 
 	"etop.vn/backend/pb/services/crmservice"
-	"etop.vn/backend/pkg/crm-service/mapping"
-	"etop.vn/backend/pkg/crm-service/model"
-	"etop.vn/backend/pkg/crm-service/vtiger"
+	"etop.vn/backend/pkg/services/crm-service/mapping"
+	"etop.vn/backend/pkg/services/crm-service/model"
 )
 
 // CreateOrUpdateLead create or update lead
 func (s *VtigerService) CreateOrUpdateLead(ctx context.Context, req *crmservice.Lead) (*crmservice.Lead, error) {
-	// get session
-	session, err := vtiger.GetSessionKey(s.cfg.VtigerService, s.cfg.VtigerUsername, s.cfg.VtigerAccesskey)
+	session, err := s.client.GetSessionKey(s.cfg.ServiceURL, s.cfg.Username, s.cfg.APIKey)
 	if err != nil {
 		return nil, err
 	}
 
-	// save value to database.
+	// save to database
 	contact := &model.VtigerContact{
 		ID:                   req.Id,
 		Firstname:            req.Firstname,
@@ -54,6 +52,7 @@ func (s *VtigerService) CreateOrUpdateLead(ctx context.Context, req *crmservice.
 			return nil, err
 		}
 	}
+
 	//s.UpdateOrCreateContactToVtiger(contact)
 	// send value to vtiger service
 	fileMapData := mapping.NewMappingConfigInfo(s.fieldMap)

@@ -6,10 +6,9 @@ import (
 	"etop.vn/api/meta"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/cmsql"
+	"etop.vn/backend/pkg/common/sqlstore"
 	"etop.vn/backend/pkg/common/validate"
-	"etop.vn/backend/pkg/crm-service/model"
-	"etop.vn/backend/pkg/etop/sqlstore"
-	"github.com/k0kubun/pp"
+	"etop.vn/backend/pkg/services/crm-service/model"
 )
 
 type VtigerContactStoreFactory func(context.Context) *VtigerContactStore
@@ -30,6 +29,7 @@ func NewVtigerStore(db cmsql.Database) VtigerContactStoreFactory {
 		}
 	}
 }
+
 func (s *VtigerContactStore) Paging(paging meta.Paging) *VtigerContactStore {
 	s.paging = paging
 	return s
@@ -62,16 +62,13 @@ func (v *VtigerContactStore) GetVtigerContact() (*model.VtigerContact, error) {
 }
 
 func (v *VtigerContactStore) CreateVtigerContact(contact *model.VtigerContact) error {
-
 	if contact.EtopID == 0 {
 		return cm.Errorf(cm.InvalidArgument, nil, "missing ContactID or EtopID")
 	}
 	err := v.query().ShouldInsert(contact)
-	pp.Println(err)
 	return err
 }
 
-// GetContact get contact
 func (v *VtigerContactStore) GetContact() (*model.VtigerContact, error) {
 	var item model.VtigerContact
 	err := v.query().Where(v.preds).ShouldGet(&item)
@@ -84,8 +81,6 @@ var SortVtigerContact = map[string]string{
 }
 
 func (v *VtigerContactStore) SearchContact(value string) ([]*model.VtigerContact, error) {
-	pp.Println("value ::", value)
-	pp.Println(v.paging)
 	query := v.query().Where(`search_norm @@ ?::tsquery`, validate.NormalizeSearchQueryAnd(value))
 	query, err := sqlstore.LimitSort(query, &v.paging, SortVtigerContact)
 	if err != nil {

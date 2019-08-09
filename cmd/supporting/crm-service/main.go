@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"encoding/json"
 	"flag"
 	"net/http"
 	"os"
@@ -10,19 +9,16 @@ import (
 	"syscall"
 	"time"
 
-	"etop.vn/backend/cmd/crm-service/config"
+	"etop.vn/backend/cmd/supporting/crm-service/config"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/cmsql"
 	cc "etop.vn/backend/pkg/common/config"
 	"etop.vn/backend/pkg/common/health"
 	"etop.vn/backend/pkg/common/metrics"
 	"etop.vn/backend/pkg/common/redis"
-	"etop.vn/backend/pkg/crm-service/mapping"
-	servicecrm "etop.vn/backend/pkg/crm-service/service"
-	vs "etop.vn/backend/pkg/crm-service/vtiger-service"
 	"etop.vn/backend/pkg/etop/authorize/middleware"
 	"etop.vn/backend/pkg/etop/authorize/tokens"
-	"etop.vn/backend/pkg/etop/sqlstore"
+	servicecrm "etop.vn/backend/pkg/services/crm-service/service"
 	wrapcrm "etop.vn/backend/wrapper/services/crmservice"
 	"etop.vn/common/l"
 )
@@ -72,24 +68,12 @@ func main() {
 		ll.Fatal("error while connecting to postgres", l.Error(err))
 	}
 
-	vtigerConfig := vs.VtigerConfig{
-		VtigerService:   cfg.VtigerService,
-		VtigerUsername:  cfg.VtigerUsername,
-		VtigerAccesskey: cfg.VtigerAccesskey,
+	configMap, err := config.ReadMappingFile(cfg.MappingFile)
+	if err != nil {
+		ll.Fatal("error while reading field map file", l.String("file", cfg.MappingFile), l.Error(err))
 	}
 
-	f, err := vs.ReadFileConfig()
-	var configMap *mapping.ConfigMap
-	{
-		err := json.Unmarshal([]byte(f), &configMap)
-		if err != nil {
-			ll.Error("Fail to Unmarshal field_mapping.json to  mappping.ConfigMap")
-		}
-	}
-	if err != nil {
-		ll.Fatal("err while read field map file", l.Error(err))
-	}
-	s := servicecrm.NewService(db, vtigerConfig, configMap)
+	s := servicecrm.NewService(db, cfg.Vtiger, configMap)
 	s.Register()
 
 	apiMux := http.NewServeMux()
@@ -101,7 +85,6 @@ func main() {
 		Addr:    cfg.HTTP.Address(),
 		Handler: mux,
 	}
-	sqlstore.Init(db)
 
 	metrics.RegisterHTTPHandler(mux)
 	healthservice.RegisterHTTPHandler(mux)

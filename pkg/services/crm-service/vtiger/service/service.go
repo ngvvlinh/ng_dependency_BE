@@ -1,36 +1,90 @@
 package vtigerservice
 
 import (
-	"encoding/json"
-	"io/ioutil"
-	"os"
 	"strconv"
 	"strings"
+
+	"etop.vn/backend/pkg/services/crm-service/vtiger/client"
 
 	"etop.vn/backend/pb/services/crmservice"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/cmsql"
-	"etop.vn/backend/pkg/crm-service/mapping"
-	"etop.vn/backend/pkg/crm-service/model"
-	"etop.vn/backend/pkg/crm-service/sqlstore"
+	cc "etop.vn/backend/pkg/common/config"
+	"etop.vn/backend/pkg/services/crm-service/mapping"
+	"etop.vn/backend/pkg/services/crm-service/model"
+	"etop.vn/backend/pkg/services/crm-service/sqlstore"
 )
+
+// Config represents configuration for vtiger service
+type Config struct {
+	ServiceURL string `yaml:"service_url"`
+	Username   string `yaml:"username"`
+	APIKey     string `yaml:"api_key"`
+}
+
+func (c *Config) MustLoadEnv(prefix string) {
+	p := prefix
+	cc.EnvMap{
+		p + "_SERVICE_URL": &c.ServiceURL,
+		p + "_USERNAME":    &c.Username,
+		p + "_API_KEY":     &c.APIKey,
+	}.MustLoad()
+}
+
+var Categories = []*crmservice.Category{
+	{
+		Code:  "force-picking",
+		Label: "Giục lấy hàng",
+	},
+	{
+		Code:  "force-delivering",
+		Label: "Giục giao hàng",
+	},
+	{
+		Code:  "change-shop-cod",
+		Label: "Thay đổi COD",
+	},
+	{
+		Code:  "change-phone",
+		Label: "Thay đổi SDT",
+	},
+	{
+		Code:  "change-customer-name",
+		Label: "Thay đổi Tên KH",
+	},
+	{
+		Code:  "change-shipping-address",
+		Label: "Thay đổi địa chỉ giao",
+	},
+	{
+		Code:  "request-redelivering",
+		Label: "Yêu cầu giao lại",
+	},
+
+	{
+		Code:  "service-rating",
+		Label: "Đánh giá dịch vụ",
+	},
+	{
+		Code:  "request-contact",
+		Label: "Liên hệ",
+	},
+	{
+		Code:  "others",
+		Label: "Yêu cầu khác",
+	},
+}
 
 // VtigerService controller vtiger
 type VtigerService struct {
 	vtigerContact sqlstore.VtigerContactStoreFactory
-	cfg           VtigerConfig
-	fieldMap      *mapping.ConfigMap
-}
-
-// VtigerConfig information vtiger's config
-type VtigerConfig struct {
-	VtigerService   string `yaml:"vtiger_service"`
-	VtigerUsername  string `yaml:"vtiger_username"`
-	VtigerAccesskey string `yaml:"vtiger_accesskey"`
+	cfg           Config
+	fieldMap      mapping.ConfigMap
+	client        *client.VtigerClient
 }
 
 // NewSVtigerService init Service
-func NewSVtigerService(db cmsql.Database, vConfig VtigerConfig, fieldMap *mapping.ConfigMap) *VtigerService {
+func NewSVtigerService(db cmsql.Database, vConfig Config, fieldMap mapping.ConfigMap) *VtigerService {
 	s := &VtigerService{
 		cfg:           vConfig,
 		fieldMap:      fieldMap,
@@ -39,8 +93,8 @@ func NewSVtigerService(db cmsql.Database, vConfig VtigerConfig, fieldMap *mappin
 	return s
 }
 
-// ConvertAccout convert Account to Contact
-func ConvertAccout(a *crmservice.Account) *crmservice.Contact {
+// ConvertAccount convert Account to Contact
+func ConvertAccount(a *crmservice.Account) *crmservice.Contact {
 	return &crmservice.Contact{
 		EtopId:   a.Id,
 		Lastname: a.FullName,
@@ -74,7 +128,7 @@ func ConvertTicket(t *crmservice.TicketRequest) *crmservice.Ticket {
 }
 
 // MapTicketJSON Get label of reason follow code
-func MapTicketJSON(code string, categories []*crmservice.Categories) (string, error) {
+func MapTicketJSON(code string, categories []*crmservice.Category) (string, error) {
 	for _, value := range categories {
 		if value.Code == code {
 			return value.Label, nil
@@ -90,28 +144,9 @@ func singleQuote(value string) (string, error) {
 	return strings.ReplaceAll(strconv.Quote(value), `"`, `'`), nil
 }
 
-// ReadFileCategories read file reason
-func ReadFileCategories() ([]*crmservice.Categories, error) {
-	configFile, err := os.Open("../pkg/crm-service/reason_mapping.json")
-	if err != nil {
-		configFile, err = os.Open("pkg/crm-service/reason_mapping.json")
-		if err != nil {
-			return nil, err
-		}
-	}
-
-	byteValue, err := ioutil.ReadAll(configFile)
-	if err != nil {
-		return nil, err
-	}
-	defer configFile.Close()
-
-	var categoriesResponse []*crmservice.Categories
-	err = json.Unmarshal(byteValue, &categoriesResponse)
-	if err != nil {
-		return nil, err
-	}
-	return categoriesResponse, nil
+// GetCategories
+func GetCategories() []*crmservice.Category {
+	return Categories
 }
 
 // ConvertModelContact covert protobuf to model Contact
@@ -140,24 +175,4 @@ func ConvertModelContact(c *crmservice.Contact, AssignedUserID string) *model.Vt
 		Country:              c.Country,
 	}
 	return contact
-}
-
-// ReadFileConfig read json file which is use for map vtiger and etop
-func ReadFileConfig() (string, error) {
-
-	configFile, err := os.Open("../pkg/crm-service/field_mapping.json")
-	if err != nil {
-		configFile, err = os.Open("pkg/crm-service/field_mapping.json")
-		if err != nil {
-			return "", err
-		}
-	}
-
-	byteValue, err := ioutil.ReadAll(configFile)
-	if err != nil {
-		return "", err
-	}
-	defer configFile.Close()
-
-	return string(byteValue), nil
 }
