@@ -16,7 +16,7 @@ import (
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/httpx"
 	"etop.vn/backend/pkg/etop/model"
-	"etop.vn/backend/pkg/integration/ghtk"
+	"etop.vn/backend/pkg/integration/shipping/ghtk"
 	"etop.vn/common/bus"
 
 	"github.com/360EntSecGroup-Skylar/excelize"

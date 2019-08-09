@@ -11,7 +11,7 @@ import (
 	"etop.vn/backend/pkg/common/cmsql"
 	cc "etop.vn/backend/pkg/common/config"
 	"etop.vn/backend/pkg/etop/model"
-	"etop.vn/backend/pkg/integration/ghn"
+	"etop.vn/backend/pkg/integration/shipping/ghn"
 	"etop.vn/common/bus"
 	"etop.vn/common/l"
 )

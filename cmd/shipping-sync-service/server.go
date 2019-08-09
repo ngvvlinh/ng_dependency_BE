@@ -8,8 +8,8 @@ import (
 	"etop.vn/backend/pkg/common/cmsql"
 	"etop.vn/backend/pkg/etop/logic/shipping_provider"
 	"etop.vn/backend/pkg/etop/sqlstore"
-	"etop.vn/backend/pkg/integration/ghn"
-	"etop.vn/backend/pkg/integration/ghtk"
+	"etop.vn/backend/pkg/integration/shipping/ghn"
+	"etop.vn/backend/pkg/integration/shipping/ghtk"
 	"etop.vn/common/l"
 )
 

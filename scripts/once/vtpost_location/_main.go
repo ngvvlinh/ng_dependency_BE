@@ -14,7 +14,7 @@ import (
 
 	"etop.vn/backend/cmd/etop-server/config"
 	cc "etop.vn/backend/pkg/common/config"
-	vtpostClient "etop.vn/backend/pkg/integration/vtpost/client"
+	vtpostClient "etop.vn/backend/pkg/integration/shipping/vtpost/client"
 	"etop.vn/common/l"
 )
 

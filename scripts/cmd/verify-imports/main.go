@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
 	"flag"
 	"fmt"
@@ -12,18 +13,24 @@ import (
 	"strings"
 
 	"golang.org/x/tools/go/packages"
+	"gopkg.in/yaml.v2"
 )
 
-const FileName = ".import-restrictions"
+var FileNames = []string{
+	".import-restrictions.yaml",
+	".import-restrictions",
+}
 
 type Rules struct {
-	Rules []Rule
+	Rules []Rule `yaml:"rules"`
+
+	importRestrictionsFilename string
 }
 
 type Rule struct {
-	SelectorRegexp    string
-	AllowedPrefixes   []string
-	ForbiddenPrefixes []string
+	SelectorRegexp    string   `yaml:"selectorRegexp"`
+	AllowedPrefixes   []string `yaml:"allowedPrefixes"`
+	ForbiddenPrefixes []string `yaml:"forbiddenPrefixes"`
 }
 
 type Verifier struct {
@@ -92,25 +99,32 @@ func (v *Verifier) GetRuleFileForPackage(pkgPath string) (rules *Rules, err erro
 		return nil, fmt.Errorf("not a directory %q", dirPath)
 	}
 
-	path := filepath.Join(dirPath, FileName)
-	if _, err = os.Stat(path); err == nil {
-		return loadRuleFile(path)
+	for _, filename := range FileNames {
+		path := filepath.Join(dirPath, filename)
+		if _, err = os.Stat(path); err == nil {
+			return loadRuleFile(path)
+		}
 	}
 	return v.GetRuleFileForPackage(filepath.Dir(pkgPath))
 }
 
-func loadRuleFile(path string) (*Rules, error) {
+func loadRuleFile(path string) (rules *Rules, err error) {
 	data, err := ioutil.ReadFile(path)
 	if err != nil {
 		return nil, err
 	}
-	var r Rules
-	err = json.Unmarshal(data, &r)
+	data = bytes.TrimSpace(data)
+	if bytes.HasPrefix(data, []byte("{")) {
+		err = json.Unmarshal(data, &rules)
+	} else {
+		err = yaml.UnmarshalStrict(data, &rules)
+	}
 	if err != nil {
 		return nil, err
 	}
+	rules.importRestrictionsFilename = path
 	fmt.Println("loaded rules", path)
-	return &r, nil
+	return
 }
 
 func (v *Verifier) VerifyPackage(pkg *packages.Package) (errs []error) {
@@ -122,7 +136,7 @@ func (v *Verifier) VerifyPackage(pkg *packages.Package) (errs []error) {
 		return nil // skip the package
 	}
 
-	actualPath := filepath.Join(pkg.PkgPath, FileName)
+	actualPath := filepath.Join(pkg.PkgPath, rules.importRestrictionsFilename)
 	for _, r := range rules.Rules {
 		re, err := regexp.Compile(r.SelectorRegexp)
 		if err != nil {

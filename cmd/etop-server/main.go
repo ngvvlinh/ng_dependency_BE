@@ -14,6 +14,7 @@ import (
 	"etop.vn/api/main/ordering"
 	"etop.vn/api/main/shipnow"
 	"etop.vn/backend/cmd/etop-server/config"
+	haravanidentity "etop.vn/backend/com/external/haravan/identity"
 	catalogaggregate "etop.vn/backend/com/main/catalog/aggregate"
 	catalogquery "etop.vn/backend/com/main/catalog/query"
 	serviceidentity "etop.vn/backend/com/main/identity"
@@ -57,13 +58,12 @@ import (
 	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/backend/pkg/etop/sqlstore"
 	"etop.vn/backend/pkg/etop/upload"
-	haravanidentity "etop.vn/backend/pkg/external/haravan/identity"
-	"etop.vn/backend/pkg/integration/ahamove"
 	"etop.vn/backend/pkg/integration/email"
-	"etop.vn/backend/pkg/integration/ghn"
-	"etop.vn/backend/pkg/integration/ghtk"
+	"etop.vn/backend/pkg/integration/shipnow/ahamove"
+	"etop.vn/backend/pkg/integration/shipping/ghn"
+	"etop.vn/backend/pkg/integration/shipping/ghtk"
+	"etop.vn/backend/pkg/integration/shipping/vtpost"
 	"etop.vn/backend/pkg/integration/sms"
-	"etop.vn/backend/pkg/integration/vtpost"
 	"etop.vn/backend/pkg/services/address"
 	"etop.vn/common/bus"
 	"etop.vn/common/l"
@@ -233,7 +233,12 @@ func main() {
 		}
 	}
 	if cfg.Ahamove.ApiKey != "" {
-		ahamoveCarrier, ahamoveCarrierAccount = ahamove.New(cfg.Ahamove, locationBus, identityQuery, cfg.ThirdPartyHost)
+		ahamoveCarrier, ahamoveCarrierAccount = ahamove.New(
+			cfg.Ahamove, locationBus, identityQuery,
+			ahamove.URLConfig{
+				ThirdPartyHost:       cfg.ThirdPartyHost,
+				PathUserVerification: config.PathAhamoveUserVerification,
+			})
 		if err := ahamoveCarrier.InitClient(ctx); err != nil {
 			ll.Fatal("Unable to connect to ahamove", l.Error(err))
 		}

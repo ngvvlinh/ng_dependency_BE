@@ -8,7 +8,7 @@ import (
 
 	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/backend/pkg/etop/sqlstore"
-	"etop.vn/backend/pkg/integration/ghtk"
+	"etop.vn/backend/pkg/integration/shipping/ghtk"
 
 	"etop.vn/backend/cmd/etop-server/config"
 	cm "etop.vn/backend/pkg/common"

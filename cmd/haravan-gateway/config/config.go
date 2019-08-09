@@ -4,10 +4,10 @@ import (
 	"errors"
 
 	cc "etop.vn/backend/pkg/common/config"
-	"etop.vn/backend/pkg/integration/ghn"
-	"etop.vn/backend/pkg/integration/ghtk"
 	haravanclient "etop.vn/backend/pkg/integration/haravan/client"
-	"etop.vn/backend/pkg/integration/vtpost"
+	"etop.vn/backend/pkg/integration/shipping/ghn"
+	"etop.vn/backend/pkg/integration/shipping/ghtk"
+	"etop.vn/backend/pkg/integration/shipping/vtpost"
 )
 
 type Config struct {

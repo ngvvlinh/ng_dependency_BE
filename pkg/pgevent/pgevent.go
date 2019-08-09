@@ -9,12 +9,12 @@ import (
 	"strings"
 	"time"
 
+	"github.com/lib/pq"
+
 	"etop.vn/backend/pkg/common/cmsql"
 	"etop.vn/backend/pkg/common/mq"
 	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/common/l"
-
-	"github.com/lib/pq"
 )
 
 var ll = l.New()

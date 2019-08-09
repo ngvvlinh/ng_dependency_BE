@@ -9,8 +9,8 @@ import (
 	shipmodelx "etop.vn/backend/com/main/shipping/modelx"
 	"etop.vn/backend/pkg/common/scheduler"
 	"etop.vn/backend/pkg/etop/model"
-	"etop.vn/backend/pkg/integration/ghn/update"
-	"etop.vn/backend/pkg/integration/ghtk"
+	"etop.vn/backend/pkg/integration/shipping/ghn/update"
+	"etop.vn/backend/pkg/integration/shipping/ghtk"
 	"etop.vn/common/bus"
 	"etop.vn/common/l"
 )

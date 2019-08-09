@@ -7,13 +7,13 @@ import (
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/captcha"
 	cc "etop.vn/backend/pkg/common/config"
-	ahamoveclient "etop.vn/backend/pkg/integration/ahamove/client"
 	"etop.vn/backend/pkg/integration/email"
-	"etop.vn/backend/pkg/integration/ghn"
-	"etop.vn/backend/pkg/integration/ghtk"
 	haravanclient "etop.vn/backend/pkg/integration/haravan/client"
+	ahamoveclient "etop.vn/backend/pkg/integration/shipnow/ahamove/client"
+	"etop.vn/backend/pkg/integration/shipping/ghn"
+	"etop.vn/backend/pkg/integration/shipping/ghtk"
+	"etop.vn/backend/pkg/integration/shipping/vtpost"
 	"etop.vn/backend/pkg/integration/sms"
-	"etop.vn/backend/pkg/integration/vtpost"
 )
 
 const (

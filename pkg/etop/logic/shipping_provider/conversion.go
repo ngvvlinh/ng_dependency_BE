@@ -4,7 +4,7 @@ import (
 	"time"
 
 	"etop.vn/backend/pkg/etop/model"
-	vtpostclient "etop.vn/backend/pkg/integration/vtpost/client"
+	vtpostclient "etop.vn/backend/pkg/integration/shipping/vtpost/client"
 )
 
 func Convert_vtpost_ClientStates_To_model_ShippingSourceInternal(in *vtpostclient.ClientStates) *model.ShippingSourceInternal {

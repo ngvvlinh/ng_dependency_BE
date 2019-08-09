@@ -16,8 +16,8 @@ import (
 	cc "etop.vn/backend/pkg/common/config"
 	"etop.vn/backend/pkg/common/health"
 	"etop.vn/backend/pkg/common/telebot"
-	"etop.vn/backend/pkg/integration/ghn"
-	ghnsync "etop.vn/backend/pkg/integration/ghn/sync"
+	"etop.vn/backend/pkg/integration/shipping/ghn"
+	ghnsync "etop.vn/backend/pkg/integration/shipping/ghn/sync"
 	"etop.vn/common/l"
 )
 

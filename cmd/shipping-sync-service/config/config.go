@@ -3,8 +3,8 @@ package config
 import (
 	cm "etop.vn/backend/pkg/common"
 	cc "etop.vn/backend/pkg/common/config"
-	"etop.vn/backend/pkg/integration/ghn"
-	"etop.vn/backend/pkg/integration/ghtk"
+	"etop.vn/backend/pkg/integration/shipping/ghn"
+	"etop.vn/backend/pkg/integration/shipping/ghtk"
 	"etop.vn/common/l"
 )
 

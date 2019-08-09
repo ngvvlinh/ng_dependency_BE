@@ -13,8 +13,8 @@ import (
 
 	"etop.vn/backend/cmd/etop-server/config"
 	cc "etop.vn/backend/pkg/common/config"
-	"etop.vn/backend/pkg/integration/vtpost"
-	vtpostClient "etop.vn/backend/pkg/integration/vtpost/client"
+	"etop.vn/backend/pkg/integration/shipping/vtpost"
+	vtpostClient "etop.vn/backend/pkg/integration/shipping/vtpost/client"
 	"etop.vn/common/bus"
 	"etop.vn/common/l"
 )

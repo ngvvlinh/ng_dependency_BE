@@ -1,0 +1,10 @@
+rules:
+- selectorRegexp: "etop[.]vn"
+  allowedPrefixes:
+  - etop.vn/api
+  - etop.vn/backend/com
+  - etop.vn/backend/pb
+  - etop.vn/backend/wrapper
+  - etop.vn/backend/pkg
+  - etop.vn/capi
+  - etop.vn/common

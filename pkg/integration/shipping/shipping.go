@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	mdlocation "etop.vn/api/main/location"
+	"etop.vn/api/main/location"
 	"etop.vn/api/main/shipnow"
 	shipnowtypes "etop.vn/api/main/shipnow/types"
 	locationutil "etop.vn/backend/com/main/location/util"
@@ -40,14 +40,14 @@ func CalcPickTime(shippingProvider model.ShippingProvider, t time.Time) time.Tim
 	return res
 }
 
-func CalcServicesTime(shippingProvider model.ShippingProvider, fromDistrict *mdlocation.District, toDistrict *mdlocation.District, services []*model.AvailableShippingService) []*model.AvailableShippingService {
+func CalcServicesTime(shippingProvider model.ShippingProvider, fromDistrict *location.District, toDistrict *location.District, services []*model.AvailableShippingService) []*model.AvailableShippingService {
 	for _, service := range services {
 		service = CalcServiceTime(shippingProvider, fromDistrict, toDistrict, service)
 	}
 	return services
 }
 
-func CalcServiceTime(shippingProvider model.ShippingProvider, fromDistrict *mdlocation.District, toDistrict *mdlocation.District, service *model.AvailableShippingService) *model.AvailableShippingService {
+func CalcServiceTime(shippingProvider model.ShippingProvider, fromDistrict *location.District, toDistrict *location.District, service *model.AvailableShippingService) *model.AvailableShippingService {
 	// GHN, GHTK
 	// Thời gian lấy hàng dự kiến:
 	// Chỉ lấy vào chủ chủ nhật trường hợp nội thành HCM,HN.
@@ -92,7 +92,7 @@ func CalcServiceTime(shippingProvider model.ShippingProvider, fromDistrict *mdlo
 	return service
 }
 
-func CalcDeliveryTime(shippingProvider model.ShippingProvider, toDistrict *mdlocation.District, deliveryAt time.Time) time.Time {
+func CalcDeliveryTime(shippingProvider model.ShippingProvider, toDistrict *location.District, deliveryAt time.Time) time.Time {
 	// Thời gian giao hàng dự kiến của NVC nếu sau 19h => chuyển qua 12h ngày hôm sau
 	// Chủ nhật chỉ giao nội thành HCM, HN
 	// VTPOST: Chủ nhật ko giao

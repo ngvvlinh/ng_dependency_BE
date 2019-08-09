@@ -9,6 +9,9 @@ import (
 	"io/ioutil"
 	"net/http"
 
+	"etop.vn/backend/com/external/haravan/gateway/aggregate"
+	haravanserver "etop.vn/backend/com/external/haravan/gateway/server"
+	haravanidentity "etop.vn/backend/com/external/haravan/identity"
 	catalogquery "etop.vn/backend/com/main/catalog/query"
 	"etop.vn/backend/com/main/identity"
 	cm "etop.vn/backend/pkg/common"
@@ -16,9 +19,6 @@ import (
 	"etop.vn/backend/pkg/common/metrics"
 	orderS "etop.vn/backend/pkg/etop/logic/orders"
 	"etop.vn/backend/pkg/etop/logic/shipping_provider"
-	"etop.vn/backend/pkg/external/haravan/gateway"
-	haravanidentity "etop.vn/backend/pkg/external/haravan/identity"
-	haravangateway "etop.vn/backend/pkg/integration/haravan/gateway"
 	"etop.vn/common/l"
 )
 
@@ -26,11 +26,11 @@ func startServers() *http.Server {
 	identityQuery := identity.NewQueryService(db).MessageBus()
 	haravanIdentityQuery := haravanidentity.NewQueryService(db).MessageBus()
 	shippingManager := shipping_provider.NewCtrl(locationBus, ghnCarrier, ghtkCarrier, vtpostCarrier)
-	haravan := gateway.NewAggregate(db, shippingManager, locationBus, identityQuery).MessageBus()
+	haravan := aggregate.NewAggregate(db, shippingManager, locationBus, identityQuery).MessageBus()
 
 	catalogQueryService := catalogquery.New(db).MessageBus()
 	orderS.Init(shippingManager, catalogQueryService)
-	gateway := haravangateway.New(haravan, haravanIdentityQuery)
+	haravanServer := haravanserver.New(haravan, haravanIdentityQuery)
 
 	mux := http.NewServeMux()
 	rt := httpx.New()
@@ -41,10 +41,10 @@ func startServers() *http.Server {
 
 	buildRoute := haravanidentity.BuildGatewayRoute
 	rt.GET("/haravan/gateway/__test", test)
-	rt.POST(buildRoute(haravanidentity.PathGetShippingRates), gateway.GetShippingRates)
-	rt.POST(buildRoute(haravanidentity.PathCreateOrder), gateway.CreateOrder)
-	rt.POST(buildRoute(haravanidentity.PathGetOrder), gateway.GetOrder)
-	rt.DELETE(buildRoute(haravanidentity.PathCancelOrder), gateway.CancelOrder)
+	rt.POST(buildRoute(haravanidentity.PathGetShippingRates), haravanServer.GetShippingRates)
+	rt.POST(buildRoute(haravanidentity.PathCreateOrder), haravanServer.CreateOrder)
+	rt.POST(buildRoute(haravanidentity.PathGetOrder), haravanServer.GetOrder)
+	rt.DELETE(buildRoute(haravanidentity.PathCancelOrder), haravanServer.CancelOrder)
 
 	metrics.RegisterHTTPHandler(mux)
 	healthservice.RegisterHTTPHandler(mux)

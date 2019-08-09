@@ -8,12 +8,12 @@ import (
 	"syscall"
 	"time"
 
-	"etop.vn/backend/pkg/integration/ghtk"
-	"etop.vn/backend/pkg/integration/vtpost"
+	"etop.vn/backend/pkg/integration/shipping/ghtk"
+	"etop.vn/backend/pkg/integration/shipping/vtpost"
 
 	"etop.vn/api/main/location"
 
-	"etop.vn/backend/pkg/integration/ghn"
+	"etop.vn/backend/pkg/integration/shipping/ghn"
 
 	"etop.vn/backend/pkg/common/cmsql"
 	"etop.vn/backend/pkg/etop/sqlstore"

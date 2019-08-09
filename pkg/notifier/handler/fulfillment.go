@@ -11,7 +11,7 @@ import (
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/mq"
 	"etop.vn/backend/pkg/etop/model"
-	ghtkclient "etop.vn/backend/pkg/integration/ghtk/client"
+	ghtkclient "etop.vn/backend/pkg/integration/shipping/ghtk/client"
 	notifiermodel "etop.vn/backend/pkg/notifier/model"
 	"etop.vn/backend/pkg/pgevent"
 	"etop.vn/common/l"
