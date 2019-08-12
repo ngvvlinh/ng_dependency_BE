@@ -8,19 +8,19 @@ import (
 )
 
 type Aggregate interface {
-	CreateShipnowFulfillment(ctx context.Context, cmd *CreateShipnowFulfillmentArgs) (*ShipnowFulfillment, error)
+	CreateShipnowFulfillment(context.Context, *CreateShipnowFulfillmentArgs) (*ShipnowFulfillment, error)
 
-	ConfirmShipnowFulfillment(ctx context.Context, cmd *ConfirmShipnowFulfillmentArgs) (*ShipnowFulfillment, error)
+	ConfirmShipnowFulfillment(context.Context, *ConfirmShipnowFulfillmentArgs) (*ShipnowFulfillment, error)
 
-	CancelShipnowFulfillment(ctx context.Context, cmd *CancelShipnowFulfillmentArgs) (*meta.Empty, error)
+	CancelShipnowFulfillment(context.Context, *CancelShipnowFulfillmentArgs) (*meta.Empty, error)
 
-	UpdateShipnowFulfillment(ctx context.Context, cmd *UpdateShipnowFulfillmentArgs) (*ShipnowFulfillment, error)
+	UpdateShipnowFulfillment(context.Context, *UpdateShipnowFulfillmentArgs) (*ShipnowFulfillment, error)
 
-	UpdateShipnowFulfillmentCarrierInfo(ctx context.Context, cmd *UpdateShipnowFulfillmentCarrierInfoArgs) (*ShipnowFulfillment, error)
+	UpdateShipnowFulfillmentCarrierInfo(context.Context, *UpdateShipnowFulfillmentCarrierInfoArgs) (*ShipnowFulfillment, error)
 
-	UpdateShipnowFulfillmentState(ctx context.Context, cmd *UpdateShipnowFulfillmentStateArgs) (*ShipnowFulfillment, error)
+	UpdateShipnowFulfillmentState(context.Context, *UpdateShipnowFulfillmentStateArgs) (*ShipnowFulfillment, error)
 
-	GetShipnowServices(ctx context.Context, cmd *GetShipnowServicesArgs) (*GetShipnowServicesResult, error)
+	GetShipnowServices(context.Context, *GetShipnowServicesArgs) (*GetShipnowServicesResult, error)
 }
 
 type QueryService interface {

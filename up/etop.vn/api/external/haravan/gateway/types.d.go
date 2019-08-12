@@ -87,42 +87,49 @@ func (q *GetShippingRateCommand) command() {}
 
 // implement conversion
 
-func (q *CancelOrderCommand) GetArgs() *CancelOrderRequestArgs {
-	return &CancelOrderRequestArgs{
-		EtopShopID:     q.EtopShopID,
-		TrackingNumber: q.TrackingNumber,
-	}
+func (q *CancelOrderCommand) GetArgs(ctx context.Context) (_ context.Context, _ *CancelOrderRequestArgs) {
+	return ctx,
+		&CancelOrderRequestArgs{
+			EtopShopID:     q.EtopShopID,
+			TrackingNumber: q.TrackingNumber,
+		}
 }
-func (q *CreateOrderCommand) GetArgs() *CreateOrderRequestArgs {
-	return &CreateOrderRequestArgs{
-		EtopShopID:            q.EtopShopID,
-		Origin:                q.Origin,
-		Destination:           q.Destination,
-		Items:                 q.Items,
-		CodAmount:             q.CodAmount,
-		TotalGrams:            q.TotalGrams,
-		ExternalStoreID:       q.ExternalStoreID,
-		ExternalOrderID:       q.ExternalOrderID,
-		ExternalFulfillmentID: q.ExternalFulfillmentID,
-		ExternalCode:          q.ExternalCode,
-		Note:                  q.Note,
-		ShippingRateID:        q.ShippingRateID,
-	}
+
+func (q *CreateOrderCommand) GetArgs(ctx context.Context) (_ context.Context, _ *CreateOrderRequestArgs) {
+	return ctx,
+		&CreateOrderRequestArgs{
+			EtopShopID:            q.EtopShopID,
+			Origin:                q.Origin,
+			Destination:           q.Destination,
+			Items:                 q.Items,
+			CodAmount:             q.CodAmount,
+			TotalGrams:            q.TotalGrams,
+			ExternalStoreID:       q.ExternalStoreID,
+			ExternalOrderID:       q.ExternalOrderID,
+			ExternalFulfillmentID: q.ExternalFulfillmentID,
+			ExternalCode:          q.ExternalCode,
+			Note:                  q.Note,
+			ShippingRateID:        q.ShippingRateID,
+		}
 }
-func (q *GetOrderCommand) GetArgs() *GetOrderRequestArgs {
-	return &GetOrderRequestArgs{
-		EtopShopID:     q.EtopShopID,
-		TrackingNumber: q.TrackingNumber,
-	}
+
+func (q *GetOrderCommand) GetArgs(ctx context.Context) (_ context.Context, _ *GetOrderRequestArgs) {
+	return ctx,
+		&GetOrderRequestArgs{
+			EtopShopID:     q.EtopShopID,
+			TrackingNumber: q.TrackingNumber,
+		}
 }
-func (q *GetShippingRateCommand) GetArgs() *GetShippingRateRequestArgs {
-	return &GetShippingRateRequestArgs{
-		EtopShopID:  q.EtopShopID,
-		Origin:      q.Origin,
-		Destination: q.Destination,
-		CodAmount:   q.CodAmount,
-		TotalGrams:  q.TotalGrams,
-	}
+
+func (q *GetShippingRateCommand) GetArgs(ctx context.Context) (_ context.Context, _ *GetShippingRateRequestArgs) {
+	return ctx,
+		&GetShippingRateRequestArgs{
+			EtopShopID:  q.EtopShopID,
+			Origin:      q.Origin,
+			Destination: q.Destination,
+			CodAmount:   q.CodAmount,
+			TotalGrams:  q.TotalGrams,
+		}
 }
 
 // implement dispatching
@@ -144,26 +151,26 @@ func (h AggregateHandler) RegisterHandlers(b interface {
 	return CommandBus{b}
 }
 
-func (h AggregateHandler) HandleCancelOrder(ctx context.Context, cmd *CancelOrderCommand) error {
-	result, err := h.inner.CancelOrder(ctx, cmd.GetArgs())
-	cmd.Result = result
+func (h AggregateHandler) HandleCancelOrder(ctx context.Context, msg *CancelOrderCommand) error {
+	result, err := h.inner.CancelOrder(msg.GetArgs(ctx))
+	msg.Result = result
 	return err
 }
 
-func (h AggregateHandler) HandleCreateOrder(ctx context.Context, cmd *CreateOrderCommand) error {
-	result, err := h.inner.CreateOrder(ctx, cmd.GetArgs())
-	cmd.Result = result
+func (h AggregateHandler) HandleCreateOrder(ctx context.Context, msg *CreateOrderCommand) error {
+	result, err := h.inner.CreateOrder(msg.GetArgs(ctx))
+	msg.Result = result
 	return err
 }
 
-func (h AggregateHandler) HandleGetOrder(ctx context.Context, cmd *GetOrderCommand) error {
-	result, err := h.inner.GetOrder(ctx, cmd.GetArgs())
-	cmd.Result = result
+func (h AggregateHandler) HandleGetOrder(ctx context.Context, msg *GetOrderCommand) error {
+	result, err := h.inner.GetOrder(msg.GetArgs(ctx))
+	msg.Result = result
 	return err
 }
 
-func (h AggregateHandler) HandleGetShippingRate(ctx context.Context, cmd *GetShippingRateCommand) error {
-	result, err := h.inner.GetShippingRate(ctx, cmd.GetArgs())
-	cmd.Result = result
+func (h AggregateHandler) HandleGetShippingRate(ctx context.Context, msg *GetShippingRateCommand) error {
+	result, err := h.inner.GetShippingRate(msg.GetArgs(ctx))
+	msg.Result = result
 	return err
 }

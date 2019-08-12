@@ -7,13 +7,13 @@ import (
 )
 
 type Aggregate interface {
-	CreateExternalAccountHaravan(ctx context.Context, args *CreateExternalAccountHaravanArgs) (*ExternalAccountHaravan, error)
+	CreateExternalAccountHaravan(context.Context, *CreateExternalAccountHaravanArgs) (*ExternalAccountHaravan, error)
 
-	UpdateExternalAccountHaravanToken(ctx context.Context, args *UpdateExternalAccountHaravanTokenArgs) (*ExternalAccountHaravan, error)
+	UpdateExternalAccountHaravanToken(context.Context, *UpdateExternalAccountHaravanTokenArgs) (*ExternalAccountHaravan, error)
 
-	ConnectCarrierServiceExternalAccountHaravan(ctx context.Context, args *ConnectCarrierServiceExternalAccountHaravanArgs) (*meta.Empty, error)
+	ConnectCarrierServiceExternalAccountHaravan(context.Context, *ConnectCarrierServiceExternalAccountHaravanArgs) (*meta.Empty, error)
 
-	DeleteConnectedCarrierServiceExternalAccountHaravan(ctx context.Context, args *DeleteConnectedCarrierServiceExternalAccountHaravanArgs) (*meta.Empty, error)
+	DeleteConnectedCarrierServiceExternalAccountHaravan(context.Context, *DeleteConnectedCarrierServiceExternalAccountHaravanArgs) (*meta.Empty, error)
 }
 
 type QueryService interface {

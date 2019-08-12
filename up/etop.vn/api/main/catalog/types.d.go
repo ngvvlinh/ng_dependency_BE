@@ -40,28 +40,28 @@ func (c QueryBus) DispatchAll(ctx context.Context, msgs ...Query) error {
 }
 
 type CreateShopProductCommand struct {
-	ShopID    int64
-	Code      string
-	Name      string
-	Unit      string
-	ImageURLs []string
-	Note      string
-	DescriptionInfo
-	PriceInfo
+	ShopID          int64
+	Code            string
+	Name            string
+	Unit            string
+	ImageURLs       []string
+	Note            string
+	DescriptionInfo DescriptionInfo
+	PriceInfo       PriceInfo
 
 	Result *ShopProduct `json:"-"`
 }
 
 type CreateShopVariantCommand struct {
-	ShopID     int64
-	ProductID  int64
-	Code       string
-	Name       string
-	ImageURLs  []string
-	Note       string
-	Attributes types.Attributes
-	DescriptionInfo
-	PriceInfo
+	ShopID          int64
+	ProductID       int64
+	Code            string
+	Name            string
+	ImageURLs       []string
+	Note            string
+	Attributes      types.Attributes
+	DescriptionInfo DescriptionInfo
+	PriceInfo       PriceInfo
 
 	Result *ShopVariant `json:"-"`
 }
@@ -89,13 +89,13 @@ type UpdateShopProductImagesCommand struct {
 }
 
 type UpdateShopProductInfoCommand struct {
-	ShopID    int64
-	ProductID int64
-	Code      *string
-	Name      *string
-	Unit      *string
-	Note      *string
-	*DescriptionInfo
+	ShopID          int64
+	ProductID       int64
+	Code            *string
+	Name            *string
+	Unit            *string
+	Note            *string
+	DescriptionInfo *DescriptionInfo
 
 	Result *ShopProduct `json:"-"`
 }
@@ -117,13 +117,13 @@ type UpdateShopVariantImagesCommand struct {
 }
 
 type UpdateShopVariantInfoCommand struct {
-	ShopID    int64
-	VariantID int64
-	Code      *string
-	Name      *string
-	Unit      *string
-	Note      *string
-	*DescriptionInfo
+	ShopID          int64
+	VariantID       int64
+	Code            *string
+	Name            *string
+	Unit            *string
+	Note            *string
+	DescriptionInfo *DescriptionInfo
 
 	Result *ShopVariant `json:"-"`
 }
@@ -242,161 +242,202 @@ func (q *ListShopVariantsWithProductByIDsQuery) query()  {}
 
 // implement conversion
 
-func (q *CreateShopProductCommand) GetArgs() *CreateShopProductArgs {
-	return &CreateShopProductArgs{
-		ShopID:          q.ShopID,
-		Code:            q.Code,
-		Name:            q.Name,
-		Unit:            q.Unit,
-		ImageURLs:       q.ImageURLs,
-		Note:            q.Note,
-		DescriptionInfo: q.DescriptionInfo,
-		PriceInfo:       q.PriceInfo,
-	}
+func (q *CreateShopProductCommand) GetArgs(ctx context.Context) (_ context.Context, _ *CreateShopProductArgs) {
+	return ctx,
+		&CreateShopProductArgs{
+			ShopID:          q.ShopID,
+			Code:            q.Code,
+			Name:            q.Name,
+			Unit:            q.Unit,
+			ImageURLs:       q.ImageURLs,
+			Note:            q.Note,
+			DescriptionInfo: q.DescriptionInfo,
+			PriceInfo:       q.PriceInfo,
+		}
 }
-func (q *CreateShopVariantCommand) GetArgs() *CreateShopVariantArgs {
-	return &CreateShopVariantArgs{
-		ShopID:          q.ShopID,
-		ProductID:       q.ProductID,
-		Code:            q.Code,
-		Name:            q.Name,
-		ImageURLs:       q.ImageURLs,
-		Note:            q.Note,
-		Attributes:      q.Attributes,
-		DescriptionInfo: q.DescriptionInfo,
-		PriceInfo:       q.PriceInfo,
-	}
+
+func (q *CreateShopVariantCommand) GetArgs(ctx context.Context) (_ context.Context, _ *CreateShopVariantArgs) {
+	return ctx,
+		&CreateShopVariantArgs{
+			ShopID:          q.ShopID,
+			ProductID:       q.ProductID,
+			Code:            q.Code,
+			Name:            q.Name,
+			ImageURLs:       q.ImageURLs,
+			Note:            q.Note,
+			Attributes:      q.Attributes,
+			DescriptionInfo: q.DescriptionInfo,
+			PriceInfo:       q.PriceInfo,
+		}
 }
-func (q *DeleteShopProductsCommand) GetArgs() *shopping.IDsQueryShopArgs {
-	return &shopping.IDsQueryShopArgs{
-		IDs:    q.IDs,
-		ShopID: q.ShopID,
-	}
+
+func (q *DeleteShopProductsCommand) GetArgs(ctx context.Context) (_ context.Context, _ *shopping.IDsQueryShopArgs) {
+	return ctx,
+		&shopping.IDsQueryShopArgs{
+			IDs:    q.IDs,
+			ShopID: q.ShopID,
+		}
 }
-func (q *DeleteShopVariantsCommand) GetArgs() *shopping.IDsQueryShopArgs {
-	return &shopping.IDsQueryShopArgs{
-		IDs:    q.IDs,
-		ShopID: q.ShopID,
-	}
+
+func (q *DeleteShopVariantsCommand) GetArgs(ctx context.Context) (_ context.Context, _ *shopping.IDsQueryShopArgs) {
+	return ctx,
+		&shopping.IDsQueryShopArgs{
+			IDs:    q.IDs,
+			ShopID: q.ShopID,
+		}
 }
-func (q *UpdateShopProductImagesCommand) GetArgs() *UpdateImagesArgs {
-	return &UpdateImagesArgs{
-		ID:      q.ID,
-		ShopID:  q.ShopID,
-		Updates: q.Updates,
-	}
+
+func (q *UpdateShopProductImagesCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateImagesArgs) {
+	return ctx,
+		&UpdateImagesArgs{
+			ID:      q.ID,
+			ShopID:  q.ShopID,
+			Updates: q.Updates,
+		}
 }
-func (q *UpdateShopProductInfoCommand) GetArgs() *UpdateShopProductInfoArgs {
-	return &UpdateShopProductInfoArgs{
-		ShopID:          q.ShopID,
-		ProductID:       q.ProductID,
-		Code:            q.Code,
-		Name:            q.Name,
-		Unit:            q.Unit,
-		Note:            q.Note,
-		DescriptionInfo: q.DescriptionInfo,
-	}
+
+func (q *UpdateShopProductInfoCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateShopProductInfoArgs) {
+	return ctx,
+		&UpdateShopProductInfoArgs{
+			ShopID:          q.ShopID,
+			ProductID:       q.ProductID,
+			Code:            q.Code,
+			Name:            q.Name,
+			Unit:            q.Unit,
+			Note:            q.Note,
+			DescriptionInfo: q.DescriptionInfo,
+		}
 }
-func (q *UpdateShopProductStatusCommand) GetArgs() *UpdateStatusArgs {
-	return &UpdateStatusArgs{
-		IDs:    q.IDs,
-		ShopID: q.ShopID,
-		Status: q.Status,
-	}
+
+func (q *UpdateShopProductStatusCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateStatusArgs) {
+	return ctx,
+		&UpdateStatusArgs{
+			IDs:    q.IDs,
+			ShopID: q.ShopID,
+			Status: q.Status,
+		}
 }
-func (q *UpdateShopVariantImagesCommand) GetArgs() *UpdateImagesArgs {
-	return &UpdateImagesArgs{
-		ID:      q.ID,
-		ShopID:  q.ShopID,
-		Updates: q.Updates,
-	}
+
+func (q *UpdateShopVariantImagesCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateImagesArgs) {
+	return ctx,
+		&UpdateImagesArgs{
+			ID:      q.ID,
+			ShopID:  q.ShopID,
+			Updates: q.Updates,
+		}
 }
-func (q *UpdateShopVariantInfoCommand) GetArgs() *UpdateShopVariantInfoArgs {
-	return &UpdateShopVariantInfoArgs{
-		ShopID:          q.ShopID,
-		VariantID:       q.VariantID,
-		Code:            q.Code,
-		Name:            q.Name,
-		Unit:            q.Unit,
-		Note:            q.Note,
-		DescriptionInfo: q.DescriptionInfo,
-	}
+
+func (q *UpdateShopVariantInfoCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateShopVariantInfoArgs) {
+	return ctx,
+		&UpdateShopVariantInfoArgs{
+			ShopID:          q.ShopID,
+			VariantID:       q.VariantID,
+			Code:            q.Code,
+			Name:            q.Name,
+			Unit:            q.Unit,
+			Note:            q.Note,
+			DescriptionInfo: q.DescriptionInfo,
+		}
 }
-func (q *UpdateShopVariantStatusCommand) GetArgs() *UpdateStatusArgs {
-	return &UpdateStatusArgs{
-		IDs:    q.IDs,
-		ShopID: q.ShopID,
-		Status: q.Status,
-	}
+
+func (q *UpdateShopVariantStatusCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateStatusArgs) {
+	return ctx,
+		&UpdateStatusArgs{
+			IDs:    q.IDs,
+			ShopID: q.ShopID,
+			Status: q.Status,
+		}
 }
-func (q *GetShopProductByIDQuery) GetArgs() *GetShopProductByIDQueryArgs {
-	return &GetShopProductByIDQueryArgs{
-		ProductID: q.ProductID,
-		ShopID:    q.ShopID,
-	}
+
+func (q *GetShopProductByIDQuery) GetArgs(ctx context.Context) (_ context.Context, _ *GetShopProductByIDQueryArgs) {
+	return ctx,
+		&GetShopProductByIDQueryArgs{
+			ProductID: q.ProductID,
+			ShopID:    q.ShopID,
+		}
 }
-func (q *GetShopProductWithVariantsByIDQuery) GetArgs() *GetShopProductByIDQueryArgs {
-	return &GetShopProductByIDQueryArgs{
-		ProductID: q.ProductID,
-		ShopID:    q.ShopID,
-	}
+
+func (q *GetShopProductWithVariantsByIDQuery) GetArgs(ctx context.Context) (_ context.Context, _ *GetShopProductByIDQueryArgs) {
+	return ctx,
+		&GetShopProductByIDQueryArgs{
+			ProductID: q.ProductID,
+			ShopID:    q.ShopID,
+		}
 }
-func (q *GetShopVariantByIDQuery) GetArgs() *GetShopVariantByIDQueryArgs {
-	return &GetShopVariantByIDQueryArgs{
-		VariantID: q.VariantID,
-		ShopID:    q.ShopID,
-	}
+
+func (q *GetShopVariantByIDQuery) GetArgs(ctx context.Context) (_ context.Context, _ *GetShopVariantByIDQueryArgs) {
+	return ctx,
+		&GetShopVariantByIDQueryArgs{
+			VariantID: q.VariantID,
+			ShopID:    q.ShopID,
+		}
 }
-func (q *GetShopVariantWithProductByIDQuery) GetArgs() *GetShopVariantByIDQueryArgs {
-	return &GetShopVariantByIDQueryArgs{
-		VariantID: q.VariantID,
-		ShopID:    q.ShopID,
-	}
+
+func (q *GetShopVariantWithProductByIDQuery) GetArgs(ctx context.Context) (_ context.Context, _ *GetShopVariantByIDQueryArgs) {
+	return ctx,
+		&GetShopVariantByIDQueryArgs{
+			VariantID: q.VariantID,
+			ShopID:    q.ShopID,
+		}
 }
-func (q *ListShopProductsQuery) GetArgs() *shopping.ListQueryShopArgs {
-	return &shopping.ListQueryShopArgs{
-		ShopID:  q.ShopID,
-		Paging:  q.Paging,
-		Filters: q.Filters,
-	}
+
+func (q *ListShopProductsQuery) GetArgs(ctx context.Context) (_ context.Context, _ *shopping.ListQueryShopArgs) {
+	return ctx,
+		&shopping.ListQueryShopArgs{
+			ShopID:  q.ShopID,
+			Paging:  q.Paging,
+			Filters: q.Filters,
+		}
 }
-func (q *ListShopProductsByIDsQuery) GetArgs() *shopping.IDsQueryShopArgs {
-	return &shopping.IDsQueryShopArgs{
-		IDs:    q.IDs,
-		ShopID: q.ShopID,
-	}
+
+func (q *ListShopProductsByIDsQuery) GetArgs(ctx context.Context) (_ context.Context, _ *shopping.IDsQueryShopArgs) {
+	return ctx,
+		&shopping.IDsQueryShopArgs{
+			IDs:    q.IDs,
+			ShopID: q.ShopID,
+		}
 }
-func (q *ListShopProductsWithVariantsQuery) GetArgs() *shopping.ListQueryShopArgs {
-	return &shopping.ListQueryShopArgs{
-		ShopID:  q.ShopID,
-		Paging:  q.Paging,
-		Filters: q.Filters,
-	}
+
+func (q *ListShopProductsWithVariantsQuery) GetArgs(ctx context.Context) (_ context.Context, _ *shopping.ListQueryShopArgs) {
+	return ctx,
+		&shopping.ListQueryShopArgs{
+			ShopID:  q.ShopID,
+			Paging:  q.Paging,
+			Filters: q.Filters,
+		}
 }
-func (q *ListShopProductsWithVariantsByIDsQuery) GetArgs() *shopping.IDsQueryShopArgs {
-	return &shopping.IDsQueryShopArgs{
-		IDs:    q.IDs,
-		ShopID: q.ShopID,
-	}
+
+func (q *ListShopProductsWithVariantsByIDsQuery) GetArgs(ctx context.Context) (_ context.Context, _ *shopping.IDsQueryShopArgs) {
+	return ctx,
+		&shopping.IDsQueryShopArgs{
+			IDs:    q.IDs,
+			ShopID: q.ShopID,
+		}
 }
-func (q *ListShopVariantsQuery) GetArgs() *shopping.ListQueryShopArgs {
-	return &shopping.ListQueryShopArgs{
-		ShopID:  q.ShopID,
-		Paging:  q.Paging,
-		Filters: q.Filters,
-	}
+
+func (q *ListShopVariantsQuery) GetArgs(ctx context.Context) (_ context.Context, _ *shopping.ListQueryShopArgs) {
+	return ctx,
+		&shopping.ListQueryShopArgs{
+			ShopID:  q.ShopID,
+			Paging:  q.Paging,
+			Filters: q.Filters,
+		}
 }
-func (q *ListShopVariantsByIDsQuery) GetArgs() *shopping.IDsQueryShopArgs {
-	return &shopping.IDsQueryShopArgs{
-		IDs:    q.IDs,
-		ShopID: q.ShopID,
-	}
+
+func (q *ListShopVariantsByIDsQuery) GetArgs(ctx context.Context) (_ context.Context, _ *shopping.IDsQueryShopArgs) {
+	return ctx,
+		&shopping.IDsQueryShopArgs{
+			IDs:    q.IDs,
+			ShopID: q.ShopID,
+		}
 }
-func (q *ListShopVariantsWithProductByIDsQuery) GetArgs() *shopping.IDsQueryShopArgs {
-	return &shopping.IDsQueryShopArgs{
-		IDs:    q.IDs,
-		ShopID: q.ShopID,
-	}
+
+func (q *ListShopVariantsWithProductByIDsQuery) GetArgs(ctx context.Context) (_ context.Context, _ *shopping.IDsQueryShopArgs) {
+	return ctx,
+		&shopping.IDsQueryShopArgs{
+			IDs:    q.IDs,
+			ShopID: q.ShopID,
+		}
 }
 
 // implement dispatching
@@ -424,63 +465,63 @@ func (h AggregateHandler) RegisterHandlers(b interface {
 	return CommandBus{b}
 }
 
-func (h AggregateHandler) HandleCreateShopProduct(ctx context.Context, cmd *CreateShopProductCommand) error {
-	result, err := h.inner.CreateShopProduct(ctx, cmd.GetArgs())
-	cmd.Result = result
+func (h AggregateHandler) HandleCreateShopProduct(ctx context.Context, msg *CreateShopProductCommand) error {
+	result, err := h.inner.CreateShopProduct(msg.GetArgs(ctx))
+	msg.Result = result
 	return err
 }
 
-func (h AggregateHandler) HandleCreateShopVariant(ctx context.Context, cmd *CreateShopVariantCommand) error {
-	result, err := h.inner.CreateShopVariant(ctx, cmd.GetArgs())
-	cmd.Result = result
+func (h AggregateHandler) HandleCreateShopVariant(ctx context.Context, msg *CreateShopVariantCommand) error {
+	result, err := h.inner.CreateShopVariant(msg.GetArgs(ctx))
+	msg.Result = result
 	return err
 }
 
-func (h AggregateHandler) HandleDeleteShopProducts(ctx context.Context, cmd *DeleteShopProductsCommand) error {
-	result, err := h.inner.DeleteShopProducts(ctx, cmd.GetArgs())
-	cmd.Result = result
+func (h AggregateHandler) HandleDeleteShopProducts(ctx context.Context, msg *DeleteShopProductsCommand) error {
+	result, err := h.inner.DeleteShopProducts(msg.GetArgs(ctx))
+	msg.Result = result
 	return err
 }
 
-func (h AggregateHandler) HandleDeleteShopVariants(ctx context.Context, cmd *DeleteShopVariantsCommand) error {
-	result, err := h.inner.DeleteShopVariants(ctx, cmd.GetArgs())
-	cmd.Result = result
+func (h AggregateHandler) HandleDeleteShopVariants(ctx context.Context, msg *DeleteShopVariantsCommand) error {
+	result, err := h.inner.DeleteShopVariants(msg.GetArgs(ctx))
+	msg.Result = result
 	return err
 }
 
-func (h AggregateHandler) HandleUpdateShopProductImages(ctx context.Context, cmd *UpdateShopProductImagesCommand) error {
-	result, err := h.inner.UpdateShopProductImages(ctx, cmd.GetArgs())
-	cmd.Result = result
+func (h AggregateHandler) HandleUpdateShopProductImages(ctx context.Context, msg *UpdateShopProductImagesCommand) error {
+	result, err := h.inner.UpdateShopProductImages(msg.GetArgs(ctx))
+	msg.Result = result
 	return err
 }
 
-func (h AggregateHandler) HandleUpdateShopProductInfo(ctx context.Context, cmd *UpdateShopProductInfoCommand) error {
-	result, err := h.inner.UpdateShopProductInfo(ctx, cmd.GetArgs())
-	cmd.Result = result
+func (h AggregateHandler) HandleUpdateShopProductInfo(ctx context.Context, msg *UpdateShopProductInfoCommand) error {
+	result, err := h.inner.UpdateShopProductInfo(msg.GetArgs(ctx))
+	msg.Result = result
 	return err
 }
 
-func (h AggregateHandler) HandleUpdateShopProductStatus(ctx context.Context, cmd *UpdateShopProductStatusCommand) error {
-	result, err := h.inner.UpdateShopProductStatus(ctx, cmd.GetArgs())
-	cmd.Result = result
+func (h AggregateHandler) HandleUpdateShopProductStatus(ctx context.Context, msg *UpdateShopProductStatusCommand) error {
+	result, err := h.inner.UpdateShopProductStatus(msg.GetArgs(ctx))
+	msg.Result = result
 	return err
 }
 
-func (h AggregateHandler) HandleUpdateShopVariantImages(ctx context.Context, cmd *UpdateShopVariantImagesCommand) error {
-	result, err := h.inner.UpdateShopVariantImages(ctx, cmd.GetArgs())
-	cmd.Result = result
+func (h AggregateHandler) HandleUpdateShopVariantImages(ctx context.Context, msg *UpdateShopVariantImagesCommand) error {
+	result, err := h.inner.UpdateShopVariantImages(msg.GetArgs(ctx))
+	msg.Result = result
 	return err
 }
 
-func (h AggregateHandler) HandleUpdateShopVariantInfo(ctx context.Context, cmd *UpdateShopVariantInfoCommand) error {
-	result, err := h.inner.UpdateShopVariantInfo(ctx, cmd.GetArgs())
-	cmd.Result = result
+func (h AggregateHandler) HandleUpdateShopVariantInfo(ctx context.Context, msg *UpdateShopVariantInfoCommand) error {
+	result, err := h.inner.UpdateShopVariantInfo(msg.GetArgs(ctx))
+	msg.Result = result
 	return err
 }
 
-func (h AggregateHandler) HandleUpdateShopVariantStatus(ctx context.Context, cmd *UpdateShopVariantStatusCommand) error {
-	result, err := h.inner.UpdateShopVariantStatus(ctx, cmd.GetArgs())
-	cmd.Result = result
+func (h AggregateHandler) HandleUpdateShopVariantStatus(ctx context.Context, msg *UpdateShopVariantStatusCommand) error {
+	result, err := h.inner.UpdateShopVariantStatus(msg.GetArgs(ctx))
+	msg.Result = result
 	return err
 }
 
@@ -510,68 +551,68 @@ func (h QueryServiceHandler) RegisterHandlers(b interface {
 	return QueryBus{b}
 }
 
-func (h QueryServiceHandler) HandleGetShopProductByID(ctx context.Context, query *GetShopProductByIDQuery) error {
-	result, err := h.inner.GetShopProductByID(ctx, query.GetArgs())
-	query.Result = result
+func (h QueryServiceHandler) HandleGetShopProductByID(ctx context.Context, msg *GetShopProductByIDQuery) error {
+	result, err := h.inner.GetShopProductByID(msg.GetArgs(ctx))
+	msg.Result = result
 	return err
 }
 
-func (h QueryServiceHandler) HandleGetShopProductWithVariantsByID(ctx context.Context, query *GetShopProductWithVariantsByIDQuery) error {
-	result, err := h.inner.GetShopProductWithVariantsByID(ctx, query.GetArgs())
-	query.Result = result
+func (h QueryServiceHandler) HandleGetShopProductWithVariantsByID(ctx context.Context, msg *GetShopProductWithVariantsByIDQuery) error {
+	result, err := h.inner.GetShopProductWithVariantsByID(msg.GetArgs(ctx))
+	msg.Result = result
 	return err
 }
 
-func (h QueryServiceHandler) HandleGetShopVariantByID(ctx context.Context, query *GetShopVariantByIDQuery) error {
-	result, err := h.inner.GetShopVariantByID(ctx, query.GetArgs())
-	query.Result = result
+func (h QueryServiceHandler) HandleGetShopVariantByID(ctx context.Context, msg *GetShopVariantByIDQuery) error {
+	result, err := h.inner.GetShopVariantByID(msg.GetArgs(ctx))
+	msg.Result = result
 	return err
 }
 
-func (h QueryServiceHandler) HandleGetShopVariantWithProductByID(ctx context.Context, query *GetShopVariantWithProductByIDQuery) error {
-	result, err := h.inner.GetShopVariantWithProductByID(ctx, query.GetArgs())
-	query.Result = result
+func (h QueryServiceHandler) HandleGetShopVariantWithProductByID(ctx context.Context, msg *GetShopVariantWithProductByIDQuery) error {
+	result, err := h.inner.GetShopVariantWithProductByID(msg.GetArgs(ctx))
+	msg.Result = result
 	return err
 }
 
-func (h QueryServiceHandler) HandleListShopProducts(ctx context.Context, query *ListShopProductsQuery) error {
-	result, err := h.inner.ListShopProducts(ctx, query.GetArgs())
-	query.Result = result
+func (h QueryServiceHandler) HandleListShopProducts(ctx context.Context, msg *ListShopProductsQuery) error {
+	result, err := h.inner.ListShopProducts(msg.GetArgs(ctx))
+	msg.Result = result
 	return err
 }
 
-func (h QueryServiceHandler) HandleListShopProductsByIDs(ctx context.Context, query *ListShopProductsByIDsQuery) error {
-	result, err := h.inner.ListShopProductsByIDs(ctx, query.GetArgs())
-	query.Result = result
+func (h QueryServiceHandler) HandleListShopProductsByIDs(ctx context.Context, msg *ListShopProductsByIDsQuery) error {
+	result, err := h.inner.ListShopProductsByIDs(msg.GetArgs(ctx))
+	msg.Result = result
 	return err
 }
 
-func (h QueryServiceHandler) HandleListShopProductsWithVariants(ctx context.Context, query *ListShopProductsWithVariantsQuery) error {
-	result, err := h.inner.ListShopProductsWithVariants(ctx, query.GetArgs())
-	query.Result = result
+func (h QueryServiceHandler) HandleListShopProductsWithVariants(ctx context.Context, msg *ListShopProductsWithVariantsQuery) error {
+	result, err := h.inner.ListShopProductsWithVariants(msg.GetArgs(ctx))
+	msg.Result = result
 	return err
 }
 
-func (h QueryServiceHandler) HandleListShopProductsWithVariantsByIDs(ctx context.Context, query *ListShopProductsWithVariantsByIDsQuery) error {
-	result, err := h.inner.ListShopProductsWithVariantsByIDs(ctx, query.GetArgs())
-	query.Result = result
+func (h QueryServiceHandler) HandleListShopProductsWithVariantsByIDs(ctx context.Context, msg *ListShopProductsWithVariantsByIDsQuery) error {
+	result, err := h.inner.ListShopProductsWithVariantsByIDs(msg.GetArgs(ctx))
+	msg.Result = result
 	return err
 }
 
-func (h QueryServiceHandler) HandleListShopVariants(ctx context.Context, query *ListShopVariantsQuery) error {
-	result, err := h.inner.ListShopVariants(ctx, query.GetArgs())
-	query.Result = result
+func (h QueryServiceHandler) HandleListShopVariants(ctx context.Context, msg *ListShopVariantsQuery) error {
+	result, err := h.inner.ListShopVariants(msg.GetArgs(ctx))
+	msg.Result = result
 	return err
 }
 
-func (h QueryServiceHandler) HandleListShopVariantsByIDs(ctx context.Context, query *ListShopVariantsByIDsQuery) error {
-	result, err := h.inner.ListShopVariantsByIDs(ctx, query.GetArgs())
-	query.Result = result
+func (h QueryServiceHandler) HandleListShopVariantsByIDs(ctx context.Context, msg *ListShopVariantsByIDsQuery) error {
+	result, err := h.inner.ListShopVariantsByIDs(msg.GetArgs(ctx))
+	msg.Result = result
 	return err
 }
 
-func (h QueryServiceHandler) HandleListShopVariantsWithProductByIDs(ctx context.Context, query *ListShopVariantsWithProductByIDsQuery) error {
-	result, err := h.inner.ListShopVariantsWithProductByIDs(ctx, query.GetArgs())
-	query.Result = result
+func (h QueryServiceHandler) HandleListShopVariantsWithProductByIDs(ctx context.Context, msg *ListShopVariantsWithProductByIDsQuery) error {
+	result, err := h.inner.ListShopVariantsWithProductByIDs(msg.GetArgs(ctx))
+	msg.Result = result
 	return err
 }

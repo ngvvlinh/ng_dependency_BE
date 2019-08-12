@@ -4,6 +4,14 @@
 package shop
 
 import (
+	fmt "fmt"
+	math "math"
+
+	_ "github.com/gogo/protobuf/gogoproto"
+	proto "github.com/golang/protobuf/proto"
+	timestamp "github.com/golang/protobuf/ptypes/timestamp"
+	_ "github.com/grpc-ecosystem/grpc-gateway/protoc-gen-swagger/options"
+
 	common "etop.vn/backend/pb/common"
 	spreadsheet "etop.vn/backend/pb/common/spreadsheet"
 	etop "etop.vn/backend/pb/etop"
@@ -13,12 +21,6 @@ import (
 	status4 "etop.vn/backend/pb/etop/etc/status4"
 	try_on "etop.vn/backend/pb/etop/etc/try_on"
 	_ "etop.vn/backend/pb/etop/order"
-	fmt "fmt"
-	_ "github.com/gogo/protobuf/gogoproto"
-	proto "github.com/golang/protobuf/proto"
-	timestamp "github.com/golang/protobuf/ptypes/timestamp"
-	_ "github.com/grpc-ecosystem/grpc-gateway/protoc-gen-swagger/options"
-	math "math"
 )
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -3922,7 +3924,7 @@ type RequestExportRequest struct {
 	DateTo     string           `protobuf:"bytes,4,opt,name=date_to,json=dateTo" json:"date_to"`
 	// Accept '\t', ',' or ';'. Default to ','.
 	Delimiter string `protobuf:"bytes,5,opt,name=delimiter" json:"delimiter"`
-	// For exporting csv compatible with Excel
+	// Walk exporting csv compatible with Excel
 	ExcelCompatibleMode  bool     `protobuf:"varint,6,opt,name=excel_compatible_mode,json=excelCompatibleMode" json:"excel_compatible_mode"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_sizecache        int32    `json:"-"`

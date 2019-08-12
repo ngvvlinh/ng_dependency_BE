@@ -166,103 +166,122 @@ func (q *GetShipnowFulfillmentsQuery) query()                  {}
 
 // implement conversion
 
-func (q *CancelShipnowFulfillmentCommand) GetArgs() *shipnowv1.CancelShipnowFulfillmentCommand {
-	return &shipnowv1.CancelShipnowFulfillmentCommand{
-		Id:           q.Id,
-		ShopId:       q.ShopId,
-		CancelReason: q.CancelReason,
-	}
+func (q *CancelShipnowFulfillmentCommand) GetArgs(ctx context.Context) (_ context.Context, _ *shipnowv1.CancelShipnowFulfillmentCommand) {
+	return ctx,
+		&shipnowv1.CancelShipnowFulfillmentCommand{
+			Id:           q.Id,
+			ShopId:       q.ShopId,
+			CancelReason: q.CancelReason,
+		}
 }
-func (q *ConfirmShipnowFulfillmentCommand) GetArgs() *shipnowv1.ConfirmShipnowFulfillmentCommand {
-	return &shipnowv1.ConfirmShipnowFulfillmentCommand{
-		Id:     q.Id,
-		ShopId: q.ShopId,
-	}
+
+func (q *ConfirmShipnowFulfillmentCommand) GetArgs(ctx context.Context) (_ context.Context, _ *shipnowv1.ConfirmShipnowFulfillmentCommand) {
+	return ctx,
+		&shipnowv1.ConfirmShipnowFulfillmentCommand{
+			Id:     q.Id,
+			ShopId: q.ShopId,
+		}
 }
-func (q *CreateShipnowFulfillmentCommand) GetArgs() *shipnowv1.CreateShipnowFulfillmentCommand {
-	return &shipnowv1.CreateShipnowFulfillmentCommand{
-		OrderIds:            q.OrderIds,
-		Carrier:             q.Carrier,
-		ShopId:              q.ShopId,
-		ShippingServiceCode: q.ShippingServiceCode,
-		ShippingServiceFee:  q.ShippingServiceFee,
-		ShippingNote:        q.ShippingNote,
-		RequestPickupAt:     q.RequestPickupAt,
-		PickupAddress:       q.PickupAddress,
-	}
+
+func (q *CreateShipnowFulfillmentCommand) GetArgs(ctx context.Context) (_ context.Context, _ *shipnowv1.CreateShipnowFulfillmentCommand) {
+	return ctx,
+		&shipnowv1.CreateShipnowFulfillmentCommand{
+			OrderIds:            q.OrderIds,
+			Carrier:             q.Carrier,
+			ShopId:              q.ShopId,
+			ShippingServiceCode: q.ShippingServiceCode,
+			ShippingServiceFee:  q.ShippingServiceFee,
+			ShippingNote:        q.ShippingNote,
+			RequestPickupAt:     q.RequestPickupAt,
+			PickupAddress:       q.PickupAddress,
+		}
 }
-func (q *GetShipnowServicesCommand) GetArgs() *shipnowv1.GetShipnowServicesCommand {
-	return &shipnowv1.GetShipnowServicesCommand{
-		ShopId:         q.ShopId,
-		OrderIds:       q.OrderIds,
-		PickupAddress:  q.PickupAddress,
-		DeliveryPoints: q.DeliveryPoints,
-	}
+
+func (q *GetShipnowServicesCommand) GetArgs(ctx context.Context) (_ context.Context, _ *shipnowv1.GetShipnowServicesCommand) {
+	return ctx,
+		&shipnowv1.GetShipnowServicesCommand{
+			ShopId:         q.ShopId,
+			OrderIds:       q.OrderIds,
+			PickupAddress:  q.PickupAddress,
+			DeliveryPoints: q.DeliveryPoints,
+		}
 }
-func (q *UpdateShipnowFulfillmentCommand) GetArgs() *shipnowv1.UpdateShipnowFulfillmentCommand {
-	return &shipnowv1.UpdateShipnowFulfillmentCommand{
-		Id:                  q.Id,
-		OrderIds:            q.OrderIds,
-		Carrier:             q.Carrier,
-		ShopId:              q.ShopId,
-		ShippingServiceCode: q.ShippingServiceCode,
-		ShippingServiceFee:  q.ShippingServiceFee,
-		ShippingNote:        q.ShippingNote,
-		RequestPickupAt:     q.RequestPickupAt,
-		PickupAddress:       q.PickupAddress,
-	}
+
+func (q *UpdateShipnowFulfillmentCommand) GetArgs(ctx context.Context) (_ context.Context, _ *shipnowv1.UpdateShipnowFulfillmentCommand) {
+	return ctx,
+		&shipnowv1.UpdateShipnowFulfillmentCommand{
+			Id:                  q.Id,
+			OrderIds:            q.OrderIds,
+			Carrier:             q.Carrier,
+			ShopId:              q.ShopId,
+			ShippingServiceCode: q.ShippingServiceCode,
+			ShippingServiceFee:  q.ShippingServiceFee,
+			ShippingNote:        q.ShippingNote,
+			RequestPickupAt:     q.RequestPickupAt,
+			PickupAddress:       q.PickupAddress,
+		}
 }
-func (q *UpdateShipnowFulfillmentCarrierInfoCommand) GetArgs() *shipnowv1.UpdateShipnowFulfillmentCarrierInfoCommand {
-	return &shipnowv1.UpdateShipnowFulfillmentCarrierInfoCommand{
-		Id:                         q.Id,
-		ShippingCode:               q.ShippingCode,
-		ShippingState:              q.ShippingState,
-		TotalFee:                   q.TotalFee,
-		FeeLines:                   q.FeeLines,
-		CarrierFeeLines:            q.CarrierFeeLines,
-		ShippingCreatedAt:          q.ShippingCreatedAt,
-		EtopPaymentStatus:          q.EtopPaymentStatus,
-		ShippingStatus:             q.ShippingStatus,
-		Status:                     q.Status,
-		CodEtopTransferedAt:        q.CodEtopTransferedAt,
-		ShippingPickingAt:          q.ShippingPickingAt,
-		ShippingDeliveringAt:       q.ShippingDeliveringAt,
-		ShippingDeliveredAt:        q.ShippingDeliveredAt,
-		ShippingCancelledAt:        q.ShippingCancelledAt,
-		ShippingServiceName:        q.ShippingServiceName,
-		CancelReason:               q.CancelReason,
-		ShippingSharedLink:         q.ShippingSharedLink,
-		ShippingServiceDescription: q.ShippingServiceDescription,
-	}
+
+func (q *UpdateShipnowFulfillmentCarrierInfoCommand) GetArgs(ctx context.Context) (_ context.Context, _ *shipnowv1.UpdateShipnowFulfillmentCarrierInfoCommand) {
+	return ctx,
+		&shipnowv1.UpdateShipnowFulfillmentCarrierInfoCommand{
+			Id:                         q.Id,
+			ShippingCode:               q.ShippingCode,
+			ShippingState:              q.ShippingState,
+			TotalFee:                   q.TotalFee,
+			FeeLines:                   q.FeeLines,
+			CarrierFeeLines:            q.CarrierFeeLines,
+			ShippingCreatedAt:          q.ShippingCreatedAt,
+			EtopPaymentStatus:          q.EtopPaymentStatus,
+			ShippingStatus:             q.ShippingStatus,
+			Status:                     q.Status,
+			CodEtopTransferedAt:        q.CodEtopTransferedAt,
+			ShippingPickingAt:          q.ShippingPickingAt,
+			ShippingDeliveringAt:       q.ShippingDeliveringAt,
+			ShippingDeliveredAt:        q.ShippingDeliveredAt,
+			ShippingCancelledAt:        q.ShippingCancelledAt,
+			ShippingServiceName:        q.ShippingServiceName,
+			CancelReason:               q.CancelReason,
+			ShippingSharedLink:         q.ShippingSharedLink,
+			ShippingServiceDescription: q.ShippingServiceDescription,
+		}
 }
-func (q *UpdateShipnowFulfillmentStateCommand) GetArgs() *shipnowv1.UpdateShipnowFulfullmentStateCommand {
-	return &shipnowv1.UpdateShipnowFulfullmentStateCommand{
-		Id:             q.Id,
-		SyncStatus:     q.SyncStatus,
-		Status:         q.Status,
-		ConfirmStatus:  q.ConfirmStatus,
-		ShippingStatus: q.ShippingStatus,
-		SyncStates:     q.SyncStates,
-		ShippingState:  q.ShippingState,
-	}
+
+func (q *UpdateShipnowFulfillmentStateCommand) GetArgs(ctx context.Context) (_ context.Context, _ *shipnowv1.UpdateShipnowFulfullmentStateCommand) {
+	return ctx,
+		&shipnowv1.UpdateShipnowFulfullmentStateCommand{
+			Id:             q.Id,
+			SyncStatus:     q.SyncStatus,
+			Status:         q.Status,
+			ConfirmStatus:  q.ConfirmStatus,
+			ShippingStatus: q.ShippingStatus,
+			SyncStates:     q.SyncStates,
+			ShippingState:  q.ShippingState,
+		}
 }
-func (q *GetShipnowFulfillmentQuery) GetArgs() *shipnowv1.GetShipnowFulfillmentQueryArgs {
-	return &shipnowv1.GetShipnowFulfillmentQueryArgs{
-		Id:     q.Id,
-		ShopId: q.ShopId,
-	}
+
+func (q *GetShipnowFulfillmentQuery) GetArgs(ctx context.Context) (_ context.Context, _ *shipnowv1.GetShipnowFulfillmentQueryArgs) {
+	return ctx,
+		&shipnowv1.GetShipnowFulfillmentQueryArgs{
+			Id:     q.Id,
+			ShopId: q.ShopId,
+		}
 }
-func (q *GetShipnowFulfillmentByShippingCodeQuery) GetArgs() *shipnowv1.GetShipnowFulfillmentByShippingCodeQueryArgs {
-	return &shipnowv1.GetShipnowFulfillmentByShippingCodeQueryArgs{
-		ShippingCode: q.ShippingCode,
-	}
+
+func (q *GetShipnowFulfillmentByShippingCodeQuery) GetArgs(ctx context.Context) (_ context.Context, _ *shipnowv1.GetShipnowFulfillmentByShippingCodeQueryArgs) {
+	return ctx,
+		&shipnowv1.GetShipnowFulfillmentByShippingCodeQueryArgs{
+			ShippingCode: q.ShippingCode,
+		}
 }
-func (q *GetShipnowFulfillmentsQuery) GetArgs() *shipnowv1.GetShipnowFulfillmentsQueryArgs {
-	return &shipnowv1.GetShipnowFulfillmentsQueryArgs{
-		ShopIds: q.ShopIds,
-		Paging:  q.Paging,
-		Filters: q.Filters,
-	}
+
+func (q *GetShipnowFulfillmentsQuery) GetArgs(ctx context.Context) (_ context.Context, _ *shipnowv1.GetShipnowFulfillmentsQueryArgs) {
+	return ctx,
+		&shipnowv1.GetShipnowFulfillmentsQueryArgs{
+			ShopIds: q.ShopIds,
+			Paging:  q.Paging,
+			Filters: q.Filters,
+		}
 }
 
 // implement dispatching
@@ -287,45 +306,45 @@ func (h AggregateHandler) RegisterHandlers(b interface {
 	return CommandBus{b}
 }
 
-func (h AggregateHandler) HandleCancelShipnowFulfillment(ctx context.Context, cmd *CancelShipnowFulfillmentCommand) error {
-	result, err := h.inner.CancelShipnowFulfillment(ctx, cmd.GetArgs())
-	cmd.Result = result
+func (h AggregateHandler) HandleCancelShipnowFulfillment(ctx context.Context, msg *CancelShipnowFulfillmentCommand) error {
+	result, err := h.inner.CancelShipnowFulfillment(msg.GetArgs(ctx))
+	msg.Result = result
 	return err
 }
 
-func (h AggregateHandler) HandleConfirmShipnowFulfillment(ctx context.Context, cmd *ConfirmShipnowFulfillmentCommand) error {
-	result, err := h.inner.ConfirmShipnowFulfillment(ctx, cmd.GetArgs())
-	cmd.Result = result
+func (h AggregateHandler) HandleConfirmShipnowFulfillment(ctx context.Context, msg *ConfirmShipnowFulfillmentCommand) error {
+	result, err := h.inner.ConfirmShipnowFulfillment(msg.GetArgs(ctx))
+	msg.Result = result
 	return err
 }
 
-func (h AggregateHandler) HandleCreateShipnowFulfillment(ctx context.Context, cmd *CreateShipnowFulfillmentCommand) error {
-	result, err := h.inner.CreateShipnowFulfillment(ctx, cmd.GetArgs())
-	cmd.Result = result
+func (h AggregateHandler) HandleCreateShipnowFulfillment(ctx context.Context, msg *CreateShipnowFulfillmentCommand) error {
+	result, err := h.inner.CreateShipnowFulfillment(msg.GetArgs(ctx))
+	msg.Result = result
 	return err
 }
 
-func (h AggregateHandler) HandleGetShipnowServices(ctx context.Context, cmd *GetShipnowServicesCommand) error {
-	result, err := h.inner.GetShipnowServices(ctx, cmd.GetArgs())
-	cmd.Result = result
+func (h AggregateHandler) HandleGetShipnowServices(ctx context.Context, msg *GetShipnowServicesCommand) error {
+	result, err := h.inner.GetShipnowServices(msg.GetArgs(ctx))
+	msg.Result = result
 	return err
 }
 
-func (h AggregateHandler) HandleUpdateShipnowFulfillment(ctx context.Context, cmd *UpdateShipnowFulfillmentCommand) error {
-	result, err := h.inner.UpdateShipnowFulfillment(ctx, cmd.GetArgs())
-	cmd.Result = result
+func (h AggregateHandler) HandleUpdateShipnowFulfillment(ctx context.Context, msg *UpdateShipnowFulfillmentCommand) error {
+	result, err := h.inner.UpdateShipnowFulfillment(msg.GetArgs(ctx))
+	msg.Result = result
 	return err
 }
 
-func (h AggregateHandler) HandleUpdateShipnowFulfillmentCarrierInfo(ctx context.Context, cmd *UpdateShipnowFulfillmentCarrierInfoCommand) error {
-	result, err := h.inner.UpdateShipnowFulfillmentCarrierInfo(ctx, cmd.GetArgs())
-	cmd.Result = result
+func (h AggregateHandler) HandleUpdateShipnowFulfillmentCarrierInfo(ctx context.Context, msg *UpdateShipnowFulfillmentCarrierInfoCommand) error {
+	result, err := h.inner.UpdateShipnowFulfillmentCarrierInfo(msg.GetArgs(ctx))
+	msg.Result = result
 	return err
 }
 
-func (h AggregateHandler) HandleUpdateShipnowFulfillmentState(ctx context.Context, cmd *UpdateShipnowFulfillmentStateCommand) error {
-	result, err := h.inner.UpdateShipnowFulfillmentState(ctx, cmd.GetArgs())
-	cmd.Result = result
+func (h AggregateHandler) HandleUpdateShipnowFulfillmentState(ctx context.Context, msg *UpdateShipnowFulfillmentStateCommand) error {
+	result, err := h.inner.UpdateShipnowFulfillmentState(msg.GetArgs(ctx))
+	msg.Result = result
 	return err
 }
 
@@ -347,20 +366,20 @@ func (h QueryServiceHandler) RegisterHandlers(b interface {
 	return QueryBus{b}
 }
 
-func (h QueryServiceHandler) HandleGetShipnowFulfillment(ctx context.Context, query *GetShipnowFulfillmentQuery) error {
-	result, err := h.inner.GetShipnowFulfillment(ctx, query.GetArgs())
-	query.Result = result
+func (h QueryServiceHandler) HandleGetShipnowFulfillment(ctx context.Context, msg *GetShipnowFulfillmentQuery) error {
+	result, err := h.inner.GetShipnowFulfillment(msg.GetArgs(ctx))
+	msg.Result = result
 	return err
 }
 
-func (h QueryServiceHandler) HandleGetShipnowFulfillmentByShippingCode(ctx context.Context, query *GetShipnowFulfillmentByShippingCodeQuery) error {
-	result, err := h.inner.GetShipnowFulfillmentByShippingCode(ctx, query.GetArgs())
-	query.Result = result
+func (h QueryServiceHandler) HandleGetShipnowFulfillmentByShippingCode(ctx context.Context, msg *GetShipnowFulfillmentByShippingCodeQuery) error {
+	result, err := h.inner.GetShipnowFulfillmentByShippingCode(msg.GetArgs(ctx))
+	msg.Result = result
 	return err
 }
 
-func (h QueryServiceHandler) HandleGetShipnowFulfillments(ctx context.Context, query *GetShipnowFulfillmentsQuery) error {
-	result, err := h.inner.GetShipnowFulfillments(ctx, query.GetArgs())
-	query.Result = result
+func (h QueryServiceHandler) HandleGetShipnowFulfillments(ctx context.Context, msg *GetShipnowFulfillmentsQuery) error {
+	result, err := h.inner.GetShipnowFulfillments(msg.GetArgs(ctx))
+	msg.Result = result
 	return err
 }

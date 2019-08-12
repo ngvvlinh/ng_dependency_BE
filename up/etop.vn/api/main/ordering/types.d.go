@@ -110,55 +110,70 @@ func (q *GetOrdersQuery) query()                     {}
 
 // implement conversion
 
-func (q *ReleaseOrdersForFfmCommand) GetArgs() *ReleaseOrdersForFfmArgs {
-	return &ReleaseOrdersForFfmArgs{
-		OrderIDs: q.OrderIDs,
-	}
+func (q *ReleaseOrdersForFfmCommand) GetArgs(ctx context.Context) (_ context.Context, _ *ReleaseOrdersForFfmArgs) {
+	return ctx,
+		&ReleaseOrdersForFfmArgs{
+			OrderIDs: q.OrderIDs,
+		}
 }
-func (q *ReserveOrdersForFfmCommand) GetArgs() *ReserveOrdersForFfmArgs {
-	return &ReserveOrdersForFfmArgs{
-		OrderIDs:   q.OrderIDs,
-		Fulfill:    q.Fulfill,
-		FulfillIDs: q.FulfillIDs,
-	}
+
+func (q *ReserveOrdersForFfmCommand) GetArgs(ctx context.Context) (_ context.Context, _ *ReserveOrdersForFfmArgs) {
+	return ctx,
+		&ReserveOrdersForFfmArgs{
+			OrderIDs:   q.OrderIDs,
+			Fulfill:    q.Fulfill,
+			FulfillIDs: q.FulfillIDs,
+		}
 }
-func (q *UpdateOrderShippingStatusCommand) GetArgs() *UpdateOrderShippingStatusArgs {
-	return &UpdateOrderShippingStatusArgs{
-		ID:                         q.ID,
-		FulfillmentShippingStates:  q.FulfillmentShippingStates,
-		FulfillmentShippingStatus:  q.FulfillmentShippingStatus,
-		FulfillmentPaymentStatuses: q.FulfillmentPaymentStatuses,
-		EtopPaymentStatus:          q.EtopPaymentStatus,
-		CODEtopPaidAt:              q.CODEtopPaidAt,
-	}
+
+func (q *UpdateOrderShippingStatusCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateOrderShippingStatusArgs) {
+	return ctx,
+		&UpdateOrderShippingStatusArgs{
+			ID:                         q.ID,
+			FulfillmentShippingStates:  q.FulfillmentShippingStates,
+			FulfillmentShippingStatus:  q.FulfillmentShippingStatus,
+			FulfillmentPaymentStatuses: q.FulfillmentPaymentStatuses,
+			EtopPaymentStatus:          q.EtopPaymentStatus,
+			CODEtopPaidAt:              q.CODEtopPaidAt,
+		}
 }
-func (q *UpdateOrdersConfirmStatusCommand) GetArgs() *UpdateOrdersConfirmStatusArgs {
-	return &UpdateOrdersConfirmStatusArgs{
-		IDs:           q.IDs,
-		ShopConfirm:   q.ShopConfirm,
-		ConfirmStatus: q.ConfirmStatus,
-	}
+
+func (q *UpdateOrdersConfirmStatusCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateOrdersConfirmStatusArgs) {
+	return ctx,
+		&UpdateOrdersConfirmStatusArgs{
+			IDs:           q.IDs,
+			ShopConfirm:   q.ShopConfirm,
+			ConfirmStatus: q.ConfirmStatus,
+		}
 }
-func (q *ValidateOrdersForShippingCommand) GetArgs() *ValidateOrdersForShippingArgs {
-	return &ValidateOrdersForShippingArgs{
-		OrderIDs: q.OrderIDs,
-	}
+
+func (q *ValidateOrdersForShippingCommand) GetArgs(ctx context.Context) (_ context.Context, _ *ValidateOrdersForShippingArgs) {
+	return ctx,
+		&ValidateOrdersForShippingArgs{
+			OrderIDs: q.OrderIDs,
+		}
 }
-func (q *GetOrderByCodeQuery) GetArgs() *GetOrderByCodeArgs {
-	return &GetOrderByCodeArgs{
-		Code: q.Code,
-	}
+
+func (q *GetOrderByCodeQuery) GetArgs(ctx context.Context) (_ context.Context, _ *GetOrderByCodeArgs) {
+	return ctx,
+		&GetOrderByCodeArgs{
+			Code: q.Code,
+		}
 }
-func (q *GetOrderByIDQuery) GetArgs() *GetOrderByIDArgs {
-	return &GetOrderByIDArgs{
-		ID: q.ID,
-	}
+
+func (q *GetOrderByIDQuery) GetArgs(ctx context.Context) (_ context.Context, _ *GetOrderByIDArgs) {
+	return ctx,
+		&GetOrderByIDArgs{
+			ID: q.ID,
+		}
 }
-func (q *GetOrdersQuery) GetArgs() *GetOrdersArgs {
-	return &GetOrdersArgs{
-		ShopID: q.ShopID,
-		IDs:    q.IDs,
-	}
+
+func (q *GetOrdersQuery) GetArgs(ctx context.Context) (_ context.Context, _ *GetOrdersArgs) {
+	return ctx,
+		&GetOrdersArgs{
+			ShopID: q.ShopID,
+			IDs:    q.IDs,
+		}
 }
 
 // implement dispatching
@@ -181,33 +196,33 @@ func (h AggregateHandler) RegisterHandlers(b interface {
 	return CommandBus{b}
 }
 
-func (h AggregateHandler) HandleReleaseOrdersForFfm(ctx context.Context, cmd *ReleaseOrdersForFfmCommand) error {
-	result, err := h.inner.ReleaseOrdersForFfm(ctx, cmd.GetArgs())
-	cmd.Result = result
+func (h AggregateHandler) HandleReleaseOrdersForFfm(ctx context.Context, msg *ReleaseOrdersForFfmCommand) error {
+	result, err := h.inner.ReleaseOrdersForFfm(msg.GetArgs(ctx))
+	msg.Result = result
 	return err
 }
 
-func (h AggregateHandler) HandleReserveOrdersForFfm(ctx context.Context, cmd *ReserveOrdersForFfmCommand) error {
-	result, err := h.inner.ReserveOrdersForFfm(ctx, cmd.GetArgs())
-	cmd.Result = result
+func (h AggregateHandler) HandleReserveOrdersForFfm(ctx context.Context, msg *ReserveOrdersForFfmCommand) error {
+	result, err := h.inner.ReserveOrdersForFfm(msg.GetArgs(ctx))
+	msg.Result = result
 	return err
 }
 
-func (h AggregateHandler) HandleUpdateOrderShippingStatus(ctx context.Context, cmd *UpdateOrderShippingStatusCommand) error {
-	result, err := h.inner.UpdateOrderShippingStatus(ctx, cmd.GetArgs())
-	cmd.Result = result
+func (h AggregateHandler) HandleUpdateOrderShippingStatus(ctx context.Context, msg *UpdateOrderShippingStatusCommand) error {
+	result, err := h.inner.UpdateOrderShippingStatus(msg.GetArgs(ctx))
+	msg.Result = result
 	return err
 }
 
-func (h AggregateHandler) HandleUpdateOrdersConfirmStatus(ctx context.Context, cmd *UpdateOrdersConfirmStatusCommand) error {
-	result, err := h.inner.UpdateOrdersConfirmStatus(ctx, cmd.GetArgs())
-	cmd.Result = result
+func (h AggregateHandler) HandleUpdateOrdersConfirmStatus(ctx context.Context, msg *UpdateOrdersConfirmStatusCommand) error {
+	result, err := h.inner.UpdateOrdersConfirmStatus(msg.GetArgs(ctx))
+	msg.Result = result
 	return err
 }
 
-func (h AggregateHandler) HandleValidateOrdersForShipping(ctx context.Context, cmd *ValidateOrdersForShippingCommand) error {
-	result, err := h.inner.ValidateOrdersForShipping(ctx, cmd.GetArgs())
-	cmd.Result = result
+func (h AggregateHandler) HandleValidateOrdersForShipping(ctx context.Context, msg *ValidateOrdersForShippingCommand) error {
+	result, err := h.inner.ValidateOrdersForShipping(msg.GetArgs(ctx))
+	msg.Result = result
 	return err
 }
 
@@ -229,20 +244,20 @@ func (h QueryServiceHandler) RegisterHandlers(b interface {
 	return QueryBus{b}
 }
 
-func (h QueryServiceHandler) HandleGetOrderByCode(ctx context.Context, query *GetOrderByCodeQuery) error {
-	result, err := h.inner.GetOrderByCode(ctx, query.GetArgs())
-	query.Result = result
+func (h QueryServiceHandler) HandleGetOrderByCode(ctx context.Context, msg *GetOrderByCodeQuery) error {
+	result, err := h.inner.GetOrderByCode(msg.GetArgs(ctx))
+	msg.Result = result
 	return err
 }
 
-func (h QueryServiceHandler) HandleGetOrderByID(ctx context.Context, query *GetOrderByIDQuery) error {
-	result, err := h.inner.GetOrderByID(ctx, query.GetArgs())
-	query.Result = result
+func (h QueryServiceHandler) HandleGetOrderByID(ctx context.Context, msg *GetOrderByIDQuery) error {
+	result, err := h.inner.GetOrderByID(msg.GetArgs(ctx))
+	msg.Result = result
 	return err
 }
 
-func (h QueryServiceHandler) HandleGetOrders(ctx context.Context, query *GetOrdersQuery) error {
-	result, err := h.inner.GetOrders(ctx, query.GetArgs())
-	query.Result = result
+func (h QueryServiceHandler) HandleGetOrders(ctx context.Context, msg *GetOrdersQuery) error {
+	result, err := h.inner.GetOrders(msg.GetArgs(ctx))
+	msg.Result = result
 	return err
 }

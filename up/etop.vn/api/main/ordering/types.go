@@ -11,17 +11,17 @@ import (
 )
 
 type Aggregate interface {
-	ValidateOrdersForShipping(ctx context.Context, args *ValidateOrdersForShippingArgs) (*ValidateOrdersForShippingResponse, error)
-	ReserveOrdersForFfm(ctx context.Context, args *ReserveOrdersForFfmArgs) (*ReserveOrdersForFfmResponse, error)
-	ReleaseOrdersForFfm(ctx context.Context, args *ReleaseOrdersForFfmArgs) (*ReleaseOrdersForFfmResponse, error)
-	UpdateOrderShippingStatus(ctx context.Context, args *UpdateOrderShippingStatusArgs) (*UpdateOrderShippingStatusResponse, error)
-	UpdateOrdersConfirmStatus(ctx context.Context, args *UpdateOrdersConfirmStatusArgs) (*UpdateOrdersConfirmStatusResponse, error)
+	ValidateOrdersForShipping(context.Context, *ValidateOrdersForShippingArgs) (*ValidateOrdersForShippingResponse, error)
+	ReserveOrdersForFfm(context.Context, *ReserveOrdersForFfmArgs) (*ReserveOrdersForFfmResponse, error)
+	ReleaseOrdersForFfm(context.Context, *ReleaseOrdersForFfmArgs) (*ReleaseOrdersForFfmResponse, error)
+	UpdateOrderShippingStatus(context.Context, *UpdateOrderShippingStatusArgs) (*UpdateOrderShippingStatusResponse, error)
+	UpdateOrdersConfirmStatus(context.Context, *UpdateOrdersConfirmStatusArgs) (*UpdateOrdersConfirmStatusResponse, error)
 }
 
 type QueryService interface {
-	GetOrderByID(ctx context.Context, args *GetOrderByIDArgs) (*Order, error)
-	GetOrders(ctx context.Context, args *GetOrdersArgs) (*OrdersResponse, error)
-	GetOrderByCode(ctx context.Context, args *GetOrderByCodeArgs) (*Order, error)
+	GetOrderByID(context.Context, *GetOrderByIDArgs) (*Order, error)
+	GetOrders(context.Context, *GetOrdersArgs) (*OrdersResponse, error)
+	GetOrderByCode(context.Context, *GetOrderByCodeArgs) (*Order, error)
 }
 
 type GetOrderByIDArgs struct {

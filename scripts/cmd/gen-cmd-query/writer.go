@@ -10,6 +10,27 @@ import (
 	"strings"
 )
 
+type MultiWriter struct {
+	*Writer
+	WriteArgs     bytes.Buffer
+	WriteIface    bytes.Buffer
+	WriteDispatch bytes.Buffer
+}
+
+func (ws *MultiWriter) GetImportWriter(w io.Writer) ImportWriter {
+	return importWriterImpl{w, ws.Writer}
+}
+
+type ImportWriter interface {
+	io.Writer
+	Importer
+}
+
+type importWriterImpl struct {
+	io.Writer
+	Importer
+}
+
 type Importer interface {
 	Import(path string) (alias string)
 }
@@ -23,7 +44,7 @@ type Writer struct {
 	// map alias to package path
 	Aliases map[string]string
 
-	Body bytes.Buffer
+	Body *bytes.Buffer
 }
 
 func NewWriter(pkgName string, pkgPath string) *Writer {
@@ -32,6 +53,7 @@ func NewWriter(pkgName string, pkgPath string) *Writer {
 		PackagePath: pkgPath,
 		Imports:     make(map[string]string),
 		Aliases:     make(map[string]string),
+		Body:        &bytes.Buffer{},
 	}
 }
 

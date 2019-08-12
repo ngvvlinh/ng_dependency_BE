@@ -65,7 +65,8 @@ type DeleteCustomerCommand struct {
 	ID     int64
 	ShopID int64
 
-	Result *metav1.Empty `json:"-"`
+	Result struct {
+	} `json:"-"`
 }
 
 type UpdateCustomerCommand struct {
@@ -117,64 +118,73 @@ func (q *ListCustomersByIDsQuery) query()          {}
 
 // implement conversion
 
-func (q *BatchSetCustomersStatusCommand) GetArgs() *BatchSetCustomersStatusArgs {
-	return &BatchSetCustomersStatusArgs{
-		IDs:    q.IDs,
-		ShopID: q.ShopID,
-		Status: q.Status,
-	}
+func (q *BatchSetCustomersStatusCommand) GetArgs(ctx context.Context) (_ context.Context, IDs []int64, shopID int64, status int32) {
+	return ctx,
+		q.IDs,
+		q.ShopID,
+		q.Status
 }
-func (q *CreateCustomerCommand) GetArgs() *CreateCustomerArgs {
-	return &CreateCustomerArgs{
-		ShopID:   q.ShopID,
-		Code:     q.Code,
-		FullName: q.FullName,
-		Gender:   q.Gender,
-		Type:     q.Type,
-		Birthday: q.Birthday,
-		Note:     q.Note,
-		Phone:    q.Phone,
-		Email:    q.Email,
-	}
+
+func (q *CreateCustomerCommand) GetArgs(ctx context.Context) (_ context.Context, _ *CreateCustomerArgs) {
+	return ctx,
+		&CreateCustomerArgs{
+			ShopID:   q.ShopID,
+			Code:     q.Code,
+			FullName: q.FullName,
+			Gender:   q.Gender,
+			Type:     q.Type,
+			Birthday: q.Birthday,
+			Note:     q.Note,
+			Phone:    q.Phone,
+			Email:    q.Email,
+		}
 }
-func (q *DeleteCustomerCommand) GetArgs() *shopping.IDQueryShopArg {
-	return &shopping.IDQueryShopArg{
-		ID:     q.ID,
-		ShopID: q.ShopID,
-	}
+
+func (q *DeleteCustomerCommand) GetArgs(ctx context.Context) (_ context.Context, ID int64, shopID int64) {
+	return ctx,
+		q.ID,
+		q.ShopID
 }
-func (q *UpdateCustomerCommand) GetArgs() *UpdateCustomerArgs {
-	return &UpdateCustomerArgs{
-		ID:       q.ID,
-		ShopID:   q.ShopID,
-		Code:     q.Code,
-		FullName: q.FullName,
-		Gender:   q.Gender,
-		Type:     q.Type,
-		Birthday: q.Birthday,
-		Note:     q.Note,
-		Phone:    q.Phone,
-		Email:    q.Email,
-	}
+
+func (q *UpdateCustomerCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateCustomerArgs) {
+	return ctx,
+		&UpdateCustomerArgs{
+			ID:       q.ID,
+			ShopID:   q.ShopID,
+			Code:     q.Code,
+			FullName: q.FullName,
+			Gender:   q.Gender,
+			Type:     q.Type,
+			Birthday: q.Birthday,
+			Note:     q.Note,
+			Phone:    q.Phone,
+			Email:    q.Email,
+		}
 }
-func (q *GetCustomerByIDQuery) GetArgs() *shopping.IDQueryShopArg {
-	return &shopping.IDQueryShopArg{
-		ID:     q.ID,
-		ShopID: q.ShopID,
-	}
+
+func (q *GetCustomerByIDQuery) GetArgs(ctx context.Context) (_ context.Context, _ *shopping.IDQueryShopArg) {
+	return ctx,
+		&shopping.IDQueryShopArg{
+			ID:     q.ID,
+			ShopID: q.ShopID,
+		}
 }
-func (q *ListCustomersQuery) GetArgs() *shopping.ListQueryShopArgs {
-	return &shopping.ListQueryShopArgs{
-		ShopID:  q.ShopID,
-		Paging:  q.Paging,
-		Filters: q.Filters,
-	}
+
+func (q *ListCustomersQuery) GetArgs(ctx context.Context) (_ context.Context, _ *shopping.ListQueryShopArgs) {
+	return ctx,
+		&shopping.ListQueryShopArgs{
+			ShopID:  q.ShopID,
+			Paging:  q.Paging,
+			Filters: q.Filters,
+		}
 }
-func (q *ListCustomersByIDsQuery) GetArgs() *shopping.IDsQueryShopArgs {
-	return &shopping.IDsQueryShopArgs{
-		IDs:    q.IDs,
-		ShopID: q.ShopID,
-	}
+
+func (q *ListCustomersByIDsQuery) GetArgs(ctx context.Context) (_ context.Context, _ *shopping.IDsQueryShopArgs) {
+	return ctx,
+		&shopping.IDsQueryShopArgs{
+			IDs:    q.IDs,
+			ShopID: q.ShopID,
+		}
 }
 
 // implement dispatching
@@ -196,27 +206,25 @@ func (h AggregateHandler) RegisterHandlers(b interface {
 	return CommandBus{b}
 }
 
-func (h AggregateHandler) HandleBatchSetCustomersStatus(ctx context.Context, cmd *BatchSetCustomersStatusCommand) error {
-	result, err := h.inner.BatchSetCustomersStatus(ctx, cmd.GetArgs())
-	cmd.Result = result
+func (h AggregateHandler) HandleBatchSetCustomersStatus(ctx context.Context, msg *BatchSetCustomersStatusCommand) error {
+	result, err := h.inner.BatchSetCustomersStatus(msg.GetArgs(ctx))
+	msg.Result = result
 	return err
 }
 
-func (h AggregateHandler) HandleCreateCustomer(ctx context.Context, cmd *CreateCustomerCommand) error {
-	result, err := h.inner.CreateCustomer(ctx, cmd.GetArgs())
-	cmd.Result = result
+func (h AggregateHandler) HandleCreateCustomer(ctx context.Context, msg *CreateCustomerCommand) error {
+	result, err := h.inner.CreateCustomer(msg.GetArgs(ctx))
+	msg.Result = result
 	return err
 }
 
-func (h AggregateHandler) HandleDeleteCustomer(ctx context.Context, cmd *DeleteCustomerCommand) error {
-	result, err := h.inner.DeleteCustomer(ctx, cmd.GetArgs())
-	cmd.Result = result
-	return err
+func (h AggregateHandler) HandleDeleteCustomer(ctx context.Context, msg *DeleteCustomerCommand) error {
+	return h.inner.DeleteCustomer(msg.GetArgs(ctx))
 }
 
-func (h AggregateHandler) HandleUpdateCustomer(ctx context.Context, cmd *UpdateCustomerCommand) error {
-	result, err := h.inner.UpdateCustomer(ctx, cmd.GetArgs())
-	cmd.Result = result
+func (h AggregateHandler) HandleUpdateCustomer(ctx context.Context, msg *UpdateCustomerCommand) error {
+	result, err := h.inner.UpdateCustomer(msg.GetArgs(ctx))
+	msg.Result = result
 	return err
 }
 
@@ -238,20 +246,20 @@ func (h QueryServiceHandler) RegisterHandlers(b interface {
 	return QueryBus{b}
 }
 
-func (h QueryServiceHandler) HandleGetCustomerByID(ctx context.Context, query *GetCustomerByIDQuery) error {
-	result, err := h.inner.GetCustomerByID(ctx, query.GetArgs())
-	query.Result = result
+func (h QueryServiceHandler) HandleGetCustomerByID(ctx context.Context, msg *GetCustomerByIDQuery) error {
+	result, err := h.inner.GetCustomerByID(msg.GetArgs(ctx))
+	msg.Result = result
 	return err
 }
 
-func (h QueryServiceHandler) HandleListCustomers(ctx context.Context, query *ListCustomersQuery) error {
-	result, err := h.inner.ListCustomers(ctx, query.GetArgs())
-	query.Result = result
+func (h QueryServiceHandler) HandleListCustomers(ctx context.Context, msg *ListCustomersQuery) error {
+	result, err := h.inner.ListCustomers(msg.GetArgs(ctx))
+	msg.Result = result
 	return err
 }
 
-func (h QueryServiceHandler) HandleListCustomersByIDs(ctx context.Context, query *ListCustomersByIDsQuery) error {
-	result, err := h.inner.ListCustomersByIDs(ctx, query.GetArgs())
-	query.Result = result
+func (h QueryServiceHandler) HandleListCustomersByIDs(ctx context.Context, msg *ListCustomersByIDsQuery) error {
+	result, err := h.inner.ListCustomersByIDs(msg.GetArgs(ctx))
+	msg.Result = result
 	return err
 }

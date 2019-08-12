@@ -59,10 +59,10 @@ type CreateFulfillmentCommand struct {
 	Carrier             string
 	ShippingServiceCode string
 	ShippingServiceFee  string
-	WeightInfo
-	ValueInfo
-	TryOn        shippingv1types.TryOnCode
-	ShippingNote string
+	WeightInfo          WeightInfo
+	ValueInfo           ValueInfo
+	TryOn               shippingv1types.TryOnCode
+	ShippingNote        string
 
 	Result *metav1.Empty `json:"-"`
 }
@@ -82,36 +82,43 @@ func (q *GetFulfillmentByIDCommand) command() {}
 
 // implement conversion
 
-func (q *CancelFulfillmentCommand) GetArgs() *CancelFulfillmentArgs {
-	return &CancelFulfillmentArgs{
-		FulfillmentID: q.FulfillmentID,
-		CancelReason:  q.CancelReason,
-	}
+func (q *CancelFulfillmentCommand) GetArgs(ctx context.Context) (_ context.Context, _ *CancelFulfillmentArgs) {
+	return ctx,
+		&CancelFulfillmentArgs{
+			FulfillmentID: q.FulfillmentID,
+			CancelReason:  q.CancelReason,
+		}
 }
-func (q *ConfirmFulfillmentCommand) GetArgs() *ConfirmFulfillmentArgs {
-	return &ConfirmFulfillmentArgs{
-		FulfillmentID: q.FulfillmentID,
-	}
+
+func (q *ConfirmFulfillmentCommand) GetArgs(ctx context.Context) (_ context.Context, _ *ConfirmFulfillmentArgs) {
+	return ctx,
+		&ConfirmFulfillmentArgs{
+			FulfillmentID: q.FulfillmentID,
+		}
 }
-func (q *CreateFulfillmentCommand) GetArgs() *CreateFulfillmentArgs {
-	return &CreateFulfillmentArgs{
-		OrderID:             q.OrderID,
-		PickupAddress:       q.PickupAddress,
-		ShippingAddress:     q.ShippingAddress,
-		ReturnAddress:       q.ReturnAddress,
-		Carrier:             q.Carrier,
-		ShippingServiceCode: q.ShippingServiceCode,
-		ShippingServiceFee:  q.ShippingServiceFee,
-		WeightInfo:          q.WeightInfo,
-		ValueInfo:           q.ValueInfo,
-		TryOn:               q.TryOn,
-		ShippingNote:        q.ShippingNote,
-	}
+
+func (q *CreateFulfillmentCommand) GetArgs(ctx context.Context) (_ context.Context, _ *CreateFulfillmentArgs) {
+	return ctx,
+		&CreateFulfillmentArgs{
+			OrderID:             q.OrderID,
+			PickupAddress:       q.PickupAddress,
+			ShippingAddress:     q.ShippingAddress,
+			ReturnAddress:       q.ReturnAddress,
+			Carrier:             q.Carrier,
+			ShippingServiceCode: q.ShippingServiceCode,
+			ShippingServiceFee:  q.ShippingServiceFee,
+			WeightInfo:          q.WeightInfo,
+			ValueInfo:           q.ValueInfo,
+			TryOn:               q.TryOn,
+			ShippingNote:        q.ShippingNote,
+		}
 }
-func (q *GetFulfillmentByIDCommand) GetArgs() *GetFulfillmentByIDQueryArgs {
-	return &GetFulfillmentByIDQueryArgs{
-		FulfillmentID: q.FulfillmentID,
-	}
+
+func (q *GetFulfillmentByIDCommand) GetArgs(ctx context.Context) (_ context.Context, _ *GetFulfillmentByIDQueryArgs) {
+	return ctx,
+		&GetFulfillmentByIDQueryArgs{
+			FulfillmentID: q.FulfillmentID,
+		}
 }
 
 // implement dispatching
@@ -133,26 +140,26 @@ func (h AggregateHandler) RegisterHandlers(b interface {
 	return CommandBus{b}
 }
 
-func (h AggregateHandler) HandleCancelFulfillment(ctx context.Context, cmd *CancelFulfillmentCommand) error {
-	result, err := h.inner.CancelFulfillment(ctx, cmd.GetArgs())
-	cmd.Result = result
+func (h AggregateHandler) HandleCancelFulfillment(ctx context.Context, msg *CancelFulfillmentCommand) error {
+	result, err := h.inner.CancelFulfillment(msg.GetArgs(ctx))
+	msg.Result = result
 	return err
 }
 
-func (h AggregateHandler) HandleConfirmFulfillment(ctx context.Context, cmd *ConfirmFulfillmentCommand) error {
-	result, err := h.inner.ConfirmFulfillment(ctx, cmd.GetArgs())
-	cmd.Result = result
+func (h AggregateHandler) HandleConfirmFulfillment(ctx context.Context, msg *ConfirmFulfillmentCommand) error {
+	result, err := h.inner.ConfirmFulfillment(msg.GetArgs(ctx))
+	msg.Result = result
 	return err
 }
 
-func (h AggregateHandler) HandleCreateFulfillment(ctx context.Context, cmd *CreateFulfillmentCommand) error {
-	result, err := h.inner.CreateFulfillment(ctx, cmd.GetArgs())
-	cmd.Result = result
+func (h AggregateHandler) HandleCreateFulfillment(ctx context.Context, msg *CreateFulfillmentCommand) error {
+	result, err := h.inner.CreateFulfillment(msg.GetArgs(ctx))
+	msg.Result = result
 	return err
 }
 
-func (h AggregateHandler) HandleGetFulfillmentByID(ctx context.Context, cmd *GetFulfillmentByIDCommand) error {
-	result, err := h.inner.GetFulfillmentByID(ctx, cmd.GetArgs())
-	cmd.Result = result
+func (h AggregateHandler) HandleGetFulfillmentByID(ctx context.Context, msg *GetFulfillmentByIDCommand) error {
+	result, err := h.inner.GetFulfillmentByID(msg.GetArgs(ctx))
+	msg.Result = result
 	return err
 }

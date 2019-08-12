@@ -4,7 +4,6 @@ import (
 	"context"
 
 	"etop.vn/api/meta"
-	"etop.vn/api/shopping"
 	"etop.vn/api/shopping/customering"
 	"etop.vn/backend/com/shopping/customering/convert"
 	"etop.vn/backend/com/shopping/customering/model"
@@ -53,15 +52,15 @@ func (a *Aggregate) UpdateCustomer(
 }
 
 func (a *Aggregate) DeleteCustomer(
-	ctx context.Context, args *shopping.IDQueryShopArg,
-) (*meta.Empty, error) {
-	return nil, cm.ErrTODO
+	ctx context.Context, id int64, shopID int64,
+) error {
+	return cm.ErrTODO
 }
 
 func (a *Aggregate) BatchSetCustomersStatus(
-	ctx context.Context, args *customering.BatchSetCustomersStatusArgs,
+	ctx context.Context, ids []int64, shopID int64, status int32,
 ) (*meta.UpdatedResponse, error) {
-	update := &model.ShopCustomer{Status: args.Status}
-	n, err := a.store(ctx).IDs(args.IDs...).PatchCustomerDB(update)
+	update := &model.ShopCustomer{Status: status}
+	n, err := a.store(ctx).IDs(ids...).PatchCustomerDB(update)
 	return &meta.UpdatedResponse{Updated: int32(n)}, err
 }

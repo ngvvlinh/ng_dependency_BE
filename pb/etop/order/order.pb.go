@@ -4,6 +4,13 @@
 package order
 
 import (
+	fmt "fmt"
+	math "math"
+
+	_ "github.com/gogo/protobuf/gogoproto"
+	proto "github.com/golang/protobuf/proto"
+	timestamp "github.com/golang/protobuf/ptypes/timestamp"
+
 	common "etop.vn/backend/pb/common"
 	spreadsheet "etop.vn/backend/pb/common/spreadsheet"
 	etop "etop.vn/backend/pb/etop"
@@ -18,11 +25,6 @@ import (
 	status5 "etop.vn/backend/pb/etop/etc/status5"
 	try_on "etop.vn/backend/pb/etop/etc/try_on"
 	source "etop.vn/backend/pb/etop/order/source"
-	fmt "fmt"
-	_ "github.com/gogo/protobuf/gogoproto"
-	proto "github.com/golang/protobuf/proto"
-	timestamp "github.com/golang/protobuf/ptypes/timestamp"
-	math "math"
 )
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -3972,7 +3974,7 @@ type PublicFulfillment struct {
 	EstimatedDeliveryAt *timestamp.Timestamp `protobuf:"bytes,16,opt,name=estimated_delivery_at,json=estimatedDeliveryAt" json:"estimated_delivery_at,omitempty"`
 	ShippingCode        string               `protobuf:"bytes,6,opt,name=shipping_code,json=shippingCode" json:"shipping_code"`
 	OrderId             int64                `protobuf:"varint,8,opt,name=order_id,json=orderId" json:"order_id"`
-	// For using with ManyChat
+	// Walk using with ManyChat
 	DeliveredAtText      string   `protobuf:"bytes,9,opt,name=delivered_at_text,json=deliveredAtText" json:"delivered_at_text"`
 	ShippingStateText    string   `protobuf:"bytes,10,opt,name=shipping_state_text,json=shippingStateText" json:"shipping_state_text"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`

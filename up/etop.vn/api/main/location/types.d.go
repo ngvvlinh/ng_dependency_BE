@@ -82,37 +82,44 @@ func (q *GetLocationQuery) query()       {}
 
 // implement conversion
 
-func (q *FindLocationQuery) GetArgs() *locationv1.FindLocationQueryArgs {
-	return &locationv1.FindLocationQueryArgs{
-		Province: q.Province,
-		District: q.District,
-		Ward:     q.Ward,
-	}
+func (q *FindLocationQuery) GetArgs(ctx context.Context) (_ context.Context, _ *locationv1.FindLocationQueryArgs) {
+	return ctx,
+		&locationv1.FindLocationQueryArgs{
+			Province: q.Province,
+			District: q.District,
+			Ward:     q.Ward,
+		}
 }
-func (q *FindOrGetLocationQuery) GetArgs() *locationv1.FindOrGetLocationQueryArgs {
-	return &locationv1.FindOrGetLocationQueryArgs{
-		Province:     q.Province,
-		District:     q.District,
-		Ward:         q.Ward,
-		ProvinceCode: q.ProvinceCode,
-		DistrictCode: q.DistrictCode,
-		WardCode:     q.WardCode,
-	}
+
+func (q *FindOrGetLocationQuery) GetArgs(ctx context.Context) (_ context.Context, _ *locationv1.FindOrGetLocationQueryArgs) {
+	return ctx,
+		&locationv1.FindOrGetLocationQueryArgs{
+			Province:     q.Province,
+			District:     q.District,
+			Ward:         q.Ward,
+			ProvinceCode: q.ProvinceCode,
+			DistrictCode: q.DistrictCode,
+			WardCode:     q.WardCode,
+		}
 }
-func (q *GetAllLocationsQuery) GetArgs() *locationv1.GetAllLocationsQueryArgs {
-	return &locationv1.GetAllLocationsQueryArgs{
-		All:          q.All,
-		ProvinceCode: q.ProvinceCode,
-		DistrictCode: q.DistrictCode,
-	}
+
+func (q *GetAllLocationsQuery) GetArgs(ctx context.Context) (_ context.Context, _ *locationv1.GetAllLocationsQueryArgs) {
+	return ctx,
+		&locationv1.GetAllLocationsQueryArgs{
+			All:          q.All,
+			ProvinceCode: q.ProvinceCode,
+			DistrictCode: q.DistrictCode,
+		}
 }
-func (q *GetLocationQuery) GetArgs() *locationv1.GetLocationQueryArgs {
-	return &locationv1.GetLocationQueryArgs{
-		ProvinceCode:     q.ProvinceCode,
-		DistrictCode:     q.DistrictCode,
-		WardCode:         q.WardCode,
-		LocationCodeType: q.LocationCodeType,
-	}
+
+func (q *GetLocationQuery) GetArgs(ctx context.Context) (_ context.Context, _ *locationv1.GetLocationQueryArgs) {
+	return ctx,
+		&locationv1.GetLocationQueryArgs{
+			ProvinceCode:     q.ProvinceCode,
+			DistrictCode:     q.DistrictCode,
+			WardCode:         q.WardCode,
+			LocationCodeType: q.LocationCodeType,
+		}
 }
 
 // implement dispatching
@@ -136,26 +143,26 @@ func (h LocationQueryServiceHandler) RegisterHandlers(b interface {
 	return QueryBus{b}
 }
 
-func (h LocationQueryServiceHandler) HandleFindLocation(ctx context.Context, query *FindLocationQuery) error {
-	result, err := h.inner.FindLocation(ctx, query.GetArgs())
-	query.Result = result
+func (h LocationQueryServiceHandler) HandleFindLocation(ctx context.Context, msg *FindLocationQuery) error {
+	result, err := h.inner.FindLocation(msg.GetArgs(ctx))
+	msg.Result = result
 	return err
 }
 
-func (h LocationQueryServiceHandler) HandleFindOrGetLocation(ctx context.Context, query *FindOrGetLocationQuery) error {
-	result, err := h.inner.FindOrGetLocation(ctx, query.GetArgs())
-	query.Result = result
+func (h LocationQueryServiceHandler) HandleFindOrGetLocation(ctx context.Context, msg *FindOrGetLocationQuery) error {
+	result, err := h.inner.FindOrGetLocation(msg.GetArgs(ctx))
+	msg.Result = result
 	return err
 }
 
-func (h LocationQueryServiceHandler) HandleGetAllLocations(ctx context.Context, query *GetAllLocationsQuery) error {
-	result, err := h.inner.GetAllLocations(ctx, query.GetArgs())
-	query.Result = result
+func (h LocationQueryServiceHandler) HandleGetAllLocations(ctx context.Context, msg *GetAllLocationsQuery) error {
+	result, err := h.inner.GetAllLocations(msg.GetArgs(ctx))
+	msg.Result = result
 	return err
 }
 
-func (h LocationQueryServiceHandler) HandleGetLocation(ctx context.Context, query *GetLocationQuery) error {
-	result, err := h.inner.GetLocation(ctx, query.GetArgs())
-	query.Result = result
+func (h LocationQueryServiceHandler) HandleGetLocation(ctx context.Context, msg *GetLocationQuery) error {
+	result, err := h.inner.GetLocation(msg.GetArgs(ctx))
+	msg.Result = result
 	return err
 }

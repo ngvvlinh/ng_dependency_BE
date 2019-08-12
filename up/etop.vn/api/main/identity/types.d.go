@@ -111,59 +111,74 @@ func (q *GetUserByIDQuery) query()                                  {}
 
 // implement conversion
 
-func (q *CreateExternalAccountAhamoveCommand) GetArgs() *CreateExternalAccountAhamoveArgs {
-	return &CreateExternalAccountAhamoveArgs{
-		OwnerID: q.OwnerID,
-		Phone:   q.Phone,
-		Name:    q.Name,
-		Address: q.Address,
-	}
+func (q *CreateExternalAccountAhamoveCommand) GetArgs(ctx context.Context) (_ context.Context, _ *CreateExternalAccountAhamoveArgs) {
+	return ctx,
+		&CreateExternalAccountAhamoveArgs{
+			OwnerID: q.OwnerID,
+			Phone:   q.Phone,
+			Name:    q.Name,
+			Address: q.Address,
+		}
 }
-func (q *RequestVerifyExternalAccountAhamoveCommand) GetArgs() *RequestVerifyExternalAccountAhamoveArgs {
-	return &RequestVerifyExternalAccountAhamoveArgs{
-		OwnerID: q.OwnerID,
-		Phone:   q.Phone,
-	}
+
+func (q *RequestVerifyExternalAccountAhamoveCommand) GetArgs(ctx context.Context) (_ context.Context, _ *RequestVerifyExternalAccountAhamoveArgs) {
+	return ctx,
+		&RequestVerifyExternalAccountAhamoveArgs{
+			OwnerID: q.OwnerID,
+			Phone:   q.Phone,
+		}
 }
-func (q *UpdateExternalAccountAhamoveVerificationCommand) GetArgs() *UpdateExternalAccountAhamoveVerificationArgs {
-	return &UpdateExternalAccountAhamoveVerificationArgs{
-		OwnerID:             q.OwnerID,
-		Phone:               q.Phone,
-		IDCardFrontImg:      q.IDCardFrontImg,
-		IDCardBackImg:       q.IDCardBackImg,
-		PortraitImg:         q.PortraitImg,
-		WebsiteURL:          q.WebsiteURL,
-		FanpageURL:          q.FanpageURL,
-		CompanyImgs:         q.CompanyImgs,
-		BusinessLicenseImgs: q.BusinessLicenseImgs,
-	}
+
+func (q *UpdateExternalAccountAhamoveVerificationCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateExternalAccountAhamoveVerificationArgs) {
+	return ctx,
+		&UpdateExternalAccountAhamoveVerificationArgs{
+			OwnerID:             q.OwnerID,
+			Phone:               q.Phone,
+			IDCardFrontImg:      q.IDCardFrontImg,
+			IDCardBackImg:       q.IDCardBackImg,
+			PortraitImg:         q.PortraitImg,
+			WebsiteURL:          q.WebsiteURL,
+			FanpageURL:          q.FanpageURL,
+			CompanyImgs:         q.CompanyImgs,
+			BusinessLicenseImgs: q.BusinessLicenseImgs,
+		}
 }
-func (q *UpdateVerifiedExternalAccountAhamoveCommand) GetArgs() *UpdateVerifiedExternalAccountAhamoveArgs {
-	return &UpdateVerifiedExternalAccountAhamoveArgs{
-		OwnerID: q.OwnerID,
-		Phone:   q.Phone,
-	}
+
+func (q *UpdateVerifiedExternalAccountAhamoveCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateVerifiedExternalAccountAhamoveArgs) {
+	return ctx,
+		&UpdateVerifiedExternalAccountAhamoveArgs{
+			OwnerID: q.OwnerID,
+			Phone:   q.Phone,
+		}
 }
-func (q *GetExternalAccountAhamoveQuery) GetArgs() *GetExternalAccountAhamoveArgs {
-	return &GetExternalAccountAhamoveArgs{
-		OwnerID: q.OwnerID,
-		Phone:   q.Phone,
-	}
+
+func (q *GetExternalAccountAhamoveQuery) GetArgs(ctx context.Context) (_ context.Context, _ *GetExternalAccountAhamoveArgs) {
+	return ctx,
+		&GetExternalAccountAhamoveArgs{
+			OwnerID: q.OwnerID,
+			Phone:   q.Phone,
+		}
 }
-func (q *GetExternalAccountAhamoveByExternalIDQuery) GetArgs() *GetExternalAccountAhamoveByExternalIDQueryArgs {
-	return &GetExternalAccountAhamoveByExternalIDQueryArgs{
-		ExternalID: q.ExternalID,
-	}
+
+func (q *GetExternalAccountAhamoveByExternalIDQuery) GetArgs(ctx context.Context) (_ context.Context, _ *GetExternalAccountAhamoveByExternalIDQueryArgs) {
+	return ctx,
+		&GetExternalAccountAhamoveByExternalIDQueryArgs{
+			ExternalID: q.ExternalID,
+		}
 }
-func (q *GetShopByIDQuery) GetArgs() *GetShopByIDQueryArgs {
-	return &GetShopByIDQueryArgs{
-		ID: q.ID,
-	}
+
+func (q *GetShopByIDQuery) GetArgs(ctx context.Context) (_ context.Context, _ *GetShopByIDQueryArgs) {
+	return ctx,
+		&GetShopByIDQueryArgs{
+			ID: q.ID,
+		}
 }
-func (q *GetUserByIDQuery) GetArgs() *GetUserByIDQueryArgs {
-	return &GetUserByIDQueryArgs{
-		UserID: q.UserID,
-	}
+
+func (q *GetUserByIDQuery) GetArgs(ctx context.Context) (_ context.Context, _ *GetUserByIDQueryArgs) {
+	return ctx,
+		&GetUserByIDQueryArgs{
+			UserID: q.UserID,
+		}
 }
 
 // implement dispatching
@@ -185,27 +200,27 @@ func (h AggregateHandler) RegisterHandlers(b interface {
 	return CommandBus{b}
 }
 
-func (h AggregateHandler) HandleCreateExternalAccountAhamove(ctx context.Context, cmd *CreateExternalAccountAhamoveCommand) error {
-	result, err := h.inner.CreateExternalAccountAhamove(ctx, cmd.GetArgs())
-	cmd.Result = result
+func (h AggregateHandler) HandleCreateExternalAccountAhamove(ctx context.Context, msg *CreateExternalAccountAhamoveCommand) error {
+	result, err := h.inner.CreateExternalAccountAhamove(msg.GetArgs(ctx))
+	msg.Result = result
 	return err
 }
 
-func (h AggregateHandler) HandleRequestVerifyExternalAccountAhamove(ctx context.Context, cmd *RequestVerifyExternalAccountAhamoveCommand) error {
-	result, err := h.inner.RequestVerifyExternalAccountAhamove(ctx, cmd.GetArgs())
-	cmd.Result = result
+func (h AggregateHandler) HandleRequestVerifyExternalAccountAhamove(ctx context.Context, msg *RequestVerifyExternalAccountAhamoveCommand) error {
+	result, err := h.inner.RequestVerifyExternalAccountAhamove(msg.GetArgs(ctx))
+	msg.Result = result
 	return err
 }
 
-func (h AggregateHandler) HandleUpdateExternalAccountAhamoveVerification(ctx context.Context, cmd *UpdateExternalAccountAhamoveVerificationCommand) error {
-	result, err := h.inner.UpdateExternalAccountAhamoveVerification(ctx, cmd.GetArgs())
-	cmd.Result = result
+func (h AggregateHandler) HandleUpdateExternalAccountAhamoveVerification(ctx context.Context, msg *UpdateExternalAccountAhamoveVerificationCommand) error {
+	result, err := h.inner.UpdateExternalAccountAhamoveVerification(msg.GetArgs(ctx))
+	msg.Result = result
 	return err
 }
 
-func (h AggregateHandler) HandleUpdateVerifiedExternalAccountAhamove(ctx context.Context, cmd *UpdateVerifiedExternalAccountAhamoveCommand) error {
-	result, err := h.inner.UpdateVerifiedExternalAccountAhamove(ctx, cmd.GetArgs())
-	cmd.Result = result
+func (h AggregateHandler) HandleUpdateVerifiedExternalAccountAhamove(ctx context.Context, msg *UpdateVerifiedExternalAccountAhamoveCommand) error {
+	result, err := h.inner.UpdateVerifiedExternalAccountAhamove(msg.GetArgs(ctx))
+	msg.Result = result
 	return err
 }
 
@@ -228,26 +243,26 @@ func (h QueryServiceHandler) RegisterHandlers(b interface {
 	return QueryBus{b}
 }
 
-func (h QueryServiceHandler) HandleGetExternalAccountAhamove(ctx context.Context, query *GetExternalAccountAhamoveQuery) error {
-	result, err := h.inner.GetExternalAccountAhamove(ctx, query.GetArgs())
-	query.Result = result
+func (h QueryServiceHandler) HandleGetExternalAccountAhamove(ctx context.Context, msg *GetExternalAccountAhamoveQuery) error {
+	result, err := h.inner.GetExternalAccountAhamove(msg.GetArgs(ctx))
+	msg.Result = result
 	return err
 }
 
-func (h QueryServiceHandler) HandleGetExternalAccountAhamoveByExternalID(ctx context.Context, query *GetExternalAccountAhamoveByExternalIDQuery) error {
-	result, err := h.inner.GetExternalAccountAhamoveByExternalID(ctx, query.GetArgs())
-	query.Result = result
+func (h QueryServiceHandler) HandleGetExternalAccountAhamoveByExternalID(ctx context.Context, msg *GetExternalAccountAhamoveByExternalIDQuery) error {
+	result, err := h.inner.GetExternalAccountAhamoveByExternalID(msg.GetArgs(ctx))
+	msg.Result = result
 	return err
 }
 
-func (h QueryServiceHandler) HandleGetShopByID(ctx context.Context, query *GetShopByIDQuery) error {
-	result, err := h.inner.GetShopByID(ctx, query.GetArgs())
-	query.Result = result
+func (h QueryServiceHandler) HandleGetShopByID(ctx context.Context, msg *GetShopByIDQuery) error {
+	result, err := h.inner.GetShopByID(msg.GetArgs(ctx))
+	msg.Result = result
 	return err
 }
 
-func (h QueryServiceHandler) HandleGetUserByID(ctx context.Context, query *GetUserByIDQuery) error {
-	result, err := h.inner.GetUserByID(ctx, query.GetArgs())
-	query.Result = result
+func (h QueryServiceHandler) HandleGetUserByID(ctx context.Context, msg *GetUserByIDQuery) error {
+	result, err := h.inner.GetUserByID(msg.GetArgs(ctx))
+	msg.Result = result
 	return err
 }

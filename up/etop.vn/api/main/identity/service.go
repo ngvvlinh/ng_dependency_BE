@@ -7,13 +7,13 @@ import (
 type Aggregate interface {
 	// External Account Ahamove
 
-	CreateExternalAccountAhamove(ctx context.Context, args *CreateExternalAccountAhamoveArgs) (*ExternalAccountAhamove, error)
+	CreateExternalAccountAhamove(context.Context, *CreateExternalAccountAhamoveArgs) (*ExternalAccountAhamove, error)
 
-	RequestVerifyExternalAccountAhamove(ctx context.Context, args *RequestVerifyExternalAccountAhamoveArgs) (*RequestVerifyExternalAccountAhamoveResult, error)
+	RequestVerifyExternalAccountAhamove(context.Context, *RequestVerifyExternalAccountAhamoveArgs) (*RequestVerifyExternalAccountAhamoveResult, error)
 
-	UpdateVerifiedExternalAccountAhamove(ctx context.Context, args *UpdateVerifiedExternalAccountAhamoveArgs) (*ExternalAccountAhamove, error)
+	UpdateVerifiedExternalAccountAhamove(context.Context, *UpdateVerifiedExternalAccountAhamoveArgs) (*ExternalAccountAhamove, error)
 
-	UpdateExternalAccountAhamoveVerification(ctx context.Context, args *UpdateExternalAccountAhamoveVerificationArgs) (*ExternalAccountAhamove, error)
+	UpdateExternalAccountAhamoveVerification(context.Context, *UpdateExternalAccountAhamoveVerificationArgs) (*ExternalAccountAhamove, error)
 }
 
 type QueryService interface {

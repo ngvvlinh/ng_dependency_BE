@@ -13,9 +13,9 @@ type Aggregate interface {
 
 	UpdateCustomer(context.Context, *UpdateCustomerArgs) (*ShopCustomer, error)
 
-	DeleteCustomer(context.Context, *shopping.IDQueryShopArg) (*meta.Empty, error)
+	DeleteCustomer(ctx context.Context, ID int64, shopID int64) error
 
-	BatchSetCustomersStatus(context.Context, *BatchSetCustomersStatusArgs) (*meta.UpdatedResponse, error)
+	BatchSetCustomersStatus(ctx context.Context, IDs []int64, shopID int64, status int32) (*meta.UpdatedResponse, error)
 }
 
 type QueryService interface {

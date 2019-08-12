@@ -48,10 +48,11 @@ func (q *GetAddressByIDQuery) query() {}
 
 // implement conversion
 
-func (q *GetAddressByIDQuery) GetArgs() *GetAddressByIDQueryArgs {
-	return &GetAddressByIDQueryArgs{
-		ID: q.ID,
-	}
+func (q *GetAddressByIDQuery) GetArgs(ctx context.Context) (_ context.Context, _ *GetAddressByIDQueryArgs) {
+	return ctx,
+		&GetAddressByIDQueryArgs{
+			ID: q.ID,
+		}
 }
 
 // implement dispatching
@@ -72,8 +73,8 @@ func (h QueryServiceHandler) RegisterHandlers(b interface {
 	return QueryBus{b}
 }
 
-func (h QueryServiceHandler) HandleGetAddressByID(ctx context.Context, query *GetAddressByIDQuery) error {
-	result, err := h.inner.GetAddressByID(ctx, query.GetArgs())
-	query.Result = result
+func (h QueryServiceHandler) HandleGetAddressByID(ctx context.Context, msg *GetAddressByIDQuery) error {
+	result, err := h.inner.GetAddressByID(msg.GetArgs(ctx))
+	msg.Result = result
 	return err
 }

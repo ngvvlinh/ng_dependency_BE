@@ -12,11 +12,11 @@ import (
 type AggregateBus struct{ meta.Bus }
 
 type Aggregate interface {
-	GetFulfillmentByID(ctx context.Context, query *GetFulfillmentByIDQueryArgs) (*Fulfillment, error)
+	GetFulfillmentByID(context.Context, *GetFulfillmentByIDQueryArgs) (*Fulfillment, error)
 
-	CreateFulfillment(ctx context.Context, cmd *CreateFulfillmentArgs) (*meta.Empty, error)
-	ConfirmFulfillment(ctx context.Context, cmd *ConfirmFulfillmentArgs) (*meta.Empty, error)
-	CancelFulfillment(ctx context.Context, cmd *CancelFulfillmentArgs) (*meta.Empty, error)
+	CreateFulfillment(context.Context, *CreateFulfillmentArgs) (*meta.Empty, error)
+	ConfirmFulfillment(context.Context, *ConfirmFulfillmentArgs) (*meta.Empty, error)
+	CancelFulfillment(context.Context, *CancelFulfillmentArgs) (*meta.Empty, error)
 }
 
 //-- Types --//

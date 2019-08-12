@@ -90,41 +90,52 @@ func (q *GetExternalAccountHaravanByXShopIDQuery) query()                      {
 
 // implement conversion
 
-func (q *ConnectCarrierServiceExternalAccountHaravanCommand) GetArgs() *ConnectCarrierServiceExternalAccountHaravanArgs {
-	return &ConnectCarrierServiceExternalAccountHaravanArgs{
-		ShopID: q.ShopID,
-	}
+func (q *ConnectCarrierServiceExternalAccountHaravanCommand) GetArgs(ctx context.Context) (_ context.Context, _ *ConnectCarrierServiceExternalAccountHaravanArgs) {
+	return ctx,
+		&ConnectCarrierServiceExternalAccountHaravanArgs{
+			ShopID: q.ShopID,
+		}
 }
-func (q *CreateExternalAccountHaravanCommand) GetArgs() *CreateExternalAccountHaravanArgs {
-	return &CreateExternalAccountHaravanArgs{
-		ShopID:      q.ShopID,
-		Subdomain:   q.Subdomain,
-		RedirectURI: q.RedirectURI,
-		Code:        q.Code,
-	}
+
+func (q *CreateExternalAccountHaravanCommand) GetArgs(ctx context.Context) (_ context.Context, _ *CreateExternalAccountHaravanArgs) {
+	return ctx,
+		&CreateExternalAccountHaravanArgs{
+			ShopID:      q.ShopID,
+			Subdomain:   q.Subdomain,
+			RedirectURI: q.RedirectURI,
+			Code:        q.Code,
+		}
 }
-func (q *DeleteConnectedCarrierServiceExternalAccountHaravanCommand) GetArgs() *DeleteConnectedCarrierServiceExternalAccountHaravanArgs {
-	return &DeleteConnectedCarrierServiceExternalAccountHaravanArgs{
-		ShopID: q.ShopID,
-	}
+
+func (q *DeleteConnectedCarrierServiceExternalAccountHaravanCommand) GetArgs(ctx context.Context) (_ context.Context, _ *DeleteConnectedCarrierServiceExternalAccountHaravanArgs) {
+	return ctx,
+		&DeleteConnectedCarrierServiceExternalAccountHaravanArgs{
+			ShopID: q.ShopID,
+		}
 }
-func (q *UpdateExternalAccountHaravanTokenCommand) GetArgs() *UpdateExternalAccountHaravanTokenArgs {
-	return &UpdateExternalAccountHaravanTokenArgs{
-		ShopID:      q.ShopID,
-		Subdomain:   q.Subdomain,
-		RedirectURI: q.RedirectURI,
-		Code:        q.Code,
-	}
+
+func (q *UpdateExternalAccountHaravanTokenCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateExternalAccountHaravanTokenArgs) {
+	return ctx,
+		&UpdateExternalAccountHaravanTokenArgs{
+			ShopID:      q.ShopID,
+			Subdomain:   q.Subdomain,
+			RedirectURI: q.RedirectURI,
+			Code:        q.Code,
+		}
 }
-func (q *GetExternalAccountHaravanByShopIDQuery) GetArgs() *GetExternalAccountHaravanByShopIDQueryArgs {
-	return &GetExternalAccountHaravanByShopIDQueryArgs{
-		ShopID: q.ShopID,
-	}
+
+func (q *GetExternalAccountHaravanByShopIDQuery) GetArgs(ctx context.Context) (_ context.Context, _ *GetExternalAccountHaravanByShopIDQueryArgs) {
+	return ctx,
+		&GetExternalAccountHaravanByShopIDQueryArgs{
+			ShopID: q.ShopID,
+		}
 }
-func (q *GetExternalAccountHaravanByXShopIDQuery) GetArgs() *GetExternalAccountHaravanByXShopIDQueryArgs {
-	return &GetExternalAccountHaravanByXShopIDQueryArgs{
-		ExternalShopID: q.ExternalShopID,
-	}
+
+func (q *GetExternalAccountHaravanByXShopIDQuery) GetArgs(ctx context.Context) (_ context.Context, _ *GetExternalAccountHaravanByXShopIDQueryArgs) {
+	return ctx,
+		&GetExternalAccountHaravanByXShopIDQueryArgs{
+			ExternalShopID: q.ExternalShopID,
+		}
 }
 
 // implement dispatching
@@ -146,27 +157,27 @@ func (h AggregateHandler) RegisterHandlers(b interface {
 	return CommandBus{b}
 }
 
-func (h AggregateHandler) HandleConnectCarrierServiceExternalAccountHaravan(ctx context.Context, cmd *ConnectCarrierServiceExternalAccountHaravanCommand) error {
-	result, err := h.inner.ConnectCarrierServiceExternalAccountHaravan(ctx, cmd.GetArgs())
-	cmd.Result = result
+func (h AggregateHandler) HandleConnectCarrierServiceExternalAccountHaravan(ctx context.Context, msg *ConnectCarrierServiceExternalAccountHaravanCommand) error {
+	result, err := h.inner.ConnectCarrierServiceExternalAccountHaravan(msg.GetArgs(ctx))
+	msg.Result = result
 	return err
 }
 
-func (h AggregateHandler) HandleCreateExternalAccountHaravan(ctx context.Context, cmd *CreateExternalAccountHaravanCommand) error {
-	result, err := h.inner.CreateExternalAccountHaravan(ctx, cmd.GetArgs())
-	cmd.Result = result
+func (h AggregateHandler) HandleCreateExternalAccountHaravan(ctx context.Context, msg *CreateExternalAccountHaravanCommand) error {
+	result, err := h.inner.CreateExternalAccountHaravan(msg.GetArgs(ctx))
+	msg.Result = result
 	return err
 }
 
-func (h AggregateHandler) HandleDeleteConnectedCarrierServiceExternalAccountHaravan(ctx context.Context, cmd *DeleteConnectedCarrierServiceExternalAccountHaravanCommand) error {
-	result, err := h.inner.DeleteConnectedCarrierServiceExternalAccountHaravan(ctx, cmd.GetArgs())
-	cmd.Result = result
+func (h AggregateHandler) HandleDeleteConnectedCarrierServiceExternalAccountHaravan(ctx context.Context, msg *DeleteConnectedCarrierServiceExternalAccountHaravanCommand) error {
+	result, err := h.inner.DeleteConnectedCarrierServiceExternalAccountHaravan(msg.GetArgs(ctx))
+	msg.Result = result
 	return err
 }
 
-func (h AggregateHandler) HandleUpdateExternalAccountHaravanToken(ctx context.Context, cmd *UpdateExternalAccountHaravanTokenCommand) error {
-	result, err := h.inner.UpdateExternalAccountHaravanToken(ctx, cmd.GetArgs())
-	cmd.Result = result
+func (h AggregateHandler) HandleUpdateExternalAccountHaravanToken(ctx context.Context, msg *UpdateExternalAccountHaravanTokenCommand) error {
+	result, err := h.inner.UpdateExternalAccountHaravanToken(msg.GetArgs(ctx))
+	msg.Result = result
 	return err
 }
 
@@ -187,14 +198,14 @@ func (h QueryServiceHandler) RegisterHandlers(b interface {
 	return QueryBus{b}
 }
 
-func (h QueryServiceHandler) HandleGetExternalAccountHaravanByShopID(ctx context.Context, query *GetExternalAccountHaravanByShopIDQuery) error {
-	result, err := h.inner.GetExternalAccountHaravanByShopID(ctx, query.GetArgs())
-	query.Result = result
+func (h QueryServiceHandler) HandleGetExternalAccountHaravanByShopID(ctx context.Context, msg *GetExternalAccountHaravanByShopIDQuery) error {
+	result, err := h.inner.GetExternalAccountHaravanByShopID(msg.GetArgs(ctx))
+	msg.Result = result
 	return err
 }
 
-func (h QueryServiceHandler) HandleGetExternalAccountHaravanByXShopID(ctx context.Context, query *GetExternalAccountHaravanByXShopIDQuery) error {
-	result, err := h.inner.GetExternalAccountHaravanByXShopID(ctx, query.GetArgs())
-	query.Result = result
+func (h QueryServiceHandler) HandleGetExternalAccountHaravanByXShopID(ctx context.Context, msg *GetExternalAccountHaravanByXShopIDQuery) error {
+	result, err := h.inner.GetExternalAccountHaravanByXShopID(msg.GetArgs(ctx))
+	msg.Result = result
 	return err
 }

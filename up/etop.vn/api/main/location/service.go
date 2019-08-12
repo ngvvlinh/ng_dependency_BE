@@ -7,13 +7,13 @@ import (
 )
 
 type LocationQueryService interface {
-	GetAllLocations(ctx context.Context, args *GetAllLocationsQueryArgs) (*locationv1.GetAllLocationsQueryResult, error)
+	GetAllLocations(ctx context.Context, _ *GetAllLocationsQueryArgs) (*locationv1.GetAllLocationsQueryResult, error)
 
-	GetLocation(ctx context.Context, args *GetLocationQueryArgs) (*LocationQueryResult, error)
+	GetLocation(ctx context.Context, _ *GetLocationQueryArgs) (*LocationQueryResult, error)
 
-	FindLocation(ctx context.Context, args *FindLocationQueryArgs) (*LocationQueryResult, error)
+	FindLocation(ctx context.Context, _ *FindLocationQueryArgs) (*LocationQueryResult, error)
 
-	FindOrGetLocation(ctx context.Context, args *FindOrGetLocationQueryArgs) (*LocationQueryResult, error)
+	FindOrGetLocation(ctx context.Context, _ *FindOrGetLocationQueryArgs) (*LocationQueryResult, error)
 }
 
 //-- queries --//
