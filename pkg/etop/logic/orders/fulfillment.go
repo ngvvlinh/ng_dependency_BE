@@ -6,11 +6,13 @@ import (
 	"time"
 
 	"etop.vn/api/main/catalog"
+	"etop.vn/api/main/ordering"
+	ordertypes "etop.vn/api/main/ordering/types"
 	ordermodel "etop.vn/backend/com/main/ordering/model"
 	ordermodelx "etop.vn/backend/com/main/ordering/modelx"
 	shipmodel "etop.vn/backend/com/main/shipping/model"
 	shipmodelx "etop.vn/backend/com/main/shipping/modelx"
-
+	pborder "etop.vn/backend/pb/etop/order"
 	"etop.vn/backend/pb/etop/shop"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/validate"
@@ -18,16 +20,16 @@ import (
 	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/common/bus"
 	"etop.vn/common/l"
-
-	pborder "etop.vn/backend/pb/etop/order"
 )
 
 var ctrl *shipping_provider.ProviderManager
 var catalogQuery catalog.QueryBus
+var orderAggr ordering.CommandBus
 
-func Init(shippingProviderCtrl *shipping_provider.ProviderManager, catalogQueryBus catalog.QueryBus) {
+func Init(shippingProviderCtrl *shipping_provider.ProviderManager, catalogQueryBus catalog.QueryBus, orderAggregate ordering.CommandBus) {
 	ctrl = shippingProviderCtrl
 	catalogQuery = catalogQueryBus
+	orderAggr = orderAggregate
 }
 
 func ConfirmOrderAndCreateFulfillments(ctx context.Context, shop *model.Shop, partnerID int64, r *shop.OrderIDRequest) (resp *pborder.OrderWithErrorsResponse, _err error) {
@@ -138,6 +140,20 @@ func ConfirmOrderAndCreateFulfillments(ctx context.Context, shop *model.Shop, pa
 				}
 			}()
 		}
+	}
+
+	// update order fulfillment_type: `shipment`
+	ffmIDs := []int64{}
+	for _, _ffm := range ffms {
+		ffmIDs = append(ffmIDs, _ffm.ID)
+	}
+	cmd := &ordering.ReserveOrdersForFfmCommand{
+		OrderIDs:   []int64{order.ID},
+		Fulfill:    ordertypes.Fulfill(ordermodel.FulfillShipment),
+		FulfillIDs: ffmIDs,
+	}
+	if err = orderAggr.Dispatch(ctx, cmd); err != nil {
+		return nil, err
 	}
 
 	// Get order again

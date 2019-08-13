@@ -310,7 +310,7 @@ func main() {
 	integration.Init(shutdowner, redisStore, authStore)
 	webhook.Init(ctlProducer, redisStore)
 	xshipping.Init(shippingManager, ordersqlstore.NewOrderStore(db), shipsqlstore.NewFulfillmentStore(db))
-	orderS.Init(shippingManager, catalogQuery)
+	orderS.Init(shippingManager, catalogQuery, orderAggr.MessageBus())
 
 	svrs := startServers()
 	if bot != nil {

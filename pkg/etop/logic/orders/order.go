@@ -71,6 +71,9 @@ func CreateOrder(ctx context.Context, claim *claims.ShopClaim, authPartner *mode
 
 	order.ShopID = shop.ID
 	order.OrderSourceType = src
+	// fulfillment_type will be filled after create fulfillment
+	order.FulfillmentType = ordermodel.FulfillManual
+
 	cmd := &ordermodelx.CreateOrderCommand{
 		Order: order,
 	}
@@ -422,15 +425,6 @@ func PrepareOrder(m *pborder.CreateOrderRequest, lines []*ordermodel.OrderLine) 
 	if m.Customer == nil {
 		return nil, cm.Error(cm.InvalidArgument, "Missing Customer", nil)
 	}
-	if m.CustomerAddress == nil {
-		m.CustomerAddress = &pborder.OrderAddress{}
-	}
-	if m.BillingAddress == nil {
-		m.BillingAddress = &pborder.OrderAddress{}
-	}
-	if m.ShippingAddress == nil {
-		m.ShippingAddress = &pborder.OrderAddress{}
-	}
 	if m.BasketValue <= 0 {
 		return nil, cm.Error(cm.InvalidArgument, "Giá trị đơn hàng không hợp lệ", nil).
 			WithMeta("reason", "basket_value <= 0")
@@ -574,7 +568,7 @@ func PrepareOrder(m *pborder.CreateOrderRequest, lines []*ordermodel.OrderLine) 
 		BillingAddress:             billingAddress,
 		ShippingAddress:            shippingAddress,
 		CustomerName:               "",
-		CustomerPhone:              m.ShippingAddress.Phone,
+		CustomerPhone:              m.Customer.Phone,
 		CustomerEmail:              m.Customer.Email,
 		CreatedAt:                  time.Now(),
 		ProcessedAt:                time.Time{},
@@ -620,7 +614,7 @@ func PrepareOrder(m *pborder.CreateOrderRequest, lines []*ordermodel.OrderLine) 
 		CustomerNameNorm:           "",
 		ProductNameNorm:            "",
 	}
-	if err := shipping.ToModel(order); err != nil {
+	if err = shipping.ToModel(order); err != nil {
 		return nil, err
 	}
 
