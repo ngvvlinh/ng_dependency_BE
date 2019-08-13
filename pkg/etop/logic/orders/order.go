@@ -397,7 +397,7 @@ func prepareOrderLine(
 		line.ListPrice = int(v.GetListPrice())
 
 		if len(v.ShopVariant.ImageURLs) > 0 {
-			line.ImageURL = v.ShopProduct.ImageURLs[0]
+			line.ImageURL = v.ShopVariant.ImageURLs[0]
 		} else if v.ShopProduct != nil && len(v.ShopProduct.ImageURLs) > 0 {
 			line.ImageURL = v.ShopProduct.ImageURLs[0]
 		}
@@ -423,13 +423,13 @@ func PrepareOrder(m *pborder.CreateOrderRequest, lines []*ordermodel.OrderLine) 
 		return nil, cm.Error(cm.InvalidArgument, "Missing Customer", nil)
 	}
 	if m.CustomerAddress == nil {
-		return nil, cm.Error(cm.InvalidArgument, "Missing CustomerAddress", nil)
+		m.CustomerAddress = &pborder.OrderAddress{}
 	}
 	if m.BillingAddress == nil {
-		return nil, cm.Error(cm.InvalidArgument, "Missing BillingAddress", nil)
+		m.BillingAddress = &pborder.OrderAddress{}
 	}
 	if m.ShippingAddress == nil {
-		return nil, cm.Error(cm.InvalidArgument, "Missing ShippingAddress", nil)
+		m.ShippingAddress = &pborder.OrderAddress{}
 	}
 	if m.BasketValue <= 0 {
 		return nil, cm.Error(cm.InvalidArgument, "Giá trị đơn hàng không hợp lệ", nil).

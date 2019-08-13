@@ -119,11 +119,11 @@ func UpdateOrdersStatus(ctx context.Context, q *wrapshop.UpdateOrdersStatusEndpo
 }
 
 func CreateOrder(ctx context.Context, q *wrapshop.CreateOrderEndpoint) error {
-	if q.ShippingAddress == nil || q.ShippingAddress.FullName == "" {
-		return cm.Error(cm.InvalidArgument, "Thiếu thông tin tên khách hàng, vui lòng kiểm tra lại.", nil)
+	if q.Customer == nil {
+		return cm.Errorf(cm.InvalidArgument, nil, "Thiếu thông tin tên khách hàng, vui lòng kiểm tra lại.")
 	}
-	customerKey := q.ShippingAddress.FullName
-	if phone := strings.TrimSpace(q.ShippingAddress.Phone); phone != "" {
+	customerKey := q.Customer.FullName
+	if phone := strings.TrimSpace(q.Customer.Phone); phone != "" {
 		customerKey = phone
 	}
 	key := fmt.Sprintf("CreateOrder %v-%v", q.Context.Shop.ID, customerKey)

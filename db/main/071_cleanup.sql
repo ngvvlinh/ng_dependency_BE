@@ -47,3 +47,16 @@ DROP TABLE _etop_category;
 --
 -- DROP TABLE _variant;
 -- DROP TABLE _product;
+
+ALTER TABLE shop_product DROP CONSTRAINT shop_product_pkey;
+ALTER TABLE shop_product ADD CONSTRAINT shop_product_pkey PRIMARY KEY (product_id);
+
+ALTER TABLE shop_variant DROP CONSTRAINT shop_variant_pkey;
+ALTER TABLE shop_variant ADD CONSTRAINT shop_variant_pkey PRIMARY KEY (variant_id);
+
+CREATE UNIQUE INDEX ON shop_product (shop_id, product_id);
+ALTER TABLE shop_variant ADD CONSTRAINT variant_product_id_fkey
+    FOREIGN KEY (shop_id, product_id) REFERENCES shop_product (shop_id, product_id);
+
+CREATE UNIQUE INDEX ON shop_product (shop_id, code) WHERE deleted_at IS NULL;
+CREATE UNIQUE INDEX ON shop_variant (shop_id, code) WHERE deleted_at IS NULL;

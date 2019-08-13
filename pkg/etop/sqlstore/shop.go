@@ -169,8 +169,10 @@ func DeprecatedCreateVariant(ctx context.Context, cmd *catalogmodelx.DeprecatedC
 			}
 			variant.ProductID = product.ProductID
 			productID = product.ProductID
+			if err := x.ShouldInsert(product); err != nil {
+				return err
+			}
 		}
-
 		return x.ShouldInsert(variant)
 	})
 	if err != nil {
