@@ -7,10 +7,13 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/k0kubun/pp"
+
 	"etop.vn/backend/pkg/services/crm-service/vtiger/client"
 
 	"etop.vn/backend/pb/services/crmservice"
 	cm "etop.vn/backend/pkg/common"
+	simpleSqlBuilder "etop.vn/backend/pkg/common/simple-sql-builder"
 	"etop.vn/backend/pkg/services/crm-service/mapping"
 )
 
@@ -23,15 +26,17 @@ func (s *VtigerService) GetCategories(ctx context.Context) (*crmservice.GetCateg
 }
 
 // CreateOrUpdateTicket create or uodate ticket
-func (s *VtigerService) CreateOrUpdateTicket(ctx context.Context, req *crmservice.CreateOrUpdateTicketRequest) (*crmservice.Ticket, error) {
+func (s *VtigerService) CreateOrUpdateTicket(ctx context.Context, req *crmservice.CreateOrUpdateTicketRequest, action string) (*crmservice.Ticket, error) {
 
 	// get session
-	session, err := s.client.GetSessionKey(s.cfg.ServiceURL, s.cfg.Username, s.cfg.APIKey)
+	session, err := s.Client.GetSessionKey(s.Cfg.ServiceURL, s.Cfg.Username, s.Cfg.APIKey)
 	if err != nil {
 		return nil, err
 	}
 	accout2Contact := ConvertAccount(&req.Account)
 	contactModel := ConvertModelContact(accout2Contact, session.UserID)
+	contactModel.EtopID = req.EtopId
+	pp.Print("contactModel ::", contactModel)
 	if contactModel.EtopID == 0 || contactModel.Phone == "" || contactModel.Email == "" {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing argument Email, Phone or EtopID in body request")
 	}
@@ -51,7 +56,7 @@ func (s *VtigerService) CreateOrUpdateTicket(ctx context.Context, req *crmservic
 		contactModel = result
 	}
 
-	ticket := ConvertTicket(&req.Ticket)
+	ticket := ConvertTicket(req)
 	// Process Ticket
 	ticketTitle := ticket.TicketTitle
 
@@ -85,7 +90,7 @@ func (s *VtigerService) CreateOrUpdateTicket(ctx context.Context, req *crmservic
 		return nil, err
 	}
 
-	ticketResp, err := s.CreateOrUpdateVtiger(vtigerMap, session, fileMapData, "HelpDesk")
+	ticketResp, err := s.CreateOrUpdateVtiger(vtigerMap, session, fileMapData, "HelpDesk", action)
 	//convert
 	ticketReturn, err := fileMapData.MappingTicketVtiger2Etop(ticketResp)
 	if err != nil {
@@ -99,7 +104,7 @@ func (s *VtigerService) GetTickets(ctx context.Context, getTicketsRequest *crmse
 	page := getTicketsRequest.Page
 	perPager := getTicketsRequest.Perpage
 
-	ticket := ConvertTicket(&getTicketsRequest.Ticket)
+	ticket := ConvertTicketGetReq(&getTicketsRequest.Ticket)
 
 	fileMapData := mapping.NewMappingConfigInfo(s.fieldMap)
 	vtigerMap, err := fileMapData.MappingTicketEtop2Vtiger(ticket)
@@ -120,7 +125,8 @@ func (s *VtigerService) GetTickets(ctx context.Context, getTicketsRequest *crmse
 
 	response := make([]*crmservice.Ticket, 0)
 	for _, value := range resultVtiger.Result {
-		mapTicket, err := fileMapData.MappingTicketVtiger2Etop(value)
+		var mapTicket *crmservice.Ticket
+		mapTicket, err = fileMapData.MappingTicketVtiger2Etop(value)
 		if err != nil {
 			return nil, err
 		}
@@ -133,9 +139,8 @@ func (s *VtigerService) GetTickets(ctx context.Context, getTicketsRequest *crmse
 
 // BuildVtigerQuery build query type sql vtiger
 func (s *VtigerService) BuildVtigerQuery(module string, condition map[string]string, orderBy *crmservice.OrderBy, page int32, perpage int32) (string, error) {
-	var b strings.Builder
-	_, _ = fmt.Fprintf(&b, "SELECT * FROM %v ", module)
-	arrCondition := make([]string, 0, len(condition))
+	var b simpleSqlBuilder.SimpleSQLBuilder
+	b.Printf("SELECT * FROM ? ", simpleSqlBuilder.Raw(module))
 	if page == 0 {
 		page = 1
 	}
@@ -143,21 +148,24 @@ func (s *VtigerService) BuildVtigerQuery(module string, condition map[string]str
 		perpage = 20
 	}
 	fieldMap := s.fieldMap[module]
+
+	if len(condition) > 0 {
+		b.Printf(" WHERE ")
+	}
+	i := 1
 	for key, value := range condition {
 		etopField := key
 		if fieldMap[key] != "" {
 			etopField = fieldMap[etopField]
 		}
-		value, err := singleQuote(value)
-		if err != nil {
-			return "", err
+		if i == 1 {
+			b.Printf(" ? = ? ", simpleSqlBuilder.Raw(etopField), value)
+			continue
 		}
-		arrCondition = append(arrCondition, fmt.Sprintf(" %v = %v ", etopField, value))
+		b.Printf(" AND ? = ? ", simpleSqlBuilder.Raw(etopField), value)
+		i++
 	}
 
-	if len(arrCondition) > 0 {
-		_, _ = fmt.Fprint(&b, "WHERE "+strings.Join(arrCondition, " AND "))
-	}
 	etopField := orderBy.Field
 	if fieldMap[etopField] != "" {
 		etopField = fieldMap[etopField]
@@ -166,26 +174,27 @@ func (s *VtigerService) BuildVtigerQuery(module string, condition map[string]str
 		orderBy.Sort = "DESC"
 	}
 	if orderBy != nil {
-		_, _ = fmt.Fprintf(&b, "ORDER BY %v %v ", etopField, orderBy.Sort)
+		b.Printf("ORDER BY ? ? ", simpleSqlBuilder.Raw(etopField), simpleSqlBuilder.Raw(orderBy.Sort))
 	}
-	_, _ = fmt.Fprintf(&b, "LIMIT %v, %v ;", (page-1)*perpage, perpage)
-	return b.String(), nil
+	b.Printf("LIMIT ?, ? ;", (page-1)*perpage, perpage)
+	returnValue, err := b.String()
+	if err != nil {
+		return "", err
+	}
+	return returnValue, nil
 }
 
 // CountTicketByStatus get count number of ticket follow status
 func (s *VtigerService) CountTicketByStatus(ctx context.Context, countTicketByStatusRequest *crmservice.CountTicketByStatusRequest) (*crmservice.CountTicketByStatusResponse, error) {
 	status := *countTicketByStatusRequest.Status
-	statusSingleQuote, err := singleQuote(status)
+	//make SQL query vtiger
+	var b simpleSqlBuilder.SimpleSQLBuilder
+	b.Printf("SELECT COUNT(*) FROM HelpDesk WHERE ticketstatus = ? ;", status)
+	sqlVtiger, err := b.String()
 	if err != nil {
 		return nil, err
 	}
-	//make SQL query vtiger
-	var b strings.Builder
-	fmt.Fprint(&b, "SELECT COUNT(*) FROM HelpDesk WHERE ticketstatus = ")
-	fmt.Fprint(&b, statusSingleQuote)
-	fmt.Fprint(&b, " ;")
-
-	resultVtiger, err := s.VtigerRawQuery(b.String())
+	resultVtiger, err := s.VtigerRawQuery(sqlVtiger)
 	if err != nil {
 		return nil, err
 	}
@@ -201,7 +210,7 @@ func (s *VtigerService) CountTicketByStatus(ctx context.Context, countTicketBySt
 
 // VtigerRawQuery request select
 func (s *VtigerService) VtigerRawQuery(query string) (*client.VtigerResponse, error) {
-	session, err := s.client.GetSessionKey(s.cfg.ServiceURL, s.cfg.Username, s.cfg.APIKey)
+	session, err := s.Client.GetSessionKey(s.Cfg.ServiceURL, s.Cfg.Username, s.Cfg.APIKey)
 	if err != nil {
 		return nil, err
 	}
@@ -211,13 +220,12 @@ func (s *VtigerService) VtigerRawQuery(query string) (*client.VtigerResponse, er
 	queryURL.Set("sessionName", session.SessionName)
 	queryURL.Set("query", query)
 
-	vtigerService := client.NewVigerClient(session.SessionName, s.cfg.ServiceURL)
-	return vtigerService.RequestGet(queryURL)
+	return s.Client.RequestGet(queryURL)
 }
 
 // GetTicketStatusCount get ticket status count
 func (s *VtigerService) GetTicketStatusCount(ctx context.Context) (*crmservice.GetTicketStatusCountResponse, error) {
-	session, err := s.client.GetSessionKey(s.cfg.ServiceURL, s.cfg.Username, s.cfg.APIKey)
+	session, err := s.Client.GetSessionKey(s.Cfg.ServiceURL, s.Cfg.Username, s.Cfg.APIKey)
 	if err != nil {
 		return nil, err
 	}
@@ -226,28 +234,28 @@ func (s *VtigerService) GetTicketStatusCount(ctx context.Context) (*crmservice.G
 	var statusCounts []crmservice.CountTicketByStatusResponse
 	for _, value := range categories {
 		status := value.Label
-		statusSingleQuote, err := singleQuote(status)
+
+		//make SQL query vtiger
+		var b simpleSqlBuilder.SimpleSQLBuilder
+		b.Printf("SELECT COUNT(*) FROM HelpDesk WHERE ticketcategories = ? AND ticketstatus = 'Open';", status)
+		var sql string
+		sql, err = b.String()
 		if err != nil {
 			return nil, err
 		}
-
-		//make SQL query vtiger
-		var b strings.Builder
-		_, _ = fmt.Fprint(&b, "SELECT COUNT(*) FROM HelpDesk WHERE ticketcategories = ")
-		_, _ = fmt.Fprint(&b, statusSingleQuote)
-		_, _ = fmt.Fprint(&b, " AND ticketstatus = 'Open';")
 
 		queryValues := make(url.Values)
 		queryValues.Set("operation", "query")
 		queryValues.Set("sessionName", session.SessionName)
-		queryValues.Set("query", b.String())
+		queryValues.Set("query", sql)
 
-		vtigerService := client.NewVigerClient(session.SessionName, s.cfg.ServiceURL)
-		response, err := vtigerService.RequestGet(queryValues)
+		var response *client.VtigerResponse
+		response, err = s.Client.RequestGet(queryValues)
 		if err != nil {
 			return nil, err
 		}
-		countAtoi, err := strconv.Atoi(response.Result[0]["count"])
+		var countAtoi int
+		countAtoi, err = strconv.Atoi(response.Result[0]["count"])
 		if err != nil {
 			return nil, err
 		}

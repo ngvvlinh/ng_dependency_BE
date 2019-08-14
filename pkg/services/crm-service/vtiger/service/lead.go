@@ -8,9 +8,13 @@ import (
 	"etop.vn/backend/pkg/services/crm-service/model"
 )
 
+var (
+	Empty = ""
+)
+
 // CreateOrUpdateLead create or update lead
 func (s *VtigerService) CreateOrUpdateLead(ctx context.Context, req *crmservice.Lead) (*crmservice.Lead, error) {
-	session, err := s.client.GetSessionKey(s.cfg.ServiceURL, s.cfg.Username, s.cfg.APIKey)
+	session, err := s.Client.GetSessionKey(s.Cfg.ServiceURL, s.Cfg.Username, s.Cfg.APIKey)
 	if err != nil {
 		return nil, err
 	}
@@ -60,7 +64,7 @@ func (s *VtigerService) CreateOrUpdateLead(ctx context.Context, req *crmservice.
 	if err != nil {
 		return nil, err
 	}
-	leadResp, err := s.CreateOrUpdateVtiger(vtigerMap, session, fileMapData, "Leads")
+	leadResp, err := s.CreateOrUpdateVtiger(vtigerMap, session, fileMapData, "Leads", Empty)
 	if err != nil {
 		return nil, err
 	}

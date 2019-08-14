@@ -810,40 +810,21 @@ func (ft *VtigerAccountFilters) ByStatusPtr(Status *string) *sq.ColumnFilterPtr 
 	}
 }
 
-type VthCallHistoryFilters struct{ prefix string }
+type VhtCallHistoryFilters struct{ prefix string }
 
-func NewVthCallHistoryFilters(prefix string) VthCallHistoryFilters {
-	return VthCallHistoryFilters{prefix}
+func NewVhtCallHistoryFilters(prefix string) VhtCallHistoryFilters {
+	return VhtCallHistoryFilters{prefix}
 }
 
-func (ft *VthCallHistoryFilters) Filter(pred string, args ...interface{}) sq.WriterTo {
+func (ft *VhtCallHistoryFilters) Filter(pred string, args ...interface{}) sq.WriterTo {
 	return sq.Filter(&ft.prefix, pred, args...)
 }
 
-func (ft VthCallHistoryFilters) Prefix() string {
+func (ft VhtCallHistoryFilters) Prefix() string {
 	return ft.prefix
 }
 
-func (ft *VthCallHistoryFilters) ByID(ID string) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
-		Prefix: &ft.prefix,
-		Column: "id",
-		Value:  ID,
-		IsNil:  ID == "",
-	}
-}
-
-func (ft *VthCallHistoryFilters) ByIDPtr(ID *string) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
-		Prefix: &ft.prefix,
-		Column: "id",
-		Value:  ID,
-		IsNil:  ID == nil,
-		IsZero: ID != nil && (*ID) == "",
-	}
-}
-
-func (ft *VthCallHistoryFilters) ByCdrID(CdrID string) *sq.ColumnFilter {
+func (ft *VhtCallHistoryFilters) ByCdrID(CdrID string) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "cdr_id",
@@ -852,7 +833,7 @@ func (ft *VthCallHistoryFilters) ByCdrID(CdrID string) *sq.ColumnFilter {
 	}
 }
 
-func (ft *VthCallHistoryFilters) ByCdrIDPtr(CdrID *string) *sq.ColumnFilterPtr {
+func (ft *VhtCallHistoryFilters) ByCdrIDPtr(CdrID *string) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "cdr_id",
@@ -862,7 +843,7 @@ func (ft *VthCallHistoryFilters) ByCdrIDPtr(CdrID *string) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft *VthCallHistoryFilters) ByCallID(CallID string) *sq.ColumnFilter {
+func (ft *VhtCallHistoryFilters) ByCallID(CallID string) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "call_id",
@@ -871,7 +852,7 @@ func (ft *VthCallHistoryFilters) ByCallID(CallID string) *sq.ColumnFilter {
 	}
 }
 
-func (ft *VthCallHistoryFilters) ByCallIDPtr(CallID *string) *sq.ColumnFilterPtr {
+func (ft *VhtCallHistoryFilters) ByCallIDPtr(CallID *string) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "call_id",
@@ -881,7 +862,7 @@ func (ft *VthCallHistoryFilters) ByCallIDPtr(CallID *string) *sq.ColumnFilterPtr
 	}
 }
 
-func (ft *VthCallHistoryFilters) BySipCallID(SipCallID string) *sq.ColumnFilter {
+func (ft *VhtCallHistoryFilters) BySipCallID(SipCallID string) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "sip_call_id",
@@ -890,7 +871,7 @@ func (ft *VthCallHistoryFilters) BySipCallID(SipCallID string) *sq.ColumnFilter 
 	}
 }
 
-func (ft *VthCallHistoryFilters) BySipCallIDPtr(SipCallID *string) *sq.ColumnFilterPtr {
+func (ft *VhtCallHistoryFilters) BySipCallIDPtr(SipCallID *string) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "sip_call_id",
@@ -900,7 +881,7 @@ func (ft *VthCallHistoryFilters) BySipCallIDPtr(SipCallID *string) *sq.ColumnFil
 	}
 }
 
-func (ft *VthCallHistoryFilters) BySdkCallID(SdkCallID string) *sq.ColumnFilter {
+func (ft *VhtCallHistoryFilters) BySdkCallID(SdkCallID string) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "sdk_call_id",
@@ -909,7 +890,7 @@ func (ft *VthCallHistoryFilters) BySdkCallID(SdkCallID string) *sq.ColumnFilter 
 	}
 }
 
-func (ft *VthCallHistoryFilters) BySdkCallIDPtr(SdkCallID *string) *sq.ColumnFilterPtr {
+func (ft *VhtCallHistoryFilters) BySdkCallIDPtr(SdkCallID *string) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "sdk_call_id",
@@ -919,7 +900,7 @@ func (ft *VthCallHistoryFilters) BySdkCallIDPtr(SdkCallID *string) *sq.ColumnFil
 	}
 }
 
-func (ft *VthCallHistoryFilters) ByCause(Cause string) *sq.ColumnFilter {
+func (ft *VhtCallHistoryFilters) ByCause(Cause string) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "cause",
@@ -928,7 +909,7 @@ func (ft *VthCallHistoryFilters) ByCause(Cause string) *sq.ColumnFilter {
 	}
 }
 
-func (ft *VthCallHistoryFilters) ByCausePtr(Cause *string) *sq.ColumnFilterPtr {
+func (ft *VhtCallHistoryFilters) ByCausePtr(Cause *string) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "cause",
@@ -938,26 +919,26 @@ func (ft *VthCallHistoryFilters) ByCausePtr(Cause *string) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft *VthCallHistoryFilters) ByQ850Call(Q850Call string) *sq.ColumnFilter {
+func (ft *VhtCallHistoryFilters) ByQ850Cause(Q850Cause string) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
-		Column: "q850_call",
-		Value:  Q850Call,
-		IsNil:  Q850Call == "",
+		Column: "q850_cause",
+		Value:  Q850Cause,
+		IsNil:  Q850Cause == "",
 	}
 }
 
-func (ft *VthCallHistoryFilters) ByQ850CallPtr(Q850Call *string) *sq.ColumnFilterPtr {
+func (ft *VhtCallHistoryFilters) ByQ850CausePtr(Q850Cause *string) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
-		Column: "q850_call",
-		Value:  Q850Call,
-		IsNil:  Q850Call == nil,
-		IsZero: Q850Call != nil && (*Q850Call) == "",
+		Column: "q850_cause",
+		Value:  Q850Cause,
+		IsNil:  Q850Cause == nil,
+		IsZero: Q850Cause != nil && (*Q850Cause) == "",
 	}
 }
 
-func (ft *VthCallHistoryFilters) ByFromExtension(FromExtension string) *sq.ColumnFilter {
+func (ft *VhtCallHistoryFilters) ByFromExtension(FromExtension string) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "from_extension",
@@ -966,7 +947,7 @@ func (ft *VthCallHistoryFilters) ByFromExtension(FromExtension string) *sq.Colum
 	}
 }
 
-func (ft *VthCallHistoryFilters) ByFromExtensionPtr(FromExtension *string) *sq.ColumnFilterPtr {
+func (ft *VhtCallHistoryFilters) ByFromExtensionPtr(FromExtension *string) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "from_extension",
@@ -976,7 +957,7 @@ func (ft *VthCallHistoryFilters) ByFromExtensionPtr(FromExtension *string) *sq.C
 	}
 }
 
-func (ft *VthCallHistoryFilters) ByToExtension(ToExtension string) *sq.ColumnFilter {
+func (ft *VhtCallHistoryFilters) ByToExtension(ToExtension string) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "to_extension",
@@ -985,7 +966,7 @@ func (ft *VthCallHistoryFilters) ByToExtension(ToExtension string) *sq.ColumnFil
 	}
 }
 
-func (ft *VthCallHistoryFilters) ByToExtensionPtr(ToExtension *string) *sq.ColumnFilterPtr {
+func (ft *VhtCallHistoryFilters) ByToExtensionPtr(ToExtension *string) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "to_extension",
@@ -995,7 +976,7 @@ func (ft *VthCallHistoryFilters) ByToExtensionPtr(ToExtension *string) *sq.Colum
 	}
 }
 
-func (ft *VthCallHistoryFilters) ByFromNumber(FromNumber string) *sq.ColumnFilter {
+func (ft *VhtCallHistoryFilters) ByFromNumber(FromNumber string) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "from_number",
@@ -1004,7 +985,7 @@ func (ft *VthCallHistoryFilters) ByFromNumber(FromNumber string) *sq.ColumnFilte
 	}
 }
 
-func (ft *VthCallHistoryFilters) ByFromNumberPtr(FromNumber *string) *sq.ColumnFilterPtr {
+func (ft *VhtCallHistoryFilters) ByFromNumberPtr(FromNumber *string) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "from_number",
@@ -1014,7 +995,7 @@ func (ft *VthCallHistoryFilters) ByFromNumberPtr(FromNumber *string) *sq.ColumnF
 	}
 }
 
-func (ft *VthCallHistoryFilters) ByToNumber(ToNumber string) *sq.ColumnFilter {
+func (ft *VhtCallHistoryFilters) ByToNumber(ToNumber string) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "to_number",
@@ -1023,7 +1004,7 @@ func (ft *VthCallHistoryFilters) ByToNumber(ToNumber string) *sq.ColumnFilter {
 	}
 }
 
-func (ft *VthCallHistoryFilters) ByToNumberPtr(ToNumber *string) *sq.ColumnFilterPtr {
+func (ft *VhtCallHistoryFilters) ByToNumberPtr(ToNumber *string) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "to_number",
@@ -1033,83 +1014,140 @@ func (ft *VthCallHistoryFilters) ByToNumberPtr(ToNumber *string) *sq.ColumnFilte
 	}
 }
 
-func (ft *VthCallHistoryFilters) ByDuration(Duration string) *sq.ColumnFilter {
+func (ft *VhtCallHistoryFilters) ByDuration(Duration int32) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "duration",
 		Value:  Duration,
-		IsNil:  Duration == "",
+		IsNil:  Duration == 0,
 	}
 }
 
-func (ft *VthCallHistoryFilters) ByDurationPtr(Duration *string) *sq.ColumnFilterPtr {
+func (ft *VhtCallHistoryFilters) ByDurationPtr(Duration *int32) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "duration",
 		Value:  Duration,
 		IsNil:  Duration == nil,
-		IsZero: Duration != nil && (*Duration) == "",
+		IsZero: Duration != nil && (*Duration) == 0,
 	}
 }
 
-func (ft *VthCallHistoryFilters) ByDirection(Direction string) *sq.ColumnFilter {
+func (ft *VhtCallHistoryFilters) ByDirection(Direction int32) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "direction",
 		Value:  Direction,
-		IsNil:  Direction == "",
+		IsNil:  Direction == 0,
 	}
 }
 
-func (ft *VthCallHistoryFilters) ByDirectionPtr(Direction *string) *sq.ColumnFilterPtr {
+func (ft *VhtCallHistoryFilters) ByDirectionPtr(Direction *int32) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "direction",
 		Value:  Direction,
 		IsNil:  Direction == nil,
-		IsZero: Direction != nil && (*Direction) == "",
+		IsZero: Direction != nil && (*Direction) == 0,
 	}
 }
 
-func (ft *VthCallHistoryFilters) ByTimeStarted(TimeStarted string) *sq.ColumnFilter {
+func (ft *VhtCallHistoryFilters) ByTimeStarted(TimeStarted time.Time) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "time_started",
 		Value:  TimeStarted,
-		IsNil:  TimeStarted == "",
+		IsNil:  TimeStarted.IsZero(),
 	}
 }
 
-func (ft *VthCallHistoryFilters) ByTimeStartedPtr(TimeStarted *string) *sq.ColumnFilterPtr {
+func (ft *VhtCallHistoryFilters) ByTimeStartedPtr(TimeStarted *time.Time) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "time_started",
 		Value:  TimeStarted,
 		IsNil:  TimeStarted == nil,
-		IsZero: TimeStarted != nil && (*TimeStarted) == "",
+		IsZero: TimeStarted != nil && (*TimeStarted).IsZero(),
 	}
 }
 
-func (ft *VthCallHistoryFilters) ByTimeConnected(TimeConnected string) *sq.ColumnFilter {
+func (ft *VhtCallHistoryFilters) ByTimeConnected(TimeConnected time.Time) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "time_connected",
 		Value:  TimeConnected,
-		IsNil:  TimeConnected == "",
+		IsNil:  TimeConnected.IsZero(),
 	}
 }
 
-func (ft *VthCallHistoryFilters) ByTimeConnectedPtr(TimeConnected *string) *sq.ColumnFilterPtr {
+func (ft *VhtCallHistoryFilters) ByTimeConnectedPtr(TimeConnected *time.Time) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "time_connected",
 		Value:  TimeConnected,
 		IsNil:  TimeConnected == nil,
-		IsZero: TimeConnected != nil && (*TimeConnected) == "",
+		IsZero: TimeConnected != nil && (*TimeConnected).IsZero(),
 	}
 }
 
-func (ft *VthCallHistoryFilters) ByRecordingPath(RecordingPath string) *sq.ColumnFilter {
+func (ft *VhtCallHistoryFilters) ByTimeEnded(TimeEnded time.Time) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "time_ended",
+		Value:  TimeEnded,
+		IsNil:  TimeEnded.IsZero(),
+	}
+}
+
+func (ft *VhtCallHistoryFilters) ByTimeEndedPtr(TimeEnded *time.Time) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "time_ended",
+		Value:  TimeEnded,
+		IsNil:  TimeEnded == nil,
+		IsZero: TimeEnded != nil && (*TimeEnded).IsZero(),
+	}
+}
+
+func (ft *VhtCallHistoryFilters) ByCreatedAt(CreatedAt time.Time) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "created_at",
+		Value:  CreatedAt,
+		IsNil:  CreatedAt.IsZero(),
+	}
+}
+
+func (ft *VhtCallHistoryFilters) ByCreatedAtPtr(CreatedAt *time.Time) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "created_at",
+		Value:  CreatedAt,
+		IsNil:  CreatedAt == nil,
+		IsZero: CreatedAt != nil && (*CreatedAt).IsZero(),
+	}
+}
+
+func (ft *VhtCallHistoryFilters) ByUpdatedAt(UpdatedAt time.Time) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "updated_at",
+		Value:  UpdatedAt,
+		IsNil:  UpdatedAt.IsZero(),
+	}
+}
+
+func (ft *VhtCallHistoryFilters) ByUpdatedAtPtr(UpdatedAt *time.Time) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "updated_at",
+		Value:  UpdatedAt,
+		IsNil:  UpdatedAt == nil,
+		IsZero: UpdatedAt != nil && (*UpdatedAt).IsZero(),
+	}
+}
+
+func (ft *VhtCallHistoryFilters) ByRecordingPath(RecordingPath string) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "recording_path",
@@ -1118,7 +1156,7 @@ func (ft *VthCallHistoryFilters) ByRecordingPath(RecordingPath string) *sq.Colum
 	}
 }
 
-func (ft *VthCallHistoryFilters) ByRecordingPathPtr(RecordingPath *string) *sq.ColumnFilterPtr {
+func (ft *VhtCallHistoryFilters) ByRecordingPathPtr(RecordingPath *string) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "recording_path",
@@ -1128,7 +1166,7 @@ func (ft *VthCallHistoryFilters) ByRecordingPathPtr(RecordingPath *string) *sq.C
 	}
 }
 
-func (ft *VthCallHistoryFilters) ByRecordingURL(RecordingURL string) *sq.ColumnFilter {
+func (ft *VhtCallHistoryFilters) ByRecordingURL(RecordingURL string) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "recording_url",
@@ -1137,7 +1175,7 @@ func (ft *VthCallHistoryFilters) ByRecordingURL(RecordingURL string) *sq.ColumnF
 	}
 }
 
-func (ft *VthCallHistoryFilters) ByRecordingURLPtr(RecordingURL *string) *sq.ColumnFilterPtr {
+func (ft *VhtCallHistoryFilters) ByRecordingURLPtr(RecordingURL *string) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "recording_url",
@@ -1147,26 +1185,45 @@ func (ft *VthCallHistoryFilters) ByRecordingURLPtr(RecordingURL *string) *sq.Col
 	}
 }
 
-func (ft *VthCallHistoryFilters) ByEtopAcountID(EtopAcountID int64) *sq.ColumnFilter {
+func (ft *VhtCallHistoryFilters) ByRecordFileSize(RecordFileSize int32) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
-		Column: "etop_acount_id",
-		Value:  EtopAcountID,
-		IsNil:  EtopAcountID == 0,
+		Column: "record_file_size",
+		Value:  RecordFileSize,
+		IsNil:  RecordFileSize == 0,
 	}
 }
 
-func (ft *VthCallHistoryFilters) ByEtopAcountIDPtr(EtopAcountID *int64) *sq.ColumnFilterPtr {
+func (ft *VhtCallHistoryFilters) ByRecordFileSizePtr(RecordFileSize *int32) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
-		Column: "etop_acount_id",
-		Value:  EtopAcountID,
-		IsNil:  EtopAcountID == nil,
-		IsZero: EtopAcountID != nil && (*EtopAcountID) == 0,
+		Column: "record_file_size",
+		Value:  RecordFileSize,
+		IsNil:  RecordFileSize == nil,
+		IsZero: RecordFileSize != nil && (*RecordFileSize) == 0,
 	}
 }
 
-func (ft *VthCallHistoryFilters) ByVtigerAccountID(VtigerAccountID string) *sq.ColumnFilter {
+func (ft *VhtCallHistoryFilters) ByEtopAccountID(EtopAccountID int64) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "etop_account_id",
+		Value:  EtopAccountID,
+		IsNil:  EtopAccountID == 0,
+	}
+}
+
+func (ft *VhtCallHistoryFilters) ByEtopAccountIDPtr(EtopAccountID *int64) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "etop_account_id",
+		Value:  EtopAccountID,
+		IsNil:  EtopAccountID == nil,
+		IsZero: EtopAccountID != nil && (*EtopAccountID) == 0,
+	}
+}
+
+func (ft *VhtCallHistoryFilters) ByVtigerAccountID(VtigerAccountID string) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "vtiger_account_id",
@@ -1175,7 +1232,7 @@ func (ft *VthCallHistoryFilters) ByVtigerAccountID(VtigerAccountID string) *sq.C
 	}
 }
 
-func (ft *VthCallHistoryFilters) ByVtigerAccountIDPtr(VtigerAccountID *string) *sq.ColumnFilterPtr {
+func (ft *VhtCallHistoryFilters) ByVtigerAccountIDPtr(VtigerAccountID *string) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "vtiger_account_id",
@@ -1185,7 +1242,45 @@ func (ft *VthCallHistoryFilters) ByVtigerAccountIDPtr(VtigerAccountID *string) *
 	}
 }
 
-func (ft *VthCallHistoryFilters) BySearchNorm(SearchNorm string) *sq.ColumnFilter {
+func (ft *VhtCallHistoryFilters) BySyncStatus(SyncStatus string) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "sync_status",
+		Value:  SyncStatus,
+		IsNil:  SyncStatus == "",
+	}
+}
+
+func (ft *VhtCallHistoryFilters) BySyncStatusPtr(SyncStatus *string) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "sync_status",
+		Value:  SyncStatus,
+		IsNil:  SyncStatus == nil,
+		IsZero: SyncStatus != nil && (*SyncStatus) == "",
+	}
+}
+
+func (ft *VhtCallHistoryFilters) ByOData(OData string) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "o_data",
+		Value:  OData,
+		IsNil:  OData == "",
+	}
+}
+
+func (ft *VhtCallHistoryFilters) ByODataPtr(OData *string) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "o_data",
+		Value:  OData,
+		IsNil:  OData == nil,
+		IsZero: OData != nil && (*OData) == "",
+	}
+}
+
+func (ft *VhtCallHistoryFilters) BySearchNorm(SearchNorm string) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "search_norm",
@@ -1194,7 +1289,7 @@ func (ft *VthCallHistoryFilters) BySearchNorm(SearchNorm string) *sq.ColumnFilte
 	}
 }
 
-func (ft *VthCallHistoryFilters) BySearchNormPtr(SearchNorm *string) *sq.ColumnFilterPtr {
+func (ft *VhtCallHistoryFilters) BySearchNormPtr(SearchNorm *string) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "search_norm",

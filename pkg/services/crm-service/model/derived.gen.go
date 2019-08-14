@@ -1001,80 +1001,91 @@ func (ms *VtigerAccountHistories) SQLScan(opts core.Opts, rows *sql.Rows) error 
 	return nil
 }
 
-// Type VthCallHistory represents table vth_call_history
-func sqlgenVthCallHistory(_ *VthCallHistory) bool { return true }
+// Type VhtCallHistory represents table vht_call_history
+func sqlgenVthCallHistory(_ *VhtCallHistory) bool { return true }
 
-type VthCallHistories []*VthCallHistory
+type VhtCallHistories []*VhtCallHistory
 
-const __sqlVthCallHistory_Table = "vth_call_history"
-const __sqlVthCallHistory_ListCols = "\"id\",\"cdr_id\",\"call_id\",\"sip_call_id\",\"sdk_call_id\",\"cause\",\"q850_call\",\"from_extension\",\"to_extension\",\"from_number\",\"to_number\",\"duration\",\"direction\",\"time_started\",\"time_connected\",\"recording_path\",\"recording_url\",\"etop_acount_id\",\"vtiger_account_id\",\"search_norm\""
-const __sqlVthCallHistory_Insert = "INSERT INTO \"vth_call_history\" (" + __sqlVthCallHistory_ListCols + ") VALUES"
-const __sqlVthCallHistory_Select = "SELECT " + __sqlVthCallHistory_ListCols + " FROM \"vth_call_history\""
-const __sqlVthCallHistory_Select_history = "SELECT " + __sqlVthCallHistory_ListCols + " FROM history.\"vth_call_history\""
-const __sqlVthCallHistory_UpdateAll = "UPDATE \"vth_call_history\" SET (" + __sqlVthCallHistory_ListCols + ")"
+const __sqlVhtCallHistory_Table = "vht_call_history"
+const __sqlVhtCallHistory_ListCols = "\"cdr_id\",\"call_id\",\"sip_call_id\",\"sdk_call_id\",\"cause\",\"q850_cause\",\"from_extension\",\"to_extension\",\"from_number\",\"to_number\",\"duration\",\"direction\",\"time_started\",\"time_connected\",\"time_ended\",\"created_at\",\"updated_at\",\"recording_path\",\"recording_url\",\"record_file_size\",\"etop_account_id\",\"vtiger_account_id\",\"sync_status\",\"o_data\",\"search_norm\""
+const __sqlVhtCallHistory_Insert = "INSERT INTO \"vht_call_history\" (" + __sqlVhtCallHistory_ListCols + ") VALUES"
+const __sqlVhtCallHistory_Select = "SELECT " + __sqlVhtCallHistory_ListCols + " FROM \"vht_call_history\""
+const __sqlVhtCallHistory_Select_history = "SELECT " + __sqlVhtCallHistory_ListCols + " FROM history.\"vht_call_history\""
+const __sqlVhtCallHistory_UpdateAll = "UPDATE \"vht_call_history\" SET (" + __sqlVhtCallHistory_ListCols + ")"
 
-func (m *VthCallHistory) SQLTableName() string   { return "vth_call_history" }
-func (m *VthCallHistories) SQLTableName() string { return "vth_call_history" }
-func (m *VthCallHistory) SQLListCols() string    { return __sqlVthCallHistory_ListCols }
+func (m *VhtCallHistory) SQLTableName() string   { return "vht_call_history" }
+func (m *VhtCallHistories) SQLTableName() string { return "vht_call_history" }
+func (m *VhtCallHistory) SQLListCols() string    { return __sqlVhtCallHistory_ListCols }
 
-func (m *VthCallHistory) SQLArgs(opts core.Opts, create bool) []interface{} {
+func (m *VhtCallHistory) SQLArgs(opts core.Opts, create bool) []interface{} {
+	now := time.Now()
 	return []interface{}{
-		core.String(m.ID),
 		core.String(m.CdrID),
 		core.String(m.CallID),
 		core.String(m.SipCallID),
 		core.String(m.SdkCallID),
 		core.String(m.Cause),
-		core.String(m.Q850Call),
+		core.String(m.Q850Cause),
 		core.String(m.FromExtension),
 		core.String(m.ToExtension),
 		core.String(m.FromNumber),
 		core.String(m.ToNumber),
-		core.String(m.Duration),
-		core.String(m.Direction),
-		core.String(m.TimeStarted),
-		core.String(m.TimeConnected),
+		core.Int32(m.Duration),
+		core.Int32(m.Direction),
+		core.Time(m.TimeStarted),
+		core.Time(m.TimeConnected),
+		core.Time(m.TimeEnded),
+		core.Now(m.CreatedAt, now, create),
+		core.Now(m.UpdatedAt, now, true),
 		core.String(m.RecordingPath),
 		core.String(m.RecordingURL),
-		core.Int64(m.EtopAcountID),
+		core.Int32(m.RecordFileSize),
+		core.Int64(m.EtopAccountID),
 		core.String(m.VtigerAccountID),
+		core.String(m.SyncStatus),
+		core.String(m.OData),
 		core.String(m.SearchNorm),
 	}
 }
 
-func (m *VthCallHistory) SQLScanArgs(opts core.Opts) []interface{} {
+func (m *VhtCallHistory) SQLScanArgs(opts core.Opts) []interface{} {
 	return []interface{}{
-		(*core.String)(&m.ID),
 		(*core.String)(&m.CdrID),
 		(*core.String)(&m.CallID),
 		(*core.String)(&m.SipCallID),
 		(*core.String)(&m.SdkCallID),
 		(*core.String)(&m.Cause),
-		(*core.String)(&m.Q850Call),
+		(*core.String)(&m.Q850Cause),
 		(*core.String)(&m.FromExtension),
 		(*core.String)(&m.ToExtension),
 		(*core.String)(&m.FromNumber),
 		(*core.String)(&m.ToNumber),
-		(*core.String)(&m.Duration),
-		(*core.String)(&m.Direction),
-		(*core.String)(&m.TimeStarted),
-		(*core.String)(&m.TimeConnected),
+		(*core.Int32)(&m.Duration),
+		(*core.Int32)(&m.Direction),
+		(*core.Time)(&m.TimeStarted),
+		(*core.Time)(&m.TimeConnected),
+		(*core.Time)(&m.TimeEnded),
+		(*core.Time)(&m.CreatedAt),
+		(*core.Time)(&m.UpdatedAt),
 		(*core.String)(&m.RecordingPath),
 		(*core.String)(&m.RecordingURL),
-		(*core.Int64)(&m.EtopAcountID),
+		(*core.Int32)(&m.RecordFileSize),
+		(*core.Int64)(&m.EtopAccountID),
 		(*core.String)(&m.VtigerAccountID),
+		(*core.String)(&m.SyncStatus),
+		(*core.String)(&m.OData),
 		(*core.String)(&m.SearchNorm),
 	}
 }
 
-func (m *VthCallHistory) SQLScan(opts core.Opts, row *sql.Row) error {
+func (m *VhtCallHistory) SQLScan(opts core.Opts, row *sql.Row) error {
 	return row.Scan(m.SQLScanArgs(opts)...)
 }
 
-func (ms *VthCallHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	res := make(VthCallHistories, 0, 128)
+func (ms *VhtCallHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
+	res := make(VhtCallHistories, 0, 128)
 	for rows.Next() {
-		m := new(VthCallHistory)
+		m := new(VhtCallHistory)
 		args := m.SQLScanArgs(opts)
 		if err := rows.Scan(args...); err != nil {
 			return err
@@ -1088,30 +1099,30 @@ func (ms *VthCallHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
 	return nil
 }
 
-func (_ *VthCallHistory) SQLSelect(w SQLWriter) error {
-	w.WriteQueryString(__sqlVthCallHistory_Select)
+func (_ *VhtCallHistory) SQLSelect(w SQLWriter) error {
+	w.WriteQueryString(__sqlVhtCallHistory_Select)
 	return nil
 }
 
-func (_ *VthCallHistories) SQLSelect(w SQLWriter) error {
-	w.WriteQueryString(__sqlVthCallHistory_Select)
+func (_ *VhtCallHistories) SQLSelect(w SQLWriter) error {
+	w.WriteQueryString(__sqlVhtCallHistory_Select)
 	return nil
 }
 
-func (m *VthCallHistory) SQLInsert(w SQLWriter) error {
-	w.WriteQueryString(__sqlVthCallHistory_Insert)
+func (m *VhtCallHistory) SQLInsert(w SQLWriter) error {
+	w.WriteQueryString(__sqlVhtCallHistory_Insert)
 	w.WriteRawString(" (")
-	w.WriteMarkers(20)
+	w.WriteMarkers(25)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), true))
 	return nil
 }
 
-func (ms VthCallHistories) SQLInsert(w SQLWriter) error {
-	w.WriteQueryString(__sqlVthCallHistory_Insert)
+func (ms VhtCallHistories) SQLInsert(w SQLWriter) error {
+	w.WriteQueryString(__sqlVhtCallHistory_Insert)
 	w.WriteRawString(" (")
 	for i := 0; i < len(ms); i++ {
-		w.WriteMarkers(20)
+		w.WriteMarkers(25)
 		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
 		w.WriteRawString("),(")
 	}
@@ -1119,21 +1130,13 @@ func (ms VthCallHistories) SQLInsert(w SQLWriter) error {
 	return nil
 }
 
-func (m *VthCallHistory) SQLUpdate(w SQLWriter) error {
+func (m *VhtCallHistory) SQLUpdate(w SQLWriter) error {
 	now, opts := time.Now(), w.Opts()
 	_, _ = now, opts // suppress unuse error
 	var flag bool
 	w.WriteRawString("UPDATE ")
-	w.WriteName("vth_call_history")
+	w.WriteName("vht_call_history")
 	w.WriteRawString(" SET ")
-	if m.ID != "" {
-		flag = true
-		w.WriteName("id")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(m.ID)
-	}
 	if m.CdrID != "" {
 		flag = true
 		w.WriteName("cdr_id")
@@ -1174,13 +1177,13 @@ func (m *VthCallHistory) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(m.Cause)
 	}
-	if m.Q850Call != "" {
+	if m.Q850Cause != "" {
 		flag = true
-		w.WriteName("q850_call")
+		w.WriteName("q850_cause")
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(m.Q850Call)
+		w.WriteArg(m.Q850Cause)
 	}
 	if m.FromExtension != "" {
 		flag = true
@@ -1214,7 +1217,7 @@ func (m *VthCallHistory) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(m.ToNumber)
 	}
-	if m.Duration != "" {
+	if m.Duration != 0 {
 		flag = true
 		w.WriteName("duration")
 		w.WriteByte('=')
@@ -1222,7 +1225,7 @@ func (m *VthCallHistory) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(m.Duration)
 	}
-	if m.Direction != "" {
+	if m.Direction != 0 {
 		flag = true
 		w.WriteName("direction")
 		w.WriteByte('=')
@@ -1230,7 +1233,7 @@ func (m *VthCallHistory) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(m.Direction)
 	}
-	if m.TimeStarted != "" {
+	if !m.TimeStarted.IsZero() {
 		flag = true
 		w.WriteName("time_started")
 		w.WriteByte('=')
@@ -1238,13 +1241,37 @@ func (m *VthCallHistory) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(m.TimeStarted)
 	}
-	if m.TimeConnected != "" {
+	if !m.TimeConnected.IsZero() {
 		flag = true
 		w.WriteName("time_connected")
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
 		w.WriteArg(m.TimeConnected)
+	}
+	if !m.TimeEnded.IsZero() {
+		flag = true
+		w.WriteName("time_ended")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.TimeEnded)
+	}
+	if !m.CreatedAt.IsZero() {
+		flag = true
+		w.WriteName("created_at")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.CreatedAt)
+	}
+	if !m.UpdatedAt.IsZero() {
+		flag = true
+		w.WriteName("updated_at")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(core.Now(m.UpdatedAt, time.Now(), true))
 	}
 	if m.RecordingPath != "" {
 		flag = true
@@ -1262,13 +1289,21 @@ func (m *VthCallHistory) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(m.RecordingURL)
 	}
-	if m.EtopAcountID != 0 {
+	if m.RecordFileSize != 0 {
 		flag = true
-		w.WriteName("etop_acount_id")
+		w.WriteName("record_file_size")
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(m.EtopAcountID)
+		w.WriteArg(m.RecordFileSize)
+	}
+	if m.EtopAccountID != 0 {
+		flag = true
+		w.WriteName("etop_account_id")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.EtopAccountID)
 	}
 	if m.VtigerAccountID != "" {
 		flag = true
@@ -1277,6 +1312,22 @@ func (m *VthCallHistory) SQLUpdate(w SQLWriter) error {
 		w.WriteMarker()
 		w.WriteByte(',')
 		w.WriteArg(m.VtigerAccountID)
+	}
+	if m.SyncStatus != "" {
+		flag = true
+		w.WriteName("sync_status")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.SyncStatus)
+	}
+	if m.OData != "" {
+		flag = true
+		w.WriteName("o_data")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.OData)
 	}
 	if m.SearchNorm != "" {
 		flag = true
@@ -1293,130 +1344,147 @@ func (m *VthCallHistory) SQLUpdate(w SQLWriter) error {
 	return nil
 }
 
-func (m *VthCallHistory) SQLUpdateAll(w SQLWriter) error {
-	w.WriteQueryString(__sqlVthCallHistory_UpdateAll)
+func (m *VhtCallHistory) SQLUpdateAll(w SQLWriter) error {
+	w.WriteQueryString(__sqlVhtCallHistory_UpdateAll)
 	w.WriteRawString(" = (")
-	w.WriteMarkers(20)
+	w.WriteMarkers(25)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), false))
 	return nil
 }
 
-type VthCallHistoryHistory map[string]interface{}
-type VthCallHistoryHistories []map[string]interface{}
+type VhtCallHistoryHistory map[string]interface{}
+type VhtCallHistoryHistories []map[string]interface{}
 
-func (m *VthCallHistoryHistory) SQLTableName() string  { return "history.\"vth_call_history\"" }
-func (m VthCallHistoryHistories) SQLTableName() string { return "history.\"vth_call_history\"" }
+func (m *VhtCallHistoryHistory) SQLTableName() string  { return "history.\"vht_call_history\"" }
+func (m VhtCallHistoryHistories) SQLTableName() string { return "history.\"vht_call_history\"" }
 
-func (m *VthCallHistoryHistory) SQLSelect(w SQLWriter) error {
-	w.WriteQueryString(__sqlVthCallHistory_Select_history)
+func (m *VhtCallHistoryHistory) SQLSelect(w SQLWriter) error {
+	w.WriteQueryString(__sqlVhtCallHistory_Select_history)
 	return nil
 }
 
-func (m VthCallHistoryHistories) SQLSelect(w SQLWriter) error {
-	w.WriteQueryString(__sqlVthCallHistory_Select_history)
+func (m VhtCallHistoryHistories) SQLSelect(w SQLWriter) error {
+	w.WriteQueryString(__sqlVhtCallHistory_Select_history)
 	return nil
 }
 
-func (m VthCallHistoryHistory) ID() core.Interface        { return core.Interface{m["id"]} }
-func (m VthCallHistoryHistory) CdrID() core.Interface     { return core.Interface{m["cdr_id"]} }
-func (m VthCallHistoryHistory) CallID() core.Interface    { return core.Interface{m["call_id"]} }
-func (m VthCallHistoryHistory) SipCallID() core.Interface { return core.Interface{m["sip_call_id"]} }
-func (m VthCallHistoryHistory) SdkCallID() core.Interface { return core.Interface{m["sdk_call_id"]} }
-func (m VthCallHistoryHistory) Cause() core.Interface     { return core.Interface{m["cause"]} }
-func (m VthCallHistoryHistory) Q850Call() core.Interface  { return core.Interface{m["q850_call"]} }
-func (m VthCallHistoryHistory) FromExtension() core.Interface {
+func (m VhtCallHistoryHistory) CdrID() core.Interface     { return core.Interface{m["cdr_id"]} }
+func (m VhtCallHistoryHistory) CallID() core.Interface    { return core.Interface{m["call_id"]} }
+func (m VhtCallHistoryHistory) SipCallID() core.Interface { return core.Interface{m["sip_call_id"]} }
+func (m VhtCallHistoryHistory) SdkCallID() core.Interface { return core.Interface{m["sdk_call_id"]} }
+func (m VhtCallHistoryHistory) Cause() core.Interface     { return core.Interface{m["cause"]} }
+func (m VhtCallHistoryHistory) Q850Cause() core.Interface { return core.Interface{m["q850_cause"]} }
+func (m VhtCallHistoryHistory) FromExtension() core.Interface {
 	return core.Interface{m["from_extension"]}
 }
-func (m VthCallHistoryHistory) ToExtension() core.Interface { return core.Interface{m["to_extension"]} }
-func (m VthCallHistoryHistory) FromNumber() core.Interface  { return core.Interface{m["from_number"]} }
-func (m VthCallHistoryHistory) ToNumber() core.Interface    { return core.Interface{m["to_number"]} }
-func (m VthCallHistoryHistory) Duration() core.Interface    { return core.Interface{m["duration"]} }
-func (m VthCallHistoryHistory) Direction() core.Interface   { return core.Interface{m["direction"]} }
-func (m VthCallHistoryHistory) TimeStarted() core.Interface { return core.Interface{m["time_started"]} }
-func (m VthCallHistoryHistory) TimeConnected() core.Interface {
+func (m VhtCallHistoryHistory) ToExtension() core.Interface { return core.Interface{m["to_extension"]} }
+func (m VhtCallHistoryHistory) FromNumber() core.Interface  { return core.Interface{m["from_number"]} }
+func (m VhtCallHistoryHistory) ToNumber() core.Interface    { return core.Interface{m["to_number"]} }
+func (m VhtCallHistoryHistory) Duration() core.Interface    { return core.Interface{m["duration"]} }
+func (m VhtCallHistoryHistory) Direction() core.Interface   { return core.Interface{m["direction"]} }
+func (m VhtCallHistoryHistory) TimeStarted() core.Interface { return core.Interface{m["time_started"]} }
+func (m VhtCallHistoryHistory) TimeConnected() core.Interface {
 	return core.Interface{m["time_connected"]}
 }
-func (m VthCallHistoryHistory) RecordingPath() core.Interface {
+func (m VhtCallHistoryHistory) TimeEnded() core.Interface { return core.Interface{m["time_ended"]} }
+func (m VhtCallHistoryHistory) CreatedAt() core.Interface { return core.Interface{m["created_at"]} }
+func (m VhtCallHistoryHistory) UpdatedAt() core.Interface { return core.Interface{m["updated_at"]} }
+func (m VhtCallHistoryHistory) RecordingPath() core.Interface {
 	return core.Interface{m["recording_path"]}
 }
-func (m VthCallHistoryHistory) RecordingURL() core.Interface {
+func (m VhtCallHistoryHistory) RecordingURL() core.Interface {
 	return core.Interface{m["recording_url"]}
 }
-func (m VthCallHistoryHistory) EtopAcountID() core.Interface {
-	return core.Interface{m["etop_acount_id"]}
+func (m VhtCallHistoryHistory) RecordFileSize() core.Interface {
+	return core.Interface{m["record_file_size"]}
 }
-func (m VthCallHistoryHistory) VtigerAccountID() core.Interface {
+func (m VhtCallHistoryHistory) EtopAccountID() core.Interface {
+	return core.Interface{m["etop_account_id"]}
+}
+func (m VhtCallHistoryHistory) VtigerAccountID() core.Interface {
 	return core.Interface{m["vtiger_account_id"]}
 }
-func (m VthCallHistoryHistory) SearchNorm() core.Interface { return core.Interface{m["search_norm"]} }
+func (m VhtCallHistoryHistory) SyncStatus() core.Interface { return core.Interface{m["sync_status"]} }
+func (m VhtCallHistoryHistory) OData() core.Interface      { return core.Interface{m["o_data"]} }
+func (m VhtCallHistoryHistory) SearchNorm() core.Interface { return core.Interface{m["search_norm"]} }
 
-func (m *VthCallHistoryHistory) SQLScan(opts core.Opts, row *sql.Row) error {
-	data := make([]interface{}, 20)
-	args := make([]interface{}, 20)
-	for i := 0; i < 20; i++ {
+func (m *VhtCallHistoryHistory) SQLScan(opts core.Opts, row *sql.Row) error {
+	data := make([]interface{}, 25)
+	args := make([]interface{}, 25)
+	for i := 0; i < 25; i++ {
 		args[i] = &data[i]
 	}
 	if err := row.Scan(args...); err != nil {
 		return err
 	}
-	res := make(VthCallHistoryHistory, 20)
-	res["id"] = data[0]
-	res["cdr_id"] = data[1]
-	res["call_id"] = data[2]
-	res["sip_call_id"] = data[3]
-	res["sdk_call_id"] = data[4]
-	res["cause"] = data[5]
-	res["q850_call"] = data[6]
-	res["from_extension"] = data[7]
-	res["to_extension"] = data[8]
-	res["from_number"] = data[9]
-	res["to_number"] = data[10]
-	res["duration"] = data[11]
-	res["direction"] = data[12]
-	res["time_started"] = data[13]
-	res["time_connected"] = data[14]
-	res["recording_path"] = data[15]
-	res["recording_url"] = data[16]
-	res["etop_acount_id"] = data[17]
-	res["vtiger_account_id"] = data[18]
-	res["search_norm"] = data[19]
+	res := make(VhtCallHistoryHistory, 25)
+	res["cdr_id"] = data[0]
+	res["call_id"] = data[1]
+	res["sip_call_id"] = data[2]
+	res["sdk_call_id"] = data[3]
+	res["cause"] = data[4]
+	res["q850_cause"] = data[5]
+	res["from_extension"] = data[6]
+	res["to_extension"] = data[7]
+	res["from_number"] = data[8]
+	res["to_number"] = data[9]
+	res["duration"] = data[10]
+	res["direction"] = data[11]
+	res["time_started"] = data[12]
+	res["time_connected"] = data[13]
+	res["time_ended"] = data[14]
+	res["created_at"] = data[15]
+	res["updated_at"] = data[16]
+	res["recording_path"] = data[17]
+	res["recording_url"] = data[18]
+	res["record_file_size"] = data[19]
+	res["etop_account_id"] = data[20]
+	res["vtiger_account_id"] = data[21]
+	res["sync_status"] = data[22]
+	res["o_data"] = data[23]
+	res["search_norm"] = data[24]
 	*m = res
 	return nil
 }
 
-func (ms *VthCallHistoryHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	data := make([]interface{}, 20)
-	args := make([]interface{}, 20)
-	for i := 0; i < 20; i++ {
+func (ms *VhtCallHistoryHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
+	data := make([]interface{}, 25)
+	args := make([]interface{}, 25)
+	for i := 0; i < 25; i++ {
 		args[i] = &data[i]
 	}
-	res := make(VthCallHistoryHistories, 0, 128)
+	res := make(VhtCallHistoryHistories, 0, 128)
 	for rows.Next() {
 		if err := rows.Scan(args...); err != nil {
 			return err
 		}
-		m := make(VthCallHistoryHistory)
-		m["id"] = data[0]
-		m["cdr_id"] = data[1]
-		m["call_id"] = data[2]
-		m["sip_call_id"] = data[3]
-		m["sdk_call_id"] = data[4]
-		m["cause"] = data[5]
-		m["q850_call"] = data[6]
-		m["from_extension"] = data[7]
-		m["to_extension"] = data[8]
-		m["from_number"] = data[9]
-		m["to_number"] = data[10]
-		m["duration"] = data[11]
-		m["direction"] = data[12]
-		m["time_started"] = data[13]
-		m["time_connected"] = data[14]
-		m["recording_path"] = data[15]
-		m["recording_url"] = data[16]
-		m["etop_acount_id"] = data[17]
-		m["vtiger_account_id"] = data[18]
-		m["search_norm"] = data[19]
+		m := make(VhtCallHistoryHistory)
+		m["cdr_id"] = data[0]
+		m["call_id"] = data[1]
+		m["sip_call_id"] = data[2]
+		m["sdk_call_id"] = data[3]
+		m["cause"] = data[4]
+		m["q850_cause"] = data[5]
+		m["from_extension"] = data[6]
+		m["to_extension"] = data[7]
+		m["from_number"] = data[8]
+		m["to_number"] = data[9]
+		m["duration"] = data[10]
+		m["direction"] = data[11]
+		m["time_started"] = data[12]
+		m["time_connected"] = data[13]
+		m["time_ended"] = data[14]
+		m["created_at"] = data[15]
+		m["updated_at"] = data[16]
+		m["recording_path"] = data[17]
+		m["recording_url"] = data[18]
+		m["record_file_size"] = data[19]
+		m["etop_account_id"] = data[20]
+		m["vtiger_account_id"] = data[21]
+		m["sync_status"] = data[22]
+		m["o_data"] = data[23]
+		m["search_norm"] = data[24]
 		res = append(res, m)
 	}
 	if err := rows.Err(); err != nil {

@@ -1,11 +1,6 @@
 package vtigerservice
 
 import (
-	"strconv"
-	"strings"
-
-	"etop.vn/backend/pkg/services/crm-service/vtiger/client"
-
 	"etop.vn/backend/pb/services/crmservice"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/cmsql"
@@ -13,6 +8,7 @@ import (
 	"etop.vn/backend/pkg/services/crm-service/mapping"
 	"etop.vn/backend/pkg/services/crm-service/model"
 	"etop.vn/backend/pkg/services/crm-service/sqlstore"
+	"etop.vn/backend/pkg/services/crm-service/vtiger/client"
 )
 
 // Config represents configuration for vtiger service
@@ -78,17 +74,18 @@ var Categories = []*crmservice.Category{
 // VtigerService controller vtiger
 type VtigerService struct {
 	vtigerContact sqlstore.VtigerContactStoreFactory
-	cfg           Config
+	Cfg           Config
 	fieldMap      mapping.ConfigMap
-	client        *client.VtigerClient
+	Client        *client.VtigerClient
 }
 
 // NewSVtigerService init Service
 func NewSVtigerService(db cmsql.Database, vConfig Config, fieldMap mapping.ConfigMap) *VtigerService {
 	s := &VtigerService{
-		cfg:           vConfig,
+		Cfg:           vConfig,
 		fieldMap:      fieldMap,
 		vtigerContact: sqlstore.NewVtigerStore(db),
+		Client:        client.NewVigerClient(vConfig.ServiceURL),
 	}
 	return s
 }
@@ -105,7 +102,30 @@ func ConvertAccount(a *crmservice.Account) *crmservice.Contact {
 }
 
 // ConvertTicket convert TicketRequest to Ticket protobuf. Ticket protobuf is used like DTO
-func ConvertTicket(t *crmservice.TicketRequest) *crmservice.Ticket {
+func ConvertTicketGetReq(t *crmservice.TicketRequest) *crmservice.Ticket {
+	ticket := &crmservice.Ticket{
+		Code:        t.Code,
+		TicketTitle: t.Title,
+		NewValue:    t.Value,
+		OldValue:    t.OldValue,
+		Reason:      t.Reason,
+		EtopId:      t.EtopId,
+		OrderId:     t.OrderId,
+		FfmCode:     t.FfmCode,
+		FfmUrl:      t.FfmUrl,
+		FfmId:       t.FfmId,
+		Company:     t.Company,
+		Provider:    t.Provider,
+		Note:        t.Note,
+		Environment: t.Environment,
+		FromApp:     t.FromApp,
+		Id:          t.Id,
+	}
+	return ticket
+}
+
+// ConvertTicket convert TicketRequest to Ticket protobuf. Ticket protobuf is used like DTO
+func ConvertTicket(t *crmservice.CreateOrUpdateTicketRequest) *crmservice.Ticket {
 	ticket := &crmservice.Ticket{
 		Code:        t.Code,
 		TicketTitle: t.Title,
@@ -135,13 +155,6 @@ func MapTicketJSON(code string, categories []*crmservice.Category) (string, erro
 		}
 	}
 	return "", cm.Errorf(cm.InvalidArgument, nil, "Code categories not existed")
-}
-
-func singleQuote(value string) (string, error) {
-	if strings.Contains(value, `"`) {
-		return "", cm.Errorf(cm.InvalidArgument, nil, "Value string contain Double-Qoute")
-	}
-	return strings.ReplaceAll(strconv.Quote(value), `"`, `'`), nil
 }
 
 // GetCategories

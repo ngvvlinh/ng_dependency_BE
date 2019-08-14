@@ -54,8 +54,8 @@ type VtigerServiceTokenResponse struct {
 // VtigerTokenResult properti result of response get token
 type VtigerTokenResult struct {
 	Token      string `json:"token"`
-	ServerTime int32  `json:"serverTime"`
-	ExpireTime int32  `json:"expireTime"`
+	ServerTime int64  `json:"serverTime"`
+	ExpireTime int64  `json:"expireTime"`
 }
 
 // VtigerSessionResponse session response from vtiger

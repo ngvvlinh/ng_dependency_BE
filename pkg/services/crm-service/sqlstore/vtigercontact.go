@@ -63,7 +63,7 @@ func (v *VtigerContactStore) GetVtigerContact() (*model.VtigerContact, error) {
 
 func (v *VtigerContactStore) CreateVtigerContact(contact *model.VtigerContact) error {
 	if contact.EtopID == 0 {
-		return cm.Errorf(cm.InvalidArgument, nil, "missing ContactID or EtopID")
+		return cm.Errorf(cm.InvalidArgument, nil, "missing EtopID")
 	}
 	err := v.query().ShouldInsert(contact)
 	return err

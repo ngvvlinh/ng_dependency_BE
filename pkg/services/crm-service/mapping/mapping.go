@@ -175,13 +175,13 @@ func (f *Mapper) MappingTicketVtiger2Etop(v map[string]string) (*crmservice.Tick
 }
 
 func (f *Mapper) MappingLeadEtop2Vtiger(lead *crmservice.Lead) (map[string]string, error) {
-	var mappingFieldMap = f.FieldMap["Lead"]
+	var mappingFieldMap = f.FieldMap["Leads"]
 	mapReturn, err := mapEtopToVtiger(lead, mappingFieldMap)
 	return mapReturn, err
 }
 
 func (f *Mapper) MappingLeadVtiger2Etop(v map[string]string) (*crmservice.Lead, error) {
-	var mappingFieldMap = f.FieldMap["Lead"]
+	var mappingFieldMap = f.FieldMap["Leads"]
 	var lead crmservice.Lead
 	err := mapVtigerToEtop(&lead, mappingFieldMap, v)
 	return &lead, err

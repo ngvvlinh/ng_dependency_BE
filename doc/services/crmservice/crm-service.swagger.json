@@ -20,7 +20,7 @@
         "operationId": "VersionInfo",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/cmVersionInfoResponse"
             }
@@ -41,12 +41,90 @@
         ]
       }
     },
+    "/api/crmservice.Vht/CreateOrUpdateCallHistoryByCallID": {
+      "post": {
+        "operationId": "CreateOrUpdateCallHistoryByCallID",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/crmserviceVHTCallLog"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/crmserviceVHTCallLog"
+            }
+          }
+        ],
+        "tags": [
+          "Vht"
+        ]
+      }
+    },
+    "/api/crmservice.Vht/CreateOrUpdateCallHistoryBySDKCallID": {
+      "post": {
+        "operationId": "CreateOrUpdateCallHistoryBySDKCallID",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/crmserviceVHTCallLog"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/crmserviceVHTCallLog"
+            }
+          }
+        ],
+        "tags": [
+          "Vht"
+        ]
+      }
+    },
+    "/api/crmservice.Vht/GetCallHistories": {
+      "post": {
+        "operationId": "GetCallHistories",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/crmserviceGetCallHistoriesResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/crmserviceGetCallHistoriesRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Vht"
+        ]
+      }
+    },
     "/api/crmservice.Vtiger/CountTicketByStatus": {
       "post": {
         "operationId": "CountTicketByStatus",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/crmserviceCountTicketByStatusResponse"
             }
@@ -72,7 +150,7 @@
         "operationId": "CreateOrUpdateContact",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/crmserviceContact"
             }
@@ -98,7 +176,7 @@
         "operationId": "CreateOrUpdateLead",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/crmserviceLead"
             }
@@ -119,12 +197,12 @@
         ]
       }
     },
-    "/api/crmservice.Vtiger/CreateOrUpdateTicket": {
+    "/api/crmservice.Vtiger/CreateTicket": {
       "post": {
-        "operationId": "CreateOrUpdateTicket",
+        "operationId": "CreateTicket",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/crmserviceTicket"
             }
@@ -150,7 +228,7 @@
         "operationId": "GetCategories",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/crmserviceGetCategoriesResponse"
             }
@@ -176,7 +254,7 @@
         "operationId": "GetContacts",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/crmserviceGetContactsResponse"
             }
@@ -202,7 +280,7 @@
         "operationId": "GetStatus",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/crmserviceGetStatusResponse"
             }
@@ -228,7 +306,7 @@
         "operationId": "GetTicketStatusCount",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/crmserviceGetTicketStatusCountResponse"
             }
@@ -254,7 +332,7 @@
         "operationId": "GetTickets",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/crmserviceGetTicketsResponse"
             }
@@ -267,6 +345,32 @@
             "required": true,
             "schema": {
               "$ref": "#/definitions/crmserviceGetTicketsRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Vtiger"
+        ]
+      }
+    },
+    "/api/crmservice.Vtiger/UpdateTicket": {
+      "post": {
+        "operationId": "UpdateTicket",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/crmserviceTicket"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/crmserviceCreateOrUpdateTicketRequest"
             }
           }
         ],
@@ -433,11 +537,89 @@
     "crmserviceCreateOrUpdateTicketRequest": {
       "type": "object",
       "properties": {
+        "id": {
+          "type": "string"
+        },
+        "code": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "value": {
+          "type": "string"
+        },
+        "old_value": {
+          "type": "string"
+        },
+        "reason": {
+          "type": "string"
+        },
+        "etop_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "order_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "order_code": {
+          "type": "string"
+        },
+        "ffm_code": {
+          "type": "string"
+        },
+        "ffm_url": {
+          "type": "string"
+        },
+        "ffm_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "company": {
+          "type": "string"
+        },
+        "provider": {
+          "type": "string"
+        },
+        "note": {
+          "type": "string"
+        },
+        "environment": {
+          "type": "string"
+        },
+        "from_app": {
+          "type": "string"
+        },
         "account": {
           "$ref": "#/definitions/crmserviceAccount"
+        }
+      }
+    },
+    "crmserviceGetCallHistoriesRequest": {
+      "type": "object",
+      "properties": {
+        "page": {
+          "type": "integer",
+          "format": "int32"
         },
-        "ticket": {
-          "$ref": "#/definitions/crmserviceTicketRequest"
+        "perpage": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "text_search": {
+          "type": "string"
+        }
+      }
+    },
+    "crmserviceGetCallHistoriesResponse": {
+      "type": "object",
+      "properties": {
+        "vht_call_log": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/crmserviceVHTCallLog"
+          }
         }
       }
     },
@@ -815,11 +997,86 @@
           "type": "string"
         }
       }
+    },
+    "crmserviceVHTCallLog": {
+      "type": "object",
+      "properties": {
+        "cdr_id": {
+          "type": "string"
+        },
+        "call_id": {
+          "type": "string"
+        },
+        "sip_call_id": {
+          "type": "string"
+        },
+        "sdk_call_id": {
+          "type": "string"
+        },
+        "cause": {
+          "type": "string"
+        },
+        "q850_cause": {
+          "type": "string"
+        },
+        "from_extension": {
+          "type": "string"
+        },
+        "to_extension": {
+          "type": "string"
+        },
+        "from_number": {
+          "type": "string"
+        },
+        "to_number": {
+          "type": "string"
+        },
+        "duration": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "direction": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "time_started": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "time_connected": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "time_ended": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "recording_path": {
+          "type": "string"
+        },
+        "recording_url": {
+          "type": "string"
+        },
+        "record_file_size": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "etop_account_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "vtiger_account_id": {
+          "type": "string"
+        }
+      }
     }
   },
   "tags": [
     {
       "name": "Misc"
+    },
+    {
+      "name": "Vht"
     },
     {
       "name": "Vtiger"

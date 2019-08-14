@@ -18,6 +18,7 @@ import (
 	"etop.vn/backend/pkg/common/redis"
 	"etop.vn/backend/pkg/etop/authorize/middleware"
 	"etop.vn/backend/pkg/etop/authorize/tokens"
+	mapVtiger "etop.vn/backend/pkg/services/crm-service/mapping"
 	servicecrm "etop.vn/backend/pkg/services/crm-service/service"
 	wrapcrm "etop.vn/backend/wrapper/services/crmservice"
 	"etop.vn/common/l"
@@ -88,10 +89,22 @@ func main() {
 
 	metrics.RegisterHTTPHandler(mux)
 	healthservice.RegisterHTTPHandler(mux)
+
+	ll.Info("Sync vht Starting")
+	go func() {
+		SyncCallHistoryVht(cfg.Vht.UserName, cfg.Vht.PassWord, db)
+	}()
+
+	ll.Info("Sync Vtiger Starting")
+	go func() {
+		feildMap := mapVtiger.NewMappingConfigInfo(configMap)
+		SyncVtiger(db, cfg.Vtiger, feildMap.FieldMap)
+	}()
+
 	healthservice.MarkReady()
 	go func() {
 		defer ctxCancel()
-		err := svr.ListenAndServe()
+		err = svr.ListenAndServe()
 		if err != http.ErrServerClosed {
 			ll.Error("HTTP server", l.Error(err))
 		}

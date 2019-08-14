@@ -27,12 +27,53 @@ service VtigerService {
     rpc CreateOrUpdateContact(Contact) returns (Contact);
     rpc CreateOrUpdateLead(Lead) returns (Lead);
     rpc GetTickets(GetTicketsRequest) returns (GetTicketsResponse);
-    rpc CreateOrUpdateTicket(CreateOrUpdateTicketRequest) returns (Ticket);
+    rpc CreateTicket(CreateOrUpdateTicketRequest) returns (Ticket);
+    rpc UpdateTicket(CreateOrUpdateTicketRequest) returns (Ticket);
     rpc GetCategories(cm.Empty) returns (GetCategoriesResponse);
     rpc GetStatus(cm.Empty) returns (GetStatusResponse);
     rpc CountTicketByStatus(CountTicketByStatusRequest) returns (CountTicketByStatusResponse);
     rpc GetTicketStatusCount(cm.Empty) returns (GetTicketStatusCountResponse);
 }
+
+service VhtService{
+    rpc GetCallHistories(GetCallHistoriesRequest) returns (GetCallHistoriesResponse);
+    rpc CreateOrUpdateCallHistoryBySDKCallID(VHTCallLog) returns (VHTCallLog);
+    rpc CreateOrUpdateCallHistoryByCallID(VHTCallLog) returns (VHTCallLog);
+}
+
+message GetCallHistoriesRequest{
+    optional int32 page = 1 [(gogoproto.nullable) = false];
+    optional int32 perpage = 2 [(gogoproto.nullable) = false];
+    optional string text_search = 3 [(gogoproto.nullable) = false];
+}
+
+message GetCallHistoriesResponse{
+    repeated VHTCallLog vht_call_log = 1 ;
+}
+
+message VHTCallLog{
+    optional string cdr_id = 1 [(gogoproto.nullable) = false];
+    optional string call_id = 2 [(gogoproto.nullable) = false];
+    optional string sip_call_id = 3 [(gogoproto.nullable) = false];
+    optional string sdk_call_id = 4 [(gogoproto.nullable) = false];
+    optional string cause = 5 [(gogoproto.nullable) = false];
+    optional string q850_cause = 6 [(gogoproto.nullable) = false];
+    optional string  from_extension = 7 [(gogoproto.nullable) = false];
+    optional string to_extension = 8 [(gogoproto.nullable) = false];
+    optional string  from_number = 9 [(gogoproto.nullable) = false];
+    optional string to_number = 10 [(gogoproto.nullable) = false];
+    optional int32  duration = 11 [(gogoproto.nullable) = false];
+    optional int32 direction = 12 [(gogoproto.nullable) = false];
+    optional google.protobuf.Timestamp time_started = 13;
+    optional google.protobuf.Timestamp time_connected = 14;
+    optional google.protobuf.Timestamp time_ended = 15;
+    optional string  recording_path = 16 [(gogoproto.nullable) = false];
+    optional string  recording_url = 17 [(gogoproto.nullable) = false];
+    optional int32   record_file_size = 18 [(gogoproto.nullable) = false];
+    optional int64  etop_account_id = 19 [(gogoproto.nullable) = false];
+    optional string  vtiger_account_id = 21 [(gogoproto.nullable) = false];
+}
+
 
 message CountTicketByStatusRequest {
     optional string status = 1 [(gogoproto.nullable) = true];
@@ -126,8 +167,24 @@ message OrderBy{
 }
 
 message CreateOrUpdateTicketRequest{
-    optional Account account = 1 [(gogoproto.nullable) = false];
-    optional TicketRequest ticket = 2 [(gogoproto.nullable) = false];
+    optional string id = 1 [(gogoproto.nullable) = false];
+    optional string code =  2 [(gogoproto.nullable) = false];
+    optional string title = 3 [(gogoproto.nullable) = false];
+    optional string value =  4 [(gogoproto.nullable) = false];
+    optional string old_value =  5 [(gogoproto.nullable) = false];
+    optional string reason =  6 [(gogoproto.nullable) = false];
+    optional int64 etop_id =  7 [(gogoproto.nullable) = false];
+    optional int64 order_id =  8 [(gogoproto.nullable) = false];
+    optional string order_code =  9 [(gogoproto.nullable) = false];
+    optional string ffm_code =  10 [(gogoproto.nullable) = false];
+    optional string ffm_url =  11 [(gogoproto.nullable) = false];
+    optional int64 ffm_id =  12 [(gogoproto.nullable) = false];
+    optional string company =  13 [(gogoproto.nullable) = false];
+    optional string provider =  15 [(gogoproto.nullable) = false];
+    optional string note =  16 [(gogoproto.nullable) = false];
+    optional string environment =  17 [(gogoproto.nullable) = false];
+    optional string from_app =  18 [(gogoproto.nullable) = false];
+    optional Account account = 19 [(gogoproto.nullable) = false];
 }
 
 message TicketRequest {

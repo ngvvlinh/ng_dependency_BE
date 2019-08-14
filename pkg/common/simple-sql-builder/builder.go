@@ -8,6 +8,8 @@ import (
 	cm "etop.vn/backend/pkg/common"
 )
 
+type Raw string
+
 type SimpleSQLBuilder struct {
 	buf strings.Builder
 	err error
@@ -35,6 +37,8 @@ func (b *SimpleSQLBuilder) Printf(query string, args ...interface{}) {
 		arg := args[argIndex]
 		argIndex++
 		switch arg := arg.(type) {
+		case Raw:
+			b.buf.WriteString(string(arg))
 		case string:
 			arg, b.err = singleQuote(arg)
 			b.buf.WriteString(arg)

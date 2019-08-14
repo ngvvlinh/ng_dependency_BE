@@ -4,6 +4,10 @@ import (
 	"context"
 	"log"
 
+	"etop.vn/backend/pkg/services/crm-service/vht/service"
+
+	"github.com/k0kubun/pp"
+
 	pbcm "etop.vn/backend/pb/common"
 	"etop.vn/backend/pkg/common/cmsql"
 	"etop.vn/backend/pkg/services/crm-service/mapping"
@@ -15,12 +19,14 @@ import (
 // Service contain config for service
 type Service struct {
 	vtigerService *vtigerservice.VtigerService
+	vhtservice    *service.VhtService
 }
 
 // NewService init Service
 func NewService(db cmsql.Database, vConfig vtigerservice.Config, fieldMap mapping.ConfigMap) *Service {
 	s := &Service{
 		vtigerService: vtigerservice.NewSVtigerService(db, vConfig, fieldMap),
+		vhtservice:    service.NewVhtService(db),
 	}
 	return s
 }
@@ -31,11 +37,14 @@ func (s *Service) Register() {
 	bus.AddHandler("", s.GetContacts)
 	bus.AddHandler("", s.CreateOrUpdateContact)
 	bus.AddHandler("", s.GetCategories)
-	bus.AddHandler("", s.CreateOrUpdateTicket)
+	bus.AddHandler("", s.CreateTicket)
+	bus.AddHandler("", s.UpdateTicket)
 	bus.AddHandler("", s.GetTickets)
 	bus.AddHandler("", s.CountTicketByStatus)
 	bus.AddHandler("", s.CreateOrUpdateLead)
 	bus.AddHandler("", s.GetTicketStatusCount)
+	bus.AddHandler("", s.GetCallHistories)
+	bus.AddHandler("", s.CreateOrUpdateCallHistoryBySDKCallID)
 }
 
 // VersionInfo get version info
@@ -45,6 +54,37 @@ func (s *Service) VersionInfo(ctx context.Context, q *wrapcrm.VersionInfoEndpoin
 		Version: "0.1",
 	}
 	log.Println("change")
+	return nil
+}
+
+//CreateOrUpdateCallHistoryBySDKCallID Create Or Update Call History By SDKCallID
+func (s *Service) CreateOrUpdateCallHistoryByCallID(ctx context.Context, q *wrapcrm.CreateOrUpdateCallHistoryByCallIDEndpoint) error {
+	result, err := s.vhtservice.CreateOrUpdateCallHistoryByCallID(ctx, q.VHTCallLog)
+	if err != nil {
+		return err
+	}
+	q.Result = result
+	return nil
+}
+
+//CreateOrUpdateCallHistoryBySDKCallID Create Or Update Call History By SDKCallID
+func (s *Service) CreateOrUpdateCallHistoryBySDKCallID(ctx context.Context, q *wrapcrm.CreateOrUpdateCallHistoryBySDKCallIDEndpoint) error {
+	result, err := s.vhtservice.CreateOrUpdateBySDKCallID(ctx, q.VHTCallLog)
+	if err != nil {
+		return err
+	}
+	q.Result = result
+	return nil
+}
+
+// GetCallHistories get call histories
+func (s *Service) GetCallHistories(ctx context.Context, q *wrapcrm.GetCallHistoriesEndpoint) error {
+	pp.Print("vht service :: ", s.vhtservice)
+	result, err := s.vhtservice.GetCallHistories(ctx, q.GetCallHistoriesRequest)
+	if err != nil {
+		return err
+	}
+	q.Result = result
 	return nil
 }
 
@@ -100,9 +140,19 @@ func (s *Service) GetTickets(ctx context.Context, q *wrapcrm.GetTicketsEndpoint)
 	return nil
 }
 
-// CreateOrUpdateTicket create or uodate ticket
-func (s *Service) CreateOrUpdateTicket(ctx context.Context, q *wrapcrm.CreateOrUpdateTicketEndpoint) error {
-	result, err := s.vtigerService.CreateOrUpdateTicket(ctx, q.CreateOrUpdateTicketRequest)
+// CreateTicket create a ticket
+func (s *Service) CreateTicket(ctx context.Context, q *wrapcrm.CreateTicketEndpoint) error {
+	result, err := s.vtigerService.CreateOrUpdateTicket(ctx, q.CreateOrUpdateTicketRequest, "create")
+	if err != nil {
+		return err
+	}
+	q.Result = result
+	return nil
+}
+
+// UpdateTicket update a ticket
+func (s *Service) UpdateTicket(ctx context.Context, q *wrapcrm.UpdateTicketEndpoint) error {
+	result, err := s.vtigerService.CreateOrUpdateTicket(ctx, q.CreateOrUpdateTicketRequest, "update")
 	if err != nil {
 		return err
 	}

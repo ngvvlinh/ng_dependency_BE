@@ -10,9 +10,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/gorilla/schema"
-
 	cm "etop.vn/backend/pkg/common"
+	"github.com/gorilla/schema"
 )
 
 var schemaEncoder = schema.NewEncoder()
@@ -25,13 +24,18 @@ func init() {
 type VtigerClient struct {
 	ServiceURL  string
 	httpClient  *http.Client
-	SessionInfo string
+	SessionInfo Session
+}
+
+type Session struct {
+	VtigerSession *VtigerSessionResult
+	ExpriredTime  int64
 }
 
 // NewVigerClient create VtigerClient
-func NewVigerClient(sessionInfo string, serviceURL string) *VtigerClient {
+func NewVigerClient(serviceURL string) *VtigerClient {
 	return &VtigerClient{
-		SessionInfo: sessionInfo,
+		SessionInfo: Session{},
 		ServiceURL:  serviceURL,
 		httpClient:  &http.Client{Timeout: 10 * time.Second},
 	}
@@ -40,11 +44,20 @@ func NewVigerClient(sessionInfo string, serviceURL string) *VtigerClient {
 // GetSessionKey which use in excute vtiger API
 func (v *VtigerClient) GetSessionKey(vtigerService string, vtigerUser string, vtigerAccessKey string) (*VtigerSessionResult, error) {
 
+	emptySession := Session{}
+	now := time.Now()
+	sec := now.Unix()
+
+	if v.SessionInfo != emptySession && (v.SessionInfo.ExpriredTime-sec) > 60 {
+		return v.SessionInfo.VtigerSession, nil
+	}
+
 	requestValues := make(url.Values)
 	requestValues.Set("operation", "getchallenge")
 	requestValues.Set("username", vtigerUser)
 
 	var responseVtigerMap VtigerServiceTokenResponse
+
 	err := v.SendGet(requestValues, &responseVtigerMap)
 	if err != nil {
 		return nil, err
@@ -58,7 +71,7 @@ func (v *VtigerClient) GetSessionKey(vtigerService string, vtigerUser string, vt
 		AccessKey: accessKey,
 	}
 	requestBody := url.Values{}
-	if err := schemaEncoder.Encode(bodySessionRequest, requestBody); err != nil {
+	if err = schemaEncoder.Encode(bodySessionRequest, requestBody); err != nil {
 		panic(err)
 	}
 
@@ -70,6 +83,10 @@ func (v *VtigerClient) GetSessionKey(vtigerService string, vtigerUser string, vt
 	if !vtigerSessionResponse.Success {
 		return nil, cm.Errorf(cm.Unknown, nil, "unknown error while sending request to vtiger")
 	}
+
+	v.SessionInfo.ExpriredTime = responseVtigerMap.Result.ExpireTime
+	v.SessionInfo.VtigerSession = vtigerSessionResponse.Result
+
 	return vtigerSessionResponse.Result, nil
 }
 
@@ -120,7 +137,10 @@ func (v *VtigerClient) SendPost(body url.Values, respBody interface{}) error {
 	if err != nil {
 		return err
 	}
-	return json.Unmarshal(respBytes, respBody)
+
+	err = json.Unmarshal(respBytes, respBody)
+
+	return err
 }
 
 // calcMD5Hash calculate MD5 hash of a string

@@ -20,7 +20,7 @@
         "operationId": "GetChanges",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/externalCallback"
             }
@@ -46,7 +46,7 @@
         "operationId": "CurrentAccount",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/etopPublicAccountInfo"
             }
@@ -72,7 +72,7 @@
         "operationId": "GetLocationList",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/externalLocationResponse"
             }
@@ -98,7 +98,7 @@
         "operationId": "VersionInfo",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/cmVersionInfoResponse"
             }
@@ -124,7 +124,7 @@
         "operationId": "CancelOrder",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/externalOrderAndFulfillments"
             }
@@ -150,7 +150,7 @@
         "operationId": "CreateAndConfirmOrder",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/externalOrderAndFulfillments"
             }
@@ -176,7 +176,7 @@
         "operationId": "GetFulfillment",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/externalFulfillment"
             }
@@ -202,7 +202,7 @@
         "operationId": "GetOrder",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/externalOrderAndFulfillments"
             }
@@ -228,7 +228,7 @@
         "operationId": "GetShippingServices",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/externalGetShippingServicesResponse"
             }
@@ -254,7 +254,7 @@
         "operationId": "CreateWebhook",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/externalWebhook"
             }
@@ -280,7 +280,7 @@
         "operationId": "DeleteWebhook",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/externalWebhooksResponse"
             }
@@ -306,7 +306,7 @@
         "operationId": "GetWebhooks",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/externalWebhooksResponse"
             }

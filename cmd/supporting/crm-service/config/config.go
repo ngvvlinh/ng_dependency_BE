@@ -8,17 +8,18 @@ import (
 
 	cc "etop.vn/backend/pkg/common/config"
 	"etop.vn/backend/pkg/services/crm-service/mapping"
+	vhtservice "etop.vn/backend/pkg/services/crm-service/vht/service"
 	vtigerservice "etop.vn/backend/pkg/services/crm-service/vtiger/service"
 )
 
 type Config struct {
-	Postgres cc.Postgres          `yaml:"postgres"`
-	Redis    cc.Redis             `yaml:"redis"`
-	HTTP     cc.HTTP              `yaml:"http"`
-	Env      string               `yaml:"env"`
-	Vtiger   vtigerservice.Config `yaml:"vtiger"`
-
-	MappingFile string `yaml:"mapping_file"`
+	Postgres    cc.Postgres          `yaml:"postgres"`
+	Redis       cc.Redis             `yaml:"redis"`
+	HTTP        cc.HTTP              `yaml:"http"`
+	Env         string               `yaml:"env"`
+	Vtiger      vtigerservice.Config `yaml:"vtiger"`
+	Vht         vhtservice.Config    `yaml:vht`
+	MappingFile string               `yaml:"mapping_file"`
 }
 
 var exampleMappingFile = filepath.Join(
@@ -39,6 +40,10 @@ func Default() Config {
 			ServiceURL: "http://vtiger/webservice.php",
 			Username:   "admin",
 			APIKey:     "q5dZOnJYGlmPY2nc",
+		},
+		Vht: vhtservice.Config{
+			UserName: "5635810cde4c14ebf6a41341f4e68395",
+			PassWord: "36828473ce0d87db8cc29798f6b8aa1e",
 		},
 		MappingFile: exampleMappingFile,
 	}

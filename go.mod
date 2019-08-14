@@ -38,6 +38,7 @@ require (
 	github.com/grpc-ecosystem/go-grpc-middleware v1.0.0
 	github.com/grpc-ecosystem/grpc-gateway v1.9.6
 	github.com/julienschmidt/httprouter v1.2.0
+	github.com/k0kubun/pp v3.0.1+incompatible
 	github.com/lib/pq v1.2.0
 	github.com/mongodb/mongo-go-driver v0.2.0
 	github.com/pierrec/lz4 v2.0.5+incompatible // indirect
