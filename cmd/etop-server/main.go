@@ -334,7 +334,8 @@ func main() {
 		ll.Warn("Disabled sending email")
 	}
 	if cfg.SMS.Enabled {
-		sms.New(cfg.SMS).Register(bus.Global())
+		smsBot := cfg.TelegramBot.MustConnectChannel(config.ChannelSMS)
+		sms.New(cfg.SMS, smsBot).Register(bus.Global())
 		ll.Info("Enabled sending sms")
 	} else {
 		ll.Warn("Disabled sending sms")

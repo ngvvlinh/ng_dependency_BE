@@ -2,14 +2,15 @@ package sms
 
 import (
 	"context"
-
-	"etop.vn/common/l"
+	"fmt"
 
 	cm "etop.vn/backend/pkg/common"
 	cc "etop.vn/backend/pkg/common/config"
+	"etop.vn/backend/pkg/common/telebot"
 	"etop.vn/backend/pkg/common/validate"
-	"etop.vn/backend/pkg/integration/sms/esms"
+	"etop.vn/backend/pkg/integration/sms/vietguys"
 	"etop.vn/common/bus"
+	"etop.vn/common/l"
 )
 
 var ll = l.New()
@@ -24,8 +25,8 @@ type SendSMSCommand struct {
 }
 
 type Config struct {
-	Enabled bool        `yaml:"enabled"`
-	ESMS    esms.Config `yaml:"esms"`
+	Enabled  bool            `yaml:"enabled"`
+	Vietguys vietguys.Config `yaml:"vietguys"`
 }
 
 func (c *Config) MustLoadEnv(prefix ...string) {
@@ -34,20 +35,23 @@ func (c *Config) MustLoadEnv(prefix ...string) {
 		p = prefix[0]
 	}
 	cc.EnvMap{
-		p + "_ENABLED":         &c.Enabled,
-		p + "_ESMS_BASE_URL":   &c.ESMS.BaseURL,
-		p + "_ESMS_API_KEY":    &c.ESMS.APIKey,
-		p + "_ESMS_SECRET_KEY": &c.ESMS.SecretKey,
-		p + "_ESMS_BRAND_NAME": &c.ESMS.BrandName,
+		p + "_ENABLED":             &c.Enabled,
+		p + "_VIETGUYS_USERNAME":   &c.Vietguys.Username,
+		p + "_VIETGUYS_API_KEY":    &c.Vietguys.APIKey,
+		p + "_VIETGUYS_BRAND_NAME": &c.Vietguys.BrandName,
 	}.MustLoad()
 }
 
 type Client struct {
-	esms *esms.ESMS
+	inner *vietguys.Client
+	bot   *telebot.Channel
 }
 
-func New(cfg Config) Client {
-	return Client{esms.New(cfg.ESMS)}
+func New(cfg Config, bot *telebot.Channel) Client {
+	return Client{
+		inner: vietguys.New(cfg.Vietguys),
+		bot:   bot,
+	}
 }
 
 func (c Client) Register(bus bus.Bus) Client {
@@ -61,11 +65,11 @@ func (c Client) SendSMS(ctx context.Context, cmd *SendSMSCommand) error {
 		return cm.Errorf(cm.FailedPrecondition, nil, "Chỉ có thể gửi tin nhắn đến địa chỉ test trên dev!")
 	}
 
-	resp, err := c.esms.SendSMS(ctx, esms.SMSTypeBrandCustomer, phone, cmd.Content)
+	resp, err := c.inner.SendSMS(ctx, phone, cmd.Content)
 	if err != nil {
-		ll.Error("can not send sms", l.Error(err))
+		c.bot.SendMessage(fmt.Sprintf("Vietguys: %v", err))
 		return cm.Errorf(cm.ExternalServiceError, nil, "Không thể gửi tin nhắn")
 	}
-	cmd.Result.SMSID = resp.SMSID
+	cmd.Result.SMSID = resp
 	return nil
 }
