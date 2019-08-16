@@ -16,6 +16,8 @@ type Aggregate interface {
 	ReleaseOrdersForFfm(context.Context, *ReleaseOrdersForFfmArgs) (*ReleaseOrdersForFfmResponse, error)
 	UpdateOrderShippingStatus(context.Context, *UpdateOrderShippingStatusArgs) (*UpdateOrderShippingStatusResponse, error)
 	UpdateOrdersConfirmStatus(context.Context, *UpdateOrdersConfirmStatusArgs) (*UpdateOrdersConfirmStatusResponse, error)
+
+	UpdateOrderPaymentInfo(context.Context, *UpdateOrderPaymentInfoArgs) error
 }
 
 type QueryService interface {
@@ -83,6 +85,9 @@ type Order struct {
 	ClosedAt    time.Time
 	ConfirmedAt time.Time
 	CancelledAt time.Time
+
+	PaymentStatus etoptypes.Status4
+	PaymentID     int64
 }
 
 type OrderFeeLine struct {
@@ -129,4 +134,10 @@ type UpdateOrdersConfirmStatusArgs struct {
 	IDs           []int64
 	ShopConfirm   etoptypes.Status3
 	ConfirmStatus etoptypes.Status3
+}
+
+type UpdateOrderPaymentInfoArgs struct {
+	ID            int64
+	PaymentStatus etoptypes.Status4
+	PaymentID     int64
 }

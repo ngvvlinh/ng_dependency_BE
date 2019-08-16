@@ -13,6 +13,7 @@ import (
 
 	"github.com/golang/protobuf/jsonpb"
 	"github.com/golang/protobuf/proto"
+	"github.com/gorilla/schema"
 	"github.com/julienschmidt/httprouter"
 	"github.com/twitchtv/twirp"
 
@@ -27,7 +28,14 @@ import (
 	"etop.vn/common/xerrors"
 )
 
-var ll = l.New()
+var (
+	ll      = l.New()
+	decoder = schema.NewDecoder()
+)
+
+func init() {
+	decoder.SetAliasTag("json")
+}
 
 type Handler func(c *Context) error
 type MiddlewareFunc func(Handler) Handler
@@ -91,7 +99,6 @@ func (c *Context) DecodeJson(v interface{}) error {
 	if err != nil {
 		return cm.Error(cm.InvalidArgument, err.Error(), err)
 	}
-
 	err = json.Unmarshal(body, v)
 	if err != nil {
 		return cm.Error(cm.InvalidArgument, err.Error(), err)
@@ -121,6 +128,19 @@ const defaultMemory = 32 << 20 // 32 MB
 func (c *Context) MultipartForm() (*multipart.Form, error) {
 	err := c.Req.ParseMultipartForm(defaultMemory)
 	return c.Req.MultipartForm, err
+}
+
+func (c *Context) DecodeFormUrlEncoded(v interface{}) error {
+	if err := c.Req.ParseForm(); err != nil {
+		return cm.Error(cm.InvalidArgument, err.Error(), err)
+	}
+	ll.Info("->"+c.Req.URL.Path, l.String("data", c.Req.Form.Encode()))
+
+	err := decoder.Decode(v, c.Req.Form)
+	if err != nil {
+		return cm.Error(cm.InvalidArgument, err.Error(), err)
+	}
+	return nil
 }
 
 type Options struct {

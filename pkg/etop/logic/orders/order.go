@@ -582,7 +582,6 @@ func PrepareOrder(m *pborder.CreateOrderRequest, lines []*ordermodel.OrderLine) 
 		ShopConfirm:                confirm,
 		ConfirmStatus:              0,
 		FulfillmentShippingStatus:  0,
-		CustomerPaymentStatus:      0,
 		EtopPaymentStatus:          0,
 		Status:                     0,
 		FulfillmentShippingStates:  nil,

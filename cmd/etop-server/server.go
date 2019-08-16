@@ -7,10 +7,16 @@ import (
 	"strings"
 	"time"
 
+	"etop.vn/backend/com/external/payment/vtpay"
+
 	"github.com/julienschmidt/httprouter"
 
 	"etop.vn/api/main/identity"
 	"etop.vn/backend/cmd/etop-server/config"
+	paymentlogaggregate "etop.vn/backend/com/etc/log/payment/aggregate"
+	paymentaggregate "etop.vn/backend/com/external/payment/payment/aggregate"
+	vtpaygatewayaggregate "etop.vn/backend/com/external/payment/vtpay/gateway/aggregate"
+	vtpaygatewayserver "etop.vn/backend/com/external/payment/vtpay/gateway/server"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/httpx"
 	"etop.vn/backend/pkg/common/metrics"
@@ -130,7 +136,23 @@ func startEtopServer() *http.Server {
 			rt.GET("/api/event-stream", eventStreamer.HandleEventStream)
 		}
 		{
-			// change path for clearing browser cache and still keep the old
+			// Register vtpayClient gateway
+			paymentAggr := paymentaggregate.NewAggregate(db).MessageBus()
+			paymentLogAggr := paymentlogaggregate.NewAggregate(dbLogs)
+			vtpayAggr := vtpay.NewAggregate(db, orderQuery, orderAggr.MessageBus(), paymentAggr, vtpayClient).MessageBus()
+			vtpayGatewayAggr := vtpaygatewayaggregate.NewAggregate(orderQuery, orderAggr.MessageBus(), paymentAggr, vtpayAggr, vtpayClient)
+
+			vtpayGatewayServer := vtpaygatewayserver.New(vtpayGatewayAggr.MessageBus(), paymentLogAggr)
+
+			buildRoute := vtpaygatewayaggregate.BuildGatewayRoute
+			rt := httpx.New()
+			mux.Handle("/api/payment/vtpay/", rt)
+			rt.Use(httpx.RecoverAndLog(bot, false))
+			rt.POST("/api"+buildRoute(vtpaygatewayaggregate.PathValidateTransaction), vtpayGatewayServer.ValidateTransaction)
+			rt.POST("/api"+buildRoute(vtpaygatewayaggregate.PathGetResult), vtpayGatewayServer.GetResult)
+		}
+		{
+			// change path for clearing browser cache and still keep the old/dl
 			// path for backward compatible
 			mux.Handle("/dl/imports/shop_orders.v1.xlsx",
 				cmservice.ServeAssetsByContentGenerator(

@@ -53,6 +53,15 @@ type ReserveOrdersForFfmCommand struct {
 	Result *ReserveOrdersForFfmResponse `json:"-"`
 }
 
+type UpdateOrderPaymentInfoCommand struct {
+	ID            int64
+	PaymentStatus etop.Status4
+	PaymentID     int64
+
+	Result struct {
+	} `json:"-"`
+}
+
 type UpdateOrderShippingStatusCommand struct {
 	ID                         int64
 	FulfillmentShippingStates  []string
@@ -101,6 +110,7 @@ type GetOrdersQuery struct {
 
 func (q *ReleaseOrdersForFfmCommand) command()       {}
 func (q *ReserveOrdersForFfmCommand) command()       {}
+func (q *UpdateOrderPaymentInfoCommand) command()    {}
 func (q *UpdateOrderShippingStatusCommand) command() {}
 func (q *UpdateOrdersConfirmStatusCommand) command() {}
 func (q *ValidateOrdersForShippingCommand) command() {}
@@ -123,6 +133,15 @@ func (q *ReserveOrdersForFfmCommand) GetArgs(ctx context.Context) (_ context.Con
 			OrderIDs:   q.OrderIDs,
 			Fulfill:    q.Fulfill,
 			FulfillIDs: q.FulfillIDs,
+		}
+}
+
+func (q *UpdateOrderPaymentInfoCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateOrderPaymentInfoArgs) {
+	return ctx,
+		&UpdateOrderPaymentInfoArgs{
+			ID:            q.ID,
+			PaymentStatus: q.PaymentStatus,
+			PaymentID:     q.PaymentID,
 		}
 }
 
@@ -190,6 +209,7 @@ func (h AggregateHandler) RegisterHandlers(b interface {
 }) CommandBus {
 	b.AddHandler(h.HandleReleaseOrdersForFfm)
 	b.AddHandler(h.HandleReserveOrdersForFfm)
+	b.AddHandler(h.HandleUpdateOrderPaymentInfo)
 	b.AddHandler(h.HandleUpdateOrderShippingStatus)
 	b.AddHandler(h.HandleUpdateOrdersConfirmStatus)
 	b.AddHandler(h.HandleValidateOrdersForShipping)
@@ -206,6 +226,10 @@ func (h AggregateHandler) HandleReserveOrdersForFfm(ctx context.Context, msg *Re
 	result, err := h.inner.ReserveOrdersForFfm(msg.GetArgs(ctx))
 	msg.Result = result
 	return err
+}
+
+func (h AggregateHandler) HandleUpdateOrderPaymentInfo(ctx context.Context, msg *UpdateOrderPaymentInfoCommand) error {
+	return h.inner.UpdateOrderPaymentInfo(msg.GetArgs(ctx))
 }
 
 func (h AggregateHandler) HandleUpdateOrderShippingStatus(ctx context.Context, msg *UpdateOrderShippingStatusCommand) error {

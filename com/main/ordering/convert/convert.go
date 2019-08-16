@@ -91,6 +91,8 @@ func Order(in *model.Order) (out *ordering.Order) {
 		CancelledAt:               in.CancelledAt,
 		FulfillmentIDs:            in.FulfillmentIDs,
 		FulfillmentType:           ordertypes.Fulfill(in.FulfillmentType),
+		PaymentStatus:             etoptypes.Status4FromInt(int(in.PaymentStatus)),
+		PaymentID:                 in.PaymentID,
 	}
 	return out
 }

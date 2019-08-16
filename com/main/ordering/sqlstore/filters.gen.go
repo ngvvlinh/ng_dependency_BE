@@ -423,25 +423,6 @@ func (ft *OrderFilters) ByFulfillmentShippingStatusPtr(FulfillmentShippingStatus
 	}
 }
 
-func (ft *OrderFilters) ByCustomerPaymentStatus(CustomerPaymentStatus model.Status3) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
-		Prefix: &ft.prefix,
-		Column: "customer_payment_status",
-		Value:  CustomerPaymentStatus,
-		IsNil:  CustomerPaymentStatus == 0,
-	}
-}
-
-func (ft *OrderFilters) ByCustomerPaymentStatusPtr(CustomerPaymentStatus *model.Status3) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
-		Prefix: &ft.prefix,
-		Column: "customer_payment_status",
-		Value:  CustomerPaymentStatus,
-		IsNil:  CustomerPaymentStatus == nil,
-		IsZero: CustomerPaymentStatus != nil && (*CustomerPaymentStatus) == 0,
-	}
-}
-
 func (ft *OrderFilters) ByEtopPaymentStatus(EtopPaymentStatus model.Status4) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
@@ -933,6 +914,44 @@ func (ft *OrderFilters) ByFulfillmentTypePtr(FulfillmentType *m.FulfillType) *sq
 		Value:  FulfillmentType,
 		IsNil:  FulfillmentType == nil,
 		IsZero: FulfillmentType != nil && (*FulfillmentType) == 0,
+	}
+}
+
+func (ft *OrderFilters) ByPaymentStatus(PaymentStatus model.Status4) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "payment_status",
+		Value:  PaymentStatus,
+		IsNil:  PaymentStatus == 0,
+	}
+}
+
+func (ft *OrderFilters) ByPaymentStatusPtr(PaymentStatus *model.Status4) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "payment_status",
+		Value:  PaymentStatus,
+		IsNil:  PaymentStatus == nil,
+		IsZero: PaymentStatus != nil && (*PaymentStatus) == 0,
+	}
+}
+
+func (ft *OrderFilters) ByPaymentID(PaymentID int64) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "payment_id",
+		Value:  PaymentID,
+		IsNil:  PaymentID == 0,
+	}
+}
+
+func (ft *OrderFilters) ByPaymentIDPtr(PaymentID *int64) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "payment_id",
+		Value:  PaymentID,
+		IsNil:  PaymentID == nil,
+		IsZero: PaymentID != nil && (*PaymentID) == 0,
 	}
 }
 

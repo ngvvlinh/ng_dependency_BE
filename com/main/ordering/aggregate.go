@@ -144,3 +144,12 @@ func (a *Aggregate) UpdateOrdersConfirmStatus(ctx context.Context, args *orderin
 	err := a.store(ctx).UpdateOrdersConfirmStatus(update)
 	return &ordering.UpdateOrdersConfirmStatusResponse{}, err
 }
+
+func (a *Aggregate) UpdateOrderPaymentInfo(ctx context.Context, args *ordering.UpdateOrderPaymentInfoArgs) error {
+	update := sqlstore.UpdateOrderPaymentInfoArgs{
+		ID:            args.ID,
+		PaymentStatus: args.PaymentStatus,
+		PaymentID:     args.PaymentID,
+	}
+	return a.store(ctx).UpdateOrderPaymentInfo(update)
+}

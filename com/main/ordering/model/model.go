@@ -64,7 +64,6 @@ type Order struct {
 	ConfirmStatus   model.Status3
 
 	FulfillmentShippingStatus model.Status5
-	CustomerPaymentStatus     model.Status3
 	EtopPaymentStatus         model.Status4
 
 	// -1:cancelled, 0:default, 1:delivered, 2:processing
@@ -113,6 +112,10 @@ type Order struct {
 	FulfillmentType  FulfillType
 	FulfillmentIDs   []int64
 	ExternalMeta     json.RawMessage
+
+	// payment
+	PaymentStatus model.Status4
+	PaymentID     int64
 }
 
 func (m *Order) SelfURL(baseURL string, accType int) string {

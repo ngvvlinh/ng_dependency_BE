@@ -1107,11 +1107,11 @@ func UpdateOrderPaymentStatus(ctx context.Context, cmd *ordermodelx.UpdateOrderP
 		return cm.Errorf(cm.FailedPrecondition, nil, "Không thể cập nhật trạng thái thanh toán cho đơn hàng này")
 	}
 
-	if order.CustomerPaymentStatus == model.S3Positive {
+	if order.PaymentStatus == model.S4Positive {
 		return cm.Error(cm.FailedPrecondition, "Đơn hàng đã được thanh toán", nil)
 	}
 	if err := x.Table("order").Where("shop_id = ? AND id = ?", cmd.ShopID, cmd.OrderID).ShouldUpdateMap(M{
-		"customer_payment_status": cmd.Status,
+		"payment_status": cmd.Status,
 	}); err != nil {
 		return err
 	}

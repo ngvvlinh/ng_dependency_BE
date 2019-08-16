@@ -194,3 +194,23 @@ func (s *OrderStore) UpdateOrdersConfirmStatus(args UpdateOrdersConfirmStatusArg
 	}
 	return nil
 }
+
+type UpdateOrderPaymentInfoArgs struct {
+	ID            int64
+	PaymentStatus etop.Status4
+	PaymentID     int64
+}
+
+func (s *OrderStore) UpdateOrderPaymentInfo(args UpdateOrderPaymentInfoArgs) error {
+	if args.ID == 0 {
+		return cm.Errorf(cm.InvalidArgument, nil, "Missing OrderID")
+	}
+	update := &model.Order{
+		PaymentStatus: etopconvert.Status4ToModel(args.PaymentStatus),
+		PaymentID:     args.PaymentID,
+	}
+	if err := s.query().Where(s.ft.ByID(args.ID)).ShouldUpdate(update); err != nil {
+		return err
+	}
+	return nil
+}

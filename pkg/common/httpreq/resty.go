@@ -2,10 +2,8 @@ package httpreq
 
 import (
 	"net/http"
-
 	"go.uber.org/zap/zapcore"
 	"gopkg.in/resty.v1"
-
 	"etop.vn/common/l"
 )
 

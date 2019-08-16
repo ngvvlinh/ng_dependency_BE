@@ -61,6 +61,7 @@ import (
 	"etop.vn/backend/pkg/etop/sqlstore"
 	"etop.vn/backend/pkg/etop/upload"
 	"etop.vn/backend/pkg/integration/email"
+	vtpayclient "etop.vn/backend/pkg/integration/payment/vtpay/client"
 	"etop.vn/backend/pkg/integration/shipnow/ahamove"
 	"etop.vn/backend/pkg/integration/shipping/ghn"
 	"etop.vn/backend/pkg/integration/shipping/ghtk"
@@ -97,6 +98,8 @@ var (
 	orderAggr     *serviceordering.Aggregate
 	orderQuery    ordering.QueryBus
 	identityQuery identity.QueryBus
+
+	vtpayClient *vtpayclient.Client
 )
 
 func main() {
@@ -249,6 +252,10 @@ func main() {
 		} else {
 			ll.Fatal("ahamove: No token")
 		}
+	}
+
+	if cfg.VTPay.MerchantCode != "" {
+		vtpayClient = vtpayclient.New(cfg.VTPay)
 	}
 
 	shippingManager := shipping_provider.NewCtrl(locationBus, ghnCarrier, ghtkCarrier, vtpostCarrier)

@@ -9,6 +9,7 @@ import (
 	cc "etop.vn/backend/pkg/common/config"
 	"etop.vn/backend/pkg/integration/email"
 	haravanclient "etop.vn/backend/pkg/integration/haravan/client"
+	vtpayclient "etop.vn/backend/pkg/integration/payment/vtpay/client"
 	ahamoveclient "etop.vn/backend/pkg/integration/shipnow/ahamove/client"
 	"etop.vn/backend/pkg/integration/shipping/ghn"
 	"etop.vn/backend/pkg/integration/shipping/ghtk"
@@ -67,6 +68,7 @@ type Config struct {
 	AhamoveWebhook cc.HTTP              `yaml:"ahamove_webhook"`
 
 	Haravan haravanclient.Config `yaml:"haravan"`
+	VTPay   vtpayclient.Config   `yaml:"vtpay"`
 
 	SAdminToken string `yaml:"sadmin_token"`
 	ServeDoc    bool   `yaml:"serve_doc"`
@@ -112,6 +114,7 @@ func Default() Config {
 		Ahamove:        ahamoveclient.DefaultConfig(),
 		AhamoveWebhook: cc.HTTP{Port: 9052},
 		Haravan:        haravanclient.DefaultConfig(),
+		VTPay:          vtpayclient.DefaultConfig(),
 
 		SAdminToken: "PZJvDAY2.sadmin.HXnnEkdV",
 		ServeDoc:    true,
@@ -165,6 +168,7 @@ func Load(isTest bool) (Config, error) {
 	cfg.GHTK.MustLoadEnv()
 	cfg.VTPost.MustLoadEnv()
 	cfg.Ahamove.MustLoadEnv()
+	cfg.VTPay.MustLoadEnv()
 	cc.MustLoadEnv("ET_SADMIN_TOKEN", &cfg.SAdminToken)
 
 	if cfg.Haravan.Secret == "" {
