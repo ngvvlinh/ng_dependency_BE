@@ -3,7 +3,7 @@ package customering
 import (
 	"time"
 
-	orderingv1types "etop.vn/api/main/ordering/v1/types"
+	orderingv1types "etop.vn/api/main/ordering/types"
 )
 
 type ShopTrader struct {

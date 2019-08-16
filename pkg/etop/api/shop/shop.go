@@ -2,16 +2,16 @@ package shop
 
 import (
 	"context"
-
-	"etop.vn/api/shopping/customering"
+	"time"
 
 	haravanidentity "etop.vn/api/external/haravan/identity"
 	"etop.vn/api/main/address"
 	"etop.vn/api/main/catalog"
 	"etop.vn/api/main/identity"
 	"etop.vn/api/main/shipnow"
-	"etop.vn/api/main/shipnow/carrier"
-	"etop.vn/api/main/shipping/v1/types"
+	carriertypes "etop.vn/api/main/shipnow/carrier/types"
+	"etop.vn/api/main/shipping/types"
+	"etop.vn/api/shopping/customering"
 	catalogmodel "etop.vn/backend/com/main/catalog/model"
 	catalogmodelx "etop.vn/backend/com/main/catalog/modelx"
 	moneymodelx "etop.vn/backend/com/main/moneytx/modelx"
@@ -712,12 +712,12 @@ func CreateShipnowFulfillment(ctx context.Context, q *wrapshop.CreateShipnowFulf
 	}
 	cmd := &shipnow.CreateShipnowFulfillmentCommand{
 		OrderIds:            q.OrderIds,
-		Carrier:             carrier.CarrierFromString(q.Carrier),
+		Carrier:             carriertypes.CarrierFromString(q.Carrier),
 		ShopId:              q.Context.Shop.ID,
 		ShippingServiceCode: q.ShippingServiceCode,
 		ShippingServiceFee:  q.ShippingServiceFee,
 		ShippingNote:        q.ShippingNote,
-		RequestPickupAt:     nil,
+		RequestPickupAt:     time.Time{},
 		PickupAddress:       pborder.Convert_api_OrderAddress_To_core_OrderAddress(pickupAddress),
 	}
 	if err := shipnowAggr.Dispatch(ctx, cmd); err != nil {
@@ -747,12 +747,12 @@ func UpdateShipnowFulfillment(ctx context.Context, q *wrapshop.UpdateShipnowFulf
 	cmd := &shipnow.UpdateShipnowFulfillmentCommand{
 		Id:                  q.Id,
 		OrderIds:            q.OrderIds,
-		Carrier:             carrier.CarrierFromString(q.Carrier),
+		Carrier:             carriertypes.CarrierFromString(q.Carrier),
 		ShopId:              q.Context.Shop.ID,
 		ShippingServiceCode: q.ShippingServiceCode,
 		ShippingServiceFee:  q.ShippingServiceFee,
 		ShippingNote:        q.ShippingNote,
-		RequestPickupAt:     nil,
+		RequestPickupAt:     time.Time{},
 		PickupAddress:       pborder.Convert_api_OrderAddress_To_core_OrderAddress(pickupAddress),
 	}
 	if err := shipnowAggr.Dispatch(ctx, cmd); err != nil {

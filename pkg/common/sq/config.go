@@ -8,7 +8,7 @@ import (
 	"sync"
 	"time"
 
-	core "etop.vn/backend/pkg/common/sq/core"
+	"etop.vn/backend/pkg/common/sq/core"
 )
 
 // Error ...

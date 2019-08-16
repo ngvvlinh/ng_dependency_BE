@@ -1,13 +1,12 @@
 package order
 
 import (
-	catalogtypes "etop.vn/api/main/catalog/v1/types"
-	orderingv1types "etop.vn/api/main/ordering/v1/types"
+	catalogtypes "etop.vn/api/main/catalog/types"
+	orderingv1types "etop.vn/api/main/ordering/types"
 	"etop.vn/api/main/shipnow"
-	"etop.vn/api/main/shipnow/carrier"
+	carrier "etop.vn/api/main/shipnow/carrier/types"
 	shipnowtypes "etop.vn/api/main/shipnow/types"
-	shippingtypes "etop.vn/api/main/shipping/v1/types"
-	"etop.vn/api/meta"
+	shippingtypes "etop.vn/api/main/shipping/types"
 	pbcm "etop.vn/backend/pb/common"
 	"etop.vn/backend/pb/etop"
 	pbs3 "etop.vn/backend/pb/etop/etc/status3"
@@ -15,27 +14,6 @@ import (
 	pbs5 "etop.vn/backend/pb/etop/etc/status5"
 	"etop.vn/backend/pkg/etop/model"
 )
-
-func Convert_api_ShipnowFulfillment_To_core_ShipnowFulfillment(in *ShipnowFulfillment) *shipnow.ShipnowFulfillment {
-	return &shipnow.ShipnowFulfillment{
-		Id:                         in.Id,
-		ShopId:                     in.ShopId,
-		PartnerId:                  in.PartnerId,
-		PickupAddress:              Convert_api_OrderAddress_To_core_OrderAddress(in.PickupAddress),
-		DeliveryPoints:             Conver_api_DeliveryPoints_To_core_DeliveryPoints(in.DeliveryPoints),
-		Carrier:                    carrier.CarrierFromString(in.Carrier),
-		ShippingServiceCode:        in.ShippingServiceCode,
-		ShippingServiceFee:         in.ShippingServiceFee,
-		ShippingServiceName:        in.ShippingServiceName,
-		ShippingServiceDescription: in.ShippingServiceDescription,
-		WeightInfo:                 Convert_api_WeightInfo_To_core_WeightInfo(in.WeightInfo),
-		ValueInfo:                  Convert_api_ValueInfo_To_core_ValueInfo(in.ValueInfo),
-		ShippingNote:               in.ShippingNote,
-		RequestPickupAt:            meta.PbTime(pbcm.PbTimeToModel(in.RequestPickupAt)),
-		ShippingSharedLink:         in.ShippingSharedLink,
-		CancelReason:               in.CancelReason,
-	}
-}
 
 func Convert_core_ShipnowFulfillment_To_api_ShipnowFulfillment(in *shipnow.ShipnowFulfillment) *ShipnowFulfillment {
 	if in == nil {
@@ -55,22 +33,22 @@ func Convert_core_ShipnowFulfillment_To_api_ShipnowFulfillment(in *shipnow.Shipn
 		WeightInfo:                 Convert_core_WeightInfo_To_api_WeightInfo(in.WeightInfo),
 		ValueInfo:                  Convert_core_ValueInfo_To_api_ValueInfo(in.ValueInfo),
 		ShippingNote:               in.ShippingNote,
-		RequestPickupAt:            pbcm.PbTime(in.RequestPickupAt.ToTime()),
-		CreatedAt:                  pbcm.PbTime(in.CreatedAt.ToTime()),
-		UpdatedAt:                  pbcm.PbTime(in.UpdatedAt.ToTime()),
+		RequestPickupAt:            pbcm.PbTime(in.RequestPickupAt),
+		CreatedAt:                  pbcm.PbTime(in.CreatedAt),
+		UpdatedAt:                  pbcm.PbTime(in.UpdatedAt),
 		Status:                     pbs5.Pb(model.Status5(in.Status)),
 		ShippingStatus:             pbs5.Pb(model.Status5(in.ShippingStatus)),
 		ShippingState:              shipnowtypes.StateToString(in.ShippingState),
 		ConfirmStatus:              pbs3.Pb(model.Status3(in.ConfirmStatus)),
 		OrderIds:                   in.OrderIds,
-		ShippingCreatedAt:          pbcm.PbTime(in.ShippingCreatedAt.ToTime()),
+		ShippingCreatedAt:          pbcm.PbTime(in.ShippingCreatedAt),
 		ShippingCode:               in.ShippingCode,
 		EtopPaymentStatus:          pbs4.Pb(model.Status4(in.EtopPaymentStatus)),
-		CodEtopTransferedAt:        pbcm.PbTime(in.CodEtopTransferedAt.ToTime()),
-		ShippingPickingAt:          pbcm.PbTime(in.ShippingPickingAt.ToTime()),
-		ShippingDeliveringAt:       pbcm.PbTime(in.ShippingDeliveringAt.ToTime()),
-		ShippingDeliveredAt:        pbcm.PbTime(in.ShippingDeliveredAt.ToTime()),
-		ShippingCancelledAt:        pbcm.PbTime(in.ShippingCancelledAt.ToTime()),
+		CodEtopTransferedAt:        pbcm.PbTime(in.CodEtopTransferedAt),
+		ShippingPickingAt:          pbcm.PbTime(in.ShippingPickingAt),
+		ShippingDeliveringAt:       pbcm.PbTime(in.ShippingDeliveringAt),
+		ShippingDeliveredAt:        pbcm.PbTime(in.ShippingDeliveredAt),
+		ShippingCancelledAt:        pbcm.PbTime(in.ShippingCancelledAt),
 		ShippingSharedLink:         in.ShippingSharedLink,
 		CancelReason:               in.CancelReason,
 	}

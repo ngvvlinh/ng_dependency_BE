@@ -8,7 +8,7 @@ import (
 	. "github.com/smartystreets/goconvey/convey"
 
 	. "etop.vn/backend/pkg/common/sq"
-	core "etop.vn/backend/pkg/common/sq/core"
+	"etop.vn/backend/pkg/common/sq/core"
 	"etop.vn/backend/pkg/common/sq/mock"
 )
 

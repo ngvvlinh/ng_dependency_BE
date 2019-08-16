@@ -4,31 +4,82 @@ import (
 	"errors"
 	"strings"
 
-	location "etop.vn/api/main/location"
-	v1types "etop.vn/api/main/ordering/v1/types"
+	"etop.vn/api/main/catalog/types"
+	"etop.vn/api/main/location"
 )
 
-type ItemLine = v1types.ItemLine
-type ProductInfo = v1types.ProductInfo
-type Address = v1types.Address
-type Location = v1types.Location
-type Coordinates = v1types.Coordinates
+type ItemLine struct {
+	OrderId     int64
+	Quantity    int32
+	ProductId   int64
+	VariantId   int64
+	IsOutside   bool
+	ProductInfo ProductInfo
+	TotalPrice  int32
+}
 
-type Fulfill = v1types.Fulfill
+type ProductInfo struct {
+	ProductName string
+	ImageUrl    string
+	Attributes  []*types.Attribute
+	ListPrice   int32
+}
+
+type Address struct {
+	FullName string
+	Phone    string
+	Email    string
+	Company  string
+	Address1 string
+	Address2 string
+	Location
+}
+
+type Location struct {
+	ProvinceCode string
+	DistrictCode string
+	WardCode     string
+	Coordinates  *Coordinates
+}
+
+type Coordinates struct {
+	Latitude  float32
+	Longitude float32
+}
+
+type Fulfill int32
 
 const (
-	FulfillNone     = v1types.Fulfill_none
-	FulfillManual   = v1types.Fulfill_manual
-	FulfillShipment = v1types.Fulfill_shipment
-	FulfillShipnow  = v1types.Fulfill_shipnow
+	FulfillNone     Fulfill = 0
+	FulfillManual   Fulfill = 1
+	FulfillShipment Fulfill = 10
+	FulfillShipnow  Fulfill = 11
 )
 
+var Fulfill_name = map[int32]string{
+	0:  "none",
+	1:  "manual",
+	10: "shipment",
+	11: "shipnow",
+}
+
+var Fulfill_value = map[string]int32{
+	"none":     0,
+	"manual":   1,
+	"shipment": 10,
+	"shipnow":  11,
+}
+
 func FulfillFromInt(s int32) (Fulfill, error) {
-	_, ok := v1types.Fulfill_name[s]
+	_, ok := Fulfill_name[s]
 	if !ok {
 		return 0, errors.New("invalid fulfill code")
 	}
 	return Fulfill(s), nil
+}
+
+func (f Fulfill) String() string {
+	return Fulfill_name[int32(f)]
 }
 
 func GetFullAddress(a *Address, location *location.LocationQueryResult) string {

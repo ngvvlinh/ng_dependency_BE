@@ -7,7 +7,6 @@ import (
 
 	types "etop.vn/api/main/catalog/types"
 	meta "etop.vn/api/meta"
-	metav1 "etop.vn/api/meta/v1"
 	shopping "etop.vn/api/shopping"
 )
 
@@ -70,14 +69,14 @@ type DeleteShopProductsCommand struct {
 	IDs    []int64
 	ShopID int64
 
-	Result *metav1.Empty `json:"-"`
+	Result *meta.Empty `json:"-"`
 }
 
 type DeleteShopVariantsCommand struct {
 	IDs    []int64
 	ShopID int64
 
-	Result *metav1.Empty `json:"-"`
+	Result *meta.Empty `json:"-"`
 }
 
 type UpdateShopProductImagesCommand struct {
@@ -166,7 +165,7 @@ type GetShopVariantWithProductByIDQuery struct {
 
 type ListShopProductsQuery struct {
 	ShopID  int64
-	Paging  metav1.Paging
+	Paging  meta.Paging
 	Filters meta.Filters
 
 	Result *ShopProductsResponse `json:"-"`
@@ -181,7 +180,7 @@ type ListShopProductsByIDsQuery struct {
 
 type ListShopProductsWithVariantsQuery struct {
 	ShopID  int64
-	Paging  metav1.Paging
+	Paging  meta.Paging
 	Filters meta.Filters
 
 	Result *ShopProductsWithVariantsResponse `json:"-"`
@@ -196,7 +195,7 @@ type ListShopProductsWithVariantsByIDsQuery struct {
 
 type ListShopVariantsQuery struct {
 	ShopID  int64
-	Paging  metav1.Paging
+	Paging  meta.Paging
 	Filters meta.Filters
 
 	Result *ShopVariantsResponse `json:"-"`

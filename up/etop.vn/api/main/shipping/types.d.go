@@ -5,9 +5,8 @@ package shipping
 import (
 	context "context"
 
-	shippingv1types "etop.vn/api/main/shipping/v1/types"
+	types "etop.vn/api/main/shipping/types"
 	meta "etop.vn/api/meta"
-	metav1 "etop.vn/api/meta/v1"
 )
 
 type Command interface{ command() }
@@ -42,13 +41,13 @@ type CancelFulfillmentCommand struct {
 	FulfillmentID int64
 	CancelReason  string
 
-	Result *metav1.Empty `json:"-"`
+	Result *meta.Empty `json:"-"`
 }
 
 type ConfirmFulfillmentCommand struct {
 	FulfillmentID int64
 
-	Result *metav1.Empty `json:"-"`
+	Result *meta.Empty `json:"-"`
 }
 
 type CreateFulfillmentCommand struct {
@@ -61,10 +60,10 @@ type CreateFulfillmentCommand struct {
 	ShippingServiceFee  string
 	WeightInfo          WeightInfo
 	ValueInfo           ValueInfo
-	TryOn               shippingv1types.TryOnCode
+	TryOn               types.TryOn
 	ShippingNote        string
 
-	Result *metav1.Empty `json:"-"`
+	Result *meta.Empty `json:"-"`
 }
 
 type GetFulfillmentByIDCommand struct {

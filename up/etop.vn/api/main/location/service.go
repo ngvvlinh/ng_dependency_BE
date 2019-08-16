@@ -2,12 +2,10 @@ package location
 
 import (
 	"context"
-
-	locationv1 "etop.vn/api/main/location/v1"
 )
 
 type LocationQueryService interface {
-	GetAllLocations(ctx context.Context, _ *GetAllLocationsQueryArgs) (*locationv1.GetAllLocationsQueryResult, error)
+	GetAllLocations(ctx context.Context, _ *GetAllLocationsQueryArgs) (*GetAllLocationsQueryResult, error)
 
 	GetLocation(ctx context.Context, _ *GetLocationQueryArgs) (*LocationQueryResult, error)
 
@@ -18,9 +16,42 @@ type LocationQueryService interface {
 
 //-- queries --//
 
-type GetAllLocationsQueryArgs = locationv1.GetAllLocationsQueryArgs
-type GetAllLocationsQueryResult = locationv1.GetAllLocationsQueryResult
-type LocationQueryResult = locationv1.LocationQueryResult
-type GetLocationQueryArgs = locationv1.GetLocationQueryArgs
-type FindLocationQueryArgs = locationv1.FindLocationQueryArgs
-type FindOrGetLocationQueryArgs = locationv1.FindOrGetLocationQueryArgs
+type GetAllLocationsQueryArgs struct {
+	All          bool
+	ProvinceCode string
+	DistrictCode string
+}
+
+type GetAllLocationsQueryResult struct {
+	Provinces []*Province
+	Districts []*District
+	Wards     []*Ward
+}
+
+type LocationQueryResult struct {
+	Province *Province
+	District *District
+	Ward     *Ward
+}
+
+type GetLocationQueryArgs struct {
+	ProvinceCode     string
+	DistrictCode     string
+	WardCode         string
+	LocationCodeType LocationCodeType
+}
+
+type FindLocationQueryArgs struct {
+	Province string
+	District string
+	Ward     string
+}
+
+type FindOrGetLocationQueryArgs struct {
+	Province     string
+	District     string
+	Ward         string
+	ProvinceCode string
+	DistrictCode string
+	WardCode     string
+}

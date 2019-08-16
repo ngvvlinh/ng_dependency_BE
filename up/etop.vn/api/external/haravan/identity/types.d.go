@@ -6,7 +6,6 @@ import (
 	context "context"
 
 	meta "etop.vn/api/meta"
-	metav1 "etop.vn/api/meta/v1"
 )
 
 type Command interface{ command() }
@@ -40,7 +39,7 @@ func (c QueryBus) DispatchAll(ctx context.Context, msgs ...Query) error {
 type ConnectCarrierServiceExternalAccountHaravanCommand struct {
 	ShopID int64
 
-	Result *metav1.Empty `json:"-"`
+	Result *meta.Empty `json:"-"`
 }
 
 type CreateExternalAccountHaravanCommand struct {
@@ -55,7 +54,7 @@ type CreateExternalAccountHaravanCommand struct {
 type DeleteConnectedCarrierServiceExternalAccountHaravanCommand struct {
 	ShopID int64
 
-	Result *metav1.Empty `json:"-"`
+	Result *meta.Empty `json:"-"`
 }
 
 type UpdateExternalAccountHaravanTokenCommand struct {

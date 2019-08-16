@@ -2,6 +2,7 @@ package shipnow
 
 import (
 	"context"
+	"time"
 
 	"etop.vn/api/main/address"
 	etoptypes "etop.vn/api/main/etop"
@@ -85,7 +86,7 @@ func (a *Aggregate) CreateShipnowFulfillment(ctx context.Context, cmd *shipnow.C
 			WeightInfo:          weightInfo,
 			ValueInfo:           valueInfo,
 			ShippingNote:        cmd.ShippingNote,
-			RequestPickupAt:     nil,
+			RequestPickupAt:     time.Time{},
 		}
 
 		if err := a.store(ctx).Create(shipnowFfm); err != nil {
@@ -309,7 +310,7 @@ func (a *Aggregate) UpdateShipnowFulfillmentCarrierInfo(ctx context.Context, arg
 		FeeLines:            args.FeeLines,
 		CarrierFeeLines:     args.CarrierFeeLines,
 		ShippingCode:        args.ShippingCode,
-		ShippingCreatedAt:   args.ShippingCreatedAt.ToTime(),
+		ShippingCreatedAt:   args.ShippingCreatedAt,
 		ShippingState:       args.ShippingState,
 		ShippingStatus:      args.ShippingStatus,
 		EtopPaymentStatus:   args.EtopPaymentStatus,

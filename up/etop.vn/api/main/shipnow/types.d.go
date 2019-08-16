@@ -4,15 +4,14 @@ package shipnow
 
 import (
 	context "context"
+	time "time"
 
-	etopv1 "etop.vn/api/main/etop/v1"
-	orderingv1types "etop.vn/api/main/ordering/v1/types"
-	carrierv1 "etop.vn/api/main/shipnow/carrier/v1"
-	shipnowv1 "etop.vn/api/main/shipnow/v1"
-	shipnowv1types "etop.vn/api/main/shipnow/v1/types"
-	shippingv1types "etop.vn/api/main/shipping/v1/types"
+	etop "etop.vn/api/main/etop"
+	types1 "etop.vn/api/main/ordering/types"
+	types "etop.vn/api/main/shipnow/carrier/types"
+	types2 "etop.vn/api/main/shipnow/types"
+	types3 "etop.vn/api/main/shipping/types"
 	meta "etop.vn/api/meta"
-	metav1 "etop.vn/api/meta/v1"
 )
 
 type Command interface{ command() }
@@ -48,107 +47,107 @@ type CancelShipnowFulfillmentCommand struct {
 	ShopId       int64  `json:"shop_id"`
 	CancelReason string `json:"cancel_reason"`
 
-	Result *metav1.Empty `json:"-"`
+	Result *meta.Empty `json:"-"`
 }
 
 type ConfirmShipnowFulfillmentCommand struct {
 	Id     int64 `json:"id"`
 	ShopId int64 `json:"shop_id"`
 
-	Result *shipnowv1.ShipnowFulfillment `json:"-"`
+	Result *ShipnowFulfillment `json:"-"`
 }
 
 type CreateShipnowFulfillmentCommand struct {
-	OrderIds            []int64                  `json:"order_ids,omitempty"`
-	Carrier             carrierv1.Carrier        `json:"carrier"`
-	ShopId              int64                    `json:"shop_id"`
-	ShippingServiceCode string                   `json:"shipping_service_code"`
-	ShippingServiceFee  int32                    `json:"shipping_service_fee"`
-	ShippingNote        string                   `json:"shipping_note"`
-	RequestPickupAt     *metav1.Timestamp        `json:"request_pickup_at,omitempty"`
-	PickupAddress       *orderingv1types.Address `json:"pickup_address,omitempty"`
+	OrderIds            []int64         `json:"order_ids,omitempty"`
+	Carrier             types.Carrier   `json:"carrier"`
+	ShopId              int64           `json:"shop_id"`
+	ShippingServiceCode string          `json:"shipping_service_code"`
+	ShippingServiceFee  int32           `json:"shipping_service_fee"`
+	ShippingNote        string          `json:"shipping_note"`
+	RequestPickupAt     time.Time       `json:"request_pickup_at,omitempty"`
+	PickupAddress       *types1.Address `json:"pickup_address,omitempty"`
 
-	Result *shipnowv1.ShipnowFulfillment `json:"-"`
+	Result *ShipnowFulfillment `json:"-"`
 }
 
 type GetShipnowServicesCommand struct {
-	ShopId         int64                           `json:"shop_id"`
-	OrderIds       []int64                         `json:"order_ids,omitempty"`
-	PickupAddress  *orderingv1types.Address        `json:"pickup_address,omitempty"`
-	DeliveryPoints []*shipnowv1types.DeliveryPoint `json:"delivery_points,omitempty"`
+	ShopId         int64            `json:"shop_id"`
+	OrderIds       []int64          `json:"order_ids,omitempty"`
+	PickupAddress  *types1.Address  `json:"pickup_address,omitempty"`
+	DeliveryPoints []*DeliveryPoint `json:"delivery_points,omitempty"`
 
-	Result *shipnowv1.GetShipnowServicesCommandResult `json:"-"`
+	Result *GetShipnowServicesResult `json:"-"`
 }
 
 type UpdateShipnowFulfillmentCommand struct {
-	Id                  int64                    `json:"id"`
-	OrderIds            []int64                  `json:"order_ids,omitempty"`
-	Carrier             carrierv1.Carrier        `json:"carrier"`
-	ShopId              int64                    `json:"shop_id"`
-	ShippingServiceCode string                   `json:"shipping_service_code"`
-	ShippingServiceFee  int32                    `json:"shipping_service_fee"`
-	ShippingNote        string                   `json:"shipping_note"`
-	RequestPickupAt     *metav1.Timestamp        `json:"request_pickup_at,omitempty"`
-	PickupAddress       *orderingv1types.Address `json:"pickup_address,omitempty"`
+	Id                  int64           `json:"id"`
+	OrderIds            []int64         `json:"order_ids,omitempty"`
+	Carrier             types.Carrier   `json:"carrier"`
+	ShopId              int64           `json:"shop_id"`
+	ShippingServiceCode string          `json:"shipping_service_code"`
+	ShippingServiceFee  int32           `json:"shipping_service_fee"`
+	ShippingNote        string          `json:"shipping_note"`
+	RequestPickupAt     time.Time       `json:"request_pickup_at,omitempty"`
+	PickupAddress       *types1.Address `json:"pickup_address,omitempty"`
 
-	Result *shipnowv1.ShipnowFulfillment `json:"-"`
+	Result *ShipnowFulfillment `json:"-"`
 }
 
 type UpdateShipnowFulfillmentCarrierInfoCommand struct {
-	Id                         int64                      `json:"id"`
-	ShippingCode               string                     `json:"shipping_code"`
-	ShippingState              shipnowv1types.State       `json:"shipping_state"`
-	TotalFee                   int32                      `json:"total_fee"`
-	FeeLines                   []*shippingv1types.FeeLine `json:"fee_lines,omitempty"`
-	CarrierFeeLines            []*shippingv1types.FeeLine `json:"carrier_fee_lines,omitempty"`
-	ShippingCreatedAt          *metav1.Timestamp          `json:"shipping_created_at,omitempty"`
-	EtopPaymentStatus          etopv1.Status4             `json:"etop_payment_status"`
-	ShippingStatus             etopv1.Status5             `json:"shipping_status"`
-	Status                     etopv1.Status5             `json:"status"`
-	CodEtopTransferedAt        *metav1.Timestamp          `json:"cod_etop_transfered_at,omitempty"`
-	ShippingPickingAt          *metav1.Timestamp          `json:"shipping_picking_at,omitempty"`
-	ShippingDeliveringAt       *metav1.Timestamp          `json:"shipping_delivering_at,omitempty"`
-	ShippingDeliveredAt        *metav1.Timestamp          `json:"shipping_delivered_at,omitempty"`
-	ShippingCancelledAt        *metav1.Timestamp          `json:"shipping_cancelled_at,omitempty"`
-	ShippingServiceName        string                     `json:"shipping_service_name"`
-	CancelReason               string                     `json:"cancel_reason"`
-	ShippingSharedLink         string                     `json:"shipping_shared_link"`
-	ShippingServiceDescription string                     `json:"shipping_service_description"`
+	Id                         int64             `json:"id"`
+	ShippingCode               string            `json:"shipping_code"`
+	ShippingState              types2.State      `json:"shipping_state"`
+	TotalFee                   int32             `json:"total_fee"`
+	FeeLines                   []*types3.FeeLine `json:"fee_lines,omitempty"`
+	CarrierFeeLines            []*types3.FeeLine `json:"carrier_fee_lines,omitempty"`
+	ShippingCreatedAt          time.Time         `json:"shipping_created_at,omitempty"`
+	EtopPaymentStatus          etop.Status4      `json:"etop_payment_status"`
+	ShippingStatus             etop.Status5      `json:"shipping_status"`
+	Status                     etop.Status5      `json:"status"`
+	CodEtopTransferedAt        time.Time         `json:"cod_etop_transfered_at,omitempty"`
+	ShippingPickingAt          time.Time         `json:"shipping_picking_at,omitempty"`
+	ShippingDeliveringAt       time.Time         `json:"shipping_delivering_at,omitempty"`
+	ShippingDeliveredAt        time.Time         `json:"shipping_delivered_at,omitempty"`
+	ShippingCancelledAt        time.Time         `json:"shipping_cancelled_at,omitempty"`
+	ShippingServiceName        string            `json:"shipping_service_name"`
+	CancelReason               string            `json:"cancel_reason"`
+	ShippingSharedLink         string            `json:"shipping_shared_link"`
+	ShippingServiceDescription string            `json:"shipping_service_description"`
 
-	Result *shipnowv1.ShipnowFulfillment `json:"-"`
+	Result *ShipnowFulfillment `json:"-"`
 }
 
 type UpdateShipnowFulfillmentStateCommand struct {
-	Id             int64                 `json:"id"`
-	SyncStatus     etopv1.Status4        `json:"sync_status"`
-	Status         etopv1.Status5        `json:"status"`
-	ConfirmStatus  etopv1.Status3        `json:"confirm_status"`
-	ShippingStatus etopv1.Status5        `json:"shipping_status"`
-	SyncStates     *shipnowv1.SyncStates `json:"sync_states,omitempty"`
-	ShippingState  shipnowv1types.State  `json:"shipping_state"`
+	Id             int64        `json:"id"`
+	SyncStatus     etop.Status4 `json:"sync_status"`
+	Status         etop.Status5 `json:"status"`
+	ConfirmStatus  etop.Status3 `json:"confirm_status"`
+	ShippingStatus etop.Status5 `json:"shipping_status"`
+	SyncStates     *SyncStates  `json:"sync_states,omitempty"`
+	ShippingState  types2.State `json:"shipping_state"`
 
-	Result *shipnowv1.ShipnowFulfillment `json:"-"`
+	Result *ShipnowFulfillment `json:"-"`
 }
 
 type GetShipnowFulfillmentQuery struct {
 	Id     int64 `json:"id"`
 	ShopId int64 `json:"shop_id"`
 
-	Result *shipnowv1.GetShipnowFulfillmentQueryResult `json:"-"`
+	Result *GetShipnowFulfillmentQueryResult `json:"-"`
 }
 
 type GetShipnowFulfillmentByShippingCodeQuery struct {
 	ShippingCode string `json:"shipping_code"`
 
-	Result *shipnowv1.GetShipnowFulfillmentQueryResult `json:"-"`
+	Result *GetShipnowFulfillmentQueryResult `json:"-"`
 }
 
 type GetShipnowFulfillmentsQuery struct {
-	ShopIds []int64          `json:"shop_ids,omitempty"`
-	Paging  *metav1.Paging   `json:"paging,omitempty"`
-	Filters []*metav1.Filter `json:"filters,omitempty"`
+	ShopIds []int64        `json:"shop_ids,omitempty"`
+	Paging  *meta.Paging   `json:"paging,omitempty"`
+	Filters []*meta.Filter `json:"filters,omitempty"`
 
-	Result *shipnowv1.GetShipnowFulfillmentsQueryResult `json:"-"`
+	Result *GetShipnowFulfillmentsQueryResult `json:"-"`
 }
 
 // implement interfaces
@@ -166,26 +165,26 @@ func (q *GetShipnowFulfillmentsQuery) query()                  {}
 
 // implement conversion
 
-func (q *CancelShipnowFulfillmentCommand) GetArgs(ctx context.Context) (_ context.Context, _ *shipnowv1.CancelShipnowFulfillmentCommand) {
+func (q *CancelShipnowFulfillmentCommand) GetArgs(ctx context.Context) (_ context.Context, _ *CancelShipnowFulfillmentArgs) {
 	return ctx,
-		&shipnowv1.CancelShipnowFulfillmentCommand{
+		&CancelShipnowFulfillmentArgs{
 			Id:           q.Id,
 			ShopId:       q.ShopId,
 			CancelReason: q.CancelReason,
 		}
 }
 
-func (q *ConfirmShipnowFulfillmentCommand) GetArgs(ctx context.Context) (_ context.Context, _ *shipnowv1.ConfirmShipnowFulfillmentCommand) {
+func (q *ConfirmShipnowFulfillmentCommand) GetArgs(ctx context.Context) (_ context.Context, _ *ConfirmShipnowFulfillmentArgs) {
 	return ctx,
-		&shipnowv1.ConfirmShipnowFulfillmentCommand{
+		&ConfirmShipnowFulfillmentArgs{
 			Id:     q.Id,
 			ShopId: q.ShopId,
 		}
 }
 
-func (q *CreateShipnowFulfillmentCommand) GetArgs(ctx context.Context) (_ context.Context, _ *shipnowv1.CreateShipnowFulfillmentCommand) {
+func (q *CreateShipnowFulfillmentCommand) GetArgs(ctx context.Context) (_ context.Context, _ *CreateShipnowFulfillmentArgs) {
 	return ctx,
-		&shipnowv1.CreateShipnowFulfillmentCommand{
+		&CreateShipnowFulfillmentArgs{
 			OrderIds:            q.OrderIds,
 			Carrier:             q.Carrier,
 			ShopId:              q.ShopId,
@@ -197,9 +196,9 @@ func (q *CreateShipnowFulfillmentCommand) GetArgs(ctx context.Context) (_ contex
 		}
 }
 
-func (q *GetShipnowServicesCommand) GetArgs(ctx context.Context) (_ context.Context, _ *shipnowv1.GetShipnowServicesCommand) {
+func (q *GetShipnowServicesCommand) GetArgs(ctx context.Context) (_ context.Context, _ *GetShipnowServicesArgs) {
 	return ctx,
-		&shipnowv1.GetShipnowServicesCommand{
+		&GetShipnowServicesArgs{
 			ShopId:         q.ShopId,
 			OrderIds:       q.OrderIds,
 			PickupAddress:  q.PickupAddress,
@@ -207,9 +206,9 @@ func (q *GetShipnowServicesCommand) GetArgs(ctx context.Context) (_ context.Cont
 		}
 }
 
-func (q *UpdateShipnowFulfillmentCommand) GetArgs(ctx context.Context) (_ context.Context, _ *shipnowv1.UpdateShipnowFulfillmentCommand) {
+func (q *UpdateShipnowFulfillmentCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateShipnowFulfillmentArgs) {
 	return ctx,
-		&shipnowv1.UpdateShipnowFulfillmentCommand{
+		&UpdateShipnowFulfillmentArgs{
 			Id:                  q.Id,
 			OrderIds:            q.OrderIds,
 			Carrier:             q.Carrier,
@@ -222,9 +221,9 @@ func (q *UpdateShipnowFulfillmentCommand) GetArgs(ctx context.Context) (_ contex
 		}
 }
 
-func (q *UpdateShipnowFulfillmentCarrierInfoCommand) GetArgs(ctx context.Context) (_ context.Context, _ *shipnowv1.UpdateShipnowFulfillmentCarrierInfoCommand) {
+func (q *UpdateShipnowFulfillmentCarrierInfoCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateShipnowFulfillmentCarrierInfoArgs) {
 	return ctx,
-		&shipnowv1.UpdateShipnowFulfillmentCarrierInfoCommand{
+		&UpdateShipnowFulfillmentCarrierInfoArgs{
 			Id:                         q.Id,
 			ShippingCode:               q.ShippingCode,
 			ShippingState:              q.ShippingState,
@@ -247,9 +246,9 @@ func (q *UpdateShipnowFulfillmentCarrierInfoCommand) GetArgs(ctx context.Context
 		}
 }
 
-func (q *UpdateShipnowFulfillmentStateCommand) GetArgs(ctx context.Context) (_ context.Context, _ *shipnowv1.UpdateShipnowFulfullmentStateCommand) {
+func (q *UpdateShipnowFulfillmentStateCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateShipnowFulfillmentStateArgs) {
 	return ctx,
-		&shipnowv1.UpdateShipnowFulfullmentStateCommand{
+		&UpdateShipnowFulfillmentStateArgs{
 			Id:             q.Id,
 			SyncStatus:     q.SyncStatus,
 			Status:         q.Status,
@@ -260,24 +259,24 @@ func (q *UpdateShipnowFulfillmentStateCommand) GetArgs(ctx context.Context) (_ c
 		}
 }
 
-func (q *GetShipnowFulfillmentQuery) GetArgs(ctx context.Context) (_ context.Context, _ *shipnowv1.GetShipnowFulfillmentQueryArgs) {
+func (q *GetShipnowFulfillmentQuery) GetArgs(ctx context.Context) (_ context.Context, _ *GetShipnowFulfillmentQueryArgs) {
 	return ctx,
-		&shipnowv1.GetShipnowFulfillmentQueryArgs{
+		&GetShipnowFulfillmentQueryArgs{
 			Id:     q.Id,
 			ShopId: q.ShopId,
 		}
 }
 
-func (q *GetShipnowFulfillmentByShippingCodeQuery) GetArgs(ctx context.Context) (_ context.Context, _ *shipnowv1.GetShipnowFulfillmentByShippingCodeQueryArgs) {
+func (q *GetShipnowFulfillmentByShippingCodeQuery) GetArgs(ctx context.Context) (_ context.Context, _ *GetShipnowFulfillmentByShippingCodeQueryArgs) {
 	return ctx,
-		&shipnowv1.GetShipnowFulfillmentByShippingCodeQueryArgs{
+		&GetShipnowFulfillmentByShippingCodeQueryArgs{
 			ShippingCode: q.ShippingCode,
 		}
 }
 
-func (q *GetShipnowFulfillmentsQuery) GetArgs(ctx context.Context) (_ context.Context, _ *shipnowv1.GetShipnowFulfillmentsQueryArgs) {
+func (q *GetShipnowFulfillmentsQuery) GetArgs(ctx context.Context) (_ context.Context, _ *GetShipnowFulfillmentsQueryArgs) {
 	return ctx,
-		&shipnowv1.GetShipnowFulfillmentsQueryArgs{
+		&GetShipnowFulfillmentsQueryArgs{
 			ShopIds: q.ShopIds,
 			Paging:  q.Paging,
 			Filters: q.Filters,

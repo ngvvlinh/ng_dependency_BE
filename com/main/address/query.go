@@ -1,0 +1,33 @@
+package address
+
+import (
+	"context"
+
+	"etop.vn/backend/com/main/address/sqlstore"
+
+	"etop.vn/api/main/address"
+	"etop.vn/backend/pkg/common/cmsql"
+	"etop.vn/common/bus"
+)
+
+var _ address.QueryService = &QueryService{}
+
+type QueryService struct {
+	s *sqlstore.AddressStore
+}
+
+func NewQueryService(db cmsql.Database) *QueryService {
+	return &QueryService{
+		s: sqlstore.NewAddressStore(db),
+	}
+}
+
+func (q *QueryService) MessageBus() address.QueryBus {
+	b := bus.New()
+	return address.NewQueryServiceHandler(q).RegisterHandlers(b)
+}
+
+func (q *QueryService) GetAddressByID(ctx context.Context, query *address.GetAddressByIDQueryArgs) (*address.Address, error) {
+	address, err := q.s.GetByID(query.ID)
+	return address, err
+}

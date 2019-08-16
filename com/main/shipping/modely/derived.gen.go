@@ -7,9 +7,9 @@ import (
 
 	etop_vn_backend_com_main_moneytx_model "etop.vn/backend/com/main/moneytx/model"
 	etop_vn_backend_com_main_ordering_model "etop.vn/backend/com/main/ordering/model"
-	model "etop.vn/backend/com/main/shipping/model"
-	sq "etop.vn/backend/pkg/common/sq"
-	core "etop.vn/backend/pkg/common/sq/core"
+	"etop.vn/backend/com/main/shipping/model"
+	"etop.vn/backend/pkg/common/sq"
+	"etop.vn/backend/pkg/common/sq/core"
 	etop_vn_backend_pkg_etop_model "etop.vn/backend/pkg/etop/model"
 )
 

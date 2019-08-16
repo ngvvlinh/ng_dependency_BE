@@ -9,7 +9,7 @@ import (
 	"strconv"
 
 	mongoopts "github.com/mongodb/mongo-go-driver/mongo/options"
-	yaml "gopkg.in/yaml.v2"
+	"gopkg.in/yaml.v2"
 
 	"etop.vn/backend/pkg/common/cmsql"
 	"etop.vn/backend/pkg/common/telebot"

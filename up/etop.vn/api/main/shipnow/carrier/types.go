@@ -6,28 +6,10 @@ import (
 
 	ordertypes "etop.vn/api/main/ordering/types"
 	"etop.vn/api/main/shipnow"
-	carrierv1 "etop.vn/api/main/shipnow/carrier/v1"
+	"etop.vn/api/main/shipnow/carrier/types"
 	shipnowtypes "etop.vn/api/main/shipnow/types"
 	shippingtypes "etop.vn/api/main/shipping/types"
 )
-
-type Carrier = carrierv1.Carrier
-
-const (
-	Ahamove = carrierv1.Carrier_ahamove
-)
-
-func CarrierToString(s Carrier) string {
-	if s == 0 {
-		return ""
-	}
-	return s.String()
-}
-
-func CarrierFromString(s string) Carrier {
-	st := carrierv1.Carrier_value[s]
-	return Carrier(st)
-}
 
 type Manager interface {
 	CreateExternalShipping(ctx context.Context, cmd *CreateExternalShipnowCommand) (*ExternalShipnow, error)
@@ -54,7 +36,7 @@ type CancelExternalShipnowCommand struct {
 	ExternalShipnowID    string
 	CarrierServiceCode   string
 	CancelReason         string
-	Carrier              Carrier
+	Carrier              types.Carrier
 }
 
 type ExternalShipnow struct {
@@ -80,12 +62,12 @@ type RegisterExternalAccountCommand struct {
 	Phone   string
 	Name    string
 	Address string
-	Carrier Carrier
+	Carrier types.Carrier
 }
 
 type GetExternalServiceNameCommand struct {
 	Code    string
-	Carrier Carrier
+	Carrier types.Carrier
 }
 
 type RegisterExternalAccountResult struct {
@@ -94,7 +76,7 @@ type RegisterExternalAccountResult struct {
 
 type GetExternalAccountCommand struct {
 	OwnerID int64
-	Carrier Carrier
+	Carrier types.Carrier
 }
 
 type ExternalAccount struct {
@@ -107,7 +89,7 @@ type ExternalAccount struct {
 
 type VerifyExternalAccountCommand struct {
 	OwnerID int64
-	Carrier Carrier
+	Carrier types.Carrier
 }
 
 type VerifyExternalAccountResult struct {

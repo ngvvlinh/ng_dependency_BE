@@ -1,18 +1,27 @@
 package meta
 
 import (
-	"time"
+	uuid "github.com/satori/go.uuid"
 
-	metav1 "etop.vn/api/meta/v1"
 	cmutil "etop.vn/capi/util"
 	"etop.vn/common/xerrors"
-
-	uuid "github.com/satori/go.uuid"
 )
 
-type Empty = metav1.Empty
-type UUID = metav1.UUID
-type Timestamp = metav1.Timestamp
+type Empty struct{}
+
+type UUID struct{ Data []byte }
+
+type Timestamp struct {
+	// Represents seconds of UTC time since Unix epoch
+	// 1970-01-01T00:00:00Z. Must be from 0001-01-01T00:00:00Z to
+	// 9999-12-31T23:59:59Z inclusive.
+	Seconds int64
+	// Non-negative fractions of a second at nanosecond resolution. Negative
+	// second values with fractions must still have non-negative nanos values
+	// that count forward in time. Must be from 0 to 999,999,999
+	// inclusive.
+	Nanos int32
+}
 
 type UpdatedResponse struct {
 	Updated int32
@@ -21,10 +30,6 @@ type UpdatedResponse struct {
 func NewUUID() UUID {
 	u := uuid.NewV4()
 	return UUID{u[:]}
-}
-
-func PbTime(t time.Time) *Timestamp {
-	return metav1.PbTime(t)
 }
 
 type PageInfo struct {
@@ -39,11 +44,32 @@ func FromPaging(paging Paging) PageInfo {
 	return PageInfo(paging)
 }
 
-type Paging = metav1.Paging
-type Filter = metav1.Filter
+type Paging struct {
+	Offset int32
+	Limit  int32
+	Sort   []string
+}
+
+type Filter struct {
+	// Comma separated properties: "name,s_name"
+	Name string
+	// Can be = ≠ (!=) < ≤ (<=) > ≥ (>=) ⊃ (c) ∈ (in) ∩ (n)
+	//
+	// - Text or set: ⊃ ∩
+	// - Exactly: = ≠ ∈
+	// - Numeric: = ≠ ∈ < ≤ > ≥
+	Op string
+	// Must always be string
+	Value string
+}
+
 type Filters []Filter
 
-type Error = metav1.Error
+type Error struct {
+	Code string
+	Msg  string
+	Meta map[string]string
+}
 
 type UpdateOp string
 

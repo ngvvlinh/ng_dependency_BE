@@ -6,7 +6,7 @@ BACKEND="${ETOPDIR}/backend"
 BASEDIR="$(realpath ${ETOPDIR}/..)"
 source "${BACKEND}/scripts/lib/init.sh"
 
-genswaggergo=$(::get cmd etop.vn/backend/up/gogen/cmd/gen-swagger-go)
+genswaggergo=$(::get cmd etop.vn/backend/tools/cmd/gen-swagger-go)
 
 "${genswaggergo}" \
   "$@"

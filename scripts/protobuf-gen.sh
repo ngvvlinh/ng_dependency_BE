@@ -1,7 +1,7 @@
 #!/bin/bash
 set -eo pipefail
 
-: ${ETOPDIR?Must set ETOPDIR}
+: "${ETOPDIR?Must set ETOPDIR}"
 BACKEND="${ETOPDIR}/backend"
 source "${BACKEND}/scripts/lib/init.sh"
 
@@ -131,7 +131,7 @@ for PKG in $(find "${BACKEND}/pb${filter}" -type d | grep -v common); do
     fi
 done
 
-wrapper_gen=$(::get cmd etop.vn/backend/scripts/cmd/wrapper_gen)
+wrapper_gen=$(::get cmd etop.vn/backend/tools/cmd/wrapper_gen)
 wrapper_gen $WRAPPER_ARGS
 
 printf "\n✔ Done\n"

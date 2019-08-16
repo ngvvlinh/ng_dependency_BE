@@ -12,6 +12,7 @@ import (
 	ordertypes "etop.vn/api/main/ordering/types"
 	"etop.vn/api/main/shipnow"
 	"etop.vn/api/main/shipnow/carrier"
+	carriertypes "etop.vn/api/main/shipnow/carrier/types"
 	shipnowtypes "etop.vn/api/main/shipnow/types"
 	shippingtypes "etop.vn/api/main/shipping/types"
 	shipnowcarrier "etop.vn/backend/com/main/shipnow-carrier"
@@ -318,7 +319,7 @@ func toShipnowService(sfResp *client.CalcShippingFeeResponse, service *AhamoveSh
 	}
 
 	res := &shipnowtypes.ShipnowService{
-		Carrier:     carrier.Ahamove,
+		Carrier:     carriertypes.Ahamove,
 		Name:        service.Name,
 		Code:        providerServiceID,
 		Fee:         int32(sfResp.TotalFee),

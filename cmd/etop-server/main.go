@@ -15,6 +15,7 @@ import (
 	"etop.vn/api/main/shipnow"
 	"etop.vn/backend/cmd/etop-server/config"
 	haravanidentity "etop.vn/backend/com/external/haravan/identity"
+	"etop.vn/backend/com/main/address"
 	catalogaggregate "etop.vn/backend/com/main/catalog/aggregate"
 	catalogquery "etop.vn/backend/com/main/catalog/query"
 	serviceidentity "etop.vn/backend/com/main/identity"
@@ -65,7 +66,6 @@ import (
 	"etop.vn/backend/pkg/integration/shipping/ghtk"
 	"etop.vn/backend/pkg/integration/shipping/vtpost"
 	"etop.vn/backend/pkg/integration/sms"
-	"etop.vn/backend/pkg/services/address"
 	"etop.vn/common/bus"
 	"etop.vn/common/l"
 )

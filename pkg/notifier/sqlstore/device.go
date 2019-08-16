@@ -4,10 +4,11 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/lib/pq"
+
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/cmsql"
 	"etop.vn/backend/pkg/notifier/model"
-	"github.com/lib/pq"
 )
 
 type DeviceStore struct {

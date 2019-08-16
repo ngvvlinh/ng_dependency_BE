@@ -6,8 +6,8 @@ import (
 	context "context"
 	time "time"
 
-	etopv1 "etop.vn/api/main/etop/v1"
-	orderingv1types "etop.vn/api/main/ordering/v1/types"
+	etop "etop.vn/api/main/etop"
+	types "etop.vn/api/main/ordering/types"
 	meta "etop.vn/api/meta"
 )
 
@@ -47,7 +47,7 @@ type ReleaseOrdersForFfmCommand struct {
 
 type ReserveOrdersForFfmCommand struct {
 	OrderIDs   []int64
-	Fulfill    orderingv1types.Fulfill
+	Fulfill    types.Fulfill
 	FulfillIDs []int64
 
 	Result *ReserveOrdersForFfmResponse `json:"-"`
@@ -56,9 +56,9 @@ type ReserveOrdersForFfmCommand struct {
 type UpdateOrderShippingStatusCommand struct {
 	ID                         int64
 	FulfillmentShippingStates  []string
-	FulfillmentShippingStatus  etopv1.Status5
+	FulfillmentShippingStatus  etop.Status5
 	FulfillmentPaymentStatuses []int
-	EtopPaymentStatus          etopv1.Status4
+	EtopPaymentStatus          etop.Status4
 	CODEtopPaidAt              time.Time
 
 	Result *UpdateOrderShippingStatusResponse `json:"-"`
@@ -66,8 +66,8 @@ type UpdateOrderShippingStatusCommand struct {
 
 type UpdateOrdersConfirmStatusCommand struct {
 	IDs           []int64
-	ShopConfirm   etopv1.Status3
-	ConfirmStatus etopv1.Status3
+	ShopConfirm   etop.Status3
+	ConfirmStatus etop.Status3
 
 	Result *UpdateOrdersConfirmStatusResponse `json:"-"`
 }

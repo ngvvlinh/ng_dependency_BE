@@ -6,7 +6,6 @@ import (
 	context "context"
 
 	meta "etop.vn/api/meta"
-	metav1 "etop.vn/api/meta/v1"
 	shopping "etop.vn/api/shopping"
 	dot "etop.vn/capi/dot"
 )
@@ -93,7 +92,7 @@ type GetCustomerByIDQuery struct {
 
 type ListCustomersQuery struct {
 	ShopID  int64
-	Paging  metav1.Paging
+	Paging  meta.Paging
 	Filters meta.Filters
 
 	Result *CustomersResponse `json:"-"`

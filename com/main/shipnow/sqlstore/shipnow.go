@@ -7,11 +7,10 @@ import (
 	"etop.vn/api/main/etop"
 	ordertypes "etop.vn/api/main/ordering/types"
 	"etop.vn/api/main/shipnow"
-	"etop.vn/api/main/shipnow/carrier"
+	carriertypes "etop.vn/api/main/shipnow/carrier/types"
 	shipnowtypes "etop.vn/api/main/shipnow/types"
 	shippingtypes "etop.vn/api/main/shipping/types"
 	"etop.vn/api/meta"
-	metav1 "etop.vn/api/meta/v1"
 	etopconvert "etop.vn/backend/com/main/etop/convert"
 	"etop.vn/backend/com/main/shipnow/convert"
 	"etop.vn/backend/com/main/shipnow/model"
@@ -132,11 +131,11 @@ func (s *ShipnowStore) Create(shipnowFfm *shipnow.ShipnowFulfillment) error {
 type UpdateInfoArgs struct {
 	ID                  int64
 	PickupAddress       *ordertypes.Address
-	Carrier             carrier.Carrier
+	Carrier             carriertypes.Carrier
 	ShippingServiceCode string
 	ShippingServiceFee  int32
 	ShippingNote        string
-	RequestPickupAt     *metav1.Timestamp
+	RequestPickupAt     time.Time
 	DeliveryPoints      []*shipnow.DeliveryPoint
 	WeightInfo          shippingtypes.WeightInfo
 	ValueInfo           shippingtypes.ValueInfo
@@ -227,13 +226,13 @@ type UpdateCarrierInfoArgs struct {
 	ShippingState       shipnowtypes.State
 	ShippingStatus      etop.Status5
 	EtopPaymentStatus   etop.Status4
-	CODEtopTransferedAt *metav1.Timestamp
+	CODEtopTransferedAt time.Time
 	Status              etop.Status5
 
-	ShippingPickingAt          *metav1.Timestamp
-	ShippingDeliveringAt       *metav1.Timestamp
-	ShippingDeliveredAt        *metav1.Timestamp
-	ShippingCancelledAt        *metav1.Timestamp
+	ShippingPickingAt          time.Time
+	ShippingDeliveringAt       time.Time
+	ShippingDeliveredAt        time.Time
+	ShippingCancelledAt        time.Time
 	ShippingServiceName        string
 	ShippingServiceDescription string
 	CancelReason               string
@@ -250,13 +249,13 @@ func (s *ShipnowStore) UpdateCarrierInfo(args UpdateCarrierInfoArgs) (*shipnow.S
 		CarrierFeeLines:     convert.FeelinesToModel(args.CarrierFeeLines),
 		TotalFee:            args.TotalFee,
 		EtopPaymentStatus:   etopconvert.Status4ToModel(args.EtopPaymentStatus),
-		CODEtopTransferedAt: args.CODEtopTransferedAt.ToTime(),
+		CODEtopTransferedAt: args.CODEtopTransferedAt,
 		Status:              etopconvert.Status5ToModel(args.Status),
 
-		ShippingPickingAt:          args.ShippingPickingAt.ToTime(),
-		ShippingDeliveringAt:       args.ShippingDeliveringAt.ToTime(),
-		ShippingDeliveredAt:        args.ShippingDeliveredAt.ToTime(),
-		ShippingCancelledAt:        args.ShippingCancelledAt.ToTime(),
+		ShippingPickingAt:          args.ShippingPickingAt,
+		ShippingDeliveringAt:       args.ShippingDeliveringAt,
+		ShippingDeliveredAt:        args.ShippingDeliveredAt,
+		ShippingCancelledAt:        args.ShippingCancelledAt,
 		ShippingServiceName:        args.ShippingServiceName,
 		ShippingServiceDescription: args.ShippingServiceDescription,
 		CancelReason:               args.CancelReason,

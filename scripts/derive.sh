@@ -7,6 +7,6 @@ fi
 
 rm derived.gen.go || true
 
-go install etop.vn/backend/up/gogen/cmd/goderive
+go install etop.vn/backend/tools/cmd/goderive
 goderive $ARG
 goimports -w $ARG

@@ -3,8 +3,8 @@ package convert
 import (
 	etoptypes "etop.vn/api/main/etop"
 	"etop.vn/api/main/ordering"
+	"etop.vn/api/main/ordering/types"
 	ordertypes "etop.vn/api/main/ordering/types"
-	"etop.vn/api/main/ordering/v1/types"
 	shippingtypes "etop.vn/api/main/shipping/types"
 	catalogconvert "etop.vn/backend/com/main/catalog/convert"
 	"etop.vn/backend/com/main/ordering/model"

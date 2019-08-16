@@ -60,7 +60,7 @@ var LocationIndexType = make(map[location.LocationCodeType]*LocationIndex)
 // define external code types
 var LocationCodeTypes = []location.LocationCodeType{
 	location.LocCodeTypeGHN,
-	location.LocCodeTypeVTPOST,
+	location.LocCodeTypeVTPost,
 	location.LocCodeTypeHaravan,
 	location.LocCodeTypeInternal,
 }

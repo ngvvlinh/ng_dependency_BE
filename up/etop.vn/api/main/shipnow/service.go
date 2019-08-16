@@ -2,8 +2,13 @@ package shipnow
 
 import (
 	"context"
+	"time"
 
-	shipnowv1 "etop.vn/api/main/shipnow/v1"
+	"etop.vn/api/main/etop"
+	"etop.vn/api/main/ordering/types"
+	carriertypes "etop.vn/api/main/shipnow/carrier/types"
+	shipnowtypes "etop.vn/api/main/shipnow/types"
+	shippingtypes "etop.vn/api/main/shipping/types"
 	"etop.vn/api/meta"
 )
 
@@ -29,33 +34,107 @@ type QueryService interface {
 	GetShipnowFulfillmentByShippingCode(context.Context, *GetShipnowFulfillmentByShippingCodeQueryArgs) (*GetShipnowFulfillmentQueryResult, error)
 }
 
-//-- commands --//
-
-type CreateShipnowFulfillmentArgs = shipnowv1.CreateShipnowFulfillmentCommand
-type ConfirmShipnowFulfillmentArgs = shipnowv1.ConfirmShipnowFulfillmentCommand
-type CancelShipnowFulfillmentArgs = shipnowv1.CancelShipnowFulfillmentCommand
-type UpdateShipnowFulfillmentArgs = shipnowv1.UpdateShipnowFulfillmentCommand
-type UpdateShipnowFulfillmentCarrierInfoArgs = shipnowv1.UpdateShipnowFulfillmentCarrierInfoCommand
-type UpdateShipnowFulfillmentStateArgs = shipnowv1.UpdateShipnowFulfullmentStateCommand
-type GetShipnowServicesArgs = shipnowv1.GetShipnowServicesCommand
-type GetShipnowServicesResult = shipnowv1.GetShipnowServicesCommandResult
-
-type CommitCreateShipnowFulfillmentArgs struct {
-	ID int64
+type CreateShipnowFulfillmentArgs struct {
+	OrderIds            []int64
+	Carrier             carriertypes.Carrier
+	ShopId              int64
+	ShippingServiceCode string
+	ShippingServiceFee  int32
+	ShippingNote        string
+	RequestPickupAt     time.Time
+	PickupAddress       *types.Address
 }
 
-type RejectCreateShipnowFulfillmentArgs struct {
-	ID int64
+type ConfirmShipnowFulfillmentArgs struct {
+	Id     int64
+	ShopId int64
 }
 
-type GetActiveShipnowFulfillmentsArgs struct {
-	OrderID int64
+type CancelShipnowFulfillmentArgs struct {
+	Id           int64
+	ShopId       int64
+	CancelReason string
 }
 
-//-- queries --//
+type UpdateShipnowFulfillmentArgs struct {
+	Id                  int64
+	OrderIds            []int64
+	Carrier             carriertypes.Carrier
+	ShopId              int64
+	ShippingServiceCode string
+	ShippingServiceFee  int32
+	ShippingNote        string
+	RequestPickupAt     time.Time
+	PickupAddress       *types.Address
+}
 
-type GetShipnowFulfillmentQueryArgs = shipnowv1.GetShipnowFulfillmentQueryArgs
-type GetShipnowFulfillmentQueryResult = shipnowv1.GetShipnowFulfillmentQueryResult
-type GetShipnowFulfillmentsQueryArgs = shipnowv1.GetShipnowFulfillmentsQueryArgs
-type GetShipnowFulfillmentsQueryResult = shipnowv1.GetShipnowFulfillmentsQueryResult
-type GetShipnowFulfillmentByShippingCodeQueryArgs = shipnowv1.GetShipnowFulfillmentByShippingCodeQueryArgs
+type UpdateShipnowFulfillmentCarrierInfoArgs struct {
+	Id                         int64
+	ShippingCode               string
+	ShippingState              shipnowtypes.State
+	TotalFee                   int32
+	FeeLines                   []*shippingtypes.FeeLine
+	CarrierFeeLines            []*shippingtypes.FeeLine
+	ShippingCreatedAt          time.Time
+	EtopPaymentStatus          etop.Status4
+	ShippingStatus             etop.Status5
+	Status                     etop.Status5
+	CodEtopTransferedAt        time.Time
+	ShippingPickingAt          time.Time
+	ShippingDeliveringAt       time.Time
+	ShippingDeliveredAt        time.Time
+	ShippingCancelledAt        time.Time
+	ShippingServiceName        string
+	CancelReason               string
+	ShippingSharedLink         string
+	ShippingServiceDescription string
+}
+
+type UpdateShipnowFulfillmentStateArgs struct {
+	Id             int64
+	SyncStatus     etop.Status4
+	Status         etop.Status5
+	ConfirmStatus  etop.Status3
+	ShippingStatus etop.Status5
+	SyncStates     *SyncStates
+	ShippingState  shipnowtypes.State
+}
+
+type GetShipnowServicesCommandResult struct {
+	Services []*shipnowtypes.ShipnowService
+}
+
+type GetShipnowFulfillmentQueryArgs struct {
+	Id     int64
+	ShopId int64
+}
+
+type GetShipnowFulfillmentsQueryArgs struct {
+	ShopIds []int64
+	Paging  *meta.Paging
+	Filters []*meta.Filter
+}
+
+type GetShipnowFulfillmentQueryResult struct {
+	ShipnowFulfillment *ShipnowFulfillment
+}
+
+type GetShipnowFulfillmentsQueryResult struct {
+	ShipnowFulfillments []*ShipnowFulfillment
+	Count               int32
+}
+
+type GetShipnowFulfillmentByShippingCodeQueryArgs struct {
+	ShippingCode string
+}
+
+type GetShipnowServicesArgs struct {
+	ShopId         int64
+	OrderIds       []int64
+	PickupAddress  *types.Address
+	DeliveryPoints []*DeliveryPoint
+}
+
+type GetShipnowServicesResult struct {
+	Services []*shipnowtypes.ShipnowService
+}

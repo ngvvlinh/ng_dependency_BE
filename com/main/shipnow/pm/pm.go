@@ -149,7 +149,7 @@ func (m *ProcessManager) ShipnowCreateExternal(ctx context.Context, event *shipn
 			Id:         ffm.Id,
 			SyncStatus: etop.S4SuperPos,
 			SyncStates: &shipnow.SyncStates{
-				TrySyncAt: meta.PbTime(time.Now()),
+				TrySyncAt: time.Now(),
 			},
 		}
 		if err := m.shipnow.Dispatch(ctx, update); err != nil {
@@ -165,7 +165,7 @@ func (m *ProcessManager) ShipnowCreateExternal(ctx context.Context, event *shipn
 			Id:         ffm.Id,
 			SyncStatus: etop.S4Negative,
 			SyncStates: &shipnow.SyncStates{
-				TrySyncAt: meta.PbTime(time.Now()),
+				TrySyncAt: time.Now(),
 				Error:     etopconvert.Error(model.ToError(_err)),
 			},
 		}
@@ -192,7 +192,7 @@ func (m *ProcessManager) ShipnowCreateExternal(ctx context.Context, event *shipn
 		TotalFee:                   int32(xShipnow.TotalFee),
 		FeeLines:                   xShipnow.FeeLines,
 		CarrierFeeLines:            xShipnow.FeeLines,
-		ShippingCreatedAt:          meta.PbTime(xShipnow.CreatedAt),
+		ShippingCreatedAt:          xShipnow.CreatedAt,
 		ShippingServiceName:        xShipnow.Service.Name,
 		ShippingServiceDescription: xShipnow.Service.Description,
 		ShippingSharedLink:         xShipnow.SharedLink,

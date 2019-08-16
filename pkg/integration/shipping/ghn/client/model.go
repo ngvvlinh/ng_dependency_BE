@@ -6,9 +6,10 @@ import (
 	"strings"
 	"time"
 
+	"etop.vn/common/strs"
+
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/httpreq"
-	cmstr "etop.vn/backend/pkg/common/str"
 	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/backend/pkg/integration/shipping"
 )
@@ -212,7 +213,7 @@ type ErrorResponse struct {
 
 func (e *ErrorResponse) Error() (s string) {
 	defer func() {
-		s = cmstr.TrimLastPunctuation(s)
+		s = strs.TrimLastPunctuation(s)
 	}()
 
 	if len(e.ErrorData) == 0 {

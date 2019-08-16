@@ -3,20 +3,20 @@ package mock
 import (
 	"fmt"
 
-	"etop.vn/backend/pkg/common/sq"
+	sq2 "etop.vn/backend/pkg/common/sq"
 )
 
 // ErrorMock ...
 type ErrorMock struct {
 	Err    error
-	Entry  *sq.LogEntry
+	Entry  *sq2.LogEntry
 	Called int
 }
 
 // Error ...
 type Error struct {
 	Err   error
-	Entry *sq.LogEntry
+	Entry *sq2.LogEntry
 }
 
 func (e *Error) Error() string {
@@ -32,7 +32,7 @@ func (m *ErrorMock) Reset() {
 }
 
 // Mock ...
-func (m *ErrorMock) Mock(err error, entry *sq.LogEntry) error {
+func (m *ErrorMock) Mock(err error, entry *sq2.LogEntry) error {
 	m.Called++
 	m.Err, m.Entry = err, entry
 

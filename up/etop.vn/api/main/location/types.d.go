@@ -5,7 +5,6 @@ package location
 import (
 	context "context"
 
-	locationv1 "etop.vn/api/main/location/v1"
 	meta "etop.vn/api/meta"
 )
 
@@ -42,7 +41,7 @@ type FindLocationQuery struct {
 	District string `json:"district"`
 	Ward     string `json:"ward"`
 
-	Result *locationv1.LocationQueryResult `json:"-"`
+	Result *LocationQueryResult `json:"-"`
 }
 
 type FindOrGetLocationQuery struct {
@@ -53,7 +52,7 @@ type FindOrGetLocationQuery struct {
 	DistrictCode string `json:"district_code"`
 	WardCode     string `json:"ward_code"`
 
-	Result *locationv1.LocationQueryResult `json:"-"`
+	Result *LocationQueryResult `json:"-"`
 }
 
 type GetAllLocationsQuery struct {
@@ -61,16 +60,16 @@ type GetAllLocationsQuery struct {
 	ProvinceCode string `json:"province_code"`
 	DistrictCode string `json:"district_code"`
 
-	Result *locationv1.GetAllLocationsQueryResult `json:"-"`
+	Result *GetAllLocationsQueryResult `json:"-"`
 }
 
 type GetLocationQuery struct {
-	ProvinceCode     string                      `json:"province_code"`
-	DistrictCode     string                      `json:"district_code"`
-	WardCode         string                      `json:"ward_code"`
-	LocationCodeType locationv1.LocationCodeType `json:"location_code_type"`
+	ProvinceCode     string           `json:"province_code"`
+	DistrictCode     string           `json:"district_code"`
+	WardCode         string           `json:"ward_code"`
+	LocationCodeType LocationCodeType `json:"location_code_type"`
 
-	Result *locationv1.LocationQueryResult `json:"-"`
+	Result *LocationQueryResult `json:"-"`
 }
 
 // implement interfaces
@@ -82,18 +81,18 @@ func (q *GetLocationQuery) query()       {}
 
 // implement conversion
 
-func (q *FindLocationQuery) GetArgs(ctx context.Context) (_ context.Context, _ *locationv1.FindLocationQueryArgs) {
+func (q *FindLocationQuery) GetArgs(ctx context.Context) (_ context.Context, _ *FindLocationQueryArgs) {
 	return ctx,
-		&locationv1.FindLocationQueryArgs{
+		&FindLocationQueryArgs{
 			Province: q.Province,
 			District: q.District,
 			Ward:     q.Ward,
 		}
 }
 
-func (q *FindOrGetLocationQuery) GetArgs(ctx context.Context) (_ context.Context, _ *locationv1.FindOrGetLocationQueryArgs) {
+func (q *FindOrGetLocationQuery) GetArgs(ctx context.Context) (_ context.Context, _ *FindOrGetLocationQueryArgs) {
 	return ctx,
-		&locationv1.FindOrGetLocationQueryArgs{
+		&FindOrGetLocationQueryArgs{
 			Province:     q.Province,
 			District:     q.District,
 			Ward:         q.Ward,
@@ -103,18 +102,18 @@ func (q *FindOrGetLocationQuery) GetArgs(ctx context.Context) (_ context.Context
 		}
 }
 
-func (q *GetAllLocationsQuery) GetArgs(ctx context.Context) (_ context.Context, _ *locationv1.GetAllLocationsQueryArgs) {
+func (q *GetAllLocationsQuery) GetArgs(ctx context.Context) (_ context.Context, _ *GetAllLocationsQueryArgs) {
 	return ctx,
-		&locationv1.GetAllLocationsQueryArgs{
+		&GetAllLocationsQueryArgs{
 			All:          q.All,
 			ProvinceCode: q.ProvinceCode,
 			DistrictCode: q.DistrictCode,
 		}
 }
 
-func (q *GetLocationQuery) GetArgs(ctx context.Context) (_ context.Context, _ *locationv1.GetLocationQueryArgs) {
+func (q *GetLocationQuery) GetArgs(ctx context.Context) (_ context.Context, _ *GetLocationQueryArgs) {
 	return ctx,
-		&locationv1.GetLocationQueryArgs{
+		&GetLocationQueryArgs{
 			ProvinceCode:     q.ProvinceCode,
 			DistrictCode:     q.DistrictCode,
 			WardCode:         q.WardCode,

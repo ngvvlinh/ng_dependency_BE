@@ -4,10 +4,9 @@ import (
 	etoptypes "etop.vn/api/main/etop"
 	"etop.vn/api/main/ordering"
 	"etop.vn/api/main/shipnow"
-	"etop.vn/api/main/shipnow/carrier"
+	carrier "etop.vn/api/main/shipnow/carrier/types"
 	shipnowtypes "etop.vn/api/main/shipnow/types"
 	shippingtypes "etop.vn/api/main/shipping/types"
-	"etop.vn/api/meta"
 	etopconvert "etop.vn/backend/com/main/etop/convert"
 	orderconvert "etop.vn/backend/com/main/ordering/convert"
 	shipnowmodel "etop.vn/backend/com/main/shipnow/model"
@@ -34,20 +33,20 @@ func ShipnowToModel(in *shipnow.ShipnowFulfillment) (out *shipnowmodel.ShipnowFu
 		BasketValue:                in.ValueInfo.BasketValue,
 		CODAmount:                  in.ValueInfo.CodAmount,
 		ShippingNote:               in.ShippingNote,
-		RequestPickupAt:            in.RequestPickupAt.ToTime(),
+		RequestPickupAt:            in.RequestPickupAt,
 		DeliveryPoints:             DeliveryPointsToModel(in.DeliveryPoints),
 		ConfirmStatus:              model.Status3(in.ConfirmStatus),
 		Status:                     model.Status5(in.Status),
 		ShippingState:              in.ShippingState.String(),
 		ShippingCode:               in.ShippingCode,
-		ShippingCreatedAt:          in.ShippingCreatedAt.ToTime(),
-		ShippingPickingAt:          in.ShippingPickingAt.ToTime(),
-		ShippingDeliveringAt:       in.ShippingDeliveringAt.ToTime(),
-		ShippingDeliveredAt:        in.ShippingDeliveredAt.ToTime(),
-		ShippingCancelledAt:        in.ShippingCancelledAt.ToTime(),
-		CreatedAt:                  in.CreatedAt.ToTime(),
-		UpdatedAt:                  in.UpdatedAt.ToTime(),
-		CODEtopTransferedAt:        in.CodEtopTransferedAt.ToTime(),
+		ShippingCreatedAt:          in.ShippingCreatedAt,
+		ShippingPickingAt:          in.ShippingPickingAt,
+		ShippingDeliveringAt:       in.ShippingDeliveringAt,
+		ShippingDeliveredAt:        in.ShippingDeliveredAt,
+		ShippingCancelledAt:        in.ShippingCancelledAt,
+		CreatedAt:                  in.CreatedAt,
+		UpdatedAt:                  in.UpdatedAt,
+		CODEtopTransferedAt:        in.CodEtopTransferedAt,
 		EtopPaymentStatus:          model.Status4(in.EtopPaymentStatus),
 		ShippingServiceName:        in.ShippingServiceName,
 		ShippingSharedLink:         in.ShippingSharedLink,
@@ -88,20 +87,20 @@ func Shipnow(in *shipnowmodel.ShipnowFulfillment) (out *shipnow.ShipnowFulfillme
 			IncludeInsurance: false,
 		},
 		ShippingNote:               in.ShippingNote,
-		RequestPickupAt:            meta.PbTime(in.RequestPickupAt),
+		RequestPickupAt:            in.RequestPickupAt,
 		ConfirmStatus:              etoptypes.Status3FromInt(int(in.ConfirmStatus)),
 		Status:                     etoptypes.Status5FromInt(int(in.Status)),
 		ShippingState:              shipnowtypes.StateFromString(string(in.ShippingState)),
 		ShippingCode:               in.ShippingCode,
 		OrderIds:                   in.OrderIDs,
-		ShippingCreatedAt:          meta.PbTime(in.ShippingCreatedAt),
-		CreatedAt:                  meta.PbTime(in.CreatedAt),
-		UpdatedAt:                  meta.PbTime(in.UpdatedAt),
-		ShippingPickingAt:          meta.PbTime(in.ShippingPickingAt),
-		ShippingDeliveringAt:       meta.PbTime(in.ShippingDeliveringAt),
-		ShippingDeliveredAt:        meta.PbTime(in.ShippingDeliveredAt),
-		ShippingCancelledAt:        meta.PbTime(in.ShippingCancelledAt),
-		CodEtopTransferedAt:        meta.PbTime(in.CODEtopTransferedAt),
+		ShippingCreatedAt:          in.ShippingCreatedAt,
+		CreatedAt:                  in.CreatedAt,
+		UpdatedAt:                  in.UpdatedAt,
+		ShippingPickingAt:          in.ShippingPickingAt,
+		ShippingDeliveringAt:       in.ShippingDeliveringAt,
+		ShippingDeliveredAt:        in.ShippingDeliveredAt,
+		ShippingCancelledAt:        in.ShippingCancelledAt,
+		CodEtopTransferedAt:        in.CODEtopTransferedAt,
 		EtopPaymentStatus:          etoptypes.Status4FromInt(int(in.EtopPaymentStatus)),
 		ShippingServiceName:        in.ShippingServiceName,
 		ShippingSharedLink:         in.ShippingSharedLink,
@@ -274,8 +273,8 @@ func SyncStateToModel(in *shipnow.SyncStates) *model.FulfillmentSyncStates {
 		return nil
 	}
 	return &model.FulfillmentSyncStates{
-		SyncAt:    in.SyncAt.ToTime(),
-		TrySyncAt: in.TrySyncAt.ToTime(),
+		SyncAt:    in.SyncAt,
+		TrySyncAt: in.TrySyncAt,
 		Error:     etopconvert.ErrorToModel(in.Error),
 	}
 }

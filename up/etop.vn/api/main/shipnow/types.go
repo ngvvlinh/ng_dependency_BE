@@ -1,48 +1,85 @@
 package shipnow
 
 import (
+	"time"
+
 	"etop.vn/api/main/etop"
+	"etop.vn/api/main/ordering/types"
+	v1 "etop.vn/api/main/shipnow/carrier/types"
 	shipnowtypes "etop.vn/api/main/shipnow/types"
-	shipnowv1 "etop.vn/api/main/shipnow/v1"
+	shippingtypes "etop.vn/api/main/shipping/types"
 	"etop.vn/api/meta"
 )
 
-type ShipnowFulfillment = shipnowv1.ShipnowFulfillment
-type DeliveryPoint = shipnowtypes.DeliveryPoint // re-export
-
-type ShipnowEvent = shipnowv1.ShipnowEvent
-type IsEventData = shipnowv1.IsEventData
-type EventType = shipnowv1.EventType
-type SyncStates = shipnowv1.SyncStates
-
-func NewShipnowEvent(
-	correlationID meta.UUID,
-	shipnowFulfillmentID int64,
-	data IsEventData,
-) *ShipnowEvent {
-	meta.AutoFill(&correlationID)
-	return &ShipnowEvent{
-		Id:            0,
-		Uuid:          meta.NewUUID(),
-		CorrelationId: correlationID,
-		Type:          int32(data.GetEnumTag()),
-		Data:          &shipnowv1.EventData{Data: data},
-	}
+type ShipnowFulfillment struct {
+	Id                         int64
+	ShopId                     int64
+	PartnerId                  int64
+	PickupAddress              *types.Address
+	DeliveryPoints             []*DeliveryPoint
+	Carrier                    v1.Carrier
+	ShippingServiceCode        string
+	ShippingServiceFee         int32
+	ShippingServiceName        string
+	ShippingServiceDescription string
+	shippingtypes.WeightInfo
+	ValueInfo            shippingtypes.ValueInfo
+	ShippingNote         string
+	RequestPickupAt      time.Time
+	Status               etop.Status5
+	ShippingStatus       etop.Status5
+	ShippingCode         string
+	ShippingState        shipnowtypes.State
+	ConfirmStatus        etop.Status3
+	OrderIds             []int64
+	ShippingCreatedAt    time.Time
+	CreatedAt            time.Time
+	UpdatedAt            time.Time
+	EtopPaymentStatus    etop.Status4
+	CodEtopTransferedAt  time.Time
+	ShippingPickingAt    time.Time
+	ShippingDeliveringAt time.Time
+	ShippingDeliveredAt  time.Time
+	ShippingCancelledAt  time.Time
+	ShippingSharedLink   string
+	CancelReason         string
 }
 
-type CreatedData = shipnowv1.CreatedData
-type ConfirmationRequestedData = shipnowv1.ConfirmationRequestedData
-type ConfirmationAcceptedData = shipnowv1.ConfirmationAcceptedData
-type ConfirmationRejectedData = shipnowv1.ConfirmationRejectedData
-type CancellationRequestedData = shipnowv1.CancellationRequestedData
-type CancellationAcceptedData = shipnowv1.CancellationAcceptedData
-type CancellationRejectedData = shipnowv1.CancellationRejectedData
+type DeliveryPoint = shipnowtypes.DeliveryPoint
 
-type ShipnowOrderReservationEvent = shipnowv1.ShipnowOrderReservationEvent
-type ShipnowOrderChangedEvent = shipnowv1.ShipnowOrderChangedEvent
-type ShipnowCancelledEvent = shipnowv1.ShipnowCancelledEvent
-type ShipnowValidateConfirmedEvent = shipnowv1.ShipnowValidatedConfirmedEvent
-type ShipnowCreateExternalEvent = shipnowv1.ShipnowCreateExternalEvent
+type SyncStates struct {
+	SyncAt    time.Time
+	TrySyncAt time.Time
+	Error     *meta.Error
+}
+
+type ShipnowOrderReservationEvent struct {
+	ShipnowFulfillmentId int64
+	OrderIds             []int64
+}
+
+type ShipnowOrderChangedEvent struct {
+	ShipnowFulfillmentId int64
+	OldOrderIds          []int64
+	OrderIds             []int64
+}
+
+type ShipnowCancelledEvent struct {
+	ShipnowFulfillmentId int64
+	OrderIds             []int64
+	ExternalShipnowId    string
+	CarrierServiceCode   string
+	CancelReason         string
+}
+
+type ShipnowValidateConfirmedEvent struct {
+	ShipnowFulfillmentId int64
+	OrderIds             []int64
+}
+
+type ShipnowCreateExternalEvent struct {
+	ShipnowFulfillmentId int64
+}
 
 func ShipnowStatus(state shipnowtypes.State, paymentStatus etop.Status4) etop.Status5 {
 	switch state {

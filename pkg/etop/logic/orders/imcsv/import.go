@@ -12,6 +12,8 @@ import (
 	"strings"
 	"time"
 
+	"etop.vn/common/strs"
+
 	"github.com/360EntSecGroup-Skylar/excelize"
 
 	"etop.vn/api/main/location"
@@ -23,7 +25,6 @@ import (
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/httpx"
 	"etop.vn/backend/pkg/common/imcsv"
-	cmstr "etop.vn/backend/pkg/common/str"
 	"etop.vn/backend/pkg/common/validate"
 	"etop.vn/backend/pkg/etop/authorize/claims"
 	"etop.vn/backend/pkg/etop/model"
@@ -903,17 +904,17 @@ func parseLocation(rowOrder *RowOrder) (*location.LocationQueryResult, error) {
 	if loc.Province == nil {
 		return nil, fmt.Errorf(
 			"Địa chỉ không hợp lệ: %v, %v, %v (không tìm thấy tỉnh/thành phố).",
-			cmstr.TrimMax(rowOrder.ShippingWard, 200),
-			cmstr.TrimMax(rowOrder.ShippingDistrict, 200),
-			cmstr.TrimMax(rowOrder.ShippingProvince, 200),
+			strs.TrimMax(rowOrder.ShippingWard, 200),
+			strs.TrimMax(rowOrder.ShippingDistrict, 200),
+			strs.TrimMax(rowOrder.ShippingProvince, 200),
 		)
 	}
 	if loc.District == nil {
 		return nil, fmt.Errorf(
 			"Địa chỉ không hợp lệ: %v, %v, %v (không tìm thấy quận/huyện).",
-			cmstr.TrimMax(rowOrder.ShippingWard, 200),
-			cmstr.TrimMax(rowOrder.ShippingDistrict, 200),
-			cmstr.TrimMax(rowOrder.ShippingProvince, 200),
+			strs.TrimMax(rowOrder.ShippingWard, 200),
+			strs.TrimMax(rowOrder.ShippingDistrict, 200),
+			strs.TrimMax(rowOrder.ShippingProvince, 200),
 		)
 	}
 

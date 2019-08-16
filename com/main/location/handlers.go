@@ -74,7 +74,7 @@ func (im *Impl) GetAllLocations(ctx context.Context, query *location.GetAllLocat
 
 func (im *Impl) GetLocation(ctx context.Context, query *location.GetLocationQueryArgs) (result *location.LocationQueryResult, _err error) {
 	switch query.LocationCodeType {
-	case location.LocCodeTypeVTPOST:
+	case location.LocCodeTypeVTPost:
 		return nil, cm.Error(cm.Unimplemented, "Address type does not valid", nil)
 	default:
 

@@ -41,7 +41,7 @@ for pkg in ${packages} ; do
 done
 
 # move all type definitions in .pb.go to .def.go
-splitter=$(::get cmd etop.vn/backend/scripts/cmd/split-pbgo-def)
+splitter=$(::get cmd etop.vn/backend/tools/cmd/split-pbgo-def)
 if [[ -n "${pbFiles}" ]] ; then
   "${splitter}" $pbFiles
 fi
@@ -56,5 +56,5 @@ for pkg in ${packages}; do
   fi
 done
 
-gen_cmd_query=$(::get cmd etop.vn/backend/scripts/cmd/gen-cmd-query)
+gen_cmd_query=$(::get cmd etop.vn/backend/tools/cmd/gen-cmd-query)
 "${gen_cmd_query}" $packagesPath

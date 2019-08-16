@@ -11,7 +11,6 @@ import (
 	"etop.vn/api/main/ordering"
 	"etop.vn/api/main/shipnow"
 	shipnowtypes "etop.vn/api/main/shipnow/types"
-	"etop.vn/api/meta"
 	shipnowmodel "etop.vn/backend/com/main/shipnow/model"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/cmsql"
@@ -145,17 +144,17 @@ func (wh *Webhook) ProcessShipnowFulfillment(ctx context.Context, ffm *shipnow.S
 		ShippingState:        shippingState,
 		ShippingStatus:       shipnowtypes.StateToStatus5(shippingState),
 		TotalFee:             int32(orderMsg.TotalFee),
-		ShippingPickingAt:    meta.PbTime(shipnowTimestamp.ShippingPickingAt),
-		ShippingDeliveringAt: meta.PbTime(shipnowTimestamp.ShippingDeliveringAt),
-		ShippingDeliveredAt:  meta.PbTime(shipnowTimestamp.ShippingDeliveredAt),
-		ShippingCancelledAt:  meta.PbTime(shipnowTimestamp.ShippingCancelledAt),
+		ShippingPickingAt:    shipnowTimestamp.ShippingPickingAt,
+		ShippingDeliveringAt: shipnowTimestamp.ShippingDeliveringAt,
+		ShippingDeliveredAt:  shipnowTimestamp.ShippingDeliveredAt,
+		ShippingCancelledAt:  shipnowTimestamp.ShippingCancelledAt,
 		FeeLines:             nil, // update if needed
 		CarrierFeeLines:      nil, // update if needed
 		CancelReason:         orderMsg.CancelComment,
 	}
 	if IsPaymentState(shippingState) && ffm.EtopPaymentStatus != etop.S4Positive {
 		// EtopPaymentStatus: Ahamove khong doi soat, thanh toán ngay khi lấy hàng
-		update.CodEtopTransferedAt = meta.PbTime(time.Now())
+		update.CodEtopTransferedAt = time.Now()
 		update.EtopPaymentStatus = etop.S4Positive
 		paymentStatus = update.EtopPaymentStatus
 	}

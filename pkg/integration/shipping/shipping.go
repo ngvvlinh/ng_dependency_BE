@@ -177,23 +177,23 @@ type ShipnowTimestamp struct {
 func CalcShipnowTimeBaseOnState(ffm *shipnow.ShipnowFulfillment, state shipnowtypes.State, t time.Time) (res ShipnowTimestamp) {
 	switch state {
 	case shipnowtypes.StateCreated:
-		if ffm.ShippingCreatedAt == nil || ffm.ShippingCreatedAt.ToTime().IsZero() {
+		if ffm.ShippingCreatedAt.IsZero() {
 			res.ShippingCreatedAt = t
 		}
 	case shipnowtypes.StatePicking:
-		if ffm.ShippingPickingAt == nil || ffm.ShippingPickingAt.ToTime().IsZero() {
+		if ffm.ShippingPickingAt.IsZero() {
 			res.ShippingPickingAt = t
 		}
 	case shipnowtypes.StateDelivering:
-		if ffm.ShippingDeliveringAt == nil || ffm.ShippingDeliveringAt.ToTime().IsZero() {
+		if ffm.ShippingDeliveringAt.IsZero() {
 			res.ShippingDeliveringAt = t
 		}
 	case shipnowtypes.StateDelivered:
-		if ffm.ShippingDeliveredAt == nil || ffm.ShippingDeliveredAt.ToTime().IsZero() {
+		if ffm.ShippingDeliveredAt.IsZero() {
 			res.ShippingDeliveredAt = t
 		}
 	case shipnowtypes.StateCancelled:
-		if ffm.ShippingCancelledAt == nil || ffm.ShippingCancelledAt.ToTime().IsZero() {
+		if ffm.ShippingCancelledAt.IsZero() {
 			res.ShippingCancelledAt = t
 		}
 	default:

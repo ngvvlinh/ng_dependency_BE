@@ -7,6 +7,7 @@ import (
 	ordertypes "etop.vn/api/main/ordering/types"
 	"etop.vn/api/main/shipnow"
 	"etop.vn/api/main/shipnow/carrier"
+	carriertypes "etop.vn/api/main/shipnow/carrier/types"
 	shipnowtypes "etop.vn/api/main/shipnow/types"
 	"etop.vn/backend/com/main/shipnow/sqlstore"
 	cm "etop.vn/backend/pkg/common"
@@ -114,9 +115,9 @@ func (ctrl *ShipnowManager) createSingleFulfillment(ctx context.Context, cmd *ca
 	return externalShipnow, nil
 }
 
-func (ctrl *ShipnowManager) GetShipnowCarrierDriver(c carrier.Carrier) (*Carrier, error) {
+func (ctrl *ShipnowManager) GetShipnowCarrierDriver(c carriertypes.Carrier) (*Carrier, error) {
 	switch c {
-	case carrier.Ahamove:
+	case carriertypes.Ahamove:
 		return ctrl.ahamove, nil
 	default:
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Đơn vị vận chuyển không hợp lệ")

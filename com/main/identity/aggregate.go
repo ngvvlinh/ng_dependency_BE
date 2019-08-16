@@ -5,16 +5,13 @@ import (
 	"encoding/json"
 	"time"
 
-	"etop.vn/backend/com/main/identity/sqlstore"
-
-	"etop.vn/common/bus"
-
-	"etop.vn/api/main/shipnow/carrier"
-
-	cm "etop.vn/backend/pkg/common"
-
 	"etop.vn/api/main/identity"
+	"etop.vn/api/main/shipnow/carrier"
+	carriertypes "etop.vn/api/main/shipnow/carrier/types"
+	"etop.vn/backend/com/main/identity/sqlstore"
+	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/cmsql"
+	"etop.vn/common/bus"
 )
 
 var _ identity.Aggregate = &Aggregate{}
@@ -78,7 +75,7 @@ func (a *Aggregate) CreateExternalAccountAhamove(ctx context.Context, args *iden
 			Phone:   phone,
 			Name:    args.Name,
 			Address: args.Address,
-			Carrier: carrier.Ahamove,
+			Carrier: carriertypes.Ahamove,
 		}
 		regisResult, err := a.shipnowCarrierManager.RegisterExternalAccount(ctx, args2)
 		if err != nil {
@@ -97,7 +94,7 @@ func (a *Aggregate) CreateExternalAccountAhamove(ctx context.Context, args *iden
 
 		xAccount, err := a.shipnowCarrierManager.GetExternalAccount(ctx, &carrier.GetExternalAccountCommand{
 			OwnerID: args.OwnerID,
-			Carrier: carrier.Ahamove,
+			Carrier: carriertypes.Ahamove,
 		})
 		if err != nil {
 			return err
@@ -139,7 +136,7 @@ func (a *Aggregate) RequestVerifyExternalAccountAhamove(ctx context.Context, arg
 
 		args1 := &carrier.GetExternalAccountCommand{
 			OwnerID: args.OwnerID,
-			Carrier: carrier.Ahamove,
+			Carrier: carriertypes.Ahamove,
 		}
 		xAccount, err := a.shipnowCarrierManager.GetExternalAccount(ctx, args1)
 		if err != nil {
@@ -160,7 +157,7 @@ func (a *Aggregate) RequestVerifyExternalAccountAhamove(ctx context.Context, arg
 		// send verify request to Ahamove
 		args2 := &carrier.VerifyExternalAccountCommand{
 			OwnerID: args.OwnerID,
-			Carrier: carrier.Ahamove,
+			Carrier: carriertypes.Ahamove,
 		}
 		res, err := a.shipnowCarrierManager.VerifyExternalAccount(ctx, args2)
 		if err != nil {
@@ -191,7 +188,7 @@ func (a *Aggregate) UpdateVerifiedExternalAccountAhamove(ctx context.Context, ar
 
 	xAccount, err := a.shipnowCarrierManager.GetExternalAccount(ctx, &carrier.GetExternalAccountCommand{
 		OwnerID: args.OwnerID,
-		Carrier: carrier.Ahamove,
+		Carrier: carriertypes.Ahamove,
 	})
 	if err != nil {
 		return nil, err

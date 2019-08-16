@@ -4,7 +4,7 @@ import (
 	"strings"
 	"time"
 
-	orderv1types "etop.vn/api/main/ordering/v1/types"
+	orderv1types "etop.vn/api/main/ordering/types"
 )
 
 type Address struct {

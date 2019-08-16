@@ -1,38 +1,84 @@
 package location
 
-import locationv1 "etop.vn/api/main/location/v1"
-
 const CountryVietnam = "Việt Nam"
 
-type VietnamRegion = locationv1.VietnamRegion
+type VietnamRegion int32
 
 const (
-	North  VietnamRegion = locationv1.VietnamRegion_north
-	Middle VietnamRegion = locationv1.VietnamRegion_middle
-	South  VietnamRegion = locationv1.VietnamRegion_south
+	North  VietnamRegion = 1
+	Middle VietnamRegion = 2
+	South  VietnamRegion = 3
 )
 
-type UrbanType = locationv1.UrbanType
+type UrbanType int32
 
 const (
-	Urban     UrbanType = locationv1.UrbanType_urban
-	Suburban1 UrbanType = locationv1.UrbanType_suburban1
-	Suburban2 UrbanType = locationv1.UrbanType_suburban2
+	Unknown   UrbanType = 0
+	Urban     UrbanType = -1
+	Suburban1 UrbanType = 1
+	Suburban2 UrbanType = 2
 )
 
-type LocationCodeType = locationv1.LocationCodeType
+func (g VietnamRegion) Name() string {
+	switch g {
+	case North:
+		return "Miền Bắc"
+	case Middle:
+		return "Miền Trung"
+	case South:
+		return "Miền Nam"
+	default:
+		return "?"
+	}
+}
+
+func (a UrbanType) Name() string {
+	switch a {
+	case Urban:
+		return "Nội thành"
+	case Suburban1:
+		return "Ngoại thành 1"
+	case Suburban2:
+		return "Ngoại thành 2"
+	default:
+		return "?"
+	}
+}
+
+type LocationCodeType int32
 
 const (
-	LocCodeTypeInternal LocationCodeType = locationv1.LocationCodeType_internal
-	LocCodeTypeGHN      LocationCodeType = locationv1.LocationCodeType_ghn
-	LocCodeTypeVTPOST   LocationCodeType = locationv1.LocationCodeType_vtpost
-	LocCodeTypeHaravan  LocationCodeType = locationv1.LocationCodeType_haravan
+	LocCodeTypeInternal LocationCodeType = 0
+	LocCodeTypeGHN      LocationCodeType = 1
+	LocCodeTypeVTPost   LocationCodeType = 2
+	LocCodeTypeHaravan  LocationCodeType = 3
 )
 
-type Province = locationv1.Province
+type Province struct {
+	Name   string
+	Code   string
+	Region VietnamRegion
+	Extra
+}
 
-type District = locationv1.District
+type District struct {
+	Name         string
+	Code         string
+	ProvinceCode string
+	UrbanType    UrbanType
+	Extra
+}
 
-type Ward = locationv1.Ward
+type Ward struct {
+	Name         string
+	Code         string
+	DistrictCode string
+	Extra
+}
 
-type LocationExtra = locationv1.Extra
+type Extra struct {
+	Special     bool
+	GhnId       int32
+	VtpostId    int32
+	HaravanCode string
+}
