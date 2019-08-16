@@ -34,7 +34,6 @@ func loadAndCreateProducts(
 	codeMode CodeMode,
 	shop *model.Shop,
 	rowProducts []*RowProduct,
-	// requests []*pbshop.DeprecatedCreateVariantRequest,
 	debug Debug,
 ) (msgs []string, _errs []error, _cellErrs []error, _err error) {
 

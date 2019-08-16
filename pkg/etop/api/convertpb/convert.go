@@ -6,6 +6,17 @@ import (
 	pbshop "etop.vn/backend/pb/etop/shop"
 )
 
+func PbAttributesToDomain(as []*pbshop.Attribute) []*catalog.Attribute {
+	attrs := make([]*catalog.Attribute, len(as))
+	for i, a := range as {
+		attrs[i] = &catalog.Attribute{
+			Name:  a.Name,
+			Value: a.Value,
+		}
+	}
+	return attrs
+}
+
 func PbAttributes(as catalog.Attributes) []*pbshop.Attribute {
 	attrs := make([]*pbshop.Attribute, len(as))
 	for i, a := range as {

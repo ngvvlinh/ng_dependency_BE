@@ -3,11 +3,10 @@ package aggregate
 import (
 	"context"
 
-	"etop.vn/backend/com/main/catalog/sqlstore"
-
 	"etop.vn/api/main/catalog"
 	"etop.vn/api/meta"
 	"etop.vn/api/shopping"
+	"etop.vn/backend/com/main/catalog/sqlstore"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/cmsql"
 	"etop.vn/common/bus"

@@ -2,6 +2,7 @@ package shop
 
 import (
 	"etop.vn/api/main/catalog"
+	pbcm "etop.vn/backend/pb/common"
 	pbs3 "etop.vn/backend/pb/etop/etc/status3"
 	pbshop "etop.vn/backend/pb/etop/shop"
 	"etop.vn/backend/pkg/etop/api/convertpb"
@@ -61,7 +62,7 @@ func PbShopProduct(m *catalog.ShopProduct) *pbshop.ShopProduct {
 	res := &pbshop.ShopProduct{
 		Id:            m.ProductID,
 		Info:          nil,
-		Code:          "",
+		Code:          m.Code,
 		EdCode:        "",
 		Name:          m.Name,
 		Description:   m.Description,
@@ -70,12 +71,12 @@ func PbShopProduct(m *catalog.ShopProduct) *pbshop.ShopProduct {
 		ImageUrls:     m.ImageURLs,
 		Tags:          m.Tags,
 		Stags:         nil,
-		Note:          "",
+		Note:          m.Note,
 		Status:        pbs3.Pb(model.Status3(m.Status)),
 		IsAvailable:   true,
-		ListPrice:     0,
+		ListPrice:     m.ListPrice,
 		RetailPrice:   m.RetailPrice,
-		CostPrice:     0,
+		CostPrice:     m.CostPrice,
 		CollectionIds: m.CollectionIDs,
 		Variants:      nil,
 
@@ -130,6 +131,8 @@ func PbShopProductWithVariants(m *catalog.ShopProductWithVariants) *pbshop.ShopP
 		CollectionIds:   m.ShopProduct.CollectionIDs,
 		Variants:        PbShopVariants(m.Variants),
 		ProductSourceId: shopID, // backward-compatible: use shop_id in place of product_source_id
+		CreatedAt:       pbcm.PbTime(m.CreatedAt),
+		UpdatedAt:       pbcm.PbTime(m.UpdatedAt),
 	}
 	return res
 }

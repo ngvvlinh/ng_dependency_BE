@@ -5866,6 +5866,12 @@
             "type": "string"
           }
         },
+        "attributes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/shopAttribute"
+          }
+        },
         "cost_price": {
           "type": "integer",
           "format": "int32"
@@ -6862,6 +6868,14 @@
         "product_source_id": {
           "type": "string",
           "format": "int64"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
         }
       },
       "required": [

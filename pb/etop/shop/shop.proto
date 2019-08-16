@@ -415,6 +415,9 @@ message ShopProduct {
     repeated ShopVariant variants = 18;
 
     optional int64 product_source_id = 19 [(gogoproto.nullable)=false];
+
+    optional google.protobuf.Timestamp created_at = 21;
+    optional google.protobuf.Timestamp updated_at = 20;
 }
 
 message GetVariantsRequest {
@@ -590,6 +593,7 @@ message CreateVariantRequest {
     optional string short_desc  = 6 [(gogoproto.nullable)=false];
     optional string desc_html   = 7 [(gogoproto.nullable)=false];
     repeated string image_urls  = 9;
+    repeated Attribute attributes = 14;
 
     optional int32  cost_price = 16 [(gogoproto.nullable)=false];
     optional int32  list_price = 15 [(gogoproto.nullable)=false];

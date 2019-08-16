@@ -315,12 +315,13 @@ func GetVariantsByIDs(ctx context.Context, q *wrapshop.GetVariantsByIDsEndpoint)
 
 func CreateVariant(ctx context.Context, q *wrapshop.CreateVariantEndpoint) error {
 	cmd := &catalog.CreateShopVariantCommand{
-		ShopID:    q.Context.Shop.ID,
-		ProductID: q.ProductId,
-		Code:      q.Code,
-		Name:      q.Name,
-		ImageURLs: q.ImageUrls,
-		Note:      q.Note,
+		ShopID:     q.Context.Shop.ID,
+		ProductID:  q.ProductId,
+		Code:       q.Code,
+		Name:       q.Name,
+		ImageURLs:  q.ImageUrls,
+		Note:       q.Note,
+		Attributes: convertpb.PbAttributesToDomain(q.Attributes),
 		DescriptionInfo: catalog.DescriptionInfo{
 			ShortDesc:   q.ShortDesc,
 			Description: q.Description,
@@ -335,6 +336,7 @@ func CreateVariant(ctx context.Context, q *wrapshop.CreateVariantEndpoint) error
 	if err := catalogAggr.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
+	q.Result = PbShopVariant(cmd.Result)
 	return nil
 }
 

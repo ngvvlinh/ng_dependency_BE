@@ -61,8 +61,8 @@ func ShopProduct(in *catalogmodel.ShopProduct) (out *catalog.ShopProduct) {
 		Note:      in.Note,
 		Tags:      in.Tags,
 		PriceInfo: catalog.PriceInfo{
-			ListPrice:   0,
-			CostPrice:   0,
+			ListPrice:   in.ListPrice,
+			CostPrice:   in.CostPrice,
 			RetailPrice: in.RetailPrice,
 		},
 		Status:    int32(in.Status),
