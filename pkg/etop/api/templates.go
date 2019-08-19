@@ -59,7 +59,7 @@ Nếu không phải bạn, hãy bỏ qua email này.<br><br>
 `))
 
 var RequestLoginSmsTpl = template.Must(template.New("request-login-sms").Parse(`
-Nhập mã {{.Code}} để đăng nhập vào tài khoản của bạn trên eTop.vn thông qua {{.PartnerWebsite}}. Mã có hiệu lực trong 2 giờ. {{.Notice}}
+Nhập mã {{.Code}} để đăng nhập vào tài khoản của bạn trên eTop.vn thông qua hệ thống của đối tác. Mã có hiệu lực trong 2 giờ. {{.Notice}}
 `))
 
 var NewAccountViaPartnerEmailTpl = template.Must(template.New("register-email").Parse(`

@@ -770,7 +770,7 @@ func sendPhoneVerification(ctx context.Context, r *wrapetop.SendPhoneVerificatio
 		return r, err
 	}
 
-	msg := fmt.Sprintf(smsVerificationTpl, code, user.Email)
+	msg := fmt.Sprintf(smsVerificationTpl, code, user.Phone)
 	phone := user.Phone
 	cmd := &sms.SendSMSCommand{
 		Phone:   phone,
