@@ -475,3 +475,287 @@ func (ms *ExternalAccountAhamoveHistories) SQLScan(opts core.Opts, rows *sql.Row
 	*ms = res
 	return nil
 }
+
+// Type Affiliate represents table affiliate
+func sqlgenSale(_ *Affiliate) bool { return true }
+
+type Affiliates []*Affiliate
+
+const __sqlAffiliate_Table = "affiliate"
+const __sqlAffiliate_ListCols = "\"id\",\"owner_id\",\"name\",\"phone\",\"email\",\"is_test\",\"status\",\"created_at\",\"updated_at\",\"deleted_at\""
+const __sqlAffiliate_Insert = "INSERT INTO \"affiliate\" (" + __sqlAffiliate_ListCols + ") VALUES"
+const __sqlAffiliate_Select = "SELECT " + __sqlAffiliate_ListCols + " FROM \"affiliate\""
+const __sqlAffiliate_Select_history = "SELECT " + __sqlAffiliate_ListCols + " FROM history.\"affiliate\""
+const __sqlAffiliate_UpdateAll = "UPDATE \"affiliate\" SET (" + __sqlAffiliate_ListCols + ")"
+
+func (m *Affiliate) SQLTableName() string  { return "affiliate" }
+func (m *Affiliates) SQLTableName() string { return "affiliate" }
+func (m *Affiliate) SQLListCols() string   { return __sqlAffiliate_ListCols }
+
+func (m *Affiliate) SQLArgs(opts core.Opts, create bool) []interface{} {
+	now := time.Now()
+	return []interface{}{
+		core.Int64(m.ID),
+		core.Int64(m.OwnerID),
+		core.String(m.Name),
+		core.String(m.Phone),
+		core.String(m.Email),
+		core.Int(m.IsTest),
+		core.Int(m.Status),
+		core.Now(m.CreatedAt, now, create),
+		core.Now(m.UpdatedAt, now, true),
+		core.Time(m.DeletedAt),
+	}
+}
+
+func (m *Affiliate) SQLScanArgs(opts core.Opts) []interface{} {
+	return []interface{}{
+		(*core.Int64)(&m.ID),
+		(*core.Int64)(&m.OwnerID),
+		(*core.String)(&m.Name),
+		(*core.String)(&m.Phone),
+		(*core.String)(&m.Email),
+		(*core.Int)(&m.IsTest),
+		(*core.Int)(&m.Status),
+		(*core.Time)(&m.CreatedAt),
+		(*core.Time)(&m.UpdatedAt),
+		(*core.Time)(&m.DeletedAt),
+	}
+}
+
+func (m *Affiliate) SQLScan(opts core.Opts, row *sql.Row) error {
+	return row.Scan(m.SQLScanArgs(opts)...)
+}
+
+func (ms *Affiliates) SQLScan(opts core.Opts, rows *sql.Rows) error {
+	res := make(Affiliates, 0, 128)
+	for rows.Next() {
+		m := new(Affiliate)
+		args := m.SQLScanArgs(opts)
+		if err := rows.Scan(args...); err != nil {
+			return err
+		}
+		res = append(res, m)
+	}
+	if err := rows.Err(); err != nil {
+		return err
+	}
+	*ms = res
+	return nil
+}
+
+func (_ *Affiliate) SQLSelect(w SQLWriter) error {
+	w.WriteQueryString(__sqlAffiliate_Select)
+	return nil
+}
+
+func (_ *Affiliates) SQLSelect(w SQLWriter) error {
+	w.WriteQueryString(__sqlAffiliate_Select)
+	return nil
+}
+
+func (m *Affiliate) SQLInsert(w SQLWriter) error {
+	w.WriteQueryString(__sqlAffiliate_Insert)
+	w.WriteRawString(" (")
+	w.WriteMarkers(10)
+	w.WriteByte(')')
+	w.WriteArgs(m.SQLArgs(w.Opts(), true))
+	return nil
+}
+
+func (ms Affiliates) SQLInsert(w SQLWriter) error {
+	w.WriteQueryString(__sqlAffiliate_Insert)
+	w.WriteRawString(" (")
+	for i := 0; i < len(ms); i++ {
+		w.WriteMarkers(10)
+		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
+		w.WriteRawString("),(")
+	}
+	w.TrimLast(2)
+	return nil
+}
+
+func (m *Affiliate) SQLUpdate(w SQLWriter) error {
+	now, opts := time.Now(), w.Opts()
+	_, _ = now, opts // suppress unuse error
+	var flag bool
+	w.WriteRawString("UPDATE ")
+	w.WriteName("affiliate")
+	w.WriteRawString(" SET ")
+	if m.ID != 0 {
+		flag = true
+		w.WriteName("id")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.ID)
+	}
+	if m.OwnerID != 0 {
+		flag = true
+		w.WriteName("owner_id")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.OwnerID)
+	}
+	if m.Name != "" {
+		flag = true
+		w.WriteName("name")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.Name)
+	}
+	if m.Phone != "" {
+		flag = true
+		w.WriteName("phone")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.Phone)
+	}
+	if m.Email != "" {
+		flag = true
+		w.WriteName("email")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.Email)
+	}
+	if m.IsTest != 0 {
+		flag = true
+		w.WriteName("is_test")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.IsTest)
+	}
+	if m.Status != 0 {
+		flag = true
+		w.WriteName("status")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(int(m.Status))
+	}
+	if !m.CreatedAt.IsZero() {
+		flag = true
+		w.WriteName("created_at")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.CreatedAt)
+	}
+	if !m.UpdatedAt.IsZero() {
+		flag = true
+		w.WriteName("updated_at")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(core.Now(m.UpdatedAt, time.Now(), true))
+	}
+	if !m.DeletedAt.IsZero() {
+		flag = true
+		w.WriteName("deleted_at")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.DeletedAt)
+	}
+	if !flag {
+		return core.ErrNoColumn
+	}
+	w.TrimLast(1)
+	return nil
+}
+
+func (m *Affiliate) SQLUpdateAll(w SQLWriter) error {
+	w.WriteQueryString(__sqlAffiliate_UpdateAll)
+	w.WriteRawString(" = (")
+	w.WriteMarkers(10)
+	w.WriteByte(')')
+	w.WriteArgs(m.SQLArgs(w.Opts(), false))
+	return nil
+}
+
+type AffiliateHistory map[string]interface{}
+type AffiliateHistories []map[string]interface{}
+
+func (m *AffiliateHistory) SQLTableName() string  { return "history.\"affiliate\"" }
+func (m AffiliateHistories) SQLTableName() string { return "history.\"affiliate\"" }
+
+func (m *AffiliateHistory) SQLSelect(w SQLWriter) error {
+	w.WriteQueryString(__sqlAffiliate_Select_history)
+	return nil
+}
+
+func (m AffiliateHistories) SQLSelect(w SQLWriter) error {
+	w.WriteQueryString(__sqlAffiliate_Select_history)
+	return nil
+}
+
+func (m AffiliateHistory) ID() core.Interface        { return core.Interface{m["id"]} }
+func (m AffiliateHistory) OwnerID() core.Interface   { return core.Interface{m["owner_id"]} }
+func (m AffiliateHistory) Name() core.Interface      { return core.Interface{m["name"]} }
+func (m AffiliateHistory) Phone() core.Interface     { return core.Interface{m["phone"]} }
+func (m AffiliateHistory) Email() core.Interface     { return core.Interface{m["email"]} }
+func (m AffiliateHistory) IsTest() core.Interface    { return core.Interface{m["is_test"]} }
+func (m AffiliateHistory) Status() core.Interface    { return core.Interface{m["status"]} }
+func (m AffiliateHistory) CreatedAt() core.Interface { return core.Interface{m["created_at"]} }
+func (m AffiliateHistory) UpdatedAt() core.Interface { return core.Interface{m["updated_at"]} }
+func (m AffiliateHistory) DeletedAt() core.Interface { return core.Interface{m["deleted_at"]} }
+
+func (m *AffiliateHistory) SQLScan(opts core.Opts, row *sql.Row) error {
+	data := make([]interface{}, 10)
+	args := make([]interface{}, 10)
+	for i := 0; i < 10; i++ {
+		args[i] = &data[i]
+	}
+	if err := row.Scan(args...); err != nil {
+		return err
+	}
+	res := make(AffiliateHistory, 10)
+	res["id"] = data[0]
+	res["owner_id"] = data[1]
+	res["name"] = data[2]
+	res["phone"] = data[3]
+	res["email"] = data[4]
+	res["is_test"] = data[5]
+	res["status"] = data[6]
+	res["created_at"] = data[7]
+	res["updated_at"] = data[8]
+	res["deleted_at"] = data[9]
+	*m = res
+	return nil
+}
+
+func (ms *AffiliateHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
+	data := make([]interface{}, 10)
+	args := make([]interface{}, 10)
+	for i := 0; i < 10; i++ {
+		args[i] = &data[i]
+	}
+	res := make(AffiliateHistories, 0, 128)
+	for rows.Next() {
+		if err := rows.Scan(args...); err != nil {
+			return err
+		}
+		m := make(AffiliateHistory)
+		m["id"] = data[0]
+		m["owner_id"] = data[1]
+		m["name"] = data[2]
+		m["phone"] = data[3]
+		m["email"] = data[4]
+		m["is_test"] = data[5]
+		m["status"] = data[6]
+		m["created_at"] = data[7]
+		m["updated_at"] = data[8]
+		m["deleted_at"] = data[9]
+		res = append(res, m)
+	}
+	if err := rows.Err(); err != nil {
+		return err
+	}
+	*ms = res
+	return nil
+}

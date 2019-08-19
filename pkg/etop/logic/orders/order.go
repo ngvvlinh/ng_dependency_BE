@@ -26,7 +26,7 @@ import (
 
 var ll = l.New()
 
-func CreateOrder(ctx context.Context, claim *claims.ShopClaim, authPartner *model.Partner, r *pborder.CreateOrderRequest) (*pborder.Order, error) {
+func CreateOrder(ctx context.Context, claim *claims.ShopClaim, authPartner *model.Partner, r *pborder.CreateOrderRequest, tradingShopID *int64) (*pborder.Order, error) {
 	shipping := r.ShopShipping
 	if r.Shipping != nil {
 		shipping = r.Shipping
@@ -74,6 +74,9 @@ func CreateOrder(ctx context.Context, claim *claims.ShopClaim, authPartner *mode
 	order.OrderSourceType = src
 	// fulfillment_type will be filled after create fulfillment
 	order.FulfillmentType = ordermodel.FulfillManual
+	if tradingShopID != nil {
+		order.TradingShopID = *tradingShopID
+	}
 
 	cmd := &ordermodelx.CreateOrderCommand{
 		Order: order,

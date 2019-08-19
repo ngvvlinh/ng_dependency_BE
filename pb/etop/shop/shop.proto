@@ -213,6 +213,15 @@ service AuthorizeService {
     rpc AuthorizePartner(AuthorizePartnerRequest) returns (AuthorizedPartnerResponse);
 }
 
+service TradingService {
+    rpc TradingGetProduct(cm.IDRequest) returns (ShopProduct);
+    rpc TradingGetProducts(cm.CommonListRequest) returns (ShopProductsResponse);
+
+    rpc TradingCreateOrder(order.TradingCreateOrderRequest) returns (order.Order);
+    rpc TradingGetOrder(cm.IDRequest) returns (order.Order);
+    rpc TradingGetOrders(GetOrdersRequest) returns (order.OrdersResponse);
+}
+
 message RegisterShopRequest {
     // @required
     optional string name = 1 [(gogoproto.nullable)=false];

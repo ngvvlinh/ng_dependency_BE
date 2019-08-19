@@ -4,14 +4,14 @@ import (
 	"context"
 	"time"
 
-	"etop.vn/api/main/location"
-
 	"github.com/asaskevich/govalidator"
 
 	haravanidentity "etop.vn/api/external/haravan/identity"
 	"etop.vn/api/main/address"
 	"etop.vn/api/main/catalog"
 	"etop.vn/api/main/identity"
+	"etop.vn/api/main/location"
+	"etop.vn/api/main/ordering"
 	"etop.vn/api/main/shipnow"
 	carriertypes "etop.vn/api/main/shipnow/carrier/types"
 	"etop.vn/api/main/shipping/types"
@@ -104,22 +104,25 @@ func init() {
 
 const PrefixIdemp = "IdempOrder"
 
-var locationQuery location.QueryBus
-var idempgroup *idemp.RedisGroup
-var shipnowAggr shipnow.CommandBus
-var shipnowQuery shipnow.QueryBus
-var identityAggr identity.CommandBus
-var identityQuery identity.QueryBus
-var addressQuery address.QueryBus
-var shippingCtrl *shipping_provider.ProviderManager
-var catalogQuery catalog.QueryBus
-var catalogAggr catalog.CommandBus
-var haravanIdentityAggr haravanidentity.CommandBus
-var haravanIdentityQuery haravanidentity.QueryBus
-var customerQuery customering.QueryBus
-var customerAggr customering.CommandBus
-var traderAddressAggr addressing.CommandBus
-var traderAddressQuery addressing.QueryBus
+var (
+	locationQuery        location.QueryBus
+	idempgroup           *idemp.RedisGroup
+	shipnowAggr          shipnow.CommandBus
+	shipnowQuery         shipnow.QueryBus
+	identityAggr         identity.CommandBus
+	identityQuery        identity.QueryBus
+	addressQuery         address.QueryBus
+	shippingCtrl         *shipping_provider.ProviderManager
+	catalogQuery         catalog.QueryBus
+	catalogAggr          catalog.CommandBus
+	haravanIdentityAggr  haravanidentity.CommandBus
+	haravanIdentityQuery haravanidentity.QueryBus
+	customerQuery        customering.QueryBus
+	customerAggr         customering.CommandBus
+	orderAggr            ordering.CommandBus
+	traderAddressAggr    addressing.CommandBus
+	traderAddressQuery   addressing.QueryBus
+)
 
 func Init(
 	locationQ location.QueryBus,
@@ -137,6 +140,7 @@ func Init(
 	customerQS customering.QueryBus,
 	traderAddressA addressing.CommandBus,
 	traderAddressQ addressing.QueryBus,
+	orderA ordering.CommandBus,
 	sd cmservice.Shutdowner,
 	rd redis.Store,
 ) {
@@ -156,6 +160,7 @@ func Init(
 	customerAggr = customerA
 	traderAddressAggr = traderAddressA
 	traderAddressQuery = traderAddressQ
+	orderAggr = orderA
 	sd.Register(idempgroup.Shutdown)
 }
 

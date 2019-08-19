@@ -5,7 +5,6 @@ import (
 
 	etoptypes "etop.vn/api/main/etop"
 	"etop.vn/api/main/ordering"
-	"etop.vn/backend/com/main/ordering/pm"
 	"etop.vn/backend/com/main/ordering/sqlstore"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/cmsql"
@@ -15,7 +14,6 @@ import (
 var _ ordering.Aggregate = &Aggregate{}
 
 type Aggregate struct {
-	pm    *pm.ProcessManager
 	store sqlstore.OrderStoreFactory
 }
 
@@ -23,11 +21,6 @@ func NewAggregate(db cmsql.Database) *Aggregate {
 	return &Aggregate{
 		store: sqlstore.NewOrderStore(db),
 	}
-}
-
-func (a *Aggregate) WithPM(pm *pm.ProcessManager) *Aggregate {
-	a.pm = pm
-	return a
 }
 
 func (a *Aggregate) MessageBus() ordering.CommandBus {

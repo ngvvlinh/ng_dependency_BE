@@ -20,6 +20,7 @@ var funcs = template.FuncMap{
 	"requireAPIKey":            requireAPIKey,
 	"requireAPIPartnerShopKey": requireAPIPartnerShopKey,
 	"requireShop":              requireShop,
+	"requireAffiliate":         requireAffiliate,
 	"requireEtopAdmin":         requireEtopAdmin,
 	"requireSuperAdmin":        requireSuperAdmin,
 	"requireRole":              requireRole,
@@ -92,6 +93,11 @@ func requireShop(m *g.Method) bool {
 	return p.Type == Shop
 }
 
+func requireAffiliate(m *g.Method) bool {
+	p := getPermission(m)
+	return p.Type == Affiliate
+}
+
 func requireEtopAdmin(m *g.Method) bool {
 	p := getPermission(m)
 	return p.Type == EtopAdmin
@@ -137,6 +143,8 @@ func getClaim(m *g.Method) string {
 		return "PartnerClaim"
 	case Shop:
 		return "ShopClaim"
+	case Affiliate:
+		return "AffiliateClaim"
 	case Public, Protected, Custom, Secret, SuperAdmin:
 		return "EmptyClaim"
 	}

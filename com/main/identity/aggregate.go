@@ -11,6 +11,8 @@ import (
 	"etop.vn/backend/com/main/identity/sqlstore"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/cmsql"
+	"etop.vn/backend/pkg/common/validate"
+	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/common/bus"
 )
 
@@ -18,8 +20,9 @@ var _ identity.Aggregate = &Aggregate{}
 
 type Aggregate struct {
 	db                    cmsql.Transactioner
-	shopStore             sqlstore.ShopStoreFactory
 	userStore             sqlstore.UserStoreFactory
+	accountStore          sqlstore.AccountStoreFactory
+	accountUserStore      sqlstore.AccountUserStoreFactory
 	xAccountAhamove       sqlstore.XAccountAhamoveStoreFactory
 	shipnowCarrierManager carrier.Manager
 }
@@ -27,9 +30,10 @@ type Aggregate struct {
 func NewAggregate(db cmsql.Database, carrierManager carrier.Manager) *Aggregate {
 	return &Aggregate{
 		db:                    db,
-		shopStore:             sqlstore.NewIdentityStore(db),
 		xAccountAhamove:       sqlstore.NewXAccountAhamoveStore(db),
 		userStore:             sqlstore.NewUserStore(db),
+		accountStore:          sqlstore.NewAccountStore(db),
+		accountUserStore:      sqlstore.NewAccoutnUserStore(db),
 		shipnowCarrierManager: carrierManager,
 	}
 }
@@ -226,4 +230,112 @@ func (a *Aggregate) UpdateExternalAccountAhamoveVerification(ctx context.Context
 	}
 
 	return a.xAccountAhamove(ctx).UpdateVerificationImages(update)
+}
+
+func (a *Aggregate) UpdateUserReferenceUserID(ctx context.Context, args *identity.UpdateUserReferenceUserIDArgs) error {
+	if currentUser, err := a.userStore(ctx).ByID(args.UserID).GetUserDB(); err != nil {
+		return err
+	} else if currentUser.RefSaleID != 0 {
+		return cm.Errorf(cm.FailedPrecondition, nil, "RefUserID đã tồn tại. Không thể cập nhật.")
+	}
+	refUser, err := a.userStore(ctx).ByPhone(args.RefUserPhone).GetUserDB()
+	if err != nil {
+		return cm.Errorf(cm.NotFound, nil, "Số điện thoại người dùng không tồn tại.")
+	}
+
+	updateCmd := &sqlstore.UpdateRefferenceIDArgs{
+		UserID:    args.UserID,
+		RefUserID: refUser.ID,
+	}
+	return a.userStore(ctx).UpdateUserRefferenceID(updateCmd)
+}
+
+func (a *Aggregate) UpdateUserReferenceSaleID(ctx context.Context, args *identity.UpdateUserReferenceSaleIDArgs) error {
+	if currentUser, err := a.userStore(ctx).ByID(args.UserID).GetUserDB(); err != nil {
+		return err
+	} else if currentUser.RefSaleID != 0 {
+		return cm.Errorf(cm.FailedPrecondition, nil, "RefSaleID đã tồn tại. Không thể cập nhật.")
+	}
+	refUser, err := a.userStore(ctx).ByPhone(args.RefSalePhone).GetUserDB()
+	if err != nil {
+		return cm.Errorf(cm.NotFound, nil, "Số điện thoại người dùng không tồn tại.")
+	}
+
+	updateCmd := &sqlstore.UpdateRefferenceIDArgs{
+		UserID:    args.UserID,
+		RefSaleID: refUser.ID,
+	}
+	return a.userStore(ctx).UpdateUserRefferenceID(updateCmd)
+}
+
+func (a *Aggregate) CreateAffiliate(ctx context.Context, args *identity.CreateAffiliateArgs) (*identity.Affiliate, error) {
+	var ok bool
+	var emailNorm model.NormalizedEmail
+	var phoneNorm model.NormalizedPhone
+	if args.Name, ok = validate.NormalizeName(args.Name); !ok {
+		return nil, cm.Error(cm.InvalidArgument, "Tên người dùng không hợp lệ", nil)
+	}
+	if args.Email != "" {
+		if emailNorm, ok = validate.NormalizeEmail(args.Email); !ok {
+			return nil, cm.Errorf(cm.InvalidArgument, nil, "Email không hợp lệ")
+		}
+	}
+	if phoneNorm, ok = validate.NormalizePhone(args.Phone); !ok {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "Số điện thoại không hợp lệ")
+	}
+	_args := sqlstore.CreateAffiliateArgs{
+		Name:    args.Name,
+		OwnerID: args.OwnerID,
+		Phone:   phoneNorm.String(),
+		Email:   emailNorm.String(),
+		IsTest:  args.IsTest,
+	}
+	return a.accountStore(ctx).CreateAffiliate(_args)
+}
+
+func (a *Aggregate) UpdateAffiliate(ctx context.Context, args *identity.UpdateAffiliateArgs) (*identity.Affiliate, error) {
+	var ok bool
+	var emailNorm model.NormalizedEmail
+	var phoneNorm model.NormalizedPhone
+
+	if args.Name != "" {
+		if args.Name, ok = validate.NormalizeName(args.Name); !ok {
+			return nil, cm.Errorf(cm.InvalidArgument, nil, "Tên người dùng không hợp lệ")
+		}
+	}
+	if args.Email != "" {
+		if emailNorm, ok = validate.NormalizeEmail(args.Email); !ok {
+			return nil, cm.Errorf(cm.InvalidArgument, nil, "Email không hợp lệ")
+		}
+	}
+	if args.Phone != "" {
+		if phoneNorm, ok = validate.NormalizePhone(args.Phone); !ok {
+			return nil, cm.Errorf(cm.InvalidArgument, nil, "Số điện thoại không hợp lệ")
+		}
+	}
+	_args := sqlstore.UpdateAffiliateArgs{
+		ID:      args.ID,
+		OwnerID: args.OwnerID,
+		Phone:   phoneNorm.String(),
+		Email:   emailNorm.String(),
+		Name:    args.Name,
+	}
+	return a.accountStore(ctx).UpdateAffiliate(_args)
+}
+
+func (a *Aggregate) DeleteAffiliate(ctx context.Context, args *identity.DeleteAffiliateArgs) error {
+	return a.db.InTransaction(ctx, func(tx cmsql.QueryInterface) error {
+		args1 := sqlstore.DeleteAffiliateArgs{
+			ID:      args.ID,
+			OwnerID: args.OwnerID,
+		}
+		if err := a.accountStore(ctx).DeleteAffiliate(args1); err != nil {
+			return err
+		}
+		args2 := sqlstore.DeleteAccountUserArgs{
+			AccountID: args.ID,
+			UserID:    args.OwnerID,
+		}
+		return a.accountUserStore(ctx).DeleteAccountUser(args2)
+	})
 }

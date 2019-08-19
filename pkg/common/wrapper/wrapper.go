@@ -115,6 +115,13 @@ func SendErrorToBot(bot *telebot.Channel, rpcName string, session *middleware.Se
 			buf.WriteString(strconv.Itoa(int(shop.ID)))
 			buf.WriteString(")")
 		}
+		if affiliate := session.Affiliate; affiliate != nil {
+			buf.WriteString("\n–– Sale: ")
+			buf.WriteString(affiliate.Name)
+			buf.WriteString(" (")
+			buf.WriteString(strconv.Itoa(int(affiliate.ID)))
+			buf.WriteString(")")
+		}
 	}
 	buf.WriteString("\n→")
 

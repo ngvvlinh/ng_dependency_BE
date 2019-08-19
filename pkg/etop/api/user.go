@@ -8,6 +8,7 @@ import (
 	"strings"
 	"time"
 
+	"etop.vn/api/main/identity"
 	"etop.vn/backend/cmd/etop-server/config"
 	pbcm "etop.vn/backend/pb/common"
 	pbetop "etop.vn/backend/pb/etop"
@@ -37,6 +38,7 @@ var (
 	enabledEmail bool
 	enabledSMS   bool
 	cfgEmail     EmailConfig
+	identityAggr identity.CommandBus
 )
 
 const PrefixIdempUser = "IdempUser"
@@ -56,12 +58,22 @@ func init() {
 		UpgradeAccessToken,
 		VerifyEmailUsingToken,
 		VerifyPhoneUsingToken,
+		UpdateReferenceUser,
+		UpdateReferenceSale,
 	)
 }
 
 type EmailConfig = config.EmailConfig
 
-func Init(sd cmservice.Shutdowner, rd redis.Store, s auth.Generator, _cfgEmail EmailConfig, _cfgSMS sms.Config) {
+func Init(
+	identityCommandBus identity.CommandBus,
+	sd cmservice.Shutdowner,
+	rd redis.Store,
+	s auth.Generator,
+	_cfgEmail EmailConfig,
+	_cfgSMS sms.Config,
+) {
+	identityAggr = identityCommandBus
 	authStore = s
 	enabledEmail = _cfgEmail.Enabled
 	enabledSMS = _cfgSMS.Enabled
@@ -552,7 +564,8 @@ func CreateLoginResponse2(ctx context.Context, claim *claims.ClaimInfo, token st
 		switch {
 		case preferAccountID == account.ID,
 			preferAccountType == model.TagShop && account.Type == model.TypeShop,
-			preferAccountType == model.TagEtop && account.Type == model.TypeEtop:
+			preferAccountType == model.TagEtop && account.Type == model.TypeEtop,
+			preferAccountType == model.TagAffiliate && account.Type == model.TypeAffiliate:
 			currentAccount = availableAccounts[i]
 			currentAccountID = currentAccount.Id
 		}
@@ -575,7 +588,9 @@ func CreateLoginResponse2(ctx context.Context, claim *claims.ClaimInfo, token st
 			resp.Shop = pbetop.PbShopExtended(query.Result)
 			respShop = query.Result.Shop
 
+		case model.IsAffiliateID(currentAccountID):
 		case model.IsEtopAccountID(currentAccountID):
+		case model.IsAccountWhiteList(currentAccountID):
 			// nothing
 		default:
 			return nil, nil, cm.ErrorTracef(cm.Internal, nil, "Invalid account")
@@ -1097,4 +1112,32 @@ func generateToken(usage string, userID int64, generate bool, ttl int, extra str
 		return nil, "", nil, cm.Error(cm.Internal, "", err)
 	}
 	return tok, code, v, nil
+}
+
+func UpdateReferenceUser(ctx context.Context, r *wrapetop.UpdateReferenceUserEndpoint) error {
+	cmd := &identity.UpdateUserReferenceUserIDCommand{
+		UserID:       r.Context.UserID,
+		RefUserPhone: r.Phone,
+	}
+	if err := identityAggr.Dispatch(ctx, cmd); err != nil {
+		return err
+	}
+	r.Result = &pbcm.UpdatedResponse{
+		Updated: 1,
+	}
+	return nil
+}
+
+func UpdateReferenceSale(ctx context.Context, r *wrapetop.UpdateReferenceSaleEndpoint) error {
+	cmd := &identity.UpdateUserReferenceSaleIDCommand{
+		UserID:       r.Context.UserID,
+		RefSalePhone: r.Phone,
+	}
+	if err := identityAggr.Dispatch(ctx, cmd); err != nil {
+		return err
+	}
+	r.Result = &pbcm.UpdatedResponse{
+		Updated: 1,
+	}
+	return nil
 }

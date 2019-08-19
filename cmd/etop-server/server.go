@@ -36,6 +36,7 @@ import (
 	webhookvtpost "etop.vn/backend/pkg/integration/shipping/vtpost/webhook"
 	wrapetop "etop.vn/backend/wrapper/etop"
 	wrapadmin "etop.vn/backend/wrapper/etop/admin"
+	wrapaffiliate "etop.vn/backend/wrapper/etop/affiliate"
 	wrapintegration "etop.vn/backend/wrapper/etop/integration"
 	wrapsadmin "etop.vn/backend/wrapper/etop/sadmin"
 	wrapshop "etop.vn/backend/wrapper/etop/shop"
@@ -46,6 +47,7 @@ import (
 
 	_ "etop.vn/backend/pkg/etop/api"
 	_ "etop.vn/backend/pkg/etop/api/admin"
+	_ "etop.vn/backend/pkg/etop/api/affiliate"
 	_ "etop.vn/backend/pkg/etop/api/crm"
 	_ "etop.vn/backend/pkg/etop/api/sadmin"
 	_ "etop.vn/backend/pkg/etop/api/shop"
@@ -84,6 +86,7 @@ func startEtopServer() *http.Server {
 		wrapsadmin.NewSadminServer(apiMux, nil)
 		wrapadmin.NewAdminServer(apiMux, nil)
 		wrapshop.NewShopServer(apiMux, nil)
+		wrapaffiliate.NewAffiliateServer(apiMux, nil)
 		wrapintegration.NewIntegrationServer(apiMux, nil)
 		wrapcrm.NewCrmServer(apiMux, nil, cfg.Secret)
 
@@ -190,7 +193,7 @@ func startEtopServer() *http.Server {
 	if cfg.ServeDoc || *flDocOnly {
 		mux.Handle("/", http.RedirectHandler("/doc/etop", http.StatusTemporaryRedirect))
 		mux.Handle("/doc", http.RedirectHandler("/doc/etop", http.StatusTemporaryRedirect))
-		for _, s := range strings.Split("sadmin,admin,shop,integration", ",") {
+		for _, s := range strings.Split("sadmin,admin,shop,integration,affiliate", ",") {
 			mux.Handle("/doc/"+s, cmservice.RedocHandler())
 			mux.Handle("/doc/"+s+"/swagger.json", cmservice.SwaggerHandler("etop/"+s+"/"+s+".swagger.json"))
 		}

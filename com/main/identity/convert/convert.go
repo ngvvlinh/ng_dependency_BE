@@ -108,3 +108,53 @@ func XAccountAhamove(in *identitymodel.ExternalAccountAhamove) *identity.Externa
 		UploadedAt:          in.UploadedAt,
 	}
 }
+
+func Affiliate(in *identitymodel.Affiliate) *identity.Affiliate {
+	if in == nil {
+		return nil
+	}
+	return &identity.Affiliate{
+		ID:        in.ID,
+		OwnerID:   in.OwnerID,
+		Name:      in.Name,
+		Phone:     in.Phone,
+		Email:     in.Email,
+		Status:    etoptypes.Status3FromInt(int(in.Status)),
+		IsTest:    in.IsTest,
+		CreatedAt: in.CreatedAt,
+		UpdatedAt: in.UpdatedAt,
+		DeletedAt: in.DeletedAt,
+	}
+}
+
+func AffiliateDB(in *identity.Affiliate) *identitymodel.Affiliate {
+	if in == nil {
+		return nil
+	}
+	return &identitymodel.Affiliate{
+		ID:        in.ID,
+		OwnerID:   in.OwnerID,
+		Name:      in.Name,
+		Phone:     in.Phone,
+		Email:     in.Email,
+		Status:    model.Status3(in.Status),
+		IsTest:    in.IsTest,
+		CreatedAt: in.CreatedAt,
+		UpdatedAt: in.UpdatedAt,
+		DeletedAt: in.DeletedAt,
+	}
+}
+
+func Permission(in model.Permission) identity.Permission {
+	return identity.Permission{
+		Roles:       in.Roles,
+		Permissions: in.Permissions,
+	}
+}
+
+func PermissionToModel(in identity.Permission) model.Permission {
+	return model.Permission{
+		Roles:       in.Roles,
+		Permissions: in.Permissions,
+	}
+}

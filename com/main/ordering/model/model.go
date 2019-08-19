@@ -112,6 +112,7 @@ type Order struct {
 	FulfillmentType  FulfillType
 	FulfillmentIDs   []int64
 	ExternalMeta     json.RawMessage
+	TradingShopID    int64
 
 	// payment
 	PaymentStatus model.Status4

@@ -156,10 +156,11 @@
         "unknown",
         "partner",
         "shop",
-        "etop"
+        "etop",
+        "affiliate"
       ],
       "default": "unknown",
-      "description": "Indicates whether given account is **etop**, **shop** or **partner**."
+      "description": "Indicates whether given account is **etop**, **shop**, **partner** or **sale**."
     },
     "etopAddress": {
       "type": "object",

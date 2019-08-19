@@ -9,11 +9,12 @@ import (
 )
 
 type GetOrderQuery struct {
-	OrderID    int64
-	ExternalID string
-	ShopID     int64
-	PartnerID  int64
-	Code       string
+	OrderID       int64
+	ExternalID    string
+	ShopID        int64
+	PartnerID     int64
+	Code          string
+	TradingShopID int64
 
 	IncludeFulfillment bool
 
@@ -31,8 +32,9 @@ type OrderWithFulfillments struct {
 }
 
 type GetOrdersQuery struct {
-	ShopIDs   []int64 // MixedAccount
-	PartnerID int64
+	ShopIDs       []int64 // MixedAccount
+	PartnerID     int64
+	TradingShopID int64
 
 	Paging  *cm.Paging
 	Filters []cm.Filter

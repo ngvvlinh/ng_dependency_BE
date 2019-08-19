@@ -6,9 +6,9 @@ import "protoc-gen-swagger/options/annotations.proto";
 option (grpc.gateway.protoc_gen_swagger.options.openapiv2_swagger) = {
     info: {
         title: "eTop API";
-        version: "v1";
-        description: "API Documentation:\n- [/doc/etop](/doc/etop) Shared API for managing login and account\n- [/doc/shop](/doc/shop) API for shops\n- [/doc/integration](/doc/integration) API for shop to integrate with external partners\n- [/doc/admin](/doc/admin) API for eTop admins\n- [/doc/ext/shop](/doc/ext/shop) External API for shops\n- [/doc/ext/partner](/doc/ext/partner) External API for partners\n- [/doc/sadmin](/doc/sadmin) Special API for super admins";
-    };
+version:"v1";
+description:"API Documentation:\n- [/doc/etop](/doc/etop) Shared API for managing login and account\n- [/doc/shop](/doc/shop) API for shops\n- [/doc/affiliate](/doc/affiliate) API for affiliates\n- [/doc/integration](/doc/integration) API for shop to integrate with external partners\n- [/doc/admin](/doc/admin) API for eTop admins\n- [/doc/ext/shop](/doc/ext/shop) External API for shops\n- [/doc/ext/partner](/doc/ext/partner) External API for partners\n- [/doc/sadmin](/doc/sadmin) Special API for super admins";
+};
 };
 
 import "gogoproto/gogo.proto";
@@ -91,6 +91,10 @@ service UserService {
     rpc VerifyPhoneUsingToken (VerifyPhoneUsingTokenRequest) returns (cm.MessageResponse);
 
     rpc UpdatePermission (UpdatePermissionRequest) returns (UpdatePermissionResponse);
+
+    rpc UpdateReferenceUser (UpdateReferenceUserRequest) returns (cm.UpdatedResponse);
+
+    rpc UpdateReferenceSale (UpdateReferenceSaleRequest) returns (cm.UpdatedResponse);
 }
 
 service AccountService {
@@ -131,12 +135,13 @@ service AddressService {
     rpc RemoveAddress(cm.IDRequest) returns (cm.Empty);
 }
 
-// Indicates whether given account is **etop**, **shop** or **partner**.
+// Indicates whether given account is **etop**, **shop**, **partner** or **sale**.
 enum AccountType {
     unknown  = 0;
     partner  = 21;
     shop     = 33;
     etop     = 101;
+    affiliate     = 211;
 }
 
 // Represents a user in eTop system. The user may or may not have associated accounts.
@@ -880,4 +885,14 @@ message NotificationsResponse {
 message UpdateNotificationsRequest {
     repeated int64 ids = 1;
     optional bool is_read = 2 [(gogoproto.nullable) = false];
+}
+
+message UpdateReferenceUserRequest {
+    // @required
+    optional string phone = 1 [(gogoproto.nullable) = false];
+}
+
+message UpdateReferenceSaleRequest {
+    // @required
+    optional string phone = 1 [(gogoproto.nullable) = false];
 }

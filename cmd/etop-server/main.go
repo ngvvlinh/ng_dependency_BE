@@ -22,7 +22,6 @@ import (
 	serviceidentity "etop.vn/backend/com/main/identity"
 	servicelocation "etop.vn/backend/com/main/location"
 	serviceordering "etop.vn/backend/com/main/ordering"
-	orderingpm "etop.vn/backend/com/main/ordering/pm"
 	ordersqlstore "etop.vn/backend/com/main/ordering/sqlstore"
 	serviceshipnow "etop.vn/backend/com/main/shipnow"
 	shipnowcarrier "etop.vn/backend/com/main/shipnow-carrier"
@@ -41,6 +40,7 @@ import (
 	cmService "etop.vn/backend/pkg/common/service"
 	"etop.vn/backend/pkg/common/telebot"
 	"etop.vn/backend/pkg/etop/api"
+	"etop.vn/backend/pkg/etop/api/affiliate"
 	"etop.vn/backend/pkg/etop/api/crm"
 	"etop.vn/backend/pkg/etop/api/integration"
 	"etop.vn/backend/pkg/etop/api/shop"
@@ -175,7 +175,6 @@ func main() {
 
 	redisStore := redis.Connect(cfg.Redis.ConnectionString())
 	tokens.Init(redisStore)
-	middleware.Init(cfg.SAdminToken)
 	db, err = cmsql.Connect(cfg.Postgres)
 	if err != nil {
 		ll.Fatal("Unable to connect to Postgres", l.Error(err))
@@ -261,7 +260,6 @@ func main() {
 	shippingManager := shipping_provider.NewCtrl(locationBus, ghnCarrier, ghtkCarrier, vtpostCarrier)
 
 	authStore := auth.NewGenerator(redisStore)
-	api.Init(shutdowner, redisStore, authStore, cfg.Email, cfg.SMS)
 	imcsvorder.Init(locationBus, shutdowner, redisStore, uploader, db)
 	imcsvproduct.Init(shutdowner, redisStore, uploader, db)
 	ffmexport.Init(shutdowner, redisStore, eventStreamer, ffmexport.Config{
@@ -289,15 +287,15 @@ func main() {
 	identityAggr := serviceidentity.NewAggregate(db, shipnowCarrierManager).MessageBus()
 	shipnowAggr = serviceshipnow.NewAggregate(eventBus, db, locationBus, identityQuery, addressQuery, orderQuery, shipnowCarrierManager).MessageBus()
 
-	orderingPM := orderingpm.New(orderAggr)
 	shipnowPM := shipnowpm.New(eventBus, shipnowQuery, shipnowAggr, orderAggr.MessageBus(), shipnowCarrierManager)
 	shipnowPM.RegisterEventHandlers(eventBus)
 	customerAggr := customeraggregate.NewCustomerAggregate(db).MessageBus()
 	traderAddressAggr := customeraggregate.NewAddressAggregate(db).MessageBus()
 	customerQuery := customerquery.NewCustomerQuery(db).MessageBus()
 	traderAddressQuery := customerquery.NewAddressQuery(db).MessageBus()
-	orderAggr.WithPM(orderingPM)
 
+	middleware.Init(cfg.SAdminToken, identityQuery)
+	api.Init(identityAggr, shutdowner, redisStore, authStore, cfg.Email, cfg.SMS)
 	shop.Init(
 		locationBus,
 		catalogQuery,
@@ -314,6 +312,7 @@ func main() {
 		customerQuery,
 		traderAddressAggr,
 		traderAddressQuery,
+		orderAggr.MessageBus(),
 		shutdowner,
 		redisStore,
 	)
@@ -324,6 +323,7 @@ func main() {
 	xshipping.Init(shippingManager, ordersqlstore.NewOrderStore(db), shipsqlstore.NewFulfillmentStore(db))
 	orderS.Init(shippingManager, catalogQuery, orderAggr.MessageBus())
 	crm.Init(ghnCarrier)
+	affiliate.Init(identityAggr)
 
 	svrs := startServers()
 	if bot != nil {

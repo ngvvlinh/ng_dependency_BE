@@ -15,6 +15,7 @@ const (
 	Partner
 	Shop
 	EtopAdmin
+	Affiliate
 
 	SuperAdmin PermType = 100
 	Custom     PermType = -1

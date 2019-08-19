@@ -88,9 +88,10 @@ const (
 	DBMain     DBName = "main"
 	DBNotifier DBName = "notifier"
 
-	TypePartner AccountType = "partner"
-	TypeShop    AccountType = "shop"
-	TypeEtop    AccountType = "etop"
+	TypePartner   AccountType = "partner"
+	TypeShop      AccountType = "shop"
+	TypeEtop      AccountType = "etop"
+	TypeAffiliate AccountType = "affiliate"
 
 	SubjectTypeAccount SubjectType = "account"
 	SubjectTypeUser    SubjectType = "user"
@@ -127,13 +128,15 @@ const (
 	UserIdentifyingStub UserIdentifying = "stub"
 
 	// Don't change these values
-	TagUser    = 17
-	TagPartner = 21
-	TagShop    = 33
-	TagEtop    = 101
-	TagImport  = 111
+	TagUser      = 17
+	TagPartner   = 21
+	TagShop      = 33
+	TagAffiliate = 35
+	TagEtop      = 101
+	TagImport    = 111
 
-	EtopAccountID = TagEtop
+	EtopAccountID        = TagEtop
+	EtopTradingAccountID = 1000015765615455091
 
 	StatusActive   = 1
 	StatusCreated  = 0
@@ -233,6 +236,7 @@ var ShippingFeeShopTypes = []ShippingFeeLineType{
 	ShippingFeeTypeMain, ShippingFeeTypeReturn, ShippingFeeTypeAdjustment,
 	ShippingFeeTypeAddessChange, ShippingFeeTypeCODS, ShippingFeeTypeInsurance, ShippingFeeTypeOther, ShippingFeeTypeDiscount,
 }
+var EtopAccountsWhiteList = []int64{EtopTradingAccountID}
 
 //        SyncAt: updated when sending data to external service successfully
 //     TrySyncAt: updated when sending data to external service (may unsuccessfully)
@@ -382,11 +386,7 @@ type Account struct {
 
 type AccountInterface interface {
 	GetAccount() *Account
-	_account()
 }
-
-func (s *Shop) _account()    {}
-func (s *Partner) _account() {}
 
 func (s *Shop) GetAccount() *Account {
 	return &Account{
@@ -693,8 +693,10 @@ type User struct {
 	EmailVerificationSentAt time.Time
 	PhoneVerificationSentAt time.Time
 
-	IsTest int
-	Source UserSource
+	IsTest    int
+	Source    UserSource
+	RefUserID int64
+	RefSaleID int64
 }
 
 type UserExtended struct {

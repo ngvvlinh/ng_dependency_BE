@@ -23,11 +23,12 @@ import (
 var ll = l.New()
 
 type (
-	EmptyClaim   = claims.EmptyClaim
-	UserClaim    = claims.UserClaim
-	AdminClaim   = claims.AdminClaim
-	PartnerClaim = claims.PartnerClaim
-	ShopClaim    = claims.ShopClaim
+	EmptyClaim     = claims.EmptyClaim
+	UserClaim      = claims.UserClaim
+	AdminClaim     = claims.AdminClaim
+	PartnerClaim   = claims.PartnerClaim
+	ShopClaim      = claims.ShopClaim
+	AffiliateClaim = claims.AffiliateClaim
 )
 
 type Muxer interface {
@@ -47,6 +48,8 @@ func NewEtopServer(mux Muxer, hooks *twirp.ServerHooks) {
 	bus.Expect(&SessionInfoEndpoint{})
 	bus.Expect(&SwitchAccountEndpoint{})
 	bus.Expect(&UpdatePermissionEndpoint{})
+	bus.Expect(&UpdateReferenceSaleEndpoint{})
+	bus.Expect(&UpdateReferenceUserEndpoint{})
 	bus.Expect(&UpgradeAccessTokenEndpoint{})
 	bus.Expect(&VerifyEmailUsingTokenEndpoint{})
 	bus.Expect(&VerifyPhoneUsingTokenEndpoint{})
@@ -542,6 +545,98 @@ func (s UserService) UpdatePermission(ctx context.Context, req *etop.UpdatePermi
 	}
 	session = sessionQuery.Result
 	query := &UpdatePermissionEndpoint{UpdatePermissionRequest: req}
+	query.Context.Claim = session.Claim
+	query.Context.User = session.User
+	query.Context.Admin = session.Admin
+	// Verify that the user has correct service type
+	if session.Claim.AuthPartnerID != 0 {
+		return nil, common.ErrPermissionDenied
+	}
+	ctx = bus.NewRootContext(ctx)
+	err = bus.Dispatch(ctx, query)
+	resp = query.Result
+	if err == nil {
+		if resp == nil {
+			return nil, common.Error(common.Internal, "", nil).Log("nil response")
+		}
+		errs = cmwrapper.HasErrors(resp)
+	}
+	return resp, err
+}
+
+type UpdateReferenceSaleEndpoint struct {
+	*etop.UpdateReferenceSaleRequest
+	Result  *cm.UpdatedResponse
+	Context UserClaim
+}
+
+func (s UserService) UpdateReferenceSale(ctx context.Context, req *etop.UpdateReferenceSaleRequest) (resp *cm.UpdatedResponse, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "etop.User/UpdateReferenceSale"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:     ctx,
+		RequireAuth: true,
+		RequireUser: true,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &UpdateReferenceSaleEndpoint{UpdateReferenceSaleRequest: req}
+	query.Context.Claim = session.Claim
+	query.Context.User = session.User
+	query.Context.Admin = session.Admin
+	// Verify that the user has correct service type
+	if session.Claim.AuthPartnerID != 0 {
+		return nil, common.ErrPermissionDenied
+	}
+	ctx = bus.NewRootContext(ctx)
+	err = bus.Dispatch(ctx, query)
+	resp = query.Result
+	if err == nil {
+		if resp == nil {
+			return nil, common.Error(common.Internal, "", nil).Log("nil response")
+		}
+		errs = cmwrapper.HasErrors(resp)
+	}
+	return resp, err
+}
+
+type UpdateReferenceUserEndpoint struct {
+	*etop.UpdateReferenceUserRequest
+	Result  *cm.UpdatedResponse
+	Context UserClaim
+}
+
+func (s UserService) UpdateReferenceUser(ctx context.Context, req *etop.UpdateReferenceUserRequest) (resp *cm.UpdatedResponse, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "etop.User/UpdateReferenceUser"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:     ctx,
+		RequireAuth: true,
+		RequireUser: true,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &UpdateReferenceUserEndpoint{UpdateReferenceUserRequest: req}
 	query.Context.Claim = session.Claim
 	query.Context.User = session.User
 	query.Context.Admin = session.Admin

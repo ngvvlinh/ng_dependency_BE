@@ -26,11 +26,12 @@ import (
 var ll = l.New()
 
 type (
-	EmptyClaim   = claims.EmptyClaim
-	UserClaim    = claims.UserClaim
-	AdminClaim   = claims.AdminClaim
-	PartnerClaim = claims.PartnerClaim
-	ShopClaim    = claims.ShopClaim
+	EmptyClaim     = claims.EmptyClaim
+	UserClaim      = claims.UserClaim
+	AdminClaim     = claims.AdminClaim
+	PartnerClaim   = claims.PartnerClaim
+	ShopClaim      = claims.ShopClaim
+	AffiliateClaim = claims.AffiliateClaim
 )
 
 type Muxer interface {
@@ -138,6 +139,11 @@ func NewShopServer(mux Muxer, hooks *twirp.ServerHooks) {
 	bus.Expect(&AuthorizePartnerEndpoint{})
 	bus.Expect(&GetAuthorizedPartnersEndpoint{})
 	bus.Expect(&GetAvailablePartnersEndpoint{})
+	bus.Expect(&TradingCreateOrderEndpoint{})
+	bus.Expect(&TradingGetOrderEndpoint{})
+	bus.Expect(&TradingGetOrdersEndpoint{})
+	bus.Expect(&TradingGetProductEndpoint{})
+	bus.Expect(&TradingGetProductsEndpoint{})
 	mux.Handle(shop.MiscServicePathPrefix, shop.NewMiscServiceServer(MiscService{}, hooks))
 	mux.Handle(shop.AccountServicePathPrefix, shop.NewAccountServiceServer(AccountService{}, hooks))
 	mux.Handle(shop.ExternalAccountServicePathPrefix, shop.NewExternalAccountServiceServer(ExternalAccountService{}, hooks))
@@ -154,6 +160,7 @@ func NewShopServer(mux Muxer, hooks *twirp.ServerHooks) {
 	mux.Handle(shop.ExportServicePathPrefix, shop.NewExportServiceServer(ExportService{}, hooks))
 	mux.Handle(shop.NotificationServicePathPrefix, shop.NewNotificationServiceServer(NotificationService{}, hooks))
 	mux.Handle(shop.AuthorizeServicePathPrefix, shop.NewAuthorizeServiceServer(AuthorizeService{}, hooks))
+	mux.Handle(shop.TradingServicePathPrefix, shop.NewTradingServiceServer(TradingService{}, hooks))
 }
 
 type ShopImpl struct {
@@ -173,6 +180,7 @@ type ShopImpl struct {
 	ExportService
 	NotificationService
 	AuthorizeService
+	TradingService
 }
 
 type MiscService struct{}
@@ -4768,6 +4776,228 @@ func (s AuthorizeService) GetAvailablePartners(ctx context.Context, req *cm.Empt
 	}
 	session = sessionQuery.Result
 	query := &GetAvailablePartnersEndpoint{Empty: req}
+	query.Context.Claim = session.Claim
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = bus.Dispatch(ctx, query)
+	resp = query.Result
+	if err == nil {
+		if resp == nil {
+			return nil, common.Error(common.Internal, "", nil).Log("nil response")
+		}
+		errs = cmwrapper.HasErrors(resp)
+	}
+	return resp, err
+}
+
+type TradingService struct{}
+
+type TradingCreateOrderEndpoint struct {
+	*order.TradingCreateOrderRequest
+	Result  *order.Order
+	Context ShopClaim
+}
+
+func (s TradingService) TradingCreateOrder(ctx context.Context, req *order.TradingCreateOrderRequest) (resp *order.Order, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "shop.Trading/TradingCreateOrder"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:     ctx,
+		RequireAuth: true,
+		RequireShop: true,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &TradingCreateOrderEndpoint{TradingCreateOrderRequest: req}
+	query.Context.Claim = session.Claim
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = bus.Dispatch(ctx, query)
+	resp = query.Result
+	if err == nil {
+		if resp == nil {
+			return nil, common.Error(common.Internal, "", nil).Log("nil response")
+		}
+		errs = cmwrapper.HasErrors(resp)
+	}
+	return resp, err
+}
+
+type TradingGetOrderEndpoint struct {
+	*cm.IDRequest
+	Result  *order.Order
+	Context ShopClaim
+}
+
+func (s TradingService) TradingGetOrder(ctx context.Context, req *cm.IDRequest) (resp *order.Order, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "shop.Trading/TradingGetOrder"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:     ctx,
+		RequireAuth: true,
+		RequireShop: true,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &TradingGetOrderEndpoint{IDRequest: req}
+	query.Context.Claim = session.Claim
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = bus.Dispatch(ctx, query)
+	resp = query.Result
+	if err == nil {
+		if resp == nil {
+			return nil, common.Error(common.Internal, "", nil).Log("nil response")
+		}
+		errs = cmwrapper.HasErrors(resp)
+	}
+	return resp, err
+}
+
+type TradingGetOrdersEndpoint struct {
+	*shop.GetOrdersRequest
+	Result  *order.OrdersResponse
+	Context ShopClaim
+}
+
+func (s TradingService) TradingGetOrders(ctx context.Context, req *shop.GetOrdersRequest) (resp *order.OrdersResponse, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "shop.Trading/TradingGetOrders"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:     ctx,
+		RequireAuth: true,
+		RequireShop: true,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &TradingGetOrdersEndpoint{GetOrdersRequest: req}
+	query.Context.Claim = session.Claim
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = bus.Dispatch(ctx, query)
+	resp = query.Result
+	if err == nil {
+		if resp == nil {
+			return nil, common.Error(common.Internal, "", nil).Log("nil response")
+		}
+		errs = cmwrapper.HasErrors(resp)
+	}
+	return resp, err
+}
+
+type TradingGetProductEndpoint struct {
+	*cm.IDRequest
+	Result  *shop.ShopProduct
+	Context ShopClaim
+}
+
+func (s TradingService) TradingGetProduct(ctx context.Context, req *cm.IDRequest) (resp *shop.ShopProduct, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "shop.Trading/TradingGetProduct"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:     ctx,
+		RequireAuth: true,
+		RequireShop: true,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &TradingGetProductEndpoint{IDRequest: req}
+	query.Context.Claim = session.Claim
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = bus.Dispatch(ctx, query)
+	resp = query.Result
+	if err == nil {
+		if resp == nil {
+			return nil, common.Error(common.Internal, "", nil).Log("nil response")
+		}
+		errs = cmwrapper.HasErrors(resp)
+	}
+	return resp, err
+}
+
+type TradingGetProductsEndpoint struct {
+	*cm.CommonListRequest
+	Result  *shop.ShopProductsResponse
+	Context ShopClaim
+}
+
+func (s TradingService) TradingGetProducts(ctx context.Context, req *cm.CommonListRequest) (resp *shop.ShopProductsResponse, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "shop.Trading/TradingGetProducts"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:     ctx,
+		RequireAuth: true,
+		RequireShop: true,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &TradingGetProductsEndpoint{CommonListRequest: req}
 	query.Context.Claim = session.Claim
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner

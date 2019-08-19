@@ -39,6 +39,10 @@ func NewShopID() int64 {
 	return cm.NewIDWithTag(TagShop)
 }
 
+func NewAffiliateID() int64 {
+	return cm.NewIDWithTag(TagAffiliate)
+}
+
 func IsPartnerID(id int64) bool {
 	return cm.GetTag(id) == TagPartner
 }
@@ -47,8 +51,16 @@ func IsShopID(id int64) bool {
 	return cm.GetTag(id) == TagShop
 }
 
+func IsAffiliateID(id int64) bool {
+	return cm.GetTag(id) == TagAffiliate
+}
+
 func IsEtopAccountID(id int64) bool {
 	return id == EtopAccountID
+}
+
+func IsAccountWhiteList(id int64) bool {
+	return cm.ContainInt64(EtopAccountsWhiteList, id)
 }
 
 type UpdateListRequest struct {

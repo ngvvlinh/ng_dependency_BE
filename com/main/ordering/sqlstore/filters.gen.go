@@ -917,6 +917,25 @@ func (ft *OrderFilters) ByFulfillmentTypePtr(FulfillmentType *m.FulfillType) *sq
 	}
 }
 
+func (ft *OrderFilters) ByTradingShopID(TradingShopID int64) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "trading_shop_id",
+		Value:  TradingShopID,
+		IsNil:  TradingShopID == 0,
+	}
+}
+
+func (ft *OrderFilters) ByTradingShopIDPtr(TradingShopID *int64) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "trading_shop_id",
+		Value:  TradingShopID,
+		IsNil:  TradingShopID == nil,
+		IsZero: TradingShopID != nil && (*TradingShopID) == 0,
+	}
+}
+
 func (ft *OrderFilters) ByPaymentStatus(PaymentStatus model.Status4) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,

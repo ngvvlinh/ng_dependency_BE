@@ -2620,6 +2620,136 @@
           "Summary"
         ]
       }
+    },
+    "/api/shop.Trading/TradingCreateOrder": {
+      "post": {
+        "operationId": "TradingCreateOrder",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/orderOrder"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/orderTradingCreateOrderRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Trading"
+        ]
+      }
+    },
+    "/api/shop.Trading/TradingGetOrder": {
+      "post": {
+        "operationId": "TradingGetOrder",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/orderOrder"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/cmIDRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Trading"
+        ]
+      }
+    },
+    "/api/shop.Trading/TradingGetOrders": {
+      "post": {
+        "operationId": "TradingGetOrders",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/orderOrdersResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/shopGetOrdersRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Trading"
+        ]
+      }
+    },
+    "/api/shop.Trading/TradingGetProduct": {
+      "post": {
+        "operationId": "TradingGetProduct",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/shopShopProduct"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/cmIDRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Trading"
+        ]
+      }
+    },
+    "/api/shop.Trading/TradingGetProducts": {
+      "post": {
+        "operationId": "TradingGetProducts",
+        "responses": {
+          "200": {
+            "description": "",
+            "schema": {
+              "$ref": "#/definitions/shopShopProductsResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/cmCommonListRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Trading"
+        ]
+      }
     }
   },
   "definitions": {
@@ -2633,6 +2763,20 @@
         "shipfrom"
       ],
       "default": "unknown"
+    },
+    "cmCommonListRequest": {
+      "type": "object",
+      "properties": {
+        "paging": {
+          "$ref": "#/definitions/cmPaging"
+        },
+        "filters": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/cmFilter"
+          }
+        }
+      }
     },
     "cmDeletedResponse": {
       "type": "object",
@@ -2802,10 +2946,11 @@
         "unknown",
         "partner",
         "shop",
-        "etop"
+        "etop",
+        "affiliate"
       ],
       "default": "unknown",
-      "description": "Indicates whether given account is **etop**, **shop** or **partner**."
+      "description": "Indicates whether given account is **etop**, **shop**, **partner** or **sale**."
     },
     "etopAddress": {
       "type": "object",
@@ -5014,6 +5159,66 @@
           "format": "int32"
         },
         "description": {
+          "type": "string"
+        }
+      }
+    },
+    "orderTradingCreateOrderRequest": {
+      "type": "object",
+      "properties": {
+        "customer": {
+          "$ref": "#/definitions/orderOrderCustomer",
+          "description": "Customer should be shop's information\nand customer_address, shipping_address must be shop address."
+        },
+        "customer_address": {
+          "$ref": "#/definitions/orderOrderAddress"
+        },
+        "billing_address": {
+          "$ref": "#/definitions/orderOrderAddress"
+        },
+        "lines": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/orderCreateOrderLine"
+          }
+        },
+        "discounts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/orderOrderDiscount"
+          }
+        },
+        "total_items": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "basket_value": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "order_discount": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "total_fee": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "fee_lines": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/orderOrderFeeLine"
+          }
+        },
+        "total_discount": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "total_amount": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "order_note": {
           "type": "string"
         }
       }
@@ -7704,6 +7909,9 @@
     },
     {
       "name": "Summary"
+    },
+    {
+      "name": "Trading"
     }
   ]
 }

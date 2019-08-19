@@ -6,6 +6,11 @@ import (
 	etoptypes "etop.vn/api/main/etop"
 )
 
+type Permission struct {
+	Roles       []string
+	Permissions []string
+}
+
 type Shop struct {
 	ID      int64
 	Name    string
@@ -28,6 +33,19 @@ type Shop struct {
 	DeletedAt time.Time
 }
 
+type Affiliate struct {
+	ID        int64
+	OwnerID   int64
+	Name      string
+	Phone     string
+	Email     string
+	IsTest    int
+	Status    etoptypes.Status3
+	CreatedAt time.Time
+	UpdatedAt time.Time
+	DeletedAt time.Time
+}
+
 type User struct {
 	ID int64
 
@@ -40,6 +58,8 @@ type User struct {
 
 	CreatedAt time.Time
 	UpdatedAt time.Time
+	RefUserID int64
+	RefSaleID int64
 }
 
 type ExternalAccountAhamove struct {

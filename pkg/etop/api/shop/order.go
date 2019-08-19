@@ -139,7 +139,7 @@ func CreateOrder(ctx context.Context, q *wrapshop.CreateOrderEndpoint) error {
 }
 
 func createOrder(ctx context.Context, q *wrapshop.CreateOrderEndpoint) (*wrapshop.CreateOrderEndpoint, error) {
-	result, err := logicorder.CreateOrder(ctx, &q.Context, q.CtxPartner, q.CreateOrderRequest)
+	result, err := logicorder.CreateOrder(ctx, &q.Context, q.CtxPartner, q.CreateOrderRequest, nil)
 	q.Result = result
 	return q, err
 }

@@ -966,3 +966,22 @@ message _Fulfillment {
     optional string code = 58 [(gogoproto.nullable)=false];
     optional int32 actual_compensation_amount = 76 [(gogoproto.nullable)=false];
 }
+
+message TradingCreateOrderRequest {
+    // Customer should be shop's information
+    // and customer_address, shipping_address must be shop address.
+    optional OrderCustomer customer         =  1;
+    optional OrderAddress  customer_address = 2;
+    optional OrderAddress  billing_address = 3;
+
+    repeated CreateOrderLine lines = 5;
+    repeated OrderDiscount discounts = 6;
+    optional int32 total_items  = 7 [(gogoproto.nullable)=false];
+    optional int32 basket_value = 8 [(gogoproto.nullable)=false];
+    optional int32 order_discount = 9 [(gogoproto.nullable)=false];
+    optional int32 total_fee = 10 [(gogoproto.nullable)=false];
+    repeated order.OrderFeeLine fee_lines = 11;
+    optional int32 total_discount = 12;
+    optional int32 total_amount = 13 [(gogoproto.nullable)=false];
+    optional string order_note = 14 [(gogoproto.nullable)=false];
+}

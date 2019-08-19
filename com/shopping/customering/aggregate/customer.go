@@ -24,9 +24,9 @@ func NewCustomerAggregate(db cmsql.Database) *CustomerAggregate {
 	}
 }
 
-func (q *CustomerAggregate) MessageBus() customering.CommandBus {
+func (a *CustomerAggregate) MessageBus() customering.CommandBus {
 	b := bus.New()
-	return customering.NewAggregateHandler(q).RegisterHandlers(b)
+	return customering.NewAggregateHandler(a).RegisterHandlers(b)
 }
 
 func (a *CustomerAggregate) CreateCustomer(

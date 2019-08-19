@@ -2149,6 +2149,44 @@ func (ft *UserFilters) BySourcePtr(Source *m.UserSource) *sq.ColumnFilterPtr {
 	}
 }
 
+func (ft *UserFilters) ByRefUserID(RefUserID int64) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "ref_user_id",
+		Value:  RefUserID,
+		IsNil:  RefUserID == 0,
+	}
+}
+
+func (ft *UserFilters) ByRefUserIDPtr(RefUserID *int64) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "ref_user_id",
+		Value:  RefUserID,
+		IsNil:  RefUserID == nil,
+		IsZero: RefUserID != nil && (*RefUserID) == 0,
+	}
+}
+
+func (ft *UserFilters) ByRefSaleID(RefSaleID int64) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "ref_sale_id",
+		Value:  RefSaleID,
+		IsNil:  RefSaleID == 0,
+	}
+}
+
+func (ft *UserFilters) ByRefSaleIDPtr(RefSaleID *int64) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "ref_sale_id",
+		Value:  RefSaleID,
+		IsNil:  RefSaleID == nil,
+		IsZero: RefSaleID != nil && (*RefSaleID) == 0,
+	}
+}
+
 type AccountUserFilters struct{ prefix string }
 
 func NewAccountUserFilters(prefix string) AccountUserFilters {

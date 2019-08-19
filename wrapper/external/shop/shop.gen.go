@@ -24,11 +24,12 @@ import (
 var ll = l.New()
 
 type (
-	EmptyClaim   = claims.EmptyClaim
-	UserClaim    = claims.UserClaim
-	AdminClaim   = claims.AdminClaim
-	PartnerClaim = claims.PartnerClaim
-	ShopClaim    = claims.ShopClaim
+	EmptyClaim     = claims.EmptyClaim
+	UserClaim      = claims.UserClaim
+	AdminClaim     = claims.AdminClaim
+	PartnerClaim   = claims.PartnerClaim
+	ShopClaim      = claims.ShopClaim
+	AffiliateClaim = claims.AffiliateClaim
 )
 
 type Muxer interface {

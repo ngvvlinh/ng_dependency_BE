@@ -5,6 +5,9 @@ import (
 	"net/http"
 	"time"
 
+	"etop.vn/api/main/identity"
+	identityconvert "etop.vn/backend/com/main/identity/convert"
+	identitymodel "etop.vn/backend/com/main/identity/model"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/auth"
 	"etop.vn/backend/pkg/etop/authorize/authkey"
@@ -18,13 +21,15 @@ import (
 
 var ll = l.New()
 var sadminToken string
+var identityQS identity.QueryBus
 
 func init() {
 	bus.AddHandler("session", StartSession)
 }
 
-func Init(token string) {
+func Init(token string, identityQuery identity.QueryBus) {
 	sadminToken = token
+	identityQS = identityQuery
 }
 
 // StartSessionQuery ...
@@ -40,6 +45,7 @@ type StartSessionQuery struct {
 
 	RequirePartner    bool
 	RequireShop       bool
+	RequireAffiliate  bool
 	RequireEtopAdmin  bool
 	RequireSuperAdmin bool
 
@@ -55,6 +61,7 @@ type Session struct {
 	Partner    *model.Partner
 	CtxPartner *model.Partner
 	Shop       *model.Shop
+	Affiliate  *identitymodel.Affiliate
 	model.Permission
 
 	IsOwner      bool
@@ -161,6 +168,7 @@ func StartSession(ctx context.Context, q *StartSessionQuery) error {
 	ok := startSessionUser(ctx, q.RequireUser, session) &&
 		startSessionPartner(ctx, q.RequirePartner, session, account) &&
 		startSessionShop(ctx, q.RequireShop, session, account) &&
+		startSessionAffiliate(ctx, q.RequireAffiliate, session, account) &&
 		startSessionEtopAdmin(ctx, q.RequireEtopAdmin, session) &&
 		startSessionAuthPartner(ctx, q.AuthPartner, session)
 	if !ok {
@@ -241,7 +249,7 @@ func startSessionShop(ctx context.Context, require bool, s *Session, account mod
 		return true
 	}
 	if require {
-		if !model.IsShopID(s.Claim.AccountID) {
+		if !model.IsShopID(s.Claim.AccountID) && !model.IsAccountWhiteList(s.Claim.AccountID) {
 			return false
 		}
 
@@ -267,6 +275,43 @@ func startSessionShop(ctx context.Context, require bool, s *Session, account mod
 				return false
 			}
 			s.Shop = query.Result
+		}
+	}
+	return true
+}
+
+func startSessionAffiliate(ctx context.Context, require bool, s *Session, account model.AccountInterface) bool {
+	if affiliate, ok := account.(*identitymodel.Affiliate); ok && s.Claim.AccountID == affiliate.ID {
+		s.Affiliate = affiliate
+		return true
+	}
+	if require {
+		if !model.IsAffiliateID(s.Claim.AccountID) && !model.IsAccountWhiteList(s.Claim.AccountID) {
+			return false
+		}
+
+		if s.Claim.UserID != 0 {
+			query := &identity.GetAffiliateWithPermissionQuery{
+				AffiliateID: s.Claim.AccountID,
+				UserID:      s.Claim.UserID,
+			}
+			if err := identityQS.Dispatch(ctx, query); err != nil {
+				ll.Error("Invalid Name", l.Error(err))
+				return false
+			}
+
+			s.Affiliate = identityconvert.AffiliateDB(query.Result.Affiliate)
+			s.Permission = identityconvert.PermissionToModel(query.Result.Permission)
+			s.IsOwner = s.Affiliate.OwnerID == s.Claim.UserID
+		} else {
+			query := &identity.GetAffiliateByIDQuery{
+				ID: s.Claim.AccountID,
+			}
+			if err := identityQS.Dispatch(ctx, query); err != nil {
+				ll.Error("Invalid Name", l.Error(err))
+				return false
+			}
+			s.Affiliate = identityconvert.AffiliateDB(query.Result)
 		}
 	}
 	return true

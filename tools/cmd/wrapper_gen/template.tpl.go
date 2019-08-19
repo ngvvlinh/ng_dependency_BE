@@ -29,11 +29,12 @@ import (
 var ll = l.New()
 
 type (
-	EmptyClaim    = claims.EmptyClaim
-	UserClaim  	  = claims.UserClaim
-	AdminClaim    = claims.AdminClaim
-	PartnerClaim  = claims.PartnerClaim
-	ShopClaim     = claims.ShopClaim
+	EmptyClaim    		= claims.EmptyClaim
+	UserClaim  	  		= claims.UserClaim
+	AdminClaim    		= claims.AdminClaim
+	PartnerClaim  		= claims.PartnerClaim
+	ShopClaim     		= claims.ShopClaim
+	AffiliateClaim    = claims.AffiliateClaim
 )
 
 type Muxer interface {
@@ -97,6 +98,7 @@ func (s {{$s.Name}}) {{$m.Name}}(ctx context.Context, req {{$m.InputType}}) (res
 {{end}} {{if requireAPIPartnerShopKey     $m}}RequireAPIPartnerShopKey:     true,
 {{end}} {{if requirePartner    $m}}RequirePartner:    true,
 {{end}}	{{if requireShop       $m}}RequireShop:       true,
+{{end}} {{if requireAffiliate  $m}}RequireAffiliate: 			true,
 {{end}}	{{if requireEtopAdmin  $m}}RequireEtopAdmin:  true,
 {{end}}	{{if requireSuperAdmin $m}}RequireSuperAdmin: true,
 {{end}} {{if authPartner       $m}}AuthPartner: {{authPartner $m}},
@@ -120,6 +122,9 @@ func (s {{$s.Name}}) {{$m.Name}}(ctx context.Context, req {{$m.InputType}}) (res
 	{{end -}}
 	{{if requireShop $m -}}
 	query.Context.Shop = session.Shop
+	{{end -}}
+	{{if requireAffiliate $m -}}
+	query.Context.Affiliate = session.Affiliate
 	{{end -}}
 	{{if requireEtopAdmin $m -}}
 	query.Context.IsEtopAdmin = session.IsEtopAdmin

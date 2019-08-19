@@ -3,6 +3,7 @@ package claims
 import (
 	"time"
 
+	identitymodel "etop.vn/backend/com/main/identity/model"
 	"etop.vn/backend/pkg/etop/model"
 )
 
@@ -78,4 +79,11 @@ type AdminClaim struct {
 	CommonAccountClaim
 
 	IsEtopAdmin bool
+}
+
+type AffiliateClaim struct {
+	UserClaim
+	CommonAccountClaim
+
+	Affiliate *identitymodel.Affiliate
 }

@@ -25,6 +25,7 @@ const (
 	CurUsr     = permission.CurUsr
 	Partner    = permission.Partner
 	Shop       = permission.Shop
+	Affiliate  = permission.Affiliate
 	EtopAdmin  = permission.EtopAdmin
 	SuperAdmin = permission.SuperAdmin
 	Custom     = permission.Custom
@@ -81,6 +82,8 @@ var ACL = map[string]*permission.PermissionDecl{
 	"etop.User/SendPhoneVerification": {Type: CurUsr},
 	"etop.User/VerifyEmailUsingToken": {Type: CurUsr},
 	"etop.User/VerifyPhoneUsingToken": {Type: CurUsr},
+	"etop.User/UpdateReferenceUser":   {Type: CurUsr},
+	"etop.User/UpdateReferenceSale":   {Type: CurUsr},
 
 	"etop.Relationship/InviteUserToAccount":          {Type: CurUsr},
 	"etop.Relationship/AnswerInvitation":             {Type: CurUsr},
@@ -357,6 +360,12 @@ var ACL = map[string]*permission.PermissionDecl{
 	"shop.Authorize/GetAvailablePartners":  {Type: Shop},
 	"shop.Authorize/AuthorizePartner":      {Type: Shop},
 
+	"shop.Trading/TradingGetProduct":  {Type: Shop},
+	"shop.Trading/TradingGetProducts": {Type: Shop},
+	"shop.Trading/TradingCreateOrder": {Type: Shop},
+	"shop.Trading/TradingGetOrder":    {Type: Shop},
+	"shop.Trading/TradingGetOrders":   {Type: Shop},
+
 	//-- pgevent --//
 	"pgevent.Misc/VersionInfo":     {Type: Secret},
 	"pgevent.Event/GenerateEvents": {Type: Secret},
@@ -385,8 +394,14 @@ var ACL = map[string]*permission.PermissionDecl{
 	"crmservice.Vht/CreateOrUpdateCallHistoryBySDKCallID": {Type: EtopAdmin},
 	"crmservice.Vht/CreateOrUpdateCallHistoryByCallID":    {Type: EtopAdmin},
 
-	// -- crm -- //
+	//-- crm --//
 	"crm.Misc/VersionInfo":                  {Type: Secret},
 	"crm.Crm/RefreshFulfillmentFromCarrier": {Type: Secret},
 	"crm.Crm/SendNotification":              {Type: Secret},
+
+	//-- affiliate --//
+	"affiliate.Misc/VersionInfo":          {Type: Public},
+	"affiliate.Account/RegisterAffiliate": {Type: CurUsr},
+	"affiliate.Account/UpdateAffiliate":   {Type: Affiliate},
+	"affiliate.Account/DeleteAffiliate":   {Type: Affiliate},
 }

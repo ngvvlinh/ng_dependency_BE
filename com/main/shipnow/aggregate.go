@@ -243,7 +243,7 @@ func (a *Aggregate) PreparePickupAddress(ctx context.Context, shopID int64, pick
 	if err := a.identityQuery.Dispatch(ctx, query); err != nil {
 		return nil, err
 	}
-	shop := query.Result.Shop
+	shop := query.Result
 	shopAddressID := shop.ShipFromAddressID
 	if shopAddressID == 0 {
 		return nil, cm.Error(cm.InvalidArgument, "Bán hàng: Cần cung cấp thông tin địa chỉ lấy hàng trong đơn hàng hoặc tại thông tin cửa hàng. Vui lòng cập nhật.", nil)

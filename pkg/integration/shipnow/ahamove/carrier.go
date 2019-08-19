@@ -65,7 +65,7 @@ func (c *Carrier) CreateExternalShipnow(ctx context.Context, cmd *carrier.Create
 	if err := identityQuery.Dispatch(ctx, queryShop); err != nil {
 		return nil, err
 	}
-	userID := queryShop.Result.Shop.OwnerID
+	userID := queryShop.Result.OwnerID
 	if ok, err := isXAccountAhamoveVerified(ctx, userID); err != nil {
 		return nil, err
 	} else if !ok {
@@ -129,7 +129,7 @@ func (c *Carrier) CancelExternalShipnow(ctx context.Context, cmd *carrier.Cancel
 	if err := identityQuery.Dispatch(ctx, queryShop); err != nil {
 		return err
 	}
-	userID := queryShop.Result.Shop.OwnerID
+	userID := queryShop.Result.OwnerID
 
 	token, err := getToken(ctx, userID)
 	if err != nil {

@@ -136,6 +136,9 @@ func GetOrder(ctx context.Context, query *ordermodelx.GetOrderQuery) error {
 	if query.Code != "" {
 		s = s.Where("code = ?", query.Code)
 	}
+	if query.TradingShopID != 0 {
+		s = s.Where("trading_shop_id = ?", query.TradingShopID)
+	}
 
 	order := new(ordermodel.Order)
 	if err := s.ShouldGet(order); err != nil {
@@ -182,6 +185,9 @@ func GetOrders(ctx context.Context, query *ordermodelx.GetOrdersQuery) error {
 	}
 	if query.PartnerID != 0 {
 		s = s.Where("partner_id = ?", query.PartnerID)
+	}
+	if query.TradingShopID != 0 {
+		s = s.Where("trading_shop_id = ?", query.TradingShopID)
 	}
 
 	s, _, err := Filters(s, query.Filters, filterOrderWhitelist)

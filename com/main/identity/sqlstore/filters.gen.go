@@ -6,6 +6,8 @@ import (
 	"time"
 
 	"etop.vn/backend/pkg/common/sq"
+
+	"etop.vn/backend/pkg/etop/model"
 )
 
 type ExternalAccountAhamoveFilters struct{ prefix string }
@@ -361,5 +363,209 @@ func (ft *ExternalAccountAhamoveFilters) ByUploadedAtPtr(UploadedAt *time.Time) 
 		Value:  UploadedAt,
 		IsNil:  UploadedAt == nil,
 		IsZero: UploadedAt != nil && (*UploadedAt).IsZero(),
+	}
+}
+
+type AffiliateFilters struct{ prefix string }
+
+func NewAffiliateFilters(prefix string) AffiliateFilters {
+	return AffiliateFilters{prefix}
+}
+
+func (ft *AffiliateFilters) Filter(pred string, args ...interface{}) sq.WriterTo {
+	return sq.Filter(&ft.prefix, pred, args...)
+}
+
+func (ft AffiliateFilters) Prefix() string {
+	return ft.prefix
+}
+
+func (ft *AffiliateFilters) ByID(ID int64) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "id",
+		Value:  ID,
+		IsNil:  ID == 0,
+	}
+}
+
+func (ft *AffiliateFilters) ByIDPtr(ID *int64) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "id",
+		Value:  ID,
+		IsNil:  ID == nil,
+		IsZero: ID != nil && (*ID) == 0,
+	}
+}
+
+func (ft *AffiliateFilters) ByOwnerID(OwnerID int64) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "owner_id",
+		Value:  OwnerID,
+		IsNil:  OwnerID == 0,
+	}
+}
+
+func (ft *AffiliateFilters) ByOwnerIDPtr(OwnerID *int64) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "owner_id",
+		Value:  OwnerID,
+		IsNil:  OwnerID == nil,
+		IsZero: OwnerID != nil && (*OwnerID) == 0,
+	}
+}
+
+func (ft *AffiliateFilters) ByName(Name string) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "name",
+		Value:  Name,
+		IsNil:  Name == "",
+	}
+}
+
+func (ft *AffiliateFilters) ByNamePtr(Name *string) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "name",
+		Value:  Name,
+		IsNil:  Name == nil,
+		IsZero: Name != nil && (*Name) == "",
+	}
+}
+
+func (ft *AffiliateFilters) ByPhone(Phone string) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "phone",
+		Value:  Phone,
+		IsNil:  Phone == "",
+	}
+}
+
+func (ft *AffiliateFilters) ByPhonePtr(Phone *string) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "phone",
+		Value:  Phone,
+		IsNil:  Phone == nil,
+		IsZero: Phone != nil && (*Phone) == "",
+	}
+}
+
+func (ft *AffiliateFilters) ByEmail(Email string) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "email",
+		Value:  Email,
+		IsNil:  Email == "",
+	}
+}
+
+func (ft *AffiliateFilters) ByEmailPtr(Email *string) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "email",
+		Value:  Email,
+		IsNil:  Email == nil,
+		IsZero: Email != nil && (*Email) == "",
+	}
+}
+
+func (ft *AffiliateFilters) ByIsTest(IsTest int) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "is_test",
+		Value:  IsTest,
+		IsNil:  IsTest == 0,
+	}
+}
+
+func (ft *AffiliateFilters) ByIsTestPtr(IsTest *int) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "is_test",
+		Value:  IsTest,
+		IsNil:  IsTest == nil,
+		IsZero: IsTest != nil && (*IsTest) == 0,
+	}
+}
+
+func (ft *AffiliateFilters) ByStatus(Status model.Status3) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "status",
+		Value:  Status,
+		IsNil:  Status == 0,
+	}
+}
+
+func (ft *AffiliateFilters) ByStatusPtr(Status *model.Status3) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "status",
+		Value:  Status,
+		IsNil:  Status == nil,
+		IsZero: Status != nil && (*Status) == 0,
+	}
+}
+
+func (ft *AffiliateFilters) ByCreatedAt(CreatedAt time.Time) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "created_at",
+		Value:  CreatedAt,
+		IsNil:  CreatedAt.IsZero(),
+	}
+}
+
+func (ft *AffiliateFilters) ByCreatedAtPtr(CreatedAt *time.Time) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "created_at",
+		Value:  CreatedAt,
+		IsNil:  CreatedAt == nil,
+		IsZero: CreatedAt != nil && (*CreatedAt).IsZero(),
+	}
+}
+
+func (ft *AffiliateFilters) ByUpdatedAt(UpdatedAt time.Time) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "updated_at",
+		Value:  UpdatedAt,
+		IsNil:  UpdatedAt.IsZero(),
+	}
+}
+
+func (ft *AffiliateFilters) ByUpdatedAtPtr(UpdatedAt *time.Time) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "updated_at",
+		Value:  UpdatedAt,
+		IsNil:  UpdatedAt == nil,
+		IsZero: UpdatedAt != nil && (*UpdatedAt).IsZero(),
+	}
+}
+
+func (ft *AffiliateFilters) ByDeletedAt(DeletedAt time.Time) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "deleted_at",
+		Value:  DeletedAt,
+		IsNil:  DeletedAt.IsZero(),
+	}
+}
+
+func (ft *AffiliateFilters) ByDeletedAtPtr(DeletedAt *time.Time) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "deleted_at",
+		Value:  DeletedAt,
+		IsNil:  DeletedAt == nil,
+		IsZero: DeletedAt != nil && (*DeletedAt).IsZero(),
 	}
 }
