@@ -10,9 +10,9 @@ import (
 	"etop.vn/common/bus"
 
 	"etop.vn/backend/cmd/etop-server/config"
+	notimodel "etop.vn/backend/com/handler/notifier/model"
 	cm "etop.vn/backend/pkg/common"
 	cc "etop.vn/backend/pkg/common/config"
-	notimodel "etop.vn/backend/pkg/notifier/model"
 	"etop.vn/common/l"
 
 	"etop.vn/backend/pkg/common/cmsql"

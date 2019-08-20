@@ -8,6 +8,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/360EntSecGroup-Skylar/excelize"
+
 	txmodel "etop.vn/backend/com/main/moneytx/model"
 	txmodelx "etop.vn/backend/com/main/moneytx/modelx"
 	shipmodel "etop.vn/backend/com/main/shipping/model"
@@ -18,8 +20,6 @@ import (
 	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/backend/pkg/integration/shipping/ghtk"
 	"etop.vn/common/bus"
-
-	"github.com/360EntSecGroup-Skylar/excelize"
 )
 
 /*
@@ -159,12 +159,12 @@ func HandleImportMoneyTransactions(c *httpx.Context) error {
 	if len(rows) <= 1 {
 		return cm.Errorf(cm.InvalidArgument, nil, "File không có nội dung. Vui lòng tải lại file import hoặc liên hệ hotro@etop.vn.").WithMeta("reason", "no rows")
 	}
-	// pp.Println("row :: ", rows, len(rows))
+
 	headerIndexMap := getHeaderIndex(rows)
 	if err := checkHeaderIndex(headerIndexMap); err != nil {
 		return err
 	}
-	// pp.Println("HeaderIndexMap :: ", headerIndexMap)
+
 	var shippingLines []*GHTKMoneyTransactionShippingExternalLine
 	for _, row := range rows {
 		line, err := parseRow(row, headerIndexMap)

@@ -12,8 +12,6 @@ import (
 	"strings"
 	"time"
 
-	"etop.vn/common/strs"
-
 	"github.com/360EntSecGroup-Skylar/excelize"
 
 	"etop.vn/api/main/location"
@@ -29,6 +27,7 @@ import (
 	"etop.vn/backend/pkg/etop/authorize/claims"
 	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/common/bus"
+	"etop.vn/common/strs"
 	"etop.vn/common/xerrors"
 )
 
@@ -261,7 +260,7 @@ func handleImportOrder(ctx context.Context, c *httpx.Context, shop *model.Shop, 
 		err := bus.Dispatch(ctx, cmd)
 		_errs[i] = err
 	}
-	if xerrors.AllError(_errs) {
+	if xerrors.Errors(_errs).IsAll() {
 		return nil, cm.Errorf(cm.Internal, _errs[0], "Không thể import đơn hàng. Vui lòng liên hệ hotro@etop.vn.")
 	}
 

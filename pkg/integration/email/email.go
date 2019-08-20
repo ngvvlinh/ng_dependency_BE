@@ -161,7 +161,7 @@ func (s *Client) sendMail(ctx context.Context, addresses []string, cmd *SendEmai
 	mime := "MIME-version: 1.0;\nContent-Type: text/html; charset=\"UTF-8\";\n\n"
 	subject := "=?utf-8?B?" + base64.StdEncoding.EncodeToString([]byte(cmd.Subject)) + "?="
 
-	var errs []error
+	var errs xerrors.Errors
 	for _, email := range addresses {
 		msg := []byte(fmt.Sprintf(
 			"From: %s <%s> \r\nTo: %s\r\nSubject: %s\r\n%s\r\n\r\n%s\r\n",
@@ -195,5 +195,5 @@ func (s *Client) sendMail(ctx context.Context, addresses []string, cmd *SendEmai
 	if len(errs) > 0 {
 		ll.Error("Can not send email", l.Any("errs", err))
 	}
-	return xerrors.ConcatError(errs)
+	return errs.Any()
 }

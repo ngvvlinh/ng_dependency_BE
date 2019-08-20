@@ -7,10 +7,11 @@ import (
 	"strconv"
 	"strings"
 
+	"etop.vn/backend/res/dl/imports"
+
 	"github.com/360EntSecGroup-Skylar/excelize"
 
 	"etop.vn/backend/pkg/common/gencode"
-	"etop.vn/backend/pkg/etop/dl"
 	"etop.vn/common/l"
 )
 
@@ -31,7 +32,7 @@ func init() {
 }
 
 func loadImportFile() error {
-	data, err := dl.Asset(AssetShopProductPath)
+	data, err := imports.Asset(AssetShopProductPath)
 	if err != nil {
 		return err
 	}

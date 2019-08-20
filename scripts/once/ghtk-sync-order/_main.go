@@ -4,17 +4,15 @@ import (
 	"context"
 	"flag"
 
-	"etop.vn/backend/com/main/shipping/modelx"
-
-	"etop.vn/backend/pkg/etop/model"
-	"etop.vn/backend/pkg/etop/sqlstore"
-	"etop.vn/backend/pkg/integration/shipping/ghtk"
-
 	"etop.vn/backend/cmd/etop-server/config"
+	"etop.vn/backend/com/main/shipping/modelx"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/cmsql"
 	cc "etop.vn/backend/pkg/common/config"
+	"etop.vn/backend/pkg/etop/model"
+	"etop.vn/backend/pkg/etop/sqlstore"
 	_ "etop.vn/backend/pkg/etop/sqlstore"
+	"etop.vn/backend/pkg/integration/shipping/ghtk"
 	"etop.vn/common/bus"
 	"etop.vn/common/l"
 )

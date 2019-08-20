@@ -3,11 +3,10 @@ package vtpost
 import (
 	"math/rand"
 
-	vtpostclient2 "etop.vn/backend/pkg/integration/shipping/vtpost/client"
-
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/gencode"
 	"etop.vn/backend/pkg/etop/model"
+	vtpostclient "etop.vn/backend/pkg/integration/shipping/vtpost/client"
 )
 
 type serviceIDGenerator struct {
@@ -22,7 +21,7 @@ func newServiceIDGenerator(seed int64) serviceIDGenerator {
 
 // GenerateServiceID generate new service id for using with ghtk. The generated
 // id is always 8 character in length.
-func (c serviceIDGenerator) GenerateServiceID(clientCode byte, orderService vtpostclient2.VTPostOrderServiceCode) (string, error) {
+func (c serviceIDGenerator) GenerateServiceID(clientCode byte, orderService vtpostclient.VTPostOrderServiceCode) (string, error) {
 	n := c.rd.Uint64()
 	v := gencode.Alphabet32.EncodeReverse(n, 8)
 	v = v[:5]
@@ -79,11 +78,11 @@ func blacklist(current byte, blacks ...byte) byte {
 	return current
 }
 
-func getLast3Character(code vtpostclient2.VTPostOrderServiceCode) string {
+func getLast3Character(code vtpostclient.VTPostOrderServiceCode) string {
 	return string(code[len(code)-3:])
 }
 
-func ParseServiceID(id string) (clientCode byte, orderService vtpostclient2.VTPostOrderServiceCode, err error) {
+func ParseServiceID(id string) (clientCode byte, orderService vtpostclient.VTPostOrderServiceCode, err error) {
 	if id == "" {
 		err = cm.Errorf(cm.InvalidArgument, nil, "missing service id")
 		return
@@ -98,44 +97,44 @@ func ParseServiceID(id string) (clientCode byte, orderService vtpostclient2.VTPo
 
 	code := id[len(id)-3:]
 	switch code {
-	case getLast3Character(vtpostclient2.OrderServiceCodeSCOD):
-		orderService = vtpostclient2.OrderServiceCodeSCOD
+	case getLast3Character(vtpostclient.OrderServiceCodeSCOD):
+		orderService = vtpostclient.OrderServiceCodeSCOD
 
-	case string(vtpostclient2.OrderServiceCodeVCN),
-		string(vtpostclient2.OrderServiceCodeVTK),
-		string(vtpostclient2.OrderServiceCodePHS),
-		string(vtpostclient2.OrderServiceCodeVVT),
-		string(vtpostclient2.OrderServiceCodeVHT),
-		string(vtpostclient2.OrderServiceCodePTN),
-		string(vtpostclient2.OrderServiceCodePHT),
-		string(vtpostclient2.OrderServiceCodeVBS),
-		string(vtpostclient2.OrderServiceCodeVBE):
-		orderService = vtpostclient2.VTPostOrderServiceCode(code)
+	case string(vtpostclient.OrderServiceCodeVCN),
+		string(vtpostclient.OrderServiceCodeVTK),
+		string(vtpostclient.OrderServiceCodePHS),
+		string(vtpostclient.OrderServiceCodeVVT),
+		string(vtpostclient.OrderServiceCodeVHT),
+		string(vtpostclient.OrderServiceCodePTN),
+		string(vtpostclient.OrderServiceCodePHT),
+		string(vtpostclient.OrderServiceCodeVBS),
+		string(vtpostclient.OrderServiceCodeVBE):
+		orderService = vtpostclient.VTPostOrderServiceCode(code)
 
 	default:
 		// Backwark compatible: the old service ids has the following format:
 		// id[4] = D => vtpostclient.OrderServiceCodeSCOD
 		// ...
 		if id[4] == 'D' {
-			orderService = vtpostclient2.OrderServiceCodeSCOD
+			orderService = vtpostclient.OrderServiceCodeSCOD
 		}
 		if id[5] == 'N' {
 			if orderService != "" {
 				err = cm.Errorf(cm.InvalidArgument, nil, "invalid service id")
 			}
-			orderService = vtpostclient2.OrderServiceCodeVCN
+			orderService = vtpostclient.OrderServiceCodeVCN
 		}
 		if id[6] == 'K' {
 			if orderService != "" {
 				err = cm.Errorf(cm.InvalidArgument, nil, "invalid service id")
 			}
-			orderService = vtpostclient2.OrderServiceCodeVTK
+			orderService = vtpostclient.OrderServiceCodeVTK
 		}
 		if id[7] == 'S' {
 			if orderService != "" {
 				err = cm.Errorf(cm.InvalidArgument, nil, "invalid service id")
 			}
-			orderService = vtpostclient2.OrderServiceCodePHS
+			orderService = vtpostclient.OrderServiceCodePHS
 		}
 	}
 

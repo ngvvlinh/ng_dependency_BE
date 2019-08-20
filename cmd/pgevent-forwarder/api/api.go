@@ -9,8 +9,8 @@ import (
 
 	"github.com/lib/pq"
 
+	"etop.vn/backend/com/handler/pgevent"
 	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/pgevent"
 	"etop.vn/common/bus"
 	"etop.vn/common/l"
 

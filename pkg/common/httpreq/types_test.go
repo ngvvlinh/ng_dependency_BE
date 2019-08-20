@@ -15,6 +15,7 @@ func init() {
 	if err != nil {
 		panic(err)
 	}
+	time.Local = local
 
 	layout := "2006-01-02T15:04:05.999"
 	t0, err = time.ParseInLocation(layout, "2010-10-20T01:02:03.000", local)
@@ -37,11 +38,11 @@ func TestJSONInt(t *testing.T) {
 		{`10`, 10, true},
 		{`10.0`, 10, true},
 		{`0.0`, 0, true},
-		{`10.5`, 10, true}, // Ignore float number
+		{`10.5`, 10, true}, // ignore float
 		{`"10"`, 10, true},
 		{`"10.0"`, 10, true},
 		{`"0.0"`, 0, true},
-		{`"10.5"`, 10, true}, // Ignore float number
+		{`"10.5"`, 10, true}, // ignore float
 	}
 	for _, tt := range tests {
 		t.Run(tt.s, func(t *testing.T) {
@@ -51,7 +52,7 @@ func TestJSONInt(t *testing.T) {
 				assert.NoError(t, err)
 				assert.Equal(t, tt.i, output)
 			} else {
-				assert.Error(t, err, "Expected integer but got float number")
+				assert.Error(t, err, "expected integer but got float number")
 			}
 		})
 	}
@@ -112,7 +113,7 @@ func TestJSONTime(t *testing.T) {
 	t.Run(`"invalid"`, func(t *testing.T) {
 		var output Time
 		err := json.Unmarshal([]byte(`"invalid"`), &output)
-		assert.EqualError(t, err, `Unable to parse time "invalid"`)
+		assert.EqualError(t, err, `unable to parse time "invalid"`)
 	})
 }
 

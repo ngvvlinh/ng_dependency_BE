@@ -4,18 +4,16 @@ import (
 	"encoding/json"
 	"time"
 
-	vtpost2 "etop.vn/backend/pkg/integration/shipping/vtpost"
-	vtpostclient "etop.vn/backend/pkg/integration/shipping/vtpost/client"
-
+	logmodel "etop.vn/backend/com/etc/log/webhook/model"
 	"etop.vn/backend/com/main/shipping/modelx"
-
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/cmsql"
 	"etop.vn/backend/pkg/common/httpreq"
 	"etop.vn/backend/pkg/common/httpx"
 	"etop.vn/backend/pkg/etop/model"
-	"etop.vn/backend/pkg/etop/model_log"
 	"etop.vn/backend/pkg/integration/shipping"
+	"etop.vn/backend/pkg/integration/shipping/vtpost"
+	vtpostclient "etop.vn/backend/pkg/integration/shipping/vtpost/client"
 	"etop.vn/common/bus"
 	"etop.vn/common/l"
 )
@@ -30,10 +28,10 @@ var EndStatesCode = []string{"501", "503", "504", "201", "107"}
 
 type Webhook struct {
 	dbLogs  cmsql.Database
-	carrier *vtpost2.Carrier
+	carrier *vtpost.Carrier
 }
 
-func New(dbLogs cmsql.Database, carrier *vtpost2.Carrier) *Webhook {
+func New(dbLogs cmsql.Database, carrier *vtpost.Carrier) *Webhook {
 	wh := &Webhook{
 		dbLogs:  dbLogs,
 		carrier: carrier,
@@ -60,7 +58,7 @@ func (wh *Webhook) Callback(c *httpx.Context) error {
 	{
 		// save to database etop_log
 		data, _ := json.Marshal(orderData)
-		webhookData := &model_log.ShippingProviderWebhook{
+		webhookData := &logmodel.ShippingProviderWebhook{
 			ID:                       logID,
 			ShippingProvider:         model.TypeVTPost.ToString(),
 			Data:                     data,
@@ -92,20 +90,20 @@ func (wh *Webhook) Callback(c *httpx.Context) error {
 	}
 	{
 		// update database etop_log
-		webhookData := &model_log.ShippingProviderWebhook{
+		webhookData := &logmodel.ShippingProviderWebhook{
 			ID:            logID,
 			ShippingState: string(vtpostStatus.ToModel(ffm.ShippingState)),
 		}
-		wh.dbLogs.Where("id = ?", logID).Update(webhookData)
+		_, _ = wh.dbLogs.Where("id = ?", logID).Update(webhookData)
 	}
 
 	providerServiceID := ffm.ProviderServiceID
-	_, _, err := vtpost2.ParseServiceID(providerServiceID)
+	_, _, err := vtpost.ParseServiceID(providerServiceID)
 	if err != nil {
 		return cm.Errorf(cm.FailedPrecondition, err, "VTPost: Can not parse ProviderServiceID in fulfillment.").WithMeta("result", "ignore")
 	}
 
-	updateFfm := vtpost2.CalcUpdateFulfillment(ffm, orderData)
+	updateFfm := vtpost.CalcUpdateFulfillment(ffm, orderData)
 	updateFfm.LastSyncAt = t0
 	// UpdateInfo other time
 	updateFfm = shipping.CalcOtherTimeBaseOnState(updateFfm, ffm, t0)

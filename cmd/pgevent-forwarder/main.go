@@ -12,13 +12,13 @@ import (
 
 	pgeventapi "etop.vn/backend/cmd/pgevent-forwarder/api"
 	"etop.vn/backend/cmd/pgevent-forwarder/config"
+	"etop.vn/backend/com/handler/pgevent"
 	cm "etop.vn/backend/pkg/common"
 	cc "etop.vn/backend/pkg/common/config"
 	"etop.vn/backend/pkg/common/health"
 	"etop.vn/backend/pkg/common/mq"
 	"etop.vn/backend/pkg/etop/authorize/middleware"
 	"etop.vn/backend/pkg/etop/model"
-	"etop.vn/backend/pkg/pgevent"
 	"etop.vn/common/l"
 
 	wrappgevent "etop.vn/backend/wrapper/services/pgevent"

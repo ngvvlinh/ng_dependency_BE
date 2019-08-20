@@ -13,11 +13,11 @@ import (
 	"etop.vn/common/bus"
 	"etop.vn/common/l"
 
+	notimodel "etop.vn/backend/com/handler/notifier/model"
 	pbcm "etop.vn/backend/pb/common"
 	pbetop "etop.vn/backend/pb/etop"
 	pbadmin "etop.vn/backend/pb/etop/admin"
 	pborder "etop.vn/backend/pb/etop/order"
-	notimodel "etop.vn/backend/pkg/notifier/model"
 	wrapadmin "etop.vn/backend/wrapper/etop/admin"
 )
 

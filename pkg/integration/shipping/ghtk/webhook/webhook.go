@@ -6,12 +6,12 @@ import (
 	"strconv"
 	"time"
 
+	logmodel "etop.vn/backend/com/etc/log/webhook/model"
 	"etop.vn/backend/com/main/shipping/modelx"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/cmsql"
 	"etop.vn/backend/pkg/common/httpx"
 	"etop.vn/backend/pkg/etop/model"
-	"etop.vn/backend/pkg/etop/model_log"
 	"etop.vn/backend/pkg/integration/shipping"
 	"etop.vn/backend/pkg/integration/shipping/ghtk"
 	ghtkclient "etop.vn/backend/pkg/integration/shipping/ghtk/client"
@@ -52,7 +52,7 @@ func (wh *Webhook) Callback(c *httpx.Context) error {
 		buf := new(bytes.Buffer)
 		enc := json.NewEncoder(buf)
 		enc.SetEscapeHTML(false)
-		webhookData := &model_log.ShippingProviderWebhook{
+		webhookData := &logmodel.ShippingProviderWebhook{
 			ID:                       cm.NewID(),
 			ShippingProvider:         model.TypeGHTK.ToString(),
 			ShippingCode:             ghtk.NormalizeGHTKCode(msg.LabelID.String()),

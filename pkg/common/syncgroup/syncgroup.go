@@ -2,64 +2,10 @@ package syncgroup
 
 import (
 	"context"
-	"errors"
 	"sync"
+
+	"etop.vn/common/xerrors"
 )
-
-type Errors []error
-
-func (e Errors) N() int {
-	return len(e)
-}
-
-func (e Errors) NErrors() int {
-	c := 0
-	for _, err := range e {
-		if err != nil {
-			c++
-		}
-	}
-	return c
-}
-
-func (e Errors) IsAll() bool {
-	if len(e) == 0 {
-		return false
-	}
-	for _, err := range e {
-		if err == nil {
-			return false
-		}
-	}
-	return true
-}
-
-func (e Errors) All() error {
-	for _, err := range e {
-		if err == nil {
-			return nil
-		}
-	}
-	return e.Any()
-}
-
-func (e Errors) Any() error {
-	var b []byte
-	for _, err := range e {
-		if err != nil {
-			if b == nil {
-				b = make([]byte, 0, 1024)
-			} else {
-				b = append(b, "; "...)
-			}
-			b = append(b, err.Error()...)
-		}
-	}
-	if b == nil {
-		return nil
-	}
-	return errors.New(string(b))
-}
 
 type Group struct {
 	ctx  context.Context
@@ -94,7 +40,7 @@ func (g *Group) Go(fn func() error) {
 	}(i)
 }
 
-func (g *Group) Wait() Errors {
+func (g *Group) Wait() xerrors.Errors {
 	g.wg.Wait()
 	return g.errs
 }

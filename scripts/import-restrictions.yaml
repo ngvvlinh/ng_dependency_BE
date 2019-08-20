@@ -4,7 +4,7 @@
   - etop.vn/backend/pb/common
   - etop.vn/backend/pkg/common
   - etop.vn/backend/pkg/etop/authorize/middleware
-  - etop.vn/backend/pkg/pgevent
+  - etop.vn/backend/com/handler/pgevent
   - etop.vn/backend/wrapper/services/pgevent
   - etop.vn/backend/pkg/etop/model
 
@@ -51,8 +51,9 @@
   - "./pkg/etop/apix/webhook"
   - "./pkg/common"
   allowedImports:
-  - etop.vn/backend/com
   - etop.vn/backend/cmd/etop-server/config
+  - etop.vn/backend/com
   - etop.vn/backend/pb
   - etop.vn/backend/pkg
+  - etop.vn/backend/res/dl
   - etop.vn/backend/wrapper

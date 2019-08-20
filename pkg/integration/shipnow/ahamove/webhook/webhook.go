@@ -11,11 +11,11 @@ import (
 	"etop.vn/api/main/ordering"
 	"etop.vn/api/main/shipnow"
 	shipnowtypes "etop.vn/api/main/shipnow/types"
+	"etop.vn/backend/com/etc/log/webhook/model"
 	shipnowmodel "etop.vn/backend/com/main/shipnow/model"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/cmsql"
 	"etop.vn/backend/pkg/common/httpx"
-	"etop.vn/backend/pkg/etop/model_log"
 	"etop.vn/backend/pkg/integration/shipnow/ahamove"
 	"etop.vn/backend/pkg/integration/shipnow/ahamove/client"
 	"etop.vn/backend/pkg/integration/shipping"
@@ -66,7 +66,7 @@ func (wh *Webhook) Callback(c *httpx.Context) error {
 		buf := new(bytes.Buffer)
 		enc := json.NewEncoder(buf)
 		enc.SetEscapeHTML(false)
-		webhookData := &model_log.ShippingProviderWebhook{
+		webhookData := &model.ShippingProviderWebhook{
 			ID:                    cm.NewID(),
 			ShippingProvider:      shipnowmodel.Ahamove.ToString(),
 			ShippingCode:          msg.ID,

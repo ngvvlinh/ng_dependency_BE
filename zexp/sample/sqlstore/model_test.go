@@ -7,7 +7,7 @@ import (
 
 	"etop.vn/backend/pkg/common/cmsql"
 	cc "etop.vn/backend/pkg/common/config"
-	testing2 "etop.vn/backend/pkg/common/testing"
+	. "etop.vn/backend/pkg/common/testing"
 	"etop.vn/backend/zexp/sample/model"
 )
 
@@ -52,7 +52,7 @@ func TestModel(t *testing.T) {
 
 			foo2.CreatedAt = foo.CreatedAt
 			foo2.UpdatedAt = foo.UpdatedAt
-			So(&foo2, testing2.ShouldDeepEqual, foo)
+			So(&foo2, ShouldDeepEqual, foo)
 		})
 		Convey("Update", func() {
 			foo2 := &model.Foo{
@@ -70,7 +70,7 @@ func TestModel(t *testing.T) {
 				foo3.UpdatedAt = foo2.UpdatedAt
 				foo.UpdatedAt = foo2.UpdatedAt
 				foo.CreatedAt = foo3.CreatedAt
-				So(&foo3, testing2.ShouldDeepEqual, foo)
+				So(&foo3, ShouldDeepEqual, foo)
 			})
 		})
 		Convey("Get 2", func() {
@@ -96,7 +96,7 @@ func TestModel(t *testing.T) {
 				foo3.UpdatedAt = foo2.UpdatedAt
 				foo.UpdatedAt = foo2.UpdatedAt
 				foo.CreatedAt = foo3.CreatedAt
-				So(&foo3, testing2.ShouldDeepEqual, foo)
+				So(&foo3, ShouldDeepEqual, foo)
 				So(foo3.AccountID, ShouldEqual, 0)
 			})
 		})

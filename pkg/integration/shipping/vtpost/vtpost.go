@@ -8,13 +8,12 @@ import (
 	"sync"
 	"time"
 
-	vtpostclient2 "etop.vn/backend/pkg/integration/shipping/vtpost/client"
-
 	"etop.vn/api/main/location"
 	shipmodel "etop.vn/backend/com/main/shipping/model"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/backend/pkg/integration/shipping"
+	vtpostclient "etop.vn/backend/pkg/integration/shipping/vtpost/client"
 	"etop.vn/common/l"
 )
 
@@ -29,7 +28,7 @@ func init() {
 	model.GetShippingServiceRegistry().RegisterNameFunc(model.TypeVTPost, DecodeShippingServiceName)
 }
 
-func (c *Carrier) getClient(ctx context.Context, code byte) (vtpostclient2.Client, error) {
+func (c *Carrier) getClient(ctx context.Context, code byte) (vtpostclient.Client, error) {
 	client := c.clients[code]
 	if client != nil {
 		// TODO: move to underlying goroutine
@@ -54,7 +53,7 @@ func (c *Carrier) getClient(ctx context.Context, code byte) (vtpostclient2.Clien
 func (c *Carrier) CalcShippingFee(ctx context.Context, cmd *CalcShippingFeeAllServicesArgs) error {
 	type Result struct {
 		Code   byte
-		Result *vtpostclient2.ShippingFeeService
+		Result *vtpostclient.ShippingFeeService
 		Error  error
 	}
 	var results []Result
@@ -63,7 +62,7 @@ func (c *Carrier) CalcShippingFee(ctx context.Context, cmd *CalcShippingFeeAllSe
 
 	wg.Add(len(c.clients))
 	for code, client := range c.clients {
-		go func(code byte, c vtpostclient2.Client) {
+		go func(code byte, c vtpostclient.Client) {
 			defer wg.Done()
 			req := *cmd.Request // clone the request to prevent race condition
 			resp, err := c.CalcShippingFeeAllServices(ctx, &req)
@@ -89,7 +88,7 @@ func (c *Carrier) CalcShippingFee(ctx context.Context, cmd *CalcShippingFeeAllSe
 	}
 	for _, result := range results {
 		// always generate service id, even if the result is error
-		serviceCode := vtpostclient2.VTPostOrderServiceCode(result.Result.MaDVChinh)
+		serviceCode := vtpostclient.VTPostOrderServiceCode(result.Result.MaDVChinh)
 		providerServiceID, err := generator.GenerateServiceID(result.Code, serviceCode)
 		if err != nil {
 			continue
@@ -99,14 +98,14 @@ func (c *Carrier) CalcShippingFee(ctx context.Context, cmd *CalcShippingFeeAllSe
 		}
 		// ignore this service
 		ignoreServices := []string{
-			string(vtpostclient2.OrderServiceCodeV60),
+			string(vtpostclient.OrderServiceCodeV60),
 		}
 		if cm.StringsContain(ignoreServices, string(serviceCode)) {
 			continue
 		}
 
 		// recall get price to get exactly shipping fee for each service
-		query := &vtpostclient2.CalcShippingFeeRequest{
+		query := &vtpostclient.CalcShippingFeeRequest{
 			SenderProvince:   cmd.Request.SenderProvince,
 			SenderDistrict:   cmd.Request.SenderDistrict,
 			ReceiverProvince: cmd.Request.ReceiverProvince,
@@ -208,7 +207,7 @@ func (c *Carrier) cancelOrder(ctx context.Context, cmd *CancelOrderCommand) erro
 	return err
 }
 
-func CalcUpdateFulfillment(ffm *shipmodel.Fulfillment, orderMsg vtpostclient2.CallbackOrderData) *shipmodel.Fulfillment {
+func CalcUpdateFulfillment(ffm *shipmodel.Fulfillment, orderMsg vtpostclient.CallbackOrderData) *shipmodel.Fulfillment {
 	if !shipping.CanUpdateFulfillmentFromWebhook(ffm) {
 		return ffm
 	}
@@ -216,7 +215,7 @@ func CalcUpdateFulfillment(ffm *shipmodel.Fulfillment, orderMsg vtpostclient2.Ca
 	now := time.Now()
 	data, _ := json.Marshal(orderMsg)
 	statusCode := orderMsg.OrderStatus
-	vtpostStatus := vtpostclient2.ToVTPostShippingState(statusCode)
+	vtpostStatus := vtpostclient.ToVTPostShippingState(statusCode)
 	update := &shipmodel.Fulfillment{
 		ID:                        ffm.ID,
 		ExternalShippingUpdatedAt: now,
@@ -269,7 +268,7 @@ func CalcUpdateFulfillment(ffm *shipmodel.Fulfillment, orderMsg vtpostclient2.Ca
 	return update
 }
 
-func CalcDeliveryDuration(orderService vtpostclient2.VTPostOrderServiceCode, fromProvince, toProvince *location.Province, fromDistrict, toDistrict *location.District) (duration time.Duration) {
+func CalcDeliveryDuration(orderService vtpostclient.VTPostOrderServiceCode, fromProvince, toProvince *location.Province, fromDistrict, toDistrict *location.District) (duration time.Duration) {
 	serviceName := orderService.Name()
 	switch serviceName {
 	case model.ShippingServiceNameFaster:

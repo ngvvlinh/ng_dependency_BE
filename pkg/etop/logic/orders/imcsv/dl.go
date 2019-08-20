@@ -6,10 +6,11 @@ import (
 	"net/http"
 	"strings"
 
+	"etop.vn/backend/res/dl/imports"
+
 	"github.com/360EntSecGroup-Skylar/excelize"
 
 	"etop.vn/backend/pkg/common/gencode"
-	"etop.vn/backend/pkg/etop/dl"
 	"etop.vn/common/l"
 )
 
@@ -28,7 +29,7 @@ func init() {
 }
 
 func loadImportFile() error {
-	data, err := dl.Asset(AssetShopOrderPath)
+	data, err := imports.Asset(AssetShopOrderPath)
 	if err != nil {
 		return err
 	}

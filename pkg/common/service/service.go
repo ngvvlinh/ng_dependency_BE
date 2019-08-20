@@ -7,9 +7,10 @@ import (
 	"path/filepath"
 	"time"
 
+	"etop.vn/backend/res/dl/imports"
+
 	"etop.vn/backend/doc"
 	"etop.vn/backend/pkg/common/idemp"
-	"etop.vn/backend/pkg/etop/dl"
 	"etop.vn/common/l"
 )
 
@@ -57,7 +58,7 @@ func ServeAssets(path string, contentType string) http.Handler {
 		contentType = GetMIME(path)
 	}
 
-	data, err := dl.Asset(path)
+	data, err := imports.Asset(path)
 	if err != nil {
 		panic(err)
 	}

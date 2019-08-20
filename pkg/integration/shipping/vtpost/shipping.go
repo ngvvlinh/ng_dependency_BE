@@ -4,8 +4,6 @@ import (
 	"context"
 	"time"
 
-	vtpostclient2 "etop.vn/backend/pkg/integration/shipping/vtpost/client"
-
 	"etop.vn/api/main/location"
 	ordermodel "etop.vn/backend/com/main/ordering/model"
 	shipmodel "etop.vn/backend/com/main/shipping/model"
@@ -14,19 +12,20 @@ import (
 	shippingprovider "etop.vn/backend/pkg/etop/logic/shipping_provider"
 	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/backend/pkg/etop/sqlstore"
+	vtpostclient "etop.vn/backend/pkg/integration/shipping/vtpost/client"
 	"etop.vn/common/bus"
 )
 
 var _ shippingprovider.ShippingProvider = &Carrier{}
 
 type Carrier struct {
-	clients  map[byte]vtpostclient2.Client
+	clients  map[byte]vtpostclient.Client
 	location location.QueryBus
 }
 
 func New(cfg Config, locationBus location.QueryBus) *Carrier {
-	clientDefault := vtpostclient2.New(cfg.Env, cfg.AccountDefault)
-	clients := map[byte]vtpostclient2.Client{
+	clientDefault := vtpostclient.New(cfg.Env, cfg.AccountDefault)
+	clients := map[byte]vtpostclient.Client{
 		VTPostCodePublic: clientDefault,
 	}
 
@@ -50,11 +49,11 @@ func (c *Carrier) InitAllClients(ctx context.Context) error {
 	return nil
 }
 
-func CreateShippingSource(code byte, client vtpostclient2.Client) error {
+func CreateShippingSource(code byte, client vtpostclient.Client) error {
 	ctx := context.Background()
 	generator := newServiceIDGenerator(SecretCode)
 	// generate a default clientName to save to db
-	clientName, err := generator.GenerateServiceID(code, vtpostclient2.OrderServiceCodeSCOD)
+	clientName, err := generator.GenerateServiceID(code, vtpostclient.OrderServiceCodeSCOD)
 	if err != nil {
 		return err
 	}
@@ -163,14 +162,14 @@ func (c *Carrier) CreateFulfillment(ctx context.Context, order *ordermodel.Order
 	deliveryDate.Add(30 * time.Minute)
 
 	// prepare products for vtpost
-	var products []*vtpostclient2.Product
+	var products []*vtpostclient.Product
 	var productName string
 	for _, line := range order.Lines {
 		if productName != "" {
 			productName += " + "
 		}
 		productName += line.ProductName
-		products = append(products, &vtpostclient2.Product{
+		products = append(products, &vtpostclient.Product{
 			ProductName:     line.ProductName,
 			ProductPrice:    line.ListPrice,
 			ProductQuantity: line.Quantity,
@@ -179,7 +178,7 @@ func (c *Carrier) CreateFulfillment(ctx context.Context, order *ordermodel.Order
 
 	vtpostCmd := &CreateOrderArgs{
 		ServiceID: providerServiceID,
-		Request: &vtpostclient2.CreateOrderRequest{
+		Request: &vtpostclient.CreateOrderRequest{
 			OrderNumber: "", // will be filled later
 			// hard code: 30 mins from now
 			DeliveryDate:       deliveryDate.Format("02/01/2006 15:04:05"),
@@ -247,7 +246,7 @@ func (c *Carrier) CreateFulfillment(ctx context.Context, order *ordermodel.Order
 	}
 
 	// recalculate shipping fee
-	shippingFees := &vtpostclient2.ShippingFeeData{
+	shippingFees := &vtpostclient.ShippingFeeData{
 		MoneyTotal:         r.Data.MoneyTotal,
 		MoneyTotalFee:      r.Data.MoneyTotalFee,
 		MoneyFee:           r.Data.MoneyFee,
@@ -268,7 +267,7 @@ func (c *Carrier) CancelFulfillment(ctx context.Context, ffm *shipmodel.Fulfillm
 	code := ffm.ExternalShippingCode
 	cmd := &CancelOrderCommand{
 		ServiceID: ffm.ProviderServiceID,
-		Request: &vtpostclient2.CancelOrderRequest{
+		Request: &vtpostclient.CancelOrderRequest{
 			OrderNumber: code,
 		},
 	}
@@ -292,7 +291,7 @@ func (c *Carrier) GetShippingServices(ctx context.Context, args shippingprovider
 		FromDistrict: fromDistrict,
 		ToProvince:   toProvince,
 		ToDistrict:   toDistrict,
-		Request: &vtpostclient2.CalcShippingFeeAllServicesRequest{
+		Request: &vtpostclient.CalcShippingFeeAllServicesRequest{
 			SenderProvince:   int(fromProvince.VtpostId),
 			SenderDistrict:   int(fromDistrict.VtpostId),
 			ReceiverProvince: int(toProvince.VtpostId),

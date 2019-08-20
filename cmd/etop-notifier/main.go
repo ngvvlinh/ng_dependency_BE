@@ -12,6 +12,8 @@ import (
 	"github.com/Shopify/sarama"
 
 	"etop.vn/backend/cmd/etop-notifier/config"
+	"etop.vn/backend/com/handler/notifier"
+	notihandler "etop.vn/backend/com/handler/notifier/handler"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/cmsql"
 	cc "etop.vn/backend/pkg/common/config"
@@ -21,8 +23,6 @@ import (
 	"etop.vn/backend/pkg/common/telebot"
 	"etop.vn/backend/pkg/etop/authorize/middleware"
 	"etop.vn/backend/pkg/etop/sqlstore"
-	"etop.vn/backend/pkg/notifier"
-	notihandler "etop.vn/backend/pkg/notifier/handler"
 	"etop.vn/common/l"
 )
 

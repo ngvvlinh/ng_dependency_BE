@@ -9,11 +9,12 @@ import (
 	"strconv"
 	"strings"
 
-	"etop.vn/common/xerrors/logline"
 	"github.com/pkg/errors"
 	"github.com/twitchtv/twirp"
 	"go.uber.org/zap/zapcore"
 	"google.golang.org/grpc/codes"
+
+	"etop.vn/common/xerrors/logline"
 )
 
 type TraceLevel int
@@ -771,8 +772,13 @@ func (errs Errors) Error() string {
 	case 0:
 		return ""
 	case 1:
-		return errs[0].Error()
+		e := errs[0]
+		if e == nil {
+			return "ok"
+		}
+		return e.Error()
 	}
+
 	var b strings.Builder
 	for i, e := range errs {
 		if i > 0 {
@@ -787,39 +793,52 @@ func (errs Errors) Error() string {
 	return b.String()
 }
 
-func AllError(errs []error) bool {
+func (errs Errors) NErrors() int {
+	c := 0
+	for _, err := range errs {
+		if err != nil {
+			c++
+		}
+	}
+	return c
+}
+
+func (errs Errors) IsAll() bool {
 	if len(errs) == 0 {
 		return false
 	}
-	for _, e := range errs {
-		if e == nil {
+	for _, err := range errs {
+		if err == nil {
 			return false
 		}
 	}
 	return true
 }
 
-func AnyError(errs []error) bool {
-	for _, e := range errs {
-		if e != nil {
+func (errs Errors) HasAny() bool {
+	for _, err := range errs {
+		if err != nil {
 			return true
 		}
 	}
 	return false
 }
 
-func ConcatError(errs []error) error {
-	switch len(errs) {
-	case 0:
-		return nil
-	case 1:
-		return errs[0]
-	default:
-		return Errors(errs)
+func (errs Errors) All() error {
+	if errs.IsAll() {
+		return errs
 	}
+	return nil
 }
 
-func LastError(errs []error) error {
+func (errs Errors) Any() error {
+	if errs.HasAny() {
+		return errs
+	}
+	return nil
+}
+
+func (errs Errors) Last() error {
 	if len(errs) == 0 {
 		return nil
 	}
@@ -829,7 +848,7 @@ func LastError(errs []error) error {
 // ErrorCollector ...
 type ErrorCollector struct {
 	Count  int
-	Errors []error
+	Errors Errors
 }
 
 func (e *ErrorCollector) CollectOne(err error) *ErrorCollector {
@@ -873,7 +892,7 @@ func (e *ErrorCollector) NErrors() int {
 }
 
 func (e *ErrorCollector) concat() error {
-	return ConcatError(e.Errors)
+	return e.Errors.ToError()
 }
 
 func (e *ErrorCollector) Last() error {

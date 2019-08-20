@@ -8,19 +8,19 @@ import (
 	"os"
 	"path/filepath"
 
-	locationlist "etop.vn/backend/com/main/location/list"
-
 	"github.com/360EntSecGroup-Skylar/excelize"
 
 	"etop.vn/backend/cmd/etop-server/config"
+	locationlist "etop.vn/backend/com/main/location/list"
 	cc "etop.vn/backend/pkg/common/config"
 	vtpostClient "etop.vn/backend/pkg/integration/shipping/vtpost/client"
 	"etop.vn/common/l"
 )
 
 var (
-	cfg                config.Config
-	ll                 = l.New()
+	cfg config.Config
+	ll  = l.New()
+
 	vtpostProvincesMap = make(map[int]*vtpostClient.Province)
 	vtpostDistrictsMap = make(map[int]*vtpostClient.District)
 )
@@ -53,8 +53,6 @@ func main() {
 	if err != nil {
 		ll.Fatal("Unable to load config", l.Error(err))
 	}
-
-	// ctx := context.Background()
 
 	file, err := os.Open(filepath.Join(gopath, "src/etop.vn/backend/scripts/vtpost_location/khu_vuc.xlsx"))
 	if err != nil {

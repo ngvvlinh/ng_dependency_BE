@@ -107,7 +107,7 @@ func HandleImportMoneyTransactions(c *httpx.Context) error {
 	if len(rows) <= 1 {
 		return cm.Errorf(cm.InvalidArgument, nil, "File không có nội dung. Vui lòng tải lại file import hoặc liên hệ hotro@etop.vn.").WithMeta("reason", "no rows")
 	}
-	// pp.Println("row :: ", rows, len(rows))
+
 	var shippingLines []*VTPostMoneyTransactionShippingExternalLine
 	for _, row := range rows {
 		line, err := parseRow(row)

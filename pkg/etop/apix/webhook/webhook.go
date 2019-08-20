@@ -3,11 +3,11 @@ package webhook
 import (
 	"context"
 
+	"etop.vn/backend/com/handler/etop-handler/intctl"
+	"etop.vn/backend/com/handler/etop-handler/webhook/sender"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/mq"
 	"etop.vn/backend/pkg/common/redis"
-	"etop.vn/backend/pkg/etop-handler/intctl"
-	"etop.vn/backend/pkg/etop-handler/webhook/sender"
 	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/backend/pkg/etop/sqlstore"
 

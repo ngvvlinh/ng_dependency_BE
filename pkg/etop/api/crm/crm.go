@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"time"
 
+	notimodel "etop.vn/backend/com/handler/notifier/model"
 	shipmodel "etop.vn/backend/com/main/shipping/model"
 	"etop.vn/backend/com/main/shipping/modelx"
 	shipmodelx "etop.vn/backend/com/main/shipping/modelx"
@@ -14,7 +15,6 @@ import (
 	"etop.vn/backend/pkg/etop/sqlstore"
 	"etop.vn/backend/pkg/integration/shipping/ghn"
 	ghnclient "etop.vn/backend/pkg/integration/shipping/ghn/client"
-	notimodel "etop.vn/backend/pkg/notifier/model"
 	wrapcrm "etop.vn/backend/wrapper/services/crm"
 	"etop.vn/common/bus"
 )

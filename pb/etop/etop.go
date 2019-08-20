@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"etop.vn/api/main/location"
+	notimodel "etop.vn/backend/com/handler/notifier/model"
 	servicelocation "etop.vn/backend/com/main/location"
 	"etop.vn/backend/pb/common"
 	"etop.vn/backend/pb/etop/etc/address_type"
@@ -14,7 +15,6 @@ import (
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/backend/pkg/integration/bank"
-	notimodel "etop.vn/backend/pkg/notifier/model"
 )
 
 var locationBus = servicelocation.New().MessageBus()

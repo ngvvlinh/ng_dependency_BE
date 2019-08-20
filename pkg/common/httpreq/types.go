@@ -11,6 +11,8 @@ import (
 	"etop.vn/common/l"
 )
 
+var ll = l.New()
+
 // Bool handles null, string and bool from json as bool
 type Bool bool
 
@@ -56,7 +58,7 @@ func (s String) String() string {
 type Int int
 
 // ErrFloatJSON is returned by unmarshalling a floating point number into Int
-var ErrFloatJSON = errors.New("Expected integer but got float number")
+var ErrFloatJSON = errors.New("expected integer but got float number")
 
 // UnmarshalJSON parses float number or string as int.
 func (v *Int) UnmarshalJSON(data []byte) error {
@@ -86,13 +88,13 @@ func (v *Int) UnmarshalJSON(data []byte) error {
 		return err
 	}
 
+	*v = Int(f)
+
 	// The float number must be equal to integer part
 	_, frac := math.Modf(f)
 	if frac != 0 {
-		ll.Error("Expect int but got float", l.Any("f", f))
+		ll.Warn("expect int but got float", l.Any("f", f))
 	}
-
-	*v = Int(f)
 	return nil
 }
 
@@ -164,7 +166,7 @@ func (t *Time) UnmarshalJSON(data []byte) error {
 			return nil
 		}
 		ll.Error("Unable to parse time", l.String("data", string(data)))
-		return fmt.Errorf(`Unable to parse time %s`, data)
+		return fmt.Errorf(`unable to parse time %s`, data)
 	}
 
 	// Zero time
@@ -222,12 +224,4 @@ func parseAsISO8601(data []byte) (time.Time, bool) {
 		t, err = time.ParseInLocation(timeLayout, s, time.Local)
 	}
 	return t, err == nil
-}
-
-func FromStrings(ss []String) []string {
-	res := make([]string, len(ss))
-	for i, s := range ss {
-		res[i] = string(s)
-	}
-	return res
 }
