@@ -3,6 +3,8 @@ package main
 import (
 	"net/http"
 
+	"etop.vn/backend/pkg/common/metrics"
+
 	servicelocation "etop.vn/backend/com/main/location"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/cmsql"
@@ -21,6 +23,8 @@ func startServers() []*http.Server {
 
 func startServiceServer() *http.Server {
 	mux := http.NewServeMux()
+	l.RegisterHTTPHandler(mux)
+	metrics.RegisterHTTPHandler(mux)
 	healthservice.RegisterHTTPHandler(mux)
 
 	db, err := cmsql.Connect(cfg.Postgres)

@@ -58,8 +58,9 @@ func startServers() []*http.Server {
 
 func startEtopServer() *http.Server {
 	mux := http.NewServeMux()
-	healthservice.RegisterHTTPHandler(mux)
+	l.RegisterHTTPHandler(mux)
 	metrics.RegisterHTTPHandler(mux)
+	healthservice.RegisterHTTPHandler(mux)
 
 	if *flDocOnly {
 		ll.Warn("API IS DISABLED (-doc-only)")

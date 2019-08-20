@@ -5,12 +5,16 @@ import (
 	"encoding/json"
 	"fmt"
 	"math"
+	"strconv"
+	"strings"
 	"sync"
 	"time"
 	"unicode/utf8"
 
 	"go.uber.org/zap/buffer"
 	"go.uber.org/zap/zapcore"
+
+	"etop.vn/common/l/color"
 )
 
 var _bufPool = buffer.NewPool()
@@ -295,8 +299,8 @@ func (enc *consoleEncoder) EncodeEntry(ent zapcore.Entry, fields []zapcore.Field
 	return line, nil
 }
 
-func (c *consoleEncoder) encodeMessage(message string, enc zapcore.PrimitiveArrayEncoder) {
-	enc.AppendString(message)
+func (enc *consoleEncoder) encodeMessage(message string, e zapcore.PrimitiveArrayEncoder) {
+	e.AppendString(message)
 }
 
 func (enc *consoleEncoder) writeContext(line *buffer.Buffer, extra []zapcore.Field) {
@@ -310,7 +314,7 @@ func (enc *consoleEncoder) writeContext(line *buffer.Buffer, extra []zapcore.Fie
 	}
 
 	enc.addTabIfNecessary(line)
-	line.Write(context.buf.Bytes())
+	_, _ = line.Write(context.buf.Bytes())
 }
 
 func (enc *consoleEncoder) addTabIfNecessary(line *buffer.Buffer) {
@@ -448,4 +452,116 @@ func addFields(enc zapcore.ObjectEncoder, fields []zapcore.Field) {
 	for i := range fields {
 		fields[i].AddTo(enc)
 	}
+}
+
+var (
+	_levelToColor = map[zapcore.Level]color.Color{
+		zapcore.DebugLevel:  color.Magenta,
+		zapcore.InfoLevel:   color.Blue,
+		zapcore.WarnLevel:   color.Yellow,
+		zapcore.ErrorLevel:  color.Red,
+		zapcore.DPanicLevel: color.Red,
+		zapcore.PanicLevel:  color.Red,
+		zapcore.FatalLevel:  color.Red,
+	}
+	_unknownLevelColor = color.Red
+
+	_levelToLowercaseColorString = make(map[zapcore.Level]string, len(_levelToColor))
+	_levelToCapitalColorString   = make(map[zapcore.Level]string, len(_levelToColor))
+)
+
+func init() {
+	for level, c := range _levelToColor {
+		_levelToLowercaseColorString[level] = c.Add(level.String())
+		_levelToCapitalColorString[level] = c.Add(level.CapitalString())
+	}
+	debugColor := _levelToColor[zapcore.DebugLevel]
+	for level := zapcore.DebugLevel - 1; level >= -MaxVerbosity; level-- {
+		_levelToLowercaseColorString[level] = debugColor.Add(stringLevel(level))
+		_levelToCapitalColorString[level] = debugColor.Add(capitalLevel(level))
+	}
+}
+
+func stringLevel(level zapcore.Level) string {
+	if level >= zapcore.DebugLevel || level < -MaxVerbosity {
+		return level.String()
+	}
+	switch level {
+	case -2:
+		return "debug-2"
+	case -3:
+		return "debug-3"
+	case -4:
+		return "debug-4"
+	case -5:
+		return "debug-5"
+	case -6:
+		return "debug-6"
+	case -7:
+		return "debug-7"
+	case -8:
+		return "debug-8"
+	case -9:
+		return "debug-9"
+	default:
+		return level.String()
+	}
+}
+
+func capitalLevel(level zapcore.Level) string {
+	if level >= zapcore.DebugLevel {
+		return level.CapitalString()
+	}
+	switch level {
+	case -2:
+		return "DEBUG-2"
+	case -3:
+		return "DEBUG-3"
+	case -4:
+		return "DEBUG-4"
+	case -5:
+		return "DEBUG-5"
+	case -6:
+		return "DEBUG-6"
+	case -7:
+		return "DEBUG-7"
+	case -8:
+		return "DEBUG-8"
+	case -9:
+		return "DEBUG-9"
+	default:
+		return level.CapitalString()
+	}
+}
+
+func unmarshalLevel(s string) (zapcore.Level, bool) {
+	if strings.HasPrefix(s, "DEBUG-") || strings.HasPrefix(s, "debug-") {
+		levelStr := s[len("DEBUG-"):]
+		lvl, err := strconv.Atoi(levelStr)
+		if err != nil {
+			return 0, false
+		}
+		if lvl < 1 || lvl > MaxVerbosity {
+			return 0, false
+		}
+		return zapcore.Level(-lvl), true
+	}
+
+	var lvl zapcore.Level
+	err := lvl.UnmarshalText([]byte(s))
+	return lvl, err == nil
+}
+
+func CapitalColorLevelEncoder(l zapcore.Level, enc zapcore.PrimitiveArrayEncoder) {
+	s, ok := _levelToCapitalColorString[l]
+	if !ok {
+		s = _unknownLevelColor.Add(l.CapitalString())
+	}
+	enc.AppendString(s)
+}
+
+// CapitalLevelEncoder serializes a Level to an all-caps string. For example,
+// InfoLevel is serialized to "INFO".
+func CapitalLevelEncoder(l zapcore.Level, enc zapcore.PrimitiveArrayEncoder) {
+	enc.AppendString(capitalLevel(l))
 }

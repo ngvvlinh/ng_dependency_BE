@@ -115,6 +115,7 @@ func main() {
 	rt := httpx.New()
 	mux.Handle("/", rt)
 
+	l.RegisterHTTPHandler(mux)
 	metrics.RegisterHTTPHandler(mux)
 	healthservice.RegisterHTTPHandler(mux)
 	healthservice.MarkReady()

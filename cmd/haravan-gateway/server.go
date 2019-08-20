@@ -48,6 +48,7 @@ func startServers() *http.Server {
 	rt.POST(buildRoute(haravanidentity.PathGetOrder), haravanServer.GetOrder)
 	rt.DELETE(buildRoute(haravanidentity.PathCancelOrder), haravanServer.CancelOrder)
 
+	l.RegisterHTTPHandler(mux)
 	metrics.RegisterHTTPHandler(mux)
 	healthservice.RegisterHTTPHandler(mux)
 

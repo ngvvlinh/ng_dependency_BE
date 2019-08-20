@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-
 	"flag"
 	"net/http"
 	"os"
@@ -121,6 +120,7 @@ func main() {
 		Handler: mux,
 	}
 
+	l.RegisterHTTPHandler(mux)
 	metrics.RegisterHTTPHandler(mux)
 	healthservice.RegisterHTTPHandler(mux)
 	healthservice.MarkReady()
