@@ -6,7 +6,7 @@ import (
 	"time"
 
 	"etop.vn/backend/pkg/common/sq"
-	model "etop.vn/backend/tools/pkg/sqlgen/test"
+	m "etop.vn/backend/tools/pkg/sqlgen/test"
 )
 
 type UserFilters struct{ prefix string }
@@ -643,7 +643,7 @@ func (ft *ComplexInfoFilters) ByIDPtr(ID *string) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft *ComplexInfoFilters) ByAliasString(AliasString model.AliasString) *sq.ColumnFilter {
+func (ft *ComplexInfoFilters) ByAliasString(AliasString m.AliasString) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "alias_string",
@@ -652,7 +652,7 @@ func (ft *ComplexInfoFilters) ByAliasString(AliasString model.AliasString) *sq.C
 	}
 }
 
-func (ft *ComplexInfoFilters) ByAliasStringPtr(AliasString *model.AliasString) *sq.ColumnFilterPtr {
+func (ft *ComplexInfoFilters) ByAliasStringPtr(AliasString *m.AliasString) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "alias_string",
@@ -662,7 +662,7 @@ func (ft *ComplexInfoFilters) ByAliasStringPtr(AliasString *model.AliasString) *
 	}
 }
 
-func (ft *ComplexInfoFilters) ByAliasInt64(AliasInt64 model.AliasInt64) *sq.ColumnFilter {
+func (ft *ComplexInfoFilters) ByAliasInt64(AliasInt64 m.AliasInt64) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "alias_int64",
@@ -671,7 +671,7 @@ func (ft *ComplexInfoFilters) ByAliasInt64(AliasInt64 model.AliasInt64) *sq.Colu
 	}
 }
 
-func (ft *ComplexInfoFilters) ByAliasInt64Ptr(AliasInt64 *model.AliasInt64) *sq.ColumnFilterPtr {
+func (ft *ComplexInfoFilters) ByAliasInt64Ptr(AliasInt64 *m.AliasInt64) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "alias_int64",
@@ -681,7 +681,7 @@ func (ft *ComplexInfoFilters) ByAliasInt64Ptr(AliasInt64 *model.AliasInt64) *sq.
 	}
 }
 
-func (ft *ComplexInfoFilters) ByAliasInt(AliasInt model.AliasInt) *sq.ColumnFilter {
+func (ft *ComplexInfoFilters) ByAliasInt(AliasInt m.AliasInt) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "alias_int",
@@ -690,7 +690,7 @@ func (ft *ComplexInfoFilters) ByAliasInt(AliasInt model.AliasInt) *sq.ColumnFilt
 	}
 }
 
-func (ft *ComplexInfoFilters) ByAliasIntPtr(AliasInt *model.AliasInt) *sq.ColumnFilterPtr {
+func (ft *ComplexInfoFilters) ByAliasIntPtr(AliasInt *m.AliasInt) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "alias_int",
@@ -700,7 +700,7 @@ func (ft *ComplexInfoFilters) ByAliasIntPtr(AliasInt *model.AliasInt) *sq.Column
 	}
 }
 
-func (ft *ComplexInfoFilters) ByAliasBool(AliasBool model.AliasBool) *sq.ColumnFilter {
+func (ft *ComplexInfoFilters) ByAliasBool(AliasBool m.AliasBool) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "alias_bool",
@@ -709,7 +709,7 @@ func (ft *ComplexInfoFilters) ByAliasBool(AliasBool model.AliasBool) *sq.ColumnF
 	}
 }
 
-func (ft *ComplexInfoFilters) ByAliasBoolPtr(AliasBool *model.AliasBool) *sq.ColumnFilterPtr {
+func (ft *ComplexInfoFilters) ByAliasBoolPtr(AliasBool *m.AliasBool) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "alias_bool",
@@ -719,7 +719,7 @@ func (ft *ComplexInfoFilters) ByAliasBoolPtr(AliasBool *model.AliasBool) *sq.Col
 	}
 }
 
-func (ft *ComplexInfoFilters) ByAliasFloat64(AliasFloat64 model.AliasFloat64) *sq.ColumnFilter {
+func (ft *ComplexInfoFilters) ByAliasFloat64(AliasFloat64 m.AliasFloat64) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "alias_float64",
@@ -728,7 +728,7 @@ func (ft *ComplexInfoFilters) ByAliasFloat64(AliasFloat64 model.AliasFloat64) *s
 	}
 }
 
-func (ft *ComplexInfoFilters) ByAliasFloat64Ptr(AliasFloat64 *model.AliasFloat64) *sq.ColumnFilterPtr {
+func (ft *ComplexInfoFilters) ByAliasFloat64Ptr(AliasFloat64 *m.AliasFloat64) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "alias_float64",
@@ -738,7 +738,7 @@ func (ft *ComplexInfoFilters) ByAliasFloat64Ptr(AliasFloat64 *model.AliasFloat64
 	}
 }
 
-func (ft *ComplexInfoFilters) ByAliasPStringPtr(AliasPString model.AliasPString) *sq.ColumnFilterPtr {
+func (ft *ComplexInfoFilters) ByAliasPStringPtr(AliasPString m.AliasPString) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "alias_p_string",
@@ -748,7 +748,7 @@ func (ft *ComplexInfoFilters) ByAliasPStringPtr(AliasPString model.AliasPString)
 	}
 }
 
-func (ft *ComplexInfoFilters) ByAliasPInt64Ptr(AliasPInt64 model.AliasPInt64) *sq.ColumnFilterPtr {
+func (ft *ComplexInfoFilters) ByAliasPInt64Ptr(AliasPInt64 m.AliasPInt64) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "alias_p_int64",
@@ -758,7 +758,7 @@ func (ft *ComplexInfoFilters) ByAliasPInt64Ptr(AliasPInt64 model.AliasPInt64) *s
 	}
 }
 
-func (ft *ComplexInfoFilters) ByAliasPIntPtr(AliasPInt model.AliasPInt) *sq.ColumnFilterPtr {
+func (ft *ComplexInfoFilters) ByAliasPIntPtr(AliasPInt m.AliasPInt) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "alias_p_int",
@@ -768,7 +768,7 @@ func (ft *ComplexInfoFilters) ByAliasPIntPtr(AliasPInt model.AliasPInt) *sq.Colu
 	}
 }
 
-func (ft *ComplexInfoFilters) ByAliasPBoolPtr(AliasPBool model.AliasPBool) *sq.ColumnFilterPtr {
+func (ft *ComplexInfoFilters) ByAliasPBoolPtr(AliasPBool m.AliasPBool) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "alias_p_bool",
@@ -778,7 +778,7 @@ func (ft *ComplexInfoFilters) ByAliasPBoolPtr(AliasPBool model.AliasPBool) *sq.C
 	}
 }
 
-func (ft *ComplexInfoFilters) ByAliasPFloat64Ptr(AliasPFloat64 model.AliasPFloat64) *sq.ColumnFilterPtr {
+func (ft *ComplexInfoFilters) ByAliasPFloat64Ptr(AliasPFloat64 m.AliasPFloat64) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "alias_p_float64",

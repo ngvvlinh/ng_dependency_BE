@@ -30,8 +30,8 @@ var gt derive.TypesMap
 func New(typesMap derive.TypesMap, p derive.Printer, deps map[string]derive.Dependency) derive.Generator {
 	gt = typesMap
 
-	p.NewImport("sq", "etop.vn/common/sq")()
-	p.NewImport("core", "etop.vn/common/sq/core")()
+	p.NewImport("sq", "etop.vn/backend/pkg/common/sq")()
+	p.NewImport("core", "etop.vn/backend/pkg/common/sq/core")()
 	p.NewImport("", "database/sql")()
 	return &gen{
 		TypesMap: typesMap,

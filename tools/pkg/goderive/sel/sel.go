@@ -44,7 +44,7 @@ func (g *gen) Generate(typs []types.Type) error {
 	if !g.init {
 		g.init = true
 		g.NewImport("", "database/sql")()
-		g.NewImport("core", "etop.vn/common/sq/core")()
+		g.NewImport("core", "etop.vn/backend/pkg/common/sq/core")()
 
 		g.P(`
 type SQLWriter = core.SQLWriter`)

@@ -5,8 +5,7 @@ package sqlstore
 import (
 	"time"
 
-	model2 "etop.vn/backend/com/main/shipnow/model"
-
+	m "etop.vn/backend/com/main/shipnow/model"
 	"etop.vn/backend/pkg/common/sq"
 	"etop.vn/backend/pkg/etop/model"
 )
@@ -82,7 +81,7 @@ func (ft *ShipnowFulfillmentFilters) ByPartnerIDPtr(PartnerID *int64) *sq.Column
 	}
 }
 
-func (ft *ShipnowFulfillmentFilters) ByCarrier(Carrier model2.Carrier) *sq.ColumnFilter {
+func (ft *ShipnowFulfillmentFilters) ByCarrier(Carrier m.Carrier) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "carrier",
@@ -91,7 +90,7 @@ func (ft *ShipnowFulfillmentFilters) ByCarrier(Carrier model2.Carrier) *sq.Colum
 	}
 }
 
-func (ft *ShipnowFulfillmentFilters) ByCarrierPtr(Carrier *model2.Carrier) *sq.ColumnFilterPtr {
+func (ft *ShipnowFulfillmentFilters) ByCarrierPtr(Carrier *m.Carrier) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "carrier",

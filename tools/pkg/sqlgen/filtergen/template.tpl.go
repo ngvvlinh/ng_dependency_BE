@@ -6,7 +6,7 @@ var tplStr = `
 package sqlstore
 
 import (
-    "etop.vn/common/sq"
+    "etop.vn/backend/pkg/common/sq"
     {{.OrigPackage}}
     {{.Imports}}
 )

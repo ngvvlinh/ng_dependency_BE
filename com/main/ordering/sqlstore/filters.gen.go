@@ -5,8 +5,7 @@ package sqlstore
 import (
 	"time"
 
-	model2 "etop.vn/backend/com/main/ordering/model"
-
+	m "etop.vn/backend/com/main/ordering/model"
 	"etop.vn/backend/pkg/common/sq"
 	"etop.vn/backend/pkg/etop/model"
 )
@@ -918,7 +917,7 @@ func (ft *OrderFilters) ByProductNameNormPtr(ProductNameNorm *string) *sq.Column
 	}
 }
 
-func (ft *OrderFilters) ByFulfillmentType(FulfillmentType model2.FulfillType) *sq.ColumnFilter {
+func (ft *OrderFilters) ByFulfillmentType(FulfillmentType m.FulfillType) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "fulfillment_type",
@@ -927,7 +926,7 @@ func (ft *OrderFilters) ByFulfillmentType(FulfillmentType model2.FulfillType) *s
 	}
 }
 
-func (ft *OrderFilters) ByFulfillmentTypePtr(FulfillmentType *model2.FulfillType) *sq.ColumnFilterPtr {
+func (ft *OrderFilters) ByFulfillmentTypePtr(FulfillmentType *m.FulfillType) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "fulfillment_type",
