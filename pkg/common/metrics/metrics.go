@@ -10,7 +10,7 @@ import (
 	cm "etop.vn/backend/pkg/common"
 )
 
-const DefaultRoute = "/==prometrics=="
+const DefaultRoute = "/==/prometrics"
 
 func init() {
 	prometheus.MustRegister(countRequests)

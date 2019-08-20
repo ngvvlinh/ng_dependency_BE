@@ -15,7 +15,7 @@ import (
 	"go.uber.org/zap/zapcore"
 )
 
-const DefaultRoute = "/==logging=="
+const DefaultRoute = "/==/logging"
 const MaxVerbosity = 9
 const EnvKey = "ETOP_LOG"
 const deprecatedEnvKey = "ETOP_LOG_DEBUG"
