@@ -10,7 +10,6 @@ import (
 	"time"
 
 	"github.com/gorilla/schema"
-	"gopkg.in/resty.v1"
 
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/httpreq"
@@ -53,7 +52,7 @@ type Client interface {
 
 type ClientImpl struct {
 	baseUrl string
-	rclient *resty.Client
+	rclient *httpreq.Resty
 
 	Username string
 	Password string
@@ -91,8 +90,9 @@ func New(env string, cfg ConfigAccount) *ClientImpl {
 		},
 	}
 
+	rcfg := httpreq.RestyConfig{Client: client}
 	c := &ClientImpl{
-		rclient:  resty.NewWithClient(client).SetDebug(true),
+		rclient:  httpreq.NewResty(rcfg),
 		Username: cfg.Username,
 		Password: cfg.Password,
 	}
@@ -308,7 +308,7 @@ func (c *ClientImpl) sendPostRequest(ctx context.Context, path string, body inte
 	return err
 }
 
-func handleResponse(res *resty.Response, result interface{}, msg string) error {
+func handleResponse(res *httpreq.RestyResponse, result interface{}, msg string) error {
 	status := res.StatusCode()
 	var err error
 	body := res.Body()

@@ -9,7 +9,6 @@ import (
 	"time"
 
 	"github.com/gorilla/schema"
-	resty "gopkg.in/resty.v1"
 
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/httpreq"
@@ -34,7 +33,7 @@ func init() {
 type Client struct {
 	ApiKey  string
 	Secret  string
-	rclient *resty.Client
+	rclient *httpreq.Resty
 }
 
 func New(cfg Config) *Client {
@@ -44,10 +43,11 @@ func New(cfg Config) *Client {
 			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
 		},
 	}
+	rcfg := httpreq.RestyConfig{Client: client}
 	c := &Client{
 		ApiKey:  cfg.APIKey,
 		Secret:  cfg.Secret,
-		rclient: resty.NewWithClient(client).SetDebug(true),
+		rclient: httpreq.NewResty(rcfg),
 	}
 	return c
 }
@@ -150,7 +150,7 @@ func buildUrl(subdomain string, path string) string {
 	return fmt.Sprintf("https://%v.myharavan.com/admin/%v.json", subdomain, path)
 }
 
-func handleResponse(res *resty.Response, result interface{}, msg string) error {
+func handleResponse(res *httpreq.RestyResponse, result interface{}, msg string) error {
 	status := res.StatusCode()
 	body := res.Body()
 	switch {

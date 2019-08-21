@@ -11,8 +11,6 @@ import (
 	"etop.vn/common/l"
 )
 
-var ll = l.New()
-
 // Bool handles null, string and bool from json as bool
 type Bool bool
 

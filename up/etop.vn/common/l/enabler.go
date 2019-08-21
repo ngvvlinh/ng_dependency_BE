@@ -20,7 +20,7 @@ const MaxVerbosity = 9
 const EnvKey = "ETOP_LOG"
 const deprecatedEnvKey = "ETOP_LOG_DEBUG"
 
-// verbosity from 1 to 9
+// verbosity from 0 to 9
 type WildcardPatterns [MaxVerbosity][]*regexp.Regexp
 
 var (
@@ -28,7 +28,7 @@ var (
 	errLevelNil        = errors.New("must specify a logging level")
 	errInvalidLevel    = errors.New("invalid level")
 
-	enablers    = make(map[string]zap.AtomicLevel)
+	enablers    = make(map[string]AtomicLevel)
 	envPatterns WildcardPatterns
 )
 
@@ -51,7 +51,7 @@ func ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusBadRequest)
 		_ = enc.Encode(errorResponse{Error: msg})
 	}
-	encodeEnablers := func(enablers map[string]zap.AtomicLevel) {
+	encodeEnablers := func(enablers map[string]AtomicLevel) {
 		var payloads []payload
 		for k, e := range enablers {
 			lvl := capitalLevel(e.Level())
@@ -193,7 +193,7 @@ func parsePattern(p string) (lvl int, pattern *regexp.Regexp, err error) {
 	return
 }
 
-func setLogLevelFromPatterns(wildcardPatterns WildcardPatterns, name string, enabler zap.AtomicLevel) {
+func setLogLevelFromPatterns(wildcardPatterns WildcardPatterns, name string, enabler AtomicLevel) {
 	for lvl, patterns := range wildcardPatterns {
 		for _, pattern := range patterns {
 			if pattern.MatchString(name) {

@@ -10,7 +10,6 @@ import (
 	"time"
 
 	"github.com/gorilla/schema"
-	"gopkg.in/resty.v1"
 
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/httpreq"
@@ -29,7 +28,7 @@ func init() {
 type Client struct {
 	baseUrl string
 	token   string
-	rclient *resty.Client
+	rclient *httpreq.Resty
 }
 
 const (
@@ -46,9 +45,10 @@ func New(env string, cfg GhtkAccount) *Client {
 			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
 		},
 	}
+	rcfg := httpreq.RestyConfig{Client: client}
 	c := &Client{
 		token:   cfg.Token,
-		rclient: resty.NewWithClient(client).SetDebug(true),
+		rclient: httpreq.NewResty(rcfg),
 	}
 	switch env {
 	case cm.PartnerEnvTest:
@@ -79,12 +79,12 @@ func (c *Client) Ping() error {
 func (c *Client) TestCreateOrder() error {
 	req := &CreateOrderRequest{
 		Products: []*ProductRequest{
-			&ProductRequest{
+			{
 				Name:     "bút",
 				Weight:   0.1,
 				Quantity: 1,
 			},
-			&ProductRequest{
+			{
 				Name:     "tẩy",
 				Weight:   0.2,
 				Quantity: 1,
@@ -206,7 +206,7 @@ func (c *Client) sendPostRequest(ctx context.Context, path string, req interface
 	return err
 }
 
-func handleResponse(res *resty.Response, result ResponseInterface, msg string) error {
+func handleResponse(res *httpreq.RestyResponse, result ResponseInterface, msg string) error {
 	status := res.StatusCode()
 	var err error
 	body := res.Body()

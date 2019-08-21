@@ -19,15 +19,6 @@ const ConsoleEncoderName = "custom_console"
 
 var ll, xl Logger
 
-// Logger wraps zap.Logger
-type Logger struct {
-	enabler zap.AtomicLevel
-	*zap.Logger
-
-	S *zap.SugaredLogger
-	v VerboseLogger
-}
-
 // Short-hand functions for logging.
 var (
 	Bool     = zap.Bool
@@ -115,19 +106,13 @@ func Dump(v interface{}) fmt.Stringer {
 	return dd{v}
 }
 
-func trimPath(c zapcore.EntryCaller) string {
-	index := strings.Index(c.File, prefix)
-	if index < 0 {
-		return c.TrimmedPath()
-	}
-	return c.File[index+len(prefix):]
-}
+// Logger wraps zap.Logger
+type Logger struct {
+	enabler AtomicLevel
+	*zap.Logger
 
-// ShortColorCallerEncoder encodes caller information with sort path filename and enable color.
-func ShortColorCallerEncoder(caller zapcore.EntryCaller, enc zapcore.PrimitiveArrayEncoder) {
-	const gray, resetColor = "\x1b[90m", "\x1b[0m"
-	callerStr := gray + "→ " + trimPath(caller) + ":" + strconv.Itoa(caller.Line) + resetColor
-	enc.AppendString(callerStr)
+	S *zap.SugaredLogger
+	v VerboseLogger
 }
 
 // New returns new zap.Logger
@@ -135,17 +120,17 @@ func New(opts ...zap.Option) Logger {
 	_, filename, _, _ := runtime.Caller(1)
 	name := filepath.Dir(truncFilename(filename))
 
-	var enabler zap.AtomicLevel
+	var enabler AtomicLevel
 	if e, ok := enablers[name]; ok {
 		enabler = e
 	} else {
-		enabler = zap.NewAtomicLevel()
+		enabler = NewAtomicLevel()
 		enablers[name] = enabler
 	}
 
 	setLogLevelFromPatterns(envPatterns, name, enabler)
 	loggerConfig := zap.Config{
-		Level:            enabler,
+		Level:            enabler.AtomicLevel,
 		Development:      false,
 		Encoding:         ConsoleEncoderName,
 		EncoderConfig:    DefaultConsoleEncoderConfig,
@@ -173,11 +158,30 @@ func New(opts ...zap.Option) Logger {
 	return l
 }
 
-func truncFilename(filename string) string {
-	index := strings.Index(filename, prefix)
-	return filename[index+len(prefix):]
+func (l Logger) Watch(fn LevelWatcher) (unwatch func()) {
+	return l.enabler.Watch(fn)
 }
 
 func (l Logger) Sync() {
 	_ = l.Logger.Sync()
+}
+
+func trimPath(c zapcore.EntryCaller) string {
+	index := strings.Index(c.File, prefix)
+	if index < 0 {
+		return c.TrimmedPath()
+	}
+	return c.File[index+len(prefix):]
+}
+
+// ShortColorCallerEncoder encodes caller information with sort path filename and enable color.
+func ShortColorCallerEncoder(caller zapcore.EntryCaller, enc zapcore.PrimitiveArrayEncoder) {
+	const gray, resetColor = "\x1b[90m", "\x1b[0m"
+	callerStr := gray + "→ " + trimPath(caller) + ":" + strconv.Itoa(caller.Line) + resetColor
+	enc.AppendString(callerStr)
+}
+
+func truncFilename(filename string) string {
+	index := strings.Index(filename, prefix)
+	return filename[index+len(prefix):]
 }

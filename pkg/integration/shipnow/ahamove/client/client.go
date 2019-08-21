@@ -10,7 +10,6 @@ import (
 	"time"
 
 	"github.com/gorilla/schema"
-	"gopkg.in/resty.v1"
 
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/httpreq"
@@ -28,7 +27,7 @@ type Client struct {
 	baseUrl          string
 	verifyAccountUrl string
 	apiKey           string
-	rclient          *resty.Client
+	rclient          *httpreq.Resty
 	env              string
 }
 
@@ -49,9 +48,10 @@ func New(cfg Config) *Client {
 			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
 		},
 	}
+	rcfg := httpreq.RestyConfig{Client: client}
 	c := &Client{
 		apiKey:  cfg.ApiKey,
-		rclient: resty.NewWithClient(client).SetDebug(true),
+		rclient: httpreq.NewResty(rcfg),
 		env:     cfg.Env,
 	}
 	switch cfg.Env {
@@ -245,7 +245,7 @@ func (c *Client) sendGetRequest(ctx context.Context, path string, req interface{
 	return err
 }
 
-func handleResponse(res *resty.Response, result interface{}, msg string) error {
+func handleResponse(res *httpreq.RestyResponse, result interface{}, msg string) error {
 	status := res.StatusCode()
 	var err error
 	body := res.Body()

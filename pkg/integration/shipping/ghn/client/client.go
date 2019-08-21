@@ -9,8 +9,6 @@ import (
 	"strings"
 	"time"
 
-	"gopkg.in/resty.v1"
-
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/httpreq"
 	"etop.vn/common/l"
@@ -23,7 +21,7 @@ type Client struct {
 
 	baseUrl string
 	token   string
-	rclient *resty.Client
+	rclient *httpreq.Resty
 }
 
 func New(env string, clientID int, token string) *Client {
@@ -33,10 +31,11 @@ func New(env string, clientID int, token string) *Client {
 			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
 		},
 	}
+	rcfg := httpreq.RestyConfig{Client: client}
 	c := &Client{
 		token:    token,
 		clientID: clientID,
-		rclient:  resty.NewWithClient(client).SetDebug(true),
+		rclient:  httpreq.NewResty(rcfg),
 	}
 	switch env {
 	case cm.PartnerEnvTest:

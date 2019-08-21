@@ -8,6 +8,13 @@ import (
 	"go.uber.org/zap/zapcore"
 )
 
+func V(verbosity int) zapcore.Level {
+	if verbosity > 0 {
+		verbosity = -verbosity
+	}
+	return zapcore.Level(verbosity)
+}
+
 type VerboseLogger struct {
 	lvl    zapcore.Level
 	logger *zap.Logger

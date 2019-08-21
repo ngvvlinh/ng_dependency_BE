@@ -10,7 +10,6 @@ import (
 	"time"
 
 	"github.com/gorilla/schema"
-	resty "gopkg.in/resty.v1"
 
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/httpreq"
@@ -31,7 +30,7 @@ type Client struct {
 	apiKey  string
 	appID   string
 	baseUrl string
-	rclient *resty.Client
+	rclient *httpreq.Resty
 }
 
 func New(appID string, apiKey string) *Client {
@@ -41,10 +40,11 @@ func New(appID string, apiKey string) *Client {
 			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
 		},
 	}
+	rcfg := httpreq.RestyConfig{Client: client}
 	c := &Client{
 		apiKey:  apiKey,
 		appID:   appID,
-		rclient: resty.NewWithClient(client).SetDebug(true),
+		rclient: httpreq.NewResty(rcfg),
 		baseUrl: "https://onesignal.com/api/v1",
 	}
 	return c
@@ -105,7 +105,7 @@ func (c *Client) CreateNotification(ctx context.Context, req *CreateNotification
 	return &resp, err
 }
 
-func handleResponse(res *resty.Response, result ResponseInterface, msg string) error {
+func handleResponse(res *httpreq.RestyResponse, result ResponseInterface, msg string) error {
 	status := res.StatusCode()
 	var err error
 	body := res.Body()
