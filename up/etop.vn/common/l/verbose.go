@@ -2,6 +2,7 @@ package l
 
 import (
 	"fmt"
+	"strconv"
 
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
@@ -14,7 +15,7 @@ type VerboseLogger struct {
 }
 
 func (l Logger) V(lvl int) VerboseLogger {
-	v := l.verbose
+	v := l.v // clone the struct
 	v.lvl = zapcore.Level(-lvl)
 	return v
 }
@@ -26,6 +27,10 @@ func (l VerboseLogger) Debug(msg string, fields ...zapcore.Field) {
 }
 
 func (l VerboseLogger) Debugf(template string, args ...interface{}) {
+	if !l.logger.Core().Enabled(l.lvl) {
+		return
+	}
+
 	msg := template
 	if template == "" {
 		msg = fmt.Sprint(args...)
@@ -34,5 +39,25 @@ func (l VerboseLogger) Debugf(template string, args ...interface{}) {
 	}
 	if ce := l.logger.Check(l.lvl, msg); ce != nil {
 		ce.Write()
+	}
+}
+
+func (l VerboseLogger) Any(msg string, objs ...interface{}) {
+	if ce := l.logger.Check(l.lvl, msg); ce != nil {
+		fields := make([]zapcore.Field, len(objs))
+		for i, obj := range objs {
+			fields[i] = Any(strconv.Itoa(i), obj)
+		}
+		ce.Write(fields...)
+	}
+}
+
+func (l VerboseLogger) Dump(msg string, objs ...interface{}) {
+	if ce := l.logger.Check(l.lvl, msg); ce != nil {
+		fields := make([]zapcore.Field, len(objs))
+		for i, obj := range objs {
+			fields[i] = Object(strconv.Itoa(i), obj)
+		}
+		ce.Write(fields...)
 	}
 }

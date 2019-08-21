@@ -24,14 +24,8 @@ type Logger struct {
 	enabler zap.AtomicLevel
 	*zap.Logger
 
-	S  *zap.SugaredLogger
-	V2 VerboseLogger
-	V3 VerboseLogger
-	V4 VerboseLogger
-	V5 VerboseLogger
-	V6 VerboseLogger
-
-	verbose VerboseLogger
+	S *zap.SugaredLogger
+	v VerboseLogger
 }
 
 // Short-hand functions for logging.
@@ -171,16 +165,11 @@ func New(opts ...zap.Option) Logger {
 		enabler: enabler,
 		Logger:  logger,
 		S:       logger.Sugar(),
-		verbose: VerboseLogger{
+		v: VerboseLogger{
 			logger: verbose,
 			sugar:  verbose.Sugar(),
 		},
 	}
-	l.V2 = l.V(2)
-	l.V3 = l.V(3)
-	l.V4 = l.V(4)
-	l.V5 = l.V(5)
-	l.V6 = l.V(6)
 	return l
 }
 

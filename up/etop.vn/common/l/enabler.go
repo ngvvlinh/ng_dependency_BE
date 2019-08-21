@@ -164,7 +164,7 @@ func parseWildcardPatterns(input string) (result WildcardPatterns, errPattern st
 			lvl = -lvl
 		}
 		if lvl > MaxVerbosity {
-			return WildcardPatterns{}, p, fmt.Errorf("verbosity must be from 1 to %v", MaxVerbosity)
+			return WildcardPatterns{}, p, fmt.Errorf("verbosity must be from 0 to %v", MaxVerbosity)
 		}
 		result[lvl] = append(result[lvl], r)
 	}
