@@ -124,7 +124,7 @@ func New(opts ...zap.Option) Logger {
 	if e, ok := enablers[name]; ok {
 		enabler = e
 	} else {
-		enabler = NewAtomicLevel()
+		enabler = NewAtomicLevel(name)
 		enablers[name] = enabler
 	}
 

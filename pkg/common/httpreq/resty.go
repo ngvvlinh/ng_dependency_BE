@@ -20,19 +20,15 @@ type Resty struct {
 type RestyResponse = resty.Response
 
 func NewResty(cfg RestyConfig) *Resty {
-	var r *resty.Client
+	client := &Resty{}
 	if cfg.Client == nil {
-		r = resty.New()
+		client.Client = *resty.New()
 	} else {
-		r = resty.NewWithClient(cfg.Client)
+		client.Client = *resty.NewWithClient(cfg.Client)
 	}
-	ll.Watch(func(level zapcore.Level) {
+	ll.Watch(func(name string, level zapcore.Level) {
 		enabled := level.Enabled(l.V(6))
-		r.SetDebug(enabled)
+		client.Client.SetDebug(enabled)
 	})
-
-	client := &Resty{
-		Client: *r,
-	}
 	return client
 }
