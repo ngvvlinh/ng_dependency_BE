@@ -31,6 +31,7 @@ build:
   script:
   - scripts/ci/cache-load.sh
   - scripts/verify-imports.sh
+  - scripts/install-tools.sh
   - go run ./scripts/init_testdb/main.go -drop
   - scripts/ci/test-all.sh
   - scripts/ci/cache-save.sh

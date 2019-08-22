@@ -44,6 +44,7 @@ require (
 	github.com/lib/pq v1.2.0
 	github.com/mattn/go-isatty v0.0.9 // indirect
 	github.com/pierrec/lz4 v2.2.7+incompatible // indirect
+	github.com/pkg/errors v0.8.1
 	github.com/pquerna/ffjson v0.0.0-20190813045741-dac163c6c0a9
 	github.com/prometheus/client_golang v1.1.0
 	github.com/rcrowley/go-metrics v0.0.0-20190826022208-cac0b30c2563 // indirect
