@@ -173,27 +173,24 @@ func (s *EventStreamer) HandleEventStream(c *httpx.Context) error {
 
 var marshaler = jsonpb.Marshaler{OrigName: true, EmitDefaults: true}
 
-func writeEvent(w http.ResponseWriter, event *Event) error {
+func writeEvent(w http.ResponseWriter, event *Event) {
 	if event.retryInSecond != 0 {
-		fmt.Fprintf(w, "retry: %d000\n", event.retryInSecond)
+		_, _ = fmt.Fprintf(w, "retry: %d000\n", event.retryInSecond)
 	}
 	if event.Type != "" {
-		fmt.Fprintf(w, "event: %s\n", event.Type)
+		_, _ = fmt.Fprintf(w, "event: %s\n", event.Type)
 	}
 	switch payload := event.Payload.(type) {
 	case []byte:
-		_, err := fmt.Fprintf(w, "data: %s\n\n", payload)
-		return err
+		_, _ = fmt.Fprintf(w, "data: %s\n\n", payload)
 
 	case string:
-		_, err := fmt.Fprintf(w, "data: %s\n\n", payload)
-		return err
+		_, _ = fmt.Fprintf(w, "data: %s\n\n", payload)
 
 	case proto.Message:
-		fmt.Fprint(w, "data: ")
-		err := marshaler.Marshal(w, payload)
-		fmt.Fprint(w, "\n\n")
-		return err
+		_, _ = fmt.Fprint(w, "data: ")
+		_ = marshaler.Marshal(w, payload)
+		_, _ = fmt.Fprint(w, "\n\n")
 
 	default:
 		panic("unsupported payload type")

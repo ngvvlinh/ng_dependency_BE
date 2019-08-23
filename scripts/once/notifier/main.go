@@ -75,7 +75,7 @@ func main() {
 	}
 	errCount := 0
 	successCount := 0
-	for i, l := 0, len(devices); i < l; i++ {
+	for i, n := 0, len(devices); i < n; i++ {
 		err := <-chUpdate
 		if err != nil {
 			errCount++

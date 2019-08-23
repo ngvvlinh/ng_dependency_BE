@@ -254,7 +254,7 @@ func GenerateCodeWithType(char string, shopCode string, t time.Time) string {
 	prefix := GetOrderPrefixByDate(t)
 
 	lastPart := GenerateCode(Alphabet32, codeLength)
-	code := string(char) + "-" + prefix + "." + shopCode + "." + lastPart
+	code := char + "-" + prefix + "." + shopCode + "." + lastPart
 	return code + CalcChecksumCharStr(Alphabet32Checksum, code, 1)
 }
 

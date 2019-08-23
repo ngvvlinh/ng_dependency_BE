@@ -98,20 +98,25 @@ func UploadHandler(c *httpx.Context) error {
 		if err := ensureDir(dirPath); err != nil {
 			return err
 		}
-		dst, err := os.Create(filepath.Join(dirPath, genName))
-		if err != nil {
-			errors[i] = NewUploadError(cm.Internal, cm.Internal.String(), file.Filename)
+		if !func() bool {
+			dst, err := os.Create(filepath.Join(dirPath, genName))
+			if err != nil {
+				errors[i] = NewUploadError(cm.Internal, cm.Internal.String(), file.Filename)
+				return false
+			}
+			defer ignoreError(dst.Close())
+
+			if _, err = io.Copy(dst, src); err != nil {
+				ll.Info("Error writing file", l.Error(err))
+				errors[i] = NewUploadError(cm.Internal, cm.Internal.String(), file.Filename)
+				return false
+			}
+			return true
+		}() {
 			continue
 		}
-		defer dst.Close()
 
-		if _, err = io.Copy(dst, src); err != nil {
-			ll.Info("Error writing file", l.Error(err))
-			errors[i] = NewUploadError(cm.Internal, cm.Internal.String(), file.Filename)
-			continue
-		}
-
-		ll.Info("Uploaded", l.String("filename", genName))
+		ll.Debug("Uploaded", l.String("filename", genName))
 		resp := map[string]interface{}{
 			"id":       id,
 			"filename": file.Filename,
@@ -139,7 +144,7 @@ func verifyImage(file *multipart.FileHeader) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	defer src.Close()
+	defer ignoreError(src.Close())
 
 	if file.Size < minSize {
 		return "", NewUploadError(cm.InvalidArgument, "Invalid filesize", file.Filename)
@@ -164,3 +169,5 @@ func verifyImage(file *multipart.FileHeader) (string, error) {
 func ensureDir(dir string) error {
 	return os.MkdirAll(dir, 0755)
 }
+
+func ignoreError(err error) {}

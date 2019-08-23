@@ -75,9 +75,10 @@ func (h *Handler) ConsumeAndHandle(ctx context.Context) {
 			pc, err := h.consumer.Consume(kafkaTopic, int32(partition))
 			if err != nil {
 				ll.S.Fatalf("Error while consuming topic: %v:%v", kafkaTopic, partition)
+				panic(err)
 			}
 			defer h.wg.Done()
-			defer pc.Close()
+			defer ignoreError(pc.Close())
 			wg.Done()
 
 			err = pc.ConsumeAndHandle(ctx, handler)
@@ -109,3 +110,5 @@ func (h *Handler) HandleInternalControl(ctx context.Context, event *sarama.Consu
 	ll.Debug("intctl: dispatched listener", l.String("channel", channel))
 	return listener(ctx, event)
 }
+
+func ignoreError(err error) {}

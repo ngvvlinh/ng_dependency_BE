@@ -48,8 +48,8 @@ func (a Alphabet) Parse(s string) (int, error) {
 // Encode ...
 func (a Alphabet) Encode(v uint64, minLen int) []byte {
 	s := a.EncodeReverse(v, minLen)
-	for i, l := 0, len(s); i < l/2; i++ {
-		s[i], s[l-i-1] = s[l-i-1], s[i]
+	for i, n := 0, len(s); i < n/2; i++ {
+		s[i], s[n-i-1] = s[n-i-1], s[i]
 	}
 	return s
 }
@@ -58,9 +58,9 @@ func (a Alphabet) Encode(v uint64, minLen int) []byte {
 func (a Alphabet) EncodeReverse(v uint64, minLen int) []byte {
 	var s []byte
 	for v > 0 || len(s) < minLen {
-		l := uint64(len(a))
-		s = append(s, a[v%l])
-		v = v / l
+		n := uint64(len(a))
+		s = append(s, a[v%n])
+		v = v / n
 	}
 	return s
 }

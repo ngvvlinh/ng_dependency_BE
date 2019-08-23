@@ -125,7 +125,7 @@ func templateFfmChangedStatus(ffm *shipmodel.Fulfillment) *notifiermodel.CreateN
 		var order = new(ordermodel.Order)
 		_ = x.Table("order").Where("id = ?", ffm.OrderID).ShouldGet(order)
 		cancelReason := ffm.CancelReason
-		if cancelReason == "" && order != nil {
+		if cancelReason == "" {
 			cancelReason = order.CancelReason
 		}
 		content = fmt.Sprintf("Lý do hủy: %v. Đơn hàng thuộc người nhận %v, %v, %v. Thu hộ %vđ", cancelReason, ffm.AddressTo.FullName, ffm.AddressTo.Phone, ffm.AddressTo.Province, totalCODAmount)

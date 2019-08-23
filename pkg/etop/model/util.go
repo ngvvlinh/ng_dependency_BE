@@ -1,8 +1,6 @@
 package model
 
 import (
-	"strings"
-
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/validate"
 	"etop.vn/common/xerrors"
@@ -51,14 +49,6 @@ func IsShopID(id int64) bool {
 
 func IsEtopAccountID(id int64) bool {
 	return id == EtopAccountID
-}
-
-func EtopAccount() *Account {
-	return &Account{
-		ID:   EtopAccountID,
-		Name: "eTop",
-		Type: TypeEtop,
-	}
 }
 
 type UpdateListRequest struct {
@@ -116,49 +106,6 @@ func ListContain(A []string, s string) bool {
 	return false
 }
 
-func TagsSplit(s string) []string {
-	if s == "" {
-		return nil
-	}
-	return strings.Split(s, ",")
-}
-
-func TagsJoin(tags []string) []string {
-	flag := false
-	for _, t := range tags {
-		if strings.TrimSpace(t) == "" {
-			flag = true
-			break
-		}
-	}
-	if !flag {
-		return tags
-	}
-	res := make([]string, 0, len(tags))
-	for _, t := range tags {
-		if strings.TrimSpace(t) != "" {
-			res = append(res, t)
-		}
-	}
-	return res
-}
-
-func coalesce(ss ...string) string {
-	for _, s := range ss {
-		if s != "" {
-			return s
-		}
-	}
-	return ""
-}
-
-func x() {
-	// coalesce([]string{"a", "b"})
-
-	strings := []string{"a", "b"}
-	coalesce(strings...)
-}
-
 func PatchTag(sourceImages []string, cmd UpdateListRequest) ([]string, error) {
 	for i, tag := range cmd.Adds {
 		tag, ok := validate.NormalizeTag(tag)
@@ -183,24 +130,6 @@ func CoalesceString2(s1, s2 string) string {
 		return s1
 	}
 	return s2
-}
-
-func CoalesceStatus3(is ...Status3) Status3 {
-	for _, i := range is {
-		if i != 0 {
-			return i
-		}
-	}
-	return 0
-}
-
-func CoalesceStatus4(is ...Status4) Status4 {
-	for _, i := range is {
-		if i != 0 {
-			return i
-		}
-	}
-	return 0
 }
 
 func URL(baseUrl, path string) string {

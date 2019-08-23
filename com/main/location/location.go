@@ -218,6 +218,7 @@ func init() {
 		district := districtIndexCode[code]
 		if district == nil {
 			ll.S.Fatal("Invalid urban district code: ", code)
+			panic("unexpected")
 		}
 		district.UrbanType = types.Urban
 	}
@@ -225,6 +226,7 @@ func init() {
 		district := districtIndexCode[code]
 		if district == nil {
 			ll.S.Fatal("Invalid suburban 1 district code: ", code)
+			panic("unexpected")
 		}
 		district.UrbanType = types.Suburban1
 	}
@@ -232,6 +234,7 @@ func init() {
 		district := districtIndexCode[code]
 		if district == nil {
 			ll.S.Fatal("Invalid suburban 2 district code: ", code)
+			panic("unexpected")
 		}
 		district.UrbanType = types.Suburban2
 	}

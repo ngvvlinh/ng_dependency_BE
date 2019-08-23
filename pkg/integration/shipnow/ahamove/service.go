@@ -223,6 +223,7 @@ func parseServiceCode(code string) (serviceCode string, err error) {
 	service := ServicesIndexShortCode[code[7]]
 	if service == nil {
 		err = cm.Errorf(cm.InvalidArgument, nil, "Ahamove: Invalid service code")
+		return
 	}
 
 	var city CityCode

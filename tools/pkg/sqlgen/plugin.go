@@ -262,7 +262,7 @@ func (g *gen) Add(name string, typs []types.Type) (string, error) {
 		def.all = false
 
 		if g.TypeString(typs[2]) != "sq.AS" {
-			fmt.Println(helpJoin)
+			fmt.Print(helpJoin)
 			return "", fmt.Errorf(
 				"JOIN %v: The third param must be sq.AS (got %v)",
 				g.TypeString(typs[0]), g.TypeString(typs[2]))
@@ -271,7 +271,7 @@ func (g *gen) Add(name string, typs []types.Type) (string, error) {
 		var err error
 		def.joins, err = g.parseJoin(typs[3:])
 		if err != nil {
-			fmt.Println(helpJoin)
+			fmt.Print(helpJoin)
 			return "", fmt.Errorf("JOIN %v: %v", g.TypeString(typs[0]), err)
 		}
 	}
@@ -566,6 +566,7 @@ const helpJoin = `
             User     *User
             UserInfo *UserInfo
         }
+
 `
 
 func (g *gen) parseJoin(typs []types.Type) (joins []*joinDef, err error) {

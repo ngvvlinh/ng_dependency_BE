@@ -327,7 +327,7 @@ type GetAccountRequest struct {
 
 type VerifyAccountRequest struct {
 	Token       string `url:"token"`
-	Description string `url:"description"'`
+	Description string `url:"description"`
 	Subject     string `url:"subject"`
 	Type        string `url:"type"`
 }
@@ -337,7 +337,7 @@ type VerifyAccountResponse struct {
 }
 
 type Ticket struct {
-	ID          int    `json:"id"'`
+	ID          int    `json:"id"`
 	Description string `json:"description"`
 	CreatedAt   string `json:"created_at"`
 	Subject     string `json:"subject"`

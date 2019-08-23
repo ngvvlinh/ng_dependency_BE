@@ -5,6 +5,8 @@ import (
 	"errors"
 	"fmt"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
 )
 
 type TestQuery struct {
@@ -29,12 +31,7 @@ func TestQueryHandlerReturnsError(t *testing.T) {
 
 	ctx := NewRootContext(context.Background())
 	err := bus.Dispatch(ctx, &TestQuery{})
-
-	if err == nil {
-		t.Fatal("Send query failed " + err.Error())
-	} else {
-		t.Log("Handler error received ok")
-	}
+	assert.Error(t, err)
 }
 
 func TestQueryHandlerReturn(t *testing.T) {
@@ -48,12 +45,7 @@ func TestQueryHandlerReturn(t *testing.T) {
 	ctx := NewRootContext(context.Background())
 	query := &TestQuery{}
 	err := bus.Dispatch(ctx, query)
-
-	if err != nil {
-		t.Fatal("Send query failed " + err.Error())
-	} else if query.Resp != "hello from handler" {
-		t.Fatal("Failed to get response from handler")
-	}
+	assert.NoError(t, err)
 }
 
 func TestQueryMockHandlerReturnsError(t *testing.T) {
@@ -65,12 +57,7 @@ func TestQueryMockHandlerReturnsError(t *testing.T) {
 
 	ctx := context.Background()
 	err := bus.Dispatch(ctx, &TestQuery{})
-
-	if err == nil {
-		t.Fatal("Send query failed " + err.Error())
-	} else {
-		t.Log("Handler error received ok")
-	}
+	assert.Error(t, err)
 }
 
 func TestQueryMockHandlerReturn(t *testing.T) {
@@ -84,12 +71,7 @@ func TestQueryMockHandlerReturn(t *testing.T) {
 	ctx := context.Background()
 	query := &TestQuery{}
 	err := bus.Dispatch(ctx, query)
-
-	if err != nil {
-		t.Fatal("Send query failed " + err.Error())
-	} else if query.Resp != "hello from test handler" {
-		t.Fatal("Failed to get response from handler")
-	}
+	assert.NoError(t, err)
 }
 
 func TestEventListeners(t *testing.T) {
@@ -119,12 +101,12 @@ func TestPrintStack(t *testing.T) {
 	bus := New()
 
 	bus.AddHandler(func(ctx context.Context, query *TestQuery) error {
-		bus.Dispatch(ctx, &TestQueryA{"A1"})
+		_ = bus.Dispatch(ctx, &TestQueryA{"A1"})
 		return bus.Dispatch(ctx, &TestQueryA{"A2"})
 	})
 
 	bus.AddHandler(func(ctx context.Context, query *TestQueryA) error {
-		bus.Dispatch(ctx, &TestQueryB{query.Value + "-B1"})
+		_ = bus.Dispatch(ctx, &TestQueryB{query.Value + "-B1"})
 		return bus.Dispatch(ctx, &TestQueryB{query.Value + "-B2"})
 	})
 

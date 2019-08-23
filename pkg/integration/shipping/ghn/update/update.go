@@ -73,7 +73,7 @@ func CalcUpdateFulfillment(ffm *shipmodel.Fulfillment, msg *ghnclient.CallbackOr
 	shippingFeeShopLines := model.GetShippingFeeShopLines(update.ProviderShippingFeeLines, ffm.EtopPriceRule, &ffm.EtopAdjustedShippingFeeMain)
 	shippingFeeShop := 0
 	for _, line := range shippingFeeShopLines {
-		shippingFeeShop += int(line.Cost)
+		shippingFeeShop += line.Cost
 	}
 	update.ShippingFeeShopLines = shippingFeeShopLines
 	update.ShippingFeeShop = shipmodel.CalcShopShippingFee(shippingFeeShop, ffm)
@@ -133,7 +133,7 @@ func SyncTrackingOrders(ffms []*shipmodel.Fulfillment) ([]*shipmodel.Fulfillment
 	}
 	var successCount, errorCount int
 
-	for i, l := 0, len(ffms); i < l; i++ {
+	for i, n := 0, len(ffms); i < n; i++ {
 		err := <-ch
 		if err == nil {
 			successCount++

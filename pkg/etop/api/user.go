@@ -488,7 +488,9 @@ func SwitchAccount(ctx context.Context, r *wrapetop.SwitchAccountEndpoint) error
 		0,
 		0,
 	)
-
+	if err != nil {
+		return err
+	}
 	if resp.Account == nil {
 		return cm.Error(cm.PermissionDenied, "Tài khoản không hợp lệ.", nil)
 	}

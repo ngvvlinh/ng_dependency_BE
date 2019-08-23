@@ -97,7 +97,7 @@ func (s *OrderStore) GetOrders(args *ordering.GetOrdersArgs) (orders []*ordering
 		x = x.Where("shop_id = ?", args.ShopID)
 	}
 	var results model.Orders
-	err = x.Find((*model.Orders)(&results))
+	err = x.Find(&results)
 	return convert.Orders(results), err
 }
 

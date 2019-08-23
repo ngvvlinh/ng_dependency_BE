@@ -38,6 +38,10 @@ func CreateWebhook(ctx context.Context, accountID int64, r *pbexternal.CreateWeb
 	}
 
 	item, err = sqlstore.Webhook(ctx).ID(item.ID).AccountID(accountID).Get()
+	if err != nil {
+		return nil, err
+	}
+
 	resp := pbexternal.PbWebhook(item, sender.LoadWebhookStates(redisStore, item.ID))
 
 	event := &intctl.ReloadWebhook{
@@ -72,10 +76,6 @@ func GetWebhooks(ctx context.Context, accountID int64) (*pbexternal.WebhooksResp
 		Webhooks: pbexternal.PbWebhooks(items, loadWebhookStates(items)),
 	}
 	return resp, err
-}
-
-func GetChanges(ctx context.Context, r *pbexternal.GetChangesRequest) (*pbexternal.Callback, error) {
-	return nil, cm.ErrTODO
 }
 
 func loadWebhookStates(webhooks []*model.Webhook) []sender.WebhookStates {

@@ -186,7 +186,7 @@ func (pricing *ESPricing) ToService(generator serviceIDGenerator, weight int, ca
 
 func GetPriceRuleDetail(weight int, priceRuleDetails map[int]*ESPricingDetail) *ESPricingDetail {
 	var weightIndex []int
-	for wIndex, _ := range priceRuleDetails {
+	for wIndex := range priceRuleDetails {
 		weightIndex = append(weightIndex, wIndex)
 	}
 	sort.Ints(weightIndex) // increase

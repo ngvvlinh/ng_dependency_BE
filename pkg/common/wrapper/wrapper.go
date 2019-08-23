@@ -83,7 +83,7 @@ func EncodeTwirpError(w io.Writer, err twirp.Error) {
 		Msg:  err.Msg(),
 		Meta: err.MetaMap(),
 	}
-	json.NewEncoder(w).Encode(twerr)
+	_ = json.NewEncoder(w).Encode(twerr)
 }
 
 func SendErrorToBot(bot *telebot.Channel, rpcName string, session *middleware.Session, req interface{}, err xerrors.TwError, errs []*cmP.Error, d time.Duration, lvl xerrors.TraceLevel, stacktrace []byte) {
@@ -120,7 +120,7 @@ func SendErrorToBot(bot *telebot.Channel, rpcName string, session *middleware.Se
 
 	switch req := req.(type) {
 	case proto.Message:
-		marshaler.Marshal(buf, req)
+		_ = marshaler.Marshal(buf, req)
 	case []byte:
 		if len(req) == 0 {
 			buf.WriteString("<empty>")
@@ -140,7 +140,7 @@ func SendErrorToBot(bot *telebot.Channel, rpcName string, session *middleware.Se
 			buf.WriteString(req)
 		}
 	default:
-		fmt.Fprintf(buf, "<unknown type=%T>", req)
+		_, _ = fmt.Fprintf(buf, "<unknown type=%T>", req)
 	}
 
 	if err != nil {
@@ -161,7 +161,7 @@ func SendErrorToBot(bot *telebot.Channel, rpcName string, session *middleware.Se
 				buf.WriteByte(' ')
 				buf.WriteString(field.Key)
 				buf.WriteByte('=')
-				fmt.Fprint(buf, logline.ValueOf(field))
+				_, _ = fmt.Fprint(buf, logline.ValueOf(field))
 			}
 			buf.WriteString(" • ")
 			buf.WriteString(xerrors.TrimFilePath(line.File))
@@ -178,7 +178,7 @@ func SendErrorToBot(bot *telebot.Channel, rpcName string, session *middleware.Se
 			if i > 0 {
 				buf.WriteByte(',')
 			}
-			marshaler.Marshal(buf, e)
+			_ = marshaler.Marshal(buf, e)
 		}
 		buf.WriteByte(']')
 	}

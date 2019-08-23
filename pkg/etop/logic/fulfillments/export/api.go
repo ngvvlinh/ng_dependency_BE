@@ -127,11 +127,11 @@ func RequestExport(ctx context.Context, r *wrappershop.RequestExportEndpoint) (_
 		return err
 	}
 
-	go exportFulfillmentsAndReportProgress(
+	go ignoreError(exportFulfillmentsAndReportProgress(
 		func() { idempgroup.ReleaseKey(key1, claim.Token) },
 		exportItem, fileName, exportOpts,
 		query.Result.Total, query.Result.Rows, query.Result.Opts,
-	)
+	))
 
 	r.Result = resp
 	return nil
@@ -146,3 +146,5 @@ func GetExports(ctx context.Context, r *wrappershop.GetExportsEndpoint) error {
 	}
 	return err
 }
+
+func ignoreError(err error) {}

@@ -497,7 +497,7 @@ func PrepareOrder(m *pborder.CreateOrderRequest, lines []*ordermodel.OrderLine) 
 	}
 
 	basketValue = int(m.BasketValue)
-	totalAmount = basketValue - totalDiscount + int(totalFee)
+	totalAmount = basketValue - totalDiscount + totalFee
 
 	// if totalDiscount != int(m.TotalDiscount) {
 	// 	return nil, cm.Error(cm.InvalidArgument, "Invalid TotalDiscount", nil)
@@ -594,7 +594,7 @@ func PrepareOrder(m *pborder.CreateOrderRequest, lines []*ordermodel.OrderLine) 
 		TotalWeight:                int(m.TotalWeight),
 		TotalTax:                   0,
 		OrderDiscount:              orderDiscount,
-		TotalDiscount:              int(totalDiscount),
+		TotalDiscount:              totalDiscount,
 		ShopShippingFee:            shopShippingFee,
 		TotalFee:                   totalFee,
 		FeeLines:                   feeLines,

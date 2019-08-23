@@ -217,7 +217,7 @@ func (rt *Router) wrapJSON(next Handler) httprouter.Handle {
 				jerr := xerrors.ToErrorJSON(twerr)
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(statusCode)
-				json.NewEncoder(w).Encode(jerr)
+				_ = json.NewEncoder(w).Encode(jerr)
 				return
 			}
 
@@ -235,7 +235,7 @@ func (rt *Router) wrapJSON(next Handler) httprouter.Handle {
 				}
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusOK)
-				w.Write(respBytes)
+				_, _ = w.Write(respBytes)
 
 			case c.resultPb != nil:
 				var buf bytes.Buffer
@@ -251,7 +251,7 @@ func (rt *Router) wrapJSON(next Handler) httprouter.Handle {
 				}
 				w.Header().Set("Content-Type", "application/json")
 				w.WriteHeader(http.StatusOK)
-				w.Write(buf.Bytes())
+				_, _ = w.Write(buf.Bytes())
 
 			default:
 				ll.Panic("If error is nil, a result must always be provided!")

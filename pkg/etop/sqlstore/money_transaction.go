@@ -440,8 +440,6 @@ func RemoveFfmsMoneyTransaction(ctx context.Context, cmd *modelx.RemoveFfmsMoney
 		cmd.Result = query.Result
 		return nil
 	})
-
-	return nil
 }
 
 func ConfirmMoneyTransaction(ctx context.Context, cmd *modelx.ConfirmMoneyTransaction) error {
@@ -786,8 +784,6 @@ func RemoveMoneyTransactionShippingExternalLines(ctx context.Context, cmd *model
 		cmd.Result = query.Result
 		return nil
 	})
-
-	return nil
 }
 
 func DeleteMoneyTransactionShippingExternal(ctx context.Context, cmd *modelx.DeleteMoneyTransactionShippingExternal) error {

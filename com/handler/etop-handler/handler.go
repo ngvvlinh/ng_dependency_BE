@@ -116,9 +116,10 @@ func (h *Handler) ConsumeAndHandleAllTopics(ctx context.Context) {
 				pc, err := h.consumer.Consume(kafkaTopic, partition)
 				if err != nil {
 					ll.S.Fatalf("Error while consuming topic: %v:%v", kafkaTopic, partition)
+					return
 				}
 				defer h.wg.Done()
-				defer pc.Close()
+				defer ignoreError(pc.Close())
 
 				wg.Done()
 				m.Lock()
@@ -266,3 +267,5 @@ func pbChangeType(op pgevent.TGOP) string {
 		return ""
 	}
 }
+
+func ignoreError(err error) {}

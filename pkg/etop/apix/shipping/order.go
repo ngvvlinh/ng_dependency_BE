@@ -270,7 +270,7 @@ func validateAddress(address *pborder.OrderAddress, shippingProvider model.Shipp
 	if s, ok := validate.NormalizeGenericName(address.FullName); !ok {
 		return errors.New("Tên không hợp lệ")
 	} else {
-		address.FullName = string(s)
+		address.FullName = s
 	}
 
 	if shippingProvider == model.TypeVTPost {

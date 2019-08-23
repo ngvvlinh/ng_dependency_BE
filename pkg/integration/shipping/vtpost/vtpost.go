@@ -401,10 +401,3 @@ func CalcDeliveryDurationFastService(fromProvince, toProvince *location.Province
 		return duration
 	}
 }
-
-func MaxInt(a, b int) int {
-	if a > b {
-		return a
-	}
-	return b
-}

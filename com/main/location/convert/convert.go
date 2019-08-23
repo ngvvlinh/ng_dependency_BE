@@ -87,7 +87,7 @@ func District(in *types.District, out *location.District) error {
 		Name:         in.Name,
 		Code:         in.Code,
 		ProvinceCode: in.ProvinceCode,
-		UrbanType:    location.UrbanType(in.UrbanType),
+		UrbanType:    in.UrbanType,
 		Extra: location.Extra{
 			GhnId:       in.GhnID,
 			VtpostId:    in.VTPostID,

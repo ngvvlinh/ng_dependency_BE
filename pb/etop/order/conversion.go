@@ -261,7 +261,7 @@ func Convert_core_ShipnowService_To_api_ShipnowService(in *shipnowtypes.ShipnowS
 		return nil
 	}
 	return &ShippnowService{
-		Carrier:     string(carrier.CarrierToString(in.Carrier)),
+		Carrier:     carrier.CarrierToString(in.Carrier),
 		Name:        in.Name,
 		Code:        in.Code,
 		Fee:         in.Fee,

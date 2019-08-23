@@ -24,6 +24,7 @@ FLAGS    :
 
 Example:
     wrapper_gen -p shop shop/one.go shop/two.go -p main main/a.go
+
 `
 
 type Config struct {
@@ -55,7 +56,7 @@ func main() {
 func parseFlags() (groups InputGroups) {
 	args := os.Args[1:]
 	if len(args) == 0 {
-		fmt.Println(usage)
+		fmt.Print(usage)
 		os.Exit(2)
 	}
 

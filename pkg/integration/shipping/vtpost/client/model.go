@@ -101,17 +101,17 @@ var (
 )
 
 var StateCodeMap = map[StateShipping][]int{
-	StateCanceled:   []int{107, 201, 503, 101},
-	StateNotConfirm: []int{-100},
-	StateConfirmed:  []int{100, -108},
-	StatePicking:    []int{102, 103, 104},
-	StateStored:     []int{-109, -110, 200, 202, 300, 320, 400, 301},
-	StatePicked:     []int{105},
-	StateDelivering: []int{500, 505, 506, 507, 570, 508, 509, 550},
-	StateReturning:  []int{502, 515},
-	StateReturned:   []int{504},
-	// StateWaitingToConfirmReturning: []int{505},
-	StateDelivered: []int{501},
+	StateCanceled:   {107, 201, 503, 101},
+	StateNotConfirm: {-100},
+	StateConfirmed:  {100, -108},
+	StatePicking:    {102, 103, 104},
+	StateStored:     {-109, -110, 200, 202, 300, 320, 400, 301},
+	StatePicked:     {105},
+	StateDelivering: {500, 505, 506, 507, 570, 508, 509, 550},
+	StateReturning:  {502, 515},
+	StateReturned:   {504},
+	// StateWaitingToConfirmReturning: {505},
+	StateDelivered: {501},
 }
 
 var SubStateMap = map[int]string{

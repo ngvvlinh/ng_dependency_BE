@@ -203,10 +203,10 @@ func (p *Carrier) GetShippingServices(ctx context.Context, args shipping_provide
 		ToDistrict:   toDistrict,
 		Request: &ghnclient.FindAvailableServicesRequest{
 			Connection:     ghnclient.Connection{},
-			Weight:         int(args.ChargeableWeight),
-			Length:         int(args.Length),
-			Width:          int(args.Width),
-			Height:         int(args.Height),
+			Weight:         args.ChargeableWeight,
+			Length:         args.Length,
+			Width:          args.Width,
+			Height:         args.Height,
 			FromDistrictID: int(fromDistrict.GhnId),
 			ToDistrictID:   int(toDistrict.GhnId),
 			InsuranceFee:   args.GetInsuranceAmount(),
@@ -237,10 +237,10 @@ func (c *Carrier) GetAllShippingServices(ctx context.Context, args shipping_prov
 		ToDistrict:   toDistrict,
 		Request: &ghnclient.FindAvailableServicesRequest{
 			Connection:     ghnclient.Connection{},
-			Weight:         int(args.ChargeableWeight),
-			Length:         int(args.Length),
-			Width:          int(args.Width),
-			Height:         int(args.Height),
+			Weight:         args.ChargeableWeight,
+			Length:         args.Length,
+			Width:          args.Width,
+			Height:         args.Height,
 			FromDistrictID: int(fromDistrict.GhnId),
 			ToDistrictID:   int(toDistrict.GhnId),
 			InsuranceFee:   args.GetInsuranceAmount(),
@@ -295,7 +295,7 @@ func (c *Carrier) CalcRefreshFulfillmentInfo(ctx context.Context, ffm *shipmodel
 	shippingFeeShopLines := model.GetShippingFeeShopLines(update.ProviderShippingFeeLines, ffm.EtopPriceRule, &ffm.EtopAdjustedShippingFeeMain)
 	shippingFeeShop := 0
 	for _, line := range shippingFeeShopLines {
-		shippingFeeShop += int(line.Cost)
+		shippingFeeShop += line.Cost
 	}
 	update.ShippingFeeShopLines = shippingFeeShopLines
 	update.ShippingFeeShop = shipmodel.CalcShopShippingFee(shippingFeeShop, ffm)

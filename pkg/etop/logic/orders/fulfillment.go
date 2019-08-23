@@ -143,7 +143,7 @@ func ConfirmOrderAndCreateFulfillments(ctx context.Context, shop *model.Shop, pa
 	}
 
 	// update order fulfillment_type: `shipment`
-	ffmIDs := []int64{}
+	var ffmIDs []int64
 	for _, _ffm := range ffms {
 		ffmIDs = append(ffmIDs, _ffm.ID)
 	}

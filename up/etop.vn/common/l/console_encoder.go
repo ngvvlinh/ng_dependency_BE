@@ -171,7 +171,7 @@ func (enc *consoleEncoder) AppendByteString(val []byte) {
 }
 
 func (enc *consoleEncoder) AppendComplex128(val complex128) {
-	r, i := float64(real(val)), float64(imag(val))
+	r, i := real(val), imag(val)
 	enc.buf.AppendByte('"')
 	enc.buf.AppendFloat(r, 64)
 	enc.buf.AppendByte('+')
@@ -245,7 +245,7 @@ func (enc *consoleEncoder) AppendUintptr(v uintptr)            { enc.AppendUint6
 
 func (enc *consoleEncoder) Clone() zapcore.Encoder {
 	clone := enc.clone()
-	clone.buf.Write(enc.buf.Bytes())
+	_, _ = clone.buf.Write(enc.buf.Bytes())
 	return clone
 }
 
@@ -278,7 +278,7 @@ func (enc *consoleEncoder) EncodeEntry(ent zapcore.Entry, fields []zapcore.Field
 		if i > 0 {
 			line.AppendByte('\t')
 		}
-		fmt.Fprint(line, arr.elems[i])
+		_, _ = fmt.Fprint(line, arr.elems[i])
 	}
 	putSliceEncoder(arr)
 
@@ -383,7 +383,7 @@ func (enc *consoleEncoder) safeAddByteString(s []byte) {
 			i++
 			continue
 		}
-		enc.buf.Write(s[i : i+size])
+		_, _ = enc.buf.Write(s[i : i+size])
 		i += size
 	}
 }

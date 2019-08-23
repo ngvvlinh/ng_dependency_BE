@@ -66,7 +66,7 @@ func (im *Impl) GetAllLocations(ctx context.Context, query *location.GetAllLocat
 			return convert.Wards(wards, &result.Wards)
 		}
 	}
-	if count != 1 {
+	if count != 1 || execFunc == nil {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "must provide exactly 1 argument")
 	}
 	return result, execFunc()

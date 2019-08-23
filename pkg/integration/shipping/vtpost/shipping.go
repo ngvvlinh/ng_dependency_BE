@@ -224,8 +224,8 @@ func (c *Carrier) CreateFulfillment(ctx context.Context, order *ordermodel.Order
 		Status:                    model.S5SuperPos, // Now processing
 		ShippingStatus:            model.S5SuperPos,
 		ShippingFeeCustomer:       order.ShopShippingFee,
-		ShippingServiceFee:        int(r.Data.MoneyTotal),
-		ShippingFeeShop:           int(r.Data.MoneyTotal),
+		ShippingServiceFee:        r.Data.MoneyTotal,
+		ShippingFeeShop:           r.Data.MoneyTotal,
 		ShippingCode:              r.Data.OrderNumber,
 		ExternalShippingName:      "", // TODO
 		ExternalShippingID:        r.Data.OrderNumber,

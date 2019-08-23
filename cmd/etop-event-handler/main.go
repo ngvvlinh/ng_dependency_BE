@@ -42,8 +42,6 @@ var (
 	healthservice = health.New()
 )
 
-const consumerGroupCIO = "handler/cio"
-
 func main() {
 	cc.InitFlags()
 	flag.Parse()

@@ -240,42 +240,42 @@ type Connection struct {
 type CreateOrderRequest struct {
 	Connection
 
-	PaymentTypeID        int     `json:"PaymentTypeID"`        //: 1,
-	FromDistrictID       int     `json:"FromDistrictID"`       //: 1455,
-	FromWardCode         string  `json:"FromWardCode"`         //: "21402",
-	ToDistrictID         int     `json:"ToDistrictID"`         //: 1462,
-	ToWardCode           string  `json:"ToWardCode"`           //: "21609",
-	Note                 string  `json:"Note"`                 //: "Tạo ĐH qua API",
-	SealCode             string  `json:"SealCode"`             //: "tem niêm phong",
-	ExternalCode         string  `json:"ExternalCode"`         //: "",
-	ClientContactName    string  `json:"ClientContactName"`    //: "client name",
-	ClientContactPhone   string  `json:"ClientContactPhone"`   //: "0987654321",
-	ClientAddress        string  `json:"ClientAddress"`        //: "140 Lê Trọng Tấn",
-	CustomerName         string  `json:"CustomerName"`         //: "Nguyễn Văn A",
-	CustomerPhone        string  `json:"CustomerPhone"`        //: "01666666666",
-	ShippingAddress      string  `json:"ShippingAddress"`      //: "137 Lê Quang Định",
-	CoDAmount            int     `json:"CoDAmount"`            //: 1500000,
-	NoteCode             string  `json:"NoteCode"`             //: "CHOXEMHANGKHONGTHU",
-	InsuranceFee         int     `json:"InsuranceFee"`         //: 0,
-	ClientHubID          int     `json:"ClientHubID"`          //: 0,
-	ServiceID            int     `json:"ServiceID"`            //: 53319,
-	ToLatitude           float64 `json:"ToLatitude"`           //: 1.2343322,
-	ToLongitude          float64 `json:"ToLongitude"`          //: 10.54324322,
-	FromLat              float64 `json:"FromLat"`              //: 1.2343322,
-	FromLng              float64 `json:"FromLng"`              //: 10.54324322,
-	Content              string  `json:"Content"`              //: "Test nội dung",
-	CouponCode           string  `json:"CouponCode"`           //: "",
-	Weight               int     `json:"Weight"`               //: 10200,
-	Length               int     `json:"Length"`               //: 10,
-	Width                int     `json:"Width"`                //: 10,
-	Height               int     `json:"Height"`               //: 10,
-	CheckMainBankAccount bool    `json:"CheckMainBankAccount"` //: false
-	ReturnContactName    string  `json:"ReturnContactName"`    //: "",
-	ReturnContactPhone   string  `json:"ReturnContactPhone"`   //: "",
-	ReturnAddress        string  `json:"ReturnAddress"`        //: "",
-	ReturnDistrictID     int     `json:"ReturnDistrictID"`     //: "",
-	ExternalReturnCode   string  `json:"ExternalReturnCode"`   //: "",
-	IsCreditCreate       bool    `json:"IsCreditCreate"`       //: true,
+	PaymentTypeID        int     `json:"PaymentTypeID"`        // 1,
+	FromDistrictID       int     `json:"FromDistrictID"`       // 1455,
+	FromWardCode         string  `json:"FromWardCode"`         // "21402",
+	ToDistrictID         int     `json:"ToDistrictID"`         // 1462,
+	ToWardCode           string  `json:"ToWardCode"`           // "21609",
+	Note                 string  `json:"Note"`                 // "Tạo ĐH qua API",
+	SealCode             string  `json:"SealCode"`             // "tem niêm phong",
+	ExternalCode         string  `json:"ExternalCode"`         // "",
+	ClientContactName    string  `json:"ClientContactName"`    // "client name",
+	ClientContactPhone   string  `json:"ClientContactPhone"`   // "0987654321",
+	ClientAddress        string  `json:"ClientAddress"`        // "140 Lê Trọng Tấn",
+	CustomerName         string  `json:"CustomerName"`         // "Nguyễn Văn A",
+	CustomerPhone        string  `json:"CustomerPhone"`        // "01666666666",
+	ShippingAddress      string  `json:"ShippingAddress"`      // "137 Lê Quang Định",
+	CoDAmount            int     `json:"CoDAmount"`            // 1500000,
+	NoteCode             string  `json:"NoteCode"`             // "CHOXEMHANGKHONGTHU",
+	InsuranceFee         int     `json:"InsuranceFee"`         // 0,
+	ClientHubID          int     `json:"ClientHubID"`          // 0,
+	ServiceID            int     `json:"ServiceID"`            // 53319,
+	ToLatitude           float64 `json:"ToLatitude"`           // 1.2343322,
+	ToLongitude          float64 `json:"ToLongitude"`          // 10.54324322,
+	FromLat              float64 `json:"FromLat"`              // 1.2343322,
+	FromLng              float64 `json:"FromLng"`              // 10.54324322,
+	Content              string  `json:"Content"`              // "Test nội dung",
+	CouponCode           string  `json:"CouponCode"`           // "",
+	Weight               int     `json:"Weight"`               // 10200,
+	Length               int     `json:"Length"`               // 10,
+	Width                int     `json:"Width"`                // 10,
+	Height               int     `json:"Height"`               // 10,
+	CheckMainBankAccount bool    `json:"CheckMainBankAccount"` // false
+	ReturnContactName    string  `json:"ReturnContactName"`    // "",
+	ReturnContactPhone   string  `json:"ReturnContactPhone"`   // "",
+	ReturnAddress        string  `json:"ReturnAddress"`        // "",
+	ReturnDistrictID     int     `json:"ReturnDistrictID"`     // "",
+	ExternalReturnCode   string  `json:"ExternalReturnCode"`   // "",
+	IsCreditCreate       bool    `json:"IsCreditCreate"`       // true,
 
 	ShippingOrderCosts []ShippingOrderCostRequest `json:"ShippingOrderCosts"`
 }
@@ -312,15 +312,15 @@ func (r *CreateOrderRequest) Validate() error {
 }
 
 type CreateOrderResponse struct {
-	ErrorMessage         String `json:"ErrorMessage"`         // : "",
-	OrderID              Int    `json:"OrderID"`              // : 268916,
-	PaymentTypeID        Int    `json:"PaymentTypeID"`        // : 4,
-	OrderCode            String `json:"OrderCode"`            // : "236697NF",
-	ExtraFee             Int    `json:"ExtraFee"`             // : 0,
-	TotalServiceFee      Int    `json:"TotalServiceFee"`      // : 81400,
-	ExpectedDeliveryTime Time   `json:"ExpectedDeliveryTime"` // : "2017-09-22T23:00:00+07:00",
-	ClientHubID          Int    `json:"ClientHubID"`          // : 0,
-	SortCode             String `json:"SortCode"`             // : "N/A"
+	ErrorMessage         String `json:"ErrorMessage"`         // "",
+	OrderID              Int    `json:"OrderID"`              // 268916,
+	PaymentTypeID        Int    `json:"PaymentTypeID"`        // 4,
+	OrderCode            String `json:"OrderCode"`            // "236697NF",
+	ExtraFee             Int    `json:"ExtraFee"`             // 0,
+	TotalServiceFee      Int    `json:"TotalServiceFee"`      // 81400,
+	ExpectedDeliveryTime Time   `json:"ExpectedDeliveryTime"` // "2017-09-22T23:00:00+07:00",
+	ClientHubID          Int    `json:"ClientHubID"`          // 0,
+	SortCode             String `json:"SortCode"`             // "N/A"
 }
 
 type ShippingOrderCostRequest struct {
@@ -333,90 +333,90 @@ type OrderCodeRequest struct {
 }
 
 type Order struct {
-	CODTransferDate      String `json:"CODTransferDate"`      //: "",
-	CSLostPackageID      Int    `json:"CSLostPackageID"`      //: 0,
-	CheckMainBankAccount Bool   `json:"CheckMainBankAccount"` //: false,
-	ClientHubID          Int    `json:"ClientHubID"`          //: 2,
-	CoDAmount            Int    `json:"CoDAmount"`            //: 1500000,
-	Content              String `json:"Content"`              //: "Test nội dung",
-	CouponCode           String `json:"CouponCode"`           //: "",
-	CurrentStatus        String `json:"CurrentStatus"`        //: "Cancel",
-	CurrentWarehouseName String `json:"CurrentWarehouseName"` //: "",
-	CustomerID           Int    `json:"CustomerID"`           //: 0,
-	CustomerName         String `json:"CustomerName"`         //: "Nguyễn Văn UpdateInfo",
-	CustomerPhone        String `json:"CustomerPhone"`        //: "0934035687",
-	DeliverWarehouseName String `json:"DeliverWarehouseName"` //: "",
-	EndDeliveryTime      String `json:"EndDeliveryTime"`      //: "",
-	EndPickTime          String `json:"EndPickTime"`          //: "2017-09-14T15:23:56.643",
-	EndReturnTime        String `json:"EndReturnTime"`        //: "",
-	ErrorMessage         String `json:"ErrorMessage"`         //: "",
-	ExpectedDeliveryTime String `json:"ExpectedDeliveryTime"` //: "2017-09-18T23:00:00",
-	ExternalCode         String `json:"ExternalCode"`         //: "",
-	ExternalReturnCode   String `json:"ExternalReturnCode"`   //: "",
-	FirstDeliveredTime   String `json:"FirstDeliveredTime"`   //: "",
-	FromDistrictID       Int    `json:"FromDistrictID"`       //: 0,
-	FromLat              Int    `json:"FromLat"`              //: 0,
-	FromLng              Int    `json:"FromLng"`              //: 0,
-	FromWardCode         String `json:"FromWardCode"`         //: "",
-	Height               Int    `json:"Height"`               //: 10,
-	InsuranceFee         Int    `json:"InsuranceFee"`         //: 0,
-	Length               Int    `json:"Length"`               //: 10,
-	Note                 String `json:"Note"`                 //: "Lưu ĐH qua API ",
-	NoteCode             String `json:"NoteCode"`             //: "",
-	NumDeliver           Int    `json:"NumDeliver"`           //: 0,
-	NumPick              Int    `json:"NumPick"`              //: 0,
-	OrderCode            String `json:"OrderCode"`            //: "23HY9557",
-	OriginServiceName    String `json:"OriginServiceName"`    //: "1 Ngày",
-	PaymentTypeID        Int    `json:"PaymentTypeID"`        //: 1,
-	PickWarehouseName    String `json:"PickWarehouseName"`    //: "",
-	ReturnInfo           String `json:"ReturnInfo"`           //: "",
-	SealCode             String `json:"SealCode"`             //: "",
-	ServiceID            Int    `json:"ServiceID"`            //: 53320,
-	ServiceName          String `json:"ServiceName"`          //: "1 Ngày",
-	ShippingAddress      String `json:"ShippingAddress"`      //: "137 Lê Quang Định",
-	ShippingOrderID      Int    `json:"ShippingOrderID"`      //: 268263,
-	StartDeliveryTime    String `json:"StartDeliveryTime"`    //: "",
-	StartPickTime        String `json:"StartPickTime"`        //: "",
-	StartReturnTime      String `json:"StartReturnTime"`      //: "",
-	ToDistrictID         Int    `json:"ToDistrictID"`         //: 1462,
-	ToLatitude           Int    `json:"ToLatitude"`           //: 0,
-	ToLongitude          Int    `json:"ToLongitude"`          //: 0,
-	ToWardCode           String `json:"ToWardCode"`           //: "",
-	TotalServiceCost     Int    `json:"TotalServiceCost"`     //: 81400,
-	Weight               Int    `json:"Weight"`               //: 10200,
-	Width                Int    `json:"Width"`                //: 10
+	CODTransferDate      String `json:"CODTransferDate"`      // "",
+	CSLostPackageID      Int    `json:"CSLostPackageID"`      // 0,
+	CheckMainBankAccount Bool   `json:"CheckMainBankAccount"` // false,
+	ClientHubID          Int    `json:"ClientHubID"`          // 2,
+	CoDAmount            Int    `json:"CoDAmount"`            // 1500000,
+	Content              String `json:"Content"`              // "Test nội dung",
+	CouponCode           String `json:"CouponCode"`           // "",
+	CurrentStatus        String `json:"CurrentStatus"`        // "Cancel",
+	CurrentWarehouseName String `json:"CurrentWarehouseName"` // "",
+	CustomerID           Int    `json:"CustomerID"`           // 0,
+	CustomerName         String `json:"CustomerName"`         // "Nguyễn Văn UpdateInfo",
+	CustomerPhone        String `json:"CustomerPhone"`        // "0934035687",
+	DeliverWarehouseName String `json:"DeliverWarehouseName"` // "",
+	EndDeliveryTime      String `json:"EndDeliveryTime"`      // "",
+	EndPickTime          String `json:"EndPickTime"`          // "2017-09-14T15:23:56.643",
+	EndReturnTime        String `json:"EndReturnTime"`        // "",
+	ErrorMessage         String `json:"ErrorMessage"`         // "",
+	ExpectedDeliveryTime String `json:"ExpectedDeliveryTime"` // "2017-09-18T23:00:00",
+	ExternalCode         String `json:"ExternalCode"`         // "",
+	ExternalReturnCode   String `json:"ExternalReturnCode"`   // "",
+	FirstDeliveredTime   String `json:"FirstDeliveredTime"`   // "",
+	FromDistrictID       Int    `json:"FromDistrictID"`       // 0,
+	FromLat              Int    `json:"FromLat"`              // 0,
+	FromLng              Int    `json:"FromLng"`              // 0,
+	FromWardCode         String `json:"FromWardCode"`         // "",
+	Height               Int    `json:"Height"`               // 10,
+	InsuranceFee         Int    `json:"InsuranceFee"`         // 0,
+	Length               Int    `json:"Length"`               // 10,
+	Note                 String `json:"Note"`                 // "Lưu ĐH qua API ",
+	NoteCode             String `json:"NoteCode"`             // "",
+	NumDeliver           Int    `json:"NumDeliver"`           // 0,
+	NumPick              Int    `json:"NumPick"`              // 0,
+	OrderCode            String `json:"OrderCode"`            // "23HY9557",
+	OriginServiceName    String `json:"OriginServiceName"`    // "1 Ngày",
+	PaymentTypeID        Int    `json:"PaymentTypeID"`        // 1,
+	PickWarehouseName    String `json:"PickWarehouseName"`    // "",
+	ReturnInfo           String `json:"ReturnInfo"`           // "",
+	SealCode             String `json:"SealCode"`             // "",
+	ServiceID            Int    `json:"ServiceID"`            // 53320,
+	ServiceName          String `json:"ServiceName"`          // "1 Ngày",
+	ShippingAddress      String `json:"ShippingAddress"`      // "137 Lê Quang Định",
+	ShippingOrderID      Int    `json:"ShippingOrderID"`      // 268263,
+	StartDeliveryTime    String `json:"StartDeliveryTime"`    // "",
+	StartPickTime        String `json:"StartPickTime"`        // "",
+	StartReturnTime      String `json:"StartReturnTime"`      // "",
+	ToDistrictID         Int    `json:"ToDistrictID"`         // 1462,
+	ToLatitude           Int    `json:"ToLatitude"`           // 0,
+	ToLongitude          Int    `json:"ToLongitude"`          // 0,
+	ToWardCode           String `json:"ToWardCode"`           // "",
+	TotalServiceCost     Int    `json:"TotalServiceCost"`     // 81400,
+	Weight               Int    `json:"Weight"`               // 10200,
+	Width                Int    `json:"Width"`                // 10
 
-	ShippingOrderCosts []*ShippingOrderCost `json:"ShippingOrderCosts"` //:
+	ShippingOrderCosts []*ShippingOrderCost `json:"ShippingOrderCosts"` //
 
-	//ExtraFees            String `json:"ExtraFees"`            //: null,
+	//ExtraFees            String `json:"ExtraFees"`           // null,
 }
 
 type OrderLog struct {
 	OrderCode       String       `json:"OrderCode"`       // "DHYDFYHF"
-	ShippingOrderID Int          `json:"ShippingOrderID"` //: 268263,
-	CurrentStatus   String       `json:"CurrentStatus"`   //: "Cancel",
-	CustomerID      Int          `json:"CustomerID"`      //: 0,
-	IsPushed        Bool         `json:"IsPushed"`        //: true
+	ShippingOrderID Int          `json:"ShippingOrderID"` // 268263,
+	CurrentStatus   String       `json:"CurrentStatus"`   // "Cancel",
+	CustomerID      Int          `json:"CustomerID"`      // 0,
+	IsPushed        Bool         `json:"IsPushed"`        // true
 	OrderInfo       OrderLogInfo `json:"OrderInfo"`
-	StatusCode      Int          `json:"StatusCode"` //: 0
-	CreateTime      Time         `json:"CreateTime"` //: "2018-08-07T14:42:23.31+07:00"
+	StatusCode      Int          `json:"StatusCode"` // 0
+	CreateTime      Time         `json:"CreateTime"` // "2018-08-07T14:42:23.31+07:00"
 	UpdateTime      Time         `json:"UpdateTime"`
 }
 
 type OrderLogInfo struct {
-	CoDAmount            Int                  `json:"CoDAmount"`            //: 1500000,
-	CurrentStatus        String               `json:"CurrentStatus"`        //: "Cancel",
-	CurrentWarehouseName String               `json:"CurrentWarehouseName"` //: "",
-	CustomerID           Int                  `json:"CustomerID"`           //: 0,
-	CustomerName         String               `json:"CustomerName"`         //: "Nguyễn Văn UpdateInfo",
-	CustomerPhone        String               `json:"CustomerPhone"`        //: "0934035687",
-	ExternalCode         String               `json:"ExternalCode"`         //: "",
-	Note                 String               `json:"Note"`                 //: "Lưu ĐH qua API ",
-	OrderCode            String               `json:"OrderCode"`            //: "23HY9557",
-	ReturnInfo           String               `json:"ReturnInfo"`           //: "",
-	ServiceName          String               `json:"ServiceName"`          //: "1 Ngày",
-	ShippingOrderCosts   []*ShippingOrderCost `json:"ShippingOrderCosts"`   //:
-	Weight               Int                  `json:"Weight"`               //: 10200,
+	CoDAmount            Int                  `json:"CoDAmount"`            // 1500000,
+	CurrentStatus        String               `json:"CurrentStatus"`        // "Cancel",
+	CurrentWarehouseName String               `json:"CurrentWarehouseName"` // "",
+	CustomerID           Int                  `json:"CustomerID"`           // 0,
+	CustomerName         String               `json:"CustomerName"`         // "Nguyễn Văn UpdateInfo",
+	CustomerPhone        String               `json:"CustomerPhone"`        // "0934035687",
+	ExternalCode         String               `json:"ExternalCode"`         // "",
+	Note                 String               `json:"Note"`                 // "Lưu ĐH qua API ",
+	OrderCode            String               `json:"OrderCode"`            // "23HY9557",
+	ReturnInfo           String               `json:"ReturnInfo"`           // "",
+	ServiceName          String               `json:"ServiceName"`          // "1 Ngày",
+	ShippingOrderCosts   []*ShippingOrderCost `json:"ShippingOrderCosts"`   //
+	Weight               Int                  `json:"Weight"`               // 10200,
 }
 
 // Use for webhook
@@ -435,24 +435,24 @@ type CallbackOrder struct {
 	Weight               Int    `json:"Weight"`               // 800
 }
 type ShippingOrderCost struct {
-	Cost             String `json:"Cost"`             //: 0,
-	PaymentChannelID String `json:"PaymentChannelID"` //: 4,
-	ServiceID        String `json:"ServiceID"`        //: 53332,
-	ServiceName      String `json:"ServiceName"`      //: "Dịch vụ khai giá",
-	ServiceType      String `json:"ServiceType"`      //: 5,
-	ShippingOrderID  String `json:"ShippingOrderID"`  //: 268263
+	Cost             String `json:"Cost"`             // 0,
+	PaymentChannelID String `json:"PaymentChannelID"` // 4,
+	ServiceID        String `json:"ServiceID"`        // 53332,
+	ServiceName      String `json:"ServiceName"`      // "Dịch vụ khai giá",
+	ServiceType      String `json:"ServiceType"`      // 5,
+	ShippingOrderID  String `json:"ShippingOrderID"`  // 268263
 }
 
 type FindAvailableServicesRequest struct {
 	Connection
 
-	Weight int `json:"Weight"` // : 10000,
-	Length int `json:"Length"` // : 10,
-	Width  int `json:"Width"`  // : 110,
-	Height int `json:"Height"` // : 20,
+	Weight int `json:"Weight"` // 10000,
+	Length int `json:"Length"` // 10,
+	Width  int `json:"Width"`  // 110,
+	Height int `json:"Height"` // 20,
 
-	FromDistrictID int `json:"FromDistrictID"` // : 1455,
-	ToDistrictID   int `json:"ToDistrictID"`   // : 1462
+	FromDistrictID int `json:"FromDistrictID"` // 1455,
+	ToDistrictID   int `json:"ToDistrictID"`   // 1462
 	InsuranceFee   int `json:"InsuranceFee"`
 }
 
@@ -468,10 +468,10 @@ type AvailableService struct {
 }
 
 type ExtraService struct {
-	MaxValue   Int    `json:"MaxValue"`   // : 0,
-	Name       String `json:"Name"`       // : "Gửi hàng tại điểm",
-	ServiceFee Int    `json:"ServiceFee"` // : -2000,
-	ServiceID  Int    `json:"ServiceID"`  // : 53337
+	MaxValue   Int    `json:"MaxValue"`   // 0,
+	Name       String `json:"Name"`       // "Gửi hàng tại điểm",
+	ServiceFee Int    `json:"ServiceFee"` // -2000,
+	ServiceID  Int    `json:"ServiceID"`  // 53337
 }
 
 func (s *AvailableService) ToShippingService(providerServiceID string) *model.AvailableShippingService {
@@ -570,15 +570,15 @@ func URL(baseUrl, path string) string {
 type CalculateFeeRequest struct {
 	Connection
 
-	Weight int `json:"Weight"` // : 10000,
-	Length int `json:"Length"` // : 10,
-	Width  int `json:"Width"`  // : 110,
-	Height int `json:"Height"` // : 20,
+	Weight int `json:"Weight"` // 10000,
+	Length int `json:"Length"` // 10,
+	Width  int `json:"Width"`  // 110,
+	Height int `json:"Height"` // 20,
 
-	FromDistrictID int `json:"FromDistrictID"` // : 1455,
-	ToDistrictID   int `json:"ToDistrictID"`   // : 1462
+	FromDistrictID int `json:"FromDistrictID"` // 1455,
+	ToDistrictID   int `json:"ToDistrictID"`   // 1462
 	InsuranceFee   int `json:"InsuranceFee"`
-	ServiceID      int `json:""ServiceID`
+	ServiceID      int `json:"ServiceID"`
 }
 
 type CalculateFeeResponse struct {
@@ -587,7 +587,7 @@ type CalculateFeeResponse struct {
 	ServiceFee      int          `json:"ServiceFee"`
 	CODFee          int          `json:"CoDFee"`
 	OrderCosts      []*OrderCost `json:"OrderCosts"`
-	DiscountFee     int          `json:"DiscountFee`
+	DiscountFee     int          `json:"DiscountFee"`
 	WeightDimension int          `json:"WeightDimension"`
 }
 

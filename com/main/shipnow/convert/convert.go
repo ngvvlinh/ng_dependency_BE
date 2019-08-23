@@ -90,7 +90,7 @@ func Shipnow(in *shipnowmodel.ShipnowFulfillment) (out *shipnow.ShipnowFulfillme
 		RequestPickupAt:            in.RequestPickupAt,
 		ConfirmStatus:              etoptypes.Status3FromInt(int(in.ConfirmStatus)),
 		Status:                     etoptypes.Status5FromInt(int(in.Status)),
-		ShippingState:              shipnowtypes.StateFromString(string(in.ShippingState)),
+		ShippingState:              shipnowtypes.StateFromString(in.ShippingState),
 		ShippingCode:               in.ShippingCode,
 		OrderIds:                   in.OrderIDs,
 		ShippingCreatedAt:          in.ShippingCreatedAt,

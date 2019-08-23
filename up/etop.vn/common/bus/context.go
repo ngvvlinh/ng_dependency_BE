@@ -130,9 +130,9 @@ func PrintStack(ctx context.Context) {
 
 	for node.Parent != nil {
 		if node.Error == nil {
-			pp.Println(node.Message)
+			_, _ = pp.Println(node.Message)
 		} else {
-			pp.Println("error = "+node.Error.Error(), node.Message)
+			_, _ = pp.Println("error = "+node.Error.Error(), node.Message)
 		}
 		node = node.Parent
 	}
@@ -183,9 +183,9 @@ func PrintAllStack(ctx context.Context, expanded bool) {
 
 		if expanded {
 			if n.Error == nil {
-				pp.Println(n.Message)
+				_, _ = pp.Println(n.Message)
 			} else {
-				pp.Println("error = "+n.Error.Error(), n.Message)
+				_, _ = pp.Println("error = "+n.Error.Error(), n.Message)
 			}
 		} else {
 			if n.Error == nil {

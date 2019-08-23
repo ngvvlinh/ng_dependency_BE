@@ -39,7 +39,7 @@ func PbPartnerShopLoginAccount(m *model.Shop, accessToken string, expiresIn int3
 		Name:        m.Name,
 		Type:        etop.PbAccountType(model.TypeShop),
 		AccessToken: accessToken,
-		ExpiresIn:   int32(expiresIn),
+		ExpiresIn:   expiresIn,
 		ImageUrl:    m.ImageURL,
 	}
 }

@@ -105,7 +105,7 @@ func NewDialer() *Dialer {
 }
 
 // [extopvn:asia-southeast1:etoppg1]:5432
-var reAddress = regexp.MustCompile(`\[([^]]+)\]`)
+var reAddress = regexp.MustCompile(`\[([^]]+)]`)
 
 // Dial ...
 func (d *Dialer) Dial(network, address string) (net.Conn, error) {

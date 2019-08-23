@@ -64,7 +64,7 @@ func HandleImportMoneyTransactions(c *httpx.Context) error {
 	if err != nil {
 		return cm.Errorf(cm.InvalidArgument, err, "Can not read file")
 	}
-	defer file.Close()
+	defer ignoreError(file.Close())
 	r := tsvreader.New(file)
 
 	provider := form.Value["provider"]
@@ -159,3 +159,5 @@ func HandleImportMoneyTransactions(c *httpx.Context) error {
 	c.SetResultPb(pborder.PbMoneyTransactionShippingExternalExtended(cmd.Result))
 	return nil
 }
+
+func ignoreError(err error) {}

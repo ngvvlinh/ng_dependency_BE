@@ -997,7 +997,7 @@ func SyncUpdateFulfillments(ctx context.Context, cmd *shipmodelx.SyncUpdateFulfi
 
 	var errs xerrors.ErrorCollector
 	var updated, errors int
-	for i, l := 0, len(cmd.Fulfillments); i < l; i++ {
+	for i, n := 0, len(cmd.Fulfillments); i < n; i++ {
 		err := <-chUpdate
 		if err == nil {
 			updated++

@@ -246,10 +246,10 @@ func checkShippingService(order *ordermodel.Order, services []*model.AvailableSh
 		if service == nil {
 			return nil, cm.Errorf(cm.InvalidArgument, nil, "Gói dịch vụ giao hàng đã chọn không hợp lệ")
 		}
-		if order.ShopShipping.ExternalShippingFee != int(service.ServiceFee) {
+		if order.ShopShipping.ExternalShippingFee != service.ServiceFee {
 			return nil, cm.Errorf(cm.InvalidArgument, nil,
 				"Số tiền phí giao hàng không hợp lệ cho dịch vụ %v: Phí trên đơn hàng %v, phí từ dịch vụ giao hàng: %v",
-				service.Name, order.ShopShipping.ExternalShippingFee, int(service.ServiceFee))
+				service.Name, order.ShopShipping.ExternalShippingFee, service.ServiceFee)
 		}
 		return service, nil
 	}

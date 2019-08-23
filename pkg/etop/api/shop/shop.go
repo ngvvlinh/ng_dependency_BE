@@ -786,12 +786,12 @@ func GetShipnowServices(ctx context.Context, q *wrapshop.GetShipnowServicesEndpo
 	var points []*shipnow.DeliveryPoint
 	if len(q.DeliveryPoints) > 0 {
 		for _, p := range q.DeliveryPoints {
-			address, err := p.ShippingAddress.Fulfilled()
+			addr, err := p.ShippingAddress.Fulfilled()
 			if err != nil {
 				return err
 			}
 			points = append(points, &shipnow.DeliveryPoint{
-				ShippingAddress: pborder.Convert_api_OrderAddress_To_core_OrderAddress(address),
+				ShippingAddress: pborder.Convert_api_OrderAddress_To_core_OrderAddress(addr),
 				ValueInfo: types.ValueInfo{
 					CodAmount: p.CodAmount,
 				},
@@ -830,12 +830,12 @@ func CreateExternalAccountAhamove(ctx context.Context, q *wrapshop.CreateExterna
 	if err := addressQuery.Dispatch(ctx, queryAddress); err != nil {
 		return cm.Errorf(cm.FailedPrecondition, err, "Thiếu thông tin địa chỉ cửa hàng")
 	}
-	address := queryAddress.Result
+	addr := queryAddress.Result
 	cmd := &identity.CreateExternalAccountAhamoveCommand{
 		OwnerID: user.ID,
 		Phone:   phone,
 		Name:    user.FullName,
-		Address: address.GetFullAddress(),
+		Address: addr.GetFullAddress(),
 	}
 	if err := identityAggr.Dispatch(ctx, cmd); err != nil {
 		return err

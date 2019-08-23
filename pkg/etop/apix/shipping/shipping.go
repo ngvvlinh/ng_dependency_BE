@@ -21,9 +21,9 @@ var locationList = buildLocationList()
 var orderStore ordersqlstore.OrderStoreFactory
 var fulfillmentStore shipsqlstore.FulfillmentStoreFactory
 
-func Init(_shippingCtrl *shipping_provider.ProviderManager, orderStore ordersqlstore.OrderStoreFactory, ffmStore shipsqlstore.FulfillmentStoreFactory) {
+func Init(_shippingCtrl *shipping_provider.ProviderManager, _orderStore ordersqlstore.OrderStoreFactory, ffmStore shipsqlstore.FulfillmentStoreFactory) {
 	shippingCtrl = _shippingCtrl
-	orderStore = orderStore
+	orderStore = _orderStore
 	fulfillmentStore = ffmStore
 }
 

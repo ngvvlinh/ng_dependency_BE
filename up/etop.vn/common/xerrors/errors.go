@@ -410,36 +410,36 @@ func (e *APIError) Format(st fmt.State, verb rune) {
 	case 'v':
 		switch {
 		case st.Flag('#') || st.Flag('+'):
-			fmt.Fprintf(st, "\ncode=%v message=%v", e.Code, e.Message)
+			_, _ = fmt.Fprintf(st, "\ncode=%v message=%v", e.Code, e.Message)
 			lvl := GetTraceLevel(e)
-			fmt.Fprint(st, " level=", lvl.String())
+			_, _ = fmt.Fprint(st, " level=", lvl.String())
 			for k, v := range e.Meta {
-				fmt.Fprint(st, " ", k, "=", v)
+				_, _ = fmt.Fprint(st, " ", k, "=", v)
 			}
 			if e.Original != "" {
-				fmt.Fprint(st, " original=", e.Original)
+				_, _ = fmt.Fprint(st, " original=", e.Original)
 			}
 			if e.Err != nil {
-				fmt.Fprint(st, " cause=", e.Err)
+				_, _ = fmt.Fprint(st, " cause=", e.Err)
 			}
 
-			fmt.Fprint(st, " •", TrimFilePath(e.OrigFile), ":", e.OrigLine)
+			_, _ = fmt.Fprint(st, " •", TrimFilePath(e.OrigFile), ":", e.OrigLine)
 			for _, log := range e.Logs {
-				fmt.Fprint(st, "\n• ", log.Message, " •", TrimFilePath(log.File), ":", strconv.Itoa(log.Line))
+				_, _ = fmt.Fprint(st, "\n• ", log.Message, " •", TrimFilePath(log.File), ":", strconv.Itoa(log.Line))
 				for _, v := range log.Fields {
-					fmt.Fprint(st, " ", v.Key, "=", logline.ValueOf(v))
+					_, _ = fmt.Fprint(st, " ", v.Key, "=", logline.ValueOf(v))
 				}
 			}
 			fallthrough
 		case st.Flag('+'):
-			fmt.Fprintf(st, "%+v", e.StackTrace())
+			_, _ = fmt.Fprintf(st, "%+v", e.StackTrace())
 		default:
-			io.WriteString(st, e.Message)
+			_, _ = io.WriteString(st, e.Message)
 		}
 	case 's':
-		io.WriteString(st, e.Message)
+		_, _ = io.WriteString(st, e.Message)
 	case 'q':
-		fmt.Fprintf(st, "%q", e.Error())
+		_, _ = fmt.Fprintf(st, "%q", e.Error())
 	}
 }
 
@@ -931,7 +931,7 @@ func (t twError) Meta(key string) string {
 }
 
 func (t twError) WithMeta(key string, val string) twirp.Error {
-	t.err.WithMeta(key, val)
+	_ = t.err.WithMeta(key, val)
 	return t
 }
 

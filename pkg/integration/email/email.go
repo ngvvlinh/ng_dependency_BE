@@ -70,15 +70,15 @@ type SendEmailCommand struct {
 	Content     string
 }
 
-func (s *Client) Ping() error {
-	client, err := s.Dial()
+func (c *Client) Ping() error {
+	client, err := c.Dial()
 	if err != nil {
 		return err
 	}
 
-	defer client.Quit()
+	defer ignoreError(client.Quit())
 
-	auth := smtp.PlainAuth("", s.cfg.Username, s.cfg.Password, s.cfg.Host)
+	auth := smtp.PlainAuth("", c.cfg.Username, c.cfg.Password, c.cfg.Host)
 	err = client.Auth(auth)
 	if err != nil {
 		ll.Error(err.Error())
@@ -87,16 +87,16 @@ func (s *Client) Ping() error {
 	return nil
 }
 
-func (s *Client) Dial() (*smtp.Client, error) {
-	smtpServer := s.cfg.SMTPServer()
-	encrypt := s.cfg.Encrypt
+func (c *Client) Dial() (*smtp.Client, error) {
+	smtpServer := c.cfg.SMTPServer()
+	encrypt := c.cfg.Encrypt
 	if encrypt == "" {
 		return smtp.Dial(smtpServer)
 	}
 
 	tlsConfig := &tls.Config{
 		InsecureSkipVerify: true,
-		ServerName:         s.cfg.Host,
+		ServerName:         c.cfg.Host,
 	}
 
 	switch encrypt {
@@ -106,7 +106,7 @@ func (s *Client) Dial() (*smtp.Client, error) {
 			return nil, err
 		}
 
-		return smtp.NewClient(conn, s.cfg.Host)
+		return smtp.NewClient(conn, c.cfg.Host)
 
 	case "tls":
 		client, err := smtp.Dial(smtpServer)
@@ -122,7 +122,7 @@ func (s *Client) Dial() (*smtp.Client, error) {
 	}
 }
 
-func (s *Client) SendMail(ctx context.Context, cmd *SendEmailCommand) error {
+func (c *Client) SendMail(ctx context.Context, cmd *SendEmailCommand) error {
 	if len(cmd.ToAddresses) == 0 {
 		return cm.Error(cm.InvalidArgument, "Missing email address", nil)
 	}
@@ -136,22 +136,22 @@ func (s *Client) SendMail(ctx context.Context, cmd *SendEmailCommand) error {
 		addrs[i] = addr
 	}
 
-	err := s.sendMail(ctx, addrs, cmd)
+	err := c.sendMail(ctx, addrs, cmd)
 	if err != nil {
 		return cm.Errorf(cm.Internal, err, "Không thể gửi email đến địa chỉ %v (%v). Nếu cần thêm thông tin, vui lòng liên hệ hotro@etop.vn.", strings.Join(addrs, ", "), err)
 	}
 	return nil
 }
 
-func (s *Client) sendMail(ctx context.Context, addresses []string, cmd *SendEmailCommand) error {
-	client, err := s.Dial()
+func (c *Client) sendMail(ctx context.Context, addresses []string, cmd *SendEmailCommand) error {
+	client, err := c.Dial()
 	if err != nil {
 		ll.Error(err.Error())
 		return err
 	}
-	defer client.Quit()
+	defer ignoreError(client.Quit())
 
-	auth := smtp.PlainAuth("", s.cfg.Username, s.cfg.Password, s.cfg.Host)
+	auth := smtp.PlainAuth("", c.cfg.Username, c.cfg.Password, c.cfg.Host)
 	err = client.Auth(auth)
 	if err != nil {
 		ll.Error(err.Error())
@@ -165,9 +165,9 @@ func (s *Client) sendMail(ctx context.Context, addresses []string, cmd *SendEmai
 	for _, email := range addresses {
 		msg := []byte(fmt.Sprintf(
 			"From: %s <%s> \r\nTo: %s\r\nSubject: %s\r\n%s\r\n\r\n%s\r\n",
-			cmd.FromName, s.cfg.FromAddress, email, subject, mime, cmd.Content))
+			cmd.FromName, c.cfg.FromAddress, email, subject, mime, cmd.Content))
 
-		err = client.Mail(s.cfg.FromAddress)
+		err = client.Mail(c.cfg.FromAddress)
 		if err != nil {
 			errs = append(errs, err)
 			continue
@@ -197,3 +197,5 @@ func (s *Client) sendMail(ctx context.Context, addresses []string, cmd *SendEmai
 	}
 	return errs.Any()
 }
+
+func ignoreError(err error) {}

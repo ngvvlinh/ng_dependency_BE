@@ -247,7 +247,7 @@ func CalcUpdateFulfillment(ffm *shipmodel.Fulfillment, msg *ghtkclient.CallbackO
 		shippingFeeShopLines = model.GetShippingFeeShopLines(update.ProviderShippingFeeLines, ffm.EtopPriceRule, &ffm.EtopAdjustedShippingFeeMain)
 		shippingFeeShop := 0
 		for _, line := range shippingFeeShopLines {
-			shippingFeeShop += int(line.Cost)
+			shippingFeeShop += line.Cost
 		}
 		update.ShippingFeeShopLines = shippingFeeShopLines
 		update.ShippingFeeShop = shipmodel.CalcShopShippingFee(shippingFeeShop, ffm)
@@ -486,7 +486,7 @@ func SyncOrders(ffms []*shipmodel.Fulfillment) ([]*shipmodel.Fulfillment, error)
 			time.Sleep(20 * time.Second)
 			count = 0
 		}
-		go func(ffm *shipmodel.Fulfillment) (_err error) {
+		go ignoreError(func(ffm *shipmodel.Fulfillment) (_err error) {
 			defer func() {
 				ch <- _err
 			}()
@@ -502,10 +502,10 @@ func SyncOrders(ffms []*shipmodel.Fulfillment) ([]*shipmodel.Fulfillment, error)
 			updateFfm := CalcUpdateFulfillment(ffm, nil, &ghtkCmd.Result.Order)
 			_ffms = append(_ffms, updateFfm)
 			return nil
-		}(ffm)
+		}(ffm))
 	}
 	var successCount, errorCount int
-	for i, l := 0, len(ffms); i < l; i++ {
+	for i, n := 0, len(ffms); i < n; i++ {
 		err := <-ch
 		if err == nil {
 			successCount++
@@ -516,3 +516,5 @@ func SyncOrders(ffms []*shipmodel.Fulfillment) ([]*shipmodel.Fulfillment, error)
 	ll.S.Infof("Sync fulfillments GHTK info success: %v/%v, errors %v/%v", successCount, len(ffms), errorCount, len(ffms))
 	return _ffms, nil
 }
+
+func ignoreError(err error) {}

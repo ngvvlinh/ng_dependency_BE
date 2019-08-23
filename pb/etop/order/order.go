@@ -427,50 +427,50 @@ func PbOrderAddressFromAddress(m *model.Address) *OrderAddress {
 	}
 }
 
-func (item *OrderShipping) ToModel(order *ordermodel.Order) error {
-	if item == nil {
+func (m *OrderShipping) ToModel(order *ordermodel.Order) error {
+	if m == nil {
 		return nil
 	}
 
 	var pickupAddress *OrderAddress
-	if item.ShAddress != nil {
-		pickupAddress = item.ShAddress
+	if m.ShAddress != nil {
+		pickupAddress = m.ShAddress
 	} else {
-		pickupAddress = item.PickupAddress
+		pickupAddress = m.PickupAddress
 	}
 	modelPickupAddress, err := pickupAddress.ToModel()
 	if err != nil {
 		return cm.Errorf(cm.InvalidArgument, err, "Địa chỉ lấy hàng không hợp lệ: %v", err)
 	}
-	modelReturnAddress, err := item.ReturnAddress.ToModel()
+	modelReturnAddress, err := m.ReturnAddress.ToModel()
 	if err != nil {
 		return cm.Errorf(cm.InvalidArgument, err, "Địa chỉ trả hàng không hợp lệ: %v", err)
 	}
 
-	carrier := item.ShippingProvider
-	if item.Carrier != 0 {
-		carrier = item.Carrier
+	carrier := m.ShippingProvider
+	if m.Carrier != 0 {
+		carrier = m.Carrier
 	}
 
 	grossWeight := 0
-	if item.Weight != nil {
-		grossWeight = int(*item.Weight)
+	if m.Weight != nil {
+		grossWeight = int(*m.Weight)
 	}
-	if item.GrossWeight != nil {
-		grossWeight = int(*item.GrossWeight)
+	if m.GrossWeight != nil {
+		grossWeight = int(*m.GrossWeight)
 	}
 
 	chargeableWeight := 0
-	if item.ChargeableWeight != nil {
-		chargeableWeight = int(*item.ChargeableWeight)
+	if m.ChargeableWeight != nil {
+		chargeableWeight = int(*m.ChargeableWeight)
 
 	} else {
 		switch {
-		case item.Length == nil && item.Width == nil && item.Height == nil:
+		case m.Length == nil && m.Width == nil && m.Height == nil:
 			// continue
-		case item.Length != nil && item.Width != nil && item.Height != nil:
+		case m.Length != nil && m.Width != nil && m.Height != nil:
 			chargeableWeight = model.CalcChargeableWeight(
-				grossWeight, int(*item.Length), int(*item.Width), int(*item.Height))
+				grossWeight, int(*m.Length), int(*m.Width), int(*m.Height))
 
 		default:
 			return cm.Errorf(cm.InvalidArgument, err, "Cần cung cấp đủ các giá trị length, width, height (hoặc để trống cả 3)", err)
@@ -478,7 +478,7 @@ func (item *OrderShipping) ToModel(order *ordermodel.Order) error {
 	}
 
 	carrierName := carrier.ToModel()
-	shippingServiceCode := cm.Coalesce(item.ShippingServiceCode, item.XServiceId)
+	shippingServiceCode := cm.Coalesce(m.ShippingServiceCode, m.XServiceId)
 
 	// check ETOP service
 	shippingServiceName, ok := model.GetShippingServiceRegistry().GetName(model.TypeShippingETOP, shippingServiceCode)
@@ -493,32 +493,32 @@ func (item *OrderShipping) ToModel(order *ordermodel.Order) error {
 		ShopAddress:         modelPickupAddress,
 		ReturnAddress:       modelReturnAddress,
 		ExternalServiceID:   shippingServiceCode,
-		ExternalShippingFee: cm.CoalesceInt(int(item.ShippingServiceFee), int(item.XShippingFee)),
+		ExternalShippingFee: cm.CoalesceInt(int(m.ShippingServiceFee), int(m.XShippingFee)),
 		ExternalServiceName: shippingServiceName,
 		ShippingProvider:    carrierName,
-		ProviderServiceID:   cm.Coalesce(shippingServiceCode, item.XServiceId),
-		IncludeInsurance:    item.IncludeInsurance,
-		Length:              pbcm.PatchInt32(0, item.Length),
-		Width:               pbcm.PatchInt32(0, item.Width),
-		Height:              pbcm.PatchInt32(0, item.Height),
+		ProviderServiceID:   cm.Coalesce(shippingServiceCode, m.XServiceId),
+		IncludeInsurance:    m.IncludeInsurance,
+		Length:              pbcm.PatchInt32(0, m.Length),
+		Width:               pbcm.PatchInt32(0, m.Width),
+		Height:              pbcm.PatchInt32(0, m.Height),
 		GrossWeight:         grossWeight,
 		ChargeableWeight:    chargeableWeight,
 	}
 
 	// when adding new fields here, remember to also change UpdateOrderCommand
 	order.ShopShipping = orderShipping
-	order.ShopCOD = pbcm.PatchInt32(order.ShopCOD, item.CodAmount)
+	order.ShopCOD = pbcm.PatchInt32(order.ShopCOD, m.CodAmount)
 	order.TotalWeight = chargeableWeight
 
-	if item.TryOn != 0 {
-		order.TryOn = item.TryOn.ToModel()
-		order.GhnNoteCode = model.GHNNoteCodeFromTryOn(item.TryOn.ToModel())
+	if m.TryOn != 0 {
+		order.TryOn = m.TryOn.ToModel()
+		order.GhnNoteCode = model.GHNNoteCodeFromTryOn(m.TryOn.ToModel())
 	} else if order.GhnNoteCode != "" {
 		order.TryOn = model.TryOnFromGHNNoteCode(order.GhnNoteCode)
 	}
 
 	// Coalesce takes from left to right while PatchInt takes from right
-	order.ShippingNote = cm.Coalesce(item.ShippingNote, order.ShippingNote)
+	order.ShippingNote = cm.Coalesce(m.ShippingNote, order.ShippingNote)
 	return nil
 }
 
