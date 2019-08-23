@@ -158,6 +158,14 @@ func New(opts ...zap.Option) Logger {
 	return l
 }
 
+func (l Logger) Verbosed(verbosity int) bool {
+	return l.enabler.Enabled(V(verbosity))
+}
+
+func (l Logger) Enabled(level zapcore.Level) bool {
+	return l.enabler.Enabled(level)
+}
+
 func (l Logger) Watch(fn LevelWatcher) (unwatch func()) {
 	return l.enabler.Watch(fn)
 }

@@ -21,7 +21,7 @@ const EnvKey = "ETOP_LOG"
 const deprecatedEnvKey = "ETOP_LOG_DEBUG"
 
 // verbosity from 0 to 9
-type WildcardPatterns [MaxVerbosity][]*regexp.Regexp
+type WildcardPatterns [MaxVerbosity + 1][]*regexp.Regexp
 
 var (
 	errEnablerNotFound = errors.New("enabler not found")
