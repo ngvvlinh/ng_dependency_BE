@@ -1021,6 +1021,8 @@ message CustomerAddress {
 }
 
 message CreateCustomerAddressRequest {
+    optional int64 customer_id = 1 [(gogoproto.nullable) = false];
+
     optional string province_code = 2 [(gogoproto.nullable) = false];
 
     optional string district_code = 3 [(gogoproto.nullable) = false];

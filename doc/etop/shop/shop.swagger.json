@@ -5703,6 +5703,10 @@
     "shopCreateCustomerAddressRequest": {
       "type": "object",
       "properties": {
+        "customer_id": {
+          "type": "string",
+          "format": "int64"
+        },
         "province_code": {
           "type": "string"
         },
