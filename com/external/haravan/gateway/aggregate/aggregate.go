@@ -183,7 +183,7 @@ func (a *Aggregate) CreateOrder(ctx context.Context, args *gateway.CreateOrderRe
 		ExternalCode:    externalID,
 		ExternalMeta:    cm.ConvertStructToMapStringString(externalMeta),
 		ExternalUrl:     "",
-		CustomerAddress: convert.ToPbExternalAddress(args.Origin, from),
+		CustomerAddress: convert.ToPbExternalAddress(args.Origin, to),
 		ShippingAddress: convert.ToPbExternalAddress(args.Destination, to),
 		Lines:           convert.ToPbExternalCreateOrderLines(args.Items),
 		TotalItems:      int32(len(args.Items)),
