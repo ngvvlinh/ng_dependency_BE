@@ -5,12 +5,12 @@ import (
 	"etop.vn/api/main/ordering"
 	"etop.vn/api/main/ordering/types"
 	ordertypes "etop.vn/api/main/ordering/types"
-	shippingtypes "etop.vn/api/main/shipping/types"
+	shiptypes "etop.vn/api/main/shipping/types"
 	catalogconvert "etop.vn/backend/com/main/catalog/convert"
 	"etop.vn/backend/com/main/ordering/model"
 )
 
-func AddressToModel(in *types.Address) (out *model.OrderAddress) {
+func AddressDB(in *types.Address) (out *model.OrderAddress) {
 	if in == nil {
 		return nil
 	}
@@ -32,7 +32,7 @@ func AddressToModel(in *types.Address) (out *model.OrderAddress) {
 		Company:      "",
 		Address1:     in.Address1,
 		Address2:     in.Address2,
-		Coordinates:  CoordinatesToModel(in.Coordinates),
+		Coordinates:  CoordinatesDB(in.Coordinates),
 	}
 	return out
 }
@@ -167,14 +167,14 @@ func FeeLines(ins []model.OrderFeeLine) (outs []ordering.OrderFeeLine) {
 	return
 }
 
-func OrderToShippingInfo(in *model.Order) (out *shippingtypes.ShippingInfo) {
+func OrderToShippingInfo(in *model.Order) (out *shiptypes.ShippingInfo) {
 	if in == nil || in.ShopShipping == nil {
 		return nil
 	}
 	shopShipping := in.ShopShipping
-	tryOn, _ := shippingtypes.TryOnFromString(string(in.TryOn))
+	tryOn, _ := shiptypes.TryOnFromString(string(in.TryOn))
 
-	return &shippingtypes.ShippingInfo{
+	return &shiptypes.ShippingInfo{
 		PickupAddress:       Address(shopShipping.ShopAddress),
 		ReturnAddress:       Address(shopShipping.ReturnAddress),
 		ShippingServiceName: shopShipping.ExternalServiceName,
@@ -202,7 +202,7 @@ func Coordinates(in *model.Coordinates) (out *types.Coordinates) {
 	}
 }
 
-func CoordinatesToModel(in *types.Coordinates) (out *model.Coordinates) {
+func CoordinatesDB(in *types.Coordinates) (out *model.Coordinates) {
 	if in == nil {
 		return nil
 	}

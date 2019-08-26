@@ -3,7 +3,7 @@ package model
 import (
 	"time"
 
-	"etop.vn/backend/pkg/etop/model"
+	ordermodel "etop.vn/backend/com/main/ordering/model"
 )
 
 //go:generate $ETOPDIR/backend/scripts/derive.sh
@@ -61,7 +61,7 @@ type ShopTraderAddress struct {
 	Address2     string
 	DistrictCode string
 	WardCode     string
-	Coordinates  model.Coordinates
+	Coordinates  *ordermodel.Coordinates
 	CreatedAt    time.Time `sq:"create"`
 	UpdatedAt    time.Time `sq:"update"`
 	DeletedAt    time.Time

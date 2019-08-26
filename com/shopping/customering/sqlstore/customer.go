@@ -2,6 +2,7 @@ package sqlstore
 
 import (
 	"context"
+	"time"
 
 	"etop.vn/api/meta"
 	"etop.vn/api/shopping/customering"
@@ -98,6 +99,15 @@ func (s *CustomerStore) PatchCustomerDB(customer *model.ShopCustomer) (int, erro
 	query = s.includeDeleted.Check(query, s.ft.NotDeleted())
 	n, err := query.Update(customer)
 	return int(n), err
+}
+
+func (s *CustomerStore) SoftDelete() (int, error) {
+	query := s.query().Where(s.preds)
+	query = s.includeDeleted.Check(query, s.ft.NotDeleted())
+	_deleted, err := query.Table("shop_customer").UpdateMap(map[string]interface{}{
+		"deleted_at": time.Now(),
+	})
+	return int(_deleted), err
 }
 
 func (s *CustomerStore) DeleteCustomer() (int, error) {

@@ -9,6 +9,10 @@ func (ft *ShopCustomerFilters) NotDeleted() sq.WriterTo {
 	return ft.Filter("$.deleted_at IS NULL")
 }
 
+func (ft *ShopTraderAddressFilters) NotDeleted() sq.WriterTo {
+	return ft.Filter("$.deleted_at IS NULL")
+}
+
 var SortCustomer = map[string]string{
 	"id":         "",
 	"created_at": "",

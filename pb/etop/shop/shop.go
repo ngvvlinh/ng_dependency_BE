@@ -1,12 +1,16 @@
 package shop
 
 import (
+	"context"
 	"encoding/json"
 	"net/url"
 	"strconv"
 
+	"etop.vn/api/main/location"
+
 	"github.com/golang/protobuf/jsonpb"
 
+	"etop.vn/api/shopping/addressing"
 	"etop.vn/api/shopping/customering"
 	catalogmodel "etop.vn/backend/com/main/catalog/model"
 	"etop.vn/backend/pb/common"
@@ -250,11 +254,14 @@ func PbCustomer(m *customering.ShopCustomer) *Customer {
 	return &Customer{
 		Id:        m.ID,
 		ShopId:    m.ShopID,
-		Code:      m.Code,
 		FullName:  m.FullName,
+		Code:      m.Code,
 		Note:      m.Note,
 		Phone:     m.Phone,
 		Email:     m.Email,
+		Gender:    m.Gender,
+		Type:      m.Type,
+		Birthday:  m.Birthday,
 		CreatedAt: pbcm.PbTime(m.CreatedAt),
 		UpdatedAt: pbcm.PbTime(m.UpdatedAt),
 		Status:    pbs3.Pb(model.Status3(m.Status)),
@@ -267,4 +274,52 @@ func PbCustomers(ms []*customering.ShopCustomer) []*Customer {
 		res[i] = PbCustomer(m)
 	}
 	return res
+}
+
+func PbShopAddress(ctx context.Context, in *addressing.ShopTraderAddress, locationBus location.QueryBus) (*CustomerAddress, error) {
+	query := &location.GetLocationQuery{
+		DistrictCode: in.DistrictCode,
+		WardCode:     in.WardCode,
+	}
+	if err := locationBus.Dispatch(ctx, query); err != nil {
+		return nil, err
+	}
+	province, district, ward := query.Result.Province, query.Result.District, query.Result.Ward
+	out := &CustomerAddress{
+		Id:           in.ID,
+		District:     "",
+		DistrictCode: in.DistrictCode,
+		Ward:         "",
+		Company:      in.Company,
+		WardCode:     in.WardCode,
+		Address1:     in.Address1,
+		Address2:     in.Address2,
+		FullName:     in.FullName,
+		Phone:        in.Phone,
+		Email:        in.Email,
+		Coordinates:  pbetop.PbCoordinates(in.Coordinates),
+	}
+	if ward != nil {
+		out.Ward = ward.Name
+	}
+	if district != nil {
+		out.District = district.Name
+	}
+	if province != nil {
+		out.Province = province.Name
+		out.ProvinceCode = province.Code
+	}
+	return out, nil
+}
+
+func PbShopAddresses(ctx context.Context, ms []*addressing.ShopTraderAddress, locationBus location.QueryBus) ([]*CustomerAddress, error) {
+	var err error
+	res := make([]*CustomerAddress, len(ms))
+	for i, m := range ms {
+		res[i], err = PbShopAddress(ctx, m, locationBus)
+		if err != nil {
+			return nil, err
+		}
+	}
+	return res, nil
 }

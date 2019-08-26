@@ -4,6 +4,10 @@ import (
 	"context"
 	"time"
 
+	"etop.vn/api/main/location"
+
+	"github.com/asaskevich/govalidator"
+
 	haravanidentity "etop.vn/api/external/haravan/identity"
 	"etop.vn/api/main/address"
 	"etop.vn/api/main/catalog"
@@ -11,6 +15,7 @@ import (
 	"etop.vn/api/main/shipnow"
 	carriertypes "etop.vn/api/main/shipnow/carrier/types"
 	"etop.vn/api/main/shipping/types"
+	"etop.vn/api/shopping/addressing"
 	"etop.vn/api/shopping/customering"
 	notimodel "etop.vn/backend/com/handler/notifier/model"
 	catalogmodel "etop.vn/backend/com/main/catalog/model"
@@ -32,8 +37,6 @@ import (
 	wrapshop "etop.vn/backend/wrapper/etop/shop"
 	"etop.vn/common/bus"
 	"etop.vn/common/l"
-
-	"github.com/asaskevich/govalidator"
 )
 
 var ll = l.New()
@@ -101,6 +104,7 @@ func init() {
 
 const PrefixIdemp = "IdempOrder"
 
+var locationQuery location.QueryBus
 var idempgroup *idemp.RedisGroup
 var shipnowAggr shipnow.CommandBus
 var shipnowQuery shipnow.QueryBus
@@ -114,8 +118,11 @@ var haravanIdentityAggr haravanidentity.CommandBus
 var haravanIdentityQuery haravanidentity.QueryBus
 var customerQuery customering.QueryBus
 var customerAggr customering.CommandBus
+var traderAddressAggr addressing.CommandBus
+var traderAddressQuery addressing.QueryBus
 
 func Init(
+	locationQ location.QueryBus,
 	catalogQueryBus catalog.QueryBus,
 	catalogCommandBus catalog.CommandBus,
 	shipnow shipnow.CommandBus,
@@ -128,10 +135,13 @@ func Init(
 	haravanIdentityQS haravanidentity.QueryBus,
 	customerA customering.CommandBus,
 	customerQS customering.QueryBus,
+	traderAddressA addressing.CommandBus,
+	traderAddressQ addressing.QueryBus,
 	sd cmservice.Shutdowner,
 	rd redis.Store,
 ) {
 	idempgroup = idemp.NewRedisGroup(rd, PrefixIdemp, 5*60)
+	locationQuery = locationQ
 	catalogQuery = catalogQueryBus
 	catalogAggr = catalogCommandBus
 	shippingCtrl = providerManager
@@ -144,6 +154,8 @@ func Init(
 	haravanIdentityQuery = haravanIdentityQS
 	customerQuery = customerQS
 	customerAggr = customerA
+	traderAddressAggr = traderAddressA
+	traderAddressQuery = traderAddressQ
 	sd.Register(idempgroup.Shutdown)
 }
 

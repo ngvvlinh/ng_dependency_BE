@@ -79,7 +79,15 @@ func BatchSetCustomersStatus(ctx context.Context, r *wrapshop.BatchSetCustomersS
 }
 
 func DeleteCustomer(ctx context.Context, r *wrapshop.DeleteCustomerEndpoint) error {
-	return cm.ErrTODO
+	cmd := &customering.DeleteCustomerCommand{
+		ID:     r.Id,
+		ShopID: r.Context.Shop.ID,
+	}
+	if err := customerAggr.Dispatch(ctx, cmd); err != nil {
+		return err
+	}
+	r.Result = &pbcm.DeletedResponse{Deleted: int32(cmd.Result)}
+	return nil
 }
 
 func GetCustomer(ctx context.Context, r *wrapshop.GetCustomerEndpoint) error {

@@ -117,7 +117,7 @@ func (a *Aggregate) CreateOrder(ctx context.Context, args *gateway.CreateOrderRe
 	if err := a.identityQS.Dispatch(ctx, query); err != nil {
 		return nil, err
 	}
-	shop := identityconvert.ShopToModel(query.Result.Shop)
+	shop := identityconvert.ShopDB(query.Result.Shop)
 
 	// Get Account Haravan Partner
 	partner, err := sqlstore.Partner(ctx).ID(haravan.HaravanPartnerID).Get()

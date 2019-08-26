@@ -2,8 +2,6 @@ package customering
 
 import (
 	"time"
-
-	orderingv1types "etop.vn/api/main/ordering/types"
 )
 
 type ShopTrader struct {
@@ -35,21 +33,4 @@ type ShopVendor struct {
 	Status    int32
 	CreatedAt time.Time
 	UpdatedAt time.Time
-}
-
-type ShopTraderAddress struct {
-	ID           int64
-	ShopID       int64
-	TraderID     int64
-	FullName     string
-	Phone        string
-	Email        string
-	Company      string
-	Address1     string
-	Address2     string
-	DistrictCode string
-	WardCode     string
-	Coordinates  *orderingv1types.Coordinates
-	CreatedAt    time.Time
-	UpdatedAt    time.Time
 }

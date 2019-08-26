@@ -1007,17 +1007,19 @@ message CustomerAddress {
     optional string address1 = 5 [(gogoproto.nullable) = false];
     optional string address2 = 9 [(gogoproto.nullable) = false];
 
-//    optional string zip = 10 [(gogoproto.nullable) = false];
-
     optional string country = 11 [(gogoproto.nullable) = false];
 
     optional string full_name = 12 [(gogoproto.nullable) = false];
+
+    optional string company = 10 [(gogoproto.nullable) = false];
 
     optional string phone = 15 [(gogoproto.nullable) = false];
 
     optional string email = 16 [(gogoproto.nullable) = false];
 
     optional string position = 17 [(gogoproto.nullable) = false];
+
+    optional etop.Coordinates coordinates = 20;
 }
 
 message CreateCustomerAddressRequest {
@@ -1037,11 +1039,15 @@ message CreateCustomerAddressRequest {
 
     optional string full_name = 8 [(gogoproto.nullable) = false];
 
+    optional string company = 12 [(gogoproto.nullable) = false];
+
     optional string phone = 9 [(gogoproto.nullable) = false];
 
     optional string email = 10 [(gogoproto.nullable) = false];
 
     optional string position = 11 [(gogoproto.nullable) = false];
+
+    optional etop.Coordinates coordinates = 18;
 }
 
 message UpdateCustomerAddressRequest {
@@ -1066,8 +1072,12 @@ message UpdateCustomerAddressRequest {
     optional string email = 10 [(gogoproto.nullable) = false];
 
     optional string position = 11 [(gogoproto.nullable) = false];
+
+    optional string company = 12 [(gogoproto.nullable) = false];
+
+    optional etop.Coordinates coordinates = 18;
 }
 
 message CustomerAddressesResponse {
-    repeated CustomerAddress addresses = 1 [(gogoproto.nullable) = false];
+    repeated CustomerAddress addresses = 1;
 }

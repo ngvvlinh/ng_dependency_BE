@@ -2,7 +2,7 @@ package convert
 
 import (
 	"etop.vn/api/main/address"
-	orderingv1types "etop.vn/api/main/ordering/types"
+	ordertypes "etop.vn/api/main/ordering/types"
 	"etop.vn/backend/pkg/etop/model"
 )
 
@@ -72,7 +72,7 @@ func Address(in *model.Address) (out *address.Address) {
 	return
 }
 
-func CoordinatesToModel(in *orderingv1types.Coordinates) (out *model.Coordinates) {
+func CoordinatesToModel(in *ordertypes.Coordinates) (out *model.Coordinates) {
 	if in == nil {
 		return nil
 	}
@@ -83,11 +83,11 @@ func CoordinatesToModel(in *orderingv1types.Coordinates) (out *model.Coordinates
 	return
 }
 
-func Coordinates(in *model.Coordinates) (out *orderingv1types.Coordinates) {
+func Coordinates(in *model.Coordinates) (out *ordertypes.Coordinates) {
 	if in == nil {
 		return nil
 	}
-	out = &orderingv1types.Coordinates{
+	out = &ordertypes.Coordinates{
 		Latitude:  in.Latitude,
 		Longitude: in.Longitude,
 	}

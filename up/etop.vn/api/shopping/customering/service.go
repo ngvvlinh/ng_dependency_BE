@@ -9,11 +9,11 @@ import (
 )
 
 type Aggregate interface {
-	CreateCustomer(context.Context, *CreateCustomerArgs) (*ShopCustomer, error)
+	CreateCustomer(ctx context.Context, _ *CreateCustomerArgs) (*ShopCustomer, error)
 
-	UpdateCustomer(context.Context, *UpdateCustomerArgs) (*ShopCustomer, error)
+	UpdateCustomer(ctx context.Context, _ *UpdateCustomerArgs) (*ShopCustomer, error)
 
-	DeleteCustomer(ctx context.Context, ID int64, shopID int64) error
+	DeleteCustomer(ctx context.Context, ID int64, shopID int64) (deleted int, _ error)
 
 	BatchSetCustomersStatus(ctx context.Context, IDs []int64, shopID int64, status int32) (*meta.UpdatedResponse, error)
 }

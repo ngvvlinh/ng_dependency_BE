@@ -8,29 +8,28 @@ import (
 	"etop.vn/backend/com/shopping/customering/convert"
 	"etop.vn/backend/com/shopping/customering/model"
 	"etop.vn/backend/com/shopping/customering/sqlstore"
-	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/cmsql"
 	"etop.vn/common/bus"
 )
 
-var _ customering.Aggregate = &Aggregate{}
+var _ customering.Aggregate = &CustomerAggregate{}
 
-type Aggregate struct {
+type CustomerAggregate struct {
 	store sqlstore.CustomerStoreFactory
 }
 
-func New(db cmsql.Database) *Aggregate {
-	return &Aggregate{
+func NewCustomerAggregate(db cmsql.Database) *CustomerAggregate {
+	return &CustomerAggregate{
 		store: sqlstore.NewCustomerStore(db),
 	}
 }
 
-func (q *Aggregate) MessageBus() customering.CommandBus {
+func (q *CustomerAggregate) MessageBus() customering.CommandBus {
 	b := bus.New()
 	return customering.NewAggregateHandler(q).RegisterHandlers(b)
 }
 
-func (a *Aggregate) CreateCustomer(
+func (a *CustomerAggregate) CreateCustomer(
 	ctx context.Context, args *customering.CreateCustomerArgs,
 ) (*customering.ShopCustomer, error) {
 	customer := convert.CreateShopCustomer(args)
@@ -39,7 +38,7 @@ func (a *Aggregate) CreateCustomer(
 	return customer, err
 }
 
-func (a *Aggregate) UpdateCustomer(
+func (a *CustomerAggregate) UpdateCustomer(
 	ctx context.Context, args *customering.UpdateCustomerArgs,
 ) (*customering.ShopCustomer, error) {
 	customer, err := a.store(ctx).ID(args.ID).ShopID(args.ShopID).GetCustomer()
@@ -51,13 +50,14 @@ func (a *Aggregate) UpdateCustomer(
 	return updated, err
 }
 
-func (a *Aggregate) DeleteCustomer(
+func (a *CustomerAggregate) DeleteCustomer(
 	ctx context.Context, id int64, shopID int64,
-) error {
-	return cm.ErrTODO
+) (deleted int, _ error) {
+	deleted, err := a.store(ctx).ID(id).ShopID(shopID).SoftDelete()
+	return deleted, err
 }
 
-func (a *Aggregate) BatchSetCustomersStatus(
+func (a *CustomerAggregate) BatchSetCustomersStatus(
 	ctx context.Context, ids []int64, shopID int64, status int32,
 ) (*meta.UpdatedResponse, error) {
 	update := &model.ShopCustomer{Status: status}

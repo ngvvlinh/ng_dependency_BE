@@ -64,8 +64,7 @@ type DeleteCustomerCommand struct {
 	ID     int64
 	ShopID int64
 
-	Result struct {
-	} `json:"-"`
+	Result int `json:"-"`
 }
 
 type UpdateCustomerCommand struct {
@@ -218,7 +217,9 @@ func (h AggregateHandler) HandleCreateCustomer(ctx context.Context, msg *CreateC
 }
 
 func (h AggregateHandler) HandleDeleteCustomer(ctx context.Context, msg *DeleteCustomerCommand) error {
-	return h.inner.DeleteCustomer(msg.GetArgs(ctx))
+	result, err := h.inner.DeleteCustomer(msg.GetArgs(ctx))
+	msg.Result = result
+	return err
 }
 
 func (h AggregateHandler) HandleUpdateCustomer(ctx context.Context, msg *UpdateCustomerCommand) error {

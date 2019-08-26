@@ -7,7 +7,7 @@ import (
 	"etop.vn/backend/pkg/etop/model"
 )
 
-func ShopToModel(in *identity.Shop) (out *model.Shop) {
+func ShopDB(in *identity.Shop) (out *model.Shop) {
 	if in == nil {
 		return nil
 	}

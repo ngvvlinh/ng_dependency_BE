@@ -25,7 +25,7 @@ func ShipnowToModel(in *shipnow.ShipnowFulfillment) (out *shipnowmodel.ShipnowFu
 		ShopID:                     in.ShopId,
 		PartnerID:                  in.PartnerId,
 		OrderIDs:                   in.OrderIds,
-		PickupAddress:              orderconvert.AddressToModel(in.PickupAddress),
+		PickupAddress:              orderconvert.AddressDB(in.PickupAddress),
 		Carrier:                    CarrierToModel(in.Carrier),
 		ShippingServiceCode:        in.ShippingServiceCode,
 		ShippingServiceFee:         in.ShippingServiceFee,
@@ -155,7 +155,7 @@ func DeliveryPointToModel(in *shipnowtypes.DeliveryPoint) (out *shipnowmodel.Del
 		return nil
 	}
 	return &shipnowmodel.DeliveryPoint{
-		ShippingAddress:  orderconvert.AddressToModel(in.ShippingAddress),
+		ShippingAddress:  orderconvert.AddressDB(in.ShippingAddress),
 		Items:            orderconvert.OrderLinesToModel(in.Lines),
 		GrossWeight:      in.GrossWeight,
 		ChargeableWeight: in.ChargeableWeight,

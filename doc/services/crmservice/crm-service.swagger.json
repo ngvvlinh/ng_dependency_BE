@@ -20,7 +20,7 @@
         "operationId": "VersionInfo",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "",
             "schema": {
               "$ref": "#/definitions/cmVersionInfoResponse"
             }
@@ -46,7 +46,7 @@
         "operationId": "CreateOrUpdateCallHistoryByCallID",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "",
             "schema": {
               "$ref": "#/definitions/crmserviceVHTCallLog"
             }
@@ -72,7 +72,7 @@
         "operationId": "CreateOrUpdateCallHistoryBySDKCallID",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "",
             "schema": {
               "$ref": "#/definitions/crmserviceVHTCallLog"
             }
@@ -98,7 +98,7 @@
         "operationId": "GetCallHistories",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "",
             "schema": {
               "$ref": "#/definitions/crmserviceGetCallHistoriesResponse"
             }
@@ -124,7 +124,7 @@
         "operationId": "CountTicketByStatus",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "",
             "schema": {
               "$ref": "#/definitions/crmserviceCountTicketByStatusResponse"
             }
@@ -150,7 +150,7 @@
         "operationId": "CreateOrUpdateContact",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "",
             "schema": {
               "$ref": "#/definitions/crmserviceContact"
             }
@@ -176,7 +176,7 @@
         "operationId": "CreateOrUpdateLead",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "",
             "schema": {
               "$ref": "#/definitions/crmserviceLead"
             }
@@ -202,7 +202,7 @@
         "operationId": "CreateTicket",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "",
             "schema": {
               "$ref": "#/definitions/crmserviceTicket"
             }
@@ -228,7 +228,7 @@
         "operationId": "GetCategories",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "",
             "schema": {
               "$ref": "#/definitions/crmserviceGetCategoriesResponse"
             }
@@ -254,7 +254,7 @@
         "operationId": "GetContacts",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "",
             "schema": {
               "$ref": "#/definitions/crmserviceGetContactsResponse"
             }
@@ -280,7 +280,7 @@
         "operationId": "GetStatus",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "",
             "schema": {
               "$ref": "#/definitions/crmserviceGetStatusResponse"
             }
@@ -306,7 +306,7 @@
         "operationId": "GetTicketStatusCount",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "",
             "schema": {
               "$ref": "#/definitions/crmserviceGetTicketStatusCountResponse"
             }
@@ -332,7 +332,7 @@
         "operationId": "GetTickets",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "",
             "schema": {
               "$ref": "#/definitions/crmserviceGetTicketsResponse"
             }
@@ -358,7 +358,7 @@
         "operationId": "UpdateTicket",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "",
             "schema": {
               "$ref": "#/definitions/crmserviceTicket"
             }

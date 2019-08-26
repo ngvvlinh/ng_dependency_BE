@@ -10,30 +10,30 @@ import (
 	"etop.vn/common/bus"
 )
 
-var _ customering.QueryService = &QueryService{}
+var _ customering.QueryService = &CustomerQuery{}
 
-type QueryService struct {
+type CustomerQuery struct {
 	store sqlstore.CustomerStoreFactory
 }
 
-func New(db cmsql.Database) *QueryService {
-	return &QueryService{
+func NewCustomerQuery(db cmsql.Database) *CustomerQuery {
+	return &CustomerQuery{
 		store: sqlstore.NewCustomerStore(db),
 	}
 }
 
-func (q *QueryService) MessageBus() customering.QueryBus {
+func (q *CustomerQuery) MessageBus() customering.QueryBus {
 	b := bus.New()
 	return customering.NewQueryServiceHandler(q).RegisterHandlers(b)
 }
 
-func (q *QueryService) GetCustomerByID(
+func (q *CustomerQuery) GetCustomerByID(
 	ctx context.Context, args *shopping.IDQueryShopArg,
 ) (*customering.ShopCustomer, error) {
 	return q.store(ctx).ID(args.ID).OptionalShopID(args.ShopID).GetCustomer()
 }
 
-func (q *QueryService) ListCustomers(
+func (q *CustomerQuery) ListCustomers(
 	ctx context.Context, args *shopping.ListQueryShopArgs,
 ) (*customering.CustomersResponse, error) {
 	query := q.store(ctx).ShopID(args.ShopID).Paging(args.Paging).Filters(args.Filters)
@@ -52,7 +52,7 @@ func (q *QueryService) ListCustomers(
 	}, nil
 }
 
-func (q *QueryService) ListCustomersByIDs(
+func (q *CustomerQuery) ListCustomersByIDs(
 	ctx context.Context, args *shopping.IDsQueryShopArgs,
 ) (*customering.CustomersResponse, error) {
 	customers, err := q.store(ctx).ShopID(args.ShopID).IDs(args.IDs...).ListCustomers()

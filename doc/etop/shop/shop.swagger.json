@@ -20,7 +20,7 @@
         "operationId": "CreateExternalAccountAhamove",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "",
             "schema": {
               "$ref": "#/definitions/shopExternalAccountAhamove"
             }
@@ -46,7 +46,7 @@
         "operationId": "DeleteShop",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "",
             "schema": {
               "$ref": "#/definitions/cmEmpty"
             }
@@ -72,7 +72,7 @@
         "operationId": "GetBalanceShop",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "",
             "schema": {
               "$ref": "#/definitions/shopGetBalanceShopResponse"
             }
@@ -98,7 +98,7 @@
         "operationId": "GetExternalAccountAhamove",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "",
             "schema": {
               "$ref": "#/definitions/shopExternalAccountAhamove"
             }
@@ -124,7 +124,7 @@
         "operationId": "RegisterShop",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "",
             "schema": {
               "$ref": "#/definitions/shopRegisterShopResponse"
             }
@@ -150,7 +150,7 @@
         "operationId": "RequestVerifyExternalAccountAhamove",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "",
             "schema": {
               "$ref": "#/definitions/cmUpdatedResponse"
             }
@@ -176,7 +176,7 @@
         "operationId": "SetDefaultAddress",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "",
             "schema": {
               "$ref": "#/definitions/cmUpdatedResponse"
             }
@@ -202,7 +202,7 @@
         "operationId": "UpdateExternalAccountAhamoveVerification",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "",
             "schema": {
               "$ref": "#/definitions/cmUpdatedResponse"
             }
@@ -229,7 +229,7 @@
         "operationId": "UpdateExternalAccountAhamoveVerificationImages",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "",
             "schema": {
               "$ref": "#/definitions/cmUpdatedResponse"
             }
@@ -255,7 +255,7 @@
         "operationId": "UpdateShop",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "",
             "schema": {
               "$ref": "#/definitions/shopUpdateShopResponse"
             }
@@ -281,7 +281,7 @@
         "operationId": "AuthorizePartner",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "",
             "schema": {
               "$ref": "#/definitions/shopAuthorizedPartnerResponse"
             }
@@ -307,7 +307,7 @@
         "operationId": "GetAuthorizedPartners",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "",
             "schema": {
               "$ref": "#/definitions/shopGetAuthorizedPartnersResponse"
             }
@@ -333,7 +333,7 @@
         "operationId": "GetAvailablePartners",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "",
             "schema": {
               "$ref": "#/definitions/shopGetPartnersResponse"
             }
@@ -359,7 +359,7 @@
         "operationId": "CreateCollection",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "",
             "schema": {
               "$ref": "#/definitions/shopCollection"
             }
@@ -385,7 +385,7 @@
         "operationId": "DeleteCollection",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "",
             "schema": {
               "$ref": "#/definitions/cmRemovedResponse"
             }
@@ -411,7 +411,7 @@
         "operationId": "GetCollection",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "",
             "schema": {
               "$ref": "#/definitions/shopCollection"
             }
@@ -437,7 +437,7 @@
         "operationId": "GetCollections",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "",
             "schema": {
               "$ref": "#/definitions/shopCollectionsResponse"
             }
@@ -463,7 +463,7 @@
         "operationId": "GetCollectionsByIDs",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "",
             "schema": {
               "$ref": "#/definitions/shopCollectionsResponse"
             }
@@ -489,7 +489,7 @@
         "operationId": "RemoveProductsCollection",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "",
             "schema": {
               "$ref": "#/definitions/cmUpdatedResponse"
             }
@@ -515,7 +515,7 @@
         "operationId": "UpdateCollection",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "",
             "schema": {
               "$ref": "#/definitions/shopCollection"
             }
@@ -541,7 +541,7 @@
         "operationId": "UpdateProductsCollection",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "",
             "schema": {
               "$ref": "#/definitions/shopUpdateProductsCollectionResponse"
             }
@@ -567,7 +567,7 @@
         "operationId": "BatchSetCustomersStatus",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "",
             "schema": {
               "$ref": "#/definitions/cmUpdatedResponse"
             }
@@ -593,7 +593,7 @@
         "operationId": "CreateCustomer",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "",
             "schema": {
               "$ref": "#/definitions/shopCustomer"
             }
@@ -616,11 +616,10 @@
     },
     "/api/shop.Customer/CreateCustomerAddress": {
       "post": {
-        "summary": "deprecated: backward-compatible, will be removed later",
         "operationId": "CreateCustomerAddress",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "",
             "schema": {
               "$ref": "#/definitions/shopCustomerAddress"
             }
@@ -646,7 +645,7 @@
         "operationId": "DeleteCustomer",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "",
             "schema": {
               "$ref": "#/definitions/cmDeletedResponse"
             }
@@ -672,7 +671,7 @@
         "operationId": "DeleteCustomerAddress",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "",
             "schema": {
               "$ref": "#/definitions/cmDeletedResponse"
             }
@@ -698,7 +697,7 @@
         "operationId": "GetCustomer",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "",
             "schema": {
               "$ref": "#/definitions/shopCustomer"
             }
@@ -724,7 +723,7 @@
         "operationId": "GetCustomerAddresses",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "",
             "schema": {
               "$ref": "#/definitions/shopCustomerAddressesResponse"
             }
@@ -750,7 +749,7 @@
         "operationId": "GetCustomerDetails",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "",
             "schema": {
               "$ref": "#/definitions/shopCustomerDetailsResponse"
             }
@@ -776,7 +775,7 @@
         "operationId": "GetCustomers",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "",
             "schema": {
               "$ref": "#/definitions/shopCustomersResponse"
             }
@@ -802,7 +801,7 @@
         "operationId": "GetCustomersByIDs",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "",
             "schema": {
               "$ref": "#/definitions/shopCustomersResponse"
             }
@@ -828,7 +827,7 @@
         "operationId": "UpdateCustomer",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "",
             "schema": {
               "$ref": "#/definitions/shopCustomer"
             }
@@ -854,7 +853,7 @@
         "operationId": "UpdateCustomerAddress",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "",
             "schema": {
               "$ref": "#/definitions/shopCustomerAddress"
             }
@@ -880,7 +879,7 @@
         "operationId": "GetExports",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "",
             "schema": {
               "$ref": "#/definitions/shopGetExportsResponse"
             }
@@ -906,7 +905,7 @@
         "operationId": "RequestExport",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "",
             "schema": {
               "$ref": "#/definitions/shopRequestExportResponse"
             }
@@ -932,7 +931,7 @@
         "operationId": "ConnectCarrierServiceExternalAccountHaravan",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "",
             "schema": {
               "$ref": "#/definitions/cmUpdatedResponse"
             }
@@ -958,7 +957,7 @@
         "operationId": "CreateExternalAccountHaravan",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "",
             "schema": {
               "$ref": "#/definitions/shopExternalAccountHaravan"
             }
@@ -984,7 +983,7 @@
         "operationId": "DeleteConnectedCarrierServiceExternalAccountHaravan",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "",
             "schema": {
               "$ref": "#/definitions/cmDeletedResponse"
             }
@@ -1010,7 +1009,7 @@
         "operationId": "GetExternalAccountHaravan",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "",
             "schema": {
               "$ref": "#/definitions/shopExternalAccountHaravan"
             }
@@ -1036,7 +1035,7 @@
         "operationId": "UpdateExternalAccountHaravanToken",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "",
             "schema": {
               "$ref": "#/definitions/shopExternalAccountHaravan"
             }
@@ -1062,7 +1061,7 @@
         "operationId": "CancelFulfillment",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "",
             "schema": {
               "$ref": "#/definitions/cmUpdatedResponse"
             }
@@ -1088,7 +1087,7 @@
         "operationId": "CreateFulfillmentsForOrder",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "",
             "schema": {
               "$ref": "#/definitions/orderOrder"
             }
@@ -1114,7 +1113,7 @@
         "operationId": "GetExternalShippingServices",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "",
             "schema": {
               "$ref": "#/definitions/orderGetExternalShippingServicesResponse"
             }
@@ -1140,7 +1139,7 @@
         "operationId": "GetFulfillment",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "",
             "schema": {
               "$ref": "#/definitions/orderFulfillment"
             }
@@ -1166,7 +1165,7 @@
         "operationId": "GetFulfillments",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "",
             "schema": {
               "$ref": "#/definitions/orderFulfillmentsResponse"
             }
@@ -1192,7 +1191,7 @@
         "operationId": "GetPublicExternalShippingServices",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "",
             "schema": {
               "$ref": "#/definitions/orderGetExternalShippingServicesResponse"
             }
@@ -1218,7 +1217,7 @@
         "operationId": "GetPublicFulfillment",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "",
             "schema": {
               "$ref": "#/definitions/orderPublicFulfillment"
             }
@@ -1244,7 +1243,7 @@
         "operationId": "UpdateFulfillmentsShippingState",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "",
             "schema": {
               "$ref": "#/definitions/cmUpdatedResponse"
             }
@@ -1270,7 +1269,7 @@
         "operationId": "GetFulfillmentHistory",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "",
             "schema": {
               "$ref": "#/definitions/etopHistoryResponse"
             }
@@ -1296,7 +1295,7 @@
         "operationId": "VersionInfo",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "",
             "schema": {
               "$ref": "#/definitions/cmVersionInfoResponse"
             }
@@ -1322,7 +1321,7 @@
         "operationId": "GetMoneyTransaction",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "",
             "schema": {
               "$ref": "#/definitions/orderMoneyTransaction"
             }
@@ -1348,7 +1347,7 @@
         "operationId": "GetMoneyTransactions",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "",
             "schema": {
               "$ref": "#/definitions/orderMoneyTransactionsResponse"
             }
@@ -1374,7 +1373,7 @@
         "operationId": "CreateDevice",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "",
             "schema": {
               "$ref": "#/definitions/etopDevice"
             }
@@ -1400,7 +1399,7 @@
         "operationId": "DeleteDevice",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "",
             "schema": {
               "$ref": "#/definitions/cmDeletedResponse"
             }
@@ -1426,7 +1425,7 @@
         "operationId": "GetNotification",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "",
             "schema": {
               "$ref": "#/definitions/etopNotification"
             }
@@ -1452,7 +1451,7 @@
         "operationId": "GetNotifications",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "",
             "schema": {
               "$ref": "#/definitions/etopNotificationsResponse"
             }
@@ -1478,7 +1477,7 @@
         "operationId": "UpdateNotifications",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "",
             "schema": {
               "$ref": "#/definitions/cmUpdatedResponse"
             }
@@ -1504,7 +1503,7 @@
         "operationId": "CancelOrder",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "",
             "schema": {
               "$ref": "#/definitions/orderOrderWithErrorsResponse"
             }
@@ -1530,7 +1529,7 @@
         "operationId": "ConfirmOrderAndCreateFulfillments",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "",
             "schema": {
               "$ref": "#/definitions/orderOrderWithErrorsResponse"
             }
@@ -1556,7 +1555,7 @@
         "operationId": "ConfirmOrdersAndCreateFulfillments",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "",
             "schema": {
               "$ref": "#/definitions/cmErrorsResponse"
             }
@@ -1582,7 +1581,7 @@
         "operationId": "CreateOrder",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "",
             "schema": {
               "$ref": "#/definitions/orderOrder"
             }
@@ -1608,7 +1607,7 @@
         "operationId": "GetOrder",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "",
             "schema": {
               "$ref": "#/definitions/orderOrder"
             }
@@ -1634,7 +1633,7 @@
         "operationId": "GetOrders",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "",
             "schema": {
               "$ref": "#/definitions/orderOrdersResponse"
             }
@@ -1660,7 +1659,7 @@
         "operationId": "GetOrdersByIDs",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "",
             "schema": {
               "$ref": "#/definitions/orderOrdersResponse"
             }
@@ -1686,7 +1685,7 @@
         "operationId": "UpdateOrder",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "",
             "schema": {
               "$ref": "#/definitions/orderOrder"
             }
@@ -1709,11 +1708,10 @@
     },
     "/api/shop.Order/UpdateOrderPaymentStatus": {
       "post": {
-        "summary": "deprecated: backward-compatible, will be removed later",
         "operationId": "UpdateOrderPaymentStatus",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "",
             "schema": {
               "$ref": "#/definitions/cmUpdatedResponse"
             }
@@ -1736,10 +1734,11 @@
     },
     "/api/shop.Order/UpdateOrdersStatus": {
       "post": {
+        "summary": "@deprecated",
         "operationId": "UpdateOrdersStatus",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "",
             "schema": {
               "$ref": "#/definitions/cmUpdatedResponse"
             }
@@ -1766,7 +1765,7 @@
         "operationId": "AddProducts",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "",
             "schema": {
               "$ref": "#/definitions/shopAddProductsResponse"
             }
@@ -1792,7 +1791,7 @@
         "operationId": "CreateProduct",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "",
             "schema": {
               "$ref": "#/definitions/shopShopProduct"
             }
@@ -1815,11 +1814,10 @@
     },
     "/api/shop.Product/CreateVariant": {
       "post": {
-        "summary": "deprecated: backward-compatible, will be removed later",
         "operationId": "CreateVariant",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "",
             "schema": {
               "$ref": "#/definitions/shopShopVariant"
             }
@@ -1845,7 +1843,7 @@
         "operationId": "GetProduct",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "",
             "schema": {
               "$ref": "#/definitions/shopShopProduct"
             }
@@ -1871,7 +1869,7 @@
         "operationId": "GetProducts",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "",
             "schema": {
               "$ref": "#/definitions/shopShopProductsResponse"
             }
@@ -1897,7 +1895,7 @@
         "operationId": "GetProductsByIDs",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "",
             "schema": {
               "$ref": "#/definitions/shopShopProductsResponse"
             }
@@ -1923,7 +1921,7 @@
         "operationId": "GetVariant",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "",
             "schema": {
               "$ref": "#/definitions/shopShopVariant"
             }
@@ -1949,7 +1947,7 @@
         "operationId": "GetVariantsByIDs",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "",
             "schema": {
               "$ref": "#/definitions/shopShopVariantsResponse"
             }
@@ -1976,7 +1974,7 @@
         "operationId": "RemoveProducts",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "",
             "schema": {
               "$ref": "#/definitions/cmRemovedResponse"
             }
@@ -2003,7 +2001,7 @@
         "operationId": "RemoveVariants",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "",
             "schema": {
               "$ref": "#/definitions/cmRemovedResponse"
             }
@@ -2029,7 +2027,7 @@
         "operationId": "UpdateProduct",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "",
             "schema": {
               "$ref": "#/definitions/shopShopProduct"
             }
@@ -2055,7 +2053,7 @@
         "operationId": "UpdateProductImages",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "",
             "schema": {
               "$ref": "#/definitions/shopShopProduct"
             }
@@ -2081,7 +2079,7 @@
         "operationId": "UpdateProductsTags",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "",
             "schema": {
               "$ref": "#/definitions/cmUpdatedResponse"
             }
@@ -2107,7 +2105,7 @@
         "operationId": "UpdateVariant",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "",
             "schema": {
               "$ref": "#/definitions/shopShopVariant"
             }
@@ -2133,7 +2131,7 @@
         "operationId": "UpdateVariantImages",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "",
             "schema": {
               "$ref": "#/definitions/shopShopVariant"
             }
@@ -2159,7 +2157,7 @@
         "operationId": "CreateProductSource",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "",
             "schema": {
               "$ref": "#/definitions/shopProductSource"
             }
@@ -2185,7 +2183,7 @@
         "operationId": "CreateProductSourceCategory",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "",
             "schema": {
               "$ref": "#/definitions/shopCategory"
             }
@@ -2208,10 +2206,11 @@
     },
     "/api/shop.ProductSource/CreateVariant": {
       "post": {
+        "summary": "deprecated: use shop.Product/CreateVariant instead",
         "operationId": "CreateVariant",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "",
             "schema": {
               "$ref": "#/definitions/shopShopProduct"
             }
@@ -2237,7 +2236,7 @@
         "operationId": "GetProductSourceCategories",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "",
             "schema": {
               "$ref": "#/definitions/shopCategoriesResponse"
             }
@@ -2263,7 +2262,7 @@
         "operationId": "GetProductSourceCategory",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "",
             "schema": {
               "$ref": "#/definitions/shopCategory"
             }
@@ -2289,7 +2288,7 @@
         "operationId": "GetShopProductSources",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "",
             "schema": {
               "$ref": "#/definitions/shopProductSourcesResponse"
             }
@@ -2315,7 +2314,7 @@
         "operationId": "RemoveProductSourceCategory",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "",
             "schema": {
               "$ref": "#/definitions/cmRemovedResponse"
             }
@@ -2341,7 +2340,7 @@
         "operationId": "UpdateProductSourceCategory",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "",
             "schema": {
               "$ref": "#/definitions/shopCategory"
             }
@@ -2367,7 +2366,7 @@
         "operationId": "UpdateProductsPSCategory",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "",
             "schema": {
               "$ref": "#/definitions/cmUpdatedResponse"
             }
@@ -2393,7 +2392,7 @@
         "operationId": "CancelShipnowFulfillment",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "",
             "schema": {
               "$ref": "#/definitions/cmUpdatedResponse"
             }
@@ -2419,7 +2418,7 @@
         "operationId": "ConfirmShipnowFulfillment",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "",
             "schema": {
               "$ref": "#/definitions/orderShipnowFulfillment"
             }
@@ -2445,7 +2444,7 @@
         "operationId": "CreateShipnowFulfillment",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "",
             "schema": {
               "$ref": "#/definitions/orderShipnowFulfillment"
             }
@@ -2471,7 +2470,7 @@
         "operationId": "GetShipnowFulfillment",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "",
             "schema": {
               "$ref": "#/definitions/orderShipnowFulfillment"
             }
@@ -2497,7 +2496,7 @@
         "operationId": "GetShipnowFulfillments",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "",
             "schema": {
               "$ref": "#/definitions/orderShipnowFulfillments"
             }
@@ -2523,7 +2522,7 @@
         "operationId": "GetShipnowServices",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "",
             "schema": {
               "$ref": "#/definitions/orderGetShipnowServicesResponse"
             }
@@ -2549,7 +2548,7 @@
         "operationId": "UpdateShipnowFulfillment",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "",
             "schema": {
               "$ref": "#/definitions/orderShipnowFulfillment"
             }
@@ -2575,7 +2574,7 @@
         "operationId": "CalcBalanceShop",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "",
             "schema": {
               "$ref": "#/definitions/shopCalcBalanceShopResponse"
             }
@@ -2601,7 +2600,7 @@
         "operationId": "SummarizeFulfillments",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "",
             "schema": {
               "$ref": "#/definitions/shopSummarizeFulfillmentsResponse"
             }
@@ -5729,6 +5728,9 @@
         "full_name": {
           "type": "string"
         },
+        "company": {
+          "type": "string"
+        },
         "phone": {
           "type": "string"
         },
@@ -5737,6 +5739,9 @@
         },
         "position": {
           "type": "string"
+        },
+        "coordinates": {
+          "$ref": "#/definitions/etopCoordinates"
         }
       }
     },
@@ -5982,6 +5987,9 @@
         "full_name": {
           "type": "string"
         },
+        "company": {
+          "type": "string"
+        },
         "phone": {
           "type": "string"
         },
@@ -5990,6 +5998,9 @@
         },
         "position": {
           "type": "string"
+        },
+        "coordinates": {
+          "$ref": "#/definitions/etopCoordinates"
         }
       }
     },
@@ -7162,6 +7173,12 @@
         },
         "position": {
           "type": "string"
+        },
+        "company": {
+          "type": "string"
+        },
+        "coordinates": {
+          "$ref": "#/definitions/etopCoordinates"
         }
       }
     },

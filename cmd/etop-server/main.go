@@ -285,12 +285,14 @@ func main() {
 	orderingPM := orderingpm.New(orderAggr)
 	shipnowPM := shipnowpm.New(eventBus, shipnowQuery, shipnowAggr, orderAggr.MessageBus(), shipnowCarrierManager)
 	shipnowPM.RegisterEventHandlers(eventBus)
-	customerAggr := customeraggregate.New(db).MessageBus()
-	customerQuery := customerquery.New(db).MessageBus()
-
+	customerAggr := customeraggregate.NewCustomerAggregate(db).MessageBus()
+	traderAddressAggr := customeraggregate.NewAddressAggregate(db).MessageBus()
+	customerQuery := customerquery.NewCustomerQuery(db).MessageBus()
+	traderAddressQuery := customerquery.NewAddressQuery(db).MessageBus()
 	orderAggr.WithPM(orderingPM)
 
 	shop.Init(
+		locationBus,
 		catalogQuery,
 		catalogAggr,
 		shipnowAggr,
@@ -303,6 +305,8 @@ func main() {
 		haravanIdentityQuery,
 		customerAggr,
 		customerQuery,
+		traderAddressAggr,
+		traderAddressQuery,
 		shutdowner,
 		redisStore,
 	)

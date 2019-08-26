@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"etop.vn/api/main/location"
+	ordertypes "etop.vn/api/main/ordering/types"
 	notimodel "etop.vn/backend/com/handler/notifier/model"
 	servicelocation "etop.vn/backend/com/main/location"
 	"etop.vn/backend/pb/common"
@@ -751,4 +752,24 @@ func PbNotifications(items []*notimodel.Notification) []*Notification {
 		result[i] = PbNotification(item)
 	}
 	return result
+}
+
+func PbCoordinates(in *ordertypes.Coordinates) *Coordinates {
+	if in == nil {
+		return nil
+	}
+	return &Coordinates{
+		Latitude:  in.Latitude,
+		Longitude: in.Longitude,
+	}
+}
+
+func PbCoordinatesToModel(in *Coordinates) *ordertypes.Coordinates {
+	if in == nil {
+		return nil
+	}
+	return &ordertypes.Coordinates{
+		Latitude:  in.Latitude,
+		Longitude: in.Longitude,
+	}
 }
