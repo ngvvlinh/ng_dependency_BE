@@ -202,11 +202,11 @@ func toService(service *client.ServiceType) *AhamoveShippingService {
 	return &AhamoveShippingService{
 		Code:          service.ID, // keep the original service code
 		Name:          service.NameViVn,
-		MinStopPoints: minStopPoints,
-		MaxStopPoints: service.MaxStopPoints,
+		MinStopPoints: int(minStopPoints),
+		MaxStopPoints: int(service.MaxStopPoints),
 		City:          city,
 		Description:   service.DescriptionViVn,
-		MaxCOD:        cm.CoalesceInt(service.MaxCOD, service.COD),
+		MaxCOD:        cm.CoalesceInt(int(service.MaxCOD), int(service.COD)),
 	}
 }
 

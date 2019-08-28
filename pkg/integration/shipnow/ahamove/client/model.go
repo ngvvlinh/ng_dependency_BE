@@ -3,6 +3,8 @@ package client
 import (
 	"encoding/json"
 
+	"etop.vn/backend/pkg/common/httpreq"
+
 	"etop.vn/api/main/etop"
 	shipnowtypes "etop.vn/api/main/shipnow/types"
 	cm "etop.vn/backend/pkg/common"
@@ -14,6 +16,13 @@ type Config struct {
 	Name   string `yaml:"name"`
 	ApiKey string `yaml:"api_key"`
 }
+
+type (
+	Bool  = httpreq.Bool
+	Float = httpreq.Float
+	Int   = httpreq.Int
+	Time  = httpreq.Time
+)
 
 func (c *Config) MustLoadEnv(prefix ...string) {
 	p := "ET_AHAMOVE"
@@ -175,22 +184,22 @@ type DeliveryPoint struct {
 }
 
 type CalcShippingFeeResponse struct {
-	Distance         float32 `json:"distance"`           // 1.144
-	Duration         int     `json:"duration"`           // 288
-	Currency         string  `json:"currency"`           // "VND"
-	Discount         int     `json:"discount"`           // 30000
-	DistanceFee      int     `json:"distance_fee"`       // 140000,
-	StopFee          int     `json:"stop_fee"`           // 0,
-	TotalFee         int     `json:"total_fee"`          // 275000,  # Total = Distance Fee + Request Fee + Stop Fee
-	UserMainAccount  int     `json:"user_main_account"`  // 0,
-	UserBonusAccount int     `json:"user_bonus_account"` // 0,
-	TotalPay         int     `json:"total_pay"`          // 275000,
+	Distance         Float  `json:"distance"`           // 1.144
+	Duration         Int    `json:"duration"`           // 288
+	Currency         string `json:"currency"`           // "VND"
+	Discount         Int    `json:"discount"`           // 30000
+	DistanceFee      Int    `json:"distance_fee"`       // 140000,
+	StopFee          Int    `json:"stop_fee"`           // 0,
+	TotalFee         Int    `json:"total_fee"`          // 275000,  # Total = Distance Fee + Request Fee + Stop Fee
+	UserMainAccount  Int    `json:"user_main_account"`  // 0,
+	UserBonusAccount Int    `json:"user_bonus_account"` // 0,
+	TotalPay         Int    `json:"total_pay"`          // 275000,
 	// Surcharge           string  `json:"surcharge"`             // 1.1 # 110% compared to normal fee, only returned if surcharge > 1,
 	BookingTimeError    string `json:"booking_time_error"`    // "Booking time not valid" #If booking time is not in opening hours period,
 	PaymentErrorMessage string `json:"payment_error_message"` // "Not enough credit" #If user does not have enough credit in balance
-	PartnerFee          int    `json:"partner_fee"`
-	PartnerDistanceFee  int    `json:"partner_distance_fee"`
-	PartnerDiscount     int    `json:"partner_discount"`
+	PartnerFee          Int    `json:"partner_fee"`
+	PartnerDistanceFee  Int    `json:"partner_distance_fee"`
+	PartnerDiscount     Int    `json:"partner_discount"`
 }
 
 type CreateOrderRequest struct {
@@ -231,7 +240,7 @@ type CreateOrderResponse struct {
 }
 
 type Order struct {
-	Duration int              `json:"duration"` // 5015,
+	Duration Int              `json:"duration"` // 5015,
 	Path     []*DeliveryPoint `json:"path"`
 
 	// Status, Service, Request
@@ -250,50 +259,50 @@ type Order struct {
 	Partner string `json:"partner"` // "topship", # If this order is created by 3rd-party partners
 
 	// Time
-	OrderTime      float32 `json:"order_time"`      // 1426297774, # Pick-up time
-	CreateTime     float32 `json:"create_time"`     // 1426297174.649361, # Order create time
-	AcceptTime     float32 `json:"accept_time"`     // 1426298634.189912, # Order accept time
-	AcceptLat      float32 `json:"accept_lat"`      // 10.7890462,
-	AcceptLng      float32 `json:"accept_lng"`      // 106.7763078,
-	AcceptDistance float32 `json:"accept_distance"` // 1.2, # Distance from accepted location to pick up point
-	AcceptDuration int     `json:"accept_duration"` // 150, # Time from accepted location to pick up point
+	OrderTime      Float `json:"order_time"`      // 1426297774, # Pick-up time
+	CreateTime     Float `json:"create_time"`     // 1426297174.649361, # Order create time
+	AcceptTime     Float `json:"accept_time"`     // 1426298634.189912, # Order accept time
+	AcceptLat      Float `json:"accept_lat"`      // 10.7890462,
+	AcceptLng      Float `json:"accept_lng"`      // 106.7763078,
+	AcceptDistance Float `json:"accept_distance"` // 1.2, # Distance from accepted location to pick up point
+	AcceptDuration Int   `json:"accept_duration"` // 150, # Time from accepted location to pick up point
 
-	CancelTime    float32 `json:"cancel_time"`    // 1426671164.374609, # Order cancel time
-	CancelComment string  `json:"cancel_comment"` // "Lich chuyen nha bi hoan", # Cancelled reason by user or supplier
-	CancelByUser  bool    `json:"cancel_by_user"` // False, # True if this order is cancelled by user, otherwise False
+	CancelTime    Float  `json:"cancel_time"`    // 1426671164.374609, # Order cancel time
+	CancelComment string `json:"cancel_comment"` // "Lich chuyen nha bi hoan", # Cancelled reason by user or supplier
+	CancelByUser  bool   `json:"cancel_by_user"` // False, # True if this order is cancelled by user, otherwise False
 	// Others: complete_time, complete_lat, complete_lng, accept_lat, accept_lng, fail_tome, fail_lat, fail_lng, fail_comment
 
 	// Payment
-	Currency    string  `json:"currency"`     // "VND",
-	StopFee     int     `json:"stop_fee"`     // 0,
-	RequestFee  int     `json:"request_fee"`  // 0,
-	Distance    float32 `json:"distance"`     // 5.597,
-	DistanceFee int     `json:"distance_fee"` // 142358,
-	PromoCode   string  `json:"promo_code"`   // "AHAMOVE",
-	Discount    int     `json:"discount"`     // 0,
-	TotalFee    int     `json:"total_fee"`    // 142358, # Total fee = Distance Fee + Request Fee + Stop Fee - Discount
-	VatFee      int     `json:"vat_fee"`      // 0,
+	Currency    string `json:"currency"`     // "VND",
+	StopFee     Int    `json:"stop_fee"`     // 0,
+	RequestFee  Int    `json:"request_fee"`  // 0,
+	Distance    Float  `json:"distance"`     // 5.597,
+	DistanceFee Int    `json:"distance_fee"` // 142358,
+	PromoCode   string `json:"promo_code"`   // "AHAMOVE",
+	Discount    Int    `json:"discount"`     // 0,
+	TotalFee    Int    `json:"total_fee"`    // 142358, # Total fee = Distance Fee + Request Fee + Stop Fee - Discount
+	VatFee      Int    `json:"vat_fee"`      // 0,
 
 	// Use credit from user account if available
-	UserBonusAccount int `json:"user_bonus_account"` // 0,
-	UserMainAccount  int `json:"user_main_account"`  // 0,
-	TotalPay         int `json:"total_pay"`          // 142358, # Total pay = Total fee - User Main account - User Bonus account
+	UserBonusAccount Int `json:"user_bonus_account"` // 0,
+	UserMainAccount  Int `json:"user_main_account"`  // 0,
+	TotalPay         Int `json:"total_pay"`          // 142358, # Total pay = Total fee - User Main account - User Bonus account
 
 	// Rating
-	RatingByUser       int    `json:"rating_by_user"`        // 4,
+	RatingByUser       Int    `json:"rating_by_user"`        // 4,
 	CommentByUser      string `json:"comment_by_user"`       // "Good",
-	RatingBySupplier   int    `json:"rating_by_supplier"`    // 5,
+	RatingBySupplier   Int    `json:"rating_by_supplier"`    // 5,
 	CommentBySupplier  string `json:"comment_by_supplier"`   // "Great customer",
-	RatingByReceiver   int    `json:"rating_by_receiver"`    // 4,
+	RatingByReceiver   Int    `json:"rating_by_receiver"`    // 4,
 	CommentByReceiver  string `json:"comment_by_receiver"`   // "Good driver",
-	StoreRatingByUser  int    `json:"store_rating_by_user"`  // 4, # For food orders
+	StoreRatingByUser  Int    `json:"store_rating_by_user"`  // 4, # For food orders
 	StoreCommentByUser string `json:"store_comment_by_user"` // "Delicious food", # For food orders
 
 	// Others
 	Remarks    string `json:"remarks"`     // "Den noi goi dien cho toi", # Note to supplier
 	Remind     bool   `json:"remind"`      // True, # If this is advance booking and the system already reminds users
 	AssignedBy string `json:"assigned_by"` // "84908842285", # If this order is assigned by a user or "auto" if by the system
-	Index      int    `json:"index"`       // 1, # 0 if first order request from the user, 1 for second...
+	Index      Int    `json:"index"`       // 1, # 0 if first order request from the user, 1 for second...
 	// Items: chỉ sử dụng cho food, tài xế dựa vào đây để mua hàng
 	// Items      []Item `json:"items"`
 }
@@ -352,12 +361,12 @@ type Account struct {
 	CountryCode   string   `json:"country_code"`
 	Currency      string   `json:"currency"`
 	AccountStatus string   `json:"account_status"`
-	CreateTime    float32  `json:"create_time"`
-	LastActivity  float32  `json:"last_activity"`
-	Points        float32  `json:"points"`
+	CreateTime    Float    `json:"create_time"`
+	LastActivity  Float    `json:"last_activity"`
+	Points        Float    `json:"points"`
 	BannedList    []string `json:"banned_list"`
-	NumRating     float32  `json:"num_rating"`
-	Rating        float32  `json:"rating"`
+	NumRating     Float    `json:"num_rating"`
+	Rating        Float    `json:"rating"`
 	Verified      bool     `json:"verified"`
 }
 
@@ -373,10 +382,10 @@ type ServiceType struct {
 	CityID          string `json:"city_id"`      // "SGN"
 	IconUrl         string `json:"icon_url"`     // "http//apistg.ahamove.com/images/tricycle.png"
 	DistanceFee     string `json:"distance_fee"` // "120000 if x <= 4 else 120000 + (x - 4)  14000",
-	StopFee         int    `json:"stop_fee"`     // 10000
-	MinStopPoints   int    `json:"min_stop_points"`
-	MaxStopPoints   int    `json:"max_stop_points"`   // 5
+	StopFee         Int    `json:"stop_fee"`     // 10000
+	MinStopPoints   Int    `json:"min_stop_points"`
+	MaxStopPoints   Int    `json:"max_stop_points"`   // 5
 	DescriptionViVn string `json:"description_vi_vn"` // "Giao hàng trong 1h"
-	MaxCOD          int    `json:"max_cod"`
-	COD             int    `json:"cod"`
+	MaxCOD          Int    `json:"max_cod"`
+	COD             Int    `json:"cod"`
 }

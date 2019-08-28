@@ -110,10 +110,10 @@ func (c *Carrier) CreateExternalShipnow(ctx context.Context, cmd *carrier.Create
 	xshipnow = &carrier.ExternalShipnow{
 		ID:         response.OrderId,
 		UserID:     response.Order.UserId,
-		Duration:   response.Order.Duration,
-		Distance:   response.Order.Distance,
+		Duration:   int(response.Order.Duration),
+		Distance:   float32(response.Order.Distance),
 		State:      client.OrderState(response.Status).ToCoreState(),
-		TotalFee:   response.Order.TotalFee,
+		TotalFee:   int(response.Order.TotalFee),
 		FeeLines:   feelines,
 		CreatedAt:  time.Now(),
 		SharedLink: response.SharedLink,
