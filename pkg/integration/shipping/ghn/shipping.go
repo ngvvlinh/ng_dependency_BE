@@ -300,7 +300,7 @@ func (c *Carrier) CalcRefreshFulfillmentInfo(ctx context.Context, ffm *shipmodel
 	update.ShippingFeeShopLines = shippingFeeShopLines
 	update.ShippingFeeShop = shipmodel.CalcShopShippingFee(shippingFeeShop, ffm)
 
-	// Update shipping address
+	// Always update shipping address because we don't know whether it was changed
 	addressQuery := &location.GetLocationQuery{
 		DistrictCode:     strconv.Itoa(int(orderGHN.ToDistrictID)),
 		LocationCodeType: location.LocCodeTypeGHN,
@@ -312,16 +312,14 @@ func (c *Carrier) CalcRefreshFulfillmentInfo(ctx context.Context, ffm *shipmodel
 	province := addressQuery.Result.Province
 	district := addressQuery.Result.District
 	addressTo := update.AddressTo
-	if addressTo.DistrictCode != district.Code {
-		addressTo.ProvinceCode = province.Code
-		addressTo.Province = province.Name
-		addressTo.DistrictCode = district.Code
-		addressTo.District = district.Name
-		addressTo.Address1 = orderGHN.ShippingAddress.String()
-		// Reset ward: GHN does not require ward
-		// so when address change, we don't have information about the ward and actually we don't need it.
-		addressTo.WardCode = ""
-		addressTo.Ward = ""
-	}
+	addressTo.ProvinceCode = province.Code
+	addressTo.Province = province.Name
+	addressTo.DistrictCode = district.Code
+	addressTo.District = district.Name
+	addressTo.Address1 = orderGHN.ShippingAddress.String()
+	// Reset ward: GHN does not require ward
+	// so when address change, we don't have information about the ward and actually we don't need it.
+	addressTo.WardCode = ""
+	addressTo.Ward = ""
 	return update, nil
 }

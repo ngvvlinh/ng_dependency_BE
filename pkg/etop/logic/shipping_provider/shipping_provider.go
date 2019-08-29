@@ -228,7 +228,7 @@ func GetShippingProviderNote(order *ordermodel.Order, ffm *shipmodel.Fulfillment
 		noteB.WriteString(note)
 		noteB.WriteString("\n")
 	}
-	noteB.WriteString("Giao hàng không thành công hoặc giao một phần, xin gọi lại cho shop.")
+	noteB.WriteString("Giao hàng không thành công hoặc giao một phần, xin gọi lại cho shop. KHÔNG ĐƯỢC TỰ Ý HOÀN HÀNG khi chưa thông báo cho shop.")
 	return noteB.String()
 }
 
