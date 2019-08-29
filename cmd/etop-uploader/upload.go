@@ -104,7 +104,7 @@ func UploadHandler(c *httpx.Context) error {
 				errors[i] = NewUploadError(cm.Internal, cm.Internal.String(), file.Filename)
 				return false
 			}
-			defer ignoreError(dst.Close())
+			defer func() { _ = dst.Close() }()
 
 			if _, err = io.Copy(dst, src); err != nil {
 				ll.Info("Error writing file", l.Error(err))
@@ -144,7 +144,7 @@ func verifyImage(file *multipart.FileHeader) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	defer ignoreError(src.Close())
+	defer func() { _ = src.Close() }()
 
 	if file.Size < minSize {
 		return "", NewUploadError(cm.InvalidArgument, "Invalid filesize", file.Filename)
@@ -169,5 +169,3 @@ func verifyImage(file *multipart.FileHeader) (string, error) {
 func ensureDir(dir string) error {
 	return os.MkdirAll(dir, 0755)
 }
-
-func ignoreError(err error) {}

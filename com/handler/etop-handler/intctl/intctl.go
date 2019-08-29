@@ -78,7 +78,7 @@ func (h *Handler) ConsumeAndHandle(ctx context.Context) {
 				panic(err)
 			}
 			defer h.wg.Done()
-			defer ignoreError(pc.Close())
+			defer func() { _ = pc.Close() }()
 			wg.Done()
 
 			err = pc.ConsumeAndHandle(ctx, handler)
@@ -110,5 +110,3 @@ func (h *Handler) HandleInternalControl(ctx context.Context, event *sarama.Consu
 	ll.Debug("intctl: dispatched listener", l.String("channel", channel))
 	return listener(ctx, event)
 }
-
-func ignoreError(err error) {}

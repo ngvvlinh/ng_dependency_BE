@@ -229,5 +229,4 @@ func appendInt64(b []byte, i int64) []byte {
 	return strconv.AppendInt(b, i, 10)
 }
 
-func ignoreError(err error) {
-}
+func ignoreError(err error) {}

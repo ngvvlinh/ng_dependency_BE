@@ -76,7 +76,7 @@ func (c *Client) Ping() error {
 		return err
 	}
 
-	defer ignoreError(client.Quit())
+	defer func() { _ = client.Quit() }()
 
 	auth := smtp.PlainAuth("", c.cfg.Username, c.cfg.Password, c.cfg.Host)
 	err = client.Auth(auth)
@@ -149,7 +149,7 @@ func (c *Client) sendMail(ctx context.Context, addresses []string, cmd *SendEmai
 		ll.Error(err.Error())
 		return err
 	}
-	defer ignoreError(client.Quit())
+	defer func() { _ = client.Quit() }()
 
 	auth := smtp.PlainAuth("", c.cfg.Username, c.cfg.Password, c.cfg.Host)
 	err = client.Auth(auth)
@@ -197,5 +197,3 @@ func (c *Client) sendMail(ctx context.Context, addresses []string, cmd *SendEmai
 	}
 	return errs.Any()
 }
-
-func ignoreError(err error) {}

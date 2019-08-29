@@ -119,7 +119,7 @@ func (h *Handler) ConsumeAndHandleAllTopics(ctx context.Context) {
 					return
 				}
 				defer h.wg.Done()
-				defer ignoreError(pc.Close())
+				defer func() { _ = pc.Close() }()
 
 				wg.Done()
 				m.Lock()
@@ -267,5 +267,3 @@ func pbChangeType(op pgevent.TGOP) string {
 		return ""
 	}
 }
-
-func ignoreError(err error) {}
