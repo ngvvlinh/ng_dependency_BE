@@ -48,7 +48,7 @@ create table shop_trader_address (
 , full_name text
 , phone text
 , email text
-, province_code text
+, company text
 , district_code text
 , ward_code text
 , city text

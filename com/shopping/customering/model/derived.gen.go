@@ -814,7 +814,7 @@ func (m *ShopTraderAddress) SQLArgs(opts core.Opts, create bool) []interface{} {
 		core.String(m.Address2),
 		core.String(m.DistrictCode),
 		core.String(m.WardCode),
-		core.JSON{&m.Coordinates},
+		core.JSON{m.Coordinates},
 		core.Now(m.CreatedAt, now, create),
 		core.Now(m.UpdatedAt, now, true),
 		core.Time(m.DeletedAt),
@@ -988,13 +988,13 @@ func (m *ShopTraderAddress) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(m.WardCode)
 	}
-	if true {
+	if m.Coordinates != nil {
 		flag = true
 		w.WriteName("coordinates")
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(core.JSON{&m.Coordinates})
+		w.WriteArg(core.JSON{m.Coordinates})
 	}
 	if !m.CreatedAt.IsZero() {
 		flag = true
