@@ -151,8 +151,9 @@ func New(opts ...zap.Option) Logger {
 		Logger:  logger,
 		S:       logger.Sugar(),
 		v: VerboseLogger{
-			logger: verbose,
-			sugar:  verbose.Sugar(),
+			enabler: enabler.AtomicLevel,
+			logger:  verbose,
+			sugar:   verbose.Sugar(),
 		},
 	}
 	return l

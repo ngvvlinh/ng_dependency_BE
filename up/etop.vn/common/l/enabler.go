@@ -150,7 +150,7 @@ func init() {
 	if err != nil {
 		ll.Fatal(fmt.Sprintf("Unable to parse %v", EnvKey), String("invalid", errPattern), Error(err))
 	}
-	ll.Info("Enable debug log", String(EnvKey, envLog))
+	ll.Debug("Enable debug log", String(EnvKey, envLog))
 }
 
 func parseWildcardPatterns(input string) (result WildcardPatterns, errPattern string, err error) {

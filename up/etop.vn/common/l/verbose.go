@@ -16,15 +16,20 @@ func V(verbosity int) zapcore.Level {
 }
 
 type VerboseLogger struct {
-	lvl    zapcore.Level
-	logger *zap.Logger
-	sugar  *zap.SugaredLogger
+	enabler zap.AtomicLevel
+	lvl     zapcore.Level
+	logger  *zap.Logger
+	sugar   *zap.SugaredLogger
 }
 
 func (l Logger) V(lvl int) VerboseLogger {
 	v := l.v // clone the struct
 	v.lvl = zapcore.Level(-lvl)
 	return v
+}
+
+func (l VerboseLogger) Enabled() bool {
+	return l.enabler.Enabled(l.lvl)
 }
 
 func (l VerboseLogger) Debug(msg string, fields ...zapcore.Field) {
