@@ -17,6 +17,10 @@ var Topics = []TopicDef{{
 	Partitions: 64,
 	DBName:     model.DBMain,
 }, {
+	Name:       "money_transaction_shipping",
+	Partitions: 8,
+	DBName:     model.DBMain,
+}, {
 	Name:       "notification",
 	Partitions: 64,
 	DBName:     model.DBNotifier,
