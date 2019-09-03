@@ -30,13 +30,15 @@ require (
 	github.com/go-telegram-bot-api/telegram-bot-api v4.6.4+incompatible
 	github.com/go-test/deep v1.0.1
 	github.com/go-xorm/builder v0.3.4
-	github.com/gogo/protobuf v1.2.2-0.20190723190241-65acae22fc9d
+	github.com/gogo/protobuf v1.3.0
 	github.com/golang/protobuf v1.3.2
 	github.com/golang/snappy v0.0.0-20180518054509-2e65f85255db // indirect
+	github.com/google/go-cmp v0.3.1 // indirect
 	github.com/gopherjs/gopherjs v0.0.0-20190328170749-bb2674552d8f // indirect
 	github.com/gorilla/schema v1.0.2
 	github.com/grpc-ecosystem/go-grpc-middleware v1.0.0
 	github.com/grpc-ecosystem/grpc-gateway v1.9.6
+	github.com/hashicorp/golang-lru v0.5.3 // indirect
 	github.com/julienschmidt/httprouter v1.2.0
 	github.com/k0kubun/pp v3.0.1+incompatible
 	github.com/lib/pq v1.2.0
@@ -58,17 +60,21 @@ require (
 	github.com/xdg/stringprep v1.0.0 // indirect
 	go.uber.org/atomic v1.4.0
 	go.uber.org/zap v1.10.0
+	golang.org/x/crypto v0.0.0-20190829043050-9756ffdc2472 // indirect
+	golang.org/x/net v0.0.0-20190827160401-ba9fcec4b297 // indirect
 	golang.org/x/oauth2 v0.0.0-20190604053449-0f29369cfe45
 	golang.org/x/sync v0.0.0-20190423024810-112230192c58
+	golang.org/x/sys v0.0.0-20190902133755-9109b7679e13 // indirect
 	golang.org/x/text v0.3.2
-	golang.org/x/tools v0.0.0-20190816200558-6889da9d5479
+	golang.org/x/tools v0.0.0-20190903025054-afe7f8212f0d
 	google.golang.org/api v0.8.0 // indirect
 	google.golang.org/genproto v0.0.0-20190502173448-54afdca5d873
 	google.golang.org/grpc v1.22.0
+	gopkg.in/check.v1 v1.0.0-20190902080502-41f04d3bba15 // indirect
 	gopkg.in/inf.v0 v0.9.1 // indirect
 	gopkg.in/resty.v1 v1.12.0
 	gopkg.in/yaml.v2 v2.2.2
-	k8s.io/apimachinery v0.0.0-20190814100815-533d101be9a6
+	k8s.io/apimachinery v0.0.0-20190831074630-461753078381
 	k8s.io/code-generator v0.0.0-20190814140513-6483f25b1faf
 	k8s.io/klog v0.4.0
 )
