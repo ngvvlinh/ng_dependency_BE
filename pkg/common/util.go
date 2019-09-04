@@ -13,8 +13,9 @@ import (
 	"time"
 	"unsafe"
 
+	"github.com/dgrijalva/jwt-go"
+
 	"etop.vn/common/l"
-	jwt "github.com/dgrijalva/jwt-go"
 )
 
 const SaltSize = 16

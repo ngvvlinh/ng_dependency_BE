@@ -46,7 +46,6 @@ const (
 
 // ACL declares access control list
 var ACL = map[string]*permission.PermissionDecl{
-
 	//-- sadmin --//
 
 	"sadmin.User/CreateUser":     {Type: SuperAdmin},
@@ -404,4 +403,16 @@ var ACL = map[string]*permission.PermissionDecl{
 	"affiliate.Account/RegisterAffiliate": {Type: CurUsr},
 	"affiliate.Account/UpdateAffiliate":   {Type: Affiliate},
 	"affiliate.Account/DeleteAffiliate":   {Type: Affiliate},
+
+	//"affiliate.Affiliate/VersionInfo":                          {Type: Shop},
+	"affiliate.Affiliate/GetCommissions":                           {Type: Shop},
+	"affiliate.Affiliate/NotifyNewShopPurchase":                    {Type: Secret},
+	"affiliate.Affiliate/GetTransactions":                          {Type: Affiliate},
+	"affiliate.Affiliate/CreateOrUpdateTradingCommissionSetting":   {Type: Shop},
+	"affiliate.Affiliate/CreateOrUpdateAffiliateCommissionSetting": {Type: Affiliate},
+	"affiliate.Affiliate/GetProductPromotionByProductID":           {Type: Affiliate},
+	"affiliate.Affiliate/CreateProductPromotion":                   {Type: Affiliate},
+	"affiliate.Affiliate/UpdateProductPromotion":                   {Type: Affiliate},
+	"affiliate.Affiliate/TradingGetProducts":                       {Type: Shop},
+	"affiliate.Affiliate/AffiliateGetProducts":                     {Type: Affiliate},
 }

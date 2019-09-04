@@ -34,13 +34,16 @@ type Muxer interface {
 	Handle(string, http.Handler)
 }
 
-func NewAffiliateServer(mux Muxer, hooks *twirp.ServerHooks) {
+func NewAffiliateServer(mux Muxer, hooks *twirp.ServerHooks, secret string) {
+	if secret == "" {
+		ll.Fatal("Secret is empty")
+	}
 	bus.Expect(&VersionInfoEndpoint{})
 	bus.Expect(&DeleteAffiliateEndpoint{})
 	bus.Expect(&RegisterAffiliateEndpoint{})
 	bus.Expect(&UpdateAffiliateEndpoint{})
-	mux.Handle(affiliate.MiscServicePathPrefix, affiliate.NewMiscServiceServer(MiscService{}, hooks))
-	mux.Handle(affiliate.AccountServicePathPrefix, affiliate.NewAccountServiceServer(AccountService{}, hooks))
+	mux.Handle(affiliate.MiscServicePathPrefix, affiliate.NewMiscServiceServer(MiscService{secret: secret}, hooks))
+	mux.Handle(affiliate.AccountServicePathPrefix, affiliate.NewAccountServiceServer(AccountService{secret: secret}, hooks))
 }
 
 type AffiliateImpl struct {
@@ -48,7 +51,7 @@ type AffiliateImpl struct {
 	AccountService
 }
 
-type MiscService struct{}
+type MiscService struct{ secret string }
 
 type VersionInfoEndpoint struct {
 	*cm.Empty
@@ -79,7 +82,7 @@ func (s MiscService) VersionInfo(ctx context.Context, req *cm.Empty) (resp *cm.V
 	return resp, err
 }
 
-type AccountService struct{}
+type AccountService struct{ secret string }
 
 type DeleteAffiliateEndpoint struct {
 	*cm.IDRequest

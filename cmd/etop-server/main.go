@@ -28,6 +28,7 @@ import (
 	shipnowcarrier "etop.vn/backend/com/main/shipnow-carrier"
 	shipnowpm "etop.vn/backend/com/main/shipnow/pm"
 	shipsqlstore "etop.vn/backend/com/main/shipping/sqlstore"
+	serviceaffiliate "etop.vn/backend/com/services/affiliate"
 	customeraggregate "etop.vn/backend/com/shopping/customering/aggregate"
 	customerquery "etop.vn/backend/com/shopping/customering/query"
 	vhtaggregate "etop.vn/backend/com/supporting/crm/vht/aggregate"
@@ -74,6 +75,7 @@ import (
 	"etop.vn/backend/pkg/integration/shipping/vtpost"
 	"etop.vn/backend/pkg/integration/sms"
 	vtigerclient "etop.vn/backend/pkg/integration/vtiger/client"
+	apiaff "etop.vn/backend/pkg/services/affiliate/api"
 	"etop.vn/common/bus"
 	"etop.vn/common/l"
 )
@@ -194,6 +196,11 @@ func main() {
 		ll.Fatal("Unable to connect to Postgres (webhook_logs)", l.Error(err))
 	}
 
+	dbaff, err := cmsql.Connect(cfg.PostgresAffiliate)
+	if err != nil {
+		ll.Fatal("error while connecting to affiliate postgres")
+	}
+
 	{
 		// init database notifier
 		dbNotifier, err := cmsql.Connect(cfg.PostgresNotifier)
@@ -310,7 +317,8 @@ func main() {
 	traderAddressAggr := customeraggregate.NewAddressAggregate(db).MessageBus()
 	customerQuery := customerquery.NewCustomerQuery(db).MessageBus()
 	traderAddressQuery := customerquery.NewAddressQuery(db).MessageBus()
-
+	affiliateCmd := serviceaffiliate.NewAggregate(dbaff).MessageBus()
+	affilateQuery := serviceaffiliate.NewQuery(dbaff).MessageBus()
 	// payment
 	var vtpayProvider *vtpay.Provider
 	if cfg.VTPay.MerchantCode != "" {
@@ -350,6 +358,7 @@ func main() {
 	orderS.Init(shippingManager, catalogQuery, orderAggr.MessageBus())
 	crm.Init(ghnCarrier, vtigerQuery, vtigerAggregate, vhtQuery, vhtAggregate)
 	affiliate.Init(identityAggr)
+	apiaff.Init(affiliateCmd, affilateQuery, catalogQuery)
 
 	svrs := startServers()
 	if bot != nil {

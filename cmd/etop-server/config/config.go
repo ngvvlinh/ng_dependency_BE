@@ -48,20 +48,21 @@ type EmailConfig struct {
 
 // Config ...
 type Config struct {
-	Postgres         cc.Postgres      `yaml:"postgres"`
-	PostgresLogs     cc.Postgres      `yaml:"postgres_logs"`
-	PostgresNotifier cc.Postgres      `yaml:"postgres_notifier"`
-	PostgresCRM      cc.Postgres      `yaml:"postgres_crm"`
-	Redis            cc.Redis         `yaml:"redis"`
-	HTTP             cc.HTTP          `yaml:"http"`
-	Kafka            cc.Kafka         `yaml:"kafka"`
-	Upload           Upload           `yaml:"upload"`
-	Export           Export           `yaml:"export"`
-	TelegramBot      cc.TelegramBot   `yaml:"telegram_bot"`
-	SMTP             email.SMTPConfig `yaml:"smtp"`
-	Email            EmailConfig      `yaml:"email"`
-	SMS              sms.Config       `yaml:"sms"`
-	Captcha          captcha.Config   `yaml:"captcha"`
+	Postgres          cc.Postgres      `yaml:"postgres"`
+	PostgresLogs      cc.Postgres      `yaml:"postgres_logs"`
+	PostgresNotifier  cc.Postgres      `yaml:"postgres_notifier"`
+	PostgresCRM       cc.Postgres      `yaml:"postgres_crm"`
+	PostgresAffiliate cc.Postgres      `yaml:"postgres_affiliate"`
+	Redis             cc.Redis         `yaml:"redis"`
+	HTTP              cc.HTTP          `yaml:"http"`
+	Kafka             cc.Kafka         `yaml:"kafka"`
+	Upload            Upload           `yaml:"upload"`
+	Export            Export           `yaml:"export"`
+	TelegramBot       cc.TelegramBot   `yaml:"telegram_bot"`
+	SMTP              email.SMTPConfig `yaml:"smtp"`
+	Email             EmailConfig      `yaml:"email"`
+	SMS               sms.Config       `yaml:"sms"`
+	Captcha           captcha.Config   `yaml:"captcha"`
 
 	GHN            ghn.Config           `yaml:"ghn"`
 	GHNWebhook     cc.HTTP              `yaml:"ghn_webhook"`
@@ -94,12 +95,13 @@ type Config struct {
 // Default ...
 func Default() Config {
 	cfg := Config{
-		Postgres:         cc.DefaultPostgres(),
-		PostgresNotifier: cc.DefaultPostgres(),
-		PostgresLogs:     cc.DefaultPostgres(),
-		PostgresCRM:      cc.DefaultPostgres(),
-		Redis:            cc.DefaultRedis(),
-		HTTP:             cc.HTTP{Port: 8080},
+		Postgres:          cc.DefaultPostgres(),
+		PostgresNotifier:  cc.DefaultPostgres(),
+		PostgresLogs:      cc.DefaultPostgres(),
+		PostgresCRM:       cc.DefaultPostgres(),
+		PostgresAffiliate: cc.DefaultPostgres(),
+		Redis:             cc.DefaultRedis(),
+		HTTP:              cc.HTTP{Port: 8080},
 		Kafka: cc.Kafka{
 			Enabled:     false,
 			Brokers:     nil,
@@ -138,6 +140,7 @@ func Default() Config {
 		Vht:            crmsyncconfig.DefaultVht(),
 	}
 	cfg.Postgres.Database = "etop_dev"
+	cfg.PostgresAffiliate.Database = "etop_aff"
 	cfg.Email = EmailConfig{
 		Enabled:              false,
 		ResetPasswordURL:     "https://etop.d.etop.vn/reset-password",
@@ -169,6 +172,7 @@ func Load(isTest bool) (Config, error) {
 	cc.PostgresMustLoadEnv(&cfg.PostgresLogs, "ET_POSTGRES_LOGS")
 	cc.PostgresMustLoadEnv(&cfg.PostgresNotifier, "ET_POSTGRES_NOTIFIER")
 	cc.PostgresMustLoadEnv(&cfg.PostgresCRM, "ET_POSTGRES_CRM")
+	cc.PostgresMustLoadEnv(&cfg.PostgresAffiliate, "ET_POSTGRES_AFFILIATE")
 	cfg.Redis.MustLoadEnv()
 	cfg.TelegramBot.MustLoadEnv()
 	cfg.GHN.MustLoadEnv()

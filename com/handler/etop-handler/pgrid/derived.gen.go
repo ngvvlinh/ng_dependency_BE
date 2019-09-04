@@ -5,7 +5,7 @@ package pgrid
 import (
 	"database/sql"
 
-	"etop.vn/backend/pkg/common/sq/core"
+	core "etop.vn/backend/pkg/common/sq/core"
 )
 
 type SQLWriter = core.SQLWriter

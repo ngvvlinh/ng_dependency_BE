@@ -43,6 +43,7 @@ import (
 	wrapxpartner "etop.vn/backend/wrapper/external/partner"
 	wrapxshop "etop.vn/backend/wrapper/external/shop"
 	wrapcrm "etop.vn/backend/wrapper/services/crm"
+	wrapaff "etop.vn/backend/wrapper/services/affiliate"
 	"etop.vn/common/l"
 
 	_ "etop.vn/backend/pkg/etop/api"
@@ -86,10 +87,10 @@ func startEtopServer() *http.Server {
 		wrapsadmin.NewSadminServer(apiMux, nil)
 		wrapadmin.NewAdminServer(apiMux, nil)
 		wrapshop.NewShopServer(apiMux, nil)
-		wrapaffiliate.NewAffiliateServer(apiMux, nil)
+		wrapaffiliate.NewAffiliateServer(apiMux, nil, cfg.Secret)
 		wrapintegration.NewIntegrationServer(apiMux, nil)
 		wrapcrm.NewCrmServer(apiMux, nil, cfg.Secret)
-
+		wrapaff.NewAffiliateServer(apiMux, nil, cfg.Secret)
 		// /v1/
 		v1Mux := http.NewServeMux()
 		v1Mux.Handle("/v1/", http.NotFoundHandler())
