@@ -23,6 +23,9 @@
   - etop.vn/backend/pkg/etop/authorize/middleware
   - etop.vn/backend/pkg/etop/authorize/tokens
   - etop.vn/backend/pkg/services/crm-service
+  - etop.vn/backend/pkg/integration/vht/client
+  - etop.vn/backend/pkg/integration/vtiger/client
+  - etop.vn/backend/com/supporting/crm
   - etop.vn/backend/wrapper/services/crmservice
   - etop.vn/common
 

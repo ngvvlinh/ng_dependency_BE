@@ -1,30 +1,37 @@
 package config
 
 import (
-	"encoding/json"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 
 	cc "etop.vn/backend/pkg/common/config"
-	"etop.vn/backend/pkg/services/crm-service/mapping"
-	vhtservice "etop.vn/backend/pkg/services/crm-service/vht/service"
-	vtigerservice "etop.vn/backend/pkg/services/crm-service/vtiger/service"
 )
 
+type Vtiger struct {
+	ServiceURL string `yaml:"service_url"`
+	Username   string `yaml:"username"`
+	APIKey     string `yaml:"api_key"`
+}
+
+type Vht struct {
+	ServiceURL string `yaml:"service_url"`
+	UserName   string `yaml:"user_name"`
+	PassWord   string `yaml:"pass_word"`
+}
+
 type Config struct {
-	Postgres    cc.Postgres          `yaml:"postgres"`
-	Redis       cc.Redis             `yaml:"redis"`
-	HTTP        cc.HTTP              `yaml:"http"`
-	Env         string               `yaml:"env"`
-	Vtiger      vtigerservice.Config `yaml:"vtiger"`
-	Vht         vhtservice.Config    `yaml:vht`
-	MappingFile string               `yaml:"mapping_file"`
+	Postgres    cc.Postgres `yaml:"postgres"`
+	Redis       cc.Redis    `yaml:"redis"`
+	HTTP        cc.HTTP     `yaml:"http"`
+	Env         string      `yaml:"env"`
+	MappingFile string      `yaml:"mapping_file"`
+	Vtiger      Vtiger      `yaml:"vtiger"`
+	Vht         Vht         `yaml:"vht"`
 }
 
 var exampleMappingFile = filepath.Join(
 	os.Getenv("ETOPDIR"),
-	"backend/cmd/supporting/crm-service/config/field_mapping_example.json",
+	"backend/cmd/etop-server/config/field_mapping_example.json",
 )
 
 func Default() Config {
@@ -36,12 +43,12 @@ func Default() Config {
 			Port: 8080,
 		},
 		Env: "dev",
-		Vtiger: vtigerservice.Config{
+		Vtiger: Vtiger{
 			ServiceURL: "http://vtiger/webservice.php",
 			Username:   "admin",
 			APIKey:     "q5dZOnJYGlmPY2nc",
 		},
-		Vht: vhtservice.Config{
+		Vht: Vht{
 			UserName: "5635810cde4c14ebf6a41341f4e68395",
 			PassWord: "36828473ce0d87db8cc29798f6b8aa1e",
 		},
@@ -55,14 +62,4 @@ func Load() (cfg Config, err error) {
 	err = cc.LoadWithDefault(&cfg, Default())
 	cc.PostgresMustLoadEnv(&cfg.Postgres)
 	return cfg, err
-}
-
-// ReadMappingFile read mapping json file for mapping fields between vtiger and etop
-func ReadMappingFile(filename string) (configMap mapping.ConfigMap, _ error) {
-	body, err := ioutil.ReadFile(filename)
-	if err != nil {
-		return nil, err
-	}
-	err = json.Unmarshal(body, &configMap)
-	return
 }

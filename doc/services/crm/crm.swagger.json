@@ -20,7 +20,7 @@
         "operationId": "RefreshFulfillmentFromCarrier",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/cmUpdatedResponse"
             }
@@ -46,7 +46,7 @@
         "operationId": "SendNotification",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/cmMessageResponse"
             }
@@ -72,7 +72,7 @@
         "operationId": "VersionInfo",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/cmVersionInfoResponse"
             }
@@ -92,6 +92,344 @@
           "Misc"
         ]
       }
+    },
+    "/api/crm.Vht/CreateOrUpdateCallHistoryByCallID": {
+      "post": {
+        "operationId": "CreateOrUpdateCallHistoryByCallID",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/crmVHTCallLog"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/crmVHTCallLog"
+            }
+          }
+        ],
+        "tags": [
+          "Vht"
+        ]
+      }
+    },
+    "/api/crm.Vht/CreateOrUpdateCallHistoryBySDKCallID": {
+      "post": {
+        "operationId": "CreateOrUpdateCallHistoryBySDKCallID",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/crmVHTCallLog"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/crmVHTCallLog"
+            }
+          }
+        ],
+        "tags": [
+          "Vht"
+        ]
+      }
+    },
+    "/api/crm.Vht/GetCallHistories": {
+      "post": {
+        "operationId": "GetCallHistories",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/crmGetCallHistoriesResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/crmGetCallHistoriesRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Vht"
+        ]
+      }
+    },
+    "/api/crm.Vtiger/CountTicketByStatus": {
+      "post": {
+        "operationId": "CountTicketByStatus",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/crmCountTicketByStatusResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/crmCountTicketByStatusRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Vtiger"
+        ]
+      }
+    },
+    "/api/crm.Vtiger/CreateOrUpdateContact": {
+      "post": {
+        "operationId": "CreateOrUpdateContact",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/crmContactResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/crmContactRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Vtiger"
+        ]
+      }
+    },
+    "/api/crm.Vtiger/CreateOrUpdateLead": {
+      "post": {
+        "operationId": "CreateOrUpdateLead",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/crmLeadResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/crmLeadRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Vtiger"
+        ]
+      }
+    },
+    "/api/crm.Vtiger/CreateTicket": {
+      "post": {
+        "operationId": "CreateTicket",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/crmTicket"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/crmCreateOrUpdateTicketRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Vtiger"
+        ]
+      }
+    },
+    "/api/crm.Vtiger/GetCategories": {
+      "post": {
+        "operationId": "GetCategories",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/crmGetCategoriesResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/cmEmpty"
+            }
+          }
+        ],
+        "tags": [
+          "Vtiger"
+        ]
+      }
+    },
+    "/api/crm.Vtiger/GetContacts": {
+      "post": {
+        "operationId": "GetContacts",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/crmGetContactsResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/crmGetContactsRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Vtiger"
+        ]
+      }
+    },
+    "/api/crm.Vtiger/GetStatus": {
+      "post": {
+        "operationId": "GetStatus",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/crmGetStatusResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/cmEmpty"
+            }
+          }
+        ],
+        "tags": [
+          "Vtiger"
+        ]
+      }
+    },
+    "/api/crm.Vtiger/GetTicketStatusCount": {
+      "post": {
+        "operationId": "GetTicketStatusCount",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/crmGetTicketStatusCountResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/cmEmpty"
+            }
+          }
+        ],
+        "tags": [
+          "Vtiger"
+        ]
+      }
+    },
+    "/api/crm.Vtiger/GetTickets": {
+      "post": {
+        "operationId": "GetTickets",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/crmGetTicketsResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/crmGetTicketsRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Vtiger"
+        ]
+      }
+    },
+    "/api/crm.Vtiger/UpdateTicket": {
+      "post": {
+        "operationId": "UpdateTicket",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/crmTicket"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/crmCreateOrUpdateTicketRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Vtiger"
+        ]
+      }
     }
   },
   "definitions": {
@@ -105,6 +443,22 @@
           "type": "string"
         },
         "msg": {
+          "type": "string"
+        }
+      }
+    },
+    "cmPaging": {
+      "type": "object",
+      "properties": {
+        "offset": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "limit": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "sort": {
           "type": "string"
         }
       }
@@ -139,6 +493,540 @@
         "updated_at": {
           "type": "string",
           "format": "date-time"
+        }
+      }
+    },
+    "crmAccount": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "full_name": {
+          "type": "string"
+        },
+        "short_name": {
+          "type": "string"
+        },
+        "phone": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "company": {
+          "type": "string"
+        }
+      }
+    },
+    "crmCategory": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "string"
+        },
+        "label": {
+          "type": "string"
+        }
+      }
+    },
+    "crmContactRequest": {
+      "type": "object",
+      "properties": {
+        "contact_no": {
+          "type": "string"
+        },
+        "phone": {
+          "type": "string"
+        },
+        "lastname": {
+          "type": "string"
+        },
+        "mobile": {
+          "type": "string"
+        },
+        "leadsource": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "secondaryemail": {
+          "type": "string"
+        },
+        "modifiedby": {
+          "type": "string"
+        },
+        "source": {
+          "type": "string"
+        },
+        "etop_user_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "company": {
+          "type": "string"
+        },
+        "website": {
+          "type": "string"
+        },
+        "lane": {
+          "type": "string"
+        },
+        "city": {
+          "type": "string"
+        },
+        "state": {
+          "type": "string"
+        },
+        "country": {
+          "type": "string"
+        },
+        "orders_per_day": {
+          "type": "string"
+        },
+        "used_shipping_provider": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string"
+        },
+        "firstname": {
+          "type": "string"
+        },
+        "createdtime": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "modifiedtime": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "assigned_user_id": {
+          "type": "string"
+        }
+      }
+    },
+    "crmContactResponse": {
+      "type": "object",
+      "properties": {
+        "contact_no": {
+          "type": "string"
+        },
+        "phone": {
+          "type": "string"
+        },
+        "lastname": {
+          "type": "string"
+        },
+        "mobile": {
+          "type": "string"
+        },
+        "leadsource": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "secondaryemail": {
+          "type": "string"
+        },
+        "modifiedby": {
+          "type": "string"
+        },
+        "source": {
+          "type": "string"
+        },
+        "etop_user_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "company": {
+          "type": "string"
+        },
+        "website": {
+          "type": "string"
+        },
+        "lane": {
+          "type": "string"
+        },
+        "city": {
+          "type": "string"
+        },
+        "state": {
+          "type": "string"
+        },
+        "country": {
+          "type": "string"
+        },
+        "orders_per_day": {
+          "type": "string"
+        },
+        "used_shipping_provider": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string"
+        },
+        "firstname": {
+          "type": "string"
+        },
+        "createdtime": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "modifiedtime": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "assigned_user_id": {
+          "type": "string"
+        }
+      }
+    },
+    "crmCountTicketByStatusRequest": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "type": "string"
+        }
+      }
+    },
+    "crmCountTicketByStatusResponse": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "string"
+        },
+        "count": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "crmCreateOrUpdateTicketRequest": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "code": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "value": {
+          "type": "string"
+        },
+        "old_value": {
+          "type": "string"
+        },
+        "reason": {
+          "type": "string"
+        },
+        "etop_user_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "order_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "order_code": {
+          "type": "string"
+        },
+        "ffm_code": {
+          "type": "string"
+        },
+        "ffm_url": {
+          "type": "string"
+        },
+        "ffm_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "company": {
+          "type": "string"
+        },
+        "provider": {
+          "type": "string"
+        },
+        "note": {
+          "type": "string"
+        },
+        "environment": {
+          "type": "string"
+        },
+        "from_app": {
+          "type": "string"
+        },
+        "account": {
+          "$ref": "#/definitions/crmAccount"
+        }
+      }
+    },
+    "crmGetCallHistoriesRequest": {
+      "type": "object",
+      "properties": {
+        "paging": {
+          "$ref": "#/definitions/cmPaging"
+        },
+        "text_search": {
+          "type": "string"
+        }
+      }
+    },
+    "crmGetCallHistoriesResponse": {
+      "type": "object",
+      "properties": {
+        "vht_call_log": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/crmVHTCallLog"
+          }
+        }
+      }
+    },
+    "crmGetCategoriesResponse": {
+      "type": "object",
+      "properties": {
+        "categories": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/crmCategory"
+          }
+        }
+      }
+    },
+    "crmGetContactsRequest": {
+      "type": "object",
+      "properties": {
+        "text_search": {
+          "type": "string"
+        },
+        "paging": {
+          "$ref": "#/definitions/cmPaging"
+        }
+      }
+    },
+    "crmGetContactsResponse": {
+      "type": "object",
+      "properties": {
+        "contacts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/crmContactResponse"
+          }
+        }
+      }
+    },
+    "crmGetStatusResponse": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/crmStatus"
+          }
+        }
+      }
+    },
+    "crmGetTicketStatusCountResponse": {
+      "type": "object",
+      "properties": {
+        "status_count": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/crmCountTicketByStatusResponse"
+          }
+        }
+      }
+    },
+    "crmGetTicketsRequest": {
+      "type": "object",
+      "properties": {
+        "paging": {
+          "$ref": "#/definitions/cmPaging"
+        },
+        "ticket": {
+          "$ref": "#/definitions/crmTicketRequest"
+        },
+        "orderby": {
+          "$ref": "#/definitions/crmOrderBy"
+        }
+      }
+    },
+    "crmGetTicketsResponse": {
+      "type": "object",
+      "properties": {
+        "tickets": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/crmTicket"
+          }
+        }
+      }
+    },
+    "crmLeadRequest": {
+      "type": "object",
+      "properties": {
+        "contact_no": {
+          "type": "string"
+        },
+        "phone": {
+          "type": "string"
+        },
+        "lastname": {
+          "type": "string"
+        },
+        "mobile": {
+          "type": "string"
+        },
+        "leadsource": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "secondaryemail": {
+          "type": "string"
+        },
+        "assigned_user_id": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "modifiedby": {
+          "type": "string"
+        },
+        "source": {
+          "type": "string"
+        },
+        "etop_user_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "company": {
+          "type": "string"
+        },
+        "website": {
+          "type": "string"
+        },
+        "lane": {
+          "type": "string"
+        },
+        "city": {
+          "type": "string"
+        },
+        "state": {
+          "type": "string"
+        },
+        "country": {
+          "type": "string"
+        },
+        "orders_per_day": {
+          "type": "string"
+        },
+        "used_shipping_provider": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string"
+        },
+        "firstname": {
+          "type": "string"
+        }
+      }
+    },
+    "crmLeadResponse": {
+      "type": "object",
+      "properties": {
+        "contact_no": {
+          "type": "string"
+        },
+        "phone": {
+          "type": "string"
+        },
+        "lastname": {
+          "type": "string"
+        },
+        "mobile": {
+          "type": "string"
+        },
+        "leadsource": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "secondaryemail": {
+          "type": "string"
+        },
+        "assigned_user_id": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "modifiedby": {
+          "type": "string"
+        },
+        "source": {
+          "type": "string"
+        },
+        "etop_user_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "company": {
+          "type": "string"
+        },
+        "website": {
+          "type": "string"
+        },
+        "lane": {
+          "type": "string"
+        },
+        "city": {
+          "type": "string"
+        },
+        "state": {
+          "type": "string"
+        },
+        "country": {
+          "type": "string"
+        },
+        "orders_per_day": {
+          "type": "string"
+        },
+        "used_shipping_provider": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string"
+        },
+        "firstname": {
+          "type": "string"
+        }
+      }
+    },
+    "crmOrderBy": {
+      "type": "object",
+      "properties": {
+        "field": {
+          "type": "string"
+        },
+        "sort": {
+          "type": "string"
         }
       }
     },
@@ -178,6 +1066,280 @@
         }
       }
     },
+    "crmStatus": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "string"
+        },
+        "count": {
+          "type": "string"
+        }
+      }
+    },
+    "crmTicket": {
+      "type": "object",
+      "properties": {
+        "ticket_no": {
+          "type": "string"
+        },
+        "assigned_user_id": {
+          "type": "string"
+        },
+        "parent_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "ticketpriorities": {
+          "type": "string"
+        },
+        "product_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "ticketseverities": {
+          "type": "string"
+        },
+        "ticketstatus": {
+          "type": "string"
+        },
+        "ticketcategories": {
+          "type": "string"
+        },
+        "update_log": {
+          "type": "string"
+        },
+        "hours": {
+          "type": "string"
+        },
+        "days": {
+          "type": "string"
+        },
+        "createdtime": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "modifiedtime": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "from_portal": {
+          "type": "string"
+        },
+        "modifiedby": {
+          "type": "string"
+        },
+        "ticket_title": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "solution": {
+          "type": "string"
+        },
+        "contact_id": {
+          "type": "string"
+        },
+        "source": {
+          "type": "string"
+        },
+        "starred": {
+          "type": "string"
+        },
+        "tags": {
+          "type": "string"
+        },
+        "note": {
+          "type": "string"
+        },
+        "ffm_code": {
+          "type": "string"
+        },
+        "ffm_url": {
+          "type": "string"
+        },
+        "ffm_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "etop_user_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "order_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "order_code": {
+          "type": "string"
+        },
+        "company": {
+          "type": "string"
+        },
+        "provider": {
+          "type": "string"
+        },
+        "from_app": {
+          "type": "string"
+        },
+        "environment": {
+          "type": "string"
+        },
+        "code": {
+          "type": "string"
+        },
+        "old_value": {
+          "type": "string"
+        },
+        "new_value": {
+          "type": "string"
+        },
+        "substatus": {
+          "type": "string"
+        },
+        "etop_note": {
+          "type": "string"
+        },
+        "reason": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string"
+        }
+      }
+    },
+    "crmTicketRequest": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "code": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "value": {
+          "type": "string"
+        },
+        "old_value": {
+          "type": "string"
+        },
+        "reason": {
+          "type": "string"
+        },
+        "etop_user_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "order_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "order_code": {
+          "type": "string"
+        },
+        "ffm_code": {
+          "type": "string"
+        },
+        "ffm_url": {
+          "type": "string"
+        },
+        "ffm_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "company": {
+          "type": "string"
+        },
+        "provider": {
+          "type": "string"
+        },
+        "note": {
+          "type": "string"
+        },
+        "environment": {
+          "type": "string"
+        },
+        "from_app": {
+          "type": "string"
+        }
+      }
+    },
+    "crmVHTCallLog": {
+      "type": "object",
+      "properties": {
+        "cdr_id": {
+          "type": "string"
+        },
+        "call_id": {
+          "type": "string"
+        },
+        "sip_call_id": {
+          "type": "string"
+        },
+        "sdk_call_id": {
+          "type": "string"
+        },
+        "cause": {
+          "type": "string"
+        },
+        "q850_cause": {
+          "type": "string"
+        },
+        "from_extension": {
+          "type": "string"
+        },
+        "to_extension": {
+          "type": "string"
+        },
+        "from_number": {
+          "type": "string"
+        },
+        "to_number": {
+          "type": "string"
+        },
+        "duration": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "direction": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "time_started": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "time_connected": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "time_ended": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "recording_path": {
+          "type": "string"
+        },
+        "recording_url": {
+          "type": "string"
+        },
+        "record_file_size": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "etop_account_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "vtiger_account_id": {
+          "type": "string"
+        }
+      }
+    },
     "notifier_entityNotifierEntity": {
       "type": "string",
       "enum": [
@@ -194,6 +1356,12 @@
     },
     {
       "name": "Misc"
+    },
+    {
+      "name": "Vht"
+    },
+    {
+      "name": "Vtiger"
     }
   ]
 }

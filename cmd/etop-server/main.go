@@ -29,6 +29,10 @@ import (
 	shipsqlstore "etop.vn/backend/com/main/shipping/sqlstore"
 	customeraggregate "etop.vn/backend/com/shopping/customering/aggregate"
 	customerquery "etop.vn/backend/com/shopping/customering/query"
+	vhtaggregate "etop.vn/backend/com/supporting/crm/vht/aggregate"
+	vhtquery "etop.vn/backend/com/supporting/crm/vht/query"
+	vtigeraggregate "etop.vn/backend/com/supporting/crm/vtiger/aggregate"
+	vtigerquery "etop.vn/backend/com/supporting/crm/vtiger/query"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/auth"
 	"etop.vn/backend/pkg/common/captcha"
@@ -67,6 +71,7 @@ import (
 	"etop.vn/backend/pkg/integration/shipping/ghtk"
 	"etop.vn/backend/pkg/integration/shipping/vtpost"
 	"etop.vn/backend/pkg/integration/sms"
+	vtigerclient "etop.vn/backend/pkg/integration/vtiger/client"
 	"etop.vn/common/bus"
 	"etop.vn/common/l"
 )
@@ -252,6 +257,10 @@ func main() {
 			ll.Fatal("ahamove: No token")
 		}
 	}
+	configMap, err := config.ReadMappingFile(cfg.MappingFile)
+	if err != nil {
+		ll.Fatal("error while reading field map file", l.String("file", cfg.MappingFile), l.Error(err))
+	}
 
 	if cfg.VTPay.MerchantCode != "" {
 		vtpayClient = vtpayclient.New(cfg.VTPay)
@@ -268,8 +277,12 @@ func main() {
 	})
 
 	eventBus := bus.New()
-
+	vtigerClient := vtigerclient.NewVigerClient(cfg.Vtiger.ServiceURL, cfg.Vtiger.Username, cfg.Vtiger.APIKey)
 	// create aggregate, query service
+	vhtQuery := vhtquery.New(db).MessageBus()
+	vhtAggregate := vhtaggregate.New(db, nil).MessageBus()
+	vtigerQuery := vtigerquery.New(db, configMap, vtigerClient).MessageBus()
+	vtigerAggregate := vtigeraggregate.New(db, configMap, vtigerClient).MessageBus()
 	identityQuery = serviceidentity.NewQueryService(db).MessageBus()
 	catalogQuery := catalogquery.New(db).MessageBus()
 	catalogAggr := catalogaggregate.New(db).MessageBus()
@@ -322,7 +335,7 @@ func main() {
 	webhook.Init(ctlProducer, redisStore)
 	xshipping.Init(shippingManager, ordersqlstore.NewOrderStore(db), shipsqlstore.NewFulfillmentStore(db))
 	orderS.Init(shippingManager, catalogQuery, orderAggr.MessageBus())
-	crm.Init(ghnCarrier)
+	crm.Init(ghnCarrier, vtigerQuery, vtigerAggregate, vhtQuery, vhtAggregate)
 	affiliate.Init(identityAggr)
 
 	svrs := startServers()

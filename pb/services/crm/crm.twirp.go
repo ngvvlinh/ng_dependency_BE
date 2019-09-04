@@ -766,6 +766,2342 @@ func (s *crmServiceServer) PathPrefix() string {
 	return CrmServicePathPrefix
 }
 
+// =======================
+// VtigerService Interface
+// =======================
+
+type VtigerService interface {
+	GetContacts(context.Context, *GetContactsRequest) (*GetContactsResponse, error)
+
+	CreateOrUpdateContact(context.Context, *ContactRequest) (*ContactResponse, error)
+
+	CreateOrUpdateLead(context.Context, *LeadRequest) (*LeadResponse, error)
+
+	GetTickets(context.Context, *GetTicketsRequest) (*GetTicketsResponse, error)
+
+	CreateTicket(context.Context, *CreateOrUpdateTicketRequest) (*Ticket, error)
+
+	UpdateTicket(context.Context, *CreateOrUpdateTicketRequest) (*Ticket, error)
+
+	GetCategories(context.Context, *cm.Empty) (*GetCategoriesResponse, error)
+
+	GetStatus(context.Context, *cm.Empty) (*GetStatusResponse, error)
+
+	CountTicketByStatus(context.Context, *CountTicketByStatusRequest) (*CountTicketByStatusResponse, error)
+
+	GetTicketStatusCount(context.Context, *cm.Empty) (*GetTicketStatusCountResponse, error)
+}
+
+// =============================
+// VtigerService Protobuf Client
+// =============================
+
+type vtigerServiceProtobufClient struct {
+	client HTTPClient
+	urls   [10]string
+}
+
+// NewVtigerServiceProtobufClient creates a Protobuf client that implements the VtigerService interface.
+// It communicates using Protobuf and can be configured with a custom HTTPClient.
+func NewVtigerServiceProtobufClient(addr string, client HTTPClient) VtigerService {
+	prefix := urlBase(addr) + VtigerServicePathPrefix
+	urls := [10]string{
+		prefix + "GetContacts",
+		prefix + "CreateOrUpdateContact",
+		prefix + "CreateOrUpdateLead",
+		prefix + "GetTickets",
+		prefix + "CreateTicket",
+		prefix + "UpdateTicket",
+		prefix + "GetCategories",
+		prefix + "GetStatus",
+		prefix + "CountTicketByStatus",
+		prefix + "GetTicketStatusCount",
+	}
+	if httpClient, ok := client.(*http.Client); ok {
+		return &vtigerServiceProtobufClient{
+			client: withoutRedirects(httpClient),
+			urls:   urls,
+		}
+	}
+	return &vtigerServiceProtobufClient{
+		client: client,
+		urls:   urls,
+	}
+}
+
+func (c *vtigerServiceProtobufClient) GetContacts(ctx context.Context, in *GetContactsRequest) (*GetContactsResponse, error) {
+	ctx = ctxsetters.WithPackageName(ctx, "crm")
+	ctx = ctxsetters.WithServiceName(ctx, "Vtiger")
+	ctx = ctxsetters.WithMethodName(ctx, "GetContacts")
+	out := new(GetContactsResponse)
+	err := doProtobufRequest(ctx, c.client, c.urls[0], in, out)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *vtigerServiceProtobufClient) CreateOrUpdateContact(ctx context.Context, in *ContactRequest) (*ContactResponse, error) {
+	ctx = ctxsetters.WithPackageName(ctx, "crm")
+	ctx = ctxsetters.WithServiceName(ctx, "Vtiger")
+	ctx = ctxsetters.WithMethodName(ctx, "CreateOrUpdateContact")
+	out := new(ContactResponse)
+	err := doProtobufRequest(ctx, c.client, c.urls[1], in, out)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *vtigerServiceProtobufClient) CreateOrUpdateLead(ctx context.Context, in *LeadRequest) (*LeadResponse, error) {
+	ctx = ctxsetters.WithPackageName(ctx, "crm")
+	ctx = ctxsetters.WithServiceName(ctx, "Vtiger")
+	ctx = ctxsetters.WithMethodName(ctx, "CreateOrUpdateLead")
+	out := new(LeadResponse)
+	err := doProtobufRequest(ctx, c.client, c.urls[2], in, out)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *vtigerServiceProtobufClient) GetTickets(ctx context.Context, in *GetTicketsRequest) (*GetTicketsResponse, error) {
+	ctx = ctxsetters.WithPackageName(ctx, "crm")
+	ctx = ctxsetters.WithServiceName(ctx, "Vtiger")
+	ctx = ctxsetters.WithMethodName(ctx, "GetTickets")
+	out := new(GetTicketsResponse)
+	err := doProtobufRequest(ctx, c.client, c.urls[3], in, out)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *vtigerServiceProtobufClient) CreateTicket(ctx context.Context, in *CreateOrUpdateTicketRequest) (*Ticket, error) {
+	ctx = ctxsetters.WithPackageName(ctx, "crm")
+	ctx = ctxsetters.WithServiceName(ctx, "Vtiger")
+	ctx = ctxsetters.WithMethodName(ctx, "CreateTicket")
+	out := new(Ticket)
+	err := doProtobufRequest(ctx, c.client, c.urls[4], in, out)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *vtigerServiceProtobufClient) UpdateTicket(ctx context.Context, in *CreateOrUpdateTicketRequest) (*Ticket, error) {
+	ctx = ctxsetters.WithPackageName(ctx, "crm")
+	ctx = ctxsetters.WithServiceName(ctx, "Vtiger")
+	ctx = ctxsetters.WithMethodName(ctx, "UpdateTicket")
+	out := new(Ticket)
+	err := doProtobufRequest(ctx, c.client, c.urls[5], in, out)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *vtigerServiceProtobufClient) GetCategories(ctx context.Context, in *cm.Empty) (*GetCategoriesResponse, error) {
+	ctx = ctxsetters.WithPackageName(ctx, "crm")
+	ctx = ctxsetters.WithServiceName(ctx, "Vtiger")
+	ctx = ctxsetters.WithMethodName(ctx, "GetCategories")
+	out := new(GetCategoriesResponse)
+	err := doProtobufRequest(ctx, c.client, c.urls[6], in, out)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *vtigerServiceProtobufClient) GetStatus(ctx context.Context, in *cm.Empty) (*GetStatusResponse, error) {
+	ctx = ctxsetters.WithPackageName(ctx, "crm")
+	ctx = ctxsetters.WithServiceName(ctx, "Vtiger")
+	ctx = ctxsetters.WithMethodName(ctx, "GetStatus")
+	out := new(GetStatusResponse)
+	err := doProtobufRequest(ctx, c.client, c.urls[7], in, out)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *vtigerServiceProtobufClient) CountTicketByStatus(ctx context.Context, in *CountTicketByStatusRequest) (*CountTicketByStatusResponse, error) {
+	ctx = ctxsetters.WithPackageName(ctx, "crm")
+	ctx = ctxsetters.WithServiceName(ctx, "Vtiger")
+	ctx = ctxsetters.WithMethodName(ctx, "CountTicketByStatus")
+	out := new(CountTicketByStatusResponse)
+	err := doProtobufRequest(ctx, c.client, c.urls[8], in, out)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *vtigerServiceProtobufClient) GetTicketStatusCount(ctx context.Context, in *cm.Empty) (*GetTicketStatusCountResponse, error) {
+	ctx = ctxsetters.WithPackageName(ctx, "crm")
+	ctx = ctxsetters.WithServiceName(ctx, "Vtiger")
+	ctx = ctxsetters.WithMethodName(ctx, "GetTicketStatusCount")
+	out := new(GetTicketStatusCountResponse)
+	err := doProtobufRequest(ctx, c.client, c.urls[9], in, out)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// =========================
+// VtigerService JSON Client
+// =========================
+
+type vtigerServiceJSONClient struct {
+	client HTTPClient
+	urls   [10]string
+}
+
+// NewVtigerServiceJSONClient creates a JSON client that implements the VtigerService interface.
+// It communicates using JSON and can be configured with a custom HTTPClient.
+func NewVtigerServiceJSONClient(addr string, client HTTPClient) VtigerService {
+	prefix := urlBase(addr) + VtigerServicePathPrefix
+	urls := [10]string{
+		prefix + "GetContacts",
+		prefix + "CreateOrUpdateContact",
+		prefix + "CreateOrUpdateLead",
+		prefix + "GetTickets",
+		prefix + "CreateTicket",
+		prefix + "UpdateTicket",
+		prefix + "GetCategories",
+		prefix + "GetStatus",
+		prefix + "CountTicketByStatus",
+		prefix + "GetTicketStatusCount",
+	}
+	if httpClient, ok := client.(*http.Client); ok {
+		return &vtigerServiceJSONClient{
+			client: withoutRedirects(httpClient),
+			urls:   urls,
+		}
+	}
+	return &vtigerServiceJSONClient{
+		client: client,
+		urls:   urls,
+	}
+}
+
+func (c *vtigerServiceJSONClient) GetContacts(ctx context.Context, in *GetContactsRequest) (*GetContactsResponse, error) {
+	ctx = ctxsetters.WithPackageName(ctx, "crm")
+	ctx = ctxsetters.WithServiceName(ctx, "Vtiger")
+	ctx = ctxsetters.WithMethodName(ctx, "GetContacts")
+	out := new(GetContactsResponse)
+	err := doJSONRequest(ctx, c.client, c.urls[0], in, out)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *vtigerServiceJSONClient) CreateOrUpdateContact(ctx context.Context, in *ContactRequest) (*ContactResponse, error) {
+	ctx = ctxsetters.WithPackageName(ctx, "crm")
+	ctx = ctxsetters.WithServiceName(ctx, "Vtiger")
+	ctx = ctxsetters.WithMethodName(ctx, "CreateOrUpdateContact")
+	out := new(ContactResponse)
+	err := doJSONRequest(ctx, c.client, c.urls[1], in, out)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *vtigerServiceJSONClient) CreateOrUpdateLead(ctx context.Context, in *LeadRequest) (*LeadResponse, error) {
+	ctx = ctxsetters.WithPackageName(ctx, "crm")
+	ctx = ctxsetters.WithServiceName(ctx, "Vtiger")
+	ctx = ctxsetters.WithMethodName(ctx, "CreateOrUpdateLead")
+	out := new(LeadResponse)
+	err := doJSONRequest(ctx, c.client, c.urls[2], in, out)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *vtigerServiceJSONClient) GetTickets(ctx context.Context, in *GetTicketsRequest) (*GetTicketsResponse, error) {
+	ctx = ctxsetters.WithPackageName(ctx, "crm")
+	ctx = ctxsetters.WithServiceName(ctx, "Vtiger")
+	ctx = ctxsetters.WithMethodName(ctx, "GetTickets")
+	out := new(GetTicketsResponse)
+	err := doJSONRequest(ctx, c.client, c.urls[3], in, out)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *vtigerServiceJSONClient) CreateTicket(ctx context.Context, in *CreateOrUpdateTicketRequest) (*Ticket, error) {
+	ctx = ctxsetters.WithPackageName(ctx, "crm")
+	ctx = ctxsetters.WithServiceName(ctx, "Vtiger")
+	ctx = ctxsetters.WithMethodName(ctx, "CreateTicket")
+	out := new(Ticket)
+	err := doJSONRequest(ctx, c.client, c.urls[4], in, out)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *vtigerServiceJSONClient) UpdateTicket(ctx context.Context, in *CreateOrUpdateTicketRequest) (*Ticket, error) {
+	ctx = ctxsetters.WithPackageName(ctx, "crm")
+	ctx = ctxsetters.WithServiceName(ctx, "Vtiger")
+	ctx = ctxsetters.WithMethodName(ctx, "UpdateTicket")
+	out := new(Ticket)
+	err := doJSONRequest(ctx, c.client, c.urls[5], in, out)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *vtigerServiceJSONClient) GetCategories(ctx context.Context, in *cm.Empty) (*GetCategoriesResponse, error) {
+	ctx = ctxsetters.WithPackageName(ctx, "crm")
+	ctx = ctxsetters.WithServiceName(ctx, "Vtiger")
+	ctx = ctxsetters.WithMethodName(ctx, "GetCategories")
+	out := new(GetCategoriesResponse)
+	err := doJSONRequest(ctx, c.client, c.urls[6], in, out)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *vtigerServiceJSONClient) GetStatus(ctx context.Context, in *cm.Empty) (*GetStatusResponse, error) {
+	ctx = ctxsetters.WithPackageName(ctx, "crm")
+	ctx = ctxsetters.WithServiceName(ctx, "Vtiger")
+	ctx = ctxsetters.WithMethodName(ctx, "GetStatus")
+	out := new(GetStatusResponse)
+	err := doJSONRequest(ctx, c.client, c.urls[7], in, out)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *vtigerServiceJSONClient) CountTicketByStatus(ctx context.Context, in *CountTicketByStatusRequest) (*CountTicketByStatusResponse, error) {
+	ctx = ctxsetters.WithPackageName(ctx, "crm")
+	ctx = ctxsetters.WithServiceName(ctx, "Vtiger")
+	ctx = ctxsetters.WithMethodName(ctx, "CountTicketByStatus")
+	out := new(CountTicketByStatusResponse)
+	err := doJSONRequest(ctx, c.client, c.urls[8], in, out)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *vtigerServiceJSONClient) GetTicketStatusCount(ctx context.Context, in *cm.Empty) (*GetTicketStatusCountResponse, error) {
+	ctx = ctxsetters.WithPackageName(ctx, "crm")
+	ctx = ctxsetters.WithServiceName(ctx, "Vtiger")
+	ctx = ctxsetters.WithMethodName(ctx, "GetTicketStatusCount")
+	out := new(GetTicketStatusCountResponse)
+	err := doJSONRequest(ctx, c.client, c.urls[9], in, out)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// ============================
+// VtigerService Server Handler
+// ============================
+
+type vtigerServiceServer struct {
+	VtigerService
+	hooks *twirp.ServerHooks
+}
+
+func NewVtigerServiceServer(svc VtigerService, hooks *twirp.ServerHooks) TwirpServer {
+	return &vtigerServiceServer{
+		VtigerService: svc,
+		hooks:         hooks,
+	}
+}
+
+// writeError writes an HTTP response with a valid Twirp error format, and triggers hooks.
+// If err is not a twirp.Error, it will get wrapped with twirp.InternalErrorWith(err)
+func (s *vtigerServiceServer) writeError(ctx context.Context, resp http.ResponseWriter, err error) {
+	writeError(ctx, resp, err, s.hooks)
+}
+
+// VtigerServicePathPrefix is used for all URL paths on a twirp VtigerService server.
+// Requests are always: POST VtigerServicePathPrefix/method
+// It can be used in an HTTP mux to route twirp requests along with non-twirp requests on other routes.
+const VtigerServicePathPrefix = "/api/crm.Vtiger/"
+
+func (s *vtigerServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
+	ctx := req.Context()
+	ctx = ctxsetters.WithPackageName(ctx, "crm")
+	ctx = ctxsetters.WithServiceName(ctx, "Vtiger")
+	ctx = ctxsetters.WithResponseWriter(ctx, resp)
+
+	var err error
+	ctx, err = callRequestReceived(ctx, s.hooks)
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+
+	if req.Method != "POST" {
+		msg := fmt.Sprintf("unsupported method %q (only POST is allowed)", req.Method)
+		err = badRouteError(msg, req.Method, req.URL.Path)
+		s.writeError(ctx, resp, err)
+		return
+	}
+
+	switch req.URL.Path {
+	case "/api/crm.Vtiger/GetContacts":
+		s.serveGetContacts(ctx, resp, req)
+		return
+	case "/api/crm.Vtiger/CreateOrUpdateContact":
+		s.serveCreateOrUpdateContact(ctx, resp, req)
+		return
+	case "/api/crm.Vtiger/CreateOrUpdateLead":
+		s.serveCreateOrUpdateLead(ctx, resp, req)
+		return
+	case "/api/crm.Vtiger/GetTickets":
+		s.serveGetTickets(ctx, resp, req)
+		return
+	case "/api/crm.Vtiger/CreateTicket":
+		s.serveCreateTicket(ctx, resp, req)
+		return
+	case "/api/crm.Vtiger/UpdateTicket":
+		s.serveUpdateTicket(ctx, resp, req)
+		return
+	case "/api/crm.Vtiger/GetCategories":
+		s.serveGetCategories(ctx, resp, req)
+		return
+	case "/api/crm.Vtiger/GetStatus":
+		s.serveGetStatus(ctx, resp, req)
+		return
+	case "/api/crm.Vtiger/CountTicketByStatus":
+		s.serveCountTicketByStatus(ctx, resp, req)
+		return
+	case "/api/crm.Vtiger/GetTicketStatusCount":
+		s.serveGetTicketStatusCount(ctx, resp, req)
+		return
+	default:
+		msg := fmt.Sprintf("no handler for path %q", req.URL.Path)
+		err = badRouteError(msg, req.Method, req.URL.Path)
+		s.writeError(ctx, resp, err)
+		return
+	}
+}
+
+func (s *vtigerServiceServer) serveGetContacts(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
+	header := req.Header.Get("Content-Type")
+	i := strings.Index(header, ";")
+	if i == -1 {
+		i = len(header)
+	}
+	switch strings.TrimSpace(strings.ToLower(header[:i])) {
+	case "application/json":
+		s.serveGetContactsJSON(ctx, resp, req)
+	case "application/protobuf":
+		s.serveGetContactsProtobuf(ctx, resp, req)
+	default:
+		msg := fmt.Sprintf("unexpected Content-Type: %q", req.Header.Get("Content-Type"))
+		twerr := badRouteError(msg, req.Method, req.URL.Path)
+		s.writeError(ctx, resp, twerr)
+	}
+}
+
+func (s *vtigerServiceServer) serveGetContactsJSON(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
+	var err error
+	ctx = ctxsetters.WithMethodName(ctx, "GetContacts")
+	ctx, err = callRequestRouted(ctx, s.hooks)
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+
+	reqContent := new(GetContactsRequest)
+	unmarshaler := jsonpb.Unmarshaler{AllowUnknownFields: true}
+	if err = unmarshaler.Unmarshal(req.Body, reqContent); err != nil {
+		s.writeError(ctx, resp, malformedRequestError("the json request could not be decoded"))
+		return
+	}
+
+	// Call service method
+	var respContent *GetContactsResponse
+	func() {
+		defer ensurePanicResponses(ctx, resp, s.hooks)
+		respContent, err = s.VtigerService.GetContacts(ctx, reqContent)
+	}()
+
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+	if respContent == nil {
+		s.writeError(ctx, resp, twirp.InternalError("received a nil *GetContactsResponse and nil error while calling GetContacts. nil responses are not supported"))
+		return
+	}
+
+	ctx = callResponsePrepared(ctx, s.hooks)
+
+	var buf bytes.Buffer
+	marshaler := &jsonpb.Marshaler{OrigName: true, EmitDefaults: true}
+	if err = marshaler.Marshal(&buf, respContent); err != nil {
+		s.writeError(ctx, resp, wrapInternal(err, "failed to marshal json response"))
+		return
+	}
+
+	ctx = ctxsetters.WithStatusCode(ctx, http.StatusOK)
+	respBytes := buf.Bytes()
+	resp.Header().Set("Content-Type", "application/json")
+	resp.Header().Set("Content-Length", strconv.Itoa(len(respBytes)))
+	resp.WriteHeader(http.StatusOK)
+
+	if n, err := resp.Write(respBytes); err != nil {
+		msg := fmt.Sprintf("failed to write response, %d of %d bytes written: %s", n, len(respBytes), err.Error())
+		twerr := twirp.NewError(twirp.Unknown, msg)
+		callError(ctx, s.hooks, twerr)
+	}
+	callResponseSent(ctx, s.hooks)
+}
+
+func (s *vtigerServiceServer) serveGetContactsProtobuf(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
+	var err error
+	ctx = ctxsetters.WithMethodName(ctx, "GetContacts")
+	ctx, err = callRequestRouted(ctx, s.hooks)
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+
+	buf, err := ioutil.ReadAll(req.Body)
+	if err != nil {
+		s.writeError(ctx, resp, wrapInternal(err, "failed to read request body"))
+		return
+	}
+	reqContent := new(GetContactsRequest)
+	if err = proto.Unmarshal(buf, reqContent); err != nil {
+		s.writeError(ctx, resp, malformedRequestError("the protobuf request could not be decoded"))
+		return
+	}
+
+	// Call service method
+	var respContent *GetContactsResponse
+	func() {
+		defer ensurePanicResponses(ctx, resp, s.hooks)
+		respContent, err = s.VtigerService.GetContacts(ctx, reqContent)
+	}()
+
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+	if respContent == nil {
+		s.writeError(ctx, resp, twirp.InternalError("received a nil *GetContactsResponse and nil error while calling GetContacts. nil responses are not supported"))
+		return
+	}
+
+	ctx = callResponsePrepared(ctx, s.hooks)
+
+	respBytes, err := proto.Marshal(respContent)
+	if err != nil {
+		s.writeError(ctx, resp, wrapInternal(err, "failed to marshal proto response"))
+		return
+	}
+
+	ctx = ctxsetters.WithStatusCode(ctx, http.StatusOK)
+	resp.Header().Set("Content-Type", "application/protobuf")
+	resp.Header().Set("Content-Length", strconv.Itoa(len(respBytes)))
+	resp.WriteHeader(http.StatusOK)
+	if n, err := resp.Write(respBytes); err != nil {
+		msg := fmt.Sprintf("failed to write response, %d of %d bytes written: %s", n, len(respBytes), err.Error())
+		twerr := twirp.NewError(twirp.Unknown, msg)
+		callError(ctx, s.hooks, twerr)
+	}
+	callResponseSent(ctx, s.hooks)
+}
+
+func (s *vtigerServiceServer) serveCreateOrUpdateContact(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
+	header := req.Header.Get("Content-Type")
+	i := strings.Index(header, ";")
+	if i == -1 {
+		i = len(header)
+	}
+	switch strings.TrimSpace(strings.ToLower(header[:i])) {
+	case "application/json":
+		s.serveCreateOrUpdateContactJSON(ctx, resp, req)
+	case "application/protobuf":
+		s.serveCreateOrUpdateContactProtobuf(ctx, resp, req)
+	default:
+		msg := fmt.Sprintf("unexpected Content-Type: %q", req.Header.Get("Content-Type"))
+		twerr := badRouteError(msg, req.Method, req.URL.Path)
+		s.writeError(ctx, resp, twerr)
+	}
+}
+
+func (s *vtigerServiceServer) serveCreateOrUpdateContactJSON(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
+	var err error
+	ctx = ctxsetters.WithMethodName(ctx, "CreateOrUpdateContact")
+	ctx, err = callRequestRouted(ctx, s.hooks)
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+
+	reqContent := new(ContactRequest)
+	unmarshaler := jsonpb.Unmarshaler{AllowUnknownFields: true}
+	if err = unmarshaler.Unmarshal(req.Body, reqContent); err != nil {
+		s.writeError(ctx, resp, malformedRequestError("the json request could not be decoded"))
+		return
+	}
+
+	// Call service method
+	var respContent *ContactResponse
+	func() {
+		defer ensurePanicResponses(ctx, resp, s.hooks)
+		respContent, err = s.VtigerService.CreateOrUpdateContact(ctx, reqContent)
+	}()
+
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+	if respContent == nil {
+		s.writeError(ctx, resp, twirp.InternalError("received a nil *ContactResponse and nil error while calling CreateOrUpdateContact. nil responses are not supported"))
+		return
+	}
+
+	ctx = callResponsePrepared(ctx, s.hooks)
+
+	var buf bytes.Buffer
+	marshaler := &jsonpb.Marshaler{OrigName: true, EmitDefaults: true}
+	if err = marshaler.Marshal(&buf, respContent); err != nil {
+		s.writeError(ctx, resp, wrapInternal(err, "failed to marshal json response"))
+		return
+	}
+
+	ctx = ctxsetters.WithStatusCode(ctx, http.StatusOK)
+	respBytes := buf.Bytes()
+	resp.Header().Set("Content-Type", "application/json")
+	resp.Header().Set("Content-Length", strconv.Itoa(len(respBytes)))
+	resp.WriteHeader(http.StatusOK)
+
+	if n, err := resp.Write(respBytes); err != nil {
+		msg := fmt.Sprintf("failed to write response, %d of %d bytes written: %s", n, len(respBytes), err.Error())
+		twerr := twirp.NewError(twirp.Unknown, msg)
+		callError(ctx, s.hooks, twerr)
+	}
+	callResponseSent(ctx, s.hooks)
+}
+
+func (s *vtigerServiceServer) serveCreateOrUpdateContactProtobuf(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
+	var err error
+	ctx = ctxsetters.WithMethodName(ctx, "CreateOrUpdateContact")
+	ctx, err = callRequestRouted(ctx, s.hooks)
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+
+	buf, err := ioutil.ReadAll(req.Body)
+	if err != nil {
+		s.writeError(ctx, resp, wrapInternal(err, "failed to read request body"))
+		return
+	}
+	reqContent := new(ContactRequest)
+	if err = proto.Unmarshal(buf, reqContent); err != nil {
+		s.writeError(ctx, resp, malformedRequestError("the protobuf request could not be decoded"))
+		return
+	}
+
+	// Call service method
+	var respContent *ContactResponse
+	func() {
+		defer ensurePanicResponses(ctx, resp, s.hooks)
+		respContent, err = s.VtigerService.CreateOrUpdateContact(ctx, reqContent)
+	}()
+
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+	if respContent == nil {
+		s.writeError(ctx, resp, twirp.InternalError("received a nil *ContactResponse and nil error while calling CreateOrUpdateContact. nil responses are not supported"))
+		return
+	}
+
+	ctx = callResponsePrepared(ctx, s.hooks)
+
+	respBytes, err := proto.Marshal(respContent)
+	if err != nil {
+		s.writeError(ctx, resp, wrapInternal(err, "failed to marshal proto response"))
+		return
+	}
+
+	ctx = ctxsetters.WithStatusCode(ctx, http.StatusOK)
+	resp.Header().Set("Content-Type", "application/protobuf")
+	resp.Header().Set("Content-Length", strconv.Itoa(len(respBytes)))
+	resp.WriteHeader(http.StatusOK)
+	if n, err := resp.Write(respBytes); err != nil {
+		msg := fmt.Sprintf("failed to write response, %d of %d bytes written: %s", n, len(respBytes), err.Error())
+		twerr := twirp.NewError(twirp.Unknown, msg)
+		callError(ctx, s.hooks, twerr)
+	}
+	callResponseSent(ctx, s.hooks)
+}
+
+func (s *vtigerServiceServer) serveCreateOrUpdateLead(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
+	header := req.Header.Get("Content-Type")
+	i := strings.Index(header, ";")
+	if i == -1 {
+		i = len(header)
+	}
+	switch strings.TrimSpace(strings.ToLower(header[:i])) {
+	case "application/json":
+		s.serveCreateOrUpdateLeadJSON(ctx, resp, req)
+	case "application/protobuf":
+		s.serveCreateOrUpdateLeadProtobuf(ctx, resp, req)
+	default:
+		msg := fmt.Sprintf("unexpected Content-Type: %q", req.Header.Get("Content-Type"))
+		twerr := badRouteError(msg, req.Method, req.URL.Path)
+		s.writeError(ctx, resp, twerr)
+	}
+}
+
+func (s *vtigerServiceServer) serveCreateOrUpdateLeadJSON(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
+	var err error
+	ctx = ctxsetters.WithMethodName(ctx, "CreateOrUpdateLead")
+	ctx, err = callRequestRouted(ctx, s.hooks)
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+
+	reqContent := new(LeadRequest)
+	unmarshaler := jsonpb.Unmarshaler{AllowUnknownFields: true}
+	if err = unmarshaler.Unmarshal(req.Body, reqContent); err != nil {
+		s.writeError(ctx, resp, malformedRequestError("the json request could not be decoded"))
+		return
+	}
+
+	// Call service method
+	var respContent *LeadResponse
+	func() {
+		defer ensurePanicResponses(ctx, resp, s.hooks)
+		respContent, err = s.VtigerService.CreateOrUpdateLead(ctx, reqContent)
+	}()
+
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+	if respContent == nil {
+		s.writeError(ctx, resp, twirp.InternalError("received a nil *LeadResponse and nil error while calling CreateOrUpdateLead. nil responses are not supported"))
+		return
+	}
+
+	ctx = callResponsePrepared(ctx, s.hooks)
+
+	var buf bytes.Buffer
+	marshaler := &jsonpb.Marshaler{OrigName: true, EmitDefaults: true}
+	if err = marshaler.Marshal(&buf, respContent); err != nil {
+		s.writeError(ctx, resp, wrapInternal(err, "failed to marshal json response"))
+		return
+	}
+
+	ctx = ctxsetters.WithStatusCode(ctx, http.StatusOK)
+	respBytes := buf.Bytes()
+	resp.Header().Set("Content-Type", "application/json")
+	resp.Header().Set("Content-Length", strconv.Itoa(len(respBytes)))
+	resp.WriteHeader(http.StatusOK)
+
+	if n, err := resp.Write(respBytes); err != nil {
+		msg := fmt.Sprintf("failed to write response, %d of %d bytes written: %s", n, len(respBytes), err.Error())
+		twerr := twirp.NewError(twirp.Unknown, msg)
+		callError(ctx, s.hooks, twerr)
+	}
+	callResponseSent(ctx, s.hooks)
+}
+
+func (s *vtigerServiceServer) serveCreateOrUpdateLeadProtobuf(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
+	var err error
+	ctx = ctxsetters.WithMethodName(ctx, "CreateOrUpdateLead")
+	ctx, err = callRequestRouted(ctx, s.hooks)
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+
+	buf, err := ioutil.ReadAll(req.Body)
+	if err != nil {
+		s.writeError(ctx, resp, wrapInternal(err, "failed to read request body"))
+		return
+	}
+	reqContent := new(LeadRequest)
+	if err = proto.Unmarshal(buf, reqContent); err != nil {
+		s.writeError(ctx, resp, malformedRequestError("the protobuf request could not be decoded"))
+		return
+	}
+
+	// Call service method
+	var respContent *LeadResponse
+	func() {
+		defer ensurePanicResponses(ctx, resp, s.hooks)
+		respContent, err = s.VtigerService.CreateOrUpdateLead(ctx, reqContent)
+	}()
+
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+	if respContent == nil {
+		s.writeError(ctx, resp, twirp.InternalError("received a nil *LeadResponse and nil error while calling CreateOrUpdateLead. nil responses are not supported"))
+		return
+	}
+
+	ctx = callResponsePrepared(ctx, s.hooks)
+
+	respBytes, err := proto.Marshal(respContent)
+	if err != nil {
+		s.writeError(ctx, resp, wrapInternal(err, "failed to marshal proto response"))
+		return
+	}
+
+	ctx = ctxsetters.WithStatusCode(ctx, http.StatusOK)
+	resp.Header().Set("Content-Type", "application/protobuf")
+	resp.Header().Set("Content-Length", strconv.Itoa(len(respBytes)))
+	resp.WriteHeader(http.StatusOK)
+	if n, err := resp.Write(respBytes); err != nil {
+		msg := fmt.Sprintf("failed to write response, %d of %d bytes written: %s", n, len(respBytes), err.Error())
+		twerr := twirp.NewError(twirp.Unknown, msg)
+		callError(ctx, s.hooks, twerr)
+	}
+	callResponseSent(ctx, s.hooks)
+}
+
+func (s *vtigerServiceServer) serveGetTickets(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
+	header := req.Header.Get("Content-Type")
+	i := strings.Index(header, ";")
+	if i == -1 {
+		i = len(header)
+	}
+	switch strings.TrimSpace(strings.ToLower(header[:i])) {
+	case "application/json":
+		s.serveGetTicketsJSON(ctx, resp, req)
+	case "application/protobuf":
+		s.serveGetTicketsProtobuf(ctx, resp, req)
+	default:
+		msg := fmt.Sprintf("unexpected Content-Type: %q", req.Header.Get("Content-Type"))
+		twerr := badRouteError(msg, req.Method, req.URL.Path)
+		s.writeError(ctx, resp, twerr)
+	}
+}
+
+func (s *vtigerServiceServer) serveGetTicketsJSON(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
+	var err error
+	ctx = ctxsetters.WithMethodName(ctx, "GetTickets")
+	ctx, err = callRequestRouted(ctx, s.hooks)
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+
+	reqContent := new(GetTicketsRequest)
+	unmarshaler := jsonpb.Unmarshaler{AllowUnknownFields: true}
+	if err = unmarshaler.Unmarshal(req.Body, reqContent); err != nil {
+		s.writeError(ctx, resp, malformedRequestError("the json request could not be decoded"))
+		return
+	}
+
+	// Call service method
+	var respContent *GetTicketsResponse
+	func() {
+		defer ensurePanicResponses(ctx, resp, s.hooks)
+		respContent, err = s.VtigerService.GetTickets(ctx, reqContent)
+	}()
+
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+	if respContent == nil {
+		s.writeError(ctx, resp, twirp.InternalError("received a nil *GetTicketsResponse and nil error while calling GetTickets. nil responses are not supported"))
+		return
+	}
+
+	ctx = callResponsePrepared(ctx, s.hooks)
+
+	var buf bytes.Buffer
+	marshaler := &jsonpb.Marshaler{OrigName: true, EmitDefaults: true}
+	if err = marshaler.Marshal(&buf, respContent); err != nil {
+		s.writeError(ctx, resp, wrapInternal(err, "failed to marshal json response"))
+		return
+	}
+
+	ctx = ctxsetters.WithStatusCode(ctx, http.StatusOK)
+	respBytes := buf.Bytes()
+	resp.Header().Set("Content-Type", "application/json")
+	resp.Header().Set("Content-Length", strconv.Itoa(len(respBytes)))
+	resp.WriteHeader(http.StatusOK)
+
+	if n, err := resp.Write(respBytes); err != nil {
+		msg := fmt.Sprintf("failed to write response, %d of %d bytes written: %s", n, len(respBytes), err.Error())
+		twerr := twirp.NewError(twirp.Unknown, msg)
+		callError(ctx, s.hooks, twerr)
+	}
+	callResponseSent(ctx, s.hooks)
+}
+
+func (s *vtigerServiceServer) serveGetTicketsProtobuf(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
+	var err error
+	ctx = ctxsetters.WithMethodName(ctx, "GetTickets")
+	ctx, err = callRequestRouted(ctx, s.hooks)
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+
+	buf, err := ioutil.ReadAll(req.Body)
+	if err != nil {
+		s.writeError(ctx, resp, wrapInternal(err, "failed to read request body"))
+		return
+	}
+	reqContent := new(GetTicketsRequest)
+	if err = proto.Unmarshal(buf, reqContent); err != nil {
+		s.writeError(ctx, resp, malformedRequestError("the protobuf request could not be decoded"))
+		return
+	}
+
+	// Call service method
+	var respContent *GetTicketsResponse
+	func() {
+		defer ensurePanicResponses(ctx, resp, s.hooks)
+		respContent, err = s.VtigerService.GetTickets(ctx, reqContent)
+	}()
+
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+	if respContent == nil {
+		s.writeError(ctx, resp, twirp.InternalError("received a nil *GetTicketsResponse and nil error while calling GetTickets. nil responses are not supported"))
+		return
+	}
+
+	ctx = callResponsePrepared(ctx, s.hooks)
+
+	respBytes, err := proto.Marshal(respContent)
+	if err != nil {
+		s.writeError(ctx, resp, wrapInternal(err, "failed to marshal proto response"))
+		return
+	}
+
+	ctx = ctxsetters.WithStatusCode(ctx, http.StatusOK)
+	resp.Header().Set("Content-Type", "application/protobuf")
+	resp.Header().Set("Content-Length", strconv.Itoa(len(respBytes)))
+	resp.WriteHeader(http.StatusOK)
+	if n, err := resp.Write(respBytes); err != nil {
+		msg := fmt.Sprintf("failed to write response, %d of %d bytes written: %s", n, len(respBytes), err.Error())
+		twerr := twirp.NewError(twirp.Unknown, msg)
+		callError(ctx, s.hooks, twerr)
+	}
+	callResponseSent(ctx, s.hooks)
+}
+
+func (s *vtigerServiceServer) serveCreateTicket(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
+	header := req.Header.Get("Content-Type")
+	i := strings.Index(header, ";")
+	if i == -1 {
+		i = len(header)
+	}
+	switch strings.TrimSpace(strings.ToLower(header[:i])) {
+	case "application/json":
+		s.serveCreateTicketJSON(ctx, resp, req)
+	case "application/protobuf":
+		s.serveCreateTicketProtobuf(ctx, resp, req)
+	default:
+		msg := fmt.Sprintf("unexpected Content-Type: %q", req.Header.Get("Content-Type"))
+		twerr := badRouteError(msg, req.Method, req.URL.Path)
+		s.writeError(ctx, resp, twerr)
+	}
+}
+
+func (s *vtigerServiceServer) serveCreateTicketJSON(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
+	var err error
+	ctx = ctxsetters.WithMethodName(ctx, "CreateTicket")
+	ctx, err = callRequestRouted(ctx, s.hooks)
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+
+	reqContent := new(CreateOrUpdateTicketRequest)
+	unmarshaler := jsonpb.Unmarshaler{AllowUnknownFields: true}
+	if err = unmarshaler.Unmarshal(req.Body, reqContent); err != nil {
+		s.writeError(ctx, resp, malformedRequestError("the json request could not be decoded"))
+		return
+	}
+
+	// Call service method
+	var respContent *Ticket
+	func() {
+		defer ensurePanicResponses(ctx, resp, s.hooks)
+		respContent, err = s.VtigerService.CreateTicket(ctx, reqContent)
+	}()
+
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+	if respContent == nil {
+		s.writeError(ctx, resp, twirp.InternalError("received a nil *Ticket and nil error while calling CreateTicket. nil responses are not supported"))
+		return
+	}
+
+	ctx = callResponsePrepared(ctx, s.hooks)
+
+	var buf bytes.Buffer
+	marshaler := &jsonpb.Marshaler{OrigName: true, EmitDefaults: true}
+	if err = marshaler.Marshal(&buf, respContent); err != nil {
+		s.writeError(ctx, resp, wrapInternal(err, "failed to marshal json response"))
+		return
+	}
+
+	ctx = ctxsetters.WithStatusCode(ctx, http.StatusOK)
+	respBytes := buf.Bytes()
+	resp.Header().Set("Content-Type", "application/json")
+	resp.Header().Set("Content-Length", strconv.Itoa(len(respBytes)))
+	resp.WriteHeader(http.StatusOK)
+
+	if n, err := resp.Write(respBytes); err != nil {
+		msg := fmt.Sprintf("failed to write response, %d of %d bytes written: %s", n, len(respBytes), err.Error())
+		twerr := twirp.NewError(twirp.Unknown, msg)
+		callError(ctx, s.hooks, twerr)
+	}
+	callResponseSent(ctx, s.hooks)
+}
+
+func (s *vtigerServiceServer) serveCreateTicketProtobuf(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
+	var err error
+	ctx = ctxsetters.WithMethodName(ctx, "CreateTicket")
+	ctx, err = callRequestRouted(ctx, s.hooks)
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+
+	buf, err := ioutil.ReadAll(req.Body)
+	if err != nil {
+		s.writeError(ctx, resp, wrapInternal(err, "failed to read request body"))
+		return
+	}
+	reqContent := new(CreateOrUpdateTicketRequest)
+	if err = proto.Unmarshal(buf, reqContent); err != nil {
+		s.writeError(ctx, resp, malformedRequestError("the protobuf request could not be decoded"))
+		return
+	}
+
+	// Call service method
+	var respContent *Ticket
+	func() {
+		defer ensurePanicResponses(ctx, resp, s.hooks)
+		respContent, err = s.VtigerService.CreateTicket(ctx, reqContent)
+	}()
+
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+	if respContent == nil {
+		s.writeError(ctx, resp, twirp.InternalError("received a nil *Ticket and nil error while calling CreateTicket. nil responses are not supported"))
+		return
+	}
+
+	ctx = callResponsePrepared(ctx, s.hooks)
+
+	respBytes, err := proto.Marshal(respContent)
+	if err != nil {
+		s.writeError(ctx, resp, wrapInternal(err, "failed to marshal proto response"))
+		return
+	}
+
+	ctx = ctxsetters.WithStatusCode(ctx, http.StatusOK)
+	resp.Header().Set("Content-Type", "application/protobuf")
+	resp.Header().Set("Content-Length", strconv.Itoa(len(respBytes)))
+	resp.WriteHeader(http.StatusOK)
+	if n, err := resp.Write(respBytes); err != nil {
+		msg := fmt.Sprintf("failed to write response, %d of %d bytes written: %s", n, len(respBytes), err.Error())
+		twerr := twirp.NewError(twirp.Unknown, msg)
+		callError(ctx, s.hooks, twerr)
+	}
+	callResponseSent(ctx, s.hooks)
+}
+
+func (s *vtigerServiceServer) serveUpdateTicket(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
+	header := req.Header.Get("Content-Type")
+	i := strings.Index(header, ";")
+	if i == -1 {
+		i = len(header)
+	}
+	switch strings.TrimSpace(strings.ToLower(header[:i])) {
+	case "application/json":
+		s.serveUpdateTicketJSON(ctx, resp, req)
+	case "application/protobuf":
+		s.serveUpdateTicketProtobuf(ctx, resp, req)
+	default:
+		msg := fmt.Sprintf("unexpected Content-Type: %q", req.Header.Get("Content-Type"))
+		twerr := badRouteError(msg, req.Method, req.URL.Path)
+		s.writeError(ctx, resp, twerr)
+	}
+}
+
+func (s *vtigerServiceServer) serveUpdateTicketJSON(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
+	var err error
+	ctx = ctxsetters.WithMethodName(ctx, "UpdateTicket")
+	ctx, err = callRequestRouted(ctx, s.hooks)
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+
+	reqContent := new(CreateOrUpdateTicketRequest)
+	unmarshaler := jsonpb.Unmarshaler{AllowUnknownFields: true}
+	if err = unmarshaler.Unmarshal(req.Body, reqContent); err != nil {
+		s.writeError(ctx, resp, malformedRequestError("the json request could not be decoded"))
+		return
+	}
+
+	// Call service method
+	var respContent *Ticket
+	func() {
+		defer ensurePanicResponses(ctx, resp, s.hooks)
+		respContent, err = s.VtigerService.UpdateTicket(ctx, reqContent)
+	}()
+
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+	if respContent == nil {
+		s.writeError(ctx, resp, twirp.InternalError("received a nil *Ticket and nil error while calling UpdateTicket. nil responses are not supported"))
+		return
+	}
+
+	ctx = callResponsePrepared(ctx, s.hooks)
+
+	var buf bytes.Buffer
+	marshaler := &jsonpb.Marshaler{OrigName: true, EmitDefaults: true}
+	if err = marshaler.Marshal(&buf, respContent); err != nil {
+		s.writeError(ctx, resp, wrapInternal(err, "failed to marshal json response"))
+		return
+	}
+
+	ctx = ctxsetters.WithStatusCode(ctx, http.StatusOK)
+	respBytes := buf.Bytes()
+	resp.Header().Set("Content-Type", "application/json")
+	resp.Header().Set("Content-Length", strconv.Itoa(len(respBytes)))
+	resp.WriteHeader(http.StatusOK)
+
+	if n, err := resp.Write(respBytes); err != nil {
+		msg := fmt.Sprintf("failed to write response, %d of %d bytes written: %s", n, len(respBytes), err.Error())
+		twerr := twirp.NewError(twirp.Unknown, msg)
+		callError(ctx, s.hooks, twerr)
+	}
+	callResponseSent(ctx, s.hooks)
+}
+
+func (s *vtigerServiceServer) serveUpdateTicketProtobuf(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
+	var err error
+	ctx = ctxsetters.WithMethodName(ctx, "UpdateTicket")
+	ctx, err = callRequestRouted(ctx, s.hooks)
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+
+	buf, err := ioutil.ReadAll(req.Body)
+	if err != nil {
+		s.writeError(ctx, resp, wrapInternal(err, "failed to read request body"))
+		return
+	}
+	reqContent := new(CreateOrUpdateTicketRequest)
+	if err = proto.Unmarshal(buf, reqContent); err != nil {
+		s.writeError(ctx, resp, malformedRequestError("the protobuf request could not be decoded"))
+		return
+	}
+
+	// Call service method
+	var respContent *Ticket
+	func() {
+		defer ensurePanicResponses(ctx, resp, s.hooks)
+		respContent, err = s.VtigerService.UpdateTicket(ctx, reqContent)
+	}()
+
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+	if respContent == nil {
+		s.writeError(ctx, resp, twirp.InternalError("received a nil *Ticket and nil error while calling UpdateTicket. nil responses are not supported"))
+		return
+	}
+
+	ctx = callResponsePrepared(ctx, s.hooks)
+
+	respBytes, err := proto.Marshal(respContent)
+	if err != nil {
+		s.writeError(ctx, resp, wrapInternal(err, "failed to marshal proto response"))
+		return
+	}
+
+	ctx = ctxsetters.WithStatusCode(ctx, http.StatusOK)
+	resp.Header().Set("Content-Type", "application/protobuf")
+	resp.Header().Set("Content-Length", strconv.Itoa(len(respBytes)))
+	resp.WriteHeader(http.StatusOK)
+	if n, err := resp.Write(respBytes); err != nil {
+		msg := fmt.Sprintf("failed to write response, %d of %d bytes written: %s", n, len(respBytes), err.Error())
+		twerr := twirp.NewError(twirp.Unknown, msg)
+		callError(ctx, s.hooks, twerr)
+	}
+	callResponseSent(ctx, s.hooks)
+}
+
+func (s *vtigerServiceServer) serveGetCategories(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
+	header := req.Header.Get("Content-Type")
+	i := strings.Index(header, ";")
+	if i == -1 {
+		i = len(header)
+	}
+	switch strings.TrimSpace(strings.ToLower(header[:i])) {
+	case "application/json":
+		s.serveGetCategoriesJSON(ctx, resp, req)
+	case "application/protobuf":
+		s.serveGetCategoriesProtobuf(ctx, resp, req)
+	default:
+		msg := fmt.Sprintf("unexpected Content-Type: %q", req.Header.Get("Content-Type"))
+		twerr := badRouteError(msg, req.Method, req.URL.Path)
+		s.writeError(ctx, resp, twerr)
+	}
+}
+
+func (s *vtigerServiceServer) serveGetCategoriesJSON(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
+	var err error
+	ctx = ctxsetters.WithMethodName(ctx, "GetCategories")
+	ctx, err = callRequestRouted(ctx, s.hooks)
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+
+	reqContent := new(cm.Empty)
+	unmarshaler := jsonpb.Unmarshaler{AllowUnknownFields: true}
+	if err = unmarshaler.Unmarshal(req.Body, reqContent); err != nil {
+		s.writeError(ctx, resp, malformedRequestError("the json request could not be decoded"))
+		return
+	}
+
+	// Call service method
+	var respContent *GetCategoriesResponse
+	func() {
+		defer ensurePanicResponses(ctx, resp, s.hooks)
+		respContent, err = s.VtigerService.GetCategories(ctx, reqContent)
+	}()
+
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+	if respContent == nil {
+		s.writeError(ctx, resp, twirp.InternalError("received a nil *GetCategoriesResponse and nil error while calling GetCategories. nil responses are not supported"))
+		return
+	}
+
+	ctx = callResponsePrepared(ctx, s.hooks)
+
+	var buf bytes.Buffer
+	marshaler := &jsonpb.Marshaler{OrigName: true, EmitDefaults: true}
+	if err = marshaler.Marshal(&buf, respContent); err != nil {
+		s.writeError(ctx, resp, wrapInternal(err, "failed to marshal json response"))
+		return
+	}
+
+	ctx = ctxsetters.WithStatusCode(ctx, http.StatusOK)
+	respBytes := buf.Bytes()
+	resp.Header().Set("Content-Type", "application/json")
+	resp.Header().Set("Content-Length", strconv.Itoa(len(respBytes)))
+	resp.WriteHeader(http.StatusOK)
+
+	if n, err := resp.Write(respBytes); err != nil {
+		msg := fmt.Sprintf("failed to write response, %d of %d bytes written: %s", n, len(respBytes), err.Error())
+		twerr := twirp.NewError(twirp.Unknown, msg)
+		callError(ctx, s.hooks, twerr)
+	}
+	callResponseSent(ctx, s.hooks)
+}
+
+func (s *vtigerServiceServer) serveGetCategoriesProtobuf(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
+	var err error
+	ctx = ctxsetters.WithMethodName(ctx, "GetCategories")
+	ctx, err = callRequestRouted(ctx, s.hooks)
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+
+	buf, err := ioutil.ReadAll(req.Body)
+	if err != nil {
+		s.writeError(ctx, resp, wrapInternal(err, "failed to read request body"))
+		return
+	}
+	reqContent := new(cm.Empty)
+	if err = proto.Unmarshal(buf, reqContent); err != nil {
+		s.writeError(ctx, resp, malformedRequestError("the protobuf request could not be decoded"))
+		return
+	}
+
+	// Call service method
+	var respContent *GetCategoriesResponse
+	func() {
+		defer ensurePanicResponses(ctx, resp, s.hooks)
+		respContent, err = s.VtigerService.GetCategories(ctx, reqContent)
+	}()
+
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+	if respContent == nil {
+		s.writeError(ctx, resp, twirp.InternalError("received a nil *GetCategoriesResponse and nil error while calling GetCategories. nil responses are not supported"))
+		return
+	}
+
+	ctx = callResponsePrepared(ctx, s.hooks)
+
+	respBytes, err := proto.Marshal(respContent)
+	if err != nil {
+		s.writeError(ctx, resp, wrapInternal(err, "failed to marshal proto response"))
+		return
+	}
+
+	ctx = ctxsetters.WithStatusCode(ctx, http.StatusOK)
+	resp.Header().Set("Content-Type", "application/protobuf")
+	resp.Header().Set("Content-Length", strconv.Itoa(len(respBytes)))
+	resp.WriteHeader(http.StatusOK)
+	if n, err := resp.Write(respBytes); err != nil {
+		msg := fmt.Sprintf("failed to write response, %d of %d bytes written: %s", n, len(respBytes), err.Error())
+		twerr := twirp.NewError(twirp.Unknown, msg)
+		callError(ctx, s.hooks, twerr)
+	}
+	callResponseSent(ctx, s.hooks)
+}
+
+func (s *vtigerServiceServer) serveGetStatus(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
+	header := req.Header.Get("Content-Type")
+	i := strings.Index(header, ";")
+	if i == -1 {
+		i = len(header)
+	}
+	switch strings.TrimSpace(strings.ToLower(header[:i])) {
+	case "application/json":
+		s.serveGetStatusJSON(ctx, resp, req)
+	case "application/protobuf":
+		s.serveGetStatusProtobuf(ctx, resp, req)
+	default:
+		msg := fmt.Sprintf("unexpected Content-Type: %q", req.Header.Get("Content-Type"))
+		twerr := badRouteError(msg, req.Method, req.URL.Path)
+		s.writeError(ctx, resp, twerr)
+	}
+}
+
+func (s *vtigerServiceServer) serveGetStatusJSON(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
+	var err error
+	ctx = ctxsetters.WithMethodName(ctx, "GetStatus")
+	ctx, err = callRequestRouted(ctx, s.hooks)
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+
+	reqContent := new(cm.Empty)
+	unmarshaler := jsonpb.Unmarshaler{AllowUnknownFields: true}
+	if err = unmarshaler.Unmarshal(req.Body, reqContent); err != nil {
+		s.writeError(ctx, resp, malformedRequestError("the json request could not be decoded"))
+		return
+	}
+
+	// Call service method
+	var respContent *GetStatusResponse
+	func() {
+		defer ensurePanicResponses(ctx, resp, s.hooks)
+		respContent, err = s.VtigerService.GetStatus(ctx, reqContent)
+	}()
+
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+	if respContent == nil {
+		s.writeError(ctx, resp, twirp.InternalError("received a nil *GetStatusResponse and nil error while calling GetStatus. nil responses are not supported"))
+		return
+	}
+
+	ctx = callResponsePrepared(ctx, s.hooks)
+
+	var buf bytes.Buffer
+	marshaler := &jsonpb.Marshaler{OrigName: true, EmitDefaults: true}
+	if err = marshaler.Marshal(&buf, respContent); err != nil {
+		s.writeError(ctx, resp, wrapInternal(err, "failed to marshal json response"))
+		return
+	}
+
+	ctx = ctxsetters.WithStatusCode(ctx, http.StatusOK)
+	respBytes := buf.Bytes()
+	resp.Header().Set("Content-Type", "application/json")
+	resp.Header().Set("Content-Length", strconv.Itoa(len(respBytes)))
+	resp.WriteHeader(http.StatusOK)
+
+	if n, err := resp.Write(respBytes); err != nil {
+		msg := fmt.Sprintf("failed to write response, %d of %d bytes written: %s", n, len(respBytes), err.Error())
+		twerr := twirp.NewError(twirp.Unknown, msg)
+		callError(ctx, s.hooks, twerr)
+	}
+	callResponseSent(ctx, s.hooks)
+}
+
+func (s *vtigerServiceServer) serveGetStatusProtobuf(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
+	var err error
+	ctx = ctxsetters.WithMethodName(ctx, "GetStatus")
+	ctx, err = callRequestRouted(ctx, s.hooks)
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+
+	buf, err := ioutil.ReadAll(req.Body)
+	if err != nil {
+		s.writeError(ctx, resp, wrapInternal(err, "failed to read request body"))
+		return
+	}
+	reqContent := new(cm.Empty)
+	if err = proto.Unmarshal(buf, reqContent); err != nil {
+		s.writeError(ctx, resp, malformedRequestError("the protobuf request could not be decoded"))
+		return
+	}
+
+	// Call service method
+	var respContent *GetStatusResponse
+	func() {
+		defer ensurePanicResponses(ctx, resp, s.hooks)
+		respContent, err = s.VtigerService.GetStatus(ctx, reqContent)
+	}()
+
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+	if respContent == nil {
+		s.writeError(ctx, resp, twirp.InternalError("received a nil *GetStatusResponse and nil error while calling GetStatus. nil responses are not supported"))
+		return
+	}
+
+	ctx = callResponsePrepared(ctx, s.hooks)
+
+	respBytes, err := proto.Marshal(respContent)
+	if err != nil {
+		s.writeError(ctx, resp, wrapInternal(err, "failed to marshal proto response"))
+		return
+	}
+
+	ctx = ctxsetters.WithStatusCode(ctx, http.StatusOK)
+	resp.Header().Set("Content-Type", "application/protobuf")
+	resp.Header().Set("Content-Length", strconv.Itoa(len(respBytes)))
+	resp.WriteHeader(http.StatusOK)
+	if n, err := resp.Write(respBytes); err != nil {
+		msg := fmt.Sprintf("failed to write response, %d of %d bytes written: %s", n, len(respBytes), err.Error())
+		twerr := twirp.NewError(twirp.Unknown, msg)
+		callError(ctx, s.hooks, twerr)
+	}
+	callResponseSent(ctx, s.hooks)
+}
+
+func (s *vtigerServiceServer) serveCountTicketByStatus(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
+	header := req.Header.Get("Content-Type")
+	i := strings.Index(header, ";")
+	if i == -1 {
+		i = len(header)
+	}
+	switch strings.TrimSpace(strings.ToLower(header[:i])) {
+	case "application/json":
+		s.serveCountTicketByStatusJSON(ctx, resp, req)
+	case "application/protobuf":
+		s.serveCountTicketByStatusProtobuf(ctx, resp, req)
+	default:
+		msg := fmt.Sprintf("unexpected Content-Type: %q", req.Header.Get("Content-Type"))
+		twerr := badRouteError(msg, req.Method, req.URL.Path)
+		s.writeError(ctx, resp, twerr)
+	}
+}
+
+func (s *vtigerServiceServer) serveCountTicketByStatusJSON(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
+	var err error
+	ctx = ctxsetters.WithMethodName(ctx, "CountTicketByStatus")
+	ctx, err = callRequestRouted(ctx, s.hooks)
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+
+	reqContent := new(CountTicketByStatusRequest)
+	unmarshaler := jsonpb.Unmarshaler{AllowUnknownFields: true}
+	if err = unmarshaler.Unmarshal(req.Body, reqContent); err != nil {
+		s.writeError(ctx, resp, malformedRequestError("the json request could not be decoded"))
+		return
+	}
+
+	// Call service method
+	var respContent *CountTicketByStatusResponse
+	func() {
+		defer ensurePanicResponses(ctx, resp, s.hooks)
+		respContent, err = s.VtigerService.CountTicketByStatus(ctx, reqContent)
+	}()
+
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+	if respContent == nil {
+		s.writeError(ctx, resp, twirp.InternalError("received a nil *CountTicketByStatusResponse and nil error while calling CountTicketByStatus. nil responses are not supported"))
+		return
+	}
+
+	ctx = callResponsePrepared(ctx, s.hooks)
+
+	var buf bytes.Buffer
+	marshaler := &jsonpb.Marshaler{OrigName: true, EmitDefaults: true}
+	if err = marshaler.Marshal(&buf, respContent); err != nil {
+		s.writeError(ctx, resp, wrapInternal(err, "failed to marshal json response"))
+		return
+	}
+
+	ctx = ctxsetters.WithStatusCode(ctx, http.StatusOK)
+	respBytes := buf.Bytes()
+	resp.Header().Set("Content-Type", "application/json")
+	resp.Header().Set("Content-Length", strconv.Itoa(len(respBytes)))
+	resp.WriteHeader(http.StatusOK)
+
+	if n, err := resp.Write(respBytes); err != nil {
+		msg := fmt.Sprintf("failed to write response, %d of %d bytes written: %s", n, len(respBytes), err.Error())
+		twerr := twirp.NewError(twirp.Unknown, msg)
+		callError(ctx, s.hooks, twerr)
+	}
+	callResponseSent(ctx, s.hooks)
+}
+
+func (s *vtigerServiceServer) serveCountTicketByStatusProtobuf(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
+	var err error
+	ctx = ctxsetters.WithMethodName(ctx, "CountTicketByStatus")
+	ctx, err = callRequestRouted(ctx, s.hooks)
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+
+	buf, err := ioutil.ReadAll(req.Body)
+	if err != nil {
+		s.writeError(ctx, resp, wrapInternal(err, "failed to read request body"))
+		return
+	}
+	reqContent := new(CountTicketByStatusRequest)
+	if err = proto.Unmarshal(buf, reqContent); err != nil {
+		s.writeError(ctx, resp, malformedRequestError("the protobuf request could not be decoded"))
+		return
+	}
+
+	// Call service method
+	var respContent *CountTicketByStatusResponse
+	func() {
+		defer ensurePanicResponses(ctx, resp, s.hooks)
+		respContent, err = s.VtigerService.CountTicketByStatus(ctx, reqContent)
+	}()
+
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+	if respContent == nil {
+		s.writeError(ctx, resp, twirp.InternalError("received a nil *CountTicketByStatusResponse and nil error while calling CountTicketByStatus. nil responses are not supported"))
+		return
+	}
+
+	ctx = callResponsePrepared(ctx, s.hooks)
+
+	respBytes, err := proto.Marshal(respContent)
+	if err != nil {
+		s.writeError(ctx, resp, wrapInternal(err, "failed to marshal proto response"))
+		return
+	}
+
+	ctx = ctxsetters.WithStatusCode(ctx, http.StatusOK)
+	resp.Header().Set("Content-Type", "application/protobuf")
+	resp.Header().Set("Content-Length", strconv.Itoa(len(respBytes)))
+	resp.WriteHeader(http.StatusOK)
+	if n, err := resp.Write(respBytes); err != nil {
+		msg := fmt.Sprintf("failed to write response, %d of %d bytes written: %s", n, len(respBytes), err.Error())
+		twerr := twirp.NewError(twirp.Unknown, msg)
+		callError(ctx, s.hooks, twerr)
+	}
+	callResponseSent(ctx, s.hooks)
+}
+
+func (s *vtigerServiceServer) serveGetTicketStatusCount(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
+	header := req.Header.Get("Content-Type")
+	i := strings.Index(header, ";")
+	if i == -1 {
+		i = len(header)
+	}
+	switch strings.TrimSpace(strings.ToLower(header[:i])) {
+	case "application/json":
+		s.serveGetTicketStatusCountJSON(ctx, resp, req)
+	case "application/protobuf":
+		s.serveGetTicketStatusCountProtobuf(ctx, resp, req)
+	default:
+		msg := fmt.Sprintf("unexpected Content-Type: %q", req.Header.Get("Content-Type"))
+		twerr := badRouteError(msg, req.Method, req.URL.Path)
+		s.writeError(ctx, resp, twerr)
+	}
+}
+
+func (s *vtigerServiceServer) serveGetTicketStatusCountJSON(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
+	var err error
+	ctx = ctxsetters.WithMethodName(ctx, "GetTicketStatusCount")
+	ctx, err = callRequestRouted(ctx, s.hooks)
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+
+	reqContent := new(cm.Empty)
+	unmarshaler := jsonpb.Unmarshaler{AllowUnknownFields: true}
+	if err = unmarshaler.Unmarshal(req.Body, reqContent); err != nil {
+		s.writeError(ctx, resp, malformedRequestError("the json request could not be decoded"))
+		return
+	}
+
+	// Call service method
+	var respContent *GetTicketStatusCountResponse
+	func() {
+		defer ensurePanicResponses(ctx, resp, s.hooks)
+		respContent, err = s.VtigerService.GetTicketStatusCount(ctx, reqContent)
+	}()
+
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+	if respContent == nil {
+		s.writeError(ctx, resp, twirp.InternalError("received a nil *GetTicketStatusCountResponse and nil error while calling GetTicketStatusCount. nil responses are not supported"))
+		return
+	}
+
+	ctx = callResponsePrepared(ctx, s.hooks)
+
+	var buf bytes.Buffer
+	marshaler := &jsonpb.Marshaler{OrigName: true, EmitDefaults: true}
+	if err = marshaler.Marshal(&buf, respContent); err != nil {
+		s.writeError(ctx, resp, wrapInternal(err, "failed to marshal json response"))
+		return
+	}
+
+	ctx = ctxsetters.WithStatusCode(ctx, http.StatusOK)
+	respBytes := buf.Bytes()
+	resp.Header().Set("Content-Type", "application/json")
+	resp.Header().Set("Content-Length", strconv.Itoa(len(respBytes)))
+	resp.WriteHeader(http.StatusOK)
+
+	if n, err := resp.Write(respBytes); err != nil {
+		msg := fmt.Sprintf("failed to write response, %d of %d bytes written: %s", n, len(respBytes), err.Error())
+		twerr := twirp.NewError(twirp.Unknown, msg)
+		callError(ctx, s.hooks, twerr)
+	}
+	callResponseSent(ctx, s.hooks)
+}
+
+func (s *vtigerServiceServer) serveGetTicketStatusCountProtobuf(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
+	var err error
+	ctx = ctxsetters.WithMethodName(ctx, "GetTicketStatusCount")
+	ctx, err = callRequestRouted(ctx, s.hooks)
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+
+	buf, err := ioutil.ReadAll(req.Body)
+	if err != nil {
+		s.writeError(ctx, resp, wrapInternal(err, "failed to read request body"))
+		return
+	}
+	reqContent := new(cm.Empty)
+	if err = proto.Unmarshal(buf, reqContent); err != nil {
+		s.writeError(ctx, resp, malformedRequestError("the protobuf request could not be decoded"))
+		return
+	}
+
+	// Call service method
+	var respContent *GetTicketStatusCountResponse
+	func() {
+		defer ensurePanicResponses(ctx, resp, s.hooks)
+		respContent, err = s.VtigerService.GetTicketStatusCount(ctx, reqContent)
+	}()
+
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+	if respContent == nil {
+		s.writeError(ctx, resp, twirp.InternalError("received a nil *GetTicketStatusCountResponse and nil error while calling GetTicketStatusCount. nil responses are not supported"))
+		return
+	}
+
+	ctx = callResponsePrepared(ctx, s.hooks)
+
+	respBytes, err := proto.Marshal(respContent)
+	if err != nil {
+		s.writeError(ctx, resp, wrapInternal(err, "failed to marshal proto response"))
+		return
+	}
+
+	ctx = ctxsetters.WithStatusCode(ctx, http.StatusOK)
+	resp.Header().Set("Content-Type", "application/protobuf")
+	resp.Header().Set("Content-Length", strconv.Itoa(len(respBytes)))
+	resp.WriteHeader(http.StatusOK)
+	if n, err := resp.Write(respBytes); err != nil {
+		msg := fmt.Sprintf("failed to write response, %d of %d bytes written: %s", n, len(respBytes), err.Error())
+		twerr := twirp.NewError(twirp.Unknown, msg)
+		callError(ctx, s.hooks, twerr)
+	}
+	callResponseSent(ctx, s.hooks)
+}
+
+func (s *vtigerServiceServer) ServiceDescriptor() ([]byte, int) {
+	return twirpFileDescriptor0, 2
+}
+
+func (s *vtigerServiceServer) ProtocGenTwirpVersion() string {
+	return "v5.8.0"
+}
+
+func (s *vtigerServiceServer) PathPrefix() string {
+	return VtigerServicePathPrefix
+}
+
+// ====================
+// VhtService Interface
+// ====================
+
+type VhtService interface {
+	GetCallHistories(context.Context, *GetCallHistoriesRequest) (*GetCallHistoriesResponse, error)
+
+	CreateOrUpdateCallHistoryBySDKCallID(context.Context, *VHTCallLog) (*VHTCallLog, error)
+
+	CreateOrUpdateCallHistoryByCallID(context.Context, *VHTCallLog) (*VHTCallLog, error)
+}
+
+// ==========================
+// VhtService Protobuf Client
+// ==========================
+
+type vhtServiceProtobufClient struct {
+	client HTTPClient
+	urls   [3]string
+}
+
+// NewVhtServiceProtobufClient creates a Protobuf client that implements the VhtService interface.
+// It communicates using Protobuf and can be configured with a custom HTTPClient.
+func NewVhtServiceProtobufClient(addr string, client HTTPClient) VhtService {
+	prefix := urlBase(addr) + VhtServicePathPrefix
+	urls := [3]string{
+		prefix + "GetCallHistories",
+		prefix + "CreateOrUpdateCallHistoryBySDKCallID",
+		prefix + "CreateOrUpdateCallHistoryByCallID",
+	}
+	if httpClient, ok := client.(*http.Client); ok {
+		return &vhtServiceProtobufClient{
+			client: withoutRedirects(httpClient),
+			urls:   urls,
+		}
+	}
+	return &vhtServiceProtobufClient{
+		client: client,
+		urls:   urls,
+	}
+}
+
+func (c *vhtServiceProtobufClient) GetCallHistories(ctx context.Context, in *GetCallHistoriesRequest) (*GetCallHistoriesResponse, error) {
+	ctx = ctxsetters.WithPackageName(ctx, "crm")
+	ctx = ctxsetters.WithServiceName(ctx, "Vht")
+	ctx = ctxsetters.WithMethodName(ctx, "GetCallHistories")
+	out := new(GetCallHistoriesResponse)
+	err := doProtobufRequest(ctx, c.client, c.urls[0], in, out)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *vhtServiceProtobufClient) CreateOrUpdateCallHistoryBySDKCallID(ctx context.Context, in *VHTCallLog) (*VHTCallLog, error) {
+	ctx = ctxsetters.WithPackageName(ctx, "crm")
+	ctx = ctxsetters.WithServiceName(ctx, "Vht")
+	ctx = ctxsetters.WithMethodName(ctx, "CreateOrUpdateCallHistoryBySDKCallID")
+	out := new(VHTCallLog)
+	err := doProtobufRequest(ctx, c.client, c.urls[1], in, out)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *vhtServiceProtobufClient) CreateOrUpdateCallHistoryByCallID(ctx context.Context, in *VHTCallLog) (*VHTCallLog, error) {
+	ctx = ctxsetters.WithPackageName(ctx, "crm")
+	ctx = ctxsetters.WithServiceName(ctx, "Vht")
+	ctx = ctxsetters.WithMethodName(ctx, "CreateOrUpdateCallHistoryByCallID")
+	out := new(VHTCallLog)
+	err := doProtobufRequest(ctx, c.client, c.urls[2], in, out)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// ======================
+// VhtService JSON Client
+// ======================
+
+type vhtServiceJSONClient struct {
+	client HTTPClient
+	urls   [3]string
+}
+
+// NewVhtServiceJSONClient creates a JSON client that implements the VhtService interface.
+// It communicates using JSON and can be configured with a custom HTTPClient.
+func NewVhtServiceJSONClient(addr string, client HTTPClient) VhtService {
+	prefix := urlBase(addr) + VhtServicePathPrefix
+	urls := [3]string{
+		prefix + "GetCallHistories",
+		prefix + "CreateOrUpdateCallHistoryBySDKCallID",
+		prefix + "CreateOrUpdateCallHistoryByCallID",
+	}
+	if httpClient, ok := client.(*http.Client); ok {
+		return &vhtServiceJSONClient{
+			client: withoutRedirects(httpClient),
+			urls:   urls,
+		}
+	}
+	return &vhtServiceJSONClient{
+		client: client,
+		urls:   urls,
+	}
+}
+
+func (c *vhtServiceJSONClient) GetCallHistories(ctx context.Context, in *GetCallHistoriesRequest) (*GetCallHistoriesResponse, error) {
+	ctx = ctxsetters.WithPackageName(ctx, "crm")
+	ctx = ctxsetters.WithServiceName(ctx, "Vht")
+	ctx = ctxsetters.WithMethodName(ctx, "GetCallHistories")
+	out := new(GetCallHistoriesResponse)
+	err := doJSONRequest(ctx, c.client, c.urls[0], in, out)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *vhtServiceJSONClient) CreateOrUpdateCallHistoryBySDKCallID(ctx context.Context, in *VHTCallLog) (*VHTCallLog, error) {
+	ctx = ctxsetters.WithPackageName(ctx, "crm")
+	ctx = ctxsetters.WithServiceName(ctx, "Vht")
+	ctx = ctxsetters.WithMethodName(ctx, "CreateOrUpdateCallHistoryBySDKCallID")
+	out := new(VHTCallLog)
+	err := doJSONRequest(ctx, c.client, c.urls[1], in, out)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *vhtServiceJSONClient) CreateOrUpdateCallHistoryByCallID(ctx context.Context, in *VHTCallLog) (*VHTCallLog, error) {
+	ctx = ctxsetters.WithPackageName(ctx, "crm")
+	ctx = ctxsetters.WithServiceName(ctx, "Vht")
+	ctx = ctxsetters.WithMethodName(ctx, "CreateOrUpdateCallHistoryByCallID")
+	out := new(VHTCallLog)
+	err := doJSONRequest(ctx, c.client, c.urls[2], in, out)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// =========================
+// VhtService Server Handler
+// =========================
+
+type vhtServiceServer struct {
+	VhtService
+	hooks *twirp.ServerHooks
+}
+
+func NewVhtServiceServer(svc VhtService, hooks *twirp.ServerHooks) TwirpServer {
+	return &vhtServiceServer{
+		VhtService: svc,
+		hooks:      hooks,
+	}
+}
+
+// writeError writes an HTTP response with a valid Twirp error format, and triggers hooks.
+// If err is not a twirp.Error, it will get wrapped with twirp.InternalErrorWith(err)
+func (s *vhtServiceServer) writeError(ctx context.Context, resp http.ResponseWriter, err error) {
+	writeError(ctx, resp, err, s.hooks)
+}
+
+// VhtServicePathPrefix is used for all URL paths on a twirp VhtService server.
+// Requests are always: POST VhtServicePathPrefix/method
+// It can be used in an HTTP mux to route twirp requests along with non-twirp requests on other routes.
+const VhtServicePathPrefix = "/api/crm.Vht/"
+
+func (s *vhtServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
+	ctx := req.Context()
+	ctx = ctxsetters.WithPackageName(ctx, "crm")
+	ctx = ctxsetters.WithServiceName(ctx, "Vht")
+	ctx = ctxsetters.WithResponseWriter(ctx, resp)
+
+	var err error
+	ctx, err = callRequestReceived(ctx, s.hooks)
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+
+	if req.Method != "POST" {
+		msg := fmt.Sprintf("unsupported method %q (only POST is allowed)", req.Method)
+		err = badRouteError(msg, req.Method, req.URL.Path)
+		s.writeError(ctx, resp, err)
+		return
+	}
+
+	switch req.URL.Path {
+	case "/api/crm.Vht/GetCallHistories":
+		s.serveGetCallHistories(ctx, resp, req)
+		return
+	case "/api/crm.Vht/CreateOrUpdateCallHistoryBySDKCallID":
+		s.serveCreateOrUpdateCallHistoryBySDKCallID(ctx, resp, req)
+		return
+	case "/api/crm.Vht/CreateOrUpdateCallHistoryByCallID":
+		s.serveCreateOrUpdateCallHistoryByCallID(ctx, resp, req)
+		return
+	default:
+		msg := fmt.Sprintf("no handler for path %q", req.URL.Path)
+		err = badRouteError(msg, req.Method, req.URL.Path)
+		s.writeError(ctx, resp, err)
+		return
+	}
+}
+
+func (s *vhtServiceServer) serveGetCallHistories(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
+	header := req.Header.Get("Content-Type")
+	i := strings.Index(header, ";")
+	if i == -1 {
+		i = len(header)
+	}
+	switch strings.TrimSpace(strings.ToLower(header[:i])) {
+	case "application/json":
+		s.serveGetCallHistoriesJSON(ctx, resp, req)
+	case "application/protobuf":
+		s.serveGetCallHistoriesProtobuf(ctx, resp, req)
+	default:
+		msg := fmt.Sprintf("unexpected Content-Type: %q", req.Header.Get("Content-Type"))
+		twerr := badRouteError(msg, req.Method, req.URL.Path)
+		s.writeError(ctx, resp, twerr)
+	}
+}
+
+func (s *vhtServiceServer) serveGetCallHistoriesJSON(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
+	var err error
+	ctx = ctxsetters.WithMethodName(ctx, "GetCallHistories")
+	ctx, err = callRequestRouted(ctx, s.hooks)
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+
+	reqContent := new(GetCallHistoriesRequest)
+	unmarshaler := jsonpb.Unmarshaler{AllowUnknownFields: true}
+	if err = unmarshaler.Unmarshal(req.Body, reqContent); err != nil {
+		s.writeError(ctx, resp, malformedRequestError("the json request could not be decoded"))
+		return
+	}
+
+	// Call service method
+	var respContent *GetCallHistoriesResponse
+	func() {
+		defer ensurePanicResponses(ctx, resp, s.hooks)
+		respContent, err = s.VhtService.GetCallHistories(ctx, reqContent)
+	}()
+
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+	if respContent == nil {
+		s.writeError(ctx, resp, twirp.InternalError("received a nil *GetCallHistoriesResponse and nil error while calling GetCallHistories. nil responses are not supported"))
+		return
+	}
+
+	ctx = callResponsePrepared(ctx, s.hooks)
+
+	var buf bytes.Buffer
+	marshaler := &jsonpb.Marshaler{OrigName: true, EmitDefaults: true}
+	if err = marshaler.Marshal(&buf, respContent); err != nil {
+		s.writeError(ctx, resp, wrapInternal(err, "failed to marshal json response"))
+		return
+	}
+
+	ctx = ctxsetters.WithStatusCode(ctx, http.StatusOK)
+	respBytes := buf.Bytes()
+	resp.Header().Set("Content-Type", "application/json")
+	resp.Header().Set("Content-Length", strconv.Itoa(len(respBytes)))
+	resp.WriteHeader(http.StatusOK)
+
+	if n, err := resp.Write(respBytes); err != nil {
+		msg := fmt.Sprintf("failed to write response, %d of %d bytes written: %s", n, len(respBytes), err.Error())
+		twerr := twirp.NewError(twirp.Unknown, msg)
+		callError(ctx, s.hooks, twerr)
+	}
+	callResponseSent(ctx, s.hooks)
+}
+
+func (s *vhtServiceServer) serveGetCallHistoriesProtobuf(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
+	var err error
+	ctx = ctxsetters.WithMethodName(ctx, "GetCallHistories")
+	ctx, err = callRequestRouted(ctx, s.hooks)
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+
+	buf, err := ioutil.ReadAll(req.Body)
+	if err != nil {
+		s.writeError(ctx, resp, wrapInternal(err, "failed to read request body"))
+		return
+	}
+	reqContent := new(GetCallHistoriesRequest)
+	if err = proto.Unmarshal(buf, reqContent); err != nil {
+		s.writeError(ctx, resp, malformedRequestError("the protobuf request could not be decoded"))
+		return
+	}
+
+	// Call service method
+	var respContent *GetCallHistoriesResponse
+	func() {
+		defer ensurePanicResponses(ctx, resp, s.hooks)
+		respContent, err = s.VhtService.GetCallHistories(ctx, reqContent)
+	}()
+
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+	if respContent == nil {
+		s.writeError(ctx, resp, twirp.InternalError("received a nil *GetCallHistoriesResponse and nil error while calling GetCallHistories. nil responses are not supported"))
+		return
+	}
+
+	ctx = callResponsePrepared(ctx, s.hooks)
+
+	respBytes, err := proto.Marshal(respContent)
+	if err != nil {
+		s.writeError(ctx, resp, wrapInternal(err, "failed to marshal proto response"))
+		return
+	}
+
+	ctx = ctxsetters.WithStatusCode(ctx, http.StatusOK)
+	resp.Header().Set("Content-Type", "application/protobuf")
+	resp.Header().Set("Content-Length", strconv.Itoa(len(respBytes)))
+	resp.WriteHeader(http.StatusOK)
+	if n, err := resp.Write(respBytes); err != nil {
+		msg := fmt.Sprintf("failed to write response, %d of %d bytes written: %s", n, len(respBytes), err.Error())
+		twerr := twirp.NewError(twirp.Unknown, msg)
+		callError(ctx, s.hooks, twerr)
+	}
+	callResponseSent(ctx, s.hooks)
+}
+
+func (s *vhtServiceServer) serveCreateOrUpdateCallHistoryBySDKCallID(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
+	header := req.Header.Get("Content-Type")
+	i := strings.Index(header, ";")
+	if i == -1 {
+		i = len(header)
+	}
+	switch strings.TrimSpace(strings.ToLower(header[:i])) {
+	case "application/json":
+		s.serveCreateOrUpdateCallHistoryBySDKCallIDJSON(ctx, resp, req)
+	case "application/protobuf":
+		s.serveCreateOrUpdateCallHistoryBySDKCallIDProtobuf(ctx, resp, req)
+	default:
+		msg := fmt.Sprintf("unexpected Content-Type: %q", req.Header.Get("Content-Type"))
+		twerr := badRouteError(msg, req.Method, req.URL.Path)
+		s.writeError(ctx, resp, twerr)
+	}
+}
+
+func (s *vhtServiceServer) serveCreateOrUpdateCallHistoryBySDKCallIDJSON(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
+	var err error
+	ctx = ctxsetters.WithMethodName(ctx, "CreateOrUpdateCallHistoryBySDKCallID")
+	ctx, err = callRequestRouted(ctx, s.hooks)
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+
+	reqContent := new(VHTCallLog)
+	unmarshaler := jsonpb.Unmarshaler{AllowUnknownFields: true}
+	if err = unmarshaler.Unmarshal(req.Body, reqContent); err != nil {
+		s.writeError(ctx, resp, malformedRequestError("the json request could not be decoded"))
+		return
+	}
+
+	// Call service method
+	var respContent *VHTCallLog
+	func() {
+		defer ensurePanicResponses(ctx, resp, s.hooks)
+		respContent, err = s.VhtService.CreateOrUpdateCallHistoryBySDKCallID(ctx, reqContent)
+	}()
+
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+	if respContent == nil {
+		s.writeError(ctx, resp, twirp.InternalError("received a nil *VHTCallLog and nil error while calling CreateOrUpdateCallHistoryBySDKCallID. nil responses are not supported"))
+		return
+	}
+
+	ctx = callResponsePrepared(ctx, s.hooks)
+
+	var buf bytes.Buffer
+	marshaler := &jsonpb.Marshaler{OrigName: true, EmitDefaults: true}
+	if err = marshaler.Marshal(&buf, respContent); err != nil {
+		s.writeError(ctx, resp, wrapInternal(err, "failed to marshal json response"))
+		return
+	}
+
+	ctx = ctxsetters.WithStatusCode(ctx, http.StatusOK)
+	respBytes := buf.Bytes()
+	resp.Header().Set("Content-Type", "application/json")
+	resp.Header().Set("Content-Length", strconv.Itoa(len(respBytes)))
+	resp.WriteHeader(http.StatusOK)
+
+	if n, err := resp.Write(respBytes); err != nil {
+		msg := fmt.Sprintf("failed to write response, %d of %d bytes written: %s", n, len(respBytes), err.Error())
+		twerr := twirp.NewError(twirp.Unknown, msg)
+		callError(ctx, s.hooks, twerr)
+	}
+	callResponseSent(ctx, s.hooks)
+}
+
+func (s *vhtServiceServer) serveCreateOrUpdateCallHistoryBySDKCallIDProtobuf(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
+	var err error
+	ctx = ctxsetters.WithMethodName(ctx, "CreateOrUpdateCallHistoryBySDKCallID")
+	ctx, err = callRequestRouted(ctx, s.hooks)
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+
+	buf, err := ioutil.ReadAll(req.Body)
+	if err != nil {
+		s.writeError(ctx, resp, wrapInternal(err, "failed to read request body"))
+		return
+	}
+	reqContent := new(VHTCallLog)
+	if err = proto.Unmarshal(buf, reqContent); err != nil {
+		s.writeError(ctx, resp, malformedRequestError("the protobuf request could not be decoded"))
+		return
+	}
+
+	// Call service method
+	var respContent *VHTCallLog
+	func() {
+		defer ensurePanicResponses(ctx, resp, s.hooks)
+		respContent, err = s.VhtService.CreateOrUpdateCallHistoryBySDKCallID(ctx, reqContent)
+	}()
+
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+	if respContent == nil {
+		s.writeError(ctx, resp, twirp.InternalError("received a nil *VHTCallLog and nil error while calling CreateOrUpdateCallHistoryBySDKCallID. nil responses are not supported"))
+		return
+	}
+
+	ctx = callResponsePrepared(ctx, s.hooks)
+
+	respBytes, err := proto.Marshal(respContent)
+	if err != nil {
+		s.writeError(ctx, resp, wrapInternal(err, "failed to marshal proto response"))
+		return
+	}
+
+	ctx = ctxsetters.WithStatusCode(ctx, http.StatusOK)
+	resp.Header().Set("Content-Type", "application/protobuf")
+	resp.Header().Set("Content-Length", strconv.Itoa(len(respBytes)))
+	resp.WriteHeader(http.StatusOK)
+	if n, err := resp.Write(respBytes); err != nil {
+		msg := fmt.Sprintf("failed to write response, %d of %d bytes written: %s", n, len(respBytes), err.Error())
+		twerr := twirp.NewError(twirp.Unknown, msg)
+		callError(ctx, s.hooks, twerr)
+	}
+	callResponseSent(ctx, s.hooks)
+}
+
+func (s *vhtServiceServer) serveCreateOrUpdateCallHistoryByCallID(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
+	header := req.Header.Get("Content-Type")
+	i := strings.Index(header, ";")
+	if i == -1 {
+		i = len(header)
+	}
+	switch strings.TrimSpace(strings.ToLower(header[:i])) {
+	case "application/json":
+		s.serveCreateOrUpdateCallHistoryByCallIDJSON(ctx, resp, req)
+	case "application/protobuf":
+		s.serveCreateOrUpdateCallHistoryByCallIDProtobuf(ctx, resp, req)
+	default:
+		msg := fmt.Sprintf("unexpected Content-Type: %q", req.Header.Get("Content-Type"))
+		twerr := badRouteError(msg, req.Method, req.URL.Path)
+		s.writeError(ctx, resp, twerr)
+	}
+}
+
+func (s *vhtServiceServer) serveCreateOrUpdateCallHistoryByCallIDJSON(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
+	var err error
+	ctx = ctxsetters.WithMethodName(ctx, "CreateOrUpdateCallHistoryByCallID")
+	ctx, err = callRequestRouted(ctx, s.hooks)
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+
+	reqContent := new(VHTCallLog)
+	unmarshaler := jsonpb.Unmarshaler{AllowUnknownFields: true}
+	if err = unmarshaler.Unmarshal(req.Body, reqContent); err != nil {
+		s.writeError(ctx, resp, malformedRequestError("the json request could not be decoded"))
+		return
+	}
+
+	// Call service method
+	var respContent *VHTCallLog
+	func() {
+		defer ensurePanicResponses(ctx, resp, s.hooks)
+		respContent, err = s.VhtService.CreateOrUpdateCallHistoryByCallID(ctx, reqContent)
+	}()
+
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+	if respContent == nil {
+		s.writeError(ctx, resp, twirp.InternalError("received a nil *VHTCallLog and nil error while calling CreateOrUpdateCallHistoryByCallID. nil responses are not supported"))
+		return
+	}
+
+	ctx = callResponsePrepared(ctx, s.hooks)
+
+	var buf bytes.Buffer
+	marshaler := &jsonpb.Marshaler{OrigName: true, EmitDefaults: true}
+	if err = marshaler.Marshal(&buf, respContent); err != nil {
+		s.writeError(ctx, resp, wrapInternal(err, "failed to marshal json response"))
+		return
+	}
+
+	ctx = ctxsetters.WithStatusCode(ctx, http.StatusOK)
+	respBytes := buf.Bytes()
+	resp.Header().Set("Content-Type", "application/json")
+	resp.Header().Set("Content-Length", strconv.Itoa(len(respBytes)))
+	resp.WriteHeader(http.StatusOK)
+
+	if n, err := resp.Write(respBytes); err != nil {
+		msg := fmt.Sprintf("failed to write response, %d of %d bytes written: %s", n, len(respBytes), err.Error())
+		twerr := twirp.NewError(twirp.Unknown, msg)
+		callError(ctx, s.hooks, twerr)
+	}
+	callResponseSent(ctx, s.hooks)
+}
+
+func (s *vhtServiceServer) serveCreateOrUpdateCallHistoryByCallIDProtobuf(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
+	var err error
+	ctx = ctxsetters.WithMethodName(ctx, "CreateOrUpdateCallHistoryByCallID")
+	ctx, err = callRequestRouted(ctx, s.hooks)
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+
+	buf, err := ioutil.ReadAll(req.Body)
+	if err != nil {
+		s.writeError(ctx, resp, wrapInternal(err, "failed to read request body"))
+		return
+	}
+	reqContent := new(VHTCallLog)
+	if err = proto.Unmarshal(buf, reqContent); err != nil {
+		s.writeError(ctx, resp, malformedRequestError("the protobuf request could not be decoded"))
+		return
+	}
+
+	// Call service method
+	var respContent *VHTCallLog
+	func() {
+		defer ensurePanicResponses(ctx, resp, s.hooks)
+		respContent, err = s.VhtService.CreateOrUpdateCallHistoryByCallID(ctx, reqContent)
+	}()
+
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+	if respContent == nil {
+		s.writeError(ctx, resp, twirp.InternalError("received a nil *VHTCallLog and nil error while calling CreateOrUpdateCallHistoryByCallID. nil responses are not supported"))
+		return
+	}
+
+	ctx = callResponsePrepared(ctx, s.hooks)
+
+	respBytes, err := proto.Marshal(respContent)
+	if err != nil {
+		s.writeError(ctx, resp, wrapInternal(err, "failed to marshal proto response"))
+		return
+	}
+
+	ctx = ctxsetters.WithStatusCode(ctx, http.StatusOK)
+	resp.Header().Set("Content-Type", "application/protobuf")
+	resp.Header().Set("Content-Length", strconv.Itoa(len(respBytes)))
+	resp.WriteHeader(http.StatusOK)
+	if n, err := resp.Write(respBytes); err != nil {
+		msg := fmt.Sprintf("failed to write response, %d of %d bytes written: %s", n, len(respBytes), err.Error())
+		twerr := twirp.NewError(twirp.Unknown, msg)
+		callError(ctx, s.hooks, twerr)
+	}
+	callResponseSent(ctx, s.hooks)
+}
+
+func (s *vhtServiceServer) ServiceDescriptor() ([]byte, int) {
+	return twirpFileDescriptor0, 3
+}
+
+func (s *vhtServiceServer) ProtocGenTwirpVersion() string {
+	return "v5.8.0"
+}
+
+func (s *vhtServiceServer) PathPrefix() string {
+	return VhtServicePathPrefix
+}
+
 // =====
 // Utils
 // =====
@@ -1243,39 +3579,166 @@ func callError(ctx context.Context, h *twirp.ServerHooks, err twirp.Error) conte
 }
 
 var twirpFileDescriptor0 = []byte{
-	// 529 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0x8c, 0x53, 0x4d, 0x6e, 0x13, 0x31,
-	0x14, 0x9e, 0xe9, 0x1f, 0x8d, 0x03, 0x08, 0x5c, 0x44, 0xa3, 0x08, 0x9c, 0x50, 0x40, 0x4a, 0x25,
-	0x3a, 0x23, 0x22, 0xb6, 0x48, 0xa8, 0x21, 0x95, 0x82, 0xd4, 0x54, 0x4d, 0x04, 0x0b, 0x36, 0x91,
-	0xe3, 0x79, 0x99, 0x1a, 0x62, 0x7b, 0xb0, 0x9d, 0x56, 0xbd, 0x01, 0x4b, 0xc4, 0x8a, 0x23, 0x70,
-	0x00, 0x16, 0x1c, 0x21, 0xcb, 0x9e, 0x00, 0x35, 0xd3, 0x0b, 0x70, 0x04, 0x34, 0xe3, 0x19, 0x29,
-	0xaa, 0x04, 0x62, 0x31, 0xf2, 0xe7, 0xef, 0xf9, 0x7d, 0x6f, 0x9e, 0xbf, 0x67, 0x74, 0xdf, 0x80,
-	0x3e, 0xe5, 0x0c, 0x4c, 0xc8, 0xb4, 0xc8, 0xbe, 0x20, 0xd1, 0xca, 0x2a, 0xbc, 0xca, 0xb4, 0xa8,
-	0x3f, 0xcb, 0x31, 0xdb, 0x8b, 0x41, 0xee, 0x99, 0x33, 0x1a, 0xc7, 0xa0, 0x43, 0x95, 0x58, 0xae,
-	0xa4, 0x09, 0xa9, 0x94, 0xca, 0xd2, 0x1c, 0xbb, 0x94, 0xfa, 0xbd, 0x58, 0xc5, 0x2a, 0x87, 0x61,
-	0x86, 0x0a, 0x76, 0x8b, 0x29, 0x21, 0x94, 0x0c, 0xdd, 0x52, 0x90, 0x4f, 0xc1, 0xaa, 0x24, 0x04,
-	0xcb, 0x42, 0xa9, 0x2c, 0x9f, 0x70, 0xd0, 0x23, 0x90, 0x96, 0xdb, 0xf3, 0xd0, 0x2d, 0xee, 0xd8,
-	0xce, 0x31, 0x7a, 0x32, 0x80, 0x89, 0x06, 0x73, 0x72, 0x30, 0x9b, 0x4e, 0xf8, 0x74, 0x2a, 0x40,
-	0xda, 0x03, 0xad, 0x44, 0x87, 0x6a, 0xcd, 0x41, 0x0f, 0xe0, 0xd3, 0x0c, 0x8c, 0xc5, 0xbb, 0xe8,
-	0x96, 0x39, 0xe1, 0x49, 0xc2, 0x65, 0x3c, 0x62, 0x2a, 0x82, 0x9a, 0xdf, 0xf4, 0x5b, 0x95, 0xfd,
-	0xb5, 0xf9, 0xaf, 0x86, 0x37, 0xb8, 0x59, 0x86, 0x3a, 0x2a, 0x82, 0x9d, 0xaf, 0x2b, 0x68, 0x7b,
-	0x08, 0x32, 0xea, 0xe7, 0x75, 0x59, 0xde, 0x40, 0x29, 0xf3, 0x18, 0x21, 0xca, 0x98, 0x9a, 0x49,
-	0x3b, 0xe2, 0x51, 0xae, 0xb1, 0x5a, 0x68, 0x54, 0x0a, 0xbe, 0x17, 0xe1, 0x3a, 0x5a, 0xb7, 0xdc,
-	0x4e, 0xa1, 0xb6, 0xb2, 0x54, 0xc3, 0x51, 0x98, 0xa0, 0x1b, 0x02, 0x8c, 0xa1, 0x31, 0xd4, 0x56,
-	0x97, 0xa2, 0x25, 0x89, 0x5f, 0xa0, 0x8a, 0x00, 0x4b, 0x47, 0x11, 0xb5, 0xb4, 0xb6, 0xd6, 0xf4,
-	0x5b, 0xd5, 0xf6, 0xdd, 0x80, 0x89, 0x60, 0x40, 0xcf, 0xde, 0x0c, 0x8f, 0xfa, 0x47, 0xe3, 0x0f,
-	0xc0, 0x6c, 0x91, 0xb4, 0x99, 0x9d, 0x7c, 0x4d, 0x2d, 0xc5, 0x2f, 0xd1, 0x86, 0xbb, 0x95, 0xda,
-	0x7a, 0xd3, 0x6f, 0xdd, 0x6e, 0x37, 0x82, 0x6b, 0x97, 0x16, 0xf4, 0x8b, 0x7d, 0x37, 0xdf, 0x16,
-	0x02, 0x45, 0x12, 0x7e, 0x84, 0x2a, 0x0e, 0x65, 0x4d, 0x6d, 0x2c, 0x35, 0xb5, 0xe9, 0xe8, 0x5e,
-	0xd4, 0x7e, 0x85, 0xaa, 0x87, 0xdc, 0xb0, 0xa1, 0x1b, 0x05, 0xfc, 0x1c, 0x55, 0xdf, 0x81, 0x36,
-	0x5c, 0xc9, 0x9e, 0x9c, 0x28, 0x5c, 0xc9, 0x7e, 0xb1, 0x2b, 0x12, 0x7b, 0x5e, 0xdf, 0xce, 0xe0,
-	0x52, 0x6c, 0x00, 0x26, 0x51, 0xd2, 0x40, 0xfb, 0x87, 0x8f, 0x50, 0x47, 0x8b, 0x52, 0x61, 0x84,
-	0x1e, 0xfe, 0xd3, 0x38, 0xbc, 0x1b, 0x64, 0xa3, 0xf6, 0x3f, 0xe6, 0xd6, 0xb7, 0xb2, 0x9a, 0x6f,
-	0x93, 0x88, 0x5a, 0x88, 0xca, 0x7a, 0xb8, 0x8b, 0xee, 0x5c, 0x77, 0x11, 0x3f, 0xc8, 0x35, 0xff,
-	0x62, 0xae, 0x93, 0x39, 0x74, 0x46, 0x94, 0x32, 0xfb, 0xc7, 0xf3, 0x05, 0xf1, 0x2f, 0x16, 0xc4,
-	0xbf, 0x5c, 0x10, 0xef, 0xf7, 0x82, 0x78, 0x9f, 0x53, 0xe2, 0x7d, 0x4f, 0x89, 0xf7, 0x33, 0x25,
-	0xde, 0x3c, 0x25, 0xde, 0x45, 0x4a, 0xbc, 0xcb, 0x94, 0x78, 0x5f, 0xae, 0x88, 0xf7, 0xed, 0x8a,
-	0x78, 0xef, 0x1b, 0xd9, 0xe4, 0x06, 0xa7, 0x32, 0x1c, 0x53, 0xf6, 0x11, 0x64, 0x14, 0x26, 0xe3,
-	0x70, 0xf9, 0x09, 0xfd, 0x09, 0x00, 0x00, 0xff, 0xff, 0x0e, 0x0f, 0x07, 0x42, 0x51, 0x03, 0x00,
-	0x00,
+	// 2573 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xec, 0x5a, 0xcd, 0x72, 0x14, 0xc9,
+	0xf1, 0xd7, 0xe8, 0x63, 0x3e, 0x72, 0x46, 0x5f, 0x25, 0x2d, 0x9a, 0x1d, 0x60, 0x24, 0x35, 0xb0,
+	0x88, 0xff, 0x1f, 0x66, 0x58, 0x85, 0xed, 0xd8, 0x5d, 0x9b, 0x35, 0x48, 0x08, 0x90, 0x0d, 0x82,
+	0x95, 0x80, 0x70, 0xf8, 0xd2, 0x51, 0xea, 0xae, 0x19, 0xb5, 0xe9, 0xee, 0xea, 0xad, 0xae, 0x11,
+	0x3b, 0xfb, 0x04, 0x3e, 0x3a, 0x1c, 0xc6, 0xf6, 0x23, 0xec, 0x03, 0xf8, 0xe0, 0x9b, 0x2f, 0x3e,
+	0x70, 0xdc, 0x27, 0x70, 0x80, 0xd6, 0x67, 0x87, 0x1f, 0xc1, 0x51, 0x1f, 0xdd, 0x53, 0xdd, 0x33,
+	0x92, 0x20, 0xf6, 0xe0, 0xf0, 0x86, 0x0e, 0x0a, 0xf5, 0xfc, 0x32, 0x2b, 0xab, 0xba, 0x2a, 0xf3,
+	0x57, 0x59, 0x95, 0x0d, 0xe7, 0x62, 0xc2, 0x0e, 0x3d, 0x87, 0xc4, 0x6d, 0x87, 0x05, 0xe2, 0xaf,
+	0x15, 0x31, 0xca, 0x29, 0x9a, 0x70, 0x58, 0xd0, 0xb8, 0x2e, 0x9f, 0x9d, 0x1b, 0x5d, 0x12, 0xde,
+	0x88, 0x5f, 0xe2, 0x6e, 0x97, 0xb0, 0x36, 0x8d, 0xb8, 0x47, 0xc3, 0xb8, 0x8d, 0xc3, 0x90, 0x72,
+	0x2c, 0x9f, 0x55, 0x93, 0xc6, 0x62, 0x97, 0x76, 0xa9, 0x7c, 0x6c, 0x8b, 0x27, 0x8d, 0x2e, 0x38,
+	0x34, 0x08, 0x68, 0xd8, 0x56, 0xff, 0x34, 0x78, 0x85, 0x70, 0x1a, 0xb5, 0x09, 0x77, 0xda, 0x21,
+	0xe5, 0x5e, 0xc7, 0x23, 0xcc, 0x26, 0x21, 0xf7, 0x78, 0xbf, 0xad, 0xfe, 0x69, 0xb5, 0xe5, 0x2e,
+	0xa5, 0x5d, 0x9f, 0xb4, 0xe5, 0xaf, 0xfd, 0x5e, 0xa7, 0xcd, 0xbd, 0x80, 0xc4, 0x1c, 0x07, 0x91,
+	0x52, 0xb0, 0xbe, 0x80, 0xcb, 0xbb, 0xa4, 0xc3, 0x48, 0x7c, 0x70, 0xaf, 0xe7, 0x77, 0x3c, 0xdf,
+	0x0f, 0x48, 0xc8, 0xef, 0x31, 0x1a, 0x6c, 0x62, 0xc6, 0x3c, 0xc2, 0x76, 0xc9, 0x97, 0x3d, 0x12,
+	0x73, 0x74, 0x0d, 0xa6, 0xe3, 0x03, 0x2f, 0x8a, 0xbc, 0xb0, 0x6b, 0x3b, 0xd4, 0x25, 0xf5, 0xc2,
+	0x4a, 0x61, 0xad, 0xb2, 0x31, 0xf9, 0xfa, 0x1f, 0xcb, 0x63, 0xbb, 0xb5, 0x44, 0xb4, 0x49, 0x5d,
+	0x62, 0xfd, 0x7e, 0x1c, 0x96, 0xf6, 0x48, 0xe8, 0xee, 0xc8, 0x81, 0x39, 0xf2, 0x0d, 0x13, 0x33,
+	0x97, 0x00, 0xb0, 0xe3, 0xd0, 0x5e, 0xc8, 0x6d, 0xcf, 0x95, 0x36, 0x26, 0xb4, 0x8d, 0x8a, 0xc6,
+	0xb7, 0x5d, 0xd4, 0x80, 0x29, 0xee, 0x71, 0x9f, 0xd4, 0xc7, 0x8d, 0x3e, 0x14, 0x84, 0x9a, 0x50,
+	0x0a, 0x48, 0x1c, 0xe3, 0x2e, 0xa9, 0x4f, 0x18, 0xd2, 0x04, 0x44, 0x3f, 0x82, 0x4a, 0x40, 0x38,
+	0xb6, 0x5d, 0xcc, 0x71, 0x7d, 0x72, 0xa5, 0xb0, 0x56, 0x5d, 0x9f, 0x6f, 0x39, 0x41, 0x6b, 0x17,
+	0xbf, 0xfc, 0xc5, 0xde, 0xe3, 0x9d, 0xc7, 0xfb, 0xbf, 0x21, 0x0e, 0xd7, 0x8d, 0xca, 0x42, 0xf3,
+	0x2e, 0xe6, 0x18, 0xdd, 0x82, 0xa2, 0x9a, 0xb6, 0xfa, 0xd4, 0x4a, 0x61, 0x6d, 0x66, 0x7d, 0xb9,
+	0x95, 0x9b, 0xd5, 0xd6, 0x8e, 0xfe, 0xbd, 0x25, 0x7f, 0x6a, 0x03, 0xba, 0x11, 0x5a, 0x85, 0x8a,
+	0x7a, 0x12, 0x2f, 0x55, 0x34, 0x5e, 0xaa, 0xac, 0xe0, 0x6d, 0xd7, 0x72, 0x61, 0xe9, 0x3e, 0xe1,
+	0x9b, 0xd8, 0xf7, 0x1f, 0x78, 0x31, 0xa7, 0xcc, 0x23, 0x71, 0x32, 0x27, 0x16, 0x14, 0x23, 0xdc,
+	0xf5, 0xc2, 0xae, 0x9c, 0x8f, 0xea, 0x3a, 0x88, 0xf1, 0x3e, 0x91, 0xc8, 0xae, 0x96, 0xa0, 0x2b,
+	0x50, 0xe5, 0xe4, 0x2b, 0x6e, 0xc7, 0x04, 0x33, 0xe7, 0x20, 0x33, 0x31, 0x20, 0x04, 0x7b, 0x12,
+	0xb7, 0x1e, 0x41, 0x7d, 0xb8, 0x97, 0x38, 0xa2, 0x61, 0x4c, 0xd0, 0xc7, 0x50, 0x3b, 0x3c, 0xe0,
+	0xb6, 0x83, 0x7d, 0xdf, 0xf6, 0xa9, 0xe8, 0x6c, 0x62, 0xad, 0xba, 0x3e, 0xdb, 0x12, 0x1e, 0xfb,
+	0xfc, 0xc1, 0x53, 0xd1, 0xe8, 0x21, 0xed, 0xee, 0xc2, 0xe1, 0x01, 0xd7, 0xcf, 0xd6, 0x9b, 0x22,
+	0xc0, 0x40, 0x84, 0xce, 0x43, 0xd1, 0x71, 0x59, 0xb2, 0x70, 0xe9, 0xc2, 0x38, 0x2e, 0xdb, 0x76,
+	0xd1, 0x45, 0x28, 0x49, 0xd3, 0x9e, 0x9b, 0x19, 0x5d, 0x51, 0x80, 0xdb, 0x2e, 0xba, 0x0c, 0xd5,
+	0xd8, 0x8b, 0xec, 0x44, 0xc5, 0x5c, 0xbb, 0x4a, 0xec, 0x45, 0x9b, 0x03, 0x2d, 0xf7, 0x45, 0xaa,
+	0x35, 0x99, 0xd1, 0x72, 0x5f, 0x68, 0xad, 0x06, 0x4c, 0x39, 0xb8, 0x17, 0x13, 0xb9, 0x58, 0x83,
+	0x61, 0x08, 0x48, 0x38, 0xd8, 0x97, 0x9f, 0xfc, 0xf8, 0xa6, 0xad, 0x14, 0x8a, 0xa6, 0x01, 0x81,
+	0x6f, 0x4a, 0xa5, 0xff, 0x87, 0x99, 0x0e, 0xa3, 0x81, 0x4d, 0xbe, 0xe2, 0x24, 0x8c, 0x3d, 0x1a,
+	0xd6, 0x4b, 0x86, 0xe2, 0xb4, 0x90, 0x6d, 0x25, 0x22, 0x74, 0x15, 0x6a, 0x9c, 0x1a, 0xaa, 0x65,
+	0x43, 0xb5, 0xca, 0xe9, 0x40, 0xf1, 0x0a, 0x54, 0xa5, 0xd5, 0xb0, 0x17, 0xec, 0x13, 0x56, 0xaf,
+	0x98, 0x6b, 0x24, 0x04, 0x3b, 0x12, 0x17, 0xce, 0xc2, 0x69, 0xa2, 0x04, 0x86, 0x52, 0x99, 0x53,
+	0xad, 0xb2, 0x02, 0x65, 0xb7, 0xc7, 0x64, 0xe0, 0xd4, 0xab, 0x2b, 0x85, 0xb5, 0xa9, 0x44, 0x23,
+	0x41, 0x91, 0x05, 0x15, 0xd7, 0x63, 0xc4, 0x91, 0x2a, 0x35, 0x43, 0x65, 0x00, 0xa3, 0x5b, 0x50,
+	0x13, 0xd1, 0x6e, 0xc7, 0x1c, 0x33, 0x4e, 0xdc, 0xfa, 0xb4, 0xf4, 0xae, 0x46, 0x4b, 0x51, 0x42,
+	0x2b, 0xa1, 0x84, 0xd6, 0xd3, 0x84, 0x12, 0x76, 0xab, 0x42, 0x7f, 0x4f, 0xa9, 0xa3, 0x3b, 0x30,
+	0x23, 0x9b, 0x3b, 0x34, 0x0c, 0x89, 0x23, 0x0c, 0xcc, 0x9c, 0x6a, 0x60, 0x5a, 0xb4, 0xd8, 0x4c,
+	0x1a, 0xa0, 0x4f, 0x01, 0xa4, 0x09, 0x12, 0xba, 0xc4, 0xad, 0xcf, 0x9e, 0xda, 0xbc, 0x22, 0xb4,
+	0xb7, 0x84, 0xb2, 0x58, 0x22, 0x46, 0x1c, 0xca, 0x5c, 0x41, 0x38, 0x11, 0xe6, 0x07, 0xf5, 0x39,
+	0x73, 0x89, 0x52, 0xd9, 0x13, 0xcc, 0x0f, 0x04, 0x39, 0x0d, 0x94, 0x7b, 0xcc, 0xaf, 0xcf, 0x9b,
+	0xe4, 0x94, 0x8a, 0x9e, 0x31, 0x1f, 0xb5, 0x60, 0x4e, 0xfd, 0xb6, 0x3b, 0x9e, 0x4f, 0xec, 0xd8,
+	0xfb, 0x9a, 0xd4, 0x91, 0x31, 0x7f, 0xba, 0xd7, 0x7b, 0x9e, 0x4f, 0xf6, 0xbc, 0xaf, 0x09, 0xba,
+	0x0e, 0xb3, 0x82, 0x69, 0x6d, 0x83, 0xb5, 0x16, 0x8c, 0x00, 0x9f, 0x16, 0xc2, 0x3b, 0x29, 0x73,
+	0xdd, 0x84, 0xf9, 0x43, 0xee, 0x75, 0x09, 0x33, 0xf5, 0x3f, 0x30, 0x06, 0x33, 0xab, 0xc4, 0x69,
+	0x0b, 0xeb, 0x33, 0x68, 0x6c, 0x8a, 0xc7, 0xa7, 0x9e, 0xf3, 0x82, 0xf0, 0x8d, 0xfe, 0x1e, 0xc7,
+	0xbc, 0x97, 0x52, 0xc3, 0x05, 0x28, 0xc6, 0x12, 0xc8, 0x44, 0x9c, 0xc6, 0x2c, 0x0f, 0x2e, 0xdc,
+	0x27, 0xba, 0xa5, 0x6a, 0x27, 0x4d, 0xa5, 0x11, 0xbf, 0x0d, 0x35, 0xa5, 0x69, 0xcb, 0xde, 0x74,
+	0xc4, 0xaf, 0xc8, 0x88, 0x1f, 0xd9, 0xa9, 0x6a, 0x27, 0x7b, 0x29, 0xec, 0x56, 0xe3, 0x81, 0x49,
+	0x6b, 0x0f, 0xce, 0x9f, 0xd0, 0x02, 0xd5, 0x61, 0x72, 0x68, 0x53, 0x90, 0x88, 0x8c, 0x55, 0xd9,
+	0xf9, 0xb8, 0x31, 0xc9, 0x0a, 0xb2, 0xee, 0xc3, 0x82, 0x60, 0x2b, 0x1a, 0x72, 0xec, 0xf0, 0x81,
+	0xb1, 0x9b, 0x50, 0x76, 0x34, 0xa6, 0x87, 0xbc, 0xa8, 0x87, 0x2c, 0xc1, 0x44, 0x6f, 0x37, 0xd5,
+	0xb2, 0x6c, 0x40, 0x19, 0x43, 0x6a, 0xf2, 0x72, 0x9c, 0x59, 0x18, 0xcd, 0x99, 0x06, 0xfd, 0x8e,
+	0x1f, 0x47, 0xbf, 0xd6, 0xab, 0x12, 0xcc, 0xa4, 0xdd, 0xa7, 0x3b, 0x99, 0xee, 0xdf, 0x0e, 0x69,
+	0xc6, 0x78, 0x45, 0xe3, 0x3b, 0x54, 0xbc, 0x7d, 0x74, 0x40, 0xc3, 0xdc, 0x4e, 0x26, 0x21, 0x11,
+	0xe4, 0x3e, 0x8e, 0x79, 0x88, 0x83, 0xec, 0x56, 0x96, 0xa2, 0x62, 0xf5, 0x03, 0xba, 0xef, 0xf9,
+	0x24, 0x43, 0x84, 0x1a, 0x43, 0x97, 0x01, 0x7c, 0x82, 0xdd, 0x98, 0xf6, 0x98, 0x93, 0xa5, 0x42,
+	0x03, 0x17, 0x23, 0x20, 0x01, 0xf6, 0xfc, 0x0c, 0x15, 0x2a, 0x08, 0x7d, 0x04, 0x55, 0x97, 0xc4,
+	0x0e, 0xf3, 0x64, 0x42, 0x92, 0xe1, 0x40, 0x53, 0x80, 0xae, 0xc3, 0x4c, 0x4c, 0x1c, 0x1a, 0xba,
+	0x98, 0xf5, 0x95, 0x31, 0x93, 0x03, 0x73, 0x32, 0x31, 0xae, 0x80, 0xba, 0x62, 0xb3, 0x74, 0xf7,
+	0xfb, 0x19, 0x82, 0x33, 0x70, 0xe9, 0xd9, 0x6a, 0xe4, 0xd5, 0x8c, 0x67, 0xab, 0x51, 0x7f, 0x04,
+	0x35, 0x19, 0x75, 0xbd, 0x98, 0xc8, 0xfd, 0xa6, 0x66, 0x84, 0x1c, 0x08, 0xc9, 0xb3, 0x98, 0x88,
+	0x4d, 0xa7, 0x09, 0x25, 0x87, 0x06, 0x11, 0x0e, 0xfb, 0x92, 0xdd, 0xd2, 0x6c, 0x40, 0x83, 0x42,
+	0xfe, 0x92, 0xec, 0xc7, 0x1e, 0x27, 0x92, 0xbc, 0x52, 0xb9, 0x06, 0x85, 0xdf, 0xfa, 0x38, 0x24,
+	0x92, 0x9a, 0x52, 0xbf, 0x15, 0x88, 0xf4, 0x68, 0x91, 0x0f, 0xcc, 0x65, 0x3c, 0x5a, 0x6c, 0xf6,
+	0x0d, 0x98, 0x12, 0x91, 0x41, 0x32, 0x24, 0xa3, 0x20, 0x35, 0x9e, 0x5e, 0xc8, 0x59, 0x5f, 0x92,
+	0x8a, 0x31, 0x1e, 0x09, 0xa2, 0xff, 0x83, 0x19, 0xca, 0x5c, 0xc2, 0x62, 0x3b, 0x22, 0xcc, 0x76,
+	0x71, 0x5f, 0x92, 0x49, 0xca, 0x54, 0x4a, 0xf6, 0x84, 0xb0, 0xbb, 0xb8, 0x8f, 0x3e, 0x83, 0x73,
+	0xbd, 0x98, 0xb8, 0x76, 0x9a, 0x76, 0x45, 0x8c, 0x1e, 0x7a, 0x2e, 0x61, 0xf5, 0x45, 0xa3, 0xcd,
+	0xa2, 0xd0, 0xd9, 0xd3, 0x2a, 0x4f, 0xb4, 0x06, 0x5a, 0x84, 0xf1, 0x1c, 0xf1, 0x8c, 0x7b, 0xae,
+	0xd8, 0x34, 0x3a, 0x1e, 0xd3, 0x2e, 0x77, 0xce, 0xf4, 0xd8, 0x14, 0x46, 0x3f, 0x83, 0xaa, 0xc3,
+	0x08, 0xe6, 0xc4, 0x15, 0x5c, 0x5c, 0x5f, 0x3a, 0x7d, 0xcf, 0x30, 0xd4, 0xd1, 0xe7, 0x50, 0x4b,
+	0xd6, 0x58, 0x36, 0xaf, 0x9f, 0xda, 0x3c, 0xa3, 0x2f, 0xd8, 0x19, 0xc7, 0xb1, 0xd7, 0x0d, 0x89,
+	0x9b, 0xae, 0xfd, 0x87, 0xa6, 0xaf, 0x25, 0x52, 0xb5, 0xfe, 0xd6, 0x1f, 0x4b, 0x30, 0x9b, 0xa3,
+	0x85, 0xb3, 0xc0, 0x3c, 0x0b, 0xcc, 0xb3, 0xc0, 0xfc, 0x6f, 0x07, 0xe6, 0x1f, 0x8a, 0x50, 0x7d,
+	0x48, 0xb0, 0xfb, 0x03, 0xda, 0x2d, 0x87, 0x83, 0xad, 0x74, 0x42, 0xb0, 0x8d, 0x9a, 0xb0, 0xf2,
+	0xf1, 0x13, 0x96, 0x0f, 0xf9, 0xca, 0x71, 0x21, 0x7f, 0x16, 0xc4, 0xff, 0xc3, 0x41, 0x6c, 0xbd,
+	0x2a, 0x42, 0x4d, 0x85, 0xc5, 0x0f, 0x67, 0xb3, 0x3a, 0x8b, 0x8b, 0xb3, 0xb8, 0xf8, 0xbe, 0x71,
+	0xf1, 0xa7, 0x02, 0xcc, 0xa7, 0x47, 0xd9, 0xf7, 0xba, 0x18, 0xbb, 0x09, 0x45, 0x2e, 0x5b, 0xe9,
+	0xd3, 0x1b, 0x92, 0x47, 0x45, 0x65, 0x48, 0xdb, 0x49, 0x56, 0x59, 0xe9, 0xa1, 0xeb, 0x50, 0x92,
+	0x6f, 0xbc, 0xdf, 0x97, 0x01, 0x53, 0x5d, 0xaf, 0xc9, 0x26, 0x8f, 0x05, 0xb6, 0x91, 0xdc, 0xec,
+	0x25, 0x2a, 0xd6, 0x4f, 0xe5, 0xd1, 0x32, 0x1d, 0x98, 0x0e, 0xdb, 0x2b, 0x50, 0x52, 0xd6, 0x92,
+	0x13, 0x6a, 0xd5, 0xec, 0x36, 0x91, 0x59, 0x3f, 0x87, 0x92, 0x36, 0x2b, 0xd6, 0xaf, 0xe3, 0x11,
+	0x3f, 0x77, 0x75, 0x26, 0x21, 0xb1, 0xea, 0x31, 0x65, 0x3c, 0x13, 0xde, 0x12, 0xb1, 0xfe, 0x39,
+	0x09, 0xe7, 0x37, 0xe5, 0x36, 0xfe, 0x98, 0x3d, 0x8b, 0x5c, 0xcc, 0x49, 0xe6, 0xcd, 0xf4, 0x8c,
+	0x17, 0x72, 0x33, 0x9e, 0x9c, 0xc6, 0xc7, 0x47, 0x9d, 0xc6, 0xd5, 0xcd, 0xea, 0xc4, 0xf0, 0xcd,
+	0x6a, 0x03, 0xa6, 0x0e, 0xb1, 0xdf, 0xcb, 0xd2, 0x84, 0x82, 0xd0, 0x2a, 0x54, 0xa8, 0xef, 0xda,
+	0x4a, 0x6e, 0x92, 0x44, 0x99, 0xfa, 0xee, 0x73, 0xa9, 0x72, 0x01, 0x8a, 0x8c, 0xe0, 0x98, 0x86,
+	0x19, 0x8e, 0xd0, 0xd8, 0x50, 0x68, 0x95, 0x8e, 0x09, 0xad, 0x65, 0x28, 0xcb, 0x99, 0x4f, 0x68,
+	0x61, 0x22, 0xb3, 0x1e, 0xdb, 0xae, 0x20, 0x4c, 0xa5, 0x20, 0xdf, 0xd0, 0xa4, 0x83, 0x8a, 0xc4,
+	0x37, 0xc5, 0x6b, 0x2e, 0x43, 0xb9, 0xd3, 0x09, 0x94, 0x8a, 0x49, 0x05, 0xa5, 0x4e, 0x27, 0x90,
+	0x0a, 0x17, 0x41, 0x3c, 0xca, 0xab, 0xa2, 0x0c, 0x11, 0x74, 0x3a, 0xc1, 0x33, 0xe6, 0xa3, 0xf3,
+	0x20, 0x9e, 0xf2, 0x14, 0x30, 0xd5, 0xe9, 0x04, 0xef, 0x10, 0xfd, 0x2b, 0x50, 0x4e, 0x63, 0xc6,
+	0x8c, 0xf0, 0x14, 0x15, 0xeb, 0x13, 0x52, 0x4e, 0xb2, 0x51, 0x2e, 0x10, 0xc1, 0x76, 0x24, 0x3c,
+	0xf4, 0x18, 0x0d, 0x03, 0x12, 0xf2, 0x4c, 0xac, 0x9b, 0x02, 0xf9, 0x82, 0x8c, 0x06, 0x36, 0x8e,
+	0xa2, 0x6c, 0xc8, 0x0b, 0xf4, 0x4e, 0x14, 0x09, 0x27, 0xd7, 0x37, 0x50, 0x32, 0xd6, 0x13, 0x27,
+	0xd7, 0xf7, 0x4e, 0x89, 0xb6, 0x56, 0xb1, 0xbe, 0x99, 0x84, 0xe9, 0x33, 0xc7, 0x3a, 0x73, 0xac,
+	0xd3, 0x1d, 0xcb, 0xfa, 0x5b, 0x01, 0x4a, 0xda, 0x8b, 0x0c, 0x27, 0x99, 0x30, 0x9c, 0x64, 0x15,
+	0x2a, 0x9d, 0x9e, 0xef, 0xdb, 0x92, 0xef, 0x4d, 0x4f, 0x29, 0x0b, 0x78, 0x47, 0xa4, 0x24, 0x97,
+	0x00, 0xe2, 0x03, 0xca, 0xb8, 0x3d, 0x94, 0xb6, 0x54, 0x24, 0x2e, 0x95, 0xd2, 0xac, 0x67, 0x72,
+	0x38, 0xeb, 0x49, 0xf3, 0x91, 0xa9, 0xe1, 0x7c, 0xc4, 0x98, 0xc6, 0xe2, 0x88, 0x69, 0xb4, 0xfe,
+	0x5e, 0x85, 0xa2, 0x72, 0x76, 0x79, 0x15, 0x2f, 0x9f, 0xf2, 0xc9, 0x57, 0x59, 0xc1, 0x3b, 0x74,
+	0x64, 0xbe, 0x32, 0x7e, 0x42, 0xbe, 0xb2, 0x0a, 0x95, 0x08, 0x33, 0xa2, 0x6e, 0x7e, 0x27, 0xcc,
+	0x52, 0x90, 0x82, 0xe5, 0x25, 0xf1, 0x9c, 0x32, 0x1f, 0x31, 0x8f, 0x32, 0x8f, 0x7b, 0x24, 0xce,
+	0xbc, 0xe3, 0x90, 0x54, 0xcc, 0x57, 0xc4, 0xa8, 0xdb, 0x73, 0xa4, 0xd5, 0x29, 0xb3, 0x6a, 0xa6,
+	0x71, 0xd3, 0x6c, 0x4c, 0x0e, 0x89, 0x36, 0x5b, 0x1c, 0x36, 0x3b, 0x90, 0xa2, 0x35, 0xa8, 0x69,
+	0x4c, 0xdd, 0x31, 0x9b, 0x79, 0x5b, 0x46, 0x32, 0xb0, 0xed, 0x60, 0x4e, 0xba, 0xb2, 0xae, 0x94,
+	0xc9, 0xda, 0x86, 0xa4, 0x62, 0xc8, 0x3d, 0xb9, 0x61, 0xc9, 0x5a, 0x53, 0x26, 0x9c, 0x14, 0xfe,
+	0x90, 0x76, 0xc5, 0x32, 0x1e, 0xd0, 0x1e, 0x8b, 0x33, 0xb1, 0xa4, 0x20, 0xe1, 0xcb, 0x2e, 0xee,
+	0xc7, 0x99, 0x30, 0x92, 0x48, 0xfe, 0x24, 0x5c, 0xfb, 0x7e, 0x27, 0xe1, 0xe9, 0xf7, 0x3c, 0x09,
+	0x27, 0x55, 0x9e, 0x88, 0x32, 0x8e, 0xfd, 0x4c, 0x82, 0x27, 0xab, 0x3c, 0x4f, 0x24, 0x9e, 0xcb,
+	0x47, 0x67, 0x8f, 0xc9, 0x47, 0xaf, 0x26, 0x2b, 0x60, 0x2b, 0xf6, 0x9c, 0xcb, 0xd4, 0x96, 0xa4,
+	0xe4, 0xa9, 0xe4, 0xd0, 0x5c, 0x1a, 0x3c, 0x7f, 0x5c, 0x1a, 0xbc, 0x02, 0xe5, 0x98, 0xfa, 0x3d,
+	0xa9, 0x64, 0xc6, 0x6f, 0x8a, 0x9a, 0x27, 0x0e, 0x5d, 0xcb, 0xc8, 0x9f, 0x38, 0xb6, 0x5d, 0x23,
+	0x4f, 0x5e, 0x1c, 0x91, 0x27, 0x37, 0xa1, 0x14, 0x73, 0xcc, 0x18, 0xc9, 0x26, 0x7b, 0x09, 0x28,
+	0x96, 0x8e, 0xe3, 0x6e, 0x9c, 0x49, 0xf6, 0x24, 0x92, 0x12, 0x54, 0x7d, 0x88, 0xa0, 0x4c, 0x66,
+	0xfd, 0xf0, 0x14, 0x66, 0x6d, 0x9c, 0xc8, 0xac, 0xe7, 0x87, 0x99, 0x35, 0xbf, 0x49, 0x5c, 0x78,
+	0x87, 0x4d, 0xe2, 0xe2, 0xe9, 0x9b, 0x44, 0x73, 0xf4, 0x26, 0x61, 0x10, 0xd0, 0xf2, 0x69, 0x3c,
+	0xbe, 0x32, 0x92, 0xc7, 0x4d, 0x16, 0x5e, 0x1d, 0xb5, 0xbd, 0xe7, 0xe8, 0xdc, 0x3a, 0x8e, 0xce,
+	0x93, 0x0d, 0xfb, 0xd2, 0xd0, 0x86, 0x9d, 0xd9, 0x78, 0x2f, 0x8f, 0xdc, 0x78, 0x57, 0xa1, 0x12,
+	0x92, 0x97, 0x5a, 0xe5, 0x8a, 0xa9, 0x12, 0x92, 0x97, 0x4a, 0xc5, 0x82, 0x4a, 0xdc, 0xdb, 0xd7,
+	0xf4, 0xf1, 0x51, 0x86, 0xc7, 0x13, 0x58, 0x16, 0xc7, 0xc5, 0xe4, 0xcb, 0x85, 0xbf, 0x6a, 0x9a,
+	0x11, 0xf0, 0x8e, 0x58, 0xfc, 0xc1, 0x16, 0xbf, 0x36, 0x62, 0x8b, 0x57, 0xdb, 0xcc, 0xb5, 0x6c,
+	0x2e, 0x62, 0xdd, 0x83, 0x0f, 0x64, 0xa9, 0x3b, 0x61, 0x9c, 0x34, 0x37, 0xbf, 0x01, 0x60, 0xb0,
+	0x94, 0x4a, 0xcf, 0xa7, 0x55, 0x01, 0x49, 0xc1, 0xfd, 0x5d, 0x43, 0xc1, 0xba, 0x0d, 0xe5, 0x04,
+	0x3f, 0xb9, 0x8c, 0xe5, 0xe3, 0x7d, 0xe2, 0x67, 0x8f, 0xe0, 0x12, 0xb2, 0x3e, 0x91, 0x67, 0x97,
+	0x5c, 0x45, 0xec, 0x92, 0x51, 0xb9, 0x1b, 0x1c, 0x10, 0xb4, 0x52, 0x52, 0xc0, 0xfb, 0x1c, 0x8a,
+	0x0a, 0x79, 0xd7, 0x02, 0x5a, 0x25, 0x53, 0x40, 0x5b, 0xbf, 0x0d, 0xd5, 0x47, 0x5e, 0xec, 0xec,
+	0xa9, 0x0f, 0x50, 0xd0, 0xc7, 0x50, 0x7d, 0x4e, 0x58, 0xec, 0xd1, 0x70, 0x3b, 0xec, 0x50, 0x54,
+	0x11, 0xc7, 0xa5, 0xad, 0x20, 0xe2, 0xfd, 0xc6, 0x92, 0x78, 0x34, 0x64, 0xc9, 0x30, 0xd7, 0xff,
+	0x52, 0x00, 0xd8, 0x64, 0x41, 0x62, 0xc1, 0x86, 0x8b, 0x27, 0x7e, 0x0d, 0x82, 0xae, 0xc9, 0xd7,
+	0x78, 0x97, 0x2f, 0x46, 0x1a, 0x0b, 0xa2, 0x4f, 0x75, 0x68, 0x19, 0xdc, 0x77, 0x6c, 0xc1, 0x5c,
+	0xfe, 0xd3, 0x10, 0x74, 0x41, 0x4d, 0xcd, 0xe8, 0x2f, 0x46, 0x94, 0x99, 0x47, 0xea, 0xeb, 0x8e,
+	0x74, 0xd8, 0xaf, 0xa6, 0x60, 0xfa, 0xb9, 0xac, 0xa4, 0x26, 0x23, 0xbf, 0x0d, 0x55, 0xa3, 0x04,
+	0x88, 0x96, 0xa4, 0xcd, 0xe1, 0xa2, 0x60, 0xa3, 0x3e, 0x2c, 0xd0, 0x43, 0xdb, 0x80, 0x0f, 0xb2,
+	0x47, 0x2d, 0xad, 0x81, 0x16, 0xb2, 0xd5, 0x47, 0x65, 0x67, 0x64, 0x49, 0x12, 0x7d, 0x0a, 0x28,
+	0x6b, 0xe3, 0x21, 0xc1, 0x2e, 0x9a, 0x93, 0xba, 0xc6, 0x75, 0x68, 0x63, 0xde, 0x40, 0x74, 0xd3,
+	0x5b, 0x00, 0x83, 0x83, 0x26, 0x3a, 0x97, 0x0c, 0x33, 0x7b, 0x24, 0x6e, 0x2c, 0x0d, 0xe1, 0x69,
+	0xf3, 0x9a, 0xea, 0x59, 0xa7, 0x36, 0xba, 0xca, 0x7b, 0xfc, 0xd9, 0xb1, 0x61, 0x1e, 0x59, 0x45,
+	0x73, 0x53, 0xe7, 0x7d, 0x9b, 0xff, 0x04, 0xa6, 0x33, 0xc1, 0x68, 0xfa, 0x5e, 0x23, 0x9d, 0xf1,
+	0xe1, 0x58, 0x6d, 0x41, 0x25, 0x0d, 0x1d, 0xb3, 0x4d, 0xfa, 0xfa, 0xb9, 0xa8, 0xfa, 0x15, 0x2c,
+	0x8c, 0x28, 0x43, 0xa3, 0xe5, 0xe3, 0x4b, 0xda, 0x6a, 0xb0, 0xa7, 0xd6, 0xbc, 0xd1, 0x5d, 0x58,
+	0x1c, 0x55, 0x4b, 0x37, 0x07, 0xb5, 0x9a, 0x9d, 0xfb, 0x11, 0x15, 0xf7, 0xf5, 0x7f, 0x15, 0x00,
+	0x9e, 0x1f, 0xf0, 0xc4, 0x29, 0x1f, 0xc3, 0x5c, 0xfe, 0x73, 0x1c, 0xed, 0xed, 0xc7, 0x7c, 0x0b,
+	0xd4, 0xb8, 0x78, 0x8c, 0x54, 0x8f, 0xf2, 0x01, 0x5c, 0xce, 0xf9, 0x68, 0xaa, 0xd6, 0xdf, 0xe8,
+	0xef, 0xdd, 0xfd, 0xa5, 0xfc, 0x42, 0xe6, 0x2e, 0xca, 0x7f, 0xd5, 0xd3, 0xc8, 0x03, 0x68, 0x0b,
+	0x56, 0x4f, 0xb0, 0xf4, 0xae, 0x66, 0x36, 0xbe, 0x78, 0xfd, 0xb6, 0x59, 0xf8, 0xf6, 0x6d, 0xb3,
+	0xf0, 0xe6, 0x6d, 0x73, 0xec, 0xdf, 0x6f, 0x9b, 0x63, 0xbf, 0x3d, 0x6a, 0x8e, 0x7d, 0x73, 0xd4,
+	0x1c, 0xfb, 0xeb, 0x51, 0x73, 0xec, 0xf5, 0x51, 0x73, 0xec, 0xdb, 0xa3, 0xe6, 0xd8, 0x9b, 0xa3,
+	0xe6, 0xd8, 0xef, 0xbe, 0x6b, 0x8e, 0xfd, 0xf9, 0xbb, 0xe6, 0xd8, 0xaf, 0x97, 0x05, 0xeb, 0xb7,
+	0x0e, 0xc3, 0xf6, 0x3e, 0x76, 0x5e, 0x90, 0xd0, 0x6d, 0x47, 0xfb, 0x6d, 0xf3, 0x0b, 0xba, 0xff,
+	0x04, 0x00, 0x00, 0xff, 0xff, 0x7b, 0xad, 0x44, 0x2c, 0x50, 0x27, 0x00, 0x00,
 }

@@ -1,0 +1,45 @@
+{
+  "Leads": {
+    "used_shipping_provider": "cf_872",
+    "orders_per_day": "cf_874",
+    "shop_code": "cf_876",
+    "assistant_name": "cf_878",
+    "personal_merchant": "cf_880",
+    "note": "cf_882",
+    "etop_user_id": "cf_884",
+    "contact_type": "cf_886",
+    "status": "cf_888"
+  },
+  "Contacts": {
+    "etop_user_id": "cf_852",
+    "company": "cf_854",
+    "website": "cf_856",
+    "lane": "cf_858",
+    "city": "cf_860",
+    "state": "cf_862",
+    "country": "cf_864",
+    "orders_per_day": "cf_866",
+    "used_shipping_provider": "cf_868",
+    "contact_type": "cf_870"
+  },
+  "HelpDesk": {
+    "reason": "cf_890",
+    "note": "cf_892",
+    "ffm_code": "cf_894",
+    "ffm_url": "cf_896",
+    "ffm_id": "cf_898",
+    "etop_user_id": "cf_900",
+    "order_id": "cf_902",
+    "order_code": "cf_904",
+    "company": "cf_906",
+    "provider": "cf_908",
+    "from_app": "cf_910",
+    "environment": "cf_912",
+    "code": "cf_914",
+    "old_value": "cf_916",
+    "new_value": "cf_918",
+    "value": "cf_920",
+    "substatus": "cf_922",
+    "etop_note": "cf_924"
+  }
+}

@@ -1,8 +1,14 @@
 package config
 
 import (
+	"encoding/json"
 	"errors"
+	"io/ioutil"
+	"os"
+	"path/filepath"
 	"strings"
+
+	"etop.vn/backend/com/supporting/crm/vtiger/mapping"
 
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/captcha"
@@ -25,6 +31,11 @@ const (
 	PathAhamoveUserVerification = "/ahamove/user_verification"
 )
 
+var exampleMappingFile = filepath.Join(
+	os.Getenv("ETOPDIR"),
+	"backend/cmd/etop-server/config/field_mapping_example.json",
+)
+
 type Upload struct {
 	DirImportShopOrder   string `yaml:"dir_import_shop_order"`
 	DirImportShopProduct string `yaml:"dir_import_shop_product"`
@@ -40,6 +51,18 @@ type EmailConfig struct {
 
 	ResetPasswordURL     string `valid:"url,required" yaml:"reset_password_url"`
 	EmailVerificationURL string `valid:"url,required" yaml:"email_verification_url"`
+}
+
+type Vtiger struct {
+	ServiceURL string `yaml:"service_url"`
+	Username   string `yaml:"username"`
+	APIKey     string `yaml:"api_key"`
+}
+
+type Vht struct {
+	ServiceURL string `yaml:"service_url"`
+	UserName   string `yaml:"user_name"`
+	PassWord   string `yaml:"pass_word"`
 }
 
 // Config ...
@@ -81,6 +104,10 @@ type Config struct {
 
 	ThirdPartyHost string `yaml:"third_party_host"`
 	Secret         string `yaml:"secret"`
+
+	Vtiger      Vtiger `yaml:"vtiger"`
+	MappingFile string `yaml:"mapping_file"`
+	Vht         Vht    `yaml:vht`
 }
 
 // Default ...
@@ -125,6 +152,16 @@ func Default() Config {
 		Env:            cm.EnvDev,
 		Secret:         "secret",
 		ThirdPartyHost: "https://etop.d.etop.vn",
+		Vtiger: Vtiger{
+			ServiceURL: "http://vtiger/webservice.php",
+			Username:   "admin",
+			APIKey:     "q5dZOnJYGlmPY2nc",
+		},
+		Vht: Vht{
+			UserName: "5635810cde4c14ebf6a41341f4e68395",
+			PassWord: "36828473ce0d87db8cc29798f6b8aa1e",
+		},
+		MappingFile: exampleMappingFile,
 	}
 	cfg.Postgres.Database = "etop_dev"
 	cfg.Email = EmailConfig{
@@ -182,4 +219,14 @@ func Load(isTest bool) (Config, error) {
 		"ET_SECRET": &cfg.Secret,
 	}.MustLoad()
 	return cfg, err
+}
+
+// ReadMappingFile read mapping json file for mapping fields between vtiger and etop
+func ReadMappingFile(filename string) (configMap mapping.ConfigMap, _ error) {
+	body, err := ioutil.ReadFile(filename)
+	if err != nil {
+		return nil, err
+	}
+	err = json.Unmarshal(body, &configMap)
+	return
 }

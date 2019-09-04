@@ -1,28 +1,25 @@
 package main
 
 import (
+	"context"
 	"math/rand"
 	"time"
 
-	"etop.vn/backend/pkg/common/cmsql"
-
+	"etop.vn/api/supporting/crm/vtiger"
 	"etop.vn/backend/pkg/common/scheduler"
-	mapVtiger "etop.vn/backend/pkg/services/crm-service/mapping"
-	vtigerService "etop.vn/backend/pkg/services/crm-service/vtiger/service"
 )
 
 var (
-	Vs *vtigerService.VtigerService
+	vtigerAggr                vtiger.CommandBus
+	vtigerQS                  vtiger.QueryBus
+	vtigerDefaultRecurr       = 30 * time.Second
+	vtigerDefaultErrRecurr    = 5 * time.Minute
+	LastTimeSyncVtigerContact = time.Now().Add(time.Duration(-24*30*8) * time.Hour)
 )
 
-func SyncVtiger(db cmsql.Database, vConfig vtigerService.Config, fieldMap mapVtiger.ConfigMap) {
-	Vs = vtigerService.NewSVtigerService(db, vConfig, fieldMap)
-	_, err := Vs.Client.GetSessionKey(Vs.Cfg.ServiceURL, Vs.Cfg.Username, Vs.Cfg.APIKey)
-	if err != nil {
-		ll.Error("Can't connnect to vtiger")
-		return
-	}
-
+func SyncVtiger(vtigerAggregate vtiger.CommandBus, vtigerQuery vtiger.QueryBus) {
+	vtigerAggr = vtigerAggregate
+	vtigerQS = vtigerQuery
 	gScheduler = scheduler.New(defaultNumWorkers)
 
 	t := rand.Intn(int(time.Second))
@@ -34,12 +31,13 @@ func SyncVtigerData(id interface{}, p scheduler.Planner) (_err error) {
 	ll.S.Info("run SyncVtigerData", time.Now())
 	defer func() {
 		err := recover()
+		GetLastVtigerModifytimeSyncInDB()
 		if err != nil {
-			ll.S.Info("Add after err :: ", defaultErrRecurr)
-			p.AddAfter(id, defaultErrRecurr, SyncVtigerData)
+			ll.S.Info("Add after err :: ", vtigerDefaultErrRecurr)
+			p.AddAfter(id, vtigerDefaultErrRecurr, SyncVtigerData)
 		} else {
-			ll.S.Info("Add after success :: ", defaultRecurr)
-			p.AddAfter(id, defaultRecurr, SyncVtigerData)
+			ll.S.Info("Add after success :: ", vtigerDefaultRecurr)
+			p.AddAfter(id, vtigerDefaultRecurr, SyncVtigerData)
 		}
 	}()
 	if err := SyncVtigerAccount(); err != nil {
@@ -57,9 +55,24 @@ func SyncVtigerAccount() error {
 }
 
 func SynVtigetContact() error {
-	err := Vs.SyncContac()
+	ctx = context.Background()
+	cmd := &vtiger.SyncContactCommand{
+		SyncTime: LastTimeSyncVtigerContact,
+	}
+	err := vtigerAggr.Dispatch(ctx, cmd)
 	if err != nil {
 		return err
 	}
 	return nil
+}
+
+func GetLastVtigerModifytimeSyncInDB() {
+	query := &vtiger.GetLastTimeModifyQuery{
+		Offset: 0,
+		Limit:  1,
+	}
+	err := vtigerQS.Dispatch(ctx, query)
+	if err == nil && query.Result != nil {
+		LastTimeSyncVtigerContact = query.Result.Modifiedtime
+	}
 }

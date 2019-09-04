@@ -7,16 +7,16 @@ import (
 	"strings"
 	"time"
 
+	meta "etop.vn/api/meta"
+	cm "etop.vn/backend/pkg/common"
+	"etop.vn/backend/pkg/etop/model"
+	"etop.vn/common/l"
+	"etop.vn/common/xerrors"
 	"github.com/asaskevich/govalidator"
 	"github.com/gogo/protobuf/proto"
 	"github.com/golang/protobuf/jsonpb"
 	"github.com/golang/protobuf/ptypes"
 	pbts "github.com/golang/protobuf/ptypes/timestamp"
-
-	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/etop/model"
-	"etop.vn/common/l"
-	"etop.vn/common/xerrors"
 )
 
 var ll = l.New()
@@ -305,4 +305,31 @@ func ErrorsToModel(errs []*Error) []*model.Error {
 		res[i] = ErrorToModel(err)
 	}
 	return res
+}
+
+func PagingToModel(paging *Paging, defaultOffset int32, defaultLimit int32, maxLimit int32) *meta.Paging {
+	if defaultLimit == 0 {
+		defaultLimit = 10
+	}
+	if defaultOffset == 0 {
+		defaultOffset = 1
+	}
+	if maxLimit == 0 {
+		maxLimit = 1000
+	}
+	if paging == nil {
+		return &meta.Paging{
+			Offset: defaultOffset,
+			Limit:  defaultLimit,
+		}
+	}
+	if paging.Limit > maxLimit {
+		paging.Limit = maxLimit
+	}
+	arrSort := []string{paging.Sort}
+	return &meta.Paging{
+		Offset: paging.Offset,
+		Limit:  paging.Limit,
+		Sort:   arrSort,
+	}
 }

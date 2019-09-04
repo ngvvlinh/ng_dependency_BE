@@ -2,25 +2,33 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"flag"
+	"io/ioutil"
 	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
 
-	"etop.vn/backend/cmd/supporting/crm-service/config"
+	"etop.vn/backend/com/supporting/crm/vtiger/mapping"
+
+	"etop.vn/backend/pkg/common/metrics"
+
+	vhtaggregate "etop.vn/backend/com/supporting/crm/vht/aggregate"
+	vhtquery "etop.vn/backend/com/supporting/crm/vht/query"
+	vtigeraggregate "etop.vn/backend/com/supporting/crm/vtiger/aggregate"
+	vtigerquery "etop.vn/backend/com/supporting/crm/vtiger/query"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/cmsql"
 	cc "etop.vn/backend/pkg/common/config"
+	vhtclient "etop.vn/backend/pkg/integration/vht/client"
+	vtigerclient "etop.vn/backend/pkg/integration/vtiger/client"
+
+	// "etop.vn/backend/com/supporting/crm"
+
+	"etop.vn/backend/cmd/supporting/crm-service/config"
 	"etop.vn/backend/pkg/common/health"
-	"etop.vn/backend/pkg/common/metrics"
-	"etop.vn/backend/pkg/common/redis"
-	"etop.vn/backend/pkg/etop/authorize/middleware"
-	"etop.vn/backend/pkg/etop/authorize/tokens"
-	mapVtiger "etop.vn/backend/pkg/services/crm-service/mapping"
-	servicecrm "etop.vn/backend/pkg/services/crm-service/service"
-	wrapcrm "etop.vn/backend/wrapper/services/crmservice"
 	"etop.vn/common/l"
 )
 
@@ -61,58 +69,54 @@ func main() {
 		ll.Fatal("Force shutdown due to timeout!")
 	}()
 
-	redisStore := redis.Connect(cfg.Redis.ConnectionString())
-	tokens.Init(redisStore)
-
 	db, err := cmsql.Connect(cfg.Postgres)
 	if err != nil {
 		ll.Fatal("error while connecting to postgres", l.Error(err))
 	}
 
-	configMap, err := config.ReadMappingFile(cfg.MappingFile)
+	configMap, err := ReadMappingFile(cfg.MappingFile)
 	if err != nil {
 		ll.Fatal("error while reading field map file", l.String("file", cfg.MappingFile), l.Error(err))
 	}
 
-	s := servicecrm.NewService(db, cfg.Vtiger, configMap)
-	s.Register()
-
-	apiMux := http.NewServeMux()
-	wrapcrm.NewCrmserviceServer(apiMux, nil)
-
-	mux := http.NewServeMux()
-	mux.Handle("/api/", middleware.ForwardHeaders(apiMux))
-	svr := &http.Server{
-		Addr:    cfg.HTTP.Address(),
-		Handler: mux,
-	}
-
-	metrics.RegisterHTTPHandler(mux)
-	healthservice.RegisterHTTPHandler(mux)
-
-	ll.Info("Sync vht Starting")
+	//client
+	vtigerClient := vtigerclient.NewVigerClient(cfg.Vtiger.ServiceURL, cfg.Vtiger.Username, cfg.Vtiger.APIKey)
+	vhtClient := vhtclient.NewClient(cfg.Vht.UserName, cfg.Vht.PassWord)
+	// create aggregate, query service
+	vhtAggregate := vhtaggregate.New(db, vhtClient).MessageBus()
+	vhtQuery := vhtquery.New(db).MessageBus()
+	vtigerAggregate := vtigeraggregate.New(db, configMap, vtigerClient).MessageBus()
+	vtigerQuery := vtigerquery.New(db, configMap, vtigerClient).MessageBus()
 	go func() {
-		SyncCallHistoryVht(cfg.Vht.UserName, cfg.Vht.PassWord, db)
+		SyncCallHistoryVht(vhtAggregate, vhtQuery)
 	}()
 
 	ll.Info("Sync Vtiger Starting")
 	go func() {
-		feildMap := mapVtiger.NewMappingConfigInfo(configMap)
-		SyncVtiger(db, cfg.Vtiger, feildMap.FieldMap)
-	}()
-
-	healthservice.MarkReady()
-	go func() {
-		defer ctxCancel()
-		err = svr.ListenAndServe()
-		if err != http.ErrServerClosed {
-			ll.Error("HTTP server", l.Error(err))
-		}
-		ll.Sync()
+		SyncVtiger(vtigerAggregate, vtigerQuery)
 	}()
 
 	<-ctx.Done()
+
+	mux := http.NewServeMux()
+	svr := &http.Server{
+		Addr:    cfg.HTTP.Address(),
+		Handler: mux,
+	}
+	metrics.RegisterHTTPHandler(mux)
+	healthservice.RegisterHTTPHandler(mux)
+
 	_ = svr.Shutdown(context.Background())
 	ll.Info("Waiting for all requests to finish")
 	ll.Info("Gracefully stopped!")
+}
+
+// ReadMappingFile read mapping json file for mapping fields between vtiger and etop
+func ReadMappingFile(filename string) (configMap mapping.ConfigMap, _ error) {
+	body, err := ioutil.ReadFile(filename)
+	if err != nil {
+		return nil, err
+	}
+	err = json.Unmarshal(body, &configMap)
+	return
 }

@@ -41,13 +41,30 @@ func NewCrmServer(mux Muxer, hooks *twirp.ServerHooks, secret string) {
 	bus.Expect(&VersionInfoEndpoint{})
 	bus.Expect(&RefreshFulfillmentFromCarrierEndpoint{})
 	bus.Expect(&SendNotificationEndpoint{})
+	bus.Expect(&CountTicketByStatusEndpoint{})
+	bus.Expect(&CreateOrUpdateContactEndpoint{})
+	bus.Expect(&CreateOrUpdateLeadEndpoint{})
+	bus.Expect(&CreateTicketEndpoint{})
+	bus.Expect(&GetCategoriesEndpoint{})
+	bus.Expect(&GetContactsEndpoint{})
+	bus.Expect(&GetStatusEndpoint{})
+	bus.Expect(&GetTicketStatusCountEndpoint{})
+	bus.Expect(&GetTicketsEndpoint{})
+	bus.Expect(&UpdateTicketEndpoint{})
+	bus.Expect(&CreateOrUpdateCallHistoryByCallIDEndpoint{})
+	bus.Expect(&CreateOrUpdateCallHistoryBySDKCallIDEndpoint{})
+	bus.Expect(&GetCallHistoriesEndpoint{})
 	mux.Handle(crm.MiscServicePathPrefix, crm.NewMiscServiceServer(MiscService{secret: secret}, hooks))
 	mux.Handle(crm.CrmServicePathPrefix, crm.NewCrmServiceServer(CrmService{secret: secret}, hooks))
+	mux.Handle(crm.VtigerServicePathPrefix, crm.NewVtigerServiceServer(VtigerService{secret: secret}, hooks))
+	mux.Handle(crm.VhtServicePathPrefix, crm.NewVhtServiceServer(VhtService{secret: secret}, hooks))
 }
 
 type CrmImpl struct {
 	MiscService
 	CrmService
+	VtigerService
+	VhtService
 }
 
 type MiscService struct{ secret string }
@@ -144,6 +161,582 @@ func (s CrmService) SendNotification(ctx context.Context, req *crm.SendNotificat
 	if token != s.secret {
 		return nil, common.ErrUnauthenticated
 	}
+	ctx = bus.NewRootContext(ctx)
+	err = bus.Dispatch(ctx, query)
+	resp = query.Result
+	if err == nil {
+		if resp == nil {
+			return nil, common.Error(common.Internal, "", nil).Log("nil response")
+		}
+		errs = cmwrapper.HasErrors(resp)
+	}
+	return resp, err
+}
+
+type VtigerService struct{ secret string }
+
+type CountTicketByStatusEndpoint struct {
+	*crm.CountTicketByStatusRequest
+	Result  *crm.CountTicketByStatusResponse
+	Context AdminClaim
+}
+
+func (s VtigerService) CountTicketByStatus(ctx context.Context, req *crm.CountTicketByStatusRequest) (resp *crm.CountTicketByStatusResponse, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "crm.Vtiger/CountTicketByStatus"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:          ctx,
+		RequireAuth:      true,
+		RequireEtopAdmin: true,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &CountTicketByStatusEndpoint{CountTicketByStatusRequest: req}
+	query.Context.Claim = session.Claim
+	query.Context.IsEtopAdmin = session.IsEtopAdmin
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = bus.Dispatch(ctx, query)
+	resp = query.Result
+	if err == nil {
+		if resp == nil {
+			return nil, common.Error(common.Internal, "", nil).Log("nil response")
+		}
+		errs = cmwrapper.HasErrors(resp)
+	}
+	return resp, err
+}
+
+type CreateOrUpdateContactEndpoint struct {
+	*crm.ContactRequest
+	Result  *crm.ContactResponse
+	Context ShopClaim
+}
+
+func (s VtigerService) CreateOrUpdateContact(ctx context.Context, req *crm.ContactRequest) (resp *crm.ContactResponse, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "crm.Vtiger/CreateOrUpdateContact"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:     ctx,
+		RequireAuth: true,
+		RequireShop: true,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &CreateOrUpdateContactEndpoint{ContactRequest: req}
+	query.Context.Claim = session.Claim
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = bus.Dispatch(ctx, query)
+	resp = query.Result
+	if err == nil {
+		if resp == nil {
+			return nil, common.Error(common.Internal, "", nil).Log("nil response")
+		}
+		errs = cmwrapper.HasErrors(resp)
+	}
+	return resp, err
+}
+
+type CreateOrUpdateLeadEndpoint struct {
+	*crm.LeadRequest
+	Result  *crm.LeadResponse
+	Context ShopClaim
+}
+
+func (s VtigerService) CreateOrUpdateLead(ctx context.Context, req *crm.LeadRequest) (resp *crm.LeadResponse, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "crm.Vtiger/CreateOrUpdateLead"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:     ctx,
+		RequireAuth: true,
+		RequireShop: true,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &CreateOrUpdateLeadEndpoint{LeadRequest: req}
+	query.Context.Claim = session.Claim
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = bus.Dispatch(ctx, query)
+	resp = query.Result
+	if err == nil {
+		if resp == nil {
+			return nil, common.Error(common.Internal, "", nil).Log("nil response")
+		}
+		errs = cmwrapper.HasErrors(resp)
+	}
+	return resp, err
+}
+
+type CreateTicketEndpoint struct {
+	*crm.CreateOrUpdateTicketRequest
+	Result  *crm.Ticket
+	Context ShopClaim
+}
+
+func (s VtigerService) CreateTicket(ctx context.Context, req *crm.CreateOrUpdateTicketRequest) (resp *crm.Ticket, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "crm.Vtiger/CreateTicket"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:     ctx,
+		RequireAuth: true,
+		RequireShop: true,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &CreateTicketEndpoint{CreateOrUpdateTicketRequest: req}
+	query.Context.Claim = session.Claim
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = bus.Dispatch(ctx, query)
+	resp = query.Result
+	if err == nil {
+		if resp == nil {
+			return nil, common.Error(common.Internal, "", nil).Log("nil response")
+		}
+		errs = cmwrapper.HasErrors(resp)
+	}
+	return resp, err
+}
+
+type GetCategoriesEndpoint struct {
+	*cm.Empty
+	Result  *crm.GetCategoriesResponse
+	Context ShopClaim
+}
+
+func (s VtigerService) GetCategories(ctx context.Context, req *cm.Empty) (resp *crm.GetCategoriesResponse, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "crm.Vtiger/GetCategories"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:     ctx,
+		RequireAuth: true,
+		RequireShop: true,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &GetCategoriesEndpoint{Empty: req}
+	query.Context.Claim = session.Claim
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = bus.Dispatch(ctx, query)
+	resp = query.Result
+	if err == nil {
+		if resp == nil {
+			return nil, common.Error(common.Internal, "", nil).Log("nil response")
+		}
+		errs = cmwrapper.HasErrors(resp)
+	}
+	return resp, err
+}
+
+type GetContactsEndpoint struct {
+	*crm.GetContactsRequest
+	Result  *crm.GetContactsResponse
+	Context AdminClaim
+}
+
+func (s VtigerService) GetContacts(ctx context.Context, req *crm.GetContactsRequest) (resp *crm.GetContactsResponse, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "crm.Vtiger/GetContacts"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:          ctx,
+		RequireAuth:      true,
+		RequireEtopAdmin: true,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &GetContactsEndpoint{GetContactsRequest: req}
+	query.Context.Claim = session.Claim
+	query.Context.IsEtopAdmin = session.IsEtopAdmin
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = bus.Dispatch(ctx, query)
+	resp = query.Result
+	if err == nil {
+		if resp == nil {
+			return nil, common.Error(common.Internal, "", nil).Log("nil response")
+		}
+		errs = cmwrapper.HasErrors(resp)
+	}
+	return resp, err
+}
+
+type GetStatusEndpoint struct {
+	*cm.Empty
+	Result  *crm.GetStatusResponse
+	Context AdminClaim
+}
+
+func (s VtigerService) GetStatus(ctx context.Context, req *cm.Empty) (resp *crm.GetStatusResponse, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "crm.Vtiger/GetStatus"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:          ctx,
+		RequireAuth:      true,
+		RequireEtopAdmin: true,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &GetStatusEndpoint{Empty: req}
+	query.Context.Claim = session.Claim
+	query.Context.IsEtopAdmin = session.IsEtopAdmin
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = bus.Dispatch(ctx, query)
+	resp = query.Result
+	if err == nil {
+		if resp == nil {
+			return nil, common.Error(common.Internal, "", nil).Log("nil response")
+		}
+		errs = cmwrapper.HasErrors(resp)
+	}
+	return resp, err
+}
+
+type GetTicketStatusCountEndpoint struct {
+	*cm.Empty
+	Result  *crm.GetTicketStatusCountResponse
+	Context AdminClaim
+}
+
+func (s VtigerService) GetTicketStatusCount(ctx context.Context, req *cm.Empty) (resp *crm.GetTicketStatusCountResponse, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "crm.Vtiger/GetTicketStatusCount"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:          ctx,
+		RequireAuth:      true,
+		RequireEtopAdmin: true,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &GetTicketStatusCountEndpoint{Empty: req}
+	query.Context.Claim = session.Claim
+	query.Context.IsEtopAdmin = session.IsEtopAdmin
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = bus.Dispatch(ctx, query)
+	resp = query.Result
+	if err == nil {
+		if resp == nil {
+			return nil, common.Error(common.Internal, "", nil).Log("nil response")
+		}
+		errs = cmwrapper.HasErrors(resp)
+	}
+	return resp, err
+}
+
+type GetTicketsEndpoint struct {
+	*crm.GetTicketsRequest
+	Result  *crm.GetTicketsResponse
+	Context ShopClaim
+}
+
+func (s VtigerService) GetTickets(ctx context.Context, req *crm.GetTicketsRequest) (resp *crm.GetTicketsResponse, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "crm.Vtiger/GetTickets"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:     ctx,
+		RequireAuth: true,
+		RequireShop: true,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &GetTicketsEndpoint{GetTicketsRequest: req}
+	query.Context.Claim = session.Claim
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = bus.Dispatch(ctx, query)
+	resp = query.Result
+	if err == nil {
+		if resp == nil {
+			return nil, common.Error(common.Internal, "", nil).Log("nil response")
+		}
+		errs = cmwrapper.HasErrors(resp)
+	}
+	return resp, err
+}
+
+type UpdateTicketEndpoint struct {
+	*crm.CreateOrUpdateTicketRequest
+	Result  *crm.Ticket
+	Context ShopClaim
+}
+
+func (s VtigerService) UpdateTicket(ctx context.Context, req *crm.CreateOrUpdateTicketRequest) (resp *crm.Ticket, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "crm.Vtiger/UpdateTicket"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:     ctx,
+		RequireAuth: true,
+		RequireShop: true,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &UpdateTicketEndpoint{CreateOrUpdateTicketRequest: req}
+	query.Context.Claim = session.Claim
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = bus.Dispatch(ctx, query)
+	resp = query.Result
+	if err == nil {
+		if resp == nil {
+			return nil, common.Error(common.Internal, "", nil).Log("nil response")
+		}
+		errs = cmwrapper.HasErrors(resp)
+	}
+	return resp, err
+}
+
+type VhtService struct{ secret string }
+
+type CreateOrUpdateCallHistoryByCallIDEndpoint struct {
+	*crm.VHTCallLog
+	Result  *crm.VHTCallLog
+	Context AdminClaim
+}
+
+func (s VhtService) CreateOrUpdateCallHistoryByCallID(ctx context.Context, req *crm.VHTCallLog) (resp *crm.VHTCallLog, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "crm.Vht/CreateOrUpdateCallHistoryByCallID"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:          ctx,
+		RequireAuth:      true,
+		RequireEtopAdmin: true,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &CreateOrUpdateCallHistoryByCallIDEndpoint{VHTCallLog: req}
+	query.Context.Claim = session.Claim
+	query.Context.IsEtopAdmin = session.IsEtopAdmin
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = bus.Dispatch(ctx, query)
+	resp = query.Result
+	if err == nil {
+		if resp == nil {
+			return nil, common.Error(common.Internal, "", nil).Log("nil response")
+		}
+		errs = cmwrapper.HasErrors(resp)
+	}
+	return resp, err
+}
+
+type CreateOrUpdateCallHistoryBySDKCallIDEndpoint struct {
+	*crm.VHTCallLog
+	Result  *crm.VHTCallLog
+	Context AdminClaim
+}
+
+func (s VhtService) CreateOrUpdateCallHistoryBySDKCallID(ctx context.Context, req *crm.VHTCallLog) (resp *crm.VHTCallLog, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "crm.Vht/CreateOrUpdateCallHistoryBySDKCallID"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:          ctx,
+		RequireAuth:      true,
+		RequireEtopAdmin: true,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &CreateOrUpdateCallHistoryBySDKCallIDEndpoint{VHTCallLog: req}
+	query.Context.Claim = session.Claim
+	query.Context.IsEtopAdmin = session.IsEtopAdmin
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = bus.Dispatch(ctx, query)
+	resp = query.Result
+	if err == nil {
+		if resp == nil {
+			return nil, common.Error(common.Internal, "", nil).Log("nil response")
+		}
+		errs = cmwrapper.HasErrors(resp)
+	}
+	return resp, err
+}
+
+type GetCallHistoriesEndpoint struct {
+	*crm.GetCallHistoriesRequest
+	Result  *crm.GetCallHistoriesResponse
+	Context AdminClaim
+}
+
+func (s VhtService) GetCallHistories(ctx context.Context, req *crm.GetCallHistoriesRequest) (resp *crm.GetCallHistoriesResponse, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "crm.Vht/GetCallHistories"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:          ctx,
+		RequireAuth:      true,
+		RequireEtopAdmin: true,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &GetCallHistoriesEndpoint{GetCallHistoriesRequest: req}
+	query.Context.Claim = session.Claim
+	query.Context.IsEtopAdmin = session.IsEtopAdmin
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
 	err = bus.Dispatch(ctx, query)
 	resp = query.Result

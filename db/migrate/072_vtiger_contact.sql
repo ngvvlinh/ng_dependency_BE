@@ -1,3 +1,4 @@
+
 CREATE	TABLE vtiger_contact (
 	id text,
 	firstname text,
@@ -6,13 +7,13 @@ CREATE	TABLE vtiger_contact (
 	lastname text,
 	mobile text,
 	email text,
-	email2 text, 
+	email2 text,
 	leadsource text,
 	secondaryemail text,
 	assigned_user_id text,
-	created_at timestamp,
-	etop_id bigint,
-	updated_at timestamp,
+	created_at timestamptz,
+	etop_user_id bigint,
+	updated_at timestamptz,
 	description text,
 	"source" text,
 	used_shipping_provider text,
@@ -23,7 +24,9 @@ CREATE	TABLE vtiger_contact (
 	website text,
 	lane text,
 	country text,
-	search_norm tsvector
+	search_norm tsvector,
+	vtiger_created_at timestamptz,
+	vtiger_updated_at timestamptz
 )
 
 CREATE INDEX search_idx ON vtiger_contact USING GIN(search_norm);
