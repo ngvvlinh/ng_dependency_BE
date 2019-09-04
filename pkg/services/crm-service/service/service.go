@@ -4,13 +4,10 @@ import (
 	"context"
 	"log"
 
-	"etop.vn/backend/pkg/services/crm-service/vht/service"
-
-	"github.com/k0kubun/pp"
-
 	pbcm "etop.vn/backend/pb/common"
 	"etop.vn/backend/pkg/common/cmsql"
 	"etop.vn/backend/pkg/services/crm-service/mapping"
+	"etop.vn/backend/pkg/services/crm-service/vht/service"
 	vtigerservice "etop.vn/backend/pkg/services/crm-service/vtiger/service"
 	wrapcrm "etop.vn/backend/wrapper/services/crmservice"
 	"etop.vn/common/bus"
@@ -79,7 +76,6 @@ func (s *Service) CreateOrUpdateCallHistoryBySDKCallID(ctx context.Context, q *w
 
 // GetCallHistories get call histories
 func (s *Service) GetCallHistories(ctx context.Context, q *wrapcrm.GetCallHistoriesEndpoint) error {
-	pp.Print("vht service :: ", s.vhtservice)
 	result, err := s.vhtservice.GetCallHistories(ctx, q.GetCallHistoriesRequest)
 	if err != nil {
 		return err

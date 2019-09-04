@@ -7,8 +7,6 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/k0kubun/pp"
-
 	"etop.vn/backend/pkg/services/crm-service/vtiger/client"
 
 	"etop.vn/backend/pb/services/crmservice"
@@ -36,7 +34,6 @@ func (s *VtigerService) CreateOrUpdateTicket(ctx context.Context, req *crmservic
 	accout2Contact := ConvertAccount(&req.Account)
 	contactModel := ConvertModelContact(accout2Contact, session.UserID)
 	contactModel.EtopID = req.EtopId
-	pp.Print("contactModel ::", contactModel)
 	if contactModel.EtopID == 0 || contactModel.Phone == "" || contactModel.Email == "" {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing argument Email, Phone or EtopID in body request")
 	}

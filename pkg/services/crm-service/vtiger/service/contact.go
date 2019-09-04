@@ -13,7 +13,6 @@ import (
 	"etop.vn/backend/pkg/services/crm-service/mapping"
 	"etop.vn/backend/pkg/services/crm-service/model"
 	"etop.vn/backend/pkg/services/crm-service/vtiger/client"
-	"github.com/k0kubun/pp"
 
 	cm "etop.vn/backend/pkg/common"
 )
@@ -30,7 +29,6 @@ func (s *VtigerService) CreateOrUpdateContact(ctx context.Context, ct *crmservic
 	if err != nil {
 		return nil, err
 	}
-	pp.Println("session :: ", session)
 
 	// send value to vtiger service
 	fileMapData := mapping.NewMappingConfigInfo(s.fieldMap)
@@ -95,7 +93,6 @@ func (s *VtigerService) CreateOrUpdateVtiger(
 
 	//check exit id is already exit
 	bodyRequestVtiger.Operation = "create"
-	pp.Println("module name :", moduleName)
 	if moduleName == "HelpDesk" {
 		bodyRequestVtiger.Operation = action
 		if action == "update " && etop2Vtiger["id"] == "" {
@@ -266,7 +263,6 @@ func (s *VtigerService) SyncContac() error {
 		if err != nil {
 			return err
 		}
-		pp.Println("Count ::", len(result.Result), "   ", page, "- ", perPage)
 		if len(result.Result) == 0 {
 			break
 		}
@@ -291,7 +287,6 @@ func (s *VtigerService) SyncContac() error {
 
 func (s *VtigerService) CreateOrUpdateContactToDB(ctx context.Context, contact *model.VtigerContact) error {
 	_, err := s.vtigerContact(ctx).ByEtopID(contact.EtopID).GetContact()
-	pp.Println("err ::", err)
 	if err != nil && cm.ErrorCode(err) == cm.NotFound {
 		return s.vtigerContact(ctx).ByEtopID(contact.EtopID).CreateVtigerContact(contact)
 	} else if err != nil {

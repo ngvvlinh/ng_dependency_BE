@@ -8,7 +8,6 @@ import (
 	"reflect"
 	"strconv"
 
-	mongoopts "github.com/mongodb/mongo-go-driver/mongo/options"
 	"gopkg.in/yaml.v2"
 
 	"etop.vn/backend/pkg/common/cmsql"
@@ -182,57 +181,6 @@ func PostgresMustLoadEnv(c *cmsql.ConfigPostgres, prefix ...string) {
 		p + "_PASSWORD": &c.Password,
 		p + "_DATABASE": &c.Database,
 		p + "_TIMEOUT":  &c.Timeout,
-	}.MustLoad()
-}
-
-type Mongo struct {
-	Host       string `yaml:"host"`
-	Port       int    `yaml:"port"`
-	AuthSource string `yaml:"auth_source"`
-	Username   string `yaml:"username"`
-	Password   string `yaml:"password"`
-	Database   string `yaml:"database"`
-}
-
-func DefaultMongo() Mongo {
-	return Mongo{
-		Host:       "mongo",
-		Port:       27017,
-		AuthSource: "admin",
-		Username:   "test",
-		Password:   "test",
-		Database:   "test",
-	}
-}
-
-func (c *Mongo) ConnectionString() string {
-	return fmt.Sprintf("mongodb://%s:%d", c.Host, c.Port)
-}
-
-// Credential returns authorization credential for connecting to mongodb
-//
-// https://godoc.org/github.com/mongodb/mongo-go-driver/mongo/options#Credential
-func (c *Mongo) Credential() mongoopts.Credential {
-	return mongoopts.Credential{
-		AuthMechanism:           "",
-		AuthMechanismProperties: nil,
-		AuthSource:              c.AuthSource,
-		Username:                c.Username,
-		Password:                c.Password,
-	}
-}
-
-func (c *Mongo) MustLoadEnv(prefix ...string) {
-	p := "ET_MONGO"
-	if len(prefix) > 0 {
-		p = prefix[0]
-	}
-	EnvMap{
-		p + "_HOST":        &c.Port,
-		p + "_PORT":        &c.Port,
-		p + "_AUTH_SOURCE": &c.AuthSource,
-		p + "_USERNAME":    &c.Username,
-		p + "_PASSWORD":    &c.Password,
 	}.MustLoad()
 }
 
