@@ -31,7 +31,7 @@ var _ = math.Inf
 // is compatible with the proto package it is being compiled against.
 // A compilation error at this line likely means your copy of the
 // proto package needs to be updated.
-const _ = proto.ProtoPackageIsVersion2 // please upgrade the proto package
+const _ = proto.ProtoPackageIsVersion3 // please upgrade the proto package
 
 type Partner struct {
 	Id         int64            `protobuf:"varint,1,opt,name=id" json:"id"`
@@ -799,78 +799,12 @@ func (m *LatestOneOf) GetFulfillment() *Fulfillment {
 	return nil
 }
 
-// XXX_OneofFuncs is for the internal use of the proto package.
-func (*LatestOneOf) XXX_OneofFuncs() (func(msg proto.Message, b *proto.Buffer) error, func(msg proto.Message, tag, wire int, b *proto.Buffer) (bool, error), func(msg proto.Message) (n int), []interface{}) {
-	return _LatestOneOf_OneofMarshaler, _LatestOneOf_OneofUnmarshaler, _LatestOneOf_OneofSizer, []interface{}{
+// XXX_OneofWrappers is for the internal use of the proto package.
+func (*LatestOneOf) XXX_OneofWrappers() []interface{} {
+	return []interface{}{
 		(*LatestOneOf_Order)(nil),
 		(*LatestOneOf_Fulfillment)(nil),
 	}
-}
-
-func _LatestOneOf_OneofMarshaler(msg proto.Message, b *proto.Buffer) error {
-	m := msg.(*LatestOneOf)
-	// latest
-	switch x := m.Latest.(type) {
-	case *LatestOneOf_Order:
-		_ = b.EncodeVarint(7<<3 | proto.WireBytes)
-		if err := b.EncodeMessage(x.Order); err != nil {
-			return err
-		}
-	case *LatestOneOf_Fulfillment:
-		_ = b.EncodeVarint(8<<3 | proto.WireBytes)
-		if err := b.EncodeMessage(x.Fulfillment); err != nil {
-			return err
-		}
-	case nil:
-	default:
-		return fmt.Errorf("LatestOneOf.Latest has unexpected type %T", x)
-	}
-	return nil
-}
-
-func _LatestOneOf_OneofUnmarshaler(msg proto.Message, tag, wire int, b *proto.Buffer) (bool, error) {
-	m := msg.(*LatestOneOf)
-	switch tag {
-	case 7: // latest.order
-		if wire != proto.WireBytes {
-			return true, proto.ErrInternalBadWireType
-		}
-		msg := new(Order)
-		err := b.DecodeMessage(msg)
-		m.Latest = &LatestOneOf_Order{msg}
-		return true, err
-	case 8: // latest.fulfillment
-		if wire != proto.WireBytes {
-			return true, proto.ErrInternalBadWireType
-		}
-		msg := new(Fulfillment)
-		err := b.DecodeMessage(msg)
-		m.Latest = &LatestOneOf_Fulfillment{msg}
-		return true, err
-	default:
-		return false, nil
-	}
-}
-
-func _LatestOneOf_OneofSizer(msg proto.Message) (n int) {
-	m := msg.(*LatestOneOf)
-	// latest
-	switch x := m.Latest.(type) {
-	case *LatestOneOf_Order:
-		s := proto.Size(x.Order)
-		n += 1 // tag and wire
-		n += proto.SizeVarint(uint64(s))
-		n += s
-	case *LatestOneOf_Fulfillment:
-		s := proto.Size(x.Fulfillment)
-		n += 1 // tag and wire
-		n += proto.SizeVarint(uint64(s))
-		n += s
-	case nil:
-	default:
-		panic(fmt.Sprintf("proto: unexpected type %T in oneof", x))
-	}
-	return n
 }
 
 type ChangeOneOf struct {
@@ -941,78 +875,12 @@ func (m *ChangeOneOf) GetFulfillment() *Fulfillment {
 	return nil
 }
 
-// XXX_OneofFuncs is for the internal use of the proto package.
-func (*ChangeOneOf) XXX_OneofFuncs() (func(msg proto.Message, b *proto.Buffer) error, func(msg proto.Message, tag, wire int, b *proto.Buffer) (bool, error), func(msg proto.Message) (n int), []interface{}) {
-	return _ChangeOneOf_OneofMarshaler, _ChangeOneOf_OneofUnmarshaler, _ChangeOneOf_OneofSizer, []interface{}{
+// XXX_OneofWrappers is for the internal use of the proto package.
+func (*ChangeOneOf) XXX_OneofWrappers() []interface{} {
+	return []interface{}{
 		(*ChangeOneOf_Order)(nil),
 		(*ChangeOneOf_Fulfillment)(nil),
 	}
-}
-
-func _ChangeOneOf_OneofMarshaler(msg proto.Message, b *proto.Buffer) error {
-	m := msg.(*ChangeOneOf)
-	// changed
-	switch x := m.Changed.(type) {
-	case *ChangeOneOf_Order:
-		_ = b.EncodeVarint(5<<3 | proto.WireBytes)
-		if err := b.EncodeMessage(x.Order); err != nil {
-			return err
-		}
-	case *ChangeOneOf_Fulfillment:
-		_ = b.EncodeVarint(6<<3 | proto.WireBytes)
-		if err := b.EncodeMessage(x.Fulfillment); err != nil {
-			return err
-		}
-	case nil:
-	default:
-		return fmt.Errorf("ChangeOneOf.Changed has unexpected type %T", x)
-	}
-	return nil
-}
-
-func _ChangeOneOf_OneofUnmarshaler(msg proto.Message, tag, wire int, b *proto.Buffer) (bool, error) {
-	m := msg.(*ChangeOneOf)
-	switch tag {
-	case 5: // changed.order
-		if wire != proto.WireBytes {
-			return true, proto.ErrInternalBadWireType
-		}
-		msg := new(Order)
-		err := b.DecodeMessage(msg)
-		m.Changed = &ChangeOneOf_Order{msg}
-		return true, err
-	case 6: // changed.fulfillment
-		if wire != proto.WireBytes {
-			return true, proto.ErrInternalBadWireType
-		}
-		msg := new(Fulfillment)
-		err := b.DecodeMessage(msg)
-		m.Changed = &ChangeOneOf_Fulfillment{msg}
-		return true, err
-	default:
-		return false, nil
-	}
-}
-
-func _ChangeOneOf_OneofSizer(msg proto.Message) (n int) {
-	m := msg.(*ChangeOneOf)
-	// changed
-	switch x := m.Changed.(type) {
-	case *ChangeOneOf_Order:
-		s := proto.Size(x.Order)
-		n += 1 // tag and wire
-		n += proto.SizeVarint(uint64(s))
-		n += s
-	case *ChangeOneOf_Fulfillment:
-		s := proto.Size(x.Fulfillment)
-		n += 1 // tag and wire
-		n += proto.SizeVarint(uint64(s))
-		n += s
-	case nil:
-	default:
-		panic(fmt.Sprintf("proto: unexpected type %T in oneof", x))
-	}
-	return n
 }
 
 type CancelOrderRequest struct {

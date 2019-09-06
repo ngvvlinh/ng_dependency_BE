@@ -34,7 +34,7 @@ var _ = math.Inf
 // is compatible with the proto package it is being compiled against.
 // A compilation error at this line likely means your copy of the
 // proto package needs to be updated.
-const _ = proto.ProtoPackageIsVersion2 // please upgrade the proto package
+const _ = proto.ProtoPackageIsVersion3 // please upgrade the proto package
 
 type OrdersResponse struct {
 	Paging               *common.PageInfo `protobuf:"bytes,1,opt,name=paging" json:"paging,omitempty"`
@@ -5705,78 +5705,12 @@ func (m *XFulfillment) GetActualCompensationAmount() int32 {
 	return 0
 }
 
-// XXX_OneofFuncs is for the internal use of the proto package.
-func (*XFulfillment) XXX_OneofFuncs() (func(msg proto.Message, b *proto.Buffer) error, func(msg proto.Message, tag, wire int, b *proto.Buffer) (bool, error), func(msg proto.Message) (n int), []interface{}) {
-	return _XFulfillment_OneofMarshaler, _XFulfillment_OneofUnmarshaler, _XFulfillment_OneofSizer, []interface{}{
+// XXX_OneofWrappers is for the internal use of the proto package.
+func (*XFulfillment) XXX_OneofWrappers() []interface{} {
+	return []interface{}{
 		(*XFulfillment_Shipnow)(nil),
 		(*XFulfillment_Shipment)(nil),
 	}
-}
-
-func _XFulfillment_OneofMarshaler(msg proto.Message, b *proto.Buffer) error {
-	m := msg.(*XFulfillment)
-	// fulfill
-	switch x := m.Fulfill.(type) {
-	case *XFulfillment_Shipnow:
-		_ = b.EncodeVarint(77<<3 | proto.WireBytes)
-		if err := b.EncodeMessage(x.Shipnow); err != nil {
-			return err
-		}
-	case *XFulfillment_Shipment:
-		_ = b.EncodeVarint(78<<3 | proto.WireBytes)
-		if err := b.EncodeMessage(x.Shipment); err != nil {
-			return err
-		}
-	case nil:
-	default:
-		return fmt.Errorf("XFulfillment.Fulfill has unexpected type %T", x)
-	}
-	return nil
-}
-
-func _XFulfillment_OneofUnmarshaler(msg proto.Message, tag, wire int, b *proto.Buffer) (bool, error) {
-	m := msg.(*XFulfillment)
-	switch tag {
-	case 77: // fulfill.shipnow
-		if wire != proto.WireBytes {
-			return true, proto.ErrInternalBadWireType
-		}
-		msg := new(ShipnowFulfillment)
-		err := b.DecodeMessage(msg)
-		m.Fulfill = &XFulfillment_Shipnow{msg}
-		return true, err
-	case 78: // fulfill.shipment
-		if wire != proto.WireBytes {
-			return true, proto.ErrInternalBadWireType
-		}
-		msg := new(Fulfillment)
-		err := b.DecodeMessage(msg)
-		m.Fulfill = &XFulfillment_Shipment{msg}
-		return true, err
-	default:
-		return false, nil
-	}
-}
-
-func _XFulfillment_OneofSizer(msg proto.Message) (n int) {
-	m := msg.(*XFulfillment)
-	// fulfill
-	switch x := m.Fulfill.(type) {
-	case *XFulfillment_Shipnow:
-		s := proto.Size(x.Shipnow)
-		n += 2 // tag and wire
-		n += proto.SizeVarint(uint64(s))
-		n += s
-	case *XFulfillment_Shipment:
-		s := proto.Size(x.Shipment)
-		n += 2 // tag and wire
-		n += proto.SizeVarint(uint64(s))
-		n += s
-	case nil:
-	default:
-		panic(fmt.Sprintf("proto: unexpected type %T in oneof", x))
-	}
-	return n
 }
 
 func init() {
