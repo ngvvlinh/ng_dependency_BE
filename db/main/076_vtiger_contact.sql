@@ -27,6 +27,6 @@ CREATE	TABLE vtiger_contact (
 	search_norm tsvector,
 	vtiger_created_at timestamptz,
 	vtiger_updated_at timestamptz
-)
+);
 
-CREATE INDEX search_idx ON vtiger_contact USING GIN(search_norm);
+CREATE INDEX ON vtiger_contact USING GIN(search_norm);

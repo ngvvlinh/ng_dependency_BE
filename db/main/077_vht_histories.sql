@@ -24,6 +24,6 @@ create table vht_call_history (
 	updated_at timestamptz,
 	o_data text,
 	search_norm tsvector
-)
+);
 
-create index search_idx_vht ON vht_call_history USING GIN(search_norm);
+create index ON vht_call_history USING GIN(search_norm);
