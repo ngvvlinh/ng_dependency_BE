@@ -4,18 +4,14 @@ import (
 	"context"
 
 	"etop.vn/api/meta"
-
-	"etop.vn/common/bus"
-
-	cm "etop.vn/backend/pkg/common"
-
-	"etop.vn/backend/com/supporting/crm/vht/sqlstore"
-	"etop.vn/backend/pkg/common/cmsql"
-
 	crmvht "etop.vn/api/supporting/crm/vht"
 	"etop.vn/backend/com/supporting/crm/vht/convert"
-	sysnvht "etop.vn/backend/com/supporting/crm/vht/sync"
+	"etop.vn/backend/com/supporting/crm/vht/sqlstore"
+	syncvht "etop.vn/backend/com/supporting/crm/vht/sync"
+	cm "etop.vn/backend/pkg/common"
+	"etop.vn/backend/pkg/common/cmsql"
 	vhtclient "etop.vn/backend/pkg/integration/vht/client"
+	"etop.vn/common/bus"
 )
 
 var _ crmvht.Aggregate = &AggregateService{}
@@ -23,7 +19,7 @@ var _ crmvht.Aggregate = &AggregateService{}
 type AggregateService struct {
 	VhtStore           sqlstore.VhtCallHistoriesFactory
 	VhtClient          *vhtclient.Client
-	SyncVhtCallHistory *sysnvht.SyncVht
+	SyncVhtCallHistory *syncvht.SyncVht
 }
 
 func New(db cmsql.Database, vhtClient *vhtclient.Client) *AggregateService {
@@ -90,7 +86,7 @@ func (a AggregateService) CreateOrUpdateCallHistoryByCallID(ctx context.Context,
 
 func (a *AggregateService) PingServerVht(context.Context, *meta.Empty) error {
 	if a.SyncVhtCallHistory == nil {
-		a.SyncVhtCallHistory = sysnvht.New(a.VhtStore, a.VhtClient)
+		a.SyncVhtCallHistory = syncvht.New(a.VhtStore, a.VhtClient)
 	}
 	return a.SyncVhtCallHistory.PingServerVht()
 }

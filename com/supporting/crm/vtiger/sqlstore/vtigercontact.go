@@ -3,9 +3,8 @@ package sqlstore
 import (
 	"context"
 
-	model2 "etop.vn/backend/com/supporting/crm/vtiger/model"
-
 	"etop.vn/api/meta"
+	"etop.vn/backend/com/supporting/crm/vtiger/model"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/cmsql"
 	"etop.vn/backend/pkg/common/sqlstore"
@@ -61,14 +60,14 @@ func (v *VtigerContactStore) ByEtopUserID(id int64) *VtigerContactStore {
 	return v
 }
 
-func (v *VtigerContactStore) GetVtigerContact() (*model2.VtigerContact, error) {
+func (v *VtigerContactStore) GetVtigerContact() (*model.VtigerContact, error) {
 	query := v.query().Where(v.preds)
-	var contact model2.VtigerContact
+	var contact model.VtigerContact
 	err := query.ShouldGet(&contact)
 	return &contact, err
 }
 
-func (v *VtigerContactStore) CreateVtigerContact(contact *model2.VtigerContact) error {
+func (v *VtigerContactStore) CreateVtigerContact(contact *model.VtigerContact) error {
 	if contact.EtopUserID == 0 {
 		return cm.Errorf(cm.InvalidArgument, nil, "missing EtopUserID")
 	}
@@ -76,8 +75,8 @@ func (v *VtigerContactStore) CreateVtigerContact(contact *model2.VtigerContact) 
 	return err
 }
 
-func (v *VtigerContactStore) GetContact() (*model2.VtigerContact, error) {
-	var item model2.VtigerContact
+func (v *VtigerContactStore) GetContact() (*model.VtigerContact, error) {
+	var item model.VtigerContact
 	err := v.query().Where(v.preds).ShouldGet(&item)
 	return &item, err
 }
@@ -87,7 +86,7 @@ var SortVtigerContact = map[string]string{
 	"updated_at": "updated_at",
 }
 
-func (v *VtigerContactStore) SearchContact(value string) ([]*model2.VtigerContact, error) {
+func (v *VtigerContactStore) SearchContact(value string) ([]*model.VtigerContact, error) {
 	query := v.query().Where(`search_norm @@ ?::tsquery`, validate.NormalizeSearchQueryAnd(value))
 	if v.OrderBy != "" {
 		query = query.OrderBy(v.OrderBy)
@@ -96,19 +95,19 @@ func (v *VtigerContactStore) SearchContact(value string) ([]*model2.VtigerContac
 	if err != nil {
 		return nil, err
 	}
-	var contacts []*model2.VtigerContact
-	err = query.Find((*model2.VtigerContacts)(&contacts))
+	var contacts []*model.VtigerContact
+	err = query.Find((*model.VtigerContacts)(&contacts))
 	return contacts, err
 }
 
-func (v *VtigerContactStore) UpdateVtigerContact(contact *model2.VtigerContact) error {
+func (v *VtigerContactStore) UpdateVtigerContact(contact *model.VtigerContact) error {
 	query := v.query()
 	query = query.Where(v.ft.ByEtopUserID(contact.EtopUserID))
 	err := v.query().Where(v.ft.ByEtopUserID(contact.EtopUserID)).ShouldUpdate(contact)
 	return err
 }
 
-func (v *VtigerContactStore) GetContacts() ([]*model2.VtigerContact, error) {
+func (v *VtigerContactStore) GetContacts() ([]*model.VtigerContact, error) {
 	query := v.query().Where(v.preds)
 	if v.OrderBy != "" {
 		query = query.OrderBy(v.OrderBy)
@@ -117,7 +116,7 @@ func (v *VtigerContactStore) GetContacts() ([]*model2.VtigerContact, error) {
 	if err != nil {
 		return nil, err
 	}
-	var contacts []*model2.VtigerContact
-	err = query.Find((*model2.VtigerContacts)(&contacts))
+	var contacts []*model.VtigerContact
+	err = query.Find((*model.VtigerContacts)(&contacts))
 	return contacts, err
 }

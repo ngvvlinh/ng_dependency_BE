@@ -11,24 +11,19 @@ import (
 	"syscall"
 	"time"
 
-	"etop.vn/backend/com/supporting/crm/vtiger/mapping"
-
-	"etop.vn/backend/pkg/common/metrics"
-
+	"etop.vn/backend/cmd/supporting/crm-sync-service/config"
 	vhtaggregate "etop.vn/backend/com/supporting/crm/vht/aggregate"
 	vhtquery "etop.vn/backend/com/supporting/crm/vht/query"
 	vtigeraggregate "etop.vn/backend/com/supporting/crm/vtiger/aggregate"
+	"etop.vn/backend/com/supporting/crm/vtiger/mapping"
 	vtigerquery "etop.vn/backend/com/supporting/crm/vtiger/query"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/cmsql"
 	cc "etop.vn/backend/pkg/common/config"
+	"etop.vn/backend/pkg/common/health"
+	"etop.vn/backend/pkg/common/metrics"
 	vhtclient "etop.vn/backend/pkg/integration/vht/client"
 	vtigerclient "etop.vn/backend/pkg/integration/vtiger/client"
-
-	// "etop.vn/backend/com/supporting/crm"
-
-	"etop.vn/backend/cmd/supporting/crm-service/config"
-	"etop.vn/backend/pkg/common/health"
 	"etop.vn/common/l"
 )
 
@@ -74,15 +69,14 @@ func main() {
 		ll.Fatal("error while connecting to postgres", l.Error(err))
 	}
 
-	configMap, err := ReadMappingFile(cfg.MappingFile)
+	configMap, err := ReadMappingFile(cfg.Vtiger.MappingFile)
 	if err != nil {
-		ll.Fatal("error while reading field map file", l.String("file", cfg.MappingFile), l.Error(err))
+		ll.Fatal("error while reading field map file", l.String("file", cfg.Vtiger.MappingFile), l.Error(err))
 	}
 
-	//client
 	vtigerClient := vtigerclient.NewVigerClient(cfg.Vtiger.ServiceURL, cfg.Vtiger.Username, cfg.Vtiger.APIKey)
-	vhtClient := vhtclient.NewClient(cfg.Vht.UserName, cfg.Vht.PassWord)
-	// create aggregate, query service
+	vhtClient := vhtclient.NewClient(cfg.Vht.Username, cfg.Vht.Password)
+
 	vhtAggregate := vhtaggregate.New(db, vhtClient).MessageBus()
 	vhtQuery := vhtquery.New(db).MessageBus()
 	vtigerAggregate := vtigeraggregate.New(db, configMap, vtigerClient).MessageBus()
@@ -105,6 +99,7 @@ func main() {
 	}
 	metrics.RegisterHTTPHandler(mux)
 	healthservice.RegisterHTTPHandler(mux)
+	healthservice.MarkReady()
 
 	_ = svr.Shutdown(context.Background())
 	ll.Info("Waiting for all requests to finish")

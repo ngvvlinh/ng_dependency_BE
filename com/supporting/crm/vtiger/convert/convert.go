@@ -2,12 +2,12 @@ package convert
 
 import (
 	"etop.vn/api/supporting/crm/vtiger"
-	model2 "etop.vn/backend/com/supporting/crm/vtiger/model"
+	"etop.vn/backend/com/supporting/crm/vtiger/model"
 )
 
 // ConvertModelContact covert protobuf to model Contact
-func ConvertModelContact(c *vtiger.Contact, AssignedUserID string) *model2.VtigerContact {
-	contact := &model2.VtigerContact{
+func ConvertModelContact(c *vtiger.Contact, AssignedUserID string) *model.VtigerContact {
+	contact := &model.VtigerContact{
 		ID:                   c.ID,
 		Firstname:            c.Firstname,
 		ContactNo:            c.ContactNo,
@@ -35,7 +35,7 @@ func ConvertModelContact(c *vtiger.Contact, AssignedUserID string) *model2.Vtige
 	return contact
 }
 
-func ConvertContactFromModel(contact *model2.VtigerContact) *vtiger.Contact {
+func ConvertContactFromModel(contact *model.VtigerContact) *vtiger.Contact {
 	return &vtiger.Contact{
 		ID:                   contact.ID,
 		Firstname:            contact.Firstname,
@@ -62,8 +62,8 @@ func ConvertContactFromModel(contact *model2.VtigerContact) *vtiger.Contact {
 	}
 }
 
-func ConvertLeadtoModelContact(lead *vtiger.Lead) *model2.VtigerContact {
-	contact := &model2.VtigerContact{
+func ConvertLeadtoModelContact(lead *vtiger.Lead) *model.VtigerContact {
+	contact := &model.VtigerContact{
 		ID:                   lead.ID,
 		Firstname:            lead.Firstname,
 		ContactNo:            lead.ContactNo,

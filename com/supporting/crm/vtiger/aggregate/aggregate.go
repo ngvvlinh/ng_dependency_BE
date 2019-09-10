@@ -5,11 +5,6 @@ import (
 	"fmt"
 	"strings"
 
-	cm "etop.vn/backend/pkg/common"
-
-	"etop.vn/backend/pkg/common/cmsql"
-	"etop.vn/common/bus"
-
 	crmvtiger "etop.vn/api/supporting/crm/vtiger"
 	"etop.vn/backend/com/supporting/crm/vtiger/convert"
 	"etop.vn/backend/com/supporting/crm/vtiger/mapping"
@@ -17,7 +12,10 @@ import (
 	"etop.vn/backend/com/supporting/crm/vtiger/sqlstore"
 	"etop.vn/backend/com/supporting/crm/vtiger/sync"
 	"etop.vn/backend/com/supporting/crm/vtiger/vtigerstore"
+	cm "etop.vn/backend/pkg/common"
+	"etop.vn/backend/pkg/common/cmsql"
 	client2 "etop.vn/backend/pkg/integration/vtiger/client"
+	"etop.vn/common/bus"
 )
 
 var (

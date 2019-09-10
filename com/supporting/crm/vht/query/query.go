@@ -3,16 +3,13 @@ package query
 import (
 	"context"
 
-	"etop.vn/common/bus"
-
 	"etop.vn/api/meta"
+	crmvht "etop.vn/api/supporting/crm/vht"
 	"etop.vn/backend/com/supporting/crm/vht/convert"
 	"etop.vn/backend/com/supporting/crm/vht/model"
-	"etop.vn/backend/pkg/common/cmsql"
-
 	"etop.vn/backend/com/supporting/crm/vht/sqlstore"
-
-	crmvht "etop.vn/api/supporting/crm/vht"
+	"etop.vn/backend/pkg/common/cmsql"
+	"etop.vn/common/bus"
 )
 
 type QueryService struct {

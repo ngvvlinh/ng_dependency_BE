@@ -257,9 +257,9 @@ func main() {
 			ll.Fatal("ahamove: No token")
 		}
 	}
-	configMap, err := config.ReadMappingFile(cfg.MappingFile)
+	configMap, err := config.ReadMappingFile(cfg.Vtiger.MappingFile)
 	if err != nil {
-		ll.Fatal("error while reading field map file", l.String("file", cfg.MappingFile), l.Error(err))
+		ll.Fatal("error while reading field map file", l.String("file", cfg.Vtiger.MappingFile), l.Error(err))
 	}
 
 	if cfg.VTPay.MerchantCode != "" {
@@ -277,12 +277,18 @@ func main() {
 	})
 
 	eventBus := bus.New()
+	crmDB, err := cmsql.Connect(cfg.PostgresCRM)
+	if err != nil {
+		ll.Fatal("Unable to connect to Postgres", l.Error(err))
+	}
+
 	vtigerClient := vtigerclient.NewVigerClient(cfg.Vtiger.ServiceURL, cfg.Vtiger.Username, cfg.Vtiger.APIKey)
 	// create aggregate, query service
-	vhtQuery := vhtquery.New(db).MessageBus()
-	vhtAggregate := vhtaggregate.New(db, nil).MessageBus()
-	vtigerQuery := vtigerquery.New(db, configMap, vtigerClient).MessageBus()
-	vtigerAggregate := vtigeraggregate.New(db, configMap, vtigerClient).MessageBus()
+	vhtQuery := vhtquery.New(crmDB).MessageBus()
+	vhtAggregate := vhtaggregate.New(crmDB, nil).MessageBus()
+	vtigerQuery := vtigerquery.New(crmDB, configMap, vtigerClient).MessageBus()
+	vtigerAggregate := vtigeraggregate.New(crmDB, configMap, vtigerClient).MessageBus()
+
 	identityQuery = serviceidentity.NewQueryService(db).MessageBus()
 	catalogQuery := catalogquery.New(db).MessageBus()
 	catalogAggr := catalogaggregate.New(db).MessageBus()

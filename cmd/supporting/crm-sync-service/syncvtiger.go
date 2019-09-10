@@ -28,15 +28,15 @@ func SyncVtiger(vtigerAggregate vtiger.CommandBus, vtigerQuery vtiger.QueryBus) 
 }
 
 func SyncVtigerData(id interface{}, p scheduler.Planner) (_err error) {
-	ll.S.Info("run SyncVtigerData", time.Now())
+	ll.S.Info("Run SyncVtigerData", time.Now())
 	defer func() {
 		err := recover()
 		GetLastVtigerModifytimeSyncInDB()
 		if err != nil {
-			ll.S.Info("Add after err :: ", vtigerDefaultErrRecurr)
+			ll.S.Info("Add after error", vtigerDefaultErrRecurr)
 			p.AddAfter(id, vtigerDefaultErrRecurr, SyncVtigerData)
 		} else {
-			ll.S.Info("Add after success :: ", vtigerDefaultRecurr)
+			ll.S.Info("Add after success", vtigerDefaultRecurr)
 			p.AddAfter(id, vtigerDefaultRecurr, SyncVtigerData)
 		}
 	}()

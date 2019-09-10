@@ -3,9 +3,8 @@ package sqlstore
 import (
 	"context"
 
-	model2 "etop.vn/backend/com/supporting/crm/vht/model"
-
 	"etop.vn/api/meta"
+	"etop.vn/backend/com/supporting/crm/vht/model"
 	"etop.vn/backend/pkg/common/cmsql"
 	"etop.vn/backend/pkg/common/sqlstore"
 	"etop.vn/backend/pkg/common/validate"
@@ -64,9 +63,9 @@ func (v *VhtCallHistoryStore) BySdkCallID(value string) *VhtCallHistoryStore {
 	return v
 }
 
-func (v *VhtCallHistoryStore) GetCallHistory() (*model2.VhtCallHistory, error) {
+func (v *VhtCallHistoryStore) GetCallHistory() (*model.VhtCallHistory, error) {
 	query := v.query().Where(v.preds)
-	var vthCallHistory model2.VhtCallHistory
+	var vthCallHistory model.VhtCallHistory
 	err := query.ShouldGet(&vthCallHistory)
 	if err != nil {
 		return nil, err
@@ -74,7 +73,7 @@ func (v *VhtCallHistoryStore) GetCallHistory() (*model2.VhtCallHistory, error) {
 	return &vthCallHistory, nil
 }
 
-func (v *VhtCallHistoryStore) GetCallHistories() ([]*model2.VhtCallHistory, error) {
+func (v *VhtCallHistoryStore) GetCallHistories() ([]*model.VhtCallHistory, error) {
 	query := v.query().Where(v.preds)
 	if v.OrderBy != "" {
 		query.OrderBy(v.OrderBy)
@@ -83,12 +82,12 @@ func (v *VhtCallHistoryStore) GetCallHistories() ([]*model2.VhtCallHistory, erro
 	if err != nil {
 		return nil, err
 	}
-	var vthCallHistories []*model2.VhtCallHistory
-	err = query.Find((*model2.VhtCallHistories)(&vthCallHistories))
+	var vthCallHistories []*model.VhtCallHistory
+	err = query.Find((*model.VhtCallHistories)(&vthCallHistories))
 	return vthCallHistories, err
 }
 
-func (v *VhtCallHistoryStore) SearchVhtCallHistories(value string) ([]*model2.VhtCallHistory, error) {
+func (v *VhtCallHistoryStore) SearchVhtCallHistories(value string) ([]*model.VhtCallHistory, error) {
 	query := v.query().Where(`search_norm @@ ?::tsquery`, validate.NormalizeSearchQueryAnd(value))
 	if v.OrderBy != "" {
 		query.OrderBy(v.OrderBy)
@@ -97,18 +96,18 @@ func (v *VhtCallHistoryStore) SearchVhtCallHistories(value string) ([]*model2.Vh
 	if err != nil {
 		return nil, err
 	}
-	var vthCallHistories []*model2.VhtCallHistory
-	err = query.Find((*model2.VhtCallHistories)(&vthCallHistories))
+	var vthCallHistories []*model.VhtCallHistory
+	err = query.Find((*model.VhtCallHistories)(&vthCallHistories))
 	return vthCallHistories, err
 }
 
-func (v *VhtCallHistoryStore) CreateVhtCallHistory(contact *model2.VhtCallHistory) error {
+func (v *VhtCallHistoryStore) CreateVhtCallHistory(contact *model.VhtCallHistory) error {
 	query := v.query().Where(v.preds)
 	err := query.ShouldInsert(contact)
 	return err
 }
 
-func (v *VhtCallHistoryStore) UpdateVhtCallHistory(contact *model2.VhtCallHistory) error {
+func (v *VhtCallHistoryStore) UpdateVhtCallHistory(contact *model.VhtCallHistory) error {
 	query := v.query().Where(v.preds)
 	err := query.ShouldUpdate(contact)
 	return err

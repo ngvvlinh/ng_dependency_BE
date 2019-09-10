@@ -33,7 +33,7 @@ func SyncCallHistoryVht(vhtAggr vht.CommandBus, vhtQS vht.QueryBus) {
 		return
 	}
 
-	GetLasttimeSyncInDB()
+	GetLatestSyncInDB()
 
 	gScheduler = scheduler.New(defaultNumWorkers)
 
@@ -43,15 +43,15 @@ func SyncCallHistoryVht(vhtAggr vht.CommandBus, vhtQS vht.QueryBus) {
 }
 
 func SyncVhtCallHistoryData(id interface{}, p scheduler.Planner) (_err error) {
-	ll.S.Info("run syncUnCompleteFfms", time.Now())
+	ll.S.Info("Run SyncVhtCallHistoryData", time.Now())
 	defer func() {
-		GetLasttimeSyncInDB()
+		GetLatestSyncInDB()
 		err := recover()
 		if err != nil {
-			ll.S.Info("Add after err :: ", vhtDefaultErrRecurr)
+			ll.S.Info("Add after error", vhtDefaultErrRecurr)
 			p.AddAfter(id, vhtDefaultErrRecurr, SyncVhtCallHistoryData)
 		} else {
-			ll.S.Info("Add after success :: ", vhtDefaultRecurr)
+			ll.S.Info("Add after success", vhtDefaultRecurr)
 			p.AddAfter(id, vhtDefaultRecurr, SyncVhtCallHistoryData)
 		}
 	}()
@@ -67,7 +67,7 @@ func SyncVhtCallHistoryData(id interface{}, p scheduler.Planner) (_err error) {
 	return nil
 }
 
-func GetLasttimeSyncInDB() {
+func GetLatestSyncInDB() {
 	query := &vht.GetLastCallHistoryQuery{
 		Offset: 0,
 		Limit:  1,

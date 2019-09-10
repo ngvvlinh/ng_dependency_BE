@@ -3,30 +3,23 @@ package query
 import (
 	"context"
 	"net/url"
+	"sort"
 	"strconv"
 
-	"etop.vn/backend/pkg/common/cmsql"
-
+	"etop.vn/api/meta"
+	"etop.vn/api/supporting/crm/vtiger"
 	"etop.vn/backend/com/supporting/crm/vtiger/convert"
-
-	"etop.vn/backend/pkg/integration/vtiger/client"
-
-	"etop.vn/backend/com/supporting/crm/vtiger/model"
-
 	"etop.vn/backend/com/supporting/crm/vtiger/mapping"
+	"etop.vn/backend/com/supporting/crm/vtiger/model"
 	"etop.vn/backend/com/supporting/crm/vtiger/sqlstore"
 	"etop.vn/backend/com/supporting/crm/vtiger/vtigerstore"
-
+	"etop.vn/backend/pkg/common/cmsql"
+	sqlbuilder "etop.vn/backend/pkg/common/simple-sql-builder"
+	"etop.vn/backend/pkg/integration/vtiger/client"
 	"etop.vn/common/bus"
-
-	"etop.vn/api/meta"
-
-	"etop.vn/api/supporting/crm/vtiger"
-	simpleSqlBuilder "etop.vn/backend/pkg/common/simple-sql-builder"
 )
 
 var (
-	Empty      = ""
 	Categories = []*vtiger.Category{
 		{
 			Code:  "force-picking",
@@ -149,8 +142,8 @@ func (q *QueryService) GetTickets(ctx context.Context, req *vtiger.GetTicketsArg
 
 func (q *QueryService) CountTicketByStatus(ctx context.Context, req *vtiger.CountTicketByStatusArgs) (*vtiger.CountTicketByStatusResponse, error) {
 	status := req.Status
-	//make SQL query vtiger
-	var b simpleSqlBuilder.SimpleSQLBuilder
+
+	var b sqlbuilder.SimpleSQLBuilder
 	b.Printf("SELECT COUNT(*) FROM HelpDesk WHERE ticketstatus = ? ;", status)
 	sqlVtiger, err := b.String()
 	if err != nil {
@@ -172,7 +165,7 @@ func (q *QueryService) CountTicketByStatus(ctx context.Context, req *vtiger.Coun
 
 func (q *QueryService) GetContacts(ctx context.Context, req *vtiger.GetContactsArgs) (*vtiger.ContactsResponse, error) {
 
-	//search in db
+	// search in db
 	textSearch := req.Search
 	var dbResult []*model.VtigerContact
 	var err error
@@ -214,38 +207,47 @@ func (q *QueryService) VtigerRawQuery(query string) (*client.VtigerResponse, err
 
 // BuildVtigerQuery build query type sql vtiger
 func (q *QueryService) BuildVtigerQuery(module string, condition map[string]string, orderBy *vtiger.OrderBy, paging *meta.Paging) (string, error) {
-	var b simpleSqlBuilder.SimpleSQLBuilder
-	b.Printf("SELECT * FROM ? ", simpleSqlBuilder.Raw(module))
-	fieldMap := q.fieldMap[module]
+	return buildVtigerQuery(q.fieldMap[module], module, condition, orderBy, paging)
+}
 
+func buildVtigerQuery(fieldMap mapping.ConfigGroup, module string, condition map[string]string, orderBy *vtiger.OrderBy, paging *meta.Paging) (string, error) {
+	var b sqlbuilder.SimpleSQLBuilder
+	b.Printf("SELECT * FROM ?", sqlbuilder.Raw(module))
 	if len(condition) > 0 {
-		b.Printf(" WHERE ")
+		b.Printf(" WHERE")
 	}
-	i := 1
-	for key, value := range condition {
+
+	keys := make([]string, 0, len(condition))
+	for key := range condition {
+		keys = append(keys, key)
+	}
+	sort.Strings(keys)
+	for i, key := range keys {
+		value := condition[key]
 		etopField := key
 		if fieldMap[key] != "" {
 			etopField = fieldMap[key]
 		}
-		if i == 1 {
-			b.Printf(" ? = ? ", simpleSqlBuilder.Raw(etopField), value)
-			continue
+		if i != 0 {
+			b.Printf(" AND")
 		}
-		b.Printf(" AND ? = ? ", simpleSqlBuilder.Raw(etopField), value)
-		i++
+		b.Printf(" ? = ?", sqlbuilder.Raw(etopField), value)
 	}
 
-	etopField := orderBy.Field
-	if fieldMap[etopField] != "" {
-		etopField = fieldMap[etopField]
-	}
-	if orderBy.Sort == "" {
-		orderBy.Sort = "DESC"
-	}
 	if orderBy != nil {
-		b.Printf("ORDER BY ? ? ", simpleSqlBuilder.Raw(etopField), simpleSqlBuilder.Raw(orderBy.Sort))
+		etopField := orderBy.Field
+		if fieldMap[etopField] != "" {
+			etopField = fieldMap[etopField]
+		}
+		if orderBy.Sort == "" {
+			orderBy.Sort = " DESC"
+		}
+		b.Printf(" ORDER BY ? ?", sqlbuilder.Raw(etopField), sqlbuilder.Raw(orderBy.Sort))
 	}
-	b.Printf("LIMIT ?, ? ;", paging.Offset, paging.Limit)
+	if paging != nil {
+		b.Printf(" LIMIT ?, ?", paging.Offset, paging.Limit)
+	}
+	b.Printf(";")
 	returnValue, err := b.String()
 	if err != nil {
 		return "", err

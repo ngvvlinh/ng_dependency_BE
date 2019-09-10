@@ -5,13 +5,11 @@ import (
 	"net/url"
 	"strconv"
 
-	"etop.vn/api/supporting/crm/vtiger"
-
 	"github.com/gorilla/schema"
 
+	"etop.vn/api/supporting/crm/vtiger"
 	"etop.vn/backend/com/supporting/crm/vtiger/mapping"
 	cm "etop.vn/backend/pkg/common"
-
 	sqlbuilder "etop.vn/backend/pkg/common/simple-sql-builder"
 	vtigerclient "etop.vn/backend/pkg/integration/vtiger/client"
 )
