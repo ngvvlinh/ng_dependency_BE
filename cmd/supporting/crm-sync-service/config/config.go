@@ -89,5 +89,7 @@ func Default() Config {
 func Load() (cfg Config, err error) {
 	err = cc.LoadWithDefault(&cfg, Default())
 	cc.PostgresMustLoadEnv(&cfg.Postgres)
+	cfg.Vtiger.MustLoadEnv()
+	cfg.Vht.MustLoadEnv()
 	return cfg, err
 }

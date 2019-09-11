@@ -180,6 +180,8 @@ func Load(isTest bool) (Config, error) {
 	cfg.VTPost.MustLoadEnv()
 	cfg.Ahamove.MustLoadEnv()
 	cfg.VTPay.MustLoadEnv()
+	cfg.Vtiger.MustLoadEnv()
+	cfg.Vht.MustLoadEnv()
 	cc.MustLoadEnv("ET_SADMIN_TOKEN", &cfg.SAdminToken)
 
 	if cfg.Haravan.Secret == "" {

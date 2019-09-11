@@ -2,6 +2,7 @@ package main
 
 import (
 	"net/http"
+	"path/filepath"
 	"regexp"
 	"strconv"
 	"strings"
@@ -193,9 +194,15 @@ func startEtopServer() *http.Server {
 	if cfg.ServeDoc || *flDocOnly {
 		mux.Handle("/", http.RedirectHandler("/doc/etop", http.StatusTemporaryRedirect))
 		mux.Handle("/doc", http.RedirectHandler("/doc/etop", http.StatusTemporaryRedirect))
-		for _, s := range strings.Split("sadmin,admin,shop,integration,affiliate", ",") {
+		for _, s := range strings.Split("sadmin,admin,shop,integration,affiliate,services/crm", ",") {
+			swaggerPath := "/doc/" + s + "/swagger.json"
 			mux.Handle("/doc/"+s, cmservice.RedocHandler())
-			mux.Handle("/doc/"+s+"/swagger.json", cmservice.SwaggerHandler("etop/"+s+"/"+s+".swagger.json"))
+			if strings.Contains(s, "/") {
+				base := filepath.Base(s)
+				mux.Handle(swaggerPath, cmservice.SwaggerHandler(s+"/"+base+".swagger.json"))
+			} else {
+				mux.Handle(swaggerPath, cmservice.SwaggerHandler("etop/"+s+"/"+s+".swagger.json"))
+			}
 		}
 		mux.Handle("/doc/etop", cmservice.RedocHandler())
 		mux.Handle("/doc/etop/swagger.json", cmservice.SwaggerHandler("etop/etop.swagger.json"))

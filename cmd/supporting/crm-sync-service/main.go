@@ -90,8 +90,6 @@ func main() {
 		SyncVtiger(vtigerAggregate, vtigerQuery)
 	}()
 
-	<-ctx.Done()
-
 	mux := http.NewServeMux()
 	svr := &http.Server{
 		Addr:    cfg.HTTP.Address(),
@@ -100,7 +98,16 @@ func main() {
 	metrics.RegisterHTTPHandler(mux)
 	healthservice.RegisterHTTPHandler(mux)
 	healthservice.MarkReady()
+	go func() {
+		defer ctxCancel()
+		err := svr.ListenAndServe()
+		if err != http.ErrServerClosed {
+			ll.Error("HTTP server", l.Error(err))
+		}
+		ll.Sync()
+	}()
 
+	<-ctx.Done()
 	_ = svr.Shutdown(context.Background())
 	ll.Info("Waiting for all requests to finish")
 	ll.Info("Gracefully stopped!")
