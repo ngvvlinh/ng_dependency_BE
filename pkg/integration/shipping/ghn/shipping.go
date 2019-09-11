@@ -147,14 +147,17 @@ func (p *Carrier) CreateFulfillment(
 		ExpectedPickAt:     service.ExpectedPickAt,
 		ExpectedDeliveryAt: expectedDeliveryAt,
 	}
-	// Fake shipping_fee_shop_lines, it will automates update later (when receive webhook)
-	updateFfm.ProviderShippingFeeLines = []*model.ShippingFeeLine{
-		{
-			ShippingFeeType:      model.ShippingFeeTypeMain,
-			Cost:                 int(r.TotalServiceFee),
-			ExternalShippingCode: r.OrderCode.String(),
+	// Get order GHN to update ProviderShippingFeeLine
+	ghnGetOrderCmd := &RequestGetOrderCommand{
+		ServiceID: service.ProviderServiceID,
+		Request: &ghnclient.OrderCodeRequest{
+			OrderCode: r.OrderCode.String(),
 		},
 	}
+	if err := p.GetOrder(ctx, ghnGetOrderCmd); err == nil {
+		updateFfm.ProviderShippingFeeLines = ghnclient.CalcAndConvertShippingFeeLines(ghnGetOrderCmd.Result.ShippingOrderCosts)
+	}
+
 	updateFfm.ShippingFeeShopLines = model.GetShippingFeeShopLines(updateFfm.ProviderShippingFeeLines, updateFfm.EtopPriceRule, &updateFfm.EtopAdjustedShippingFeeMain)
 	return updateFfm, nil
 }
