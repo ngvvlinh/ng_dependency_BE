@@ -34,6 +34,7 @@ import "etop/etc/status3/status.proto";
 import "etop/etc/status4/status.proto";
 import "etop/etop.proto";
 import "etop/order/order.proto";
+import "etop/etc/payment_provider/payment_provider.proto";
 
 service MiscService {
     rpc VersionInfo(cm.Empty) returns (cm.VersionInfoResponse);
@@ -220,6 +221,8 @@ service TradingService {
     rpc TradingCreateOrder(order.TradingCreateOrderRequest) returns (order.Order);
     rpc TradingGetOrder(cm.IDRequest) returns (order.Order);
     rpc TradingGetOrders(GetOrdersRequest) returns (order.OrdersResponse);
+
+    rpc TradingPaymentOrder(TradingPaymentOrderRequest) returns (TradingPaymentOrderResponse);
 }
 
 message RegisterShopRequest {
@@ -1089,4 +1092,16 @@ message UpdateCustomerAddressRequest {
 
 message CustomerAddressesResponse {
     repeated CustomerAddress addresses = 1;
+}
+
+message TradingPaymentOrderRequest {
+    optional int64 id = 1 [(gogoproto.nullable) = false];
+    optional string desc = 2 [(gogoproto.nullable) = false];
+    optional string return_url = 3 [(gogoproto.nullable) = false];
+    optional int32 amount = 4 [(gogoproto.nullable) = false];
+    optional payment_provider.PaymentProvider payment_provider = 5 [(gogoproto.nullable) = false];
+}
+
+message TradingPaymentOrderResponse {
+    optional string url = 1 [(gogoproto.nullable) = false];
 }

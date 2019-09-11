@@ -15,6 +15,7 @@ import (
 	"etop.vn/api/main/shipnow"
 	"etop.vn/backend/cmd/etop-server/config"
 	haravanidentity "etop.vn/backend/com/external/haravan/identity"
+	servicepaymentmanager "etop.vn/backend/com/external/payment/manager"
 	"etop.vn/backend/com/handler/etop-handler/intctl"
 	"etop.vn/backend/com/main/address"
 	catalogaggregate "etop.vn/backend/com/main/catalog/aggregate"
@@ -65,6 +66,7 @@ import (
 	"etop.vn/backend/pkg/etop/sqlstore"
 	"etop.vn/backend/pkg/etop/upload"
 	"etop.vn/backend/pkg/integration/email"
+	"etop.vn/backend/pkg/integration/payment/vtpay"
 	vtpayclient "etop.vn/backend/pkg/integration/payment/vtpay/client"
 	"etop.vn/backend/pkg/integration/shipnow/ahamove"
 	"etop.vn/backend/pkg/integration/shipping/ghn"
@@ -262,10 +264,6 @@ func main() {
 		ll.Fatal("error while reading field map file", l.String("file", cfg.Vtiger.MappingFile), l.Error(err))
 	}
 
-	if cfg.VTPay.MerchantCode != "" {
-		vtpayClient = vtpayclient.New(cfg.VTPay)
-	}
-
 	shippingManager := shipping_provider.NewCtrl(locationBus, ghnCarrier, ghtkCarrier, vtpostCarrier)
 
 	authStore := auth.NewGenerator(redisStore)
@@ -313,6 +311,14 @@ func main() {
 	customerQuery := customerquery.NewCustomerQuery(db).MessageBus()
 	traderAddressQuery := customerquery.NewAddressQuery(db).MessageBus()
 
+	// payment
+	var vtpayProvider *vtpay.Provider
+	if cfg.VTPay.MerchantCode != "" {
+		vtpayClient = vtpayclient.New(cfg.VTPay)
+		vtpayProvider = vtpay.New(cfg.VTPay)
+	}
+	paymentManager := servicepaymentmanager.NewManager(vtpayProvider).MesssageBus()
+
 	middleware.Init(cfg.SAdminToken, identityQuery)
 	api.Init(identityAggr, shutdowner, redisStore, authStore, cfg.Email, cfg.SMS)
 	shop.Init(
@@ -332,6 +338,7 @@ func main() {
 		traderAddressAggr,
 		traderAddressQuery,
 		orderAggr.MessageBus(),
+		paymentManager,
 		shutdowner,
 		redisStore,
 	)

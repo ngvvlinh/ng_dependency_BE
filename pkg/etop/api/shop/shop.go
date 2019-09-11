@@ -7,6 +7,7 @@ import (
 	"github.com/asaskevich/govalidator"
 
 	haravanidentity "etop.vn/api/external/haravan/identity"
+	paymentmanager "etop.vn/api/external/payment/manager"
 	"etop.vn/api/main/address"
 	"etop.vn/api/main/catalog"
 	"etop.vn/api/main/identity"
@@ -122,6 +123,7 @@ var (
 	orderAggr            ordering.CommandBus
 	traderAddressAggr    addressing.CommandBus
 	traderAddressQuery   addressing.QueryBus
+	paymentCtrl          paymentmanager.CommandBus
 )
 
 func Init(
@@ -141,6 +143,7 @@ func Init(
 	traderAddressA addressing.CommandBus,
 	traderAddressQ addressing.QueryBus,
 	orderA ordering.CommandBus,
+	paymentManager paymentmanager.CommandBus,
 	sd cmservice.Shutdowner,
 	rd redis.Store,
 ) {
@@ -161,6 +164,7 @@ func Init(
 	traderAddressAggr = traderAddressA
 	traderAddressQuery = traderAddressQ
 	orderAggr = orderA
+	paymentCtrl = paymentManager
 	sd.Register(idempgroup.Shutdown)
 }
 

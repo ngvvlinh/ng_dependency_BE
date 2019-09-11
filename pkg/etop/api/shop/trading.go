@@ -2,7 +2,11 @@ package shop
 
 import (
 	"context"
+	"fmt"
 
+	"etop.vn/api/external/payment"
+
+	paymentmanager "etop.vn/api/external/payment/manager"
 	"etop.vn/api/main/catalog"
 	"etop.vn/api/main/identity"
 	identityconvert "etop.vn/backend/com/main/identity/convert"
@@ -25,6 +29,7 @@ func init() {
 		TradingCreateOrder,
 		TradingGetOrder,
 		TradingGetOrders,
+		TradingPaymentOrder,
 	)
 }
 
@@ -125,6 +130,25 @@ func TradingGetOrders(ctx context.Context, q *wrapshop.TradingGetOrdersEndpoint)
 	q.Result = &pborder.OrdersResponse{
 		Paging: pbcm.PbPageInfo(paging, int32(query.Result.Total)),
 		Orders: pborder.PbOrdersWithFulfillments(query.Result.Orders, model.TagShop, query.Result.Shops),
+	}
+	return nil
+}
+
+func TradingPaymentOrder(ctx context.Context, q *wrapshop.TradingPaymentOrderEndpoint) error {
+	code := fmt.Sprintf("%v_%v", payment.PaymentSourceOrder, q.Id)
+	args := &paymentmanager.BuildUrlConnectPaymentGatewayCommand{
+		OrderID:           code,
+		Desc:              q.Desc,
+		ReturnURL:         q.ReturnUrl,
+		TransactionAmount: int(q.Amount),
+		Provider:          q.PaymentProvider.ToPaymentProvider(),
+	}
+
+	if err := paymentCtrl.Dispatch(ctx, args); err != nil {
+		return err
+	}
+	q.Result = &pbshop.TradingPaymentOrderResponse{
+		Url: args.Result,
 	}
 	return nil
 }

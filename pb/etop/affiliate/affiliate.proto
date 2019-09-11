@@ -5,7 +5,7 @@ option go_package = "etop.vn/backend/pb/etop/affiliate";
 import "protoc-gen-swagger/options/annotations.proto";
 option (grpc.gateway.protoc_gen_swagger.options.openapiv2_swagger) = {
     info: {
-        title: "eTop API: Sale";
+        title: "eTop API: Affiliate";
 version:"v1"
 };
 };

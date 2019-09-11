@@ -1,7 +1,7 @@
 {
   "swagger": "2.0",
   "info": {
-    "title": "eTop API: Sale",
+    "title": "eTop API: Affiliate",
     "version": "v1"
   },
   "schemes": [
@@ -20,7 +20,7 @@
         "operationId": "DeleteAffiliate",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "",
             "schema": {
               "$ref": "#/definitions/cmEmpty"
             }
@@ -46,7 +46,7 @@
         "operationId": "RegisterAffiliate",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "",
             "schema": {
               "$ref": "#/definitions/affiliateAffiliate"
             }
@@ -72,7 +72,7 @@
         "operationId": "UpdateAffiliate",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "",
             "schema": {
               "$ref": "#/definitions/affiliateAffiliate"
             }
@@ -98,7 +98,7 @@
         "operationId": "VersionInfo",
         "responses": {
           "200": {
-            "description": "A successful response.",
+            "description": "",
             "schema": {
               "$ref": "#/definitions/cmVersionInfoResponse"
             }
