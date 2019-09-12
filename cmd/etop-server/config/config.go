@@ -97,6 +97,7 @@ func Default() Config {
 		Postgres:         cc.DefaultPostgres(),
 		PostgresNotifier: cc.DefaultPostgres(),
 		PostgresLogs:     cc.DefaultPostgres(),
+		PostgresCRM: 	  cc.DefaultPostgres(),
 		Redis:            cc.DefaultRedis(),
 		HTTP:             cc.HTTP{Port: 8080},
 		Kafka: cc.Kafka{

@@ -389,6 +389,7 @@ func prepareOrderLine(
 		RetailPrice:     int(m.RetailPrice), // will be over-written if a variant is provided
 		PaymentPrice:    int(m.PaymentPrice),
 		LineAmount:      int(m.Quantity) * int(m.RetailPrice),
+		ImageURL:        m.ImageUrl,
 		ProductName:     productName,
 		Attributes:      pborder.PbAttributesToModel(m.Attributes),
 		TotalDiscount:   0, // will be filled later
