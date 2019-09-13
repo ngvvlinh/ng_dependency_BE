@@ -99,7 +99,7 @@ func TestParseDirectives(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			directives, err := ParseDirective(tt.input)
+			directives, err := parseDirective(tt.input, nil)
 			if tt.err != "" {
 				require.EqualError(t, err, tt.err)
 				return

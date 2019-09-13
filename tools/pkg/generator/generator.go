@@ -271,9 +271,15 @@ func parseDirectivesFromPackage(fileCh chan<- fileContent, pkg *packages.Package
 			return nil, err
 		}
 		fileCh <- fileContent{Path: file, Body: body}
-		ds, err := parseDirectivesFromBody(directives, body)
-		if err != nil {
-			return nil, errorf(err, "parsing %v: %v", file, err)
+		ds, errs := parseDirectivesFromBody(directives, body)
+		if len(errs) != 0 {
+			// ignore unknown directives
+			if ll.Verbosed(2) {
+				for _, e := range errs {
+					ll.V(1).Debugf("ignored %v", e)
+				}
+			}
+			continue
 		}
 		directives = append(directives, ds...)
 	}
@@ -282,10 +288,13 @@ func parseDirectivesFromPackage(fileCh chan<- fileContent, pkg *packages.Package
 
 var startDirective = []byte(startDirectiveStr)
 
-func parseDirectivesFromBody(directives []Directive, body []byte) ([]Directive, error) {
+func parseDirectivesFromBody(directives []Directive, body []byte) (_ []Directive, errs []error) {
+	// store processing directives, they may be discarded if they are not
+	// followed by a blank line
+	var tmp []Directive
 	lastIdx := -1
-	for idx, b := range body {
-		if b != '\n' {
+	for idx := 1; idx < len(body); idx++ {
+		if body[idx] != '\n' {
 			continue
 		}
 
@@ -296,19 +305,27 @@ func parseDirectivesFromBody(directives []Directive, body []byte) ([]Directive, 
 
 			ds, err := ParseDirective(string(line))
 			if err != nil {
-				return nil, err
+				errs = append(errs, err)
+				continue
 			}
-			directives = append(directives, ds...)
+			tmp = append(tmp, ds...)
 		}
-
+		// directives are followed by a blank line, accept them
+		if idx+1 < len(body) && body[idx+1] == '\n' {
+			directives = append(directives, tmp...)
+			tmp = tmp[:0]
+		}
 		// find the next directive
-		if !bytes.HasPrefix(body[idx+1:], startDirective) {
+		if !bytes.HasPrefix(body[idx+1:], startDirective) && idx+1 != len(body) {
+			// discard directives not followed by a blank line
+			tmp = tmp[:0]
 			continue
 		}
 		lastIdx = idx + 1
 	}
 	// source file should end with a newline, so we don't process remaining lastIdx
-	return directives, nil
+	directives = append(directives, tmp...)
+	return directives, errs
 }
 
 func (ng *engine) validateConfig(cfg *Config) (_err error) {

@@ -69,8 +69,16 @@ func processDoc(doc, cmt *ast.CommentGroup) (Comment, []Directive, error) {
 	return comment, directives, nil
 }
 
-func ParseDirective(text string) (result []Directive, err error) {
-	return parseDirective(text, result)
+func ParseDirective(text string) (result []Directive, _ error) {
+	text = strings.TrimSpace(text)
+	if strings.HasPrefix(text, "+build") {
+		return nil, nil
+	}
+	result, err := parseDirective(text, result)
+	if err != nil {
+		return nil, errorf(err, "%v (%v)", err, text)
+	}
+	return result, nil
 }
 
 func parseDirective(text string, result []Directive) ([]Directive, error) {

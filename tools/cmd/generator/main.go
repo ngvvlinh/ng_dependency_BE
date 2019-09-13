@@ -9,10 +9,8 @@ import (
 	"etop.vn/backend/tools/pkg/generator"
 	"etop.vn/backend/tools/pkg/plugins/cq"
 	"etop.vn/backend/tools/pkg/plugins/sample"
-	"etop.vn/common/l"
 )
 
-var ll = l.New()
 var flClean = flag.Bool("clean", false, "clean generated files without generating new files")
 var flPlugins = flag.String("plugins", "", "select plugins for generating (default to all plugins)")
 
@@ -22,7 +20,6 @@ Usage: generator [OPTION] PATTERN ...
 
 Options:
 `
-
 	fmt.Print(text[1:])
 	flag.PrintDefaults()
 }
@@ -47,11 +44,11 @@ func main() {
 		cfg.EnabledPlugins = strings.Split(*flPlugins, ",")
 	}
 	if err := generator.RegisterPlugin(plugins...); err != nil {
-		fmt.Println(err)
+		fmt.Printf("%+v\n", err)
 		os.Exit(1)
 	}
 	if err := generator.Start(cfg, patterns...); err != nil {
-		fmt.Printf("can not generate: %v\n", err)
+		fmt.Printf("%+v\n", err)
 		os.Exit(1)
 	}
 }
