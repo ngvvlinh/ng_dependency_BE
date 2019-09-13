@@ -4,6 +4,8 @@ import (
 	"context"
 )
 
+// +gen:api
+
 type LocationQueryService interface {
 	GetAllLocations(ctx context.Context, _ *GetAllLocationsQueryArgs) (*GetAllLocationsQueryResult, error)
 

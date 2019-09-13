@@ -6,6 +6,8 @@ import (
 	"etop.vn/api/meta"
 )
 
+// +gen:api
+
 type Aggregate interface {
 	CreateExternalAccountHaravan(context.Context, *CreateExternalAccountHaravanArgs) (*ExternalAccountHaravan, error)
 

@@ -10,6 +10,8 @@ import (
 	shippingtypes "etop.vn/api/main/shipping/types"
 )
 
+// +gen:api
+
 type Aggregate interface {
 	ValidateOrdersForShipping(context.Context, *ValidateOrdersForShippingArgs) (*ValidateOrdersForShippingResponse, error)
 	ReserveOrdersForFfm(context.Context, *ReserveOrdersForFfmArgs) (*ReserveOrdersForFfmResponse, error)

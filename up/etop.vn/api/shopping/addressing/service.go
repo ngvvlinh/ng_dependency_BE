@@ -8,6 +8,8 @@ import (
 	. "etop.vn/capi/dot"
 )
 
+// +gen:api
+
 type Aggregate interface {
 	CreateAddress(ctx context.Context, _ *CreateAddressArgs) (*ShopTraderAddress, error)
 

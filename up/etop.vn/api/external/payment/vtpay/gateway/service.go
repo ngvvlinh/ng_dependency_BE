@@ -5,6 +5,8 @@ import (
 	"strconv"
 )
 
+// +gen:api
+
 type Aggregate interface {
 	ValidateTransaction(context.Context, *ValidateTransactionArgs) (*ValidateTransactionResult, error)
 

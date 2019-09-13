@@ -67,7 +67,7 @@ func SynVtigetContact() error {
 }
 
 func GetLastVtigerModifytimeSyncInDB() {
-	query := &vtiger.GetLastTimeModifyQuery{
+	query := &vtiger.GetRecordLastTimeModifyQuery{
 		Offset: 0,
 		Limit:  1,
 	}

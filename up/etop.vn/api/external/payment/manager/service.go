@@ -6,6 +6,8 @@ import (
 	"etop.vn/api/external/payment"
 )
 
+// +gen:api
+
 type PaymentState = payment.PaymentState
 
 type Aggregate interface {

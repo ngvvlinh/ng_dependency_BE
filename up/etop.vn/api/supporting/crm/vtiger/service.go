@@ -7,6 +7,8 @@ import (
 	"etop.vn/api/meta"
 )
 
+// +gen:api
+
 type Aggregate interface {
 	CreateOrUpdateContact(context.Context, *Contact) (*Contact, error)
 	CreateOrUpdateLead(context.Context, *Lead) (*Lead, error)

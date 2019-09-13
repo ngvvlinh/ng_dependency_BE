@@ -8,6 +8,8 @@ import (
 	. "etop.vn/capi/dot"
 )
 
+// +gen:api
+
 type Aggregate interface {
 	CreateCustomer(ctx context.Context, _ *CreateCustomerArgs) (*ShopCustomer, error)
 

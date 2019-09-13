@@ -7,6 +7,8 @@ import (
 	"etop.vn/api/meta"
 )
 
+// +gen:api
+
 type Aggregate interface {
 	CreateOrUpdateCallHistoryBySDKCallID(context.Context, *VhtCallLog) (*VhtCallLog, error)
 	CreateOrUpdateCallHistoryByCallID(context.Context, *VhtCallLog) (*VhtCallLog, error)

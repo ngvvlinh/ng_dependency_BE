@@ -12,6 +12,8 @@ import (
 	"etop.vn/api/meta"
 )
 
+// +gen:api
+
 type Aggregate interface {
 	CreateShipnowFulfillment(context.Context, *CreateShipnowFulfillmentArgs) (*ShipnowFulfillment, error)
 

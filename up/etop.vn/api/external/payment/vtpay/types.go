@@ -5,6 +5,8 @@ import (
 	"strconv"
 )
 
+// +gen:api
+
 type Aggregate interface {
 	HandleExternalDataResponse(context.Context, *HandleExternalDataResponseArgs) error
 }

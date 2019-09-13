@@ -8,6 +8,8 @@ import (
 	"etop.vn/api/main/etop"
 )
 
+// +gen:api
+
 type Aggregate interface {
 	CreateOrUpdatePayment(context.Context, *CreatePaymentArgs) (*Payment, error)
 

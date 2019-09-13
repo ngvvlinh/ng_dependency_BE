@@ -8,6 +8,8 @@ import (
 	"etop.vn/api/meta"
 )
 
+// +gen:api
+
 type AggregateBus struct{ meta.Bus }
 
 type Aggregate interface {

@@ -6,6 +6,8 @@ import (
 	"etop.vn/api/external/haravan"
 )
 
+// +gen:api
+
 type Aggregate interface {
 	GetShippingRate(context.Context, *GetShippingRateRequestArgs) (*GetShippingRateResponse, error)
 

@@ -6,6 +6,8 @@ import (
 	"etop.vn/api/meta"
 )
 
+// +gen:api
+
 type Aggregate interface {
 	SendUpdateExternalFulfillmentState(context.Context, *SendUpdateExternalFulfillmentStateArgs) (*meta.Empty, error)
 

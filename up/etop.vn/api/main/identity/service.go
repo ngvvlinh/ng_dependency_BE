@@ -4,6 +4,8 @@ import (
 	"context"
 )
 
+// +gen:api
+
 type Aggregate interface {
 	// -- User -- //
 	UpdateUserReferenceUserID(context.Context, *UpdateUserReferenceUserIDArgs) error

@@ -7,6 +7,8 @@ import (
 	"etop.vn/api/shopping"
 )
 
+// +gen:api
+
 type Aggregate interface {
 
 	//-- shop_product --//
