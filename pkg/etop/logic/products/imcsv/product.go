@@ -136,6 +136,7 @@ func loadAndCreateProducts(
 					return
 				}
 			}
+
 			if v := variantByAttr[rowProduct.GetVariantAttrNorm()]; v != nil {
 				err := imcsv.CellError(idx.indexer, rowProduct.RowIndex, idx.attributes, `Một phiên bản của sản phẩm "%v" với thuộc tính "%v" đã tồn tại. Vui lòng sử dụng thuộc tính khác hoặc xoá phiên bản này.`, rowProduct.GetProductCodeOrName(), v.Attributes.ShortLabel())
 				_cellErrs = append(_cellErrs, err)
@@ -232,6 +233,7 @@ func loadAndCreateProducts(
 				_errs = append(_errs, err)
 				continue
 			}
+			variantReq.ProductId = createProductCmd.Result.Id
 		}
 
 		createVariantCmd := &wrapshop.CreateVariantEndpoint{
@@ -250,7 +252,7 @@ func loadAndCreateProducts(
 
 		// Fake the product, so subsequent create variant requests reuse the created product
 		products[rowProduct.GetProductKey()] = &catalog.ShopProduct{
-			ProductID: createVariantCmd.Result.Info.Id,
+			ProductID: variantReq.ProductId,
 		}
 
 		var msg string
@@ -261,7 +263,7 @@ func loadAndCreateProducts(
 		}
 		msgs = append(msgs, msg)
 
-		productIDs := []int64{createVariantCmd.Result.Info.Id}
+		productIDs := []int64{variantReq.ProductId}
 		if rowProduct.categoryID != 0 {
 			updateProductsCategoryCmd := &catalogmodelx.UpdateProductsShopCategoryCommand{
 				CategoryID: rowProduct.categoryID,

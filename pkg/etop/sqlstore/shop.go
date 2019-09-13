@@ -244,9 +244,9 @@ func UpdateProductsPSCategory(ctx context.Context, cmd *catalogmodelx.UpdateProd
 	}
 
 	if updated, err := x.Table("shop_product").
-		Where("product_source_id = ?", cmd.ShopID).
+		Where("shop_id = ?", cmd.ShopID).
 		In("product_id", cmd.ProductIDs).
-		UpdateMap(M{"shop_category_id": cmd.CategoryID}); err != nil {
+		UpdateMap(M{"category_id": cmd.CategoryID}); err != nil {
 		return err
 	} else if updated == 0 {
 		return cm.Error(cm.NotFound, "No product updated", nil)
