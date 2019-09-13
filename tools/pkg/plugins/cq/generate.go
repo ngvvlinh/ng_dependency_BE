@@ -192,7 +192,7 @@ func (c QueryBus) DispatchAll(ctx context.Context, msgs ...Query) error {
 }
 
 func generateQueries(w *MultiWriter, serviceName string, defs []HandlerDef) {
-	w.Import("", "context")
+	w.Import("context", "context")
 
 	genHandlerName := serviceName + "Handler"
 	{
@@ -248,7 +248,7 @@ func (h %v) RegisterHandlers(b interface{
 }
 
 func generateCommands(w *MultiWriter, serviceName string, defs []HandlerDef) {
-	w.Import("", "context")
+	w.Import("context", "context")
 
 	genHandlerName := serviceName + "Handler"
 	{
