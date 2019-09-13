@@ -29,17 +29,17 @@ build:
   - postgres:9.6-alpine
   - redis:alpine
   script:
-  - scripts/ci/cache-load.sh
-  - scripts/verify-imports.sh
-  - scripts/install-tools.sh
-  - go run ./scripts/init_testdb/main.go -drop
-  - scripts/ci/test-all.sh
-  - scripts/ci/cache-save.sh
+  - time scripts/ci/cache-load.sh
+  - time scripts/verify-imports.sh
+  - time scripts/install-tools.sh
+  - time go run ./scripts/init_testdb/main.go -drop
+  - time scripts/ci/test-all.sh
+  - time scripts/ci/cache-save.sh
   - touch artifacts/BUILD_SUCCESS
   after_script:
   - scripts/ci/report-gerrit.sh
   cache:
-    key: "ci:build"
+    key: "ci:build-1"
     paths:
     - .mod/
   artifacts:
