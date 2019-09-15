@@ -260,7 +260,7 @@ func (es listErrors) Format(st fmt.State, c rune) {
 				b.WriteByte(' ')
 			}
 		}
-		_ = fmt.Sprint(b, e)
+		b.WriteString(e.Error())
 		if i > 0 {
 			if verbose {
 				b.WriteString("\n")

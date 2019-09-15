@@ -61,6 +61,7 @@ type ShopVariantWithProduct struct {
 
 var _ = sqlgenShopVariant(&ShopVariant{})
 
+// +convert:type=catalog.ShopVariant
 type ShopVariant struct {
 	ShopID    int64
 	VariantID int64
@@ -94,6 +95,7 @@ type ShopVariant struct {
 
 var _ = sqlgenShopProduct(&ShopProduct{})
 
+// +convert:type=catalog.ShopProduct
 type ShopProduct struct {
 	ShopID        int64
 	ProductID     int64

@@ -7,8 +7,9 @@ import (
 	"strings"
 
 	"etop.vn/backend/tools/pkg/generator"
-	"etop.vn/backend/tools/pkg/plugins/cq"
-	"etop.vn/backend/tools/pkg/plugins/sample"
+	"etop.vn/backend/tools/pkg/generators/convert"
+	"etop.vn/backend/tools/pkg/generators/cq"
+	"etop.vn/backend/tools/pkg/generators/sample"
 )
 
 var flClean = flag.Bool("clean", false, "clean generated files without generating new files")
@@ -26,6 +27,7 @@ Options:
 
 func main() {
 	plugins := []generator.Plugin{
+		convert.New(),
 		cq.New(),
 		sample.New(),
 	}
@@ -39,6 +41,7 @@ func main() {
 
 	cfg := generator.Config{
 		CleanOnly: *flClean,
+		Namespace: "etop.vn",
 	}
 	if *flPlugins != "" {
 		cfg.EnabledPlugins = strings.Split(*flPlugins, ",")

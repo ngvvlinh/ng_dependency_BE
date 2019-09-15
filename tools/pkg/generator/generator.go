@@ -30,13 +30,15 @@ type Config struct {
 	EnabledPlugins []string
 
 	CleanOnly bool
+
+	Namespace string
 }
 
 func Start(cfg Config, patterns ...string) error {
 	return theEngine.clone().start(cfg, patterns...)
 }
 
-func (ng *engine) start(cfg Config, patterns ...string) error {
+func (ng *engine) start(cfg Config, patterns ...string) (_err error) {
 	{
 		if len(patterns) == 0 {
 			return errorf(nil, "no patterns")
@@ -117,10 +119,19 @@ func (ng *engine) start(cfg Config, patterns ...string) error {
 
 		// populate xinfo
 		ng.xinfo = newExtendedInfo(ng.pkgcfg.Fset)
-		for _, pkg := range pkgs {
-			if err := ng.xinfo.AddPackage(pkg); err != nil {
-				return err
-			}
+		packages.Visit(pkgs,
+			func(pkg *packages.Package) bool {
+				if cfg.Namespace != "" && !strings.HasPrefix(pkg.PkgPath, cfg.Namespace) {
+					return true
+				}
+				if err := ng.xinfo.AddPackage(pkg); err != nil {
+					_err = err
+					return false
+				}
+				return true
+			}, nil)
+		if _err != nil {
+			return _err
 		}
 
 		// populate pkgMap

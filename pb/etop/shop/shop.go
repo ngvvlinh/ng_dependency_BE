@@ -6,10 +6,9 @@ import (
 	"net/url"
 	"strconv"
 
-	"etop.vn/api/main/location"
-
 	"github.com/golang/protobuf/jsonpb"
 
+	"etop.vn/api/main/location"
 	"etop.vn/api/shopping/addressing"
 	"etop.vn/api/shopping/customering"
 	catalogmodel "etop.vn/backend/com/main/catalog/model"

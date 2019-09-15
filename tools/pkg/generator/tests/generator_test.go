@@ -5,6 +5,8 @@ import (
 	"os/exec"
 	"testing"
 
+	"github.com/stretchr/testify/assert"
+
 	"github.com/stretchr/testify/require"
 
 	"etop.vn/backend/tools/pkg/generator"
@@ -124,6 +126,24 @@ func TestFilter(t *testing.T) {
 			require.Equal(t, expecteds[i], p.Package.PkgPath)
 		}
 	}
+}
+
+func TestObjects(t *testing.T) {
+	reset()
+	cfg := generator.Config{}
+	err := generator.Start(cfg, testPatterns)
+	require.NoError(t, err)
+
+	ng := mock.ng
+	pkg := ng.PackageByPath(testPath + "/one")
+	require.NotNil(t, pkg)
+
+	objects := ng.ObjectsByScope(pkg.Types.Scope())
+	require.Len(t, objects, 2)
+	assert.Equal(t, "A", objects[0].Object.Name())
+	assert.Equal(t, "B", objects[1].Object.Name())
+	assert.Len(t, objects[1].Directives, 1)
+	assert.Equal(t, "gen:b", objects[1].Directives[0].Cmd)
 }
 
 func TestGenerate(t *testing.T) {

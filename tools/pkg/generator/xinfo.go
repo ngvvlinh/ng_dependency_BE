@@ -84,14 +84,13 @@ func (x *extendedInfo) AddPackage(pkg *packages.Package) error {
 
 func (x *extendedInfo) addFile(pkg *packages.Package, file *ast.File) error {
 	var genDoc *ast.CommentGroup
-	var errs []error
 	processDoc := func(doc, cmt *ast.CommentGroup) *declaration {
 		if doc == nil {
 			doc = genDoc
 		}
 		comment, directives, err := processDoc(doc, cmt)
 		if err != nil {
-			errs = append(errs, err)
+			ll.V(3).Debugf("error while processing doc: %v", err)
 		}
 		return &declaration{
 			Pkg:        pkg,
@@ -137,10 +136,6 @@ func (x *extendedInfo) addFile(pkg *packages.Package, file *ast.File) error {
 		}
 		return true
 	})
-
-	if len(errs) != 0 {
-		return newErrors("", errs)
-	}
 	return nil
 }
 
@@ -152,10 +147,10 @@ func (x *extendedInfo) GetDef(ident *ast.Ident) types.Object {
 	return decl.Pkg.TypesInfo.Defs[ident]
 }
 
-func (x *extendedInfo) GetComment(ident *ast.Ident) *Comment {
+func (x *extendedInfo) GetComment(ident *ast.Ident) (*Comment, []Directive) {
 	decl := x.Declarations[ident]
 	if decl == nil {
-		return nil
+		return nil, nil
 	}
-	return &decl.Comment
+	return &decl.Comment, decl.Directives
 }

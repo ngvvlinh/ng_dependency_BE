@@ -8,6 +8,8 @@ import (
 	cm "etop.vn/backend/pkg/common"
 )
 
+// +gen:convert: etop.vn/api/shopping/customering -> etop.vn/backend/com/shopping/customering/model
+
 func CreateShopCustomer(args *customering.CreateCustomerArgs) (out *customering.ShopCustomer) {
 	if args == nil {
 		return nil
