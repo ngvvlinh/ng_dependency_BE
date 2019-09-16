@@ -1,7 +1,6 @@
 package model
 
 import (
-	"fmt"
 	"time"
 
 	"etop.vn/backend/pkg/common/sq"
@@ -27,13 +26,11 @@ func NormalizeAttributes(attrs []ProductAttribute) ([]ProductAttribute, string) 
 		attr.Name, _ = validate.NormalizeName(attr.Name)
 		attr.Value, _ = validate.NormalizeName(attr.Value)
 		if attr.Name == "" || attr.Value == "" {
-			fmt.Println("1", attr.Name, attr.Value)
 			continue
 		}
 		nameNorm := validate.NormalizeUnderscore(attr.Name)
 		valueNorm := validate.NormalizeUnderscore(attr.Value)
 		if nameNorm == "" || valueNorm == "" {
-			fmt.Println("2")
 			continue
 		}
 

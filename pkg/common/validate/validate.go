@@ -1,7 +1,6 @@
 package validate
 
 import (
-	"fmt"
 	"reflect"
 	"regexp"
 	"sort"
@@ -628,9 +627,6 @@ func NormalizedSearchToTsVector(s string) string {
 	}
 	ss := strings.Split(s, " ")
 	for i, item := range ss {
-		if item == "" {
-			fmt.Println("--", s)
-		}
 		if item[0] == '\'' {
 			ss[i] = item[1 : len(item)-1]
 		}

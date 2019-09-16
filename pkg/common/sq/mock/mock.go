@@ -1,8 +1,6 @@
 package mock
 
 import (
-	"fmt"
-
 	sq "etop.vn/backend/pkg/common/sq"
 )
 
@@ -25,7 +23,6 @@ func (e *Error) Error() string {
 
 // Reset ...
 func (m *ErrorMock) Reset() {
-	fmt.Println()
 	m.Err = nil
 	m.Entry = nil
 	m.Called = 0

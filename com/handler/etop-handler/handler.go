@@ -147,7 +147,7 @@ func (h *Handler) ConsumeAndHandleAllTopics(ctx context.Context) {
 
 	ll.S.Infof("Initialized %v consumers", count)
 	for topic, partitions := range topics {
-		fmt.Printf("\t%2v %v\n", partitions, topic)
+		ll.S.Infof("%2v %v\n", partitions, topic)
 	}
 }
 
