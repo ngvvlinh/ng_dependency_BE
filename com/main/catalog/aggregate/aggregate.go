@@ -52,6 +52,7 @@ func (a *Aggregate) CreateShopProduct(ctx context.Context, args *catalog.CreateS
 			ListPrice:   args.ListPrice,
 			RetailPrice: args.RetailPrice,
 		},
+		ProductType: args.ProductType,
 	}
 	if err := a.shopProduct(ctx).CreateShopProduct(product); err != nil {
 		return nil, err

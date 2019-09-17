@@ -122,8 +122,9 @@ type ShopProduct struct {
 	UpdatedAt time.Time `sq:"update"`
 	DeletedAt time.Time
 
-	NameNorm   string
-	NameNormUa string // unaccent normalization
+	NameNorm    string
+	NameNormUa  string // unaccent normalization
+	ProductType string
 }
 
 type ShopProductWithVariants struct {

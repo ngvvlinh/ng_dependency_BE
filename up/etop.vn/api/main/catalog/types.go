@@ -7,6 +7,13 @@ import (
 	cmutil "etop.vn/capi/util"
 )
 
+type ProductType = string
+
+const (
+	ProductTypeService ProductType = "services"
+	ProductTypeGoods   ProductType = "goods"
+)
+
 type ShopProduct struct {
 	ShopID int64
 
@@ -39,6 +46,8 @@ type ShopProduct struct {
 	UpdatedAt time.Time
 
 	DeletedAt time.Time
+
+	ProductType ProductType
 }
 
 type ShopVariant struct {

@@ -304,6 +304,7 @@ func CreateProduct(ctx context.Context, q *wrapshop.CreateProductEndpoint) error
 			ListPrice:   q.ListPrice,
 			RetailPrice: q.RetailPrice,
 		},
+		ProductType: q.ProductType.ToProductType(),
 	}
 	if err := catalogAggr.Dispatch(ctx, cmd); err != nil {
 		return err

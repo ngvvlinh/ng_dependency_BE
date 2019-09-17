@@ -50,6 +50,7 @@ type CreateShopProductCommand struct {
 	Note            string
 	DescriptionInfo DescriptionInfo
 	PriceInfo       PriceInfo
+	ProductType     string
 
 	Result *ShopProduct `json:"-"`
 }
@@ -128,6 +129,7 @@ type UpdateShopProductInfoCommand struct {
 	CostPrice   dot.NullInt32
 	ListPrice   dot.NullInt32
 	RetailPrice dot.NullInt32
+	ProductType string
 
 	Result *ShopProduct `json:"-"`
 }
@@ -383,6 +385,7 @@ func (q *CreateShopProductCommand) GetArgs(ctx context.Context) (_ context.Conte
 			Note:            q.Note,
 			DescriptionInfo: q.DescriptionInfo,
 			PriceInfo:       q.PriceInfo,
+			ProductType:     q.ProductType,
 		}
 }
 
@@ -441,6 +444,7 @@ func (q *UpdateShopProductInfoCommand) GetArgs(ctx context.Context) (_ context.C
 			CostPrice:   q.CostPrice,
 			ListPrice:   q.ListPrice,
 			RetailPrice: q.RetailPrice,
+			ProductType: q.ProductType,
 		}
 }
 

@@ -5777,6 +5777,15 @@
       ],
       "default": "unknown"
     },
+    "product_typeProductType": {
+      "type": "string",
+      "enum": [
+        "unknown",
+        "services",
+        "goods"
+      ],
+      "default": "unknown"
+    },
     "shippingState": {
       "type": "string",
       "enum": [
@@ -6160,6 +6169,9 @@
         "retail_price": {
           "type": "integer",
           "format": "int32"
+        },
+        "product_type": {
+          "$ref": "#/definitions/product_typeProductType"
         }
       }
     },
@@ -7214,6 +7226,9 @@
         "updated_at": {
           "type": "string",
           "format": "date-time"
+        },
+        "product_type": {
+          "$ref": "#/definitions/product_typeProductType"
         }
       },
       "required": [
@@ -7656,6 +7671,9 @@
         "retail_price": {
           "type": "integer",
           "format": "int32"
+        },
+        "product_type": {
+          "$ref": "#/definitions/product_typeProductType"
         }
       },
       "required": [

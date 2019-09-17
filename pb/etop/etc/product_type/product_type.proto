@@ -1,0 +1,12 @@
+syntax = "proto2";
+package product_type;
+option go_package = "etop.vn/backend/pb/etop/etc/product_type";
+
+import "gogoproto/gogo.proto";
+option (gogoproto.gogoproto_import)         = false;
+
+enum ProductType {
+    unknown = 0;
+    services = 1;
+    goods = 2;
+}

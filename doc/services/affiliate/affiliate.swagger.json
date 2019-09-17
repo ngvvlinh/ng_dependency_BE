@@ -604,6 +604,15 @@
         }
       }
     },
+    "product_typeProductType": {
+      "type": "string",
+      "enum": [
+        "unknown",
+        "services",
+        "goods"
+      ],
+      "default": "unknown"
+    },
     "shopAttribute": {
       "type": "object",
       "properties": {
@@ -803,6 +812,9 @@
         "updated_at": {
           "type": "string",
           "format": "date-time"
+        },
+        "product_type": {
+          "$ref": "#/definitions/product_typeProductType"
         }
       },
       "required": [

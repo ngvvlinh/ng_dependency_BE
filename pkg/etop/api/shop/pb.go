@@ -3,6 +3,7 @@ package shop
 import (
 	"etop.vn/api/main/catalog"
 	pbcm "etop.vn/backend/pb/common"
+	pbproducttype "etop.vn/backend/pb/etop/etc/product_type"
 	pbs3 "etop.vn/backend/pb/etop/etc/status3"
 	pbshop "etop.vn/backend/pb/etop/shop"
 	"etop.vn/backend/pkg/etop/api/convertpb"
@@ -133,6 +134,7 @@ func PbShopProductWithVariants(m *catalog.ShopProductWithVariants) *pbshop.ShopP
 		ProductSourceId: shopID, // backward-compatible: use shop_id in place of product_source_id
 		CreatedAt:       pbcm.PbTime(m.CreatedAt),
 		UpdatedAt:       pbcm.PbTime(m.UpdatedAt),
+		ProductType:     pbproducttype.PbProductType(string(m.ProductType)),
 	}
 	return res
 }

@@ -35,6 +35,7 @@ import "etop/etc/status4/status.proto";
 import "etop/etop.proto";
 import "etop/order/order.proto";
 import "etop/etc/payment_provider/payment_provider.proto";
+import "etop/etc/product_type/product_type.proto";
 
 service MiscService {
     rpc VersionInfo(cm.Empty) returns (cm.VersionInfoResponse);
@@ -430,6 +431,7 @@ message ShopProduct {
 
     optional google.protobuf.Timestamp created_at = 21;
     optional google.protobuf.Timestamp updated_at = 20;
+    optional product_type.ProductType product_type = 23;
 }
 
 message GetVariantsRequest {
@@ -486,6 +488,7 @@ message UpdateProductRequest {
     optional int32 cost_price = 9;
     optional int32 list_price = 10;
     optional int32 retail_price = 11;
+    optional product_type.ProductType product_type = 12;
 }
 
 message UpdateVariantsRequest {
@@ -603,6 +606,7 @@ message CreateProductRequest {
     optional int32  cost_price = 16 [(gogoproto.nullable)=false];
     optional int32  list_price = 15 [(gogoproto.nullable)=false];
     optional int32  retail_price = 26 [(gogoproto.nullable)=false];
+    optional product_type.ProductType product_type = 27;
 }
 
 message CreateVariantRequest {

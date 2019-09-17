@@ -69,9 +69,10 @@ func ShopProduct(in *catalogmodel.ShopProduct) (out *catalog.ShopProduct) {
 			CostPrice:   in.CostPrice,
 			RetailPrice: in.RetailPrice,
 		},
-		Status:    int32(in.Status),
-		CreatedAt: in.CreatedAt,
-		UpdatedAt: in.UpdatedAt,
+		Status:      int32(in.Status),
+		CreatedAt:   in.CreatedAt,
+		UpdatedAt:   in.UpdatedAt,
+		ProductType: catalog.ProductType(in.ProductType),
 	}
 	return out
 }
@@ -124,6 +125,7 @@ func ShopProductDB(in *catalog.ShopProduct) (out *catalogmodel.ShopProduct) {
 		DeletedAt:     time.Time{},
 		NameNorm:      validate.NormalizeSearch(in.Name),
 		NameNormUa:    validate.NormalizeUnaccent(in.Name),
+		ProductType:   string(in.ProductType),
 	}
 	return out
 }

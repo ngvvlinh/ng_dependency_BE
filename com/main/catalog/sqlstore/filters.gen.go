@@ -740,6 +740,25 @@ func (ft *ShopProductFilters) ByNameNormUaPtr(NameNormUa *string) *sq.ColumnFilt
 	}
 }
 
+func (ft *ShopProductFilters) ByProductType(ProductType string) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "product_type",
+		Value:  ProductType,
+		IsNil:  ProductType == "",
+	}
+}
+
+func (ft *ShopProductFilters) ByProductTypePtr(ProductType *string) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "product_type",
+		Value:  ProductType,
+		IsNil:  ProductType == nil,
+		IsZero: ProductType != nil && (*ProductType) == "",
+	}
+}
+
 type ShopCollectionFilters struct{ prefix string }
 
 func NewShopCollectionFilters(prefix string) ShopCollectionFilters {

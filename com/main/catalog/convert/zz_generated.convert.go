@@ -35,6 +35,7 @@ func convert_catalog_ShopProduct_catalogmodel_ShopProduct(in *catalog.ShopProduc
 	out.DeletedAt = in.DeletedAt              // simple assign
 	out.NameNorm = ""                         // zero value
 	out.NameNormUa = ""                       // zero value
+	out.ProductType = in.ProductType          // simple assign
 }
 
 func convert_catalog_ShopProducts_catalogmodel_ShopProducts(ins []*catalog.ShopProduct) (outs []*catalogmodel.ShopProduct) {
@@ -65,6 +66,7 @@ func convert_catalogmodel_ShopProduct_catalog_ShopProduct(in *catalogmodel.ShopP
 	out.CreatedAt = in.CreatedAt                    // simple assign
 	out.UpdatedAt = in.UpdatedAt                    // simple assign
 	out.DeletedAt = in.DeletedAt                    // simple assign
+	out.ProductType = in.ProductType                // simple assign
 }
 
 func convert_catalogmodel_ShopProducts_catalog_ShopProducts(ins []*catalogmodel.ShopProduct) (outs []*catalog.ShopProduct) {

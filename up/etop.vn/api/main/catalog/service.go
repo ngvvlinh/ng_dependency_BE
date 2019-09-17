@@ -112,6 +112,7 @@ type CreateShopProductArgs struct {
 	Note      string
 	DescriptionInfo
 	PriceInfo
+	ProductType ProductType
 }
 
 type UpdateShopProductInfoArgs struct {
@@ -128,6 +129,7 @@ type UpdateShopProductInfoArgs struct {
 	CostPrice   NullInt32
 	ListPrice   NullInt32
 	RetailPrice NullInt32
+	ProductType ProductType
 }
 
 type CreateShopVariantArgs struct {
