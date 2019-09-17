@@ -41,10 +41,10 @@ func Start(cfg Config, patterns ...string) error {
 func (ng *engine) start(cfg Config, patterns ...string) (_err error) {
 	{
 		if len(patterns) == 0 {
-			return errorf(nil, "no patterns")
+			return Errorf(nil, "no patterns")
 		}
 		if len(ng.plugins) == 0 {
-			return errorf(nil, "no registed plugins")
+			return Errorf(nil, "no registed plugins")
 		}
 		if err := ng.validateConfig(&cfg); err != nil {
 			return err
@@ -57,7 +57,7 @@ func (ng *engine) start(cfg Config, patterns ...string) (_err error) {
 		ng.pkgcfg = packages.Config{Mode: mode}
 		pkgs, err := packages.Load(&ng.pkgcfg, patterns...)
 		if err != nil {
-			return errorf(err, "can not load package: %v", err)
+			return Errorf(err, "can not load package: %v", err)
 		}
 
 		// populate cleanedFileNames
@@ -72,7 +72,7 @@ func (ng *engine) start(cfg Config, patterns ...string) (_err error) {
 				filename := filepath.Base(file)
 				if cleanedFileNames[filename] {
 					if err := os.Remove(file); err != nil {
-						return errorf(err, "can not remove file %v: %v", file, err)
+						return Errorf(err, "can not remove file %v: %v", file, err)
 					}
 				}
 			}
@@ -114,7 +114,7 @@ func (ng *engine) start(cfg Config, patterns ...string) (_err error) {
 		}
 		pkgs, err := packages.Load(&ng.pkgcfg, pkgPatterns...)
 		if err != nil {
-			return errorf(err, "can not load package: %v", err)
+			return Errorf(err, "can not load package: %v", err)
 		}
 
 		// populate xinfo
@@ -146,7 +146,7 @@ func (ng *engine) start(cfg Config, patterns ...string) (_err error) {
 		for _, pl := range ng.enabledPlugins {
 			wrapNg := &wrapEngine{engine: ng, plugin: pl}
 			if err := pl.plugin.Generate(wrapNg); err != nil {
-				return errorf(err, "%v: %v", pl.name, err)
+				return Errorf(err, "%v: %v", pl.name, err)
 			}
 			for _, gpkg := range wrapNg.pkgs {
 				printer := gpkg.printer
@@ -192,7 +192,7 @@ func (ng *engine) collectPackages(ps patternsStruct, pkgs []*packages.Package) e
 			ppkg := collectedPackages[i] // capture the value
 			include, err := pl.plugin.FilterPackage(&ppkg)
 			if err != nil {
-				return errorf(err, "%v: filter %v: %v", pl.name, ppkg.PkgPath, err)
+				return Errorf(err, "%v: filter %v: %v", pl.name, ppkg.PkgPath, err)
 			}
 			ng.includes[i] = ng.includes[i] || include
 			pl.includes[i] = include
@@ -252,7 +252,7 @@ func collectPackages(
 			defer func() { wg.Done(); <-limit }() // release limit
 			directives, err := parseDirectivesFromPackage(fileCh, pkg, cleanedFileNames)
 			if err != nil {
-				_err = errorf(err, "parsing %v: %v", pkg.PkgPath, err)
+				_err = Errorf(err, "parsing %v: %v", pkg.PkgPath, err)
 			}
 			p := PreparsedPackage{
 				PkgPath:    pkg.PkgPath,
@@ -342,7 +342,7 @@ func parseDirectivesFromBody(directives []Directive, body []byte) (_ []Directive
 func (ng *engine) validateConfig(cfg *Config) (_err error) {
 	defer func() {
 		if _err != nil {
-			_err = errorf(_err, "config error: %v", _err)
+			_err = Errorf(_err, "config error: %v", _err)
 		}
 	}()
 
@@ -351,7 +351,7 @@ func (ng *engine) validateConfig(cfg *Config) (_err error) {
 		for _, enabled := range cfg.EnabledPlugins {
 			pl := ng.pluginsMap[enabled]
 			if pl == nil {
-				return errorf(nil, "plugin %v not found", enabled)
+				return Errorf(nil, "plugin %v not found", enabled)
 			}
 			pl.enabled = true
 			ng.enabledPlugins = append(ng.enabledPlugins, pl)
@@ -395,7 +395,7 @@ func execGoimport(files []string) error {
 	ll.V(4).Debugf("goimports %v", args)
 	out, err := cmd.CombinedOutput()
 	if err != nil {
-		return errorf(err, "goimports: %s\n\n%s\n", err, out)
+		return Errorf(err, "goimports: %s\n\n%s\n", err, out)
 	}
 	return nil
 }

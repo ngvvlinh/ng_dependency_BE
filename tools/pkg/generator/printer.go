@@ -125,7 +125,11 @@ func (p *printer) qualifier(pkg *types.Package) string {
 	if pkg == p.pkg.Types {
 		return ""
 	}
+	alias := pkg.Name()
+	if p.plugin.qualifier != nil {
+		alias = p.plugin.qualifier(pkg)
+	}
 	pkgPath := pkg.Path()
-	p.Import(pkg.Name(), pkgPath)
+	p.Import(alias, pkgPath)
 	return p.aliasByPkgPath[pkgPath]
 }

@@ -11,8 +11,8 @@ import (
 )
 
 type Object struct {
+	types.Object
 	Ident      *ast.Ident
-	Object     types.Object
 	Comment    *Comment
 	Directives []Directive
 }
@@ -24,7 +24,7 @@ type PreparsedPackage struct {
 }
 
 type GeneratingPackage struct {
-	Package    *packages.Package
+	*packages.Package
 	Directives []Directive
 
 	plugin  *pluginStruct

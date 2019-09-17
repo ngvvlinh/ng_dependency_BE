@@ -5,12 +5,11 @@ import (
 	"go/types"
 	"text/template"
 
-	"github.com/dustin/go-humanize/english"
-
 	"etop.vn/backend/tools/pkg/generator"
+	"etop.vn/backend/tools/pkg/genutil"
 )
 
-var tplConvertType, tplConvertApply *template.Template
+var tplConvertType, tplUpdate, tplCreate *template.Template
 var currentPrinter generator.Printer
 
 func init() {
@@ -18,7 +17,6 @@ func init() {
 		"fieldName":   renderFieldName,
 		"fieldValue":  renderFieldValue,
 		"fieldApply":  renderFieldApply,
-		"go":          renderGo,
 		"lastComment": renderLastComment,
 		"plural":      renderPlural,
 	}
@@ -27,19 +25,12 @@ func init() {
 	}
 
 	tplConvertType = parse(tplConvertTypeText)
-	tplConvertApply = parse(tplConvertApplyText)
-}
-
-func renderGo(v interface{}) string {
-	switch vv := v.(type) {
-	case []byte:
-		v = string(vv)
-	}
-	return fmt.Sprintf("%#v", v)
+	tplCreate = parse(tplCreateText)
+	tplUpdate = parse(tplUpdateText)
 }
 
 func renderPlural(s string) string {
-	return english.PluralWord(2, s, "")
+	return genutil.Plural(s)
 }
 
 var lastComment string
@@ -49,18 +40,18 @@ func renderLastComment() string {
 }
 
 func renderFieldName(field fieldConvert) string {
-	return field.OutField.Name()
+	return field.Out.Name()
 }
 
-func renderFieldValue(field fieldConvert) string {
-	in, out := field.InField, field.OutField
+func renderFieldValue(prefix string, field fieldConvert) string {
+	in, out := field.In, field.Out
 	if in == nil {
 		lastComment = "// zero value"
 		return renderZero(out.Type())
 	}
 	if out.Type() == in.Type() {
-		lastComment = ""
-		return "in." + in.Name()
+		lastComment = "// simple assign"
+		return prefix + "." + in.Name()
 	}
 
 	// convert basic types
@@ -70,12 +61,12 @@ func renderFieldValue(field fieldConvert) string {
 		if inBasic != nil && outBasic != nil {
 			outStr := currentPrinter.TypeString(out.Type())
 			if inBasic.Kind() == outBasic.Kind() {
-				lastComment = ""
-				return outStr + "(in." + in.Name() + ")"
+				lastComment = "// simple conversion"
+				return outStr + "(" + prefix + "." + in.Name() + ")"
 			}
 			if inBasic.Info()&types.IsNumeric > 0 && outBasic.Info()&types.IsNumeric > 0 {
-				lastComment = ""
-				return outStr + "(in." + in.Name() + ")"
+				lastComment = "// simple conversion"
+				return outStr + "(" + prefix + "." + in.Name() + ")"
 			}
 		}
 	}

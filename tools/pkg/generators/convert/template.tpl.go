@@ -1,35 +1,40 @@
 package convert
 
 const tplConvertTypeText = `
-func convert_{{.InStr}}_{{.OutStr}}(in *{{.InType}})(out *{{.OutType}}) {
-	if in == nil {
-		return nil
-	}
-	return &{{.OutType}}{
+func convert_{{.InStr}}_{{.OutStr}}(in *{{.InType}}, out *{{.OutType}}) {
 	{{- range .Fields}}
-		{{.|fieldName}}: {{.|fieldValue}}, {{lastComment -}}
+		out.{{.|fieldName}} = {{.|fieldValue "in"}} {{lastComment -}}
   {{end}}
-	}
 }
 
 func convert_{{.InStr|plural}}_{{.OutStr|plural}}(ins []*{{.InType}})(outs []*{{.OutType}}) {
-	outs = make([]*{{.OutType}}, len(ins))
-	for i := range outs {
-    outs[i] = convert_{{.InStr}}_{{.OutStr}}(ins[i])
+  tmps := make([]{{.OutType}}, len(ins))
+  outs = make([]*{{.OutType}}, len(ins))
+	for i := range tmps {
+    out := &tmps[i]
+		outs[i] = out
+		convert_{{.InStr}}_{{.OutStr}}(ins[i], out)
   }
   return outs
 }
 `
 
-const tplConvertApplyText = `
+const tplCreateText = `
+func apply_{{.ArgStr}}(arg *{{.ArgType}}, out *{{.BaseType}}) {
+  {{- range .Fields}}
+		out.{{.|fieldName}} = {{.|fieldValue "arg"}} {{lastComment -}}
+	{{end}}
+}
+`
+
+const tplUpdateText = `
 func apply_{{.ArgStr}}(in *{{.BaseType}}, arg *{{.ArgType}})(out *{{.BaseType}}) {
 	if in == nil {
 		return nil
 	}
-	return &{{.BaseType}}{
-  {{range .Fields}}
-		{{.|fieldName}}: {{.|fieldApply}}, {{lastComment}}
+  {{- range .Fields}}
+	in.{{.|fieldName}} = {{.|fieldApply "in"}} {{lastComment -}}
   {{end}}
-	}
+	return in
 }
 `

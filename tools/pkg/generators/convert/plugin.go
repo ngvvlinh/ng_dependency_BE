@@ -11,6 +11,7 @@ import (
 	"golang.org/x/tools/go/packages"
 
 	"etop.vn/backend/tools/pkg/generator"
+	"etop.vn/backend/tools/pkg/genutil"
 	"etop.vn/common/l"
 )
 
@@ -18,16 +19,19 @@ var ll = l.New()
 
 const Command = "gen:convert"
 const ModeType = "convert:type"
-const ModeApply = "convert:apply"
+const ModeCreate = "convert:create"
+const ModeUpdate = "convert:update"
 
 func New() generator.Plugin {
 	return &plugin{
-		Filter: generator.FilterByCommand(Command),
+		Filter:    generator.FilterByCommand(Command),
+		Qualifier: genutil.Qualifier{},
 	}
 }
 
 type plugin struct {
 	generator.Filter
+	generator.Qualifier
 }
 
 func (p *plugin) Name() string { return "convert" }
@@ -51,6 +55,7 @@ type objMap struct {
 type objGen struct {
 	mode string
 	obj  generator.Object
+	opts options
 }
 
 type objName struct {
@@ -58,9 +63,13 @@ type objName struct {
 	name string
 }
 
+type options struct {
+	identifiers []string
+}
+
 type fieldConvert struct {
-	OutField *types.Var
-	InField  *types.Var
+	Out *types.Var
+	In  *types.Var
 }
 
 func (o objName) String() string {
@@ -71,25 +80,45 @@ func (o objName) String() string {
 }
 
 func generatePackage(ng generator.Engine, gpkg *generator.GeneratingPackage) error {
-	flagInfo := false
-	apiPkgPaths, toPkgPath, err := parseConvertDirectives(gpkg.Directives)
-	if err != nil {
-		return err
+	count := 0
+	for _, d := range gpkg.Directives {
+		if d.Cmd != Command {
+			continue
+		}
+		count++
+		apiPkgPaths, toPkgPath, err := parseConvertDirective(d)
+		if err != nil {
+			return err
+		}
+		currentPrinter = gpkg.Generate()
+		err = generatePackageStep(ng, currentPrinter, apiPkgPaths, toPkgPath)
+		if err != nil {
+			return err
+		}
 	}
+	if count == 0 {
+		return generator.Errorf(nil, "invalid directive (must in format pkg1 -> pkg2)")
+	}
+	return nil
+}
 
+func generatePackageStep(ng generator.Engine, p generator.Printer, apiPkgPaths []string, toPkgPath string) error {
 	ll.V(1).Debugf("convert from %v to %v", strings.Join(apiPkgPaths, ","), toPkgPath)
+
+	flagInfo := false
+	flagSelf := len(apiPkgPaths) == 1 && apiPkgPaths[0] == toPkgPath
 
 	apiPkgs := make([]*packages.Package, len(apiPkgPaths))
 	for i, pkgPath := range apiPkgPaths {
 		apiPkgs[i] = ng.PackageByPath(pkgPath)
 		if apiPkgs[i] == nil {
-			return fmt.Errorf("can not find package %v", pkgPath)
+			return generator.Errorf(nil, "can not find package %v", pkgPath)
 		}
 	}
 
 	toPkg := ng.PackageByPath(toPkgPath)
 	if toPkg == nil {
-		return fmt.Errorf("can not find package %v", toPkgPath)
+		return generator.Errorf(nil, "can not find package %v", toPkgPath)
 	}
 
 	apiObjMap := make(map[objName]*objMap)
@@ -103,6 +132,13 @@ func generatePackage(ng generator.Engine, gpkg *generator.GeneratingPackage) err
 			apiObjMap[objName] = &objMap{src: obj}
 		}
 	}
+
+	if ll.Verbosed(3) {
+		for objName, objMap := range apiObjMap {
+			ll.V(3).Debugf("object %v: %v", objName, objMap.src.Object.Type())
+		}
+	}
+
 	toObjs := ng.ObjectsByPackage(toPkg)
 	for _, obj := range toObjs {
 		ll.V(2).Debugf("convert to object %v with directives %#v", obj.Object.Name(), obj.Directives)
@@ -112,34 +148,40 @@ func generatePackage(ng generator.Engine, gpkg *generator.GeneratingPackage) err
 		if s := validateStruct(obj.Object); s == nil {
 			continue
 		}
-		mode, name, err := parseWithMode(apiPkgs, obj.Directives)
+		raw, mode, name, opts, err := parseWithMode(apiPkgs, obj.Directives)
 		if err != nil {
 			return err
 		}
-		if mode == "" && len(apiPkgs) == 1 {
-			name = objName{apiPkgs[0].PkgPath, obj.Object.Name()}
-			if apiObjMap[name] == nil {
-				continue
-			}
-			mode = ModeType
+		ll.V(3).Debugf("parsed type %v with mode %v", name, mode)
+		if mode == "" {
+			// automatically convert type with the same name
+			if !flagSelf && len(apiPkgs) == 1 {
+				name = objName{apiPkgs[0].PkgPath, obj.Object.Name()}
+				if apiObjMap[name] == nil {
+					continue
+				}
+				mode = ModeType
 
-		} else if mode == "" {
-			flagInfo = true
-			continue
+			} else {
+				// notify user that there is no type generated for the conversion
+				flagInfo = true
+			}
 
 		} else if apiObjMap[name] == nil {
-			return fmt.Errorf("type %v not found", name)
+			return generator.Errorf(nil, "type %v not found (directive %v)", name, raw)
+		}
+		if (name == objName{}) {
+			continue
 		}
 
 		m := apiObjMap[name]
 		if s := validateStruct(m.src.Object); s == nil {
-			return fmt.Errorf("%v is not a struct", m.src.Object.Name())
+			return generator.Errorf(nil, "%v is not a struct", m.src.Object.Name())
 		}
-		m.gens = append(m.gens, objGen{mode: mode, obj: obj})
+		m.gens = append(m.gens, objGen{mode: mode, obj: obj, opts: opts})
 	}
 
-	currentPrinter = gpkg.Generate()
-	count, err := generateConverts(currentPrinter, apiObjMap)
+	count, err := generateConverts(p, apiObjMap)
 	if err != nil {
 		return err
 	}
@@ -158,95 +200,120 @@ func validateStruct(obj types.Object) *types.Struct {
 	return st
 }
 
-func parseConvertDirectives(directives []generator.Directive) (apiPkgs []string, toPkg string, err error) {
-	for _, d := range directives {
-		if d.Cmd != Command {
-			continue
-		}
+var reConvertSelf = regexp.MustCompile(`^([^\s]+)\s*-\|$`)
 
-		// parse "pkg1 -> pkg2"
-		parts := strings.Split(d.Arg, "->")
-		if len(parts) != 2 {
-			err = fmt.Errorf("invalid directive (must in format pkg1 -> pkg2)")
+func parseConvertDirective(directive generator.Directive) (apiPkgs []string, toPkg string, err error) {
+	// parse "pkg-|"
+	if strings.Index(directive.Arg, "-|") >= 0 {
+		parts := reConvertSelf.FindStringSubmatch(directive.Arg)
+		if len(parts) == 0 {
+			err = generator.Errorf(nil, "invalid directive (must in format pkg-|)")
 			return
 		}
-
-		// parse "pkg1,pkg2"
-		apiPkgs = strings.Split(parts[0], ",")
-		for i := range apiPkgs {
-			apiPkgs[i] = strings.TrimSpace(apiPkgs[i])
-			if apiPkgs[i] == "" {
-				err = fmt.Errorf("invalid directive (must in format pkg1 -> pkg2)")
-				return
-			}
-		}
-
-		// validate toPkg
-		toPkg = strings.TrimSpace(parts[1])
-		if toPkg == "" {
-			err = fmt.Errorf("invalid directive (must in format pkg1 -> pkg2)")
-			return
-		}
-		return apiPkgs, toPkg, nil
+		pkgPath := parts[1]
+		return []string{pkgPath}, pkgPath, nil
 	}
 
-	err = fmt.Errorf("invalid directive (must in format pkg1 -> pkg2)")
-	return
+	// parse "pkg1 -> pkg2"
+	parts := strings.Split(directive.Arg, "->")
+	if len(parts) != 2 {
+		err = generator.Errorf(nil, "invalid directive (must in format pkg1 -> pkg2)")
+		return
+	}
+
+	// validate toPkg
+	toPkg = strings.TrimSpace(parts[0])
+	if toPkg == "" {
+		err = generator.Errorf(nil, "invalid directive (must in format pkg1 -> pkg2)")
+		return
+	}
+
+	// parse "pkg1,pkg2"
+	apiPkgs = strings.Split(parts[1], ",")
+	for i := range apiPkgs {
+		apiPkgs[i] = strings.TrimSpace(apiPkgs[i])
+		if apiPkgs[i] == "" {
+			err = generator.Errorf(nil, "invalid directive (must in format pkg1 -> pkg2)")
+			return
+		}
+	}
+	return apiPkgs, toPkg, nil
 }
 
 var reName = regexp.MustCompile(`[A-Z][A-z0-9_]*`)
 
-func parseWithMode(apiPkgs []*packages.Package, directives []generator.Directive) (mode string, _ objName, _ error) {
+func parseWithMode(apiPkgs []*packages.Package, directives []generator.Directive) (raw, mode string, _ objName, _ options, _ error) {
 	for _, d := range directives {
 		switch d.Cmd {
-		case ModeApply:
-			objName, err := parseTypeName(apiPkgs, d.Arg)
-			return d.Cmd, objName, err
-
-		case ModeType:
-			objName, err := parseTypeName(apiPkgs, d.Arg)
-			return d.Cmd, objName, err
+		case ModeType, ModeCreate, ModeUpdate:
+			objName, opts, err := parseTypeName(apiPkgs, d.Arg)
+			if err == nil && d.Cmd != ModeUpdate {
+				if len(opts.identifiers) != 0 {
+					err = generator.Errorf(nil, "invalid extra option (%v)", d.Arg)
+				}
+			}
+			return d.Raw, d.Cmd, objName, opts, err
 		}
 	}
 	return
 }
 
-func parseTypeName(apiPkgs []*packages.Package, input string) (_ objName, err error) {
-	var pkgPath, name string
-	idx := strings.LastIndexByte(input, '.')
-	if idx < 0 {
-		pkgPath, name = "", input
+var reTypeName = regexp.MustCompile(`^(.+\.)?([^.(]+)(\([^)]*\))?$`)
+
+func parseTypeName(apiPkgs []*packages.Package, input string) (_ objName, opts options, err error) {
+	parts := reTypeName.FindStringSubmatch(input)
+	if len(parts) == 0 {
+		err = generator.Errorf(nil, "invalid convert directive (%v)", input)
+		return
+	}
+	pkgPath, name, extra := parts[1], parts[2], parts[3]
+	if pkgPath != "" {
+		pkgPath = pkgPath[:len(pkgPath)-1] // remove "."
+	}
+	if extra != "" {
+		extra = extra[1 : len(extra)-1] // remove "(" ")"
+		opts.identifiers = strings.Split(extra, ",")
+		for _, ident := range opts.identifiers {
+			if !reName.MatchString(ident) {
+				err = generator.Errorf(nil, "invalid field name (%v)", input)
+				return
+			}
+		}
+	}
+
+	if pkgPath == "" {
 		if !reName.MatchString(name) {
-			err = fmt.Errorf("invalid type name (%v)", name)
+			err = generator.Errorf(nil, "invalid type name (%v)", input)
 			return
 		}
 		if len(apiPkgs) == 1 {
-			return objName{pkg: pkgPath, name: name}, nil
+			return objName{pkg: apiPkgs[0].PkgPath, name: name}, opts, nil
 		}
-		err = fmt.Errorf("must provide path for multiple input packages (%v)", input)
+		err = generator.Errorf(nil, "must provide path for multiple input packages (%v)", input)
 		return
 	}
 
-	pkgPath, name = input[:idx], input[idx+1:]
+	pkgPaths := make([]string, len(apiPkgs))
 	var thePkg *packages.Package
-	for _, pkg := range apiPkgs {
+	for i, pkg := range apiPkgs {
+		pkgPaths[i] = pkg.PkgPath
 		if hasBase(pkg.PkgPath, pkgPath) {
 			if thePkg != nil {
-				err = fmt.Errorf("ambiguous path (%v)", pkgPath)
+				err = generator.Errorf(nil, "ambiguous path (%v)", pkgPath)
 				return
 			}
 			thePkg = pkg
 		}
 	}
 	if thePkg == nil {
-		err = fmt.Errorf("invalid package path (%v)", pkgPath)
+		err = generator.Errorf(nil, "invalid package path (%v not found in %v)", pkgPath, strings.Join(pkgPaths, ","))
 		return
 	}
 	if !reName.MatchString(name) {
-		err = fmt.Errorf("invalid type name (%v)", name)
+		err = generator.Errorf(nil, "invalid type name (%v)", name)
 		return
 	}
-	return objName{pkg: thePkg.PkgPath, name: name}, nil
+	return objName{pkg: thePkg.PkgPath, name: name}, opts, nil
 }
 
 func hasBase(pkgPath, tail string) bool {
@@ -278,13 +345,15 @@ func generateConverts(p generator.Printer, apiObjMap map[objName]*objMap) (count
 			switch g.mode {
 			case ModeType:
 				err = generateConvertType(p, m.src, g.obj)
-			case ModeApply:
-				err = generateConvertApply(p, m.src, g.obj)
+			case ModeCreate:
+				err = generateCreate(p, m.src, g.obj)
+			case ModeUpdate:
+				err = generateUpdate(p, m.src, g.obj)
 			default:
 				panic("unexpected")
 			}
 			if err != nil {
-				return count, fmt.Errorf("can not convert between %v and %v: %v", g.obj.Object.Name(), m.src.Object.Name(), err)
+				return count, generator.Errorf(err, "can not convert between %v and %v: %v", g.obj.Object.Name(), m.src.Object.Name(), err)
 			}
 			count++
 		}
@@ -293,26 +362,26 @@ func generateConverts(p generator.Printer, apiObjMap map[objName]*objMap) (count
 }
 
 func generateConvertType(p generator.Printer, src, dst generator.Object) error {
-	srcStruct := validateStruct(src.Object)
-	dstStruct := validateStruct(dst.Object)
-	inType := p.TypeString(src.Object.Type())
-	outType := p.TypeString(dst.Object.Type())
-	fields := make([]fieldConvert, 0, dstStruct.NumFields())
-	for i, n := 0, dstStruct.NumFields(); i < n; i++ {
-		dstField := dstStruct.Field(i)
-		var srcField *types.Var
-		for j, m := 0, srcStruct.NumFields(); j < m; j++ {
-			field := srcStruct.Field(j)
-			if field.Name() == dstField.Name() {
-				srcField = field
-				break
-			}
-		}
-		fields = append(fields, fieldConvert{OutField: dstField, InField: srcField})
+	if err := generateConvertTypeImpl(p, src, dst); err != nil {
+		return err
+	}
+	return generateConvertTypeImpl(p, dst, src)
+}
+
+func generateConvertTypeImpl(p generator.Printer, in, out generator.Object) error {
+	inSt := validateStruct(in.Object)
+	outSt := validateStruct(out.Object)
+	inType := p.TypeString(in.Type())
+	outType := p.TypeString(out.Type())
+	fields := make([]fieldConvert, 0, outSt.NumFields())
+	for i, n := 0, outSt.NumFields(); i < n; i++ {
+		outField := outSt.Field(i)
+		inField := matchField(outField, inSt)
+		fields = append(fields, fieldConvert{In: inField, Out: outField})
 	}
 	vars := map[string]interface{}{
-		"InStr":   strings.ReplaceAll(inType, ".", ""),
-		"OutStr":  strings.ReplaceAll(outType, ".", ""),
+		"InStr":   strings.ReplaceAll(inType, ".", "_"),
+		"OutStr":  strings.ReplaceAll(outType, ".", "_"),
 		"InType":  inType,
 		"OutType": outType,
 		"Fields":  fields,
@@ -320,7 +389,38 @@ func generateConvertType(p generator.Printer, src, dst generator.Object) error {
 	return tplConvertType.Execute(p, vars)
 }
 
-func generateConvertApply(p generator.Printer, src, dst generator.Object) error {
+func generateCreate(p generator.Printer, base, arg generator.Object) error {
+	baseSt := validateStruct(base.Object)
+	argSt := validateStruct(arg.Object)
+	baseType := p.TypeString(base.Type())
+	argType := p.TypeString(arg.Type())
+	fields := make([]fieldConvert, 0, baseSt.NumFields())
+	for i, n := 0, baseSt.NumFields(); i < n; i++ {
+		baseField := baseSt.Field(i)
+		argField := matchField(baseField, argSt)
+		fields = append(fields, fieldConvert{In: argField, Out: baseField})
+	}
+	vars := map[string]interface{}{
+		"ArgStr":   strings.ReplaceAll(argType, ".", "_"),
+		"ArgType":  argType,
+		"BaseType": baseType,
+		"Fields":   fields,
+	}
+	return tplCreate.Execute(p, vars)
+}
+
+func generateUpdate(p generator.Printer, base, arg generator.Object) error {
+	return nil
+	// return tplUpdate.Execute(p, vars)
+}
+
+func matchField(baseField *types.Var, st *types.Struct) *types.Var {
+	for i, n := 0, st.NumFields(); i < n; i++ {
+		field := st.Field(i)
+		if field.Name() == baseField.Name() {
+			return field
+		}
+	}
 	return nil
 }
 

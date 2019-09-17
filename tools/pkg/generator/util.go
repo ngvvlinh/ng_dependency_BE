@@ -76,7 +76,7 @@ func ParseDirective(text string) (result []Directive, _ error) {
 	}
 	result, err := parseDirective(text, result)
 	if err != nil {
-		return nil, errorf(err, "%v (%v)", err, text)
+		return nil, Errorf(err, "%v (%v)", err, text)
 	}
 	return result, nil
 }
@@ -87,14 +87,14 @@ func parseDirective(text string, result []Directive) ([]Directive, error) {
 		return nil, nil
 	}
 	if text[0] != '+' {
-		return nil, errorf(nil, "invalid directive")
+		return nil, Errorf(nil, "invalid directive")
 	}
 	cmdIdx := reCommand.FindStringIndex(text)
 	if cmdIdx == nil {
-		return nil, errorf(nil, "invalid directive")
+		return nil, Errorf(nil, "invalid directive")
 	}
 	if cmdIdx[0] != 1 {
-		return nil, errorf(nil, "invalid directive")
+		return nil, Errorf(nil, "invalid directive")
 	}
 	dtext := text[:cmdIdx[1]]
 	directive := Directive{
@@ -115,7 +115,7 @@ func parseDirective(text string, result []Directive) ([]Directive, error) {
 		directive.Raw = text
 		directive.Arg = strings.TrimSpace(remain)
 		if directive.Arg == "" {
-			return nil, errorf(nil, "invalid directive")
+			return nil, Errorf(nil, "invalid directive")
 		}
 		return append(result, directive), nil
 	}
@@ -126,19 +126,19 @@ func parseDirective(text string, result []Directive) ([]Directive, error) {
 			directive.Raw = text
 			directive.Arg = strings.TrimSpace(remain)
 			if directive.Arg == "" {
-				return nil, errorf(nil, "invalid directive")
+				return nil, Errorf(nil, "invalid directive")
 			}
 			return append(result, directive), nil
 		}
 		directive.Raw = text[:idx]
 		directive.Arg = strings.TrimSpace(text[len(dtext)+1 : idx])
 		if directive.Arg == "" {
-			return nil, errorf(nil, "invalid directive")
+			return nil, Errorf(nil, "invalid directive")
 		}
 		result = append(result, directive)
 		return parseDirective(text[idx:], result)
 	}
-	return nil, errorf(nil, "invalid directive")
+	return nil, Errorf(nil, "invalid directive")
 }
 
 // TODO: handle "unicode..." for being compatible with
@@ -272,8 +272,15 @@ func (es listErrors) Format(st fmt.State, c rune) {
 	_, _ = st.Write(b.Bytes())
 }
 
-func errorf(err error, format string, args ...interface{}) error {
+type stacker interface {
+	StackTrace() errors.StackTrace
+}
+
+func Errorf(err error, format string, args ...interface{}) error {
 	if err != nil {
+		if _, ok := err.(stacker); !ok {
+			err = errors.WithStack(err)
+		}
 		return errors.WithMessagef(err, format, args...)
 	}
 	msg := fmt.Sprintf(format, args...)

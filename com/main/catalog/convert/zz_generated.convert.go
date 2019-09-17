@@ -8,81 +8,133 @@ import (
 	time "time"
 
 	catalog "etop.vn/api/main/catalog"
-	model "etop.vn/backend/com/main/catalog/model"
-	model1 "etop.vn/backend/pkg/etop/model"
+	catalogmodel "etop.vn/backend/com/main/catalog/model"
+	etopmodel "etop.vn/backend/pkg/etop/model"
 )
 
-func convert_catalogShopProduct_modelShopProduct(in *catalog.ShopProduct) (out *model.ShopProduct) {
-	if in == nil {
-		return nil
-	}
-	return &model.ShopProduct{
-		ShopID:        in.ShopID,
-		ProductID:     in.ProductID,
-		CollectionIDs: nil, // types do not match
-		Code:          in.Code,
-		Name:          in.Name,
-		Description:   "",  // zero value
-		DescHTML:      "",  // zero value
-		ShortDesc:     "",  // zero value
-		ImageURLs:     nil, // types do not match
-		Note:          in.Note,
-		Tags:          nil, // types do not match
-		Unit:          in.Unit,
-		CategoryID:    in.CategoryID,
-		CostPrice:     0, // zero value
-		ListPrice:     0, // zero value
-		RetailPrice:   0, // zero value
-		Status:        model1.Status3(in.Status),
-		CreatedAt:     in.CreatedAt,
-		UpdatedAt:     in.UpdatedAt,
-		DeletedAt:     time.Time{}, // zero value
-		NameNorm:      "",          // zero value
-		NameNormUa:    "",          // zero value
-	}
+func convert_catalog_ShopProduct_catalogmodel_ShopProduct(in *catalog.ShopProduct, out *catalogmodel.ShopProduct) {
+	out.ShopID = in.ShopID                    // simple assign
+	out.ProductID = in.ProductID              // simple assign
+	out.CollectionIDs = nil                   // types do not match
+	out.Code = in.Code                        // simple assign
+	out.Name = in.Name                        // simple assign
+	out.Description = ""                      // zero value
+	out.DescHTML = ""                         // zero value
+	out.ShortDesc = ""                        // zero value
+	out.ImageURLs = nil                       // types do not match
+	out.Note = in.Note                        // simple assign
+	out.Tags = nil                            // types do not match
+	out.Unit = in.Unit                        // simple assign
+	out.CategoryID = in.CategoryID            // simple assign
+	out.CostPrice = 0                         // zero value
+	out.ListPrice = 0                         // zero value
+	out.RetailPrice = 0                       // zero value
+	out.Status = etopmodel.Status3(in.Status) // simple conversion
+	out.CreatedAt = in.CreatedAt              // simple assign
+	out.UpdatedAt = in.UpdatedAt              // simple assign
+	out.DeletedAt = time.Time{}               // zero value
+	out.NameNorm = ""                         // zero value
+	out.NameNormUa = ""                       // zero value
 }
 
-func convert_catalogShopProducts_modelShopProducts(ins []*catalog.ShopProduct) (outs []*model.ShopProduct) {
-	outs = make([]*model.ShopProduct, len(ins))
-	for i := range outs {
-		outs[i] = convert_catalogShopProduct_modelShopProduct(ins[i])
+func convert_catalog_ShopProducts_catalogmodel_ShopProducts(ins []*catalog.ShopProduct) (outs []*catalogmodel.ShopProduct) {
+	tmps := make([]catalogmodel.ShopProduct, len(ins))
+	outs = make([]*catalogmodel.ShopProduct, len(ins))
+	for i := range tmps {
+		out := &tmps[i]
+		outs[i] = out
+		convert_catalog_ShopProduct_catalogmodel_ShopProduct(ins[i], out)
 	}
 	return outs
 }
 
-func convert_catalogShopVariant_modelShopVariant(in *catalog.ShopVariant) (out *model.ShopVariant) {
-	if in == nil {
-		return nil
-	}
-	return &model.ShopVariant{
-		ShopID:      in.ShopID,
-		VariantID:   in.VariantID,
-		ProductID:   in.ProductID,
-		Code:        in.Code,
-		Name:        in.Name,
-		Description: "",  // zero value
-		DescHTML:    "",  // zero value
-		ShortDesc:   "",  // zero value
-		ImageURLs:   nil, // types do not match
-		Note:        in.Note,
-		Tags:        nil, // zero value
-		CostPrice:   0,   // zero value
-		ListPrice:   0,   // zero value
-		RetailPrice: 0,   // zero value
-		Status:      model1.Status3(in.Status),
-		Attributes:  nil, // types do not match
-		CreatedAt:   in.CreatedAt,
-		UpdatedAt:   in.UpdatedAt,
-		DeletedAt:   time.Time{}, // zero value
-		NameNorm:    "",          // zero value
-		AttrNormKv:  "",          // zero value
-	}
+func convert_catalogmodel_ShopProduct_catalog_ShopProduct(in *catalogmodel.ShopProduct, out *catalog.ShopProduct) {
+	out.ShopID = in.ShopID                          // simple assign
+	out.ProductID = in.ProductID                    // simple assign
+	out.Code = in.Code                              // simple assign
+	out.Name = in.Name                              // simple assign
+	out.Unit = in.Unit                              // simple assign
+	out.ImageURLs = nil                             // types do not match
+	out.Note = in.Note                              // simple assign
+	out.DescriptionInfo = catalog.DescriptionInfo{} // zero value
+	out.PriceInfo = catalog.PriceInfo{}             // zero value
+	out.CategoryID = in.CategoryID                  // simple assign
+	out.CollectionIDs = nil                         // types do not match
+	out.Tags = nil                                  // types do not match
+	out.Status = int32(in.Status)                   // simple conversion
+	out.CreatedAt = in.CreatedAt                    // simple assign
+	out.UpdatedAt = in.UpdatedAt                    // simple assign
 }
 
-func convert_catalogShopVariants_modelShopVariants(ins []*catalog.ShopVariant) (outs []*model.ShopVariant) {
-	outs = make([]*model.ShopVariant, len(ins))
-	for i := range outs {
-		outs[i] = convert_catalogShopVariant_modelShopVariant(ins[i])
+func convert_catalogmodel_ShopProducts_catalog_ShopProducts(ins []*catalogmodel.ShopProduct) (outs []*catalog.ShopProduct) {
+	tmps := make([]catalog.ShopProduct, len(ins))
+	outs = make([]*catalog.ShopProduct, len(ins))
+	for i := range tmps {
+		out := &tmps[i]
+		outs[i] = out
+		convert_catalogmodel_ShopProduct_catalog_ShopProduct(ins[i], out)
+	}
+	return outs
+}
+
+func convert_catalog_ShopVariant_catalogmodel_ShopVariant(in *catalog.ShopVariant, out *catalogmodel.ShopVariant) {
+	out.ShopID = in.ShopID                    // simple assign
+	out.VariantID = in.VariantID              // simple assign
+	out.ProductID = in.ProductID              // simple assign
+	out.Code = in.Code                        // simple assign
+	out.Name = in.Name                        // simple assign
+	out.Description = ""                      // zero value
+	out.DescHTML = ""                         // zero value
+	out.ShortDesc = ""                        // zero value
+	out.ImageURLs = nil                       // types do not match
+	out.Note = in.Note                        // simple assign
+	out.Tags = nil                            // zero value
+	out.CostPrice = 0                         // zero value
+	out.ListPrice = 0                         // zero value
+	out.RetailPrice = 0                       // zero value
+	out.Status = etopmodel.Status3(in.Status) // simple conversion
+	out.Attributes = nil                      // types do not match
+	out.CreatedAt = in.CreatedAt              // simple assign
+	out.UpdatedAt = in.UpdatedAt              // simple assign
+	out.DeletedAt = time.Time{}               // zero value
+	out.NameNorm = ""                         // zero value
+	out.AttrNormKv = ""                       // zero value
+}
+
+func convert_catalog_ShopVariants_catalogmodel_ShopVariants(ins []*catalog.ShopVariant) (outs []*catalogmodel.ShopVariant) {
+	tmps := make([]catalogmodel.ShopVariant, len(ins))
+	outs = make([]*catalogmodel.ShopVariant, len(ins))
+	for i := range tmps {
+		out := &tmps[i]
+		outs[i] = out
+		convert_catalog_ShopVariant_catalogmodel_ShopVariant(ins[i], out)
+	}
+	return outs
+}
+
+func convert_catalogmodel_ShopVariant_catalog_ShopVariant(in *catalogmodel.ShopVariant, out *catalog.ShopVariant) {
+	out.ShopID = in.ShopID                          // simple assign
+	out.ProductID = in.ProductID                    // simple assign
+	out.VariantID = in.VariantID                    // simple assign
+	out.Code = in.Code                              // simple assign
+	out.Name = in.Name                              // simple assign
+	out.DescriptionInfo = catalog.DescriptionInfo{} // zero value
+	out.ImageURLs = nil                             // types do not match
+	out.Status = int16(in.Status)                   // simple conversion
+	out.Attributes = nil                            // types do not match
+	out.PriceInfo = catalog.PriceInfo{}             // zero value
+	out.Note = in.Note                              // simple assign
+	out.CreatedAt = in.CreatedAt                    // simple assign
+	out.UpdatedAt = in.UpdatedAt                    // simple assign
+}
+
+func convert_catalogmodel_ShopVariants_catalog_ShopVariants(ins []*catalogmodel.ShopVariant) (outs []*catalog.ShopVariant) {
+	tmps := make([]catalog.ShopVariant, len(ins))
+	outs = make([]*catalog.ShopVariant, len(ins))
+	for i := range tmps {
+		out := &tmps[i]
+		outs[i] = out
+		convert_catalogmodel_ShopVariant_catalog_ShopVariant(ins[i], out)
 	}
 	return outs
 }

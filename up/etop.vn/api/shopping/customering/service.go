@@ -38,6 +38,7 @@ type CustomersResponse struct {
 
 //-- commands --//
 
+// +convert:create=ShopCustomer
 type CreateCustomerArgs struct {
 	ShopID   int64
 	Code     string
@@ -50,6 +51,7 @@ type CreateCustomerArgs struct {
 	Email    string
 }
 
+// +convert:update=ShopCustomer(ID,ShopID)
 type UpdateCustomerArgs struct {
 	ID       int64
 	ShopID   int64

@@ -95,16 +95,16 @@ func checkService(kinds []string, obj *types.TypeName, cmt *generator.Comment) (
 	}
 
 	if obj == nil {
-		return "", nil, fmt.Errorf("%v: can not load definition", name)
+		return "", nil, generator.Errorf(nil, "%v: can not load definition", name)
 	}
 	typ := obj.Type()
 	if typ == nil {
-		return "", nil, fmt.Errorf("%v: can not load type information", name)
+		return "", nil, generator.Errorf(nil, "%v: can not load type information", name)
 	}
 	if typ, ok := typ.(*types.Named); ok {
 		if typ, ok := typ.Underlying().(*types.Interface); ok {
 			return kind, typ, nil
 		}
 	}
-	return "", nil, fmt.Errorf("%v: must be an interface", name)
+	return "", nil, generator.Errorf(nil, "%v: must be an interface", name)
 }

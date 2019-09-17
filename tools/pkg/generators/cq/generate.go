@@ -1,12 +1,12 @@
 package cq
 
 import (
-	"errors"
 	"fmt"
 	"go/types"
 	"strings"
 
-	"etop.vn/backend/tools/pkg/reflect"
+	"etop.vn/backend/tools/pkg/generator"
+	"etop.vn/backend/tools/pkg/genutil"
 )
 
 func processService(w *MultiWriter, def ServiceDef) {
@@ -61,24 +61,24 @@ func extractHandlerDefs(pkgPath string, name string, typ *types.Interface) (defs
 
 func checkMethodSignature(name string, params *types.Tuple, results *types.Tuple) (requests []*ArgItem, responses []*ArgItem, err error) {
 	if params.Len() == 0 {
-		err = errors.New("expect at least 1 param")
+		err = generator.Errorf(nil, "expect at least 1 param")
 		return
 	}
 	if results.Len() == 0 {
-		err = errors.New("expect at least 1 param")
+		err = generator.Errorf(nil, "expect at least 1 param")
 		return
 	}
 	{
 		t := params.At(0)
 		if t.Type().String() != "context.Context" {
-			err = errors.New("expect the first param is context.Context")
+			err = generator.Errorf(nil, "expect the first param is context.Context")
 			return
 		}
 	}
 	{
 		t := results.At(results.Len() - 1)
 		if t.Type().String() != "error" {
-			err = errors.New("expect the last return value is error")
+			err = generator.Errorf(nil, "expect the last return value is error")
 			return
 		}
 	}
@@ -411,15 +411,15 @@ func generateHandle(w ImportWriter, item HandlerDef, methodName, genHandlerName,
 }
 
 func processTag(tag string) (string, error) {
-	stag, err := reflect.ParseStructTags(tag)
+	stag, err := genutil.ParseStructTags(tag)
 	if err != nil {
 		return "", err
 	}
 	if strings.Contains(tag, "`") {
-		return "", errors.New("backquote (`) is not supported in tag")
+		return "", generator.Errorf(nil, "backquote (`) is not supported in tag")
 	}
 
-	result := make(reflect.StructTags, 0, len(stag))
+	result := make(genutil.StructTags, 0, len(stag))
 	for _, t := range stag {
 		if t.Name != "protobuf" {
 			result = append(result, t)

@@ -10,7 +10,8 @@ import (
 	"etop.vn/backend/pkg/etop/model"
 )
 
-// +gen:convert: etop.vn/api/main/catalog,etop.vn/api/main/catalog/types -> etop.vn/backend/com/main/catalog/model
+// +gen:convert: etop.vn/backend/com/main/catalog/model->etop.vn/api/main/catalog,etop.vn/api/main/catalog/types
+// +gen:convert: etop.vn/api/main/catalog-|
 
 func AttributeDB(in *catalogtypes.Attribute) (out catalogmodel.ProductAttribute) {
 	if in == nil {
