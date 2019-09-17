@@ -590,7 +590,6 @@ func CreateLoginResponse2(ctx context.Context, claim *claims.ClaimInfo, token st
 
 		case model.IsAffiliateID(currentAccountID):
 		case model.IsEtopAccountID(currentAccountID):
-		case model.IsAccountWhiteList(currentAccountID):
 			// nothing
 		default:
 			return nil, nil, cm.ErrorTracef(cm.Internal, nil, "Invalid account")

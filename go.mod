@@ -40,6 +40,7 @@ require (
 	github.com/jcmturner/gofork v1.0.0 // indirect
 	github.com/jteeuwen/go-bindata v3.0.7+incompatible
 	github.com/julienschmidt/httprouter v1.2.0
+	github.com/k0kubun/pp v3.0.1+incompatible
 	github.com/lib/pq v1.2.0
 	github.com/mattn/go-isatty v0.0.9 // indirect
 	github.com/pierrec/lz4 v2.2.7+incompatible // indirect

@@ -34,21 +34,21 @@ func init() {
 }
 
 func TradingGetProduct(ctx context.Context, q *wrapshop.TradingGetProductEndpoint) error {
-	query := &catalog.GetShopProductByIDQuery{
+	query := &catalog.GetShopProductWithVariantsByIDQuery{
 		ProductID: q.Id,
 		ShopID:    model.EtopTradingAccountID,
 	}
 	if err := catalogQuery.Dispatch(ctx, query); err != nil {
 		return err
 	}
-	q.Result = PbShopProduct(query.Result)
+	q.Result = PbShopProductWithVariants(query.Result)
 	return nil
 
 }
 
 func TradingGetProducts(ctx context.Context, q *wrapshop.TradingGetProductsEndpoint) error {
 	paging := q.Paging.CMPaging()
-	query := &catalog.ListShopProductsQuery{
+	query := &catalog.ListShopProductsWithVariantsQuery{
 		ShopID:  model.EtopTradingAccountID,
 		Paging:  *paging,
 		Filters: pbcm.ToFilters(q.Filters),
@@ -59,7 +59,7 @@ func TradingGetProducts(ctx context.Context, q *wrapshop.TradingGetProductsEndpo
 
 	q.Result = &pbshop.ShopProductsResponse{
 		Paging:   pbcm.PbPageInfo(paging, query.Result.Count),
-		Products: PbShopProducts(query.Result.Products),
+		Products: PbShopProductsWithVariants(query.Result.Products),
 	}
 	return nil
 }

@@ -249,7 +249,7 @@ func startSessionShop(ctx context.Context, require bool, s *Session, account mod
 		return true
 	}
 	if require {
-		if !model.IsShopID(s.Claim.AccountID) && !model.IsAccountWhiteList(s.Claim.AccountID) {
+		if !model.IsShopID(s.Claim.AccountID) {
 			return false
 		}
 
@@ -286,7 +286,7 @@ func startSessionAffiliate(ctx context.Context, require bool, s *Session, accoun
 		return true
 	}
 	if require {
-		if !model.IsAffiliateID(s.Claim.AccountID) && !model.IsAccountWhiteList(s.Claim.AccountID) {
+		if !model.IsAffiliateID(s.Claim.AccountID) {
 			return false
 		}
 

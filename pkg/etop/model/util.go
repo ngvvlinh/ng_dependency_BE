@@ -59,10 +59,6 @@ func IsEtopAccountID(id int64) bool {
 	return id == EtopAccountID
 }
 
-func IsAccountWhiteList(id int64) bool {
-	return cm.ContainInt64(EtopAccountsWhiteList, id)
-}
-
 type UpdateListRequest struct {
 	Adds       []string
 	Deletes    []string

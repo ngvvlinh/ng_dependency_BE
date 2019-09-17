@@ -10,13 +10,13 @@ ALTER TABLE history."user"
 INSERT INTO "account" (
     "id", "name", "type", "owner_id"
 ) VALUES (
-    '1000015765615455091', 'eTop Trading', 'shop', '1000101010101010101'
+    '1000015764575267699', 'eTop Trading', 'shop', '1000101010101010101'
 );
 
 INSERT INTO shop (
     "id", "name", "owner_id", "status", "created_at", "updated_at", "is_test", "try_on"
 ) VALUES (
-    '1000015765615455091', 'eTop Trading', '1000101010101010101', 1, NOW(), NOW(), 1, 'open'
+    '1000015764575267699', 'eTop Trading', '1000101010101010101', 1, NOW(), NOW(), 1, 'open'
 );
 
 -- Add field **trading_shop_id** to table shop

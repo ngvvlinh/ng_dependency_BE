@@ -137,11 +137,10 @@ const (
 	TagImport    = 111
 
 	EtopAccountID        = TagEtop
-	EtopTradingAccountID = 1000015765615455091
-
-	StatusActive   = 1
-	StatusCreated  = 0
-	StatusDisabled = -1
+	EtopTradingAccountID = 1000015764575267699
+	StatusActive         = 1
+	StatusCreated        = 0
+	StatusDisabled       = -1
 
 	StateDefault    ShippingState = "default"    //  0
 	StateCreated    ShippingState = "created"    //  2
@@ -237,7 +236,6 @@ var ShippingFeeShopTypes = []ShippingFeeLineType{
 	ShippingFeeTypeMain, ShippingFeeTypeReturn, ShippingFeeTypeAdjustment,
 	ShippingFeeTypeAddessChange, ShippingFeeTypeCODS, ShippingFeeTypeInsurance, ShippingFeeTypeOther, ShippingFeeTypeDiscount,
 }
-var EtopAccountsWhiteList = []int64{EtopTradingAccountID}
 
 //        SyncAt: updated when sending data to external service successfully
 //     TrySyncAt: updated when sending data to external service (may unsuccessfully)
