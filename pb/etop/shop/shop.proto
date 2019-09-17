@@ -104,9 +104,10 @@ service ProductService {
 
     rpc CreateProduct (CreateProductRequest) returns (ShopProduct);
     rpc UpdateProduct (UpdateProductRequest) returns (ShopProduct);
+    rpc UpdateProductsStatus (UpdateProductStatusRequest) returns (UpdateProductStatusResponse);
     rpc UpdateProductsTags (UpdateProductsTagsRequest) returns (cm.UpdatedResponse);
     rpc UpdateProductImages (UpdateVariantImagesRequest) returns (ShopProduct);
-
+    rpc RemoveProducts (RemoveVariantsRequest) returns (cm.RemovedResponse);
     //-- variant --//
 
     rpc GetVariant (cm.IDRequest) returns (ShopVariant);
@@ -115,15 +116,14 @@ service ProductService {
     rpc CreateVariant (CreateVariantRequest) returns (ShopVariant);
     rpc UpdateVariant (UpdateVariantRequest) returns (ShopVariant);
     rpc UpdateVariantImages (UpdateVariantImagesRequest) returns (ShopVariant);
-
+    rpc UpdateVariantsStatus (UpdateProductStatusRequest) returns(UpdateProductStatusResponse);
+    rpc UpdateVariantAttributes (UpdateVariantAttributesRequest) returns (ShopVariant);
+    rpc RemoveVariants (RemoveVariantsRequest) returns (cm.RemovedResponse);
     //-- deprecated --//
 
     // deprecated
     rpc AddProducts (AddProductsRequest) returns (AddProductsResponse);
-    // deprecated
-    rpc RemoveProducts (RemoveVariantsRequest) returns (cm.RemovedResponse);
-    // deprecated
-    rpc RemoveVariants (RemoveVariantsRequest) returns (cm.RemovedResponse);
+
 }
 
 // deprecated: 2018.07.31+14
@@ -451,18 +451,20 @@ message UpdateVariantRequest {
     // @required
     optional int64 id = 1 [(gogoproto.nullable)=false];
 
-    optional string name        = 3 [(gogoproto.nullable)=false];
-    optional string description = 4 [(gogoproto.nullable)=false];
-    optional string short_desc  = 5 [(gogoproto.nullable)=false];
-    optional string desc_html   = 6 [(gogoproto.nullable)=false];
-    optional string note        = 7 [(gogoproto.nullable)=false];
+    optional string name        = 2;
+    optional string note        = 3;
+    optional string code       = 11;
 
-    optional int32  cost_price  = 12 [(gogoproto.nullable)=false];
-    optional int32  list_price  = 17 [(gogoproto.nullable)=false];
-    optional int32  retail_price  = 11 [(gogoproto.nullable)=false];
-    repeated Attribute attributes = 14;
+    optional int32  cost_price  = 4;
+    optional int32  list_price  = 5;
+    optional int32  retail_price  = 6;
 
-    optional string code       = 15 [(gogoproto.nullable)=false];
+    optional string description = 7;
+    optional string short_desc  = 8;
+    optional string desc_html   = 9;
+
+    repeated Attribute attributes = 10;
+
 
     // deprecated
     optional string sku        = 16 [(gogoproto.nullable)=false];
@@ -472,11 +474,18 @@ message UpdateProductRequest {
     // @required
     optional int64 id = 1 [(gogoproto.nullable)=false];
 
-    optional string name        = 3 [(gogoproto.nullable)=false];
-    optional string description = 4 [(gogoproto.nullable)=false];
-    optional string short_desc  = 5 [(gogoproto.nullable)=false];
-    optional string desc_html   = 6 [(gogoproto.nullable)=false];
-    optional string code   = 7 [(gogoproto.nullable)=false];
+    optional string name = 2;
+    optional string code = 3;
+    optional string note = 4;
+    optional string unit = 5;
+
+    optional string description = 6;
+    optional string short_desc  = 7;
+    optional string desc_html   = 8;
+
+    optional int32 cost_price = 9;
+    optional int32 list_price = 10;
+    optional int32 retail_price = 11;
 }
 
 message UpdateVariantsRequest {
@@ -835,6 +844,7 @@ message Attribute {
 message UpdateVariantImagesRequest {
     // @required
     optional int64  id          = 1 [(gogoproto.nullable)=false];
+
     repeated string adds        = 2;
     repeated string deletes     = 3;
     repeated string replace_all = 4;
@@ -1094,6 +1104,15 @@ message CustomerAddressesResponse {
     repeated CustomerAddress addresses = 1;
 }
 
+message UpdateProductStatusRequest {
+    repeated int64 ids  = 1 ;
+    optional status3.Status status = 3 [(gogoproto.nullable) = false];
+}
+
+message UpdateProductStatusResponse {
+    optional int32 updated = 2 [(gogoproto.nullable) = false];
+}
+
 message TradingPaymentOrderRequest {
     optional int64 id = 1 [(gogoproto.nullable) = false];
     optional string desc = 2 [(gogoproto.nullable) = false];
@@ -1104,4 +1123,10 @@ message TradingPaymentOrderRequest {
 
 message TradingPaymentOrderResponse {
     optional string url = 1 [(gogoproto.nullable) = false];
+}
+
+message UpdateVariantAttributesRequest {
+    // @required
+    optional int64 variant_id = 1 [(gogoproto.nullable) = false];
+    repeated Attribute attributes =2;
 }

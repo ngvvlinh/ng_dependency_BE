@@ -37,6 +37,8 @@ type ShopProduct struct {
 	CreatedAt time.Time
 
 	UpdatedAt time.Time
+
+	DeletedAt time.Time
 }
 
 type ShopVariant struct {
@@ -66,6 +68,8 @@ type ShopVariant struct {
 	CreatedAt time.Time
 
 	UpdatedAt time.Time
+
+	DeletedAt time.Time
 }
 
 func (v *ShopVariant) GetName() string {

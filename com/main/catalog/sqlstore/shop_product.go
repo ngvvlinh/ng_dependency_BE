@@ -2,6 +2,7 @@ package sqlstore
 
 import (
 	"context"
+	"time"
 
 	"etop.vn/api/main/catalog"
 	"etop.vn/api/meta"
@@ -221,4 +222,35 @@ func (s *ShopProductStore) ListShopProductsWithVariants() ([]*catalog.ShopProduc
 		return nil, err
 	}
 	return convert.ShopProductsWithVariants(products), nil
+}
+
+func (s *ShopProductStore) UpdateShopProduct(product *model.ShopProduct) error {
+	sqlstore.MustNoPreds(s.preds)
+	err := s.query().In("product_id", product.ProductID).UpdateAll().ShouldUpdate(product)
+	return err
+}
+
+func (s *ShopProductStore) UpdateStatusShopProducts(status int16) (int, error) {
+	query := s.query().Where(s.preds)
+	query = s.includeDeleted.Check(query, s.FtShopProduct.NotDeleted())
+	updateStatus, err := query.Table("shop_product").UpdateMap(map[string]interface{}{
+		"status": status,
+	})
+	return int(updateStatus), err
+}
+
+func (s *ShopProductStore) UpdateImageShopProduct(product *catalog.ShopProduct) error {
+	query := s.query().Where(s.preds)
+	producttDB := convert.ShopProductDB(product)
+	err := query.ShouldUpdate(producttDB)
+	return err
+}
+
+func (s *ShopProductStore) SoftDelete() (int, error) {
+	query := s.query().Where(s.preds)
+	query = s.includeDeleted.Check(query, s.FtShopProduct.NotDeleted())
+	_deleted, err := query.Table("shop_product").UpdateMap(map[string]interface{}{
+		"deleted_at": time.Now(),
+	})
+	return int(_deleted), err
 }

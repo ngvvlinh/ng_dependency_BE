@@ -16,10 +16,10 @@ import (
 	"etop.vn/api/main/shipnow"
 	carriertypes "etop.vn/api/main/shipnow/carrier/types"
 	"etop.vn/api/main/shipping/types"
+	"etop.vn/api/meta"
 	"etop.vn/api/shopping/addressing"
 	"etop.vn/api/shopping/customering"
 	notimodel "etop.vn/backend/com/handler/notifier/model"
-	catalogmodel "etop.vn/backend/com/main/catalog/model"
 	catalogmodelx "etop.vn/backend/com/main/catalog/modelx"
 	moneymodelx "etop.vn/backend/com/main/moneytx/modelx"
 	pbcm "etop.vn/backend/pb/common"
@@ -36,11 +36,14 @@ import (
 	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/backend/pkg/etop/sqlstore"
 	wrapshop "etop.vn/backend/wrapper/etop/shop"
+	. "etop.vn/capi/dot"
 	"etop.vn/common/bus"
 	"etop.vn/common/l"
 )
 
-var ll = l.New()
+var (
+	ll = l.New()
+)
 
 func init() {
 	bus.AddHandler("api", VersionInfo)
@@ -50,6 +53,8 @@ func init() {
 	bus.AddHandler("api", UpdateCollection)
 	bus.AddHandler("api", UpdateVariant)
 	bus.AddHandler("api", UpdateProductsCollection)
+	bus.AddHandler("api", UpdateVariantAttributes)
+	bus.AddHandler("api", UpdateVariantsStatus)
 
 	bus.AddHandler("api", AddProducts)
 	bus.AddHandler("api", GetProduct)
@@ -57,6 +62,7 @@ func init() {
 	bus.AddHandler("api", GetProductsByIDs)
 	bus.AddHandler("api", CreateProduct)
 	bus.AddHandler("api", UpdateProduct)
+	bus.AddHandler("api", UpdateProductsStatus)
 	bus.AddHandler("api", UpdateProductsTags)
 	bus.AddHandler("api", RemoveProducts)
 
@@ -178,14 +184,44 @@ func VersionInfo(ctx context.Context, q *wrapshop.VersionInfoEndpoint) error {
 
 func UpdateVariant(ctx context.Context, q *wrapshop.UpdateVariantEndpoint) error {
 	shopID := q.Context.Shop.ID
-	cmd := &catalogmodelx.UpdateShopVariantCommand{
-		ShopID:     shopID,
-		Variant:    pbshop.PbUpdateVariantToModel(shopID, q.UpdateVariantRequest),
-		CostPrice:  q.CostPrice,
-		Code:       q.Sku,
-		Attributes: convertpb.AttributesTomodel(q.Attributes),
+	cmd := &catalog.UpdateShopVariantInfoCommand{
+		ShopID:    shopID,
+		VariantID: q.Id,
+		Name:      PString(q.Name),
+		Code:      PString(q.Code),
+		Note:      PString(q.Note),
+
+		ShortDesc:    PString(q.ShortDesc),
+		Descripttion: PString(q.Description),
+		DescHTML:     PString(q.DescHtml),
+
+		CostPrice:   PInt32(q.CostPrice),
+		ListPrice:   PInt32(q.ListPrice),
+		RetailPrice: PInt32(q.RetailPrice),
 	}
-	if err := bus.Dispatch(ctx, cmd); err != nil {
+	if err := catalogAggr.Dispatch(ctx, cmd); err != nil {
+		return err
+	}
+	q.Result = PbShopVariant(cmd.Result)
+	return nil
+}
+
+func UpdateVariantAttributes(ctx context.Context, q *wrapshop.UpdateVariantAttributesEndpoint) error {
+	shopID := q.Context.Shop.ID
+
+	var attributes catalog.Attributes
+	for _, value := range q.Attributes {
+		attributes = append(attributes, &catalog.Attribute{
+			Name:  value.Name,
+			Value: value.Value,
+		})
+	}
+	cmd := &catalog.UpdateShopVariantAttributesCommand{
+		ShopID:     shopID,
+		VariantID:  q.VariantId,
+		Attributes: attributes,
+	}
+	if err := catalogAggr.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
 	q.Result = PbShopVariant(cmd.Result)
@@ -193,15 +229,15 @@ func UpdateVariant(ctx context.Context, q *wrapshop.UpdateVariantEndpoint) error
 }
 
 func RemoveVariants(ctx context.Context, q *wrapshop.RemoveVariantsEndpoint) error {
-	cmd := &catalogmodelx.RemoveShopVariantsCommand{
+	cmd := &catalog.DeleteShopVariantsCommand{
 		ShopID: q.Context.Shop.ID,
 		IDs:    q.Ids,
 	}
-	if err := bus.Dispatch(ctx, cmd); err != nil {
+	if err := catalogAggr.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
 	q.Result = &pbcm.RemovedResponse{
-		Removed: int32(cmd.Result.Removed),
+		Removed: int32(cmd.Result),
 	}
 	return nil
 }
@@ -277,30 +313,69 @@ func CreateProduct(ctx context.Context, q *wrapshop.CreateProductEndpoint) error
 }
 
 func RemoveProducts(ctx context.Context, q *wrapshop.RemoveProductsEndpoint) error {
-	cmd := &catalogmodelx.RemoveShopProductsCommand{
+	cmd := &catalog.DeleteShopProductsCommand{
 		ShopID: q.Context.Shop.ID,
 		IDs:    q.Ids,
 	}
-	if err := bus.Dispatch(ctx, cmd); err != nil {
+	if err := catalogAggr.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
 	q.Result = &pbcm.RemovedResponse{
-		Removed: int32(cmd.Result.Removed),
+		Removed: int32(cmd.Result),
 	}
 	return nil
 }
 
 func UpdateProduct(ctx context.Context, q *wrapshop.UpdateProductEndpoint) error {
 	shopID := q.Context.Shop.ID
-	cmd := &catalogmodelx.UpdateShopProductCommand{
-		ShopID:  shopID,
-		Product: pbshop.PbUpdateProductToModel(shopID, q.UpdateProductRequest),
-		Code:    q.Code,
+	cmd := &catalog.UpdateShopProductInfoCommand{
+		ShopID:    shopID,
+		ProductID: q.Id,
+		Code:      PString(q.Code),
+		Name:      PString(q.Name),
+		Unit:      PString(q.Unit),
+		Note:      PString(q.Note),
+
+		ShortDesc:   PString(q.ShortDesc),
+		Description: PString(q.Description),
+		DescHTML:    PString(q.DescHtml),
+
+		CostPrice:   PInt32(q.CostPrice),
+		ListPrice:   PInt32(q.ListPrice),
+		RetailPrice: PInt32(q.RetailPrice),
 	}
-	if err := bus.Dispatch(ctx, cmd); err != nil {
+	if err := catalogAggr.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
-	q.Result = PbShopProductWithVariants(cmd.Result)
+	q.Result = PbShopProduct(cmd.Result)
+	return nil
+}
+
+func UpdateProductsStatus(ctx context.Context, q *wrapshop.UpdateProductsStatusEndpoint) error {
+	shopID := q.Context.Shop.ID
+	cmd := &catalog.UpdateShopProductStatusCommand{
+		IDs:    q.Ids,
+		ShopID: shopID,
+		Status: int16(q.Status),
+	}
+	if err := catalogAggr.Dispatch(ctx, cmd); err != nil {
+		return err
+	}
+	q.Result = &pbshop.UpdateProductStatusResponse{Updated: int32(cmd.Result)}
+	return nil
+}
+
+func UpdateVariantsStatus(ctx context.Context, q *wrapshop.UpdateVariantsStatusEndpoint) error {
+	shopID := q.Context.Shop.ID
+	cmd := &catalog.UpdateShopVariantStatusCommand{
+		IDs:    q.Ids,
+		ShopID: shopID,
+		Status: int16(q.Status),
+	}
+	if err := catalogAggr.Dispatch(ctx, cmd); err != nil {
+		return err
+	}
+	q.Result = &pbshop.UpdateProductStatusResponse{Updated: int32(cmd.Result)}
 	return nil
 }
 
@@ -483,72 +558,71 @@ func RemoveProductSourceCategory(ctx context.Context, q *wrapshop.RemoveProductS
 
 func UpdateProductImages(ctx context.Context, q *wrapshop.UpdateProductImagesEndpoint) error {
 	shopID := q.Context.Shop.ID
-	query := &catalog.GetShopProductByIDQuery{
-		ProductID: q.Id,
-		ShopID:    q.Context.Shop.ID,
+
+	var metaUpdate []*meta.UpdateSet
+	if q.DeleteAll == true {
+		metaUpdate = append(metaUpdate, &meta.UpdateSet{
+			Op: meta.OpDeleteAll,
+		})
 	}
-	if err := catalogQuery.Dispatch(ctx, query); err != nil {
-		return err
+	if q.ReplaceAll != nil {
+		metaUpdate = append(metaUpdate, &meta.UpdateSet{
+			Op:      meta.OpReplaceAll,
+			Changes: q.ReplaceAll,
+		})
+	}
+	metaUpdate = append(metaUpdate, &meta.UpdateSet{
+		Op:      meta.OpAdd,
+		Changes: q.Adds,
+	})
+	metaUpdate = append(metaUpdate, &meta.UpdateSet{
+		Op:      meta.OpRemove,
+		Changes: q.Deletes,
+	})
+
+	cmd := catalog.UpdateShopProductImagesCommand{
+		ShopID:  shopID,
+		ID:      q.Id,
+		Updates: metaUpdate,
 	}
 
-	r := &model.UpdateListRequest{
-		Adds:       q.Adds,
-		Deletes:    q.Deletes,
-		ReplaceAll: q.ReplaceAll,
-		DeleteAll:  q.DeleteAll,
-	}
-
-	imageURLs, err := pbcm.PatchImage(query.Result.ImageURLs, r)
-	if err != nil {
+	if err := catalogAggr.Dispatch(ctx, &cmd); err != nil {
 		return err
 	}
-
-	cmd := &catalogmodelx.UpdateShopProductCommand{
-		ShopID: shopID,
-		Product: &catalogmodel.ShopProduct{
-			ProductID: q.Id,
-			ShopID:    shopID,
-			ImageURLs: imageURLs,
-		},
-	}
-	if err := bus.Dispatch(ctx, cmd); err != nil {
-		return err
-	}
-	q.Result = PbShopProductWithVariants(cmd.Result)
+	q.Result = PbShopProduct(cmd.Result)
 	return nil
 }
 
 func UpdateVariantImages(ctx context.Context, q *wrapshop.UpdateVariantImagesEndpoint) error {
 	shopID := q.Context.Shop.ID
-	query := &catalogmodelx.GetShopVariantQuery{
-		ShopID:    shopID,
-		VariantID: q.Id,
-	}
-	var sourceImages []string
-	if err := bus.Dispatch(ctx, query); err == nil {
-		sourceImages = query.Result.ImageURLs
-	}
 
-	r := &model.UpdateListRequest{
-		Adds:       q.Adds,
-		Deletes:    q.Deletes,
-		ReplaceAll: q.ReplaceAll,
-		DeleteAll:  q.DeleteAll,
+	var metaUpdate []*meta.UpdateSet
+	if q.DeleteAll == true {
+		metaUpdate = append(metaUpdate, &meta.UpdateSet{
+			Op: meta.OpDeleteAll,
+		})
 	}
-	imageURLs, err := pbcm.PatchImage(sourceImages, r)
-	if err != nil {
-		return err
+	if q.ReplaceAll != nil {
+		metaUpdate = append(metaUpdate, &meta.UpdateSet{
+			Op:      meta.OpReplaceAll,
+			Changes: q.ReplaceAll,
+		})
 	}
+	metaUpdate = append(metaUpdate, &meta.UpdateSet{
+		Op:      meta.OpAdd,
+		Changes: q.Adds,
+	})
+	metaUpdate = append(metaUpdate, &meta.UpdateSet{
+		Op:      meta.OpRemove,
+		Changes: q.Deletes,
+	})
 
-	cmd := &catalogmodelx.UpdateShopVariantCommand{
-		ShopID: shopID,
-		Variant: &catalogmodel.ShopVariant{
-			VariantID: q.Id,
-			ShopID:    shopID,
-			ImageURLs: imageURLs,
-		},
+	cmd := catalog.UpdateShopVariantImagesCommand{
+		ShopID:  shopID,
+		ID:      q.Id,
+		Updates: metaUpdate,
 	}
-	if err := bus.Dispatch(ctx, cmd); err != nil {
+	if err := catalogAggr.Dispatch(ctx, &cmd); err != nil {
 		return err
 	}
 	q.Result = PbShopVariant(cmd.Result)

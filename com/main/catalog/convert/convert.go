@@ -8,6 +8,7 @@ import (
 	catalogmodel "etop.vn/backend/com/main/catalog/model"
 	"etop.vn/backend/pkg/common/validate"
 	"etop.vn/backend/pkg/etop/model"
+	. "etop.vn/capi/dot"
 )
 
 // +gen:convert: etop.vn/backend/com/main/catalog/model->etop.vn/api/main/catalog,etop.vn/api/main/catalog/types
@@ -71,6 +72,27 @@ func ShopProduct(in *catalogmodel.ShopProduct) (out *catalog.ShopProduct) {
 		Status:    int32(in.Status),
 		CreatedAt: in.CreatedAt,
 		UpdatedAt: in.UpdatedAt,
+	}
+	return out
+}
+
+func ShopProductUpdate(in *catalogmodel.ShopProduct) (out *catalog.UpdateShopProductInfoArgs) {
+	if in == nil {
+		return nil
+	}
+	out = &catalog.UpdateShopProductInfoArgs{
+		ShopID:      in.ShopID,
+		ProductID:   in.ProductID,
+		Code:        PString(&in.Code),
+		Name:        PString(&in.Name),
+		Unit:        PString(&in.Unit),
+		Note:        PString(&in.Note),
+		ShortDesc:   PString(&in.ShortDesc),
+		Description: PString(&in.Description),
+		DescHTML:    PString(&in.DescHTML),
+		CostPrice:   PInt32(&in.CostPrice),
+		ListPrice:   PInt32(&in.ListPrice),
+		RetailPrice: PInt32(&in.RetailPrice),
 	}
 	return out
 }
@@ -217,4 +239,64 @@ func ShopVariantsWithProduct(ins []*catalogmodel.ShopVariantWithProduct) (outs [
 		outs[i] = ShopVariantWithProduct(in)
 	}
 	return outs
+}
+
+func UpdateShopProduct(in *catalogmodel.ShopProduct, args *catalog.UpdateShopProductInfoArgs) (out *catalogmodel.ShopProduct) {
+	if in == nil {
+		return nil
+	}
+	shopProduct := &catalogmodel.ShopProduct{
+		ShopID:      args.ShopID,
+		ProductID:   args.ProductID,
+		Code:        args.Code.Apply(in.Code),
+		Name:        args.Name.Apply(in.Name),
+		Description: args.Description.Apply(in.Description),
+		DescHTML:    args.DescHTML.Apply(in.DescHTML),
+		ShortDesc:   args.ShortDesc.Apply(in.ShortDesc),
+		Note:        args.Note.Apply(in.Note),
+		Unit:        args.Unit.Apply(in.Unit),
+		CostPrice:   args.CostPrice.Apply(in.CostPrice),
+		ListPrice:   args.ListPrice.Apply(in.ListPrice),
+		RetailPrice: args.RetailPrice.Apply(in.RetailPrice),
+
+		CategoryID: in.CategoryID,
+		Status:     in.Status,
+		DeletedAt:  in.DeletedAt,
+		NameNorm:   in.NameNorm,
+		NameNormUa: in.NameNormUa,
+	}
+	return shopProduct
+}
+
+func UpdateShopVariant(in *catalogmodel.ShopVariant, args *catalog.UpdateShopVariantInfoArgs) (out *catalogmodel.ShopVariant) {
+	if in == nil {
+		return nil
+	}
+	shopVariant := &catalogmodel.ShopVariant{
+		ShopID:      args.ShopID,
+		VariantID:   args.VariantID,
+		Code:        args.Code.Apply(in.Code),
+		Name:        args.Name.Apply(in.Name),
+		Description: args.Descripttion.Apply(in.Description),
+		DescHTML:    args.DescHTML.Apply(in.DescHTML),
+		ShortDesc:   args.ShortDesc.Apply(in.ShortDesc),
+		Note:        args.Note.Apply(in.Note),
+		CostPrice:   args.CostPrice.Apply(in.CostPrice),
+		ListPrice:   args.ListPrice.Apply(in.ListPrice),
+		RetailPrice: args.RetailPrice.Apply(in.RetailPrice),
+
+		ImageURLs: in.ImageURLs,
+		ProductID: in.ProductID,
+		Tags:      in.Tags,
+		DeletedAt: in.DeletedAt,
+	}
+	// var attributes catalogmodel.ProductAttributes
+	// for _, value := range args.Attributes {
+	// 	attributes = append(attributes, catalogmodel.ProductAttribute{
+	// 		Name:  value.Name,
+	// 		Value: value.Value,
+	// 	})
+	// // }
+	// shopVariant.Attributes = attributes
+	return shopVariant
 }

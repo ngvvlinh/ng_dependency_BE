@@ -16,36 +16,8 @@ import (
 	pbcm "etop.vn/backend/pb/common"
 	pbetop "etop.vn/backend/pb/etop"
 	pbs3 "etop.vn/backend/pb/etop/etc/status3"
-	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/etop/model"
 )
-
-func PbUpdateVariantToModel(shopID int64, p *UpdateVariantRequest) *catalogmodel.ShopVariant {
-	return &catalogmodel.ShopVariant{
-		ShopID:      shopID,
-		VariantID:   p.Id,
-		Name:        p.Name,
-		Code:        cm.Coalesce(p.Code, p.Sku),
-		Description: p.Description,
-		ShortDesc:   p.ShortDesc,
-		DescHTML:    p.DescHtml,
-		Note:        p.Note,
-		RetailPrice: p.RetailPrice,
-		ListPrice:   p.ListPrice,
-		CostPrice:   p.CostPrice,
-	}
-}
-
-func PbUpdateProductToModel(shopID int64, p *UpdateProductRequest) *catalogmodel.ShopProduct {
-	return &catalogmodel.ShopProduct{
-		ShopID:      shopID,
-		ProductID:   p.Id,
-		Name:        p.Name,
-		Description: p.Description,
-		ShortDesc:   p.ShortDesc,
-		DescHTML:    p.DescHtml,
-	}
-}
 
 func PbCollections(items []*catalogmodel.ShopCollection) []*Collection {
 	res := make([]*Collection, len(items))

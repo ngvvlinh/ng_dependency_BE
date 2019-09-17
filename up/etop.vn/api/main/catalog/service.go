@@ -5,6 +5,7 @@ import (
 
 	"etop.vn/api/meta"
 	"etop.vn/api/shopping"
+	. "etop.vn/capi/dot"
 )
 
 // +gen:api
@@ -17,11 +18,11 @@ type Aggregate interface {
 
 	UpdateShopProductInfo(context.Context, *UpdateShopProductInfoArgs) (*ShopProduct, error)
 
-	UpdateShopProductStatus(context.Context, *UpdateStatusArgs) (*ShopProduct, error)
+	UpdateShopProductStatus(context.Context, *UpdateStatusArgs) (int, error)
 
 	UpdateShopProductImages(context.Context, *UpdateImagesArgs) (*ShopProduct, error)
 
-	DeleteShopProducts(context.Context, *shopping.IDsQueryShopArgs) (*meta.Empty, error)
+	DeleteShopProducts(context.Context, *shopping.IDsQueryShopArgs) (int, error)
 
 	//-- shop_variant --//
 
@@ -29,11 +30,13 @@ type Aggregate interface {
 
 	UpdateShopVariantInfo(context.Context, *UpdateShopVariantInfoArgs) (*ShopVariant, error)
 
-	DeleteShopVariants(context.Context, *shopping.IDsQueryShopArgs) (*meta.Empty, error)
+	DeleteShopVariants(context.Context, *shopping.IDsQueryShopArgs) (int, error)
 
-	UpdateShopVariantStatus(context.Context, *UpdateStatusArgs) (*ShopVariant, error)
+	UpdateShopVariantStatus(context.Context, *UpdateStatusArgs) (int, error)
 
 	UpdateShopVariantImages(context.Context, *UpdateImagesArgs) (*ShopVariant, error)
+
+	UpdateShopVariantAttributes(context.Context, *UpdateShopVariantAttributes) (*ShopVariant, error)
 
 	//-- category --//
 
@@ -115,11 +118,16 @@ type UpdateShopProductInfoArgs struct {
 	ShopID    int64
 	ProductID int64
 
-	Code *string
-	Name *string
-	Unit *string
-	Note *string
-	*DescriptionInfo
+	Code        NullString
+	Name        NullString
+	Unit        NullString
+	Note        NullString
+	ShortDesc   NullString
+	Description NullString
+	DescHTML    NullString
+	CostPrice   NullInt32
+	ListPrice   NullInt32
+	RetailPrice NullInt32
 }
 
 type CreateShopVariantArgs struct {
@@ -139,11 +147,15 @@ type UpdateShopVariantInfoArgs struct {
 	ShopID    int64
 	VariantID int64
 
-	Code *string
-	Name *string
-	Unit *string
-	Note *string
-	*DescriptionInfo
+	Code         NullString
+	Name         NullString
+	Note         NullString
+	ShortDesc    NullString
+	Descripttion NullString
+	DescHTML     NullString
+	CostPrice    NullInt32
+	ListPrice    NullInt32
+	RetailPrice  NullInt32
 }
 
 type UpdateStatusArgs struct {
@@ -156,4 +168,10 @@ type UpdateImagesArgs struct {
 	ID      int64
 	ShopID  int64
 	Updates []*meta.UpdateSet
+}
+
+type UpdateShopVariantAttributes struct {
+	ShopID     int64
+	VariantID  int64
+	Attributes Attributes
 }

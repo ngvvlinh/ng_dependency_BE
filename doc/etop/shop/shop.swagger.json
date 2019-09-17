@@ -1815,7 +1815,6 @@
     },
     "/api/shop.Product/CreateVariant": {
       "post": {
-        "summary": "deprecated: backward-compatible, will be removed later",
         "operationId": "CreateVariant",
         "responses": {
           "200": {
@@ -1920,6 +1919,7 @@
     },
     "/api/shop.Product/GetVariant": {
       "post": {
+        "summary": "deprecated: backward-compatible, will be removed later",
         "operationId": "GetVariant",
         "responses": {
           "200": {
@@ -1972,7 +1972,6 @@
     },
     "/api/shop.Product/RemoveProducts": {
       "post": {
-        "summary": "deprecated",
         "operationId": "RemoveProducts",
         "responses": {
           "200": {
@@ -1999,7 +1998,6 @@
     },
     "/api/shop.Product/RemoveVariants": {
       "post": {
-        "summary": "deprecated",
         "operationId": "RemoveVariants",
         "responses": {
           "200": {
@@ -2076,6 +2074,32 @@
         ]
       }
     },
+    "/api/shop.Product/UpdateProductsStatus": {
+      "post": {
+        "operationId": "UpdateProductsStatus",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/shopUpdateProductStatusResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/shopUpdateProductStatusRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Product"
+        ]
+      }
+    },
     "/api/shop.Product/UpdateProductsTags": {
       "post": {
         "operationId": "UpdateProductsTags",
@@ -2128,6 +2152,32 @@
         ]
       }
     },
+    "/api/shop.Product/UpdateVariantAttributes": {
+      "post": {
+        "operationId": "UpdateVariantAttributes",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/shopShopVariant"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/shopUpdateVariantAttributesRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Product"
+        ]
+      }
+    },
     "/api/shop.Product/UpdateVariantImages": {
       "post": {
         "operationId": "UpdateVariantImages",
@@ -2146,6 +2196,32 @@
             "required": true,
             "schema": {
               "$ref": "#/definitions/shopUpdateVariantImagesRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Product"
+        ]
+      }
+    },
+    "/api/shop.Product/UpdateVariantsStatus": {
+      "post": {
+        "operationId": "UpdateVariantsStatus",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/shopUpdateProductStatusResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/shopUpdateProductStatusRequest"
             }
           }
         ],
@@ -7551,6 +7627,15 @@
         "name": {
           "type": "string"
         },
+        "code": {
+          "type": "string"
+        },
+        "note": {
+          "type": "string"
+        },
+        "unit": {
+          "type": "string"
+        },
         "description": {
           "type": "string"
         },
@@ -7560,8 +7645,17 @@
         "desc_html": {
           "type": "string"
         },
-        "code": {
-          "type": "string"
+        "cost_price": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "list_price": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "retail_price": {
+          "type": "integer",
+          "format": "int32"
         }
       },
       "required": [
@@ -7581,6 +7675,30 @@
         },
         "name": {
           "type": "string"
+        }
+      }
+    },
+    "shopUpdateProductStatusRequest": {
+      "type": "object",
+      "properties": {
+        "ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          }
+        },
+        "status": {
+          "$ref": "#/definitions/status3Status"
+        }
+      }
+    },
+    "shopUpdateProductStatusResponse": {
+      "type": "object",
+      "properties": {
+        "updated": {
+          "type": "integer",
+          "format": "int32"
         }
       }
     },
@@ -7735,6 +7853,24 @@
         }
       }
     },
+    "shopUpdateVariantAttributesRequest": {
+      "type": "object",
+      "properties": {
+        "variant_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "attributes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/shopAttribute"
+          }
+        }
+      },
+      "required": [
+        "variant_id"
+      ]
+    },
     "shopUpdateVariantImagesRequest": {
       "type": "object",
       "properties": {
@@ -7779,16 +7915,10 @@
         "name": {
           "type": "string"
         },
-        "description": {
-          "type": "string"
-        },
-        "short_desc": {
-          "type": "string"
-        },
-        "desc_html": {
-          "type": "string"
-        },
         "note": {
+          "type": "string"
+        },
+        "code": {
           "type": "string"
         },
         "cost_price": {
@@ -7803,14 +7933,20 @@
           "type": "integer",
           "format": "int32"
         },
+        "description": {
+          "type": "string"
+        },
+        "short_desc": {
+          "type": "string"
+        },
+        "desc_html": {
+          "type": "string"
+        },
         "attributes": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/shopAttribute"
           }
-        },
-        "code": {
-          "type": "string"
         },
         "sku": {
           "type": "string",

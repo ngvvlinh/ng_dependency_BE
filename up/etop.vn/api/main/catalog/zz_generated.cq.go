@@ -10,6 +10,7 @@ import (
 	types "etop.vn/api/main/catalog/types"
 	meta "etop.vn/api/meta"
 	shopping "etop.vn/api/shopping"
+	dot "etop.vn/capi/dot"
 )
 
 type Command interface{ command() }
@@ -81,7 +82,7 @@ type DeleteShopProductsCommand struct {
 	IDs    []int64
 	ShopID int64
 
-	Result *meta.Empty `json:"-"`
+	Result int `json:"-"`
 }
 
 func (h AggregateHandler) HandleDeleteShopProducts(ctx context.Context, msg *DeleteShopProductsCommand) (err error) {
@@ -93,7 +94,7 @@ type DeleteShopVariantsCommand struct {
 	IDs    []int64
 	ShopID int64
 
-	Result *meta.Empty `json:"-"`
+	Result int `json:"-"`
 }
 
 func (h AggregateHandler) HandleDeleteShopVariants(ctx context.Context, msg *DeleteShopVariantsCommand) (err error) {
@@ -115,13 +116,18 @@ func (h AggregateHandler) HandleUpdateShopProductImages(ctx context.Context, msg
 }
 
 type UpdateShopProductInfoCommand struct {
-	ShopID          int64
-	ProductID       int64
-	Code            *string
-	Name            *string
-	Unit            *string
-	Note            *string
-	DescriptionInfo *DescriptionInfo
+	ShopID      int64
+	ProductID   int64
+	Code        dot.NullString
+	Name        dot.NullString
+	Unit        dot.NullString
+	Note        dot.NullString
+	ShortDesc   dot.NullString
+	Description dot.NullString
+	DescHTML    dot.NullString
+	CostPrice   dot.NullInt32
+	ListPrice   dot.NullInt32
+	RetailPrice dot.NullInt32
 
 	Result *ShopProduct `json:"-"`
 }
@@ -136,11 +142,24 @@ type UpdateShopProductStatusCommand struct {
 	ShopID int64
 	Status int16
 
-	Result *ShopProduct `json:"-"`
+	Result int `json:"-"`
 }
 
 func (h AggregateHandler) HandleUpdateShopProductStatus(ctx context.Context, msg *UpdateShopProductStatusCommand) (err error) {
 	msg.Result, err = h.inner.UpdateShopProductStatus(msg.GetArgs(ctx))
+	return err
+}
+
+type UpdateShopVariantAttributesCommand struct {
+	ShopID     int64
+	VariantID  int64
+	Attributes types.Attributes
+
+	Result *ShopVariant `json:"-"`
+}
+
+func (h AggregateHandler) HandleUpdateShopVariantAttributes(ctx context.Context, msg *UpdateShopVariantAttributesCommand) (err error) {
+	msg.Result, err = h.inner.UpdateShopVariantAttributes(msg.GetArgs(ctx))
 	return err
 }
 
@@ -158,13 +177,17 @@ func (h AggregateHandler) HandleUpdateShopVariantImages(ctx context.Context, msg
 }
 
 type UpdateShopVariantInfoCommand struct {
-	ShopID          int64
-	VariantID       int64
-	Code            *string
-	Name            *string
-	Unit            *string
-	Note            *string
-	DescriptionInfo *DescriptionInfo
+	ShopID       int64
+	VariantID    int64
+	Code         dot.NullString
+	Name         dot.NullString
+	Note         dot.NullString
+	ShortDesc    dot.NullString
+	Descripttion dot.NullString
+	DescHTML     dot.NullString
+	CostPrice    dot.NullInt32
+	ListPrice    dot.NullInt32
+	RetailPrice  dot.NullInt32
 
 	Result *ShopVariant `json:"-"`
 }
@@ -179,7 +202,7 @@ type UpdateShopVariantStatusCommand struct {
 	ShopID int64
 	Status int16
 
-	Result *ShopVariant `json:"-"`
+	Result int `json:"-"`
 }
 
 func (h AggregateHandler) HandleUpdateShopVariantStatus(ctx context.Context, msg *UpdateShopVariantStatusCommand) (err error) {
@@ -331,6 +354,7 @@ func (q *DeleteShopVariantsCommand) command()            {}
 func (q *UpdateShopProductImagesCommand) command()       {}
 func (q *UpdateShopProductInfoCommand) command()         {}
 func (q *UpdateShopProductStatusCommand) command()       {}
+func (q *UpdateShopVariantAttributesCommand) command()   {}
 func (q *UpdateShopVariantImagesCommand) command()       {}
 func (q *UpdateShopVariantInfoCommand) command()         {}
 func (q *UpdateShopVariantStatusCommand) command()       {}
@@ -405,13 +429,18 @@ func (q *UpdateShopProductImagesCommand) GetArgs(ctx context.Context) (_ context
 func (q *UpdateShopProductInfoCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateShopProductInfoArgs) {
 	return ctx,
 		&UpdateShopProductInfoArgs{
-			ShopID:          q.ShopID,
-			ProductID:       q.ProductID,
-			Code:            q.Code,
-			Name:            q.Name,
-			Unit:            q.Unit,
-			Note:            q.Note,
-			DescriptionInfo: q.DescriptionInfo,
+			ShopID:      q.ShopID,
+			ProductID:   q.ProductID,
+			Code:        q.Code,
+			Name:        q.Name,
+			Unit:        q.Unit,
+			Note:        q.Note,
+			ShortDesc:   q.ShortDesc,
+			Description: q.Description,
+			DescHTML:    q.DescHTML,
+			CostPrice:   q.CostPrice,
+			ListPrice:   q.ListPrice,
+			RetailPrice: q.RetailPrice,
 		}
 }
 
@@ -421,6 +450,15 @@ func (q *UpdateShopProductStatusCommand) GetArgs(ctx context.Context) (_ context
 			IDs:    q.IDs,
 			ShopID: q.ShopID,
 			Status: q.Status,
+		}
+}
+
+func (q *UpdateShopVariantAttributesCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateShopVariantAttributes) {
+	return ctx,
+		&UpdateShopVariantAttributes{
+			ShopID:     q.ShopID,
+			VariantID:  q.VariantID,
+			Attributes: q.Attributes,
 		}
 }
 
@@ -436,13 +474,17 @@ func (q *UpdateShopVariantImagesCommand) GetArgs(ctx context.Context) (_ context
 func (q *UpdateShopVariantInfoCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateShopVariantInfoArgs) {
 	return ctx,
 		&UpdateShopVariantInfoArgs{
-			ShopID:          q.ShopID,
-			VariantID:       q.VariantID,
-			Code:            q.Code,
-			Name:            q.Name,
-			Unit:            q.Unit,
-			Note:            q.Note,
-			DescriptionInfo: q.DescriptionInfo,
+			ShopID:       q.ShopID,
+			VariantID:    q.VariantID,
+			Code:         q.Code,
+			Name:         q.Name,
+			Note:         q.Note,
+			ShortDesc:    q.ShortDesc,
+			Descripttion: q.Descripttion,
+			DescHTML:     q.DescHTML,
+			CostPrice:    q.CostPrice,
+			ListPrice:    q.ListPrice,
+			RetailPrice:  q.RetailPrice,
 		}
 }
 
@@ -565,6 +607,7 @@ func (h AggregateHandler) RegisterHandlers(b interface {
 	b.AddHandler(h.HandleUpdateShopProductImages)
 	b.AddHandler(h.HandleUpdateShopProductInfo)
 	b.AddHandler(h.HandleUpdateShopProductStatus)
+	b.AddHandler(h.HandleUpdateShopVariantAttributes)
 	b.AddHandler(h.HandleUpdateShopVariantImages)
 	b.AddHandler(h.HandleUpdateShopVariantInfo)
 	b.AddHandler(h.HandleUpdateShopVariantStatus)

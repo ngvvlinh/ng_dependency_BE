@@ -2,6 +2,7 @@ package sqlstore
 
 import (
 	"context"
+	"time"
 
 	"etop.vn/api/main/catalog"
 	"etop.vn/api/meta"
@@ -173,4 +174,36 @@ func (s *ShopVariantStore) ListShopVariantsWithProduct() ([]*catalog.ShopVariant
 		return nil, err
 	}
 	return convert.ShopVariantsWithProduct(variants), nil
+}
+
+func (s *ShopVariantStore) UpdateShopVariant(variant *model.ShopVariant) error {
+	sqlstore.MustNoPreds(s.preds)
+	err := s.query().In("variant_id", variant.VariantID).UpdateAll().ShouldUpdate(variant)
+	return err
+}
+
+func (s *ShopVariantStore) SoftDelete() (int, error) {
+	query := s.query().Where(s.preds)
+	query = s.includeDeleted.Check(query, s.FtShopVariant.NotDeleted())
+	_deleted, err := query.Table("shop_variant").UpdateMap(map[string]interface{}{
+		"deleted_at": time.Now(),
+	})
+	return int(_deleted), err
+}
+
+func (s *ShopVariantStore) UpdateStatusShopVariant(status int16) (int, error) {
+	query := s.query().Where(s.preds)
+	query = s.includeDeleted.Check(query, s.FtShopVariant.NotDeleted())
+	updateStatus, err := query.Table("shop_variant").UpdateMap(map[string]interface{}{
+		"status": status,
+	})
+	return int(updateStatus), err
+}
+
+func (s *ShopVariantStore) UpdateImageShopVariant(variant *catalog.ShopVariant) error {
+	query := s.query().Where(s.preds)
+	query = s.includeDeleted.Check(query, s.FtShopVariant.NotDeleted())
+	variantDB := convert.ShopVariantDB(variant)
+	err := query.ShouldUpdate(variantDB)
+	return err
 }

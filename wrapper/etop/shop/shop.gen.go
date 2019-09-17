@@ -87,9 +87,12 @@ func NewShopServer(mux Muxer, hooks *twirp.ServerHooks) {
 	bus.Expect(&RemoveVariantsEndpoint{})
 	bus.Expect(&UpdateProductEndpoint{})
 	bus.Expect(&UpdateProductImagesEndpoint{})
+	bus.Expect(&UpdateProductsStatusEndpoint{})
 	bus.Expect(&UpdateProductsTagsEndpoint{})
 	bus.Expect(&UpdateVariantEndpoint{})
+	bus.Expect(&UpdateVariantAttributesEndpoint{})
 	bus.Expect(&UpdateVariantImagesEndpoint{})
+	bus.Expect(&UpdateVariantsStatusEndpoint{})
 	bus.Expect(&CreateProductSourceEndpoint{})
 	bus.Expect(&CreateProductSourceCategoryEndpoint{})
 	bus.Expect(&DeprecatedCreateVariantEndpoint{})
@@ -2376,6 +2379,54 @@ func (s ProductService) UpdateProductImages(ctx context.Context, req *shop.Updat
 	return resp, err
 }
 
+type UpdateProductsStatusEndpoint struct {
+	*shop.UpdateProductStatusRequest
+	Result  *shop.UpdateProductStatusResponse
+	Context ShopClaim
+}
+
+func (s ProductService) UpdateProductsStatus(ctx context.Context, req *shop.UpdateProductStatusRequest) (resp *shop.UpdateProductStatusResponse, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "shop.Product/UpdateProductsStatus"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:     ctx,
+		RequireAuth: true,
+		RequireShop: true,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &UpdateProductsStatusEndpoint{UpdateProductStatusRequest: req}
+	query.Context.Claim = session.Claim
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	// Verify that the user has role "staff"
+	if !session.IsOwner && permission.MaxRoleLevel(session.Roles) < 2 {
+		return nil, common.ErrPermissionDenied
+	}
+	ctx = bus.NewRootContext(ctx)
+	err = bus.Dispatch(ctx, query)
+	resp = query.Result
+	if err == nil {
+		if resp == nil {
+			return nil, common.Error(common.Internal, "", nil).Log("nil response")
+		}
+		errs = cmwrapper.HasErrors(resp)
+	}
+	return resp, err
+}
+
 type UpdateProductsTagsEndpoint struct {
 	*shop.UpdateProductsTagsRequest
 	Result  *cm.UpdatedResponse
@@ -2472,6 +2523,54 @@ func (s ProductService) UpdateVariant(ctx context.Context, req *shop.UpdateVaria
 	return resp, err
 }
 
+type UpdateVariantAttributesEndpoint struct {
+	*shop.UpdateVariantAttributesRequest
+	Result  *shop.ShopVariant
+	Context ShopClaim
+}
+
+func (s ProductService) UpdateVariantAttributes(ctx context.Context, req *shop.UpdateVariantAttributesRequest) (resp *shop.ShopVariant, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "shop.Product/UpdateVariantAttributes"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:     ctx,
+		RequireAuth: true,
+		RequireShop: true,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &UpdateVariantAttributesEndpoint{UpdateVariantAttributesRequest: req}
+	query.Context.Claim = session.Claim
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	// Verify that the user has role "staff"
+	if !session.IsOwner && permission.MaxRoleLevel(session.Roles) < 2 {
+		return nil, common.ErrPermissionDenied
+	}
+	ctx = bus.NewRootContext(ctx)
+	err = bus.Dispatch(ctx, query)
+	resp = query.Result
+	if err == nil {
+		if resp == nil {
+			return nil, common.Error(common.Internal, "", nil).Log("nil response")
+		}
+		errs = cmwrapper.HasErrors(resp)
+	}
+	return resp, err
+}
+
 type UpdateVariantImagesEndpoint struct {
 	*shop.UpdateVariantImagesRequest
 	Result  *shop.ShopVariant
@@ -2499,6 +2598,54 @@ func (s ProductService) UpdateVariantImages(ctx context.Context, req *shop.Updat
 	}
 	session = sessionQuery.Result
 	query := &UpdateVariantImagesEndpoint{UpdateVariantImagesRequest: req}
+	query.Context.Claim = session.Claim
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	// Verify that the user has role "staff"
+	if !session.IsOwner && permission.MaxRoleLevel(session.Roles) < 2 {
+		return nil, common.ErrPermissionDenied
+	}
+	ctx = bus.NewRootContext(ctx)
+	err = bus.Dispatch(ctx, query)
+	resp = query.Result
+	if err == nil {
+		if resp == nil {
+			return nil, common.Error(common.Internal, "", nil).Log("nil response")
+		}
+		errs = cmwrapper.HasErrors(resp)
+	}
+	return resp, err
+}
+
+type UpdateVariantsStatusEndpoint struct {
+	*shop.UpdateProductStatusRequest
+	Result  *shop.UpdateProductStatusResponse
+	Context ShopClaim
+}
+
+func (s ProductService) UpdateVariantsStatus(ctx context.Context, req *shop.UpdateProductStatusRequest) (resp *shop.UpdateProductStatusResponse, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "shop.Product/UpdateVariantsStatus"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:     ctx,
+		RequireAuth: true,
+		RequireShop: true,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &UpdateVariantsStatusEndpoint{UpdateProductStatusRequest: req}
 	query.Context.Claim = session.Claim
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
