@@ -6,7 +6,7 @@ import (
 	"go/types"
 	"strings"
 
-	"k8s.io/code-generator/third_party/forked/golang/reflect"
+	"etop.vn/backend/tools/pkg/reflect"
 )
 
 func processService(w *MultiWriter, def ServiceDef) {
