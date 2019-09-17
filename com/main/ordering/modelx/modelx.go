@@ -1,10 +1,15 @@
 package modelx
 
 import (
+	"database/sql"
+	"time"
+
 	"etop.vn/api/main/shipnow"
 	ordermodel "etop.vn/backend/com/main/ordering/model"
+	"etop.vn/backend/com/main/ordering/modely"
 	shipmodel "etop.vn/backend/com/main/shipping/model"
 	cm "etop.vn/backend/pkg/common"
+	"etop.vn/backend/pkg/common/sq/core"
 	"etop.vn/backend/pkg/etop/model"
 )
 
@@ -22,6 +27,30 @@ type GetOrderQuery struct {
 		Order         *ordermodel.Order
 		Fulfillments  []*shipmodel.Fulfillment
 		XFulfillments []*Fulfillment
+	}
+}
+
+type GetOrderExtendedsQuery struct {
+	ShopIDs       []int64 // MixedAccount
+	PartnerID     int64
+	Status        *model.Status3
+	TradingShopID int64
+	DateFrom      time.Time
+	DateTo        time.Time
+
+	Paging  *cm.Paging
+	Filters []cm.Filter
+
+	// When use this option, remember to always call Rows.Close()
+	ResultAsRows bool
+
+	Result struct {
+		Orders []*modely.OrderExtended
+		Total  int
+
+		// only for ResultAsRows
+		Rows *sql.Rows
+		Opts core.Opts
 	}
 }
 

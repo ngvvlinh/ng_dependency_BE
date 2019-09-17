@@ -77,6 +77,7 @@ type (
 	ShippingDistrictType string
 	DBName               string
 	UserSource           string
+	EtopPaymentStatus	Status4
 )
 
 func (s ShippingProvider) ToString() string {
@@ -264,6 +265,38 @@ func (s ShippingState) Text() string {
 		return "Không xác định"
 	}
 	return res
+}
+
+func EtopPaymentStatusLabel(s Status4) string  {
+	switch s {
+	case S4Negative:
+		return "Không cần thanh toán"
+	case S4Zero:
+		return "Chưa đối soát"
+	case S4Positive:
+		return "Đã thanh toán"
+	case S4SuperPos:
+		return "Cần thanh toán"
+	default:
+		return "Không xác định"
+	}
+}
+
+func OrderStatusLabel(s Status5) string {
+	switch s {
+	case S5NegSuper:
+		return "Trả hàng"
+	case S5Negative:
+		return "Huỷ"
+	case S5Zero:
+		return "Mới"
+	case S5Positive:
+		return "Thành công"
+	case S5SuperPos:
+		return "Đang xử lý"
+	default:
+		return "Không xác định"
+	}
 }
 
 func PaymentStatusLabel(s Status4) string {

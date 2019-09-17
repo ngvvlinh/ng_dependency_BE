@@ -47,6 +47,7 @@ import (
 	"etop.vn/backend/pkg/etop/api"
 	"etop.vn/backend/pkg/etop/api/affiliate"
 	"etop.vn/backend/pkg/etop/api/crm"
+	"etop.vn/backend/pkg/etop/api/export"
 	"etop.vn/backend/pkg/etop/api/integration"
 	"etop.vn/backend/pkg/etop/api/shop"
 	"etop.vn/backend/pkg/etop/apix/partner"
@@ -56,7 +57,6 @@ import (
 	"etop.vn/backend/pkg/etop/authorize/middleware"
 	"etop.vn/backend/pkg/etop/authorize/tokens"
 	"etop.vn/backend/pkg/etop/eventstream"
-	ffmexport "etop.vn/backend/pkg/etop/logic/fulfillments/export"
 	orderS "etop.vn/backend/pkg/etop/logic/orders"
 	imcsvorder "etop.vn/backend/pkg/etop/logic/orders/imcsv"
 	imcsvproduct "etop.vn/backend/pkg/etop/logic/products/imcsv"
@@ -269,7 +269,7 @@ func main() {
 	authStore := auth.NewGenerator(redisStore)
 	imcsvorder.Init(locationBus, shutdowner, redisStore, uploader, db)
 	imcsvproduct.Init(shutdowner, redisStore, uploader, db)
-	ffmexport.Init(shutdowner, redisStore, eventStreamer, ffmexport.Config{
+	export.Init(shutdowner, redisStore, eventStreamer, export.Config{
 		UrlPrefix: cfg.Export.URLPrefix,
 		DirExport: cfg.Export.DirExport,
 	})

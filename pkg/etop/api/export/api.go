@@ -7,7 +7,8 @@ import (
 	"strconv"
 	"time"
 
-	"etop.vn/backend/com/main/shipping/modelx"
+	ordering "etop.vn/backend/com/main/ordering/modelx"
+	shipping "etop.vn/backend/com/main/shipping/modelx"
 	pbcm "etop.vn/backend/pb/common"
 	pbs4 "etop.vn/backend/pb/etop/etc/status4"
 	pbshop "etop.vn/backend/pb/etop/shop"
@@ -51,7 +52,7 @@ func RequestExport(ctx context.Context, r *wrappershop.RequestExportEndpoint) (_
 		}
 	}()
 
-	if r.ExportType != PathShopFulfillments {
+	if r.ExportType != PathShopOrders {
 		return cm.Errorf(cm.InvalidArgument, nil, "export type is not supported")
 	}
 
@@ -75,13 +76,14 @@ func RequestExport(ctx context.Context, r *wrappershop.RequestExportEndpoint) (_
 	}
 
 	// prepare fulfillments for exporting
-	query := &modelx.GetFulfillmentExtendedsQuery{
+	query := &ordering.GetOrderExtendedsQuery{
 		ShopIDs:      []int64{shop.ID},
 		DateFrom:     from,
 		DateTo:       to,
 		Filters:      pbcm.ToFilters(r.Filters),
 		ResultAsRows: true,
 	}
+
 	defer func() {
 		// always close the connection when encounting error
 		if _err != nil && query.Result.Rows != nil {
@@ -95,11 +97,20 @@ func RequestExport(ctx context.Context, r *wrappershop.RequestExportEndpoint) (_
 		return cm.Errorf(cm.ResourceExhausted, nil, "Không có dữ liệu để xuất. Vui lòng thử lại với điều kiện tìm kiếm khác.")
 	}
 
+	tableNameExport := ""
+
+	switch r.ExportType {
+	case PathShopOrders:
+		tableNameExport = "orders"
+	case PathShopFulfillments:
+		tableNameExport = "fulfillments"
+	}
+
 	exportID := cm.NewBase54ID()
 	fileName := fmt.Sprintf(
-		"%v_fulfillments_%v_%v_%v", shop.Code,
-		formatDateShort(from), formatDateShort(to),
-		formatDateTimeShort(time.Now()))
+		"%v_%s_%v_%v_%v", shop.Code, tableNameExport,
+		FormatDateShort(from), FormatDateShort(to),
+		FormatDateTimeShort(time.Now()))
 	midPath := filepath.Join(exportID[:3], exportID)
 	zipFileName := fileName + ".zip"
 	fullFileName := filepath.Join(midPath, zipFileName)
@@ -123,15 +134,70 @@ func RequestExport(ctx context.Context, r *wrappershop.RequestExportEndpoint) (_
 		ExportType: r.ExportType,
 		Status:     pbs4.Pb(model.S4Zero),
 	}
+
 	if err := sqlstore.ExportAttempt(ctx).Create(exportItem); err != nil {
 		return err
 	}
 
-	go ignoreError(exportFulfillmentsAndReportProgress(
-		func() { idempgroup.ReleaseKey(key1, claim.Token) },
-		exportItem, fileName, exportOpts,
-		query.Result.Total, query.Result.Rows, query.Result.Opts,
-	))
+	switch r.ExportType {
+	case PathShopFulfillments:
+		// prepare fulfillments for exporting
+		query := &shipping.GetFulfillmentExtendedsQuery{
+			ShopIDs:      []int64{shop.ID},
+			DateFrom:     from,
+			DateTo:       to,
+			Filters:      pbcm.ToFilters(r.Filters),
+			ResultAsRows: true,
+		}
+
+		defer func() {
+			// always close the connection when encounting error
+			if _err != nil && query.Result.Rows != nil {
+				_ = query.Result.Rows.Close()
+			}
+		}()
+		if err := bus.Dispatch(ctx, query); err != nil {
+			return err
+		}
+		if query.Result.Total == 0 {
+			return cm.Errorf(cm.ResourceExhausted, nil, "Không có dữ liệu để xuất. Vui lòng thử lại với điều kiện tìm kiếm khác.")
+		}
+
+		go ignoreError(exportAndReportProgress(
+			func() { idempgroup.ReleaseKey(key1, claim.Token) },
+			exportItem, fileName, exportOpts,
+			query.Result.Total, query.Result.Rows, query.Result.Opts,
+			ExportFulfillments,
+		))
+	case PathShopOrders:
+		query := &ordering.GetOrderExtendedsQuery{
+			ShopIDs:      []int64{shop.ID},
+			DateFrom:     from,
+			DateTo:       to,
+			Filters:      pbcm.ToFilters(r.Filters),
+			ResultAsRows: true,
+		}
+
+		defer func() {
+			// always close the connection when encounting error
+			if _err != nil && query.Result.Rows != nil {
+				_ = query.Result.Rows.Close()
+			}
+		}()
+		if err := bus.Dispatch(ctx, query); err != nil {
+			return err
+		}
+		if query.Result.Total == 0 {
+			return cm.Errorf(cm.ResourceExhausted, nil, "Không có dữ liệu để xuất. Vui lòng thử lại với điều kiện tìm kiếm khác.")
+		}
+
+		go ignoreError(exportAndReportProgress(
+			func() { idempgroup.ReleaseKey(key1, claim.Token) },
+			exportItem, fileName, exportOpts,
+			query.Result.Total, query.Result.Rows, query.Result.Opts,
+			ExportOrders,
+		))
+	}
 
 	r.Result = resp
 	return nil

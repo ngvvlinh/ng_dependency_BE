@@ -10,6 +10,7 @@ import (
 	"etop.vn/api/main/shipnow"
 	ordermodel "etop.vn/backend/com/main/ordering/model"
 	ordermodelx "etop.vn/backend/com/main/ordering/modelx"
+	ordermodely "etop.vn/backend/com/main/ordering/modely"
 	shipnowconvert "etop.vn/backend/com/main/shipnow/convert"
 	shipnowmodel "etop.vn/backend/com/main/shipnow/model"
 	shipmodel "etop.vn/backend/com/main/shipping/model"
@@ -31,6 +32,7 @@ func init() {
 		GetFulfillment,
 		GetOrder,
 		GetOrders,
+		GetOrderExtends,
 		SimpleGetOrdersByIDs,
 		UpdateFulfillment,
 		UpdateFulfillments,
@@ -282,6 +284,82 @@ func GetOrders(ctx context.Context, query *ordermodelx.GetOrdersQuery) error {
 		for _, sm := range shipments {
 			order.Fulfillments = append(order.Fulfillments, &ordermodelx.Fulfillment{Shipment: sm})
 		}
+	}
+
+	return nil
+}
+
+func GetOrderExtends(ctx context.Context, query *ordermodelx.GetOrderExtendedsQuery) error {
+	s := x.Table("order")
+
+	if query.ShopIDs != nil {
+		s = s.InOrEqIDs("o.shop_id", query.ShopIDs)
+	}
+	if query.PartnerID != 0 {
+		s = s.Where("o.partner_id = ?", query.PartnerID)
+	}
+	if query.TradingShopID != 0 {
+		s = s.Where("o.trading_shop_id = ?", query.TradingShopID)
+	}
+	if query.DateFrom.IsZero() != query.DateTo.IsZero() {
+		return cm.Errorf(cm.InvalidArgument, nil, "must provide both DateFrom and DateTo")
+	}
+	if !query.DateFrom.IsZero() {
+		s = s.Where("o.created_at BETWEEN ? AND ?", query.DateFrom, query.DateTo)
+	}
+
+	s, _, err := Filters(s, query.Filters, filterOrderWhitelist)
+	if err != nil {
+		return err
+	}
+
+	// for exporting data
+	if query.ResultAsRows {
+		{
+			s2 := s.Clone()
+			total, err := s2.Count(&ordermodely.OrderExtendeds{})
+			if err != nil {
+				return err
+			}
+			query.Result.Total = int(total)
+		}
+		{
+			if query.Paging != nil && len(query.Paging.Sort) != 0 {
+				s = s.OrderBy(query.Paging.Sort...)
+			} else {
+				s = s.OrderBy("f.created_at")
+			}
+
+			opts, rows, err := s.FindRows((*ordermodely.OrderExtendeds)(nil))
+			if err != nil {
+				return err
+			}
+			query.Result.Opts = opts
+			query.Result.Rows = rows
+		}
+		return nil
+	}
+
+	if query.Paging != nil && len(query.Paging.Sort) == 0 {
+		query.Paging.Sort = []string{"-updated_at"}
+	}
+
+	{
+		s2 := s.Clone()
+		s2, err := LimitSort(s2, query.Paging, Ms{"updated_at": "f.updated_at", "created_at": "f.created_at", "id": "f.id"})
+		if err != nil {
+			return err
+		}
+		if err := s2.Find((*ordermodely.OrderExtendeds)(&query.Result.Orders)); err != nil {
+			return err
+		}
+	}
+	if len(query.Filters) == 0 {
+		total, err := s.Count(&ordermodely.OrderExtendeds{})
+		if err != nil {
+			return err
+		}
+		query.Result.Total = int(total)
 	}
 
 	return nil
