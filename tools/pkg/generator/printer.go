@@ -61,7 +61,10 @@ func (p *printer) Close() (_err error) {
 		return nil
 	}
 	p.closed = true
-	defer p.engine.bufPool.Put(p.buf)
+	defer func() {
+		p.buf.Reset()
+		p.engine.bufPool.Put(p.buf)
+	}()
 
 	w, err := p.engine.writeFile(p.filePath)
 	if err != nil {

@@ -11,6 +11,8 @@ import (
 	customeringmodel "etop.vn/backend/com/shopping/customering/model"
 )
 
+//-- convert etop.vn/api/shopping/customering.ShopCustomer --//
+
 func convert_customering_ShopCustomer_customeringmodel_ShopCustomer(in *customering.ShopCustomer, out *customeringmodel.ShopCustomer) {
 	out.ID = in.ID               // simple assign
 	out.ShopID = in.ShopID       // simple assign
@@ -66,6 +68,8 @@ func convert_customeringmodel_ShopCustomers_customering_ShopCustomers(ins []*cus
 	return outs
 }
 
+//-- convert etop.vn/api/shopping/customering.ShopTrader --//
+
 func convert_customering_ShopTrader_customeringmodel_ShopTrader(in *customering.ShopTrader, out *customeringmodel.ShopTrader) {
 	out.ID = in.ID         // simple assign
 	out.ShopID = in.ShopID // simple assign
@@ -97,6 +101,8 @@ func convert_customeringmodel_ShopTraders_customering_ShopTraders(ins []*custome
 	}
 	return outs
 }
+
+//-- convert etop.vn/api/shopping/customering.ShopVendor --//
 
 func convert_customering_ShopVendor_customeringmodel_ShopVendor(in *customering.ShopVendor, out *customeringmodel.ShopVendor) {
 	out.ID = in.ID               // simple assign
@@ -141,6 +147,8 @@ func convert_customeringmodel_ShopVendors_customering_ShopVendors(ins []*custome
 	return outs
 }
 
+//-- convert etop.vn/api/shopping/customering.ShopCustomer --//
+
 func apply_customering_CreateCustomerArgs(arg *customering.CreateCustomerArgs, out *customering.ShopCustomer) {
 	out.ID = 0                  // zero value
 	out.ShopID = arg.ShopID     // simple assign
@@ -155,4 +163,20 @@ func apply_customering_CreateCustomerArgs(arg *customering.CreateCustomerArgs, o
 	out.Status = 0              // zero value
 	out.CreatedAt = time.Time{} // zero value
 	out.UpdatedAt = time.Time{} // zero value
+}
+
+func apply_customering_UpdateCustomerArgs(arg *customering.UpdateCustomerArgs, out *customering.ShopCustomer) {
+	out.ID = out.ID                                 // identifier
+	out.ShopID = out.ShopID                         // identifier
+	out.Code = arg.Code.Apply(out.Code)             // apply change
+	out.FullName = arg.FullName.Apply(out.FullName) // apply change
+	out.Gender = arg.Gender.Apply(out.Gender)       // apply change
+	out.Type = arg.Type.Apply(out.Type)             // apply change
+	out.Birthday = arg.Birthday.Apply(out.Birthday) // apply change
+	out.Note = arg.Note.Apply(out.Note)             // apply change
+	out.Phone = arg.Phone.Apply(out.Phone)          // apply change
+	out.Email = arg.Email.Apply(out.Email)          // apply change
+	out.Status = out.Status                         // no change
+	out.CreatedAt = out.CreatedAt                   // no change
+	out.UpdatedAt = out.UpdatedAt                   // no change
 }

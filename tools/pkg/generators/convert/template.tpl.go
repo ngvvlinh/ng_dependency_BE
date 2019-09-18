@@ -28,13 +28,9 @@ func apply_{{.ArgStr}}(arg *{{.ArgType}}, out *{{.BaseType}}) {
 `
 
 const tplUpdateText = `
-func apply_{{.ArgStr}}(in *{{.BaseType}}, arg *{{.ArgType}})(out *{{.BaseType}}) {
-	if in == nil {
-		return nil
-	}
+func apply_{{.ArgStr}}(arg *{{.ArgType}}, out *{{.BaseType}}) {
   {{- range .Fields}}
-	in.{{.|fieldName}} = {{.|fieldApply "in"}} {{lastComment -}}
+	out.{{.|fieldName}} = {{.|fieldApply "arg"}} {{lastComment -}}
   {{end}}
-	return in
 }
 `

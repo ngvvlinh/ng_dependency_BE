@@ -12,6 +12,8 @@ import (
 	etopmodel "etop.vn/backend/pkg/etop/model"
 )
 
+//-- convert etop.vn/api/main/catalog.ShopProduct --//
+
 func convert_catalog_ShopProduct_catalogmodel_ShopProduct(in *catalog.ShopProduct, out *catalogmodel.ShopProduct) {
 	out.ShopID = in.ShopID                    // simple assign
 	out.ProductID = in.ProductID              // simple assign
@@ -76,6 +78,8 @@ func convert_catalogmodel_ShopProducts_catalog_ShopProducts(ins []*catalogmodel.
 	}
 	return outs
 }
+
+//-- convert etop.vn/api/main/catalog.ShopVariant --//
 
 func convert_catalog_ShopVariant_catalogmodel_ShopVariant(in *catalog.ShopVariant, out *catalogmodel.ShopVariant) {
 	out.ShopID = in.ShopID                    // simple assign

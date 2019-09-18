@@ -9,7 +9,7 @@ import (
 )
 
 // +gen:convert: etop.vn/backend/com/shopping/customering/model -> etop.vn/api/shopping/customering
-// +gen:convert: etop.vn/api/shopping/customering-|
+// +gen:convert: etop.vn/api/shopping/customering
 
 func CreateShopCustomer(args *customering.CreateCustomerArgs) (out *customering.ShopCustomer) {
 	if args == nil {
