@@ -2672,6 +2672,136 @@
         ]
       }
     },
+    "/api/shop.Receipt/CreateOrUpdateReceipt": {
+      "post": {
+        "operationId": "CreateOrUpdateReceipt",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/shopReceipt"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/shopCreateOrUpdateReceiptRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Receipt"
+        ]
+      }
+    },
+    "/api/shop.Receipt/DeleteReceipt": {
+      "post": {
+        "operationId": "DeleteReceipt",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/cmDeletedResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/cmIDRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Receipt"
+        ]
+      }
+    },
+    "/api/shop.Receipt/GetReceipt": {
+      "post": {
+        "operationId": "GetReceipt",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/shopReceipt"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/cmIDRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Receipt"
+        ]
+      }
+    },
+    "/api/shop.Receipt/GetReceipts": {
+      "post": {
+        "operationId": "GetReceipts",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/shopReceiptsResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/shopGetReceiptsRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Receipt"
+        ]
+      }
+    },
+    "/api/shop.Receipt/GetReceivedAmountByOrderID": {
+      "post": {
+        "operationId": "GetReceivedAmountByOrderID",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/shopGetReceivedAmountByOrderIDResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/cmIDRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Receipt"
+        ]
+      }
+    },
     "/api/shop.Shipnow/CancelShipnowFulfillment": {
       "post": {
         "operationId": "CancelShipnowFulfillment",
@@ -6537,6 +6667,39 @@
         }
       }
     },
+    "shopCreateOrUpdateReceiptRequest": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "shop_trader_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "user_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "title": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "amount": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "receipt_lines": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/shopReceiptLine"
+          }
+        }
+      }
+    },
     "shopCreatePSCategoryRequest": {
       "type": "object",
       "properties": {
@@ -7332,6 +7495,33 @@
         }
       }
     },
+    "shopGetReceiptsRequest": {
+      "type": "object",
+      "properties": {
+        "paging": {
+          "$ref": "#/definitions/cmPaging"
+        },
+        "filters": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/cmFilter"
+          }
+        }
+      }
+    },
+    "shopGetReceivedAmountByOrderIDResponse": {
+      "type": "object",
+      "properties": {
+        "total_amount": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "received_amount": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
     "shopGetVariantsRequest": {
       "type": "object",
       "properties": {
@@ -7399,6 +7589,41 @@
             "type": "string",
             "format": "int64"
           }
+        }
+      }
+    },
+    "shopOrderOfReceiptLine": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "shop_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "code": {
+          "type": "string"
+        },
+        "total_amount": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "shopPartner": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "type": {
+          "type": "string"
+        },
+        "full_name": {
+          "type": "string"
         }
       }
     },
@@ -7490,6 +7715,100 @@
           "items": {
             "$ref": "#/definitions/shopProductSource"
           }
+        }
+      }
+    },
+    "shopReceipt": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "shop_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "shop_trader_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "user_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "code": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "amount": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "receipt_lines": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/shopReceiptLine"
+          }
+        },
+        "status": {
+          "$ref": "#/definitions/status3Status"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "user": {
+          "$ref": "#/definitions/etopUser"
+        },
+        "partner": {
+          "$ref": "#/definitions/shopPartner"
+        }
+      }
+    },
+    "shopReceiptLine": {
+      "type": "object",
+      "properties": {
+        "order_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "title": {
+          "type": "string"
+        },
+        "amount": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "received_amount": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "order": {
+          "$ref": "#/definitions/shopOrderOfReceiptLine"
+        }
+      }
+    },
+    "shopReceiptsResponse": {
+      "type": "object",
+      "properties": {
+        "receipts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/shopReceipt"
+          }
+        },
+        "paging": {
+          "$ref": "#/definitions/cmPageInfo"
         }
       }
     },
@@ -8695,6 +9014,9 @@
     },
     {
       "name": "ProductSource"
+    },
+    {
+      "name": "Receipt"
     },
     {
       "name": "Shipnow"

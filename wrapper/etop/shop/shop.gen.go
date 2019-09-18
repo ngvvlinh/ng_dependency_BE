@@ -149,6 +149,11 @@ func NewShopServer(mux Muxer, hooks *twirp.ServerHooks) {
 	bus.Expect(&TradingGetProductsEndpoint{})
 	bus.Expect(&PaymentCheckReturnDataEndpoint{})
 	bus.Expect(&PaymentTradingOrderEndpoint{})
+	bus.Expect(&CreateOrUpdateReceiptEndpoint{})
+	bus.Expect(&DeleteReceiptEndpoint{})
+	bus.Expect(&GetReceiptEndpoint{})
+	bus.Expect(&GetReceiptsEndpoint{})
+	bus.Expect(&GetReceivedAmountByOrderIDEndpoint{})
 	bus.Expect(&CreateVendorEndpoint{})
 	bus.Expect(&DeleteVendorEndpoint{})
 	bus.Expect(&GetVendorEndpoint{})
@@ -179,6 +184,7 @@ func NewShopServer(mux Muxer, hooks *twirp.ServerHooks) {
 	mux.Handle(shop.AuthorizeServicePathPrefix, shop.NewAuthorizeServiceServer(AuthorizeService{}, hooks))
 	mux.Handle(shop.TradingServicePathPrefix, shop.NewTradingServiceServer(TradingService{}, hooks))
 	mux.Handle(shop.PaymentServicePathPrefix, shop.NewPaymentServiceServer(PaymentService{}, hooks))
+	mux.Handle(shop.ReceiptServicePathPrefix, shop.NewReceiptServiceServer(ReceiptService{}, hooks))
 	mux.Handle(shop.VendorServicePathPrefix, shop.NewVendorServiceServer(VendorService{}, hooks))
 	mux.Handle(shop.CarrierServicePathPrefix, shop.NewCarrierServiceServer(CarrierService{}, hooks))
 }
@@ -202,6 +208,7 @@ type ShopImpl struct {
 	AuthorizeService
 	TradingService
 	PaymentService
+	ReceiptService
 	VendorService
 	CarrierService
 }
@@ -5255,6 +5262,228 @@ func (s PaymentService) PaymentTradingOrder(ctx context.Context, req *shop.Payme
 	}
 	session = sessionQuery.Result
 	query := &PaymentTradingOrderEndpoint{PaymentTradingOrderRequest: req}
+	query.Context.Claim = session.Claim
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = bus.Dispatch(ctx, query)
+	resp = query.Result
+	if err == nil {
+		if resp == nil {
+			return nil, common.Error(common.Internal, "", nil).Log("nil response")
+		}
+		errs = cmwrapper.HasErrors(resp)
+	}
+	return resp, err
+}
+
+type ReceiptService struct{}
+
+type CreateOrUpdateReceiptEndpoint struct {
+	*shop.CreateOrUpdateReceiptRequest
+	Result  *shop.Receipt
+	Context ShopClaim
+}
+
+func (s ReceiptService) CreateOrUpdateReceipt(ctx context.Context, req *shop.CreateOrUpdateReceiptRequest) (resp *shop.Receipt, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "shop.Receipt/CreateOrUpdateReceipt"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:     ctx,
+		RequireAuth: true,
+		RequireShop: true,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &CreateOrUpdateReceiptEndpoint{CreateOrUpdateReceiptRequest: req}
+	query.Context.Claim = session.Claim
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = bus.Dispatch(ctx, query)
+	resp = query.Result
+	if err == nil {
+		if resp == nil {
+			return nil, common.Error(common.Internal, "", nil).Log("nil response")
+		}
+		errs = cmwrapper.HasErrors(resp)
+	}
+	return resp, err
+}
+
+type DeleteReceiptEndpoint struct {
+	*cm.IDRequest
+	Result  *cm.DeletedResponse
+	Context ShopClaim
+}
+
+func (s ReceiptService) DeleteReceipt(ctx context.Context, req *cm.IDRequest) (resp *cm.DeletedResponse, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "shop.Receipt/DeleteReceipt"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:     ctx,
+		RequireAuth: true,
+		RequireShop: true,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &DeleteReceiptEndpoint{IDRequest: req}
+	query.Context.Claim = session.Claim
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = bus.Dispatch(ctx, query)
+	resp = query.Result
+	if err == nil {
+		if resp == nil {
+			return nil, common.Error(common.Internal, "", nil).Log("nil response")
+		}
+		errs = cmwrapper.HasErrors(resp)
+	}
+	return resp, err
+}
+
+type GetReceiptEndpoint struct {
+	*cm.IDRequest
+	Result  *shop.Receipt
+	Context ShopClaim
+}
+
+func (s ReceiptService) GetReceipt(ctx context.Context, req *cm.IDRequest) (resp *shop.Receipt, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "shop.Receipt/GetReceipt"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:     ctx,
+		RequireAuth: true,
+		RequireShop: true,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &GetReceiptEndpoint{IDRequest: req}
+	query.Context.Claim = session.Claim
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = bus.Dispatch(ctx, query)
+	resp = query.Result
+	if err == nil {
+		if resp == nil {
+			return nil, common.Error(common.Internal, "", nil).Log("nil response")
+		}
+		errs = cmwrapper.HasErrors(resp)
+	}
+	return resp, err
+}
+
+type GetReceiptsEndpoint struct {
+	*shop.GetReceiptsRequest
+	Result  *shop.ReceiptsResponse
+	Context ShopClaim
+}
+
+func (s ReceiptService) GetReceipts(ctx context.Context, req *shop.GetReceiptsRequest) (resp *shop.ReceiptsResponse, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "shop.Receipt/GetReceipts"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:     ctx,
+		RequireAuth: true,
+		RequireShop: true,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &GetReceiptsEndpoint{GetReceiptsRequest: req}
+	query.Context.Claim = session.Claim
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = bus.Dispatch(ctx, query)
+	resp = query.Result
+	if err == nil {
+		if resp == nil {
+			return nil, common.Error(common.Internal, "", nil).Log("nil response")
+		}
+		errs = cmwrapper.HasErrors(resp)
+	}
+	return resp, err
+}
+
+type GetReceivedAmountByOrderIDEndpoint struct {
+	*cm.IDRequest
+	Result  *shop.GetReceivedAmountByOrderIDResponse
+	Context ShopClaim
+}
+
+func (s ReceiptService) GetReceivedAmountByOrderID(ctx context.Context, req *cm.IDRequest) (resp *shop.GetReceivedAmountByOrderIDResponse, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "shop.Receipt/GetReceivedAmountByOrderID"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:     ctx,
+		RequireAuth: true,
+		RequireShop: true,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &GetReceivedAmountByOrderIDEndpoint{IDRequest: req}
 	query.Context.Claim = session.Claim
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner

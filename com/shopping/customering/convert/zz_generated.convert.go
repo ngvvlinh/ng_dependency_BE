@@ -59,24 +59,6 @@ func registerConversionFunctions(s *scheme.Scheme) {
 		Apply_customering_UpdateCustomerArgs_customering_ShopCustomer(arg.(*customering.UpdateCustomerArgs), out.(*customering.ShopCustomer))
 		return nil
 	})
-	s.Register((*customeringmodel.ShopTrader)(nil), (*customering.ShopTrader)(nil), func(arg, out interface{}) error {
-		Convert_customeringmodel_ShopTrader_customering_ShopTrader(arg.(*customeringmodel.ShopTrader), out.(*customering.ShopTrader))
-		return nil
-	})
-	s.Register(([]*customeringmodel.ShopTrader)(nil), (*[]*customering.ShopTrader)(nil), func(arg, out interface{}) error {
-		out0 := Convert_customeringmodel_ShopTraders_customering_ShopTraders(arg.([]*customeringmodel.ShopTrader))
-		*out.(*[]*customering.ShopTrader) = out0
-		return nil
-	})
-	s.Register((*customering.ShopTrader)(nil), (*customeringmodel.ShopTrader)(nil), func(arg, out interface{}) error {
-		Convert_customering_ShopTrader_customeringmodel_ShopTrader(arg.(*customering.ShopTrader), out.(*customeringmodel.ShopTrader))
-		return nil
-	})
-	s.Register(([]*customering.ShopTrader)(nil), (*[]*customeringmodel.ShopTrader)(nil), func(arg, out interface{}) error {
-		out0 := Convert_customering_ShopTraders_customeringmodel_ShopTraders(arg.([]*customering.ShopTrader))
-		*out.(*[]*customeringmodel.ShopTrader) = out0
-		return nil
-	})
 }
 
 //-- convert etop.vn/api/shopping/customering.ShopCustomer --//
@@ -185,58 +167,4 @@ func apply_customering_UpdateCustomerArgs_customering_ShopCustomer(arg *customer
 	out.Status = out.Status                         // no change
 	out.CreatedAt = out.CreatedAt                   // no change
 	out.UpdatedAt = out.UpdatedAt                   // no change
-}
-
-//-- convert etop.vn/api/shopping/customering.ShopTrader --//
-
-func Convert_customeringmodel_ShopTrader_customering_ShopTrader(arg *customeringmodel.ShopTrader, out *customering.ShopTrader) *customering.ShopTrader {
-	if arg == nil {
-		return nil
-	}
-	if out == nil {
-		out = &customering.ShopTrader{}
-	}
-	convert_customeringmodel_ShopTrader_customering_ShopTrader(arg, out)
-	return out
-}
-
-func convert_customeringmodel_ShopTrader_customering_ShopTrader(arg *customeringmodel.ShopTrader, out *customering.ShopTrader) {
-	out.ID = arg.ID         // simple assign
-	out.ShopID = arg.ShopID // simple assign
-	out.Type = arg.Type     // simple assign
-}
-
-func Convert_customeringmodel_ShopTraders_customering_ShopTraders(args []*customeringmodel.ShopTrader) (outs []*customering.ShopTrader) {
-	tmps := make([]customering.ShopTrader, len(args))
-	outs = make([]*customering.ShopTrader, len(args))
-	for i := range tmps {
-		outs[i] = Convert_customeringmodel_ShopTrader_customering_ShopTrader(args[i], &tmps[i])
-	}
-	return outs
-}
-
-func Convert_customering_ShopTrader_customeringmodel_ShopTrader(arg *customering.ShopTrader, out *customeringmodel.ShopTrader) *customeringmodel.ShopTrader {
-	if arg == nil {
-		return nil
-	}
-	if out == nil {
-		out = &customeringmodel.ShopTrader{}
-	}
-	convert_customering_ShopTrader_customeringmodel_ShopTrader(arg, out)
-	return out
-}
-
-func convert_customering_ShopTrader_customeringmodel_ShopTrader(arg *customering.ShopTrader, out *customeringmodel.ShopTrader) {
-	out.ID = arg.ID         // simple assign
-	out.ShopID = arg.ShopID // simple assign
-	out.Type = arg.Type     // simple assign
-}
-
-func Convert_customering_ShopTraders_customeringmodel_ShopTraders(args []*customering.ShopTrader) (outs []*customeringmodel.ShopTrader) {
-	tmps := make([]customeringmodel.ShopTrader, len(args))
-	outs = make([]*customeringmodel.ShopTrader, len(args))
-	for i := range tmps {
-		outs[i] = Convert_customering_ShopTrader_customeringmodel_ShopTrader(args[i], &tmps[i])
-	}
-	return outs
 }

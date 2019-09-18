@@ -5,6 +5,10 @@ import (
 	"strconv"
 	"time"
 
+	"etop.vn/api/shopping/tradering"
+
+	"github.com/asaskevich/govalidator"
+
 	haravanidentity "etop.vn/api/external/haravan/identity"
 	"etop.vn/api/external/payment"
 	paymentmanager "etop.vn/api/external/payment/manager"
@@ -13,6 +17,7 @@ import (
 	"etop.vn/api/main/identity"
 	"etop.vn/api/main/location"
 	"etop.vn/api/main/ordering"
+	receipting "etop.vn/api/main/receipting"
 	"etop.vn/api/main/shipnow"
 	carriertypes "etop.vn/api/main/shipnow/carrier/types"
 	"etop.vn/api/main/shipping/types"
@@ -41,7 +46,6 @@ import (
 	. "etop.vn/capi/dot"
 	"etop.vn/common/bus"
 	"etop.vn/common/l"
-	"github.com/asaskevich/govalidator"
 )
 
 var (
@@ -140,7 +144,10 @@ var (
 	vendorQuery          vendoring.QueryBus
 	carrierAggr          carrying.CommandBus
 	carrierQuery         carrying.QueryBus
+	traderQuery          tradering.QueryBus
 	eventBus             meta.EventBus
+	receiptAggr          receipting.CommandBus
+	receiptQuery         receipting.QueryBus
 )
 
 func Init(
@@ -166,7 +173,10 @@ func Init(
 	vendorQ vendoring.QueryBus,
 	carrierA carrying.CommandBus,
 	carrierQ carrying.QueryBus,
+	traderQ tradering.QueryBus,
 	eventB meta.EventBus,
+	receiptA receipting.CommandBus,
+	receiptQS receipting.QueryBus,
 	sd cmservice.Shutdowner,
 	rd redis.Store,
 ) {
@@ -188,11 +198,14 @@ func Init(
 	traderAddressQuery = traderAddressQ
 	orderAggr = orderA
 	orderQuery = orderQ
+	receiptAggr = receiptA
+	receiptQuery = receiptQS
 	paymentCtrl = paymentManager
 	vendorAggr = vendorA
 	vendorQuery = vendorQ
 	carrierAggr = carrierA
 	carrierQuery = carrierQ
+	traderQuery = traderQ
 	eventBus = eventB
 	sd.Register(idempgroup.Shutdown)
 }

@@ -4,6 +4,8 @@ import (
 	"context"
 	"time"
 
+	"etop.vn/api/shopping/tradering"
+
 	"etop.vn/api/meta"
 	"etop.vn/api/shopping/customering"
 	"etop.vn/backend/com/shopping/customering/convert"
@@ -82,7 +84,11 @@ func (s *CustomerStore) Count() (uint64, error) {
 
 func (s *CustomerStore) CreateCustomer(customer *customering.ShopCustomer) error {
 	sqlstore.MustNoPreds(s.preds)
-	trader := &model.ShopTrader{ID: customer.ID, ShopID: customer.ShopID, Type: customering.CustomerType}
+	trader := &model.ShopTrader{
+		ID:     customer.ID,
+		ShopID: customer.ShopID,
+		Type:   tradering.CustomerType,
+	}
 	customerDB := convert.ShopCustomerDB(customer)
 	_, err := s.query().Insert(trader, customerDB)
 	return err

@@ -4,9 +4,9 @@ import (
 	"context"
 	"time"
 
-	"etop.vn/backend/pkg/common/scheme"
+	"etop.vn/api/shopping/tradering"
 
-	"etop.vn/api/shopping/customering"
+	"etop.vn/backend/pkg/common/scheme"
 
 	"etop.vn/backend/com/shopping/vendoring/convert"
 
@@ -91,7 +91,7 @@ func (s *VendorStore) CreateVendor(vendor *vendoring.ShopVendor) error {
 	trader := &customeringmodel.ShopTrader{
 		ID:     vendor.ID,
 		ShopID: vendor.ShopID,
-		Type:   customering.VendorType,
+		Type:   tradering.VendorType,
 	}
 	vendorDB := new(model.ShopVendor)
 	if err := scheme.Convert(vendor, vendorDB); err != nil {

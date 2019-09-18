@@ -25,6 +25,8 @@ import (
 	serviceordering "etop.vn/backend/com/main/ordering"
 	serviceorderingpm "etop.vn/backend/com/main/ordering/pm"
 	ordersqlstore "etop.vn/backend/com/main/ordering/sqlstore"
+	receiptaggregate "etop.vn/backend/com/main/receipting/aggregate"
+	receiptquery "etop.vn/backend/com/main/receipting/query"
 	serviceshipnow "etop.vn/backend/com/main/shipnow"
 	shipnowcarrier "etop.vn/backend/com/main/shipnow-carrier"
 	shipnowpm "etop.vn/backend/com/main/shipnow/pm"
@@ -34,6 +36,7 @@ import (
 	carrierquery "etop.vn/backend/com/shopping/carrying/query"
 	customeraggregate "etop.vn/backend/com/shopping/customering/aggregate"
 	customerquery "etop.vn/backend/com/shopping/customering/query"
+	traderquery "etop.vn/backend/com/shopping/tradering/query"
 	vendoraggregate "etop.vn/backend/com/shopping/vendoring/aggregate"
 	vendorquery "etop.vn/backend/com/shopping/vendoring/query"
 	vhtaggregate "etop.vn/backend/com/supporting/crm/vht/aggregate"
@@ -325,9 +328,13 @@ func main() {
 	customerQuery := customerquery.NewCustomerQuery(db).MessageBus()
 	vendorQuery := vendorquery.NewVendorQuery(db).MessageBus()
 	carrierQuery := carrierquery.NewCarrierQuery(db).MessageBus()
+	traderQuery := traderquery.NewTraderQuery(db).MessageBus()
 	traderAddressQuery := customerquery.NewAddressQuery(db).MessageBus()
 	affiliateCmd := serviceaffiliate.NewAggregate(dbaff, identityQuery).MessageBus()
 	affilateQuery := serviceaffiliate.NewQuery(dbaff).MessageBus()
+	receiptAggr := receiptaggregate.NewReceiptAggregate(db).MessageBus()
+	receiptQuery := receiptquery.NewReceiptQuery(db).MessageBus()
+
 	// payment
 	var vtpayProvider *vtpay.Provider
 	if cfg.VTPay.MerchantCode != "" {
@@ -363,7 +370,10 @@ func main() {
 		vendorQuery,
 		carrierAggr,
 		carrierQuery,
+		traderQuery,
 		eventBus,
+		receiptAggr,
+		receiptQuery,
 		shutdowner,
 		redisStore,
 	)

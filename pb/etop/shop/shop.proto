@@ -230,6 +230,15 @@ service PaymentService {
     rpc PaymentCheckReturnData(PaymentCheckReturnDataRequest) returns (cm.MessageResponse);
 }
 
+service ReceiptService {
+    rpc CreateOrUpdateReceipt(CreateOrUpdateReceiptRequest) returns (Receipt);
+    rpc DeleteReceipt(cm.IDRequest) returns (cm.DeletedResponse);
+    rpc GetReceipt(cm.IDRequest) returns (Receipt);
+    rpc GetReceipts(GetReceiptsRequest) returns (ReceiptsResponse);
+
+    rpc GetReceivedAmountByOrderID(cm.IDRequest) returns (GetReceivedAmountByOrderIDResponse);
+}
+
 service VendorService {
     rpc GetVendor(cm.IDRequest) returns (Vendor);
     rpc GetVendors(GetVendorsRequest) returns (VendorsResponse);
@@ -1229,4 +1238,111 @@ message GetCarriersRequest {
 message CarriersResponse {
     repeated Carrier carriers = 1;
     optional cm.PageInfo paging = 2;
+}
+
+message CreateReceiptRequest {
+    required int64 shop_trader_id = 1 [(gogoproto.nullable) = false];
+    required string title = 2 [(gogoproto.nullable) = false];
+    optional string description = 3 [(gogoproto.nullable) = false];
+    required int32 amount = 4 [(gogoproto.nullable) = false];
+    required int64 user_id = 5 [(gogoproto.nullable) = false];
+}
+
+message OrderOfReceiptLine {
+    optional int64 id = 1 [(gogoproto.nullable) = false];;
+    optional int64 shop_id = 2 [(gogoproto.nullable) = false];;
+    optional string code = 3 [(gogoproto.nullable) = false];;
+    optional int32 total_amount = 4 [(gogoproto.nullable) = false];;
+}
+
+message ReceiptLine {
+    optional int64 order_id = 1 [(gogoproto.nullable) = false];
+    optional string title = 2 [(gogoproto.nullable) = false];
+    required int32 amount = 3 [(gogoproto.nullable) = false];
+    optional int32 received_amount = 4 [(gogoproto.nullable) = false];
+    optional OrderOfReceiptLine order = 5;
+}
+
+message UpdateReceiptRequest {
+    optional int64 id = 1 [(gogoproto.nullable) = false];
+    optional int64 shop_trader_id = 2;
+    optional string title = 3;
+    optional string description = 4;
+    optional int32 amount = 5;
+    optional int64 user_id = 6;
+}
+
+message ReceiptLineWithOldAmount {
+    optional int64 id = 1 [(gogoproto.nullable) = false];
+    required int64 receipt_id = 2 [(gogoproto.nullable) = false];
+    optional int64 order_id = 3 [(gogoproto.nullable) = false];
+    optional string title = 4 [(gogoproto.nullable) = false];
+    required int32 receivedAmount = 5 [(gogoproto.nullable) = false];
+    required int32 amount = 6 [(gogoproto.nullable) = false];
+    optional google.protobuf.Timestamp created_at = 7;
+    optional google.protobuf.Timestamp updated_at = 8;
+
+    optional OrderOfReceiptLine order = 9;
+}
+
+message GetReceiptResponse {
+    required Receipt receipt = 1;
+    required etop.User user = 2;
+    repeated ReceiptLineWithOldAmount receipt_lines = 3;
+}
+
+message Partner {
+    optional int64 id = 1 [(gogoproto.nullable) = false];
+    optional string type = 2 [(gogoproto.nullable) = false];
+    optional string full_name = 3 [(gogoproto.nullable) = false];
+}
+
+message Receipt {
+    optional int64 id = 1 [(gogoproto.nullable) = false];
+    optional int64 shop_id = 2 [(gogoproto.nullable) = false];
+    optional int64 shop_trader_id = 3 [(gogoproto.nullable) = false];
+    optional int64 user_id = 4 [(gogoproto.nullable) = false];
+    optional string code = 5 [(gogoproto.nullable) = false];
+    optional string title = 6 [(gogoproto.nullable) = false];
+    optional string description = 7 [(gogoproto.nullable) = false];
+    optional int32 amount = 8 [(gogoproto.nullable) = false];
+    repeated ReceiptLine receipt_lines = 9;
+    optional status3.Status status = 10 [(gogoproto.nullable) = false];
+    optional google.protobuf.Timestamp created_at = 11;
+    optional google.protobuf.Timestamp updated_at = 12;
+
+    optional etop.User user = 13;
+    optional Partner partner = 14;
+}
+
+message CreateReceiptLine {
+    optional int64 id = 1 [(gogoproto.nullable) = false];
+    optional int64 order_id = 2 [(gogoproto.nullable) = false];
+    optional string title = 3 [(gogoproto.nullable) = false];
+    optional int32 amount = 4 [(gogoproto.nullable) = false];
+}
+
+message CreateOrUpdateReceiptRequest {
+    optional int64 id = 1 [(gogoproto.nullable) = false];
+    optional int64 shop_trader_id = 2 [(gogoproto.nullable) = false];
+    optional int64 user_id = 3 [(gogoproto.nullable) = false];
+    optional string title = 4 [(gogoproto.nullable) = false];
+    optional string description = 5 [(gogoproto.nullable) = false];
+    optional int32 amount = 6 [(gogoproto.nullable) = false];
+    repeated ReceiptLine receipt_lines = 7;
+}
+
+message GetReceiptsRequest {
+    optional cm.Paging paging = 1;
+    repeated cm.Filter filters = 2;
+}
+
+message ReceiptsResponse {
+    repeated Receipt receipts = 1;
+    optional cm.PageInfo paging = 2;
+}
+
+message GetReceivedAmountByOrderIDResponse {
+    optional int32 total_amount = 1 [(gogoproto.nullable) = false];
+    optional int32 received_amount = 2 [(gogoproto.nullable) = false];
 }

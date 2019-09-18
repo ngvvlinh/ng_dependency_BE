@@ -4,9 +4,10 @@ import (
 	"context"
 	"time"
 
+	"etop.vn/api/shopping/tradering"
+
 	"etop.vn/api/meta"
 	"etop.vn/api/shopping/carrying"
-	"etop.vn/api/shopping/customering"
 	"etop.vn/backend/com/shopping/carrying/convert"
 	"etop.vn/backend/com/shopping/carrying/model"
 	customeringmodel "etop.vn/backend/com/shopping/customering/model"
@@ -88,7 +89,7 @@ func (s *CarrierStore) CreateCarrier(carrier *carrying.ShopCarrier) error {
 	trader := &customeringmodel.ShopTrader{
 		ID:     carrier.ID,
 		ShopID: carrier.ShopID,
-		Type:   customering.CarrierType,
+		Type:   tradering.CarrierType,
 	}
 	carrierDB := new(model.ShopCarrier)
 	if err := scheme.Convert(carrier, carrierDB); err != nil {
