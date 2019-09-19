@@ -52,9 +52,9 @@ func (c *Carrier) ParseServiceCode(code string) (serviceCode string, _err error)
 }
 
 func (c *Carrier) InitClient(ctx context.Context) error {
-	// if err := c.client.Ping(); err != nil {
-	// 	return cm.Errorf(cm.ExternalServiceError, err, "can not init client")
-	// }
+	if err := c.client.Ping(); err != nil {
+		return cm.Errorf(cm.ExternalServiceError, err, "can not init client")
+	}
 	return nil
 }
 

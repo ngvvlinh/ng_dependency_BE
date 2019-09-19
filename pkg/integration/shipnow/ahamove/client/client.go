@@ -156,6 +156,7 @@ func (c *Client) TestGetServices() error {
 
 func (c *Client) CalcShippingFee(ctx context.Context, req *CalcShippingFeeRequest) (*CalcShippingFeeResponse, error) {
 	req.Path = ConvertDeliveryPointsRequestToString(req.DeliveryPoints)
+	req.PaymentMethod = PaymentMethodCash
 	var resp CalcShippingFeeResponse
 	err := c.sendGetRequest(ctx, PathCalcShippingFee, req, &resp,
 		"Không thể tính phí giao hàng")
@@ -170,6 +171,7 @@ func (c *Client) GetServices(ctx context.Context, req *GetServicesRequest) ([]*S
 
 func (c *Client) CreateOrder(ctx context.Context, req *CreateOrderRequest) (*CreateOrderResponse, error) {
 	req.Path = ConvertDeliveryPointsRequestToString(req.DeliveryPoints)
+	req.PaymentMethod = PaymentMethodCash
 	var resp CreateOrderResponse
 	err := c.sendGetRequest(ctx, PathCreateOrder, req, &resp, "Không thể tạo đơn hàng")
 	return &resp, err

@@ -63,6 +63,8 @@ const (
 
 	StateDeliveryCompleted DeliveryStatus = "COMPLETED" // When the supplier gives the order to recipient & collects cash, he will choose Complete and the according stop point status will be changed to COMPLETED
 	StateDeliveryFailed    DeliveryStatus = "FAILED"    // When the supplier arrives at the recipient point, but the recipient does not show up, he will choose Fail and the according stop point status will be changed to FAILED
+
+	PaymentMethodCash = "CASH"
 )
 
 func (orderState OrderState) ToCoreState() shipnowtypes.State {
@@ -128,6 +130,8 @@ type CalcShippingFeeRequest struct {
 	Path           string                  `url:"path"`
 	DeliveryPoints []*DeliveryPointRequest `url:"-"`
 	ServiceID      string                  `url:"service_id"`
+	// Payment method chose by user (BALANCE or CASH or MOMO)
+	PaymentMethod string `url:"payment_method"`
 }
 
 type DeliveryPointRequest struct {
@@ -211,7 +215,7 @@ type CreateOrderRequest struct {
 	Path           string                  `url:"path"`
 	ServiceID      string                  `url:"service_id"`
 	Remarks        string                  `url:"remarks"`
-	// Payment method chose by user (BALANCE or CASH) - Optional
+	// Method which user chooses to pay for this order (Available methods: CASH)
 	PaymentMethod string `url:"payment_method"`
 	// Products      []Item `url:"-"`
 	// Items         string `url:"items"`
