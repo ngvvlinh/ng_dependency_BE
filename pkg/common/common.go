@@ -36,7 +36,7 @@ var (
 )
 
 func init() {
-	commit = strings.Replace(commit, "·", " ", -1)
+	commit = strings.Replace(commit, "·", "\n", -1)
 }
 
 func Commit() string {
