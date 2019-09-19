@@ -208,7 +208,7 @@ type RowProduct struct {
 	ProductCode   string
 	VariantCode   string
 	ProductName   string
-	Attributes    []catalogmodel.ProductAttribute
+	Attributes    []*catalogmodel.ProductAttribute
 	ListPrice     int
 	CostPrice     int
 	QuantityAvail int

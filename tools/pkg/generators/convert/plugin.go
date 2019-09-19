@@ -37,14 +37,106 @@ type plugin struct {
 func (p *plugin) Name() string { return "convert" }
 
 func (p *plugin) Generate(ng generator.Engine) error {
+	// collect all converting packages
+	var generatingPackages []*generatingPackage
 	pkgs := ng.GeneratingPackages()
 	for _, pkg := range pkgs {
-		err := generatePackage(ng, pkg)
+		p, err := preparePackage(ng, pkg)
+		if err != nil {
+			return err
+		}
+		generatingPackages = append(generatingPackages, p)
+	}
+
+	// find all package pairs
+	pkgPairs := make(map[pkgPair]*generatingPackage)
+	for _, gpkg := range generatingPackages {
+		for _, step := range gpkg.steps {
+			for _, argPkg := range step.argPkgs {
+				for _, outPkg := range step.outPkgs {
+					pair0 := pkgPair{argPkg.PkgPath, outPkg.PkgPath}
+					pair1 := pkgPair{outPkg.PkgPath, argPkg.PkgPath}
+					if pkgPairs[pair0] != nil {
+						return generator.Errorf(nil, "multiple packages with same conversion %v->%v (%v and %v)",
+							argPkg.PkgPath, outPkg.PkgPath, pkgPairs[pair0].gpkg.PkgPath, gpkg.gpkg.PkgPath)
+					}
+					pkgPairs[pair0] = gpkg
+					pkgPairs[pair1] = gpkg
+				}
+			}
+		}
+	}
+
+	// find all custom conversion functions, they must be declared in the conversion packages
+	convPairs = make(map[pair]*conversionFunc)
+	for _, gpkg := range generatingPackages {
+		for _, object := range gpkg.gpkg.Objects() {
+			fn, ok := object.Object.(*types.Func)
+			if !ok {
+				continue
+			}
+			sign := fn.Type().(*types.Signature)
+			if sign.Recv() != nil {
+				continue
+			}
+			mode, arg, out, err := validateConvertFunc(fn)
+			if err != nil {
+				ll.V(2).Debugf("error in function %v.%v: err", fn.Pkg().Path(), fn.Name(), err)
+				return err
+			}
+			if mode == 0 {
+				ll.V(2).Debugf("ignore function %v.%v because it is not a recognized signature format", fn.Pkg().Path(), fn.Name())
+				continue
+			}
+			pkgPair := pkgPair{
+				ArgPkg: arg.Pkg().Path(),
+				OutPkg: out.Pkg().Path(),
+			}
+			if gpkg1 := pkgPairs[pkgPair]; gpkg1 != nil && gpkg1 != gpkg {
+				return generator.Errorf(nil,
+					"function %v which converts from %v to %v must be defined in %v (found in %v)",
+					fn.Name(), arg.Name(), out.Name(),
+					gpkg.gpkg.PkgPath, gpkg1.gpkg.PkgPath)
+			}
+			pair, _, _ := getPairWithPointer(arg, out)
+			if !pair.valid {
+				ll.V(2).Debugf("ignore function %v.%v because its params are not pointer to named type", fn.Pkg().Path(), fn.Name())
+				continue
+			}
+			if convPairs[pair] != nil {
+				return generator.Errorf(nil,
+					"duplicated conversion functions from %v to %v (function %v and %v)",
+					arg.Type().String(), out.Type().String(), convPairs[pair].Func.Name(), fn.Name())
+			}
+			convPairs[pair] = &conversionFunc{
+				pair: pair,
+				Obj:  object,
+				Func: fn,
+				Mode: mode,
+			}
+		}
+	}
+
+	// generate
+	for _, gpkg := range generatingPackages {
+		currentPrinter = gpkg.gpkg.Generate()
+		_, err := generateConverts(currentPrinter, convPairs, gpkg.objMap)
 		if err != nil {
 			return err
 		}
 	}
 	return nil
+}
+
+type generatingPackage struct {
+	gpkg   *generator.GeneratingPackage
+	objMap map[objName]*objMap
+	steps  []*generatingPackageStep
+}
+
+type generatingPackageStep struct {
+	outPkgs []*packages.Package
+	argPkgs []*packages.Package
 }
 
 type objMap struct {
@@ -68,9 +160,28 @@ type options struct {
 }
 
 type fieldConvert struct {
-	Out          *types.Var
-	Arg          *types.Var
+	Arg *types.Var
+	Out *types.Var
+
 	IsIdentifier bool // for updating only
+}
+
+type pkgPair struct {
+	ArgPkg string
+	OutPkg string
+}
+
+type pair struct {
+	valid bool
+	Arg   objName
+	Out   objName
+}
+
+type conversionFunc struct {
+	pair
+	Obj  generator.Object
+	Func *types.Func
+	Mode int
 }
 
 func (o objName) String() string {
@@ -80,55 +191,56 @@ func (o objName) String() string {
 	return o.pkg + "." + o.name
 }
 
-func generatePackage(ng generator.Engine, gpkg *generator.GeneratingPackage) error {
-	count := 0
+func preparePackage(ng generator.Engine, gpkg *generator.GeneratingPackage) (*generatingPackage, error) {
+	result := &generatingPackage{
+		gpkg:   gpkg,
+		objMap: make(map[objName]*objMap),
+	}
 	for _, d := range gpkg.Directives {
 		if d.Cmd != Command {
 			continue
 		}
-		count++
 		apiPkgPaths, toPkgPaths, err := parseConvertDirective(d)
 		if err != nil {
-			return err
+			return nil, err
 		}
-		currentPrinter = gpkg.Generate()
-		err = generatePackageStep(ng, currentPrinter, apiPkgPaths, toPkgPaths)
+		step, err := generatePackageStep(ng, gpkg.Generate(), result.objMap, apiPkgPaths, toPkgPaths)
 		if err != nil {
-			return err
+			return nil, err
 		}
+		result.steps = append(result.steps, step)
 	}
-	if count == 0 {
-		return generator.Errorf(nil, "invalid directive (must in format pkg1 -> pkg2)")
+	if len(result.steps) == 0 {
+		return nil, generator.Errorf(nil, "invalid directive (must in format pkg1 -> pkg2)")
 	}
-	return nil
+	return result, nil
 }
 
-func generatePackageStep(ng generator.Engine, p generator.Printer, apiPkgPaths, toPkgPaths []string) error {
+func generatePackageStep(ng generator.Engine, p generator.Printer, apiObjMap map[objName]*objMap, apiPkgPaths, toPkgPaths []string) (*generatingPackageStep, error) {
 	ll.V(1).Debugf("convert from %v to %v", strings.Join(apiPkgPaths, ","), strings.Join(toPkgPaths, ","))
 
+	var result generatingPackageStep
 	flagSelf, err := validateEquality(apiPkgPaths, toPkgPaths)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	flagAuto := !flagSelf && len(apiPkgPaths) == 1 && len(toPkgPaths) == 1
-	flagInfo := false
 
 	apiPkgs := make([]*packages.Package, len(apiPkgPaths))
 	for i, pkgPath := range apiPkgPaths {
 		apiPkgs[i] = ng.PackageByPath(pkgPath)
 		if apiPkgs[i] == nil {
-			return generator.Errorf(nil, "can not find package %v", pkgPath)
+			return nil, generator.Errorf(nil, "can not find package %v", pkgPath)
 		}
 	}
 	toPkgs := make([]*packages.Package, len(toPkgPaths))
 	for i, pkgPath := range toPkgPaths {
 		toPkgs[i] = ng.PackageByPath(pkgPath)
 		if toPkgs[i] == nil {
-			return generator.Errorf(nil, "can not find package %v", pkgPath)
+			return nil, generator.Errorf(nil, "can not find package %v", pkgPath)
 		}
 	}
 
-	apiObjMap := make(map[objName]*objMap)
 	for _, pkg := range apiPkgs {
 		apiObjs := ng.ObjectsByPackage(pkg)
 		for _, obj := range apiObjs {
@@ -136,7 +248,9 @@ func generatePackageStep(ng generator.Engine, p generator.Printer, apiPkgPaths, 
 				continue
 			}
 			objName := objName{pkg: pkg.PkgPath, name: obj.Object.Name()}
-			apiObjMap[objName] = &objMap{src: obj}
+			if apiObjMap[objName] == nil {
+				apiObjMap[objName] = &objMap{src: obj}
+			}
 		}
 	}
 
@@ -158,7 +272,7 @@ func generatePackageStep(ng generator.Engine, p generator.Printer, apiPkgPaths, 
 			}
 			raw, mode, name, opts, err := parseWithMode(apiPkgs, obj.Directives)
 			if err != nil {
-				return err
+				return nil, err
 			}
 			ll.V(3).Debugf("parsed type %v with mode %v", name, mode)
 			if mode == "" {
@@ -169,14 +283,10 @@ func generatePackageStep(ng generator.Engine, p generator.Printer, apiPkgPaths, 
 						continue
 					}
 					mode = ModeType
-
-				} else {
-					// notify user that there is no type generated for the conversion
-					flagInfo = true
 				}
 
 			} else if apiObjMap[name] == nil {
-				return generator.Errorf(nil, "type %v not found (directive %v)", name, raw)
+				return nil, generator.Errorf(nil, "type %v not found (directive %v)", name, raw)
 			}
 			if (name == objName{}) {
 				continue
@@ -184,20 +294,37 @@ func generatePackageStep(ng generator.Engine, p generator.Printer, apiPkgPaths, 
 
 			m := apiObjMap[name]
 			if s := validateStruct(m.src.Object); s == nil {
-				return generator.Errorf(nil, "%v is not a struct", m.src.Object.Name())
+				return nil, generator.Errorf(nil, "%v is not a struct", m.src.Object.Name())
 			}
 			m.gens = append(m.gens, objGen{mode: mode, obj: obj, opts: opts})
 		}
 	}
+	return &result, nil
+}
 
-	count, err := generateConverts(p, apiObjMap)
-	if err != nil {
-		return err
+func validateConvertFunc(fn *types.Func) (mode int, arg, out *types.Var, err error) {
+	sign := fn.Type().(*types.Signature)
+	params, results := sign.Params(), sign.Results()
+	switch {
+	case params.Len() == 1 && results.Len() == 1:
+		arg = params.At(0)
+		out = results.At(0)
+		return 1, arg, out, nil
+
+	case params.Len() == 2 && results.Len() == 0:
+		arg = params.At(0)
+		out = params.At(1)
+		return 2, arg, out, nil
+
+	case params.Len() == 2 && results.Len() == 0:
+		if params.At(1).Type() == results.At(0).Type() {
+			arg = params.At(0)
+			out = params.At(1)
+			return 3, arg, out, nil
+		}
 	}
-	if flagInfo && count == 0 {
-		ll.Warn("no types generated (for multiple package conversion, must use convert:type to define mapping)")
-	}
-	return nil
+	// ignore unrecognized functions
+	return 0, nil, nil, nil
 }
 
 func validateEquality(pkgs1, pkgs2 []string) (bool, error) {
@@ -347,7 +474,7 @@ func hasBase(pkgPath, tail string) bool {
 		strings.HasSuffix(pkgPath, tail) && pkgPath[len(pkgPath)-len(tail)-1] == '/'
 }
 
-func generateConverts(p generator.Printer, apiObjMap map[objName]*objMap) (count int, _ error) {
+func generateConverts(p generator.Printer, convPair map[pair]*conversionFunc, apiObjMap map[objName]*objMap) (count int, _ error) {
 	list := make([]objName, 0, len(apiObjMap))
 	for objName, obj := range apiObjMap {
 		if len(obj.gens) != 0 {
@@ -414,11 +541,21 @@ func generateConvertTypeImpl(p generator.Printer, in, out generator.Object) erro
 		})
 	}
 	vars := map[string]interface{}{
-		"InStr":   strings.ReplaceAll(inType, ".", "_"),
-		"OutStr":  strings.ReplaceAll(outType, ".", "_"),
-		"InType":  inType,
-		"OutType": outType,
-		"Fields":  fields,
+		"InStr":                strings.ReplaceAll(inType, ".", "_"),
+		"OutStr":               strings.ReplaceAll(outType, ".", "_"),
+		"InType":               inType,
+		"OutType":              outType,
+		"Fields":               fields,
+		"CustomConversionMode": 0,
+	}
+	if conv := convPairs[getPair(in, out)]; conv != nil {
+		vars["CustomConversionMode"] = conv.Mode
+		funcType := conv.Obj.Name()
+		alias := p.Qualifier(conv.Obj.Pkg())
+		if alias != "" {
+			funcType = alias + "." + funcType
+		}
+		vars["CustomConversionFuncType"] = funcType
 	}
 	return tplConvertType.Execute(p, vars)
 }
@@ -452,15 +589,23 @@ func generateUpdate(p generator.Printer, base, arg generator.Object, opts option
 	baseType := p.TypeString(base.Type())
 	argType := p.TypeString(arg.Type())
 	fields := make([]fieldConvert, 0, baseSt.NumFields())
+	identCount := 0
 	for i, n := 0, baseSt.NumFields(); i < n; i++ {
 		baseField := baseSt.Field(i)
 		argField := matchField(baseField, argSt)
+		isIdentifier := contains(opts.identifiers, baseField.Name())
+		if isIdentifier {
+			identCount++
+		}
 		fields = append(fields, fieldConvert{
 			Arg: argField,
 			Out: baseField,
 
-			IsIdentifier: contains(opts.identifiers, baseField.Name()),
+			IsIdentifier: isIdentifier,
 		})
+	}
+	if identCount != len(opts.identifiers) {
+		return fmt.Errorf("update %v: identifier not found (%v)", arg.Name(), strings.Join(opts.identifiers, ","))
 	}
 	vars := map[string]interface{}{
 		"ArgStr":   strings.ReplaceAll(argType, ".", "_"),
@@ -469,6 +614,96 @@ func generateUpdate(p generator.Printer, base, arg generator.Object, opts option
 		"Fields":   fields,
 	}
 	return tplUpdate.Execute(p, vars)
+}
+
+func validateCompatible(arg, out types.Object) bool {
+	if arg.Type() == out.Type() {
+		return true
+	}
+	slice0, ok0 := arg.Type().(*types.Slice)
+	slice1, ok1 := out.Type().(*types.Slice)
+	return ok0 && ok1 && slice0.Elem() == slice1.Elem()
+}
+
+func validateSliceToPointerNamed(obj types.Type) *types.Named {
+	if typ, ok := obj.(*types.Named); ok {
+		obj = typ.Underlying()
+	}
+	slice, ok := obj.(*types.Slice)
+	if !ok {
+		return nil
+	}
+	ptr, ok := slice.Elem().(*types.Pointer)
+	if !ok {
+		return nil
+	}
+	named, _ := ptr.Elem().(*types.Named)
+	return named
+}
+
+func validatePointerToNamed(obj types.Type) *types.Named {
+	typ, ok := obj.(*types.Pointer)
+	if !ok {
+		return nil
+	}
+	named, _ := typ.Elem().(*types.Named)
+	return named
+}
+
+func getPairWithSlice(arg, out types.Object) (result pair, argNamed, outNamed *types.Named) {
+	argNamed = validateSliceToPointerNamed(arg.Type())
+	outNamed = validateSliceToPointerNamed(out.Type())
+	if argNamed == nil {
+		return
+	}
+	if outNamed == nil {
+		return
+	}
+	result = pair{
+		valid: true,
+		Arg:   getObjName(argNamed),
+		Out:   getObjName(outNamed),
+	}
+	return
+}
+
+func getPairWithPointer(arg, out types.Object) (result pair, argNamed, outNamed *types.Named) {
+	argNamed = validatePointerToNamed(arg.Type())
+	outNamed = validatePointerToNamed(out.Type())
+	if argNamed == nil {
+		ll.V(3).Debugf("ignore type %v because it is not a pointer to a named type", arg.Type())
+		return
+	}
+	if outNamed == nil {
+		ll.V(3).Debugf("ignore type %v because it is not a pointer to a named type", out.Type())
+		return
+	}
+	result = pair{
+		valid: true,
+		Arg:   getObjName(argNamed),
+		Out:   getObjName(outNamed),
+	}
+	return
+}
+
+func getPair(arg, out types.Object) pair {
+	argNamed, _ := arg.Type().(*types.Named)
+	outNamed, _ := out.Type().(*types.Named)
+	if argNamed == nil || outNamed == nil {
+		return pair{}
+	}
+	return pair{
+		valid: true,
+		Arg:   getObjName(argNamed),
+		Out:   getObjName(outNamed),
+	}
+}
+
+func getObjName(named *types.Named) objName {
+	return objName{
+		pkg:  named.Obj().Pkg().Path(),
+		name: named.Obj().Name(),
+	}
 }
 
 func contains(ss []string, item string) bool {

@@ -15,6 +15,7 @@ import (
 var tplConvertType, tplUpdate, tplCreate *template.Template
 var currentPrinter generator.Printer
 var capiPkgPath = reflect.TypeOf(dot.NullString{}).PkgPath()
+var convPairs map[pair]*conversionFunc
 
 func init() {
 	funcMap := map[string]interface{}{
@@ -24,13 +25,13 @@ func init() {
 		"lastComment": renderLastComment,
 		"plural":      renderPlural,
 	}
-	parse := func(text string) *template.Template {
-		return template.Must(template.New("convert_type").Funcs(funcMap).Parse(text))
+	parse := func(name, text string) *template.Template {
+		return template.Must(template.New(name).Funcs(funcMap).Parse(text))
 	}
 
-	tplConvertType = parse(tplConvertTypeText)
-	tplCreate = parse(tplCreateText)
-	tplUpdate = parse(tplUpdateText)
+	tplConvertType = parse("convert_type", tplConvertTypeText)
+	tplCreate = parse("create", tplCreateText)
+	tplUpdate = parse("update", tplUpdateText)
 }
 
 func renderPlural(s string) string {
@@ -53,9 +54,12 @@ func renderFieldValue(prefix string, field fieldConvert) string {
 		lastComment = "// zero value"
 		return renderZero(out.Type())
 	}
-	if out.Type() == in.Type() {
+	if validateCompatible(in, out) {
 		lastComment = "// simple assign"
 		return prefix + "." + in.Name()
+	}
+	if result := renderCustomConversion(in, out, prefix); result != "" {
+		return result
 	}
 	if result := renderSimpleConversion(in, out, prefix); result != "" {
 		return result
@@ -74,6 +78,10 @@ func renderFieldApply(prefix string, field fieldConvert) string {
 		lastComment = "// no change"
 		return "out." + out.Name()
 	}
+	if validateCompatible(arg, out) {
+		lastComment = "// simple assign"
+		return "arg." + out.Name()
+	}
 	// render NullString, NullInt, ...Apply()
 	if argType, ok := arg.Type().(*types.Named); ok {
 		typObj := argType.Obj()
@@ -83,11 +91,63 @@ func renderFieldApply(prefix string, field fieldConvert) string {
 			return prefix + "." + arg.Name() + ".Apply(out." + out.Name() + ")"
 		}
 	}
+	if result := renderCustomConversion(arg, out, prefix); result != "" {
+		return result
+	}
 	if result := renderSimpleConversion(arg, out, prefix); result != "" {
 		return result
 	}
 	lastComment = "// types do not match"
 	return "out." + out.Name()
+}
+
+func renderCustomConversion(in, out *types.Var, prefix string) string {
+	{
+		pair, argNamed, outNamed := getPairWithSlice(in, out)
+		if pair.valid {
+			conv := convPairs[pair]
+			if conv == nil {
+				return ""
+			}
+			lastComment = ""
+			return renderCustomConversion0(true, argNamed, outNamed, conv, prefix+"."+in.Name())
+		}
+	}
+	{
+		pair, argNamed, outNamed := getPairWithPointer(in, out)
+		if pair.valid {
+			conv := convPairs[pair]
+			if conv == nil {
+				return ""
+			}
+			lastComment = ""
+			return renderCustomConversion0(false, argNamed, outNamed, conv, prefix+"."+in.Name())
+		}
+	}
+	return ""
+}
+
+func renderCustomConversion0(plural bool, in, out *types.Named, conv *conversionFunc, inField string) string {
+	p := currentPrinter
+	inType := p.TypeString(in)
+	outType := p.TypeString(out)
+	inStr := strings.ReplaceAll(inType, ".", "_")
+	outStr := strings.ReplaceAll(outType, ".", "_")
+	if plural {
+		inStr = renderPlural(inStr)
+		outStr = renderPlural(outStr)
+	}
+	var result string
+	if plural {
+		result = "Convert_" + inStr + "_" + outStr + "(" + inField + ")"
+	} else {
+		result = "Convert_" + inStr + "_" + outStr + "(" + inField + ", nil)"
+	}
+	alias := p.Qualifier(conv.Obj.Pkg())
+	if alias != "" {
+		return alias + "." + result
+	}
+	return result
 }
 
 func renderSimpleConversion(in, out *types.Var, prefix string) string {

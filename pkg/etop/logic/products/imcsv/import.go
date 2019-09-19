@@ -478,12 +478,12 @@ func parseCollections(v string) ([]string, error) {
 	return parts, nil
 }
 
-func parseAttributes(v string) ([]catalogmodel.ProductAttribute, error) {
+func parseAttributes(v string) ([]*catalogmodel.ProductAttribute, error) {
 	items := split(v)
 	if len(items) >= 7 {
 		return nil, fmt.Errorf(`Quá nhiều thuộc tính.`)
 	}
-	res := make([]catalogmodel.ProductAttribute, len(items))
+	res := make([]*catalogmodel.ProductAttribute, len(items))
 	for i, p := range items {
 		parts := strings.Split(p, ":")
 		if len(parts) != 2 {
@@ -494,7 +494,7 @@ func parseAttributes(v string) ([]catalogmodel.ProductAttribute, error) {
 		if key == "" || value == "" {
 			return nil, fmt.Errorf(`Thuộc tính không hợp lệ (%v). Cần sử dụng cấu trúc "Tên thuộc tính: giá trị thuộc tính".`, p)
 		}
-		res[i] = catalogmodel.ProductAttribute{Name: key, Value: value}
+		res[i] = &catalogmodel.ProductAttribute{Name: key, Value: value}
 	}
 	return res, nil
 }
@@ -579,7 +579,7 @@ func rowToCreateProduct(row *RowProduct, now time.Time) *pbshop.CreateProductReq
 	}
 }
 
-func variantNameFromAttributes(attrs []catalogmodel.ProductAttribute) string {
+func variantNameFromAttributes(attrs []*catalogmodel.ProductAttribute) string {
 	if len(attrs) == 0 {
 		return ""
 	}

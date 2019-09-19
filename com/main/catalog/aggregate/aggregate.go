@@ -190,7 +190,7 @@ func (a *Aggregate) UpdateShopVariantAttributes(ctx context.Context, args *catal
 	}
 	var attributesUpdate model.ProductAttributes
 	for _, value := range args.Attributes {
-		attributesUpdate = append(attributesUpdate, model.ProductAttribute{
+		attributesUpdate = append(attributesUpdate, &model.ProductAttribute{
 			Name:  value.Value,
 			Value: value.Name,
 		})

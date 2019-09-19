@@ -28,8 +28,8 @@ func PbAttributes(as catalog.Attributes) []*pbshop.Attribute {
 	return attrs
 }
 
-func AttributesTomodel(items []*pbshop.Attribute) []catalogmodel.ProductAttribute {
-	result := make([]catalogmodel.ProductAttribute, 0, len(items))
+func AttributesTomodel(items []*pbshop.Attribute) []*catalogmodel.ProductAttribute {
+	result := make([]*catalogmodel.ProductAttribute, 0, len(items))
 	for _, item := range items {
 		if item.Name == "" {
 			continue

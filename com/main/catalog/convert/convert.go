@@ -14,32 +14,22 @@ import (
 // +gen:convert: etop.vn/backend/com/main/catalog/model->etop.vn/api/main/catalog,etop.vn/api/main/catalog/types
 // +gen:convert: etop.vn/api/main/catalog
 
-func AttributeDB(in *catalogtypes.Attribute) (out catalogmodel.ProductAttribute) {
-	if in == nil {
-		return catalogmodel.ProductAttribute{}
-	}
-	return catalogmodel.ProductAttribute{
-		Name:  in.Name,
-		Value: in.Value,
-	}
+func AttributeDB(in *catalogtypes.Attribute, out *catalogmodel.ProductAttribute) {
+	convert_catalogtypes_Attribute_catalogmodel_ProductAttribute(in, out)
 }
 
-func AttributesDB(ins []*catalogtypes.Attribute) (outs []catalogmodel.ProductAttribute) {
-	outs = make([]catalogmodel.ProductAttribute, len(ins))
-	for i, in := range ins {
-		outs[i] = AttributeDB(in)
-	}
-	return outs
+func AttributesDB(ins []*catalogtypes.Attribute) (outs []*catalogmodel.ProductAttribute) {
+	return Convert_catalogtypes_Attributes_catalogmodel_ProductAttributes(ins)
 }
 
-func Attribute(in catalogmodel.ProductAttribute) (out *catalogtypes.Attribute) {
+func Attribute(in *catalogmodel.ProductAttribute) (out *catalogtypes.Attribute) {
 	return &catalogtypes.Attribute{
 		Name:  in.Name,
 		Value: in.Value,
 	}
 }
 
-func Attributes(ins []catalogmodel.ProductAttribute) (outs catalogtypes.Attributes) {
+func Attributes(ins []*catalogmodel.ProductAttribute) (outs catalogtypes.Attributes) {
 	outs = make(catalogtypes.Attributes, len(ins))
 	for i, in := range ins {
 		outs[i] = Attribute(in)

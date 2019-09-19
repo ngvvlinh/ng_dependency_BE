@@ -11,7 +11,7 @@ import (
 //go:generate $ETOPDIR/backend/scripts/derive.sh
 
 // Normalize attributes, do not sort them. Empty attributes is '_'.
-func NormalizeAttributes(attrs []ProductAttribute) ([]ProductAttribute, string) {
+func NormalizeAttributes(attrs []*ProductAttribute) ([]*ProductAttribute, string) {
 	if len(attrs) == 0 {
 		return nil, "_"
 	}
@@ -20,7 +20,7 @@ func NormalizeAttributes(attrs []ProductAttribute) ([]ProductAttribute, string) 
 		attrs = attrs[:maxAttrs]
 	}
 
-	normAttrs := make([]ProductAttribute, 0, len(attrs))
+	normAttrs := make([]*ProductAttribute, 0, len(attrs))
 	b := make([]byte, 0, 256)
 	for _, attr := range attrs {
 		attr.Name, _ = validate.NormalizeName(attr.Name)
@@ -34,7 +34,7 @@ func NormalizeAttributes(attrs []ProductAttribute) ([]ProductAttribute, string) 
 			continue
 		}
 
-		normAttrs = append(normAttrs, ProductAttribute{Name: attr.Name, Value: attr.Value})
+		normAttrs = append(normAttrs, &ProductAttribute{Name: attr.Name, Value: attr.Value})
 		if len(b) > 0 {
 			b = append(b, ' ')
 		}
@@ -158,7 +158,7 @@ type ProductShopCollection struct {
 	UpdatedAt    time.Time `sq:"update"`
 }
 
-type ProductAttributes []ProductAttribute
+type ProductAttributes []*ProductAttribute
 
 func (attrs ProductAttributes) Name() string {
 	if len(attrs) == 0 {
@@ -203,6 +203,7 @@ func (attrs ProductAttributes) ShortLabel() string {
 	return string(b)
 }
 
+// +convert:type=catalog.Attribute
 type ProductAttribute struct {
 	Name  string `json:"name"`
 	Value string `json:"value"`

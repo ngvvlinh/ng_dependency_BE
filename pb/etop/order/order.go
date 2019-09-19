@@ -622,11 +622,11 @@ func PbOrderLine(m *ordermodel.OrderLine) *OrderLine {
 	}
 }
 
-func PbAttributesToModel(items []*Attribute) []catalogmodel.ProductAttribute {
+func PbAttributesToModel(items []*Attribute) []*catalogmodel.ProductAttribute {
 	if len(items) == 0 {
 		return nil
 	}
-	res := make([]catalogmodel.ProductAttribute, 0, len(items))
+	res := make([]*catalogmodel.ProductAttribute, 0, len(items))
 	for _, item := range items {
 		if item == nil {
 			continue
@@ -636,14 +636,14 @@ func PbAttributesToModel(items []*Attribute) []catalogmodel.ProductAttribute {
 	return res
 }
 
-func (m *Attribute) ToModel() catalogmodel.ProductAttribute {
-	return catalogmodel.ProductAttribute{
+func (m *Attribute) ToModel() *catalogmodel.ProductAttribute {
+	return &catalogmodel.ProductAttribute{
 		Name:  m.Name,
 		Value: m.Value,
 	}
 }
 
-func PbAttributes(as []catalogmodel.ProductAttribute) []*Attribute {
+func PbAttributes(as []*catalogmodel.ProductAttribute) []*Attribute {
 	attrs := make([]*Attribute, len(as))
 	for i, a := range as {
 		attrs[i] = &Attribute{

@@ -347,10 +347,10 @@ type OrderLine struct {
 	TotalDiscount   int `json:"discount"`
 	TotalLineAmount int `json:"total_line_amount"`
 
-	ImageURL      string                          `json:"image_url" `
-	Attributes    []catalogmodel.ProductAttribute `json:"attributes" sq:"-"`
-	IsOutsideEtop bool                            `json:"is_outside_etop"`
-	Code          string                          `json:"code"`
+	ImageURL      string                           `json:"image_url" `
+	Attributes    []*catalogmodel.ProductAttribute `json:"attributes" sq:"-"`
+	IsOutsideEtop bool                             `json:"is_outside_etop"`
+	Code          string                           `json:"code"`
 }
 
 func (l *OrderLine) GetRetailAmount() int {

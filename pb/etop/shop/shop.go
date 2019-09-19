@@ -211,11 +211,11 @@ func GenerateRedirectAuthorizedPartnerURL(redirectUrl string, shop *model.Shop) 
 	return res
 }
 
-func (a *Attribute) ToModel() catalogmodel.ProductAttribute {
+func (a *Attribute) ToModel() *catalogmodel.ProductAttribute {
 	if a == nil {
-		return catalogmodel.ProductAttribute{}
+		return nil
 	}
-	return catalogmodel.ProductAttribute{
+	return &catalogmodel.ProductAttribute{
 		Name:  a.Name,
 		Value: a.Value,
 	}

@@ -103,7 +103,7 @@ type DeprecatedCreateVariantCommand struct {
 	RetailPrice int32
 	CostPrice   int32
 
-	Attributes []catalogmodel.ProductAttribute
+	Attributes []*catalogmodel.ProductAttribute
 	DescHTML   string
 
 	Result *catalog.ShopProductWithVariants

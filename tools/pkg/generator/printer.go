@@ -13,6 +13,7 @@ import (
 type Printer interface {
 	FilePath() string
 	Import(name, path string)
+	Qualifier(pkg *types.Package) string
 	TypeString(types.Type) string
 
 	io.WriteCloser
@@ -121,10 +122,10 @@ func (p *printer) Import(name, path string) {
 }
 
 func (p *printer) TypeString(typ types.Type) string {
-	return types.TypeString(typ, p.qualifier)
+	return types.TypeString(typ, p.Qualifier)
 }
 
-func (p *printer) qualifier(pkg *types.Package) string {
+func (p *printer) Qualifier(pkg *types.Package) string {
 	if pkg == p.pkg.Types {
 		return ""
 	}
