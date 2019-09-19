@@ -5,8 +5,6 @@
 package convert
 
 import (
-	time "time"
-
 	catalog "etop.vn/api/main/catalog"
 	catalogmodel "etop.vn/backend/com/main/catalog/model"
 	etopmodel "etop.vn/backend/pkg/etop/model"
@@ -34,7 +32,7 @@ func convert_catalog_ShopProduct_catalogmodel_ShopProduct(in *catalog.ShopProduc
 	out.Status = etopmodel.Status3(in.Status) // simple conversion
 	out.CreatedAt = in.CreatedAt              // simple assign
 	out.UpdatedAt = in.UpdatedAt              // simple assign
-	out.DeletedAt = time.Time{}               // zero value
+	out.DeletedAt = in.DeletedAt              // simple assign
 	out.NameNorm = ""                         // zero value
 	out.NameNormUa = ""                       // zero value
 }
@@ -66,6 +64,7 @@ func convert_catalogmodel_ShopProduct_catalog_ShopProduct(in *catalogmodel.ShopP
 	out.Status = int32(in.Status)                   // simple conversion
 	out.CreatedAt = in.CreatedAt                    // simple assign
 	out.UpdatedAt = in.UpdatedAt                    // simple assign
+	out.DeletedAt = in.DeletedAt                    // simple assign
 }
 
 func convert_catalogmodel_ShopProducts_catalog_ShopProducts(ins []*catalogmodel.ShopProduct) (outs []*catalog.ShopProduct) {
@@ -100,7 +99,7 @@ func convert_catalog_ShopVariant_catalogmodel_ShopVariant(in *catalog.ShopVarian
 	out.Attributes = nil                      // types do not match
 	out.CreatedAt = in.CreatedAt              // simple assign
 	out.UpdatedAt = in.UpdatedAt              // simple assign
-	out.DeletedAt = time.Time{}               // zero value
+	out.DeletedAt = in.DeletedAt              // simple assign
 	out.NameNorm = ""                         // zero value
 	out.AttrNormKv = ""                       // zero value
 }
@@ -130,6 +129,7 @@ func convert_catalogmodel_ShopVariant_catalog_ShopVariant(in *catalogmodel.ShopV
 	out.Note = in.Note                              // simple assign
 	out.CreatedAt = in.CreatedAt                    // simple assign
 	out.UpdatedAt = in.UpdatedAt                    // simple assign
+	out.DeletedAt = in.DeletedAt                    // simple assign
 }
 
 func convert_catalogmodel_ShopVariants_catalog_ShopVariants(ins []*catalogmodel.ShopVariant) (outs []*catalog.ShopVariant) {

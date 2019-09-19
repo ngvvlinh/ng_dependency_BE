@@ -2,16 +2,24 @@ package bus
 
 import (
 	"context"
-	"flag"
 	"fmt"
 	"log"
+	"os"
 	"path/filepath"
 	"reflect"
 	"sort"
+	"strings"
 	"time"
 )
 
-var isTest = flag.Lookup("test.v") != nil
+var isTest = func() bool {
+	for _, arg := range os.Args {
+		if strings.HasPrefix(arg, "-test.") {
+			return true
+		}
+	}
+	return false
+}()
 
 type HandlerFunc = interface{}
 type CtxHandlerFunc func()
