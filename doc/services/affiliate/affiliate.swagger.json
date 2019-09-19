@@ -1,8 +1,8 @@
 {
   "swagger": "2.0",
   "info": {
-    "title": "services/affiliate/affiliate.proto",
-    "version": "version not set"
+    "title": "eTop API: Affiliate service",
+    "version": "v1"
   },
   "schemes": [
     "http",

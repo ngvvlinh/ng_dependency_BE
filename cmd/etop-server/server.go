@@ -42,8 +42,8 @@ import (
 	wrapshop "etop.vn/backend/wrapper/etop/shop"
 	wrapxpartner "etop.vn/backend/wrapper/external/partner"
 	wrapxshop "etop.vn/backend/wrapper/external/shop"
-	wrapcrm "etop.vn/backend/wrapper/services/crm"
 	wrapaff "etop.vn/backend/wrapper/services/affiliate"
+	wrapcrm "etop.vn/backend/wrapper/services/crm"
 	"etop.vn/common/l"
 
 	_ "etop.vn/backend/pkg/etop/api"
@@ -194,7 +194,7 @@ func startEtopServer() *http.Server {
 	if cfg.ServeDoc || *flDocOnly {
 		mux.Handle("/", http.RedirectHandler("/doc/etop", http.StatusTemporaryRedirect))
 		mux.Handle("/doc", http.RedirectHandler("/doc/etop", http.StatusTemporaryRedirect))
-		for _, s := range strings.Split("sadmin,admin,shop,integration,affiliate,services/crm", ",") {
+		for _, s := range strings.Split("sadmin,admin,shop,integration,affiliate,services/crm,services/affiliate", ",") {
 			swaggerPath := "/doc/" + s + "/swagger.json"
 			mux.Handle("/doc/"+s, cmservice.RedocHandler())
 			if strings.Contains(s, "/") {

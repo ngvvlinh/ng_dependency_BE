@@ -1,6 +1,13 @@
 syntax = "proto2";
 package affiliate;
 option go_package = "etop.vn/backend/pb/services/affiliate";
+import "protoc-gen-swagger/options/annotations.proto";
+option (grpc.gateway.protoc_gen_swagger.options.openapiv2_swagger) = {
+    info: {
+        title: "eTop API: Affiliate service";
+version:"v1"
+};
+};
 import "gogoproto/gogo.proto";
 option (gogoproto.equal_all)                = false;
 option (gogoproto.gogoproto_import)         = false;
