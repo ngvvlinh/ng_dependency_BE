@@ -20,7 +20,7 @@
         "operationId": "RefreshFulfillmentFromCarrier",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/cmUpdatedResponse"
             }
@@ -46,7 +46,7 @@
         "operationId": "SendNotification",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/cmMessageResponse"
             }
@@ -72,7 +72,7 @@
         "operationId": "VersionInfo",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/cmVersionInfoResponse"
             }
@@ -98,7 +98,7 @@
         "operationId": "CreateOrUpdateCallHistoryByCallID",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/crmVHTCallLog"
             }
@@ -124,7 +124,7 @@
         "operationId": "CreateOrUpdateCallHistoryBySDKCallID",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/crmVHTCallLog"
             }
@@ -150,7 +150,7 @@
         "operationId": "GetCallHistories",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/crmGetCallHistoriesResponse"
             }
@@ -176,7 +176,7 @@
         "operationId": "CountTicketByStatus",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/crmCountTicketByStatusResponse"
             }
@@ -202,7 +202,7 @@
         "operationId": "CreateOrUpdateContact",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/crmContactResponse"
             }
@@ -228,7 +228,7 @@
         "operationId": "CreateOrUpdateLead",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/crmLeadResponse"
             }
@@ -254,7 +254,7 @@
         "operationId": "CreateTicket",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/crmTicket"
             }
@@ -280,7 +280,7 @@
         "operationId": "GetCategories",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/crmGetCategoriesResponse"
             }
@@ -306,7 +306,7 @@
         "operationId": "GetContacts",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/crmGetContactsResponse"
             }
@@ -332,7 +332,7 @@
         "operationId": "GetStatus",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/crmGetStatusResponse"
             }
@@ -358,7 +358,7 @@
         "operationId": "GetTicketStatusCount",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/crmGetTicketStatusCountResponse"
             }
@@ -384,7 +384,7 @@
         "operationId": "GetTickets",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/crmGetTicketsResponse"
             }
@@ -410,7 +410,7 @@
         "operationId": "UpdateTicket",
         "responses": {
           "200": {
-            "description": "",
+            "description": "A successful response.",
             "schema": {
               "$ref": "#/definitions/crmTicket"
             }

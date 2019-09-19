@@ -5,11 +5,13 @@ set -eo pipefail
 BACKEND="${ETOPDIR}/backend"
 source "${BACKEND}/scripts/lib/init.sh"
 
+"${BACKEND}/scripts/install-tools.sh"
+
 # install tools
 go install \
-    $(::get mod path github.com/gogo/protobuf)/protoc-gen-gogo   \
-    $(::get mod path github.com/twitchtv/twirp)/protoc-gen-twirp \
-    $(::get mod path github.com/golang/protobuf)/protoc-gen-go
+    "$(::get mod path github.com/gogo/protobuf)/protoc-gen-gogo"   \
+    "$(::get mod path github.com/twitchtv/twirp)/protoc-gen-twirp" \
+    "$(::get mod path github.com/golang/protobuf)/protoc-gen-go"
 
 ROOTDIR=$ETOPDIR/.. # the root of import path
 IMPORT="-I${BACKEND}/pb \
@@ -76,7 +78,7 @@ for PKG in $(find "${BACKEND}/pb${filter}" -type d); do
     if ls $PROTO 1>/dev/null 2>/dev/null; then
         protoc $IMPORT --twirp_out=$ROOTDIR --gogo_out=$ROOTDIR --twirp_swagger_out=${BACKEND}/doc $PROTO
 
-        sedtwirp $PKG/*.twirp.go $(prefixpath $PKG)
+        sedtwirp $PKG/*.twirp.go "$(prefixpath $PKG)"
         echo "Generated from: $PKG"
     fi
     if ls $PKG/*.twirp.go 1>/dev/null 2>/dev/null; then
@@ -84,11 +86,15 @@ for PKG in $(find "${BACKEND}/pb${filter}" -type d); do
     fi
 done
 
-if [[ -n "$GENERATED_FILES" ]]; then goimports -local etop.vn -w $GENERATED_FILES ; fi
+if [[ -n "$GENERATED_FILES" ]]; then
+    twirp_modifier="$(::get cmd etop.vn/backend/tools/cmd/twirp-modifier)"
+    "${twirp_modifier}" $GENERATED_FILES
+    goimports -local etop.vn -w $GENERATED_FILES
+fi
 
 # Sort swagger tags and parse @required fields
 for FILE in $(find "${BACKEND}/doc" -name *.swagger.json); do
-    if [ $(cat $FILE | jq '.paths | length') -eq 0 ]; then
+    if [ "$(cat $FILE | jq '.paths | length')" -eq 0 ]; then
         rm $FILE
         continue
     fi
@@ -112,7 +118,7 @@ for FILE in $(find "${BACKEND}/doc" -name *.swagger.json); do
         | tr '~' '\n' \
         > $FILE.jq
 
-    sedtwirp $FILE.jq $(prefixpath $FILE)
+    sedtwirp $FILE.jq "$(prefixpath $FILE)"
     mv $FILE.jq $FILE
     echo "Updated doc:    $FILE"
 done
@@ -124,14 +130,13 @@ go-bindata -pkg doc -o bindata.gen.go ./...
 # Generate wrapper files
 WRAPPER_ARGS=
 for PKG in $(find "${BACKEND}/pb${filter}" -type d | grep -v common); do
-    PKGNAME=$(basename $PKG)
-    FILES=$PKG/*.twirp.go
+    FILES="${PKG}/*.twirp.go"
     if ls $FILES 1>/dev/null 2>/dev/null; then
         WRAPPER_ARGS="$WRAPPER_ARGS $(prefixext $PKG) -s pb -o wrapper $FILES"
     fi
 done
 
 wrapper_gen=$(::get cmd etop.vn/backend/tools/cmd/wrapper_gen)
-wrapper_gen $WRAPPER_ARGS
+"${wrapper_gen}" $WRAPPER_ARGS
 
 printf "\n✔ Done\n"

@@ -10,25 +10,25 @@ It is generated from these files:
 */
 package handler
 
-import bytes "bytes"
-import strings "strings"
-import context "context"
-import fmt "fmt"
-import ioutil "io/ioutil"
-import http "net/http"
-import strconv "strconv"
+import (
+	bytes "bytes"
+	context "context"
+	json "encoding/json"
+	fmt "fmt"
+	io "io"
+	ioutil "io/ioutil"
+	http "net/http"
+	url "net/url"
+	strconv "strconv"
+	strings "strings"
 
-import jsonpb "github.com/golang/protobuf/jsonpb"
-import proto "github.com/golang/protobuf/proto"
-import twirp "github.com/twitchtv/twirp"
-import ctxsetters "github.com/twitchtv/twirp/ctxsetters"
+	jsonpb "github.com/golang/protobuf/jsonpb"
+	proto "github.com/golang/protobuf/proto"
+	twirp "github.com/twitchtv/twirp"
+	ctxsetters "github.com/twitchtv/twirp/ctxsetters"
 
-import cm "etop.vn/backend/pb/common"
-
-// Imports only used by utility functions:
-import io "io"
-import json "encoding/json"
-import url "net/url"
+	cm "etop.vn/backend/pb/common"
+)
 
 // =====================
 // MiscService Interface
