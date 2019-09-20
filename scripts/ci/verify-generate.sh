@@ -3,6 +3,7 @@ set -eo pipefail
 
 scripts/protobuf-gen.sh
 scripts/generate-all.sh
+go mod tidy
 CHANGES="$(git status -s)"
 if [[ ! -z "$CHANGES" ]]; then
   echo "$CHANGES"

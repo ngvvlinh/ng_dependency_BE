@@ -2,7 +2,7 @@
 set -e
 
 COMMIT=$(git log -1 --pretty='%h %B')
-COMMIT=$(echo "${COMMIT}" | tr '\n' ' ' | sed 's/\s/·/g')
+COMMIT=$(echo "${COMMIT}" | tr '\n' '⮐' | sed 's/\s/·/g')
 function build() {
     FILE=$1
     NAME=$(echo $FILE | rev | cut -f1 -d'/' | rev)
