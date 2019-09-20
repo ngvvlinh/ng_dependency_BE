@@ -30,31 +30,1236 @@ import (
 	cm "etop.vn/backend/pb/common"
 )
 
-// ==========================
-// AffiliateService Interface
-// ==========================
+// ========================
+// TradingService Interface
+// ========================
 
-// service MiscService {
-//    rpc VersionInfo(cm.Empty) returns (cm.VersionInfoResponse);
-// }
-type AffiliateService interface {
-	GetCommissions(context.Context, *cm.Paging) (*GetCommissionsResponse, error)
-
-	NotifyNewShopPurchase(context.Context, *NotifyNewShopPurchaseRequest) (*NotifyNewShopPurchaseResponse, error)
-
-	GetTransactions(context.Context, *cm.Paging) (*GetTransactionsResponse, error)
+type TradingService interface {
+	TradingGetProducts(context.Context, *cm.CommonListRequest) (*ShopGetProductsResponse, error)
 
 	CreateOrUpdateTradingCommissionSetting(context.Context, *CreateOrUpdateCommissionSettingRequest) (*CommissionSetting, error)
 
-	CreateOrUpdateAffiliateCommissionSetting(context.Context, *CreateOrUpdateCommissionSettingRequest) (*CommissionSetting, error)
-
-	GetProductPromotionByProductID(context.Context, *GetProductPromotionByProductIDRequest) (*GetProductPromotionByProductIDResponse, error)
+	GetProductPromotions(context.Context, *cm.CommonListRequest) (*GetProductPromotionsResponse, error)
 
 	CreateProductPromotion(context.Context, *CreateOrUpdateProductPromotionRequest) (*ProductPromotion, error)
 
 	UpdateProductPromotion(context.Context, *CreateOrUpdateProductPromotionRequest) (*ProductPromotion, error)
+}
 
-	TradingGetProducts(context.Context, *cm.CommonListRequest) (*ShopGetProductsResponse, error)
+// ==============================
+// TradingService Protobuf Client
+// ==============================
+
+type tradingServiceProtobufClient struct {
+	client HTTPClient
+	urls   [5]string
+}
+
+// NewTradingServiceProtobufClient creates a Protobuf client that implements the TradingService interface.
+// It communicates using Protobuf and can be configured with a custom HTTPClient.
+func NewTradingServiceProtobufClient(addr string, client HTTPClient) TradingService {
+	prefix := urlBase(addr) + TradingServicePathPrefix
+	urls := [5]string{
+		prefix + "TradingGetProducts",
+		prefix + "CreateOrUpdateTradingCommissionSetting",
+		prefix + "GetProductPromotions",
+		prefix + "CreateProductPromotion",
+		prefix + "UpdateProductPromotion",
+	}
+	if httpClient, ok := client.(*http.Client); ok {
+		return &tradingServiceProtobufClient{
+			client: withoutRedirects(httpClient),
+			urls:   urls,
+		}
+	}
+	return &tradingServiceProtobufClient{
+		client: client,
+		urls:   urls,
+	}
+}
+
+func (c *tradingServiceProtobufClient) TradingGetProducts(ctx context.Context, in *cm.CommonListRequest) (*ShopGetProductsResponse, error) {
+	ctx = ctxsetters.WithPackageName(ctx, "affiliate")
+	ctx = ctxsetters.WithServiceName(ctx, "Trading")
+	ctx = ctxsetters.WithMethodName(ctx, "TradingGetProducts")
+	out := new(ShopGetProductsResponse)
+	err := doProtobufRequest(ctx, c.client, c.urls[0], in, out)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *tradingServiceProtobufClient) CreateOrUpdateTradingCommissionSetting(ctx context.Context, in *CreateOrUpdateCommissionSettingRequest) (*CommissionSetting, error) {
+	ctx = ctxsetters.WithPackageName(ctx, "affiliate")
+	ctx = ctxsetters.WithServiceName(ctx, "Trading")
+	ctx = ctxsetters.WithMethodName(ctx, "CreateOrUpdateTradingCommissionSetting")
+	out := new(CommissionSetting)
+	err := doProtobufRequest(ctx, c.client, c.urls[1], in, out)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *tradingServiceProtobufClient) GetProductPromotions(ctx context.Context, in *cm.CommonListRequest) (*GetProductPromotionsResponse, error) {
+	ctx = ctxsetters.WithPackageName(ctx, "affiliate")
+	ctx = ctxsetters.WithServiceName(ctx, "Trading")
+	ctx = ctxsetters.WithMethodName(ctx, "GetProductPromotions")
+	out := new(GetProductPromotionsResponse)
+	err := doProtobufRequest(ctx, c.client, c.urls[2], in, out)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *tradingServiceProtobufClient) CreateProductPromotion(ctx context.Context, in *CreateOrUpdateProductPromotionRequest) (*ProductPromotion, error) {
+	ctx = ctxsetters.WithPackageName(ctx, "affiliate")
+	ctx = ctxsetters.WithServiceName(ctx, "Trading")
+	ctx = ctxsetters.WithMethodName(ctx, "CreateProductPromotion")
+	out := new(ProductPromotion)
+	err := doProtobufRequest(ctx, c.client, c.urls[3], in, out)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *tradingServiceProtobufClient) UpdateProductPromotion(ctx context.Context, in *CreateOrUpdateProductPromotionRequest) (*ProductPromotion, error) {
+	ctx = ctxsetters.WithPackageName(ctx, "affiliate")
+	ctx = ctxsetters.WithServiceName(ctx, "Trading")
+	ctx = ctxsetters.WithMethodName(ctx, "UpdateProductPromotion")
+	out := new(ProductPromotion)
+	err := doProtobufRequest(ctx, c.client, c.urls[4], in, out)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// ==========================
+// TradingService JSON Client
+// ==========================
+
+type tradingServiceJSONClient struct {
+	client HTTPClient
+	urls   [5]string
+}
+
+// NewTradingServiceJSONClient creates a JSON client that implements the TradingService interface.
+// It communicates using JSON and can be configured with a custom HTTPClient.
+func NewTradingServiceJSONClient(addr string, client HTTPClient) TradingService {
+	prefix := urlBase(addr) + TradingServicePathPrefix
+	urls := [5]string{
+		prefix + "TradingGetProducts",
+		prefix + "CreateOrUpdateTradingCommissionSetting",
+		prefix + "GetProductPromotions",
+		prefix + "CreateProductPromotion",
+		prefix + "UpdateProductPromotion",
+	}
+	if httpClient, ok := client.(*http.Client); ok {
+		return &tradingServiceJSONClient{
+			client: withoutRedirects(httpClient),
+			urls:   urls,
+		}
+	}
+	return &tradingServiceJSONClient{
+		client: client,
+		urls:   urls,
+	}
+}
+
+func (c *tradingServiceJSONClient) TradingGetProducts(ctx context.Context, in *cm.CommonListRequest) (*ShopGetProductsResponse, error) {
+	ctx = ctxsetters.WithPackageName(ctx, "affiliate")
+	ctx = ctxsetters.WithServiceName(ctx, "Trading")
+	ctx = ctxsetters.WithMethodName(ctx, "TradingGetProducts")
+	out := new(ShopGetProductsResponse)
+	err := doJSONRequest(ctx, c.client, c.urls[0], in, out)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *tradingServiceJSONClient) CreateOrUpdateTradingCommissionSetting(ctx context.Context, in *CreateOrUpdateCommissionSettingRequest) (*CommissionSetting, error) {
+	ctx = ctxsetters.WithPackageName(ctx, "affiliate")
+	ctx = ctxsetters.WithServiceName(ctx, "Trading")
+	ctx = ctxsetters.WithMethodName(ctx, "CreateOrUpdateTradingCommissionSetting")
+	out := new(CommissionSetting)
+	err := doJSONRequest(ctx, c.client, c.urls[1], in, out)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *tradingServiceJSONClient) GetProductPromotions(ctx context.Context, in *cm.CommonListRequest) (*GetProductPromotionsResponse, error) {
+	ctx = ctxsetters.WithPackageName(ctx, "affiliate")
+	ctx = ctxsetters.WithServiceName(ctx, "Trading")
+	ctx = ctxsetters.WithMethodName(ctx, "GetProductPromotions")
+	out := new(GetProductPromotionsResponse)
+	err := doJSONRequest(ctx, c.client, c.urls[2], in, out)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *tradingServiceJSONClient) CreateProductPromotion(ctx context.Context, in *CreateOrUpdateProductPromotionRequest) (*ProductPromotion, error) {
+	ctx = ctxsetters.WithPackageName(ctx, "affiliate")
+	ctx = ctxsetters.WithServiceName(ctx, "Trading")
+	ctx = ctxsetters.WithMethodName(ctx, "CreateProductPromotion")
+	out := new(ProductPromotion)
+	err := doJSONRequest(ctx, c.client, c.urls[3], in, out)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *tradingServiceJSONClient) UpdateProductPromotion(ctx context.Context, in *CreateOrUpdateProductPromotionRequest) (*ProductPromotion, error) {
+	ctx = ctxsetters.WithPackageName(ctx, "affiliate")
+	ctx = ctxsetters.WithServiceName(ctx, "Trading")
+	ctx = ctxsetters.WithMethodName(ctx, "UpdateProductPromotion")
+	out := new(ProductPromotion)
+	err := doJSONRequest(ctx, c.client, c.urls[4], in, out)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// =============================
+// TradingService Server Handler
+// =============================
+
+type tradingServiceServer struct {
+	TradingService
+	hooks *twirp.ServerHooks
+}
+
+func NewTradingServiceServer(svc TradingService, hooks *twirp.ServerHooks) TwirpServer {
+	return &tradingServiceServer{
+		TradingService: svc,
+		hooks:          hooks,
+	}
+}
+
+// writeError writes an HTTP response with a valid Twirp error format, and triggers hooks.
+// If err is not a twirp.Error, it will get wrapped with twirp.InternalErrorWith(err)
+func (s *tradingServiceServer) writeError(ctx context.Context, resp http.ResponseWriter, err error) {
+	writeError(ctx, resp, err, s.hooks)
+}
+
+// TradingServicePathPrefix is used for all URL paths on a twirp TradingService server.
+// Requests are always: POST TradingServicePathPrefix/method
+// It can be used in an HTTP mux to route twirp requests along with non-twirp requests on other routes.
+const TradingServicePathPrefix = "/api/affiliate.Trading/"
+
+func (s *tradingServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
+	ctx := req.Context()
+	ctx = ctxsetters.WithPackageName(ctx, "affiliate")
+	ctx = ctxsetters.WithServiceName(ctx, "Trading")
+	ctx = ctxsetters.WithResponseWriter(ctx, resp)
+
+	var err error
+	ctx, err = callRequestReceived(ctx, s.hooks)
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+
+	if req.Method != "POST" {
+		msg := fmt.Sprintf("unsupported method %q (only POST is allowed)", req.Method)
+		err = badRouteError(msg, req.Method, req.URL.Path)
+		s.writeError(ctx, resp, err)
+		return
+	}
+
+	switch req.URL.Path {
+	case "/api/affiliate.Trading/TradingGetProducts":
+		s.serveTradingGetProducts(ctx, resp, req)
+		return
+	case "/api/affiliate.Trading/CreateOrUpdateTradingCommissionSetting":
+		s.serveCreateOrUpdateTradingCommissionSetting(ctx, resp, req)
+		return
+	case "/api/affiliate.Trading/GetProductPromotions":
+		s.serveGetProductPromotions(ctx, resp, req)
+		return
+	case "/api/affiliate.Trading/CreateProductPromotion":
+		s.serveCreateProductPromotion(ctx, resp, req)
+		return
+	case "/api/affiliate.Trading/UpdateProductPromotion":
+		s.serveUpdateProductPromotion(ctx, resp, req)
+		return
+	default:
+		msg := fmt.Sprintf("no handler for path %q", req.URL.Path)
+		err = badRouteError(msg, req.Method, req.URL.Path)
+		s.writeError(ctx, resp, err)
+		return
+	}
+}
+
+func (s *tradingServiceServer) serveTradingGetProducts(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
+	header := req.Header.Get("Content-Type")
+	i := strings.Index(header, ";")
+	if i == -1 {
+		i = len(header)
+	}
+	switch strings.TrimSpace(strings.ToLower(header[:i])) {
+	case "application/json":
+		s.serveTradingGetProductsJSON(ctx, resp, req)
+	case "application/protobuf":
+		s.serveTradingGetProductsProtobuf(ctx, resp, req)
+	default:
+		msg := fmt.Sprintf("unexpected Content-Type: %q", req.Header.Get("Content-Type"))
+		twerr := badRouteError(msg, req.Method, req.URL.Path)
+		s.writeError(ctx, resp, twerr)
+	}
+}
+
+func (s *tradingServiceServer) serveTradingGetProductsJSON(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
+	var err error
+	ctx = ctxsetters.WithMethodName(ctx, "TradingGetProducts")
+	ctx, err = callRequestRouted(ctx, s.hooks)
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+
+	reqContent := new(cm.CommonListRequest)
+	unmarshaler := jsonpb.Unmarshaler{AllowUnknownFields: true}
+	if err = unmarshaler.Unmarshal(req.Body, reqContent); err != nil {
+		s.writeError(ctx, resp, malformedRequestError("the json request could not be decoded"))
+		return
+	}
+
+	// Call service method
+	var respContent *ShopGetProductsResponse
+	func() {
+		defer ensurePanicResponses(ctx, resp, s.hooks)
+		respContent, err = s.TradingService.TradingGetProducts(ctx, reqContent)
+	}()
+
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+	if respContent == nil {
+		s.writeError(ctx, resp, twirp.InternalError("received a nil *ShopGetProductsResponse and nil error while calling TradingGetProducts. nil responses are not supported"))
+		return
+	}
+
+	ctx = callResponsePrepared(ctx, s.hooks)
+
+	var buf bytes.Buffer
+	marshaler := &jsonpb.Marshaler{OrigName: true, EmitDefaults: true}
+	if err = marshaler.Marshal(&buf, respContent); err != nil {
+		s.writeError(ctx, resp, wrapInternal(err, "failed to marshal json response"))
+		return
+	}
+
+	ctx = ctxsetters.WithStatusCode(ctx, http.StatusOK)
+	respBytes := buf.Bytes()
+	resp.Header().Set("Content-Type", "application/json")
+	resp.Header().Set("Content-Length", strconv.Itoa(len(respBytes)))
+	resp.WriteHeader(http.StatusOK)
+
+	if n, err := resp.Write(respBytes); err != nil {
+		msg := fmt.Sprintf("failed to write response, %d of %d bytes written: %s", n, len(respBytes), err.Error())
+		twerr := twirp.NewError(twirp.Unknown, msg)
+		callError(ctx, s.hooks, twerr)
+	}
+	callResponseSent(ctx, s.hooks)
+}
+
+func (s *tradingServiceServer) serveTradingGetProductsProtobuf(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
+	var err error
+	ctx = ctxsetters.WithMethodName(ctx, "TradingGetProducts")
+	ctx, err = callRequestRouted(ctx, s.hooks)
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+
+	buf, err := ioutil.ReadAll(req.Body)
+	if err != nil {
+		s.writeError(ctx, resp, wrapInternal(err, "failed to read request body"))
+		return
+	}
+	reqContent := new(cm.CommonListRequest)
+	if err = proto.Unmarshal(buf, reqContent); err != nil {
+		s.writeError(ctx, resp, malformedRequestError("the protobuf request could not be decoded"))
+		return
+	}
+
+	// Call service method
+	var respContent *ShopGetProductsResponse
+	func() {
+		defer ensurePanicResponses(ctx, resp, s.hooks)
+		respContent, err = s.TradingService.TradingGetProducts(ctx, reqContent)
+	}()
+
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+	if respContent == nil {
+		s.writeError(ctx, resp, twirp.InternalError("received a nil *ShopGetProductsResponse and nil error while calling TradingGetProducts. nil responses are not supported"))
+		return
+	}
+
+	ctx = callResponsePrepared(ctx, s.hooks)
+
+	respBytes, err := proto.Marshal(respContent)
+	if err != nil {
+		s.writeError(ctx, resp, wrapInternal(err, "failed to marshal proto response"))
+		return
+	}
+
+	ctx = ctxsetters.WithStatusCode(ctx, http.StatusOK)
+	resp.Header().Set("Content-Type", "application/protobuf")
+	resp.Header().Set("Content-Length", strconv.Itoa(len(respBytes)))
+	resp.WriteHeader(http.StatusOK)
+	if n, err := resp.Write(respBytes); err != nil {
+		msg := fmt.Sprintf("failed to write response, %d of %d bytes written: %s", n, len(respBytes), err.Error())
+		twerr := twirp.NewError(twirp.Unknown, msg)
+		callError(ctx, s.hooks, twerr)
+	}
+	callResponseSent(ctx, s.hooks)
+}
+
+func (s *tradingServiceServer) serveCreateOrUpdateTradingCommissionSetting(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
+	header := req.Header.Get("Content-Type")
+	i := strings.Index(header, ";")
+	if i == -1 {
+		i = len(header)
+	}
+	switch strings.TrimSpace(strings.ToLower(header[:i])) {
+	case "application/json":
+		s.serveCreateOrUpdateTradingCommissionSettingJSON(ctx, resp, req)
+	case "application/protobuf":
+		s.serveCreateOrUpdateTradingCommissionSettingProtobuf(ctx, resp, req)
+	default:
+		msg := fmt.Sprintf("unexpected Content-Type: %q", req.Header.Get("Content-Type"))
+		twerr := badRouteError(msg, req.Method, req.URL.Path)
+		s.writeError(ctx, resp, twerr)
+	}
+}
+
+func (s *tradingServiceServer) serveCreateOrUpdateTradingCommissionSettingJSON(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
+	var err error
+	ctx = ctxsetters.WithMethodName(ctx, "CreateOrUpdateTradingCommissionSetting")
+	ctx, err = callRequestRouted(ctx, s.hooks)
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+
+	reqContent := new(CreateOrUpdateCommissionSettingRequest)
+	unmarshaler := jsonpb.Unmarshaler{AllowUnknownFields: true}
+	if err = unmarshaler.Unmarshal(req.Body, reqContent); err != nil {
+		s.writeError(ctx, resp, malformedRequestError("the json request could not be decoded"))
+		return
+	}
+
+	// Call service method
+	var respContent *CommissionSetting
+	func() {
+		defer ensurePanicResponses(ctx, resp, s.hooks)
+		respContent, err = s.TradingService.CreateOrUpdateTradingCommissionSetting(ctx, reqContent)
+	}()
+
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+	if respContent == nil {
+		s.writeError(ctx, resp, twirp.InternalError("received a nil *CommissionSetting and nil error while calling CreateOrUpdateTradingCommissionSetting. nil responses are not supported"))
+		return
+	}
+
+	ctx = callResponsePrepared(ctx, s.hooks)
+
+	var buf bytes.Buffer
+	marshaler := &jsonpb.Marshaler{OrigName: true, EmitDefaults: true}
+	if err = marshaler.Marshal(&buf, respContent); err != nil {
+		s.writeError(ctx, resp, wrapInternal(err, "failed to marshal json response"))
+		return
+	}
+
+	ctx = ctxsetters.WithStatusCode(ctx, http.StatusOK)
+	respBytes := buf.Bytes()
+	resp.Header().Set("Content-Type", "application/json")
+	resp.Header().Set("Content-Length", strconv.Itoa(len(respBytes)))
+	resp.WriteHeader(http.StatusOK)
+
+	if n, err := resp.Write(respBytes); err != nil {
+		msg := fmt.Sprintf("failed to write response, %d of %d bytes written: %s", n, len(respBytes), err.Error())
+		twerr := twirp.NewError(twirp.Unknown, msg)
+		callError(ctx, s.hooks, twerr)
+	}
+	callResponseSent(ctx, s.hooks)
+}
+
+func (s *tradingServiceServer) serveCreateOrUpdateTradingCommissionSettingProtobuf(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
+	var err error
+	ctx = ctxsetters.WithMethodName(ctx, "CreateOrUpdateTradingCommissionSetting")
+	ctx, err = callRequestRouted(ctx, s.hooks)
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+
+	buf, err := ioutil.ReadAll(req.Body)
+	if err != nil {
+		s.writeError(ctx, resp, wrapInternal(err, "failed to read request body"))
+		return
+	}
+	reqContent := new(CreateOrUpdateCommissionSettingRequest)
+	if err = proto.Unmarshal(buf, reqContent); err != nil {
+		s.writeError(ctx, resp, malformedRequestError("the protobuf request could not be decoded"))
+		return
+	}
+
+	// Call service method
+	var respContent *CommissionSetting
+	func() {
+		defer ensurePanicResponses(ctx, resp, s.hooks)
+		respContent, err = s.TradingService.CreateOrUpdateTradingCommissionSetting(ctx, reqContent)
+	}()
+
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+	if respContent == nil {
+		s.writeError(ctx, resp, twirp.InternalError("received a nil *CommissionSetting and nil error while calling CreateOrUpdateTradingCommissionSetting. nil responses are not supported"))
+		return
+	}
+
+	ctx = callResponsePrepared(ctx, s.hooks)
+
+	respBytes, err := proto.Marshal(respContent)
+	if err != nil {
+		s.writeError(ctx, resp, wrapInternal(err, "failed to marshal proto response"))
+		return
+	}
+
+	ctx = ctxsetters.WithStatusCode(ctx, http.StatusOK)
+	resp.Header().Set("Content-Type", "application/protobuf")
+	resp.Header().Set("Content-Length", strconv.Itoa(len(respBytes)))
+	resp.WriteHeader(http.StatusOK)
+	if n, err := resp.Write(respBytes); err != nil {
+		msg := fmt.Sprintf("failed to write response, %d of %d bytes written: %s", n, len(respBytes), err.Error())
+		twerr := twirp.NewError(twirp.Unknown, msg)
+		callError(ctx, s.hooks, twerr)
+	}
+	callResponseSent(ctx, s.hooks)
+}
+
+func (s *tradingServiceServer) serveGetProductPromotions(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
+	header := req.Header.Get("Content-Type")
+	i := strings.Index(header, ";")
+	if i == -1 {
+		i = len(header)
+	}
+	switch strings.TrimSpace(strings.ToLower(header[:i])) {
+	case "application/json":
+		s.serveGetProductPromotionsJSON(ctx, resp, req)
+	case "application/protobuf":
+		s.serveGetProductPromotionsProtobuf(ctx, resp, req)
+	default:
+		msg := fmt.Sprintf("unexpected Content-Type: %q", req.Header.Get("Content-Type"))
+		twerr := badRouteError(msg, req.Method, req.URL.Path)
+		s.writeError(ctx, resp, twerr)
+	}
+}
+
+func (s *tradingServiceServer) serveGetProductPromotionsJSON(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
+	var err error
+	ctx = ctxsetters.WithMethodName(ctx, "GetProductPromotions")
+	ctx, err = callRequestRouted(ctx, s.hooks)
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+
+	reqContent := new(cm.CommonListRequest)
+	unmarshaler := jsonpb.Unmarshaler{AllowUnknownFields: true}
+	if err = unmarshaler.Unmarshal(req.Body, reqContent); err != nil {
+		s.writeError(ctx, resp, malformedRequestError("the json request could not be decoded"))
+		return
+	}
+
+	// Call service method
+	var respContent *GetProductPromotionsResponse
+	func() {
+		defer ensurePanicResponses(ctx, resp, s.hooks)
+		respContent, err = s.TradingService.GetProductPromotions(ctx, reqContent)
+	}()
+
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+	if respContent == nil {
+		s.writeError(ctx, resp, twirp.InternalError("received a nil *GetProductPromotionsResponse and nil error while calling GetProductPromotions. nil responses are not supported"))
+		return
+	}
+
+	ctx = callResponsePrepared(ctx, s.hooks)
+
+	var buf bytes.Buffer
+	marshaler := &jsonpb.Marshaler{OrigName: true, EmitDefaults: true}
+	if err = marshaler.Marshal(&buf, respContent); err != nil {
+		s.writeError(ctx, resp, wrapInternal(err, "failed to marshal json response"))
+		return
+	}
+
+	ctx = ctxsetters.WithStatusCode(ctx, http.StatusOK)
+	respBytes := buf.Bytes()
+	resp.Header().Set("Content-Type", "application/json")
+	resp.Header().Set("Content-Length", strconv.Itoa(len(respBytes)))
+	resp.WriteHeader(http.StatusOK)
+
+	if n, err := resp.Write(respBytes); err != nil {
+		msg := fmt.Sprintf("failed to write response, %d of %d bytes written: %s", n, len(respBytes), err.Error())
+		twerr := twirp.NewError(twirp.Unknown, msg)
+		callError(ctx, s.hooks, twerr)
+	}
+	callResponseSent(ctx, s.hooks)
+}
+
+func (s *tradingServiceServer) serveGetProductPromotionsProtobuf(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
+	var err error
+	ctx = ctxsetters.WithMethodName(ctx, "GetProductPromotions")
+	ctx, err = callRequestRouted(ctx, s.hooks)
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+
+	buf, err := ioutil.ReadAll(req.Body)
+	if err != nil {
+		s.writeError(ctx, resp, wrapInternal(err, "failed to read request body"))
+		return
+	}
+	reqContent := new(cm.CommonListRequest)
+	if err = proto.Unmarshal(buf, reqContent); err != nil {
+		s.writeError(ctx, resp, malformedRequestError("the protobuf request could not be decoded"))
+		return
+	}
+
+	// Call service method
+	var respContent *GetProductPromotionsResponse
+	func() {
+		defer ensurePanicResponses(ctx, resp, s.hooks)
+		respContent, err = s.TradingService.GetProductPromotions(ctx, reqContent)
+	}()
+
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+	if respContent == nil {
+		s.writeError(ctx, resp, twirp.InternalError("received a nil *GetProductPromotionsResponse and nil error while calling GetProductPromotions. nil responses are not supported"))
+		return
+	}
+
+	ctx = callResponsePrepared(ctx, s.hooks)
+
+	respBytes, err := proto.Marshal(respContent)
+	if err != nil {
+		s.writeError(ctx, resp, wrapInternal(err, "failed to marshal proto response"))
+		return
+	}
+
+	ctx = ctxsetters.WithStatusCode(ctx, http.StatusOK)
+	resp.Header().Set("Content-Type", "application/protobuf")
+	resp.Header().Set("Content-Length", strconv.Itoa(len(respBytes)))
+	resp.WriteHeader(http.StatusOK)
+	if n, err := resp.Write(respBytes); err != nil {
+		msg := fmt.Sprintf("failed to write response, %d of %d bytes written: %s", n, len(respBytes), err.Error())
+		twerr := twirp.NewError(twirp.Unknown, msg)
+		callError(ctx, s.hooks, twerr)
+	}
+	callResponseSent(ctx, s.hooks)
+}
+
+func (s *tradingServiceServer) serveCreateProductPromotion(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
+	header := req.Header.Get("Content-Type")
+	i := strings.Index(header, ";")
+	if i == -1 {
+		i = len(header)
+	}
+	switch strings.TrimSpace(strings.ToLower(header[:i])) {
+	case "application/json":
+		s.serveCreateProductPromotionJSON(ctx, resp, req)
+	case "application/protobuf":
+		s.serveCreateProductPromotionProtobuf(ctx, resp, req)
+	default:
+		msg := fmt.Sprintf("unexpected Content-Type: %q", req.Header.Get("Content-Type"))
+		twerr := badRouteError(msg, req.Method, req.URL.Path)
+		s.writeError(ctx, resp, twerr)
+	}
+}
+
+func (s *tradingServiceServer) serveCreateProductPromotionJSON(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
+	var err error
+	ctx = ctxsetters.WithMethodName(ctx, "CreateProductPromotion")
+	ctx, err = callRequestRouted(ctx, s.hooks)
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+
+	reqContent := new(CreateOrUpdateProductPromotionRequest)
+	unmarshaler := jsonpb.Unmarshaler{AllowUnknownFields: true}
+	if err = unmarshaler.Unmarshal(req.Body, reqContent); err != nil {
+		s.writeError(ctx, resp, malformedRequestError("the json request could not be decoded"))
+		return
+	}
+
+	// Call service method
+	var respContent *ProductPromotion
+	func() {
+		defer ensurePanicResponses(ctx, resp, s.hooks)
+		respContent, err = s.TradingService.CreateProductPromotion(ctx, reqContent)
+	}()
+
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+	if respContent == nil {
+		s.writeError(ctx, resp, twirp.InternalError("received a nil *ProductPromotion and nil error while calling CreateProductPromotion. nil responses are not supported"))
+		return
+	}
+
+	ctx = callResponsePrepared(ctx, s.hooks)
+
+	var buf bytes.Buffer
+	marshaler := &jsonpb.Marshaler{OrigName: true, EmitDefaults: true}
+	if err = marshaler.Marshal(&buf, respContent); err != nil {
+		s.writeError(ctx, resp, wrapInternal(err, "failed to marshal json response"))
+		return
+	}
+
+	ctx = ctxsetters.WithStatusCode(ctx, http.StatusOK)
+	respBytes := buf.Bytes()
+	resp.Header().Set("Content-Type", "application/json")
+	resp.Header().Set("Content-Length", strconv.Itoa(len(respBytes)))
+	resp.WriteHeader(http.StatusOK)
+
+	if n, err := resp.Write(respBytes); err != nil {
+		msg := fmt.Sprintf("failed to write response, %d of %d bytes written: %s", n, len(respBytes), err.Error())
+		twerr := twirp.NewError(twirp.Unknown, msg)
+		callError(ctx, s.hooks, twerr)
+	}
+	callResponseSent(ctx, s.hooks)
+}
+
+func (s *tradingServiceServer) serveCreateProductPromotionProtobuf(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
+	var err error
+	ctx = ctxsetters.WithMethodName(ctx, "CreateProductPromotion")
+	ctx, err = callRequestRouted(ctx, s.hooks)
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+
+	buf, err := ioutil.ReadAll(req.Body)
+	if err != nil {
+		s.writeError(ctx, resp, wrapInternal(err, "failed to read request body"))
+		return
+	}
+	reqContent := new(CreateOrUpdateProductPromotionRequest)
+	if err = proto.Unmarshal(buf, reqContent); err != nil {
+		s.writeError(ctx, resp, malformedRequestError("the protobuf request could not be decoded"))
+		return
+	}
+
+	// Call service method
+	var respContent *ProductPromotion
+	func() {
+		defer ensurePanicResponses(ctx, resp, s.hooks)
+		respContent, err = s.TradingService.CreateProductPromotion(ctx, reqContent)
+	}()
+
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+	if respContent == nil {
+		s.writeError(ctx, resp, twirp.InternalError("received a nil *ProductPromotion and nil error while calling CreateProductPromotion. nil responses are not supported"))
+		return
+	}
+
+	ctx = callResponsePrepared(ctx, s.hooks)
+
+	respBytes, err := proto.Marshal(respContent)
+	if err != nil {
+		s.writeError(ctx, resp, wrapInternal(err, "failed to marshal proto response"))
+		return
+	}
+
+	ctx = ctxsetters.WithStatusCode(ctx, http.StatusOK)
+	resp.Header().Set("Content-Type", "application/protobuf")
+	resp.Header().Set("Content-Length", strconv.Itoa(len(respBytes)))
+	resp.WriteHeader(http.StatusOK)
+	if n, err := resp.Write(respBytes); err != nil {
+		msg := fmt.Sprintf("failed to write response, %d of %d bytes written: %s", n, len(respBytes), err.Error())
+		twerr := twirp.NewError(twirp.Unknown, msg)
+		callError(ctx, s.hooks, twerr)
+	}
+	callResponseSent(ctx, s.hooks)
+}
+
+func (s *tradingServiceServer) serveUpdateProductPromotion(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
+	header := req.Header.Get("Content-Type")
+	i := strings.Index(header, ";")
+	if i == -1 {
+		i = len(header)
+	}
+	switch strings.TrimSpace(strings.ToLower(header[:i])) {
+	case "application/json":
+		s.serveUpdateProductPromotionJSON(ctx, resp, req)
+	case "application/protobuf":
+		s.serveUpdateProductPromotionProtobuf(ctx, resp, req)
+	default:
+		msg := fmt.Sprintf("unexpected Content-Type: %q", req.Header.Get("Content-Type"))
+		twerr := badRouteError(msg, req.Method, req.URL.Path)
+		s.writeError(ctx, resp, twerr)
+	}
+}
+
+func (s *tradingServiceServer) serveUpdateProductPromotionJSON(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
+	var err error
+	ctx = ctxsetters.WithMethodName(ctx, "UpdateProductPromotion")
+	ctx, err = callRequestRouted(ctx, s.hooks)
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+
+	reqContent := new(CreateOrUpdateProductPromotionRequest)
+	unmarshaler := jsonpb.Unmarshaler{AllowUnknownFields: true}
+	if err = unmarshaler.Unmarshal(req.Body, reqContent); err != nil {
+		s.writeError(ctx, resp, malformedRequestError("the json request could not be decoded"))
+		return
+	}
+
+	// Call service method
+	var respContent *ProductPromotion
+	func() {
+		defer ensurePanicResponses(ctx, resp, s.hooks)
+		respContent, err = s.TradingService.UpdateProductPromotion(ctx, reqContent)
+	}()
+
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+	if respContent == nil {
+		s.writeError(ctx, resp, twirp.InternalError("received a nil *ProductPromotion and nil error while calling UpdateProductPromotion. nil responses are not supported"))
+		return
+	}
+
+	ctx = callResponsePrepared(ctx, s.hooks)
+
+	var buf bytes.Buffer
+	marshaler := &jsonpb.Marshaler{OrigName: true, EmitDefaults: true}
+	if err = marshaler.Marshal(&buf, respContent); err != nil {
+		s.writeError(ctx, resp, wrapInternal(err, "failed to marshal json response"))
+		return
+	}
+
+	ctx = ctxsetters.WithStatusCode(ctx, http.StatusOK)
+	respBytes := buf.Bytes()
+	resp.Header().Set("Content-Type", "application/json")
+	resp.Header().Set("Content-Length", strconv.Itoa(len(respBytes)))
+	resp.WriteHeader(http.StatusOK)
+
+	if n, err := resp.Write(respBytes); err != nil {
+		msg := fmt.Sprintf("failed to write response, %d of %d bytes written: %s", n, len(respBytes), err.Error())
+		twerr := twirp.NewError(twirp.Unknown, msg)
+		callError(ctx, s.hooks, twerr)
+	}
+	callResponseSent(ctx, s.hooks)
+}
+
+func (s *tradingServiceServer) serveUpdateProductPromotionProtobuf(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
+	var err error
+	ctx = ctxsetters.WithMethodName(ctx, "UpdateProductPromotion")
+	ctx, err = callRequestRouted(ctx, s.hooks)
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+
+	buf, err := ioutil.ReadAll(req.Body)
+	if err != nil {
+		s.writeError(ctx, resp, wrapInternal(err, "failed to read request body"))
+		return
+	}
+	reqContent := new(CreateOrUpdateProductPromotionRequest)
+	if err = proto.Unmarshal(buf, reqContent); err != nil {
+		s.writeError(ctx, resp, malformedRequestError("the protobuf request could not be decoded"))
+		return
+	}
+
+	// Call service method
+	var respContent *ProductPromotion
+	func() {
+		defer ensurePanicResponses(ctx, resp, s.hooks)
+		respContent, err = s.TradingService.UpdateProductPromotion(ctx, reqContent)
+	}()
+
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+	if respContent == nil {
+		s.writeError(ctx, resp, twirp.InternalError("received a nil *ProductPromotion and nil error while calling UpdateProductPromotion. nil responses are not supported"))
+		return
+	}
+
+	ctx = callResponsePrepared(ctx, s.hooks)
+
+	respBytes, err := proto.Marshal(respContent)
+	if err != nil {
+		s.writeError(ctx, resp, wrapInternal(err, "failed to marshal proto response"))
+		return
+	}
+
+	ctx = ctxsetters.WithStatusCode(ctx, http.StatusOK)
+	resp.Header().Set("Content-Type", "application/protobuf")
+	resp.Header().Set("Content-Length", strconv.Itoa(len(respBytes)))
+	resp.WriteHeader(http.StatusOK)
+	if n, err := resp.Write(respBytes); err != nil {
+		msg := fmt.Sprintf("failed to write response, %d of %d bytes written: %s", n, len(respBytes), err.Error())
+		twerr := twirp.NewError(twirp.Unknown, msg)
+		callError(ctx, s.hooks, twerr)
+	}
+	callResponseSent(ctx, s.hooks)
+}
+
+func (s *tradingServiceServer) ServiceDescriptor() ([]byte, int) {
+	return twirpFileDescriptor0, 0
+}
+
+func (s *tradingServiceServer) ProtocGenTwirpVersion() string {
+	return "v5.8.0"
+}
+
+func (s *tradingServiceServer) PathPrefix() string {
+	return TradingServicePathPrefix
+}
+
+// =====================
+// ShopService Interface
+// =====================
+
+type ShopService interface {
+	GetProductPromotion(context.Context, *GetProductPromotionRequest) (*GetProductPromotionResponse, error)
+}
+
+// ===========================
+// ShopService Protobuf Client
+// ===========================
+
+type shopServiceProtobufClient struct {
+	client HTTPClient
+	urls   [1]string
+}
+
+// NewShopServiceProtobufClient creates a Protobuf client that implements the ShopService interface.
+// It communicates using Protobuf and can be configured with a custom HTTPClient.
+func NewShopServiceProtobufClient(addr string, client HTTPClient) ShopService {
+	prefix := urlBase(addr) + ShopServicePathPrefix
+	urls := [1]string{
+		prefix + "GetProductPromotion",
+	}
+	if httpClient, ok := client.(*http.Client); ok {
+		return &shopServiceProtobufClient{
+			client: withoutRedirects(httpClient),
+			urls:   urls,
+		}
+	}
+	return &shopServiceProtobufClient{
+		client: client,
+		urls:   urls,
+	}
+}
+
+func (c *shopServiceProtobufClient) GetProductPromotion(ctx context.Context, in *GetProductPromotionRequest) (*GetProductPromotionResponse, error) {
+	ctx = ctxsetters.WithPackageName(ctx, "affiliate")
+	ctx = ctxsetters.WithServiceName(ctx, "Shop")
+	ctx = ctxsetters.WithMethodName(ctx, "GetProductPromotion")
+	out := new(GetProductPromotionResponse)
+	err := doProtobufRequest(ctx, c.client, c.urls[0], in, out)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// =======================
+// ShopService JSON Client
+// =======================
+
+type shopServiceJSONClient struct {
+	client HTTPClient
+	urls   [1]string
+}
+
+// NewShopServiceJSONClient creates a JSON client that implements the ShopService interface.
+// It communicates using JSON and can be configured with a custom HTTPClient.
+func NewShopServiceJSONClient(addr string, client HTTPClient) ShopService {
+	prefix := urlBase(addr) + ShopServicePathPrefix
+	urls := [1]string{
+		prefix + "GetProductPromotion",
+	}
+	if httpClient, ok := client.(*http.Client); ok {
+		return &shopServiceJSONClient{
+			client: withoutRedirects(httpClient),
+			urls:   urls,
+		}
+	}
+	return &shopServiceJSONClient{
+		client: client,
+		urls:   urls,
+	}
+}
+
+func (c *shopServiceJSONClient) GetProductPromotion(ctx context.Context, in *GetProductPromotionRequest) (*GetProductPromotionResponse, error) {
+	ctx = ctxsetters.WithPackageName(ctx, "affiliate")
+	ctx = ctxsetters.WithServiceName(ctx, "Shop")
+	ctx = ctxsetters.WithMethodName(ctx, "GetProductPromotion")
+	out := new(GetProductPromotionResponse)
+	err := doJSONRequest(ctx, c.client, c.urls[0], in, out)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// ==========================
+// ShopService Server Handler
+// ==========================
+
+type shopServiceServer struct {
+	ShopService
+	hooks *twirp.ServerHooks
+}
+
+func NewShopServiceServer(svc ShopService, hooks *twirp.ServerHooks) TwirpServer {
+	return &shopServiceServer{
+		ShopService: svc,
+		hooks:       hooks,
+	}
+}
+
+// writeError writes an HTTP response with a valid Twirp error format, and triggers hooks.
+// If err is not a twirp.Error, it will get wrapped with twirp.InternalErrorWith(err)
+func (s *shopServiceServer) writeError(ctx context.Context, resp http.ResponseWriter, err error) {
+	writeError(ctx, resp, err, s.hooks)
+}
+
+// ShopServicePathPrefix is used for all URL paths on a twirp ShopService server.
+// Requests are always: POST ShopServicePathPrefix/method
+// It can be used in an HTTP mux to route twirp requests along with non-twirp requests on other routes.
+const ShopServicePathPrefix = "/api/affiliate.Shop/"
+
+func (s *shopServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
+	ctx := req.Context()
+	ctx = ctxsetters.WithPackageName(ctx, "affiliate")
+	ctx = ctxsetters.WithServiceName(ctx, "Shop")
+	ctx = ctxsetters.WithResponseWriter(ctx, resp)
+
+	var err error
+	ctx, err = callRequestReceived(ctx, s.hooks)
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+
+	if req.Method != "POST" {
+		msg := fmt.Sprintf("unsupported method %q (only POST is allowed)", req.Method)
+		err = badRouteError(msg, req.Method, req.URL.Path)
+		s.writeError(ctx, resp, err)
+		return
+	}
+
+	switch req.URL.Path {
+	case "/api/affiliate.Shop/GetProductPromotion":
+		s.serveGetProductPromotion(ctx, resp, req)
+		return
+	default:
+		msg := fmt.Sprintf("no handler for path %q", req.URL.Path)
+		err = badRouteError(msg, req.Method, req.URL.Path)
+		s.writeError(ctx, resp, err)
+		return
+	}
+}
+
+func (s *shopServiceServer) serveGetProductPromotion(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
+	header := req.Header.Get("Content-Type")
+	i := strings.Index(header, ";")
+	if i == -1 {
+		i = len(header)
+	}
+	switch strings.TrimSpace(strings.ToLower(header[:i])) {
+	case "application/json":
+		s.serveGetProductPromotionJSON(ctx, resp, req)
+	case "application/protobuf":
+		s.serveGetProductPromotionProtobuf(ctx, resp, req)
+	default:
+		msg := fmt.Sprintf("unexpected Content-Type: %q", req.Header.Get("Content-Type"))
+		twerr := badRouteError(msg, req.Method, req.URL.Path)
+		s.writeError(ctx, resp, twerr)
+	}
+}
+
+func (s *shopServiceServer) serveGetProductPromotionJSON(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
+	var err error
+	ctx = ctxsetters.WithMethodName(ctx, "GetProductPromotion")
+	ctx, err = callRequestRouted(ctx, s.hooks)
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+
+	reqContent := new(GetProductPromotionRequest)
+	unmarshaler := jsonpb.Unmarshaler{AllowUnknownFields: true}
+	if err = unmarshaler.Unmarshal(req.Body, reqContent); err != nil {
+		s.writeError(ctx, resp, malformedRequestError("the json request could not be decoded"))
+		return
+	}
+
+	// Call service method
+	var respContent *GetProductPromotionResponse
+	func() {
+		defer ensurePanicResponses(ctx, resp, s.hooks)
+		respContent, err = s.ShopService.GetProductPromotion(ctx, reqContent)
+	}()
+
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+	if respContent == nil {
+		s.writeError(ctx, resp, twirp.InternalError("received a nil *GetProductPromotionResponse and nil error while calling GetProductPromotion. nil responses are not supported"))
+		return
+	}
+
+	ctx = callResponsePrepared(ctx, s.hooks)
+
+	var buf bytes.Buffer
+	marshaler := &jsonpb.Marshaler{OrigName: true, EmitDefaults: true}
+	if err = marshaler.Marshal(&buf, respContent); err != nil {
+		s.writeError(ctx, resp, wrapInternal(err, "failed to marshal json response"))
+		return
+	}
+
+	ctx = ctxsetters.WithStatusCode(ctx, http.StatusOK)
+	respBytes := buf.Bytes()
+	resp.Header().Set("Content-Type", "application/json")
+	resp.Header().Set("Content-Length", strconv.Itoa(len(respBytes)))
+	resp.WriteHeader(http.StatusOK)
+
+	if n, err := resp.Write(respBytes); err != nil {
+		msg := fmt.Sprintf("failed to write response, %d of %d bytes written: %s", n, len(respBytes), err.Error())
+		twerr := twirp.NewError(twirp.Unknown, msg)
+		callError(ctx, s.hooks, twerr)
+	}
+	callResponseSent(ctx, s.hooks)
+}
+
+func (s *shopServiceServer) serveGetProductPromotionProtobuf(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
+	var err error
+	ctx = ctxsetters.WithMethodName(ctx, "GetProductPromotion")
+	ctx, err = callRequestRouted(ctx, s.hooks)
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+
+	buf, err := ioutil.ReadAll(req.Body)
+	if err != nil {
+		s.writeError(ctx, resp, wrapInternal(err, "failed to read request body"))
+		return
+	}
+	reqContent := new(GetProductPromotionRequest)
+	if err = proto.Unmarshal(buf, reqContent); err != nil {
+		s.writeError(ctx, resp, malformedRequestError("the protobuf request could not be decoded"))
+		return
+	}
+
+	// Call service method
+	var respContent *GetProductPromotionResponse
+	func() {
+		defer ensurePanicResponses(ctx, resp, s.hooks)
+		respContent, err = s.ShopService.GetProductPromotion(ctx, reqContent)
+	}()
+
+	if err != nil {
+		s.writeError(ctx, resp, err)
+		return
+	}
+	if respContent == nil {
+		s.writeError(ctx, resp, twirp.InternalError("received a nil *GetProductPromotionResponse and nil error while calling GetProductPromotion. nil responses are not supported"))
+		return
+	}
+
+	ctx = callResponsePrepared(ctx, s.hooks)
+
+	respBytes, err := proto.Marshal(respContent)
+	if err != nil {
+		s.writeError(ctx, resp, wrapInternal(err, "failed to marshal proto response"))
+		return
+	}
+
+	ctx = ctxsetters.WithStatusCode(ctx, http.StatusOK)
+	resp.Header().Set("Content-Type", "application/protobuf")
+	resp.Header().Set("Content-Length", strconv.Itoa(len(respBytes)))
+	resp.WriteHeader(http.StatusOK)
+	if n, err := resp.Write(respBytes); err != nil {
+		msg := fmt.Sprintf("failed to write response, %d of %d bytes written: %s", n, len(respBytes), err.Error())
+		twerr := twirp.NewError(twirp.Unknown, msg)
+		callError(ctx, s.hooks, twerr)
+	}
+	callResponseSent(ctx, s.hooks)
+}
+
+func (s *shopServiceServer) ServiceDescriptor() ([]byte, int) {
+	return twirpFileDescriptor0, 1
+}
+
+func (s *shopServiceServer) ProtocGenTwirpVersion() string {
+	return "v5.8.0"
+}
+
+func (s *shopServiceServer) PathPrefix() string {
+	return ShopServicePathPrefix
+}
+
+// ==========================
+// AffiliateService Interface
+// ==========================
+
+type AffiliateService interface {
+	GetCommissions(context.Context, *cm.CommonListRequest) (*GetCommissionsResponse, error)
+
+	NotifyNewShopPurchase(context.Context, *NotifyNewShopPurchaseRequest) (*NotifyNewShopPurchaseResponse, error)
+
+	GetTransactions(context.Context, *cm.CommonListRequest) (*GetTransactionsResponse, error)
+
+	CreateOrUpdateAffiliateCommissionSetting(context.Context, *CreateOrUpdateCommissionSettingRequest) (*CommissionSetting, error)
+
+	GetProductPromotionByProductID(context.Context, *GetProductPromotionByProductIDRequest) (*GetProductPromotionByProductIDResponse, error)
 
 	AffiliateGetProducts(context.Context, *cm.CommonListRequest) (*AffiliateGetProductsResponse, error)
 }
@@ -65,23 +1270,19 @@ type AffiliateService interface {
 
 type affiliateServiceProtobufClient struct {
 	client HTTPClient
-	urls   [10]string
+	urls   [6]string
 }
 
 // NewAffiliateServiceProtobufClient creates a Protobuf client that implements the AffiliateService interface.
 // It communicates using Protobuf and can be configured with a custom HTTPClient.
 func NewAffiliateServiceProtobufClient(addr string, client HTTPClient) AffiliateService {
 	prefix := urlBase(addr) + AffiliateServicePathPrefix
-	urls := [10]string{
+	urls := [6]string{
 		prefix + "GetCommissions",
 		prefix + "NotifyNewShopPurchase",
 		prefix + "GetTransactions",
-		prefix + "CreateOrUpdateTradingCommissionSetting",
 		prefix + "CreateOrUpdateAffiliateCommissionSetting",
 		prefix + "GetProductPromotionByProductID",
-		prefix + "CreateProductPromotion",
-		prefix + "UpdateProductPromotion",
-		prefix + "TradingGetProducts",
 		prefix + "AffiliateGetProducts",
 	}
 	if httpClient, ok := client.(*http.Client); ok {
@@ -96,7 +1297,7 @@ func NewAffiliateServiceProtobufClient(addr string, client HTTPClient) Affiliate
 	}
 }
 
-func (c *affiliateServiceProtobufClient) GetCommissions(ctx context.Context, in *cm.Paging) (*GetCommissionsResponse, error) {
+func (c *affiliateServiceProtobufClient) GetCommissions(ctx context.Context, in *cm.CommonListRequest) (*GetCommissionsResponse, error) {
 	ctx = ctxsetters.WithPackageName(ctx, "affiliate")
 	ctx = ctxsetters.WithServiceName(ctx, "Affiliate")
 	ctx = ctxsetters.WithMethodName(ctx, "GetCommissions")
@@ -120,7 +1321,7 @@ func (c *affiliateServiceProtobufClient) NotifyNewShopPurchase(ctx context.Conte
 	return out, nil
 }
 
-func (c *affiliateServiceProtobufClient) GetTransactions(ctx context.Context, in *cm.Paging) (*GetTransactionsResponse, error) {
+func (c *affiliateServiceProtobufClient) GetTransactions(ctx context.Context, in *cm.CommonListRequest) (*GetTransactionsResponse, error) {
 	ctx = ctxsetters.WithPackageName(ctx, "affiliate")
 	ctx = ctxsetters.WithServiceName(ctx, "Affiliate")
 	ctx = ctxsetters.WithMethodName(ctx, "GetTransactions")
@@ -132,24 +1333,12 @@ func (c *affiliateServiceProtobufClient) GetTransactions(ctx context.Context, in
 	return out, nil
 }
 
-func (c *affiliateServiceProtobufClient) CreateOrUpdateTradingCommissionSetting(ctx context.Context, in *CreateOrUpdateCommissionSettingRequest) (*CommissionSetting, error) {
-	ctx = ctxsetters.WithPackageName(ctx, "affiliate")
-	ctx = ctxsetters.WithServiceName(ctx, "Affiliate")
-	ctx = ctxsetters.WithMethodName(ctx, "CreateOrUpdateTradingCommissionSetting")
-	out := new(CommissionSetting)
-	err := doProtobufRequest(ctx, c.client, c.urls[3], in, out)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 func (c *affiliateServiceProtobufClient) CreateOrUpdateAffiliateCommissionSetting(ctx context.Context, in *CreateOrUpdateCommissionSettingRequest) (*CommissionSetting, error) {
 	ctx = ctxsetters.WithPackageName(ctx, "affiliate")
 	ctx = ctxsetters.WithServiceName(ctx, "Affiliate")
 	ctx = ctxsetters.WithMethodName(ctx, "CreateOrUpdateAffiliateCommissionSetting")
 	out := new(CommissionSetting)
-	err := doProtobufRequest(ctx, c.client, c.urls[4], in, out)
+	err := doProtobufRequest(ctx, c.client, c.urls[3], in, out)
 	if err != nil {
 		return nil, err
 	}
@@ -161,43 +1350,7 @@ func (c *affiliateServiceProtobufClient) GetProductPromotionByProductID(ctx cont
 	ctx = ctxsetters.WithServiceName(ctx, "Affiliate")
 	ctx = ctxsetters.WithMethodName(ctx, "GetProductPromotionByProductID")
 	out := new(GetProductPromotionByProductIDResponse)
-	err := doProtobufRequest(ctx, c.client, c.urls[5], in, out)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *affiliateServiceProtobufClient) CreateProductPromotion(ctx context.Context, in *CreateOrUpdateProductPromotionRequest) (*ProductPromotion, error) {
-	ctx = ctxsetters.WithPackageName(ctx, "affiliate")
-	ctx = ctxsetters.WithServiceName(ctx, "Affiliate")
-	ctx = ctxsetters.WithMethodName(ctx, "CreateProductPromotion")
-	out := new(ProductPromotion)
-	err := doProtobufRequest(ctx, c.client, c.urls[6], in, out)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *affiliateServiceProtobufClient) UpdateProductPromotion(ctx context.Context, in *CreateOrUpdateProductPromotionRequest) (*ProductPromotion, error) {
-	ctx = ctxsetters.WithPackageName(ctx, "affiliate")
-	ctx = ctxsetters.WithServiceName(ctx, "Affiliate")
-	ctx = ctxsetters.WithMethodName(ctx, "UpdateProductPromotion")
-	out := new(ProductPromotion)
-	err := doProtobufRequest(ctx, c.client, c.urls[7], in, out)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *affiliateServiceProtobufClient) TradingGetProducts(ctx context.Context, in *cm.CommonListRequest) (*ShopGetProductsResponse, error) {
-	ctx = ctxsetters.WithPackageName(ctx, "affiliate")
-	ctx = ctxsetters.WithServiceName(ctx, "Affiliate")
-	ctx = ctxsetters.WithMethodName(ctx, "TradingGetProducts")
-	out := new(ShopGetProductsResponse)
-	err := doProtobufRequest(ctx, c.client, c.urls[8], in, out)
+	err := doProtobufRequest(ctx, c.client, c.urls[4], in, out)
 	if err != nil {
 		return nil, err
 	}
@@ -209,7 +1362,7 @@ func (c *affiliateServiceProtobufClient) AffiliateGetProducts(ctx context.Contex
 	ctx = ctxsetters.WithServiceName(ctx, "Affiliate")
 	ctx = ctxsetters.WithMethodName(ctx, "AffiliateGetProducts")
 	out := new(AffiliateGetProductsResponse)
-	err := doProtobufRequest(ctx, c.client, c.urls[9], in, out)
+	err := doProtobufRequest(ctx, c.client, c.urls[5], in, out)
 	if err != nil {
 		return nil, err
 	}
@@ -222,23 +1375,19 @@ func (c *affiliateServiceProtobufClient) AffiliateGetProducts(ctx context.Contex
 
 type affiliateServiceJSONClient struct {
 	client HTTPClient
-	urls   [10]string
+	urls   [6]string
 }
 
 // NewAffiliateServiceJSONClient creates a JSON client that implements the AffiliateService interface.
 // It communicates using JSON and can be configured with a custom HTTPClient.
 func NewAffiliateServiceJSONClient(addr string, client HTTPClient) AffiliateService {
 	prefix := urlBase(addr) + AffiliateServicePathPrefix
-	urls := [10]string{
+	urls := [6]string{
 		prefix + "GetCommissions",
 		prefix + "NotifyNewShopPurchase",
 		prefix + "GetTransactions",
-		prefix + "CreateOrUpdateTradingCommissionSetting",
 		prefix + "CreateOrUpdateAffiliateCommissionSetting",
 		prefix + "GetProductPromotionByProductID",
-		prefix + "CreateProductPromotion",
-		prefix + "UpdateProductPromotion",
-		prefix + "TradingGetProducts",
 		prefix + "AffiliateGetProducts",
 	}
 	if httpClient, ok := client.(*http.Client); ok {
@@ -253,7 +1402,7 @@ func NewAffiliateServiceJSONClient(addr string, client HTTPClient) AffiliateServ
 	}
 }
 
-func (c *affiliateServiceJSONClient) GetCommissions(ctx context.Context, in *cm.Paging) (*GetCommissionsResponse, error) {
+func (c *affiliateServiceJSONClient) GetCommissions(ctx context.Context, in *cm.CommonListRequest) (*GetCommissionsResponse, error) {
 	ctx = ctxsetters.WithPackageName(ctx, "affiliate")
 	ctx = ctxsetters.WithServiceName(ctx, "Affiliate")
 	ctx = ctxsetters.WithMethodName(ctx, "GetCommissions")
@@ -277,7 +1426,7 @@ func (c *affiliateServiceJSONClient) NotifyNewShopPurchase(ctx context.Context, 
 	return out, nil
 }
 
-func (c *affiliateServiceJSONClient) GetTransactions(ctx context.Context, in *cm.Paging) (*GetTransactionsResponse, error) {
+func (c *affiliateServiceJSONClient) GetTransactions(ctx context.Context, in *cm.CommonListRequest) (*GetTransactionsResponse, error) {
 	ctx = ctxsetters.WithPackageName(ctx, "affiliate")
 	ctx = ctxsetters.WithServiceName(ctx, "Affiliate")
 	ctx = ctxsetters.WithMethodName(ctx, "GetTransactions")
@@ -289,24 +1438,12 @@ func (c *affiliateServiceJSONClient) GetTransactions(ctx context.Context, in *cm
 	return out, nil
 }
 
-func (c *affiliateServiceJSONClient) CreateOrUpdateTradingCommissionSetting(ctx context.Context, in *CreateOrUpdateCommissionSettingRequest) (*CommissionSetting, error) {
-	ctx = ctxsetters.WithPackageName(ctx, "affiliate")
-	ctx = ctxsetters.WithServiceName(ctx, "Affiliate")
-	ctx = ctxsetters.WithMethodName(ctx, "CreateOrUpdateTradingCommissionSetting")
-	out := new(CommissionSetting)
-	err := doJSONRequest(ctx, c.client, c.urls[3], in, out)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
 func (c *affiliateServiceJSONClient) CreateOrUpdateAffiliateCommissionSetting(ctx context.Context, in *CreateOrUpdateCommissionSettingRequest) (*CommissionSetting, error) {
 	ctx = ctxsetters.WithPackageName(ctx, "affiliate")
 	ctx = ctxsetters.WithServiceName(ctx, "Affiliate")
 	ctx = ctxsetters.WithMethodName(ctx, "CreateOrUpdateAffiliateCommissionSetting")
 	out := new(CommissionSetting)
-	err := doJSONRequest(ctx, c.client, c.urls[4], in, out)
+	err := doJSONRequest(ctx, c.client, c.urls[3], in, out)
 	if err != nil {
 		return nil, err
 	}
@@ -318,43 +1455,7 @@ func (c *affiliateServiceJSONClient) GetProductPromotionByProductID(ctx context.
 	ctx = ctxsetters.WithServiceName(ctx, "Affiliate")
 	ctx = ctxsetters.WithMethodName(ctx, "GetProductPromotionByProductID")
 	out := new(GetProductPromotionByProductIDResponse)
-	err := doJSONRequest(ctx, c.client, c.urls[5], in, out)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *affiliateServiceJSONClient) CreateProductPromotion(ctx context.Context, in *CreateOrUpdateProductPromotionRequest) (*ProductPromotion, error) {
-	ctx = ctxsetters.WithPackageName(ctx, "affiliate")
-	ctx = ctxsetters.WithServiceName(ctx, "Affiliate")
-	ctx = ctxsetters.WithMethodName(ctx, "CreateProductPromotion")
-	out := new(ProductPromotion)
-	err := doJSONRequest(ctx, c.client, c.urls[6], in, out)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *affiliateServiceJSONClient) UpdateProductPromotion(ctx context.Context, in *CreateOrUpdateProductPromotionRequest) (*ProductPromotion, error) {
-	ctx = ctxsetters.WithPackageName(ctx, "affiliate")
-	ctx = ctxsetters.WithServiceName(ctx, "Affiliate")
-	ctx = ctxsetters.WithMethodName(ctx, "UpdateProductPromotion")
-	out := new(ProductPromotion)
-	err := doJSONRequest(ctx, c.client, c.urls[7], in, out)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-func (c *affiliateServiceJSONClient) TradingGetProducts(ctx context.Context, in *cm.CommonListRequest) (*ShopGetProductsResponse, error) {
-	ctx = ctxsetters.WithPackageName(ctx, "affiliate")
-	ctx = ctxsetters.WithServiceName(ctx, "Affiliate")
-	ctx = ctxsetters.WithMethodName(ctx, "TradingGetProducts")
-	out := new(ShopGetProductsResponse)
-	err := doJSONRequest(ctx, c.client, c.urls[8], in, out)
+	err := doJSONRequest(ctx, c.client, c.urls[4], in, out)
 	if err != nil {
 		return nil, err
 	}
@@ -366,7 +1467,7 @@ func (c *affiliateServiceJSONClient) AffiliateGetProducts(ctx context.Context, i
 	ctx = ctxsetters.WithServiceName(ctx, "Affiliate")
 	ctx = ctxsetters.WithMethodName(ctx, "AffiliateGetProducts")
 	out := new(AffiliateGetProductsResponse)
-	err := doJSONRequest(ctx, c.client, c.urls[9], in, out)
+	err := doJSONRequest(ctx, c.client, c.urls[5], in, out)
 	if err != nil {
 		return nil, err
 	}
@@ -430,23 +1531,11 @@ func (s *affiliateServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.R
 	case "/api/affiliate.Affiliate/GetTransactions":
 		s.serveGetTransactions(ctx, resp, req)
 		return
-	case "/api/affiliate.Affiliate/CreateOrUpdateTradingCommissionSetting":
-		s.serveCreateOrUpdateTradingCommissionSetting(ctx, resp, req)
-		return
 	case "/api/affiliate.Affiliate/CreateOrUpdateAffiliateCommissionSetting":
 		s.serveCreateOrUpdateAffiliateCommissionSetting(ctx, resp, req)
 		return
 	case "/api/affiliate.Affiliate/GetProductPromotionByProductID":
 		s.serveGetProductPromotionByProductID(ctx, resp, req)
-		return
-	case "/api/affiliate.Affiliate/CreateProductPromotion":
-		s.serveCreateProductPromotion(ctx, resp, req)
-		return
-	case "/api/affiliate.Affiliate/UpdateProductPromotion":
-		s.serveUpdateProductPromotion(ctx, resp, req)
-		return
-	case "/api/affiliate.Affiliate/TradingGetProducts":
-		s.serveTradingGetProducts(ctx, resp, req)
 		return
 	case "/api/affiliate.Affiliate/AffiliateGetProducts":
 		s.serveAffiliateGetProducts(ctx, resp, req)
@@ -486,7 +1575,7 @@ func (s *affiliateServiceServer) serveGetCommissionsJSON(ctx context.Context, re
 		return
 	}
 
-	reqContent := new(cm.Paging)
+	reqContent := new(cm.CommonListRequest)
 	unmarshaler := jsonpb.Unmarshaler{AllowUnknownFields: true}
 	if err = unmarshaler.Unmarshal(req.Body, reqContent); err != nil {
 		s.writeError(ctx, resp, malformedRequestError("the json request could not be decoded"))
@@ -546,7 +1635,7 @@ func (s *affiliateServiceServer) serveGetCommissionsProtobuf(ctx context.Context
 		s.writeError(ctx, resp, wrapInternal(err, "failed to read request body"))
 		return
 	}
-	reqContent := new(cm.Paging)
+	reqContent := new(cm.CommonListRequest)
 	if err = proto.Unmarshal(buf, reqContent); err != nil {
 		s.writeError(ctx, resp, malformedRequestError("the protobuf request could not be decoded"))
 		return
@@ -744,7 +1833,7 @@ func (s *affiliateServiceServer) serveGetTransactionsJSON(ctx context.Context, r
 		return
 	}
 
-	reqContent := new(cm.Paging)
+	reqContent := new(cm.CommonListRequest)
 	unmarshaler := jsonpb.Unmarshaler{AllowUnknownFields: true}
 	if err = unmarshaler.Unmarshal(req.Body, reqContent); err != nil {
 		s.writeError(ctx, resp, malformedRequestError("the json request could not be decoded"))
@@ -804,7 +1893,7 @@ func (s *affiliateServiceServer) serveGetTransactionsProtobuf(ctx context.Contex
 		s.writeError(ctx, resp, wrapInternal(err, "failed to read request body"))
 		return
 	}
-	reqContent := new(cm.Paging)
+	reqContent := new(cm.CommonListRequest)
 	if err = proto.Unmarshal(buf, reqContent); err != nil {
 		s.writeError(ctx, resp, malformedRequestError("the protobuf request could not be decoded"))
 		return
@@ -823,135 +1912,6 @@ func (s *affiliateServiceServer) serveGetTransactionsProtobuf(ctx context.Contex
 	}
 	if respContent == nil {
 		s.writeError(ctx, resp, twirp.InternalError("received a nil *GetTransactionsResponse and nil error while calling GetTransactions. nil responses are not supported"))
-		return
-	}
-
-	ctx = callResponsePrepared(ctx, s.hooks)
-
-	respBytes, err := proto.Marshal(respContent)
-	if err != nil {
-		s.writeError(ctx, resp, wrapInternal(err, "failed to marshal proto response"))
-		return
-	}
-
-	ctx = ctxsetters.WithStatusCode(ctx, http.StatusOK)
-	resp.Header().Set("Content-Type", "application/protobuf")
-	resp.Header().Set("Content-Length", strconv.Itoa(len(respBytes)))
-	resp.WriteHeader(http.StatusOK)
-	if n, err := resp.Write(respBytes); err != nil {
-		msg := fmt.Sprintf("failed to write response, %d of %d bytes written: %s", n, len(respBytes), err.Error())
-		twerr := twirp.NewError(twirp.Unknown, msg)
-		callError(ctx, s.hooks, twerr)
-	}
-	callResponseSent(ctx, s.hooks)
-}
-
-func (s *affiliateServiceServer) serveCreateOrUpdateTradingCommissionSetting(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
-	header := req.Header.Get("Content-Type")
-	i := strings.Index(header, ";")
-	if i == -1 {
-		i = len(header)
-	}
-	switch strings.TrimSpace(strings.ToLower(header[:i])) {
-	case "application/json":
-		s.serveCreateOrUpdateTradingCommissionSettingJSON(ctx, resp, req)
-	case "application/protobuf":
-		s.serveCreateOrUpdateTradingCommissionSettingProtobuf(ctx, resp, req)
-	default:
-		msg := fmt.Sprintf("unexpected Content-Type: %q", req.Header.Get("Content-Type"))
-		twerr := badRouteError(msg, req.Method, req.URL.Path)
-		s.writeError(ctx, resp, twerr)
-	}
-}
-
-func (s *affiliateServiceServer) serveCreateOrUpdateTradingCommissionSettingJSON(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
-	var err error
-	ctx = ctxsetters.WithMethodName(ctx, "CreateOrUpdateTradingCommissionSetting")
-	ctx, err = callRequestRouted(ctx, s.hooks)
-	if err != nil {
-		s.writeError(ctx, resp, err)
-		return
-	}
-
-	reqContent := new(CreateOrUpdateCommissionSettingRequest)
-	unmarshaler := jsonpb.Unmarshaler{AllowUnknownFields: true}
-	if err = unmarshaler.Unmarshal(req.Body, reqContent); err != nil {
-		s.writeError(ctx, resp, malformedRequestError("the json request could not be decoded"))
-		return
-	}
-
-	// Call service method
-	var respContent *CommissionSetting
-	func() {
-		defer ensurePanicResponses(ctx, resp, s.hooks)
-		respContent, err = s.AffiliateService.CreateOrUpdateTradingCommissionSetting(ctx, reqContent)
-	}()
-
-	if err != nil {
-		s.writeError(ctx, resp, err)
-		return
-	}
-	if respContent == nil {
-		s.writeError(ctx, resp, twirp.InternalError("received a nil *CommissionSetting and nil error while calling CreateOrUpdateTradingCommissionSetting. nil responses are not supported"))
-		return
-	}
-
-	ctx = callResponsePrepared(ctx, s.hooks)
-
-	var buf bytes.Buffer
-	marshaler := &jsonpb.Marshaler{OrigName: true, EmitDefaults: true}
-	if err = marshaler.Marshal(&buf, respContent); err != nil {
-		s.writeError(ctx, resp, wrapInternal(err, "failed to marshal json response"))
-		return
-	}
-
-	ctx = ctxsetters.WithStatusCode(ctx, http.StatusOK)
-	respBytes := buf.Bytes()
-	resp.Header().Set("Content-Type", "application/json")
-	resp.Header().Set("Content-Length", strconv.Itoa(len(respBytes)))
-	resp.WriteHeader(http.StatusOK)
-
-	if n, err := resp.Write(respBytes); err != nil {
-		msg := fmt.Sprintf("failed to write response, %d of %d bytes written: %s", n, len(respBytes), err.Error())
-		twerr := twirp.NewError(twirp.Unknown, msg)
-		callError(ctx, s.hooks, twerr)
-	}
-	callResponseSent(ctx, s.hooks)
-}
-
-func (s *affiliateServiceServer) serveCreateOrUpdateTradingCommissionSettingProtobuf(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
-	var err error
-	ctx = ctxsetters.WithMethodName(ctx, "CreateOrUpdateTradingCommissionSetting")
-	ctx, err = callRequestRouted(ctx, s.hooks)
-	if err != nil {
-		s.writeError(ctx, resp, err)
-		return
-	}
-
-	buf, err := ioutil.ReadAll(req.Body)
-	if err != nil {
-		s.writeError(ctx, resp, wrapInternal(err, "failed to read request body"))
-		return
-	}
-	reqContent := new(CreateOrUpdateCommissionSettingRequest)
-	if err = proto.Unmarshal(buf, reqContent); err != nil {
-		s.writeError(ctx, resp, malformedRequestError("the protobuf request could not be decoded"))
-		return
-	}
-
-	// Call service method
-	var respContent *CommissionSetting
-	func() {
-		defer ensurePanicResponses(ctx, resp, s.hooks)
-		respContent, err = s.AffiliateService.CreateOrUpdateTradingCommissionSetting(ctx, reqContent)
-	}()
-
-	if err != nil {
-		s.writeError(ctx, resp, err)
-		return
-	}
-	if respContent == nil {
-		s.writeError(ctx, resp, twirp.InternalError("received a nil *CommissionSetting and nil error while calling CreateOrUpdateTradingCommissionSetting. nil responses are not supported"))
 		return
 	}
 
@@ -1233,393 +2193,6 @@ func (s *affiliateServiceServer) serveGetProductPromotionByProductIDProtobuf(ctx
 	callResponseSent(ctx, s.hooks)
 }
 
-func (s *affiliateServiceServer) serveCreateProductPromotion(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
-	header := req.Header.Get("Content-Type")
-	i := strings.Index(header, ";")
-	if i == -1 {
-		i = len(header)
-	}
-	switch strings.TrimSpace(strings.ToLower(header[:i])) {
-	case "application/json":
-		s.serveCreateProductPromotionJSON(ctx, resp, req)
-	case "application/protobuf":
-		s.serveCreateProductPromotionProtobuf(ctx, resp, req)
-	default:
-		msg := fmt.Sprintf("unexpected Content-Type: %q", req.Header.Get("Content-Type"))
-		twerr := badRouteError(msg, req.Method, req.URL.Path)
-		s.writeError(ctx, resp, twerr)
-	}
-}
-
-func (s *affiliateServiceServer) serveCreateProductPromotionJSON(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
-	var err error
-	ctx = ctxsetters.WithMethodName(ctx, "CreateProductPromotion")
-	ctx, err = callRequestRouted(ctx, s.hooks)
-	if err != nil {
-		s.writeError(ctx, resp, err)
-		return
-	}
-
-	reqContent := new(CreateOrUpdateProductPromotionRequest)
-	unmarshaler := jsonpb.Unmarshaler{AllowUnknownFields: true}
-	if err = unmarshaler.Unmarshal(req.Body, reqContent); err != nil {
-		s.writeError(ctx, resp, malformedRequestError("the json request could not be decoded"))
-		return
-	}
-
-	// Call service method
-	var respContent *ProductPromotion
-	func() {
-		defer ensurePanicResponses(ctx, resp, s.hooks)
-		respContent, err = s.AffiliateService.CreateProductPromotion(ctx, reqContent)
-	}()
-
-	if err != nil {
-		s.writeError(ctx, resp, err)
-		return
-	}
-	if respContent == nil {
-		s.writeError(ctx, resp, twirp.InternalError("received a nil *ProductPromotion and nil error while calling CreateProductPromotion. nil responses are not supported"))
-		return
-	}
-
-	ctx = callResponsePrepared(ctx, s.hooks)
-
-	var buf bytes.Buffer
-	marshaler := &jsonpb.Marshaler{OrigName: true, EmitDefaults: true}
-	if err = marshaler.Marshal(&buf, respContent); err != nil {
-		s.writeError(ctx, resp, wrapInternal(err, "failed to marshal json response"))
-		return
-	}
-
-	ctx = ctxsetters.WithStatusCode(ctx, http.StatusOK)
-	respBytes := buf.Bytes()
-	resp.Header().Set("Content-Type", "application/json")
-	resp.Header().Set("Content-Length", strconv.Itoa(len(respBytes)))
-	resp.WriteHeader(http.StatusOK)
-
-	if n, err := resp.Write(respBytes); err != nil {
-		msg := fmt.Sprintf("failed to write response, %d of %d bytes written: %s", n, len(respBytes), err.Error())
-		twerr := twirp.NewError(twirp.Unknown, msg)
-		callError(ctx, s.hooks, twerr)
-	}
-	callResponseSent(ctx, s.hooks)
-}
-
-func (s *affiliateServiceServer) serveCreateProductPromotionProtobuf(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
-	var err error
-	ctx = ctxsetters.WithMethodName(ctx, "CreateProductPromotion")
-	ctx, err = callRequestRouted(ctx, s.hooks)
-	if err != nil {
-		s.writeError(ctx, resp, err)
-		return
-	}
-
-	buf, err := ioutil.ReadAll(req.Body)
-	if err != nil {
-		s.writeError(ctx, resp, wrapInternal(err, "failed to read request body"))
-		return
-	}
-	reqContent := new(CreateOrUpdateProductPromotionRequest)
-	if err = proto.Unmarshal(buf, reqContent); err != nil {
-		s.writeError(ctx, resp, malformedRequestError("the protobuf request could not be decoded"))
-		return
-	}
-
-	// Call service method
-	var respContent *ProductPromotion
-	func() {
-		defer ensurePanicResponses(ctx, resp, s.hooks)
-		respContent, err = s.AffiliateService.CreateProductPromotion(ctx, reqContent)
-	}()
-
-	if err != nil {
-		s.writeError(ctx, resp, err)
-		return
-	}
-	if respContent == nil {
-		s.writeError(ctx, resp, twirp.InternalError("received a nil *ProductPromotion and nil error while calling CreateProductPromotion. nil responses are not supported"))
-		return
-	}
-
-	ctx = callResponsePrepared(ctx, s.hooks)
-
-	respBytes, err := proto.Marshal(respContent)
-	if err != nil {
-		s.writeError(ctx, resp, wrapInternal(err, "failed to marshal proto response"))
-		return
-	}
-
-	ctx = ctxsetters.WithStatusCode(ctx, http.StatusOK)
-	resp.Header().Set("Content-Type", "application/protobuf")
-	resp.Header().Set("Content-Length", strconv.Itoa(len(respBytes)))
-	resp.WriteHeader(http.StatusOK)
-	if n, err := resp.Write(respBytes); err != nil {
-		msg := fmt.Sprintf("failed to write response, %d of %d bytes written: %s", n, len(respBytes), err.Error())
-		twerr := twirp.NewError(twirp.Unknown, msg)
-		callError(ctx, s.hooks, twerr)
-	}
-	callResponseSent(ctx, s.hooks)
-}
-
-func (s *affiliateServiceServer) serveUpdateProductPromotion(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
-	header := req.Header.Get("Content-Type")
-	i := strings.Index(header, ";")
-	if i == -1 {
-		i = len(header)
-	}
-	switch strings.TrimSpace(strings.ToLower(header[:i])) {
-	case "application/json":
-		s.serveUpdateProductPromotionJSON(ctx, resp, req)
-	case "application/protobuf":
-		s.serveUpdateProductPromotionProtobuf(ctx, resp, req)
-	default:
-		msg := fmt.Sprintf("unexpected Content-Type: %q", req.Header.Get("Content-Type"))
-		twerr := badRouteError(msg, req.Method, req.URL.Path)
-		s.writeError(ctx, resp, twerr)
-	}
-}
-
-func (s *affiliateServiceServer) serveUpdateProductPromotionJSON(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
-	var err error
-	ctx = ctxsetters.WithMethodName(ctx, "UpdateProductPromotion")
-	ctx, err = callRequestRouted(ctx, s.hooks)
-	if err != nil {
-		s.writeError(ctx, resp, err)
-		return
-	}
-
-	reqContent := new(CreateOrUpdateProductPromotionRequest)
-	unmarshaler := jsonpb.Unmarshaler{AllowUnknownFields: true}
-	if err = unmarshaler.Unmarshal(req.Body, reqContent); err != nil {
-		s.writeError(ctx, resp, malformedRequestError("the json request could not be decoded"))
-		return
-	}
-
-	// Call service method
-	var respContent *ProductPromotion
-	func() {
-		defer ensurePanicResponses(ctx, resp, s.hooks)
-		respContent, err = s.AffiliateService.UpdateProductPromotion(ctx, reqContent)
-	}()
-
-	if err != nil {
-		s.writeError(ctx, resp, err)
-		return
-	}
-	if respContent == nil {
-		s.writeError(ctx, resp, twirp.InternalError("received a nil *ProductPromotion and nil error while calling UpdateProductPromotion. nil responses are not supported"))
-		return
-	}
-
-	ctx = callResponsePrepared(ctx, s.hooks)
-
-	var buf bytes.Buffer
-	marshaler := &jsonpb.Marshaler{OrigName: true, EmitDefaults: true}
-	if err = marshaler.Marshal(&buf, respContent); err != nil {
-		s.writeError(ctx, resp, wrapInternal(err, "failed to marshal json response"))
-		return
-	}
-
-	ctx = ctxsetters.WithStatusCode(ctx, http.StatusOK)
-	respBytes := buf.Bytes()
-	resp.Header().Set("Content-Type", "application/json")
-	resp.Header().Set("Content-Length", strconv.Itoa(len(respBytes)))
-	resp.WriteHeader(http.StatusOK)
-
-	if n, err := resp.Write(respBytes); err != nil {
-		msg := fmt.Sprintf("failed to write response, %d of %d bytes written: %s", n, len(respBytes), err.Error())
-		twerr := twirp.NewError(twirp.Unknown, msg)
-		callError(ctx, s.hooks, twerr)
-	}
-	callResponseSent(ctx, s.hooks)
-}
-
-func (s *affiliateServiceServer) serveUpdateProductPromotionProtobuf(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
-	var err error
-	ctx = ctxsetters.WithMethodName(ctx, "UpdateProductPromotion")
-	ctx, err = callRequestRouted(ctx, s.hooks)
-	if err != nil {
-		s.writeError(ctx, resp, err)
-		return
-	}
-
-	buf, err := ioutil.ReadAll(req.Body)
-	if err != nil {
-		s.writeError(ctx, resp, wrapInternal(err, "failed to read request body"))
-		return
-	}
-	reqContent := new(CreateOrUpdateProductPromotionRequest)
-	if err = proto.Unmarshal(buf, reqContent); err != nil {
-		s.writeError(ctx, resp, malformedRequestError("the protobuf request could not be decoded"))
-		return
-	}
-
-	// Call service method
-	var respContent *ProductPromotion
-	func() {
-		defer ensurePanicResponses(ctx, resp, s.hooks)
-		respContent, err = s.AffiliateService.UpdateProductPromotion(ctx, reqContent)
-	}()
-
-	if err != nil {
-		s.writeError(ctx, resp, err)
-		return
-	}
-	if respContent == nil {
-		s.writeError(ctx, resp, twirp.InternalError("received a nil *ProductPromotion and nil error while calling UpdateProductPromotion. nil responses are not supported"))
-		return
-	}
-
-	ctx = callResponsePrepared(ctx, s.hooks)
-
-	respBytes, err := proto.Marshal(respContent)
-	if err != nil {
-		s.writeError(ctx, resp, wrapInternal(err, "failed to marshal proto response"))
-		return
-	}
-
-	ctx = ctxsetters.WithStatusCode(ctx, http.StatusOK)
-	resp.Header().Set("Content-Type", "application/protobuf")
-	resp.Header().Set("Content-Length", strconv.Itoa(len(respBytes)))
-	resp.WriteHeader(http.StatusOK)
-	if n, err := resp.Write(respBytes); err != nil {
-		msg := fmt.Sprintf("failed to write response, %d of %d bytes written: %s", n, len(respBytes), err.Error())
-		twerr := twirp.NewError(twirp.Unknown, msg)
-		callError(ctx, s.hooks, twerr)
-	}
-	callResponseSent(ctx, s.hooks)
-}
-
-func (s *affiliateServiceServer) serveTradingGetProducts(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
-	header := req.Header.Get("Content-Type")
-	i := strings.Index(header, ";")
-	if i == -1 {
-		i = len(header)
-	}
-	switch strings.TrimSpace(strings.ToLower(header[:i])) {
-	case "application/json":
-		s.serveTradingGetProductsJSON(ctx, resp, req)
-	case "application/protobuf":
-		s.serveTradingGetProductsProtobuf(ctx, resp, req)
-	default:
-		msg := fmt.Sprintf("unexpected Content-Type: %q", req.Header.Get("Content-Type"))
-		twerr := badRouteError(msg, req.Method, req.URL.Path)
-		s.writeError(ctx, resp, twerr)
-	}
-}
-
-func (s *affiliateServiceServer) serveTradingGetProductsJSON(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
-	var err error
-	ctx = ctxsetters.WithMethodName(ctx, "TradingGetProducts")
-	ctx, err = callRequestRouted(ctx, s.hooks)
-	if err != nil {
-		s.writeError(ctx, resp, err)
-		return
-	}
-
-	reqContent := new(cm.CommonListRequest)
-	unmarshaler := jsonpb.Unmarshaler{AllowUnknownFields: true}
-	if err = unmarshaler.Unmarshal(req.Body, reqContent); err != nil {
-		s.writeError(ctx, resp, malformedRequestError("the json request could not be decoded"))
-		return
-	}
-
-	// Call service method
-	var respContent *ShopGetProductsResponse
-	func() {
-		defer ensurePanicResponses(ctx, resp, s.hooks)
-		respContent, err = s.AffiliateService.TradingGetProducts(ctx, reqContent)
-	}()
-
-	if err != nil {
-		s.writeError(ctx, resp, err)
-		return
-	}
-	if respContent == nil {
-		s.writeError(ctx, resp, twirp.InternalError("received a nil *ShopGetProductsResponse and nil error while calling TradingGetProducts. nil responses are not supported"))
-		return
-	}
-
-	ctx = callResponsePrepared(ctx, s.hooks)
-
-	var buf bytes.Buffer
-	marshaler := &jsonpb.Marshaler{OrigName: true, EmitDefaults: true}
-	if err = marshaler.Marshal(&buf, respContent); err != nil {
-		s.writeError(ctx, resp, wrapInternal(err, "failed to marshal json response"))
-		return
-	}
-
-	ctx = ctxsetters.WithStatusCode(ctx, http.StatusOK)
-	respBytes := buf.Bytes()
-	resp.Header().Set("Content-Type", "application/json")
-	resp.Header().Set("Content-Length", strconv.Itoa(len(respBytes)))
-	resp.WriteHeader(http.StatusOK)
-
-	if n, err := resp.Write(respBytes); err != nil {
-		msg := fmt.Sprintf("failed to write response, %d of %d bytes written: %s", n, len(respBytes), err.Error())
-		twerr := twirp.NewError(twirp.Unknown, msg)
-		callError(ctx, s.hooks, twerr)
-	}
-	callResponseSent(ctx, s.hooks)
-}
-
-func (s *affiliateServiceServer) serveTradingGetProductsProtobuf(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
-	var err error
-	ctx = ctxsetters.WithMethodName(ctx, "TradingGetProducts")
-	ctx, err = callRequestRouted(ctx, s.hooks)
-	if err != nil {
-		s.writeError(ctx, resp, err)
-		return
-	}
-
-	buf, err := ioutil.ReadAll(req.Body)
-	if err != nil {
-		s.writeError(ctx, resp, wrapInternal(err, "failed to read request body"))
-		return
-	}
-	reqContent := new(cm.CommonListRequest)
-	if err = proto.Unmarshal(buf, reqContent); err != nil {
-		s.writeError(ctx, resp, malformedRequestError("the protobuf request could not be decoded"))
-		return
-	}
-
-	// Call service method
-	var respContent *ShopGetProductsResponse
-	func() {
-		defer ensurePanicResponses(ctx, resp, s.hooks)
-		respContent, err = s.AffiliateService.TradingGetProducts(ctx, reqContent)
-	}()
-
-	if err != nil {
-		s.writeError(ctx, resp, err)
-		return
-	}
-	if respContent == nil {
-		s.writeError(ctx, resp, twirp.InternalError("received a nil *ShopGetProductsResponse and nil error while calling TradingGetProducts. nil responses are not supported"))
-		return
-	}
-
-	ctx = callResponsePrepared(ctx, s.hooks)
-
-	respBytes, err := proto.Marshal(respContent)
-	if err != nil {
-		s.writeError(ctx, resp, wrapInternal(err, "failed to marshal proto response"))
-		return
-	}
-
-	ctx = ctxsetters.WithStatusCode(ctx, http.StatusOK)
-	resp.Header().Set("Content-Type", "application/protobuf")
-	resp.Header().Set("Content-Length", strconv.Itoa(len(respBytes)))
-	resp.WriteHeader(http.StatusOK)
-	if n, err := resp.Write(respBytes); err != nil {
-		msg := fmt.Sprintf("failed to write response, %d of %d bytes written: %s", n, len(respBytes), err.Error())
-		twerr := twirp.NewError(twirp.Unknown, msg)
-		callError(ctx, s.hooks, twerr)
-	}
-	callResponseSent(ctx, s.hooks)
-}
-
 func (s *affiliateServiceServer) serveAffiliateGetProducts(ctx context.Context, resp http.ResponseWriter, req *http.Request) {
 	header := req.Header.Get("Content-Type")
 	i := strings.Index(header, ";")
@@ -1750,7 +2323,7 @@ func (s *affiliateServiceServer) serveAffiliateGetProductsProtobuf(ctx context.C
 }
 
 func (s *affiliateServiceServer) ServiceDescriptor() ([]byte, int) {
-	return twirpFileDescriptor0, 0
+	return twirpFileDescriptor0, 2
 }
 
 func (s *affiliateServiceServer) ProtocGenTwirpVersion() string {
@@ -2238,78 +2811,89 @@ func callError(ctx context.Context, h *twirp.ServerHooks, err twirp.Error) conte
 }
 
 var twirpFileDescriptor0 = []byte{
-	// 1165 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xcc, 0x57, 0x4f, 0x4f, 0xdc, 0x46,
-	0x14, 0xb7, 0x77, 0x61, 0x17, 0xde, 0xa6, 0x6d, 0x32, 0xfc, 0xb3, 0x36, 0xc4, 0x6c, 0x4c, 0x03,
-	0x2b, 0x25, 0x59, 0x17, 0xa4, 0x4a, 0x2d, 0x17, 0xb4, 0x90, 0x0a, 0x51, 0xb5, 0x04, 0x19, 0x92,
-	0x43, 0x0f, 0x45, 0xc6, 0x1e, 0x8c, 0x5b, 0xd6, 0xe3, 0x7a, 0x66, 0x89, 0x50, 0xd4, 0x63, 0xaa,
-	0x1e, 0xab, 0x9e, 0x72, 0xeb, 0xb5, 0x1f, 0xa1, 0xe7, 0x9e, 0x38, 0xe6, 0x13, 0x54, 0x61, 0x23,
-	0xf5, 0xdc, 0x2f, 0x10, 0xa9, 0xf2, 0x78, 0xbc, 0x3b, 0xde, 0xf5, 0xb2, 0x84, 0xe6, 0xd0, 0x0b,
-	0xcc, 0xbe, 0x79, 0x7f, 0x7e, 0xef, 0xf7, 0xde, 0xbc, 0x19, 0x83, 0x41, 0x71, 0x74, 0xea, 0x3b,
-	0x98, 0x9a, 0xf6, 0xd1, 0x91, 0x7f, 0xe2, 0xdb, 0x0c, 0xf7, 0x56, 0x8d, 0x30, 0x22, 0x8c, 0xa0,
-	0xc9, 0xae, 0xa0, 0xfa, 0x80, 0x4b, 0x9c, 0x87, 0x1e, 0x0e, 0x1e, 0xd2, 0x67, 0xb6, 0xe7, 0xe1,
-	0xc8, 0x24, 0x21, 0xf3, 0x49, 0x40, 0x4d, 0x3b, 0x08, 0x08, 0xb3, 0xf9, 0x3a, 0x31, 0xac, 0x4e,
-	0x7b, 0xc4, 0x23, 0x7c, 0x69, 0xc6, 0x2b, 0x21, 0x9d, 0x72, 0x48, 0xab, 0x45, 0x02, 0x33, 0xf9,
-	0x27, 0x84, 0x0b, 0x1e, 0x21, 0xde, 0x09, 0x36, 0xf9, 0xaf, 0xc3, 0xf6, 0x91, 0xc9, 0xfc, 0x16,
-	0xa6, 0xcc, 0x6e, 0x85, 0xa9, 0x2f, 0xcc, 0x48, 0x68, 0xd2, 0x63, 0xf1, 0x27, 0x91, 0x1a, 0x9f,
-	0xc1, 0xec, 0x16, 0x66, 0x9b, 0xa4, 0xd5, 0xf2, 0x29, 0x8d, 0x23, 0x5b, 0x98, 0x86, 0x24, 0xa0,
-	0x18, 0xe9, 0x50, 0x6e, 0x61, 0x4a, 0x6d, 0x0f, 0x6b, 0x6a, 0x4d, 0xad, 0x4f, 0x6e, 0x8c, 0x9d,
-	0xff, 0xb5, 0xa0, 0x58, 0xa9, 0xd0, 0x58, 0x87, 0xf9, 0x1d, 0xc2, 0xfc, 0xa3, 0xb3, 0x1d, 0xfc,
-	0x6c, 0xef, 0x98, 0x84, 0xbb, 0xed, 0xc8, 0x39, 0xb6, 0x29, 0xb6, 0xf0, 0x0f, 0x6d, 0x4c, 0x19,
-	0x5a, 0x80, 0x09, 0x12, 0xb9, 0x38, 0x3a, 0xf0, 0x5d, 0xee, 0xa0, 0x98, 0x3a, 0xe0, 0xd2, 0x6d,
-	0xd7, 0x58, 0x87, 0x3b, 0x43, 0x1c, 0x5c, 0x11, 0x41, 0x13, 0x10, 0xc7, 0xde, 0x0e, 0x65, 0xdc,
-	0xf7, 0xa1, 0xec, 0x24, 0x22, 0x4d, 0xad, 0x15, 0xeb, 0x95, 0xd5, 0x5b, 0x8d, 0x5e, 0x3d, 0x12,
-	0x65, 0x2b, 0xd5, 0x30, 0x5e, 0xaa, 0x30, 0xb5, 0x19, 0x61, 0x9b, 0x61, 0xb1, 0x23, 0xc0, 0x57,
-	0x61, 0xfc, 0xd4, 0x3e, 0x69, 0x27, 0x81, 0xc7, 0x45, 0xe0, 0x44, 0x84, 0x34, 0x18, 0x6b, 0x07,
-	0x3e, 0xd3, 0x0a, 0x5d, 0x4c, 0xaa, 0xc5, 0x25, 0x68, 0x09, 0x2a, 0x2e, 0xa6, 0x4e, 0xe4, 0xf3,
-	0x82, 0x6a, 0x45, 0x49, 0x41, 0xde, 0x40, 0x8b, 0x00, 0x61, 0x44, 0xdc, 0xb6, 0xc3, 0x62, 0x72,
-	0xc6, 0x24, 0x72, 0x26, 0x85, 0x7c, 0xdb, 0x35, 0xfe, 0x2c, 0x42, 0x29, 0x01, 0x85, 0xa6, 0xa1,
-	0xd0, 0x47, 0x62, 0xc1, 0x77, 0x63, 0x1c, 0x0e, 0x71, 0xb1, 0x84, 0x43, 0xb1, 0xb8, 0xa4, 0x87,
-	0xbe, 0x38, 0x1c, 0xfd, 0x98, 0x6c, 0x95, 0x87, 0x7e, 0x7c, 0x18, 0xfa, 0x3b, 0x50, 0x6e, 0xd3,
-	0xa4, 0xae, 0x25, 0x09, 0x52, 0x29, 0x16, 0x6e, 0xbb, 0xe8, 0x73, 0x00, 0xca, 0xec, 0x88, 0x1d,
-	0xb8, 0x36, 0xc3, 0x5a, 0xb9, 0xa6, 0xd6, 0x2b, 0xab, 0xd5, 0x46, 0xd2, 0x9d, 0x8d, 0xb4, 0x3b,
-	0x1b, 0xfb, 0x69, 0x77, 0x5a, 0x93, 0x5c, 0xfb, 0x91, 0xcd, 0x30, 0xfa, 0x14, 0x26, 0x70, 0xe0,
-	0x26, 0x86, 0x13, 0x23, 0x0d, 0xcb, 0x38, 0x70, 0xb9, 0x59, 0x96, 0xce, 0xc9, 0x5c, 0x3a, 0x63,
-	0x58, 0x0e, 0x2f, 0xb4, 0x7b, 0x60, 0x33, 0x0d, 0x46, 0xc3, 0x12, 0xda, 0x4d, 0x16, 0x9b, 0xb6,
-	0x43, 0x37, 0x35, 0xad, 0x8c, 0x36, 0x15, 0xda, 0x4d, 0x66, 0x3c, 0x81, 0xb9, 0x2d, 0xcc, 0xf6,
-	0x23, 0x3b, 0xa0, 0xb6, 0xc3, 0x32, 0xe7, 0x6b, 0x0d, 0x6e, 0x30, 0x49, 0x2e, 0x9a, 0x75, 0x56,
-	0x6a, 0x56, 0xc9, 0xcc, 0xca, 0xe8, 0x1a, 0x1f, 0x40, 0x45, 0xda, 0x34, 0xfe, 0x56, 0xe1, 0x56,
-	0xef, 0x08, 0xef, 0x61, 0xc6, 0xfc, 0xc0, 0xeb, 0xa3, 0xa5, 0x90, 0x4f, 0xcb, 0x3c, 0x94, 0xec,
-	0x16, 0x69, 0x07, 0x2c, 0xd3, 0x2b, 0x42, 0x76, 0x49, 0xb3, 0x64, 0xe9, 0x1c, 0xbf, 0x3e, 0x9d,
-	0xa5, 0x77, 0xa1, 0x73, 0x07, 0xee, 0x6f, 0x61, 0xf6, 0x05, 0x23, 0xe1, 0x40, 0xba, 0x1b, 0x67,
-	0xbb, 0x22, 0xa9, 0x47, 0xb4, 0x37, 0x82, 0x2a, 0x3d, 0x06, 0x12, 0x86, 0x8b, 0x16, 0x74, 0x93,
-	0xa7, 0xc6, 0x4f, 0x2a, 0x3c, 0xb8, 0x9a, 0x43, 0x51, 0xb4, 0xa7, 0xa0, 0xc5, 0x63, 0xf4, 0xc0,
-	0xe9, 0x6a, 0x1f, 0xd0, 0x44, 0x3d, 0x2d, 0xe0, 0x7c, 0x66, 0xda, 0xf4, 0xf9, 0xb4, 0x66, 0x71,
-	0x5e, 0x28, 0x6a, 0x7c, 0x09, 0xcb, 0x99, 0x31, 0xfc, 0x5f, 0x92, 0x3a, 0x83, 0xfa, 0x68, 0x5f,
-	0x22, 0x9f, 0xaf, 0x61, 0xea, 0xba, 0xa9, 0x20, 0x67, 0x30, 0x8d, 0xdf, 0x54, 0x58, 0x4a, 0xc6,
-	0xe9, 0xe3, 0xe8, 0x09, 0xaf, 0xda, 0xa0, 0x9d, 0x48, 0x23, 0xdb, 0x9d, 0xea, 0xa8, 0xee, 0x2c,
-	0x5c, 0xd2, 0x9d, 0xc5, 0x81, 0x41, 0xac, 0xc1, 0x18, 0x3b, 0x0b, 0xb1, 0xd4, 0xb7, 0xaa, 0xc5,
-	0x25, 0x06, 0x82, 0x9b, 0x82, 0x86, 0xdd, 0x88, 0xb4, 0x08, 0x3f, 0x3e, 0xcb, 0x70, 0x2f, 0x0b,
-	0xba, 0x5f, 0x43, 0x60, 0x8e, 0x15, 0xb7, 0x30, 0xeb, 0xdf, 0x95, 0x88, 0x4d, 0x15, 0xeb, 0xb0,
-	0x34, 0x4a, 0x31, 0x29, 0x00, 0xbf, 0x80, 0xf8, 0xe5, 0x97, 0xec, 0xc8, 0xb7, 0x98, 0xa0, 0x81,
-	0x73, 0x13, 0xdf, 0x62, 0xfc, 0xd6, 0x96, 0x75, 0x53, 0x0d, 0xb4, 0x0f, 0x73, 0xf1, 0x66, 0x4e,
-	0x57, 0x72, 0xde, 0x46, 0x55, 0x72, 0x26, 0x36, 0x1e, 0x10, 0x1b, 0x6f, 0x55, 0xd0, 0x9a, 0xa9,
-	0xd9, 0xff, 0x0f, 0x1f, 0xfa, 0x16, 0xe6, 0xbb, 0x56, 0x79, 0xae, 0x8b, 0x57, 0x70, 0x5d, 0xed,
-	0x6e, 0x0e, 0xe6, 0xff, 0x1c, 0xe6, 0xe2, 0x6c, 0x7a, 0x85, 0xec, 0x1d, 0x9b, 0x8f, 0xa1, 0x14,
-	0xda, 0x5e, 0x1c, 0x24, 0x49, 0xfe, 0x46, 0xc3, 0x69, 0x35, 0x76, 0x6d, 0x0f, 0x6f, 0x07, 0x47,
-	0xc4, 0x12, 0x7b, 0x68, 0x0d, 0x26, 0x04, 0x03, 0x54, 0x2b, 0xf0, 0x13, 0xa5, 0x4b, 0x60, 0x72,
-	0xaa, 0x6e, 0x75, 0xf5, 0x8d, 0x17, 0x2a, 0xcc, 0x77, 0xc9, 0xbf, 0x3e, 0x84, 0xf5, 0x01, 0x08,
-	0x8b, 0x12, 0x84, 0x61, 0xd5, 0xed, 0xe1, 0x58, 0x7d, 0x5b, 0x86, 0x9b, 0x5d, 0xb5, 0xbd, 0xe4,
-	0xa9, 0x8b, 0xd6, 0xe1, 0xc3, 0xec, 0xa3, 0x11, 0x81, 0x88, 0xee, 0x07, 0x5e, 0xf5, 0xae, 0x14,
-	0x61, 0xc8, 0xdb, 0xf2, 0x3b, 0x98, 0xc9, 0x7d, 0xfa, 0xa1, 0x65, 0xc9, 0xf6, 0xb2, 0xd7, 0x65,
-	0xb5, 0x3e, 0x5a, 0x51, 0xc4, 0x6a, 0xc2, 0x47, 0x7d, 0x57, 0x70, 0x06, 0xad, 0x91, 0x45, 0x9b,
-	0x7b, 0x55, 0x9f, 0xf5, 0x4f, 0xb5, 0xfd, 0xc8, 0x76, 0xfd, 0xc0, 0x1b, 0xec, 0xc9, 0x15, 0xb9,
-	0xdb, 0xae, 0x34, 0x08, 0xab, 0x97, 0x36, 0x28, 0x7a, 0x0e, 0xf5, 0xac, 0x9f, 0xe6, 0xd0, 0x86,
-	0x7d, 0xff, 0xc1, 0x5f, 0xa8, 0xa0, 0x5f, 0x3e, 0xc7, 0xd0, 0x27, 0x59, 0xfa, 0x46, 0xcf, 0xc6,
-	0xea, 0xca, 0x3b, 0x58, 0x08, 0xfe, 0x3d, 0x98, 0x4d, 0xf2, 0xe9, 0x57, 0xce, 0x84, 0xbf, 0xd2,
-	0x0c, 0xaf, 0xde, 0x96, 0x2c, 0x06, 0xdc, 0x79, 0x30, 0x9b, 0x6f, 0xfd, 0xbe, 0x03, 0x3d, 0x06,
-	0x24, 0x7a, 0x48, 0x3a, 0xdb, 0x68, 0x26, 0xee, 0xcb, 0x4d, 0xfe, 0x55, 0xf7, 0x95, 0x4f, 0x59,
-	0xea, 0xc9, 0xe8, 0x9b, 0x1a, 0x79, 0xe3, 0xe0, 0x29, 0x4c, 0xe7, 0x8d, 0x8b, 0x61, 0x2e, 0x97,
-	0xf3, 0xa6, 0x40, 0x8e, 0xdf, 0x8d, 0x1f, 0x7f, 0x6d, 0x2e, 0xa2, 0xbb, 0x70, 0x1b, 0xef, 0x93,
-	0xb0, 0xd6, 0xdc, 0xdd, 0x5e, 0xab, 0x75, 0xd5, 0x6b, 0xe2, 0xcb, 0x77, 0xb5, 0x70, 0xba, 0x72,
-	0x7e, 0xa1, 0xab, 0xaf, 0x2e, 0x74, 0xf5, 0xf5, 0x85, 0xae, 0xfc, 0x73, 0xa1, 0x2b, 0x3f, 0x77,
-	0x74, 0xe5, 0xf7, 0x8e, 0xae, 0xfc, 0xd1, 0xd1, 0x95, 0xf3, 0x8e, 0xae, 0xbc, 0xea, 0xe8, 0xca,
-	0xeb, 0x8e, 0xae, 0xfc, 0xf2, 0x46, 0x57, 0x5e, 0xbe, 0xd1, 0x95, 0x6f, 0xee, 0xc5, 0x0f, 0xa1,
-	0xc6, 0x69, 0x60, 0x1e, 0xda, 0xce, 0xf7, 0x38, 0x70, 0xcd, 0xf0, 0xd0, 0x1c, 0xfc, 0x92, 0xfe,
-	0x37, 0x00, 0x00, 0xff, 0xff, 0xda, 0xd1, 0xaa, 0x8f, 0x5e, 0x0f, 0x00, 0x00,
+	// 1331 bytes of a gzipped FileDescriptorProto
+	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xcc, 0x58, 0xcf, 0x8f, 0xd3, 0xc6,
+	0x17, 0xb7, 0x93, 0x6c, 0xb2, 0xfb, 0x02, 0x7c, 0xc1, 0xbb, 0x2c, 0x51, 0x08, 0x26, 0x98, 0x2f,
+	0x4b, 0x2a, 0x20, 0x29, 0x91, 0x2a, 0x15, 0x7a, 0x40, 0x61, 0xa9, 0x56, 0x41, 0x14, 0x56, 0x66,
+	0xe1, 0xd0, 0x43, 0x23, 0x63, 0x4f, 0x8c, 0xdb, 0x8d, 0xc7, 0xf5, 0x4c, 0x16, 0xad, 0x50, 0x0f,
+	0x3d, 0x80, 0x7a, 0xac, 0x7a, 0xe2, 0xd6, 0x43, 0x2f, 0xfd, 0x13, 0x7a, 0xee, 0x89, 0x43, 0x0f,
+	0xfc, 0x05, 0x15, 0x1b, 0xa4, 0x9e, 0x7b, 0xe9, 0xb1, 0x52, 0xe5, 0xf1, 0xd8, 0x19, 0xc7, 0xce,
+	0x8f, 0xdd, 0x72, 0xe8, 0x65, 0xd7, 0x79, 0xf3, 0x7e, 0x7c, 0xde, 0xe7, 0xbd, 0x79, 0xe3, 0x31,
+	0x68, 0x04, 0xf9, 0x7b, 0x8e, 0x89, 0x48, 0xcb, 0xe8, 0xf7, 0x9d, 0x5d, 0xc7, 0xa0, 0x68, 0xfc,
+	0xd4, 0xf4, 0x7c, 0x4c, 0xb1, 0xb2, 0x12, 0x0b, 0xaa, 0x57, 0x99, 0xc4, 0xbc, 0x66, 0x23, 0xf7,
+	0x1a, 0x79, 0x66, 0xd8, 0x36, 0xf2, 0x5b, 0xd8, 0xa3, 0x0e, 0x76, 0x49, 0xcb, 0x70, 0x5d, 0x4c,
+	0x0d, 0xf6, 0x1c, 0x1a, 0x56, 0xd7, 0x6c, 0x6c, 0x63, 0xf6, 0xd8, 0x0a, 0x9e, 0xb8, 0x74, 0xd5,
+	0xc4, 0x83, 0x01, 0x76, 0x5b, 0xe1, 0x3f, 0x2e, 0x3c, 0x6f, 0x63, 0x6c, 0xef, 0xa2, 0x16, 0xfb,
+	0xf5, 0x64, 0xd8, 0x6f, 0x51, 0x67, 0x80, 0x08, 0x35, 0x06, 0x5e, 0xe4, 0x0b, 0x51, 0xec, 0xb5,
+	0xc8, 0x53, 0xfe, 0x27, 0x94, 0x6a, 0x1f, 0xc3, 0xfa, 0x16, 0xa2, 0x9b, 0x78, 0x30, 0x70, 0x08,
+	0x09, 0x22, 0xeb, 0x88, 0x78, 0xd8, 0x25, 0x48, 0x51, 0xa1, 0x34, 0x40, 0x84, 0x18, 0x36, 0xaa,
+	0xc8, 0x75, 0xb9, 0xb1, 0x72, 0xbb, 0xf0, 0xfa, 0xf7, 0xf3, 0x92, 0x1e, 0x09, 0xb5, 0x5b, 0x50,
+	0xbb, 0x8f, 0xa9, 0xd3, 0xdf, 0xbf, 0x8f, 0x9e, 0x3d, 0x7c, 0x8a, 0xbd, 0xed, 0xa1, 0x6f, 0x3e,
+	0x35, 0x08, 0xd2, 0xd1, 0xd7, 0x43, 0x44, 0xa8, 0x72, 0x1e, 0x96, 0xb1, 0x6f, 0x21, 0xbf, 0xe7,
+	0x58, 0xcc, 0x41, 0x3e, 0x72, 0xc0, 0xa4, 0x5d, 0x4b, 0xbb, 0x05, 0xe7, 0xa6, 0x38, 0x58, 0x10,
+	0x41, 0x07, 0x14, 0x86, 0x7d, 0xe8, 0x89, 0xb8, 0xaf, 0x40, 0xc9, 0x0c, 0x45, 0x15, 0xb9, 0x9e,
+	0x6f, 0x94, 0xdb, 0xa7, 0x9a, 0xe3, 0x7a, 0x84, 0xca, 0x7a, 0xa4, 0xa1, 0xbd, 0x92, 0x61, 0x75,
+	0xd3, 0x47, 0x06, 0x45, 0x7c, 0x85, 0x83, 0xaf, 0xc2, 0xd2, 0x9e, 0xb1, 0x3b, 0x0c, 0x03, 0x2f,
+	0xf1, 0xc0, 0xa1, 0x48, 0xa9, 0x40, 0x61, 0xe8, 0x3a, 0xb4, 0x92, 0x8b, 0x31, 0xc9, 0x3a, 0x93,
+	0x28, 0x1b, 0x50, 0xb6, 0x10, 0x31, 0x7d, 0x87, 0x15, 0xb4, 0x92, 0x17, 0x14, 0xc4, 0x05, 0xe5,
+	0x22, 0x80, 0xe7, 0x63, 0x6b, 0x68, 0xd2, 0x80, 0x9c, 0x82, 0x40, 0xce, 0x0a, 0x97, 0x77, 0x2d,
+	0xed, 0xd7, 0x3c, 0x14, 0x43, 0x50, 0xca, 0x1a, 0xe4, 0x26, 0x48, 0xcc, 0x39, 0x56, 0x80, 0xc3,
+	0xc4, 0x16, 0x12, 0x70, 0x48, 0x3a, 0x93, 0x8c, 0xd1, 0xe7, 0xa7, 0xa3, 0x2f, 0x88, 0x56, 0x59,
+	0xe8, 0x97, 0xa6, 0xa1, 0x3f, 0x07, 0xa5, 0x21, 0x09, 0xeb, 0x5a, 0x14, 0x20, 0x15, 0x03, 0x61,
+	0xd7, 0x52, 0x6e, 0x00, 0x10, 0x6a, 0xf8, 0xb4, 0x67, 0x19, 0x14, 0x55, 0x4a, 0x75, 0xb9, 0x51,
+	0x6e, 0x57, 0x9b, 0x61, 0x77, 0x36, 0xa3, 0xee, 0x6c, 0xee, 0x44, 0xdd, 0xa9, 0xaf, 0x30, 0xed,
+	0x3b, 0x06, 0x45, 0xca, 0x47, 0xb0, 0x8c, 0x5c, 0x2b, 0x34, 0x5c, 0x9e, 0x6b, 0x58, 0x42, 0xae,
+	0xc5, 0xcc, 0x92, 0x74, 0xae, 0x64, 0xd2, 0x19, 0xc0, 0x32, 0x59, 0xa1, 0xad, 0x9e, 0x41, 0x2b,
+	0x30, 0x1f, 0x16, 0xd7, 0xee, 0xd0, 0xc0, 0x74, 0xe8, 0x59, 0x91, 0x69, 0x79, 0xbe, 0x29, 0xd7,
+	0xee, 0x50, 0xed, 0x11, 0x9c, 0xd9, 0x42, 0x74, 0xc7, 0x37, 0x5c, 0x62, 0x98, 0x34, 0xb1, 0xbf,
+	0x6e, 0xc2, 0x31, 0x2a, 0xc8, 0x79, 0xb3, 0xae, 0x0b, 0xcd, 0x2a, 0x98, 0xe9, 0x09, 0x5d, 0xed,
+	0x38, 0x94, 0x85, 0x45, 0xed, 0x0f, 0x19, 0x4e, 0x8d, 0xb7, 0xf0, 0x43, 0x44, 0xa9, 0xe3, 0xda,
+	0x13, 0xb4, 0xe4, 0xb2, 0x69, 0xa9, 0x41, 0xd1, 0x18, 0xe0, 0xa1, 0x4b, 0x13, 0xbd, 0xc2, 0x65,
+	0x33, 0x9a, 0x25, 0x49, 0xe7, 0xd2, 0xd1, 0xe9, 0x2c, 0x1e, 0x86, 0xce, 0xfb, 0x70, 0x65, 0x0b,
+	0xd1, 0x4f, 0x29, 0xf6, 0x52, 0xe9, 0xde, 0xde, 0xdf, 0xe6, 0x49, 0xdd, 0x21, 0xe3, 0x11, 0x54,
+	0x1e, 0x33, 0x10, 0x32, 0x9c, 0xd7, 0x21, 0x4e, 0x9e, 0x68, 0x2f, 0x65, 0xb8, 0xba, 0x98, 0x43,
+	0x5e, 0xb4, 0xc7, 0x50, 0x09, 0xc6, 0x68, 0xcf, 0x8c, 0xb5, 0x7b, 0x24, 0x54, 0x8f, 0x0a, 0x58,
+	0x4b, 0x4c, 0x9b, 0x09, 0x9f, 0xfa, 0x3a, 0xca, 0x0a, 0x45, 0xb4, 0xbb, 0x70, 0x39, 0x31, 0x86,
+	0xff, 0x4d, 0x52, 0xfb, 0xd0, 0x98, 0xef, 0x8b, 0xe7, 0xf3, 0x19, 0xac, 0x1e, 0x35, 0x15, 0xc5,
+	0x4c, 0xa7, 0xf1, 0xa3, 0x0c, 0x1b, 0xe1, 0x38, 0x7d, 0xe0, 0x3f, 0x62, 0x55, 0x4b, 0xdb, 0xf1,
+	0x34, 0x92, 0xdd, 0x29, 0xcf, 0xeb, 0xce, 0xdc, 0x8c, 0xee, 0xcc, 0xa7, 0x06, 0x71, 0x05, 0x0a,
+	0x74, 0xdf, 0x43, 0x42, 0xdf, 0xca, 0x3a, 0x93, 0x68, 0xbf, 0xc9, 0x70, 0x92, 0xf3, 0xb0, 0xed,
+	0xe3, 0x01, 0x66, 0x13, 0xed, 0x0a, 0x94, 0x78, 0x4c, 0x06, 0x24, 0x38, 0x32, 0xd8, 0x11, 0xc9,
+	0x4e, 0xa5, 0x70, 0x41, 0x8f, 0x34, 0xf8, 0x30, 0xce, 0x4d, 0x0c, 0xe3, 0x64, 0x3a, 0xf9, 0x79,
+	0xe9, 0x14, 0x66, 0xa4, 0xb3, 0x94, 0xda, 0x6c, 0x51, 0x3a, 0x45, 0x71, 0x85, 0xa5, 0x73, 0x19,
+	0x2e, 0x25, 0xf9, 0x9e, 0xcc, 0x8d, 0xd3, 0x1d, 0x28, 0x6e, 0x21, 0x3a, 0xb9, 0x2a, 0xf4, 0x44,
+	0xa4, 0xd8, 0x80, 0x8d, 0x79, 0x8a, 0x61, 0xef, 0xb0, 0xb3, 0x53, 0x64, 0x48, 0x38, 0x80, 0x17,
+	0x67, 0x73, 0x07, 0xce, 0x04, 0x8b, 0x19, 0x1b, 0x8a, 0x51, 0x3c, 0xaf, 0x09, 0x4f, 0x07, 0xc6,
+	0x29, 0xb1, 0xf6, 0xb7, 0x0c, 0x95, 0x4e, 0x64, 0xf6, 0xdf, 0xc3, 0xa7, 0x7c, 0x01, 0xb5, 0xd8,
+	0x2a, 0xcb, 0x75, 0x7e, 0x01, 0xd7, 0xd5, 0x78, 0x31, 0x9d, 0xff, 0x73, 0x38, 0x13, 0x64, 0x33,
+	0x2e, 0xe4, 0x78, 0xc7, 0xff, 0x1f, 0x8a, 0x9e, 0x61, 0x07, 0x41, 0xc2, 0xe4, 0x8f, 0x35, 0xcd,
+	0x41, 0x73, 0xdb, 0xb0, 0x51, 0xd7, 0xed, 0x63, 0x9d, 0xaf, 0x29, 0x37, 0x61, 0x99, 0x33, 0x40,
+	0x2a, 0x39, 0x36, 0x0c, 0x54, 0x01, 0x4c, 0x46, 0xd5, 0xf5, 0x58, 0x5f, 0x7b, 0x21, 0x43, 0x2d,
+	0x26, 0xff, 0xe8, 0x10, 0x6e, 0xa5, 0x20, 0x5c, 0x14, 0x20, 0x4c, 0xab, 0xae, 0x80, 0x63, 0x17,
+	0xaa, 0x19, 0x9d, 0x7c, 0xa8, 0xf9, 0xf3, 0x01, 0x1c, 0xf7, 0x51, 0x1f, 0xf9, 0xbe, 0xb1, 0xdb,
+	0x8b, 0xdf, 0xb5, 0xf2, 0x7c, 0xa0, 0x1c, 0x8b, 0x96, 0x36, 0xb1, 0x85, 0xb4, 0x9f, 0x64, 0x38,
+	0x9b, 0x19, 0x8e, 0x27, 0x7d, 0x03, 0x02, 0xbf, 0xa1, 0x90, 0xe7, 0x7d, 0x56, 0xc8, 0x27, 0x65,
+	0x37, 0xd6, 0x56, 0xba, 0x70, 0x2a, 0x46, 0x61, 0x39, 0xc4, 0x8c, 0x07, 0xe2, 0xbc, 0x16, 0x39,
+	0x19, 0x99, 0xdd, 0xe1, 0x56, 0xda, 0xb7, 0x32, 0xd4, 0x32, 0x50, 0x1e, 0xb6, 0x36, 0x9f, 0x30,
+	0xf2, 0xb8, 0x2d, 0xaf, 0xce, 0xcc, 0x6c, 0x04, 0xf5, 0xf6, 0xcb, 0x02, 0x9c, 0xd8, 0xf1, 0x0d,
+	0xcb, 0x71, 0xed, 0x87, 0xe1, 0xdd, 0x49, 0x79, 0x00, 0x0a, 0x97, 0x08, 0xfd, 0xa2, 0x9c, 0x0e,
+	0x62, 0x6f, 0xb2, 0x4b, 0xce, 0x3d, 0x87, 0x50, 0x5e, 0xb9, 0xaa, 0x36, 0xd1, 0x89, 0x59, 0x2d,
+	0xb6, 0x3f, 0x79, 0x0e, 0x71, 0xf7, 0xe9, 0xad, 0x78, 0x5d, 0x64, 0x70, 0xa1, 0xa3, 0xab, 0x3a,
+	0x93, 0x74, 0xe5, 0x31, 0xac, 0x65, 0x31, 0x3c, 0x2d, 0x9b, 0xcb, 0x82, 0xb3, 0x99, 0x95, 0xb1,
+	0x61, 0x3d, 0xc4, 0x97, 0x3a, 0xbe, 0x3e, 0x9c, 0x9a, 0xc2, 0x94, 0xe6, 0xaf, 0xce, 0xaa, 0x55,
+	0x10, 0x28, 0xdb, 0xfa, 0x3d, 0x07, 0x6a, 0x13, 0x28, 0x07, 0xf5, 0x8b, 0x9a, 0xc0, 0x82, 0xd5,
+	0x0c, 0x02, 0x94, 0x4b, 0xb3, 0x09, 0x8a, 0x22, 0x6d, 0xcc, 0x53, 0x0b, 0x69, 0x6c, 0xff, 0x55,
+	0x80, 0x93, 0xf1, 0xf0, 0x88, 0x42, 0xdf, 0x85, 0x13, 0xc9, 0x5b, 0xf0, 0xb4, 0x6a, 0x5d, 0x48,
+	0x46, 0xc9, 0xba, 0x37, 0x7f, 0x09, 0xa7, 0x33, 0xaf, 0xb5, 0x8a, 0x58, 0xe9, 0x59, 0x37, 0xe7,
+	0x6a, 0x63, 0xbe, 0x22, 0x8f, 0x75, 0x0f, 0xfe, 0x37, 0x71, 0xbd, 0x58, 0x64, 0xd3, 0x4c, 0xbb,
+	0x91, 0x3c, 0x87, 0x46, 0xb2, 0xaa, 0x9d, 0xa9, 0x27, 0xcc, 0xfb, 0xdf, 0x36, 0x2f, 0x64, 0x50,
+	0x67, 0xbf, 0x78, 0x24, 0xda, 0x6f, 0xa1, 0x97, 0x99, 0xea, 0xf5, 0x43, 0x58, 0xc4, 0x6f, 0xf8,
+	0x6b, 0x59, 0x87, 0xd7, 0x22, 0xdb, 0x77, 0xd6, 0xa1, 0x77, 0xfb, 0x9b, 0x1f, 0x3a, 0x17, 0x95,
+	0x0b, 0x70, 0x16, 0xed, 0x60, 0xaf, 0xde, 0xd9, 0xee, 0xde, 0xac, 0xc7, 0xea, 0x75, 0xfe, 0x09,
+	0xa9, 0x9d, 0xdb, 0xbb, 0xfe, 0xfa, 0x40, 0x95, 0xdf, 0x1c, 0xa8, 0xf2, 0xdb, 0x03, 0x55, 0xfa,
+	0xf3, 0x40, 0x95, 0xbe, 0x1b, 0xa9, 0xd2, 0xcf, 0x23, 0x55, 0xfa, 0x65, 0xa4, 0x4a, 0xaf, 0x47,
+	0xaa, 0xf4, 0x66, 0xa4, 0x4a, 0x6f, 0x47, 0xaa, 0xf4, 0xfd, 0x3b, 0x55, 0x7a, 0xf5, 0x4e, 0x95,
+	0x3e, 0xbf, 0x14, 0xdc, 0x28, 0x9a, 0x7b, 0x6e, 0xeb, 0x89, 0x61, 0x7e, 0x85, 0x5c, 0xab, 0xe5,
+	0x3d, 0x69, 0xa5, 0x3f, 0x49, 0xfd, 0x13, 0x00, 0x00, 0xff, 0xff, 0x46, 0xd3, 0x89, 0x3b, 0xa7,
+	0x12, 0x00, 0x00,
 }

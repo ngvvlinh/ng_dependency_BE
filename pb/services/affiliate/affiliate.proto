@@ -5,38 +5,48 @@ import "protoc-gen-swagger/options/annotations.proto";
 option (grpc.gateway.protoc_gen_swagger.options.openapiv2_swagger) = {
     info: {
         title: "eTop API: Affiliate service";
-version:"v1"
+version:"v1";
 };
 };
+
 import "gogoproto/gogo.proto";
-option (gogoproto.equal_all)                = false;
-option (gogoproto.gogoproto_import)         = false;
-option (gogoproto.goproto_enum_prefix_all)  = true;
-option (gogoproto.goproto_getters_all)      = true;
+option (gogoproto.equal_all) = false;
+option (gogoproto.gogoproto_import) = false;
+option (gogoproto.goproto_enum_prefix_all) = true;
+option (gogoproto.goproto_getters_all) = true;
 option (gogoproto.goproto_unrecognized_all) = false;
-option (gogoproto.gostring_all)             = false;
-option (gogoproto.marshaler_all)            = false;
-option (gogoproto.onlyone_all)              = false;
-option (gogoproto.sizer_all)                = false;
-option (gogoproto.testgen_all)              = false;
-option (gogoproto.unmarshaler_all)          = false;
-option (gogoproto.verbose_equal_all)        = false;
+option (gogoproto.gostring_all) = false;
+option (gogoproto.marshaler_all) = false;
+option (gogoproto.onlyone_all) = false;
+option (gogoproto.sizer_all) = false;
+option (gogoproto.testgen_all) = false;
+option (gogoproto.unmarshaler_all) = false;
+option (gogoproto.verbose_equal_all) = false;
 import "common/common.proto";
 import "google/protobuf/timestamp.proto";
 import "etop/shop/shop.proto";
 //service MiscService {
 //    rpc VersionInfo(cm.Empty) returns (cm.VersionInfoResponse);
 //}
-service AffiliateService {
-    rpc GetCommissions (cm.Paging) returns (GetCommissionsResponse);
-    rpc NotifyNewShopPurchase (NotifyNewShopPurchaseRequest) returns (NotifyNewShopPurchaseResponse);
-    rpc GetTransactions (cm.Paging) returns (GetTransactionsResponse);
+
+service TradingService {
+    rpc TradingGetProducts (cm.CommonListRequest) returns (ShopGetProductsResponse);
     rpc CreateOrUpdateTradingCommissionSetting (CreateOrUpdateCommissionSettingRequest) returns (CommissionSetting);
-    rpc CreateOrUpdateAffiliateCommissionSetting (CreateOrUpdateCommissionSettingRequest) returns (CommissionSetting);
-    rpc GetProductPromotionByProductID (GetProductPromotionByProductIDRequest) returns (GetProductPromotionByProductIDResponse);
+    rpc GetProductPromotions (cm.CommonListRequest) returns (GetProductPromotionsResponse);
     rpc CreateProductPromotion (CreateOrUpdateProductPromotionRequest) returns (ProductPromotion);
     rpc UpdateProductPromotion (CreateOrUpdateProductPromotionRequest) returns (ProductPromotion);
-    rpc TradingGetProducts (cm.CommonListRequest) returns (ShopGetProductsResponse);
+}
+
+service ShopService {
+    rpc GetProductPromotion (GetProductPromotionRequest) returns (GetProductPromotionResponse);
+}
+
+service AffiliateService {
+    rpc GetCommissions (cm.CommonListRequest) returns (GetCommissionsResponse);
+    rpc NotifyNewShopPurchase (NotifyNewShopPurchaseRequest) returns (NotifyNewShopPurchaseResponse);
+    rpc GetTransactions (cm.CommonListRequest) returns (GetTransactionsResponse);
+    rpc CreateOrUpdateAffiliateCommissionSetting (CreateOrUpdateCommissionSettingRequest) returns (CommissionSetting);
+    rpc GetProductPromotionByProductID (GetProductPromotionByProductIDRequest) returns (GetProductPromotionByProductIDResponse);
     rpc AffiliateGetProducts (cm.CommonListRequest) returns (AffiliateGetProductsResponse);
 }
 
@@ -109,7 +119,12 @@ message CreateOrUpdateCommissionSettingRequest {
 }
 
 message ProductPromotion {
-
+    optional shop.ShopProduct product = 1;
+    optional int64 id = 2 [(gogoproto.nullable) = false];
+    optional int64 product_id = 3 [(gogoproto.nullable) = false];
+    optional int32 amount = 4 [(gogoproto.nullable) = false];
+    optional string unit = 5 [(gogoproto.nullable) = false];
+    optional string type = 6 [(gogoproto.nullable) = false];
 }
 
 message CreateOrUpdateProductPromotionRequest {
@@ -144,4 +159,19 @@ message ShopGetProductsResponse {
 message AffiliateGetProductsResponse {
     optional cm.PageInfo paging = 1;
     repeated AffiliateProductResponse products = 2;
+}
+
+message GetProductPromotionRequest {
+    optional int64 product_id = 1 [(gogoproto.nullable) = false];
+    optional int64 referral_code = 2 [(gogoproto.nullable) = true];
+}
+
+message GetProductPromotionResponse {
+    optional ProductPromotion promotion = 1;
+    optional CommissionSetting referral_discount = 2;
+}
+
+message GetProductPromotionsResponse {
+    optional cm.PageInfo paging = 1;
+    repeated ProductPromotion promotions = 2;
 }

@@ -19,11 +19,17 @@ import (
 
 func init() {
 	bus.AddHandlers("",
+		TradingGetProducts,
+		CreateOrUpdateTradingCommissionSetting,
+		GetProductPromotions,
+		CreateProductPromotion,
+		UpdateProductPromotion,
+
 		GetCommissions,
 		NotifyNewShopPurchase,
-		CreateOrUpdateTradingCommissionSetting,
+		GetTransactions,
 		CreateOrUpdateAffiliateCommissionSetting,
-		TradingGetProducts,
+		GetProductPromotionByProductID,
 		AffiliateGetProducts,
 	)
 }
@@ -44,49 +50,6 @@ func Init(
 	affiliateCmd = affCmd
 	catalogQuery = catQuery
 	affiliateQuery = affQuery
-}
-
-func GetCommissions(ctx context.Context, q *wrapaff.GetCommissionsEndpoint) error {
-	q.Result = &pbaff.GetCommissionsResponse{Message: "hello"}
-	return nil
-}
-
-func NotifyNewShopPurchase(ctx context.Context, q *wrapaff.NotifyNewShopPurchaseEndpoint) error {
-	return nil
-}
-
-func CreateOrUpdateTradingCommissionSetting(ctx context.Context, q *wrapaff.CreateOrUpdateTradingCommissionSettingEndpoint) error {
-	if q.Context.Shop.ID != modeletop.EtopTradingAccountID {
-		return cm.Errorf(cm.Unauthenticated, nil, "Unauthorized")
-	}
-
-	cmd := &affiliate.CreateOrUpdateCommissionSettingCommand{
-		ProductID: q.ProductId,
-		AccountID: modeletop.EtopTradingAccountID, // TODO test public api
-		Amount:    q.Amount,
-		Unit:      *q.Unit,
-		Type:      "shop",
-	}
-	if err := affiliateCmd.Dispatch(ctx, cmd); err != nil {
-		return err
-	}
-	q.Result = pbaff.PbCommissionSetting(cmd.Result)
-	return nil
-}
-
-func CreateOrUpdateAffiliateCommissionSetting(ctx context.Context, q *wrapaff.CreateOrUpdateAffiliateCommissionSettingEndpoint) error {
-	cmd := &affiliate.CreateOrUpdateCommissionSettingCommand{
-		ProductID: q.ProductId,
-		AccountID: q.Context.Affiliate.ID,
-		Amount:    q.Amount,
-		Unit:      *q.Unit,
-		Type:      "affiliate",
-	}
-	if err := affiliateCmd.Dispatch(ctx, cmd); err != nil {
-		return err
-	}
-	q.Result = pbaff.PbCommissionSetting(cmd.Result)
-	return nil
 }
 
 func TradingGetProducts(ctx context.Context, q *wrapaff.TradingGetProductsEndpoint) error {
@@ -124,30 +87,67 @@ func TradingGetProducts(ctx context.Context, q *wrapaff.TradingGetProductsEndpoi
 	return nil
 }
 
-func GetShopCommissionSettingsByProducts(ctx context.Context, accountID int64, products []*servicecatalog.ShopProduct) map[int64]*affiliate.CommissionSetting {
-	var productIds []int64
-	for _, product := range products {
-		productIds = append(productIds, product.ProductID)
+func CreateOrUpdateTradingCommissionSetting(ctx context.Context, q *wrapaff.CreateOrUpdateTradingCommissionSettingEndpoint) error {
+	if q.Context.Shop.ID != modeletop.EtopTradingAccountID {
+		return cm.Errorf(cm.Unauthenticated, nil, "Unauthorized")
 	}
 
-	getShopCommissionByProductIDsQuery := &affiliate.GetCommissionByProductIDsQuery{
-		AccountID:  accountID,
-		ProductIDs: productIds,
+	cmd := &affiliate.CreateOrUpdateCommissionSettingCommand{
+		ProductID: q.ProductId,
+		AccountID: modeletop.EtopTradingAccountID, // TODO test public api
+		Amount:    q.Amount,
+		Unit:      *q.Unit,
+		Type:      "shop",
 	}
-	if err := affiliateQuery.Dispatch(ctx, getShopCommissionByProductIDsQuery); err != nil {
-		return map[int64]*affiliate.CommissionSetting{}
+	if err := affiliateCmd.Dispatch(ctx, cmd); err != nil {
+		return err
 	}
+	q.Result = pbaff.PbCommissionSetting(cmd.Result)
+	return nil
+}
 
-	var interfaceArr []interface{}
-	for _, e := range getShopCommissionByProductIDsQuery.Result {
-		interfaceArr = append(interfaceArr, e)
-	}
-	shopCommissionMap := map[int64]*affiliate.CommissionSetting{}
-	for _, e := range getShopCommissionByProductIDsQuery.Result {
-		shopCommissionMap[e.ProductID] = e
-	}
+func GetProductPromotions(ctx context.Context, q *wrapaff.GetProductPromotionsEndpoint) error {
+	panic("IMPLEMENT ME")
+}
 
-	return shopCommissionMap
+func CreateProductPromotion(ctx context.Context, q *wrapaff.CreateProductPromotionEndpoint) error {
+	panic("IMPLEMENT ME")
+}
+
+func UpdateProductPromotion(ctx context.Context, q *wrapaff.CreateProductPromotionEndpoint) error {
+	panic("IMPLEMENT ME")
+}
+
+func GetCommissions(ctx context.Context, q *wrapaff.GetCommissionsEndpoint) error {
+	q.Result = &pbaff.GetCommissionsResponse{Message: "hello"}
+	return nil
+}
+
+func NotifyNewShopPurchase(ctx context.Context, q *wrapaff.NotifyNewShopPurchaseEndpoint) error {
+	panic("IMPLEMENT ME")
+}
+
+func GetTransactions(ctx context.Context, q *wrapaff.GetTransactionsEndpoint) error {
+	panic("IMPLEMENT ME")
+}
+
+func CreateOrUpdateAffiliateCommissionSetting(ctx context.Context, q *wrapaff.CreateOrUpdateAffiliateCommissionSettingEndpoint) error {
+	cmd := &affiliate.CreateOrUpdateCommissionSettingCommand{
+		ProductID: q.ProductId,
+		AccountID: q.Context.Affiliate.ID,
+		Amount:    q.Amount,
+		Unit:      *q.Unit,
+		Type:      "affiliate",
+	}
+	if err := affiliateCmd.Dispatch(ctx, cmd); err != nil {
+		return err
+	}
+	q.Result = pbaff.PbCommissionSetting(cmd.Result)
+	return nil
+}
+
+func GetProductPromotionByProductID(ctx context.Context, q *wrapaff.GetProductPromotionByProductIDEndpoint) error {
+	panic("IMPLEMENT ME")
 }
 
 func AffiliateGetProducts(ctx context.Context, q *wrapaff.AffiliateGetProductsEndpoint) error {
@@ -189,4 +189,30 @@ func AffiliateGetProducts(ctx context.Context, q *wrapaff.AffiliateGetProductsEn
 	}
 
 	return nil
+}
+
+func GetShopCommissionSettingsByProducts(ctx context.Context, accountID int64, products []*servicecatalog.ShopProduct) map[int64]*affiliate.CommissionSetting {
+	var productIds []int64
+	for _, product := range products {
+		productIds = append(productIds, product.ProductID)
+	}
+
+	getShopCommissionByProductIDsQuery := &affiliate.GetCommissionByProductIDsQuery{
+		AccountID:  accountID,
+		ProductIDs: productIds,
+	}
+	if err := affiliateQuery.Dispatch(ctx, getShopCommissionByProductIDsQuery); err != nil {
+		return map[int64]*affiliate.CommissionSetting{}
+	}
+
+	var interfaceArr []interface{}
+	for _, e := range getShopCommissionByProductIDsQuery.Result {
+		interfaceArr = append(interfaceArr, e)
+	}
+	shopCommissionMap := map[int64]*affiliate.CommissionSetting{}
+	for _, e := range getShopCommissionByProductIDsQuery.Result {
+		shopCommissionMap[e.ProductID] = e
+	}
+
+	return shopCommissionMap
 }

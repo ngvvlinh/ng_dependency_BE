@@ -67,58 +67,6 @@
         ]
       }
     },
-    "/api/affiliate.Affiliate/CreateOrUpdateTradingCommissionSetting": {
-      "post": {
-        "operationId": "CreateOrUpdateTradingCommissionSetting",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/affiliateCommissionSetting"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/affiliateCreateOrUpdateCommissionSettingRequest"
-            }
-          }
-        ],
-        "tags": [
-          "Affiliate"
-        ]
-      }
-    },
-    "/api/affiliate.Affiliate/CreateProductPromotion": {
-      "post": {
-        "operationId": "CreateProductPromotion",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/affiliateProductPromotion"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/affiliateCreateOrUpdateProductPromotionRequest"
-            }
-          }
-        ],
-        "tags": [
-          "Affiliate"
-        ]
-      }
-    },
     "/api/affiliate.Affiliate/GetCommissions": {
       "post": {
         "operationId": "GetCommissions",
@@ -136,7 +84,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/cmPaging"
+              "$ref": "#/definitions/cmCommonListRequest"
             }
           }
         ],
@@ -188,7 +136,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/cmPaging"
+              "$ref": "#/definitions/cmCommonListRequest"
             }
           }
         ],
@@ -223,7 +171,111 @@
         ]
       }
     },
-    "/api/affiliate.Affiliate/TradingGetProducts": {
+    "/api/affiliate.Shop/GetProductPromotion": {
+      "post": {
+        "operationId": "GetProductPromotion",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/affiliateGetProductPromotionResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/affiliateGetProductPromotionRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Shop"
+        ]
+      }
+    },
+    "/api/affiliate.Trading/CreateOrUpdateTradingCommissionSetting": {
+      "post": {
+        "operationId": "CreateOrUpdateTradingCommissionSetting",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/affiliateCommissionSetting"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/affiliateCreateOrUpdateCommissionSettingRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Trading"
+        ]
+      }
+    },
+    "/api/affiliate.Trading/CreateProductPromotion": {
+      "post": {
+        "operationId": "CreateProductPromotion",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/affiliateProductPromotion"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/affiliateCreateOrUpdateProductPromotionRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Trading"
+        ]
+      }
+    },
+    "/api/affiliate.Trading/GetProductPromotions": {
+      "post": {
+        "operationId": "GetProductPromotions",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/affiliateGetProductPromotionsResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/cmCommonListRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Trading"
+        ]
+      }
+    },
+    "/api/affiliate.Trading/TradingGetProducts": {
       "post": {
         "operationId": "TradingGetProducts",
         "responses": {
@@ -245,11 +297,11 @@
           }
         ],
         "tags": [
-          "Affiliate"
+          "Trading"
         ]
       }
     },
-    "/api/affiliate.Affiliate/UpdateProductPromotion": {
+    "/api/affiliate.Trading/UpdateProductPromotion": {
       "post": {
         "operationId": "UpdateProductPromotion",
         "responses": {
@@ -271,7 +323,7 @@
           }
         ],
         "tags": [
-          "Affiliate"
+          "Trading"
         ]
       }
     }
@@ -365,6 +417,44 @@
     "affiliateGetProductPromotionByProductIDResponse": {
       "type": "object"
     },
+    "affiliateGetProductPromotionRequest": {
+      "type": "object",
+      "properties": {
+        "product_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "referral_code": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "affiliateGetProductPromotionResponse": {
+      "type": "object",
+      "properties": {
+        "promotion": {
+          "$ref": "#/definitions/affiliateProductPromotion"
+        },
+        "referral_discount": {
+          "$ref": "#/definitions/affiliateCommissionSetting"
+        }
+      }
+    },
+    "affiliateGetProductPromotionsResponse": {
+      "type": "object",
+      "properties": {
+        "paging": {
+          "$ref": "#/definitions/cmPageInfo"
+        },
+        "promotions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/affiliateProductPromotion"
+          }
+        }
+      }
+    },
     "affiliateGetTransactionsResponse": {
       "type": "object",
       "properties": {
@@ -394,7 +484,30 @@
       }
     },
     "affiliateProductPromotion": {
-      "type": "object"
+      "type": "object",
+      "properties": {
+        "product": {
+          "$ref": "#/definitions/shopShopProduct"
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "product_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "amount": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "unit": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        }
+      }
     },
     "affiliateShopGetProductsResponse": {
       "type": "object",
@@ -802,6 +915,12 @@
   "tags": [
     {
       "name": "Affiliate"
+    },
+    {
+      "name": "Shop"
+    },
+    {
+      "name": "Trading"
     }
   ]
 }
