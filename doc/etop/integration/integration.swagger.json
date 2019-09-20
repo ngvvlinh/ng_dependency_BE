@@ -236,8 +236,8 @@
         "unknown",
         "partner",
         "shop",
-        "etop",
-        "affiliate"
+        "affiliate",
+        "etop"
       ],
       "default": "unknown",
       "description": "Indicates whether given account is **etop**, **shop**, **partner** or **sale**."

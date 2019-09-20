@@ -137,11 +137,11 @@ service AddressService {
 
 // Indicates whether given account is **etop**, **shop**, **partner** or **sale**.
 enum AccountType {
-    unknown  = 0;
-    partner  = 21;
-    shop     = 33;
-    etop     = 101;
-    affiliate     = 211;
+    unknown     = 0;
+    partner     = 21;
+    shop        = 33;
+    affiliate   = 35;
+    etop        = 101;
 }
 
 // Represents a user in eTop system. The user may or may not have associated accounts.
@@ -408,6 +408,7 @@ message LoginResponse {
 
     optional LoginAccount account       = 4;
     optional Shop         shop          = 5;
+    optional Affiliate affiliate = 6;
 
     // @required
     repeated LoginAccount available_accounts = 7;
@@ -443,8 +444,9 @@ message AccessTokenResponse {
     // @required
     optional User         user          = 3;
 
-    optional LoginAccount account       = 4;
-    optional Shop         shop          = 5;
+    optional LoginAccount           account       = 4;
+    optional Shop                   shop          = 5;
+    optional Affiliate    affiliate = 6;
 
     optional bool stoken = 8 [(gogoproto.nullable) = false];
     optional google.protobuf.Timestamp stoken_expires_at = 9;
@@ -895,4 +897,14 @@ message UpdateReferenceUserRequest {
 message UpdateReferenceSaleRequest {
     // @required
     optional string phone = 1 [(gogoproto.nullable) = false];
+}
+
+message Affiliate {
+    optional int64 id = 1 [(gogoproto.nullable) = false];
+    optional string name = 2 [(gogoproto.nullable) = false];
+    optional status3.Status status = 3 [(gogoproto.nullable) = false];
+    optional bool is_test = 4 [(gogoproto.nullable) = false];
+    optional string phone = 5 [(gogoproto.nullable) = false];
+    optional string email = 6 [(gogoproto.nullable) = false];
+    optional etop.BankAccount bank_account = 7;
 }

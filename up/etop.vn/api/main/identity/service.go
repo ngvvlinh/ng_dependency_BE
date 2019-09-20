@@ -25,7 +25,9 @@ type Aggregate interface {
 	// -- Affiliate -- //
 	CreateAffiliate(context.Context, *CreateAffiliateArgs) (*Affiliate, error)
 
-	UpdateAffiliate(context.Context, *UpdateAffiliateArgs) (*Affiliate, error)
+	UpdateAffiliateInfo(context.Context, *UpdateAffiliateInfoArgs) (*Affiliate, error)
+
+	UpdateAffiliateBankAccount(context.Context, *UpdateAffiliateBankAccountArgs) (*Affiliate, error)
 
 	DeleteAffiliate(context.Context, *DeleteAffiliateArgs) error
 }
@@ -113,14 +115,15 @@ type GetAffiliateWithPermissionResult struct {
 }
 
 type CreateAffiliateArgs struct {
-	Name    string
-	OwnerID int64
-	Phone   string
-	Email   string
-	IsTest  bool
+	Name        string
+	OwnerID     int64
+	Phone       string
+	Email       string
+	IsTest      bool
+	BankAccount *BankAccount
 }
 
-type UpdateAffiliateArgs struct {
+type UpdateAffiliateInfoArgs struct {
 	ID      int64
 	OwnerID int64
 	Phone   string
@@ -131,4 +134,10 @@ type UpdateAffiliateArgs struct {
 type DeleteAffiliateArgs struct {
 	ID      int64
 	OwnerID int64
+}
+
+type UpdateAffiliateBankAccountArgs struct {
+	ID          int64
+	OwnerID     int64
+	BankAccount *BankAccount
 }

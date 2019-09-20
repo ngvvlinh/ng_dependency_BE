@@ -34,16 +34,17 @@ type Shop struct {
 }
 
 type Affiliate struct {
-	ID        int64
-	OwnerID   int64
-	Name      string
-	Phone     string
-	Email     string
-	IsTest    int
-	Status    etoptypes.Status3
-	CreatedAt time.Time
-	UpdatedAt time.Time
-	DeletedAt time.Time
+	ID          int64
+	OwnerID     int64
+	Name        string
+	Phone       string
+	Email       string
+	IsTest      int
+	Status      etoptypes.Status3
+	CreatedAt   time.Time
+	UpdatedAt   time.Time
+	DeletedAt   time.Time
+	BankAccount *BankAccount
 }
 
 type User struct {
@@ -82,4 +83,12 @@ type ExternalAccountAhamove struct {
 	CompanyImgs         []string
 	BusinessLicenseImgs []string
 	UploadedAt          time.Time
+}
+
+type BankAccount struct {
+	Name          string
+	Province      string
+	Branch        string
+	AccountNumber string
+	AccountName   string
 }

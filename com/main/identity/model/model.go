@@ -40,16 +40,17 @@ type ExternalAccountAhamove struct {
 var _ = sqlgenSale(&Affiliate{})
 
 type Affiliate struct {
-	ID        int64
-	OwnerID   int64
-	Name      string
-	Phone     string
-	Email     string
-	IsTest    int
-	Status    model.Status3
-	CreatedAt time.Time `sq:"create"`
-	UpdatedAt time.Time `sq:"update"`
-	DeletedAt time.Time
+	ID          int64
+	OwnerID     int64
+	Name        string
+	Phone       string
+	Email       string
+	IsTest      int
+	Status      model.Status3
+	CreatedAt   time.Time `sq:"create"`
+	UpdatedAt   time.Time `sq:"update"`
+	DeletedAt   time.Time
+	BankAccount *model.BankAccount
 }
 
 var _ model.AccountInterface = &Affiliate{}

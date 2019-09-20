@@ -114,16 +114,17 @@ func Affiliate(in *identitymodel.Affiliate) *identity.Affiliate {
 		return nil
 	}
 	return &identity.Affiliate{
-		ID:        in.ID,
-		OwnerID:   in.OwnerID,
-		Name:      in.Name,
-		Phone:     in.Phone,
-		Email:     in.Email,
-		Status:    etoptypes.Status3FromInt(int(in.Status)),
-		IsTest:    in.IsTest,
-		CreatedAt: in.CreatedAt,
-		UpdatedAt: in.UpdatedAt,
-		DeletedAt: in.DeletedAt,
+		ID:          in.ID,
+		OwnerID:     in.OwnerID,
+		Name:        in.Name,
+		Phone:       in.Phone,
+		Email:       in.Email,
+		Status:      etoptypes.Status3FromInt(int(in.Status)),
+		IsTest:      in.IsTest,
+		CreatedAt:   in.CreatedAt,
+		UpdatedAt:   in.UpdatedAt,
+		DeletedAt:   in.DeletedAt,
+		BankAccount: BankAccount(in.BankAccount),
 	}
 }
 
@@ -132,16 +133,17 @@ func AffiliateDB(in *identity.Affiliate) *identitymodel.Affiliate {
 		return nil
 	}
 	return &identitymodel.Affiliate{
-		ID:        in.ID,
-		OwnerID:   in.OwnerID,
-		Name:      in.Name,
-		Phone:     in.Phone,
-		Email:     in.Email,
-		Status:    model.Status3(in.Status),
-		IsTest:    in.IsTest,
-		CreatedAt: in.CreatedAt,
-		UpdatedAt: in.UpdatedAt,
-		DeletedAt: in.DeletedAt,
+		ID:          in.ID,
+		OwnerID:     in.OwnerID,
+		Name:        in.Name,
+		Phone:       in.Phone,
+		Email:       in.Email,
+		Status:      model.Status3(in.Status),
+		IsTest:      in.IsTest,
+		CreatedAt:   in.CreatedAt,
+		UpdatedAt:   in.UpdatedAt,
+		DeletedAt:   in.DeletedAt,
+		BankAccount: BankAccountDB(in.BankAccount),
 	}
 }
 
@@ -156,5 +158,31 @@ func PermissionToModel(in identity.Permission) model.Permission {
 	return model.Permission{
 		Roles:       in.Roles,
 		Permissions: in.Permissions,
+	}
+}
+
+func BankAccount(in *model.BankAccount) *identity.BankAccount {
+	if in == nil {
+		return nil
+	}
+	return &identity.BankAccount{
+		Name:          in.Name,
+		Province:      in.Province,
+		Branch:        in.Branch,
+		AccountNumber: in.AccountNumber,
+		AccountName:   in.AccountName,
+	}
+}
+
+func BankAccountDB(in *identity.BankAccount) *model.BankAccount {
+	if in == nil {
+		return nil
+	}
+	return &model.BankAccount{
+		Name:          in.Name,
+		Province:      in.Province,
+		Branch:        in.Branch,
+		AccountNumber: in.AccountNumber,
+		AccountName:   in.AccountName,
 	}
 }

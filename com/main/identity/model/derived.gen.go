@@ -482,7 +482,7 @@ func sqlgenSale(_ *Affiliate) bool { return true }
 type Affiliates []*Affiliate
 
 const __sqlAffiliate_Table = "affiliate"
-const __sqlAffiliate_ListCols = "\"id\",\"owner_id\",\"name\",\"phone\",\"email\",\"is_test\",\"status\",\"created_at\",\"updated_at\",\"deleted_at\""
+const __sqlAffiliate_ListCols = "\"id\",\"owner_id\",\"name\",\"phone\",\"email\",\"is_test\",\"status\",\"created_at\",\"updated_at\",\"deleted_at\",\"bank_account\""
 const __sqlAffiliate_Insert = "INSERT INTO \"affiliate\" (" + __sqlAffiliate_ListCols + ") VALUES"
 const __sqlAffiliate_Select = "SELECT " + __sqlAffiliate_ListCols + " FROM \"affiliate\""
 const __sqlAffiliate_Select_history = "SELECT " + __sqlAffiliate_ListCols + " FROM history.\"affiliate\""
@@ -505,6 +505,7 @@ func (m *Affiliate) SQLArgs(opts core.Opts, create bool) []interface{} {
 		core.Now(m.CreatedAt, now, create),
 		core.Now(m.UpdatedAt, now, true),
 		core.Time(m.DeletedAt),
+		core.JSON{m.BankAccount},
 	}
 }
 
@@ -520,6 +521,7 @@ func (m *Affiliate) SQLScanArgs(opts core.Opts) []interface{} {
 		(*core.Time)(&m.CreatedAt),
 		(*core.Time)(&m.UpdatedAt),
 		(*core.Time)(&m.DeletedAt),
+		core.JSON{&m.BankAccount},
 	}
 }
 
@@ -557,7 +559,7 @@ func (_ *Affiliates) SQLSelect(w SQLWriter) error {
 func (m *Affiliate) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlAffiliate_Insert)
 	w.WriteRawString(" (")
-	w.WriteMarkers(10)
+	w.WriteMarkers(11)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), true))
 	return nil
@@ -567,7 +569,7 @@ func (ms Affiliates) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlAffiliate_Insert)
 	w.WriteRawString(" (")
 	for i := 0; i < len(ms); i++ {
-		w.WriteMarkers(10)
+		w.WriteMarkers(11)
 		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
 		w.WriteRawString("),(")
 	}
@@ -662,6 +664,14 @@ func (m *Affiliate) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(m.DeletedAt)
 	}
+	if m.BankAccount != nil {
+		flag = true
+		w.WriteName("bank_account")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(core.JSON{m.BankAccount})
+	}
 	if !flag {
 		return core.ErrNoColumn
 	}
@@ -672,7 +682,7 @@ func (m *Affiliate) SQLUpdate(w SQLWriter) error {
 func (m *Affiliate) SQLUpdateAll(w SQLWriter) error {
 	w.WriteQueryString(__sqlAffiliate_UpdateAll)
 	w.WriteRawString(" = (")
-	w.WriteMarkers(10)
+	w.WriteMarkers(11)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), false))
 	return nil
@@ -694,27 +704,28 @@ func (m AffiliateHistories) SQLSelect(w SQLWriter) error {
 	return nil
 }
 
-func (m AffiliateHistory) ID() core.Interface        { return core.Interface{m["id"]} }
-func (m AffiliateHistory) OwnerID() core.Interface   { return core.Interface{m["owner_id"]} }
-func (m AffiliateHistory) Name() core.Interface      { return core.Interface{m["name"]} }
-func (m AffiliateHistory) Phone() core.Interface     { return core.Interface{m["phone"]} }
-func (m AffiliateHistory) Email() core.Interface     { return core.Interface{m["email"]} }
-func (m AffiliateHistory) IsTest() core.Interface    { return core.Interface{m["is_test"]} }
-func (m AffiliateHistory) Status() core.Interface    { return core.Interface{m["status"]} }
-func (m AffiliateHistory) CreatedAt() core.Interface { return core.Interface{m["created_at"]} }
-func (m AffiliateHistory) UpdatedAt() core.Interface { return core.Interface{m["updated_at"]} }
-func (m AffiliateHistory) DeletedAt() core.Interface { return core.Interface{m["deleted_at"]} }
+func (m AffiliateHistory) ID() core.Interface          { return core.Interface{m["id"]} }
+func (m AffiliateHistory) OwnerID() core.Interface     { return core.Interface{m["owner_id"]} }
+func (m AffiliateHistory) Name() core.Interface        { return core.Interface{m["name"]} }
+func (m AffiliateHistory) Phone() core.Interface       { return core.Interface{m["phone"]} }
+func (m AffiliateHistory) Email() core.Interface       { return core.Interface{m["email"]} }
+func (m AffiliateHistory) IsTest() core.Interface      { return core.Interface{m["is_test"]} }
+func (m AffiliateHistory) Status() core.Interface      { return core.Interface{m["status"]} }
+func (m AffiliateHistory) CreatedAt() core.Interface   { return core.Interface{m["created_at"]} }
+func (m AffiliateHistory) UpdatedAt() core.Interface   { return core.Interface{m["updated_at"]} }
+func (m AffiliateHistory) DeletedAt() core.Interface   { return core.Interface{m["deleted_at"]} }
+func (m AffiliateHistory) BankAccount() core.Interface { return core.Interface{m["bank_account"]} }
 
 func (m *AffiliateHistory) SQLScan(opts core.Opts, row *sql.Row) error {
-	data := make([]interface{}, 10)
-	args := make([]interface{}, 10)
-	for i := 0; i < 10; i++ {
+	data := make([]interface{}, 11)
+	args := make([]interface{}, 11)
+	for i := 0; i < 11; i++ {
 		args[i] = &data[i]
 	}
 	if err := row.Scan(args...); err != nil {
 		return err
 	}
-	res := make(AffiliateHistory, 10)
+	res := make(AffiliateHistory, 11)
 	res["id"] = data[0]
 	res["owner_id"] = data[1]
 	res["name"] = data[2]
@@ -725,14 +736,15 @@ func (m *AffiliateHistory) SQLScan(opts core.Opts, row *sql.Row) error {
 	res["created_at"] = data[7]
 	res["updated_at"] = data[8]
 	res["deleted_at"] = data[9]
+	res["bank_account"] = data[10]
 	*m = res
 	return nil
 }
 
 func (ms *AffiliateHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	data := make([]interface{}, 10)
-	args := make([]interface{}, 10)
-	for i := 0; i < 10; i++ {
+	data := make([]interface{}, 11)
+	args := make([]interface{}, 11)
+	for i := 0; i < 11; i++ {
 		args[i] = &data[i]
 	}
 	res := make(AffiliateHistories, 0, 128)
@@ -751,6 +763,7 @@ func (ms *AffiliateHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
 		m["created_at"] = data[7]
 		m["updated_at"] = data[8]
 		m["deleted_at"] = data[9]
+		m["bank_account"] = data[10]
 		res = append(res, m)
 	}
 	if err := rows.Err(); err != nil {

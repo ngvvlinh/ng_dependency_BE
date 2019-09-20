@@ -1594,8 +1594,8 @@
         "unknown",
         "partner",
         "shop",
-        "etop",
-        "affiliate"
+        "affiliate",
+        "etop"
       ],
       "default": "unknown",
       "description": "Indicates whether given account is **etop**, **shop**, **partner** or **sale**."
@@ -1688,6 +1688,34 @@
         },
         "other": {
           "type": "string"
+        }
+      }
+    },
+    "etopAffiliate": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "name": {
+          "type": "string"
+        },
+        "status": {
+          "$ref": "#/definitions/status3Status"
+        },
+        "is_test": {
+          "type": "boolean",
+          "format": "boolean"
+        },
+        "phone": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "bank_account": {
+          "$ref": "#/definitions/etopBankAccount"
         }
       }
     },
@@ -1876,6 +1904,9 @@
         },
         "shop": {
           "$ref": "#/definitions/etopShop"
+        },
+        "affiliate": {
+          "$ref": "#/definitions/etopAffiliate"
         },
         "available_accounts": {
           "type": "array",

@@ -3,6 +3,8 @@ package etop
 import (
 	"context"
 
+	"etop.vn/api/main/identity"
+
 	"etop.vn/api/main/location"
 	ordertypes "etop.vn/api/main/ordering/types"
 	notimodel "etop.vn/backend/com/handler/notifier/model"
@@ -77,6 +79,19 @@ func (b *BankAccount) ToModel() *model.BankAccount {
 		return nil
 	}
 	return &model.BankAccount{
+		Name:          b.Name,
+		Province:      b.Province,
+		Branch:        b.Branch,
+		AccountNumber: b.AccountNumber,
+		AccountName:   b.AccountName,
+	}
+}
+
+func (b *BankAccount) ToCoreBankAccount() *identity.BankAccount {
+	if b == nil {
+		return nil
+	}
+	return &identity.BankAccount{
 		Name:          b.Name,
 		Province:      b.Province,
 		Branch:        b.Branch,
@@ -487,6 +502,19 @@ func PbBankAccount(b *model.BankAccount) *BankAccount {
 		Branch:        b.Branch,
 		AccountName:   b.AccountName,
 		AccountNumber: b.AccountNumber,
+	}
+}
+
+func Convert_core_BankAccount_To_api_BankAccount(in *identity.BankAccount) *BankAccount {
+	if in == nil {
+		return nil
+	}
+	return &BankAccount{
+		Name:          in.Name,
+		Province:      in.Province,
+		Branch:        in.Branch,
+		AccountNumber: in.AccountNumber,
+		AccountName:   in.AccountName,
 	}
 }
 

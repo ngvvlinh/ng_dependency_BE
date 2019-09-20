@@ -15,6 +15,7 @@ func init() {
 		VersionInfo,
 		RegisterAffiliate,
 		UpdateAffiliate,
+		UpdateAffiliateBankAccount,
 		DeleteAffiliate,
 	)
 }
@@ -37,11 +38,12 @@ func VersionInfo(ctx context.Context, q *wrapaffiliate.VersionInfoEndpoint) erro
 
 func RegisterAffiliate(ctx context.Context, r *wrapaffiliate.RegisterAffiliateEndpoint) error {
 	cmd := &identity.CreateAffiliateCommand{
-		Name:    r.Name,
-		OwnerID: r.Context.UserID,
-		Phone:   r.Phone,
-		Email:   r.Email,
-		IsTest:  r.Context.User.IsTest != 0,
+		Name:        r.Name,
+		OwnerID:     r.Context.UserID,
+		Phone:       r.Phone,
+		Email:       r.Email,
+		BankAccount: r.BankAccount.ToCoreBankAccount(),
+		IsTest:      r.Context.User.IsTest != 0,
 	}
 	if err := identityAggr.Dispatch(ctx, cmd); err != nil {
 		return err
@@ -51,13 +53,26 @@ func RegisterAffiliate(ctx context.Context, r *wrapaffiliate.RegisterAffiliateEn
 }
 
 func UpdateAffiliate(ctx context.Context, r *wrapaffiliate.UpdateAffiliateEndpoint) error {
-	sale := r.Context.Affiliate
-	cmd := &identity.UpdateAffiliateCommand{
-		ID:      sale.ID,
-		OwnerID: sale.OwnerID,
+	affiliate := r.Context.Affiliate
+	cmd := &identity.UpdateAffiliateInfoCommand{
+		ID:      affiliate.ID,
+		OwnerID: affiliate.OwnerID,
 		Phone:   r.Phone,
 		Email:   r.Email,
 		Name:    r.Name,
+	}
+	if err := identityAggr.Dispatch(ctx, cmd); err != nil {
+		return err
+	}
+	r.Result = pbaffiliate.Convert_core_Affiliate_To_api_Affiliate(cmd.Result)
+	return nil
+}
+
+func UpdateAffiliateBankAccount(ctx context.Context, r *wrapaffiliate.UpdateAffiliateBankAccountEndpoint) error {
+	cmd := &identity.UpdateAffiliateBankAccountCommand{
+		ID:          r.Context.Affiliate.ID,
+		OwnerID:     r.Context.Affiliate.OwnerID,
+		BankAccount: r.BankAccount.ToCoreBankAccount(),
 	}
 	if err := identityAggr.Dispatch(ctx, cmd); err != nil {
 		return err

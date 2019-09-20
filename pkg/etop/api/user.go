@@ -12,6 +12,7 @@ import (
 	"etop.vn/backend/cmd/etop-server/config"
 	pbcm "etop.vn/backend/pb/common"
 	pbetop "etop.vn/backend/pb/etop"
+	pbaffiliate "etop.vn/backend/pb/etop/affiliate"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/auth"
 	"etop.vn/backend/pkg/common/gencode"
@@ -39,6 +40,7 @@ var (
 	enabledSMS   bool
 	cfgEmail     EmailConfig
 	identityAggr identity.CommandBus
+	identityQS   identity.QueryBus
 )
 
 const PrefixIdempUser = "IdempUser"
@@ -67,6 +69,7 @@ type EmailConfig = config.EmailConfig
 
 func Init(
 	identityCommandBus identity.CommandBus,
+	identityQueryBus identity.QueryBus,
 	sd cmservice.Shutdowner,
 	rd redis.Store,
 	s auth.Generator,
@@ -74,6 +77,7 @@ func Init(
 	_cfgSMS sms.Config,
 ) {
 	identityAggr = identityCommandBus
+	identityQS = identityQueryBus
 	authStore = s
 	enabledEmail = _cfgEmail.Enabled
 	enabledSMS = _cfgSMS.Enabled
@@ -521,6 +525,7 @@ func CreateSessionResponse(ctx context.Context, claim *claims.ClaimInfo, token s
 		User:            resp.User,
 		Account:         resp.Account,
 		Shop:            resp.Shop,
+		Affiliate:       resp.Affiliate,
 		Stoken:          resp.Stoken,
 		StokenExpiresAt: resp.StokenExpiresAt,
 	}, nil
@@ -589,6 +594,11 @@ func CreateLoginResponse2(ctx context.Context, claim *claims.ClaimInfo, token st
 			respShop = query.Result.Shop
 
 		case model.IsAffiliateID(currentAccountID):
+			query := &identity.GetAffiliateByIDQuery{ID: currentAccountID}
+			if err := identityQS.Dispatch(ctx, query); err != nil {
+				return nil, nil, cm.ErrorTracef(cm.Internal, err, "Account affiliate not found")
+			}
+			resp.Affiliate = pbaffiliate.Convert_core_Affiliate_To_api_Affiliate(query.Result)
 		case model.IsEtopAccountID(currentAccountID):
 			// nothing
 		default:

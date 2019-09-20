@@ -48,7 +48,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/affiliateAffiliate"
+              "$ref": "#/definitions/etopAffiliate"
             }
           }
         },
@@ -74,7 +74,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/affiliateAffiliate"
+              "$ref": "#/definitions/etopAffiliate"
             }
           }
         },
@@ -85,6 +85,32 @@
             "required": true,
             "schema": {
               "$ref": "#/definitions/affiliateUpdateAffiliateRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Account"
+        ]
+      }
+    },
+    "/api/affiliate.Account/UpdateAffiliateBankAccount": {
+      "post": {
+        "operationId": "UpdateAffiliateBankAccount",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/etopAffiliate"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/affiliateUpdateAffiliateBankAccountRequest"
             }
           }
         ],
@@ -121,31 +147,6 @@
     }
   },
   "definitions": {
-    "affiliateAffiliate": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "string",
-          "format": "int64"
-        },
-        "name": {
-          "type": "string"
-        },
-        "status": {
-          "$ref": "#/definitions/status3Status"
-        },
-        "is_test": {
-          "type": "boolean",
-          "format": "boolean"
-        },
-        "phone": {
-          "type": "string"
-        },
-        "email": {
-          "type": "string"
-        }
-      }
-    },
     "affiliateRegisterAffiliateRequest": {
       "type": "object",
       "properties": {
@@ -157,11 +158,22 @@
         },
         "email": {
           "type": "string"
+        },
+        "bank_account": {
+          "$ref": "#/definitions/etopBankAccount"
         }
       },
       "required": [
         "name"
       ]
+    },
+    "affiliateUpdateAffiliateBankAccountRequest": {
+      "type": "object",
+      "properties": {
+        "bank_account": {
+          "$ref": "#/definitions/etopBankAccount"
+        }
+      }
     },
     "affiliateUpdateAffiliateRequest": {
       "type": "object",
@@ -204,6 +216,54 @@
         "updated_at": {
           "type": "string",
           "format": "date-time"
+        }
+      }
+    },
+    "etopAffiliate": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "name": {
+          "type": "string"
+        },
+        "status": {
+          "$ref": "#/definitions/status3Status"
+        },
+        "is_test": {
+          "type": "boolean",
+          "format": "boolean"
+        },
+        "phone": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "bank_account": {
+          "$ref": "#/definitions/etopBankAccount"
+        }
+      }
+    },
+    "etopBankAccount": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "province": {
+          "type": "string"
+        },
+        "branch": {
+          "type": "string"
+        },
+        "account_number": {
+          "type": "string"
+        },
+        "account_name": {
+          "type": "string"
         }
       }
     },

@@ -71,11 +71,12 @@ func (s *AccountStore) GetAffiliate() (*identity.Affiliate, error) {
 }
 
 type CreateAffiliateArgs struct {
-	Name    string
-	OwnerID int64
-	Phone   string
-	Email   string
-	IsTest  bool
+	Name        string
+	OwnerID     int64
+	Phone       string
+	Email       string
+	IsTest      bool
+	BankAccount *identity.BankAccount
 }
 
 func (s *AccountStore) CreateAffiliate(args CreateAffiliateArgs) (*identity.Affiliate, error) {
@@ -98,12 +99,13 @@ func (s *AccountStore) CreateAffiliate(args CreateAffiliateArgs) (*identity.Affi
 		Status:    model.StatusActive,
 	}
 	affiliate := &identitymodel.Affiliate{
-		ID:      id,
-		OwnerID: args.OwnerID,
-		Name:    args.Name,
-		Phone:   args.Phone,
-		Email:   args.Email,
-		Status:  model.StatusActive,
+		ID:          id,
+		OwnerID:     args.OwnerID,
+		Name:        args.Name,
+		Phone:       args.Phone,
+		Email:       args.Email,
+		Status:      model.StatusActive,
+		BankAccount: convert.BankAccountDB(args.BankAccount),
 	}
 	if args.IsTest {
 		affiliate.IsTest = 1
@@ -115,11 +117,12 @@ func (s *AccountStore) CreateAffiliate(args CreateAffiliateArgs) (*identity.Affi
 }
 
 type UpdateAffiliateArgs struct {
-	ID      int64
-	OwnerID int64
-	Phone   string
-	Email   string
-	Name    string
+	ID          int64
+	OwnerID     int64
+	Phone       string
+	Email       string
+	Name        string
+	BankAccount *identity.BankAccount
 }
 
 func (s *AccountStore) UpdateAffiliate(args UpdateAffiliateArgs) (*identity.Affiliate, error) {
@@ -127,9 +130,10 @@ func (s *AccountStore) UpdateAffiliate(args UpdateAffiliateArgs) (*identity.Affi
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing Affiliate ID")
 	}
 	update := &identitymodel.Affiliate{
-		Name:  args.Name,
-		Phone: args.Phone,
-		Email: args.Email,
+		Name:        args.Name,
+		Phone:       args.Phone,
+		Email:       args.Email,
+		BankAccount: convert.BankAccountDB(args.BankAccount),
 	}
 	if err := s.query().Where(s.affiliateFt.ByID(args.ID)).
 		Where(s.affiliateFt.ByOwnerID(args.OwnerID)).

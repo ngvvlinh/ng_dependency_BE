@@ -39,11 +39,12 @@ func (c QueryBus) DispatchAll(ctx context.Context, msgs ...Query) error {
 }
 
 type CreateAffiliateCommand struct {
-	Name    string
-	OwnerID int64
-	Phone   string
-	Email   string
-	IsTest  bool
+	Name        string
+	OwnerID     int64
+	Phone       string
+	Email       string
+	IsTest      bool
+	BankAccount *BankAccount
 
 	Result *Affiliate `json:"-"`
 }
@@ -91,7 +92,20 @@ func (h AggregateHandler) HandleRequestVerifyExternalAccountAhamove(ctx context.
 	return err
 }
 
-type UpdateAffiliateCommand struct {
+type UpdateAffiliateBankAccountCommand struct {
+	ID          int64
+	OwnerID     int64
+	BankAccount *BankAccount
+
+	Result *Affiliate `json:"-"`
+}
+
+func (h AggregateHandler) HandleUpdateAffiliateBankAccount(ctx context.Context, msg *UpdateAffiliateBankAccountCommand) (err error) {
+	msg.Result, err = h.inner.UpdateAffiliateBankAccount(msg.GetArgs(ctx))
+	return err
+}
+
+type UpdateAffiliateInfoCommand struct {
 	ID      int64
 	OwnerID int64
 	Phone   string
@@ -101,8 +115,8 @@ type UpdateAffiliateCommand struct {
 	Result *Affiliate `json:"-"`
 }
 
-func (h AggregateHandler) HandleUpdateAffiliate(ctx context.Context, msg *UpdateAffiliateCommand) (err error) {
-	msg.Result, err = h.inner.UpdateAffiliate(msg.GetArgs(ctx))
+func (h AggregateHandler) HandleUpdateAffiliateInfo(ctx context.Context, msg *UpdateAffiliateInfoCommand) (err error) {
+	msg.Result, err = h.inner.UpdateAffiliateInfo(msg.GetArgs(ctx))
 	return err
 }
 
@@ -246,7 +260,8 @@ func (q *CreateAffiliateCommand) command()                          {}
 func (q *CreateExternalAccountAhamoveCommand) command()             {}
 func (q *DeleteAffiliateCommand) command()                          {}
 func (q *RequestVerifyExternalAccountAhamoveCommand) command()      {}
-func (q *UpdateAffiliateCommand) command()                          {}
+func (q *UpdateAffiliateBankAccountCommand) command()               {}
+func (q *UpdateAffiliateInfoCommand) command()                      {}
 func (q *UpdateExternalAccountAhamoveVerificationCommand) command() {}
 func (q *UpdateUserReferenceSaleIDCommand) command()                {}
 func (q *UpdateUserReferenceUserIDCommand) command()                {}
@@ -264,11 +279,12 @@ func (q *GetUserByPhoneQuery) query()                               {}
 func (q *CreateAffiliateCommand) GetArgs(ctx context.Context) (_ context.Context, _ *CreateAffiliateArgs) {
 	return ctx,
 		&CreateAffiliateArgs{
-			Name:    q.Name,
-			OwnerID: q.OwnerID,
-			Phone:   q.Phone,
-			Email:   q.Email,
-			IsTest:  q.IsTest,
+			Name:        q.Name,
+			OwnerID:     q.OwnerID,
+			Phone:       q.Phone,
+			Email:       q.Email,
+			IsTest:      q.IsTest,
+			BankAccount: q.BankAccount,
 		}
 }
 
@@ -298,9 +314,18 @@ func (q *RequestVerifyExternalAccountAhamoveCommand) GetArgs(ctx context.Context
 		}
 }
 
-func (q *UpdateAffiliateCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateAffiliateArgs) {
+func (q *UpdateAffiliateBankAccountCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateAffiliateBankAccountArgs) {
 	return ctx,
-		&UpdateAffiliateArgs{
+		&UpdateAffiliateBankAccountArgs{
+			ID:          q.ID,
+			OwnerID:     q.OwnerID,
+			BankAccount: q.BankAccount,
+		}
+}
+
+func (q *UpdateAffiliateInfoCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateAffiliateInfoArgs) {
+	return ctx,
+		&UpdateAffiliateInfoArgs{
 			ID:      q.ID,
 			OwnerID: q.OwnerID,
 			Phone:   q.Phone,
@@ -407,7 +432,8 @@ func (h AggregateHandler) RegisterHandlers(b interface {
 	b.AddHandler(h.HandleCreateExternalAccountAhamove)
 	b.AddHandler(h.HandleDeleteAffiliate)
 	b.AddHandler(h.HandleRequestVerifyExternalAccountAhamove)
-	b.AddHandler(h.HandleUpdateAffiliate)
+	b.AddHandler(h.HandleUpdateAffiliateBankAccount)
+	b.AddHandler(h.HandleUpdateAffiliateInfo)
 	b.AddHandler(h.HandleUpdateExternalAccountAhamoveVerification)
 	b.AddHandler(h.HandleUpdateUserReferenceSaleID)
 	b.AddHandler(h.HandleUpdateUserReferenceUserID)

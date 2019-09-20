@@ -284,16 +284,17 @@ func (a *Aggregate) CreateAffiliate(ctx context.Context, args *identity.CreateAf
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Số điện thoại không hợp lệ")
 	}
 	_args := sqlstore.CreateAffiliateArgs{
-		Name:    args.Name,
-		OwnerID: args.OwnerID,
-		Phone:   phoneNorm.String(),
-		Email:   emailNorm.String(),
-		IsTest:  args.IsTest,
+		Name:        args.Name,
+		OwnerID:     args.OwnerID,
+		Phone:       phoneNorm.String(),
+		Email:       emailNorm.String(),
+		IsTest:      args.IsTest,
+		BankAccount: args.BankAccount,
 	}
 	return a.accountStore(ctx).CreateAffiliate(_args)
 }
 
-func (a *Aggregate) UpdateAffiliate(ctx context.Context, args *identity.UpdateAffiliateArgs) (*identity.Affiliate, error) {
+func (a *Aggregate) UpdateAffiliateInfo(ctx context.Context, args *identity.UpdateAffiliateInfoArgs) (*identity.Affiliate, error) {
 	var ok bool
 	var emailNorm model.NormalizedEmail
 	var phoneNorm model.NormalizedPhone
@@ -319,6 +320,15 @@ func (a *Aggregate) UpdateAffiliate(ctx context.Context, args *identity.UpdateAf
 		Phone:   phoneNorm.String(),
 		Email:   emailNorm.String(),
 		Name:    args.Name,
+	}
+	return a.accountStore(ctx).UpdateAffiliate(_args)
+}
+
+func (a *Aggregate) UpdateAffiliateBankAccount(ctx context.Context, args *identity.UpdateAffiliateBankAccountArgs) (*identity.Affiliate, error) {
+	_args := sqlstore.UpdateAffiliateArgs{
+		ID:          args.ID,
+		OwnerID:     args.OwnerID,
+		BankAccount: args.BankAccount,
 	}
 	return a.accountStore(ctx).UpdateAffiliate(_args)
 }

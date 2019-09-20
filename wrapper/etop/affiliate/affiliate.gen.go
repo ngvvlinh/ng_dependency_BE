@@ -9,6 +9,7 @@ import (
 	twirp "github.com/twitchtv/twirp"
 
 	cm "etop.vn/backend/pb/common"
+	etop "etop.vn/backend/pb/etop"
 	affiliate "etop.vn/backend/pb/etop/affiliate"
 	common "etop.vn/backend/pkg/common"
 	metrics "etop.vn/backend/pkg/common/metrics"
@@ -42,6 +43,7 @@ func NewAffiliateServer(mux Muxer, hooks *twirp.ServerHooks, secret string) {
 	bus.Expect(&DeleteAffiliateEndpoint{})
 	bus.Expect(&RegisterAffiliateEndpoint{})
 	bus.Expect(&UpdateAffiliateEndpoint{})
+	bus.Expect(&UpdateAffiliateBankAccountEndpoint{})
 	mux.Handle(affiliate.MiscServicePathPrefix, affiliate.NewMiscServiceServer(MiscService{secret: secret}, hooks))
 	mux.Handle(affiliate.AccountServicePathPrefix, affiliate.NewAccountServiceServer(AccountService{secret: secret}, hooks))
 }
@@ -126,11 +128,11 @@ func (s AccountService) DeleteAffiliate(ctx context.Context, req *cm.IDRequest) 
 
 type RegisterAffiliateEndpoint struct {
 	*affiliate.RegisterAffiliateRequest
-	Result  *affiliate.Affiliate
+	Result  *etop.Affiliate
 	Context UserClaim
 }
 
-func (s AccountService) RegisterAffiliate(ctx context.Context, req *affiliate.RegisterAffiliateRequest) (resp *affiliate.Affiliate, err error) {
+func (s AccountService) RegisterAffiliate(ctx context.Context, req *affiliate.RegisterAffiliateRequest) (resp *etop.Affiliate, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -172,11 +174,11 @@ func (s AccountService) RegisterAffiliate(ctx context.Context, req *affiliate.Re
 
 type UpdateAffiliateEndpoint struct {
 	*affiliate.UpdateAffiliateRequest
-	Result  *affiliate.Affiliate
+	Result  *etop.Affiliate
 	Context AffiliateClaim
 }
 
-func (s AccountService) UpdateAffiliate(ctx context.Context, req *affiliate.UpdateAffiliateRequest) (resp *affiliate.Affiliate, err error) {
+func (s AccountService) UpdateAffiliate(ctx context.Context, req *affiliate.UpdateAffiliateRequest) (resp *etop.Affiliate, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -197,6 +199,46 @@ func (s AccountService) UpdateAffiliate(ctx context.Context, req *affiliate.Upda
 	}
 	session = sessionQuery.Result
 	query := &UpdateAffiliateEndpoint{UpdateAffiliateRequest: req}
+	query.Context.Affiliate = session.Affiliate
+	ctx = bus.NewRootContext(ctx)
+	err = bus.Dispatch(ctx, query)
+	resp = query.Result
+	if err == nil {
+		if resp == nil {
+			return nil, common.Error(common.Internal, "", nil).Log("nil response")
+		}
+		errs = cmwrapper.HasErrors(resp)
+	}
+	return resp, err
+}
+
+type UpdateAffiliateBankAccountEndpoint struct {
+	*affiliate.UpdateAffiliateBankAccountRequest
+	Result  *etop.Affiliate
+	Context AffiliateClaim
+}
+
+func (s AccountService) UpdateAffiliateBankAccount(ctx context.Context, req *affiliate.UpdateAffiliateBankAccountRequest) (resp *etop.Affiliate, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "affiliate.Account/UpdateAffiliateBankAccount"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:          ctx,
+		RequireAuth:      true,
+		RequireAffiliate: true,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &UpdateAffiliateBankAccountEndpoint{UpdateAffiliateBankAccountRequest: req}
 	query.Context.Affiliate = session.Affiliate
 	ctx = bus.NewRootContext(ctx)
 	err = bus.Dispatch(ctx, query)

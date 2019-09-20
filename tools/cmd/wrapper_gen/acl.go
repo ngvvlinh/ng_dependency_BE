@@ -400,10 +400,11 @@ var ACL = map[string]*permission.PermissionDecl{
 	"crm.Crm/SendNotification":              {Type: Secret},
 
 	//-- affiliate --//
-	"affiliate.Misc/VersionInfo":          {Type: Public},
-	"affiliate.Account/RegisterAffiliate": {Type: CurUsr},
-	"affiliate.Account/UpdateAffiliate":   {Type: Affiliate},
-	"affiliate.Account/DeleteAffiliate":   {Type: Affiliate},
+	"affiliate.Misc/VersionInfo":                   {Type: Public},
+	"affiliate.Account/RegisterAffiliate":          {Type: CurUsr},
+	"affiliate.Account/UpdateAffiliate":            {Type: Affiliate},
+	"affiliate.Account/UpdateAffiliateBankAccount": {Type: Affiliate},
+	"affiliate.Account/DeleteAffiliate":            {Type: Affiliate},
 
 	//"affiliate.Affiliate/VersionInfo":                          {Type: Shop},
 	"affiliate.Trading/TradingGetProducts":                     {Type: Shop},

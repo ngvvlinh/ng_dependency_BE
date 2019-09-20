@@ -26,24 +26,17 @@ option (gogoproto.verbose_equal_all)        = false;
 
 import "common/common.proto";
 import "etop/etc/status3/status.proto";
+import "etop/etop.proto";
 
 service MiscService {
     rpc VersionInfo(cm.Empty) returns (cm.VersionInfoResponse);
 }
 
 service AccountService {
-    rpc RegisterAffiliate (RegisterAffiliateRequest) returns (Affiliate);
-    rpc UpdateAffiliate (UpdateAffiliateRequest) returns (Affiliate);
+    rpc RegisterAffiliate (RegisterAffiliateRequest) returns (etop.Affiliate);
+    rpc UpdateAffiliate (UpdateAffiliateRequest) returns (etop.Affiliate);
+    rpc UpdateAffiliateBankAccount(UpdateAffiliateBankAccountRequest) returns (etop.Affiliate);
     rpc DeleteAffiliate (cm.IDRequest) returns (cm.Empty);
-}
-
-message Affiliate {
-    optional int64 id = 1 [(gogoproto.nullable) = false];
-    optional string name = 2 [(gogoproto.nullable) = false];
-    optional status3.Status status = 3 [(gogoproto.nullable) = false];
-    optional bool is_test = 4 [(gogoproto.nullable) = false];
-    optional string phone = 5 [(gogoproto.nullable) = false];
-    optional string email = 6 [(gogoproto.nullable) = false];
 }
 
 message RegisterAffiliateRequest {
@@ -51,10 +44,15 @@ message RegisterAffiliateRequest {
     optional string name = 1 [(gogoproto.nullable) = false];
     optional string phone = 2 [(gogoproto.nullable) = false];
     optional string email = 3 [(gogoproto.nullable) = false];
+    optional etop.BankAccount bank_account = 4;
 }
 
 message UpdateAffiliateRequest {
     optional string name = 2 [(gogoproto.nullable) = false];
     optional string phone = 3 [(gogoproto.nullable) = false];
     optional string email = 4 [(gogoproto.nullable) = false];
+}
+
+message UpdateAffiliateBankAccountRequest {
+    optional etop.BankAccount bank_account = 1;
 }

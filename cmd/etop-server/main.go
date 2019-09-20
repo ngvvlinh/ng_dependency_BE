@@ -328,7 +328,7 @@ func main() {
 	paymentManager := servicepaymentmanager.NewManager(vtpayProvider).MesssageBus()
 
 	middleware.Init(cfg.SAdminToken, identityQuery)
-	api.Init(identityAggr, shutdowner, redisStore, authStore, cfg.Email, cfg.SMS)
+	api.Init(identityAggr, identityQuery, shutdowner, redisStore, authStore, cfg.Email, cfg.SMS)
 	shop.Init(
 		locationBus,
 		catalogQuery,
