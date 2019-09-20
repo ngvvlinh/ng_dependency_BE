@@ -19,10 +19,12 @@ type ItemLine struct {
 }
 
 type ProductInfo struct {
-	ProductName string
-	ImageUrl    string
-	Attributes  []*types.Attribute
-	ListPrice   int32
+	ProductName  string
+	ImageUrl     string
+	Attributes   []*types.Attribute
+	ListPrice    int32
+	RetailPrice  int32
+	PaymentPrice int32
 }
 
 type Address struct {

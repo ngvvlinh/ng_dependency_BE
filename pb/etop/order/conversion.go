@@ -2,7 +2,7 @@ package order
 
 import (
 	catalogtypes "etop.vn/api/main/catalog/types"
-	orderingv1types "etop.vn/api/main/ordering/types"
+	ordertypes "etop.vn/api/main/ordering/types"
 	"etop.vn/api/main/shipnow"
 	carrier "etop.vn/api/main/shipnow/carrier/types"
 	shipnowtypes "etop.vn/api/main/shipnow/types"
@@ -135,30 +135,30 @@ func Convert_core_ValueInfo_To_api_ValueInfo(in shippingtypes.ValueInfo) ValueIn
 	}
 }
 
-func Convert_api_OrderLine_To_core_OrderLine(in *OrderLine) (out *orderingv1types.ItemLine) {
-	return &orderingv1types.ItemLine{
+func Convert_api_OrderLine_To_core_OrderLine(in *OrderLine) (out *ordertypes.ItemLine) {
+	return &ordertypes.ItemLine{
 		OrderId:   in.OrderId,
 		ProductId: in.ProductId,
 		Quantity:  in.Quantity,
 		VariantId: in.VariantId,
 		IsOutside: in.IsOutsideEtop,
-		ProductInfo: orderingv1types.ProductInfo{
+		ProductInfo: ordertypes.ProductInfo{
 			ProductName: in.ProductName,
 			ImageUrl:    in.ImageUrl,
-			Attributes:  Convert_api_Attributes_To_core_Atributes(in.Attributes),
+			Attributes:  Convert_api_Attributes_To_core_Attributes(in.Attributes),
 		},
 	}
 }
 
-func Convert_api_OrderLines_To_core_OrderLines(ins []*OrderLine) (outs []*orderingv1types.ItemLine) {
-	res := make([]*orderingv1types.ItemLine, len(ins))
+func Convert_api_OrderLines_To_core_OrderLines(ins []*OrderLine) (outs []*ordertypes.ItemLine) {
+	res := make([]*ordertypes.ItemLine, len(ins))
 	for i, in := range ins {
 		res[i] = Convert_api_OrderLine_To_core_OrderLine(in)
 	}
 	return res
 }
 
-func Convert_core_OrderLine_To_api_OrderLine(in *orderingv1types.ItemLine) *OrderLine {
+func Convert_core_OrderLine_To_api_OrderLine(in *ordertypes.ItemLine) *OrderLine {
 	return &OrderLine{
 		OrderId:       in.OrderId,
 		VariantId:     in.VariantId,
@@ -166,19 +166,19 @@ func Convert_core_OrderLine_To_api_OrderLine(in *orderingv1types.ItemLine) *Orde
 		IsOutsideEtop: in.IsOutside,
 		Quantity:      in.Quantity,
 		ImageUrl:      in.ProductInfo.ImageUrl,
-		Attributes:    Convert_core_Attribute_To_api_Atribures(in.ProductInfo.Attributes),
+		Attributes:    Convert_core_Attributes_To_api_Attributes(in.ProductInfo.Attributes),
 		ProductId:     in.ProductId,
 	}
 }
 
-func Convert_core_OrderLines_To_api_OrderLines(ins []*orderingv1types.ItemLine) (outs []*OrderLine) {
+func Convert_core_OrderLines_To_api_OrderLines(ins []*ordertypes.ItemLine) (outs []*OrderLine) {
 	for _, in := range ins {
 		outs = append(outs, Convert_core_OrderLine_To_api_OrderLine(in))
 	}
 	return
 }
 
-func Convert_api_Attributes_To_core_Atributes(ins []*Attribute) []*catalogtypes.Attribute {
+func Convert_api_Attributes_To_core_Attributes(ins []*Attribute) []*catalogtypes.Attribute {
 	res := make([]*catalogtypes.Attribute, len(ins))
 	for i, in := range ins {
 		res[i] = &catalogtypes.Attribute{
@@ -189,7 +189,7 @@ func Convert_api_Attributes_To_core_Atributes(ins []*Attribute) []*catalogtypes.
 	return res
 }
 
-func Convert_core_Attribute_To_api_Atribures(ins []*catalogtypes.Attribute) (outs []*Attribute) {
+func Convert_core_Attributes_To_api_Attributes(ins []*catalogtypes.Attribute) (outs []*Attribute) {
 	for _, in := range ins {
 		outs = append(outs, &Attribute{
 			Name:  in.Name,
@@ -199,18 +199,18 @@ func Convert_core_Attribute_To_api_Atribures(ins []*catalogtypes.Attribute) (out
 	return
 }
 
-func Convert_api_OrderAddress_To_core_OrderAddress(in *OrderAddress) *orderingv1types.Address {
+func Convert_api_OrderAddress_To_core_OrderAddress(in *OrderAddress) *ordertypes.Address {
 	if in == nil {
 		return nil
 	}
-	return &orderingv1types.Address{
+	return &ordertypes.Address{
 		FullName: in.FullName,
 		Phone:    in.Phone,
 		Email:    in.Email,
 		Company:  in.Company,
 		Address1: in.Address1,
 		Address2: in.Address2,
-		Location: orderingv1types.Location{
+		Location: ordertypes.Location{
 			ProvinceCode: in.ProvinceCode,
 			DistrictCode: in.DistrictCode,
 			WardCode:     in.WardCode,
@@ -219,7 +219,7 @@ func Convert_api_OrderAddress_To_core_OrderAddress(in *OrderAddress) *orderingv1
 	}
 }
 
-func Convert_core_OrderAddress_To_api_OrderAddress(in *orderingv1types.Address) *OrderAddress {
+func Convert_core_OrderAddress_To_api_OrderAddress(in *ordertypes.Address) *OrderAddress {
 	if in == nil {
 		return nil
 	}
@@ -236,17 +236,17 @@ func Convert_core_OrderAddress_To_api_OrderAddress(in *orderingv1types.Address) 
 	}
 }
 
-func Convert_api_Coordinates_To_core_Coordinates(in *etop.Coordinates) *orderingv1types.Coordinates {
+func Convert_api_Coordinates_To_core_Coordinates(in *etop.Coordinates) *ordertypes.Coordinates {
 	if in == nil {
 		return nil
 	}
-	return &orderingv1types.Coordinates{
+	return &ordertypes.Coordinates{
 		Latitude:  in.Latitude,
 		Longitude: in.Longitude,
 	}
 }
 
-func Convert_core_Coordinates_To_api_Coordinates(in *orderingv1types.Coordinates) *etop.Coordinates {
+func Convert_core_Coordinates_To_api_Coordinates(in *ordertypes.Coordinates) *etop.Coordinates {
 	if in == nil {
 		return nil
 	}

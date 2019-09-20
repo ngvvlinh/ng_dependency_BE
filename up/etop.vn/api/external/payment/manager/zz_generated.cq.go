@@ -70,6 +70,34 @@ func (h AggregateHandler) HandleCancelTransaction(ctx context.Context, msg *Canc
 	return err
 }
 
+type CheckReturnDataCommand struct {
+	ID                    string
+	Code                  string
+	PaymentStatus         string
+	Amount                int
+	ExternalTransactionID string
+	Provider              payment.PaymentProvider
+
+	Result *CheckReturnDataResult `json:"-"`
+}
+
+func (h AggregateHandler) HandleCheckReturnData(ctx context.Context, msg *CheckReturnDataCommand) (err error) {
+	msg.Result, err = h.inner.CheckReturnData(msg.GetArgs(ctx))
+	return err
+}
+
+type GenerateCodeCommand struct {
+	PaymentSource payment.PaymentSource
+	ID            string
+
+	Result string `json:"-"`
+}
+
+func (h AggregateHandler) HandleGenerateCode(ctx context.Context, msg *GenerateCodeCommand) (err error) {
+	msg.Result, err = h.inner.GenerateCode(msg.GetArgs(ctx))
+	return err
+}
+
 type GetTransactionCommand struct {
 	OrderID  string
 	Provider payment.PaymentProvider
@@ -86,6 +114,8 @@ func (h AggregateHandler) HandleGetTransaction(ctx context.Context, msg *GetTran
 
 func (q *BuildUrlConnectPaymentGatewayCommand) command() {}
 func (q *CancelTransactionCommand) command()             {}
+func (q *CheckReturnDataCommand) command()               {}
+func (q *GenerateCodeCommand) command()                  {}
 func (q *GetTransactionCommand) command()                {}
 
 // implement conversion
@@ -113,6 +143,26 @@ func (q *CancelTransactionCommand) GetArgs(ctx context.Context) (_ context.Conte
 		}
 }
 
+func (q *CheckReturnDataCommand) GetArgs(ctx context.Context) (_ context.Context, _ *CheckReturnDataArgs) {
+	return ctx,
+		&CheckReturnDataArgs{
+			ID:                    q.ID,
+			Code:                  q.Code,
+			PaymentStatus:         q.PaymentStatus,
+			Amount:                q.Amount,
+			ExternalTransactionID: q.ExternalTransactionID,
+			Provider:              q.Provider,
+		}
+}
+
+func (q *GenerateCodeCommand) GetArgs(ctx context.Context) (_ context.Context, _ *GenerateCodeArgs) {
+	return ctx,
+		&GenerateCodeArgs{
+			PaymentSource: q.PaymentSource,
+			ID:            q.ID,
+		}
+}
+
 func (q *GetTransactionCommand) GetArgs(ctx context.Context) (_ context.Context, _ *GetTransactionArgs) {
 	return ctx,
 		&GetTransactionArgs{
@@ -135,6 +185,8 @@ func (h AggregateHandler) RegisterHandlers(b interface {
 }) CommandBus {
 	b.AddHandler(h.HandleBuildUrlConnectPaymentGateway)
 	b.AddHandler(h.HandleCancelTransaction)
+	b.AddHandler(h.HandleCheckReturnData)
+	b.AddHandler(h.HandleGenerateCode)
 	b.AddHandler(h.HandleGetTransaction)
 	return CommandBus{b}
 }

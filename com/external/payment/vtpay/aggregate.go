@@ -9,6 +9,7 @@ import (
 	"etop.vn/api/external/payment"
 	"etop.vn/api/external/payment/vtpay"
 	"etop.vn/api/main/ordering"
+	paymentutil "etop.vn/backend/com/external/payment"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/cmsql"
 	vtpayclient "etop.vn/backend/pkg/integration/payment/vtpay/client"
@@ -38,7 +39,7 @@ func (a *Aggregate) MessageBus() vtpay.CommandBus {
 }
 
 func (a *Aggregate) HandleExternalDataResponse(ctx context.Context, args *vtpay.HandleExternalDataResponseArgs) error {
-	paymentSource, id, err := ParseCode(args.OrderID)
+	paymentSource, id, err := paymentutil.ParseCode(args.OrderID)
 	if err != nil {
 		return cm.Errorf(cm.InvalidArgument, err, "Mã giao dịch không hợp lệ (order_id = %v)", args.OrderID)
 	}
@@ -53,7 +54,7 @@ func (a *Aggregate) HandleExternalDataResponse(ctx context.Context, args *vtpay.
 func (a *Aggregate) HandleExternalDataOrderResponse(ctx context.Context, orderID int64, args *vtpay.HandleExternalDataResponseArgs) error {
 	queryOrder := &ordering.GetOrderByIDQuery{ID: orderID}
 	if err := a.orderQS.Dispatch(ctx, queryOrder); err != nil {
-		return cm.Errorf(cm.InvalidArgument, err, "Mã giao dịch không tồn tại (order_id = %v)", orderID)
+		return cm.Errorf(cm.InvalidArgument, err, "Mã đơn hàng không tồn tại (order_id = %v)", orderID)
 	}
 	order := queryOrder.Result
 

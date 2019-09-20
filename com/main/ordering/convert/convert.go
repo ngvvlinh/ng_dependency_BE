@@ -1,6 +1,8 @@
 package convert
 
 import (
+	"encoding/json"
+
 	etoptypes "etop.vn/api/main/etop"
 	"etop.vn/api/main/ordering"
 	"etop.vn/api/main/ordering/types"
@@ -93,6 +95,10 @@ func Order(in *model.Order) (out *ordering.Order) {
 		FulfillmentType:           ordertypes.Fulfill(in.FulfillmentType),
 		PaymentStatus:             etoptypes.Status4FromInt(int(in.PaymentStatus)),
 		PaymentID:                 in.PaymentID,
+	}
+	var referralMeta ordering.ReferralMeta
+	if err := json.Unmarshal(in.ReferralMeta, &referralMeta); err == nil {
+		out.ReferralMeta = &referralMeta
 	}
 	return out
 }

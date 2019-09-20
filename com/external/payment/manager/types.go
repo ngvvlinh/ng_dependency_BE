@@ -3,6 +3,8 @@ package manager
 import (
 	"context"
 
+	"etop.vn/api/main/etop"
+
 	paymentmanager "etop.vn/api/external/payment/manager"
 )
 
@@ -12,4 +14,19 @@ type PaymentProvider interface {
 	GetTransaction(context.Context, *paymentmanager.GetTransactionArgs) (*paymentmanager.GetTransactionResult, error)
 
 	CancelTransaction(context.Context, *paymentmanager.CancelTransactionArgs) (*paymentmanager.CancelTransactionResult, error)
+
+	CheckReturnData(context.Context, *CheckReturnDataArgs) (*CheckReturnDataResult, error)
+}
+
+type CheckReturnDataArgs struct {
+	OrderID       string
+	Code          string
+	PaymentStatus string
+}
+
+type CheckReturnDataResult struct {
+	Message                   string
+	PaymentState              paymentmanager.PaymentState
+	PaymentStatus             etop.Status4
+	ExternalPaymentStatusText string
 }

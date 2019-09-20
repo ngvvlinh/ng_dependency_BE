@@ -360,12 +360,14 @@ var ACL = map[string]*permission.PermissionDecl{
 	"shop.Authorize/GetAvailablePartners":  {Type: Shop},
 	"shop.Authorize/AuthorizePartner":      {Type: Shop},
 
-	"shop.Trading/TradingGetProduct":   {Type: Shop},
-	"shop.Trading/TradingGetProducts":  {Type: Shop},
-	"shop.Trading/TradingCreateOrder":  {Type: Shop},
-	"shop.Trading/TradingGetOrder":     {Type: Shop},
-	"shop.Trading/TradingGetOrders":    {Type: Shop},
-	"shop.Trading/TradingPaymentOrder": {Type: Shop},
+	"shop.Trading/TradingGetProduct":  {Type: Shop},
+	"shop.Trading/TradingGetProducts": {Type: Shop},
+	"shop.Trading/TradingCreateOrder": {Type: Shop},
+	"shop.Trading/TradingGetOrder":    {Type: Shop},
+	"shop.Trading/TradingGetOrders":   {Type: Shop},
+
+	"shop.Payment/PaymentTradingOrder":    {Type: Shop},
+	"shop.Payment/PaymentCheckReturnData": {Type: Shop},
 
 	//-- pgevent --//
 	"pgevent.Misc/VersionInfo":     {Type: Secret},

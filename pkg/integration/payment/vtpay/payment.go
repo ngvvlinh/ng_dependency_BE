@@ -3,6 +3,8 @@ package vtpay
 import (
 	"context"
 
+	cm "etop.vn/backend/pkg/common"
+
 	paymentmanager "etop.vn/api/external/payment/manager"
 	servicepaymentmanager "etop.vn/backend/com/external/payment/manager"
 	vtpayclient "etop.vn/backend/pkg/integration/payment/vtpay/client"
@@ -64,4 +66,22 @@ func (p *Provider) CancelTransaction(ctx context.Context, args *paymentmanager.C
 		return nil, err
 	}
 	return &paymentmanager.CancelTransactionResult{}, nil
+}
+
+func (p *Provider) CheckReturnData(ctx context.Context, args *servicepaymentmanager.CheckReturnDataArgs) (*servicepaymentmanager.CheckReturnDataResult, error) {
+	errMsg := vtpayclient.TransactionResultCodeMap[args.Code]
+	paymentStatus := vtpayclient.PaymentStatus(args.PaymentStatus)
+	if args.Code == vtpayclient.TransactionSuccessCode {
+		return &servicepaymentmanager.CheckReturnDataResult{
+			Message:                   errMsg,
+			PaymentState:              paymentStatus.ToState(),
+			PaymentStatus:             paymentStatus.ToStatus(),
+			ExternalPaymentStatusText: vtpayclient.PaymentStatusMap[paymentStatus],
+		}, nil
+	}
+
+	if errMsg == "" {
+		return nil, cm.Errorf(cm.ExternalServiceError, nil, "Mã lỗi '%v' của VTPay không hợp lệ. Vui lòng liên hệ hi@etop.vn để biết thêm chi tiết.", args.Code)
+	}
+	return nil, cm.Errorf(cm.ExternalServiceError, nil, "Lỗi từ VTPay: %v", errMsg)
 }

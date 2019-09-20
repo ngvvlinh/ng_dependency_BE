@@ -223,7 +223,11 @@ service TradingService {
     rpc TradingGetOrder(cm.IDRequest) returns (order.Order);
     rpc TradingGetOrders(GetOrdersRequest) returns (order.OrdersResponse);
 
-    rpc TradingPaymentOrder(TradingPaymentOrderRequest) returns (TradingPaymentOrderResponse);
+}
+
+service PaymentService {
+    rpc PaymentTradingOrder(PaymentTradingOrderRequest) returns (PaymentTradingOrderResponse);
+    rpc PaymentCheckReturnData(PaymentCheckReturnDataRequest) returns (cm.MessageResponse);
 }
 
 message RegisterShopRequest {
@@ -1120,15 +1124,15 @@ message UpdateProductStatusResponse {
     optional int32 updated = 2 [(gogoproto.nullable) = false];
 }
 
-message TradingPaymentOrderRequest {
-    optional int64 id = 1 [(gogoproto.nullable) = false];
+message PaymentTradingOrderRequest {
+    optional int64 order_id = 1 [(gogoproto.nullable) = false];
     optional string desc = 2 [(gogoproto.nullable) = false];
     optional string return_url = 3 [(gogoproto.nullable) = false];
     optional int32 amount = 4 [(gogoproto.nullable) = false];
     optional payment_provider.PaymentProvider payment_provider = 5 [(gogoproto.nullable) = false];
 }
 
-message TradingPaymentOrderResponse {
+message PaymentTradingOrderResponse {
     optional string url = 1 [(gogoproto.nullable) = false];
 }
 
@@ -1136,4 +1140,13 @@ message UpdateVariantAttributesRequest {
     // @required
     optional int64 variant_id = 1 [(gogoproto.nullable) = false];
     repeated Attribute attributes =2;
+}
+
+message PaymentCheckReturnDataRequest {
+    optional string id = 1 [(gogoproto.nullable) = false];
+    optional string code = 2 [(gogoproto.nullable) = false];
+    optional string payment_status = 3 [(gogoproto.nullable) = false];
+    optional int32 amount = 4 [(gogoproto.nullable) = false];
+    optional string external_transaction_id = 5 [(gogoproto.nullable) = false];
+    optional payment_provider.PaymentProvider payment_provider = 6 [(gogoproto.nullable) = false];
 }

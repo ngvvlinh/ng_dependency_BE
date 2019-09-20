@@ -1760,6 +1760,58 @@
         ]
       }
     },
+    "/api/shop.Payment/PaymentCheckReturnData": {
+      "post": {
+        "operationId": "PaymentCheckReturnData",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/cmMessageResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/shopPaymentCheckReturnDataRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Payment"
+        ]
+      }
+    },
+    "/api/shop.Payment/PaymentTradingOrder": {
+      "post": {
+        "operationId": "PaymentTradingOrder",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/shopPaymentTradingOrderResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/shopPaymentTradingOrderRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Payment"
+        ]
+      }
+    },
     "/api/shop.Product/AddProducts": {
       "post": {
         "summary": "deprecated",
@@ -2827,32 +2879,6 @@
           "Trading"
         ]
       }
-    },
-    "/api/shop.Trading/TradingPaymentOrder": {
-      "post": {
-        "operationId": "TradingPaymentOrder",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/shopTradingPaymentOrderResponse"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/shopTradingPaymentOrderRequest"
-            }
-          }
-        ],
-        "tags": [
-          "Trading"
-        ]
-      }
     }
   },
   "definitions": {
@@ -2965,6 +2991,17 @@
       "required": [
         "ids"
       ]
+    },
+    "cmMessageResponse": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "string"
+        },
+        "msg": {
+          "type": "string"
+        }
+      }
     },
     "cmPageInfo": {
       "type": "object",
@@ -3827,6 +3864,12 @@
           "title": "@deprecated use shop_shipping.try_on instead"
         },
         "external_meta": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "referral_meta": {
           "type": "object",
           "additionalProperties": {
             "type": "string"
@@ -5279,6 +5322,9 @@
         "billing_address": {
           "$ref": "#/definitions/orderOrderAddress"
         },
+        "shipping_address": {
+          "$ref": "#/definitions/orderOrderAddress"
+        },
         "lines": {
           "type": "array",
           "items": {
@@ -5323,6 +5369,15 @@
         },
         "order_note": {
           "type": "string"
+        },
+        "payment_method": {
+          "type": "string"
+        },
+        "referral_meta": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
         }
       }
     },
@@ -6941,6 +6996,60 @@
         }
       }
     },
+    "shopPaymentCheckReturnDataRequest": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "code": {
+          "type": "string"
+        },
+        "payment_status": {
+          "type": "string"
+        },
+        "amount": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "external_transaction_id": {
+          "type": "string"
+        },
+        "payment_provider": {
+          "$ref": "#/definitions/payment_providerPaymentProvider"
+        }
+      }
+    },
+    "shopPaymentTradingOrderRequest": {
+      "type": "object",
+      "properties": {
+        "order_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "desc": {
+          "type": "string"
+        },
+        "return_url": {
+          "type": "string"
+        },
+        "amount": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "payment_provider": {
+          "$ref": "#/definitions/payment_providerPaymentProvider"
+        }
+      }
+    },
+    "shopPaymentTradingOrderResponse": {
+      "type": "object",
+      "properties": {
+        "url": {
+          "type": "string"
+        }
+      }
+    },
     "shopProductSource": {
       "type": "object",
       "properties": {
@@ -7447,36 +7556,6 @@
           "format": "int64"
         },
         "label": {
-          "type": "string"
-        }
-      }
-    },
-    "shopTradingPaymentOrderRequest": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "string",
-          "format": "int64"
-        },
-        "desc": {
-          "type": "string"
-        },
-        "return_url": {
-          "type": "string"
-        },
-        "amount": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "payment_provider": {
-          "$ref": "#/definitions/payment_providerPaymentProvider"
-        }
-      }
-    },
-    "shopTradingPaymentOrderResponse": {
-      "type": "object",
-      "properties": {
-        "url": {
           "type": "string"
         }
       }
@@ -8124,6 +8203,9 @@
     },
     {
       "name": "Order"
+    },
+    {
+      "name": "Payment"
     },
     {
       "name": "Product"

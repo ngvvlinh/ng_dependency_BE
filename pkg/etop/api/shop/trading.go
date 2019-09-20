@@ -4,11 +4,10 @@ import (
 	"context"
 	"fmt"
 
-	"etop.vn/api/external/payment"
-
-	paymentmanager "etop.vn/api/external/payment/manager"
 	"etop.vn/api/main/catalog"
 	"etop.vn/api/main/identity"
+	"etop.vn/api/main/ordering"
+	ordertrading "etop.vn/api/main/ordering/trading"
 	identityconvert "etop.vn/backend/com/main/identity/convert"
 	ordermodelx "etop.vn/backend/com/main/ordering/modelx"
 	pbcm "etop.vn/backend/pb/common"
@@ -29,7 +28,6 @@ func init() {
 		TradingCreateOrder,
 		TradingGetOrder,
 		TradingGetOrders,
-		TradingPaymentOrder,
 	)
 }
 
@@ -65,12 +63,29 @@ func TradingGetProducts(ctx context.Context, q *wrapshop.TradingGetProductsEndpo
 }
 
 func TradingCreateOrder(ctx context.Context, r *wrapshop.TradingCreateOrderEndpoint) error {
+	_, err := tradingCreateOrder(ctx, r)
+	return err
+}
+
+func tradingCreateOrder(ctx context.Context, r *wrapshop.TradingCreateOrderEndpoint) (_orderID int64, _err error) {
+	defer func() {
+		if _err == nil {
+			return
+		}
+		if _orderID != 0 {
+			// cancel Order an inform error message
+			if _, err := logicorder.CancelOrder(ctx, model.EtopTradingAccountID, 0, _orderID, fmt.Sprintf("Tạo đơn Trading thất bại (err = %v)", _err.Error())); err != nil {
+				return
+			}
+		}
+	}()
 	req := &pborder.CreateOrderRequest{
-		PaymentMethod:   model.PaymentMethodOther,
+		PaymentMethod:   r.PaymentMethod,
 		Source:          pbsource.Source_etop_pos,
 		Customer:        r.Customer,
 		CustomerAddress: r.CustomerAddress,
 		BillingAddress:  r.BillingAddress,
+		ShippingAddress: r.ShippingAddress,
 		Lines:           r.Lines,
 		Discounts:       r.Discounts,
 		TotalItems:      r.TotalItems,
@@ -81,24 +96,53 @@ func TradingCreateOrder(ctx context.Context, r *wrapshop.TradingCreateOrderEndpo
 		TotalDiscount:   r.TotalDiscount,
 		TotalAmount:     r.TotalAmount,
 		OrderNote:       r.OrderNote,
+		ReferralMeta:    r.ReferralMeta,
 	}
 
 	query := &identity.GetShopByIDQuery{
 		ID: model.EtopTradingAccountID,
 	}
 	if err := identityQuery.Dispatch(ctx, query); err != nil {
-		return err
+		return 0, err
+	}
+	{
+		referralCode := r.ReferralMeta["referral_code"]
+		if referralCode != "" {
+			checkTradingOrderValidEvent := &ordertrading.CheckTradingOrderValidEvent{
+				OrderID:      0,
+				ReferralCode: referralCode,
+			}
+			if err := eventBus.Publish(ctx, checkTradingOrderValidEvent); err != nil {
+				return 0, err
+			}
+		}
 	}
 	eTopTrading := identityconvert.ShopDB(query.Result)
 	shopClaim := &claims.ShopClaim{Shop: eTopTrading}
 	shopID := r.Context.Shop.ID
 	resp, err := logicorder.CreateOrder(ctx, shopClaim, nil, req, &shopID)
 	if err != nil {
-		return err
+		return 0, err
+	}
+
+	{
+		_query := &ordering.GetOrderByIDQuery{
+			ID: resp.Id,
+		}
+		if err := orderQuery.Dispatch(ctx, _query); err != nil {
+			return resp.Id, err
+		}
+		tradingOrderCreatedEvent := &ordertrading.TradingOrderCreatedEvent{
+			OrderID:      _query.Result.ID,
+			ReferralCode: _query.Result.ReferralMeta.ReferralCode,
+		}
+		if err := eventBus.Publish(ctx, tradingOrderCreatedEvent); err != nil {
+			return resp.Id, err
+		}
 	}
 
 	r.Result = resp
-	return nil
+	return resp.Id, nil
 }
 
 func TradingGetOrder(ctx context.Context, q *wrapshop.TradingGetOrderEndpoint) error {
@@ -130,25 +174,6 @@ func TradingGetOrders(ctx context.Context, q *wrapshop.TradingGetOrdersEndpoint)
 	q.Result = &pborder.OrdersResponse{
 		Paging: pbcm.PbPageInfo(paging, int32(query.Result.Total)),
 		Orders: pborder.PbOrdersWithFulfillments(query.Result.Orders, model.TagShop, query.Result.Shops),
-	}
-	return nil
-}
-
-func TradingPaymentOrder(ctx context.Context, q *wrapshop.TradingPaymentOrderEndpoint) error {
-	code := fmt.Sprintf("%v_%v", payment.PaymentSourceOrder, q.Id)
-	args := &paymentmanager.BuildUrlConnectPaymentGatewayCommand{
-		OrderID:           code,
-		Desc:              q.Desc,
-		ReturnURL:         q.ReturnUrl,
-		TransactionAmount: int(q.Amount),
-		Provider:          q.PaymentProvider.ToPaymentProvider(),
-	}
-
-	if err := paymentCtrl.Dispatch(ctx, args); err != nil {
-		return err
-	}
-	q.Result = &pbshop.TradingPaymentOrderResponse{
-		Url: args.Result,
 	}
 	return nil
 }

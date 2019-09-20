@@ -557,6 +557,7 @@ func PrepareOrder(m *pborder.CreateOrderRequest, lines []*ordermodel.OrderLine) 
 		return nil, cm.Error(cm.InvalidArgument, "Mã đơn hàng external_id không hợp lệ", nil)
 	}
 	externalMeta, _ := json.Marshal(m.ExternalMeta)
+	referralMeta, _ := json.Marshal(m.ReferralMeta)
 	order := &ordermodel.Order{
 		ID:         0,
 		ShopID:     0,
@@ -618,6 +619,7 @@ func PrepareOrder(m *pborder.CreateOrderRequest, lines []*ordermodel.OrderLine) 
 		CustomerNameNorm:           "",
 		ProductNameNorm:            "",
 		ExternalMeta:               externalMeta,
+		ReferralMeta:               referralMeta,
 	}
 	if err = shipping.ToModel(order); err != nil {
 		return nil, err

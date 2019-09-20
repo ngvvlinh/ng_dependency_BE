@@ -147,7 +147,8 @@ func NewShopServer(mux Muxer, hooks *twirp.ServerHooks) {
 	bus.Expect(&TradingGetOrdersEndpoint{})
 	bus.Expect(&TradingGetProductEndpoint{})
 	bus.Expect(&TradingGetProductsEndpoint{})
-	bus.Expect(&TradingPaymentOrderEndpoint{})
+	bus.Expect(&PaymentCheckReturnDataEndpoint{})
+	bus.Expect(&PaymentTradingOrderEndpoint{})
 	mux.Handle(shop.MiscServicePathPrefix, shop.NewMiscServiceServer(MiscService{}, hooks))
 	mux.Handle(shop.AccountServicePathPrefix, shop.NewAccountServiceServer(AccountService{}, hooks))
 	mux.Handle(shop.ExternalAccountServicePathPrefix, shop.NewExternalAccountServiceServer(ExternalAccountService{}, hooks))
@@ -165,6 +166,7 @@ func NewShopServer(mux Muxer, hooks *twirp.ServerHooks) {
 	mux.Handle(shop.NotificationServicePathPrefix, shop.NewNotificationServiceServer(NotificationService{}, hooks))
 	mux.Handle(shop.AuthorizeServicePathPrefix, shop.NewAuthorizeServiceServer(AuthorizeService{}, hooks))
 	mux.Handle(shop.TradingServicePathPrefix, shop.NewTradingServiceServer(TradingService{}, hooks))
+	mux.Handle(shop.PaymentServicePathPrefix, shop.NewPaymentServiceServer(PaymentService{}, hooks))
 }
 
 type ShopImpl struct {
@@ -185,6 +187,7 @@ type ShopImpl struct {
 	NotificationService
 	AuthorizeService
 	TradingService
+	PaymentService
 }
 
 type MiscService struct{}
@@ -5163,17 +5166,19 @@ func (s TradingService) TradingGetProducts(ctx context.Context, req *cm.CommonLi
 	return resp, err
 }
 
-type TradingPaymentOrderEndpoint struct {
-	*shop.TradingPaymentOrderRequest
-	Result  *shop.TradingPaymentOrderResponse
+type PaymentService struct{}
+
+type PaymentCheckReturnDataEndpoint struct {
+	*shop.PaymentCheckReturnDataRequest
+	Result  *cm.MessageResponse
 	Context ShopClaim
 }
 
-func (s TradingService) TradingPaymentOrder(ctx context.Context, req *shop.TradingPaymentOrderRequest) (resp *shop.TradingPaymentOrderResponse, err error) {
+func (s PaymentService) PaymentCheckReturnData(ctx context.Context, req *shop.PaymentCheckReturnDataRequest) (resp *cm.MessageResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
-	const rpcName = "shop.Trading/TradingPaymentOrder"
+	const rpcName = "shop.Payment/PaymentCheckReturnData"
 	defer func() {
 		recovered := recover()
 		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
@@ -5189,7 +5194,51 @@ func (s TradingService) TradingPaymentOrder(ctx context.Context, req *shop.Tradi
 		return nil, err
 	}
 	session = sessionQuery.Result
-	query := &TradingPaymentOrderEndpoint{TradingPaymentOrderRequest: req}
+	query := &PaymentCheckReturnDataEndpoint{PaymentCheckReturnDataRequest: req}
+	query.Context.Claim = session.Claim
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = bus.Dispatch(ctx, query)
+	resp = query.Result
+	if err == nil {
+		if resp == nil {
+			return nil, common.Error(common.Internal, "", nil).Log("nil response")
+		}
+		errs = cmwrapper.HasErrors(resp)
+	}
+	return resp, err
+}
+
+type PaymentTradingOrderEndpoint struct {
+	*shop.PaymentTradingOrderRequest
+	Result  *shop.PaymentTradingOrderResponse
+	Context ShopClaim
+}
+
+func (s PaymentService) PaymentTradingOrder(ctx context.Context, req *shop.PaymentTradingOrderRequest) (resp *shop.PaymentTradingOrderResponse, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "shop.Payment/PaymentTradingOrder"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:     ctx,
+		RequireAuth: true,
+		RequireShop: true,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &PaymentTradingOrderEndpoint{PaymentTradingOrderRequest: req}
 	query.Context.Claim = session.Claim
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner

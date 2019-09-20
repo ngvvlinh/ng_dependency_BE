@@ -1,4 +1,4 @@
-package vtpay
+package payment
 
 import (
 	"strconv"

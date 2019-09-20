@@ -9,7 +9,7 @@ import (
 	vtpaygateway "etop.vn/api/external/payment/vtpay/gateway"
 	"etop.vn/api/main/etop"
 	"etop.vn/api/main/ordering"
-	vtpayutil "etop.vn/backend/com/external/payment/vtpay"
+	paymentutil "etop.vn/backend/com/external/payment"
 	vtpayclient "etop.vn/backend/pkg/integration/payment/vtpay/client"
 	"etop.vn/common/bus"
 	"etop.vn/common/l"
@@ -32,16 +32,14 @@ func BuildGatewayRoute(path string) string {
 type Aggregate struct {
 	orderQS     ordering.QueryBus
 	orderAggr   ordering.CommandBus
-	paymentAggr payment.CommandBus
 	vtpayAggr   vtpay.CommandBus
 	vtpayClient *vtpayclient.Client
 }
 
-func NewAggregate(orderQuery ordering.QueryBus, orderAggregate ordering.CommandBus, paymentAggregate payment.CommandBus, vtpayA vtpay.CommandBus, vtpayClient *vtpayclient.Client) *Aggregate {
+func NewAggregate(orderQuery ordering.QueryBus, orderAggregate ordering.CommandBus, vtpayA vtpay.CommandBus, vtpayClient *vtpayclient.Client) *Aggregate {
 	return &Aggregate{
 		orderQS:     orderQuery,
 		orderAggr:   orderAggregate,
-		paymentAggr: paymentAggregate,
 		vtpayAggr:   vtpayA,
 		vtpayClient: vtpayClient,
 	}
@@ -53,7 +51,7 @@ func (a *Aggregate) MessageBus() vtpaygateway.CommandBus {
 }
 
 func (a *Aggregate) ValidateTransaction(ctx context.Context, args *vtpaygateway.ValidateTransactionArgs) (*vtpaygateway.ValidateTransactionResult, error) {
-	paymentSource, id, err := vtpayutil.ParseCode(args.OrderID)
+	paymentSource, id, err := paymentutil.ParseCode(args.OrderID)
 	if err != nil {
 		return &vtpaygateway.ValidateTransactionResult{
 			ErrorCode: vtpaygateway.ErrorCodeInvalidData,

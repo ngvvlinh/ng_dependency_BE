@@ -279,6 +279,7 @@ message CreateOrderRequest {
     optional ghn_note_code.GHNNoteCode ghn_note_code = 56 [(gogoproto.nullable)=false];
 
     map<string,string> external_meta = 62;
+    map<string,string> referral_meta = 63;
 }
 
 message UpdateOrderRequest {
@@ -973,6 +974,7 @@ message TradingCreateOrderRequest {
     optional OrderCustomer customer         =  1;
     optional OrderAddress  customer_address = 2;
     optional OrderAddress  billing_address = 3;
+    optional OrderAddress  shipping_address = 4;
 
     repeated CreateOrderLine lines = 5;
     repeated OrderDiscount discounts = 6;
@@ -984,4 +986,6 @@ message TradingCreateOrderRequest {
     optional int32 total_discount = 12;
     optional int32 total_amount = 13 [(gogoproto.nullable)=false];
     optional string order_note = 14 [(gogoproto.nullable)=false];
+    optional string payment_method = 15 [(gogoproto.nullable)=false];
+    map<string,string> referral_meta = 16;
 }

@@ -77,7 +77,7 @@ type (
 	ShippingDistrictType string
 	DBName               string
 	UserSource           string
-	EtopPaymentStatus	Status4
+	EtopPaymentStatus    Status4
 )
 
 func (s ShippingProvider) ToString() string {
@@ -178,6 +178,7 @@ const (
 	PaymentMethodCOD   = "cod"
 	PaymentMethodBank  = "bank"
 	PaymentMethodOther = "other"
+	PaymentMethodVtpay = "vtpay"
 
 	CurrencyVND = "vnd"
 
@@ -265,7 +266,7 @@ func (s ShippingState) Text() string {
 	return res
 }
 
-func EtopPaymentStatusLabel(s Status4) string  {
+func EtopPaymentStatusLabel(s Status4) string {
 	switch s {
 	case S4Negative:
 		return "Không cần thanh toán"
@@ -341,7 +342,8 @@ func (t CodeType) Validate() error {
 
 func VerifyPaymentMethod(s string) bool {
 	switch s {
-	case PaymentMethodCOD, PaymentMethodBank, PaymentMethodOther:
+	case PaymentMethodCOD, PaymentMethodBank,
+		PaymentMethodOther, PaymentMethodVtpay:
 		return true
 	}
 	return false

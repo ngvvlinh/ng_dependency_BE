@@ -23,6 +23,7 @@ import (
 	serviceidentity "etop.vn/backend/com/main/identity"
 	servicelocation "etop.vn/backend/com/main/location"
 	serviceordering "etop.vn/backend/com/main/ordering"
+	serviceorderingpm "etop.vn/backend/com/main/ordering/pm"
 	ordersqlstore "etop.vn/backend/com/main/ordering/sqlstore"
 	serviceshipnow "etop.vn/backend/com/main/shipnow"
 	shipnowcarrier "etop.vn/backend/com/main/shipnow-carrier"
@@ -325,7 +326,9 @@ func main() {
 		vtpayClient = vtpayclient.New(cfg.VTPay)
 		vtpayProvider = vtpay.New(cfg.VTPay)
 	}
-	paymentManager := servicepaymentmanager.NewManager(vtpayProvider).MesssageBus()
+	paymentManager := servicepaymentmanager.NewManager(vtpayProvider, orderQuery).MesssageBus()
+	orderPM := serviceorderingpm.New(orderAggr.MessageBus(), orderQuery, affiliateCmd)
+	orderPM.RegisterEventHandlers(eventBus)
 
 	middleware.Init(cfg.SAdminToken, identityQuery)
 	api.Init(identityAggr, identityQuery, shutdowner, redisStore, authStore, cfg.Email, cfg.SMS)
@@ -346,7 +349,9 @@ func main() {
 		traderAddressAggr,
 		traderAddressQuery,
 		orderAggr.MessageBus(),
+		orderQuery,
 		paymentManager,
+		eventBus,
 		shutdowner,
 		redisStore,
 	)

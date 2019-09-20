@@ -90,6 +90,7 @@ type Order struct {
 
 	PaymentStatus etoptypes.Status4
 	PaymentID     int64
+	ReferralMeta  *ReferralMeta
 }
 
 type OrderFeeLine struct {
@@ -142,4 +143,9 @@ type UpdateOrderPaymentInfoArgs struct {
 	ID            int64
 	PaymentStatus etoptypes.Status4
 	PaymentID     int64
+}
+
+type ReferralMeta struct {
+	ReferralCode   string `json:"referral_code"`
+	ReferralAmount string `json:"referral_amount"`
 }

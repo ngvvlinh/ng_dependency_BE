@@ -2,11 +2,13 @@ package shop
 
 import (
 	"context"
+	"strconv"
 	"time"
 
 	"github.com/asaskevich/govalidator"
 
 	haravanidentity "etop.vn/api/external/haravan/identity"
+	"etop.vn/api/external/payment"
 	paymentmanager "etop.vn/api/external/payment/manager"
 	"etop.vn/api/main/address"
 	"etop.vn/api/main/catalog"
@@ -107,6 +109,8 @@ func init() {
 	bus.AddHandler("api", UpdateExternalAccountHaravanToken)
 	bus.AddHandler("api", ConnectCarrierServiceExternalAccountHaravan)
 	bus.AddHandler("api", DeleteConnectedCarrierServiceExternalAccountHaravan)
+	bus.AddHandler("api", PaymentTradingOrder)
+	bus.AddHandler("api", PaymentCheckReturnData)
 }
 
 const PrefixIdemp = "IdempOrder"
@@ -127,9 +131,11 @@ var (
 	customerQuery        customering.QueryBus
 	customerAggr         customering.CommandBus
 	orderAggr            ordering.CommandBus
+	orderQuery           ordering.QueryBus
 	traderAddressAggr    addressing.CommandBus
 	traderAddressQuery   addressing.QueryBus
 	paymentCtrl          paymentmanager.CommandBus
+	eventBus             meta.EventBus
 )
 
 func Init(
@@ -149,7 +155,9 @@ func Init(
 	traderAddressA addressing.CommandBus,
 	traderAddressQ addressing.QueryBus,
 	orderA ordering.CommandBus,
+	orderQ ordering.QueryBus,
 	paymentManager paymentmanager.CommandBus,
+	eventB meta.EventBus,
 	sd cmservice.Shutdowner,
 	rd redis.Store,
 ) {
@@ -170,7 +178,9 @@ func Init(
 	traderAddressAggr = traderAddressA
 	traderAddressQuery = traderAddressQ
 	orderAggr = orderA
+	orderQuery = orderQ
 	paymentCtrl = paymentManager
+	eventBus = eventB
 	sd.Register(idempgroup.Shutdown)
 }
 
@@ -1112,6 +1122,63 @@ func DeleteConnectedCarrierServiceExternalAccountHaravan(ctx context.Context, r 
 	}
 	r.Result = &pbcm.DeletedResponse{
 		Deleted: 1,
+	}
+	return nil
+}
+
+func PaymentTradingOrder(ctx context.Context, q *wrapshop.PaymentTradingOrderEndpoint) error {
+	if q.OrderId == 0 {
+		return cm.Errorf(cm.InvalidArgument, nil, "Missing OrderID")
+	}
+	if q.ReturnUrl == "" {
+		return cm.Errorf(cm.InvalidArgument, nil, "Missing ReturnURL")
+	}
+
+	argGenCode := &paymentmanager.GenerateCodeCommand{
+		PaymentSource: payment.PaymentSourceOrder,
+		ID:            strconv.FormatInt(q.OrderId, 10),
+	}
+	if err := paymentCtrl.Dispatch(ctx, argGenCode); err != nil {
+		return err
+	}
+	args := &paymentmanager.BuildUrlConnectPaymentGatewayCommand{
+		OrderID:           argGenCode.Result,
+		Desc:              q.Desc,
+		ReturnURL:         q.ReturnUrl,
+		TransactionAmount: int(q.Amount),
+		Provider:          q.PaymentProvider.ToPaymentProvider(),
+	}
+
+	if err := paymentCtrl.Dispatch(ctx, args); err != nil {
+		return err
+	}
+	q.Result = &pbshop.PaymentTradingOrderResponse{
+		Url: args.Result,
+	}
+	return nil
+}
+
+func PaymentCheckReturnData(ctx context.Context, q *wrapshop.PaymentCheckReturnDataEndpoint) error {
+	if q.Id == "" {
+		return cm.Errorf(cm.InvalidArgument, nil, "Mã giao dịch không được để trống")
+	}
+	if q.Code == "" {
+		return cm.Errorf(cm.InvalidArgument, nil, "Mã 'Code' không được để trống")
+	}
+	args := &paymentmanager.CheckReturnDataCommand{
+		ID:                    q.Id,
+		Code:                  q.Code,
+		PaymentStatus:         q.PaymentStatus,
+		Amount:                int(q.Amount),
+		ExternalTransactionID: q.ExternalTransactionId,
+		Provider:              q.PaymentProvider.ToPaymentProvider(),
+	}
+	if err := paymentCtrl.Dispatch(ctx, args); err != nil {
+		return err
+	}
+	q.Result = &pbcm.MessageResponse{
+		Code: "ok",
+		Msg:  args.Result.Msg,
 	}
 	return nil
 }

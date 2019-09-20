@@ -13,9 +13,14 @@ type PaymentState = payment.PaymentState
 type Aggregate interface {
 	BuildUrlConnectPaymentGateway(context.Context, *ConnectPaymentGatewayArgs) (string, error)
 
+	GenerateCode(context.Context, *GenerateCodeArgs) (code string, err error)
+
 	GetTransaction(context.Context, *GetTransactionArgs) (*GetTransactionResult, error)
 
 	CancelTransaction(context.Context, *CancelTransactionArgs) (*CancelTransactionResult, error)
+
+	// Kiểm trả kết trả trả về dựa vào params trên redirect_urls của bên thứ 3 (vtpay)
+	CheckReturnData(context.Context, *CheckReturnDataArgs) (*CheckReturnDataResult, error)
 }
 
 type ConnectPaymentGatewayArgs struct {
@@ -50,4 +55,23 @@ type CancelTransactionArgs struct {
 }
 
 type CancelTransactionResult struct {
+}
+
+type GenerateCodeArgs struct {
+	PaymentSource payment.PaymentSource
+	ID            string
+}
+
+type CheckReturnDataArgs struct {
+	ID                    string
+	Code                  string
+	PaymentStatus         string
+	Amount                int
+	ExternalTransactionID string
+	Provider              payment.PaymentProvider
+}
+
+type CheckReturnDataResult struct {
+	Code string
+	Msg  string
 }

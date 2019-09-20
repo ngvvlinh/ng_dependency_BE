@@ -144,7 +144,7 @@ func startEtopServer() *http.Server {
 			paymentAggr := paymentaggregate.NewAggregate(db).MessageBus()
 			paymentLogAggr := paymentlogaggregate.NewAggregate(dbLogs)
 			vtpayAggr := vtpay.NewAggregate(db, orderQuery, orderAggr.MessageBus(), paymentAggr, vtpayClient).MessageBus()
-			vtpayGatewayAggr := vtpaygatewayaggregate.NewAggregate(orderQuery, orderAggr.MessageBus(), paymentAggr, vtpayAggr, vtpayClient)
+			vtpayGatewayAggr := vtpaygatewayaggregate.NewAggregate(orderQuery, orderAggr.MessageBus(), vtpayAggr, vtpayClient)
 
 			vtpayGatewayServer := vtpaygatewayserver.New(vtpayGatewayAggr.MessageBus(), paymentLogAggr)
 

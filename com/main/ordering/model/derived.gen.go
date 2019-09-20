@@ -17,7 +17,7 @@ func sqlgenOrder(_ *Order) bool { return true }
 type Orders []*Order
 
 const __sqlOrder_Table = "order"
-const __sqlOrder_ListCols = "\"id\",\"shop_id\",\"code\",\"ed_code\",\"product_ids\",\"variant_ids\",\"partner_id\",\"currency\",\"payment_method\",\"customer\",\"customer_address\",\"billing_address\",\"shipping_address\",\"customer_name\",\"customer_phone\",\"customer_email\",\"created_at\",\"processed_at\",\"updated_at\",\"closed_at\",\"confirmed_at\",\"cancelled_at\",\"cancel_reason\",\"customer_confirm\",\"shop_confirm\",\"confirm_status\",\"fulfillment_shipping_status\",\"etop_payment_status\",\"status\",\"fulfillment_shipping_states\",\"fulfillment_payment_statuses\",\"lines\",\"discounts\",\"total_items\",\"basket_value\",\"total_weight\",\"total_tax\",\"order_discount\",\"total_discount\",\"shop_shipping_fee\",\"total_fee\",\"fee_lines\",\"shop_cod\",\"total_amount\",\"order_note\",\"shop_note\",\"shipping_note\",\"order_source_type\",\"order_source_id\",\"external_order_id\",\"reference_url\",\"external_url\",\"shop_shipping\",\"is_outside_etop\",\"ghn_note_code\",\"try_on\",\"customer_name_norm\",\"product_name_norm\",\"fulfillment_type\",\"fulfillment_ids\",\"external_meta\",\"trading_shop_id\",\"payment_status\",\"payment_id\""
+const __sqlOrder_ListCols = "\"id\",\"shop_id\",\"code\",\"ed_code\",\"product_ids\",\"variant_ids\",\"partner_id\",\"currency\",\"payment_method\",\"customer\",\"customer_address\",\"billing_address\",\"shipping_address\",\"customer_name\",\"customer_phone\",\"customer_email\",\"created_at\",\"processed_at\",\"updated_at\",\"closed_at\",\"confirmed_at\",\"cancelled_at\",\"cancel_reason\",\"customer_confirm\",\"shop_confirm\",\"confirm_status\",\"fulfillment_shipping_status\",\"etop_payment_status\",\"status\",\"fulfillment_shipping_states\",\"fulfillment_payment_statuses\",\"lines\",\"discounts\",\"total_items\",\"basket_value\",\"total_weight\",\"total_tax\",\"order_discount\",\"total_discount\",\"shop_shipping_fee\",\"total_fee\",\"fee_lines\",\"shop_cod\",\"total_amount\",\"order_note\",\"shop_note\",\"shipping_note\",\"order_source_type\",\"order_source_id\",\"external_order_id\",\"reference_url\",\"external_url\",\"shop_shipping\",\"is_outside_etop\",\"ghn_note_code\",\"try_on\",\"customer_name_norm\",\"product_name_norm\",\"fulfillment_type\",\"fulfillment_ids\",\"external_meta\",\"trading_shop_id\",\"payment_status\",\"payment_id\",\"referral_meta\""
 const __sqlOrder_Insert = "INSERT INTO \"order\" (" + __sqlOrder_ListCols + ") VALUES"
 const __sqlOrder_Select = "SELECT " + __sqlOrder_ListCols + " FROM \"order\""
 const __sqlOrder_Select_history = "SELECT " + __sqlOrder_ListCols + " FROM history.\"order\""
@@ -94,6 +94,7 @@ func (m *Order) SQLArgs(opts core.Opts, create bool) []interface{} {
 		core.Int64(m.TradingShopID),
 		core.Int(m.PaymentStatus),
 		core.Int64(m.PaymentID),
+		core.JSON{m.ReferralMeta},
 	}
 }
 
@@ -163,6 +164,7 @@ func (m *Order) SQLScanArgs(opts core.Opts) []interface{} {
 		(*core.Int64)(&m.TradingShopID),
 		(*core.Int)(&m.PaymentStatus),
 		(*core.Int64)(&m.PaymentID),
+		core.JSON{&m.ReferralMeta},
 	}
 }
 
@@ -200,7 +202,7 @@ func (_ *Orders) SQLSelect(w SQLWriter) error {
 func (m *Order) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlOrder_Insert)
 	w.WriteRawString(" (")
-	w.WriteMarkers(64)
+	w.WriteMarkers(65)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), true))
 	return nil
@@ -210,7 +212,7 @@ func (ms Orders) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlOrder_Insert)
 	w.WriteRawString(" (")
 	for i := 0; i < len(ms); i++ {
-		w.WriteMarkers(64)
+		w.WriteMarkers(65)
 		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
 		w.WriteRawString("),(")
 	}
@@ -737,6 +739,14 @@ func (m *Order) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(m.PaymentID)
 	}
+	if m.ReferralMeta != nil {
+		flag = true
+		w.WriteName("referral_meta")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(core.JSON{m.ReferralMeta})
+	}
 	if !flag {
 		return core.ErrNoColumn
 	}
@@ -747,7 +757,7 @@ func (m *Order) SQLUpdate(w SQLWriter) error {
 func (m *Order) SQLUpdateAll(w SQLWriter) error {
 	w.WriteQueryString(__sqlOrder_UpdateAll)
 	w.WriteRawString(" = (")
-	w.WriteMarkers(64)
+	w.WriteMarkers(65)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), false))
 	return nil
@@ -843,17 +853,18 @@ func (m OrderHistory) ExternalMeta() core.Interface    { return core.Interface{m
 func (m OrderHistory) TradingShopID() core.Interface   { return core.Interface{m["trading_shop_id"]} }
 func (m OrderHistory) PaymentStatus() core.Interface   { return core.Interface{m["payment_status"]} }
 func (m OrderHistory) PaymentID() core.Interface       { return core.Interface{m["payment_id"]} }
+func (m OrderHistory) ReferralMeta() core.Interface    { return core.Interface{m["referral_meta"]} }
 
 func (m *OrderHistory) SQLScan(opts core.Opts, row *sql.Row) error {
-	data := make([]interface{}, 64)
-	args := make([]interface{}, 64)
-	for i := 0; i < 64; i++ {
+	data := make([]interface{}, 65)
+	args := make([]interface{}, 65)
+	for i := 0; i < 65; i++ {
 		args[i] = &data[i]
 	}
 	if err := row.Scan(args...); err != nil {
 		return err
 	}
-	res := make(OrderHistory, 64)
+	res := make(OrderHistory, 65)
 	res["id"] = data[0]
 	res["shop_id"] = data[1]
 	res["code"] = data[2]
@@ -918,14 +929,15 @@ func (m *OrderHistory) SQLScan(opts core.Opts, row *sql.Row) error {
 	res["trading_shop_id"] = data[61]
 	res["payment_status"] = data[62]
 	res["payment_id"] = data[63]
+	res["referral_meta"] = data[64]
 	*m = res
 	return nil
 }
 
 func (ms *OrderHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	data := make([]interface{}, 64)
-	args := make([]interface{}, 64)
-	for i := 0; i < 64; i++ {
+	data := make([]interface{}, 65)
+	args := make([]interface{}, 65)
+	for i := 0; i < 65; i++ {
 		args[i] = &data[i]
 	}
 	res := make(OrderHistories, 0, 128)
@@ -998,6 +1010,7 @@ func (ms *OrderHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
 		m["trading_shop_id"] = data[61]
 		m["payment_status"] = data[62]
 		m["payment_id"] = data[63]
+		m["referral_meta"] = data[64]
 		res = append(res, m)
 	}
 	if err := rows.Err(); err != nil {
