@@ -82,9 +82,10 @@ func NewWithHandlers(db cmsql.Database, sender *sender.WebhookSender, bot *teleb
 
 func (h *Handler) TopicsAndHandlers() map[string]pgrid.HandlerFunc {
 	return map[string]pgrid.HandlerFunc{
-		"fulfillment":  h.HandleFulfillmentEvent,
-		"order":        h.HandleOrderEvent,
-		"notification": nil,
+		"fulfillment":                h.HandleFulfillmentEvent,
+		"order":                      h.HandleOrderEvent,
+		"notification":               nil,
+		"money_transaction_shipping": nil,
 	}
 }
 
