@@ -12,5 +12,15 @@ type CommissionSetting struct {
 	UpdatedAt time.Time
 }
 
-type ShopProduct struct {
+type ProductPromotion struct {
+	ID          int64
+	ProductID   int64
+	Amount      int32
+	Unit        string
+	Code        string
+	Description string
+	Note        string
+	Type        string
+	CreatedAt   time.Time
+	UpdatedAt   time.Time
 }

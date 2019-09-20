@@ -17,7 +17,7 @@ create table commission_setting
 create table commission
 (
     id bigint not null primary key,
-    aff_id bigint not null,
+    affiliate_id bigint not null,
     value int8 default 0,
     unit unit_type default 'vnd'::unit_type,
     description text,
@@ -25,6 +25,6 @@ create table commission
     order_id bigint not null,
     status int2 default 0 not null,
     type commission_type,
-    created_at timestamptz default now() not null,
-    updated_at timestamptz default now() not null
+    created_at timestamptz not null,
+    updated_at timestamptz not null
 );

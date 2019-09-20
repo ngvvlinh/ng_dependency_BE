@@ -375,7 +375,7 @@ func main() {
 	orderS.Init(shippingManager, catalogQuery, orderAggr.MessageBus())
 	crm.Init(ghnCarrier, vtigerQuery, vtigerAggregate, vhtQuery, vhtAggregate)
 	affiliate.Init(identityAggr)
-	apiaff.Init(affiliateCmd, affilateQuery, catalogQuery)
+	apiaff.Init(affiliateCmd, affilateQuery, catalogQuery, identityQuery)
 
 	svrs := startServers()
 	if bot != nil {

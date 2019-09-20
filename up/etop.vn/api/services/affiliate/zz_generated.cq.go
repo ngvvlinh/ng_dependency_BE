@@ -39,17 +39,66 @@ func (c QueryBus) DispatchAll(ctx context.Context, msgs ...Query) error {
 }
 
 type CreateOrUpdateCommissionSettingCommand struct {
-	ProductID int64
-	AccountID int64
-	Amount    int32
-	Unit      string
-	Type      string
+	ProductID   int64
+	AccountID   int64
+	Amount      int32
+	Unit        string
+	Type        string
+	Description string
+	Note        string
 
 	Result *CommissionSetting `json:"-"`
 }
 
 func (h AggregateHandler) HandleCreateOrUpdateCommissionSetting(ctx context.Context, msg *CreateOrUpdateCommissionSettingCommand) (err error) {
 	msg.Result, err = h.inner.CreateOrUpdateCommissionSetting(msg.GetArgs(ctx))
+	return err
+}
+
+type CreateProductPromotionCommand struct {
+	ShopID      int64
+	ProductID   int64
+	Amount      int32
+	Code        string
+	Description string
+	Unit        string
+	Note        string
+	Type        string
+
+	Result *ProductPromotion `json:"-"`
+}
+
+func (h AggregateHandler) HandleCreateProductPromotion(ctx context.Context, msg *CreateProductPromotionCommand) (err error) {
+	msg.Result, err = h.inner.CreateProductPromotion(msg.GetArgs(ctx))
+	return err
+}
+
+type UpdateProductPromotionCommand struct {
+	ID          int64
+	Amount      int32
+	Unit        string
+	Code        string
+	Description string
+	Note        string
+	Type        string
+
+	Result *ProductPromotion `json:"-"`
+}
+
+func (h AggregateHandler) HandleUpdateProductPromotion(ctx context.Context, msg *UpdateProductPromotionCommand) (err error) {
+	msg.Result, err = h.inner.UpdateProductPromotion(msg.GetArgs(ctx))
+	return err
+}
+
+type GetCommissionByProductIDQuery struct {
+	AccountID int64
+	ProductID int64
+
+	Result *CommissionSetting `json:"-"`
+}
+
+func (h QueryServiceHandler) HandleGetCommissionByProductID(ctx context.Context, msg *GetCommissionByProductIDQuery) (err error) {
+	msg.Result, err = h.inner.GetCommissionByProductID(msg.GetArgs(ctx))
 	return err
 }
 
@@ -65,21 +114,101 @@ func (h QueryServiceHandler) HandleGetCommissionByProductIDs(ctx context.Context
 	return err
 }
 
+type GetShopProductPromotionQuery struct {
+	ShopID    int64
+	ProductID int64
+
+	Result *ProductPromotion `json:"-"`
+}
+
+func (h QueryServiceHandler) HandleGetShopProductPromotion(ctx context.Context, msg *GetShopProductPromotionQuery) (err error) {
+	msg.Result, err = h.inner.GetShopProductPromotion(msg.GetArgs(ctx))
+	return err
+}
+
+type GetShopProductPromotionByProductIDsQuery struct {
+	ShopID     int64
+	ProductIDs []int64
+
+	Result []*ProductPromotion `json:"-"`
+}
+
+func (h QueryServiceHandler) HandleGetShopProductPromotionByProductIDs(ctx context.Context, msg *GetShopProductPromotionByProductIDsQuery) (err error) {
+	msg.Result, err = h.inner.GetShopProductPromotionByProductIDs(msg.GetArgs(ctx))
+	return err
+}
+
+type ListShopProductPromotionsQuery struct {
+	ShopID  int64
+	Paging  meta.Paging
+	Filters meta.Filters
+
+	Result *ListShopProductPromotionsResponse `json:"-"`
+}
+
+func (h QueryServiceHandler) HandleListShopProductPromotions(ctx context.Context, msg *ListShopProductPromotionsQuery) (err error) {
+	msg.Result, err = h.inner.ListShopProductPromotions(msg.GetArgs(ctx))
+	return err
+}
+
 // implement interfaces
 
 func (q *CreateOrUpdateCommissionSettingCommand) command() {}
+func (q *CreateProductPromotionCommand) command()          {}
+func (q *UpdateProductPromotionCommand) command()          {}
+func (q *GetCommissionByProductIDQuery) query()            {}
 func (q *GetCommissionByProductIDsQuery) query()           {}
+func (q *GetShopProductPromotionQuery) query()             {}
+func (q *GetShopProductPromotionByProductIDsQuery) query() {}
+func (q *ListShopProductPromotionsQuery) query()           {}
 
 // implement conversion
 
 func (q *CreateOrUpdateCommissionSettingCommand) GetArgs(ctx context.Context) (_ context.Context, _ *CreateCommissionSettingArgs) {
 	return ctx,
 		&CreateCommissionSettingArgs{
-			ProductID: q.ProductID,
+			ProductID:   q.ProductID,
+			AccountID:   q.AccountID,
+			Amount:      q.Amount,
+			Unit:        q.Unit,
+			Type:        q.Type,
+			Description: q.Description,
+			Note:        q.Note,
+		}
+}
+
+func (q *CreateProductPromotionCommand) GetArgs(ctx context.Context) (_ context.Context, _ *CreateProductPromotionArgs) {
+	return ctx,
+		&CreateProductPromotionArgs{
+			ShopID:      q.ShopID,
+			ProductID:   q.ProductID,
+			Amount:      q.Amount,
+			Code:        q.Code,
+			Description: q.Description,
+			Unit:        q.Unit,
+			Note:        q.Note,
+			Type:        q.Type,
+		}
+}
+
+func (q *UpdateProductPromotionCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateProductPromotionArgs) {
+	return ctx,
+		&UpdateProductPromotionArgs{
+			ID:          q.ID,
+			Amount:      q.Amount,
+			Unit:        q.Unit,
+			Code:        q.Code,
+			Description: q.Description,
+			Note:        q.Note,
+			Type:        q.Type,
+		}
+}
+
+func (q *GetCommissionByProductIDQuery) GetArgs(ctx context.Context) (_ context.Context, _ *GetCommissionByProductIDArgs) {
+	return ctx,
+		&GetCommissionByProductIDArgs{
 			AccountID: q.AccountID,
-			Amount:    q.Amount,
-			Unit:      q.Unit,
-			Type:      q.Type,
+			ProductID: q.ProductID,
 		}
 }
 
@@ -88,6 +217,31 @@ func (q *GetCommissionByProductIDsQuery) GetArgs(ctx context.Context) (_ context
 		&GetCommissionByProductIDsArgs{
 			AccountID:  q.AccountID,
 			ProductIDs: q.ProductIDs,
+		}
+}
+
+func (q *GetShopProductPromotionQuery) GetArgs(ctx context.Context) (_ context.Context, _ *GetProductPromotionArgs) {
+	return ctx,
+		&GetProductPromotionArgs{
+			ShopID:    q.ShopID,
+			ProductID: q.ProductID,
+		}
+}
+
+func (q *GetShopProductPromotionByProductIDsQuery) GetArgs(ctx context.Context) (_ context.Context, _ *GetShopProductPromotionByProductIDs) {
+	return ctx,
+		&GetShopProductPromotionByProductIDs{
+			ShopID:     q.ShopID,
+			ProductIDs: q.ProductIDs,
+		}
+}
+
+func (q *ListShopProductPromotionsQuery) GetArgs(ctx context.Context) (_ context.Context, _ *ListShopProductPromotionsArgs) {
+	return ctx,
+		&ListShopProductPromotionsArgs{
+			ShopID:  q.ShopID,
+			Paging:  q.Paging,
+			Filters: q.Filters,
 		}
 }
 
@@ -104,6 +258,8 @@ func (h AggregateHandler) RegisterHandlers(b interface {
 	AddHandler(handler interface{})
 }) CommandBus {
 	b.AddHandler(h.HandleCreateOrUpdateCommissionSetting)
+	b.AddHandler(h.HandleCreateProductPromotion)
+	b.AddHandler(h.HandleUpdateProductPromotion)
 	return CommandBus{b}
 }
 
@@ -119,6 +275,10 @@ func (h QueryServiceHandler) RegisterHandlers(b interface {
 	meta.Bus
 	AddHandler(handler interface{})
 }) QueryBus {
+	b.AddHandler(h.HandleGetCommissionByProductID)
 	b.AddHandler(h.HandleGetCommissionByProductIDs)
+	b.AddHandler(h.HandleGetShopProductPromotion)
+	b.AddHandler(h.HandleGetShopProductPromotionByProductIDs)
+	b.AddHandler(h.HandleListShopProductPromotions)
 	return QueryBus{b}
 }

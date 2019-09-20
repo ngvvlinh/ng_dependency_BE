@@ -411,9 +411,10 @@ var ACL = map[string]*permission.PermissionDecl{
 	//"affiliate.Affiliate/VersionInfo":                          {Type: Shop},
 	"affiliate.Trading/TradingGetProducts":                     {Type: Shop},
 	"affiliate.Trading/CreateOrUpdateTradingCommissionSetting": {Type: Shop},
-	"affiliate.Trading/GetProductPromotions":                   {Type: Shop},
-	"affiliate.Trading/CreateProductPromotion":                 {Type: Shop},
-	"affiliate.Trading/UpdateProductPromotion":                 {Type: Shop},
+	"affiliate.Trading/GetTradingProductPromotions":            {Type: Shop},
+	"affiliate.Trading/GetTradingProductPromotionByProductIDs": {Type: Shop},
+	"affiliate.Trading/CreateTradingProductPromotion":          {Type: Shop},
+	"affiliate.Trading/UpdateTradingProductPromotion":          {Type: Shop},
 
 	"affiliate.Shop/GetProductPromotion": {Type: Shop},
 

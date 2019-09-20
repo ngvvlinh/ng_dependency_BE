@@ -2,13 +2,14 @@ package main
 
 import (
 	"context"
-	"etop.vn/backend/pkg/etop/sqlstore"
 	"flag"
 	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
 	"time"
+
+	"etop.vn/backend/pkg/etop/sqlstore"
 
 	"etop.vn/backend/cmd/affiliate/config"
 	querycatalog "etop.vn/backend/com/main/catalog/query"
@@ -67,7 +68,6 @@ func main() {
 	redisStore := redis.Connect(cfg.Redis.ConnectionString())
 	tokens.Init(redisStore)
 
-
 	db, err := cmsql.Connect(cfg.Postgres)
 	if err != nil {
 		ll.Fatal("error while connecting to etop postgres", l.Error(err))
@@ -85,7 +85,7 @@ func main() {
 	catalogCmd := querycatalog.New(db).MessageBus()
 	identityQuery := serviceidentity.NewQueryService(db).MessageBus()
 
-	apiaff.Init(affiliateCmd, affiliateQuery, catalogCmd)
+	apiaff.Init(affiliateCmd, affiliateQuery, catalogCmd, identityQuery)
 
 	apiMux := http.NewServeMux()
 

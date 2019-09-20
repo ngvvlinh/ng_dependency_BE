@@ -18,3 +18,29 @@ func PbCommissionSetting(m *affiliate.CommissionSetting) *CommissionSetting {
 	}
 	return out
 }
+
+func PbProductPromotion(m *affiliate.ProductPromotion) *ProductPromotion {
+	if m == nil {
+		return nil
+	}
+	out := &ProductPromotion{
+		Product:   nil,
+		Id:        m.ID,
+		ProductId: m.ProductID,
+		Amount:    m.Amount,
+		Unit:      m.Unit,
+		Type:      m.Type,
+	}
+	return out
+}
+
+func PbProductPromotions(ms []*affiliate.ProductPromotion) []*ProductPromotion {
+	var out []*ProductPromotion
+	if len(ms) == 0 {
+		return out
+	}
+	for _, pp := range ms {
+		out = append(out, PbProductPromotion(pp))
+	}
+	return out
+}

@@ -32,9 +32,10 @@ import "etop/shop/shop.proto";
 service TradingService {
     rpc TradingGetProducts (cm.CommonListRequest) returns (ShopGetProductsResponse);
     rpc CreateOrUpdateTradingCommissionSetting (CreateOrUpdateCommissionSettingRequest) returns (CommissionSetting);
-    rpc GetProductPromotions (cm.CommonListRequest) returns (GetProductPromotionsResponse);
-    rpc CreateProductPromotion (CreateOrUpdateProductPromotionRequest) returns (ProductPromotion);
-    rpc UpdateProductPromotion (CreateOrUpdateProductPromotionRequest) returns (ProductPromotion);
+    rpc GetTradingProductPromotionByProductIDs(GetTradingProductPromotionByIDsRequest) returns (GetTradingProductPromotionByIDsResponse);
+    rpc GetTradingProductPromotions (cm.CommonListRequest) returns (GetProductPromotionsResponse);
+    rpc CreateTradingProductPromotion (CreateOrUpdateProductPromotionRequest) returns (ProductPromotion);
+    rpc UpdateTradingProductPromotion (CreateOrUpdateProductPromotionRequest) returns (ProductPromotion);
 }
 
 service ShopService {
@@ -115,7 +116,6 @@ message CreateOrUpdateCommissionSettingRequest {
     optional int64 product_id = 1 [(gogoproto.nullable) = false];
     optional int32 amount = 2 [(gogoproto.nullable) = false];
     optional string unit = 3 [(gogoproto.nullable) = true];
-    optional string type = 4 [(gogoproto.nullable) = true];
 }
 
 message ProductPromotion {
@@ -128,7 +128,14 @@ message ProductPromotion {
 }
 
 message CreateOrUpdateProductPromotionRequest {
-
+    optional int64 id = 8 [(gogoproto.nullable) = false];
+    optional int64 product_id = 1 [(gogoproto.nullable) = false];
+    optional int32 amount = 2 [(gogoproto.nullable) = false];
+    optional string unit = 3 [(gogoproto.nullable) = false];
+    optional string code = 4 [(gogoproto.nullable) = false];
+    optional string description = 5 [(gogoproto.nullable) = false];
+    optional string note = 6 [(gogoproto.nullable) = false];
+    optional string type = 7 [(gogoproto.nullable) = false];
 }
 
 message GetProductPromotionByProductIDRequest {
@@ -149,6 +156,7 @@ message AffiliateProductResponse {
     optional shop.ShopProduct product = 1;
     optional CommissionSetting shop_commission_setting = 2;
     optional CommissionSetting affiliate_commission_setting = 3;
+    optional ProductPromotion promotion = 4;
 }
 
 message ShopGetProductsResponse {
@@ -163,7 +171,7 @@ message AffiliateGetProductsResponse {
 
 message GetProductPromotionRequest {
     optional int64 product_id = 1 [(gogoproto.nullable) = false];
-    optional int64 referral_code = 2 [(gogoproto.nullable) = true];
+    optional string referral_code = 2 [(gogoproto.nullable) = true];
 }
 
 message GetProductPromotionResponse {
@@ -174,4 +182,12 @@ message GetProductPromotionResponse {
 message GetProductPromotionsResponse {
     optional cm.PageInfo paging = 1;
     repeated ProductPromotion promotions = 2;
+}
+
+message GetTradingProductPromotionByIDsRequest {
+    repeated int64 product_ids = 1 [(gogoproto.nullable) = false];
+}
+
+message GetTradingProductPromotionByIDsResponse {
+    repeated ProductPromotion promotions = 1;
 }

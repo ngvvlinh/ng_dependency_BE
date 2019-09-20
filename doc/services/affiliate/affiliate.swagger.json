@@ -223,9 +223,9 @@
         ]
       }
     },
-    "/api/affiliate.Trading/CreateProductPromotion": {
+    "/api/affiliate.Trading/CreateTradingProductPromotion": {
       "post": {
-        "operationId": "CreateProductPromotion",
+        "operationId": "CreateTradingProductPromotion",
         "responses": {
           "200": {
             "description": "A successful response.",
@@ -249,9 +249,35 @@
         ]
       }
     },
-    "/api/affiliate.Trading/GetProductPromotions": {
+    "/api/affiliate.Trading/GetTradingProductPromotionByProductIDs": {
       "post": {
-        "operationId": "GetProductPromotions",
+        "operationId": "GetTradingProductPromotionByProductIDs",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/affiliateGetTradingProductPromotionByIDsResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/affiliateGetTradingProductPromotionByIDsRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Trading"
+        ]
+      }
+    },
+    "/api/affiliate.Trading/GetTradingProductPromotions": {
+      "post": {
+        "operationId": "GetTradingProductPromotions",
         "responses": {
           "200": {
             "description": "A successful response.",
@@ -301,9 +327,9 @@
         ]
       }
     },
-    "/api/affiliate.Trading/UpdateProductPromotion": {
+    "/api/affiliate.Trading/UpdateTradingProductPromotion": {
       "post": {
-        "operationId": "UpdateProductPromotion",
+        "operationId": "UpdateTradingProductPromotion",
         "responses": {
           "200": {
             "description": "A successful response.",
@@ -354,6 +380,9 @@
         },
         "affiliate_commission_setting": {
           "$ref": "#/definitions/affiliateCommissionSetting"
+        },
+        "promotion": {
+          "$ref": "#/definitions/affiliateProductPromotion"
         }
       }
     },
@@ -394,14 +423,40 @@
         },
         "unit": {
           "type": "string"
+        }
+      }
+    },
+    "affiliateCreateOrUpdateProductPromotionRequest": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "product_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "amount": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "unit": {
+          "type": "string"
+        },
+        "code": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "note": {
+          "type": "string"
         },
         "type": {
           "type": "string"
         }
       }
-    },
-    "affiliateCreateOrUpdateProductPromotionRequest": {
-      "type": "object"
     },
     "affiliateGetCommissionsResponse": {
       "type": "object",
@@ -425,8 +480,7 @@
           "format": "int64"
         },
         "referral_code": {
-          "type": "string",
-          "format": "int64"
+          "type": "string"
         }
       }
     },
@@ -447,6 +501,29 @@
         "paging": {
           "$ref": "#/definitions/cmPageInfo"
         },
+        "promotions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/affiliateProductPromotion"
+          }
+        }
+      }
+    },
+    "affiliateGetTradingProductPromotionByIDsRequest": {
+      "type": "object",
+      "properties": {
+        "product_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          }
+        }
+      }
+    },
+    "affiliateGetTradingProductPromotionByIDsResponse": {
+      "type": "object",
+      "properties": {
         "promotions": {
           "type": "array",
           "items": {

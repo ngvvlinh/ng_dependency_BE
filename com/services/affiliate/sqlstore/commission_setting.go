@@ -13,7 +13,7 @@ import (
 
 type CommissionSettingStoreFactory func(ctx context.Context) *CommissionSettingStore
 
-func NewShopCommissionSettingStore(db cmsql.Database) CommissionSettingStoreFactory {
+func NewCommissionSettingStore(db cmsql.Database) CommissionSettingStoreFactory {
 	return func(ctx context.Context) *CommissionSettingStore {
 		return &CommissionSettingStore{
 			query: func() cmsql.QueryInterface {
@@ -44,37 +44,33 @@ func (s *CommissionSettingStore) AccountID(id int64) *CommissionSettingStore {
 	return s
 }
 
-func (s *CommissionSettingStore) GetShopCommissionSettingDB() (*model.CommissionSetting, error) {
+func (s *CommissionSettingStore) GetCommissionSettingDB() (*model.CommissionSetting, error) {
 	var commissionSetting model.CommissionSetting
 	err := s.query().Where(s.preds...).ShouldGet(&commissionSetting)
 	return &commissionSetting, err
 }
 
-func (s *CommissionSettingStore) GetShopCommissionSetting() (*affiliate.CommissionSetting, error) {
-	commissionSetting, err := s.GetShopCommissionSettingDB()
+func (s *CommissionSettingStore) GetCommissionSetting() (*affiliate.CommissionSetting, error) {
+	commissionSetting, err := s.GetCommissionSettingDB()
 	if err != nil {
 		return nil, err
 	}
 	return convert.CommissionSetting(commissionSetting), nil
 }
 
-func (s *CommissionSettingStore) GetShopCommissionSettings() ([]*affiliate.CommissionSetting, error) {
+func (s *CommissionSettingStore) GetCommissionSettings() ([]*affiliate.CommissionSetting, error) {
 	var results model.CommissionSettings
 	err := s.query().Where(s.preds).Find(&results)
 	return convert.CommissionSettings(results), err
 }
 
-func (s *CommissionSettingStore) GetShopCommissionSettingByProductID(ShopID int64, productID int64) (*affiliate.CommissionSetting, error) {
-	return s.AccountID(ShopID).ProductID(productID).GetShopCommissionSetting()
-}
-
-func (s *CommissionSettingStore) CreateShopCommissionSetting(commissionSetting *model.CommissionSetting) error {
+func (s *CommissionSettingStore) CreateCommissionSetting(commissionSetting *model.CommissionSetting) error {
 	sqlstore.MustNoPreds(s.preds)
 	_, err := s.query().Insert(commissionSetting)
 	return err
 }
 
-func (s *CommissionSettingStore) UpdateShopCommissionSetting(commissionSetting *model.CommissionSetting) error {
+func (s *CommissionSettingStore) UpdateCommissionSetting(commissionSetting *model.CommissionSetting) error {
 	sqlstore.MustNoPreds(s.preds)
 	_, err := s.AccountID(commissionSetting.AccountID).ProductID(commissionSetting.ProductID).query().Where(s.preds).Update(commissionSetting)
 	return err

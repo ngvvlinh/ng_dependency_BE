@@ -3,10 +3,11 @@ package api
 import (
 	"context"
 
+	"etop.vn/api/main/identity"
+
 	cm "etop.vn/backend/pkg/common"
 
 	"etop.vn/api/main/catalog"
-	servicecatalog "etop.vn/api/main/catalog"
 	"etop.vn/api/services/affiliate"
 	pbcm "etop.vn/backend/pb/common"
 	pbaff "etop.vn/backend/pb/services/affiliate"
@@ -21,9 +22,12 @@ func init() {
 	bus.AddHandlers("",
 		TradingGetProducts,
 		CreateOrUpdateTradingCommissionSetting,
-		GetProductPromotions,
-		CreateProductPromotion,
-		UpdateProductPromotion,
+		GetTradingProductPromotions,
+		GetTradingProductPromotionByProductIDs,
+		CreateTradingProductPromotion,
+		UpdateTradingProductPromotion,
+
+		GetProductPromotion,
 
 		GetCommissions,
 		NotifyNewShopPurchase,
@@ -40,21 +44,24 @@ var (
 	catalogQuery   catalog.QueryBus
 	affiliateCmd   affiliate.CommandBus
 	affiliateQuery affiliate.QueryBus
+	identityQuery  identity.QueryBus
 )
 
 func Init(
 	affCmd affiliate.CommandBus,
 	affQuery affiliate.QueryBus,
 	catQuery catalog.QueryBus,
+	idenQuery identity.QueryBus,
 ) {
 	affiliateCmd = affCmd
 	catalogQuery = catQuery
 	affiliateQuery = affQuery
+	identityQuery = idenQuery
 }
 
 func TradingGetProducts(ctx context.Context, q *wrapaff.TradingGetProductsEndpoint) error {
 	if q.Context.Shop.ID != modeletop.EtopTradingAccountID {
-		return cm.Errorf(cm.Unauthenticated, nil, "Unauthenticated")
+		return cm.Errorf(cm.PermissionDenied, nil, "PermissionDenied")
 	}
 	paging := q.Paging.CMPaging()
 	query := &catalog.ListShopProductsWithVariantsQuery{
@@ -66,7 +73,12 @@ func TradingGetProducts(ctx context.Context, q *wrapaff.TradingGetProductsEndpoi
 		return err
 	}
 
-	shopCommissionSettingMap := GetShopCommissionSettingsByProducts(ctx, modeletop.EtopTradingAccountID, query.Result.Products)
+	var productIds []int64
+	for _, product := range query.Result.Products {
+		productIds = append(productIds, product.ProductID)
+	}
+
+	shopCommissionSettingMap := GetShopCommissionSettingsByProducts(ctx, modeletop.EtopTradingAccountID, productIds)
 	var products []*pbaff.ShopProductResponse
 	for _, product := range query.Result.Products {
 		shopCommissionSetting := shopCommissionSettingMap[product.ProductID]
@@ -89,7 +101,7 @@ func TradingGetProducts(ctx context.Context, q *wrapaff.TradingGetProductsEndpoi
 
 func CreateOrUpdateTradingCommissionSetting(ctx context.Context, q *wrapaff.CreateOrUpdateTradingCommissionSettingEndpoint) error {
 	if q.Context.Shop.ID != modeletop.EtopTradingAccountID {
-		return cm.Errorf(cm.Unauthenticated, nil, "Unauthorized")
+		return cm.Errorf(cm.PermissionDenied, nil, "PermissionDenied")
 	}
 
 	cmd := &affiliate.CreateOrUpdateCommissionSettingCommand{
@@ -106,16 +118,107 @@ func CreateOrUpdateTradingCommissionSetting(ctx context.Context, q *wrapaff.Crea
 	return nil
 }
 
-func GetProductPromotions(ctx context.Context, q *wrapaff.GetProductPromotionsEndpoint) error {
-	panic("IMPLEMENT ME")
+func GetTradingProductPromotions(ctx context.Context, q *wrapaff.GetTradingProductPromotionsEndpoint) error {
+	if q.Context.Shop.ID != modeletop.EtopTradingAccountID {
+		return cm.Errorf(cm.PermissionDenied, nil, "PermissionDenied")
+	}
+	paging := q.Paging.CMPaging()
+	query := &affiliate.ListShopProductPromotionsQuery{
+		ShopID:  modeletop.EtopTradingAccountID,
+		Paging:  *paging,
+		Filters: pbcm.ToFilters(q.Filters),
+	}
+
+	if err := affiliateQuery.Dispatch(ctx, query); err != nil {
+		return err
+	}
+
+	q.Result = &pbaff.GetProductPromotionsResponse{
+		Paging:     pbcm.PbPageInfo(paging, query.Result.Count),
+		Promotions: pbaff.PbProductPromotions(query.Result.Promotions),
+	}
+	return nil
 }
 
-func CreateProductPromotion(ctx context.Context, q *wrapaff.CreateProductPromotionEndpoint) error {
-	panic("IMPLEMENT ME")
+func GetTradingProductPromotionByProductIDs(ctx context.Context, q *wrapaff.GetTradingProductPromotionByProductIDsEndpoint) error {
+	if q.Context.Shop.ID != modeletop.EtopTradingAccountID {
+		return cm.Errorf(cm.PermissionDenied, nil, "PermissionDenied")
+	}
+	productPromotionsQ := &affiliate.GetShopProductPromotionByProductIDsQuery{
+		ShopID:     modeletop.EtopTradingAccountID,
+		ProductIDs: q.ProductIds,
+	}
+	if err := affiliateQuery.Dispatch(ctx, productPromotionsQ); err != nil {
+		return err
+	}
+	q.Result = &pbaff.GetTradingProductPromotionByIDsResponse{
+		Promotions: pbaff.PbProductPromotions(productPromotionsQ.Result),
+	}
+	return nil
 }
 
-func UpdateProductPromotion(ctx context.Context, q *wrapaff.CreateProductPromotionEndpoint) error {
-	panic("IMPLEMENT ME")
+func CreateTradingProductPromotion(ctx context.Context, q *wrapaff.CreateTradingProductPromotionEndpoint) error {
+	if q.Context.Shop.ID != modeletop.EtopTradingAccountID {
+		return cm.Errorf(cm.PermissionDenied, nil, "PermissionDenied")
+	}
+	cmd := &affiliate.CreateProductPromotionCommand{
+		ShopID:      modeletop.EtopTradingAccountID,
+		ProductID:   q.ProductId,
+		Amount:      q.Amount,
+		Code:        q.Code,
+		Description: q.Description,
+		Unit:        q.Unit,
+		Note:        q.Note,
+		Type:        q.Type,
+	}
+	if err := affiliateCmd.Dispatch(ctx, cmd); err != nil {
+		return err
+	}
+	q.Result = pbaff.PbProductPromotion(cmd.Result)
+	return nil
+}
+
+func UpdateTradingProductPromotion(ctx context.Context, q *wrapaff.UpdateTradingProductPromotionEndpoint) error {
+	if q.Context.Shop.ID != modeletop.EtopTradingAccountID {
+		return cm.Errorf(cm.PermissionDenied, nil, "PermissionDenied")
+	}
+	cmd := &affiliate.UpdateProductPromotionCommand{
+		ID:          q.Id,
+		Amount:      q.Amount,
+		Unit:        q.Unit,
+		Code:        q.Code,
+		Description: q.Description,
+		Note:        q.Note,
+		Type:        q.Type,
+	}
+	if err := affiliateCmd.Dispatch(ctx, cmd); err != nil {
+		return err
+	}
+	q.Result = pbaff.PbProductPromotion(cmd.Result)
+	return nil
+}
+
+func GetProductPromotion(ctx context.Context, q *wrapaff.GetProductPromotionEndpoint) error {
+	promotionQuery := &affiliate.GetShopProductPromotionQuery{
+		ShopID:    modeletop.EtopTradingAccountID,
+		ProductID: q.ProductId,
+	}
+	if err := affiliateQuery.Dispatch(ctx, promotionQuery); err != nil {
+		return err
+	}
+	var pbReferralDiscount *pbaff.CommissionSetting
+	if q.ReferralCode != nil {
+		commissionSetting, err := GetCommissionSettingByReferralCode(ctx, *q.ReferralCode, q.ProductId)
+		if err != nil {
+			return err
+		}
+		pbReferralDiscount = pbaff.PbCommissionSetting(commissionSetting)
+	}
+	q.Result = &pbaff.GetProductPromotionResponse{
+		Promotion:        pbaff.PbProductPromotion(promotionQuery.Result),
+		ReferralDiscount: pbReferralDiscount,
+	}
+	return nil
 }
 
 func GetCommissions(ctx context.Context, q *wrapaff.GetCommissionsEndpoint) error {
@@ -161,12 +264,21 @@ func AffiliateGetProducts(ctx context.Context, q *wrapaff.AffiliateGetProductsEn
 		return err
 	}
 
-	tradingCommissionMap := GetShopCommissionSettingsByProducts(ctx, modeletop.EtopTradingAccountID, query.Result.Products)
-	affCommissionMap := GetShopCommissionSettingsByProducts(ctx, q.Context.Affiliate.ID, query.Result.Products)
+	var productIds []int64
+	for _, product := range query.Result.Products {
+		productIds = append(productIds, product.ProductID)
+	}
+
+	tradingCommissionMap := GetShopCommissionSettingsByProducts(ctx, modeletop.EtopTradingAccountID, productIds)
+	affCommissionMap := GetShopCommissionSettingsByProducts(ctx, q.Context.Affiliate.ID, productIds)
+	shopPromotionMap := GetShopProductPromotionMapByProductIDs(ctx, modeletop.EtopTradingAccountID, productIds)
+
 	var products []*pbaff.AffiliateProductResponse
 	for _, product := range query.Result.Products {
 		tradingCommissionSetting := tradingCommissionMap[product.ProductID]
 		affCommissionSetting := affCommissionMap[product.ProductID]
+		shopPromotion := shopPromotionMap[product.ProductID]
+
 		var pbTradingCommissionSetting *pbaff.CommissionSetting = nil
 		if tradingCommissionSetting != nil {
 			pbTradingCommissionSetting = pbaff.PbCommissionSetting(tradingCommissionSetting)
@@ -175,11 +287,16 @@ func AffiliateGetProducts(ctx context.Context, q *wrapaff.AffiliateGetProductsEn
 		if affCommissionSetting != nil {
 			pbAffCommissionSetting = pbaff.PbCommissionSetting(affCommissionSetting)
 		}
+		var pbShopPromotion *pbaff.ProductPromotion = nil
+		if shopPromotion != nil {
+			pbShopPromotion = pbaff.PbProductPromotion(shopPromotion)
+		}
 
 		products = append(products, &pbaff.AffiliateProductResponse{
 			Product:                    pbshop.PbShopProductWithVariants(product),
 			ShopCommissionSetting:      pbTradingCommissionSetting,
 			AffiliateCommissionSetting: pbAffCommissionSetting,
+			Promotion:                  pbShopPromotion,
 		})
 	}
 
@@ -191,12 +308,7 @@ func AffiliateGetProducts(ctx context.Context, q *wrapaff.AffiliateGetProductsEn
 	return nil
 }
 
-func GetShopCommissionSettingsByProducts(ctx context.Context, accountID int64, products []*servicecatalog.ShopProductWithVariants) map[int64]*affiliate.CommissionSetting {
-	var productIds []int64
-	for _, product := range products {
-		productIds = append(productIds, product.ProductID)
-	}
-
+func GetShopCommissionSettingsByProducts(ctx context.Context, accountID int64, productIds []int64) map[int64]*affiliate.CommissionSetting {
 	getShopCommissionByProductIDsQuery := &affiliate.GetCommissionByProductIDsQuery{
 		AccountID:  accountID,
 		ProductIDs: productIds,
@@ -205,14 +317,43 @@ func GetShopCommissionSettingsByProducts(ctx context.Context, accountID int64, p
 		return map[int64]*affiliate.CommissionSetting{}
 	}
 
-	var interfaceArr []interface{}
-	for _, e := range getShopCommissionByProductIDsQuery.Result {
-		interfaceArr = append(interfaceArr, e)
-	}
 	shopCommissionMap := map[int64]*affiliate.CommissionSetting{}
 	for _, e := range getShopCommissionByProductIDsQuery.Result {
 		shopCommissionMap[e.ProductID] = e
 	}
 
 	return shopCommissionMap
+}
+
+func GetShopProductPromotionMapByProductIDs(ctx context.Context, shopID int64, productIDs []int64) map[int64]*affiliate.ProductPromotion {
+	promotionsQ := &affiliate.GetShopProductPromotionByProductIDsQuery{
+		ShopID:     shopID,
+		ProductIDs: productIDs,
+	}
+	if err := affiliateQuery.Dispatch(ctx, promotionsQ); err != nil {
+		return map[int64]*affiliate.ProductPromotion{}
+	}
+
+	promotionMap := map[int64]*affiliate.ProductPromotion{}
+	for _, e := range promotionsQ.Result {
+		promotionMap[e.ProductID] = e
+	}
+	return promotionMap
+}
+
+func GetCommissionSettingByReferralCode(ctx context.Context, referralCode string, productID int64) (*affiliate.CommissionSetting, error) {
+	idenQ := &identity.GetUserByPhoneQuery{
+		Phone: referralCode,
+	}
+	if err := identityQuery.Dispatch(ctx, idenQ); err != nil {
+		return nil, err
+	}
+	commissionSettingQ := &affiliate.GetCommissionByProductIDQuery{
+		AccountID: idenQ.Result.ID,
+		ProductID: productID,
+	}
+	if err := affiliateQuery.Dispatch(ctx, commissionSettingQ); err != nil {
+		return nil, err
+	}
+	return commissionSettingQ.Result, nil
 }

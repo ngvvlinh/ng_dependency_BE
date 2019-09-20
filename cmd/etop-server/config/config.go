@@ -139,8 +139,7 @@ func Default() Config {
 		Vtiger:         crmsyncconfig.DefaultVtiger(),
 		Vht:            crmsyncconfig.DefaultVht(),
 	}
-	cfg.Postgres.Database = "etop_dev"
-	cfg.PostgresAffiliate.Database = "etop_aff"
+	cfg.Postgres.Database = "etopv1_4"
 	cfg.Email = EmailConfig{
 		Enabled:              false,
 		ResetPasswordURL:     "https://etop.d.etop.vn/reset-password",

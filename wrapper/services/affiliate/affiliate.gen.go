@@ -39,10 +39,11 @@ func NewAffiliateServer(mux Muxer, hooks *twirp.ServerHooks, secret string) {
 		ll.Fatal("Secret is empty")
 	}
 	bus.Expect(&CreateOrUpdateTradingCommissionSettingEndpoint{})
-	bus.Expect(&CreateProductPromotionEndpoint{})
-	bus.Expect(&GetProductPromotionsEndpoint{})
+	bus.Expect(&CreateTradingProductPromotionEndpoint{})
+	bus.Expect(&GetTradingProductPromotionByProductIDsEndpoint{})
+	bus.Expect(&GetTradingProductPromotionsEndpoint{})
 	bus.Expect(&TradingGetProductsEndpoint{})
-	bus.Expect(&UpdateProductPromotionEndpoint{})
+	bus.Expect(&UpdateTradingProductPromotionEndpoint{})
 	bus.Expect(&GetProductPromotionEndpoint{})
 	bus.Expect(&AffiliateGetProductsEndpoint{})
 	bus.Expect(&CreateOrUpdateAffiliateCommissionSettingEndpoint{})
@@ -107,17 +108,17 @@ func (s TradingService) CreateOrUpdateTradingCommissionSetting(ctx context.Conte
 	return resp, err
 }
 
-type CreateProductPromotionEndpoint struct {
+type CreateTradingProductPromotionEndpoint struct {
 	*affiliate.CreateOrUpdateProductPromotionRequest
 	Result  *affiliate.ProductPromotion
 	Context ShopClaim
 }
 
-func (s TradingService) CreateProductPromotion(ctx context.Context, req *affiliate.CreateOrUpdateProductPromotionRequest) (resp *affiliate.ProductPromotion, err error) {
+func (s TradingService) CreateTradingProductPromotion(ctx context.Context, req *affiliate.CreateOrUpdateProductPromotionRequest) (resp *affiliate.ProductPromotion, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
-	const rpcName = "affiliate.Trading/CreateProductPromotion"
+	const rpcName = "affiliate.Trading/CreateTradingProductPromotion"
 	defer func() {
 		recovered := recover()
 		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
@@ -133,7 +134,7 @@ func (s TradingService) CreateProductPromotion(ctx context.Context, req *affilia
 		return nil, err
 	}
 	session = sessionQuery.Result
-	query := &CreateProductPromotionEndpoint{CreateOrUpdateProductPromotionRequest: req}
+	query := &CreateTradingProductPromotionEndpoint{CreateOrUpdateProductPromotionRequest: req}
 	query.Context.Claim = session.Claim
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
@@ -151,17 +152,17 @@ func (s TradingService) CreateProductPromotion(ctx context.Context, req *affilia
 	return resp, err
 }
 
-type GetProductPromotionsEndpoint struct {
-	*cm.CommonListRequest
-	Result  *affiliate.GetProductPromotionsResponse
+type GetTradingProductPromotionByProductIDsEndpoint struct {
+	*affiliate.GetTradingProductPromotionByIDsRequest
+	Result  *affiliate.GetTradingProductPromotionByIDsResponse
 	Context ShopClaim
 }
 
-func (s TradingService) GetProductPromotions(ctx context.Context, req *cm.CommonListRequest) (resp *affiliate.GetProductPromotionsResponse, err error) {
+func (s TradingService) GetTradingProductPromotionByProductIDs(ctx context.Context, req *affiliate.GetTradingProductPromotionByIDsRequest) (resp *affiliate.GetTradingProductPromotionByIDsResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
-	const rpcName = "affiliate.Trading/GetProductPromotions"
+	const rpcName = "affiliate.Trading/GetTradingProductPromotionByProductIDs"
 	defer func() {
 		recovered := recover()
 		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
@@ -177,7 +178,51 @@ func (s TradingService) GetProductPromotions(ctx context.Context, req *cm.Common
 		return nil, err
 	}
 	session = sessionQuery.Result
-	query := &GetProductPromotionsEndpoint{CommonListRequest: req}
+	query := &GetTradingProductPromotionByProductIDsEndpoint{GetTradingProductPromotionByIDsRequest: req}
+	query.Context.Claim = session.Claim
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = bus.Dispatch(ctx, query)
+	resp = query.Result
+	if err == nil {
+		if resp == nil {
+			return nil, common.Error(common.Internal, "", nil).Log("nil response")
+		}
+		errs = cmwrapper.HasErrors(resp)
+	}
+	return resp, err
+}
+
+type GetTradingProductPromotionsEndpoint struct {
+	*cm.CommonListRequest
+	Result  *affiliate.GetProductPromotionsResponse
+	Context ShopClaim
+}
+
+func (s TradingService) GetTradingProductPromotions(ctx context.Context, req *cm.CommonListRequest) (resp *affiliate.GetProductPromotionsResponse, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "affiliate.Trading/GetTradingProductPromotions"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:     ctx,
+		RequireAuth: true,
+		RequireShop: true,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &GetTradingProductPromotionsEndpoint{CommonListRequest: req}
 	query.Context.Claim = session.Claim
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
@@ -239,17 +284,17 @@ func (s TradingService) TradingGetProducts(ctx context.Context, req *cm.CommonLi
 	return resp, err
 }
 
-type UpdateProductPromotionEndpoint struct {
+type UpdateTradingProductPromotionEndpoint struct {
 	*affiliate.CreateOrUpdateProductPromotionRequest
 	Result  *affiliate.ProductPromotion
 	Context ShopClaim
 }
 
-func (s TradingService) UpdateProductPromotion(ctx context.Context, req *affiliate.CreateOrUpdateProductPromotionRequest) (resp *affiliate.ProductPromotion, err error) {
+func (s TradingService) UpdateTradingProductPromotion(ctx context.Context, req *affiliate.CreateOrUpdateProductPromotionRequest) (resp *affiliate.ProductPromotion, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
-	const rpcName = "affiliate.Trading/UpdateProductPromotion"
+	const rpcName = "affiliate.Trading/UpdateTradingProductPromotion"
 	defer func() {
 		recovered := recover()
 		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
@@ -265,7 +310,7 @@ func (s TradingService) UpdateProductPromotion(ctx context.Context, req *affilia
 		return nil, err
 	}
 	session = sessionQuery.Result
-	query := &UpdateProductPromotionEndpoint{CreateOrUpdateProductPromotionRequest: req}
+	query := &UpdateTradingProductPromotionEndpoint{CreateOrUpdateProductPromotionRequest: req}
 	query.Context.Claim = session.Claim
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner

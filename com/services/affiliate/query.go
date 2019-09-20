@@ -12,12 +12,14 @@ import (
 var _ affiliate.QueryService = &QueryService{}
 
 type QueryService struct {
-	etopCommissionSetting sqlstore.CommissionSettingStoreFactory
+	commissionSetting sqlstore.CommissionSettingStoreFactory
+	productPromotion  sqlstore.ProductPromotionStoreFactory
 }
 
 func NewQuery(db cmsql.Database) *QueryService {
 	return &QueryService{
-		etopCommissionSetting: sqlstore.NewShopCommissionSettingStore(db),
+		commissionSetting: sqlstore.NewCommissionSettingStore(db),
+		productPromotion:  sqlstore.NewProductPromotionStore(db),
 	}
 }
 
@@ -26,6 +28,35 @@ func (a *QueryService) MessageBus() affiliate.QueryBus {
 	return affiliate.NewQueryServiceHandler(a).RegisterHandlers(b)
 }
 
-func (q *QueryService) GetCommissionByProductIDs(ctx context.Context, args *affiliate.GetCommissionByProductIDsArgs) ([]*affiliate.CommissionSetting, error) {
-	return q.etopCommissionSetting(ctx).AccountID(args.AccountID).ProductIDs(args.ProductIDs).GetShopCommissionSettings()
+func (a *QueryService) GetCommissionByProductIDs(ctx context.Context, args *affiliate.GetCommissionByProductIDsArgs) ([]*affiliate.CommissionSetting, error) {
+	return a.commissionSetting(ctx).AccountID(args.AccountID).ProductIDs(args.ProductIDs).GetCommissionSettings()
+}
+
+func (a *QueryService) GetCommissionByProductID(ctx context.Context, args *affiliate.GetCommissionByProductIDArgs) (*affiliate.CommissionSetting, error) {
+	return a.commissionSetting(ctx).AccountID(args.AccountID).ProductID(args.ProductID).GetCommissionSetting()
+}
+
+func (a *QueryService) ListShopProductPromotions(ctx context.Context, args *affiliate.ListShopProductPromotionsArgs) (*affiliate.ListShopProductPromotionsResponse, error) {
+	query := a.productPromotion(ctx).ShopID(args.ShopID).Filters(args.Filters)
+	promotions, err := query.Paging(args.Paging).GetProductPromotions()
+	if err != nil {
+		return nil, err
+	}
+	count, err := query.Count()
+	if err != nil {
+		return nil, err
+	}
+	return &affiliate.ListShopProductPromotionsResponse{
+		Promotions: promotions,
+		Count:      int32(count),
+		Paging:     query.GetPaging(),
+	}, nil
+}
+
+func (a *QueryService) GetShopProductPromotion(ctx context.Context, args *affiliate.GetProductPromotionArgs) (*affiliate.ProductPromotion, error) {
+	return a.productPromotion(ctx).ShopID(args.ShopID).ProductID(args.ProductID).GetProductPromotion()
+}
+
+func (a *QueryService) GetShopProductPromotionByProductIDs(ctx context.Context, args *affiliate.GetShopProductPromotionByProductIDs) ([]*affiliate.ProductPromotion, error) {
+	return a.productPromotion(ctx).ShopID(args.ShopID).ProductIDs(args.ProductIDs...).GetProductPromotions()
 }
