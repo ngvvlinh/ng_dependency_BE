@@ -13,6 +13,7 @@ import (
 	"etop.vn/api/shopping/carrying"
 	"etop.vn/api/shopping/customering"
 	"etop.vn/api/shopping/vendoring"
+	summary "etop.vn/api/summary"
 	catalogmodel "etop.vn/backend/com/main/catalog/model"
 	"etop.vn/backend/pb/common"
 	pbcm "etop.vn/backend/pb/common"
@@ -97,6 +98,48 @@ func PbSummaryData(data []model.SummaryItem) []SummaryItem {
 			Spec:  item.Spec,
 			Value: int32(item.Value),
 			Unit:  item.Unit,
+		}
+	}
+	return res
+}
+
+// From up
+func PbSummaryTablesNew(tables []*summary.SummaryTable) []*SummaryTable {
+	res := make([]*SummaryTable, len(tables))
+	for i, table := range tables {
+		res[i] = &SummaryTable{
+			Label:   table.Label,
+			Tags:    table.Tags,
+			Columns: PbSummaryColRowNew(table.Cols),
+			Rows:    PbSummaryColRowNew(table.Rows),
+			Data:    PbSummaryDataNew(table.Data),
+		}
+	}
+	return res
+}
+
+func PbSummaryColRowNew(items []summary.SummaryColRow) []SummaryColRow {
+	res := make([]SummaryColRow, len(items))
+	for i, item := range items {
+		res[i] = SummaryColRow{
+			Label:  item.Label,
+			Spec:   item.Spec,
+			Unit:   item.Unit,
+			Indent: int32(item.Indent),
+		}
+	}
+	return res
+}
+
+func PbSummaryDataNew(data []summary.SummaryItem) []SummaryItem {
+	res := make([]SummaryItem, len(data))
+	for i, item := range data {
+		res[i] = SummaryItem{
+			Spec:      item.Spec,
+			Value:     int32(item.Value),
+			Unit:      item.Unit,
+			ImageUrls: item.ImageUrls,
+			Label:     item.Label,
 		}
 	}
 	return res

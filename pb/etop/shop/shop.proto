@@ -192,6 +192,7 @@ service MoneyTransactionService {
 
 service SummaryService {
     rpc SummarizeFulfillments(SummarizeFulfillmentsRequest) returns (SummarizeFulfillmentsResponse);
+    rpc SummarizePOS (SummarizePOSRequest) returns (SummarizePOSResponse);
     rpc CalcBalanceShop(cm.Empty) returns (CalcBalanceShopResponse);
 }
 
@@ -765,6 +766,15 @@ message SummarizeFulfillmentsResponse {
     repeated SummaryTable tables = 1;
 }
 
+message SummarizePOSResponse {
+    repeated SummaryTable tables = 1;
+}
+
+message SummarizePOSRequest{
+    optional string date_from = 1 [(gogoproto.nullable)=false];
+    optional string date_to   = 2 [(gogoproto.nullable)=false];
+}
+
 message SummaryTable {
     optional string label = 1 [(gogoproto.nullable)=false];
     repeated string tags  = 2;
@@ -782,9 +792,11 @@ message SummaryColRow {
 }
 
 message SummaryItem {
+    optional string label = 1 [(gogoproto.nullable)=false];
     optional string spec  = 2 [(gogoproto.nullable)=false];
     optional int32  value = 3 [(gogoproto.nullable)=false];
     optional string unit  = 4 [(gogoproto.nullable)=false];
+    repeated string image_urls = 5;
 }
 
 message ImportProductsResponse {

@@ -3036,6 +3036,32 @@
         ]
       }
     },
+    "/api/shop.Summary/SummarizePOS": {
+      "post": {
+        "operationId": "SummarizePOS",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/shopSummarizePOSResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/shopSummarizePOSRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Summary"
+        ]
+      }
+    },
     "/api/shop.Trading/TradingCreateOrder": {
       "post": {
         "operationId": "TradingCreateOrder",
@@ -8213,6 +8239,28 @@
         }
       }
     },
+    "shopSummarizePOSRequest": {
+      "type": "object",
+      "properties": {
+        "date_from": {
+          "type": "string"
+        },
+        "date_to": {
+          "type": "string"
+        }
+      }
+    },
+    "shopSummarizePOSResponse": {
+      "type": "object",
+      "properties": {
+        "tables": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/shopSummaryTable"
+          }
+        }
+      }
+    },
     "shopSummaryColRow": {
       "type": "object",
       "properties": {
@@ -8234,6 +8282,9 @@
     "shopSummaryItem": {
       "type": "object",
       "properties": {
+        "label": {
+          "type": "string"
+        },
         "spec": {
           "type": "string"
         },
@@ -8243,6 +8294,12 @@
         },
         "unit": {
           "type": "string"
+        },
+        "image_urls": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },

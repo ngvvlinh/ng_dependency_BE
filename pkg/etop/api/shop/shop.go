@@ -5,8 +5,6 @@ import (
 	"strconv"
 	"time"
 
-	"etop.vn/api/shopping/tradering"
-
 	"github.com/asaskevich/govalidator"
 
 	haravanidentity "etop.vn/api/external/haravan/identity"
@@ -25,7 +23,9 @@ import (
 	"etop.vn/api/shopping/addressing"
 	"etop.vn/api/shopping/carrying"
 	"etop.vn/api/shopping/customering"
+	"etop.vn/api/shopping/tradering"
 	"etop.vn/api/shopping/vendoring"
+	"etop.vn/api/summary"
 	notimodel "etop.vn/backend/com/handler/notifier/model"
 	catalogmodelx "etop.vn/backend/com/main/catalog/modelx"
 	moneymodelx "etop.vn/backend/com/main/moneytx/modelx"
@@ -116,6 +116,7 @@ func init() {
 	bus.AddHandler("api", DeleteConnectedCarrierServiceExternalAccountHaravan)
 	bus.AddHandler("api", PaymentTradingOrder)
 	bus.AddHandler("api", PaymentCheckReturnData)
+	bus.AddHandler("api", GetSummarizePOS)
 }
 
 const PrefixIdemp = "IdempOrder"
@@ -145,6 +146,7 @@ var (
 	carrierAggr          carrying.CommandBus
 	carrierQuery         carrying.QueryBus
 	traderQuery          tradering.QueryBus
+	summaryQuery         summary.QueryBus
 	eventBus             meta.EventBus
 	receiptAggr          receipting.CommandBus
 	receiptQuery         receipting.QueryBus
@@ -179,6 +181,7 @@ func Init(
 	receiptQS receipting.QueryBus,
 	sd cmservice.Shutdowner,
 	rd redis.Store,
+	summary summary.QueryBus,
 ) {
 	idempgroup = idemp.NewRedisGroup(rd, PrefixIdemp, 5*60)
 	locationQuery = locationQ
@@ -207,6 +210,7 @@ func Init(
 	carrierQuery = carrierQ
 	traderQuery = traderQ
 	eventBus = eventB
+	summaryQuery = summary
 	sd.Register(idempgroup.Shutdown)
 }
 
@@ -707,6 +711,25 @@ func SummarizeFulfillments(ctx context.Context, q *wrapshop.SummarizeFulfillment
 
 	q.Result = &pbshop.SummarizeFulfillmentsResponse{
 		Tables: pbshop.PbSummaryTables(query.Result.Tables),
+	}
+	return nil
+}
+
+func GetSummarizePOS(ctx context.Context, q *wrapshop.SummarizePOSEndpoint) error {
+	dateFrom, dateTo, err := cm.ParseDateFromTo(q.DateFrom, q.DateTo)
+	if err != nil {
+		return err
+	}
+	query := &summary.SummaryPOSQuery{
+		ShopID:   q.Context.Shop.ID,
+		DateFrom: dateFrom,
+		DateTo:   dateTo,
+	}
+	if err := summaryQuery.Dispatch(ctx, query); err != nil {
+		return err
+	}
+	q.Result = &pbshop.SummarizePOSResponse{
+		Tables: pbshop.PbSummaryTablesNew(query.Result.ListTable),
 	}
 	return nil
 }

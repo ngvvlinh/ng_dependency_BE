@@ -39,6 +39,7 @@ import (
 	traderquery "etop.vn/backend/com/shopping/tradering/query"
 	vendoraggregate "etop.vn/backend/com/shopping/vendoring/aggregate"
 	vendorquery "etop.vn/backend/com/shopping/vendoring/query"
+	summaryquery "etop.vn/backend/com/summary/query"
 	vhtaggregate "etop.vn/backend/com/supporting/crm/vht/aggregate"
 	vhtquery "etop.vn/backend/com/supporting/crm/vht/query"
 	vtigeraggregate "etop.vn/backend/com/supporting/crm/vtiger/aggregate"
@@ -297,6 +298,7 @@ func main() {
 
 	vtigerClient := vtigerclient.NewVigerClient(cfg.Vtiger.ServiceURL, cfg.Vtiger.Username, cfg.Vtiger.APIKey)
 	// create aggregate, query service
+	summaryQuery := summaryquery.NewDashboardQuery(db, redisStore).MessageBus()
 	vhtQuery := vhtquery.New(crmDB).MessageBus()
 	vhtAggregate := vhtaggregate.New(crmDB, nil).MessageBus()
 	vtigerQuery := vtigerquery.New(crmDB, configMap, vtigerClient).MessageBus()
@@ -376,6 +378,7 @@ func main() {
 		receiptQuery,
 		shutdowner,
 		redisStore,
+		summaryQuery,
 	)
 	partner.Init(shutdowner, redisStore, authStore, cfg.URL.Auth)
 	xshop.Init(shutdowner, redisStore, authStore)

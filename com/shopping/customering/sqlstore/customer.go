@@ -171,7 +171,7 @@ func CheckErrorCustomer(e error, email string, phone string) error {
 		errMsg := e.Error()
 		switch {
 		case strings.Contains(errMsg, "shop_customer_shop_id_email_idx"):
-			e = cm.Errorf(cm.FailedPrecondition, e, "Trùng email: %", email)
+			e = cm.Errorf(cm.FailedPrecondition, e, "Trùng email: %v", email)
 		case strings.Contains(errMsg, "shop_customer_shop_id_phone_idx"):
 			e = cm.Errorf(cm.FailedPrecondition, e, "Trùng số điện thoại: %v", phone)
 		}

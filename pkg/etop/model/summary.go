@@ -10,6 +10,16 @@ type SummarizeFulfillmentsRequest struct {
 	}
 }
 
+type SummarizePOSResquest struct {
+	ShopID   int64
+	DateFrom string
+	DateTo   string
+
+	Result struct {
+		Tables []*SummaryTable
+	}
+}
+
 type SummaryTable struct {
 	Label string
 	Tags  []string
