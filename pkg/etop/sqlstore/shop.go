@@ -176,6 +176,13 @@ func DeprecatedCreateVariant(ctx context.Context, cmd *catalogmodelx.DeprecatedC
 		return x.ShouldInsert(variant)
 	})
 	if err != nil {
+		errMsg := err.Error()
+		switch {
+		case strings.Contains(errMsg, "shop_product_shop_id_code_idx"):
+			err = cm.Errorf(cm.FailedPrecondition, nil, "Mã sản phẩm %v đã tồn tại. Vui lòng chọn mã khác.", cmd.ProductCode)
+		case strings.Contains(errMsg, "shop_variant_shop_id_code_idx"):
+			err = cm.Errorf(cm.FailedPrecondition, nil, "Mã phiên bản sản phẩm %v đã tồn tại. Vui lòng chọn mã khác.", cmd.VariantCode)
+		}
 		return err
 	}
 
