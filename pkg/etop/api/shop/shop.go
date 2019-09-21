@@ -454,7 +454,7 @@ func DeprecatedCreateVariant(ctx context.Context, q *wrapshop.DeprecatedCreateVa
 		RetailPrice: q.RetailPrice,
 
 		ProductCode:       q.Code,
-		VariantCode:       q.Sku,
+		VariantCode:       q.Code,
 		QuantityAvailable: int(q.QuantityAvailable),
 		QuantityOnHand:    int(q.QuantityOnHand),
 		QuantityReserved:  int(q.QuantityReserved),

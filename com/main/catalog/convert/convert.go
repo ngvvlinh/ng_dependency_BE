@@ -56,6 +56,7 @@ func ShopProduct(in *catalogmodel.ShopProduct) (out *catalog.ShopProduct) {
 		ProductID:     in.ProductID,
 		CollectionIDs: in.CollectionIDs,
 		Name:          in.Name,
+		Code:          in.Code,
 		DescriptionInfo: catalog.DescriptionInfo{
 			ShortDesc:   in.ShortDesc,
 			Description: in.Description,

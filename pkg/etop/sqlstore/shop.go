@@ -164,6 +164,7 @@ func DeprecatedCreateVariant(ctx context.Context, cmd *catalogmodelx.DeprecatedC
 				ProductID:  cm.NewID(),
 				Code:       cmd.ProductCode,
 				Name:       cmd.ProductName,
+				ImageURLs:  cmd.ImageURLs,
 				NameNorm:   validate.NormalizeSearch(cmd.ProductName),
 				NameNormUa: validate.NormalizeUnaccent(cmd.ProductName),
 			}
