@@ -62,6 +62,11 @@ func (s *ShopVariantStore) ID(id int64) *ShopVariantStore {
 	return s
 }
 
+func (s *ShopVariantStore) ProductIDs(productIds ...int64) *ShopVariantStore {
+	s.preds = append(s.preds, sq.PrefixedIn(&s.FtShopVariant.prefix, "product_id", productIds))
+	return s
+}
+
 func (s *ShopVariantStore) IDs(ids ...int64) *ShopVariantStore {
 	s.preds = append(s.preds, sq.PrefixedIn(&s.FtShopVariant.prefix, "variant_id", ids))
 	return s

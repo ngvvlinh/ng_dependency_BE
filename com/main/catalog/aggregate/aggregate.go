@@ -97,8 +97,15 @@ func (a *Aggregate) UpdateShopProductImages(ctx context.Context, args *catalog.U
 }
 
 func (a *Aggregate) DeleteShopProducts(ctx context.Context, args *shopping.IDsQueryShopArgs) (int, error) {
-	deleted, err := a.shopProduct(ctx).ShopID(args.ShopID).IDs(args.IDs...).SoftDelete()
-	return deleted, err
+	deletedProduct, err := a.shopProduct(ctx).ShopID(args.ShopID).IDs(args.IDs...).SoftDelete()
+	if err != nil {
+		return 0, err
+	}
+	_, err = a.shopVariant(ctx).ShopID(args.ShopID).ProductIDs(args.IDs...).SoftDelete()
+	if err != nil {
+		return 0, err
+	}
+	return deletedProduct, nil
 }
 
 func (a *Aggregate) CreateShopVariant(ctx context.Context, args *catalog.CreateShopVariantArgs) (*catalog.ShopVariant, error) {

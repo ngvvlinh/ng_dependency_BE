@@ -252,11 +252,15 @@ func UpdateShopProduct(in *catalogmodel.ShopProduct, args *catalog.UpdateShopPro
 		ListPrice:   args.ListPrice.Apply(in.ListPrice),
 		RetailPrice: args.RetailPrice.Apply(in.RetailPrice),
 
-		CategoryID: in.CategoryID,
-		Status:     in.Status,
-		DeletedAt:  in.DeletedAt,
-		NameNorm:   in.NameNorm,
-		NameNormUa: in.NameNormUa,
+		CategoryID:    in.CategoryID,
+		CollectionIDs: in.CollectionIDs,
+		Status:        in.Status,
+		DeletedAt:     in.DeletedAt,
+		ImageURLs:     in.ImageURLs,
+		NameNorm:      in.NameNorm,
+		NameNormUa:    in.NameNormUa,
+		ProductType:   in.ProductType,
+		Tags:          in.Tags,
 	}
 	return shopProduct
 }
@@ -278,18 +282,14 @@ func UpdateShopVariant(in *catalogmodel.ShopVariant, args *catalog.UpdateShopVar
 		ListPrice:   args.ListPrice.Apply(in.ListPrice),
 		RetailPrice: args.RetailPrice.Apply(in.RetailPrice),
 
-		ImageURLs: in.ImageURLs,
-		ProductID: in.ProductID,
-		Tags:      in.Tags,
-		DeletedAt: in.DeletedAt,
+		ImageURLs:  in.ImageURLs,
+		ProductID:  in.ProductID,
+		Tags:       in.Tags,
+		Status:     in.Status,
+		DeletedAt:  in.DeletedAt,
+		Attributes: in.Attributes,
+		NameNorm:   in.NameNorm,
+		AttrNormKv: in.AttrNormKv,
 	}
-	// var attributes catalogmodel.ProductAttributes
-	// for _, value := range args.Attributes {
-	// 	attributes = append(attributes, catalogmodel.ProductAttribute{
-	// 		Name:  value.Name,
-	// 		Value: value.Value,
-	// 	})
-	// // }
-	// shopVariant.Attributes = attributes
 	return shopVariant
 }
