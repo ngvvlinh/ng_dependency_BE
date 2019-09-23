@@ -17,11 +17,9 @@ func init() {
 	bus.AddHandler("api", GetShopProductSources)
 	bus.AddHandler("api", CreateProductSource)
 
-	bus.AddHandler("api", CreateCollection)
-	bus.AddHandler("api", DeleteCollection)
 	bus.AddHandler("api", GetCollection)
 	bus.AddHandler("api", GetCollections)
-	bus.AddHandler("api", GetCollectionsByIDs)
+
 }
 
 // deprecated
@@ -86,46 +84,6 @@ func UpdateExternalAccountAhamoveVerificationImages(ctx context.Context, r *wrap
 		Updated: 1,
 	}
 	return nil
-}
-
-// deprecated
-func GetCollection(ctx context.Context, q *wrapshop.GetCollectionEndpoint) error {
-	return cm.ErrREMOVED
-}
-
-// deprecated
-func GetCollectionsByIDs(ctx context.Context, q *wrapshop.GetCollectionsByIDsEndpoint) error {
-	return cm.ErrREMOVED
-}
-
-// deprecated
-func GetCollections(ctx context.Context, q *wrapshop.GetCollectionsEndpoint) error {
-	return cm.ErrREMOVED
-}
-
-// deprecated
-func CreateCollection(ctx context.Context, q *wrapshop.CreateCollectionEndpoint) error {
-	return cm.ErrREMOVED
-}
-
-// deprecated
-func DeleteCollection(ctx context.Context, q *wrapshop.DeleteCollectionEndpoint) error {
-	return cm.ErrREMOVED
-}
-
-// deprecated
-func RemoveProductsCollection(ctx context.Context, q *wrapshop.RemoveProductsCollectionEndpoint) error {
-	return cm.ErrREMOVED
-}
-
-// deprecated
-func UpdateCollection(ctx context.Context, q *wrapshop.UpdateCollectionEndpoint) error {
-	return cm.ErrREMOVED
-}
-
-// deprecated
-func UpdateProductsCollection(ctx context.Context, q *wrapshop.UpdateProductsCollectionEndpoint) error {
-	return cm.ErrREMOVED
 }
 
 // deprecated

@@ -50,7 +50,7 @@ type ExportOption struct {
 
 type ExportFunction func(ctx context.Context, id string, exportOpts ExportOption, output io.Writer,
 	result chan<- *pbshop.ExportStatusItem,
-	total int, rows *sql.Rows, opts core.Opts,) (_err error)
+	total int, rows *sql.Rows, opts core.Opts) (_err error)
 
 func Init(sd cmService.Shutdowner, rd redis.Store, p eventstream.Publisher, cfg Config) {
 	idempgroup = idemp.NewRedisGroup(rd, "export", 60)
@@ -94,7 +94,7 @@ func exportAndReportProgress(
 	cleanup func(),
 	exportResult *model.ExportAttempt, bareFilename string, exportOpts ExportOption,
 	total int, rows *sql.Rows, opts core.Opts,
-	exportFunction ExportFunction,) (_err error) {
+	exportFunction ExportFunction) (_err error) {
 
 	exportResult.StartedAt = time.Now()
 
@@ -226,7 +226,6 @@ func exportAndReportProgress(
 	}
 	return nil
 }
-
 
 func WriteBOM(w io.Writer) (n int, err error) {
 	utf8bom := make([]byte, 3)

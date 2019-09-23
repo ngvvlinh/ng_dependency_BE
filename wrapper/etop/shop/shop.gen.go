@@ -56,13 +56,10 @@ func NewShopServer(mux Muxer, hooks *twirp.ServerHooks) {
 	bus.Expect(&GetExternalAccountHaravanEndpoint{})
 	bus.Expect(&UpdateExternalAccountHaravanTokenEndpoint{})
 	bus.Expect(&CreateCollectionEndpoint{})
-	bus.Expect(&DeleteCollectionEndpoint{})
 	bus.Expect(&GetCollectionEndpoint{})
 	bus.Expect(&GetCollectionsEndpoint{})
-	bus.Expect(&GetCollectionsByIDsEndpoint{})
-	bus.Expect(&RemoveProductsCollectionEndpoint{})
+	bus.Expect(&GetCollectionsByProductIDEndpoint{})
 	bus.Expect(&UpdateCollectionEndpoint{})
-	bus.Expect(&UpdateProductsCollectionEndpoint{})
 	bus.Expect(&BatchSetCustomersStatusEndpoint{})
 	bus.Expect(&CreateCustomerEndpoint{})
 	bus.Expect(&CreateCustomerAddressEndpoint{})
@@ -76,6 +73,7 @@ func NewShopServer(mux Muxer, hooks *twirp.ServerHooks) {
 	bus.Expect(&SetDefaultCustomerAddressEndpoint{})
 	bus.Expect(&UpdateCustomerEndpoint{})
 	bus.Expect(&UpdateCustomerAddressEndpoint{})
+	bus.Expect(&AddProductCollectionEndpoint{})
 	bus.Expect(&AddProductsEndpoint{})
 	bus.Expect(&CreateProductEndpoint{})
 	bus.Expect(&CreateVariantEndpoint{})
@@ -84,9 +82,11 @@ func NewShopServer(mux Muxer, hooks *twirp.ServerHooks) {
 	bus.Expect(&GetProductsByIDsEndpoint{})
 	bus.Expect(&GetVariantEndpoint{})
 	bus.Expect(&GetVariantsByIDsEndpoint{})
+	bus.Expect(&RemoveProductCollectionEndpoint{})
 	bus.Expect(&RemoveProductsEndpoint{})
 	bus.Expect(&RemoveVariantsEndpoint{})
 	bus.Expect(&UpdateProductEndpoint{})
+	bus.Expect(&UpdateProductCategoryEndpoint{})
 	bus.Expect(&UpdateProductImagesEndpoint{})
 	bus.Expect(&UpdateProductsStatusEndpoint{})
 	bus.Expect(&UpdateProductsTagsEndpoint{})
@@ -94,6 +94,11 @@ func NewShopServer(mux Muxer, hooks *twirp.ServerHooks) {
 	bus.Expect(&UpdateVariantAttributesEndpoint{})
 	bus.Expect(&UpdateVariantImagesEndpoint{})
 	bus.Expect(&UpdateVariantsStatusEndpoint{})
+	bus.Expect(&CreateCategoryEndpoint{})
+	bus.Expect(&DeleteCategoryEndpoint{})
+	bus.Expect(&GetCategoriesEndpoint{})
+	bus.Expect(&GetCategoryEndpoint{})
+	bus.Expect(&UpdateCategoryEndpoint{})
 	bus.Expect(&CreateProductSourceEndpoint{})
 	bus.Expect(&CreateProductSourceCategoryEndpoint{})
 	bus.Expect(&DeprecatedCreateVariantEndpoint{})
@@ -174,6 +179,7 @@ func NewShopServer(mux Muxer, hooks *twirp.ServerHooks) {
 	mux.Handle(shop.CollectionServicePathPrefix, shop.NewCollectionServiceServer(CollectionService{}, hooks))
 	mux.Handle(shop.CustomerServicePathPrefix, shop.NewCustomerServiceServer(CustomerService{}, hooks))
 	mux.Handle(shop.ProductServicePathPrefix, shop.NewProductServiceServer(ProductService{}, hooks))
+	mux.Handle(shop.CategoryServicePathPrefix, shop.NewCategoryServiceServer(CategoryService{}, hooks))
 	mux.Handle(shop.ProductSourceServicePathPrefix, shop.NewProductSourceServiceServer(ProductSourceService{}, hooks))
 	mux.Handle(shop.OrderServicePathPrefix, shop.NewOrderServiceServer(OrderService{}, hooks))
 	mux.Handle(shop.FulfillmentServicePathPrefix, shop.NewFulfillmentServiceServer(FulfillmentService{}, hooks))
@@ -198,6 +204,7 @@ type ShopImpl struct {
 	CollectionService
 	CustomerService
 	ProductService
+	CategoryService
 	ProductSourceService
 	OrderService
 	FulfillmentService
@@ -931,11 +938,11 @@ type CollectionService struct{}
 
 type CreateCollectionEndpoint struct {
 	*shop.CreateCollectionRequest
-	Result  *shop.Collection
+	Result  *shop.ShopCollection
 	Context ShopClaim
 }
 
-func (s CollectionService) CreateCollection(ctx context.Context, req *shop.CreateCollectionRequest) (resp *shop.Collection, err error) {
+func (s CollectionService) CreateCollection(ctx context.Context, req *shop.CreateCollectionRequest) (resp *shop.ShopCollection, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -977,61 +984,13 @@ func (s CollectionService) CreateCollection(ctx context.Context, req *shop.Creat
 	return resp, err
 }
 
-type DeleteCollectionEndpoint struct {
-	*cm.IDRequest
-	Result  *cm.RemovedResponse
-	Context ShopClaim
-}
-
-func (s CollectionService) DeleteCollection(ctx context.Context, req *cm.IDRequest) (resp *cm.RemovedResponse, err error) {
-	t0 := time.Now()
-	var session *middleware.Session
-	var errs []*cm.Error
-	const rpcName = "shop.Collection/DeleteCollection"
-	defer func() {
-		recovered := recover()
-		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
-		metrics.CountRequest(rpcName, err)
-	}()
-	defer cmwrapper.Censor(req)
-	sessionQuery := &middleware.StartSessionQuery{
-		Context:     ctx,
-		RequireAuth: true,
-		RequireShop: true,
-	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
-		return nil, err
-	}
-	session = sessionQuery.Result
-	query := &DeleteCollectionEndpoint{IDRequest: req}
-	query.Context.Claim = session.Claim
-	query.Context.Shop = session.Shop
-	query.Context.IsOwner = session.IsOwner
-	query.Context.Roles = session.Roles
-	query.Context.Permissions = session.Permissions
-	// Verify that the user has role "staff"
-	if !session.IsOwner && permission.MaxRoleLevel(session.Roles) < 2 {
-		return nil, common.ErrPermissionDenied
-	}
-	ctx = bus.NewRootContext(ctx)
-	err = bus.Dispatch(ctx, query)
-	resp = query.Result
-	if err == nil {
-		if resp == nil {
-			return nil, common.Error(common.Internal, "", nil).Log("nil response")
-		}
-		errs = cmwrapper.HasErrors(resp)
-	}
-	return resp, err
-}
-
 type GetCollectionEndpoint struct {
 	*cm.IDRequest
-	Result  *shop.Collection
+	Result  *shop.ShopCollection
 	Context ShopClaim
 }
 
-func (s CollectionService) GetCollection(ctx context.Context, req *cm.IDRequest) (resp *shop.Collection, err error) {
+func (s CollectionService) GetCollection(ctx context.Context, req *cm.IDRequest) (resp *shop.ShopCollection, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -1070,12 +1029,12 @@ func (s CollectionService) GetCollection(ctx context.Context, req *cm.IDRequest)
 }
 
 type GetCollectionsEndpoint struct {
-	*cm.Empty
-	Result  *shop.CollectionsResponse
+	*shop.GetCollectionsRequest
+	Result  *shop.ShopCollectionsResponse
 	Context ShopClaim
 }
 
-func (s CollectionService) GetCollections(ctx context.Context, req *cm.Empty) (resp *shop.CollectionsResponse, err error) {
+func (s CollectionService) GetCollections(ctx context.Context, req *shop.GetCollectionsRequest) (resp *shop.ShopCollectionsResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -1095,7 +1054,7 @@ func (s CollectionService) GetCollections(ctx context.Context, req *cm.Empty) (r
 		return nil, err
 	}
 	session = sessionQuery.Result
-	query := &GetCollectionsEndpoint{Empty: req}
+	query := &GetCollectionsEndpoint{GetCollectionsRequest: req}
 	query.Context.Claim = session.Claim
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
@@ -1113,17 +1072,17 @@ func (s CollectionService) GetCollections(ctx context.Context, req *cm.Empty) (r
 	return resp, err
 }
 
-type GetCollectionsByIDsEndpoint struct {
-	*cm.IDsRequest
+type GetCollectionsByProductIDEndpoint struct {
+	*shop.GetShopCollectionsByProductIDRequest
 	Result  *shop.CollectionsResponse
 	Context ShopClaim
 }
 
-func (s CollectionService) GetCollectionsByIDs(ctx context.Context, req *cm.IDsRequest) (resp *shop.CollectionsResponse, err error) {
+func (s CollectionService) GetCollectionsByProductID(ctx context.Context, req *shop.GetShopCollectionsByProductIDRequest) (resp *shop.CollectionsResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
-	const rpcName = "shop.Collection/GetCollectionsByIDs"
+	const rpcName = "shop.Collection/GetCollectionsByProductID"
 	defer func() {
 		recovered := recover()
 		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
@@ -1139,60 +1098,12 @@ func (s CollectionService) GetCollectionsByIDs(ctx context.Context, req *cm.IDsR
 		return nil, err
 	}
 	session = sessionQuery.Result
-	query := &GetCollectionsByIDsEndpoint{IDsRequest: req}
+	query := &GetCollectionsByProductIDEndpoint{GetShopCollectionsByProductIDRequest: req}
 	query.Context.Claim = session.Claim
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
-	ctx = bus.NewRootContext(ctx)
-	err = bus.Dispatch(ctx, query)
-	resp = query.Result
-	if err == nil {
-		if resp == nil {
-			return nil, common.Error(common.Internal, "", nil).Log("nil response")
-		}
-		errs = cmwrapper.HasErrors(resp)
-	}
-	return resp, err
-}
-
-type RemoveProductsCollectionEndpoint struct {
-	*shop.RemoveProductsCollectionRequest
-	Result  *cm.UpdatedResponse
-	Context ShopClaim
-}
-
-func (s CollectionService) RemoveProductsCollection(ctx context.Context, req *shop.RemoveProductsCollectionRequest) (resp *cm.UpdatedResponse, err error) {
-	t0 := time.Now()
-	var session *middleware.Session
-	var errs []*cm.Error
-	const rpcName = "shop.Collection/RemoveProductsCollection"
-	defer func() {
-		recovered := recover()
-		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
-		metrics.CountRequest(rpcName, err)
-	}()
-	defer cmwrapper.Censor(req)
-	sessionQuery := &middleware.StartSessionQuery{
-		Context:     ctx,
-		RequireAuth: true,
-		RequireShop: true,
-	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
-		return nil, err
-	}
-	session = sessionQuery.Result
-	query := &RemoveProductsCollectionEndpoint{RemoveProductsCollectionRequest: req}
-	query.Context.Claim = session.Claim
-	query.Context.Shop = session.Shop
-	query.Context.IsOwner = session.IsOwner
-	query.Context.Roles = session.Roles
-	query.Context.Permissions = session.Permissions
-	// Verify that the user has role "staff"
-	if !session.IsOwner && permission.MaxRoleLevel(session.Roles) < 2 {
-		return nil, common.ErrPermissionDenied
-	}
 	ctx = bus.NewRootContext(ctx)
 	err = bus.Dispatch(ctx, query)
 	resp = query.Result
@@ -1207,11 +1118,11 @@ func (s CollectionService) RemoveProductsCollection(ctx context.Context, req *sh
 
 type UpdateCollectionEndpoint struct {
 	*shop.UpdateCollectionRequest
-	Result  *shop.Collection
+	Result  *shop.ShopCollection
 	Context ShopClaim
 }
 
-func (s CollectionService) UpdateCollection(ctx context.Context, req *shop.UpdateCollectionRequest) (resp *shop.Collection, err error) {
+func (s CollectionService) UpdateCollection(ctx context.Context, req *shop.UpdateCollectionRequest) (resp *shop.ShopCollection, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -1232,54 +1143,6 @@ func (s CollectionService) UpdateCollection(ctx context.Context, req *shop.Updat
 	}
 	session = sessionQuery.Result
 	query := &UpdateCollectionEndpoint{UpdateCollectionRequest: req}
-	query.Context.Claim = session.Claim
-	query.Context.Shop = session.Shop
-	query.Context.IsOwner = session.IsOwner
-	query.Context.Roles = session.Roles
-	query.Context.Permissions = session.Permissions
-	// Verify that the user has role "staff"
-	if !session.IsOwner && permission.MaxRoleLevel(session.Roles) < 2 {
-		return nil, common.ErrPermissionDenied
-	}
-	ctx = bus.NewRootContext(ctx)
-	err = bus.Dispatch(ctx, query)
-	resp = query.Result
-	if err == nil {
-		if resp == nil {
-			return nil, common.Error(common.Internal, "", nil).Log("nil response")
-		}
-		errs = cmwrapper.HasErrors(resp)
-	}
-	return resp, err
-}
-
-type UpdateProductsCollectionEndpoint struct {
-	*shop.UpdateProductsCollectionRequest
-	Result  *shop.UpdateProductsCollectionResponse
-	Context ShopClaim
-}
-
-func (s CollectionService) UpdateProductsCollection(ctx context.Context, req *shop.UpdateProductsCollectionRequest) (resp *shop.UpdateProductsCollectionResponse, err error) {
-	t0 := time.Now()
-	var session *middleware.Session
-	var errs []*cm.Error
-	const rpcName = "shop.Collection/UpdateProductsCollection"
-	defer func() {
-		recovered := recover()
-		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
-		metrics.CountRequest(rpcName, err)
-	}()
-	defer cmwrapper.Censor(req)
-	sessionQuery := &middleware.StartSessionQuery{
-		Context:     ctx,
-		RequireAuth: true,
-		RequireShop: true,
-	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
-		return nil, err
-	}
-	session = sessionQuery.Result
-	query := &UpdateProductsCollectionEndpoint{UpdateProductsCollectionRequest: req}
 	query.Context.Claim = session.Claim
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
@@ -1877,6 +1740,50 @@ func (s CustomerService) UpdateCustomerAddress(ctx context.Context, req *shop.Up
 
 type ProductService struct{}
 
+type AddProductCollectionEndpoint struct {
+	*shop.AddShopProductCollectionRequest
+	Result  *cm.UpdatedResponse
+	Context ShopClaim
+}
+
+func (s ProductService) AddProductCollection(ctx context.Context, req *shop.AddShopProductCollectionRequest) (resp *cm.UpdatedResponse, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "shop.Product/AddProductCollection"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:     ctx,
+		RequireAuth: true,
+		RequireShop: true,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &AddProductCollectionEndpoint{AddShopProductCollectionRequest: req}
+	query.Context.Claim = session.Claim
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = bus.Dispatch(ctx, query)
+	resp = query.Result
+	if err == nil {
+		if resp == nil {
+			return nil, common.Error(common.Internal, "", nil).Log("nil response")
+		}
+		errs = cmwrapper.HasErrors(resp)
+	}
+	return resp, err
+}
+
 type AddProductsEndpoint struct {
 	*shop.AddProductsRequest
 	Result     *shop.AddProductsResponse
@@ -2259,6 +2166,50 @@ func (s ProductService) GetVariantsByIDs(ctx context.Context, req *cm.IDsRequest
 	return resp, err
 }
 
+type RemoveProductCollectionEndpoint struct {
+	*shop.RemoveShopProductCollectionRequest
+	Result  *cm.RemovedResponse
+	Context ShopClaim
+}
+
+func (s ProductService) RemoveProductCollection(ctx context.Context, req *shop.RemoveShopProductCollectionRequest) (resp *cm.RemovedResponse, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "shop.Product/RemoveProductCollection"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:     ctx,
+		RequireAuth: true,
+		RequireShop: true,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &RemoveProductCollectionEndpoint{RemoveShopProductCollectionRequest: req}
+	query.Context.Claim = session.Claim
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = bus.Dispatch(ctx, query)
+	resp = query.Result
+	if err == nil {
+		if resp == nil {
+			return nil, common.Error(common.Internal, "", nil).Log("nil response")
+		}
+		errs = cmwrapper.HasErrors(resp)
+	}
+	return resp, err
+}
+
 type RemoveProductsEndpoint struct {
 	*shop.RemoveVariantsRequest
 	Result  *cm.RemovedResponse
@@ -2391,6 +2342,50 @@ func (s ProductService) UpdateProduct(ctx context.Context, req *shop.UpdateProdu
 	if !session.IsOwner && permission.MaxRoleLevel(session.Roles) < 2 {
 		return nil, common.ErrPermissionDenied
 	}
+	ctx = bus.NewRootContext(ctx)
+	err = bus.Dispatch(ctx, query)
+	resp = query.Result
+	if err == nil {
+		if resp == nil {
+			return nil, common.Error(common.Internal, "", nil).Log("nil response")
+		}
+		errs = cmwrapper.HasErrors(resp)
+	}
+	return resp, err
+}
+
+type UpdateProductCategoryEndpoint struct {
+	*shop.UpdateProductCategoryRequest
+	Result  *shop.ShopProduct
+	Context ShopClaim
+}
+
+func (s ProductService) UpdateProductCategory(ctx context.Context, req *shop.UpdateProductCategoryRequest) (resp *shop.ShopProduct, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "shop.Product/UpdateProductCategory"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:     ctx,
+		RequireAuth: true,
+		RequireShop: true,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &UpdateProductCategoryEndpoint{UpdateProductCategoryRequest: req}
+	query.Context.Claim = session.Claim
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
 	err = bus.Dispatch(ctx, query)
 	resp = query.Result
@@ -2727,6 +2722,228 @@ func (s ProductService) UpdateVariantsStatus(ctx context.Context, req *shop.Upda
 	if !session.IsOwner && permission.MaxRoleLevel(session.Roles) < 2 {
 		return nil, common.ErrPermissionDenied
 	}
+	ctx = bus.NewRootContext(ctx)
+	err = bus.Dispatch(ctx, query)
+	resp = query.Result
+	if err == nil {
+		if resp == nil {
+			return nil, common.Error(common.Internal, "", nil).Log("nil response")
+		}
+		errs = cmwrapper.HasErrors(resp)
+	}
+	return resp, err
+}
+
+type CategoryService struct{}
+
+type CreateCategoryEndpoint struct {
+	*shop.CreateCategoryRequest
+	Result  *shop.ShopCategory
+	Context ShopClaim
+}
+
+func (s CategoryService) CreateCategory(ctx context.Context, req *shop.CreateCategoryRequest) (resp *shop.ShopCategory, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "shop.Category/CreateCategory"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:     ctx,
+		RequireAuth: true,
+		RequireShop: true,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &CreateCategoryEndpoint{CreateCategoryRequest: req}
+	query.Context.Claim = session.Claim
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = bus.Dispatch(ctx, query)
+	resp = query.Result
+	if err == nil {
+		if resp == nil {
+			return nil, common.Error(common.Internal, "", nil).Log("nil response")
+		}
+		errs = cmwrapper.HasErrors(resp)
+	}
+	return resp, err
+}
+
+type DeleteCategoryEndpoint struct {
+	*cm.IDRequest
+	Result  *cm.DeletedResponse
+	Context ShopClaim
+}
+
+func (s CategoryService) DeleteCategory(ctx context.Context, req *cm.IDRequest) (resp *cm.DeletedResponse, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "shop.Category/DeleteCategory"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:     ctx,
+		RequireAuth: true,
+		RequireShop: true,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &DeleteCategoryEndpoint{IDRequest: req}
+	query.Context.Claim = session.Claim
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = bus.Dispatch(ctx, query)
+	resp = query.Result
+	if err == nil {
+		if resp == nil {
+			return nil, common.Error(common.Internal, "", nil).Log("nil response")
+		}
+		errs = cmwrapper.HasErrors(resp)
+	}
+	return resp, err
+}
+
+type GetCategoriesEndpoint struct {
+	*shop.GetCategoriesRequest
+	Result  *shop.ShopCategoriesResponse
+	Context ShopClaim
+}
+
+func (s CategoryService) GetCategories(ctx context.Context, req *shop.GetCategoriesRequest) (resp *shop.ShopCategoriesResponse, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "shop.Category/GetCategories"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:     ctx,
+		RequireAuth: true,
+		RequireShop: true,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &GetCategoriesEndpoint{GetCategoriesRequest: req}
+	query.Context.Claim = session.Claim
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = bus.Dispatch(ctx, query)
+	resp = query.Result
+	if err == nil {
+		if resp == nil {
+			return nil, common.Error(common.Internal, "", nil).Log("nil response")
+		}
+		errs = cmwrapper.HasErrors(resp)
+	}
+	return resp, err
+}
+
+type GetCategoryEndpoint struct {
+	*cm.IDRequest
+	Result  *shop.ShopCategory
+	Context ShopClaim
+}
+
+func (s CategoryService) GetCategory(ctx context.Context, req *cm.IDRequest) (resp *shop.ShopCategory, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "shop.Category/GetCategory"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:     ctx,
+		RequireAuth: true,
+		RequireShop: true,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &GetCategoryEndpoint{IDRequest: req}
+	query.Context.Claim = session.Claim
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = bus.Dispatch(ctx, query)
+	resp = query.Result
+	if err == nil {
+		if resp == nil {
+			return nil, common.Error(common.Internal, "", nil).Log("nil response")
+		}
+		errs = cmwrapper.HasErrors(resp)
+	}
+	return resp, err
+}
+
+type UpdateCategoryEndpoint struct {
+	*shop.UpdateCategoryRequest
+	Result  *shop.ShopCategory
+	Context ShopClaim
+}
+
+func (s CategoryService) UpdateCategory(ctx context.Context, req *shop.UpdateCategoryRequest) (resp *shop.ShopCategory, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "shop.Category/UpdateCategory"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:     ctx,
+		RequireAuth: true,
+		RequireShop: true,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &UpdateCategoryEndpoint{UpdateCategoryRequest: req}
+	query.Context.Claim = session.Claim
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
 	err = bus.Dispatch(ctx, query)
 	resp = query.Result

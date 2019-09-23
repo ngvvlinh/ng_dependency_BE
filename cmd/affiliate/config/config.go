@@ -24,8 +24,8 @@ func Default() Config {
 			Host: "",
 			Port: 8081,
 		},
-		Env:    "dev",
-		Secret: "secret",
+		Env:         "dev",
+		Secret:      "secret",
 		SAdminToken: "PZJvDAY2.sadmin.HXnnEkdV",
 	}
 	cfg.Postgres.Database = "etop_dev"

@@ -569,6 +569,25 @@ func (ft *ShopProductFilters) ByCategoryIDPtr(CategoryID *int64) *sq.ColumnFilte
 	}
 }
 
+func (ft *ShopProductFilters) ByVendorID(VendorID int64) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "vendor_id",
+		Value:  VendorID,
+		IsNil:  VendorID == 0,
+	}
+}
+
+func (ft *ShopProductFilters) ByVendorIDPtr(VendorID *int64) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "vendor_id",
+		Value:  VendorID,
+		IsNil:  VendorID == nil,
+		IsZero: VendorID != nil && (*VendorID) == 0,
+	}
+}
+
 func (ft *ShopProductFilters) ByCostPrice(CostPrice int32) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
@@ -756,172 +775,6 @@ func (ft *ShopProductFilters) ByProductTypePtr(ProductType *string) *sq.ColumnFi
 		Value:  ProductType,
 		IsNil:  ProductType == nil,
 		IsZero: ProductType != nil && (*ProductType) == "",
-	}
-}
-
-type ShopCollectionFilters struct{ prefix string }
-
-func NewShopCollectionFilters(prefix string) ShopCollectionFilters {
-	return ShopCollectionFilters{prefix}
-}
-
-func (ft *ShopCollectionFilters) Filter(pred string, args ...interface{}) sq.WriterTo {
-	return sq.Filter(&ft.prefix, pred, args...)
-}
-
-func (ft ShopCollectionFilters) Prefix() string {
-	return ft.prefix
-}
-
-func (ft *ShopCollectionFilters) ByID(ID int64) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
-		Prefix: &ft.prefix,
-		Column: "id",
-		Value:  ID,
-		IsNil:  ID == 0,
-	}
-}
-
-func (ft *ShopCollectionFilters) ByIDPtr(ID *int64) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
-		Prefix: &ft.prefix,
-		Column: "id",
-		Value:  ID,
-		IsNil:  ID == nil,
-		IsZero: ID != nil && (*ID) == 0,
-	}
-}
-
-func (ft *ShopCollectionFilters) ByShopID(ShopID int64) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
-		Prefix: &ft.prefix,
-		Column: "shop_id",
-		Value:  ShopID,
-		IsNil:  ShopID == 0,
-	}
-}
-
-func (ft *ShopCollectionFilters) ByShopIDPtr(ShopID *int64) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
-		Prefix: &ft.prefix,
-		Column: "shop_id",
-		Value:  ShopID,
-		IsNil:  ShopID == nil,
-		IsZero: ShopID != nil && (*ShopID) == 0,
-	}
-}
-
-func (ft *ShopCollectionFilters) ByName(Name string) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
-		Prefix: &ft.prefix,
-		Column: "name",
-		Value:  Name,
-		IsNil:  Name == "",
-	}
-}
-
-func (ft *ShopCollectionFilters) ByNamePtr(Name *string) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
-		Prefix: &ft.prefix,
-		Column: "name",
-		Value:  Name,
-		IsNil:  Name == nil,
-		IsZero: Name != nil && (*Name) == "",
-	}
-}
-
-func (ft *ShopCollectionFilters) ByDescription(Description string) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
-		Prefix: &ft.prefix,
-		Column: "description",
-		Value:  Description,
-		IsNil:  Description == "",
-	}
-}
-
-func (ft *ShopCollectionFilters) ByDescriptionPtr(Description *string) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
-		Prefix: &ft.prefix,
-		Column: "description",
-		Value:  Description,
-		IsNil:  Description == nil,
-		IsZero: Description != nil && (*Description) == "",
-	}
-}
-
-func (ft *ShopCollectionFilters) ByDescHTML(DescHTML string) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
-		Prefix: &ft.prefix,
-		Column: "desc_html",
-		Value:  DescHTML,
-		IsNil:  DescHTML == "",
-	}
-}
-
-func (ft *ShopCollectionFilters) ByDescHTMLPtr(DescHTML *string) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
-		Prefix: &ft.prefix,
-		Column: "desc_html",
-		Value:  DescHTML,
-		IsNil:  DescHTML == nil,
-		IsZero: DescHTML != nil && (*DescHTML) == "",
-	}
-}
-
-func (ft *ShopCollectionFilters) ByShortDesc(ShortDesc string) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
-		Prefix: &ft.prefix,
-		Column: "short_desc",
-		Value:  ShortDesc,
-		IsNil:  ShortDesc == "",
-	}
-}
-
-func (ft *ShopCollectionFilters) ByShortDescPtr(ShortDesc *string) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
-		Prefix: &ft.prefix,
-		Column: "short_desc",
-		Value:  ShortDesc,
-		IsNil:  ShortDesc == nil,
-		IsZero: ShortDesc != nil && (*ShortDesc) == "",
-	}
-}
-
-func (ft *ShopCollectionFilters) ByCreatedAt(CreatedAt time.Time) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
-		Prefix: &ft.prefix,
-		Column: "created_at",
-		Value:  CreatedAt,
-		IsNil:  CreatedAt.IsZero(),
-	}
-}
-
-func (ft *ShopCollectionFilters) ByCreatedAtPtr(CreatedAt *time.Time) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
-		Prefix: &ft.prefix,
-		Column: "created_at",
-		Value:  CreatedAt,
-		IsNil:  CreatedAt == nil,
-		IsZero: CreatedAt != nil && (*CreatedAt).IsZero(),
-	}
-}
-
-func (ft *ShopCollectionFilters) ByUpdatedAt(UpdatedAt time.Time) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
-		Prefix: &ft.prefix,
-		Column: "updated_at",
-		Value:  UpdatedAt,
-		IsNil:  UpdatedAt.IsZero(),
-	}
-}
-
-func (ft *ShopCollectionFilters) ByUpdatedAtPtr(UpdatedAt *time.Time) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
-		Prefix: &ft.prefix,
-		Column: "updated_at",
-		Value:  UpdatedAt,
-		IsNil:  UpdatedAt == nil,
-		IsZero: UpdatedAt != nil && (*UpdatedAt).IsZero(),
 	}
 }
 
@@ -1210,6 +1063,300 @@ func (ft *ShopCategoryFilters) ByDeletedAt(DeletedAt time.Time) *sq.ColumnFilter
 }
 
 func (ft *ShopCategoryFilters) ByDeletedAtPtr(DeletedAt *time.Time) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "deleted_at",
+		Value:  DeletedAt,
+		IsNil:  DeletedAt == nil,
+		IsZero: DeletedAt != nil && (*DeletedAt).IsZero(),
+	}
+}
+
+type ShopCollectionFilters struct{ prefix string }
+
+func NewShopCollectionFilters(prefix string) ShopCollectionFilters {
+	return ShopCollectionFilters{prefix}
+}
+
+func (ft *ShopCollectionFilters) Filter(pred string, args ...interface{}) sq.WriterTo {
+	return sq.Filter(&ft.prefix, pred, args...)
+}
+
+func (ft ShopCollectionFilters) Prefix() string {
+	return ft.prefix
+}
+
+func (ft *ShopCollectionFilters) ByID(ID int64) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "id",
+		Value:  ID,
+		IsNil:  ID == 0,
+	}
+}
+
+func (ft *ShopCollectionFilters) ByIDPtr(ID *int64) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "id",
+		Value:  ID,
+		IsNil:  ID == nil,
+		IsZero: ID != nil && (*ID) == 0,
+	}
+}
+
+func (ft *ShopCollectionFilters) ByShopID(ShopID int64) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "shop_id",
+		Value:  ShopID,
+		IsNil:  ShopID == 0,
+	}
+}
+
+func (ft *ShopCollectionFilters) ByShopIDPtr(ShopID *int64) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "shop_id",
+		Value:  ShopID,
+		IsNil:  ShopID == nil,
+		IsZero: ShopID != nil && (*ShopID) == 0,
+	}
+}
+
+func (ft *ShopCollectionFilters) ByName(Name string) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "name",
+		Value:  Name,
+		IsNil:  Name == "",
+	}
+}
+
+func (ft *ShopCollectionFilters) ByNamePtr(Name *string) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "name",
+		Value:  Name,
+		IsNil:  Name == nil,
+		IsZero: Name != nil && (*Name) == "",
+	}
+}
+
+func (ft *ShopCollectionFilters) ByDescription(Description string) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "description",
+		Value:  Description,
+		IsNil:  Description == "",
+	}
+}
+
+func (ft *ShopCollectionFilters) ByDescriptionPtr(Description *string) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "description",
+		Value:  Description,
+		IsNil:  Description == nil,
+		IsZero: Description != nil && (*Description) == "",
+	}
+}
+
+func (ft *ShopCollectionFilters) ByDescHTML(DescHTML string) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "desc_html",
+		Value:  DescHTML,
+		IsNil:  DescHTML == "",
+	}
+}
+
+func (ft *ShopCollectionFilters) ByDescHTMLPtr(DescHTML *string) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "desc_html",
+		Value:  DescHTML,
+		IsNil:  DescHTML == nil,
+		IsZero: DescHTML != nil && (*DescHTML) == "",
+	}
+}
+
+func (ft *ShopCollectionFilters) ByShortDesc(ShortDesc string) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "short_desc",
+		Value:  ShortDesc,
+		IsNil:  ShortDesc == "",
+	}
+}
+
+func (ft *ShopCollectionFilters) ByShortDescPtr(ShortDesc *string) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "short_desc",
+		Value:  ShortDesc,
+		IsNil:  ShortDesc == nil,
+		IsZero: ShortDesc != nil && (*ShortDesc) == "",
+	}
+}
+
+func (ft *ShopCollectionFilters) ByCreatedAt(CreatedAt time.Time) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "created_at",
+		Value:  CreatedAt,
+		IsNil:  CreatedAt.IsZero(),
+	}
+}
+
+func (ft *ShopCollectionFilters) ByCreatedAtPtr(CreatedAt *time.Time) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "created_at",
+		Value:  CreatedAt,
+		IsNil:  CreatedAt == nil,
+		IsZero: CreatedAt != nil && (*CreatedAt).IsZero(),
+	}
+}
+
+func (ft *ShopCollectionFilters) ByUpdatedAt(UpdatedAt time.Time) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "updated_at",
+		Value:  UpdatedAt,
+		IsNil:  UpdatedAt.IsZero(),
+	}
+}
+
+func (ft *ShopCollectionFilters) ByUpdatedAtPtr(UpdatedAt *time.Time) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "updated_at",
+		Value:  UpdatedAt,
+		IsNil:  UpdatedAt == nil,
+		IsZero: UpdatedAt != nil && (*UpdatedAt).IsZero(),
+	}
+}
+
+type ShopProductCollectionFilters struct{ prefix string }
+
+func NewShopProductCollectionFilters(prefix string) ShopProductCollectionFilters {
+	return ShopProductCollectionFilters{prefix}
+}
+
+func (ft *ShopProductCollectionFilters) Filter(pred string, args ...interface{}) sq.WriterTo {
+	return sq.Filter(&ft.prefix, pred, args...)
+}
+
+func (ft ShopProductCollectionFilters) Prefix() string {
+	return ft.prefix
+}
+
+func (ft *ShopProductCollectionFilters) ByProductID(ProductID int64) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "product_id",
+		Value:  ProductID,
+		IsNil:  ProductID == 0,
+	}
+}
+
+func (ft *ShopProductCollectionFilters) ByProductIDPtr(ProductID *int64) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "product_id",
+		Value:  ProductID,
+		IsNil:  ProductID == nil,
+		IsZero: ProductID != nil && (*ProductID) == 0,
+	}
+}
+
+func (ft *ShopProductCollectionFilters) ByCollectionID(CollectionID int64) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "collection_id",
+		Value:  CollectionID,
+		IsNil:  CollectionID == 0,
+	}
+}
+
+func (ft *ShopProductCollectionFilters) ByCollectionIDPtr(CollectionID *int64) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "collection_id",
+		Value:  CollectionID,
+		IsNil:  CollectionID == nil,
+		IsZero: CollectionID != nil && (*CollectionID) == 0,
+	}
+}
+
+func (ft *ShopProductCollectionFilters) ByShopID(ShopID int64) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "shop_id",
+		Value:  ShopID,
+		IsNil:  ShopID == 0,
+	}
+}
+
+func (ft *ShopProductCollectionFilters) ByShopIDPtr(ShopID *int64) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "shop_id",
+		Value:  ShopID,
+		IsNil:  ShopID == nil,
+		IsZero: ShopID != nil && (*ShopID) == 0,
+	}
+}
+
+func (ft *ShopProductCollectionFilters) ByCreatedAt(CreatedAt time.Time) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "created_at",
+		Value:  CreatedAt,
+		IsNil:  CreatedAt.IsZero(),
+	}
+}
+
+func (ft *ShopProductCollectionFilters) ByCreatedAtPtr(CreatedAt *time.Time) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "created_at",
+		Value:  CreatedAt,
+		IsNil:  CreatedAt == nil,
+		IsZero: CreatedAt != nil && (*CreatedAt).IsZero(),
+	}
+}
+
+func (ft *ShopProductCollectionFilters) ByUpdatedAt(UpdatedAt time.Time) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "updated_at",
+		Value:  UpdatedAt,
+		IsNil:  UpdatedAt.IsZero(),
+	}
+}
+
+func (ft *ShopProductCollectionFilters) ByUpdatedAtPtr(UpdatedAt *time.Time) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "updated_at",
+		Value:  UpdatedAt,
+		IsNil:  UpdatedAt == nil,
+		IsZero: UpdatedAt != nil && (*UpdatedAt).IsZero(),
+	}
+}
+
+func (ft *ShopProductCollectionFilters) ByDeletedAt(DeletedAt time.Time) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "deleted_at",
+		Value:  DeletedAt,
+		IsNil:  DeletedAt.IsZero(),
+	}
+}
+
+func (ft *ShopProductCollectionFilters) ByDeletedAtPtr(DeletedAt *time.Time) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "deleted_at",

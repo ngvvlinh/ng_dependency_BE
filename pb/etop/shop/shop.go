@@ -53,17 +53,6 @@ func PbCreateCollection(shopID int64, p *CreateCollectionRequest) *catalogmodel.
 	}
 }
 
-func PbUpdateCollection(shopID int64, p *UpdateCollectionRequest) *catalogmodel.ShopCollection {
-	return &catalogmodel.ShopCollection{
-		ID:          p.Id,
-		ShopID:      shopID,
-		Name:        p.Name,
-		DescHTML:    p.DescHtml,
-		Description: p.Description,
-		ShortDesc:   p.ShortDesc,
-	}
-}
-
 func PbSummaryTables(tables []*model.SummaryTable) []*SummaryTable {
 	res := make([]*SummaryTable, len(tables))
 	for i, table := range tables {

@@ -14,14 +14,20 @@ import (
 var _ catalog.QueryService = &QueryService{}
 
 type QueryService struct {
-	shopProduct sqlstore.ShopProductStoreFactory
-	shopVariant sqlstore.ShopVariantStoreFactory
+	shopProduct           sqlstore.ShopProductStoreFactory
+	shopVariant           sqlstore.ShopVariantStoreFactory
+	shopCategory          sqlstore.ShopCategoryStoreFactory
+	shopCollection        sqlstore.ShopCollectionStoreFactory
+	shopProductCollection sqlstore.ShopProductCollectionStoreFactory
 }
 
 func New(db cmsql.Database) *QueryService {
 	return &QueryService{
-		shopProduct: sqlstore.NewShopProductStore(db),
-		shopVariant: sqlstore.NewShopVariantStore(db),
+		shopProduct:           sqlstore.NewShopProductStore(db),
+		shopVariant:           sqlstore.NewShopVariantStore(db),
+		shopCategory:          sqlstore.NewShopCategoryStore(db),
+		shopCollection:        sqlstore.NewShopCollectionStore(db),
+		shopProductCollection: sqlstore.NewShopProductCollectionStore(db),
 	}
 }
 
@@ -38,6 +44,14 @@ func (s *QueryService) GetShopProductWithVariantsByID(
 	if err != nil {
 		return nil, err
 	}
+	q1 := s.shopProductCollection(ctx).OptionalShopID(args.ShopID).ProductID(args.ProductID)
+	collections, err := q1.ListShopProductCollectionsByProductID()
+	if err != nil {
+		return nil, err
+	}
+	for _, collection := range collections {
+		product.CollectionIDs = append(product.CollectionIDs, collection.CollectionID)
+	}
 	return product, nil
 }
 
@@ -50,6 +64,36 @@ func (s *QueryService) GetShopProductByID(
 		return nil, err
 	}
 	return product, nil
+}
+
+func (s *QueryService) GetShopCategory(
+	ctx context.Context, args *catalog.GetShopCategoryArgs,
+) (*catalog.ShopCategory, error) {
+	q := s.shopCategory(ctx).ID(args.ID).OptionalShopID(args.ShopID)
+	category, err := q.GetShopCategory()
+	if err != nil {
+		return nil, err
+	}
+	return category, nil
+}
+
+func (s *QueryService) ListShopCategories(
+	ctx context.Context, args *shopping.ListQueryShopArgs,
+) (*catalog.ShopCategoriesResponse, error) {
+	q := s.shopCategory(ctx).OptionalShopID(args.ShopID).Filters(args.Filters)
+	categories, err := q.Paging(args.Paging).ListShopCategories()
+	if err != nil {
+		return nil, err
+	}
+	count, err := q.Count()
+	if err != nil {
+		return nil, err
+	}
+	return &catalog.ShopCategoriesResponse{
+		Categories: categories,
+		Count:      int32(count),
+		Paging:     q.GetPaging(),
+	}, nil
 }
 
 func (s *QueryService) GetShopVariantByID(
@@ -82,7 +126,6 @@ func (s *QueryService) ListShopProducts(
 	if err != nil {
 		return nil, err
 	}
-
 	count, err := q.Count()
 	if err != nil {
 		return nil, err
@@ -102,7 +145,21 @@ func (s *QueryService) ListShopProductsWithVariants(
 	if err != nil {
 		return nil, err
 	}
-
+	var mapProductCollection = make(map[int64][]int64)
+	var productIDs []int64
+	for _, product := range products {
+		productIDs = append(productIDs, product.ProductID)
+	}
+	productCollections, err := s.shopProductCollection(ctx).OptionalShopID(args.ShopID).ProductIDs(productIDs).ListShopProductCollections()
+	if err != nil {
+		return nil, err
+	}
+	for _, productCollection := range productCollections {
+		mapProductCollection[productCollection.ProductID] = append(mapProductCollection[productCollection.ProductID], productCollection.CollectionID)
+	}
+	for _, product := range products {
+		product.CollectionIDs = mapProductCollection[product.ProductID]
+	}
 	count, err := q.Count()
 	if err != nil {
 		return nil, err
@@ -173,4 +230,50 @@ func (s *QueryService) ListShopVariantsWithProductByIDs(
 		Variants: variants,
 		Count:    int32(len(variants)),
 	}, nil
+}
+func (s *QueryService) GetShopCollection(
+	ctx context.Context, args *catalog.GetShopCollectionArgs,
+) (*catalog.ShopCollection, error) {
+	q := s.shopCollection(ctx).ID(args.ID).OptionalShopID(args.ShopID)
+	collection, err := q.GetShopCollection()
+	if err != nil {
+		return nil, err
+	}
+	return collection, nil
+}
+
+func (s *QueryService) ListShopCollections(
+	ctx context.Context, args *shopping.ListQueryShopArgs,
+) (*catalog.ShopCollectionsResponse, error) {
+	q := s.shopCollection(ctx).OptionalShopID(args.ShopID).Filters(args.Filters)
+	collections, err := q.Paging(args.Paging).ListShopCollections()
+	if err != nil {
+		return nil, err
+	}
+	count, err := q.Count()
+	if err != nil {
+		return nil, err
+	}
+	return &catalog.ShopCollectionsResponse{
+		Collections: collections,
+		Count:       int32(count),
+		Paging:      q.GetPaging(),
+	}, nil
+}
+
+func (s *QueryService) ListShopCollectionsByProductID(
+	ctx context.Context, args *catalog.ListShopCollectionsByProductIDArgs,
+) ([]*catalog.ShopCollection, error) {
+	q := s.shopProductCollection(ctx).OptionalShopID(args.ShopID).ProductID(args.ProductID)
+	productCollections, err := q.ListShopProductCollectionsByProductID()
+	if err != nil {
+		return nil, err
+	}
+	collectionIDs := make([]int64, len(productCollections))
+	for _, pc := range productCollections {
+		collectionIDs = append(collectionIDs, pc.CollectionID)
+	}
+	qc := s.shopCollection(ctx).OptionalShopID(args.ShopID).IDs(collectionIDs) // qc=querycollection
+	collections, err := qc.ListShopCollections()
+	return collections, err
 }

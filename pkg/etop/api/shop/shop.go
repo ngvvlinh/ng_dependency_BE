@@ -56,12 +56,8 @@ var (
 
 func init() {
 	bus.AddHandler("api", VersionInfo)
-
 	bus.AddHandler("api", RemoveVariants)
-	bus.AddHandler("api", RemoveProductsCollection)
-	bus.AddHandler("api", UpdateCollection)
 	bus.AddHandler("api", UpdateVariant)
-	bus.AddHandler("api", UpdateProductsCollection)
 	bus.AddHandler("api", UpdateVariantAttributes)
 	bus.AddHandler("api", UpdateVariantsStatus)
 
@@ -118,6 +114,23 @@ func init() {
 	bus.AddHandler("api", DeleteConnectedCarrierServiceExternalAccountHaravan)
 	bus.AddHandler("api", PaymentTradingOrder)
 	bus.AddHandler("api", PaymentCheckReturnData)
+
+	bus.AddHandler("api", CreateCategory)
+	bus.AddHandler("api", GetCategory)
+	bus.AddHandler("api", GetCategories)
+	bus.AddHandler("api", UpdateCategory)
+	bus.AddHandler("api", DeleteCategory)
+
+	bus.AddHandler("api", UpdateProductCategory)
+
+	bus.AddHandler("api", GetCollection)
+	bus.AddHandler("api", GetCollections)
+	bus.AddHandler("api", CreateCollection)
+	bus.AddHandler("api", UpdateCollection)
+
+	bus.AddHandler("api", AddProductCollections)
+	bus.AddHandler("api", RemoveProductCollection)
+	bus.AddHandler("api", GetCollectionsByProductID)
 	bus.AddHandler("api", GetSummarizePOS)
 }
 
@@ -349,6 +362,7 @@ func CreateProduct(ctx context.Context, q *wrapshop.CreateProductEndpoint) error
 			ListPrice:   q.ListPrice,
 			RetailPrice: q.RetailPrice,
 		},
+		VendorID:    q.VendorId,
 		ProductType: q.ProductType.ToProductType(),
 	}
 	if err := catalogAggr.Dispatch(ctx, cmd); err != nil {
@@ -377,6 +391,7 @@ func UpdateProduct(ctx context.Context, q *wrapshop.UpdateProductEndpoint) error
 	cmd := &catalog.UpdateShopProductInfoCommand{
 		ShopID:    shopID,
 		ProductID: q.Id,
+		VendorID:  q.VendorId,
 		Code:      PString(q.Code),
 		Name:      PString(q.Name),
 		Unit:      PString(q.Unit),
@@ -1233,6 +1248,191 @@ func PaymentCheckReturnData(ctx context.Context, q *wrapshop.PaymentCheckReturnD
 	q.Result = &pbcm.MessageResponse{
 		Code: "ok",
 		Msg:  args.Result.Msg,
+	}
+	return nil
+}
+
+func CreateCategory(ctx context.Context, q *wrapshop.CreateCategoryEndpoint) error {
+	cmd := &catalog.CreateShopCategoryCommand{
+		ShopID:   q.Context.Shop.ID,
+		Name:     q.Name,
+		ParentID: q.ParentId,
+	}
+	if err := catalogAggr.Dispatch(ctx, cmd); err != nil {
+		return err
+	}
+	q.Result = PbShopCategory(cmd.Result)
+	return nil
+}
+
+func GetCategory(ctx context.Context, q *wrapshop.GetCategoryEndpoint) error {
+	query := &catalog.GetShopCategoryQuery{
+		ID:     q.Id,
+		ShopID: q.Context.Shop.ID,
+	}
+	if err := catalogQuery.Dispatch(ctx, query); err != nil {
+		return err
+	}
+	q.Result = PbShopCategory(query.Result)
+	return nil
+}
+
+func GetCategories(ctx context.Context, q *wrapshop.GetCategoriesEndpoint) error {
+	paging := q.Paging.CMPaging()
+	query := &catalog.ListShopCategoriesQuery{
+		ShopID:  q.Context.Shop.ID,
+		Paging:  *paging,
+		Filters: pbcm.ToFilters(q.Filters),
+	}
+	if err := catalogQuery.Dispatch(ctx, query); err != nil {
+		return err
+	}
+
+	q.Result = &pbshop.ShopCategoriesResponse{
+		Paging:     pbcm.PbPageInfo(paging, query.Result.Count),
+		Categories: PbShopCategories(query.Result.Categories),
+	}
+	return nil
+}
+
+func UpdateCategory(ctx context.Context, q *wrapshop.UpdateCategoryEndpoint) error {
+	shopID := q.Context.Shop.ID
+	cmd := &catalog.UpdateShopCategoryCommand{
+		ID:       q.Id,
+		ShopID:   shopID,
+		Name:     PString(q.Name),
+		ParentID: q.ParentId,
+	}
+	if err := catalogAggr.Dispatch(ctx, cmd); err != nil {
+		return err
+	}
+	q.Result = PbShopCategory(cmd.Result)
+	return nil
+}
+
+func DeleteCategory(ctx context.Context, r *wrapshop.DeleteCategoryEndpoint) error {
+	cmd := &catalog.DeleteShopCategoryCommand{
+		ID:     r.Id,
+		ShopID: r.Context.Shop.ID,
+	}
+	if err := catalogAggr.Dispatch(ctx, cmd); err != nil {
+		return err
+	}
+	r.Result = &pbcm.DeletedResponse{Deleted: int32(cmd.Result)}
+	return nil
+}
+
+func UpdateProductCategory(ctx context.Context, q *wrapshop.UpdateProductCategoryEndpoint) error {
+	shopID := q.Context.Shop.ID
+	cmd := &catalog.UpdateShopProductCategoryCommand{
+		ProductID:  q.ProductId,
+		CategoryID: q.CategoryId,
+		ShopID:     shopID,
+	}
+	if err := catalogAggr.Dispatch(ctx, cmd); err != nil {
+		return err
+	}
+	q.Result = PbShopProductWithVariants(cmd.Result)
+	return nil
+}
+
+func GetCollection(ctx context.Context, q *wrapshop.GetCollectionEndpoint) error {
+	query := &catalog.GetShopCollectionQuery{
+		ID:     q.Id,
+		ShopID: q.Context.Shop.ID,
+	}
+	if err := catalogQuery.Dispatch(ctx, query); err != nil {
+		return err
+	}
+	q.Result = PbShopCollection(query.Result)
+	return nil
+}
+
+func GetCollections(ctx context.Context, q *wrapshop.GetCollectionsEndpoint) error {
+	paging := q.Paging.CMPaging()
+	query := &catalog.ListShopCollectionsQuery{
+		ShopID:  q.Context.Shop.ID,
+		Paging:  *paging,
+		Filters: pbcm.ToFilters(q.Filters),
+	}
+	if err := catalogQuery.Dispatch(ctx, query); err != nil {
+		return err
+	}
+	q.Result = &pbshop.ShopCollectionsResponse{
+		Paging:      pbcm.PbPageInfo(paging, query.Result.Count),
+		Collections: PbShopCollections(query.Result.Collections),
+	}
+	return nil
+}
+
+func UpdateCollection(ctx context.Context, q *wrapshop.UpdateCollectionEndpoint) error {
+	shopID := q.Context.Shop.ID
+	cmd := &catalog.UpdateShopCollectionCommand{
+		ID:          q.Id,
+		ShopID:      shopID,
+		Name:        PString(q.Name),
+		Description: PString(q.Description),
+		DescHTML:    PString(q.DescHtml),
+		ShortDesc:   PString(q.ShortDesc),
+	}
+	if err := catalogAggr.Dispatch(ctx, cmd); err != nil {
+		return err
+	}
+	q.Result = PbShopCollection(cmd.Result)
+	return nil
+}
+
+func CreateCollection(ctx context.Context, q *wrapshop.CreateCollectionEndpoint) error {
+	cmd := &catalog.CreateShopCollectionCommand{
+		ShopID:      q.Context.Shop.ID,
+		Name:        q.Name,
+		DescHTML:    q.DescHtml,
+		Description: q.Description,
+		ShortDesc:   q.ShortDesc,
+	}
+	if err := catalogAggr.Dispatch(ctx, cmd); err != nil {
+		return err
+	}
+	q.Result = PbShopCollection(cmd.Result)
+	return nil
+}
+
+func AddProductCollections(ctx context.Context, r *wrapshop.AddProductCollectionEndpoint) error {
+	cmd := &catalog.AddShopProductCollectionCommand{
+		ProductID:     r.ProductId,
+		CollectionIDs: r.CollectionIds,
+		ShopID:        r.Context.Shop.ID,
+	}
+	if err := catalogAggr.Dispatch(ctx, cmd); err != nil {
+		return err
+	}
+	r.Result = &pbcm.UpdatedResponse{Updated: int32(cmd.Result)}
+	return nil
+}
+
+func RemoveProductCollection(ctx context.Context, r *wrapshop.RemoveProductCollectionEndpoint) error {
+	cmd := &catalog.RemoveShopProductCollectionCommand{
+		ProductID:     r.ProductId,
+		CollectionIDs: r.CollectionIds,
+		ShopID:        r.Context.Shop.ID,
+	}
+	if err := catalogAggr.Dispatch(ctx, cmd); err != nil {
+		return err
+	}
+	r.Result = &pbcm.RemovedResponse{Removed: int32(cmd.Result)}
+	return nil
+}
+
+func GetCollectionsByProductID(ctx context.Context, q *wrapshop.GetCollectionsByProductIDEndpoint) error {
+	query := &catalog.ListShopCollectionsByProductIDQuery{
+		ShopID:    q.Context.Shop.ID,
+		ProductID: q.ProductId,
+	}
+	if err := catalogQuery.Dispatch(ctx, query); err != nil {
+		return err
+	}
+	q.Result = &pbshop.CollectionsResponse{
+		Collections: PbShopCollections(query.Result),
 	}
 	return nil
 }

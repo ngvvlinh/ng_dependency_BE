@@ -98,7 +98,6 @@ func UpdateShop(ctx context.Context, q *wrapshop.UpdateShopEndpoint) error {
 			ImageURL:                      q.ImageUrl,
 			Email:                         q.Email,
 			Address:                       address,
-			AutoCreateFFM:                 q.AutoCreateFfm,
 			TryOn:                         q.TryOn.ToModel(),
 			GhnNoteCode:                   q.GhnNoteCode.ToModel(),
 			CompanyInfo:                   q.CompanyInfo.ToModel(),
@@ -106,6 +105,7 @@ func UpdateShop(ctx context.Context, q *wrapshop.UpdateShopEndpoint) error {
 			SurveyInfo:                    pbetop.SurveyInfosToModel(q.SurveyInfo),
 			ShippingServiceSelectStrategy: pbetop.ShippingServiceSelectStrategyToModel(q.ShippingServiceSelectStrategy),
 		},
+		AutoCreateFFM: q.AutoCreateFfm,
 	}
 
 	if err := bus.Dispatch(ctx, cmd); err != nil {

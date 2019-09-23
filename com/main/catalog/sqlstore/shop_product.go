@@ -5,12 +5,11 @@ import (
 	"strings"
 	"time"
 
-	cm "etop.vn/backend/pkg/common"
-
 	"etop.vn/api/main/catalog"
 	"etop.vn/api/meta"
 	"etop.vn/backend/com/main/catalog/convert"
 	"etop.vn/backend/com/main/catalog/model"
+	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/cmsql"
 	"etop.vn/backend/pkg/common/sq"
 	"etop.vn/backend/pkg/common/sqlstore"
@@ -65,6 +64,11 @@ func (s *ShopProductStore) Filters(filters meta.Filters) *ShopProductStore {
 
 func (s *ShopProductStore) ID(id int64) *ShopProductStore {
 	s.preds = append(s.preds, s.FtShopProduct.ByProductID(id))
+	return s
+}
+
+func (s *ShopProductStore) CategoryID(id int64) *ShopProductStore {
+	s.preds = append(s.preds, s.FtShopProduct.ByCategoryID(id))
 	return s
 }
 
@@ -133,7 +137,6 @@ func (s *ShopProductStore) GetShopProductWithVariantsDB() (*model.ShopProductWit
 	if err != nil {
 		return nil, err
 	}
-
 	var variants model.ShopVariants
 	{
 		q := s.query().OrderBy("variant_id").
@@ -170,7 +173,7 @@ func (s *ShopProductStore) ListShopProductsDB() ([]*model.ShopProduct, error) {
 	}
 
 	var products model.ShopProducts
-	err = query.Find(&products)
+	err = query.OrderBy("created_at DESC").Find(&products)
 	return products, err
 }
 
@@ -233,6 +236,12 @@ func (s *ShopProductStore) UpdateShopProduct(product *model.ShopProduct) error {
 	return checkProductOrVariantError(err, product.Code)
 }
 
+func (s *ShopProductStore) UpdateShopProductCategory(product *model.ShopProduct) error {
+	sqlstore.MustNoPreds(s.preds)
+	_, err := s.query().Where(s.FtShopProduct.ByProductID((product.ProductID))).Update(product)
+	return err
+}
+
 func (s *ShopProductStore) UpdateStatusShopProducts(status int16) (int, error) {
 	query := s.query().Where(s.preds)
 	query = s.includeDeleted.Check(query, s.FtShopProduct.NotDeleted())
@@ -269,4 +278,13 @@ func checkProductOrVariantError(e error, code string) error {
 		}
 	}
 	return e
+}
+
+func (s *ShopProductStore) RemoveShopProductCategory() (int, error) {
+	query := s.query().Where(s.preds)
+	query = s.includeDeleted.Check(query, s.FtShopProduct.NotDeleted())
+	_deleted, err := query.Table("shop_product").UpdateMap(map[string]interface{}{
+		"category_id": nil,
+	})
+	return int(_deleted), err
 }

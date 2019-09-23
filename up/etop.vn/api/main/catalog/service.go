@@ -24,6 +24,12 @@ type Aggregate interface {
 
 	DeleteShopProducts(context.Context, *shopping.IDsQueryShopArgs) (int, error)
 
+	UpdateShopProductCategory(context.Context, *UpdateShopProductCategoryArgs) (*ShopProductWithVariants, error)
+
+	AddShopProductCollection(context.Context, *AddShopProductCollectionArgs) (int, error)
+
+	RemoveShopProductCollection(context.Context, *RemoveShopProductColelctionArgs) (int, error)
+
 	//-- shop_variant --//
 
 	CreateShopVariant(context.Context, *CreateShopVariantArgs) (*ShopVariant, error)
@@ -40,7 +46,17 @@ type Aggregate interface {
 
 	//-- category --//
 
+	CreateShopCategory(context.Context, *CreateShopCategoryArgs) (*ShopCategory, error)
+
+	UpdateShopCategory(context.Context, *UpdateShopCategoryArgs) (*ShopCategory, error)
+
+	DeleteShopCategory(context.Context, *DeleteShopCategoryArgs) (int, error)
+
 	//-- collection --//
+
+	CreateShopCollection(context.Context, *CreateShopCollectionArgs) (*ShopCollection, error)
+
+	UpdateShopCollection(context.Context, *UpdateShopCollectionArgs) (*ShopCollection, error)
 
 	//-- tag --//
 }
@@ -58,12 +74,26 @@ type QueryService interface {
 	ListShopVariants(context.Context, *shopping.ListQueryShopArgs) (*ShopVariantsResponse, error)
 	ListShopVariantsByIDs(context.Context, *shopping.IDsQueryShopArgs) (*ShopVariantsResponse, error)
 	ListShopVariantsWithProductByIDs(context.Context, *shopping.IDsQueryShopArgs) (*ShopVariantsWithProductResponse, error)
+
+	//--Category --//
+	GetShopCategory(context.Context, *GetShopCategoryArgs) (*ShopCategory, error)
+	ListShopCategories(context.Context, *shopping.ListQueryShopArgs) (*ShopCategoriesResponse, error)
+
+	//-- Collection--//
+	GetShopCollection(context.Context, *GetShopCollectionArgs) (*ShopCollection, error)
+	ListShopCollections(context.Context, *shopping.ListQueryShopArgs) (*ShopCollectionsResponse, error)
+	ListShopCollectionsByProductID(context.Context, *ListShopCollectionsByProductIDArgs) ([]*ShopCollection, error)
 }
 
 //-- query --//
 
 type IDsArgs struct {
 	IDs []int64
+}
+
+type GetShopCategoryArgs struct {
+	ID     int64
+	ShopID int64
 }
 
 type GetShopProductByIDQueryArgs struct {
@@ -80,6 +110,12 @@ type ShopProductsResponse struct {
 	Products []*ShopProduct
 	Count    int32
 	Paging   meta.PageInfo
+}
+
+type ShopCategoriesResponse struct {
+	Categories []*ShopCategory
+	Count      int32
+	Paging     meta.PageInfo
 }
 
 type ShopProductsWithVariantsResponse struct {
@@ -100,11 +136,28 @@ type ShopVariantsWithProductResponse struct {
 	Paging   meta.PageInfo
 }
 
+type ListShopCollectionsByProductIDArgs struct {
+	ProductID int64
+	ShopID    int64
+}
+
+type GetShopCollectionArgs struct {
+	ID     int64
+	ShopID int64
+}
+
+type ShopCollectionsResponse struct {
+	Collections []*ShopCollection
+	Count       int32
+	Paging      meta.PageInfo
+}
+
 //-- command --//
 
 type CreateShopProductArgs struct {
 	ShopID int64
 
+	VendorID  int64
 	Code      string
 	Name      string
 	Unit      string
@@ -113,6 +166,14 @@ type CreateShopProductArgs struct {
 	DescriptionInfo
 	PriceInfo
 	ProductType ProductType
+}
+
+type CreateShopCategoryArgs struct {
+	ID       int64
+	ShopID   int64
+	ParentID int64
+	Name     string
+	Status   int
 }
 
 type UpdateShopProductInfoArgs struct {
@@ -130,6 +191,46 @@ type UpdateShopProductInfoArgs struct {
 	ListPrice   NullInt32
 	RetailPrice NullInt32
 	ProductType ProductType
+	CategoryID  int64
+	VendorID    int64
+}
+
+type UpdateShopProductCategoryArgs struct {
+	CategoryID int64
+	ShopID     int64
+	ProductID  int64
+}
+
+type UpdateShopCategoryArgs struct {
+	ID       int64
+	Name     NullString
+	ShopID   int64
+	ParentID int64
+}
+
+type UpdateShopCollectionArgs struct {
+	ID     int64
+	ShopID int64
+
+	Name        NullString
+	Description NullString
+	DescHTML    NullString
+	ShortDesc   NullString
+}
+
+type CreateShopCollectionArgs struct {
+	ID     int64
+	ShopID int64
+
+	Name        string
+	Description string
+	DescHTML    string
+	ShortDesc   string
+}
+
+type DeleteShopCategoryArgs struct {
+	ID     int64
+	ShopID int64
 }
 
 type CreateShopVariantArgs struct {
@@ -176,4 +277,21 @@ type UpdateShopVariantAttributes struct {
 	ShopID     int64
 	VariantID  int64
 	Attributes Attributes
+}
+
+type AddShopProductCollectionArgs struct {
+	ProductID     int64
+	ShopID        int64
+	CollectionIDs []int64
+}
+
+type RemoveShopProductColelctionArgs struct {
+	ProductID     int64
+	ShopID        int64
+	CollectionIDs []int64
+}
+
+type ValidVendorIDEvent struct {
+	VendorID int64
+	ShopID   int64
 }

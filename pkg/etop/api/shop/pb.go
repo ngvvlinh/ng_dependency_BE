@@ -51,10 +51,85 @@ func PbShopVariant(m *catalog.ShopVariant) *pbshop.ShopVariant {
 	return res
 }
 
+func PbShopProducts(items []*catalog.ShopProduct) []*pbshop.ShopProduct {
+	res := make([]*pbshop.ShopProduct, len(items))
+	for i, item := range items {
+		res[i] = PbShopProduct(item)
+	}
+	return res
+}
+
+func PbShopProduct(m *catalog.ShopProduct) *pbshop.ShopProduct {
+	res := &pbshop.ShopProduct{
+		Id:            m.ProductID,
+		Info:          nil,
+		Code:          m.Code,
+		EdCode:        "",
+		Name:          m.Name,
+		Description:   m.Description,
+		ShortDesc:     m.ShortDesc,
+		DescHtml:      m.DescHTML,
+		ImageUrls:     m.ImageURLs,
+		Tags:          m.Tags,
+		Stags:         nil,
+		Note:          m.Note,
+		Status:        pbs3.Pb(model.Status3(m.Status)),
+		IsAvailable:   true,
+		ListPrice:     m.ListPrice,
+		RetailPrice:   m.RetailPrice,
+		CostPrice:     m.CostPrice,
+		CollectionIds: m.CollectionIDs,
+		Variants:      nil,
+		CategoryId:    m.CategoryID,
+
+		ProductSourceId: m.ShopID, // deprecated
+	}
+	return res
+}
+
+func PbShopCategory(m *catalog.ShopCategory) *pbshop.ShopCategory {
+	res := &pbshop.ShopCategory{
+		Id:       m.ID,
+		ShopId:   m.ShopID,
+		Status:   0,
+		ParentId: m.ParentID,
+		Name:     m.Name,
+	}
+	return res
+}
+
+func PbShopCollection(m *catalog.ShopCollection) *pbshop.ShopCollection {
+	res := &pbshop.ShopCollection{
+		Id:          m.ID,
+		ShopId:      m.ShopID,
+		Description: m.Description,
+		DescHtml:    m.DescHTML,
+		Name:        m.Name,
+		ShortDesc:   m.ShortDesc,
+	}
+	return res
+}
+
+func PbShopCollections(items []*catalog.ShopCollection) []*pbshop.ShopCollection {
+	res := make([]*pbshop.ShopCollection, len(items))
+	for i, item := range items {
+		res[i] = PbShopCollection(item)
+	}
+	return res
+}
+
 func PbShopProductsWithVariants(items []*catalog.ShopProductWithVariants) []*pbshop.ShopProduct {
 	res := make([]*pbshop.ShopProduct, len(items))
 	for i, item := range items {
 		res[i] = PbShopProductWithVariants(item)
+	}
+	return res
+}
+
+func PbShopCategories(items []*catalog.ShopCategory) []*pbshop.ShopCategory {
+	res := make([]*pbshop.ShopCategory, len(items))
+	for i, item := range items {
+		res[i] = PbShopCategory(item)
 	}
 	return res
 }
@@ -75,10 +150,10 @@ func PbShopProductWithVariants(m *catalog.ShopProductWithVariants) *pbshop.ShopP
 			ListPrice:   m.ShopProduct.ListPrice,
 			CostPrice:   m.ShopProduct.CostPrice,
 			CategoryId:  m.ShopProduct.CategoryID,
-
 			// deprecated
 			ProductSourceCategoryId: m.ShopProduct.CategoryID,
 		},
+		CategoryId:      m.ShopProduct.CategoryID,
 		Code:            m.ShopProduct.Code,
 		EdCode:          m.ShopProduct.Code,
 		Name:            m.ShopProduct.Name,
@@ -95,6 +170,7 @@ func PbShopProductWithVariants(m *catalog.ShopProductWithVariants) *pbshop.ShopP
 		RetailPrice:     coalesceInt32(m.ShopProduct.RetailPrice, m.ShopProduct.ListPrice),
 		CostPrice:       m.ShopProduct.CostPrice,
 		CollectionIds:   m.ShopProduct.CollectionIDs,
+		VendorId:        m.VendorID,
 		Variants:        PbShopVariants(m.Variants),
 		ProductSourceId: shopID, // backward-compatible: use shop_id in place of product_source_id
 		CreatedAt:       pbcm.PbTime(m.CreatedAt),

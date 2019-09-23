@@ -3,9 +3,13 @@ package catalog
 import (
 	"time"
 
+	"etop.vn/api/meta"
+
 	"etop.vn/api/main/catalog/types"
 	cmutil "etop.vn/capi/util"
 )
+
+// +gen:event:topic=event/catalog
 
 type ProductType = string
 
@@ -34,6 +38,8 @@ type ShopProduct struct {
 	PriceInfo
 
 	CategoryID int64
+
+	VendorID int64
 
 	CollectionIDs []int64
 
@@ -79,6 +85,34 @@ type ShopVariant struct {
 	UpdatedAt time.Time
 
 	DeletedAt time.Time
+}
+
+type ShopCategory struct {
+	ID int64
+
+	ParentID int64
+	ShopID   int64
+
+	Name string
+
+	Status int
+
+	CreatedAt time.Time
+	UpdatedAt time.Time
+	DeletedAt time.Time
+}
+
+type ShopCollection struct {
+	ID     int64
+	ShopID int64
+
+	Name        string
+	Description string
+	DescHTML    string
+	ShortDesc   string
+
+	CreatedAt time.Time
+	UpdatedAt time.Time
 }
 
 func (v *ShopVariant) GetName() string {
@@ -156,4 +190,30 @@ func (v ShopVariantWithProduct) ProductWithVariantName() string {
 type ShopProductWithVariants struct {
 	*ShopProduct
 	Variants []*ShopVariant
+}
+
+type ShopCategories struct {
+	Categories []*ShopCategory
+}
+
+type ShopProductCollection struct {
+	ProductID    int64
+	CollectionID int64
+	ShopID       int64
+
+	CreatedAt time.Time
+	UpdatedAt time.Time
+	DeletedAt time.Time
+}
+
+type ShopProductCreatingEvent struct {
+	meta.EventMeta
+	VendorID int64
+	ShopID   int64
+}
+
+type ShopProductUpdatingEvent struct {
+	meta.EventMeta
+	VendorID int64
+	ShopID   int64
 }

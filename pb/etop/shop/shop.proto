@@ -65,16 +65,12 @@ service ExternalAccountService {
     rpc DeleteConnectedCarrierServiceExternalAccountHaravan(cm.Empty) returns(cm.DeletedResponse);
 }
 
-// deprecated
 service CollectionService {
-    rpc CreateCollection(CreateCollectionRequest) returns (Collection);
-    rpc DeleteCollection(cm.IDRequest) returns (cm.RemovedResponse);
-    rpc GetCollection(cm.IDRequest) returns (Collection);
-    rpc GetCollections(cm.Empty) returns (CollectionsResponse);
-    rpc GetCollectionsByIDs(cm.IDsRequest) returns (CollectionsResponse);
-    rpc UpdateCollection(UpdateCollectionRequest) returns (Collection);
-    rpc UpdateProductsCollection(UpdateProductsCollectionRequest) returns (UpdateProductsCollectionResponse);
-    rpc RemoveProductsCollection(RemoveProductsCollectionRequest) returns (cm.UpdatedResponse);
+    rpc CreateCollection(CreateCollectionRequest) returns (ShopCollection);
+    rpc GetCollection(cm.IDRequest) returns (ShopCollection);
+    rpc GetCollections(GetCollectionsRequest) returns (ShopCollectionsResponse);
+    rpc UpdateCollection(UpdateCollectionRequest) returns (ShopCollection);
+    rpc GetCollectionsByProductID(GetShopCollectionsByProductIDRequest) returns (CollectionsResponse);
 }
 
 service CustomerService {
@@ -121,11 +117,25 @@ service ProductService {
     rpc UpdateVariantsStatus (UpdateProductStatusRequest) returns(UpdateProductStatusResponse);
     rpc UpdateVariantAttributes (UpdateVariantAttributesRequest) returns (ShopVariant);
     rpc RemoveVariants (RemoveVariantsRequest) returns (cm.RemovedResponse);
-    //-- deprecated --//
+
+    //-- category --//
+    rpc UpdateProductCategory(UpdateProductCategoryRequest) returns (ShopProduct);
+
+    //-- collection --//
+    rpc AddProductCollection(AddShopProductCollectionRequest) returns (cm.UpdatedResponse);
+    rpc RemoveProductCollection(RemoveShopProductCollectionRequest) returns (cm.RemovedResponse);
 
     // deprecated
     rpc AddProducts (AddProductsRequest) returns (AddProductsResponse);
 
+}
+
+service CategoryService{
+    rpc CreateCategory(CreateCategoryRequest) returns (ShopCategory);
+    rpc GetCategory(cm.IDRequest) returns (ShopCategory);
+    rpc GetCategories(GetCategoriesRequest) returns (ShopCategoriesResponse);
+    rpc UpdateCategory(UpdateCategoryRequest) returns(ShopCategory);
+    rpc DeleteCategory(cm.IDRequest) returns (cm.DeletedResponse);
 }
 
 // deprecated: 2018.07.31+14
@@ -291,7 +301,7 @@ message UpdateShopRequest {
     optional string website_url = 12 [(gogoproto.nullable)=false];
     optional string image_url = 13 [(gogoproto.nullable)=false];
     optional string email = 14 [(gogoproto.nullable)=false];
-    optional bool auto_create_ffm = 15 [(gogoproto.nullable)=false];
+    optional bool auto_create_ffm = 15;
 
     // @deprecated use try_on instead
     optional ghn_note_code.GHNNoteCode ghn_note_code = 16;
@@ -310,6 +320,7 @@ message UpdateShopResponse {
 message Collection {
     // @required
     optional int64 id = 1 [(gogoproto.nullable)=false];
+    optional int64 shop_id = 8 [(gogoproto.nullable)=false];
 
     // @required
     optional string name = 2 [(gogoproto.nullable)=false];
@@ -334,8 +345,13 @@ message CreateCollectionRequest {
      optional string desc_html   = 5 [(gogoproto.nullable)=false];
 }
 
+message UpdateProductCategoryRequest {
+    optional int64 product_id =1 [(gogoproto.nullable)=false];
+    optional int64 category_id =2 [(gogoproto.nullable)=false];
+}
+
 message CollectionsResponse {
-    repeated Collection collections = 1;
+    repeated ShopCollection collections = 1;
 }
 
 message UpdateCollectionRequest {
@@ -343,11 +359,11 @@ message UpdateCollectionRequest {
     optional int64 id = 1 [(gogoproto.nullable)=false];
 
     // @required
-    optional string name = 2 [(gogoproto.nullable)=false];
+    optional string name = 2;
 
-    optional string description = 3 [(gogoproto.nullable)=false];
-    optional string short_desc  = 4 [(gogoproto.nullable)=false];
-    optional string desc_html   = 5 [(gogoproto.nullable)=false];
+    optional string description = 3;
+    optional string short_desc  = 4;
+    optional string desc_html   = 5;
 }
 
 message UpdateProductsCollectionRequest {
@@ -443,6 +459,8 @@ message ShopProduct {
     optional string short_desc  = 6 [(gogoproto.nullable)=false];
     optional string desc_html   = 7 [(gogoproto.nullable)=false];
     repeated string image_urls  = 9;
+    optional int64 category_id = 24 [(gogoproto.nullable)=false];
+    optional int64 vendor_id = 25  [(gogoproto.nullable)=false];
 
     // @deprecated use stags instead
     repeated string  tags = 10;
@@ -466,7 +484,22 @@ message ShopProduct {
     optional product_type.ProductType product_type = 23;
 }
 
+message  ShopCollection {
+	optional int64 id = 1 [(gogoproto.nullable)=false];
+	optional int64 shop_id = 2 [(gogoproto.nullable)=false];
+
+	optional string name = 3 [(gogoproto.nullable)=false];
+	optional string description = 4 [(gogoproto.nullable)=false];
+	optional string desc_html = 5 [(gogoproto.nullable)=false];
+	optional string short_desc = 6 [(gogoproto.nullable)=false];
+}
+
 message GetVariantsRequest {
+    optional cm.Paging paging = 1;
+    repeated cm.Filter filters = 4;
+}
+
+message GetCategoriesRequest {
     optional cm.Paging paging = 1;
     repeated cm.Filter filters = 4;
 }
@@ -479,6 +512,11 @@ message ShopVariantsResponse {
 message ShopProductsResponse {
     optional cm.PageInfo paging   = 1;
     repeated ShopProduct products = 2;
+}
+
+message ShopCategoriesResponse {
+    optional cm.PageInfo paging   = 1;
+    repeated ShopCategory categories = 2;
 }
 
 message UpdateVariantRequest {
@@ -507,6 +545,7 @@ message UpdateVariantRequest {
 message UpdateProductRequest {
     // @required
     optional int64 id = 1 [(gogoproto.nullable)=false];
+    optional int64 vendor_id = 13 [(gogoproto.nullable)=false];
 
     optional string name = 2;
     optional string code = 3;
@@ -521,6 +560,12 @@ message UpdateProductRequest {
     optional int32 list_price = 10;
     optional int32 retail_price = 11;
     optional product_type.ProductType product_type = 12;
+}
+
+message UpdateCategoryRequest {
+     optional int64 id = 1 [(gogoproto.nullable)=false];
+     optional string name = 2;
+     optional int64 parent_id = 3 [(gogoproto.nullable)=false];
 }
 
 message UpdateVariantsRequest {
@@ -625,6 +670,11 @@ message ProductSourcesResponse {
     repeated ProductSource product_sources = 1;
 }
 
+message CreateCategoryRequest {
+    optional string name = 1 [(gogoproto.nullable)=false];
+    optional int64 parent_id = 2 [(gogoproto.nullable)=false];
+}
+
 message CreateProductRequest {
     optional string code = 1 [(gogoproto.nullable)=false];
     optional string name = 2 [(gogoproto.nullable)=false];
@@ -634,6 +684,7 @@ message CreateProductRequest {
     optional string short_desc  = 6 [(gogoproto.nullable)=false];
     optional string desc_html   = 7 [(gogoproto.nullable)=false];
     repeated string image_urls  = 9;
+    optional int64 vendor_id = 10 [(gogoproto.nullable)=false];
 
     optional int32  cost_price = 16 [(gogoproto.nullable)=false];
     optional int32  list_price = 15 [(gogoproto.nullable)=false];
@@ -1193,6 +1244,34 @@ message PaymentCheckReturnDataRequest {
     optional payment_provider.PaymentProvider payment_provider = 6 [(gogoproto.nullable) = false];
 }
 
+message ShopCategory {
+    optional int64 id = 1 [(gogoproto.nullable) = false];
+    optional string name = 2 [(gogoproto.nullable) = false];
+    optional int64 parent_id = 3 [(gogoproto.nullable) = false];
+    optional int64 shop_id = 4 [(gogoproto.nullable) = false];
+    optional int64 status = 5 [(gogoproto.nullable) = false];
+}
+
+message GetCollectionsRequest {
+    optional cm.Paging paging = 1;
+    repeated cm.Filter filters = 4;
+}
+
+message ShopCollectionsResponse {
+    optional cm.PageInfo paging   = 1;
+    repeated ShopCollection collections = 2;
+}
+
+message AddShopProductCollectionRequest {
+   optional int64 product_id = 1 [(gogoproto.nullable) = false];
+   repeated int64 collection_ids = 2 [(gogoproto.nullable) = false];
+}
+
+message RemoveShopProductCollectionRequest {
+   optional int64 product_id = 1 [(gogoproto.nullable) = false];
+   repeated int64 collection_ids = 2 [(gogoproto.nullable) = false];
+}
+
 message Vendor {
     optional int64 id = 1 [(gogoproto.nullable) = false];
     optional int64 shop_id = 2 [(gogoproto.nullable) = false];
@@ -1331,4 +1410,8 @@ message ReceiptsResponse {
 message GetReceivedAmountByOrderIDResponse {
     optional int32 total_amount = 1 [(gogoproto.nullable) = false];
     optional int32 received_amount = 2 [(gogoproto.nullable) = false];
+}
+
+message GetShopCollectionsByProductIDRequest {
+      optional int64 product_id =1  [(gogoproto.nullable) = false];
 }

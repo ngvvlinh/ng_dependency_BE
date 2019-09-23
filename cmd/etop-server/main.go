@@ -36,6 +36,7 @@ import (
 	carrierquery "etop.vn/backend/com/shopping/carrying/query"
 	customeraggregate "etop.vn/backend/com/shopping/customering/aggregate"
 	customerquery "etop.vn/backend/com/shopping/customering/query"
+	vendorpm "etop.vn/backend/com/shopping/pm"
 	traderquery "etop.vn/backend/com/shopping/tradering/query"
 	vendoraggregate "etop.vn/backend/com/shopping/vendoring/aggregate"
 	vendorquery "etop.vn/backend/com/shopping/vendoring/query"
@@ -307,7 +308,7 @@ func main() {
 
 	identityQuery = serviceidentity.NewQueryService(db).MessageBus()
 	catalogQuery := catalogquery.New(db).MessageBus()
-	catalogAggr := catalogaggregate.New(db).MessageBus()
+	catalogAggr := catalogaggregate.New(eventBus, db).MessageBus()
 	addressQuery := address.NewQueryService(db).MessageBus()
 	shipnowQuery = serviceshipnow.NewQueryService(db).MessageBus()
 	orderQuery = serviceordering.NewQueryService(db).MessageBus()
@@ -324,6 +325,7 @@ func main() {
 
 	shipnowPM := shipnowpm.New(eventBus, shipnowQuery, shipnowAggr, orderAggr.MessageBus(), shipnowCarrierManager)
 	shipnowPM.RegisterEventHandlers(eventBus)
+
 	customerAggr := customeraggregate.NewCustomerAggregate(db).MessageBus()
 	vendorAggr := vendoraggregate.NewVendorAggregate(db).MessageBus()
 	carrierAggr := carrieraggregate.NewCarrierAggregate(db).MessageBus()
@@ -338,6 +340,8 @@ func main() {
 	receiptAggr := receiptaggregate.NewReceiptAggregate(db).MessageBus()
 	receiptQuery := receiptquery.NewReceiptQuery(db).MessageBus()
 
+	vendorPM := vendorpm.New(eventBus, vendorQuery)
+	vendorPM.RegisterEventHandlers(eventBus)
 	// payment
 	var vtpayProvider *vtpay.Provider
 	if cfg.VTPay.MerchantCode != "" {

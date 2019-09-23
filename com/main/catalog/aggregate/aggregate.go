@@ -3,6 +3,8 @@ package aggregate
 import (
 	"context"
 
+	"etop.vn/capi"
+
 	"etop.vn/api/main/catalog"
 	"etop.vn/api/meta"
 	"etop.vn/api/shopping"
@@ -17,14 +19,24 @@ import (
 var _ catalog.Aggregate = &Aggregate{}
 
 type Aggregate struct {
-	shopProduct sqlstore.ShopProductStoreFactory
-	shopVariant sqlstore.ShopVariantStoreFactory
+	db                    cmsql.Database
+	shopProduct           sqlstore.ShopProductStoreFactory
+	shopVariant           sqlstore.ShopVariantStoreFactory
+	shopCategory          sqlstore.ShopCategoryStoreFactory
+	shopCollection        sqlstore.ShopCollectionStoreFactory
+	shopProductCollection sqlstore.ShopProductCollectionStoreFactory
+	eventBus              capi.EventBus
 }
 
-func New(db cmsql.Database) *Aggregate {
+func New(eventBus capi.EventBus, db cmsql.Database) *Aggregate {
 	return &Aggregate{
-		shopProduct: sqlstore.NewShopProductStore(db),
-		shopVariant: sqlstore.NewShopVariantStore(db),
+		db:                    db,
+		shopProduct:           sqlstore.NewShopProductStore(db),
+		shopVariant:           sqlstore.NewShopVariantStore(db),
+		shopCategory:          sqlstore.NewShopCategoryStore(db),
+		shopCollection:        sqlstore.NewShopCollectionStore(db),
+		shopProductCollection: sqlstore.NewShopProductCollectionStore(db),
+		eventBus:              eventBus,
 	}
 }
 
@@ -38,6 +50,7 @@ func (a *Aggregate) CreateShopProduct(ctx context.Context, args *catalog.CreateS
 		ProductID: cm.NewID(),
 		ShopID:    args.ShopID,
 		Code:      args.Code,
+		VendorID:  args.VendorID,
 		Name:      args.Name,
 		Unit:      args.Unit,
 		ImageURLs: args.ImageURLs,
@@ -54,6 +67,13 @@ func (a *Aggregate) CreateShopProduct(ctx context.Context, args *catalog.CreateS
 		},
 		ProductType: args.ProductType,
 	}
+	event := &catalog.ShopProductCreatingEvent{
+		ShopID:   product.ShopID,
+		VendorID: product.VendorID,
+	}
+	if err := a.eventBus.Publish(ctx, event); err != nil {
+		return nil, err
+	}
 	if err := a.shopProduct(ctx).CreateShopProduct(product); err != nil {
 		return nil, err
 	}
@@ -67,6 +87,13 @@ func (a *Aggregate) UpdateShopProductInfo(ctx context.Context, args *catalog.Upd
 		return nil, err
 	}
 	updated := convert.UpdateShopProduct(productDB, args)
+	event := &catalog.ShopProductUpdatingEvent{
+		ShopID:   updated.ShopID,
+		VendorID: updated.VendorID,
+	}
+	if err := a.eventBus.Publish(ctx, event); err != nil {
+		return nil, err
+	}
 	if err = a.shopProduct(ctx).UpdateShopProduct(updated); err != nil {
 		return nil, err
 	}
@@ -247,4 +274,161 @@ func OptionValue(update []*meta.UpdateSet, op meta.UpdateOp) *meta.UpdateSet {
 		}
 	}
 	return nil
+}
+
+func (a *Aggregate) UpdateShopProductCategory(ctx context.Context, args *catalog.UpdateShopProductCategoryArgs) (*catalog.ShopProductWithVariants, error) {
+	productDB, err := a.shopProduct(ctx).ShopID(args.ShopID).ID(args.ProductID).GetShopProductDB()
+	if err != nil {
+		return nil, err
+	}
+	_, err = a.shopCategory(ctx).ShopID(args.ShopID).ID(args.CategoryID).GetShopCategoryDB()
+	if err != nil {
+		return nil, cm.Errorf(cm.InvalidArgument, err, "Mã Loại Sản Phẩm không không tồn tại")
+	}
+	updated := convert.UpdateShopProductCategory(productDB, args)
+	if err = a.shopProduct(ctx).UpdateShopProductCategory(updated); err != nil {
+		return nil, err
+	}
+	result, err := a.shopProduct(ctx).ShopID(args.ShopID).ID(args.ProductID).GetShopProductWithVariants()
+	return result, err
+}
+
+func (a *Aggregate) CreateShopCategory(ctx context.Context, args *catalog.CreateShopCategoryArgs) (*catalog.ShopCategory, error) {
+	category := &catalog.ShopCategory{
+		ID:       cm.NewID(),
+		ShopID:   args.ShopID,
+		Name:     args.Name,
+		ParentID: args.ParentID,
+		Status:   args.Status,
+	}
+	if args.ParentID != 0 {
+		if _, err := a.shopCategory(ctx).ID(args.ParentID).GetShopCategory(); err != nil {
+			return nil, err
+		}
+	}
+	if err := a.shopCategory(ctx).CreateShopCategory(category); err != nil {
+		return nil, err
+	}
+	return category, nil
+}
+
+func (a *Aggregate) UpdateShopCategory(ctx context.Context, args *catalog.UpdateShopCategoryArgs) (*catalog.ShopCategory, error) {
+	categoryDB, err := a.shopCategory(ctx).ShopID(args.ShopID).ID(args.ID).GetShopCategoryDB()
+	if err != nil {
+		return nil, err
+	}
+	if args.ParentID != 0 {
+		if _, err := a.shopCategory(ctx).ID(args.ParentID).GetShopCategory(); err != nil {
+			return nil, err
+		}
+	}
+	updated := convert.UpdateShopCategory(categoryDB, args)
+	if err = a.shopCategory(ctx).UpdateShopCategory(updated); err != nil {
+		return nil, err
+	}
+	result, err := a.shopCategory(ctx).ShopID(args.ShopID).ID(args.ID).GetShopCategory()
+	return result, err
+}
+
+func (a *Aggregate) DeleteShopCategory(ctx context.Context, args *catalog.DeleteShopCategoryArgs) (deleted int, _ error) {
+	err := a.db.InTransaction(ctx, func(tx cmsql.QueryInterface) error {
+		var err error
+		deleted, err = a.shopProduct(ctx).ShopID(args.ShopID).RemoveShopProductCategory()
+		if err != nil {
+			return err
+		}
+		deleted, err = a.shopCategory(ctx).ID(args.ID).ShopID(args.ShopID).SoftDelete()
+		return err
+	})
+
+	return deleted, err
+}
+
+func (a *Aggregate) CreateShopCollection(ctx context.Context, args *catalog.CreateShopCollectionArgs) (*catalog.ShopCollection, error) {
+	collection := &catalog.ShopCollection{
+		ID:          cm.NewID(),
+		ShopID:      args.ShopID,
+		Name:        args.Name,
+		DescHTML:    args.DescHTML,
+		Description: args.Description,
+		ShortDesc:   args.ShortDesc,
+	}
+	if err := a.shopCollection(ctx).CreateShopCollection(collection); err != nil {
+		return nil, err
+	}
+	return collection, nil
+}
+
+func (a *Aggregate) UpdateShopCollection(ctx context.Context, args *catalog.UpdateShopCollectionArgs) (*catalog.ShopCollection, error) {
+	collectionDB, err := a.shopCollection(ctx).ShopID(args.ShopID).ID(args.ID).GetShopCollectionDB()
+	if err != nil {
+		return nil, err
+	}
+	updated := convert.UpdateShopCollection(collectionDB, args)
+	if err = a.shopCollection(ctx).UpdateShopCollection(updated); err != nil {
+		return nil, err
+	}
+	result, err := a.shopCollection(ctx).ShopID(args.ShopID).ID(args.ID).GetShopCollection()
+	return result, err
+}
+
+func (a *Aggregate) AddShopProductCollection(ctx context.Context, args *catalog.AddShopProductCollectionArgs) (created int, _ error) {
+	var err error
+	if len(args.CollectionIDs) == 0 {
+		return 0, cm.Errorf(cm.InvalidArgument, err, "Mã bộ sưu tập không được để trống")
+	}
+	if args.ProductID == 0 {
+		return 0, cm.Errorf(cm.InvalidArgument, err, "Mã sản phẩm không được để trống")
+	}
+	_, err = a.shopProduct(ctx).ShopID(args.ShopID).ID(args.ProductID).GetShopProduct()
+	if err != nil {
+		return 0, cm.Errorf(cm.InvalidArgument, err, "Mã sản phẩm không không tồn tại")
+	}
+	for _, collectionID := range args.CollectionIDs {
+		if collectionID == 0 {
+			return 0, cm.Errorf(cm.InvalidArgument, err, "Mã bộ sưu tập không được để trống")
+		}
+	}
+	collections, err := a.shopCollection(ctx).ShopID(args.ShopID).IDs(args.CollectionIDs).ListShopCollections()
+	if err != nil {
+		return 0, err
+	}
+	if len(collections) != len(args.CollectionIDs) {
+		return 0, cm.Errorf(cm.InvalidArgument, nil, "Mã bộ sưu tập không tồn tại")
+	}
+
+	err = a.db.InTransaction(ctx, func(q cmsql.QueryInterface) error {
+		for _, collectionID := range args.CollectionIDs {
+			productCollection := &catalog.ShopProductCollection{
+				ProductID:    args.ProductID,
+				ShopID:       args.ShopID,
+				CollectionID: collectionID,
+			}
+			lineCreated, err := a.shopProductCollection(ctx).AddProductToCollection(productCollection)
+			if err != nil {
+				return err
+			}
+			created += lineCreated
+		}
+		return nil
+	})
+	return created, err
+}
+
+func (a *Aggregate) RemoveShopProductCollection(ctx context.Context, args *catalog.RemoveShopProductColelctionArgs) (deleted int, _ error) {
+	var err error
+	var removedProduct int
+	if len(args.CollectionIDs) == 0 {
+		return 0, cm.Errorf(cm.InvalidArgument, err, "Mã bộ sưu tập không được để trống")
+	}
+	if args.ProductID == 0 {
+		return 0, cm.Errorf(cm.InvalidArgument, err, "Mã sản phẩm không được để trống")
+	}
+	for i := 0; i < len(args.CollectionIDs); i++ {
+		if args.CollectionIDs[i] == 0 {
+			return 0, cm.Errorf(cm.InvalidArgument, err, "Mã bộ sưu tập không được để trống")
+		}
+	}
+	removedProduct, err = a.shopProductCollection(ctx).ShopID(args.ShopID).ProductID(args.ProductID).IDs(args.CollectionIDs).RemoveProductFromCollection()
+	return removedProduct, err
 }

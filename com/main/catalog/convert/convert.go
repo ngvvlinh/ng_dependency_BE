@@ -63,9 +63,23 @@ func ShopProduct(in *catalogmodel.ShopProduct) (out *catalog.ShopProduct) {
 		Status:      int32(in.Status),
 		CreatedAt:   in.CreatedAt,
 		UpdatedAt:   in.UpdatedAt,
+		CategoryID:  in.CategoryID,
+		VendorID:    in.VendorID,
 		ProductType: catalog.ProductType(in.ProductType),
 	}
 	return out
+}
+
+func ShopCategory(in *catalogmodel.ShopCategory, out *catalog.ShopCategory) {
+	convert_catalogmodel_ShopCategory_catalog_ShopCategory(in, out)
+}
+
+func ShopCategoryDB(in *catalog.ShopCategory, out *catalogmodel.ShopCategory) {
+	convert_catalog_ShopCategory_catalogmodel_ShopCategory(in, out)
+}
+
+func ShopCategories(ins []*catalogmodel.ShopCategory) (outs []*catalog.ShopCategory) {
+	return Convert_catalogmodel_ShopCategories_catalog_ShopCategories(ins)
 }
 
 func ShopProductUpdate(in *catalogmodel.ShopProduct) (out *catalog.UpdateShopProductInfoArgs) {
@@ -107,16 +121,18 @@ func ShopProductDB(in *catalog.ShopProduct) (out *catalogmodel.ShopProduct) {
 		Tags:          in.Tags,
 		Unit:          in.Unit,
 		CategoryID:    in.CategoryID,
+		VendorID:      in.VendorID,
 		CostPrice:     in.CostPrice,
 		ListPrice:     in.ListPrice,
 		RetailPrice:   in.RetailPrice,
 		Status:        model.Status3(in.Status),
 		CreatedAt:     in.CreatedAt,
 		UpdatedAt:     in.UpdatedAt,
-		DeletedAt:     time.Time{},
-		NameNorm:      validate.NormalizeSearch(in.Name),
-		NameNormUa:    validate.NormalizeUnaccent(in.Name),
-		ProductType:   string(in.ProductType),
+
+		DeletedAt:   time.Time{},
+		NameNorm:    validate.NormalizeSearch(in.Name),
+		NameNormUa:  validate.NormalizeUnaccent(in.Name),
+		ProductType: string(in.ProductType),
 	}
 	return out
 }
@@ -241,6 +257,7 @@ func UpdateShopProduct(in *catalogmodel.ShopProduct, args *catalog.UpdateShopPro
 	shopProduct := &catalogmodel.ShopProduct{
 		ShopID:      args.ShopID,
 		ProductID:   args.ProductID,
+		VendorID:    args.VendorID,
 		Code:        args.Code.Apply(in.Code),
 		Name:        args.Name.Apply(in.Name),
 		Description: args.Description.Apply(in.Description),
@@ -263,6 +280,21 @@ func UpdateShopProduct(in *catalogmodel.ShopProduct, args *catalog.UpdateShopPro
 		Tags:          in.Tags,
 	}
 	return shopProduct
+}
+func UpdateShopCategory(in *catalogmodel.ShopCategory, args *catalog.UpdateShopCategoryArgs) (out *catalogmodel.ShopCategory) {
+	if in == nil {
+		return nil
+	}
+	shopCategory := &catalogmodel.ShopCategory{
+		ID:       args.ID,
+		ShopID:   args.ShopID,
+		ParentID: args.ParentID,
+		Name:     args.Name.Apply(in.Name),
+
+		Status:    in.Status,
+		DeletedAt: in.DeletedAt,
+	}
+	return shopCategory
 }
 
 func UpdateShopVariant(in *catalogmodel.ShopVariant, args *catalog.UpdateShopVariantInfoArgs) (out *catalogmodel.ShopVariant) {
@@ -292,4 +324,54 @@ func UpdateShopVariant(in *catalogmodel.ShopVariant, args *catalog.UpdateShopVar
 		AttrNormKv: in.AttrNormKv,
 	}
 	return shopVariant
+}
+
+func ShopCollectionDB(in *catalog.ShopCollection, out *catalogmodel.ShopCollection) {
+	convert_catalog_ShopCollection_catalogmodel_ShopCollection(in, out)
+}
+
+func ShopCollection(in *catalogmodel.ShopCollection, out *catalog.ShopCollection) {
+	convert_catalogmodel_ShopCollection_catalog_ShopCollection(in, out)
+}
+
+func ShopProductCollectionDB(in *catalog.ShopProductCollection, out *catalogmodel.ShopProductCollection) {
+	convert_catalog_ShopProductCollection_catalogmodel_ShopProductCollection(in, out)
+}
+
+func ShopProducCollection(in *catalogmodel.ShopProductCollection, out *catalog.ShopProductCollection) {
+	convert_catalogmodel_ShopProductCollection_catalog_ShopProductCollection(in, out)
+}
+
+func ShopCollections(ins []*catalogmodel.ShopCollection) (outs []*catalog.ShopCollection) {
+	return Convert_catalogmodel_ShopCollections_catalog_ShopCollections(ins)
+}
+
+func ShopProductCollections(ins []*catalogmodel.ShopProductCollection) (outs []*catalog.ShopProductCollection) {
+	return Convert_catalogmodel_ShopProductCollections_catalog_ShopProductCollections(ins)
+}
+
+func UpdateShopCollection(in *catalogmodel.ShopCollection, args *catalog.UpdateShopCollectionArgs) (out *catalogmodel.ShopCollection) {
+	if in == nil {
+		return nil
+	}
+	shopColelction := &catalogmodel.ShopCollection{
+		ID:          args.ID,
+		ShopID:      args.ShopID,
+		Name:        args.Name.Apply(in.Name),
+		Description: args.Description.Apply(in.Description),
+		DescHTML:    args.DescHTML.Apply(in.DescHTML),
+		ShortDesc:   args.ShortDesc.Apply(in.ShortDesc),
+	}
+	return shopColelction
+}
+
+func UpdateShopProductCategory(in *catalogmodel.ShopProduct, args *catalog.UpdateShopProductCategoryArgs) (out *catalogmodel.ShopProduct) {
+	if in == nil {
+		return nil
+	}
+	shopProduct := &catalogmodel.ShopProduct{
+		ProductID:  args.ProductID,
+		CategoryID: args.CategoryID,
+	}
+	return shopProduct
 }

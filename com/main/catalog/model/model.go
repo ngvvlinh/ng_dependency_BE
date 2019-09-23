@@ -111,6 +111,7 @@ type ShopProduct struct {
 	Tags        []string
 	Unit        string
 	CategoryID  int64
+	VendorID    int64
 
 	CostPrice   int32
 	ListPrice   int32
@@ -130,21 +131,6 @@ type ShopProduct struct {
 type ShopProductWithVariants struct {
 	*ShopProduct
 	Variants []*ShopVariant
-}
-
-var _ = sqlgenShopCollection(&ShopCollection{})
-
-type ShopCollection struct {
-	ID     int64
-	ShopID int64
-
-	Name        string
-	Description string
-	DescHTML    string
-	ShortDesc   string
-
-	CreatedAt time.Time `sq:"create"`
-	UpdatedAt time.Time `sq:"update"`
 }
 
 var _ = sqlgenProductShopCollection(&ProductShopCollection{})
@@ -211,6 +197,7 @@ type ProductAttribute struct {
 
 var _ = sqlgenShopCategory(&ShopCategory{})
 
+// +convert:type=catalog.ShopCategory
 type ShopCategory struct {
 	ID int64
 
@@ -220,6 +207,35 @@ type ShopCategory struct {
 	Name string
 
 	Status    int
+	CreatedAt time.Time `sq:"create"`
+	UpdatedAt time.Time `sq:"update"`
+	DeletedAt time.Time
+}
+
+var _ = sqlgenShopCollection(&ShopCollection{})
+
+// +convert:type=catalog.ShopCollection
+type ShopCollection struct {
+	ID     int64
+	ShopID int64
+
+	Name        string
+	Description string
+	DescHTML    string
+	ShortDesc   string
+
+	CreatedAt time.Time `sq:"create"`
+	UpdatedAt time.Time `sq:"update"`
+}
+
+var _ = sqlgenShopProductCollection(&ShopProductCollection{})
+
+// +convert:type=catalog.ShopProductCollection
+type ShopProductCollection struct {
+	ProductID    int64
+	CollectionID int64
+	ShopID       int64
+
 	CreatedAt time.Time `sq:"create"`
 	UpdatedAt time.Time `sq:"update"`
 	DeletedAt time.Time

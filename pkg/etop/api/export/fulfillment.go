@@ -1,17 +1,17 @@
 package export
 
 import (
+	"context"
 	"database/sql"
 	"encoding/csv"
 	"etop.vn/backend/com/main/shipping/modely"
-	"etop.vn/backend/pkg/common/sq/core"
-	cm "etop.vn/backend/pkg/common"
-	"strconv"
-	"time"
-	"context"
-	"io"
 	pbcm "etop.vn/backend/pb/common"
 	pbshop "etop.vn/backend/pb/etop/shop"
+	cm "etop.vn/backend/pkg/common"
+	"etop.vn/backend/pkg/common/sq/core"
+	"io"
+	"strconv"
+	"time"
 )
 
 const exportFulfillmentLines = false
@@ -296,4 +296,3 @@ func buildTableFulfillment(csvWriter *csv.Writer,
 	}
 	return w.WriteHeader()
 }
-

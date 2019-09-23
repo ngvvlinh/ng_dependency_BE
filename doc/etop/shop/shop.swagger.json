@@ -510,6 +510,136 @@
         ]
       }
     },
+    "/api/shop.Category/CreateCategory": {
+      "post": {
+        "operationId": "CreateCategory",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/shopShopCategory"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/shopCreateCategoryRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Category"
+        ]
+      }
+    },
+    "/api/shop.Category/DeleteCategory": {
+      "post": {
+        "operationId": "DeleteCategory",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/cmDeletedResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/cmIDRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Category"
+        ]
+      }
+    },
+    "/api/shop.Category/GetCategories": {
+      "post": {
+        "operationId": "GetCategories",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/shopShopCategoriesResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/shopGetCategoriesRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Category"
+        ]
+      }
+    },
+    "/api/shop.Category/GetCategory": {
+      "post": {
+        "operationId": "GetCategory",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/shopShopCategory"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/cmIDRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Category"
+        ]
+      }
+    },
+    "/api/shop.Category/UpdateCategory": {
+      "post": {
+        "operationId": "UpdateCategory",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/shopShopCategory"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/shopUpdateCategoryRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Category"
+        ]
+      }
+    },
     "/api/shop.Collection/CreateCollection": {
       "post": {
         "operationId": "CreateCollection",
@@ -517,7 +647,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/shopCollection"
+              "$ref": "#/definitions/shopShopCollection"
             }
           }
         },
@@ -536,32 +666,6 @@
         ]
       }
     },
-    "/api/shop.Collection/DeleteCollection": {
-      "post": {
-        "operationId": "DeleteCollection",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/cmRemovedResponse"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/cmIDRequest"
-            }
-          }
-        ],
-        "tags": [
-          "Collection"
-        ]
-      }
-    },
     "/api/shop.Collection/GetCollection": {
       "post": {
         "operationId": "GetCollection",
@@ -569,7 +673,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/shopCollection"
+              "$ref": "#/definitions/shopShopCollection"
             }
           }
         },
@@ -595,7 +699,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/shopCollectionsResponse"
+              "$ref": "#/definitions/shopShopCollectionsResponse"
             }
           }
         },
@@ -605,7 +709,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/cmEmpty"
+              "$ref": "#/definitions/shopGetCollectionsRequest"
             }
           }
         ],
@@ -614,9 +718,9 @@
         ]
       }
     },
-    "/api/shop.Collection/GetCollectionsByIDs": {
+    "/api/shop.Collection/GetCollectionsByProductID": {
       "post": {
-        "operationId": "GetCollectionsByIDs",
+        "operationId": "GetCollectionsByProductID",
         "responses": {
           "200": {
             "description": "A successful response.",
@@ -631,33 +735,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/cmIDsRequest"
-            }
-          }
-        ],
-        "tags": [
-          "Collection"
-        ]
-      }
-    },
-    "/api/shop.Collection/RemoveProductsCollection": {
-      "post": {
-        "operationId": "RemoveProductsCollection",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/cmUpdatedResponse"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/shopRemoveProductsCollectionRequest"
+              "$ref": "#/definitions/shopGetShopCollectionsByProductIDRequest"
             }
           }
         ],
@@ -673,7 +751,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/shopCollection"
+              "$ref": "#/definitions/shopShopCollection"
             }
           }
         },
@@ -684,32 +762,6 @@
             "required": true,
             "schema": {
               "$ref": "#/definitions/shopUpdateCollectionRequest"
-            }
-          }
-        ],
-        "tags": [
-          "Collection"
-        ]
-      }
-    },
-    "/api/shop.Collection/UpdateProductsCollection": {
-      "post": {
-        "operationId": "UpdateProductsCollection",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/shopUpdateProductsCollectionResponse"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/shopUpdateProductsCollectionRequest"
             }
           }
         ],
@@ -1994,6 +2046,33 @@
         ]
       }
     },
+    "/api/shop.Product/AddProductCollection": {
+      "post": {
+        "summary": "-- collection --//",
+        "operationId": "AddProductCollection",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/cmUpdatedResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/shopAddShopProductCollectionRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Product"
+        ]
+      }
+    },
     "/api/shop.Product/AddProducts": {
       "post": {
         "summary": "deprecated",
@@ -2204,6 +2283,32 @@
         ]
       }
     },
+    "/api/shop.Product/RemoveProductCollection": {
+      "post": {
+        "operationId": "RemoveProductCollection",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/cmRemovedResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/shopRemoveShopProductCollectionRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Product"
+        ]
+      }
+    },
     "/api/shop.Product/RemoveProducts": {
       "post": {
         "operationId": "RemoveProducts",
@@ -2274,6 +2379,33 @@
             "required": true,
             "schema": {
               "$ref": "#/definitions/shopUpdateProductRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Product"
+        ]
+      }
+    },
+    "/api/shop.Product/UpdateProductCategory": {
+      "post": {
+        "summary": "-- category --//",
+        "operationId": "UpdateProductCategory",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/shopShopProduct"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/shopUpdateProductCategoryRequest"
             }
           }
         ],
@@ -6441,6 +6573,22 @@
         }
       }
     },
+    "shopAddShopProductCollectionRequest": {
+      "type": "object",
+      "properties": {
+        "product_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "collection_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          }
+        }
+      }
+    },
     "shopAttribute": {
       "type": "object",
       "properties": {
@@ -6572,48 +6720,13 @@
         }
       }
     },
-    "shopCollection": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "string",
-          "format": "int64"
-        },
-        "name": {
-          "type": "string"
-        },
-        "description": {
-          "type": "string"
-        },
-        "short_desc": {
-          "type": "string"
-        },
-        "desc_html": {
-          "type": "string"
-        },
-        "created_at": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "updated_at": {
-          "type": "string",
-          "format": "date-time"
-        }
-      },
-      "required": [
-        "id",
-        "name",
-        "created_at",
-        "updated_at"
-      ]
-    },
     "shopCollectionsResponse": {
       "type": "object",
       "properties": {
         "collections": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/shopCollection"
+            "$ref": "#/definitions/shopShopCollection"
           }
         }
       }
@@ -6626,6 +6739,18 @@
         },
         "note": {
           "type": "string"
+        }
+      }
+    },
+    "shopCreateCategoryRequest": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "parent_id": {
+          "type": "string",
+          "format": "int64"
         }
       }
     },
@@ -6786,6 +6911,10 @@
           "items": {
             "type": "string"
           }
+        },
+        "vendor_id": {
+          "type": "string",
+          "format": "int64"
         },
         "cost_price": {
           "type": "integer",
@@ -7439,6 +7568,34 @@
         }
       }
     },
+    "shopGetCategoriesRequest": {
+      "type": "object",
+      "properties": {
+        "paging": {
+          "$ref": "#/definitions/cmPaging"
+        },
+        "filters": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/cmFilter"
+          }
+        }
+      }
+    },
+    "shopGetCollectionsRequest": {
+      "type": "object",
+      "properties": {
+        "paging": {
+          "$ref": "#/definitions/cmPaging"
+        },
+        "filters": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/cmFilter"
+          }
+        }
+      }
+    },
     "shopGetCustomerAddressesRequest": {
       "type": "object",
       "properties": {
@@ -7586,6 +7743,15 @@
           "items": {
             "$ref": "#/definitions/cmFilter"
           }
+        }
+      }
+    },
+    "shopGetShopCollectionsByProductIDRequest": {
+      "type": "object",
+      "properties": {
+        "product_id": {
+          "type": "string",
+          "format": "int64"
         }
       }
     },
@@ -7944,24 +8110,21 @@
         "shop"
       ]
     },
-    "shopRemoveProductsCollectionRequest": {
+    "shopRemoveShopProductCollectionRequest": {
       "type": "object",
       "properties": {
-        "collection_id": {
+        "product_id": {
           "type": "string",
           "format": "int64"
         },
-        "product_ids": {
+        "collection_ids": {
           "type": "array",
           "items": {
             "type": "string",
             "format": "int64"
           }
         }
-      },
-      "required": [
-        "collection_id"
-      ]
+      }
     },
     "shopRemoveVariantsRequest": {
       "type": "object",
@@ -8044,6 +8207,83 @@
         }
       }
     },
+    "shopShopCategoriesResponse": {
+      "type": "object",
+      "properties": {
+        "paging": {
+          "$ref": "#/definitions/cmPageInfo"
+        },
+        "categories": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/shopShopCategory"
+          }
+        }
+      }
+    },
+    "shopShopCategory": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "name": {
+          "type": "string"
+        },
+        "parent_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "shop_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "status": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "shopShopCollection": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "shop_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "desc_html": {
+          "type": "string"
+        },
+        "short_desc": {
+          "type": "string"
+        }
+      }
+    },
+    "shopShopCollectionsResponse": {
+      "type": "object",
+      "properties": {
+        "paging": {
+          "$ref": "#/definitions/cmPageInfo"
+        },
+        "collections": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/shopShopCollection"
+          }
+        }
+      }
+    },
     "shopShopProduct": {
       "type": "object",
       "properties": {
@@ -8078,6 +8318,14 @@
           "items": {
             "type": "string"
           }
+        },
+        "category_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "vendor_id": {
+          "type": "string",
+          "format": "int64"
         },
         "tags": {
           "type": "array",
@@ -8401,6 +8649,22 @@
         }
       }
     },
+    "shopUpdateCategoryRequest": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "name": {
+          "type": "string"
+        },
+        "parent_id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
     "shopUpdateCollectionRequest": {
       "type": "object",
       "properties": {
@@ -8561,10 +8825,27 @@
         "confirm"
       ]
     },
+    "shopUpdateProductCategoryRequest": {
+      "type": "object",
+      "properties": {
+        "product_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "category_id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
     "shopUpdateProductRequest": {
       "type": "object",
       "properties": {
         "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "vendor_id": {
           "type": "string",
           "format": "int64"
         },
@@ -8646,40 +8927,6 @@
         "updated": {
           "type": "integer",
           "format": "int32"
-        }
-      }
-    },
-    "shopUpdateProductsCollectionRequest": {
-      "type": "object",
-      "properties": {
-        "collection_id": {
-          "type": "string",
-          "format": "int64"
-        },
-        "product_ids": {
-          "type": "array",
-          "items": {
-            "type": "string",
-            "format": "int64"
-          }
-        }
-      },
-      "required": [
-        "collection_id"
-      ]
-    },
-    "shopUpdateProductsCollectionResponse": {
-      "type": "object",
-      "properties": {
-        "updated": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "errors": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/cmError"
-          }
         }
       }
     },
@@ -9113,6 +9360,9 @@
     },
     {
       "name": "Carrier"
+    },
+    {
+      "name": "Category"
     },
     {
       "name": "Collection"

@@ -162,7 +162,13 @@ func UpdateShop(ctx context.Context, cmd *model.UpdateShopCommand) error {
 			ShouldUpdate(shop); err != nil {
 			return err
 		}
-
+		if cmd.AutoCreateFFM != nil {
+			if err := x.Table("shop").Where("id= ?", shop.ID).ShouldUpdateMap(map[string]interface{}{
+				"auto_create_ffm": cmd.AutoCreateFFM,
+			}); err != nil {
+				return err
+			}
+		}
 		cmd.Result = new(model.ShopExtended)
 		if has, err := x.
 			Table("shop").

@@ -16,7 +16,13 @@ import (
 Custom conversions:
     Attribute                  // not use, no conversions between params
     AttributeDB                // not use, no conversions between params
+    ShopCategory               // in use
+    ShopCategoryDB             // in use
+    ShopCollection             // in use
+    ShopCollectionDB           // in use
+    ShopProducCollection       // in use
     ShopProduct                // in use
+    ShopProductCollectionDB    // in use
     ShopProductDB              // in use
     ShopProductUpdate          // not use, no conversions between params
     ShopProductWithVariants    // not use, no conversions between params
@@ -25,14 +31,20 @@ Custom conversions:
     ShopVariantWithProduct     // not use, no conversions between params
 
 Ignored functions:
-    Attributes                  // params are not pointer to named types
-    AttributesDB                // params are not pointer to named types
-    ShopProducts                // params are not pointer to named types
-    ShopProductsWithVariants    // params are not pointer to named types
-    ShopVariants                // params are not pointer to named types
-    ShopVariantsWithProduct     // params are not pointer to named types
-    UpdateShopProduct           // not recognized
-    UpdateShopVariant           // not recognized
+    Attributes                   // params are not pointer to named types
+    AttributesDB                 // params are not pointer to named types
+    ShopCategories               // params are not pointer to named types
+    ShopCollections              // params are not pointer to named types
+    ShopProductCollections       // params are not pointer to named types
+    ShopProducts                 // params are not pointer to named types
+    ShopProductsWithVariants     // params are not pointer to named types
+    ShopVariants                 // params are not pointer to named types
+    ShopVariantsWithProduct      // params are not pointer to named types
+    UpdateShopCategory           // not recognized
+    UpdateShopCollection         // not recognized
+    UpdateShopProduct            // not recognized
+    UpdateShopProductCategory    // not recognized
+    UpdateShopVariant            // not recognized
 */
 
 func init() {
@@ -58,6 +70,42 @@ func registerConversionFunctions(s *scheme.Scheme) {
 		*out.(*[]*catalogmodel.ProductAttribute) = out0
 		return nil
 	})
+	s.Register((*catalogmodel.ShopCategory)(nil), (*catalog.ShopCategory)(nil), func(arg, out interface{}) error {
+		Convert_catalogmodel_ShopCategory_catalog_ShopCategory(arg.(*catalogmodel.ShopCategory), out.(*catalog.ShopCategory))
+		return nil
+	})
+	s.Register(([]*catalogmodel.ShopCategory)(nil), (*[]*catalog.ShopCategory)(nil), func(arg, out interface{}) error {
+		out0 := Convert_catalogmodel_ShopCategories_catalog_ShopCategories(arg.([]*catalogmodel.ShopCategory))
+		*out.(*[]*catalog.ShopCategory) = out0
+		return nil
+	})
+	s.Register((*catalog.ShopCategory)(nil), (*catalogmodel.ShopCategory)(nil), func(arg, out interface{}) error {
+		Convert_catalog_ShopCategory_catalogmodel_ShopCategory(arg.(*catalog.ShopCategory), out.(*catalogmodel.ShopCategory))
+		return nil
+	})
+	s.Register(([]*catalog.ShopCategory)(nil), (*[]*catalogmodel.ShopCategory)(nil), func(arg, out interface{}) error {
+		out0 := Convert_catalog_ShopCategories_catalogmodel_ShopCategories(arg.([]*catalog.ShopCategory))
+		*out.(*[]*catalogmodel.ShopCategory) = out0
+		return nil
+	})
+	s.Register((*catalogmodel.ShopCollection)(nil), (*catalog.ShopCollection)(nil), func(arg, out interface{}) error {
+		Convert_catalogmodel_ShopCollection_catalog_ShopCollection(arg.(*catalogmodel.ShopCollection), out.(*catalog.ShopCollection))
+		return nil
+	})
+	s.Register(([]*catalogmodel.ShopCollection)(nil), (*[]*catalog.ShopCollection)(nil), func(arg, out interface{}) error {
+		out0 := Convert_catalogmodel_ShopCollections_catalog_ShopCollections(arg.([]*catalogmodel.ShopCollection))
+		*out.(*[]*catalog.ShopCollection) = out0
+		return nil
+	})
+	s.Register((*catalog.ShopCollection)(nil), (*catalogmodel.ShopCollection)(nil), func(arg, out interface{}) error {
+		Convert_catalog_ShopCollection_catalogmodel_ShopCollection(arg.(*catalog.ShopCollection), out.(*catalogmodel.ShopCollection))
+		return nil
+	})
+	s.Register(([]*catalog.ShopCollection)(nil), (*[]*catalogmodel.ShopCollection)(nil), func(arg, out interface{}) error {
+		out0 := Convert_catalog_ShopCollections_catalogmodel_ShopCollections(arg.([]*catalog.ShopCollection))
+		*out.(*[]*catalogmodel.ShopCollection) = out0
+		return nil
+	})
 	s.Register((*catalogmodel.ShopProduct)(nil), (*catalog.ShopProduct)(nil), func(arg, out interface{}) error {
 		Convert_catalogmodel_ShopProduct_catalog_ShopProduct(arg.(*catalogmodel.ShopProduct), out.(*catalog.ShopProduct))
 		return nil
@@ -74,6 +122,24 @@ func registerConversionFunctions(s *scheme.Scheme) {
 	s.Register(([]*catalog.ShopProduct)(nil), (*[]*catalogmodel.ShopProduct)(nil), func(arg, out interface{}) error {
 		out0 := Convert_catalog_ShopProducts_catalogmodel_ShopProducts(arg.([]*catalog.ShopProduct))
 		*out.(*[]*catalogmodel.ShopProduct) = out0
+		return nil
+	})
+	s.Register((*catalogmodel.ShopProductCollection)(nil), (*catalog.ShopProductCollection)(nil), func(arg, out interface{}) error {
+		Convert_catalogmodel_ShopProductCollection_catalog_ShopProductCollection(arg.(*catalogmodel.ShopProductCollection), out.(*catalog.ShopProductCollection))
+		return nil
+	})
+	s.Register(([]*catalogmodel.ShopProductCollection)(nil), (*[]*catalog.ShopProductCollection)(nil), func(arg, out interface{}) error {
+		out0 := Convert_catalogmodel_ShopProductCollections_catalog_ShopProductCollections(arg.([]*catalogmodel.ShopProductCollection))
+		*out.(*[]*catalog.ShopProductCollection) = out0
+		return nil
+	})
+	s.Register((*catalog.ShopProductCollection)(nil), (*catalogmodel.ShopProductCollection)(nil), func(arg, out interface{}) error {
+		Convert_catalog_ShopProductCollection_catalogmodel_ShopProductCollection(arg.(*catalog.ShopProductCollection), out.(*catalogmodel.ShopProductCollection))
+		return nil
+	})
+	s.Register(([]*catalog.ShopProductCollection)(nil), (*[]*catalogmodel.ShopProductCollection)(nil), func(arg, out interface{}) error {
+		out0 := Convert_catalog_ShopProductCollections_catalogmodel_ShopProductCollections(arg.([]*catalog.ShopProductCollection))
+		*out.(*[]*catalogmodel.ShopProductCollection) = out0
 		return nil
 	})
 	s.Register((*catalogmodel.ShopVariant)(nil), (*catalog.ShopVariant)(nil), func(arg, out interface{}) error {
@@ -141,6 +207,134 @@ func Convert_catalogtypes_Attributes_catalogmodel_ProductAttributes(args []*cata
 	return outs
 }
 
+//-- convert etop.vn/api/main/catalog.ShopCategory --//
+
+func Convert_catalogmodel_ShopCategory_catalog_ShopCategory(arg *catalogmodel.ShopCategory, out *catalog.ShopCategory) *catalog.ShopCategory {
+	if arg == nil {
+		return nil
+	}
+	if out == nil {
+		out = &catalog.ShopCategory{}
+	}
+	ShopCategory(arg, out)
+	return out
+}
+
+func convert_catalogmodel_ShopCategory_catalog_ShopCategory(arg *catalogmodel.ShopCategory, out *catalog.ShopCategory) {
+	out.ID = arg.ID               // simple assign
+	out.ParentID = arg.ParentID   // simple assign
+	out.ShopID = arg.ShopID       // simple assign
+	out.Name = arg.Name           // simple assign
+	out.Status = arg.Status       // simple assign
+	out.CreatedAt = arg.CreatedAt // simple assign
+	out.UpdatedAt = arg.UpdatedAt // simple assign
+	out.DeletedAt = arg.DeletedAt // simple assign
+}
+
+func Convert_catalogmodel_ShopCategories_catalog_ShopCategories(args []*catalogmodel.ShopCategory) (outs []*catalog.ShopCategory) {
+	tmps := make([]catalog.ShopCategory, len(args))
+	outs = make([]*catalog.ShopCategory, len(args))
+	for i := range tmps {
+		outs[i] = Convert_catalogmodel_ShopCategory_catalog_ShopCategory(args[i], &tmps[i])
+	}
+	return outs
+}
+
+func Convert_catalog_ShopCategory_catalogmodel_ShopCategory(arg *catalog.ShopCategory, out *catalogmodel.ShopCategory) *catalogmodel.ShopCategory {
+	if arg == nil {
+		return nil
+	}
+	if out == nil {
+		out = &catalogmodel.ShopCategory{}
+	}
+	ShopCategoryDB(arg, out)
+	return out
+}
+
+func convert_catalog_ShopCategory_catalogmodel_ShopCategory(arg *catalog.ShopCategory, out *catalogmodel.ShopCategory) {
+	out.ID = arg.ID               // simple assign
+	out.ParentID = arg.ParentID   // simple assign
+	out.ShopID = arg.ShopID       // simple assign
+	out.Name = arg.Name           // simple assign
+	out.Status = arg.Status       // simple assign
+	out.CreatedAt = arg.CreatedAt // simple assign
+	out.UpdatedAt = arg.UpdatedAt // simple assign
+	out.DeletedAt = arg.DeletedAt // simple assign
+}
+
+func Convert_catalog_ShopCategories_catalogmodel_ShopCategories(args []*catalog.ShopCategory) (outs []*catalogmodel.ShopCategory) {
+	tmps := make([]catalogmodel.ShopCategory, len(args))
+	outs = make([]*catalogmodel.ShopCategory, len(args))
+	for i := range tmps {
+		outs[i] = Convert_catalog_ShopCategory_catalogmodel_ShopCategory(args[i], &tmps[i])
+	}
+	return outs
+}
+
+//-- convert etop.vn/api/main/catalog.ShopCollection --//
+
+func Convert_catalogmodel_ShopCollection_catalog_ShopCollection(arg *catalogmodel.ShopCollection, out *catalog.ShopCollection) *catalog.ShopCollection {
+	if arg == nil {
+		return nil
+	}
+	if out == nil {
+		out = &catalog.ShopCollection{}
+	}
+	ShopCollection(arg, out)
+	return out
+}
+
+func convert_catalogmodel_ShopCollection_catalog_ShopCollection(arg *catalogmodel.ShopCollection, out *catalog.ShopCollection) {
+	out.ID = arg.ID                   // simple assign
+	out.ShopID = arg.ShopID           // simple assign
+	out.Name = arg.Name               // simple assign
+	out.Description = arg.Description // simple assign
+	out.DescHTML = arg.DescHTML       // simple assign
+	out.ShortDesc = arg.ShortDesc     // simple assign
+	out.CreatedAt = arg.CreatedAt     // simple assign
+	out.UpdatedAt = arg.UpdatedAt     // simple assign
+}
+
+func Convert_catalogmodel_ShopCollections_catalog_ShopCollections(args []*catalogmodel.ShopCollection) (outs []*catalog.ShopCollection) {
+	tmps := make([]catalog.ShopCollection, len(args))
+	outs = make([]*catalog.ShopCollection, len(args))
+	for i := range tmps {
+		outs[i] = Convert_catalogmodel_ShopCollection_catalog_ShopCollection(args[i], &tmps[i])
+	}
+	return outs
+}
+
+func Convert_catalog_ShopCollection_catalogmodel_ShopCollection(arg *catalog.ShopCollection, out *catalogmodel.ShopCollection) *catalogmodel.ShopCollection {
+	if arg == nil {
+		return nil
+	}
+	if out == nil {
+		out = &catalogmodel.ShopCollection{}
+	}
+	ShopCollectionDB(arg, out)
+	return out
+}
+
+func convert_catalog_ShopCollection_catalogmodel_ShopCollection(arg *catalog.ShopCollection, out *catalogmodel.ShopCollection) {
+	out.ID = arg.ID                   // simple assign
+	out.ShopID = arg.ShopID           // simple assign
+	out.Name = arg.Name               // simple assign
+	out.Description = arg.Description // simple assign
+	out.DescHTML = arg.DescHTML       // simple assign
+	out.ShortDesc = arg.ShortDesc     // simple assign
+	out.CreatedAt = arg.CreatedAt     // simple assign
+	out.UpdatedAt = arg.UpdatedAt     // simple assign
+}
+
+func Convert_catalog_ShopCollections_catalogmodel_ShopCollections(args []*catalog.ShopCollection) (outs []*catalogmodel.ShopCollection) {
+	tmps := make([]catalogmodel.ShopCollection, len(args))
+	outs = make([]*catalogmodel.ShopCollection, len(args))
+	for i := range tmps {
+		outs[i] = Convert_catalog_ShopCollection_catalogmodel_ShopCollection(args[i], &tmps[i])
+	}
+	return outs
+}
+
 //-- convert etop.vn/api/main/catalog.ShopProduct --//
 
 func Convert_catalogmodel_ShopProduct_catalog_ShopProduct(arg *catalogmodel.ShopProduct, out *catalog.ShopProduct) *catalog.ShopProduct {
@@ -158,6 +352,7 @@ func convert_catalogmodel_ShopProduct_catalog_ShopProduct(arg *catalogmodel.Shop
 	out.DescriptionInfo = catalog.DescriptionInfo{} // zero value
 	out.PriceInfo = catalog.PriceInfo{}             // zero value
 	out.CategoryID = arg.CategoryID                 // simple assign
+	out.VendorID = arg.VendorID                     // simple assign
 	out.CollectionIDs = arg.CollectionIDs           // simple assign
 	out.Tags = arg.Tags                             // simple assign
 	out.Status = int32(arg.Status)                  // simple conversion
@@ -194,6 +389,7 @@ func convert_catalog_ShopProduct_catalogmodel_ShopProduct(arg *catalog.ShopProdu
 	out.Tags = arg.Tags                        // simple assign
 	out.Unit = arg.Unit                        // simple assign
 	out.CategoryID = arg.CategoryID            // simple assign
+	out.VendorID = arg.VendorID                // simple assign
 	out.CostPrice = 0                          // zero value
 	out.ListPrice = 0                          // zero value
 	out.RetailPrice = 0                        // zero value
@@ -211,6 +407,66 @@ func Convert_catalog_ShopProducts_catalogmodel_ShopProducts(args []*catalog.Shop
 	outs = make([]*catalogmodel.ShopProduct, len(args))
 	for i := range tmps {
 		outs[i] = Convert_catalog_ShopProduct_catalogmodel_ShopProduct(args[i], &tmps[i])
+	}
+	return outs
+}
+
+//-- convert etop.vn/api/main/catalog.ShopProductCollection --//
+
+func Convert_catalogmodel_ShopProductCollection_catalog_ShopProductCollection(arg *catalogmodel.ShopProductCollection, out *catalog.ShopProductCollection) *catalog.ShopProductCollection {
+	if arg == nil {
+		return nil
+	}
+	if out == nil {
+		out = &catalog.ShopProductCollection{}
+	}
+	ShopProducCollection(arg, out)
+	return out
+}
+
+func convert_catalogmodel_ShopProductCollection_catalog_ShopProductCollection(arg *catalogmodel.ShopProductCollection, out *catalog.ShopProductCollection) {
+	out.ProductID = arg.ProductID       // simple assign
+	out.CollectionID = arg.CollectionID // simple assign
+	out.ShopID = arg.ShopID             // simple assign
+	out.CreatedAt = arg.CreatedAt       // simple assign
+	out.UpdatedAt = arg.UpdatedAt       // simple assign
+	out.DeletedAt = arg.DeletedAt       // simple assign
+}
+
+func Convert_catalogmodel_ShopProductCollections_catalog_ShopProductCollections(args []*catalogmodel.ShopProductCollection) (outs []*catalog.ShopProductCollection) {
+	tmps := make([]catalog.ShopProductCollection, len(args))
+	outs = make([]*catalog.ShopProductCollection, len(args))
+	for i := range tmps {
+		outs[i] = Convert_catalogmodel_ShopProductCollection_catalog_ShopProductCollection(args[i], &tmps[i])
+	}
+	return outs
+}
+
+func Convert_catalog_ShopProductCollection_catalogmodel_ShopProductCollection(arg *catalog.ShopProductCollection, out *catalogmodel.ShopProductCollection) *catalogmodel.ShopProductCollection {
+	if arg == nil {
+		return nil
+	}
+	if out == nil {
+		out = &catalogmodel.ShopProductCollection{}
+	}
+	ShopProductCollectionDB(arg, out)
+	return out
+}
+
+func convert_catalog_ShopProductCollection_catalogmodel_ShopProductCollection(arg *catalog.ShopProductCollection, out *catalogmodel.ShopProductCollection) {
+	out.ProductID = arg.ProductID       // simple assign
+	out.CollectionID = arg.CollectionID // simple assign
+	out.ShopID = arg.ShopID             // simple assign
+	out.CreatedAt = arg.CreatedAt       // simple assign
+	out.UpdatedAt = arg.UpdatedAt       // simple assign
+	out.DeletedAt = arg.DeletedAt       // simple assign
+}
+
+func Convert_catalog_ShopProductCollections_catalogmodel_ShopProductCollections(args []*catalog.ShopProductCollection) (outs []*catalogmodel.ShopProductCollection) {
+	tmps := make([]catalogmodel.ShopProductCollection, len(args))
+	outs = make([]*catalogmodel.ShopProductCollection, len(args))
+	for i := range tmps {
+		outs[i] = Convert_catalog_ShopProductCollection_catalogmodel_ShopProductCollection(args[i], &tmps[i])
 	}
 	return outs
 }

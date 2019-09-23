@@ -42,8 +42,53 @@ func (c QueryBus) DispatchAll(ctx context.Context, msgs ...Query) error {
 	return nil
 }
 
+type AddShopProductCollectionCommand struct {
+	ProductID     int64
+	ShopID        int64
+	CollectionIDs []int64
+
+	Result int `json:"-"`
+}
+
+func (h AggregateHandler) HandleAddShopProductCollection(ctx context.Context, msg *AddShopProductCollectionCommand) (err error) {
+	msg.Result, err = h.inner.AddShopProductCollection(msg.GetArgs(ctx))
+	return err
+}
+
+type CreateShopCategoryCommand struct {
+	ID       int64
+	ShopID   int64
+	ParentID int64
+	Name     string
+	Status   int
+
+	Result *ShopCategory `json:"-"`
+}
+
+func (h AggregateHandler) HandleCreateShopCategory(ctx context.Context, msg *CreateShopCategoryCommand) (err error) {
+	msg.Result, err = h.inner.CreateShopCategory(msg.GetArgs(ctx))
+	return err
+}
+
+type CreateShopCollectionCommand struct {
+	ID          int64
+	ShopID      int64
+	Name        string
+	Description string
+	DescHTML    string
+	ShortDesc   string
+
+	Result *ShopCollection `json:"-"`
+}
+
+func (h AggregateHandler) HandleCreateShopCollection(ctx context.Context, msg *CreateShopCollectionCommand) (err error) {
+	msg.Result, err = h.inner.CreateShopCollection(msg.GetArgs(ctx))
+	return err
+}
+
 type CreateShopProductCommand struct {
 	ShopID          int64
+	VendorID        int64
 	Code            string
 	Name            string
 	Unit            string
@@ -80,6 +125,18 @@ func (h AggregateHandler) HandleCreateShopVariant(ctx context.Context, msg *Crea
 	return err
 }
 
+type DeleteShopCategoryCommand struct {
+	ID     int64
+	ShopID int64
+
+	Result int `json:"-"`
+}
+
+func (h AggregateHandler) HandleDeleteShopCategory(ctx context.Context, msg *DeleteShopCategoryCommand) (err error) {
+	msg.Result, err = h.inner.DeleteShopCategory(msg.GetArgs(ctx))
+	return err
+}
+
 type DeleteShopProductsCommand struct {
 	IDs    []int64
 	ShopID int64
@@ -101,6 +158,62 @@ type DeleteShopVariantsCommand struct {
 
 func (h AggregateHandler) HandleDeleteShopVariants(ctx context.Context, msg *DeleteShopVariantsCommand) (err error) {
 	msg.Result, err = h.inner.DeleteShopVariants(msg.GetArgs(ctx))
+	return err
+}
+
+type RemoveShopProductCollectionCommand struct {
+	ProductID     int64
+	ShopID        int64
+	CollectionIDs []int64
+
+	Result int `json:"-"`
+}
+
+func (h AggregateHandler) HandleRemoveShopProductCollection(ctx context.Context, msg *RemoveShopProductCollectionCommand) (err error) {
+	msg.Result, err = h.inner.RemoveShopProductCollection(msg.GetArgs(ctx))
+	return err
+}
+
+type UpdateShopCategoryCommand struct {
+	ID       int64
+	Name     dot.NullString
+	ShopID   int64
+	ParentID int64
+
+	Result *ShopCategory `json:"-"`
+}
+
+func (h AggregateHandler) HandleUpdateShopCategory(ctx context.Context, msg *UpdateShopCategoryCommand) (err error) {
+	msg.Result, err = h.inner.UpdateShopCategory(msg.GetArgs(ctx))
+	return err
+}
+
+type UpdateShopCollectionCommand struct {
+	ID          int64
+	ShopID      int64
+	Name        dot.NullString
+	Description dot.NullString
+	DescHTML    dot.NullString
+	ShortDesc   dot.NullString
+
+	Result *ShopCollection `json:"-"`
+}
+
+func (h AggregateHandler) HandleUpdateShopCollection(ctx context.Context, msg *UpdateShopCollectionCommand) (err error) {
+	msg.Result, err = h.inner.UpdateShopCollection(msg.GetArgs(ctx))
+	return err
+}
+
+type UpdateShopProductCategoryCommand struct {
+	CategoryID int64
+	ShopID     int64
+	ProductID  int64
+
+	Result *ShopProductWithVariants `json:"-"`
+}
+
+func (h AggregateHandler) HandleUpdateShopProductCategory(ctx context.Context, msg *UpdateShopProductCategoryCommand) (err error) {
+	msg.Result, err = h.inner.UpdateShopProductCategory(msg.GetArgs(ctx))
 	return err
 }
 
@@ -131,6 +244,8 @@ type UpdateShopProductInfoCommand struct {
 	ListPrice   dot.NullInt32
 	RetailPrice dot.NullInt32
 	ProductType string
+	CategoryID  int64
+	VendorID    int64
 
 	Result *ShopProductWithVariants `json:"-"`
 }
@@ -213,6 +328,30 @@ func (h AggregateHandler) HandleUpdateShopVariantStatus(ctx context.Context, msg
 	return err
 }
 
+type GetShopCategoryQuery struct {
+	ID     int64
+	ShopID int64
+
+	Result *ShopCategory `json:"-"`
+}
+
+func (h QueryServiceHandler) HandleGetShopCategory(ctx context.Context, msg *GetShopCategoryQuery) (err error) {
+	msg.Result, err = h.inner.GetShopCategory(msg.GetArgs(ctx))
+	return err
+}
+
+type GetShopCollectionQuery struct {
+	ID     int64
+	ShopID int64
+
+	Result *ShopCollection `json:"-"`
+}
+
+func (h QueryServiceHandler) HandleGetShopCollection(ctx context.Context, msg *GetShopCollectionQuery) (err error) {
+	msg.Result, err = h.inner.GetShopCollection(msg.GetArgs(ctx))
+	return err
+}
+
 type GetShopProductByIDQuery struct {
 	ProductID int64
 	ShopID    int64
@@ -258,6 +397,44 @@ type GetShopVariantWithProductByIDQuery struct {
 
 func (h QueryServiceHandler) HandleGetShopVariantWithProductByID(ctx context.Context, msg *GetShopVariantWithProductByIDQuery) (err error) {
 	msg.Result, err = h.inner.GetShopVariantWithProductByID(msg.GetArgs(ctx))
+	return err
+}
+
+type ListShopCategoriesQuery struct {
+	ShopID  int64
+	Paging  meta.Paging
+	Filters meta.Filters
+
+	Result *ShopCategoriesResponse `json:"-"`
+}
+
+func (h QueryServiceHandler) HandleListShopCategories(ctx context.Context, msg *ListShopCategoriesQuery) (err error) {
+	msg.Result, err = h.inner.ListShopCategories(msg.GetArgs(ctx))
+	return err
+}
+
+type ListShopCollectionsQuery struct {
+	ShopID  int64
+	Paging  meta.Paging
+	Filters meta.Filters
+
+	Result *ShopCollectionsResponse `json:"-"`
+}
+
+func (h QueryServiceHandler) HandleListShopCollections(ctx context.Context, msg *ListShopCollectionsQuery) (err error) {
+	msg.Result, err = h.inner.ListShopCollections(msg.GetArgs(ctx))
+	return err
+}
+
+type ListShopCollectionsByProductIDQuery struct {
+	ProductID int64
+	ShopID    int64
+
+	Result []*ShopCollection `json:"-"`
+}
+
+func (h QueryServiceHandler) HandleListShopCollectionsByProductID(ctx context.Context, msg *ListShopCollectionsByProductIDQuery) (err error) {
+	msg.Result, err = h.inner.ListShopCollectionsByProductID(msg.GetArgs(ctx))
 	return err
 }
 
@@ -350,10 +527,18 @@ func (h QueryServiceHandler) HandleListShopVariantsWithProductByIDs(ctx context.
 
 // implement interfaces
 
+func (q *AddShopProductCollectionCommand) command()      {}
+func (q *CreateShopCategoryCommand) command()            {}
+func (q *CreateShopCollectionCommand) command()          {}
 func (q *CreateShopProductCommand) command()             {}
 func (q *CreateShopVariantCommand) command()             {}
+func (q *DeleteShopCategoryCommand) command()            {}
 func (q *DeleteShopProductsCommand) command()            {}
 func (q *DeleteShopVariantsCommand) command()            {}
+func (q *RemoveShopProductCollectionCommand) command()   {}
+func (q *UpdateShopCategoryCommand) command()            {}
+func (q *UpdateShopCollectionCommand) command()          {}
+func (q *UpdateShopProductCategoryCommand) command()     {}
 func (q *UpdateShopProductImagesCommand) command()       {}
 func (q *UpdateShopProductInfoCommand) command()         {}
 func (q *UpdateShopProductStatusCommand) command()       {}
@@ -361,10 +546,15 @@ func (q *UpdateShopVariantAttributesCommand) command()   {}
 func (q *UpdateShopVariantImagesCommand) command()       {}
 func (q *UpdateShopVariantInfoCommand) command()         {}
 func (q *UpdateShopVariantStatusCommand) command()       {}
+func (q *GetShopCategoryQuery) query()                   {}
+func (q *GetShopCollectionQuery) query()                 {}
 func (q *GetShopProductByIDQuery) query()                {}
 func (q *GetShopProductWithVariantsByIDQuery) query()    {}
 func (q *GetShopVariantByIDQuery) query()                {}
 func (q *GetShopVariantWithProductByIDQuery) query()     {}
+func (q *ListShopCategoriesQuery) query()                {}
+func (q *ListShopCollectionsQuery) query()               {}
+func (q *ListShopCollectionsByProductIDQuery) query()    {}
 func (q *ListShopProductsQuery) query()                  {}
 func (q *ListShopProductsByIDsQuery) query()             {}
 func (q *ListShopProductsWithVariantsQuery) query()      {}
@@ -375,10 +565,43 @@ func (q *ListShopVariantsWithProductByIDsQuery) query()  {}
 
 // implement conversion
 
+func (q *AddShopProductCollectionCommand) GetArgs(ctx context.Context) (_ context.Context, _ *AddShopProductCollectionArgs) {
+	return ctx,
+		&AddShopProductCollectionArgs{
+			ProductID:     q.ProductID,
+			ShopID:        q.ShopID,
+			CollectionIDs: q.CollectionIDs,
+		}
+}
+
+func (q *CreateShopCategoryCommand) GetArgs(ctx context.Context) (_ context.Context, _ *CreateShopCategoryArgs) {
+	return ctx,
+		&CreateShopCategoryArgs{
+			ID:       q.ID,
+			ShopID:   q.ShopID,
+			ParentID: q.ParentID,
+			Name:     q.Name,
+			Status:   q.Status,
+		}
+}
+
+func (q *CreateShopCollectionCommand) GetArgs(ctx context.Context) (_ context.Context, _ *CreateShopCollectionArgs) {
+	return ctx,
+		&CreateShopCollectionArgs{
+			ID:          q.ID,
+			ShopID:      q.ShopID,
+			Name:        q.Name,
+			Description: q.Description,
+			DescHTML:    q.DescHTML,
+			ShortDesc:   q.ShortDesc,
+		}
+}
+
 func (q *CreateShopProductCommand) GetArgs(ctx context.Context) (_ context.Context, _ *CreateShopProductArgs) {
 	return ctx,
 		&CreateShopProductArgs{
 			ShopID:          q.ShopID,
+			VendorID:        q.VendorID,
 			Code:            q.Code,
 			Name:            q.Name,
 			Unit:            q.Unit,
@@ -405,6 +628,14 @@ func (q *CreateShopVariantCommand) GetArgs(ctx context.Context) (_ context.Conte
 		}
 }
 
+func (q *DeleteShopCategoryCommand) GetArgs(ctx context.Context) (_ context.Context, _ *DeleteShopCategoryArgs) {
+	return ctx,
+		&DeleteShopCategoryArgs{
+			ID:     q.ID,
+			ShopID: q.ShopID,
+		}
+}
+
 func (q *DeleteShopProductsCommand) GetArgs(ctx context.Context) (_ context.Context, _ *shopping.IDsQueryShopArgs) {
 	return ctx,
 		&shopping.IDsQueryShopArgs{
@@ -418,6 +649,46 @@ func (q *DeleteShopVariantsCommand) GetArgs(ctx context.Context) (_ context.Cont
 		&shopping.IDsQueryShopArgs{
 			IDs:    q.IDs,
 			ShopID: q.ShopID,
+		}
+}
+
+func (q *RemoveShopProductCollectionCommand) GetArgs(ctx context.Context) (_ context.Context, _ *RemoveShopProductColelctionArgs) {
+	return ctx,
+		&RemoveShopProductColelctionArgs{
+			ProductID:     q.ProductID,
+			ShopID:        q.ShopID,
+			CollectionIDs: q.CollectionIDs,
+		}
+}
+
+func (q *UpdateShopCategoryCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateShopCategoryArgs) {
+	return ctx,
+		&UpdateShopCategoryArgs{
+			ID:       q.ID,
+			Name:     q.Name,
+			ShopID:   q.ShopID,
+			ParentID: q.ParentID,
+		}
+}
+
+func (q *UpdateShopCollectionCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateShopCollectionArgs) {
+	return ctx,
+		&UpdateShopCollectionArgs{
+			ID:          q.ID,
+			ShopID:      q.ShopID,
+			Name:        q.Name,
+			Description: q.Description,
+			DescHTML:    q.DescHTML,
+			ShortDesc:   q.ShortDesc,
+		}
+}
+
+func (q *UpdateShopProductCategoryCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateShopProductCategoryArgs) {
+	return ctx,
+		&UpdateShopProductCategoryArgs{
+			CategoryID: q.CategoryID,
+			ShopID:     q.ShopID,
+			ProductID:  q.ProductID,
 		}
 }
 
@@ -446,6 +717,8 @@ func (q *UpdateShopProductInfoCommand) GetArgs(ctx context.Context) (_ context.C
 			ListPrice:   q.ListPrice,
 			RetailPrice: q.RetailPrice,
 			ProductType: q.ProductType,
+			CategoryID:  q.CategoryID,
+			VendorID:    q.VendorID,
 		}
 }
 
@@ -502,6 +775,22 @@ func (q *UpdateShopVariantStatusCommand) GetArgs(ctx context.Context) (_ context
 		}
 }
 
+func (q *GetShopCategoryQuery) GetArgs(ctx context.Context) (_ context.Context, _ *GetShopCategoryArgs) {
+	return ctx,
+		&GetShopCategoryArgs{
+			ID:     q.ID,
+			ShopID: q.ShopID,
+		}
+}
+
+func (q *GetShopCollectionQuery) GetArgs(ctx context.Context) (_ context.Context, _ *GetShopCollectionArgs) {
+	return ctx,
+		&GetShopCollectionArgs{
+			ID:     q.ID,
+			ShopID: q.ShopID,
+		}
+}
+
 func (q *GetShopProductByIDQuery) GetArgs(ctx context.Context) (_ context.Context, _ *GetShopProductByIDQueryArgs) {
 	return ctx,
 		&GetShopProductByIDQueryArgs{
@@ -530,6 +819,32 @@ func (q *GetShopVariantWithProductByIDQuery) GetArgs(ctx context.Context) (_ con
 	return ctx,
 		&GetShopVariantByIDQueryArgs{
 			VariantID: q.VariantID,
+			ShopID:    q.ShopID,
+		}
+}
+
+func (q *ListShopCategoriesQuery) GetArgs(ctx context.Context) (_ context.Context, _ *shopping.ListQueryShopArgs) {
+	return ctx,
+		&shopping.ListQueryShopArgs{
+			ShopID:  q.ShopID,
+			Paging:  q.Paging,
+			Filters: q.Filters,
+		}
+}
+
+func (q *ListShopCollectionsQuery) GetArgs(ctx context.Context) (_ context.Context, _ *shopping.ListQueryShopArgs) {
+	return ctx,
+		&shopping.ListQueryShopArgs{
+			ShopID:  q.ShopID,
+			Paging:  q.Paging,
+			Filters: q.Filters,
+		}
+}
+
+func (q *ListShopCollectionsByProductIDQuery) GetArgs(ctx context.Context) (_ context.Context, _ *ListShopCollectionsByProductIDArgs) {
+	return ctx,
+		&ListShopCollectionsByProductIDArgs{
+			ProductID: q.ProductID,
 			ShopID:    q.ShopID,
 		}
 }
@@ -605,10 +920,18 @@ func (h AggregateHandler) RegisterHandlers(b interface {
 	capi.Bus
 	AddHandler(handler interface{})
 }) CommandBus {
+	b.AddHandler(h.HandleAddShopProductCollection)
+	b.AddHandler(h.HandleCreateShopCategory)
+	b.AddHandler(h.HandleCreateShopCollection)
 	b.AddHandler(h.HandleCreateShopProduct)
 	b.AddHandler(h.HandleCreateShopVariant)
+	b.AddHandler(h.HandleDeleteShopCategory)
 	b.AddHandler(h.HandleDeleteShopProducts)
 	b.AddHandler(h.HandleDeleteShopVariants)
+	b.AddHandler(h.HandleRemoveShopProductCollection)
+	b.AddHandler(h.HandleUpdateShopCategory)
+	b.AddHandler(h.HandleUpdateShopCollection)
+	b.AddHandler(h.HandleUpdateShopProductCategory)
 	b.AddHandler(h.HandleUpdateShopProductImages)
 	b.AddHandler(h.HandleUpdateShopProductInfo)
 	b.AddHandler(h.HandleUpdateShopProductStatus)
@@ -631,10 +954,15 @@ func (h QueryServiceHandler) RegisterHandlers(b interface {
 	capi.Bus
 	AddHandler(handler interface{})
 }) QueryBus {
+	b.AddHandler(h.HandleGetShopCategory)
+	b.AddHandler(h.HandleGetShopCollection)
 	b.AddHandler(h.HandleGetShopProductByID)
 	b.AddHandler(h.HandleGetShopProductWithVariantsByID)
 	b.AddHandler(h.HandleGetShopVariantByID)
 	b.AddHandler(h.HandleGetShopVariantWithProductByID)
+	b.AddHandler(h.HandleListShopCategories)
+	b.AddHandler(h.HandleListShopCollections)
+	b.AddHandler(h.HandleListShopCollectionsByProductID)
 	b.AddHandler(h.HandleListShopProducts)
 	b.AddHandler(h.HandleListShopProductsByIDs)
 	b.AddHandler(h.HandleListShopProductsWithVariants)

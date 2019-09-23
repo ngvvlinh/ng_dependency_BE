@@ -26,8 +26,9 @@ type CreateShopCommand struct {
 }
 
 type UpdateShopCommand struct {
-	Shop   *Shop
-	Result *ShopExtended
+	Shop          *Shop
+	AutoCreateFFM *bool
+	Result        *ShopExtended
 }
 
 type DeleteShopCommand struct {
