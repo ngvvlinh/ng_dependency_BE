@@ -492,6 +492,37 @@ func generateConverts(p generator.Printer, convPair map[pair]*conversionFunc, ap
 		return list[i].name < list[j].name
 	})
 
+	var conversions []map[string]interface{}
+	for _, objName := range list {
+		m := apiObjMap[objName]
+		if len(m.gens) == 0 {
+			continue
+		}
+		for _, g := range m.gens {
+			{
+				arg, out := g.obj, m.src
+				conversion := map[string]interface{}{}
+				includeBaseConversion(p, conversion, g.mode, arg, out)
+				conversions = append(conversions, conversion)
+			}
+			if g.mode == ModeType {
+				arg, out := m.src, g.obj
+				conversion := map[string]interface{}{}
+				includeBaseConversion(p, conversion, g.mode, arg, out)
+				conversions = append(conversions, conversion)
+			}
+		}
+	}
+	{
+		p.Import("scheme", "etop.vn/backend/pkg/common/scheme")
+		vars := map[string]interface{}{
+			"Conversions": conversions,
+		}
+		if err := tplRegister.Execute(p, vars); err != nil {
+			return 0, err
+		}
+	}
+
 	for _, objName := range list {
 		m := apiObjMap[objName]
 		if len(m.gens) == 0 {
@@ -502,11 +533,11 @@ func generateConverts(p generator.Printer, convPair map[pair]*conversionFunc, ap
 			var err error
 			switch g.mode {
 			case ModeType:
-				err = generateConvertType(p, m.src, g.obj)
+				err = generateConvertType(p, g.obj, m.src)
 			case ModeCreate:
-				err = generateCreate(p, m.src, g.obj)
+				err = generateCreate(p, g.obj, m.src)
 			case ModeUpdate:
-				err = generateUpdate(p, m.src, g.obj, g.opts)
+				err = generateUpdate(p, g.obj, m.src, g.opts)
 			default:
 				panic("unexpected")
 			}
@@ -526,11 +557,9 @@ func generateConvertType(p generator.Printer, src, dst generator.Object) error {
 	return generateConvertTypeImpl(p, dst, src)
 }
 
-func generateConvertTypeImpl(p generator.Printer, in, out generator.Object) error {
+func generateConvertTypeImpl(p generator.Printer, in generator.Object, out generator.Object) error {
 	inSt := validateStruct(in.Object)
 	outSt := validateStruct(out.Object)
-	inType := p.TypeString(in.Type())
-	outType := p.TypeString(out.Type())
 	fields := make([]fieldConvert, 0, outSt.NumFields())
 	for i, n := 0, outSt.NumFields(); i < n; i++ {
 		outField := outSt.Field(i)
@@ -541,65 +570,48 @@ func generateConvertTypeImpl(p generator.Printer, in, out generator.Object) erro
 		})
 	}
 	vars := map[string]interface{}{
-		"InStr":                strings.ReplaceAll(inType, ".", "_"),
-		"OutStr":               strings.ReplaceAll(outType, ".", "_"),
-		"InType":               inType,
-		"OutType":              outType,
-		"Fields":               fields,
-		"CustomConversionMode": 0,
+		"Fields": fields,
 	}
-	if conv := convPairs[getPair(in, out)]; conv != nil {
-		vars["CustomConversionMode"] = conv.Mode
-		funcType := conv.Obj.Name()
-		alias := p.Qualifier(conv.Obj.Pkg())
-		if alias != "" {
-			funcType = alias + "." + funcType
-		}
-		vars["CustomConversionFuncType"] = funcType
-	}
+	includeBaseConversion(p, vars, ModeType, in, out)
+	includeCustomConversion(p, vars, in, out)
 	return tplConvertType.Execute(p, vars)
 }
 
-func generateCreate(p generator.Printer, base, arg generator.Object) error {
-	baseSt := validateStruct(base.Object)
+func generateCreate(p generator.Printer, arg generator.Object, out generator.Object) error {
+	outSt := validateStruct(out.Object)
 	argSt := validateStruct(arg.Object)
-	baseType := p.TypeString(base.Type())
-	argType := p.TypeString(arg.Type())
-	fields := make([]fieldConvert, 0, baseSt.NumFields())
-	for i, n := 0, baseSt.NumFields(); i < n; i++ {
-		baseField := baseSt.Field(i)
-		argField := matchField(baseField, argSt)
+	fields := make([]fieldConvert, 0, outSt.NumFields())
+	for i, n := 0, outSt.NumFields(); i < n; i++ {
+		outField := outSt.Field(i)
+		argField := matchField(outField, argSt)
 		fields = append(fields, fieldConvert{
 			Arg: argField,
-			Out: baseField,
+			Out: outField,
 		})
 	}
 	vars := map[string]interface{}{
-		"ArgStr":   strings.ReplaceAll(argType, ".", "_"),
-		"ArgType":  argType,
-		"BaseType": baseType,
-		"Fields":   fields,
+		"Fields": fields,
 	}
+	includeBaseConversion(p, vars, ModeCreate, arg, out)
+	includeCustomConversion(p, vars, arg, out)
 	return tplCreate.Execute(p, vars)
 }
 
-func generateUpdate(p generator.Printer, base, arg generator.Object, opts options) error {
-	baseSt := validateStruct(base.Object)
+func generateUpdate(p generator.Printer, arg generator.Object, out generator.Object, opts options) error {
+	outSt := validateStruct(out.Object)
 	argSt := validateStruct(arg.Object)
-	baseType := p.TypeString(base.Type())
-	argType := p.TypeString(arg.Type())
-	fields := make([]fieldConvert, 0, baseSt.NumFields())
+	fields := make([]fieldConvert, 0, outSt.NumFields())
 	identCount := 0
-	for i, n := 0, baseSt.NumFields(); i < n; i++ {
-		baseField := baseSt.Field(i)
-		argField := matchField(baseField, argSt)
-		isIdentifier := contains(opts.identifiers, baseField.Name())
+	for i, n := 0, outSt.NumFields(); i < n; i++ {
+		outField := outSt.Field(i)
+		argField := matchField(outField, argSt)
+		isIdentifier := contains(opts.identifiers, outField.Name())
 		if isIdentifier {
 			identCount++
 		}
 		fields = append(fields, fieldConvert{
 			Arg: argField,
-			Out: baseField,
+			Out: outField,
 
 			IsIdentifier: isIdentifier,
 		})
@@ -608,12 +620,44 @@ func generateUpdate(p generator.Printer, base, arg generator.Object, opts option
 		return fmt.Errorf("update %v: identifier not found (%v)", arg.Name(), strings.Join(opts.identifiers, ","))
 	}
 	vars := map[string]interface{}{
-		"ArgStr":   strings.ReplaceAll(argType, ".", "_"),
-		"ArgType":  argType,
-		"BaseType": baseType,
-		"Fields":   fields,
+		"Fields": fields,
 	}
+	includeBaseConversion(p, vars, ModeUpdate, arg, out)
+	includeCustomConversion(p, vars, arg, out)
 	return tplUpdate.Execute(p, vars)
+}
+
+func includeBaseConversion(p generator.Printer, vars map[string]interface{}, mode string, arg generator.Object, out generator.Object) {
+	outType := p.TypeString(out.Type())
+	argType := p.TypeString(arg.Type())
+	vars["ArgStr"] = strings.ReplaceAll(argType, ".", "_")
+	vars["OutStr"] = strings.ReplaceAll(outType, ".", "_")
+	vars["ArgType"] = argType
+	vars["OutType"] = outType
+
+	switch mode {
+	case ModeType:
+		vars["Action"] = "Convert"
+		vars["action"] = "convert"
+	case ModeCreate, ModeUpdate:
+		vars["Action"] = "Apply"
+		vars["action"] = "apply"
+	default:
+		panic("unexpected")
+	}
+}
+
+func includeCustomConversion(p generator.Printer, vars map[string]interface{}, arg generator.Object, out generator.Object) {
+	vars["CustomConversionMode"] = 0
+	if conv := convPairs[getPair(arg, out)]; conv != nil {
+		vars["CustomConversionMode"] = conv.Mode
+		funcType := conv.Obj.Name()
+		alias := p.Qualifier(conv.Obj.Pkg())
+		if alias != "" {
+			funcType = alias + "." + funcType
+		}
+		vars["CustomConversionFuncType"] = funcType
+	}
 }
 
 func validateCompatible(arg, out types.Object) bool {

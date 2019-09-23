@@ -1,58 +1,82 @@
 package convert
 
-const tplConvertTypeText = `
-func Convert_{{.InStr}}_{{.OutStr}}(in *{{.InType}}, out *{{.OutType}}) *{{.OutType}} {
+const tplRegisterText = `
+func init() {
+  registerConversionFunctions(scheme.Global)
+}
+
+func registerConversionFunctions(s *scheme.Scheme) {
+{{range .Conversions -}}
+    s.Register((*{{.ArgType}})(nil), (*{{.OutType}})(nil), func(arg, out interface{}) error {
+        {{.Action}}_{{.ArgStr}}_{{.OutStr}}(arg.(*{{.ArgType}}), out.(*{{.OutType}}))
+        return nil
+    })
+    {{if .Action|eq "Convert" -}}
+    s.Register(([]*{{.ArgType}})(nil), (*[]*{{.OutType}})(nil), func(arg, out interface{}) error {
+        out0 := {{.Action}}_{{.ArgStr|plural}}_{{.OutStr|plural}}(arg.([]*{{.ArgType}}))
+        *out.(*[]*{{.OutType}}) = out0
+        return nil
+    })
+    {{end -}}
+{{end -}}
+}
+`
+
+const tplConvertCustomText = `
+func {{.Action}}_{{.ArgStr}}_{{.OutStr}}(arg *{{.ArgType}}, out *{{.OutType}}) *{{.OutType}} {
   {{- if .CustomConversionMode|eq 1}}
-    return {{.CustomConversionFuncType}}(in)
+    return {{.CustomConversionFuncType}}(arg)
   {{- else if .CustomConversionMode|eq 2}}
-    if in == nil {
+    if arg == nil {
         return nil
     }
     if out == nil {
         out = &{{.OutType}}{}
     }
-    {{.CustomConversionFuncType}}(in, out)
+  {{.CustomConversionFuncType}}(arg, out)
     return out
   {{- else if .CustomConversionMode|eq 3}}
-    return {{.CustomConversionFuncType}}(in, out)
+    return {{.CustomConversionFuncType}}(arg, out)
   {{- else}}
-    if in == nil {
+    if arg == nil {
         return nil
     }
     if out == nil {
-      out = &{{.OutType}}{}
+        out = &{{.OutType}}{}
     }
-    convert_{{.InStr}}_{{.OutStr}}(in, out)
+  {{.action}}_{{.ArgStr}}_{{.OutStr}}(arg, out)
     return out
   {{- end}}
 }
+`
 
-func convert_{{.InStr}}_{{.OutStr}}(in *{{.InType}}, out *{{.OutType}}) {
+const tplConvertTypeText = tplConvertCustomText + `
+func {{.action}}_{{.ArgStr}}_{{.OutStr}}(arg *{{.ArgType}}, out *{{.OutType}}) {
 	{{- range .Fields}}
-		out.{{.|fieldName}} = {{.|fieldValue "in"}} {{lastComment -}}
+		out.{{.|fieldName}} = {{.|fieldValue "arg"}} {{lastComment -}}
   {{end}}
 }
 
-func Convert_{{.InStr|plural}}_{{.OutStr|plural}}(ins []*{{.InType}})(outs []*{{.OutType}}) {
-  tmps := make([]{{.OutType}}, len(ins))
-  outs = make([]*{{.OutType}}, len(ins))
+func {{.Action}}_{{.ArgStr|plural}}_{{.OutStr|plural}}(args []*{{.ArgType}})(outs []*{{.OutType}}) {
+  tmps := make([]{{.OutType}}, len(args))
+  outs = make([]*{{.OutType}}, len(args))
 	for i := range tmps {
-		outs[i] = Convert_{{.InStr}}_{{.OutStr}}(ins[i], &tmps[i])
+		outs[i] = Convert_{{.ArgStr}}_{{.OutStr}}(args[i], &tmps[i])
   }
   return outs
 }
 `
 
-const tplCreateText = `
-func apply_{{.ArgStr}}(arg *{{.ArgType}}, out *{{.BaseType}}) {
+const tplCreateText = tplConvertCustomText + `
+func {{.action}}_{{.ArgStr}}_{{.OutStr}}(arg *{{.ArgType}}, out *{{.OutType}}) {
   {{- range .Fields}}
 		out.{{.|fieldName}} = {{.|fieldValue "arg"}} {{lastComment -}}
 	{{end}}
 }
 `
 
-const tplUpdateText = `
-func apply_{{.ArgStr}}(arg *{{.ArgType}}, out *{{.BaseType}}) {
+const tplUpdateText = tplConvertCustomText + `
+func {{.action}}_{{.ArgStr}}_{{.OutStr}}(arg *{{.ArgType}}, out *{{.OutType}}) {
   {{- range .Fields}}
 	out.{{.|fieldName}} = {{.|fieldApply "arg"}} {{lastComment -}}
   {{end}}

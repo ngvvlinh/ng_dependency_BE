@@ -8,193 +8,255 @@ import (
 	catalog "etop.vn/api/main/catalog"
 	catalogtypes "etop.vn/api/main/catalog/types"
 	catalogmodel "etop.vn/backend/com/main/catalog/model"
+	scheme "etop.vn/backend/pkg/common/scheme"
 	etopmodel "etop.vn/backend/pkg/etop/model"
 )
 
+func init() {
+	registerConversionFunctions(scheme.Global)
+}
+
+func registerConversionFunctions(s *scheme.Scheme) {
+	s.Register((*catalogmodel.ProductAttribute)(nil), (*catalogtypes.Attribute)(nil), func(arg, out interface{}) error {
+		Convert_catalogmodel_ProductAttribute_catalogtypes_Attribute(arg.(*catalogmodel.ProductAttribute), out.(*catalogtypes.Attribute))
+		return nil
+	})
+	s.Register(([]*catalogmodel.ProductAttribute)(nil), (*[]*catalogtypes.Attribute)(nil), func(arg, out interface{}) error {
+		out0 := Convert_catalogmodel_ProductAttributes_catalogtypes_Attributes(arg.([]*catalogmodel.ProductAttribute))
+		*out.(*[]*catalogtypes.Attribute) = out0
+		return nil
+	})
+	s.Register((*catalogtypes.Attribute)(nil), (*catalogmodel.ProductAttribute)(nil), func(arg, out interface{}) error {
+		Convert_catalogtypes_Attribute_catalogmodel_ProductAttribute(arg.(*catalogtypes.Attribute), out.(*catalogmodel.ProductAttribute))
+		return nil
+	})
+	s.Register(([]*catalogtypes.Attribute)(nil), (*[]*catalogmodel.ProductAttribute)(nil), func(arg, out interface{}) error {
+		out0 := Convert_catalogtypes_Attributes_catalogmodel_ProductAttributes(arg.([]*catalogtypes.Attribute))
+		*out.(*[]*catalogmodel.ProductAttribute) = out0
+		return nil
+	})
+	s.Register((*catalogmodel.ShopProduct)(nil), (*catalog.ShopProduct)(nil), func(arg, out interface{}) error {
+		Convert_catalogmodel_ShopProduct_catalog_ShopProduct(arg.(*catalogmodel.ShopProduct), out.(*catalog.ShopProduct))
+		return nil
+	})
+	s.Register(([]*catalogmodel.ShopProduct)(nil), (*[]*catalog.ShopProduct)(nil), func(arg, out interface{}) error {
+		out0 := Convert_catalogmodel_ShopProducts_catalog_ShopProducts(arg.([]*catalogmodel.ShopProduct))
+		*out.(*[]*catalog.ShopProduct) = out0
+		return nil
+	})
+	s.Register((*catalog.ShopProduct)(nil), (*catalogmodel.ShopProduct)(nil), func(arg, out interface{}) error {
+		Convert_catalog_ShopProduct_catalogmodel_ShopProduct(arg.(*catalog.ShopProduct), out.(*catalogmodel.ShopProduct))
+		return nil
+	})
+	s.Register(([]*catalog.ShopProduct)(nil), (*[]*catalogmodel.ShopProduct)(nil), func(arg, out interface{}) error {
+		out0 := Convert_catalog_ShopProducts_catalogmodel_ShopProducts(arg.([]*catalog.ShopProduct))
+		*out.(*[]*catalogmodel.ShopProduct) = out0
+		return nil
+	})
+	s.Register((*catalogmodel.ShopVariant)(nil), (*catalog.ShopVariant)(nil), func(arg, out interface{}) error {
+		Convert_catalogmodel_ShopVariant_catalog_ShopVariant(arg.(*catalogmodel.ShopVariant), out.(*catalog.ShopVariant))
+		return nil
+	})
+	s.Register(([]*catalogmodel.ShopVariant)(nil), (*[]*catalog.ShopVariant)(nil), func(arg, out interface{}) error {
+		out0 := Convert_catalogmodel_ShopVariants_catalog_ShopVariants(arg.([]*catalogmodel.ShopVariant))
+		*out.(*[]*catalog.ShopVariant) = out0
+		return nil
+	})
+	s.Register((*catalog.ShopVariant)(nil), (*catalogmodel.ShopVariant)(nil), func(arg, out interface{}) error {
+		Convert_catalog_ShopVariant_catalogmodel_ShopVariant(arg.(*catalog.ShopVariant), out.(*catalogmodel.ShopVariant))
+		return nil
+	})
+	s.Register(([]*catalog.ShopVariant)(nil), (*[]*catalogmodel.ShopVariant)(nil), func(arg, out interface{}) error {
+		out0 := Convert_catalog_ShopVariants_catalogmodel_ShopVariants(arg.([]*catalog.ShopVariant))
+		*out.(*[]*catalogmodel.ShopVariant) = out0
+		return nil
+	})
+}
+
 //-- convert etop.vn/api/main/catalog.Attribute --//
 
-func Convert_catalogtypes_Attribute_catalogmodel_ProductAttribute(in *catalogtypes.Attribute, out *catalogmodel.ProductAttribute) *catalogmodel.ProductAttribute {
-	if in == nil {
+func Convert_catalogmodel_ProductAttribute_catalogtypes_Attribute(arg *catalogmodel.ProductAttribute, out *catalogtypes.Attribute) *catalogtypes.Attribute {
+	return Attribute(arg)
+}
+
+func convert_catalogmodel_ProductAttribute_catalogtypes_Attribute(arg *catalogmodel.ProductAttribute, out *catalogtypes.Attribute) {
+	out.Name = arg.Name   // simple assign
+	out.Value = arg.Value // simple assign
+}
+
+func Convert_catalogmodel_ProductAttributes_catalogtypes_Attributes(args []*catalogmodel.ProductAttribute) (outs []*catalogtypes.Attribute) {
+	tmps := make([]catalogtypes.Attribute, len(args))
+	outs = make([]*catalogtypes.Attribute, len(args))
+	for i := range tmps {
+		outs[i] = Convert_catalogmodel_ProductAttribute_catalogtypes_Attribute(args[i], &tmps[i])
+	}
+	return outs
+}
+
+func Convert_catalogtypes_Attribute_catalogmodel_ProductAttribute(arg *catalogtypes.Attribute, out *catalogmodel.ProductAttribute) *catalogmodel.ProductAttribute {
+	if arg == nil {
 		return nil
 	}
 	if out == nil {
 		out = &catalogmodel.ProductAttribute{}
 	}
-	AttributeDB(in, out)
+	AttributeDB(arg, out)
 	return out
 }
 
-func convert_catalogtypes_Attribute_catalogmodel_ProductAttribute(in *catalogtypes.Attribute, out *catalogmodel.ProductAttribute) {
-	out.Name = in.Name   // simple assign
-	out.Value = in.Value // simple assign
+func convert_catalogtypes_Attribute_catalogmodel_ProductAttribute(arg *catalogtypes.Attribute, out *catalogmodel.ProductAttribute) {
+	out.Name = arg.Name   // simple assign
+	out.Value = arg.Value // simple assign
 }
 
-func Convert_catalogtypes_Attributes_catalogmodel_ProductAttributes(ins []*catalogtypes.Attribute) (outs []*catalogmodel.ProductAttribute) {
-	tmps := make([]catalogmodel.ProductAttribute, len(ins))
-	outs = make([]*catalogmodel.ProductAttribute, len(ins))
+func Convert_catalogtypes_Attributes_catalogmodel_ProductAttributes(args []*catalogtypes.Attribute) (outs []*catalogmodel.ProductAttribute) {
+	tmps := make([]catalogmodel.ProductAttribute, len(args))
+	outs = make([]*catalogmodel.ProductAttribute, len(args))
 	for i := range tmps {
-		outs[i] = Convert_catalogtypes_Attribute_catalogmodel_ProductAttribute(ins[i], &tmps[i])
-	}
-	return outs
-}
-
-func Convert_catalogmodel_ProductAttribute_catalogtypes_Attribute(in *catalogmodel.ProductAttribute, out *catalogtypes.Attribute) *catalogtypes.Attribute {
-	return Attribute(in)
-}
-
-func convert_catalogmodel_ProductAttribute_catalogtypes_Attribute(in *catalogmodel.ProductAttribute, out *catalogtypes.Attribute) {
-	out.Name = in.Name   // simple assign
-	out.Value = in.Value // simple assign
-}
-
-func Convert_catalogmodel_ProductAttributes_catalogtypes_Attributes(ins []*catalogmodel.ProductAttribute) (outs []*catalogtypes.Attribute) {
-	tmps := make([]catalogtypes.Attribute, len(ins))
-	outs = make([]*catalogtypes.Attribute, len(ins))
-	for i := range tmps {
-		outs[i] = Convert_catalogmodel_ProductAttribute_catalogtypes_Attribute(ins[i], &tmps[i])
+		outs[i] = Convert_catalogtypes_Attribute_catalogmodel_ProductAttribute(args[i], &tmps[i])
 	}
 	return outs
 }
 
 //-- convert etop.vn/api/main/catalog.ShopProduct --//
 
-func Convert_catalog_ShopProduct_catalogmodel_ShopProduct(in *catalog.ShopProduct, out *catalogmodel.ShopProduct) *catalogmodel.ShopProduct {
-	return ShopProductDB(in)
+func Convert_catalogmodel_ShopProduct_catalog_ShopProduct(arg *catalogmodel.ShopProduct, out *catalog.ShopProduct) *catalog.ShopProduct {
+	return ShopProduct(arg)
 }
 
-func convert_catalog_ShopProduct_catalogmodel_ShopProduct(in *catalog.ShopProduct, out *catalogmodel.ShopProduct) {
-	out.ShopID = in.ShopID                    // simple assign
-	out.ProductID = in.ProductID              // simple assign
-	out.CollectionIDs = in.CollectionIDs      // simple assign
-	out.Code = in.Code                        // simple assign
-	out.Name = in.Name                        // simple assign
-	out.Description = ""                      // zero value
-	out.DescHTML = ""                         // zero value
-	out.ShortDesc = ""                        // zero value
-	out.ImageURLs = in.ImageURLs              // simple assign
-	out.Note = in.Note                        // simple assign
-	out.Tags = in.Tags                        // simple assign
-	out.Unit = in.Unit                        // simple assign
-	out.CategoryID = in.CategoryID            // simple assign
-	out.CostPrice = 0                         // zero value
-	out.ListPrice = 0                         // zero value
-	out.RetailPrice = 0                       // zero value
-	out.Status = etopmodel.Status3(in.Status) // simple conversion
-	out.CreatedAt = in.CreatedAt              // simple assign
-	out.UpdatedAt = in.UpdatedAt              // simple assign
-	out.DeletedAt = in.DeletedAt              // simple assign
-	out.NameNorm = ""                         // zero value
-	out.NameNormUa = ""                       // zero value
-	out.ProductType = in.ProductType          // simple assign
+func convert_catalogmodel_ShopProduct_catalog_ShopProduct(arg *catalogmodel.ShopProduct, out *catalog.ShopProduct) {
+	out.ShopID = arg.ShopID                         // simple assign
+	out.ProductID = arg.ProductID                   // simple assign
+	out.Code = arg.Code                             // simple assign
+	out.Name = arg.Name                             // simple assign
+	out.Unit = arg.Unit                             // simple assign
+	out.ImageURLs = arg.ImageURLs                   // simple assign
+	out.Note = arg.Note                             // simple assign
+	out.DescriptionInfo = catalog.DescriptionInfo{} // zero value
+	out.PriceInfo = catalog.PriceInfo{}             // zero value
+	out.CategoryID = arg.CategoryID                 // simple assign
+	out.CollectionIDs = arg.CollectionIDs           // simple assign
+	out.Tags = arg.Tags                             // simple assign
+	out.Status = int32(arg.Status)                  // simple conversion
+	out.CreatedAt = arg.CreatedAt                   // simple assign
+	out.UpdatedAt = arg.UpdatedAt                   // simple assign
+	out.DeletedAt = arg.DeletedAt                   // simple assign
+	out.ProductType = arg.ProductType               // simple assign
 }
 
-func Convert_catalog_ShopProducts_catalogmodel_ShopProducts(ins []*catalog.ShopProduct) (outs []*catalogmodel.ShopProduct) {
-	tmps := make([]catalogmodel.ShopProduct, len(ins))
-	outs = make([]*catalogmodel.ShopProduct, len(ins))
+func Convert_catalogmodel_ShopProducts_catalog_ShopProducts(args []*catalogmodel.ShopProduct) (outs []*catalog.ShopProduct) {
+	tmps := make([]catalog.ShopProduct, len(args))
+	outs = make([]*catalog.ShopProduct, len(args))
 	for i := range tmps {
-		outs[i] = Convert_catalog_ShopProduct_catalogmodel_ShopProduct(ins[i], &tmps[i])
+		outs[i] = Convert_catalogmodel_ShopProduct_catalog_ShopProduct(args[i], &tmps[i])
 	}
 	return outs
 }
 
-func Convert_catalogmodel_ShopProduct_catalog_ShopProduct(in *catalogmodel.ShopProduct, out *catalog.ShopProduct) *catalog.ShopProduct {
-	return ShopProduct(in)
+func Convert_catalog_ShopProduct_catalogmodel_ShopProduct(arg *catalog.ShopProduct, out *catalogmodel.ShopProduct) *catalogmodel.ShopProduct {
+	return ShopProductDB(arg)
 }
 
-func convert_catalogmodel_ShopProduct_catalog_ShopProduct(in *catalogmodel.ShopProduct, out *catalog.ShopProduct) {
-	out.ShopID = in.ShopID                          // simple assign
-	out.ProductID = in.ProductID                    // simple assign
-	out.Code = in.Code                              // simple assign
-	out.Name = in.Name                              // simple assign
-	out.Unit = in.Unit                              // simple assign
-	out.ImageURLs = in.ImageURLs                    // simple assign
-	out.Note = in.Note                              // simple assign
-	out.DescriptionInfo = catalog.DescriptionInfo{} // zero value
-	out.PriceInfo = catalog.PriceInfo{}             // zero value
-	out.CategoryID = in.CategoryID                  // simple assign
-	out.CollectionIDs = in.CollectionIDs            // simple assign
-	out.Tags = in.Tags                              // simple assign
-	out.Status = int32(in.Status)                   // simple conversion
-	out.CreatedAt = in.CreatedAt                    // simple assign
-	out.UpdatedAt = in.UpdatedAt                    // simple assign
-	out.DeletedAt = in.DeletedAt                    // simple assign
-	out.ProductType = in.ProductType                // simple assign
+func convert_catalog_ShopProduct_catalogmodel_ShopProduct(arg *catalog.ShopProduct, out *catalogmodel.ShopProduct) {
+	out.ShopID = arg.ShopID                    // simple assign
+	out.ProductID = arg.ProductID              // simple assign
+	out.CollectionIDs = arg.CollectionIDs      // simple assign
+	out.Code = arg.Code                        // simple assign
+	out.Name = arg.Name                        // simple assign
+	out.Description = ""                       // zero value
+	out.DescHTML = ""                          // zero value
+	out.ShortDesc = ""                         // zero value
+	out.ImageURLs = arg.ImageURLs              // simple assign
+	out.Note = arg.Note                        // simple assign
+	out.Tags = arg.Tags                        // simple assign
+	out.Unit = arg.Unit                        // simple assign
+	out.CategoryID = arg.CategoryID            // simple assign
+	out.CostPrice = 0                          // zero value
+	out.ListPrice = 0                          // zero value
+	out.RetailPrice = 0                        // zero value
+	out.Status = etopmodel.Status3(arg.Status) // simple conversion
+	out.CreatedAt = arg.CreatedAt              // simple assign
+	out.UpdatedAt = arg.UpdatedAt              // simple assign
+	out.DeletedAt = arg.DeletedAt              // simple assign
+	out.NameNorm = ""                          // zero value
+	out.NameNormUa = ""                        // zero value
+	out.ProductType = arg.ProductType          // simple assign
 }
 
-func Convert_catalogmodel_ShopProducts_catalog_ShopProducts(ins []*catalogmodel.ShopProduct) (outs []*catalog.ShopProduct) {
-	tmps := make([]catalog.ShopProduct, len(ins))
-	outs = make([]*catalog.ShopProduct, len(ins))
+func Convert_catalog_ShopProducts_catalogmodel_ShopProducts(args []*catalog.ShopProduct) (outs []*catalogmodel.ShopProduct) {
+	tmps := make([]catalogmodel.ShopProduct, len(args))
+	outs = make([]*catalogmodel.ShopProduct, len(args))
 	for i := range tmps {
-		outs[i] = Convert_catalogmodel_ShopProduct_catalog_ShopProduct(ins[i], &tmps[i])
+		outs[i] = Convert_catalog_ShopProduct_catalogmodel_ShopProduct(args[i], &tmps[i])
 	}
 	return outs
 }
 
 //-- convert etop.vn/api/main/catalog.ShopVariant --//
 
-func Convert_catalog_ShopVariant_catalogmodel_ShopVariant(in *catalog.ShopVariant, out *catalogmodel.ShopVariant) *catalogmodel.ShopVariant {
-	return ShopVariantDB(in)
+func Convert_catalogmodel_ShopVariant_catalog_ShopVariant(arg *catalogmodel.ShopVariant, out *catalog.ShopVariant) *catalog.ShopVariant {
+	return ShopVariant(arg)
 }
 
-func convert_catalog_ShopVariant_catalogmodel_ShopVariant(in *catalog.ShopVariant, out *catalogmodel.ShopVariant) {
-	out.ShopID = in.ShopID                    // simple assign
-	out.VariantID = in.VariantID              // simple assign
-	out.ProductID = in.ProductID              // simple assign
-	out.Code = in.Code                        // simple assign
-	out.Name = in.Name                        // simple assign
-	out.Description = ""                      // zero value
-	out.DescHTML = ""                         // zero value
-	out.ShortDesc = ""                        // zero value
-	out.ImageURLs = in.ImageURLs              // simple assign
-	out.Note = in.Note                        // simple assign
-	out.Tags = nil                            // zero value
-	out.CostPrice = 0                         // zero value
-	out.ListPrice = 0                         // zero value
-	out.RetailPrice = 0                       // zero value
-	out.Status = etopmodel.Status3(in.Status) // simple conversion
-	out.Attributes = Convert_catalogtypes_Attributes_catalogmodel_ProductAttributes(in.Attributes)
-	out.CreatedAt = in.CreatedAt // simple assign
-	out.UpdatedAt = in.UpdatedAt // simple assign
-	out.DeletedAt = in.DeletedAt // simple assign
-	out.NameNorm = ""            // zero value
-	out.AttrNormKv = ""          // zero value
+func convert_catalogmodel_ShopVariant_catalog_ShopVariant(arg *catalogmodel.ShopVariant, out *catalog.ShopVariant) {
+	out.ShopID = arg.ShopID                         // simple assign
+	out.ProductID = arg.ProductID                   // simple assign
+	out.VariantID = arg.VariantID                   // simple assign
+	out.Code = arg.Code                             // simple assign
+	out.Name = arg.Name                             // simple assign
+	out.DescriptionInfo = catalog.DescriptionInfo{} // zero value
+	out.ImageURLs = arg.ImageURLs                   // simple assign
+	out.Status = int16(arg.Status)                  // simple conversion
+	out.Attributes = Convert_catalogmodel_ProductAttributes_catalogtypes_Attributes(arg.Attributes)
+	out.PriceInfo = catalog.PriceInfo{} // zero value
+	out.Note = arg.Note                 // simple assign
+	out.CreatedAt = arg.CreatedAt       // simple assign
+	out.UpdatedAt = arg.UpdatedAt       // simple assign
+	out.DeletedAt = arg.DeletedAt       // simple assign
 }
 
-func Convert_catalog_ShopVariants_catalogmodel_ShopVariants(ins []*catalog.ShopVariant) (outs []*catalogmodel.ShopVariant) {
-	tmps := make([]catalogmodel.ShopVariant, len(ins))
-	outs = make([]*catalogmodel.ShopVariant, len(ins))
+func Convert_catalogmodel_ShopVariants_catalog_ShopVariants(args []*catalogmodel.ShopVariant) (outs []*catalog.ShopVariant) {
+	tmps := make([]catalog.ShopVariant, len(args))
+	outs = make([]*catalog.ShopVariant, len(args))
 	for i := range tmps {
-		outs[i] = Convert_catalog_ShopVariant_catalogmodel_ShopVariant(ins[i], &tmps[i])
+		outs[i] = Convert_catalogmodel_ShopVariant_catalog_ShopVariant(args[i], &tmps[i])
 	}
 	return outs
 }
 
-func Convert_catalogmodel_ShopVariant_catalog_ShopVariant(in *catalogmodel.ShopVariant, out *catalog.ShopVariant) *catalog.ShopVariant {
-	return ShopVariant(in)
+func Convert_catalog_ShopVariant_catalogmodel_ShopVariant(arg *catalog.ShopVariant, out *catalogmodel.ShopVariant) *catalogmodel.ShopVariant {
+	return ShopVariantDB(arg)
 }
 
-func convert_catalogmodel_ShopVariant_catalog_ShopVariant(in *catalogmodel.ShopVariant, out *catalog.ShopVariant) {
-	out.ShopID = in.ShopID                          // simple assign
-	out.ProductID = in.ProductID                    // simple assign
-	out.VariantID = in.VariantID                    // simple assign
-	out.Code = in.Code                              // simple assign
-	out.Name = in.Name                              // simple assign
-	out.DescriptionInfo = catalog.DescriptionInfo{} // zero value
-	out.ImageURLs = in.ImageURLs                    // simple assign
-	out.Status = int16(in.Status)                   // simple conversion
-	out.Attributes = Convert_catalogmodel_ProductAttributes_catalogtypes_Attributes(in.Attributes)
-	out.PriceInfo = catalog.PriceInfo{} // zero value
-	out.Note = in.Note                  // simple assign
-	out.CreatedAt = in.CreatedAt        // simple assign
-	out.UpdatedAt = in.UpdatedAt        // simple assign
-	out.DeletedAt = in.DeletedAt        // simple assign
+func convert_catalog_ShopVariant_catalogmodel_ShopVariant(arg *catalog.ShopVariant, out *catalogmodel.ShopVariant) {
+	out.ShopID = arg.ShopID                    // simple assign
+	out.VariantID = arg.VariantID              // simple assign
+	out.ProductID = arg.ProductID              // simple assign
+	out.Code = arg.Code                        // simple assign
+	out.Name = arg.Name                        // simple assign
+	out.Description = ""                       // zero value
+	out.DescHTML = ""                          // zero value
+	out.ShortDesc = ""                         // zero value
+	out.ImageURLs = arg.ImageURLs              // simple assign
+	out.Note = arg.Note                        // simple assign
+	out.Tags = nil                             // zero value
+	out.CostPrice = 0                          // zero value
+	out.ListPrice = 0                          // zero value
+	out.RetailPrice = 0                        // zero value
+	out.Status = etopmodel.Status3(arg.Status) // simple conversion
+	out.Attributes = Convert_catalogtypes_Attributes_catalogmodel_ProductAttributes(arg.Attributes)
+	out.CreatedAt = arg.CreatedAt // simple assign
+	out.UpdatedAt = arg.UpdatedAt // simple assign
+	out.DeletedAt = arg.DeletedAt // simple assign
+	out.NameNorm = ""             // zero value
+	out.AttrNormKv = ""           // zero value
 }
 
-func Convert_catalogmodel_ShopVariants_catalog_ShopVariants(ins []*catalogmodel.ShopVariant) (outs []*catalog.ShopVariant) {
-	tmps := make([]catalog.ShopVariant, len(ins))
-	outs = make([]*catalog.ShopVariant, len(ins))
+func Convert_catalog_ShopVariants_catalogmodel_ShopVariants(args []*catalog.ShopVariant) (outs []*catalogmodel.ShopVariant) {
+	tmps := make([]catalogmodel.ShopVariant, len(args))
+	outs = make([]*catalogmodel.ShopVariant, len(args))
 	for i := range tmps {
-		outs[i] = Convert_catalogmodel_ShopVariant_catalog_ShopVariant(ins[i], &tmps[i])
+		outs[i] = Convert_catalog_ShopVariant_catalogmodel_ShopVariant(args[i], &tmps[i])
 	}
 	return outs
 }

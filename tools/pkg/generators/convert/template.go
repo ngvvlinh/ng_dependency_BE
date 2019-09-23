@@ -12,7 +12,7 @@ import (
 	"etop.vn/capi/dot"
 )
 
-var tplConvertType, tplUpdate, tplCreate *template.Template
+var tplRegister, tplConvertType, tplUpdate, tplCreate *template.Template
 var currentPrinter generator.Printer
 var capiPkgPath = reflect.TypeOf(dot.NullString{}).PkgPath()
 var convPairs map[pair]*conversionFunc
@@ -29,6 +29,7 @@ func init() {
 		return template.Must(template.New(name).Funcs(funcMap).Parse(text))
 	}
 
+	tplRegister = parse("register", tplRegisterText)
 	tplConvertType = parse("convert_type", tplConvertTypeText)
 	tplCreate = parse("create", tplCreateText)
 	tplUpdate = parse("update", tplUpdateText)
