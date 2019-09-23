@@ -52,7 +52,7 @@ func RequestExport(ctx context.Context, r *wrappershop.RequestExportEndpoint) (_
 		}
 	}()
 
-	if r.ExportType != PathShopOrders {
+	if r.ExportType != PathShopOrders && r.ExportType != PathShopFulfillments {
 		return cm.Errorf(cm.InvalidArgument, nil, "export type is not supported")
 	}
 
@@ -73,28 +73,6 @@ func RequestExport(ctx context.Context, r *wrappershop.RequestExportEndpoint) (_
 	from, to, err := cm.ParseDateFromTo(r.DateFrom, r.DateTo)
 	if err != nil {
 		return err
-	}
-
-	// prepare fulfillments for exporting
-	query := &ordering.GetOrderExtendedsQuery{
-		ShopIDs:      []int64{shop.ID},
-		DateFrom:     from,
-		DateTo:       to,
-		Filters:      pbcm.ToFilters(r.Filters),
-		ResultAsRows: true,
-	}
-
-	defer func() {
-		// always close the connection when encounting error
-		if _err != nil && query.Result.Rows != nil {
-			_ = query.Result.Rows.Close()
-		}
-	}()
-	if err := bus.Dispatch(ctx, query); err != nil {
-		return err
-	}
-	if query.Result.Total == 0 {
-		return cm.Errorf(cm.ResourceExhausted, nil, "Không có dữ liệu để xuất. Vui lòng thử lại với điều kiện tìm kiếm khác.")
 	}
 
 	tableNameExport := ""
