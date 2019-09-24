@@ -7097,6 +7097,14 @@
           "type": "boolean",
           "format": "boolean",
           "title": "For exporting csv compatible with Excel"
+        },
+        "ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          },
+          "title": "Export specific ids"
         }
       }
     },

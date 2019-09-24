@@ -12,6 +12,7 @@ import (
 )
 
 type GetFulfillmentExtendedsQuery struct {
+	IDs           []int64
 	ShopIDs       []int64 // MixedAccount
 	PartnerID     int64
 	OrderID       int64

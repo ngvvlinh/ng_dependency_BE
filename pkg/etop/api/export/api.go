@@ -121,6 +121,7 @@ func RequestExport(ctx context.Context, r *wrappershop.RequestExportEndpoint) (_
 	case PathShopFulfillments:
 		// prepare fulfillments for exporting
 		query := &shipping.GetFulfillmentExtendedsQuery{
+			IDs:          r.Ids,
 			ShopIDs:      []int64{shop.ID},
 			DateFrom:     from,
 			DateTo:       to,
@@ -149,6 +150,7 @@ func RequestExport(ctx context.Context, r *wrappershop.RequestExportEndpoint) (_
 		))
 	case PathShopOrders:
 		query := &ordering.GetOrderExtendedsQuery{
+			IDs:          r.Ids,
 			ShopIDs:      []int64{shop.ID},
 			DateFrom:     from,
 			DateTo:       to,

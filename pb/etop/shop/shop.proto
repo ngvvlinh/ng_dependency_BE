@@ -778,6 +778,9 @@ message RequestExportRequest {
 
     // For exporting csv compatible with Excel
     optional bool excel_compatible_mode = 6 [(gogoproto.nullable)=false];
+
+    // Export specific ids
+    repeated int64 ids = 7;
 }
 
 message RequestExportResponse {

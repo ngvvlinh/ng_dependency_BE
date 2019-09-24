@@ -309,9 +309,14 @@ func GetOrderExtends(ctx context.Context, query *ordermodelx.GetOrderExtendedsQu
 		s = s.Where(`"order".created_at BETWEEN ? AND ?`, query.DateFrom, query.DateTo)
 	}
 
-	s, _, err := Filters(s, query.Filters, filterOrderWhitelist)
-	if err != nil {
-		return err
+	if query.IDs != nil && len(query.IDs) > 0 {
+		s = s.In(`"order".id`, query.IDs)
+	} else {
+		query, _, err := Filters(s, query.Filters, filterOrderWhitelist)
+		if err != nil {
+			return err
+		}
+		s = query
 	}
 
 	// for exporting data
@@ -855,9 +860,14 @@ func GetFulfillmentExtendeds(ctx context.Context, query *shipmodelx.GetFulfillme
 		s = s.Where("f.created_at BETWEEN ? AND ?", query.DateFrom, query.DateTo)
 	}
 
-	s, _, err := Filters(s, query.Filters, filterFulfillmentWhitelist)
-	if err != nil {
-		return err
+	if query.IDs != nil && len(query.IDs) > 0 {
+		s = s.In("f.id", query.IDs)
+	} else {
+		query, _, err := Filters(s, query.Filters, filterFulfillmentWhitelist)
+		if err != nil {
+			return err
+		}
+		s = query
 	}
 
 	// for exporting data

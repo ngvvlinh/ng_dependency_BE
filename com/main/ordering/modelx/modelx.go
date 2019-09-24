@@ -31,6 +31,7 @@ type GetOrderQuery struct {
 }
 
 type GetOrderExtendedsQuery struct {
+	IDs           []int64
 	ShopIDs       []int64 // MixedAccount
 	PartnerID     int64
 	Status        *model.Status3
