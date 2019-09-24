@@ -4,15 +4,16 @@ import (
 	"context"
 	"database/sql"
 	"encoding/csv"
+	"io"
+	"strconv"
+	"time"
+
 	orderingmodely "etop.vn/backend/com/main/ordering/modely"
 	pbcm "etop.vn/backend/pb/common"
 	pbshop "etop.vn/backend/pb/etop/shop"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/sq/core"
 	"etop.vn/backend/pkg/etop/model"
-	"io"
-	"strconv"
-	"time"
 )
 
 const exportOrderLines = false
@@ -191,19 +192,44 @@ func buildOrder(csvWriter *csv.Writer, w *TableWriter, exportOpts ExportOption, 
 	// TODO: add value customer code
 	w.AddColumn("Mã KH", func() string { return FirstLine(line, "") })
 	firstHeaders = append(firstHeaders, "")
-	w.AddColumn("Tên KH", func() string { return FirstLine(line, ffm.Fulfillment.AddressTo.FullName) })
+	w.AddColumn("Tên KH", func() string {
+		if ffm.Customer == nil {
+			return FirstLine(line, "")
+		}
+		return FirstLine(line, ffm.Customer.FullName)
+	})
 	firstHeaders = append(firstHeaders, "")
-	w.AddColumn("Số điện thoại KH", func() string { return FirstLine(line, ffm.Fulfillment.AddressTo.Phone)	})
+	w.AddColumn("Số điện thoại KH", func() string {
+		if ffm.Customer == nil {
+			return FirstLine(line, "")
+		}
+		return FirstLine(line, ffm.Customer.Phone)
+	})
 
 	firstHeaders = append(firstHeaders, "GIAO HÀNG")
-	w.AddColumn("Mã giao hàng", func() string { return FirstLine(line, ffm.Fulfillment.ShippingCode) })
+	w.AddColumn("Mã giao hàng", func() string {
+		if ffm.Fulfillment == nil {
+			return FirstLine(line, "")
+		}
+		return FirstLine(line, ffm.Fulfillment.ShippingCode)
+	})
 	firstHeaders = append(firstHeaders, "")
-	w.AddColumn("Nhà vận chuyển", func() string { return FirstLine(line, ffm.Fulfillment.ShippingProvider.Label()) })
+	w.AddColumn("Nhà vận chuyển", func() string {
+		if ffm.Fulfillment == nil {
+			return FirstLine(line, "")
+		}
+		return FirstLine(line, ffm.Fulfillment.ShippingProvider.Label())
+	})
 	firstHeaders = append(firstHeaders, "")
-	w.AddColumn("Trạng thái giao hàng", func() string { return FirstLine(line, ffm.Fulfillment.ShippingState.Text()) })
+	w.AddColumn("Trạng thái giao hàng", func() string {
+		if ffm.Fulfillment == nil {
+			return FirstLine(line, "")
+		}
+		return FirstLine(line, ffm.Fulfillment.ShippingState.Text())
+	})
 
 	firstHeaders = append(firstHeaders, "THANH TOÁN")
-	w.AddColumn("Trạng thái thanh toán", func() string { return FirstLine(line, model.EtopPaymentStatusLabel(ffm.Fulfillment.EtopPaymentStatus)) })
+	w.AddColumn("Trạng thái thanh toán", func() string { return FirstLine(line, model.EtopPaymentStatusLabel(ffm.PaymentStatus)) })
 
 	if err := csvWriter.Write(firstHeaders); err != nil {
 		return err

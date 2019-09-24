@@ -73,6 +73,7 @@ var filterOrderWhitelist = FilterWhitelist{
 		"external_code":     `"order".ed_code`,
 		"external_id":       `"order".external_order_id`,
 		"chargeable_weight": `"order".total_weight`,
+		"status":            `"order".status`,
 	},
 }
 
@@ -293,19 +294,19 @@ func GetOrderExtends(ctx context.Context, query *ordermodelx.GetOrderExtendedsQu
 	s := x.Table("order")
 
 	if query.ShopIDs != nil {
-		s = s.InOrEqIDs("o.shop_id", query.ShopIDs)
+		s = s.InOrEqIDs(`"order".shop_id`, query.ShopIDs)
 	}
 	if query.PartnerID != 0 {
-		s = s.Where("o.partner_id = ?", query.PartnerID)
+		s = s.Where(`"order".partner_id = ?`, query.PartnerID)
 	}
 	if query.TradingShopID != 0 {
-		s = s.Where("o.trading_shop_id = ?", query.TradingShopID)
+		s = s.Where(`"order".trading_shop_id = ?`, query.TradingShopID)
 	}
 	if query.DateFrom.IsZero() != query.DateTo.IsZero() {
 		return cm.Errorf(cm.InvalidArgument, nil, "must provide both DateFrom and DateTo")
 	}
 	if !query.DateFrom.IsZero() {
-		s = s.Where("o.created_at BETWEEN ? AND ?", query.DateFrom, query.DateTo)
+		s = s.Where(`"order".created_at BETWEEN ? AND ?`, query.DateFrom, query.DateTo)
 	}
 
 	s, _, err := Filters(s, query.Filters, filterOrderWhitelist)
@@ -327,7 +328,7 @@ func GetOrderExtends(ctx context.Context, query *ordermodelx.GetOrderExtendedsQu
 			if query.Paging != nil && len(query.Paging.Sort) != 0 {
 				s = s.OrderBy(query.Paging.Sort...)
 			} else {
-				s = s.OrderBy("f.created_at")
+				s = s.OrderBy(`"order".created_at`)
 			}
 
 			opts, rows, err := s.FindRows((*ordermodely.OrderExtendeds)(nil))
@@ -346,7 +347,7 @@ func GetOrderExtends(ctx context.Context, query *ordermodelx.GetOrderExtendedsQu
 
 	{
 		s2 := s.Clone()
-		s2, err := LimitSort(s2, query.Paging, Ms{"updated_at": "f.updated_at", "created_at": "f.created_at", "id": "f.id"})
+		s2, err := LimitSort(s2, query.Paging, Ms{"updated_at": `"order".updated_at`, "created_at": `"order".created_at`, "id": `"order".id`})
 		if err != nil {
 			return err
 		}
