@@ -60,11 +60,12 @@ func (s *XAccountHaravanStore) GetXAccountHaravan() (*identity.ExternalAccountHa
 }
 
 type CreateXAccountHaravanArgs struct {
-	ID          int64
-	ShopID      int64
-	Subdomain   string
-	AccessToken string
-	ExpiresAt   time.Time
+	ID             int64
+	ShopID         int64
+	Subdomain      string
+	AccessToken    string
+	ExternalShopID int
+	ExpiresAt      time.Time
 }
 
 func (s *XAccountHaravanStore) CreateXAccountHaravan(args *CreateXAccountHaravanArgs) (*identity.ExternalAccountHaravan, error) {
@@ -81,11 +82,12 @@ func (s *XAccountHaravanStore) CreateXAccountHaravan(args *CreateXAccountHaravan
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing subdomain")
 	}
 	account := &identitymodel.ExternalAccountHaravan{
-		ID:          args.ID,
-		ShopID:      args.ShopID,
-		Subdomain:   args.Subdomain,
-		AccessToken: args.AccessToken,
-		ExpiresAt:   args.ExpiresAt,
+		ID:             args.ID,
+		ShopID:         args.ShopID,
+		Subdomain:      args.Subdomain,
+		AccessToken:    args.AccessToken,
+		ExpiresAt:      args.ExpiresAt,
+		ExternalShopID: args.ExternalShopID,
 	}
 	if err := s.query().ShouldInsert(account); err != nil {
 		return nil, err
@@ -95,10 +97,11 @@ func (s *XAccountHaravanStore) CreateXAccountHaravan(args *CreateXAccountHaravan
 }
 
 type UpdateXAccountHaravanInfoArgs struct {
-	ShopID      int64
-	Subdomain   string
-	AccessToken string
-	ExpiresAt   time.Time
+	ShopID         int64
+	Subdomain      string
+	AccessToken    string
+	ExternalShopID int
+	ExpiresAt      time.Time
 }
 
 func (s *XAccountHaravanStore) UpdateXAccountHaravan(args *UpdateXAccountHaravanInfoArgs) (*identity.ExternalAccountHaravan, error) {
@@ -106,9 +109,10 @@ func (s *XAccountHaravanStore) UpdateXAccountHaravan(args *UpdateXAccountHaravan
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing Shop ID")
 	}
 	account := &identitymodel.ExternalAccountHaravan{
-		Subdomain:   args.Subdomain,
-		AccessToken: args.AccessToken,
-		ExpiresAt:   args.ExpiresAt,
+		Subdomain:      args.Subdomain,
+		AccessToken:    args.AccessToken,
+		ExpiresAt:      args.ExpiresAt,
+		ExternalShopID: args.ExternalShopID,
 	}
 	if err := s.query().Where(s.ft.ByShopID(args.ShopID)).ShouldUpdate(account); err != nil {
 		return nil, err
@@ -158,18 +162,26 @@ func (s *XAccountHaravanStore) UpdateXCarrierServiceInfo(args *UpdateXCarrierSer
 }
 
 type UpdateDeleteConnectedXCarrierSeriveArgs struct {
-	ShopID int64
+	ShopID    int64
+	SubDomain string
 }
 
-func (s *XAccountHaravanStore) UpdateDeleteConnectedXCarrierService(args *UpdateDeleteConnectedXCarrierSeriveArgs) (*identity.ExternalAccountHaravan, error) {
-	if args.ShopID == 0 {
-		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing Shop ID")
+func (s *XAccountHaravanStore) UpdateDeleteConnectedXCarrierService(args *UpdateDeleteConnectedXCarrierSeriveArgs) error {
+	if args.ShopID == 0 && args.SubDomain == "" {
+		return cm.Errorf(cm.InvalidArgument, nil, "Missing Shop ID or SubDomain")
 	}
-	if err := s.query().Table("external_account_haravan").Where(s.ft.ByShopID(args.ShopID)).ShouldUpdateMap(map[string]interface{}{
+	s1 := s.query().Table("external_account_haravan")
+	if args.ShopID != 0 {
+		s1 = s1.Where(s.ft.ByShopID(args.ShopID))
+	}
+	if args.SubDomain != "" {
+		s1 = s1.Where(s.ft.BySubdomain(args.SubDomain))
+	}
+	if err := s1.ShouldUpdateMap(map[string]interface{}{
 		"external_carrier_service_id":           nil,
 		"external_connected_carrier_service_at": nil,
 	}); err != nil {
-		return nil, err
+		return err
 	}
-	return s.ShopID(args.ShopID).GetXAccountHaravan()
+	return nil
 }

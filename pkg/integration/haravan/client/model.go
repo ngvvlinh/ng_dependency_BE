@@ -225,3 +225,19 @@ type UpdatePaymentStatusRequest struct {
 	FulfillID string
 	Status    PaymentStatus
 }
+
+type CarrierServiceItem struct {
+	ID               int    `json:"id"`
+	CarrierServiceID int    `json:"carrier_service_id"`
+	CarrierName      string `json:"carrier_name"`
+	CarrierCode      string `json:"carrier_code"`
+	IsConnected      bool   `json:"is_connected"`
+}
+
+type GetCarrierServicesRequest struct {
+	Connection `json:"-"`
+}
+
+type GetCarrierServicesResponse struct {
+	CarrierServices []*CarrierServiceItem `json:"carrier_services"`
+}

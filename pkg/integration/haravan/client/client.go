@@ -22,8 +22,8 @@ var (
 )
 
 const (
-	PathShopInfo              = "shop"
-	PathConnectCarrierService = "carrier_services"
+	PathShopInfo        = "shop"
+	PathCarrierServices = "carrier_services"
 )
 
 func init() {
@@ -63,14 +63,22 @@ func (c *Client) GetShop(ctx context.Context, req *GetShopRequest) (*Shop, error
 func (c *Client) ConnectCarrierService(ctx context.Context, req *ConnectCarrierServiceRequest) (*CarrierService, error) {
 	req.CarrierService.CarrierServiceType = "api"
 	var resp ConnectCarrierServiceResponse
-	if err := c.sendPostRequest(ctx, req.Connection, PathConnectCarrierService, req, &resp, "Khổng thể tạo kết nối với nhà vận chuyển"); err != nil {
+	if err := c.sendPostRequest(ctx, req.Connection, PathCarrierServices, req, &resp, "Khổng thể tạo kết nối với nhà vận chuyển"); err != nil {
 		return nil, err
 	}
 	return resp.CarrierService, nil
 }
 
+func (c *Client) GetCarrierServices(ctx context.Context, req *GetCarrierServicesRequest) ([]*CarrierServiceItem, error) {
+	var resp GetCarrierServicesResponse
+	if err := c.sendGetRequest(ctx, req.Connection, PathCarrierServices, nil, &resp, "Không thể lấy danh sách Carrier Services"); err != nil {
+		return nil, err
+	}
+	return resp.CarrierServices, nil
+}
+
 func (c *Client) DeleteConnectedCarrierService(ctx context.Context, req *DeleteConnectedCarrierServiceRequest) error {
-	path := fmt.Sprintf("%v/%v", PathConnectCarrierService, req.CarrierServiceID)
+	path := fmt.Sprintf("%v/%v", PathCarrierServices, req.CarrierServiceID)
 	if err := c.SendDeleteRequest(ctx, req.Connection, path, req, nil, "Không thể xóa kết nối nhà vận chuyển"); err != nil {
 		return err
 	}

@@ -76,24 +76,37 @@ func (a *Aggregate) CreateExternalAccountHaravan(ctx context.Context, args *iden
 	if err != nil {
 		return nil, err
 	}
+	// Get Haravan account
+	query := &haravanclient.GetShopRequest{
+		Connection: haravanclient.Connection{
+			Subdomain: args.Subdomain,
+			TokenStr:  tokenResp.AccessToken,
+		},
+	}
+	externalShop, err := a.haravanClient.GetShop(ctx, query)
+	if err != nil {
+		return nil, err
+	}
 
 	if account == nil {
 		// create new account
 		id = cm.NewID()
 		createArgs := &sqlstore.CreateXAccountHaravanArgs{
-			ID:          id,
-			ShopID:      args.ShopID,
-			Subdomain:   args.Subdomain,
-			AccessToken: tokenResp.AccessToken,
+			ID:             id,
+			ShopID:         args.ShopID,
+			Subdomain:      args.Subdomain,
+			AccessToken:    tokenResp.AccessToken,
+			ExternalShopID: externalShop.Id,
 		}
 
 		return a.xAccountHaravanStore(ctx).CreateXAccountHaravan(createArgs)
 	}
 
 	args2 := &sqlstore.UpdateXAccountHaravanInfoArgs{
-		ShopID:      account.ShopID,
-		Subdomain:   args.Subdomain,
-		AccessToken: tokenResp.AccessToken,
+		ShopID:         account.ShopID,
+		Subdomain:      args.Subdomain,
+		AccessToken:    tokenResp.AccessToken,
+		ExternalShopID: externalShop.Id,
 	}
 	return a.xAccountHaravanStore(ctx).UpdateXAccountHaravan(args2)
 }
@@ -148,15 +161,31 @@ func (a *Aggregate) ConnectCarrierServiceExternalAccountHaravan(ctx context.Cont
 	if err != nil {
 		return nil, err
 	}
-	if account.ExternalShopID == 0 {
-		xShopID, err := a.GetExternalAccountIDHaravan(ctx, account.ShopID)
-		if err != nil || xShopID == 0 {
-			return nil, cm.Errorf(cm.InvalidArgument, err, "Tài khoản Haravan không hợp lệ. Vui lòng liên hệ hi@etop.vn để biết thêm chi tiết.")
+
+	currentCarrierServiceID, _ := a.GetCurrentCarrierServiceID(ctx, args.ShopID)
+	if currentCarrierServiceID != 0 && currentCarrierServiceID == account.ExternalCarrierServiceID {
+		// Keep the old connection
+		return &meta.Empty{}, nil
+	}
+	if currentCarrierServiceID != 0 {
+		// Delete this connection to create the new one
+		cmd := &haravanclient.DeleteConnectedCarrierServiceRequest{
+			Connection: haravanclient.Connection{
+				Subdomain: account.Subdomain,
+				TokenStr:  account.AccessToken,
+			},
+			CarrierServiceID: currentCarrierServiceID,
 		}
-		account, err = a.UpdateExternalShopIDAccountHaravan(ctx, &identity.UpdateExternalShopIDAccountHaravanArgs{
-			ShopID:         args.ShopID,
-			ExternalShopID: xShopID,
-		})
+		if err := a.haravanClient.DeleteConnectedCarrierService(ctx, cmd); err != nil {
+			return nil, err
+		}
+		// Delete all ConnectedXCarrierService
+		updateArgs := &sqlstore.UpdateDeleteConnectedXCarrierSeriveArgs{
+			SubDomain: account.Subdomain,
+		}
+		if err := a.xAccountHaravanStore(ctx).UpdateDeleteConnectedXCarrierService(updateArgs); err != nil {
+			return nil, err
+		}
 	}
 
 	buildURL := BuildURLForRegistration(thirdPartyHost, account.ExternalShopID)
@@ -207,15 +236,44 @@ func (a *Aggregate) DeleteConnectedCarrierServiceExternalAccountHaravan(ctx cont
 		},
 		CarrierServiceID: account.ExternalCarrierServiceID,
 	}
-	if err := a.haravanClient.DeleteConnectedCarrierService(ctx, cmd); err != nil {
-		return nil, err
-	}
+	// ignore error
+	_ = a.haravanClient.DeleteConnectedCarrierService(ctx, cmd)
+
 	updateArgs := &sqlstore.UpdateDeleteConnectedXCarrierSeriveArgs{
 		ShopID: args.ShopID,
 	}
-	if _, err := a.xAccountHaravanStore(ctx).UpdateDeleteConnectedXCarrierService(updateArgs); err != nil {
+	if err := a.xAccountHaravanStore(ctx).UpdateDeleteConnectedXCarrierService(updateArgs); err != nil {
 		return nil, err
 	}
 
 	return &meta.Empty{}, nil
+}
+
+func (a *Aggregate) GetCurrentCarrierServiceID(ctx context.Context, shopID int64) (int, error) {
+	account, err := a.xAccountHaravanStore(ctx).ShopID(shopID).GetXAccountHaravan()
+	if err != nil {
+		return 0, err
+	}
+
+	query := &haravanclient.GetCarrierServicesRequest{
+		Connection: haravanclient.Connection{
+			Subdomain: account.Subdomain,
+			TokenStr:  account.AccessToken,
+		},
+	}
+	carrierServices, err := a.haravanClient.GetCarrierServices(ctx, query)
+	if err != nil {
+		return 0, nil
+	}
+	var currentCarrierServiceID int
+	for _, cs := range carrierServices {
+		if cs.CarrierName == CarrierServiceName {
+			currentCarrierServiceID = cs.ID
+			break
+		}
+	}
+	if currentCarrierServiceID == 0 {
+		return 0, cm.Errorf(cm.NotFound, nil, "Shop chưa kết nối vận chuyển với Haravan")
+	}
+	return currentCarrierServiceID, nil
 }
