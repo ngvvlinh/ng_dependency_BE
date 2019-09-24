@@ -319,7 +319,7 @@ func CreateProduct(ctx context.Context, q *wrapshop.CreateProductEndpoint) error
 	if err := catalogAggr.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
-	q.Result = PbShopProduct(cmd.Result)
+	q.Result = PbShopProductWithVariants(cmd.Result)
 	return nil
 }
 
@@ -358,7 +358,7 @@ func UpdateProduct(ctx context.Context, q *wrapshop.UpdateProductEndpoint) error
 	if err := catalogAggr.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
-	q.Result = PbShopProduct(cmd.Result)
+	q.Result = PbShopProductWithVariants(cmd.Result)
 	return nil
 }
 
@@ -600,7 +600,7 @@ func UpdateProductImages(ctx context.Context, q *wrapshop.UpdateProductImagesEnd
 	if err := catalogAggr.Dispatch(ctx, &cmd); err != nil {
 		return err
 	}
-	q.Result = PbShopProduct(cmd.Result)
+	q.Result = PbShopProductWithVariants(cmd.Result)
 	return nil
 }
 

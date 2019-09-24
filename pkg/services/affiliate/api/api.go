@@ -57,7 +57,7 @@ func TradingGetProducts(ctx context.Context, q *wrapaff.TradingGetProductsEndpoi
 		return cm.Errorf(cm.Unauthenticated, nil, "Unauthenticated")
 	}
 	paging := q.Paging.CMPaging()
-	query := &catalog.ListShopProductsQuery{
+	query := &catalog.ListShopProductsWithVariantsQuery{
 		ShopID:  modeletop.EtopTradingAccountID,
 		Paging:  *paging,
 		Filters: pbcm.ToFilters(q.Filters),
@@ -75,7 +75,7 @@ func TradingGetProducts(ctx context.Context, q *wrapaff.TradingGetProductsEndpoi
 			pbShopCommissionSetting = pbaff.PbCommissionSetting(shopCommissionSetting)
 		}
 		products = append(products, &pbaff.ShopProductResponse{
-			Product:               pbshop.PbShopProduct(product),
+			Product:               pbshop.PbShopProductWithVariants(product),
 			ShopCommissionSetting: pbShopCommissionSetting,
 		})
 	}
@@ -152,7 +152,7 @@ func GetProductPromotionByProductID(ctx context.Context, q *wrapaff.GetProductPr
 
 func AffiliateGetProducts(ctx context.Context, q *wrapaff.AffiliateGetProductsEndpoint) error {
 	paging := q.Paging.CMPaging()
-	query := &catalog.ListShopProductsQuery{
+	query := &catalog.ListShopProductsWithVariantsQuery{
 		ShopID:  modeletop.EtopTradingAccountID,
 		Paging:  *paging,
 		Filters: pbcm.ToFilters(q.Filters),
@@ -177,7 +177,7 @@ func AffiliateGetProducts(ctx context.Context, q *wrapaff.AffiliateGetProductsEn
 		}
 
 		products = append(products, &pbaff.AffiliateProductResponse{
-			Product:                    pbshop.PbShopProduct(product),
+			Product:                    pbshop.PbShopProductWithVariants(product),
 			ShopCommissionSetting:      pbTradingCommissionSetting,
 			AffiliateCommissionSetting: pbAffCommissionSetting,
 		})
@@ -191,7 +191,7 @@ func AffiliateGetProducts(ctx context.Context, q *wrapaff.AffiliateGetProductsEn
 	return nil
 }
 
-func GetShopCommissionSettingsByProducts(ctx context.Context, accountID int64, products []*servicecatalog.ShopProduct) map[int64]*affiliate.CommissionSetting {
+func GetShopCommissionSettingsByProducts(ctx context.Context, accountID int64, products []*servicecatalog.ShopProductWithVariants) map[int64]*affiliate.CommissionSetting {
 	var productIds []int64
 	for _, product := range products {
 		productIds = append(productIds, product.ProductID)

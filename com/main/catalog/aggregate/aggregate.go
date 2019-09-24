@@ -33,7 +33,7 @@ func (a *Aggregate) MessageBus() catalog.CommandBus {
 	return catalog.NewAggregateHandler(a).RegisterHandlers(b)
 }
 
-func (a *Aggregate) CreateShopProduct(ctx context.Context, args *catalog.CreateShopProductArgs) (*catalog.ShopProduct, error) {
+func (a *Aggregate) CreateShopProduct(ctx context.Context, args *catalog.CreateShopProductArgs) (*catalog.ShopProductWithVariants, error) {
 	product := &catalog.ShopProduct{
 		ProductID: cm.NewID(),
 		ShopID:    args.ShopID,
@@ -57,10 +57,11 @@ func (a *Aggregate) CreateShopProduct(ctx context.Context, args *catalog.CreateS
 	if err := a.shopProduct(ctx).CreateShopProduct(product); err != nil {
 		return nil, err
 	}
-	return product, nil
+	result, err := a.shopProduct(ctx).ShopID(args.ShopID).ID(product.ProductID).GetShopProductWithVariants()
+	return result, err
 }
 
-func (a *Aggregate) UpdateShopProductInfo(ctx context.Context, args *catalog.UpdateShopProductInfoArgs) (*catalog.ShopProduct, error) {
+func (a *Aggregate) UpdateShopProductInfo(ctx context.Context, args *catalog.UpdateShopProductInfoArgs) (*catalog.ShopProductWithVariants, error) {
 	productDB, err := a.shopProduct(ctx).ShopID(args.ShopID).ID(args.ProductID).GetShopProductDB()
 	if err != nil {
 		return nil, err
@@ -69,8 +70,8 @@ func (a *Aggregate) UpdateShopProductInfo(ctx context.Context, args *catalog.Upd
 	if err = a.shopProduct(ctx).UpdateShopProduct(updated); err != nil {
 		return nil, err
 	}
-	productReturn, err := a.shopProduct(ctx).ShopID(args.ShopID).ID(args.ProductID).GetShopProduct()
-	return productReturn, err
+	result, err := a.shopProduct(ctx).ShopID(args.ShopID).ID(args.ProductID).GetShopProductWithVariants()
+	return result, err
 }
 
 func (a *Aggregate) UpdateShopProductStatus(ctx context.Context, args *catalog.UpdateStatusArgs) (int, error) {
@@ -78,7 +79,7 @@ func (a *Aggregate) UpdateShopProductStatus(ctx context.Context, args *catalog.U
 	return count, err
 }
 
-func (a *Aggregate) UpdateShopProductImages(ctx context.Context, args *catalog.UpdateImagesArgs) (*catalog.ShopProduct, error) {
+func (a *Aggregate) UpdateShopProductImages(ctx context.Context, args *catalog.UpdateImagesArgs) (*catalog.ShopProductWithVariants, error) {
 	productDB, err := a.shopProduct(ctx).ShopID(args.ShopID).ID(args.ID).GetShopProduct()
 	if err != nil {
 		return nil, err
@@ -93,7 +94,8 @@ func (a *Aggregate) UpdateShopProductImages(ctx context.Context, args *catalog.U
 	if err = a.shopProduct(ctx).ShopID(productDB.ShopID).ID(productDB.ProductID).UpdateImageShopProduct(productDB); err != nil {
 		return nil, err
 	}
-	return productDB, nil
+	result, err := a.shopProduct(ctx).ShopID(args.ShopID).ID(args.ID).GetShopProductWithVariants()
+	return result, nil
 }
 
 func (a *Aggregate) DeleteShopProducts(ctx context.Context, args *shopping.IDsQueryShopArgs) (int, error) {
@@ -150,7 +152,6 @@ func (a *Aggregate) UpdateShopVariantInfo(ctx context.Context, args *catalog.Upd
 		return nil, err
 	}
 	updated := convert.UpdateShopVariant(variantDB, args)
-
 	if err = a.shopVariant(ctx).UpdateShopVariant(updated); err != nil {
 		return nil, err
 	}
@@ -220,23 +221,23 @@ func Patch(source []string, update []*meta.UpdateSet) ([]string, error) {
 		}
 		return arr, nil
 	}
-	var arrReturn []string
-	arrReturn = source
+	var arrResult []string
+	arrResult = source
 	if add := OptionValue(update, meta.OpAdd); add != nil {
 		var err error
-		arrReturn, _, err = add.Update(arrReturn)
+		arrResult, _, err = add.Update(arrResult)
 		if err != nil {
 			return []string{}, err
 		}
 	}
 	if remove := OptionValue(update, meta.OpRemove); remove != nil {
 		var err error
-		arrReturn, _, err = remove.Update(arrReturn)
+		arrResult, _, err = remove.Update(arrResult)
 		if err != nil {
 			return []string{}, err
 		}
 	}
-	return arrReturn, nil
+	return arrResult, nil
 }
 
 func OptionValue(update []*meta.UpdateSet, op meta.UpdateOp) *meta.UpdateSet {

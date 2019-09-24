@@ -139,7 +139,7 @@ func (u *UpdateSet) Update(set []string) (result []string, count int, err error)
 		return result, n, nil
 
 	case OpReplaceAll:
-		return set, 0, nil
+		return u.Changes, 0, nil
 
 	case OpDeleteAll:
 		return []string{}, 0, nil

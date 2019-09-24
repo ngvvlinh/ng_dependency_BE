@@ -2,7 +2,10 @@ package sqlstore
 
 import (
 	"context"
+	"strings"
 	"time"
+
+	cm "etop.vn/backend/pkg/common"
 
 	"etop.vn/api/main/catalog"
 	"etop.vn/api/meta"
@@ -105,7 +108,7 @@ func (s *ShopProductStore) CreateShopProduct(product *catalog.ShopProduct) error
 	sqlstore.MustNoPreds(s.preds)
 	productDB := convert.ShopProductDB(product)
 	_, err := s.query().Insert(productDB)
-	return err
+	return checkProductOrVariantError(err, productDB.Code)
 }
 
 func (s *ShopProductStore) GetShopProductDB() (*model.ShopProduct, error) {
@@ -227,7 +230,7 @@ func (s *ShopProductStore) ListShopProductsWithVariants() ([]*catalog.ShopProduc
 func (s *ShopProductStore) UpdateShopProduct(product *model.ShopProduct) error {
 	sqlstore.MustNoPreds(s.preds)
 	err := s.query().In("product_id", product.ProductID).UpdateAll().ShouldUpdate(product)
-	return err
+	return checkProductOrVariantError(err, product.Code)
 }
 
 func (s *ShopProductStore) UpdateStatusShopProducts(status int16) (int, error) {
@@ -253,4 +256,17 @@ func (s *ShopProductStore) SoftDelete() (int, error) {
 		"deleted_at": time.Now(),
 	})
 	return int(_deleted), err
+}
+
+func checkProductOrVariantError(e error, code string) error {
+	if e != nil {
+		errMsg := e.Error()
+		switch {
+		case strings.Contains(errMsg, "shop_product_shop_id_code_idx"):
+			e = cm.Errorf(cm.FailedPrecondition, nil, "Mã sản phẩm %v đã tồn tại. Vui lòng chọn mã khác.", code)
+		case strings.Contains(errMsg, "shop_variant_shop_id_code_idx"):
+			e = cm.Errorf(cm.FailedPrecondition, nil, "Mã phiên bản sản phẩm %v đã tồn tại. Vui lòng chọn mã khác.", code)
+		}
+	}
+	return e
 }

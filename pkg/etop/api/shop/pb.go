@@ -51,41 +51,6 @@ func PbShopVariant(m *catalog.ShopVariant) *pbshop.ShopVariant {
 	return res
 }
 
-func PbShopProducts(items []*catalog.ShopProduct) []*pbshop.ShopProduct {
-	res := make([]*pbshop.ShopProduct, len(items))
-	for i, item := range items {
-		res[i] = PbShopProduct(item)
-	}
-	return res
-}
-
-func PbShopProduct(m *catalog.ShopProduct) *pbshop.ShopProduct {
-	res := &pbshop.ShopProduct{
-		Id:            m.ProductID,
-		Info:          nil,
-		Code:          m.Code,
-		EdCode:        "",
-		Name:          m.Name,
-		Description:   m.Description,
-		ShortDesc:     m.ShortDesc,
-		DescHtml:      m.DescHTML,
-		ImageUrls:     m.ImageURLs,
-		Tags:          m.Tags,
-		Stags:         nil,
-		Note:          m.Note,
-		Status:        pbs3.Pb(model.Status3(m.Status)),
-		IsAvailable:   true,
-		ListPrice:     m.ListPrice,
-		RetailPrice:   m.RetailPrice,
-		CostPrice:     m.CostPrice,
-		CollectionIds: m.CollectionIDs,
-		Variants:      nil,
-
-		ProductSourceId: m.ShopID, // deprecated
-	}
-	return res
-}
-
 func PbShopProductsWithVariants(items []*catalog.ShopProductWithVariants) []*pbshop.ShopProduct {
 	res := make([]*pbshop.ShopProduct, len(items))
 	for i, item := range items {

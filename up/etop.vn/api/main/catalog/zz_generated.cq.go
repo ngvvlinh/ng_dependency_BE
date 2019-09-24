@@ -52,7 +52,7 @@ type CreateShopProductCommand struct {
 	PriceInfo       PriceInfo
 	ProductType     string
 
-	Result *ShopProduct `json:"-"`
+	Result *ShopProductWithVariants `json:"-"`
 }
 
 func (h AggregateHandler) HandleCreateShopProduct(ctx context.Context, msg *CreateShopProductCommand) (err error) {
@@ -108,7 +108,7 @@ type UpdateShopProductImagesCommand struct {
 	ShopID  int64
 	Updates []*meta.UpdateSet
 
-	Result *ShopProduct `json:"-"`
+	Result *ShopProductWithVariants `json:"-"`
 }
 
 func (h AggregateHandler) HandleUpdateShopProductImages(ctx context.Context, msg *UpdateShopProductImagesCommand) (err error) {
@@ -131,7 +131,7 @@ type UpdateShopProductInfoCommand struct {
 	RetailPrice dot.NullInt32
 	ProductType string
 
-	Result *ShopProduct `json:"-"`
+	Result *ShopProductWithVariants `json:"-"`
 }
 
 func (h AggregateHandler) HandleUpdateShopProductInfo(ctx context.Context, msg *UpdateShopProductInfoCommand) (err error) {

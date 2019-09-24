@@ -14,13 +14,13 @@ type Aggregate interface {
 
 	//-- shop_product --//
 
-	CreateShopProduct(context.Context, *CreateShopProductArgs) (*ShopProduct, error)
+	CreateShopProduct(context.Context, *CreateShopProductArgs) (*ShopProductWithVariants, error)
 
-	UpdateShopProductInfo(context.Context, *UpdateShopProductInfoArgs) (*ShopProduct, error)
+	UpdateShopProductInfo(context.Context, *UpdateShopProductInfoArgs) (*ShopProductWithVariants, error)
 
 	UpdateShopProductStatus(context.Context, *UpdateStatusArgs) (int, error)
 
-	UpdateShopProductImages(context.Context, *UpdateImagesArgs) (*ShopProduct, error)
+	UpdateShopProductImages(context.Context, *UpdateImagesArgs) (*ShopProductWithVariants, error)
 
 	DeleteShopProducts(context.Context, *shopping.IDsQueryShopArgs) (int, error)
 

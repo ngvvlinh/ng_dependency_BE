@@ -100,7 +100,7 @@ func (s *ShopVariantStore) CreateShopVariant(variant *catalog.ShopVariant) error
 	sqlstore.MustNoPreds(s.preds)
 	variantDB := convert.ShopVariantDB(variant)
 	_, err := s.query().Insert(variantDB)
-	return err
+	return checkProductOrVariantError(err, variantDB.Code)
 }
 
 func (s *ShopVariantStore) GetShopVariantDB() (*model.ShopVariant, error) {
@@ -184,7 +184,7 @@ func (s *ShopVariantStore) ListShopVariantsWithProduct() ([]*catalog.ShopVariant
 func (s *ShopVariantStore) UpdateShopVariant(variant *model.ShopVariant) error {
 	sqlstore.MustNoPreds(s.preds)
 	err := s.query().In("variant_id", variant.VariantID).UpdateAll().ShouldUpdate(variant)
-	return err
+	return checkProductOrVariantError(err, variant.Code)
 }
 
 func (s *ShopVariantStore) SoftDelete() (int, error) {
