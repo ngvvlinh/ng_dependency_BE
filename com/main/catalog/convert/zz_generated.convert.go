@@ -12,6 +12,29 @@ import (
 	etopmodel "etop.vn/backend/pkg/etop/model"
 )
 
+/*
+Custom conversions:
+    Attribute
+    AttributeDB
+    ShopProduct
+    ShopProductDB
+    ShopProductUpdate
+    ShopProductWithVariants
+    ShopVariant
+    ShopVariantDB
+    ShopVariantWithProduct
+
+Ignored functions:
+    Attributes                  // params are not pointer to named types
+    AttributesDB                // params are not pointer to named types
+    ShopProducts                // params are not pointer to named types
+    ShopProductsWithVariants    // params are not pointer to named types
+    ShopVariants                // params are not pointer to named types
+    ShopVariantsWithProduct     // params are not pointer to named types
+    UpdateShopProduct           // not recognized
+    UpdateShopVariant           // not recognized
+*/
+
 func init() {
 	registerConversionFunctions(scheme.Global)
 }

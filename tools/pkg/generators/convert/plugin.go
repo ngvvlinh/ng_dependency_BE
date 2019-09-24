@@ -7,6 +7,7 @@ import (
 	"regexp"
 	"sort"
 	"strings"
+	"text/tabwriter"
 
 	"golang.org/x/tools/go/packages"
 
@@ -68,6 +69,7 @@ func (p *plugin) Generate(ng generator.Engine) error {
 	}
 
 	// find all custom conversion functions, they must be declared in the conversion packages
+
 	convPairs = make(map[pair]*conversionFunc)
 	for _, gpkg := range generatingPackages {
 		for _, object := range gpkg.gpkg.Objects() {
@@ -85,6 +87,10 @@ func (p *plugin) Generate(ng generator.Engine) error {
 				return err
 			}
 			if mode == 0 {
+				gpkg.ignoredFuncs = append(gpkg.ignoredFuncs, nameWithComment{
+					Name:    fn.Name(),
+					Comment: "not recognized",
+				})
 				ll.V(2).Debugf("ignore function %v.%v because it is not a recognized signature format", fn.Pkg().Path(), fn.Name())
 				continue
 			}
@@ -100,7 +106,11 @@ func (p *plugin) Generate(ng generator.Engine) error {
 			}
 			pair, _, _ := getPairWithPointer(arg, out)
 			if !pair.valid {
-				ll.V(2).Debugf("ignore function %v.%v because its params are not pointer to named type", fn.Pkg().Path(), fn.Name())
+				gpkg.ignoredFuncs = append(gpkg.ignoredFuncs, nameWithComment{
+					Name:    fn.Name(),
+					Comment: "params are not pointer to named types",
+				})
+				ll.V(2).Debugf("ignore function %v.%v because its params are not pointer to named types", fn.Pkg().Path(), fn.Name())
 				continue
 			}
 			if convPairs[pair] != nil {
@@ -108,6 +118,9 @@ func (p *plugin) Generate(ng generator.Engine) error {
 					"duplicated conversion functions from %v to %v (function %v and %v)",
 					arg.Type().String(), out.Type().String(), convPairs[pair].Func.Name(), fn.Name())
 			}
+			gpkg.customConvs = append(gpkg.customConvs, nameWithComment{
+				Name: fn.Name(),
+			})
 			convPairs[pair] = &conversionFunc{
 				pair: pair,
 				Obj:  object,
@@ -120,6 +133,7 @@ func (p *plugin) Generate(ng generator.Engine) error {
 	// generate
 	for _, gpkg := range generatingPackages {
 		currentPrinter = gpkg.gpkg.Generate()
+		generateComments(currentPrinter, gpkg.customConvs, gpkg.ignoredFuncs)
 		_, err := generateConverts(currentPrinter, convPairs, gpkg.objMap)
 		if err != nil {
 			return err
@@ -132,6 +146,9 @@ type generatingPackage struct {
 	gpkg   *generator.GeneratingPackage
 	objMap map[objName]*objMap
 	steps  []*generatingPackageStep
+
+	customConvs  []nameWithComment
+	ignoredFuncs []nameWithComment
 }
 
 type generatingPackageStep struct {
@@ -148,6 +165,11 @@ type objGen struct {
 	mode string
 	obj  generator.Object
 	opts options
+}
+
+type nameWithComment struct {
+	Name    string
+	Comment string
 }
 
 type objName struct {
@@ -316,15 +338,25 @@ func validateConvertFunc(fn *types.Func) (mode int, arg, out *types.Var, err err
 		out = params.At(1)
 		return 2, arg, out, nil
 
-	case params.Len() == 2 && results.Len() == 0:
-		if params.At(1).Type() == results.At(0).Type() {
+	case params.Len() == 2 && results.Len() == 1:
+		if validatePtrTypeEquality(params.At(1).Type(), results.At(0).Type()) {
 			arg = params.At(0)
 			out = params.At(1)
 			return 3, arg, out, nil
 		}
 	}
+
 	// ignore unrecognized functions
 	return 0, nil, nil, nil
+}
+
+func validatePtrTypeEquality(t0, t1 types.Type) bool {
+	ptr0, ok0 := t0.(*types.Pointer)
+	ptr1, ok1 := t1.(*types.Pointer)
+	if !ok0 || !ok1 {
+		return false
+	}
+	return ptr0.Elem() == ptr1.Elem()
 }
 
 func validateEquality(pkgs1, pkgs2 []string) (bool, error) {
@@ -474,7 +506,43 @@ func hasBase(pkgPath, tail string) bool {
 		strings.HasSuffix(pkgPath, tail) && pkgPath[len(pkgPath)-len(tail)-1] == '/'
 }
 
-func generateConverts(p generator.Printer, convPair map[pair]*conversionFunc, apiObjMap map[objName]*objMap) (count int, _ error) {
+func generateComments(p generator.Printer, customConversions, ignoredFuncs []nameWithComment) {
+	sort.Slice(customConversions, func(i, j int) bool {
+		return customConversions[i].Name < customConversions[j].Name
+	})
+	sort.Slice(ignoredFuncs, func(i, j int) bool {
+		return ignoredFuncs[i].Name < ignoredFuncs[j].Name
+	})
+	tp := tabwriter.NewWriter(p, 16, 4, 0, ' ', 0)
+	w(p, "/*\n")
+	w(p, "Custom conversions:")
+	if len(customConversions) == 0 {
+		w(p, " (none)\n")
+	} else {
+		w(p, "\n")
+	}
+	for _, c := range customConversions {
+		w(tp, "    %v\n", c.Name)
+	}
+	_ = tp.Flush()
+	w(p, "\nIgnored functions:")
+	if len(ignoredFuncs) == 0 {
+		w(p, " (none)\n")
+	} else {
+		w(p, "\n")
+	}
+	for _, c := range ignoredFuncs {
+		w(tp, "    %v\t    // %v\n", c.Name, c.Comment)
+	}
+	_ = tp.Flush()
+	w(p, "*/\n")
+}
+
+func generateConverts(
+	p generator.Printer,
+	convPair map[pair]*conversionFunc,
+	apiObjMap map[objName]*objMap,
+) (count int, _ error) {
 	list := make([]objName, 0, len(apiObjMap))
 	for objName, obj := range apiObjMap {
 		if len(obj.gens) != 0 {
@@ -651,12 +719,12 @@ func includeCustomConversion(p generator.Printer, vars map[string]interface{}, a
 	vars["CustomConversionMode"] = 0
 	if conv := convPairs[getPair(arg, out)]; conv != nil {
 		vars["CustomConversionMode"] = conv.Mode
-		funcType := conv.Obj.Name()
+		funcName := conv.Obj.Name()
 		alias := p.Qualifier(conv.Obj.Pkg())
 		if alias != "" {
-			funcType = alias + "." + funcType
+			funcName = alias + "." + funcName
 		}
-		vars["CustomConversionFuncType"] = funcType
+		vars["CustomConversionFuncName"] = funcName
 	}
 }
 

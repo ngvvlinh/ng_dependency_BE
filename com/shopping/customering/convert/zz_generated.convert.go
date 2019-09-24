@@ -12,6 +12,22 @@ import (
 	scheme "etop.vn/backend/pkg/common/scheme"
 )
 
+/*
+Custom conversions:
+    CreateShopCustomer
+    CreateShopTraderAddress
+    ShopCustomer
+    ShopCustomerDB
+    ShopTraderAddress
+    ShopTraderAddressDB
+
+Ignored functions:
+    Addresses                  // params are not pointer to named types
+    ShopCustomers              // params are not pointer to named types
+    UpdateShopCustomer         // not recognized
+    UpdateShopTraderAddress    // not recognized
+*/
+
 func init() {
 	registerConversionFunctions(scheme.Global)
 }

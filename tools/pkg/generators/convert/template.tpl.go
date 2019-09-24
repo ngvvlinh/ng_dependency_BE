@@ -25,7 +25,7 @@ func registerConversionFunctions(s *scheme.Scheme) {
 const tplConvertCustomText = `
 func {{.Action}}_{{.ArgStr}}_{{.OutStr}}(arg *{{.ArgType}}, out *{{.OutType}}) *{{.OutType}} {
   {{- if .CustomConversionMode|eq 1}}
-    return {{.CustomConversionFuncType}}(arg)
+    return {{.CustomConversionFuncName}}(arg)
   {{- else if .CustomConversionMode|eq 2}}
     if arg == nil {
         return nil
@@ -33,10 +33,10 @@ func {{.Action}}_{{.ArgStr}}_{{.OutStr}}(arg *{{.ArgType}}, out *{{.OutType}}) *
     if out == nil {
         out = &{{.OutType}}{}
     }
-  {{.CustomConversionFuncType}}(arg, out)
+  {{.CustomConversionFuncName}}(arg, out)
     return out
   {{- else if .CustomConversionMode|eq 3}}
-    return {{.CustomConversionFuncType}}(arg, out)
+    return {{.CustomConversionFuncName}}(arg, out)
   {{- else}}
     if arg == nil {
         return nil
