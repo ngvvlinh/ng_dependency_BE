@@ -1,7 +1,6 @@
 package client
 
 import (
-	"encoding/json"
 	"io/ioutil"
 	"net/http"
 	"net/url"
@@ -9,6 +8,7 @@ import (
 	"time"
 
 	model2 "etop.vn/backend/com/supporting/crm/vht/model"
+	"etop.vn/common/jsonx"
 
 	cm "etop.vn/backend/pkg/common"
 )
@@ -65,7 +65,7 @@ func (c *Client) Request(baseUrl string, method string, query string, vhtResp in
 	if err != nil {
 		return err
 	}
-	err = json.Unmarshal(respBytes, vhtResp)
+	err = jsonx.Unmarshal(respBytes, vhtResp)
 	if err != nil {
 		return err
 	}

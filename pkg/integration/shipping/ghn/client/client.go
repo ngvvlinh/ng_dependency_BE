@@ -3,7 +3,6 @@ package client
 import (
 	"context"
 	"crypto/tls"
-	"encoding/json"
 	"fmt"
 	"net/http"
 	"strings"
@@ -11,6 +10,7 @@ import (
 
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/httpreq"
+	"etop.vn/common/jsonx"
 	"etop.vn/common/l"
 )
 
@@ -147,7 +147,7 @@ func (c *Client) sendRequest(ctx context.Context, path string, req, resp interfa
 			if httpreq.IsNullJsonRaw(errResp.Data) {
 				return cm.Error(cm.ExternalServiceError, "Lỗi không xác định từ Giao Hang Nhanh: null response. Chúng tôi đang liên hệ với Giao Hang Nhanh để xử lý. Xin lỗi quý khách vì sự bất tiện này. Nếu cần thêm thông tin vui lòng liên hệ hotro@etop.vn.", nil)
 			}
-			if err = json.Unmarshal(errResp.Data, resp); err != nil {
+			if err = jsonx.Unmarshal(errResp.Data, resp); err != nil {
 				return cm.Errorf(cm.ExternalServiceError, err, "Lỗi không xác định từ Giao Hang Nhanh: %v. Chúng tôi đang liên hệ với Giao Hang Nhanh để xử lý. Xin lỗi quý khách vì sự bất tiện này. Nếu cần thêm thông tin vui lòng liên hệ hotro@etop.vn.", err)
 			}
 		}
@@ -156,10 +156,10 @@ func (c *Client) sendRequest(ctx context.Context, path string, req, resp interfa
 	case status >= 400:
 		var meta map[string]string
 		if !httpreq.IsNullJsonRaw(errResp.Data) {
-			if err = json.Unmarshal(errResp.Data, &meta); err != nil {
+			if err = jsonx.Unmarshal(errResp.Data, &meta); err != nil {
 				// The slow path
 				var metaX map[string]interface{}
-				_ = json.Unmarshal(errResp.Data, &metaX)
+				_ = jsonx.Unmarshal(errResp.Data, &metaX)
 				meta = make(map[string]string)
 				for k, v := range metaX {
 					meta[k] = fmt.Sprint(v)

@@ -1,9 +1,8 @@
 package client
 
 import (
-	"encoding/json"
-
 	"etop.vn/backend/pkg/common/httpreq"
+	"etop.vn/common/jsonx"
 
 	"etop.vn/api/main/etop"
 	shipnowtypes "etop.vn/api/main/shipnow/types"
@@ -151,7 +150,7 @@ type DeliveryPointRequest struct {
 }
 
 func ConvertDeliveryPointsRequestToString(points []*DeliveryPointRequest) string {
-	path, err := json.Marshal(points)
+	path, err := jsonx.Marshal(points)
 	if err != nil {
 		return ""
 	}
@@ -229,7 +228,7 @@ type Item struct {
 }
 
 func ConvertItemsToString(items []Item) string {
-	res, err := json.Marshal(items)
+	res, err := jsonx.Marshal(items)
 	if err != nil {
 		return ""
 	}

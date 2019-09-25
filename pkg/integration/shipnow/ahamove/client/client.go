@@ -3,7 +3,6 @@ package client
 import (
 	"context"
 	"crypto/tls"
-	"encoding/json"
 	"fmt"
 	"net/http"
 	"net/url"
@@ -13,6 +12,7 @@ import (
 
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/httpreq"
+	"etop.vn/common/jsonx"
 	"etop.vn/common/l"
 )
 
@@ -257,7 +257,7 @@ func handleResponse(res *httpreq.RestyResponse, result interface{}, msg string) 
 			if httpreq.IsNullJsonRaw(body) {
 				return cm.Error(cm.ExternalServiceError, "Lỗi không xác định từ ahamove: null response. Chúng tôi đang liên hệ với ahamove để xử lý. Xin lỗi quý khách vì sự bất tiện này. Nếu cần thêm thông tin vui lòng liên hệ hotro@etop.vn.", nil)
 			}
-			if err = json.Unmarshal(body, result); err != nil {
+			if err = jsonx.Unmarshal(body, result); err != nil {
 				return cm.Errorf(cm.ExternalServiceError, err, "Lỗi không xác định từ ahamove: %v. Chúng tôi đang liên hệ với ahamove để xử lý. Xin lỗi quý khách vì sự bất tiện này. Nếu cần thêm thông tin vui lòng liên hệ hotro@etop.vn.", err)
 			}
 		}
@@ -266,10 +266,10 @@ func handleResponse(res *httpreq.RestyResponse, result interface{}, msg string) 
 	case status >= 400:
 		var meta map[string]string
 		if !httpreq.IsNullJsonRaw(body) {
-			if err = json.Unmarshal(body, &meta); err != nil {
+			if err = jsonx.Unmarshal(body, &meta); err != nil {
 				// The slow path
 				var metaX map[string]interface{}
-				_ = json.Unmarshal(body, &metaX)
+				_ = jsonx.Unmarshal(body, &metaX)
 				meta = make(map[string]string)
 				for k, v := range metaX {
 					meta[k] = fmt.Sprint(v)

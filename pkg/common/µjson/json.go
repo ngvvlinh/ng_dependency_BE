@@ -9,11 +9,11 @@
 package µjson
 
 import (
-	"encoding/json"
 	"fmt"
 	"strings"
 
 	cm "etop.vn/backend/pkg/common"
+	"etop.vn/common/jsonx"
 	"etop.vn/common/l"
 )
 
@@ -173,8 +173,8 @@ func FilterAndRename(b []byte, input []byte) (output []byte, _ error) {
 		defer func() {
 			var v interface{}
 			out := b[lenb:]
-			err1 := json.Unmarshal(input, &v)
-			err2 := json.Unmarshal(out, &v)
+			err1 := jsonx.Unmarshal(input, &v)
+			err2 := jsonx.Unmarshal(out, &v)
 			if err1 != nil || err2 != nil {
 				if err1 != nil {
 					ll.Error("Invalid json input")

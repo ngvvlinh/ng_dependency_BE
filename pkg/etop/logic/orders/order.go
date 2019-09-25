@@ -2,7 +2,6 @@ package orderS
 
 import (
 	"context"
-	"encoding/json"
 	"net/url"
 	"regexp"
 	"strings"
@@ -20,6 +19,7 @@ import (
 	"etop.vn/backend/pkg/etop/logic/etop_shipping_price"
 	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/common/bus"
+	"etop.vn/common/jsonx"
 	"etop.vn/common/l"
 	"etop.vn/common/xerrors"
 )
@@ -556,8 +556,8 @@ func PrepareOrder(m *pborder.CreateOrderRequest, lines []*ordermodel.OrderLine) 
 	if m.ExternalId != "" && !validate.ExternalCode(m.ExternalId) {
 		return nil, cm.Error(cm.InvalidArgument, "Mã đơn hàng external_id không hợp lệ", nil)
 	}
-	externalMeta, _ := json.Marshal(m.ExternalMeta)
-	referralMeta, _ := json.Marshal(m.ReferralMeta)
+	externalMeta, _ := jsonx.Marshal(m.ExternalMeta)
+	referralMeta, _ := jsonx.Marshal(m.ReferralMeta)
 	order := &ordermodel.Order{
 		ID:         0,
 		ShopID:     0,

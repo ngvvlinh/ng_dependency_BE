@@ -2,7 +2,6 @@ package identity
 
 import (
 	"context"
-	"encoding/json"
 	"time"
 
 	"etop.vn/api/main/identity"
@@ -14,6 +13,7 @@ import (
 	"etop.vn/backend/pkg/common/validate"
 	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/common/bus"
+	"etop.vn/common/jsonx"
 )
 
 var _ identity.Aggregate = &Aggregate{}
@@ -168,7 +168,7 @@ func (a *Aggregate) RequestVerifyExternalAccountAhamove(ctx context.Context, arg
 			return err
 		}
 		// update external_ticket_id
-		externalData, _ := json.Marshal(res)
+		externalData, _ := jsonx.Marshal(res)
 		update := &sqlstore.UpdateXAccountAhamoveVerifiedInfoArgs{
 			ID:                    account.ID,
 			ExternalTickerID:      res.TicketID,

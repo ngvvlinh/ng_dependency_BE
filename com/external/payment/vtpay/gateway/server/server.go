@@ -2,7 +2,6 @@ package server
 
 import (
 	"context"
-	"encoding/json"
 
 	"etop.vn/api/external/payment"
 
@@ -11,6 +10,7 @@ import (
 	paymentlogmodel "etop.vn/backend/com/etc/log/payment/model"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/httpx"
+	"etop.vn/common/jsonx"
 	"etop.vn/common/l"
 )
 
@@ -30,7 +30,7 @@ func New(vtpayAggregate vtpaygateway.CommandBus, paymentLogA *paymentlogaggregat
 
 func (s *Server) SaveLog(ctx context.Context, data interface{}, orderID string, action paymentlogmodel.PaymentAction) error {
 	id := cm.NewID()
-	_data, err := json.Marshal(data)
+	_data, err := jsonx.Marshal(data)
 	if err != nil {
 		return err
 	}

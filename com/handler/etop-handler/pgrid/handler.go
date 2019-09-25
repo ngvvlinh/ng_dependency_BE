@@ -2,7 +2,6 @@ package pgrid
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"time"
 
@@ -11,6 +10,7 @@ import (
 	"etop.vn/backend/com/handler/pgevent"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/mq"
+	"etop.vn/common/jsonx"
 	"etop.vn/common/l"
 	"etop.vn/common/xerrors"
 )
@@ -26,7 +26,7 @@ const tenYears = 365 * 10 * 24 * time.Hour
 func WrapHandlerFunc(fn HandlerFunc) mq.EventHandler {
 	return func(ctx context.Context, msg *sarama.ConsumerMessage) (mq.Code, error) {
 		var event pgevent.PgEvent
-		if err := json.Unmarshal(msg.Value, &event); err != nil {
+		if err := jsonx.Unmarshal(msg.Value, &event); err != nil {
 			return mq.CodeStop, wrapError(err, msg, nil)
 		}
 

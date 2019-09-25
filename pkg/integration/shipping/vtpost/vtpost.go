@@ -2,7 +2,6 @@ package vtpost
 
 import (
 	"context"
-	"encoding/json"
 	"strconv"
 	"strings"
 	"sync"
@@ -14,6 +13,7 @@ import (
 	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/backend/pkg/integration/shipping"
 	vtpostclient "etop.vn/backend/pkg/integration/shipping/vtpost/client"
+	"etop.vn/common/jsonx"
 	"etop.vn/common/l"
 )
 
@@ -213,7 +213,7 @@ func CalcUpdateFulfillment(ffm *shipmodel.Fulfillment, orderMsg vtpostclient.Cal
 	}
 
 	now := time.Now()
-	data, _ := json.Marshal(orderMsg)
+	data, _ := jsonx.Marshal(orderMsg)
 	statusCode := orderMsg.OrderStatus
 	vtpostStatus := vtpostclient.ToVTPostShippingState(statusCode)
 	update := &shipmodel.Fulfillment{

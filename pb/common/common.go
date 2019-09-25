@@ -2,21 +2,22 @@ package common
 
 import (
 	"bytes"
-	"encoding/json"
 	"errors"
 	"strings"
 	"time"
 
-	meta "etop.vn/api/meta"
-	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/etop/model"
-	"etop.vn/common/l"
-	"etop.vn/common/xerrors"
 	"github.com/asaskevich/govalidator"
 	"github.com/gogo/protobuf/proto"
 	"github.com/golang/protobuf/jsonpb"
 	"github.com/golang/protobuf/ptypes"
 	pbts "github.com/golang/protobuf/ptypes/timestamp"
+
+	meta "etop.vn/api/meta"
+	cm "etop.vn/backend/pkg/common"
+	"etop.vn/backend/pkg/etop/model"
+	"etop.vn/common/jsonx"
+	"etop.vn/common/l"
+	"etop.vn/common/xerrors"
 )
 
 var ll = l.New()
@@ -233,7 +234,7 @@ func Updated(updated int) *UpdatedResponse {
 
 // PbRawJSON ...
 func PbRawJSON(v interface{}) *RawJSONObject {
-	data, _ := json.Marshal(v)
+	data, _ := jsonx.Marshal(v)
 	return &RawJSONObject{Data: data}
 }
 

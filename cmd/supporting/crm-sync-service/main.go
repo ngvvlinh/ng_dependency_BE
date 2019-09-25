@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"encoding/json"
 	"flag"
 	"io/ioutil"
 	"net/http"
@@ -24,6 +23,7 @@ import (
 	"etop.vn/backend/pkg/common/metrics"
 	vhtclient "etop.vn/backend/pkg/integration/vht/client"
 	vtigerclient "etop.vn/backend/pkg/integration/vtiger/client"
+	"etop.vn/common/jsonx"
 	"etop.vn/common/l"
 )
 
@@ -119,6 +119,6 @@ func ReadMappingFile(filename string) (configMap mapping.ConfigMap, _ error) {
 	if err != nil {
 		return nil, err
 	}
-	err = json.Unmarshal(body, &configMap)
+	err = jsonx.Unmarshal(body, &configMap)
 	return
 }

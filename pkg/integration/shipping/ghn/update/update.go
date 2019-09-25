@@ -1,7 +1,6 @@
 package update
 
 import (
-	"encoding/json"
 	"fmt"
 	"net/http"
 	"time"
@@ -13,6 +12,7 @@ import (
 	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/backend/pkg/integration/shipping"
 	ghnclient "etop.vn/backend/pkg/integration/shipping/ghn/client"
+	"etop.vn/common/jsonx"
 	"etop.vn/common/l"
 )
 
@@ -52,7 +52,7 @@ func CalcUpdateFulfillment(ffm *shipmodel.Fulfillment, msg *ghnclient.CallbackOr
 
 	now := time.Now()
 	state := ghnclient.State(msg.CurrentStatus)
-	data, _ := json.Marshal(msg)
+	data, _ := jsonx.Marshal(msg)
 
 	// GET LOGS
 	ffm, _ = SyncTrackingOrder(ffm)
@@ -176,7 +176,7 @@ func SyncTrackingOrder(ffm *shipmodel.Fulfillment) (*shipmodel.Fulfillment, erro
 			// remove 'resultOrder='
 			orderStr = orderStr[12:]
 			var order ResultOrder
-			if err = json.Unmarshal([]byte(orderStr), &order); err != nil {
+			if err = jsonx.Unmarshal([]byte(orderStr), &order); err != nil {
 				ll.Error("Lỗi không xác định", l.Error(err), l.String("shipping_code", ffm.ShippingCode))
 			}
 			var logs []*model.ExternalShippingLog

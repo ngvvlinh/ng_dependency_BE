@@ -1,12 +1,12 @@
 package cm
 
 import (
-	"encoding/json"
 	"regexp"
 	"strconv"
 	"strings"
 	"time"
 
+	"etop.vn/common/jsonx"
 	"etop.vn/common/l"
 )
 
@@ -34,7 +34,7 @@ func (t *TimeAsMillis) UnmarshalJSON(b []byte) error {
 	}
 
 	var v int64
-	err := json.Unmarshal(b, &v)
+	err := jsonx.Unmarshal(b, &v)
 	if err != nil {
 		return err
 	}

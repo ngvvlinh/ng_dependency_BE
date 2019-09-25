@@ -1,7 +1,6 @@
 package vtigerstore
 
 import (
-	"encoding/json"
 	"net/url"
 	"strconv"
 
@@ -12,6 +11,7 @@ import (
 	cm "etop.vn/backend/pkg/common"
 	sqlbuilder "etop.vn/backend/pkg/common/simple-sql-builder"
 	vtigerclient "etop.vn/backend/pkg/integration/vtiger/client"
+	"etop.vn/common/jsonx"
 )
 
 var encoder = schema.NewEncoder()
@@ -117,7 +117,7 @@ func (v *VtigerStore) CreateOrUpdateVtiger(
 		}
 	}
 
-	etop2VtigerString, err := json.Marshal(etop2Vtiger)
+	etop2VtigerString, err := jsonx.Marshal(etop2Vtiger)
 	if err != nil {
 		return nil, err
 	}

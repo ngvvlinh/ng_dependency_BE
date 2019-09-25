@@ -1,7 +1,6 @@
 package xerrors
 
 import (
-	"encoding/json"
 	"fmt"
 	"io"
 	"reflect"
@@ -14,6 +13,7 @@ import (
 	"go.uber.org/zap/zapcore"
 	"google.golang.org/grpc/codes"
 
+	"etop.vn/common/jsonx"
 	"etop.vn/common/xerrors/logline"
 )
 
@@ -463,7 +463,7 @@ func (e *APIError) WithMetaJson(key string, value interface{}) *APIError {
 	if e.Meta == nil {
 		e.Meta = make(map[string]string)
 	}
-	data, err := json.Marshal(value)
+	data, err := jsonx.Marshal(value)
 	if err != nil {
 		e.Meta[key] = fmt.Sprint(err)
 	} else {
@@ -575,9 +575,9 @@ func PrintStack(err error) {
 }
 
 func marshal(v interface{}) []byte {
-	data, err := json.Marshal(v)
+	data, err := jsonx.Marshal(v)
 	if err != nil {
-		data, _ = json.Marshal(err)
+		data, _ = jsonx.Marshal(err)
 	}
 	return data
 }

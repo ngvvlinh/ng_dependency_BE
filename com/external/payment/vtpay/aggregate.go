@@ -2,7 +2,6 @@ package vtpay
 
 import (
 	"context"
-	"encoding/json"
 
 	"etop.vn/common/bus"
 
@@ -13,6 +12,7 @@ import (
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/cmsql"
 	vtpayclient "etop.vn/backend/pkg/integration/payment/vtpay/client"
+	"etop.vn/common/jsonx"
 )
 
 type Aggregate struct {
@@ -59,7 +59,7 @@ func (a *Aggregate) HandleExternalDataOrderResponse(ctx context.Context, orderID
 	order := queryOrder.Result
 
 	paymentStatus := vtpayclient.PaymentStatus(args.PaymentStatus)
-	data, _ := json.Marshal(args)
+	data, _ := jsonx.Marshal(args)
 
 	return a.db.InTransaction(ctx, func(tx cmsql.QueryInterface) error {
 		cmd := &payment.CreateOrUpdatePaymentCommand{

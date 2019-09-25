@@ -2,13 +2,13 @@ package sync
 
 import (
 	"context"
-	"encoding/json"
 	"time"
 
 	"etop.vn/backend/com/supporting/crm/vht/model"
 	"etop.vn/backend/com/supporting/crm/vht/sqlstore"
 	cm "etop.vn/backend/pkg/common"
 	vhtclient "etop.vn/backend/pkg/integration/vht/client"
+	"etop.vn/common/jsonx"
 )
 
 type SyncVht struct {
@@ -58,7 +58,7 @@ func (s *SyncVht) SyncVhtCallHistory(ctx context.Context, lasTimeSync time.Time)
 					continue
 				}
 				var oldDataMarshal []byte
-				oldDataMarshal, err = json.Marshal(oldData)
+				oldDataMarshal, err = jsonx.Marshal(oldData)
 				data.OData = string(oldDataMarshal)
 				err = s.VhtCallHistoryStore(ctx).ByCallID(data.CallID).UpdateVhtCallHistory(data)
 			} else {

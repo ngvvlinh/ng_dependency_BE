@@ -3,7 +3,6 @@ package sender
 import (
 	"bytes"
 	"context"
-	"encoding/json"
 	"fmt"
 	"io"
 	"strconv"
@@ -14,6 +13,7 @@ import (
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/redis"
 	"etop.vn/backend/pkg/etop/model"
+	"etop.vn/common/jsonx"
 	"etop.vn/common/l"
 )
 
@@ -139,7 +139,7 @@ func (s *SingleSender) storeToDatabase(callbackID int64, mc *types.MessageCollec
 	// TODO: refactor
 	changesData := buildJSON(callbackID, mc.Messages)
 	changesData = changesData[len(jsonOpen)-1 : len(changesData)-1]
-	statesData, _ := json.Marshal(states)
+	statesData, _ := jsonx.Marshal(states)
 
 	data := &model.Callback{
 		ID:        callbackID,

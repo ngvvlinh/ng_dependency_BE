@@ -2,7 +2,6 @@ package ghtk
 
 import (
 	"context"
-	"encoding/json"
 	"math/rand"
 	"sort"
 	"strconv"
@@ -18,6 +17,7 @@ import (
 	"etop.vn/backend/pkg/integration/shipping"
 	ghtkclient "etop.vn/backend/pkg/integration/shipping/ghtk/client"
 	"etop.vn/common/bus"
+	"etop.vn/common/jsonx"
 	"etop.vn/common/l"
 )
 
@@ -220,7 +220,7 @@ func CalcUpdateFulfillment(ffm *shipmodel.Fulfillment, msg *ghtkclient.CallbackO
 	}
 
 	now := time.Now()
-	data, _ := json.Marshal(ghtkOrder)
+	data, _ := jsonx.Marshal(ghtkOrder)
 	var statusID int
 	if msg == nil {
 		statusID, _ = strconv.Atoi(ghtkOrder.Status.String())

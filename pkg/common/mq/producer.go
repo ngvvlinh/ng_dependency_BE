@@ -2,11 +2,11 @@ package mq
 
 import (
 	"context"
-	"encoding/json"
 	"time"
 
 	"github.com/Shopify/sarama"
 
+	"etop.vn/common/jsonx"
 	"etop.vn/common/l"
 )
 
@@ -63,7 +63,7 @@ func (mq *KafkaProducer) WithTopic(topic string) Producer {
 }
 
 func (mq *KafkaProducer) SendJSON(topic string, partition int32, id string, v interface{}) {
-	data, err := json.Marshal(v)
+	data, err := jsonx.Marshal(v)
 	if err != nil {
 		ll.Panic("error marshalling", l.Error(err))
 	}
@@ -92,7 +92,7 @@ type kafkaProducer struct {
 }
 
 func (mq kafkaProducer) SendJSON(partition int32, id string, v interface{}) {
-	data, err := json.Marshal(v)
+	data, err := jsonx.Marshal(v)
 	if err != nil {
 		ll.Panic("error marshalling", l.Error(err))
 	}

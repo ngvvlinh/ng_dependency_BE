@@ -3,7 +3,6 @@ package client
 import (
 	"context"
 	"crypto/tls"
-	"encoding/json"
 	"fmt"
 	"net/http"
 	"net/url"
@@ -15,6 +14,7 @@ import (
 	"etop.vn/backend/pkg/common/httpreq"
 	"etop.vn/backend/pkg/common/validate"
 	"etop.vn/backend/pkg/etop/model"
+	"etop.vn/common/jsonx"
 	"etop.vn/common/l"
 )
 
@@ -216,7 +216,7 @@ func handleResponse(res *httpreq.RestyResponse, result ResponseInterface, msg st
 			if httpreq.IsNullJsonRaw(body) {
 				return cm.Error(cm.ExternalServiceError, "Lỗi không xác định từ Giaohangtietkiem: null response. Chúng tôi đang liên hệ với Giaohangtietkiem để xử lý. Xin lỗi quý khách vì sự bất tiện này. Nếu cần thêm thông tin vui lòng liên hệ hotro@etop.vn.", nil)
 			}
-			if err = json.Unmarshal(body, result); err != nil {
+			if err = jsonx.Unmarshal(body, result); err != nil {
 				return cm.Errorf(cm.ExternalServiceError, err, "Lỗi không xác định từ Giaohangtietkiem: %v. Chúng tôi đang liên hệ với Giaohangtietkiem để xử lý. Xin lỗi quý khách vì sự bất tiện này. Nếu cần thêm thông tin vui lòng liên hệ hotro@etop.vn.", err)
 			}
 			cr := result.GetCommonResponse()
@@ -230,10 +230,10 @@ func handleResponse(res *httpreq.RestyResponse, result ResponseInterface, msg st
 	case status >= 400:
 		var meta map[string]string
 		if !httpreq.IsNullJsonRaw(body) {
-			if err = json.Unmarshal(body, &meta); err != nil {
+			if err = jsonx.Unmarshal(body, &meta); err != nil {
 				// The slow path
 				var metaX map[string]interface{}
-				_ = json.Unmarshal(body, &metaX)
+				_ = jsonx.Unmarshal(body, &metaX)
 				meta = make(map[string]string)
 				for k, v := range metaX {
 					meta[k] = fmt.Sprint(v)

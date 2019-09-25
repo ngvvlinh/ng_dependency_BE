@@ -4,7 +4,6 @@ import (
 	"crypto/rand"
 	"crypto/sha1"
 	"encoding/hex"
-	"encoding/json"
 	"fmt"
 	"io"
 	"sort"
@@ -15,6 +14,7 @@ import (
 
 	"github.com/dgrijalva/jwt-go"
 
+	"etop.vn/common/jsonx"
 	"etop.vn/common/l"
 )
 
@@ -68,12 +68,12 @@ func BoolDefault(b *bool, def bool) bool {
 
 // JSONTime encodes time for json request
 func JSONTime(t time.Time) string {
-	data, _ := json.Marshal(t)
+	data, _ := jsonx.Marshal(t)
 	return string(data[1 : len(data)-1])
 }
 
 func JSON(v interface{}) []byte {
-	data, err := json.Marshal(v)
+	data, err := jsonx.Marshal(v)
 	if err != nil {
 		panic(err)
 	}
@@ -81,7 +81,7 @@ func JSON(v interface{}) []byte {
 }
 
 func JSONString(v interface{}) string {
-	data, err := json.Marshal(v)
+	data, err := jsonx.Marshal(v)
 	if err != nil {
 		panic(err)
 	}
@@ -161,7 +161,7 @@ func IntsContain(list []int, i int) bool {
 }
 
 func ToJSON(v interface{}) []byte {
-	data, err := json.Marshal(v)
+	data, err := jsonx.Marshal(v)
 	if err != nil {
 		panic(err)
 	}
@@ -277,9 +277,9 @@ func FormatCurrency(num int) string {
 }
 
 func ConvertStructToMapStringString(data interface{}) map[string]string {
-	_data, _ := json.Marshal(data)
+	_data, _ := jsonx.Marshal(data)
 	var metaX map[string]interface{}
-	_ = json.Unmarshal(_data, &metaX)
+	_ = jsonx.Unmarshal(_data, &metaX)
 	meta := make(map[string]string)
 	for k, v := range metaX {
 		meta[k] = fmt.Sprint(v)

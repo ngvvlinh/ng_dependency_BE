@@ -1,10 +1,11 @@
 package logline
 
 import (
-	"encoding/json"
 	"strconv"
 
 	zc "go.uber.org/zap/zapcore"
+
+	"etop.vn/common/jsonx"
 )
 
 func ValueOf(f zc.Field) interface{} {
@@ -60,9 +61,9 @@ func (l LogLine) MarshalTo(b []byte) []byte {
 }
 
 func marshal(v interface{}) []byte {
-	data, err := json.Marshal(v)
+	data, err := jsonx.Marshal(v)
 	if err != nil {
-		data, _ = json.Marshal(err)
+		data, _ = jsonx.Marshal(err)
 	}
 	return data
 }

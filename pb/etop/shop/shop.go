@@ -2,7 +2,6 @@ package shop
 
 import (
 	"context"
-	"encoding/json"
 	"net/url"
 	"strconv"
 
@@ -17,6 +16,7 @@ import (
 	pbetop "etop.vn/backend/pb/etop"
 	pbs3 "etop.vn/backend/pb/etop/etc/status3"
 	"etop.vn/backend/pkg/etop/model"
+	"etop.vn/common/jsonx"
 )
 
 func PbCollections(items []*catalogmodel.ShopCollection) []*Collection {
@@ -113,13 +113,13 @@ func (m *SummaryTable) MarshalJSONPB(_ *jsonpb.Marshaler) ([]byte, error) {
 		Rows:    m.Rows,
 		Data:    data,
 	}
-	return json.Marshal(res)
+	return jsonx.Marshal(res)
 }
 
 // UnmarshalJSONPB implements JSONPBUnmarshaler
 func (m *SummaryTable) UnmarshalJSONPB(_ *jsonpb.Unmarshaler, data []byte) error {
 	var tmp SummaryTableJSON
-	if err := json.Unmarshal(data, &tmp); err != nil {
+	if err := jsonx.Unmarshal(data, &tmp); err != nil {
 		return err
 	}
 	ncol := len(tmp.Columns)

@@ -7,6 +7,7 @@ import (
 	"sync"
 
 	"etop.vn/api/meta"
+	"etop.vn/common/jsonx"
 	"etop.vn/common/l"
 )
 
@@ -53,7 +54,10 @@ func SetEnvironment(e string) {
 	switch e {
 	case EnvDev:
 		isDev = true
+		jsonx.EnableValidation()
+
 	case EnvStag:
+		jsonx.EnableValidation()
 
 	case EnvSandbox:
 

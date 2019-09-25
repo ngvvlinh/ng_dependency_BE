@@ -2,7 +2,6 @@ package haravan
 
 import (
 	"context"
-	"encoding/json"
 
 	"etop.vn/api/external/haravan"
 	"etop.vn/api/external/haravan/identity"
@@ -16,6 +15,7 @@ import (
 	"etop.vn/backend/pkg/external/haravan/convert"
 	haravanclient "etop.vn/backend/pkg/integration/haravan/client"
 	"etop.vn/common/bus"
+	"etop.vn/common/jsonx"
 )
 
 var _ haravan.Aggregate = &Aggregate{}
@@ -111,7 +111,7 @@ func (a *Aggregate) validateUpdateExternalFulfillment(ctx context.Context, fulfi
 	}
 
 	var externalMeta haravan.ExternalMeta
-	if err := json.Unmarshal(order.ExternalMeta, &externalMeta); err != nil {
+	if err := jsonx.Unmarshal(order.ExternalMeta, &externalMeta); err != nil {
 		return nil, "", "", nil
 	}
 

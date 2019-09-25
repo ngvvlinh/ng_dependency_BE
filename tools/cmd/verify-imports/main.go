@@ -2,7 +2,6 @@ package main
 
 import (
 	"bytes"
-	"encoding/json"
 	"flag"
 	"fmt"
 	"io/ioutil"
@@ -14,6 +13,8 @@ import (
 
 	"golang.org/x/tools/go/packages"
 	"gopkg.in/yaml.v2"
+
+	"etop.vn/common/jsonx"
 )
 
 var FileNames = []string{
@@ -115,7 +116,7 @@ func loadRuleFile(path string) (rules *Rules, err error) {
 	}
 	data = bytes.TrimSpace(data)
 	if bytes.HasPrefix(data, []byte("{")) {
-		err = json.Unmarshal(data, &rules)
+		err = jsonx.Unmarshal(data, &rules)
 	} else {
 		err = yaml.UnmarshalStrict(data, &rules)
 	}

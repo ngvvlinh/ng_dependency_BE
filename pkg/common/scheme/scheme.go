@@ -48,7 +48,7 @@ func (s *Scheme) Convert(arg, out interface{}) error {
 	}
 	pair, err := getTypePair(arg, out)
 	if err != nil {
-		panic(fmt.Sprintf("invalid conversion type pair: %v (%t and %t)", err, arg, out))
+		panic(fmt.Sprintf("invalid conversion type pair: %v (%T and %T)", err, arg, out))
 	}
 	fn := s.convPairs[pair]
 	if fn == nil {

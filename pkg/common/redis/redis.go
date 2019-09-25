@@ -2,11 +2,11 @@
 package redis
 
 import (
-	"encoding/json"
 	"time"
 
 	"github.com/garyburd/redigo/redis"
 
+	"etop.vn/common/jsonx"
 	"etop.vn/common/l"
 )
 
@@ -78,7 +78,7 @@ func NewWithPool(address string) Store {
 }
 
 func (r redisStore) Set(k string, v interface{}) error {
-	data, err := json.Marshal(v)
+	data, err := jsonx.Marshal(v)
 	if err != nil {
 		panic(err)
 	}
@@ -92,7 +92,7 @@ func (r redisStore) Set(k string, v interface{}) error {
 
 // ttl: time in second
 func (r redisStore) SetWithTTL(k string, v interface{}, ttl int) error {
-	data, err := json.Marshal(v)
+	data, err := jsonx.Marshal(v)
 	if err != nil {
 		panic(err)
 	}
@@ -112,7 +112,7 @@ func (r redisStore) Get(k string, v interface{}) error {
 	if err != nil {
 		return err
 	}
-	return json.Unmarshal(data, v)
+	return jsonx.Unmarshal(data, v)
 }
 
 func (r redisStore) SetString(k string, v string) error {

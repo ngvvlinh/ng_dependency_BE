@@ -1,8 +1,6 @@
 package convert
 
 import (
-	"encoding/json"
-
 	etoptypes "etop.vn/api/main/etop"
 	"etop.vn/api/main/ordering"
 	"etop.vn/api/main/ordering/types"
@@ -10,6 +8,7 @@ import (
 	shiptypes "etop.vn/api/main/shipping/types"
 	catalogconvert "etop.vn/backend/com/main/catalog/convert"
 	"etop.vn/backend/com/main/ordering/model"
+	"etop.vn/common/jsonx"
 )
 
 func AddressDB(in *types.Address) (out *model.OrderAddress) {
@@ -97,7 +96,7 @@ func Order(in *model.Order) (out *ordering.Order) {
 		PaymentID:                 in.PaymentID,
 	}
 	var referralMeta ordering.ReferralMeta
-	if err := json.Unmarshal(in.ReferralMeta, &referralMeta); err == nil {
+	if err := jsonx.Unmarshal(in.ReferralMeta, &referralMeta); err == nil {
 		out.ReferralMeta = &referralMeta
 	}
 	return out

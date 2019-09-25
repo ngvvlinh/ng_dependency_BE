@@ -9,6 +9,7 @@ import (
 	"etop.vn/backend/pkg/common/µjson"
 	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/common/bus"
+	"etop.vn/common/jsonx"
 )
 
 func init() {
@@ -102,7 +103,7 @@ func GetHistory(ctx context.Context, query *model.GetHistoryQuery) error {
 
 		if cm.IsDev() {
 			var v interface{}
-			if err := json.Unmarshal(data, &v); err != nil {
+			if err := jsonx.Unmarshal(data, &v); err != nil {
 				ll.Error("Invalid json output")
 				fmt.Printf("-- output\n%s\n\n", data)
 			}

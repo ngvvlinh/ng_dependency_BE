@@ -3,7 +3,6 @@ package auth
 import (
 	"crypto/rand"
 	"encoding/base64"
-	"encoding/json"
 	"errors"
 	"io"
 	"strconv"
@@ -11,6 +10,7 @@ import (
 
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/redis"
+	"etop.vn/common/jsonx"
 	"etop.vn/common/l"
 )
 
@@ -87,7 +87,7 @@ func (t *Token) ToValue() string {
 		return strconv.FormatInt(t.UserID, 16)
 	}
 
-	data, err := json.Marshal(t.Value)
+	data, err := jsonx.Marshal(t.Value)
 	if err != nil {
 		ll.Panic("Unable to marshal json", l.Error(err))
 	}
@@ -157,7 +157,7 @@ func (g *generator) Validate(usage, token string, v interface{}) (*Token, error)
 
 	t.UserID = userID
 	if v != nil && len(s) > 1 && len(s[1]) > 0 {
-		err = json.Unmarshal([]byte(s[1]), v)
+		err = jsonx.Unmarshal([]byte(s[1]), v)
 		if err != nil {
 			ll.Error("Unable to decode json", l.Error(err), l.String("json", s[1]))
 			return t, cm.Errorf(cm.NotFound, err, "invalid token")

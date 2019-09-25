@@ -3,7 +3,6 @@ package imcsv
 import (
 	"crypto/rand"
 	"encoding/binary"
-	"encoding/json"
 	"fmt"
 	"mime/multipart"
 	"net/http"
@@ -22,6 +21,7 @@ import (
 	cmservice "etop.vn/backend/pkg/common/service"
 	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/backend/pkg/etop/upload"
+	"etop.vn/common/jsonx"
 	"etop.vn/common/l"
 )
 
@@ -176,7 +176,7 @@ func parseDebugHeader(h http.Header) (debug Debug, err error) {
 		return
 	}
 
-	if err := json.Unmarshal([]byte(debugHeader), &debug); err != nil {
+	if err := jsonx.Unmarshal([]byte(debugHeader), &debug); err != nil {
 		return Debug{}, cm.Error(cm.InvalidArgument, "Can not read debug header", err)
 	}
 	if debug.FailPercent < 0 || debug.FailPercent > 100 {

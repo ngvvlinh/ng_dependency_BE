@@ -2,7 +2,6 @@ package handler
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"sync"
 	"time"
@@ -21,6 +20,7 @@ import (
 	"etop.vn/backend/pkg/common/mq"
 	"etop.vn/backend/pkg/common/telebot"
 	historysqlstore "etop.vn/backend/pkg/etop-history/sqlstore"
+	"etop.vn/common/jsonx"
 	"etop.vn/common/l"
 )
 
@@ -158,7 +158,7 @@ func (h *Handler) Wait() {
 
 func (h *Handler) handleReloadWebhook(ctx context.Context, msg *sarama.ConsumerMessage) (mq.Code, error) {
 	var v intctl.ReloadWebhook
-	err := json.Unmarshal(msg.Value, &v)
+	err := jsonx.Unmarshal(msg.Value, &v)
 	if err != nil {
 		return mq.CodeStop, nil
 	}

@@ -1,7 +1,6 @@
 package vtpostWebhook
 
 import (
-	"encoding/json"
 	"time"
 
 	logmodel "etop.vn/backend/com/etc/log/webhook/model"
@@ -15,6 +14,7 @@ import (
 	"etop.vn/backend/pkg/integration/shipping/vtpost"
 	vtpostclient "etop.vn/backend/pkg/integration/shipping/vtpost/client"
 	"etop.vn/common/bus"
+	"etop.vn/common/jsonx"
 	"etop.vn/common/l"
 )
 
@@ -57,7 +57,7 @@ func (wh *Webhook) Callback(c *httpx.Context) error {
 	logID := cm.NewID()
 	{
 		// save to database etop_log
-		data, _ := json.Marshal(orderData)
+		data, _ := jsonx.Marshal(orderData)
 		webhookData := &logmodel.ShippingProviderWebhook{
 			ID:                       logID,
 			ShippingProvider:         model.TypeVTPost.ToString(),

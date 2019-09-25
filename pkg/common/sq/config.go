@@ -3,12 +3,12 @@ package sq
 import (
 	"context"
 	"database/sql/driver"
-	"encoding/json"
 	"log"
 	"sync"
 	"time"
 
 	"etop.vn/backend/pkg/common/sq/core"
+	"etop.vn/common/jsonx"
 )
 
 // Error ...
@@ -163,7 +163,7 @@ func (args LogArgs) ToSQLValues() (res []interface{}, _err error) {
 // MarshalJSON ...
 func (args LogArgs) MarshalJSON() ([]byte, error) {
 	res, _ := args.ToSQLValues()
-	return json.Marshal(res)
+	return jsonx.Marshal(res)
 }
 
 // LogEntry ...

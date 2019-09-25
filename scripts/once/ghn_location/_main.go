@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"encoding/json"
 	"flag"
 	"fmt"
 	"io/ioutil"
@@ -16,6 +15,7 @@ import (
 	"etop.vn/backend/pkg/integration/shipping/vtpost"
 	vtpostClient "etop.vn/backend/pkg/integration/shipping/vtpost/client"
 	"etop.vn/common/bus"
+	"etop.vn/common/jsonx"
 	"etop.vn/common/l"
 )
 
@@ -88,7 +88,7 @@ func buildDistricts(gopath string, vtpostDistricts []*vtpostClient.District) {
 	var list struct {
 		Data []*District `json:"data"`
 	}
-	err = json.Unmarshal(data, &list)
+	err = jsonx.Unmarshal(data, &list)
 	must(err)
 
 	districts := list.Data

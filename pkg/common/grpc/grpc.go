@@ -16,6 +16,7 @@ import (
 	"google.golang.org/grpc/status"
 
 	"etop.vn/backend/pkg/common/auth"
+	"etop.vn/common/jsonx"
 	"etop.vn/common/l"
 )
 
@@ -180,12 +181,12 @@ func NewJSONEncoder(w io.Writer) runtime.Encoder {
 
 // MarshalJSON encodes JSON in compatible with GRPC
 func MarshalJSON(v interface{}) ([]byte, error) {
-	return jSON.Marshal(v)
+	return jsonx.Marshal(v)
 }
 
 // UnmarshalJSON decodes JSON in compatible with GRPC
 func UnmarshalJSON(data []byte, v interface{}) error {
-	return jSON.Unmarshal(data, v)
+	return jsonx.Unmarshal(data, v)
 }
 
 // OptToken ...

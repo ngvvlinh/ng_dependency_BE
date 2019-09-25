@@ -24,6 +24,7 @@ import (
 	"etop.vn/backend/pkg/etop/authorize/middleware"
 	"etop.vn/backend/pkg/etop/authorize/permission"
 	"etop.vn/common/bus"
+	"etop.vn/common/jsonx"
 	"etop.vn/common/l"
 	"etop.vn/common/xerrors"
 )
@@ -99,7 +100,7 @@ func (c *Context) DecodeJson(v interface{}) error {
 	if err != nil {
 		return cm.Error(cm.InvalidArgument, err.Error(), err)
 	}
-	err = json.Unmarshal(body, v)
+	err = jsonx.Unmarshal(body, v)
 	if err != nil {
 		return cm.Error(cm.InvalidArgument, err.Error(), err)
 	}
@@ -244,7 +245,7 @@ func (rt *Router) wrapJSON(next Handler) httprouter.Handle {
 			switch {
 			case c.result != nil:
 				var respBytes []byte
-				if respBytes, err = json.Marshal(c.result); err != nil {
+				if respBytes, err = jsonx.Marshal(c.result); err != nil {
 					w.WriteHeader(http.StatusInternalServerError)
 					_ = json.NewEncoder(w).Encode(&xerrors.ErrorJSON{
 						Code: cm.Internal.String(),

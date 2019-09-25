@@ -13,6 +13,8 @@ import (
 	"unsafe"
 
 	"github.com/lib/pq"
+
+	"etop.vn/common/jsonx"
 )
 
 type Row struct {
@@ -283,7 +285,7 @@ func (i Interface) Unmarshal(v interface{}) error {
 	if i.V == nil {
 		return nil
 	}
-	err := json.Unmarshal(i.V.([]byte), v)
+	err := jsonx.Unmarshal(i.V.([]byte), v)
 	if err != nil {
 		log.Println("common/sql: error unmarshalling", err)
 	}
@@ -624,12 +626,12 @@ func (v JSON) Scan(src interface{}) error {
 		if len(value) == 0 {
 			return nil
 		}
-		return json.Unmarshal(value, v.V)
+		return jsonx.Unmarshal(value, v.V)
 	case string:
 		if len(value) == 0 {
 			return nil
 		}
-		return json.Unmarshal([]byte(value), v.V)
+		return jsonx.Unmarshal([]byte(value), v.V)
 	default:
 		return fmt.Errorf("common/sql: Unsupported json source %v", reflect.TypeOf(src))
 	}
@@ -646,7 +648,7 @@ func (v JSON) Value() (driver.Value, error) {
 		}
 		return []byte(v), nil
 	}
-	data, err := json.Marshal(v.V)
+	data, err := jsonx.Marshal(v.V)
 	return data, err
 }
 

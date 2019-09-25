@@ -2,7 +2,6 @@ package pgevent
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"strconv"
@@ -14,6 +13,7 @@ import (
 	"etop.vn/backend/pkg/common/cmsql"
 	"etop.vn/backend/pkg/common/mq"
 	"etop.vn/backend/pkg/etop/model"
+	"etop.vn/common/jsonx"
 	"etop.vn/common/l"
 )
 
@@ -113,7 +113,7 @@ func (s Service) HandleNotificationWithError(noti *pq.Notification) error {
 		return fmt.Errorf("invalid payload: %v", err)
 	}
 
-	data, err := json.Marshal(event)
+	data, err := jsonx.Marshal(event)
 	if err != nil {
 		panic(err)
 	}

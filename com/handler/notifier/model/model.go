@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"etop.vn/backend/pkg/etop/model"
+	"etop.vn/common/jsonx"
 )
 
 //go:generate $ETOPDIR/backend/scripts/derive.sh
@@ -67,7 +68,7 @@ type NotiDataAddition struct {
 }
 
 func PrepareNotiData(args NotiDataAddition) json.RawMessage {
-	dataRaw, _ := json.Marshal(args)
+	dataRaw, _ := jsonx.Marshal(args)
 	return dataRaw
 }
 

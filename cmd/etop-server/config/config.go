@@ -1,7 +1,6 @@
 package config
 
 import (
-	"encoding/json"
 	"errors"
 	"io/ioutil"
 	"strings"
@@ -19,6 +18,7 @@ import (
 	"etop.vn/backend/pkg/integration/shipping/ghtk"
 	"etop.vn/backend/pkg/integration/shipping/vtpost"
 	"etop.vn/backend/pkg/integration/sms"
+	"etop.vn/common/jsonx"
 )
 
 const (
@@ -208,6 +208,6 @@ func ReadMappingFile(filename string) (configMap mapping.ConfigMap, _ error) {
 	if err != nil {
 		return nil, err
 	}
-	err = json.Unmarshal(body, &configMap)
+	err = jsonx.Unmarshal(body, &configMap)
 	return
 }

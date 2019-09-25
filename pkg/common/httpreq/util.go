@@ -5,6 +5,7 @@ import (
 	"fmt"
 
 	cm "etop.vn/backend/pkg/common"
+	"etop.vn/common/jsonx"
 	"etop.vn/common/l"
 	"etop.vn/common/xerrors"
 )
@@ -26,7 +27,7 @@ func HandleResponse(res *RestyResponse, result interface{}, errMsg string) error
 			if IsNullJsonRaw(body) {
 				return cm.Error(cm.ExternalServiceError, "Lỗi không xác định: null response. Chúng tôi đang liên hệ để xử lý. Xin lỗi quý khách vì sự bất tiện này. Nếu cần thêm thông tin vui lòng liên hệ hotro@etop.vn.", nil)
 			}
-			if err = json.Unmarshal(body, result); err != nil {
+			if err = jsonx.Unmarshal(body, result); err != nil {
 				return cm.Errorf(cm.ExternalServiceError, err, "Lỗi không xác định: %v. Chúng tôi đang liên hệ để xử lý. Xin lỗi quý khách vì sự bất tiện này. Nếu cần thêm thông tin vui lòng liên hệ hotro@etop.vn.", err)
 			}
 		}
@@ -36,10 +37,10 @@ func HandleResponse(res *RestyResponse, result interface{}, errMsg string) error
 		var meta map[string]string
 		var errJSON xerrors.ErrorJSON
 		if !IsNullJsonRaw(body) {
-			if err = json.Unmarshal(body, &meta); err != nil {
+			if err = jsonx.Unmarshal(body, &meta); err != nil {
 				// The slow path
 				var metaX map[string]interface{}
-				_ = json.Unmarshal(body, &metaX)
+				_ = jsonx.Unmarshal(body, &metaX)
 				meta = make(map[string]string)
 				for k, v := range metaX {
 					meta[k] = fmt.Sprint(v)

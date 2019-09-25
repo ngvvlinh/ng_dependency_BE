@@ -3,15 +3,16 @@ package client
 import (
 	"crypto/md5"
 	"encoding/hex"
-	"encoding/json"
 	"io/ioutil"
 	"net/http"
 	"net/url"
 	"strings"
 	"time"
 
-	cm "etop.vn/backend/pkg/common"
 	"github.com/gorilla/schema"
+
+	cm "etop.vn/backend/pkg/common"
+	"etop.vn/common/jsonx"
 )
 
 var schemaEncoder = schema.NewEncoder()
@@ -117,7 +118,7 @@ func (v *VtigerClient) SendGet(values url.Values, respBody interface{}) error {
 		return err
 	}
 	var errorResp VtigerErrorResponse
-	err = json.Unmarshal(bodyResponse, &errorResp)
+	err = jsonx.Unmarshal(bodyResponse, &errorResp)
 	if err != nil {
 		return err
 	}
@@ -127,7 +128,7 @@ func (v *VtigerClient) SendGet(values url.Values, respBody interface{}) error {
 		}
 		return cm.Errorf(cm.Unknown, nil, "unknown error while sending request to vtiger")
 	}
-	return json.Unmarshal(bodyResponse, respBody)
+	return jsonx.Unmarshal(bodyResponse, respBody)
 }
 
 func (v *VtigerClient) SendPost(body url.Values, respBody interface{}) error {
@@ -148,7 +149,7 @@ func (v *VtigerClient) SendPost(body url.Values, respBody interface{}) error {
 	}
 
 	var errorResp VtigerErrorResponse
-	err = json.Unmarshal(respBytes, &errorResp)
+	err = jsonx.Unmarshal(respBytes, &errorResp)
 	if err != nil {
 		return err
 	}
@@ -160,7 +161,7 @@ func (v *VtigerClient) SendPost(body url.Values, respBody interface{}) error {
 	}
 
 	err = nil
-	err = json.Unmarshal(respBytes, respBody)
+	err = jsonx.Unmarshal(respBytes, respBody)
 	return err
 }
 

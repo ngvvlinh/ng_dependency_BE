@@ -2,7 +2,6 @@ package integration
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"html/template"
 	"strings"
@@ -29,6 +28,7 @@ import (
 	"etop.vn/backend/pkg/integration/sms"
 	wrapintegration "etop.vn/backend/wrapper/etop/integration"
 	"etop.vn/common/bus"
+	"etop.vn/common/jsonx"
 	"etop.vn/common/l"
 )
 
@@ -270,7 +270,7 @@ func requestLogin(ctx context.Context, r *wrapintegration.RequestLoginEndpoint) 
 	}
 
 	var requestInfo apipartner.PartnerShopToken
-	if err := json.Unmarshal([]byte(r.Context.Extra["request_login"]), &requestInfo); err != nil {
+	if err := jsonx.Unmarshal([]byte(r.Context.Extra["request_login"]), &requestInfo); err != nil {
 		return r, cm.Errorf(cm.FailedPrecondition, nil, "Yêu cầu đăng nhập không còn hiệu lực")
 	}
 
@@ -453,7 +453,7 @@ func LoginUsingToken(ctx context.Context, r *wrapintegration.LoginUsingTokenEndp
 	//     - shop_id == 0 && external_shop_id != "": New shop and update existing relation
 	//     - shop_id != 0 && external_shop_id != "": Must validate that they match
 	var requestInfo apipartner.PartnerShopToken
-	if err := json.Unmarshal([]byte(r.Context.Extra["request_login"]), &requestInfo); err != nil {
+	if err := jsonx.Unmarshal([]byte(r.Context.Extra["request_login"]), &requestInfo); err != nil {
 		return cm.Errorf(cm.FailedPrecondition, nil, "Yêu cầu đăng nhập không còn hiệu lực")
 	}
 
@@ -799,7 +799,7 @@ func Register(ctx context.Context, r *wrapintegration.RegisterEndpoint) error {
 
 func GrantAccess(ctx context.Context, r *wrapintegration.GrantAccessEndpoint) error {
 	var requestInfo apipartner.PartnerShopToken
-	if err := json.Unmarshal([]byte(r.Context.Extra["request_login"]), &requestInfo); err != nil {
+	if err := jsonx.Unmarshal([]byte(r.Context.Extra["request_login"]), &requestInfo); err != nil {
 		return cm.Errorf(cm.FailedPrecondition, nil, "Yêu cầu đăng nhập không còn hiệu lực")
 	}
 
