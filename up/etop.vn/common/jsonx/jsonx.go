@@ -16,54 +16,65 @@ const (
 	revalidate
 )
 
-var mustValidate bool
+var fastpath int // for testing only
+var enabled bool
 var recognizedTypes = make(map[reflect.Type]modeType)
 var m sync.RWMutex
 
 func EnableValidation() {
-	if mustValidate {
+	if enabled {
 		panic("already enabled")
 	}
-	mustValidate = true
+	enabled = true
 }
 
 func Marshal(v interface{}) ([]byte, error) {
-	if mustValidate {
-		validate(v)
+	if enabled {
+		mustValidate(v)
 	}
 	return json.Marshal(v)
 }
 
 func Unmarshal(data []byte, v interface{}) error {
-	if mustValidate {
-		validate(v)
+	if enabled {
+		mustValidate(v)
 	}
 	return json.Unmarshal(data, v)
 }
 
-func validate(v interface{}) {
-	value := reflect.Indirect(reflect.ValueOf(v))
-	m.RLock()
-	if recognizedTypes[value.Type()] == safe {
-		m.RUnlock()
-		return
-	}
-	m.RUnlock()
-	m.Lock()
-	defer m.Unlock()
-	_, err := validateTag(value, nil)
+func mustValidate(v interface{}) {
+	_, err := validate(v)
 	if err != nil {
 		panic(err)
 	}
 }
 
+func validate(v interface{}) (modeType, error) {
+	fastpath = 0
+	t := indirect(reflect.TypeOf(v))
+	if t == nil {
+		fastpath = 1
+		return safe, nil
+	}
+	m.RLock()
+	if recognizedTypes[t] == safe {
+		fastpath = 2
+		m.RUnlock()
+		return safe, nil
+	}
+	m.RUnlock()
+	m.Lock()
+	defer m.Unlock()
+	return validateTag(reflect.ValueOf(v), t)
+}
+
 func validateTag(v reflect.Value, t reflect.Type) (_mode modeType, _ error) {
+	defer func() { recognizedTypes[t] = _mode }()
+
 	v = reflect.Indirect(v)
-	// workaround for "call of reflect.Value.Type on zero Value"
-	if t != nil {
-		t = indirect(t)
-	} else {
-		t = v.Type()
+	t = indirect(t)
+	if t == nil {
+		return safe, nil
 	}
 
 	// fast test
@@ -71,12 +82,12 @@ func validateTag(v reflect.Value, t reflect.Type) (_mode modeType, _ error) {
 	if currentMode == safe || currentMode == evaluating {
 		return currentMode, nil
 	}
+	if v.Kind() == reflect.Invalid {
+		return validateTag(reflect.New(t).Elem(), t)
+	}
 
 	// temporary set to evaluating, set back to mode later
 	_mode, recognizedTypes[t] = safe, evaluating
-	defer func() {
-		recognizedTypes[t] = _mode
-	}()
 
 	switch v.Kind() {
 	case reflect.Slice, reflect.Array:
@@ -123,7 +134,7 @@ func validateTag(v reflect.Value, t reflect.Type) (_mode modeType, _ error) {
 		if v.IsNil() {
 			return revalidate, nil
 		}
-		_, err := validateTag(v.Elem(), nil)
+		_, err := validateTag(v.Elem(), v.Elem().Type())
 		return revalidate, err // always revalidate interface
 
 	case reflect.Struct:
@@ -134,7 +145,7 @@ func validateTag(v reflect.Value, t reflect.Type) (_mode modeType, _ error) {
 				if recognizedTypes[tField] == safe {
 					continue
 				}
-				_, err := validateTag(v.Field(i), nil)
+				_, err := validateTag(v.Field(i), tField)
 				if err != nil {
 					return 0, fmt.Errorf(
 						"field %v of type %v: %v",
@@ -155,7 +166,7 @@ func validateTag(v reflect.Value, t reflect.Type) (_mode modeType, _ error) {
 			if jsonTag == "-" || strings.HasPrefix(jsonTag, "-,") {
 				continue
 			}
-			mode, err := validateTag(vField, nil)
+			mode, err := validateTag(vField, tField.Type)
 			if err != nil {
 				return 0, fmt.Errorf(
 					"field %v of type %v: %v",
@@ -185,6 +196,9 @@ func validateTag(v reflect.Value, t reflect.Type) (_mode modeType, _ error) {
 }
 
 func indirect(t reflect.Type) reflect.Type {
+	if t == nil {
+		return nil
+	}
 	for t.Kind() == reflect.Ptr {
 		t = t.Elem()
 	}
