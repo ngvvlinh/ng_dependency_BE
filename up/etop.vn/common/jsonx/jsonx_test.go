@@ -52,7 +52,7 @@ func reset() {
 	}
 }
 
-func expectFastpath(t *testing.T, expected int) {
+func expectFastpath(t *testing.T, expected int, fastpath int) {
 	if withCache == 2 {
 		require.Equal(t, expected, fastpath)
 	}
@@ -78,85 +78,123 @@ func TestValidate(t *testing.T) {
 func testValidate(t *testing.T) {
 	t.Run("no tag (error)", func(t *testing.T) {
 		reset()
-		_, err := validate(Invalid{})
+		_, _, err := validate(Invalid{})
 		require.EqualError(t, err, "field String of type Invalid must have json tag")
 	})
 	t.Run("nil", func(t *testing.T) {
 		reset()
-		mode, err := validate(nil)
+		fastpath, mode, err := validate(nil)
 		require.NoError(t, err)
 		require.Equal(t, safe, mode)
-		expectFastpath(t, 1)
+		expectFastpath(t, 1, fastpath)
 	})
 	t.Run("simple safe struct", func(t *testing.T) {
 		reset()
-		mode, err := validate(A{})
+		value := A{}
+		fastpath, mode, err := validate(value)
 		require.NoError(t, err)
 		require.Equal(t, safe, mode)
-		expectFastpath(t, 2)
+		require.Equal(t, safe, recognizedTypes[reflect.TypeOf(value)])
+		expectFastpath(t, 2, fastpath)
 	})
 	t.Run("simple pointer to safe struct with nil value", func(t *testing.T) {
 		reset()
-		mode, err := validate((*A)(nil))
+		value := (*A)(nil)
+		fastpath, mode, err := validate(value)
 		require.NoError(t, err)
 		require.Equal(t, safe, mode)
-		expectFastpath(t, 2)
+		require.Equal(t, safe, recognizedTypes[reflect.TypeOf(value).Elem()])
+		expectFastpath(t, 2, fastpath)
 	})
 	t.Run("simple pointer to safe struct", func(t *testing.T) {
 		reset()
-		mode, err := validate(&A{})
+		value := &A{}
+		fastpath, mode, err := validate(value)
 		require.NoError(t, err)
 		require.Equal(t, safe, mode)
-		expectFastpath(t, 2)
+		require.Equal(t, safe, recognizedTypes[reflect.TypeOf(value).Elem()])
+		expectFastpath(t, 2, fastpath)
 	})
 	t.Run("complex safe struct with nil value", func(t *testing.T) {
 		reset()
-		mode, err := validate((*B)(nil))
+		value := (*B)(nil)
+		fastpath, mode, err := validate(value)
 		require.NoError(t, err)
 		require.Equal(t, safe, mode)
-		expectFastpath(t, 2)
+		require.Equal(t, safe, recognizedTypes[reflect.TypeOf(value).Elem()])
+		expectFastpath(t, 2, fastpath)
 	})
 	t.Run("complex safe struct", func(t *testing.T) {
 		reset()
-		mode, err := validate(&B{})
+		value := &B{}
+		fastpath, mode, err := validate(value)
 		require.NoError(t, err)
 		require.Equal(t, safe, mode)
-		expectFastpath(t, 2)
+		require.Equal(t, safe, recognizedTypes[reflect.TypeOf(value).Elem()])
+		expectFastpath(t, 2, fastpath)
+	})
+	t.Run("double pointer to safe struct with nil value", func(t *testing.T) {
+		reset()
+		value0 := (*B)(nil)
+		fastpath, mode, err := validate(&value0)
+		require.NoError(t, err)
+		require.Equal(t, safe, mode)
+		require.Equal(t, safe, recognizedTypes[reflect.TypeOf(&value0).Elem().Elem()])
+		expectFastpath(t, 2, fastpath)
+	})
+	t.Run("double pointer to safe struct", func(t *testing.T) {
+		reset()
+		value0 := &B{}
+		fastpath, mode, err := validate(&value0)
+		require.NoError(t, err)
+		require.Equal(t, safe, mode)
+		require.Equal(t, safe, recognizedTypes[reflect.TypeOf(&value0).Elem().Elem()])
+		expectFastpath(t, 2, fastpath)
 	})
 	t.Run("revalidate struct with nil value", func(t *testing.T) {
 		reset()
-		mode, err := validate((*C)(nil))
+		value := (*C)(nil)
+		_, mode, err := validate(value)
 		require.NoError(t, err)
 		require.Equal(t, revalidate, mode)
+		require.Equal(t, revalidate, recognizedTypes[reflect.TypeOf(value).Elem()])
 	})
 	t.Run("revalidate struct with empty interface", func(t *testing.T) {
 		reset()
-		mode, err := validate(&C{})
+		value := &C{}
+		_, mode, err := validate(value)
 		require.NoError(t, err)
 		require.Equal(t, revalidate, mode)
+		require.Equal(t, revalidate, recognizedTypes[reflect.TypeOf(value).Elem()])
 	})
 	t.Run("revalidate struct with valid interface", func(t *testing.T) {
 		reset()
-		mode, err := validate(&C{Interface: &C{}})
+		value := &C{Interface: &C{}}
+		_, mode, err := validate(value)
 		require.NoError(t, err)
 		require.Equal(t, revalidate, mode)
+		require.Equal(t, revalidate, recognizedTypes[reflect.TypeOf(value).Elem()])
 	})
 	t.Run("revalidate struct with invalid interface (error)", func(t *testing.T) {
 		reset()
-		_, err := validate(&C{Interface: &Invalid{}})
+		_, _, err := validate(&C{Interface: &Invalid{}})
 		require.EqualError(t, err, "field Interface of type C: field String of type Invalid must have json tag")
 	})
 	t.Run("revalidate indirect struct with nil value", func(t *testing.T) {
 		reset()
 		t.Run("map", func(t *testing.T) {
-			mode, err := validate((*D)(nil))
+			value := (*D)(nil)
+			_, mode, err := validate(value)
 			require.NoError(t, err)
 			require.Equal(t, revalidate, mode)
+			require.Equal(t, revalidate, recognizedTypes[reflect.TypeOf(value).Elem()])
 		})
 		t.Run("slice", func(t *testing.T) {
-			mode, err := validate((*E)(nil))
+			value := (*E)(nil)
+			_, mode, err := validate(value)
 			require.NoError(t, err)
 			require.Equal(t, revalidate, mode)
+			require.Equal(t, revalidate, recognizedTypes[reflect.TypeOf(value).Elem()])
 		})
 	})
 	t.Run("revalidate indirect struct with empty interface", func(t *testing.T) {
@@ -165,17 +203,19 @@ func testValidate(t *testing.T) {
 			value := &D{
 				MapC: map[string]*C{},
 			}
-			mode, err := validate(value)
+			_, mode, err := validate(value)
 			require.NoError(t, err)
 			require.Equal(t, revalidate, mode)
+			require.Equal(t, revalidate, recognizedTypes[reflect.TypeOf(value).Elem()])
 		})
 		t.Run("slice", func(t *testing.T) {
 			value := &E{
 				SliceC: []*C{},
 			}
-			mode, err := validate(value)
+			_, mode, err := validate(value)
 			require.NoError(t, err)
 			require.Equal(t, revalidate, mode)
+			require.Equal(t, revalidate, recognizedTypes[reflect.TypeOf(value).Elem()])
 		})
 	})
 	t.Run("revalidate indirect struct with valid interface", func(t *testing.T) {
@@ -186,9 +226,10 @@ func testValidate(t *testing.T) {
 					"one": &C{},
 				},
 			}
-			mode, err := validate(value)
+			_, mode, err := validate(value)
 			require.NoError(t, err)
 			require.Equal(t, revalidate, mode)
+			require.Equal(t, revalidate, recognizedTypes[reflect.TypeOf(value).Elem()])
 		})
 		t.Run("slice", func(t *testing.T) {
 			value := &E{
@@ -196,9 +237,10 @@ func testValidate(t *testing.T) {
 					&C{},
 				},
 			}
-			mode, err := validate(value)
+			_, mode, err := validate(value)
 			require.NoError(t, err)
 			require.Equal(t, revalidate, mode)
+			require.Equal(t, revalidate, recognizedTypes[reflect.TypeOf(value).Elem()])
 		})
 	})
 	t.Run("revalidate indirect struct with invalid interface (error)", func(t *testing.T) {
@@ -211,7 +253,7 @@ func testValidate(t *testing.T) {
 					"three": &C{Interface: &Invalid{}},
 				},
 			}
-			_, err := validate(value)
+			_, _, err := validate(value)
 			require.EqualError(t, err, "field MapC of type D: field Interface of type C: field String of type Invalid must have json tag")
 		})
 		t.Run("slice", func(t *testing.T) {
@@ -222,7 +264,7 @@ func testValidate(t *testing.T) {
 					&C{Interface: &Invalid{}},
 				},
 			}
-			_, err := validate(value)
+			_, _, err := validate(value)
 			require.EqualError(t, err, "field SliceC of type E: field Interface of type C: field String of type Invalid must have json tag")
 		})
 	})
@@ -248,7 +290,7 @@ func TestMarshal(t *testing.T) {
 	})
 	t.Run("invalid", func(t *testing.T) {
 		value := C{Interface: Invalid{}}
-		_, err := validate(value)
+		_, _, err := validate(value)
 		require.EqualError(t, err, "field Interface of type C: field String of type Invalid must have json tag")
 		require.Panics(t, func() {
 			_, _ = Marshal(value)

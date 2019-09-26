@@ -16,7 +16,6 @@ const (
 	revalidate
 )
 
-var fastpath int // for testing only
 var enabled bool
 var recognizedTypes = make(map[reflect.Type]modeType)
 var m sync.RWMutex
@@ -43,36 +42,33 @@ func Unmarshal(data []byte, v interface{}) error {
 }
 
 func mustValidate(v interface{}) {
-	_, err := validate(v)
+	_, _, err := validate(v)
 	if err != nil {
 		panic(err)
 	}
 }
 
-func validate(v interface{}) (modeType, error) {
-	fastpath = 0
-	t := indirect(reflect.TypeOf(v))
+func validate(v interface{}) (fastpath int, _ modeType, _ error) {
+	t := indirectType(reflect.TypeOf(v))
 	if t == nil {
-		fastpath = 1
-		return safe, nil
+		return 1, safe, nil
 	}
 	m.RLock()
 	if recognizedTypes[t] == safe {
 		fastpath = 2
 		m.RUnlock()
-		return safe, nil
+		return 2, safe, nil
 	}
 	m.RUnlock()
 	m.Lock()
 	defer m.Unlock()
-	return validateTag(reflect.ValueOf(v), t)
+	mode, err := validateTag(reflect.ValueOf(v), t)
+	return 0, mode, err
 }
 
 func validateTag(v reflect.Value, t reflect.Type) (_mode modeType, _ error) {
-	defer func() { recognizedTypes[t] = _mode }()
-
-	v = reflect.Indirect(v)
-	t = indirect(t)
+	v = indirectValue(v)
+	t = indirectType(t)
 	if t == nil {
 		return safe, nil
 	}
@@ -87,11 +83,12 @@ func validateTag(v reflect.Value, t reflect.Type) (_mode modeType, _ error) {
 	}
 
 	// temporary set to evaluating, set back to mode later
+	defer func() { recognizedTypes[t] = _mode }()
 	_mode, recognizedTypes[t] = safe, evaluating
 
 	switch v.Kind() {
 	case reflect.Slice, reflect.Array:
-		elem := indirect(t.Elem())
+		elem := indirectType(t.Elem())
 		if recognizedTypes[elem] == safe {
 			return safe, nil
 		}
@@ -111,7 +108,7 @@ func validateTag(v reflect.Value, t reflect.Type) (_mode modeType, _ error) {
 		return _mode, nil
 
 	case reflect.Map:
-		elem := indirect(t.Elem())
+		elem := indirectType(t.Elem())
 		if recognizedTypes[elem] == safe {
 			return safe, nil
 		}
@@ -141,7 +138,7 @@ func validateTag(v reflect.Value, t reflect.Type) (_mode modeType, _ error) {
 		// fast path: only validate field of type interface or revalidate
 		if currentMode == revalidate {
 			for i, n := 0, v.NumField(); i < n; i++ {
-				tField := indirect(t.Field(i).Type)
+				tField := indirectType(t.Field(i).Type)
 				if recognizedTypes[tField] == safe {
 					continue
 				}
@@ -195,7 +192,14 @@ func validateTag(v reflect.Value, t reflect.Type) (_mode modeType, _ error) {
 	}
 }
 
-func indirect(t reflect.Type) reflect.Type {
+func indirectValue(v reflect.Value) reflect.Value {
+	for v.Kind() == reflect.Ptr {
+		v = v.Elem()
+	}
+	return v
+}
+
+func indirectType(t reflect.Type) reflect.Type {
 	if t == nil {
 		return nil
 	}
