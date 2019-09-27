@@ -14,15 +14,15 @@ import (
 
 /*
 Custom conversions:
-    Attribute
-    AttributeDB
-    ShopProduct
-    ShopProductDB
-    ShopProductUpdate
-    ShopProductWithVariants
-    ShopVariant
-    ShopVariantDB
-    ShopVariantWithProduct
+    Attribute                  // not use, no conversions between params
+    AttributeDB                // not use, no conversions between params
+    ShopProduct                // in use
+    ShopProductDB              // in use
+    ShopProductUpdate          // not use, no conversions between params
+    ShopProductWithVariants    // not use, no conversions between params
+    ShopVariant                // in use
+    ShopVariantDB              // in use
+    ShopVariantWithProduct     // not use, no conversions between params
 
 Ignored functions:
     Attributes                  // params are not pointer to named types

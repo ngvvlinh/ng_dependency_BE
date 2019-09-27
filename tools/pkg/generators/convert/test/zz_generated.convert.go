@@ -10,9 +10,9 @@ import (
 
 /*
 Custom conversions:
-    ConvertAB
-    ConvertC01
-    ConvertC10
+    ConvertAB       // in use
+    ConvertC01      // in use
+    ConvertC10      // in use
 
 Ignored functions: (none)
 */

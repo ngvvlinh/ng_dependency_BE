@@ -14,12 +14,12 @@ import (
 
 /*
 Custom conversions:
-    CreateShopCustomer
-    CreateShopTraderAddress
-    ShopCustomer
-    ShopCustomerDB
-    ShopTraderAddress
-    ShopTraderAddressDB
+    CreateShopCustomer         // in use
+    CreateShopTraderAddress    // not use, no conversions between params
+    ShopCustomer               // in use
+    ShopCustomerDB             // in use
+    ShopTraderAddress          // not use, no conversions between params
+    ShopTraderAddressDB        // not use, no conversions between params
 
 Ignored functions:
     Addresses                  // params are not pointer to named types

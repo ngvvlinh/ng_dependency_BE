@@ -118,9 +118,14 @@ func (p *plugin) Generate(ng generator.Engine) error {
 					"duplicated conversion functions from %v to %v (function %v and %v)",
 					arg.Type().String(), out.Type().String(), convPairs[pair].Func.Name(), fn.Name())
 			}
-			gpkg.customConvs = append(gpkg.customConvs, nameWithComment{
-				Name: fn.Name(),
-			})
+			customConv := nameWithComment{
+				Name:    fn.Name(),
+				Comment: "not use, no conversions between params",
+			}
+			if convInUse(gpkg.objMap, pair) {
+				customConv.Comment = "in use"
+			}
+			gpkg.customConvs = append(gpkg.customConvs, customConv)
 			convPairs[pair] = &conversionFunc{
 				pair: pair,
 				Obj:  object,
@@ -506,7 +511,10 @@ func hasBase(pkgPath, tail string) bool {
 		strings.HasSuffix(pkgPath, tail) && pkgPath[len(pkgPath)-len(tail)-1] == '/'
 }
 
-func generateComments(p generator.Printer, customConversions, ignoredFuncs []nameWithComment) {
+func generateComments(
+	p generator.Printer,
+	customConversions, ignoredFuncs []nameWithComment,
+) {
 	sort.Slice(customConversions, func(i, j int) bool {
 		return customConversions[i].Name < customConversions[j].Name
 	})
@@ -522,7 +530,11 @@ func generateComments(p generator.Printer, customConversions, ignoredFuncs []nam
 		w(p, "\n")
 	}
 	for _, c := range customConversions {
-		w(tp, "    %v\n", c.Name)
+		w(tp, "    %v", c.Name)
+		if c.Comment != "" {
+			w(tp, "\t    // %v", c.Comment)
+		}
+		w(tp, "\n")
 	}
 	_ = tp.Flush()
 	w(p, "\nIgnored functions:")
@@ -536,6 +548,28 @@ func generateComments(p generator.Printer, customConversions, ignoredFuncs []nam
 	}
 	_ = tp.Flush()
 	w(p, "*/\n")
+}
+
+func convInUse(apiObjMap map[objName]*objMap, pair pair) bool {
+	for _, item := range [][2]objName{
+		{pair.Arg, pair.Out},
+		{pair.Out, pair.Arg},
+	} {
+		m := apiObjMap[item[0]]
+		if m == nil {
+			continue
+		}
+		for _, g := range m.gens {
+			name := objName{
+				pkg:  g.obj.Pkg().Path(),
+				name: g.obj.Name(),
+			}
+			if name == item[1] {
+				return true
+			}
+		}
+	}
+	return false
 }
 
 func generateConverts(
