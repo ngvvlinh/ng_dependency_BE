@@ -837,9 +837,9 @@ type StatusQuery struct {
 }
 
 type ExternalShippingLog struct {
-	StateText string
-	Time      string
-	Message   string
+	StateText string `json:"StateText"`
+	Time      string `json:"Time"`
+	Message   string `json:"Message"`
 }
 
 type FulfillmentSyncStates struct {
@@ -1238,11 +1238,12 @@ type ShippingSourceInternal struct {
 }
 
 type ShippingSourceSecret struct {
-	CustomerID int
-	Username   string
-	Password   string
+	CustomerID int    `json:"CustomerID"`
+	Username   string `json:"Username"`
+	Password   string `json:"Password"`
+
 	// Use for VTPost
-	GroupAddressID int
+	GroupAddressID int `json:"GroupAddressID"`
 }
 
 func (s ShippingState) ToStatus4() Status4 {
@@ -1275,8 +1276,10 @@ func (s ShippingState) ToShippingStatus5() Status5 {
 
 type AvailableShippingService struct {
 	Name string
+
 	// ServiceFee: Tổng phí giao hàng (đã bao gồm phí chính + các phụ phí khác)
 	ServiceFee int
+
 	// ShippingFeeMain: Phí chính giao hàng
 	ShippingFeeMain   int
 	Provider          ShippingProvider
