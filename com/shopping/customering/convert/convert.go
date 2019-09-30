@@ -1,6 +1,7 @@
 package convert
 
 import (
+	"etop.vn/api/main/etop"
 	"etop.vn/api/shopping/addressing"
 	"etop.vn/api/shopping/customering"
 	orderconvert "etop.vn/backend/com/main/ordering/convert"
@@ -149,6 +150,9 @@ func ShopTraderAddressDB(in *addressing.ShopTraderAddress) (out *model.ShopTrade
 		Coordinates:  orderconvert.CoordinatesDB(in.Coordinates),
 		CreatedAt:    in.CreatedAt,
 		UpdatedAt:    in.UpdatedAt,
+
+		// currently not use TODO
+		Status: etop.S3Positive,
 	}
 }
 

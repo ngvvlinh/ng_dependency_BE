@@ -3,6 +3,7 @@ package model
 import (
 	"time"
 
+	"etop.vn/api/main/etop"
 	ordermodel "etop.vn/backend/com/main/ordering/model"
 )
 
@@ -53,4 +54,7 @@ type ShopTraderAddress struct {
 	CreatedAt    time.Time `sq:"create"`
 	UpdatedAt    time.Time `sq:"update"`
 	DeletedAt    time.Time
+
+	//Default status = 1
+	Status etop.Status3
 }

@@ -6,6 +6,7 @@ import (
 	"etop.vn/api/shopping/addressing"
 	"etop.vn/backend/com/shopping/customering/convert"
 	"etop.vn/backend/com/shopping/customering/sqlstore"
+	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/cmsql"
 	"etop.vn/common/bus"
 )
@@ -28,8 +29,12 @@ func (q *AddressAggregate) MessageBus() addressing.CommandBus {
 }
 
 func (a *AddressAggregate) CreateAddress(ctx context.Context, args *addressing.CreateAddressArgs) (*addressing.ShopTraderAddress, error) {
+	err := ValidateCreateShopTraderAddress(args)
+	if err != nil {
+		return nil, err
+	}
 	addr := convert.CreateShopTraderAddress(args)
-	err := a.store(ctx).CreateAddress(addr)
+	err = a.store(ctx).CreateAddress(addr)
 	return addr, err
 }
 
@@ -43,4 +48,30 @@ func (a *AddressAggregate) UpdateAddress(ctx context.Context, ID int64, ShopID i
 func (a *AddressAggregate) DeleteAddress(ctx context.Context, ID int64, ShopID int64) (deleted int, _ error) {
 	deleted, err := a.store(ctx).ID(ID).ShopID(ShopID).SoftDelete()
 	return deleted, err
+}
+
+func ValidateCreateShopTraderAddress(args *addressing.CreateAddressArgs) error {
+	if args.FullName == "" {
+		return EditErrorMsg("Tên")
+	}
+	if args.DistrictCode == "" {
+		return EditErrorMsg("Quận/Huyện")
+	}
+	if args.WardCode == "" {
+		return EditErrorMsg("Phường/Xã")
+	}
+	if args.Address1 == "" {
+		return EditErrorMsg("Địa chỉ cụ thể")
+	}
+	if args.Email == "" {
+		return EditErrorMsg("Email")
+	}
+	if args.Phone == "" {
+		return EditErrorMsg("Số điện thoại")
+	}
+	return nil
+}
+
+func EditErrorMsg(str string) error {
+	return cm.Errorf(cm.InvalidArgument, nil, "Vui lòng nhập thông tin bắt buộc, thiếu %v", str)
 }

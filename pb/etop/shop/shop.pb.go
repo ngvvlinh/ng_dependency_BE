@@ -5418,12 +5418,14 @@ func (m *Customer) GetStatus() status3.Status {
 }
 
 type CreateCustomerRequest struct {
-	FullName             string   `protobuf:"bytes,1,opt,name=full_name,json=fullName" json:"full_name"`
-	Code                 string   `protobuf:"bytes,5,opt,name=code" json:"code"`
-	Gender               string   `protobuf:"bytes,12,opt,name=gender" json:"gender"`
-	Birthday             string   `protobuf:"bytes,13,opt,name=birthday" json:"birthday"`
-	Type                 string   `protobuf:"bytes,14,opt,name=type" json:"type"`
-	Note                 string   `protobuf:"bytes,2,opt,name=note" json:"note"`
+	// @required
+	FullName string `protobuf:"bytes,1,opt,name=full_name,json=fullName" json:"full_name"`
+	Code     string `protobuf:"bytes,5,opt,name=code" json:"code"`
+	Gender   string `protobuf:"bytes,12,opt,name=gender" json:"gender"`
+	Birthday string `protobuf:"bytes,13,opt,name=birthday" json:"birthday"`
+	Type     string `protobuf:"bytes,14,opt,name=type" json:"type"`
+	Note     string `protobuf:"bytes,2,opt,name=note" json:"note"`
+	// @required
 	Phone                string   `protobuf:"bytes,3,opt,name=phone" json:"phone"`
 	Email                string   `protobuf:"bytes,4,opt,name=email" json:"email"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`

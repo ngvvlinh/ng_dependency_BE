@@ -987,6 +987,7 @@ message Customer {
 }
 
 message CreateCustomerRequest {
+    // @required
     optional string full_name = 1 [(gogoproto.nullable) = false];
 
     optional string code = 5 [(gogoproto.nullable) = false];
@@ -998,7 +999,7 @@ message CreateCustomerRequest {
     optional string type = 14 [(gogoproto.nullable) = false];
 
     optional string note = 2 [(gogoproto.nullable) = false];
-
+    // @required
     optional string phone = 3 [(gogoproto.nullable) = false];
 
     optional string email = 4 [(gogoproto.nullable) = false];

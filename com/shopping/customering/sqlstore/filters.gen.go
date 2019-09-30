@@ -5,6 +5,7 @@ package sqlstore
 import (
 	"time"
 
+	"etop.vn/api/main/etop"
 	"etop.vn/backend/pkg/common/sq"
 )
 
@@ -636,5 +637,24 @@ func (ft *ShopTraderAddressFilters) ByDeletedAtPtr(DeletedAt *time.Time) *sq.Col
 		Value:  DeletedAt,
 		IsNil:  DeletedAt == nil,
 		IsZero: DeletedAt != nil && (*DeletedAt).IsZero(),
+	}
+}
+
+func (ft *ShopTraderAddressFilters) ByStatus(Status etop.Status3) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "status",
+		Value:  Status,
+		IsNil:  Status == 0,
+	}
+}
+
+func (ft *ShopTraderAddressFilters) ByStatusPtr(Status *etop.Status3) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "status",
+		Value:  Status,
+		IsNil:  Status == nil,
+		IsZero: Status != nil && (*Status) == 0,
 	}
 }

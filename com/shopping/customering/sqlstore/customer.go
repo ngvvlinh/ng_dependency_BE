@@ -2,7 +2,10 @@ package sqlstore
 
 import (
 	"context"
+	"strings"
 	"time"
+
+	cm "etop.vn/backend/pkg/common"
 
 	"etop.vn/api/shopping/tradering"
 
@@ -91,7 +94,7 @@ func (s *CustomerStore) CreateCustomer(customer *customering.ShopCustomer) error
 	}
 	customerDB := convert.ShopCustomerDB(customer)
 	_, err := s.query().Insert(trader, customerDB)
-	return err
+	return CheckErrorCustomer(err, customerDB.Email, customerDB.Phone)
 }
 
 func (s *CustomerStore) UpdateCustomerDB(customer *model.ShopCustomer) error {
@@ -161,4 +164,17 @@ func (s *CustomerStore) ListCustomers() ([]*customering.ShopCustomer, error) {
 		return nil, err
 	}
 	return convert.ShopCustomers(customers), nil
+}
+
+func CheckErrorCustomer(e error, email string, phone string) error {
+	if e != nil {
+		errMsg := e.Error()
+		switch {
+		case strings.Contains(errMsg, "shop_customer_shop_id_email_idx"):
+			e = cm.Errorf(cm.FailedPrecondition, e, "Trùng email: %", email)
+		case strings.Contains(errMsg, "shop_customer_shop_id_phone_idx"):
+			e = cm.Errorf(cm.FailedPrecondition, e, "Trùng số điện thoại: %v", phone)
+		}
+	}
+	return e
 }
