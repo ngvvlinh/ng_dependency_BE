@@ -82,7 +82,7 @@ func (s *CustomerStore) Count() (uint64, error) {
 
 func (s *CustomerStore) CreateCustomer(customer *customering.ShopCustomer) error {
 	sqlstore.MustNoPreds(s.preds)
-	trader := &model.ShopTrader{ID: customer.ID, ShopID: customer.ShopID}
+	trader := &model.ShopTrader{ID: customer.ID, ShopID: customer.ShopID, Type: customering.CustomerType}
 	customerDB := convert.ShopCustomerDB(customer)
 	_, err := s.query().Insert(trader, customerDB)
 	return err

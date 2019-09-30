@@ -354,6 +354,162 @@
         ]
       }
     },
+    "/api/shop.Carrier/CreateCarrier": {
+      "post": {
+        "operationId": "CreateCarrier",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/shopCarrier"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/shopCreateCarrierRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Carrier"
+        ]
+      }
+    },
+    "/api/shop.Carrier/DeleteCarrier": {
+      "post": {
+        "operationId": "DeleteCarrier",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/cmDeletedResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/cmIDRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Carrier"
+        ]
+      }
+    },
+    "/api/shop.Carrier/GetCarrier": {
+      "post": {
+        "operationId": "GetCarrier",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/shopCarrier"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/cmIDRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Carrier"
+        ]
+      }
+    },
+    "/api/shop.Carrier/GetCarriers": {
+      "post": {
+        "operationId": "GetCarriers",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/shopCarriersResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/shopGetCarriersRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Carrier"
+        ]
+      }
+    },
+    "/api/shop.Carrier/GetCarriersByIDs": {
+      "post": {
+        "operationId": "GetCarriersByIDs",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/shopCarriersResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/cmIDsRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Carrier"
+        ]
+      }
+    },
+    "/api/shop.Carrier/UpdateCarrier": {
+      "post": {
+        "operationId": "UpdateCarrier",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/shopCarrier"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/shopUpdateCarrierRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Carrier"
+        ]
+      }
+    },
     "/api/shop.Collection/CreateCollection": {
       "post": {
         "operationId": "CreateCollection",
@@ -2877,6 +3033,162 @@
         ],
         "tags": [
           "Trading"
+        ]
+      }
+    },
+    "/api/shop.Vendor/CreateVendor": {
+      "post": {
+        "operationId": "CreateVendor",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/shopVendor"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/shopCreateVendorRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Vendor"
+        ]
+      }
+    },
+    "/api/shop.Vendor/DeleteVendor": {
+      "post": {
+        "operationId": "DeleteVendor",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/cmDeletedResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/cmIDRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Vendor"
+        ]
+      }
+    },
+    "/api/shop.Vendor/GetVendor": {
+      "post": {
+        "operationId": "GetVendor",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/shopVendor"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/cmIDRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Vendor"
+        ]
+      }
+    },
+    "/api/shop.Vendor/GetVendors": {
+      "post": {
+        "operationId": "GetVendors",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/shopVendorsResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/shopGetVendorsRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Vendor"
+        ]
+      }
+    },
+    "/api/shop.Vendor/GetVendorsByIDs": {
+      "post": {
+        "operationId": "GetVendorsByIDs",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/shopVendorsResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/cmIDsRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Vendor"
+        ]
+      }
+    },
+    "/api/shop.Vendor/UpdateVendor": {
+      "post": {
+        "operationId": "UpdateVendor",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/shopVendor"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/shopUpdateVendorRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Vendor"
         ]
       }
     }
@@ -5979,6 +6291,50 @@
         }
       }
     },
+    "shopCarrier": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "shop_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "full_name": {
+          "type": "string"
+        },
+        "note": {
+          "type": "string"
+        },
+        "status": {
+          "$ref": "#/definitions/status3Status"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "shopCarriersResponse": {
+      "type": "object",
+      "properties": {
+        "carriers": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/shopCarrier"
+          }
+        },
+        "paging": {
+          "$ref": "#/definitions/cmPageInfo"
+        }
+      }
+    },
     "shopCategoriesResponse": {
       "type": "object",
       "properties": {
@@ -6057,6 +6413,17 @@
           "items": {
             "$ref": "#/definitions/shopCollection"
           }
+        }
+      }
+    },
+    "shopCreateCarrierRequest": {
+      "type": "object",
+      "properties": {
+        "full_name": {
+          "type": "string"
+        },
+        "note": {
+          "type": "string"
         }
       }
     },
@@ -6282,6 +6649,17 @@
         "retail_price": {
           "type": "integer",
           "format": "int32"
+        }
+      }
+    },
+    "shopCreateVendorRequest": {
+      "type": "object",
+      "properties": {
+        "full_name": {
+          "type": "string"
+        },
+        "note": {
+          "type": "string"
         }
       }
     },
@@ -6804,6 +7182,20 @@
         }
       }
     },
+    "shopGetCarriersRequest": {
+      "type": "object",
+      "properties": {
+        "paging": {
+          "$ref": "#/definitions/cmPaging"
+        },
+        "filters": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/cmFilter"
+          }
+        }
+      }
+    },
     "shopGetCustomerAddressesRequest": {
       "type": "object",
       "properties": {
@@ -6941,6 +7333,20 @@
       }
     },
     "shopGetVariantsRequest": {
+      "type": "object",
+      "properties": {
+        "paging": {
+          "$ref": "#/definitions/cmPaging"
+        },
+        "filters": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/cmFilter"
+          }
+        }
+      }
+    },
+    "shopGetVendorsRequest": {
       "type": "object",
       "properties": {
         "paging": {
@@ -7560,6 +7966,21 @@
         }
       }
     },
+    "shopUpdateCarrierRequest": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "full_name": {
+          "type": "string"
+        },
+        "note": {
+          "type": "string"
+        }
+      }
+    },
     "shopUpdateCollectionRequest": {
       "type": "object",
       "properties": {
@@ -8062,6 +8483,21 @@
         "id"
       ]
     },
+    "shopUpdateVendorRequest": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "full_name": {
+          "type": "string"
+        },
+        "note": {
+          "type": "string"
+        }
+      }
+    },
     "shopUpdateXAccountAhamoveVerificationRequest": {
       "type": "object",
       "properties": {
@@ -8095,6 +8531,50 @@
           "items": {
             "type": "string"
           }
+        }
+      }
+    },
+    "shopVendor": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "shop_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "full_name": {
+          "type": "string"
+        },
+        "note": {
+          "type": "string"
+        },
+        "status": {
+          "$ref": "#/definitions/status3Status"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "shopVendorsResponse": {
+      "type": "object",
+      "properties": {
+        "vendors": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/shopVendor"
+          }
+        },
+        "paging": {
+          "$ref": "#/definitions/cmPageInfo"
         }
       }
     },
@@ -8175,6 +8655,9 @@
       "name": "Authorize"
     },
     {
+      "name": "Carrier"
+    },
+    {
       "name": "Collection"
     },
     {
@@ -8221,6 +8704,9 @@
     },
     {
       "name": "Trading"
+    },
+    {
+      "name": "Vendor"
     }
   ]
 }

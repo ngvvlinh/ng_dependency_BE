@@ -13,6 +13,7 @@ var _ = sqlgenShopTrader(&ShopTrader{})
 type ShopTrader struct {
 	ID     int64
 	ShopID int64
+	Type   string
 }
 
 var _ = sqlgenShopCustomer(&ShopCustomer{})
@@ -28,19 +29,6 @@ type ShopCustomer struct {
 	Note      string
 	Phone     string
 	Email     string
-	Status    int32
-	CreatedAt time.Time `sq:"create"`
-	UpdatedAt time.Time `sq:"update"`
-	DeletedAt time.Time
-}
-
-var _ = sqlgenShopVendor(&ShopVendor{})
-
-type ShopVendor struct {
-	ID        int64
-	ShopID    int64
-	Name      string
-	Note      string
 	Status    int32
 	CreatedAt time.Time `sq:"create"`
 	UpdatedAt time.Time `sq:"update"`

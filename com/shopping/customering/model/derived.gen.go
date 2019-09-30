@@ -17,7 +17,7 @@ func sqlgenShopTrader(_ *ShopTrader) bool { return true }
 type ShopTraders []*ShopTrader
 
 const __sqlShopTrader_Table = "shop_trader"
-const __sqlShopTrader_ListCols = "\"id\",\"shop_id\""
+const __sqlShopTrader_ListCols = "\"id\",\"shop_id\",\"type\""
 const __sqlShopTrader_Insert = "INSERT INTO \"shop_trader\" (" + __sqlShopTrader_ListCols + ") VALUES"
 const __sqlShopTrader_Select = "SELECT " + __sqlShopTrader_ListCols + " FROM \"shop_trader\""
 const __sqlShopTrader_Select_history = "SELECT " + __sqlShopTrader_ListCols + " FROM history.\"shop_trader\""
@@ -31,6 +31,7 @@ func (m *ShopTrader) SQLArgs(opts core.Opts, create bool) []interface{} {
 	return []interface{}{
 		core.Int64(m.ID),
 		core.Int64(m.ShopID),
+		core.String(m.Type),
 	}
 }
 
@@ -38,6 +39,7 @@ func (m *ShopTrader) SQLScanArgs(opts core.Opts) []interface{} {
 	return []interface{}{
 		(*core.Int64)(&m.ID),
 		(*core.Int64)(&m.ShopID),
+		(*core.String)(&m.Type),
 	}
 }
 
@@ -75,7 +77,7 @@ func (_ *ShopTraders) SQLSelect(w SQLWriter) error {
 func (m *ShopTrader) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlShopTrader_Insert)
 	w.WriteRawString(" (")
-	w.WriteMarkers(2)
+	w.WriteMarkers(3)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), true))
 	return nil
@@ -85,7 +87,7 @@ func (ms ShopTraders) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlShopTrader_Insert)
 	w.WriteRawString(" (")
 	for i := 0; i < len(ms); i++ {
-		w.WriteMarkers(2)
+		w.WriteMarkers(3)
 		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
 		w.WriteRawString("),(")
 	}
@@ -116,6 +118,14 @@ func (m *ShopTrader) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(m.ShopID)
 	}
+	if m.Type != "" {
+		flag = true
+		w.WriteName("type")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.Type)
+	}
 	if !flag {
 		return core.ErrNoColumn
 	}
@@ -126,7 +136,7 @@ func (m *ShopTrader) SQLUpdate(w SQLWriter) error {
 func (m *ShopTrader) SQLUpdateAll(w SQLWriter) error {
 	w.WriteQueryString(__sqlShopTrader_UpdateAll)
 	w.WriteRawString(" = (")
-	w.WriteMarkers(2)
+	w.WriteMarkers(3)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), false))
 	return nil
@@ -150,27 +160,29 @@ func (m ShopTraderHistories) SQLSelect(w SQLWriter) error {
 
 func (m ShopTraderHistory) ID() core.Interface     { return core.Interface{m["id"]} }
 func (m ShopTraderHistory) ShopID() core.Interface { return core.Interface{m["shop_id"]} }
+func (m ShopTraderHistory) Type() core.Interface   { return core.Interface{m["type"]} }
 
 func (m *ShopTraderHistory) SQLScan(opts core.Opts, row *sql.Row) error {
-	data := make([]interface{}, 2)
-	args := make([]interface{}, 2)
-	for i := 0; i < 2; i++ {
+	data := make([]interface{}, 3)
+	args := make([]interface{}, 3)
+	for i := 0; i < 3; i++ {
 		args[i] = &data[i]
 	}
 	if err := row.Scan(args...); err != nil {
 		return err
 	}
-	res := make(ShopTraderHistory, 2)
+	res := make(ShopTraderHistory, 3)
 	res["id"] = data[0]
 	res["shop_id"] = data[1]
+	res["type"] = data[2]
 	*m = res
 	return nil
 }
 
 func (ms *ShopTraderHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	data := make([]interface{}, 2)
-	args := make([]interface{}, 2)
-	for i := 0; i < 2; i++ {
+	data := make([]interface{}, 3)
+	args := make([]interface{}, 3)
+	for i := 0; i < 3; i++ {
 		args[i] = &data[i]
 	}
 	res := make(ShopTraderHistories, 0, 128)
@@ -181,6 +193,7 @@ func (ms *ShopTraderHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
 		m := make(ShopTraderHistory)
 		m["id"] = data[0]
 		m["shop_id"] = data[1]
+		m["type"] = data[2]
 		res = append(res, m)
 	}
 	if err := rows.Err(); err != nil {
@@ -517,264 +530,6 @@ func (ms *ShopCustomerHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
 		m["created_at"] = data[11]
 		m["updated_at"] = data[12]
 		m["deleted_at"] = data[13]
-		res = append(res, m)
-	}
-	if err := rows.Err(); err != nil {
-		return err
-	}
-	*ms = res
-	return nil
-}
-
-// Type ShopVendor represents table shop_vendor
-func sqlgenShopVendor(_ *ShopVendor) bool { return true }
-
-type ShopVendors []*ShopVendor
-
-const __sqlShopVendor_Table = "shop_vendor"
-const __sqlShopVendor_ListCols = "\"id\",\"shop_id\",\"name\",\"note\",\"status\",\"created_at\",\"updated_at\",\"deleted_at\""
-const __sqlShopVendor_Insert = "INSERT INTO \"shop_vendor\" (" + __sqlShopVendor_ListCols + ") VALUES"
-const __sqlShopVendor_Select = "SELECT " + __sqlShopVendor_ListCols + " FROM \"shop_vendor\""
-const __sqlShopVendor_Select_history = "SELECT " + __sqlShopVendor_ListCols + " FROM history.\"shop_vendor\""
-const __sqlShopVendor_UpdateAll = "UPDATE \"shop_vendor\" SET (" + __sqlShopVendor_ListCols + ")"
-
-func (m *ShopVendor) SQLTableName() string  { return "shop_vendor" }
-func (m *ShopVendors) SQLTableName() string { return "shop_vendor" }
-func (m *ShopVendor) SQLListCols() string   { return __sqlShopVendor_ListCols }
-
-func (m *ShopVendor) SQLArgs(opts core.Opts, create bool) []interface{} {
-	now := time.Now()
-	return []interface{}{
-		core.Int64(m.ID),
-		core.Int64(m.ShopID),
-		core.String(m.Name),
-		core.String(m.Note),
-		core.Int32(m.Status),
-		core.Now(m.CreatedAt, now, create),
-		core.Now(m.UpdatedAt, now, true),
-		core.Time(m.DeletedAt),
-	}
-}
-
-func (m *ShopVendor) SQLScanArgs(opts core.Opts) []interface{} {
-	return []interface{}{
-		(*core.Int64)(&m.ID),
-		(*core.Int64)(&m.ShopID),
-		(*core.String)(&m.Name),
-		(*core.String)(&m.Note),
-		(*core.Int32)(&m.Status),
-		(*core.Time)(&m.CreatedAt),
-		(*core.Time)(&m.UpdatedAt),
-		(*core.Time)(&m.DeletedAt),
-	}
-}
-
-func (m *ShopVendor) SQLScan(opts core.Opts, row *sql.Row) error {
-	return row.Scan(m.SQLScanArgs(opts)...)
-}
-
-func (ms *ShopVendors) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	res := make(ShopVendors, 0, 128)
-	for rows.Next() {
-		m := new(ShopVendor)
-		args := m.SQLScanArgs(opts)
-		if err := rows.Scan(args...); err != nil {
-			return err
-		}
-		res = append(res, m)
-	}
-	if err := rows.Err(); err != nil {
-		return err
-	}
-	*ms = res
-	return nil
-}
-
-func (_ *ShopVendor) SQLSelect(w SQLWriter) error {
-	w.WriteQueryString(__sqlShopVendor_Select)
-	return nil
-}
-
-func (_ *ShopVendors) SQLSelect(w SQLWriter) error {
-	w.WriteQueryString(__sqlShopVendor_Select)
-	return nil
-}
-
-func (m *ShopVendor) SQLInsert(w SQLWriter) error {
-	w.WriteQueryString(__sqlShopVendor_Insert)
-	w.WriteRawString(" (")
-	w.WriteMarkers(8)
-	w.WriteByte(')')
-	w.WriteArgs(m.SQLArgs(w.Opts(), true))
-	return nil
-}
-
-func (ms ShopVendors) SQLInsert(w SQLWriter) error {
-	w.WriteQueryString(__sqlShopVendor_Insert)
-	w.WriteRawString(" (")
-	for i := 0; i < len(ms); i++ {
-		w.WriteMarkers(8)
-		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
-		w.WriteRawString("),(")
-	}
-	w.TrimLast(2)
-	return nil
-}
-
-func (m *ShopVendor) SQLUpdate(w SQLWriter) error {
-	now, opts := time.Now(), w.Opts()
-	_, _ = now, opts // suppress unuse error
-	var flag bool
-	w.WriteRawString("UPDATE ")
-	w.WriteName("shop_vendor")
-	w.WriteRawString(" SET ")
-	if m.ID != 0 {
-		flag = true
-		w.WriteName("id")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(m.ID)
-	}
-	if m.ShopID != 0 {
-		flag = true
-		w.WriteName("shop_id")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(m.ShopID)
-	}
-	if m.Name != "" {
-		flag = true
-		w.WriteName("name")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(m.Name)
-	}
-	if m.Note != "" {
-		flag = true
-		w.WriteName("note")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(m.Note)
-	}
-	if m.Status != 0 {
-		flag = true
-		w.WriteName("status")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(m.Status)
-	}
-	if !m.CreatedAt.IsZero() {
-		flag = true
-		w.WriteName("created_at")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(m.CreatedAt)
-	}
-	if !m.UpdatedAt.IsZero() {
-		flag = true
-		w.WriteName("updated_at")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(core.Now(m.UpdatedAt, time.Now(), true))
-	}
-	if !m.DeletedAt.IsZero() {
-		flag = true
-		w.WriteName("deleted_at")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(m.DeletedAt)
-	}
-	if !flag {
-		return core.ErrNoColumn
-	}
-	w.TrimLast(1)
-	return nil
-}
-
-func (m *ShopVendor) SQLUpdateAll(w SQLWriter) error {
-	w.WriteQueryString(__sqlShopVendor_UpdateAll)
-	w.WriteRawString(" = (")
-	w.WriteMarkers(8)
-	w.WriteByte(')')
-	w.WriteArgs(m.SQLArgs(w.Opts(), false))
-	return nil
-}
-
-type ShopVendorHistory map[string]interface{}
-type ShopVendorHistories []map[string]interface{}
-
-func (m *ShopVendorHistory) SQLTableName() string  { return "history.\"shop_vendor\"" }
-func (m ShopVendorHistories) SQLTableName() string { return "history.\"shop_vendor\"" }
-
-func (m *ShopVendorHistory) SQLSelect(w SQLWriter) error {
-	w.WriteQueryString(__sqlShopVendor_Select_history)
-	return nil
-}
-
-func (m ShopVendorHistories) SQLSelect(w SQLWriter) error {
-	w.WriteQueryString(__sqlShopVendor_Select_history)
-	return nil
-}
-
-func (m ShopVendorHistory) ID() core.Interface        { return core.Interface{m["id"]} }
-func (m ShopVendorHistory) ShopID() core.Interface    { return core.Interface{m["shop_id"]} }
-func (m ShopVendorHistory) Name() core.Interface      { return core.Interface{m["name"]} }
-func (m ShopVendorHistory) Note() core.Interface      { return core.Interface{m["note"]} }
-func (m ShopVendorHistory) Status() core.Interface    { return core.Interface{m["status"]} }
-func (m ShopVendorHistory) CreatedAt() core.Interface { return core.Interface{m["created_at"]} }
-func (m ShopVendorHistory) UpdatedAt() core.Interface { return core.Interface{m["updated_at"]} }
-func (m ShopVendorHistory) DeletedAt() core.Interface { return core.Interface{m["deleted_at"]} }
-
-func (m *ShopVendorHistory) SQLScan(opts core.Opts, row *sql.Row) error {
-	data := make([]interface{}, 8)
-	args := make([]interface{}, 8)
-	for i := 0; i < 8; i++ {
-		args[i] = &data[i]
-	}
-	if err := row.Scan(args...); err != nil {
-		return err
-	}
-	res := make(ShopVendorHistory, 8)
-	res["id"] = data[0]
-	res["shop_id"] = data[1]
-	res["name"] = data[2]
-	res["note"] = data[3]
-	res["status"] = data[4]
-	res["created_at"] = data[5]
-	res["updated_at"] = data[6]
-	res["deleted_at"] = data[7]
-	*m = res
-	return nil
-}
-
-func (ms *ShopVendorHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	data := make([]interface{}, 8)
-	args := make([]interface{}, 8)
-	for i := 0; i < 8; i++ {
-		args[i] = &data[i]
-	}
-	res := make(ShopVendorHistories, 0, 128)
-	for rows.Next() {
-		if err := rows.Scan(args...); err != nil {
-			return err
-		}
-		m := make(ShopVendorHistory)
-		m["id"] = data[0]
-		m["shop_id"] = data[1]
-		m["name"] = data[2]
-		m["note"] = data[3]
-		m["status"] = data[4]
-		m["created_at"] = data[5]
-		m["updated_at"] = data[6]
-		m["deleted_at"] = data[7]
 		res = append(res, m)
 	}
 	if err := rows.Err(); err != nil {

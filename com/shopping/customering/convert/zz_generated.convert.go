@@ -77,24 +77,6 @@ func registerConversionFunctions(s *scheme.Scheme) {
 		*out.(*[]*customeringmodel.ShopTrader) = out0
 		return nil
 	})
-	s.Register((*customeringmodel.ShopVendor)(nil), (*customering.ShopVendor)(nil), func(arg, out interface{}) error {
-		Convert_customeringmodel_ShopVendor_customering_ShopVendor(arg.(*customeringmodel.ShopVendor), out.(*customering.ShopVendor))
-		return nil
-	})
-	s.Register(([]*customeringmodel.ShopVendor)(nil), (*[]*customering.ShopVendor)(nil), func(arg, out interface{}) error {
-		out0 := Convert_customeringmodel_ShopVendors_customering_ShopVendors(arg.([]*customeringmodel.ShopVendor))
-		*out.(*[]*customering.ShopVendor) = out0
-		return nil
-	})
-	s.Register((*customering.ShopVendor)(nil), (*customeringmodel.ShopVendor)(nil), func(arg, out interface{}) error {
-		Convert_customering_ShopVendor_customeringmodel_ShopVendor(arg.(*customering.ShopVendor), out.(*customeringmodel.ShopVendor))
-		return nil
-	})
-	s.Register(([]*customering.ShopVendor)(nil), (*[]*customeringmodel.ShopVendor)(nil), func(arg, out interface{}) error {
-		out0 := Convert_customering_ShopVendors_customeringmodel_ShopVendors(arg.([]*customering.ShopVendor))
-		*out.(*[]*customeringmodel.ShopVendor) = out0
-		return nil
-	})
 }
 
 //-- convert etop.vn/api/shopping/customering.ShopCustomer --//
@@ -221,6 +203,7 @@ func Convert_customeringmodel_ShopTrader_customering_ShopTrader(arg *customering
 func convert_customeringmodel_ShopTrader_customering_ShopTrader(arg *customeringmodel.ShopTrader, out *customering.ShopTrader) {
 	out.ID = arg.ID         // simple assign
 	out.ShopID = arg.ShopID // simple assign
+	out.Type = arg.Type     // simple assign
 }
 
 func Convert_customeringmodel_ShopTraders_customering_ShopTraders(args []*customeringmodel.ShopTrader) (outs []*customering.ShopTrader) {
@@ -246,6 +229,7 @@ func Convert_customering_ShopTrader_customeringmodel_ShopTrader(arg *customering
 func convert_customering_ShopTrader_customeringmodel_ShopTrader(arg *customering.ShopTrader, out *customeringmodel.ShopTrader) {
 	out.ID = arg.ID         // simple assign
 	out.ShopID = arg.ShopID // simple assign
+	out.Type = arg.Type     // simple assign
 }
 
 func Convert_customering_ShopTraders_customeringmodel_ShopTraders(args []*customering.ShopTrader) (outs []*customeringmodel.ShopTrader) {
@@ -253,69 +237,6 @@ func Convert_customering_ShopTraders_customeringmodel_ShopTraders(args []*custom
 	outs = make([]*customeringmodel.ShopTrader, len(args))
 	for i := range tmps {
 		outs[i] = Convert_customering_ShopTrader_customeringmodel_ShopTrader(args[i], &tmps[i])
-	}
-	return outs
-}
-
-//-- convert etop.vn/api/shopping/customering.ShopVendor --//
-
-func Convert_customeringmodel_ShopVendor_customering_ShopVendor(arg *customeringmodel.ShopVendor, out *customering.ShopVendor) *customering.ShopVendor {
-	if arg == nil {
-		return nil
-	}
-	if out == nil {
-		out = &customering.ShopVendor{}
-	}
-	convert_customeringmodel_ShopVendor_customering_ShopVendor(arg, out)
-	return out
-}
-
-func convert_customeringmodel_ShopVendor_customering_ShopVendor(arg *customeringmodel.ShopVendor, out *customering.ShopVendor) {
-	out.ID = arg.ID               // simple assign
-	out.ShopID = arg.ShopID       // simple assign
-	out.Name = arg.Name           // simple assign
-	out.Note = arg.Note           // simple assign
-	out.Status = arg.Status       // simple assign
-	out.CreatedAt = arg.CreatedAt // simple assign
-	out.UpdatedAt = arg.UpdatedAt // simple assign
-}
-
-func Convert_customeringmodel_ShopVendors_customering_ShopVendors(args []*customeringmodel.ShopVendor) (outs []*customering.ShopVendor) {
-	tmps := make([]customering.ShopVendor, len(args))
-	outs = make([]*customering.ShopVendor, len(args))
-	for i := range tmps {
-		outs[i] = Convert_customeringmodel_ShopVendor_customering_ShopVendor(args[i], &tmps[i])
-	}
-	return outs
-}
-
-func Convert_customering_ShopVendor_customeringmodel_ShopVendor(arg *customering.ShopVendor, out *customeringmodel.ShopVendor) *customeringmodel.ShopVendor {
-	if arg == nil {
-		return nil
-	}
-	if out == nil {
-		out = &customeringmodel.ShopVendor{}
-	}
-	convert_customering_ShopVendor_customeringmodel_ShopVendor(arg, out)
-	return out
-}
-
-func convert_customering_ShopVendor_customeringmodel_ShopVendor(arg *customering.ShopVendor, out *customeringmodel.ShopVendor) {
-	out.ID = arg.ID               // simple assign
-	out.ShopID = arg.ShopID       // simple assign
-	out.Name = arg.Name           // simple assign
-	out.Note = arg.Note           // simple assign
-	out.Status = arg.Status       // simple assign
-	out.CreatedAt = arg.CreatedAt // simple assign
-	out.UpdatedAt = arg.UpdatedAt // simple assign
-	out.DeletedAt = time.Time{}   // zero value
-}
-
-func Convert_customering_ShopVendors_customeringmodel_ShopVendors(args []*customering.ShopVendor) (outs []*customeringmodel.ShopVendor) {
-	tmps := make([]customeringmodel.ShopVendor, len(args))
-	outs = make([]*customeringmodel.ShopVendor, len(args))
-	for i := range tmps {
-		outs[i] = Convert_customering_ShopVendor_customeringmodel_ShopVendor(args[i], &tmps[i])
 	}
 	return outs
 }

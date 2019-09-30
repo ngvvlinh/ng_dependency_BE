@@ -5,11 +5,11 @@ import (
 	"net/url"
 	"strconv"
 
-	"github.com/golang/protobuf/jsonpb"
-
 	"etop.vn/api/main/location"
 	"etop.vn/api/shopping/addressing"
+	"etop.vn/api/shopping/carrying"
 	"etop.vn/api/shopping/customering"
+	"etop.vn/api/shopping/vendoring"
 	catalogmodel "etop.vn/backend/com/main/catalog/model"
 	"etop.vn/backend/pb/common"
 	pbcm "etop.vn/backend/pb/common"
@@ -17,6 +17,7 @@ import (
 	pbs3 "etop.vn/backend/pb/etop/etc/status3"
 	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/common/jsonx"
+	"github.com/golang/protobuf/jsonpb"
 )
 
 func PbCollections(items []*catalogmodel.ShopCollection) []*Collection {
@@ -243,6 +244,46 @@ func PbCustomers(ms []*customering.ShopCustomer) []*Customer {
 	res := make([]*Customer, len(ms))
 	for i, m := range ms {
 		res[i] = PbCustomer(m)
+	}
+	return res
+}
+
+func PbVendor(m *vendoring.ShopVendor) *Vendor {
+	return &Vendor{
+		Id:        m.ID,
+		ShopId:    m.ShopID,
+		FullName:  m.FullName,
+		Note:      m.Note,
+		Status:    pbs3.Pb(model.Status3(m.Status)),
+		CreatedAt: pbcm.PbTime(m.CreatedAt),
+		UpdatedAt: pbcm.PbTime(m.UpdatedAt),
+	}
+}
+
+func PbVendors(ms []*vendoring.ShopVendor) []*Vendor {
+	res := make([]*Vendor, len(ms))
+	for i, m := range ms {
+		res[i] = PbVendor(m)
+	}
+	return res
+}
+
+func PbCarrier(m *carrying.ShopCarrier) *Carrier {
+	return &Carrier{
+		Id:        m.ID,
+		ShopId:    m.ShopID,
+		FullName:  m.FullName,
+		Note:      m.Note,
+		Status:    pbs3.Pb(model.Status3(m.Status)),
+		CreatedAt: pbcm.PbTime(m.CreatedAt),
+		UpdatedAt: pbcm.PbTime(m.UpdatedAt),
+	}
+}
+
+func PbCarriers(ms []*carrying.ShopCarrier) []*Carrier {
+	res := make([]*Carrier, len(ms))
+	for i, m := range ms {
+		res[i] = PbCarrier(m)
 	}
 	return res
 }

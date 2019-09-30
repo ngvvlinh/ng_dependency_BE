@@ -5,8 +5,6 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/asaskevich/govalidator"
-
 	haravanidentity "etop.vn/api/external/haravan/identity"
 	"etop.vn/api/external/payment"
 	paymentmanager "etop.vn/api/external/payment/manager"
@@ -20,7 +18,9 @@ import (
 	"etop.vn/api/main/shipping/types"
 	"etop.vn/api/meta"
 	"etop.vn/api/shopping/addressing"
+	"etop.vn/api/shopping/carrying"
 	"etop.vn/api/shopping/customering"
+	"etop.vn/api/shopping/vendoring"
 	notimodel "etop.vn/backend/com/handler/notifier/model"
 	catalogmodelx "etop.vn/backend/com/main/catalog/modelx"
 	moneymodelx "etop.vn/backend/com/main/moneytx/modelx"
@@ -41,6 +41,7 @@ import (
 	. "etop.vn/capi/dot"
 	"etop.vn/common/bus"
 	"etop.vn/common/l"
+	"github.com/asaskevich/govalidator"
 )
 
 var (
@@ -135,6 +136,10 @@ var (
 	traderAddressAggr    addressing.CommandBus
 	traderAddressQuery   addressing.QueryBus
 	paymentCtrl          paymentmanager.CommandBus
+	vendorAggr           vendoring.CommandBus
+	vendorQuery          vendoring.QueryBus
+	carrierAggr          carrying.CommandBus
+	carrierQuery         carrying.QueryBus
 	eventBus             meta.EventBus
 )
 
@@ -157,6 +162,10 @@ func Init(
 	orderA ordering.CommandBus,
 	orderQ ordering.QueryBus,
 	paymentManager paymentmanager.CommandBus,
+	vendorA vendoring.CommandBus,
+	vendorQ vendoring.QueryBus,
+	carrierA carrying.CommandBus,
+	carrierQ carrying.QueryBus,
 	eventB meta.EventBus,
 	sd cmservice.Shutdowner,
 	rd redis.Store,
@@ -180,6 +189,10 @@ func Init(
 	orderAggr = orderA
 	orderQuery = orderQ
 	paymentCtrl = paymentManager
+	vendorAggr = vendorA
+	vendorQuery = vendorQ
+	carrierAggr = carrierA
+	carrierQuery = carrierQ
 	eventBus = eventB
 	sd.Register(idempgroup.Shutdown)
 }

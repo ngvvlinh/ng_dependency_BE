@@ -4,9 +4,16 @@ import (
 	"time"
 )
 
+var (
+	CustomerType = "customer"
+	VendorType   = "vendor"
+	CarrierType  = "carrier"
+)
+
 type ShopTrader struct {
 	ID     int64
 	ShopID int64
+	Type   string
 }
 
 type ShopCustomer struct {
@@ -20,16 +27,6 @@ type ShopCustomer struct {
 	Note      string
 	Phone     string
 	Email     string
-	Status    int32
-	CreatedAt time.Time
-	UpdatedAt time.Time
-}
-
-type ShopVendor struct {
-	ID        int64
-	ShopID    int64
-	Name      string
-	Note      string
 	Status    int32
 	CreatedAt time.Time
 	UpdatedAt time.Time

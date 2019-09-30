@@ -30,8 +30,12 @@ import (
 	shipnowpm "etop.vn/backend/com/main/shipnow/pm"
 	shipsqlstore "etop.vn/backend/com/main/shipping/sqlstore"
 	serviceaffiliate "etop.vn/backend/com/services/affiliate"
+	carrieraggregate "etop.vn/backend/com/shopping/carrying/aggregate"
+	carrierquery "etop.vn/backend/com/shopping/carrying/query"
 	customeraggregate "etop.vn/backend/com/shopping/customering/aggregate"
 	customerquery "etop.vn/backend/com/shopping/customering/query"
+	vendoraggregate "etop.vn/backend/com/shopping/vendoring/aggregate"
+	vendorquery "etop.vn/backend/com/shopping/vendoring/query"
 	vhtaggregate "etop.vn/backend/com/supporting/crm/vht/aggregate"
 	vhtquery "etop.vn/backend/com/supporting/crm/vht/query"
 	vtigeraggregate "etop.vn/backend/com/supporting/crm/vtiger/aggregate"
@@ -315,8 +319,12 @@ func main() {
 	shipnowPM := shipnowpm.New(eventBus, shipnowQuery, shipnowAggr, orderAggr.MessageBus(), shipnowCarrierManager)
 	shipnowPM.RegisterEventHandlers(eventBus)
 	customerAggr := customeraggregate.NewCustomerAggregate(db).MessageBus()
+	vendorAggr := vendoraggregate.NewVendorAggregate(db).MessageBus()
+	carrierAggr := carrieraggregate.NewCarrierAggregate(db).MessageBus()
 	traderAddressAggr := customeraggregate.NewAddressAggregate(db).MessageBus()
 	customerQuery := customerquery.NewCustomerQuery(db).MessageBus()
+	vendorQuery := vendorquery.NewVendorQuery(db).MessageBus()
+	carrierQuery := carrierquery.NewCarrierQuery(db).MessageBus()
 	traderAddressQuery := customerquery.NewAddressQuery(db).MessageBus()
 	affiliateCmd := serviceaffiliate.NewAggregate(dbaff).MessageBus()
 	affilateQuery := serviceaffiliate.NewQuery(dbaff).MessageBus()
@@ -351,6 +359,10 @@ func main() {
 		orderAggr.MessageBus(),
 		orderQuery,
 		paymentManager,
+		vendorAggr,
+		vendorQuery,
+		carrierAggr,
+		carrierQuery,
 		eventBus,
 		shutdowner,
 		redisStore,
