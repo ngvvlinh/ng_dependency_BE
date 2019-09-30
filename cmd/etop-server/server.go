@@ -8,6 +8,8 @@ import (
 	"strings"
 	"time"
 
+	"etop.vn/common/jsonx"
+
 	"github.com/julienschmidt/httprouter"
 
 	"etop.vn/api/main/identity"
@@ -70,6 +72,7 @@ func startEtopServer() *http.Server {
 	l.RegisterHTTPHandler(mux)
 	metrics.RegisterHTTPHandler(mux)
 	healthservice.RegisterHTTPHandler(mux)
+	jsonx.RegisterHTTPHandler(mux)
 
 	if *flDocOnly {
 		ll.Warn("API IS DISABLED (-doc-only)")

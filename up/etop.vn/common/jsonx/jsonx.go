@@ -3,9 +3,24 @@ package jsonx
 import (
 	"encoding/json"
 	"fmt"
+	"net/http"
 	"reflect"
+	"sort"
 	"strings"
 	"sync"
+)
+
+const DefaultRoute = "/==/jsonx"
+
+func RegisterHTTPHandler(mux *http.ServeMux) {
+	mux.HandleFunc(DefaultRoute, ServeHTTP)
+}
+
+type ErrorMode int
+
+const (
+	Warning ErrorMode = iota + 1
+	Panicking
 )
 
 type modeType int
@@ -16,57 +31,119 @@ const (
 	revalidate
 )
 
-var enabled bool
-var recognizedTypes = make(map[reflect.Type]modeType)
-var m sync.RWMutex
+type routeType int
 
-func EnableValidation() {
-	if enabled {
+const (
+	marshal routeType = iota + 1
+	unmarshal
+)
+
+var marshaler = reflect.TypeOf((*json.Marshaler)(nil)).Elem()
+var unmarshaler = reflect.TypeOf((*json.Unmarshaler)(nil)).Elem()
+
+var enabledMode ErrorMode
+var recognizedTypes = make(map[reflect.Type]modeType)
+var savedErrors = make(map[Error]struct{})
+var mr, me sync.RWMutex
+
+type Error struct {
+	Message string
+}
+
+func GetErrors() []Error {
+	me.RLock()
+	defer me.RUnlock()
+
+	if len(savedErrors) == 0 {
+		return nil
+	}
+	errs := make([]Error, 0, len(savedErrors))
+	for msg := range savedErrors {
+		errs = append(errs, msg)
+	}
+	sort.Slice(errs, func(i, j int) bool {
+		return errs[i].Message < errs[j].Message
+	})
+	return errs
+}
+
+func ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	errs := GetErrors()
+	if len(errs) == 0 {
+		_, _ = fmt.Fprint(w, "no error")
+		return
+	}
+	for _, err := range errs {
+		_, _ = fmt.Fprint(w, err.Message, "\n")
+	}
+}
+
+func EnableValidation(mode ErrorMode) {
+	if mode <= 0 {
+		panic("invalid mode")
+	}
+	if enabledMode > 0 {
 		panic("already enabled")
 	}
-	enabled = true
+	enabledMode = mode
 }
 
 func Marshal(v interface{}) ([]byte, error) {
-	if enabled {
-		mustValidate(v)
+	if enabledMode > 0 {
+		mustValidate(v, marshal)
 	}
 	return json.Marshal(v)
 }
 
 func Unmarshal(data []byte, v interface{}) error {
-	if enabled {
-		mustValidate(v)
+	if enabledMode > 0 {
+		mustValidate(v, unmarshal)
 	}
 	return json.Unmarshal(data, v)
 }
 
-func mustValidate(v interface{}) {
-	_, _, err := validate(v)
-	if err != nil {
+func mustValidate(v interface{}, route routeType) {
+	_, _, err := validate(v, route)
+	if err == nil {
+		return
+	}
+	if enabledMode == Panicking {
 		panic(err)
 	}
+
+	// save the error
+	msg := Error{Message: err.Error()}
+	me.RLock()
+	if _, ok := savedErrors[msg]; ok {
+		me.RUnlock()
+		return
+	}
+	me.RUnlock()
+	me.Lock()
+	defer me.Unlock()
+
+	savedErrors[msg] = struct{}{}
 }
 
-func validate(v interface{}) (fastpath int, _ modeType, _ error) {
+func validate(v interface{}, route routeType) (fastpath int, _ modeType, _ error) {
 	t := indirectType(reflect.TypeOf(v))
 	if t == nil {
 		return 1, safe, nil
 	}
-	m.RLock()
+	mr.RLock()
 	if recognizedTypes[t] == safe {
 		fastpath = 2
-		m.RUnlock()
+		mr.RUnlock()
 		return 2, safe, nil
 	}
-	m.RUnlock()
-	m.Lock()
-	defer m.Unlock()
-	mode, err := validateTag(reflect.ValueOf(v), t)
+	mr.RUnlock()
+	mr.Lock()
+	defer mr.Unlock()
+	mode, err := validateTag(reflect.ValueOf(v), t, route)
 	return 0, mode, err
 }
 
-func validateTag(v reflect.Value, t reflect.Type) (_mode modeType, _ error) {
+func validateTag(v reflect.Value, t reflect.Type, route routeType) (_mode modeType, _ error) {
 	v = indirectValue(v)
 	t = indirectType(t)
 	if t == nil {
@@ -79,7 +156,7 @@ func validateTag(v reflect.Value, t reflect.Type) (_mode modeType, _ error) {
 		return currentMode, nil
 	}
 	if v.Kind() == reflect.Invalid {
-		return validateTag(reflect.New(t).Elem(), t)
+		return validateTag(reflect.New(t).Elem(), t, route)
 	}
 
 	// temporary set to evaluating, set back to mode later
@@ -93,11 +170,11 @@ func validateTag(v reflect.Value, t reflect.Type) (_mode modeType, _ error) {
 			return safe, nil
 		}
 		if v.Len() == 0 {
-			return validateTag(reflect.New(elem).Elem(), elem)
+			return validateTag(reflect.New(elem).Elem(), elem, route)
 		}
 		for i, n := 0, v.Len(); i < n; i++ {
 			value := v.Index(i)
-			mode, err := validateTag(value, elem)
+			mode, err := validateTag(value, elem, route)
 			if err != nil {
 				return 0, err
 			}
@@ -113,11 +190,11 @@ func validateTag(v reflect.Value, t reflect.Type) (_mode modeType, _ error) {
 			return safe, nil
 		}
 		if v.Len() == 0 {
-			return validateTag(reflect.New(elem).Elem(), elem)
+			return validateTag(reflect.New(elem).Elem(), elem, route)
 		}
 		for _, key := range v.MapKeys() {
 			value := v.MapIndex(key)
-			mode, err := validateTag(value, elem)
+			mode, err := validateTag(value, elem, route)
 			if err != nil {
 				return 0, err
 			}
@@ -131,7 +208,7 @@ func validateTag(v reflect.Value, t reflect.Type) (_mode modeType, _ error) {
 		if v.IsNil() {
 			return revalidate, nil
 		}
-		_, err := validateTag(v.Elem(), v.Elem().Type())
+		_, err := validateTag(v.Elem(), v.Elem().Type(), route)
 		return revalidate, err // always revalidate interface
 
 	case reflect.Struct:
@@ -142,11 +219,11 @@ func validateTag(v reflect.Value, t reflect.Type) (_mode modeType, _ error) {
 				if recognizedTypes[tField] == safe {
 					continue
 				}
-				_, err := validateTag(v.Field(i), tField)
+				_, err := validateTag(v.Field(i), tField, route)
 				if err != nil {
 					return 0, fmt.Errorf(
-						"field %v of type %v: %v",
-						t.Field(i).Name, t.Name(), err)
+						"field %v of type %v.%v: %v",
+						t.Field(i).Name, t.PkgPath(), t.Name(), err)
 				}
 			}
 			return revalidate, nil
@@ -155,19 +232,31 @@ func validateTag(v reflect.Value, t reflect.Type) (_mode modeType, _ error) {
 			vField := v.Field(i)
 			tField := t.Field(i)
 			jsonTag := tField.Tag.Get("json")
-			if jsonTag == "" {
+			if jsonTag == "" && !tField.Anonymous {
 				return 0, fmt.Errorf(
-					"field %v of type %v must have json tag",
-					tField.Name, t.Name())
+					"field %v of type %v.%v must have json tag",
+					tField.Name, t.PkgPath(), t.Name())
 			}
 			if jsonTag == "-" || strings.HasPrefix(jsonTag, "-,") {
 				continue
 			}
-			mode, err := validateTag(vField, tField.Type)
+			switch route {
+			case marshal:
+				if vField.Type().Implements(marshaler) {
+					continue
+				}
+			case unmarshal:
+				if vField.Type().Implements(unmarshaler) || reflect.New(vField.Type()).Type().Implements(unmarshaler) {
+					continue
+				}
+			default:
+				panic("unexpected")
+			}
+			mode, err := validateTag(vField, tField.Type, route)
 			if err != nil {
 				return 0, fmt.Errorf(
-					"field %v of type %v: %v",
-					tField.Name, t.Name(), err)
+					"field %v of type %v.%v: %v",
+					tField.Name, t.PkgPath(), t.Name(), err)
 			}
 			if mode > _mode {
 				_mode = mode
@@ -177,7 +266,8 @@ func validateTag(v reflect.Value, t reflect.Type) (_mode modeType, _ error) {
 
 	case reflect.String, reflect.Bool,
 		reflect.Int, reflect.Int8, reflect.Int16, reflect.Int32, reflect.Int64,
-		reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64:
+		reflect.Uint, reflect.Uint8, reflect.Uint16, reflect.Uint32, reflect.Uint64,
+		reflect.Float32, reflect.Float64:
 		return safe, nil
 
 	case reflect.UnsafePointer,
