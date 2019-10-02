@@ -50,7 +50,7 @@ func main() {
 
 	cm.SetEnvironment(cfg.Env)
 	cm.SetMainSiteBaseURL(cfg.URL.MainSite)
-	ll.Info("Service start with config", l.String("commit", cm.Commit()))
+	ll.Info("Service start with config", l.String("commit", cm.CommitMessage()))
 	if cm.IsDev() {
 		ll.Info("config", l.Object("cfg", cfg))
 	}
@@ -122,7 +122,7 @@ func main() {
 
 	svr := startServers()
 	if bot != nil {
-		bot.SendMessage("–––\n✨ haravan-gateway started ✨\n" + cm.Commit())
+		bot.SendMessage("–––\n✨ haravan-gateway started ✨\n" + cm.CommitMessage())
 		defer bot.SendMessage("👹 haravan-gateway stopped 👹\n–––")
 	}
 

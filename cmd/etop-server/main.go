@@ -132,7 +132,7 @@ func main() {
 	cm.SetEnvironment(cfg.Env)
 	cm.SetMainSiteBaseURL(cfg.URL.MainSite)
 
-	ll.Info("Service started with config", l.String("commit", cm.Commit()))
+	ll.Info("Service started with config", l.String("commit", cm.CommitMessage()))
 	if cm.IsDev() {
 		ll.Info("config", l.Object("cfg", cfg))
 	}
@@ -389,7 +389,7 @@ func main() {
 
 	svrs := startServers()
 	if bot != nil {
-		bot.SendMessage("–––\n✨ Server started ✨\n" + cm.Commit())
+		bot.SendMessage("–––\n✨ Server started ✨\n" + cm.CommitMessage())
 		defer bot.SendMessage("👻 Server stopped 👻\n–––")
 	}
 

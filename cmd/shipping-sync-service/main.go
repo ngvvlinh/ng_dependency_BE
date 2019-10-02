@@ -42,7 +42,7 @@ func main() {
 	}
 
 	cm.SetEnvironment(cfg.Env)
-	ll.Info("Service started with config", l.String("commit", cm.Commit()))
+	ll.Info("Service started with config", l.String("commit", cm.CommitMessage()))
 	if cm.IsDev() {
 		ll.Info("config", l.Object("cfg", cfg))
 	}
@@ -70,7 +70,7 @@ func main() {
 
 	svrs := startServers()
 	if bot != nil {
-		bot.SendMessage("–––\n✨ shipping-sync-service started ✨\n" + cm.Commit())
+		bot.SendMessage("–––\n✨ shipping-sync-service started ✨\n" + cm.CommitMessage())
 		defer bot.SendMessage("👻 shipping-sync-service stopped 👻\n–––")
 	}
 

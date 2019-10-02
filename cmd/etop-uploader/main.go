@@ -78,7 +78,7 @@ func main() {
 		ll.Fatal("Unable to open", l.String("upload_dir_ahamove_verification", cfg.UploadDirAhamoveVerification), l.Error(err))
 	}
 
-	ll.Info("Service started with config", l.String("commit", cm.Commit()))
+	ll.Info("Service started with config", l.String("commit", cm.CommitMessage()))
 	if cm.IsDev() {
 		ll.Info("config", l.Object("cfg", cfg))
 	}
@@ -141,7 +141,7 @@ func main() {
 	}()
 
 	if bot != nil {
-		bot.SendMessage("–––\n✨ etop-uploader started ✨\n" + cm.Commit())
+		bot.SendMessage("–––\n✨ etop-uploader started ✨\n" + cm.CommitMessage())
 		defer bot.SendMessage("👻 etop-uploader stopped 👻\n–––")
 	}
 

@@ -53,7 +53,7 @@ func main() {
 	}
 
 	cm.SetEnvironment(cfg.Env)
-	ll.Info("Service started with config", l.String("commit", cm.Commit()))
+	ll.Info("Service started with config", l.String("commit", cm.CommitMessage()))
 	if cm.IsDev() {
 		ll.Info("config", l.Object("cfg", cfg))
 	}
@@ -167,7 +167,7 @@ func main() {
 	}()
 
 	if bot != nil {
-		bot.SendMessage("–––\n✨ etop-handler started ✨\n" + cm.Commit())
+		bot.SendMessage("–––\n✨ etop-handler started ✨\n" + cm.CommitMessage())
 		defer bot.SendMessage("👹 etop-handler stopped 👹\n–––")
 	}
 

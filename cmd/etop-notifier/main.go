@@ -48,7 +48,7 @@ func main() {
 
 	cm.SetEnvironment(cfg.Env)
 	cm.SetMainSiteBaseURL(cfg.URL.MainSite)
-	ll.Info("Service started with config", l.String("commit", cm.Commit()))
+	ll.Info("Service started with config", l.String("commit", cm.CommitMessage()))
 	if cm.IsDev() {
 		ll.Info("config", l.Object("cfg", cfg))
 	}
@@ -134,7 +134,7 @@ func main() {
 	}()
 
 	if bot != nil {
-		bot.SendMessage("–––\n✨ etop-notification started ✨\n" + cm.Commit())
+		bot.SendMessage("–––\n✨ etop-notification started ✨\n" + cm.CommitMessage())
 		defer bot.SendMessage("👹 etop-notification stopped 👹\n–––")
 	}
 

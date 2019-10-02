@@ -41,7 +41,7 @@ func init() {
 	commit = strings.ReplaceAll(commit, "⮐", "\n")
 }
 
-func Commit() string {
+func CommitMessage() string {
 	return commit
 }
 

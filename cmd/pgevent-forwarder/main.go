@@ -51,7 +51,7 @@ func main() {
 	}
 
 	cm.SetEnvironment(cfg.Env)
-	ll.Info("Service started with config", l.String("commit", cm.Commit()))
+	ll.Info("Service started with config", l.String("commit", cm.CommitMessage()))
 	if cm.IsDev() {
 		ll.Info("config", l.Object("cfg", cfg))
 	}
