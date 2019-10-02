@@ -4,6 +4,8 @@ import (
 	"context"
 	"time"
 
+	"etop.vn/backend/pkg/common/sq"
+
 	"etop.vn/api/main/identity"
 	"etop.vn/backend/com/main/identity/convert"
 	identitymodel "etop.vn/backend/com/main/identity/model"
@@ -42,6 +44,16 @@ func (s *AccountStore) AffiliateByID(id int64) *AccountStore {
 	return s
 }
 
+func (s *AccountStore) AffiliatesByOwnerID(id int64) *AccountStore {
+	s.preds = append(s.preds, s.affiliateFt.ByOwnerID(id))
+	return s
+}
+
+func (s *AccountStore) AffiliatesByIDs(ids ...int64) *AccountStore {
+	s.preds = append(s.preds, sq.In("id", ids))
+	return s
+}
+
 func (s *AccountStore) GetShopDB() (*model.Shop, error) {
 	var shop model.Shop
 	err := s.query().Where(s.preds).ShouldGet(&shop)
@@ -68,6 +80,12 @@ func (s *AccountStore) GetAffiliate() (*identity.Affiliate, error) {
 		return nil, err
 	}
 	return convert.Affiliate(affiliate), nil
+}
+
+func (s *AccountStore) GetAffiliates() ([]*identity.Affiliate, error) {
+	var affiliates identitymodel.Affiliates
+	err := s.query().Where(s.preds).Find(&affiliates)
+	return convert.Affiliates(affiliates), err
 }
 
 type CreateAffiliateArgs struct {

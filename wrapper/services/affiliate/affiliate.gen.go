@@ -38,6 +38,7 @@ func NewAffiliateServer(mux Muxer, hooks *twirp.ServerHooks, secret string) {
 	if secret == "" {
 		ll.Fatal("Secret is empty")
 	}
+	bus.Expect(&UpdateReferralEndpoint{})
 	bus.Expect(&CreateOrUpdateTradingCommissionSettingEndpoint{})
 	bus.Expect(&CreateTradingProductPromotionEndpoint{})
 	bus.Expect(&GetTradingProductPromotionByProductIDsEndpoint{})
@@ -47,19 +48,72 @@ func NewAffiliateServer(mux Muxer, hooks *twirp.ServerHooks, secret string) {
 	bus.Expect(&GetProductPromotionEndpoint{})
 	bus.Expect(&AffiliateGetProductsEndpoint{})
 	bus.Expect(&CreateOrUpdateAffiliateCommissionSettingEndpoint{})
+	bus.Expect(&CreateReferralCodeEndpoint{})
 	bus.Expect(&GetCommissionsEndpoint{})
 	bus.Expect(&GetProductPromotionByProductIDEndpoint{})
+	bus.Expect(&GetReferralCodesEndpoint{})
+	bus.Expect(&GetReferralsEndpoint{})
 	bus.Expect(&GetTransactionsEndpoint{})
 	bus.Expect(&NotifyNewShopPurchaseEndpoint{})
+	mux.Handle(affiliate.UserServicePathPrefix, affiliate.NewUserServiceServer(UserService{secret: secret}, hooks))
 	mux.Handle(affiliate.TradingServicePathPrefix, affiliate.NewTradingServiceServer(TradingService{secret: secret}, hooks))
 	mux.Handle(affiliate.ShopServicePathPrefix, affiliate.NewShopServiceServer(ShopService{secret: secret}, hooks))
 	mux.Handle(affiliate.AffiliateServicePathPrefix, affiliate.NewAffiliateServiceServer(AffiliateService{secret: secret}, hooks))
 }
 
 type AffiliateImpl struct {
+	UserService
 	TradingService
 	ShopService
 	AffiliateService
+}
+
+type UserService struct{ secret string }
+
+type UpdateReferralEndpoint struct {
+	*affiliate.UpdateReferralRequest
+	Result  *affiliate.UserReferral
+	Context UserClaim
+}
+
+func (s UserService) UpdateReferral(ctx context.Context, req *affiliate.UpdateReferralRequest) (resp *affiliate.UserReferral, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "affiliate.User/UpdateReferral"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:     ctx,
+		RequireAuth: true,
+		RequireUser: true,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &UpdateReferralEndpoint{UpdateReferralRequest: req}
+	query.Context.Claim = session.Claim
+	query.Context.User = session.User
+	query.Context.Admin = session.Admin
+	// Verify that the user has correct service type
+	if session.Claim.AuthPartnerID != 0 {
+		return nil, common.ErrPermissionDenied
+	}
+	ctx = bus.NewRootContext(ctx)
+	err = bus.Dispatch(ctx, query)
+	resp = query.Result
+	if err == nil {
+		if resp == nil {
+			return nil, common.Error(common.Internal, "", nil).Log("nil response")
+		}
+		errs = cmwrapper.HasErrors(resp)
+	}
+	return resp, err
 }
 
 type TradingService struct{ secret string }
@@ -456,6 +510,46 @@ func (s AffiliateService) CreateOrUpdateAffiliateCommissionSetting(ctx context.C
 	return resp, err
 }
 
+type CreateReferralCodeEndpoint struct {
+	*affiliate.CreateReferralCodeRequest
+	Result  *affiliate.ReferralCode
+	Context AffiliateClaim
+}
+
+func (s AffiliateService) CreateReferralCode(ctx context.Context, req *affiliate.CreateReferralCodeRequest) (resp *affiliate.ReferralCode, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "affiliate.Affiliate/CreateReferralCode"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:          ctx,
+		RequireAuth:      true,
+		RequireAffiliate: true,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &CreateReferralCodeEndpoint{CreateReferralCodeRequest: req}
+	query.Context.Affiliate = session.Affiliate
+	ctx = bus.NewRootContext(ctx)
+	err = bus.Dispatch(ctx, query)
+	resp = query.Result
+	if err == nil {
+		if resp == nil {
+			return nil, common.Error(common.Internal, "", nil).Log("nil response")
+		}
+		errs = cmwrapper.HasErrors(resp)
+	}
+	return resp, err
+}
+
 type GetCommissionsEndpoint struct {
 	*cm.CommonListRequest
 	Result  *affiliate.GetCommissionsResponse
@@ -527,6 +621,86 @@ func (s AffiliateService) GetProductPromotionByProductID(ctx context.Context, re
 	}
 	session = sessionQuery.Result
 	query := &GetProductPromotionByProductIDEndpoint{GetProductPromotionByProductIDRequest: req}
+	query.Context.Affiliate = session.Affiliate
+	ctx = bus.NewRootContext(ctx)
+	err = bus.Dispatch(ctx, query)
+	resp = query.Result
+	if err == nil {
+		if resp == nil {
+			return nil, common.Error(common.Internal, "", nil).Log("nil response")
+		}
+		errs = cmwrapper.HasErrors(resp)
+	}
+	return resp, err
+}
+
+type GetReferralCodesEndpoint struct {
+	*cm.CommonListRequest
+	Result  *affiliate.GetReferralCodesResponse
+	Context AffiliateClaim
+}
+
+func (s AffiliateService) GetReferralCodes(ctx context.Context, req *cm.CommonListRequest) (resp *affiliate.GetReferralCodesResponse, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "affiliate.Affiliate/GetReferralCodes"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:          ctx,
+		RequireAuth:      true,
+		RequireAffiliate: true,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &GetReferralCodesEndpoint{CommonListRequest: req}
+	query.Context.Affiliate = session.Affiliate
+	ctx = bus.NewRootContext(ctx)
+	err = bus.Dispatch(ctx, query)
+	resp = query.Result
+	if err == nil {
+		if resp == nil {
+			return nil, common.Error(common.Internal, "", nil).Log("nil response")
+		}
+		errs = cmwrapper.HasErrors(resp)
+	}
+	return resp, err
+}
+
+type GetReferralsEndpoint struct {
+	*cm.CommonListRequest
+	Result  *affiliate.GetReferralsResponse
+	Context AffiliateClaim
+}
+
+func (s AffiliateService) GetReferrals(ctx context.Context, req *cm.CommonListRequest) (resp *affiliate.GetReferralsResponse, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "affiliate.Affiliate/GetReferrals"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:          ctx,
+		RequireAuth:      true,
+		RequireAffiliate: true,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &GetReferralsEndpoint{CommonListRequest: req}
 	query.Context.Affiliate = session.Affiliate
 	ctx = bus.NewRootContext(ctx)
 	err = bus.Dispatch(ctx, query)

@@ -128,6 +128,17 @@ func Affiliate(in *identitymodel.Affiliate) *identity.Affiliate {
 	}
 }
 
+func Affiliates(ins []*identitymodel.Affiliate) []*identity.Affiliate {
+	var results []*identity.Affiliate
+	if len(ins) == 0 {
+		return results
+	}
+	for _, mAff := range ins {
+		results = append(results, Affiliate(mAff))
+	}
+	return results
+}
+
 func AffiliateDB(in *identity.Affiliate) *identitymodel.Affiliate {
 	if in == nil {
 		return nil

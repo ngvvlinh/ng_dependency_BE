@@ -2,6 +2,9 @@ package affiliate
 
 import (
 	"context"
+	"time"
+
+	"etop.vn/api/main/identity"
 
 	"etop.vn/backend/com/services/affiliate/model"
 	"etop.vn/backend/com/services/affiliate/sqlstore"
@@ -21,14 +24,24 @@ var AvailableUnit = []string{"vnd", "percent"}
 var AvailablePromotionTypes = []string{"cashback", "discount"}
 
 type Aggregate struct {
-	commissionSetting sqlstore.CommissionSettingStoreFactory
-	productPromotion  sqlstore.ProductPromotionStoreFactory
+	commissionSetting     sqlstore.CommissionSettingStoreFactory
+	productPromotion      sqlstore.ProductPromotionStoreFactory
+	affiliateCommission   sqlstore.AffiliateCommissionStoreFactory
+	orderCreatedNotify    sqlstore.OrderCreatedNotifyStoreFactory
+	affiliateReferralCode sqlstore.AffiliateReferralCodeStoreFactory
+	userReferral          sqlstore.UserReferralStoreFactory
+	identityQuery         identity.QueryBus
 }
 
-func NewAggregate(db cmsql.Database) *Aggregate {
+func NewAggregate(db cmsql.Database, idenQuery identity.QueryBus) *Aggregate {
 	return &Aggregate{
-		commissionSetting: sqlstore.NewCommissionSettingStore(db),
-		productPromotion:  sqlstore.NewProductPromotionStore(db),
+		commissionSetting:     sqlstore.NewCommissionSettingStore(db),
+		productPromotion:      sqlstore.NewProductPromotionStore(db),
+		affiliateCommission:   sqlstore.NewAffiliateCommissionSettingStore(db),
+		orderCreatedNotify:    sqlstore.NewOrderCreatedNotifyStore(db),
+		affiliateReferralCode: sqlstore.NewAffiliateReferralCodeStore(db),
+		userReferral:          sqlstore.NewUserReferralStore(db),
+		identityQuery:         idenQuery,
 	}
 }
 
@@ -143,4 +156,129 @@ func (a *Aggregate) UpdateProductPromotion(ctx context.Context, args *affiliate.
 		return nil, err
 	}
 	return a.productPromotion(ctx).ID(productPromotion.ID).GetProductPromotion()
+}
+
+func (a *Aggregate) OnTradingOrderCreated(ctx context.Context, args *affiliate.OnTradingOrderCreatedArgs) error {
+	if args.OrderID == 0 {
+		return cm.Errorf(cm.InvalidArgument, nil, "Missing OrderID")
+	}
+	if args.ReferralCode == "" {
+		return cm.Errorf(cm.InvalidArgument, nil, "Missing ReferralCode")
+	}
+
+	notify, _ := a.orderCreatedNotify(ctx).OrderID(args.OrderID).ReferralCode(args.ReferralCode).GetOrderCreatedNotifyDB()
+	if notify != nil {
+		return cm.Errorf(cm.AlreadyExists, nil, "Notify does existed")
+	}
+
+	notify = &model.OrderCreatedNotify{
+		ID:           cm.NewID(),
+		OrderID:      args.OrderID,
+		ReferralCode: args.ReferralCode,
+		Status:       0,
+		CompletedAt:  time.Time{},
+		CreatedAt:    time.Now(),
+		UpdatedAt:    time.Now(),
+	}
+	if err := a.orderCreatedNotify(ctx).CreateOrderCreatedNotify(notify); err != nil {
+		return err
+	}
+	return nil
+}
+
+func (a *Aggregate) CheckTradingOrderValid(ctx context.Context, args *affiliate.CheckTradingOrderValidArgs) error {
+	if len(args.ProductIDs) == 0 {
+		return cm.Errorf(cm.InvalidArgument, nil, "Missing ProductIDS")
+	}
+	if args.ReferralCode == "" {
+		return cm.Errorf(cm.InvalidArgument, nil, "Missing ReferralCode")
+	}
+
+	// TODO: Get affiliate account
+	affiliateReferralCode, err := a.affiliateReferralCode(ctx).Code(args.ReferralCode).GetAffiliateReferralCodeDB()
+	if err != nil {
+		return err
+	}
+
+	commissionSettings, _ := a.commissionSetting(ctx).ProductIDs(args.ProductIDs).AccountID(affiliateReferralCode.AffiliateID).GetCommissionSettings()
+	if len(commissionSettings) == 0 {
+		return cm.Errorf(cm.Unavailable, nil, "Referral not available")
+	}
+	return nil
+}
+
+func (a *Aggregate) CreateAffiliateReferralCode(ctx context.Context, args *affiliate.CreateReferralCodeArgs) (*affiliate.AffiliateReferralCode, error) {
+	if args.AffiliateAccountID == 0 {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "AffiliateAccountID missing")
+	}
+	if args.Code == "" {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "Code is missing")
+	}
+	affiliateQ := &identity.GetAffiliateByIDQuery{
+		ID: args.AffiliateAccountID,
+	}
+	if err := a.identityQuery.Dispatch(ctx, affiliateQ); err != nil {
+		return nil, err
+	}
+	_, err := a.affiliateReferralCode(ctx).Code(args.Code).GetAffiliateReferralCodeDB()
+	if err == nil {
+		return nil, cm.Errorf(cm.ValidationFailed, nil, "Referral Code does exist")
+	}
+	affiliateReferralCode := &model.AffiliateReferralCode{
+		ID:          cm.NewID(),
+		Code:        args.Code,
+		AffiliateID: args.AffiliateAccountID,
+		CreatedAt:   time.Now(),
+		UpdatedAt:   time.Now(),
+	}
+
+	if err := a.affiliateReferralCode(ctx).CreateAffiliateReferralCode(affiliateReferralCode); err != nil {
+		return nil, err
+	}
+	return a.affiliateReferralCode(ctx).ID(affiliateReferralCode.ID).GetAffiliateReferralCode()
+}
+
+func (a *Aggregate) CreateOrUpdateUserReferral(ctx context.Context, args *affiliate.CreateOrUpdateReferralArgs) (*affiliate.UserReferral, error) {
+	if args.UserID == 0 {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "UserID is missing")
+	}
+	userReferral, err := a.userReferral(ctx).UserID(args.UserID).GetUserReferralDB()
+	if err != nil {
+		userReferral = &model.UserReferral{
+			UserID: args.UserID,
+		}
+		if err := a.userReferral(ctx).CreateUserReferral(userReferral); err != nil {
+			return nil, err
+		}
+	}
+	if args.ReferralCode != "" {
+		if userReferral.ReferralID != 0 {
+			return nil, cm.Errorf(cm.InvalidArgument, nil, "Tài khoản đã được giới thiệu bởi thành viên khác")
+		}
+		affiliateReferralCode, err := a.affiliateReferralCode(ctx).Code(args.ReferralCode).GetAffiliateReferralCodeDB()
+		if err != nil {
+			return nil, cm.Errorf(cm.InvalidArgument, nil, "ReferralCode not found")
+		}
+		userReferral.ReferralCode = args.ReferralCode
+		userReferral.ReferralID = affiliateReferralCode.AffiliateID
+		userReferral.ReferralAt = time.Now()
+	}
+	if args.SaleReferralCode != "" {
+		if userReferral.SaleReferralID != 0 {
+			return nil, cm.Errorf(cm.InvalidArgument, nil, "Tài khoản đã được giới thiệu bởi thành viên khác")
+		}
+		affiliateReferralCode, err := a.affiliateReferralCode(ctx).Code(args.SaleReferralCode).GetAffiliateReferralCodeDB()
+		if err != nil {
+			return nil, cm.Errorf(cm.InvalidArgument, nil, "ReferralCode not found")
+		}
+		userReferral.SaleReferralCode = args.SaleReferralCode
+		userReferral.SaleReferralID = affiliateReferralCode.AffiliateID
+		userReferral.SaleReferralAt = time.Now()
+	}
+	err = a.userReferral(ctx).UpdateUserReferral(userReferral)
+	if err != nil {
+		return nil, err
+	}
+
+	return a.userReferral(ctx).UserID(args.UserID).GetUserReferral()
 }

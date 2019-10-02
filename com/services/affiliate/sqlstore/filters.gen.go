@@ -155,191 +155,6 @@ func (ft *CommissionSettingFilters) ByUpdatedAtPtr(UpdatedAt *time.Time) *sq.Col
 	}
 }
 
-type CommissionFilters struct{ prefix string }
-
-func NewCommissionFilters(prefix string) CommissionFilters {
-	return CommissionFilters{prefix}
-}
-
-func (ft *CommissionFilters) Filter(pred string, args ...interface{}) sq.WriterTo {
-	return sq.Filter(&ft.prefix, pred, args...)
-}
-
-func (ft CommissionFilters) Prefix() string {
-	return ft.prefix
-}
-
-func (ft *CommissionFilters) ByID(ID int64) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
-		Prefix: &ft.prefix,
-		Column: "id",
-		Value:  ID,
-		IsNil:  ID == 0,
-	}
-}
-
-func (ft *CommissionFilters) ByIDPtr(ID *int64) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
-		Prefix: &ft.prefix,
-		Column: "id",
-		Value:  ID,
-		IsNil:  ID == nil,
-		IsZero: ID != nil && (*ID) == 0,
-	}
-}
-
-func (ft *CommissionFilters) ByAffiliateID(AffiliateID int64) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
-		Prefix: &ft.prefix,
-		Column: "affiliate_id",
-		Value:  AffiliateID,
-		IsNil:  AffiliateID == 0,
-	}
-}
-
-func (ft *CommissionFilters) ByAffiliateIDPtr(AffiliateID *int64) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
-		Prefix: &ft.prefix,
-		Column: "affiliate_id",
-		Value:  AffiliateID,
-		IsNil:  AffiliateID == nil,
-		IsZero: AffiliateID != nil && (*AffiliateID) == 0,
-	}
-}
-
-func (ft *CommissionFilters) ByValue(Value int32) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
-		Prefix: &ft.prefix,
-		Column: "value",
-		Value:  Value,
-		IsNil:  Value == 0,
-	}
-}
-
-func (ft *CommissionFilters) ByValuePtr(Value *int32) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
-		Prefix: &ft.prefix,
-		Column: "value",
-		Value:  Value,
-		IsNil:  Value == nil,
-		IsZero: Value != nil && (*Value) == 0,
-	}
-}
-
-func (ft *CommissionFilters) ByUnit(Unit string) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
-		Prefix: &ft.prefix,
-		Column: "unit",
-		Value:  Unit,
-		IsNil:  Unit == "",
-	}
-}
-
-func (ft *CommissionFilters) ByUnitPtr(Unit *string) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
-		Prefix: &ft.prefix,
-		Column: "unit",
-		Value:  Unit,
-		IsNil:  Unit == nil,
-		IsZero: Unit != nil && (*Unit) == "",
-	}
-}
-
-func (ft *CommissionFilters) ByOrderID(OrderID int64) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
-		Prefix: &ft.prefix,
-		Column: "order_id",
-		Value:  OrderID,
-		IsNil:  OrderID == 0,
-	}
-}
-
-func (ft *CommissionFilters) ByOrderIDPtr(OrderID *int64) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
-		Prefix: &ft.prefix,
-		Column: "order_id",
-		Value:  OrderID,
-		IsNil:  OrderID == nil,
-		IsZero: OrderID != nil && (*OrderID) == 0,
-	}
-}
-
-func (ft *CommissionFilters) ByStatus(Status int) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
-		Prefix: &ft.prefix,
-		Column: "status",
-		Value:  Status,
-		IsNil:  Status == 0,
-	}
-}
-
-func (ft *CommissionFilters) ByStatusPtr(Status *int) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
-		Prefix: &ft.prefix,
-		Column: "status",
-		Value:  Status,
-		IsNil:  Status == nil,
-		IsZero: Status != nil && (*Status) == 0,
-	}
-}
-
-func (ft *CommissionFilters) ByType(Type string) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
-		Prefix: &ft.prefix,
-		Column: "type",
-		Value:  Type,
-		IsNil:  Type == "",
-	}
-}
-
-func (ft *CommissionFilters) ByTypePtr(Type *string) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
-		Prefix: &ft.prefix,
-		Column: "type",
-		Value:  Type,
-		IsNil:  Type == nil,
-		IsZero: Type != nil && (*Type) == "",
-	}
-}
-
-func (ft *CommissionFilters) ByCreatedAt(CreatedAt time.Time) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
-		Prefix: &ft.prefix,
-		Column: "created_at",
-		Value:  CreatedAt,
-		IsNil:  CreatedAt.IsZero(),
-	}
-}
-
-func (ft *CommissionFilters) ByCreatedAtPtr(CreatedAt *time.Time) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
-		Prefix: &ft.prefix,
-		Column: "created_at",
-		Value:  CreatedAt,
-		IsNil:  CreatedAt == nil,
-		IsZero: CreatedAt != nil && (*CreatedAt).IsZero(),
-	}
-}
-
-func (ft *CommissionFilters) ByUpdatedAt(UpdatedAt time.Time) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
-		Prefix: &ft.prefix,
-		Column: "updated_at",
-		Value:  UpdatedAt,
-		IsNil:  UpdatedAt.IsZero(),
-	}
-}
-
-func (ft *CommissionFilters) ByUpdatedAtPtr(UpdatedAt *time.Time) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
-		Prefix: &ft.prefix,
-		Column: "updated_at",
-		Value:  UpdatedAt,
-		IsNil:  UpdatedAt == nil,
-		IsZero: UpdatedAt != nil && (*UpdatedAt).IsZero(),
-	}
-}
-
 type ProductPromotionFilters struct{ prefix string }
 
 func NewProductPromotionFilters(prefix string) ProductPromotionFilters {
@@ -573,6 +388,708 @@ func (ft *ProductPromotionFilters) ByUpdatedAt(UpdatedAt time.Time) *sq.ColumnFi
 }
 
 func (ft *ProductPromotionFilters) ByUpdatedAtPtr(UpdatedAt *time.Time) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "updated_at",
+		Value:  UpdatedAt,
+		IsNil:  UpdatedAt == nil,
+		IsZero: UpdatedAt != nil && (*UpdatedAt).IsZero(),
+	}
+}
+
+type AffiliateCommissionFilters struct{ prefix string }
+
+func NewAffiliateCommissionFilters(prefix string) AffiliateCommissionFilters {
+	return AffiliateCommissionFilters{prefix}
+}
+
+func (ft *AffiliateCommissionFilters) Filter(pred string, args ...interface{}) sq.WriterTo {
+	return sq.Filter(&ft.prefix, pred, args...)
+}
+
+func (ft AffiliateCommissionFilters) Prefix() string {
+	return ft.prefix
+}
+
+func (ft *AffiliateCommissionFilters) ByID(ID int64) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "id",
+		Value:  ID,
+		IsNil:  ID == 0,
+	}
+}
+
+func (ft *AffiliateCommissionFilters) ByIDPtr(ID *int64) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "id",
+		Value:  ID,
+		IsNil:  ID == nil,
+		IsZero: ID != nil && (*ID) == 0,
+	}
+}
+
+func (ft *AffiliateCommissionFilters) ByAffiliateID(AffiliateID int64) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "affiliate_id",
+		Value:  AffiliateID,
+		IsNil:  AffiliateID == 0,
+	}
+}
+
+func (ft *AffiliateCommissionFilters) ByAffiliateIDPtr(AffiliateID *int64) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "affiliate_id",
+		Value:  AffiliateID,
+		IsNil:  AffiliateID == nil,
+		IsZero: AffiliateID != nil && (*AffiliateID) == 0,
+	}
+}
+
+func (ft *AffiliateCommissionFilters) ByFromAffiliateID(FromAffiliateID int64) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "from_affiliate_id",
+		Value:  FromAffiliateID,
+		IsNil:  FromAffiliateID == 0,
+	}
+}
+
+func (ft *AffiliateCommissionFilters) ByFromAffiliateIDPtr(FromAffiliateID *int64) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "from_affiliate_id",
+		Value:  FromAffiliateID,
+		IsNil:  FromAffiliateID == nil,
+		IsZero: FromAffiliateID != nil && (*FromAffiliateID) == 0,
+	}
+}
+
+func (ft *AffiliateCommissionFilters) ByProductID(ProductID int64) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "product_id",
+		Value:  ProductID,
+		IsNil:  ProductID == 0,
+	}
+}
+
+func (ft *AffiliateCommissionFilters) ByProductIDPtr(ProductID *int64) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "product_id",
+		Value:  ProductID,
+		IsNil:  ProductID == nil,
+		IsZero: ProductID != nil && (*ProductID) == 0,
+	}
+}
+
+func (ft *AffiliateCommissionFilters) ByOrderId(OrderId int64) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "order_id",
+		Value:  OrderId,
+		IsNil:  OrderId == 0,
+	}
+}
+
+func (ft *AffiliateCommissionFilters) ByOrderIdPtr(OrderId *int64) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "order_id",
+		Value:  OrderId,
+		IsNil:  OrderId == nil,
+		IsZero: OrderId != nil && (*OrderId) == 0,
+	}
+}
+
+func (ft *AffiliateCommissionFilters) ByValue(Value int32) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "value",
+		Value:  Value,
+		IsNil:  Value == 0,
+	}
+}
+
+func (ft *AffiliateCommissionFilters) ByValuePtr(Value *int32) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "value",
+		Value:  Value,
+		IsNil:  Value == nil,
+		IsZero: Value != nil && (*Value) == 0,
+	}
+}
+
+func (ft *AffiliateCommissionFilters) ByDescription(Description string) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "description",
+		Value:  Description,
+		IsNil:  Description == "",
+	}
+}
+
+func (ft *AffiliateCommissionFilters) ByDescriptionPtr(Description *string) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "description",
+		Value:  Description,
+		IsNil:  Description == nil,
+		IsZero: Description != nil && (*Description) == "",
+	}
+}
+
+func (ft *AffiliateCommissionFilters) ByNote(Note string) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "note",
+		Value:  Note,
+		IsNil:  Note == "",
+	}
+}
+
+func (ft *AffiliateCommissionFilters) ByNotePtr(Note *string) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "note",
+		Value:  Note,
+		IsNil:  Note == nil,
+		IsZero: Note != nil && (*Note) == "",
+	}
+}
+
+func (ft *AffiliateCommissionFilters) ByType(Type string) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "type",
+		Value:  Type,
+		IsNil:  Type == "",
+	}
+}
+
+func (ft *AffiliateCommissionFilters) ByTypePtr(Type *string) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "type",
+		Value:  Type,
+		IsNil:  Type == nil,
+		IsZero: Type != nil && (*Type) == "",
+	}
+}
+
+func (ft *AffiliateCommissionFilters) ByStatus(Status int) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "status",
+		Value:  Status,
+		IsNil:  Status == 0,
+	}
+}
+
+func (ft *AffiliateCommissionFilters) ByStatusPtr(Status *int) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "status",
+		Value:  Status,
+		IsNil:  Status == nil,
+		IsZero: Status != nil && (*Status) == 0,
+	}
+}
+
+func (ft *AffiliateCommissionFilters) ByValidAt(ValidAt time.Time) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "valid_at",
+		Value:  ValidAt,
+		IsNil:  ValidAt.IsZero(),
+	}
+}
+
+func (ft *AffiliateCommissionFilters) ByValidAtPtr(ValidAt *time.Time) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "valid_at",
+		Value:  ValidAt,
+		IsNil:  ValidAt == nil,
+		IsZero: ValidAt != nil && (*ValidAt).IsZero(),
+	}
+}
+
+func (ft *AffiliateCommissionFilters) ByCreatedAt(CreatedAt time.Time) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "created_at",
+		Value:  CreatedAt,
+		IsNil:  CreatedAt.IsZero(),
+	}
+}
+
+func (ft *AffiliateCommissionFilters) ByCreatedAtPtr(CreatedAt *time.Time) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "created_at",
+		Value:  CreatedAt,
+		IsNil:  CreatedAt == nil,
+		IsZero: CreatedAt != nil && (*CreatedAt).IsZero(),
+	}
+}
+
+func (ft *AffiliateCommissionFilters) ByUpdatedAt(UpdatedAt time.Time) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "updated_at",
+		Value:  UpdatedAt,
+		IsNil:  UpdatedAt.IsZero(),
+	}
+}
+
+func (ft *AffiliateCommissionFilters) ByUpdatedAtPtr(UpdatedAt *time.Time) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "updated_at",
+		Value:  UpdatedAt,
+		IsNil:  UpdatedAt == nil,
+		IsZero: UpdatedAt != nil && (*UpdatedAt).IsZero(),
+	}
+}
+
+type OrderCreatedNotifyFilters struct{ prefix string }
+
+func NewOrderCreatedNotifyFilters(prefix string) OrderCreatedNotifyFilters {
+	return OrderCreatedNotifyFilters{prefix}
+}
+
+func (ft *OrderCreatedNotifyFilters) Filter(pred string, args ...interface{}) sq.WriterTo {
+	return sq.Filter(&ft.prefix, pred, args...)
+}
+
+func (ft OrderCreatedNotifyFilters) Prefix() string {
+	return ft.prefix
+}
+
+func (ft *OrderCreatedNotifyFilters) ByID(ID int64) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "id",
+		Value:  ID,
+		IsNil:  ID == 0,
+	}
+}
+
+func (ft *OrderCreatedNotifyFilters) ByIDPtr(ID *int64) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "id",
+		Value:  ID,
+		IsNil:  ID == nil,
+		IsZero: ID != nil && (*ID) == 0,
+	}
+}
+
+func (ft *OrderCreatedNotifyFilters) ByOrderID(OrderID int64) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "order_id",
+		Value:  OrderID,
+		IsNil:  OrderID == 0,
+	}
+}
+
+func (ft *OrderCreatedNotifyFilters) ByOrderIDPtr(OrderID *int64) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "order_id",
+		Value:  OrderID,
+		IsNil:  OrderID == nil,
+		IsZero: OrderID != nil && (*OrderID) == 0,
+	}
+}
+
+func (ft *OrderCreatedNotifyFilters) ByReferralCode(ReferralCode string) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "referral_code",
+		Value:  ReferralCode,
+		IsNil:  ReferralCode == "",
+	}
+}
+
+func (ft *OrderCreatedNotifyFilters) ByReferralCodePtr(ReferralCode *string) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "referral_code",
+		Value:  ReferralCode,
+		IsNil:  ReferralCode == nil,
+		IsZero: ReferralCode != nil && (*ReferralCode) == "",
+	}
+}
+
+func (ft *OrderCreatedNotifyFilters) ByStatus(Status int) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "status",
+		Value:  Status,
+		IsNil:  Status == 0,
+	}
+}
+
+func (ft *OrderCreatedNotifyFilters) ByStatusPtr(Status *int) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "status",
+		Value:  Status,
+		IsNil:  Status == nil,
+		IsZero: Status != nil && (*Status) == 0,
+	}
+}
+
+func (ft *OrderCreatedNotifyFilters) ByCompletedAt(CompletedAt time.Time) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "completed_at",
+		Value:  CompletedAt,
+		IsNil:  CompletedAt.IsZero(),
+	}
+}
+
+func (ft *OrderCreatedNotifyFilters) ByCompletedAtPtr(CompletedAt *time.Time) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "completed_at",
+		Value:  CompletedAt,
+		IsNil:  CompletedAt == nil,
+		IsZero: CompletedAt != nil && (*CompletedAt).IsZero(),
+	}
+}
+
+func (ft *OrderCreatedNotifyFilters) ByCreatedAt(CreatedAt time.Time) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "created_at",
+		Value:  CreatedAt,
+		IsNil:  CreatedAt.IsZero(),
+	}
+}
+
+func (ft *OrderCreatedNotifyFilters) ByCreatedAtPtr(CreatedAt *time.Time) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "created_at",
+		Value:  CreatedAt,
+		IsNil:  CreatedAt == nil,
+		IsZero: CreatedAt != nil && (*CreatedAt).IsZero(),
+	}
+}
+
+func (ft *OrderCreatedNotifyFilters) ByUpdatedAt(UpdatedAt time.Time) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "updated_at",
+		Value:  UpdatedAt,
+		IsNil:  UpdatedAt.IsZero(),
+	}
+}
+
+func (ft *OrderCreatedNotifyFilters) ByUpdatedAtPtr(UpdatedAt *time.Time) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "updated_at",
+		Value:  UpdatedAt,
+		IsNil:  UpdatedAt == nil,
+		IsZero: UpdatedAt != nil && (*UpdatedAt).IsZero(),
+	}
+}
+
+type AffiliateReferralCodeFilters struct{ prefix string }
+
+func NewAffiliateReferralCodeFilters(prefix string) AffiliateReferralCodeFilters {
+	return AffiliateReferralCodeFilters{prefix}
+}
+
+func (ft *AffiliateReferralCodeFilters) Filter(pred string, args ...interface{}) sq.WriterTo {
+	return sq.Filter(&ft.prefix, pred, args...)
+}
+
+func (ft AffiliateReferralCodeFilters) Prefix() string {
+	return ft.prefix
+}
+
+func (ft *AffiliateReferralCodeFilters) ByID(ID int64) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "id",
+		Value:  ID,
+		IsNil:  ID == 0,
+	}
+}
+
+func (ft *AffiliateReferralCodeFilters) ByIDPtr(ID *int64) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "id",
+		Value:  ID,
+		IsNil:  ID == nil,
+		IsZero: ID != nil && (*ID) == 0,
+	}
+}
+
+func (ft *AffiliateReferralCodeFilters) ByCode(Code string) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "code",
+		Value:  Code,
+		IsNil:  Code == "",
+	}
+}
+
+func (ft *AffiliateReferralCodeFilters) ByCodePtr(Code *string) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "code",
+		Value:  Code,
+		IsNil:  Code == nil,
+		IsZero: Code != nil && (*Code) == "",
+	}
+}
+
+func (ft *AffiliateReferralCodeFilters) ByAffiliateID(AffiliateID int64) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "affiliate_id",
+		Value:  AffiliateID,
+		IsNil:  AffiliateID == 0,
+	}
+}
+
+func (ft *AffiliateReferralCodeFilters) ByAffiliateIDPtr(AffiliateID *int64) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "affiliate_id",
+		Value:  AffiliateID,
+		IsNil:  AffiliateID == nil,
+		IsZero: AffiliateID != nil && (*AffiliateID) == 0,
+	}
+}
+
+func (ft *AffiliateReferralCodeFilters) ByCreatedAt(CreatedAt time.Time) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "created_at",
+		Value:  CreatedAt,
+		IsNil:  CreatedAt.IsZero(),
+	}
+}
+
+func (ft *AffiliateReferralCodeFilters) ByCreatedAtPtr(CreatedAt *time.Time) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "created_at",
+		Value:  CreatedAt,
+		IsNil:  CreatedAt == nil,
+		IsZero: CreatedAt != nil && (*CreatedAt).IsZero(),
+	}
+}
+
+func (ft *AffiliateReferralCodeFilters) ByUpdatedAt(UpdatedAt time.Time) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "updated_at",
+		Value:  UpdatedAt,
+		IsNil:  UpdatedAt.IsZero(),
+	}
+}
+
+func (ft *AffiliateReferralCodeFilters) ByUpdatedAtPtr(UpdatedAt *time.Time) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "updated_at",
+		Value:  UpdatedAt,
+		IsNil:  UpdatedAt == nil,
+		IsZero: UpdatedAt != nil && (*UpdatedAt).IsZero(),
+	}
+}
+
+type UserReferralFilters struct{ prefix string }
+
+func NewUserReferralFilters(prefix string) UserReferralFilters {
+	return UserReferralFilters{prefix}
+}
+
+func (ft *UserReferralFilters) Filter(pred string, args ...interface{}) sq.WriterTo {
+	return sq.Filter(&ft.prefix, pred, args...)
+}
+
+func (ft UserReferralFilters) Prefix() string {
+	return ft.prefix
+}
+
+func (ft *UserReferralFilters) ByUserID(UserID int64) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "user_id",
+		Value:  UserID,
+		IsNil:  UserID == 0,
+	}
+}
+
+func (ft *UserReferralFilters) ByUserIDPtr(UserID *int64) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "user_id",
+		Value:  UserID,
+		IsNil:  UserID == nil,
+		IsZero: UserID != nil && (*UserID) == 0,
+	}
+}
+
+func (ft *UserReferralFilters) ByReferralID(ReferralID int64) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "referral_id",
+		Value:  ReferralID,
+		IsNil:  ReferralID == 0,
+	}
+}
+
+func (ft *UserReferralFilters) ByReferralIDPtr(ReferralID *int64) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "referral_id",
+		Value:  ReferralID,
+		IsNil:  ReferralID == nil,
+		IsZero: ReferralID != nil && (*ReferralID) == 0,
+	}
+}
+
+func (ft *UserReferralFilters) ByReferralCode(ReferralCode string) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "referral_code",
+		Value:  ReferralCode,
+		IsNil:  ReferralCode == "",
+	}
+}
+
+func (ft *UserReferralFilters) ByReferralCodePtr(ReferralCode *string) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "referral_code",
+		Value:  ReferralCode,
+		IsNil:  ReferralCode == nil,
+		IsZero: ReferralCode != nil && (*ReferralCode) == "",
+	}
+}
+
+func (ft *UserReferralFilters) BySaleReferralID(SaleReferralID int64) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "sale_referral_id",
+		Value:  SaleReferralID,
+		IsNil:  SaleReferralID == 0,
+	}
+}
+
+func (ft *UserReferralFilters) BySaleReferralIDPtr(SaleReferralID *int64) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "sale_referral_id",
+		Value:  SaleReferralID,
+		IsNil:  SaleReferralID == nil,
+		IsZero: SaleReferralID != nil && (*SaleReferralID) == 0,
+	}
+}
+
+func (ft *UserReferralFilters) BySaleReferralCode(SaleReferralCode string) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "sale_referral_code",
+		Value:  SaleReferralCode,
+		IsNil:  SaleReferralCode == "",
+	}
+}
+
+func (ft *UserReferralFilters) BySaleReferralCodePtr(SaleReferralCode *string) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "sale_referral_code",
+		Value:  SaleReferralCode,
+		IsNil:  SaleReferralCode == nil,
+		IsZero: SaleReferralCode != nil && (*SaleReferralCode) == "",
+	}
+}
+
+func (ft *UserReferralFilters) ByReferralAt(ReferralAt time.Time) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "referral_at",
+		Value:  ReferralAt,
+		IsNil:  ReferralAt.IsZero(),
+	}
+}
+
+func (ft *UserReferralFilters) ByReferralAtPtr(ReferralAt *time.Time) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "referral_at",
+		Value:  ReferralAt,
+		IsNil:  ReferralAt == nil,
+		IsZero: ReferralAt != nil && (*ReferralAt).IsZero(),
+	}
+}
+
+func (ft *UserReferralFilters) BySaleReferralAt(SaleReferralAt time.Time) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "sale_referral_at",
+		Value:  SaleReferralAt,
+		IsNil:  SaleReferralAt.IsZero(),
+	}
+}
+
+func (ft *UserReferralFilters) BySaleReferralAtPtr(SaleReferralAt *time.Time) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "sale_referral_at",
+		Value:  SaleReferralAt,
+		IsNil:  SaleReferralAt == nil,
+		IsZero: SaleReferralAt != nil && (*SaleReferralAt).IsZero(),
+	}
+}
+
+func (ft *UserReferralFilters) ByCreatedAt(CreatedAt time.Time) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "created_at",
+		Value:  CreatedAt,
+		IsNil:  CreatedAt.IsZero(),
+	}
+}
+
+func (ft *UserReferralFilters) ByCreatedAtPtr(CreatedAt *time.Time) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "created_at",
+		Value:  CreatedAt,
+		IsNil:  CreatedAt == nil,
+		IsZero: CreatedAt != nil && (*CreatedAt).IsZero(),
+	}
+}
+
+func (ft *UserReferralFilters) ByUpdatedAt(UpdatedAt time.Time) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "updated_at",
+		Value:  UpdatedAt,
+		IsNil:  UpdatedAt.IsZero(),
+	}
+}
+
+func (ft *UserReferralFilters) ByUpdatedAtPtr(UpdatedAt *time.Time) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "updated_at",

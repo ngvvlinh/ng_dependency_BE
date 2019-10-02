@@ -80,10 +80,11 @@ func main() {
 
 	sqlstore.Init(db)
 
-	affiliateCmd := serviceaffiliate.NewAggregate(dbaff).MessageBus()
 	affiliateQuery := serviceaffiliate.NewQuery(dbaff).MessageBus()
-	catalogCmd := querycatalog.New(db).MessageBus()
 	identityQuery := serviceidentity.NewQueryService(db).MessageBus()
+
+	affiliateCmd := serviceaffiliate.NewAggregate(dbaff, identityQuery).MessageBus()
+	catalogCmd := querycatalog.New(db).MessageBus()
 
 	apiaff.Init(affiliateCmd, affiliateQuery, catalogCmd, identityQuery)
 

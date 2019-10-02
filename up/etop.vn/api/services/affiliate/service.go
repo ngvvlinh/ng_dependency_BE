@@ -12,6 +12,10 @@ type Aggregate interface {
 	CreateOrUpdateCommissionSetting(context.Context, *CreateCommissionSettingArgs) (*CommissionSetting, error)
 	CreateProductPromotion(context.Context, *CreateProductPromotionArgs) (*ProductPromotion, error)
 	UpdateProductPromotion(context.Context, *UpdateProductPromotionArgs) (*ProductPromotion, error)
+	OnTradingOrderCreated(context.Context, *OnTradingOrderCreatedArgs) error
+	CheckTradingOrderValid(context.Context, *CheckTradingOrderValidArgs) error
+	CreateAffiliateReferralCode(context.Context, *CreateReferralCodeArgs) (*AffiliateReferralCode, error)
+	CreateOrUpdateUserReferral(context.Context, *CreateOrUpdateReferralArgs) (*UserReferral, error)
 }
 
 type CreateCommissionSettingArgs struct {
@@ -51,9 +55,20 @@ type OnTradingOrderCreatedArgs struct {
 }
 
 type CheckTradingOrderValidArgs struct {
-	ProductIDs    int64
-	ReferralCode  string
-	TotalDiscount int32
+	ProductIDs   []int64
+	ReferralCode string
+	UserID       int64
+}
+
+type CreateReferralCodeArgs struct {
+	AffiliateAccountID int64
+	Code               string
+}
+
+type CreateOrUpdateReferralArgs struct {
+	UserID           int64
+	ReferralCode     string
+	SaleReferralCode string
 }
 
 type QueryService interface {
@@ -62,6 +77,9 @@ type QueryService interface {
 	ListShopProductPromotions(context.Context, *ListShopProductPromotionsArgs) (*ListShopProductPromotionsResponse, error)
 	GetShopProductPromotion(context.Context, *GetProductPromotionArgs) (*ProductPromotion, error)
 	GetShopProductPromotionByProductIDs(context.Context, *GetShopProductPromotionByProductIDs) ([]*ProductPromotion, error)
+	GetAffiliateAccountReferralCodes(context.Context, *GetAffiliateAccountReferralCodesArgs) ([]*AffiliateReferralCode, error)
+	GetReferralsByReferralID(context.Context, *GetReferralsByReferralIDArgs) ([]*UserReferral, error)
+	GetAffiliateAccountReferralByCode(context.Context, *GetAffiliateAccountReferralByCodeArgs) (*AffiliateReferralCode, error)
 }
 
 type GetCommissionByProductIDsArgs struct {
@@ -94,4 +112,20 @@ type GetProductPromotionArgs struct {
 type GetShopProductPromotionByProductIDs struct {
 	ShopID     int64
 	ProductIDs []int64
+}
+
+type GetAffiliateAccountReferralCodesArgs struct {
+	AffiliateAccountID int64
+}
+
+type GetReferralsByReferralIDArgs struct {
+	ID int64
+}
+
+type GetAffiliateReferralsArgs struct {
+	Paging meta.Paging
+}
+
+type GetAffiliateAccountReferralByCodeArgs struct {
+	Code string
 }

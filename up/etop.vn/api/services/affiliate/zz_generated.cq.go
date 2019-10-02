@@ -38,6 +38,31 @@ func (c QueryBus) DispatchAll(ctx context.Context, msgs ...Query) error {
 	return nil
 }
 
+type CheckTradingOrderValidCommand struct {
+	ProductIDs   []int64
+	ReferralCode string
+	UserID       int64
+
+	Result struct {
+	} `json:"-"`
+}
+
+func (h AggregateHandler) HandleCheckTradingOrderValid(ctx context.Context, msg *CheckTradingOrderValidCommand) (err error) {
+	return h.inner.CheckTradingOrderValid(msg.GetArgs(ctx))
+}
+
+type CreateAffiliateReferralCodeCommand struct {
+	AffiliateAccountID int64
+	Code               string
+
+	Result *AffiliateReferralCode `json:"-"`
+}
+
+func (h AggregateHandler) HandleCreateAffiliateReferralCode(ctx context.Context, msg *CreateAffiliateReferralCodeCommand) (err error) {
+	msg.Result, err = h.inner.CreateAffiliateReferralCode(msg.GetArgs(ctx))
+	return err
+}
+
 type CreateOrUpdateCommissionSettingCommand struct {
 	ProductID   int64
 	AccountID   int64
@@ -52,6 +77,19 @@ type CreateOrUpdateCommissionSettingCommand struct {
 
 func (h AggregateHandler) HandleCreateOrUpdateCommissionSetting(ctx context.Context, msg *CreateOrUpdateCommissionSettingCommand) (err error) {
 	msg.Result, err = h.inner.CreateOrUpdateCommissionSetting(msg.GetArgs(ctx))
+	return err
+}
+
+type CreateOrUpdateUserReferralCommand struct {
+	UserID           int64
+	ReferralCode     string
+	SaleReferralCode string
+
+	Result *UserReferral `json:"-"`
+}
+
+func (h AggregateHandler) HandleCreateOrUpdateUserReferral(ctx context.Context, msg *CreateOrUpdateUserReferralCommand) (err error) {
+	msg.Result, err = h.inner.CreateOrUpdateUserReferral(msg.GetArgs(ctx))
 	return err
 }
 
@@ -73,6 +111,18 @@ func (h AggregateHandler) HandleCreateProductPromotion(ctx context.Context, msg 
 	return err
 }
 
+type OnTradingOrderCreatedCommand struct {
+	OrderID      int64
+	ReferralCode string
+
+	Result struct {
+	} `json:"-"`
+}
+
+func (h AggregateHandler) HandleOnTradingOrderCreated(ctx context.Context, msg *OnTradingOrderCreatedCommand) (err error) {
+	return h.inner.OnTradingOrderCreated(msg.GetArgs(ctx))
+}
+
 type UpdateProductPromotionCommand struct {
 	ID          int64
 	Amount      int32
@@ -87,6 +137,28 @@ type UpdateProductPromotionCommand struct {
 
 func (h AggregateHandler) HandleUpdateProductPromotion(ctx context.Context, msg *UpdateProductPromotionCommand) (err error) {
 	msg.Result, err = h.inner.UpdateProductPromotion(msg.GetArgs(ctx))
+	return err
+}
+
+type GetAffiliateAccountReferralByCodeQuery struct {
+	Code string
+
+	Result *AffiliateReferralCode `json:"-"`
+}
+
+func (h QueryServiceHandler) HandleGetAffiliateAccountReferralByCode(ctx context.Context, msg *GetAffiliateAccountReferralByCodeQuery) (err error) {
+	msg.Result, err = h.inner.GetAffiliateAccountReferralByCode(msg.GetArgs(ctx))
+	return err
+}
+
+type GetAffiliateAccountReferralCodesQuery struct {
+	AffiliateAccountID int64
+
+	Result []*AffiliateReferralCode `json:"-"`
+}
+
+func (h QueryServiceHandler) HandleGetAffiliateAccountReferralCodes(ctx context.Context, msg *GetAffiliateAccountReferralCodesQuery) (err error) {
+	msg.Result, err = h.inner.GetAffiliateAccountReferralCodes(msg.GetArgs(ctx))
 	return err
 }
 
@@ -111,6 +183,17 @@ type GetCommissionByProductIDsQuery struct {
 
 func (h QueryServiceHandler) HandleGetCommissionByProductIDs(ctx context.Context, msg *GetCommissionByProductIDsQuery) (err error) {
 	msg.Result, err = h.inner.GetCommissionByProductIDs(msg.GetArgs(ctx))
+	return err
+}
+
+type GetReferralsByReferralIDQuery struct {
+	ID int64
+
+	Result []*UserReferral `json:"-"`
+}
+
+func (h QueryServiceHandler) HandleGetReferralsByReferralID(ctx context.Context, msg *GetReferralsByReferralIDQuery) (err error) {
+	msg.Result, err = h.inner.GetReferralsByReferralID(msg.GetArgs(ctx))
 	return err
 }
 
@@ -153,16 +236,40 @@ func (h QueryServiceHandler) HandleListShopProductPromotions(ctx context.Context
 
 // implement interfaces
 
+func (q *CheckTradingOrderValidCommand) command()          {}
+func (q *CreateAffiliateReferralCodeCommand) command()     {}
 func (q *CreateOrUpdateCommissionSettingCommand) command() {}
+func (q *CreateOrUpdateUserReferralCommand) command()      {}
 func (q *CreateProductPromotionCommand) command()          {}
+func (q *OnTradingOrderCreatedCommand) command()           {}
 func (q *UpdateProductPromotionCommand) command()          {}
+func (q *GetAffiliateAccountReferralByCodeQuery) query()   {}
+func (q *GetAffiliateAccountReferralCodesQuery) query()    {}
 func (q *GetCommissionByProductIDQuery) query()            {}
 func (q *GetCommissionByProductIDsQuery) query()           {}
+func (q *GetReferralsByReferralIDQuery) query()            {}
 func (q *GetShopProductPromotionQuery) query()             {}
 func (q *GetShopProductPromotionByProductIDsQuery) query() {}
 func (q *ListShopProductPromotionsQuery) query()           {}
 
 // implement conversion
+
+func (q *CheckTradingOrderValidCommand) GetArgs(ctx context.Context) (_ context.Context, _ *CheckTradingOrderValidArgs) {
+	return ctx,
+		&CheckTradingOrderValidArgs{
+			ProductIDs:   q.ProductIDs,
+			ReferralCode: q.ReferralCode,
+			UserID:       q.UserID,
+		}
+}
+
+func (q *CreateAffiliateReferralCodeCommand) GetArgs(ctx context.Context) (_ context.Context, _ *CreateReferralCodeArgs) {
+	return ctx,
+		&CreateReferralCodeArgs{
+			AffiliateAccountID: q.AffiliateAccountID,
+			Code:               q.Code,
+		}
+}
 
 func (q *CreateOrUpdateCommissionSettingCommand) GetArgs(ctx context.Context) (_ context.Context, _ *CreateCommissionSettingArgs) {
 	return ctx,
@@ -174,6 +281,15 @@ func (q *CreateOrUpdateCommissionSettingCommand) GetArgs(ctx context.Context) (_
 			Type:        q.Type,
 			Description: q.Description,
 			Note:        q.Note,
+		}
+}
+
+func (q *CreateOrUpdateUserReferralCommand) GetArgs(ctx context.Context) (_ context.Context, _ *CreateOrUpdateReferralArgs) {
+	return ctx,
+		&CreateOrUpdateReferralArgs{
+			UserID:           q.UserID,
+			ReferralCode:     q.ReferralCode,
+			SaleReferralCode: q.SaleReferralCode,
 		}
 }
 
@@ -191,6 +307,14 @@ func (q *CreateProductPromotionCommand) GetArgs(ctx context.Context) (_ context.
 		}
 }
 
+func (q *OnTradingOrderCreatedCommand) GetArgs(ctx context.Context) (_ context.Context, _ *OnTradingOrderCreatedArgs) {
+	return ctx,
+		&OnTradingOrderCreatedArgs{
+			OrderID:      q.OrderID,
+			ReferralCode: q.ReferralCode,
+		}
+}
+
 func (q *UpdateProductPromotionCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateProductPromotionArgs) {
 	return ctx,
 		&UpdateProductPromotionArgs{
@@ -201,6 +325,20 @@ func (q *UpdateProductPromotionCommand) GetArgs(ctx context.Context) (_ context.
 			Description: q.Description,
 			Note:        q.Note,
 			Type:        q.Type,
+		}
+}
+
+func (q *GetAffiliateAccountReferralByCodeQuery) GetArgs(ctx context.Context) (_ context.Context, _ *GetAffiliateAccountReferralByCodeArgs) {
+	return ctx,
+		&GetAffiliateAccountReferralByCodeArgs{
+			Code: q.Code,
+		}
+}
+
+func (q *GetAffiliateAccountReferralCodesQuery) GetArgs(ctx context.Context) (_ context.Context, _ *GetAffiliateAccountReferralCodesArgs) {
+	return ctx,
+		&GetAffiliateAccountReferralCodesArgs{
+			AffiliateAccountID: q.AffiliateAccountID,
 		}
 }
 
@@ -217,6 +355,13 @@ func (q *GetCommissionByProductIDsQuery) GetArgs(ctx context.Context) (_ context
 		&GetCommissionByProductIDsArgs{
 			AccountID:  q.AccountID,
 			ProductIDs: q.ProductIDs,
+		}
+}
+
+func (q *GetReferralsByReferralIDQuery) GetArgs(ctx context.Context) (_ context.Context, _ *GetReferralsByReferralIDArgs) {
+	return ctx,
+		&GetReferralsByReferralIDArgs{
+			ID: q.ID,
 		}
 }
 
@@ -257,8 +402,12 @@ func (h AggregateHandler) RegisterHandlers(b interface {
 	meta.Bus
 	AddHandler(handler interface{})
 }) CommandBus {
+	b.AddHandler(h.HandleCheckTradingOrderValid)
+	b.AddHandler(h.HandleCreateAffiliateReferralCode)
 	b.AddHandler(h.HandleCreateOrUpdateCommissionSetting)
+	b.AddHandler(h.HandleCreateOrUpdateUserReferral)
 	b.AddHandler(h.HandleCreateProductPromotion)
+	b.AddHandler(h.HandleOnTradingOrderCreated)
 	b.AddHandler(h.HandleUpdateProductPromotion)
 	return CommandBus{b}
 }
@@ -275,8 +424,11 @@ func (h QueryServiceHandler) RegisterHandlers(b interface {
 	meta.Bus
 	AddHandler(handler interface{})
 }) QueryBus {
+	b.AddHandler(h.HandleGetAffiliateAccountReferralByCode)
+	b.AddHandler(h.HandleGetAffiliateAccountReferralCodes)
 	b.AddHandler(h.HandleGetCommissionByProductID)
 	b.AddHandler(h.HandleGetCommissionByProductIDs)
+	b.AddHandler(h.HandleGetReferralsByReferralID)
 	b.AddHandler(h.HandleGetShopProductPromotion)
 	b.AddHandler(h.HandleGetShopProductPromotionByProductIDs)
 	b.AddHandler(h.HandleListShopProductPromotions)

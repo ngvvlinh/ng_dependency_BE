@@ -50,6 +50,10 @@ type QueryService interface {
 	GetAffiliateByID(ctx context.Context, ID int64) (*Affiliate, error)
 
 	GetAffiliateWithPermission(ctx context.Context, AffiliateID int64, UserID int64) (*GetAffiliateWithPermissionResult, error)
+
+	GetAffiliatesByIDs(context.Context, *GetAffiliatesByIDsArgs) ([]*Affiliate, error)
+
+	GetAffiliatesByOwnerID(context.Context, *GetAffiliatesByOwnerIDArgs) ([]*Affiliate, error)
 }
 
 //-- queries --//
@@ -112,6 +116,14 @@ type UpdateUserReferenceSaleIDArgs struct {
 type GetAffiliateWithPermissionResult struct {
 	Affiliate  *Affiliate
 	Permission Permission
+}
+
+type GetAffiliatesByIDsArgs struct {
+	AffiliateIDs []int64
+}
+
+type GetAffiliatesByOwnerIDArgs struct {
+	ID int64
 }
 
 type CreateAffiliateArgs struct {

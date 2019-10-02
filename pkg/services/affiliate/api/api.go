@@ -20,6 +20,8 @@ import (
 
 func init() {
 	bus.AddHandlers("",
+		UpdateReferral,
+
 		TradingGetProducts,
 		CreateOrUpdateTradingCommissionSetting,
 		GetTradingProductPromotions,
@@ -35,6 +37,9 @@ func init() {
 		CreateOrUpdateAffiliateCommissionSetting,
 		GetProductPromotionByProductID,
 		AffiliateGetProducts,
+		CreateReferralCode,
+		GetReferralCodes,
+		GetReferrals,
 	)
 }
 
@@ -57,6 +62,24 @@ func Init(
 	catalogQuery = catQuery
 	affiliateQuery = affQuery
 	identityQuery = idenQuery
+}
+
+func UpdateReferral(ctx context.Context, q *wrapaff.UpdateReferralEndpoint) error {
+	cmd := &affiliate.CreateOrUpdateUserReferralCommand{
+		UserID:           q.Context.UserID,
+		ReferralCode:     q.ReferralCode,
+		SaleReferralCode: q.SaleReferralCode,
+	}
+	if err := affiliateCmd.Dispatch(ctx, cmd); err != nil {
+		return err
+	}
+
+	q.Result = &pbaff.UserReferral{
+		UserId:           cmd.Result.UserID,
+		ReferralCode:     cmd.Result.ReferralCode,
+		SaleReferralCode: cmd.Result.SaleReferralCode,
+	}
+	return nil
 }
 
 func TradingGetProducts(ctx context.Context, q *wrapaff.TradingGetProductsEndpoint) error {
@@ -209,10 +232,9 @@ func GetProductPromotion(ctx context.Context, q *wrapaff.GetProductPromotionEndp
 	var pbReferralDiscount *pbaff.CommissionSetting
 	if q.ReferralCode != nil {
 		commissionSetting, err := GetCommissionSettingByReferralCode(ctx, *q.ReferralCode, q.ProductId)
-		if err != nil {
-			return err
+		if err == nil {
+			pbReferralDiscount = pbaff.PbCommissionSetting(commissionSetting)
 		}
-		pbReferralDiscount = pbaff.PbCommissionSetting(commissionSetting)
 	}
 	q.Result = &pbaff.GetProductPromotionResponse{
 		Promotion:        pbaff.PbProductPromotion(promotionQuery.Result),
@@ -342,18 +364,80 @@ func GetShopProductPromotionMapByProductIDs(ctx context.Context, shopID int64, p
 }
 
 func GetCommissionSettingByReferralCode(ctx context.Context, referralCode string, productID int64) (*affiliate.CommissionSetting, error) {
-	idenQ := &identity.GetUserByPhoneQuery{
-		Phone: referralCode,
-	}
-	if err := identityQuery.Dispatch(ctx, idenQ); err != nil {
+	referralQ := &affiliate.GetAffiliateAccountReferralByCodeQuery{Code: referralCode}
+	if err := affiliateQuery.Dispatch(ctx, referralQ); err != nil {
 		return nil, err
 	}
 	commissionSettingQ := &affiliate.GetCommissionByProductIDQuery{
-		AccountID: idenQ.Result.ID,
+		AccountID: referralQ.Result.AffiliateID,
 		ProductID: productID,
 	}
 	if err := affiliateQuery.Dispatch(ctx, commissionSettingQ); err != nil {
 		return nil, err
 	}
 	return commissionSettingQ.Result, nil
+}
+
+func CreateReferralCode(ctx context.Context, q *wrapaff.CreateReferralCodeEndpoint) error {
+	cmd := &affiliate.CreateAffiliateReferralCodeCommand{
+		AffiliateAccountID: q.Context.Affiliate.ID,
+		Code:               q.Code,
+	}
+	if err := affiliateCmd.Dispatch(ctx, cmd); err != nil {
+		return err
+	}
+
+	q.Result = pbaff.PbReferralCode(cmd.Result)
+
+	return nil
+}
+
+func GetReferralCodes(ctx context.Context, q *wrapaff.GetReferralCodesEndpoint) error {
+	query := &affiliate.GetAffiliateAccountReferralCodesQuery{
+		AffiliateAccountID: q.Context.Affiliate.ID,
+	}
+	if err := affiliateQuery.Dispatch(ctx, query); err != nil {
+		return err
+	}
+
+	q.Result = &pbaff.GetReferralCodesResponse{
+		ReferralCodes: pbaff.PbReferralCodes(query.Result),
+	}
+
+	return nil
+}
+
+func GetReferrals(ctx context.Context, q *wrapaff.GetReferralsEndpoint) error {
+	referralQ := &affiliate.GetReferralsByReferralIDQuery{
+		ID: q.Context.Affiliate.ID,
+	}
+	if err := affiliateQuery.Dispatch(ctx, referralQ); err != nil {
+		return err
+	}
+
+	var affiliateIDs []int64
+	for _, userReferral := range referralQ.Result {
+		userQ := &identity.GetAffiliatesByOwnerIDQuery{
+			ID: userReferral.UserID,
+		}
+		if err := identityQuery.Dispatch(ctx, userQ); err == nil {
+			affiliateIDs = append(affiliateIDs, userQ.Result[0].ID)
+		}
+	}
+
+	affiliateQ := &identity.GetAffiliatesByIDsQuery{AffiliateIDs: affiliateIDs}
+	if err := identityQuery.Dispatch(ctx, affiliateQ); err != nil {
+		return err
+	}
+
+	var referrals []*pbaff.Referral
+	for _, aff := range affiliateQ.Result {
+		pbAffiliate := pbaff.PbReferral(aff)
+		referrals = append(referrals, pbAffiliate)
+	}
+
+	q.Result = &pbaff.GetReferralsResponse{
+		Referrals: referrals,
+	}
+	return nil
 }

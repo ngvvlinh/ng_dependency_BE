@@ -79,3 +79,11 @@ func (q *QueryService) GetAffiliateWithPermission(ctx context.Context, affID int
 	res.Permission = convert.Permission(accUser.Permission)
 	return res, nil
 }
+
+func (q *QueryService) GetAffiliatesByIDs(ctx context.Context, args *identity.GetAffiliatesByIDsArgs) ([]*identity.Affiliate, error) {
+	return q.accountStore(ctx).AffiliatesByIDs(args.AffiliateIDs...).GetAffiliates()
+}
+
+func (q *QueryService) GetAffiliatesByOwnerID(ctx context.Context, args *identity.GetAffiliatesByOwnerIDArgs) ([]*identity.Affiliate, error) {
+	return q.accountStore(ctx).AffiliatesByOwnerID(args.ID).GetAffiliates()
+}

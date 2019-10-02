@@ -326,7 +326,7 @@ func main() {
 	vendorQuery := vendorquery.NewVendorQuery(db).MessageBus()
 	carrierQuery := carrierquery.NewCarrierQuery(db).MessageBus()
 	traderAddressQuery := customerquery.NewAddressQuery(db).MessageBus()
-	affiliateCmd := serviceaffiliate.NewAggregate(dbaff).MessageBus()
+	affiliateCmd := serviceaffiliate.NewAggregate(dbaff, identityQuery).MessageBus()
 	affilateQuery := serviceaffiliate.NewQuery(dbaff).MessageBus()
 	// payment
 	var vtpayProvider *vtpay.Provider

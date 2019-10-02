@@ -67,6 +67,32 @@
         ]
       }
     },
+    "/api/affiliate.Affiliate/CreateReferralCode": {
+      "post": {
+        "operationId": "CreateReferralCode",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/affiliateReferralCode"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/affiliateCreateReferralCodeRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Affiliate"
+        ]
+      }
+    },
     "/api/affiliate.Affiliate/GetCommissions": {
       "post": {
         "operationId": "GetCommissions",
@@ -111,6 +137,58 @@
             "required": true,
             "schema": {
               "$ref": "#/definitions/affiliateGetProductPromotionByProductIDRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Affiliate"
+        ]
+      }
+    },
+    "/api/affiliate.Affiliate/GetReferralCodes": {
+      "post": {
+        "operationId": "GetReferralCodes",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/affiliateGetReferralCodesResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/cmCommonListRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Affiliate"
+        ]
+      }
+    },
+    "/api/affiliate.Affiliate/GetReferrals": {
+      "post": {
+        "operationId": "GetReferrals",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/affiliateGetReferralsResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/cmCommonListRequest"
             }
           }
         ],
@@ -352,6 +430,32 @@
           "Trading"
         ]
       }
+    },
+    "/api/affiliate.User/UpdateReferral": {
+      "post": {
+        "operationId": "UpdateReferral",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/affiliateUserReferral"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/affiliateUpdateReferralRequest"
+            }
+          }
+        ],
+        "tags": [
+          "User"
+        ]
+      }
     }
   },
   "definitions": {
@@ -458,6 +562,14 @@
         }
       }
     },
+    "affiliateCreateReferralCodeRequest": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "string"
+        }
+      }
+    },
     "affiliateGetCommissionsResponse": {
       "type": "object",
       "properties": {
@@ -505,6 +617,28 @@
           "type": "array",
           "items": {
             "$ref": "#/definitions/affiliateProductPromotion"
+          }
+        }
+      }
+    },
+    "affiliateGetReferralCodesResponse": {
+      "type": "object",
+      "properties": {
+        "referral_codes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/affiliateReferralCode"
+          }
+        }
+      }
+    },
+    "affiliateGetReferralsResponse": {
+      "type": "object",
+      "properties": {
+        "referrals": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/affiliateReferral"
           }
         }
       }
@@ -586,6 +720,44 @@
         }
       }
     },
+    "affiliateReferral": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "phone": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "order_count": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "total_revenue": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "total_commission": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "affiliateReferralCode": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "string"
+        }
+      }
+    },
     "affiliateShopGetProductsResponse": {
       "type": "object",
       "properties": {
@@ -613,6 +785,32 @@
     },
     "affiliateTransaction": {
       "type": "object"
+    },
+    "affiliateUpdateReferralRequest": {
+      "type": "object",
+      "properties": {
+        "referral_code": {
+          "type": "string"
+        },
+        "sale_referral_code": {
+          "type": "string"
+        }
+      }
+    },
+    "affiliateUserReferral": {
+      "type": "object",
+      "properties": {
+        "user_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "referral_code": {
+          "type": "string"
+        },
+        "sale_referral_code": {
+          "type": "string"
+        }
+      }
     },
     "cmCommonListRequest": {
       "type": "object",
@@ -1010,6 +1208,9 @@
     },
     {
       "name": "Trading"
+    },
+    {
+      "name": "User"
     }
   ]
 }

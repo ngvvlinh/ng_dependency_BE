@@ -29,6 +29,10 @@ import "etop/shop/shop.proto";
 //    rpc VersionInfo(cm.Empty) returns (cm.VersionInfoResponse);
 //}
 
+service UserService {
+    rpc UpdateReferral(UpdateReferralRequest) returns (UserReferral);
+}
+
 service TradingService {
     rpc TradingGetProducts (cm.CommonListRequest) returns (ShopGetProductsResponse);
     rpc CreateOrUpdateTradingCommissionSetting (CreateOrUpdateCommissionSettingRequest) returns (CommissionSetting);
@@ -49,6 +53,20 @@ service AffiliateService {
     rpc CreateOrUpdateAffiliateCommissionSetting (CreateOrUpdateCommissionSettingRequest) returns (CommissionSetting);
     rpc GetProductPromotionByProductID (GetProductPromotionByProductIDRequest) returns (GetProductPromotionByProductIDResponse);
     rpc AffiliateGetProducts (cm.CommonListRequest) returns (AffiliateGetProductsResponse);
+    rpc CreateReferralCode (CreateReferralCodeRequest) returns (ReferralCode);
+    rpc GetReferralCodes (cm.CommonListRequest) returns (GetReferralCodesResponse);
+    rpc GetReferrals (cm.CommonListRequest) returns (GetReferralsResponse);
+}
+
+message UpdateReferralRequest {
+    optional string referral_code = 2 [(gogoproto.nullable) = false];
+    optional string sale_referral_code = 3 [(gogoproto.nullable) = false];
+}
+
+message UserReferral {
+    optional int64 user_id = 1 [(gogoproto.nullable) = false];
+    optional string referral_code = 2  [(gogoproto.nullable) = false];
+    optional string sale_referral_code = 3  [(gogoproto.nullable) = false];
 }
 
 message GetCommissionsResponse {
@@ -190,4 +208,31 @@ message GetTradingProductPromotionByIDsRequest {
 
 message GetTradingProductPromotionByIDsResponse {
     repeated ProductPromotion promotions = 1;
+}
+
+message CreateReferralCodeRequest {
+    optional string code = 1 [(gogoproto.nullable) = false];
+}
+
+message ReferralCode {
+    optional string code = 1 [(gogoproto.nullable) = false];
+}
+
+message GetReferralCodesResponse {
+    repeated ReferralCode referral_codes = 1;
+}
+
+message Referral {
+    optional string name = 1 [(gogoproto.nullable) = false];
+    optional string phone = 2 [(gogoproto.nullable) = false];
+    optional string email = 3 [(gogoproto.nullable) = false];
+    optional int32 order_count = 4 [(gogoproto.nullable) = false];
+    optional int32 total_revenue = 5 [(gogoproto.nullable) = false];
+    optional int32 total_commission = 6 [(gogoproto.nullable) = false];
+    optional google.protobuf.Timestamp created_at = 7 [(gogoproto.nullable) = true];
+
+}
+
+message GetReferralsResponse {
+    repeated Referral referrals = 1;
 }

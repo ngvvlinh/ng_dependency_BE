@@ -198,6 +198,28 @@ func (h QueryServiceHandler) HandleGetAffiliateWithPermission(ctx context.Contex
 	return err
 }
 
+type GetAffiliatesByIDsQuery struct {
+	AffiliateIDs []int64
+
+	Result []*Affiliate `json:"-"`
+}
+
+func (h QueryServiceHandler) HandleGetAffiliatesByIDs(ctx context.Context, msg *GetAffiliatesByIDsQuery) (err error) {
+	msg.Result, err = h.inner.GetAffiliatesByIDs(msg.GetArgs(ctx))
+	return err
+}
+
+type GetAffiliatesByOwnerIDQuery struct {
+	ID int64
+
+	Result []*Affiliate `json:"-"`
+}
+
+func (h QueryServiceHandler) HandleGetAffiliatesByOwnerID(ctx context.Context, msg *GetAffiliatesByOwnerIDQuery) (err error) {
+	msg.Result, err = h.inner.GetAffiliatesByOwnerID(msg.GetArgs(ctx))
+	return err
+}
+
 type GetExternalAccountAhamoveQuery struct {
 	OwnerID int64
 	Phone   string
@@ -268,6 +290,8 @@ func (q *UpdateUserReferenceUserIDCommand) command()                {}
 func (q *UpdateVerifiedExternalAccountAhamoveCommand) command()     {}
 func (q *GetAffiliateByIDQuery) query()                             {}
 func (q *GetAffiliateWithPermissionQuery) query()                   {}
+func (q *GetAffiliatesByIDsQuery) query()                           {}
+func (q *GetAffiliatesByOwnerIDQuery) query()                       {}
 func (q *GetExternalAccountAhamoveQuery) query()                    {}
 func (q *GetExternalAccountAhamoveByExternalIDQuery) query()        {}
 func (q *GetShopByIDQuery) query()                                  {}
@@ -384,6 +408,20 @@ func (q *GetAffiliateWithPermissionQuery) GetArgs(ctx context.Context) (_ contex
 		q.UserID
 }
 
+func (q *GetAffiliatesByIDsQuery) GetArgs(ctx context.Context) (_ context.Context, _ *GetAffiliatesByIDsArgs) {
+	return ctx,
+		&GetAffiliatesByIDsArgs{
+			AffiliateIDs: q.AffiliateIDs,
+		}
+}
+
+func (q *GetAffiliatesByOwnerIDQuery) GetArgs(ctx context.Context) (_ context.Context, _ *GetAffiliatesByOwnerIDArgs) {
+	return ctx,
+		&GetAffiliatesByOwnerIDArgs{
+			ID: q.ID,
+		}
+}
+
 func (q *GetExternalAccountAhamoveQuery) GetArgs(ctx context.Context) (_ context.Context, _ *GetExternalAccountAhamoveArgs) {
 	return ctx,
 		&GetExternalAccountAhamoveArgs{
@@ -455,6 +493,8 @@ func (h QueryServiceHandler) RegisterHandlers(b interface {
 }) QueryBus {
 	b.AddHandler(h.HandleGetAffiliateByID)
 	b.AddHandler(h.HandleGetAffiliateWithPermission)
+	b.AddHandler(h.HandleGetAffiliatesByIDs)
+	b.AddHandler(h.HandleGetAffiliatesByOwnerID)
 	b.AddHandler(h.HandleGetExternalAccountAhamove)
 	b.AddHandler(h.HandleGetExternalAccountAhamoveByExternalID)
 	b.AddHandler(h.HandleGetShopByID)
