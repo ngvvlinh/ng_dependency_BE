@@ -15,6 +15,7 @@ type QueryService struct {
 	commissionSetting     sqlstore.CommissionSettingStoreFactory
 	productPromotion      sqlstore.ProductPromotionStoreFactory
 	affiliateReferralCode sqlstore.AffiliateReferralCodeStoreFactory
+	userReferral          sqlstore.UserReferralStoreFactory
 }
 
 func NewQuery(db cmsql.Database) *QueryService {
@@ -22,6 +23,7 @@ func NewQuery(db cmsql.Database) *QueryService {
 		commissionSetting:     sqlstore.NewCommissionSettingStore(db),
 		productPromotion:      sqlstore.NewProductPromotionStore(db),
 		affiliateReferralCode: sqlstore.NewAffiliateReferralCodeStore(db),
+		userReferral:          sqlstore.NewUserReferralStore(db),
 	}
 }
 
@@ -67,8 +69,8 @@ func (a *QueryService) GetAffiliateAccountReferralCodes(ctx context.Context, arg
 	return a.affiliateReferralCode(ctx).AffiliateID(args.AffiliateAccountID).GetAffiliateReferralCodes()
 }
 
-func (a *QueryService) GetReferralsByReferralID(context.Context, *affiliate.GetReferralsByReferralIDArgs) ([]*affiliate.UserReferral, error) {
-	panic("implement me")
+func (a *QueryService) GetReferralsByReferralID(ctx context.Context, args *affiliate.GetReferralsByReferralIDArgs) ([]*affiliate.UserReferral, error) {
+	return a.userReferral(ctx).ReferralID(args.ID).GetUserReferrals()
 }
 
 func (q *QueryService) GetAffiliateAccountReferralByCode(ctx context.Context, args *affiliate.GetAffiliateAccountReferralByCodeArgs) (*affiliate.AffiliateReferralCode, error) {

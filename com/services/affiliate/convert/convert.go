@@ -133,3 +133,14 @@ func UserReferral(in *model.UserReferral) *affiliate.UserReferral {
 	}
 	return result
 }
+
+func UserReferrals(ins []*model.UserReferral) []*affiliate.UserReferral {
+	var results []*affiliate.UserReferral
+	if len(ins) == 0 {
+		return results
+	}
+	for _, ur := range ins {
+		results = append(results, UserReferral(ur))
+	}
+	return results
+}

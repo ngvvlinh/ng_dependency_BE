@@ -79,6 +79,12 @@ func (s *UserReferralStore) GetUserReferral() (*affiliate.UserReferral, error) {
 	return convert.UserReferral(userReferral), err
 }
 
+func (s *UserReferralStore) GetUserReferrals() ([]*affiliate.UserReferral, error) {
+	var userReferrals model.UserReferrals
+	err := s.query().Where(s.preds).Find(&userReferrals)
+	return convert.UserReferrals(userReferrals), err
+}
+
 func (s *UserReferralStore) CreateUserReferral(userReferral *model.UserReferral) error {
 	sqlstore.MustNoPreds(s.preds)
 	_, err := s.query().Insert(userReferral)
