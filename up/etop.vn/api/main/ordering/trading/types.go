@@ -1,8 +1,8 @@
 package trading
 
-type CheckTradingOrderValidEvent struct {
-	OrderID      int64
+type TradingOrderCreatingEvent struct {
 	ReferralCode string
+	UserID       int64
 }
 
 type TradingOrderCreatedEvent struct {

@@ -108,11 +108,11 @@ func tradingCreateOrder(ctx context.Context, r *wrapshop.TradingCreateOrderEndpo
 	{
 		referralCode := r.ReferralMeta["referral_code"]
 		if referralCode != "" {
-			checkTradingOrderValidEvent := &ordertrading.CheckTradingOrderValidEvent{
-				OrderID:      0,
+			tradingOrderCreating := &ordertrading.TradingOrderCreatingEvent{
 				ReferralCode: referralCode,
+				UserID:       r.Context.Shop.OwnerID,
 			}
-			if err := eventBus.Publish(ctx, checkTradingOrderValidEvent); err != nil {
+			if err := eventBus.Publish(ctx, tradingOrderCreating); err != nil {
 				return 0, err
 			}
 		}

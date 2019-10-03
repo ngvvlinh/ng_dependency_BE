@@ -13,7 +13,7 @@ type Aggregate interface {
 	CreateProductPromotion(context.Context, *CreateProductPromotionArgs) (*ProductPromotion, error)
 	UpdateProductPromotion(context.Context, *UpdateProductPromotionArgs) (*ProductPromotion, error)
 	OnTradingOrderCreated(context.Context, *OnTradingOrderCreatedArgs) error
-	CheckTradingOrderValid(context.Context, *CheckTradingOrderValidArgs) error
+	TradingOrderCreating(context.Context, *TradingOrderCreating) error
 	CreateAffiliateReferralCode(context.Context, *CreateReferralCodeArgs) (*AffiliateReferralCode, error)
 	CreateOrUpdateUserReferral(context.Context, *CreateOrUpdateReferralArgs) (*UserReferral, error)
 }
@@ -54,7 +54,7 @@ type OnTradingOrderCreatedArgs struct {
 	ReferralCode string
 }
 
-type CheckTradingOrderValidArgs struct {
+type TradingOrderCreating struct {
 	ProductIDs   []int64
 	ReferralCode string
 	UserID       int64

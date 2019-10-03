@@ -162,12 +162,9 @@ func (a *Aggregate) OnTradingOrderCreated(ctx context.Context, args *affiliate.O
 	if args.OrderID == 0 {
 		return cm.Errorf(cm.InvalidArgument, nil, "Missing OrderID")
 	}
-	if args.ReferralCode == "" {
-		return cm.Errorf(cm.InvalidArgument, nil, "Missing ReferralCode")
-	}
 
-	notify, _ := a.orderCreatedNotify(ctx).OrderID(args.OrderID).ReferralCode(args.ReferralCode).GetOrderCreatedNotifyDB()
-	if notify != nil {
+	notify, err := a.orderCreatedNotify(ctx).OrderID(args.OrderID).GetOrderCreatedNotifyDB()
+	if err == nil {
 		return cm.Errorf(cm.AlreadyExists, nil, "Notify does existed")
 	}
 
@@ -186,12 +183,16 @@ func (a *Aggregate) OnTradingOrderCreated(ctx context.Context, args *affiliate.O
 	return nil
 }
 
-func (a *Aggregate) CheckTradingOrderValid(ctx context.Context, args *affiliate.CheckTradingOrderValidArgs) error {
-	if len(args.ProductIDs) == 0 {
-		return cm.Errorf(cm.InvalidArgument, nil, "Missing ProductIDS")
-	}
+func (a *Aggregate) TradingOrderCreating(ctx context.Context, args *affiliate.TradingOrderCreating) error {
 	if args.ReferralCode == "" {
 		return cm.Errorf(cm.InvalidArgument, nil, "Missing ReferralCode")
+	}
+	if args.UserID == 0 {
+		return cm.Errorf(cm.InvalidArgument, nil, "Missing UserID")
+	}
+	userQ := &identity.GetUserByIDQuery{UserID: args.UserID}
+	if err := a.identityQuery.Dispatch(ctx, userQ); err != nil {
+		return cm.Errorf(cm.InvalidArgument, nil, "User not found")
 	}
 
 	// TODO: Get affiliate account
@@ -200,10 +201,10 @@ func (a *Aggregate) CheckTradingOrderValid(ctx context.Context, args *affiliate.
 		return err
 	}
 
-	commissionSettings, _ := a.commissionSetting(ctx).ProductIDs(args.ProductIDs).AccountID(affiliateReferralCode.AffiliateID).GetCommissionSettings()
-	if len(commissionSettings) == 0 {
-		return cm.Errorf(cm.Unavailable, nil, "Referral not available")
+	if userQ.Result.ID == affiliateReferralCode.UserID {
+		return cm.Errorf(cm.ValidationFailed, nil, "Mã giới thiệu không hợp lệ")
 	}
+
 	return nil
 }
 

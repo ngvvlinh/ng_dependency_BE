@@ -38,12 +38,24 @@ func (p *ProcessManager) RegisterEventHandlers(eventBus bus.EventRegistry) {
 	eventBus.AddEventListener(p.TradingOrderCreated)
 }
 
-func (p *ProcessManager) CheckTradingOrderValid(ctx context.Context, event *ordertrading.CheckTradingOrderValidEvent) error {
-	ll.V(3).Debug("CheckTradingOrderValid", l.Object("event", event))
+func (p *ProcessManager) CheckTradingOrderValid(ctx context.Context, event *ordertrading.TradingOrderCreatingEvent) error {
+	checkCmd := &affiliate.TradingOrderCreatingCommand{
+		ReferralCode: event.ReferralCode,
+		UserID:       event.UserID,
+	}
+	if err := p.affiliate.Dispatch(ctx, checkCmd); err != nil {
+		return err
+	}
 	return nil
 }
 
 func (p *ProcessManager) TradingOrderCreated(ctx context.Context, event *ordertrading.TradingOrderCreatedEvent) error {
-	ll.V(3).Debug("TradingOrderCreated", l.Object("event", event))
+	orderCreatedNotifyCmd := &affiliate.OnTradingOrderCreatedCommand{
+		OrderID:      event.OrderID,
+		ReferralCode: event.ReferralCode,
+	}
+	if err := p.affiliate.Dispatch(ctx, orderCreatedNotifyCmd); err != nil {
+		return err
+	}
 	return nil
 }

@@ -38,19 +38,6 @@ func (c QueryBus) DispatchAll(ctx context.Context, msgs ...Query) error {
 	return nil
 }
 
-type CheckTradingOrderValidCommand struct {
-	ProductIDs   []int64
-	ReferralCode string
-	UserID       int64
-
-	Result struct {
-	} `json:"-"`
-}
-
-func (h AggregateHandler) HandleCheckTradingOrderValid(ctx context.Context, msg *CheckTradingOrderValidCommand) (err error) {
-	return h.inner.CheckTradingOrderValid(msg.GetArgs(ctx))
-}
-
 type CreateAffiliateReferralCodeCommand struct {
 	AffiliateAccountID int64
 	Code               string
@@ -121,6 +108,19 @@ type OnTradingOrderCreatedCommand struct {
 
 func (h AggregateHandler) HandleOnTradingOrderCreated(ctx context.Context, msg *OnTradingOrderCreatedCommand) (err error) {
 	return h.inner.OnTradingOrderCreated(msg.GetArgs(ctx))
+}
+
+type TradingOrderCreatingCommand struct {
+	ProductIDs   []int64
+	ReferralCode string
+	UserID       int64
+
+	Result struct {
+	} `json:"-"`
+}
+
+func (h AggregateHandler) HandleTradingOrderCreating(ctx context.Context, msg *TradingOrderCreatingCommand) (err error) {
+	return h.inner.TradingOrderCreating(msg.GetArgs(ctx))
 }
 
 type UpdateProductPromotionCommand struct {
@@ -236,12 +236,12 @@ func (h QueryServiceHandler) HandleListShopProductPromotions(ctx context.Context
 
 // implement interfaces
 
-func (q *CheckTradingOrderValidCommand) command()          {}
 func (q *CreateAffiliateReferralCodeCommand) command()     {}
 func (q *CreateOrUpdateCommissionSettingCommand) command() {}
 func (q *CreateOrUpdateUserReferralCommand) command()      {}
 func (q *CreateProductPromotionCommand) command()          {}
 func (q *OnTradingOrderCreatedCommand) command()           {}
+func (q *TradingOrderCreatingCommand) command()            {}
 func (q *UpdateProductPromotionCommand) command()          {}
 func (q *GetAffiliateAccountReferralByCodeQuery) query()   {}
 func (q *GetAffiliateAccountReferralCodesQuery) query()    {}
@@ -253,15 +253,6 @@ func (q *GetShopProductPromotionByProductIDsQuery) query() {}
 func (q *ListShopProductPromotionsQuery) query()           {}
 
 // implement conversion
-
-func (q *CheckTradingOrderValidCommand) GetArgs(ctx context.Context) (_ context.Context, _ *CheckTradingOrderValidArgs) {
-	return ctx,
-		&CheckTradingOrderValidArgs{
-			ProductIDs:   q.ProductIDs,
-			ReferralCode: q.ReferralCode,
-			UserID:       q.UserID,
-		}
-}
 
 func (q *CreateAffiliateReferralCodeCommand) GetArgs(ctx context.Context) (_ context.Context, _ *CreateReferralCodeArgs) {
 	return ctx,
@@ -312,6 +303,15 @@ func (q *OnTradingOrderCreatedCommand) GetArgs(ctx context.Context) (_ context.C
 		&OnTradingOrderCreatedArgs{
 			OrderID:      q.OrderID,
 			ReferralCode: q.ReferralCode,
+		}
+}
+
+func (q *TradingOrderCreatingCommand) GetArgs(ctx context.Context) (_ context.Context, _ *TradingOrderCreating) {
+	return ctx,
+		&TradingOrderCreating{
+			ProductIDs:   q.ProductIDs,
+			ReferralCode: q.ReferralCode,
+			UserID:       q.UserID,
 		}
 }
 
@@ -402,12 +402,12 @@ func (h AggregateHandler) RegisterHandlers(b interface {
 	meta.Bus
 	AddHandler(handler interface{})
 }) CommandBus {
-	b.AddHandler(h.HandleCheckTradingOrderValid)
 	b.AddHandler(h.HandleCreateAffiliateReferralCode)
 	b.AddHandler(h.HandleCreateOrUpdateCommissionSetting)
 	b.AddHandler(h.HandleCreateOrUpdateUserReferral)
 	b.AddHandler(h.HandleCreateProductPromotion)
 	b.AddHandler(h.HandleOnTradingOrderCreated)
+	b.AddHandler(h.HandleTradingOrderCreating)
 	b.AddHandler(h.HandleUpdateProductPromotion)
 	return CommandBus{b}
 }
