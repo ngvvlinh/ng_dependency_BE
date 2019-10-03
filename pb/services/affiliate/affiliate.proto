@@ -34,9 +34,9 @@ service UserService {
 }
 
 service TradingService {
-    rpc TradingGetProducts (cm.CommonListRequest) returns (ShopGetProductsResponse);
+    rpc TradingGetProducts (cm.CommonListRequest) returns (SupplyGetProductsResponse);
     rpc CreateOrUpdateTradingCommissionSetting (CreateOrUpdateCommissionSettingRequest) returns (CommissionSetting);
-    rpc GetTradingProductPromotionByProductIDs(GetTradingProductPromotionByIDsRequest) returns (GetTradingProductPromotionByIDsResponse);
+    rpc GetTradingProductPromotionByProductIDs (GetTradingProductPromotionByIDsRequest) returns (GetTradingProductPromotionByIDsResponse);
     rpc GetTradingProductPromotions (cm.CommonListRequest) returns (GetProductPromotionsResponse);
     rpc CreateTradingProductPromotion (CreateOrUpdateProductPromotionRequest) returns (ProductPromotion);
     rpc UpdateTradingProductPromotion (CreateOrUpdateProductPromotionRequest) returns (ProductPromotion);
@@ -44,6 +44,8 @@ service TradingService {
 
 service ShopService {
     rpc GetProductPromotion (GetProductPromotionRequest) returns (GetProductPromotionResponse);
+    rpc ShopGetProducts (cm.CommonListRequest) returns (ShopGetProductsResponse);
+    rpc CheckReferralCodeValid(CheckReferralCodeValidRequest) returns (GetProductPromotionResponse);
 }
 
 service AffiliateService {
@@ -164,10 +166,15 @@ message GetProductPromotionByProductIDResponse {
 
 }
 
+message SupplyProductResponse {
+    optional shop.ShopProduct product = 1;
+    optional CommissionSetting shop_commission_setting = 2;
+    optional ProductPromotion promotion = 3;
+}
 
 message ShopProductResponse {
     optional shop.ShopProduct product = 1;
-    optional CommissionSetting shop_commission_setting = 2;
+    optional ProductPromotion promotion = 3;
 }
 
 message AffiliateProductResponse {
@@ -177,9 +184,19 @@ message AffiliateProductResponse {
     optional ProductPromotion promotion = 4;
 }
 
+message SupplyGetProductsResponse {
+    optional cm.PageInfo paging = 1;
+    repeated SupplyProductResponse products = 2;
+}
+
 message ShopGetProductsResponse {
     optional cm.PageInfo paging = 1;
     repeated ShopProductResponse products = 2;
+}
+
+message CheckReferralCodeValidRequest {
+    optional int64 product_id = 1 [(gogoproto.nullable) = false];
+    optional string referral_code = 2 [(gogoproto.nullable) = false];
 }
 
 message AffiliateGetProductsResponse {

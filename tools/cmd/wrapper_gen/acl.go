@@ -408,6 +408,7 @@ var ACL = map[string]*permission.PermissionDecl{
 	"affiliate.Account/UpdateAffiliateBankAccount": {Type: Affiliate},
 	"affiliate.Account/DeleteAffiliate":            {Type: Affiliate},
 
+	// affiliate for etopTrading
 	//"affiliate.Affiliate/VersionInfo":                          {Type: Shop},
 	"affiliate.User/UpdateReferral": {Type: CurUsr},
 
@@ -418,8 +419,12 @@ var ACL = map[string]*permission.PermissionDecl{
 	"affiliate.Trading/CreateTradingProductPromotion":          {Type: Shop},
 	"affiliate.Trading/UpdateTradingProductPromotion":          {Type: Shop},
 
-	"affiliate.Shop/GetProductPromotion": {Type: Shop},
+	// affiliate shop
+	"affiliate.Shop/GetProductPromotion":    {Type: Shop},
+	"affiliate.Shop/ShopGetProducts":        {Type: Shop},
+	"affiliate.Shop/CheckReferralCodeValid": {Type: Shop},
 
+	// affiliate
 	"affiliate.Affiliate/GetCommissions":                           {Type: Shop},
 	"affiliate.Affiliate/NotifyNewShopPurchase":                    {Type: Secret},
 	"affiliate.Affiliate/GetTransactions":                          {Type: Affiliate},

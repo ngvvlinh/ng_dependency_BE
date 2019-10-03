@@ -249,6 +249,32 @@
         ]
       }
     },
+    "/api/affiliate.Shop/CheckReferralCodeValid": {
+      "post": {
+        "operationId": "CheckReferralCodeValid",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/affiliateGetProductPromotionResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/affiliateCheckReferralCodeValidRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Shop"
+        ]
+      }
+    },
     "/api/affiliate.Shop/GetProductPromotion": {
       "post": {
         "operationId": "GetProductPromotion",
@@ -267,6 +293,32 @@
             "required": true,
             "schema": {
               "$ref": "#/definitions/affiliateGetProductPromotionRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Shop"
+        ]
+      }
+    },
+    "/api/affiliate.Shop/ShopGetProducts": {
+      "post": {
+        "operationId": "ShopGetProducts",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/affiliateShopGetProductsResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/cmCommonListRequest"
             }
           }
         ],
@@ -386,7 +438,7 @@
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/affiliateShopGetProductsResponse"
+              "$ref": "#/definitions/affiliateSupplyGetProductsResponse"
             }
           }
         },
@@ -487,6 +539,18 @@
         },
         "promotion": {
           "$ref": "#/definitions/affiliateProductPromotion"
+        }
+      }
+    },
+    "affiliateCheckReferralCodeValidRequest": {
+      "type": "object",
+      "properties": {
+        "product_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "referral_code": {
+          "type": "string"
         }
       }
     },
@@ -778,8 +842,36 @@
         "product": {
           "$ref": "#/definitions/shopShopProduct"
         },
+        "promotion": {
+          "$ref": "#/definitions/affiliateProductPromotion"
+        }
+      }
+    },
+    "affiliateSupplyGetProductsResponse": {
+      "type": "object",
+      "properties": {
+        "paging": {
+          "$ref": "#/definitions/cmPageInfo"
+        },
+        "products": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/affiliateSupplyProductResponse"
+          }
+        }
+      }
+    },
+    "affiliateSupplyProductResponse": {
+      "type": "object",
+      "properties": {
+        "product": {
+          "$ref": "#/definitions/shopShopProduct"
+        },
         "shop_commission_setting": {
           "$ref": "#/definitions/affiliateCommissionSetting"
+        },
+        "promotion": {
+          "$ref": "#/definitions/affiliateProductPromotion"
         }
       }
     },

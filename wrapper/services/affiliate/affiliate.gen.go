@@ -45,7 +45,9 @@ func NewAffiliateServer(mux Muxer, hooks *twirp.ServerHooks, secret string) {
 	bus.Expect(&GetTradingProductPromotionsEndpoint{})
 	bus.Expect(&TradingGetProductsEndpoint{})
 	bus.Expect(&UpdateTradingProductPromotionEndpoint{})
+	bus.Expect(&CheckReferralCodeValidEndpoint{})
 	bus.Expect(&GetProductPromotionEndpoint{})
+	bus.Expect(&ShopGetProductsEndpoint{})
 	bus.Expect(&AffiliateGetProductsEndpoint{})
 	bus.Expect(&CreateOrUpdateAffiliateCommissionSettingEndpoint{})
 	bus.Expect(&CreateReferralCodeEndpoint{})
@@ -296,11 +298,11 @@ func (s TradingService) GetTradingProductPromotions(ctx context.Context, req *cm
 
 type TradingGetProductsEndpoint struct {
 	*cm.CommonListRequest
-	Result  *affiliate.ShopGetProductsResponse
+	Result  *affiliate.SupplyGetProductsResponse
 	Context ShopClaim
 }
 
-func (s TradingService) TradingGetProducts(ctx context.Context, req *cm.CommonListRequest) (resp *affiliate.ShopGetProductsResponse, err error) {
+func (s TradingService) TradingGetProducts(ctx context.Context, req *cm.CommonListRequest) (resp *affiliate.SupplyGetProductsResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -384,6 +386,50 @@ func (s TradingService) UpdateTradingProductPromotion(ctx context.Context, req *
 
 type ShopService struct{ secret string }
 
+type CheckReferralCodeValidEndpoint struct {
+	*affiliate.CheckReferralCodeValidRequest
+	Result  *affiliate.GetProductPromotionResponse
+	Context ShopClaim
+}
+
+func (s ShopService) CheckReferralCodeValid(ctx context.Context, req *affiliate.CheckReferralCodeValidRequest) (resp *affiliate.GetProductPromotionResponse, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "affiliate.Shop/CheckReferralCodeValid"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:     ctx,
+		RequireAuth: true,
+		RequireShop: true,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &CheckReferralCodeValidEndpoint{CheckReferralCodeValidRequest: req}
+	query.Context.Claim = session.Claim
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = bus.Dispatch(ctx, query)
+	resp = query.Result
+	if err == nil {
+		if resp == nil {
+			return nil, common.Error(common.Internal, "", nil).Log("nil response")
+		}
+		errs = cmwrapper.HasErrors(resp)
+	}
+	return resp, err
+}
+
 type GetProductPromotionEndpoint struct {
 	*affiliate.GetProductPromotionRequest
 	Result  *affiliate.GetProductPromotionResponse
@@ -411,6 +457,50 @@ func (s ShopService) GetProductPromotion(ctx context.Context, req *affiliate.Get
 	}
 	session = sessionQuery.Result
 	query := &GetProductPromotionEndpoint{GetProductPromotionRequest: req}
+	query.Context.Claim = session.Claim
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = bus.Dispatch(ctx, query)
+	resp = query.Result
+	if err == nil {
+		if resp == nil {
+			return nil, common.Error(common.Internal, "", nil).Log("nil response")
+		}
+		errs = cmwrapper.HasErrors(resp)
+	}
+	return resp, err
+}
+
+type ShopGetProductsEndpoint struct {
+	*cm.CommonListRequest
+	Result  *affiliate.ShopGetProductsResponse
+	Context ShopClaim
+}
+
+func (s ShopService) ShopGetProducts(ctx context.Context, req *cm.CommonListRequest) (resp *affiliate.ShopGetProductsResponse, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "affiliate.Shop/ShopGetProducts"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:     ctx,
+		RequireAuth: true,
+		RequireShop: true,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &ShopGetProductsEndpoint{CommonListRequest: req}
 	query.Context.Claim = session.Claim
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner

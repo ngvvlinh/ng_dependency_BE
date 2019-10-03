@@ -30,6 +30,8 @@ func init() {
 		UpdateTradingProductPromotion,
 
 		GetProductPromotion,
+		ShopGetProducts,
+		CheckReferralCodeValid,
 
 		GetCommissions,
 		NotifyNewShopPurchase,
@@ -102,20 +104,27 @@ func TradingGetProducts(ctx context.Context, q *wrapaff.TradingGetProductsEndpoi
 	}
 
 	shopCommissionSettingMap := GetShopCommissionSettingsByProducts(ctx, modeletop.EtopTradingAccountID, productIds)
-	var products []*pbaff.ShopProductResponse
+	productPromotionMap := GetShopProductPromotionMapByProductIDs(ctx, modeletop.EtopTradingAccountID, productIds)
+	var products []*pbaff.SupplyProductResponse
 	for _, product := range query.Result.Products {
 		shopCommissionSetting := shopCommissionSettingMap[product.ProductID]
 		var pbShopCommissionSetting *pbaff.CommissionSetting = nil
 		if shopCommissionSetting != nil {
 			pbShopCommissionSetting = pbaff.PbCommissionSetting(shopCommissionSetting)
 		}
-		products = append(products, &pbaff.ShopProductResponse{
+		productPromotion := productPromotionMap[product.ProductID]
+		var pbProductPromotion *pbaff.ProductPromotion = nil
+		if productPromotion != nil {
+			pbProductPromotion = pbaff.PbProductPromotion(productPromotion)
+		}
+		products = append(products, &pbaff.SupplyProductResponse{
 			Product:               pbshop.PbShopProductWithVariants(product),
 			ShopCommissionSetting: pbShopCommissionSetting,
+			Promotion:             pbProductPromotion,
 		})
 	}
 
-	q.Result = &pbaff.ShopGetProductsResponse{
+	q.Result = &pbaff.SupplyGetProductsResponse{
 		Paging:   pbcm.PbPageInfo(paging, query.Result.Count),
 		Products: products,
 	}
@@ -236,6 +245,68 @@ func GetProductPromotion(ctx context.Context, q *wrapaff.GetProductPromotionEndp
 			pbReferralDiscount = pbaff.PbCommissionSetting(commissionSetting)
 		}
 	}
+	q.Result = &pbaff.GetProductPromotionResponse{
+		Promotion:        pbaff.PbProductPromotion(promotionQuery.Result),
+		ReferralDiscount: pbReferralDiscount,
+	}
+	return nil
+}
+
+func ShopGetProducts(ctx context.Context, q *wrapaff.ShopGetProductsEndpoint) error {
+	paging := q.Paging.CMPaging()
+	query := &catalog.ListShopProductsWithVariantsQuery{
+		ShopID:  modeletop.EtopTradingAccountID,
+		Paging:  *paging,
+		Filters: pbcm.ToFilters(q.Filters),
+	}
+	if err := catalogQuery.Dispatch(ctx, query); err != nil {
+		return err
+	}
+
+	var productIds []int64
+	for _, product := range query.Result.Products {
+		productIds = append(productIds, product.ProductID)
+	}
+	productPromotionMap := GetShopProductPromotionMapByProductIDs(ctx, modeletop.EtopTradingAccountID, productIds)
+	var products []*pbaff.ShopProductResponse
+	for _, product := range query.Result.Products {
+		productPromotion := productPromotionMap[product.ProductID]
+		var pbProductPromotion *pbaff.ProductPromotion = nil
+		if productPromotion != nil {
+			pbProductPromotion = pbaff.PbProductPromotion(productPromotion)
+		}
+		products = append(products, &pbaff.ShopProductResponse{
+			Product:   pbshop.PbShopProductWithVariants(product),
+			Promotion: pbProductPromotion,
+		})
+	}
+
+	q.Result = &pbaff.ShopGetProductsResponse{
+		Paging:   pbcm.PbPageInfo(paging, query.Result.Count),
+		Products: products,
+	}
+	return nil
+}
+
+func CheckReferralCodeValid(ctx context.Context, q *wrapaff.CheckReferralCodeValidEndpoint) error {
+	affiliateAccountReferralQ := &affiliate.GetAffiliateAccountReferralByCodeQuery{
+		Code: q.ReferralCode,
+	}
+	if err := affiliateQuery.Dispatch(ctx, affiliateAccountReferralQ); err != nil {
+		return cm.Errorf(cm.NotFound, nil, "Referral Code does not exist")
+	}
+
+	promotionQuery := &affiliate.GetShopProductPromotionQuery{
+		ShopID:    modeletop.EtopTradingAccountID,
+		ProductID: q.ProductId,
+	}
+	_ = affiliateQuery.Dispatch(ctx, promotionQuery)
+
+	commissionSetting, err := GetCommissionSettingByReferralCode(ctx, q.ReferralCode, q.ProductId)
+	if err != nil {
+		return cm.Errorf(cm.ValidationFailed, nil, "ReferralCode does not exist")
+	}
+	pbReferralDiscount := pbaff.PbCommissionSetting(commissionSetting)
 	q.Result = &pbaff.GetProductPromotionResponse{
 		Promotion:        pbaff.PbProductPromotion(promotionQuery.Result),
 		ReferralDiscount: pbReferralDiscount,
