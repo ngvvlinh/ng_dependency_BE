@@ -293,7 +293,11 @@ func CheckReferralCodeValid(ctx context.Context, q *wrapaff.CheckReferralCodeVal
 		Code: q.ReferralCode,
 	}
 	if err := affiliateQuery.Dispatch(ctx, affiliateAccountReferralQ); err != nil {
-		return cm.Errorf(cm.NotFound, nil, "Referral Code does not exist")
+		return cm.Errorf(cm.NotFound, nil, "Mã giới thiệu không hợp lệ")
+	}
+
+	if affiliateAccountReferralQ.Result.UserID == q.Context.Shop.OwnerID {
+		return cm.Errorf(cm.ValidationFailed, nil, "Mã giới thiệu không hợp lệ")
 	}
 
 	promotionQuery := &affiliate.GetShopProductPromotionQuery{
@@ -304,7 +308,7 @@ func CheckReferralCodeValid(ctx context.Context, q *wrapaff.CheckReferralCodeVal
 
 	commissionSetting, err := GetCommissionSettingByReferralCode(ctx, q.ReferralCode, q.ProductId)
 	if err != nil {
-		return cm.Errorf(cm.ValidationFailed, nil, "ReferralCode does not exist")
+		return cm.Errorf(cm.ValidationFailed, nil, "Mã giới thiệu không hợp lệ")
 	}
 	pbReferralDiscount := pbaff.PbCommissionSetting(commissionSetting)
 	q.Result = &pbaff.GetProductPromotionResponse{

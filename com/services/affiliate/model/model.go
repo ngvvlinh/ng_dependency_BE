@@ -69,6 +69,7 @@ type AffiliateReferralCode struct {
 	ID          int64
 	Code        string
 	AffiliateID int64
+	UserID      int64
 	CreatedAt   time.Time `sq:"create"`
 	UpdatedAt   time.Time `sql:"update"`
 }

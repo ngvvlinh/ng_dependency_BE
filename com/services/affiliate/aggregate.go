@@ -227,6 +227,7 @@ func (a *Aggregate) CreateAffiliateReferralCode(ctx context.Context, args *affil
 	affiliateReferralCode := &model.AffiliateReferralCode{
 		ID:          cm.NewID(),
 		Code:        args.Code,
+		UserID:      affiliateQ.Result.OwnerID,
 		AffiliateID: args.AffiliateAccountID,
 		CreatedAt:   time.Now(),
 		UpdatedAt:   time.Now(),

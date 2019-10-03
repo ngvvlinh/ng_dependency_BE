@@ -1150,7 +1150,7 @@ func sqlgenAffiliateReferralCode(_ *AffiliateReferralCode) bool { return true }
 type AffiliateReferralCodes []*AffiliateReferralCode
 
 const __sqlAffiliateReferralCode_Table = "affiliate_referral_code"
-const __sqlAffiliateReferralCode_ListCols = "\"id\",\"code\",\"affiliate_id\",\"created_at\",\"updated_at\""
+const __sqlAffiliateReferralCode_ListCols = "\"id\",\"code\",\"affiliate_id\",\"user_id\",\"created_at\",\"updated_at\""
 const __sqlAffiliateReferralCode_Insert = "INSERT INTO \"affiliate_referral_code\" (" + __sqlAffiliateReferralCode_ListCols + ") VALUES"
 const __sqlAffiliateReferralCode_Select = "SELECT " + __sqlAffiliateReferralCode_ListCols + " FROM \"affiliate_referral_code\""
 const __sqlAffiliateReferralCode_Select_history = "SELECT " + __sqlAffiliateReferralCode_ListCols + " FROM history.\"affiliate_referral_code\""
@@ -1166,6 +1166,7 @@ func (m *AffiliateReferralCode) SQLArgs(opts core.Opts, create bool) []interface
 		core.Int64(m.ID),
 		core.String(m.Code),
 		core.Int64(m.AffiliateID),
+		core.Int64(m.UserID),
 		core.Now(m.CreatedAt, now, create),
 		core.Time(m.UpdatedAt),
 	}
@@ -1176,6 +1177,7 @@ func (m *AffiliateReferralCode) SQLScanArgs(opts core.Opts) []interface{} {
 		(*core.Int64)(&m.ID),
 		(*core.String)(&m.Code),
 		(*core.Int64)(&m.AffiliateID),
+		(*core.Int64)(&m.UserID),
 		(*core.Time)(&m.CreatedAt),
 		(*core.Time)(&m.UpdatedAt),
 	}
@@ -1215,7 +1217,7 @@ func (_ *AffiliateReferralCodes) SQLSelect(w SQLWriter) error {
 func (m *AffiliateReferralCode) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlAffiliateReferralCode_Insert)
 	w.WriteRawString(" (")
-	w.WriteMarkers(5)
+	w.WriteMarkers(6)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), true))
 	return nil
@@ -1225,7 +1227,7 @@ func (ms AffiliateReferralCodes) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlAffiliateReferralCode_Insert)
 	w.WriteRawString(" (")
 	for i := 0; i < len(ms); i++ {
-		w.WriteMarkers(5)
+		w.WriteMarkers(6)
 		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
 		w.WriteRawString("),(")
 	}
@@ -1264,6 +1266,14 @@ func (m *AffiliateReferralCode) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(m.AffiliateID)
 	}
+	if m.UserID != 0 {
+		flag = true
+		w.WriteName("user_id")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.UserID)
+	}
 	if !m.CreatedAt.IsZero() {
 		flag = true
 		w.WriteName("created_at")
@@ -1290,7 +1300,7 @@ func (m *AffiliateReferralCode) SQLUpdate(w SQLWriter) error {
 func (m *AffiliateReferralCode) SQLUpdateAll(w SQLWriter) error {
 	w.WriteQueryString(__sqlAffiliateReferralCode_UpdateAll)
 	w.WriteRawString(" = (")
-	w.WriteMarkers(5)
+	w.WriteMarkers(6)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), false))
 	return nil
@@ -1321,6 +1331,7 @@ func (m AffiliateReferralCodeHistory) Code() core.Interface { return core.Interf
 func (m AffiliateReferralCodeHistory) AffiliateID() core.Interface {
 	return core.Interface{m["affiliate_id"]}
 }
+func (m AffiliateReferralCodeHistory) UserID() core.Interface { return core.Interface{m["user_id"]} }
 func (m AffiliateReferralCodeHistory) CreatedAt() core.Interface {
 	return core.Interface{m["created_at"]}
 }
@@ -1329,28 +1340,29 @@ func (m AffiliateReferralCodeHistory) UpdatedAt() core.Interface {
 }
 
 func (m *AffiliateReferralCodeHistory) SQLScan(opts core.Opts, row *sql.Row) error {
-	data := make([]interface{}, 5)
-	args := make([]interface{}, 5)
-	for i := 0; i < 5; i++ {
+	data := make([]interface{}, 6)
+	args := make([]interface{}, 6)
+	for i := 0; i < 6; i++ {
 		args[i] = &data[i]
 	}
 	if err := row.Scan(args...); err != nil {
 		return err
 	}
-	res := make(AffiliateReferralCodeHistory, 5)
+	res := make(AffiliateReferralCodeHistory, 6)
 	res["id"] = data[0]
 	res["code"] = data[1]
 	res["affiliate_id"] = data[2]
-	res["created_at"] = data[3]
-	res["updated_at"] = data[4]
+	res["user_id"] = data[3]
+	res["created_at"] = data[4]
+	res["updated_at"] = data[5]
 	*m = res
 	return nil
 }
 
 func (ms *AffiliateReferralCodeHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	data := make([]interface{}, 5)
-	args := make([]interface{}, 5)
-	for i := 0; i < 5; i++ {
+	data := make([]interface{}, 6)
+	args := make([]interface{}, 6)
+	for i := 0; i < 6; i++ {
 		args[i] = &data[i]
 	}
 	res := make(AffiliateReferralCodeHistories, 0, 128)
@@ -1362,8 +1374,9 @@ func (ms *AffiliateReferralCodeHistories) SQLScan(opts core.Opts, rows *sql.Rows
 		m["id"] = data[0]
 		m["code"] = data[1]
 		m["affiliate_id"] = data[2]
-		m["created_at"] = data[3]
-		m["updated_at"] = data[4]
+		m["user_id"] = data[3]
+		m["created_at"] = data[4]
+		m["updated_at"] = data[5]
 		res = append(res, m)
 	}
 	if err := rows.Err(); err != nil {

@@ -101,6 +101,7 @@ func AffiliateReferralCode(in *model.AffiliateReferralCode) *affiliate.Affiliate
 		ID:          in.ID,
 		Code:        in.Code,
 		AffiliateID: in.AffiliateID,
+		UserID:      in.UserID,
 		CreatedAt:   in.CreatedAt,
 		UpdatedAt:   in.UpdatedAt,
 	}

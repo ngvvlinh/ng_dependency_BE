@@ -876,6 +876,25 @@ func (ft *AffiliateReferralCodeFilters) ByAffiliateIDPtr(AffiliateID *int64) *sq
 	}
 }
 
+func (ft *AffiliateReferralCodeFilters) ByUserID(UserID int64) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "user_id",
+		Value:  UserID,
+		IsNil:  UserID == 0,
+	}
+}
+
+func (ft *AffiliateReferralCodeFilters) ByUserIDPtr(UserID *int64) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "user_id",
+		Value:  UserID,
+		IsNil:  UserID == nil,
+		IsZero: UserID != nil && (*UserID) == 0,
+	}
+}
+
 func (ft *AffiliateReferralCodeFilters) ByCreatedAt(CreatedAt time.Time) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
