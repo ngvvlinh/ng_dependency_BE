@@ -3,6 +3,9 @@ create type trader_type as enum('customer', 'vendor', 'carrier');
 ALTER TABLE shop_trader
     ADD COLUMN type trader_type not null;
 
+ALTER TABLE history.shop_trader
+    ADD COLUMN type trader_type;
+
 CREATE TABLE receipt (
     id INT8 PRIMARY KEY,
     shop_id INT8 NOT NULL REFERENCES shop(id),

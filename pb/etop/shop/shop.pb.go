@@ -5423,8 +5423,9 @@ type CreateCustomerRequest struct {
 	Code     string `protobuf:"bytes,5,opt,name=code" json:"code"`
 	Gender   string `protobuf:"bytes,12,opt,name=gender" json:"gender"`
 	Birthday string `protobuf:"bytes,13,opt,name=birthday" json:"birthday"`
-	Type     string `protobuf:"bytes,14,opt,name=type" json:"type"`
-	Note     string `protobuf:"bytes,2,opt,name=note" json:"note"`
+	// enum ('individual', 'organization')
+	Type string `protobuf:"bytes,14,opt,name=type" json:"type"`
+	Note string `protobuf:"bytes,2,opt,name=note" json:"note"`
 	// @required
 	Phone                string   `protobuf:"bytes,3,opt,name=phone" json:"phone"`
 	Email                string   `protobuf:"bytes,4,opt,name=email" json:"email"`
@@ -5513,11 +5514,12 @@ func (m *CreateCustomerRequest) GetEmail() string {
 }
 
 type UpdateCustomerRequest struct {
-	Id                   int64    `protobuf:"varint,5,opt,name=id" json:"id"`
-	Code                 *string  `protobuf:"bytes,6,opt,name=code" json:"code,omitempty"`
-	FullName             *string  `protobuf:"bytes,1,opt,name=full_name,json=fullName" json:"full_name,omitempty"`
-	Gender               *string  `protobuf:"bytes,12,opt,name=gender" json:"gender,omitempty"`
-	Birthday             *string  `protobuf:"bytes,13,opt,name=birthday" json:"birthday,omitempty"`
+	Id       int64   `protobuf:"varint,5,opt,name=id" json:"id"`
+	Code     *string `protobuf:"bytes,6,opt,name=code" json:"code,omitempty"`
+	FullName *string `protobuf:"bytes,1,opt,name=full_name,json=fullName" json:"full_name,omitempty"`
+	Gender   *string `protobuf:"bytes,12,opt,name=gender" json:"gender,omitempty"`
+	Birthday *string `protobuf:"bytes,13,opt,name=birthday" json:"birthday,omitempty"`
+	// enum ('individual', 'organization')
 	Type                 *string  `protobuf:"bytes,14,opt,name=type" json:"type,omitempty"`
 	Note                 *string  `protobuf:"bytes,2,opt,name=note" json:"note,omitempty"`
 	Phone                *string  `protobuf:"bytes,3,opt,name=phone" json:"phone,omitempty"`

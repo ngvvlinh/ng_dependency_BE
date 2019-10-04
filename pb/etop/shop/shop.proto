@@ -996,6 +996,7 @@ message CreateCustomerRequest {
 
     optional string birthday = 13 [(gogoproto.nullable) = false];
 
+    // enum ('individual', 'organization')
     optional string type = 14 [(gogoproto.nullable) = false];
 
     optional string note = 2 [(gogoproto.nullable) = false];
@@ -1016,6 +1017,7 @@ message UpdateCustomerRequest {
 
     optional string birthday = 13;
 
+    // enum ('individual', 'organization')
     optional string type = 14;
 
     optional string note = 2;

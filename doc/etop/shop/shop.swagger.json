@@ -6638,7 +6638,8 @@
           "type": "string"
         },
         "type": {
-          "type": "string"
+          "type": "string",
+          "title": "enum ('individual', 'organization')"
         },
         "note": {
           "type": "string"
@@ -8394,7 +8395,8 @@
           "type": "string"
         },
         "type": {
-          "type": "string"
+          "type": "string",
+          "title": "enum ('individual', 'organization')"
         },
         "note": {
           "type": "string"
