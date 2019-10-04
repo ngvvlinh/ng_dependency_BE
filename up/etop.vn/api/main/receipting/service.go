@@ -18,6 +18,7 @@ type Aggregate interface {
 
 type QueryService interface {
 	GetReceiptByID(context.Context, *shopping.IDQueryShopArg) (*Receipt, error)
+	GetReceiptByCode(ctx context.Context, code string, shopID int64) (*Receipt, error)
 	ListReceipts(context.Context, *shopping.ListQueryShopArgs) (*ReceiptsResponse, error)
 	ListReceiptsByIDs(context.Context, *shopping.IDsQueryShopArgs) (*ReceiptsResponse, error)
 	ListReceiptsByOrderIDs(context.Context, *shopping.IDsQueryShopArgs) (*ReceiptsResponse, error)
@@ -45,6 +46,7 @@ type CreateReceiptArgs struct {
 	UserID      int64
 	Code        string
 	Title       string
+	Type        string
 	Description string
 	Amount      int32
 	OrderIDs    []int64
@@ -58,6 +60,7 @@ type UpdateReceiptArgs struct {
 	TraderID    NullInt64
 	UserID      NullInt64
 	Title       NullString
+	Code        NullString
 	Description NullString
 	Amount      NullInt32
 	OrderIDs    []int64

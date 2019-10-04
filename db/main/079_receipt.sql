@@ -6,6 +6,8 @@ ALTER TABLE shop_trader
 ALTER TABLE history.shop_trader
     ADD COLUMN type trader_type;
 
+create type receipt_type as enum('receipt', 'payment');
+
 CREATE TABLE receipt (
     id INT8 PRIMARY KEY,
     shop_id INT8 NOT NULL REFERENCES shop(id),
@@ -16,11 +18,13 @@ CREATE TABLE receipt (
     description TEXT,
     amount INT4,
     status INT2,
-    receipt_lines JSONB,
+    type receipt_type NOT NULL,
+    lines JSONB,
     order_ids INT8[],
     created_at TIMESTAMP WITH TIME ZONE,
     updated_at TIMESTAMP WITH TIME ZONE,
     deleted_at TIMESTAMP WITH TIME ZONE
 );
 
-CREATE INDEX ON receipt (order_ids);
+CREATE INDEX ON receipt USING GIN(order_ids);
+CREATE UNIQUE INDEX ON receipt (shop_id, code);

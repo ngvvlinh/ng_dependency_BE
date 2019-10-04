@@ -6,6 +6,7 @@ import (
 	"strings"
 	"time"
 
+	"etop.vn/api/main/receipting"
 	ordermodelx "etop.vn/backend/com/main/ordering/modelx"
 	shipmodelx "etop.vn/backend/com/main/shipping/modelx"
 	pbcm "etop.vn/backend/pb/common"
@@ -55,6 +56,11 @@ func GetOrder(ctx context.Context, q *wrapshop.GetOrderEndpoint) error {
 	q.Result = pborder.PbOrder(query.Result.Order, nil, model.TagShop)
 	q.Result.ShopName = q.Context.Shop.Name
 	q.Result.Fulfillments = pborder.XPbFulfillments(query.Result.XFulfillments, model.TagShop)
+
+	if err := addReceivedAmountToOrders(ctx, q.Context.Shop.ID, []*pborder.Order{q.Result}); err != nil {
+		return err
+	}
+
 	return nil
 }
 
@@ -78,6 +84,11 @@ func GetOrders(ctx context.Context, q *wrapshop.GetOrdersEndpoint) error {
 		Paging: pbcm.PbPageInfo(paging, int32(query.Result.Total)),
 		Orders: pborder.PbOrdersWithFulfillments(query.Result.Orders, model.TagShop, query.Result.Shops),
 	}
+
+	if err := addReceivedAmountToOrders(ctx, q.Context.Shop.ID, q.Result.Orders); err != nil {
+		return err
+	}
+
 	return nil
 }
 
@@ -98,6 +109,11 @@ func GetOrdersByIDs(ctx context.Context, q *wrapshop.GetOrdersByIDsEndpoint) err
 	q.Result = &pborder.OrdersResponse{
 		Orders: pborder.PbOrdersWithFulfillments(query.Result.Orders, model.TagShop, query.Result.Shops),
 	}
+
+	if err := addReceivedAmountToOrders(ctx, q.Context.Shop.ID, q.Result.Orders); err != nil {
+		return err
+	}
+
 	return nil
 }
 
@@ -199,6 +215,46 @@ func ConfirmOrderAndCreateFulfillments(ctx context.Context, q *wrapshop.ConfirmO
 	}
 	q.Result = res.(*wrapshop.ConfirmOrderAndCreateFulfillmentsEndpoint).Result
 	return err
+}
+
+func addReceivedAmountToOrders(ctx context.Context, shopID int64, orders []*pborder.Order) error {
+	var orderIDs []int64
+	mOrderIDsAndReceivedAmounts := make(map[int64]int32)
+
+	for _, order := range orders {
+		mOrderIDsAndReceivedAmounts[order.Id] = 0
+		orderIDs = append(orderIDs, order.Id)
+	}
+
+	getReceiptsByOrderIDs := &receipting.ListReceiptsByOrderIDsQuery{
+		IDs:    orderIDs,
+		ShopID: shopID,
+	}
+	if err := receiptQuery.Dispatch(ctx, getReceiptsByOrderIDs); err != nil {
+		return err
+	}
+
+	for _, receipt := range getReceiptsByOrderIDs.Result.Receipts {
+		for _, receiptLine := range receipt.Lines {
+			if receiptLine.OrderID == 0 {
+				continue
+			}
+			if _, ok := mOrderIDsAndReceivedAmounts[receiptLine.OrderID]; ok {
+				switch receipt.Type {
+				case receipting.ReceiptType:
+					mOrderIDsAndReceivedAmounts[receiptLine.OrderID] += receiptLine.Amount
+				case receipting.PaymentType:
+					mOrderIDsAndReceivedAmounts[receiptLine.OrderID] -= receiptLine.Amount
+				}
+			}
+		}
+	}
+
+	for _, order := range orders {
+		order.ReceivedAmount = mOrderIDsAndReceivedAmounts[order.Id]
+	}
+
+	return nil
 }
 
 func confirmOrderAndCreateFulfillments(ctx context.Context, q *wrapshop.ConfirmOrderAndCreateFulfillmentsEndpoint) (_ *wrapshop.ConfirmOrderAndCreateFulfillmentsEndpoint, _err error) {

@@ -4,7 +4,7 @@ import (
 	"time"
 
 	"etop.vn/api/main/receipting"
-	_ "etop.vn/backend/com/main/receipting/model"
+	"etop.vn/backend/com/main/receipting/model"
 	cm "etop.vn/backend/pkg/common"
 )
 
@@ -21,4 +21,9 @@ func updateReceipt(args *receipting.UpdateReceiptArgs, out *receipting.Receipt) 
 	apply_receipting_UpdateReceiptArgs_receipting_Receipt(args, out)
 	out.Lines = args.Lines
 	out.UpdatedAt = time.Now()
+}
+
+func receiptDB(args *receipting.Receipt, out *model.Receipt) {
+	convert_receipting_Receipt_receiptingmodel_Receipt(args, out)
+	out.OrderIDs = args.GetOrderIDs()
 }

@@ -15,6 +15,7 @@ import (
 /*
 Custom conversions:
     createReceipt    // in use
+    receiptDB        // in use
     updateReceipt    // in use
 
 Ignored functions: (none)
@@ -89,9 +90,9 @@ func convert_receiptingmodel_Receipt_receipting_Receipt(arg *receiptingmodel.Rec
 	out.ShopID = arg.ShopID           // simple assign
 	out.TraderID = arg.TraderID       // simple assign
 	out.UserID = arg.UserID           // simple assign
-	out.OrderIDs = arg.OrderIDs       // simple assign
 	out.Code = arg.Code               // simple assign
 	out.Title = arg.Title             // simple assign
+	out.Type = arg.Type               // simple assign
 	out.Description = arg.Description // simple assign
 	out.Amount = arg.Amount           // simple assign
 	out.Status = arg.Status           // simple assign
@@ -116,7 +117,7 @@ func Convert_receipting_Receipt_receiptingmodel_Receipt(arg *receipting.Receipt,
 	if out == nil {
 		out = &receiptingmodel.Receipt{}
 	}
-	convert_receipting_Receipt_receiptingmodel_Receipt(arg, out)
+	receiptDB(arg, out)
 	return out
 }
 
@@ -127,10 +128,11 @@ func convert_receipting_Receipt_receiptingmodel_Receipt(arg *receipting.Receipt,
 	out.UserID = arg.UserID           // simple assign
 	out.Code = arg.Code               // simple assign
 	out.Title = arg.Title             // simple assign
+	out.Type = arg.Type               // simple assign
 	out.Description = arg.Description // simple assign
 	out.Amount = arg.Amount           // simple assign
 	out.Status = arg.Status           // simple assign
-	out.OrderIDs = arg.OrderIDs       // simple assign
+	out.OrderIDs = nil                // zero value
 	out.Lines = nil                   // types do not match
 	out.CreatedAt = arg.CreatedAt     // simple assign
 	out.UpdatedAt = arg.UpdatedAt     // simple assign
@@ -162,9 +164,9 @@ func apply_receipting_CreateReceiptArgs_receipting_Receipt(arg *receipting.Creat
 	out.ShopID = arg.ShopID           // simple assign
 	out.TraderID = arg.TraderID       // simple assign
 	out.UserID = arg.UserID           // simple assign
-	out.OrderIDs = arg.OrderIDs       // simple assign
 	out.Code = arg.Code               // simple assign
 	out.Title = arg.Title             // simple assign
+	out.Type = arg.Type               // simple assign
 	out.Description = arg.Description // simple assign
 	out.Amount = arg.Amount           // simple assign
 	out.Status = 0                    // zero value
@@ -189,9 +191,9 @@ func apply_receipting_UpdateReceiptArgs_receipting_Receipt(arg *receipting.Updat
 	out.ShopID = out.ShopID                                  // identifier
 	out.TraderID = arg.TraderID.Apply(out.TraderID)          // apply change
 	out.UserID = arg.UserID.Apply(out.UserID)                // apply change
-	out.OrderIDs = arg.OrderIDs                              // simple assign
-	out.Code = out.Code                                      // no change
+	out.Code = arg.Code.Apply(out.Code)                      // apply change
 	out.Title = arg.Title.Apply(out.Title)                   // apply change
+	out.Type = out.Type                                      // no change
 	out.Description = arg.Description.Apply(out.Description) // apply change
 	out.Amount = arg.Amount.Apply(out.Amount)                // apply change
 	out.Status = out.Status                                  // no change

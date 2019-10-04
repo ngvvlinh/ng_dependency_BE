@@ -130,6 +130,9 @@ message Order {
     optional string fulfillment_type = 72 [(gogoproto.nullable) = false];
 
     repeated int64 fulfillment_ids = 73;
+
+    // received_amount get from receipt
+    optional int32 received_amount = 75 [(gogoproto.nullable) = false];
 }
 
 message OrderLine {

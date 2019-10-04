@@ -46,6 +46,7 @@ type CreateReceiptCommand struct {
 	UserID      int64
 	Code        string
 	Title       string
+	Type        string
 	Description string
 	Amount      int32
 	OrderIDs    []int64
@@ -77,6 +78,7 @@ type UpdateReceiptCommand struct {
 	TraderID    dot.NullInt64
 	UserID      dot.NullInt64
 	Title       dot.NullString
+	Code        dot.NullString
 	Description dot.NullString
 	Amount      dot.NullInt32
 	OrderIDs    []int64
@@ -87,6 +89,18 @@ type UpdateReceiptCommand struct {
 
 func (h AggregateHandler) HandleUpdateReceipt(ctx context.Context, msg *UpdateReceiptCommand) (err error) {
 	msg.Result, err = h.inner.UpdateReceipt(msg.GetArgs(ctx))
+	return err
+}
+
+type GetReceiptByCodeQuery struct {
+	Code   string
+	ShopID int64
+
+	Result *Receipt `json:"-"`
+}
+
+func (h QueryServiceHandler) HandleGetReceiptByCode(ctx context.Context, msg *GetReceiptByCodeQuery) (err error) {
+	msg.Result, err = h.inner.GetReceiptByCode(msg.GetArgs(ctx))
 	return err
 }
 
@@ -144,6 +158,7 @@ func (h QueryServiceHandler) HandleListReceiptsByOrderIDs(ctx context.Context, m
 func (q *CreateReceiptCommand) command()      {}
 func (q *DeleteReceiptCommand) command()      {}
 func (q *UpdateReceiptCommand) command()      {}
+func (q *GetReceiptByCodeQuery) query()       {}
 func (q *GetReceiptByIDQuery) query()         {}
 func (q *ListReceiptsQuery) query()           {}
 func (q *ListReceiptsByIDsQuery) query()      {}
@@ -159,6 +174,7 @@ func (q *CreateReceiptCommand) GetArgs(ctx context.Context) (_ context.Context, 
 			UserID:      q.UserID,
 			Code:        q.Code,
 			Title:       q.Title,
+			Type:        q.Type,
 			Description: q.Description,
 			Amount:      q.Amount,
 			OrderIDs:    q.OrderIDs,
@@ -180,11 +196,18 @@ func (q *UpdateReceiptCommand) GetArgs(ctx context.Context) (_ context.Context, 
 			TraderID:    q.TraderID,
 			UserID:      q.UserID,
 			Title:       q.Title,
+			Code:        q.Code,
 			Description: q.Description,
 			Amount:      q.Amount,
 			OrderIDs:    q.OrderIDs,
 			Lines:       q.Lines,
 		}
+}
+
+func (q *GetReceiptByCodeQuery) GetArgs(ctx context.Context) (_ context.Context, code string, shopID int64) {
+	return ctx,
+		q.Code,
+		q.ShopID
 }
 
 func (q *GetReceiptByIDQuery) GetArgs(ctx context.Context) (_ context.Context, _ *shopping.IDQueryShopArg) {
@@ -250,6 +273,7 @@ func (h QueryServiceHandler) RegisterHandlers(b interface {
 	meta.Bus
 	AddHandler(handler interface{})
 }) QueryBus {
+	b.AddHandler(h.HandleGetReceiptByCode)
 	b.AddHandler(h.HandleGetReceiptByID)
 	b.AddHandler(h.HandleListReceipts)
 	b.AddHandler(h.HandleListReceiptsByIDs)

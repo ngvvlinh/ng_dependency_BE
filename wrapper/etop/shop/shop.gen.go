@@ -150,11 +150,11 @@ func NewShopServer(mux Muxer, hooks *twirp.ServerHooks) {
 	bus.Expect(&TradingGetProductsEndpoint{})
 	bus.Expect(&PaymentCheckReturnDataEndpoint{})
 	bus.Expect(&PaymentTradingOrderEndpoint{})
-	bus.Expect(&CreateOrUpdateReceiptEndpoint{})
+	bus.Expect(&CreateReceiptEndpoint{})
 	bus.Expect(&DeleteReceiptEndpoint{})
 	bus.Expect(&GetReceiptEndpoint{})
 	bus.Expect(&GetReceiptsEndpoint{})
-	bus.Expect(&GetReceivedAmountByOrderIDEndpoint{})
+	bus.Expect(&UpdateReceiptEndpoint{})
 	bus.Expect(&CreateVendorEndpoint{})
 	bus.Expect(&DeleteVendorEndpoint{})
 	bus.Expect(&GetVendorEndpoint{})
@@ -5326,17 +5326,17 @@ func (s PaymentService) PaymentTradingOrder(ctx context.Context, req *shop.Payme
 
 type ReceiptService struct{}
 
-type CreateOrUpdateReceiptEndpoint struct {
-	*shop.CreateOrUpdateReceiptRequest
+type CreateReceiptEndpoint struct {
+	*shop.CreateReceiptRequest
 	Result  *shop.Receipt
 	Context ShopClaim
 }
 
-func (s ReceiptService) CreateOrUpdateReceipt(ctx context.Context, req *shop.CreateOrUpdateReceiptRequest) (resp *shop.Receipt, err error) {
+func (s ReceiptService) CreateReceipt(ctx context.Context, req *shop.CreateReceiptRequest) (resp *shop.Receipt, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
-	const rpcName = "shop.Receipt/CreateOrUpdateReceipt"
+	const rpcName = "shop.Receipt/CreateReceipt"
 	defer func() {
 		recovered := recover()
 		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
@@ -5352,7 +5352,7 @@ func (s ReceiptService) CreateOrUpdateReceipt(ctx context.Context, req *shop.Cre
 		return nil, err
 	}
 	session = sessionQuery.Result
-	query := &CreateOrUpdateReceiptEndpoint{CreateOrUpdateReceiptRequest: req}
+	query := &CreateReceiptEndpoint{CreateReceiptRequest: req}
 	query.Context.Claim = session.Claim
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
@@ -5502,17 +5502,17 @@ func (s ReceiptService) GetReceipts(ctx context.Context, req *shop.GetReceiptsRe
 	return resp, err
 }
 
-type GetReceivedAmountByOrderIDEndpoint struct {
-	*cm.IDRequest
-	Result  *shop.GetReceivedAmountByOrderIDResponse
+type UpdateReceiptEndpoint struct {
+	*shop.UpdateReceiptRequest
+	Result  *shop.Receipt
 	Context ShopClaim
 }
 
-func (s ReceiptService) GetReceivedAmountByOrderID(ctx context.Context, req *cm.IDRequest) (resp *shop.GetReceivedAmountByOrderIDResponse, err error) {
+func (s ReceiptService) UpdateReceipt(ctx context.Context, req *shop.UpdateReceiptRequest) (resp *shop.Receipt, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
-	const rpcName = "shop.Receipt/GetReceivedAmountByOrderID"
+	const rpcName = "shop.Receipt/UpdateReceipt"
 	defer func() {
 		recovered := recover()
 		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
@@ -5528,7 +5528,7 @@ func (s ReceiptService) GetReceivedAmountByOrderID(ctx context.Context, req *cm.
 		return nil, err
 	}
 	session = sessionQuery.Result
-	query := &GetReceivedAmountByOrderIDEndpoint{IDRequest: req}
+	query := &UpdateReceiptEndpoint{UpdateReceiptRequest: req}
 	query.Context.Claim = session.Claim
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner

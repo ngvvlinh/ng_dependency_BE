@@ -60,22 +60,22 @@ func (ft *ReceiptFilters) ByShopIDPtr(ShopID *int64) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft *ReceiptFilters) ByShopTraderID(ShopTraderID int64) *sq.ColumnFilter {
+func (ft *ReceiptFilters) ByTraderID(TraderID int64) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
-		Column: "shop_trader_id",
-		Value:  ShopTraderID,
-		IsNil:  ShopTraderID == 0,
+		Column: "trader_id",
+		Value:  TraderID,
+		IsNil:  TraderID == 0,
 	}
 }
 
-func (ft *ReceiptFilters) ByShopTraderIDPtr(ShopTraderID *int64) *sq.ColumnFilterPtr {
+func (ft *ReceiptFilters) ByTraderIDPtr(TraderID *int64) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
-		Column: "shop_trader_id",
-		Value:  ShopTraderID,
-		IsNil:  ShopTraderID == nil,
-		IsZero: ShopTraderID != nil && (*ShopTraderID) == 0,
+		Column: "trader_id",
+		Value:  TraderID,
+		IsNil:  TraderID == nil,
+		IsZero: TraderID != nil && (*TraderID) == 0,
 	}
 }
 
@@ -133,6 +133,25 @@ func (ft *ReceiptFilters) ByTitlePtr(Title *string) *sq.ColumnFilterPtr {
 		Value:  Title,
 		IsNil:  Title == nil,
 		IsZero: Title != nil && (*Title) == "",
+	}
+}
+
+func (ft *ReceiptFilters) ByType(Type string) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "type",
+		Value:  Type,
+		IsNil:  Type == "",
+	}
+}
+
+func (ft *ReceiptFilters) ByTypePtr(Type *string) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "type",
+		Value:  Type,
+		IsNil:  Type == nil,
+		IsZero: Type != nil && (*Type) == "",
 	}
 }
 

@@ -15,6 +15,7 @@ type Receipt struct {
 	UserID      int64
 	Code        string
 	Title       string
+	Type        string
 	Description string
 	Amount      int32
 	Status      int32

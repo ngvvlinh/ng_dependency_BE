@@ -2672,9 +2672,9 @@
         ]
       }
     },
-    "/api/shop.Receipt/CreateOrUpdateReceipt": {
+    "/api/shop.Receipt/CreateReceipt": {
       "post": {
-        "operationId": "CreateOrUpdateReceipt",
+        "operationId": "CreateReceipt",
         "responses": {
           "200": {
             "description": "A successful response.",
@@ -2689,7 +2689,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/shopCreateOrUpdateReceiptRequest"
+              "$ref": "#/definitions/shopCreateReceiptRequest"
             }
           }
         ],
@@ -2776,14 +2776,14 @@
         ]
       }
     },
-    "/api/shop.Receipt/GetReceivedAmountByOrderID": {
+    "/api/shop.Receipt/UpdateReceipt": {
       "post": {
-        "operationId": "GetReceivedAmountByOrderID",
+        "operationId": "UpdateReceipt",
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/shopGetReceivedAmountByOrderIDResponse"
+              "$ref": "#/definitions/shopReceipt"
             }
           }
         },
@@ -2793,7 +2793,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/cmIDRequest"
+              "$ref": "#/definitions/shopUpdateReceiptRequest"
             }
           }
         ],
@@ -5229,6 +5229,11 @@
             "type": "string",
             "format": "int64"
           }
+        },
+        "received_amount": {
+          "type": "integer",
+          "format": "int32",
+          "title": "received_amount get from receipt"
         }
       }
     },
@@ -6698,39 +6703,6 @@
         }
       }
     },
-    "shopCreateOrUpdateReceiptRequest": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "string",
-          "format": "int64"
-        },
-        "shop_trader_id": {
-          "type": "string",
-          "format": "int64"
-        },
-        "user_id": {
-          "type": "string",
-          "format": "int64"
-        },
-        "title": {
-          "type": "string"
-        },
-        "description": {
-          "type": "string"
-        },
-        "amount": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "receipt_lines": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/shopReceiptLine"
-          }
-        }
-      }
-    },
     "shopCreatePSCategoryRequest": {
       "type": "object",
       "properties": {
@@ -6794,6 +6766,42 @@
     "shopCreateProductSourceRequest": {
       "type": "object",
       "title": "deprecated"
+    },
+    "shopCreateReceiptRequest": {
+      "type": "object",
+      "properties": {
+        "trader_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "user_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "title": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string",
+          "title": "enum('receipt', 'payment')"
+        },
+        "code": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "amount": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "lines": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/shopReceiptLine"
+          }
+        }
+      }
     },
     "shopCreateVariantRequest": {
       "type": "object",
@@ -7540,19 +7548,6 @@
         }
       }
     },
-    "shopGetReceivedAmountByOrderIDResponse": {
-      "type": "object",
-      "properties": {
-        "total_amount": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "received_amount": {
-          "type": "integer",
-          "format": "int32"
-        }
-      }
-    },
     "shopGetVariantsRequest": {
       "type": "object",
       "properties": {
@@ -7760,7 +7755,7 @@
           "type": "string",
           "format": "int64"
         },
-        "shop_trader_id": {
+        "trader_id": {
           "type": "string",
           "format": "int64"
         },
@@ -7774,6 +7769,9 @@
         "title": {
           "type": "string"
         },
+        "type": {
+          "type": "string"
+        },
         "description": {
           "type": "string"
         },
@@ -7781,7 +7779,7 @@
           "type": "integer",
           "format": "int32"
         },
-        "receipt_lines": {
+        "lines": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/shopReceiptLine"
@@ -8696,6 +8694,42 @@
       "required": [
         "ids"
       ]
+    },
+    "shopUpdateReceiptRequest": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "trader_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "user_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "title": {
+          "type": "string"
+        },
+        "code": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "amount": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "lines": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/shopReceiptLine"
+          }
+        }
+      }
     },
     "shopUpdateShopRequest": {
       "type": "object",

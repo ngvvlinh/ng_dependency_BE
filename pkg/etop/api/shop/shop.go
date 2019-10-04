@@ -119,11 +119,14 @@ func init() {
 	bus.AddHandler("api", GetSummarizePOS)
 }
 
-const PrefixIdemp = "IdempOrder"
+const (
+	PrefixIdemp = "IdempShop"
+)
 
 var (
 	locationQuery        location.QueryBus
 	idempgroup           *idemp.RedisGroup
+	idempgroupReceipt    *idemp.RedisGroup
 	shipnowAggr          shipnow.CommandBus
 	shipnowQuery         shipnow.QueryBus
 	identityAggr         identity.CommandBus

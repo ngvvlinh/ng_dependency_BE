@@ -383,18 +383,19 @@ func PbShopAddresses(ctx context.Context, ms []*addressing.ShopTraderAddress, lo
 
 func PbReceipt(m *receipting.Receipt) *Receipt {
 	return &Receipt{
-		Id:           m.ID,
-		ShopId:       m.ShopID,
-		ShopTraderId: m.TraderID,
-		UserId:       m.UserID,
-		Code:         m.Code,
-		Title:        m.Title,
-		Description:  m.Description,
-		Amount:       m.Amount,
-		ReceiptLines: PbReceiptLines(m.Lines),
-		Status:       pbs3.Pb(model.Status3(m.Status)),
-		CreatedAt:    pbcm.PbTime(m.CreatedAt),
-		UpdatedAt:    pbcm.PbTime(m.UpdatedAt),
+		Id:          m.ID,
+		ShopId:      m.ShopID,
+		TraderId:    m.TraderID,
+		UserId:      m.UserID,
+		Code:        m.Code,
+		Title:       m.Title,
+		Type:        m.Type,
+		Description: m.Description,
+		Amount:      m.Amount,
+		Lines:       PbReceiptLines(m.Lines),
+		Status:      pbs3.Pb(model.Status3(m.Status)),
+		CreatedAt:   pbcm.PbTime(m.CreatedAt),
+		UpdatedAt:   pbcm.PbTime(m.UpdatedAt),
 	}
 }
 

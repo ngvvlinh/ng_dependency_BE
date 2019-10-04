@@ -17,7 +17,7 @@ func sqlgenReceipt(_ *Receipt) bool { return true }
 type Receipts []*Receipt
 
 const __sqlReceipt_Table = "receipt"
-const __sqlReceipt_ListCols = "\"id\",\"shop_id\",\"shop_trader_id\",\"user_id\",\"code\",\"title\",\"description\",\"amount\",\"status\",\"order_ids\",\"receipt_lines\",\"created_at\",\"updated_at\",\"deleted_at\""
+const __sqlReceipt_ListCols = "\"id\",\"shop_id\",\"trader_id\",\"user_id\",\"code\",\"title\",\"type\",\"description\",\"amount\",\"status\",\"order_ids\",\"lines\",\"created_at\",\"updated_at\",\"deleted_at\""
 const __sqlReceipt_Insert = "INSERT INTO \"receipt\" (" + __sqlReceipt_ListCols + ") VALUES"
 const __sqlReceipt_Select = "SELECT " + __sqlReceipt_ListCols + " FROM \"receipt\""
 const __sqlReceipt_Select_history = "SELECT " + __sqlReceipt_ListCols + " FROM history.\"receipt\""
@@ -36,6 +36,7 @@ func (m *Receipt) SQLArgs(opts core.Opts, create bool) []interface{} {
 		core.Int64(m.UserID),
 		core.String(m.Code),
 		core.String(m.Title),
+		core.String(m.Type),
 		core.String(m.Description),
 		core.Int32(m.Amount),
 		core.Int32(m.Status),
@@ -55,6 +56,7 @@ func (m *Receipt) SQLScanArgs(opts core.Opts) []interface{} {
 		(*core.Int64)(&m.UserID),
 		(*core.String)(&m.Code),
 		(*core.String)(&m.Title),
+		(*core.String)(&m.Type),
 		(*core.String)(&m.Description),
 		(*core.Int32)(&m.Amount),
 		(*core.Int32)(&m.Status),
@@ -100,7 +102,7 @@ func (_ *Receipts) SQLSelect(w SQLWriter) error {
 func (m *Receipt) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlReceipt_Insert)
 	w.WriteRawString(" (")
-	w.WriteMarkers(14)
+	w.WriteMarkers(15)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), true))
 	return nil
@@ -110,7 +112,7 @@ func (ms Receipts) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlReceipt_Insert)
 	w.WriteRawString(" (")
 	for i := 0; i < len(ms); i++ {
-		w.WriteMarkers(14)
+		w.WriteMarkers(15)
 		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
 		w.WriteRawString("),(")
 	}
@@ -143,7 +145,7 @@ func (m *Receipt) SQLUpdate(w SQLWriter) error {
 	}
 	if m.TraderID != 0 {
 		flag = true
-		w.WriteName("shop_trader_id")
+		w.WriteName("trader_id")
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
@@ -172,6 +174,14 @@ func (m *Receipt) SQLUpdate(w SQLWriter) error {
 		w.WriteMarker()
 		w.WriteByte(',')
 		w.WriteArg(m.Title)
+	}
+	if m.Type != "" {
+		flag = true
+		w.WriteName("type")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.Type)
 	}
 	if m.Description != "" {
 		flag = true
@@ -207,7 +217,7 @@ func (m *Receipt) SQLUpdate(w SQLWriter) error {
 	}
 	if m.Lines != nil {
 		flag = true
-		w.WriteName("receipt_lines")
+		w.WriteName("lines")
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
@@ -247,7 +257,7 @@ func (m *Receipt) SQLUpdate(w SQLWriter) error {
 func (m *Receipt) SQLUpdateAll(w SQLWriter) error {
 	w.WriteQueryString(__sqlReceipt_UpdateAll)
 	w.WriteRawString(" = (")
-	w.WriteMarkers(14)
+	w.WriteMarkers(15)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), false))
 	return nil
@@ -269,53 +279,55 @@ func (m ReceiptHistories) SQLSelect(w SQLWriter) error {
 	return nil
 }
 
-func (m ReceiptHistory) ID() core.Interface           { return core.Interface{m["id"]} }
-func (m ReceiptHistory) ShopID() core.Interface       { return core.Interface{m["shop_id"]} }
-func (m ReceiptHistory) ShopTraderID() core.Interface { return core.Interface{m["shop_trader_id"]} }
-func (m ReceiptHistory) UserID() core.Interface       { return core.Interface{m["user_id"]} }
-func (m ReceiptHistory) Code() core.Interface         { return core.Interface{m["code"]} }
-func (m ReceiptHistory) Title() core.Interface        { return core.Interface{m["title"]} }
-func (m ReceiptHistory) Description() core.Interface  { return core.Interface{m["description"]} }
-func (m ReceiptHistory) Amount() core.Interface       { return core.Interface{m["amount"]} }
-func (m ReceiptHistory) Status() core.Interface       { return core.Interface{m["status"]} }
-func (m ReceiptHistory) OrderIDs() core.Interface     { return core.Interface{m["order_ids"]} }
-func (m ReceiptHistory) ReceiptLines() core.Interface { return core.Interface{m["receipt_lines"]} }
-func (m ReceiptHistory) CreatedAt() core.Interface    { return core.Interface{m["created_at"]} }
-func (m ReceiptHistory) UpdatedAt() core.Interface    { return core.Interface{m["updated_at"]} }
-func (m ReceiptHistory) DeletedAt() core.Interface    { return core.Interface{m["deleted_at"]} }
+func (m ReceiptHistory) ID() core.Interface          { return core.Interface{m["id"]} }
+func (m ReceiptHistory) ShopID() core.Interface      { return core.Interface{m["shop_id"]} }
+func (m ReceiptHistory) TraderID() core.Interface    { return core.Interface{m["trader_id"]} }
+func (m ReceiptHistory) UserID() core.Interface      { return core.Interface{m["user_id"]} }
+func (m ReceiptHistory) Code() core.Interface        { return core.Interface{m["code"]} }
+func (m ReceiptHistory) Title() core.Interface       { return core.Interface{m["title"]} }
+func (m ReceiptHistory) Type() core.Interface        { return core.Interface{m["type"]} }
+func (m ReceiptHistory) Description() core.Interface { return core.Interface{m["description"]} }
+func (m ReceiptHistory) Amount() core.Interface      { return core.Interface{m["amount"]} }
+func (m ReceiptHistory) Status() core.Interface      { return core.Interface{m["status"]} }
+func (m ReceiptHistory) OrderIDs() core.Interface    { return core.Interface{m["order_ids"]} }
+func (m ReceiptHistory) Lines() core.Interface       { return core.Interface{m["lines"]} }
+func (m ReceiptHistory) CreatedAt() core.Interface   { return core.Interface{m["created_at"]} }
+func (m ReceiptHistory) UpdatedAt() core.Interface   { return core.Interface{m["updated_at"]} }
+func (m ReceiptHistory) DeletedAt() core.Interface   { return core.Interface{m["deleted_at"]} }
 
 func (m *ReceiptHistory) SQLScan(opts core.Opts, row *sql.Row) error {
-	data := make([]interface{}, 14)
-	args := make([]interface{}, 14)
-	for i := 0; i < 14; i++ {
+	data := make([]interface{}, 15)
+	args := make([]interface{}, 15)
+	for i := 0; i < 15; i++ {
 		args[i] = &data[i]
 	}
 	if err := row.Scan(args...); err != nil {
 		return err
 	}
-	res := make(ReceiptHistory, 14)
+	res := make(ReceiptHistory, 15)
 	res["id"] = data[0]
 	res["shop_id"] = data[1]
-	res["shop_trader_id"] = data[2]
+	res["trader_id"] = data[2]
 	res["user_id"] = data[3]
 	res["code"] = data[4]
 	res["title"] = data[5]
-	res["description"] = data[6]
-	res["amount"] = data[7]
-	res["status"] = data[8]
-	res["order_ids"] = data[9]
-	res["receipt_lines"] = data[10]
-	res["created_at"] = data[11]
-	res["updated_at"] = data[12]
-	res["deleted_at"] = data[13]
+	res["type"] = data[6]
+	res["description"] = data[7]
+	res["amount"] = data[8]
+	res["status"] = data[9]
+	res["order_ids"] = data[10]
+	res["lines"] = data[11]
+	res["created_at"] = data[12]
+	res["updated_at"] = data[13]
+	res["deleted_at"] = data[14]
 	*m = res
 	return nil
 }
 
 func (ms *ReceiptHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	data := make([]interface{}, 14)
-	args := make([]interface{}, 14)
-	for i := 0; i < 14; i++ {
+	data := make([]interface{}, 15)
+	args := make([]interface{}, 15)
+	for i := 0; i < 15; i++ {
 		args[i] = &data[i]
 	}
 	res := make(ReceiptHistories, 0, 128)
@@ -326,18 +338,19 @@ func (ms *ReceiptHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
 		m := make(ReceiptHistory)
 		m["id"] = data[0]
 		m["shop_id"] = data[1]
-		m["shop_trader_id"] = data[2]
+		m["trader_id"] = data[2]
 		m["user_id"] = data[3]
 		m["code"] = data[4]
 		m["title"] = data[5]
-		m["description"] = data[6]
-		m["amount"] = data[7]
-		m["status"] = data[8]
-		m["order_ids"] = data[9]
-		m["receipt_lines"] = data[10]
-		m["created_at"] = data[11]
-		m["updated_at"] = data[12]
-		m["deleted_at"] = data[13]
+		m["type"] = data[6]
+		m["description"] = data[7]
+		m["amount"] = data[8]
+		m["status"] = data[9]
+		m["order_ids"] = data[10]
+		m["lines"] = data[11]
+		m["created_at"] = data[12]
+		m["updated_at"] = data[13]
+		m["deleted_at"] = data[14]
 		res = append(res, m)
 	}
 	if err := rows.Err(); err != nil {

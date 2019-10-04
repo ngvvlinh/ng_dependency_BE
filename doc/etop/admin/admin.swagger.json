@@ -3135,6 +3135,11 @@
             "type": "string",
             "format": "int64"
           }
+        },
+        "received_amount": {
+          "type": "integer",
+          "format": "int32",
+          "title": "received_amount get from receipt"
         }
       }
     },

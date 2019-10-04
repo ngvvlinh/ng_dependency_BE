@@ -75,3 +75,8 @@ func (q *ReceiptQuery) ListReceiptsByOrderIDs(
 	}
 	return &receipting.ReceiptsResponse{Receipts: receipts}, nil
 }
+
+func (q *ReceiptQuery) GetReceiptByCode(ctx context.Context, code string, shopID int64) (*receipting.Receipt, error) {
+	receipt, err := q.store(ctx).ShopID(shopID).Code(code).GetReceipt()
+	return receipt, err
+}
