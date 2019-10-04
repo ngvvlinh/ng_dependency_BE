@@ -125,7 +125,7 @@ done
 
 # Generate go-bindata
 cd ${BACKEND}/doc
-go-bindata -pkg doc -o bindata.gen.go ./...
+go-bindata -pkg doc -o bindata.gen.go -ignore '\.md$' ./...
 
 # Generate wrapper files
 WRAPPER_ARGS=
