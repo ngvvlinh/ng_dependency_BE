@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-COMMIT=$(git log -1 --pretty='%h %B')
+COMMIT=$(git log -5 --pretty='%h %B' | grep ':' | grep -E '^([0-9a-f]{6,10} )|(Change-Id:)')
 COMMIT=$(echo "${COMMIT}" | tr '\n' '⮐' | sed 's/\s/·/g')
 function build() {
     FILE=$1
