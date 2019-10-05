@@ -999,7 +999,7 @@ func sqlgenShop(_ *Shop) bool { return true }
 type Shops []*Shop
 
 const __sqlShop_Table = "shop"
-const __sqlShop_ListCols = "\"id\",\"name\",\"owner_id\",\"is_test\",\"address_id\",\"ship_to_address_id\",\"ship_from_address_id\",\"phone\",\"bank_account\",\"website_url\",\"image_url\",\"email\",\"code\",\"auto_create_ffm\",\"order_source_id\",\"status\",\"created_at\",\"updated_at\",\"deleted_at\",\"recognized_hosts\",\"ghn_note_code\",\"try_on\",\"company_info\",\"money_transaction_rrule\",\"survey_info\",\"shipping_service_select_strategy\""
+const __sqlShop_ListCols = "\"id\",\"name\",\"owner_id\",\"is_test\",\"address_id\",\"ship_to_address_id\",\"ship_from_address_id\",\"phone\",\"bank_account\",\"website_url\",\"image_url\",\"email\",\"code\",\"auto_create_ffm\",\"order_source_id\",\"status\",\"created_at\",\"updated_at\",\"deleted_at\",\"recognized_hosts\",\"ghn_note_code\",\"try_on\",\"company_info\",\"money_transaction_rrule\",\"survey_info\",\"shipping_service_select_strategy\",\"inventory_overstock\""
 const __sqlShop_Insert = "INSERT INTO \"shop\" (" + __sqlShop_ListCols + ") VALUES"
 const __sqlShop_Select = "SELECT " + __sqlShop_ListCols + " FROM \"shop\""
 const __sqlShop_Select_history = "SELECT " + __sqlShop_ListCols + " FROM history.\"shop\""
@@ -1038,6 +1038,7 @@ func (m *Shop) SQLArgs(opts core.Opts, create bool) []interface{} {
 		core.String(m.MoneyTransactionRRule),
 		core.JSON{m.SurveyInfo},
 		core.JSON{m.ShippingServiceSelectStrategy},
+		m.InventoryOverstock,
 	}
 }
 
@@ -1069,6 +1070,7 @@ func (m *Shop) SQLScanArgs(opts core.Opts) []interface{} {
 		(*core.String)(&m.MoneyTransactionRRule),
 		core.JSON{&m.SurveyInfo},
 		core.JSON{&m.ShippingServiceSelectStrategy},
+		&m.InventoryOverstock,
 	}
 }
 
@@ -1106,7 +1108,7 @@ func (_ *Shops) SQLSelect(w SQLWriter) error {
 func (m *Shop) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlShop_Insert)
 	w.WriteRawString(" (")
-	w.WriteMarkers(26)
+	w.WriteMarkers(27)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), true))
 	return nil
@@ -1116,7 +1118,7 @@ func (ms Shops) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlShop_Insert)
 	w.WriteRawString(" (")
 	for i := 0; i < len(ms); i++ {
-		w.WriteMarkers(26)
+		w.WriteMarkers(27)
 		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
 		w.WriteRawString("),(")
 	}
@@ -1339,6 +1341,14 @@ func (m *Shop) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(core.JSON{m.ShippingServiceSelectStrategy})
 	}
+	if m.InventoryOverstock != nil {
+		flag = true
+		w.WriteName("inventory_overstock")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(*m.InventoryOverstock)
+	}
 	if !flag {
 		return core.ErrNoColumn
 	}
@@ -1349,7 +1359,7 @@ func (m *Shop) SQLUpdate(w SQLWriter) error {
 func (m *Shop) SQLUpdateAll(w SQLWriter) error {
 	w.WriteQueryString(__sqlShop_UpdateAll)
 	w.WriteRawString(" = (")
-	w.WriteMarkers(26)
+	w.WriteMarkers(27)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), false))
 	return nil
@@ -1403,17 +1413,20 @@ func (m ShopHistory) SurveyInfo() core.Interface { return core.Interface{m["surv
 func (m ShopHistory) ShippingServiceSelectStrategy() core.Interface {
 	return core.Interface{m["shipping_service_select_strategy"]}
 }
+func (m ShopHistory) InventoryOverstock() core.Interface {
+	return core.Interface{m["inventory_overstock"]}
+}
 
 func (m *ShopHistory) SQLScan(opts core.Opts, row *sql.Row) error {
-	data := make([]interface{}, 26)
-	args := make([]interface{}, 26)
-	for i := 0; i < 26; i++ {
+	data := make([]interface{}, 27)
+	args := make([]interface{}, 27)
+	for i := 0; i < 27; i++ {
 		args[i] = &data[i]
 	}
 	if err := row.Scan(args...); err != nil {
 		return err
 	}
-	res := make(ShopHistory, 26)
+	res := make(ShopHistory, 27)
 	res["id"] = data[0]
 	res["name"] = data[1]
 	res["owner_id"] = data[2]
@@ -1440,14 +1453,15 @@ func (m *ShopHistory) SQLScan(opts core.Opts, row *sql.Row) error {
 	res["money_transaction_rrule"] = data[23]
 	res["survey_info"] = data[24]
 	res["shipping_service_select_strategy"] = data[25]
+	res["inventory_overstock"] = data[26]
 	*m = res
 	return nil
 }
 
 func (ms *ShopHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	data := make([]interface{}, 26)
-	args := make([]interface{}, 26)
-	for i := 0; i < 26; i++ {
+	data := make([]interface{}, 27)
+	args := make([]interface{}, 27)
+	for i := 0; i < 27; i++ {
 		args[i] = &data[i]
 	}
 	res := make(ShopHistories, 0, 128)
@@ -1482,6 +1496,7 @@ func (ms *ShopHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
 		m["money_transaction_rrule"] = data[23]
 		m["survey_info"] = data[24]
 		m["shipping_service_select_strategy"] = data[25]
+		m["inventory_overstock"] = data[26]
 		res = append(res, m)
 	}
 	if err := rows.Err(); err != nil {

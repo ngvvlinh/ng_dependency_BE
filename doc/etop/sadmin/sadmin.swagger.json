@@ -539,6 +539,10 @@
             "type": "string"
           }
         },
+        "inventory_overstock": {
+          "type": "boolean",
+          "format": "boolean"
+        },
         "id": {
           "type": "string",
           "format": "int64"

@@ -160,3 +160,8 @@ type OrderPaymentSuccessEvent struct {
 	meta.EventMeta
 	OrderID int64
 }
+
+type OrderCreatedEvent struct {
+	ShopID  int64
+	OrderID int64
+}

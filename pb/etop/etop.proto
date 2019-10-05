@@ -229,7 +229,7 @@ message PublicAccountsResponse {
 
 message Shop {
     repeated string exported_fields = 100;
-
+    optional bool inventory_overstock = 30 [(gogoproto.nullable)=false];
     optional int64  id   = 1 [(gogoproto.nullable) = false];
     optional string name = 2 [(gogoproto.nullable) = false];
     optional status3.Status status = 3 [(gogoproto.nullable) = false];

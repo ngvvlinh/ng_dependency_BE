@@ -5,8 +5,6 @@ import (
 	"strconv"
 	"time"
 
-	"etop.vn/capi"
-
 	"github.com/asaskevich/govalidator"
 
 	haravanidentity "etop.vn/api/external/haravan/identity"
@@ -15,9 +13,10 @@ import (
 	"etop.vn/api/main/address"
 	"etop.vn/api/main/catalog"
 	"etop.vn/api/main/identity"
+	"etop.vn/api/main/inventory"
 	"etop.vn/api/main/location"
 	"etop.vn/api/main/ordering"
-	receipting "etop.vn/api/main/receipting"
+	"etop.vn/api/main/receipting"
 	"etop.vn/api/main/shipnow"
 	carriertypes "etop.vn/api/main/shipnow/carrier/types"
 	"etop.vn/api/main/shipping/types"
@@ -46,6 +45,7 @@ import (
 	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/backend/pkg/etop/sqlstore"
 	wrapshop "etop.vn/backend/wrapper/etop/shop"
+	"etop.vn/capi"
 	. "etop.vn/capi/dot"
 	"etop.vn/common/l"
 )
@@ -56,6 +56,19 @@ var (
 
 func init() {
 	bus.AddHandler("api", VersionInfo)
+
+	bus.AddHandler("api", CreateInventoryVoucher)
+	bus.AddHandler("api", UpdateInventoryVoucher)
+	bus.AddHandler("api", AdjustInventoryQuantity)
+	bus.AddHandler("api", ConfirmInventoryVoucher)
+	bus.AddHandler("api", CancelInventoryVoucher)
+	bus.AddHandler("api", GetInventory)
+	bus.AddHandler("api", GetInventories)
+	bus.AddHandler("api", GetInventoryByVariantIDs)
+	bus.AddHandler("api", GetInventoryVoucher)
+	bus.AddHandler("api", GetInventoryVouchers)
+	bus.AddHandler("api", GetInventoryVoucherByIDs)
+
 	bus.AddHandler("api", RemoveVariants)
 	bus.AddHandler("api", UpdateVariant)
 	bus.AddHandler("api", UpdateVariantAttributes)
@@ -169,6 +182,8 @@ var (
 	eventBus             capi.EventBus
 	receiptAggr          receipting.CommandBus
 	receiptQuery         receipting.QueryBus
+	inventoryAggregate   inventory.CommandBus
+	inventoryQuery       inventory.QueryBus
 )
 
 func Init(
@@ -200,6 +215,9 @@ func Init(
 	receiptQS receipting.QueryBus,
 	sd cmservice.Shutdowner,
 	rd redis.Store,
+	inventoryA inventory.CommandBus,
+	inventoryQ inventory.QueryBus,
+
 	summary summary.QueryBus,
 ) {
 	idempgroup = idemp.NewRedisGroup(rd, PrefixIdemp, 5*60)
@@ -231,12 +249,236 @@ func Init(
 	eventBus = eventB
 	summaryQuery = summary
 	sd.Register(idempgroup.Shutdown)
+	inventoryAggregate = inventoryA
+	inventoryQuery = inventoryQ
 }
 
 func VersionInfo(ctx context.Context, q *wrapshop.VersionInfoEndpoint) error {
 	q.Result = &pbcm.VersionInfoResponse{
 		Service: "etop.Shop",
 		Version: "0.1",
+	}
+	return nil
+}
+
+func CreateInventoryVoucher(ctx context.Context, q *wrapshop.CreateInventoryVoucherEndpoint) error {
+	shopID := q.Context.Shop.ID
+	userID := q.Context.UserID
+	inventoryOverstock := q.Context.Shop.InventoryOverstock
+	var items []*inventory.InventoryVoucherItem
+	for _, value := range q.Lines {
+		items = append(items, &inventory.InventoryVoucherItem{
+			VariantID: value.VariantId,
+			Price:     value.Price,
+			Quantity:  value.Quantity,
+		})
+	}
+	cmd := &inventory.CreateInventoryVoucherCommand{
+		Title:       q.Title,
+		ShopID:      shopID,
+		Overstock:   *inventoryOverstock,
+		TotalAmount: q.TotalAmount,
+		CreatedBy:   userID,
+		TraderID:    q.TraderId,
+		Type:        q.Type,
+		Note:        q.Note,
+		Lines:       items,
+	}
+	if err := inventoryAggregate.Dispatch(ctx, cmd); err != nil {
+		return err
+	}
+	q.Result = &pbshop.CreateInventoryVoucherResponse{
+		Inventory: PbShopInventoryVoucher(cmd.Result),
+	}
+	return nil
+}
+
+func ConfirmInventoryVoucher(ctx context.Context, q *wrapshop.ConfirmInventoryVoucherEndpoint) error {
+	shopID := q.Context.Shop.ID
+	userID := q.Context.UserID
+
+	cmd := &inventory.ConfirmInventoryVoucherCommand{
+		ShopID:    shopID,
+		ID:        q.Id,
+		UpdatedBy: userID,
+	}
+	if err := inventoryAggregate.Dispatch(ctx, cmd); err != nil {
+		return err
+	}
+	q.Result = &pbshop.ConfirmInventoryVoucherResponse{
+		Inventory: PbShopInventoryVoucher(cmd.Result),
+	}
+	return nil
+}
+
+func CancelInventoryVoucher(ctx context.Context, q *wrapshop.CancelInventoryVoucherEndpoint) error {
+	shopID := q.Context.Shop.ID
+	userID := q.Context.UserID
+
+	cmd := &inventory.CancelInventoryVoucherCommand{
+		ShopID:    shopID,
+		ID:        q.Id,
+		UpdatedBy: userID,
+		Reason:    q.Reason,
+	}
+	if err := inventoryAggregate.Dispatch(ctx, cmd); err != nil {
+		return err
+	}
+	q.Result = &pbshop.CancelInventoryVoucherResponse{
+		Inventory: PbShopInventoryVoucher(cmd.Result),
+	}
+	return nil
+}
+
+func UpdateInventoryVoucher(ctx context.Context, q *wrapshop.UpdateInventoryVoucherEndpoint) error {
+	shopID := q.Context.Shop.ID
+	userID := q.Context.UserID
+	var items []*inventory.InventoryVoucherItem
+	for _, value := range q.Lines {
+		items = append(items, &inventory.InventoryVoucherItem{
+			VariantID: value.VariantId,
+			Price:     value.Price,
+			Quantity:  value.Quantity,
+		})
+	}
+	cmd := &inventory.UpdateInventoryVoucherCommand{
+		Title:       q.Title,
+		ID:          q.Id,
+		ShopID:      shopID,
+		TotalAmount: q.TotalAmount,
+		UpdatedBy:   userID,
+		TraderID:    q.TraderId,
+		Note:        q.Note,
+		Lines:       items,
+	}
+	if err := inventoryAggregate.Dispatch(ctx, cmd); err != nil {
+		return err
+	}
+	q.Result = &pbshop.UpdateInventoryVoucherResponse{
+		Inventory: PbShopInventoryVoucher(cmd.Result),
+	}
+	return nil
+}
+
+func AdjustInventoryQuantity(ctx context.Context, q *wrapshop.AdjustInventoryQuantityEndpoint) error {
+	shopID := q.Context.Shop.ID
+	userID := q.Context.UserID
+	inventoryOverstock := q.Context.Shop.InventoryOverstock
+	var items []*inventory.InventoryVariant
+	for _, value := range q.Inventories {
+		items = append(items, &inventory.InventoryVariant{
+			ShopID:          shopID,
+			VariantID:       value.VariantId,
+			QuantityOnHand:  value.QuantityOnHand,
+			QuantitySummary: value.Quantity,
+			QuantityPicked:  value.QuantityPicked,
+		})
+	}
+	cmd := &inventory.AdjustInventoryQuantityCommand{
+		Overstock: cm.BoolDefault(inventoryOverstock, false),
+		ShopID:    shopID,
+		Lines:     items,
+		UserID:    userID,
+		Note:      q.Note,
+	}
+	if err := inventoryAggregate.Dispatch(ctx, cmd); err != nil {
+		return err
+	}
+	q.Result = &pbshop.AdjustInventoryQuantityResponse{
+		Inventories:       PbInventories(cmd.Result.Inventory),
+		InventoryVouchers: PbShopInventoryVouchers(cmd.Result.InventoryVouchers),
+	}
+	return nil
+}
+
+func GetInventories(ctx context.Context, q *wrapshop.GetInventoriesEndpoint) error {
+	shopID := q.Context.Shop.ID
+	query := &inventory.GetInventoriesQuery{
+		ShopID: shopID,
+		Paging: &meta.Paging{
+			Offset: q.Paging.Offset,
+			Limit:  q.Paging.Limit,
+		},
+	}
+	if err := inventoryQuery.Dispatch(ctx, query); err != nil {
+		return err
+	}
+	q.Result = &pbshop.GetInventoriesResponse{
+		Inventories: PbInventories(query.Result.Inventories),
+	}
+	return nil
+}
+
+func GetInventory(ctx context.Context, q *wrapshop.GetInventoryEndpoint) error {
+	shopID := q.Context.Shop.ID
+	query := &inventory.GetInventoryQuery{
+		ShopID:    shopID,
+		VariantID: q.VariantId,
+	}
+	if err := inventoryQuery.Dispatch(ctx, query); err != nil {
+		return err
+	}
+	q.Result = PbInventory(query.Result)
+	return nil
+}
+
+func GetInventoryByVariantIDs(ctx context.Context, q *wrapshop.GetInventoriesByVariantIDsEndpoint) error {
+	shopID := q.Context.Shop.ID
+	query := &inventory.GetInventoriesByVariantIDsQuery{
+		ShopID:     shopID,
+		VariantIDs: q.VariantIds,
+	}
+	if err := inventoryQuery.Dispatch(ctx, query); err != nil {
+		return err
+	}
+	q.Result = &pbshop.GetInventoriesResponse{
+		Inventories: PbInventories(query.Result.Inventories),
+	}
+	return nil
+}
+
+func GetInventoryVoucher(ctx context.Context, q *wrapshop.GetInventoryVoucherEndpoint) error {
+	shopID := q.Context.Shop.ID
+	query := &inventory.GetInventoryVoucherQuery{
+		ShopID: shopID,
+		ID:     q.Id,
+	}
+	if err := inventoryQuery.Dispatch(ctx, query); err != nil {
+		return err
+	}
+	q.Result = PbShopInventoryVoucher(query.Result)
+	return nil
+}
+
+func GetInventoryVouchers(ctx context.Context, q *wrapshop.GetInventoryVouchersEndpoint) error {
+	shopID := q.Context.Shop.ID
+	query := &inventory.GetInventoryVouchersQuery{
+		ShopID: shopID,
+		Paging: &meta.Paging{
+			Offset: q.Paging.Offset,
+			Limit:  q.Paging.Limit,
+		},
+	}
+	if err := inventoryQuery.Dispatch(ctx, query); err != nil {
+		return err
+	}
+	q.Result = &pbshop.GetInventoryVouchersResponse{
+		InventoryVouchers: PbShopInventoryVouchers(query.Result.InventoryVoucher),
+	}
+	return nil
+}
+
+func GetInventoryVoucherByIDs(ctx context.Context, q *wrapshop.GetInventoryVouchersByIDsEndpoint) error {
+	shopID := q.Context.Shop.ID
+	query := &inventory.GetInventoryVouchersByIDsQuery{
+		ShopID: shopID,
+		IDs:    q.Ids,
+	}
+	if err := inventoryQuery.Dispatch(ctx, query); err != nil {
+		return err
+	}
+	q.Result = &pbshop.GetInventoryVouchersResponse{
+		InventoryVouchers: PbShopInventoryVouchers(query.Result.InventoryVoucher),
 	}
 	return nil
 }

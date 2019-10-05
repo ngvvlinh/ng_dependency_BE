@@ -318,6 +318,7 @@ func PbShop(m *model.Shop) *Shop {
 func PbShopExtended(m *model.ShopExtended) *Shop {
 	return &Shop{
 		Id:                            m.ID,
+		InventoryOverstock:            *m.InventoryOverstock,
 		Name:                          m.Name,
 		Status:                        status3.Pb(m.Status),
 		Address:                       PbAddress(m.Address),

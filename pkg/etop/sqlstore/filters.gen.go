@@ -1167,6 +1167,16 @@ func (ft *ShopFilters) ByMoneyTransactionRRulePtr(MoneyTransactionRRule *string)
 	}
 }
 
+func (ft *ShopFilters) ByInventoryOverstockPtr(InventoryOverstock *bool) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "inventory_overstock",
+		Value:  InventoryOverstock,
+		IsNil:  InventoryOverstock == nil,
+		IsZero: InventoryOverstock != nil && bool(!(*InventoryOverstock)),
+	}
+}
+
 type ShopDeleteFilters struct{ prefix string }
 
 func NewShopDeleteFilters(prefix string) ShopDeleteFilters {

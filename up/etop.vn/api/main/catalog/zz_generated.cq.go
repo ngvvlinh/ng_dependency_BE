@@ -535,6 +535,18 @@ func (h QueryServiceHandler) HandleListShopVariantsWithProductByIDs(ctx context.
 	return err
 }
 
+type ValidateVariantIDsQuery struct {
+	ShopId         int64
+	ShopVariantIds []int64
+
+	Result struct {
+	} `json:"-"`
+}
+
+func (h QueryServiceHandler) HandleValidateVariantIDs(ctx context.Context, msg *ValidateVariantIDsQuery) (err error) {
+	return h.inner.ValidateVariantIDs(msg.GetArgs(ctx))
+}
+
 // implement interfaces
 
 func (q *AddShopProductCollectionCommand) command()      {}
@@ -573,6 +585,7 @@ func (q *ListShopProductsWithVariantsByIDsQuery) query() {}
 func (q *ListShopVariantsQuery) query()                  {}
 func (q *ListShopVariantsByIDsQuery) query()             {}
 func (q *ListShopVariantsWithProductByIDsQuery) query()  {}
+func (q *ValidateVariantIDsQuery) query()                {}
 
 // implement conversion
 
@@ -927,6 +940,12 @@ func (q *ListShopVariantsWithProductByIDsQuery) GetArgs(ctx context.Context) (_ 
 		}
 }
 
+func (q *ValidateVariantIDsQuery) GetArgs(ctx context.Context) (_ context.Context, shopId int64, shopVariantIds []int64) {
+	return ctx,
+		q.ShopId,
+		q.ShopVariantIds
+}
+
 // implement dispatching
 
 type AggregateHandler struct {
@@ -990,5 +1009,6 @@ func (h QueryServiceHandler) RegisterHandlers(b interface {
 	b.AddHandler(h.HandleListShopVariants)
 	b.AddHandler(h.HandleListShopVariantsByIDs)
 	b.AddHandler(h.HandleListShopVariantsWithProductByIDs)
+	b.AddHandler(h.HandleValidateVariantIDs)
 	return QueryBus{b}
 }

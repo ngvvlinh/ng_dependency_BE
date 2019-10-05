@@ -76,6 +76,7 @@ type QueryService interface {
 	ListShopVariants(context.Context, *shopping.ListQueryShopArgs) (*ShopVariantsResponse, error)
 	ListShopVariantsByIDs(context.Context, *shopping.IDsQueryShopArgs) (*ShopVariantsResponse, error)
 	ListShopVariantsWithProductByIDs(context.Context, *shopping.IDsQueryShopArgs) (*ShopVariantsWithProductResponse, error)
+	ValidateVariantIDs(ctx context.Context, shopId int64, shopVariantIds []int64) error
 
 	//--Category --//
 	GetShopCategory(context.Context, *GetShopCategoryArgs) (*ShopCategory, error)

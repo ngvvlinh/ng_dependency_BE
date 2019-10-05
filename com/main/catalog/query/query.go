@@ -262,6 +262,17 @@ func (s *QueryService) ListShopCollections(
 	}, nil
 }
 
+func (s *QueryService) ValidateVariantIDs(ctx context.Context, shopId int64, shopVariantIds []int64) error {
+	dbResult, err := s.shopVariant(ctx).IDs(shopVariantIds...).ShopID(shopId).ListShopVariantsDB()
+	if err != nil {
+		return err
+	}
+	if len(dbResult) != len(shopVariantIds) {
+		return cm.Error(cm.InvalidArgument, "Vui lòng kiểm tra lại thông tin, variant_id sai", nil)
+	}
+	return nil
+}
+
 func (s *QueryService) ListShopCollectionsByProductID(
 	ctx context.Context, args *catalog.ListShopCollectionsByProductIDArgs,
 ) ([]*catalog.ShopCollection, error) {

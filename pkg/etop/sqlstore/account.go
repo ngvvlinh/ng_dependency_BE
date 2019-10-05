@@ -162,13 +162,19 @@ func UpdateShop(ctx context.Context, cmd *model.UpdateShopCommand) error {
 			ShouldUpdate(shop); err != nil {
 			return err
 		}
+		updateMapValue := make(map[string]interface{})
+		if shop.InventoryOverstock != nil {
+			updateMapValue["inventory_overstock"] = shop.InventoryOverstock
+		}
 		if cmd.AutoCreateFFM != nil {
-			if err := x.Table("shop").Where("id= ?", shop.ID).ShouldUpdateMap(map[string]interface{}{
-				"auto_create_ffm": cmd.AutoCreateFFM,
-			}); err != nil {
+			updateMapValue["auto_create_ffm"] = cmd.AutoCreateFFM
+		}
+		if len(updateMapValue) != 0 {
+			if err := x.Table("shop").Where("id= ?", shop.ID).ShouldUpdateMap(updateMapValue); err != nil {
 				return err
 			}
 		}
+
 		cmd.Result = new(model.ShopExtended)
 		if has, err := x.
 			Table("shop").

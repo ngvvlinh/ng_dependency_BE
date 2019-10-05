@@ -40,6 +40,17 @@ type Muxer interface {
 
 func NewShopServer(mux Muxer, hooks *twirp.ServerHooks) {
 	bus.Expect(&VersionInfoEndpoint{})
+	bus.Expect(&AdjustInventoryQuantityEndpoint{})
+	bus.Expect(&CancelInventoryVoucherEndpoint{})
+	bus.Expect(&ConfirmInventoryVoucherEndpoint{})
+	bus.Expect(&CreateInventoryVoucherEndpoint{})
+	bus.Expect(&GetInventoriesEndpoint{})
+	bus.Expect(&GetInventoriesByVariantIDsEndpoint{})
+	bus.Expect(&GetInventoryEndpoint{})
+	bus.Expect(&GetInventoryVoucherEndpoint{})
+	bus.Expect(&GetInventoryVouchersEndpoint{})
+	bus.Expect(&GetInventoryVouchersByIDsEndpoint{})
+	bus.Expect(&UpdateInventoryVoucherEndpoint{})
 	bus.Expect(&CreateExternalAccountAhamoveEndpoint{})
 	bus.Expect(&DeleteShopEndpoint{})
 	bus.Expect(&GetBalanceShopEndpoint{})
@@ -182,6 +193,7 @@ func NewShopServer(mux Muxer, hooks *twirp.ServerHooks) {
 	bus.Expect(&GetCarriersByIDsEndpoint{})
 	bus.Expect(&UpdateCarrierEndpoint{})
 	mux.Handle(shop.MiscServicePathPrefix, shop.NewMiscServiceServer(MiscService{}, hooks))
+	mux.Handle(shop.InventoryServicePathPrefix, shop.NewInventoryServiceServer(InventoryService{}, hooks))
 	mux.Handle(shop.AccountServicePathPrefix, shop.NewAccountServiceServer(AccountService{}, hooks))
 	mux.Handle(shop.ExternalAccountServicePathPrefix, shop.NewExternalAccountServiceServer(ExternalAccountService{}, hooks))
 	mux.Handle(shop.CollectionServicePathPrefix, shop.NewCollectionServiceServer(CollectionService{}, hooks))
@@ -208,6 +220,7 @@ func NewShopServer(mux Muxer, hooks *twirp.ServerHooks) {
 
 type ShopImpl struct {
 	MiscService
+	InventoryService
 	AccountService
 	ExternalAccountService
 	CollectionService
@@ -251,6 +264,492 @@ func (s MiscService) VersionInfo(ctx context.Context, req *cm.Empty) (resp *cm.V
 	}()
 	defer cmwrapper.Censor(req)
 	query := &VersionInfoEndpoint{Empty: req}
+	ctx = bus.NewRootContext(ctx)
+	err = bus.Dispatch(ctx, query)
+	resp = query.Result
+	if err == nil {
+		if resp == nil {
+			return nil, common.Error(common.Internal, "", nil).Log("nil response")
+		}
+		errs = cmwrapper.HasErrors(resp)
+	}
+	return resp, err
+}
+
+type InventoryService struct{}
+
+type AdjustInventoryQuantityEndpoint struct {
+	*shop.AdjustInventoryQuantityRequest
+	Result  *shop.AdjustInventoryQuantityResponse
+	Context ShopClaim
+}
+
+func (s InventoryService) AdjustInventoryQuantity(ctx context.Context, req *shop.AdjustInventoryQuantityRequest) (resp *shop.AdjustInventoryQuantityResponse, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "shop.Inventory/AdjustInventoryQuantity"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:     ctx,
+		RequireAuth: true,
+		RequireShop: true,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &AdjustInventoryQuantityEndpoint{AdjustInventoryQuantityRequest: req}
+	query.Context.Claim = session.Claim
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = bus.Dispatch(ctx, query)
+	resp = query.Result
+	if err == nil {
+		if resp == nil {
+			return nil, common.Error(common.Internal, "", nil).Log("nil response")
+		}
+		errs = cmwrapper.HasErrors(resp)
+	}
+	return resp, err
+}
+
+type CancelInventoryVoucherEndpoint struct {
+	*shop.CancelInventoryVoucherRequest
+	Result  *shop.CancelInventoryVoucherResponse
+	Context ShopClaim
+}
+
+func (s InventoryService) CancelInventoryVoucher(ctx context.Context, req *shop.CancelInventoryVoucherRequest) (resp *shop.CancelInventoryVoucherResponse, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "shop.Inventory/CancelInventoryVoucher"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:     ctx,
+		RequireAuth: true,
+		RequireShop: true,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &CancelInventoryVoucherEndpoint{CancelInventoryVoucherRequest: req}
+	query.Context.Claim = session.Claim
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = bus.Dispatch(ctx, query)
+	resp = query.Result
+	if err == nil {
+		if resp == nil {
+			return nil, common.Error(common.Internal, "", nil).Log("nil response")
+		}
+		errs = cmwrapper.HasErrors(resp)
+	}
+	return resp, err
+}
+
+type ConfirmInventoryVoucherEndpoint struct {
+	*shop.ConfirmInventoryVoucherRequest
+	Result  *shop.ConfirmInventoryVoucherResponse
+	Context ShopClaim
+}
+
+func (s InventoryService) ConfirmInventoryVoucher(ctx context.Context, req *shop.ConfirmInventoryVoucherRequest) (resp *shop.ConfirmInventoryVoucherResponse, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "shop.Inventory/ConfirmInventoryVoucher"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:     ctx,
+		RequireAuth: true,
+		RequireShop: true,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &ConfirmInventoryVoucherEndpoint{ConfirmInventoryVoucherRequest: req}
+	query.Context.Claim = session.Claim
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = bus.Dispatch(ctx, query)
+	resp = query.Result
+	if err == nil {
+		if resp == nil {
+			return nil, common.Error(common.Internal, "", nil).Log("nil response")
+		}
+		errs = cmwrapper.HasErrors(resp)
+	}
+	return resp, err
+}
+
+type CreateInventoryVoucherEndpoint struct {
+	*shop.CreateInventoryVoucherRequest
+	Result  *shop.CreateInventoryVoucherResponse
+	Context ShopClaim
+}
+
+func (s InventoryService) CreateInventoryVoucher(ctx context.Context, req *shop.CreateInventoryVoucherRequest) (resp *shop.CreateInventoryVoucherResponse, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "shop.Inventory/CreateInventoryVoucher"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:     ctx,
+		RequireAuth: true,
+		RequireShop: true,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &CreateInventoryVoucherEndpoint{CreateInventoryVoucherRequest: req}
+	query.Context.Claim = session.Claim
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = bus.Dispatch(ctx, query)
+	resp = query.Result
+	if err == nil {
+		if resp == nil {
+			return nil, common.Error(common.Internal, "", nil).Log("nil response")
+		}
+		errs = cmwrapper.HasErrors(resp)
+	}
+	return resp, err
+}
+
+type GetInventoriesEndpoint struct {
+	*shop.GetInventoriesRequest
+	Result  *shop.GetInventoriesResponse
+	Context ShopClaim
+}
+
+func (s InventoryService) GetInventories(ctx context.Context, req *shop.GetInventoriesRequest) (resp *shop.GetInventoriesResponse, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "shop.Inventory/GetInventories"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:     ctx,
+		RequireAuth: true,
+		RequireShop: true,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &GetInventoriesEndpoint{GetInventoriesRequest: req}
+	query.Context.Claim = session.Claim
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = bus.Dispatch(ctx, query)
+	resp = query.Result
+	if err == nil {
+		if resp == nil {
+			return nil, common.Error(common.Internal, "", nil).Log("nil response")
+		}
+		errs = cmwrapper.HasErrors(resp)
+	}
+	return resp, err
+}
+
+type GetInventoriesByVariantIDsEndpoint struct {
+	*shop.GetInventoriesByVariantIDsRequest
+	Result  *shop.GetInventoriesResponse
+	Context ShopClaim
+}
+
+func (s InventoryService) GetInventoriesByVariantIDs(ctx context.Context, req *shop.GetInventoriesByVariantIDsRequest) (resp *shop.GetInventoriesResponse, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "shop.Inventory/GetInventoriesByVariantIDs"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:     ctx,
+		RequireAuth: true,
+		RequireShop: true,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &GetInventoriesByVariantIDsEndpoint{GetInventoriesByVariantIDsRequest: req}
+	query.Context.Claim = session.Claim
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = bus.Dispatch(ctx, query)
+	resp = query.Result
+	if err == nil {
+		if resp == nil {
+			return nil, common.Error(common.Internal, "", nil).Log("nil response")
+		}
+		errs = cmwrapper.HasErrors(resp)
+	}
+	return resp, err
+}
+
+type GetInventoryEndpoint struct {
+	*shop.GetInventoryRequest
+	Result  *shop.Inventory
+	Context ShopClaim
+}
+
+func (s InventoryService) GetInventory(ctx context.Context, req *shop.GetInventoryRequest) (resp *shop.Inventory, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "shop.Inventory/GetInventory"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:     ctx,
+		RequireAuth: true,
+		RequireShop: true,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &GetInventoryEndpoint{GetInventoryRequest: req}
+	query.Context.Claim = session.Claim
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = bus.Dispatch(ctx, query)
+	resp = query.Result
+	if err == nil {
+		if resp == nil {
+			return nil, common.Error(common.Internal, "", nil).Log("nil response")
+		}
+		errs = cmwrapper.HasErrors(resp)
+	}
+	return resp, err
+}
+
+type GetInventoryVoucherEndpoint struct {
+	*cm.IDRequest
+	Result  *shop.InventoryVoucher
+	Context ShopClaim
+}
+
+func (s InventoryService) GetInventoryVoucher(ctx context.Context, req *cm.IDRequest) (resp *shop.InventoryVoucher, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "shop.Inventory/GetInventoryVoucher"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:     ctx,
+		RequireAuth: true,
+		RequireShop: true,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &GetInventoryVoucherEndpoint{IDRequest: req}
+	query.Context.Claim = session.Claim
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = bus.Dispatch(ctx, query)
+	resp = query.Result
+	if err == nil {
+		if resp == nil {
+			return nil, common.Error(common.Internal, "", nil).Log("nil response")
+		}
+		errs = cmwrapper.HasErrors(resp)
+	}
+	return resp, err
+}
+
+type GetInventoryVouchersEndpoint struct {
+	*shop.GetInventoryVouchersRequest
+	Result  *shop.GetInventoryVouchersResponse
+	Context ShopClaim
+}
+
+func (s InventoryService) GetInventoryVouchers(ctx context.Context, req *shop.GetInventoryVouchersRequest) (resp *shop.GetInventoryVouchersResponse, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "shop.Inventory/GetInventoryVouchers"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:     ctx,
+		RequireAuth: true,
+		RequireShop: true,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &GetInventoryVouchersEndpoint{GetInventoryVouchersRequest: req}
+	query.Context.Claim = session.Claim
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = bus.Dispatch(ctx, query)
+	resp = query.Result
+	if err == nil {
+		if resp == nil {
+			return nil, common.Error(common.Internal, "", nil).Log("nil response")
+		}
+		errs = cmwrapper.HasErrors(resp)
+	}
+	return resp, err
+}
+
+type GetInventoryVouchersByIDsEndpoint struct {
+	*shop.GetInventoryVouchersByIDsRequest
+	Result  *shop.GetInventoryVouchersResponse
+	Context ShopClaim
+}
+
+func (s InventoryService) GetInventoryVouchersByIDs(ctx context.Context, req *shop.GetInventoryVouchersByIDsRequest) (resp *shop.GetInventoryVouchersResponse, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "shop.Inventory/GetInventoryVouchersByIDs"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:     ctx,
+		RequireAuth: true,
+		RequireShop: true,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &GetInventoryVouchersByIDsEndpoint{GetInventoryVouchersByIDsRequest: req}
+	query.Context.Claim = session.Claim
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = bus.Dispatch(ctx, query)
+	resp = query.Result
+	if err == nil {
+		if resp == nil {
+			return nil, common.Error(common.Internal, "", nil).Log("nil response")
+		}
+		errs = cmwrapper.HasErrors(resp)
+	}
+	return resp, err
+}
+
+type UpdateInventoryVoucherEndpoint struct {
+	*shop.UpdateInventoryVoucherRequest
+	Result  *shop.UpdateInventoryVoucherResponse
+	Context ShopClaim
+}
+
+func (s InventoryService) UpdateInventoryVoucher(ctx context.Context, req *shop.UpdateInventoryVoucherRequest) (resp *shop.UpdateInventoryVoucherResponse, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "shop.Inventory/UpdateInventoryVoucher"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:     ctx,
+		RequireAuth: true,
+		RequireShop: true,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &UpdateInventoryVoucherEndpoint{UpdateInventoryVoucherRequest: req}
+	query.Context.Claim = session.Claim
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
 	err = bus.Dispatch(ctx, query)
 	resp = query.Result

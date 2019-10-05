@@ -2,6 +2,7 @@ package shop
 
 import (
 	"etop.vn/api/main/catalog"
+	"etop.vn/api/main/inventory"
 	pbcm "etop.vn/backend/pb/common"
 	pbproducttype "etop.vn/backend/pb/etop/etc/product_type"
 	pbs3 "etop.vn/backend/pb/etop/etc/status3"
@@ -9,6 +10,61 @@ import (
 	"etop.vn/backend/pkg/etop/api/convertpb"
 	"etop.vn/backend/pkg/etop/model"
 )
+
+func PbInventory(args *inventory.InventoryVariant) *pbshop.Inventory {
+	return &pbshop.Inventory{
+		ShopId:         args.ShopID,
+		VariantId:      args.VariantID,
+		QuantityOnHand: args.QuantityOnHand,
+		QuantityPicked: args.QuantityPicked,
+		Quantity:       args.QuantitySummary,
+		PurchasePrice:  args.PurchasePrice,
+	}
+}
+
+func PbInventories(args []*inventory.InventoryVariant) []*pbshop.Inventory {
+	var inventories []*pbshop.Inventory
+	for _, value := range args {
+		inventories = append(inventories, PbInventory(value))
+	}
+	return inventories
+}
+
+func PbShopInventoryVoucher(args *inventory.InventoryVoucher) *pbshop.InventoryVoucher {
+	var inventoryVoucherItem []*pbshop.InventoryVoucherLine
+	for _, value := range args.Lines {
+		inventoryVoucherItem = append(inventoryVoucherItem, &pbshop.InventoryVoucherLine{
+			VariantId: value.VariantID,
+			Price:     value.Price,
+			Quantity:  value.Quantity,
+		})
+	}
+	return &pbshop.InventoryVoucher{
+		Title:        args.Title,
+		TotalAmount:  args.TotalAmount,
+		CreatedBy:    args.CreatedBy,
+		UpdatedBy:    args.UpdatedBy,
+		Lines:        inventoryVoucherItem,
+		TraderId:     args.TraderID,
+		Note:         args.Note,
+		Type:         args.Type,
+		Id:           args.ID,
+		ShopId:       args.ShopID,
+		CreatedAt:    pbcm.PbTime(args.CreatedAt),
+		UpdatedAt:    pbcm.PbTime(args.UpdatedAt),
+		CancelledAt:  pbcm.PbTime(args.CancelledAt),
+		ComfirmedAt:  pbcm.PbTime(args.ConfirmedAt),
+		CancelReason: args.CancelledReason,
+	}
+}
+
+func PbShopInventoryVouchers(inventory []*inventory.InventoryVoucher) []*pbshop.InventoryVoucher {
+	var inventoryVouchers []*pbshop.InventoryVoucher
+	for _, value := range inventory {
+		inventoryVouchers = append(inventoryVouchers, PbShopInventoryVoucher(value))
+	}
+	return inventoryVouchers
+}
 
 func PbShopVariants(items []*catalog.ShopVariant) []*pbshop.ShopVariant {
 	res := make([]*pbshop.ShopVariant, len(items))

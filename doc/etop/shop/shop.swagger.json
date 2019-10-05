@@ -225,7 +225,6 @@
     },
     "/api/shop.Account/UpdateExternalAccountAhamoveVerificationImages": {
       "post": {
-        "summary": "deprecated: backward-compatible, will be removed later",
         "operationId": "UpdateExternalAccountAhamoveVerificationImages",
         "responses": {
           "200": {
@@ -955,7 +954,6 @@
     },
     "/api/shop.Customer/CreateCustomerAddress": {
       "post": {
-        "summary": "deprecated: backward-compatible, will be removed later",
         "operationId": "CreateCustomerAddress",
         "responses": {
           "200": {
@@ -1682,6 +1680,292 @@
         ]
       }
     },
+    "/api/shop.Inventory/AdjustInventoryQuantity": {
+      "post": {
+        "operationId": "AdjustInventoryQuantity",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/shopAdjustInventoryQuantityResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/shopAdjustInventoryQuantityRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Inventory"
+        ]
+      }
+    },
+    "/api/shop.Inventory/CancelInventoryVoucher": {
+      "post": {
+        "operationId": "CancelInventoryVoucher",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/shopCancelInventoryVoucherResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/shopCancelInventoryVoucherRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Inventory"
+        ]
+      }
+    },
+    "/api/shop.Inventory/ConfirmInventoryVoucher": {
+      "post": {
+        "operationId": "ConfirmInventoryVoucher",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/shopConfirmInventoryVoucherResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/shopConfirmInventoryVoucherRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Inventory"
+        ]
+      }
+    },
+    "/api/shop.Inventory/CreateInventoryVoucher": {
+      "post": {
+        "operationId": "CreateInventoryVoucher",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/shopCreateInventoryVoucherResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/shopCreateInventoryVoucherRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Inventory"
+        ]
+      }
+    },
+    "/api/shop.Inventory/GetInventories": {
+      "post": {
+        "operationId": "GetInventories",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/shopGetInventoriesResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/shopGetInventoriesRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Inventory"
+        ]
+      }
+    },
+    "/api/shop.Inventory/GetInventoriesByVariantIDs": {
+      "post": {
+        "operationId": "GetInventoriesByVariantIDs",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/shopGetInventoriesResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/shopGetInventoriesByVariantIDsRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Inventory"
+        ]
+      }
+    },
+    "/api/shop.Inventory/GetInventory": {
+      "post": {
+        "operationId": "GetInventory",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/shopInventory"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/shopGetInventoryRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Inventory"
+        ]
+      }
+    },
+    "/api/shop.Inventory/GetInventoryVoucher": {
+      "post": {
+        "operationId": "GetInventoryVoucher",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/shopInventoryVoucher"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/cmIDRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Inventory"
+        ]
+      }
+    },
+    "/api/shop.Inventory/GetInventoryVouchers": {
+      "post": {
+        "operationId": "GetInventoryVouchers",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/shopGetInventoryVouchersResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/shopGetInventoryVouchersRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Inventory"
+        ]
+      }
+    },
+    "/api/shop.Inventory/GetInventoryVouchersByIDs": {
+      "post": {
+        "operationId": "GetInventoryVouchersByIDs",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/shopGetInventoryVouchersResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/shopGetInventoryVouchersByIDsRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Inventory"
+        ]
+      }
+    },
+    "/api/shop.Inventory/UpdateInventoryVoucher": {
+      "post": {
+        "operationId": "UpdateInventoryVoucher",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/shopUpdateInventoryVoucherResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/shopUpdateInventoryVoucherRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Inventory"
+        ]
+      }
+    },
     "/api/shop.Misc/VersionInfo": {
       "post": {
         "operationId": "VersionInfo",
@@ -1892,7 +2176,6 @@
     },
     "/api/shop.Order/CancelOrder": {
       "post": {
-        "summary": "deprecated: backward-compatible, will be removed later",
         "operationId": "CancelOrder",
         "responses": {
           "200": {
@@ -2415,7 +2698,6 @@
     },
     "/api/shop.Product/GetVariant": {
       "post": {
-        "summary": "deprecated: backward-compatible, will be removed later",
         "operationId": "GetVariant",
         "responses": {
           "200": {
@@ -4320,6 +4602,10 @@
           "items": {
             "type": "string"
           }
+        },
+        "inventory_overstock": {
+          "type": "boolean",
+          "format": "boolean"
         },
         "id": {
           "type": "string",
@@ -6818,6 +7104,37 @@
         }
       }
     },
+    "shopAdjustInventoryQuantityRequest": {
+      "type": "object",
+      "properties": {
+        "inventories": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/shopInventory"
+          }
+        },
+        "note": {
+          "type": "string"
+        }
+      }
+    },
+    "shopAdjustInventoryQuantityResponse": {
+      "type": "object",
+      "properties": {
+        "inventories": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/shopInventory"
+          }
+        },
+        "inventory_vouchers": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/shopInventoryVoucher"
+          }
+        }
+      }
+    },
     "shopAttribute": {
       "type": "object",
       "properties": {
@@ -6855,6 +7172,26 @@
         "balance": {
           "type": "integer",
           "format": "int32"
+        }
+      }
+    },
+    "shopCancelInventoryVoucherRequest": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "reason": {
+          "type": "string"
+        }
+      }
+    },
+    "shopCancelInventoryVoucherResponse": {
+      "type": "object",
+      "properties": {
+        "inventory": {
+          "$ref": "#/definitions/shopInventoryVoucher"
         }
       }
     },
@@ -6957,6 +7294,23 @@
           "items": {
             "$ref": "#/definitions/shopShopCollection"
           }
+        }
+      }
+    },
+    "shopConfirmInventoryVoucherRequest": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "shopConfirmInventoryVoucherResponse": {
+      "type": "object",
+      "properties": {
+        "inventory": {
+          "$ref": "#/definitions/shopInventoryVoucher"
         }
       }
     },
@@ -7103,6 +7457,42 @@
             "type": "string",
             "format": "int64"
           }
+        }
+      }
+    },
+    "shopCreateInventoryVoucherRequest": {
+      "type": "object",
+      "properties": {
+        "trader_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "note": {
+          "type": "string"
+        },
+        "lines": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/shopInventoryVoucherLine"
+          }
+        },
+        "type": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "total_amount": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "shopCreateInventoryVoucherResponse": {
+      "type": "object",
+      "properties": {
+        "inventory": {
+          "$ref": "#/definitions/shopInventoryVoucher"
         }
       }
     },
@@ -7957,6 +8347,77 @@
         }
       }
     },
+    "shopGetInventoriesByVariantIDsRequest": {
+      "type": "object",
+      "properties": {
+        "variant_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          }
+        }
+      }
+    },
+    "shopGetInventoriesRequest": {
+      "type": "object",
+      "properties": {
+        "paging": {
+          "$ref": "#/definitions/cmPaging"
+        }
+      }
+    },
+    "shopGetInventoriesResponse": {
+      "type": "object",
+      "properties": {
+        "inventories": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/shopInventory"
+          }
+        }
+      }
+    },
+    "shopGetInventoryRequest": {
+      "type": "object",
+      "properties": {
+        "variant_id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "shopGetInventoryVouchersByIDsRequest": {
+      "type": "object",
+      "properties": {
+        "ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          }
+        }
+      }
+    },
+    "shopGetInventoryVouchersRequest": {
+      "type": "object",
+      "properties": {
+        "paging": {
+          "$ref": "#/definitions/cmPaging"
+        }
+      }
+    },
+    "shopGetInventoryVouchersResponse": {
+      "type": "object",
+      "properties": {
+        "inventory_vouchers": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/shopInventoryVoucher"
+          }
+        }
+      }
+    },
     "shopGetMoneyTransactionsRequest": {
       "type": "object",
       "properties": {
@@ -8090,6 +8551,115 @@
         },
         "unit": {
           "type": "string"
+        }
+      }
+    },
+    "shopInventory": {
+      "type": "object",
+      "properties": {
+        "shop_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "variant_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "quantity_on_hand": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "quantity_picked": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "purchase_price": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "quantity": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "shopInventoryVoucher": {
+      "type": "object",
+      "properties": {
+        "total_amount": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "created_by": {
+          "type": "string",
+          "format": "int64"
+        },
+        "updated_by": {
+          "type": "string",
+          "format": "int64"
+        },
+        "lines": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/shopInventoryVoucherLine"
+          }
+        },
+        "trader_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "note": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "shop_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "title": {
+          "type": "string"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "cancelled_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "comfirmed_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "cancel_reason": {
+          "type": "string"
+        }
+      }
+    },
+    "shopInventoryVoucherLine": {
+      "type": "object",
+      "properties": {
+        "variant_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "price": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "quantity": {
+          "type": "integer",
+          "format": "int32"
         }
       }
     },
@@ -9105,6 +9675,46 @@
         "shipping_state"
       ]
     },
+    "shopUpdateInventoryVoucherRequest": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "trader_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "lines": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/shopInventoryVoucherLine"
+          }
+        },
+        "note": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "total_amount": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "shopUpdateInventoryVoucherResponse": {
+      "type": "object",
+      "properties": {
+        "inventory": {
+          "$ref": "#/definitions/shopInventoryVoucher"
+        }
+      }
+    },
     "shopUpdateOrderPaymentStatusRequest": {
       "type": "object",
       "properties": {
@@ -9335,6 +9945,10 @@
     "shopUpdateShopRequest": {
       "type": "object",
       "properties": {
+        "inventory_overstock": {
+          "type": "boolean",
+          "format": "boolean"
+        },
         "name": {
           "type": "string"
         },
@@ -9697,6 +10311,9 @@
     },
     {
       "name": "History"
+    },
+    {
+      "name": "Inventory"
     },
     {
       "name": "Misc"

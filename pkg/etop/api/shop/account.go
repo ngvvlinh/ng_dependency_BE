@@ -91,6 +91,7 @@ func UpdateShop(ctx context.Context, q *wrapshop.UpdateShopEndpoint) error {
 	cmd := &model.UpdateShopCommand{
 		Shop: &model.Shop{
 			ID:                            q.Context.Shop.ID,
+			InventoryOverstock:            q.InventoryOverstock,
 			Name:                          q.Name,
 			Phone:                         q.Phone,
 			BankAccount:                   q.BankAccount.ToModel(),

@@ -395,6 +395,19 @@ var ACL = map[string]*permission.PermissionDecl{
 	"shop.Payment/PaymentTradingOrder":    {Type: Shop},
 	"shop.Payment/PaymentCheckReturnData": {Type: Shop},
 
+	"shop.Inventory/CreateInventoryVoucher":  {Type: Shop},
+	"shop.Inventory/ConfirmInventoryVoucher": {Type: Shop},
+	"shop.Inventory/CancelInventoryVoucher":  {Type: Shop},
+	"shop.Inventory/UpdateInventoryVoucher":  {Type: Shop},
+	"shop.Inventory/AdjustInventoryQuantity": {Type: Shop},
+
+	"shop.Inventory/GetInventories":             {Type: Shop},
+	"shop.Inventory/GetInventoriesByVariantIDs": {Type: Shop},
+	"shop.Inventory/GetInventoryVouchersByIDs":  {Type: Shop},
+	"shop.Inventory/GetInventoryVouchers":       {Type: Shop},
+	"shop.Inventory/GetInventoryVoucher":        {Type: Shop},
+	"shop.Inventory/GetInventory":               {Type: Shop},
+
 	//-- pgevent --//
 	"pgevent.Misc/VersionInfo":     {Type: Secret},
 	"pgevent.Event/GenerateEvents": {Type: Secret},

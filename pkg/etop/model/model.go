@@ -484,6 +484,8 @@ type Shop struct {
 	MoneyTransactionRRule         string `sq:"'money_transaction_rrule'"`
 	SurveyInfo                    []*SurveyInfo
 	ShippingServiceSelectStrategy []*ShippingServiceSelectStrategyItem
+
+	InventoryOverstock *bool
 }
 
 func (s *Shop) CheckInfo() error {

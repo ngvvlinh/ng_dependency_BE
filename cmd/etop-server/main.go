@@ -21,6 +21,9 @@ import (
 	catalogaggregate "etop.vn/backend/com/main/catalog/aggregate"
 	catalogquery "etop.vn/backend/com/main/catalog/query"
 	serviceidentity "etop.vn/backend/com/main/identity"
+	inventoryaggregate "etop.vn/backend/com/main/inventory/aggregate"
+	inventorypm "etop.vn/backend/com/main/inventory/pm"
+	inventoryquery "etop.vn/backend/com/main/inventory/query"
 	servicelocation "etop.vn/backend/com/main/location"
 	serviceordering "etop.vn/backend/com/main/ordering"
 	serviceorderingpm "etop.vn/backend/com/main/ordering/pm"
@@ -302,6 +305,8 @@ func main() {
 	vtigerClient := vtigerclient.NewVigerClient(cfg.Vtiger.ServiceURL, cfg.Vtiger.Username, cfg.Vtiger.APIKey)
 	// create aggregate, query service
 	summaryQuery := summaryquery.NewDashboardQuery(db, redisStore).MessageBus()
+	inventoryaggregate := inventoryaggregate.NewAggregateInventory(eventBus, db).MessageBus()
+	inventoryQuery := inventoryquery.NewQueryInventory(eventBus, db).MessageBus()
 	vhtQuery := vhtquery.New(crmDB).MessageBus()
 	vhtAggregate := vhtaggregate.New(crmDB, nil).MessageBus()
 	vtigerQuery := vtigerquery.New(crmDB, configMap, vtigerClient).MessageBus()
@@ -324,6 +329,8 @@ func main() {
 	identityAggr := serviceidentity.NewAggregate(db, shipnowCarrierManager).MessageBus()
 	shipnowAggr = serviceshipnow.NewAggregate(eventBus, db, locationBus, identityQuery, addressQuery, orderQuery, shipnowCarrierManager).MessageBus()
 
+	inventoryPm := inventorypm.New(eventBus, catalogQuery, orderQuery, inventoryaggregate)
+	inventoryPm.RegisterEventHandlers(eventBus)
 	shipnowPM := shipnowpm.New(eventBus, shipnowQuery, shipnowAggr, orderAggr.MessageBus(), shipnowCarrierManager)
 	shipnowPM.RegisterEventHandlers(eventBus)
 
@@ -387,6 +394,8 @@ func main() {
 		receiptQuery,
 		shutdowner,
 		redisStore,
+		inventoryaggregate,
+		inventoryQuery,
 		summaryQuery,
 	)
 	partner.Init(shutdowner, redisStore, authStore, cfg.URL.Auth)
