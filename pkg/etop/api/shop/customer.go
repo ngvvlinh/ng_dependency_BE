@@ -4,6 +4,8 @@ import (
 	"context"
 	"strings"
 
+	"etop.vn/api/main/ordering"
+	"etop.vn/api/main/receipting"
 	"etop.vn/api/shopping/customering"
 	pbcm "etop.vn/backend/pb/common"
 	pbshop "etop.vn/backend/pb/etop/shop"
@@ -124,6 +126,9 @@ func GetCustomer(ctx context.Context, r *wrapshop.GetCustomerEndpoint) error {
 		return err
 	}
 	r.Result = pbshop.PbCustomer(query.Result)
+	if err := listLiabilities(ctx, r.Context.Shop.ID, []*pbshop.Customer{r.Result}); err != nil {
+		return err
+	}
 	return nil
 }
 
@@ -141,6 +146,9 @@ func GetCustomers(ctx context.Context, r *wrapshop.GetCustomersEndpoint) error {
 		Customers: pbshop.PbCustomers(query.Result.Customers),
 		Paging:    pbcm.PbPageInfo(paging, query.Result.Count),
 	}
+	if err := listLiabilities(ctx, r.Context.Shop.ID, r.Result.Customers); err != nil {
+		return err
+	}
 	return nil
 }
 
@@ -154,6 +162,9 @@ func GetCustomersByIDs(ctx context.Context, r *wrapshop.GetCustomersByIDsEndpoin
 	}
 	r.Result = &pbshop.CustomersResponse{
 		Customers: pbshop.PbCustomers(query.Result.Customers),
+	}
+	if err := listLiabilities(ctx, r.Context.Shop.ID, r.Result.Customers); err != nil {
+		return err
 	}
 	return nil
 }
@@ -233,5 +244,55 @@ func RemoveCustomersFromGroup(ctx context.Context, r *wrapshop.RemoveCustomersFr
 		return err
 	}
 	r.Result = &pbcm.RemovedResponse{Removed: int32(cmd.Result)}
+	return nil
+}
+
+func listLiabilities(ctx context.Context, shopID int64, customers []*pbshop.Customer) error {
+	var customerIDs []int64
+	mapCustomerIDAndNumberOfOrders := make(map[int64]int)
+	mapCustomerIDAndTotalAmountOrders := make(map[int64]int64)
+	mapCustomerIDAndTotalAmountReceipts := make(map[int64]int64)
+
+	for _, customer := range customers {
+		customerIDs = append(customerIDs, customer.Id)
+	}
+
+	getOrdersByCustomerIDs := &ordering.ListOrdersByCustomerIDsQuery{
+		CustomerIDs: customerIDs,
+		ShopID:      shopID,
+	}
+	if err := orderQuery.Dispatch(ctx, getOrdersByCustomerIDs); err != nil {
+		return err
+	}
+	for _, order := range getOrdersByCustomerIDs.Result.Orders {
+		mapCustomerIDAndNumberOfOrders[order.CustomerID] += 1
+		mapCustomerIDAndTotalAmountOrders[order.CustomerID] += int64(order.TotalAmount)
+	}
+
+	getReceiptsByCustomerIDs := &receipting.ListReceiptsByCustomerIDsQuery{
+		ShopID:      shopID,
+		CustomerIDs: customerIDs,
+	}
+	if err := receiptQuery.Dispatch(ctx, getReceiptsByCustomerIDs); err != nil {
+		return err
+	}
+	for _, receipt := range getReceiptsByCustomerIDs.Result.Receipts {
+		switch receipt.Type {
+		case receipting.ReceiptType:
+			mapCustomerIDAndTotalAmountReceipts[receipt.TraderID] += int64(receipt.Amount)
+		case receipting.PaymentType:
+			mapCustomerIDAndTotalAmountReceipts[receipt.TraderID] -= int64(receipt.Amount)
+		}
+	}
+
+	for _, customer := range customers {
+		customer.Liability = &pbshop.Liability{
+			NumberOfOrders: int32(mapCustomerIDAndNumberOfOrders[customer.Id]),
+			TotalAmount:    mapCustomerIDAndTotalAmountOrders[customer.Id],
+			ReceivedAmount: mapCustomerIDAndTotalAmountReceipts[customer.Id],
+			Liability:      mapCustomerIDAndTotalAmountOrders[customer.Id] - mapCustomerIDAndTotalAmountReceipts[customer.Id],
+		}
+	}
+
 	return nil
 }

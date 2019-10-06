@@ -80,3 +80,10 @@ func (q *ReceiptQuery) GetReceiptByCode(ctx context.Context, code string, shopID
 	receipt, err := q.store(ctx).ShopID(shopID).Code(code).GetReceipt()
 	return receipt, err
 }
+
+func (q *ReceiptQuery) ListReceiptsByCustomerIDs(
+	ctx context.Context, shopID int64, customerIDs []int64,
+) (*receipting.ReceiptsResponse, error) {
+	receipts, err := q.store(ctx).ShopID(shopID).TraderIDs(customerIDs...).ListReceipts()
+	return &receipting.ReceiptsResponse{Receipts: receipts}, err
+}

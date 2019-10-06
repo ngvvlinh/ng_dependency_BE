@@ -22,6 +22,7 @@ type QueryService interface {
 	ListReceipts(context.Context, *shopping.ListQueryShopArgs) (*ReceiptsResponse, error)
 	ListReceiptsByIDs(context.Context, *shopping.IDsQueryShopArgs) (*ReceiptsResponse, error)
 	ListReceiptsByOrderIDs(context.Context, *shopping.IDsQueryShopArgs) (*ReceiptsResponse, error)
+	ListReceiptsByCustomerIDs(ctx context.Context, shopID int64, customerIDs []int64) (*ReceiptsResponse, error)
 }
 
 //-- queries --//

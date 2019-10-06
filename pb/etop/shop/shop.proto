@@ -1051,6 +1051,16 @@ message ExternalAccountHaravanRequest {
     optional string redirect_uri = 3 [(gogoproto.nullable) = false];
 }
 
+message Liability {
+    optional int32 number_of_orders = 1 [(gogoproto.nullable) = false];
+
+    optional int64 total_amount = 2 [(gogoproto.nullable) = false];
+
+    optional int64 received_amount = 3 [(gogoproto.nullable) = false];
+
+    optional int64 liability = 4 [(gogoproto.nullable) = false];
+}
+
 message Customer {
     optional int64 id = 1 [(gogoproto.nullable) = false];
 
@@ -1079,6 +1089,8 @@ message Customer {
     optional status3.Status status = 11 [(gogoproto.nullable) = false];
 
     repeated int64 group_ids = 14 [(gogoproto.nullable) = false];
+
+    optional Liability liability = 15;
 }
 
 message CreateCustomerRequest {

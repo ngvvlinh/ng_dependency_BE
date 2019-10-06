@@ -79,6 +79,16 @@ func (s *ReceiptStore) Code(code string) *ReceiptStore {
 	return s
 }
 
+func (s *ReceiptStore) TraderID(traderID int64) *ReceiptStore {
+	s.preds = append(s.preds, s.ft.ByTraderID(traderID))
+	return s
+}
+
+func (s *ReceiptStore) TraderIDs(traderIDs ...int64) *ReceiptStore {
+	s.preds = append(s.preds, sq.PrefixedIn(&s.ft.prefix, "trader_id", traderIDs))
+	return s
+}
+
 func (s *ReceiptStore) OrderID(id int64) *ReceiptStore {
 	s.preds = append(s.preds, sq.NewExpr("order_ids @> '{?}'", strconv.FormatInt(id, 10)))
 	return s

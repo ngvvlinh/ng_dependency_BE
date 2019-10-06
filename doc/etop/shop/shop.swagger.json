@@ -7710,6 +7710,9 @@
             "type": "string",
             "format": "int64"
           }
+        },
+        "liability": {
+          "$ref": "#/definitions/shopLiability"
         }
       }
     },
@@ -8660,6 +8663,27 @@
         "quantity": {
           "type": "integer",
           "format": "int32"
+        }
+      }
+    },
+    "shopLiability": {
+      "type": "object",
+      "properties": {
+        "number_of_orders": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "total_amount": {
+          "type": "string",
+          "format": "int64"
+        },
+        "received_amount": {
+          "type": "string",
+          "format": "int64"
+        },
+        "liability": {
+          "type": "string",
+          "format": "int64"
         }
       }
     },

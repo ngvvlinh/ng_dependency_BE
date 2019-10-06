@@ -127,6 +127,18 @@ func (h QueryServiceHandler) HandleListReceipts(ctx context.Context, msg *ListRe
 	return err
 }
 
+type ListReceiptsByCustomerIDsQuery struct {
+	ShopID      int64
+	CustomerIDs []int64
+
+	Result *ReceiptsResponse `json:"-"`
+}
+
+func (h QueryServiceHandler) HandleListReceiptsByCustomerIDs(ctx context.Context, msg *ListReceiptsByCustomerIDsQuery) (err error) {
+	msg.Result, err = h.inner.ListReceiptsByCustomerIDs(msg.GetArgs(ctx))
+	return err
+}
+
 type ListReceiptsByIDsQuery struct {
 	IDs    []int64
 	ShopID int64
@@ -153,14 +165,15 @@ func (h QueryServiceHandler) HandleListReceiptsByOrderIDs(ctx context.Context, m
 
 // implement interfaces
 
-func (q *CreateReceiptCommand) command()      {}
-func (q *DeleteReceiptCommand) command()      {}
-func (q *UpdateReceiptCommand) command()      {}
-func (q *GetReceiptByCodeQuery) query()       {}
-func (q *GetReceiptByIDQuery) query()         {}
-func (q *ListReceiptsQuery) query()           {}
-func (q *ListReceiptsByIDsQuery) query()      {}
-func (q *ListReceiptsByOrderIDsQuery) query() {}
+func (q *CreateReceiptCommand) command()         {}
+func (q *DeleteReceiptCommand) command()         {}
+func (q *UpdateReceiptCommand) command()         {}
+func (q *GetReceiptByCodeQuery) query()          {}
+func (q *GetReceiptByIDQuery) query()            {}
+func (q *ListReceiptsQuery) query()              {}
+func (q *ListReceiptsByCustomerIDsQuery) query() {}
+func (q *ListReceiptsByIDsQuery) query()         {}
+func (q *ListReceiptsByOrderIDsQuery) query()    {}
 
 // implement conversion
 
@@ -224,6 +237,12 @@ func (q *ListReceiptsQuery) GetArgs(ctx context.Context) (_ context.Context, _ *
 		}
 }
 
+func (q *ListReceiptsByCustomerIDsQuery) GetArgs(ctx context.Context) (_ context.Context, shopID int64, customerIDs []int64) {
+	return ctx,
+		q.ShopID,
+		q.CustomerIDs
+}
+
 func (q *ListReceiptsByIDsQuery) GetArgs(ctx context.Context) (_ context.Context, _ *shopping.IDsQueryShopArgs) {
 	return ctx,
 		&shopping.IDsQueryShopArgs{
@@ -273,6 +292,7 @@ func (h QueryServiceHandler) RegisterHandlers(b interface {
 	b.AddHandler(h.HandleGetReceiptByCode)
 	b.AddHandler(h.HandleGetReceiptByID)
 	b.AddHandler(h.HandleListReceipts)
+	b.AddHandler(h.HandleListReceiptsByCustomerIDs)
 	b.AddHandler(h.HandleListReceiptsByIDs)
 	b.AddHandler(h.HandleListReceiptsByOrderIDs)
 	return QueryBus{b}

@@ -4,12 +4,11 @@ import (
 	"context"
 	"time"
 
-	"etop.vn/api/meta"
-
 	etoptypes "etop.vn/api/main/etop"
 	"etop.vn/api/main/ordering/types"
 	ordertypes "etop.vn/api/main/ordering/types"
 	shippingtypes "etop.vn/api/main/shipping/types"
+	"etop.vn/api/meta"
 )
 
 // +gen:api
@@ -30,6 +29,8 @@ type QueryService interface {
 	GetOrders(context.Context, *GetOrdersArgs) (*OrdersResponse, error)
 	GetOrdersByIDsAndCustomerID(ctx context.Context, shopID int64, IDs []int64, customerID int64) (*OrdersResponse, error)
 	GetOrderByCode(context.Context, *GetOrderByCodeArgs) (*Order, error)
+	ListOrdersByCustomerID(ctx context.Context, shopID, customerID int64) (*OrdersResponse, error)
+	ListOrdersByCustomerIDs(ctx context.Context, shopID int64, customerIDs []int64) (*OrdersResponse, error)
 }
 
 type GetOrderByIDArgs struct {
@@ -97,6 +98,7 @@ type Order struct {
 	ReferralMeta  *ReferralMeta
 
 	TradingShopID int64
+	CustomerID    int64
 }
 
 type OrderFeeLine struct {

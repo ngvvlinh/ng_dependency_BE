@@ -163,6 +163,30 @@ func (h QueryServiceHandler) HandleGetOrdersByIDsAndCustomerID(ctx context.Conte
 	return err
 }
 
+type ListOrdersByCustomerIDQuery struct {
+	ShopID     int64
+	CustomerID int64
+
+	Result *OrdersResponse `json:"-"`
+}
+
+func (h QueryServiceHandler) HandleListOrdersByCustomerID(ctx context.Context, msg *ListOrdersByCustomerIDQuery) (err error) {
+	msg.Result, err = h.inner.ListOrdersByCustomerID(msg.GetArgs(ctx))
+	return err
+}
+
+type ListOrdersByCustomerIDsQuery struct {
+	ShopID      int64
+	CustomerIDs []int64
+
+	Result *OrdersResponse `json:"-"`
+}
+
+func (h QueryServiceHandler) HandleListOrdersByCustomerIDs(ctx context.Context, msg *ListOrdersByCustomerIDsQuery) (err error) {
+	msg.Result, err = h.inner.ListOrdersByCustomerIDs(msg.GetArgs(ctx))
+	return err
+}
+
 // implement interfaces
 
 func (q *ReleaseOrdersForFfmCommand) command()       {}
@@ -175,6 +199,8 @@ func (q *GetOrderByCodeQuery) query()                {}
 func (q *GetOrderByIDQuery) query()                  {}
 func (q *GetOrdersQuery) query()                     {}
 func (q *GetOrdersByIDsAndCustomerIDQuery) query()   {}
+func (q *ListOrdersByCustomerIDQuery) query()        {}
+func (q *ListOrdersByCustomerIDsQuery) query()       {}
 
 // implement conversion
 
@@ -260,6 +286,18 @@ func (q *GetOrdersByIDsAndCustomerIDQuery) GetArgs(ctx context.Context) (_ conte
 		q.CustomerID
 }
 
+func (q *ListOrdersByCustomerIDQuery) GetArgs(ctx context.Context) (_ context.Context, shopID int64, customerID int64) {
+	return ctx,
+		q.ShopID,
+		q.CustomerID
+}
+
+func (q *ListOrdersByCustomerIDsQuery) GetArgs(ctx context.Context) (_ context.Context, shopID int64, customerIDs []int64) {
+	return ctx,
+		q.ShopID,
+		q.CustomerIDs
+}
+
 // implement dispatching
 
 type AggregateHandler struct {
@@ -297,5 +335,7 @@ func (h QueryServiceHandler) RegisterHandlers(b interface {
 	b.AddHandler(h.HandleGetOrderByID)
 	b.AddHandler(h.HandleGetOrders)
 	b.AddHandler(h.HandleGetOrdersByIDsAndCustomerID)
+	b.AddHandler(h.HandleListOrdersByCustomerID)
+	b.AddHandler(h.HandleListOrdersByCustomerIDs)
 	return QueryBus{b}
 }
