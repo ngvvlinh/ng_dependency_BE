@@ -60,10 +60,10 @@ func CreateUser(ctx context.Context, r *wrapadmin.CreateUserEndpoint) error {
 
 func ResetPassword(ctx context.Context, r *wrapadmin.ResetPasswordEndpoint) error {
 	if len(r.Password) < 8 {
-		return cm.Error(cm.InvalidArgument, "Password is too short", nil)
+		return cm.Error(cm.InvalidArgument, "Mật khẩu phải có ít nhất 8 ký tự", nil)
 	}
 	if r.Password != r.Confirm {
-		return cm.Error(cm.InvalidArgument, "Password does not match", nil)
+		return cm.Error(cm.InvalidArgument, "Mật khẩu không khớp", nil)
 	}
 
 	cmd := &model.SetPasswordCommand{

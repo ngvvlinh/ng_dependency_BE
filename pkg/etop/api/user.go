@@ -391,10 +391,10 @@ func ChangePassword(ctx context.Context, r *wrapetop.ChangePasswordEndpoint) err
 	}
 
 	if len(r.NewPassword) < 8 {
-		return cm.Error(cm.InvalidArgument, "Password is too short", nil)
+		return cm.Error(cm.InvalidArgument, "Mật khẩu phải có ít nhất 8 ký tự", nil)
 	}
 	if r.NewPassword != r.ConfirmPassword {
-		return cm.Error(cm.InvalidArgument, "Password does not match", nil)
+		return cm.Error(cm.InvalidArgument, "Mật khẩu không khớp", nil)
 	}
 
 	cmd := &model.SetPasswordCommand{
@@ -455,10 +455,10 @@ func changePasswordUsingToken(ctx context.Context, r *wrapetop.ChangePasswordUsi
 	}
 
 	if len(r.NewPassword) < 8 {
-		return r, cm.Error(cm.InvalidArgument, "Password is too short", nil)
+		return r, cm.Error(cm.InvalidArgument, "Mật khẩu phải có ít nhất 8 ký tự", nil)
 	}
 	if r.NewPassword != r.ConfirmPassword {
-		return r, cm.Error(cm.InvalidArgument, "Password does not match", nil)
+		return r, cm.Error(cm.InvalidArgument, "Mật khẩu không khớp", nil)
 	}
 
 	cmd := &model.SetPasswordCommand{
