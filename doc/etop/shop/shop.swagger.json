@@ -979,6 +979,32 @@
         ]
       }
     },
+    "/api/shop.Customer/SetDefaultCustomerAddress": {
+      "post": {
+        "operationId": "SetDefaultCustomerAddress",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/cmUpdatedResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/cmIDRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Customer"
+        ]
+      }
+    },
     "/api/shop.Customer/UpdateCustomer": {
       "post": {
         "operationId": "UpdateCustomer",
@@ -4342,6 +4368,10 @@
           "additionalProperties": {
             "type": "string"
           }
+        },
+        "customer_id": {
+          "type": "string",
+          "format": "int64"
         }
       }
     },
@@ -5234,6 +5264,10 @@
           "type": "integer",
           "format": "int32",
           "title": "received_amount get from receipt"
+        },
+        "customer_id": {
+          "type": "string",
+          "format": "int64"
         }
       }
     },
@@ -5328,6 +5362,9 @@
         },
         "gender": {
           "$ref": "#/definitions/genderGender"
+        },
+        "type": {
+          "type": "string"
         }
       }
     },
@@ -5939,6 +5976,10 @@
         "total_fee": {
           "type": "integer",
           "format": "int32"
+        },
+        "customer_id": {
+          "type": "string",
+          "format": "int64"
         }
       },
       "required": [

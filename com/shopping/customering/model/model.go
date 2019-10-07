@@ -50,6 +50,7 @@ type ShopTraderAddress struct {
 	Address2     string
 	DistrictCode string
 	WardCode     string
+	IsDefault    bool
 	Coordinates  *ordermodel.Coordinates
 	CreatedAt    time.Time `sq:"create"`
 	UpdatedAt    time.Time `sq:"update"`

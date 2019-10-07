@@ -31,6 +31,16 @@ func (a *AddressQuery) GetAddressByID(ctx context.Context, ID int64, ShopID int6
 	return addr, err
 }
 
+func (a *AddressQuery) GetAddressByTraderID(ctx context.Context, traderID, shopID int64) (*addressing.ShopTraderAddress, error) {
+	addr, err := a.store(ctx).ShopTraderID(shopID, traderID).GetAddress()
+	return addr, err
+}
+
+func (a *AddressQuery) GetAddressActiveByTraderID(ctx context.Context, traderID, ShopID int64) (*addressing.ShopTraderAddress, error) {
+	addr, err := a.store(ctx).ShopTraderID(ShopID, traderID).IsDefault(true).GetAddress()
+	return addr, err
+}
+
 func (a *AddressQuery) ListAddressesByTraderID(ctx context.Context, ShopID int64, TraderID int64) ([]*addressing.ShopTraderAddress, error) {
 	addrs, err := a.store(ctx).ShopTraderID(ShopID, TraderID).ListAddresses()
 	return addrs, err

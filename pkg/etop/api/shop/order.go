@@ -3,6 +3,7 @@ package shop
 import (
 	"context"
 	"fmt"
+	"strconv"
 	"strings"
 	"time"
 
@@ -134,12 +135,17 @@ func UpdateOrdersStatus(ctx context.Context, q *wrapshop.UpdateOrdersStatusEndpo
 }
 
 func CreateOrder(ctx context.Context, q *wrapshop.CreateOrderEndpoint) error {
-	if q.Customer == nil {
+	if q.CustomerId == 0 && q.Customer == nil {
 		return cm.Errorf(cm.InvalidArgument, nil, "Thiếu thông tin tên khách hàng, vui lòng kiểm tra lại.")
 	}
-	customerKey := q.Customer.FullName
-	if phone := strings.TrimSpace(q.Customer.Phone); phone != "" {
-		customerKey = phone
+	customerKey := ""
+	if q.Customer != nil {
+		customerKey = q.Customer.FullName
+		if phone := strings.TrimSpace(q.Customer.Phone); phone != "" {
+			customerKey = phone
+		}
+	} else {
+		customerKey = strconv.FormatInt(q.CustomerId, 10)
 	}
 	key := fmt.Sprintf("CreateOrder %v-%v", q.Context.Shop.ID, customerKey)
 	res, err := idempgroup.DoAndWrap(key, 15*time.Second,
@@ -150,6 +156,7 @@ func CreateOrder(ctx context.Context, q *wrapshop.CreateOrderEndpoint) error {
 	if err != nil {
 		return err
 	}
+
 	q.Result = res.(*wrapshop.CreateOrderEndpoint).Result
 	return nil
 }

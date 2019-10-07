@@ -111,10 +111,11 @@ var (
 	ahamoveCarrier        *ahamove.Carrier
 	ahamoveCarrierAccount *ahamove.CarrierAccount
 
-	shipnowQuery  shipnow.QueryBus
-	shipnowAggr   shipnow.CommandBus
-	orderAggr     *serviceordering.Aggregate
-	orderQuery    ordering.QueryBus
+	shipnowQuery shipnow.QueryBus
+	shipnowAggr  shipnow.CommandBus
+	orderAggr    *serviceordering.Aggregate
+	orderQuery   ordering.QueryBus
+
 	identityQuery identity.QueryBus
 
 	vtpayClient *vtpayclient.Client
@@ -385,7 +386,8 @@ func main() {
 	integration.Init(shutdowner, redisStore, authStore)
 	webhook.Init(ctlProducer, redisStore)
 	xshipping.Init(shippingManager, ordersqlstore.NewOrderStore(db), shipsqlstore.NewFulfillmentStore(db))
-	orderS.Init(shippingManager, catalogQuery, orderAggr.MessageBus())
+	orderS.Init(shippingManager, catalogQuery, orderAggr.MessageBus(),
+		customerAggr, customerQuery, traderAddressAggr, traderAddressQuery, locationBus)
 	crm.Init(ghnCarrier, vtigerQuery, vtigerAggregate, vhtQuery, vhtAggregate)
 	affiliate.Init(identityAggr)
 	apiaff.Init(affiliateCmd, affilateQuery, catalogQuery, identityQuery)

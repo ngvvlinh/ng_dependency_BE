@@ -612,6 +612,7 @@ func UpdateOrder(ctx context.Context, cmd *ordermodelx.UpdateOrderCommand) error
 		FeeLines:        cmd.FeeLines,
 		TotalItems:      cmd.TotalItems,
 		PartnerID:       cmd.PartnerID,
+		CustomerID:      cmd.CustomerID,
 	}
 
 	if err := order.BeforeUpdate(); err != nil {

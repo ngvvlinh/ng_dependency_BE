@@ -7,12 +7,17 @@ import (
 	"strings"
 	"time"
 
+	"etop.vn/api/shopping/addressing"
+	"etop.vn/api/shopping/customering"
+	"etop.vn/backend/pb/etop/etc/gender"
+
 	"etop.vn/api/main/catalog"
 	"etop.vn/backend/com/main/catalog/convert"
 	ordermodel "etop.vn/backend/com/main/ordering/model"
 	ordermodelx "etop.vn/backend/com/main/ordering/modelx"
 	pbcm "etop.vn/backend/pb/common"
 	pborder "etop.vn/backend/pb/etop/order"
+	pbshop "etop.vn/backend/pb/etop/shop"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/validate"
@@ -26,7 +31,10 @@ import (
 
 var ll = l.New()
 
-func CreateOrder(ctx context.Context, claim *claims.ShopClaim, authPartner *model.Partner, r *pborder.CreateOrderRequest, tradingShopID *int64) (*pborder.Order, error) {
+func CreateOrder(
+	ctx context.Context, claim *claims.ShopClaim,
+	authPartner *model.Partner, r *pborder.CreateOrderRequest,
+	tradingShopID *int64) (*pborder.Order, error) {
 	shipping := r.ShopShipping
 	if r.Shipping != nil {
 		shipping = r.Shipping
@@ -62,7 +70,7 @@ func CreateOrder(ctx context.Context, claim *claims.ShopClaim, authPartner *mode
 	if err != nil {
 		return nil, err
 	}
-	order, err := PrepareOrder(r, lines)
+	order, err := PrepareOrder(ctx, shop.ID, r, lines)
 	if err != nil {
 		return nil, err
 	}
@@ -76,6 +84,66 @@ func CreateOrder(ctx context.Context, claim *claims.ShopClaim, authPartner *mode
 	order.FulfillmentType = ordermodel.FulfillManual
 	if tradingShopID != nil {
 		order.TradingShopID = *tradingShopID
+	}
+
+	if r.CustomerId != 0 && r.Customer == nil {
+		getCustomerQuery := &customering.GetCustomerByIDQuery{
+			ID:     r.CustomerId,
+			ShopID: shop.ID,
+		}
+		if err := customerQuery.Dispatch(ctx, getCustomerQuery); err != nil {
+			return nil, err
+		}
+		order.Customer = &ordermodel.OrderCustomer{
+			FullName: getCustomerQuery.Result.FullName,
+			Email:    getCustomerQuery.Result.Email,
+			Phone:    getCustomerQuery.Result.Phone,
+			Gender:   getCustomerQuery.Result.Gender,
+			Birthday: getCustomerQuery.Result.Birthday,
+		}
+		order.CustomerID = r.CustomerId
+	}
+	if r.CustomerId != 0 && r.CustomerAddress == nil {
+		getAddressQuery := &addressing.GetAddressActiveByTraderIDQuery{
+			TraderID: r.CustomerId,
+			ShopID:   shop.ID,
+		}
+		if err := traderAddressQuery.Dispatch(ctx, getAddressQuery); err != nil {
+			switch err.(*xerrors.APIError).Code {
+			case cm.NotFound:
+				return nil, cm.Errorf(cm.InvalidArgument, nil, "Vui lòng chọn địa chỉ mặc định cho khách hàng")
+			default:
+				return nil, err
+			}
+
+		}
+		customerAddress, err := pbshop.PbShopAddress(ctx, getAddressQuery.Result, locationQuery)
+		if err != nil {
+			return nil, err
+		}
+		var coordinates *ordermodel.Coordinates
+		if customerAddress.Coordinates != nil {
+			coordinates = &ordermodel.Coordinates{
+				Latitude:  customerAddress.Coordinates.Latitude,
+				Longitude: customerAddress.Coordinates.Longitude,
+			}
+		}
+		order.CustomerAddress = &ordermodel.OrderAddress{
+			FullName:     customerAddress.FullName,
+			Phone:        customerAddress.Phone,
+			Email:        customerAddress.Email,
+			Country:      customerAddress.Country,
+			Province:     customerAddress.Province,
+			District:     customerAddress.District,
+			Ward:         customerAddress.Ward,
+			Company:      customerAddress.Company,
+			Address1:     customerAddress.Address1,
+			Address2:     customerAddress.Address2,
+			ProvinceCode: customerAddress.ProvinceCode,
+			DistrictCode: customerAddress.DistrictCode,
+			WardCode:     customerAddress.WardCode,
+			Coordinates:  coordinates,
+		}
 	}
 
 	cmd := &ordermodelx.CreateOrderCommand{
@@ -212,6 +280,11 @@ func UpdateOrder(ctx context.Context, claim *claims.ShopClaim, authPartner *mode
 		return nil, err
 	}
 	oldOrder := query.Result.Order
+	customerId := query.Result.Order.CustomerID
+
+	if q.CustomerId != 0 {
+		customerId = q.CustomerId
+	}
 
 	// make sure update always has Lines and FeeLines
 	lines, err := PrepareOrderLines(ctx, claim.Shop.ID, q.Lines)
@@ -298,6 +371,73 @@ func UpdateOrder(ctx context.Context, claim *claims.ShopClaim, authPartner *mode
 		return nil, err
 	}
 
+	if q.CustomerId != 0 && q.Customer != nil {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "customer_id và customer không được gửi cùng 1 lúc", err)
+	}
+
+	if q.CustomerId != 0 && q.CustomerAddress != nil {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "customer_id và customer_address không được gửi cùng 1 lúc", err)
+	}
+
+	if q.CustomerId != 0 && q.Customer == nil {
+		query := &customering.GetCustomerByIDQuery{
+			ID:     q.CustomerId,
+			ShopID: claim.Shop.ID,
+		}
+		if err := customerQuery.Dispatch(ctx, query); err != nil {
+			switch err.(*xerrors.APIError).Code {
+			case cm.NotFound:
+				return nil, cm.Errorf(cm.InvalidArgument, nil, "customer_id %v không tồn tại", q.CustomerId)
+			default:
+				return nil, err
+			}
+		}
+
+		q.Customer = &pborder.OrderCustomer{
+			FullName: query.Result.FullName,
+			Email:    query.Result.Email,
+			Phone:    query.Result.Phone,
+			Gender:   gender.PbGender(query.Result.Gender),
+			Type:     query.Result.Type,
+		}
+	}
+
+	if q.CustomerId != 0 && q.CustomerAddress == nil {
+		query := &addressing.GetAddressActiveByTraderIDQuery{
+			ShopID:   claim.Shop.ID,
+			TraderID: q.CustomerId,
+		}
+		if err := traderAddressQuery.Dispatch(ctx, query); err != nil {
+			switch err.(*xerrors.APIError).Code {
+			case cm.NotFound:
+				return nil, cm.Errorf(cm.InvalidArgument, nil, "Vui lòng chọn địa chỉ mặc định")
+			default:
+				return nil, err
+			}
+		}
+		customerAddressResult, err := pbshop.PbShopAddress(ctx, query.Result, locationQuery)
+		if err != nil {
+			return nil, err
+		}
+		q.CustomerAddress = &pborder.OrderAddress{
+			FullName:     customerAddressResult.FullName,
+			Phone:        customerAddressResult.Phone,
+			Email:        customerAddressResult.Email,
+			District:     customerAddressResult.District,
+			Ward:         customerAddressResult.Ward,
+			Company:      customerAddressResult.Company,
+			Address1:     customerAddressResult.Address1,
+			Address2:     customerAddressResult.Address2,
+			DistrictCode: customerAddressResult.DistrictCode,
+			WardCode:     customerAddressResult.WardCode,
+			Coordinates:  customerAddressResult.Coordinates,
+		}
+		customerAddress, err = q.CustomerAddress.ToModel()
+		if err != nil {
+			return nil, err
+		}
+	}
+
 	cmd := &ordermodelx.UpdateOrderCommand{
 		ID:              q.Id,
 		ShopID:          claim.Shop.ID,
@@ -320,6 +460,7 @@ func UpdateOrder(ctx context.Context, claim *claims.ShopClaim, authPartner *mode
 		OrderDiscount:   cm.PInt(orderDiscount),
 		TotalDiscount:   totalDiscount,
 		ShopCOD:         cm.PInt32(shopCod),
+		CustomerID:      customerId,
 	}
 	if authPartner != nil {
 		cmd.PartnerID = authPartner.ID
@@ -426,10 +567,15 @@ func prepareOrderLine(
 	return line, nil
 }
 
-func PrepareOrder(m *pborder.CreateOrderRequest, lines []*ordermodel.OrderLine) (*ordermodel.Order, error) {
-	if m.Customer == nil {
-		return nil, cm.Error(cm.InvalidArgument, "Missing Customer", nil)
+func PrepareOrder(ctx context.Context, shopID int64, m *pborder.CreateOrderRequest, lines []*ordermodel.OrderLine) (*ordermodel.Order, error) {
+	if m.CustomerId != 0 && m.Customer != nil {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "customer_id và customer không được gửi cùng 1 lúc")
 	}
+
+	if m.CustomerId != 0 && m.CustomerAddress != nil {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "customer_id và customer_address không được gửi cùng 1 lúc")
+	}
+
 	if m.BasketValue <= 0 {
 		return nil, cm.Error(cm.InvalidArgument, "Giá trị đơn hàng không hợp lệ", nil).
 			WithMeta("reason", "basket_value <= 0")
@@ -558,6 +704,26 @@ func PrepareOrder(m *pborder.CreateOrderRequest, lines []*ordermodel.OrderLine) 
 	}
 	externalMeta, _ := jsonx.Marshal(m.ExternalMeta)
 	referralMeta, _ := jsonx.Marshal(m.ReferralMeta)
+	var phone, email string
+	if m.Customer != nil {
+		phone = m.Customer.Phone
+		email = m.Customer.Email
+	} else {
+		query := &customering.GetCustomerByIDQuery{
+			ID:     m.CustomerId,
+			ShopID: shopID,
+		}
+		if err := customerQuery.Dispatch(ctx, query); err != nil {
+			switch cm.ErrorCode(err.(*xerrors.APIError).Err) {
+			case cm.NotFound:
+				return nil, cm.Errorf(cm.NotFound, nil, "customer not found")
+			default:
+				return nil, err
+			}
+		}
+		phone = query.Result.Phone
+		email = query.Result.Email
+	}
 	order := &ordermodel.Order{
 		ID:         0,
 		ShopID:     0,
@@ -574,8 +740,8 @@ func PrepareOrder(m *pborder.CreateOrderRequest, lines []*ordermodel.OrderLine) 
 		BillingAddress:             billingAddress,
 		ShippingAddress:            shippingAddress,
 		CustomerName:               "",
-		CustomerPhone:              customerAddress.Phone,
-		CustomerEmail:              customerAddress.Email,
+		CustomerPhone:              phone,
+		CustomerEmail:              email,
 		CreatedAt:                  time.Now(),
 		ProcessedAt:                time.Time{},
 		UpdatedAt:                  time.Time{},

@@ -92,6 +92,7 @@ service CustomerService {
     rpc GetCustomerAddresses(GetCustomerAddressesRequest) returns (CustomerAddressesResponse);
     rpc CreateCustomerAddress(CreateCustomerAddressRequest) returns (CustomerAddress);
     rpc UpdateCustomerAddress(UpdateCustomerAddressRequest) returns (CustomerAddress);
+    rpc SetDefaultCustomerAddress(cm.IDRequest) returns (cm.UpdatedResponse);
     rpc DeleteCustomerAddress(cm.IDRequest) returns (cm.DeletedResponse);
 }
 

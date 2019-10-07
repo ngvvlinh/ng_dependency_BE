@@ -3,6 +3,9 @@ package shop
 import (
 	"context"
 
+	cm "etop.vn/backend/pkg/common"
+	"etop.vn/common/xerrors"
+
 	"etop.vn/api/shopping/addressing"
 	pbcm "etop.vn/backend/pb/common"
 	pbetop "etop.vn/backend/pb/etop"
@@ -18,6 +21,7 @@ func init() {
 		DeleteCustomerAddress,
 		GetCustomerAddresses,
 		UpdateCustomerAddress,
+		SetDefaultCustomerAddress,
 	)
 }
 
@@ -34,6 +38,7 @@ func CreateCustomerAddress(ctx context.Context, r *wrapshop.CreateCustomerAddres
 		DistrictCode: r.DistrictCode,
 		WardCode:     r.WardCode,
 		Coordinates:  pbetop.PbCoordinatesToModel(r.Coordinates),
+		IsDefault:    true,
 	}
 	if err := traderAddressAggr.Dispatch(ctx, cmd); err != nil {
 		return err
@@ -97,5 +102,31 @@ func UpdateCustomerAddress(ctx context.Context, r *wrapshop.UpdateCustomerAddres
 		return err
 	}
 	r.Result = addr
+	return nil
+}
+
+func SetDefaultCustomerAddress(ctx context.Context, r *wrapshop.SetDefaultCustomerAddressEndpoint) error {
+	query := &addressing.GetAddressByIDQuery{
+		ID:     r.Id,
+		ShopID: r.Context.Shop.ID,
+	}
+	if err := traderAddressQuery.Dispatch(ctx, query); err != nil {
+		switch cm.ErrorCode(err.(*xerrors.APIError).Err) {
+		case cm.NotFound:
+			return cm.Errorf(cm.InvalidArgument, nil, "traderAddress not found")
+		default:
+			return err
+		}
+	}
+
+	setDefaultAddressCmd := &addressing.SetDefaultAddressCommand{
+		ID:       r.Id,
+		TraderID: query.Result.TraderID,
+		ShopID:   r.Context.Shop.ID,
+	}
+	if err := traderAddressAggr.Dispatch(ctx, setDefaultAddressCmd); err != nil {
+		return nil
+	}
+	r.Result = &pbcm.UpdatedResponse{Updated: setDefaultAddressCmd.Result.Updated}
 	return nil
 }

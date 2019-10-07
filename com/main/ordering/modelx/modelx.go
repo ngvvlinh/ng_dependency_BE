@@ -124,6 +124,8 @@ type UpdateOrderCommand struct {
 	TotalAmount     int
 	TotalItems      int
 	TotalDiscount   int
+
+	CustomerID int64
 }
 
 type UpdateOrdersStatusCommand struct {

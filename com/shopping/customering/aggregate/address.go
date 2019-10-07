@@ -3,6 +3,8 @@ package aggregate
 import (
 	"context"
 
+	"etop.vn/api/meta"
+
 	"etop.vn/api/shopping/addressing"
 	"etop.vn/backend/com/shopping/customering/convert"
 	"etop.vn/backend/com/shopping/customering/sqlstore"
@@ -33,6 +35,11 @@ func (a *AddressAggregate) CreateAddress(ctx context.Context, args *addressing.C
 	if err != nil {
 		return nil, err
 	}
+
+	if err := a.store(ctx).UpdateStatusAddresses(args.ShopID, args.TraderID, false); err != nil {
+		return nil, err
+	}
+
 	addr := convert.CreateShopTraderAddress(args)
 	err = a.store(ctx).CreateAddress(addr)
 	return addr, err
@@ -71,4 +78,15 @@ func ValidateCreateShopTraderAddress(args *addressing.CreateAddressArgs) error {
 
 func EditErrorMsg(str string) error {
 	return cm.Errorf(cm.InvalidArgument, nil, "Vui lòng nhập thông tin bắt buộc, thiếu %v", str)
+}
+
+func (a *AddressAggregate) SetDefaultAddress(
+	ctx context.Context, ID, traderID, shopID int64,
+) (*meta.UpdatedResponse, error) {
+	if err := a.store(ctx).UpdateStatusAddresses(shopID, traderID, false); err != nil {
+		return nil, err
+	}
+
+	updated, err := a.store(ctx).SetDefaultAddress(ID, shopID, traderID)
+	return &meta.UpdatedResponse{Updated: int32(updated)}, err
 }

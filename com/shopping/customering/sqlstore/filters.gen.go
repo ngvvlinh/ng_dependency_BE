@@ -583,6 +583,25 @@ func (ft *ShopTraderAddressFilters) ByWardCodePtr(WardCode *string) *sq.ColumnFi
 	}
 }
 
+func (ft *ShopTraderAddressFilters) ByIsDefault(IsDefault bool) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "is_default",
+		Value:  IsDefault,
+		IsNil:  bool(!IsDefault),
+	}
+}
+
+func (ft *ShopTraderAddressFilters) ByIsDefaultPtr(IsDefault *bool) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "is_default",
+		Value:  IsDefault,
+		IsNil:  IsDefault == nil,
+		IsZero: IsDefault != nil && bool(!(*IsDefault)),
+	}
+}
+
 func (ft *ShopTraderAddressFilters) ByCreatedAt(CreatedAt time.Time) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,

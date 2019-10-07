@@ -264,10 +264,11 @@ var ACL = map[string]*permission.PermissionDecl{
 	"shop.Customer/GetCustomersByIDs":       {Type: Shop},
 	"shop.Customer/BatchSetCustomersStatus": {Type: Shop},
 
-	"shop.Customer/GetCustomerAddresses":  {Type: Shop},
-	"shop.Customer/CreateCustomerAddress": {Type: Shop},
-	"shop.Customer/UpdateCustomerAddress": {Type: Shop},
-	"shop.Customer/DeleteCustomerAddress": {Type: Shop},
+	"shop.Customer/GetCustomerAddresses":      {Type: Shop},
+	"shop.Customer/CreateCustomerAddress":     {Type: Shop},
+	"shop.Customer/UpdateCustomerAddress":     {Type: Shop},
+	"shop.Customer/DeleteCustomerAddress":     {Type: Shop},
+	"shop.Customer/SetDefaultCustomerAddress": {Type: Shop},
 
 	"shop.Product/GetProduct":           {Type: Shop, Role: _____, AuthPartner: Opt},
 	"shop.Product/GetProducts":          {Type: Shop, Role: _____, AuthPartner: Opt},

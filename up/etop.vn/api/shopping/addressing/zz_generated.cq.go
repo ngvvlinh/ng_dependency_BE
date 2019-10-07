@@ -8,6 +8,7 @@ import (
 	context "context"
 
 	types "etop.vn/api/main/ordering/types"
+	meta "etop.vn/api/meta"
 	capi "etop.vn/capi"
 	dot "etop.vn/capi/dot"
 )
@@ -51,6 +52,7 @@ type CreateAddressCommand struct {
 	Address2     string
 	DistrictCode string
 	WardCode     string
+	IsDefault    bool
 	Coordinates  *types.Coordinates
 
 	Result *ShopTraderAddress `json:"-"`
@@ -73,6 +75,19 @@ func (h AggregateHandler) HandleDeleteAddress(ctx context.Context, msg *DeleteAd
 	return err
 }
 
+type SetDefaultAddressCommand struct {
+	ID       int64
+	TraderID int64
+	ShopID   int64
+
+	Result *meta.UpdatedResponse `json:"-"`
+}
+
+func (h AggregateHandler) HandleSetDefaultAddress(ctx context.Context, msg *SetDefaultAddressCommand) (err error) {
+	msg.Result, err = h.inner.SetDefaultAddress(msg.GetArgs(ctx))
+	return err
+}
+
 type UpdateAddressCommand struct {
 	ID           int64
 	ShopID       int64
@@ -84,6 +99,7 @@ type UpdateAddressCommand struct {
 	Address2     dot.NullString
 	DistrictCode dot.NullString
 	WardCode     dot.NullString
+	IsDefault    dot.NullBool
 	Coordinates  *types.Coordinates
 
 	Result *ShopTraderAddress `json:"-"`
@@ -91,6 +107,18 @@ type UpdateAddressCommand struct {
 
 func (h AggregateHandler) HandleUpdateAddress(ctx context.Context, msg *UpdateAddressCommand) (err error) {
 	msg.Result, err = h.inner.UpdateAddress(msg.GetArgs(ctx))
+	return err
+}
+
+type GetAddressActiveByTraderIDQuery struct {
+	TraderID int64
+	ShopID   int64
+
+	Result *ShopTraderAddress `json:"-"`
+}
+
+func (h QueryServiceHandler) HandleGetAddressActiveByTraderID(ctx context.Context, msg *GetAddressActiveByTraderIDQuery) (err error) {
+	msg.Result, err = h.inner.GetAddressActiveByTraderID(msg.GetArgs(ctx))
 	return err
 }
 
@@ -103,6 +131,18 @@ type GetAddressByIDQuery struct {
 
 func (h QueryServiceHandler) HandleGetAddressByID(ctx context.Context, msg *GetAddressByIDQuery) (err error) {
 	msg.Result, err = h.inner.GetAddressByID(msg.GetArgs(ctx))
+	return err
+}
+
+type GetAddressByTraderIDQuery struct {
+	TraderID int64
+	ShopID   int64
+
+	Result *ShopTraderAddress `json:"-"`
+}
+
+func (h QueryServiceHandler) HandleGetAddressByTraderID(ctx context.Context, msg *GetAddressByTraderIDQuery) (err error) {
+	msg.Result, err = h.inner.GetAddressByTraderID(msg.GetArgs(ctx))
 	return err
 }
 
@@ -120,11 +160,14 @@ func (h QueryServiceHandler) HandleListAddressesByTraderID(ctx context.Context, 
 
 // implement interfaces
 
-func (q *CreateAddressCommand) command()       {}
-func (q *DeleteAddressCommand) command()       {}
-func (q *UpdateAddressCommand) command()       {}
-func (q *GetAddressByIDQuery) query()          {}
-func (q *ListAddressesByTraderIDQuery) query() {}
+func (q *CreateAddressCommand) command()          {}
+func (q *DeleteAddressCommand) command()          {}
+func (q *SetDefaultAddressCommand) command()      {}
+func (q *UpdateAddressCommand) command()          {}
+func (q *GetAddressActiveByTraderIDQuery) query() {}
+func (q *GetAddressByIDQuery) query()             {}
+func (q *GetAddressByTraderIDQuery) query()       {}
+func (q *ListAddressesByTraderIDQuery) query()    {}
 
 // implement conversion
 
@@ -141,6 +184,7 @@ func (q *CreateAddressCommand) GetArgs(ctx context.Context) (_ context.Context, 
 			Address2:     q.Address2,
 			DistrictCode: q.DistrictCode,
 			WardCode:     q.WardCode,
+			IsDefault:    q.IsDefault,
 			Coordinates:  q.Coordinates,
 		}
 }
@@ -148,6 +192,13 @@ func (q *CreateAddressCommand) GetArgs(ctx context.Context) (_ context.Context, 
 func (q *DeleteAddressCommand) GetArgs(ctx context.Context) (_ context.Context, ID int64, ShopID int64) {
 	return ctx,
 		q.ID,
+		q.ShopID
+}
+
+func (q *SetDefaultAddressCommand) GetArgs(ctx context.Context) (_ context.Context, ID int64, traderID int64, ShopID int64) {
+	return ctx,
+		q.ID,
+		q.TraderID,
 		q.ShopID
 }
 
@@ -164,13 +215,26 @@ func (q *UpdateAddressCommand) GetArgs(ctx context.Context) (_ context.Context, 
 			Address2:     q.Address2,
 			DistrictCode: q.DistrictCode,
 			WardCode:     q.WardCode,
+			IsDefault:    q.IsDefault,
 			Coordinates:  q.Coordinates,
 		}
+}
+
+func (q *GetAddressActiveByTraderIDQuery) GetArgs(ctx context.Context) (_ context.Context, traderID int64, ShopID int64) {
+	return ctx,
+		q.TraderID,
+		q.ShopID
 }
 
 func (q *GetAddressByIDQuery) GetArgs(ctx context.Context) (_ context.Context, ID int64, ShopID int64) {
 	return ctx,
 		q.ID,
+		q.ShopID
+}
+
+func (q *GetAddressByTraderIDQuery) GetArgs(ctx context.Context) (_ context.Context, traderID int64, shopID int64) {
+	return ctx,
+		q.TraderID,
 		q.ShopID
 }
 
@@ -194,6 +258,7 @@ func (h AggregateHandler) RegisterHandlers(b interface {
 }) CommandBus {
 	b.AddHandler(h.HandleCreateAddress)
 	b.AddHandler(h.HandleDeleteAddress)
+	b.AddHandler(h.HandleSetDefaultAddress)
 	b.AddHandler(h.HandleUpdateAddress)
 	return CommandBus{b}
 }
@@ -210,7 +275,9 @@ func (h QueryServiceHandler) RegisterHandlers(b interface {
 	capi.Bus
 	AddHandler(handler interface{})
 }) QueryBus {
+	b.AddHandler(h.HandleGetAddressActiveByTraderID)
 	b.AddHandler(h.HandleGetAddressByID)
+	b.AddHandler(h.HandleGetAddressByTraderID)
 	b.AddHandler(h.HandleListAddressesByTraderID)
 	return QueryBus{b}
 }

@@ -5,6 +5,11 @@ import (
 	"sync"
 	"time"
 
+	"etop.vn/api/main/location"
+
+	"etop.vn/api/shopping/addressing"
+	"etop.vn/api/shopping/customering"
+
 	"etop.vn/api/main/catalog"
 	"etop.vn/api/main/ordering"
 	ordertypes "etop.vn/api/main/ordering/types"
@@ -22,14 +27,33 @@ import (
 	"etop.vn/common/l"
 )
 
-var ctrl *shipping_provider.ProviderManager
-var catalogQuery catalog.QueryBus
-var orderAggr ordering.CommandBus
+var (
+	ctrl               *shipping_provider.ProviderManager
+	catalogQuery       catalog.QueryBus
+	orderAggr          ordering.CommandBus
+	customerAggr       customering.CommandBus
+	customerQuery      customering.QueryBus
+	traderAddressAggr  addressing.CommandBus
+	traderAddressQuery addressing.QueryBus
+	locationQuery      location.QueryBus
+)
 
-func Init(shippingProviderCtrl *shipping_provider.ProviderManager, catalogQueryBus catalog.QueryBus, orderAggregate ordering.CommandBus) {
+func Init(shippingProviderCtrl *shipping_provider.ProviderManager,
+	catalogQueryBus catalog.QueryBus,
+	orderAggregate ordering.CommandBus,
+	customerAggregate customering.CommandBus,
+	customerQueryBus customering.QueryBus,
+	traderAddressAggregate addressing.CommandBus,
+	traderAddressQueryBus addressing.QueryBus,
+	locationQueryBus location.QueryBus) {
 	ctrl = shippingProviderCtrl
 	catalogQuery = catalogQueryBus
 	orderAggr = orderAggregate
+	customerAggr = customerAggregate
+	customerQuery = customerQueryBus
+	traderAddressAggr = traderAddressAggregate
+	traderAddressQuery = traderAddressQueryBus
+	locationQuery = locationQueryBus
 }
 
 func ConfirmOrderAndCreateFulfillments(ctx context.Context, shop *model.Shop, partnerID int64, r *shop.OrderIDRequest) (resp *pborder.OrderWithErrorsResponse, _err error) {

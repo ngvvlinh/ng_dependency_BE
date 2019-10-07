@@ -127,6 +127,7 @@ func PbOrder(m *ordermodel.Order, fulfillments []*shipmodel.Fulfillment, accType
 		GhnNoteCode:               m.GhnNoteCode,
 		FulfillmentType:           orderconvert.Fulfill(m.FulfillmentType).String(),
 		FulfillmentIds:            m.FulfillmentIDs,
+		CustomerId:                m.CustomerID,
 	}
 	shipping := PbOrderShipping(m)
 	order.ShopShipping = shipping
@@ -190,6 +191,7 @@ func XPbOrder(m *ordermodel.Order, fulfillments []*ordermodelx.Fulfillment, accT
 		GhnNoteCode:               m.GhnNoteCode,
 		FulfillmentType:           orderconvert.Fulfill(m.FulfillmentType).String(),
 		FulfillmentIds:            m.FulfillmentIDs,
+		CustomerId:                m.CustomerID,
 	}
 	shipping := PbOrderShipping(m)
 	order.ShopShipping = shipping

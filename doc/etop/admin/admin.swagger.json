@@ -3140,6 +3140,10 @@
           "type": "integer",
           "format": "int32",
           "title": "received_amount get from receipt"
+        },
+        "customer_id": {
+          "type": "string",
+          "format": "int64"
         }
       }
     },
@@ -3234,6 +3238,9 @@
         },
         "gender": {
           "$ref": "#/definitions/genderGender"
+        },
+        "type": {
+          "type": "string"
         }
       }
     },

@@ -120,6 +120,7 @@ func ShopTraderAddress(in *model.ShopTraderAddress) (out *addressing.ShopTraderA
 		Coordinates:  orderconvert.Coordinates(in.Coordinates),
 		CreatedAt:    in.CreatedAt,
 		UpdatedAt:    in.UpdatedAt,
+		IsDefault:    in.IsDefault,
 	}
 }
 
@@ -150,6 +151,7 @@ func ShopTraderAddressDB(in *addressing.ShopTraderAddress) (out *model.ShopTrade
 		Coordinates:  orderconvert.CoordinatesDB(in.Coordinates),
 		CreatedAt:    in.CreatedAt,
 		UpdatedAt:    in.UpdatedAt,
+		IsDefault:    in.IsDefault,
 
 		// currently not use TODO
 		Status: etop.S3Positive,
@@ -173,6 +175,7 @@ func CreateShopTraderAddress(in *addressing.CreateAddressArgs) (out *addressing.
 		DistrictCode: in.DistrictCode,
 		WardCode:     in.WardCode,
 		Coordinates:  in.Coordinates,
+		IsDefault:    in.IsDefault,
 	}
 }
 
@@ -193,6 +196,7 @@ func UpdateShopTraderAddress(in *addressing.ShopTraderAddress, update *addressin
 		DistrictCode: update.DistrictCode.Apply(in.DistrictCode),
 		WardCode:     update.WardCode.Apply(in.WardCode),
 		Coordinates:  in.Coordinates,
+		IsDefault:    in.IsDefault,
 	}
 	if update.Coordinates != nil {
 		out.Coordinates = update.Coordinates

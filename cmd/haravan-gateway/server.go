@@ -14,7 +14,10 @@ import (
 	haravanidentity "etop.vn/backend/com/external/haravan/identity"
 	catalogquery "etop.vn/backend/com/main/catalog/query"
 	"etop.vn/backend/com/main/identity"
+	servicelocation "etop.vn/backend/com/main/location"
 	serviceordering "etop.vn/backend/com/main/ordering"
+	customeraggregate "etop.vn/backend/com/shopping/customering/aggregate"
+	customerquery "etop.vn/backend/com/shopping/customering/query"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/httpx"
 	"etop.vn/backend/pkg/common/metrics"
@@ -31,7 +34,13 @@ func startServers() *http.Server {
 
 	catalogQueryService := catalogquery.New(db).MessageBus()
 	orderAggr := serviceordering.NewAggregate(db).MessageBus()
-	orderS.Init(shippingManager, catalogQueryService, orderAggr)
+	customerAggr := customeraggregate.NewCustomerAggregate(db).MessageBus()
+	customerQuery := customerquery.NewCustomerQuery(db).MessageBus()
+	traderAddressAggr := customeraggregate.NewAddressAggregate(db).MessageBus()
+	traderAddressQuery := customerquery.NewAddressQuery(db).MessageBus()
+	locationBus := servicelocation.New().MessageBus()
+	orderS.Init(shippingManager, catalogQueryService, orderAggr, customerAggr,
+		customerQuery, traderAddressAggr, traderAddressQuery, locationBus)
 	haravanServer := haravanserver.New(haravan, haravanIdentityQuery)
 
 	mux := http.NewServeMux()

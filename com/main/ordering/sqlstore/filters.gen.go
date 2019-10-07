@@ -974,6 +974,25 @@ func (ft *OrderFilters) ByPaymentIDPtr(PaymentID *int64) *sq.ColumnFilterPtr {
 	}
 }
 
+func (ft *OrderFilters) ByCustomerID(CustomerID int64) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "customer_id",
+		Value:  CustomerID,
+		IsNil:  CustomerID == 0,
+	}
+}
+
+func (ft *OrderFilters) ByCustomerIDPtr(CustomerID *int64) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "customer_id",
+		Value:  CustomerID,
+		IsNil:  CustomerID == nil,
+		IsZero: CustomerID != nil && (*CustomerID) == 0,
+	}
+}
+
 type OrderLineFilters struct{ prefix string }
 
 func NewOrderLineFilters(prefix string) OrderLineFilters {

@@ -54,6 +54,36 @@ func (s *AddressStore) ShopTraderID(shopID, traderID int64) *AddressStore {
 	return s
 }
 
+func (s *AddressStore) IsDefault(isDefault bool) *AddressStore {
+	s.preds = append(s.preds, s.ft.ByIsDefault(isDefault))
+	return s
+}
+
+func (s *AddressStore) UpdateStatusAddresses(shopID, traderID int64, isDefault bool) error {
+	_, err := s.query().Where(
+		s.ft.ByShopID(shopID),
+		s.ft.ByTraderID(traderID)).
+		Table("shop_trader_address").
+		UpdateMap(map[string]interface{}{
+			"is_default": isDefault,
+		})
+
+	return err
+}
+
+func (s *AddressStore) SetDefaultAddress(ID, shopID, traderID int64) (int, error) {
+	sqlstore.MustNoPreds(s.preds)
+	updated, err := s.query().Where(
+		s.ft.ByID(ID),
+		s.ft.ByShopID(shopID),
+		s.ft.ByTraderID(traderID)).
+		Table("shop_trader_address").
+		UpdateMap(map[string]interface{}{
+			"is_default": true,
+		})
+	return int(updated), err
+}
+
 func (s *AddressStore) CreateAddress(addr *addressing.ShopTraderAddress) error {
 	sqlstore.MustNoPreds(s.preds)
 	addrDB := convert.ShopTraderAddressDB(addr)

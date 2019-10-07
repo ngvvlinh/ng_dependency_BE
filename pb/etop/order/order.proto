@@ -133,6 +133,8 @@ message Order {
 
     // received_amount get from receipt
     optional int32 received_amount = 75 [(gogoproto.nullable) = false];
+
+    optional int64 customer_id = 76 [(gogoproto.nullable)=false];
 }
 
 message OrderLine {
@@ -191,7 +193,9 @@ message OrderCustomer {
     optional string full_name = 3 [(gogoproto.nullable)=false];
     optional string email = 4 [(gogoproto.nullable)=false];
     optional string phone = 5 [(gogoproto.nullable)=false];
+
     optional gender.Gender gender = 6 [(gogoproto.nullable)=false];
+    optional string type = 7 [(gogoproto.nullable)=false];
 }
 
 message OrderAddress {
@@ -283,6 +287,8 @@ message CreateOrderRequest {
 
     map<string,string> external_meta = 62;
     map<string,string> referral_meta = 63;
+
+    optional int64 customer_id = 64 [(gogoproto.nullable)=false];
 }
 
 message UpdateOrderRequest {
@@ -321,6 +327,8 @@ message UpdateOrderRequest {
     optional int32 total_amount = 22 [(gogoproto.nullable)=false];
     optional int32 total_items  = 23 [(gogoproto.nullable)=false];
     optional int32 total_fee  = 24;
+
+    optional int64 customer_id = 25 [(gogoproto.nullable)=false];
 }
 
 message OrderShipping {
