@@ -42,9 +42,6 @@ func (a *CustomerAggregate) CreateCustomer(
 	if args.Phone == "" {
 		return nil, cm.Error(cm.InvalidArgument, "Vui lòng nhập số điện thoại", nil)
 	}
-	if args.Email == "" {
-		return nil, cm.Error(cm.InvalidArgument, "Vui lòng nhập email", nil)
-	}
 
 	phone, isPhone := validate.NormalizePhone(args.Phone)
 	if isPhone != true {
@@ -52,12 +49,13 @@ func (a *CustomerAggregate) CreateCustomer(
 	}
 	args.Phone = phone.String()
 
-	email, isEmail := validate.NormalizeEmail(args.Email)
-	if isEmail != true {
-		return nil, cm.Error(cm.InvalidArgument, "Vui lòng nhập đúng định dạng email", nil)
+	if args.Email != "" {
+		email, isEmail := validate.NormalizeEmail(args.Email)
+		if isEmail != true {
+			return nil, cm.Error(cm.InvalidArgument, "Vui lòng nhập đúng định dạng email", nil)
+		}
+		args.Email = email.String()
 	}
-	args.Email = email.String()
-
 	customer := convert.CreateShopCustomer(args)
 	err := a.store(ctx).CreateCustomer(customer)
 	if err != nil {

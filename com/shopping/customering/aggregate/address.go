@@ -63,9 +63,6 @@ func ValidateCreateShopTraderAddress(args *addressing.CreateAddressArgs) error {
 	if args.Address1 == "" {
 		return EditErrorMsg("Địa chỉ cụ thể")
 	}
-	if args.Email == "" {
-		return EditErrorMsg("Email")
-	}
 	if args.Phone == "" {
 		return EditErrorMsg("Số điện thoại")
 	}
