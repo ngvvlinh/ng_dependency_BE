@@ -7,6 +7,16 @@ import (
 	"etop.vn/common/xerrors"
 )
 
+type EventMeta struct {
+	ID string
+}
+
+func NewEvent() EventMeta {
+	return EventMeta{
+		ID: uuid.NewV4().String(),
+	}
+}
+
 type Empty struct{}
 
 type UUID struct{ Data []byte }

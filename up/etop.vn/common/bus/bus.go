@@ -25,10 +25,14 @@ type HandlerFunc = interface{}
 type CtxHandlerFunc func()
 type Msg = interface{}
 
+type Event interface {
+	GetTopic() string
+}
+
 type Bus interface {
 	Dispatch(ctx context.Context, msg Msg) error
 	DispatchAll(ctx context.Context, msgs ...Msg) error
-	Publish(ctx context.Context, msg Msg) error
+	Publish(ctx context.Context, msg Event) error
 
 	AddHandler(handler HandlerFunc)
 	AddHandlers(handlers ...HandlerFunc)
@@ -38,7 +42,7 @@ type Bus interface {
 }
 
 type EventRegistry interface {
-	Publish(ctx context.Context, msg Msg) error
+	Publish(ctx context.Context, msg Event) error
 	AddEventListener(handler interface{})
 }
 
@@ -84,7 +88,7 @@ func (b *InProcBus) Dispatch(ctx context.Context, msg Msg) (_err error) {
 	return call(node, msg, params, handler)
 }
 
-func (b *InProcBus) Publish(ctx context.Context, msg Msg) (_err error) {
+func (b *InProcBus) Publish(ctx context.Context, msg Event) (_err error) {
 	var msgType = reflect.TypeOf(msg).Elem()
 	var listeners = b.listeners[msgType]
 	var params = make([]reflect.Value, 2)
@@ -264,10 +268,6 @@ func AddWildcardListener(handler HandlerFunc) {
 
 func Dispatch(ctx context.Context, msg Msg) error {
 	return globalBus.Dispatch(ctx, msg)
-}
-
-func Publish(ctx context.Context, msg Msg) error {
-	return globalBus.Publish(ctx, msg)
 }
 
 func ClearBusHandlers() {

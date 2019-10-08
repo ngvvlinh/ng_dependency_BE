@@ -8,13 +8,13 @@ import (
 	context "context"
 	time "time"
 
-	meta "etop.vn/api/meta"
+	capi "etop.vn/capi"
 )
 
 type Command interface{ command() }
 type Query interface{ query() }
-type CommandBus struct{ bus meta.Bus }
-type QueryBus struct{ bus meta.Bus }
+type CommandBus struct{ bus capi.Bus }
+type QueryBus struct{ bus capi.Bus }
 
 func (c CommandBus) Dispatch(ctx context.Context, msg Command) error {
 	return c.bus.Dispatch(ctx, msg)
@@ -78,7 +78,7 @@ func NewQueryServiceHandler(service QueryService) QueryServiceHandler {
 }
 
 func (h QueryServiceHandler) RegisterHandlers(b interface {
-	meta.Bus
+	capi.Bus
 	AddHandler(handler interface{})
 }) QueryBus {
 	b.AddHandler(h.HandleSummaryPOS)

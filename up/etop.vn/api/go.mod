@@ -2,9 +2,10 @@ module etop.vn/api
 
 go 1.13
 
-replace etop.vn/capi => ../capi
-
-replace etop.vn/common => ../common
+replace (
+	etop.vn/capi => ../capi
+	etop.vn/common => ../common
+)
 
 require (
 	etop.vn/capi v0.0.0-00010101000000-000000000000

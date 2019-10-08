@@ -4,6 +4,8 @@ import (
 	"context"
 	"fmt"
 
+	"etop.vn/api/meta"
+
 	"etop.vn/api/main/catalog"
 	"etop.vn/api/main/identity"
 	"etop.vn/api/main/ordering"
@@ -109,6 +111,7 @@ func tradingCreateOrder(ctx context.Context, r *wrapshop.TradingCreateOrderEndpo
 		referralCode := r.ReferralMeta["referral_code"]
 		if referralCode != "" {
 			tradingOrderCreating := &ordertrading.TradingOrderCreatingEvent{
+				EventMeta:    meta.NewEvent(),
 				ReferralCode: referralCode,
 				UserID:       r.Context.Shop.OwnerID,
 			}
@@ -133,6 +136,7 @@ func tradingCreateOrder(ctx context.Context, r *wrapshop.TradingCreateOrderEndpo
 			return resp.Id, err
 		}
 		tradingOrderCreatedEvent := &ordertrading.TradingOrderCreatedEvent{
+			EventMeta:    meta.NewEvent(),
 			OrderID:      _query.Result.ID,
 			ReferralCode: _query.Result.ReferralMeta.ReferralCode,
 		}

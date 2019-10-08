@@ -11,16 +11,6 @@ import (
 	uuid "github.com/satori/go.uuid"
 )
 
-type AutoGeneratable interface {
-	autoGenerate()
-}
-
-func AutoFill(id *UUID) {
-	if id.IsZero() {
-		*id = NewUUID()
-	}
-}
-
 var zeroUUID = uuid.UUID{}
 
 func (id UUID) IsZero() bool {

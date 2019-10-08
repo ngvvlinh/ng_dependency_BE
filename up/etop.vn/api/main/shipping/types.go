@@ -4,13 +4,15 @@ import (
 	"context"
 	"time"
 
+	"etop.vn/capi"
+
 	"etop.vn/api/main/shipping/types"
 	"etop.vn/api/meta"
 )
 
 // +gen:api
 
-type AggregateBus struct{ meta.Bus }
+type AggregateBus struct{ capi.Bus }
 
 type Aggregate interface {
 	GetFulfillmentByID(context.Context, *GetFulfillmentByIDQueryArgs) (*Fulfillment, error)

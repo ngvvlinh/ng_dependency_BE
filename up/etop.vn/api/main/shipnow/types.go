@@ -11,6 +11,8 @@ import (
 	"etop.vn/api/meta"
 )
 
+// +gen:event:topic=event/shipnow
+
 type ShipnowFulfillment struct {
 	Id                         int64
 	ShopId                     int64
@@ -54,17 +56,23 @@ type SyncStates struct {
 }
 
 type ShipnowOrderReservationEvent struct {
+	meta.EventMeta
+
 	ShipnowFulfillmentId int64
 	OrderIds             []int64
 }
 
 type ShipnowOrderChangedEvent struct {
+	meta.EventMeta
+
 	ShipnowFulfillmentId int64
 	OldOrderIds          []int64
 	OrderIds             []int64
 }
 
 type ShipnowCancelledEvent struct {
+	meta.EventMeta
+
 	ShipnowFulfillmentId int64
 	OrderIds             []int64
 	ExternalShipnowId    string
@@ -73,11 +81,15 @@ type ShipnowCancelledEvent struct {
 }
 
 type ShipnowValidateConfirmedEvent struct {
+	meta.EventMeta
+
 	ShipnowFulfillmentId int64
 	OrderIds             []int64
 }
 
 type ShipnowCreateExternalEvent struct {
+	meta.EventMeta
+
 	ShipnowFulfillmentId int64
 }
 

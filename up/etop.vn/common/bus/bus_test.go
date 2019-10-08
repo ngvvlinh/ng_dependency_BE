@@ -14,6 +14,8 @@ type TestQuery struct {
 	Resp  string
 }
 
+func (q *TestQuery) GetTopic() string { return "topic" }
+
 type TestQueryA struct {
 	Value string
 }
@@ -89,7 +91,6 @@ func TestEventListeners(t *testing.T) {
 	})
 
 	err := bus.Publish(Ctx(), &TestQuery{})
-
 	if err != nil {
 		t.Fatal("Publish event failed " + err.Error())
 	} else if count != 11 {

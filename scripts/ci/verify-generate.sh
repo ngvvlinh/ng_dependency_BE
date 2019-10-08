@@ -16,7 +16,8 @@ tidy $wd/up/etop.vn/common
 
 CHANGES="$(git status -s)"
 if [[ ! -z "$CHANGES" ]]; then
-  echo "$CHANGES"
-  echo "\nGenerated files are not up to date!"
+  printf "$CHANGES\n\n"
+  printf "Generated files are not up to date!\n\n"
+  git diff
   exit 1
 fi

@@ -4,20 +4,21 @@ import (
 	"context"
 	"time"
 
+	"etop.vn/capi"
+
 	"etop.vn/api/main/etop"
 	"etop.vn/api/main/ordering"
 	ordertypes "etop.vn/api/main/ordering/types"
 	"etop.vn/api/main/shipnow"
 	"etop.vn/api/main/shipnow/carrier"
 	shipnowcarrier "etop.vn/api/main/shipnow/carrier"
-	"etop.vn/api/meta"
 	etopconvert "etop.vn/backend/com/main/etop/convert"
 	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/common/bus"
 )
 
 type ProcessManager struct {
-	eventBus     meta.EventBus
+	eventBus     capi.EventBus
 	shipnowQuery shipnow.QueryBus
 	shipnow      shipnow.CommandBus
 
@@ -26,7 +27,7 @@ type ProcessManager struct {
 }
 
 func New(
-	eventBus meta.EventBus,
+	eventBus capi.EventBus,
 	shipnowQuery shipnow.QueryBus,
 	shipnowAggrBus shipnow.CommandBus,
 	orderAggrBus ordering.CommandBus,

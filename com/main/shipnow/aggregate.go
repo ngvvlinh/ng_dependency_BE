@@ -4,6 +4,8 @@ import (
 	"context"
 	"time"
 
+	"etop.vn/capi"
+
 	"etop.vn/api/main/address"
 	etoptypes "etop.vn/api/main/etop"
 	"etop.vn/api/main/identity"
@@ -32,11 +34,11 @@ type Aggregate struct {
 
 	db             cmsql.Transactioner
 	store          sqlstore.ShipnowStoreFactory
-	eventBus       meta.EventBus
+	eventBus       capi.EventBus
 	carrierManager carrier.Manager
 }
 
-func NewAggregate(eventBus meta.EventBus, db cmsql.Database, location location.QueryBus, identityQuery identity.QueryBus, addressQuery address.QueryBus, order ordering.QueryBus, carrierManager carrier.Manager) *Aggregate {
+func NewAggregate(eventBus capi.EventBus, db cmsql.Database, location location.QueryBus, identityQuery identity.QueryBus, addressQuery address.QueryBus, order ordering.QueryBus, carrierManager carrier.Manager) *Aggregate {
 	return &Aggregate{
 		db:       db,
 		store:    sqlstore.NewShipnowStore(db),
@@ -61,6 +63,7 @@ func (a *Aggregate) CreateShipnowFulfillment(ctx context.Context, cmd *shipnow.C
 		ffmID := cm.NewID()
 		// ShipnowOrderReservationEvent
 		event := &shipnow.ShipnowOrderReservationEvent{
+			EventMeta:            meta.NewEvent(),
 			OrderIds:             cmd.OrderIds,
 			ShipnowFulfillmentId: ffmID,
 		}
@@ -121,6 +124,7 @@ func (a *Aggregate) UpdateShipnowFulfillment(ctx context.Context, cmd *shipnow.U
 		if len(cmd.OrderIds) > 0 {
 			// ShipnowOrderChangedEvent
 			event := &shipnow.ShipnowOrderChangedEvent{
+				EventMeta:            meta.NewEvent(),
 				ShipnowFulfillmentId: ffm.Id,
 				OldOrderIds:          ffm.OrderIds,
 				OrderIds:             cmd.OrderIds,
@@ -170,6 +174,7 @@ func (a *Aggregate) CancelShipnowFulfillment(ctx context.Context, cmd *shipnow.C
 		}
 
 		event := &shipnow.ShipnowCancelledEvent{
+			EventMeta:            meta.NewEvent(),
 			ShipnowFulfillmentId: ffm.Id,
 			OrderIds:             ffm.OrderIds,
 			CancelReason:         cmd.CancelReason,
@@ -205,6 +210,7 @@ func (a *Aggregate) ConfirmShipnowFulfillment(ctx context.Context, cmd *shipnow.
 		}
 
 		event := &shipnow.ShipnowValidateConfirmedEvent{
+			EventMeta:            meta.NewEvent(),
 			ShipnowFulfillmentId: ffm.Id,
 			OrderIds:             ffm.OrderIds,
 		}

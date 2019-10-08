@@ -157,13 +157,13 @@ underlying:
 }
 
 func writeCommonDeclaration(w *MultiWriter) {
-	w.Import("meta", "etop.vn/api/meta")
+	w.Import("capi", "etop.vn/capi")
 
 	tmpl := `
 type Command interface { command() }
 type Query interface { query() }
-type CommandBus struct { bus meta.Bus }
-type QueryBus struct { bus meta.Bus }
+type CommandBus struct { bus capi.Bus }
+type QueryBus struct { bus capi.Bus }
 
 func (c CommandBus) Dispatch(ctx context.Context, msg Command) error {
 	return c.bus.Dispatch(ctx, msg)
@@ -204,7 +204,7 @@ type %v struct {
 func New%v(service %v) %v { return %v{service} }
 
 func (h %v) RegisterHandlers(b interface{
-	meta.Bus
+	capi.Bus
 	AddHandler(handler interface{})
 }) QueryBus {
 `
@@ -260,7 +260,7 @@ type %v struct {
 func New%v(service %v) %v { return %v{service} }
 
 func (h %v) RegisterHandlers(b interface{
-	meta.Bus
+	capi.Bus
 	AddHandler(handler interface{})
 }) CommandBus {
 `

@@ -5,6 +5,8 @@ import (
 	"strconv"
 	"time"
 
+	"etop.vn/capi"
+
 	"github.com/asaskevich/govalidator"
 
 	haravanidentity "etop.vn/api/external/haravan/identity"
@@ -150,7 +152,7 @@ var (
 	carrierQuery         carrying.QueryBus
 	traderQuery          tradering.QueryBus
 	summaryQuery         summary.QueryBus
-	eventBus             meta.EventBus
+	eventBus             capi.EventBus
 	receiptAggr          receipting.CommandBus
 	receiptQuery         receipting.QueryBus
 )
@@ -179,7 +181,7 @@ func Init(
 	carrierA carrying.CommandBus,
 	carrierQ carrying.QueryBus,
 	traderQ tradering.QueryBus,
-	eventB meta.EventBus,
+	eventB capi.EventBus,
 	receiptA receipting.CommandBus,
 	receiptQS receipting.QueryBus,
 	sd cmservice.Shutdowner,
