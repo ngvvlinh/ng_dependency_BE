@@ -85,7 +85,7 @@ func New(cfg Config) *Client {
 	case cm.PartnerEnvTest:
 		c.baseUrl = "https://sandbox.viettel.vn/"
 	case cm.PartnerEnvProd:
-		c.baseUrl = "https://pay.bankplus.vn:8450"
+		c.baseUrl = "https://pay.bankplus.vn:8450/"
 	default:
 		ll.Fatal("vtpay: invalid env")
 	}
