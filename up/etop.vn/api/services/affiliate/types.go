@@ -61,3 +61,25 @@ type UserReferral struct {
 	CreatedAt        time.Time
 	UpdatedAt        time.Time
 }
+
+type SupplyCommissionSetting struct {
+	ShopID                   int64
+	ProductID                int64
+	Level1DirectCommission   int
+	Level1IndirectCommission int
+	Level2DirectCommission   int
+	Level2IndirectCommission int
+	DependOn                 string
+	Level1LimitCount         int
+	Level1LimitDuration      int64
+	MLevel1LimitDuration     *Duration
+	LifetimeDuration         int64
+	MLifetimeDuration        *Duration
+	CreatedAt                time.Time
+	UpdatedAt                time.Time
+}
+
+type Duration struct {
+	Type     string
+	Duration int32
+}

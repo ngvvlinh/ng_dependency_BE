@@ -23,7 +23,6 @@ func init() {
 		UpdateReferral,
 
 		TradingGetProducts,
-		CreateOrUpdateTradingCommissionSetting,
 		GetTradingProductPromotions,
 		GetTradingProductPromotionByProductIDs,
 		CreateTradingProductPromotion,
@@ -128,25 +127,6 @@ func TradingGetProducts(ctx context.Context, q *wrapaff.TradingGetProductsEndpoi
 		Paging:   pbcm.PbPageInfo(paging, query.Result.Count),
 		Products: products,
 	}
-	return nil
-}
-
-func CreateOrUpdateTradingCommissionSetting(ctx context.Context, q *wrapaff.CreateOrUpdateTradingCommissionSettingEndpoint) error {
-	if q.Context.Shop.ID != modeletop.EtopTradingAccountID {
-		return cm.Errorf(cm.PermissionDenied, nil, "PermissionDenied")
-	}
-
-	cmd := &affiliate.CreateOrUpdateCommissionSettingCommand{
-		ProductID: q.ProductId,
-		AccountID: modeletop.EtopTradingAccountID, // TODO test public api
-		Amount:    q.Amount,
-		Unit:      *q.Unit,
-		Type:      "shop",
-	}
-	if err := affiliateCmd.Dispatch(ctx, cmd); err != nil {
-		return err
-	}
-	q.Result = pbaff.PbCommissionSetting(cmd.Result)
 	return nil
 }
 

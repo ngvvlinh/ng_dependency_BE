@@ -121,12 +121,12 @@ func (s UserService) UpdateReferral(ctx context.Context, req *affiliate.UpdateRe
 type TradingService struct{ secret string }
 
 type CreateOrUpdateTradingCommissionSettingEndpoint struct {
-	*affiliate.CreateOrUpdateCommissionSettingRequest
-	Result  *affiliate.CommissionSetting
+	*affiliate.CreateOrUpdateTradingCommissionSettingRequest
+	Result  *affiliate.SupplyCommissionSetting
 	Context ShopClaim
 }
 
-func (s TradingService) CreateOrUpdateTradingCommissionSetting(ctx context.Context, req *affiliate.CreateOrUpdateCommissionSettingRequest) (resp *affiliate.CommissionSetting, err error) {
+func (s TradingService) CreateOrUpdateTradingCommissionSetting(ctx context.Context, req *affiliate.CreateOrUpdateTradingCommissionSettingRequest) (resp *affiliate.SupplyCommissionSetting, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -146,7 +146,7 @@ func (s TradingService) CreateOrUpdateTradingCommissionSetting(ctx context.Conte
 		return nil, err
 	}
 	session = sessionQuery.Result
-	query := &CreateOrUpdateTradingCommissionSettingEndpoint{CreateOrUpdateCommissionSettingRequest: req}
+	query := &CreateOrUpdateTradingCommissionSettingEndpoint{CreateOrUpdateTradingCommissionSettingRequest: req}
 	query.Context.Claim = session.Claim
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner

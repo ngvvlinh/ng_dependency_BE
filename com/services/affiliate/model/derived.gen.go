@@ -1662,3 +1662,339 @@ func (ms *UserReferralHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
 	*ms = res
 	return nil
 }
+
+// Type SupplyCommissionSetting represents table supply_commission_setting
+func sqlgenSupplyCommissionSetting(_ *SupplyCommissionSetting) bool { return true }
+
+type SupplyCommissionSettings []*SupplyCommissionSetting
+
+const __sqlSupplyCommissionSetting_Table = "supply_commission_setting"
+const __sqlSupplyCommissionSetting_ListCols = "\"shop_id\",\"product_id\",\"level1_direct_commission\",\"level1_indirect_commission\",\"level2_direct_commission\",\"level2_indirect_commission\",\"depend_on\",\"level1_limit_count\",\"level1_limit_duration\",\"lifetime_duration\",\"created_at\",\"updated_at\""
+const __sqlSupplyCommissionSetting_Insert = "INSERT INTO \"supply_commission_setting\" (" + __sqlSupplyCommissionSetting_ListCols + ") VALUES"
+const __sqlSupplyCommissionSetting_Select = "SELECT " + __sqlSupplyCommissionSetting_ListCols + " FROM \"supply_commission_setting\""
+const __sqlSupplyCommissionSetting_Select_history = "SELECT " + __sqlSupplyCommissionSetting_ListCols + " FROM history.\"supply_commission_setting\""
+const __sqlSupplyCommissionSetting_UpdateAll = "UPDATE \"supply_commission_setting\" SET (" + __sqlSupplyCommissionSetting_ListCols + ")"
+
+func (m *SupplyCommissionSetting) SQLTableName() string  { return "supply_commission_setting" }
+func (m *SupplyCommissionSettings) SQLTableName() string { return "supply_commission_setting" }
+func (m *SupplyCommissionSetting) SQLListCols() string   { return __sqlSupplyCommissionSetting_ListCols }
+
+func (m *SupplyCommissionSetting) SQLArgs(opts core.Opts, create bool) []interface{} {
+	now := time.Now()
+	return []interface{}{
+		core.Int64(m.ShopID),
+		core.Int64(m.ProductID),
+		core.Int(m.Level1DirectCommission),
+		core.Int(m.Level1IndirectCommission),
+		core.Int(m.Level2DirectCommission),
+		core.Int(m.Level2IndirectCommission),
+		core.String(m.DependOn),
+		core.Int(m.Level1LimitCount),
+		core.Int64(m.Level1LimitDuration),
+		core.Int64(m.LifetimeDuration),
+		core.Now(m.CreatedAt, now, create),
+		core.Now(m.UpdatedAt, now, true),
+	}
+}
+
+func (m *SupplyCommissionSetting) SQLScanArgs(opts core.Opts) []interface{} {
+	return []interface{}{
+		(*core.Int64)(&m.ShopID),
+		(*core.Int64)(&m.ProductID),
+		(*core.Int)(&m.Level1DirectCommission),
+		(*core.Int)(&m.Level1IndirectCommission),
+		(*core.Int)(&m.Level2DirectCommission),
+		(*core.Int)(&m.Level2IndirectCommission),
+		(*core.String)(&m.DependOn),
+		(*core.Int)(&m.Level1LimitCount),
+		(*core.Int64)(&m.Level1LimitDuration),
+		(*core.Int64)(&m.LifetimeDuration),
+		(*core.Time)(&m.CreatedAt),
+		(*core.Time)(&m.UpdatedAt),
+	}
+}
+
+func (m *SupplyCommissionSetting) SQLScan(opts core.Opts, row *sql.Row) error {
+	return row.Scan(m.SQLScanArgs(opts)...)
+}
+
+func (ms *SupplyCommissionSettings) SQLScan(opts core.Opts, rows *sql.Rows) error {
+	res := make(SupplyCommissionSettings, 0, 128)
+	for rows.Next() {
+		m := new(SupplyCommissionSetting)
+		args := m.SQLScanArgs(opts)
+		if err := rows.Scan(args...); err != nil {
+			return err
+		}
+		res = append(res, m)
+	}
+	if err := rows.Err(); err != nil {
+		return err
+	}
+	*ms = res
+	return nil
+}
+
+func (_ *SupplyCommissionSetting) SQLSelect(w SQLWriter) error {
+	w.WriteQueryString(__sqlSupplyCommissionSetting_Select)
+	return nil
+}
+
+func (_ *SupplyCommissionSettings) SQLSelect(w SQLWriter) error {
+	w.WriteQueryString(__sqlSupplyCommissionSetting_Select)
+	return nil
+}
+
+func (m *SupplyCommissionSetting) SQLInsert(w SQLWriter) error {
+	w.WriteQueryString(__sqlSupplyCommissionSetting_Insert)
+	w.WriteRawString(" (")
+	w.WriteMarkers(12)
+	w.WriteByte(')')
+	w.WriteArgs(m.SQLArgs(w.Opts(), true))
+	return nil
+}
+
+func (ms SupplyCommissionSettings) SQLInsert(w SQLWriter) error {
+	w.WriteQueryString(__sqlSupplyCommissionSetting_Insert)
+	w.WriteRawString(" (")
+	for i := 0; i < len(ms); i++ {
+		w.WriteMarkers(12)
+		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
+		w.WriteRawString("),(")
+	}
+	w.TrimLast(2)
+	return nil
+}
+
+func (m *SupplyCommissionSetting) SQLUpdate(w SQLWriter) error {
+	now, opts := time.Now(), w.Opts()
+	_, _ = now, opts // suppress unuse error
+	var flag bool
+	w.WriteRawString("UPDATE ")
+	w.WriteName("supply_commission_setting")
+	w.WriteRawString(" SET ")
+	if m.ShopID != 0 {
+		flag = true
+		w.WriteName("shop_id")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.ShopID)
+	}
+	if m.ProductID != 0 {
+		flag = true
+		w.WriteName("product_id")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.ProductID)
+	}
+	if m.Level1DirectCommission != 0 {
+		flag = true
+		w.WriteName("level1_direct_commission")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.Level1DirectCommission)
+	}
+	if m.Level1IndirectCommission != 0 {
+		flag = true
+		w.WriteName("level1_indirect_commission")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.Level1IndirectCommission)
+	}
+	if m.Level2DirectCommission != 0 {
+		flag = true
+		w.WriteName("level2_direct_commission")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.Level2DirectCommission)
+	}
+	if m.Level2IndirectCommission != 0 {
+		flag = true
+		w.WriteName("level2_indirect_commission")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.Level2IndirectCommission)
+	}
+	if m.DependOn != "" {
+		flag = true
+		w.WriteName("depend_on")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.DependOn)
+	}
+	if m.Level1LimitCount != 0 {
+		flag = true
+		w.WriteName("level1_limit_count")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.Level1LimitCount)
+	}
+	if m.Level1LimitDuration != 0 {
+		flag = true
+		w.WriteName("level1_limit_duration")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.Level1LimitDuration)
+	}
+	if m.LifetimeDuration != 0 {
+		flag = true
+		w.WriteName("lifetime_duration")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.LifetimeDuration)
+	}
+	if !m.CreatedAt.IsZero() {
+		flag = true
+		w.WriteName("created_at")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.CreatedAt)
+	}
+	if !m.UpdatedAt.IsZero() {
+		flag = true
+		w.WriteName("updated_at")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(core.Now(m.UpdatedAt, time.Now(), true))
+	}
+	if !flag {
+		return core.ErrNoColumn
+	}
+	w.TrimLast(1)
+	return nil
+}
+
+func (m *SupplyCommissionSetting) SQLUpdateAll(w SQLWriter) error {
+	w.WriteQueryString(__sqlSupplyCommissionSetting_UpdateAll)
+	w.WriteRawString(" = (")
+	w.WriteMarkers(12)
+	w.WriteByte(')')
+	w.WriteArgs(m.SQLArgs(w.Opts(), false))
+	return nil
+}
+
+type SupplyCommissionSettingHistory map[string]interface{}
+type SupplyCommissionSettingHistories []map[string]interface{}
+
+func (m *SupplyCommissionSettingHistory) SQLTableName() string {
+	return "history.\"supply_commission_setting\""
+}
+func (m SupplyCommissionSettingHistories) SQLTableName() string {
+	return "history.\"supply_commission_setting\""
+}
+
+func (m *SupplyCommissionSettingHistory) SQLSelect(w SQLWriter) error {
+	w.WriteQueryString(__sqlSupplyCommissionSetting_Select_history)
+	return nil
+}
+
+func (m SupplyCommissionSettingHistories) SQLSelect(w SQLWriter) error {
+	w.WriteQueryString(__sqlSupplyCommissionSetting_Select_history)
+	return nil
+}
+
+func (m SupplyCommissionSettingHistory) ShopID() core.Interface { return core.Interface{m["shop_id"]} }
+func (m SupplyCommissionSettingHistory) ProductID() core.Interface {
+	return core.Interface{m["product_id"]}
+}
+func (m SupplyCommissionSettingHistory) Level1DirectCommission() core.Interface {
+	return core.Interface{m["level1_direct_commission"]}
+}
+func (m SupplyCommissionSettingHistory) Level1IndirectCommission() core.Interface {
+	return core.Interface{m["level1_indirect_commission"]}
+}
+func (m SupplyCommissionSettingHistory) Level2DirectCommission() core.Interface {
+	return core.Interface{m["level2_direct_commission"]}
+}
+func (m SupplyCommissionSettingHistory) Level2IndirectCommission() core.Interface {
+	return core.Interface{m["level2_indirect_commission"]}
+}
+func (m SupplyCommissionSettingHistory) DependOn() core.Interface {
+	return core.Interface{m["depend_on"]}
+}
+func (m SupplyCommissionSettingHistory) Level1LimitCount() core.Interface {
+	return core.Interface{m["level1_limit_count"]}
+}
+func (m SupplyCommissionSettingHistory) Level1LimitDuration() core.Interface {
+	return core.Interface{m["level1_limit_duration"]}
+}
+func (m SupplyCommissionSettingHistory) LifetimeDuration() core.Interface {
+	return core.Interface{m["lifetime_duration"]}
+}
+func (m SupplyCommissionSettingHistory) CreatedAt() core.Interface {
+	return core.Interface{m["created_at"]}
+}
+func (m SupplyCommissionSettingHistory) UpdatedAt() core.Interface {
+	return core.Interface{m["updated_at"]}
+}
+
+func (m *SupplyCommissionSettingHistory) SQLScan(opts core.Opts, row *sql.Row) error {
+	data := make([]interface{}, 12)
+	args := make([]interface{}, 12)
+	for i := 0; i < 12; i++ {
+		args[i] = &data[i]
+	}
+	if err := row.Scan(args...); err != nil {
+		return err
+	}
+	res := make(SupplyCommissionSettingHistory, 12)
+	res["shop_id"] = data[0]
+	res["product_id"] = data[1]
+	res["level1_direct_commission"] = data[2]
+	res["level1_indirect_commission"] = data[3]
+	res["level2_direct_commission"] = data[4]
+	res["level2_indirect_commission"] = data[5]
+	res["depend_on"] = data[6]
+	res["level1_limit_count"] = data[7]
+	res["level1_limit_duration"] = data[8]
+	res["lifetime_duration"] = data[9]
+	res["created_at"] = data[10]
+	res["updated_at"] = data[11]
+	*m = res
+	return nil
+}
+
+func (ms *SupplyCommissionSettingHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
+	data := make([]interface{}, 12)
+	args := make([]interface{}, 12)
+	for i := 0; i < 12; i++ {
+		args[i] = &data[i]
+	}
+	res := make(SupplyCommissionSettingHistories, 0, 128)
+	for rows.Next() {
+		if err := rows.Scan(args...); err != nil {
+			return err
+		}
+		m := make(SupplyCommissionSettingHistory)
+		m["shop_id"] = data[0]
+		m["product_id"] = data[1]
+		m["level1_direct_commission"] = data[2]
+		m["level1_indirect_commission"] = data[3]
+		m["level2_direct_commission"] = data[4]
+		m["level2_indirect_commission"] = data[5]
+		m["depend_on"] = data[6]
+		m["level1_limit_count"] = data[7]
+		m["level1_limit_duration"] = data[8]
+		m["lifetime_duration"] = data[9]
+		m["created_at"] = data[10]
+		m["updated_at"] = data[11]
+		res = append(res, m)
+	}
+	if err := rows.Err(); err != nil {
+		return err
+	}
+	*ms = res
+	return nil
+}

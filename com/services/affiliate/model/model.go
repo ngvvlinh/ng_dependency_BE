@@ -87,3 +87,27 @@ type UserReferral struct {
 	CreatedAt        time.Time `sq:"create"`
 	UpdatedAt        time.Time `sq:"update"`
 }
+
+var _ = sqlgenSupplyCommissionSetting(&SupplyCommissionSetting{})
+
+type SupplyCommissionSetting struct {
+	ShopID                   int64
+	ProductID                int64
+	Level1DirectCommission   int
+	Level1IndirectCommission int
+	Level2DirectCommission   int
+	Level2IndirectCommission int
+	DependOn                 string
+	Level1LimitCount         int
+	Level1LimitDuration      int64
+	MLevel1LimitDuration     *DurationJSON
+	LifetimeDuration         int64
+	MLifetimeDuration        *DurationJSON
+	CreatedAt                time.Time `sq:"create"`
+	UpdatedAt                time.Time `sq:"update"`
+}
+
+type DurationJSON struct {
+	Duration int32  `json:"duration"`
+	Type     string `json:"type"`
+}

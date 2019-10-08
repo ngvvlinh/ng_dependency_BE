@@ -1117,3 +1117,245 @@ func (ft *UserReferralFilters) ByUpdatedAtPtr(UpdatedAt *time.Time) *sq.ColumnFi
 		IsZero: UpdatedAt != nil && (*UpdatedAt).IsZero(),
 	}
 }
+
+type SupplyCommissionSettingFilters struct{ prefix string }
+
+func NewSupplyCommissionSettingFilters(prefix string) SupplyCommissionSettingFilters {
+	return SupplyCommissionSettingFilters{prefix}
+}
+
+func (ft *SupplyCommissionSettingFilters) Filter(pred string, args ...interface{}) sq.WriterTo {
+	return sq.Filter(&ft.prefix, pred, args...)
+}
+
+func (ft SupplyCommissionSettingFilters) Prefix() string {
+	return ft.prefix
+}
+
+func (ft *SupplyCommissionSettingFilters) ByShopID(ShopID int64) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "shop_id",
+		Value:  ShopID,
+		IsNil:  ShopID == 0,
+	}
+}
+
+func (ft *SupplyCommissionSettingFilters) ByShopIDPtr(ShopID *int64) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "shop_id",
+		Value:  ShopID,
+		IsNil:  ShopID == nil,
+		IsZero: ShopID != nil && (*ShopID) == 0,
+	}
+}
+
+func (ft *SupplyCommissionSettingFilters) ByProductID(ProductID int64) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "product_id",
+		Value:  ProductID,
+		IsNil:  ProductID == 0,
+	}
+}
+
+func (ft *SupplyCommissionSettingFilters) ByProductIDPtr(ProductID *int64) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "product_id",
+		Value:  ProductID,
+		IsNil:  ProductID == nil,
+		IsZero: ProductID != nil && (*ProductID) == 0,
+	}
+}
+
+func (ft *SupplyCommissionSettingFilters) ByLevel1DirectCommission(Level1DirectCommission int) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "level1_direct_commission",
+		Value:  Level1DirectCommission,
+		IsNil:  Level1DirectCommission == 0,
+	}
+}
+
+func (ft *SupplyCommissionSettingFilters) ByLevel1DirectCommissionPtr(Level1DirectCommission *int) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "level1_direct_commission",
+		Value:  Level1DirectCommission,
+		IsNil:  Level1DirectCommission == nil,
+		IsZero: Level1DirectCommission != nil && (*Level1DirectCommission) == 0,
+	}
+}
+
+func (ft *SupplyCommissionSettingFilters) ByLevel1IndirectCommission(Level1IndirectCommission int) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "level1_indirect_commission",
+		Value:  Level1IndirectCommission,
+		IsNil:  Level1IndirectCommission == 0,
+	}
+}
+
+func (ft *SupplyCommissionSettingFilters) ByLevel1IndirectCommissionPtr(Level1IndirectCommission *int) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "level1_indirect_commission",
+		Value:  Level1IndirectCommission,
+		IsNil:  Level1IndirectCommission == nil,
+		IsZero: Level1IndirectCommission != nil && (*Level1IndirectCommission) == 0,
+	}
+}
+
+func (ft *SupplyCommissionSettingFilters) ByLevel2DirectCommission(Level2DirectCommission int) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "level2_direct_commission",
+		Value:  Level2DirectCommission,
+		IsNil:  Level2DirectCommission == 0,
+	}
+}
+
+func (ft *SupplyCommissionSettingFilters) ByLevel2DirectCommissionPtr(Level2DirectCommission *int) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "level2_direct_commission",
+		Value:  Level2DirectCommission,
+		IsNil:  Level2DirectCommission == nil,
+		IsZero: Level2DirectCommission != nil && (*Level2DirectCommission) == 0,
+	}
+}
+
+func (ft *SupplyCommissionSettingFilters) ByLevel2IndirectCommission(Level2IndirectCommission int) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "level2_indirect_commission",
+		Value:  Level2IndirectCommission,
+		IsNil:  Level2IndirectCommission == 0,
+	}
+}
+
+func (ft *SupplyCommissionSettingFilters) ByLevel2IndirectCommissionPtr(Level2IndirectCommission *int) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "level2_indirect_commission",
+		Value:  Level2IndirectCommission,
+		IsNil:  Level2IndirectCommission == nil,
+		IsZero: Level2IndirectCommission != nil && (*Level2IndirectCommission) == 0,
+	}
+}
+
+func (ft *SupplyCommissionSettingFilters) ByDependOn(DependOn string) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "depend_on",
+		Value:  DependOn,
+		IsNil:  DependOn == "",
+	}
+}
+
+func (ft *SupplyCommissionSettingFilters) ByDependOnPtr(DependOn *string) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "depend_on",
+		Value:  DependOn,
+		IsNil:  DependOn == nil,
+		IsZero: DependOn != nil && (*DependOn) == "",
+	}
+}
+
+func (ft *SupplyCommissionSettingFilters) ByLevel1LimitCount(Level1LimitCount int) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "level1_limit_count",
+		Value:  Level1LimitCount,
+		IsNil:  Level1LimitCount == 0,
+	}
+}
+
+func (ft *SupplyCommissionSettingFilters) ByLevel1LimitCountPtr(Level1LimitCount *int) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "level1_limit_count",
+		Value:  Level1LimitCount,
+		IsNil:  Level1LimitCount == nil,
+		IsZero: Level1LimitCount != nil && (*Level1LimitCount) == 0,
+	}
+}
+
+func (ft *SupplyCommissionSettingFilters) ByLevel1LimitDuration(Level1LimitDuration int64) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "level1_limit_duration",
+		Value:  Level1LimitDuration,
+		IsNil:  Level1LimitDuration == 0,
+	}
+}
+
+func (ft *SupplyCommissionSettingFilters) ByLevel1LimitDurationPtr(Level1LimitDuration *int64) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "level1_limit_duration",
+		Value:  Level1LimitDuration,
+		IsNil:  Level1LimitDuration == nil,
+		IsZero: Level1LimitDuration != nil && (*Level1LimitDuration) == 0,
+	}
+}
+
+func (ft *SupplyCommissionSettingFilters) ByLifetimeDuration(LifetimeDuration int64) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "lifetime_duration",
+		Value:  LifetimeDuration,
+		IsNil:  LifetimeDuration == 0,
+	}
+}
+
+func (ft *SupplyCommissionSettingFilters) ByLifetimeDurationPtr(LifetimeDuration *int64) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "lifetime_duration",
+		Value:  LifetimeDuration,
+		IsNil:  LifetimeDuration == nil,
+		IsZero: LifetimeDuration != nil && (*LifetimeDuration) == 0,
+	}
+}
+
+func (ft *SupplyCommissionSettingFilters) ByCreatedAt(CreatedAt time.Time) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "created_at",
+		Value:  CreatedAt,
+		IsNil:  CreatedAt.IsZero(),
+	}
+}
+
+func (ft *SupplyCommissionSettingFilters) ByCreatedAtPtr(CreatedAt *time.Time) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "created_at",
+		Value:  CreatedAt,
+		IsNil:  CreatedAt == nil,
+		IsZero: CreatedAt != nil && (*CreatedAt).IsZero(),
+	}
+}
+
+func (ft *SupplyCommissionSettingFilters) ByUpdatedAt(UpdatedAt time.Time) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "updated_at",
+		Value:  UpdatedAt,
+		IsNil:  UpdatedAt.IsZero(),
+	}
+}
+
+func (ft *SupplyCommissionSettingFilters) ByUpdatedAtPtr(UpdatedAt *time.Time) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "updated_at",
+		Value:  UpdatedAt,
+		IsNil:  UpdatedAt == nil,
+		IsZero: UpdatedAt != nil && (*UpdatedAt).IsZero(),
+	}
+}

@@ -145,3 +145,35 @@ func UserReferrals(ins []*model.UserReferral) []*affiliate.UserReferral {
 	}
 	return results
 }
+
+func Duration(in *model.DurationJSON) *affiliate.Duration {
+	if in == nil {
+		return nil
+	}
+	return &affiliate.Duration{
+		Type:     in.Type,
+		Duration: in.Duration,
+	}
+}
+
+func SupplyCommissionSetting(in *model.SupplyCommissionSetting) *affiliate.SupplyCommissionSetting {
+	if in == nil {
+		return nil
+	}
+	return &affiliate.SupplyCommissionSetting{
+		ShopID:                   in.ShopID,
+		ProductID:                in.ProductID,
+		Level1DirectCommission:   in.Level1DirectCommission,
+		Level1IndirectCommission: in.Level1IndirectCommission,
+		Level2DirectCommission:   in.Level2DirectCommission,
+		Level2IndirectCommission: in.Level2IndirectCommission,
+		DependOn:                 in.DependOn,
+		Level1LimitCount:         in.Level1LimitCount,
+		Level1LimitDuration:      in.Level1LimitDuration,
+		MLevel1LimitDuration:     Duration(in.MLevel1LimitDuration),
+		LifetimeDuration:         in.LifetimeDuration,
+		MLifetimeDuration:        Duration(in.MLifetimeDuration),
+		CreatedAt:                in.CreatedAt,
+		UpdatedAt:                in.UpdatedAt,
+	}
+}
