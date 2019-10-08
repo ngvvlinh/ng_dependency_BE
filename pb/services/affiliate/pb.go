@@ -80,3 +80,32 @@ func PbReferral(m *identity.Affiliate) *Referral {
 		CreatedAt:       pbcm.PbTime(m.CreatedAt),
 	}
 }
+
+func PbSupplyCommissionSetting(m *affiliate.SupplyCommissionSetting) *SupplyCommissionSetting {
+	if m == nil {
+		return nil
+	}
+	return &SupplyCommissionSetting{
+		ProductId:                m.ProductID,
+		Level1DirectCommission:   m.Level1DirectCommission,
+		Level1IndirectCommission: m.Level1IndirectCommission,
+		Level2DirectCommission:   m.Level2DirectCommission,
+		Level2IndirectCommission: m.Level2IndirectCommission,
+		DependOn:                 m.DependOn,
+		Level1LimitCount:         m.Level1LimitCount,
+		MLifetimeDuration:        PbDuration(m.MLifetimeDuration),
+		MLevel1LimitDuration:     PbDuration(m.MLevel1LimitDuration),
+		CreatedAt:                pbcm.PbTime(m.CreatedAt),
+		UpdatedAt:                pbcm.PbTime(m.UpdatedAt),
+	}
+}
+
+func PbDuration(m *affiliate.Duration) *SupplyCommissionSettingDurationObject {
+	if m == nil {
+		return nil
+	}
+	return &SupplyCommissionSettingDurationObject{
+		Duration: m.Duration,
+		Type:     m.Type,
+	}
+}

@@ -634,8 +634,8 @@
           "format": "int64"
         },
         "level1_direct_commission": {
-          "type": "string",
-          "format": "int64"
+          "type": "integer",
+          "format": "int32"
         },
         "level1_indirect_commission": {
           "type": "integer",
@@ -927,10 +927,10 @@
           "format": "int32"
         },
         "m_lifetime_duration": {
-          "$ref": "#/definitions/affiliateSupplyCommissionSettingLifetimeDuration"
+          "$ref": "#/definitions/affiliateSupplyCommissionSettingDurationObject"
         },
         "m_level1_limit_duration": {
-          "$ref": "#/definitions/affiliateSupplyCommissionSettingLevel1LimitDuration"
+          "$ref": "#/definitions/affiliateSupplyCommissionSettingDurationObject"
         },
         "created_at": {
           "type": "string",
@@ -942,19 +942,7 @@
         }
       }
     },
-    "affiliateSupplyCommissionSettingLevel1LimitDuration": {
-      "type": "object",
-      "properties": {
-        "duration": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "type": {
-          "type": "string"
-        }
-      }
-    },
-    "affiliateSupplyCommissionSettingLifetimeDuration": {
+    "affiliateSupplyCommissionSettingDurationObject": {
       "type": "object",
       "properties": {
         "duration": {
@@ -986,8 +974,8 @@
         "product": {
           "$ref": "#/definitions/shopShopProduct"
         },
-        "shop_commission_setting": {
-          "$ref": "#/definitions/affiliateCommissionSetting"
+        "supply_commission_setting": {
+          "$ref": "#/definitions/affiliateSupplyCommissionSetting"
         },
         "promotion": {
           "$ref": "#/definitions/affiliateProductPromotion"

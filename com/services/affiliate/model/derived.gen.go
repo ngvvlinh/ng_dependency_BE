@@ -1669,7 +1669,7 @@ func sqlgenSupplyCommissionSetting(_ *SupplyCommissionSetting) bool { return tru
 type SupplyCommissionSettings []*SupplyCommissionSetting
 
 const __sqlSupplyCommissionSetting_Table = "supply_commission_setting"
-const __sqlSupplyCommissionSetting_ListCols = "\"shop_id\",\"product_id\",\"level1_direct_commission\",\"level1_indirect_commission\",\"level2_direct_commission\",\"level2_indirect_commission\",\"depend_on\",\"level1_limit_count\",\"level1_limit_duration\",\"lifetime_duration\",\"created_at\",\"updated_at\""
+const __sqlSupplyCommissionSetting_ListCols = "\"shop_id\",\"product_id\",\"level1_direct_commission\",\"level1_indirect_commission\",\"level2_direct_commission\",\"level2_indirect_commission\",\"depend_on\",\"level1_limit_count\",\"level1_limit_duration\",\"m_level1_limit_duration\",\"lifetime_duration\",\"m_lifetime_duration\",\"created_at\",\"updated_at\""
 const __sqlSupplyCommissionSetting_Insert = "INSERT INTO \"supply_commission_setting\" (" + __sqlSupplyCommissionSetting_ListCols + ") VALUES"
 const __sqlSupplyCommissionSetting_Select = "SELECT " + __sqlSupplyCommissionSetting_ListCols + " FROM \"supply_commission_setting\""
 const __sqlSupplyCommissionSetting_Select_history = "SELECT " + __sqlSupplyCommissionSetting_ListCols + " FROM history.\"supply_commission_setting\""
@@ -1684,14 +1684,16 @@ func (m *SupplyCommissionSetting) SQLArgs(opts core.Opts, create bool) []interfa
 	return []interface{}{
 		core.Int64(m.ShopID),
 		core.Int64(m.ProductID),
-		core.Int(m.Level1DirectCommission),
-		core.Int(m.Level1IndirectCommission),
-		core.Int(m.Level2DirectCommission),
-		core.Int(m.Level2IndirectCommission),
+		core.Int32(m.Level1DirectCommission),
+		core.Int32(m.Level1IndirectCommission),
+		core.Int32(m.Level2DirectCommission),
+		core.Int32(m.Level2IndirectCommission),
 		core.String(m.DependOn),
-		core.Int(m.Level1LimitCount),
+		core.Int32(m.Level1LimitCount),
 		core.Int64(m.Level1LimitDuration),
+		core.JSON{m.MLevel1LimitDuration},
 		core.Int64(m.LifetimeDuration),
+		core.JSON{m.MLifetimeDuration},
 		core.Now(m.CreatedAt, now, create),
 		core.Now(m.UpdatedAt, now, true),
 	}
@@ -1701,14 +1703,16 @@ func (m *SupplyCommissionSetting) SQLScanArgs(opts core.Opts) []interface{} {
 	return []interface{}{
 		(*core.Int64)(&m.ShopID),
 		(*core.Int64)(&m.ProductID),
-		(*core.Int)(&m.Level1DirectCommission),
-		(*core.Int)(&m.Level1IndirectCommission),
-		(*core.Int)(&m.Level2DirectCommission),
-		(*core.Int)(&m.Level2IndirectCommission),
+		(*core.Int32)(&m.Level1DirectCommission),
+		(*core.Int32)(&m.Level1IndirectCommission),
+		(*core.Int32)(&m.Level2DirectCommission),
+		(*core.Int32)(&m.Level2IndirectCommission),
 		(*core.String)(&m.DependOn),
-		(*core.Int)(&m.Level1LimitCount),
+		(*core.Int32)(&m.Level1LimitCount),
 		(*core.Int64)(&m.Level1LimitDuration),
+		core.JSON{&m.MLevel1LimitDuration},
 		(*core.Int64)(&m.LifetimeDuration),
+		core.JSON{&m.MLifetimeDuration},
 		(*core.Time)(&m.CreatedAt),
 		(*core.Time)(&m.UpdatedAt),
 	}
@@ -1748,7 +1752,7 @@ func (_ *SupplyCommissionSettings) SQLSelect(w SQLWriter) error {
 func (m *SupplyCommissionSetting) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlSupplyCommissionSetting_Insert)
 	w.WriteRawString(" (")
-	w.WriteMarkers(12)
+	w.WriteMarkers(14)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), true))
 	return nil
@@ -1758,7 +1762,7 @@ func (ms SupplyCommissionSettings) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlSupplyCommissionSetting_Insert)
 	w.WriteRawString(" (")
 	for i := 0; i < len(ms); i++ {
-		w.WriteMarkers(12)
+		w.WriteMarkers(14)
 		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
 		w.WriteRawString("),(")
 	}
@@ -1845,6 +1849,14 @@ func (m *SupplyCommissionSetting) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(m.Level1LimitDuration)
 	}
+	if m.MLevel1LimitDuration != nil {
+		flag = true
+		w.WriteName("m_level1_limit_duration")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(core.JSON{m.MLevel1LimitDuration})
+	}
 	if m.LifetimeDuration != 0 {
 		flag = true
 		w.WriteName("lifetime_duration")
@@ -1852,6 +1864,14 @@ func (m *SupplyCommissionSetting) SQLUpdate(w SQLWriter) error {
 		w.WriteMarker()
 		w.WriteByte(',')
 		w.WriteArg(m.LifetimeDuration)
+	}
+	if m.MLifetimeDuration != nil {
+		flag = true
+		w.WriteName("m_lifetime_duration")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(core.JSON{m.MLifetimeDuration})
 	}
 	if !m.CreatedAt.IsZero() {
 		flag = true
@@ -1879,7 +1899,7 @@ func (m *SupplyCommissionSetting) SQLUpdate(w SQLWriter) error {
 func (m *SupplyCommissionSetting) SQLUpdateAll(w SQLWriter) error {
 	w.WriteQueryString(__sqlSupplyCommissionSetting_UpdateAll)
 	w.WriteRawString(" = (")
-	w.WriteMarkers(12)
+	w.WriteMarkers(14)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), false))
 	return nil
@@ -1930,8 +1950,14 @@ func (m SupplyCommissionSettingHistory) Level1LimitCount() core.Interface {
 func (m SupplyCommissionSettingHistory) Level1LimitDuration() core.Interface {
 	return core.Interface{m["level1_limit_duration"]}
 }
+func (m SupplyCommissionSettingHistory) MLevel1LimitDuration() core.Interface {
+	return core.Interface{m["m_level1_limit_duration"]}
+}
 func (m SupplyCommissionSettingHistory) LifetimeDuration() core.Interface {
 	return core.Interface{m["lifetime_duration"]}
+}
+func (m SupplyCommissionSettingHistory) MLifetimeDuration() core.Interface {
+	return core.Interface{m["m_lifetime_duration"]}
 }
 func (m SupplyCommissionSettingHistory) CreatedAt() core.Interface {
 	return core.Interface{m["created_at"]}
@@ -1941,15 +1967,15 @@ func (m SupplyCommissionSettingHistory) UpdatedAt() core.Interface {
 }
 
 func (m *SupplyCommissionSettingHistory) SQLScan(opts core.Opts, row *sql.Row) error {
-	data := make([]interface{}, 12)
-	args := make([]interface{}, 12)
-	for i := 0; i < 12; i++ {
+	data := make([]interface{}, 14)
+	args := make([]interface{}, 14)
+	for i := 0; i < 14; i++ {
 		args[i] = &data[i]
 	}
 	if err := row.Scan(args...); err != nil {
 		return err
 	}
-	res := make(SupplyCommissionSettingHistory, 12)
+	res := make(SupplyCommissionSettingHistory, 14)
 	res["shop_id"] = data[0]
 	res["product_id"] = data[1]
 	res["level1_direct_commission"] = data[2]
@@ -1959,17 +1985,19 @@ func (m *SupplyCommissionSettingHistory) SQLScan(opts core.Opts, row *sql.Row) e
 	res["depend_on"] = data[6]
 	res["level1_limit_count"] = data[7]
 	res["level1_limit_duration"] = data[8]
-	res["lifetime_duration"] = data[9]
-	res["created_at"] = data[10]
-	res["updated_at"] = data[11]
+	res["m_level1_limit_duration"] = data[9]
+	res["lifetime_duration"] = data[10]
+	res["m_lifetime_duration"] = data[11]
+	res["created_at"] = data[12]
+	res["updated_at"] = data[13]
 	*m = res
 	return nil
 }
 
 func (ms *SupplyCommissionSettingHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	data := make([]interface{}, 12)
-	args := make([]interface{}, 12)
-	for i := 0; i < 12; i++ {
+	data := make([]interface{}, 14)
+	args := make([]interface{}, 14)
+	for i := 0; i < 14; i++ {
 		args[i] = &data[i]
 	}
 	res := make(SupplyCommissionSettingHistories, 0, 128)
@@ -1987,9 +2015,11 @@ func (ms *SupplyCommissionSettingHistories) SQLScan(opts core.Opts, rows *sql.Ro
 		m["depend_on"] = data[6]
 		m["level1_limit_count"] = data[7]
 		m["level1_limit_duration"] = data[8]
-		m["lifetime_duration"] = data[9]
-		m["created_at"] = data[10]
-		m["updated_at"] = data[11]
+		m["m_level1_limit_duration"] = data[9]
+		m["lifetime_duration"] = data[10]
+		m["m_lifetime_duration"] = data[11]
+		m["created_at"] = data[12]
+		m["updated_at"] = data[13]
 		res = append(res, m)
 	}
 	if err := rows.Err(); err != nil {

@@ -68,6 +68,28 @@ func (h AggregateHandler) HandleCreateOrUpdateCommissionSetting(ctx context.Cont
 	return err
 }
 
+type CreateOrUpdateSupplyCommissionSettingCommand struct {
+	ShopID                   int64
+	ProductID                int64
+	Level1DirectCommission   int32
+	Level1IndirectCommission int32
+	Level2DirectCommission   int32
+	Level2IndirectCommission int32
+	DependOn                 string
+	Level1LimitCount         int32
+	Level1LimitDuration      int32
+	Level1LimitDurationType  string
+	LifetimeDuration         int32
+	LifetimeDurationType     string
+
+	Result *SupplyCommissionSetting `json:"-"`
+}
+
+func (h AggregateHandler) HandleCreateOrUpdateSupplyCommissionSetting(ctx context.Context, msg *CreateOrUpdateSupplyCommissionSettingCommand) (err error) {
+	msg.Result, err = h.inner.CreateOrUpdateSupplyCommissionSetting(msg.GetArgs(ctx))
+	return err
+}
+
 type CreateOrUpdateUserReferralCommand struct {
 	UserID           int64
 	ReferralCode     string
@@ -222,6 +244,18 @@ func (h QueryServiceHandler) HandleGetShopProductPromotionByProductIDs(ctx conte
 	return err
 }
 
+type GetSupplyCommissionSettingsByProductIDsQuery struct {
+	ShopID     int64
+	ProductIDs []int64
+
+	Result []*SupplyCommissionSetting `json:"-"`
+}
+
+func (h QueryServiceHandler) HandleGetSupplyCommissionSettingsByProductIDs(ctx context.Context, msg *GetSupplyCommissionSettingsByProductIDsQuery) (err error) {
+	msg.Result, err = h.inner.GetSupplyCommissionSettingsByProductIDs(msg.GetArgs(ctx))
+	return err
+}
+
 type ListShopProductPromotionsQuery struct {
 	ShopID  int64
 	Paging  meta.Paging
@@ -237,21 +271,23 @@ func (h QueryServiceHandler) HandleListShopProductPromotions(ctx context.Context
 
 // implement interfaces
 
-func (q *CreateAffiliateReferralCodeCommand) command()     {}
-func (q *CreateOrUpdateCommissionSettingCommand) command() {}
-func (q *CreateOrUpdateUserReferralCommand) command()      {}
-func (q *CreateProductPromotionCommand) command()          {}
-func (q *OnTradingOrderCreatedCommand) command()           {}
-func (q *TradingOrderCreatingCommand) command()            {}
-func (q *UpdateProductPromotionCommand) command()          {}
-func (q *GetAffiliateAccountReferralByCodeQuery) query()   {}
-func (q *GetAffiliateAccountReferralCodesQuery) query()    {}
-func (q *GetCommissionByProductIDQuery) query()            {}
-func (q *GetCommissionByProductIDsQuery) query()           {}
-func (q *GetReferralsByReferralIDQuery) query()            {}
-func (q *GetShopProductPromotionQuery) query()             {}
-func (q *GetShopProductPromotionByProductIDsQuery) query() {}
-func (q *ListShopProductPromotionsQuery) query()           {}
+func (q *CreateAffiliateReferralCodeCommand) command()           {}
+func (q *CreateOrUpdateCommissionSettingCommand) command()       {}
+func (q *CreateOrUpdateSupplyCommissionSettingCommand) command() {}
+func (q *CreateOrUpdateUserReferralCommand) command()            {}
+func (q *CreateProductPromotionCommand) command()                {}
+func (q *OnTradingOrderCreatedCommand) command()                 {}
+func (q *TradingOrderCreatingCommand) command()                  {}
+func (q *UpdateProductPromotionCommand) command()                {}
+func (q *GetAffiliateAccountReferralByCodeQuery) query()         {}
+func (q *GetAffiliateAccountReferralCodesQuery) query()          {}
+func (q *GetCommissionByProductIDQuery) query()                  {}
+func (q *GetCommissionByProductIDsQuery) query()                 {}
+func (q *GetReferralsByReferralIDQuery) query()                  {}
+func (q *GetShopProductPromotionQuery) query()                   {}
+func (q *GetShopProductPromotionByProductIDsQuery) query()       {}
+func (q *GetSupplyCommissionSettingsByProductIDsQuery) query()   {}
+func (q *ListShopProductPromotionsQuery) query()                 {}
 
 // implement conversion
 
@@ -273,6 +309,24 @@ func (q *CreateOrUpdateCommissionSettingCommand) GetArgs(ctx context.Context) (_
 			Type:        q.Type,
 			Description: q.Description,
 			Note:        q.Note,
+		}
+}
+
+func (q *CreateOrUpdateSupplyCommissionSettingCommand) GetArgs(ctx context.Context) (_ context.Context, _ *CreateOrUpdateSupplyCommissionSettingArgs) {
+	return ctx,
+		&CreateOrUpdateSupplyCommissionSettingArgs{
+			ShopID:                   q.ShopID,
+			ProductID:                q.ProductID,
+			Level1DirectCommission:   q.Level1DirectCommission,
+			Level1IndirectCommission: q.Level1IndirectCommission,
+			Level2DirectCommission:   q.Level2DirectCommission,
+			Level2IndirectCommission: q.Level2IndirectCommission,
+			DependOn:                 q.DependOn,
+			Level1LimitCount:         q.Level1LimitCount,
+			Level1LimitDuration:      q.Level1LimitDuration,
+			Level1LimitDurationType:  q.Level1LimitDurationType,
+			LifetimeDuration:         q.LifetimeDuration,
+			LifetimeDurationType:     q.LifetimeDurationType,
 		}
 }
 
@@ -382,6 +436,14 @@ func (q *GetShopProductPromotionByProductIDsQuery) GetArgs(ctx context.Context) 
 		}
 }
 
+func (q *GetSupplyCommissionSettingsByProductIDsQuery) GetArgs(ctx context.Context) (_ context.Context, _ *GetSupplyCommissionSettingsByProductIDsArgs) {
+	return ctx,
+		&GetSupplyCommissionSettingsByProductIDsArgs{
+			ShopID:     q.ShopID,
+			ProductIDs: q.ProductIDs,
+		}
+}
+
 func (q *ListShopProductPromotionsQuery) GetArgs(ctx context.Context) (_ context.Context, _ *ListShopProductPromotionsArgs) {
 	return ctx,
 		&ListShopProductPromotionsArgs{
@@ -405,6 +467,7 @@ func (h AggregateHandler) RegisterHandlers(b interface {
 }) CommandBus {
 	b.AddHandler(h.HandleCreateAffiliateReferralCode)
 	b.AddHandler(h.HandleCreateOrUpdateCommissionSetting)
+	b.AddHandler(h.HandleCreateOrUpdateSupplyCommissionSetting)
 	b.AddHandler(h.HandleCreateOrUpdateUserReferral)
 	b.AddHandler(h.HandleCreateProductPromotion)
 	b.AddHandler(h.HandleOnTradingOrderCreated)
@@ -432,6 +495,7 @@ func (h QueryServiceHandler) RegisterHandlers(b interface {
 	b.AddHandler(h.HandleGetReferralsByReferralID)
 	b.AddHandler(h.HandleGetShopProductPromotion)
 	b.AddHandler(h.HandleGetShopProductPromotionByProductIDs)
+	b.AddHandler(h.HandleGetSupplyCommissionSettingsByProductIDs)
 	b.AddHandler(h.HandleListShopProductPromotions)
 	return QueryBus{b}
 }

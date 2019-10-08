@@ -10,6 +10,7 @@ import (
 
 type Aggregate interface {
 	CreateOrUpdateCommissionSetting(context.Context, *CreateCommissionSettingArgs) (*CommissionSetting, error)
+	CreateOrUpdateSupplyCommissionSetting(context.Context, *CreateOrUpdateSupplyCommissionSettingArgs) (*SupplyCommissionSetting, error)
 	CreateProductPromotion(context.Context, *CreateProductPromotionArgs) (*ProductPromotion, error)
 	UpdateProductPromotion(context.Context, *UpdateProductPromotionArgs) (*ProductPromotion, error)
 	OnTradingOrderCreated(context.Context, *OnTradingOrderCreatedArgs) error
@@ -26,6 +27,21 @@ type CreateCommissionSettingArgs struct {
 	Type        string
 	Description string
 	Note        string
+}
+
+type CreateOrUpdateSupplyCommissionSettingArgs struct {
+	ShopID                   int64
+	ProductID                int64
+	Level1DirectCommission   int32
+	Level1IndirectCommission int32
+	Level2DirectCommission   int32
+	Level2IndirectCommission int32
+	DependOn                 string
+	Level1LimitCount         int32
+	Level1LimitDuration      int32
+	Level1LimitDurationType  string
+	LifetimeDuration         int32
+	LifetimeDurationType     string
 }
 
 type CreateProductPromotionArgs struct {
@@ -80,6 +96,7 @@ type QueryService interface {
 	GetAffiliateAccountReferralCodes(context.Context, *GetAffiliateAccountReferralCodesArgs) ([]*AffiliateReferralCode, error)
 	GetReferralsByReferralID(context.Context, *GetReferralsByReferralIDArgs) ([]*UserReferral, error)
 	GetAffiliateAccountReferralByCode(context.Context, *GetAffiliateAccountReferralByCodeArgs) (*AffiliateReferralCode, error)
+	GetSupplyCommissionSettingsByProductIDs(context.Context, *GetSupplyCommissionSettingsByProductIDsArgs) ([]*SupplyCommissionSetting, error)
 }
 
 type GetCommissionByProductIDsArgs struct {
@@ -128,4 +145,9 @@ type GetAffiliateReferralsArgs struct {
 
 type GetAffiliateAccountReferralByCodeArgs struct {
 	Code string
+}
+
+type GetSupplyCommissionSettingsByProductIDsArgs struct {
+	ShopID     int64
+	ProductIDs []int64
 }

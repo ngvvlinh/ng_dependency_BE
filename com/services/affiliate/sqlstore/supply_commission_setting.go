@@ -3,6 +3,8 @@ package sqlstore
 import (
 	"context"
 
+	"etop.vn/backend/pkg/common/sq"
+
 	"etop.vn/backend/com/services/affiliate/convert"
 
 	"etop.vn/api/services/affiliate"
@@ -47,6 +49,11 @@ func (s *SupplyCommissionSettingStore) ProductID(id int64) *SupplyCommissionSett
 	return s
 }
 
+func (s *SupplyCommissionSettingStore) ProductIDs(ids ...int64) *SupplyCommissionSettingStore {
+	s.preds = append(s.preds, sq.In("product_id", ids))
+	return s
+}
+
 func (s *SupplyCommissionSettingStore) GetSupplyCommissionSettingDB() (*model.SupplyCommissionSetting, error) {
 	var supplyCommissionSetting model.SupplyCommissionSetting
 	err := s.query().Where(s.preds).ShouldGet(&supplyCommissionSetting)
@@ -59,6 +66,12 @@ func (s *SupplyCommissionSettingStore) GetSupplyCommissionSetting() (*affiliate.
 		return nil, err
 	}
 	return convert.SupplyCommissionSetting(supplyCommissionSetting), err
+}
+
+func (s *SupplyCommissionSettingStore) GetSupplyCommissionSettings() ([]*affiliate.SupplyCommissionSetting, error) {
+	var results model.SupplyCommissionSettings
+	err := s.query().Where(s.preds).Find(&results)
+	return convert.SupplyCommissionSettings(results), err
 }
 
 func (s *SupplyCommissionSettingStore) CreateSupplyCommissionSetting(supplyCommissionSetting *model.SupplyCommissionSetting) error {

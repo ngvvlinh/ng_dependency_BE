@@ -1170,7 +1170,7 @@ func (ft *SupplyCommissionSettingFilters) ByProductIDPtr(ProductID *int64) *sq.C
 	}
 }
 
-func (ft *SupplyCommissionSettingFilters) ByLevel1DirectCommission(Level1DirectCommission int) *sq.ColumnFilter {
+func (ft *SupplyCommissionSettingFilters) ByLevel1DirectCommission(Level1DirectCommission int32) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "level1_direct_commission",
@@ -1179,7 +1179,7 @@ func (ft *SupplyCommissionSettingFilters) ByLevel1DirectCommission(Level1DirectC
 	}
 }
 
-func (ft *SupplyCommissionSettingFilters) ByLevel1DirectCommissionPtr(Level1DirectCommission *int) *sq.ColumnFilterPtr {
+func (ft *SupplyCommissionSettingFilters) ByLevel1DirectCommissionPtr(Level1DirectCommission *int32) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "level1_direct_commission",
@@ -1189,7 +1189,7 @@ func (ft *SupplyCommissionSettingFilters) ByLevel1DirectCommissionPtr(Level1Dire
 	}
 }
 
-func (ft *SupplyCommissionSettingFilters) ByLevel1IndirectCommission(Level1IndirectCommission int) *sq.ColumnFilter {
+func (ft *SupplyCommissionSettingFilters) ByLevel1IndirectCommission(Level1IndirectCommission int32) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "level1_indirect_commission",
@@ -1198,7 +1198,7 @@ func (ft *SupplyCommissionSettingFilters) ByLevel1IndirectCommission(Level1Indir
 	}
 }
 
-func (ft *SupplyCommissionSettingFilters) ByLevel1IndirectCommissionPtr(Level1IndirectCommission *int) *sq.ColumnFilterPtr {
+func (ft *SupplyCommissionSettingFilters) ByLevel1IndirectCommissionPtr(Level1IndirectCommission *int32) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "level1_indirect_commission",
@@ -1208,7 +1208,7 @@ func (ft *SupplyCommissionSettingFilters) ByLevel1IndirectCommissionPtr(Level1In
 	}
 }
 
-func (ft *SupplyCommissionSettingFilters) ByLevel2DirectCommission(Level2DirectCommission int) *sq.ColumnFilter {
+func (ft *SupplyCommissionSettingFilters) ByLevel2DirectCommission(Level2DirectCommission int32) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "level2_direct_commission",
@@ -1217,7 +1217,7 @@ func (ft *SupplyCommissionSettingFilters) ByLevel2DirectCommission(Level2DirectC
 	}
 }
 
-func (ft *SupplyCommissionSettingFilters) ByLevel2DirectCommissionPtr(Level2DirectCommission *int) *sq.ColumnFilterPtr {
+func (ft *SupplyCommissionSettingFilters) ByLevel2DirectCommissionPtr(Level2DirectCommission *int32) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "level2_direct_commission",
@@ -1227,7 +1227,7 @@ func (ft *SupplyCommissionSettingFilters) ByLevel2DirectCommissionPtr(Level2Dire
 	}
 }
 
-func (ft *SupplyCommissionSettingFilters) ByLevel2IndirectCommission(Level2IndirectCommission int) *sq.ColumnFilter {
+func (ft *SupplyCommissionSettingFilters) ByLevel2IndirectCommission(Level2IndirectCommission int32) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "level2_indirect_commission",
@@ -1236,7 +1236,7 @@ func (ft *SupplyCommissionSettingFilters) ByLevel2IndirectCommission(Level2Indir
 	}
 }
 
-func (ft *SupplyCommissionSettingFilters) ByLevel2IndirectCommissionPtr(Level2IndirectCommission *int) *sq.ColumnFilterPtr {
+func (ft *SupplyCommissionSettingFilters) ByLevel2IndirectCommissionPtr(Level2IndirectCommission *int32) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "level2_indirect_commission",
@@ -1265,7 +1265,7 @@ func (ft *SupplyCommissionSettingFilters) ByDependOnPtr(DependOn *string) *sq.Co
 	}
 }
 
-func (ft *SupplyCommissionSettingFilters) ByLevel1LimitCount(Level1LimitCount int) *sq.ColumnFilter {
+func (ft *SupplyCommissionSettingFilters) ByLevel1LimitCount(Level1LimitCount int32) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "level1_limit_count",
@@ -1274,7 +1274,7 @@ func (ft *SupplyCommissionSettingFilters) ByLevel1LimitCount(Level1LimitCount in
 	}
 }
 
-func (ft *SupplyCommissionSettingFilters) ByLevel1LimitCountPtr(Level1LimitCount *int) *sq.ColumnFilterPtr {
+func (ft *SupplyCommissionSettingFilters) ByLevel1LimitCountPtr(Level1LimitCount *int32) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "level1_limit_count",

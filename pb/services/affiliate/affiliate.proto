@@ -124,18 +124,13 @@ message SupplyCommissionSetting {
     optional int32 level2_indirect_commission = 5  [(gogoproto.nullable) = false];
     optional string depend_on = 6  [(gogoproto.nullable) = false];
     optional int32 level1_limit_count = 7  [(gogoproto.nullable) = false];
-    optional SupplyCommissionSettingLifetimeDuration m_lifetime_duration = 8 [(gogoproto.nullable) = false];
-    optional SupplyCommissionSettingLevel1LimitDuration m_level1_limit_duration = 11 [(gogoproto.nullable) = false];
-    optional google.protobuf.Timestamp created_at = 9  [(gogoproto.nullable) = false];
-    optional google.protobuf.Timestamp updated_at = 10  [(gogoproto.nullable) = false];
+    optional SupplyCommissionSettingDurationObject m_lifetime_duration = 8 [(gogoproto.nullable) = true];
+    optional SupplyCommissionSettingDurationObject m_level1_limit_duration = 11 [(gogoproto.nullable) = true];
+    optional google.protobuf.Timestamp created_at = 9  [(gogoproto.nullable) = true];
+    optional google.protobuf.Timestamp updated_at = 10  [(gogoproto.nullable) = true];
 }
 
-message SupplyCommissionSettingLevel1LimitDuration {
-    optional int32 duration = 1 [(gogoproto.nullable) = false];
-    optional string type = 2 [(gogoproto.nullable) = false];
-}
-
-message SupplyCommissionSettingLifetimeDuration {
+message SupplyCommissionSettingDurationObject {
     optional int32 duration = 1 [(gogoproto.nullable) = false];
     optional string type = 2 [(gogoproto.nullable) = false];
 }
@@ -164,7 +159,7 @@ message CreateOrUpdateCommissionSettingRequest {
 
 message CreateOrUpdateTradingCommissionSettingRequest {
     optional int64 product_id = 1 [(gogoproto.nullable) = false];
-    optional int64 level1_direct_commission = 2 [(gogoproto.nullable) = false];
+    optional int32 level1_direct_commission = 2 [(gogoproto.nullable) = false];
     optional int32 level1_indirect_commission = 3 [(gogoproto.nullable) = false];
     optional int32 level2_direct_commission = 4  [(gogoproto.nullable) = false];
     optional int32 level2_indirect_commission = 5  [(gogoproto.nullable) = false];
@@ -212,7 +207,7 @@ message GetProductPromotionByProductIDResponse {
 
 message SupplyProductResponse {
     optional shop.ShopProduct product = 1;
-    optional CommissionSetting shop_commission_setting = 2;
+    optional SupplyCommissionSetting supply_commission_setting = 2;
     optional ProductPromotion promotion = 3;
 }
 

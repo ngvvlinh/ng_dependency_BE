@@ -22,26 +22,30 @@ var ll = l.New()
 
 var AvailableUnit = []string{"vnd", "percent"}
 var AvailablePromotionTypes = []string{"cashback", "discount"}
+var AvailableDependOnValues = []string{"product", "customer"}
+var AvailableDurationTypes = []string{"day", "month", "year"}
 
 type Aggregate struct {
-	commissionSetting     sqlstore.CommissionSettingStoreFactory
-	productPromotion      sqlstore.ProductPromotionStoreFactory
-	affiliateCommission   sqlstore.AffiliateCommissionStoreFactory
-	orderCreatedNotify    sqlstore.OrderCreatedNotifyStoreFactory
-	affiliateReferralCode sqlstore.AffiliateReferralCodeStoreFactory
-	userReferral          sqlstore.UserReferralStoreFactory
-	identityQuery         identity.QueryBus
+	commissionSetting       sqlstore.CommissionSettingStoreFactory
+	supplyCommissionSetting sqlstore.SupplyCommissionSettingStoreFactory
+	productPromotion        sqlstore.ProductPromotionStoreFactory
+	affiliateCommission     sqlstore.AffiliateCommissionStoreFactory
+	orderCreatedNotify      sqlstore.OrderCreatedNotifyStoreFactory
+	affiliateReferralCode   sqlstore.AffiliateReferralCodeStoreFactory
+	userReferral            sqlstore.UserReferralStoreFactory
+	identityQuery           identity.QueryBus
 }
 
 func NewAggregate(db cmsql.Database, idenQuery identity.QueryBus) *Aggregate {
 	return &Aggregate{
-		commissionSetting:     sqlstore.NewCommissionSettingStore(db),
-		productPromotion:      sqlstore.NewProductPromotionStore(db),
-		affiliateCommission:   sqlstore.NewAffiliateCommissionSettingStore(db),
-		orderCreatedNotify:    sqlstore.NewOrderCreatedNotifyStore(db),
-		affiliateReferralCode: sqlstore.NewAffiliateReferralCodeStore(db),
-		userReferral:          sqlstore.NewUserReferralStore(db),
-		identityQuery:         idenQuery,
+		commissionSetting:       sqlstore.NewCommissionSettingStore(db),
+		supplyCommissionSetting: sqlstore.NewSupplyCommissionSettingStore(db),
+		productPromotion:        sqlstore.NewProductPromotionStore(db),
+		affiliateCommission:     sqlstore.NewAffiliateCommissionSettingStore(db),
+		orderCreatedNotify:      sqlstore.NewOrderCreatedNotifyStore(db),
+		affiliateReferralCode:   sqlstore.NewAffiliateReferralCodeStore(db),
+		userReferral:            sqlstore.NewUserReferralStore(db),
+		identityQuery:           idenQuery,
 	}
 }
 
@@ -283,4 +287,81 @@ func (a *Aggregate) CreateOrUpdateUserReferral(ctx context.Context, args *affili
 	}
 
 	return a.userReferral(ctx).UserID(args.UserID).GetUserReferral()
+}
+
+func (a *Aggregate) CreateOrUpdateSupplyCommissionSetting(ctx context.Context, args *affiliate.CreateOrUpdateSupplyCommissionSettingArgs) (*affiliate.SupplyCommissionSetting, error) {
+	if args.ShopID == 0 {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "ShopID is invalid")
+	}
+	if args.ProductID == 0 {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "ProductID is invalid")
+	}
+	if !cm.StringsContain(AvailableDependOnValues, args.DependOn) {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "Depend On value is not valid")
+	}
+	if !cm.StringsContain(AvailableDurationTypes, args.Level1LimitDurationType) {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "Level1LimitDurationType is not valid")
+	}
+	if !cm.StringsContain(AvailableDurationTypes, args.LifetimeDurationType) {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "LifetimeDurationType is not valid")
+	}
+
+	var level1LimitDuration int64 = 0
+	var lifetimeDuration int64 = 0
+
+	switch args.Level1LimitDurationType {
+	case "day":
+		level1LimitDuration = int64(args.Level1LimitDuration) * 86400
+	case "month":
+		level1LimitDuration = int64(args.Level1LimitDuration) * 2592000
+	case "year":
+		level1LimitDuration = int64(args.Level1LimitDuration) * 31104000
+	}
+
+	switch args.LifetimeDurationType {
+	case "day":
+		lifetimeDuration = int64(args.LifetimeDuration) * 86400
+	case "month":
+		lifetimeDuration = int64(args.LifetimeDuration) * 2592000
+	case "year":
+		lifetimeDuration = int64(args.LifetimeDuration) * 31104000
+	}
+
+	var createOrUpdateErr error
+	supplyCommissionSetting := &model.SupplyCommissionSetting{
+		ShopID:                   args.ShopID,
+		ProductID:                args.ProductID,
+		Level1DirectCommission:   args.Level1DirectCommission,
+		Level1IndirectCommission: args.Level1IndirectCommission,
+		Level2DirectCommission:   args.Level2DirectCommission,
+		Level2IndirectCommission: args.Level2IndirectCommission,
+		DependOn:                 args.DependOn,
+		Level1LimitCount:         args.Level1LimitCount,
+		Level1LimitDuration:      level1LimitDuration,
+		MLevel1LimitDuration: &model.DurationJSON{
+			Duration: int32(args.Level1LimitDuration),
+			Type:     args.Level1LimitDurationType,
+		},
+		LifetimeDuration: lifetimeDuration,
+		MLifetimeDuration: &model.DurationJSON{
+			Duration: int32(args.LifetimeDuration),
+			Type:     args.LifetimeDurationType,
+		},
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
+	}
+
+	_, err := a.supplyCommissionSetting(ctx).ProductID(args.ProductID).ShopID(args.ShopID).GetSupplyCommissionSettingDB()
+
+	if cm.ErrorCode(err) == cm.NotFound {
+		createOrUpdateErr = a.supplyCommissionSetting(ctx).CreateSupplyCommissionSetting(supplyCommissionSetting)
+	} else {
+		createOrUpdateErr = a.supplyCommissionSetting(ctx).UpdateSupplyCommissionSetting(supplyCommissionSetting)
+	}
+
+	if createOrUpdateErr != nil {
+		return nil, createOrUpdateErr
+	}
+
+	return a.supplyCommissionSetting(ctx).ShopID(args.ShopID).ProductID(args.ProductID).GetSupplyCommissionSetting()
 }

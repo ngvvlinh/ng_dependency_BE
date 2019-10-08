@@ -177,3 +177,14 @@ func SupplyCommissionSetting(in *model.SupplyCommissionSetting) *affiliate.Suppl
 		UpdatedAt:                in.UpdatedAt,
 	}
 }
+
+func SupplyCommissionSettings(ins []*model.SupplyCommissionSetting) []*affiliate.SupplyCommissionSetting {
+	var results []*affiliate.SupplyCommissionSetting
+	if len(ins) == 0 {
+		return results
+	}
+	for _, in := range ins {
+		results = append(results, SupplyCommissionSetting(in))
+	}
+	return results
+}

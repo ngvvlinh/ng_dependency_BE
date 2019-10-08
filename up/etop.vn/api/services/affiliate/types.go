@@ -65,12 +65,12 @@ type UserReferral struct {
 type SupplyCommissionSetting struct {
 	ShopID                   int64
 	ProductID                int64
-	Level1DirectCommission   int
-	Level1IndirectCommission int
-	Level2DirectCommission   int
-	Level2IndirectCommission int
+	Level1DirectCommission   int32
+	Level1IndirectCommission int32
+	Level2DirectCommission   int32
+	Level2IndirectCommission int32
 	DependOn                 string
-	Level1LimitCount         int
+	Level1LimitCount         int32
 	Level1LimitDuration      int64
 	MLevel1LimitDuration     *Duration
 	LifetimeDuration         int64

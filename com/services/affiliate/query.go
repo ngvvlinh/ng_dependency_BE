@@ -12,18 +12,20 @@ import (
 var _ affiliate.QueryService = &QueryService{}
 
 type QueryService struct {
-	commissionSetting     sqlstore.CommissionSettingStoreFactory
-	productPromotion      sqlstore.ProductPromotionStoreFactory
-	affiliateReferralCode sqlstore.AffiliateReferralCodeStoreFactory
-	userReferral          sqlstore.UserReferralStoreFactory
+	commissionSetting       sqlstore.CommissionSettingStoreFactory
+	supplyCommissionSetting sqlstore.SupplyCommissionSettingStoreFactory
+	productPromotion        sqlstore.ProductPromotionStoreFactory
+	affiliateReferralCode   sqlstore.AffiliateReferralCodeStoreFactory
+	userReferral            sqlstore.UserReferralStoreFactory
 }
 
 func NewQuery(db cmsql.Database) *QueryService {
 	return &QueryService{
-		commissionSetting:     sqlstore.NewCommissionSettingStore(db),
-		productPromotion:      sqlstore.NewProductPromotionStore(db),
-		affiliateReferralCode: sqlstore.NewAffiliateReferralCodeStore(db),
-		userReferral:          sqlstore.NewUserReferralStore(db),
+		commissionSetting:       sqlstore.NewCommissionSettingStore(db),
+		supplyCommissionSetting: sqlstore.NewSupplyCommissionSettingStore(db),
+		productPromotion:        sqlstore.NewProductPromotionStore(db),
+		affiliateReferralCode:   sqlstore.NewAffiliateReferralCodeStore(db),
+		userReferral:            sqlstore.NewUserReferralStore(db),
 	}
 }
 
@@ -75,4 +77,8 @@ func (a *QueryService) GetReferralsByReferralID(ctx context.Context, args *affil
 
 func (q *QueryService) GetAffiliateAccountReferralByCode(ctx context.Context, args *affiliate.GetAffiliateAccountReferralByCodeArgs) (*affiliate.AffiliateReferralCode, error) {
 	return q.affiliateReferralCode(ctx).Code(args.Code).GetAffiliateReferralCode()
+}
+
+func (q *QueryService) GetSupplyCommissionSettingsByProductIDs(ctx context.Context, args *affiliate.GetSupplyCommissionSettingsByProductIDsArgs) ([]*affiliate.SupplyCommissionSetting, error) {
+	return q.supplyCommissionSetting(ctx).ShopID(args.ShopID).ProductIDs(args.ProductIDs...).GetSupplyCommissionSettings()
 }
