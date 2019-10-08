@@ -6,8 +6,8 @@ CREATE TABLE payment (
     payment_provider TEXT,
     external_trans_id TEXT,
     external_data JSONB,
-    created_at TIMESTAMP,
-    updated_at TIMESTAMP
+    created_at TIMESTAMPTZ,
+    updated_at TIMESTAMPTZ
 );
 
 CREATE UNIQUE INDEX ON payment (external_trans_id, payment_provider);
