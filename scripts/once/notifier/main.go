@@ -6,8 +6,8 @@ import (
 
 	"etop.vn/backend/pkg/etop/sqlstore"
 
+	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/etop/model"
-	"etop.vn/common/bus"
 
 	"etop.vn/backend/cmd/etop-server/config"
 	notimodel "etop.vn/backend/com/handler/notifier/model"

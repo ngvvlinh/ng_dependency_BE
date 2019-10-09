@@ -7,8 +7,8 @@ import (
 	"etop.vn/api/main/transaction"
 	"etop.vn/backend/com/main/transaction/sqlstore"
 	cm "etop.vn/backend/pkg/common"
+	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/cmsql"
-	"etop.vn/common/bus"
 )
 
 var _ transaction.Aggregate = &Aggregate{}

@@ -9,9 +9,9 @@ import (
 	"etop.vn/backend/com/supporting/crm/vht/sqlstore"
 	syncvht "etop.vn/backend/com/supporting/crm/vht/sync"
 	cm "etop.vn/backend/pkg/common"
+	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/cmsql"
 	vhtclient "etop.vn/backend/pkg/integration/vht/client"
-	"etop.vn/common/bus"
 )
 
 var _ crmvht.Aggregate = &AggregateService{}

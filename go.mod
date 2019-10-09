@@ -33,6 +33,7 @@ require (
 	github.com/grpc-ecosystem/grpc-gateway v1.11.3
 	github.com/jteeuwen/go-bindata v3.0.7+incompatible
 	github.com/julienschmidt/httprouter v1.3.0
+	github.com/k0kubun/pp v3.0.1+incompatible
 	github.com/lib/pq v1.2.0
 	github.com/pkg/errors v0.8.1
 	github.com/pquerna/ffjson v0.0.0-20190930134022-aa0246cd15f7

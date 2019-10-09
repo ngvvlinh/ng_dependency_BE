@@ -13,11 +13,11 @@ import (
 	pbs4 "etop.vn/backend/pb/etop/etc/status4"
 	pbshop "etop.vn/backend/pb/etop/shop"
 	cm "etop.vn/backend/pkg/common"
+	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/idemp"
 	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/backend/pkg/etop/sqlstore"
 	wrappershop "etop.vn/backend/wrapper/etop/shop"
-	"etop.vn/common/bus"
 )
 
 func init() {

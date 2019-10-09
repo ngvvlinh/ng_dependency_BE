@@ -19,6 +19,7 @@ import (
 	pborder "etop.vn/backend/pb/etop/order"
 	pbexternal "etop.vn/backend/pb/external"
 	cm "etop.vn/backend/pkg/common"
+	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/cmsql"
 	"etop.vn/backend/pkg/etop/apix/shipping"
 	"etop.vn/backend/pkg/etop/authorize/claims"
@@ -27,7 +28,6 @@ import (
 	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/backend/pkg/etop/sqlstore"
 	haravanconvert "etop.vn/backend/pkg/external/haravan/convert"
-	"etop.vn/common/bus"
 	"etop.vn/common/l"
 )
 

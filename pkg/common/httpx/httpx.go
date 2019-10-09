@@ -18,12 +18,12 @@ import (
 	"github.com/twitchtv/twirp"
 
 	cm "etop.vn/backend/pkg/common"
+	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/telebot"
 	cmWrapper "etop.vn/backend/pkg/common/wrapper"
 	"etop.vn/backend/pkg/etop/authorize/claims"
 	"etop.vn/backend/pkg/etop/authorize/middleware"
 	"etop.vn/backend/pkg/etop/authorize/permission"
-	"etop.vn/common/bus"
 	"etop.vn/common/jsonx"
 	"etop.vn/common/l"
 	"etop.vn/common/xerrors"

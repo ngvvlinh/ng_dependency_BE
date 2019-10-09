@@ -9,9 +9,9 @@ import (
 	notifiermodel "etop.vn/backend/com/handler/notifier/model"
 	"etop.vn/backend/com/handler/pgevent"
 	cm "etop.vn/backend/pkg/common"
+	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/mq"
 	etopmodel "etop.vn/backend/pkg/etop/model"
-	"etop.vn/common/bus"
 	"etop.vn/common/l"
 )
 

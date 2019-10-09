@@ -12,6 +12,7 @@ import (
 	pbintegration "etop.vn/backend/pb/etop/integration"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/auth"
+	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/gencode"
 	"etop.vn/backend/pkg/common/idemp"
 	"etop.vn/backend/pkg/common/redis"
@@ -27,7 +28,6 @@ import (
 	"etop.vn/backend/pkg/integration/email"
 	"etop.vn/backend/pkg/integration/sms"
 	wrapintegration "etop.vn/backend/wrapper/etop/integration"
-	"etop.vn/common/bus"
 	"etop.vn/common/jsonx"
 	"etop.vn/common/l"
 )

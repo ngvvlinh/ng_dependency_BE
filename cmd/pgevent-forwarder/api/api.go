@@ -11,7 +11,7 @@ import (
 
 	"etop.vn/backend/com/handler/pgevent"
 	cm "etop.vn/backend/pkg/common"
-	"etop.vn/common/bus"
+	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/common/l"
 
 	pbcm "etop.vn/backend/pb/common"

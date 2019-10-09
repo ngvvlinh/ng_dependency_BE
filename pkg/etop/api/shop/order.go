@@ -12,11 +12,11 @@ import (
 	pbcm "etop.vn/backend/pb/common"
 	pborder "etop.vn/backend/pb/etop/order"
 	cm "etop.vn/backend/pkg/common"
+	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/etop/api"
 	logicorder "etop.vn/backend/pkg/etop/logic/orders"
 	"etop.vn/backend/pkg/etop/model"
 	wrapshop "etop.vn/backend/wrapper/etop/shop"
-	"etop.vn/common/bus"
 )
 
 func init() {

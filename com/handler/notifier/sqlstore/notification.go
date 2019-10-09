@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	"etop.vn/common/bus"
+	"etop.vn/backend/pkg/common/bus"
 
 	"etop.vn/backend/com/handler/notifier/model"
 	cm "etop.vn/backend/pkg/common"

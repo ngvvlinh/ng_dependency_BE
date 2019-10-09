@@ -8,6 +8,7 @@ import (
 
 	twirp "github.com/twitchtv/twirp"
 
+	bus "etop.vn/backend/pkg/common/bus"
 	common "etop.vn/backend/pkg/common"
 	cmgrpc "etop.vn/backend/pkg/common/grpc"
 	metrics "etop.vn/backend/pkg/common/metrics"
@@ -18,7 +19,6 @@ import (
 	model "etop.vn/backend/pkg/etop/model"
 	cm "etop.vn/backend/pb/common"
 	cmwrapper "etop.vn/backend/pkg/common/wrapper"
-	bus "etop.vn/common/bus"
 	l "etop.vn/common/l"
 	{{.PackageName}} "{{.PackagePath}}"
 	{{range .Imports -}}

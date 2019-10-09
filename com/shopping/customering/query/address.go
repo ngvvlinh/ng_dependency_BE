@@ -5,8 +5,8 @@ import (
 
 	"etop.vn/api/shopping/addressing"
 	"etop.vn/backend/com/shopping/customering/sqlstore"
+	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/cmsql"
-	"etop.vn/common/bus"
 )
 
 var _ addressing.QueryService = &AddressQuery{}

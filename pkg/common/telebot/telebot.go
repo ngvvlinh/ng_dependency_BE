@@ -11,7 +11,7 @@ import (
 	"sync"
 	"time"
 
-	"etop.vn/common/bus"
+	"etop.vn/backend/pkg/common/bus"
 
 	tg "github.com/go-telegram-bot-api/telegram-bot-api"
 

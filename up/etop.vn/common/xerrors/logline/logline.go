@@ -8,6 +8,10 @@ import (
 	"etop.vn/common/jsonx"
 )
 
+type LogAppender interface {
+	AppendLog(LogLine)
+}
+
 func ValueOf(f zc.Field) interface{} {
 	switch {
 	case f.Integer != 0:

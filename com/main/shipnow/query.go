@@ -5,8 +5,8 @@ import (
 
 	"etop.vn/api/main/shipnow"
 	"etop.vn/backend/com/main/shipnow/sqlstore"
+	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/cmsql"
-	"etop.vn/common/bus"
 )
 
 var _ shipnow.QueryService = &QueryService{}

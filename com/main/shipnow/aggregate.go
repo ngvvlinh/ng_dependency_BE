@@ -20,8 +20,8 @@ import (
 	"etop.vn/backend/com/main/shipnow/convert"
 	"etop.vn/backend/com/main/shipnow/sqlstore"
 	cm "etop.vn/backend/pkg/common"
+	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/cmsql"
-	"etop.vn/common/bus"
 )
 
 var _ shipnow.Aggregate = &Aggregate{}

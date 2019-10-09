@@ -25,72 +25,67 @@ type TestQueryB struct {
 }
 
 func TestQueryHandlerReturnsError(t *testing.T) {
-	bus := New()
-
-	bus.AddHandler(func(ctx context.Context, query *TestQuery) error {
+	b := New()
+	b.AddHandler(func(ctx context.Context, query *TestQuery) error {
 		return errors.New("handler error")
 	})
 
 	ctx := NewRootContext(context.Background())
-	err := bus.Dispatch(ctx, &TestQuery{})
+	err := Dispatch(ctx, &TestQuery{})
 	assert.Error(t, err)
 }
 
 func TestQueryHandlerReturn(t *testing.T) {
-	bus := New()
-
-	bus.AddHandler(func(ctx context.Context, q *TestQuery) error {
+	b := New()
+	b.AddHandler(func(ctx context.Context, q *TestQuery) error {
 		q.Resp = "hello from handler"
 		return nil
 	})
 
 	ctx := NewRootContext(context.Background())
 	query := &TestQuery{}
-	err := bus.Dispatch(ctx, query)
+	err := b.Dispatch(ctx, query)
 	assert.NoError(t, err)
 }
 
 func TestQueryMockHandlerReturnsError(t *testing.T) {
-	bus := New()
-
-	bus.MockHandler(func(q *TestQuery) error {
+	b := New()
+	b.MockHandler(func(q *TestQuery) error {
 		return errors.New("test handler error")
 	})
 
 	ctx := context.Background()
-	err := bus.Dispatch(ctx, &TestQuery{})
+	err := b.Dispatch(ctx, &TestQuery{})
 	assert.Error(t, err)
 }
 
 func TestQueryMockHandlerReturn(t *testing.T) {
-	bus := New()
-
-	bus.MockHandler(func(q *TestQuery) error {
+	b := New()
+	b.MockHandler(func(q *TestQuery) error {
 		q.Resp = "hello from test handler"
 		return nil
 	})
 
 	ctx := context.Background()
 	query := &TestQuery{}
-	err := bus.Dispatch(ctx, query)
+	err := b.Dispatch(ctx, query)
 	assert.NoError(t, err)
 }
 
 func TestEventListeners(t *testing.T) {
-	bus := New()
+	b := New()
 	count := 0
 
-	bus.AddEventListener(func(_ context.Context, query *TestQuery) error {
+	b.AddEventListener(func(_ context.Context, query *TestQuery) error {
 		count += 1
 		return nil
 	})
-
-	bus.AddEventListener(func(_ context.Context, query *TestQuery) error {
+	b.AddEventListener(func(_ context.Context, query *TestQuery) error {
 		count += 10
 		return nil
 	})
 
-	err := bus.Publish(Ctx(), &TestQuery{})
+	err := b.Publish(Ctx(), &TestQuery{})
 	if err != nil {
 		t.Fatal("Publish event failed " + err.Error())
 	} else if count != 11 {
@@ -99,19 +94,16 @@ func TestEventListeners(t *testing.T) {
 }
 
 func TestPrintStack(t *testing.T) {
-	bus := New()
-
-	bus.AddHandler(func(ctx context.Context, query *TestQuery) error {
-		_ = bus.Dispatch(ctx, &TestQueryA{"A1"})
-		return bus.Dispatch(ctx, &TestQueryA{"A2"})
+	b := New()
+	b.AddHandler(func(ctx context.Context, query *TestQuery) error {
+		_ = b.Dispatch(ctx, &TestQueryA{"A1"})
+		return b.Dispatch(ctx, &TestQueryA{"A2"})
 	})
-
-	bus.AddHandler(func(ctx context.Context, query *TestQueryA) error {
-		_ = bus.Dispatch(ctx, &TestQueryB{query.Value + "-B1"})
-		return bus.Dispatch(ctx, &TestQueryB{query.Value + "-B2"})
+	b.AddHandler(func(ctx context.Context, query *TestQueryA) error {
+		_ = b.Dispatch(ctx, &TestQueryB{query.Value + "-B1"})
+		return b.Dispatch(ctx, &TestQueryB{query.Value + "-B2"})
 	})
-
-	bus.AddHandler(func(ctx context.Context, query *TestQueryB) error {
+	b.AddHandler(func(ctx context.Context, query *TestQueryB) error {
 		if query.Value == "A2-B2" {
 			PrintStack(ctx)
 			return errors.New("Error at A2-B2")
@@ -120,7 +112,7 @@ func TestPrintStack(t *testing.T) {
 	})
 
 	ctx := NewRootContext(context.Background())
-	err := bus.Dispatch(ctx, &TestQuery{})
+	err := b.Dispatch(ctx, &TestQuery{})
 	if err != nil {
 		PrintAllStack(ctx, false)
 		PrintAllStack(ctx, true)

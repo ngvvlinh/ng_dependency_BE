@@ -2,8 +2,6 @@ package capi
 
 import (
 	"context"
-
-	"etop.vn/common/bus"
 )
 
 type Bus interface {
@@ -11,7 +9,9 @@ type Bus interface {
 	DispatchAll(ctx context.Context, msgs ...interface{}) error
 }
 
-type Event = bus.Event
+type Event interface {
+	GetTopic() string
+}
 
 type EventBus interface {
 	Publish(ctx context.Context, msg Event) error

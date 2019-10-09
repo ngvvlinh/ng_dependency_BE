@@ -6,8 +6,8 @@ import (
 	"etop.vn/api/shopping"
 	"etop.vn/api/shopping/tradering"
 	"etop.vn/backend/com/shopping/tradering/sqlstore"
+	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/cmsql"
-	"etop.vn/common/bus"
 )
 
 var _ tradering.QueryService = &TraderQuery{}

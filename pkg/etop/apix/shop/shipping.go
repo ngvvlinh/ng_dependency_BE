@@ -3,9 +3,9 @@ package xshop
 import (
 	"context"
 
+	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/etop/apix/shipping"
 	wrapxshop "etop.vn/backend/wrapper/external/shop"
-	"etop.vn/common/bus"
 )
 
 func init() {

@@ -12,8 +12,8 @@ import (
 	"etop.vn/backend/com/shopping/customering/model"
 	"etop.vn/backend/com/shopping/customering/sqlstore"
 	cm "etop.vn/backend/pkg/common"
+	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/cmsql"
-	"etop.vn/common/bus"
 )
 
 var _ customering.Aggregate = &CustomerAggregate{}

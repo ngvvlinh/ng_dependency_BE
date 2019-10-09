@@ -7,9 +7,9 @@ import (
 	shipmodelx "etop.vn/backend/com/main/shipping/modelx"
 	pbcm "etop.vn/backend/pb/common"
 	pborder "etop.vn/backend/pb/etop/order"
+	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/etop/model"
 	wrapadmin "etop.vn/backend/wrapper/etop/admin"
-	"etop.vn/common/bus"
 )
 
 func init() {

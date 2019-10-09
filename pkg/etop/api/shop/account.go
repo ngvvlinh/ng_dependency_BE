@@ -4,10 +4,10 @@ import (
 	"context"
 
 	cm "etop.vn/backend/pkg/common"
+	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/validate"
 	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/backend/pkg/etop/sqlstore"
-	"etop.vn/common/bus"
 
 	pbcm "etop.vn/backend/pb/common"
 	pbetop "etop.vn/backend/pb/etop"

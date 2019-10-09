@@ -9,9 +9,9 @@ import (
 	"etop.vn/api/meta"
 	"etop.vn/backend/com/external/haravan/identity/sqlstore"
 	cm "etop.vn/backend/pkg/common"
+	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/cmsql"
 	haravanclient "etop.vn/backend/pkg/integration/haravan/client"
-	"etop.vn/common/bus"
 )
 
 const (

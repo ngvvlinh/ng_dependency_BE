@@ -5,8 +5,8 @@ import (
 
 	"etop.vn/api/external/payment"
 	"etop.vn/backend/com/external/payment/payment/sqlstore"
+	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/cmsql"
-	"etop.vn/common/bus"
 )
 
 var _ payment.QueryService = &QueryService{}

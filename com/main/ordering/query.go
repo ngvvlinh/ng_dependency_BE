@@ -5,8 +5,8 @@ import (
 
 	"etop.vn/api/main/ordering"
 	"etop.vn/backend/com/main/ordering/sqlstore"
+	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/cmsql"
-	"etop.vn/common/bus"
 )
 
 var _ ordering.QueryService = &QueryService{}

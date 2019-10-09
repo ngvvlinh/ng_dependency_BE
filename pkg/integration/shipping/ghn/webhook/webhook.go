@@ -9,6 +9,7 @@ import (
 	logmodel "etop.vn/backend/com/etc/log/webhook/model"
 	"etop.vn/backend/com/main/shipping/modelx"
 	cm "etop.vn/backend/pkg/common"
+	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/cmsql"
 	"etop.vn/backend/pkg/common/httpx"
 	"etop.vn/backend/pkg/etop/model"
@@ -16,7 +17,6 @@ import (
 	"etop.vn/backend/pkg/integration/shipping/ghn"
 	ghnclient "etop.vn/backend/pkg/integration/shipping/ghn/client"
 	"etop.vn/backend/pkg/integration/shipping/ghn/update"
-	"etop.vn/common/bus"
 	"etop.vn/common/l"
 )
 

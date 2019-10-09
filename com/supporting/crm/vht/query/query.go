@@ -8,8 +8,8 @@ import (
 	"etop.vn/backend/com/supporting/crm/vht/convert"
 	"etop.vn/backend/com/supporting/crm/vht/model"
 	"etop.vn/backend/com/supporting/crm/vht/sqlstore"
+	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/cmsql"
-	"etop.vn/common/bus"
 )
 
 type QueryService struct {

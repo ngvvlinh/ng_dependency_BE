@@ -11,10 +11,10 @@ import (
 	"etop.vn/api/services/affiliate"
 	pbcm "etop.vn/backend/pb/common"
 	pbaff "etop.vn/backend/pb/services/affiliate"
+	"etop.vn/backend/pkg/common/bus"
 	pbshop "etop.vn/backend/pkg/etop/api/shop"
 	modeletop "etop.vn/backend/pkg/etop/model"
 	wrapaff "etop.vn/backend/wrapper/services/affiliate"
-	"etop.vn/common/bus"
 	"etop.vn/common/l"
 )
 

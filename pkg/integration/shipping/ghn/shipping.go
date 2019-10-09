@@ -9,12 +9,12 @@ import (
 	ordermodel "etop.vn/backend/com/main/ordering/model"
 	shipmodel "etop.vn/backend/com/main/shipping/model"
 	cm "etop.vn/backend/pkg/common"
+	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/etop/logic/etop_shipping_price"
 	"etop.vn/backend/pkg/etop/logic/shipping_provider"
 	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/backend/pkg/integration/shipping"
 	ghnclient "etop.vn/backend/pkg/integration/shipping/ghn/client"
-	"etop.vn/common/bus"
 )
 
 var _ shipping_provider.ShippingProvider = &Carrier{}

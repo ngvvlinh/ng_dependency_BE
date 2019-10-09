@@ -5,8 +5,8 @@ import (
 
 	"etop.vn/api/external/haravan/identity"
 	"etop.vn/backend/com/external/haravan/identity/sqlstore"
+	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/cmsql"
-	"etop.vn/common/bus"
 )
 
 var _ identity.QueryService = &QueryService{}

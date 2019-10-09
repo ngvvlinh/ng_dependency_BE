@@ -5,9 +5,9 @@ import (
 
 	"etop.vn/api/main/location"
 	servicelocation "etop.vn/backend/com/main/location"
+	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/backend/pkg/integration/bank"
-	"etop.vn/common/bus"
 	"etop.vn/common/l"
 
 	pbcm "etop.vn/backend/pb/common"

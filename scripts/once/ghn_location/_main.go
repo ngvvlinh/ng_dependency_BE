@@ -11,10 +11,10 @@ import (
 	locationlist "etop.vn/backend/com/main/location/list"
 
 	"etop.vn/backend/cmd/etop-server/config"
+	"etop.vn/backend/pkg/common/bus"
 	cc "etop.vn/backend/pkg/common/config"
 	"etop.vn/backend/pkg/integration/shipping/vtpost"
 	vtpostClient "etop.vn/backend/pkg/integration/shipping/vtpost/client"
-	"etop.vn/common/bus"
 	"etop.vn/common/jsonx"
 	"etop.vn/common/l"
 )

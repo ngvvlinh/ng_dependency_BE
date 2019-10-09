@@ -4,7 +4,7 @@ import (
 	"context"
 	"testing"
 
-	"etop.vn/common/bus"
+	"etop.vn/backend/pkg/common/bus"
 
 	. "github.com/smartystreets/goconvey/convey"
 

@@ -6,8 +6,8 @@ import (
 	"etop.vn/backend/com/handler/etop-handler/webhook/sender"
 	pbcm "etop.vn/backend/pb/common"
 	cm "etop.vn/backend/pkg/common"
+	"etop.vn/backend/pkg/common/bus"
 	wraphandler "etop.vn/backend/wrapper/services/handler"
-	"etop.vn/common/bus"
 )
 
 var whsender *sender.WebhookSender

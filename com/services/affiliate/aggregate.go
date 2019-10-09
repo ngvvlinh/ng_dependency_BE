@@ -9,8 +9,8 @@ import (
 	"etop.vn/backend/com/services/affiliate/model"
 	"etop.vn/backend/com/services/affiliate/sqlstore"
 	cm "etop.vn/backend/pkg/common"
+	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/cmsql"
-	"etop.vn/common/bus"
 	"etop.vn/common/l"
 
 	"etop.vn/api/services/affiliate"

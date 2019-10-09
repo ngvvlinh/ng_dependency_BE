@@ -3,8 +3,8 @@ package usering
 import (
 	"context"
 
+	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/etop/model"
-	"etop.vn/common/bus"
 )
 
 func CreateUser(ctx context.Context, cmd *CreateUserCommand) error {

@@ -6,8 +6,8 @@ import (
 	"etop.vn/api/main/identity"
 	pbcm "etop.vn/backend/pb/common"
 	pbaffiliate "etop.vn/backend/pb/etop/affiliate"
+	"etop.vn/backend/pkg/common/bus"
 	wrapaffiliate "etop.vn/backend/wrapper/etop/affiliate"
-	"etop.vn/common/bus"
 )
 
 func init() {

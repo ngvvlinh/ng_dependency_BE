@@ -11,12 +11,12 @@ import (
 	cm "etop.vn/backend/pb/common"
 	integration "etop.vn/backend/pb/etop/integration"
 	common "etop.vn/backend/pkg/common"
+	bus "etop.vn/backend/pkg/common/bus"
 	metrics "etop.vn/backend/pkg/common/metrics"
 	cmwrapper "etop.vn/backend/pkg/common/wrapper"
 	claims "etop.vn/backend/pkg/etop/authorize/claims"
 	middleware "etop.vn/backend/pkg/etop/authorize/middleware"
 	model "etop.vn/backend/pkg/etop/model"
-	bus "etop.vn/common/bus"
 	l "etop.vn/common/l"
 )
 

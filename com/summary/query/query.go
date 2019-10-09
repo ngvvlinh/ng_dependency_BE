@@ -7,9 +7,9 @@ import (
 
 	"etop.vn/api/summary"
 	"etop.vn/backend/com/summary/sqlstore"
+	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/cmsql"
 	"etop.vn/backend/pkg/common/redis"
-	"etop.vn/common/bus"
 )
 
 const currentVersion = "1"

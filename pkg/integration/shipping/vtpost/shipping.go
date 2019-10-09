@@ -8,12 +8,12 @@ import (
 	ordermodel "etop.vn/backend/com/main/ordering/model"
 	shipmodel "etop.vn/backend/com/main/shipping/model"
 	cm "etop.vn/backend/pkg/common"
+	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/etop/logic/shipping_provider"
 	shippingprovider "etop.vn/backend/pkg/etop/logic/shipping_provider"
 	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/backend/pkg/etop/sqlstore"
 	vtpostclient "etop.vn/backend/pkg/integration/shipping/vtpost/client"
-	"etop.vn/common/bus"
 )
 
 var _ shippingprovider.ShippingProvider = &Carrier{}

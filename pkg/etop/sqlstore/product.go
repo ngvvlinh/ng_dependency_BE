@@ -9,8 +9,8 @@ import (
 	catalogmodelx "etop.vn/backend/com/main/catalog/modelx"
 	catalogsqlstore "etop.vn/backend/com/main/catalog/sqlstore"
 	cm "etop.vn/backend/pkg/common"
+	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/etop/model"
-	"etop.vn/common/bus"
 )
 
 func init() {

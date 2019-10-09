@@ -6,9 +6,9 @@ import (
 	"etop.vn/api/shopping/vendoring"
 	pbcm "etop.vn/backend/pb/common"
 	pbshop "etop.vn/backend/pb/etop/shop"
+	"etop.vn/backend/pkg/common/bus"
 	wrapshop "etop.vn/backend/wrapper/etop/shop"
 	. "etop.vn/capi/dot"
-	"etop.vn/common/bus"
 )
 
 func init() {

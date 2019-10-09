@@ -10,6 +10,8 @@ import (
 	"sort"
 	"strings"
 	"time"
+
+	"etop.vn/capi"
 )
 
 var isTest = func() bool {
@@ -25,9 +27,7 @@ type HandlerFunc = interface{}
 type CtxHandlerFunc func()
 type Msg = interface{}
 
-type Event interface {
-	GetTopic() string
-}
+type Event = capi.Event
 
 type Bus interface {
 	Dispatch(ctx context.Context, msg Msg) error

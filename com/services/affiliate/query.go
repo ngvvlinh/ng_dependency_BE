@@ -5,8 +5,8 @@ import (
 
 	"etop.vn/api/services/affiliate"
 	"etop.vn/backend/com/services/affiliate/sqlstore"
+	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/cmsql"
-	"etop.vn/common/bus"
 )
 
 var _ affiliate.QueryService = &QueryService{}

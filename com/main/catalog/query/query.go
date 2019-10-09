@@ -7,8 +7,8 @@ import (
 	"etop.vn/api/shopping"
 	"etop.vn/backend/com/main/catalog/sqlstore"
 	cm "etop.vn/backend/pkg/common"
+	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/cmsql"
-	"etop.vn/common/bus"
 )
 
 var _ catalog.QueryService = &QueryService{}

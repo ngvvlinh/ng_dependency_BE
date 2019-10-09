@@ -5,7 +5,7 @@ import (
 
 	"etop.vn/api/shopping"
 
-	"etop.vn/common/bus"
+	"etop.vn/backend/pkg/common/bus"
 
 	"etop.vn/api/main/receipting"
 	"etop.vn/backend/com/main/receipting/sqlstore"

@@ -8,12 +8,12 @@ import (
 	notisqlstore "etop.vn/backend/com/handler/notifier/sqlstore"
 	catalogsqlstore "etop.vn/backend/com/main/catalog/sqlstore"
 	cm "etop.vn/backend/pkg/common"
+	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/cmsql"
 	"etop.vn/backend/pkg/common/httpreq"
 	"etop.vn/backend/pkg/common/sq"
 	"etop.vn/backend/pkg/common/sqlstore"
 	"etop.vn/backend/pkg/etop/model"
-	"etop.vn/common/bus"
 	"etop.vn/common/l"
 )
 

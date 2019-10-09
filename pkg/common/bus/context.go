@@ -98,6 +98,10 @@ func (n *NodeContext) ResetValue(key interface{}) {
 	}
 }
 
+func (n *NodeContext) AppendLog(line logline.LogLine) {
+	n.Logs = append(n.Logs, line)
+}
+
 func GetStack(ctx context.Context) []*NodeContext {
 	node, ok := ctx.(*NodeContext)
 	if !ok {

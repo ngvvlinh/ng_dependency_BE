@@ -46,6 +46,7 @@ import (
 	vtigerquery "etop.vn/backend/com/supporting/crm/vtiger/query"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/auth"
+	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/captcha"
 	"etop.vn/backend/pkg/common/cmsql"
 	cc "etop.vn/backend/pkg/common/config"
@@ -85,7 +86,6 @@ import (
 	"etop.vn/backend/pkg/integration/sms"
 	vtigerclient "etop.vn/backend/pkg/integration/vtiger/client"
 	apiaff "etop.vn/backend/pkg/services/affiliate/api"
-	"etop.vn/common/bus"
 	"etop.vn/common/l"
 )
 

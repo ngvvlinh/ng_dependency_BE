@@ -8,7 +8,7 @@ import (
 	"etop.vn/api/main/ordering"
 	ordertrading "etop.vn/api/main/ordering/trading"
 	"etop.vn/api/services/affiliate"
-	"etop.vn/common/bus"
+	"etop.vn/backend/pkg/common/bus"
 )
 
 type ProcessManager struct {

@@ -3,7 +3,7 @@ package vtpay
 import (
 	"context"
 
-	"etop.vn/common/bus"
+	"etop.vn/backend/pkg/common/bus"
 
 	"etop.vn/api/external/payment"
 	"etop.vn/api/external/payment/vtpay"

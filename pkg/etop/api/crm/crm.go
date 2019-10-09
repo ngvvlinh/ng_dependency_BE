@@ -14,12 +14,12 @@ import (
 	pbcm "etop.vn/backend/pb/common"
 	crmservice "etop.vn/backend/pb/services/crm"
 	cm "etop.vn/backend/pkg/common"
+	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/backend/pkg/etop/sqlstore"
 	"etop.vn/backend/pkg/integration/shipping/ghn"
 	ghnclient "etop.vn/backend/pkg/integration/shipping/ghn/client"
 	wrapcrm "etop.vn/backend/wrapper/services/crm"
-	"etop.vn/common/bus"
 )
 
 func init() {

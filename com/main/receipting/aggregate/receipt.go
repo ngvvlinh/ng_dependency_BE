@@ -10,8 +10,8 @@ import (
 
 	"etop.vn/api/main/receipting"
 	"etop.vn/backend/com/main/receipting/sqlstore"
+	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/cmsql"
-	"etop.vn/common/bus"
 )
 
 var _ receipting.Aggregate = &ReceiptAggregate{}

@@ -6,6 +6,7 @@ import (
 	logmodel "etop.vn/backend/com/etc/log/webhook/model"
 	"etop.vn/backend/com/main/shipping/modelx"
 	cm "etop.vn/backend/pkg/common"
+	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/cmsql"
 	"etop.vn/backend/pkg/common/httpreq"
 	"etop.vn/backend/pkg/common/httpx"
@@ -13,7 +14,6 @@ import (
 	"etop.vn/backend/pkg/integration/shipping"
 	"etop.vn/backend/pkg/integration/shipping/vtpost"
 	vtpostclient "etop.vn/backend/pkg/integration/shipping/vtpost/client"
-	"etop.vn/common/bus"
 	"etop.vn/common/jsonx"
 	"etop.vn/common/l"
 )
