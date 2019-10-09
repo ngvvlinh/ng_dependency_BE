@@ -22,8 +22,8 @@ var _ = sqlgenShopCustomer(&ShopCustomer{})
 type ShopCustomer struct {
 	ID           int64
 	ShopID       int64
-	GroupIDs     []int64 `sq:"-"`
 	Code         string
+	CodeNorm     int32
 	FullName     string
 	Gender       string
 	Type         string
@@ -34,6 +34,7 @@ type ShopCustomer struct {
 	Status       int32
 	FullNameNorm string
 	PhoneNorm    string
+	GroupIDs     []int64   `sq:"-"`
 	CreatedAt    time.Time `sq:"create"`
 	UpdatedAt    time.Time `sq:"update"`
 	DeletedAt    time.Time

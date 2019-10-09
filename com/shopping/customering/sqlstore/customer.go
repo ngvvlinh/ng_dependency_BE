@@ -74,6 +74,16 @@ func (s *CustomerStore) ShopID(id int64) *CustomerStore {
 	return s
 }
 
+func (s *CustomerStore) Code(code string) *CustomerStore {
+	s.preds = append(s.preds, s.ft.ByCode(code))
+	return s
+}
+
+func (s *CustomerStore) CodeNorm(codeNorm int32) *CustomerStore {
+	s.preds = append(s.preds, s.ft.ByCodeNorm(codeNorm))
+	return s
+}
+
 func (s *CustomerStore) Phone(phone string) *CustomerStore {
 	s.preds = append(s.preds, s.ft.ByPhone(phone))
 	return s
@@ -90,16 +100,15 @@ func (s *CustomerStore) Count() (uint64, error) {
 	return query.Count((*model.ShopCustomer)(nil))
 }
 
-func (s *CustomerStore) CreateCustomer(customer *customering.ShopCustomer) error {
+func (s *CustomerStore) CreateCustomer(customer *model.ShopCustomer) error {
 	sqlstore.MustNoPreds(s.preds)
 	trader := &model.ShopTrader{
 		ID:     customer.ID,
 		ShopID: customer.ShopID,
 		Type:   tradering.CustomerType,
 	}
-	customerDB := convert.ShopCustomerDB(customer)
-	_, err := s.query().Insert(trader, customerDB)
-	return CheckErrorCustomer(err, customerDB.Email, customerDB.Phone)
+	_, err := s.query().Insert(trader, customer)
+	return CheckErrorCustomer(err, customer.Email, customer.Phone)
 }
 
 func (s *CustomerStore) UpdateCustomerDB(customer *model.ShopCustomer) error {
@@ -144,6 +153,18 @@ func (s *CustomerStore) GetCustomer() (*customering.ShopCustomer, error) {
 		return nil, err
 	}
 	return convert.ShopCustomer(customer), nil
+}
+
+func (s *CustomerStore) GetCustomerByMaximumCodeNorm() (*model.ShopCustomer, error) {
+	query := s.query().Where(s.preds).Where("code_norm != 0")
+	query = s.includeDeleted.Check(query, s.ft.NotDeleted())
+	query = query.OrderBy("code_norm desc").Limit(1)
+
+	var customer model.ShopCustomer
+	if err := query.ShouldGet(&customer); err != nil {
+		return nil, err
+	}
+	return &customer, nil
 }
 
 func (s *CustomerStore) ListCustomersDB() ([]*model.ShopCustomer, error) {

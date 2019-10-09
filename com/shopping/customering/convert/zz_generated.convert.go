@@ -14,7 +14,7 @@ import (
 
 /*
 Custom conversions:
-    CreateShopCustomer             // in use
+    CreateShopCustomer             // not use, no conversions between params
     CreateShopTraderAddress        // not use, no conversions between params
     ShopCustomer                   // in use
     ShopCustomerDB                 // in use
@@ -27,6 +27,8 @@ Custom conversions:
 
 Ignored functions:
     Addresses                  // params are not pointer to named types
+    GenerateCode               // params are not pointer to named types
+    ParseCodeNorm              // not recognized
     ShopCustomerGroups         // params are not pointer to named types
     ShopCustomers              // params are not pointer to named types
     UpdateCustomerGroup        // not recognized
@@ -142,8 +144,8 @@ func Convert_customering_ShopCustomer_customeringmodel_ShopCustomer(arg *custome
 func convert_customering_ShopCustomer_customeringmodel_ShopCustomer(arg *customering.ShopCustomer, out *customeringmodel.ShopCustomer) {
 	out.ID = arg.ID               // simple assign
 	out.ShopID = arg.ShopID       // simple assign
-	out.GroupIDs = arg.GroupIDs   // simple assign
 	out.Code = arg.Code           // simple assign
+	out.CodeNorm = 0              // zero value
 	out.FullName = arg.FullName   // simple assign
 	out.Gender = arg.Gender       // simple assign
 	out.Type = arg.Type           // simple assign
@@ -154,6 +156,7 @@ func convert_customering_ShopCustomer_customeringmodel_ShopCustomer(arg *custome
 	out.Status = arg.Status       // simple assign
 	out.FullNameNorm = ""         // zero value
 	out.PhoneNorm = ""            // zero value
+	out.GroupIDs = arg.GroupIDs   // simple assign
 	out.CreatedAt = arg.CreatedAt // simple assign
 	out.UpdatedAt = arg.UpdatedAt // simple assign
 	out.DeletedAt = time.Time{}   // zero value
@@ -169,7 +172,14 @@ func Convert_customering_ShopCustomers_customeringmodel_ShopCustomers(args []*cu
 }
 
 func Apply_customering_CreateCustomerArgs_customering_ShopCustomer(arg *customering.CreateCustomerArgs, out *customering.ShopCustomer) *customering.ShopCustomer {
-	return CreateShopCustomer(arg)
+	if arg == nil {
+		return nil
+	}
+	if out == nil {
+		out = &customering.ShopCustomer{}
+	}
+	apply_customering_CreateCustomerArgs_customering_ShopCustomer(arg, out)
+	return out
 }
 
 func apply_customering_CreateCustomerArgs_customering_ShopCustomer(arg *customering.CreateCustomerArgs, out *customering.ShopCustomer) {

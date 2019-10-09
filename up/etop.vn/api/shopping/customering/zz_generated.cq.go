@@ -150,6 +150,18 @@ func (h AggregateHandler) HandleUpdateCustomerGroup(ctx context.Context, msg *Up
 	return err
 }
 
+type GetCustomerByCodeQuery struct {
+	Code   string
+	ShopID int64
+
+	Result *ShopCustomer `json:"-"`
+}
+
+func (h QueryServiceHandler) HandleGetCustomerByCode(ctx context.Context, msg *GetCustomerByCodeQuery) (err error) {
+	msg.Result, err = h.inner.GetCustomerByCode(msg.GetArgs(ctx))
+	return err
+}
+
 type GetCustomerByIDQuery struct {
 	ID     int64
 	ShopID int64
@@ -220,6 +232,7 @@ func (q *DeleteCustomerCommand) command()           {}
 func (q *RemoveCustomersFromGroupCommand) command() {}
 func (q *UpdateCustomerCommand) command()           {}
 func (q *UpdateCustomerGroupCommand) command()      {}
+func (q *GetCustomerByCodeQuery) query()            {}
 func (q *GetCustomerByIDQuery) query()              {}
 func (q *GetCustomerGroupQuery) query()             {}
 func (q *ListCustomerGroupsQuery) query()           {}
@@ -303,6 +316,12 @@ func (q *UpdateCustomerGroupCommand) GetArgs(ctx context.Context) (_ context.Con
 		}
 }
 
+func (q *GetCustomerByCodeQuery) GetArgs(ctx context.Context) (_ context.Context, code string, shopID int64) {
+	return ctx,
+		q.Code,
+		q.ShopID
+}
+
 func (q *GetCustomerByIDQuery) GetArgs(ctx context.Context) (_ context.Context, _ *shopping.IDQueryShopArg) {
 	return ctx,
 		&shopping.IDQueryShopArg{
@@ -378,6 +397,7 @@ func (h QueryServiceHandler) RegisterHandlers(b interface {
 	capi.Bus
 	AddHandler(handler interface{})
 }) QueryBus {
+	b.AddHandler(h.HandleGetCustomerByCode)
 	b.AddHandler(h.HandleGetCustomerByID)
 	b.AddHandler(h.HandleGetCustomerGroup)
 	b.AddHandler(h.HandleListCustomerGroups)

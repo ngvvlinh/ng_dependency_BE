@@ -31,6 +31,9 @@ type Aggregate interface {
 type QueryService interface {
 	GetCustomerByID(context.Context, *shopping.IDQueryShopArg) (*ShopCustomer, error)
 
+	// unused
+	GetCustomerByCode(ctx context.Context, code string, shopID int64) (*ShopCustomer, error)
+
 	ListCustomers(context.Context, *shopping.ListQueryShopArgs) (*CustomersResponse, error)
 
 	ListCustomersByIDs(context.Context, *shopping.IDsQueryShopArgs) (*CustomersResponse, error)

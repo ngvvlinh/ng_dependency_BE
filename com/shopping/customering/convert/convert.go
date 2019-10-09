@@ -1,6 +1,9 @@
 package convert
 
 import (
+	"fmt"
+	"regexp"
+	"strconv"
 	"time"
 
 	"etop.vn/api/main/etop"
@@ -10,16 +13,43 @@ import (
 	"etop.vn/backend/com/shopping/customering/model"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/validate"
+	"etop.vn/common/l"
 )
 
 // +gen:convert: etop.vn/backend/com/shopping/customering/model -> etop.vn/api/shopping/customering
 // +gen:convert: etop.vn/api/shopping/customering
 
-func CreateShopCustomer(args *customering.CreateCustomerArgs) (out *customering.ShopCustomer) {
+var ll = l.New()
+
+const (
+	MaxCodeNorm = 999999
+	codeRegex   = "^KH([0-9]{6})$"
+	codePrefix  = "KH"
+)
+
+var reCode = regexp.MustCompile(codeRegex)
+
+func ParseCodeNorm(code string) (_ int, ok bool) {
+	parts := reCode.FindStringSubmatch(code)
+	if len(parts) == 0 {
+		return 0, false
+	}
+	number, err := strconv.Atoi(parts[1])
+	if err != nil {
+		ll.Panic("unexpected", l.Error(err))
+	}
+	return number, true
+}
+
+func GenerateCode(codeNorm int) string {
+	return fmt.Sprintf("%v%06v", codePrefix, codeNorm)
+}
+
+func CreateShopCustomer(args *customering.CreateCustomerArgs) (out *model.ShopCustomer) {
 	if args == nil {
 		return nil
 	}
-	return &customering.ShopCustomer{
+	result := &model.ShopCustomer{
 		ID:       cm.NewID(),
 		ShopID:   args.ShopID,
 		Code:     args.Code,
@@ -32,6 +62,9 @@ func CreateShopCustomer(args *customering.CreateCustomerArgs) (out *customering.
 		Email:    args.Email,
 		Status:   1,
 	}
+	codeNorm, _ := ParseCodeNorm(args.Code)
+	result.CodeNorm = int32(codeNorm)
+	return result
 }
 
 func UpdateShopCustomer(in *customering.ShopCustomer, args *customering.UpdateCustomerArgs) (out *customering.ShopCustomer) {

@@ -2,6 +2,8 @@ package aggregate
 
 import (
 	"context"
+	"fmt"
+	"regexp"
 	"strings"
 
 	"etop.vn/api/meta"
@@ -40,9 +42,16 @@ func (a *CustomerAggregate) MessageBus() customering.CommandBus {
 	return customering.NewAggregateHandler(a).RegisterHandlers(b)
 }
 
+const (
+	codeRegex  = "^KH[0-9]{6}$"
+	codePrefix = "KH"
+)
+
+var reCode = regexp.MustCompile(codeRegex)
+
 func (a *CustomerAggregate) CreateCustomer(
 	ctx context.Context, args *customering.CreateCustomerArgs,
-) (*customering.ShopCustomer, error) {
+) (_ *customering.ShopCustomer, err error) {
 	if args.FullName == "" {
 		return nil, cm.Error(cm.InvalidArgument, "Vui lòng nhập tên đầy đủ", nil)
 	}
@@ -63,15 +72,53 @@ func (a *CustomerAggregate) CreateCustomer(
 		}
 		args.Email = email.String()
 	}
+
 	customer := convert.CreateShopCustomer(args)
-	err := a.store(ctx).CreateCustomer(customer)
+	if customer.Code != "" { // check code exists
+		_, err := a.store(ctx).ShopID(args.ShopID).Code(customer.Code).GetCustomerDB()
+		switch cm.ErrorCode(err) {
+		case cm.NoError:
+			return nil, cm.Errorf(cm.FailedPrecondition, nil, "Mã khách hàng đã tồn tại")
+		case cm.NotFound:
+			if codeNorm, err := convert.ParseCodeNorm(customer.Code); err {
+				customer.CodeNorm = int32(codeNorm)
+			}
+		default:
+			return nil, err
+		}
+	} else {
+		var maxCodeNorm int32
+		customerTemp, err := a.store(ctx).ShopID(args.ShopID).GetCustomerByMaximumCodeNorm()
+		switch cm.ErrorCode(err) {
+		case cm.NoError:
+			maxCodeNorm = customerTemp.CodeNorm
+		case cm.NotFound:
+			// no-op
+		default:
+			return nil, err
+		}
+
+		if maxCodeNorm >= convert.MaxCodeNorm {
+			return nil, cm.Errorf(cm.InvalidArgument, nil, "Vui lòng nhập mã")
+		}
+		codeNorm := maxCodeNorm + 1
+		customer.Code = convert.GenerateCode(int(codeNorm))
+		customer.CodeNorm = codeNorm
+	}
+
+	if true {
+		fmt.Printf("%v", customer)
+	}
+
+	err = a.store(ctx).CreateCustomer(customer)
 	if err != nil {
 		if strings.Contains(err.Error(), "gender_type") {
 			return nil, cm.Error(cm.InvalidArgument, `Giới tính chỉ nằm trong "male", "female", "other"`, err)
 		}
 	}
 	// TODO: created_at, updated_at
-	return customer, err
+	var customerResult customering.ShopCustomer
+	return convert.Convert_customeringmodel_ShopCustomer_customering_ShopCustomer(customer, &customerResult), err
 }
 
 func (a *CustomerAggregate) UpdateCustomer(
@@ -81,6 +128,7 @@ func (a *CustomerAggregate) UpdateCustomer(
 	if err != nil {
 		return nil, err
 	}
+
 	updated := convert.UpdateShopCustomer(customer, args)
 	if customer.Phone != updated.Phone {
 		_, err := a.store(ctx).ShopID(args.ShopID).Phone(updated.Phone).GetCustomerDB()
@@ -89,6 +137,26 @@ func (a *CustomerAggregate) UpdateCustomer(
 		}
 	}
 	err = a.store(ctx).UpdateCustomerDB(convert.ShopCustomerDB(updated))
+	customerModel := convert.ShopCustomerDB(updated)
+
+	if args.Code.Valid && args.Code.String != "" {
+		customerTemp, err := a.store(ctx).ShopID(args.ShopID).Code(args.Code.String).GetCustomerDB()
+		switch cm.ErrorCode(err) {
+		case cm.NoError:
+			if customerTemp.ID != customer.ID {
+				return nil, cm.Errorf(cm.FailedPrecondition, nil, "Mã khách hàng đã tồn tại")
+			}
+		case cm.NotFound:
+			// no-op
+		default:
+			return nil, err
+		}
+		if codeNorm, err := convert.ParseCodeNorm(args.Code.String); err {
+			customerModel.CodeNorm = int32(codeNorm)
+		}
+	}
+
+	err = a.store(ctx).UpdateCustomerDB(customerModel)
 	return updated, err
 }
 

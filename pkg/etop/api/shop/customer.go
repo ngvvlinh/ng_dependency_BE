@@ -2,6 +2,7 @@ package shop
 
 import (
 	"context"
+	"strings"
 
 	"etop.vn/api/shopping/customering"
 	pbcm "etop.vn/backend/pb/common"
@@ -21,7 +22,6 @@ func init() {
 		GetCustomers,
 		GetCustomersByIDs,
 		GetCustomerDetails,
-
 		BatchSetCustomersStatus,
 
 		CreateCustomerGroup,
@@ -36,7 +36,7 @@ func init() {
 func CreateCustomer(ctx context.Context, r *wrapshop.CreateCustomerEndpoint) error {
 	cmd := &customering.CreateCustomerCommand{
 		ShopID:   r.Context.Shop.ID,
-		Code:     r.Code,
+		Code:     strings.ToUpper(r.Code),
 		FullName: r.FullName,
 		Gender:   r.Gender,
 		Type:     r.Type,
@@ -45,9 +45,18 @@ func CreateCustomer(ctx context.Context, r *wrapshop.CreateCustomerEndpoint) err
 		Phone:    r.Phone,
 		Email:    r.Email,
 	}
-	if err := customerAggr.Dispatch(ctx, cmd); err != nil {
+	err := customerAggr.Dispatch(ctx, cmd)
+	if err != nil {
+		errMgs := err.Error()
+		switch {
+		case strings.Contains(errMgs, "shop_customer_shop_id_phone_idx"):
+			err = cm.Errorf(cm.FailedPrecondition, nil, "Số điện thoại này đã tồn tại")
+		case strings.Contains(errMgs, "shop_customer_shop_id_email_idx"):
+			err = cm.Errorf(cm.FailedPrecondition, nil, "Email này đã tồn tại")
+		}
 		return err
 	}
+
 	r.Result = pbshop.PbCustomer(cmd.Result)
 	return nil
 }
@@ -65,9 +74,18 @@ func UpdateCustomer(ctx context.Context, r *wrapshop.UpdateCustomerEndpoint) err
 		Phone:    PString(r.Phone),
 		Email:    PString(r.Email),
 	}
-	if err := customerAggr.Dispatch(ctx, cmd); err != nil {
+	err := customerAggr.Dispatch(ctx, cmd)
+	if err != nil {
+		errMgs := err.Error()
+		switch {
+		case strings.Contains(errMgs, "shop_customer_shop_id_phone_idx"):
+			err = cm.Errorf(cm.FailedPrecondition, nil, "Số điện thoại này đã tồn tại")
+		case strings.Contains(errMgs, "shop_customer_shop_id_email_idx"):
+			err = cm.Errorf(cm.FailedPrecondition, nil, "Email này đã tồn tại")
+		}
 		return err
 	}
+
 	r.Result = pbshop.PbCustomer(cmd.Result)
 	return nil
 }

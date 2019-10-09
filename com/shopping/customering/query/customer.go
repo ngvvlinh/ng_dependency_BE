@@ -46,6 +46,12 @@ func (q *CustomerQuery) GetCustomerByID(
 	return customer, err
 }
 
+func (q *CustomerQuery) GetCustomerByCode(
+	ctx context.Context, code string, shopID int64,
+) (*customering.ShopCustomer, error) {
+	return q.store(ctx).ShopID(shopID).Code(code).GetCustomer()
+}
+
 func (q *CustomerQuery) ListCustomers(
 	ctx context.Context, args *shopping.ListQueryShopArgs,
 ) (*customering.CustomersResponse, error) {

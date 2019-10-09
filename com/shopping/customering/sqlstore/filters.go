@@ -30,6 +30,7 @@ var SortCustomer = map[string]string{
 	"created_at": "",
 	"updated_at": "",
 	"name":       "",
+	"code":       "",
 }
 
 var FilterCustomer = sqlstore.FilterWhitelist{

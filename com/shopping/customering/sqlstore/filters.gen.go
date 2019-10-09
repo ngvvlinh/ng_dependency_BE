@@ -151,6 +151,25 @@ func (ft *ShopCustomerFilters) ByCodePtr(Code *string) *sq.ColumnFilterPtr {
 	}
 }
 
+func (ft *ShopCustomerFilters) ByCodeNorm(CodeNorm int32) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "code_norm",
+		Value:  CodeNorm,
+		IsNil:  CodeNorm == 0,
+	}
+}
+
+func (ft *ShopCustomerFilters) ByCodeNormPtr(CodeNorm *int32) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "code_norm",
+		Value:  CodeNorm,
+		IsNil:  CodeNorm == nil,
+		IsZero: CodeNorm != nil && (*CodeNorm) == 0,
+	}
+}
+
 func (ft *ShopCustomerFilters) ByFullName(FullName string) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
