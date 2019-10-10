@@ -49,7 +49,7 @@ require (
 	golang.org/x/oauth2 v0.0.0-20190604053449-0f29369cfe45
 	golang.org/x/sync v0.0.0-20190911185100-cd5d95a43a6e
 	golang.org/x/text v0.3.2
-	golang.org/x/tools v0.0.0-20191007185444-6536af71d98a
+	golang.org/x/tools v0.0.0-20191009213438-b090f1f24028
 	google.golang.org/genproto v0.0.0-20191007204434-a023cd5227bd
 	google.golang.org/grpc v1.24.0
 	gopkg.in/jcmturner/goidentity.v3 v3.0.0 // indirect
