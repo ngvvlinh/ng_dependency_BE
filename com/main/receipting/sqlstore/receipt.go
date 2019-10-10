@@ -85,14 +85,19 @@ func (s *ReceiptStore) OrderID(id int64) *ReceiptStore {
 }
 
 func (s *ReceiptStore) OrderIDs(ids ...int64) *ReceiptStore {
-	strConditions := "("
+	if len(ids) == 0 {
+		s.preds = append(s.preds, sq.NewExpr("false"))
+		return s
+	}
+
+	strConditions := "order_ids && '{"
 	for i, id := range ids {
-		strConditions += fmt.Sprintf("order_ids @> '{%d}'", id)
+		strConditions += fmt.Sprintf("%d", id)
 		if i < len(ids)-1 {
-			strConditions += " or "
+			strConditions += ","
 		}
 	}
-	strConditions += ")"
+	strConditions += "}'"
 
 	s.preds = append(s.preds, sq.NewExpr(strConditions))
 	return s
