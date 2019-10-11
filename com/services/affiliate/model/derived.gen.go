@@ -566,67 +566,75 @@ func (ms *ProductPromotionHistories) SQLScan(opts core.Opts, rows *sql.Rows) err
 	return nil
 }
 
-// Type AffiliateCommission represents table affiliate_commission
-func sqlgenAffiliateCommission(_ *AffiliateCommission) bool { return true }
+// Type SellerCommission represents table seller_commission
+func sqlgenSellerCommission(_ *SellerCommission) bool { return true }
 
-type AffiliateCommissions []*AffiliateCommission
+type SellerCommissions []*SellerCommission
 
-const __sqlAffiliateCommission_Table = "affiliate_commission"
-const __sqlAffiliateCommission_ListCols = "\"id\",\"affiliate_id\",\"from_affiliate_id\",\"product_id\",\"order_id\",\"value\",\"description\",\"note\",\"type\",\"status\",\"valid_at\",\"created_at\",\"updated_at\""
-const __sqlAffiliateCommission_Insert = "INSERT INTO \"affiliate_commission\" (" + __sqlAffiliateCommission_ListCols + ") VALUES"
-const __sqlAffiliateCommission_Select = "SELECT " + __sqlAffiliateCommission_ListCols + " FROM \"affiliate_commission\""
-const __sqlAffiliateCommission_Select_history = "SELECT " + __sqlAffiliateCommission_ListCols + " FROM history.\"affiliate_commission\""
-const __sqlAffiliateCommission_UpdateAll = "UPDATE \"affiliate_commission\" SET (" + __sqlAffiliateCommission_ListCols + ")"
+const __sqlSellerCommission_Table = "seller_commission"
+const __sqlSellerCommission_ListCols = "\"id\",\"seller_id\",\"from_seller_id\",\"product_id\",\"shop_id\",\"supply_id\",\"order_id\",\"amount\",\"description\",\"note\",\"type\",\"status\",\"o_value\",\"o_base_value\",\"valid_at\",\"created_at\",\"updated_at\""
+const __sqlSellerCommission_Insert = "INSERT INTO \"seller_commission\" (" + __sqlSellerCommission_ListCols + ") VALUES"
+const __sqlSellerCommission_Select = "SELECT " + __sqlSellerCommission_ListCols + " FROM \"seller_commission\""
+const __sqlSellerCommission_Select_history = "SELECT " + __sqlSellerCommission_ListCols + " FROM history.\"seller_commission\""
+const __sqlSellerCommission_UpdateAll = "UPDATE \"seller_commission\" SET (" + __sqlSellerCommission_ListCols + ")"
 
-func (m *AffiliateCommission) SQLTableName() string  { return "affiliate_commission" }
-func (m *AffiliateCommissions) SQLTableName() string { return "affiliate_commission" }
-func (m *AffiliateCommission) SQLListCols() string   { return __sqlAffiliateCommission_ListCols }
+func (m *SellerCommission) SQLTableName() string  { return "seller_commission" }
+func (m *SellerCommissions) SQLTableName() string { return "seller_commission" }
+func (m *SellerCommission) SQLListCols() string   { return __sqlSellerCommission_ListCols }
 
-func (m *AffiliateCommission) SQLArgs(opts core.Opts, create bool) []interface{} {
+func (m *SellerCommission) SQLArgs(opts core.Opts, create bool) []interface{} {
 	now := time.Now()
 	return []interface{}{
 		core.Int64(m.ID),
-		core.Int64(m.AffiliateID),
-		core.Int64(m.FromAffiliateID),
+		core.Int64(m.SellerID),
+		core.Int64(m.FromSellerID),
 		core.Int64(m.ProductID),
+		core.Int64(m.ShopID),
+		core.Int64(m.SupplyID),
 		core.Int64(m.OrderId),
-		core.Int32(m.Value),
+		core.Int32(m.Amount),
 		core.String(m.Description),
 		core.String(m.Note),
 		core.String(m.Type),
 		core.Int(m.Status),
+		core.Int32(m.OValue),
+		core.Int32(m.OBaseValue),
 		core.Time(m.ValidAt),
 		core.Now(m.CreatedAt, now, create),
 		core.Now(m.UpdatedAt, now, true),
 	}
 }
 
-func (m *AffiliateCommission) SQLScanArgs(opts core.Opts) []interface{} {
+func (m *SellerCommission) SQLScanArgs(opts core.Opts) []interface{} {
 	return []interface{}{
 		(*core.Int64)(&m.ID),
-		(*core.Int64)(&m.AffiliateID),
-		(*core.Int64)(&m.FromAffiliateID),
+		(*core.Int64)(&m.SellerID),
+		(*core.Int64)(&m.FromSellerID),
 		(*core.Int64)(&m.ProductID),
+		(*core.Int64)(&m.ShopID),
+		(*core.Int64)(&m.SupplyID),
 		(*core.Int64)(&m.OrderId),
-		(*core.Int32)(&m.Value),
+		(*core.Int32)(&m.Amount),
 		(*core.String)(&m.Description),
 		(*core.String)(&m.Note),
 		(*core.String)(&m.Type),
 		(*core.Int)(&m.Status),
+		(*core.Int32)(&m.OValue),
+		(*core.Int32)(&m.OBaseValue),
 		(*core.Time)(&m.ValidAt),
 		(*core.Time)(&m.CreatedAt),
 		(*core.Time)(&m.UpdatedAt),
 	}
 }
 
-func (m *AffiliateCommission) SQLScan(opts core.Opts, row *sql.Row) error {
+func (m *SellerCommission) SQLScan(opts core.Opts, row *sql.Row) error {
 	return row.Scan(m.SQLScanArgs(opts)...)
 }
 
-func (ms *AffiliateCommissions) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	res := make(AffiliateCommissions, 0, 128)
+func (ms *SellerCommissions) SQLScan(opts core.Opts, rows *sql.Rows) error {
+	res := make(SellerCommissions, 0, 128)
 	for rows.Next() {
-		m := new(AffiliateCommission)
+		m := new(SellerCommission)
 		args := m.SQLScanArgs(opts)
 		if err := rows.Scan(args...); err != nil {
 			return err
@@ -640,30 +648,30 @@ func (ms *AffiliateCommissions) SQLScan(opts core.Opts, rows *sql.Rows) error {
 	return nil
 }
 
-func (_ *AffiliateCommission) SQLSelect(w SQLWriter) error {
-	w.WriteQueryString(__sqlAffiliateCommission_Select)
+func (_ *SellerCommission) SQLSelect(w SQLWriter) error {
+	w.WriteQueryString(__sqlSellerCommission_Select)
 	return nil
 }
 
-func (_ *AffiliateCommissions) SQLSelect(w SQLWriter) error {
-	w.WriteQueryString(__sqlAffiliateCommission_Select)
+func (_ *SellerCommissions) SQLSelect(w SQLWriter) error {
+	w.WriteQueryString(__sqlSellerCommission_Select)
 	return nil
 }
 
-func (m *AffiliateCommission) SQLInsert(w SQLWriter) error {
-	w.WriteQueryString(__sqlAffiliateCommission_Insert)
+func (m *SellerCommission) SQLInsert(w SQLWriter) error {
+	w.WriteQueryString(__sqlSellerCommission_Insert)
 	w.WriteRawString(" (")
-	w.WriteMarkers(13)
+	w.WriteMarkers(17)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), true))
 	return nil
 }
 
-func (ms AffiliateCommissions) SQLInsert(w SQLWriter) error {
-	w.WriteQueryString(__sqlAffiliateCommission_Insert)
+func (ms SellerCommissions) SQLInsert(w SQLWriter) error {
+	w.WriteQueryString(__sqlSellerCommission_Insert)
 	w.WriteRawString(" (")
 	for i := 0; i < len(ms); i++ {
-		w.WriteMarkers(13)
+		w.WriteMarkers(17)
 		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
 		w.WriteRawString("),(")
 	}
@@ -671,12 +679,12 @@ func (ms AffiliateCommissions) SQLInsert(w SQLWriter) error {
 	return nil
 }
 
-func (m *AffiliateCommission) SQLUpdate(w SQLWriter) error {
+func (m *SellerCommission) SQLUpdate(w SQLWriter) error {
 	now, opts := time.Now(), w.Opts()
 	_, _ = now, opts // suppress unuse error
 	var flag bool
 	w.WriteRawString("UPDATE ")
-	w.WriteName("affiliate_commission")
+	w.WriteName("seller_commission")
 	w.WriteRawString(" SET ")
 	if m.ID != 0 {
 		flag = true
@@ -686,21 +694,21 @@ func (m *AffiliateCommission) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(m.ID)
 	}
-	if m.AffiliateID != 0 {
+	if m.SellerID != 0 {
 		flag = true
-		w.WriteName("affiliate_id")
+		w.WriteName("seller_id")
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(m.AffiliateID)
+		w.WriteArg(m.SellerID)
 	}
-	if m.FromAffiliateID != 0 {
+	if m.FromSellerID != 0 {
 		flag = true
-		w.WriteName("from_affiliate_id")
+		w.WriteName("from_seller_id")
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(m.FromAffiliateID)
+		w.WriteArg(m.FromSellerID)
 	}
 	if m.ProductID != 0 {
 		flag = true
@@ -710,6 +718,22 @@ func (m *AffiliateCommission) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(m.ProductID)
 	}
+	if m.ShopID != 0 {
+		flag = true
+		w.WriteName("shop_id")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.ShopID)
+	}
+	if m.SupplyID != 0 {
+		flag = true
+		w.WriteName("supply_id")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.SupplyID)
+	}
 	if m.OrderId != 0 {
 		flag = true
 		w.WriteName("order_id")
@@ -718,13 +742,13 @@ func (m *AffiliateCommission) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(m.OrderId)
 	}
-	if m.Value != 0 {
+	if m.Amount != 0 {
 		flag = true
-		w.WriteName("value")
+		w.WriteName("amount")
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(m.Value)
+		w.WriteArg(m.Amount)
 	}
 	if m.Description != "" {
 		flag = true
@@ -758,6 +782,22 @@ func (m *AffiliateCommission) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(m.Status)
 	}
+	if m.OValue != 0 {
+		flag = true
+		w.WriteName("o_value")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.OValue)
+	}
+	if m.OBaseValue != 0 {
+		flag = true
+		w.WriteName("o_base_value")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.OBaseValue)
+	}
 	if !m.ValidAt.IsZero() {
 		flag = true
 		w.WriteName("valid_at")
@@ -789,103 +829,111 @@ func (m *AffiliateCommission) SQLUpdate(w SQLWriter) error {
 	return nil
 }
 
-func (m *AffiliateCommission) SQLUpdateAll(w SQLWriter) error {
-	w.WriteQueryString(__sqlAffiliateCommission_UpdateAll)
+func (m *SellerCommission) SQLUpdateAll(w SQLWriter) error {
+	w.WriteQueryString(__sqlSellerCommission_UpdateAll)
 	w.WriteRawString(" = (")
-	w.WriteMarkers(13)
+	w.WriteMarkers(17)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), false))
 	return nil
 }
 
-type AffiliateCommissionHistory map[string]interface{}
-type AffiliateCommissionHistories []map[string]interface{}
+type SellerCommissionHistory map[string]interface{}
+type SellerCommissionHistories []map[string]interface{}
 
-func (m *AffiliateCommissionHistory) SQLTableName() string  { return "history.\"affiliate_commission\"" }
-func (m AffiliateCommissionHistories) SQLTableName() string { return "history.\"affiliate_commission\"" }
+func (m *SellerCommissionHistory) SQLTableName() string  { return "history.\"seller_commission\"" }
+func (m SellerCommissionHistories) SQLTableName() string { return "history.\"seller_commission\"" }
 
-func (m *AffiliateCommissionHistory) SQLSelect(w SQLWriter) error {
-	w.WriteQueryString(__sqlAffiliateCommission_Select_history)
+func (m *SellerCommissionHistory) SQLSelect(w SQLWriter) error {
+	w.WriteQueryString(__sqlSellerCommission_Select_history)
 	return nil
 }
 
-func (m AffiliateCommissionHistories) SQLSelect(w SQLWriter) error {
-	w.WriteQueryString(__sqlAffiliateCommission_Select_history)
+func (m SellerCommissionHistories) SQLSelect(w SQLWriter) error {
+	w.WriteQueryString(__sqlSellerCommission_Select_history)
 	return nil
 }
 
-func (m AffiliateCommissionHistory) ID() core.Interface { return core.Interface{m["id"]} }
-func (m AffiliateCommissionHistory) AffiliateID() core.Interface {
-	return core.Interface{m["affiliate_id"]}
+func (m SellerCommissionHistory) ID() core.Interface       { return core.Interface{m["id"]} }
+func (m SellerCommissionHistory) SellerID() core.Interface { return core.Interface{m["seller_id"]} }
+func (m SellerCommissionHistory) FromSellerID() core.Interface {
+	return core.Interface{m["from_seller_id"]}
 }
-func (m AffiliateCommissionHistory) FromAffiliateID() core.Interface {
-	return core.Interface{m["from_affiliate_id"]}
-}
-func (m AffiliateCommissionHistory) ProductID() core.Interface { return core.Interface{m["product_id"]} }
-func (m AffiliateCommissionHistory) OrderId() core.Interface   { return core.Interface{m["order_id"]} }
-func (m AffiliateCommissionHistory) Value() core.Interface     { return core.Interface{m["value"]} }
-func (m AffiliateCommissionHistory) Description() core.Interface {
-	return core.Interface{m["description"]}
-}
-func (m AffiliateCommissionHistory) Note() core.Interface      { return core.Interface{m["note"]} }
-func (m AffiliateCommissionHistory) Type() core.Interface      { return core.Interface{m["type"]} }
-func (m AffiliateCommissionHistory) Status() core.Interface    { return core.Interface{m["status"]} }
-func (m AffiliateCommissionHistory) ValidAt() core.Interface   { return core.Interface{m["valid_at"]} }
-func (m AffiliateCommissionHistory) CreatedAt() core.Interface { return core.Interface{m["created_at"]} }
-func (m AffiliateCommissionHistory) UpdatedAt() core.Interface { return core.Interface{m["updated_at"]} }
+func (m SellerCommissionHistory) ProductID() core.Interface   { return core.Interface{m["product_id"]} }
+func (m SellerCommissionHistory) ShopID() core.Interface      { return core.Interface{m["shop_id"]} }
+func (m SellerCommissionHistory) SupplyID() core.Interface    { return core.Interface{m["supply_id"]} }
+func (m SellerCommissionHistory) OrderId() core.Interface     { return core.Interface{m["order_id"]} }
+func (m SellerCommissionHistory) Amount() core.Interface      { return core.Interface{m["amount"]} }
+func (m SellerCommissionHistory) Description() core.Interface { return core.Interface{m["description"]} }
+func (m SellerCommissionHistory) Note() core.Interface        { return core.Interface{m["note"]} }
+func (m SellerCommissionHistory) Type() core.Interface        { return core.Interface{m["type"]} }
+func (m SellerCommissionHistory) Status() core.Interface      { return core.Interface{m["status"]} }
+func (m SellerCommissionHistory) OValue() core.Interface      { return core.Interface{m["o_value"]} }
+func (m SellerCommissionHistory) OBaseValue() core.Interface  { return core.Interface{m["o_base_value"]} }
+func (m SellerCommissionHistory) ValidAt() core.Interface     { return core.Interface{m["valid_at"]} }
+func (m SellerCommissionHistory) CreatedAt() core.Interface   { return core.Interface{m["created_at"]} }
+func (m SellerCommissionHistory) UpdatedAt() core.Interface   { return core.Interface{m["updated_at"]} }
 
-func (m *AffiliateCommissionHistory) SQLScan(opts core.Opts, row *sql.Row) error {
-	data := make([]interface{}, 13)
-	args := make([]interface{}, 13)
-	for i := 0; i < 13; i++ {
+func (m *SellerCommissionHistory) SQLScan(opts core.Opts, row *sql.Row) error {
+	data := make([]interface{}, 17)
+	args := make([]interface{}, 17)
+	for i := 0; i < 17; i++ {
 		args[i] = &data[i]
 	}
 	if err := row.Scan(args...); err != nil {
 		return err
 	}
-	res := make(AffiliateCommissionHistory, 13)
+	res := make(SellerCommissionHistory, 17)
 	res["id"] = data[0]
-	res["affiliate_id"] = data[1]
-	res["from_affiliate_id"] = data[2]
+	res["seller_id"] = data[1]
+	res["from_seller_id"] = data[2]
 	res["product_id"] = data[3]
-	res["order_id"] = data[4]
-	res["value"] = data[5]
-	res["description"] = data[6]
-	res["note"] = data[7]
-	res["type"] = data[8]
-	res["status"] = data[9]
-	res["valid_at"] = data[10]
-	res["created_at"] = data[11]
-	res["updated_at"] = data[12]
+	res["shop_id"] = data[4]
+	res["supply_id"] = data[5]
+	res["order_id"] = data[6]
+	res["amount"] = data[7]
+	res["description"] = data[8]
+	res["note"] = data[9]
+	res["type"] = data[10]
+	res["status"] = data[11]
+	res["o_value"] = data[12]
+	res["o_base_value"] = data[13]
+	res["valid_at"] = data[14]
+	res["created_at"] = data[15]
+	res["updated_at"] = data[16]
 	*m = res
 	return nil
 }
 
-func (ms *AffiliateCommissionHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	data := make([]interface{}, 13)
-	args := make([]interface{}, 13)
-	for i := 0; i < 13; i++ {
+func (ms *SellerCommissionHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
+	data := make([]interface{}, 17)
+	args := make([]interface{}, 17)
+	for i := 0; i < 17; i++ {
 		args[i] = &data[i]
 	}
-	res := make(AffiliateCommissionHistories, 0, 128)
+	res := make(SellerCommissionHistories, 0, 128)
 	for rows.Next() {
 		if err := rows.Scan(args...); err != nil {
 			return err
 		}
-		m := make(AffiliateCommissionHistory)
+		m := make(SellerCommissionHistory)
 		m["id"] = data[0]
-		m["affiliate_id"] = data[1]
-		m["from_affiliate_id"] = data[2]
+		m["seller_id"] = data[1]
+		m["from_seller_id"] = data[2]
 		m["product_id"] = data[3]
-		m["order_id"] = data[4]
-		m["value"] = data[5]
-		m["description"] = data[6]
-		m["note"] = data[7]
-		m["type"] = data[8]
-		m["status"] = data[9]
-		m["valid_at"] = data[10]
-		m["created_at"] = data[11]
-		m["updated_at"] = data[12]
+		m["shop_id"] = data[4]
+		m["supply_id"] = data[5]
+		m["order_id"] = data[6]
+		m["amount"] = data[7]
+		m["description"] = data[8]
+		m["note"] = data[9]
+		m["type"] = data[10]
+		m["status"] = data[11]
+		m["o_value"] = data[12]
+		m["o_base_value"] = data[13]
+		m["valid_at"] = data[14]
+		m["created_at"] = data[15]
+		m["updated_at"] = data[16]
 		res = append(res, m)
 	}
 	if err := rows.Err(); err != nil {
@@ -901,7 +949,7 @@ func sqlgenOrderCreatedNotify(_ *OrderCreatedNotify) bool { return true }
 type OrderCreatedNotifies []*OrderCreatedNotify
 
 const __sqlOrderCreatedNotify_Table = "order_created_notify"
-const __sqlOrderCreatedNotify_ListCols = "\"id\",\"order_id\",\"referral_code\",\"status\",\"completed_at\",\"created_at\",\"updated_at\""
+const __sqlOrderCreatedNotify_ListCols = "\"id\",\"order_id\",\"shop_user_id\",\"seller_id\",\"shop_id\",\"supply_id\",\"referral_code\",\"promotion_snapshot_status\",\"promotion_snapshot_err\",\"commission_snapshot_status\",\"commission_snapshot_err\",\"cashback_process_status\",\"cashback_process_err\",\"commission_process_status\",\"commission_process_err\",\"payment_status\",\"status\",\"completed_at\",\"created_at\",\"updated_at\""
 const __sqlOrderCreatedNotify_Insert = "INSERT INTO \"order_created_notify\" (" + __sqlOrderCreatedNotify_ListCols + ") VALUES"
 const __sqlOrderCreatedNotify_Select = "SELECT " + __sqlOrderCreatedNotify_ListCols + " FROM \"order_created_notify\""
 const __sqlOrderCreatedNotify_Select_history = "SELECT " + __sqlOrderCreatedNotify_ListCols + " FROM history.\"order_created_notify\""
@@ -916,8 +964,21 @@ func (m *OrderCreatedNotify) SQLArgs(opts core.Opts, create bool) []interface{} 
 	return []interface{}{
 		core.Int64(m.ID),
 		core.Int64(m.OrderID),
+		core.Int64(m.ShopUserID),
+		core.Int64(m.SellerID),
+		core.Int64(m.ShopID),
+		core.Int64(m.SupplyID),
 		core.String(m.ReferralCode),
-		core.Int(m.Status),
+		core.Int32(m.PromotionSnapshotStatus),
+		core.String(m.PromotionSnapshotErr),
+		core.Int32(m.CommissionSnapshotStatus),
+		core.String(m.CommissionSnapshotErr),
+		core.Int32(m.CashbackProcessStatus),
+		core.String(m.CashbackProcessErr),
+		core.Int32(m.CommissionProcessStatus),
+		core.String(m.CommissionProcessErr),
+		core.Int32(m.PaymentStatus),
+		core.Int32(m.Status),
 		core.Time(m.CompletedAt),
 		core.Now(m.CreatedAt, now, create),
 		core.Now(m.UpdatedAt, now, true),
@@ -928,8 +989,21 @@ func (m *OrderCreatedNotify) SQLScanArgs(opts core.Opts) []interface{} {
 	return []interface{}{
 		(*core.Int64)(&m.ID),
 		(*core.Int64)(&m.OrderID),
+		(*core.Int64)(&m.ShopUserID),
+		(*core.Int64)(&m.SellerID),
+		(*core.Int64)(&m.ShopID),
+		(*core.Int64)(&m.SupplyID),
 		(*core.String)(&m.ReferralCode),
-		(*core.Int)(&m.Status),
+		(*core.Int32)(&m.PromotionSnapshotStatus),
+		(*core.String)(&m.PromotionSnapshotErr),
+		(*core.Int32)(&m.CommissionSnapshotStatus),
+		(*core.String)(&m.CommissionSnapshotErr),
+		(*core.Int32)(&m.CashbackProcessStatus),
+		(*core.String)(&m.CashbackProcessErr),
+		(*core.Int32)(&m.CommissionProcessStatus),
+		(*core.String)(&m.CommissionProcessErr),
+		(*core.Int32)(&m.PaymentStatus),
+		(*core.Int32)(&m.Status),
 		(*core.Time)(&m.CompletedAt),
 		(*core.Time)(&m.CreatedAt),
 		(*core.Time)(&m.UpdatedAt),
@@ -970,7 +1044,7 @@ func (_ *OrderCreatedNotifies) SQLSelect(w SQLWriter) error {
 func (m *OrderCreatedNotify) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlOrderCreatedNotify_Insert)
 	w.WriteRawString(" (")
-	w.WriteMarkers(7)
+	w.WriteMarkers(20)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), true))
 	return nil
@@ -980,7 +1054,7 @@ func (ms OrderCreatedNotifies) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlOrderCreatedNotify_Insert)
 	w.WriteRawString(" (")
 	for i := 0; i < len(ms); i++ {
-		w.WriteMarkers(7)
+		w.WriteMarkers(20)
 		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
 		w.WriteRawString("),(")
 	}
@@ -1011,6 +1085,38 @@ func (m *OrderCreatedNotify) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(m.OrderID)
 	}
+	if m.ShopUserID != 0 {
+		flag = true
+		w.WriteName("shop_user_id")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.ShopUserID)
+	}
+	if m.SellerID != 0 {
+		flag = true
+		w.WriteName("seller_id")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.SellerID)
+	}
+	if m.ShopID != 0 {
+		flag = true
+		w.WriteName("shop_id")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.ShopID)
+	}
+	if m.SupplyID != 0 {
+		flag = true
+		w.WriteName("supply_id")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.SupplyID)
+	}
 	if m.ReferralCode != "" {
 		flag = true
 		w.WriteName("referral_code")
@@ -1018,6 +1124,78 @@ func (m *OrderCreatedNotify) SQLUpdate(w SQLWriter) error {
 		w.WriteMarker()
 		w.WriteByte(',')
 		w.WriteArg(m.ReferralCode)
+	}
+	if m.PromotionSnapshotStatus != 0 {
+		flag = true
+		w.WriteName("promotion_snapshot_status")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.PromotionSnapshotStatus)
+	}
+	if m.PromotionSnapshotErr != "" {
+		flag = true
+		w.WriteName("promotion_snapshot_err")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.PromotionSnapshotErr)
+	}
+	if m.CommissionSnapshotStatus != 0 {
+		flag = true
+		w.WriteName("commission_snapshot_status")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.CommissionSnapshotStatus)
+	}
+	if m.CommissionSnapshotErr != "" {
+		flag = true
+		w.WriteName("commission_snapshot_err")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.CommissionSnapshotErr)
+	}
+	if m.CashbackProcessStatus != 0 {
+		flag = true
+		w.WriteName("cashback_process_status")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.CashbackProcessStatus)
+	}
+	if m.CashbackProcessErr != "" {
+		flag = true
+		w.WriteName("cashback_process_err")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.CashbackProcessErr)
+	}
+	if m.CommissionProcessStatus != 0 {
+		flag = true
+		w.WriteName("commission_process_status")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.CommissionProcessStatus)
+	}
+	if m.CommissionProcessErr != "" {
+		flag = true
+		w.WriteName("commission_process_err")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.CommissionProcessErr)
+	}
+	if m.PaymentStatus != 0 {
+		flag = true
+		w.WriteName("payment_status")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.PaymentStatus)
 	}
 	if m.Status != 0 {
 		flag = true
@@ -1061,7 +1239,7 @@ func (m *OrderCreatedNotify) SQLUpdate(w SQLWriter) error {
 func (m *OrderCreatedNotify) SQLUpdateAll(w SQLWriter) error {
 	w.WriteQueryString(__sqlOrderCreatedNotify_UpdateAll)
 	w.WriteRawString(" = (")
-	w.WriteMarkers(7)
+	w.WriteMarkers(20)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), false))
 	return nil
@@ -1085,8 +1263,41 @@ func (m OrderCreatedNotifyHistories) SQLSelect(w SQLWriter) error {
 
 func (m OrderCreatedNotifyHistory) ID() core.Interface      { return core.Interface{m["id"]} }
 func (m OrderCreatedNotifyHistory) OrderID() core.Interface { return core.Interface{m["order_id"]} }
+func (m OrderCreatedNotifyHistory) ShopUserID() core.Interface {
+	return core.Interface{m["shop_user_id"]}
+}
+func (m OrderCreatedNotifyHistory) SellerID() core.Interface { return core.Interface{m["seller_id"]} }
+func (m OrderCreatedNotifyHistory) ShopID() core.Interface   { return core.Interface{m["shop_id"]} }
+func (m OrderCreatedNotifyHistory) SupplyID() core.Interface { return core.Interface{m["supply_id"]} }
 func (m OrderCreatedNotifyHistory) ReferralCode() core.Interface {
 	return core.Interface{m["referral_code"]}
+}
+func (m OrderCreatedNotifyHistory) PromotionSnapshotStatus() core.Interface {
+	return core.Interface{m["promotion_snapshot_status"]}
+}
+func (m OrderCreatedNotifyHistory) PromotionSnapshotErr() core.Interface {
+	return core.Interface{m["promotion_snapshot_err"]}
+}
+func (m OrderCreatedNotifyHistory) CommissionSnapshotStatus() core.Interface {
+	return core.Interface{m["commission_snapshot_status"]}
+}
+func (m OrderCreatedNotifyHistory) CommissionSnapshotErr() core.Interface {
+	return core.Interface{m["commission_snapshot_err"]}
+}
+func (m OrderCreatedNotifyHistory) CashbackProcessStatus() core.Interface {
+	return core.Interface{m["cashback_process_status"]}
+}
+func (m OrderCreatedNotifyHistory) CashbackProcessErr() core.Interface {
+	return core.Interface{m["cashback_process_err"]}
+}
+func (m OrderCreatedNotifyHistory) CommissionProcessStatus() core.Interface {
+	return core.Interface{m["commission_process_status"]}
+}
+func (m OrderCreatedNotifyHistory) CommissionProcessErr() core.Interface {
+	return core.Interface{m["commission_process_err"]}
+}
+func (m OrderCreatedNotifyHistory) PaymentStatus() core.Interface {
+	return core.Interface{m["payment_status"]}
 }
 func (m OrderCreatedNotifyHistory) Status() core.Interface { return core.Interface{m["status"]} }
 func (m OrderCreatedNotifyHistory) CompletedAt() core.Interface {
@@ -1096,30 +1307,43 @@ func (m OrderCreatedNotifyHistory) CreatedAt() core.Interface { return core.Inte
 func (m OrderCreatedNotifyHistory) UpdatedAt() core.Interface { return core.Interface{m["updated_at"]} }
 
 func (m *OrderCreatedNotifyHistory) SQLScan(opts core.Opts, row *sql.Row) error {
-	data := make([]interface{}, 7)
-	args := make([]interface{}, 7)
-	for i := 0; i < 7; i++ {
+	data := make([]interface{}, 20)
+	args := make([]interface{}, 20)
+	for i := 0; i < 20; i++ {
 		args[i] = &data[i]
 	}
 	if err := row.Scan(args...); err != nil {
 		return err
 	}
-	res := make(OrderCreatedNotifyHistory, 7)
+	res := make(OrderCreatedNotifyHistory, 20)
 	res["id"] = data[0]
 	res["order_id"] = data[1]
-	res["referral_code"] = data[2]
-	res["status"] = data[3]
-	res["completed_at"] = data[4]
-	res["created_at"] = data[5]
-	res["updated_at"] = data[6]
+	res["shop_user_id"] = data[2]
+	res["seller_id"] = data[3]
+	res["shop_id"] = data[4]
+	res["supply_id"] = data[5]
+	res["referral_code"] = data[6]
+	res["promotion_snapshot_status"] = data[7]
+	res["promotion_snapshot_err"] = data[8]
+	res["commission_snapshot_status"] = data[9]
+	res["commission_snapshot_err"] = data[10]
+	res["cashback_process_status"] = data[11]
+	res["cashback_process_err"] = data[12]
+	res["commission_process_status"] = data[13]
+	res["commission_process_err"] = data[14]
+	res["payment_status"] = data[15]
+	res["status"] = data[16]
+	res["completed_at"] = data[17]
+	res["created_at"] = data[18]
+	res["updated_at"] = data[19]
 	*m = res
 	return nil
 }
 
 func (ms *OrderCreatedNotifyHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	data := make([]interface{}, 7)
-	args := make([]interface{}, 7)
-	for i := 0; i < 7; i++ {
+	data := make([]interface{}, 20)
+	args := make([]interface{}, 20)
+	for i := 0; i < 20; i++ {
 		args[i] = &data[i]
 	}
 	res := make(OrderCreatedNotifyHistories, 0, 128)
@@ -1130,11 +1354,24 @@ func (ms *OrderCreatedNotifyHistories) SQLScan(opts core.Opts, rows *sql.Rows) e
 		m := make(OrderCreatedNotifyHistory)
 		m["id"] = data[0]
 		m["order_id"] = data[1]
-		m["referral_code"] = data[2]
-		m["status"] = data[3]
-		m["completed_at"] = data[4]
-		m["created_at"] = data[5]
-		m["updated_at"] = data[6]
+		m["shop_user_id"] = data[2]
+		m["seller_id"] = data[3]
+		m["shop_id"] = data[4]
+		m["supply_id"] = data[5]
+		m["referral_code"] = data[6]
+		m["promotion_snapshot_status"] = data[7]
+		m["promotion_snapshot_err"] = data[8]
+		m["commission_snapshot_status"] = data[9]
+		m["commission_snapshot_err"] = data[10]
+		m["cashback_process_status"] = data[11]
+		m["cashback_process_err"] = data[12]
+		m["commission_process_status"] = data[13]
+		m["commission_process_err"] = data[14]
+		m["payment_status"] = data[15]
+		m["status"] = data[16]
+		m["completed_at"] = data[17]
+		m["created_at"] = data[18]
+		m["updated_at"] = data[19]
 		res = append(res, m)
 	}
 	if err := rows.Err(); err != nil {
@@ -2020,6 +2257,1212 @@ func (ms *SupplyCommissionSettingHistories) SQLScan(opts core.Opts, rows *sql.Ro
 		m["m_lifetime_duration"] = data[11]
 		m["created_at"] = data[12]
 		m["updated_at"] = data[13]
+		res = append(res, m)
+	}
+	if err := rows.Err(); err != nil {
+		return err
+	}
+	*ms = res
+	return nil
+}
+
+// Type OrderPromotion represents table order_promotion
+func sqlgenOrderPromotion(_ *OrderPromotion) bool { return true }
+
+type OrderPromotions []*OrderPromotion
+
+const __sqlOrderPromotion_Table = "order_promotion"
+const __sqlOrderPromotion_ListCols = "\"id\",\"product_id\",\"order_id\",\"base_value\",\"amount\",\"unit\",\"type\",\"order_created_notify_id\",\"description\",\"src\",\"created_at\",\"updated_at\""
+const __sqlOrderPromotion_Insert = "INSERT INTO \"order_promotion\" (" + __sqlOrderPromotion_ListCols + ") VALUES"
+const __sqlOrderPromotion_Select = "SELECT " + __sqlOrderPromotion_ListCols + " FROM \"order_promotion\""
+const __sqlOrderPromotion_Select_history = "SELECT " + __sqlOrderPromotion_ListCols + " FROM history.\"order_promotion\""
+const __sqlOrderPromotion_UpdateAll = "UPDATE \"order_promotion\" SET (" + __sqlOrderPromotion_ListCols + ")"
+
+func (m *OrderPromotion) SQLTableName() string  { return "order_promotion" }
+func (m *OrderPromotions) SQLTableName() string { return "order_promotion" }
+func (m *OrderPromotion) SQLListCols() string   { return __sqlOrderPromotion_ListCols }
+
+func (m *OrderPromotion) SQLArgs(opts core.Opts, create bool) []interface{} {
+	now := time.Now()
+	return []interface{}{
+		core.Int64(m.ID),
+		core.Int64(m.ProductID),
+		core.Int64(m.OrderID),
+		core.Int32(m.BaseValue),
+		core.Int32(m.Amount),
+		core.String(m.Unit),
+		core.String(m.Type),
+		core.Int64(m.OrderCreatedNotifyID),
+		core.String(m.Description),
+		core.String(m.Src),
+		core.Now(m.CreatedAt, now, create),
+		core.Now(m.UpdatedAt, now, true),
+	}
+}
+
+func (m *OrderPromotion) SQLScanArgs(opts core.Opts) []interface{} {
+	return []interface{}{
+		(*core.Int64)(&m.ID),
+		(*core.Int64)(&m.ProductID),
+		(*core.Int64)(&m.OrderID),
+		(*core.Int32)(&m.BaseValue),
+		(*core.Int32)(&m.Amount),
+		(*core.String)(&m.Unit),
+		(*core.String)(&m.Type),
+		(*core.Int64)(&m.OrderCreatedNotifyID),
+		(*core.String)(&m.Description),
+		(*core.String)(&m.Src),
+		(*core.Time)(&m.CreatedAt),
+		(*core.Time)(&m.UpdatedAt),
+	}
+}
+
+func (m *OrderPromotion) SQLScan(opts core.Opts, row *sql.Row) error {
+	return row.Scan(m.SQLScanArgs(opts)...)
+}
+
+func (ms *OrderPromotions) SQLScan(opts core.Opts, rows *sql.Rows) error {
+	res := make(OrderPromotions, 0, 128)
+	for rows.Next() {
+		m := new(OrderPromotion)
+		args := m.SQLScanArgs(opts)
+		if err := rows.Scan(args...); err != nil {
+			return err
+		}
+		res = append(res, m)
+	}
+	if err := rows.Err(); err != nil {
+		return err
+	}
+	*ms = res
+	return nil
+}
+
+func (_ *OrderPromotion) SQLSelect(w SQLWriter) error {
+	w.WriteQueryString(__sqlOrderPromotion_Select)
+	return nil
+}
+
+func (_ *OrderPromotions) SQLSelect(w SQLWriter) error {
+	w.WriteQueryString(__sqlOrderPromotion_Select)
+	return nil
+}
+
+func (m *OrderPromotion) SQLInsert(w SQLWriter) error {
+	w.WriteQueryString(__sqlOrderPromotion_Insert)
+	w.WriteRawString(" (")
+	w.WriteMarkers(12)
+	w.WriteByte(')')
+	w.WriteArgs(m.SQLArgs(w.Opts(), true))
+	return nil
+}
+
+func (ms OrderPromotions) SQLInsert(w SQLWriter) error {
+	w.WriteQueryString(__sqlOrderPromotion_Insert)
+	w.WriteRawString(" (")
+	for i := 0; i < len(ms); i++ {
+		w.WriteMarkers(12)
+		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
+		w.WriteRawString("),(")
+	}
+	w.TrimLast(2)
+	return nil
+}
+
+func (m *OrderPromotion) SQLUpdate(w SQLWriter) error {
+	now, opts := time.Now(), w.Opts()
+	_, _ = now, opts // suppress unuse error
+	var flag bool
+	w.WriteRawString("UPDATE ")
+	w.WriteName("order_promotion")
+	w.WriteRawString(" SET ")
+	if m.ID != 0 {
+		flag = true
+		w.WriteName("id")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.ID)
+	}
+	if m.ProductID != 0 {
+		flag = true
+		w.WriteName("product_id")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.ProductID)
+	}
+	if m.OrderID != 0 {
+		flag = true
+		w.WriteName("order_id")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.OrderID)
+	}
+	if m.BaseValue != 0 {
+		flag = true
+		w.WriteName("base_value")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.BaseValue)
+	}
+	if m.Amount != 0 {
+		flag = true
+		w.WriteName("amount")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.Amount)
+	}
+	if m.Unit != "" {
+		flag = true
+		w.WriteName("unit")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.Unit)
+	}
+	if m.Type != "" {
+		flag = true
+		w.WriteName("type")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.Type)
+	}
+	if m.OrderCreatedNotifyID != 0 {
+		flag = true
+		w.WriteName("order_created_notify_id")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.OrderCreatedNotifyID)
+	}
+	if m.Description != "" {
+		flag = true
+		w.WriteName("description")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.Description)
+	}
+	if m.Src != "" {
+		flag = true
+		w.WriteName("src")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.Src)
+	}
+	if !m.CreatedAt.IsZero() {
+		flag = true
+		w.WriteName("created_at")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.CreatedAt)
+	}
+	if !m.UpdatedAt.IsZero() {
+		flag = true
+		w.WriteName("updated_at")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(core.Now(m.UpdatedAt, time.Now(), true))
+	}
+	if !flag {
+		return core.ErrNoColumn
+	}
+	w.TrimLast(1)
+	return nil
+}
+
+func (m *OrderPromotion) SQLUpdateAll(w SQLWriter) error {
+	w.WriteQueryString(__sqlOrderPromotion_UpdateAll)
+	w.WriteRawString(" = (")
+	w.WriteMarkers(12)
+	w.WriteByte(')')
+	w.WriteArgs(m.SQLArgs(w.Opts(), false))
+	return nil
+}
+
+type OrderPromotionHistory map[string]interface{}
+type OrderPromotionHistories []map[string]interface{}
+
+func (m *OrderPromotionHistory) SQLTableName() string  { return "history.\"order_promotion\"" }
+func (m OrderPromotionHistories) SQLTableName() string { return "history.\"order_promotion\"" }
+
+func (m *OrderPromotionHistory) SQLSelect(w SQLWriter) error {
+	w.WriteQueryString(__sqlOrderPromotion_Select_history)
+	return nil
+}
+
+func (m OrderPromotionHistories) SQLSelect(w SQLWriter) error {
+	w.WriteQueryString(__sqlOrderPromotion_Select_history)
+	return nil
+}
+
+func (m OrderPromotionHistory) ID() core.Interface        { return core.Interface{m["id"]} }
+func (m OrderPromotionHistory) ProductID() core.Interface { return core.Interface{m["product_id"]} }
+func (m OrderPromotionHistory) OrderID() core.Interface   { return core.Interface{m["order_id"]} }
+func (m OrderPromotionHistory) BaseValue() core.Interface { return core.Interface{m["base_value"]} }
+func (m OrderPromotionHistory) Amount() core.Interface    { return core.Interface{m["amount"]} }
+func (m OrderPromotionHistory) Unit() core.Interface      { return core.Interface{m["unit"]} }
+func (m OrderPromotionHistory) Type() core.Interface      { return core.Interface{m["type"]} }
+func (m OrderPromotionHistory) OrderCreatedNotifyID() core.Interface {
+	return core.Interface{m["order_created_notify_id"]}
+}
+func (m OrderPromotionHistory) Description() core.Interface { return core.Interface{m["description"]} }
+func (m OrderPromotionHistory) Src() core.Interface         { return core.Interface{m["src"]} }
+func (m OrderPromotionHistory) CreatedAt() core.Interface   { return core.Interface{m["created_at"]} }
+func (m OrderPromotionHistory) UpdatedAt() core.Interface   { return core.Interface{m["updated_at"]} }
+
+func (m *OrderPromotionHistory) SQLScan(opts core.Opts, row *sql.Row) error {
+	data := make([]interface{}, 12)
+	args := make([]interface{}, 12)
+	for i := 0; i < 12; i++ {
+		args[i] = &data[i]
+	}
+	if err := row.Scan(args...); err != nil {
+		return err
+	}
+	res := make(OrderPromotionHistory, 12)
+	res["id"] = data[0]
+	res["product_id"] = data[1]
+	res["order_id"] = data[2]
+	res["base_value"] = data[3]
+	res["amount"] = data[4]
+	res["unit"] = data[5]
+	res["type"] = data[6]
+	res["order_created_notify_id"] = data[7]
+	res["description"] = data[8]
+	res["src"] = data[9]
+	res["created_at"] = data[10]
+	res["updated_at"] = data[11]
+	*m = res
+	return nil
+}
+
+func (ms *OrderPromotionHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
+	data := make([]interface{}, 12)
+	args := make([]interface{}, 12)
+	for i := 0; i < 12; i++ {
+		args[i] = &data[i]
+	}
+	res := make(OrderPromotionHistories, 0, 128)
+	for rows.Next() {
+		if err := rows.Scan(args...); err != nil {
+			return err
+		}
+		m := make(OrderPromotionHistory)
+		m["id"] = data[0]
+		m["product_id"] = data[1]
+		m["order_id"] = data[2]
+		m["base_value"] = data[3]
+		m["amount"] = data[4]
+		m["unit"] = data[5]
+		m["type"] = data[6]
+		m["order_created_notify_id"] = data[7]
+		m["description"] = data[8]
+		m["src"] = data[9]
+		m["created_at"] = data[10]
+		m["updated_at"] = data[11]
+		res = append(res, m)
+	}
+	if err := rows.Err(); err != nil {
+		return err
+	}
+	*ms = res
+	return nil
+}
+
+// Type OrderCommissionSetting represents table order_commission_setting
+func sqlgenOrderCommissionSetting(_ *OrderCommissionSetting) bool { return true }
+
+type OrderCommissionSettings []*OrderCommissionSetting
+
+const __sqlOrderCommissionSetting_Table = "order_commission_setting"
+const __sqlOrderCommissionSetting_ListCols = "\"order_id\",\"supply_id\",\"product_id\",\"level1_direct_commission\",\"level1_indirect_commission\",\"level2_direct_commission\",\"level2_indirect_commission\",\"depend_on\",\"level1_limit_count\",\"level1_limit_duration\",\"lifetime_duration\",\"created_at\",\"updated_at\""
+const __sqlOrderCommissionSetting_Insert = "INSERT INTO \"order_commission_setting\" (" + __sqlOrderCommissionSetting_ListCols + ") VALUES"
+const __sqlOrderCommissionSetting_Select = "SELECT " + __sqlOrderCommissionSetting_ListCols + " FROM \"order_commission_setting\""
+const __sqlOrderCommissionSetting_Select_history = "SELECT " + __sqlOrderCommissionSetting_ListCols + " FROM history.\"order_commission_setting\""
+const __sqlOrderCommissionSetting_UpdateAll = "UPDATE \"order_commission_setting\" SET (" + __sqlOrderCommissionSetting_ListCols + ")"
+
+func (m *OrderCommissionSetting) SQLTableName() string  { return "order_commission_setting" }
+func (m *OrderCommissionSettings) SQLTableName() string { return "order_commission_setting" }
+func (m *OrderCommissionSetting) SQLListCols() string   { return __sqlOrderCommissionSetting_ListCols }
+
+func (m *OrderCommissionSetting) SQLArgs(opts core.Opts, create bool) []interface{} {
+	now := time.Now()
+	return []interface{}{
+		core.Int64(m.OrderID),
+		core.Int64(m.SupplyID),
+		core.Int64(m.ProductID),
+		core.Int32(m.Level1DirectCommission),
+		core.Int32(m.Level1IndirectCommission),
+		core.Int32(m.Level2DirectCommission),
+		core.Int32(m.Level2IndirectCommission),
+		core.String(m.DependOn),
+		core.Int32(m.Level1LimitCount),
+		core.Int64(m.Level1LimitDuration),
+		core.Int64(m.LifetimeDuration),
+		core.Now(m.CreatedAt, now, create),
+		core.Now(m.UpdatedAt, now, true),
+	}
+}
+
+func (m *OrderCommissionSetting) SQLScanArgs(opts core.Opts) []interface{} {
+	return []interface{}{
+		(*core.Int64)(&m.OrderID),
+		(*core.Int64)(&m.SupplyID),
+		(*core.Int64)(&m.ProductID),
+		(*core.Int32)(&m.Level1DirectCommission),
+		(*core.Int32)(&m.Level1IndirectCommission),
+		(*core.Int32)(&m.Level2DirectCommission),
+		(*core.Int32)(&m.Level2IndirectCommission),
+		(*core.String)(&m.DependOn),
+		(*core.Int32)(&m.Level1LimitCount),
+		(*core.Int64)(&m.Level1LimitDuration),
+		(*core.Int64)(&m.LifetimeDuration),
+		(*core.Time)(&m.CreatedAt),
+		(*core.Time)(&m.UpdatedAt),
+	}
+}
+
+func (m *OrderCommissionSetting) SQLScan(opts core.Opts, row *sql.Row) error {
+	return row.Scan(m.SQLScanArgs(opts)...)
+}
+
+func (ms *OrderCommissionSettings) SQLScan(opts core.Opts, rows *sql.Rows) error {
+	res := make(OrderCommissionSettings, 0, 128)
+	for rows.Next() {
+		m := new(OrderCommissionSetting)
+		args := m.SQLScanArgs(opts)
+		if err := rows.Scan(args...); err != nil {
+			return err
+		}
+		res = append(res, m)
+	}
+	if err := rows.Err(); err != nil {
+		return err
+	}
+	*ms = res
+	return nil
+}
+
+func (_ *OrderCommissionSetting) SQLSelect(w SQLWriter) error {
+	w.WriteQueryString(__sqlOrderCommissionSetting_Select)
+	return nil
+}
+
+func (_ *OrderCommissionSettings) SQLSelect(w SQLWriter) error {
+	w.WriteQueryString(__sqlOrderCommissionSetting_Select)
+	return nil
+}
+
+func (m *OrderCommissionSetting) SQLInsert(w SQLWriter) error {
+	w.WriteQueryString(__sqlOrderCommissionSetting_Insert)
+	w.WriteRawString(" (")
+	w.WriteMarkers(13)
+	w.WriteByte(')')
+	w.WriteArgs(m.SQLArgs(w.Opts(), true))
+	return nil
+}
+
+func (ms OrderCommissionSettings) SQLInsert(w SQLWriter) error {
+	w.WriteQueryString(__sqlOrderCommissionSetting_Insert)
+	w.WriteRawString(" (")
+	for i := 0; i < len(ms); i++ {
+		w.WriteMarkers(13)
+		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
+		w.WriteRawString("),(")
+	}
+	w.TrimLast(2)
+	return nil
+}
+
+func (m *OrderCommissionSetting) SQLUpdate(w SQLWriter) error {
+	now, opts := time.Now(), w.Opts()
+	_, _ = now, opts // suppress unuse error
+	var flag bool
+	w.WriteRawString("UPDATE ")
+	w.WriteName("order_commission_setting")
+	w.WriteRawString(" SET ")
+	if m.OrderID != 0 {
+		flag = true
+		w.WriteName("order_id")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.OrderID)
+	}
+	if m.SupplyID != 0 {
+		flag = true
+		w.WriteName("supply_id")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.SupplyID)
+	}
+	if m.ProductID != 0 {
+		flag = true
+		w.WriteName("product_id")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.ProductID)
+	}
+	if m.Level1DirectCommission != 0 {
+		flag = true
+		w.WriteName("level1_direct_commission")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.Level1DirectCommission)
+	}
+	if m.Level1IndirectCommission != 0 {
+		flag = true
+		w.WriteName("level1_indirect_commission")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.Level1IndirectCommission)
+	}
+	if m.Level2DirectCommission != 0 {
+		flag = true
+		w.WriteName("level2_direct_commission")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.Level2DirectCommission)
+	}
+	if m.Level2IndirectCommission != 0 {
+		flag = true
+		w.WriteName("level2_indirect_commission")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.Level2IndirectCommission)
+	}
+	if m.DependOn != "" {
+		flag = true
+		w.WriteName("depend_on")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.DependOn)
+	}
+	if m.Level1LimitCount != 0 {
+		flag = true
+		w.WriteName("level1_limit_count")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.Level1LimitCount)
+	}
+	if m.Level1LimitDuration != 0 {
+		flag = true
+		w.WriteName("level1_limit_duration")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.Level1LimitDuration)
+	}
+	if m.LifetimeDuration != 0 {
+		flag = true
+		w.WriteName("lifetime_duration")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.LifetimeDuration)
+	}
+	if !m.CreatedAt.IsZero() {
+		flag = true
+		w.WriteName("created_at")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.CreatedAt)
+	}
+	if !m.UpdatedAt.IsZero() {
+		flag = true
+		w.WriteName("updated_at")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(core.Now(m.UpdatedAt, time.Now(), true))
+	}
+	if !flag {
+		return core.ErrNoColumn
+	}
+	w.TrimLast(1)
+	return nil
+}
+
+func (m *OrderCommissionSetting) SQLUpdateAll(w SQLWriter) error {
+	w.WriteQueryString(__sqlOrderCommissionSetting_UpdateAll)
+	w.WriteRawString(" = (")
+	w.WriteMarkers(13)
+	w.WriteByte(')')
+	w.WriteArgs(m.SQLArgs(w.Opts(), false))
+	return nil
+}
+
+type OrderCommissionSettingHistory map[string]interface{}
+type OrderCommissionSettingHistories []map[string]interface{}
+
+func (m *OrderCommissionSettingHistory) SQLTableName() string {
+	return "history.\"order_commission_setting\""
+}
+func (m OrderCommissionSettingHistories) SQLTableName() string {
+	return "history.\"order_commission_setting\""
+}
+
+func (m *OrderCommissionSettingHistory) SQLSelect(w SQLWriter) error {
+	w.WriteQueryString(__sqlOrderCommissionSetting_Select_history)
+	return nil
+}
+
+func (m OrderCommissionSettingHistories) SQLSelect(w SQLWriter) error {
+	w.WriteQueryString(__sqlOrderCommissionSetting_Select_history)
+	return nil
+}
+
+func (m OrderCommissionSettingHistory) OrderID() core.Interface { return core.Interface{m["order_id"]} }
+func (m OrderCommissionSettingHistory) SupplyID() core.Interface {
+	return core.Interface{m["supply_id"]}
+}
+func (m OrderCommissionSettingHistory) ProductID() core.Interface {
+	return core.Interface{m["product_id"]}
+}
+func (m OrderCommissionSettingHistory) Level1DirectCommission() core.Interface {
+	return core.Interface{m["level1_direct_commission"]}
+}
+func (m OrderCommissionSettingHistory) Level1IndirectCommission() core.Interface {
+	return core.Interface{m["level1_indirect_commission"]}
+}
+func (m OrderCommissionSettingHistory) Level2DirectCommission() core.Interface {
+	return core.Interface{m["level2_direct_commission"]}
+}
+func (m OrderCommissionSettingHistory) Level2IndirectCommission() core.Interface {
+	return core.Interface{m["level2_indirect_commission"]}
+}
+func (m OrderCommissionSettingHistory) DependOn() core.Interface {
+	return core.Interface{m["depend_on"]}
+}
+func (m OrderCommissionSettingHistory) Level1LimitCount() core.Interface {
+	return core.Interface{m["level1_limit_count"]}
+}
+func (m OrderCommissionSettingHistory) Level1LimitDuration() core.Interface {
+	return core.Interface{m["level1_limit_duration"]}
+}
+func (m OrderCommissionSettingHistory) LifetimeDuration() core.Interface {
+	return core.Interface{m["lifetime_duration"]}
+}
+func (m OrderCommissionSettingHistory) CreatedAt() core.Interface {
+	return core.Interface{m["created_at"]}
+}
+func (m OrderCommissionSettingHistory) UpdatedAt() core.Interface {
+	return core.Interface{m["updated_at"]}
+}
+
+func (m *OrderCommissionSettingHistory) SQLScan(opts core.Opts, row *sql.Row) error {
+	data := make([]interface{}, 13)
+	args := make([]interface{}, 13)
+	for i := 0; i < 13; i++ {
+		args[i] = &data[i]
+	}
+	if err := row.Scan(args...); err != nil {
+		return err
+	}
+	res := make(OrderCommissionSettingHistory, 13)
+	res["order_id"] = data[0]
+	res["supply_id"] = data[1]
+	res["product_id"] = data[2]
+	res["level1_direct_commission"] = data[3]
+	res["level1_indirect_commission"] = data[4]
+	res["level2_direct_commission"] = data[5]
+	res["level2_indirect_commission"] = data[6]
+	res["depend_on"] = data[7]
+	res["level1_limit_count"] = data[8]
+	res["level1_limit_duration"] = data[9]
+	res["lifetime_duration"] = data[10]
+	res["created_at"] = data[11]
+	res["updated_at"] = data[12]
+	*m = res
+	return nil
+}
+
+func (ms *OrderCommissionSettingHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
+	data := make([]interface{}, 13)
+	args := make([]interface{}, 13)
+	for i := 0; i < 13; i++ {
+		args[i] = &data[i]
+	}
+	res := make(OrderCommissionSettingHistories, 0, 128)
+	for rows.Next() {
+		if err := rows.Scan(args...); err != nil {
+			return err
+		}
+		m := make(OrderCommissionSettingHistory)
+		m["order_id"] = data[0]
+		m["supply_id"] = data[1]
+		m["product_id"] = data[2]
+		m["level1_direct_commission"] = data[3]
+		m["level1_indirect_commission"] = data[4]
+		m["level2_direct_commission"] = data[5]
+		m["level2_indirect_commission"] = data[6]
+		m["depend_on"] = data[7]
+		m["level1_limit_count"] = data[8]
+		m["level1_limit_duration"] = data[9]
+		m["lifetime_duration"] = data[10]
+		m["created_at"] = data[11]
+		m["updated_at"] = data[12]
+		res = append(res, m)
+	}
+	if err := rows.Err(); err != nil {
+		return err
+	}
+	*ms = res
+	return nil
+}
+
+// Type ShopCashback represents table shop_cashback
+func sqlgenShopCashback(_ *ShopCashback) bool { return true }
+
+type ShopCashbacks []*ShopCashback
+
+const __sqlShopCashback_Table = "shop_cashback"
+const __sqlShopCashback_ListCols = "\"id\",\"shop_id\",\"order_id\",\"amount\",\"order_created_notify_id\",\"description\",\"status\",\"valid_at\",\"created_at\",\"updated_at\""
+const __sqlShopCashback_Insert = "INSERT INTO \"shop_cashback\" (" + __sqlShopCashback_ListCols + ") VALUES"
+const __sqlShopCashback_Select = "SELECT " + __sqlShopCashback_ListCols + " FROM \"shop_cashback\""
+const __sqlShopCashback_Select_history = "SELECT " + __sqlShopCashback_ListCols + " FROM history.\"shop_cashback\""
+const __sqlShopCashback_UpdateAll = "UPDATE \"shop_cashback\" SET (" + __sqlShopCashback_ListCols + ")"
+
+func (m *ShopCashback) SQLTableName() string  { return "shop_cashback" }
+func (m *ShopCashbacks) SQLTableName() string { return "shop_cashback" }
+func (m *ShopCashback) SQLListCols() string   { return __sqlShopCashback_ListCols }
+
+func (m *ShopCashback) SQLArgs(opts core.Opts, create bool) []interface{} {
+	now := time.Now()
+	return []interface{}{
+		core.Int64(m.ID),
+		core.Int64(m.ShopID),
+		core.Int64(m.OrderID),
+		core.Int32(m.Amount),
+		core.Int64(m.OrderCreatedNotifyID),
+		core.String(m.Description),
+		core.Int8(m.Status),
+		core.Time(m.ValidAt),
+		core.Now(m.CreatedAt, now, create),
+		core.Now(m.UpdatedAt, now, true),
+	}
+}
+
+func (m *ShopCashback) SQLScanArgs(opts core.Opts) []interface{} {
+	return []interface{}{
+		(*core.Int64)(&m.ID),
+		(*core.Int64)(&m.ShopID),
+		(*core.Int64)(&m.OrderID),
+		(*core.Int32)(&m.Amount),
+		(*core.Int64)(&m.OrderCreatedNotifyID),
+		(*core.String)(&m.Description),
+		(*core.Int8)(&m.Status),
+		(*core.Time)(&m.ValidAt),
+		(*core.Time)(&m.CreatedAt),
+		(*core.Time)(&m.UpdatedAt),
+	}
+}
+
+func (m *ShopCashback) SQLScan(opts core.Opts, row *sql.Row) error {
+	return row.Scan(m.SQLScanArgs(opts)...)
+}
+
+func (ms *ShopCashbacks) SQLScan(opts core.Opts, rows *sql.Rows) error {
+	res := make(ShopCashbacks, 0, 128)
+	for rows.Next() {
+		m := new(ShopCashback)
+		args := m.SQLScanArgs(opts)
+		if err := rows.Scan(args...); err != nil {
+			return err
+		}
+		res = append(res, m)
+	}
+	if err := rows.Err(); err != nil {
+		return err
+	}
+	*ms = res
+	return nil
+}
+
+func (_ *ShopCashback) SQLSelect(w SQLWriter) error {
+	w.WriteQueryString(__sqlShopCashback_Select)
+	return nil
+}
+
+func (_ *ShopCashbacks) SQLSelect(w SQLWriter) error {
+	w.WriteQueryString(__sqlShopCashback_Select)
+	return nil
+}
+
+func (m *ShopCashback) SQLInsert(w SQLWriter) error {
+	w.WriteQueryString(__sqlShopCashback_Insert)
+	w.WriteRawString(" (")
+	w.WriteMarkers(10)
+	w.WriteByte(')')
+	w.WriteArgs(m.SQLArgs(w.Opts(), true))
+	return nil
+}
+
+func (ms ShopCashbacks) SQLInsert(w SQLWriter) error {
+	w.WriteQueryString(__sqlShopCashback_Insert)
+	w.WriteRawString(" (")
+	for i := 0; i < len(ms); i++ {
+		w.WriteMarkers(10)
+		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
+		w.WriteRawString("),(")
+	}
+	w.TrimLast(2)
+	return nil
+}
+
+func (m *ShopCashback) SQLUpdate(w SQLWriter) error {
+	now, opts := time.Now(), w.Opts()
+	_, _ = now, opts // suppress unuse error
+	var flag bool
+	w.WriteRawString("UPDATE ")
+	w.WriteName("shop_cashback")
+	w.WriteRawString(" SET ")
+	if m.ID != 0 {
+		flag = true
+		w.WriteName("id")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.ID)
+	}
+	if m.ShopID != 0 {
+		flag = true
+		w.WriteName("shop_id")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.ShopID)
+	}
+	if m.OrderID != 0 {
+		flag = true
+		w.WriteName("order_id")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.OrderID)
+	}
+	if m.Amount != 0 {
+		flag = true
+		w.WriteName("amount")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.Amount)
+	}
+	if m.OrderCreatedNotifyID != 0 {
+		flag = true
+		w.WriteName("order_created_notify_id")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.OrderCreatedNotifyID)
+	}
+	if m.Description != "" {
+		flag = true
+		w.WriteName("description")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.Description)
+	}
+	if m.Status != 0 {
+		flag = true
+		w.WriteName("status")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.Status)
+	}
+	if !m.ValidAt.IsZero() {
+		flag = true
+		w.WriteName("valid_at")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.ValidAt)
+	}
+	if !m.CreatedAt.IsZero() {
+		flag = true
+		w.WriteName("created_at")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.CreatedAt)
+	}
+	if !m.UpdatedAt.IsZero() {
+		flag = true
+		w.WriteName("updated_at")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(core.Now(m.UpdatedAt, time.Now(), true))
+	}
+	if !flag {
+		return core.ErrNoColumn
+	}
+	w.TrimLast(1)
+	return nil
+}
+
+func (m *ShopCashback) SQLUpdateAll(w SQLWriter) error {
+	w.WriteQueryString(__sqlShopCashback_UpdateAll)
+	w.WriteRawString(" = (")
+	w.WriteMarkers(10)
+	w.WriteByte(')')
+	w.WriteArgs(m.SQLArgs(w.Opts(), false))
+	return nil
+}
+
+type ShopCashbackHistory map[string]interface{}
+type ShopCashbackHistories []map[string]interface{}
+
+func (m *ShopCashbackHistory) SQLTableName() string  { return "history.\"shop_cashback\"" }
+func (m ShopCashbackHistories) SQLTableName() string { return "history.\"shop_cashback\"" }
+
+func (m *ShopCashbackHistory) SQLSelect(w SQLWriter) error {
+	w.WriteQueryString(__sqlShopCashback_Select_history)
+	return nil
+}
+
+func (m ShopCashbackHistories) SQLSelect(w SQLWriter) error {
+	w.WriteQueryString(__sqlShopCashback_Select_history)
+	return nil
+}
+
+func (m ShopCashbackHistory) ID() core.Interface      { return core.Interface{m["id"]} }
+func (m ShopCashbackHistory) ShopID() core.Interface  { return core.Interface{m["shop_id"]} }
+func (m ShopCashbackHistory) OrderID() core.Interface { return core.Interface{m["order_id"]} }
+func (m ShopCashbackHistory) Amount() core.Interface  { return core.Interface{m["amount"]} }
+func (m ShopCashbackHistory) OrderCreatedNotifyID() core.Interface {
+	return core.Interface{m["order_created_notify_id"]}
+}
+func (m ShopCashbackHistory) Description() core.Interface { return core.Interface{m["description"]} }
+func (m ShopCashbackHistory) Status() core.Interface      { return core.Interface{m["status"]} }
+func (m ShopCashbackHistory) ValidAt() core.Interface     { return core.Interface{m["valid_at"]} }
+func (m ShopCashbackHistory) CreatedAt() core.Interface   { return core.Interface{m["created_at"]} }
+func (m ShopCashbackHistory) UpdatedAt() core.Interface   { return core.Interface{m["updated_at"]} }
+
+func (m *ShopCashbackHistory) SQLScan(opts core.Opts, row *sql.Row) error {
+	data := make([]interface{}, 10)
+	args := make([]interface{}, 10)
+	for i := 0; i < 10; i++ {
+		args[i] = &data[i]
+	}
+	if err := row.Scan(args...); err != nil {
+		return err
+	}
+	res := make(ShopCashbackHistory, 10)
+	res["id"] = data[0]
+	res["shop_id"] = data[1]
+	res["order_id"] = data[2]
+	res["amount"] = data[3]
+	res["order_created_notify_id"] = data[4]
+	res["description"] = data[5]
+	res["status"] = data[6]
+	res["valid_at"] = data[7]
+	res["created_at"] = data[8]
+	res["updated_at"] = data[9]
+	*m = res
+	return nil
+}
+
+func (ms *ShopCashbackHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
+	data := make([]interface{}, 10)
+	args := make([]interface{}, 10)
+	for i := 0; i < 10; i++ {
+		args[i] = &data[i]
+	}
+	res := make(ShopCashbackHistories, 0, 128)
+	for rows.Next() {
+		if err := rows.Scan(args...); err != nil {
+			return err
+		}
+		m := make(ShopCashbackHistory)
+		m["id"] = data[0]
+		m["shop_id"] = data[1]
+		m["order_id"] = data[2]
+		m["amount"] = data[3]
+		m["order_created_notify_id"] = data[4]
+		m["description"] = data[5]
+		m["status"] = data[6]
+		m["valid_at"] = data[7]
+		m["created_at"] = data[8]
+		m["updated_at"] = data[9]
+		res = append(res, m)
+	}
+	if err := rows.Err(); err != nil {
+		return err
+	}
+	*ms = res
+	return nil
+}
+
+// Type ShopOrderProductHistory represents table shop_order_product_history
+func sqlgenShopOrderProductHistory(_ *ShopOrderProductHistory) bool { return true }
+
+type ShopOrderProductHistories []*ShopOrderProductHistory
+
+const __sqlShopOrderProductHistory_Table = "shop_order_product_history"
+const __sqlShopOrderProductHistory_ListCols = "\"user_id\",\"shop_id\",\"order_id\",\"supply_id\",\"product_id\",\"created_at\",\"updated_at\""
+const __sqlShopOrderProductHistory_Insert = "INSERT INTO \"shop_order_product_history\" (" + __sqlShopOrderProductHistory_ListCols + ") VALUES"
+const __sqlShopOrderProductHistory_Select = "SELECT " + __sqlShopOrderProductHistory_ListCols + " FROM \"shop_order_product_history\""
+const __sqlShopOrderProductHistory_Select_history = "SELECT " + __sqlShopOrderProductHistory_ListCols + " FROM history.\"shop_order_product_history\""
+const __sqlShopOrderProductHistory_UpdateAll = "UPDATE \"shop_order_product_history\" SET (" + __sqlShopOrderProductHistory_ListCols + ")"
+
+func (m *ShopOrderProductHistory) SQLTableName() string   { return "shop_order_product_history" }
+func (m *ShopOrderProductHistories) SQLTableName() string { return "shop_order_product_history" }
+func (m *ShopOrderProductHistory) SQLListCols() string    { return __sqlShopOrderProductHistory_ListCols }
+
+func (m *ShopOrderProductHistory) SQLArgs(opts core.Opts, create bool) []interface{} {
+	now := time.Now()
+	return []interface{}{
+		core.Int64(m.UserID),
+		core.Int64(m.ShopID),
+		core.Int64(m.OrderID),
+		core.Int64(m.SupplyID),
+		core.Int64(m.ProductID),
+		core.Now(m.CreatedAt, now, create),
+		core.Now(m.UpdatedAt, now, true),
+	}
+}
+
+func (m *ShopOrderProductHistory) SQLScanArgs(opts core.Opts) []interface{} {
+	return []interface{}{
+		(*core.Int64)(&m.UserID),
+		(*core.Int64)(&m.ShopID),
+		(*core.Int64)(&m.OrderID),
+		(*core.Int64)(&m.SupplyID),
+		(*core.Int64)(&m.ProductID),
+		(*core.Time)(&m.CreatedAt),
+		(*core.Time)(&m.UpdatedAt),
+	}
+}
+
+func (m *ShopOrderProductHistory) SQLScan(opts core.Opts, row *sql.Row) error {
+	return row.Scan(m.SQLScanArgs(opts)...)
+}
+
+func (ms *ShopOrderProductHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
+	res := make(ShopOrderProductHistories, 0, 128)
+	for rows.Next() {
+		m := new(ShopOrderProductHistory)
+		args := m.SQLScanArgs(opts)
+		if err := rows.Scan(args...); err != nil {
+			return err
+		}
+		res = append(res, m)
+	}
+	if err := rows.Err(); err != nil {
+		return err
+	}
+	*ms = res
+	return nil
+}
+
+func (_ *ShopOrderProductHistory) SQLSelect(w SQLWriter) error {
+	w.WriteQueryString(__sqlShopOrderProductHistory_Select)
+	return nil
+}
+
+func (_ *ShopOrderProductHistories) SQLSelect(w SQLWriter) error {
+	w.WriteQueryString(__sqlShopOrderProductHistory_Select)
+	return nil
+}
+
+func (m *ShopOrderProductHistory) SQLInsert(w SQLWriter) error {
+	w.WriteQueryString(__sqlShopOrderProductHistory_Insert)
+	w.WriteRawString(" (")
+	w.WriteMarkers(7)
+	w.WriteByte(')')
+	w.WriteArgs(m.SQLArgs(w.Opts(), true))
+	return nil
+}
+
+func (ms ShopOrderProductHistories) SQLInsert(w SQLWriter) error {
+	w.WriteQueryString(__sqlShopOrderProductHistory_Insert)
+	w.WriteRawString(" (")
+	for i := 0; i < len(ms); i++ {
+		w.WriteMarkers(7)
+		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
+		w.WriteRawString("),(")
+	}
+	w.TrimLast(2)
+	return nil
+}
+
+func (m *ShopOrderProductHistory) SQLUpdate(w SQLWriter) error {
+	now, opts := time.Now(), w.Opts()
+	_, _ = now, opts // suppress unuse error
+	var flag bool
+	w.WriteRawString("UPDATE ")
+	w.WriteName("shop_order_product_history")
+	w.WriteRawString(" SET ")
+	if m.UserID != 0 {
+		flag = true
+		w.WriteName("user_id")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.UserID)
+	}
+	if m.ShopID != 0 {
+		flag = true
+		w.WriteName("shop_id")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.ShopID)
+	}
+	if m.OrderID != 0 {
+		flag = true
+		w.WriteName("order_id")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.OrderID)
+	}
+	if m.SupplyID != 0 {
+		flag = true
+		w.WriteName("supply_id")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.SupplyID)
+	}
+	if m.ProductID != 0 {
+		flag = true
+		w.WriteName("product_id")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.ProductID)
+	}
+	if !m.CreatedAt.IsZero() {
+		flag = true
+		w.WriteName("created_at")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.CreatedAt)
+	}
+	if !m.UpdatedAt.IsZero() {
+		flag = true
+		w.WriteName("updated_at")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(core.Now(m.UpdatedAt, time.Now(), true))
+	}
+	if !flag {
+		return core.ErrNoColumn
+	}
+	w.TrimLast(1)
+	return nil
+}
+
+func (m *ShopOrderProductHistory) SQLUpdateAll(w SQLWriter) error {
+	w.WriteQueryString(__sqlShopOrderProductHistory_UpdateAll)
+	w.WriteRawString(" = (")
+	w.WriteMarkers(7)
+	w.WriteByte(')')
+	w.WriteArgs(m.SQLArgs(w.Opts(), false))
+	return nil
+}
+
+type ShopOrderProductHistoryHistory map[string]interface{}
+type ShopOrderProductHistoryHistories []map[string]interface{}
+
+func (m *ShopOrderProductHistoryHistory) SQLTableName() string {
+	return "history.\"shop_order_product_history\""
+}
+func (m ShopOrderProductHistoryHistories) SQLTableName() string {
+	return "history.\"shop_order_product_history\""
+}
+
+func (m *ShopOrderProductHistoryHistory) SQLSelect(w SQLWriter) error {
+	w.WriteQueryString(__sqlShopOrderProductHistory_Select_history)
+	return nil
+}
+
+func (m ShopOrderProductHistoryHistories) SQLSelect(w SQLWriter) error {
+	w.WriteQueryString(__sqlShopOrderProductHistory_Select_history)
+	return nil
+}
+
+func (m ShopOrderProductHistoryHistory) UserID() core.Interface  { return core.Interface{m["user_id"]} }
+func (m ShopOrderProductHistoryHistory) ShopID() core.Interface  { return core.Interface{m["shop_id"]} }
+func (m ShopOrderProductHistoryHistory) OrderID() core.Interface { return core.Interface{m["order_id"]} }
+func (m ShopOrderProductHistoryHistory) SupplyID() core.Interface {
+	return core.Interface{m["supply_id"]}
+}
+func (m ShopOrderProductHistoryHistory) ProductID() core.Interface {
+	return core.Interface{m["product_id"]}
+}
+func (m ShopOrderProductHistoryHistory) CreatedAt() core.Interface {
+	return core.Interface{m["created_at"]}
+}
+func (m ShopOrderProductHistoryHistory) UpdatedAt() core.Interface {
+	return core.Interface{m["updated_at"]}
+}
+
+func (m *ShopOrderProductHistoryHistory) SQLScan(opts core.Opts, row *sql.Row) error {
+	data := make([]interface{}, 7)
+	args := make([]interface{}, 7)
+	for i := 0; i < 7; i++ {
+		args[i] = &data[i]
+	}
+	if err := row.Scan(args...); err != nil {
+		return err
+	}
+	res := make(ShopOrderProductHistoryHistory, 7)
+	res["user_id"] = data[0]
+	res["shop_id"] = data[1]
+	res["order_id"] = data[2]
+	res["supply_id"] = data[3]
+	res["product_id"] = data[4]
+	res["created_at"] = data[5]
+	res["updated_at"] = data[6]
+	*m = res
+	return nil
+}
+
+func (ms *ShopOrderProductHistoryHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
+	data := make([]interface{}, 7)
+	args := make([]interface{}, 7)
+	for i := 0; i < 7; i++ {
+		args[i] = &data[i]
+	}
+	res := make(ShopOrderProductHistoryHistories, 0, 128)
+	for rows.Next() {
+		if err := rows.Scan(args...); err != nil {
+			return err
+		}
+		m := make(ShopOrderProductHistoryHistory)
+		m["user_id"] = data[0]
+		m["shop_id"] = data[1]
+		m["order_id"] = data[2]
+		m["supply_id"] = data[3]
+		m["product_id"] = data[4]
+		m["created_at"] = data[5]
+		m["updated_at"] = data[6]
 		res = append(res, m)
 	}
 	if err := rows.Err(); err != nil {

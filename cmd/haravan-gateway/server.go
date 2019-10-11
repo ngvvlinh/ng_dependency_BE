@@ -33,7 +33,7 @@ func startServers() *http.Server {
 	haravan := aggregate.NewAggregate(db, shippingManager, locationBus, identityQuery).MessageBus()
 
 	catalogQueryService := catalogquery.New(db).MessageBus()
-	orderAggr := serviceordering.NewAggregate(db).MessageBus()
+	orderAggr := serviceordering.NewAggregate(eventBus, db).MessageBus()
 	customerAggr := customeraggregate.NewCustomerAggregate(db).MessageBus()
 	customerQuery := customerquery.NewCustomerQuery(db).MessageBus()
 	traderAddressAggr := customeraggregate.NewAddressAggregate(db).MessageBus()

@@ -2,6 +2,8 @@ package affiliate
 
 import (
 	"time"
+
+	"etop.vn/api/meta"
 )
 
 type CommissionSetting struct {
@@ -25,20 +27,24 @@ type ProductPromotion struct {
 	UpdatedAt   time.Time
 }
 
-type AffiliateCommission struct {
-	ID              int64
-	AffiliateID     int64
-	FromAffiliateID int64
-	ProductID       int64
-	OrderId         int64
-	Value           int32
-	Description     string
-	Note            string
-	Type            string
-	Status          int
-	ValidAt         time.Time
-	CreatedAt       time.Time
-	UpdatedAt       time.Time
+type SellerCommission struct {
+	ID           int64
+	SellerID     int64
+	FromSellerID int64
+	ProductID    int64
+	OrderID      int64
+	ShopID       int64
+	SupplyID     int64
+	Amount       int32
+	Description  string
+	Note         string
+	Type         string
+	Status       int
+	OValue       int32
+	OBaseValue   int32
+	ValidAt      time.Time
+	CreatedAt    time.Time
+	UpdatedAt    time.Time
 }
 
 type AffiliateReferralCode struct {
@@ -82,4 +88,10 @@ type SupplyCommissionSetting struct {
 type Duration struct {
 	Type     string
 	Duration int32
+}
+
+type OrderPaymentSuccessEvent struct {
+	meta.EventMeta
+
+	OrderID int64
 }

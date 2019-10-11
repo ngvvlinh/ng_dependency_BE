@@ -4,6 +4,8 @@ import (
 	"context"
 	"time"
 
+	"etop.vn/api/meta"
+
 	etoptypes "etop.vn/api/main/etop"
 	"etop.vn/api/main/ordering/types"
 	ordertypes "etop.vn/api/main/ordering/types"
@@ -11,6 +13,7 @@ import (
 )
 
 // +gen:api
+// +gen:event:topic=event/ordering
 
 type Aggregate interface {
 	ValidateOrdersForShipping(context.Context, *ValidateOrdersForShippingArgs) (*ValidateOrdersForShippingResponse, error)
@@ -92,6 +95,8 @@ type Order struct {
 	PaymentStatus etoptypes.Status4
 	PaymentID     int64
 	ReferralMeta  *ReferralMeta
+
+	TradingShopID int64
 }
 
 type OrderFeeLine struct {
@@ -149,4 +154,9 @@ type UpdateOrderPaymentInfoArgs struct {
 type ReferralMeta struct {
 	ReferralCode   string `json:"referral_code"`
 	ReferralAmount string `json:"referral_amount"`
+}
+
+type OrderPaymentSuccessEvent struct {
+	meta.EventMeta
+	OrderID int64
 }

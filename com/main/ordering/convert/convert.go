@@ -94,6 +94,7 @@ func Order(in *model.Order) (out *ordering.Order) {
 		FulfillmentType:           ordertypes.Fulfill(in.FulfillmentType),
 		PaymentStatus:             etoptypes.Status4FromInt(int(in.PaymentStatus)),
 		PaymentID:                 in.PaymentID,
+		TradingShopID:             in.TradingShopID,
 	}
 	var referralMeta ordering.ReferralMeta
 	if err := jsonx.Unmarshal(in.ReferralMeta, &referralMeta); err == nil {

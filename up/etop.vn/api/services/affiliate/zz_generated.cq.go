@@ -131,6 +131,18 @@ func (h AggregateHandler) HandleOnTradingOrderCreated(ctx context.Context, msg *
 	return h.inner.OnTradingOrderCreated(msg.GetArgs(ctx))
 }
 
+type OrderPaymentSuccessCommand struct {
+	EventMeta meta.EventMeta
+	OrderID   int64
+
+	Result struct {
+	} `json:"-"`
+}
+
+func (h AggregateHandler) HandleOrderPaymentSuccess(ctx context.Context, msg *OrderPaymentSuccessCommand) (err error) {
+	return h.inner.OrderPaymentSuccess(msg.GetArgs(ctx))
+}
+
 type TradingOrderCreatingCommand struct {
 	ProductIDs   []int64
 	ReferralCode string
@@ -218,6 +230,19 @@ func (h QueryServiceHandler) HandleGetReferralsByReferralID(ctx context.Context,
 	return err
 }
 
+type GetSellerCommissionsQuery struct {
+	SellerID int64
+	Paging   meta.Paging
+	Filters  meta.Filters
+
+	Result []*SellerCommission `json:"-"`
+}
+
+func (h QueryServiceHandler) HandleGetSellerCommissions(ctx context.Context, msg *GetSellerCommissionsQuery) (err error) {
+	msg.Result, err = h.inner.GetSellerCommissions(msg.GetArgs(ctx))
+	return err
+}
+
 type GetShopProductPromotionQuery struct {
 	ShopID    int64
 	ProductID int64
@@ -275,6 +300,7 @@ func (q *CreateOrUpdateSupplyCommissionSettingCommand) command() {}
 func (q *CreateOrUpdateUserReferralCommand) command()            {}
 func (q *CreateProductPromotionCommand) command()                {}
 func (q *OnTradingOrderCreatedCommand) command()                 {}
+func (q *OrderPaymentSuccessCommand) command()                   {}
 func (q *TradingOrderCreatingCommand) command()                  {}
 func (q *UpdateProductPromotionCommand) command()                {}
 func (q *GetAffiliateAccountReferralByCodeQuery) query()         {}
@@ -282,6 +308,7 @@ func (q *GetAffiliateAccountReferralCodesQuery) query()          {}
 func (q *GetCommissionByProductIDQuery) query()                  {}
 func (q *GetCommissionByProductIDsQuery) query()                 {}
 func (q *GetReferralsByReferralIDQuery) query()                  {}
+func (q *GetSellerCommissionsQuery) query()                      {}
 func (q *GetShopProductPromotionQuery) query()                   {}
 func (q *GetShopProductPromotionByProductIDsQuery) query()       {}
 func (q *GetSupplyCommissionSettingsByProductIDsQuery) query()   {}
@@ -359,6 +386,14 @@ func (q *OnTradingOrderCreatedCommand) GetArgs(ctx context.Context) (_ context.C
 		}
 }
 
+func (q *OrderPaymentSuccessCommand) GetArgs(ctx context.Context) (_ context.Context, _ *OrderPaymentSuccessEvent) {
+	return ctx,
+		&OrderPaymentSuccessEvent{
+			EventMeta: q.EventMeta,
+			OrderID:   q.OrderID,
+		}
+}
+
 func (q *TradingOrderCreatingCommand) GetArgs(ctx context.Context) (_ context.Context, _ *TradingOrderCreating) {
 	return ctx,
 		&TradingOrderCreating{
@@ -418,6 +453,15 @@ func (q *GetReferralsByReferralIDQuery) GetArgs(ctx context.Context) (_ context.
 		}
 }
 
+func (q *GetSellerCommissionsQuery) GetArgs(ctx context.Context) (_ context.Context, _ *GetSellerCommissionsArgs) {
+	return ctx,
+		&GetSellerCommissionsArgs{
+			SellerID: q.SellerID,
+			Paging:   q.Paging,
+			Filters:  q.Filters,
+		}
+}
+
 func (q *GetShopProductPromotionQuery) GetArgs(ctx context.Context) (_ context.Context, _ *GetProductPromotionArgs) {
 	return ctx,
 		&GetProductPromotionArgs{
@@ -469,6 +513,7 @@ func (h AggregateHandler) RegisterHandlers(b interface {
 	b.AddHandler(h.HandleCreateOrUpdateUserReferral)
 	b.AddHandler(h.HandleCreateProductPromotion)
 	b.AddHandler(h.HandleOnTradingOrderCreated)
+	b.AddHandler(h.HandleOrderPaymentSuccess)
 	b.AddHandler(h.HandleTradingOrderCreating)
 	b.AddHandler(h.HandleUpdateProductPromotion)
 	return CommandBus{b}
@@ -491,6 +536,7 @@ func (h QueryServiceHandler) RegisterHandlers(b interface {
 	b.AddHandler(h.HandleGetCommissionByProductID)
 	b.AddHandler(h.HandleGetCommissionByProductIDs)
 	b.AddHandler(h.HandleGetReferralsByReferralID)
+	b.AddHandler(h.HandleGetSellerCommissions)
 	b.AddHandler(h.HandleGetShopProductPromotion)
 	b.AddHandler(h.HandleGetShopProductPromotionByProductIDs)
 	b.AddHandler(h.HandleGetSupplyCommissionSettingsByProductIDs)

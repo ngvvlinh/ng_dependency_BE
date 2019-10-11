@@ -38,7 +38,7 @@ type AffiliateReferralCodeStore struct {
 
 func (s *AffiliateReferralCodeStore) Count() (uint64, error) {
 	query := s.query().Where(s.preds)
-	return query.Count((*model.AffiliateCommission)(nil))
+	return query.Count((*model.SellerCommission)(nil))
 }
 
 func (s *AffiliateReferralCodeStore) GetPaging() meta.PageInfo {

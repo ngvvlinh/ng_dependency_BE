@@ -33,34 +33,51 @@ type ProductPromotion struct {
 	UpdatedAt   time.Time `sq:"update"`
 }
 
-var _ = sqlgenAffiliateCommission(&AffiliateCommission{})
+var _ = sqlgenSellerCommission(&SellerCommission{})
 
-type AffiliateCommission struct {
-	ID              int64
-	AffiliateID     int64
-	FromAffiliateID int64
-	ProductID       int64
-	OrderId         int64
-	Value           int32
-	Description     string
-	Note            string
-	Type            string
-	Status          int
-	ValidAt         time.Time
-	CreatedAt       time.Time `sq:"create"`
-	UpdatedAt       time.Time `sq:"update"`
+type SellerCommission struct {
+	ID           int64
+	SellerID     int64
+	FromSellerID int64
+	ProductID    int64
+	ShopID       int64
+	SupplyID     int64
+	OrderId      int64
+	Amount       int32
+	Description  string
+	Note         string
+	Type         string
+	Status       int
+	OValue       int32
+	OBaseValue   int32
+	ValidAt      time.Time
+	CreatedAt    time.Time `sq:"create"`
+	UpdatedAt    time.Time `sq:"update"`
 }
 
 var _ = sqlgenOrderCreatedNotify(&OrderCreatedNotify{})
 
 type OrderCreatedNotify struct {
-	ID           int64
-	OrderID      int64
-	ReferralCode string
-	Status       int
-	CompletedAt  time.Time
-	CreatedAt    time.Time `sq:"create"`
-	UpdatedAt    time.Time `sq:"update"`
+	ID                       int64
+	OrderID                  int64
+	ShopUserID               int64
+	SellerID                 int64
+	ShopID                   int64
+	SupplyID                 int64
+	ReferralCode             string
+	PromotionSnapshotStatus  int32
+	PromotionSnapshotErr     string
+	CommissionSnapshotStatus int32
+	CommissionSnapshotErr    string
+	CashbackProcessStatus    int32
+	CashbackProcessErr       string
+	CommissionProcessStatus  int32
+	CommissionProcessErr     string
+	PaymentStatus            int32
+	Status                   int32
+	CompletedAt              time.Time
+	CreatedAt                time.Time `sq:"create"`
+	UpdatedAt                time.Time `sq:"update"`
 }
 
 var _ = sqlgenAffiliateReferralCode(&AffiliateReferralCode{})
@@ -110,4 +127,66 @@ type SupplyCommissionSetting struct {
 type DurationJSON struct {
 	Duration int32  `json:"duration"`
 	Type     string `json:"type"`
+}
+
+var _ = sqlgenOrderPromotion(&OrderPromotion{})
+
+type OrderPromotion struct {
+	ID                   int64
+	ProductID            int64
+	OrderID              int64
+	BaseValue            int32
+	Amount               int32
+	Unit                 string
+	Type                 string
+	OrderCreatedNotifyID int64
+	Description          string
+	Src                  string
+	CreatedAt            time.Time `sq:"create"`
+	UpdatedAt            time.Time `sq:"update"`
+}
+
+var _ = sqlgenOrderCommissionSetting(&OrderCommissionSetting{})
+
+type OrderCommissionSetting struct {
+	OrderID                  int64
+	SupplyID                 int64
+	ProductID                int64
+	Level1DirectCommission   int32
+	Level1IndirectCommission int32
+	Level2DirectCommission   int32
+	Level2IndirectCommission int32
+	DependOn                 string
+	Level1LimitCount         int32
+	Level1LimitDuration      int64
+	LifetimeDuration         int64
+	CreatedAt                time.Time `sq:"create"`
+	UpdatedAt                time.Time `sq:"update"`
+}
+
+var _ = sqlgenShopCashback(&ShopCashback{})
+
+type ShopCashback struct {
+	ID                   int64
+	ShopID               int64
+	OrderID              int64
+	Amount               int32
+	OrderCreatedNotifyID int64
+	Description          string
+	Status               int8
+	ValidAt              time.Time
+	CreatedAt            time.Time `sq:"create"`
+	UpdatedAt            time.Time `sq:"update"`
+}
+
+var _ = sqlgenShopOrderProductHistory(&ShopOrderProductHistory{})
+
+type ShopOrderProductHistory struct {
+	UserID    int64
+	ShopID    int64
+	OrderID   int64
+	SupplyID  int64
+	ProductID int64
+	CreatedAt time.Time `sq:"create"`
+	UpdatedAt time.Time `sq:"update"`
 }

@@ -3,6 +3,10 @@ package ordering
 import (
 	"context"
 
+	"etop.vn/api/meta"
+
+	"etop.vn/capi"
+
 	etoptypes "etop.vn/api/main/etop"
 	"etop.vn/api/main/ordering"
 	"etop.vn/backend/com/main/ordering/sqlstore"
@@ -14,12 +18,14 @@ import (
 var _ ordering.Aggregate = &Aggregate{}
 
 type Aggregate struct {
-	store sqlstore.OrderStoreFactory
+	store    sqlstore.OrderStoreFactory
+	eventBus capi.EventBus
 }
 
-func NewAggregate(db cmsql.Database) *Aggregate {
+func NewAggregate(eventBus capi.EventBus, db cmsql.Database) *Aggregate {
 	return &Aggregate{
-		store: sqlstore.NewOrderStore(db),
+		store:    sqlstore.NewOrderStore(db),
+		eventBus: eventBus,
 	}
 }
 
@@ -144,5 +150,16 @@ func (a *Aggregate) UpdateOrderPaymentInfo(ctx context.Context, args *ordering.U
 		PaymentStatus: args.PaymentStatus,
 		PaymentID:     args.PaymentID,
 	}
-	return a.store(ctx).UpdateOrderPaymentInfo(update)
+	if err := a.store(ctx).UpdateOrderPaymentInfo(update); err != nil {
+		return err
+	}
+
+	event := &ordering.OrderPaymentSuccessEvent{
+		EventMeta: meta.NewEvent(),
+		OrderID:   args.ID,
+	}
+	if err := a.eventBus.Publish(ctx, event); err != nil {
+		return err
+	}
+	return nil
 }

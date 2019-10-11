@@ -17,6 +17,7 @@ type QueryService struct {
 	productPromotion        sqlstore.ProductPromotionStoreFactory
 	affiliateReferralCode   sqlstore.AffiliateReferralCodeStoreFactory
 	userReferral            sqlstore.UserReferralStoreFactory
+	sellerCommission        sqlstore.SellerCommissionStoreFactory
 }
 
 func NewQuery(db cmsql.Database) *QueryService {
@@ -26,6 +27,7 @@ func NewQuery(db cmsql.Database) *QueryService {
 		productPromotion:        sqlstore.NewProductPromotionStore(db),
 		affiliateReferralCode:   sqlstore.NewAffiliateReferralCodeStore(db),
 		userReferral:            sqlstore.NewUserReferralStore(db),
+		sellerCommission:        sqlstore.NewSellerCommissionSettingStore(db),
 	}
 }
 
@@ -81,4 +83,8 @@ func (q *QueryService) GetAffiliateAccountReferralByCode(ctx context.Context, ar
 
 func (q *QueryService) GetSupplyCommissionSettingsByProductIDs(ctx context.Context, args *affiliate.GetSupplyCommissionSettingsByProductIDsArgs) ([]*affiliate.SupplyCommissionSetting, error) {
 	return q.supplyCommissionSetting(ctx).ShopID(args.ShopID).ProductIDs(args.ProductIDs...).GetSupplyCommissionSettings()
+}
+
+func (q *QueryService) GetSellerCommissions(ctx context.Context, args *affiliate.GetSellerCommissionsArgs) ([]*affiliate.SellerCommission, error) {
+	return q.sellerCommission(ctx).SellerID(args.SellerID).Paging(args.Paging).Filters(args.Filters).GetAffiliateCommissions()
 }

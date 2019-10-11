@@ -3,13 +3,20 @@ package api
 import (
 	"context"
 
+	"etop.vn/api/main/ordering"
+
+	"etop.vn/api/meta"
+
 	"etop.vn/api/main/identity"
 
 	cm "etop.vn/backend/pkg/common"
 
 	"etop.vn/api/main/catalog"
 	"etop.vn/api/services/affiliate"
+	ordermodelx "etop.vn/backend/com/main/ordering/modelx"
 	pbcm "etop.vn/backend/pb/common"
+	pbetopaff "etop.vn/backend/pb/etop/affiliate"
+	pborder "etop.vn/backend/pb/etop/order"
 	pbaff "etop.vn/backend/pb/services/affiliate"
 	"etop.vn/backend/pkg/common/bus"
 	pbshop "etop.vn/backend/pkg/etop/api/shop"
@@ -52,6 +59,7 @@ var (
 	affiliateCmd   affiliate.CommandBus
 	affiliateQuery affiliate.QueryBus
 	identityQuery  identity.QueryBus
+	orderingQuery  ordering.QueryBus
 )
 
 func Init(
@@ -59,11 +67,13 @@ func Init(
 	affQuery affiliate.QueryBus,
 	catQuery catalog.QueryBus,
 	idenQuery identity.QueryBus,
+	orderingQ ordering.QueryBus,
 ) {
 	affiliateCmd = affCmd
 	catalogQuery = catQuery
 	affiliateQuery = affQuery
 	identityQuery = idenQuery
+	orderingQuery = orderingQ
 }
 
 func UpdateReferral(ctx context.Context, q *wrapaff.UpdateReferralEndpoint) error {
@@ -203,6 +213,14 @@ func CreateTradingProductPromotion(ctx context.Context, q *wrapaff.CreateTrading
 	if q.Context.Shop.ID != modeletop.EtopTradingAccountID {
 		return cm.Errorf(cm.PermissionDenied, nil, "PermissionDenied")
 	}
+
+	if err := affiliateQuery.Dispatch(ctx, &affiliate.GetShopProductPromotionQuery{
+		ShopID:    q.Context.Shop.ID,
+		ProductID: q.ProductId,
+	}); err == nil {
+		return cm.Errorf(cm.AlreadyExists, nil, "Sản phẩm đã có chương trình khuyến mãi")
+	}
+
 	cmd := &affiliate.CreateProductPromotionCommand{
 		ShopID:      modeletop.EtopTradingAccountID,
 		ProductID:   q.ProductId,
@@ -329,7 +347,54 @@ func CheckReferralCodeValid(ctx context.Context, q *wrapaff.CheckReferralCodeVal
 }
 
 func GetCommissions(ctx context.Context, q *wrapaff.GetCommissionsEndpoint) error {
-	q.Result = &pbaff.GetCommissionsResponse{Message: "hello"}
+	commissionQ := &affiliate.GetSellerCommissionsQuery{
+		SellerID: q.Context.Affiliate.ID,
+		Paging:   meta.Paging{},
+		Filters:  pbcm.ToFilters(q.Filters),
+	}
+	if err := affiliateQuery.Dispatch(ctx, commissionQ); err != nil {
+		return err
+	}
+
+	var pbCommissions []*pbaff.SellerCommission
+
+	for _, commission := range commissionQ.Result {
+		pbCommission := pbaff.PbSellerCommission(commission)
+
+		if commission.FromSellerID != 0 {
+			affiliateQ := &identity.GetAffiliateByIDQuery{
+				ID: commission.FromSellerID,
+			}
+			if err := identityQuery.Dispatch(ctx, affiliateQ); err == nil {
+				pbCommission.FromSeller = pbetopaff.Convert_core_Affiliate_To_api_Affiliate(affiliateQ.Result)
+			}
+		}
+
+		if commission.OrderID != 0 {
+			orderQ := &ordermodelx.GetOrderQuery{
+				OrderID:            commission.OrderID,
+				ShopID:             commission.SupplyID,
+				PartnerID:          0,
+				IncludeFulfillment: false,
+			}
+			if err := bus.Dispatch(ctx, orderQ); err == nil {
+				pbCommission.Order = pborder.PbOrder(orderQ.Result.Order, nil, modeletop.TagEtop)
+			}
+
+			shopQ := &identity.GetShopByIDQuery{
+				ID: commission.ShopID,
+			}
+			if err := identityQuery.Dispatch(ctx, shopQ); err == nil && pbCommission.Order != nil {
+				pbCommission.Order.ShopName = shopQ.Result.Name
+			}
+			pbCommissions = append(pbCommissions, pbCommission)
+		}
+	}
+
+	q.Result = &pbaff.GetCommissionsResponse{
+		Commissions: pbCommissions,
+	}
+
 	return nil
 }
 
@@ -478,9 +543,7 @@ func GetCommissionSettingByReferralCode(ctx context.Context, referralCode string
 		AccountID: referralQ.Result.AffiliateID,
 		ProductID: productID,
 	}
-	if err := affiliateQuery.Dispatch(ctx, commissionSettingQ); err != nil {
-		return nil, err
-	}
+	_ = affiliateQuery.Dispatch(ctx, commissionSettingQ)
 	return commissionSettingQ.Result, nil
 }
 

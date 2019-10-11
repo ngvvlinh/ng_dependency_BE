@@ -25,6 +25,9 @@ option (gogoproto.verbose_equal_all) = false;
 import "common/common.proto";
 import "google/protobuf/timestamp.proto";
 import "etop/shop/shop.proto";
+import "etop/order/order.proto";
+import "etop/etop.proto";
+import "etop/etc/status4/status.proto";
 //service MiscService {
 //    rpc VersionInfo(cm.Empty) returns (cm.VersionInfoResponse);
 //}
@@ -71,8 +74,28 @@ message UserReferral {
     optional string sale_referral_code = 3  [(gogoproto.nullable) = false];
 }
 
+message SellerCommission {
+    optional int64 id = 1 [(gogoproto.nullable) = false];
+    optional int32 value = 4 [(gogoproto.nullable) = false];
+    optional string description = 5 [(gogoproto.nullable) = false];
+    optional string note = 6 [(gogoproto.nullable) = false];
+    optional status4.Status status = 8 [(gogoproto.nullable) = false];
+    optional string type = 9 [(gogoproto.nullable) = false];
+
+    optional int32 o_value = 16 [(gogoproto.nullable) = false];
+    optional int32 o_base_value = 17 [(gogoproto.nullable) = false];
+
+    optional shop.ShopProduct product = 13 [(gogoproto.nullable) = true];
+    optional order.Order order = 14 [(gogoproto.nullable) = true];
+    optional etop.Affiliate from_seller = 15 [(gogoproto.nullable) = true];
+
+    optional google.protobuf.Timestamp valid_at = 10 [(gogoproto.nullable) = true];
+    optional google.protobuf.Timestamp created_at = 11 [(gogoproto.nullable) = true];
+    optional google.protobuf.Timestamp updated_at = 12 [(gogoproto.nullable) = true];
+}
+
 message GetCommissionsResponse {
-    optional string message = 1 [(gogoproto.nullable) = false];
+    repeated SellerCommission commissions = 1;
 }
 message NotifyNewShopPurchaseRequest {
     optional int64 order_id = 1 [(gogoproto.nullable) = false];

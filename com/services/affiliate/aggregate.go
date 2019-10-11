@@ -2,7 +2,12 @@ package affiliate
 
 import (
 	"context"
+	"math"
 	"time"
+
+	"etop.vn/api/main/catalog"
+
+	"etop.vn/api/main/ordering"
 
 	"etop.vn/api/main/identity"
 
@@ -29,23 +34,38 @@ type Aggregate struct {
 	commissionSetting       sqlstore.CommissionSettingStoreFactory
 	supplyCommissionSetting sqlstore.SupplyCommissionSettingStoreFactory
 	productPromotion        sqlstore.ProductPromotionStoreFactory
-	affiliateCommission     sqlstore.AffiliateCommissionStoreFactory
+	affiliateCommission     sqlstore.SellerCommissionStoreFactory
 	orderCreatedNotify      sqlstore.OrderCreatedNotifyStoreFactory
 	affiliateReferralCode   sqlstore.AffiliateReferralCodeStoreFactory
 	userReferral            sqlstore.UserReferralStoreFactory
+	orderPromotion          sqlstore.OrderPromotionStoreFactory
+	shopCashback            sqlstore.ShopCashbackStoreFactory
+	orderCommissionSetting  sqlstore.OrderCommissionSettingStoreFactory
+	shopOrderProductHistory sqlstore.ShopOrderProductHistoryStoreFactory
 	identityQuery           identity.QueryBus
+	catalogQuery            catalog.QueryBus
+	orderingQuery           ordering.QueryBus
+
+	db cmsql.Transactioner
 }
 
-func NewAggregate(db cmsql.Database, idenQuery identity.QueryBus) *Aggregate {
+func NewAggregate(db cmsql.Database, idenQuery identity.QueryBus, catalogQuery catalog.QueryBus, orderQuery ordering.QueryBus) *Aggregate {
 	return &Aggregate{
 		commissionSetting:       sqlstore.NewCommissionSettingStore(db),
 		supplyCommissionSetting: sqlstore.NewSupplyCommissionSettingStore(db),
 		productPromotion:        sqlstore.NewProductPromotionStore(db),
-		affiliateCommission:     sqlstore.NewAffiliateCommissionSettingStore(db),
+		affiliateCommission:     sqlstore.NewSellerCommissionSettingStore(db),
 		orderCreatedNotify:      sqlstore.NewOrderCreatedNotifyStore(db),
 		affiliateReferralCode:   sqlstore.NewAffiliateReferralCodeStore(db),
 		userReferral:            sqlstore.NewUserReferralStore(db),
+		orderPromotion:          sqlstore.NewOrderPromotionStore(db),
+		shopCashback:            sqlstore.NewShopCashbackStore(db),
+		orderCommissionSetting:  sqlstore.NewOrderCommissionSettingStoreFactory(db),
+		shopOrderProductHistory: sqlstore.NewShopOrderProductHistoryStore(db),
 		identityQuery:           idenQuery,
+		catalogQuery:            catalogQuery,
+		orderingQuery:           orderQuery,
+		db:                      db,
 	}
 }
 
@@ -162,31 +182,6 @@ func (a *Aggregate) UpdateProductPromotion(ctx context.Context, args *affiliate.
 	return a.productPromotion(ctx).ID(productPromotion.ID).GetProductPromotion()
 }
 
-func (a *Aggregate) OnTradingOrderCreated(ctx context.Context, args *affiliate.OnTradingOrderCreatedArgs) error {
-	if args.OrderID == 0 {
-		return cm.Errorf(cm.InvalidArgument, nil, "Missing OrderID")
-	}
-
-	notify, err := a.orderCreatedNotify(ctx).OrderID(args.OrderID).GetOrderCreatedNotifyDB()
-	if err == nil {
-		return cm.Errorf(cm.AlreadyExists, nil, "Notify does existed")
-	}
-
-	notify = &model.OrderCreatedNotify{
-		ID:           cm.NewID(),
-		OrderID:      args.OrderID,
-		ReferralCode: args.ReferralCode,
-		Status:       0,
-		CompletedAt:  time.Time{},
-		CreatedAt:    time.Now(),
-		UpdatedAt:    time.Now(),
-	}
-	if err := a.orderCreatedNotify(ctx).CreateOrderCreatedNotify(notify); err != nil {
-		return err
-	}
-	return nil
-}
-
 func (a *Aggregate) TradingOrderCreating(ctx context.Context, args *affiliate.TradingOrderCreating) error {
 	if args.ReferralCode == "" {
 		return cm.Errorf(cm.InvalidArgument, nil, "Missing ReferralCode")
@@ -210,6 +205,94 @@ func (a *Aggregate) TradingOrderCreating(ctx context.Context, args *affiliate.Tr
 	}
 
 	return nil
+}
+
+func (a *Aggregate) OnTradingOrderCreated(ctx context.Context, args *affiliate.OnTradingOrderCreatedArgs) error {
+	if args.OrderID == 0 {
+		return cm.Errorf(cm.InvalidArgument, nil, "Missing OrderID")
+	}
+
+	notify, err := a.orderCreatedNotify(ctx).OrderID(args.OrderID).GetOrderCreatedNotifyDB()
+	if err == nil {
+		return cm.Errorf(cm.AlreadyExists, nil, "Notify does existed")
+	}
+
+	notify = &model.OrderCreatedNotify{
+		ID:           cm.NewID(),
+		OrderID:      args.OrderID,
+		ReferralCode: args.ReferralCode,
+		Status:       0,
+		CompletedAt:  time.Time{},
+		CreatedAt:    time.Now(),
+		UpdatedAt:    time.Now(),
+	}
+
+	if err := a.orderCreatedNotify(ctx).CreateOrderCreatedNotify(notify); err != nil {
+		return err
+	}
+
+	go func() {
+		if err := a.FetchOrderInfoToNotify(bus.Ctx(), notify.ID); err != nil {
+			ll.Error(err.Error())
+			return
+		}
+
+		if err := a.CreateOrderPromotions(bus.Ctx(), notify.ID, args.OrderID); err != nil {
+			ll.Error(err.Error())
+			notify.PromotionSnapshotErr = err.Error()
+			notify.PromotionSnapshotStatus = -1
+		}
+		if err := a.CreateOrderCommissionSettings(bus.Ctx(), notify.ID); err != nil {
+			ll.Error(err.Error())
+			notify.CommissionSnapshotErr = err.Error()
+			notify.CommissionSnapshotStatus = -1
+		}
+		notifyUpdate, err := a.orderCreatedNotify(bus.Ctx()).ID(notify.ID).GetOrderCreatedNotifyDB()
+		if err != nil {
+			ll.Error(err.Error())
+			return
+		}
+		notifyUpdate.PromotionSnapshotErr = notify.PromotionSnapshotErr
+		notifyUpdate.CommissionSnapshotErr = notify.CommissionSnapshotErr
+		_ = a.orderCreatedNotify(bus.Ctx()).UpdateOrderCreatedNotify(notifyUpdate)
+
+		go a.ProcessOrderNotify(bus.Ctx(), notify.ID)
+	}()
+
+	return nil
+}
+
+func (a *Aggregate) FetchOrderInfoToNotify(ctx context.Context, orderCreatedNotifyID int64) error {
+	notify, err := a.orderCreatedNotify(ctx).ID(orderCreatedNotifyID).GetOrderCreatedNotifyDB()
+	if err != nil {
+		return err
+	}
+
+	orderQ := &ordering.GetOrderByIDQuery{
+		ID: notify.OrderID,
+	}
+	if err := a.orderingQuery.Dispatch(ctx, orderQ); err != nil {
+		return err
+	}
+
+	notify.ShopID = orderQ.Result.TradingShopID
+	notify.SupplyID = orderQ.Result.ShopID
+
+	shopQ := &identity.GetShopByIDQuery{
+		ID: orderQ.Result.ShopID,
+	}
+	if err := a.identityQuery.Dispatch(ctx, shopQ); err == nil {
+		notify.ShopUserID = shopQ.Result.OwnerID
+	}
+
+	sellerReferralCode, err := a.affiliateReferralCode(ctx).Code(notify.ReferralCode).GetAffiliateReferralCodeDB()
+
+	if err == nil {
+		notify.SellerID = sellerReferralCode.AffiliateID
+	}
+
+	notify.Status = 2
+	return a.orderCreatedNotify(ctx).UpdateOrderCreatedNotify(notify)
 }
 
 func (a *Aggregate) CreateAffiliateReferralCode(ctx context.Context, args *affiliate.CreateReferralCodeArgs) (*affiliate.AffiliateReferralCode, error) {
@@ -364,4 +447,374 @@ func (a *Aggregate) CreateOrUpdateSupplyCommissionSetting(ctx context.Context, a
 	}
 
 	return a.supplyCommissionSetting(ctx).ShopID(args.ShopID).ProductID(args.ProductID).GetSupplyCommissionSetting()
+}
+
+func (a *Aggregate) CreateOrderPromotions(ctx context.Context, orderNotifyID int64, orderID int64) error {
+	orderNotify, err := a.orderCreatedNotify(ctx).ID(orderNotifyID).GetOrderCreatedNotifyDB()
+	if err != nil {
+		return err
+	}
+	getOrderQ := &ordering.GetOrderByIDQuery{
+		ID: orderID,
+	}
+	if err := a.orderingQuery.Dispatch(ctx, getOrderQ); err != nil {
+		return err
+	}
+
+	var promotions []*model.OrderPromotion
+	for _, line := range getOrderQ.Result.Lines {
+		var basePrice = float64(line.TotalPrice)
+		tradingPromotion, err := a.productPromotion(ctx).ProductID(line.ProductId).GetProductPromotionDB()
+		if err == nil {
+			promotions = append(promotions, &model.OrderPromotion{
+				ID:                   cm.NewID(),
+				ProductID:            line.ProductId,
+				OrderID:              getOrderQ.Result.ID,
+				BaseValue:            int32(basePrice),
+				Amount:               tradingPromotion.Amount,
+				Unit:                 tradingPromotion.Unit,
+				Type:                 tradingPromotion.Type,
+				OrderCreatedNotifyID: orderNotify.ID,
+				Src:                  "etop",
+				Description:          "Khuyến mãi từ eTop Trading",
+				CreatedAt:            time.Now(),
+				UpdatedAt:            time.Now(),
+			})
+			switch tradingPromotion.Unit {
+			case "vnd":
+				basePrice = basePrice - float64(tradingPromotion.Amount)
+			case "percent":
+				basePrice = math.Round(basePrice - basePrice*(float64(tradingPromotion.Amount)/100/100))
+			}
+		}
+
+		affReferralCode, err := a.affiliateReferralCode(ctx).Code(orderNotify.ReferralCode).GetAffiliateReferralCodeDB()
+		if err != nil {
+			continue
+		}
+		sellerCashback, err := a.commissionSetting(ctx).AccountID(affReferralCode.AffiliateID).ProductID(line.ProductId).GetCommissionSettingDB()
+		if err != nil {
+			continue
+		}
+		promotions = append(promotions, &model.OrderPromotion{
+			ID:                   cm.NewID(),
+			ProductID:            line.ProductId,
+			OrderID:              getOrderQ.Result.ID,
+			BaseValue:            int32(basePrice),
+			Amount:               sellerCashback.Amount,
+			Unit:                 sellerCashback.Unit,
+			Type:                 "cashback",
+			OrderCreatedNotifyID: orderNotify.ID,
+			Src:                  "seller",
+			Description:          "Khuyến mãi từ mã giảm giá",
+			CreatedAt:            time.Now(),
+			UpdatedAt:            time.Now(),
+		})
+	}
+	if len(promotions) != 0 {
+		return a.db.InTransaction(ctx, func(tx cmsql.QueryInterface) error {
+			for _, promotion := range promotions {
+				err := a.orderPromotion(ctx).CreateOrderPromotion(promotion)
+				if err != nil {
+					return err
+				}
+			}
+
+			orderNotify.PromotionSnapshotStatus = 1
+			return a.orderCreatedNotify(ctx).UpdateOrderCreatedNotify(orderNotify)
+		})
+	}
+	return nil
+}
+
+func (a *Aggregate) CreateOrderCommissionSettings(ctx context.Context, orderCreatedNotifyID int64) error {
+	orderNotify, err := a.orderCreatedNotify(ctx).ID(orderCreatedNotifyID).GetOrderCreatedNotifyDB()
+	if err != nil {
+		return err
+	}
+	getOrderQ := &ordering.GetOrderByIDQuery{
+		ID: orderNotify.OrderID,
+	}
+	if err := a.orderingQuery.Dispatch(ctx, getOrderQ); err != nil {
+		return err
+	}
+
+	for _, line := range getOrderQ.Result.Lines {
+		supplyCommissionSetting, err := a.supplyCommissionSetting(ctx).ShopID(orderNotify.SupplyID).ProductID(line.ProductId).GetSupplyCommissionSettingDB()
+		if err != nil {
+			return err
+		}
+
+		if err := a.orderCommissionSetting(ctx).CreateOrderCommissionSetting(&model.OrderCommissionSetting{
+			OrderID:                  orderNotify.OrderID,
+			SupplyID:                 orderNotify.SupplyID,
+			ProductID:                line.ProductId,
+			Level1DirectCommission:   supplyCommissionSetting.Level1DirectCommission,
+			Level1IndirectCommission: supplyCommissionSetting.Level1IndirectCommission,
+			Level2DirectCommission:   supplyCommissionSetting.Level2DirectCommission,
+			Level2IndirectCommission: supplyCommissionSetting.Level2IndirectCommission,
+			DependOn:                 supplyCommissionSetting.DependOn,
+			Level1LimitCount:         supplyCommissionSetting.Level1LimitCount,
+			Level1LimitDuration:      supplyCommissionSetting.Level1LimitDuration,
+			LifetimeDuration:         supplyCommissionSetting.LifetimeDuration,
+			CreatedAt:                time.Now(),
+			UpdatedAt:                time.Now(),
+		}); err != nil {
+			return err
+		}
+
+	}
+
+	orderNotify.CommissionSnapshotStatus = 1
+	return a.orderCreatedNotify(ctx).UpdateOrderCreatedNotify(orderNotify)
+}
+
+func (a *Aggregate) ProcessOrderNotify(ctx context.Context, orderCreatedNotifyID int64) error {
+	return a.db.InTransaction(ctx, func(tx cmsql.QueryInterface) error {
+		orderCreatedNotify, err := a.orderCreatedNotify(ctx).ID(orderCreatedNotifyID).GetOrderCreatedNotifyDB()
+		if err != nil {
+			return err
+		}
+
+		orderPromotions, err := a.orderPromotion(ctx).OrderCreatedNotifyID(orderCreatedNotify.ID).GetOrderPromotionsDB()
+		if err != nil {
+			return err
+		}
+		getOrderQ := &ordering.GetOrderByIDQuery{ID: orderCreatedNotify.OrderID}
+		if err := a.orderingQuery.Dispatch(ctx, getOrderQ); err != nil {
+			return err
+		}
+
+		shopQ := &identity.GetShopByIDQuery{
+			ID: orderCreatedNotify.ShopID,
+		}
+		if err := a.identityQuery.Dispatch(ctx, shopQ); err != nil {
+			return err
+		}
+
+		// process cashback for shop
+		var shopCashbacks []*model.ShopCashback
+		shopCashbackMap := map[int64]*model.ShopCashback{}
+		for _, promotion := range orderPromotions {
+			var cashback = float64(0)
+			if promotion.Type != "cashback" {
+				continue
+			}
+			switch promotion.Unit {
+			case "vnd":
+				cashback = cashback + float64(promotion.Amount)
+			case "percent":
+				cashback = cashback + (float64(promotion.BaseValue) * float64(promotion.Amount) / 100 / 100)
+			}
+			productQ := &catalog.GetShopProductByIDQuery{
+				ProductID: promotion.ProductID,
+				ShopID:    getOrderQ.Result.ShopID,
+			}
+			if err := a.catalogQuery.Dispatch(ctx, productQ); err != nil {
+				return err
+			}
+
+			if shopCashbackMap[productQ.ProductID] != nil {
+				shopCashbackMap[productQ.ProductID].Amount = shopCashbackMap[productQ.ProductID].Amount + int32(cashback)
+			} else {
+				now := time.Now()
+				valid := now.Add(time.Hour * 24 * 3)
+				shopCashback := &model.ShopCashback{
+					ID:                   cm.NewID(),
+					ShopID:               getOrderQ.Result.TradingShopID,
+					OrderID:              getOrderQ.Result.ID,
+					Amount:               int32(cashback),
+					OrderCreatedNotifyID: orderCreatedNotifyID,
+					Description:          "Hoàn tiền khi mua sản phẩm " + productQ.Result.Name + " từ eTop Trading",
+					Status:               0,
+					ValidAt:              valid,
+					CreatedAt:            now,
+					UpdatedAt:            now,
+				}
+				shopCashbacks = append(shopCashbacks, shopCashback)
+				shopCashbackMap[productQ.ProductID] = shopCashback
+			}
+		}
+		for _, shopCashback := range shopCashbacks {
+			err := a.shopCashback(ctx).CreateShopCashback(shopCashback)
+			if err != nil {
+				return err
+			}
+		}
+
+		// process commission for seller
+		affReferralCode, err := a.affiliateReferralCode(ctx).Code(orderCreatedNotify.ReferralCode).GetAffiliateReferralCodeDB()
+		if err != nil {
+			return err
+		}
+		userReferral, _ := a.userReferral(ctx).UserID(affReferralCode.UserID).GetUserReferralDB()
+
+		for _, line := range getOrderQ.Result.Lines {
+			orderCommissionSetting, err := a.orderCommissionSetting(ctx).SupplyID(getOrderQ.Result.ShopID).OrderID(getOrderQ.Result.ID).ProductID(line.ProductId).GetOrderCommissionSettingDB()
+			if err != nil {
+				continue
+			}
+
+			basePrice := float64(line.TotalPrice)
+			tradingPromotion, err := a.productPromotion(ctx).ProductID(line.ProductId).GetProductPromotionDB()
+			if err == nil {
+				switch tradingPromotion.Unit {
+				case "vnd":
+					basePrice = basePrice - float64(tradingPromotion.Amount)
+				case "percent":
+					basePrice = math.Round(basePrice - basePrice*(float64(tradingPromotion.Amount)/100/100))
+				}
+			}
+
+			countByUser, err := a.shopOrderProductHistory(ctx).UserID(shopQ.Result.OwnerID).Count()
+			if err != nil {
+				return err
+			}
+			countByProduct, err := a.shopOrderProductHistory(ctx).UserID(shopQ.Result.OwnerID).ProductID(line.ProductId).Count()
+			if err != nil {
+				return err
+			}
+
+			var directCommission float64
+			var indirectCommission float64
+
+			if (orderCommissionSetting.DependOn == "product" && countByProduct <= uint64(orderCommissionSetting.Level1LimitCount)) || (orderCommissionSetting.DependOn == "user" && countByUser <= uint64(orderCommissionSetting.Level1LimitCount)) {
+				directCommission = float64(orderCommissionSetting.Level1DirectCommission)
+				indirectCommission = float64(orderCommissionSetting.Level1IndirectCommission)
+			} else {
+				directCommission = float64(orderCommissionSetting.Level2DirectCommission)
+				indirectCommission = float64(orderCommissionSetting.Level2IndirectCommission)
+			}
+
+			directCommissionValue := math.Round(basePrice * (float64(directCommission) / 100 / 100))
+
+			if err := a.affiliateCommission(ctx).CreateAffiliateCommission(&model.SellerCommission{
+				ID:           cm.NewID(),
+				SellerID:     affReferralCode.AffiliateID,
+				FromSellerID: 0,
+				ProductID:    line.ProductId,
+				OrderId:      getOrderQ.Result.ID,
+				ShopID:       getOrderQ.Result.TradingShopID,
+				SupplyID:     getOrderQ.Result.ShopID,
+				Amount:       int32(directCommissionValue),
+				Description:  "",
+				Note:         "",
+				Type:         "direct",
+				Status:       0,
+				OValue:       int32(directCommission),
+				OBaseValue:   int32(basePrice),
+				ValidAt:      time.Now().Add(time.Hour * 24 * 10),
+				CreatedAt:    time.Now(),
+				UpdatedAt:    time.Now(),
+			}); err != nil {
+				return err
+			}
+
+			if userReferral != nil && userReferral.ReferralID != 0 {
+				indirectCommissionValue := math.Round(basePrice * (float64(indirectCommission) / 100 / 100))
+				if err := a.affiliateCommission(ctx).CreateAffiliateCommission(&model.SellerCommission{
+					ID:           cm.NewID(),
+					SellerID:     userReferral.ReferralID,
+					FromSellerID: affReferralCode.AffiliateID,
+					ProductID:    line.ProductId,
+					OrderId:      getOrderQ.Result.ID,
+					ShopID:       getOrderQ.Result.TradingShopID,
+					SupplyID:     getOrderQ.Result.ShopID,
+					Amount:       int32(indirectCommissionValue),
+					Description:  "",
+					Note:         "",
+					Type:         "indirect",
+					Status:       0,
+					OValue:       int32(indirectCommission),
+					OBaseValue:   int32(basePrice),
+					ValidAt:      time.Now().Add(time.Hour * 24 * 10),
+					CreatedAt:    time.Now(),
+					UpdatedAt:    time.Now(),
+				}); err != nil {
+					return err
+				}
+			}
+		}
+
+		// store history
+		for _, line := range getOrderQ.Result.Lines {
+			if err := a.shopOrderProductHistory(ctx).CreateShopOrderProductHistory(&model.ShopOrderProductHistory{
+				UserID:    shopQ.Result.OwnerID,
+				ShopID:    getOrderQ.Result.TradingShopID,
+				OrderID:   getOrderQ.Result.ID,
+				SupplyID:  getOrderQ.Result.ShopID,
+				ProductID: line.ProductId,
+				CreatedAt: time.Now(),
+				UpdatedAt: time.Now(),
+			}); err != nil {
+				return err
+			}
+		}
+
+		orderCreatedNotify.CashbackProcessStatus = 1
+		orderCreatedNotify.CommissionProcessStatus = 1
+		orderCreatedNotify.Status = 1
+		if err := a.orderCreatedNotify(ctx).UpdateOrderCreatedNotify(orderCreatedNotify); err != nil {
+			return err
+		}
+
+		return nil
+	})
+}
+
+func (a *Aggregate) OrderPaymentSuccess(ctx context.Context, event *affiliate.OrderPaymentSuccessEvent) error {
+	orderCreatedNotify, err := a.orderCreatedNotify(ctx).ID(event.OrderID).GetOrderCreatedNotifyDB()
+	if err != nil {
+		return err
+	}
+
+	if orderCreatedNotify.Status == 1 {
+		return nil
+	}
+
+	orderCreatedNotify.PaymentStatus = 1
+	if err := a.orderCreatedNotify(ctx).UpdateOrderCreatedNotify(orderCreatedNotify); err != nil {
+		return err
+	}
+
+	go func() {
+		if err := a.ProcessOrderNotify(bus.Ctx(), orderCreatedNotify.ID); err != nil {
+			ll.Error("Processing Order created notify failed", l.Object("err", err))
+			return
+		}
+		err := a.db.InTransaction(bus.Ctx(), func(tx cmsql.QueryInterface) error {
+			commissions, err := a.affiliateCommission(ctx).OrderID(event.OrderID).GetAffiliateCommissionsDB()
+			if err != nil {
+				return err
+			}
+			for _, commission := range commissions {
+				commission.Status = 2
+				commission.ValidAt = time.Now().Add(time.Hour * 24 * 10)
+
+				if err = a.affiliateCommission(ctx).UpdateAffiliateCommission(commission); err != nil {
+					return err
+				}
+			}
+
+			shopCashBacks, err := a.shopCashback(ctx).OrderID(event.OrderID).GetShopCashbacksDB()
+			if err != nil {
+				return err
+			}
+			for _, cashback := range shopCashBacks {
+				cashback.Status = 2
+				cashback.ValidAt = time.Now().Add(time.Hour * 24 * 3)
+				if err = a.shopCashback(ctx).UpdateShopCashback(cashback); err != nil {
+					return err
+				}
+			}
+			return nil
+		})
+		if err != nil {
+			ll.Error("Processing Order created notify failed", l.Object("err", err))
+			return
+		}
+		return
+	}()
+
+	return nil
 }

@@ -643,7 +643,7 @@ func (s AffiliateService) CreateReferralCode(ctx context.Context, req *affiliate
 type GetCommissionsEndpoint struct {
 	*cm.CommonListRequest
 	Result  *affiliate.GetCommissionsResponse
-	Context ShopClaim
+	Context AffiliateClaim
 }
 
 func (s AffiliateService) GetCommissions(ctx context.Context, req *cm.CommonListRequest) (resp *affiliate.GetCommissionsResponse, err error) {
@@ -658,20 +658,16 @@ func (s AffiliateService) GetCommissions(ctx context.Context, req *cm.CommonList
 	}()
 	defer cmwrapper.Censor(req)
 	sessionQuery := &middleware.StartSessionQuery{
-		Context:     ctx,
-		RequireAuth: true,
-		RequireShop: true,
+		Context:          ctx,
+		RequireAuth:      true,
+		RequireAffiliate: true,
 	}
 	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
 		return nil, err
 	}
 	session = sessionQuery.Result
 	query := &GetCommissionsEndpoint{CommonListRequest: req}
-	query.Context.Claim = session.Claim
-	query.Context.Shop = session.Shop
-	query.Context.IsOwner = session.IsOwner
-	query.Context.Roles = session.Roles
-	query.Context.Permissions = session.Permissions
+	query.Context.Affiliate = session.Affiliate
 	ctx = bus.NewRootContext(ctx)
 	err = bus.Dispatch(ctx, query)
 	resp = query.Result

@@ -451,7 +451,7 @@ var ACL = map[string]*permission.PermissionDecl{
 	"affiliate.Shop/CheckReferralCodeValid": {Type: Shop},
 
 	// affiliate
-	"affiliate.Affiliate/GetCommissions":                           {Type: Shop},
+	"affiliate.Affiliate/GetCommissions":                           {Type: Affiliate},
 	"affiliate.Affiliate/NotifyNewShopPurchase":                    {Type: Secret},
 	"affiliate.Affiliate/GetTransactions":                          {Type: Affiliate},
 	"affiliate.Affiliate/CreateOrUpdateAffiliateCommissionSetting": {Type: Affiliate},

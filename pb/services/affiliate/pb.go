@@ -4,6 +4,8 @@ import (
 	"etop.vn/api/main/identity"
 	"etop.vn/api/services/affiliate"
 	pbcm "etop.vn/backend/pb/common"
+	pbs4 "etop.vn/backend/pb/etop/etc/status4"
+	"etop.vn/backend/pkg/etop/model"
 )
 
 func PbCommissionSetting(m *affiliate.CommissionSetting) *CommissionSetting {
@@ -107,5 +109,27 @@ func PbDuration(m *affiliate.Duration) *SupplyCommissionSettingDurationObject {
 	return &SupplyCommissionSettingDurationObject{
 		Duration: m.Duration,
 		Type:     m.Type,
+	}
+}
+
+func PbSellerCommission(m *affiliate.SellerCommission) *SellerCommission {
+	if m == nil {
+		return nil
+	}
+	return &SellerCommission{
+		Id:          m.ID,
+		Value:       m.Amount,
+		Description: m.Description,
+		Note:        m.Note,
+		Status:      pbs4.Pb(model.Status4(m.Status)),
+		Type:        m.Type,
+		OValue:      m.OValue,
+		OBaseValue:  m.OBaseValue,
+		Product:     nil,
+		Order:       nil,
+		FromSeller:  nil,
+		ValidAt:     pbcm.PbTime(m.ValidAt),
+		CreatedAt:   pbcm.PbTime(m.CreatedAt),
+		UpdatedAt:   pbcm.PbTime(m.UpdatedAt),
 	}
 }

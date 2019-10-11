@@ -32,6 +32,7 @@ import (
 	shipnowpm "etop.vn/backend/com/main/shipnow/pm"
 	shipsqlstore "etop.vn/backend/com/main/shipping/sqlstore"
 	serviceaffiliate "etop.vn/backend/com/services/affiliate"
+	affiliatepm "etop.vn/backend/com/services/affiliate/pm"
 	carrieraggregate "etop.vn/backend/com/shopping/carrying/aggregate"
 	carrierquery "etop.vn/backend/com/shopping/carrying/query"
 	customeraggregate "etop.vn/backend/com/shopping/customering/aggregate"
@@ -315,7 +316,7 @@ func main() {
 	haravanIdentityAggr := haravanidentity.NewAggregate(db, cfg.ThirdPartyHost, cfg.Haravan).MessageBus()
 	haravanIdentityQuery := haravanidentity.NewQueryService(db).MessageBus()
 
-	orderAggr = serviceordering.NewAggregate(db)
+	orderAggr = serviceordering.NewAggregate(eventBus, db)
 	shipnowCarrierManager := shipnowcarrier.NewManager(db, locationBus, &shipnowcarrier.Carrier{
 		ShipnowCarrier:        ahamoveCarrier,
 		ShipnowCarrierAccount: ahamoveCarrierAccount,
@@ -335,8 +336,11 @@ func main() {
 	carrierQuery := carrierquery.NewCarrierQuery(db).MessageBus()
 	traderQuery := traderquery.NewTraderQuery(db).MessageBus()
 	traderAddressQuery := customerquery.NewAddressQuery(db).MessageBus()
-	affiliateCmd := serviceaffiliate.NewAggregate(dbaff, identityQuery).MessageBus()
+	affiliateCmd := serviceaffiliate.NewAggregate(dbaff, identityQuery, catalogQuery, orderQuery).MessageBus()
 	affilateQuery := serviceaffiliate.NewQuery(dbaff).MessageBus()
+	affiliatePM := affiliatepm.New(affiliateCmd)
+	affiliatePM.RegisterEventHandlers(eventBus)
+
 	receiptAggr := receiptaggregate.NewReceiptAggregate(db).MessageBus()
 	receiptQuery := receiptquery.NewReceiptQuery(db).MessageBus()
 
@@ -394,7 +398,7 @@ func main() {
 		customerAggr, customerQuery, traderAddressAggr, traderAddressQuery, locationBus)
 	crm.Init(ghnCarrier, vtigerQuery, vtigerAggregate, vhtQuery, vhtAggregate)
 	affiliate.Init(identityAggr)
-	apiaff.Init(affiliateCmd, affilateQuery, catalogQuery, identityQuery)
+	apiaff.Init(affiliateCmd, affilateQuery, catalogQuery, identityQuery, orderQuery)
 
 	svrs := startServers()
 	if bot != nil {

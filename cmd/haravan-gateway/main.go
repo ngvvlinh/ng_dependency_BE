@@ -8,6 +8,9 @@ import (
 	"syscall"
 	"time"
 
+	"etop.vn/backend/pkg/common/bus"
+	"etop.vn/capi"
+
 	"etop.vn/api/main/location"
 	"etop.vn/backend/cmd/haravan-gateway/config"
 	servicelocation "etop.vn/backend/com/main/location"
@@ -36,6 +39,7 @@ var (
 
 	ctxCancel     context.CancelFunc
 	healthservice = health.New()
+	eventBus      capi.EventBus
 )
 
 func main() {
@@ -71,6 +75,7 @@ func main() {
 		ll.Warn("DEVELOPMENT MODE ENABLED")
 	}
 
+	eventBus = bus.New()
 	bot, err := cfg.TelegramBot.ConnectDefault()
 	if err != nil {
 		ll.Fatal("Unable to connect to Telegram", l.Error(err))

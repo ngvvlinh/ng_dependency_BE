@@ -32,34 +32,6 @@ create table product_promotion
 );
 create index on product_promotion (product_id);
 
-create table affiliate_commission
-(
-    id                bigint         not null primary key,
-    affiliate_id      bigint         not null,
-    from_affiliate_id bigint         not null,
-    product_id        bigint         not null,
-    value             int8 default 0,
-    description       text,
-    note              text,
-    order_id          bigint         not null,
-    status            int2 default 0 not null,
-    type              commission_type,
-    valid_at          timestamptz,
-    created_at        timestamptz    not null,
-    updated_at        timestamptz    not null
-);
-
-create table order_created_notify
-(
-    id            bigint         not null primary key,
-    order_id      bigint         not null,
-    referral_code text,
-    status        int2 default 0 not null,
-    completed_at  timestamptz,
-    created_at    timestamptz    not null,
-    updated_at    timestamptz    not null
-);
-
 create table affiliate_referral_code
 (
     id           bigint primary key,

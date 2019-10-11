@@ -60,35 +60,39 @@ func ProductPromotions(ins []*model.ProductPromotion) []*affiliate.ProductPromot
 	return results
 }
 
-func AffiliateCommission(in *model.AffiliateCommission) *affiliate.AffiliateCommission {
+func SellerCommission(in *model.SellerCommission) *affiliate.SellerCommission {
 	if in == nil {
 		return nil
 	}
-	result := &affiliate.AffiliateCommission{
-		ID:              in.ID,
-		AffiliateID:     in.AffiliateID,
-		FromAffiliateID: in.FromAffiliateID,
-		ProductID:       in.ProductID,
-		OrderId:         in.OrderId,
-		Value:           in.Value,
-		Description:     in.Description,
-		Note:            in.Note,
-		Type:            in.Type,
-		Status:          in.Status,
-		ValidAt:         in.ValidAt,
-		CreatedAt:       in.CreatedAt,
-		UpdatedAt:       in.UpdatedAt,
+	result := &affiliate.SellerCommission{
+		ID:           in.ID,
+		SellerID:     in.SellerID,
+		FromSellerID: in.FromSellerID,
+		ProductID:    in.ProductID,
+		OrderID:      in.OrderId,
+		ShopID:       in.ShopID,
+		SupplyID:     in.SupplyID,
+		Amount:       in.Amount,
+		Description:  in.Description,
+		Note:         in.Note,
+		Type:         in.Type,
+		Status:       in.Status,
+		OValue:       in.OValue,
+		OBaseValue:   in.OBaseValue,
+		ValidAt:      in.ValidAt,
+		CreatedAt:    in.CreatedAt,
+		UpdatedAt:    in.UpdatedAt,
 	}
 	return result
 }
 
-func AffiliateCommissions(ins []*model.AffiliateCommission) []*affiliate.AffiliateCommission {
+func AffiliateCommissions(ins []*model.SellerCommission) []*affiliate.SellerCommission {
 	if len(ins) == 0 {
-		return []*affiliate.AffiliateCommission{}
+		return []*affiliate.SellerCommission{}
 	}
-	var results []*affiliate.AffiliateCommission
+	var results []*affiliate.SellerCommission
 	for _, in := range ins {
-		results = append(results, AffiliateCommission(in))
+		results = append(results, SellerCommission(in))
 	}
 	return results
 }

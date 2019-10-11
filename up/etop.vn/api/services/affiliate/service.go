@@ -17,6 +17,7 @@ type Aggregate interface {
 	TradingOrderCreating(context.Context, *TradingOrderCreating) error
 	CreateAffiliateReferralCode(context.Context, *CreateReferralCodeArgs) (*AffiliateReferralCode, error)
 	CreateOrUpdateUserReferral(context.Context, *CreateOrUpdateReferralArgs) (*UserReferral, error)
+	OrderPaymentSuccess(context.Context, *OrderPaymentSuccessEvent) error
 }
 
 type CreateCommissionSettingArgs struct {
@@ -97,6 +98,7 @@ type QueryService interface {
 	GetReferralsByReferralID(context.Context, *GetReferralsByReferralIDArgs) ([]*UserReferral, error)
 	GetAffiliateAccountReferralByCode(context.Context, *GetAffiliateAccountReferralByCodeArgs) (*AffiliateReferralCode, error)
 	GetSupplyCommissionSettingsByProductIDs(context.Context, *GetSupplyCommissionSettingsByProductIDsArgs) ([]*SupplyCommissionSetting, error)
+	GetSellerCommissions(context.Context, *GetSellerCommissionsArgs) ([]*SellerCommission, error)
 }
 
 type GetCommissionByProductIDsArgs struct {
@@ -150,4 +152,10 @@ type GetAffiliateAccountReferralByCodeArgs struct {
 type GetSupplyCommissionSettingsByProductIDsArgs struct {
 	ShopID     int64
 	ProductIDs []int64
+}
+
+type GetSellerCommissionsArgs struct {
+	SellerID int64
+	Paging   meta.Paging
+	Filters  meta.Filters
 }
