@@ -290,7 +290,6 @@ func parseDirectivesFromPackage(fileCh chan<- fileContent, pkg *packages.Package
 					ll.V(1).Debugf("ignored %v", e)
 				}
 			}
-			continue
 		}
 		directives = append(directives, ds...)
 	}
