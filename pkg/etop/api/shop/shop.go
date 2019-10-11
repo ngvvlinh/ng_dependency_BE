@@ -339,7 +339,7 @@ func GetProducts(ctx context.Context, q *wrapshop.GetProductsEndpoint) error {
 	}
 
 	q.Result = &pbshop.ShopProductsResponse{
-		Paging:   pbcm.PbPageInfo(paging, query.Result.Count),
+		Paging:   pbcm.PbPaging(cm.Paging(query.Result.Paging), query.Result.Count),
 		Products: PbShopProductsWithVariants(query.Result.Products),
 	}
 	return nil

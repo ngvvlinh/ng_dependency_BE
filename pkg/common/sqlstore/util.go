@@ -67,6 +67,24 @@ func LimitSort(s cmsql.Query, p *cm.Paging, sortWhitelist map[string]string) (cm
 	return Sort(s, p.Sort, sortWhitelist)
 }
 
+func PrefixedLimitSort(s cmsql.Query, p *cm.Paging, sortWhitelist map[string]string, prefix string) (cmsql.Query, error) {
+	if p == nil {
+		s = s.Limit(1000)
+		return s, nil
+	}
+	if p.Offset < 0 {
+		return s, cm.Errorf(cm.InvalidArgument, nil, "invalid offset")
+	}
+	if p.Limit < 0 || p.Limit > 10000 {
+		return s, cm.Errorf(cm.InvalidArgument, nil, "invalid limit")
+	}
+	if p.Limit == 0 {
+		p.Limit = 1000
+	}
+	s = s.Limit(uint64(p.Limit)).Offset(uint64(p.Offset))
+	return PrefixSort(s, p.Sort, sortWhitelist, prefix)
+}
+
 func Sort(s cmsql.Query, sorts []string, whitelist map[string]string) (cmsql.Query, error) {
 	for _, sort := range sorts {
 		sort = strings.TrimSpace(sort)
@@ -86,6 +104,35 @@ func Sort(s cmsql.Query, sorts []string, whitelist map[string]string) (cmsql.Que
 				sortField = field
 			}
 			s = s.OrderBy(sortField + desc)
+		} else {
+			return s, cm.Errorf(cm.InvalidArgument, nil, "Sort by %v is not allowed", field)
+		}
+	}
+	return s, nil
+}
+
+func PrefixSort(s cmsql.Query, sorts []string, whitelist map[string]string, prefix string) (cmsql.Query, error) {
+	if prefix != "" && !strings.Contains(prefix, ".") {
+		prefix = prefix + "."
+	}
+	for _, sort := range sorts {
+		sort = strings.TrimSpace(sort)
+		if sort == "" {
+			continue
+		}
+
+		field := sort
+		desc := ""
+		if sort[0] == '-' {
+			field = sort[1:]
+			desc = " DESC"
+		}
+
+		if sortField, ok := whitelist[field]; ok {
+			if sortField == "" {
+				sortField = field
+			}
+			s = s.OrderBy(prefix + sortField + desc)
 		} else {
 			return s, cm.Errorf(cm.InvalidArgument, nil, "Sort by %v is not allowed", field)
 		}

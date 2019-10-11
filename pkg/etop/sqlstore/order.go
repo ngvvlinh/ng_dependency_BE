@@ -57,7 +57,7 @@ var filterOrderWhitelist = FilterWhitelist{
 	Arrays:   []string{"fulfillment.shipping_code", "fulfillment.shipping_state"},
 	Contains: []string{"customer.name", "product.name"},
 	Dates:    []string{"created_at", "updated_at"},
-	Equals:   []string{"shop.id", "code", "source", "external_code", "external_id", "customer.phone"},
+	Equals:   []string{"shop.id", "code", "source", "external_code", "external_id", "customer.phone", "customer.id"},
 	Numbers:  []string{"total_amount", "chargeable_weight"},
 	Status:   []string{"status", "confirm_status", "fulfillment.shipping_status", "etop_payment_status"},
 	PrefixOrRename: map[string]string{
@@ -67,6 +67,7 @@ var filterOrderWhitelist = FilterWhitelist{
 
 		"source":            `"order".order_source_type`,
 		"shop.id":           `"order".shop_id`,
+		"customer.id":       `"order".customer_id`,
 		"customer.name":     `"order".customer_name_norm`,
 		"customer.phone":    `"order".customer_phone`,
 		"product.name":      `"order".product_name_norm`,

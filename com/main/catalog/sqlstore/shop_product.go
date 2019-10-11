@@ -23,13 +23,14 @@ func NewShopProductStore(db cmsql.Database) ShopProductStoreFactory {
 			query: func() cmsql.QueryInterface {
 				return cmsql.GetTxOrNewQuery(ctx, db)
 			},
+			shopVariant: NewShopVariantStore(db)(ctx),
 		}
 	}
 }
 
 type ShopProductStore struct {
 	FtShopProduct ShopProductFilters
-	ftShopVariant ShopVariantFilters // unexported
+	shopVariant   *ShopVariantStore
 
 	query   func() cmsql.QueryInterface
 	preds   []interface{}
@@ -139,10 +140,9 @@ func (s *ShopProductStore) GetShopProductWithVariantsDB() (*model.ShopProductWit
 	}
 	var variants model.ShopVariants
 	{
-		q := s.query().OrderBy("variant_id").
-			Where(s.ftShopVariant.ByProductID(product.ProductID))
-		q = s.includeDeleted.Check(q, s.ftShopVariant.NotDeleted())
-		if err := q.Find(&variants); err != nil {
+		q := s.shopVariant.ProductIDs(product.ProductID)
+		variants, err = q.ListShopVariantsDB()
+		if err != nil {
 			return nil, err
 		}
 	}
@@ -163,7 +163,10 @@ func (s *ShopProductStore) GetShopProductWithVariants() (*catalog.ShopProductWit
 func (s *ShopProductStore) ListShopProductsDB() ([]*model.ShopProduct, error) {
 	query := s.query().Where(s.preds)
 	query = s.includeDeleted.Check(query, s.FtShopProduct.NotDeleted())
-	query, err := sqlstore.LimitSort(query, &s.paging, SortShopProduct)
+	if len(s.paging.Sort) == 0 {
+		s.paging.Sort = []string{"-created_at"}
+	}
+	query, err := sqlstore.PrefixedLimitSort(query, &s.paging, SortShopProduct, s.FtShopProduct.prefix)
 	if err != nil {
 		return nil, err
 	}
@@ -173,7 +176,7 @@ func (s *ShopProductStore) ListShopProductsDB() ([]*model.ShopProduct, error) {
 	}
 
 	var products model.ShopProducts
-	err = query.OrderBy("created_at DESC").Find(&products)
+	err = query.Find(&products)
 	return products, err
 }
 
@@ -198,9 +201,9 @@ func (s *ShopProductStore) ListShopProductsWithVariantsDB() ([]*model.ShopProduc
 
 	var variants model.ShopVariants
 	{
-		q := s.query().In("product_id", productIDs)
-		q = s.includeDeleted.Check(q, s.ftShopVariant.NotDeleted())
-		if err := q.Find(&variants); err != nil {
+		q := s.shopVariant.ProductIDs(productIDs...)
+		variants, err = q.ListShopVariantsDB()
+		if err != nil {
 			return nil, err
 		}
 	}

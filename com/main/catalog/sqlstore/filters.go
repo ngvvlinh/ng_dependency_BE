@@ -26,7 +26,8 @@ func (ft ShopProductCollectionFilters) NotDeleted() sq.WriterTo {
 }
 
 var SortShopVariant = map[string]string{
-	"id": "",
+	"id":         "",
+	"created_at": "",
 }
 
 var SortShopProduct = map[string]string{

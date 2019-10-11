@@ -140,7 +140,10 @@ func (s *ShopVariantStore) GetShopVariantWithProduct() (*catalog.ShopVariantWith
 func (s *ShopVariantStore) ListShopVariantsDB() ([]*model.ShopVariant, error) {
 	query := s.query().Where(s.preds)
 	query = s.includeDeleted.Check(query, s.FtShopVariant.NotDeleted())
-	query, err := sqlstore.LimitSort(query, &s.paging, SortShopVariant)
+	if len(s.paging.Sort) == 0 {
+		s.paging.Sort = []string{"-created_at"}
+	}
+	query, err := sqlstore.PrefixedLimitSort(query, &s.paging, SortShopVariant, s.FtShopVariant.prefix)
 	if err != nil {
 		return nil, err
 	}
@@ -163,7 +166,10 @@ func (s *ShopVariantStore) ListShopVariantsWithProductDB() ([]*model.ShopVariant
 	query := s.extend().query().Where(s.preds)
 	query = s.includeDeleted.Check(query, s.FtShopVariant.NotDeleted())
 	query = s.includeDeleted.Check(query, s.ftShopProduct.NotDeleted())
-	query, err := sqlstore.LimitSort(query, &s.paging, SortShopVariant)
+	if len(s.paging.Sort) == 0 {
+		s.paging.Sort = []string{"-created_at"}
+	}
+	query, err := sqlstore.PrefixedLimitSort(query, &s.paging, SortShopVariant, s.FtShopVariant.prefix)
 	if err != nil {
 		return nil, err
 	}

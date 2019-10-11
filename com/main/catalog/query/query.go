@@ -167,6 +167,7 @@ func (s *QueryService) ListShopProductsWithVariants(
 	return &catalog.ShopProductsWithVariantsResponse{
 		Products: products,
 		Count:    int32(count),
+		Paging:   q.GetPaging(),
 	}, nil
 }
 

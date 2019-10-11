@@ -126,6 +126,14 @@ func PbPageInfo(p *cm.Paging, total int32) *PageInfo {
 	}
 }
 
+func PbPaging(p cm.Paging, total int32) *PageInfo {
+	return &PageInfo{
+		Total: total,
+		Limit: p.Limit,
+		Sort:  p.Sort,
+	}
+}
+
 func ToFilters(filters []*Filter) []cm.Filter {
 	res := make([]cm.Filter, len(filters))
 	for i, filter := range filters {

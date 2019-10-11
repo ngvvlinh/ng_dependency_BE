@@ -144,7 +144,10 @@ func (s *CustomerStore) GetCustomer() (*customering.ShopCustomer, error) {
 func (s *CustomerStore) ListCustomersDB() ([]*model.ShopCustomer, error) {
 	query := s.query().Where(s.preds)
 	query = s.includeDeleted.Check(query, s.ft.NotDeleted())
-	query, err := sqlstore.LimitSort(query, &s.paging, SortCustomer)
+	if len(s.paging.Sort) == 0 {
+		s.paging.Sort = []string{"-created_at"}
+	}
+	query, err := sqlstore.PrefixedLimitSort(query, &s.paging, SortCustomer, s.ft.prefix)
 	if err != nil {
 		return nil, err
 	}
@@ -171,9 +174,9 @@ func CheckErrorCustomer(e error, email string, phone string) error {
 		errMsg := e.Error()
 		switch {
 		case strings.Contains(errMsg, "shop_customer_shop_id_email_idx"):
-			e = cm.Errorf(cm.FailedPrecondition, e, "Trùng email: %v", email)
+			e = cm.Errorf(cm.FailedPrecondition, e, "Khách hàng với email %v đã tồn tại", email)
 		case strings.Contains(errMsg, "shop_customer_shop_id_phone_idx"):
-			e = cm.Errorf(cm.FailedPrecondition, e, "Trùng số điện thoại: %v", phone)
+			e = cm.Errorf(cm.FailedPrecondition, e, "Khách hàng với số điện thoại %v đã tồn tại", phone)
 		}
 	}
 	return e

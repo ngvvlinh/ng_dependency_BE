@@ -254,31 +254,18 @@ func UpdateShopProduct(in *catalogmodel.ShopProduct, args *catalog.UpdateShopPro
 	if in == nil {
 		return nil
 	}
-	shopProduct := &catalogmodel.ShopProduct{
-		ShopID:      args.ShopID,
-		ProductID:   args.ProductID,
-		VendorID:    args.VendorID,
-		Code:        args.Code.Apply(in.Code),
-		Name:        args.Name.Apply(in.Name),
-		Description: args.Description.Apply(in.Description),
-		DescHTML:    args.DescHTML.Apply(in.DescHTML),
-		ShortDesc:   args.ShortDesc.Apply(in.ShortDesc),
-		Note:        args.Note.Apply(in.Note),
-		Unit:        args.Unit.Apply(in.Unit),
-		CostPrice:   args.CostPrice.Apply(in.CostPrice),
-		ListPrice:   args.ListPrice.Apply(in.ListPrice),
-		RetailPrice: args.RetailPrice.Apply(in.RetailPrice),
-
-		CategoryID:    in.CategoryID,
-		CollectionIDs: in.CollectionIDs,
-		Status:        in.Status,
-		DeletedAt:     in.DeletedAt,
-		ImageURLs:     in.ImageURLs,
-		NameNorm:      in.NameNorm,
-		NameNormUa:    in.NameNormUa,
-		ProductType:   in.ProductType,
-		Tags:          in.Tags,
-	}
+	shopProduct := in
+	shopProduct.VendorID = args.VendorID
+	shopProduct.Code = args.Code.Apply(in.Code)
+	shopProduct.Name = args.Name.Apply(in.Name)
+	shopProduct.Description = args.Description.Apply(in.Description)
+	shopProduct.DescHTML = args.DescHTML.Apply(in.DescHTML)
+	shopProduct.ShortDesc = args.ShortDesc.Apply(in.ShortDesc)
+	shopProduct.Note = args.Note.Apply(in.Note)
+	shopProduct.Unit = args.Unit.Apply(in.Unit)
+	shopProduct.CostPrice = args.CostPrice.Apply(in.CostPrice)
+	shopProduct.ListPrice = args.ListPrice.Apply(in.ListPrice)
+	shopProduct.RetailPrice = args.RetailPrice.Apply(in.RetailPrice)
 	return shopProduct
 }
 func UpdateShopCategory(in *catalogmodel.ShopCategory, args *catalog.UpdateShopCategoryArgs) (out *catalogmodel.ShopCategory) {
@@ -301,28 +288,16 @@ func UpdateShopVariant(in *catalogmodel.ShopVariant, args *catalog.UpdateShopVar
 	if in == nil {
 		return nil
 	}
-	shopVariant := &catalogmodel.ShopVariant{
-		ShopID:      args.ShopID,
-		VariantID:   args.VariantID,
-		Code:        args.Code.Apply(in.Code),
-		Name:        args.Name.Apply(in.Name),
-		Description: args.Descripttion.Apply(in.Description),
-		DescHTML:    args.DescHTML.Apply(in.DescHTML),
-		ShortDesc:   args.ShortDesc.Apply(in.ShortDesc),
-		Note:        args.Note.Apply(in.Note),
-		CostPrice:   args.CostPrice.Apply(in.CostPrice),
-		ListPrice:   args.ListPrice.Apply(in.ListPrice),
-		RetailPrice: args.RetailPrice.Apply(in.RetailPrice),
-
-		ImageURLs:  in.ImageURLs,
-		ProductID:  in.ProductID,
-		Tags:       in.Tags,
-		Status:     in.Status,
-		DeletedAt:  in.DeletedAt,
-		Attributes: in.Attributes,
-		NameNorm:   in.NameNorm,
-		AttrNormKv: in.AttrNormKv,
-	}
+	shopVariant := in
+	shopVariant.Code = args.Code.Apply(in.Code)
+	shopVariant.Name = args.Name.Apply(in.Name)
+	shopVariant.Description = args.Descripttion.Apply(in.Description)
+	shopVariant.DescHTML = args.DescHTML.Apply(in.DescHTML)
+	shopVariant.ShortDesc = args.ShortDesc.Apply(in.ShortDesc)
+	shopVariant.Note = args.Note.Apply(in.Note)
+	shopVariant.CostPrice = args.CostPrice.Apply(in.CostPrice)
+	shopVariant.ListPrice = args.ListPrice.Apply(in.ListPrice)
+	shopVariant.RetailPrice = args.RetailPrice.Apply(in.RetailPrice)
 	return shopVariant
 }
 
