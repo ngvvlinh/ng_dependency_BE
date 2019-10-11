@@ -120,6 +120,7 @@ service ProductService {
 
     //-- category --//
     rpc UpdateProductCategory(UpdateProductCategoryRequest) returns (ShopProduct);
+    rpc RemoveProductCategory(cm.IDRequest) returns (ShopProduct);
 
     //-- collection --//
     rpc AddProductCollection(AddShopProductCollectionRequest) returns (cm.UpdatedResponse);

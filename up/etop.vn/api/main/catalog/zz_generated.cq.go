@@ -161,6 +161,18 @@ func (h AggregateHandler) HandleDeleteShopVariants(ctx context.Context, msg *Del
 	return err
 }
 
+type RemoveShopProductCategoryCommand struct {
+	ProductID int64
+	ShopID    int64
+
+	Result *ShopProductWithVariants `json:"-"`
+}
+
+func (h AggregateHandler) HandleRemoveShopProductCategory(ctx context.Context, msg *RemoveShopProductCategoryCommand) (err error) {
+	msg.Result, err = h.inner.RemoveShopProductCategory(msg.GetArgs(ctx))
+	return err
+}
+
 type RemoveShopProductCollectionCommand struct {
 	ProductID     int64
 	ShopID        int64
@@ -535,6 +547,7 @@ func (q *CreateShopVariantCommand) command()             {}
 func (q *DeleteShopCategoryCommand) command()            {}
 func (q *DeleteShopProductsCommand) command()            {}
 func (q *DeleteShopVariantsCommand) command()            {}
+func (q *RemoveShopProductCategoryCommand) command()     {}
 func (q *RemoveShopProductCollectionCommand) command()   {}
 func (q *UpdateShopCategoryCommand) command()            {}
 func (q *UpdateShopCollectionCommand) command()          {}
@@ -649,6 +662,14 @@ func (q *DeleteShopVariantsCommand) GetArgs(ctx context.Context) (_ context.Cont
 		&shopping.IDsQueryShopArgs{
 			IDs:    q.IDs,
 			ShopID: q.ShopID,
+		}
+}
+
+func (q *RemoveShopProductCategoryCommand) GetArgs(ctx context.Context) (_ context.Context, _ *RemoveShopProductCategoryArgs) {
+	return ctx,
+		&RemoveShopProductCategoryArgs{
+			ProductID: q.ProductID,
+			ShopID:    q.ShopID,
 		}
 }
 
@@ -928,6 +949,7 @@ func (h AggregateHandler) RegisterHandlers(b interface {
 	b.AddHandler(h.HandleDeleteShopCategory)
 	b.AddHandler(h.HandleDeleteShopProducts)
 	b.AddHandler(h.HandleDeleteShopVariants)
+	b.AddHandler(h.HandleRemoveShopProductCategory)
 	b.AddHandler(h.HandleRemoveShopProductCollection)
 	b.AddHandler(h.HandleUpdateShopCategory)
 	b.AddHandler(h.HandleUpdateShopCollection)

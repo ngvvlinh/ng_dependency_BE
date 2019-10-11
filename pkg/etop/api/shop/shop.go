@@ -122,6 +122,7 @@ func init() {
 	bus.AddHandler("api", DeleteCategory)
 
 	bus.AddHandler("api", UpdateProductCategory)
+	bus.AddHandler("api", RemoveProductCategory)
 
 	bus.AddHandler("api", GetCollection)
 	bus.AddHandler("api", GetCollections)
@@ -1434,5 +1435,17 @@ func GetCollectionsByProductID(ctx context.Context, q *wrapshop.GetCollectionsBy
 	q.Result = &pbshop.CollectionsResponse{
 		Collections: PbShopCollections(query.Result),
 	}
+	return nil
+}
+
+func RemoveProductCategory(ctx context.Context, r *wrapshop.RemoveProductCategoryEndpoint) error {
+	cmd := &catalog.RemoveShopProductCategoryCommand{
+		ShopID:    r.Context.Shop.ID,
+		ProductID: r.Id,
+	}
+	if err := catalogAggr.Dispatch(ctx, cmd); err != nil {
+		return err
+	}
+	r.Result = PbShopProductWithVariants(cmd.Result)
 	return nil
 }

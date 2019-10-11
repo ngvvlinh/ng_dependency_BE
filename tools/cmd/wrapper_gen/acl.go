@@ -285,6 +285,7 @@ var ACL = map[string]*permission.PermissionDecl{
 	"shop.Product/UpdateProductStatus":     {Type: Shop, Role: Staff},
 	"shop.Product/AddProducts":             {Type: Shop, Role: Staff, AuthPartner: Opt},
 	"shop.Product/UpdateProductCategory":   {Type: Shop},
+	"shop.Product/RemoveProductCategory":   {Type: Shop},
 	"shop.Product/AddProductCollection":    {Type: Shop},
 	"shop.Product/RemoveProductCollection": {Type: Shop},
 

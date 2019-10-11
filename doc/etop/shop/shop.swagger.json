@@ -2283,6 +2283,32 @@
         ]
       }
     },
+    "/api/shop.Product/RemoveProductCategory": {
+      "post": {
+        "operationId": "RemoveProductCategory",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/shopShopProduct"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/cmIDRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Product"
+        ]
+      }
+    },
     "/api/shop.Product/RemoveProductCollection": {
       "post": {
         "operationId": "RemoveProductCollection",

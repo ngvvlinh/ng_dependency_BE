@@ -26,6 +26,8 @@ type Aggregate interface {
 
 	UpdateShopProductCategory(context.Context, *UpdateShopProductCategoryArgs) (*ShopProductWithVariants, error)
 
+	RemoveShopProductCategory(context.Context, *RemoveShopProductCategoryArgs) (*ShopProductWithVariants, error)
+
 	AddShopProductCollection(context.Context, *AddShopProductCollectionArgs) (int, error)
 
 	RemoveShopProductCollection(context.Context, *RemoveShopProductColelctionArgs) (int, error)
@@ -294,4 +296,9 @@ type RemoveShopProductColelctionArgs struct {
 type ValidVendorIDEvent struct {
 	VendorID int64
 	ShopID   int64
+}
+
+type RemoveShopProductCategoryArgs struct {
+	ProductID int64
+	ShopID    int64
 }

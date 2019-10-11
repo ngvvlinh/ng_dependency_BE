@@ -283,7 +283,7 @@ func (a *Aggregate) UpdateShopProductCategory(ctx context.Context, args *catalog
 	}
 	_, err = a.shopCategory(ctx).ShopID(args.ShopID).ID(args.CategoryID).GetShopCategoryDB()
 	if err != nil {
-		return nil, cm.Errorf(cm.InvalidArgument, err, "Mã Loại Sản Phẩm không không tồn tại")
+		return nil, cm.Errorf(cm.InvalidArgument, err, "Mã danh mục không không tồn tại")
 	}
 	updated := convert.UpdateShopProductCategory(productDB, args)
 	if err = a.shopProduct(ctx).UpdateShopProductCategory(updated); err != nil {
@@ -342,6 +342,18 @@ func (a *Aggregate) DeleteShopCategory(ctx context.Context, args *catalog.Delete
 	})
 
 	return deleted, err
+}
+
+func (a *Aggregate) RemoveShopProductCategory(ctx context.Context, args *catalog.RemoveShopProductCategoryArgs) (*catalog.ShopProductWithVariants, error) {
+	_, err := a.shopProduct(ctx).ShopID(args.ShopID).ID(args.ProductID).RemoveShopProductCategory()
+	if err != nil {
+		return nil, err
+	}
+	product, err := a.shopProduct(ctx).ShopID(args.ShopID).ID(args.ProductID).GetShopProductWithVariants()
+	if err != nil {
+		return nil, err
+	}
+	return product, err
 }
 
 func (a *Aggregate) CreateShopCollection(ctx context.Context, args *catalog.CreateShopCollectionArgs) (*catalog.ShopCollection, error) {
