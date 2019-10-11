@@ -5400,6 +5400,9 @@
         "customer_id": {
           "type": "string",
           "format": "int64"
+        },
+        "payment_status": {
+          "$ref": "#/definitions/status4Status"
         }
       }
     },

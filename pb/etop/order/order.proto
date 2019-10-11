@@ -135,6 +135,8 @@ message Order {
     optional int32 received_amount = 75 [(gogoproto.nullable) = false];
 
     optional int64 customer_id = 76 [(gogoproto.nullable)=false];
+
+    optional status4.Status payment_status = 77 [(gogoproto.nullable)=false];
 }
 
 message OrderLine {
