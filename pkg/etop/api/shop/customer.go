@@ -23,6 +23,13 @@ func init() {
 		GetCustomerDetails,
 
 		BatchSetCustomersStatus,
+
+		CreateCustomerGroup,
+		GetCustomerGroup,
+		GetCustomerGroups,
+		UpdateCustomerGroup,
+		AddCustomersToGroup,
+		RemoveCustomersFromGroup,
 	)
 }
 
@@ -135,4 +142,78 @@ func GetCustomersByIDs(ctx context.Context, r *wrapshop.GetCustomersByIDsEndpoin
 
 func GetCustomerDetails(ctx context.Context, r *wrapshop.GetCustomerDetailsEndpoint) error {
 	return cm.ErrTODO
+}
+
+func CreateCustomerGroup(ctx context.Context, r *wrapshop.CreateCustomerGroupEndpoint) error {
+	cmd := &customering.CreateCustomerGroupCommand{
+		Name: r.Name,
+	}
+	if err := customerAggr.Dispatch(ctx, cmd); err != nil {
+		return err
+	}
+	r.Result = pbshop.PbCustopmerGroup(cmd.Result)
+	return nil
+}
+
+func GetCustomerGroup(ctx context.Context, q *wrapshop.GetCustomerGroupEndpoint) error {
+	query := &customering.GetCustomerGroupQuery{
+		ID: q.Id,
+	}
+	if err := customerQuery.Dispatch(ctx, query); err != nil {
+		return err
+	}
+	q.Result = pbshop.PbCustopmerGroup(query.Result)
+	return nil
+}
+
+func GetCustomerGroups(ctx context.Context, q *wrapshop.GetCustomerGroupsEndpoint) error {
+	paging := q.Paging.CMPaging()
+	query := &customering.ListCustomerGroupsQuery{
+		Paging:  *paging,
+		Filters: pbcm.ToFilters(q.Filters),
+	}
+	if err := customerQuery.Dispatch(ctx, query); err != nil {
+		return err
+	}
+	q.Result = &pbshop.CustomerGroupsResponse{
+		Paging:         pbcm.PbPageInfo(paging, query.Result.Count),
+		CustomerGroups: pbshop.PbCustomerGroups(query.Result.CustomerGroups),
+	}
+	return nil
+}
+
+func UpdateCustomerGroup(ctx context.Context, r *wrapshop.UpdateCustomerGroupEndpoint) error {
+	cmd := &customering.UpdateCustomerGroupCommand{
+		ID:   r.GroupId,
+		Name: r.Name,
+	}
+	if err := customerAggr.Dispatch(ctx, cmd); err != nil {
+		return err
+	}
+	r.Result = pbshop.PbCustopmerGroup(cmd.Result)
+	return nil
+}
+
+func AddCustomersToGroup(ctx context.Context, r *wrapshop.AddCustomersToGroupEndpoint) error {
+	cmd := &customering.AddCustomersToGroupCommand{
+		GroupID:     r.GroupId,
+		CustomerIDs: r.CustomerIds,
+	}
+	if err := customerAggr.Dispatch(ctx, cmd); err != nil {
+		return err
+	}
+	r.Result = &pbcm.UpdatedResponse{Updated: int32(cmd.Result)}
+	return nil
+}
+
+func RemoveCustomersFromGroup(ctx context.Context, r *wrapshop.RemoveCustomersFromGroupEndpoint) error {
+	cmd := &customering.RemoveCustomersFromGroupCommand{
+		GroupID:     r.GroupId,
+		CustomerIDs: r.CustomerIds,
+	}
+	if err := customerAggr.Dispatch(ctx, cmd); err != nil {
+		return err
+	}
+	r.Result = &pbcm.RemovedResponse{Removed: int32(cmd.Result)}
+	return nil
 }

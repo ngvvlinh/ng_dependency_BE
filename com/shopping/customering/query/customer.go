@@ -13,12 +13,16 @@ import (
 var _ customering.QueryService = &CustomerQuery{}
 
 type CustomerQuery struct {
-	store sqlstore.CustomerStoreFactory
+	store                      sqlstore.CustomerStoreFactory
+	customerGroupStore         sqlstore.CustomerGroupStoreFactory
+	customerGroupCustomerStore sqlstore.CustomerGroupCustomerStoreFactory
 }
 
 func NewCustomerQuery(db cmsql.Database) *CustomerQuery {
 	return &CustomerQuery{
-		store: sqlstore.NewCustomerStore(db),
+		store:                      sqlstore.NewCustomerStore(db),
+		customerGroupStore:         sqlstore.NewCustomerGroupStore(db),
+		customerGroupCustomerStore: sqlstore.NewCustomerGroupCustomerStore(db),
 	}
 }
 
@@ -30,7 +34,16 @@ func (q *CustomerQuery) MessageBus() customering.QueryBus {
 func (q *CustomerQuery) GetCustomerByID(
 	ctx context.Context, args *shopping.IDQueryShopArg,
 ) (*customering.ShopCustomer, error) {
-	return q.store(ctx).ID(args.ID).OptionalShopID(args.ShopID).GetCustomer()
+	customer, err := q.store(ctx).ID(args.ID).OptionalShopID(args.ShopID).GetCustomer()
+	q1 := q.customerGroupCustomerStore(ctx).CustomerID(args.ID)
+	customerGroups, err := q1.ListShopCustomerGroupsCustomerByCustomerID()
+	if err != nil {
+		return nil, err
+	}
+	for _, customerGroup := range customerGroups {
+		customer.GroupIDs = append(customer.GroupIDs, customerGroup.GroupID)
+	}
+	return customer, err
 }
 
 func (q *CustomerQuery) ListCustomers(
@@ -40,6 +53,21 @@ func (q *CustomerQuery) ListCustomers(
 	customers, err := query.ListCustomers()
 	if err != nil {
 		return nil, err
+	}
+	var mapCustomerGroup = make(map[int64][]int64)
+	var customerIDs []int64
+	for _, customer := range customers {
+		customerIDs = append(customerIDs, customer.ID)
+	}
+	customerGroups, err := q.customerGroupCustomerStore(ctx).CustomerIDs(customerIDs...).ListShopCustomerGroupsCustomer()
+	if err != nil {
+		return nil, err
+	}
+	for _, customerGroup := range customerGroups {
+		mapCustomerGroup[customerGroup.CustomerID] = append(mapCustomerGroup[customerGroup.CustomerID], customerGroup.GroupID)
+	}
+	for _, customer := range customers {
+		customer.GroupIDs = mapCustomerGroup[customer.ID]
 	}
 	count, err := query.Count()
 	if err != nil {
@@ -60,4 +88,31 @@ func (q *CustomerQuery) ListCustomersByIDs(
 		return nil, err
 	}
 	return &customering.CustomersResponse{Customers: customers}, nil
+}
+
+func (q *CustomerQuery) GetCustomerGroup(ctx context.Context, args *customering.GetCustomerGroupArgs) (*customering.ShopCustomerGroup, error) {
+	customerGroup, err := q.customerGroupStore(ctx).ID(args.ID).GetShopCustomerGroup()
+	if err != nil {
+		return nil, err
+	}
+	return customerGroup, err
+}
+
+func (q *CustomerQuery) ListCustomerGroups(
+	ctx context.Context, args *customering.ListCustomerGroupArgs,
+) (*customering.CustomerGroupsResponse, error) {
+	query := q.customerGroupStore(ctx).Paging(args.Paging).Filters(args.Filters)
+	customerGroup, err := query.ListShopCustomerGroups()
+	if err != nil {
+		return nil, err
+	}
+	count, err := query.Count()
+	if err != nil {
+		return nil, err
+	}
+	return &customering.CustomerGroupsResponse{
+		CustomerGroups: customerGroup,
+		Count:          int32(count),
+		Paging:         query.GetPaging(),
+	}, nil
 }

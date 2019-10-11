@@ -14,16 +14,22 @@ import (
 
 /*
 Custom conversions:
-    CreateShopCustomer         // in use
-    CreateShopTraderAddress    // not use, no conversions between params
-    ShopCustomer               // in use
-    ShopCustomerDB             // in use
-    ShopTraderAddress          // not use, no conversions between params
-    ShopTraderAddressDB        // not use, no conversions between params
+    CreateShopCustomer             // in use
+    CreateShopTraderAddress        // not use, no conversions between params
+    ShopCustomer                   // in use
+    ShopCustomerDB                 // in use
+    ShopCustomerGroup              // in use
+    ShopCustomerGroupCustomer      // in use
+    ShopCustomerGroupCustomerDB    // in use
+    ShopCustomerGroupDB            // in use
+    ShopTraderAddress              // not use, no conversions between params
+    ShopTraderAddressDB            // not use, no conversions between params
 
 Ignored functions:
     Addresses                  // params are not pointer to named types
+    ShopCustomerGroups         // params are not pointer to named types
     ShopCustomers              // params are not pointer to named types
+    UpdateCustomerGroup        // not recognized
     UpdateShopCustomer         // not recognized
     UpdateShopTraderAddress    // not recognized
 */
@@ -59,6 +65,42 @@ func registerConversionFunctions(s *scheme.Scheme) {
 		Apply_customering_UpdateCustomerArgs_customering_ShopCustomer(arg.(*customering.UpdateCustomerArgs), out.(*customering.ShopCustomer))
 		return nil
 	})
+	s.Register((*customeringmodel.ShopCustomerGroup)(nil), (*customering.ShopCustomerGroup)(nil), func(arg, out interface{}) error {
+		Convert_customeringmodel_ShopCustomerGroup_customering_ShopCustomerGroup(arg.(*customeringmodel.ShopCustomerGroup), out.(*customering.ShopCustomerGroup))
+		return nil
+	})
+	s.Register(([]*customeringmodel.ShopCustomerGroup)(nil), (*[]*customering.ShopCustomerGroup)(nil), func(arg, out interface{}) error {
+		out0 := Convert_customeringmodel_ShopCustomerGroups_customering_ShopCustomerGroups(arg.([]*customeringmodel.ShopCustomerGroup))
+		*out.(*[]*customering.ShopCustomerGroup) = out0
+		return nil
+	})
+	s.Register((*customering.ShopCustomerGroup)(nil), (*customeringmodel.ShopCustomerGroup)(nil), func(arg, out interface{}) error {
+		Convert_customering_ShopCustomerGroup_customeringmodel_ShopCustomerGroup(arg.(*customering.ShopCustomerGroup), out.(*customeringmodel.ShopCustomerGroup))
+		return nil
+	})
+	s.Register(([]*customering.ShopCustomerGroup)(nil), (*[]*customeringmodel.ShopCustomerGroup)(nil), func(arg, out interface{}) error {
+		out0 := Convert_customering_ShopCustomerGroups_customeringmodel_ShopCustomerGroups(arg.([]*customering.ShopCustomerGroup))
+		*out.(*[]*customeringmodel.ShopCustomerGroup) = out0
+		return nil
+	})
+	s.Register((*customeringmodel.ShopCustomerGroupCustomer)(nil), (*customering.ShopCustomerGroupCustomer)(nil), func(arg, out interface{}) error {
+		Convert_customeringmodel_ShopCustomerGroupCustomer_customering_ShopCustomerGroupCustomer(arg.(*customeringmodel.ShopCustomerGroupCustomer), out.(*customering.ShopCustomerGroupCustomer))
+		return nil
+	})
+	s.Register(([]*customeringmodel.ShopCustomerGroupCustomer)(nil), (*[]*customering.ShopCustomerGroupCustomer)(nil), func(arg, out interface{}) error {
+		out0 := Convert_customeringmodel_ShopCustomerGroupCustomers_customering_ShopCustomerGroupCustomers(arg.([]*customeringmodel.ShopCustomerGroupCustomer))
+		*out.(*[]*customering.ShopCustomerGroupCustomer) = out0
+		return nil
+	})
+	s.Register((*customering.ShopCustomerGroupCustomer)(nil), (*customeringmodel.ShopCustomerGroupCustomer)(nil), func(arg, out interface{}) error {
+		Convert_customering_ShopCustomerGroupCustomer_customeringmodel_ShopCustomerGroupCustomer(arg.(*customering.ShopCustomerGroupCustomer), out.(*customeringmodel.ShopCustomerGroupCustomer))
+		return nil
+	})
+	s.Register(([]*customering.ShopCustomerGroupCustomer)(nil), (*[]*customeringmodel.ShopCustomerGroupCustomer)(nil), func(arg, out interface{}) error {
+		out0 := Convert_customering_ShopCustomerGroupCustomers_customeringmodel_ShopCustomerGroupCustomers(arg.([]*customering.ShopCustomerGroupCustomer))
+		*out.(*[]*customeringmodel.ShopCustomerGroupCustomer) = out0
+		return nil
+	})
 }
 
 //-- convert etop.vn/api/shopping/customering.ShopCustomer --//
@@ -70,6 +112,7 @@ func Convert_customeringmodel_ShopCustomer_customering_ShopCustomer(arg *custome
 func convert_customeringmodel_ShopCustomer_customering_ShopCustomer(arg *customeringmodel.ShopCustomer, out *customering.ShopCustomer) {
 	out.ID = arg.ID               // simple assign
 	out.ShopID = arg.ShopID       // simple assign
+	out.GroupIDs = arg.GroupIDs   // simple assign
 	out.Code = arg.Code           // simple assign
 	out.FullName = arg.FullName   // simple assign
 	out.Gender = arg.Gender       // simple assign
@@ -99,6 +142,7 @@ func Convert_customering_ShopCustomer_customeringmodel_ShopCustomer(arg *custome
 func convert_customering_ShopCustomer_customeringmodel_ShopCustomer(arg *customering.ShopCustomer, out *customeringmodel.ShopCustomer) {
 	out.ID = arg.ID               // simple assign
 	out.ShopID = arg.ShopID       // simple assign
+	out.GroupIDs = arg.GroupIDs   // simple assign
 	out.Code = arg.Code           // simple assign
 	out.FullName = arg.FullName   // simple assign
 	out.Gender = arg.Gender       // simple assign
@@ -129,6 +173,7 @@ func Apply_customering_CreateCustomerArgs_customering_ShopCustomer(arg *customer
 func apply_customering_CreateCustomerArgs_customering_ShopCustomer(arg *customering.CreateCustomerArgs, out *customering.ShopCustomer) {
 	out.ID = 0                  // zero value
 	out.ShopID = arg.ShopID     // simple assign
+	out.GroupIDs = nil          // zero value
 	out.Code = arg.Code         // simple assign
 	out.FullName = arg.FullName // simple assign
 	out.Gender = arg.Gender     // simple assign
@@ -156,6 +201,7 @@ func Apply_customering_UpdateCustomerArgs_customering_ShopCustomer(arg *customer
 func apply_customering_UpdateCustomerArgs_customering_ShopCustomer(arg *customering.UpdateCustomerArgs, out *customering.ShopCustomer) {
 	out.ID = out.ID                                 // identifier
 	out.ShopID = out.ShopID                         // identifier
+	out.GroupIDs = out.GroupIDs                     // no change
 	out.Code = arg.Code.Apply(out.Code)             // apply change
 	out.FullName = arg.FullName.Apply(out.FullName) // apply change
 	out.Gender = arg.Gender.Apply(out.Gender)       // apply change
@@ -167,4 +213,114 @@ func apply_customering_UpdateCustomerArgs_customering_ShopCustomer(arg *customer
 	out.Status = out.Status                         // no change
 	out.CreatedAt = out.CreatedAt                   // no change
 	out.UpdatedAt = out.UpdatedAt                   // no change
+}
+
+//-- convert etop.vn/api/shopping/customering.ShopCustomerGroup --//
+
+func Convert_customeringmodel_ShopCustomerGroup_customering_ShopCustomerGroup(arg *customeringmodel.ShopCustomerGroup, out *customering.ShopCustomerGroup) *customering.ShopCustomerGroup {
+	if arg == nil {
+		return nil
+	}
+	if out == nil {
+		out = &customering.ShopCustomerGroup{}
+	}
+	ShopCustomerGroup(arg, out)
+	return out
+}
+
+func convert_customeringmodel_ShopCustomerGroup_customering_ShopCustomerGroup(arg *customeringmodel.ShopCustomerGroup, out *customering.ShopCustomerGroup) {
+	out.ID = arg.ID     // simple assign
+	out.Name = arg.Name // simple assign
+}
+
+func Convert_customeringmodel_ShopCustomerGroups_customering_ShopCustomerGroups(args []*customeringmodel.ShopCustomerGroup) (outs []*customering.ShopCustomerGroup) {
+	tmps := make([]customering.ShopCustomerGroup, len(args))
+	outs = make([]*customering.ShopCustomerGroup, len(args))
+	for i := range tmps {
+		outs[i] = Convert_customeringmodel_ShopCustomerGroup_customering_ShopCustomerGroup(args[i], &tmps[i])
+	}
+	return outs
+}
+
+func Convert_customering_ShopCustomerGroup_customeringmodel_ShopCustomerGroup(arg *customering.ShopCustomerGroup, out *customeringmodel.ShopCustomerGroup) *customeringmodel.ShopCustomerGroup {
+	if arg == nil {
+		return nil
+	}
+	if out == nil {
+		out = &customeringmodel.ShopCustomerGroup{}
+	}
+	ShopCustomerGroupDB(arg, out)
+	return out
+}
+
+func convert_customering_ShopCustomerGroup_customeringmodel_ShopCustomerGroup(arg *customering.ShopCustomerGroup, out *customeringmodel.ShopCustomerGroup) {
+	out.ID = arg.ID             // simple assign
+	out.Name = arg.Name         // simple assign
+	out.CreatedAt = time.Time{} // zero value
+	out.UpdatedAt = time.Time{} // zero value
+}
+
+func Convert_customering_ShopCustomerGroups_customeringmodel_ShopCustomerGroups(args []*customering.ShopCustomerGroup) (outs []*customeringmodel.ShopCustomerGroup) {
+	tmps := make([]customeringmodel.ShopCustomerGroup, len(args))
+	outs = make([]*customeringmodel.ShopCustomerGroup, len(args))
+	for i := range tmps {
+		outs[i] = Convert_customering_ShopCustomerGroup_customeringmodel_ShopCustomerGroup(args[i], &tmps[i])
+	}
+	return outs
+}
+
+//-- convert etop.vn/api/shopping/customering.ShopCustomerGroupCustomer --//
+
+func Convert_customeringmodel_ShopCustomerGroupCustomer_customering_ShopCustomerGroupCustomer(arg *customeringmodel.ShopCustomerGroupCustomer, out *customering.ShopCustomerGroupCustomer) *customering.ShopCustomerGroupCustomer {
+	if arg == nil {
+		return nil
+	}
+	if out == nil {
+		out = &customering.ShopCustomerGroupCustomer{}
+	}
+	ShopCustomerGroupCustomer(arg, out)
+	return out
+}
+
+func convert_customeringmodel_ShopCustomerGroupCustomer_customering_ShopCustomerGroupCustomer(arg *customeringmodel.ShopCustomerGroupCustomer, out *customering.ShopCustomerGroupCustomer) {
+	out.GroupID = arg.GroupID       // simple assign
+	out.CustomerID = arg.CustomerID // simple assign
+	out.CreatedAt = arg.CreatedAt   // simple assign
+	out.UpdatedAt = arg.UpdatedAt   // simple assign
+}
+
+func Convert_customeringmodel_ShopCustomerGroupCustomers_customering_ShopCustomerGroupCustomers(args []*customeringmodel.ShopCustomerGroupCustomer) (outs []*customering.ShopCustomerGroupCustomer) {
+	tmps := make([]customering.ShopCustomerGroupCustomer, len(args))
+	outs = make([]*customering.ShopCustomerGroupCustomer, len(args))
+	for i := range tmps {
+		outs[i] = Convert_customeringmodel_ShopCustomerGroupCustomer_customering_ShopCustomerGroupCustomer(args[i], &tmps[i])
+	}
+	return outs
+}
+
+func Convert_customering_ShopCustomerGroupCustomer_customeringmodel_ShopCustomerGroupCustomer(arg *customering.ShopCustomerGroupCustomer, out *customeringmodel.ShopCustomerGroupCustomer) *customeringmodel.ShopCustomerGroupCustomer {
+	if arg == nil {
+		return nil
+	}
+	if out == nil {
+		out = &customeringmodel.ShopCustomerGroupCustomer{}
+	}
+	ShopCustomerGroupCustomerDB(arg, out)
+	return out
+}
+
+func convert_customering_ShopCustomerGroupCustomer_customeringmodel_ShopCustomerGroupCustomer(arg *customering.ShopCustomerGroupCustomer, out *customeringmodel.ShopCustomerGroupCustomer) {
+	out.GroupID = arg.GroupID       // simple assign
+	out.CustomerID = arg.CustomerID // simple assign
+	out.CreatedAt = arg.CreatedAt   // simple assign
+	out.UpdatedAt = arg.UpdatedAt   // simple assign
+}
+
+func Convert_customering_ShopCustomerGroupCustomers_customeringmodel_ShopCustomerGroupCustomers(args []*customering.ShopCustomerGroupCustomer) (outs []*customeringmodel.ShopCustomerGroupCustomer) {
+	tmps := make([]customeringmodel.ShopCustomerGroupCustomer, len(args))
+	outs = make([]*customeringmodel.ShopCustomerGroupCustomer, len(args))
+	for i := range tmps {
+		outs[i] = Convert_customering_ShopCustomerGroupCustomer_customeringmodel_ShopCustomerGroupCustomer(args[i], &tmps[i])
+	}
+	return outs
 }

@@ -60,6 +60,7 @@ func NewShopServer(mux Muxer, hooks *twirp.ServerHooks) {
 	bus.Expect(&GetCollectionsEndpoint{})
 	bus.Expect(&GetCollectionsByProductIDEndpoint{})
 	bus.Expect(&UpdateCollectionEndpoint{})
+	bus.Expect(&AddCustomersToGroupEndpoint{})
 	bus.Expect(&BatchSetCustomersStatusEndpoint{})
 	bus.Expect(&CreateCustomerEndpoint{})
 	bus.Expect(&CreateCustomerAddressEndpoint{})
@@ -70,9 +71,14 @@ func NewShopServer(mux Muxer, hooks *twirp.ServerHooks) {
 	bus.Expect(&GetCustomerDetailsEndpoint{})
 	bus.Expect(&GetCustomersEndpoint{})
 	bus.Expect(&GetCustomersByIDsEndpoint{})
+	bus.Expect(&RemoveCustomersFromGroupEndpoint{})
 	bus.Expect(&SetDefaultCustomerAddressEndpoint{})
 	bus.Expect(&UpdateCustomerEndpoint{})
 	bus.Expect(&UpdateCustomerAddressEndpoint{})
+	bus.Expect(&CreateCustomerGroupEndpoint{})
+	bus.Expect(&GetCustomerGroupEndpoint{})
+	bus.Expect(&GetCustomerGroupsEndpoint{})
+	bus.Expect(&UpdateCustomerGroupEndpoint{})
 	bus.Expect(&AddProductCollectionEndpoint{})
 	bus.Expect(&AddProductsEndpoint{})
 	bus.Expect(&CreateProductEndpoint{})
@@ -179,6 +185,7 @@ func NewShopServer(mux Muxer, hooks *twirp.ServerHooks) {
 	mux.Handle(shop.ExternalAccountServicePathPrefix, shop.NewExternalAccountServiceServer(ExternalAccountService{}, hooks))
 	mux.Handle(shop.CollectionServicePathPrefix, shop.NewCollectionServiceServer(CollectionService{}, hooks))
 	mux.Handle(shop.CustomerServicePathPrefix, shop.NewCustomerServiceServer(CustomerService{}, hooks))
+	mux.Handle(shop.CustomerGroupServicePathPrefix, shop.NewCustomerGroupServiceServer(CustomerGroupService{}, hooks))
 	mux.Handle(shop.ProductServicePathPrefix, shop.NewProductServiceServer(ProductService{}, hooks))
 	mux.Handle(shop.CategoryServicePathPrefix, shop.NewCategoryServiceServer(CategoryService{}, hooks))
 	mux.Handle(shop.ProductSourceServicePathPrefix, shop.NewProductSourceServiceServer(ProductSourceService{}, hooks))
@@ -204,6 +211,7 @@ type ShopImpl struct {
 	ExternalAccountService
 	CollectionService
 	CustomerService
+	CustomerGroupService
 	ProductService
 	CategoryService
 	ProductSourceService
@@ -1167,6 +1175,50 @@ func (s CollectionService) UpdateCollection(ctx context.Context, req *shop.Updat
 
 type CustomerService struct{}
 
+type AddCustomersToGroupEndpoint struct {
+	*shop.AddCustomerToGroupRequest
+	Result  *cm.UpdatedResponse
+	Context ShopClaim
+}
+
+func (s CustomerService) AddCustomersToGroup(ctx context.Context, req *shop.AddCustomerToGroupRequest) (resp *cm.UpdatedResponse, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "shop.Customer/AddCustomersToGroup"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:     ctx,
+		RequireAuth: true,
+		RequireShop: true,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &AddCustomersToGroupEndpoint{AddCustomerToGroupRequest: req}
+	query.Context.Claim = session.Claim
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = bus.Dispatch(ctx, query)
+	resp = query.Result
+	if err == nil {
+		if resp == nil {
+			return nil, common.Error(common.Internal, "", nil).Log("nil response")
+		}
+		errs = cmwrapper.HasErrors(resp)
+	}
+	return resp, err
+}
+
 type BatchSetCustomersStatusEndpoint struct {
 	*shop.SetCustomersStatusRequest
 	Result  *cm.UpdatedResponse
@@ -1607,6 +1659,50 @@ func (s CustomerService) GetCustomersByIDs(ctx context.Context, req *cm.IDsReque
 	return resp, err
 }
 
+type RemoveCustomersFromGroupEndpoint struct {
+	*shop.RemoveCustomerOutOfGroupRequest
+	Result  *cm.RemovedResponse
+	Context ShopClaim
+}
+
+func (s CustomerService) RemoveCustomersFromGroup(ctx context.Context, req *shop.RemoveCustomerOutOfGroupRequest) (resp *cm.RemovedResponse, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "shop.Customer/RemoveCustomersFromGroup"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:     ctx,
+		RequireAuth: true,
+		RequireShop: true,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &RemoveCustomersFromGroupEndpoint{RemoveCustomerOutOfGroupRequest: req}
+	query.Context.Claim = session.Claim
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = bus.Dispatch(ctx, query)
+	resp = query.Result
+	if err == nil {
+		if resp == nil {
+			return nil, common.Error(common.Internal, "", nil).Log("nil response")
+		}
+		errs = cmwrapper.HasErrors(resp)
+	}
+	return resp, err
+}
+
 type SetDefaultCustomerAddressEndpoint struct {
 	*cm.IDRequest
 	Result  *cm.UpdatedResponse
@@ -1722,6 +1818,184 @@ func (s CustomerService) UpdateCustomerAddress(ctx context.Context, req *shop.Up
 	}
 	session = sessionQuery.Result
 	query := &UpdateCustomerAddressEndpoint{UpdateCustomerAddressRequest: req}
+	query.Context.Claim = session.Claim
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = bus.Dispatch(ctx, query)
+	resp = query.Result
+	if err == nil {
+		if resp == nil {
+			return nil, common.Error(common.Internal, "", nil).Log("nil response")
+		}
+		errs = cmwrapper.HasErrors(resp)
+	}
+	return resp, err
+}
+
+type CustomerGroupService struct{}
+
+type CreateCustomerGroupEndpoint struct {
+	*shop.CreateCustomerGroupRequest
+	Result  *shop.CustomerGroup
+	Context ShopClaim
+}
+
+func (s CustomerGroupService) CreateCustomerGroup(ctx context.Context, req *shop.CreateCustomerGroupRequest) (resp *shop.CustomerGroup, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "shop.CustomerGroup/CreateCustomerGroup"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:     ctx,
+		RequireAuth: true,
+		RequireShop: true,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &CreateCustomerGroupEndpoint{CreateCustomerGroupRequest: req}
+	query.Context.Claim = session.Claim
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = bus.Dispatch(ctx, query)
+	resp = query.Result
+	if err == nil {
+		if resp == nil {
+			return nil, common.Error(common.Internal, "", nil).Log("nil response")
+		}
+		errs = cmwrapper.HasErrors(resp)
+	}
+	return resp, err
+}
+
+type GetCustomerGroupEndpoint struct {
+	*cm.IDRequest
+	Result  *shop.CustomerGroup
+	Context ShopClaim
+}
+
+func (s CustomerGroupService) GetCustomerGroup(ctx context.Context, req *cm.IDRequest) (resp *shop.CustomerGroup, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "shop.CustomerGroup/GetCustomerGroup"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:     ctx,
+		RequireAuth: true,
+		RequireShop: true,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &GetCustomerGroupEndpoint{IDRequest: req}
+	query.Context.Claim = session.Claim
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = bus.Dispatch(ctx, query)
+	resp = query.Result
+	if err == nil {
+		if resp == nil {
+			return nil, common.Error(common.Internal, "", nil).Log("nil response")
+		}
+		errs = cmwrapper.HasErrors(resp)
+	}
+	return resp, err
+}
+
+type GetCustomerGroupsEndpoint struct {
+	*shop.GetCustomerGroupsRequest
+	Result  *shop.CustomerGroupsResponse
+	Context ShopClaim
+}
+
+func (s CustomerGroupService) GetCustomerGroups(ctx context.Context, req *shop.GetCustomerGroupsRequest) (resp *shop.CustomerGroupsResponse, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "shop.CustomerGroup/GetCustomerGroups"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:     ctx,
+		RequireAuth: true,
+		RequireShop: true,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &GetCustomerGroupsEndpoint{GetCustomerGroupsRequest: req}
+	query.Context.Claim = session.Claim
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = bus.Dispatch(ctx, query)
+	resp = query.Result
+	if err == nil {
+		if resp == nil {
+			return nil, common.Error(common.Internal, "", nil).Log("nil response")
+		}
+		errs = cmwrapper.HasErrors(resp)
+	}
+	return resp, err
+}
+
+type UpdateCustomerGroupEndpoint struct {
+	*shop.UpdateCustomerGroupRequest
+	Result  *shop.CustomerGroup
+	Context ShopClaim
+}
+
+func (s CustomerGroupService) UpdateCustomerGroup(ctx context.Context, req *shop.UpdateCustomerGroupRequest) (resp *shop.CustomerGroup, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "shop.CustomerGroup/UpdateCustomerGroup"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:     ctx,
+		RequireAuth: true,
+		RequireShop: true,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &UpdateCustomerGroupEndpoint{UpdateCustomerGroupRequest: req}
 	query.Context.Claim = session.Claim
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner

@@ -13,6 +13,22 @@ func (ft *ShopTraderAddressFilters) NotDeleted() sq.WriterTo {
 	return ft.Filter("$.deleted_at IS NULL")
 }
 
+func (ft *ShopCustomerGroupFilters) NotDeleted() sq.WriterTo {
+	return ft.Filter("$.deleted_at IS NULL")
+}
+
+func (ft *ShopCustomerGroupCustomerFilters) NotDeleted() sq.WriterTo {
+	return ft.Filter("$.deleted_at IS NULL")
+}
+
+var SortShopCustomerGroup = map[string]string{
+	"group_id":   "",
+	"created_at": "",
+	"updated_at": "",
+}
+
+var FilterCustomerGroup = sqlstore.FilterWhitelist{}
+
 var SortCustomer = map[string]string{
 	"id":         "",
 	"created_at": "",
@@ -21,3 +37,12 @@ var SortCustomer = map[string]string{
 }
 
 var FilterCustomer = sqlstore.FilterWhitelist{}
+
+var SortShopCustomerGroupCustomer = map[string]string{
+	"group_id":    "",
+	"customer_id": "",
+	"created_at":  "",
+	"updated_at":  "",
+}
+
+var FilterCustomerGroupCustomer = sqlstore.FilterWhitelist{}

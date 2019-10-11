@@ -22,6 +22,7 @@ var _ = sqlgenShopCustomer(&ShopCustomer{})
 type ShopCustomer struct {
 	ID        int64
 	ShopID    int64
+	GroupIDs  []int64 `sq:"-"`
 	Code      string
 	FullName  string
 	Gender    string
@@ -58,4 +59,26 @@ type ShopTraderAddress struct {
 
 	//Default status = 1
 	Status etop.Status3
+}
+
+var _ = sqlgenShopCustomerGroupCustomer(&ShopCustomerGroupCustomer{})
+
+// +convert:type=customering.ShopCustomerGroupCustomer
+type ShopCustomerGroupCustomer struct {
+	GroupID    int64
+	CustomerID int64
+
+	CreatedAt time.Time `sq:"create"`
+	UpdatedAt time.Time `sq:"update"`
+}
+
+var _ = sqlgenShopCustomerGroup(&ShopCustomerGroup{})
+
+// +convert:type=customering.ShopCustomerGroup
+type ShopCustomerGroup struct {
+	ID   int64
+	Name string
+
+	CreatedAt time.Time `sq:"create"`
+	UpdatedAt time.Time `sq:"update"`
 }

@@ -260,6 +260,7 @@ func PbCustomer(m *customering.ShopCustomer) *Customer {
 	return &Customer{
 		Id:        m.ID,
 		ShopId:    m.ShopID,
+		GroupIds:  m.GroupIDs,
 		FullName:  m.FullName,
 		Code:      m.Code,
 		Note:      m.Note,
@@ -272,6 +273,21 @@ func PbCustomer(m *customering.ShopCustomer) *Customer {
 		UpdatedAt: pbcm.PbTime(m.UpdatedAt),
 		Status:    pbs3.Pb(model.Status3(m.Status)),
 	}
+}
+
+func PbCustopmerGroup(m *customering.ShopCustomerGroup) *CustomerGroup {
+	return &CustomerGroup{
+		Id:   m.ID,
+		Name: m.Name,
+	}
+}
+
+func PbCustomerGroups(ms []*customering.ShopCustomerGroup) []*CustomerGroup {
+	res := make([]*CustomerGroup, len(ms))
+	for i, m := range ms {
+		res[i] = PbCustopmerGroup(m)
+	}
+	return res
 }
 
 func PbCustomers(ms []*customering.ShopCustomer) []*Customer {

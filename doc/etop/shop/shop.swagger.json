@@ -770,6 +770,137 @@
         ]
       }
     },
+    "/api/shop.CustomerGroup/CreateCustomerGroup": {
+      "post": {
+        "operationId": "CreateCustomerGroup",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/shopCustomerGroup"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/shopCreateCustomerGroupRequest"
+            }
+          }
+        ],
+        "tags": [
+          "CustomerGroup"
+        ]
+      }
+    },
+    "/api/shop.CustomerGroup/GetCustomerGroup": {
+      "post": {
+        "operationId": "GetCustomerGroup",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/shopCustomerGroup"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/cmIDRequest"
+            }
+          }
+        ],
+        "tags": [
+          "CustomerGroup"
+        ]
+      }
+    },
+    "/api/shop.CustomerGroup/GetCustomerGroups": {
+      "post": {
+        "operationId": "GetCustomerGroups",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/shopCustomerGroupsResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/shopGetCustomerGroupsRequest"
+            }
+          }
+        ],
+        "tags": [
+          "CustomerGroup"
+        ]
+      }
+    },
+    "/api/shop.CustomerGroup/UpdateCustomerGroup": {
+      "post": {
+        "operationId": "UpdateCustomerGroup",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/shopCustomerGroup"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/shopUpdateCustomerGroupRequest"
+            }
+          }
+        ],
+        "tags": [
+          "CustomerGroup"
+        ]
+      }
+    },
+    "/api/shop.Customer/AddCustomersToGroup": {
+      "post": {
+        "summary": "-- group --//",
+        "operationId": "AddCustomersToGroup",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/cmUpdatedResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/shopAddCustomerToGroupRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Customer"
+        ]
+      }
+    },
     "/api/shop.Customer/BatchSetCustomersStatus": {
       "post": {
         "operationId": "BatchSetCustomersStatus",
@@ -1023,6 +1154,32 @@
             "required": true,
             "schema": {
               "$ref": "#/definitions/cmIDsRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Customer"
+        ]
+      }
+    },
+    "/api/shop.Customer/RemoveCustomersFromGroup": {
+      "post": {
+        "operationId": "RemoveCustomersFromGroup",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/cmRemovedResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/shopRemoveCustomerOutOfGroupRequest"
             }
           }
         ],
@@ -2572,6 +2729,7 @@
     },
     "/api/shop.Product/UpdateVariantImages": {
       "post": {
+        "summary": "-- group --//",
         "operationId": "UpdateVariantImages",
         "responses": {
           "200": {
@@ -6563,6 +6721,22 @@
       ],
       "default": "unknown"
     },
+    "shopAddCustomerToGroupRequest": {
+      "type": "object",
+      "properties": {
+        "customer_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          }
+        },
+        "group_id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
     "shopAddProductsRequest": {
       "type": "object",
       "properties": {
@@ -6848,6 +7022,14 @@
         }
       }
     },
+    "shopCreateCustomerGroupRequest": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        }
+      }
+    },
     "shopCreateCustomerRequest": {
       "type": "object",
       "properties": {
@@ -7109,6 +7291,13 @@
         },
         "status": {
           "$ref": "#/definitions/status3Status"
+        },
+        "group_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          }
         }
       }
     },
@@ -7188,6 +7377,32 @@
           "items": {
             "$ref": "#/definitions/shopIndependentSummaryItem"
           }
+        }
+      }
+    },
+    "shopCustomerGroup": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "name": {
+          "type": "string"
+        }
+      }
+    },
+    "shopCustomerGroupsResponse": {
+      "type": "object",
+      "properties": {
+        "customer_groups": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/shopCustomerGroup"
+          }
+        },
+        "paging": {
+          "$ref": "#/definitions/cmPageInfo"
         }
       }
     },
@@ -7631,6 +7846,20 @@
         "customer_id": {
           "type": "string",
           "format": "int64"
+        }
+      }
+    },
+    "shopGetCustomerGroupsRequest": {
+      "type": "object",
+      "properties": {
+        "paging": {
+          "$ref": "#/definitions/cmPaging"
+        },
+        "filters": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/cmFilter"
+          }
         }
       }
     },
@@ -8138,6 +8367,22 @@
       "required": [
         "shop"
       ]
+    },
+    "shopRemoveCustomerOutOfGroupRequest": {
+      "type": "object",
+      "properties": {
+        "customer_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          }
+        },
+        "group_id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
     },
     "shopRemoveShopProductCollectionRequest": {
       "type": "object",
@@ -8761,6 +9006,18 @@
         },
         "coordinates": {
           "$ref": "#/definitions/etopCoordinates"
+        }
+      }
+    },
+    "shopUpdateCustomerGroupRequest": {
+      "type": "object",
+      "properties": {
+        "group_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "name": {
+          "type": "string"
         }
       }
     },
@@ -9395,6 +9652,9 @@
     },
     {
       "name": "Collection"
+    },
+    {
+      "name": "CustomerGroup"
     },
     {
       "name": "Customer"

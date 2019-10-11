@@ -41,6 +41,18 @@ func (c QueryBus) DispatchAll(ctx context.Context, msgs ...Query) error {
 	return nil
 }
 
+type AddCustomersToGroupCommand struct {
+	GroupID     int64
+	CustomerIDs []int64
+
+	Result int `json:"-"`
+}
+
+func (h AggregateHandler) HandleAddCustomersToGroup(ctx context.Context, msg *AddCustomersToGroupCommand) (err error) {
+	msg.Result, err = h.inner.AddCustomersToGroup(msg.GetArgs(ctx))
+	return err
+}
+
 type BatchSetCustomersStatusCommand struct {
 	IDs    []int64
 	ShopID int64
@@ -73,6 +85,17 @@ func (h AggregateHandler) HandleCreateCustomer(ctx context.Context, msg *CreateC
 	return err
 }
 
+type CreateCustomerGroupCommand struct {
+	Name string
+
+	Result *ShopCustomerGroup `json:"-"`
+}
+
+func (h AggregateHandler) HandleCreateCustomerGroup(ctx context.Context, msg *CreateCustomerGroupCommand) (err error) {
+	msg.Result, err = h.inner.CreateCustomerGroup(msg.GetArgs(ctx))
+	return err
+}
+
 type DeleteCustomerCommand struct {
 	ID     int64
 	ShopID int64
@@ -82,6 +105,18 @@ type DeleteCustomerCommand struct {
 
 func (h AggregateHandler) HandleDeleteCustomer(ctx context.Context, msg *DeleteCustomerCommand) (err error) {
 	msg.Result, err = h.inner.DeleteCustomer(msg.GetArgs(ctx))
+	return err
+}
+
+type RemoveCustomersFromGroupCommand struct {
+	GroupID     int64
+	CustomerIDs []int64
+
+	Result int `json:"-"`
+}
+
+func (h AggregateHandler) HandleRemoveCustomersFromGroup(ctx context.Context, msg *RemoveCustomersFromGroupCommand) (err error) {
+	msg.Result, err = h.inner.RemoveCustomersFromGroup(msg.GetArgs(ctx))
 	return err
 }
 
@@ -105,6 +140,18 @@ func (h AggregateHandler) HandleUpdateCustomer(ctx context.Context, msg *UpdateC
 	return err
 }
 
+type UpdateCustomerGroupCommand struct {
+	ID   int64
+	Name string
+
+	Result *ShopCustomerGroup `json:"-"`
+}
+
+func (h AggregateHandler) HandleUpdateCustomerGroup(ctx context.Context, msg *UpdateCustomerGroupCommand) (err error) {
+	msg.Result, err = h.inner.UpdateCustomerGroup(msg.GetArgs(ctx))
+	return err
+}
+
 type GetCustomerByIDQuery struct {
 	ID     int64
 	ShopID int64
@@ -114,6 +161,29 @@ type GetCustomerByIDQuery struct {
 
 func (h QueryServiceHandler) HandleGetCustomerByID(ctx context.Context, msg *GetCustomerByIDQuery) (err error) {
 	msg.Result, err = h.inner.GetCustomerByID(msg.GetArgs(ctx))
+	return err
+}
+
+type GetCustomerGroupQuery struct {
+	ID int64
+
+	Result *ShopCustomerGroup `json:"-"`
+}
+
+func (h QueryServiceHandler) HandleGetCustomerGroup(ctx context.Context, msg *GetCustomerGroupQuery) (err error) {
+	msg.Result, err = h.inner.GetCustomerGroup(msg.GetArgs(ctx))
+	return err
+}
+
+type ListCustomerGroupsQuery struct {
+	Paging  meta.Paging
+	Filters meta.Filters
+
+	Result *CustomerGroupsResponse `json:"-"`
+}
+
+func (h QueryServiceHandler) HandleListCustomerGroups(ctx context.Context, msg *ListCustomerGroupsQuery) (err error) {
+	msg.Result, err = h.inner.ListCustomerGroups(msg.GetArgs(ctx))
 	return err
 }
 
@@ -144,15 +214,29 @@ func (h QueryServiceHandler) HandleListCustomersByIDs(ctx context.Context, msg *
 
 // implement interfaces
 
-func (q *BatchSetCustomersStatusCommand) command() {}
-func (q *CreateCustomerCommand) command()          {}
-func (q *DeleteCustomerCommand) command()          {}
-func (q *UpdateCustomerCommand) command()          {}
-func (q *GetCustomerByIDQuery) query()             {}
-func (q *ListCustomersQuery) query()               {}
-func (q *ListCustomersByIDsQuery) query()          {}
+func (q *AddCustomersToGroupCommand) command()      {}
+func (q *BatchSetCustomersStatusCommand) command()  {}
+func (q *CreateCustomerCommand) command()           {}
+func (q *CreateCustomerGroupCommand) command()      {}
+func (q *DeleteCustomerCommand) command()           {}
+func (q *RemoveCustomersFromGroupCommand) command() {}
+func (q *UpdateCustomerCommand) command()           {}
+func (q *UpdateCustomerGroupCommand) command()      {}
+func (q *GetCustomerByIDQuery) query()              {}
+func (q *GetCustomerGroupQuery) query()             {}
+func (q *ListCustomerGroupsQuery) query()           {}
+func (q *ListCustomersQuery) query()                {}
+func (q *ListCustomersByIDsQuery) query()           {}
 
 // implement conversion
+
+func (q *AddCustomersToGroupCommand) GetArgs(ctx context.Context) (_ context.Context, _ *AddCustomerToGroupArgs) {
+	return ctx,
+		&AddCustomerToGroupArgs{
+			GroupID:     q.GroupID,
+			CustomerIDs: q.CustomerIDs,
+		}
+}
 
 func (q *BatchSetCustomersStatusCommand) GetArgs(ctx context.Context) (_ context.Context, IDs []int64, shopID int64, status int32) {
 	return ctx,
@@ -176,10 +260,25 @@ func (q *CreateCustomerCommand) GetArgs(ctx context.Context) (_ context.Context,
 		}
 }
 
+func (q *CreateCustomerGroupCommand) GetArgs(ctx context.Context) (_ context.Context, _ *CreateCustomerGroupArgs) {
+	return ctx,
+		&CreateCustomerGroupArgs{
+			Name: q.Name,
+		}
+}
+
 func (q *DeleteCustomerCommand) GetArgs(ctx context.Context) (_ context.Context, ID int64, shopID int64) {
 	return ctx,
 		q.ID,
 		q.ShopID
+}
+
+func (q *RemoveCustomersFromGroupCommand) GetArgs(ctx context.Context) (_ context.Context, _ *RemoveCustomerOutOfGroupArgs) {
+	return ctx,
+		&RemoveCustomerOutOfGroupArgs{
+			GroupID:     q.GroupID,
+			CustomerIDs: q.CustomerIDs,
+		}
 }
 
 func (q *UpdateCustomerCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateCustomerArgs) {
@@ -198,11 +297,34 @@ func (q *UpdateCustomerCommand) GetArgs(ctx context.Context) (_ context.Context,
 		}
 }
 
+func (q *UpdateCustomerGroupCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateCustomerGroupArgs) {
+	return ctx,
+		&UpdateCustomerGroupArgs{
+			ID:   q.ID,
+			Name: q.Name,
+		}
+}
+
 func (q *GetCustomerByIDQuery) GetArgs(ctx context.Context) (_ context.Context, _ *shopping.IDQueryShopArg) {
 	return ctx,
 		&shopping.IDQueryShopArg{
 			ID:     q.ID,
 			ShopID: q.ShopID,
+		}
+}
+
+func (q *GetCustomerGroupQuery) GetArgs(ctx context.Context) (_ context.Context, _ *GetCustomerGroupArgs) {
+	return ctx,
+		&GetCustomerGroupArgs{
+			ID: q.ID,
+		}
+}
+
+func (q *ListCustomerGroupsQuery) GetArgs(ctx context.Context) (_ context.Context, _ *ListCustomerGroupArgs) {
+	return ctx,
+		&ListCustomerGroupArgs{
+			Paging:  q.Paging,
+			Filters: q.Filters,
 		}
 }
 
@@ -235,10 +357,14 @@ func (h AggregateHandler) RegisterHandlers(b interface {
 	capi.Bus
 	AddHandler(handler interface{})
 }) CommandBus {
+	b.AddHandler(h.HandleAddCustomersToGroup)
 	b.AddHandler(h.HandleBatchSetCustomersStatus)
 	b.AddHandler(h.HandleCreateCustomer)
+	b.AddHandler(h.HandleCreateCustomerGroup)
 	b.AddHandler(h.HandleDeleteCustomer)
+	b.AddHandler(h.HandleRemoveCustomersFromGroup)
 	b.AddHandler(h.HandleUpdateCustomer)
+	b.AddHandler(h.HandleUpdateCustomerGroup)
 	return CommandBus{b}
 }
 
@@ -255,6 +381,8 @@ func (h QueryServiceHandler) RegisterHandlers(b interface {
 	AddHandler(handler interface{})
 }) QueryBus {
 	b.AddHandler(h.HandleGetCustomerByID)
+	b.AddHandler(h.HandleGetCustomerGroup)
+	b.AddHandler(h.HandleListCustomerGroups)
 	b.AddHandler(h.HandleListCustomers)
 	b.AddHandler(h.HandleListCustomersByIDs)
 	return QueryBus{b}

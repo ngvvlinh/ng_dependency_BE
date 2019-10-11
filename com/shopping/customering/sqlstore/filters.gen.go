@@ -677,3 +677,183 @@ func (ft *ShopTraderAddressFilters) ByStatusPtr(Status *etop.Status3) *sq.Column
 		IsZero: Status != nil && (*Status) == 0,
 	}
 }
+
+type ShopCustomerGroupCustomerFilters struct{ prefix string }
+
+func NewShopCustomerGroupCustomerFilters(prefix string) ShopCustomerGroupCustomerFilters {
+	return ShopCustomerGroupCustomerFilters{prefix}
+}
+
+func (ft *ShopCustomerGroupCustomerFilters) Filter(pred string, args ...interface{}) sq.WriterTo {
+	return sq.Filter(&ft.prefix, pred, args...)
+}
+
+func (ft ShopCustomerGroupCustomerFilters) Prefix() string {
+	return ft.prefix
+}
+
+func (ft *ShopCustomerGroupCustomerFilters) ByGroupID(GroupID int64) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "group_id",
+		Value:  GroupID,
+		IsNil:  GroupID == 0,
+	}
+}
+
+func (ft *ShopCustomerGroupCustomerFilters) ByGroupIDPtr(GroupID *int64) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "group_id",
+		Value:  GroupID,
+		IsNil:  GroupID == nil,
+		IsZero: GroupID != nil && (*GroupID) == 0,
+	}
+}
+
+func (ft *ShopCustomerGroupCustomerFilters) ByCustomerID(CustomerID int64) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "customer_id",
+		Value:  CustomerID,
+		IsNil:  CustomerID == 0,
+	}
+}
+
+func (ft *ShopCustomerGroupCustomerFilters) ByCustomerIDPtr(CustomerID *int64) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "customer_id",
+		Value:  CustomerID,
+		IsNil:  CustomerID == nil,
+		IsZero: CustomerID != nil && (*CustomerID) == 0,
+	}
+}
+
+func (ft *ShopCustomerGroupCustomerFilters) ByCreatedAt(CreatedAt time.Time) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "created_at",
+		Value:  CreatedAt,
+		IsNil:  CreatedAt.IsZero(),
+	}
+}
+
+func (ft *ShopCustomerGroupCustomerFilters) ByCreatedAtPtr(CreatedAt *time.Time) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "created_at",
+		Value:  CreatedAt,
+		IsNil:  CreatedAt == nil,
+		IsZero: CreatedAt != nil && (*CreatedAt).IsZero(),
+	}
+}
+
+func (ft *ShopCustomerGroupCustomerFilters) ByUpdatedAt(UpdatedAt time.Time) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "updated_at",
+		Value:  UpdatedAt,
+		IsNil:  UpdatedAt.IsZero(),
+	}
+}
+
+func (ft *ShopCustomerGroupCustomerFilters) ByUpdatedAtPtr(UpdatedAt *time.Time) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "updated_at",
+		Value:  UpdatedAt,
+		IsNil:  UpdatedAt == nil,
+		IsZero: UpdatedAt != nil && (*UpdatedAt).IsZero(),
+	}
+}
+
+type ShopCustomerGroupFilters struct{ prefix string }
+
+func NewShopCustomerGroupFilters(prefix string) ShopCustomerGroupFilters {
+	return ShopCustomerGroupFilters{prefix}
+}
+
+func (ft *ShopCustomerGroupFilters) Filter(pred string, args ...interface{}) sq.WriterTo {
+	return sq.Filter(&ft.prefix, pred, args...)
+}
+
+func (ft ShopCustomerGroupFilters) Prefix() string {
+	return ft.prefix
+}
+
+func (ft *ShopCustomerGroupFilters) ByID(ID int64) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "id",
+		Value:  ID,
+		IsNil:  ID == 0,
+	}
+}
+
+func (ft *ShopCustomerGroupFilters) ByIDPtr(ID *int64) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "id",
+		Value:  ID,
+		IsNil:  ID == nil,
+		IsZero: ID != nil && (*ID) == 0,
+	}
+}
+
+func (ft *ShopCustomerGroupFilters) ByName(Name string) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "name",
+		Value:  Name,
+		IsNil:  Name == "",
+	}
+}
+
+func (ft *ShopCustomerGroupFilters) ByNamePtr(Name *string) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "name",
+		Value:  Name,
+		IsNil:  Name == nil,
+		IsZero: Name != nil && (*Name) == "",
+	}
+}
+
+func (ft *ShopCustomerGroupFilters) ByCreatedAt(CreatedAt time.Time) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "created_at",
+		Value:  CreatedAt,
+		IsNil:  CreatedAt.IsZero(),
+	}
+}
+
+func (ft *ShopCustomerGroupFilters) ByCreatedAtPtr(CreatedAt *time.Time) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "created_at",
+		Value:  CreatedAt,
+		IsNil:  CreatedAt == nil,
+		IsZero: CreatedAt != nil && (*CreatedAt).IsZero(),
+	}
+}
+
+func (ft *ShopCustomerGroupFilters) ByUpdatedAt(UpdatedAt time.Time) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "updated_at",
+		Value:  UpdatedAt,
+		IsNil:  UpdatedAt.IsZero(),
+	}
+}
+
+func (ft *ShopCustomerGroupFilters) ByUpdatedAtPtr(UpdatedAt *time.Time) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "updated_at",
+		Value:  UpdatedAt,
+		IsNil:  UpdatedAt == nil,
+		IsZero: UpdatedAt != nil && (*UpdatedAt).IsZero(),
+	}
+}

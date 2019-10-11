@@ -917,3 +917,429 @@ func (ms *ShopTraderAddressHistories) SQLScan(opts core.Opts, rows *sql.Rows) er
 	*ms = res
 	return nil
 }
+
+// Type ShopCustomerGroupCustomer represents table shop_customer_group_customer
+func sqlgenShopCustomerGroupCustomer(_ *ShopCustomerGroupCustomer) bool { return true }
+
+type ShopCustomerGroupCustomers []*ShopCustomerGroupCustomer
+
+const __sqlShopCustomerGroupCustomer_Table = "shop_customer_group_customer"
+const __sqlShopCustomerGroupCustomer_ListCols = "\"group_id\",\"customer_id\",\"created_at\",\"updated_at\""
+const __sqlShopCustomerGroupCustomer_Insert = "INSERT INTO \"shop_customer_group_customer\" (" + __sqlShopCustomerGroupCustomer_ListCols + ") VALUES"
+const __sqlShopCustomerGroupCustomer_Select = "SELECT " + __sqlShopCustomerGroupCustomer_ListCols + " FROM \"shop_customer_group_customer\""
+const __sqlShopCustomerGroupCustomer_Select_history = "SELECT " + __sqlShopCustomerGroupCustomer_ListCols + " FROM history.\"shop_customer_group_customer\""
+const __sqlShopCustomerGroupCustomer_UpdateAll = "UPDATE \"shop_customer_group_customer\" SET (" + __sqlShopCustomerGroupCustomer_ListCols + ")"
+
+func (m *ShopCustomerGroupCustomer) SQLTableName() string  { return "shop_customer_group_customer" }
+func (m *ShopCustomerGroupCustomers) SQLTableName() string { return "shop_customer_group_customer" }
+func (m *ShopCustomerGroupCustomer) SQLListCols() string {
+	return __sqlShopCustomerGroupCustomer_ListCols
+}
+
+func (m *ShopCustomerGroupCustomer) SQLArgs(opts core.Opts, create bool) []interface{} {
+	now := time.Now()
+	return []interface{}{
+		core.Int64(m.GroupID),
+		core.Int64(m.CustomerID),
+		core.Now(m.CreatedAt, now, create),
+		core.Now(m.UpdatedAt, now, true),
+	}
+}
+
+func (m *ShopCustomerGroupCustomer) SQLScanArgs(opts core.Opts) []interface{} {
+	return []interface{}{
+		(*core.Int64)(&m.GroupID),
+		(*core.Int64)(&m.CustomerID),
+		(*core.Time)(&m.CreatedAt),
+		(*core.Time)(&m.UpdatedAt),
+	}
+}
+
+func (m *ShopCustomerGroupCustomer) SQLScan(opts core.Opts, row *sql.Row) error {
+	return row.Scan(m.SQLScanArgs(opts)...)
+}
+
+func (ms *ShopCustomerGroupCustomers) SQLScan(opts core.Opts, rows *sql.Rows) error {
+	res := make(ShopCustomerGroupCustomers, 0, 128)
+	for rows.Next() {
+		m := new(ShopCustomerGroupCustomer)
+		args := m.SQLScanArgs(opts)
+		if err := rows.Scan(args...); err != nil {
+			return err
+		}
+		res = append(res, m)
+	}
+	if err := rows.Err(); err != nil {
+		return err
+	}
+	*ms = res
+	return nil
+}
+
+func (_ *ShopCustomerGroupCustomer) SQLSelect(w SQLWriter) error {
+	w.WriteQueryString(__sqlShopCustomerGroupCustomer_Select)
+	return nil
+}
+
+func (_ *ShopCustomerGroupCustomers) SQLSelect(w SQLWriter) error {
+	w.WriteQueryString(__sqlShopCustomerGroupCustomer_Select)
+	return nil
+}
+
+func (m *ShopCustomerGroupCustomer) SQLInsert(w SQLWriter) error {
+	w.WriteQueryString(__sqlShopCustomerGroupCustomer_Insert)
+	w.WriteRawString(" (")
+	w.WriteMarkers(4)
+	w.WriteByte(')')
+	w.WriteArgs(m.SQLArgs(w.Opts(), true))
+	return nil
+}
+
+func (ms ShopCustomerGroupCustomers) SQLInsert(w SQLWriter) error {
+	w.WriteQueryString(__sqlShopCustomerGroupCustomer_Insert)
+	w.WriteRawString(" (")
+	for i := 0; i < len(ms); i++ {
+		w.WriteMarkers(4)
+		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
+		w.WriteRawString("),(")
+	}
+	w.TrimLast(2)
+	return nil
+}
+
+func (m *ShopCustomerGroupCustomer) SQLUpdate(w SQLWriter) error {
+	now, opts := time.Now(), w.Opts()
+	_, _ = now, opts // suppress unuse error
+	var flag bool
+	w.WriteRawString("UPDATE ")
+	w.WriteName("shop_customer_group_customer")
+	w.WriteRawString(" SET ")
+	if m.GroupID != 0 {
+		flag = true
+		w.WriteName("group_id")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.GroupID)
+	}
+	if m.CustomerID != 0 {
+		flag = true
+		w.WriteName("customer_id")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.CustomerID)
+	}
+	if !m.CreatedAt.IsZero() {
+		flag = true
+		w.WriteName("created_at")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.CreatedAt)
+	}
+	if !m.UpdatedAt.IsZero() {
+		flag = true
+		w.WriteName("updated_at")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(core.Now(m.UpdatedAt, time.Now(), true))
+	}
+	if !flag {
+		return core.ErrNoColumn
+	}
+	w.TrimLast(1)
+	return nil
+}
+
+func (m *ShopCustomerGroupCustomer) SQLUpdateAll(w SQLWriter) error {
+	w.WriteQueryString(__sqlShopCustomerGroupCustomer_UpdateAll)
+	w.WriteRawString(" = (")
+	w.WriteMarkers(4)
+	w.WriteByte(')')
+	w.WriteArgs(m.SQLArgs(w.Opts(), false))
+	return nil
+}
+
+type ShopCustomerGroupCustomerHistory map[string]interface{}
+type ShopCustomerGroupCustomerHistories []map[string]interface{}
+
+func (m *ShopCustomerGroupCustomerHistory) SQLTableName() string {
+	return "history.\"shop_customer_group_customer\""
+}
+func (m ShopCustomerGroupCustomerHistories) SQLTableName() string {
+	return "history.\"shop_customer_group_customer\""
+}
+
+func (m *ShopCustomerGroupCustomerHistory) SQLSelect(w SQLWriter) error {
+	w.WriteQueryString(__sqlShopCustomerGroupCustomer_Select_history)
+	return nil
+}
+
+func (m ShopCustomerGroupCustomerHistories) SQLSelect(w SQLWriter) error {
+	w.WriteQueryString(__sqlShopCustomerGroupCustomer_Select_history)
+	return nil
+}
+
+func (m ShopCustomerGroupCustomerHistory) GroupID() core.Interface {
+	return core.Interface{m["group_id"]}
+}
+func (m ShopCustomerGroupCustomerHistory) CustomerID() core.Interface {
+	return core.Interface{m["customer_id"]}
+}
+func (m ShopCustomerGroupCustomerHistory) CreatedAt() core.Interface {
+	return core.Interface{m["created_at"]}
+}
+func (m ShopCustomerGroupCustomerHistory) UpdatedAt() core.Interface {
+	return core.Interface{m["updated_at"]}
+}
+
+func (m *ShopCustomerGroupCustomerHistory) SQLScan(opts core.Opts, row *sql.Row) error {
+	data := make([]interface{}, 4)
+	args := make([]interface{}, 4)
+	for i := 0; i < 4; i++ {
+		args[i] = &data[i]
+	}
+	if err := row.Scan(args...); err != nil {
+		return err
+	}
+	res := make(ShopCustomerGroupCustomerHistory, 4)
+	res["group_id"] = data[0]
+	res["customer_id"] = data[1]
+	res["created_at"] = data[2]
+	res["updated_at"] = data[3]
+	*m = res
+	return nil
+}
+
+func (ms *ShopCustomerGroupCustomerHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
+	data := make([]interface{}, 4)
+	args := make([]interface{}, 4)
+	for i := 0; i < 4; i++ {
+		args[i] = &data[i]
+	}
+	res := make(ShopCustomerGroupCustomerHistories, 0, 128)
+	for rows.Next() {
+		if err := rows.Scan(args...); err != nil {
+			return err
+		}
+		m := make(ShopCustomerGroupCustomerHistory)
+		m["group_id"] = data[0]
+		m["customer_id"] = data[1]
+		m["created_at"] = data[2]
+		m["updated_at"] = data[3]
+		res = append(res, m)
+	}
+	if err := rows.Err(); err != nil {
+		return err
+	}
+	*ms = res
+	return nil
+}
+
+// Type ShopCustomerGroup represents table shop_customer_group
+func sqlgenShopCustomerGroup(_ *ShopCustomerGroup) bool { return true }
+
+type ShopCustomerGroups []*ShopCustomerGroup
+
+const __sqlShopCustomerGroup_Table = "shop_customer_group"
+const __sqlShopCustomerGroup_ListCols = "\"id\",\"name\",\"created_at\",\"updated_at\""
+const __sqlShopCustomerGroup_Insert = "INSERT INTO \"shop_customer_group\" (" + __sqlShopCustomerGroup_ListCols + ") VALUES"
+const __sqlShopCustomerGroup_Select = "SELECT " + __sqlShopCustomerGroup_ListCols + " FROM \"shop_customer_group\""
+const __sqlShopCustomerGroup_Select_history = "SELECT " + __sqlShopCustomerGroup_ListCols + " FROM history.\"shop_customer_group\""
+const __sqlShopCustomerGroup_UpdateAll = "UPDATE \"shop_customer_group\" SET (" + __sqlShopCustomerGroup_ListCols + ")"
+
+func (m *ShopCustomerGroup) SQLTableName() string  { return "shop_customer_group" }
+func (m *ShopCustomerGroups) SQLTableName() string { return "shop_customer_group" }
+func (m *ShopCustomerGroup) SQLListCols() string   { return __sqlShopCustomerGroup_ListCols }
+
+func (m *ShopCustomerGroup) SQLArgs(opts core.Opts, create bool) []interface{} {
+	now := time.Now()
+	return []interface{}{
+		core.Int64(m.ID),
+		core.String(m.Name),
+		core.Now(m.CreatedAt, now, create),
+		core.Now(m.UpdatedAt, now, true),
+	}
+}
+
+func (m *ShopCustomerGroup) SQLScanArgs(opts core.Opts) []interface{} {
+	return []interface{}{
+		(*core.Int64)(&m.ID),
+		(*core.String)(&m.Name),
+		(*core.Time)(&m.CreatedAt),
+		(*core.Time)(&m.UpdatedAt),
+	}
+}
+
+func (m *ShopCustomerGroup) SQLScan(opts core.Opts, row *sql.Row) error {
+	return row.Scan(m.SQLScanArgs(opts)...)
+}
+
+func (ms *ShopCustomerGroups) SQLScan(opts core.Opts, rows *sql.Rows) error {
+	res := make(ShopCustomerGroups, 0, 128)
+	for rows.Next() {
+		m := new(ShopCustomerGroup)
+		args := m.SQLScanArgs(opts)
+		if err := rows.Scan(args...); err != nil {
+			return err
+		}
+		res = append(res, m)
+	}
+	if err := rows.Err(); err != nil {
+		return err
+	}
+	*ms = res
+	return nil
+}
+
+func (_ *ShopCustomerGroup) SQLSelect(w SQLWriter) error {
+	w.WriteQueryString(__sqlShopCustomerGroup_Select)
+	return nil
+}
+
+func (_ *ShopCustomerGroups) SQLSelect(w SQLWriter) error {
+	w.WriteQueryString(__sqlShopCustomerGroup_Select)
+	return nil
+}
+
+func (m *ShopCustomerGroup) SQLInsert(w SQLWriter) error {
+	w.WriteQueryString(__sqlShopCustomerGroup_Insert)
+	w.WriteRawString(" (")
+	w.WriteMarkers(4)
+	w.WriteByte(')')
+	w.WriteArgs(m.SQLArgs(w.Opts(), true))
+	return nil
+}
+
+func (ms ShopCustomerGroups) SQLInsert(w SQLWriter) error {
+	w.WriteQueryString(__sqlShopCustomerGroup_Insert)
+	w.WriteRawString(" (")
+	for i := 0; i < len(ms); i++ {
+		w.WriteMarkers(4)
+		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
+		w.WriteRawString("),(")
+	}
+	w.TrimLast(2)
+	return nil
+}
+
+func (m *ShopCustomerGroup) SQLUpdate(w SQLWriter) error {
+	now, opts := time.Now(), w.Opts()
+	_, _ = now, opts // suppress unuse error
+	var flag bool
+	w.WriteRawString("UPDATE ")
+	w.WriteName("shop_customer_group")
+	w.WriteRawString(" SET ")
+	if m.ID != 0 {
+		flag = true
+		w.WriteName("id")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.ID)
+	}
+	if m.Name != "" {
+		flag = true
+		w.WriteName("name")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.Name)
+	}
+	if !m.CreatedAt.IsZero() {
+		flag = true
+		w.WriteName("created_at")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.CreatedAt)
+	}
+	if !m.UpdatedAt.IsZero() {
+		flag = true
+		w.WriteName("updated_at")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(core.Now(m.UpdatedAt, time.Now(), true))
+	}
+	if !flag {
+		return core.ErrNoColumn
+	}
+	w.TrimLast(1)
+	return nil
+}
+
+func (m *ShopCustomerGroup) SQLUpdateAll(w SQLWriter) error {
+	w.WriteQueryString(__sqlShopCustomerGroup_UpdateAll)
+	w.WriteRawString(" = (")
+	w.WriteMarkers(4)
+	w.WriteByte(')')
+	w.WriteArgs(m.SQLArgs(w.Opts(), false))
+	return nil
+}
+
+type ShopCustomerGroupHistory map[string]interface{}
+type ShopCustomerGroupHistories []map[string]interface{}
+
+func (m *ShopCustomerGroupHistory) SQLTableName() string  { return "history.\"shop_customer_group\"" }
+func (m ShopCustomerGroupHistories) SQLTableName() string { return "history.\"shop_customer_group\"" }
+
+func (m *ShopCustomerGroupHistory) SQLSelect(w SQLWriter) error {
+	w.WriteQueryString(__sqlShopCustomerGroup_Select_history)
+	return nil
+}
+
+func (m ShopCustomerGroupHistories) SQLSelect(w SQLWriter) error {
+	w.WriteQueryString(__sqlShopCustomerGroup_Select_history)
+	return nil
+}
+
+func (m ShopCustomerGroupHistory) ID() core.Interface        { return core.Interface{m["id"]} }
+func (m ShopCustomerGroupHistory) Name() core.Interface      { return core.Interface{m["name"]} }
+func (m ShopCustomerGroupHistory) CreatedAt() core.Interface { return core.Interface{m["created_at"]} }
+func (m ShopCustomerGroupHistory) UpdatedAt() core.Interface { return core.Interface{m["updated_at"]} }
+
+func (m *ShopCustomerGroupHistory) SQLScan(opts core.Opts, row *sql.Row) error {
+	data := make([]interface{}, 4)
+	args := make([]interface{}, 4)
+	for i := 0; i < 4; i++ {
+		args[i] = &data[i]
+	}
+	if err := row.Scan(args...); err != nil {
+		return err
+	}
+	res := make(ShopCustomerGroupHistory, 4)
+	res["id"] = data[0]
+	res["name"] = data[1]
+	res["created_at"] = data[2]
+	res["updated_at"] = data[3]
+	*m = res
+	return nil
+}
+
+func (ms *ShopCustomerGroupHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
+	data := make([]interface{}, 4)
+	args := make([]interface{}, 4)
+	for i := 0; i < 4; i++ {
+		args[i] = &data[i]
+	}
+	res := make(ShopCustomerGroupHistories, 0, 128)
+	for rows.Next() {
+		if err := rows.Scan(args...); err != nil {
+			return err
+		}
+		m := make(ShopCustomerGroupHistory)
+		m["id"] = data[0]
+		m["name"] = data[1]
+		m["created_at"] = data[2]
+		m["updated_at"] = data[3]
+		res = append(res, m)
+	}
+	if err := rows.Err(); err != nil {
+		return err
+	}
+	*ms = res
+	return nil
+}

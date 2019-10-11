@@ -7,6 +7,7 @@ import (
 type ShopCustomer struct {
 	ID        int64
 	ShopID    int64
+	GroupIDs  []int64
 	Code      string
 	FullName  string
 	Gender    string
@@ -16,6 +17,19 @@ type ShopCustomer struct {
 	Phone     string
 	Email     string
 	Status    int32
+	CreatedAt time.Time
+	UpdatedAt time.Time
+}
+
+type ShopCustomerGroup struct {
+	ID   int64
+	Name string
+}
+
+type ShopCustomerGroupCustomer struct {
+	GroupID    int64
+	CustomerID int64
+
 	CreatedAt time.Time
 	UpdatedAt time.Time
 }

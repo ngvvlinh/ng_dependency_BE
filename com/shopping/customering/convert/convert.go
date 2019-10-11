@@ -1,6 +1,8 @@
 package convert
 
 import (
+	"time"
+
 	"etop.vn/api/main/etop"
 	"etop.vn/api/shopping/addressing"
 	"etop.vn/api/shopping/customering"
@@ -202,4 +204,36 @@ func UpdateShopTraderAddress(in *addressing.ShopTraderAddress, update *addressin
 		out.Coordinates = update.Coordinates
 	}
 	return out
+}
+
+func ShopCustomerGroup(in *model.ShopCustomerGroup, out *customering.ShopCustomerGroup) {
+	convert_customeringmodel_ShopCustomerGroup_customering_ShopCustomerGroup(in, out)
+}
+
+func ShopCustomerGroupDB(in *customering.ShopCustomerGroup, out *model.ShopCustomerGroup) {
+	convert_customering_ShopCustomerGroup_customeringmodel_ShopCustomerGroup(in, out)
+}
+
+func ShopCustomerGroups(ins []*model.ShopCustomerGroup) (outs []*customering.ShopCustomerGroup) {
+	return Convert_customeringmodel_ShopCustomerGroups_customering_ShopCustomerGroups(ins)
+}
+
+func ShopCustomerGroupCustomer(in *model.ShopCustomerGroupCustomer, out *customering.ShopCustomerGroupCustomer) {
+	convert_customeringmodel_ShopCustomerGroupCustomer_customering_ShopCustomerGroupCustomer(in, out)
+}
+
+func ShopCustomerGroupCustomerDB(in *customering.ShopCustomerGroupCustomer, out *model.ShopCustomerGroupCustomer) {
+	convert_customering_ShopCustomerGroupCustomer_customeringmodel_ShopCustomerGroupCustomer(in, out)
+}
+
+func UpdateCustomerGroup(in *model.ShopCustomerGroup, update *customering.UpdateCustomerGroupArgs) (out *model.ShopCustomerGroup) {
+	if in == nil {
+		return nil
+	}
+	return &model.ShopCustomerGroup{
+		ID:        update.ID,
+		Name:      update.Name,
+		CreatedAt: in.CreatedAt,
+		UpdatedAt: time.Now(),
+	}
 }

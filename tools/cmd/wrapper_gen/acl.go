@@ -267,6 +267,14 @@ var ACL = map[string]*permission.PermissionDecl{
 	"shop.Customer/DeleteCustomerAddress":     {Type: Shop},
 	"shop.Customer/SetDefaultCustomerAddress": {Type: Shop},
 
+	"shop.Customer/AddCustomersToGroup":      {Type: Shop},
+	"shop.Customer/RemoveCustomersFromGroup": {Type: Shop},
+
+	"shop.CustomerGroup/CreateCustomerGroup": {Type: Shop},
+	"shop.CustomerGroup/GetCustomerGroup":    {Type: Shop},
+	"shop.CustomerGroup/GetCustomerGroups":   {Type: Shop},
+	"shop.CustomerGroup/UpdateCustomerGroup": {Type: Shop},
+
 	"shop.Category/GetCategory":    {Type: Shop},
 	"shop.Category/GetCategories":  {Type: Shop},
 	"shop.Category/CreateCategory": {Type: Shop},

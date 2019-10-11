@@ -90,6 +90,17 @@ service CustomerService {
     rpc UpdateCustomerAddress(UpdateCustomerAddressRequest) returns (CustomerAddress);
     rpc SetDefaultCustomerAddress(cm.IDRequest) returns (cm.UpdatedResponse);
     rpc DeleteCustomerAddress(cm.IDRequest) returns (cm.DeletedResponse);
+
+    //-- group --//
+    rpc AddCustomersToGroup(AddCustomerToGroupRequest) returns (cm.UpdatedResponse);
+    rpc RemoveCustomersFromGroup(RemoveCustomerOutOfGroupRequest) returns (cm.RemovedResponse);
+}
+
+service CustomerGroupService {
+    rpc CreateCustomerGroup (CreateCustomerGroupRequest) returns (CustomerGroup);
+    rpc GetCustomerGroup (cm.IDRequest) returns (CustomerGroup);
+    rpc GetCustomerGroups (GetCustomerGroupsRequest) returns (CustomerGroupsResponse);
+    rpc UpdateCustomerGroup (UpdateCustomerGroupRequest) returns (CustomerGroup);
 }
 
 service ProductService {
@@ -1048,6 +1059,8 @@ message Customer {
     optional google.protobuf.Timestamp updated_at = 10;
 
     optional status3.Status status = 11 [(gogoproto.nullable) = false];
+
+    repeated int64 group_ids = 14 [(gogoproto.nullable) = false];
 }
 
 message CreateCustomerRequest {
@@ -1273,6 +1286,16 @@ message RemoveShopProductCollectionRequest {
    repeated int64 collection_ids = 2 [(gogoproto.nullable) = false];
 }
 
+message AddCustomerToGroupRequest {
+   repeated int64 customer_ids = 1 [(gogoproto.nullable) = false];
+   optional int64 group_id = 2 [(gogoproto.nullable) = false];
+}
+
+message RemoveCustomerOutOfGroupRequest {
+   repeated int64 customer_ids = 1 [(gogoproto.nullable) = false];
+   optional int64 group_id = 2 [(gogoproto.nullable) = false];
+}
+
 message Vendor {
     optional int64 id = 1 [(gogoproto.nullable) = false];
     optional int64 shop_id = 2 [(gogoproto.nullable) = false];
@@ -1411,8 +1434,33 @@ message ReceiptsResponse {
 message GetReceivedAmountByOrderIDResponse {
     optional int32 total_amount = 1 [(gogoproto.nullable) = false];
     optional int32 received_amount = 2 [(gogoproto.nullable) = false];
+    optional int64 user_id = 3 [(gogoproto.nullable) = false];
 }
 
 message GetShopCollectionsByProductIDRequest {
       optional int64 product_id =1  [(gogoproto.nullable) = false];
+}
+
+message CustomerGroup {
+    optional int64 id = 1 [(gogoproto.nullable) = false];
+    optional string name = 2 [(gogoproto.nullable) = false];
+}
+
+message CreateCustomerGroupRequest {
+    optional string name = 1 [(gogoproto.nullable) = false];
+}
+
+message UpdateCustomerGroupRequest {
+    optional int64 group_id = 1 [(gogoproto.nullable) = false];
+    optional string name = 2 [(gogoproto.nullable) = false];
+}
+
+message GetCustomerGroupsRequest {
+    optional cm.Paging paging = 1;
+    repeated cm.Filter filters = 2;
+}
+
+message CustomerGroupsResponse {
+    repeated CustomerGroup customer_groups = 1;
+    optional cm.PageInfo paging = 2;
 }
