@@ -763,6 +763,7 @@ func PrepareOrder(ctx context.Context, shopID int64, m *pborder.CreateOrderReque
 		ProductNameNorm:            "",
 		ExternalMeta:               externalMeta,
 		ReferralMeta:               referralMeta,
+		CustomerID:                 m.CustomerId,
 	}
 	if err = shipping.ToModel(order); err != nil {
 		return nil, err
