@@ -152,6 +152,7 @@ func convert_customering_ShopCustomer_customeringmodel_ShopCustomer(arg *custome
 	out.Phone = arg.Phone         // simple assign
 	out.Email = arg.Email         // simple assign
 	out.Status = arg.Status       // simple assign
+	out.FullNameNorm = ""         // zero value
 	out.CreatedAt = arg.CreatedAt // simple assign
 	out.UpdatedAt = arg.UpdatedAt // simple assign
 	out.DeletedAt = time.Time{}   // zero value

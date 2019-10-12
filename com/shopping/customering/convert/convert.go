@@ -9,6 +9,7 @@ import (
 	orderconvert "etop.vn/backend/com/main/ordering/convert"
 	"etop.vn/backend/com/shopping/customering/model"
 	cm "etop.vn/backend/pkg/common"
+	"etop.vn/backend/pkg/common/validate"
 )
 
 // +gen:convert: etop.vn/backend/com/shopping/customering/model -> etop.vn/api/shopping/customering
@@ -79,19 +80,20 @@ func ShopCustomerDB(in *customering.ShopCustomer) (out *model.ShopCustomer) {
 		return nil
 	}
 	return &model.ShopCustomer{
-		ID:        in.ID,
-		ShopID:    in.ShopID,
-		Code:      in.Code,
-		FullName:  in.FullName,
-		Gender:    in.Gender,
-		Type:      in.Type,
-		Birthday:  in.Birthday,
-		Note:      in.Note,
-		Phone:     in.Phone,
-		Email:     in.Email,
-		Status:    in.Status,
-		CreatedAt: in.CreatedAt,
-		UpdatedAt: in.UpdatedAt,
+		ID:           in.ID,
+		ShopID:       in.ShopID,
+		Code:         in.Code,
+		FullName:     in.FullName,
+		Gender:       in.Gender,
+		Type:         in.Type,
+		Birthday:     in.Birthday,
+		Note:         in.Note,
+		Phone:        in.Phone,
+		Email:        in.Email,
+		Status:       in.Status,
+		CreatedAt:    in.CreatedAt,
+		UpdatedAt:    in.UpdatedAt,
+		FullNameNorm: validate.NormalizeSearch(in.FullName),
 	}
 }
 

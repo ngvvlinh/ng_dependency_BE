@@ -36,7 +36,10 @@ var SortCustomer = map[string]string{
 	"name":       "",
 }
 
-var FilterCustomer = sqlstore.FilterWhitelist{}
+var FilterCustomer = sqlstore.FilterWhitelist{
+	Contains: []string{"full_name"},
+	Equals:   []string{"phone"},
+}
 
 var SortShopCustomerGroupCustomer = map[string]string{
 	"group_id":    "",

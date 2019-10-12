@@ -303,6 +303,25 @@ func (ft *ShopCustomerFilters) ByStatusPtr(Status *int32) *sq.ColumnFilterPtr {
 	}
 }
 
+func (ft *ShopCustomerFilters) ByFullNameNorm(FullNameNorm string) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "full_name_norm",
+		Value:  FullNameNorm,
+		IsNil:  FullNameNorm == "",
+	}
+}
+
+func (ft *ShopCustomerFilters) ByFullNameNormPtr(FullNameNorm *string) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "full_name_norm",
+		Value:  FullNameNorm,
+		IsNil:  FullNameNorm == nil,
+		IsZero: FullNameNorm != nil && (*FullNameNorm) == "",
+	}
+}
+
 func (ft *ShopCustomerFilters) ByCreatedAt(CreatedAt time.Time) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
