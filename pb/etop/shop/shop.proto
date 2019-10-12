@@ -1180,27 +1180,27 @@ message CreateCustomerAddressRequest {
 message UpdateCustomerAddressRequest {
     optional int64 id = 1 [(gogoproto.nullable) = false];
 
-    optional string province_code = 2 [(gogoproto.nullable) = false];
+    optional string province_code = 2;
 
-    optional string district_code = 3 [(gogoproto.nullable) = false];
+    optional string district_code = 3;
 
-    optional string ward_code = 4 [(gogoproto.nullable) = false];
+    optional string ward_code = 4;
 
-    optional string address1 = 5 [(gogoproto.nullable) = false];
+    optional string address1 = 5;
 
-    optional string address2 = 6 [(gogoproto.nullable) = false];
+    optional string address2 = 6;
 
-    optional string country = 7 [(gogoproto.nullable) = false];
+    optional string country = 7;
 
-    optional string full_name = 8 [(gogoproto.nullable) = false];
+    optional string full_name = 8;
 
-    optional string phone = 9 [(gogoproto.nullable) = false];
+    optional string phone = 9;
 
-    optional string email = 10 [(gogoproto.nullable) = false];
+    optional string email = 10;
 
-    optional string position = 11 [(gogoproto.nullable) = false];
+    optional string position = 11;
 
-    optional string company = 12 [(gogoproto.nullable) = false];
+    optional string company = 12;
 
     optional etop.Coordinates coordinates = 18;
 }

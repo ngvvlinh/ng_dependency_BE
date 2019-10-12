@@ -3,16 +3,16 @@ package shop
 import (
 	"context"
 
-	cm "etop.vn/backend/pkg/common"
-	"etop.vn/common/xerrors"
-
+	"etop.vn/api/main/location"
 	"etop.vn/api/shopping/addressing"
 	pbcm "etop.vn/backend/pb/common"
 	pbetop "etop.vn/backend/pb/etop"
 	pbshop "etop.vn/backend/pb/etop/shop"
+	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
 	wrapshop "etop.vn/backend/wrapper/etop/shop"
 	. "etop.vn/capi/dot"
+	"etop.vn/common/xerrors"
 )
 
 func init() {
@@ -26,6 +26,14 @@ func init() {
 }
 
 func CreateCustomerAddress(ctx context.Context, r *wrapshop.CreateCustomerAddressEndpoint) error {
+	query := &location.GetLocationQuery{
+		DistrictCode: r.DistrictCode,
+		WardCode:     r.WardCode,
+	}
+	if err := locationQuery.Dispatch(ctx, query); err != nil {
+		return err
+	}
+
 	cmd := &addressing.CreateAddressCommand{
 		ShopID:       r.Context.Shop.ID,
 		TraderID:     r.CustomerId,
@@ -80,18 +88,28 @@ func GetCustomerAddresses(ctx context.Context, r *wrapshop.GetCustomerAddressesE
 }
 
 func UpdateCustomerAddress(ctx context.Context, r *wrapshop.UpdateCustomerAddressEndpoint) error {
+	if r.DistrictCode != nil && r.WardCode != nil {
+		query := &location.GetLocationQuery{
+			DistrictCode: *r.DistrictCode,
+			WardCode:     *r.WardCode,
+		}
+		if err := locationQuery.Dispatch(ctx, query); err != nil {
+			return err
+		}
+	}
+
 	// TODO: verify district & ward code
 	cmd := &addressing.UpdateAddressCommand{
 		ID:           r.Id,
 		ShopID:       r.Context.Shop.ID,
-		FullName:     String(r.FullName),
-		Phone:        String(r.Phone),
-		Email:        String(r.Email),
-		Company:      String(r.Company),
-		Address1:     String(r.Address1),
-		Address2:     String(r.Address2),
-		DistrictCode: String(r.DistrictCode),
-		WardCode:     String(r.WardCode),
+		FullName:     PString(r.FullName),
+		Phone:        PString(r.Phone),
+		Email:        PString(r.Email),
+		Company:      PString(r.Company),
+		Address1:     PString(r.Address1),
+		Address2:     PString(r.Address2),
+		DistrictCode: PString(r.DistrictCode),
+		WardCode:     PString(r.WardCode),
 		Coordinates:  pbetop.PbCoordinatesToModel(r.Coordinates),
 	}
 	if err := traderAddressAggr.Dispatch(ctx, cmd); err != nil {
