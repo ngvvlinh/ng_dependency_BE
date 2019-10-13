@@ -5,8 +5,6 @@ import (
 	"os/exec"
 	"testing"
 
-	"github.com/stretchr/testify/assert"
-
 	"github.com/stretchr/testify/require"
 
 	"etop.vn/backend/tools/pkg/generator"
@@ -140,10 +138,10 @@ func TestObjects(t *testing.T) {
 
 	objects := ng.ObjectsByScope(pkg.Types.Scope())
 	require.Len(t, objects, 2)
-	assert.Equal(t, "A", objects[0].Object.Name())
-	assert.Equal(t, "B", objects[1].Object.Name())
-	assert.Len(t, objects[1].Directives, 1)
-	assert.Equal(t, "gen:b", objects[1].Directives[0].Cmd)
+	require.Equal(t, "A", objects[0].Object.Name())
+	require.Equal(t, "B", objects[1].Object.Name())
+	require.Len(t, objects[1].Directives, 1)
+	require.Equal(t, "gen:b", objects[1].Directives[0].Cmd)
 }
 
 func TestGenerate(t *testing.T) {

@@ -58,6 +58,24 @@ func registerConversionFunctions(s *scheme.Scheme) {
 		*out.(*[]*C1) = out0
 		return nil
 	})
+	s.Register((*D1)(nil), (*D0)(nil), func(arg, out interface{}) error {
+		Convert_D1_D0(arg.(*D1), out.(*D0))
+		return nil
+	})
+	s.Register(([]*D1)(nil), (*[]*D0)(nil), func(arg, out interface{}) error {
+		out0 := Convert_D1s_D0s(arg.([]*D1))
+		*out.(*[]*D0) = out0
+		return nil
+	})
+	s.Register((*D0)(nil), (*D1)(nil), func(arg, out interface{}) error {
+		Convert_D0_D1(arg.(*D0), out.(*D1))
+		return nil
+	})
+	s.Register(([]*D0)(nil), (*[]*D1)(nil), func(arg, out interface{}) error {
+		out0 := Convert_D0s_D1s(arg.([]*D0))
+		*out.(*[]*D1) = out0
+		return nil
+	})
 }
 
 //-- convert etop.vn/backend/tools/pkg/generators/convert/test.A --//
@@ -80,6 +98,12 @@ func convert_B_A(arg *B, out *A) {
 	out.Strings = arg.Strings       // simple assign
 	out.C = Convert_C1_C0(arg.C, nil)
 	out.Cs = Convert_C1s_C0s(arg.Cs)
+	out.D = Convert_D1_D0(arg.D, nil)
+	out.Ds = Convert_D1s_D0s(arg.Ds)
+	out.E = arg.E     // simple assign
+	out.Ep = arg.Ep   // simple assign
+	out.Es = arg.Es   // simple assign
+	out.Eps = arg.Eps // simple assign
 }
 
 func Convert_Bs_As(args []*B) (outs []*A) {
@@ -109,6 +133,12 @@ func convert_A_B(arg *A, out *B) {
 	out.Strings = arg.Strings  // simple assign
 	out.C = Convert_C0_C1(arg.C, nil)
 	out.Cs = Convert_C0s_C1s(arg.Cs)
+	out.D = Convert_D0_D1(arg.D, nil)
+	out.Ds = Convert_D0s_D1s(arg.Ds)
+	out.E = arg.E     // simple assign
+	out.Ep = arg.Ep   // simple assign
+	out.Es = arg.Es   // simple assign
+	out.Eps = arg.Eps // simple assign
 }
 
 func Convert_As_Bs(args []*A) (outs []*B) {
@@ -152,6 +182,56 @@ func Convert_C0s_C1s(args []*C0) (outs []*C1) {
 	outs = make([]*C1, len(args))
 	for i := range tmps {
 		outs[i] = Convert_C0_C1(args[i], &tmps[i])
+	}
+	return outs
+}
+
+//-- convert etop.vn/backend/tools/pkg/generators/convert/test.D0 --//
+
+func Convert_D1_D0(arg *D1, out *D0) *D0 {
+	if arg == nil {
+		return nil
+	}
+	if out == nil {
+		out = &D0{}
+	}
+	convert_D1_D0(arg, out)
+	return out
+}
+
+func convert_D1_D0(arg *D1, out *D0) {
+	out.Value = arg.Value // simple assign
+}
+
+func Convert_D1s_D0s(args []*D1) (outs []*D0) {
+	tmps := make([]D0, len(args))
+	outs = make([]*D0, len(args))
+	for i := range tmps {
+		outs[i] = Convert_D1_D0(args[i], &tmps[i])
+	}
+	return outs
+}
+
+func Convert_D0_D1(arg *D0, out *D1) *D1 {
+	if arg == nil {
+		return nil
+	}
+	if out == nil {
+		out = &D1{}
+	}
+	convert_D0_D1(arg, out)
+	return out
+}
+
+func convert_D0_D1(arg *D0, out *D1) {
+	out.Value = arg.Value // simple assign
+}
+
+func Convert_D0s_D1s(args []*D0) (outs []*D1) {
+	tmps := make([]D1, len(args))
+	outs = make([]*D1, len(args))
+	for i := range tmps {
+		outs[i] = Convert_D0_D1(args[i], &tmps[i])
 	}
 	return outs
 }

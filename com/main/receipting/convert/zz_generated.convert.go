@@ -96,9 +96,9 @@ func convert_receiptingmodel_Receipt_receipting_Receipt(arg *receiptingmodel.Rec
 	out.Description = arg.Description // simple assign
 	out.Amount = arg.Amount           // simple assign
 	out.Status = arg.Status           // simple assign
-	out.Lines = nil                   // types do not match
-	out.CreatedAt = arg.CreatedAt     // simple assign
-	out.UpdatedAt = arg.UpdatedAt     // simple assign
+	out.Lines = Convert_receiptingmodel_ReceiptLines_receipting_ReceiptLines(arg.Lines)
+	out.CreatedAt = arg.CreatedAt // simple assign
+	out.UpdatedAt = arg.UpdatedAt // simple assign
 }
 
 func Convert_receiptingmodel_Receipts_receipting_Receipts(args []*receiptingmodel.Receipt) (outs []*receipting.Receipt) {
@@ -133,10 +133,10 @@ func convert_receipting_Receipt_receiptingmodel_Receipt(arg *receipting.Receipt,
 	out.Amount = arg.Amount           // simple assign
 	out.Status = arg.Status           // simple assign
 	out.OrderIDs = nil                // zero value
-	out.Lines = nil                   // types do not match
-	out.CreatedAt = arg.CreatedAt     // simple assign
-	out.UpdatedAt = arg.UpdatedAt     // simple assign
-	out.DeletedAt = time.Time{}       // zero value
+	out.Lines = Convert_receipting_ReceiptLines_receiptingmodel_ReceiptLines(arg.Lines)
+	out.CreatedAt = arg.CreatedAt // simple assign
+	out.UpdatedAt = arg.UpdatedAt // simple assign
+	out.DeletedAt = time.Time{}   // zero value
 }
 
 func Convert_receipting_Receipts_receiptingmodel_Receipts(args []*receipting.Receipt) (outs []*receiptingmodel.Receipt) {
@@ -170,7 +170,7 @@ func apply_receipting_CreateReceiptArgs_receipting_Receipt(arg *receipting.Creat
 	out.Description = arg.Description // simple assign
 	out.Amount = arg.Amount           // simple assign
 	out.Status = 0                    // zero value
-	out.Lines = nil                   // types do not match
+	out.Lines = arg.Lines             // simple assign
 	out.CreatedAt = time.Time{}       // zero value
 	out.UpdatedAt = time.Time{}       // zero value
 }
@@ -197,7 +197,7 @@ func apply_receipting_UpdateReceiptArgs_receipting_Receipt(arg *receipting.Updat
 	out.Description = arg.Description.Apply(out.Description) // apply change
 	out.Amount = arg.Amount.Apply(out.Amount)                // apply change
 	out.Status = out.Status                                  // no change
-	out.Lines = out.Lines                                    // types do not match
+	out.Lines = arg.Lines                                    // simple assign
 	out.CreatedAt = out.CreatedAt                            // no change
 	out.UpdatedAt = out.UpdatedAt                            // no change
 }

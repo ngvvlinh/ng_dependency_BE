@@ -17,8 +17,15 @@ func TestConvert(t *testing.T) {
 			Int:     100,
 			String:  "hello",
 			Strings: []string{"one", "two"},
-			C:       &C0{-10},
-			Cs:      []*C0{{-100}, {-200}},
+
+			C:   &C0{-10},
+			Cs:  []*C0{{-100}, {-200}},
+			D:   &D0{"first"},
+			Ds:  []*D0{{"second"}, {"third"}},
+			E:   E{"first"},
+			Ep:  &E{"first"},
+			Es:  []E{{"second"}, {"third"}},
+			Eps: []*E{{"second"}, {"third"}},
 		}
 		err := scheme.Convert(a, &b)
 		require.NoError(t, err)
@@ -28,6 +35,12 @@ func TestConvert(t *testing.T) {
 		assert.EqualValues(t, b.Strings, []string{"one", "two"})
 		assert.Equal(t, b.C.Value, "-10")
 		assert.EqualValues(t, b.Cs, []*C1{{"-100"}, {"-200"}})
+		assert.Equal(t, b.D.Value, "first")
+		assert.EqualValues(t, b.Ds, []*D1{{"second"}, {"third"}})
+		assert.Equal(t, b.E.Value, "first")
+		assert.Equal(t, b.Ep.Value, "first")
+		assert.EqualValues(t, b.Es, []E{{"second"}, {"third"}})
+		assert.EqualValues(t, b.Eps, []*E{{"second"}, {"third"}})
 	})
 	t.Run("[]*A to []*B", func(t *testing.T) {
 		var bs []*B

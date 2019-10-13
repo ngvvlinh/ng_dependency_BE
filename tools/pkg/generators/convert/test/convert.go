@@ -14,8 +14,22 @@ type A struct {
 	String  string
 	Strings []string
 
+	// C0 and C1 have custom conversions
+
 	C  *C0
 	Cs []*C0
+
+	// D0 and D1 have no custom conversions
+
+	D  *D0
+	Ds []*D0
+
+	// E is just a struct without any conversions
+
+	E   E
+	Ep  *E
+	Es  []E
+	Eps []*E
 }
 
 // +convert:type=A
@@ -25,8 +39,14 @@ type B struct {
 	String  S
 	Strings []string
 
-	C  *C1
-	Cs []*C1
+	C   *C1
+	Cs  []*C1
+	D   *D1
+	Ds  []*D1
+	E   E
+	Ep  *E
+	Es  []E
+	Eps []*E
 }
 
 type C0 struct {
@@ -35,6 +55,19 @@ type C0 struct {
 
 // +convert:type=C0
 type C1 struct {
+	Value string
+}
+
+type D0 struct {
+	Value string
+}
+
+// +convert:type=D0
+type D1 struct {
+	Value string
+}
+
+type E struct {
 	Value string
 }
 

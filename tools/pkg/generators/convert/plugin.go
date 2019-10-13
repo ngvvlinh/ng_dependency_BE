@@ -128,7 +128,6 @@ func (p *plugin) Generate(ng generator.Engine) error {
 			gpkg.customConvs = append(gpkg.customConvs, customConv)
 			convPairs[pair] = &conversionFunc{
 				pair: pair,
-				Obj:  object,
 				Func: fn,
 				Mode: mode,
 			}
@@ -167,9 +166,10 @@ type objMap struct {
 }
 
 type objGen struct {
-	mode string
-	obj  generator.Object
-	opts options
+	mode    string
+	obj     generator.Object
+	opts    options
+	convPkg *packages.Package
 }
 
 type nameWithComment struct {
@@ -206,9 +206,10 @@ type pair struct {
 
 type conversionFunc struct {
 	pair
-	Obj  generator.Object
-	Func *types.Func
 	Mode int
+	Func *types.Func
+
+	ConverterPkg *packages.Package
 }
 
 func (o objName) String() string {
@@ -231,7 +232,7 @@ func preparePackage(ng generator.Engine, gpkg *generator.GeneratingPackage) (*ge
 		if err != nil {
 			return nil, err
 		}
-		step, err := generatePackageStep(ng, gpkg.Generate(), result.objMap, apiPkgPaths, toPkgPaths)
+		step, err := generatePackageStep(ng, gpkg, gpkg.Generate(), result.objMap, apiPkgPaths, toPkgPaths)
 		if err != nil {
 			return nil, err
 		}
@@ -243,7 +244,7 @@ func preparePackage(ng generator.Engine, gpkg *generator.GeneratingPackage) (*ge
 	return result, nil
 }
 
-func generatePackageStep(ng generator.Engine, p generator.Printer, apiObjMap map[objName]*objMap, apiPkgPaths, toPkgPaths []string) (*generatingPackageStep, error) {
+func generatePackageStep(ng generator.Engine, gpkg *generator.GeneratingPackage, p generator.Printer, apiObjMap map[objName]*objMap, apiPkgPaths, toPkgPaths []string) (*generatingPackageStep, error) {
 	ll.V(1).Debugf("convert from %v to %v", strings.Join(apiPkgPaths, ","), strings.Join(toPkgPaths, ","))
 
 	var result generatingPackageStep
@@ -323,7 +324,12 @@ func generatePackageStep(ng generator.Engine, p generator.Printer, apiObjMap map
 			if s := validateStruct(m.src.Object); s == nil {
 				return nil, generator.Errorf(nil, "%v is not a struct", m.src.Object.Name())
 			}
-			m.gens = append(m.gens, objGen{mode: mode, obj: obj, opts: opts})
+			m.gens = append(m.gens, objGen{
+				mode:    mode,
+				obj:     obj,
+				opts:    opts,
+				convPkg: gpkg.Package,
+			})
 		}
 	}
 	return &result, nil
@@ -594,12 +600,26 @@ func generateConverts(
 		return list[i].name < list[j].name
 	})
 
+	// populate convPair with auto conversions
+	for _, objName := range list {
+		m := apiObjMap[objName]
+		for _, g := range m.gens {
+			if g.mode != ModeType {
+				continue
+			}
+			pairs := []pair{getPair(m.src, g.obj), getPair(g.obj, m.src)}
+			for _, pair := range pairs {
+				if convPairs[pair] == nil {
+					convPairs[pair] = &conversionFunc{pair: pair}
+				}
+				convPairs[pair].ConverterPkg = g.convPkg
+			}
+		}
+	}
+
 	var conversions []map[string]interface{}
 	for _, objName := range list {
 		m := apiObjMap[objName]
-		if len(m.gens) == 0 {
-			continue
-		}
 		for _, g := range m.gens {
 			{
 				arg, out := g.obj, m.src
@@ -751,10 +771,10 @@ func includeBaseConversion(p generator.Printer, vars map[string]interface{}, mod
 
 func includeCustomConversion(p generator.Printer, vars map[string]interface{}, arg generator.Object, out generator.Object) {
 	vars["CustomConversionMode"] = 0
-	if conv := convPairs[getPair(arg, out)]; conv != nil {
+	if conv := convPairs[getPair(arg, out)]; conv != nil && conv.Func != nil {
 		vars["CustomConversionMode"] = conv.Mode
-		funcName := conv.Obj.Name()
-		alias := p.Qualifier(conv.Obj.Pkg())
+		funcName := conv.Func.Name()
+		alias := p.Qualifier(conv.Func.Pkg())
 		if alias != "" {
 			funcName = alias + "." + funcName
 		}
@@ -766,9 +786,35 @@ func validateCompatible(arg, out types.Object) bool {
 	if arg.Type() == out.Type() {
 		return true
 	}
-	slice0, ok0 := arg.Type().(*types.Slice)
-	slice1, ok1 := out.Type().(*types.Slice)
-	return ok0 && ok1 && slice0.Elem() == slice1.Elem()
+	{
+		// *Type
+		ptr0, ok0 := arg.Type().(*types.Pointer)
+		ptr1, ok1 := out.Type().(*types.Pointer)
+		if ok0 && ok1 && ptr0.Elem() == ptr1.Elem() {
+			ll.V(1).Debugf("*Type %v %v", arg, out)
+			return true
+		}
+	}
+	{
+		// []Type
+		slice0, ok0 := arg.Type().(*types.Slice)
+		slice1, ok1 := out.Type().(*types.Slice)
+		if ok0 && ok1 && slice0.Elem() == slice1.Elem() {
+			ll.V(1).Debugf("[]Type %v %v", arg, out)
+			return true
+		}
+
+		// []*Type
+		if ok0 && ok1 {
+			ptr0, ptrok0 := slice0.Elem().(*types.Pointer)
+			ptr1, ptrok1 := slice1.Elem().(*types.Pointer)
+			if ptrok0 && ptrok1 && ptr0.Elem() == ptr1.Elem() {
+				ll.V(1).Debugf("[]*Type %v %v", arg, out)
+				return true
+			}
+		}
+	}
+	return false
 }
 
 func validateSliceToPointerNamed(obj types.Type) *types.Named {

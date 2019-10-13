@@ -144,7 +144,7 @@ func renderCustomConversion0(plural bool, in, out *types.Named, conv *conversion
 	} else {
 		result = "Convert_" + inStr + "_" + outStr + "(" + inField + ", nil)"
 	}
-	alias := p.Qualifier(conv.Obj.Pkg())
+	alias := p.Qualifier(conv.ConverterPkg.Types)
 	if alias != "" {
 		return alias + "." + result
 	}
