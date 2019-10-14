@@ -40,6 +40,7 @@ func init() {
 		GetPublicFulfillment,
 		UpdateFulfillmentsShippingState,
 		UpdateOrderPaymentStatus,
+		GetOrderByReceiptID,
 	)
 }
 
@@ -103,6 +104,39 @@ func GetOrdersByIDs(ctx context.Context, q *wrapshop.GetOrdersByIDsEndpoint) err
 		ShopIDs:   shopIDs,
 		PartnerID: q.CtxPartner.GetID(),
 		IDs:       q.Ids,
+	}
+	if err := bus.Dispatch(ctx, query); err != nil {
+		return err
+	}
+	q.Result = &pborder.OrdersResponse{
+		Orders: pborder.PbOrdersWithFulfillments(query.Result.Orders, model.TagShop, query.Result.Shops),
+	}
+
+	if err := addReceivedAmountToOrders(ctx, q.Context.Shop.ID, q.Result.Orders); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func GetOrderByReceiptID(ctx context.Context, q *wrapshop.GetOrdersByReceiptIDEndpoint) error {
+	shopID := q.Context.Shop.ID
+	queryReceipt := &receipting.GetReceiptByIDQuery{
+		ID:     q.ReceiptId,
+		ShopID: shopID,
+	}
+	if err := receiptQuery.Dispatch(ctx, queryReceipt); err != nil {
+		return err
+	}
+	var arrOrderID []int64
+	for _, value := range queryReceipt.Result.Lines {
+		arrOrderID = append(arrOrderID, value.OrderID)
+	}
+
+	query := &ordermodelx.GetOrdersQuery{
+		ShopIDs:   []int64{shopID},
+		PartnerID: q.CtxPartner.GetID(),
+		IDs:       arrOrderID,
 	}
 	if err := bus.Dispatch(ctx, query); err != nil {
 		return err

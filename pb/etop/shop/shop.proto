@@ -169,6 +169,7 @@ service OrderService {
     rpc GetOrder(cm.IDRequest) returns (order.Order);
     rpc GetOrders(GetOrdersRequest) returns (order.OrdersResponse);
     rpc GetOrdersByIDs(etop.IDsRequest) returns (order.OrdersResponse);
+    rpc GetOrdersByReceiptID(GetOrdersByReceiptIDRequest) returns (order.OrdersResponse);
     rpc UpdateOrder(order.UpdateOrderRequest) returns (order.Order);
 
     // @deprecated
@@ -1438,7 +1439,7 @@ message GetReceivedAmountByOrderIDResponse {
 }
 
 message GetShopCollectionsByProductIDRequest {
-      optional int64 product_id =1  [(gogoproto.nullable) = false];
+    optional int64 product_id =1  [(gogoproto.nullable) = false];
 }
 
 message CustomerGroup {
@@ -1463,4 +1464,8 @@ message GetCustomerGroupsRequest {
 message CustomerGroupsResponse {
     repeated CustomerGroup customer_groups = 1;
     optional cm.PageInfo paging = 2;
+}
+
+message GetOrdersByReceiptIDRequest{
+    optional int64 receipt_id = 1 [(gogoproto.nullable) = false];
 }

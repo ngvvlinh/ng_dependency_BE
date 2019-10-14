@@ -22,6 +22,7 @@ type CustomerAggregate struct {
 	store                      sqlstore.CustomerStoreFactory
 	customerGroupStore         sqlstore.CustomerGroupStoreFactory
 	customerGroupCustomerStore sqlstore.CustomerGroupCustomerStoreFactory
+	addressStore               sqlstore.AddressStoreFactory
 }
 
 func NewCustomerAggregate(db cmsql.Database) *CustomerAggregate {
@@ -30,6 +31,7 @@ func NewCustomerAggregate(db cmsql.Database) *CustomerAggregate {
 		store:                      sqlstore.NewCustomerStore(db),
 		customerGroupStore:         sqlstore.NewCustomerGroupStore(db),
 		customerGroupCustomerStore: sqlstore.NewCustomerGroupCustomerStore(db),
+		addressStore:               sqlstore.NewAddressStore(db),
 	}
 }
 
@@ -93,7 +95,15 @@ func (a *CustomerAggregate) UpdateCustomer(
 func (a *CustomerAggregate) DeleteCustomer(
 	ctx context.Context, id int64, shopID int64,
 ) (deleted int, _ error) {
-	deleted, err := a.store(ctx).ID(id).ShopID(shopID).SoftDelete()
+	err := a.db.InTransaction(ctx, func(tx cmsql.QueryInterface) error {
+		var errTr error
+		deleted, errTr = a.store(ctx).ID(id).ShopID(shopID).SoftDelete()
+		if errTr != nil {
+			return errTr
+		}
+		_, errTr = a.addressStore(ctx).ShopTraderID(shopID, id).SoftDelete()
+		return errTr
+	})
 	return deleted, err
 }
 

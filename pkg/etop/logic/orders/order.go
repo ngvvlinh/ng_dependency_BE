@@ -280,6 +280,18 @@ func UpdateOrder(ctx context.Context, claim *claims.ShopClaim, authPartner *mode
 		return nil, err
 	}
 	oldOrder := query.Result.Order
+
+	switch oldOrder.Status {
+	case model.S5Negative:
+		return nil, cm.Error(cm.InvalidArgument, "Đơn hàng đã hủy, không thể cập nhật đơn", nil)
+	case model.S5NegSuper:
+		return nil, cm.Error(cm.InvalidArgument, "Đơn hàng đã trả hàng, không thể cập nhật đơn", nil)
+	case model.S5Positive:
+		return nil, cm.Error(cm.InvalidArgument, "Đơn hàng đã hoàn thành, không thể cập nhật đơn", nil)
+	case model.S5SuperPos:
+		return nil, cm.Error(cm.InvalidArgument, "Đơn hàng đang xử lý, không thể cập nhật đơn", nil)
+	}
+
 	customerId := query.Result.Order.CustomerID
 
 	if q.CustomerId != 0 {

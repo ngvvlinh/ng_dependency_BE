@@ -1892,6 +1892,7 @@
     },
     "/api/shop.Order/CancelOrder": {
       "post": {
+        "summary": "deprecated: backward-compatible, will be removed later",
         "operationId": "CancelOrder",
         "responses": {
           "200": {
@@ -2072,6 +2073,32 @@
         ]
       }
     },
+    "/api/shop.Order/GetOrdersByReceiptID": {
+      "post": {
+        "operationId": "GetOrdersByReceiptID",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/orderOrdersResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/shopGetOrdersByReceiptIDRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Order"
+        ]
+      }
+    },
     "/api/shop.Order/UpdateOrder": {
       "post": {
         "operationId": "UpdateOrder",
@@ -2100,7 +2127,6 @@
     },
     "/api/shop.Order/UpdateOrderPaymentStatus": {
       "post": {
-        "summary": "deprecated: backward-compatible, will be removed later",
         "operationId": "UpdateOrderPaymentStatus",
         "responses": {
           "200": {
@@ -7946,6 +7972,15 @@
           "items": {
             "$ref": "#/definitions/cmFilter"
           }
+        }
+      }
+    },
+    "shopGetOrdersByReceiptIDRequest": {
+      "type": "object",
+      "properties": {
+        "receipt_id": {
+          "type": "string",
+          "format": "int64"
         }
       }
     },

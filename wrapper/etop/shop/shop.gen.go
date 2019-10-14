@@ -122,6 +122,7 @@ func NewShopServer(mux Muxer, hooks *twirp.ServerHooks) {
 	bus.Expect(&GetOrderEndpoint{})
 	bus.Expect(&GetOrdersEndpoint{})
 	bus.Expect(&GetOrdersByIDsEndpoint{})
+	bus.Expect(&GetOrdersByReceiptIDEndpoint{})
 	bus.Expect(&UpdateOrderEndpoint{})
 	bus.Expect(&UpdateOrderPaymentStatusEndpoint{})
 	bus.Expect(&UpdateOrdersStatusEndpoint{})
@@ -4038,6 +4039,53 @@ func (s OrderService) GetOrdersByIDs(ctx context.Context, req *etop.IDsRequest) 
 	}
 	session = sessionQuery.Result
 	query := &GetOrdersByIDsEndpoint{IDsRequest: req}
+	query.Context.Claim = session.Claim
+	query.Context.Shop = session.Shop
+	query.CtxPartner = session.CtxPartner
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = bus.Dispatch(ctx, query)
+	resp = query.Result
+	if err == nil {
+		if resp == nil {
+			return nil, common.Error(common.Internal, "", nil).Log("nil response")
+		}
+		errs = cmwrapper.HasErrors(resp)
+	}
+	return resp, err
+}
+
+type GetOrdersByReceiptIDEndpoint struct {
+	*shop.GetOrdersByReceiptIDRequest
+	Result     *order.OrdersResponse
+	Context    ShopClaim
+	CtxPartner *model.Partner
+}
+
+func (s OrderService) GetOrdersByReceiptID(ctx context.Context, req *shop.GetOrdersByReceiptIDRequest) (resp *order.OrdersResponse, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "shop.Order/GetOrdersByReceiptID"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:     ctx,
+		RequireAuth: true,
+		RequireShop: true,
+		AuthPartner: 1,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &GetOrdersByReceiptIDEndpoint{GetOrdersByReceiptIDRequest: req}
 	query.Context.Claim = session.Claim
 	query.Context.Shop = session.Shop
 	query.CtxPartner = session.CtxPartner
