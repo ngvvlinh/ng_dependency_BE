@@ -42,16 +42,11 @@ func defaultGeneratedFileName(tpl string) func(GenerateFileNameInput) string {
 }
 
 // processDoc splits directive and text comment
-func processDoc(doc, cmt *ast.CommentGroup) (Comment, []Directive, error) {
-	comment := Comment{
-		Doc:     doc,
-		Comment: cmt,
-	}
+func processDoc(doc, cmt *ast.CommentGroup) (Comment, error) {
 	if doc == nil {
-		return comment, nil, nil
+		return Comment{Comment: cmt}, nil
 	}
 
-	processedDoc := make([]*ast.Comment, 0, len(doc.List))
 	directives := make([]Directive, 0, 4)
 	for _, line := range doc.List {
 		if !strings.HasPrefix(line.Text, startDirectiveStr) {
@@ -61,12 +56,31 @@ func processDoc(doc, cmt *ast.CommentGroup) (Comment, []Directive, error) {
 		text := line.Text[len(startDirectiveStr)-1:]
 		_directives, err := ParseDirective(text)
 		if err != nil {
-			return Comment{}, nil, err
+			return Comment{}, err
 		}
 		directives = append(directives, _directives...)
 	}
-	comment.Text = (&ast.CommentGroup{List: processedDoc}).Text()
-	return comment, directives, nil
+
+	comment := Comment{
+		Doc:        doc,
+		Comment:    cmt,
+		Directives: directives,
+	}
+	return comment, nil
+}
+
+func processDocText(doc *ast.CommentGroup) string {
+	if doc == nil {
+		return ""
+	}
+	processedDoc := make([]*ast.Comment, 0, len(doc.List))
+	for _, line := range doc.List {
+		if !strings.HasPrefix(line.Text, startDirectiveStr) {
+			processedDoc = append(processedDoc, line)
+			continue
+		}
+	}
+	return (&ast.CommentGroup{List: processedDoc}).Text()
 }
 
 func ParseDirective(text string) (result []Directive, _ error) {

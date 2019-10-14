@@ -24,7 +24,7 @@ func (g *gen) Name() string { return "cq" }
 func (g *gen) Generate(ng generator.Engine) error {
 	pkgs := ng.GeneratingPackages()
 	for _, pkg := range pkgs {
-		err := generatePackage(pkg)
+		err := generatePackage(ng, pkg)
 		if err != nil {
 			return err
 		}
@@ -32,16 +32,16 @@ func (g *gen) Generate(ng generator.Engine) error {
 	return nil
 }
 
-func generatePackage(gpkg *generator.GeneratingPackage) error {
+func generatePackage(ng generator.Engine, gpkg *generator.GeneratingPackage) error {
 	pkg := gpkg.Package
 	objs := gpkg.Objects()
 
 	var services []ServiceDef
 	kinds := []string{QueryService, Aggregate}
-	for _, object := range objs {
-		switch obj := object.Object.(type) {
+	for _, obj := range objs {
+		switch obj := obj.(type) {
 		case *types.TypeName:
-			kind, iface, err := checkService(kinds, obj, object.Comment)
+			kind, iface, err := checkService(kinds, obj, ng.GetComment(obj))
 			if err != nil {
 				errorf("%v\n", err)
 				continue
@@ -82,7 +82,7 @@ func generatePackage(gpkg *generator.GeneratingPackage) error {
 	return nil
 }
 
-func checkService(kinds []string, obj *types.TypeName, cmt *generator.Comment) (kind string, _ *types.Interface, err error) {
+func checkService(kinds []string, obj *types.TypeName, cmt generator.Comment) (kind string, _ *types.Interface, err error) {
 	name := obj.Name()
 	for _, suffix := range kinds {
 		if strings.HasSuffix(name, suffix) {

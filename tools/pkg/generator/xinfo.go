@@ -13,7 +13,11 @@ type Comment struct {
 
 	Comment *ast.CommentGroup
 
-	Text string
+	Directives []Directive
+}
+
+func (c Comment) Text() string {
+	return processDocText(c.Doc)
 }
 
 // Directive comment has one of following formats
@@ -46,8 +50,6 @@ type declaration struct {
 	Pkg *packages.Package
 
 	Comment Comment
-
-	Directives []Directive
 }
 
 type extendedInfo struct {
@@ -88,14 +90,13 @@ func (x *extendedInfo) addFile(pkg *packages.Package, file *ast.File) error {
 		if doc == nil {
 			doc = genDoc
 		}
-		comment, directives, err := processDoc(doc, cmt)
+		comment, err := processDoc(doc, cmt)
 		if err != nil {
 			ll.V(3).Debugf("error while processing doc: %v", err)
 		}
 		return &declaration{
-			Pkg:        pkg,
-			Comment:    comment,
-			Directives: directives,
+			Pkg:     pkg,
+			Comment: comment,
 		}
 	}
 
@@ -147,10 +148,10 @@ func (x *extendedInfo) GetDef(ident *ast.Ident) types.Object {
 	return decl.Pkg.TypesInfo.Defs[ident]
 }
 
-func (x *extendedInfo) GetComment(ident *ast.Ident) (*Comment, []Directive) {
+func (x *extendedInfo) GetComment(ident *ast.Ident) Comment {
 	decl := x.Declarations[ident]
 	if decl == nil {
-		return nil, nil
+		return Comment{}
 	}
-	return &decl.Comment, decl.Directives
+	return decl.Comment
 }

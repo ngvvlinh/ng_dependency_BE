@@ -26,8 +26,7 @@ func (p plugin) Generate(ng generator.Engine) error {
 	for _, gpkg := range pkgs {
 		fmt.Printf("package %v:\n", gpkg.Package.PkgPath)
 		objects := gpkg.Objects()
-		for _, object := range objects {
-			obj := object.Object
+		for _, obj := range objects {
 			fmt.Printf("  %v\t%v\n", obj.Name(), obj.Type())
 		}
 		fmt.Println()

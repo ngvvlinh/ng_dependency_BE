@@ -55,7 +55,7 @@ func generatePackage(gpkg *generator.GeneratingPackage) error {
 
 	p := gpkg.Generate()
 	for _, object := range gpkg.Objects() {
-		switch obj := object.Object.(type) {
+		switch obj := object.(type) {
 		case *types.TypeName:
 			if strings.HasSuffix(obj.Name(), "Event") {
 				w(p, "func (e *%v) GetTopic() string { return %q }\n",

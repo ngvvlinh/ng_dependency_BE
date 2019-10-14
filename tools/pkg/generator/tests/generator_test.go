@@ -133,15 +133,16 @@ func TestObjects(t *testing.T) {
 	require.NoError(t, err)
 
 	ng := mock.ng
-	pkg := ng.PackageByPath(testPath + "/one")
+	pkg := ng.GetPackageByPath(testPath + "/one")
 	require.NotNil(t, pkg)
 
-	objects := ng.ObjectsByScope(pkg.Types.Scope())
+	objects := ng.GetObjectsByScope(pkg.Types.Scope())
 	require.Len(t, objects, 2)
-	require.Equal(t, "A", objects[0].Object.Name())
-	require.Equal(t, "B", objects[1].Object.Name())
-	require.Len(t, objects[1].Directives, 1)
-	require.Equal(t, "gen:b", objects[1].Directives[0].Cmd)
+	require.Equal(t, "A", objects[0].Name())
+	require.Equal(t, "B", objects[1].Name())
+	directives := ng.GetDirectives(objects[1])
+	require.Len(t, directives, 1)
+	require.Equal(t, "gen:b", directives[0].Cmd)
 }
 
 func TestGenerate(t *testing.T) {

@@ -72,8 +72,8 @@ func (p *plugin) Generate(ng generator.Engine) error {
 
 	convPairs = make(map[pair]*conversionFunc)
 	for _, gpkg := range generatingPackages {
-		for _, object := range gpkg.gpkg.Objects() {
-			fn, ok := object.Object.(*types.Func)
+		for _, obj := range gpkg.gpkg.Objects() {
+			fn, ok := obj.(*types.Func)
 			if !ok {
 				continue
 			}
@@ -161,13 +161,13 @@ type generatingPackageStep struct {
 }
 
 type objMap struct {
-	src  generator.Object
+	src  types.Object
 	gens []objGen
 }
 
 type objGen struct {
 	mode    string
-	obj     generator.Object
+	obj     types.Object
 	opts    options
 	convPkg *packages.Package
 }
@@ -256,26 +256,26 @@ func generatePackageStep(ng generator.Engine, gpkg *generator.GeneratingPackage,
 
 	apiPkgs := make([]*packages.Package, len(apiPkgPaths))
 	for i, pkgPath := range apiPkgPaths {
-		apiPkgs[i] = ng.PackageByPath(pkgPath)
+		apiPkgs[i] = ng.GetPackageByPath(pkgPath)
 		if apiPkgs[i] == nil {
 			return nil, generator.Errorf(nil, "can not find package %v", pkgPath)
 		}
 	}
 	toPkgs := make([]*packages.Package, len(toPkgPaths))
 	for i, pkgPath := range toPkgPaths {
-		toPkgs[i] = ng.PackageByPath(pkgPath)
+		toPkgs[i] = ng.GetPackageByPath(pkgPath)
 		if toPkgs[i] == nil {
 			return nil, generator.Errorf(nil, "can not find package %v", pkgPath)
 		}
 	}
 
 	for _, pkg := range apiPkgs {
-		apiObjs := ng.ObjectsByPackage(pkg)
+		apiObjs := ng.GetObjectsByPackage(pkg)
 		for _, obj := range apiObjs {
-			if !obj.Object.Exported() {
+			if !obj.Exported() {
 				continue
 			}
-			objName := objName{pkg: pkg.PkgPath, name: obj.Object.Name()}
+			objName := objName{pkg: pkg.PkgPath, name: obj.Name()}
 			if apiObjMap[objName] == nil {
 				apiObjMap[objName] = &objMap{src: obj}
 			}
@@ -284,21 +284,22 @@ func generatePackageStep(ng generator.Engine, gpkg *generator.GeneratingPackage,
 
 	if ll.Verbosed(3) {
 		for objName, objMap := range apiObjMap {
-			ll.V(3).Debugf("object %v: %v", objName, objMap.src.Object.Type())
+			ll.V(3).Debugf("object %v: %v", objName, objMap.src.Type())
 		}
 	}
 
 	for _, toPkg := range toPkgs {
-		toObjs := ng.ObjectsByPackage(toPkg)
+		toObjs := ng.GetObjectsByPackage(toPkg)
 		for _, obj := range toObjs {
-			ll.V(2).Debugf("convert to object %v with directives %#v", obj.Object.Name(), obj.Directives)
-			if !obj.Object.Exported() {
+			directives := ng.GetDirectives(obj)
+			ll.V(2).Debugf("convert to object %v with directives %#v", obj.Name(), directives)
+			if !obj.Exported() {
 				continue
 			}
-			if s := validateStruct(obj.Object); s == nil {
+			if s := validateStruct(obj); s == nil {
 				continue
 			}
-			raw, mode, name, opts, err := parseWithMode(apiPkgs, obj.Directives)
+			raw, mode, name, opts, err := parseWithMode(apiPkgs, directives)
 			if err != nil {
 				return nil, err
 			}
@@ -306,7 +307,7 @@ func generatePackageStep(ng generator.Engine, gpkg *generator.GeneratingPackage,
 			if mode == "" {
 				// automatically convert type with the same name
 				if flagAuto {
-					name = objName{apiPkgs[0].PkgPath, obj.Object.Name()}
+					name = objName{apiPkgs[0].PkgPath, obj.Name()}
 					if apiObjMap[name] == nil {
 						continue
 					}
@@ -321,8 +322,8 @@ func generatePackageStep(ng generator.Engine, gpkg *generator.GeneratingPackage,
 			}
 
 			m := apiObjMap[name]
-			if s := validateStruct(m.src.Object); s == nil {
-				return nil, generator.Errorf(nil, "%v is not a struct", m.src.Object.Name())
+			if s := validateStruct(m.src); s == nil {
+				return nil, generator.Errorf(nil, "%v is not a struct", m.src.Name())
 			}
 			m.gens = append(m.gens, objGen{
 				mode:    mode,
@@ -664,7 +665,7 @@ func generateConverts(
 				panic("unexpected")
 			}
 			if err != nil {
-				return count, generator.Errorf(err, "can not convert between %v and %v: %v", g.obj.Object.Name(), m.src.Object.Name(), err)
+				return count, generator.Errorf(err, "can not convert between %v and %v: %v", g.obj.Name(), m.src.Name(), err)
 			}
 			count++
 		}
@@ -672,16 +673,16 @@ func generateConverts(
 	return count, nil
 }
 
-func generateConvertType(p generator.Printer, src, dst generator.Object) error {
+func generateConvertType(p generator.Printer, src, dst types.Object) error {
 	if err := generateConvertTypeImpl(p, src, dst); err != nil {
 		return err
 	}
 	return generateConvertTypeImpl(p, dst, src)
 }
 
-func generateConvertTypeImpl(p generator.Printer, in generator.Object, out generator.Object) error {
-	inSt := validateStruct(in.Object)
-	outSt := validateStruct(out.Object)
+func generateConvertTypeImpl(p generator.Printer, in types.Object, out types.Object) error {
+	inSt := validateStruct(in)
+	outSt := validateStruct(out)
 	fields := make([]fieldConvert, 0, outSt.NumFields())
 	for i, n := 0, outSt.NumFields(); i < n; i++ {
 		outField := outSt.Field(i)
@@ -699,9 +700,9 @@ func generateConvertTypeImpl(p generator.Printer, in generator.Object, out gener
 	return tplConvertType.Execute(p, vars)
 }
 
-func generateCreate(p generator.Printer, arg generator.Object, out generator.Object) error {
-	outSt := validateStruct(out.Object)
-	argSt := validateStruct(arg.Object)
+func generateCreate(p generator.Printer, arg types.Object, out types.Object) error {
+	outSt := validateStruct(out)
+	argSt := validateStruct(arg)
 	fields := make([]fieldConvert, 0, outSt.NumFields())
 	for i, n := 0, outSt.NumFields(); i < n; i++ {
 		outField := outSt.Field(i)
@@ -719,9 +720,9 @@ func generateCreate(p generator.Printer, arg generator.Object, out generator.Obj
 	return tplCreate.Execute(p, vars)
 }
 
-func generateUpdate(p generator.Printer, arg generator.Object, out generator.Object, opts options) error {
-	outSt := validateStruct(out.Object)
-	argSt := validateStruct(arg.Object)
+func generateUpdate(p generator.Printer, arg types.Object, out types.Object, opts options) error {
+	outSt := validateStruct(out)
+	argSt := validateStruct(arg)
 	fields := make([]fieldConvert, 0, outSt.NumFields())
 	identCount := 0
 	for i, n := 0, outSt.NumFields(); i < n; i++ {
@@ -749,7 +750,7 @@ func generateUpdate(p generator.Printer, arg generator.Object, out generator.Obj
 	return tplUpdate.Execute(p, vars)
 }
 
-func includeBaseConversion(p generator.Printer, vars map[string]interface{}, mode string, arg generator.Object, out generator.Object) {
+func includeBaseConversion(p generator.Printer, vars map[string]interface{}, mode string, arg types.Object, out types.Object) {
 	outType := p.TypeString(out.Type())
 	argType := p.TypeString(arg.Type())
 	vars["ArgStr"] = strings.ReplaceAll(argType, ".", "_")
@@ -769,7 +770,7 @@ func includeBaseConversion(p generator.Printer, vars map[string]interface{}, mod
 	}
 }
 
-func includeCustomConversion(p generator.Printer, vars map[string]interface{}, arg generator.Object, out generator.Object) {
+func includeCustomConversion(p generator.Printer, vars map[string]interface{}, arg types.Object, out types.Object) {
 	vars["CustomConversionMode"] = 0
 	if conv := convPairs[getPair(arg, out)]; conv != nil && conv.Func != nil {
 		vars["CustomConversionMode"] = conv.Mode

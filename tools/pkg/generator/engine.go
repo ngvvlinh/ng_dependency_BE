@@ -10,11 +10,8 @@ import (
 	"golang.org/x/tools/go/packages"
 )
 
-type Object struct {
-	types.Object
-	Ident      *ast.Ident
-	Comment    *Comment
-	Directives []Directive
+type Positioner interface {
+	Pos() token.Pos
 }
 
 type PreparsedPackage struct {
@@ -43,24 +40,21 @@ func (g *GeneratingPackage) Generate() Printer {
 	return g.printer
 }
 
-func (g *GeneratingPackage) Objects() []Object {
-	return g.engine.ObjectsByPackage(g.Package)
+func (g *GeneratingPackage) Objects() []types.Object {
+	return g.engine.GetObjectsByPackage(g.Package)
 }
 
 type Engine interface {
 	GeneratingPackages() []*GeneratingPackage
 
-	CommentByIdent(*ast.Ident) *Comment
-	CommentByObject(types.Object) *Comment
-	DirectivesByIdent(*ast.Ident) []Directive
-	DirectivesByObject(types.Object) []Directive
-	IdentByObject(types.Object) *ast.Ident
-	IdentByPos(token.Pos) *ast.Ident
-	ObjectByIdent(*ast.Ident) types.Object
-	ObjectsByPackage(*packages.Package) []Object
-	ObjectsByScope(*types.Scope) []Object
-	PackageByIdent(*ast.Ident) *packages.Package
-	PackageByPath(string) *packages.Package
+	GetComment(Positioner) Comment
+	GetDirectives(Positioner) []Directive
+	GetIdent(Positioner) *ast.Ident
+	GetObject(Positioner) types.Object
+	GetObjectsByPackage(*packages.Package) []types.Object
+	GetObjectsByScope(*types.Scope) []types.Object
+	GetPackage(Positioner) *packages.Package
+	GetPackageByPath(string) *packages.Package
 }
 
 var _ Engine = &wrapEngine{}
@@ -105,39 +99,50 @@ func (ng *engine) clone() *engine {
 	return result
 }
 
-func (ng *engine) CommentByIdent(ident *ast.Ident) *Comment {
-	cmt, _ := ng.xinfo.GetComment(ident)
+func (ng *engine) GetComment(p Positioner) Comment {
+	cmt := ng.xinfo.GetComment(ng.GetIdent(p))
 	return cmt
 }
 
-func (ng *engine) CommentByObject(obj types.Object) *Comment {
-	ident := ng.IdentByPos(obj.Pos())
+func (ng *engine) CommentByIdent(ident *ast.Ident) Comment {
+	cmt := ng.xinfo.GetComment(ident)
+	return cmt
+}
+
+func (ng *engine) CommentByObject(obj types.Object) Comment {
+	ident := ng.GetIdentByPos(obj.Pos())
 	return ng.CommentByIdent(ident)
 }
 
-func (ng *engine) DirectivesByIdent(ident *ast.Ident) []Directive {
-	_, directives := ng.xinfo.GetComment(ident)
-	return directives
+func (ng *engine) GetDirectives(p Positioner) []Directive {
+	return ng.GetComment(p).Directives
 }
 
-func (ng *engine) DirectivesByObject(obj types.Object) []Directive {
-	ident := ng.IdentByPos(obj.Pos())
-	return ng.DirectivesByIdent(ident)
+func (ng *engine) GetIdent(p Positioner) *ast.Ident {
+	return ng.GetIdentByPos(p.Pos())
 }
 
-func (ng *engine) IdentByObject(obj types.Object) *ast.Ident {
-	return ng.IdentByPos(obj.Pos())
+func (ng *engine) GetIdentByObject(obj types.Object) *ast.Ident {
+	return ng.GetIdentByPos(obj.Pos())
 }
 
-func (ng *engine) IdentByPos(pos token.Pos) *ast.Ident {
+func (ng *engine) GetIdentByPos(pos token.Pos) *ast.Ident {
 	return ng.xinfo.Positions[pos]
 }
 
-func (ng *engine) ObjectByIdent(ident *ast.Ident) types.Object {
+func (ng *engine) GetObject(p Positioner) types.Object {
+	return ng.GetObjectByIdent(ng.GetIdent(p))
+}
+
+func (ng *engine) GetObjectByIdent(ident *ast.Ident) types.Object {
 	return ng.xinfo.GetDef(ident)
 }
 
-func (ng *engine) PackageByIdent(ident *ast.Ident) *packages.Package {
+func (ng *engine) GetPackage(p Positioner) *packages.Package {
+	return ng.GetPackageByIdent(ng.GetIdent(p))
+}
+
+func (ng *engine) GetPackageByIdent(ident *ast.Ident) *packages.Package {
 	decl := ng.xinfo.Declarations[ident]
 	if decl == nil {
 		return nil
@@ -145,27 +150,19 @@ func (ng *engine) PackageByIdent(ident *ast.Ident) *packages.Package {
 	return decl.Pkg
 }
 
-func (ng *engine) PackageByPath(pkgPath string) *packages.Package {
+func (ng *engine) GetPackageByPath(pkgPath string) *packages.Package {
 	return ng.pkgMap[pkgPath]
 }
 
-func (ng *engine) ObjectsByPackage(pkg *packages.Package) []Object {
-	return ng.ObjectsByScope(pkg.Types.Scope())
+func (ng *engine) GetObjectsByPackage(pkg *packages.Package) []types.Object {
+	return ng.GetObjectsByScope(pkg.Types.Scope())
 }
 
-func (ng *engine) ObjectsByScope(s *types.Scope) []Object {
+func (ng *engine) GetObjectsByScope(s *types.Scope) []types.Object {
 	names := s.Names()
-	objs := make([]Object, len(names))
+	objs := make([]types.Object, len(names))
 	for i, name := range names {
-		obj := s.Lookup(name)
-		ident := ng.IdentByPos(obj.Pos())
-		cmt, directives := ng.xinfo.GetComment(ident)
-		objs[i] = Object{
-			Ident:      ident,
-			Object:     obj,
-			Comment:    cmt,
-			Directives: directives,
-		}
+		objs[i] = s.Lookup(name)
 	}
 	return objs
 }
@@ -185,7 +182,7 @@ func (ng *wrapEngine) generatingPackages() []*GeneratingPackage {
 			pkg := ng.pkgMap[ppkg.PkgPath]
 			gpkg := &GeneratingPackage{
 				Package:    pkg,
-				Directives: ppkg.Directives,
+				Directives: cloneDirectives(ppkg.Directives),
 				plugin:     ng.plugin,
 				engine:     ng.engine,
 			}
@@ -193,4 +190,12 @@ func (ng *wrapEngine) generatingPackages() []*GeneratingPackage {
 		}
 	}
 	return pkgs
+}
+
+func cloneDirectives(directives []Directive) []Directive {
+	result := make([]Directive, len(directives))
+	for i, d := range directives {
+		result[i] = d
+	}
+	return result
 }
