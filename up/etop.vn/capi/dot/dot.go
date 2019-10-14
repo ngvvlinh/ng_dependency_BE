@@ -1,5 +1,19 @@
 package dot
 
+import "strconv"
+
+type ID int64
+
+func (id ID) MarshalJSON() ([]byte, error) {
+	b := make([]byte, 0, 32)
+	b = append(b, '"')
+	b = strconv.AppendInt(b, int64(id), 10)
+	b = append(b, '"')
+	return b, nil
+}
+
+// TODO: UnmarshalJSON
+
 type NullBool struct {
 	Bool  bool
 	Valid bool
