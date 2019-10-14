@@ -111,7 +111,10 @@ func (s *ShopCategoryStore) GetShopCategory() (*catalog.ShopCategory, error) {
 func (s *ShopCategoryStore) ListShopCategoriesDB() ([]*model.ShopCategory, error) {
 	query := s.query().Where(s.preds)
 	query = s.includeDeleted.Check(query, s.ftShopCategory.NotDeleted())
-	query, err := sqlstore.LimitSort(query, &s.paging, SortShopCategory)
+	if len(s.paging.Sort) == 0 {
+		s.paging.Sort = []string{"-created_at"}
+	}
+	query, err := sqlstore.PrefixedLimitSort(query, &s.paging, SortShopCategory, s.ftShopCategory.prefix)
 	if err != nil {
 		return nil, err
 	}

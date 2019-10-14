@@ -103,7 +103,10 @@ func (s *ShopProductCollectionStore) AddProductToCollection(productCollection *c
 func (s *ShopProductCollectionStore) ListShopProductCollectionsByProductIDDB() ([]*model.ShopProductCollection, error) {
 	query := s.query().Where(s.preds)
 	query = s.includeDeleted.Check(query, s.ftShopProductCollection.NotDeleted())
-	query, err := sqlstore.LimitSort(query, &s.paging, SortShopProductCollection)
+	if len(s.paging.Sort) == 0 {
+		s.paging.Sort = []string{"-created_at"}
+	}
+	query, err := sqlstore.PrefixedLimitSort(query, &s.paging, SortShopProductCollection, s.ftShopProductCollection.prefix)
 	if err != nil {
 		return nil, err
 	}
@@ -128,7 +131,10 @@ func (s *ShopProductCollectionStore) ListShopProductCollectionsByProductID() ([]
 func (s *ShopProductCollectionStore) ListShopProductCollectionsDB() ([]*model.ShopProductCollection, error) {
 	query := s.query().Where(s.preds)
 	query = s.includeDeleted.Check(query, s.ftShopProductCollection.NotDeleted())
-	query, err := sqlstore.LimitSort(query, &s.paging, SortShopProductCollection)
+	if len(s.paging.Sort) == 0 {
+		s.paging.Sort = []string{"-created_at"}
+	}
+	query, err := sqlstore.PrefixedLimitSort(query, &s.paging, SortShopProductCollection, s.ftShopProductCollection.prefix)
 	if err != nil {
 		return nil, err
 	}
