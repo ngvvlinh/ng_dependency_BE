@@ -13,7 +13,6 @@ type Receipt struct {
 	ID          int64
 	ShopID      int64
 	TraderID    int64
-	UserID      int64
 	Code        string
 	Title       string
 	Type        string
@@ -21,6 +20,7 @@ type Receipt struct {
 	Amount      int32
 	Status      int32
 	Lines       []*ReceiptLine
+	CreatedBy   int64
 	CreatedAt   time.Time
 	UpdatedAt   time.Time
 }

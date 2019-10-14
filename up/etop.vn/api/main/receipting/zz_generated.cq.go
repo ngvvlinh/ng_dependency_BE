@@ -42,7 +42,6 @@ func (c QueryBus) DispatchAll(ctx context.Context, msgs ...Query) error {
 type CreateReceiptCommand struct {
 	ShopID      int64
 	TraderID    int64
-	UserID      int64
 	Code        string
 	Title       string
 	Type        string
@@ -50,6 +49,7 @@ type CreateReceiptCommand struct {
 	Amount      int32
 	OrderIDs    []int64
 	Lines       []*ReceiptLine
+	CreatedBy   int64
 
 	Result *Receipt `json:"-"`
 }
@@ -75,7 +75,6 @@ type UpdateReceiptCommand struct {
 	ID          int64
 	ShopID      int64
 	TraderID    dot.NullInt64
-	UserID      dot.NullInt64
 	Title       dot.NullString
 	Code        dot.NullString
 	Description dot.NullString
@@ -170,7 +169,6 @@ func (q *CreateReceiptCommand) GetArgs(ctx context.Context) (_ context.Context, 
 		&CreateReceiptArgs{
 			ShopID:      q.ShopID,
 			TraderID:    q.TraderID,
-			UserID:      q.UserID,
 			Code:        q.Code,
 			Title:       q.Title,
 			Type:        q.Type,
@@ -178,6 +176,7 @@ func (q *CreateReceiptCommand) GetArgs(ctx context.Context) (_ context.Context, 
 			Amount:      q.Amount,
 			OrderIDs:    q.OrderIDs,
 			Lines:       q.Lines,
+			CreatedBy:   q.CreatedBy,
 		}
 }
 
@@ -193,7 +192,6 @@ func (q *UpdateReceiptCommand) GetArgs(ctx context.Context) (_ context.Context, 
 			ID:          q.ID,
 			ShopID:      q.ShopID,
 			TraderID:    q.TraderID,
-			UserID:      q.UserID,
 			Title:       q.Title,
 			Code:        q.Code,
 			Description: q.Description,

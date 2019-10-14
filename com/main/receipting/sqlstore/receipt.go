@@ -133,7 +133,6 @@ func (s *ReceiptStore) GetReceipt() (receiptResult *receipting.Receipt, _ error)
 		return nil, err
 	}
 	receiptResult = convert.Convert_receiptingmodel_Receipt_receipting_Receipt(receipt, receiptResult)
-	receiptResult.Lines = convert.Convert_receiptingmodel_ReceiptLines_receipting_ReceiptLines(receipt.Lines)
 	return receiptResult, nil
 }
 

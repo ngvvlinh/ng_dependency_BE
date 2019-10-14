@@ -11,6 +11,7 @@ import (
 	"etop.vn/backend/com/main/ordering/model"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/cmsql"
+	"etop.vn/backend/pkg/common/sq"
 )
 
 type OrderStoreFactory func(context.Context) *OrderStore
@@ -38,6 +39,11 @@ func (s *OrderStore) ID(id int64) *OrderStore {
 	return s
 }
 
+func (s *OrderStore) IDs(ids ...int64) *OrderStore {
+	s.preds = append(s.preds, sq.PrefixedIn(&s.ft.prefix, "id", ids))
+	return s
+}
+
 func (s *OrderStore) ShopID(id int64) *OrderStore {
 	s.preds = append(s.preds, s.ft.ByShopID(id))
 	return s
@@ -45,6 +51,21 @@ func (s *OrderStore) ShopID(id int64) *OrderStore {
 
 func (s *OrderStore) PartnerID(id int64) *OrderStore {
 	s.preds = append(s.preds, s.ft.ByPartnerID(id))
+	return s
+}
+
+func (s *OrderStore) CustomerID(id int64) *OrderStore {
+	s.preds = append(s.preds, s.ft.ByCustomerID(id))
+	return s
+}
+
+func (s *OrderStore) Statuses(values []etop.Status5) *OrderStore {
+	s.preds = append(s.preds, sq.PrefixedIn(&s.ft.prefix, "status", values))
+	return s
+}
+
+func (s *OrderStore) CustomerIDs(ids ...int64) *OrderStore {
+	s.preds = append(s.preds, sq.PrefixedIn(&s.ft.prefix, "customer_id", ids))
 	return s
 }
 
@@ -125,6 +146,22 @@ func (s *OrderStore) UpdateOrdersForReserveOrdersFfm(args UpdateOrdersForReserve
 	return s.GetOrders(&ordering.GetOrdersArgs{
 		IDs: args.OrderIDs,
 	})
+}
+
+func (s *OrderStore) ListOrdersDB() ([]*model.Order, error) {
+	query := s.query().Where(s.preds)
+
+	var orders model.Orders
+	err := query.Find(&orders)
+	return orders, err
+}
+
+func (s *OrderStore) ListOrders() ([]*model.Order, error) {
+	orders, err := s.ListOrdersDB()
+	if err != nil {
+		return nil, err
+	}
+	return orders, nil
 }
 
 type UpdateOrdersForReleaseOrderFfmArgs struct {

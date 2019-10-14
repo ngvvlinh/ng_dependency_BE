@@ -94,7 +94,7 @@ func CreateOrder(
 			ShopID:   claim.Shop.ID,
 		}
 		if err := traderAddressQuery.Dispatch(ctx, getAddressQuery); err != nil {
-			switch err.(*xerrors.APIError).Code {
+			switch cm.ErrorCode(err) {
 			case cm.NotFound:
 				isHaveCustomerAddress = false
 			default:
@@ -397,12 +397,9 @@ func UpdateOrder(ctx context.Context, claim *claims.ShopClaim, authPartner *mode
 			ShopID: claim.Shop.ID,
 		}
 		if err := customerQuery.Dispatch(ctx, query); err != nil {
-			switch err.(*xerrors.APIError).Code {
-			case cm.NotFound:
-				return nil, cm.Errorf(cm.InvalidArgument, nil, "customer_id %v không tồn tại", q.CustomerId)
-			default:
-				return nil, err
-			}
+			return nil, cm.MapError(err).
+				Wrapf(cm.NotFound, "customer_id %v không tồn tại", q.CustomerId).
+				Throw()
 		}
 
 		q.Customer = &pborder.OrderCustomer{
@@ -419,7 +416,7 @@ func UpdateOrder(ctx context.Context, claim *claims.ShopClaim, authPartner *mode
 			TraderID: q.CustomerId,
 		}
 		if err := traderAddressQuery.Dispatch(ctx, getAddressQuery); err != nil {
-			switch err.(*xerrors.APIError).Code {
+			switch cm.ErrorCode(err) {
 			case cm.NotFound:
 				isHaveAddress = false
 			default:

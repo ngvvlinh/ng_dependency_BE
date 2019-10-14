@@ -43,7 +43,6 @@ type OrderIDsQueryArgs struct {
 type CreateReceiptArgs struct {
 	ShopID      int64
 	TraderID    int64
-	UserID      int64
 	Code        string
 	Title       string
 	Type        string
@@ -51,6 +50,7 @@ type CreateReceiptArgs struct {
 	Amount      int32
 	OrderIDs    []int64
 	Lines       []*ReceiptLine
+	CreatedBy   int64
 }
 
 // +convert:update=Receipt(ID,ShopID)
@@ -58,7 +58,6 @@ type UpdateReceiptArgs struct {
 	ID          int64
 	ShopID      int64
 	TraderID    NullInt64
-	UserID      NullInt64
 	Title       NullString
 	Code        NullString
 	Description NullString

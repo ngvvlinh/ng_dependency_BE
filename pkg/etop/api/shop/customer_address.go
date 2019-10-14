@@ -12,7 +12,6 @@ import (
 	"etop.vn/backend/pkg/common/bus"
 	wrapshop "etop.vn/backend/wrapper/etop/shop"
 	. "etop.vn/capi/dot"
-	"etop.vn/common/xerrors"
 )
 
 func init() {
@@ -129,12 +128,9 @@ func SetDefaultCustomerAddress(ctx context.Context, r *wrapshop.SetDefaultCustom
 		ShopID: r.Context.Shop.ID,
 	}
 	if err := traderAddressQuery.Dispatch(ctx, query); err != nil {
-		switch cm.ErrorCode(err.(*xerrors.APIError).Err) {
-		case cm.NotFound:
-			return cm.Errorf(cm.InvalidArgument, nil, "traderAddress not found")
-		default:
-			return err
-		}
+		return cm.MapError(err).
+			Wrap(cm.NotFound, "traderAddress not found").
+			Throw()
 	}
 
 	setDefaultAddressCmd := &addressing.SetDefaultAddressCommand{

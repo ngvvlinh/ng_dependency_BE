@@ -1384,7 +1384,7 @@ message Receipt {
     optional int64 id = 1 [(gogoproto.nullable) = false];
     optional int64 shop_id = 2 [(gogoproto.nullable) = false];
     optional int64 trader_id = 3 [(gogoproto.nullable) = false];
-    optional int64 user_id = 4 [(gogoproto.nullable) = false];
+    optional int64 created_by = 4 [(gogoproto.nullable) = false];
     optional string code = 5 [(gogoproto.nullable) = false];
     optional string title = 6 [(gogoproto.nullable) = false];
     optional string type = 7 [(gogoproto.nullable) = false];
@@ -1401,25 +1401,23 @@ message Receipt {
 
 message CreateReceiptRequest {
     optional int64 trader_id = 1 [(gogoproto.nullable) = false];
-    optional int64 user_id = 2 [(gogoproto.nullable) = false];
-    optional string title = 3 [(gogoproto.nullable) = false];
+    optional string title = 2 [(gogoproto.nullable) = false];
     // enum('receipt', 'payment')
-    optional string type = 4 [(gogoproto.nullable) = false];
-    optional string code = 5 [(gogoproto.nullable) = false];
-    optional string description = 6 [(gogoproto.nullable) = false];
-    optional int32 amount = 7 [(gogoproto.nullable) = false];
-    repeated ReceiptLine lines = 8;
+    optional string type = 3 [(gogoproto.nullable) = false];
+    optional string code = 4 [(gogoproto.nullable) = false];
+    optional string description = 5 [(gogoproto.nullable) = false];
+    optional int32 amount = 6 [(gogoproto.nullable) = false];
+    repeated ReceiptLine lines = 7;
 }
 
 message UpdateReceiptRequest {
     optional int64 id = 1 [(gogoproto.nullable) = false];
-    optional int64 trader_id = 2 [(gogoproto.nullable) = false];
-    optional int64 user_id = 3 [(gogoproto.nullable) = false];
-    optional string title = 4 [(gogoproto.nullable) = false];
-    optional string code = 5 [(gogoproto.nullable) = false];
-    optional string description = 6 [(gogoproto.nullable) = false];
-    optional int32 amount = 7 [(gogoproto.nullable) = false];
-    repeated ReceiptLine lines = 8;
+    optional int64 trader_id = 2;
+    optional string title = 3;
+    optional string code = 4;
+    optional string description = 5;
+    optional int32 amount = 6;
+    repeated ReceiptLine lines = 7;
 }
 
 message GetReceiptsRequest {

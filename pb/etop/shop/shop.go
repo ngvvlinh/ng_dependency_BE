@@ -391,7 +391,7 @@ func PbReceipt(m *receipting.Receipt) *Receipt {
 		Id:          m.ID,
 		ShopId:      m.ShopID,
 		TraderId:    m.TraderID,
-		UserId:      m.UserID,
+		CreatedBy:   m.CreatedBy,
 		Code:        m.Code,
 		Title:       m.Title,
 		Type:        m.Type,

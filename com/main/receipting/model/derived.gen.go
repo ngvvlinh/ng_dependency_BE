@@ -17,7 +17,7 @@ func sqlgenReceipt(_ *Receipt) bool { return true }
 type Receipts []*Receipt
 
 const __sqlReceipt_Table = "receipt"
-const __sqlReceipt_ListCols = "\"id\",\"shop_id\",\"trader_id\",\"user_id\",\"code\",\"title\",\"type\",\"description\",\"amount\",\"status\",\"order_ids\",\"lines\",\"created_at\",\"updated_at\",\"deleted_at\""
+const __sqlReceipt_ListCols = "\"id\",\"shop_id\",\"trader_id\",\"code\",\"title\",\"type\",\"description\",\"amount\",\"status\",\"order_ids\",\"lines\",\"created_by\",\"created_at\",\"updated_at\",\"deleted_at\""
 const __sqlReceipt_Insert = "INSERT INTO \"receipt\" (" + __sqlReceipt_ListCols + ") VALUES"
 const __sqlReceipt_Select = "SELECT " + __sqlReceipt_ListCols + " FROM \"receipt\""
 const __sqlReceipt_Select_history = "SELECT " + __sqlReceipt_ListCols + " FROM history.\"receipt\""
@@ -33,7 +33,6 @@ func (m *Receipt) SQLArgs(opts core.Opts, create bool) []interface{} {
 		core.Int64(m.ID),
 		core.Int64(m.ShopID),
 		core.Int64(m.TraderID),
-		core.Int64(m.UserID),
 		core.String(m.Code),
 		core.String(m.Title),
 		core.String(m.Type),
@@ -42,6 +41,7 @@ func (m *Receipt) SQLArgs(opts core.Opts, create bool) []interface{} {
 		core.Int32(m.Status),
 		core.Array{m.OrderIDs, opts},
 		core.JSON{m.Lines},
+		core.Int64(m.CreatedBy),
 		core.Now(m.CreatedAt, now, create),
 		core.Now(m.UpdatedAt, now, true),
 		core.Time(m.DeletedAt),
@@ -53,7 +53,6 @@ func (m *Receipt) SQLScanArgs(opts core.Opts) []interface{} {
 		(*core.Int64)(&m.ID),
 		(*core.Int64)(&m.ShopID),
 		(*core.Int64)(&m.TraderID),
-		(*core.Int64)(&m.UserID),
 		(*core.String)(&m.Code),
 		(*core.String)(&m.Title),
 		(*core.String)(&m.Type),
@@ -62,6 +61,7 @@ func (m *Receipt) SQLScanArgs(opts core.Opts) []interface{} {
 		(*core.Int32)(&m.Status),
 		core.Array{&m.OrderIDs, opts},
 		core.JSON{&m.Lines},
+		(*core.Int64)(&m.CreatedBy),
 		(*core.Time)(&m.CreatedAt),
 		(*core.Time)(&m.UpdatedAt),
 		(*core.Time)(&m.DeletedAt),
@@ -151,14 +151,6 @@ func (m *Receipt) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(m.TraderID)
 	}
-	if m.UserID != 0 {
-		flag = true
-		w.WriteName("user_id")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(m.UserID)
-	}
 	if m.Code != "" {
 		flag = true
 		w.WriteName("code")
@@ -223,6 +215,14 @@ func (m *Receipt) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(core.JSON{m.Lines})
 	}
+	if m.CreatedBy != 0 {
+		flag = true
+		w.WriteName("created_by")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.CreatedBy)
+	}
 	if !m.CreatedAt.IsZero() {
 		flag = true
 		w.WriteName("created_at")
@@ -282,7 +282,6 @@ func (m ReceiptHistories) SQLSelect(w SQLWriter) error {
 func (m ReceiptHistory) ID() core.Interface          { return core.Interface{m["id"]} }
 func (m ReceiptHistory) ShopID() core.Interface      { return core.Interface{m["shop_id"]} }
 func (m ReceiptHistory) TraderID() core.Interface    { return core.Interface{m["trader_id"]} }
-func (m ReceiptHistory) UserID() core.Interface      { return core.Interface{m["user_id"]} }
 func (m ReceiptHistory) Code() core.Interface        { return core.Interface{m["code"]} }
 func (m ReceiptHistory) Title() core.Interface       { return core.Interface{m["title"]} }
 func (m ReceiptHistory) Type() core.Interface        { return core.Interface{m["type"]} }
@@ -291,6 +290,7 @@ func (m ReceiptHistory) Amount() core.Interface      { return core.Interface{m["
 func (m ReceiptHistory) Status() core.Interface      { return core.Interface{m["status"]} }
 func (m ReceiptHistory) OrderIDs() core.Interface    { return core.Interface{m["order_ids"]} }
 func (m ReceiptHistory) Lines() core.Interface       { return core.Interface{m["lines"]} }
+func (m ReceiptHistory) CreatedBy() core.Interface   { return core.Interface{m["created_by"]} }
 func (m ReceiptHistory) CreatedAt() core.Interface   { return core.Interface{m["created_at"]} }
 func (m ReceiptHistory) UpdatedAt() core.Interface   { return core.Interface{m["updated_at"]} }
 func (m ReceiptHistory) DeletedAt() core.Interface   { return core.Interface{m["deleted_at"]} }
@@ -308,15 +308,15 @@ func (m *ReceiptHistory) SQLScan(opts core.Opts, row *sql.Row) error {
 	res["id"] = data[0]
 	res["shop_id"] = data[1]
 	res["trader_id"] = data[2]
-	res["user_id"] = data[3]
-	res["code"] = data[4]
-	res["title"] = data[5]
-	res["type"] = data[6]
-	res["description"] = data[7]
-	res["amount"] = data[8]
-	res["status"] = data[9]
-	res["order_ids"] = data[10]
-	res["lines"] = data[11]
+	res["code"] = data[3]
+	res["title"] = data[4]
+	res["type"] = data[5]
+	res["description"] = data[6]
+	res["amount"] = data[7]
+	res["status"] = data[8]
+	res["order_ids"] = data[9]
+	res["lines"] = data[10]
+	res["created_by"] = data[11]
 	res["created_at"] = data[12]
 	res["updated_at"] = data[13]
 	res["deleted_at"] = data[14]
@@ -339,15 +339,15 @@ func (ms *ReceiptHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
 		m["id"] = data[0]
 		m["shop_id"] = data[1]
 		m["trader_id"] = data[2]
-		m["user_id"] = data[3]
-		m["code"] = data[4]
-		m["title"] = data[5]
-		m["type"] = data[6]
-		m["description"] = data[7]
-		m["amount"] = data[8]
-		m["status"] = data[9]
-		m["order_ids"] = data[10]
-		m["lines"] = data[11]
+		m["code"] = data[3]
+		m["title"] = data[4]
+		m["type"] = data[5]
+		m["description"] = data[6]
+		m["amount"] = data[7]
+		m["status"] = data[8]
+		m["order_ids"] = data[9]
+		m["lines"] = data[10]
+		m["created_by"] = data[11]
 		m["created_at"] = data[12]
 		m["updated_at"] = data[13]
 		m["deleted_at"] = data[14]

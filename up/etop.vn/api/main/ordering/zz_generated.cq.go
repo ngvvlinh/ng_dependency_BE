@@ -150,6 +150,19 @@ func (h QueryServiceHandler) HandleGetOrders(ctx context.Context, msg *GetOrders
 	return err
 }
 
+type GetOrdersByIDsAndCustomerIDQuery struct {
+	ShopID     int64
+	IDs        []int64
+	CustomerID int64
+
+	Result *OrdersResponse `json:"-"`
+}
+
+func (h QueryServiceHandler) HandleGetOrdersByIDsAndCustomerID(ctx context.Context, msg *GetOrdersByIDsAndCustomerIDQuery) (err error) {
+	msg.Result, err = h.inner.GetOrdersByIDsAndCustomerID(msg.GetArgs(ctx))
+	return err
+}
+
 // implement interfaces
 
 func (q *ReleaseOrdersForFfmCommand) command()       {}
@@ -161,6 +174,7 @@ func (q *ValidateOrdersForShippingCommand) command() {}
 func (q *GetOrderByCodeQuery) query()                {}
 func (q *GetOrderByIDQuery) query()                  {}
 func (q *GetOrdersQuery) query()                     {}
+func (q *GetOrdersByIDsAndCustomerIDQuery) query()   {}
 
 // implement conversion
 
@@ -239,6 +253,13 @@ func (q *GetOrdersQuery) GetArgs(ctx context.Context) (_ context.Context, _ *Get
 		}
 }
 
+func (q *GetOrdersByIDsAndCustomerIDQuery) GetArgs(ctx context.Context) (_ context.Context, shopID int64, IDs []int64, customerID int64) {
+	return ctx,
+		q.ShopID,
+		q.IDs,
+		q.CustomerID
+}
+
 // implement dispatching
 
 type AggregateHandler struct {
@@ -275,5 +296,6 @@ func (h QueryServiceHandler) RegisterHandlers(b interface {
 	b.AddHandler(h.HandleGetOrderByCode)
 	b.AddHandler(h.HandleGetOrderByID)
 	b.AddHandler(h.HandleGetOrders)
+	b.AddHandler(h.HandleGetOrdersByIDsAndCustomerID)
 	return QueryBus{b}
 }

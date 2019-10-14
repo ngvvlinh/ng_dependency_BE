@@ -79,25 +79,6 @@ func (ft *ReceiptFilters) ByTraderIDPtr(TraderID *int64) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft *ReceiptFilters) ByUserID(UserID int64) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
-		Prefix: &ft.prefix,
-		Column: "user_id",
-		Value:  UserID,
-		IsNil:  UserID == 0,
-	}
-}
-
-func (ft *ReceiptFilters) ByUserIDPtr(UserID *int64) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
-		Prefix: &ft.prefix,
-		Column: "user_id",
-		Value:  UserID,
-		IsNil:  UserID == nil,
-		IsZero: UserID != nil && (*UserID) == 0,
-	}
-}
-
 func (ft *ReceiptFilters) ByCode(Code string) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
@@ -209,6 +190,25 @@ func (ft *ReceiptFilters) ByStatusPtr(Status *int32) *sq.ColumnFilterPtr {
 		Value:  Status,
 		IsNil:  Status == nil,
 		IsZero: Status != nil && (*Status) == 0,
+	}
+}
+
+func (ft *ReceiptFilters) ByCreatedBy(CreatedBy int64) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "created_by",
+		Value:  CreatedBy,
+		IsNil:  CreatedBy == 0,
+	}
+}
+
+func (ft *ReceiptFilters) ByCreatedByPtr(CreatedBy *int64) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "created_by",
+		Value:  CreatedBy,
+		IsNil:  CreatedBy == nil,
+		IsZero: CreatedBy != nil && (*CreatedBy) == 0,
 	}
 }
 

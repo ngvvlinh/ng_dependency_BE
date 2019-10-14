@@ -3,7 +3,9 @@ package ordering
 import (
 	"context"
 
+	"etop.vn/api/main/etop"
 	"etop.vn/api/main/ordering"
+	"etop.vn/backend/com/main/ordering/convert"
 	"etop.vn/backend/com/main/ordering/sqlstore"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/cmsql"
@@ -36,6 +38,17 @@ func (q *QueryService) GetOrders(ctx context.Context, args *ordering.GetOrdersAr
 		return nil, err
 	}
 	return &ordering.OrdersResponse{Orders: orders}, nil
+}
+
+func (q *QueryService) GetOrdersByIDsAndCustomerID(
+	ctx context.Context, shopID int64, IDs []int64, customerID int64,
+) (*ordering.OrdersResponse, error) {
+	statuses := []etop.Status5{etop.S5Zero, etop.S5Positive, etop.S5SuperPos}
+	orders, err := q.store(ctx).IDs(IDs...).CustomerID(customerID).Statuses(statuses).ListOrders()
+	if err != nil {
+		return nil, err
+	}
+	return &ordering.OrdersResponse{Orders: convert.Orders(orders)}, nil
 }
 
 func (q *QueryService) GetOrderByCode(ctx context.Context, args *ordering.GetOrderByCodeArgs) (*ordering.Order, error) {

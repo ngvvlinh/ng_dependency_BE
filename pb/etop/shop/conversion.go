@@ -3,6 +3,7 @@ package shop
 import (
 	haravanidentity "etop.vn/api/external/haravan/identity"
 	"etop.vn/api/main/identity"
+	"etop.vn/api/main/receipting"
 	pbcm "etop.vn/backend/pb/common"
 )
 
@@ -45,4 +46,25 @@ func Convert_core_XAccountHaravan_To_api_XAccountHaravan(in *haravanidentity.Ext
 		CreatedAt:                         pbcm.PbTime(in.CreatedAt),
 		UpdatedAt:                         pbcm.PbTime(in.UpdatedAt),
 	}
+}
+
+func Convert_api_ReceiptLine_To_core_ReceiptLine(in *ReceiptLine) *receipting.ReceiptLine {
+	if in == nil {
+		return nil
+	}
+	return &receipting.ReceiptLine{
+		OrderID:        in.OrderId,
+		Title:          in.Title,
+		Amount:         in.Amount,
+		ReceivedAmount: in.ReceivedAmount,
+	}
+}
+
+func Convert_api_ReceiptLines_To_core_ReceiptLines(in []*ReceiptLine) []*receipting.ReceiptLine {
+	out := make([]*receipting.ReceiptLine, len(in))
+	for i := range in {
+		out[i] = Convert_api_ReceiptLine_To_core_ReceiptLine(in[i])
+	}
+
+	return out
 }

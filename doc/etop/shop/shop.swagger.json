@@ -7181,10 +7181,6 @@
           "type": "string",
           "format": "int64"
         },
-        "user_id": {
-          "type": "string",
-          "format": "int64"
-        },
         "title": {
           "type": "string"
         },
@@ -8259,7 +8255,7 @@
           "type": "string",
           "format": "int64"
         },
-        "user_id": {
+        "created_by": {
           "type": "string",
           "format": "int64"
         },
@@ -9312,10 +9308,6 @@
           "format": "int64"
         },
         "trader_id": {
-          "type": "string",
-          "format": "int64"
-        },
-        "user_id": {
           "type": "string",
           "format": "int64"
         },
