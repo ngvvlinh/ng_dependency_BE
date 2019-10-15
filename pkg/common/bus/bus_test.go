@@ -54,7 +54,7 @@ func TestQueryMockHandlerReturnsError(t *testing.T) {
 		return errors.New("test handler error")
 	})
 
-	ctx := context.Background()
+	ctx := Ctx()
 	err := b.Dispatch(ctx, &TestQuery{})
 	assert.Error(t, err)
 }
@@ -66,7 +66,20 @@ func TestQueryMockHandlerReturn(t *testing.T) {
 		return nil
 	})
 
-	ctx := context.Background()
+	ctx := Ctx()
+	query := &TestQuery{}
+	err := b.Dispatch(ctx, query)
+	assert.NoError(t, err)
+}
+
+func TestQueryMockHandlerContext(t *testing.T) {
+	b := New()
+	b.MockHandler(func(ctx context.Context, q *TestQuery) error {
+		q.Resp = "hello from test handler"
+		return nil
+	})
+
+	ctx := Ctx()
 	query := &TestQuery{}
 	err := b.Dispatch(ctx, query)
 	assert.NoError(t, err)
@@ -106,7 +119,7 @@ func TestPrintStack(t *testing.T) {
 	b.AddHandler(func(ctx context.Context, query *TestQueryB) error {
 		if query.Value == "A2-B2" {
 			PrintStack(ctx)
-			return errors.New("Error at A2-B2")
+			return errors.New("error at A2-B2")
 		}
 		return nil
 	})

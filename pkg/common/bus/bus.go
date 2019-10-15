@@ -135,6 +135,12 @@ func (b *InProcBus) AddHandler(handler HandlerFunc) {
 	if handlerType.NumIn() != 2 || handlerType.NumOut() != 1 {
 		panic("bus: Handler must receive 2 params and return error")
 	}
+	if handlerType.In(0) != ctxType {
+		panic(fmt.Sprintf("bus: Handler must receive the first param as context.Context (got %v)", handlerType.In(0)))
+	}
+	if handlerType.Out(0) != errType {
+		panic(fmt.Sprintf("bus: Handler must return error (got %v)", handlerType.Out(0)))
+	}
 
 	queryType := handlerType.In(1).Elem()
 	b.handlers[queryType] = handler
@@ -147,7 +153,7 @@ func (b *InProcBus) AddHandlers(handlers ...HandlerFunc) {
 }
 
 var (
-	ctxType = reflect.TypeOf(context.Background())
+	ctxType = reflect.TypeOf((*context.Context)(nil)).Elem()
 	errType = reflect.TypeOf((*error)(nil)).Elem()
 )
 
@@ -157,23 +163,37 @@ func (b *InProcBus) MockHandler(handler HandlerFunc) {
 	}
 
 	handlerType := reflect.TypeOf(handler)
-	if handlerType.NumIn() != 1 || handlerType.NumOut() != 1 {
-		panic("bus: Test handler must receive 1 params and return error")
+	if handlerType.NumOut() != 1 {
+		panic("bus: Test handler must return 1 result")
 	}
-	queryType := handlerType.In(0).Elem()
+	if handlerType.Out(0) != errType {
+		panic(fmt.Sprintf("bus: Test handler must return error (got %v)", handlerType.Out(0)))
+	}
+	switch {
+	case handlerType.NumIn() == 1:
+		queryType := handlerType.In(0).Elem()
+		fnType := reflect.FuncOf(
+			[]reflect.Type{ctxType, handlerType.In(0)},
+			[]reflect.Type{errType},
+			false,
+		)
+		wrapped := reflect.MakeFunc(fnType,
+			func(args []reflect.Value) []reflect.Value {
+				params := []reflect.Value{args[1]}
+				return reflect.ValueOf(handler).Call(params)
+			})
+		b.handlers[queryType] = wrapped.Interface()
 
-	fnType := reflect.FuncOf(
-		[]reflect.Type{ctxType, handlerType.In(0)},
-		[]reflect.Type{errType},
-		false,
-	)
-	wrapped := reflect.MakeFunc(fnType,
-		func(args []reflect.Value) []reflect.Value {
-			params := []reflect.Value{args[1]}
-			return reflect.ValueOf(handler).Call(params)
-		})
+	case handlerType.NumIn() == 2:
+		if handlerType.In(0) != ctxType {
+			panic(fmt.Sprintf("bus: Test handler must receive the first param as context.Context (got %v)", handlerType.In(0)))
+		}
+		queryType := handlerType.In(1).Elem()
+		b.handlers[queryType] = handler
 
-	b.handlers[queryType] = wrapped.Interface()
+	default:
+		panic("bus: Test handler must receive 2 params and return error")
+	}
 }
 
 func (b *InProcBus) AddEventListener(handler HandlerFunc) {
