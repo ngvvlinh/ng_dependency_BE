@@ -4,8 +4,6 @@ import (
 	"context"
 	"strings"
 
-	"etop.vn/backend/pkg/common/validate"
-
 	"etop.vn/api/meta"
 	"etop.vn/api/shopping/customering"
 	"etop.vn/backend/com/shopping/customering/convert"
@@ -14,6 +12,7 @@ import (
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/cmsql"
+	"etop.vn/backend/pkg/common/validate"
 )
 
 var _ customering.Aggregate = &CustomerAggregate{}
@@ -81,6 +80,12 @@ func (a *CustomerAggregate) UpdateCustomer(
 		return nil, err
 	}
 	updated := convert.UpdateShopCustomer(customer, args)
+	if customer.Phone != updated.Phone {
+		_, err := a.store(ctx).ShopID(args.ShopID).Phone(updated.Phone).GetCustomerDB()
+		if err == nil {
+			return nil, cm.Error(cm.InvalidArgument, "Số điện thoại đã tồn tại", err)
+		}
+	}
 	err = a.store(ctx).UpdateCustomerDB(convert.ShopCustomerDB(updated))
 	return updated, err
 }

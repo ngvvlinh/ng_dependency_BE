@@ -74,6 +74,11 @@ func (s *CustomerStore) ShopID(id int64) *CustomerStore {
 	return s
 }
 
+func (s *CustomerStore) Phone(phone string) *CustomerStore {
+	s.preds = append(s.preds, s.ft.ByPhone(phone))
+	return s
+}
+
 func (s *CustomerStore) OptionalShopID(id int64) *CustomerStore {
 	s.preds = append(s.preds, s.ft.ByShopID(id).Optional())
 	return s
