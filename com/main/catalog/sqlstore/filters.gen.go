@@ -1346,22 +1346,3 @@ func (ft *ShopProductCollectionFilters) ByUpdatedAtPtr(UpdatedAt *time.Time) *sq
 		IsZero: UpdatedAt != nil && (*UpdatedAt).IsZero(),
 	}
 }
-
-func (ft *ShopProductCollectionFilters) ByDeletedAt(DeletedAt time.Time) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
-		Prefix: &ft.prefix,
-		Column: "deleted_at",
-		Value:  DeletedAt,
-		IsNil:  DeletedAt.IsZero(),
-	}
-}
-
-func (ft *ShopProductCollectionFilters) ByDeletedAtPtr(DeletedAt *time.Time) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
-		Prefix: &ft.prefix,
-		Column: "deleted_at",
-		Value:  DeletedAt,
-		IsNil:  DeletedAt == nil,
-		IsZero: DeletedAt != nil && (*DeletedAt).IsZero(),
-	}
-}

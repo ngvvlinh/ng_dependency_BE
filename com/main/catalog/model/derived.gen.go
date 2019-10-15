@@ -1756,7 +1756,7 @@ func sqlgenShopProductCollection(_ *ShopProductCollection) bool { return true }
 type ShopProductCollections []*ShopProductCollection
 
 const __sqlShopProductCollection_Table = "shop_product_collection"
-const __sqlShopProductCollection_ListCols = "\"product_id\",\"collection_id\",\"shop_id\",\"created_at\",\"updated_at\",\"deleted_at\""
+const __sqlShopProductCollection_ListCols = "\"product_id\",\"collection_id\",\"shop_id\",\"created_at\",\"updated_at\""
 const __sqlShopProductCollection_Insert = "INSERT INTO \"shop_product_collection\" (" + __sqlShopProductCollection_ListCols + ") VALUES"
 const __sqlShopProductCollection_Select = "SELECT " + __sqlShopProductCollection_ListCols + " FROM \"shop_product_collection\""
 const __sqlShopProductCollection_Select_history = "SELECT " + __sqlShopProductCollection_ListCols + " FROM history.\"shop_product_collection\""
@@ -1774,7 +1774,6 @@ func (m *ShopProductCollection) SQLArgs(opts core.Opts, create bool) []interface
 		core.Int64(m.ShopID),
 		core.Now(m.CreatedAt, now, create),
 		core.Now(m.UpdatedAt, now, true),
-		core.Time(m.DeletedAt),
 	}
 }
 
@@ -1785,7 +1784,6 @@ func (m *ShopProductCollection) SQLScanArgs(opts core.Opts) []interface{} {
 		(*core.Int64)(&m.ShopID),
 		(*core.Time)(&m.CreatedAt),
 		(*core.Time)(&m.UpdatedAt),
-		(*core.Time)(&m.DeletedAt),
 	}
 }
 
@@ -1823,7 +1821,7 @@ func (_ *ShopProductCollections) SQLSelect(w SQLWriter) error {
 func (m *ShopProductCollection) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlShopProductCollection_Insert)
 	w.WriteRawString(" (")
-	w.WriteMarkers(6)
+	w.WriteMarkers(5)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), true))
 	return nil
@@ -1833,7 +1831,7 @@ func (ms ShopProductCollections) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlShopProductCollection_Insert)
 	w.WriteRawString(" (")
 	for i := 0; i < len(ms); i++ {
-		w.WriteMarkers(6)
+		w.WriteMarkers(5)
 		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
 		w.WriteRawString("),(")
 	}
@@ -1888,14 +1886,6 @@ func (m *ShopProductCollection) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(core.Now(m.UpdatedAt, time.Now(), true))
 	}
-	if !m.DeletedAt.IsZero() {
-		flag = true
-		w.WriteName("deleted_at")
-		w.WriteByte('=')
-		w.WriteMarker()
-		w.WriteByte(',')
-		w.WriteArg(m.DeletedAt)
-	}
 	if !flag {
 		return core.ErrNoColumn
 	}
@@ -1906,7 +1896,7 @@ func (m *ShopProductCollection) SQLUpdate(w SQLWriter) error {
 func (m *ShopProductCollection) SQLUpdateAll(w SQLWriter) error {
 	w.WriteQueryString(__sqlShopProductCollection_UpdateAll)
 	w.WriteRawString(" = (")
-	w.WriteMarkers(6)
+	w.WriteMarkers(5)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), false))
 	return nil
@@ -1945,34 +1935,30 @@ func (m ShopProductCollectionHistory) CreatedAt() core.Interface {
 func (m ShopProductCollectionHistory) UpdatedAt() core.Interface {
 	return core.Interface{m["updated_at"]}
 }
-func (m ShopProductCollectionHistory) DeletedAt() core.Interface {
-	return core.Interface{m["deleted_at"]}
-}
 
 func (m *ShopProductCollectionHistory) SQLScan(opts core.Opts, row *sql.Row) error {
-	data := make([]interface{}, 6)
-	args := make([]interface{}, 6)
-	for i := 0; i < 6; i++ {
+	data := make([]interface{}, 5)
+	args := make([]interface{}, 5)
+	for i := 0; i < 5; i++ {
 		args[i] = &data[i]
 	}
 	if err := row.Scan(args...); err != nil {
 		return err
 	}
-	res := make(ShopProductCollectionHistory, 6)
+	res := make(ShopProductCollectionHistory, 5)
 	res["product_id"] = data[0]
 	res["collection_id"] = data[1]
 	res["shop_id"] = data[2]
 	res["created_at"] = data[3]
 	res["updated_at"] = data[4]
-	res["deleted_at"] = data[5]
 	*m = res
 	return nil
 }
 
 func (ms *ShopProductCollectionHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	data := make([]interface{}, 6)
-	args := make([]interface{}, 6)
-	for i := 0; i < 6; i++ {
+	data := make([]interface{}, 5)
+	args := make([]interface{}, 5)
+	for i := 0; i < 5; i++ {
 		args[i] = &data[i]
 	}
 	res := make(ShopProductCollectionHistories, 0, 128)
@@ -1986,7 +1972,6 @@ func (ms *ShopProductCollectionHistories) SQLScan(opts core.Opts, rows *sql.Rows
 		m["shop_id"] = data[2]
 		m["created_at"] = data[3]
 		m["updated_at"] = data[4]
-		m["deleted_at"] = data[5]
 		res = append(res, m)
 	}
 	if err := rows.Err(); err != nil {

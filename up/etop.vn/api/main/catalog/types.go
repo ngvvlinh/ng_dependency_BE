@@ -203,7 +203,6 @@ type ShopProductCollection struct {
 
 	CreatedAt time.Time
 	UpdatedAt time.Time
-	DeletedAt time.Time
 }
 
 type ShopProductCreatingEvent struct {

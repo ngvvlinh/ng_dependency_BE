@@ -21,10 +21,6 @@ func (ft ShopCollectionFilters) NotDeleted() sq.WriterTo {
 	return ft.Filter("$.deleted_at IS NULL")
 }
 
-func (ft ShopProductCollectionFilters) NotDeleted() sq.WriterTo {
-	return ft.Filter("$.deleted_at IS NULL")
-}
-
 var SortShopVariant = map[string]string{
 	"id":         "",
 	"created_at": "",

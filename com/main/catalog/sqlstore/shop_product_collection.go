@@ -33,8 +33,6 @@ type ShopProductCollectionStore struct {
 	preds   []interface{}
 	filters meta.Filters
 	paging  meta.Paging
-
-	includeDeleted sqlstore.IncludeDeleted
 }
 
 func (s *ShopProductCollectionStore) Paging(paging meta.Paging) *ShopProductCollectionStore {
@@ -102,7 +100,6 @@ func (s *ShopProductCollectionStore) AddProductToCollection(productCollection *c
 
 func (s *ShopProductCollectionStore) ListShopProductCollectionsByProductIDDB() ([]*model.ShopProductCollection, error) {
 	query := s.query().Where(s.preds)
-	query = s.includeDeleted.Check(query, s.ftShopProductCollection.NotDeleted())
 	if len(s.paging.Sort) == 0 {
 		s.paging.Sort = []string{"-created_at"}
 	}
@@ -130,7 +127,6 @@ func (s *ShopProductCollectionStore) ListShopProductCollectionsByProductID() ([]
 
 func (s *ShopProductCollectionStore) ListShopProductCollectionsDB() ([]*model.ShopProductCollection, error) {
 	query := s.query().Where(s.preds)
-	query = s.includeDeleted.Check(query, s.ftShopProductCollection.NotDeleted())
 	if len(s.paging.Sort) == 0 {
 		s.paging.Sort = []string{"-created_at"}
 	}
