@@ -17,10 +17,6 @@ func (ft *ShopCustomerGroupFilters) NotDeleted() sq.WriterTo {
 	return ft.Filter("$.deleted_at IS NULL")
 }
 
-func (ft *ShopCustomerGroupCustomerFilters) NotDeleted() sq.WriterTo {
-	return ft.Filter("$.deleted_at IS NULL")
-}
-
 var SortShopCustomerGroup = map[string]string{
 	"group_id":   "",
 	"created_at": "",

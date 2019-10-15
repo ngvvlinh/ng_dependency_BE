@@ -31,8 +31,6 @@ type CustomerGroupCustomerStore struct {
 	preds   []interface{}
 	filters meta.Filters
 	paging  meta.Paging
-
-	includeDeleted sqlstore.IncludeDeleted
 }
 
 func (s *CustomerGroupCustomerStore) Paging(paging meta.Paging) *CustomerGroupCustomerStore {
@@ -89,7 +87,6 @@ func (s *CustomerGroupCustomerStore) RemoveCustomerFromGroup() (int, error) {
 
 func (s *CustomerGroupCustomerStore) GetShopCustomerToGroupDB() (*model.ShopCustomerGroupCustomer, error) {
 	query := s.query().Where(s.preds)
-	query = s.includeDeleted.Check(query, s.ft.NotDeleted())
 
 	var shopCustomerGroupCustomer model.ShopCustomerGroupCustomer
 	err := query.ShouldGet(&shopCustomerGroupCustomer)
@@ -98,7 +95,6 @@ func (s *CustomerGroupCustomerStore) GetShopCustomerToGroupDB() (*model.ShopCust
 
 func (s *CustomerGroupCustomerStore) ListShopCustomerGroupsCustomerByCustomerIDDB() ([]*model.ShopCustomerGroupCustomer, error) {
 	query := s.query().Where(s.preds)
-	query = s.includeDeleted.Check(query, s.ft.NotDeleted())
 	if len(s.paging.Sort) == 0 {
 		s.paging.Sort = []string{"-created_at"}
 	}
@@ -126,7 +122,6 @@ func (s *CustomerGroupCustomerStore) ListShopCustomerGroupsCustomerByCustomerID(
 
 func (s *CustomerGroupCustomerStore) ListShopCustomerGroupsCustomerDB() ([]*model.ShopCustomerGroupCustomer, error) {
 	query := s.query().Where(s.preds)
-	query = s.includeDeleted.Check(query, s.ft.NotDeleted())
 	if len(s.paging.Sort) == 0 {
 		s.paging.Sort = []string{"-created_at"}
 	}
