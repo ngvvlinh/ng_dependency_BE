@@ -6,6 +6,8 @@ import (
 	"sort"
 	"strings"
 
+	"golang.org/x/tools/go/packages"
+
 	"etop.vn/backend/tools/pkg/generator"
 )
 
@@ -22,23 +24,13 @@ type gen struct {
 func (g *gen) Name() string { return "cq" }
 
 func (g *gen) Generate(ng generator.Engine) error {
-	pkgs := ng.GeneratingPackages()
-	for _, pkg := range pkgs {
-		err := generatePackage(ng, pkg)
-		if err != nil {
-			return err
-		}
-	}
-	return nil
+	return ng.GenerateEachPackage(generatePackage)
 }
 
-func generatePackage(ng generator.Engine, gpkg *generator.GeneratingPackage) error {
-	pkg := gpkg.Package
-	objs := gpkg.Objects()
-
+func generatePackage(ng generator.Engine, pkg *packages.Package, printer generator.Printer) error {
 	var services []ServiceDef
 	kinds := []string{QueryService, Aggregate}
-	for _, obj := range objs {
+	for _, obj := range ng.GetObjectsByPackage(pkg) {
 		switch obj := obj.(type) {
 		case *types.TypeName:
 			kind, iface, err := checkService(kinds, obj, ng.GetComment(obj))
@@ -64,7 +56,6 @@ func generatePackage(ng generator.Engine, gpkg *generator.GeneratingPackage) err
 		return services[i].Name < services[j].Name
 	})
 
-	printer := gpkg.Generate()
 	w := NewWriter(pkg.Name, pkg.PkgPath, printer, printer)
 	ws := &MultiWriter{Writer: w}
 	writeCommonDeclaration(ws)

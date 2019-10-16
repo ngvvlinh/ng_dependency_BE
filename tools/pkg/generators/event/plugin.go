@@ -6,6 +6,8 @@ import (
 	"io"
 	"strings"
 
+	"golang.org/x/tools/go/packages"
+
 	"etop.vn/backend/tools/pkg/generator"
 )
 
@@ -24,14 +26,7 @@ type gen struct {
 func (g gen) Name() string { return "event" }
 
 func (g gen) Generate(ng generator.Engine) error {
-	pkgs := ng.GeneratingPackages()
-	for _, pkg := range pkgs {
-		err := generatePackage(pkg)
-		if err != nil {
-			return err
-		}
-	}
-	return nil
+	return ng.GenerateEachPackage(generatePackage)
 }
 
 func parseTopic(directives []generator.Directive) (topic string, _ error) {
@@ -47,14 +42,14 @@ func parseTopic(directives []generator.Directive) (topic string, _ error) {
 	return
 }
 
-func generatePackage(gpkg *generator.GeneratingPackage) error {
-	topic, err := parseTopic(gpkg.Directives)
+func generatePackage(ng generator.Engine, pkg *packages.Package, p generator.Printer) error {
+	directives := ng.GetDirectivesByPackage(pkg)
+	topic, err := parseTopic(directives)
 	if err != nil {
 		return err
 	}
 
-	p := gpkg.Generate()
-	for _, object := range gpkg.Objects() {
+	for _, object := range ng.GetObjectsByPackage(pkg) {
 		switch obj := object.(type) {
 		case *types.TypeName:
 			if strings.HasSuffix(obj.Name(), "Event") {

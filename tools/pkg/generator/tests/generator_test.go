@@ -156,7 +156,7 @@ func TestGenerate(t *testing.T) {
 				continue
 			}
 
-			p := pkg.Generate()
+			p := pkg.GetPrinter()
 			mustWrite(p, []byte(" ")) // write a single byte for triggering p.Close()
 		}
 		return nil

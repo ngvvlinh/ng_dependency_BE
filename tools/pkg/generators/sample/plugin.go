@@ -25,7 +25,7 @@ func (p plugin) Generate(ng generator.Engine) error {
 	pkgs := ng.GeneratingPackages()
 	for _, gpkg := range pkgs {
 		fmt.Printf("package %v:\n", gpkg.Package.PkgPath)
-		objects := gpkg.Objects()
+		objects := gpkg.GetObjects()
 		for _, obj := range objects {
 			fmt.Printf("  %v\t%v\n", obj.Name(), obj.Type())
 		}

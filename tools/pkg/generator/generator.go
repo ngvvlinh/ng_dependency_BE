@@ -202,6 +202,10 @@ func (ng *engine) collectPackages(ps patternsStruct, pkgs []*packages.Package) e
 		}
 	}
 	ng.collectedPackages = collectedPackages
+	ng.mapPkgDirectives = make(map[string][]Directive)
+	for _, pkg := range collectedPackages {
+		ng.mapPkgDirectives[pkg.PkgPath] = pkg.Directives
+	}
 
 	srcMap := make(map[string][]byte)
 	for _, fileContent := range fileContents {

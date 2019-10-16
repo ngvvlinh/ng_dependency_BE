@@ -4,6 +4,8 @@ import (
 	"go/ast"
 	"go/token"
 	"go/types"
+	"io/ioutil"
+	"os"
 	"path/filepath"
 	"sync"
 
@@ -22,14 +24,14 @@ type PreparsedPackage struct {
 
 type GeneratingPackage struct {
 	*packages.Package
-	Directives []Directive
 
-	plugin  *pluginStruct
-	engine  *engine
-	printer *printer
+	directives []Directive
+	plugin     *pluginStruct
+	engine     *engine
+	printer    *printer
 }
 
-func (g *GeneratingPackage) Generate() Printer {
+func (g *GeneratingPackage) GetPrinter() Printer {
 	if g.printer == nil {
 		input := GenerateFileNameInput{PluginName: g.plugin.name}
 		filename := g.engine.genFilename(input)
@@ -40,15 +42,21 @@ func (g *GeneratingPackage) Generate() Printer {
 	return g.printer
 }
 
-func (g *GeneratingPackage) Objects() []types.Object {
+func (g *GeneratingPackage) GetDirectives() []Directive {
+	return cloneDirectives(g.directives)
+}
+
+func (g *GeneratingPackage) GetObjects() []types.Object {
 	return g.engine.GetObjectsByPackage(g.Package)
 }
 
 type Engine interface {
+	GenerateEachPackage(func(Engine, *packages.Package, Printer) error) error
 	GeneratingPackages() []*GeneratingPackage
 
 	GetComment(Positioner) Comment
 	GetDirectives(Positioner) []Directive
+	GetDirectivesByPackage(*packages.Package) []Directive
 	GetIdent(Positioner) *ast.Ident
 	GetObject(Positioner) types.Object
 	GetObjectsByPackage(*packages.Package) []types.Object
@@ -73,6 +81,7 @@ type engine struct {
 	bufPool sync.Pool
 
 	cleanedFileNames  map[string]bool
+	mapPkgDirectives  map[string][]Directive
 	collectedPackages []PreparsedPackage
 	includes          []bool
 	generatedFile     []string
@@ -167,6 +176,21 @@ func (ng *engine) GetObjectsByScope(s *types.Scope) []types.Object {
 	return objs
 }
 
+func (ng *wrapEngine) GenerateEachPackage(
+	fn func(Engine, *packages.Package, Printer) error,
+) error {
+	for _, pkg := range ng.generatingPackages() {
+		printer := pkg.GetPrinter()
+		if err := fn(ng, pkg.Package, printer); err != nil {
+			return Errorf(err, "generating package %v: %v", pkg.PkgPath, err)
+		}
+		if err := printer.Close(); err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
 func (ng *wrapEngine) GeneratingPackages() []*GeneratingPackage {
 	if ng.pkgs == nil {
 		ng.pkgs = ng.generatingPackages()
@@ -180,16 +204,48 @@ func (ng *wrapEngine) generatingPackages() []*GeneratingPackage {
 	for i, ppkg := range ng.collectedPackages {
 		if includes[i] {
 			pkg := ng.pkgMap[ppkg.PkgPath]
-			gpkg := &GeneratingPackage{
-				Package:    pkg,
-				Directives: cloneDirectives(ppkg.Directives),
-				plugin:     ng.plugin,
-				engine:     ng.engine,
-			}
+			gpkg := ng.generatingPackage(pkg)
 			pkgs = append(pkgs, gpkg)
 		}
 	}
 	return pkgs
+}
+
+func (ng *wrapEngine) generatingPackage(pkg *packages.Package) *GeneratingPackage {
+	directives := ng.GetDirectivesByPackage(pkg)
+	gpkg := &GeneratingPackage{
+		Package:    pkg,
+		directives: directives,
+		plugin:     ng.plugin,
+		engine:     ng.engine,
+	}
+	return gpkg
+}
+
+func (ng *wrapEngine) GetDirectivesByPackage(pkg *packages.Package) []Directive {
+	directives, ok := ng.mapPkgDirectives[pkg.PkgPath]
+	if !ok {
+		var ds []Directive
+		for _, file := range pkg.GoFiles {
+			body, err := ioutil.ReadFile(file)
+			if err != nil {
+				if os.IsNotExist(err) {
+					ll.V(1).Debugf("ignore not found file: %v", file)
+					continue
+				}
+				panic(err)
+			}
+
+			var errs []error
+			ds, errs = parseDirectivesFromBody(ds, body)
+			for _, err := range errs {
+				ll.V(1).Debugf("invalid directive from file %v: %v", file, err)
+			}
+		}
+		directives = ds
+		ng.mapPkgDirectives[pkg.PkgPath] = ds
+	}
+	return cloneDirectives(directives)
 }
 
 func cloneDirectives(directives []Directive) []Directive {

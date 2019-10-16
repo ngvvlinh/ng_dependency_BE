@@ -72,7 +72,7 @@ func (p *plugin) Generate(ng generator.Engine) error {
 
 	convPairs = make(map[pair]*conversionFunc)
 	for _, gpkg := range generatingPackages {
-		for _, obj := range gpkg.gpkg.Objects() {
+		for _, obj := range gpkg.gpkg.GetObjects() {
 			fn, ok := obj.(*types.Func)
 			if !ok {
 				continue
@@ -136,7 +136,7 @@ func (p *plugin) Generate(ng generator.Engine) error {
 
 	// generate
 	for _, gpkg := range generatingPackages {
-		currentPrinter = gpkg.gpkg.Generate()
+		currentPrinter = gpkg.gpkg.GetPrinter()
 		generateComments(currentPrinter, gpkg.customConvs, gpkg.ignoredFuncs)
 		_, err := generateConverts(currentPrinter, convPairs, gpkg.objMap)
 		if err != nil {
@@ -224,7 +224,7 @@ func preparePackage(ng generator.Engine, gpkg *generator.GeneratingPackage) (*ge
 		gpkg:   gpkg,
 		objMap: make(map[objName]*objMap),
 	}
-	for _, d := range gpkg.Directives {
+	for _, d := range gpkg.GetDirectives() {
 		if d.Cmd != Command {
 			continue
 		}
@@ -232,7 +232,7 @@ func preparePackage(ng generator.Engine, gpkg *generator.GeneratingPackage) (*ge
 		if err != nil {
 			return nil, err
 		}
-		step, err := generatePackageStep(ng, gpkg, gpkg.Generate(), result.objMap, apiPkgPaths, toPkgPaths)
+		step, err := generatePackageStep(ng, gpkg, gpkg.GetPrinter(), result.objMap, apiPkgPaths, toPkgPaths)
 		if err != nil {
 			return nil, err
 		}
