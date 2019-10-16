@@ -501,3 +501,34 @@ func TestNormalizeSearch(t *testing.T) {
 		})
 	}
 }
+
+func TestNormalizeSearchPhone(t *testing.T) {
+	tests := []struct {
+		input string
+		want  string // NormalizeSerachPhone
+	}{
+		{
+			"0945389709",
+			"09 094 0945 09453 094538 0945389 09453897 094538970 0945389709",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.input, func(t *testing.T) {
+			n, output := normalizeSearchPhone(tt.input)
+			assert.Equal(t, tt.want, output)
+			assert.Equal(t, n, len(output))
+		})
+	}
+}
+
+func BenchmarkNormalizeSearchPhone(b *testing.B) {
+	input := "0945389709"
+	var _s string
+
+	b.ReportAllocs()
+	for i := 0; i < b.N; i++ {
+		s := NormalizeSearchPhone(input)
+		_s = s
+	}
+	_ = _s
+}

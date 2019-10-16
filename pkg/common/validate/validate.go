@@ -8,6 +8,8 @@ import (
 	"strings"
 	"unsafe"
 
+	cm "etop.vn/backend/pkg/common"
+
 	"github.com/asaskevich/govalidator"
 	"golang.org/x/text/unicode/norm"
 )
@@ -603,6 +605,24 @@ func normalizeSearch(s string, space string, quote bool, lower bool) string {
 		b = b[:len(b)-len(space)]
 	}
 	return unsafeBytesToString(b)
+}
+
+func NormalizeSearchPhone(s string) string {
+	_, ss := normalizeSearchPhone(s)
+	return ss
+}
+
+func normalizeSearchPhone(s string) (int, string) {
+	ln := len(s) - 1
+	n := (1+ln)*ln/2 + 2*ln - 1
+	b := make([]byte, 0, n)
+	for i := 2; i <= len(s); i++ {
+		if i != 2 {
+			b = append(b, ' ')
+		}
+		b = append(b, s[:i]...)
+	}
+	return n, cm.UnsafeBytesToString(b)
 }
 
 func ValidateStruct(v interface{}) (bool, error) {

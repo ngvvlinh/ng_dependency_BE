@@ -33,7 +33,7 @@ var SortCustomer = map[string]string{
 }
 
 var FilterCustomer = sqlstore.FilterWhitelist{
-	Contains: []string{"full_name"},
+	Contains: []string{"full_name", "phone"},
 	Equals:   []string{"phone"},
 }
 

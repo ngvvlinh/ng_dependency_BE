@@ -209,7 +209,7 @@ func sqlgenShopCustomer(_ *ShopCustomer) bool { return true }
 type ShopCustomers []*ShopCustomer
 
 const __sqlShopCustomer_Table = "shop_customer"
-const __sqlShopCustomer_ListCols = "\"id\",\"shop_id\",\"code\",\"full_name\",\"gender\",\"type\",\"birthday\",\"note\",\"phone\",\"email\",\"status\",\"full_name_norm\",\"created_at\",\"updated_at\",\"deleted_at\""
+const __sqlShopCustomer_ListCols = "\"id\",\"shop_id\",\"code\",\"full_name\",\"gender\",\"type\",\"birthday\",\"note\",\"phone\",\"email\",\"status\",\"full_name_norm\",\"phone_norm\",\"created_at\",\"updated_at\",\"deleted_at\""
 const __sqlShopCustomer_Insert = "INSERT INTO \"shop_customer\" (" + __sqlShopCustomer_ListCols + ") VALUES"
 const __sqlShopCustomer_Select = "SELECT " + __sqlShopCustomer_ListCols + " FROM \"shop_customer\""
 const __sqlShopCustomer_Select_history = "SELECT " + __sqlShopCustomer_ListCols + " FROM history.\"shop_customer\""
@@ -234,6 +234,7 @@ func (m *ShopCustomer) SQLArgs(opts core.Opts, create bool) []interface{} {
 		core.String(m.Email),
 		core.Int32(m.Status),
 		core.String(m.FullNameNorm),
+		core.String(m.PhoneNorm),
 		core.Now(m.CreatedAt, now, create),
 		core.Now(m.UpdatedAt, now, true),
 		core.Time(m.DeletedAt),
@@ -254,6 +255,7 @@ func (m *ShopCustomer) SQLScanArgs(opts core.Opts) []interface{} {
 		(*core.String)(&m.Email),
 		(*core.Int32)(&m.Status),
 		(*core.String)(&m.FullNameNorm),
+		(*core.String)(&m.PhoneNorm),
 		(*core.Time)(&m.CreatedAt),
 		(*core.Time)(&m.UpdatedAt),
 		(*core.Time)(&m.DeletedAt),
@@ -294,7 +296,7 @@ func (_ *ShopCustomers) SQLSelect(w SQLWriter) error {
 func (m *ShopCustomer) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlShopCustomer_Insert)
 	w.WriteRawString(" (")
-	w.WriteMarkers(15)
+	w.WriteMarkers(16)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), true))
 	return nil
@@ -304,7 +306,7 @@ func (ms ShopCustomers) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlShopCustomer_Insert)
 	w.WriteRawString(" (")
 	for i := 0; i < len(ms); i++ {
-		w.WriteMarkers(15)
+		w.WriteMarkers(16)
 		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
 		w.WriteRawString("),(")
 	}
@@ -415,6 +417,14 @@ func (m *ShopCustomer) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(m.FullNameNorm)
 	}
+	if m.PhoneNorm != "" {
+		flag = true
+		w.WriteName("phone_norm")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.PhoneNorm)
+	}
 	if !m.CreatedAt.IsZero() {
 		flag = true
 		w.WriteName("created_at")
@@ -449,7 +459,7 @@ func (m *ShopCustomer) SQLUpdate(w SQLWriter) error {
 func (m *ShopCustomer) SQLUpdateAll(w SQLWriter) error {
 	w.WriteQueryString(__sqlShopCustomer_UpdateAll)
 	w.WriteRawString(" = (")
-	w.WriteMarkers(15)
+	w.WriteMarkers(16)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), false))
 	return nil
@@ -483,20 +493,21 @@ func (m ShopCustomerHistory) Phone() core.Interface        { return core.Interfa
 func (m ShopCustomerHistory) Email() core.Interface        { return core.Interface{m["email"]} }
 func (m ShopCustomerHistory) Status() core.Interface       { return core.Interface{m["status"]} }
 func (m ShopCustomerHistory) FullNameNorm() core.Interface { return core.Interface{m["full_name_norm"]} }
+func (m ShopCustomerHistory) PhoneNorm() core.Interface    { return core.Interface{m["phone_norm"]} }
 func (m ShopCustomerHistory) CreatedAt() core.Interface    { return core.Interface{m["created_at"]} }
 func (m ShopCustomerHistory) UpdatedAt() core.Interface    { return core.Interface{m["updated_at"]} }
 func (m ShopCustomerHistory) DeletedAt() core.Interface    { return core.Interface{m["deleted_at"]} }
 
 func (m *ShopCustomerHistory) SQLScan(opts core.Opts, row *sql.Row) error {
-	data := make([]interface{}, 15)
-	args := make([]interface{}, 15)
-	for i := 0; i < 15; i++ {
+	data := make([]interface{}, 16)
+	args := make([]interface{}, 16)
+	for i := 0; i < 16; i++ {
 		args[i] = &data[i]
 	}
 	if err := row.Scan(args...); err != nil {
 		return err
 	}
-	res := make(ShopCustomerHistory, 15)
+	res := make(ShopCustomerHistory, 16)
 	res["id"] = data[0]
 	res["shop_id"] = data[1]
 	res["code"] = data[2]
@@ -509,17 +520,18 @@ func (m *ShopCustomerHistory) SQLScan(opts core.Opts, row *sql.Row) error {
 	res["email"] = data[9]
 	res["status"] = data[10]
 	res["full_name_norm"] = data[11]
-	res["created_at"] = data[12]
-	res["updated_at"] = data[13]
-	res["deleted_at"] = data[14]
+	res["phone_norm"] = data[12]
+	res["created_at"] = data[13]
+	res["updated_at"] = data[14]
+	res["deleted_at"] = data[15]
 	*m = res
 	return nil
 }
 
 func (ms *ShopCustomerHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	data := make([]interface{}, 15)
-	args := make([]interface{}, 15)
-	for i := 0; i < 15; i++ {
+	data := make([]interface{}, 16)
+	args := make([]interface{}, 16)
+	for i := 0; i < 16; i++ {
 		args[i] = &data[i]
 	}
 	res := make(ShopCustomerHistories, 0, 128)
@@ -540,9 +552,10 @@ func (ms *ShopCustomerHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
 		m["email"] = data[9]
 		m["status"] = data[10]
 		m["full_name_norm"] = data[11]
-		m["created_at"] = data[12]
-		m["updated_at"] = data[13]
-		m["deleted_at"] = data[14]
+		m["phone_norm"] = data[12]
+		m["created_at"] = data[13]
+		m["updated_at"] = data[14]
+		m["deleted_at"] = data[15]
 		res = append(res, m)
 	}
 	if err := rows.Err(); err != nil {

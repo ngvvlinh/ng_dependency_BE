@@ -90,6 +90,7 @@ func ShopCustomerDB(in *customering.ShopCustomer) (out *model.ShopCustomer) {
 		Note:         in.Note,
 		Phone:        in.Phone,
 		Email:        in.Email,
+		PhoneNorm:    validate.NormalizeSearchPhone(in.Phone),
 		Status:       in.Status,
 		CreatedAt:    in.CreatedAt,
 		UpdatedAt:    in.UpdatedAt,

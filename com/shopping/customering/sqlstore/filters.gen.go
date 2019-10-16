@@ -322,6 +322,25 @@ func (ft *ShopCustomerFilters) ByFullNameNormPtr(FullNameNorm *string) *sq.Colum
 	}
 }
 
+func (ft *ShopCustomerFilters) ByPhoneNorm(PhoneNorm string) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "phone_norm",
+		Value:  PhoneNorm,
+		IsNil:  PhoneNorm == "",
+	}
+}
+
+func (ft *ShopCustomerFilters) ByPhoneNormPtr(PhoneNorm *string) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "phone_norm",
+		Value:  PhoneNorm,
+		IsNil:  PhoneNorm == nil,
+		IsZero: PhoneNorm != nil && (*PhoneNorm) == "",
+	}
+}
+
 func (ft *ShopCustomerFilters) ByCreatedAt(CreatedAt time.Time) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
