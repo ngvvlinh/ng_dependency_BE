@@ -388,6 +388,14 @@ func (a *Aggregate) CreateOrUpdateSupplyCommissionSetting(ctx context.Context, a
 	if !cm.StringsContain(AvailableDurationTypes, args.LifetimeDurationType) {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "LifetimeDurationType is not valid")
 	}
+	if args.Level1DirectCommission < 0 ||
+		args.Level1IndirectCommission < 0 ||
+		args.Level2DirectCommission < 0 ||
+		args.Level2IndirectCommission < 0 ||
+		args.LifetimeDuration < 0 ||
+		args.Level1LimitCount < 0 {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "Giá trị số phải lớn hơn 0")
+	}
 
 	var level1LimitDuration int64 = 0
 	var lifetimeDuration int64 = 0
