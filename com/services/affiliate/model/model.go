@@ -135,6 +135,7 @@ type OrderPromotion struct {
 	ID                   int64
 	ProductID            int64
 	OrderID              int64
+	ProductQuantity      int32
 	BaseValue            int32
 	Amount               int32
 	Unit                 string
@@ -152,6 +153,7 @@ type OrderCommissionSetting struct {
 	OrderID                  int64
 	SupplyID                 int64
 	ProductID                int64
+	ProductQuantity          int32
 	Level1DirectCommission   int32
 	Level1IndirectCommission int32
 	Level2DirectCommission   int32
@@ -182,11 +184,12 @@ type ShopCashback struct {
 var _ = sqlgenShopOrderProductHistory(&ShopOrderProductHistory{})
 
 type ShopOrderProductHistory struct {
-	UserID    int64
-	ShopID    int64
-	OrderID   int64
-	SupplyID  int64
-	ProductID int64
-	CreatedAt time.Time `sq:"create"`
-	UpdatedAt time.Time `sq:"update"`
+	UserID          int64
+	ShopID          int64
+	OrderID         int64
+	SupplyID        int64
+	ProductID       int64
+	ProductQuantity int32
+	CreatedAt       time.Time `sq:"create"`
+	UpdatedAt       time.Time `sq:"update"`
 }

@@ -510,6 +510,7 @@ func (a *Aggregate) CreateOrderPromotions(ctx context.Context, orderNotifyID int
 			ID:                   cm.NewID(),
 			ProductID:            line.ProductId,
 			OrderID:              getOrderQ.Result.ID,
+			ProductQuantity:      line.Quantity,
 			BaseValue:            int32(basePrice),
 			Amount:               sellerCashback.Amount,
 			Unit:                 sellerCashback.Unit,
@@ -559,6 +560,7 @@ func (a *Aggregate) CreateOrderCommissionSettings(ctx context.Context, orderCrea
 			OrderID:                  orderNotify.OrderID,
 			SupplyID:                 orderNotify.SupplyID,
 			ProductID:                line.ProductId,
+			ProductQuantity:          line.Quantity,
 			Level1DirectCommission:   supplyCommissionSetting.Level1DirectCommission,
 			Level1IndirectCommission: supplyCommissionSetting.Level1IndirectCommission,
 			Level2DirectCommission:   supplyCommissionSetting.Level2DirectCommission,
@@ -605,6 +607,7 @@ func (a *Aggregate) ProcessOrderNotify(ctx context.Context, orderCreatedNotifyID
 		// process cashback for shop
 		var shopCashbacks []*model.ShopCashback
 		shopCashbackMap := map[int64]*model.ShopCashback{}
+		sellerPromotionByProductID := map[int64]int32{}
 		for _, promotion := range orderPromotions {
 			var cashback = float64(0)
 			if promotion.Type != "cashback" {
@@ -622,6 +625,19 @@ func (a *Aggregate) ProcessOrderNotify(ctx context.Context, orderCreatedNotifyID
 			}
 			if err := a.catalogQuery.Dispatch(ctx, productQ); err != nil {
 				return err
+			}
+
+			if promotion.Src == "seller" {
+				sellerCashback := int32(cashback)
+				if promotion.Unit == "vnd" {
+					sellerCashback = sellerCashback * promotion.ProductQuantity
+				}
+
+				if sellerPromotionByProductID[promotion.ProductID] == 0 {
+					sellerPromotionByProductID[promotion.ProductID] = sellerCashback
+				} else {
+					sellerPromotionByProductID[promotion.ProductID] = sellerPromotionByProductID[promotion.ProductID] + sellerCashback
+				}
 			}
 
 			if shopCashbackMap[productQ.ProductID] != nil {
@@ -698,6 +714,10 @@ func (a *Aggregate) ProcessOrderNotify(ctx context.Context, orderCreatedNotifyID
 
 			directCommissionValue := math.Round(basePrice * (float64(directCommission) / 100 / 100))
 
+			if sellerPromotionByProductID[line.ProductId] != 0 {
+				directCommissionValue = directCommissionValue - float64(sellerPromotionByProductID[line.ProductId])
+			}
+
 			if err := a.affiliateCommission(ctx).CreateAffiliateCommission(&model.SellerCommission{
 				ID:           cm.NewID(),
 				SellerID:     affReferralCode.AffiliateID,
@@ -749,13 +769,14 @@ func (a *Aggregate) ProcessOrderNotify(ctx context.Context, orderCreatedNotifyID
 		// store history
 		for _, line := range getOrderQ.Result.Lines {
 			if err := a.shopOrderProductHistory(ctx).CreateShopOrderProductHistory(&model.ShopOrderProductHistory{
-				UserID:    shopQ.Result.OwnerID,
-				ShopID:    getOrderQ.Result.TradingShopID,
-				OrderID:   getOrderQ.Result.ID,
-				SupplyID:  getOrderQ.Result.ShopID,
-				ProductID: line.ProductId,
-				CreatedAt: time.Now(),
-				UpdatedAt: time.Now(),
+				UserID:          shopQ.Result.OwnerID,
+				ShopID:          getOrderQ.Result.TradingShopID,
+				OrderID:         getOrderQ.Result.ID,
+				SupplyID:        getOrderQ.Result.ShopID,
+				ProductID:       line.ProductId,
+				ProductQuantity: line.Quantity,
+				CreatedAt:       time.Now(),
+				UpdatedAt:       time.Now(),
 			}); err != nil {
 				return err
 			}

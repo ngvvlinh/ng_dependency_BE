@@ -1754,6 +1754,25 @@ func (ft *OrderPromotionFilters) ByOrderIDPtr(OrderID *int64) *sq.ColumnFilterPt
 	}
 }
 
+func (ft *OrderPromotionFilters) ByProductQuantity(ProductQuantity int32) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "product_quantity",
+		Value:  ProductQuantity,
+		IsNil:  ProductQuantity == 0,
+	}
+}
+
+func (ft *OrderPromotionFilters) ByProductQuantityPtr(ProductQuantity *int32) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "product_quantity",
+		Value:  ProductQuantity,
+		IsNil:  ProductQuantity == nil,
+		IsZero: ProductQuantity != nil && (*ProductQuantity) == 0,
+	}
+}
+
 func (ft *OrderPromotionFilters) ByBaseValue(BaseValue int32) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
@@ -1993,6 +2012,25 @@ func (ft *OrderCommissionSettingFilters) ByProductIDPtr(ProductID *int64) *sq.Co
 		Value:  ProductID,
 		IsNil:  ProductID == nil,
 		IsZero: ProductID != nil && (*ProductID) == 0,
+	}
+}
+
+func (ft *OrderCommissionSettingFilters) ByProductQuantity(ProductQuantity int32) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "product_quantity",
+		Value:  ProductQuantity,
+		IsNil:  ProductQuantity == 0,
+	}
+}
+
+func (ft *OrderCommissionSettingFilters) ByProductQuantityPtr(ProductQuantity *int32) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "product_quantity",
+		Value:  ProductQuantity,
+		IsNil:  ProductQuantity == nil,
+		IsZero: ProductQuantity != nil && (*ProductQuantity) == 0,
 	}
 }
 
@@ -2496,6 +2534,25 @@ func (ft *ShopOrderProductHistoryFilters) ByProductIDPtr(ProductID *int64) *sq.C
 		Value:  ProductID,
 		IsNil:  ProductID == nil,
 		IsZero: ProductID != nil && (*ProductID) == 0,
+	}
+}
+
+func (ft *ShopOrderProductHistoryFilters) ByProductQuantity(ProductQuantity int32) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "product_quantity",
+		Value:  ProductQuantity,
+		IsNil:  ProductQuantity == 0,
+	}
+}
+
+func (ft *ShopOrderProductHistoryFilters) ByProductQuantityPtr(ProductQuantity *int32) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "product_quantity",
+		Value:  ProductQuantity,
+		IsNil:  ProductQuantity == nil,
+		IsZero: ProductQuantity != nil && (*ProductQuantity) == 0,
 	}
 }
 

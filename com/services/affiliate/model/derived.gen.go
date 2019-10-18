@@ -2272,7 +2272,7 @@ func sqlgenOrderPromotion(_ *OrderPromotion) bool { return true }
 type OrderPromotions []*OrderPromotion
 
 const __sqlOrderPromotion_Table = "order_promotion"
-const __sqlOrderPromotion_ListCols = "\"id\",\"product_id\",\"order_id\",\"base_value\",\"amount\",\"unit\",\"type\",\"order_created_notify_id\",\"description\",\"src\",\"created_at\",\"updated_at\""
+const __sqlOrderPromotion_ListCols = "\"id\",\"product_id\",\"order_id\",\"product_quantity\",\"base_value\",\"amount\",\"unit\",\"type\",\"order_created_notify_id\",\"description\",\"src\",\"created_at\",\"updated_at\""
 const __sqlOrderPromotion_Insert = "INSERT INTO \"order_promotion\" (" + __sqlOrderPromotion_ListCols + ") VALUES"
 const __sqlOrderPromotion_Select = "SELECT " + __sqlOrderPromotion_ListCols + " FROM \"order_promotion\""
 const __sqlOrderPromotion_Select_history = "SELECT " + __sqlOrderPromotion_ListCols + " FROM history.\"order_promotion\""
@@ -2288,6 +2288,7 @@ func (m *OrderPromotion) SQLArgs(opts core.Opts, create bool) []interface{} {
 		core.Int64(m.ID),
 		core.Int64(m.ProductID),
 		core.Int64(m.OrderID),
+		core.Int32(m.ProductQuantity),
 		core.Int32(m.BaseValue),
 		core.Int32(m.Amount),
 		core.String(m.Unit),
@@ -2305,6 +2306,7 @@ func (m *OrderPromotion) SQLScanArgs(opts core.Opts) []interface{} {
 		(*core.Int64)(&m.ID),
 		(*core.Int64)(&m.ProductID),
 		(*core.Int64)(&m.OrderID),
+		(*core.Int32)(&m.ProductQuantity),
 		(*core.Int32)(&m.BaseValue),
 		(*core.Int32)(&m.Amount),
 		(*core.String)(&m.Unit),
@@ -2351,7 +2353,7 @@ func (_ *OrderPromotions) SQLSelect(w SQLWriter) error {
 func (m *OrderPromotion) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlOrderPromotion_Insert)
 	w.WriteRawString(" (")
-	w.WriteMarkers(12)
+	w.WriteMarkers(13)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), true))
 	return nil
@@ -2361,7 +2363,7 @@ func (ms OrderPromotions) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlOrderPromotion_Insert)
 	w.WriteRawString(" (")
 	for i := 0; i < len(ms); i++ {
-		w.WriteMarkers(12)
+		w.WriteMarkers(13)
 		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
 		w.WriteRawString("),(")
 	}
@@ -2399,6 +2401,14 @@ func (m *OrderPromotion) SQLUpdate(w SQLWriter) error {
 		w.WriteMarker()
 		w.WriteByte(',')
 		w.WriteArg(m.OrderID)
+	}
+	if m.ProductQuantity != 0 {
+		flag = true
+		w.WriteName("product_quantity")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.ProductQuantity)
 	}
 	if m.BaseValue != 0 {
 		flag = true
@@ -2482,7 +2492,7 @@ func (m *OrderPromotion) SQLUpdate(w SQLWriter) error {
 func (m *OrderPromotion) SQLUpdateAll(w SQLWriter) error {
 	w.WriteQueryString(__sqlOrderPromotion_UpdateAll)
 	w.WriteRawString(" = (")
-	w.WriteMarkers(12)
+	w.WriteMarkers(13)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), false))
 	return nil
@@ -2507,6 +2517,9 @@ func (m OrderPromotionHistories) SQLSelect(w SQLWriter) error {
 func (m OrderPromotionHistory) ID() core.Interface        { return core.Interface{m["id"]} }
 func (m OrderPromotionHistory) ProductID() core.Interface { return core.Interface{m["product_id"]} }
 func (m OrderPromotionHistory) OrderID() core.Interface   { return core.Interface{m["order_id"]} }
+func (m OrderPromotionHistory) ProductQuantity() core.Interface {
+	return core.Interface{m["product_quantity"]}
+}
 func (m OrderPromotionHistory) BaseValue() core.Interface { return core.Interface{m["base_value"]} }
 func (m OrderPromotionHistory) Amount() core.Interface    { return core.Interface{m["amount"]} }
 func (m OrderPromotionHistory) Unit() core.Interface      { return core.Interface{m["unit"]} }
@@ -2520,35 +2533,36 @@ func (m OrderPromotionHistory) CreatedAt() core.Interface   { return core.Interf
 func (m OrderPromotionHistory) UpdatedAt() core.Interface   { return core.Interface{m["updated_at"]} }
 
 func (m *OrderPromotionHistory) SQLScan(opts core.Opts, row *sql.Row) error {
-	data := make([]interface{}, 12)
-	args := make([]interface{}, 12)
-	for i := 0; i < 12; i++ {
+	data := make([]interface{}, 13)
+	args := make([]interface{}, 13)
+	for i := 0; i < 13; i++ {
 		args[i] = &data[i]
 	}
 	if err := row.Scan(args...); err != nil {
 		return err
 	}
-	res := make(OrderPromotionHistory, 12)
+	res := make(OrderPromotionHistory, 13)
 	res["id"] = data[0]
 	res["product_id"] = data[1]
 	res["order_id"] = data[2]
-	res["base_value"] = data[3]
-	res["amount"] = data[4]
-	res["unit"] = data[5]
-	res["type"] = data[6]
-	res["order_created_notify_id"] = data[7]
-	res["description"] = data[8]
-	res["src"] = data[9]
-	res["created_at"] = data[10]
-	res["updated_at"] = data[11]
+	res["product_quantity"] = data[3]
+	res["base_value"] = data[4]
+	res["amount"] = data[5]
+	res["unit"] = data[6]
+	res["type"] = data[7]
+	res["order_created_notify_id"] = data[8]
+	res["description"] = data[9]
+	res["src"] = data[10]
+	res["created_at"] = data[11]
+	res["updated_at"] = data[12]
 	*m = res
 	return nil
 }
 
 func (ms *OrderPromotionHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	data := make([]interface{}, 12)
-	args := make([]interface{}, 12)
-	for i := 0; i < 12; i++ {
+	data := make([]interface{}, 13)
+	args := make([]interface{}, 13)
+	for i := 0; i < 13; i++ {
 		args[i] = &data[i]
 	}
 	res := make(OrderPromotionHistories, 0, 128)
@@ -2560,15 +2574,16 @@ func (ms *OrderPromotionHistories) SQLScan(opts core.Opts, rows *sql.Rows) error
 		m["id"] = data[0]
 		m["product_id"] = data[1]
 		m["order_id"] = data[2]
-		m["base_value"] = data[3]
-		m["amount"] = data[4]
-		m["unit"] = data[5]
-		m["type"] = data[6]
-		m["order_created_notify_id"] = data[7]
-		m["description"] = data[8]
-		m["src"] = data[9]
-		m["created_at"] = data[10]
-		m["updated_at"] = data[11]
+		m["product_quantity"] = data[3]
+		m["base_value"] = data[4]
+		m["amount"] = data[5]
+		m["unit"] = data[6]
+		m["type"] = data[7]
+		m["order_created_notify_id"] = data[8]
+		m["description"] = data[9]
+		m["src"] = data[10]
+		m["created_at"] = data[11]
+		m["updated_at"] = data[12]
 		res = append(res, m)
 	}
 	if err := rows.Err(); err != nil {
@@ -2584,7 +2599,7 @@ func sqlgenOrderCommissionSetting(_ *OrderCommissionSetting) bool { return true 
 type OrderCommissionSettings []*OrderCommissionSetting
 
 const __sqlOrderCommissionSetting_Table = "order_commission_setting"
-const __sqlOrderCommissionSetting_ListCols = "\"order_id\",\"supply_id\",\"product_id\",\"level1_direct_commission\",\"level1_indirect_commission\",\"level2_direct_commission\",\"level2_indirect_commission\",\"depend_on\",\"level1_limit_count\",\"level1_limit_duration\",\"lifetime_duration\",\"created_at\",\"updated_at\""
+const __sqlOrderCommissionSetting_ListCols = "\"order_id\",\"supply_id\",\"product_id\",\"product_quantity\",\"level1_direct_commission\",\"level1_indirect_commission\",\"level2_direct_commission\",\"level2_indirect_commission\",\"depend_on\",\"level1_limit_count\",\"level1_limit_duration\",\"lifetime_duration\",\"created_at\",\"updated_at\""
 const __sqlOrderCommissionSetting_Insert = "INSERT INTO \"order_commission_setting\" (" + __sqlOrderCommissionSetting_ListCols + ") VALUES"
 const __sqlOrderCommissionSetting_Select = "SELECT " + __sqlOrderCommissionSetting_ListCols + " FROM \"order_commission_setting\""
 const __sqlOrderCommissionSetting_Select_history = "SELECT " + __sqlOrderCommissionSetting_ListCols + " FROM history.\"order_commission_setting\""
@@ -2600,6 +2615,7 @@ func (m *OrderCommissionSetting) SQLArgs(opts core.Opts, create bool) []interfac
 		core.Int64(m.OrderID),
 		core.Int64(m.SupplyID),
 		core.Int64(m.ProductID),
+		core.Int32(m.ProductQuantity),
 		core.Int32(m.Level1DirectCommission),
 		core.Int32(m.Level1IndirectCommission),
 		core.Int32(m.Level2DirectCommission),
@@ -2618,6 +2634,7 @@ func (m *OrderCommissionSetting) SQLScanArgs(opts core.Opts) []interface{} {
 		(*core.Int64)(&m.OrderID),
 		(*core.Int64)(&m.SupplyID),
 		(*core.Int64)(&m.ProductID),
+		(*core.Int32)(&m.ProductQuantity),
 		(*core.Int32)(&m.Level1DirectCommission),
 		(*core.Int32)(&m.Level1IndirectCommission),
 		(*core.Int32)(&m.Level2DirectCommission),
@@ -2665,7 +2682,7 @@ func (_ *OrderCommissionSettings) SQLSelect(w SQLWriter) error {
 func (m *OrderCommissionSetting) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlOrderCommissionSetting_Insert)
 	w.WriteRawString(" (")
-	w.WriteMarkers(13)
+	w.WriteMarkers(14)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), true))
 	return nil
@@ -2675,7 +2692,7 @@ func (ms OrderCommissionSettings) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlOrderCommissionSetting_Insert)
 	w.WriteRawString(" (")
 	for i := 0; i < len(ms); i++ {
-		w.WriteMarkers(13)
+		w.WriteMarkers(14)
 		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
 		w.WriteRawString("),(")
 	}
@@ -2713,6 +2730,14 @@ func (m *OrderCommissionSetting) SQLUpdate(w SQLWriter) error {
 		w.WriteMarker()
 		w.WriteByte(',')
 		w.WriteArg(m.ProductID)
+	}
+	if m.ProductQuantity != 0 {
+		flag = true
+		w.WriteName("product_quantity")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.ProductQuantity)
 	}
 	if m.Level1DirectCommission != 0 {
 		flag = true
@@ -2804,7 +2829,7 @@ func (m *OrderCommissionSetting) SQLUpdate(w SQLWriter) error {
 func (m *OrderCommissionSetting) SQLUpdateAll(w SQLWriter) error {
 	w.WriteQueryString(__sqlOrderCommissionSetting_UpdateAll)
 	w.WriteRawString(" = (")
-	w.WriteMarkers(13)
+	w.WriteMarkers(14)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), false))
 	return nil
@@ -2836,6 +2861,9 @@ func (m OrderCommissionSettingHistory) SupplyID() core.Interface {
 }
 func (m OrderCommissionSettingHistory) ProductID() core.Interface {
 	return core.Interface{m["product_id"]}
+}
+func (m OrderCommissionSettingHistory) ProductQuantity() core.Interface {
+	return core.Interface{m["product_quantity"]}
 }
 func (m OrderCommissionSettingHistory) Level1DirectCommission() core.Interface {
 	return core.Interface{m["level1_direct_commission"]}
@@ -2869,36 +2897,37 @@ func (m OrderCommissionSettingHistory) UpdatedAt() core.Interface {
 }
 
 func (m *OrderCommissionSettingHistory) SQLScan(opts core.Opts, row *sql.Row) error {
-	data := make([]interface{}, 13)
-	args := make([]interface{}, 13)
-	for i := 0; i < 13; i++ {
+	data := make([]interface{}, 14)
+	args := make([]interface{}, 14)
+	for i := 0; i < 14; i++ {
 		args[i] = &data[i]
 	}
 	if err := row.Scan(args...); err != nil {
 		return err
 	}
-	res := make(OrderCommissionSettingHistory, 13)
+	res := make(OrderCommissionSettingHistory, 14)
 	res["order_id"] = data[0]
 	res["supply_id"] = data[1]
 	res["product_id"] = data[2]
-	res["level1_direct_commission"] = data[3]
-	res["level1_indirect_commission"] = data[4]
-	res["level2_direct_commission"] = data[5]
-	res["level2_indirect_commission"] = data[6]
-	res["depend_on"] = data[7]
-	res["level1_limit_count"] = data[8]
-	res["level1_limit_duration"] = data[9]
-	res["lifetime_duration"] = data[10]
-	res["created_at"] = data[11]
-	res["updated_at"] = data[12]
+	res["product_quantity"] = data[3]
+	res["level1_direct_commission"] = data[4]
+	res["level1_indirect_commission"] = data[5]
+	res["level2_direct_commission"] = data[6]
+	res["level2_indirect_commission"] = data[7]
+	res["depend_on"] = data[8]
+	res["level1_limit_count"] = data[9]
+	res["level1_limit_duration"] = data[10]
+	res["lifetime_duration"] = data[11]
+	res["created_at"] = data[12]
+	res["updated_at"] = data[13]
 	*m = res
 	return nil
 }
 
 func (ms *OrderCommissionSettingHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	data := make([]interface{}, 13)
-	args := make([]interface{}, 13)
-	for i := 0; i < 13; i++ {
+	data := make([]interface{}, 14)
+	args := make([]interface{}, 14)
+	for i := 0; i < 14; i++ {
 		args[i] = &data[i]
 	}
 	res := make(OrderCommissionSettingHistories, 0, 128)
@@ -2910,16 +2939,17 @@ func (ms *OrderCommissionSettingHistories) SQLScan(opts core.Opts, rows *sql.Row
 		m["order_id"] = data[0]
 		m["supply_id"] = data[1]
 		m["product_id"] = data[2]
-		m["level1_direct_commission"] = data[3]
-		m["level1_indirect_commission"] = data[4]
-		m["level2_direct_commission"] = data[5]
-		m["level2_indirect_commission"] = data[6]
-		m["depend_on"] = data[7]
-		m["level1_limit_count"] = data[8]
-		m["level1_limit_duration"] = data[9]
-		m["lifetime_duration"] = data[10]
-		m["created_at"] = data[11]
-		m["updated_at"] = data[12]
+		m["product_quantity"] = data[3]
+		m["level1_direct_commission"] = data[4]
+		m["level1_indirect_commission"] = data[5]
+		m["level2_direct_commission"] = data[6]
+		m["level2_indirect_commission"] = data[7]
+		m["depend_on"] = data[8]
+		m["level1_limit_count"] = data[9]
+		m["level1_limit_duration"] = data[10]
+		m["lifetime_duration"] = data[11]
+		m["created_at"] = data[12]
+		m["updated_at"] = data[13]
 		res = append(res, m)
 	}
 	if err := rows.Err(); err != nil {
@@ -3221,7 +3251,7 @@ func sqlgenShopOrderProductHistory(_ *ShopOrderProductHistory) bool { return tru
 type ShopOrderProductHistories []*ShopOrderProductHistory
 
 const __sqlShopOrderProductHistory_Table = "shop_order_product_history"
-const __sqlShopOrderProductHistory_ListCols = "\"user_id\",\"shop_id\",\"order_id\",\"supply_id\",\"product_id\",\"created_at\",\"updated_at\""
+const __sqlShopOrderProductHistory_ListCols = "\"user_id\",\"shop_id\",\"order_id\",\"supply_id\",\"product_id\",\"product_quantity\",\"created_at\",\"updated_at\""
 const __sqlShopOrderProductHistory_Insert = "INSERT INTO \"shop_order_product_history\" (" + __sqlShopOrderProductHistory_ListCols + ") VALUES"
 const __sqlShopOrderProductHistory_Select = "SELECT " + __sqlShopOrderProductHistory_ListCols + " FROM \"shop_order_product_history\""
 const __sqlShopOrderProductHistory_Select_history = "SELECT " + __sqlShopOrderProductHistory_ListCols + " FROM history.\"shop_order_product_history\""
@@ -3239,6 +3269,7 @@ func (m *ShopOrderProductHistory) SQLArgs(opts core.Opts, create bool) []interfa
 		core.Int64(m.OrderID),
 		core.Int64(m.SupplyID),
 		core.Int64(m.ProductID),
+		core.Int32(m.ProductQuantity),
 		core.Now(m.CreatedAt, now, create),
 		core.Now(m.UpdatedAt, now, true),
 	}
@@ -3251,6 +3282,7 @@ func (m *ShopOrderProductHistory) SQLScanArgs(opts core.Opts) []interface{} {
 		(*core.Int64)(&m.OrderID),
 		(*core.Int64)(&m.SupplyID),
 		(*core.Int64)(&m.ProductID),
+		(*core.Int32)(&m.ProductQuantity),
 		(*core.Time)(&m.CreatedAt),
 		(*core.Time)(&m.UpdatedAt),
 	}
@@ -3290,7 +3322,7 @@ func (_ *ShopOrderProductHistories) SQLSelect(w SQLWriter) error {
 func (m *ShopOrderProductHistory) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlShopOrderProductHistory_Insert)
 	w.WriteRawString(" (")
-	w.WriteMarkers(7)
+	w.WriteMarkers(8)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), true))
 	return nil
@@ -3300,7 +3332,7 @@ func (ms ShopOrderProductHistories) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlShopOrderProductHistory_Insert)
 	w.WriteRawString(" (")
 	for i := 0; i < len(ms); i++ {
-		w.WriteMarkers(7)
+		w.WriteMarkers(8)
 		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
 		w.WriteRawString("),(")
 	}
@@ -3355,6 +3387,14 @@ func (m *ShopOrderProductHistory) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(m.ProductID)
 	}
+	if m.ProductQuantity != 0 {
+		flag = true
+		w.WriteName("product_quantity")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.ProductQuantity)
+	}
 	if !m.CreatedAt.IsZero() {
 		flag = true
 		w.WriteName("created_at")
@@ -3381,7 +3421,7 @@ func (m *ShopOrderProductHistory) SQLUpdate(w SQLWriter) error {
 func (m *ShopOrderProductHistory) SQLUpdateAll(w SQLWriter) error {
 	w.WriteQueryString(__sqlShopOrderProductHistory_UpdateAll)
 	w.WriteRawString(" = (")
-	w.WriteMarkers(7)
+	w.WriteMarkers(8)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), false))
 	return nil
@@ -3416,6 +3456,9 @@ func (m ShopOrderProductHistoryHistory) SupplyID() core.Interface {
 func (m ShopOrderProductHistoryHistory) ProductID() core.Interface {
 	return core.Interface{m["product_id"]}
 }
+func (m ShopOrderProductHistoryHistory) ProductQuantity() core.Interface {
+	return core.Interface{m["product_quantity"]}
+}
 func (m ShopOrderProductHistoryHistory) CreatedAt() core.Interface {
 	return core.Interface{m["created_at"]}
 }
@@ -3424,30 +3467,31 @@ func (m ShopOrderProductHistoryHistory) UpdatedAt() core.Interface {
 }
 
 func (m *ShopOrderProductHistoryHistory) SQLScan(opts core.Opts, row *sql.Row) error {
-	data := make([]interface{}, 7)
-	args := make([]interface{}, 7)
-	for i := 0; i < 7; i++ {
+	data := make([]interface{}, 8)
+	args := make([]interface{}, 8)
+	for i := 0; i < 8; i++ {
 		args[i] = &data[i]
 	}
 	if err := row.Scan(args...); err != nil {
 		return err
 	}
-	res := make(ShopOrderProductHistoryHistory, 7)
+	res := make(ShopOrderProductHistoryHistory, 8)
 	res["user_id"] = data[0]
 	res["shop_id"] = data[1]
 	res["order_id"] = data[2]
 	res["supply_id"] = data[3]
 	res["product_id"] = data[4]
-	res["created_at"] = data[5]
-	res["updated_at"] = data[6]
+	res["product_quantity"] = data[5]
+	res["created_at"] = data[6]
+	res["updated_at"] = data[7]
 	*m = res
 	return nil
 }
 
 func (ms *ShopOrderProductHistoryHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	data := make([]interface{}, 7)
-	args := make([]interface{}, 7)
-	for i := 0; i < 7; i++ {
+	data := make([]interface{}, 8)
+	args := make([]interface{}, 8)
+	for i := 0; i < 8; i++ {
 		args[i] = &data[i]
 	}
 	res := make(ShopOrderProductHistoryHistories, 0, 128)
@@ -3461,8 +3505,9 @@ func (ms *ShopOrderProductHistoryHistories) SQLScan(opts core.Opts, rows *sql.Ro
 		m["order_id"] = data[2]
 		m["supply_id"] = data[3]
 		m["product_id"] = data[4]
-		m["created_at"] = data[5]
-		m["updated_at"] = data[6]
+		m["product_quantity"] = data[5]
+		m["created_at"] = data[6]
+		m["updated_at"] = data[7]
 		res = append(res, m)
 	}
 	if err := rows.Err(); err != nil {
