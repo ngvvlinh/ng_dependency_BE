@@ -125,7 +125,7 @@ func (a *Aggregate) CreateProductPromotion(ctx context.Context, args *affiliate.
 	if !cm.StringsContain(AvailablePromotionTypes, args.Type) {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Type not valid")
 	}
-	if args.Amount <= 0 {
+	if args.Amount < 0 {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Amount must be greater than 0")
 	}
 	if args.Unit == "" {
@@ -418,11 +418,13 @@ func (a *Aggregate) CreateOrUpdateSupplyCommissionSetting(ctx context.Context, a
 		lifetimeDuration = int64(args.LifetimeDuration) * 31104000
 	}
 
+	ll.Info("CHECK ARGS", l.Object("ARGS", args))
+
 	var createOrUpdateErr error
 	supplyCommissionSetting := &model.SupplyCommissionSetting{
 		ShopID:                   args.ShopID,
 		ProductID:                args.ProductID,
-		Level1DirectCommission:   args.Level1DirectCommission,
+		Level1DirectCommission:   int32(args.Level1DirectCommission),
 		Level1IndirectCommission: args.Level1IndirectCommission,
 		Level2DirectCommission:   args.Level2DirectCommission,
 		Level2IndirectCommission: args.Level2IndirectCommission,

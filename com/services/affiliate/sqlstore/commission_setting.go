@@ -72,6 +72,6 @@ func (s *AffiliateCommissonStore) CreateCommissionSetting(commissionSetting *mod
 
 func (s *AffiliateCommissonStore) UpdateCommissionSetting(commissionSetting *model.CommissionSetting) error {
 	sqlstore.MustNoPreds(s.preds)
-	_, err := s.AccountID(commissionSetting.AccountID).ProductID(commissionSetting.ProductID).query().Where(s.preds).Update(commissionSetting)
+	_, err := s.AccountID(commissionSetting.AccountID).ProductID(commissionSetting.ProductID).query().Where(s.preds).UpdateAll().Update(commissionSetting)
 	return err
 }

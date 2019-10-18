@@ -82,6 +82,5 @@ func (s *SupplyCommissionSettingStore) CreateSupplyCommissionSetting(supplyCommi
 
 func (s *SupplyCommissionSettingStore) UpdateSupplyCommissionSetting(supplyCommissionSetting *model.SupplyCommissionSetting) error {
 	sqlstore.MustNoPreds(s.preds)
-	_, err := s.ShopID(supplyCommissionSetting.ShopID).ProductID(supplyCommissionSetting.ProductID).query().Where(s.preds).Update(supplyCommissionSetting)
-	return err
+	return s.ShopID(supplyCommissionSetting.ShopID).ProductID(supplyCommissionSetting.ProductID).query().Where(s.preds).UpdateAll().ShouldUpdate(supplyCommissionSetting)
 }
