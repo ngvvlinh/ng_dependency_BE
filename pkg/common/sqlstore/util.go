@@ -172,11 +172,32 @@ func Filters(s cmsql.Query, filters []cm.Filter, whitelist FilterWhitelist) (cms
 			isString := containsAll(whitelist.Equals, names)
 			isNullable := containsAll(whitelist.Nullable, names)
 			isBool := containsAll(whitelist.Bools, names)
-			if !isString && !isNumber && !isStatus && !isBool && !isNullable {
+			isArray := containsAll(whitelist.Arrays, names)
+			if !isString && !isNumber && !isStatus && !isBool && !isNullable && !isArray {
 				return cmsql.Query{}, false, cm.Error(cm.InvalidArgument, "Exactly filter is not allowed for "+filter.Name, nil)
 			}
-			if countBool(isNumber, isStatus, isString, isBool, isNullable) != 1 {
+			if countBool(isNumber, isStatus, isString, isBool, isNullable, isArray) != 1 {
 				return cmsql.Query{}, false, cm.Error(cm.InvalidArgument, "Exactly filter must contain the same type "+filter.Name, nil)
+			}
+
+			if isArray && op != "=" && op != "!=" && op != "≠" {
+				return cmsql.Query{}, false, cm.Error(cm.InvalidArgument, "Array not support for "+op+" operation", nil)
+			}
+			if isArray && filter.Value != "{}" && filter.Value != "Ø" {
+				return cmsql.Query{}, false, cm.Error(cm.InvalidArgument, "Array support for "+op+" operation only when value is {} or Ø", nil)
+			}
+			if isArray {
+				value := "{}"
+				if filter.Op == "=" {
+					s = buildQuery(s, names, value, func(name string) string {
+						return whitelist.ToCol(name, "") + ` = ? OR ` + whitelist.ToCol(name, "") + " IS NULL"
+					})
+				} else {
+					s = buildQuery(s, names, value, func(name string) string {
+						return whitelist.ToCol(name, "") + ` != ? AND ` + whitelist.ToCol(name, "") + " IS NOT NULL"
+					})
+				}
+				break
 			}
 
 			cfg := valueConfig{isNumber: isNumber, isStatus: isStatus, isBool: isBool, isNullable: isNullable}

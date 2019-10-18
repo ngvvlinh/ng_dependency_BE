@@ -54,7 +54,7 @@ func init() {
 }
 
 var filterOrderWhitelist = FilterWhitelist{
-	Arrays:   []string{"fulfillment.shipping_code", "fulfillment.shipping_state"},
+	Arrays:   []string{"fulfillment.shipping_code", "fulfillment.shipping_state", "fulfillment.ids"},
 	Contains: []string{"customer.name", "product.name"},
 	Dates:    []string{"created_at", "updated_at"},
 	Equals:   []string{"shop.id", "code", "source", "external_code", "external_id", "customer.phone", "customer.id"},
@@ -75,6 +75,7 @@ var filterOrderWhitelist = FilterWhitelist{
 		"external_id":       `"order".external_order_id`,
 		"chargeable_weight": `"order".total_weight`,
 		"status":            `"order".status`,
+		"fulfillment.ids":   `"order".fulfillment_ids`,
 	},
 }
 

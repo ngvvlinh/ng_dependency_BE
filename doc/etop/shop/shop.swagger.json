@@ -4348,7 +4348,7 @@
         },
         "op": {
           "type": "string",
-          "description": "- Text or set: ⊃ ∩\n- Exactly: = ≠ ∈\n- Numeric: = ≠ ∈ < ≤ > ≥",
+          "description": "- Text or set: ⊃ ∩\n- Exactly: = ≠ ∈\n- Numeric: = ≠ ∈ < ≤ > ≥\n- Array: = ≠ (only with value is {})",
           "title": "Can be = ≠ (!=) < ≤ (<=) > ≥ (>=) ⊃ (c) ∈ (in) ∩ (n)"
         },
         "value": {

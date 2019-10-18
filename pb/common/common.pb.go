@@ -834,6 +834,7 @@ type Filter struct {
 	// - Text or set: ⊃ ∩
 	// - Exactly: = ≠ ∈
 	// - Numeric: = ≠ ∈ < ≤ > ≥
+	// - Array: = ≠ (only with value is {})
 	Op string `protobuf:"bytes,2,opt,name=op" json:"op"`
 	// Must always be string
 	Value                string   `protobuf:"bytes,3,opt,name=value" json:"value"`

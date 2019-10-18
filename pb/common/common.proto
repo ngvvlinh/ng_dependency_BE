@@ -138,6 +138,7 @@ message Filter {
     // - Text or set: ⊃ ∩
     // - Exactly: = ≠ ∈
     // - Numeric: = ≠ ∈ < ≤ > ≥
+    // - Array: = ≠ (only with value is {})
     optional string op    = 2 [(gogoproto.nullable)=false];
 
     // Must always be string
