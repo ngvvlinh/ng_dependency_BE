@@ -387,7 +387,9 @@ func ChangePassword(ctx context.Context, r *wrapetop.ChangePasswordEndpoint) err
 		Password: r.CurrentPassword,
 	}
 	if err := bus.Dispatch(ctx, query); err != nil {
-		return err
+		return cm.MapError(err).
+			Wrap(cm.Unauthenticated, "Mật khẩu không đúng. Vui lòng kiểm tra lại thông tin đăng nhập. Nếu cần thêm thông tin, vui lòng liên hệ hotro@etop.vn.").
+			Throw()
 	}
 
 	if len(r.NewPassword) < 8 {
