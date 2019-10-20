@@ -706,7 +706,7 @@ func (a *Aggregate) ProcessOrderNotify(ctx context.Context, orderCreatedNotifyID
 			var directCommission float64
 			var indirectCommission float64
 
-			if (orderCommissionSetting.DependOn == "product" && countByProduct <= uint64(orderCommissionSetting.Level1LimitCount)) || (orderCommissionSetting.DependOn == "user" && countByUser <= uint64(orderCommissionSetting.Level1LimitCount)) {
+			if (orderCommissionSetting.DependOn == "product" && countByProduct < uint64(orderCommissionSetting.Level1LimitCount)) || (orderCommissionSetting.DependOn == "user" && countByUser < uint64(orderCommissionSetting.Level1LimitCount)) {
 				directCommission = float64(orderCommissionSetting.Level1DirectCommission)
 				indirectCommission = float64(orderCommissionSetting.Level1IndirectCommission)
 			} else {
