@@ -276,7 +276,7 @@ func CreateInventoryVoucher(ctx context.Context, q *wrapshop.CreateInventoryVouc
 	cmd := &inventory.CreateInventoryVoucherCommand{
 		Title:       q.Title,
 		ShopID:      shopID,
-		Overstock:   *inventoryOverstock,
+		Overstock:   cm.BoolDefault(inventoryOverstock, true),
 		TotalAmount: q.TotalAmount,
 		CreatedBy:   userID,
 		TraderID:    q.TraderId,
@@ -375,7 +375,7 @@ func AdjustInventoryQuantity(ctx context.Context, q *wrapshop.AdjustInventoryQua
 		})
 	}
 	cmd := &inventory.AdjustInventoryQuantityCommand{
-		Overstock: cm.BoolDefault(inventoryOverstock, false),
+		Overstock: cm.BoolDefault(inventoryOverstock, true),
 		ShopID:    shopID,
 		Lines:     items,
 		UserID:    userID,

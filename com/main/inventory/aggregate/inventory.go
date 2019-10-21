@@ -91,7 +91,7 @@ func (q *InventoryAggregate) ProcessInventoryVariantForVoucher(ctx context.Conte
 	var listInventoryModel []*inventory.InventoryVariant
 	for _, value := range args.Lines {
 		if errValidate := validateInventoryVoucher(value); errValidate != nil {
-			return 0, nil, err
+			return 0, nil, errValidate
 		}
 		totalAmount = totalAmount + value.Price*value.Quantity
 		inventoryCore, err = q.InventoryStore(ctx).ShopID(args.ShopID).VariantID(value.VariantID).Get()
@@ -141,7 +141,7 @@ func (q *InventoryAggregate) UpdateInventoryVoucher(ctx context.Context, args *i
 	var totalAmount int32 = 0
 	for _, value := range args.Lines {
 		if errValidate := validateInventoryVoucher(value); errValidate != nil {
-			return nil, err
+			return nil, errValidate
 		}
 		totalAmount = totalAmount + value.Quantity*value.Price
 	}
@@ -212,6 +212,9 @@ func (q *InventoryAggregate) DevideInOutInventoryVoucher(ctx context.Context,
 	var linesCheckin []*inventory.InventoryVoucherItem
 	var linesCheckout []*inventory.InventoryVoucherItem
 	for _, value := range args.Lines {
+		if value.QuantitySummary < 0 {
+			return nil, nil, nil, cm.Errorf(cm.InvalidArgument, nil, "Số lượng sản phẩm cân bằng kho phải lớn hơn 0")
+		}
 		listVariantID = append(listVariantID, value.VariantID)
 		result, err := q.InventoryStore(ctx).ShopID(args.ShopID).VariantID(value.VariantID).Get()
 		if err != nil && cm.ErrorCode(err) == cm.NotFound {
@@ -377,8 +380,8 @@ func (q *InventoryAggregate) CreateInventoryVariant(ctx context.Context, args *i
 }
 
 func validateInventoryVoucher(args *inventory.InventoryVoucherItem) error {
-	if args.Price < 1 {
-		return cm.Errorf(cm.InvalidArgument, nil, "Số lượng nhập xuất phải lớn hơn 0")
+	if args.Price < 0 {
+		return cm.Errorf(cm.InvalidArgument, nil, "Giá sản phẩm không được âm")
 	}
 	if args.Quantity < 1 {
 		return cm.Errorf(cm.InvalidArgument, nil, "Số lượng nhập xuất phải lớn hơn 0")
