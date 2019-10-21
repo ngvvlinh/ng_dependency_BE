@@ -18,6 +18,7 @@ import (
 	permission "etop.vn/backend/pkg/etop/authorize/permission"
 	model "etop.vn/backend/pkg/etop/model"
 	cm "etop.vn/backend/pb/common"
+	usr "etop.vn/backend/zexp/api/root/int/etop"
 	cmwrapper "etop.vn/backend/pkg/common/wrapper"
 	l "etop.vn/common/l"
 	{{.PackageName}} "{{.PackagePath}}"
@@ -55,8 +56,15 @@ func New{{.ServiceName}}Server(mux Muxer, hooks *twirp.ServerHooks{{if $.HasSecr
 {{end -}}
 
 {{range $s := .Services -}}
-	mux.Handle({{$.PackageName}}.{{$s.Name}}PathPrefix, {{$.PackageName}}.New{{$s.Name}}Server({{$s.Name}}{ {{if $.HasSecret}}secret: secret{{end}} }, hooks))
-{{end -}}
+	{{if $.PackageName | eq "etop" -}}
+	{{if $s.Name | eq "UserService" -}}
+		mux.Handle(usr.{{$s.Name}}PathPrefix, usr.New{{$s.Name}}Server({{$s.Name}}{ {{if $.HasSecret}}secret: secret{{end}} }))
+	{{else -}}
+		mux.Handle({{$.PackageName}}.{{$s.Name}}PathPrefix, {{$.PackageName}}.New{{$s.Name}}Server({{$s.Name}}{ {{if $.HasSecret}}secret: secret{{end}} }, hooks))
+	{{end -}}
+	{{else -}}
+		mux.Handle({{$.PackageName}}.{{$s.Name}}PathPrefix, {{$.PackageName}}.New{{$s.Name}}Server({{$s.Name}}{ {{if $.HasSecret}}secret: secret{{end}} }, hooks))
+	{{end -}}{{end -}}
 }
 
 type {{.ServiceName}}Impl struct {

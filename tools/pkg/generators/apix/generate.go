@@ -2,7 +2,7 @@ package apix
 
 import (
 	"go/types"
-	"html/template"
+	"text/template"
 
 	"etop.vn/backend/tools/pkg/generator"
 )

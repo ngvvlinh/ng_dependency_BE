@@ -12,8 +12,6 @@ func (id ID) MarshalJSON() ([]byte, error) {
 	return b, nil
 }
 
-// TODO: UnmarshalJSON
-
 type NullBool struct {
 	Bool  bool
 	Valid bool

@@ -17,6 +17,7 @@ import (
 	claims "etop.vn/backend/pkg/etop/authorize/claims"
 	middleware "etop.vn/backend/pkg/etop/authorize/middleware"
 	model "etop.vn/backend/pkg/etop/model"
+	usr "etop.vn/backend/zexp/api/root/int/etop"
 	l "etop.vn/common/l"
 )
 
@@ -75,7 +76,7 @@ func NewEtopServer(mux Muxer, hooks *twirp.ServerHooks) {
 	bus.Expect(&RemoveAddressEndpoint{})
 	bus.Expect(&UpdateAddressEndpoint{})
 	mux.Handle(etop.MiscServicePathPrefix, etop.NewMiscServiceServer(MiscService{}, hooks))
-	mux.Handle(etop.UserServicePathPrefix, etop.NewUserServiceServer(UserService{}, hooks))
+	mux.Handle(usr.UserServicePathPrefix, usr.NewUserServiceServer(UserService{}))
 	mux.Handle(etop.AccountServicePathPrefix, etop.NewAccountServiceServer(AccountService{}, hooks))
 	mux.Handle(etop.RelationshipServicePathPrefix, etop.NewRelationshipServiceServer(RelationshipService{}, hooks))
 	mux.Handle(etop.LocationServicePathPrefix, etop.NewLocationServiceServer(LocationService{}, hooks))

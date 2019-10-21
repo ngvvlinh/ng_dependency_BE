@@ -66,7 +66,7 @@ func (p *plugin) generatePackage(ng generator.Engine, pkg *packages.Package, pri
 		fmt.Println("service", s.Name, s.APIPath)
 		for _, m := range s.Methods {
 			fmt.Println("  method  ", m.Name, strings.ReplaceAll(m.Comment, "\n", `\n`))
-			fmt.Println("  request ", m.Request.Name)
+			fmt.Println("  request ", m.Request.Type.Underlying())
 			fmt.Println("  response", m.Response.Name)
 		}
 	}
