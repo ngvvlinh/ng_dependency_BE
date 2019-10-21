@@ -95,8 +95,17 @@ func (s *SellerCommissionStore) GetAffiliateCommission() (*affiliate.SellerCommi
 }
 
 func (s *SellerCommissionStore) GetAffiliateCommissions() ([]*affiliate.SellerCommission, error) {
+	query := s.query().Where(s.preds)
+	if len(s.paging.Sort) == 0 {
+		s.paging.Sort = []string{"-created_at"}
+	}
+	query, err := sqlstore.LimitSort(query, &s.paging, SortSellerCommission)
+	if err != nil {
+		return nil, err
+	}
+
 	var results model.SellerCommissions
-	err := s.query().Where(s.preds).Find(&results)
+	err = query.Find(&results)
 	return convert.AffiliateCommissions(results), err
 }
 
