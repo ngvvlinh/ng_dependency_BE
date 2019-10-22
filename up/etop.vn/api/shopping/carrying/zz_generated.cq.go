@@ -135,6 +135,12 @@ func (q *CreateCarrierCommand) GetArgs(ctx context.Context) (_ context.Context, 
 		}
 }
 
+func (q *CreateCarrierCommand) SetCreateCarrierArgs(args *CreateCarrierArgs) {
+	q.ShopID = args.ShopID
+	q.FullName = args.FullName
+	q.Note = args.Note
+}
+
 func (q *DeleteCarrierCommand) GetArgs(ctx context.Context) (_ context.Context, ID int64, shopID int64) {
 	return ctx,
 		q.ID,
@@ -151,12 +157,24 @@ func (q *UpdateCarrierCommand) GetArgs(ctx context.Context) (_ context.Context, 
 		}
 }
 
+func (q *UpdateCarrierCommand) SetUpdateCarrierArgs(args *UpdateCarrierArgs) {
+	q.ID = args.ID
+	q.ShopID = args.ShopID
+	q.FullName = args.FullName
+	q.Note = args.Note
+}
+
 func (q *GetCarrierByIDQuery) GetArgs(ctx context.Context) (_ context.Context, _ *shopping.IDQueryShopArg) {
 	return ctx,
 		&shopping.IDQueryShopArg{
 			ID:     q.ID,
 			ShopID: q.ShopID,
 		}
+}
+
+func (q *GetCarrierByIDQuery) SetIDQueryShopArg(args *shopping.IDQueryShopArg) {
+	q.ID = args.ID
+	q.ShopID = args.ShopID
 }
 
 func (q *ListCarriersQuery) GetArgs(ctx context.Context) (_ context.Context, _ *shopping.ListQueryShopArgs) {
@@ -168,12 +186,23 @@ func (q *ListCarriersQuery) GetArgs(ctx context.Context) (_ context.Context, _ *
 		}
 }
 
+func (q *ListCarriersQuery) SetListQueryShopArgs(args *shopping.ListQueryShopArgs) {
+	q.ShopID = args.ShopID
+	q.Paging = args.Paging
+	q.Filters = args.Filters
+}
+
 func (q *ListCarriersByIDsQuery) GetArgs(ctx context.Context) (_ context.Context, _ *shopping.IDsQueryShopArgs) {
 	return ctx,
 		&shopping.IDsQueryShopArgs{
 			IDs:    q.IDs,
 			ShopID: q.ShopID,
 		}
+}
+
+func (q *ListCarriersByIDsQuery) SetIDsQueryShopArgs(args *shopping.IDsQueryShopArgs) {
+	q.IDs = args.IDs
+	q.ShopID = args.ShopID
 }
 
 // implement dispatching

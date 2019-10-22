@@ -65,6 +65,12 @@ func (q *SummaryPOSQuery) GetArgs(ctx context.Context) (_ context.Context, _ *Su
 		}
 }
 
+func (q *SummaryPOSQuery) SetSummaryPOSRequest(args *SummaryPOSRequest) {
+	q.DateFrom = args.DateFrom
+	q.DateTo = args.DateTo
+	q.ShopID = args.ShopID
+}
+
 // implement dispatching
 
 type QueryServiceHandler struct {

@@ -180,6 +180,29 @@ func (q *CreateOrUpdateCallHistoryByCallIDCommand) GetArgs(ctx context.Context) 
 		}
 }
 
+func (q *CreateOrUpdateCallHistoryByCallIDCommand) SetVhtCallLog(args *VhtCallLog) {
+	q.Direction = args.Direction
+	q.CdrID = args.CdrID
+	q.CallID = args.CallID
+	q.SipCallID = args.SipCallID
+	q.SdkCallID = args.SdkCallID
+	q.Cause = args.Cause
+	q.Q850Cause = args.Q850Cause
+	q.FromExtension = args.FromExtension
+	q.ToExtension = args.ToExtension
+	q.FromNumber = args.FromNumber
+	q.ToNumber = args.ToNumber
+	q.Duration = args.Duration
+	q.TimeStarted = args.TimeStarted
+	q.TimeConnected = args.TimeConnected
+	q.TimeEnded = args.TimeEnded
+	q.RecordingPath = args.RecordingPath
+	q.RecordingUrl = args.RecordingUrl
+	q.RecordFileSize = args.RecordFileSize
+	q.EtopAccountID = args.EtopAccountID
+	q.VtigerAccountID = args.VtigerAccountID
+}
+
 func (q *CreateOrUpdateCallHistoryBySDKCallIDCommand) GetArgs(ctx context.Context) (_ context.Context, _ *VhtCallLog) {
 	return ctx,
 		&VhtCallLog{
@@ -206,9 +229,35 @@ func (q *CreateOrUpdateCallHistoryBySDKCallIDCommand) GetArgs(ctx context.Contex
 		}
 }
 
+func (q *CreateOrUpdateCallHistoryBySDKCallIDCommand) SetVhtCallLog(args *VhtCallLog) {
+	q.Direction = args.Direction
+	q.CdrID = args.CdrID
+	q.CallID = args.CallID
+	q.SipCallID = args.SipCallID
+	q.SdkCallID = args.SdkCallID
+	q.Cause = args.Cause
+	q.Q850Cause = args.Q850Cause
+	q.FromExtension = args.FromExtension
+	q.ToExtension = args.ToExtension
+	q.FromNumber = args.FromNumber
+	q.ToNumber = args.ToNumber
+	q.Duration = args.Duration
+	q.TimeStarted = args.TimeStarted
+	q.TimeConnected = args.TimeConnected
+	q.TimeEnded = args.TimeEnded
+	q.RecordingPath = args.RecordingPath
+	q.RecordingUrl = args.RecordingUrl
+	q.RecordFileSize = args.RecordFileSize
+	q.EtopAccountID = args.EtopAccountID
+	q.VtigerAccountID = args.VtigerAccountID
+}
+
 func (q *PingServerVhtCommand) GetArgs(ctx context.Context) (_ context.Context, _ *meta.Empty) {
 	return ctx,
 		&meta.Empty{}
+}
+
+func (q *PingServerVhtCommand) SetEmpty(args *meta.Empty) {
 }
 
 func (q *SyncVhtCallHistoriesCommand) GetArgs(ctx context.Context) (_ context.Context, _ *SyncVhtCallHistoriesArgs) {
@@ -216,6 +265,10 @@ func (q *SyncVhtCallHistoriesCommand) GetArgs(ctx context.Context) (_ context.Co
 		&SyncVhtCallHistoriesArgs{
 			SyncTime: q.SyncTime,
 		}
+}
+
+func (q *SyncVhtCallHistoriesCommand) SetSyncVhtCallHistoriesArgs(args *SyncVhtCallHistoriesArgs) {
+	q.SyncTime = args.SyncTime
 }
 
 func (q *GetCallHistoriesQuery) GetArgs(ctx context.Context) (_ context.Context, _ *GetCallHistoriesArgs) {
@@ -226,6 +279,11 @@ func (q *GetCallHistoriesQuery) GetArgs(ctx context.Context) (_ context.Context,
 		}
 }
 
+func (q *GetCallHistoriesQuery) SetGetCallHistoriesArgs(args *GetCallHistoriesArgs) {
+	q.Paging = args.Paging
+	q.TextSearch = args.TextSearch
+}
+
 func (q *GetLastCallHistoryQuery) GetArgs(ctx context.Context) (_ context.Context, _ meta.Paging) {
 	return ctx,
 		meta.Paging{
@@ -233,6 +291,12 @@ func (q *GetLastCallHistoryQuery) GetArgs(ctx context.Context) (_ context.Contex
 			Limit:  q.Limit,
 			Sort:   q.Sort,
 		}
+}
+
+func (q *GetLastCallHistoryQuery) SetPaging(args meta.Paging) {
+	q.Offset = args.Offset
+	q.Limit = args.Limit
+	q.Sort = args.Sort
 }
 
 // implement dispatching

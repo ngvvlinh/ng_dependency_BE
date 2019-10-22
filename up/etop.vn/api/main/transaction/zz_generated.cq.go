@@ -151,12 +151,27 @@ func (q *CreateTransactionCommand) GetArgs(ctx context.Context) (_ context.Conte
 		}
 }
 
+func (q *CreateTransactionCommand) SetCreateTransactionArgs(args *CreateTransactionArgs) {
+	q.ID = args.ID
+	q.Amount = args.Amount
+	q.AccountID = args.AccountID
+	q.Status = args.Status
+	q.Type = args.Type
+	q.Note = args.Note
+	q.Metadata = args.Metadata
+}
+
 func (q *GetBalanceQuery) GetArgs(ctx context.Context) (_ context.Context, _ *GetBalanceArgs) {
 	return ctx,
 		&GetBalanceArgs{
 			AccountID:       q.AccountID,
 			TransactionType: q.TransactionType,
 		}
+}
+
+func (q *GetBalanceQuery) SetGetBalanceArgs(args *GetBalanceArgs) {
+	q.AccountID = args.AccountID
+	q.TransactionType = args.TransactionType
 }
 
 func (q *GetTransactionByIDQuery) GetArgs(ctx context.Context) (_ context.Context, trxnID int64, accountID int64) {
@@ -171,6 +186,11 @@ func (q *ListTransactionsQuery) GetArgs(ctx context.Context) (_ context.Context,
 			AccountID: q.AccountID,
 			Paging:    q.Paging,
 		}
+}
+
+func (q *ListTransactionsQuery) SetGetTransactionsArgs(args *GetTransactionsArgs) {
+	q.AccountID = args.AccountID
+	q.Paging = args.Paging
 }
 
 // implement dispatching

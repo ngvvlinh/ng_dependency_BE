@@ -324,6 +324,11 @@ func (q *CreateAffiliateReferralCodeCommand) GetArgs(ctx context.Context) (_ con
 		}
 }
 
+func (q *CreateAffiliateReferralCodeCommand) SetCreateReferralCodeArgs(args *CreateReferralCodeArgs) {
+	q.AffiliateAccountID = args.AffiliateAccountID
+	q.Code = args.Code
+}
+
 func (q *CreateOrUpdateCommissionSettingCommand) GetArgs(ctx context.Context) (_ context.Context, _ *CreateCommissionSettingArgs) {
 	return ctx,
 		&CreateCommissionSettingArgs{
@@ -335,6 +340,16 @@ func (q *CreateOrUpdateCommissionSettingCommand) GetArgs(ctx context.Context) (_
 			Description: q.Description,
 			Note:        q.Note,
 		}
+}
+
+func (q *CreateOrUpdateCommissionSettingCommand) SetCreateCommissionSettingArgs(args *CreateCommissionSettingArgs) {
+	q.ProductID = args.ProductID
+	q.AccountID = args.AccountID
+	q.Amount = args.Amount
+	q.Unit = args.Unit
+	q.Type = args.Type
+	q.Description = args.Description
+	q.Note = args.Note
 }
 
 func (q *CreateOrUpdateSupplyCommissionSettingCommand) GetArgs(ctx context.Context) (_ context.Context, _ *CreateOrUpdateSupplyCommissionSettingArgs) {
@@ -355,6 +370,21 @@ func (q *CreateOrUpdateSupplyCommissionSettingCommand) GetArgs(ctx context.Conte
 		}
 }
 
+func (q *CreateOrUpdateSupplyCommissionSettingCommand) SetCreateOrUpdateSupplyCommissionSettingArgs(args *CreateOrUpdateSupplyCommissionSettingArgs) {
+	q.ShopID = args.ShopID
+	q.ProductID = args.ProductID
+	q.Level1DirectCommission = args.Level1DirectCommission
+	q.Level1IndirectCommission = args.Level1IndirectCommission
+	q.Level2DirectCommission = args.Level2DirectCommission
+	q.Level2IndirectCommission = args.Level2IndirectCommission
+	q.DependOn = args.DependOn
+	q.Level1LimitCount = args.Level1LimitCount
+	q.Level1LimitDuration = args.Level1LimitDuration
+	q.Level1LimitDurationType = args.Level1LimitDurationType
+	q.LifetimeDuration = args.LifetimeDuration
+	q.LifetimeDurationType = args.LifetimeDurationType
+}
+
 func (q *CreateOrUpdateUserReferralCommand) GetArgs(ctx context.Context) (_ context.Context, _ *CreateOrUpdateReferralArgs) {
 	return ctx,
 		&CreateOrUpdateReferralArgs{
@@ -362,6 +392,12 @@ func (q *CreateOrUpdateUserReferralCommand) GetArgs(ctx context.Context) (_ cont
 			ReferralCode:     q.ReferralCode,
 			SaleReferralCode: q.SaleReferralCode,
 		}
+}
+
+func (q *CreateOrUpdateUserReferralCommand) SetCreateOrUpdateReferralArgs(args *CreateOrUpdateReferralArgs) {
+	q.UserID = args.UserID
+	q.ReferralCode = args.ReferralCode
+	q.SaleReferralCode = args.SaleReferralCode
 }
 
 func (q *CreateProductPromotionCommand) GetArgs(ctx context.Context) (_ context.Context, _ *CreateProductPromotionArgs) {
@@ -378,12 +414,28 @@ func (q *CreateProductPromotionCommand) GetArgs(ctx context.Context) (_ context.
 		}
 }
 
+func (q *CreateProductPromotionCommand) SetCreateProductPromotionArgs(args *CreateProductPromotionArgs) {
+	q.ShopID = args.ShopID
+	q.ProductID = args.ProductID
+	q.Amount = args.Amount
+	q.Code = args.Code
+	q.Description = args.Description
+	q.Unit = args.Unit
+	q.Note = args.Note
+	q.Type = args.Type
+}
+
 func (q *OnTradingOrderCreatedCommand) GetArgs(ctx context.Context) (_ context.Context, _ *OnTradingOrderCreatedArgs) {
 	return ctx,
 		&OnTradingOrderCreatedArgs{
 			OrderID:      q.OrderID,
 			ReferralCode: q.ReferralCode,
 		}
+}
+
+func (q *OnTradingOrderCreatedCommand) SetOnTradingOrderCreatedArgs(args *OnTradingOrderCreatedArgs) {
+	q.OrderID = args.OrderID
+	q.ReferralCode = args.ReferralCode
 }
 
 func (q *OrderPaymentSuccessCommand) GetArgs(ctx context.Context) (_ context.Context, _ *OrderPaymentSuccessEvent) {
@@ -394,6 +446,11 @@ func (q *OrderPaymentSuccessCommand) GetArgs(ctx context.Context) (_ context.Con
 		}
 }
 
+func (q *OrderPaymentSuccessCommand) SetOrderPaymentSuccessEvent(args *OrderPaymentSuccessEvent) {
+	q.EventMeta = args.EventMeta
+	q.OrderID = args.OrderID
+}
+
 func (q *TradingOrderCreatingCommand) GetArgs(ctx context.Context) (_ context.Context, _ *TradingOrderCreating) {
 	return ctx,
 		&TradingOrderCreating{
@@ -401,6 +458,12 @@ func (q *TradingOrderCreatingCommand) GetArgs(ctx context.Context) (_ context.Co
 			ReferralCode: q.ReferralCode,
 			UserID:       q.UserID,
 		}
+}
+
+func (q *TradingOrderCreatingCommand) SetTradingOrderCreating(args *TradingOrderCreating) {
+	q.ProductIDs = args.ProductIDs
+	q.ReferralCode = args.ReferralCode
+	q.UserID = args.UserID
 }
 
 func (q *UpdateProductPromotionCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateProductPromotionArgs) {
@@ -416,6 +479,16 @@ func (q *UpdateProductPromotionCommand) GetArgs(ctx context.Context) (_ context.
 		}
 }
 
+func (q *UpdateProductPromotionCommand) SetUpdateProductPromotionArgs(args *UpdateProductPromotionArgs) {
+	q.ID = args.ID
+	q.Amount = args.Amount
+	q.Unit = args.Unit
+	q.Code = args.Code
+	q.Description = args.Description
+	q.Note = args.Note
+	q.Type = args.Type
+}
+
 func (q *GetAffiliateAccountReferralByCodeQuery) GetArgs(ctx context.Context) (_ context.Context, _ *GetAffiliateAccountReferralByCodeArgs) {
 	return ctx,
 		&GetAffiliateAccountReferralByCodeArgs{
@@ -423,11 +496,19 @@ func (q *GetAffiliateAccountReferralByCodeQuery) GetArgs(ctx context.Context) (_
 		}
 }
 
+func (q *GetAffiliateAccountReferralByCodeQuery) SetGetAffiliateAccountReferralByCodeArgs(args *GetAffiliateAccountReferralByCodeArgs) {
+	q.Code = args.Code
+}
+
 func (q *GetAffiliateAccountReferralCodesQuery) GetArgs(ctx context.Context) (_ context.Context, _ *GetAffiliateAccountReferralCodesArgs) {
 	return ctx,
 		&GetAffiliateAccountReferralCodesArgs{
 			AffiliateAccountID: q.AffiliateAccountID,
 		}
+}
+
+func (q *GetAffiliateAccountReferralCodesQuery) SetGetAffiliateAccountReferralCodesArgs(args *GetAffiliateAccountReferralCodesArgs) {
+	q.AffiliateAccountID = args.AffiliateAccountID
 }
 
 func (q *GetCommissionByProductIDQuery) GetArgs(ctx context.Context) (_ context.Context, _ *GetCommissionByProductIDArgs) {
@@ -438,6 +519,11 @@ func (q *GetCommissionByProductIDQuery) GetArgs(ctx context.Context) (_ context.
 		}
 }
 
+func (q *GetCommissionByProductIDQuery) SetGetCommissionByProductIDArgs(args *GetCommissionByProductIDArgs) {
+	q.AccountID = args.AccountID
+	q.ProductID = args.ProductID
+}
+
 func (q *GetCommissionByProductIDsQuery) GetArgs(ctx context.Context) (_ context.Context, _ *GetCommissionByProductIDsArgs) {
 	return ctx,
 		&GetCommissionByProductIDsArgs{
@@ -446,11 +532,20 @@ func (q *GetCommissionByProductIDsQuery) GetArgs(ctx context.Context) (_ context
 		}
 }
 
+func (q *GetCommissionByProductIDsQuery) SetGetCommissionByProductIDsArgs(args *GetCommissionByProductIDsArgs) {
+	q.AccountID = args.AccountID
+	q.ProductIDs = args.ProductIDs
+}
+
 func (q *GetReferralsByReferralIDQuery) GetArgs(ctx context.Context) (_ context.Context, _ *GetReferralsByReferralIDArgs) {
 	return ctx,
 		&GetReferralsByReferralIDArgs{
 			ID: q.ID,
 		}
+}
+
+func (q *GetReferralsByReferralIDQuery) SetGetReferralsByReferralIDArgs(args *GetReferralsByReferralIDArgs) {
+	q.ID = args.ID
 }
 
 func (q *GetSellerCommissionsQuery) GetArgs(ctx context.Context) (_ context.Context, _ *GetSellerCommissionsArgs) {
@@ -462,12 +557,23 @@ func (q *GetSellerCommissionsQuery) GetArgs(ctx context.Context) (_ context.Cont
 		}
 }
 
+func (q *GetSellerCommissionsQuery) SetGetSellerCommissionsArgs(args *GetSellerCommissionsArgs) {
+	q.SellerID = args.SellerID
+	q.Paging = args.Paging
+	q.Filters = args.Filters
+}
+
 func (q *GetShopProductPromotionQuery) GetArgs(ctx context.Context) (_ context.Context, _ *GetProductPromotionArgs) {
 	return ctx,
 		&GetProductPromotionArgs{
 			ShopID:    q.ShopID,
 			ProductID: q.ProductID,
 		}
+}
+
+func (q *GetShopProductPromotionQuery) SetGetProductPromotionArgs(args *GetProductPromotionArgs) {
+	q.ShopID = args.ShopID
+	q.ProductID = args.ProductID
 }
 
 func (q *GetShopProductPromotionByProductIDsQuery) GetArgs(ctx context.Context) (_ context.Context, _ *GetShopProductPromotionByProductIDs) {
@@ -478,12 +584,22 @@ func (q *GetShopProductPromotionByProductIDsQuery) GetArgs(ctx context.Context) 
 		}
 }
 
+func (q *GetShopProductPromotionByProductIDsQuery) SetGetShopProductPromotionByProductIDs(args *GetShopProductPromotionByProductIDs) {
+	q.ShopID = args.ShopID
+	q.ProductIDs = args.ProductIDs
+}
+
 func (q *GetSupplyCommissionSettingsByProductIDsQuery) GetArgs(ctx context.Context) (_ context.Context, _ *GetSupplyCommissionSettingsByProductIDsArgs) {
 	return ctx,
 		&GetSupplyCommissionSettingsByProductIDsArgs{
 			ShopID:     q.ShopID,
 			ProductIDs: q.ProductIDs,
 		}
+}
+
+func (q *GetSupplyCommissionSettingsByProductIDsQuery) SetGetSupplyCommissionSettingsByProductIDsArgs(args *GetSupplyCommissionSettingsByProductIDsArgs) {
+	q.ShopID = args.ShopID
+	q.ProductIDs = args.ProductIDs
 }
 
 func (q *ListShopProductPromotionsQuery) GetArgs(ctx context.Context) (_ context.Context, _ *ListShopProductPromotionsArgs) {
@@ -493,6 +609,12 @@ func (q *ListShopProductPromotionsQuery) GetArgs(ctx context.Context) (_ context
 			Paging:  q.Paging,
 			Filters: q.Filters,
 		}
+}
+
+func (q *ListShopProductPromotionsQuery) SetListShopProductPromotionsArgs(args *ListShopProductPromotionsArgs) {
+	q.ShopID = args.ShopID
+	q.Paging = args.Paging
+	q.Filters = args.Filters
 }
 
 // implement dispatching

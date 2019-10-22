@@ -115,6 +115,11 @@ func (q *CancelOrderCommand) GetArgs(ctx context.Context) (_ context.Context, _ 
 		}
 }
 
+func (q *CancelOrderCommand) SetCancelOrderRequestArgs(args *CancelOrderRequestArgs) {
+	q.EtopShopID = args.EtopShopID
+	q.TrackingNumber = args.TrackingNumber
+}
+
 func (q *CreateOrderCommand) GetArgs(ctx context.Context) (_ context.Context, _ *CreateOrderRequestArgs) {
 	return ctx,
 		&CreateOrderRequestArgs{
@@ -133,12 +138,32 @@ func (q *CreateOrderCommand) GetArgs(ctx context.Context) (_ context.Context, _ 
 		}
 }
 
+func (q *CreateOrderCommand) SetCreateOrderRequestArgs(args *CreateOrderRequestArgs) {
+	q.EtopShopID = args.EtopShopID
+	q.Origin = args.Origin
+	q.Destination = args.Destination
+	q.Items = args.Items
+	q.CodAmount = args.CodAmount
+	q.TotalGrams = args.TotalGrams
+	q.ExternalStoreID = args.ExternalStoreID
+	q.ExternalOrderID = args.ExternalOrderID
+	q.ExternalFulfillmentID = args.ExternalFulfillmentID
+	q.ExternalCode = args.ExternalCode
+	q.Note = args.Note
+	q.ShippingRateID = args.ShippingRateID
+}
+
 func (q *GetOrderCommand) GetArgs(ctx context.Context) (_ context.Context, _ *GetOrderRequestArgs) {
 	return ctx,
 		&GetOrderRequestArgs{
 			EtopShopID:     q.EtopShopID,
 			TrackingNumber: q.TrackingNumber,
 		}
+}
+
+func (q *GetOrderCommand) SetGetOrderRequestArgs(args *GetOrderRequestArgs) {
+	q.EtopShopID = args.EtopShopID
+	q.TrackingNumber = args.TrackingNumber
 }
 
 func (q *GetShippingRateCommand) GetArgs(ctx context.Context) (_ context.Context, _ *GetShippingRateRequestArgs) {
@@ -150,6 +175,14 @@ func (q *GetShippingRateCommand) GetArgs(ctx context.Context) (_ context.Context
 			CodAmount:   q.CodAmount,
 			TotalGrams:  q.TotalGrams,
 		}
+}
+
+func (q *GetShippingRateCommand) SetGetShippingRateRequestArgs(args *GetShippingRateRequestArgs) {
+	q.EtopShopID = args.EtopShopID
+	q.Origin = args.Origin
+	q.Destination = args.Destination
+	q.CodAmount = args.CodAmount
+	q.TotalGrams = args.TotalGrams
 }
 
 // implement dispatching

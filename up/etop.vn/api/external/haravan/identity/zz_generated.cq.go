@@ -127,6 +127,10 @@ func (q *ConnectCarrierServiceExternalAccountHaravanCommand) GetArgs(ctx context
 		}
 }
 
+func (q *ConnectCarrierServiceExternalAccountHaravanCommand) SetConnectCarrierServiceExternalAccountHaravanArgs(args *ConnectCarrierServiceExternalAccountHaravanArgs) {
+	q.ShopID = args.ShopID
+}
+
 func (q *CreateExternalAccountHaravanCommand) GetArgs(ctx context.Context) (_ context.Context, _ *CreateExternalAccountHaravanArgs) {
 	return ctx,
 		&CreateExternalAccountHaravanArgs{
@@ -137,11 +141,22 @@ func (q *CreateExternalAccountHaravanCommand) GetArgs(ctx context.Context) (_ co
 		}
 }
 
+func (q *CreateExternalAccountHaravanCommand) SetCreateExternalAccountHaravanArgs(args *CreateExternalAccountHaravanArgs) {
+	q.ShopID = args.ShopID
+	q.Subdomain = args.Subdomain
+	q.RedirectURI = args.RedirectURI
+	q.Code = args.Code
+}
+
 func (q *DeleteConnectedCarrierServiceExternalAccountHaravanCommand) GetArgs(ctx context.Context) (_ context.Context, _ *DeleteConnectedCarrierServiceExternalAccountHaravanArgs) {
 	return ctx,
 		&DeleteConnectedCarrierServiceExternalAccountHaravanArgs{
 			ShopID: q.ShopID,
 		}
+}
+
+func (q *DeleteConnectedCarrierServiceExternalAccountHaravanCommand) SetDeleteConnectedCarrierServiceExternalAccountHaravanArgs(args *DeleteConnectedCarrierServiceExternalAccountHaravanArgs) {
+	q.ShopID = args.ShopID
 }
 
 func (q *UpdateExternalAccountHaravanTokenCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateExternalAccountHaravanTokenArgs) {
@@ -154,6 +169,13 @@ func (q *UpdateExternalAccountHaravanTokenCommand) GetArgs(ctx context.Context) 
 		}
 }
 
+func (q *UpdateExternalAccountHaravanTokenCommand) SetUpdateExternalAccountHaravanTokenArgs(args *UpdateExternalAccountHaravanTokenArgs) {
+	q.ShopID = args.ShopID
+	q.Subdomain = args.Subdomain
+	q.RedirectURI = args.RedirectURI
+	q.Code = args.Code
+}
+
 func (q *GetExternalAccountHaravanByShopIDQuery) GetArgs(ctx context.Context) (_ context.Context, _ *GetExternalAccountHaravanByShopIDQueryArgs) {
 	return ctx,
 		&GetExternalAccountHaravanByShopIDQueryArgs{
@@ -161,11 +183,19 @@ func (q *GetExternalAccountHaravanByShopIDQuery) GetArgs(ctx context.Context) (_
 		}
 }
 
+func (q *GetExternalAccountHaravanByShopIDQuery) SetGetExternalAccountHaravanByShopIDQueryArgs(args *GetExternalAccountHaravanByShopIDQueryArgs) {
+	q.ShopID = args.ShopID
+}
+
 func (q *GetExternalAccountHaravanByXShopIDQuery) GetArgs(ctx context.Context) (_ context.Context, _ *GetExternalAccountHaravanByXShopIDQueryArgs) {
 	return ctx,
 		&GetExternalAccountHaravanByXShopIDQueryArgs{
 			ExternalShopID: q.ExternalShopID,
 		}
+}
+
+func (q *GetExternalAccountHaravanByXShopIDQuery) SetGetExternalAccountHaravanByXShopIDQueryArgs(args *GetExternalAccountHaravanByXShopIDQueryArgs) {
+	q.ExternalShopID = args.ExternalShopID
 }
 
 // implement dispatching

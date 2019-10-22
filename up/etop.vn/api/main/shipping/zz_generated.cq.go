@@ -110,11 +110,20 @@ func (q *CancelFulfillmentCommand) GetArgs(ctx context.Context) (_ context.Conte
 		}
 }
 
+func (q *CancelFulfillmentCommand) SetCancelFulfillmentArgs(args *CancelFulfillmentArgs) {
+	q.FulfillmentID = args.FulfillmentID
+	q.CancelReason = args.CancelReason
+}
+
 func (q *ConfirmFulfillmentCommand) GetArgs(ctx context.Context) (_ context.Context, _ *ConfirmFulfillmentArgs) {
 	return ctx,
 		&ConfirmFulfillmentArgs{
 			FulfillmentID: q.FulfillmentID,
 		}
+}
+
+func (q *ConfirmFulfillmentCommand) SetConfirmFulfillmentArgs(args *ConfirmFulfillmentArgs) {
+	q.FulfillmentID = args.FulfillmentID
 }
 
 func (q *CreateFulfillmentCommand) GetArgs(ctx context.Context) (_ context.Context, _ *CreateFulfillmentArgs) {
@@ -134,11 +143,29 @@ func (q *CreateFulfillmentCommand) GetArgs(ctx context.Context) (_ context.Conte
 		}
 }
 
+func (q *CreateFulfillmentCommand) SetCreateFulfillmentArgs(args *CreateFulfillmentArgs) {
+	q.OrderID = args.OrderID
+	q.PickupAddress = args.PickupAddress
+	q.ShippingAddress = args.ShippingAddress
+	q.ReturnAddress = args.ReturnAddress
+	q.Carrier = args.Carrier
+	q.ShippingServiceCode = args.ShippingServiceCode
+	q.ShippingServiceFee = args.ShippingServiceFee
+	q.WeightInfo = args.WeightInfo
+	q.ValueInfo = args.ValueInfo
+	q.TryOn = args.TryOn
+	q.ShippingNote = args.ShippingNote
+}
+
 func (q *GetFulfillmentByIDCommand) GetArgs(ctx context.Context) (_ context.Context, _ *GetFulfillmentByIDQueryArgs) {
 	return ctx,
 		&GetFulfillmentByIDQueryArgs{
 			FulfillmentID: q.FulfillmentID,
 		}
+}
+
+func (q *GetFulfillmentByIDCommand) SetGetFulfillmentByIDQueryArgs(args *GetFulfillmentByIDQueryArgs) {
+	q.FulfillmentID = args.FulfillmentID
 }
 
 // implement dispatching

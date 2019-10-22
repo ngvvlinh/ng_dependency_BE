@@ -118,6 +118,17 @@ func (q *CreateOrUpdatePaymentCommand) GetArgs(ctx context.Context) (_ context.C
 		}
 }
 
+func (q *CreateOrUpdatePaymentCommand) SetCreatePaymentArgs(args *CreatePaymentArgs) {
+	q.Amount = args.Amount
+	q.Status = args.Status
+	q.State = args.State
+	q.PaymentProvider = args.PaymentProvider
+	q.ExternalTransID = args.ExternalTransID
+	q.ExternalData = args.ExternalData
+	q.CreatedAt = args.CreatedAt
+	q.UpdatedAt = args.UpdatedAt
+}
+
 func (q *UpdateExternalPaymentInfoCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateExternalPaymentInfoArgs) {
 	return ctx,
 		&UpdateExternalPaymentInfoArgs{
@@ -128,6 +139,15 @@ func (q *UpdateExternalPaymentInfoCommand) GetArgs(ctx context.Context) (_ conte
 			ExternalData:    q.ExternalData,
 			ExternalTransID: q.ExternalTransID,
 		}
+}
+
+func (q *UpdateExternalPaymentInfoCommand) SetUpdateExternalPaymentInfoArgs(args *UpdateExternalPaymentInfoArgs) {
+	q.ID = args.ID
+	q.Amount = args.Amount
+	q.Status = args.Status
+	q.State = args.State
+	q.ExternalData = args.ExternalData
+	q.ExternalTransID = args.ExternalTransID
 }
 
 func (q *GetPaymentByExternalTransIDQuery) GetArgs(ctx context.Context) (_ context.Context, TransactionID string) {

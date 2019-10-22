@@ -193,6 +193,19 @@ func (q *CreateReceiptCommand) GetArgs(ctx context.Context) (_ context.Context, 
 		}
 }
 
+func (q *CreateReceiptCommand) SetCreateReceiptArgs(args *CreateReceiptArgs) {
+	q.ShopID = args.ShopID
+	q.TraderID = args.TraderID
+	q.Code = args.Code
+	q.Title = args.Title
+	q.Type = args.Type
+	q.Description = args.Description
+	q.Amount = args.Amount
+	q.OrderIDs = args.OrderIDs
+	q.Lines = args.Lines
+	q.CreatedBy = args.CreatedBy
+}
+
 func (q *DeleteReceiptCommand) GetArgs(ctx context.Context) (_ context.Context, ID int64, shopID int64) {
 	return ctx,
 		q.ID,
@@ -214,6 +227,18 @@ func (q *UpdateReceiptCommand) GetArgs(ctx context.Context) (_ context.Context, 
 		}
 }
 
+func (q *UpdateReceiptCommand) SetUpdateReceiptArgs(args *UpdateReceiptArgs) {
+	q.ID = args.ID
+	q.ShopID = args.ShopID
+	q.TraderID = args.TraderID
+	q.Title = args.Title
+	q.Code = args.Code
+	q.Description = args.Description
+	q.Amount = args.Amount
+	q.OrderIDs = args.OrderIDs
+	q.Lines = args.Lines
+}
+
 func (q *GetReceiptByCodeQuery) GetArgs(ctx context.Context) (_ context.Context, code string, shopID int64) {
 	return ctx,
 		q.Code,
@@ -228,6 +253,11 @@ func (q *GetReceiptByIDQuery) GetArgs(ctx context.Context) (_ context.Context, _
 		}
 }
 
+func (q *GetReceiptByIDQuery) SetIDQueryShopArg(args *shopping.IDQueryShopArg) {
+	q.ID = args.ID
+	q.ShopID = args.ShopID
+}
+
 func (q *ListReceiptsQuery) GetArgs(ctx context.Context) (_ context.Context, _ *shopping.ListQueryShopArgs) {
 	return ctx,
 		&shopping.ListQueryShopArgs{
@@ -235,6 +265,12 @@ func (q *ListReceiptsQuery) GetArgs(ctx context.Context) (_ context.Context, _ *
 			Paging:  q.Paging,
 			Filters: q.Filters,
 		}
+}
+
+func (q *ListReceiptsQuery) SetListQueryShopArgs(args *shopping.ListQueryShopArgs) {
+	q.ShopID = args.ShopID
+	q.Paging = args.Paging
+	q.Filters = args.Filters
 }
 
 func (q *ListReceiptsByCustomerIDsQuery) GetArgs(ctx context.Context) (_ context.Context, shopID int64, customerIDs []int64) {
@@ -251,12 +287,22 @@ func (q *ListReceiptsByIDsQuery) GetArgs(ctx context.Context) (_ context.Context
 		}
 }
 
+func (q *ListReceiptsByIDsQuery) SetIDsQueryShopArgs(args *shopping.IDsQueryShopArgs) {
+	q.IDs = args.IDs
+	q.ShopID = args.ShopID
+}
+
 func (q *ListReceiptsByOrderIDsQuery) GetArgs(ctx context.Context) (_ context.Context, _ *shopping.IDsQueryShopArgs) {
 	return ctx,
 		&shopping.IDsQueryShopArgs{
 			IDs:    q.IDs,
 			ShopID: q.ShopID,
 		}
+}
+
+func (q *ListReceiptsByOrderIDsQuery) SetIDsQueryShopArgs(args *shopping.IDsQueryShopArgs) {
+	q.IDs = args.IDs
+	q.ShopID = args.ShopID
 }
 
 // implement dispatching

@@ -235,6 +235,7 @@ func (h %v) RegisterHandlers(b interface{
 		{
 			w2 := w.GetImportWriter(&w.WriteArgs)
 			generateGetArgs(w2, genQueryName, item.Requests)
+			generateSetArgs(w2, genQueryName, item.Requests)
 		}
 		// implement Query
 		{
@@ -285,6 +286,7 @@ func (h %v) RegisterHandlers(b interface{
 		{
 			w2 := w.GetImportWriter(&w.WriteArgs)
 			generateGetArgs(w2, genCommandName, item.Requests)
+			generateSetArgs(w2, genCommandName, item.Requests)
 		}
 		// implement Handle()
 		{
@@ -340,6 +342,20 @@ func generateGetArgs(w ImportWriter, wrapperName string, requests ArgItems) {
 	p(w, "}\n\n")
 }
 
+func generateSetArgs(w ImportWriter, wrapperName string, requests ArgItems) {
+	for _, req := range requests {
+		if !req.Inline {
+			continue
+		}
+		p(w, "func (q *%v) Set%v(args %v) {\n", wrapperName, renderTypeName(req.Type), renderType(w, req.Type, false))
+		for i, n := 0, req.Struct.NumFields(); i < n; i++ {
+			field := req.Struct.Field(i)
+			p(w, "q.%v = args.%v\n", field.Name(), field.Name())
+		}
+		p(w, "}\n\n")
+	}
+}
+
 func generateArgList(w ImportWriter, args []*ArgItem) {
 	for i, arg := range args {
 		if i > 0 {
@@ -359,6 +375,14 @@ func renderType(w Importer, typ types.Type, literal bool) string {
 		result = "&" + result[1:]
 	}
 	return result
+}
+
+func renderTypeName(typ types.Type) string {
+	ptr, ok := typ.(*types.Pointer)
+	if ok {
+		typ = ptr.Elem()
+	}
+	return typ.(*types.Named).Obj().Name()
 }
 
 func generateStruct(w ImportWriter, args ArgItems) {

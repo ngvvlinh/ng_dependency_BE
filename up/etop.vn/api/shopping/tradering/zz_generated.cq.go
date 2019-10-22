@@ -76,12 +76,22 @@ func (q *GetTraderByIDQuery) GetArgs(ctx context.Context) (_ context.Context, _ 
 		}
 }
 
+func (q *GetTraderByIDQuery) SetIDQueryShopArg(args *shopping.IDQueryShopArg) {
+	q.ID = args.ID
+	q.ShopID = args.ShopID
+}
+
 func (q *ListTradersByIDsQuery) GetArgs(ctx context.Context) (_ context.Context, _ *shopping.IDsQueryShopArgs) {
 	return ctx,
 		&shopping.IDsQueryShopArgs{
 			IDs:    q.IDs,
 			ShopID: q.ShopID,
 		}
+}
+
+func (q *ListTradersByIDsQuery) SetIDsQueryShopArgs(args *shopping.IDsQueryShopArgs) {
+	q.IDs = args.IDs
+	q.ShopID = args.ShopID
 }
 
 // implement dispatching

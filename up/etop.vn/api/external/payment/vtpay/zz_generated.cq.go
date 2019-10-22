@@ -76,6 +76,18 @@ func (q *HandleExternalDataResponseCommand) GetArgs(ctx context.Context) (_ cont
 		}
 }
 
+func (q *HandleExternalDataResponseCommand) SetHandleExternalDataResponseArgs(args *HandleExternalDataResponseArgs) {
+	q.BillCode = args.BillCode
+	q.CustMsisdn = args.CustMsisdn
+	q.ErrorCode = args.ErrorCode
+	q.MerchantCode = args.MerchantCode
+	q.OrderID = args.OrderID
+	q.PaymentStatus = args.PaymentStatus
+	q.TransAmount = args.TransAmount
+	q.VtTransactionID = args.VtTransactionID
+	q.CheckSum = args.CheckSum
+}
+
 // implement dispatching
 
 type AggregateHandler struct {

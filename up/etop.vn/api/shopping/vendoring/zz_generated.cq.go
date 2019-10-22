@@ -135,6 +135,12 @@ func (q *CreateVendorCommand) GetArgs(ctx context.Context) (_ context.Context, _
 		}
 }
 
+func (q *CreateVendorCommand) SetCreateVendorArgs(args *CreateVendorArgs) {
+	q.ShopID = args.ShopID
+	q.FullName = args.FullName
+	q.Note = args.Note
+}
+
 func (q *DeleteVendorCommand) GetArgs(ctx context.Context) (_ context.Context, ID int64, shopID int64) {
 	return ctx,
 		q.ID,
@@ -151,12 +157,24 @@ func (q *UpdateVendorCommand) GetArgs(ctx context.Context) (_ context.Context, _
 		}
 }
 
+func (q *UpdateVendorCommand) SetUpdateVendorArgs(args *UpdateVendorArgs) {
+	q.ID = args.ID
+	q.ShopID = args.ShopID
+	q.FullName = args.FullName
+	q.Note = args.Note
+}
+
 func (q *GetVendorByIDQuery) GetArgs(ctx context.Context) (_ context.Context, _ *shopping.IDQueryShopArg) {
 	return ctx,
 		&shopping.IDQueryShopArg{
 			ID:     q.ID,
 			ShopID: q.ShopID,
 		}
+}
+
+func (q *GetVendorByIDQuery) SetIDQueryShopArg(args *shopping.IDQueryShopArg) {
+	q.ID = args.ID
+	q.ShopID = args.ShopID
 }
 
 func (q *ListVendorsQuery) GetArgs(ctx context.Context) (_ context.Context, _ *shopping.ListQueryShopArgs) {
@@ -168,12 +186,23 @@ func (q *ListVendorsQuery) GetArgs(ctx context.Context) (_ context.Context, _ *s
 		}
 }
 
+func (q *ListVendorsQuery) SetListQueryShopArgs(args *shopping.ListQueryShopArgs) {
+	q.ShopID = args.ShopID
+	q.Paging = args.Paging
+	q.Filters = args.Filters
+}
+
 func (q *ListVendorsByIDsQuery) GetArgs(ctx context.Context) (_ context.Context, _ *shopping.IDsQueryShopArgs) {
 	return ctx,
 		&shopping.IDsQueryShopArgs{
 			IDs:    q.IDs,
 			ShopID: q.ShopID,
 		}
+}
+
+func (q *ListVendorsByIDsQuery) SetIDsQueryShopArgs(args *shopping.IDsQueryShopArgs) {
+	q.IDs = args.IDs
+	q.ShopID = args.ShopID
 }
 
 // implement dispatching

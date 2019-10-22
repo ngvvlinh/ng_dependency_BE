@@ -225,12 +225,23 @@ func (q *CancelShipnowFulfillmentCommand) GetArgs(ctx context.Context) (_ contex
 		}
 }
 
+func (q *CancelShipnowFulfillmentCommand) SetCancelShipnowFulfillmentArgs(args *CancelShipnowFulfillmentArgs) {
+	q.Id = args.Id
+	q.ShopId = args.ShopId
+	q.CancelReason = args.CancelReason
+}
+
 func (q *ConfirmShipnowFulfillmentCommand) GetArgs(ctx context.Context) (_ context.Context, _ *ConfirmShipnowFulfillmentArgs) {
 	return ctx,
 		&ConfirmShipnowFulfillmentArgs{
 			Id:     q.Id,
 			ShopId: q.ShopId,
 		}
+}
+
+func (q *ConfirmShipnowFulfillmentCommand) SetConfirmShipnowFulfillmentArgs(args *ConfirmShipnowFulfillmentArgs) {
+	q.Id = args.Id
+	q.ShopId = args.ShopId
 }
 
 func (q *CreateShipnowFulfillmentCommand) GetArgs(ctx context.Context) (_ context.Context, _ *CreateShipnowFulfillmentArgs) {
@@ -247,6 +258,17 @@ func (q *CreateShipnowFulfillmentCommand) GetArgs(ctx context.Context) (_ contex
 		}
 }
 
+func (q *CreateShipnowFulfillmentCommand) SetCreateShipnowFulfillmentArgs(args *CreateShipnowFulfillmentArgs) {
+	q.OrderIds = args.OrderIds
+	q.Carrier = args.Carrier
+	q.ShopId = args.ShopId
+	q.ShippingServiceCode = args.ShippingServiceCode
+	q.ShippingServiceFee = args.ShippingServiceFee
+	q.ShippingNote = args.ShippingNote
+	q.RequestPickupAt = args.RequestPickupAt
+	q.PickupAddress = args.PickupAddress
+}
+
 func (q *GetShipnowServicesCommand) GetArgs(ctx context.Context) (_ context.Context, _ *GetShipnowServicesArgs) {
 	return ctx,
 		&GetShipnowServicesArgs{
@@ -255,6 +277,13 @@ func (q *GetShipnowServicesCommand) GetArgs(ctx context.Context) (_ context.Cont
 			PickupAddress:  q.PickupAddress,
 			DeliveryPoints: q.DeliveryPoints,
 		}
+}
+
+func (q *GetShipnowServicesCommand) SetGetShipnowServicesArgs(args *GetShipnowServicesArgs) {
+	q.ShopId = args.ShopId
+	q.OrderIds = args.OrderIds
+	q.PickupAddress = args.PickupAddress
+	q.DeliveryPoints = args.DeliveryPoints
 }
 
 func (q *UpdateShipnowFulfillmentCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateShipnowFulfillmentArgs) {
@@ -270,6 +299,18 @@ func (q *UpdateShipnowFulfillmentCommand) GetArgs(ctx context.Context) (_ contex
 			RequestPickupAt:     q.RequestPickupAt,
 			PickupAddress:       q.PickupAddress,
 		}
+}
+
+func (q *UpdateShipnowFulfillmentCommand) SetUpdateShipnowFulfillmentArgs(args *UpdateShipnowFulfillmentArgs) {
+	q.Id = args.Id
+	q.OrderIds = args.OrderIds
+	q.Carrier = args.Carrier
+	q.ShopId = args.ShopId
+	q.ShippingServiceCode = args.ShippingServiceCode
+	q.ShippingServiceFee = args.ShippingServiceFee
+	q.ShippingNote = args.ShippingNote
+	q.RequestPickupAt = args.RequestPickupAt
+	q.PickupAddress = args.PickupAddress
 }
 
 func (q *UpdateShipnowFulfillmentCarrierInfoCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateShipnowFulfillmentCarrierInfoArgs) {
@@ -297,6 +338,28 @@ func (q *UpdateShipnowFulfillmentCarrierInfoCommand) GetArgs(ctx context.Context
 		}
 }
 
+func (q *UpdateShipnowFulfillmentCarrierInfoCommand) SetUpdateShipnowFulfillmentCarrierInfoArgs(args *UpdateShipnowFulfillmentCarrierInfoArgs) {
+	q.Id = args.Id
+	q.ShippingCode = args.ShippingCode
+	q.ShippingState = args.ShippingState
+	q.TotalFee = args.TotalFee
+	q.FeeLines = args.FeeLines
+	q.CarrierFeeLines = args.CarrierFeeLines
+	q.ShippingCreatedAt = args.ShippingCreatedAt
+	q.EtopPaymentStatus = args.EtopPaymentStatus
+	q.ShippingStatus = args.ShippingStatus
+	q.Status = args.Status
+	q.CodEtopTransferedAt = args.CodEtopTransferedAt
+	q.ShippingPickingAt = args.ShippingPickingAt
+	q.ShippingDeliveringAt = args.ShippingDeliveringAt
+	q.ShippingDeliveredAt = args.ShippingDeliveredAt
+	q.ShippingCancelledAt = args.ShippingCancelledAt
+	q.ShippingServiceName = args.ShippingServiceName
+	q.CancelReason = args.CancelReason
+	q.ShippingSharedLink = args.ShippingSharedLink
+	q.ShippingServiceDescription = args.ShippingServiceDescription
+}
+
 func (q *UpdateShipnowFulfillmentStateCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateShipnowFulfillmentStateArgs) {
 	return ctx,
 		&UpdateShipnowFulfillmentStateArgs{
@@ -310,12 +373,27 @@ func (q *UpdateShipnowFulfillmentStateCommand) GetArgs(ctx context.Context) (_ c
 		}
 }
 
+func (q *UpdateShipnowFulfillmentStateCommand) SetUpdateShipnowFulfillmentStateArgs(args *UpdateShipnowFulfillmentStateArgs) {
+	q.Id = args.Id
+	q.SyncStatus = args.SyncStatus
+	q.Status = args.Status
+	q.ConfirmStatus = args.ConfirmStatus
+	q.ShippingStatus = args.ShippingStatus
+	q.SyncStates = args.SyncStates
+	q.ShippingState = args.ShippingState
+}
+
 func (q *GetShipnowFulfillmentQuery) GetArgs(ctx context.Context) (_ context.Context, _ *GetShipnowFulfillmentQueryArgs) {
 	return ctx,
 		&GetShipnowFulfillmentQueryArgs{
 			Id:     q.Id,
 			ShopId: q.ShopId,
 		}
+}
+
+func (q *GetShipnowFulfillmentQuery) SetGetShipnowFulfillmentQueryArgs(args *GetShipnowFulfillmentQueryArgs) {
+	q.Id = args.Id
+	q.ShopId = args.ShopId
 }
 
 func (q *GetShipnowFulfillmentByShippingCodeQuery) GetArgs(ctx context.Context) (_ context.Context, _ *GetShipnowFulfillmentByShippingCodeQueryArgs) {
@@ -325,6 +403,10 @@ func (q *GetShipnowFulfillmentByShippingCodeQuery) GetArgs(ctx context.Context) 
 		}
 }
 
+func (q *GetShipnowFulfillmentByShippingCodeQuery) SetGetShipnowFulfillmentByShippingCodeQueryArgs(args *GetShipnowFulfillmentByShippingCodeQueryArgs) {
+	q.ShippingCode = args.ShippingCode
+}
+
 func (q *GetShipnowFulfillmentsQuery) GetArgs(ctx context.Context) (_ context.Context, _ *GetShipnowFulfillmentsQueryArgs) {
 	return ctx,
 		&GetShipnowFulfillmentsQueryArgs{
@@ -332,6 +414,12 @@ func (q *GetShipnowFulfillmentsQuery) GetArgs(ctx context.Context) (_ context.Co
 			Paging:  q.Paging,
 			Filters: q.Filters,
 		}
+}
+
+func (q *GetShipnowFulfillmentsQuery) SetGetShipnowFulfillmentsQueryArgs(args *GetShipnowFulfillmentsQueryArgs) {
+	q.ShopIds = args.ShopIds
+	q.Paging = args.Paging
+	q.Filters = args.Filters
 }
 
 // implement dispatching

@@ -288,6 +288,33 @@ func (q *CreateOrUpdateContactCommand) GetArgs(ctx context.Context) (_ context.C
 		}
 }
 
+func (q *CreateOrUpdateContactCommand) SetContact(args *Contact) {
+	q.ID = args.ID
+	q.EtopUserID = args.EtopUserID
+	q.ContactNo = args.ContactNo
+	q.Phone = args.Phone
+	q.Lastname = args.Lastname
+	q.Mobile = args.Mobile
+	q.Leadsource = args.Leadsource
+	q.Email = args.Email
+	q.Description = args.Description
+	q.Secondaryemail = args.Secondaryemail
+	q.Modifiedby = args.Modifiedby
+	q.Source = args.Source
+	q.Company = args.Company
+	q.Website = args.Website
+	q.Lane = args.Lane
+	q.City = args.City
+	q.State = args.State
+	q.Country = args.Country
+	q.OrdersPerDay = args.OrdersPerDay
+	q.UsedShippingProvider = args.UsedShippingProvider
+	q.Firstname = args.Firstname
+	q.Createdtime = args.Createdtime
+	q.Modifiedtime = args.Modifiedtime
+	q.AssignedUserID = args.AssignedUserID
+}
+
 func (q *CreateOrUpdateLeadCommand) GetArgs(ctx context.Context) (_ context.Context, _ *Lead) {
 	return ctx,
 		&Lead{
@@ -318,6 +345,33 @@ func (q *CreateOrUpdateLeadCommand) GetArgs(ctx context.Context) (_ context.Cont
 		}
 }
 
+func (q *CreateOrUpdateLeadCommand) SetLead(args *Lead) {
+	q.ID = args.ID
+	q.EtopUserID = args.EtopUserID
+	q.ContactNo = args.ContactNo
+	q.Phone = args.Phone
+	q.Lastname = args.Lastname
+	q.Mobile = args.Mobile
+	q.Leadsource = args.Leadsource
+	q.Email = args.Email
+	q.Description = args.Description
+	q.Secondaryemail = args.Secondaryemail
+	q.Modifiedby = args.Modifiedby
+	q.Source = args.Source
+	q.Company = args.Company
+	q.Website = args.Website
+	q.Lane = args.Lane
+	q.City = args.City
+	q.State = args.State
+	q.Country = args.Country
+	q.OrdersPerDay = args.OrdersPerDay
+	q.UsedShippingProvider = args.UsedShippingProvider
+	q.Firstname = args.Firstname
+	q.AssignedUserID = args.AssignedUserID
+	q.Createdtime = args.Createdtime
+	q.Modifiedtime = args.Modifiedtime
+}
+
 func (q *CreateTicketCommand) GetArgs(ctx context.Context) (_ context.Context, _ *CreateOrUpdateTicketArgs) {
 	return ctx,
 		&CreateOrUpdateTicketArgs{
@@ -343,11 +397,37 @@ func (q *CreateTicketCommand) GetArgs(ctx context.Context) (_ context.Context, _
 		}
 }
 
+func (q *CreateTicketCommand) SetCreateOrUpdateTicketArgs(args *CreateOrUpdateTicketArgs) {
+	q.FfmCode = args.FfmCode
+	q.FfmID = args.FfmID
+	q.ID = args.ID
+	q.EtopUserID = args.EtopUserID
+	q.Code = args.Code
+	q.Title = args.Title
+	q.Value = args.Value
+	q.OldValue = args.OldValue
+	q.Reason = args.Reason
+	q.ShopID = args.ShopID
+	q.OrderID = args.OrderID
+	q.OrderCode = args.OrderCode
+	q.FfmUrl = args.FfmUrl
+	q.Company = args.Company
+	q.Provider = args.Provider
+	q.Note = args.Note
+	q.Environment = args.Environment
+	q.FromApp = args.FromApp
+	q.Account = args.Account
+}
+
 func (q *SyncContactCommand) GetArgs(ctx context.Context) (_ context.Context, _ *SyncContactArgs) {
 	return ctx,
 		&SyncContactArgs{
 			SyncTime: q.SyncTime,
 		}
+}
+
+func (q *SyncContactCommand) SetSyncContactArgs(args *SyncContactArgs) {
+	q.SyncTime = args.SyncTime
 }
 
 func (q *UpdateTicketCommand) GetArgs(ctx context.Context) (_ context.Context, _ *CreateOrUpdateTicketArgs) {
@@ -375,6 +455,28 @@ func (q *UpdateTicketCommand) GetArgs(ctx context.Context) (_ context.Context, _
 		}
 }
 
+func (q *UpdateTicketCommand) SetCreateOrUpdateTicketArgs(args *CreateOrUpdateTicketArgs) {
+	q.FfmCode = args.FfmCode
+	q.FfmID = args.FfmID
+	q.ID = args.ID
+	q.EtopUserID = args.EtopUserID
+	q.Code = args.Code
+	q.Title = args.Title
+	q.Value = args.Value
+	q.OldValue = args.OldValue
+	q.Reason = args.Reason
+	q.ShopID = args.ShopID
+	q.OrderID = args.OrderID
+	q.OrderCode = args.OrderCode
+	q.FfmUrl = args.FfmUrl
+	q.Company = args.Company
+	q.Provider = args.Provider
+	q.Note = args.Note
+	q.Environment = args.Environment
+	q.FromApp = args.FromApp
+	q.Account = args.Account
+}
+
 func (q *CountTicketByStatusQuery) GetArgs(ctx context.Context) (_ context.Context, _ *CountTicketByStatusArgs) {
 	return ctx,
 		&CountTicketByStatusArgs{
@@ -382,9 +484,16 @@ func (q *CountTicketByStatusQuery) GetArgs(ctx context.Context) (_ context.Conte
 		}
 }
 
+func (q *CountTicketByStatusQuery) SetCountTicketByStatusArgs(args *CountTicketByStatusArgs) {
+	q.Status = args.Status
+}
+
 func (q *GetCategoriesQuery) GetArgs(ctx context.Context) (_ context.Context, _ *meta.Empty) {
 	return ctx,
 		&meta.Empty{}
+}
+
+func (q *GetCategoriesQuery) SetEmpty(args *meta.Empty) {
 }
 
 func (q *GetContactsQuery) GetArgs(ctx context.Context) (_ context.Context, _ *GetContactsArgs) {
@@ -393,6 +502,11 @@ func (q *GetContactsQuery) GetArgs(ctx context.Context) (_ context.Context, _ *G
 			Search: q.Search,
 			Paging: q.Paging,
 		}
+}
+
+func (q *GetContactsQuery) SetGetContactsArgs(args *GetContactsArgs) {
+	q.Search = args.Search
+	q.Paging = args.Paging
 }
 
 func (q *GetRecordLastTimeModifyQuery) GetArgs(ctx context.Context) (_ context.Context, _ meta.Paging) {
@@ -404,9 +518,18 @@ func (q *GetRecordLastTimeModifyQuery) GetArgs(ctx context.Context) (_ context.C
 		}
 }
 
+func (q *GetRecordLastTimeModifyQuery) SetPaging(args meta.Paging) {
+	q.Offset = args.Offset
+	q.Limit = args.Limit
+	q.Sort = args.Sort
+}
+
 func (q *GetTicketStatusCountQuery) GetArgs(ctx context.Context) (_ context.Context, _ *meta.Empty) {
 	return ctx,
 		&meta.Empty{}
+}
+
+func (q *GetTicketStatusCountQuery) SetEmpty(args *meta.Empty) {
 }
 
 func (q *GetTicketsQuery) GetArgs(ctx context.Context) (_ context.Context, _ *GetTicketsArgs) {
@@ -416,6 +539,12 @@ func (q *GetTicketsQuery) GetArgs(ctx context.Context) (_ context.Context, _ *Ge
 			Ticket:  q.Ticket,
 			Orderby: q.Orderby,
 		}
+}
+
+func (q *GetTicketsQuery) SetGetTicketsArgs(args *GetTicketsArgs) {
+	q.Paging = args.Paging
+	q.Ticket = args.Ticket
+	q.Orderby = args.Orderby
 }
 
 // implement dispatching

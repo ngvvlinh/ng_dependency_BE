@@ -249,6 +249,11 @@ func (q *AddCustomersToGroupCommand) GetArgs(ctx context.Context) (_ context.Con
 		}
 }
 
+func (q *AddCustomersToGroupCommand) SetAddCustomerToGroupArgs(args *AddCustomerToGroupArgs) {
+	q.GroupID = args.GroupID
+	q.CustomerIDs = args.CustomerIDs
+}
+
 func (q *BatchSetCustomersStatusCommand) GetArgs(ctx context.Context) (_ context.Context, IDs []int64, shopID int64, status int32) {
 	return ctx,
 		q.IDs,
@@ -271,11 +276,27 @@ func (q *CreateCustomerCommand) GetArgs(ctx context.Context) (_ context.Context,
 		}
 }
 
+func (q *CreateCustomerCommand) SetCreateCustomerArgs(args *CreateCustomerArgs) {
+	q.ShopID = args.ShopID
+	q.Code = args.Code
+	q.FullName = args.FullName
+	q.Gender = args.Gender
+	q.Type = args.Type
+	q.Birthday = args.Birthday
+	q.Note = args.Note
+	q.Phone = args.Phone
+	q.Email = args.Email
+}
+
 func (q *CreateCustomerGroupCommand) GetArgs(ctx context.Context) (_ context.Context, _ *CreateCustomerGroupArgs) {
 	return ctx,
 		&CreateCustomerGroupArgs{
 			Name: q.Name,
 		}
+}
+
+func (q *CreateCustomerGroupCommand) SetCreateCustomerGroupArgs(args *CreateCustomerGroupArgs) {
+	q.Name = args.Name
 }
 
 func (q *DeleteCustomerCommand) GetArgs(ctx context.Context) (_ context.Context, ID int64, shopID int64) {
@@ -290,6 +311,11 @@ func (q *RemoveCustomersFromGroupCommand) GetArgs(ctx context.Context) (_ contex
 			GroupID:     q.GroupID,
 			CustomerIDs: q.CustomerIDs,
 		}
+}
+
+func (q *RemoveCustomersFromGroupCommand) SetRemoveCustomerOutOfGroupArgs(args *RemoveCustomerOutOfGroupArgs) {
+	q.GroupID = args.GroupID
+	q.CustomerIDs = args.CustomerIDs
 }
 
 func (q *UpdateCustomerCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateCustomerArgs) {
@@ -308,12 +334,30 @@ func (q *UpdateCustomerCommand) GetArgs(ctx context.Context) (_ context.Context,
 		}
 }
 
+func (q *UpdateCustomerCommand) SetUpdateCustomerArgs(args *UpdateCustomerArgs) {
+	q.ID = args.ID
+	q.ShopID = args.ShopID
+	q.Code = args.Code
+	q.FullName = args.FullName
+	q.Gender = args.Gender
+	q.Type = args.Type
+	q.Birthday = args.Birthday
+	q.Note = args.Note
+	q.Phone = args.Phone
+	q.Email = args.Email
+}
+
 func (q *UpdateCustomerGroupCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateCustomerGroupArgs) {
 	return ctx,
 		&UpdateCustomerGroupArgs{
 			ID:   q.ID,
 			Name: q.Name,
 		}
+}
+
+func (q *UpdateCustomerGroupCommand) SetUpdateCustomerGroupArgs(args *UpdateCustomerGroupArgs) {
+	q.ID = args.ID
+	q.Name = args.Name
 }
 
 func (q *GetCustomerByCodeQuery) GetArgs(ctx context.Context) (_ context.Context, code string, shopID int64) {
@@ -330,11 +374,20 @@ func (q *GetCustomerByIDQuery) GetArgs(ctx context.Context) (_ context.Context, 
 		}
 }
 
+func (q *GetCustomerByIDQuery) SetIDQueryShopArg(args *shopping.IDQueryShopArg) {
+	q.ID = args.ID
+	q.ShopID = args.ShopID
+}
+
 func (q *GetCustomerGroupQuery) GetArgs(ctx context.Context) (_ context.Context, _ *GetCustomerGroupArgs) {
 	return ctx,
 		&GetCustomerGroupArgs{
 			ID: q.ID,
 		}
+}
+
+func (q *GetCustomerGroupQuery) SetGetCustomerGroupArgs(args *GetCustomerGroupArgs) {
+	q.ID = args.ID
 }
 
 func (q *ListCustomerGroupsQuery) GetArgs(ctx context.Context) (_ context.Context, _ *ListCustomerGroupArgs) {
@@ -343,6 +396,11 @@ func (q *ListCustomerGroupsQuery) GetArgs(ctx context.Context) (_ context.Contex
 			Paging:  q.Paging,
 			Filters: q.Filters,
 		}
+}
+
+func (q *ListCustomerGroupsQuery) SetListCustomerGroupArgs(args *ListCustomerGroupArgs) {
+	q.Paging = args.Paging
+	q.Filters = args.Filters
 }
 
 func (q *ListCustomersQuery) GetArgs(ctx context.Context) (_ context.Context, _ *shopping.ListQueryShopArgs) {
@@ -354,12 +412,23 @@ func (q *ListCustomersQuery) GetArgs(ctx context.Context) (_ context.Context, _ 
 		}
 }
 
+func (q *ListCustomersQuery) SetListQueryShopArgs(args *shopping.ListQueryShopArgs) {
+	q.ShopID = args.ShopID
+	q.Paging = args.Paging
+	q.Filters = args.Filters
+}
+
 func (q *ListCustomersByIDsQuery) GetArgs(ctx context.Context) (_ context.Context, _ *shopping.IDsQueryShopArgs) {
 	return ctx,
 		&shopping.IDsQueryShopArgs{
 			IDs:    q.IDs,
 			ShopID: q.ShopID,
 		}
+}
+
+func (q *ListCustomersByIDsQuery) SetIDsQueryShopArgs(args *shopping.IDsQueryShopArgs) {
+	q.IDs = args.IDs
+	q.ShopID = args.ShopID
 }
 
 // implement dispatching

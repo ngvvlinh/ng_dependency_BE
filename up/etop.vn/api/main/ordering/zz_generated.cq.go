@@ -211,6 +211,10 @@ func (q *ReleaseOrdersForFfmCommand) GetArgs(ctx context.Context) (_ context.Con
 		}
 }
 
+func (q *ReleaseOrdersForFfmCommand) SetReleaseOrdersForFfmArgs(args *ReleaseOrdersForFfmArgs) {
+	q.OrderIDs = args.OrderIDs
+}
+
 func (q *ReserveOrdersForFfmCommand) GetArgs(ctx context.Context) (_ context.Context, _ *ReserveOrdersForFfmArgs) {
 	return ctx,
 		&ReserveOrdersForFfmArgs{
@@ -220,6 +224,12 @@ func (q *ReserveOrdersForFfmCommand) GetArgs(ctx context.Context) (_ context.Con
 		}
 }
 
+func (q *ReserveOrdersForFfmCommand) SetReserveOrdersForFfmArgs(args *ReserveOrdersForFfmArgs) {
+	q.OrderIDs = args.OrderIDs
+	q.Fulfill = args.Fulfill
+	q.FulfillIDs = args.FulfillIDs
+}
+
 func (q *UpdateOrderPaymentInfoCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateOrderPaymentInfoArgs) {
 	return ctx,
 		&UpdateOrderPaymentInfoArgs{
@@ -227,6 +237,12 @@ func (q *UpdateOrderPaymentInfoCommand) GetArgs(ctx context.Context) (_ context.
 			PaymentStatus: q.PaymentStatus,
 			PaymentID:     q.PaymentID,
 		}
+}
+
+func (q *UpdateOrderPaymentInfoCommand) SetUpdateOrderPaymentInfoArgs(args *UpdateOrderPaymentInfoArgs) {
+	q.ID = args.ID
+	q.PaymentStatus = args.PaymentStatus
+	q.PaymentID = args.PaymentID
 }
 
 func (q *UpdateOrderShippingStatusCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateOrderShippingStatusArgs) {
@@ -241,6 +257,15 @@ func (q *UpdateOrderShippingStatusCommand) GetArgs(ctx context.Context) (_ conte
 		}
 }
 
+func (q *UpdateOrderShippingStatusCommand) SetUpdateOrderShippingStatusArgs(args *UpdateOrderShippingStatusArgs) {
+	q.ID = args.ID
+	q.FulfillmentShippingStates = args.FulfillmentShippingStates
+	q.FulfillmentShippingStatus = args.FulfillmentShippingStatus
+	q.FulfillmentPaymentStatuses = args.FulfillmentPaymentStatuses
+	q.EtopPaymentStatus = args.EtopPaymentStatus
+	q.CODEtopPaidAt = args.CODEtopPaidAt
+}
+
 func (q *UpdateOrdersConfirmStatusCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateOrdersConfirmStatusArgs) {
 	return ctx,
 		&UpdateOrdersConfirmStatusArgs{
@@ -250,11 +275,21 @@ func (q *UpdateOrdersConfirmStatusCommand) GetArgs(ctx context.Context) (_ conte
 		}
 }
 
+func (q *UpdateOrdersConfirmStatusCommand) SetUpdateOrdersConfirmStatusArgs(args *UpdateOrdersConfirmStatusArgs) {
+	q.IDs = args.IDs
+	q.ShopConfirm = args.ShopConfirm
+	q.ConfirmStatus = args.ConfirmStatus
+}
+
 func (q *ValidateOrdersForShippingCommand) GetArgs(ctx context.Context) (_ context.Context, _ *ValidateOrdersForShippingArgs) {
 	return ctx,
 		&ValidateOrdersForShippingArgs{
 			OrderIDs: q.OrderIDs,
 		}
+}
+
+func (q *ValidateOrdersForShippingCommand) SetValidateOrdersForShippingArgs(args *ValidateOrdersForShippingArgs) {
+	q.OrderIDs = args.OrderIDs
 }
 
 func (q *GetOrderByCodeQuery) GetArgs(ctx context.Context) (_ context.Context, _ *GetOrderByCodeArgs) {
@@ -264,11 +299,19 @@ func (q *GetOrderByCodeQuery) GetArgs(ctx context.Context) (_ context.Context, _
 		}
 }
 
+func (q *GetOrderByCodeQuery) SetGetOrderByCodeArgs(args *GetOrderByCodeArgs) {
+	q.Code = args.Code
+}
+
 func (q *GetOrderByIDQuery) GetArgs(ctx context.Context) (_ context.Context, _ *GetOrderByIDArgs) {
 	return ctx,
 		&GetOrderByIDArgs{
 			ID: q.ID,
 		}
+}
+
+func (q *GetOrderByIDQuery) SetGetOrderByIDArgs(args *GetOrderByIDArgs) {
+	q.ID = args.ID
 }
 
 func (q *GetOrdersQuery) GetArgs(ctx context.Context) (_ context.Context, _ *GetOrdersArgs) {
@@ -277,6 +320,11 @@ func (q *GetOrdersQuery) GetArgs(ctx context.Context) (_ context.Context, _ *Get
 			ShopID: q.ShopID,
 			IDs:    q.IDs,
 		}
+}
+
+func (q *GetOrdersQuery) SetGetOrdersArgs(args *GetOrdersArgs) {
+	q.ShopID = args.ShopID
+	q.IDs = args.IDs
 }
 
 func (q *GetOrdersByIDsAndCustomerIDQuery) GetArgs(ctx context.Context) (_ context.Context, shopID int64, IDs []int64, customerID int64) {

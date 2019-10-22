@@ -60,6 +60,10 @@ func (q *GetAddressByIDQuery) GetArgs(ctx context.Context) (_ context.Context, _
 		}
 }
 
+func (q *GetAddressByIDQuery) SetGetAddressByIDQueryArgs(args *GetAddressByIDQueryArgs) {
+	q.ID = args.ID
+}
+
 // implement dispatching
 
 type QueryServiceHandler struct {

@@ -73,11 +73,19 @@ func (q *SendUpdateExternalFulfillmentStateCommand) GetArgs(ctx context.Context)
 		}
 }
 
+func (q *SendUpdateExternalFulfillmentStateCommand) SetSendUpdateExternalFulfillmentStateArgs(args *SendUpdateExternalFulfillmentStateArgs) {
+	q.FulfillmentID = args.FulfillmentID
+}
+
 func (q *SendUpdateExternalPaymentStatusCommand) GetArgs(ctx context.Context) (_ context.Context, _ *SendUpdateExternalPaymentStatusArgs) {
 	return ctx,
 		&SendUpdateExternalPaymentStatusArgs{
 			FulfillmentID: q.FulfillmentID,
 		}
+}
+
+func (q *SendUpdateExternalPaymentStatusCommand) SetSendUpdateExternalPaymentStatusArgs(args *SendUpdateExternalPaymentStatusArgs) {
+	q.FulfillmentID = args.FulfillmentID
 }
 
 // implement dispatching

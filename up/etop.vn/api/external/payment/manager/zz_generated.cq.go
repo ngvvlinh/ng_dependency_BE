@@ -130,6 +130,15 @@ func (q *BuildUrlConnectPaymentGatewayCommand) GetArgs(ctx context.Context) (_ c
 		}
 }
 
+func (q *BuildUrlConnectPaymentGatewayCommand) SetConnectPaymentGatewayArgs(args *ConnectPaymentGatewayArgs) {
+	q.OrderID = args.OrderID
+	q.Desc = args.Desc
+	q.ReturnURL = args.ReturnURL
+	q.CancelURL = args.CancelURL
+	q.TransactionAmount = args.TransactionAmount
+	q.Provider = args.Provider
+}
+
 func (q *CancelTransactionCommand) GetArgs(ctx context.Context) (_ context.Context, _ *CancelTransactionArgs) {
 	return ctx,
 		&CancelTransactionArgs{
@@ -139,6 +148,14 @@ func (q *CancelTransactionCommand) GetArgs(ctx context.Context) (_ context.Conte
 			Reason:                q.Reason,
 			Provider:              q.Provider,
 		}
+}
+
+func (q *CancelTransactionCommand) SetCancelTransactionArgs(args *CancelTransactionArgs) {
+	q.OrderID = args.OrderID
+	q.ExternalTransactionID = args.ExternalTransactionID
+	q.TransactionAmount = args.TransactionAmount
+	q.Reason = args.Reason
+	q.Provider = args.Provider
 }
 
 func (q *CheckReturnDataCommand) GetArgs(ctx context.Context) (_ context.Context, _ *CheckReturnDataArgs) {
@@ -153,6 +170,15 @@ func (q *CheckReturnDataCommand) GetArgs(ctx context.Context) (_ context.Context
 		}
 }
 
+func (q *CheckReturnDataCommand) SetCheckReturnDataArgs(args *CheckReturnDataArgs) {
+	q.ID = args.ID
+	q.Code = args.Code
+	q.PaymentStatus = args.PaymentStatus
+	q.Amount = args.Amount
+	q.ExternalTransactionID = args.ExternalTransactionID
+	q.Provider = args.Provider
+}
+
 func (q *GenerateCodeCommand) GetArgs(ctx context.Context) (_ context.Context, _ *GenerateCodeArgs) {
 	return ctx,
 		&GenerateCodeArgs{
@@ -161,12 +187,22 @@ func (q *GenerateCodeCommand) GetArgs(ctx context.Context) (_ context.Context, _
 		}
 }
 
+func (q *GenerateCodeCommand) SetGenerateCodeArgs(args *GenerateCodeArgs) {
+	q.PaymentSource = args.PaymentSource
+	q.ID = args.ID
+}
+
 func (q *GetTransactionCommand) GetArgs(ctx context.Context) (_ context.Context, _ *GetTransactionArgs) {
 	return ctx,
 		&GetTransactionArgs{
 			OrderID:  q.OrderID,
 			Provider: q.Provider,
 		}
+}
+
+func (q *GetTransactionCommand) SetGetTransactionArgs(args *GetTransactionArgs) {
+	q.OrderID = args.OrderID
+	q.Provider = args.Provider
 }
 
 // implement dispatching

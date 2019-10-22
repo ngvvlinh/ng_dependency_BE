@@ -91,6 +91,18 @@ func (q *GetResultCommand) GetArgs(ctx context.Context) (_ context.Context, _ *G
 		}
 }
 
+func (q *GetResultCommand) SetGetResultArgs(args *GetResultArgs) {
+	q.BillCode = args.BillCode
+	q.CustMsisdn = args.CustMsisdn
+	q.ErrorCode = args.ErrorCode
+	q.MerchantCode = args.MerchantCode
+	q.OrderID = args.OrderID
+	q.PaymentStatus = args.PaymentStatus
+	q.TransAmount = args.TransAmount
+	q.VtTransactionID = args.VtTransactionID
+	q.CheckSum = args.CheckSum
+}
+
 func (q *ValidateTransactionCommand) GetArgs(ctx context.Context) (_ context.Context, _ *ValidateTransactionArgs) {
 	return ctx,
 		&ValidateTransactionArgs{
@@ -99,6 +111,13 @@ func (q *ValidateTransactionCommand) GetArgs(ctx context.Context) (_ context.Con
 			OrderID:      q.OrderID,
 			CheckSum:     q.CheckSum,
 		}
+}
+
+func (q *ValidateTransactionCommand) SetValidateTransactionArgs(args *ValidateTransactionArgs) {
+	q.BillCode = args.BillCode
+	q.MerchantCode = args.MerchantCode
+	q.OrderID = args.OrderID
+	q.CheckSum = args.CheckSum
 }
 
 // implement dispatching

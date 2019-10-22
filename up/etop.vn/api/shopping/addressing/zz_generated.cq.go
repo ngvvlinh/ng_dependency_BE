@@ -187,6 +187,21 @@ func (q *CreateAddressCommand) GetArgs(ctx context.Context) (_ context.Context, 
 		}
 }
 
+func (q *CreateAddressCommand) SetCreateAddressArgs(args *CreateAddressArgs) {
+	q.ShopID = args.ShopID
+	q.TraderID = args.TraderID
+	q.FullName = args.FullName
+	q.Phone = args.Phone
+	q.Email = args.Email
+	q.Company = args.Company
+	q.Address1 = args.Address1
+	q.Address2 = args.Address2
+	q.DistrictCode = args.DistrictCode
+	q.WardCode = args.WardCode
+	q.IsDefault = args.IsDefault
+	q.Coordinates = args.Coordinates
+}
+
 func (q *DeleteAddressCommand) GetArgs(ctx context.Context) (_ context.Context, ID int64, ShopID int64) {
 	return ctx,
 		q.ID,
@@ -216,6 +231,19 @@ func (q *UpdateAddressCommand) GetArgs(ctx context.Context) (_ context.Context, 
 			IsDefault:    q.IsDefault,
 			Coordinates:  q.Coordinates,
 		}
+}
+
+func (q *UpdateAddressCommand) SetUpdateAddressArgs(args *UpdateAddressArgs) {
+	q.FullName = args.FullName
+	q.Phone = args.Phone
+	q.Email = args.Email
+	q.Company = args.Company
+	q.Address1 = args.Address1
+	q.Address2 = args.Address2
+	q.DistrictCode = args.DistrictCode
+	q.WardCode = args.WardCode
+	q.IsDefault = args.IsDefault
+	q.Coordinates = args.Coordinates
 }
 
 func (q *GetAddressActiveByTraderIDQuery) GetArgs(ctx context.Context) (_ context.Context, traderID int64, ShopID int64) {

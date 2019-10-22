@@ -233,6 +233,14 @@ func (q *AdjustInventoryQuantityCommand) GetArgs(ctx context.Context) (_ context
 		}
 }
 
+func (q *AdjustInventoryQuantityCommand) SetAdjustInventoryQuantityArgs(args *AdjustInventoryQuantityArgs) {
+	q.ShopID = args.ShopID
+	q.Lines = args.Lines
+	q.Title = args.Title
+	q.UserID = args.UserID
+	q.Note = args.Note
+}
+
 func (q *CancelInventoryVoucherCommand) GetArgs(ctx context.Context) (_ context.Context, _ *CancelInventoryVoucherArgs) {
 	return ctx,
 		&CancelInventoryVoucherArgs{
@@ -241,6 +249,13 @@ func (q *CancelInventoryVoucherCommand) GetArgs(ctx context.Context) (_ context.
 			UpdatedBy: q.UpdatedBy,
 			Reason:    q.Reason,
 		}
+}
+
+func (q *CancelInventoryVoucherCommand) SetCancelInventoryVoucherArgs(args *CancelInventoryVoucherArgs) {
+	q.ShopID = args.ShopID
+	q.ID = args.ID
+	q.UpdatedBy = args.UpdatedBy
+	q.Reason = args.Reason
 }
 
 func (q *ConfirmInventoryVoucherCommand) GetArgs(ctx context.Context) (_ context.Context, _ *ConfirmInventoryVoucherArgs) {
@@ -252,12 +267,23 @@ func (q *ConfirmInventoryVoucherCommand) GetArgs(ctx context.Context) (_ context
 		}
 }
 
+func (q *ConfirmInventoryVoucherCommand) SetConfirmInventoryVoucherArgs(args *ConfirmInventoryVoucherArgs) {
+	q.ShopID = args.ShopID
+	q.ID = args.ID
+	q.UpdatedBy = args.UpdatedBy
+}
+
 func (q *CreateInventoryVariantCommand) GetArgs(ctx context.Context) (_ context.Context, _ *CreateInventoryVariantArgs) {
 	return ctx,
 		&CreateInventoryVariantArgs{
 			ShopID:    q.ShopID,
 			VariantID: q.VariantID,
 		}
+}
+
+func (q *CreateInventoryVariantCommand) SetCreateInventoryVariantArgs(args *CreateInventoryVariantArgs) {
+	q.ShopID = args.ShopID
+	q.VariantID = args.VariantID
 }
 
 func (q *CreateInventoryVoucherCommand) GetArgs(ctx context.Context) (_ context.Context, Overstock bool, _ *CreateInventoryVoucherArgs) {
@@ -275,6 +301,17 @@ func (q *CreateInventoryVoucherCommand) GetArgs(ctx context.Context) (_ context.
 		}
 }
 
+func (q *CreateInventoryVoucherCommand) SetCreateInventoryVoucherArgs(args *CreateInventoryVoucherArgs) {
+	q.ShopID = args.ShopID
+	q.CreatedBy = args.CreatedBy
+	q.Title = args.Title
+	q.TraderID = args.TraderID
+	q.TotalAmount = args.TotalAmount
+	q.Type = args.Type
+	q.Note = args.Note
+	q.Lines = args.Lines
+}
+
 func (q *UpdateInventoryVoucherCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateInventoryVoucherArgs) {
 	return ctx,
 		&UpdateInventoryVoucherArgs{
@@ -290,12 +327,29 @@ func (q *UpdateInventoryVoucherCommand) GetArgs(ctx context.Context) (_ context.
 		}
 }
 
+func (q *UpdateInventoryVoucherCommand) SetUpdateInventoryVoucherArgs(args *UpdateInventoryVoucherArgs) {
+	q.ID = args.ID
+	q.ShopID = args.ShopID
+	q.Title = args.Title
+	q.UpdatedBy = args.UpdatedBy
+	q.TraderID = args.TraderID
+	q.TotalAmount = args.TotalAmount
+	q.CancelledReason = args.CancelledReason
+	q.Note = args.Note
+	q.Lines = args.Lines
+}
+
 func (q *GetInventoriesQuery) GetArgs(ctx context.Context) (_ context.Context, _ *GetInventoryRequest) {
 	return ctx,
 		&GetInventoryRequest{
 			ShopID: q.ShopID,
 			Paging: q.Paging,
 		}
+}
+
+func (q *GetInventoriesQuery) SetGetInventoryRequest(args *GetInventoryRequest) {
+	q.ShopID = args.ShopID
+	q.Paging = args.Paging
 }
 
 func (q *GetInventoriesByVariantIDsQuery) GetArgs(ctx context.Context) (_ context.Context, _ *GetInventoriesByVariantIDsArgs) {
@@ -305,6 +359,12 @@ func (q *GetInventoriesByVariantIDsQuery) GetArgs(ctx context.Context) (_ contex
 			Paging:     q.Paging,
 			VariantIDs: q.VariantIDs,
 		}
+}
+
+func (q *GetInventoriesByVariantIDsQuery) SetGetInventoriesByVariantIDsArgs(args *GetInventoriesByVariantIDsArgs) {
+	q.ShopID = args.ShopID
+	q.Paging = args.Paging
+	q.VariantIDs = args.VariantIDs
 }
 
 func (q *GetInventoryQuery) GetArgs(ctx context.Context) (_ context.Context, ShopID int64, VariantID int64) {
@@ -332,6 +392,12 @@ func (q *GetInventoryVouchersByIDsQuery) GetArgs(ctx context.Context) (_ context
 			Paging: q.Paging,
 			IDs:    q.IDs,
 		}
+}
+
+func (q *GetInventoryVouchersByIDsQuery) SetGetInventoryVouchersByIDArgs(args *GetInventoryVouchersByIDArgs) {
+	q.ShopID = args.ShopID
+	q.Paging = args.Paging
+	q.IDs = args.IDs
 }
 
 // implement dispatching

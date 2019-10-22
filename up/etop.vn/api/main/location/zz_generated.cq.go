@@ -110,6 +110,12 @@ func (q *FindLocationQuery) GetArgs(ctx context.Context) (_ context.Context, _ *
 		}
 }
 
+func (q *FindLocationQuery) SetFindLocationQueryArgs(args *FindLocationQueryArgs) {
+	q.Province = args.Province
+	q.District = args.District
+	q.Ward = args.Ward
+}
+
 func (q *FindOrGetLocationQuery) GetArgs(ctx context.Context) (_ context.Context, _ *FindOrGetLocationQueryArgs) {
 	return ctx,
 		&FindOrGetLocationQueryArgs{
@@ -122,6 +128,15 @@ func (q *FindOrGetLocationQuery) GetArgs(ctx context.Context) (_ context.Context
 		}
 }
 
+func (q *FindOrGetLocationQuery) SetFindOrGetLocationQueryArgs(args *FindOrGetLocationQueryArgs) {
+	q.Province = args.Province
+	q.District = args.District
+	q.Ward = args.Ward
+	q.ProvinceCode = args.ProvinceCode
+	q.DistrictCode = args.DistrictCode
+	q.WardCode = args.WardCode
+}
+
 func (q *GetAllLocationsQuery) GetArgs(ctx context.Context) (_ context.Context, _ *GetAllLocationsQueryArgs) {
 	return ctx,
 		&GetAllLocationsQueryArgs{
@@ -129,6 +144,12 @@ func (q *GetAllLocationsQuery) GetArgs(ctx context.Context) (_ context.Context, 
 			ProvinceCode: q.ProvinceCode,
 			DistrictCode: q.DistrictCode,
 		}
+}
+
+func (q *GetAllLocationsQuery) SetGetAllLocationsQueryArgs(args *GetAllLocationsQueryArgs) {
+	q.All = args.All
+	q.ProvinceCode = args.ProvinceCode
+	q.DistrictCode = args.DistrictCode
 }
 
 func (q *GetLocationQuery) GetArgs(ctx context.Context) (_ context.Context, _ *GetLocationQueryArgs) {
@@ -139,6 +160,13 @@ func (q *GetLocationQuery) GetArgs(ctx context.Context) (_ context.Context, _ *G
 			WardCode:         q.WardCode,
 			LocationCodeType: q.LocationCodeType,
 		}
+}
+
+func (q *GetLocationQuery) SetGetLocationQueryArgs(args *GetLocationQueryArgs) {
+	q.ProvinceCode = args.ProvinceCode
+	q.DistrictCode = args.DistrictCode
+	q.WardCode = args.WardCode
+	q.LocationCodeType = args.LocationCodeType
 }
 
 // implement dispatching

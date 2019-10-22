@@ -310,6 +310,15 @@ func (q *CreateAffiliateCommand) GetArgs(ctx context.Context) (_ context.Context
 		}
 }
 
+func (q *CreateAffiliateCommand) SetCreateAffiliateArgs(args *CreateAffiliateArgs) {
+	q.Name = args.Name
+	q.OwnerID = args.OwnerID
+	q.Phone = args.Phone
+	q.Email = args.Email
+	q.IsTest = args.IsTest
+	q.BankAccount = args.BankAccount
+}
+
 func (q *CreateExternalAccountAhamoveCommand) GetArgs(ctx context.Context) (_ context.Context, _ *CreateExternalAccountAhamoveArgs) {
 	return ctx,
 		&CreateExternalAccountAhamoveArgs{
@@ -320,6 +329,13 @@ func (q *CreateExternalAccountAhamoveCommand) GetArgs(ctx context.Context) (_ co
 		}
 }
 
+func (q *CreateExternalAccountAhamoveCommand) SetCreateExternalAccountAhamoveArgs(args *CreateExternalAccountAhamoveArgs) {
+	q.OwnerID = args.OwnerID
+	q.Phone = args.Phone
+	q.Name = args.Name
+	q.Address = args.Address
+}
+
 func (q *DeleteAffiliateCommand) GetArgs(ctx context.Context) (_ context.Context, _ *DeleteAffiliateArgs) {
 	return ctx,
 		&DeleteAffiliateArgs{
@@ -328,12 +344,22 @@ func (q *DeleteAffiliateCommand) GetArgs(ctx context.Context) (_ context.Context
 		}
 }
 
+func (q *DeleteAffiliateCommand) SetDeleteAffiliateArgs(args *DeleteAffiliateArgs) {
+	q.ID = args.ID
+	q.OwnerID = args.OwnerID
+}
+
 func (q *RequestVerifyExternalAccountAhamoveCommand) GetArgs(ctx context.Context) (_ context.Context, _ *RequestVerifyExternalAccountAhamoveArgs) {
 	return ctx,
 		&RequestVerifyExternalAccountAhamoveArgs{
 			OwnerID: q.OwnerID,
 			Phone:   q.Phone,
 		}
+}
+
+func (q *RequestVerifyExternalAccountAhamoveCommand) SetRequestVerifyExternalAccountAhamoveArgs(args *RequestVerifyExternalAccountAhamoveArgs) {
+	q.OwnerID = args.OwnerID
+	q.Phone = args.Phone
 }
 
 func (q *UpdateAffiliateBankAccountCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateAffiliateBankAccountArgs) {
@@ -345,6 +371,12 @@ func (q *UpdateAffiliateBankAccountCommand) GetArgs(ctx context.Context) (_ cont
 		}
 }
 
+func (q *UpdateAffiliateBankAccountCommand) SetUpdateAffiliateBankAccountArgs(args *UpdateAffiliateBankAccountArgs) {
+	q.ID = args.ID
+	q.OwnerID = args.OwnerID
+	q.BankAccount = args.BankAccount
+}
+
 func (q *UpdateAffiliateInfoCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateAffiliateInfoArgs) {
 	return ctx,
 		&UpdateAffiliateInfoArgs{
@@ -354,6 +386,14 @@ func (q *UpdateAffiliateInfoCommand) GetArgs(ctx context.Context) (_ context.Con
 			Email:   q.Email,
 			Name:    q.Name,
 		}
+}
+
+func (q *UpdateAffiliateInfoCommand) SetUpdateAffiliateInfoArgs(args *UpdateAffiliateInfoArgs) {
+	q.ID = args.ID
+	q.OwnerID = args.OwnerID
+	q.Phone = args.Phone
+	q.Email = args.Email
+	q.Name = args.Name
 }
 
 func (q *UpdateExternalAccountAhamoveVerificationCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateExternalAccountAhamoveVerificationArgs) {
@@ -371,12 +411,29 @@ func (q *UpdateExternalAccountAhamoveVerificationCommand) GetArgs(ctx context.Co
 		}
 }
 
+func (q *UpdateExternalAccountAhamoveVerificationCommand) SetUpdateExternalAccountAhamoveVerificationArgs(args *UpdateExternalAccountAhamoveVerificationArgs) {
+	q.OwnerID = args.OwnerID
+	q.Phone = args.Phone
+	q.IDCardFrontImg = args.IDCardFrontImg
+	q.IDCardBackImg = args.IDCardBackImg
+	q.PortraitImg = args.PortraitImg
+	q.WebsiteURL = args.WebsiteURL
+	q.FanpageURL = args.FanpageURL
+	q.CompanyImgs = args.CompanyImgs
+	q.BusinessLicenseImgs = args.BusinessLicenseImgs
+}
+
 func (q *UpdateUserReferenceSaleIDCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateUserReferenceSaleIDArgs) {
 	return ctx,
 		&UpdateUserReferenceSaleIDArgs{
 			UserID:       q.UserID,
 			RefSalePhone: q.RefSalePhone,
 		}
+}
+
+func (q *UpdateUserReferenceSaleIDCommand) SetUpdateUserReferenceSaleIDArgs(args *UpdateUserReferenceSaleIDArgs) {
+	q.UserID = args.UserID
+	q.RefSalePhone = args.RefSalePhone
 }
 
 func (q *UpdateUserReferenceUserIDCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateUserReferenceUserIDArgs) {
@@ -387,12 +444,22 @@ func (q *UpdateUserReferenceUserIDCommand) GetArgs(ctx context.Context) (_ conte
 		}
 }
 
+func (q *UpdateUserReferenceUserIDCommand) SetUpdateUserReferenceUserIDArgs(args *UpdateUserReferenceUserIDArgs) {
+	q.UserID = args.UserID
+	q.RefUserPhone = args.RefUserPhone
+}
+
 func (q *UpdateVerifiedExternalAccountAhamoveCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateVerifiedExternalAccountAhamoveArgs) {
 	return ctx,
 		&UpdateVerifiedExternalAccountAhamoveArgs{
 			OwnerID: q.OwnerID,
 			Phone:   q.Phone,
 		}
+}
+
+func (q *UpdateVerifiedExternalAccountAhamoveCommand) SetUpdateVerifiedExternalAccountAhamoveArgs(args *UpdateVerifiedExternalAccountAhamoveArgs) {
+	q.OwnerID = args.OwnerID
+	q.Phone = args.Phone
 }
 
 func (q *GetAffiliateByIDQuery) GetArgs(ctx context.Context) (_ context.Context, ID int64) {
@@ -413,11 +480,19 @@ func (q *GetAffiliatesByIDsQuery) GetArgs(ctx context.Context) (_ context.Contex
 		}
 }
 
+func (q *GetAffiliatesByIDsQuery) SetGetAffiliatesByIDsArgs(args *GetAffiliatesByIDsArgs) {
+	q.AffiliateIDs = args.AffiliateIDs
+}
+
 func (q *GetAffiliatesByOwnerIDQuery) GetArgs(ctx context.Context) (_ context.Context, _ *GetAffiliatesByOwnerIDArgs) {
 	return ctx,
 		&GetAffiliatesByOwnerIDArgs{
 			ID: q.ID,
 		}
+}
+
+func (q *GetAffiliatesByOwnerIDQuery) SetGetAffiliatesByOwnerIDArgs(args *GetAffiliatesByOwnerIDArgs) {
+	q.ID = args.ID
 }
 
 func (q *GetExternalAccountAhamoveQuery) GetArgs(ctx context.Context) (_ context.Context, _ *GetExternalAccountAhamoveArgs) {
@@ -428,11 +503,20 @@ func (q *GetExternalAccountAhamoveQuery) GetArgs(ctx context.Context) (_ context
 		}
 }
 
+func (q *GetExternalAccountAhamoveQuery) SetGetExternalAccountAhamoveArgs(args *GetExternalAccountAhamoveArgs) {
+	q.OwnerID = args.OwnerID
+	q.Phone = args.Phone
+}
+
 func (q *GetExternalAccountAhamoveByExternalIDQuery) GetArgs(ctx context.Context) (_ context.Context, _ *GetExternalAccountAhamoveByExternalIDQueryArgs) {
 	return ctx,
 		&GetExternalAccountAhamoveByExternalIDQueryArgs{
 			ExternalID: q.ExternalID,
 		}
+}
+
+func (q *GetExternalAccountAhamoveByExternalIDQuery) SetGetExternalAccountAhamoveByExternalIDQueryArgs(args *GetExternalAccountAhamoveByExternalIDQueryArgs) {
+	q.ExternalID = args.ExternalID
 }
 
 func (q *GetShopByIDQuery) GetArgs(ctx context.Context) (_ context.Context, ID int64) {
@@ -445,6 +529,10 @@ func (q *GetUserByIDQuery) GetArgs(ctx context.Context) (_ context.Context, _ *G
 		&GetUserByIDQueryArgs{
 			UserID: q.UserID,
 		}
+}
+
+func (q *GetUserByIDQuery) SetGetUserByIDQueryArgs(args *GetUserByIDQueryArgs) {
+	q.UserID = args.UserID
 }
 
 func (q *GetUserByPhoneQuery) GetArgs(ctx context.Context) (_ context.Context, phone string) {

@@ -598,6 +598,12 @@ func (q *AddShopProductCollectionCommand) GetArgs(ctx context.Context) (_ contex
 		}
 }
 
+func (q *AddShopProductCollectionCommand) SetAddShopProductCollectionArgs(args *AddShopProductCollectionArgs) {
+	q.ProductID = args.ProductID
+	q.ShopID = args.ShopID
+	q.CollectionIDs = args.CollectionIDs
+}
+
 func (q *CreateShopCategoryCommand) GetArgs(ctx context.Context) (_ context.Context, _ *CreateShopCategoryArgs) {
 	return ctx,
 		&CreateShopCategoryArgs{
@@ -607,6 +613,14 @@ func (q *CreateShopCategoryCommand) GetArgs(ctx context.Context) (_ context.Cont
 			Name:     q.Name,
 			Status:   q.Status,
 		}
+}
+
+func (q *CreateShopCategoryCommand) SetCreateShopCategoryArgs(args *CreateShopCategoryArgs) {
+	q.ID = args.ID
+	q.ShopID = args.ShopID
+	q.ParentID = args.ParentID
+	q.Name = args.Name
+	q.Status = args.Status
 }
 
 func (q *CreateShopCollectionCommand) GetArgs(ctx context.Context) (_ context.Context, _ *CreateShopCollectionArgs) {
@@ -619,6 +633,15 @@ func (q *CreateShopCollectionCommand) GetArgs(ctx context.Context) (_ context.Co
 			DescHTML:    q.DescHTML,
 			ShortDesc:   q.ShortDesc,
 		}
+}
+
+func (q *CreateShopCollectionCommand) SetCreateShopCollectionArgs(args *CreateShopCollectionArgs) {
+	q.ID = args.ID
+	q.ShopID = args.ShopID
+	q.Name = args.Name
+	q.Description = args.Description
+	q.DescHTML = args.DescHTML
+	q.ShortDesc = args.ShortDesc
 }
 
 func (q *CreateShopProductCommand) GetArgs(ctx context.Context) (_ context.Context, _ *CreateShopProductArgs) {
@@ -637,6 +660,19 @@ func (q *CreateShopProductCommand) GetArgs(ctx context.Context) (_ context.Conte
 		}
 }
 
+func (q *CreateShopProductCommand) SetCreateShopProductArgs(args *CreateShopProductArgs) {
+	q.ShopID = args.ShopID
+	q.VendorID = args.VendorID
+	q.Code = args.Code
+	q.Name = args.Name
+	q.Unit = args.Unit
+	q.ImageURLs = args.ImageURLs
+	q.Note = args.Note
+	q.DescriptionInfo = args.DescriptionInfo
+	q.PriceInfo = args.PriceInfo
+	q.ProductType = args.ProductType
+}
+
 func (q *CreateShopVariantCommand) GetArgs(ctx context.Context) (_ context.Context, _ *CreateShopVariantArgs) {
 	return ctx,
 		&CreateShopVariantArgs{
@@ -652,12 +688,29 @@ func (q *CreateShopVariantCommand) GetArgs(ctx context.Context) (_ context.Conte
 		}
 }
 
+func (q *CreateShopVariantCommand) SetCreateShopVariantArgs(args *CreateShopVariantArgs) {
+	q.ShopID = args.ShopID
+	q.ProductID = args.ProductID
+	q.Code = args.Code
+	q.Name = args.Name
+	q.ImageURLs = args.ImageURLs
+	q.Note = args.Note
+	q.Attributes = args.Attributes
+	q.DescriptionInfo = args.DescriptionInfo
+	q.PriceInfo = args.PriceInfo
+}
+
 func (q *DeleteShopCategoryCommand) GetArgs(ctx context.Context) (_ context.Context, _ *DeleteShopCategoryArgs) {
 	return ctx,
 		&DeleteShopCategoryArgs{
 			ID:     q.ID,
 			ShopID: q.ShopID,
 		}
+}
+
+func (q *DeleteShopCategoryCommand) SetDeleteShopCategoryArgs(args *DeleteShopCategoryArgs) {
+	q.ID = args.ID
+	q.ShopID = args.ShopID
 }
 
 func (q *DeleteShopProductsCommand) GetArgs(ctx context.Context) (_ context.Context, _ *shopping.IDsQueryShopArgs) {
@@ -668,6 +721,11 @@ func (q *DeleteShopProductsCommand) GetArgs(ctx context.Context) (_ context.Cont
 		}
 }
 
+func (q *DeleteShopProductsCommand) SetIDsQueryShopArgs(args *shopping.IDsQueryShopArgs) {
+	q.IDs = args.IDs
+	q.ShopID = args.ShopID
+}
+
 func (q *DeleteShopVariantsCommand) GetArgs(ctx context.Context) (_ context.Context, _ *shopping.IDsQueryShopArgs) {
 	return ctx,
 		&shopping.IDsQueryShopArgs{
@@ -676,12 +734,22 @@ func (q *DeleteShopVariantsCommand) GetArgs(ctx context.Context) (_ context.Cont
 		}
 }
 
+func (q *DeleteShopVariantsCommand) SetIDsQueryShopArgs(args *shopping.IDsQueryShopArgs) {
+	q.IDs = args.IDs
+	q.ShopID = args.ShopID
+}
+
 func (q *RemoveShopProductCategoryCommand) GetArgs(ctx context.Context) (_ context.Context, _ *RemoveShopProductCategoryArgs) {
 	return ctx,
 		&RemoveShopProductCategoryArgs{
 			ProductID: q.ProductID,
 			ShopID:    q.ShopID,
 		}
+}
+
+func (q *RemoveShopProductCategoryCommand) SetRemoveShopProductCategoryArgs(args *RemoveShopProductCategoryArgs) {
+	q.ProductID = args.ProductID
+	q.ShopID = args.ShopID
 }
 
 func (q *RemoveShopProductCollectionCommand) GetArgs(ctx context.Context) (_ context.Context, _ *RemoveShopProductColelctionArgs) {
@@ -693,6 +761,12 @@ func (q *RemoveShopProductCollectionCommand) GetArgs(ctx context.Context) (_ con
 		}
 }
 
+func (q *RemoveShopProductCollectionCommand) SetRemoveShopProductColelctionArgs(args *RemoveShopProductColelctionArgs) {
+	q.ProductID = args.ProductID
+	q.ShopID = args.ShopID
+	q.CollectionIDs = args.CollectionIDs
+}
+
 func (q *UpdateShopCategoryCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateShopCategoryArgs) {
 	return ctx,
 		&UpdateShopCategoryArgs{
@@ -701,6 +775,13 @@ func (q *UpdateShopCategoryCommand) GetArgs(ctx context.Context) (_ context.Cont
 			ShopID:   q.ShopID,
 			ParentID: q.ParentID,
 		}
+}
+
+func (q *UpdateShopCategoryCommand) SetUpdateShopCategoryArgs(args *UpdateShopCategoryArgs) {
+	q.ID = args.ID
+	q.Name = args.Name
+	q.ShopID = args.ShopID
+	q.ParentID = args.ParentID
 }
 
 func (q *UpdateShopCollectionCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateShopCollectionArgs) {
@@ -715,6 +796,15 @@ func (q *UpdateShopCollectionCommand) GetArgs(ctx context.Context) (_ context.Co
 		}
 }
 
+func (q *UpdateShopCollectionCommand) SetUpdateShopCollectionArgs(args *UpdateShopCollectionArgs) {
+	q.ID = args.ID
+	q.ShopID = args.ShopID
+	q.Name = args.Name
+	q.Description = args.Description
+	q.DescHTML = args.DescHTML
+	q.ShortDesc = args.ShortDesc
+}
+
 func (q *UpdateShopProductCategoryCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateShopProductCategoryArgs) {
 	return ctx,
 		&UpdateShopProductCategoryArgs{
@@ -724,6 +814,12 @@ func (q *UpdateShopProductCategoryCommand) GetArgs(ctx context.Context) (_ conte
 		}
 }
 
+func (q *UpdateShopProductCategoryCommand) SetUpdateShopProductCategoryArgs(args *UpdateShopProductCategoryArgs) {
+	q.CategoryID = args.CategoryID
+	q.ShopID = args.ShopID
+	q.ProductID = args.ProductID
+}
+
 func (q *UpdateShopProductImagesCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateImagesArgs) {
 	return ctx,
 		&UpdateImagesArgs{
@@ -731,6 +827,12 @@ func (q *UpdateShopProductImagesCommand) GetArgs(ctx context.Context) (_ context
 			ShopID:  q.ShopID,
 			Updates: q.Updates,
 		}
+}
+
+func (q *UpdateShopProductImagesCommand) SetUpdateImagesArgs(args *UpdateImagesArgs) {
+	q.ID = args.ID
+	q.ShopID = args.ShopID
+	q.Updates = args.Updates
 }
 
 func (q *UpdateShopProductInfoCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateShopProductInfoArgs) {
@@ -754,6 +856,24 @@ func (q *UpdateShopProductInfoCommand) GetArgs(ctx context.Context) (_ context.C
 		}
 }
 
+func (q *UpdateShopProductInfoCommand) SetUpdateShopProductInfoArgs(args *UpdateShopProductInfoArgs) {
+	q.ShopID = args.ShopID
+	q.ProductID = args.ProductID
+	q.Code = args.Code
+	q.Name = args.Name
+	q.Unit = args.Unit
+	q.Note = args.Note
+	q.ShortDesc = args.ShortDesc
+	q.Description = args.Description
+	q.DescHTML = args.DescHTML
+	q.CostPrice = args.CostPrice
+	q.ListPrice = args.ListPrice
+	q.RetailPrice = args.RetailPrice
+	q.ProductType = args.ProductType
+	q.CategoryID = args.CategoryID
+	q.VendorID = args.VendorID
+}
+
 func (q *UpdateShopProductStatusCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateStatusArgs) {
 	return ctx,
 		&UpdateStatusArgs{
@@ -761,6 +881,12 @@ func (q *UpdateShopProductStatusCommand) GetArgs(ctx context.Context) (_ context
 			ShopID: q.ShopID,
 			Status: q.Status,
 		}
+}
+
+func (q *UpdateShopProductStatusCommand) SetUpdateStatusArgs(args *UpdateStatusArgs) {
+	q.IDs = args.IDs
+	q.ShopID = args.ShopID
+	q.Status = args.Status
 }
 
 func (q *UpdateShopVariantAttributesCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateShopVariantAttributes) {
@@ -772,6 +898,12 @@ func (q *UpdateShopVariantAttributesCommand) GetArgs(ctx context.Context) (_ con
 		}
 }
 
+func (q *UpdateShopVariantAttributesCommand) SetUpdateShopVariantAttributes(args *UpdateShopVariantAttributes) {
+	q.ShopID = args.ShopID
+	q.VariantID = args.VariantID
+	q.Attributes = args.Attributes
+}
+
 func (q *UpdateShopVariantImagesCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateImagesArgs) {
 	return ctx,
 		&UpdateImagesArgs{
@@ -779,6 +911,12 @@ func (q *UpdateShopVariantImagesCommand) GetArgs(ctx context.Context) (_ context
 			ShopID:  q.ShopID,
 			Updates: q.Updates,
 		}
+}
+
+func (q *UpdateShopVariantImagesCommand) SetUpdateImagesArgs(args *UpdateImagesArgs) {
+	q.ID = args.ID
+	q.ShopID = args.ShopID
+	q.Updates = args.Updates
 }
 
 func (q *UpdateShopVariantInfoCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateShopVariantInfoArgs) {
@@ -798,6 +936,20 @@ func (q *UpdateShopVariantInfoCommand) GetArgs(ctx context.Context) (_ context.C
 		}
 }
 
+func (q *UpdateShopVariantInfoCommand) SetUpdateShopVariantInfoArgs(args *UpdateShopVariantInfoArgs) {
+	q.ShopID = args.ShopID
+	q.VariantID = args.VariantID
+	q.Code = args.Code
+	q.Name = args.Name
+	q.Note = args.Note
+	q.ShortDesc = args.ShortDesc
+	q.Descripttion = args.Descripttion
+	q.DescHTML = args.DescHTML
+	q.CostPrice = args.CostPrice
+	q.ListPrice = args.ListPrice
+	q.RetailPrice = args.RetailPrice
+}
+
 func (q *UpdateShopVariantStatusCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateStatusArgs) {
 	return ctx,
 		&UpdateStatusArgs{
@@ -805,6 +957,12 @@ func (q *UpdateShopVariantStatusCommand) GetArgs(ctx context.Context) (_ context
 			ShopID: q.ShopID,
 			Status: q.Status,
 		}
+}
+
+func (q *UpdateShopVariantStatusCommand) SetUpdateStatusArgs(args *UpdateStatusArgs) {
+	q.IDs = args.IDs
+	q.ShopID = args.ShopID
+	q.Status = args.Status
 }
 
 func (q *GetShopCategoryQuery) GetArgs(ctx context.Context) (_ context.Context, _ *GetShopCategoryArgs) {
@@ -815,12 +973,22 @@ func (q *GetShopCategoryQuery) GetArgs(ctx context.Context) (_ context.Context, 
 		}
 }
 
+func (q *GetShopCategoryQuery) SetGetShopCategoryArgs(args *GetShopCategoryArgs) {
+	q.ID = args.ID
+	q.ShopID = args.ShopID
+}
+
 func (q *GetShopCollectionQuery) GetArgs(ctx context.Context) (_ context.Context, _ *GetShopCollectionArgs) {
 	return ctx,
 		&GetShopCollectionArgs{
 			ID:     q.ID,
 			ShopID: q.ShopID,
 		}
+}
+
+func (q *GetShopCollectionQuery) SetGetShopCollectionArgs(args *GetShopCollectionArgs) {
+	q.ID = args.ID
+	q.ShopID = args.ShopID
 }
 
 func (q *GetShopProductByIDQuery) GetArgs(ctx context.Context) (_ context.Context, _ *GetShopProductByIDQueryArgs) {
@@ -831,12 +999,22 @@ func (q *GetShopProductByIDQuery) GetArgs(ctx context.Context) (_ context.Contex
 		}
 }
 
+func (q *GetShopProductByIDQuery) SetGetShopProductByIDQueryArgs(args *GetShopProductByIDQueryArgs) {
+	q.ProductID = args.ProductID
+	q.ShopID = args.ShopID
+}
+
 func (q *GetShopProductWithVariantsByIDQuery) GetArgs(ctx context.Context) (_ context.Context, _ *GetShopProductByIDQueryArgs) {
 	return ctx,
 		&GetShopProductByIDQueryArgs{
 			ProductID: q.ProductID,
 			ShopID:    q.ShopID,
 		}
+}
+
+func (q *GetShopProductWithVariantsByIDQuery) SetGetShopProductByIDQueryArgs(args *GetShopProductByIDQueryArgs) {
+	q.ProductID = args.ProductID
+	q.ShopID = args.ShopID
 }
 
 func (q *GetShopVariantByIDQuery) GetArgs(ctx context.Context) (_ context.Context, _ *GetShopVariantByIDQueryArgs) {
@@ -847,12 +1025,22 @@ func (q *GetShopVariantByIDQuery) GetArgs(ctx context.Context) (_ context.Contex
 		}
 }
 
+func (q *GetShopVariantByIDQuery) SetGetShopVariantByIDQueryArgs(args *GetShopVariantByIDQueryArgs) {
+	q.VariantID = args.VariantID
+	q.ShopID = args.ShopID
+}
+
 func (q *GetShopVariantWithProductByIDQuery) GetArgs(ctx context.Context) (_ context.Context, _ *GetShopVariantByIDQueryArgs) {
 	return ctx,
 		&GetShopVariantByIDQueryArgs{
 			VariantID: q.VariantID,
 			ShopID:    q.ShopID,
 		}
+}
+
+func (q *GetShopVariantWithProductByIDQuery) SetGetShopVariantByIDQueryArgs(args *GetShopVariantByIDQueryArgs) {
+	q.VariantID = args.VariantID
+	q.ShopID = args.ShopID
 }
 
 func (q *ListShopCategoriesQuery) GetArgs(ctx context.Context) (_ context.Context, _ *shopping.ListQueryShopArgs) {
@@ -864,6 +1052,12 @@ func (q *ListShopCategoriesQuery) GetArgs(ctx context.Context) (_ context.Contex
 		}
 }
 
+func (q *ListShopCategoriesQuery) SetListQueryShopArgs(args *shopping.ListQueryShopArgs) {
+	q.ShopID = args.ShopID
+	q.Paging = args.Paging
+	q.Filters = args.Filters
+}
+
 func (q *ListShopCollectionsQuery) GetArgs(ctx context.Context) (_ context.Context, _ *shopping.ListQueryShopArgs) {
 	return ctx,
 		&shopping.ListQueryShopArgs{
@@ -873,12 +1067,23 @@ func (q *ListShopCollectionsQuery) GetArgs(ctx context.Context) (_ context.Conte
 		}
 }
 
+func (q *ListShopCollectionsQuery) SetListQueryShopArgs(args *shopping.ListQueryShopArgs) {
+	q.ShopID = args.ShopID
+	q.Paging = args.Paging
+	q.Filters = args.Filters
+}
+
 func (q *ListShopCollectionsByProductIDQuery) GetArgs(ctx context.Context) (_ context.Context, _ *ListShopCollectionsByProductIDArgs) {
 	return ctx,
 		&ListShopCollectionsByProductIDArgs{
 			ProductID: q.ProductID,
 			ShopID:    q.ShopID,
 		}
+}
+
+func (q *ListShopCollectionsByProductIDQuery) SetListShopCollectionsByProductIDArgs(args *ListShopCollectionsByProductIDArgs) {
+	q.ProductID = args.ProductID
+	q.ShopID = args.ShopID
 }
 
 func (q *ListShopProductsQuery) GetArgs(ctx context.Context) (_ context.Context, _ *shopping.ListQueryShopArgs) {
@@ -890,12 +1095,23 @@ func (q *ListShopProductsQuery) GetArgs(ctx context.Context) (_ context.Context,
 		}
 }
 
+func (q *ListShopProductsQuery) SetListQueryShopArgs(args *shopping.ListQueryShopArgs) {
+	q.ShopID = args.ShopID
+	q.Paging = args.Paging
+	q.Filters = args.Filters
+}
+
 func (q *ListShopProductsByIDsQuery) GetArgs(ctx context.Context) (_ context.Context, _ *shopping.IDsQueryShopArgs) {
 	return ctx,
 		&shopping.IDsQueryShopArgs{
 			IDs:    q.IDs,
 			ShopID: q.ShopID,
 		}
+}
+
+func (q *ListShopProductsByIDsQuery) SetIDsQueryShopArgs(args *shopping.IDsQueryShopArgs) {
+	q.IDs = args.IDs
+	q.ShopID = args.ShopID
 }
 
 func (q *ListShopProductsWithVariantsQuery) GetArgs(ctx context.Context) (_ context.Context, _ *shopping.ListQueryShopArgs) {
@@ -907,12 +1123,23 @@ func (q *ListShopProductsWithVariantsQuery) GetArgs(ctx context.Context) (_ cont
 		}
 }
 
+func (q *ListShopProductsWithVariantsQuery) SetListQueryShopArgs(args *shopping.ListQueryShopArgs) {
+	q.ShopID = args.ShopID
+	q.Paging = args.Paging
+	q.Filters = args.Filters
+}
+
 func (q *ListShopProductsWithVariantsByIDsQuery) GetArgs(ctx context.Context) (_ context.Context, _ *shopping.IDsQueryShopArgs) {
 	return ctx,
 		&shopping.IDsQueryShopArgs{
 			IDs:    q.IDs,
 			ShopID: q.ShopID,
 		}
+}
+
+func (q *ListShopProductsWithVariantsByIDsQuery) SetIDsQueryShopArgs(args *shopping.IDsQueryShopArgs) {
+	q.IDs = args.IDs
+	q.ShopID = args.ShopID
 }
 
 func (q *ListShopVariantsQuery) GetArgs(ctx context.Context) (_ context.Context, _ *shopping.ListQueryShopArgs) {
@@ -924,6 +1151,12 @@ func (q *ListShopVariantsQuery) GetArgs(ctx context.Context) (_ context.Context,
 		}
 }
 
+func (q *ListShopVariantsQuery) SetListQueryShopArgs(args *shopping.ListQueryShopArgs) {
+	q.ShopID = args.ShopID
+	q.Paging = args.Paging
+	q.Filters = args.Filters
+}
+
 func (q *ListShopVariantsByIDsQuery) GetArgs(ctx context.Context) (_ context.Context, _ *shopping.IDsQueryShopArgs) {
 	return ctx,
 		&shopping.IDsQueryShopArgs{
@@ -932,12 +1165,22 @@ func (q *ListShopVariantsByIDsQuery) GetArgs(ctx context.Context) (_ context.Con
 		}
 }
 
+func (q *ListShopVariantsByIDsQuery) SetIDsQueryShopArgs(args *shopping.IDsQueryShopArgs) {
+	q.IDs = args.IDs
+	q.ShopID = args.ShopID
+}
+
 func (q *ListShopVariantsWithProductByIDsQuery) GetArgs(ctx context.Context) (_ context.Context, _ *shopping.IDsQueryShopArgs) {
 	return ctx,
 		&shopping.IDsQueryShopArgs{
 			IDs:    q.IDs,
 			ShopID: q.ShopID,
 		}
+}
+
+func (q *ListShopVariantsWithProductByIDsQuery) SetIDsQueryShopArgs(args *shopping.IDsQueryShopArgs) {
+	q.IDs = args.IDs
+	q.ShopID = args.ShopID
 }
 
 func (q *ValidateVariantIDsQuery) GetArgs(ctx context.Context) (_ context.Context, shopId int64, shopVariantIds []int64) {
