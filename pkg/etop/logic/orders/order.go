@@ -253,6 +253,36 @@ func PrepareOrderLines(
 		for _, v := range variants {
 			if line.VariantId == v.ShopVariant.VariantID {
 				variant = v
+
+				// Check meta_fields
+				mapMetaField := make(map[string]string)
+
+				for _, metaField := range v.ShopProduct.MetaFields {
+					mapMetaField[metaField.Key] = metaField.Value
+				}
+
+				if len(mapMetaField) != len(line.MetaFields) {
+					return nil, cm.Errorf(cm.InvalidArgument, nil, "meta_fields không hợp lệ")
+				}
+
+				mapMetaFieldArg := make(map[string]bool)
+				for _, metaField := range line.MetaFields {
+					mapMetaFieldArg[metaField.Key] = true
+					if _, ok := mapMetaField[metaField.Key]; !ok {
+						return nil, cm.Errorf(cm.InvalidArgument, nil, "meta_field %v không tồn tại", metaField.Key)
+					}
+					if metaField.Value == "" || len(strings.TrimSpace(metaField.Value)) == 0 {
+						return nil, cm.Errorf(cm.InvalidArgument, nil, "meta_field %v không được rỗng", metaField.Key)
+					}
+
+					metaField.Name = mapMetaField[metaField.Key]
+				}
+
+				// goal: check duplicate key in metaFields
+				if len(mapMetaField) != len(mapMetaFieldArg) {
+					return nil, cm.Errorf(cm.InvalidArgument, nil, "meta_fields không hợp lệ")
+				}
+
 				break
 			}
 		}
@@ -536,6 +566,15 @@ func prepareOrderLine(
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Cần cung cấp product_name hoặc variant_id")
 	}
 
+	metaFields := []*ordermodel.MetaField{}
+	for _, metaField := range m.MetaFields {
+		metaFields = append(metaFields, &ordermodel.MetaField{
+			Key:   metaField.Key,
+			Value: metaField.Value,
+			Name:  metaField.Name,
+		})
+	}
+
 	line := &ordermodel.OrderLine{
 		ShopID:          shopID,
 		IsOutsideEtop:   m.VariantId == 0,
@@ -549,6 +588,7 @@ func prepareOrderLine(
 		Attributes:      pborder.PbAttributesToModel(m.Attributes),
 		TotalDiscount:   0, // will be filled later
 		TotalLineAmount: 0, // will be filled later
+		MetaFields:      metaFields,
 	}
 
 	originalPrice := m.RetailPrice

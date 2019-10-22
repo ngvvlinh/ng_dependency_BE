@@ -605,6 +605,14 @@ var exportedOrderLine = cm.SortStrings([]string{
 })
 
 func PbOrderLine(m *ordermodel.OrderLine) *OrderLine {
+	metaFields := []*OrderLineMetaField{}
+	for _, metaField := range m.MetaFields {
+		metaFields = append(metaFields, &OrderLineMetaField{
+			Key:   metaField.Key,
+			Value: metaField.Value,
+			Name:  metaField.Name,
+		})
+	}
 	if m == nil {
 		return nil
 	}
@@ -623,6 +631,7 @@ func PbOrderLine(m *ordermodel.OrderLine) *OrderLine {
 		Attributes:    PbAttributes(m.Attributes),
 		ProductId:     m.ProductID,
 		TotalDiscount: int32(m.TotalDiscount),
+		MetaFields:    metaFields,
 	}
 }
 

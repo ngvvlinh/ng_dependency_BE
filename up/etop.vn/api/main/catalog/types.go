@@ -54,6 +54,8 @@ type ShopProduct struct {
 	DeletedAt time.Time
 
 	ProductType ProductType
+
+	MetaFields []*MetaField
 }
 
 type ShopVariant struct {
@@ -215,4 +217,9 @@ type ShopProductUpdatingEvent struct {
 	meta.EventMeta
 	VendorID int64
 	ShopID   int64
+}
+
+type MetaField struct {
+	Key   string
+	Value string
 }

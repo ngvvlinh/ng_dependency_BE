@@ -139,6 +139,12 @@ message Order {
     optional status4.Status payment_status = 77 [(gogoproto.nullable)=false];
 }
 
+message OrderLineMetaField {
+    optional string key = 1 [(gogoproto.nullable)=false];
+    optional string value = 2 [(gogoproto.nullable)=false];
+    optional string name = 3 [(gogoproto.nullable)=false];
+}
+
 message OrderLine {
     repeated string exported_fields = 100;
 
@@ -159,6 +165,8 @@ message OrderLine {
     optional int64 product_id = 23 [(gogoproto.nullable)=false];
 
     optional int32 total_discount = 24 [(gogoproto.nullable)=false];
+
+    repeated OrderLineMetaField meta_fields = 25;
 }
 
 message OrderFeeLine {
@@ -185,6 +193,8 @@ message CreateOrderLine {
 
     optional string image_url = 21 [(gogoproto.nullable)=false];
     repeated order.Attribute attributes = 22;
+
+    repeated OrderLineMetaField meta_fields = 23;
 }
 
 message OrderCustomer {
@@ -1002,3 +1012,5 @@ message TradingCreateOrderRequest {
     optional string payment_method = 15 [(gogoproto.nullable)=false];
     map<string,string> referral_meta = 16;
 }
+
+

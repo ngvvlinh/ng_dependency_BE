@@ -41,6 +41,14 @@ func ShopProduct(in *catalogmodel.ShopProduct) (out *catalog.ShopProduct) {
 	if in == nil {
 		return nil
 	}
+	metaFields := []*catalog.MetaField{}
+	for _, metaField := range in.MetaFields {
+		metaFields = append(metaFields, &catalog.MetaField{
+			Key:   metaField.Key,
+			Value: metaField.Value,
+		})
+	}
+
 	out = &catalog.ShopProduct{
 		ShopID:        in.ShopID,
 		ProductID:     in.ProductID,
@@ -66,6 +74,7 @@ func ShopProduct(in *catalogmodel.ShopProduct) (out *catalog.ShopProduct) {
 		CategoryID:  in.CategoryID,
 		VendorID:    in.VendorID,
 		ProductType: catalog.ProductType(in.ProductType),
+		MetaFields:  metaFields,
 	}
 	return out
 }
@@ -107,6 +116,14 @@ func ShopProductDB(in *catalog.ShopProduct) (out *catalogmodel.ShopProduct) {
 	if in == nil {
 		return nil
 	}
+	metaFields := []*catalogmodel.MetaField{}
+	for _, metaField := range in.MetaFields {
+		metaFields = append(metaFields, &catalogmodel.MetaField{
+			Key:   metaField.Key,
+			Value: metaField.Value,
+		})
+	}
+
 	out = &catalogmodel.ShopProduct{
 		ShopID:        in.ShopID,
 		ProductID:     in.ProductID,
@@ -133,6 +150,7 @@ func ShopProductDB(in *catalog.ShopProduct) (out *catalogmodel.ShopProduct) {
 		NameNorm:    validate.NormalizeSearch(in.Name),
 		NameNormUa:  validate.NormalizeUnaccent(in.Name),
 		ProductType: string(in.ProductType),
+		MetaFields:  metaFields,
 	}
 	return out
 }

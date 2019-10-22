@@ -360,6 +360,7 @@ func convert_catalogmodel_ShopProduct_catalog_ShopProduct(arg *catalogmodel.Shop
 	out.UpdatedAt = arg.UpdatedAt                   // simple assign
 	out.DeletedAt = arg.DeletedAt                   // simple assign
 	out.ProductType = arg.ProductType               // simple assign
+	out.MetaFields = nil                            // types do not match
 }
 
 func Convert_catalogmodel_ShopProducts_catalog_ShopProducts(args []*catalogmodel.ShopProduct) (outs []*catalog.ShopProduct) {
@@ -400,6 +401,7 @@ func convert_catalog_ShopProduct_catalogmodel_ShopProduct(arg *catalog.ShopProdu
 	out.NameNorm = ""                          // zero value
 	out.NameNormUa = ""                        // zero value
 	out.ProductType = arg.ProductType          // simple assign
+	out.MetaFields = nil                       // types do not match
 }
 
 func Convert_catalog_ShopProducts_catalogmodel_ShopProducts(args []*catalog.ShopProduct) (outs []*catalogmodel.ShopProduct) {

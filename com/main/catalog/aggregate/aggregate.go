@@ -66,6 +66,7 @@ func (a *Aggregate) CreateShopProduct(ctx context.Context, args *catalog.CreateS
 			RetailPrice: args.RetailPrice,
 		},
 		ProductType: args.ProductType,
+		MetaFields:  args.MetaFields,
 	}
 	event := &catalog.ShopProductCreatingEvent{
 		ShopID:   product.ShopID,
@@ -443,4 +444,17 @@ func (a *Aggregate) RemoveShopProductCollection(ctx context.Context, args *catal
 	}
 	removedProduct, err = a.shopProductCollection(ctx).ShopID(args.ShopID).ProductID(args.ProductID).IDs(args.CollectionIDs).RemoveProductFromCollection()
 	return removedProduct, err
+}
+
+func (a *Aggregate) UpdateShopProductMetaFields(ctx context.Context, args *catalog.UpdateShopProductMetaFieldsArgs) (*catalog.ShopProductWithVariants, error) {
+	productDB, err := a.shopProduct(ctx).ShopID(args.ShopID).ID(args.ID).GetShopProduct()
+	if err != nil {
+		return nil, err
+	}
+	productDB.MetaFields = args.MetaFields
+	if err := a.shopProduct(ctx).ShopID(args.ShopID).ID(productDB.ProductID).UpdateMetaFieldsShopProduct(productDB); err != nil {
+		return nil, err
+	}
+	result, err := a.shopProduct(ctx).ShopID(args.ShopID).ID(args.ID).GetShopProductWithVariants()
+	return result, nil
 }

@@ -148,3 +148,8 @@ message CommonListRequest {
     optional Paging paging = 1;
     repeated Filter filters = 2;
 }
+
+message MetaField {
+    optional string key = 1 [(gogoproto.nullable)=false];
+    optional string value = 2 [(gogoproto.nullable)=false];
+}

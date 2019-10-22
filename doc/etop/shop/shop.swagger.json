@@ -2931,6 +2931,32 @@
         ]
       }
     },
+    "/api/shop.Product/UpdateProductMetaFields": {
+      "post": {
+        "operationId": "UpdateProductMetaFields",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/shopShopProduct"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/shopUpdateProductMetaFieldsRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Product"
+        ]
+      }
+    },
     "/api/shop.Product/UpdateProductsStatus": {
       "post": {
         "operationId": "UpdateProductsStatus",
@@ -2985,6 +3011,7 @@
     },
     "/api/shop.Product/UpdateVariant": {
       "post": {
+        "summary": "-- group --//",
         "operationId": "UpdateVariant",
         "responses": {
           "200": {
@@ -3037,7 +3064,6 @@
     },
     "/api/shop.Product/UpdateVariantImages": {
       "post": {
-        "summary": "-- group --//",
         "operationId": "UpdateVariantImages",
         "responses": {
           "200": {
@@ -4121,6 +4147,17 @@
         }
       }
     },
+    "cmMetaField": {
+      "type": "object",
+      "properties": {
+        "key": {
+          "type": "string"
+        },
+        "value": {
+          "type": "string"
+        }
+      }
+    },
     "cmPageInfo": {
       "type": "object",
       "properties": {
@@ -4866,6 +4903,12 @@
           "type": "array",
           "items": {
             "$ref": "#/definitions/orderAttribute"
+          }
+        },
+        "meta_fields": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/orderOrderLineMetaField"
           }
         }
       }
@@ -6095,6 +6138,26 @@
         "total_discount": {
           "type": "integer",
           "format": "int32"
+        },
+        "meta_fields": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/orderOrderLineMetaField"
+          }
+        }
+      }
+    },
+    "orderOrderLineMetaField": {
+      "type": "object",
+      "properties": {
+        "key": {
+          "type": "string"
+        },
+        "value": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
         }
       }
     },
@@ -7557,6 +7620,12 @@
         },
         "product_type": {
           "$ref": "#/definitions/product_typeProductType"
+        },
+        "meta_fields": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/cmMetaField"
+          }
         }
       }
     },
@@ -9288,6 +9357,12 @@
         },
         "product_type": {
           "$ref": "#/definitions/product_typeProductType"
+        },
+        "meta_fields": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/cmMetaField"
+          }
         }
       },
       "required": [
@@ -9789,6 +9864,24 @@
         }
       }
     },
+    "shopUpdateProductMetaFieldsRequest": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "meta_fields": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/cmMetaField"
+          }
+        }
+      },
+      "required": [
+        "id"
+      ]
+    },
     "shopUpdateProductRequest": {
       "type": "object",
       "properties": {
@@ -9835,6 +9928,9 @@
         },
         "product_type": {
           "$ref": "#/definitions/product_typeProductType"
+        },
+        "meta_fields": {
+          "$ref": "#/definitions/cmMetaField"
         }
       },
       "required": [

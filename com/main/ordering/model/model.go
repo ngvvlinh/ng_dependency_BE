@@ -332,6 +332,12 @@ func (lines OrderLinesList) GetSummary() string {
 	return b.String()
 }
 
+type MetaField struct {
+	Key   string `json:"key"`
+	Value string `json:"value"`
+	Name  string `json:"name"`
+}
+
 var _ = sqlgenOrderLine(&OrderLine{})
 
 type OrderLine struct {
@@ -355,6 +361,7 @@ type OrderLine struct {
 	Attributes    []*catalogmodel.ProductAttribute `json:"attributes" sq:"-"`
 	IsOutsideEtop bool                             `json:"is_outside_etop"`
 	Code          string                           `json:"code"`
+	MetaFields    []*MetaField
 }
 
 func (l *OrderLine) GetRetailAmount() int {

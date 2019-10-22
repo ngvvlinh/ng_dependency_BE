@@ -95,6 +95,7 @@ type CreateShopProductCommand struct {
 	DescriptionInfo DescriptionInfo
 	PriceInfo       PriceInfo
 	ProductType     string
+	MetaFields      []*MetaField
 
 	Result *ShopProductWithVariants `json:"-"`
 }
@@ -262,6 +263,19 @@ type UpdateShopProductInfoCommand struct {
 
 func (h AggregateHandler) HandleUpdateShopProductInfo(ctx context.Context, msg *UpdateShopProductInfoCommand) (err error) {
 	msg.Result, err = h.inner.UpdateShopProductInfo(msg.GetArgs(ctx))
+	return err
+}
+
+type UpdateShopProductMetaFieldsCommand struct {
+	ID         int64
+	ShopID     int64
+	MetaFields []*MetaField
+
+	Result *ShopProductWithVariants `json:"-"`
+}
+
+func (h AggregateHandler) HandleUpdateShopProductMetaFields(ctx context.Context, msg *UpdateShopProductMetaFieldsCommand) (err error) {
+	msg.Result, err = h.inner.UpdateShopProductMetaFields(msg.GetArgs(ctx))
 	return err
 }
 
@@ -564,6 +578,7 @@ func (q *UpdateShopCollectionCommand) command()          {}
 func (q *UpdateShopProductCategoryCommand) command()     {}
 func (q *UpdateShopProductImagesCommand) command()       {}
 func (q *UpdateShopProductInfoCommand) command()         {}
+func (q *UpdateShopProductMetaFieldsCommand) command()   {}
 func (q *UpdateShopProductStatusCommand) command()       {}
 func (q *UpdateShopVariantAttributesCommand) command()   {}
 func (q *UpdateShopVariantImagesCommand) command()       {}
@@ -657,6 +672,7 @@ func (q *CreateShopProductCommand) GetArgs(ctx context.Context) (_ context.Conte
 			DescriptionInfo: q.DescriptionInfo,
 			PriceInfo:       q.PriceInfo,
 			ProductType:     q.ProductType,
+			MetaFields:      q.MetaFields,
 		}
 }
 
@@ -671,6 +687,7 @@ func (q *CreateShopProductCommand) SetCreateShopProductArgs(args *CreateShopProd
 	q.DescriptionInfo = args.DescriptionInfo
 	q.PriceInfo = args.PriceInfo
 	q.ProductType = args.ProductType
+	q.MetaFields = args.MetaFields
 }
 
 func (q *CreateShopVariantCommand) GetArgs(ctx context.Context) (_ context.Context, _ *CreateShopVariantArgs) {
@@ -872,6 +889,21 @@ func (q *UpdateShopProductInfoCommand) SetUpdateShopProductInfoArgs(args *Update
 	q.ProductType = args.ProductType
 	q.CategoryID = args.CategoryID
 	q.VendorID = args.VendorID
+}
+
+func (q *UpdateShopProductMetaFieldsCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateShopProductMetaFieldsArgs) {
+	return ctx,
+		&UpdateShopProductMetaFieldsArgs{
+			ID:         q.ID,
+			ShopID:     q.ShopID,
+			MetaFields: q.MetaFields,
+		}
+}
+
+func (q *UpdateShopProductMetaFieldsCommand) SetUpdateShopProductMetaFieldsArgs(args *UpdateShopProductMetaFieldsArgs) {
+	q.ID = args.ID
+	q.ShopID = args.ShopID
+	q.MetaFields = args.MetaFields
 }
 
 func (q *UpdateShopProductStatusCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateStatusArgs) {
@@ -1216,6 +1248,7 @@ func (h AggregateHandler) RegisterHandlers(b interface {
 	b.AddHandler(h.HandleUpdateShopProductCategory)
 	b.AddHandler(h.HandleUpdateShopProductImages)
 	b.AddHandler(h.HandleUpdateShopProductInfo)
+	b.AddHandler(h.HandleUpdateShopProductMetaFields)
 	b.AddHandler(h.HandleUpdateShopProductStatus)
 	b.AddHandler(h.HandleUpdateShopVariantAttributes)
 	b.AddHandler(h.HandleUpdateShopVariantImages)

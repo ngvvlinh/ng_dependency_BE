@@ -543,7 +543,7 @@ func sqlgenShopProduct(_ *ShopProduct) bool { return true }
 type ShopProducts []*ShopProduct
 
 const __sqlShopProduct_Table = "shop_product"
-const __sqlShopProduct_ListCols = "\"shop_id\",\"product_id\",\"code\",\"name\",\"description\",\"desc_html\",\"short_desc\",\"image_urls\",\"note\",\"tags\",\"unit\",\"category_id\",\"vendor_id\",\"cost_price\",\"list_price\",\"retail_price\",\"status\",\"created_at\",\"updated_at\",\"deleted_at\",\"name_norm\",\"name_norm_ua\",\"product_type\""
+const __sqlShopProduct_ListCols = "\"shop_id\",\"product_id\",\"code\",\"name\",\"description\",\"desc_html\",\"short_desc\",\"image_urls\",\"note\",\"tags\",\"unit\",\"category_id\",\"vendor_id\",\"cost_price\",\"list_price\",\"retail_price\",\"status\",\"created_at\",\"updated_at\",\"deleted_at\",\"name_norm\",\"name_norm_ua\",\"product_type\",\"meta_fields\""
 const __sqlShopProduct_Insert = "INSERT INTO \"shop_product\" (" + __sqlShopProduct_ListCols + ") VALUES"
 const __sqlShopProduct_Select = "SELECT " + __sqlShopProduct_ListCols + " FROM \"shop_product\""
 const __sqlShopProduct_Select_history = "SELECT " + __sqlShopProduct_ListCols + " FROM history.\"shop_product\""
@@ -579,6 +579,7 @@ func (m *ShopProduct) SQLArgs(opts core.Opts, create bool) []interface{} {
 		core.String(m.NameNorm),
 		core.String(m.NameNormUa),
 		core.String(m.ProductType),
+		core.JSON{m.MetaFields},
 	}
 }
 
@@ -607,6 +608,7 @@ func (m *ShopProduct) SQLScanArgs(opts core.Opts) []interface{} {
 		(*core.String)(&m.NameNorm),
 		(*core.String)(&m.NameNormUa),
 		(*core.String)(&m.ProductType),
+		core.JSON{&m.MetaFields},
 	}
 }
 
@@ -644,7 +646,7 @@ func (_ *ShopProducts) SQLSelect(w SQLWriter) error {
 func (m *ShopProduct) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlShopProduct_Insert)
 	w.WriteRawString(" (")
-	w.WriteMarkers(23)
+	w.WriteMarkers(24)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), true))
 	return nil
@@ -654,7 +656,7 @@ func (ms ShopProducts) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlShopProduct_Insert)
 	w.WriteRawString(" (")
 	for i := 0; i < len(ms); i++ {
-		w.WriteMarkers(23)
+		w.WriteMarkers(24)
 		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
 		w.WriteRawString("),(")
 	}
@@ -853,6 +855,14 @@ func (m *ShopProduct) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(m.ProductType)
 	}
+	if m.MetaFields != nil {
+		flag = true
+		w.WriteName("meta_fields")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(core.JSON{m.MetaFields})
+	}
 	if !flag {
 		return core.ErrNoColumn
 	}
@@ -863,7 +873,7 @@ func (m *ShopProduct) SQLUpdate(w SQLWriter) error {
 func (m *ShopProduct) SQLUpdateAll(w SQLWriter) error {
 	w.WriteQueryString(__sqlShopProduct_UpdateAll)
 	w.WriteRawString(" = (")
-	w.WriteMarkers(23)
+	w.WriteMarkers(24)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), false))
 	return nil
@@ -908,17 +918,18 @@ func (m ShopProductHistory) DeletedAt() core.Interface   { return core.Interface
 func (m ShopProductHistory) NameNorm() core.Interface    { return core.Interface{m["name_norm"]} }
 func (m ShopProductHistory) NameNormUa() core.Interface  { return core.Interface{m["name_norm_ua"]} }
 func (m ShopProductHistory) ProductType() core.Interface { return core.Interface{m["product_type"]} }
+func (m ShopProductHistory) MetaFields() core.Interface  { return core.Interface{m["meta_fields"]} }
 
 func (m *ShopProductHistory) SQLScan(opts core.Opts, row *sql.Row) error {
-	data := make([]interface{}, 23)
-	args := make([]interface{}, 23)
-	for i := 0; i < 23; i++ {
+	data := make([]interface{}, 24)
+	args := make([]interface{}, 24)
+	for i := 0; i < 24; i++ {
 		args[i] = &data[i]
 	}
 	if err := row.Scan(args...); err != nil {
 		return err
 	}
-	res := make(ShopProductHistory, 23)
+	res := make(ShopProductHistory, 24)
 	res["shop_id"] = data[0]
 	res["product_id"] = data[1]
 	res["code"] = data[2]
@@ -942,14 +953,15 @@ func (m *ShopProductHistory) SQLScan(opts core.Opts, row *sql.Row) error {
 	res["name_norm"] = data[20]
 	res["name_norm_ua"] = data[21]
 	res["product_type"] = data[22]
+	res["meta_fields"] = data[23]
 	*m = res
 	return nil
 }
 
 func (ms *ShopProductHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	data := make([]interface{}, 23)
-	args := make([]interface{}, 23)
-	for i := 0; i < 23; i++ {
+	data := make([]interface{}, 24)
+	args := make([]interface{}, 24)
+	for i := 0; i < 24; i++ {
 		args[i] = &data[i]
 	}
 	res := make(ShopProductHistories, 0, 128)
@@ -981,6 +993,7 @@ func (ms *ShopProductHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
 		m["name_norm"] = data[20]
 		m["name_norm_ua"] = data[21]
 		m["product_type"] = data[22]
+		m["meta_fields"] = data[23]
 		res = append(res, m)
 	}
 	if err := rows.Err(); err != nil {

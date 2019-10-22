@@ -132,6 +132,7 @@ service ProductService {
     rpc UpdateProductsStatus (UpdateProductStatusRequest) returns (UpdateProductStatusResponse);
     rpc UpdateProductsTags (UpdateProductsTagsRequest) returns (cm.UpdatedResponse);
     rpc UpdateProductImages (UpdateVariantImagesRequest) returns (ShopProduct);
+    rpc UpdateProductMetaFields (UpdateProductMetaFieldsRequest) returns (ShopProduct);
     rpc RemoveProducts (RemoveVariantsRequest) returns (cm.RemovedResponse);
     //-- variant --//
 
@@ -512,6 +513,8 @@ message ShopProduct {
     optional google.protobuf.Timestamp created_at = 21;
     optional google.protobuf.Timestamp updated_at = 20;
     optional product_type.ProductType product_type = 23;
+
+    repeated cm.MetaField meta_fields = 26;
 }
 
 message  ShopCollection {
@@ -590,6 +593,8 @@ message UpdateProductRequest {
     optional int32 list_price = 10;
     optional int32 retail_price = 11;
     optional product_type.ProductType product_type = 12;
+
+    optional cm.MetaField meta_fields = 14;
 }
 
 message UpdateCategoryRequest {
@@ -720,6 +725,8 @@ message CreateProductRequest {
     optional int32  list_price = 15 [(gogoproto.nullable)=false];
     optional int32  retail_price = 26 [(gogoproto.nullable)=false];
     optional product_type.ProductType product_type = 27;
+
+    repeated cm.MetaField meta_fields = 28;
 }
 
 message CreateVariantRequest {
@@ -980,6 +987,13 @@ message UpdateVariantImagesRequest {
     repeated string deletes     = 3;
     repeated string replace_all = 4;
     optional bool   delete_all  = 5 [(gogoproto.nullable)=false];
+}
+
+message UpdateProductMetaFieldsRequest {
+    // @required
+    optional int64 id = 1 [(gogoproto.nullable)=false];
+
+    repeated cm.MetaField meta_fields = 2;
 }
 
 message CategoriesResponse {

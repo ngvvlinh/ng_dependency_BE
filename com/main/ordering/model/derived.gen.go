@@ -1039,7 +1039,7 @@ func sqlgenOrderLine(_ *OrderLine) bool { return true }
 type OrderLines []*OrderLine
 
 const __sqlOrderLine_Table = "order_line"
-const __sqlOrderLine_ListCols = "\"order_id\",\"variant_id\",\"product_name\",\"product_id\",\"shop_id\",\"weight\",\"quantity\",\"list_price\",\"retail_price\",\"payment_price\",\"line_amount\",\"total_discount\",\"total_line_amount\",\"image_url\",\"is_outside_etop\",\"code\""
+const __sqlOrderLine_ListCols = "\"order_id\",\"variant_id\",\"product_name\",\"product_id\",\"shop_id\",\"weight\",\"quantity\",\"list_price\",\"retail_price\",\"payment_price\",\"line_amount\",\"total_discount\",\"total_line_amount\",\"image_url\",\"is_outside_etop\",\"code\",\"meta_fields\""
 const __sqlOrderLine_Insert = "INSERT INTO \"order_line\" (" + __sqlOrderLine_ListCols + ") VALUES"
 const __sqlOrderLine_Select = "SELECT " + __sqlOrderLine_ListCols + " FROM \"order_line\""
 const __sqlOrderLine_Select_history = "SELECT " + __sqlOrderLine_ListCols + " FROM history.\"order_line\""
@@ -1067,6 +1067,7 @@ func (m *OrderLine) SQLArgs(opts core.Opts, create bool) []interface{} {
 		core.String(m.ImageURL),
 		core.Bool(m.IsOutsideEtop),
 		core.String(m.Code),
+		core.JSON{m.MetaFields},
 	}
 }
 
@@ -1088,6 +1089,7 @@ func (m *OrderLine) SQLScanArgs(opts core.Opts) []interface{} {
 		(*core.String)(&m.ImageURL),
 		(*core.Bool)(&m.IsOutsideEtop),
 		(*core.String)(&m.Code),
+		core.JSON{&m.MetaFields},
 	}
 }
 
@@ -1125,7 +1127,7 @@ func (_ *OrderLines) SQLSelect(w SQLWriter) error {
 func (m *OrderLine) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlOrderLine_Insert)
 	w.WriteRawString(" (")
-	w.WriteMarkers(16)
+	w.WriteMarkers(17)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), true))
 	return nil
@@ -1135,7 +1137,7 @@ func (ms OrderLines) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlOrderLine_Insert)
 	w.WriteRawString(" (")
 	for i := 0; i < len(ms); i++ {
-		w.WriteMarkers(16)
+		w.WriteMarkers(17)
 		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
 		w.WriteRawString("),(")
 	}
@@ -1278,6 +1280,14 @@ func (m *OrderLine) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(m.Code)
 	}
+	if m.MetaFields != nil {
+		flag = true
+		w.WriteName("meta_fields")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(core.JSON{m.MetaFields})
+	}
 	if !flag {
 		return core.ErrNoColumn
 	}
@@ -1288,7 +1298,7 @@ func (m *OrderLine) SQLUpdate(w SQLWriter) error {
 func (m *OrderLine) SQLUpdateAll(w SQLWriter) error {
 	w.WriteQueryString(__sqlOrderLine_UpdateAll)
 	w.WriteRawString(" = (")
-	w.WriteMarkers(16)
+	w.WriteMarkers(17)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), false))
 	return nil
@@ -1328,17 +1338,18 @@ func (m OrderLineHistory) TotalLineAmount() core.Interface {
 func (m OrderLineHistory) ImageURL() core.Interface      { return core.Interface{m["image_url"]} }
 func (m OrderLineHistory) IsOutsideEtop() core.Interface { return core.Interface{m["is_outside_etop"]} }
 func (m OrderLineHistory) Code() core.Interface          { return core.Interface{m["code"]} }
+func (m OrderLineHistory) MetaFields() core.Interface    { return core.Interface{m["meta_fields"]} }
 
 func (m *OrderLineHistory) SQLScan(opts core.Opts, row *sql.Row) error {
-	data := make([]interface{}, 16)
-	args := make([]interface{}, 16)
-	for i := 0; i < 16; i++ {
+	data := make([]interface{}, 17)
+	args := make([]interface{}, 17)
+	for i := 0; i < 17; i++ {
 		args[i] = &data[i]
 	}
 	if err := row.Scan(args...); err != nil {
 		return err
 	}
-	res := make(OrderLineHistory, 16)
+	res := make(OrderLineHistory, 17)
 	res["order_id"] = data[0]
 	res["variant_id"] = data[1]
 	res["product_name"] = data[2]
@@ -1355,14 +1366,15 @@ func (m *OrderLineHistory) SQLScan(opts core.Opts, row *sql.Row) error {
 	res["image_url"] = data[13]
 	res["is_outside_etop"] = data[14]
 	res["code"] = data[15]
+	res["meta_fields"] = data[16]
 	*m = res
 	return nil
 }
 
 func (ms *OrderLineHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	data := make([]interface{}, 16)
-	args := make([]interface{}, 16)
-	for i := 0; i < 16; i++ {
+	data := make([]interface{}, 17)
+	args := make([]interface{}, 17)
+	for i := 0; i < 17; i++ {
 		args[i] = &data[i]
 	}
 	res := make(OrderLineHistories, 0, 128)
@@ -1387,6 +1399,7 @@ func (ms *OrderLineHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
 		m["image_url"] = data[13]
 		m["is_outside_etop"] = data[14]
 		m["code"] = data[15]
+		m["meta_fields"] = data[16]
 		res = append(res, m)
 	}
 	if err := rows.Err(); err != nil {

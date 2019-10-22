@@ -261,6 +261,13 @@ func (s *ShopProductStore) UpdateImageShopProduct(product *catalog.ShopProduct) 
 	return err
 }
 
+func (s *ShopProductStore) UpdateMetaFieldsShopProduct(product *catalog.ShopProduct) error {
+	query := s.query().Where(s.preds)
+	productDB := convert.ShopProductDB(product)
+	err := query.ShouldUpdate(productDB)
+	return err
+}
+
 func (s *ShopProductStore) SoftDelete() (int, error) {
 	query := s.query().Where(s.preds)
 	query = s.includeDeleted.Check(query, s.FtShopProduct.NotDeleted())

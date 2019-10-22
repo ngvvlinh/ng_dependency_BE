@@ -22,6 +22,8 @@ type Aggregate interface {
 
 	UpdateShopProductImages(context.Context, *UpdateImagesArgs) (*ShopProductWithVariants, error)
 
+	UpdateShopProductMetaFields(context.Context, *UpdateShopProductMetaFieldsArgs) (*ShopProductWithVariants, error)
+
 	DeleteShopProducts(context.Context, *shopping.IDsQueryShopArgs) (int, error)
 
 	UpdateShopProductCategory(context.Context, *UpdateShopProductCategoryArgs) (*ShopProductWithVariants, error)
@@ -169,6 +171,7 @@ type CreateShopProductArgs struct {
 	DescriptionInfo
 	PriceInfo
 	ProductType ProductType
+	MetaFields  []*MetaField
 }
 
 type CreateShopCategoryArgs struct {
@@ -274,6 +277,12 @@ type UpdateImagesArgs struct {
 	ID      int64
 	ShopID  int64
 	Updates []*meta.UpdateSet
+}
+
+type UpdateShopProductMetaFieldsArgs struct {
+	ID         int64
+	ShopID     int64
+	MetaFields []*MetaField
 }
 
 type UpdateShopVariantAttributes struct {

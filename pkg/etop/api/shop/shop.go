@@ -91,6 +91,7 @@ func init() {
 	bus.AddHandler("api", CreateProductSourceCategory)
 	bus.AddHandler("api", UpdateProductsPSCategory)
 	bus.AddHandler("api", UpdateProductImages)
+	bus.AddHandler("api", UpdateProductMetaFields)
 	bus.AddHandler("api", GetProductSourceCategory)
 	bus.AddHandler("api", GetProductSourceCategories)
 	bus.AddHandler("api", UpdateProductSourceCategory)
@@ -588,6 +589,14 @@ func GetProducts(ctx context.Context, q *wrapshop.GetProductsEndpoint) error {
 }
 
 func CreateProduct(ctx context.Context, q *wrapshop.CreateProductEndpoint) error {
+	metaFields := []*catalog.MetaField{}
+
+	for _, metaField := range q.MetaFields {
+		metaFields = append(metaFields, &catalog.MetaField{
+			Key:   metaField.Key,
+			Value: metaField.Value,
+		})
+	}
 	cmd := &catalog.CreateShopProductCommand{
 		ShopID:    q.Context.Shop.ID,
 		Code:      q.Code,
@@ -607,6 +616,7 @@ func CreateProduct(ctx context.Context, q *wrapshop.CreateProductEndpoint) error
 		},
 		VendorID:    q.VendorId,
 		ProductType: q.ProductType.ToProductType(),
+		MetaFields:  metaFields,
 	}
 	if err := catalogAggr.Dispatch(ctx, cmd); err != nil {
 		return err
@@ -890,6 +900,26 @@ func UpdateProductImages(ctx context.Context, q *wrapshop.UpdateProductImagesEnd
 		Updates: metaUpdate,
 	}
 
+	if err := catalogAggr.Dispatch(ctx, &cmd); err != nil {
+		return err
+	}
+	q.Result = PbShopProductWithVariants(cmd.Result)
+	return nil
+}
+
+func UpdateProductMetaFields(ctx context.Context, q *wrapshop.UpdateProductMetaFieldsEndpoint) error {
+	metaFields := []*catalog.MetaField{}
+	for _, metaField := range q.MetaFields {
+		metaFields = append(metaFields, &catalog.MetaField{
+			Key:   metaField.Key,
+			Value: metaField.Value,
+		})
+	}
+	cmd := catalog.UpdateShopProductMetaFieldsCommand{
+		ID:         q.Id,
+		ShopID:     q.Context.Shop.ID,
+		MetaFields: metaFields,
+	}
 	if err := catalogAggr.Dispatch(ctx, &cmd); err != nil {
 		return err
 	}

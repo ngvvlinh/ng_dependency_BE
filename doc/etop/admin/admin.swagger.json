@@ -3347,6 +3347,26 @@
         "total_discount": {
           "type": "integer",
           "format": "int32"
+        },
+        "meta_fields": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/orderOrderLineMetaField"
+          }
+        }
+      }
+    },
+    "orderOrderLineMetaField": {
+      "type": "object",
+      "properties": {
+        "key": {
+          "type": "string"
+        },
+        "value": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
         }
       }
     },

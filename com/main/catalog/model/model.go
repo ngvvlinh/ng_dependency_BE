@@ -93,6 +93,11 @@ type ShopVariant struct {
 	AttrNormKv string
 }
 
+type MetaField struct {
+	Key   string `json:"key"`
+	Value string `json:"value"`
+}
+
 var _ = sqlgenShopProduct(&ShopProduct{})
 
 // +convert:type=catalog.ShopProduct
@@ -126,6 +131,8 @@ type ShopProduct struct {
 	NameNorm    string
 	NameNormUa  string // unaccent normalization
 	ProductType string
+
+	MetaFields []*MetaField
 }
 
 type ShopProductWithVariants struct {

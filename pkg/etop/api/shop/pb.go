@@ -3,6 +3,7 @@ package shop
 import (
 	"etop.vn/api/main/catalog"
 	"etop.vn/api/main/inventory"
+	common "etop.vn/backend/pb/common"
 	pbcm "etop.vn/backend/pb/common"
 	pbproducttype "etop.vn/backend/pb/etop/etc/product_type"
 	pbs3 "etop.vn/backend/pb/etop/etc/status3"
@@ -192,6 +193,13 @@ func PbShopCategories(items []*catalog.ShopCategory) []*pbshop.ShopCategory {
 
 func PbShopProductWithVariants(m *catalog.ShopProductWithVariants) *pbshop.ShopProduct {
 	shopID := m.ShopProduct.ShopID
+	metaFields := []*common.MetaField{}
+	for _, metaField := range m.MetaFields {
+		metaFields = append(metaFields, &common.MetaField{
+			Key:   metaField.Key,
+			Value: metaField.Value,
+		})
+	}
 	res := &pbshop.ShopProduct{
 		Id: m.ShopProduct.ProductID,
 		Info: &pbshop.EtopProduct{
@@ -232,6 +240,7 @@ func PbShopProductWithVariants(m *catalog.ShopProductWithVariants) *pbshop.ShopP
 		CreatedAt:       pbcm.PbTime(m.CreatedAt),
 		UpdatedAt:       pbcm.PbTime(m.UpdatedAt),
 		ProductType:     pbproducttype.PbProductType(string(m.ProductType)),
+		MetaFields:      metaFields,
 	}
 	return res
 }
