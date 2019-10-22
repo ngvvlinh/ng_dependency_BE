@@ -41,6 +41,9 @@ func (s *{{$s.Name}}ServiceServer) serve{{.Name}}(ctx context.Context, resp http
 	case "application/json":
 		s.serve{{.Name}}JSON(ctx, resp, req)
 	default:
+		msg := fmt.Sprintf("unexpected Content-Type: %q", req.Header.Get("Content-Type"))
+		twerr := badRouteError(msg, req.Method, req.URL.Path)
+		writeError(ctx, resp, twerr)
 		return
 	}
 }
@@ -50,6 +53,7 @@ func (s *{{$s.Name}}ServiceServer) serve{{.Name}}JSON(ctx context.Context, resp 
 	reqContent := new({{.Request.Type|type}})
 	unmarshaler := jsonpb.Unmarshaler{AllowUnknownFields: true}
 	if err := unmarshaler.Unmarshal(req.Body, reqContent); err != nil {
+		writeError(ctx, resp, malformedRequestError("the json request could not be decoded").WithMeta("cause", err.Error()))
 		return
 	}
 	// Call service method
@@ -59,17 +63,19 @@ func (s *{{$s.Name}}ServiceServer) serve{{.Name}}JSON(ctx context.Context, resp 
 		respContent, err = s.{{$s.Name}}API.{{.Name}}(ctx, reqContent)
 	}()
 	if err != nil {
+		writeError(ctx, resp, err)
 		return
 	}
 	if respContent == nil {
+		writeError(ctx, resp, twirp.InternalError("received a nil response"))
 		return
 	}
 	var buf bytes.Buffer
 	marshaler := &jsonpb.Marshaler{OrigName: true, EmitDefaults: true}
 	if err = marshaler.Marshal(&buf, respContent); err != nil {
+		writeError(ctx, resp, wrapInternal(err, "failed to marshal json response"))
 		return
 	}
-	ctx = ctxsetters.WithStatusCode(ctx, http.StatusOK)
 	respBytes := buf.Bytes()
 	resp.Header().Set("Content-Type", "application/json")
 	resp.Header().Set("Content-Length", strconv.Itoa(len(respBytes)))
@@ -153,7 +159,6 @@ func writeError(ctx context.Context, resp http.ResponseWriter, err error) {
 		}
 
 		statusCode := twirp.ServerHTTPStatusFromErrorCode(twerr.Code())
-		ctx = ctxsetters.WithStatusCode(ctx, statusCode)
 
 		respBody := marshalErrorToJSON(twerr)
 		resp.Header().Set("Content-Type", "application/json") // Error responses are always JSON
@@ -179,6 +184,20 @@ func writeError(ctx context.Context, resp http.ResponseWriter, err error) {
 		_ = writeErr
 	}
 }
+
+// wrapInternal wraps an error with a prefix as an Internal error.
+// The original error cause is accessible by github.com/pkg/errors.Cause.
+func wrapInternal(err error, prefix string) twirp.Error {
+	return twirp.InternalErrorWith(&wrappedError{prefix: prefix, cause: err})
+}
+
+type wrappedError struct {
+	prefix string
+	cause  error
+}
+
+func (e *wrappedError) Cause() error  { return e.cause }
+func (e *wrappedError) Error() string { return e.prefix + ": " + e.cause.Error() }
 
 // JSON serialization for errors
 type twerrJSON struct {

@@ -5,19 +5,18 @@
 package etop
 
 import (
-	"bytes"
+	bytes "bytes"
 	context "context"
-	"encoding/json"
-	"fmt"
-	"net/http"
-	"strconv"
-	"strings"
+	json "encoding/json"
+	fmt "fmt"
+	http "net/http"
+	strconv "strconv"
+	strings "strings"
 
 	common "etop.vn/backend/pb/common"
 	etop "etop.vn/backend/pb/etop"
-	"github.com/gogo/protobuf/jsonpb"
-	"github.com/twitchtv/twirp"
-	"github.com/twitchtv/twirp/ctxsetters"
+	jsonpb "github.com/golang/protobuf/jsonpb"
+	twirp "github.com/twitchtv/twirp"
 )
 
 type UserServiceServer struct {
@@ -118,6 +117,9 @@ func (s *UserServiceServer) serveChangePassword(ctx context.Context, resp http.R
 	case "application/json":
 		s.serveChangePasswordJSON(ctx, resp, req)
 	default:
+		msg := fmt.Sprintf("unexpected Content-Type: %q", req.Header.Get("Content-Type"))
+		twerr := badRouteError(msg, req.Method, req.URL.Path)
+		writeError(ctx, resp, twerr)
 		return
 	}
 }
@@ -127,6 +129,7 @@ func (s *UserServiceServer) serveChangePasswordJSON(ctx context.Context, resp ht
 	reqContent := new(etop.ChangePasswordRequest)
 	unmarshaler := jsonpb.Unmarshaler{AllowUnknownFields: true}
 	if err := unmarshaler.Unmarshal(req.Body, reqContent); err != nil {
+		writeError(ctx, resp, malformedRequestError("the json request could not be decoded").WithMeta("cause", err.Error()))
 		return
 	}
 	// Call service method
@@ -136,17 +139,19 @@ func (s *UserServiceServer) serveChangePasswordJSON(ctx context.Context, resp ht
 		respContent, err = s.UserAPI.ChangePassword(ctx, reqContent)
 	}()
 	if err != nil {
+		writeError(ctx, resp, err)
 		return
 	}
 	if respContent == nil {
+		writeError(ctx, resp, twirp.InternalError("received a nil response"))
 		return
 	}
 	var buf bytes.Buffer
 	marshaler := &jsonpb.Marshaler{OrigName: true, EmitDefaults: true}
 	if err = marshaler.Marshal(&buf, respContent); err != nil {
+		writeError(ctx, resp, wrapInternal(err, "failed to marshal json response"))
 		return
 	}
-	ctx = ctxsetters.WithStatusCode(ctx, http.StatusOK)
 	respBytes := buf.Bytes()
 	resp.Header().Set("Content-Type", "application/json")
 	resp.Header().Set("Content-Length", strconv.Itoa(len(respBytes)))
@@ -166,6 +171,9 @@ func (s *UserServiceServer) serveChangePasswordUsingToken(ctx context.Context, r
 	case "application/json":
 		s.serveChangePasswordUsingTokenJSON(ctx, resp, req)
 	default:
+		msg := fmt.Sprintf("unexpected Content-Type: %q", req.Header.Get("Content-Type"))
+		twerr := badRouteError(msg, req.Method, req.URL.Path)
+		writeError(ctx, resp, twerr)
 		return
 	}
 }
@@ -175,6 +183,7 @@ func (s *UserServiceServer) serveChangePasswordUsingTokenJSON(ctx context.Contex
 	reqContent := new(etop.ChangePasswordUsingTokenRequest)
 	unmarshaler := jsonpb.Unmarshaler{AllowUnknownFields: true}
 	if err := unmarshaler.Unmarshal(req.Body, reqContent); err != nil {
+		writeError(ctx, resp, malformedRequestError("the json request could not be decoded").WithMeta("cause", err.Error()))
 		return
 	}
 	// Call service method
@@ -184,17 +193,19 @@ func (s *UserServiceServer) serveChangePasswordUsingTokenJSON(ctx context.Contex
 		respContent, err = s.UserAPI.ChangePasswordUsingToken(ctx, reqContent)
 	}()
 	if err != nil {
+		writeError(ctx, resp, err)
 		return
 	}
 	if respContent == nil {
+		writeError(ctx, resp, twirp.InternalError("received a nil response"))
 		return
 	}
 	var buf bytes.Buffer
 	marshaler := &jsonpb.Marshaler{OrigName: true, EmitDefaults: true}
 	if err = marshaler.Marshal(&buf, respContent); err != nil {
+		writeError(ctx, resp, wrapInternal(err, "failed to marshal json response"))
 		return
 	}
-	ctx = ctxsetters.WithStatusCode(ctx, http.StatusOK)
 	respBytes := buf.Bytes()
 	resp.Header().Set("Content-Type", "application/json")
 	resp.Header().Set("Content-Length", strconv.Itoa(len(respBytes)))
@@ -214,6 +225,9 @@ func (s *UserServiceServer) serveLogin(ctx context.Context, resp http.ResponseWr
 	case "application/json":
 		s.serveLoginJSON(ctx, resp, req)
 	default:
+		msg := fmt.Sprintf("unexpected Content-Type: %q", req.Header.Get("Content-Type"))
+		twerr := badRouteError(msg, req.Method, req.URL.Path)
+		writeError(ctx, resp, twerr)
 		return
 	}
 }
@@ -223,6 +237,7 @@ func (s *UserServiceServer) serveLoginJSON(ctx context.Context, resp http.Respon
 	reqContent := new(etop.LoginRequest)
 	unmarshaler := jsonpb.Unmarshaler{AllowUnknownFields: true}
 	if err := unmarshaler.Unmarshal(req.Body, reqContent); err != nil {
+		writeError(ctx, resp, malformedRequestError("the json request could not be decoded").WithMeta("cause", err.Error()))
 		return
 	}
 	// Call service method
@@ -232,17 +247,19 @@ func (s *UserServiceServer) serveLoginJSON(ctx context.Context, resp http.Respon
 		respContent, err = s.UserAPI.Login(ctx, reqContent)
 	}()
 	if err != nil {
+		writeError(ctx, resp, err)
 		return
 	}
 	if respContent == nil {
+		writeError(ctx, resp, twirp.InternalError("received a nil response"))
 		return
 	}
 	var buf bytes.Buffer
 	marshaler := &jsonpb.Marshaler{OrigName: true, EmitDefaults: true}
 	if err = marshaler.Marshal(&buf, respContent); err != nil {
+		writeError(ctx, resp, wrapInternal(err, "failed to marshal json response"))
 		return
 	}
-	ctx = ctxsetters.WithStatusCode(ctx, http.StatusOK)
 	respBytes := buf.Bytes()
 	resp.Header().Set("Content-Type", "application/json")
 	resp.Header().Set("Content-Length", strconv.Itoa(len(respBytes)))
@@ -262,6 +279,9 @@ func (s *UserServiceServer) serveRegister(ctx context.Context, resp http.Respons
 	case "application/json":
 		s.serveRegisterJSON(ctx, resp, req)
 	default:
+		msg := fmt.Sprintf("unexpected Content-Type: %q", req.Header.Get("Content-Type"))
+		twerr := badRouteError(msg, req.Method, req.URL.Path)
+		writeError(ctx, resp, twerr)
 		return
 	}
 }
@@ -271,6 +291,7 @@ func (s *UserServiceServer) serveRegisterJSON(ctx context.Context, resp http.Res
 	reqContent := new(etop.CreateUserRequest)
 	unmarshaler := jsonpb.Unmarshaler{AllowUnknownFields: true}
 	if err := unmarshaler.Unmarshal(req.Body, reqContent); err != nil {
+		writeError(ctx, resp, malformedRequestError("the json request could not be decoded").WithMeta("cause", err.Error()))
 		return
 	}
 	// Call service method
@@ -280,17 +301,19 @@ func (s *UserServiceServer) serveRegisterJSON(ctx context.Context, resp http.Res
 		respContent, err = s.UserAPI.Register(ctx, reqContent)
 	}()
 	if err != nil {
+		writeError(ctx, resp, err)
 		return
 	}
 	if respContent == nil {
+		writeError(ctx, resp, twirp.InternalError("received a nil response"))
 		return
 	}
 	var buf bytes.Buffer
 	marshaler := &jsonpb.Marshaler{OrigName: true, EmitDefaults: true}
 	if err = marshaler.Marshal(&buf, respContent); err != nil {
+		writeError(ctx, resp, wrapInternal(err, "failed to marshal json response"))
 		return
 	}
-	ctx = ctxsetters.WithStatusCode(ctx, http.StatusOK)
 	respBytes := buf.Bytes()
 	resp.Header().Set("Content-Type", "application/json")
 	resp.Header().Set("Content-Length", strconv.Itoa(len(respBytes)))
@@ -310,6 +333,9 @@ func (s *UserServiceServer) serveResetPassword(ctx context.Context, resp http.Re
 	case "application/json":
 		s.serveResetPasswordJSON(ctx, resp, req)
 	default:
+		msg := fmt.Sprintf("unexpected Content-Type: %q", req.Header.Get("Content-Type"))
+		twerr := badRouteError(msg, req.Method, req.URL.Path)
+		writeError(ctx, resp, twerr)
 		return
 	}
 }
@@ -319,6 +345,7 @@ func (s *UserServiceServer) serveResetPasswordJSON(ctx context.Context, resp htt
 	reqContent := new(etop.ResetPasswordRequest)
 	unmarshaler := jsonpb.Unmarshaler{AllowUnknownFields: true}
 	if err := unmarshaler.Unmarshal(req.Body, reqContent); err != nil {
+		writeError(ctx, resp, malformedRequestError("the json request could not be decoded").WithMeta("cause", err.Error()))
 		return
 	}
 	// Call service method
@@ -328,17 +355,19 @@ func (s *UserServiceServer) serveResetPasswordJSON(ctx context.Context, resp htt
 		respContent, err = s.UserAPI.ResetPassword(ctx, reqContent)
 	}()
 	if err != nil {
+		writeError(ctx, resp, err)
 		return
 	}
 	if respContent == nil {
+		writeError(ctx, resp, twirp.InternalError("received a nil response"))
 		return
 	}
 	var buf bytes.Buffer
 	marshaler := &jsonpb.Marshaler{OrigName: true, EmitDefaults: true}
 	if err = marshaler.Marshal(&buf, respContent); err != nil {
+		writeError(ctx, resp, wrapInternal(err, "failed to marshal json response"))
 		return
 	}
-	ctx = ctxsetters.WithStatusCode(ctx, http.StatusOK)
 	respBytes := buf.Bytes()
 	resp.Header().Set("Content-Type", "application/json")
 	resp.Header().Set("Content-Length", strconv.Itoa(len(respBytes)))
@@ -358,6 +387,9 @@ func (s *UserServiceServer) serveSendEmailVerification(ctx context.Context, resp
 	case "application/json":
 		s.serveSendEmailVerificationJSON(ctx, resp, req)
 	default:
+		msg := fmt.Sprintf("unexpected Content-Type: %q", req.Header.Get("Content-Type"))
+		twerr := badRouteError(msg, req.Method, req.URL.Path)
+		writeError(ctx, resp, twerr)
 		return
 	}
 }
@@ -367,6 +399,7 @@ func (s *UserServiceServer) serveSendEmailVerificationJSON(ctx context.Context, 
 	reqContent := new(etop.SendEmailVerificationRequest)
 	unmarshaler := jsonpb.Unmarshaler{AllowUnknownFields: true}
 	if err := unmarshaler.Unmarshal(req.Body, reqContent); err != nil {
+		writeError(ctx, resp, malformedRequestError("the json request could not be decoded").WithMeta("cause", err.Error()))
 		return
 	}
 	// Call service method
@@ -376,17 +409,19 @@ func (s *UserServiceServer) serveSendEmailVerificationJSON(ctx context.Context, 
 		respContent, err = s.UserAPI.SendEmailVerification(ctx, reqContent)
 	}()
 	if err != nil {
+		writeError(ctx, resp, err)
 		return
 	}
 	if respContent == nil {
+		writeError(ctx, resp, twirp.InternalError("received a nil response"))
 		return
 	}
 	var buf bytes.Buffer
 	marshaler := &jsonpb.Marshaler{OrigName: true, EmitDefaults: true}
 	if err = marshaler.Marshal(&buf, respContent); err != nil {
+		writeError(ctx, resp, wrapInternal(err, "failed to marshal json response"))
 		return
 	}
-	ctx = ctxsetters.WithStatusCode(ctx, http.StatusOK)
 	respBytes := buf.Bytes()
 	resp.Header().Set("Content-Type", "application/json")
 	resp.Header().Set("Content-Length", strconv.Itoa(len(respBytes)))
@@ -406,6 +441,9 @@ func (s *UserServiceServer) serveSendPhoneVerification(ctx context.Context, resp
 	case "application/json":
 		s.serveSendPhoneVerificationJSON(ctx, resp, req)
 	default:
+		msg := fmt.Sprintf("unexpected Content-Type: %q", req.Header.Get("Content-Type"))
+		twerr := badRouteError(msg, req.Method, req.URL.Path)
+		writeError(ctx, resp, twerr)
 		return
 	}
 }
@@ -415,6 +453,7 @@ func (s *UserServiceServer) serveSendPhoneVerificationJSON(ctx context.Context, 
 	reqContent := new(etop.SendPhoneVerificationRequest)
 	unmarshaler := jsonpb.Unmarshaler{AllowUnknownFields: true}
 	if err := unmarshaler.Unmarshal(req.Body, reqContent); err != nil {
+		writeError(ctx, resp, malformedRequestError("the json request could not be decoded").WithMeta("cause", err.Error()))
 		return
 	}
 	// Call service method
@@ -424,17 +463,19 @@ func (s *UserServiceServer) serveSendPhoneVerificationJSON(ctx context.Context, 
 		respContent, err = s.UserAPI.SendPhoneVerification(ctx, reqContent)
 	}()
 	if err != nil {
+		writeError(ctx, resp, err)
 		return
 	}
 	if respContent == nil {
+		writeError(ctx, resp, twirp.InternalError("received a nil response"))
 		return
 	}
 	var buf bytes.Buffer
 	marshaler := &jsonpb.Marshaler{OrigName: true, EmitDefaults: true}
 	if err = marshaler.Marshal(&buf, respContent); err != nil {
+		writeError(ctx, resp, wrapInternal(err, "failed to marshal json response"))
 		return
 	}
-	ctx = ctxsetters.WithStatusCode(ctx, http.StatusOK)
 	respBytes := buf.Bytes()
 	resp.Header().Set("Content-Type", "application/json")
 	resp.Header().Set("Content-Length", strconv.Itoa(len(respBytes)))
@@ -454,6 +495,9 @@ func (s *UserServiceServer) serveSendSTokenEmail(ctx context.Context, resp http.
 	case "application/json":
 		s.serveSendSTokenEmailJSON(ctx, resp, req)
 	default:
+		msg := fmt.Sprintf("unexpected Content-Type: %q", req.Header.Get("Content-Type"))
+		twerr := badRouteError(msg, req.Method, req.URL.Path)
+		writeError(ctx, resp, twerr)
 		return
 	}
 }
@@ -463,6 +507,7 @@ func (s *UserServiceServer) serveSendSTokenEmailJSON(ctx context.Context, resp h
 	reqContent := new(etop.SendSTokenEmailRequest)
 	unmarshaler := jsonpb.Unmarshaler{AllowUnknownFields: true}
 	if err := unmarshaler.Unmarshal(req.Body, reqContent); err != nil {
+		writeError(ctx, resp, malformedRequestError("the json request could not be decoded").WithMeta("cause", err.Error()))
 		return
 	}
 	// Call service method
@@ -472,17 +517,19 @@ func (s *UserServiceServer) serveSendSTokenEmailJSON(ctx context.Context, resp h
 		respContent, err = s.UserAPI.SendSTokenEmail(ctx, reqContent)
 	}()
 	if err != nil {
+		writeError(ctx, resp, err)
 		return
 	}
 	if respContent == nil {
+		writeError(ctx, resp, twirp.InternalError("received a nil response"))
 		return
 	}
 	var buf bytes.Buffer
 	marshaler := &jsonpb.Marshaler{OrigName: true, EmitDefaults: true}
 	if err = marshaler.Marshal(&buf, respContent); err != nil {
+		writeError(ctx, resp, wrapInternal(err, "failed to marshal json response"))
 		return
 	}
-	ctx = ctxsetters.WithStatusCode(ctx, http.StatusOK)
 	respBytes := buf.Bytes()
 	resp.Header().Set("Content-Type", "application/json")
 	resp.Header().Set("Content-Length", strconv.Itoa(len(respBytes)))
@@ -502,6 +549,9 @@ func (s *UserServiceServer) serveSessionInfo(ctx context.Context, resp http.Resp
 	case "application/json":
 		s.serveSessionInfoJSON(ctx, resp, req)
 	default:
+		msg := fmt.Sprintf("unexpected Content-Type: %q", req.Header.Get("Content-Type"))
+		twerr := badRouteError(msg, req.Method, req.URL.Path)
+		writeError(ctx, resp, twerr)
 		return
 	}
 }
@@ -511,6 +561,7 @@ func (s *UserServiceServer) serveSessionInfoJSON(ctx context.Context, resp http.
 	reqContent := new(common.Empty)
 	unmarshaler := jsonpb.Unmarshaler{AllowUnknownFields: true}
 	if err := unmarshaler.Unmarshal(req.Body, reqContent); err != nil {
+		writeError(ctx, resp, malformedRequestError("the json request could not be decoded").WithMeta("cause", err.Error()))
 		return
 	}
 	// Call service method
@@ -520,17 +571,19 @@ func (s *UserServiceServer) serveSessionInfoJSON(ctx context.Context, resp http.
 		respContent, err = s.UserAPI.SessionInfo(ctx, reqContent)
 	}()
 	if err != nil {
+		writeError(ctx, resp, err)
 		return
 	}
 	if respContent == nil {
+		writeError(ctx, resp, twirp.InternalError("received a nil response"))
 		return
 	}
 	var buf bytes.Buffer
 	marshaler := &jsonpb.Marshaler{OrigName: true, EmitDefaults: true}
 	if err = marshaler.Marshal(&buf, respContent); err != nil {
+		writeError(ctx, resp, wrapInternal(err, "failed to marshal json response"))
 		return
 	}
-	ctx = ctxsetters.WithStatusCode(ctx, http.StatusOK)
 	respBytes := buf.Bytes()
 	resp.Header().Set("Content-Type", "application/json")
 	resp.Header().Set("Content-Length", strconv.Itoa(len(respBytes)))
@@ -550,6 +603,9 @@ func (s *UserServiceServer) serveSwitchAccount(ctx context.Context, resp http.Re
 	case "application/json":
 		s.serveSwitchAccountJSON(ctx, resp, req)
 	default:
+		msg := fmt.Sprintf("unexpected Content-Type: %q", req.Header.Get("Content-Type"))
+		twerr := badRouteError(msg, req.Method, req.URL.Path)
+		writeError(ctx, resp, twerr)
 		return
 	}
 }
@@ -559,6 +615,7 @@ func (s *UserServiceServer) serveSwitchAccountJSON(ctx context.Context, resp htt
 	reqContent := new(etop.SwitchAccountRequest)
 	unmarshaler := jsonpb.Unmarshaler{AllowUnknownFields: true}
 	if err := unmarshaler.Unmarshal(req.Body, reqContent); err != nil {
+		writeError(ctx, resp, malformedRequestError("the json request could not be decoded").WithMeta("cause", err.Error()))
 		return
 	}
 	// Call service method
@@ -568,17 +625,19 @@ func (s *UserServiceServer) serveSwitchAccountJSON(ctx context.Context, resp htt
 		respContent, err = s.UserAPI.SwitchAccount(ctx, reqContent)
 	}()
 	if err != nil {
+		writeError(ctx, resp, err)
 		return
 	}
 	if respContent == nil {
+		writeError(ctx, resp, twirp.InternalError("received a nil response"))
 		return
 	}
 	var buf bytes.Buffer
 	marshaler := &jsonpb.Marshaler{OrigName: true, EmitDefaults: true}
 	if err = marshaler.Marshal(&buf, respContent); err != nil {
+		writeError(ctx, resp, wrapInternal(err, "failed to marshal json response"))
 		return
 	}
-	ctx = ctxsetters.WithStatusCode(ctx, http.StatusOK)
 	respBytes := buf.Bytes()
 	resp.Header().Set("Content-Type", "application/json")
 	resp.Header().Set("Content-Length", strconv.Itoa(len(respBytes)))
@@ -598,6 +657,9 @@ func (s *UserServiceServer) serveUpdatePermission(ctx context.Context, resp http
 	case "application/json":
 		s.serveUpdatePermissionJSON(ctx, resp, req)
 	default:
+		msg := fmt.Sprintf("unexpected Content-Type: %q", req.Header.Get("Content-Type"))
+		twerr := badRouteError(msg, req.Method, req.URL.Path)
+		writeError(ctx, resp, twerr)
 		return
 	}
 }
@@ -607,6 +669,7 @@ func (s *UserServiceServer) serveUpdatePermissionJSON(ctx context.Context, resp 
 	reqContent := new(etop.UpdatePermissionRequest)
 	unmarshaler := jsonpb.Unmarshaler{AllowUnknownFields: true}
 	if err := unmarshaler.Unmarshal(req.Body, reqContent); err != nil {
+		writeError(ctx, resp, malformedRequestError("the json request could not be decoded").WithMeta("cause", err.Error()))
 		return
 	}
 	// Call service method
@@ -616,17 +679,19 @@ func (s *UserServiceServer) serveUpdatePermissionJSON(ctx context.Context, resp 
 		respContent, err = s.UserAPI.UpdatePermission(ctx, reqContent)
 	}()
 	if err != nil {
+		writeError(ctx, resp, err)
 		return
 	}
 	if respContent == nil {
+		writeError(ctx, resp, twirp.InternalError("received a nil response"))
 		return
 	}
 	var buf bytes.Buffer
 	marshaler := &jsonpb.Marshaler{OrigName: true, EmitDefaults: true}
 	if err = marshaler.Marshal(&buf, respContent); err != nil {
+		writeError(ctx, resp, wrapInternal(err, "failed to marshal json response"))
 		return
 	}
-	ctx = ctxsetters.WithStatusCode(ctx, http.StatusOK)
 	respBytes := buf.Bytes()
 	resp.Header().Set("Content-Type", "application/json")
 	resp.Header().Set("Content-Length", strconv.Itoa(len(respBytes)))
@@ -646,6 +711,9 @@ func (s *UserServiceServer) serveUpdateReferenceSale(ctx context.Context, resp h
 	case "application/json":
 		s.serveUpdateReferenceSaleJSON(ctx, resp, req)
 	default:
+		msg := fmt.Sprintf("unexpected Content-Type: %q", req.Header.Get("Content-Type"))
+		twerr := badRouteError(msg, req.Method, req.URL.Path)
+		writeError(ctx, resp, twerr)
 		return
 	}
 }
@@ -655,6 +723,7 @@ func (s *UserServiceServer) serveUpdateReferenceSaleJSON(ctx context.Context, re
 	reqContent := new(etop.UpdateReferenceSaleRequest)
 	unmarshaler := jsonpb.Unmarshaler{AllowUnknownFields: true}
 	if err := unmarshaler.Unmarshal(req.Body, reqContent); err != nil {
+		writeError(ctx, resp, malformedRequestError("the json request could not be decoded").WithMeta("cause", err.Error()))
 		return
 	}
 	// Call service method
@@ -664,17 +733,19 @@ func (s *UserServiceServer) serveUpdateReferenceSaleJSON(ctx context.Context, re
 		respContent, err = s.UserAPI.UpdateReferenceSale(ctx, reqContent)
 	}()
 	if err != nil {
+		writeError(ctx, resp, err)
 		return
 	}
 	if respContent == nil {
+		writeError(ctx, resp, twirp.InternalError("received a nil response"))
 		return
 	}
 	var buf bytes.Buffer
 	marshaler := &jsonpb.Marshaler{OrigName: true, EmitDefaults: true}
 	if err = marshaler.Marshal(&buf, respContent); err != nil {
+		writeError(ctx, resp, wrapInternal(err, "failed to marshal json response"))
 		return
 	}
-	ctx = ctxsetters.WithStatusCode(ctx, http.StatusOK)
 	respBytes := buf.Bytes()
 	resp.Header().Set("Content-Type", "application/json")
 	resp.Header().Set("Content-Length", strconv.Itoa(len(respBytes)))
@@ -694,6 +765,9 @@ func (s *UserServiceServer) serveUpdateReferenceUser(ctx context.Context, resp h
 	case "application/json":
 		s.serveUpdateReferenceUserJSON(ctx, resp, req)
 	default:
+		msg := fmt.Sprintf("unexpected Content-Type: %q", req.Header.Get("Content-Type"))
+		twerr := badRouteError(msg, req.Method, req.URL.Path)
+		writeError(ctx, resp, twerr)
 		return
 	}
 }
@@ -703,6 +777,7 @@ func (s *UserServiceServer) serveUpdateReferenceUserJSON(ctx context.Context, re
 	reqContent := new(etop.UpdateReferenceUserRequest)
 	unmarshaler := jsonpb.Unmarshaler{AllowUnknownFields: true}
 	if err := unmarshaler.Unmarshal(req.Body, reqContent); err != nil {
+		writeError(ctx, resp, malformedRequestError("the json request could not be decoded").WithMeta("cause", err.Error()))
 		return
 	}
 	// Call service method
@@ -712,17 +787,19 @@ func (s *UserServiceServer) serveUpdateReferenceUserJSON(ctx context.Context, re
 		respContent, err = s.UserAPI.UpdateReferenceUser(ctx, reqContent)
 	}()
 	if err != nil {
+		writeError(ctx, resp, err)
 		return
 	}
 	if respContent == nil {
+		writeError(ctx, resp, twirp.InternalError("received a nil response"))
 		return
 	}
 	var buf bytes.Buffer
 	marshaler := &jsonpb.Marshaler{OrigName: true, EmitDefaults: true}
 	if err = marshaler.Marshal(&buf, respContent); err != nil {
+		writeError(ctx, resp, wrapInternal(err, "failed to marshal json response"))
 		return
 	}
-	ctx = ctxsetters.WithStatusCode(ctx, http.StatusOK)
 	respBytes := buf.Bytes()
 	resp.Header().Set("Content-Type", "application/json")
 	resp.Header().Set("Content-Length", strconv.Itoa(len(respBytes)))
@@ -742,6 +819,9 @@ func (s *UserServiceServer) serveUpgradeAccessToken(ctx context.Context, resp ht
 	case "application/json":
 		s.serveUpgradeAccessTokenJSON(ctx, resp, req)
 	default:
+		msg := fmt.Sprintf("unexpected Content-Type: %q", req.Header.Get("Content-Type"))
+		twerr := badRouteError(msg, req.Method, req.URL.Path)
+		writeError(ctx, resp, twerr)
 		return
 	}
 }
@@ -751,6 +831,7 @@ func (s *UserServiceServer) serveUpgradeAccessTokenJSON(ctx context.Context, res
 	reqContent := new(etop.UpgradeAccessTokenRequest)
 	unmarshaler := jsonpb.Unmarshaler{AllowUnknownFields: true}
 	if err := unmarshaler.Unmarshal(req.Body, reqContent); err != nil {
+		writeError(ctx, resp, malformedRequestError("the json request could not be decoded").WithMeta("cause", err.Error()))
 		return
 	}
 	// Call service method
@@ -760,17 +841,19 @@ func (s *UserServiceServer) serveUpgradeAccessTokenJSON(ctx context.Context, res
 		respContent, err = s.UserAPI.UpgradeAccessToken(ctx, reqContent)
 	}()
 	if err != nil {
+		writeError(ctx, resp, err)
 		return
 	}
 	if respContent == nil {
+		writeError(ctx, resp, twirp.InternalError("received a nil response"))
 		return
 	}
 	var buf bytes.Buffer
 	marshaler := &jsonpb.Marshaler{OrigName: true, EmitDefaults: true}
 	if err = marshaler.Marshal(&buf, respContent); err != nil {
+		writeError(ctx, resp, wrapInternal(err, "failed to marshal json response"))
 		return
 	}
-	ctx = ctxsetters.WithStatusCode(ctx, http.StatusOK)
 	respBytes := buf.Bytes()
 	resp.Header().Set("Content-Type", "application/json")
 	resp.Header().Set("Content-Length", strconv.Itoa(len(respBytes)))
@@ -790,6 +873,9 @@ func (s *UserServiceServer) serveVerifyEmailUsingToken(ctx context.Context, resp
 	case "application/json":
 		s.serveVerifyEmailUsingTokenJSON(ctx, resp, req)
 	default:
+		msg := fmt.Sprintf("unexpected Content-Type: %q", req.Header.Get("Content-Type"))
+		twerr := badRouteError(msg, req.Method, req.URL.Path)
+		writeError(ctx, resp, twerr)
 		return
 	}
 }
@@ -799,6 +885,7 @@ func (s *UserServiceServer) serveVerifyEmailUsingTokenJSON(ctx context.Context, 
 	reqContent := new(etop.VerifyEmailUsingTokenRequest)
 	unmarshaler := jsonpb.Unmarshaler{AllowUnknownFields: true}
 	if err := unmarshaler.Unmarshal(req.Body, reqContent); err != nil {
+		writeError(ctx, resp, malformedRequestError("the json request could not be decoded").WithMeta("cause", err.Error()))
 		return
 	}
 	// Call service method
@@ -808,17 +895,19 @@ func (s *UserServiceServer) serveVerifyEmailUsingTokenJSON(ctx context.Context, 
 		respContent, err = s.UserAPI.VerifyEmailUsingToken(ctx, reqContent)
 	}()
 	if err != nil {
+		writeError(ctx, resp, err)
 		return
 	}
 	if respContent == nil {
+		writeError(ctx, resp, twirp.InternalError("received a nil response"))
 		return
 	}
 	var buf bytes.Buffer
 	marshaler := &jsonpb.Marshaler{OrigName: true, EmitDefaults: true}
 	if err = marshaler.Marshal(&buf, respContent); err != nil {
+		writeError(ctx, resp, wrapInternal(err, "failed to marshal json response"))
 		return
 	}
-	ctx = ctxsetters.WithStatusCode(ctx, http.StatusOK)
 	respBytes := buf.Bytes()
 	resp.Header().Set("Content-Type", "application/json")
 	resp.Header().Set("Content-Length", strconv.Itoa(len(respBytes)))
@@ -838,6 +927,9 @@ func (s *UserServiceServer) serveVerifyPhoneUsingToken(ctx context.Context, resp
 	case "application/json":
 		s.serveVerifyPhoneUsingTokenJSON(ctx, resp, req)
 	default:
+		msg := fmt.Sprintf("unexpected Content-Type: %q", req.Header.Get("Content-Type"))
+		twerr := badRouteError(msg, req.Method, req.URL.Path)
+		writeError(ctx, resp, twerr)
 		return
 	}
 }
@@ -847,6 +939,7 @@ func (s *UserServiceServer) serveVerifyPhoneUsingTokenJSON(ctx context.Context, 
 	reqContent := new(etop.VerifyPhoneUsingTokenRequest)
 	unmarshaler := jsonpb.Unmarshaler{AllowUnknownFields: true}
 	if err := unmarshaler.Unmarshal(req.Body, reqContent); err != nil {
+		writeError(ctx, resp, malformedRequestError("the json request could not be decoded").WithMeta("cause", err.Error()))
 		return
 	}
 	// Call service method
@@ -856,17 +949,19 @@ func (s *UserServiceServer) serveVerifyPhoneUsingTokenJSON(ctx context.Context, 
 		respContent, err = s.UserAPI.VerifyPhoneUsingToken(ctx, reqContent)
 	}()
 	if err != nil {
+		writeError(ctx, resp, err)
 		return
 	}
 	if respContent == nil {
+		writeError(ctx, resp, twirp.InternalError("received a nil response"))
 		return
 	}
 	var buf bytes.Buffer
 	marshaler := &jsonpb.Marshaler{OrigName: true, EmitDefaults: true}
 	if err = marshaler.Marshal(&buf, respContent); err != nil {
+		writeError(ctx, resp, wrapInternal(err, "failed to marshal json response"))
 		return
 	}
-	ctx = ctxsetters.WithStatusCode(ctx, http.StatusOK)
 	respBytes := buf.Bytes()
 	resp.Header().Set("Content-Type", "application/json")
 	resp.Header().Set("Content-Length", strconv.Itoa(len(respBytes)))
@@ -949,7 +1044,6 @@ func writeError(ctx context.Context, resp http.ResponseWriter, err error) {
 	}
 
 	statusCode := twirp.ServerHTTPStatusFromErrorCode(twerr.Code())
-	ctx = ctxsetters.WithStatusCode(ctx, statusCode)
 
 	respBody := marshalErrorToJSON(twerr)
 	resp.Header().Set("Content-Type", "application/json") // Error responses are always JSON
@@ -975,6 +1069,20 @@ func writeError(ctx context.Context, resp http.ResponseWriter, err error) {
 		_ = writeErr
 	}
 }
+
+// wrapInternal wraps an error with a prefix as an Internal error.
+// The original error cause is accessible by github.com/pkg/errors.Cause.
+func wrapInternal(err error, prefix string) twirp.Error {
+	return twirp.InternalErrorWith(&wrappedError{prefix: prefix, cause: err})
+}
+
+type wrappedError struct {
+	prefix string
+	cause  error
+}
+
+func (e *wrappedError) Cause() error  { return e.cause }
+func (e *wrappedError) Error() string { return e.prefix + ": " + e.cause.Error() }
 
 // JSON serialization for errors
 type twerrJSON struct {
