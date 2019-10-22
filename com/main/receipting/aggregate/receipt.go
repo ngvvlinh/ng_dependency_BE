@@ -3,15 +3,13 @@ package aggregate
 import (
 	"context"
 
-	"etop.vn/backend/com/main/receipting/convert"
-
-	"etop.vn/backend/com/main/receipting/model"
-	"etop.vn/backend/pkg/common/scheme"
-
 	"etop.vn/api/main/receipting"
+	"etop.vn/backend/com/main/receipting/convert"
+	"etop.vn/backend/com/main/receipting/model"
 	"etop.vn/backend/com/main/receipting/sqlstore"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/cmsql"
+	"etop.vn/backend/pkg/common/scheme"
 )
 
 var _ receipting.Aggregate = &ReceiptAggregate{}

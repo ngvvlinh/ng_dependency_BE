@@ -4,8 +4,6 @@ import (
 	"context"
 	"time"
 
-	"etop.vn/backend/pkg/common/scheme"
-
 	"etop.vn/api/main/etop"
 	"etop.vn/api/main/inventory"
 	"etop.vn/backend/com/main/inventory/convert"
@@ -14,6 +12,7 @@ import (
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/cmsql"
+	"etop.vn/backend/pkg/common/scheme"
 )
 
 var _ inventory.Aggregate = &InventoryAggregate{}

@@ -14,6 +14,7 @@ import (
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/cmsql"
+	"etop.vn/backend/pkg/common/scheme"
 	"etop.vn/backend/pkg/common/validate"
 )
 
@@ -129,15 +130,20 @@ func (a *CustomerAggregate) UpdateCustomer(
 		return nil, err
 	}
 
-	updated := convert.UpdateShopCustomer(customer, args)
-	if customer.Phone != updated.Phone {
-		_, err := a.store(ctx).ShopID(args.ShopID).Phone(updated.Phone).GetCustomerDB()
+	if err = scheme.Convert(args, customer); err != nil {
+		return nil, err
+	}
+	if customer.Phone != customer.Phone {
+		_, err := a.store(ctx).ShopID(args.ShopID).Phone(customer.Phone).GetCustomerDB()
 		if err == nil {
 			return nil, cm.Error(cm.InvalidArgument, "Số điện thoại đã tồn tại", err)
 		}
 	}
-	err = a.store(ctx).UpdateCustomerDB(convert.ShopCustomerDB(updated))
-	customerModel := convert.ShopCustomerDB(updated)
+	customerModel := &model.ShopCustomer{}
+	if err = scheme.Convert(customer, customerModel); err != nil {
+		return nil, err
+	}
+	err = a.store(ctx).UpdateCustomerDB(customerModel)
 
 	if args.Code.Valid && args.Code.String != "" {
 		customerTemp, err := a.store(ctx).ShopID(args.ShopID).Code(args.Code.String).GetCustomerDB()
@@ -157,7 +163,7 @@ func (a *CustomerAggregate) UpdateCustomer(
 	}
 
 	err = a.store(ctx).UpdateCustomerDB(customerModel)
-	return updated, err
+	return customer, err
 }
 
 func (a *CustomerAggregate) DeleteCustomer(
@@ -204,9 +210,9 @@ func (a *CustomerAggregate) UpdateCustomerGroup(ctx context.Context, args *custo
 		return nil, err
 	}
 
-	var out customering.ShopCustomerGroup
-	convert.ShopCustomerGroup(group, &out)
-	return &out, nil
+	out := &customering.ShopCustomerGroup{}
+	err = scheme.Convert(group, out)
+	return out, err
 }
 
 func (a *CustomerAggregate) AddCustomersToGroup(ctx context.Context, args *customering.AddCustomerToGroupArgs) (created int, _ error) {

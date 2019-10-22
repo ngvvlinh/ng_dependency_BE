@@ -4,9 +4,8 @@ import (
 	"context"
 	"time"
 
-	"etop.vn/api/meta"
-
 	ordertypes "etop.vn/api/main/ordering/types"
+	"etop.vn/api/meta"
 	. "etop.vn/capi/dot"
 )
 
@@ -50,6 +49,7 @@ type ShopTraderAddress struct {
 	UpdatedAt    time.Time
 }
 
+// +convert:create=ShopTraderAddress
 type CreateAddressArgs struct {
 	ShopID       int64
 	TraderID     int64
@@ -65,6 +65,7 @@ type CreateAddressArgs struct {
 	Coordinates  *ordertypes.Coordinates
 }
 
+// +convert:update=ShopTraderAddress(ID)
 type UpdateAddressArgs struct {
 	FullName     NullString
 	Phone        NullString

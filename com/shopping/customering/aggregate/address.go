@@ -4,13 +4,13 @@ import (
 	"context"
 
 	"etop.vn/api/meta"
-
 	"etop.vn/api/shopping/addressing"
-	"etop.vn/backend/com/shopping/customering/convert"
+	"etop.vn/backend/com/shopping/customering/model"
 	"etop.vn/backend/com/shopping/customering/sqlstore"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/cmsql"
+	"etop.vn/backend/pkg/common/scheme"
 )
 
 var _ addressing.Aggregate = &AddressAggregate{}
@@ -35,21 +35,32 @@ func (a *AddressAggregate) CreateAddress(ctx context.Context, args *addressing.C
 	if err != nil {
 		return nil, err
 	}
-
 	if err := a.store(ctx).UpdateStatusAddresses(args.ShopID, args.TraderID, false); err != nil {
 		return nil, err
 	}
 
-	addr := convert.CreateShopTraderAddress(args)
+	addr := &addressing.ShopTraderAddress{}
+	if err = scheme.Convert(args, addr); err != nil {
+		return nil, err
+	}
 	err = a.store(ctx).CreateAddress(addr)
 	return addr, err
 }
 
 func (a *AddressAggregate) UpdateAddress(ctx context.Context, ID int64, ShopID int64, args *addressing.UpdateAddressArgs) (*addressing.ShopTraderAddress, error) {
 	addr, err := a.store(ctx).ID(ID).ShopID(ShopID).GetAddress()
-	updated := convert.UpdateShopTraderAddress(addr, args)
-	err = a.store(ctx).UpdateAddressDB(convert.ShopTraderAddressDB(updated))
-	return updated, err
+	if err != nil {
+		return nil, err
+	}
+	if err = scheme.Convert(args, addr); err != nil {
+		return nil, err
+	}
+	addrDB := &model.ShopTraderAddress{}
+	if err = scheme.Convert(addr, addrDB); err != nil {
+		return nil, err
+	}
+	err = a.store(ctx).UpdateAddressDB(addrDB)
+	return addr, err
 }
 
 func (a *AddressAggregate) DeleteAddress(ctx context.Context, ID int64, ShopID int64) (deleted int, _ error) {

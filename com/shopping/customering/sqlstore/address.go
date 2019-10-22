@@ -5,9 +5,9 @@ import (
 	"time"
 
 	"etop.vn/api/shopping/addressing"
-	"etop.vn/backend/com/shopping/customering/convert"
 	"etop.vn/backend/com/shopping/customering/model"
 	"etop.vn/backend/pkg/common/cmsql"
+	"etop.vn/backend/pkg/common/scheme"
 	"etop.vn/backend/pkg/common/sq"
 	"etop.vn/backend/pkg/common/sqlstore"
 )
@@ -87,7 +87,10 @@ func (s *AddressStore) SetDefaultAddress(ID, shopID, traderID int64) (int, error
 
 func (s *AddressStore) CreateAddress(addr *addressing.ShopTraderAddress) error {
 	sqlstore.MustNoPreds(s.preds)
-	addrDB := convert.ShopTraderAddressDB(addr)
+	addrDB := &model.ShopTraderAddress{}
+	if err := scheme.Convert(addr, addrDB); err != nil {
+		return err
+	}
 	_, err := s.query().Insert(addrDB)
 	return err
 }
@@ -125,7 +128,9 @@ func (s *AddressStore) GetAddress() (*addressing.ShopTraderAddress, error) {
 	if err != nil {
 		return nil, err
 	}
-	return convert.ShopTraderAddress(address), nil
+	result := &addressing.ShopTraderAddress{}
+	err = scheme.Convert(address, result)
+	return result, err
 }
 
 func (s *AddressStore) ListAddressesDB() ([]*model.ShopTraderAddress, error) {
@@ -137,10 +142,11 @@ func (s *AddressStore) ListAddressesDB() ([]*model.ShopTraderAddress, error) {
 	return addrs, err
 }
 
-func (s *AddressStore) ListAddresses() ([]*addressing.ShopTraderAddress, error) {
+func (s *AddressStore) ListAddresses() (result []*addressing.ShopTraderAddress, err error) {
 	addrs, err := s.ListAddressesDB()
 	if err != nil {
 		return nil, err
 	}
-	return convert.Addresses(addrs), nil
+	err = scheme.Convert(addrs, &result)
+	return
 }

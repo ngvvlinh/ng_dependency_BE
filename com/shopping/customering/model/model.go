@@ -11,6 +11,7 @@ import (
 
 var _ = sqlgenShopTrader(&ShopTrader{})
 
+// +convert:type=tradering.ShopTrader
 type ShopTrader struct {
 	ID     int64
 	ShopID int64
@@ -19,6 +20,7 @@ type ShopTrader struct {
 
 var _ = sqlgenShopCustomer(&ShopCustomer{})
 
+// +convert:type=customering.ShopCustomer
 type ShopCustomer struct {
 	ID           int64
 	ShopID       int64
@@ -42,6 +44,7 @@ type ShopCustomer struct {
 
 var _ = sqlgenShopTraderAddress(&ShopTraderAddress{})
 
+// +convert:type=addressing.ShopTraderAddress
 type ShopTraderAddress struct {
 	ID           int64
 	ShopID       int64

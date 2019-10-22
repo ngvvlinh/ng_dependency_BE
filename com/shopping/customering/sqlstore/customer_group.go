@@ -3,13 +3,11 @@ package sqlstore
 import (
 	"context"
 
-	"etop.vn/backend/com/shopping/customering/convert"
-
-	"etop.vn/backend/com/shopping/customering/model"
-
 	"etop.vn/api/meta"
 	"etop.vn/api/shopping/customering"
+	"etop.vn/backend/com/shopping/customering/model"
 	"etop.vn/backend/pkg/common/cmsql"
+	"etop.vn/backend/pkg/common/scheme"
 	"etop.vn/backend/pkg/common/sq"
 	"etop.vn/backend/pkg/common/sqlstore"
 )
@@ -74,9 +72,11 @@ func (s *CustomerGroupStore) Count() (uint64, error) {
 
 func (s *CustomerGroupStore) CreateShopCustomerGroup(customerGroup *customering.ShopCustomerGroup) error {
 	sqlstore.MustNoPreds(s.preds)
-	var customerDB model.ShopCustomerGroup
-	convert.ShopCustomerGroupDB(customerGroup, &customerDB)
-	_, err := s.query().Insert(&customerDB)
+	customerDB := &model.ShopCustomerGroup{}
+	if err := scheme.Convert(customerGroup, customerDB); err != nil {
+		return err
+	}
+	_, err := s.query().Insert(customerDB)
 	return err
 }
 
@@ -94,9 +94,9 @@ func (s *CustomerGroupStore) GetShopCustomerGroup() (*customering.ShopCustomerGr
 	if err != nil {
 		return nil, err
 	}
-	var out customering.ShopCustomerGroup
-	convert.ShopCustomerGroup(customerGroupDB, &out)
-	return &out, err
+	out := &customering.ShopCustomerGroup{}
+	err = scheme.Convert(customerGroupDB, out)
+	return out, err
 }
 
 func (s *CustomerGroupStore) ListShopCustomerGroupsDB() ([]*model.ShopCustomerGroup, error) {
@@ -119,12 +119,13 @@ func (s *CustomerGroupStore) ListShopCustomerGroupsDB() ([]*model.ShopCustomerGr
 	return customerGroups, err
 }
 
-func (s *CustomerGroupStore) ListShopCustomerGroups() ([]*customering.ShopCustomerGroup, error) {
+func (s *CustomerGroupStore) ListShopCustomerGroups() (result []*customering.ShopCustomerGroup, err error) {
 	customerGroup, err := s.ListShopCustomerGroupsDB()
 	if err != nil {
 		return nil, err
 	}
-	return convert.ShopCustomerGroups(customerGroup), nil
+	err = scheme.Convert(customerGroup, &result)
+	return
 }
 
 func (s *CustomerGroupStore) UpdateCustomerGroup(customerGroup *model.ShopCustomerGroup) error {

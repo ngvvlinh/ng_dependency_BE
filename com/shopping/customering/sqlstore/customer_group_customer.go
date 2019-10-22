@@ -8,6 +8,7 @@ import (
 	"etop.vn/backend/com/shopping/customering/convert"
 	"etop.vn/backend/com/shopping/customering/model"
 	"etop.vn/backend/pkg/common/cmsql"
+	"etop.vn/backend/pkg/common/scheme"
 	"etop.vn/backend/pkg/common/sq"
 	"etop.vn/backend/pkg/common/sqlstore"
 )
@@ -72,11 +73,13 @@ func (s *CustomerGroupCustomerStore) CustomerIDs(ids ...int64) *CustomerGroupCus
 }
 
 // AddCustomerToGroup add a customer to a group. If the customer already exists in the group, it's a no-op.
-func (s *CustomerGroupCustomerStore) AddShopCustomerToGroup(ShopCustomerGroupCustomer *customering.ShopCustomerGroupCustomer) (int, error) {
+func (s *CustomerGroupCustomerStore) AddShopCustomerToGroup(groupCustomer *customering.ShopCustomerGroupCustomer) (int, error) {
 	sqlstore.MustNoPreds(s.preds)
-	var out model.ShopCustomerGroupCustomer
-	convert.ShopCustomerGroupCustomerDB(ShopCustomerGroupCustomer, &out)
-	created, err := s.query().Suffix("ON CONFLICT ON CONSTRAINT shop_customer_group_customer_constraint DO NOTHING").Insert(&out)
+	out := &model.ShopCustomerGroupCustomer{}
+	if err := scheme.Convert(groupCustomer, out); err != nil {
+		return 0, err
+	}
+	created, err := s.query().Suffix("ON CONFLICT ON CONSTRAINT shop_customer_group_customer_constraint DO NOTHING").Insert(out)
 	return int(created), err
 }
 
@@ -89,9 +92,9 @@ func (s *CustomerGroupCustomerStore) RemoveCustomerFromGroup() (int, error) {
 func (s *CustomerGroupCustomerStore) GetShopCustomerToGroupDB() (*model.ShopCustomerGroupCustomer, error) {
 	query := s.query().Where(s.preds)
 
-	var shopCustomerGroupCustomer model.ShopCustomerGroupCustomer
-	err := query.ShouldGet(&shopCustomerGroupCustomer)
-	return &shopCustomerGroupCustomer, err
+	var groupCustomer model.ShopCustomerGroupCustomer
+	err := query.ShouldGet(&groupCustomer)
+	return &groupCustomer, err
 }
 
 func (s *CustomerGroupCustomerStore) ListShopCustomerGroupsCustomerByCustomerIDDB() ([]*model.ShopCustomerGroupCustomer, error) {

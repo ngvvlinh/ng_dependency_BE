@@ -5,15 +5,13 @@ import (
 	"strings"
 	"time"
 
-	cm "etop.vn/backend/pkg/common"
-
-	"etop.vn/api/shopping/tradering"
-
 	"etop.vn/api/meta"
 	"etop.vn/api/shopping/customering"
-	"etop.vn/backend/com/shopping/customering/convert"
+	"etop.vn/api/shopping/tradering"
 	"etop.vn/backend/com/shopping/customering/model"
+	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/cmsql"
+	"etop.vn/backend/pkg/common/scheme"
 	"etop.vn/backend/pkg/common/sq"
 	"etop.vn/backend/pkg/common/sqlstore"
 )
@@ -153,7 +151,9 @@ func (s *CustomerStore) GetCustomer() (*customering.ShopCustomer, error) {
 	if err != nil {
 		return nil, err
 	}
-	return convert.ShopCustomer(customer), nil
+	result := &customering.ShopCustomer{}
+	err = scheme.Convert(customer, result)
+	return result, err
 }
 
 func (s *CustomerStore) GetCustomerByMaximumCodeNorm() (*model.ShopCustomer, error) {
@@ -188,12 +188,13 @@ func (s *CustomerStore) ListCustomersDB() ([]*model.ShopCustomer, error) {
 	return customers, err
 }
 
-func (s *CustomerStore) ListCustomers() ([]*customering.ShopCustomer, error) {
+func (s *CustomerStore) ListCustomers() (result []*customering.ShopCustomer, err error) {
 	customers, err := s.ListCustomersDB()
 	if err != nil {
 		return nil, err
 	}
-	return convert.ShopCustomers(customers), nil
+	err = scheme.Convert(customers, &result)
+	return
 }
 
 func CheckErrorCustomer(e error, email string, phone string) error {

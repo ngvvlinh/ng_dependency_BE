@@ -16,8 +16,9 @@ import (
 	"etop.vn/common/l"
 )
 
-// +gen:convert: etop.vn/backend/com/shopping/customering/model -> etop.vn/api/shopping/customering
+// +gen:convert: etop.vn/backend/com/shopping/customering/model -> etop.vn/api/shopping/customering,etop.vn/api/shopping/addressing,etop.vn/api/shopping/tradering
 // +gen:convert: etop.vn/api/shopping/customering
+// +gen:convert: etop.vn/api/shopping/addressing
 
 var ll = l.New()
 
@@ -67,7 +68,7 @@ func CreateShopCustomer(args *customering.CreateCustomerArgs) (out *model.ShopCu
 	return result
 }
 
-func UpdateShopCustomer(in *customering.ShopCustomer, args *customering.UpdateCustomerArgs) (out *customering.ShopCustomer) {
+func UpdateShopCustomer(args *customering.UpdateCustomerArgs, in *customering.ShopCustomer) (out *customering.ShopCustomer) {
 	if in == nil {
 		return nil
 	}
@@ -87,179 +88,35 @@ func UpdateShopCustomer(in *customering.ShopCustomer, args *customering.UpdateCu
 	}
 }
 
-func ShopCustomer(in *model.ShopCustomer) (out *customering.ShopCustomer) {
-	if in == nil {
-		return nil
-	}
-	return &customering.ShopCustomer{
-		ID:        in.ID,
-		ShopID:    in.ShopID,
-		Code:      in.Code,
-		FullName:  in.FullName,
-		Gender:    in.Gender,
-		Type:      in.Type,
-		Birthday:  in.Birthday,
-		Note:      in.Note,
-		Phone:     in.Phone,
-		Email:     in.Email,
-		Status:    in.Status,
-		CreatedAt: in.CreatedAt,
-		UpdatedAt: in.UpdatedAt,
-	}
+func shopCustomerDB(args *customering.ShopCustomer, out *model.ShopCustomer) {
+	convert_customering_ShopCustomer_customeringmodel_ShopCustomer(args, out)
+	out.PhoneNorm = validate.NormalizeSearchPhone(args.Phone)
+	out.FullNameNorm = validate.NormalizeSearch(args.FullName)
 }
 
-func ShopCustomerDB(in *customering.ShopCustomer) (out *model.ShopCustomer) {
-	if in == nil {
-		return nil
-	}
-	return &model.ShopCustomer{
-		ID:           in.ID,
-		ShopID:       in.ShopID,
-		Code:         in.Code,
-		FullName:     in.FullName,
-		Gender:       in.Gender,
-		Type:         in.Type,
-		Birthday:     in.Birthday,
-		Note:         in.Note,
-		Phone:        in.Phone,
-		Email:        in.Email,
-		PhoneNorm:    validate.NormalizeSearchPhone(in.Phone),
-		Status:       in.Status,
-		CreatedAt:    in.CreatedAt,
-		UpdatedAt:    in.UpdatedAt,
-		FullNameNorm: validate.NormalizeSearch(in.FullName),
-	}
+func ShopTraderAddress(args *model.ShopTraderAddress, out *addressing.ShopTraderAddress) {
+	convert_customeringmodel_ShopTraderAddress_addressing_ShopTraderAddress(args, out)
+	out.Coordinates = orderconvert.Coordinates(args.Coordinates)
 }
 
-func ShopCustomers(ins []*model.ShopCustomer) (outs []*customering.ShopCustomer) {
-	outs = make([]*customering.ShopCustomer, len(ins))
-	for i, in := range ins {
-		outs[i] = ShopCustomer(in)
-	}
-	return outs
+func ShopTraderAddressDB(args *addressing.ShopTraderAddress, out *model.ShopTraderAddress) {
+	Convert_addressing_ShopTraderAddress_customeringmodel_ShopTraderAddress(args, out)
+	out.Coordinates = orderconvert.CoordinatesDB(args.Coordinates)
+	out.Status = etop.S3Positive
 }
 
-func ShopTraderAddress(in *model.ShopTraderAddress) (out *addressing.ShopTraderAddress) {
-	if in == nil {
-		return nil
-	}
-	return &addressing.ShopTraderAddress{
-		ID:           in.ID,
-		ShopID:       in.ShopID,
-		TraderID:     in.TraderID,
-		FullName:     in.FullName,
-		Phone:        in.Phone,
-		Email:        in.Email,
-		Company:      in.Company,
-		Address1:     in.Address1,
-		Address2:     in.Address2,
-		DistrictCode: in.DistrictCode,
-		WardCode:     in.WardCode,
-		Coordinates:  orderconvert.Coordinates(in.Coordinates),
-		CreatedAt:    in.CreatedAt,
-		UpdatedAt:    in.UpdatedAt,
-		IsDefault:    in.IsDefault,
-	}
+func CreateShopTraderAddress(args *addressing.CreateAddressArgs, out *addressing.ShopTraderAddress) {
+	apply_addressing_CreateAddressArgs_addressing_ShopTraderAddress(args, out)
+	out.ID = cm.NewID()
 }
 
-func Addresses(ins []*model.ShopTraderAddress) (outs []*addressing.ShopTraderAddress) {
-	outs = make([]*addressing.ShopTraderAddress, len(ins))
-	for i, in := range ins {
-		outs[i] = ShopTraderAddress(in)
+func UpdateShopTraderAddress(args *addressing.UpdateAddressArgs, out *addressing.ShopTraderAddress) {
+	// TODO: coordinates
+	coordinates := out.Coordinates
+	apply_addressing_UpdateAddressArgs_addressing_ShopTraderAddress(args, out)
+	if args.Coordinates == nil {
+		out.Coordinates = coordinates
 	}
-	return outs
-}
-
-func ShopTraderAddressDB(in *addressing.ShopTraderAddress) (out *model.ShopTraderAddress) {
-	if in == nil {
-		return nil
-	}
-	return &model.ShopTraderAddress{
-		ID:           in.ID,
-		ShopID:       in.ShopID,
-		TraderID:     in.TraderID,
-		FullName:     in.FullName,
-		Phone:        in.Phone,
-		Email:        in.Email,
-		Company:      in.Company,
-		Address1:     in.Address1,
-		Address2:     in.Address2,
-		DistrictCode: in.DistrictCode,
-		WardCode:     in.WardCode,
-		Coordinates:  orderconvert.CoordinatesDB(in.Coordinates),
-		CreatedAt:    in.CreatedAt,
-		UpdatedAt:    in.UpdatedAt,
-		IsDefault:    in.IsDefault,
-
-		// currently not use TODO
-		Status: etop.S3Positive,
-	}
-}
-
-func CreateShopTraderAddress(in *addressing.CreateAddressArgs) (out *addressing.ShopTraderAddress) {
-	if in == nil {
-		return nil
-	}
-	return &addressing.ShopTraderAddress{
-		ID:           cm.NewID(),
-		ShopID:       in.ShopID,
-		TraderID:     in.TraderID,
-		FullName:     in.FullName,
-		Phone:        in.Phone,
-		Email:        in.Email,
-		Company:      in.Company,
-		Address1:     in.Address1,
-		Address2:     in.Address2,
-		DistrictCode: in.DistrictCode,
-		WardCode:     in.WardCode,
-		Coordinates:  in.Coordinates,
-		IsDefault:    in.IsDefault,
-	}
-}
-
-func UpdateShopTraderAddress(in *addressing.ShopTraderAddress, update *addressing.UpdateAddressArgs) (out *addressing.ShopTraderAddress) {
-	if in == nil {
-		return nil
-	}
-	out = &addressing.ShopTraderAddress{
-		ID:           in.ID,
-		ShopID:       in.ShopID,
-		TraderID:     in.TraderID,
-		FullName:     update.FullName.Apply(in.FullName),
-		Phone:        update.Phone.Apply(in.Phone),
-		Email:        update.Email.Apply(in.Email),
-		Company:      update.Company.Apply(in.Company),
-		Address1:     update.Address1.Apply(in.Address1),
-		Address2:     update.Address2.Apply(in.Address2),
-		DistrictCode: update.DistrictCode.Apply(in.DistrictCode),
-		WardCode:     update.WardCode.Apply(in.WardCode),
-		Coordinates:  in.Coordinates,
-		IsDefault:    in.IsDefault,
-	}
-	if update.Coordinates != nil {
-		out.Coordinates = update.Coordinates
-	}
-	return out
-}
-
-func ShopCustomerGroup(in *model.ShopCustomerGroup, out *customering.ShopCustomerGroup) {
-	convert_customeringmodel_ShopCustomerGroup_customering_ShopCustomerGroup(in, out)
-}
-
-func ShopCustomerGroupDB(in *customering.ShopCustomerGroup, out *model.ShopCustomerGroup) {
-	convert_customering_ShopCustomerGroup_customeringmodel_ShopCustomerGroup(in, out)
-}
-
-func ShopCustomerGroups(ins []*model.ShopCustomerGroup) (outs []*customering.ShopCustomerGroup) {
-	return Convert_customeringmodel_ShopCustomerGroups_customering_ShopCustomerGroups(ins)
-}
-
-func ShopCustomerGroupCustomer(in *model.ShopCustomerGroupCustomer, out *customering.ShopCustomerGroupCustomer) {
-	convert_customeringmodel_ShopCustomerGroupCustomer_customering_ShopCustomerGroupCustomer(in, out)
-}
-
-func ShopCustomerGroupCustomerDB(in *customering.ShopCustomerGroupCustomer, out *model.ShopCustomerGroupCustomer) {
-	convert_customering_ShopCustomerGroupCustomer_customeringmodel_ShopCustomerGroupCustomer(in, out)
 }
 
 func UpdateCustomerGroup(in *model.ShopCustomerGroup, update *customering.UpdateCustomerGroupArgs) (out *model.ShopCustomerGroup) {
