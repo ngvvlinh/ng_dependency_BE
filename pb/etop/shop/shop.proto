@@ -1052,7 +1052,7 @@ message ExternalAccountHaravanRequest {
 }
 
 message Liability {
-    optional int32 number_of_orders = 1 [(gogoproto.nullable) = false];
+    optional int32 total_orders = 1 [(gogoproto.nullable) = false];
 
     optional int64 total_amount = 2 [(gogoproto.nullable) = false];
 

@@ -287,7 +287,7 @@ func listLiabilities(ctx context.Context, shopID int64, customers []*pbshop.Cust
 
 	for _, customer := range customers {
 		customer.Liability = &pbshop.Liability{
-			NumberOfOrders: int32(mapCustomerIDAndNumberOfOrders[customer.Id]),
+			TotalOrders:    int32(mapCustomerIDAndNumberOfOrders[customer.Id]),
 			TotalAmount:    mapCustomerIDAndTotalAmountOrders[customer.Id],
 			ReceivedAmount: mapCustomerIDAndTotalAmountReceipts[customer.Id],
 			Liability:      mapCustomerIDAndTotalAmountOrders[customer.Id] - mapCustomerIDAndTotalAmountReceipts[customer.Id],

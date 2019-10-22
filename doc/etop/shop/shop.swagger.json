@@ -8669,7 +8669,7 @@
     "shopLiability": {
       "type": "object",
       "properties": {
-        "number_of_orders": {
+        "total_orders": {
           "type": "integer",
           "format": "int32"
         },
