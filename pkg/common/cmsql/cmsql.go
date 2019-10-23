@@ -7,13 +7,8 @@ import (
 	"io/ioutil"
 	"net"
 	"regexp"
+	"sync"
 	"time"
-
-	"etop.vn/backend/pkg/common/bus"
-	"etop.vn/backend/pkg/common/sq"
-	"etop.vn/backend/pkg/common/sq/core"
-	"etop.vn/common/l"
-	cm "etop.vn/common/xerrors"
 
 	"github.com/lib/pq"
 	"golang.org/x/oauth2/google"
@@ -21,8 +16,18 @@ import (
 
 	_ "github.com/GoogleCloudPlatform/cloudsql-proxy/proxy/dialers/postgres"
 	"github.com/GoogleCloudPlatform/cloudsql-proxy/proxy/proxy"
+
+	cm "etop.vn/backend/pkg/common"
+	"etop.vn/backend/pkg/common/bus"
+	"etop.vn/backend/pkg/common/sq"
+	"etop.vn/backend/pkg/common/sq/core"
+	"etop.vn/common/l"
+	"etop.vn/common/xerrors"
 )
 
+// map[connection-string]Database
+var dbPool = map[string]Database{}
+var mu sync.RWMutex
 var ll = l.New()
 
 const sqlScope = "https://www.googleapis.com/auth/sqlservice.admin"
@@ -83,16 +88,30 @@ func (c *ConfigPostgres) ConnectionString() (driver string, connStr string) {
 
 	switch c.Protocol {
 	case "":
-		driver = "postgres"
 		connStr = fmt.Sprintf("host=%v port=%v user=%v password=%v dbname=%v sslmode=%v connect_timeout=%v", c.Host, c.Port, c.Username, c.Password, c.Database, sslmode, c.Timeout)
 	case "cloudsql":
-		driver = "cloudsqlpostgres"
 		connStr = fmt.Sprintf("host=%v user=%v password=%v dbname=%v sslmode=disable",
 			c.Host, c.Username, c.Password, c.Database)
 	default:
 		ll.Panic("postgres: Invalid protocol", l.Object("config", c))
 	}
-	return
+	return c.Driver(), connStr
+}
+
+func (c *ConfigPostgres) Driver() string {
+	switch c.Protocol {
+	case "":
+		return "postgres"
+	case "cloudsql":
+		return "cloudsqlpostgres"
+	default:
+		return "unknown"
+	}
+}
+
+func (c *ConfigPostgres) connectionStringIdentifier() string {
+	return fmt.Sprintf("driver=%v host=%v port=%v user=%v dbname=%v",
+		c.Driver(), c.Host, c.Port, c.Username, c.Database)
 }
 
 // Dialer ...
@@ -137,6 +156,7 @@ func (d *Dialer) DialTimeout(network, address string, timeout time.Duration) (ne
 
 // Database ...
 type Database struct {
+	id   int64
 	db   *sq.Database
 	dlog *sq.DynamicLogger
 }
@@ -155,6 +175,14 @@ func Connect(c ConfigPostgres) (Database, error) {
 		return Database{}, err
 	}
 
+	identifier := c.connectionStringIdentifier()
+	mu.RLock()
+	if db, ok := dbPool[identifier]; ok {
+		mu.RUnlock()
+		return db, nil
+	}
+	mu.RUnlock()
+
 	dlog := sq.NewDynamicLogger(DefaultLogger)
 	driver, conn := c.ConnectionString()
 	db, err := sq.Connect(driver, conn, dlog,
@@ -167,14 +195,23 @@ func Connect(c ConfigPostgres) (Database, error) {
 	}
 
 	if c.MaxOpenConns == 0 {
-		c.MaxOpenConns = 5
+		c.MaxOpenConns = 10
 	}
 	if c.MaxIdleConns == 0 {
-		c.MaxIdleConns = 2
+		c.MaxIdleConns = 3
 	}
 	db.DB().SetMaxOpenConns(c.MaxOpenConns)
 	db.DB().SetMaxIdleConns(c.MaxIdleConns)
-	return Database{db, dlog}, err
+
+	mu.Lock()
+	database := Database{cm.NewID(), db, dlog}
+	dbPool[identifier] = database
+	defer mu.Unlock()
+	return database, nil
+}
+
+func (db Database) TxKey() TxKey {
+	return TxKey{db.id}
 }
 
 // DB ...
@@ -336,7 +373,7 @@ func DefaultLogger(entry *sq.LogEntry) {
 func logQuery(entry *sq.LogEntry) {
 	d, query, err := entry.Duration, entry.Query, entry.Error
 	args, _ := entry.Args.ToSQLValues()
-	if err != nil && cm.ErrorCode(err) != cm.NotFound {
+	if err != nil && xerrors.ErrorCode(err) != xerrors.NotFound {
 		ll.Error(query, l.Any("args", args), l.Error(err), l.Duration("t", d), l.Bool("tx", entry.IsTx()))
 	} else if d >= 200*time.Millisecond {
 		ll.Warn(query, l.Any("args", args), l.Duration("t", d), l.Bool("tx", entry.IsTx()))
@@ -351,19 +388,20 @@ func DefaultErrorMapper(err error, entry *sq.LogEntry) error {
 	case nil:
 		return nil
 	case sql.ErrNoRows:
-		return cm.Error(cm.NotFound, "", err)
+		return xerrors.Error(xerrors.NotFound, "", err)
 	default:
 		if err, ok := err.(core.InvalidArgumentError); ok {
-			return cm.Error(cm.InvalidArgument, string(err), nil)
+			return xerrors.Error(xerrors.InvalidArgument, string(err), nil)
 		}
-		return cm.Error(cm.Internal, "", err)
+		return xerrors.Error(xerrors.Internal, "", err)
 	}
 }
 
 // InTransaction ...
 func (db Database) InTransaction(ctx context.Context, callback func(QueryInterface) error) (err error) {
+	txKey := db.TxKey()
 	{
-		tx := ctx.Value(TxKey{})
+		tx := ctx.Value(txKey)
 		if tx != nil {
 			return callback(tx.(Tx))
 		}
@@ -377,26 +415,26 @@ func (db Database) InTransaction(ctx context.Context, callback func(QueryInterfa
 	if !ok {
 		panic("cmsql: InTransaction only accepts bus.NodeContext")
 	}
-	ctx2.WithValue(TxKey{}, tx)
+	ctx2.WithValue(txKey, tx)
 
 	defer func() {
 		e := recover()
 		if e != nil {
 			ll.Error("common/sql: panic (recover)", l.Any("err", e), l.Stack())
-			err = cm.Error(cm.Internal, fmt.Sprint(e), nil)
+			err = xerrors.Error(xerrors.Internal, fmt.Sprint(e), nil)
 		}
 		if err != nil {
 			_ = tx.Rollback()
 		} else {
 			err = tx.Commit()
 		}
-		ctx2.ResetValue(TxKey{})
+		ctx2.ResetValue(txKey)
 	}()
 	return callback(tx)
 }
 
 func GetTxOrNewQuery(ctx context.Context, db Database) QueryInterface {
-	tx := ctx.Value(TxKey{})
+	tx := ctx.Value(db.TxKey())
 	if tx == nil {
 		return db.WithContext(ctx)
 	}

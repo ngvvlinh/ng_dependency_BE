@@ -53,7 +53,7 @@ type DBX interface {
 	QueryInterface
 }
 
-type TxKey struct{}
+type TxKey struct{ dbID int64 }
 
 type Transactioner interface {
 	InTransaction(ctx context.Context, callback func(QueryInterface) error) (err error)

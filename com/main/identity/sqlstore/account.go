@@ -4,13 +4,12 @@ import (
 	"context"
 	"time"
 
-	"etop.vn/backend/pkg/common/sq"
-
 	"etop.vn/api/main/identity"
 	"etop.vn/backend/com/main/identity/convert"
 	identitymodel "etop.vn/backend/com/main/identity/model"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/cmsql"
+	"etop.vn/backend/pkg/common/sq"
 	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/backend/pkg/etop/sqlstore"
 )
