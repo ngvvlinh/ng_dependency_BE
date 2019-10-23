@@ -20,7 +20,7 @@ var _ = selModel(
 // We must always use string for id, shop_id, order_id, etc.
 
 type IModel interface {
-	Query(cmsql.Database, *pgevent.PgEvent) (bool, error)
+	Query(*cmsql.Database, *pgevent.PgEvent) (bool, error)
 	_meta() Meta
 }
 
@@ -41,7 +41,7 @@ type UserEvent struct {
 	AgreedEmailInfoAt time.Time `json:"agreed_email_info" sel:"u.agreed_email_info_at IS NOT NULL"`
 }
 
-func (m *UserEvent) Query(db cmsql.Database, event *pgevent.PgEvent) (bool, error) {
+func (m *UserEvent) Query(db *cmsql.Database, event *pgevent.PgEvent) (bool, error) {
 	sql := `
 FROM "user" AS u
 JOIN history."user" AS h
@@ -62,7 +62,7 @@ type FulfillmentEvent struct {
 	ShippingState string    `json:"shipping_state" sel:"h.shipping_state"`
 }
 
-func (m *FulfillmentEvent) Query(db cmsql.Database, event *pgevent.PgEvent) (bool, error) {
+func (m *FulfillmentEvent) Query(db *cmsql.Database, event *pgevent.PgEvent) (bool, error) {
 	sql := `
 FROM fulfillment AS f
 JOIN history.fulfillment AS h
@@ -91,7 +91,7 @@ type ShopEvent struct {
 	OwnerCreatedAt time.Time `json:"owner_created_at" sel:"u.created_at"`
 }
 
-func (m *ShopEvent) Query(db cmsql.Database, event *pgevent.PgEvent) (bool, error) {
+func (m *ShopEvent) Query(db *cmsql.Database, event *pgevent.PgEvent) (bool, error) {
 	sql := `
 FROM shop AS s
 JOIN history.shop AS h
@@ -112,7 +112,7 @@ type ShopProductEvent struct {
 	ProductID string `json:"product_id" sel:"sp.product_id"`
 }
 
-func (m *ShopProductEvent) Query(db cmsql.Database, event *pgevent.PgEvent) (bool, error) {
+func (m *ShopProductEvent) Query(db *cmsql.Database, event *pgevent.PgEvent) (bool, error) {
 	sql := `
 FROM shop_product AS sp
 JOIN history.shop_product AS h
@@ -132,7 +132,7 @@ type OrderEvent struct {
 	ShopID string `json:"shop_id" sel:"o.shop_id"`
 }
 
-func (m *OrderEvent) Query(db cmsql.Database, event *pgevent.PgEvent) (bool, error) {
+func (m *OrderEvent) Query(db *cmsql.Database, event *pgevent.PgEvent) (bool, error) {
 	sql := `
 FROM "order" AS o
 JOIN history."order" AS h

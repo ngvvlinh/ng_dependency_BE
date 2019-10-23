@@ -98,6 +98,25 @@ func (ft *ShopVendorFilters) ByNotePtr(Note *string) *sq.ColumnFilterPtr {
 	}
 }
 
+func (ft *ShopVendorFilters) ByStatus(Status int32) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "status",
+		Value:  Status,
+		IsNil:  Status == 0,
+	}
+}
+
+func (ft *ShopVendorFilters) ByStatusPtr(Status *int32) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "status",
+		Value:  Status,
+		IsNil:  Status == nil,
+		IsZero: Status != nil && (*Status) == 0,
+	}
+}
+
 func (ft *ShopVendorFilters) ByCreatedAt(CreatedAt time.Time) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,

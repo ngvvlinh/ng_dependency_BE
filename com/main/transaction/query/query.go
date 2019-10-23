@@ -16,7 +16,7 @@ type QueryService struct {
 	store sqlstore.TransactionStoreFactory
 }
 
-func NewQueryService(db cmsql.Database) *QueryService {
+func NewQueryService(db *cmsql.Database) *QueryService {
 	return &QueryService{
 		store: sqlstore.NewTransactionStore(db),
 	}

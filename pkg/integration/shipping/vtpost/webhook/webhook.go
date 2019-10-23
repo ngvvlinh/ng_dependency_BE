@@ -27,11 +27,11 @@ var ll = l.New()
 var EndStatesCode = []string{"501", "503", "504", "201", "107"}
 
 type Webhook struct {
-	dbLogs  cmsql.Database
+	dbLogs  *cmsql.Database
 	carrier *vtpost.Carrier
 }
 
-func New(dbLogs cmsql.Database, carrier *vtpost.Carrier) *Webhook {
+func New(dbLogs *cmsql.Database, carrier *vtpost.Carrier) *Webhook {
 	wh := &Webhook{
 		dbLogs:  dbLogs,
 		carrier: carrier,

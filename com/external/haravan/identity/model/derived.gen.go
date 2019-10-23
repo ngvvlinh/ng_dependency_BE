@@ -4,10 +4,23 @@ package model
 
 import (
 	"database/sql"
+	"sync"
 	"time"
 
+	"etop.vn/backend/pkg/common/cmsql"
 	core "etop.vn/backend/pkg/common/sq/core"
 )
+
+var __sqlModels []interface{ SQLVerifySchema(db *cmsql.Database) }
+var __sqlonce sync.Once
+
+func SQLVerifySchema(db *cmsql.Database) {
+	__sqlonce.Do(func() {
+		for _, m := range __sqlModels {
+			m.SQLVerifySchema(db)
+		}
+	})
+}
 
 type SQLWriter = core.SQLWriter
 
@@ -26,6 +39,17 @@ const __sqlExternalAccountHaravan_UpdateAll = "UPDATE \"external_account_haravan
 func (m *ExternalAccountHaravan) SQLTableName() string  { return "external_account_haravan" }
 func (m *ExternalAccountHaravans) SQLTableName() string { return "external_account_haravan" }
 func (m *ExternalAccountHaravan) SQLListCols() string   { return __sqlExternalAccountHaravan_ListCols }
+
+func (m *ExternalAccountHaravan) SQLVerifySchema(db *cmsql.Database) {
+	query := "SELECT " + __sqlExternalAccountHaravan_ListCols + " FROM external_account_haravan WHERE false"
+	if _, err := db.SQL(query).Exec(); err != nil {
+		db.RecordError(err)
+	}
+}
+
+func init() {
+	__sqlModels = append(__sqlModels, (*ExternalAccountHaravan)(nil))
+}
 
 func (m *ExternalAccountHaravan) SQLArgs(opts core.Opts, create bool) []interface{} {
 	now := time.Now()

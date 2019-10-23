@@ -29,7 +29,7 @@ const ConsumerGroup = "handler/webhook"
 var ll = l.New()
 
 type Handler struct {
-	db           cmsql.Database
+	db           *cmsql.Database
 	historyStore historysqlstore.HistoryStoreFactory
 	bot          *telebot.Channel
 
@@ -41,7 +41,7 @@ type Handler struct {
 	sender *sender.WebhookSender
 }
 
-func New(db cmsql.Database, sender *sender.WebhookSender, bot *telebot.Channel, consumer mq.KafkaConsumer, prefix string) *Handler {
+func New(db *cmsql.Database, sender *sender.WebhookSender, bot *telebot.Channel, consumer mq.KafkaConsumer, prefix string) *Handler {
 	h := &Handler{
 		db:           db,
 		historyStore: historysqlstore.NewHistoryStore(db),
@@ -65,7 +65,7 @@ func New(db cmsql.Database, sender *sender.WebhookSender, bot *telebot.Channel, 
 	return h
 }
 
-func NewWithHandlers(db cmsql.Database, sender *sender.WebhookSender, bot *telebot.Channel, consumer mq.KafkaConsumer, prefix string, handlers map[string]pgrid.HandlerFunc) *Handler {
+func NewWithHandlers(db *cmsql.Database, sender *sender.WebhookSender, bot *telebot.Channel, consumer mq.KafkaConsumer, prefix string, handlers map[string]pgrid.HandlerFunc) *Handler {
 	if len(handlers) == 0 {
 		ll.Panic("Missing handler!")
 	}

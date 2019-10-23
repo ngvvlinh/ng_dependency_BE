@@ -17,11 +17,12 @@ import (
 
 type SellerCommissionStoreFactory func(ctx context.Context) *SellerCommissionStore
 
-func NewSellerCommissionSettingStore(db cmsql.Database) SellerCommissionStoreFactory {
+func NewSellerCommissionSettingStore(db *cmsql.Database) SellerCommissionStoreFactory {
+	model.SQLVerifySchema(db)
 	return func(ctx context.Context) *SellerCommissionStore {
 		return &SellerCommissionStore{
 			query: func() cmsql.QueryInterface {
-				return cmsql.GetTxOrNewQuery(ctx, db)
+				return cmsql.GetTxOrNewQuery(ctx, *db)
 			},
 		}
 	}

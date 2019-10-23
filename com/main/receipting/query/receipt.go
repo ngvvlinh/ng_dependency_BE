@@ -18,7 +18,7 @@ type ReceiptQuery struct {
 	store sqlstore.ReceiptStoreFactory
 }
 
-func NewReceiptQuery(db cmsql.Database) *ReceiptQuery {
+func NewReceiptQuery(db *cmsql.Database) *ReceiptQuery {
 	return &ReceiptQuery{
 		store: sqlstore.NewReceiptStore(db),
 	}

@@ -16,7 +16,7 @@ type TraderQuery struct {
 	store sqlstore.TraderStoreFactory
 }
 
-func NewTraderQuery(db cmsql.Database) *TraderQuery {
+func NewTraderQuery(db *cmsql.Database) *TraderQuery {
 	return &TraderQuery{
 		store: sqlstore.NewTraderStore(db),
 	}

@@ -4,10 +4,23 @@ package model
 
 import (
 	"database/sql"
+	"sync"
 	"time"
 
+	"etop.vn/backend/pkg/common/cmsql"
 	core "etop.vn/backend/pkg/common/sq/core"
 )
+
+var __sqlModels []interface{ SQLVerifySchema(db *cmsql.Database) }
+var __sqlonce sync.Once
+
+func SQLVerifySchema(db *cmsql.Database) {
+	__sqlonce.Do(func() {
+		for _, m := range __sqlModels {
+			m.SQLVerifySchema(db)
+		}
+	})
+}
 
 type SQLWriter = core.SQLWriter
 
@@ -26,6 +39,17 @@ const __sqlNotification_UpdateAll = "UPDATE \"notification\" SET (" + __sqlNotif
 func (m *Notification) SQLTableName() string  { return "notification" }
 func (m *Notifications) SQLTableName() string { return "notification" }
 func (m *Notification) SQLListCols() string   { return __sqlNotification_ListCols }
+
+func (m *Notification) SQLVerifySchema(db *cmsql.Database) {
+	query := "SELECT " + __sqlNotification_ListCols + " FROM notification WHERE false"
+	if _, err := db.SQL(query).Exec(); err != nil {
+		db.RecordError(err)
+	}
+}
+
+func init() {
+	__sqlModels = append(__sqlModels, (*Notification)(nil))
+}
 
 func (m *Notification) SQLArgs(opts core.Opts, create bool) []interface{} {
 	now := time.Now()
@@ -394,6 +418,17 @@ const __sqlDevice_UpdateAll = "UPDATE \"device\" SET (" + __sqlDevice_ListCols +
 func (m *Device) SQLTableName() string  { return "device" }
 func (m *Devices) SQLTableName() string { return "device" }
 func (m *Device) SQLListCols() string   { return __sqlDevice_ListCols }
+
+func (m *Device) SQLVerifySchema(db *cmsql.Database) {
+	query := "SELECT " + __sqlDevice_ListCols + " FROM device WHERE false"
+	if _, err := db.SQL(query).Exec(); err != nil {
+		db.RecordError(err)
+	}
+}
+
+func init() {
+	__sqlModels = append(__sqlModels, (*Device)(nil))
+}
 
 func (m *Device) SQLArgs(opts core.Opts, create bool) []interface{} {
 	now := time.Now()

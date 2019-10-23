@@ -14,11 +14,12 @@ import (
 
 type AddressStoreFactory func(context.Context) *AddressStore
 
-func NewAddressStore(db cmsql.Database) AddressStoreFactory {
+func NewAddressStore(db *cmsql.Database) AddressStoreFactory {
+	model.SQLVerifySchema(db)
 	return func(ctx context.Context) *AddressStore {
 		return &AddressStore{
 			query: func() cmsql.QueryInterface {
-				return cmsql.GetTxOrNewQuery(ctx, db)
+				return cmsql.GetTxOrNewQuery(ctx, *db)
 			},
 		}
 	}

@@ -42,7 +42,7 @@ type Aggregate struct {
 	haravanClient        *haravanclient.Client
 }
 
-func NewAggregate(db cmsql.Database, thirdParty string, cfg haravanclient.Config) *Aggregate {
+func NewAggregate(db *cmsql.Database, thirdParty string, cfg haravanclient.Config) *Aggregate {
 	thirdPartyHost = thirdParty
 	return &Aggregate{
 		xAccountHaravanStore: sqlstore.NewXAccountHaravanStore(db),

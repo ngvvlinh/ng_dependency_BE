@@ -21,7 +21,7 @@ type QueryService struct {
 	shopProductCollection sqlstore.ShopProductCollectionStoreFactory
 }
 
-func New(db cmsql.Database) *QueryService {
+func New(db *cmsql.Database) *QueryService {
 	return &QueryService{
 		shopProduct:           sqlstore.NewShopProductStore(db),
 		shopVariant:           sqlstore.NewShopVariantStore(db),

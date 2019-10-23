@@ -20,14 +20,14 @@ import (
 var _ customering.Aggregate = &CustomerAggregate{}
 
 type CustomerAggregate struct {
-	db                         cmsql.Database
+	db                         *cmsql.Database
 	store                      sqlstore.CustomerStoreFactory
 	customerGroupStore         sqlstore.CustomerGroupStoreFactory
 	customerGroupCustomerStore sqlstore.CustomerGroupCustomerStoreFactory
 	addressStore               sqlstore.AddressStoreFactory
 }
 
-func NewCustomerAggregate(db cmsql.Database) *CustomerAggregate {
+func NewCustomerAggregate(db *cmsql.Database) *CustomerAggregate {
 	return &CustomerAggregate{
 		db:                         db,
 		store:                      sqlstore.NewCustomerStore(db),

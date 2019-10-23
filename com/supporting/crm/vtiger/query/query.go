@@ -72,7 +72,7 @@ type QueryService struct {
 	vs       *vtigerstore.VtigerStore
 }
 
-func New(db cmsql.Database, fieldMap mapping.ConfigMap, client *client.VtigerClient) *QueryService {
+func New(db *cmsql.Database, fieldMap mapping.ConfigMap, client *client.VtigerClient) *QueryService {
 	return &QueryService{
 		fieldMap: fieldMap,
 		vcsf:     sqlstore.NewVtigerStore(db),

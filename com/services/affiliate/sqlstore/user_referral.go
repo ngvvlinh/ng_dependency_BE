@@ -15,11 +15,12 @@ import (
 
 type UserReferralStoreFactory func(ctx context.Context) *UserReferralStore
 
-func NewUserReferralStore(db cmsql.Database) UserReferralStoreFactory {
+func NewUserReferralStore(db *cmsql.Database) UserReferralStoreFactory {
+	model.SQLVerifySchema(db)
 	return func(ctx context.Context) *UserReferralStore {
 		return &UserReferralStore{
 			query: func() cmsql.QueryInterface {
-				return cmsql.GetTxOrNewQuery(ctx, db)
+				return cmsql.GetTxOrNewQuery(ctx, *db)
 			},
 		}
 	}

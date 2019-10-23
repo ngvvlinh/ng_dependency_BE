@@ -16,7 +16,7 @@ type VendorQuery struct {
 	store sqlstore.VendorStoreFactory
 }
 
-func NewVendorQuery(db cmsql.Database) *VendorQuery {
+func NewVendorQuery(db *cmsql.Database) *VendorQuery {
 	return &VendorQuery{
 		store: sqlstore.NewVendorStore(db),
 	}

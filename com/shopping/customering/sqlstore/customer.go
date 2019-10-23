@@ -20,11 +20,12 @@ import (
 
 type CustomerStoreFactory func(context.Context) *CustomerStore
 
-func NewCustomerStore(db cmsql.Database) CustomerStoreFactory {
+func NewCustomerStore(db *cmsql.Database) CustomerStoreFactory {
+	model.SQLVerifySchema(db)
 	return func(ctx context.Context) *CustomerStore {
 		return &CustomerStore{
 			query: func() cmsql.QueryInterface {
-				return cmsql.GetTxOrNewQuery(ctx, db)
+				return cmsql.GetTxOrNewQuery(ctx, *db)
 			},
 		}
 	}

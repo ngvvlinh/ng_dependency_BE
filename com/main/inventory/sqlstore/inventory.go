@@ -20,11 +20,12 @@ var Sort = map[string]string{
 
 type InventoryFactory func(context.Context) *InventoryStore
 
-func NewInventoryStore(db cmsql.Database) InventoryFactory {
+func NewInventoryStore(db *cmsql.Database) InventoryFactory {
+	model.SQLVerifySchema(db)
 	return func(ctx context.Context) *InventoryStore {
 		return &InventoryStore{
 			query: func() cmsql.QueryInterface {
-				return cmsql.GetTxOrNewQuery(ctx, db)
+				return cmsql.GetTxOrNewQuery(ctx, *db)
 			},
 		}
 	}

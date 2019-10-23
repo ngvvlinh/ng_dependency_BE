@@ -4,10 +4,23 @@ package model
 
 import (
 	"database/sql"
+	"sync"
 	"time"
 
+	"etop.vn/backend/pkg/common/cmsql"
 	core "etop.vn/backend/pkg/common/sq/core"
 )
+
+var __sqlModels []interface{ SQLVerifySchema(db *cmsql.Database) }
+var __sqlonce sync.Once
+
+func SQLVerifySchema(db *cmsql.Database) {
+	__sqlonce.Do(func() {
+		for _, m := range __sqlModels {
+			m.SQLVerifySchema(db)
+		}
+	})
+}
 
 type SQLWriter = core.SQLWriter
 
@@ -26,6 +39,17 @@ const __sqlEtopAcount_UpdateAll = "UPDATE \"etop_acount\" SET (" + __sqlEtopAcou
 func (m *EtopAcount) SQLTableName() string  { return "etop_acount" }
 func (m *EtopAcounts) SQLTableName() string { return "etop_acount" }
 func (m *EtopAcount) SQLListCols() string   { return __sqlEtopAcount_ListCols }
+
+func (m *EtopAcount) SQLVerifySchema(db *cmsql.Database) {
+	query := "SELECT " + __sqlEtopAcount_ListCols + " FROM etop_acount WHERE false"
+	if _, err := db.SQL(query).Exec(); err != nil {
+		db.RecordError(err)
+	}
+}
+
+func init() {
+	__sqlModels = append(__sqlModels, (*EtopAcount)(nil))
+}
 
 func (m *EtopAcount) SQLArgs(opts core.Opts, create bool) []interface{} {
 	return []interface{}{
@@ -296,6 +320,17 @@ const __sqlVtigerContact_UpdateAll = "UPDATE \"vtiger_contact\" SET (" + __sqlVt
 func (m *VtigerContact) SQLTableName() string  { return "vtiger_contact" }
 func (m *VtigerContacts) SQLTableName() string { return "vtiger_contact" }
 func (m *VtigerContact) SQLListCols() string   { return __sqlVtigerContact_ListCols }
+
+func (m *VtigerContact) SQLVerifySchema(db *cmsql.Database) {
+	query := "SELECT " + __sqlVtigerContact_ListCols + " FROM vtiger_contact WHERE false"
+	if _, err := db.SQL(query).Exec(); err != nil {
+		db.RecordError(err)
+	}
+}
+
+func init() {
+	__sqlModels = append(__sqlModels, (*VtigerContact)(nil))
+}
 
 func (m *VtigerContact) SQLArgs(opts core.Opts, create bool) []interface{} {
 	now := time.Now()
@@ -800,6 +835,17 @@ const __sqlVtigerAccount_UpdateAll = "UPDATE \"vtiger_account\" SET (" + __sqlVt
 func (m *VtigerAccount) SQLTableName() string  { return "vtiger_account" }
 func (m *VtigerAccounts) SQLTableName() string { return "vtiger_account" }
 func (m *VtigerAccount) SQLListCols() string   { return __sqlVtigerAccount_ListCols }
+
+func (m *VtigerAccount) SQLVerifySchema(db *cmsql.Database) {
+	query := "SELECT " + __sqlVtigerAccount_ListCols + " FROM vtiger_account WHERE false"
+	if _, err := db.SQL(query).Exec(); err != nil {
+		db.RecordError(err)
+	}
+}
+
+func init() {
+	__sqlModels = append(__sqlModels, (*VtigerAccount)(nil))
+}
 
 func (m *VtigerAccount) SQLArgs(opts core.Opts, create bool) []interface{} {
 	return []interface{}{

@@ -18,10 +18,10 @@ func init() {
 
 var (
 	onesignalClient *onesignal.Client
-	x               cmsql.Database
+	x               *cmsql.Database
 )
 
-func Init(db cmsql.Database, cfg cc.OnesignalConfig) error {
+func Init(db *cmsql.Database, cfg cc.OnesignalConfig) error {
 	x = db
 	onesignalClient = onesignal.New(cfg.AppID, cfg.ApiKey)
 	if err := onesignalClient.Ping(); err != nil {

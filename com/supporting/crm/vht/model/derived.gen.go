@@ -4,10 +4,23 @@ package model
 
 import (
 	"database/sql"
+	"sync"
 	"time"
 
+	"etop.vn/backend/pkg/common/cmsql"
 	core "etop.vn/backend/pkg/common/sq/core"
 )
+
+var __sqlModels []interface{ SQLVerifySchema(db *cmsql.Database) }
+var __sqlonce sync.Once
+
+func SQLVerifySchema(db *cmsql.Database) {
+	__sqlonce.Do(func() {
+		for _, m := range __sqlModels {
+			m.SQLVerifySchema(db)
+		}
+	})
+}
 
 type SQLWriter = core.SQLWriter
 
@@ -26,6 +39,17 @@ const __sqlVhtCallHistory_UpdateAll = "UPDATE \"vht_call_history\" SET (" + __sq
 func (m *VhtCallHistory) SQLTableName() string   { return "vht_call_history" }
 func (m *VhtCallHistories) SQLTableName() string { return "vht_call_history" }
 func (m *VhtCallHistory) SQLListCols() string    { return __sqlVhtCallHistory_ListCols }
+
+func (m *VhtCallHistory) SQLVerifySchema(db *cmsql.Database) {
+	query := "SELECT " + __sqlVhtCallHistory_ListCols + " FROM vht_call_history WHERE false"
+	if _, err := db.SQL(query).Exec(); err != nil {
+		db.RecordError(err)
+	}
+}
+
+func init() {
+	__sqlModels = append(__sqlModels, (*VhtCallHistory)(nil))
+}
 
 func (m *VhtCallHistory) SQLArgs(opts core.Opts, create bool) []interface{} {
 	now := time.Now()

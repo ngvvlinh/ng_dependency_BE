@@ -4,10 +4,23 @@ package model
 
 import (
 	"database/sql"
+	"sync"
 	"time"
 
+	"etop.vn/backend/pkg/common/cmsql"
 	core "etop.vn/backend/pkg/common/sq/core"
 )
+
+var __sqlModels []interface{ SQLVerifySchema(db *cmsql.Database) }
+var __sqlonce sync.Once
+
+func SQLVerifySchema(db *cmsql.Database) {
+	__sqlonce.Do(func() {
+		for _, m := range __sqlModels {
+			m.SQLVerifySchema(db)
+		}
+	})
+}
 
 type SQLWriter = core.SQLWriter
 
@@ -26,6 +39,17 @@ const __sqlShipnowFulfillment_UpdateAll = "UPDATE \"shipnow_fulfillment\" SET ("
 func (m *ShipnowFulfillment) SQLTableName() string  { return "shipnow_fulfillment" }
 func (m *ShipnowFulfillments) SQLTableName() string { return "shipnow_fulfillment" }
 func (m *ShipnowFulfillment) SQLListCols() string   { return __sqlShipnowFulfillment_ListCols }
+
+func (m *ShipnowFulfillment) SQLVerifySchema(db *cmsql.Database) {
+	query := "SELECT " + __sqlShipnowFulfillment_ListCols + " FROM shipnow_fulfillment WHERE false"
+	if _, err := db.SQL(query).Exec(); err != nil {
+		db.RecordError(err)
+	}
+}
+
+func init() {
+	__sqlModels = append(__sqlModels, (*ShipnowFulfillment)(nil))
+}
 
 func (m *ShipnowFulfillment) SQLArgs(opts core.Opts, create bool) []interface{} {
 	now := time.Now()

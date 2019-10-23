@@ -76,7 +76,7 @@ type Aggregate struct {
 type FieldMap map[string]ItemFieldMap
 type ItemFieldMap map[string]string
 
-func New(db cmsql.Database, fieldMap mapping2.ConfigMap, client *client2.VtigerClient) *Aggregate {
+func New(db *cmsql.Database, fieldMap mapping2.ConfigMap, client *client2.VtigerClient) *Aggregate {
 	return &Aggregate{
 		fieldMap: fieldMap,
 		vcsf:     sqlstore.NewVtigerStore(db),

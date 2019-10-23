@@ -19,11 +19,12 @@ import (
 
 type CarrierStoreFactory func(context.Context) *CarrierStore
 
-func NewCarrierStore(db cmsql.Database) CarrierStoreFactory {
+func NewCarrierStore(db *cmsql.Database) CarrierStoreFactory {
+	model.SQLVerifySchema(db)
 	return func(ctx context.Context) *CarrierStore {
 		return &CarrierStore{
 			query: func() cmsql.QueryInterface {
-				return cmsql.GetTxOrNewQuery(ctx, db)
+				return cmsql.GetTxOrNewQuery(ctx, *db)
 			},
 		}
 	}

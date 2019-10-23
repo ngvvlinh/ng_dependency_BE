@@ -14,11 +14,12 @@ import (
 
 type PaymentStoreFactory func(context.Context) *PaymentStore
 
-func NewPaymentStore(db cmsql.Database) PaymentStoreFactory {
+func NewPaymentStore(db *cmsql.Database) PaymentStoreFactory {
+	model.SQLVerifySchema(db)
 	return func(ctx context.Context) *PaymentStore {
 		return &PaymentStore{
 			query: func() cmsql.QueryInterface {
-				return cmsql.GetTxOrNewQuery(ctx, db)
+				return cmsql.GetTxOrNewQuery(ctx, *db)
 			},
 		}
 	}

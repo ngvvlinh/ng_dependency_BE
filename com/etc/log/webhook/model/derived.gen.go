@@ -4,10 +4,23 @@ package model
 
 import (
 	"database/sql"
+	"sync"
 	"time"
 
+	"etop.vn/backend/pkg/common/cmsql"
 	core "etop.vn/backend/pkg/common/sq/core"
 )
+
+var __sqlModels []interface{ SQLVerifySchema(db *cmsql.Database) }
+var __sqlonce sync.Once
+
+func SQLVerifySchema(db *cmsql.Database) {
+	__sqlonce.Do(func() {
+		for _, m := range __sqlModels {
+			m.SQLVerifySchema(db)
+		}
+	})
+}
 
 type SQLWriter = core.SQLWriter
 
@@ -26,6 +39,17 @@ const __sqlShippingProviderWebhook_UpdateAll = "UPDATE \"shipping_provider_webho
 func (m *ShippingProviderWebhook) SQLTableName() string  { return "shipping_provider_webhook" }
 func (m *ShippingProviderWebhooks) SQLTableName() string { return "shipping_provider_webhook" }
 func (m *ShippingProviderWebhook) SQLListCols() string   { return __sqlShippingProviderWebhook_ListCols }
+
+func (m *ShippingProviderWebhook) SQLVerifySchema(db *cmsql.Database) {
+	query := "SELECT " + __sqlShippingProviderWebhook_ListCols + " FROM shipping_provider_webhook WHERE false"
+	if _, err := db.SQL(query).Exec(); err != nil {
+		db.RecordError(err)
+	}
+}
+
+func init() {
+	__sqlModels = append(__sqlModels, (*ShippingProviderWebhook)(nil))
+}
 
 func (m *ShippingProviderWebhook) SQLArgs(opts core.Opts, create bool) []interface{} {
 	now := time.Now()

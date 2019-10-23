@@ -15,7 +15,7 @@ type QueryService struct {
 	store sqlstore.XAccountHaravanStoreFactory
 }
 
-func NewQueryService(db cmsql.Database) *QueryService {
+func NewQueryService(db *cmsql.Database) *QueryService {
 	return &QueryService{
 		store: sqlstore.NewXAccountHaravanStore(db),
 	}

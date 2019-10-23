@@ -22,11 +22,12 @@ import (
 
 type ShipnowStoreFactory func(context.Context) *ShipnowStore
 
-func NewShipnowStore(db cmsql.Database) ShipnowStoreFactory {
+func NewShipnowStore(db *cmsql.Database) ShipnowStoreFactory {
+	model.SQLVerifySchema(db)
 	return func(ctx context.Context) *ShipnowStore {
 		return &ShipnowStore{
 			query: func() cmsql.QueryInterface {
-				return cmsql.GetTxOrNewQuery(ctx, db)
+				return cmsql.GetTxOrNewQuery(ctx, *db)
 			},
 		}
 	}

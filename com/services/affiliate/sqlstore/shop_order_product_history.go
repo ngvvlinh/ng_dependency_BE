@@ -11,11 +11,12 @@ import (
 	"etop.vn/backend/pkg/common/cmsql"
 )
 
-func NewShopOrderProductHistoryStore(db cmsql.Database) ShopOrderProductHistoryStoreFactory {
+func NewShopOrderProductHistoryStore(db *cmsql.Database) ShopOrderProductHistoryStoreFactory {
+	model.SQLVerifySchema(db)
 	return func(ctx context.Context) *ShopOrderProductHistoryStore {
 		return &ShopOrderProductHistoryStore{
 			query: func() cmsql.QueryInterface {
-				return cmsql.GetTxOrNewQuery(ctx, db)
+				return cmsql.GetTxOrNewQuery(ctx, *db)
 			},
 		}
 	}

@@ -4,12 +4,25 @@ package modely
 
 import (
 	"database/sql"
+	"sync"
 
 	model "etop.vn/backend/com/main/ordering/model"
 	etop_vn_backend_com_main_shipping_model "etop.vn/backend/com/main/shipping/model"
+	"etop.vn/backend/pkg/common/cmsql"
 	sq "etop.vn/backend/pkg/common/sq"
 	core "etop.vn/backend/pkg/common/sq/core"
 )
+
+var __sqlModels []interface{ SQLVerifySchema(db *cmsql.Database) }
+var __sqlonce sync.Once
+
+func SQLVerifySchema(db *cmsql.Database) {
+	__sqlonce.Do(func() {
+		for _, m := range __sqlModels {
+			m.SQLVerifySchema(db)
+		}
+	})
+}
 
 type SQLWriter = core.SQLWriter
 

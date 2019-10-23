@@ -22,11 +22,11 @@ import (
 var ll = l.New()
 
 type Webhook struct {
-	dbLogs  cmsql.Database
+	dbLogs  *cmsql.Database
 	carrier *ghtk.Carrier
 }
 
-func New(dbLogs cmsql.Database, carrier *ghtk.Carrier) *Webhook {
+func New(dbLogs *cmsql.Database, carrier *ghtk.Carrier) *Webhook {
 	wh := &Webhook{
 		dbLogs:  dbLogs,
 		carrier: carrier,

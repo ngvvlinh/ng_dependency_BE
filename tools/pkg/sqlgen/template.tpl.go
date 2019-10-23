@@ -35,6 +35,17 @@ func (m *{{.TypeName}}) SQLTableName() string { return {{.TableName | go}} }
 func (m *{{.TypeNames}}) SQLTableName() string { return {{.TableName | go}} }
 {{if .IsSimple -}}
 func (m *{{.TypeName}}) SQLListCols() string { return {{._ListCols}} }
+
+func (m *{{.TypeName}}) SQLVerifySchema(db *cmsql.Database) {
+    query := "SELECT " + {{._ListCols}} + " FROM {{.TableName}} WHERE false"
+    if _, err := db.SQL(query).Exec(); err != nil {
+        db.RecordError(err)
+    }
+}
+
+func init() {
+    __sqlModels = append(__sqlModels, (*{{.TypeName}})(nil))
+}
 {{end}}
 
 {{if or .IsAll .IsInsert .IsUpdate}}

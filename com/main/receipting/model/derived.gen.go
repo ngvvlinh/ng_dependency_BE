@@ -4,10 +4,23 @@ package model
 
 import (
 	"database/sql"
+	"sync"
 	"time"
 
+	"etop.vn/backend/pkg/common/cmsql"
 	core "etop.vn/backend/pkg/common/sq/core"
 )
+
+var __sqlModels []interface{ SQLVerifySchema(db *cmsql.Database) }
+var __sqlonce sync.Once
+
+func SQLVerifySchema(db *cmsql.Database) {
+	__sqlonce.Do(func() {
+		for _, m := range __sqlModels {
+			m.SQLVerifySchema(db)
+		}
+	})
+}
 
 type SQLWriter = core.SQLWriter
 
@@ -26,6 +39,17 @@ const __sqlReceipt_UpdateAll = "UPDATE \"receipt\" SET (" + __sqlReceipt_ListCol
 func (m *Receipt) SQLTableName() string  { return "receipt" }
 func (m *Receipts) SQLTableName() string { return "receipt" }
 func (m *Receipt) SQLListCols() string   { return __sqlReceipt_ListCols }
+
+func (m *Receipt) SQLVerifySchema(db *cmsql.Database) {
+	query := "SELECT " + __sqlReceipt_ListCols + " FROM receipt WHERE false"
+	if _, err := db.SQL(query).Exec(); err != nil {
+		db.RecordError(err)
+	}
+}
+
+func init() {
+	__sqlModels = append(__sqlModels, (*Receipt)(nil))
+}
 
 func (m *Receipt) SQLArgs(opts core.Opts, create bool) []interface{} {
 	now := time.Now()
@@ -375,6 +399,17 @@ const __sqlReceiptLine_UpdateAll = "UPDATE \"receipt_line\" SET (" + __sqlReceip
 func (m *ReceiptLine) SQLTableName() string  { return "receipt_line" }
 func (m *ReceiptLines) SQLTableName() string { return "receipt_line" }
 func (m *ReceiptLine) SQLListCols() string   { return __sqlReceiptLine_ListCols }
+
+func (m *ReceiptLine) SQLVerifySchema(db *cmsql.Database) {
+	query := "SELECT " + __sqlReceiptLine_ListCols + " FROM receipt_line WHERE false"
+	if _, err := db.SQL(query).Exec(); err != nil {
+		db.RecordError(err)
+	}
+}
+
+func init() {
+	__sqlModels = append(__sqlModels, (*ReceiptLine)(nil))
+}
 
 func (m *ReceiptLine) SQLArgs(opts core.Opts, create bool) []interface{} {
 	return []interface{}{

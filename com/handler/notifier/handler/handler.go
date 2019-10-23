@@ -15,8 +15,8 @@ import (
 )
 
 var (
-	x            cmsql.Database
-	xNotifier    cmsql.Database
+	x            *cmsql.Database
+	xNotifier    *cmsql.Database
 	ll           = l.New()
 	notiStore    *sqlstore.NotificationStore
 	deviceStore  *sqlstore.DeviceStore
@@ -25,7 +25,7 @@ var (
 
 const ConsumerGroup = "handler/notifier"
 
-func New(dbMain cmsql.Database, dbNotifier cmsql.Database, bot *telebot.Channel, consumer mq.KafkaConsumer, prefix string) (handlerMain *handler.Handler, handlerNotifier *handler.Handler) {
+func New(dbMain *cmsql.Database, dbNotifier *cmsql.Database, bot *telebot.Channel, consumer mq.KafkaConsumer, prefix string) (handlerMain *handler.Handler, handlerNotifier *handler.Handler) {
 	x = dbMain
 	xNotifier = dbNotifier
 	notiStore = sqlstore.NewNotificationStore(dbNotifier)

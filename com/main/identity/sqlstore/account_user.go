@@ -13,11 +13,12 @@ import (
 
 type AccountUserStoreFactory func(context.Context) *AccountUserStore
 
-func NewAccoutnUserStore(db cmsql.Database) AccountUserStoreFactory {
+func NewAccoutnUserStore(db *cmsql.Database) AccountUserStoreFactory {
+	model.SQLVerifySchema(db)
 	return func(ctx context.Context) *AccountUserStore {
 		return &AccountUserStore{
 			query: func() cmsql.QueryInterface {
-				return cmsql.GetTxOrNewQuery(ctx, db)
+				return cmsql.GetTxOrNewQuery(ctx, *db)
 			},
 		}
 	}

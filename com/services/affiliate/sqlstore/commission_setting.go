@@ -13,11 +13,12 @@ import (
 
 type CommissionSettingStoreFactory func(ctx context.Context) *AffiliateCommissonStore
 
-func NewCommissionSettingStore(db cmsql.Database) CommissionSettingStoreFactory {
+func NewCommissionSettingStore(db *cmsql.Database) CommissionSettingStoreFactory {
+	model.SQLVerifySchema(db)
 	return func(ctx context.Context) *AffiliateCommissonStore {
 		return &AffiliateCommissonStore{
 			query: func() cmsql.QueryInterface {
-				return cmsql.GetTxOrNewQuery(ctx, db)
+				return cmsql.GetTxOrNewQuery(ctx, *db)
 			},
 		}
 	}

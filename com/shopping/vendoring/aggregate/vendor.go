@@ -19,7 +19,7 @@ type VendorAggregate struct {
 	store sqlstore.VendorStoreFactory
 }
 
-func NewVendorAggregate(db cmsql.Database) *VendorAggregate {
+func NewVendorAggregate(db *cmsql.Database) *VendorAggregate {
 	return &VendorAggregate{
 		store: sqlstore.NewVendorStore(db),
 	}

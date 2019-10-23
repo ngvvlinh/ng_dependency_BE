@@ -11,11 +11,12 @@ import (
 
 type ShopCashbackStoreFactory func(ctx context.Context) *ShopCashbackStore
 
-func NewShopCashbackStore(db cmsql.Database) ShopCashbackStoreFactory {
+func NewShopCashbackStore(db *cmsql.Database) ShopCashbackStoreFactory {
+	model.SQLVerifySchema(db)
 	return func(ctx context.Context) *ShopCashbackStore {
 		return &ShopCashbackStore{
 			query: func() cmsql.QueryInterface {
-				return cmsql.GetTxOrNewQuery(ctx, db)
+				return cmsql.GetTxOrNewQuery(ctx, *db)
 			},
 		}
 	}

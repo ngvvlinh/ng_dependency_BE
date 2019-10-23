@@ -20,11 +20,12 @@ type ListShopVariantsForImportArgs struct {
 
 type ShopVariantStoreFactory func(context.Context) *ShopVariantStore
 
-func NewShopVariantStore(db cmsql.Database) ShopVariantStoreFactory {
+func NewShopVariantStore(db *cmsql.Database) ShopVariantStoreFactory {
+	model.SQLVerifySchema(db)
 	return func(ctx context.Context) *ShopVariantStore {
 		return &ShopVariantStore{
 			query: func() cmsql.QueryInterface {
-				return cmsql.GetTxOrNewQuery(ctx, db)
+				return cmsql.GetTxOrNewQuery(ctx, *db)
 			},
 		}
 	}

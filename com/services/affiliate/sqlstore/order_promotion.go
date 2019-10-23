@@ -12,11 +12,12 @@ import (
 
 type OrderPromotionStoreFactory func(ctx context.Context) *OrderPromotionStore
 
-func NewOrderPromotionStore(db cmsql.Database) OrderPromotionStoreFactory {
+func NewOrderPromotionStore(db *cmsql.Database) OrderPromotionStoreFactory {
+	model.SQLVerifySchema(db)
 	return func(ctx context.Context) *OrderPromotionStore {
 		return &OrderPromotionStore{
 			query: func() cmsql.QueryInterface {
-				return cmsql.GetTxOrNewQuery(ctx, db)
+				return cmsql.GetTxOrNewQuery(ctx, *db)
 			},
 		}
 	}

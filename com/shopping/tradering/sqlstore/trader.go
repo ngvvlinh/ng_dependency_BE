@@ -14,11 +14,12 @@ import (
 
 type TraderStoreFactory func(ctx context.Context) *TraderStore
 
-func NewTraderStore(db cmsql.Database) TraderStoreFactory {
+func NewTraderStore(db *cmsql.Database) TraderStoreFactory {
+	model.SQLVerifySchema(db)
 	return func(ctx context.Context) *TraderStore {
 		return &TraderStore{
 			query: func() cmsql.QueryInterface {
-				return cmsql.GetTxOrNewQuery(ctx, db)
+				return cmsql.GetTxOrNewQuery(ctx, *db)
 			},
 		}
 	}

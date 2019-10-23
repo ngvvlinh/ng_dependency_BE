@@ -19,7 +19,7 @@ import (
 
 var db cmsql.Transactioner
 
-func New(database cmsql.Database) error {
+func New(database *cmsql.Database) error {
 	db = database
 	return nil
 }

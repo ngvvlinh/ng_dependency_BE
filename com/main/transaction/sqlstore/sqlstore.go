@@ -17,11 +17,12 @@ import (
 
 type TransactionStoreFactory func(context.Context) *TransactionStore
 
-func NewTransactionStore(db cmsql.Database) TransactionStoreFactory {
+func NewTransactionStore(db *cmsql.Database) TransactionStoreFactory {
+	transactionmodel.SQLVerifySchema(db)
 	return func(ctx context.Context) *TransactionStore {
 		return &TransactionStore{
 			query: func() cmsql.QueryInterface {
-				return cmsql.GetTxOrNewQuery(ctx, db)
+				return cmsql.GetTxOrNewQuery(ctx, *db)
 			},
 		}
 	}

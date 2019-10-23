@@ -33,7 +33,7 @@ var shopVariantStore catalogsqlstore.ShopVariantStoreFactory
 
 const PrefixIdemp = "IdempImportOrder"
 
-func Init(_locationBus location.QueryBus, sd cmservice.Shutdowner, rd redis.Store, ul *upload.Uploader, db cmsql.Database) {
+func Init(_locationBus location.QueryBus, sd cmservice.Shutdowner, rd redis.Store, ul *upload.Uploader, db *cmsql.Database) {
 	locationBus = _locationBus
 	idempgroup = idemp.NewRedisGroup(rd, PrefixIdemp, 5*60) // 5 minutes
 	sd.Register(idempgroup.Shutdown)

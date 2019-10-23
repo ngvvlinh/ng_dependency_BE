@@ -20,7 +20,7 @@ type QueryService struct {
 	sellerCommission        sqlstore.SellerCommissionStoreFactory
 }
 
-func NewQuery(db cmsql.Database) *QueryService {
+func NewQuery(db *cmsql.Database) *QueryService {
 	return &QueryService{
 		commissionSetting:       sqlstore.NewCommissionSettingStore(db),
 		supplyCommissionSetting: sqlstore.NewSupplyCommissionSettingStore(db),

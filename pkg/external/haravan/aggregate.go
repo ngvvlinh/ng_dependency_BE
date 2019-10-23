@@ -27,7 +27,7 @@ type Aggregate struct {
 	xAccountHaravanStore identitysqlstore.XAccountHaravanStoreFactory
 }
 
-func NewAggregate(db cmsql.Database, cfg haravanclient.Config) *Aggregate {
+func NewAggregate(db *cmsql.Database, cfg haravanclient.Config) *Aggregate {
 	ctx := context.Background()
 	if partner, err := sqlstore.Partner(ctx).ID(haravan.HaravanPartnerID).Get(); err == nil {
 		haravanPartner = partner

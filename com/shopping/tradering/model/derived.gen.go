@@ -4,10 +4,23 @@ package model
 
 import (
 	"database/sql"
+	"sync"
 	"time"
 
+	"etop.vn/backend/pkg/common/cmsql"
 	core "etop.vn/backend/pkg/common/sq/core"
 )
+
+var __sqlModels []interface{ SQLVerifySchema(db *cmsql.Database) }
+var __sqlonce sync.Once
+
+func SQLVerifySchema(db *cmsql.Database) {
+	__sqlonce.Do(func() {
+		for _, m := range __sqlModels {
+			m.SQLVerifySchema(db)
+		}
+	})
+}
 
 type SQLWriter = core.SQLWriter
 
@@ -26,6 +39,17 @@ const __sqlShopTrader_UpdateAll = "UPDATE \"shop_trader\" SET (" + __sqlShopTrad
 func (m *ShopTrader) SQLTableName() string  { return "shop_trader" }
 func (m *ShopTraders) SQLTableName() string { return "shop_trader" }
 func (m *ShopTrader) SQLListCols() string   { return __sqlShopTrader_ListCols }
+
+func (m *ShopTrader) SQLVerifySchema(db *cmsql.Database) {
+	query := "SELECT " + __sqlShopTrader_ListCols + " FROM shop_trader WHERE false"
+	if _, err := db.SQL(query).Exec(); err != nil {
+		db.RecordError(err)
+	}
+}
+
+func init() {
+	__sqlModels = append(__sqlModels, (*ShopTrader)(nil))
+}
 
 func (m *ShopTrader) SQLArgs(opts core.Opts, create bool) []interface{} {
 	return []interface{}{

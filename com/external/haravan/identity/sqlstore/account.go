@@ -14,11 +14,12 @@ import (
 
 type XAccountHaravanStoreFactory func(context.Context) *XAccountHaravanStore
 
-func NewXAccountHaravanStore(db cmsql.Database) XAccountHaravanStoreFactory {
+func NewXAccountHaravanStore(db *cmsql.Database) XAccountHaravanStoreFactory {
+	identitymodel.SQLVerifySchema(db)
 	return func(ctx context.Context) *XAccountHaravanStore {
 		return &XAccountHaravanStore{
 			query: func() cmsql.QueryInterface {
-				return cmsql.GetTxOrNewQuery(ctx, db)
+				return cmsql.GetTxOrNewQuery(ctx, *db)
 			},
 		}
 	}

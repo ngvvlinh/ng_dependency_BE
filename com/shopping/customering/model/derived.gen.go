@@ -4,10 +4,23 @@ package model
 
 import (
 	"database/sql"
+	"sync"
 	"time"
 
+	"etop.vn/backend/pkg/common/cmsql"
 	core "etop.vn/backend/pkg/common/sq/core"
 )
+
+var __sqlModels []interface{ SQLVerifySchema(db *cmsql.Database) }
+var __sqlonce sync.Once
+
+func SQLVerifySchema(db *cmsql.Database) {
+	__sqlonce.Do(func() {
+		for _, m := range __sqlModels {
+			m.SQLVerifySchema(db)
+		}
+	})
+}
 
 type SQLWriter = core.SQLWriter
 
@@ -26,6 +39,17 @@ const __sqlShopTrader_UpdateAll = "UPDATE \"shop_trader\" SET (" + __sqlShopTrad
 func (m *ShopTrader) SQLTableName() string  { return "shop_trader" }
 func (m *ShopTraders) SQLTableName() string { return "shop_trader" }
 func (m *ShopTrader) SQLListCols() string   { return __sqlShopTrader_ListCols }
+
+func (m *ShopTrader) SQLVerifySchema(db *cmsql.Database) {
+	query := "SELECT " + __sqlShopTrader_ListCols + " FROM shop_trader WHERE false"
+	if _, err := db.SQL(query).Exec(); err != nil {
+		db.RecordError(err)
+	}
+}
+
+func init() {
+	__sqlModels = append(__sqlModels, (*ShopTrader)(nil))
+}
 
 func (m *ShopTrader) SQLArgs(opts core.Opts, create bool) []interface{} {
 	return []interface{}{
@@ -218,6 +242,17 @@ const __sqlShopCustomer_UpdateAll = "UPDATE \"shop_customer\" SET (" + __sqlShop
 func (m *ShopCustomer) SQLTableName() string  { return "shop_customer" }
 func (m *ShopCustomers) SQLTableName() string { return "shop_customer" }
 func (m *ShopCustomer) SQLListCols() string   { return __sqlShopCustomer_ListCols }
+
+func (m *ShopCustomer) SQLVerifySchema(db *cmsql.Database) {
+	query := "SELECT " + __sqlShopCustomer_ListCols + " FROM shop_customer WHERE false"
+	if _, err := db.SQL(query).Exec(); err != nil {
+		db.RecordError(err)
+	}
+}
+
+func init() {
+	__sqlModels = append(__sqlModels, (*ShopCustomer)(nil))
+}
 
 func (m *ShopCustomer) SQLArgs(opts core.Opts, create bool) []interface{} {
 	now := time.Now()
@@ -593,6 +628,17 @@ const __sqlShopTraderAddress_UpdateAll = "UPDATE \"shop_trader_address\" SET (" 
 func (m *ShopTraderAddress) SQLTableName() string   { return "shop_trader_address" }
 func (m *ShopTraderAddresses) SQLTableName() string { return "shop_trader_address" }
 func (m *ShopTraderAddress) SQLListCols() string    { return __sqlShopTraderAddress_ListCols }
+
+func (m *ShopTraderAddress) SQLVerifySchema(db *cmsql.Database) {
+	query := "SELECT " + __sqlShopTraderAddress_ListCols + " FROM shop_trader_address WHERE false"
+	if _, err := db.SQL(query).Exec(); err != nil {
+		db.RecordError(err)
+	}
+}
+
+func init() {
+	__sqlModels = append(__sqlModels, (*ShopTraderAddress)(nil))
+}
 
 func (m *ShopTraderAddress) SQLArgs(opts core.Opts, create bool) []interface{} {
 	now := time.Now()
@@ -975,6 +1021,17 @@ func (m *ShopCustomerGroupCustomer) SQLListCols() string {
 	return __sqlShopCustomerGroupCustomer_ListCols
 }
 
+func (m *ShopCustomerGroupCustomer) SQLVerifySchema(db *cmsql.Database) {
+	query := "SELECT " + __sqlShopCustomerGroupCustomer_ListCols + " FROM shop_customer_group_customer WHERE false"
+	if _, err := db.SQL(query).Exec(); err != nil {
+		db.RecordError(err)
+	}
+}
+
+func init() {
+	__sqlModels = append(__sqlModels, (*ShopCustomerGroupCustomer)(nil))
+}
+
 func (m *ShopCustomerGroupCustomer) SQLArgs(opts core.Opts, create bool) []interface{} {
 	now := time.Now()
 	return []interface{}{
@@ -1192,6 +1249,17 @@ const __sqlShopCustomerGroup_UpdateAll = "UPDATE \"shop_customer_group\" SET (" 
 func (m *ShopCustomerGroup) SQLTableName() string  { return "shop_customer_group" }
 func (m *ShopCustomerGroups) SQLTableName() string { return "shop_customer_group" }
 func (m *ShopCustomerGroup) SQLListCols() string   { return __sqlShopCustomerGroup_ListCols }
+
+func (m *ShopCustomerGroup) SQLVerifySchema(db *cmsql.Database) {
+	query := "SELECT " + __sqlShopCustomerGroup_ListCols + " FROM shop_customer_group WHERE false"
+	if _, err := db.SQL(query).Exec(); err != nil {
+		db.RecordError(err)
+	}
+}
+
+func init() {
+	__sqlModels = append(__sqlModels, (*ShopCustomerGroup)(nil))
+}
 
 func (m *ShopCustomerGroup) SQLArgs(opts core.Opts, create bool) []interface{} {
 	now := time.Now()

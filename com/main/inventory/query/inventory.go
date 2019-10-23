@@ -21,7 +21,7 @@ type InventoryQueryService struct {
 	EventBus              capi.EventBus
 }
 
-func NewQueryInventory(eventBus capi.EventBus, db cmsql.Database) *InventoryQueryService {
+func NewQueryInventory(eventBus capi.EventBus, db *cmsql.Database) *InventoryQueryService {
 	return &InventoryQueryService{
 		InventoryStore:        sqlstore.NewInventoryStore(db),
 		InventoryVoucherStore: sqlstore.NewInventoryVoucherStore(db),

@@ -27,7 +27,7 @@ type Aggregate struct {
 	shipnowCarrierManager carrier.Manager
 }
 
-func NewAggregate(db cmsql.Database, carrierManager carrier.Manager) *Aggregate {
+func NewAggregate(db *cmsql.Database, carrierManager carrier.Manager) *Aggregate {
 	return &Aggregate{
 		db:                    db,
 		xAccountAhamove:       sqlstore.NewXAccountAhamoveStore(db),

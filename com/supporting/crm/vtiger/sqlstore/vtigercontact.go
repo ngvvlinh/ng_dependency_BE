@@ -21,11 +21,11 @@ type VtigerContactStore struct {
 	OrderBy string
 }
 
-func NewVtigerStore(db cmsql.Database) VtigerContactStoreFactory {
+func NewVtigerStore(db *cmsql.Database) VtigerContactStoreFactory {
 	return func(ctx context.Context) *VtigerContactStore {
 		return &VtigerContactStore{
 			query: func() cmsql.QueryInterface {
-				return cmsql.GetTxOrNewQuery(ctx, db)
+				return cmsql.GetTxOrNewQuery(ctx, *db)
 			},
 		}
 	}

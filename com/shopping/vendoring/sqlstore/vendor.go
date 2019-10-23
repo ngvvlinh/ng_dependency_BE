@@ -21,11 +21,12 @@ import (
 
 type VendorStoreFactory func(ctx context.Context) *VendorStore
 
-func NewVendorStore(db cmsql.Database) VendorStoreFactory {
+func NewVendorStore(db *cmsql.Database) VendorStoreFactory {
+	model.SQLVerifySchema(db)
 	return func(ctx context.Context) *VendorStore {
 		return &VendorStore{
 			query: func() cmsql.QueryInterface {
-				return cmsql.GetTxOrNewQuery(ctx, db)
+				return cmsql.GetTxOrNewQuery(ctx, *db)
 			},
 		}
 	}

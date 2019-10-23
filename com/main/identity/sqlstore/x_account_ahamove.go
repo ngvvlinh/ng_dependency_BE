@@ -15,11 +15,12 @@ import (
 
 type XAccountAhamoveStoreFactory func(context.Context) *XAccountAhamoveStore
 
-func NewXAccountAhamoveStore(db cmsql.Database) XAccountAhamoveStoreFactory {
+func NewXAccountAhamoveStore(db *cmsql.Database) XAccountAhamoveStoreFactory {
+	model.SQLVerifySchema(db)
 	return func(ctx context.Context) *XAccountAhamoveStore {
 		return &XAccountAhamoveStore{
 			query: func() cmsql.QueryInterface {
-				return cmsql.GetTxOrNewQuery(ctx, db)
+				return cmsql.GetTxOrNewQuery(ctx, *db)
 			},
 		}
 	}

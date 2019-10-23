@@ -15,7 +15,7 @@ type QueryService struct {
 	store sqlstore.ShipnowStoreFactory
 }
 
-func NewQueryService(db cmsql.Database) *QueryService {
+func NewQueryService(db *cmsql.Database) *QueryService {
 	return &QueryService{
 		store: sqlstore.NewShipnowStore(db),
 	}

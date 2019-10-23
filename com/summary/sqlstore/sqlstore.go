@@ -12,11 +12,11 @@ import (
 
 type OrderStoreFactory func(context.Context) *OrderStore
 
-func NewOrderStore(db cmsql.Database) OrderStoreFactory {
+func NewOrderStore(db *cmsql.Database) OrderStoreFactory {
 	return func(ctx context.Context) *OrderStore {
 		return &OrderStore{
 			query: func() cmsql.QueryInterface {
-				return cmsql.GetTxOrNewQuery(ctx, db)
+				return cmsql.GetTxOrNewQuery(ctx, *db)
 			},
 		}
 	}

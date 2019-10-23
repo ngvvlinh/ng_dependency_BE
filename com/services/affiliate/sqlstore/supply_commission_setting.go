@@ -19,11 +19,12 @@ import (
 
 type SupplyCommissionSettingStoreFactory func(ctx context.Context) *SupplyCommissionSettingStore
 
-func NewSupplyCommissionSettingStore(db cmsql.Database) SupplyCommissionSettingStoreFactory {
+func NewSupplyCommissionSettingStore(db *cmsql.Database) SupplyCommissionSettingStoreFactory {
+	model.SQLVerifySchema(db)
 	return func(ctx context.Context) *SupplyCommissionSettingStore {
 		return &SupplyCommissionSettingStore{
 			query: func() cmsql.QueryInterface {
-				return cmsql.GetTxOrNewQuery(ctx, db)
+				return cmsql.GetTxOrNewQuery(ctx, *db)
 			},
 		}
 	}

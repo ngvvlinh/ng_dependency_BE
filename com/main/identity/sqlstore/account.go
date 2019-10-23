@@ -16,11 +16,12 @@ import (
 
 type AccountStoreFactory func(context.Context) *AccountStore
 
-func NewAccountStore(db cmsql.Database) AccountStoreFactory {
+func NewAccountStore(db *cmsql.Database) AccountStoreFactory {
+	model.SQLVerifySchema(db)
 	return func(ctx context.Context) *AccountStore {
 		return &AccountStore{
 			query: func() cmsql.QueryInterface {
-				return cmsql.GetTxOrNewQuery(ctx, db)
+				return cmsql.GetTxOrNewQuery(ctx, *db)
 			},
 		}
 	}

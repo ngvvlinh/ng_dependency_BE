@@ -4,11 +4,24 @@ package model
 
 import (
 	"database/sql"
+	"sync"
 	"time"
 
+	"etop.vn/backend/pkg/common/cmsql"
 	sq "etop.vn/backend/pkg/common/sq"
 	core "etop.vn/backend/pkg/common/sq/core"
 )
+
+var __sqlModels []interface{ SQLVerifySchema(db *cmsql.Database) }
+var __sqlonce sync.Once
+
+func SQLVerifySchema(db *cmsql.Database) {
+	__sqlonce.Do(func() {
+		for _, m := range __sqlModels {
+			m.SQLVerifySchema(db)
+		}
+	})
+}
 
 type SQLWriter = core.SQLWriter
 
@@ -27,6 +40,17 @@ const __sqlImportAttempt_UpdateAll = "UPDATE \"import_attempt\" SET (" + __sqlIm
 func (m *ImportAttempt) SQLTableName() string  { return "import_attempt" }
 func (m *ImportAttempts) SQLTableName() string { return "import_attempt" }
 func (m *ImportAttempt) SQLListCols() string   { return __sqlImportAttempt_ListCols }
+
+func (m *ImportAttempt) SQLVerifySchema(db *cmsql.Database) {
+	query := "SELECT " + __sqlImportAttempt_ListCols + " FROM import_attempt WHERE false"
+	if _, err := db.SQL(query).Exec(); err != nil {
+		db.RecordError(err)
+	}
+}
+
+func init() {
+	__sqlModels = append(__sqlModels, (*ImportAttempt)(nil))
+}
 
 func (m *ImportAttempt) SQLArgs(opts core.Opts, create bool) []interface{} {
 	now := time.Now()
@@ -363,6 +387,17 @@ const __sqlExportAttempt_UpdateAll = "UPDATE \"export_attempt\" SET (" + __sqlEx
 func (m *ExportAttempt) SQLTableName() string  { return "export_attempt" }
 func (m *ExportAttempts) SQLTableName() string { return "export_attempt" }
 func (m *ExportAttempt) SQLListCols() string   { return __sqlExportAttempt_ListCols }
+
+func (m *ExportAttempt) SQLVerifySchema(db *cmsql.Database) {
+	query := "SELECT " + __sqlExportAttempt_ListCols + " FROM export_attempt WHERE false"
+	if _, err := db.SQL(query).Exec(); err != nil {
+		db.RecordError(err)
+	}
+}
+
+func init() {
+	__sqlModels = append(__sqlModels, (*ExportAttempt)(nil))
+}
 
 func (m *ExportAttempt) SQLArgs(opts core.Opts, create bool) []interface{} {
 	now := time.Now()
@@ -778,6 +813,17 @@ func (m *Account) SQLTableName() string  { return "account" }
 func (m *Accounts) SQLTableName() string { return "account" }
 func (m *Account) SQLListCols() string   { return __sqlAccount_ListCols }
 
+func (m *Account) SQLVerifySchema(db *cmsql.Database) {
+	query := "SELECT " + __sqlAccount_ListCols + " FROM account WHERE false"
+	if _, err := db.SQL(query).Exec(); err != nil {
+		db.RecordError(err)
+	}
+}
+
+func init() {
+	__sqlModels = append(__sqlModels, (*Account)(nil))
+}
+
 func (m *Account) SQLArgs(opts core.Opts, create bool) []interface{} {
 	return []interface{}{
 		core.Int64(m.ID),
@@ -1008,6 +1054,17 @@ const __sqlShop_UpdateAll = "UPDATE \"shop\" SET (" + __sqlShop_ListCols + ")"
 func (m *Shop) SQLTableName() string  { return "shop" }
 func (m *Shops) SQLTableName() string { return "shop" }
 func (m *Shop) SQLListCols() string   { return __sqlShop_ListCols }
+
+func (m *Shop) SQLVerifySchema(db *cmsql.Database) {
+	query := "SELECT " + __sqlShop_ListCols + " FROM shop WHERE false"
+	if _, err := db.SQL(query).Exec(); err != nil {
+		db.RecordError(err)
+	}
+}
+
+func init() {
+	__sqlModels = append(__sqlModels, (*Shop)(nil))
+}
 
 func (m *Shop) SQLArgs(opts core.Opts, create bool) []interface{} {
 	now := time.Now()
@@ -1677,6 +1734,17 @@ func (m *ShopDelete) SQLTableName() string  { return "shop" }
 func (m *ShopDeletes) SQLTableName() string { return "shop" }
 func (m *ShopDelete) SQLListCols() string   { return __sqlShopDelete_ListCols }
 
+func (m *ShopDelete) SQLVerifySchema(db *cmsql.Database) {
+	query := "SELECT " + __sqlShopDelete_ListCols + " FROM shop WHERE false"
+	if _, err := db.SQL(query).Exec(); err != nil {
+		db.RecordError(err)
+	}
+}
+
+func init() {
+	__sqlModels = append(__sqlModels, (*ShopDelete)(nil))
+}
+
 func (m *ShopDelete) SQLArgs(opts core.Opts, create bool) []interface{} {
 	return []interface{}{
 		core.Time(m.DeletedAt),
@@ -1842,6 +1910,17 @@ const __sqlPartner_UpdateAll = "UPDATE \"partner\" SET (" + __sqlPartner_ListCol
 func (m *Partner) SQLTableName() string  { return "partner" }
 func (m *Partners) SQLTableName() string { return "partner" }
 func (m *Partner) SQLListCols() string   { return __sqlPartner_ListCols }
+
+func (m *Partner) SQLVerifySchema(db *cmsql.Database) {
+	query := "SELECT " + __sqlPartner_ListCols + " FROM partner WHERE false"
+	if _, err := db.SQL(query).Exec(); err != nil {
+		db.RecordError(err)
+	}
+}
+
+func init() {
+	__sqlModels = append(__sqlModels, (*Partner)(nil))
+}
 
 func (m *Partner) SQLArgs(opts core.Opts, create bool) []interface{} {
 	now := time.Now()
@@ -2234,6 +2313,17 @@ const __sqlAccountAuth_UpdateAll = "UPDATE \"account_auth\" SET (" + __sqlAccoun
 func (m *AccountAuth) SQLTableName() string  { return "account_auth" }
 func (m *AccountAuths) SQLTableName() string { return "account_auth" }
 func (m *AccountAuth) SQLListCols() string   { return __sqlAccountAuth_ListCols }
+
+func (m *AccountAuth) SQLVerifySchema(db *cmsql.Database) {
+	query := "SELECT " + __sqlAccountAuth_ListCols + " FROM account_auth WHERE false"
+	if _, err := db.SQL(query).Exec(); err != nil {
+		db.RecordError(err)
+	}
+}
+
+func init() {
+	__sqlModels = append(__sqlModels, (*AccountAuth)(nil))
+}
 
 func (m *AccountAuth) SQLArgs(opts core.Opts, create bool) []interface{} {
 	now := time.Now()
@@ -2689,6 +2779,17 @@ func (m *PartnerRelation) SQLTableName() string  { return "partner_relation" }
 func (m *PartnerRelations) SQLTableName() string { return "partner_relation" }
 func (m *PartnerRelation) SQLListCols() string   { return __sqlPartnerRelation_ListCols }
 
+func (m *PartnerRelation) SQLVerifySchema(db *cmsql.Database) {
+	query := "SELECT " + __sqlPartnerRelation_ListCols + " FROM partner_relation WHERE false"
+	if _, err := db.SQL(query).Exec(); err != nil {
+		db.RecordError(err)
+	}
+}
+
+func init() {
+	__sqlModels = append(__sqlModels, (*PartnerRelation)(nil))
+}
+
 func (m *PartnerRelation) SQLArgs(opts core.Opts, create bool) []interface{} {
 	now := time.Now()
 	return []interface{}{
@@ -3111,6 +3212,17 @@ func (m *User) SQLTableName() string  { return "user" }
 func (m *Users) SQLTableName() string { return "user" }
 func (m *User) SQLListCols() string   { return __sqlUser_ListCols }
 
+func (m *User) SQLVerifySchema(db *cmsql.Database) {
+	query := "SELECT " + __sqlUser_ListCols + " FROM user WHERE false"
+	if _, err := db.SQL(query).Exec(); err != nil {
+		db.RecordError(err)
+	}
+}
+
+func init() {
+	__sqlModels = append(__sqlModels, (*User)(nil))
+}
+
 func (m *User) SQLArgs(opts core.Opts, create bool) []interface{} {
 	now := time.Now()
 	return []interface{}{
@@ -3517,6 +3629,17 @@ const __sqlAccountUser_UpdateAll = "UPDATE \"account_user\" SET (" + __sqlAccoun
 func (m *AccountUser) SQLTableName() string  { return "account_user" }
 func (m *AccountUsers) SQLTableName() string { return "account_user" }
 func (m *AccountUser) SQLListCols() string   { return __sqlAccountUser_ListCols }
+
+func (m *AccountUser) SQLVerifySchema(db *cmsql.Database) {
+	query := "SELECT " + __sqlAccountUser_ListCols + " FROM account_user WHERE false"
+	if _, err := db.SQL(query).Exec(); err != nil {
+		db.RecordError(err)
+	}
+}
+
+func init() {
+	__sqlModels = append(__sqlModels, (*AccountUser)(nil))
+}
 
 func (m *AccountUser) SQLArgs(opts core.Opts, create bool) []interface{} {
 	now := time.Now()
@@ -4084,6 +4207,17 @@ func (m *AccountUserDelete) SQLTableName() string  { return "account_user" }
 func (m *AccountUserDeletes) SQLTableName() string { return "account_user" }
 func (m *AccountUserDelete) SQLListCols() string   { return __sqlAccountUserDelete_ListCols }
 
+func (m *AccountUserDelete) SQLVerifySchema(db *cmsql.Database) {
+	query := "SELECT " + __sqlAccountUserDelete_ListCols + " FROM account_user WHERE false"
+	if _, err := db.SQL(query).Exec(); err != nil {
+		db.RecordError(err)
+	}
+}
+
+func init() {
+	__sqlModels = append(__sqlModels, (*AccountUserDelete)(nil))
+}
+
 func (m *AccountUserDelete) SQLArgs(opts core.Opts, create bool) []interface{} {
 	return []interface{}{
 		core.Time(m.DeletedAt),
@@ -4249,6 +4383,17 @@ const __sqlUserAuth_UpdateAll = "UPDATE \"user_auth\" SET (" + __sqlUserAuth_Lis
 func (m *UserAuth) SQLTableName() string  { return "user_auth" }
 func (m *UserAuths) SQLTableName() string { return "user_auth" }
 func (m *UserAuth) SQLListCols() string   { return __sqlUserAuth_ListCols }
+
+func (m *UserAuth) SQLVerifySchema(db *cmsql.Database) {
+	query := "SELECT " + __sqlUserAuth_ListCols + " FROM user_auth WHERE false"
+	if _, err := db.SQL(query).Exec(); err != nil {
+		db.RecordError(err)
+	}
+}
+
+func init() {
+	__sqlModels = append(__sqlModels, (*UserAuth)(nil))
+}
 
 func (m *UserAuth) SQLArgs(opts core.Opts, create bool) []interface{} {
 	now := time.Now()
@@ -4469,6 +4614,17 @@ func (m *UserInternal) SQLTableName() string  { return "user_internal" }
 func (m *UserInternals) SQLTableName() string { return "user_internal" }
 func (m *UserInternal) SQLListCols() string   { return __sqlUserInternal_ListCols }
 
+func (m *UserInternal) SQLVerifySchema(db *cmsql.Database) {
+	query := "SELECT " + __sqlUserInternal_ListCols + " FROM user_internal WHERE false"
+	if _, err := db.SQL(query).Exec(); err != nil {
+		db.RecordError(err)
+	}
+}
+
+func init() {
+	__sqlModels = append(__sqlModels, (*UserInternal)(nil))
+}
+
 func (m *UserInternal) SQLArgs(opts core.Opts, create bool) []interface{} {
 	now := time.Now()
 	return []interface{}{
@@ -4661,6 +4817,17 @@ const __sqlAddress_UpdateAll = "UPDATE \"address\" SET (" + __sqlAddress_ListCol
 func (m *Address) SQLTableName() string   { return "address" }
 func (m *Addresses) SQLTableName() string { return "address" }
 func (m *Address) SQLListCols() string    { return __sqlAddress_ListCols }
+
+func (m *Address) SQLVerifySchema(db *cmsql.Database) {
+	query := "SELECT " + __sqlAddress_ListCols + " FROM address WHERE false"
+	if _, err := db.SQL(query).Exec(); err != nil {
+		db.RecordError(err)
+	}
+}
+
+func init() {
+	__sqlModels = append(__sqlModels, (*Address)(nil))
+}
 
 func (m *Address) SQLArgs(opts core.Opts, create bool) []interface{} {
 	now := time.Now()
@@ -5141,6 +5308,17 @@ func (m *Code) SQLTableName() string  { return "code" }
 func (m *Codes) SQLTableName() string { return "code" }
 func (m *Code) SQLListCols() string   { return __sqlCode_ListCols }
 
+func (m *Code) SQLVerifySchema(db *cmsql.Database) {
+	query := "SELECT " + __sqlCode_ListCols + " FROM code WHERE false"
+	if _, err := db.SQL(query).Exec(); err != nil {
+		db.RecordError(err)
+	}
+}
+
+func init() {
+	__sqlModels = append(__sqlModels, (*Code)(nil))
+}
+
 func (m *Code) SQLArgs(opts core.Opts, create bool) []interface{} {
 	now := time.Now()
 	return []interface{}{
@@ -5333,6 +5511,17 @@ const __sqlCredit_UpdateAll = "UPDATE \"credit\" SET (" + __sqlCredit_ListCols +
 func (m *Credit) SQLTableName() string  { return "credit" }
 func (m *Credits) SQLTableName() string { return "credit" }
 func (m *Credit) SQLListCols() string   { return __sqlCredit_ListCols }
+
+func (m *Credit) SQLVerifySchema(db *cmsql.Database) {
+	query := "SELECT " + __sqlCredit_ListCols + " FROM credit WHERE false"
+	if _, err := db.SQL(query).Exec(); err != nil {
+		db.RecordError(err)
+	}
+}
+
+func init() {
+	__sqlModels = append(__sqlModels, (*Credit)(nil))
+}
 
 func (m *Credit) SQLArgs(opts core.Opts, create bool) []interface{} {
 	now := time.Now()
@@ -5690,6 +5879,17 @@ func (m *ShippingSource) SQLTableName() string  { return "shipping_source" }
 func (m *ShippingSources) SQLTableName() string { return "shipping_source" }
 func (m *ShippingSource) SQLListCols() string   { return __sqlShippingSource_ListCols }
 
+func (m *ShippingSource) SQLVerifySchema(db *cmsql.Database) {
+	query := "SELECT " + __sqlShippingSource_ListCols + " FROM shipping_source WHERE false"
+	if _, err := db.SQL(query).Exec(); err != nil {
+		db.RecordError(err)
+	}
+}
+
+func init() {
+	__sqlModels = append(__sqlModels, (*ShippingSource)(nil))
+}
+
 func (m *ShippingSource) SQLArgs(opts core.Opts, create bool) []interface{} {
 	now := time.Now()
 	return []interface{}{
@@ -5921,6 +6121,17 @@ const __sqlShippingSourceInternal_UpdateAll = "UPDATE \"shipping_source_internal
 func (m *ShippingSourceInternal) SQLTableName() string  { return "shipping_source_internal" }
 func (m *ShippingSourceInternals) SQLTableName() string { return "shipping_source_internal" }
 func (m *ShippingSourceInternal) SQLListCols() string   { return __sqlShippingSourceInternal_ListCols }
+
+func (m *ShippingSourceInternal) SQLVerifySchema(db *cmsql.Database) {
+	query := "SELECT " + __sqlShippingSourceInternal_ListCols + " FROM shipping_source_internal WHERE false"
+	if _, err := db.SQL(query).Exec(); err != nil {
+		db.RecordError(err)
+	}
+}
+
+func init() {
+	__sqlModels = append(__sqlModels, (*ShippingSourceInternal)(nil))
+}
 
 func (m *ShippingSourceInternal) SQLArgs(opts core.Opts, create bool) []interface{} {
 	now := time.Now()
@@ -6180,6 +6391,17 @@ const __sqlWebhook_UpdateAll = "UPDATE \"webhook\" SET (" + __sqlWebhook_ListCol
 func (m *Webhook) SQLTableName() string  { return "webhook" }
 func (m *Webhooks) SQLTableName() string { return "webhook" }
 func (m *Webhook) SQLListCols() string   { return __sqlWebhook_ListCols }
+
+func (m *Webhook) SQLVerifySchema(db *cmsql.Database) {
+	query := "SELECT " + __sqlWebhook_ListCols + " FROM webhook WHERE false"
+	if _, err := db.SQL(query).Exec(); err != nil {
+		db.RecordError(err)
+	}
+}
+
+func init() {
+	__sqlModels = append(__sqlModels, (*Webhook)(nil))
+}
 
 func (m *Webhook) SQLArgs(opts core.Opts, create bool) []interface{} {
 	now := time.Now()
@@ -6451,6 +6673,17 @@ const __sqlCallback_UpdateAll = "UPDATE \"callback\" SET (" + __sqlCallback_List
 func (m *Callback) SQLTableName() string  { return "callback" }
 func (m *Callbacks) SQLTableName() string { return "callback" }
 func (m *Callback) SQLListCols() string   { return __sqlCallback_ListCols }
+
+func (m *Callback) SQLVerifySchema(db *cmsql.Database) {
+	query := "SELECT " + __sqlCallback_ListCols + " FROM callback WHERE false"
+	if _, err := db.SQL(query).Exec(); err != nil {
+		db.RecordError(err)
+	}
+}
+
+func init() {
+	__sqlModels = append(__sqlModels, (*Callback)(nil))
+}
 
 func (m *Callback) SQLArgs(opts core.Opts, create bool) []interface{} {
 	now := time.Now()

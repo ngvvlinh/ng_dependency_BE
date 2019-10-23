@@ -4,10 +4,23 @@ package model
 
 import (
 	"database/sql"
+	"sync"
 	"time"
 
+	"etop.vn/backend/pkg/common/cmsql"
 	core "etop.vn/backend/pkg/common/sq/core"
 )
+
+var __sqlModels []interface{ SQLVerifySchema(db *cmsql.Database) }
+var __sqlonce sync.Once
+
+func SQLVerifySchema(db *cmsql.Database) {
+	__sqlonce.Do(func() {
+		for _, m := range __sqlModels {
+			m.SQLVerifySchema(db)
+		}
+	})
+}
 
 type SQLWriter = core.SQLWriter
 
@@ -17,7 +30,7 @@ func sqlgenShopVendor(_ *ShopVendor) bool { return true }
 type ShopVendors []*ShopVendor
 
 const __sqlShopVendor_Table = "shop_vendor"
-const __sqlShopVendor_ListCols = "\"id\",\"shop_id\",\"full_name\",\"note\",\"created_at\",\"updated_at\",\"deleted_at\""
+const __sqlShopVendor_ListCols = "\"id\",\"shop_id\",\"full_name\",\"note\",\"status\",\"created_at\",\"updated_at\",\"deleted_at\""
 const __sqlShopVendor_Insert = "INSERT INTO \"shop_vendor\" (" + __sqlShopVendor_ListCols + ") VALUES"
 const __sqlShopVendor_Select = "SELECT " + __sqlShopVendor_ListCols + " FROM \"shop_vendor\""
 const __sqlShopVendor_Select_history = "SELECT " + __sqlShopVendor_ListCols + " FROM history.\"shop_vendor\""
@@ -27,6 +40,17 @@ func (m *ShopVendor) SQLTableName() string  { return "shop_vendor" }
 func (m *ShopVendors) SQLTableName() string { return "shop_vendor" }
 func (m *ShopVendor) SQLListCols() string   { return __sqlShopVendor_ListCols }
 
+func (m *ShopVendor) SQLVerifySchema(db *cmsql.Database) {
+	query := "SELECT " + __sqlShopVendor_ListCols + " FROM shop_vendor WHERE false"
+	if _, err := db.SQL(query).Exec(); err != nil {
+		db.RecordError(err)
+	}
+}
+
+func init() {
+	__sqlModels = append(__sqlModels, (*ShopVendor)(nil))
+}
+
 func (m *ShopVendor) SQLArgs(opts core.Opts, create bool) []interface{} {
 	now := time.Now()
 	return []interface{}{
@@ -34,6 +58,7 @@ func (m *ShopVendor) SQLArgs(opts core.Opts, create bool) []interface{} {
 		core.Int64(m.ShopID),
 		core.String(m.FullName),
 		core.String(m.Note),
+		core.Int32(m.Status),
 		core.Now(m.CreatedAt, now, create),
 		core.Now(m.UpdatedAt, now, true),
 		core.Time(m.DeletedAt),
@@ -46,6 +71,7 @@ func (m *ShopVendor) SQLScanArgs(opts core.Opts) []interface{} {
 		(*core.Int64)(&m.ShopID),
 		(*core.String)(&m.FullName),
 		(*core.String)(&m.Note),
+		(*core.Int32)(&m.Status),
 		(*core.Time)(&m.CreatedAt),
 		(*core.Time)(&m.UpdatedAt),
 		(*core.Time)(&m.DeletedAt),
@@ -86,7 +112,7 @@ func (_ *ShopVendors) SQLSelect(w SQLWriter) error {
 func (m *ShopVendor) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlShopVendor_Insert)
 	w.WriteRawString(" (")
-	w.WriteMarkers(7)
+	w.WriteMarkers(8)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), true))
 	return nil
@@ -96,7 +122,7 @@ func (ms ShopVendors) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlShopVendor_Insert)
 	w.WriteRawString(" (")
 	for i := 0; i < len(ms); i++ {
-		w.WriteMarkers(7)
+		w.WriteMarkers(8)
 		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
 		w.WriteRawString("),(")
 	}
@@ -143,6 +169,14 @@ func (m *ShopVendor) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(m.Note)
 	}
+	if m.Status != 0 {
+		flag = true
+		w.WriteName("status")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.Status)
+	}
 	if !m.CreatedAt.IsZero() {
 		flag = true
 		w.WriteName("created_at")
@@ -177,7 +211,7 @@ func (m *ShopVendor) SQLUpdate(w SQLWriter) error {
 func (m *ShopVendor) SQLUpdateAll(w SQLWriter) error {
 	w.WriteQueryString(__sqlShopVendor_UpdateAll)
 	w.WriteRawString(" = (")
-	w.WriteMarkers(7)
+	w.WriteMarkers(8)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), false))
 	return nil
@@ -203,35 +237,37 @@ func (m ShopVendorHistory) ID() core.Interface        { return core.Interface{m[
 func (m ShopVendorHistory) ShopID() core.Interface    { return core.Interface{m["shop_id"]} }
 func (m ShopVendorHistory) FullName() core.Interface  { return core.Interface{m["full_name"]} }
 func (m ShopVendorHistory) Note() core.Interface      { return core.Interface{m["note"]} }
+func (m ShopVendorHistory) Status() core.Interface    { return core.Interface{m["status"]} }
 func (m ShopVendorHistory) CreatedAt() core.Interface { return core.Interface{m["created_at"]} }
 func (m ShopVendorHistory) UpdatedAt() core.Interface { return core.Interface{m["updated_at"]} }
 func (m ShopVendorHistory) DeletedAt() core.Interface { return core.Interface{m["deleted_at"]} }
 
 func (m *ShopVendorHistory) SQLScan(opts core.Opts, row *sql.Row) error {
-	data := make([]interface{}, 7)
-	args := make([]interface{}, 7)
-	for i := 0; i < 7; i++ {
+	data := make([]interface{}, 8)
+	args := make([]interface{}, 8)
+	for i := 0; i < 8; i++ {
 		args[i] = &data[i]
 	}
 	if err := row.Scan(args...); err != nil {
 		return err
 	}
-	res := make(ShopVendorHistory, 7)
+	res := make(ShopVendorHistory, 8)
 	res["id"] = data[0]
 	res["shop_id"] = data[1]
 	res["full_name"] = data[2]
 	res["note"] = data[3]
-	res["created_at"] = data[4]
-	res["updated_at"] = data[5]
-	res["deleted_at"] = data[6]
+	res["status"] = data[4]
+	res["created_at"] = data[5]
+	res["updated_at"] = data[6]
+	res["deleted_at"] = data[7]
 	*m = res
 	return nil
 }
 
 func (ms *ShopVendorHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	data := make([]interface{}, 7)
-	args := make([]interface{}, 7)
-	for i := 0; i < 7; i++ {
+	data := make([]interface{}, 8)
+	args := make([]interface{}, 8)
+	for i := 0; i < 8; i++ {
 		args[i] = &data[i]
 	}
 	res := make(ShopVendorHistories, 0, 128)
@@ -244,9 +280,10 @@ func (ms *ShopVendorHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
 		m["shop_id"] = data[1]
 		m["full_name"] = data[2]
 		m["note"] = data[3]
-		m["created_at"] = data[4]
-		m["updated_at"] = data[5]
-		m["deleted_at"] = data[6]
+		m["status"] = data[4]
+		m["created_at"] = data[5]
+		m["updated_at"] = data[6]
+		m["deleted_at"] = data[7]
 		res = append(res, m)
 	}
 	if err := rows.Err(); err != nil {

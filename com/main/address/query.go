@@ -15,7 +15,7 @@ type QueryService struct {
 	s *sqlstore.AddressStore
 }
 
-func NewQueryService(db cmsql.Database) *QueryService {
+func NewQueryService(db *cmsql.Database) *QueryService {
 	return &QueryService{
 		s: sqlstore.NewAddressStore(db),
 	}

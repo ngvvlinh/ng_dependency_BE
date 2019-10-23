@@ -27,7 +27,7 @@ var PaymentStates = []shipnowtypes.State{shipnowtypes.StateDelivering, shipnowty
 
 type Webhook struct {
 	db           cmsql.Transactioner
-	dbLogs       cmsql.Database
+	dbLogs       *cmsql.Database
 	carrier      *ahamove.Carrier
 	shipnowQuery shipnow.QueryBus
 	shipnow      shipnow.CommandBus
@@ -35,7 +35,7 @@ type Webhook struct {
 	orderQuery   ordering.QueryBus
 }
 
-func New(db cmsql.Database, dbLogs cmsql.Database, carrier *ahamove.Carrier, shipnowQS shipnow.QueryBus, shipnowAggr shipnow.CommandBus, orderAggr ordering.CommandBus, orderQS ordering.QueryBus) *Webhook {
+func New(db *cmsql.Database, dbLogs *cmsql.Database, carrier *ahamove.Carrier, shipnowQS shipnow.QueryBus, shipnowAggr shipnow.CommandBus, orderAggr ordering.CommandBus, orderQS ordering.QueryBus) *Webhook {
 	wh := &Webhook{
 		db:           db,
 		dbLogs:       dbLogs,

@@ -18,7 +18,7 @@ import (
 
 var (
 	ll        = l.New()
-	db        cmsql.Database
+	db        *cmsql.Database
 	tranID    = int64(123)
 	accountID = int64(123456)
 	amount    = 25000

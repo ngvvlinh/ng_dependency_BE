@@ -16,11 +16,12 @@ import (
 
 type InventoryVoucherFactory func(context.Context) *InventoryVoucherStore
 
-func NewInventoryVoucherStore(db cmsql.Database) InventoryVoucherFactory {
+func NewInventoryVoucherStore(db *cmsql.Database) InventoryVoucherFactory {
+	model.SQLVerifySchema(db)
 	return func(ctx context.Context) *InventoryVoucherStore {
 		return &InventoryVoucherStore{
 			query: func() cmsql.QueryInterface {
-				return cmsql.GetTxOrNewQuery(ctx, db)
+				return cmsql.GetTxOrNewQuery(ctx, *db)
 			},
 		}
 	}

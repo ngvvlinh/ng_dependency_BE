@@ -20,11 +20,11 @@ type VhtCallHistoryStore struct {
 	OrderBy string
 }
 
-func NewVhtCallHistoryStore(db cmsql.Database) VhtCallHistoriesFactory {
+func NewVhtCallHistoryStore(db *cmsql.Database) VhtCallHistoriesFactory {
 	return func(ctx context.Context) *VhtCallHistoryStore {
 		return &VhtCallHistoryStore{
 			query: func() cmsql.QueryInterface {
-				return cmsql.GetTxOrNewQuery(ctx, db)
+				return cmsql.GetTxOrNewQuery(ctx, *db)
 			},
 		}
 	}

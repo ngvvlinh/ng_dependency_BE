@@ -4,11 +4,24 @@ package model
 
 import (
 	"database/sql"
+	"sync"
 	"time"
 
+	"etop.vn/backend/pkg/common/cmsql"
 	sq "etop.vn/backend/pkg/common/sq"
 	core "etop.vn/backend/pkg/common/sq/core"
 )
+
+var __sqlModels []interface{ SQLVerifySchema(db *cmsql.Database) }
+var __sqlonce sync.Once
+
+func SQLVerifySchema(db *cmsql.Database) {
+	__sqlonce.Do(func() {
+		for _, m := range __sqlModels {
+			m.SQLVerifySchema(db)
+		}
+	})
+}
 
 type SQLWriter = core.SQLWriter
 
@@ -27,6 +40,17 @@ const __sqlFoo_UpdateAll = "UPDATE \"foo\" SET (" + __sqlFoo_ListCols + ")"
 func (m *Foo) SQLTableName() string  { return "foo" }
 func (m *Foos) SQLTableName() string { return "foo" }
 func (m *Foo) SQLListCols() string   { return __sqlFoo_ListCols }
+
+func (m *Foo) SQLVerifySchema(db *cmsql.Database) {
+	query := "SELECT " + __sqlFoo_ListCols + " FROM foo WHERE false"
+	if _, err := db.SQL(query).Exec(); err != nil {
+		db.RecordError(err)
+	}
+}
+
+func init() {
+	__sqlModels = append(__sqlModels, (*Foo)(nil))
+}
 
 func (m *Foo) SQLArgs(opts core.Opts, create bool) []interface{} {
 	now := time.Now()
@@ -259,6 +283,17 @@ const __sqlAccount_UpdateAll = "UPDATE \"account\" SET (" + __sqlAccount_ListCol
 func (m *Account) SQLTableName() string  { return "account" }
 func (m *Accounts) SQLTableName() string { return "account" }
 func (m *Account) SQLListCols() string   { return __sqlAccount_ListCols }
+
+func (m *Account) SQLVerifySchema(db *cmsql.Database) {
+	query := "SELECT " + __sqlAccount_ListCols + " FROM account WHERE false"
+	if _, err := db.SQL(query).Exec(); err != nil {
+		db.RecordError(err)
+	}
+}
+
+func init() {
+	__sqlModels = append(__sqlModels, (*Account)(nil))
+}
 
 func (m *Account) SQLArgs(opts core.Opts, create bool) []interface{} {
 	return []interface{}{

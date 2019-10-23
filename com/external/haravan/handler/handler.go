@@ -23,7 +23,7 @@ var (
 
 const ConsumerGroup = "handler/haravan"
 
-func New(db cmsql.Database, bot *telebot.Channel, consumer mq.KafkaConsumer, prefix string) *handler.Handler {
+func New(db *cmsql.Database, bot *telebot.Channel, consumer mq.KafkaConsumer, prefix string) *handler.Handler {
 	historyStore = historysqlstore.NewHistoryStore(db)
 	haravanAggr = serviceHaravan.NewAggregate(db, haravanclient.Config{}).MessageBus()
 	handlers := TopicsAndHandlersHaravan()

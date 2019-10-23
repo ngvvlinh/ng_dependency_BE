@@ -17,7 +17,7 @@ import (
 )
 
 var (
-	x  cmsql.Database
+	x  *cmsql.Database
 	ll = l.New()
 
 	idempgroup = idemp.NewGroup()
@@ -27,8 +27,8 @@ func init() {
 	bus.AddHandlers("sql", SummarizeFulfillments)
 }
 
-func Init(db cmsql.Database) {
-	if x.DB() != nil {
+func Init(db *cmsql.Database) {
+	if x != nil && (*x).DB() != nil {
 		ll.Panic("Already initialized")
 	}
 	x = db

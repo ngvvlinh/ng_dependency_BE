@@ -12,10 +12,10 @@ import (
 
 type AddressStore struct {
 	ctx context.Context
-	db  cmsql.Database
+	db  *cmsql.Database
 }
 
-func NewAddressStore(db cmsql.Database) *AddressStore {
+func NewAddressStore(db *cmsql.Database) *AddressStore {
 	return &AddressStore{
 		ctx: context.Background(),
 		db:  db,

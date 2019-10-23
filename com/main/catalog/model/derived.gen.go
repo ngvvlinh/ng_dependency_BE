@@ -4,11 +4,24 @@ package model
 
 import (
 	"database/sql"
+	"sync"
 	"time"
 
+	"etop.vn/backend/pkg/common/cmsql"
 	sq "etop.vn/backend/pkg/common/sq"
 	core "etop.vn/backend/pkg/common/sq/core"
 )
+
+var __sqlModels []interface{ SQLVerifySchema(db *cmsql.Database) }
+var __sqlonce sync.Once
+
+func SQLVerifySchema(db *cmsql.Database) {
+	__sqlonce.Do(func() {
+		for _, m := range __sqlModels {
+			m.SQLVerifySchema(db)
+		}
+	})
+}
 
 type SQLWriter = core.SQLWriter
 
@@ -125,6 +138,17 @@ const __sqlShopVariant_UpdateAll = "UPDATE \"shop_variant\" SET (" + __sqlShopVa
 func (m *ShopVariant) SQLTableName() string  { return "shop_variant" }
 func (m *ShopVariants) SQLTableName() string { return "shop_variant" }
 func (m *ShopVariant) SQLListCols() string   { return __sqlShopVariant_ListCols }
+
+func (m *ShopVariant) SQLVerifySchema(db *cmsql.Database) {
+	query := "SELECT " + __sqlShopVariant_ListCols + " FROM shop_variant WHERE false"
+	if _, err := db.SQL(query).Exec(); err != nil {
+		db.RecordError(err)
+	}
+}
+
+func init() {
+	__sqlModels = append(__sqlModels, (*ShopVariant)(nil))
+}
 
 func (m *ShopVariant) SQLArgs(opts core.Opts, create bool) []interface{} {
 	now := time.Now()
@@ -552,6 +576,17 @@ const __sqlShopProduct_UpdateAll = "UPDATE \"shop_product\" SET (" + __sqlShopPr
 func (m *ShopProduct) SQLTableName() string  { return "shop_product" }
 func (m *ShopProducts) SQLTableName() string { return "shop_product" }
 func (m *ShopProduct) SQLListCols() string   { return __sqlShopProduct_ListCols }
+
+func (m *ShopProduct) SQLVerifySchema(db *cmsql.Database) {
+	query := "SELECT " + __sqlShopProduct_ListCols + " FROM shop_product WHERE false"
+	if _, err := db.SQL(query).Exec(); err != nil {
+		db.RecordError(err)
+	}
+}
+
+func init() {
+	__sqlModels = append(__sqlModels, (*ShopProduct)(nil))
+}
 
 func (m *ShopProduct) SQLArgs(opts core.Opts, create bool) []interface{} {
 	now := time.Now()
@@ -1019,6 +1054,17 @@ func (m *ProductShopCollection) SQLTableName() string  { return "product_shop_co
 func (m *ProductShopCollections) SQLTableName() string { return "product_shop_collection" }
 func (m *ProductShopCollection) SQLListCols() string   { return __sqlProductShopCollection_ListCols }
 
+func (m *ProductShopCollection) SQLVerifySchema(db *cmsql.Database) {
+	query := "SELECT " + __sqlProductShopCollection_ListCols + " FROM product_shop_collection WHERE false"
+	if _, err := db.SQL(query).Exec(); err != nil {
+		db.RecordError(err)
+	}
+}
+
+func init() {
+	__sqlModels = append(__sqlModels, (*ProductShopCollection)(nil))
+}
+
 func (m *ProductShopCollection) SQLArgs(opts core.Opts, create bool) []interface{} {
 	now := time.Now()
 	return []interface{}{
@@ -1262,6 +1308,17 @@ const __sqlShopCategory_UpdateAll = "UPDATE \"shop_category\" SET (" + __sqlShop
 func (m *ShopCategory) SQLTableName() string   { return "shop_category" }
 func (m *ShopCategories) SQLTableName() string { return "shop_category" }
 func (m *ShopCategory) SQLListCols() string    { return __sqlShopCategory_ListCols }
+
+func (m *ShopCategory) SQLVerifySchema(db *cmsql.Database) {
+	query := "SELECT " + __sqlShopCategory_ListCols + " FROM shop_category WHERE false"
+	if _, err := db.SQL(query).Exec(); err != nil {
+		db.RecordError(err)
+	}
+}
+
+func init() {
+	__sqlModels = append(__sqlModels, (*ShopCategory)(nil))
+}
 
 func (m *ShopCategory) SQLArgs(opts core.Opts, create bool) []interface{} {
 	now := time.Now()
@@ -1521,6 +1578,17 @@ func (m *ShopCollection) SQLTableName() string  { return "shop_collection" }
 func (m *ShopCollections) SQLTableName() string { return "shop_collection" }
 func (m *ShopCollection) SQLListCols() string   { return __sqlShopCollection_ListCols }
 
+func (m *ShopCollection) SQLVerifySchema(db *cmsql.Database) {
+	query := "SELECT " + __sqlShopCollection_ListCols + " FROM shop_collection WHERE false"
+	if _, err := db.SQL(query).Exec(); err != nil {
+		db.RecordError(err)
+	}
+}
+
+func init() {
+	__sqlModels = append(__sqlModels, (*ShopCollection)(nil))
+}
+
 func (m *ShopCollection) SQLArgs(opts core.Opts, create bool) []interface{} {
 	now := time.Now()
 	return []interface{}{
@@ -1778,6 +1846,17 @@ const __sqlShopProductCollection_UpdateAll = "UPDATE \"shop_product_collection\"
 func (m *ShopProductCollection) SQLTableName() string  { return "shop_product_collection" }
 func (m *ShopProductCollections) SQLTableName() string { return "shop_product_collection" }
 func (m *ShopProductCollection) SQLListCols() string   { return __sqlShopProductCollection_ListCols }
+
+func (m *ShopProductCollection) SQLVerifySchema(db *cmsql.Database) {
+	query := "SELECT " + __sqlShopProductCollection_ListCols + " FROM shop_product_collection WHERE false"
+	if _, err := db.SQL(query).Exec(); err != nil {
+		db.RecordError(err)
+	}
+}
+
+func init() {
+	__sqlModels = append(__sqlModels, (*ShopProductCollection)(nil))
+}
 
 func (m *ShopProductCollection) SQLArgs(opts core.Opts, create bool) []interface{} {
 	now := time.Now()

@@ -19,7 +19,7 @@ type AddressAggregate struct {
 	store sqlstore.AddressStoreFactory
 }
 
-func NewAddressAggregate(db cmsql.Database) *AddressAggregate {
+func NewAddressAggregate(db *cmsql.Database) *AddressAggregate {
 	return &AddressAggregate{
 		store: sqlstore.NewAddressStore(db),
 	}

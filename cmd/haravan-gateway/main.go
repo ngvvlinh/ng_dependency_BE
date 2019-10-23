@@ -31,7 +31,7 @@ var (
 	cfg           config.Config
 	ctx           context.Context
 	bot           *telebot.Channel
-	db            cmsql.Database
+	db            *cmsql.Database
 	ghnCarrier    *ghn.Carrier
 	ghtkCarrier   *ghtk.Carrier
 	vtpostCarrier *vtpost.Carrier

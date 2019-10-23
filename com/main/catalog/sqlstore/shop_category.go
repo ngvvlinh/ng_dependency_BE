@@ -5,10 +5,9 @@ import (
 	"time"
 
 	"etop.vn/api/main/catalog"
+	"etop.vn/api/meta"
 	"etop.vn/backend/com/main/catalog/convert"
 	"etop.vn/backend/com/main/catalog/model"
-
-	"etop.vn/api/meta"
 	"etop.vn/backend/pkg/common/cmsql"
 	"etop.vn/backend/pkg/common/sq"
 	"etop.vn/backend/pkg/common/sqlstore"
@@ -16,11 +15,12 @@ import (
 
 type ShopCategoryStoreFactory func(context.Context) *ShopCategoryStore
 
-func NewShopCategoryStore(db cmsql.Database) ShopCategoryStoreFactory {
+func NewShopCategoryStore(db *cmsql.Database) ShopCategoryStoreFactory {
+	model.SQLVerifySchema(db)
 	return func(ctx context.Context) *ShopCategoryStore {
 		return &ShopCategoryStore{
 			query: func() cmsql.QueryInterface {
-				return cmsql.GetTxOrNewQuery(ctx, db)
+				return cmsql.GetTxOrNewQuery(ctx, *db)
 			},
 		}
 	}

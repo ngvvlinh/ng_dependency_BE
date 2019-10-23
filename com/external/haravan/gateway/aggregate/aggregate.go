@@ -43,7 +43,7 @@ type Aggregate struct {
 	identityQS   identity.QueryBus
 }
 
-func NewAggregate(db cmsql.Database, providerManager *shipping_provider.ProviderManager, locationQuery location.QueryBus, identityQuery identity.QueryBus) *Aggregate {
+func NewAggregate(db *cmsql.Database, providerManager *shipping_provider.ProviderManager, locationQuery location.QueryBus, identityQuery identity.QueryBus) *Aggregate {
 	return &Aggregate{
 		db:           db,
 		locationQS:   locationQuery,

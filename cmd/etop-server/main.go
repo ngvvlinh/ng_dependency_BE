@@ -108,8 +108,8 @@ var (
 	healthservice = health.New()
 
 	eventStreamer         *eventstream.EventStreamer
-	db                    cmsql.Database
-	dbLogs                cmsql.Database
+	db                    *cmsql.Database
+	dbLogs                *cmsql.Database
 	ghnCarrier            *ghn.Carrier
 	ghtkCarrier           *ghtk.Carrier
 	vtpostCarrier         *vtpost.Carrier
@@ -408,6 +408,14 @@ func main() {
 	crm.Init(ghnCarrier, vtigerQuery, vtigerAggregate, vhtQuery, vhtAggregate)
 	affiliate.Init(identityAggr)
 	apiaff.Init(affiliateCmd, affilateQuery, catalogQuery, identityQuery, orderQuery)
+
+	err = db.GetSchemaErrors()
+	if err != nil && cm.IsDev() != true {
+		ll.Error("Fail to verify Database", l.Error(err))
+		return
+	} else if err != nil && cm.IsDev() == true {
+		ll.Fatal("Fail to verify Database", l.Error(err))
+	}
 
 	svrs := startServers()
 	if bot != nil {

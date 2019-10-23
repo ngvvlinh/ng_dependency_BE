@@ -4,10 +4,23 @@ package model
 
 import (
 	"database/sql"
+	"sync"
 	"time"
 
+	"etop.vn/backend/pkg/common/cmsql"
 	core "etop.vn/backend/pkg/common/sq/core"
 )
+
+var __sqlModels []interface{ SQLVerifySchema(db *cmsql.Database) }
+var __sqlonce sync.Once
+
+func SQLVerifySchema(db *cmsql.Database) {
+	__sqlonce.Do(func() {
+		for _, m := range __sqlModels {
+			m.SQLVerifySchema(db)
+		}
+	})
+}
 
 type SQLWriter = core.SQLWriter
 
@@ -26,6 +39,17 @@ const __sqlOrder_UpdateAll = "UPDATE \"order\" SET (" + __sqlOrder_ListCols + ")
 func (m *Order) SQLTableName() string  { return "order" }
 func (m *Orders) SQLTableName() string { return "order" }
 func (m *Order) SQLListCols() string   { return __sqlOrder_ListCols }
+
+func (m *Order) SQLVerifySchema(db *cmsql.Database) {
+	query := "SELECT " + __sqlOrder_ListCols + " FROM order WHERE false"
+	if _, err := db.SQL(query).Exec(); err != nil {
+		db.RecordError(err)
+	}
+}
+
+func init() {
+	__sqlModels = append(__sqlModels, (*Order)(nil))
+}
 
 func (m *Order) SQLArgs(opts core.Opts, create bool) []interface{} {
 	now := time.Now()
@@ -1048,6 +1072,17 @@ const __sqlOrderLine_UpdateAll = "UPDATE \"order_line\" SET (" + __sqlOrderLine_
 func (m *OrderLine) SQLTableName() string  { return "order_line" }
 func (m *OrderLines) SQLTableName() string { return "order_line" }
 func (m *OrderLine) SQLListCols() string   { return __sqlOrderLine_ListCols }
+
+func (m *OrderLine) SQLVerifySchema(db *cmsql.Database) {
+	query := "SELECT " + __sqlOrderLine_ListCols + " FROM order_line WHERE false"
+	if _, err := db.SQL(query).Exec(); err != nil {
+		db.RecordError(err)
+	}
+}
+
+func init() {
+	__sqlModels = append(__sqlModels, (*OrderLine)(nil))
+}
 
 func (m *OrderLine) SQLArgs(opts core.Opts, create bool) []interface{} {
 	return []interface{}{

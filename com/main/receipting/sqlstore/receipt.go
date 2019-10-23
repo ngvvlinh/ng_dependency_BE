@@ -24,11 +24,12 @@ import (
 
 type ReceiptStoreFactory func(ctx context.Context) *ReceiptStore
 
-func NewReceiptStore(db cmsql.Database) ReceiptStoreFactory {
+func NewReceiptStore(db *cmsql.Database) ReceiptStoreFactory {
+	model.SQLVerifySchema(db)
 	return func(ctx context.Context) *ReceiptStore {
 		return &ReceiptStore{
 			query: func() cmsql.QueryInterface {
-				return cmsql.GetTxOrNewQuery(ctx, db)
+				return cmsql.GetTxOrNewQuery(ctx, *db)
 			},
 		}
 	}

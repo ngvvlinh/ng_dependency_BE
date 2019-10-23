@@ -21,7 +21,7 @@ type QueryService struct {
 	xAccountAhamove  sqlstore.XAccountAhamoveStoreFactory
 }
 
-func NewQueryService(db cmsql.Database) *QueryService {
+func NewQueryService(db *cmsql.Database) *QueryService {
 	return &QueryService{
 		userStore:        sqlstore.NewUserStore(db),
 		accountStore:     sqlstore.NewAccountStore(db),

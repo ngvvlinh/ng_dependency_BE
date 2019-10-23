@@ -4,10 +4,23 @@ package model
 
 import (
 	"database/sql"
+	"sync"
 	"time"
 
+	"etop.vn/backend/pkg/common/cmsql"
 	core "etop.vn/backend/pkg/common/sq/core"
 )
+
+var __sqlModels []interface{ SQLVerifySchema(db *cmsql.Database) }
+var __sqlonce sync.Once
+
+func SQLVerifySchema(db *cmsql.Database) {
+	__sqlonce.Do(func() {
+		for _, m := range __sqlModels {
+			m.SQLVerifySchema(db)
+		}
+	})
+}
 
 type SQLWriter = core.SQLWriter
 
@@ -26,6 +39,17 @@ const __sqlFulfillment_UpdateAll = "UPDATE \"fulfillment\" SET (" + __sqlFulfill
 func (m *Fulfillment) SQLTableName() string  { return "fulfillment" }
 func (m *Fulfillments) SQLTableName() string { return "fulfillment" }
 func (m *Fulfillment) SQLListCols() string   { return __sqlFulfillment_ListCols }
+
+func (m *Fulfillment) SQLVerifySchema(db *cmsql.Database) {
+	query := "SELECT " + __sqlFulfillment_ListCols + " FROM fulfillment WHERE false"
+	if _, err := db.SQL(query).Exec(); err != nil {
+		db.RecordError(err)
+	}
+}
+
+func init() {
+	__sqlModels = append(__sqlModels, (*Fulfillment)(nil))
+}
 
 func (m *Fulfillment) SQLArgs(opts core.Opts, create bool) []interface{} {
 	now := time.Now()

@@ -4,10 +4,23 @@ package model
 
 import (
 	"database/sql"
+	"sync"
 	"time"
 
+	"etop.vn/backend/pkg/common/cmsql"
 	core "etop.vn/backend/pkg/common/sq/core"
 )
+
+var __sqlModels []interface{ SQLVerifySchema(db *cmsql.Database) }
+var __sqlonce sync.Once
+
+func SQLVerifySchema(db *cmsql.Database) {
+	__sqlonce.Do(func() {
+		for _, m := range __sqlModels {
+			m.SQLVerifySchema(db)
+		}
+	})
+}
 
 type SQLWriter = core.SQLWriter
 
@@ -26,6 +39,17 @@ const __sqlExternalAccountAhamove_UpdateAll = "UPDATE \"external_account_ahamove
 func (m *ExternalAccountAhamove) SQLTableName() string  { return "external_account_ahamove" }
 func (m *ExternalAccountAhamoves) SQLTableName() string { return "external_account_ahamove" }
 func (m *ExternalAccountAhamove) SQLListCols() string   { return __sqlExternalAccountAhamove_ListCols }
+
+func (m *ExternalAccountAhamove) SQLVerifySchema(db *cmsql.Database) {
+	query := "SELECT " + __sqlExternalAccountAhamove_ListCols + " FROM external_account_ahamove WHERE false"
+	if _, err := db.SQL(query).Exec(); err != nil {
+		db.RecordError(err)
+	}
+}
+
+func init() {
+	__sqlModels = append(__sqlModels, (*ExternalAccountAhamove)(nil))
+}
 
 func (m *ExternalAccountAhamove) SQLArgs(opts core.Opts, create bool) []interface{} {
 	now := time.Now()
@@ -491,6 +515,17 @@ const __sqlAffiliate_UpdateAll = "UPDATE \"affiliate\" SET (" + __sqlAffiliate_L
 func (m *Affiliate) SQLTableName() string  { return "affiliate" }
 func (m *Affiliates) SQLTableName() string { return "affiliate" }
 func (m *Affiliate) SQLListCols() string   { return __sqlAffiliate_ListCols }
+
+func (m *Affiliate) SQLVerifySchema(db *cmsql.Database) {
+	query := "SELECT " + __sqlAffiliate_ListCols + " FROM affiliate WHERE false"
+	if _, err := db.SQL(query).Exec(); err != nil {
+		db.RecordError(err)
+	}
+}
+
+func init() {
+	__sqlModels = append(__sqlModels, (*Affiliate)(nil))
+}
 
 func (m *Affiliate) SQLArgs(opts core.Opts, create bool) []interface{} {
 	now := time.Now()

@@ -91,7 +91,6 @@ func (g *gen) Generate(typs []types.Type) error {
 	}
 
 	g.generateCommon()
-
 	return g.genQueryFor(typs[0])
 }
 
@@ -100,11 +99,22 @@ func (g *gen) generateCommon() {
 		return
 	}
 	g.init = true
+	p := g.printer
 
 	str := `
+var __sqlModels []interface{ SQLVerifySchema(db *cmsql.Database) }
+var __sqlonce sync.Once
+
+func SQLVerifySchema(db *cmsql.Database) {
+	__sqlonce.Do(func() {
+		for _, m := range __sqlModels {
+			m.SQLVerifySchema(db)
+		}
+	})
+}
+
 type SQLWriter = core.SQLWriter
 `
-	p := g.printer
 	p.P(str)
 }
 

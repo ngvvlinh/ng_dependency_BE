@@ -38,7 +38,7 @@ type Aggregate struct {
 	carrierManager carrier.Manager
 }
 
-func NewAggregate(eventBus capi.EventBus, db cmsql.Database, location location.QueryBus, identityQuery identity.QueryBus, addressQuery address.QueryBus, order ordering.QueryBus, carrierManager carrier.Manager) *Aggregate {
+func NewAggregate(eventBus capi.EventBus, db *cmsql.Database, location location.QueryBus, identityQuery identity.QueryBus, addressQuery address.QueryBus, order ordering.QueryBus, carrierManager carrier.Manager) *Aggregate {
 	return &Aggregate{
 		db:       db,
 		store:    sqlstore.NewShipnowStore(db),

@@ -10,11 +10,12 @@ import (
 	"etop.vn/backend/pkg/common/cmsql"
 )
 
-func NewOrderCommissionSettingStoreFactory(db cmsql.Database) OrderCommissionSettingStoreFactory {
+func NewOrderCommissionSettingStoreFactory(db *cmsql.Database) OrderCommissionSettingStoreFactory {
+	model.SQLVerifySchema(db)
 	return func(ctx context.Context) *OrderCommissionSettingStore {
 		return &OrderCommissionSettingStore{
 			query: func() cmsql.QueryInterface {
-				return cmsql.GetTxOrNewQuery(ctx, db)
+				return cmsql.GetTxOrNewQuery(ctx, *db)
 			},
 		}
 	}

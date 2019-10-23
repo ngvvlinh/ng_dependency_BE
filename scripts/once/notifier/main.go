@@ -22,8 +22,8 @@ import (
 var (
 	ll         = l.New()
 	cfg        config.Config
-	db         cmsql.Database
-	dbNotifier cmsql.Database
+	db         *cmsql.Database
+	dbNotifier *cmsql.Database
 	ctx        context.Context
 )
 

@@ -4,10 +4,23 @@ package model
 
 import (
 	"database/sql"
+	"sync"
 	"time"
 
+	"etop.vn/backend/pkg/common/cmsql"
 	core "etop.vn/backend/pkg/common/sq/core"
 )
+
+var __sqlModels []interface{ SQLVerifySchema(db *cmsql.Database) }
+var __sqlonce sync.Once
+
+func SQLVerifySchema(db *cmsql.Database) {
+	__sqlonce.Do(func() {
+		for _, m := range __sqlModels {
+			m.SQLVerifySchema(db)
+		}
+	})
+}
 
 type SQLWriter = core.SQLWriter
 
@@ -26,6 +39,17 @@ const __sqlInventoryVariant_UpdateAll = "UPDATE \"inventory_variant\" SET (" + _
 func (m *InventoryVariant) SQLTableName() string  { return "inventory_variant" }
 func (m *InventoryVariants) SQLTableName() string { return "inventory_variant" }
 func (m *InventoryVariant) SQLListCols() string   { return __sqlInventoryVariant_ListCols }
+
+func (m *InventoryVariant) SQLVerifySchema(db *cmsql.Database) {
+	query := "SELECT " + __sqlInventoryVariant_ListCols + " FROM inventory_variant WHERE false"
+	if _, err := db.SQL(query).Exec(); err != nil {
+		db.RecordError(err)
+	}
+}
+
+func init() {
+	__sqlModels = append(__sqlModels, (*InventoryVariant)(nil))
+}
 
 func (m *InventoryVariant) SQLArgs(opts core.Opts, create bool) []interface{} {
 	now := time.Now()
@@ -277,6 +301,17 @@ const __sqlInventoryVoucher_UpdateAll = "UPDATE \"inventory_voucher\" SET (" + _
 func (m *InventoryVoucher) SQLTableName() string  { return "inventory_voucher" }
 func (m *InventoryVouchers) SQLTableName() string { return "inventory_voucher" }
 func (m *InventoryVoucher) SQLListCols() string   { return __sqlInventoryVoucher_ListCols }
+
+func (m *InventoryVoucher) SQLVerifySchema(db *cmsql.Database) {
+	query := "SELECT " + __sqlInventoryVoucher_ListCols + " FROM inventory_voucher WHERE false"
+	if _, err := db.SQL(query).Exec(); err != nil {
+		db.RecordError(err)
+	}
+}
+
+func init() {
+	__sqlModels = append(__sqlModels, (*InventoryVoucher)(nil))
+}
 
 func (m *InventoryVoucher) SQLArgs(opts core.Opts, create bool) []interface{} {
 	now := time.Now()

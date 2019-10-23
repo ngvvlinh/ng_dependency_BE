@@ -4,14 +4,27 @@ package model
 
 import (
 	"database/sql"
+	"sync"
 	"time"
 
 	etop_vn_backend_com_main_ordering_model "etop.vn/backend/com/main/ordering/model"
 	etop_vn_backend_com_main_shipping_model "etop.vn/backend/com/main/shipping/model"
+	"etop.vn/backend/pkg/common/cmsql"
 	sq "etop.vn/backend/pkg/common/sq"
 	core "etop.vn/backend/pkg/common/sq/core"
 	model "etop.vn/backend/pkg/etop/model"
 )
+
+var __sqlModels []interface{ SQLVerifySchema(db *cmsql.Database) }
+var __sqlonce sync.Once
+
+func SQLVerifySchema(db *cmsql.Database) {
+	__sqlonce.Do(func() {
+		for _, m := range __sqlModels {
+			m.SQLVerifySchema(db)
+		}
+	})
+}
 
 type SQLWriter = core.SQLWriter
 
@@ -35,6 +48,17 @@ func (m *MoneyTransactionShippingExternals) SQLTableName() string {
 }
 func (m *MoneyTransactionShippingExternal) SQLListCols() string {
 	return __sqlMoneyTransactionShippingExternal_ListCols
+}
+
+func (m *MoneyTransactionShippingExternal) SQLVerifySchema(db *cmsql.Database) {
+	query := "SELECT " + __sqlMoneyTransactionShippingExternal_ListCols + " FROM money_transaction_shipping_external WHERE false"
+	if _, err := db.SQL(query).Exec(); err != nil {
+		db.RecordError(err)
+	}
+}
+
+func init() {
+	__sqlModels = append(__sqlModels, (*MoneyTransactionShippingExternal)(nil))
 }
 
 func (m *MoneyTransactionShippingExternal) SQLArgs(opts core.Opts, create bool) []interface{} {
@@ -379,6 +403,17 @@ func (m *MoneyTransactionShippingExternalLines) SQLTableName() string {
 }
 func (m *MoneyTransactionShippingExternalLine) SQLListCols() string {
 	return __sqlMoneyTransactionShippingExternalLine_ListCols
+}
+
+func (m *MoneyTransactionShippingExternalLine) SQLVerifySchema(db *cmsql.Database) {
+	query := "SELECT " + __sqlMoneyTransactionShippingExternalLine_ListCols + " FROM money_transaction_shipping_external_line WHERE false"
+	if _, err := db.SQL(query).Exec(); err != nil {
+		db.RecordError(err)
+	}
+}
+
+func init() {
+	__sqlModels = append(__sqlModels, (*MoneyTransactionShippingExternalLine)(nil))
 }
 
 func (m *MoneyTransactionShippingExternalLine) SQLArgs(opts core.Opts, create bool) []interface{} {
@@ -889,6 +924,17 @@ const __sqlMoneyTransactionShipping_UpdateAll = "UPDATE \"money_transaction_ship
 func (m *MoneyTransactionShipping) SQLTableName() string  { return "money_transaction_shipping" }
 func (m *MoneyTransactionShippings) SQLTableName() string { return "money_transaction_shipping" }
 func (m *MoneyTransactionShipping) SQLListCols() string   { return __sqlMoneyTransactionShipping_ListCols }
+
+func (m *MoneyTransactionShipping) SQLVerifySchema(db *cmsql.Database) {
+	query := "SELECT " + __sqlMoneyTransactionShipping_ListCols + " FROM money_transaction_shipping WHERE false"
+	if _, err := db.SQL(query).Exec(); err != nil {
+		db.RecordError(err)
+	}
+}
+
+func init() {
+	__sqlModels = append(__sqlModels, (*MoneyTransactionShipping)(nil))
+}
 
 func (m *MoneyTransactionShipping) SQLArgs(opts core.Opts, create bool) []interface{} {
 	now := time.Now()
@@ -1421,6 +1467,17 @@ func (m *MoneyTransactionShippingEtops) SQLTableName() string {
 }
 func (m *MoneyTransactionShippingEtop) SQLListCols() string {
 	return __sqlMoneyTransactionShippingEtop_ListCols
+}
+
+func (m *MoneyTransactionShippingEtop) SQLVerifySchema(db *cmsql.Database) {
+	query := "SELECT " + __sqlMoneyTransactionShippingEtop_ListCols + " FROM money_transaction_shipping_etop WHERE false"
+	if _, err := db.SQL(query).Exec(); err != nil {
+		db.RecordError(err)
+	}
+}
+
+func init() {
+	__sqlModels = append(__sqlModels, (*MoneyTransactionShippingEtop)(nil))
 }
 
 func (m *MoneyTransactionShippingEtop) SQLArgs(opts core.Opts, create bool) []interface{} {

@@ -17,7 +17,7 @@ type CarrierAggregate struct {
 	store sqlstore.CarrierStoreFactory
 }
 
-func NewCarrierAggregate(db cmsql.Database) *CarrierAggregate {
+func NewCarrierAggregate(db *cmsql.Database) *CarrierAggregate {
 	return &CarrierAggregate{
 		store: sqlstore.NewCarrierStore(db),
 	}

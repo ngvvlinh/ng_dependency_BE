@@ -20,7 +20,7 @@ type ReceiptAggregate struct {
 	store sqlstore.ReceiptStoreFactory
 }
 
-func NewReceiptAggregate(db cmsql.Database) *ReceiptAggregate {
+func NewReceiptAggregate(db *cmsql.Database) *ReceiptAggregate {
 	return &ReceiptAggregate{
 		store: sqlstore.NewReceiptStore(db),
 	}

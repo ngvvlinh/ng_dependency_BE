@@ -19,7 +19,7 @@ import (
 var _ catalog.Aggregate = &Aggregate{}
 
 type Aggregate struct {
-	db                    cmsql.Database
+	db                    *cmsql.Database
 	shopProduct           sqlstore.ShopProductStoreFactory
 	shopVariant           sqlstore.ShopVariantStoreFactory
 	shopCategory          sqlstore.ShopCategoryStoreFactory
@@ -28,7 +28,7 @@ type Aggregate struct {
 	eventBus              capi.EventBus
 }
 
-func New(eventBus capi.EventBus, db cmsql.Database) *Aggregate {
+func New(eventBus capi.EventBus, db *cmsql.Database) *Aggregate {
 	return &Aggregate{
 		db:                    db,
 		shopProduct:           sqlstore.NewShopProductStore(db),

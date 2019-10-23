@@ -23,7 +23,7 @@ type Aggregate struct {
 	paymentAggr payment.CommandBus
 }
 
-func NewAggregate(db cmsql.Database, orderQuery ordering.QueryBus, orderA ordering.CommandBus, paymentA payment.CommandBus, vtpayClient *vtpayclient.Client) *Aggregate {
+func NewAggregate(db *cmsql.Database, orderQuery ordering.QueryBus, orderA ordering.CommandBus, paymentA payment.CommandBus, vtpayClient *vtpayclient.Client) *Aggregate {
 	return &Aggregate{
 		db:          db,
 		orderQS:     orderQuery,

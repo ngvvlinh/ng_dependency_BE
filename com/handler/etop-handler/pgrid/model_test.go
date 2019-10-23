@@ -14,7 +14,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-var db cmsql.Database
+var db *cmsql.Database
 
 func init() {
 	cfg := cc.DefaultPostgres()

@@ -18,8 +18,8 @@ import (
 )
 
 var (
-	x                 cmsql.Database
-	xNotifier         cmsql.Database
+	x                 *cmsql.Database
+	xNotifier         *cmsql.Database
 	ll                = l.New()
 	deviceStore       *notisqlstore.DeviceStore
 	notificationStore *notisqlstore.NotificationStore
@@ -33,17 +33,19 @@ type (
 	Qx    = cmsql.QueryInterface
 )
 
-func Init(db cmsql.Database) {
-	if x.DB() != nil {
-		ll.Panic("Already initialized")
+func Init(db *cmsql.Database) {
+	if x != nil {
+		if (*x).DB() != nil {
+			ll.Panic("Already initialized")
+		}
 	}
 	x = db
 
 	shopProductStore = catalogsqlstore.NewShopProductStore(db)
 }
 
-func InitDBNotifier(db cmsql.Database) {
-	if xNotifier.DB() != nil {
+func InitDBNotifier(db *cmsql.Database) {
+	if xNotifier != nil && (*xNotifier).DB() != nil {
 		ll.Panic("Database Notifier already initialized")
 	}
 	xNotifier = db

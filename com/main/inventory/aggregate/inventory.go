@@ -27,7 +27,7 @@ type InventoryAggregate struct {
 	EventBus              bus.Bus
 }
 
-func NewAggregateInventory(eventBus bus.Bus, db cmsql.Database) *InventoryAggregate {
+func NewAggregateInventory(eventBus bus.Bus, db *cmsql.Database) *InventoryAggregate {
 	return &InventoryAggregate{
 		InventoryStore:        sqlstore.NewInventoryStore(db),
 		InventoryVoucherStore: sqlstore.NewInventoryVoucherStore(db),

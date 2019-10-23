@@ -15,7 +15,7 @@ import (
 var (
 	ll  = l.New()
 	cfg config.Config
-	db  cmsql.Database
+	db  *cmsql.Database
 )
 
 type M map[string]interface{}

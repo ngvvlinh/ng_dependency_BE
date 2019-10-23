@@ -12,12 +12,13 @@ import (
 )
 
 type DeviceStore struct {
-	db cmsql.Database
+	db *cmsql.Database
 }
 
 type M map[string]interface{}
 
-func NewDeviceStore(db cmsql.Database) *DeviceStore {
+func NewDeviceStore(db *cmsql.Database) *DeviceStore {
+	model.SQLVerifySchema(db)
 	return &DeviceStore{
 		db: db,
 	}

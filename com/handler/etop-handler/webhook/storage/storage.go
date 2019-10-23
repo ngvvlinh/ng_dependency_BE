@@ -8,10 +8,10 @@ import (
 )
 
 type ChangesStore struct {
-	db cmsql.Database
+	db *cmsql.Database
 }
 
-func NewChangesStore(db cmsql.Database) *ChangesStore {
+func NewChangesStore(db *cmsql.Database) *ChangesStore {
 	return &ChangesStore{
 		db: db,
 	}

@@ -17,11 +17,12 @@ import (
 
 type ShopProductStoreFactory func(context.Context) *ShopProductStore
 
-func NewShopProductStore(db cmsql.Database) ShopProductStoreFactory {
+func NewShopProductStore(db *cmsql.Database) ShopProductStoreFactory {
+	model.SQLVerifySchema(db)
 	return func(ctx context.Context) *ShopProductStore {
 		return &ShopProductStore{
 			query: func() cmsql.QueryInterface {
-				return cmsql.GetTxOrNewQuery(ctx, db)
+				return cmsql.GetTxOrNewQuery(ctx, *db)
 			},
 			shopVariant: NewShopVariantStore(db)(ctx),
 		}

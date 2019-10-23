@@ -4,11 +4,24 @@ package model
 
 import (
 	"database/sql"
+	"sync"
 	"time"
 
+	"etop.vn/backend/pkg/common/cmsql"
 	sq "etop.vn/backend/pkg/common/sq"
 	core "etop.vn/backend/pkg/common/sq/core"
 )
+
+var __sqlModels []interface{ SQLVerifySchema(db *cmsql.Database) }
+var __sqlonce sync.Once
+
+func SQLVerifySchema(db *cmsql.Database) {
+	__sqlonce.Do(func() {
+		for _, m := range __sqlModels {
+			m.SQLVerifySchema(db)
+		}
+	})
+}
 
 type SQLWriter = core.SQLWriter
 
@@ -27,6 +40,17 @@ const __sqlUser_UpdateAll = "UPDATE \"user\" SET (" + __sqlUser_ListCols + ")"
 func (m *User) SQLTableName() string  { return "user" }
 func (m *Users) SQLTableName() string { return "user" }
 func (m *User) SQLListCols() string   { return __sqlUser_ListCols }
+
+func (m *User) SQLVerifySchema(db *cmsql.Database) {
+	query := "SELECT " + __sqlUser_ListCols + " FROM user WHERE false"
+	if _, err := db.SQL(query).Exec(); err != nil {
+		db.RecordError(err)
+	}
+}
+
+func init() {
+	__sqlModels = append(__sqlModels, (*User)(nil))
+}
 
 func (m *User) SQLArgs(opts core.Opts, create bool) []interface{} {
 	return []interface{}{
@@ -428,6 +452,17 @@ func (m *UserSubset) SQLTableName() string  { return "user" }
 func (m *UserSubsets) SQLTableName() string { return "user" }
 func (m *UserSubset) SQLListCols() string   { return __sqlUserSubset_ListCols }
 
+func (m *UserSubset) SQLVerifySchema(db *cmsql.Database) {
+	query := "SELECT " + __sqlUserSubset_ListCols + " FROM user WHERE false"
+	if _, err := db.SQL(query).Exec(); err != nil {
+		db.RecordError(err)
+	}
+}
+
+func init() {
+	__sqlModels = append(__sqlModels, (*UserSubset)(nil))
+}
+
 func (m *UserSubset) SQLArgs(opts core.Opts, create bool) []interface{} {
 	return []interface{}{
 		core.String(m.ID),
@@ -723,6 +758,17 @@ const __sqlUserInfo_UpdateAll = "UPDATE \"user_info\" SET (" + __sqlUserInfo_Lis
 func (m *UserInfo) SQLTableName() string   { return "user_info" }
 func (m *UserInfoes) SQLTableName() string { return "user_info" }
 func (m *UserInfo) SQLListCols() string    { return __sqlUserInfo_ListCols }
+
+func (m *UserInfo) SQLVerifySchema(db *cmsql.Database) {
+	query := "SELECT " + __sqlUserInfo_ListCols + " FROM user_info WHERE false"
+	if _, err := db.SQL(query).Exec(); err != nil {
+		db.RecordError(err)
+	}
+}
+
+func init() {
+	__sqlModels = append(__sqlModels, (*UserInfo)(nil))
+}
 
 func (m *UserInfo) SQLArgs(opts core.Opts, create bool) []interface{} {
 	return []interface{}{
@@ -1241,6 +1287,17 @@ func (m *ComplexInfo) SQLTableName() string   { return "complex_info" }
 func (m *ComplexInfoes) SQLTableName() string { return "complex_info" }
 func (m *ComplexInfo) SQLListCols() string    { return __sqlComplexInfo_ListCols }
 
+func (m *ComplexInfo) SQLVerifySchema(db *cmsql.Database) {
+	query := "SELECT " + __sqlComplexInfo_ListCols + " FROM complex_info WHERE false"
+	if _, err := db.SQL(query).Exec(); err != nil {
+		db.RecordError(err)
+	}
+}
+
+func init() {
+	__sqlModels = append(__sqlModels, (*ComplexInfo)(nil))
+}
+
 func (m *ComplexInfo) SQLArgs(opts core.Opts, create bool) []interface{} {
 	return []interface{}{
 		core.String(m.ID),
@@ -1643,6 +1700,17 @@ func (m *UserTag) SQLTableName() string  { return "user_tag" }
 func (m *UserTags) SQLTableName() string { return "user_tag" }
 func (m *UserTag) SQLListCols() string   { return __sqlUserTag_ListCols }
 
+func (m *UserTag) SQLVerifySchema(db *cmsql.Database) {
+	query := "SELECT " + __sqlUserTag_ListCols + " FROM user_tag WHERE false"
+	if _, err := db.SQL(query).Exec(); err != nil {
+		db.RecordError(err)
+	}
+}
+
+func init() {
+	__sqlModels = append(__sqlModels, (*UserTag)(nil))
+}
+
 func (m *UserTag) SQLArgs(opts core.Opts, create bool) []interface{} {
 	return []interface{}{
 		core.String(m.Inline.Province),
@@ -1821,6 +1889,17 @@ const __sqlUserInline_UpdateAll = "UPDATE \"user_inline\" SET (" + __sqlUserInli
 func (m *UserInline) SQLTableName() string  { return "user_inline" }
 func (m *UserInlines) SQLTableName() string { return "user_inline" }
 func (m *UserInline) SQLListCols() string   { return __sqlUserInline_ListCols }
+
+func (m *UserInline) SQLVerifySchema(db *cmsql.Database) {
+	query := "SELECT " + __sqlUserInline_ListCols + " FROM user_inline WHERE false"
+	if _, err := db.SQL(query).Exec(); err != nil {
+		db.RecordError(err)
+	}
+}
+
+func init() {
+	__sqlModels = append(__sqlModels, (*UserInline)(nil))
+}
 
 func (m *UserInline) SQLArgs(opts core.Opts, create bool) []interface{} {
 	return []interface{}{
@@ -2001,6 +2080,17 @@ const __sqlProfile_UpdateAll = "UPDATE \"profile\" SET (" + __sqlProfile_ListCol
 func (m *Profile) SQLTableName() string  { return "profile" }
 func (m *Profiles) SQLTableName() string { return "profile" }
 func (m *Profile) SQLListCols() string   { return __sqlProfile_ListCols }
+
+func (m *Profile) SQLVerifySchema(db *cmsql.Database) {
+	query := "SELECT " + __sqlProfile_ListCols + " FROM profile WHERE false"
+	if _, err := db.SQL(query).Exec(); err != nil {
+		db.RecordError(err)
+	}
+}
+
+func init() {
+	__sqlModels = append(__sqlModels, (*Profile)(nil))
+}
 
 func (m *Profile) SQLArgs(opts core.Opts, create bool) []interface{} {
 	return []interface{}{

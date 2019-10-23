@@ -18,7 +18,7 @@ type CustomerQuery struct {
 	customerGroupCustomerStore sqlstore.CustomerGroupCustomerStoreFactory
 }
 
-func NewCustomerQuery(db cmsql.Database) *CustomerQuery {
+func NewCustomerQuery(db *cmsql.Database) *CustomerQuery {
 	return &CustomerQuery{
 		store:                      sqlstore.NewCustomerStore(db),
 		customerGroupStore:         sqlstore.NewCustomerGroupStore(db),

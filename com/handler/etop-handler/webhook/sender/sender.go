@@ -35,7 +35,7 @@ var redisStore redis.Store
 var changesStore *storage.ChangesStore
 
 type WebhookSender struct {
-	db       cmsql.Database
+	db       *cmsql.Database
 	ssenders map[int64][]*SingleSender
 	running  bool
 
@@ -43,7 +43,7 @@ type WebhookSender struct {
 	m  sync.RWMutex
 }
 
-func New(db cmsql.Database, redis redis.Store, cs *storage.ChangesStore) *WebhookSender {
+func New(db *cmsql.Database, redis redis.Store, cs *storage.ChangesStore) *WebhookSender {
 	redisStore = redis
 	changesStore = cs
 	return &WebhookSender{db: db}

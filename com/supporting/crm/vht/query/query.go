@@ -18,7 +18,7 @@ type QueryService struct {
 
 var _ crmvht.QueryService = &QueryService{}
 
-func New(db cmsql.Database) *QueryService {
+func New(db *cmsql.Database) *QueryService {
 	return &QueryService{
 		VhtStore: sqlstore.NewVhtCallHistoryStore(db),
 	}

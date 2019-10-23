@@ -13,10 +13,11 @@ import (
 )
 
 type NotificationStore struct {
-	db cmsql.Database
+	db *cmsql.Database
 }
 
-func NewNotificationStore(db cmsql.Database) *NotificationStore {
+func NewNotificationStore(db *cmsql.Database) *NotificationStore {
+	model.SQLVerifySchema(db)
 	return &NotificationStore{
 		db: db,
 	}

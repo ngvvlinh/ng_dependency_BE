@@ -22,7 +22,7 @@ type DashboardQuery struct {
 	redisStore redis.Store
 }
 
-func NewDashboardQuery(db cmsql.Database, resdis redis.Store) *DashboardQuery {
+func NewDashboardQuery(db *cmsql.Database, resdis redis.Store) *DashboardQuery {
 	return &DashboardQuery{
 		store:      sqlstore.NewOrderStore(db),
 		redisStore: resdis,

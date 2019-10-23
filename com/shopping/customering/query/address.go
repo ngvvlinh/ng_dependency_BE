@@ -15,7 +15,7 @@ type AddressQuery struct {
 	store sqlstore.AddressStoreFactory
 }
 
-func NewAddressQuery(db cmsql.Database) *AddressQuery {
+func NewAddressQuery(db *cmsql.Database) *AddressQuery {
 	return &AddressQuery{
 		store: sqlstore.NewAddressStore(db),
 	}

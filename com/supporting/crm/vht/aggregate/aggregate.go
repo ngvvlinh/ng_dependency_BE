@@ -22,7 +22,7 @@ type AggregateService struct {
 	SyncVhtCallHistory *syncvht.SyncVht
 }
 
-func New(db cmsql.Database, vhtClient *vhtclient.Client) *AggregateService {
+func New(db *cmsql.Database, vhtClient *vhtclient.Client) *AggregateService {
 	return &AggregateService{
 		VhtStore:  sqlstore.NewVhtCallHistoryStore(db),
 		VhtClient: vhtClient,

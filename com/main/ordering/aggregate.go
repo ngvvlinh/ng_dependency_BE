@@ -22,7 +22,7 @@ type Aggregate struct {
 	eventBus capi.EventBus
 }
 
-func NewAggregate(eventBus capi.EventBus, db cmsql.Database) *Aggregate {
+func NewAggregate(eventBus capi.EventBus, db *cmsql.Database) *Aggregate {
 	return &Aggregate{
 		store:    sqlstore.NewOrderStore(db),
 		eventBus: eventBus,

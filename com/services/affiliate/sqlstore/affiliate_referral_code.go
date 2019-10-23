@@ -16,11 +16,12 @@ import (
 
 type AffiliateReferralCodeStoreFactory func(ctx context.Context) *AffiliateReferralCodeStore
 
-func NewAffiliateReferralCodeStore(db cmsql.Database) AffiliateReferralCodeStoreFactory {
+func NewAffiliateReferralCodeStore(db *cmsql.Database) AffiliateReferralCodeStoreFactory {
+	model.SQLVerifySchema(db)
 	return func(ctx context.Context) *AffiliateReferralCodeStore {
 		return &AffiliateReferralCodeStore{
 			query: func() cmsql.QueryInterface {
-				return cmsql.GetTxOrNewQuery(ctx, db)
+				return cmsql.GetTxOrNewQuery(ctx, *db)
 			},
 		}
 	}

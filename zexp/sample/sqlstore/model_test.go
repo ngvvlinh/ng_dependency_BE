@@ -11,7 +11,7 @@ import (
 	"etop.vn/backend/zexp/sample/model"
 )
 
-var db cmsql.Database
+var db *cmsql.Database
 
 func init() {
 	db = cmsql.MustConnect(cc.DefaultPostgres())

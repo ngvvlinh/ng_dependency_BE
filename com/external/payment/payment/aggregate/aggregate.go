@@ -17,7 +17,7 @@ type Aggregate struct {
 	store sqlstore.PaymentStoreFactory
 }
 
-func NewAggregate(db cmsql.Database) *Aggregate {
+func NewAggregate(db *cmsql.Database) *Aggregate {
 	return &Aggregate{
 		db:    db,
 		store: sqlstore.NewPaymentStore(db),

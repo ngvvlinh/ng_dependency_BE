@@ -4,10 +4,23 @@ package model
 
 import (
 	"database/sql"
+	"sync"
 	"time"
 
+	"etop.vn/backend/pkg/common/cmsql"
 	core "etop.vn/backend/pkg/common/sq/core"
 )
+
+var __sqlModels []interface{ SQLVerifySchema(db *cmsql.Database) }
+var __sqlonce sync.Once
+
+func SQLVerifySchema(db *cmsql.Database) {
+	__sqlonce.Do(func() {
+		for _, m := range __sqlModels {
+			m.SQLVerifySchema(db)
+		}
+	})
+}
 
 type SQLWriter = core.SQLWriter
 
@@ -26,6 +39,17 @@ const __sqlPayment_UpdateAll = "UPDATE \"payment\" SET (" + __sqlPayment_ListCol
 func (m *Payment) SQLTableName() string  { return "payment" }
 func (m *Payments) SQLTableName() string { return "payment" }
 func (m *Payment) SQLListCols() string   { return __sqlPayment_ListCols }
+
+func (m *Payment) SQLVerifySchema(db *cmsql.Database) {
+	query := "SELECT " + __sqlPayment_ListCols + " FROM payment WHERE false"
+	if _, err := db.SQL(query).Exec(); err != nil {
+		db.RecordError(err)
+	}
+}
+
+func init() {
+	__sqlModels = append(__sqlModels, (*Payment)(nil))
+}
 
 func (m *Payment) SQLArgs(opts core.Opts, create bool) []interface{} {
 	now := time.Now()

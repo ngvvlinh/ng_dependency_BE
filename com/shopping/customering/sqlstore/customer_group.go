@@ -16,11 +16,12 @@ import (
 
 type CustomerGroupStoreFactory func(context.Context) *CustomerGroupStore
 
-func NewCustomerGroupStore(db cmsql.Database) CustomerGroupStoreFactory {
+func NewCustomerGroupStore(db *cmsql.Database) CustomerGroupStoreFactory {
+	model.SQLVerifySchema(db)
 	return func(ctx context.Context) *CustomerGroupStore {
 		return &CustomerGroupStore{
 			query: func() cmsql.QueryInterface {
-				return cmsql.GetTxOrNewQuery(ctx, db)
+				return cmsql.GetTxOrNewQuery(ctx, *db)
 			},
 		}
 	}

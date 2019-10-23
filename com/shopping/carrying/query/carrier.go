@@ -16,7 +16,7 @@ type CarrierQuery struct {
 	store sqlstore.CarrierStoreFactory
 }
 
-func NewCarrierQuery(db cmsql.Database) *CarrierQuery {
+func NewCarrierQuery(db *cmsql.Database) *CarrierQuery {
 	return &CarrierQuery{
 		store: sqlstore.NewCarrierStore(db),
 	}

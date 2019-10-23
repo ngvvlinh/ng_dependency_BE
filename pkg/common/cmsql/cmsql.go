@@ -26,7 +26,7 @@ import (
 )
 
 // map[connection-string]Database
-var dbPool = map[string]Database{}
+var dbPool = map[string]*Database{}
 var mu sync.RWMutex
 var ll = l.New()
 
@@ -159,9 +159,24 @@ type Database struct {
 	id   int64
 	db   *sq.Database
 	dlog *sq.DynamicLogger
+	errs []error
 }
 
-func MustConnect(c ConfigPostgres) Database {
+func (db *Database) GetSchemaErrors() error {
+	for _, v := range db.errs {
+		l.Error(v)
+	}
+	if len(db.errs) > 0 {
+		return cm.Error(cm.Internal, "Found error in database migration", nil)
+	}
+	return nil
+}
+
+func (db *Database) RecordError(err error) {
+	db.errs = append(db.errs, err)
+}
+
+func MustConnect(c ConfigPostgres) *Database {
 	db, err := Connect(c)
 	if err != nil {
 		ll.Fatal("Error while connecting to database", l.Error(err))
@@ -170,9 +185,9 @@ func MustConnect(c ConfigPostgres) Database {
 }
 
 // Connect ...
-func Connect(c ConfigPostgres) (Database, error) {
+func Connect(c ConfigPostgres) (*Database, error) {
 	if err := c.RegisterCloudSQL(); err != nil {
-		return Database{}, err
+		return &Database{}, err
 	}
 
 	identifier := c.connectionStringIdentifier()
@@ -188,12 +203,11 @@ func Connect(c ConfigPostgres) (Database, error) {
 	db, err := sq.Connect(driver, conn, dlog,
 		sq.SetErrorMapper(DefaultErrorMapper))
 	if err != nil {
-		return Database{}, err
+		return &Database{}, err
 	}
 	if _, err := db.Exec("SELECT 1"); err != nil {
-		return Database{}, err
+		return &Database{}, err
 	}
-
 	if c.MaxOpenConns == 0 {
 		c.MaxOpenConns = 10
 	}
@@ -204,7 +218,7 @@ func Connect(c ConfigPostgres) (Database, error) {
 	db.DB().SetMaxIdleConns(c.MaxIdleConns)
 
 	mu.Lock()
-	database := Database{cm.NewID(), db, dlog}
+	database := &Database{id: cm.NewID(), db: db, dlog: dlog}
 	dbPool[identifier] = database
 	defer mu.Unlock()
 	return database, nil

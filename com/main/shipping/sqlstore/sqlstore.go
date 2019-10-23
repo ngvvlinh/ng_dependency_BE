@@ -10,11 +10,12 @@ import (
 
 type FulfillmentStoreFactory func(context.Context) *FulfillmentStore
 
-func NewFulfillmentStore(db cmsql.Database) FulfillmentStoreFactory {
+func NewFulfillmentStore(db *cmsql.Database) FulfillmentStoreFactory {
+	model.SQLVerifySchema(db)
 	return func(ctx context.Context) *FulfillmentStore {
 		return &FulfillmentStore{
 			query: func() cmsql.QueryInterface {
-				return cmsql.GetTxOrNewQuery(ctx, db)
+				return cmsql.GetTxOrNewQuery(ctx, *db)
 			},
 		}
 	}

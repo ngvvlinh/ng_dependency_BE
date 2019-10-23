@@ -12,11 +12,12 @@ import (
 
 type OrderCreatedNotifyStoreFactory func(ctx context.Context) *OrderCreatedNotifyStore
 
-func NewOrderCreatedNotifyStore(db cmsql.Database) OrderCreatedNotifyStoreFactory {
+func NewOrderCreatedNotifyStore(db *cmsql.Database) OrderCreatedNotifyStoreFactory {
+	model.SQLVerifySchema(db)
 	return func(ctx context.Context) *OrderCreatedNotifyStore {
 		return &OrderCreatedNotifyStore{
 			query: func() cmsql.QueryInterface {
-				return cmsql.GetTxOrNewQuery(ctx, db)
+				return cmsql.GetTxOrNewQuery(ctx, *db)
 			},
 		}
 	}

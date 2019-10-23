@@ -32,7 +32,7 @@ type ShipnowManager struct {
 	store        sqlstore.ShipnowStoreFactory
 }
 
-func NewManager(db cmsql.Database, locationBus location.QueryBus, ahamoveCarrier *Carrier, shipnowQuery shipnow.QueryBus) *ShipnowManager {
+func NewManager(db *cmsql.Database, locationBus location.QueryBus, ahamoveCarrier *Carrier, shipnowQuery shipnow.QueryBus) *ShipnowManager {
 	return &ShipnowManager{
 		ahamove:      ahamoveCarrier,
 		location:     locationBus,

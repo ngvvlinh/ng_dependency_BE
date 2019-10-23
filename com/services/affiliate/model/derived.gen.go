@@ -4,10 +4,23 @@ package model
 
 import (
 	"database/sql"
+	"sync"
 	"time"
 
+	"etop.vn/backend/pkg/common/cmsql"
 	core "etop.vn/backend/pkg/common/sq/core"
 )
+
+var __sqlModels []interface{ SQLVerifySchema(db *cmsql.Database) }
+var __sqlonce sync.Once
+
+func SQLVerifySchema(db *cmsql.Database) {
+	__sqlonce.Do(func() {
+		for _, m := range __sqlModels {
+			m.SQLVerifySchema(db)
+		}
+	})
+}
 
 type SQLWriter = core.SQLWriter
 
@@ -26,6 +39,17 @@ const __sqlCommissionSetting_UpdateAll = "UPDATE \"commission_setting\" SET (" +
 func (m *CommissionSetting) SQLTableName() string  { return "commission_setting" }
 func (m *CommissionSettings) SQLTableName() string { return "commission_setting" }
 func (m *CommissionSetting) SQLListCols() string   { return __sqlCommissionSetting_ListCols }
+
+func (m *CommissionSetting) SQLVerifySchema(db *cmsql.Database) {
+	query := "SELECT " + __sqlCommissionSetting_ListCols + " FROM commission_setting WHERE false"
+	if _, err := db.SQL(query).Exec(); err != nil {
+		db.RecordError(err)
+	}
+}
+
+func init() {
+	__sqlModels = append(__sqlModels, (*CommissionSetting)(nil))
+}
 
 func (m *CommissionSetting) SQLArgs(opts core.Opts, create bool) []interface{} {
 	now := time.Now()
@@ -271,6 +295,17 @@ const __sqlProductPromotion_UpdateAll = "UPDATE \"product_promotion\" SET (" + _
 func (m *ProductPromotion) SQLTableName() string  { return "product_promotion" }
 func (m *ProductPromotions) SQLTableName() string { return "product_promotion" }
 func (m *ProductPromotion) SQLListCols() string   { return __sqlProductPromotion_ListCols }
+
+func (m *ProductPromotion) SQLVerifySchema(db *cmsql.Database) {
+	query := "SELECT " + __sqlProductPromotion_ListCols + " FROM product_promotion WHERE false"
+	if _, err := db.SQL(query).Exec(); err != nil {
+		db.RecordError(err)
+	}
+}
+
+func init() {
+	__sqlModels = append(__sqlModels, (*ProductPromotion)(nil))
+}
 
 func (m *ProductPromotion) SQLArgs(opts core.Opts, create bool) []interface{} {
 	now := time.Now()
@@ -581,6 +616,17 @@ const __sqlSellerCommission_UpdateAll = "UPDATE \"seller_commission\" SET (" + _
 func (m *SellerCommission) SQLTableName() string  { return "seller_commission" }
 func (m *SellerCommissions) SQLTableName() string { return "seller_commission" }
 func (m *SellerCommission) SQLListCols() string   { return __sqlSellerCommission_ListCols }
+
+func (m *SellerCommission) SQLVerifySchema(db *cmsql.Database) {
+	query := "SELECT " + __sqlSellerCommission_ListCols + " FROM seller_commission WHERE false"
+	if _, err := db.SQL(query).Exec(); err != nil {
+		db.RecordError(err)
+	}
+}
+
+func init() {
+	__sqlModels = append(__sqlModels, (*SellerCommission)(nil))
+}
 
 func (m *SellerCommission) SQLArgs(opts core.Opts, create bool) []interface{} {
 	now := time.Now()
@@ -958,6 +1004,17 @@ const __sqlOrderCreatedNotify_UpdateAll = "UPDATE \"order_created_notify\" SET (
 func (m *OrderCreatedNotify) SQLTableName() string   { return "order_created_notify" }
 func (m *OrderCreatedNotifies) SQLTableName() string { return "order_created_notify" }
 func (m *OrderCreatedNotify) SQLListCols() string    { return __sqlOrderCreatedNotify_ListCols }
+
+func (m *OrderCreatedNotify) SQLVerifySchema(db *cmsql.Database) {
+	query := "SELECT " + __sqlOrderCreatedNotify_ListCols + " FROM order_created_notify WHERE false"
+	if _, err := db.SQL(query).Exec(); err != nil {
+		db.RecordError(err)
+	}
+}
+
+func init() {
+	__sqlModels = append(__sqlModels, (*OrderCreatedNotify)(nil))
+}
 
 func (m *OrderCreatedNotify) SQLArgs(opts core.Opts, create bool) []interface{} {
 	now := time.Now()
@@ -1397,6 +1454,17 @@ func (m *AffiliateReferralCode) SQLTableName() string  { return "affiliate_refer
 func (m *AffiliateReferralCodes) SQLTableName() string { return "affiliate_referral_code" }
 func (m *AffiliateReferralCode) SQLListCols() string   { return __sqlAffiliateReferralCode_ListCols }
 
+func (m *AffiliateReferralCode) SQLVerifySchema(db *cmsql.Database) {
+	query := "SELECT " + __sqlAffiliateReferralCode_ListCols + " FROM affiliate_referral_code WHERE false"
+	if _, err := db.SQL(query).Exec(); err != nil {
+		db.RecordError(err)
+	}
+}
+
+func init() {
+	__sqlModels = append(__sqlModels, (*AffiliateReferralCode)(nil))
+}
+
 func (m *AffiliateReferralCode) SQLArgs(opts core.Opts, create bool) []interface{} {
 	now := time.Now()
 	return []interface{}{
@@ -1638,6 +1706,17 @@ const __sqlUserReferral_UpdateAll = "UPDATE \"user_referral\" SET (" + __sqlUser
 func (m *UserReferral) SQLTableName() string  { return "user_referral" }
 func (m *UserReferrals) SQLTableName() string { return "user_referral" }
 func (m *UserReferral) SQLListCols() string   { return __sqlUserReferral_ListCols }
+
+func (m *UserReferral) SQLVerifySchema(db *cmsql.Database) {
+	query := "SELECT " + __sqlUserReferral_ListCols + " FROM user_referral WHERE false"
+	if _, err := db.SQL(query).Exec(); err != nil {
+		db.RecordError(err)
+	}
+}
+
+func init() {
+	__sqlModels = append(__sqlModels, (*UserReferral)(nil))
+}
 
 func (m *UserReferral) SQLArgs(opts core.Opts, create bool) []interface{} {
 	now := time.Now()
@@ -1915,6 +1994,17 @@ const __sqlSupplyCommissionSetting_UpdateAll = "UPDATE \"supply_commission_setti
 func (m *SupplyCommissionSetting) SQLTableName() string  { return "supply_commission_setting" }
 func (m *SupplyCommissionSettings) SQLTableName() string { return "supply_commission_setting" }
 func (m *SupplyCommissionSetting) SQLListCols() string   { return __sqlSupplyCommissionSetting_ListCols }
+
+func (m *SupplyCommissionSetting) SQLVerifySchema(db *cmsql.Database) {
+	query := "SELECT " + __sqlSupplyCommissionSetting_ListCols + " FROM supply_commission_setting WHERE false"
+	if _, err := db.SQL(query).Exec(); err != nil {
+		db.RecordError(err)
+	}
+}
+
+func init() {
+	__sqlModels = append(__sqlModels, (*SupplyCommissionSetting)(nil))
+}
 
 func (m *SupplyCommissionSetting) SQLArgs(opts core.Opts, create bool) []interface{} {
 	now := time.Now()
@@ -2282,6 +2372,17 @@ func (m *OrderPromotion) SQLTableName() string  { return "order_promotion" }
 func (m *OrderPromotions) SQLTableName() string { return "order_promotion" }
 func (m *OrderPromotion) SQLListCols() string   { return __sqlOrderPromotion_ListCols }
 
+func (m *OrderPromotion) SQLVerifySchema(db *cmsql.Database) {
+	query := "SELECT " + __sqlOrderPromotion_ListCols + " FROM order_promotion WHERE false"
+	if _, err := db.SQL(query).Exec(); err != nil {
+		db.RecordError(err)
+	}
+}
+
+func init() {
+	__sqlModels = append(__sqlModels, (*OrderPromotion)(nil))
+}
+
 func (m *OrderPromotion) SQLArgs(opts core.Opts, create bool) []interface{} {
 	now := time.Now()
 	return []interface{}{
@@ -2608,6 +2709,17 @@ const __sqlOrderCommissionSetting_UpdateAll = "UPDATE \"order_commission_setting
 func (m *OrderCommissionSetting) SQLTableName() string  { return "order_commission_setting" }
 func (m *OrderCommissionSettings) SQLTableName() string { return "order_commission_setting" }
 func (m *OrderCommissionSetting) SQLListCols() string   { return __sqlOrderCommissionSetting_ListCols }
+
+func (m *OrderCommissionSetting) SQLVerifySchema(db *cmsql.Database) {
+	query := "SELECT " + __sqlOrderCommissionSetting_ListCols + " FROM order_commission_setting WHERE false"
+	if _, err := db.SQL(query).Exec(); err != nil {
+		db.RecordError(err)
+	}
+}
+
+func init() {
+	__sqlModels = append(__sqlModels, (*OrderCommissionSetting)(nil))
+}
 
 func (m *OrderCommissionSetting) SQLArgs(opts core.Opts, create bool) []interface{} {
 	now := time.Now()
@@ -2975,6 +3087,17 @@ func (m *ShopCashback) SQLTableName() string  { return "shop_cashback" }
 func (m *ShopCashbacks) SQLTableName() string { return "shop_cashback" }
 func (m *ShopCashback) SQLListCols() string   { return __sqlShopCashback_ListCols }
 
+func (m *ShopCashback) SQLVerifySchema(db *cmsql.Database) {
+	query := "SELECT " + __sqlShopCashback_ListCols + " FROM shop_cashback WHERE false"
+	if _, err := db.SQL(query).Exec(); err != nil {
+		db.RecordError(err)
+	}
+}
+
+func init() {
+	__sqlModels = append(__sqlModels, (*ShopCashback)(nil))
+}
+
 func (m *ShopCashback) SQLArgs(opts core.Opts, create bool) []interface{} {
 	now := time.Now()
 	return []interface{}{
@@ -3260,6 +3383,17 @@ const __sqlShopOrderProductHistory_UpdateAll = "UPDATE \"shop_order_product_hist
 func (m *ShopOrderProductHistory) SQLTableName() string   { return "shop_order_product_history" }
 func (m *ShopOrderProductHistories) SQLTableName() string { return "shop_order_product_history" }
 func (m *ShopOrderProductHistory) SQLListCols() string    { return __sqlShopOrderProductHistory_ListCols }
+
+func (m *ShopOrderProductHistory) SQLVerifySchema(db *cmsql.Database) {
+	query := "SELECT " + __sqlShopOrderProductHistory_ListCols + " FROM shop_order_product_history WHERE false"
+	if _, err := db.SQL(query).Exec(); err != nil {
+		db.RecordError(err)
+	}
+}
+
+func init() {
+	__sqlModels = append(__sqlModels, (*ShopOrderProductHistory)(nil))
+}
 
 func (m *ShopOrderProductHistory) SQLArgs(opts core.Opts, create bool) []interface{} {
 	now := time.Now()
