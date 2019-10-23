@@ -158,8 +158,7 @@ func (a *Aggregate) UpdateOrderPaymentInfo(ctx context.Context, args *ordering.U
 		EventMeta: meta.NewEvent(),
 		OrderID:   args.ID,
 	}
-	if err := a.eventBus.Publish(ctx, event); err != nil {
-		return err
-	}
+	// ignore err
+	_ = a.eventBus.Publish(ctx, event)
 	return nil
 }

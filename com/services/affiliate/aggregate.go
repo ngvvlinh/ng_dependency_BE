@@ -796,7 +796,7 @@ func (a *Aggregate) ProcessOrderNotify(ctx context.Context, orderCreatedNotifyID
 }
 
 func (a *Aggregate) OrderPaymentSuccess(ctx context.Context, event *affiliate.OrderPaymentSuccessEvent) error {
-	orderCreatedNotify, err := a.orderCreatedNotify(ctx).ID(event.OrderID).GetOrderCreatedNotifyDB()
+	orderCreatedNotify, err := a.orderCreatedNotify(ctx).OrderID(event.OrderID).GetOrderCreatedNotifyDB()
 	if err != nil {
 		return err
 	}
