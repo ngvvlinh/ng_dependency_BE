@@ -5,6 +5,10 @@ import (
 	"net/url"
 	"strconv"
 
+	"etop.vn/api/main/identity"
+
+	"etop.vn/api/main/ledgering"
+
 	"github.com/golang/protobuf/jsonpb"
 
 	"etop.vn/api/main/location"
@@ -391,14 +395,15 @@ func PbReceipt(m *receipting.Receipt) *Receipt {
 		Id:          m.ID,
 		ShopId:      m.ShopID,
 		TraderId:    m.TraderID,
-		CreatedBy:   m.CreatedBy,
 		Code:        m.Code,
 		Title:       m.Title,
 		Type:        m.Type,
 		Description: m.Description,
 		Amount:      m.Amount,
+		LedgerId:    m.LedgerID,
 		Lines:       PbReceiptLines(m.Lines),
 		Status:      pbs3.Pb(model.Status3(m.Status)),
+		CreatedBy:   m.CreatedBy,
 		CreatedAt:   pbcm.PbTime(m.CreatedAt),
 		UpdatedAt:   pbcm.PbTime(m.UpdatedAt),
 	}
@@ -426,4 +431,41 @@ func PbReceiptLines(ms []*receipting.ReceiptLine) []*ReceiptLine {
 		res[i] = PbReceiptLine(m)
 	}
 	return res
+}
+
+func PbLedger(m *ledgering.ShopLedger) *Ledger {
+	if m == nil {
+		return nil
+	}
+	return &Ledger{
+		Id:          m.ID,
+		Name:        m.Name,
+		BankAccount: PbBankAccount(m.BankAccount),
+		Note:        m.Note,
+		Type:        m.Type,
+		CreatedBy:   m.CreatedBy,
+		CreatedAt:   pbcm.PbTime(m.CreatedAt),
+		UpdatedAt:   pbcm.PbTime(m.UpdatedAt),
+	}
+}
+
+func PbLedgers(ms []*ledgering.ShopLedger) []*Ledger {
+	res := make([]*Ledger, len(ms))
+	for i, m := range ms {
+		res[i] = PbLedger(m)
+	}
+	return res
+}
+
+func PbBankAccount(m *identity.BankAccount) *pbetop.BankAccount {
+	if m == nil {
+		return nil
+	}
+	return &pbetop.BankAccount{
+		Name:          m.Name,
+		Province:      m.Province,
+		Branch:        m.Branch,
+		AccountNumber: m.AccountNumber,
+		AccountName:   m.AccountName,
+	}
 }

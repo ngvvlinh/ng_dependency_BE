@@ -87,3 +87,10 @@ func (q *ReceiptQuery) ListReceiptsByCustomerIDs(
 	receipts, err := q.store(ctx).ShopID(shopID).TraderIDs(customerIDs...).ListReceipts()
 	return &receipting.ReceiptsResponse{Receipts: receipts}, err
 }
+
+func (q *ReceiptQuery) ListReceiptsByLedgerID(
+	ctx context.Context, shopID, ledgerID int64,
+) (*receipting.ReceiptsResponse, error) {
+	receipts, err := q.store(ctx).ShopID(shopID).LedgerID(ledgerID).ListReceipts()
+	return &receipting.ReceiptsResponse{Receipts: receipts}, err
+}

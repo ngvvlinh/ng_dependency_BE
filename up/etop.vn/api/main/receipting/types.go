@@ -7,6 +7,10 @@ import (
 const (
 	ReceiptType = "receipt"
 	PaymentType = "payment"
+
+	// Created type
+	ManualType = "manual"
+	AutoType   = "auto"
 )
 
 type Receipt struct {
@@ -19,6 +23,7 @@ type Receipt struct {
 	Description string
 	Amount      int32
 	Status      int32
+	LedgerID    int64
 	Lines       []*ReceiptLine
 	CreatedBy   int64
 	CreatedAt   time.Time

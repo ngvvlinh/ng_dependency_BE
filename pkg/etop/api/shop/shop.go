@@ -14,6 +14,7 @@ import (
 	"etop.vn/api/main/catalog"
 	"etop.vn/api/main/identity"
 	"etop.vn/api/main/inventory"
+	"etop.vn/api/main/ledgering"
 	"etop.vn/api/main/location"
 	"etop.vn/api/main/ordering"
 	"etop.vn/api/main/receipting"
@@ -186,6 +187,8 @@ var (
 	receiptQuery         receipting.QueryBus
 	inventoryAggregate   inventory.CommandBus
 	inventoryQuery       inventory.QueryBus
+	ledgerAggr           ledgering.CommandBus
+	ledgerQuery          ledgering.QueryBus
 )
 
 func Init(
@@ -219,6 +222,8 @@ func Init(
 	rd redis.Store,
 	inventoryA inventory.CommandBus,
 	inventoryQ inventory.QueryBus,
+	ledgerA ledgering.CommandBus,
+	ledgerQ ledgering.QueryBus,
 
 	summary summary.QueryBus,
 ) {
@@ -253,6 +258,8 @@ func Init(
 	sd.Register(idempgroup.Shutdown)
 	inventoryAggregate = inventoryA
 	inventoryQuery = inventoryQ
+	ledgerAggr = ledgerA
+	ledgerQuery = ledgerQ
 }
 
 type Service struct{}

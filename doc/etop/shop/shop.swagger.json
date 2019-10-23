@@ -1966,6 +1966,136 @@
         ]
       }
     },
+    "/api/shop.Ledger/CreateLedger": {
+      "post": {
+        "operationId": "CreateLedger",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/shopLedger"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/shopCreateLedgerRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Ledger"
+        ]
+      }
+    },
+    "/api/shop.Ledger/DeleteLedger": {
+      "post": {
+        "operationId": "DeleteLedger",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/cmDeletedResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/cmIDRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Ledger"
+        ]
+      }
+    },
+    "/api/shop.Ledger/GetLedger": {
+      "post": {
+        "operationId": "GetLedger",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/shopLedger"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/cmIDRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Ledger"
+        ]
+      }
+    },
+    "/api/shop.Ledger/GetLedgers": {
+      "post": {
+        "operationId": "GetLedgers",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/shopLedgersResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/shopGetLedgersRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Ledger"
+        ]
+      }
+    },
+    "/api/shop.Ledger/UpdateLedger": {
+      "post": {
+        "operationId": "UpdateLedger",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/shopLedger"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/shopUpdateLedgerRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Ledger"
+        ]
+      }
+    },
     "/api/shop.Misc/VersionInfo": {
       "post": {
         "operationId": "VersionInfo",
@@ -7559,6 +7689,24 @@
         }
       }
     },
+    "shopCreateLedgerRequest": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "bank_account": {
+          "$ref": "#/definitions/etopBankAccount",
+          "title": "required name, account_number, account_name"
+        },
+        "note": {
+          "type": "string"
+        },
+        "created_by": {
+          "type": "string"
+        }
+      }
+    },
     "shopCreatePSCategoryRequest": {
       "type": "object",
       "properties": {
@@ -7656,6 +7804,10 @@
         "amount": {
           "type": "integer",
           "format": "int32"
+        },
+        "ledger_id": {
+          "type": "string",
+          "format": "int64"
         },
         "lines": {
           "type": "array",
@@ -8490,6 +8642,20 @@
         }
       }
     },
+    "shopGetLedgersRequest": {
+      "type": "object",
+      "properties": {
+        "paging": {
+          "$ref": "#/definitions/cmPaging"
+        },
+        "filters": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/cmFilter"
+          }
+        }
+      }
+    },
     "shopGetMoneyTransactionsRequest": {
       "type": "object",
       "properties": {
@@ -8735,6 +8901,54 @@
         }
       }
     },
+    "shopLedger": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "name": {
+          "type": "string"
+        },
+        "bank_account": {
+          "$ref": "#/definitions/etopBankAccount"
+        },
+        "note": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string",
+          "title": "enum: cash, bank"
+        },
+        "created_by": {
+          "type": "string",
+          "format": "int64"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "shopLedgersResponse": {
+      "type": "object",
+      "properties": {
+        "ledgers": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/shopLedger"
+          }
+        },
+        "paging": {
+          "$ref": "#/definitions/cmPageInfo"
+        }
+      }
+    },
     "shopLiability": {
       "type": "object",
       "properties": {
@@ -8937,6 +9151,10 @@
         "amount": {
           "type": "integer",
           "format": "int32"
+        },
+        "ledger_id": {
+          "type": "string",
+          "format": "int64"
         },
         "lines": {
           "type": "array",
@@ -9814,6 +10032,25 @@
         }
       }
     },
+    "shopUpdateLedgerRequest": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "name": {
+          "type": "string"
+        },
+        "bank_account": {
+          "$ref": "#/definitions/etopBankAccount",
+          "title": "required name, account_number, account_name"
+        },
+        "note": {
+          "type": "string"
+        }
+      }
+    },
     "shopUpdateOrderPaymentStatusRequest": {
       "type": "object",
       "properties": {
@@ -10053,6 +10290,10 @@
         "amount": {
           "type": "integer",
           "format": "int32"
+        },
+        "ledger_id": {
+          "type": "string",
+          "format": "int64"
         },
         "lines": {
           "type": "array",
@@ -10434,6 +10675,9 @@
     },
     {
       "name": "Inventory"
+    },
+    {
+      "name": "Ledger"
     },
     {
       "name": "Misc"

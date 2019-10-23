@@ -105,6 +105,11 @@ func (s *ReceiptStore) OrderIDs(ids ...int64) *ReceiptStore {
 	return s
 }
 
+func (s *ReceiptStore) LedgerID(LedgerID int64) *ReceiptStore {
+	s.preds = append(s.preds, s.ft.ByLedgerID(LedgerID))
+	return s
+}
+
 func (s *ReceiptStore) Count() (uint64, error) {
 	query := s.query().Where(s.preds)
 	query = s.includeDeleted.Check(query, s.ft.NotDeleted())

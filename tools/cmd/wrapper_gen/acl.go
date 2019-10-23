@@ -493,4 +493,11 @@ var ACL = map[string]*permission.PermissionDecl{
 	"shop.Carrier/CreateCarrier":    {Type: Shop},
 	"shop.Carrier/UpdateCarrier":    {Type: Shop},
 	"shop.Carrier/DeleteCarrier":    {Type: Shop},
+
+	// Ledger:
+	"shop.Ledger/GetLedger":    {Type: Shop},
+	"shop.Ledger/GetLedgers":   {Type: Shop},
+	"shop.Ledger/CreateLedger": {Type: Shop},
+	"shop.Ledger/UpdateLedger": {Type: Shop},
+	"shop.Ledger/DeleteLedger": {Type: Shop},
 }

@@ -6,6 +6,8 @@ import (
 	"strings"
 	"time"
 
+	"etop.vn/api/main/ledgering"
+
 	"etop.vn/api/main/ordering"
 	"etop.vn/api/main/receipting"
 	"etop.vn/api/shopping/carrying"
@@ -55,10 +57,14 @@ func (s *Service) createReceipt(ctx context.Context, q *wrapshop.CreateReceiptEn
 		Description: q.Description,
 		Code:        q.Code,
 		Amount:      q.Amount,
+		LedgerID:    q.LedgerId,
 		Lines:       pbshop.Convert_api_ReceiptLines_To_core_ReceiptLines(q.Lines),
 	}
 	if receipt.TraderID == 0 {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Đối tác không hợp lệ")
+	}
+	if receipt.LedgerID == 0 {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "Sổ quỹ không hợp lệ")
 	}
 	if receipt.Type != receipting.ReceiptType && receipt.Type != receipting.PaymentType {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Loại đối tác không hợp lệ")
@@ -81,6 +87,7 @@ func (s *Service) createReceipt(ctx context.Context, q *wrapshop.CreateReceiptEn
 		Title:       q.Title,
 		Description: q.Description,
 		Amount:      q.Amount,
+		LedgerID:    q.LedgerId,
 		Type:        q.Type,
 		Lines:       receipt.Lines,
 	}
@@ -109,6 +116,7 @@ func (s *Service) UpdateReceipt(ctx context.Context, q *wrapshop.UpdateReceiptEn
 		Description: PString(q.Description).Apply(""),
 		Code:        PString(q.Code).Apply(""),
 		Amount:      PInt32(q.Amount).Apply(0),
+		LedgerID:    PInt64(q.LedgerId).Apply(0),
 		Lines:       lines,
 	}
 	if err := s.validateReceiptForCreateOrUpdate(ctx, q.Context.Shop.ID, receipt); err != nil {
@@ -123,6 +131,7 @@ func (s *Service) UpdateReceipt(ctx context.Context, q *wrapshop.UpdateReceiptEn
 		Title:       PString(q.Title),
 		Description: PString(q.Description),
 		Amount:      PInt32(q.Amount),
+		LedgerID:    PInt64(q.LedgerId),
 		Lines:       lines,
 	}
 	err := receiptAggr.Dispatch(ctx, cmd)
@@ -184,6 +193,18 @@ func (s *Service) validateReceiptForCreateOrUpdate(ctx context.Context, shopID i
 				Throw()
 		}
 		traderType = query.Result.Type
+	}
+
+	if receipt.LedgerID != 0 {
+		query := &ledgering.GetLedgerByIDQuery{
+			ID:     receipt.LedgerID,
+			ShopID: shopID,
+		}
+		if err := ledgerQuery.Dispatch(ctx, query); err != nil {
+			return cm.MapError(err).
+				Map(cm.NotFound, cm.FailedPrecondition, "Sổ quỹ không hợp lệ").
+				Throw()
+		}
 	}
 
 	// validate receipt lines

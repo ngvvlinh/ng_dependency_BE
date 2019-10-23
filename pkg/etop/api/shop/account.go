@@ -3,9 +3,11 @@ package shop
 import (
 	"context"
 
+	"etop.vn/api/main/ledgering"
 	pbcm "etop.vn/backend/pb/common"
 	pbetop "etop.vn/backend/pb/etop"
 	pbshop "etop.vn/backend/pb/etop/shop"
+
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/validate"
@@ -47,10 +49,17 @@ func (s *Service) RegisterShop(ctx context.Context, q *wrapshop.RegisterShopEndp
 		SurveyInfo:                  pbetop.SurveyInfosToModel(q.SurveyInfo),
 		ShippingServicePickStrategy: pbetop.ShippingServiceSelectStrategyToModel(q.ShippingServiceSelectStrategy),
 	}
-
 	if err := bus.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
+	event := &ledgering.AccountCreatedEvent{
+		ShopID: cmd.Result.ID,
+		UserID: q.Context.UserID,
+	}
+	if err := eventBus.Publish(ctx, event); err != nil {
+		return err
+	}
+
 	q.Result = &pbshop.RegisterShopResponse{
 		Shop: pbetop.PbShopExtended(cmd.Result),
 	}

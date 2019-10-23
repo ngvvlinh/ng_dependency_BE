@@ -47,9 +47,11 @@ type CreateReceiptCommand struct {
 	Type        string
 	Description string
 	Amount      int32
+	LedgerID    int64
 	OrderIDs    []int64
 	Lines       []*ReceiptLine
 	CreatedBy   int64
+	CreatedType string
 
 	Result *Receipt `json:"-"`
 }
@@ -79,8 +81,10 @@ type UpdateReceiptCommand struct {
 	Code        dot.NullString
 	Description dot.NullString
 	Amount      dot.NullInt32
+	LedgerID    dot.NullInt64
 	OrderIDs    []int64
 	Lines       []*ReceiptLine
+	CreatedType dot.NullString
 
 	Result *Receipt `json:"-"`
 }
@@ -151,6 +155,18 @@ func (h QueryServiceHandler) HandleListReceiptsByIDs(ctx context.Context, msg *L
 	return err
 }
 
+type ListReceiptsByLedgerIDQuery struct {
+	ShopID   int64
+	LedgerID int64
+
+	Result *ReceiptsResponse `json:"-"`
+}
+
+func (h QueryServiceHandler) HandleListReceiptsByLedgerID(ctx context.Context, msg *ListReceiptsByLedgerIDQuery) (err error) {
+	msg.Result, err = h.inner.ListReceiptsByLedgerID(msg.GetArgs(ctx))
+	return err
+}
+
 type ListReceiptsByOrderIDsQuery struct {
 	IDs    []int64
 	ShopID int64
@@ -173,6 +189,7 @@ func (q *GetReceiptByIDQuery) query()            {}
 func (q *ListReceiptsQuery) query()              {}
 func (q *ListReceiptsByCustomerIDsQuery) query() {}
 func (q *ListReceiptsByIDsQuery) query()         {}
+func (q *ListReceiptsByLedgerIDQuery) query()    {}
 func (q *ListReceiptsByOrderIDsQuery) query()    {}
 
 // implement conversion
@@ -187,9 +204,11 @@ func (q *CreateReceiptCommand) GetArgs(ctx context.Context) (_ context.Context, 
 			Type:        q.Type,
 			Description: q.Description,
 			Amount:      q.Amount,
+			LedgerID:    q.LedgerID,
 			OrderIDs:    q.OrderIDs,
 			Lines:       q.Lines,
 			CreatedBy:   q.CreatedBy,
+			CreatedType: q.CreatedType,
 		}
 }
 
@@ -201,9 +220,11 @@ func (q *CreateReceiptCommand) SetCreateReceiptArgs(args *CreateReceiptArgs) {
 	q.Type = args.Type
 	q.Description = args.Description
 	q.Amount = args.Amount
+	q.LedgerID = args.LedgerID
 	q.OrderIDs = args.OrderIDs
 	q.Lines = args.Lines
 	q.CreatedBy = args.CreatedBy
+	q.CreatedType = args.CreatedType
 }
 
 func (q *DeleteReceiptCommand) GetArgs(ctx context.Context) (_ context.Context, ID int64, shopID int64) {
@@ -222,8 +243,10 @@ func (q *UpdateReceiptCommand) GetArgs(ctx context.Context) (_ context.Context, 
 			Code:        q.Code,
 			Description: q.Description,
 			Amount:      q.Amount,
+			LedgerID:    q.LedgerID,
 			OrderIDs:    q.OrderIDs,
 			Lines:       q.Lines,
+			CreatedType: q.CreatedType,
 		}
 }
 
@@ -235,8 +258,10 @@ func (q *UpdateReceiptCommand) SetUpdateReceiptArgs(args *UpdateReceiptArgs) {
 	q.Code = args.Code
 	q.Description = args.Description
 	q.Amount = args.Amount
+	q.LedgerID = args.LedgerID
 	q.OrderIDs = args.OrderIDs
 	q.Lines = args.Lines
+	q.CreatedType = args.CreatedType
 }
 
 func (q *GetReceiptByCodeQuery) GetArgs(ctx context.Context) (_ context.Context, code string, shopID int64) {
@@ -292,6 +317,12 @@ func (q *ListReceiptsByIDsQuery) SetIDsQueryShopArgs(args *shopping.IDsQueryShop
 	q.ShopID = args.ShopID
 }
 
+func (q *ListReceiptsByLedgerIDQuery) GetArgs(ctx context.Context) (_ context.Context, shopID int64, ledgerID int64) {
+	return ctx,
+		q.ShopID,
+		q.LedgerID
+}
+
 func (q *ListReceiptsByOrderIDsQuery) GetArgs(ctx context.Context) (_ context.Context, _ *shopping.IDsQueryShopArgs) {
 	return ctx,
 		&shopping.IDsQueryShopArgs{
@@ -340,6 +371,7 @@ func (h QueryServiceHandler) RegisterHandlers(b interface {
 	b.AddHandler(h.HandleListReceipts)
 	b.AddHandler(h.HandleListReceiptsByCustomerIDs)
 	b.AddHandler(h.HandleListReceiptsByIDs)
+	b.AddHandler(h.HandleListReceiptsByLedgerID)
 	b.AddHandler(h.HandleListReceiptsByOrderIDs)
 	return QueryBus{b}
 }

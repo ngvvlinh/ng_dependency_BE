@@ -298,6 +298,52 @@ service CarrierService {
     rpc DeleteCarrier(cm.IDRequest) returns (cm.DeletedResponse);
 }
 
+service LedgerService {
+    rpc GetLedger(cm.IDRequest) returns (Ledger);
+    rpc GetLedgers(GetLedgersRequest) returns (LedgersResponse);
+    rpc CreateLedger(CreateLedgerRequest) returns (Ledger);
+    rpc UpdateLedger(UpdateLedgerRequest) returns (Ledger);
+    rpc DeleteLedger(cm.IDRequest) returns (cm.DeletedResponse);
+}
+
+message GetLedgersRequest {
+    optional cm.Paging paging = 1;
+    repeated cm.Filter filters = 2;
+}
+
+message CreateLedgerRequest {
+    optional string name = 1 [(gogoproto.nullable)=false];
+    // required name, account_number, account_name
+    optional etop.BankAccount bank_account = 2;
+    optional string note = 3 [(gogoproto.nullable)=false];
+    optional string created_by = 4 [(gogoproto.nullable)=false];
+}
+
+message UpdateLedgerRequest {
+    optional int64 id = 1 [(gogoproto.nullable)=false];
+    optional string name = 2;
+    // required name, account_number, account_name
+    optional etop.BankAccount bank_account = 3;
+    optional string note = 4;
+}
+
+message LedgersResponse {
+    repeated Ledger ledgers = 1;
+    optional cm.PageInfo paging = 2;
+}
+
+message Ledger {
+    optional int64 id = 1 [(gogoproto.nullable)=false];
+    optional string name = 2 [(gogoproto.nullable)=false];
+    optional etop.BankAccount bank_account = 3;
+    optional string note = 4 [(gogoproto.nullable)=false];
+    // enum: cash, bank
+    optional string type = 5 [(gogoproto.nullable)=false];
+    optional int64 created_by = 6 [(gogoproto.nullable)=false];
+    optional google.protobuf.Timestamp created_at = 7;
+    optional google.protobuf.Timestamp updated_at = 8;
+}
+
 message RegisterShopRequest {
     // @required
     optional string name = 1 [(gogoproto.nullable)=false];
@@ -1433,13 +1479,14 @@ message Receipt {
     optional string type = 7 [(gogoproto.nullable) = false];
     optional string description = 8 [(gogoproto.nullable) = false];
     optional int32 amount = 9 [(gogoproto.nullable) = false];
-    repeated ReceiptLine lines = 10;
-    optional status3.Status status = 11 [(gogoproto.nullable) = false];
-    optional google.protobuf.Timestamp created_at = 12;
-    optional google.protobuf.Timestamp updated_at = 13;
+    optional int64 ledger_id = 10 [(gogoproto.nullable) = false];
+    repeated ReceiptLine lines = 11;
+    optional status3.Status status = 12 [(gogoproto.nullable) = false];
+    optional google.protobuf.Timestamp created_at = 13;
+    optional google.protobuf.Timestamp updated_at = 14;
 
-    optional etop.User user = 14;
-    optional Partner partner = 15;
+    optional etop.User user = 15;
+    optional Partner partner = 16;
 }
 
 message CreateReceiptRequest {
@@ -1450,7 +1497,8 @@ message CreateReceiptRequest {
     optional string code = 4 [(gogoproto.nullable) = false];
     optional string description = 5 [(gogoproto.nullable) = false];
     optional int32 amount = 6 [(gogoproto.nullable) = false];
-    repeated ReceiptLine lines = 7;
+    optional int64 ledger_id = 7 [(gogoproto.nullable) = false];
+    repeated ReceiptLine lines = 8;
 }
 
 message UpdateReceiptRequest {
@@ -1460,7 +1508,8 @@ message UpdateReceiptRequest {
     optional string code = 4;
     optional string description = 5;
     optional int32 amount = 6;
-    repeated ReceiptLine lines = 7;
+    optional int64 ledger_id = 7;
+    repeated ReceiptLine lines = 8;
 }
 
 message GetReceiptsRequest {

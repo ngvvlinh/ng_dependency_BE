@@ -20,6 +20,8 @@ type Receipt struct {
 	Status      int32
 	OrderIDs    []int64
 	Lines       []*ReceiptLine
+	LedgerID    int64
+	CreatedType string
 	CreatedBy   int64
 	CreatedAt   time.Time `sq:"create"`
 	UpdatedAt   time.Time `sq:"update"`

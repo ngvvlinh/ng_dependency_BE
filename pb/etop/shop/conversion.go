@@ -5,6 +5,7 @@ import (
 	"etop.vn/api/main/identity"
 	"etop.vn/api/main/receipting"
 	pbcm "etop.vn/backend/pb/common"
+	"etop.vn/backend/pb/etop"
 )
 
 func Convert_core_XAccountAhamove_To_api_XAccountAhamove(in *identity.ExternalAccountAhamove) *ExternalAccountAhamove {
@@ -67,4 +68,17 @@ func Convert_api_ReceiptLines_To_core_ReceiptLines(in []*ReceiptLine) []*receipt
 	}
 
 	return out
+}
+
+func Convert_api_BankAccount_To_core_BankAccount(in *etop.BankAccount) *identity.BankAccount {
+	if in == nil {
+		return nil
+	}
+	return &identity.BankAccount{
+		Name:          in.Name,
+		Province:      in.Province,
+		Branch:        in.Branch,
+		AccountNumber: in.AccountNumber,
+		AccountName:   in.AccountName,
+	}
 }

@@ -193,6 +193,11 @@ func NewShopServer(mux Muxer, hooks *twirp.ServerHooks) {
 	bus.Expect(&GetCarriersEndpoint{})
 	bus.Expect(&GetCarriersByIDsEndpoint{})
 	bus.Expect(&UpdateCarrierEndpoint{})
+	bus.Expect(&CreateLedgerEndpoint{})
+	bus.Expect(&DeleteLedgerEndpoint{})
+	bus.Expect(&GetLedgerEndpoint{})
+	bus.Expect(&GetLedgersEndpoint{})
+	bus.Expect(&UpdateLedgerEndpoint{})
 	mux.Handle(shop.MiscServicePathPrefix, shop.NewMiscServiceServer(MiscService{}, hooks))
 	mux.Handle(shop.InventoryServicePathPrefix, shop.NewInventoryServiceServer(InventoryService{}, hooks))
 	mux.Handle(shop.AccountServicePathPrefix, shop.NewAccountServiceServer(AccountService{}, hooks))
@@ -217,6 +222,7 @@ func NewShopServer(mux Muxer, hooks *twirp.ServerHooks) {
 	mux.Handle(shop.ReceiptServicePathPrefix, shop.NewReceiptServiceServer(ReceiptService{}, hooks))
 	mux.Handle(shop.VendorServicePathPrefix, shop.NewVendorServiceServer(VendorService{}, hooks))
 	mux.Handle(shop.CarrierServicePathPrefix, shop.NewCarrierServiceServer(CarrierService{}, hooks))
+	mux.Handle(shop.LedgerServicePathPrefix, shop.NewLedgerServiceServer(LedgerService{}, hooks))
 }
 
 type ShopImpl struct {
@@ -244,6 +250,7 @@ type ShopImpl struct {
 	ReceiptService
 	VendorService
 	CarrierService
+	LedgerService
 }
 
 type MiscService struct{}
@@ -7238,6 +7245,228 @@ func (s CarrierService) UpdateCarrier(ctx context.Context, req *shop.UpdateCarri
 	}
 	session = sessionQuery.Result
 	query := &UpdateCarrierEndpoint{UpdateCarrierRequest: req}
+	query.Context.Claim = session.Claim
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = bus.Dispatch(ctx, query)
+	resp = query.Result
+	if err == nil {
+		if resp == nil {
+			return nil, common.Error(common.Internal, "", nil).Log("nil response")
+		}
+		errs = cmwrapper.HasErrors(resp)
+	}
+	return resp, err
+}
+
+type LedgerService struct{}
+
+type CreateLedgerEndpoint struct {
+	*shop.CreateLedgerRequest
+	Result  *shop.Ledger
+	Context ShopClaim
+}
+
+func (s LedgerService) CreateLedger(ctx context.Context, req *shop.CreateLedgerRequest) (resp *shop.Ledger, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "shop.Ledger/CreateLedger"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:     ctx,
+		RequireAuth: true,
+		RequireShop: true,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &CreateLedgerEndpoint{CreateLedgerRequest: req}
+	query.Context.Claim = session.Claim
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = bus.Dispatch(ctx, query)
+	resp = query.Result
+	if err == nil {
+		if resp == nil {
+			return nil, common.Error(common.Internal, "", nil).Log("nil response")
+		}
+		errs = cmwrapper.HasErrors(resp)
+	}
+	return resp, err
+}
+
+type DeleteLedgerEndpoint struct {
+	*cm.IDRequest
+	Result  *cm.DeletedResponse
+	Context ShopClaim
+}
+
+func (s LedgerService) DeleteLedger(ctx context.Context, req *cm.IDRequest) (resp *cm.DeletedResponse, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "shop.Ledger/DeleteLedger"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:     ctx,
+		RequireAuth: true,
+		RequireShop: true,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &DeleteLedgerEndpoint{IDRequest: req}
+	query.Context.Claim = session.Claim
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = bus.Dispatch(ctx, query)
+	resp = query.Result
+	if err == nil {
+		if resp == nil {
+			return nil, common.Error(common.Internal, "", nil).Log("nil response")
+		}
+		errs = cmwrapper.HasErrors(resp)
+	}
+	return resp, err
+}
+
+type GetLedgerEndpoint struct {
+	*cm.IDRequest
+	Result  *shop.Ledger
+	Context ShopClaim
+}
+
+func (s LedgerService) GetLedger(ctx context.Context, req *cm.IDRequest) (resp *shop.Ledger, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "shop.Ledger/GetLedger"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:     ctx,
+		RequireAuth: true,
+		RequireShop: true,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &GetLedgerEndpoint{IDRequest: req}
+	query.Context.Claim = session.Claim
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = bus.Dispatch(ctx, query)
+	resp = query.Result
+	if err == nil {
+		if resp == nil {
+			return nil, common.Error(common.Internal, "", nil).Log("nil response")
+		}
+		errs = cmwrapper.HasErrors(resp)
+	}
+	return resp, err
+}
+
+type GetLedgersEndpoint struct {
+	*shop.GetLedgersRequest
+	Result  *shop.LedgersResponse
+	Context ShopClaim
+}
+
+func (s LedgerService) GetLedgers(ctx context.Context, req *shop.GetLedgersRequest) (resp *shop.LedgersResponse, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "shop.Ledger/GetLedgers"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:     ctx,
+		RequireAuth: true,
+		RequireShop: true,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &GetLedgersEndpoint{GetLedgersRequest: req}
+	query.Context.Claim = session.Claim
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = bus.Dispatch(ctx, query)
+	resp = query.Result
+	if err == nil {
+		if resp == nil {
+			return nil, common.Error(common.Internal, "", nil).Log("nil response")
+		}
+		errs = cmwrapper.HasErrors(resp)
+	}
+	return resp, err
+}
+
+type UpdateLedgerEndpoint struct {
+	*shop.UpdateLedgerRequest
+	Result  *shop.Ledger
+	Context ShopClaim
+}
+
+func (s LedgerService) UpdateLedger(ctx context.Context, req *shop.UpdateLedgerRequest) (resp *shop.Ledger, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "shop.Ledger/UpdateLedger"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:     ctx,
+		RequireAuth: true,
+		RequireShop: true,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &UpdateLedgerEndpoint{UpdateLedgerRequest: req}
 	query.Context.Claim = session.Claim
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner

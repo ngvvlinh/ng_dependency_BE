@@ -24,6 +24,9 @@ import (
 	inventoryaggregate "etop.vn/backend/com/main/inventory/aggregate"
 	inventorypm "etop.vn/backend/com/main/inventory/pm"
 	inventoryquery "etop.vn/backend/com/main/inventory/query"
+	ledgeraggregate "etop.vn/backend/com/main/ledgering/aggregate"
+	ledgerpm "etop.vn/backend/com/main/ledgering/pm"
+	ledgerquery "etop.vn/backend/com/main/ledgering/query"
 	servicelocation "etop.vn/backend/com/main/location"
 	serviceordering "etop.vn/backend/com/main/ordering"
 	serviceorderingpm "etop.vn/backend/com/main/ordering/pm"
@@ -351,6 +354,11 @@ func main() {
 	receiptAggr := receiptaggregate.NewReceiptAggregate(db).MessageBus()
 	receiptQuery := receiptquery.NewReceiptQuery(db).MessageBus()
 
+	ledgerAggr := ledgeraggregate.NewLedgerAggregate(db).MessageBus()
+	ledgerQuery := ledgerquery.NewLedgerQuery(db).MessageBus()
+	ledgerPM := ledgerpm.New(eventBus, ledgerAggr)
+	ledgerPM.RegisterEventHandlers(eventBus)
+
 	vendorPM := vendorpm.New(eventBus, vendorQuery)
 	vendorPM.RegisterEventHandlers(eventBus)
 	// payment
@@ -396,6 +404,8 @@ func main() {
 		redisStore,
 		inventoryaggregate,
 		inventoryQuery,
+		ledgerAggr,
+		ledgerQuery,
 		summaryQuery,
 	)
 	partner.Init(shutdowner, redisStore, authStore, cfg.URL.Auth)

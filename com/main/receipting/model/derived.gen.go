@@ -30,7 +30,7 @@ func sqlgenReceipt(_ *Receipt) bool { return true }
 type Receipts []*Receipt
 
 const __sqlReceipt_Table = "receipt"
-const __sqlReceipt_ListCols = "\"id\",\"shop_id\",\"trader_id\",\"code\",\"title\",\"type\",\"description\",\"amount\",\"status\",\"order_ids\",\"lines\",\"created_by\",\"created_at\",\"updated_at\",\"deleted_at\""
+const __sqlReceipt_ListCols = "\"id\",\"shop_id\",\"trader_id\",\"code\",\"title\",\"type\",\"description\",\"amount\",\"status\",\"order_ids\",\"lines\",\"ledger_id\",\"created_type\",\"created_by\",\"created_at\",\"updated_at\",\"deleted_at\""
 const __sqlReceipt_Insert = "INSERT INTO \"receipt\" (" + __sqlReceipt_ListCols + ") VALUES"
 const __sqlReceipt_Select = "SELECT " + __sqlReceipt_ListCols + " FROM \"receipt\""
 const __sqlReceipt_Select_history = "SELECT " + __sqlReceipt_ListCols + " FROM history.\"receipt\""
@@ -65,6 +65,8 @@ func (m *Receipt) SQLArgs(opts core.Opts, create bool) []interface{} {
 		core.Int32(m.Status),
 		core.Array{m.OrderIDs, opts},
 		core.JSON{m.Lines},
+		core.Int64(m.LedgerID),
+		core.String(m.CreatedType),
 		core.Int64(m.CreatedBy),
 		core.Now(m.CreatedAt, now, create),
 		core.Now(m.UpdatedAt, now, true),
@@ -85,6 +87,8 @@ func (m *Receipt) SQLScanArgs(opts core.Opts) []interface{} {
 		(*core.Int32)(&m.Status),
 		core.Array{&m.OrderIDs, opts},
 		core.JSON{&m.Lines},
+		(*core.Int64)(&m.LedgerID),
+		(*core.String)(&m.CreatedType),
 		(*core.Int64)(&m.CreatedBy),
 		(*core.Time)(&m.CreatedAt),
 		(*core.Time)(&m.UpdatedAt),
@@ -126,7 +130,7 @@ func (_ *Receipts) SQLSelect(w SQLWriter) error {
 func (m *Receipt) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlReceipt_Insert)
 	w.WriteRawString(" (")
-	w.WriteMarkers(15)
+	w.WriteMarkers(17)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), true))
 	return nil
@@ -136,7 +140,7 @@ func (ms Receipts) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlReceipt_Insert)
 	w.WriteRawString(" (")
 	for i := 0; i < len(ms); i++ {
-		w.WriteMarkers(15)
+		w.WriteMarkers(17)
 		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
 		w.WriteRawString("),(")
 	}
@@ -239,6 +243,22 @@ func (m *Receipt) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(core.JSON{m.Lines})
 	}
+	if m.LedgerID != 0 {
+		flag = true
+		w.WriteName("ledger_id")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.LedgerID)
+	}
+	if m.CreatedType != "" {
+		flag = true
+		w.WriteName("created_type")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.CreatedType)
+	}
 	if m.CreatedBy != 0 {
 		flag = true
 		w.WriteName("created_by")
@@ -281,7 +301,7 @@ func (m *Receipt) SQLUpdate(w SQLWriter) error {
 func (m *Receipt) SQLUpdateAll(w SQLWriter) error {
 	w.WriteQueryString(__sqlReceipt_UpdateAll)
 	w.WriteRawString(" = (")
-	w.WriteMarkers(15)
+	w.WriteMarkers(17)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), false))
 	return nil
@@ -314,21 +334,23 @@ func (m ReceiptHistory) Amount() core.Interface      { return core.Interface{m["
 func (m ReceiptHistory) Status() core.Interface      { return core.Interface{m["status"]} }
 func (m ReceiptHistory) OrderIDs() core.Interface    { return core.Interface{m["order_ids"]} }
 func (m ReceiptHistory) Lines() core.Interface       { return core.Interface{m["lines"]} }
+func (m ReceiptHistory) LedgerID() core.Interface    { return core.Interface{m["ledger_id"]} }
+func (m ReceiptHistory) CreatedType() core.Interface { return core.Interface{m["created_type"]} }
 func (m ReceiptHistory) CreatedBy() core.Interface   { return core.Interface{m["created_by"]} }
 func (m ReceiptHistory) CreatedAt() core.Interface   { return core.Interface{m["created_at"]} }
 func (m ReceiptHistory) UpdatedAt() core.Interface   { return core.Interface{m["updated_at"]} }
 func (m ReceiptHistory) DeletedAt() core.Interface   { return core.Interface{m["deleted_at"]} }
 
 func (m *ReceiptHistory) SQLScan(opts core.Opts, row *sql.Row) error {
-	data := make([]interface{}, 15)
-	args := make([]interface{}, 15)
-	for i := 0; i < 15; i++ {
+	data := make([]interface{}, 17)
+	args := make([]interface{}, 17)
+	for i := 0; i < 17; i++ {
 		args[i] = &data[i]
 	}
 	if err := row.Scan(args...); err != nil {
 		return err
 	}
-	res := make(ReceiptHistory, 15)
+	res := make(ReceiptHistory, 17)
 	res["id"] = data[0]
 	res["shop_id"] = data[1]
 	res["trader_id"] = data[2]
@@ -340,18 +362,20 @@ func (m *ReceiptHistory) SQLScan(opts core.Opts, row *sql.Row) error {
 	res["status"] = data[8]
 	res["order_ids"] = data[9]
 	res["lines"] = data[10]
-	res["created_by"] = data[11]
-	res["created_at"] = data[12]
-	res["updated_at"] = data[13]
-	res["deleted_at"] = data[14]
+	res["ledger_id"] = data[11]
+	res["created_type"] = data[12]
+	res["created_by"] = data[13]
+	res["created_at"] = data[14]
+	res["updated_at"] = data[15]
+	res["deleted_at"] = data[16]
 	*m = res
 	return nil
 }
 
 func (ms *ReceiptHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	data := make([]interface{}, 15)
-	args := make([]interface{}, 15)
-	for i := 0; i < 15; i++ {
+	data := make([]interface{}, 17)
+	args := make([]interface{}, 17)
+	for i := 0; i < 17; i++ {
 		args[i] = &data[i]
 	}
 	res := make(ReceiptHistories, 0, 128)
@@ -371,10 +395,12 @@ func (ms *ReceiptHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
 		m["status"] = data[8]
 		m["order_ids"] = data[9]
 		m["lines"] = data[10]
-		m["created_by"] = data[11]
-		m["created_at"] = data[12]
-		m["updated_at"] = data[13]
-		m["deleted_at"] = data[14]
+		m["ledger_id"] = data[11]
+		m["created_type"] = data[12]
+		m["created_by"] = data[13]
+		m["created_at"] = data[14]
+		m["updated_at"] = data[15]
+		m["deleted_at"] = data[16]
 		res = append(res, m)
 	}
 	if err := rows.Err(); err != nil {

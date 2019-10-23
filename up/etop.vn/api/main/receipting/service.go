@@ -23,6 +23,7 @@ type QueryService interface {
 	ListReceiptsByIDs(context.Context, *shopping.IDsQueryShopArgs) (*ReceiptsResponse, error)
 	ListReceiptsByOrderIDs(context.Context, *shopping.IDsQueryShopArgs) (*ReceiptsResponse, error)
 	ListReceiptsByCustomerIDs(ctx context.Context, shopID int64, customerIDs []int64) (*ReceiptsResponse, error)
+	ListReceiptsByLedgerID(ctx context.Context, shopID, ledgerID int64) (*ReceiptsResponse, error)
 }
 
 //-- queries --//
@@ -49,9 +50,11 @@ type CreateReceiptArgs struct {
 	Type        string
 	Description string
 	Amount      int32
+	LedgerID    int64
 	OrderIDs    []int64
 	Lines       []*ReceiptLine
 	CreatedBy   int64
+	CreatedType string
 }
 
 // +convert:update=Receipt(ID,ShopID)
@@ -63,6 +66,8 @@ type UpdateReceiptArgs struct {
 	Code        NullString
 	Description NullString
 	Amount      NullInt32
+	LedgerID    NullInt64
 	OrderIDs    []int64
 	Lines       []*ReceiptLine
+	CreatedType NullString
 }
