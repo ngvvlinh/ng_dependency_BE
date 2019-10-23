@@ -32,6 +32,8 @@ type Config struct {
 	CleanOnly bool
 
 	Namespace string
+
+	GoimportsArgs []string
 }
 
 func Start(cfg Config, patterns ...string) error {
@@ -170,7 +172,7 @@ func (ng *engine) start(cfg Config, patterns ...string) (_err error) {
 			must(err)
 			fmt.Printf("\t./%v\n", filename)
 		}
-		if err := execGoimport(ng.generatedFile); err != nil {
+		if err := ng.execGoimport(ng.generatedFile); err != nil {
 			return err
 		}
 	}
@@ -391,8 +393,10 @@ func (ng *engine) writeFile(filePath string) (io.WriteCloser, error) {
 	return f, nil
 }
 
-func execGoimport(files []string) error {
-	args := []string{"-w"}
+func (ng *engine) execGoimport(files []string) error {
+	var args []string
+	args = append(args, ng.xcfg.GoimportsArgs...)
+	args = append(args, "-w")
 	args = append(args, files...)
 	cmd := exec.Command("goimports", args...)
 	ll.V(4).Debugf("goimports %v", args)

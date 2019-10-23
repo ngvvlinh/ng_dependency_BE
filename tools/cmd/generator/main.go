@@ -57,6 +57,7 @@ func main() {
 		CleanOnly:      *flClean,
 		Namespace:      "etop.vn",
 		EnabledPlugins: enabledPlugins,
+		GoimportsArgs:  []string{"-local", "etop.vn"},
 	}
 
 	if err := generator.RegisterPlugin(plugins...); err != nil {
