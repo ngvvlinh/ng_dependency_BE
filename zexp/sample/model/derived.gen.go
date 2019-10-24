@@ -42,7 +42,7 @@ func (m *Foos) SQLTableName() string { return "foo" }
 func (m *Foo) SQLListCols() string   { return __sqlFoo_ListCols }
 
 func (m *Foo) SQLVerifySchema(db *cmsql.Database) {
-	query := "SELECT " + __sqlFoo_ListCols + " FROM foo WHERE false"
+	query := "SELECT " + __sqlFoo_ListCols + " FROM \"foo\" WHERE false"
 	if _, err := db.SQL(query).Exec(); err != nil {
 		db.RecordError(err)
 	}
@@ -285,7 +285,7 @@ func (m *Accounts) SQLTableName() string { return "account" }
 func (m *Account) SQLListCols() string   { return __sqlAccount_ListCols }
 
 func (m *Account) SQLVerifySchema(db *cmsql.Database) {
-	query := "SELECT " + __sqlAccount_ListCols + " FROM account WHERE false"
+	query := "SELECT " + __sqlAccount_ListCols + " FROM \"account\" WHERE false"
 	if _, err := db.SQL(query).Exec(); err != nil {
 		db.RecordError(err)
 	}

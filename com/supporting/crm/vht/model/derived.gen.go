@@ -41,7 +41,7 @@ func (m *VhtCallHistories) SQLTableName() string { return "vht_call_history" }
 func (m *VhtCallHistory) SQLListCols() string    { return __sqlVhtCallHistory_ListCols }
 
 func (m *VhtCallHistory) SQLVerifySchema(db *cmsql.Database) {
-	query := "SELECT " + __sqlVhtCallHistory_ListCols + " FROM vht_call_history WHERE false"
+	query := "SELECT " + __sqlVhtCallHistory_ListCols + " FROM \"vht_call_history\" WHERE false"
 	if _, err := db.SQL(query).Exec(); err != nil {
 		db.RecordError(err)
 	}

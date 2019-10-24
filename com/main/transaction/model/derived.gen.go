@@ -41,7 +41,7 @@ func (m *Transactions) SQLTableName() string { return "transaction" }
 func (m *Transaction) SQLListCols() string   { return __sqlTransaction_ListCols }
 
 func (m *Transaction) SQLVerifySchema(db *cmsql.Database) {
-	query := "SELECT " + __sqlTransaction_ListCols + " FROM transaction WHERE false"
+	query := "SELECT " + __sqlTransaction_ListCols + " FROM \"transaction\" WHERE false"
 	if _, err := db.SQL(query).Exec(); err != nil {
 		db.RecordError(err)
 	}

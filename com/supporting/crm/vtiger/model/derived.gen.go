@@ -41,7 +41,7 @@ func (m *EtopAcounts) SQLTableName() string { return "etop_acount" }
 func (m *EtopAcount) SQLListCols() string   { return __sqlEtopAcount_ListCols }
 
 func (m *EtopAcount) SQLVerifySchema(db *cmsql.Database) {
-	query := "SELECT " + __sqlEtopAcount_ListCols + " FROM etop_acount WHERE false"
+	query := "SELECT " + __sqlEtopAcount_ListCols + " FROM \"etop_acount\" WHERE false"
 	if _, err := db.SQL(query).Exec(); err != nil {
 		db.RecordError(err)
 	}
@@ -322,7 +322,7 @@ func (m *VtigerContacts) SQLTableName() string { return "vtiger_contact" }
 func (m *VtigerContact) SQLListCols() string   { return __sqlVtigerContact_ListCols }
 
 func (m *VtigerContact) SQLVerifySchema(db *cmsql.Database) {
-	query := "SELECT " + __sqlVtigerContact_ListCols + " FROM vtiger_contact WHERE false"
+	query := "SELECT " + __sqlVtigerContact_ListCols + " FROM \"vtiger_contact\" WHERE false"
 	if _, err := db.SQL(query).Exec(); err != nil {
 		db.RecordError(err)
 	}
@@ -837,7 +837,7 @@ func (m *VtigerAccounts) SQLTableName() string { return "vtiger_account" }
 func (m *VtigerAccount) SQLListCols() string   { return __sqlVtigerAccount_ListCols }
 
 func (m *VtigerAccount) SQLVerifySchema(db *cmsql.Database) {
-	query := "SELECT " + __sqlVtigerAccount_ListCols + " FROM vtiger_account WHERE false"
+	query := "SELECT " + __sqlVtigerAccount_ListCols + " FROM \"vtiger_account\" WHERE false"
 	if _, err := db.SQL(query).Exec(); err != nil {
 		db.RecordError(err)
 	}

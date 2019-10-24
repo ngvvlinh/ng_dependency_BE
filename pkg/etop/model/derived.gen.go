@@ -42,7 +42,7 @@ func (m *ImportAttempts) SQLTableName() string { return "import_attempt" }
 func (m *ImportAttempt) SQLListCols() string   { return __sqlImportAttempt_ListCols }
 
 func (m *ImportAttempt) SQLVerifySchema(db *cmsql.Database) {
-	query := "SELECT " + __sqlImportAttempt_ListCols + " FROM import_attempt WHERE false"
+	query := "SELECT " + __sqlImportAttempt_ListCols + " FROM \"import_attempt\" WHERE false"
 	if _, err := db.SQL(query).Exec(); err != nil {
 		db.RecordError(err)
 	}
@@ -389,7 +389,7 @@ func (m *ExportAttempts) SQLTableName() string { return "export_attempt" }
 func (m *ExportAttempt) SQLListCols() string   { return __sqlExportAttempt_ListCols }
 
 func (m *ExportAttempt) SQLVerifySchema(db *cmsql.Database) {
-	query := "SELECT " + __sqlExportAttempt_ListCols + " FROM export_attempt WHERE false"
+	query := "SELECT " + __sqlExportAttempt_ListCols + " FROM \"export_attempt\" WHERE false"
 	if _, err := db.SQL(query).Exec(); err != nil {
 		db.RecordError(err)
 	}
@@ -814,7 +814,7 @@ func (m *Accounts) SQLTableName() string { return "account" }
 func (m *Account) SQLListCols() string   { return __sqlAccount_ListCols }
 
 func (m *Account) SQLVerifySchema(db *cmsql.Database) {
-	query := "SELECT " + __sqlAccount_ListCols + " FROM account WHERE false"
+	query := "SELECT " + __sqlAccount_ListCols + " FROM \"account\" WHERE false"
 	if _, err := db.SQL(query).Exec(); err != nil {
 		db.RecordError(err)
 	}
@@ -1056,7 +1056,7 @@ func (m *Shops) SQLTableName() string { return "shop" }
 func (m *Shop) SQLListCols() string   { return __sqlShop_ListCols }
 
 func (m *Shop) SQLVerifySchema(db *cmsql.Database) {
-	query := "SELECT " + __sqlShop_ListCols + " FROM shop WHERE false"
+	query := "SELECT " + __sqlShop_ListCols + " FROM \"shop\" WHERE false"
 	if _, err := db.SQL(query).Exec(); err != nil {
 		db.RecordError(err)
 	}
@@ -1735,7 +1735,7 @@ func (m *ShopDeletes) SQLTableName() string { return "shop" }
 func (m *ShopDelete) SQLListCols() string   { return __sqlShopDelete_ListCols }
 
 func (m *ShopDelete) SQLVerifySchema(db *cmsql.Database) {
-	query := "SELECT " + __sqlShopDelete_ListCols + " FROM shop WHERE false"
+	query := "SELECT " + __sqlShopDelete_ListCols + " FROM \"shop\" WHERE false"
 	if _, err := db.SQL(query).Exec(); err != nil {
 		db.RecordError(err)
 	}
@@ -1912,7 +1912,7 @@ func (m *Partners) SQLTableName() string { return "partner" }
 func (m *Partner) SQLListCols() string   { return __sqlPartner_ListCols }
 
 func (m *Partner) SQLVerifySchema(db *cmsql.Database) {
-	query := "SELECT " + __sqlPartner_ListCols + " FROM partner WHERE false"
+	query := "SELECT " + __sqlPartner_ListCols + " FROM \"partner\" WHERE false"
 	if _, err := db.SQL(query).Exec(); err != nil {
 		db.RecordError(err)
 	}
@@ -2315,7 +2315,7 @@ func (m *AccountAuths) SQLTableName() string { return "account_auth" }
 func (m *AccountAuth) SQLListCols() string   { return __sqlAccountAuth_ListCols }
 
 func (m *AccountAuth) SQLVerifySchema(db *cmsql.Database) {
-	query := "SELECT " + __sqlAccountAuth_ListCols + " FROM account_auth WHERE false"
+	query := "SELECT " + __sqlAccountAuth_ListCols + " FROM \"account_auth\" WHERE false"
 	if _, err := db.SQL(query).Exec(); err != nil {
 		db.RecordError(err)
 	}
@@ -2780,7 +2780,7 @@ func (m *PartnerRelations) SQLTableName() string { return "partner_relation" }
 func (m *PartnerRelation) SQLListCols() string   { return __sqlPartnerRelation_ListCols }
 
 func (m *PartnerRelation) SQLVerifySchema(db *cmsql.Database) {
-	query := "SELECT " + __sqlPartnerRelation_ListCols + " FROM partner_relation WHERE false"
+	query := "SELECT " + __sqlPartnerRelation_ListCols + " FROM \"partner_relation\" WHERE false"
 	if _, err := db.SQL(query).Exec(); err != nil {
 		db.RecordError(err)
 	}
@@ -3213,7 +3213,7 @@ func (m *Users) SQLTableName() string { return "user" }
 func (m *User) SQLListCols() string   { return __sqlUser_ListCols }
 
 func (m *User) SQLVerifySchema(db *cmsql.Database) {
-	query := "SELECT " + __sqlUser_ListCols + " FROM user WHERE false"
+	query := "SELECT " + __sqlUser_ListCols + " FROM \"user\" WHERE false"
 	if _, err := db.SQL(query).Exec(); err != nil {
 		db.RecordError(err)
 	}
@@ -3631,7 +3631,7 @@ func (m *AccountUsers) SQLTableName() string { return "account_user" }
 func (m *AccountUser) SQLListCols() string   { return __sqlAccountUser_ListCols }
 
 func (m *AccountUser) SQLVerifySchema(db *cmsql.Database) {
-	query := "SELECT " + __sqlAccountUser_ListCols + " FROM account_user WHERE false"
+	query := "SELECT " + __sqlAccountUser_ListCols + " FROM \"account_user\" WHERE false"
 	if _, err := db.SQL(query).Exec(); err != nil {
 		db.RecordError(err)
 	}
@@ -4208,7 +4208,7 @@ func (m *AccountUserDeletes) SQLTableName() string { return "account_user" }
 func (m *AccountUserDelete) SQLListCols() string   { return __sqlAccountUserDelete_ListCols }
 
 func (m *AccountUserDelete) SQLVerifySchema(db *cmsql.Database) {
-	query := "SELECT " + __sqlAccountUserDelete_ListCols + " FROM account_user WHERE false"
+	query := "SELECT " + __sqlAccountUserDelete_ListCols + " FROM \"account_user\" WHERE false"
 	if _, err := db.SQL(query).Exec(); err != nil {
 		db.RecordError(err)
 	}
@@ -4385,7 +4385,7 @@ func (m *UserAuths) SQLTableName() string { return "user_auth" }
 func (m *UserAuth) SQLListCols() string   { return __sqlUserAuth_ListCols }
 
 func (m *UserAuth) SQLVerifySchema(db *cmsql.Database) {
-	query := "SELECT " + __sqlUserAuth_ListCols + " FROM user_auth WHERE false"
+	query := "SELECT " + __sqlUserAuth_ListCols + " FROM \"user_auth\" WHERE false"
 	if _, err := db.SQL(query).Exec(); err != nil {
 		db.RecordError(err)
 	}
@@ -4615,7 +4615,7 @@ func (m *UserInternals) SQLTableName() string { return "user_internal" }
 func (m *UserInternal) SQLListCols() string   { return __sqlUserInternal_ListCols }
 
 func (m *UserInternal) SQLVerifySchema(db *cmsql.Database) {
-	query := "SELECT " + __sqlUserInternal_ListCols + " FROM user_internal WHERE false"
+	query := "SELECT " + __sqlUserInternal_ListCols + " FROM \"user_internal\" WHERE false"
 	if _, err := db.SQL(query).Exec(); err != nil {
 		db.RecordError(err)
 	}
@@ -4819,7 +4819,7 @@ func (m *Addresses) SQLTableName() string { return "address" }
 func (m *Address) SQLListCols() string    { return __sqlAddress_ListCols }
 
 func (m *Address) SQLVerifySchema(db *cmsql.Database) {
-	query := "SELECT " + __sqlAddress_ListCols + " FROM address WHERE false"
+	query := "SELECT " + __sqlAddress_ListCols + " FROM \"address\" WHERE false"
 	if _, err := db.SQL(query).Exec(); err != nil {
 		db.RecordError(err)
 	}
@@ -5309,7 +5309,7 @@ func (m *Codes) SQLTableName() string { return "code" }
 func (m *Code) SQLListCols() string   { return __sqlCode_ListCols }
 
 func (m *Code) SQLVerifySchema(db *cmsql.Database) {
-	query := "SELECT " + __sqlCode_ListCols + " FROM code WHERE false"
+	query := "SELECT " + __sqlCode_ListCols + " FROM \"code\" WHERE false"
 	if _, err := db.SQL(query).Exec(); err != nil {
 		db.RecordError(err)
 	}
@@ -5513,7 +5513,7 @@ func (m *Credits) SQLTableName() string { return "credit" }
 func (m *Credit) SQLListCols() string   { return __sqlCredit_ListCols }
 
 func (m *Credit) SQLVerifySchema(db *cmsql.Database) {
-	query := "SELECT " + __sqlCredit_ListCols + " FROM credit WHERE false"
+	query := "SELECT " + __sqlCredit_ListCols + " FROM \"credit\" WHERE false"
 	if _, err := db.SQL(query).Exec(); err != nil {
 		db.RecordError(err)
 	}
@@ -5880,7 +5880,7 @@ func (m *ShippingSources) SQLTableName() string { return "shipping_source" }
 func (m *ShippingSource) SQLListCols() string   { return __sqlShippingSource_ListCols }
 
 func (m *ShippingSource) SQLVerifySchema(db *cmsql.Database) {
-	query := "SELECT " + __sqlShippingSource_ListCols + " FROM shipping_source WHERE false"
+	query := "SELECT " + __sqlShippingSource_ListCols + " FROM \"shipping_source\" WHERE false"
 	if _, err := db.SQL(query).Exec(); err != nil {
 		db.RecordError(err)
 	}
@@ -6123,7 +6123,7 @@ func (m *ShippingSourceInternals) SQLTableName() string { return "shipping_sourc
 func (m *ShippingSourceInternal) SQLListCols() string   { return __sqlShippingSourceInternal_ListCols }
 
 func (m *ShippingSourceInternal) SQLVerifySchema(db *cmsql.Database) {
-	query := "SELECT " + __sqlShippingSourceInternal_ListCols + " FROM shipping_source_internal WHERE false"
+	query := "SELECT " + __sqlShippingSourceInternal_ListCols + " FROM \"shipping_source_internal\" WHERE false"
 	if _, err := db.SQL(query).Exec(); err != nil {
 		db.RecordError(err)
 	}
@@ -6393,7 +6393,7 @@ func (m *Webhooks) SQLTableName() string { return "webhook" }
 func (m *Webhook) SQLListCols() string   { return __sqlWebhook_ListCols }
 
 func (m *Webhook) SQLVerifySchema(db *cmsql.Database) {
-	query := "SELECT " + __sqlWebhook_ListCols + " FROM webhook WHERE false"
+	query := "SELECT " + __sqlWebhook_ListCols + " FROM \"webhook\" WHERE false"
 	if _, err := db.SQL(query).Exec(); err != nil {
 		db.RecordError(err)
 	}
@@ -6675,7 +6675,7 @@ func (m *Callbacks) SQLTableName() string { return "callback" }
 func (m *Callback) SQLListCols() string   { return __sqlCallback_ListCols }
 
 func (m *Callback) SQLVerifySchema(db *cmsql.Database) {
-	query := "SELECT " + __sqlCallback_ListCols + " FROM callback WHERE false"
+	query := "SELECT " + __sqlCallback_ListCols + " FROM \"callback\" WHERE false"
 	if _, err := db.SQL(query).Exec(); err != nil {
 		db.RecordError(err)
 	}

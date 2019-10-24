@@ -5,9 +5,10 @@ package sqlstore
 import (
 	"time"
 
+	"etop.vn/backend/pkg/etop/model"
+
 	m "etop.vn/backend/com/main/shipnow/model"
 	"etop.vn/backend/pkg/common/sq"
-	"etop.vn/backend/pkg/etop/model"
 )
 
 type ShipnowFulfillmentFilters struct{ prefix string }

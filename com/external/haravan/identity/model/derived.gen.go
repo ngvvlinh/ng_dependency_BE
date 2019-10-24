@@ -41,7 +41,7 @@ func (m *ExternalAccountHaravans) SQLTableName() string { return "external_accou
 func (m *ExternalAccountHaravan) SQLListCols() string   { return __sqlExternalAccountHaravan_ListCols }
 
 func (m *ExternalAccountHaravan) SQLVerifySchema(db *cmsql.Database) {
-	query := "SELECT " + __sqlExternalAccountHaravan_ListCols + " FROM external_account_haravan WHERE false"
+	query := "SELECT " + __sqlExternalAccountHaravan_ListCols + " FROM \"external_account_haravan\" WHERE false"
 	if _, err := db.SQL(query).Exec(); err != nil {
 		db.RecordError(err)
 	}

@@ -37,7 +37,7 @@ func (m *{{.TypeNames}}) SQLTableName() string { return {{.TableName | go}} }
 func (m *{{.TypeName}}) SQLListCols() string { return {{._ListCols}} }
 
 func (m *{{.TypeName}}) SQLVerifySchema(db *cmsql.Database) {
-    query := "SELECT " + {{._ListCols}} + " FROM {{.TableName}} WHERE false"
+    query := "SELECT " + {{._ListCols}} + " FROM \"{{.TableName}}\" WHERE false"
     if _, err := db.SQL(query).Exec(); err != nil {
         db.RecordError(err)
     }

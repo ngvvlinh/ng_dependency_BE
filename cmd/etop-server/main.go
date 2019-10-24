@@ -410,10 +410,9 @@ func main() {
 	apiaff.Init(affiliateCmd, affilateQuery, catalogQuery, identityQuery, orderQuery)
 
 	err = db.GetSchemaErrors()
-	if err != nil && cm.IsDev() != true {
+	if err != nil && cm.IsDev() {
 		ll.Error("Fail to verify Database", l.Error(err))
-		return
-	} else if err != nil && cm.IsDev() == true {
+	} else if err != nil {
 		ll.Fatal("Fail to verify Database", l.Error(err))
 	}
 

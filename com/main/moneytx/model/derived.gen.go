@@ -51,7 +51,7 @@ func (m *MoneyTransactionShippingExternal) SQLListCols() string {
 }
 
 func (m *MoneyTransactionShippingExternal) SQLVerifySchema(db *cmsql.Database) {
-	query := "SELECT " + __sqlMoneyTransactionShippingExternal_ListCols + " FROM money_transaction_shipping_external WHERE false"
+	query := "SELECT " + __sqlMoneyTransactionShippingExternal_ListCols + " FROM \"money_transaction_shipping_external\" WHERE false"
 	if _, err := db.SQL(query).Exec(); err != nil {
 		db.RecordError(err)
 	}
@@ -406,7 +406,7 @@ func (m *MoneyTransactionShippingExternalLine) SQLListCols() string {
 }
 
 func (m *MoneyTransactionShippingExternalLine) SQLVerifySchema(db *cmsql.Database) {
-	query := "SELECT " + __sqlMoneyTransactionShippingExternalLine_ListCols + " FROM money_transaction_shipping_external_line WHERE false"
+	query := "SELECT " + __sqlMoneyTransactionShippingExternalLine_ListCols + " FROM \"money_transaction_shipping_external_line\" WHERE false"
 	if _, err := db.SQL(query).Exec(); err != nil {
 		db.RecordError(err)
 	}
@@ -926,7 +926,7 @@ func (m *MoneyTransactionShippings) SQLTableName() string { return "money_transa
 func (m *MoneyTransactionShipping) SQLListCols() string   { return __sqlMoneyTransactionShipping_ListCols }
 
 func (m *MoneyTransactionShipping) SQLVerifySchema(db *cmsql.Database) {
-	query := "SELECT " + __sqlMoneyTransactionShipping_ListCols + " FROM money_transaction_shipping WHERE false"
+	query := "SELECT " + __sqlMoneyTransactionShipping_ListCols + " FROM \"money_transaction_shipping\" WHERE false"
 	if _, err := db.SQL(query).Exec(); err != nil {
 		db.RecordError(err)
 	}
@@ -1470,7 +1470,7 @@ func (m *MoneyTransactionShippingEtop) SQLListCols() string {
 }
 
 func (m *MoneyTransactionShippingEtop) SQLVerifySchema(db *cmsql.Database) {
-	query := "SELECT " + __sqlMoneyTransactionShippingEtop_ListCols + " FROM money_transaction_shipping_etop WHERE false"
+	query := "SELECT " + __sqlMoneyTransactionShippingEtop_ListCols + " FROM \"money_transaction_shipping_etop\" WHERE false"
 	if _, err := db.SQL(query).Exec(); err != nil {
 		db.RecordError(err)
 	}

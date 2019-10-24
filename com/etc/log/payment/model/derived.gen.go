@@ -41,7 +41,7 @@ func (m *Payments) SQLTableName() string { return "payment" }
 func (m *Payment) SQLListCols() string   { return __sqlPayment_ListCols }
 
 func (m *Payment) SQLVerifySchema(db *cmsql.Database) {
-	query := "SELECT " + __sqlPayment_ListCols + " FROM payment WHERE false"
+	query := "SELECT " + __sqlPayment_ListCols + " FROM \"payment\" WHERE false"
 	if _, err := db.SQL(query).Exec(); err != nil {
 		db.RecordError(err)
 	}

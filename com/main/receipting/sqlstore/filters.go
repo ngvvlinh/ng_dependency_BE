@@ -9,10 +9,6 @@ func (ft *ReceiptFilters) NotDeleted() sq.WriterTo {
 	return ft.Filter("$.deleted_at IS NULL")
 }
 
-func (ft *ReceiptLineFilters) NotDeleted() sq.WriterTo {
-	return ft.Filter("$.deleted_at IS NULL")
-}
-
 var SortReceipt = map[string]string{
 	"id":         "",
 	"created_at": "",

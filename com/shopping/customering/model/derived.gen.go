@@ -41,7 +41,7 @@ func (m *ShopTraders) SQLTableName() string { return "shop_trader" }
 func (m *ShopTrader) SQLListCols() string   { return __sqlShopTrader_ListCols }
 
 func (m *ShopTrader) SQLVerifySchema(db *cmsql.Database) {
-	query := "SELECT " + __sqlShopTrader_ListCols + " FROM shop_trader WHERE false"
+	query := "SELECT " + __sqlShopTrader_ListCols + " FROM \"shop_trader\" WHERE false"
 	if _, err := db.SQL(query).Exec(); err != nil {
 		db.RecordError(err)
 	}
@@ -244,7 +244,7 @@ func (m *ShopCustomers) SQLTableName() string { return "shop_customer" }
 func (m *ShopCustomer) SQLListCols() string   { return __sqlShopCustomer_ListCols }
 
 func (m *ShopCustomer) SQLVerifySchema(db *cmsql.Database) {
-	query := "SELECT " + __sqlShopCustomer_ListCols + " FROM shop_customer WHERE false"
+	query := "SELECT " + __sqlShopCustomer_ListCols + " FROM \"shop_customer\" WHERE false"
 	if _, err := db.SQL(query).Exec(); err != nil {
 		db.RecordError(err)
 	}
@@ -630,7 +630,7 @@ func (m *ShopTraderAddresses) SQLTableName() string { return "shop_trader_addres
 func (m *ShopTraderAddress) SQLListCols() string    { return __sqlShopTraderAddress_ListCols }
 
 func (m *ShopTraderAddress) SQLVerifySchema(db *cmsql.Database) {
-	query := "SELECT " + __sqlShopTraderAddress_ListCols + " FROM shop_trader_address WHERE false"
+	query := "SELECT " + __sqlShopTraderAddress_ListCols + " FROM \"shop_trader_address\" WHERE false"
 	if _, err := db.SQL(query).Exec(); err != nil {
 		db.RecordError(err)
 	}
@@ -1022,7 +1022,7 @@ func (m *ShopCustomerGroupCustomer) SQLListCols() string {
 }
 
 func (m *ShopCustomerGroupCustomer) SQLVerifySchema(db *cmsql.Database) {
-	query := "SELECT " + __sqlShopCustomerGroupCustomer_ListCols + " FROM shop_customer_group_customer WHERE false"
+	query := "SELECT " + __sqlShopCustomerGroupCustomer_ListCols + " FROM \"shop_customer_group_customer\" WHERE false"
 	if _, err := db.SQL(query).Exec(); err != nil {
 		db.RecordError(err)
 	}
@@ -1251,7 +1251,7 @@ func (m *ShopCustomerGroups) SQLTableName() string { return "shop_customer_group
 func (m *ShopCustomerGroup) SQLListCols() string   { return __sqlShopCustomerGroup_ListCols }
 
 func (m *ShopCustomerGroup) SQLVerifySchema(db *cmsql.Database) {
-	query := "SELECT " + __sqlShopCustomerGroup_ListCols + " FROM shop_customer_group WHERE false"
+	query := "SELECT " + __sqlShopCustomerGroup_ListCols + " FROM \"shop_customer_group\" WHERE false"
 	if _, err := db.SQL(query).Exec(); err != nil {
 		db.RecordError(err)
 	}

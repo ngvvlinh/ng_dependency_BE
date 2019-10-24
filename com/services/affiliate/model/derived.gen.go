@@ -41,7 +41,7 @@ func (m *CommissionSettings) SQLTableName() string { return "commission_setting"
 func (m *CommissionSetting) SQLListCols() string   { return __sqlCommissionSetting_ListCols }
 
 func (m *CommissionSetting) SQLVerifySchema(db *cmsql.Database) {
-	query := "SELECT " + __sqlCommissionSetting_ListCols + " FROM commission_setting WHERE false"
+	query := "SELECT " + __sqlCommissionSetting_ListCols + " FROM \"commission_setting\" WHERE false"
 	if _, err := db.SQL(query).Exec(); err != nil {
 		db.RecordError(err)
 	}
@@ -297,7 +297,7 @@ func (m *ProductPromotions) SQLTableName() string { return "product_promotion" }
 func (m *ProductPromotion) SQLListCols() string   { return __sqlProductPromotion_ListCols }
 
 func (m *ProductPromotion) SQLVerifySchema(db *cmsql.Database) {
-	query := "SELECT " + __sqlProductPromotion_ListCols + " FROM product_promotion WHERE false"
+	query := "SELECT " + __sqlProductPromotion_ListCols + " FROM \"product_promotion\" WHERE false"
 	if _, err := db.SQL(query).Exec(); err != nil {
 		db.RecordError(err)
 	}
@@ -618,7 +618,7 @@ func (m *SellerCommissions) SQLTableName() string { return "seller_commission" }
 func (m *SellerCommission) SQLListCols() string   { return __sqlSellerCommission_ListCols }
 
 func (m *SellerCommission) SQLVerifySchema(db *cmsql.Database) {
-	query := "SELECT " + __sqlSellerCommission_ListCols + " FROM seller_commission WHERE false"
+	query := "SELECT " + __sqlSellerCommission_ListCols + " FROM \"seller_commission\" WHERE false"
 	if _, err := db.SQL(query).Exec(); err != nil {
 		db.RecordError(err)
 	}
@@ -1006,7 +1006,7 @@ func (m *OrderCreatedNotifies) SQLTableName() string { return "order_created_not
 func (m *OrderCreatedNotify) SQLListCols() string    { return __sqlOrderCreatedNotify_ListCols }
 
 func (m *OrderCreatedNotify) SQLVerifySchema(db *cmsql.Database) {
-	query := "SELECT " + __sqlOrderCreatedNotify_ListCols + " FROM order_created_notify WHERE false"
+	query := "SELECT " + __sqlOrderCreatedNotify_ListCols + " FROM \"order_created_notify\" WHERE false"
 	if _, err := db.SQL(query).Exec(); err != nil {
 		db.RecordError(err)
 	}
@@ -1455,7 +1455,7 @@ func (m *AffiliateReferralCodes) SQLTableName() string { return "affiliate_refer
 func (m *AffiliateReferralCode) SQLListCols() string   { return __sqlAffiliateReferralCode_ListCols }
 
 func (m *AffiliateReferralCode) SQLVerifySchema(db *cmsql.Database) {
-	query := "SELECT " + __sqlAffiliateReferralCode_ListCols + " FROM affiliate_referral_code WHERE false"
+	query := "SELECT " + __sqlAffiliateReferralCode_ListCols + " FROM \"affiliate_referral_code\" WHERE false"
 	if _, err := db.SQL(query).Exec(); err != nil {
 		db.RecordError(err)
 	}
@@ -1708,7 +1708,7 @@ func (m *UserReferrals) SQLTableName() string { return "user_referral" }
 func (m *UserReferral) SQLListCols() string   { return __sqlUserReferral_ListCols }
 
 func (m *UserReferral) SQLVerifySchema(db *cmsql.Database) {
-	query := "SELECT " + __sqlUserReferral_ListCols + " FROM user_referral WHERE false"
+	query := "SELECT " + __sqlUserReferral_ListCols + " FROM \"user_referral\" WHERE false"
 	if _, err := db.SQL(query).Exec(); err != nil {
 		db.RecordError(err)
 	}
@@ -1996,7 +1996,7 @@ func (m *SupplyCommissionSettings) SQLTableName() string { return "supply_commis
 func (m *SupplyCommissionSetting) SQLListCols() string   { return __sqlSupplyCommissionSetting_ListCols }
 
 func (m *SupplyCommissionSetting) SQLVerifySchema(db *cmsql.Database) {
-	query := "SELECT " + __sqlSupplyCommissionSetting_ListCols + " FROM supply_commission_setting WHERE false"
+	query := "SELECT " + __sqlSupplyCommissionSetting_ListCols + " FROM \"supply_commission_setting\" WHERE false"
 	if _, err := db.SQL(query).Exec(); err != nil {
 		db.RecordError(err)
 	}
@@ -2373,7 +2373,7 @@ func (m *OrderPromotions) SQLTableName() string { return "order_promotion" }
 func (m *OrderPromotion) SQLListCols() string   { return __sqlOrderPromotion_ListCols }
 
 func (m *OrderPromotion) SQLVerifySchema(db *cmsql.Database) {
-	query := "SELECT " + __sqlOrderPromotion_ListCols + " FROM order_promotion WHERE false"
+	query := "SELECT " + __sqlOrderPromotion_ListCols + " FROM \"order_promotion\" WHERE false"
 	if _, err := db.SQL(query).Exec(); err != nil {
 		db.RecordError(err)
 	}
@@ -2711,7 +2711,7 @@ func (m *OrderCommissionSettings) SQLTableName() string { return "order_commissi
 func (m *OrderCommissionSetting) SQLListCols() string   { return __sqlOrderCommissionSetting_ListCols }
 
 func (m *OrderCommissionSetting) SQLVerifySchema(db *cmsql.Database) {
-	query := "SELECT " + __sqlOrderCommissionSetting_ListCols + " FROM order_commission_setting WHERE false"
+	query := "SELECT " + __sqlOrderCommissionSetting_ListCols + " FROM \"order_commission_setting\" WHERE false"
 	if _, err := db.SQL(query).Exec(); err != nil {
 		db.RecordError(err)
 	}
@@ -3088,7 +3088,7 @@ func (m *ShopCashbacks) SQLTableName() string { return "shop_cashback" }
 func (m *ShopCashback) SQLListCols() string   { return __sqlShopCashback_ListCols }
 
 func (m *ShopCashback) SQLVerifySchema(db *cmsql.Database) {
-	query := "SELECT " + __sqlShopCashback_ListCols + " FROM shop_cashback WHERE false"
+	query := "SELECT " + __sqlShopCashback_ListCols + " FROM \"shop_cashback\" WHERE false"
 	if _, err := db.SQL(query).Exec(); err != nil {
 		db.RecordError(err)
 	}
@@ -3385,7 +3385,7 @@ func (m *ShopOrderProductHistories) SQLTableName() string { return "shop_order_p
 func (m *ShopOrderProductHistory) SQLListCols() string    { return __sqlShopOrderProductHistory_ListCols }
 
 func (m *ShopOrderProductHistory) SQLVerifySchema(db *cmsql.Database) {
-	query := "SELECT " + __sqlShopOrderProductHistory_ListCols + " FROM shop_order_product_history WHERE false"
+	query := "SELECT " + __sqlShopOrderProductHistory_ListCols + " FROM \"shop_order_product_history\" WHERE false"
 	if _, err := db.SQL(query).Exec(); err != nil {
 		db.RecordError(err)
 	}

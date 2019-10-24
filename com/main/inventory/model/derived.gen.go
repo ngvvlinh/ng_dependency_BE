@@ -41,7 +41,7 @@ func (m *InventoryVariants) SQLTableName() string { return "inventory_variant" }
 func (m *InventoryVariant) SQLListCols() string   { return __sqlInventoryVariant_ListCols }
 
 func (m *InventoryVariant) SQLVerifySchema(db *cmsql.Database) {
-	query := "SELECT " + __sqlInventoryVariant_ListCols + " FROM inventory_variant WHERE false"
+	query := "SELECT " + __sqlInventoryVariant_ListCols + " FROM \"inventory_variant\" WHERE false"
 	if _, err := db.SQL(query).Exec(); err != nil {
 		db.RecordError(err)
 	}
@@ -303,7 +303,7 @@ func (m *InventoryVouchers) SQLTableName() string { return "inventory_voucher" }
 func (m *InventoryVoucher) SQLListCols() string   { return __sqlInventoryVoucher_ListCols }
 
 func (m *InventoryVoucher) SQLVerifySchema(db *cmsql.Database) {
-	query := "SELECT " + __sqlInventoryVoucher_ListCols + " FROM inventory_voucher WHERE false"
+	query := "SELECT " + __sqlInventoryVoucher_ListCols + " FROM \"inventory_voucher\" WHERE false"
 	if _, err := db.SQL(query).Exec(); err != nil {
 		db.RecordError(err)
 	}

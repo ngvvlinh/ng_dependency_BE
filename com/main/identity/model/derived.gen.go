@@ -41,7 +41,7 @@ func (m *ExternalAccountAhamoves) SQLTableName() string { return "external_accou
 func (m *ExternalAccountAhamove) SQLListCols() string   { return __sqlExternalAccountAhamove_ListCols }
 
 func (m *ExternalAccountAhamove) SQLVerifySchema(db *cmsql.Database) {
-	query := "SELECT " + __sqlExternalAccountAhamove_ListCols + " FROM external_account_ahamove WHERE false"
+	query := "SELECT " + __sqlExternalAccountAhamove_ListCols + " FROM \"external_account_ahamove\" WHERE false"
 	if _, err := db.SQL(query).Exec(); err != nil {
 		db.RecordError(err)
 	}
@@ -517,7 +517,7 @@ func (m *Affiliates) SQLTableName() string { return "affiliate" }
 func (m *Affiliate) SQLListCols() string   { return __sqlAffiliate_ListCols }
 
 func (m *Affiliate) SQLVerifySchema(db *cmsql.Database) {
-	query := "SELECT " + __sqlAffiliate_ListCols + " FROM affiliate WHERE false"
+	query := "SELECT " + __sqlAffiliate_ListCols + " FROM \"affiliate\" WHERE false"
 	if _, err := db.SQL(query).Exec(); err != nil {
 		db.RecordError(err)
 	}

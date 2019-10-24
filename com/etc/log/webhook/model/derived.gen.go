@@ -41,7 +41,7 @@ func (m *ShippingProviderWebhooks) SQLTableName() string { return "shipping_prov
 func (m *ShippingProviderWebhook) SQLListCols() string   { return __sqlShippingProviderWebhook_ListCols }
 
 func (m *ShippingProviderWebhook) SQLVerifySchema(db *cmsql.Database) {
-	query := "SELECT " + __sqlShippingProviderWebhook_ListCols + " FROM shipping_provider_webhook WHERE false"
+	query := "SELECT " + __sqlShippingProviderWebhook_ListCols + " FROM \"shipping_provider_webhook\" WHERE false"
 	if _, err := db.SQL(query).Exec(); err != nil {
 		db.RecordError(err)
 	}

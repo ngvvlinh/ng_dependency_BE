@@ -26,8 +26,6 @@ type Receipt struct {
 	DeletedAt   time.Time
 }
 
-var _ = sqlgenReceiptLine(&ReceiptLine{})
-
 type ReceiptLine struct {
 	OrderID int64  `json:"order_id"`
 	Title   string `json:"title"`

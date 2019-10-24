@@ -41,7 +41,7 @@ func (m *Fulfillments) SQLTableName() string { return "fulfillment" }
 func (m *Fulfillment) SQLListCols() string   { return __sqlFulfillment_ListCols }
 
 func (m *Fulfillment) SQLVerifySchema(db *cmsql.Database) {
-	query := "SELECT " + __sqlFulfillment_ListCols + " FROM fulfillment WHERE false"
+	query := "SELECT " + __sqlFulfillment_ListCols + " FROM \"fulfillment\" WHERE false"
 	if _, err := db.SQL(query).Exec(); err != nil {
 		db.RecordError(err)
 	}

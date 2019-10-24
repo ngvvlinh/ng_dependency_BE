@@ -164,10 +164,10 @@ type Database struct {
 
 func (db *Database) GetSchemaErrors() error {
 	for _, v := range db.errs {
-		l.Error(v)
+		ll.Error("Error verify schema: ", l.Error(v))
 	}
 	if len(db.errs) > 0 {
-		return cm.Error(cm.Internal, "Found error in database migration", nil)
+		return cm.Error(cm.Internal, fmt.Sprintf("Found %v error in database migration", len(db.errs)), nil)
 	}
 	return nil
 }

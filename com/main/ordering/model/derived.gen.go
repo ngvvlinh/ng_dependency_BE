@@ -41,7 +41,7 @@ func (m *Orders) SQLTableName() string { return "order" }
 func (m *Order) SQLListCols() string   { return __sqlOrder_ListCols }
 
 func (m *Order) SQLVerifySchema(db *cmsql.Database) {
-	query := "SELECT " + __sqlOrder_ListCols + " FROM order WHERE false"
+	query := "SELECT " + __sqlOrder_ListCols + " FROM \"order\" WHERE false"
 	if _, err := db.SQL(query).Exec(); err != nil {
 		db.RecordError(err)
 	}
@@ -1074,7 +1074,7 @@ func (m *OrderLines) SQLTableName() string { return "order_line" }
 func (m *OrderLine) SQLListCols() string   { return __sqlOrderLine_ListCols }
 
 func (m *OrderLine) SQLVerifySchema(db *cmsql.Database) {
-	query := "SELECT " + __sqlOrderLine_ListCols + " FROM order_line WHERE false"
+	query := "SELECT " + __sqlOrderLine_ListCols + " FROM \"order_line\" WHERE false"
 	if _, err := db.SQL(query).Exec(); err != nil {
 		db.RecordError(err)
 	}

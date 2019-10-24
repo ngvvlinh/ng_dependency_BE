@@ -41,7 +41,7 @@ func (m *Notifications) SQLTableName() string { return "notification" }
 func (m *Notification) SQLListCols() string   { return __sqlNotification_ListCols }
 
 func (m *Notification) SQLVerifySchema(db *cmsql.Database) {
-	query := "SELECT " + __sqlNotification_ListCols + " FROM notification WHERE false"
+	query := "SELECT " + __sqlNotification_ListCols + " FROM \"notification\" WHERE false"
 	if _, err := db.SQL(query).Exec(); err != nil {
 		db.RecordError(err)
 	}
@@ -420,7 +420,7 @@ func (m *Devices) SQLTableName() string { return "device" }
 func (m *Device) SQLListCols() string   { return __sqlDevice_ListCols }
 
 func (m *Device) SQLVerifySchema(db *cmsql.Database) {
-	query := "SELECT " + __sqlDevice_ListCols + " FROM device WHERE false"
+	query := "SELECT " + __sqlDevice_ListCols + " FROM \"device\" WHERE false"
 	if _, err := db.SQL(query).Exec(); err != nil {
 		db.RecordError(err)
 	}

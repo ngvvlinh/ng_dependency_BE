@@ -41,7 +41,7 @@ func (m *ShipnowFulfillments) SQLTableName() string { return "shipnow_fulfillmen
 func (m *ShipnowFulfillment) SQLListCols() string   { return __sqlShipnowFulfillment_ListCols }
 
 func (m *ShipnowFulfillment) SQLVerifySchema(db *cmsql.Database) {
-	query := "SELECT " + __sqlShipnowFulfillment_ListCols + " FROM shipnow_fulfillment WHERE false"
+	query := "SELECT " + __sqlShipnowFulfillment_ListCols + " FROM \"shipnow_fulfillment\" WHERE false"
 	if _, err := db.SQL(query).Exec(); err != nil {
 		db.RecordError(err)
 	}

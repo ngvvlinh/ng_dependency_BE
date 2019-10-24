@@ -42,7 +42,7 @@ func (m *Users) SQLTableName() string { return "user" }
 func (m *User) SQLListCols() string   { return __sqlUser_ListCols }
 
 func (m *User) SQLVerifySchema(db *cmsql.Database) {
-	query := "SELECT " + __sqlUser_ListCols + " FROM user WHERE false"
+	query := "SELECT " + __sqlUser_ListCols + " FROM \"user\" WHERE false"
 	if _, err := db.SQL(query).Exec(); err != nil {
 		db.RecordError(err)
 	}
@@ -453,7 +453,7 @@ func (m *UserSubsets) SQLTableName() string { return "user" }
 func (m *UserSubset) SQLListCols() string   { return __sqlUserSubset_ListCols }
 
 func (m *UserSubset) SQLVerifySchema(db *cmsql.Database) {
-	query := "SELECT " + __sqlUserSubset_ListCols + " FROM user WHERE false"
+	query := "SELECT " + __sqlUserSubset_ListCols + " FROM \"user\" WHERE false"
 	if _, err := db.SQL(query).Exec(); err != nil {
 		db.RecordError(err)
 	}
@@ -760,7 +760,7 @@ func (m *UserInfoes) SQLTableName() string { return "user_info" }
 func (m *UserInfo) SQLListCols() string    { return __sqlUserInfo_ListCols }
 
 func (m *UserInfo) SQLVerifySchema(db *cmsql.Database) {
-	query := "SELECT " + __sqlUserInfo_ListCols + " FROM user_info WHERE false"
+	query := "SELECT " + __sqlUserInfo_ListCols + " FROM \"user_info\" WHERE false"
 	if _, err := db.SQL(query).Exec(); err != nil {
 		db.RecordError(err)
 	}
@@ -1288,7 +1288,7 @@ func (m *ComplexInfoes) SQLTableName() string { return "complex_info" }
 func (m *ComplexInfo) SQLListCols() string    { return __sqlComplexInfo_ListCols }
 
 func (m *ComplexInfo) SQLVerifySchema(db *cmsql.Database) {
-	query := "SELECT " + __sqlComplexInfo_ListCols + " FROM complex_info WHERE false"
+	query := "SELECT " + __sqlComplexInfo_ListCols + " FROM \"complex_info\" WHERE false"
 	if _, err := db.SQL(query).Exec(); err != nil {
 		db.RecordError(err)
 	}
@@ -1701,7 +1701,7 @@ func (m *UserTags) SQLTableName() string { return "user_tag" }
 func (m *UserTag) SQLListCols() string   { return __sqlUserTag_ListCols }
 
 func (m *UserTag) SQLVerifySchema(db *cmsql.Database) {
-	query := "SELECT " + __sqlUserTag_ListCols + " FROM user_tag WHERE false"
+	query := "SELECT " + __sqlUserTag_ListCols + " FROM \"user_tag\" WHERE false"
 	if _, err := db.SQL(query).Exec(); err != nil {
 		db.RecordError(err)
 	}
@@ -1891,7 +1891,7 @@ func (m *UserInlines) SQLTableName() string { return "user_inline" }
 func (m *UserInline) SQLListCols() string   { return __sqlUserInline_ListCols }
 
 func (m *UserInline) SQLVerifySchema(db *cmsql.Database) {
-	query := "SELECT " + __sqlUserInline_ListCols + " FROM user_inline WHERE false"
+	query := "SELECT " + __sqlUserInline_ListCols + " FROM \"user_inline\" WHERE false"
 	if _, err := db.SQL(query).Exec(); err != nil {
 		db.RecordError(err)
 	}
@@ -2082,7 +2082,7 @@ func (m *Profiles) SQLTableName() string { return "profile" }
 func (m *Profile) SQLListCols() string   { return __sqlProfile_ListCols }
 
 func (m *Profile) SQLVerifySchema(db *cmsql.Database) {
-	query := "SELECT " + __sqlProfile_ListCols + " FROM profile WHERE false"
+	query := "SELECT " + __sqlProfile_ListCols + " FROM \"profile\" WHERE false"
 	if _, err := db.SQL(query).Exec(); err != nil {
 		db.RecordError(err)
 	}

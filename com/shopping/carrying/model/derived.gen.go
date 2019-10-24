@@ -41,7 +41,7 @@ func (m *ShopCarriers) SQLTableName() string { return "shop_carrier" }
 func (m *ShopCarrier) SQLListCols() string   { return __sqlShopCarrier_ListCols }
 
 func (m *ShopCarrier) SQLVerifySchema(db *cmsql.Database) {
-	query := "SELECT " + __sqlShopCarrier_ListCols + " FROM shop_carrier WHERE false"
+	query := "SELECT " + __sqlShopCarrier_ListCols + " FROM \"shop_carrier\" WHERE false"
 	if _, err := db.SQL(query).Exec(); err != nil {
 		db.RecordError(err)
 	}
