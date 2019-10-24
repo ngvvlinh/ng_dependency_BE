@@ -285,9 +285,9 @@ func main() {
 		}
 	}
 	configMap, err := config.ReadMappingFile(cfg.Vtiger.MappingFile)
-	if err != nil {
-		ll.Fatal("error while reading field map file", l.String("file", cfg.Vtiger.MappingFile), l.Error(err))
-	}
+	//if err != nil {
+	//	ll.Fatal("error while reading field map file", l.String("file", cfg.Vtiger.MappingFile), l.Error(err))
+	//}
 
 	shippingManager := shipping_provider.NewCtrl(locationBus, ghnCarrier, ghtkCarrier, vtpostCarrier)
 

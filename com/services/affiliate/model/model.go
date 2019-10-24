@@ -120,6 +120,8 @@ type SupplyCommissionSetting struct {
 	MLevel1LimitDuration     *DurationJSON
 	LifetimeDuration         int64
 	MLifetimeDuration        *DurationJSON
+	CustomerPolicyGroupID    int64
+	Group                    string
 	CreatedAt                time.Time `sq:"create"`
 	UpdatedAt                time.Time `sq:"update"`
 }
@@ -162,6 +164,8 @@ type OrderCommissionSetting struct {
 	Level1LimitCount         int32
 	Level1LimitDuration      int64
 	LifetimeDuration         int64
+	Group                    string
+	CustomerPolicyGroupID    int64
 	CreatedAt                time.Time `sq:"create"`
 	UpdatedAt                time.Time `sq:"update"`
 }
@@ -184,12 +188,23 @@ type ShopCashback struct {
 var _ = sqlgenShopOrderProductHistory(&ShopOrderProductHistory{})
 
 type ShopOrderProductHistory struct {
-	UserID          int64
-	ShopID          int64
-	OrderID         int64
-	SupplyID        int64
-	ProductID       int64
-	ProductQuantity int32
-	CreatedAt       time.Time `sq:"create"`
-	UpdatedAt       time.Time `sq:"update"`
+	UserID                int64
+	ShopID                int64
+	OrderID               int64
+	SupplyID              int64
+	ProductID             int64
+	CustomerPolicyGroupID int64
+	ProductQuantity       int32
+	CreatedAt             time.Time `sq:"create"`
+	UpdatedAt             time.Time `sq:"update"`
+}
+
+var _ = sqlgenCustomerPolicyGroup(&CustomerPolicyGroup{})
+
+type CustomerPolicyGroup struct {
+	ID        int64
+	SupplyID  int64
+	Name      string
+	CreatedAt time.Time `sq:"create"`
+	UpdatedAt time.Time `sq:"update"`
 }

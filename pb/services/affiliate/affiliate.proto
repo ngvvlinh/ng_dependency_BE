@@ -151,6 +151,7 @@ message SupplyCommissionSetting {
     optional SupplyCommissionSettingDurationObject m_level1_limit_duration = 11 [(gogoproto.nullable) = true];
     optional google.protobuf.Timestamp created_at = 9  [(gogoproto.nullable) = true];
     optional google.protobuf.Timestamp updated_at = 10  [(gogoproto.nullable) = true];
+    optional string group = 12 [(gogoproto.nullable) = false];
 }
 
 message SupplyCommissionSettingDurationObject {
@@ -198,6 +199,7 @@ message CreateOrUpdateTradingCommissionSettingRequest {
     // day, month
     optional string lifetime_duration_type = 11  [(gogoproto.nullable) = false];
     optional int32 lifetime_duration = 12  [(gogoproto.nullable) = false];
+    optional string group = 13 [(gogoproto.nullable) = false];
 }
 
 message ProductPromotion {

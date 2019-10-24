@@ -97,6 +97,7 @@ func PbSupplyCommissionSetting(m *affiliate.SupplyCommissionSetting) *SupplyComm
 		Level1LimitCount:         m.Level1LimitCount,
 		MLifetimeDuration:        PbDuration(m.MLifetimeDuration),
 		MLevel1LimitDuration:     PbDuration(m.MLevel1LimitDuration),
+		Group:                    m.Group,
 		CreatedAt:                pbcm.PbTime(m.CreatedAt),
 		UpdatedAt:                pbcm.PbTime(m.UpdatedAt),
 	}

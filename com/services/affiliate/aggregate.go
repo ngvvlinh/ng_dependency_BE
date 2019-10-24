@@ -42,6 +42,7 @@ type Aggregate struct {
 	shopCashback            sqlstore.ShopCashbackStoreFactory
 	orderCommissionSetting  sqlstore.OrderCommissionSettingStoreFactory
 	shopOrderProductHistory sqlstore.ShopOrderProductHistoryStoreFactory
+	customerPolicyGroup     sqlstore.CustomerPolicyGroupStoreFactory
 	identityQuery           identity.QueryBus
 	catalogQuery            catalog.QueryBus
 	orderingQuery           ordering.QueryBus
@@ -62,6 +63,7 @@ func NewAggregate(db *cmsql.Database, idenQuery identity.QueryBus, catalogQuery 
 		shopCashback:            sqlstore.NewShopCashbackStore(db),
 		orderCommissionSetting:  sqlstore.NewOrderCommissionSettingStoreFactory(db),
 		shopOrderProductHistory: sqlstore.NewShopOrderProductHistoryStore(db),
+		customerPolicyGroup:     sqlstore.NewCustomerPolicyGroupStore(db),
 		identityQuery:           idenQuery,
 		catalogQuery:            catalogQuery,
 		orderingQuery:           orderQuery,
@@ -391,6 +393,11 @@ func (a *Aggregate) CreateOrUpdateSupplyCommissionSetting(ctx context.Context, a
 	if args.Level1LimitCount < 1 {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Giá trị giới hạn khách hàng mới tối thiểu là 1")
 	}
+
+	if args.DependOn == "customer" && args.Group == "" {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "Vui lòng nhập nhóm khách hàng khi cài đặt chiết khấu theo khách hàng")
+	}
+
 	if args.Level1DirectCommission < 0 ||
 		args.Level1IndirectCommission < 0 ||
 		args.Level2DirectCommission < 0 ||
@@ -398,6 +405,23 @@ func (a *Aggregate) CreateOrUpdateSupplyCommissionSetting(ctx context.Context, a
 		args.LifetimeDuration < 0 {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Giá trị số phải lớn hơn 0")
 	}
+
+	customerPolicyGroup, err := a.customerPolicyGroup(ctx).Name(args.Group).GetCustomerPolicyGroupDB()
+	if cm.ErrorCode(err) == cm.NotFound {
+		customerPolicyGroup = &model.CustomerPolicyGroup{
+			ID:        cm.NewID(),
+			SupplyID:  args.ShopID,
+			Name:      args.Group,
+			CreatedAt: time.Now(),
+			UpdatedAt: time.Now(),
+		}
+		err = a.customerPolicyGroup(ctx).CreateCustomerPolicyGroup(customerPolicyGroup)
+		if err != nil {
+			return nil, err
+		}
+	}
+
+	ll.Info("CHECK CUSTOMER GROUP", l.Object("customerPolicyGroup", customerPolicyGroup))
 
 	var level1LimitDuration int64 = 0
 	var lifetimeDuration int64 = 0
@@ -442,11 +466,13 @@ func (a *Aggregate) CreateOrUpdateSupplyCommissionSetting(ctx context.Context, a
 			Duration: int32(args.LifetimeDuration),
 			Type:     args.LifetimeDurationType,
 		},
-		CreatedAt: time.Now(),
-		UpdatedAt: time.Now(),
+		CustomerPolicyGroupID: customerPolicyGroup.ID,
+		Group:                 customerPolicyGroup.Name,
+		CreatedAt:             time.Now(),
+		UpdatedAt:             time.Now(),
 	}
 
-	_, err := a.supplyCommissionSetting(ctx).ProductID(args.ProductID).ShopID(args.ShopID).GetSupplyCommissionSettingDB()
+	_, err = a.supplyCommissionSetting(ctx).ProductID(args.ProductID).ShopID(args.ShopID).GetSupplyCommissionSettingDB()
 
 	if cm.ErrorCode(err) == cm.NotFound {
 		createOrUpdateErr = a.supplyCommissionSetting(ctx).CreateSupplyCommissionSetting(supplyCommissionSetting)
@@ -571,6 +597,8 @@ func (a *Aggregate) CreateOrderCommissionSettings(ctx context.Context, orderCrea
 			Level1LimitCount:         supplyCommissionSetting.Level1LimitCount,
 			Level1LimitDuration:      supplyCommissionSetting.Level1LimitDuration,
 			LifetimeDuration:         supplyCommissionSetting.LifetimeDuration,
+			Group:                    supplyCommissionSetting.Group,
+			CustomerPolicyGroupID:    supplyCommissionSetting.CustomerPolicyGroupID,
 			CreatedAt:                time.Now(),
 			UpdatedAt:                time.Now(),
 		}); err != nil {
@@ -694,7 +722,7 @@ func (a *Aggregate) ProcessOrderNotify(ctx context.Context, orderCreatedNotifyID
 				}
 			}
 
-			countByUser, err := a.shopOrderProductHistory(ctx).UserID(shopQ.Result.OwnerID).Count()
+			countByUser, err := a.shopOrderProductHistory(ctx).UserID(shopQ.Result.OwnerID).CustomerPolicyGroup(orderCommissionSetting.CustomerPolicyGroupID).Count()
 			if err != nil {
 				return err
 			}
@@ -706,7 +734,8 @@ func (a *Aggregate) ProcessOrderNotify(ctx context.Context, orderCreatedNotifyID
 			var directCommission float64
 			var indirectCommission float64
 
-			if (orderCommissionSetting.DependOn == "product" && countByProduct < uint64(orderCommissionSetting.Level1LimitCount)) || (orderCommissionSetting.DependOn == "user" && countByUser < uint64(orderCommissionSetting.Level1LimitCount)) {
+			if (orderCommissionSetting.DependOn == "product" && countByProduct < uint64(orderCommissionSetting.Level1LimitCount)) ||
+				(orderCommissionSetting.DependOn == "customer" && countByUser < uint64(orderCommissionSetting.Level1LimitCount)) {
 				directCommission = float64(orderCommissionSetting.Level1DirectCommission)
 				indirectCommission = float64(orderCommissionSetting.Level1IndirectCommission)
 			} else {
@@ -770,15 +799,18 @@ func (a *Aggregate) ProcessOrderNotify(ctx context.Context, orderCreatedNotifyID
 
 		// store history
 		for _, line := range getOrderQ.Result.Lines {
+			orderCommissionSetting, _ := a.orderCommissionSetting(ctx).SupplyID(getOrderQ.Result.ShopID).OrderID(getOrderQ.Result.ID).ProductID(line.ProductId).GetOrderCommissionSettingDB()
+
 			if err := a.shopOrderProductHistory(ctx).CreateShopOrderProductHistory(&model.ShopOrderProductHistory{
-				UserID:          shopQ.Result.OwnerID,
-				ShopID:          getOrderQ.Result.TradingShopID,
-				OrderID:         getOrderQ.Result.ID,
-				SupplyID:        getOrderQ.Result.ShopID,
-				ProductID:       line.ProductId,
-				ProductQuantity: line.Quantity,
-				CreatedAt:       time.Now(),
-				UpdatedAt:       time.Now(),
+				UserID:                shopQ.Result.OwnerID,
+				ShopID:                getOrderQ.Result.TradingShopID,
+				OrderID:               getOrderQ.Result.ID,
+				SupplyID:              getOrderQ.Result.ShopID,
+				ProductID:             line.ProductId,
+				ProductQuantity:       line.Quantity,
+				CustomerPolicyGroupID: orderCommissionSetting.CustomerPolicyGroupID,
+				CreatedAt:             time.Now(),
+				UpdatedAt:             time.Now(),
 			}); err != nil {
 				return err
 			}

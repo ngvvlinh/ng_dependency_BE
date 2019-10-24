@@ -683,6 +683,9 @@
         "lifetime_duration": {
           "type": "integer",
           "format": "int32"
+        },
+        "group": {
+          "type": "string"
         }
       }
     },
@@ -1007,6 +1010,9 @@
         "updated_at": {
           "type": "string",
           "format": "date-time"
+        },
+        "group": {
+          "type": "string"
         }
       }
     },

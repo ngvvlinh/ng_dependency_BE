@@ -37,6 +37,11 @@ func (s *ShopOrderProductHistoryStore) UserID(id int64) *ShopOrderProductHistory
 	return s
 }
 
+func (s *ShopOrderProductHistoryStore) CustomerPolicyGroup(id int64) *ShopOrderProductHistoryStore {
+	s.preds = append(s.preds, s.ft.ByCustomerPolicyGroupID(id))
+	return s
+}
+
 func (s *ShopOrderProductHistoryStore) ShopID(id int64) *ShopOrderProductHistoryStore {
 	s.preds = append(s.preds, s.ft.ByShopID(id))
 	return s

@@ -1985,7 +1985,7 @@ func sqlgenSupplyCommissionSetting(_ *SupplyCommissionSetting) bool { return tru
 type SupplyCommissionSettings []*SupplyCommissionSetting
 
 const __sqlSupplyCommissionSetting_Table = "supply_commission_setting"
-const __sqlSupplyCommissionSetting_ListCols = "\"shop_id\",\"product_id\",\"level1_direct_commission\",\"level1_indirect_commission\",\"level2_direct_commission\",\"level2_indirect_commission\",\"depend_on\",\"level1_limit_count\",\"level1_limit_duration\",\"m_level1_limit_duration\",\"lifetime_duration\",\"m_lifetime_duration\",\"created_at\",\"updated_at\""
+const __sqlSupplyCommissionSetting_ListCols = "\"shop_id\",\"product_id\",\"level1_direct_commission\",\"level1_indirect_commission\",\"level2_direct_commission\",\"level2_indirect_commission\",\"depend_on\",\"level1_limit_count\",\"level1_limit_duration\",\"m_level1_limit_duration\",\"lifetime_duration\",\"m_lifetime_duration\",\"customer_policy_group_id\",\"group\",\"created_at\",\"updated_at\""
 const __sqlSupplyCommissionSetting_Insert = "INSERT INTO \"supply_commission_setting\" (" + __sqlSupplyCommissionSetting_ListCols + ") VALUES"
 const __sqlSupplyCommissionSetting_Select = "SELECT " + __sqlSupplyCommissionSetting_ListCols + " FROM \"supply_commission_setting\""
 const __sqlSupplyCommissionSetting_Select_history = "SELECT " + __sqlSupplyCommissionSetting_ListCols + " FROM history.\"supply_commission_setting\""
@@ -2021,6 +2021,8 @@ func (m *SupplyCommissionSetting) SQLArgs(opts core.Opts, create bool) []interfa
 		core.JSON{m.MLevel1LimitDuration},
 		core.Int64(m.LifetimeDuration),
 		core.JSON{m.MLifetimeDuration},
+		core.Int64(m.CustomerPolicyGroupID),
+		core.String(m.Group),
 		core.Now(m.CreatedAt, now, create),
 		core.Now(m.UpdatedAt, now, true),
 	}
@@ -2040,6 +2042,8 @@ func (m *SupplyCommissionSetting) SQLScanArgs(opts core.Opts) []interface{} {
 		core.JSON{&m.MLevel1LimitDuration},
 		(*core.Int64)(&m.LifetimeDuration),
 		core.JSON{&m.MLifetimeDuration},
+		(*core.Int64)(&m.CustomerPolicyGroupID),
+		(*core.String)(&m.Group),
 		(*core.Time)(&m.CreatedAt),
 		(*core.Time)(&m.UpdatedAt),
 	}
@@ -2079,7 +2083,7 @@ func (_ *SupplyCommissionSettings) SQLSelect(w SQLWriter) error {
 func (m *SupplyCommissionSetting) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlSupplyCommissionSetting_Insert)
 	w.WriteRawString(" (")
-	w.WriteMarkers(14)
+	w.WriteMarkers(16)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), true))
 	return nil
@@ -2089,7 +2093,7 @@ func (ms SupplyCommissionSettings) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlSupplyCommissionSetting_Insert)
 	w.WriteRawString(" (")
 	for i := 0; i < len(ms); i++ {
-		w.WriteMarkers(14)
+		w.WriteMarkers(16)
 		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
 		w.WriteRawString("),(")
 	}
@@ -2200,6 +2204,22 @@ func (m *SupplyCommissionSetting) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(core.JSON{m.MLifetimeDuration})
 	}
+	if m.CustomerPolicyGroupID != 0 {
+		flag = true
+		w.WriteName("customer_policy_group_id")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.CustomerPolicyGroupID)
+	}
+	if m.Group != "" {
+		flag = true
+		w.WriteName("group")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.Group)
+	}
 	if !m.CreatedAt.IsZero() {
 		flag = true
 		w.WriteName("created_at")
@@ -2226,7 +2246,7 @@ func (m *SupplyCommissionSetting) SQLUpdate(w SQLWriter) error {
 func (m *SupplyCommissionSetting) SQLUpdateAll(w SQLWriter) error {
 	w.WriteQueryString(__sqlSupplyCommissionSetting_UpdateAll)
 	w.WriteRawString(" = (")
-	w.WriteMarkers(14)
+	w.WriteMarkers(16)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), false))
 	return nil
@@ -2286,6 +2306,10 @@ func (m SupplyCommissionSettingHistory) LifetimeDuration() core.Interface {
 func (m SupplyCommissionSettingHistory) MLifetimeDuration() core.Interface {
 	return core.Interface{m["m_lifetime_duration"]}
 }
+func (m SupplyCommissionSettingHistory) CustomerPolicyGroupID() core.Interface {
+	return core.Interface{m["customer_policy_group_id"]}
+}
+func (m SupplyCommissionSettingHistory) Group() core.Interface { return core.Interface{m["group"]} }
 func (m SupplyCommissionSettingHistory) CreatedAt() core.Interface {
 	return core.Interface{m["created_at"]}
 }
@@ -2294,15 +2318,15 @@ func (m SupplyCommissionSettingHistory) UpdatedAt() core.Interface {
 }
 
 func (m *SupplyCommissionSettingHistory) SQLScan(opts core.Opts, row *sql.Row) error {
-	data := make([]interface{}, 14)
-	args := make([]interface{}, 14)
-	for i := 0; i < 14; i++ {
+	data := make([]interface{}, 16)
+	args := make([]interface{}, 16)
+	for i := 0; i < 16; i++ {
 		args[i] = &data[i]
 	}
 	if err := row.Scan(args...); err != nil {
 		return err
 	}
-	res := make(SupplyCommissionSettingHistory, 14)
+	res := make(SupplyCommissionSettingHistory, 16)
 	res["shop_id"] = data[0]
 	res["product_id"] = data[1]
 	res["level1_direct_commission"] = data[2]
@@ -2315,16 +2339,18 @@ func (m *SupplyCommissionSettingHistory) SQLScan(opts core.Opts, row *sql.Row) e
 	res["m_level1_limit_duration"] = data[9]
 	res["lifetime_duration"] = data[10]
 	res["m_lifetime_duration"] = data[11]
-	res["created_at"] = data[12]
-	res["updated_at"] = data[13]
+	res["customer_policy_group_id"] = data[12]
+	res["group"] = data[13]
+	res["created_at"] = data[14]
+	res["updated_at"] = data[15]
 	*m = res
 	return nil
 }
 
 func (ms *SupplyCommissionSettingHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	data := make([]interface{}, 14)
-	args := make([]interface{}, 14)
-	for i := 0; i < 14; i++ {
+	data := make([]interface{}, 16)
+	args := make([]interface{}, 16)
+	for i := 0; i < 16; i++ {
 		args[i] = &data[i]
 	}
 	res := make(SupplyCommissionSettingHistories, 0, 128)
@@ -2345,8 +2371,10 @@ func (ms *SupplyCommissionSettingHistories) SQLScan(opts core.Opts, rows *sql.Ro
 		m["m_level1_limit_duration"] = data[9]
 		m["lifetime_duration"] = data[10]
 		m["m_lifetime_duration"] = data[11]
-		m["created_at"] = data[12]
-		m["updated_at"] = data[13]
+		m["customer_policy_group_id"] = data[12]
+		m["group"] = data[13]
+		m["created_at"] = data[14]
+		m["updated_at"] = data[15]
 		res = append(res, m)
 	}
 	if err := rows.Err(); err != nil {
@@ -2700,7 +2728,7 @@ func sqlgenOrderCommissionSetting(_ *OrderCommissionSetting) bool { return true 
 type OrderCommissionSettings []*OrderCommissionSetting
 
 const __sqlOrderCommissionSetting_Table = "order_commission_setting"
-const __sqlOrderCommissionSetting_ListCols = "\"order_id\",\"supply_id\",\"product_id\",\"product_quantity\",\"level1_direct_commission\",\"level1_indirect_commission\",\"level2_direct_commission\",\"level2_indirect_commission\",\"depend_on\",\"level1_limit_count\",\"level1_limit_duration\",\"lifetime_duration\",\"created_at\",\"updated_at\""
+const __sqlOrderCommissionSetting_ListCols = "\"order_id\",\"supply_id\",\"product_id\",\"product_quantity\",\"level1_direct_commission\",\"level1_indirect_commission\",\"level2_direct_commission\",\"level2_indirect_commission\",\"depend_on\",\"level1_limit_count\",\"level1_limit_duration\",\"lifetime_duration\",\"group\",\"customer_policy_group_id\",\"created_at\",\"updated_at\""
 const __sqlOrderCommissionSetting_Insert = "INSERT INTO \"order_commission_setting\" (" + __sqlOrderCommissionSetting_ListCols + ") VALUES"
 const __sqlOrderCommissionSetting_Select = "SELECT " + __sqlOrderCommissionSetting_ListCols + " FROM \"order_commission_setting\""
 const __sqlOrderCommissionSetting_Select_history = "SELECT " + __sqlOrderCommissionSetting_ListCols + " FROM history.\"order_commission_setting\""
@@ -2736,6 +2764,8 @@ func (m *OrderCommissionSetting) SQLArgs(opts core.Opts, create bool) []interfac
 		core.Int32(m.Level1LimitCount),
 		core.Int64(m.Level1LimitDuration),
 		core.Int64(m.LifetimeDuration),
+		core.String(m.Group),
+		core.Int64(m.CustomerPolicyGroupID),
 		core.Now(m.CreatedAt, now, create),
 		core.Now(m.UpdatedAt, now, true),
 	}
@@ -2755,6 +2785,8 @@ func (m *OrderCommissionSetting) SQLScanArgs(opts core.Opts) []interface{} {
 		(*core.Int32)(&m.Level1LimitCount),
 		(*core.Int64)(&m.Level1LimitDuration),
 		(*core.Int64)(&m.LifetimeDuration),
+		(*core.String)(&m.Group),
+		(*core.Int64)(&m.CustomerPolicyGroupID),
 		(*core.Time)(&m.CreatedAt),
 		(*core.Time)(&m.UpdatedAt),
 	}
@@ -2794,7 +2826,7 @@ func (_ *OrderCommissionSettings) SQLSelect(w SQLWriter) error {
 func (m *OrderCommissionSetting) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlOrderCommissionSetting_Insert)
 	w.WriteRawString(" (")
-	w.WriteMarkers(14)
+	w.WriteMarkers(16)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), true))
 	return nil
@@ -2804,7 +2836,7 @@ func (ms OrderCommissionSettings) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlOrderCommissionSetting_Insert)
 	w.WriteRawString(" (")
 	for i := 0; i < len(ms); i++ {
-		w.WriteMarkers(14)
+		w.WriteMarkers(16)
 		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
 		w.WriteRawString("),(")
 	}
@@ -2915,6 +2947,22 @@ func (m *OrderCommissionSetting) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(m.LifetimeDuration)
 	}
+	if m.Group != "" {
+		flag = true
+		w.WriteName("group")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.Group)
+	}
+	if m.CustomerPolicyGroupID != 0 {
+		flag = true
+		w.WriteName("customer_policy_group_id")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.CustomerPolicyGroupID)
+	}
 	if !m.CreatedAt.IsZero() {
 		flag = true
 		w.WriteName("created_at")
@@ -2941,7 +2989,7 @@ func (m *OrderCommissionSetting) SQLUpdate(w SQLWriter) error {
 func (m *OrderCommissionSetting) SQLUpdateAll(w SQLWriter) error {
 	w.WriteQueryString(__sqlOrderCommissionSetting_UpdateAll)
 	w.WriteRawString(" = (")
-	w.WriteMarkers(14)
+	w.WriteMarkers(16)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), false))
 	return nil
@@ -3001,6 +3049,10 @@ func (m OrderCommissionSettingHistory) Level1LimitDuration() core.Interface {
 func (m OrderCommissionSettingHistory) LifetimeDuration() core.Interface {
 	return core.Interface{m["lifetime_duration"]}
 }
+func (m OrderCommissionSettingHistory) Group() core.Interface { return core.Interface{m["group"]} }
+func (m OrderCommissionSettingHistory) CustomerPolicyGroupID() core.Interface {
+	return core.Interface{m["customer_policy_group_id"]}
+}
 func (m OrderCommissionSettingHistory) CreatedAt() core.Interface {
 	return core.Interface{m["created_at"]}
 }
@@ -3009,15 +3061,15 @@ func (m OrderCommissionSettingHistory) UpdatedAt() core.Interface {
 }
 
 func (m *OrderCommissionSettingHistory) SQLScan(opts core.Opts, row *sql.Row) error {
-	data := make([]interface{}, 14)
-	args := make([]interface{}, 14)
-	for i := 0; i < 14; i++ {
+	data := make([]interface{}, 16)
+	args := make([]interface{}, 16)
+	for i := 0; i < 16; i++ {
 		args[i] = &data[i]
 	}
 	if err := row.Scan(args...); err != nil {
 		return err
 	}
-	res := make(OrderCommissionSettingHistory, 14)
+	res := make(OrderCommissionSettingHistory, 16)
 	res["order_id"] = data[0]
 	res["supply_id"] = data[1]
 	res["product_id"] = data[2]
@@ -3030,16 +3082,18 @@ func (m *OrderCommissionSettingHistory) SQLScan(opts core.Opts, row *sql.Row) er
 	res["level1_limit_count"] = data[9]
 	res["level1_limit_duration"] = data[10]
 	res["lifetime_duration"] = data[11]
-	res["created_at"] = data[12]
-	res["updated_at"] = data[13]
+	res["group"] = data[12]
+	res["customer_policy_group_id"] = data[13]
+	res["created_at"] = data[14]
+	res["updated_at"] = data[15]
 	*m = res
 	return nil
 }
 
 func (ms *OrderCommissionSettingHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	data := make([]interface{}, 14)
-	args := make([]interface{}, 14)
-	for i := 0; i < 14; i++ {
+	data := make([]interface{}, 16)
+	args := make([]interface{}, 16)
+	for i := 0; i < 16; i++ {
 		args[i] = &data[i]
 	}
 	res := make(OrderCommissionSettingHistories, 0, 128)
@@ -3060,8 +3114,10 @@ func (ms *OrderCommissionSettingHistories) SQLScan(opts core.Opts, rows *sql.Row
 		m["level1_limit_count"] = data[9]
 		m["level1_limit_duration"] = data[10]
 		m["lifetime_duration"] = data[11]
-		m["created_at"] = data[12]
-		m["updated_at"] = data[13]
+		m["group"] = data[12]
+		m["customer_policy_group_id"] = data[13]
+		m["created_at"] = data[14]
+		m["updated_at"] = data[15]
 		res = append(res, m)
 	}
 	if err := rows.Err(); err != nil {
@@ -3374,7 +3430,7 @@ func sqlgenShopOrderProductHistory(_ *ShopOrderProductHistory) bool { return tru
 type ShopOrderProductHistories []*ShopOrderProductHistory
 
 const __sqlShopOrderProductHistory_Table = "shop_order_product_history"
-const __sqlShopOrderProductHistory_ListCols = "\"user_id\",\"shop_id\",\"order_id\",\"supply_id\",\"product_id\",\"product_quantity\",\"created_at\",\"updated_at\""
+const __sqlShopOrderProductHistory_ListCols = "\"user_id\",\"shop_id\",\"order_id\",\"supply_id\",\"product_id\",\"customer_policy_group_id\",\"product_quantity\",\"created_at\",\"updated_at\""
 const __sqlShopOrderProductHistory_Insert = "INSERT INTO \"shop_order_product_history\" (" + __sqlShopOrderProductHistory_ListCols + ") VALUES"
 const __sqlShopOrderProductHistory_Select = "SELECT " + __sqlShopOrderProductHistory_ListCols + " FROM \"shop_order_product_history\""
 const __sqlShopOrderProductHistory_Select_history = "SELECT " + __sqlShopOrderProductHistory_ListCols + " FROM history.\"shop_order_product_history\""
@@ -3403,6 +3459,7 @@ func (m *ShopOrderProductHistory) SQLArgs(opts core.Opts, create bool) []interfa
 		core.Int64(m.OrderID),
 		core.Int64(m.SupplyID),
 		core.Int64(m.ProductID),
+		core.Int64(m.CustomerPolicyGroupID),
 		core.Int32(m.ProductQuantity),
 		core.Now(m.CreatedAt, now, create),
 		core.Now(m.UpdatedAt, now, true),
@@ -3416,6 +3473,7 @@ func (m *ShopOrderProductHistory) SQLScanArgs(opts core.Opts) []interface{} {
 		(*core.Int64)(&m.OrderID),
 		(*core.Int64)(&m.SupplyID),
 		(*core.Int64)(&m.ProductID),
+		(*core.Int64)(&m.CustomerPolicyGroupID),
 		(*core.Int32)(&m.ProductQuantity),
 		(*core.Time)(&m.CreatedAt),
 		(*core.Time)(&m.UpdatedAt),
@@ -3456,7 +3514,7 @@ func (_ *ShopOrderProductHistories) SQLSelect(w SQLWriter) error {
 func (m *ShopOrderProductHistory) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlShopOrderProductHistory_Insert)
 	w.WriteRawString(" (")
-	w.WriteMarkers(8)
+	w.WriteMarkers(9)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), true))
 	return nil
@@ -3466,7 +3524,7 @@ func (ms ShopOrderProductHistories) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlShopOrderProductHistory_Insert)
 	w.WriteRawString(" (")
 	for i := 0; i < len(ms); i++ {
-		w.WriteMarkers(8)
+		w.WriteMarkers(9)
 		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
 		w.WriteRawString("),(")
 	}
@@ -3521,6 +3579,14 @@ func (m *ShopOrderProductHistory) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(m.ProductID)
 	}
+	if m.CustomerPolicyGroupID != 0 {
+		flag = true
+		w.WriteName("customer_policy_group_id")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.CustomerPolicyGroupID)
+	}
 	if m.ProductQuantity != 0 {
 		flag = true
 		w.WriteName("product_quantity")
@@ -3555,7 +3621,7 @@ func (m *ShopOrderProductHistory) SQLUpdate(w SQLWriter) error {
 func (m *ShopOrderProductHistory) SQLUpdateAll(w SQLWriter) error {
 	w.WriteQueryString(__sqlShopOrderProductHistory_UpdateAll)
 	w.WriteRawString(" = (")
-	w.WriteMarkers(8)
+	w.WriteMarkers(9)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), false))
 	return nil
@@ -3590,6 +3656,9 @@ func (m ShopOrderProductHistoryHistory) SupplyID() core.Interface {
 func (m ShopOrderProductHistoryHistory) ProductID() core.Interface {
 	return core.Interface{m["product_id"]}
 }
+func (m ShopOrderProductHistoryHistory) CustomerPolicyGroupID() core.Interface {
+	return core.Interface{m["customer_policy_group_id"]}
+}
 func (m ShopOrderProductHistoryHistory) ProductQuantity() core.Interface {
 	return core.Interface{m["product_quantity"]}
 }
@@ -3601,31 +3670,32 @@ func (m ShopOrderProductHistoryHistory) UpdatedAt() core.Interface {
 }
 
 func (m *ShopOrderProductHistoryHistory) SQLScan(opts core.Opts, row *sql.Row) error {
-	data := make([]interface{}, 8)
-	args := make([]interface{}, 8)
-	for i := 0; i < 8; i++ {
+	data := make([]interface{}, 9)
+	args := make([]interface{}, 9)
+	for i := 0; i < 9; i++ {
 		args[i] = &data[i]
 	}
 	if err := row.Scan(args...); err != nil {
 		return err
 	}
-	res := make(ShopOrderProductHistoryHistory, 8)
+	res := make(ShopOrderProductHistoryHistory, 9)
 	res["user_id"] = data[0]
 	res["shop_id"] = data[1]
 	res["order_id"] = data[2]
 	res["supply_id"] = data[3]
 	res["product_id"] = data[4]
-	res["product_quantity"] = data[5]
-	res["created_at"] = data[6]
-	res["updated_at"] = data[7]
+	res["customer_policy_group_id"] = data[5]
+	res["product_quantity"] = data[6]
+	res["created_at"] = data[7]
+	res["updated_at"] = data[8]
 	*m = res
 	return nil
 }
 
 func (ms *ShopOrderProductHistoryHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	data := make([]interface{}, 8)
-	args := make([]interface{}, 8)
-	for i := 0; i < 8; i++ {
+	data := make([]interface{}, 9)
+	args := make([]interface{}, 9)
+	for i := 0; i < 9; i++ {
 		args[i] = &data[i]
 	}
 	res := make(ShopOrderProductHistoryHistories, 0, 128)
@@ -3639,9 +3709,242 @@ func (ms *ShopOrderProductHistoryHistories) SQLScan(opts core.Opts, rows *sql.Ro
 		m["order_id"] = data[2]
 		m["supply_id"] = data[3]
 		m["product_id"] = data[4]
-		m["product_quantity"] = data[5]
-		m["created_at"] = data[6]
-		m["updated_at"] = data[7]
+		m["customer_policy_group_id"] = data[5]
+		m["product_quantity"] = data[6]
+		m["created_at"] = data[7]
+		m["updated_at"] = data[8]
+		res = append(res, m)
+	}
+	if err := rows.Err(); err != nil {
+		return err
+	}
+	*ms = res
+	return nil
+}
+
+// Type CustomerPolicyGroup represents table customer_policy_group
+func sqlgenCustomerPolicyGroup(_ *CustomerPolicyGroup) bool { return true }
+
+type CustomerPolicyGroups []*CustomerPolicyGroup
+
+const __sqlCustomerPolicyGroup_Table = "customer_policy_group"
+const __sqlCustomerPolicyGroup_ListCols = "\"id\",\"supply_id\",\"name\",\"created_at\",\"updated_at\""
+const __sqlCustomerPolicyGroup_Insert = "INSERT INTO \"customer_policy_group\" (" + __sqlCustomerPolicyGroup_ListCols + ") VALUES"
+const __sqlCustomerPolicyGroup_Select = "SELECT " + __sqlCustomerPolicyGroup_ListCols + " FROM \"customer_policy_group\""
+const __sqlCustomerPolicyGroup_Select_history = "SELECT " + __sqlCustomerPolicyGroup_ListCols + " FROM history.\"customer_policy_group\""
+const __sqlCustomerPolicyGroup_UpdateAll = "UPDATE \"customer_policy_group\" SET (" + __sqlCustomerPolicyGroup_ListCols + ")"
+
+func (m *CustomerPolicyGroup) SQLTableName() string  { return "customer_policy_group" }
+func (m *CustomerPolicyGroups) SQLTableName() string { return "customer_policy_group" }
+func (m *CustomerPolicyGroup) SQLListCols() string   { return __sqlCustomerPolicyGroup_ListCols }
+
+func (m *CustomerPolicyGroup) SQLVerifySchema(db *cmsql.Database) {
+	query := "SELECT " + __sqlCustomerPolicyGroup_ListCols + " FROM \"customer_policy_group\" WHERE false"
+	if _, err := db.SQL(query).Exec(); err != nil {
+		db.RecordError(err)
+	}
+}
+
+func init() {
+	__sqlModels = append(__sqlModels, (*CustomerPolicyGroup)(nil))
+}
+
+func (m *CustomerPolicyGroup) SQLArgs(opts core.Opts, create bool) []interface{} {
+	now := time.Now()
+	return []interface{}{
+		core.Int64(m.ID),
+		core.Int64(m.SupplyID),
+		core.String(m.Name),
+		core.Now(m.CreatedAt, now, create),
+		core.Now(m.UpdatedAt, now, true),
+	}
+}
+
+func (m *CustomerPolicyGroup) SQLScanArgs(opts core.Opts) []interface{} {
+	return []interface{}{
+		(*core.Int64)(&m.ID),
+		(*core.Int64)(&m.SupplyID),
+		(*core.String)(&m.Name),
+		(*core.Time)(&m.CreatedAt),
+		(*core.Time)(&m.UpdatedAt),
+	}
+}
+
+func (m *CustomerPolicyGroup) SQLScan(opts core.Opts, row *sql.Row) error {
+	return row.Scan(m.SQLScanArgs(opts)...)
+}
+
+func (ms *CustomerPolicyGroups) SQLScan(opts core.Opts, rows *sql.Rows) error {
+	res := make(CustomerPolicyGroups, 0, 128)
+	for rows.Next() {
+		m := new(CustomerPolicyGroup)
+		args := m.SQLScanArgs(opts)
+		if err := rows.Scan(args...); err != nil {
+			return err
+		}
+		res = append(res, m)
+	}
+	if err := rows.Err(); err != nil {
+		return err
+	}
+	*ms = res
+	return nil
+}
+
+func (_ *CustomerPolicyGroup) SQLSelect(w SQLWriter) error {
+	w.WriteQueryString(__sqlCustomerPolicyGroup_Select)
+	return nil
+}
+
+func (_ *CustomerPolicyGroups) SQLSelect(w SQLWriter) error {
+	w.WriteQueryString(__sqlCustomerPolicyGroup_Select)
+	return nil
+}
+
+func (m *CustomerPolicyGroup) SQLInsert(w SQLWriter) error {
+	w.WriteQueryString(__sqlCustomerPolicyGroup_Insert)
+	w.WriteRawString(" (")
+	w.WriteMarkers(5)
+	w.WriteByte(')')
+	w.WriteArgs(m.SQLArgs(w.Opts(), true))
+	return nil
+}
+
+func (ms CustomerPolicyGroups) SQLInsert(w SQLWriter) error {
+	w.WriteQueryString(__sqlCustomerPolicyGroup_Insert)
+	w.WriteRawString(" (")
+	for i := 0; i < len(ms); i++ {
+		w.WriteMarkers(5)
+		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
+		w.WriteRawString("),(")
+	}
+	w.TrimLast(2)
+	return nil
+}
+
+func (m *CustomerPolicyGroup) SQLUpdate(w SQLWriter) error {
+	now, opts := time.Now(), w.Opts()
+	_, _ = now, opts // suppress unuse error
+	var flag bool
+	w.WriteRawString("UPDATE ")
+	w.WriteName("customer_policy_group")
+	w.WriteRawString(" SET ")
+	if m.ID != 0 {
+		flag = true
+		w.WriteName("id")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.ID)
+	}
+	if m.SupplyID != 0 {
+		flag = true
+		w.WriteName("supply_id")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.SupplyID)
+	}
+	if m.Name != "" {
+		flag = true
+		w.WriteName("name")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.Name)
+	}
+	if !m.CreatedAt.IsZero() {
+		flag = true
+		w.WriteName("created_at")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.CreatedAt)
+	}
+	if !m.UpdatedAt.IsZero() {
+		flag = true
+		w.WriteName("updated_at")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(core.Now(m.UpdatedAt, time.Now(), true))
+	}
+	if !flag {
+		return core.ErrNoColumn
+	}
+	w.TrimLast(1)
+	return nil
+}
+
+func (m *CustomerPolicyGroup) SQLUpdateAll(w SQLWriter) error {
+	w.WriteQueryString(__sqlCustomerPolicyGroup_UpdateAll)
+	w.WriteRawString(" = (")
+	w.WriteMarkers(5)
+	w.WriteByte(')')
+	w.WriteArgs(m.SQLArgs(w.Opts(), false))
+	return nil
+}
+
+type CustomerPolicyGroupHistory map[string]interface{}
+type CustomerPolicyGroupHistories []map[string]interface{}
+
+func (m *CustomerPolicyGroupHistory) SQLTableName() string { return "history.\"customer_policy_group\"" }
+func (m CustomerPolicyGroupHistories) SQLTableName() string {
+	return "history.\"customer_policy_group\""
+}
+
+func (m *CustomerPolicyGroupHistory) SQLSelect(w SQLWriter) error {
+	w.WriteQueryString(__sqlCustomerPolicyGroup_Select_history)
+	return nil
+}
+
+func (m CustomerPolicyGroupHistories) SQLSelect(w SQLWriter) error {
+	w.WriteQueryString(__sqlCustomerPolicyGroup_Select_history)
+	return nil
+}
+
+func (m CustomerPolicyGroupHistory) ID() core.Interface        { return core.Interface{m["id"]} }
+func (m CustomerPolicyGroupHistory) SupplyID() core.Interface  { return core.Interface{m["supply_id"]} }
+func (m CustomerPolicyGroupHistory) Name() core.Interface      { return core.Interface{m["name"]} }
+func (m CustomerPolicyGroupHistory) CreatedAt() core.Interface { return core.Interface{m["created_at"]} }
+func (m CustomerPolicyGroupHistory) UpdatedAt() core.Interface { return core.Interface{m["updated_at"]} }
+
+func (m *CustomerPolicyGroupHistory) SQLScan(opts core.Opts, row *sql.Row) error {
+	data := make([]interface{}, 5)
+	args := make([]interface{}, 5)
+	for i := 0; i < 5; i++ {
+		args[i] = &data[i]
+	}
+	if err := row.Scan(args...); err != nil {
+		return err
+	}
+	res := make(CustomerPolicyGroupHistory, 5)
+	res["id"] = data[0]
+	res["supply_id"] = data[1]
+	res["name"] = data[2]
+	res["created_at"] = data[3]
+	res["updated_at"] = data[4]
+	*m = res
+	return nil
+}
+
+func (ms *CustomerPolicyGroupHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
+	data := make([]interface{}, 5)
+	args := make([]interface{}, 5)
+	for i := 0; i < 5; i++ {
+		args[i] = &data[i]
+	}
+	res := make(CustomerPolicyGroupHistories, 0, 128)
+	for rows.Next() {
+		if err := rows.Scan(args...); err != nil {
+			return err
+		}
+		m := make(CustomerPolicyGroupHistory)
+		m["id"] = data[0]
+		m["supply_id"] = data[1]
+		m["name"] = data[2]
+		m["created_at"] = data[3]
+		m["updated_at"] = data[4]
 		res = append(res, m)
 	}
 	if err := rows.Err(); err != nil {

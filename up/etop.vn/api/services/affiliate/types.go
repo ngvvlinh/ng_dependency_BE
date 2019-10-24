@@ -81,6 +81,7 @@ type SupplyCommissionSetting struct {
 	MLevel1LimitDuration     *Duration
 	LifetimeDuration         int64
 	MLifetimeDuration        *Duration
+	Group                    string
 	CreatedAt                time.Time
 	UpdatedAt                time.Time
 }

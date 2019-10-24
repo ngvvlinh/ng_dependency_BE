@@ -79,6 +79,7 @@ type CreateOrUpdateSupplyCommissionSettingCommand struct {
 	Level1LimitDurationType  string
 	LifetimeDuration         int32
 	LifetimeDurationType     string
+	Group                    string
 
 	Result *SupplyCommissionSetting `json:"-"`
 }
@@ -367,6 +368,7 @@ func (q *CreateOrUpdateSupplyCommissionSettingCommand) GetArgs(ctx context.Conte
 			Level1LimitDurationType:  q.Level1LimitDurationType,
 			LifetimeDuration:         q.LifetimeDuration,
 			LifetimeDurationType:     q.LifetimeDurationType,
+			Group:                    q.Group,
 		}
 }
 
@@ -383,6 +385,7 @@ func (q *CreateOrUpdateSupplyCommissionSettingCommand) SetCreateOrUpdateSupplyCo
 	q.Level1LimitDurationType = args.Level1LimitDurationType
 	q.LifetimeDuration = args.LifetimeDuration
 	q.LifetimeDurationType = args.LifetimeDurationType
+	q.Group = args.Group
 }
 
 func (q *CreateOrUpdateUserReferralCommand) GetArgs(ctx context.Context) (_ context.Context, _ *CreateOrUpdateReferralArgs) {

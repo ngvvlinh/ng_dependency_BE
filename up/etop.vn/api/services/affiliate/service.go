@@ -43,6 +43,7 @@ type CreateOrUpdateSupplyCommissionSettingArgs struct {
 	Level1LimitDurationType  string
 	LifetimeDuration         int32
 	LifetimeDurationType     string
+	Group                    string
 }
 
 type CreateProductPromotionArgs struct {

@@ -177,6 +177,7 @@ func SupplyCommissionSetting(in *model.SupplyCommissionSetting) *affiliate.Suppl
 		MLevel1LimitDuration:     Duration(in.MLevel1LimitDuration),
 		LifetimeDuration:         in.LifetimeDuration,
 		MLifetimeDuration:        Duration(in.MLifetimeDuration),
+		Group:                    in.Group,
 		CreatedAt:                in.CreatedAt,
 		UpdatedAt:                in.UpdatedAt,
 	}

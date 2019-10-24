@@ -1645,6 +1645,44 @@ func (ft *SupplyCommissionSettingFilters) ByLifetimeDurationPtr(LifetimeDuration
 	}
 }
 
+func (ft *SupplyCommissionSettingFilters) ByCustomerPolicyGroupID(CustomerPolicyGroupID int64) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "customer_policy_group_id",
+		Value:  CustomerPolicyGroupID,
+		IsNil:  CustomerPolicyGroupID == 0,
+	}
+}
+
+func (ft *SupplyCommissionSettingFilters) ByCustomerPolicyGroupIDPtr(CustomerPolicyGroupID *int64) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "customer_policy_group_id",
+		Value:  CustomerPolicyGroupID,
+		IsNil:  CustomerPolicyGroupID == nil,
+		IsZero: CustomerPolicyGroupID != nil && (*CustomerPolicyGroupID) == 0,
+	}
+}
+
+func (ft *SupplyCommissionSettingFilters) ByGroup(Group string) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "group",
+		Value:  Group,
+		IsNil:  Group == "",
+	}
+}
+
+func (ft *SupplyCommissionSettingFilters) ByGroupPtr(Group *string) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "group",
+		Value:  Group,
+		IsNil:  Group == nil,
+		IsZero: Group != nil && (*Group) == "",
+	}
+}
+
 func (ft *SupplyCommissionSettingFilters) ByCreatedAt(CreatedAt time.Time) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
@@ -2186,6 +2224,44 @@ func (ft *OrderCommissionSettingFilters) ByLifetimeDurationPtr(LifetimeDuration 
 	}
 }
 
+func (ft *OrderCommissionSettingFilters) ByGroup(Group string) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "group",
+		Value:  Group,
+		IsNil:  Group == "",
+	}
+}
+
+func (ft *OrderCommissionSettingFilters) ByGroupPtr(Group *string) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "group",
+		Value:  Group,
+		IsNil:  Group == nil,
+		IsZero: Group != nil && (*Group) == "",
+	}
+}
+
+func (ft *OrderCommissionSettingFilters) ByCustomerPolicyGroupID(CustomerPolicyGroupID int64) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "customer_policy_group_id",
+		Value:  CustomerPolicyGroupID,
+		IsNil:  CustomerPolicyGroupID == 0,
+	}
+}
+
+func (ft *OrderCommissionSettingFilters) ByCustomerPolicyGroupIDPtr(CustomerPolicyGroupID *int64) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "customer_policy_group_id",
+		Value:  CustomerPolicyGroupID,
+		IsNil:  CustomerPolicyGroupID == nil,
+		IsZero: CustomerPolicyGroupID != nil && (*CustomerPolicyGroupID) == 0,
+	}
+}
+
 func (ft *OrderCommissionSettingFilters) ByCreatedAt(CreatedAt time.Time) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
@@ -2537,6 +2613,25 @@ func (ft *ShopOrderProductHistoryFilters) ByProductIDPtr(ProductID *int64) *sq.C
 	}
 }
 
+func (ft *ShopOrderProductHistoryFilters) ByCustomerPolicyGroupID(CustomerPolicyGroupID int64) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "customer_policy_group_id",
+		Value:  CustomerPolicyGroupID,
+		IsNil:  CustomerPolicyGroupID == 0,
+	}
+}
+
+func (ft *ShopOrderProductHistoryFilters) ByCustomerPolicyGroupIDPtr(CustomerPolicyGroupID *int64) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "customer_policy_group_id",
+		Value:  CustomerPolicyGroupID,
+		IsNil:  CustomerPolicyGroupID == nil,
+		IsZero: CustomerPolicyGroupID != nil && (*CustomerPolicyGroupID) == 0,
+	}
+}
+
 func (ft *ShopOrderProductHistoryFilters) ByProductQuantity(ProductQuantity int32) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
@@ -2585,6 +2680,115 @@ func (ft *ShopOrderProductHistoryFilters) ByUpdatedAt(UpdatedAt time.Time) *sq.C
 }
 
 func (ft *ShopOrderProductHistoryFilters) ByUpdatedAtPtr(UpdatedAt *time.Time) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "updated_at",
+		Value:  UpdatedAt,
+		IsNil:  UpdatedAt == nil,
+		IsZero: UpdatedAt != nil && (*UpdatedAt).IsZero(),
+	}
+}
+
+type CustomerPolicyGroupFilters struct{ prefix string }
+
+func NewCustomerPolicyGroupFilters(prefix string) CustomerPolicyGroupFilters {
+	return CustomerPolicyGroupFilters{prefix}
+}
+
+func (ft *CustomerPolicyGroupFilters) Filter(pred string, args ...interface{}) sq.WriterTo {
+	return sq.Filter(&ft.prefix, pred, args...)
+}
+
+func (ft CustomerPolicyGroupFilters) Prefix() string {
+	return ft.prefix
+}
+
+func (ft *CustomerPolicyGroupFilters) ByID(ID int64) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "id",
+		Value:  ID,
+		IsNil:  ID == 0,
+	}
+}
+
+func (ft *CustomerPolicyGroupFilters) ByIDPtr(ID *int64) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "id",
+		Value:  ID,
+		IsNil:  ID == nil,
+		IsZero: ID != nil && (*ID) == 0,
+	}
+}
+
+func (ft *CustomerPolicyGroupFilters) BySupplyID(SupplyID int64) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "supply_id",
+		Value:  SupplyID,
+		IsNil:  SupplyID == 0,
+	}
+}
+
+func (ft *CustomerPolicyGroupFilters) BySupplyIDPtr(SupplyID *int64) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "supply_id",
+		Value:  SupplyID,
+		IsNil:  SupplyID == nil,
+		IsZero: SupplyID != nil && (*SupplyID) == 0,
+	}
+}
+
+func (ft *CustomerPolicyGroupFilters) ByName(Name string) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "name",
+		Value:  Name,
+		IsNil:  Name == "",
+	}
+}
+
+func (ft *CustomerPolicyGroupFilters) ByNamePtr(Name *string) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "name",
+		Value:  Name,
+		IsNil:  Name == nil,
+		IsZero: Name != nil && (*Name) == "",
+	}
+}
+
+func (ft *CustomerPolicyGroupFilters) ByCreatedAt(CreatedAt time.Time) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "created_at",
+		Value:  CreatedAt,
+		IsNil:  CreatedAt.IsZero(),
+	}
+}
+
+func (ft *CustomerPolicyGroupFilters) ByCreatedAtPtr(CreatedAt *time.Time) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "created_at",
+		Value:  CreatedAt,
+		IsNil:  CreatedAt == nil,
+		IsZero: CreatedAt != nil && (*CreatedAt).IsZero(),
+	}
+}
+
+func (ft *CustomerPolicyGroupFilters) ByUpdatedAt(UpdatedAt time.Time) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "updated_at",
+		Value:  UpdatedAt,
+		IsNil:  UpdatedAt.IsZero(),
+	}
+}
+
+func (ft *CustomerPolicyGroupFilters) ByUpdatedAtPtr(UpdatedAt *time.Time) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "updated_at",

@@ -2,6 +2,7 @@ package api
 
 import (
 	"context"
+	"strings"
 
 	"etop.vn/api/main/catalog"
 	"etop.vn/api/main/identity"
@@ -164,6 +165,9 @@ func CreateOrUpdateTradingCommissionSetting(ctx context.Context, q *wrapaff.Crea
 		return cm.Errorf(cm.PermissionDenied, nil, "PermissionDenied")
 	}
 
+	q.DependOn = strings.ToLower(q.DependOn)
+	q.Group = strings.ToLower(q.Group)
+
 	cmd := &affiliate.CreateOrUpdateSupplyCommissionSettingCommand{
 		ShopID:                   q.Context.Shop.ID,
 		ProductID:                q.ProductId,
@@ -177,6 +181,7 @@ func CreateOrUpdateTradingCommissionSetting(ctx context.Context, q *wrapaff.Crea
 		Level1LimitDurationType:  q.Level1LimitDurationType,
 		LifetimeDuration:         q.LifetimeDuration,
 		LifetimeDurationType:     q.LifetimeDurationType,
+		Group:                    q.Group,
 	}
 
 	if err := affiliateCmd.Dispatch(ctx, cmd); err != nil {
