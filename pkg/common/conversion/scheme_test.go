@@ -1,4 +1,4 @@
-package scheme
+package conversion
 
 import (
 	"strconv"
@@ -36,6 +36,7 @@ func TestScheme(t *testing.T) {
 		*bs.(*[]*B) = outs
 		return nil
 	})
+	s.ready = true
 
 	t.Run("A to B", func(t *testing.T) {
 		var b B

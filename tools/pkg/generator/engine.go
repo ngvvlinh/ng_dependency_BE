@@ -144,7 +144,7 @@ func (ng *engine) GetObject(p Positioner) types.Object {
 }
 
 func (ng *engine) GetObjectByIdent(ident *ast.Ident) types.Object {
-	return ng.xinfo.GetDef(ident)
+	return ng.xinfo.GetObject(ident)
 }
 
 func (ng *engine) GetPackage(p Positioner) *packages.Package {

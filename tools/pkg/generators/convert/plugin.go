@@ -637,7 +637,7 @@ func generateConverts(
 		}
 	}
 	{
-		p.Import("scheme", "etop.vn/backend/pkg/common/scheme")
+		p.Import("conversion", "etop.vn/backend/pkg/common/conversion")
 		vars := map[string]interface{}{
 			"Conversions": conversions,
 		}

@@ -8,7 +8,7 @@ import (
 	catalog "etop.vn/api/main/catalog"
 	catalogtypes "etop.vn/api/main/catalog/types"
 	catalogmodel "etop.vn/backend/com/main/catalog/model"
-	scheme "etop.vn/backend/pkg/common/scheme"
+	conversion "etop.vn/backend/pkg/common/conversion"
 	etopmodel "etop.vn/backend/pkg/etop/model"
 )
 
@@ -47,11 +47,11 @@ Ignored functions:
     UpdateShopVariant            // not recognized
 */
 
-func init() {
-	registerConversionFunctions(scheme.Global)
+func RegisterConversions(s *conversion.Scheme) {
+	registerConversions(s)
 }
 
-func registerConversionFunctions(s *scheme.Scheme) {
+func registerConversions(s *conversion.Scheme) {
 	s.Register((*catalogmodel.ProductAttribute)(nil), (*catalogtypes.Attribute)(nil), func(arg, out interface{}) error {
 		Convert_catalogmodel_ProductAttribute_catalogtypes_Attribute(arg.(*catalogmodel.ProductAttribute), out.(*catalogtypes.Attribute))
 		return nil

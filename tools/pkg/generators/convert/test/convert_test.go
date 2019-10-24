@@ -6,8 +6,10 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"etop.vn/backend/pkg/common/scheme"
+	"etop.vn/backend/pkg/common/conversion"
 )
+
+var scheme = conversion.Build(RegisterConversions)
 
 func TestConvert(t *testing.T) {
 	t.Run("A to B", func(t *testing.T) {

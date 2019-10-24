@@ -4,14 +4,16 @@ import (
 	"context"
 
 	"etop.vn/api/shopping/vendoring"
+	"etop.vn/backend/com/shopping/vendoring/convert"
 	"etop.vn/backend/com/shopping/vendoring/model"
 	"etop.vn/backend/com/shopping/vendoring/sqlstore"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/cmsql"
-	"etop.vn/backend/pkg/common/scheme"
+	"etop.vn/backend/pkg/common/conversion"
 )
 
 var _ vendoring.Aggregate = &VendorAggregate{}
+var scheme = conversion.Build(convert.RegisterConversions)
 
 type VendorAggregate struct {
 	store sqlstore.VendorStoreFactory

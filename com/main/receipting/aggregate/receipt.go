@@ -9,10 +9,11 @@ import (
 	"etop.vn/backend/com/main/receipting/sqlstore"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/cmsql"
-	"etop.vn/backend/pkg/common/scheme"
+	"etop.vn/backend/pkg/common/conversion"
 )
 
 var _ receipting.Aggregate = &ReceiptAggregate{}
+var scheme = conversion.Build(convert.RegisterConversions)
 
 type ReceiptAggregate struct {
 	store sqlstore.ReceiptStoreFactory

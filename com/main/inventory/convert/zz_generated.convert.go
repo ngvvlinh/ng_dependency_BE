@@ -9,7 +9,7 @@ import (
 
 	inventory "etop.vn/api/main/inventory"
 	inventorymodel "etop.vn/backend/com/main/inventory/model"
-	scheme "etop.vn/backend/pkg/common/scheme"
+	conversion "etop.vn/backend/pkg/common/conversion"
 )
 
 /*
@@ -26,11 +26,11 @@ Ignored functions:
     InventoryVouchersFromModel    // params are not pointer to named types
 */
 
-func init() {
-	registerConversionFunctions(scheme.Global)
+func RegisterConversions(s *conversion.Scheme) {
+	registerConversions(s)
 }
 
-func registerConversionFunctions(s *scheme.Scheme) {
+func registerConversions(s *conversion.Scheme) {
 	s.Register((*inventorymodel.InventoryVariant)(nil), (*inventory.InventoryVariant)(nil), func(arg, out interface{}) error {
 		Convert_inventorymodel_InventoryVariant_inventory_InventoryVariant(arg.(*inventorymodel.InventoryVariant), out.(*inventory.InventoryVariant))
 		return nil

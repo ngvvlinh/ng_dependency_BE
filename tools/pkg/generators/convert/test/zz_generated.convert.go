@@ -5,7 +5,7 @@
 package test
 
 import (
-	scheme "etop.vn/backend/pkg/common/scheme"
+	conversion "etop.vn/backend/pkg/common/conversion"
 )
 
 /*
@@ -17,11 +17,11 @@ Custom conversions:
 Ignored functions: (none)
 */
 
-func init() {
-	registerConversionFunctions(scheme.Global)
+func RegisterConversions(s *conversion.Scheme) {
+	registerConversions(s)
 }
 
-func registerConversionFunctions(s *scheme.Scheme) {
+func registerConversions(s *conversion.Scheme) {
 	s.Register((*B)(nil), (*A)(nil), func(arg, out interface{}) error {
 		Convert_B_A(arg.(*B), out.(*A))
 		return nil

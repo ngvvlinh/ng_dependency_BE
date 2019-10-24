@@ -4,14 +4,16 @@ import (
 	"context"
 
 	"etop.vn/api/shopping/carrying"
+	"etop.vn/backend/com/shopping/carrying/convert"
 	"etop.vn/backend/com/shopping/carrying/model"
 	"etop.vn/backend/com/shopping/carrying/sqlstore"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/cmsql"
-	"etop.vn/backend/pkg/common/scheme"
+	"etop.vn/backend/pkg/common/conversion"
 )
 
 var _ carrying.Aggregate = &CarrierAggregate{}
+var scheme = conversion.Build(convert.RegisterConversions)
 
 type CarrierAggregate struct {
 	store sqlstore.CarrierStoreFactory

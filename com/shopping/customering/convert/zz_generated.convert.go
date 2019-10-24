@@ -11,7 +11,7 @@ import (
 	customering "etop.vn/api/shopping/customering"
 	tradering "etop.vn/api/shopping/tradering"
 	customeringmodel "etop.vn/backend/com/shopping/customering/model"
-	scheme "etop.vn/backend/pkg/common/scheme"
+	conversion "etop.vn/backend/pkg/common/conversion"
 )
 
 /*
@@ -30,11 +30,11 @@ Ignored functions:
     UpdateCustomerGroup    // not recognized
 */
 
-func init() {
-	registerConversionFunctions(scheme.Global)
+func RegisterConversions(s *conversion.Scheme) {
+	registerConversions(s)
 }
 
-func registerConversionFunctions(s *scheme.Scheme) {
+func registerConversions(s *conversion.Scheme) {
 	s.Register((*customeringmodel.ShopTraderAddress)(nil), (*addressing.ShopTraderAddress)(nil), func(arg, out interface{}) error {
 		Convert_customeringmodel_ShopTraderAddress_addressing_ShopTraderAddress(arg.(*customeringmodel.ShopTraderAddress), out.(*addressing.ShopTraderAddress))
 		return nil

@@ -9,7 +9,7 @@ import (
 
 	carrying "etop.vn/api/shopping/carrying"
 	carryingmodel "etop.vn/backend/com/shopping/carrying/model"
-	scheme "etop.vn/backend/pkg/common/scheme"
+	conversion "etop.vn/backend/pkg/common/conversion"
 )
 
 /*
@@ -20,11 +20,11 @@ Custom conversions:
 Ignored functions: (none)
 */
 
-func init() {
-	registerConversionFunctions(scheme.Global)
+func RegisterConversions(s *conversion.Scheme) {
+	registerConversions(s)
 }
 
-func registerConversionFunctions(s *scheme.Scheme) {
+func registerConversions(s *conversion.Scheme) {
 	s.Register((*carryingmodel.ShopCarrier)(nil), (*carrying.ShopCarrier)(nil), func(arg, out interface{}) error {
 		Convert_carryingmodel_ShopCarrier_carrying_ShopCarrier(arg.(*carryingmodel.ShopCarrier), out.(*carrying.ShopCarrier))
 		return nil

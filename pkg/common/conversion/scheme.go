@@ -1,16 +1,10 @@
-package scheme
+package conversion
 
 import (
 	"errors"
 	"fmt"
 	"reflect"
 )
-
-var Global = NewScheme()
-
-func Convert(arg, out interface{}) error {
-	return Global.Convert(arg, out)
-}
 
 type TypePair struct {
 	Slice bool
@@ -44,7 +38,7 @@ func (s *Scheme) Register(arg, out interface{}, fn ConversionFunc) {
 
 func (s *Scheme) Convert(arg, out interface{}) error {
 	if !s.ready {
-		s.ready = true
+		panic("not ready")
 	}
 	pair, err := getTypePair(arg, out)
 	if err != nil {

@@ -8,7 +8,6 @@ import (
 	"etop.vn/backend/com/shopping/customering/convert"
 	"etop.vn/backend/com/shopping/customering/model"
 	"etop.vn/backend/pkg/common/cmsql"
-	"etop.vn/backend/pkg/common/scheme"
 	"etop.vn/backend/pkg/common/sq"
 	"etop.vn/backend/pkg/common/sqlstore"
 )

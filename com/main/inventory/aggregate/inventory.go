@@ -12,10 +12,11 @@ import (
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/cmsql"
-	"etop.vn/backend/pkg/common/scheme"
+	"etop.vn/backend/pkg/common/conversion"
 )
 
 var _ inventory.Aggregate = &InventoryAggregate{}
+var scheme = conversion.Build(convert.RegisterConversions)
 
 const TypeIn = "in"
 const TypeOut = "out"

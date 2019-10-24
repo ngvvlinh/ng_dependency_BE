@@ -1,11 +1,11 @@
 package convert
 
 const tplRegisterText = `
-func init() {
-  registerConversionFunctions(scheme.Global)
+func RegisterConversions(s *conversion.Scheme) {
+    registerConversions(s)
 }
 
-func registerConversionFunctions(s *scheme.Scheme) {
+func registerConversions(s *conversion.Scheme) {
 {{range .Conversions -}}
     s.Register((*{{.ArgType}})(nil), (*{{.OutType}})(nil), func(arg, out interface{}) error {
         {{.Action}}_{{.ArgStr}}_{{.OutStr}}(arg.(*{{.ArgType}}), out.(*{{.OutType}}))

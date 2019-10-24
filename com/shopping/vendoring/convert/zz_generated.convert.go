@@ -9,7 +9,7 @@ import (
 
 	vendoring "etop.vn/api/shopping/vendoring"
 	vendoringmodel "etop.vn/backend/com/shopping/vendoring/model"
-	scheme "etop.vn/backend/pkg/common/scheme"
+	conversion "etop.vn/backend/pkg/common/conversion"
 )
 
 /*
@@ -20,11 +20,11 @@ Custom conversions:
 Ignored functions: (none)
 */
 
-func init() {
-	registerConversionFunctions(scheme.Global)
+func RegisterConversions(s *conversion.Scheme) {
+	registerConversions(s)
 }
 
-func registerConversionFunctions(s *scheme.Scheme) {
+func registerConversions(s *conversion.Scheme) {
 	s.Register((*vendoringmodel.ShopVendor)(nil), (*vendoring.ShopVendor)(nil), func(arg, out interface{}) error {
 		Convert_vendoringmodel_ShopVendor_vendoring_ShopVendor(arg.(*vendoringmodel.ShopVendor), out.(*vendoring.ShopVendor))
 		return nil

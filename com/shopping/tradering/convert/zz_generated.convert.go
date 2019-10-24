@@ -7,7 +7,7 @@ package convert
 import (
 	tradering "etop.vn/api/shopping/tradering"
 	traderingmodel "etop.vn/backend/com/shopping/tradering/model"
-	scheme "etop.vn/backend/pkg/common/scheme"
+	conversion "etop.vn/backend/pkg/common/conversion"
 )
 
 /*
@@ -16,11 +16,11 @@ Custom conversions: (none)
 Ignored functions: (none)
 */
 
-func init() {
-	registerConversionFunctions(scheme.Global)
+func RegisterConversions(s *conversion.Scheme) {
+	registerConversions(s)
 }
 
-func registerConversionFunctions(s *scheme.Scheme) {
+func registerConversions(s *conversion.Scheme) {
 	s.Register((*traderingmodel.ShopTrader)(nil), (*tradering.ShopTrader)(nil), func(arg, out interface{}) error {
 		Convert_traderingmodel_ShopTrader_tradering_ShopTrader(arg.(*traderingmodel.ShopTrader), out.(*tradering.ShopTrader))
 		return nil

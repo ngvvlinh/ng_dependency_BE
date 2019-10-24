@@ -140,12 +140,12 @@ func (x *extendedInfo) addFile(pkg *packages.Package, file *ast.File) error {
 	return nil
 }
 
-func (x *extendedInfo) GetDef(ident *ast.Ident) types.Object {
+func (x *extendedInfo) GetObject(ident *ast.Ident) types.Object {
 	decl := x.Declarations[ident]
 	if decl == nil {
 		return nil
 	}
-	return decl.Pkg.TypesInfo.Defs[ident]
+	return decl.Pkg.TypesInfo.ObjectOf(ident)
 }
 
 func (x *extendedInfo) GetComment(ident *ast.Ident) Comment {

@@ -9,7 +9,7 @@ import (
 
 	receipting "etop.vn/api/main/receipting"
 	receiptingmodel "etop.vn/backend/com/main/receipting/model"
-	scheme "etop.vn/backend/pkg/common/scheme"
+	conversion "etop.vn/backend/pkg/common/conversion"
 )
 
 /*
@@ -21,11 +21,11 @@ Custom conversions:
 Ignored functions: (none)
 */
 
-func init() {
-	registerConversionFunctions(scheme.Global)
+func RegisterConversions(s *conversion.Scheme) {
+	registerConversions(s)
 }
 
-func registerConversionFunctions(s *scheme.Scheme) {
+func registerConversions(s *conversion.Scheme) {
 	s.Register((*receiptingmodel.Receipt)(nil), (*receipting.Receipt)(nil), func(arg, out interface{}) error {
 		Convert_receiptingmodel_Receipt_receipting_Receipt(arg.(*receiptingmodel.Receipt), out.(*receipting.Receipt))
 		return nil

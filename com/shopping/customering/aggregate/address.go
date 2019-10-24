@@ -5,15 +5,17 @@ import (
 
 	"etop.vn/api/meta"
 	"etop.vn/api/shopping/addressing"
+	"etop.vn/backend/com/shopping/customering/convert"
 	"etop.vn/backend/com/shopping/customering/model"
 	"etop.vn/backend/com/shopping/customering/sqlstore"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/cmsql"
-	"etop.vn/backend/pkg/common/scheme"
+	"etop.vn/backend/pkg/common/conversion"
 )
 
 var _ addressing.Aggregate = &AddressAggregate{}
+var scheme = conversion.Build(convert.RegisterConversions)
 
 type AddressAggregate struct {
 	store sqlstore.AddressStoreFactory
