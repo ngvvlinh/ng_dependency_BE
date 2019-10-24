@@ -18,9 +18,7 @@ func NewAddressStore(db *cmsql.Database) AddressStoreFactory {
 	model.SQLVerifySchema(db)
 	return func(ctx context.Context) *AddressStore {
 		return &AddressStore{
-			query: func() cmsql.QueryInterface {
-				return cmsql.GetTxOrNewQuery(ctx, *db)
-			},
+			query: cmsql.NewQueryFactory(ctx, db),
 		}
 	}
 }
@@ -28,7 +26,7 @@ func NewAddressStore(db *cmsql.Database) AddressStoreFactory {
 type AddressStore struct {
 	ft ShopTraderAddressFilters
 
-	query func() cmsql.QueryInterface
+	query cmsql.QueryFactory
 	preds []interface{}
 
 	includeDeleted sqlstore.IncludeDeleted

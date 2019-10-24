@@ -18,9 +18,7 @@ func NewShopProductCollectionStore(db *cmsql.Database) ShopProductCollectionStor
 	model.SQLVerifySchema(db)
 	return func(ctx context.Context) *ShopProductCollectionStore {
 		return &ShopProductCollectionStore{
-			query: func() cmsql.QueryInterface {
-				return cmsql.GetTxOrNewQuery(ctx, *db)
-			},
+			query: cmsql.NewQueryFactory(ctx, db),
 		}
 	}
 }
@@ -30,7 +28,7 @@ type ShopProductCollectionStore struct {
 	ftShopcollection        ShopCollectionFilters
 	ftShopProduct           ShopProductFilters
 
-	query   func() cmsql.QueryInterface
+	query   cmsql.QueryFactory
 	preds   []interface{}
 	filters meta.Filters
 	paging  meta.Paging

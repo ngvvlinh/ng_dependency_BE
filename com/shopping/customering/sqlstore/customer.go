@@ -22,9 +22,7 @@ func NewCustomerStore(db *cmsql.Database) CustomerStoreFactory {
 	model.SQLVerifySchema(db)
 	return func(ctx context.Context) *CustomerStore {
 		return &CustomerStore{
-			query: func() cmsql.QueryInterface {
-				return cmsql.GetTxOrNewQuery(ctx, *db)
-			},
+			query: cmsql.NewQueryFactory(ctx, db),
 		}
 	}
 }
@@ -32,7 +30,7 @@ func NewCustomerStore(db *cmsql.Database) CustomerStoreFactory {
 type CustomerStore struct {
 	ft ShopCustomerFilters
 
-	query   func() cmsql.QueryInterface
+	query   cmsql.QueryFactory
 	preds   []interface{}
 	filters meta.Filters
 	paging  meta.Paging

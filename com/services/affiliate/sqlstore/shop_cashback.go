@@ -15,15 +15,13 @@ func NewShopCashbackStore(db *cmsql.Database) ShopCashbackStoreFactory {
 	model.SQLVerifySchema(db)
 	return func(ctx context.Context) *ShopCashbackStore {
 		return &ShopCashbackStore{
-			query: func() cmsql.QueryInterface {
-				return cmsql.GetTxOrNewQuery(ctx, *db)
-			},
+			query: cmsql.NewQueryFactory(ctx, db),
 		}
 	}
 }
 
 type ShopCashbackStore struct {
-	query func() cmsql.QueryInterface
+	query cmsql.QueryFactory
 	preds []interface{}
 
 	ft ShopCashbackFilters

@@ -23,15 +23,13 @@ func NewSupplyCommissionSettingStore(db *cmsql.Database) SupplyCommissionSetting
 	model.SQLVerifySchema(db)
 	return func(ctx context.Context) *SupplyCommissionSettingStore {
 		return &SupplyCommissionSettingStore{
-			query: func() cmsql.QueryInterface {
-				return cmsql.GetTxOrNewQuery(ctx, *db)
-			},
+			query: cmsql.NewQueryFactory(ctx, db),
 		}
 	}
 }
 
 type SupplyCommissionSettingStore struct {
-	query func() cmsql.QueryInterface
+	query cmsql.QueryFactory
 	preds []interface{}
 
 	ft SupplyCommissionSettingFilters

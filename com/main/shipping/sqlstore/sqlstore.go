@@ -14,9 +14,7 @@ func NewFulfillmentStore(db *cmsql.Database) FulfillmentStoreFactory {
 	model.SQLVerifySchema(db)
 	return func(ctx context.Context) *FulfillmentStore {
 		return &FulfillmentStore{
-			query: func() cmsql.QueryInterface {
-				return cmsql.GetTxOrNewQuery(ctx, *db)
-			},
+			query: cmsql.NewQueryFactory(ctx, db),
 		}
 	}
 }
@@ -24,7 +22,7 @@ func NewFulfillmentStore(db *cmsql.Database) FulfillmentStoreFactory {
 type FulfillmentStore struct {
 	ft FulfillmentFilters
 
-	query func() cmsql.QueryInterface
+	query cmsql.QueryFactory
 	preds []interface{}
 
 	includeDeleted bool

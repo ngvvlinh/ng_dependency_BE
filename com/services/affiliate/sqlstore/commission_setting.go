@@ -17,15 +17,13 @@ func NewCommissionSettingStore(db *cmsql.Database) CommissionSettingStoreFactory
 	model.SQLVerifySchema(db)
 	return func(ctx context.Context) *AffiliateCommissonStore {
 		return &AffiliateCommissonStore{
-			query: func() cmsql.QueryInterface {
-				return cmsql.GetTxOrNewQuery(ctx, *db)
-			},
+			query: cmsql.NewQueryFactory(ctx, db),
 		}
 	}
 }
 
 type AffiliateCommissonStore struct {
-	query func() cmsql.QueryInterface
+	query cmsql.QueryFactory
 	ft    CommissionSettingFilters
 	preds []interface{}
 }

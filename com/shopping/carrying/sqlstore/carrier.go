@@ -22,9 +22,7 @@ func NewCarrierStore(db *cmsql.Database) CarrierStoreFactory {
 	model.SQLVerifySchema(db)
 	return func(ctx context.Context) *CarrierStore {
 		return &CarrierStore{
-			query: func() cmsql.QueryInterface {
-				return cmsql.GetTxOrNewQuery(ctx, *db)
-			},
+			query: cmsql.NewQueryFactory(ctx, db),
 		}
 	}
 }
@@ -32,7 +30,7 @@ func NewCarrierStore(db *cmsql.Database) CarrierStoreFactory {
 type CarrierStore struct {
 	ft ShopCarrierFilters
 
-	query   func() cmsql.QueryInterface
+	query   cmsql.QueryFactory
 	preds   []interface{}
 	filters meta.Filters
 	paging  meta.Paging

@@ -21,15 +21,13 @@ func NewSellerCommissionSettingStore(db *cmsql.Database) SellerCommissionStoreFa
 	model.SQLVerifySchema(db)
 	return func(ctx context.Context) *SellerCommissionStore {
 		return &SellerCommissionStore{
-			query: func() cmsql.QueryInterface {
-				return cmsql.GetTxOrNewQuery(ctx, *db)
-			},
+			query: cmsql.NewQueryFactory(ctx, db),
 		}
 	}
 }
 
 type SellerCommissionStore struct {
-	query func() cmsql.QueryInterface
+	query cmsql.QueryFactory
 	preds []interface{}
 
 	ft SellerCommissionFilters

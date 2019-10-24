@@ -26,15 +26,13 @@ func NewShipnowStore(db *cmsql.Database) ShipnowStoreFactory {
 	model.SQLVerifySchema(db)
 	return func(ctx context.Context) *ShipnowStore {
 		return &ShipnowStore{
-			query: func() cmsql.QueryInterface {
-				return cmsql.GetTxOrNewQuery(ctx, *db)
-			},
+			query: cmsql.NewQueryFactory(ctx, db),
 		}
 	}
 }
 
 type ShipnowStore struct {
-	query   func() cmsql.QueryInterface
+	query   cmsql.QueryFactory
 	ft      ShipnowFulfillmentFilters
 	preds   []interface{}
 	filters []meta.Filter

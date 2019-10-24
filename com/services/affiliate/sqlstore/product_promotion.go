@@ -24,15 +24,13 @@ func NewProductPromotionStore(db *cmsql.Database) ProductPromotionStoreFactory {
 	model.SQLVerifySchema(db)
 	return func(ctx context.Context) *ProductPromotionStore {
 		return &ProductPromotionStore{
-			query: func() cmsql.QueryInterface {
-				return cmsql.GetTxOrNewQuery(ctx, *db)
-			},
+			query: cmsql.NewQueryFactory(ctx, db),
 		}
 	}
 }
 
 type ProductPromotionStore struct {
-	query func() cmsql.QueryInterface
+	query cmsql.QueryFactory
 	preds []interface{}
 
 	ft ProductPromotionFilters

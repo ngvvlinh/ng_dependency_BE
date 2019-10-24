@@ -19,15 +19,13 @@ func NewUserReferralStore(db *cmsql.Database) UserReferralStoreFactory {
 	model.SQLVerifySchema(db)
 	return func(ctx context.Context) *UserReferralStore {
 		return &UserReferralStore{
-			query: func() cmsql.QueryInterface {
-				return cmsql.GetTxOrNewQuery(ctx, *db)
-			},
+			query: cmsql.NewQueryFactory(ctx, db),
 		}
 	}
 }
 
 type UserReferralStore struct {
-	query func() cmsql.QueryInterface
+	query cmsql.QueryFactory
 	preds []interface{}
 
 	ft UserReferralFilters

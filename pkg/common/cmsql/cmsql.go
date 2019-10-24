@@ -157,8 +157,8 @@ func (d *Dialer) DialTimeout(network, address string, timeout time.Duration) (ne
 // Database ...
 type Database struct {
 	id   int64
-	db   *sq.Database
-	dlog *sq.DynamicLogger
+	db   sq.Database
+	dlog sq.DynamicLogger
 	errs []error
 }
 
@@ -218,7 +218,7 @@ func Connect(c ConfigPostgres) (*Database, error) {
 	db.DB().SetMaxIdleConns(c.MaxIdleConns)
 
 	mu.Lock()
-	database := &Database{id: cm.NewID(), db: db, dlog: dlog}
+	database := &Database{id: cm.NewID(), db: *db, dlog: *dlog}
 	dbPool[identifier] = database
 	defer mu.Unlock()
 	return database, nil
@@ -230,7 +230,7 @@ func (db Database) TxKey() TxKey {
 
 // DB ...
 func (db Database) DB() *sq.Database {
-	return db.db
+	return &db.db
 }
 
 func (db Database) Opts() core.Opts {
@@ -445,14 +445,6 @@ func (db Database) InTransaction(ctx context.Context, callback func(QueryInterfa
 		ctx2.ResetValue(txKey)
 	}()
 	return callback(tx)
-}
-
-func GetTxOrNewQuery(ctx context.Context, db Database) QueryInterface {
-	tx := ctx.Value(db.TxKey())
-	if tx == nil {
-		return db.WithContext(ctx)
-	}
-	return tx.(Tx)
 }
 
 func DefaultListenerProblemReport(ev pq.ListenerEventType, err error) {

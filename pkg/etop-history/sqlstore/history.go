@@ -10,15 +10,13 @@ import (
 type HistoryStoreFactory func(context.Context) *HistoryStore
 
 type HistoryStore struct {
-	query func() cmsql.QueryInterface
+	query cmsql.QueryFactory
 }
 
 func NewHistoryStore(db *cmsql.Database) HistoryStoreFactory {
 	return func(ctx context.Context) *HistoryStore {
 		return &HistoryStore{
-			query: func() cmsql.QueryInterface {
-				return cmsql.GetTxOrNewQuery(ctx, *db)
-			},
+			query: cmsql.NewQueryFactory(ctx, db),
 		}
 	}
 }

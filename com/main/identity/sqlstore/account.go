@@ -20,15 +20,13 @@ func NewAccountStore(db *cmsql.Database) AccountStoreFactory {
 	model.SQLVerifySchema(db)
 	return func(ctx context.Context) *AccountStore {
 		return &AccountStore{
-			query: func() cmsql.QueryInterface {
-				return cmsql.GetTxOrNewQuery(ctx, *db)
-			},
+			query: cmsql.NewQueryFactory(ctx, db),
 		}
 	}
 }
 
 type AccountStore struct {
-	query       func() cmsql.QueryInterface
+	query       cmsql.QueryFactory
 	preds       []interface{}
 	shopFt      sqlstore.ShopFilters
 	affiliateFt AffiliateFilters

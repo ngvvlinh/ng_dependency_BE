@@ -13,7 +13,7 @@ import (
 type VhtCallHistoriesFactory func(context.Context) *VhtCallHistoryStore
 
 type VhtCallHistoryStore struct {
-	query   func() cmsql.QueryInterface
+	query   cmsql.QueryFactory
 	preds   []interface{}
 	ft      VhtCallHistoryFilters
 	paging  meta.Paging
@@ -23,9 +23,7 @@ type VhtCallHistoryStore struct {
 func NewVhtCallHistoryStore(db *cmsql.Database) VhtCallHistoriesFactory {
 	return func(ctx context.Context) *VhtCallHistoryStore {
 		return &VhtCallHistoryStore{
-			query: func() cmsql.QueryInterface {
-				return cmsql.GetTxOrNewQuery(ctx, *db)
-			},
+			query: cmsql.NewQueryFactory(ctx, db),
 		}
 	}
 }

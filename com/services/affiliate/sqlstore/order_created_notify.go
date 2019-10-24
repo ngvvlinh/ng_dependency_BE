@@ -16,15 +16,13 @@ func NewOrderCreatedNotifyStore(db *cmsql.Database) OrderCreatedNotifyStoreFacto
 	model.SQLVerifySchema(db)
 	return func(ctx context.Context) *OrderCreatedNotifyStore {
 		return &OrderCreatedNotifyStore{
-			query: func() cmsql.QueryInterface {
-				return cmsql.GetTxOrNewQuery(ctx, *db)
-			},
+			query: cmsql.NewQueryFactory(ctx, db),
 		}
 	}
 }
 
 type OrderCreatedNotifyStore struct {
-	query func() cmsql.QueryInterface
+	query cmsql.QueryFactory
 	preds []interface{}
 
 	ft OrderCreatedNotifyFilters

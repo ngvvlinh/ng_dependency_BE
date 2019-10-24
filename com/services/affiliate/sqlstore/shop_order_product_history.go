@@ -15,9 +15,7 @@ func NewShopOrderProductHistoryStore(db *cmsql.Database) ShopOrderProductHistory
 	model.SQLVerifySchema(db)
 	return func(ctx context.Context) *ShopOrderProductHistoryStore {
 		return &ShopOrderProductHistoryStore{
-			query: func() cmsql.QueryInterface {
-				return cmsql.GetTxOrNewQuery(ctx, *db)
-			},
+			query: cmsql.NewQueryFactory(ctx, db),
 		}
 	}
 }
@@ -25,7 +23,7 @@ func NewShopOrderProductHistoryStore(db *cmsql.Database) ShopOrderProductHistory
 type ShopOrderProductHistoryStoreFactory func(ctx context.Context) *ShopOrderProductHistoryStore
 
 type ShopOrderProductHistoryStore struct {
-	query func() cmsql.QueryInterface
+	query cmsql.QueryFactory
 	preds []interface{}
 
 	ft ShopOrderProductHistoryFilters

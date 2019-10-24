@@ -20,15 +20,13 @@ func NewAffiliateReferralCodeStore(db *cmsql.Database) AffiliateReferralCodeStor
 	model.SQLVerifySchema(db)
 	return func(ctx context.Context) *AffiliateReferralCodeStore {
 		return &AffiliateReferralCodeStore{
-			query: func() cmsql.QueryInterface {
-				return cmsql.GetTxOrNewQuery(ctx, *db)
-			},
+			query: cmsql.NewQueryFactory(ctx, db),
 		}
 	}
 }
 
 type AffiliateReferralCodeStore struct {
-	query func() cmsql.QueryInterface
+	query cmsql.QueryFactory
 	preds []interface{}
 
 	ft AffiliateReferralCodeFilters

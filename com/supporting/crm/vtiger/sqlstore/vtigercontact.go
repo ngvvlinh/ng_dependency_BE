@@ -14,7 +14,7 @@ import (
 type VtigerContactStoreFactory func(context.Context) *VtigerContactStore
 
 type VtigerContactStore struct {
-	query   func() cmsql.QueryInterface
+	query   cmsql.QueryFactory
 	preds   []interface{}
 	ft      VtigerContactFilters
 	paging  meta.Paging
@@ -24,9 +24,7 @@ type VtigerContactStore struct {
 func NewVtigerStore(db *cmsql.Database) VtigerContactStoreFactory {
 	return func(ctx context.Context) *VtigerContactStore {
 		return &VtigerContactStore{
-			query: func() cmsql.QueryInterface {
-				return cmsql.GetTxOrNewQuery(ctx, *db)
-			},
+			query: cmsql.NewQueryFactory(ctx, db),
 		}
 	}
 }

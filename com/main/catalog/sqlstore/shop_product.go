@@ -21,9 +21,7 @@ func NewShopProductStore(db *cmsql.Database) ShopProductStoreFactory {
 	model.SQLVerifySchema(db)
 	return func(ctx context.Context) *ShopProductStore {
 		return &ShopProductStore{
-			query: func() cmsql.QueryInterface {
-				return cmsql.GetTxOrNewQuery(ctx, *db)
-			},
+			query:       cmsql.NewQueryFactory(ctx, db),
 			shopVariant: NewShopVariantStore(db)(ctx),
 		}
 	}
@@ -33,7 +31,7 @@ type ShopProductStore struct {
 	FtShopProduct ShopProductFilters
 	shopVariant   *ShopVariantStore
 
-	query   func() cmsql.QueryInterface
+	query   cmsql.QueryFactory
 	preds   []interface{}
 	filters meta.Filters
 	paging  meta.Paging

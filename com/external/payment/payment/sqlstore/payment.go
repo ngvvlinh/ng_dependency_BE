@@ -18,15 +18,13 @@ func NewPaymentStore(db *cmsql.Database) PaymentStoreFactory {
 	model.SQLVerifySchema(db)
 	return func(ctx context.Context) *PaymentStore {
 		return &PaymentStore{
-			query: func() cmsql.QueryInterface {
-				return cmsql.GetTxOrNewQuery(ctx, *db)
-			},
+			query: cmsql.NewQueryFactory(ctx, db),
 		}
 	}
 }
 
 type PaymentStore struct {
-	query func() cmsql.QueryInterface
+	query cmsql.QueryFactory
 	ft    PaymentFilters
 	preds []interface{}
 }

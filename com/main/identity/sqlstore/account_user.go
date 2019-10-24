@@ -17,15 +17,13 @@ func NewAccoutnUserStore(db *cmsql.Database) AccountUserStoreFactory {
 	model.SQLVerifySchema(db)
 	return func(ctx context.Context) *AccountUserStore {
 		return &AccountUserStore{
-			query: func() cmsql.QueryInterface {
-				return cmsql.GetTxOrNewQuery(ctx, *db)
-			},
+			query: cmsql.NewQueryFactory(ctx, db),
 		}
 	}
 }
 
 type AccountUserStore struct {
-	query func() cmsql.QueryInterface
+	query cmsql.QueryFactory
 	preds []interface{}
 	ft    sqlstore.AccountUserFilters
 }

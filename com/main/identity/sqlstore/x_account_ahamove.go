@@ -19,15 +19,13 @@ func NewXAccountAhamoveStore(db *cmsql.Database) XAccountAhamoveStoreFactory {
 	model.SQLVerifySchema(db)
 	return func(ctx context.Context) *XAccountAhamoveStore {
 		return &XAccountAhamoveStore{
-			query: func() cmsql.QueryInterface {
-				return cmsql.GetTxOrNewQuery(ctx, *db)
-			},
+			query: cmsql.NewQueryFactory(ctx, db),
 		}
 	}
 }
 
 type XAccountAhamoveStore struct {
-	query func() cmsql.QueryInterface
+	query cmsql.QueryFactory
 	ft    ExternalAccountAhamoveFilters
 	preds []interface{}
 }

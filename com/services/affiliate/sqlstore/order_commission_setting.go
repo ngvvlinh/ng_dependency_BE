@@ -14,9 +14,7 @@ func NewOrderCommissionSettingStoreFactory(db *cmsql.Database) OrderCommissionSe
 	model.SQLVerifySchema(db)
 	return func(ctx context.Context) *OrderCommissionSettingStore {
 		return &OrderCommissionSettingStore{
-			query: func() cmsql.QueryInterface {
-				return cmsql.GetTxOrNewQuery(ctx, *db)
-			},
+			query: cmsql.NewQueryFactory(ctx, db),
 		}
 	}
 }
@@ -24,7 +22,7 @@ func NewOrderCommissionSettingStoreFactory(db *cmsql.Database) OrderCommissionSe
 type OrderCommissionSettingStoreFactory func(ctx context.Context) *OrderCommissionSettingStore
 
 type OrderCommissionSettingStore struct {
-	query func() cmsql.QueryInterface
+	query cmsql.QueryFactory
 	preds []interface{}
 
 	ft OrderCommissionSettingFilters

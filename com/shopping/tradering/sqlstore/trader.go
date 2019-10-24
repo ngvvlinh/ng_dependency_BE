@@ -18,9 +18,7 @@ func NewTraderStore(db *cmsql.Database) TraderStoreFactory {
 	model.SQLVerifySchema(db)
 	return func(ctx context.Context) *TraderStore {
 		return &TraderStore{
-			query: func() cmsql.QueryInterface {
-				return cmsql.GetTxOrNewQuery(ctx, *db)
-			},
+			query: cmsql.NewQueryFactory(ctx, db),
 		}
 	}
 }
@@ -28,7 +26,7 @@ func NewTraderStore(db *cmsql.Database) TraderStoreFactory {
 type TraderStore struct {
 	ft ShopTraderFilters
 
-	query   func() cmsql.QueryInterface
+	query   cmsql.QueryFactory
 	preds   []interface{}
 	filters meta.Filters
 	paging  meta.Paging

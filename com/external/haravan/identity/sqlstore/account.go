@@ -18,15 +18,13 @@ func NewXAccountHaravanStore(db *cmsql.Database) XAccountHaravanStoreFactory {
 	identitymodel.SQLVerifySchema(db)
 	return func(ctx context.Context) *XAccountHaravanStore {
 		return &XAccountHaravanStore{
-			query: func() cmsql.QueryInterface {
-				return cmsql.GetTxOrNewQuery(ctx, *db)
-			},
+			query: cmsql.NewQueryFactory(ctx, db),
 		}
 	}
 }
 
 type XAccountHaravanStore struct {
-	query func() cmsql.QueryInterface
+	query cmsql.QueryFactory
 	ft    ExternalAccountHaravanFilters
 	preds []interface{}
 }

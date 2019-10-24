@@ -333,7 +333,7 @@ func (db Database) IsNull(column string, null bool) Query {
 
 // InOrEqIDs ...
 func (db Database) InOrEqIDs(column string, ids []int64) Query {
-	return inOrEqIDs(db.db, column, ids)
+	return inOrEqIDs(&db.db, column, ids)
 }
 
 func (db Database) Preload(table string, preds ...interface{}) Query {

@@ -24,15 +24,13 @@ func NewInventoryStore(db *cmsql.Database) InventoryFactory {
 	model.SQLVerifySchema(db)
 	return func(ctx context.Context) *InventoryStore {
 		return &InventoryStore{
-			query: func() cmsql.QueryInterface {
-				return cmsql.GetTxOrNewQuery(ctx, *db)
-			},
+			query: cmsql.NewQueryFactory(ctx, db),
 		}
 	}
 }
 
 type InventoryStore struct {
-	query  func() cmsql.QueryInterface
+	query  cmsql.QueryFactory
 	ft     InventoryVariantFilters
 	paging *cm.Paging
 	preds  []interface{}

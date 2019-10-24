@@ -18,9 +18,7 @@ func NewCustomerGroupStore(db *cmsql.Database) CustomerGroupStoreFactory {
 	model.SQLVerifySchema(db)
 	return func(ctx context.Context) *CustomerGroupStore {
 		return &CustomerGroupStore{
-			query: func() cmsql.QueryInterface {
-				return cmsql.GetTxOrNewQuery(ctx, *db)
-			},
+			query: cmsql.NewQueryFactory(ctx, db),
 		}
 	}
 }
@@ -28,7 +26,7 @@ func NewCustomerGroupStore(db *cmsql.Database) CustomerGroupStoreFactory {
 type CustomerGroupStore struct {
 	ft ShopCustomerGroupFilters
 
-	query   func() cmsql.QueryInterface
+	query   cmsql.QueryFactory
 	preds   []interface{}
 	filters meta.Filters
 	paging  meta.Paging

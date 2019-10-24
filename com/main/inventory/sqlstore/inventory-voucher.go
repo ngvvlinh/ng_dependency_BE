@@ -20,15 +20,13 @@ func NewInventoryVoucherStore(db *cmsql.Database) InventoryVoucherFactory {
 	model.SQLVerifySchema(db)
 	return func(ctx context.Context) *InventoryVoucherStore {
 		return &InventoryVoucherStore{
-			query: func() cmsql.QueryInterface {
-				return cmsql.GetTxOrNewQuery(ctx, *db)
-			},
+			query: cmsql.NewQueryFactory(ctx, db),
 		}
 	}
 }
 
 type InventoryVoucherStore struct {
-	query  func() cmsql.QueryInterface
+	query  cmsql.QueryFactory
 	ft     InventoryVoucherFilters
 	preds  []interface{}
 	paging *cm.Paging

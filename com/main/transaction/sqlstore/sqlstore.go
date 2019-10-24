@@ -21,15 +21,13 @@ func NewTransactionStore(db *cmsql.Database) TransactionStoreFactory {
 	transactionmodel.SQLVerifySchema(db)
 	return func(ctx context.Context) *TransactionStore {
 		return &TransactionStore{
-			query: func() cmsql.QueryInterface {
-				return cmsql.GetTxOrNewQuery(ctx, *db)
-			},
+			query: cmsql.NewQueryFactory(ctx, db),
 		}
 	}
 }
 
 type TransactionStore struct {
-	query  func() cmsql.QueryInterface
+	query  cmsql.QueryFactory
 	preds  []interface{}
 	ft     TransactionFilters
 	paging meta.Paging

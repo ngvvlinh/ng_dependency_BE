@@ -20,9 +20,7 @@ func NewOrderStore(db *cmsql.Database) OrderStoreFactory {
 	model.SQLVerifySchema(db)
 	return func(ctx context.Context) *OrderStore {
 		return &OrderStore{
-			query: func() cmsql.QueryInterface {
-				return cmsql.GetTxOrNewQuery(ctx, *db)
-			},
+			query: cmsql.NewQueryFactory(ctx, db),
 		}
 	}
 }
@@ -30,7 +28,7 @@ func NewOrderStore(db *cmsql.Database) OrderStoreFactory {
 type M map[string]interface{}
 
 type OrderStore struct {
-	query func() cmsql.QueryInterface
+	query cmsql.QueryFactory
 	ft    OrderFilters
 	preds []interface{}
 }

@@ -13,15 +13,13 @@ type PaymentLogStoreFactory func(context.Context) *PaymentLogStore
 func NewPaymentLogStore(db *cmsql.Database) PaymentLogStoreFactory {
 	return func(ctx context.Context) *PaymentLogStore {
 		return &PaymentLogStore{
-			query: func() cmsql.QueryInterface {
-				return cmsql.GetTxOrNewQuery(ctx, *db)
-			},
+			query: cmsql.NewQueryFactory(ctx, db),
 		}
 	}
 }
 
 type PaymentLogStore struct {
-	query func() cmsql.QueryInterface
+	query cmsql.QueryFactory
 	ft    PaymentFilters
 }
 
