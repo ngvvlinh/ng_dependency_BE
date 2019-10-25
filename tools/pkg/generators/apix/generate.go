@@ -17,14 +17,10 @@ var funcs = map[string]interface{}{
 func (p *plugin) generateServices(printer generator.Printer, services []*Service) error {
 	currentPrinter = printer
 	printer.Import("context", "context")
-	printer.Import("bytes", "bytes")
-	printer.Import("jsonpb", "github.com/golang/protobuf/jsonpb")
-	printer.Import("twirp", "github.com/twitchtv/twirp")
-	printer.Import("json", "encoding/json")
 	printer.Import("fmt", "fmt")
 	printer.Import("http", "net/http")
-	printer.Import("strconv", "strconv")
-	printer.Import("strings", "strings")
+	printer.Import("proto", "github.com/golang/protobuf/proto")
+	printer.Import("httprpc", "etop.vn/backend/pkg/common/httprpc")
 	vars := map[string]interface{}{
 		"Services": services,
 	}
