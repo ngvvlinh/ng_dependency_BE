@@ -12,17 +12,21 @@ import (
 	wrapadmin "etop.vn/backend/wrapper/etop/sadmin"
 )
 
+var s = &Service{}
+
 func init() {
-	bus.AddHandler("api", VersionInfo)
-	bus.AddHandler("api", CreateUser)
-	bus.AddHandler("api", ResetPassword)
-	bus.AddHandler("api", LoginAsAccount)
+	bus.AddHandler("api", s.VersionInfo)
+	bus.AddHandler("api", s.CreateUser)
+	bus.AddHandler("api", s.ResetPassword)
+	bus.AddHandler("api", s.LoginAsAccount)
 
 	bus.Expect(&model.UpdateRoleCommand{})
 	bus.Expect(&model.SetPasswordCommand{})
 }
 
-func VersionInfo(ctx context.Context, q *wrapadmin.VersionInfoEndpoint) error {
+type Service struct{}
+
+func (s *Service) VersionInfo(ctx context.Context, q *wrapadmin.VersionInfoEndpoint) error {
 	q.Result = &pbcm.VersionInfoResponse{
 		Service: "etop.SuperAdmin",
 		Version: "0.1",
@@ -30,7 +34,7 @@ func VersionInfo(ctx context.Context, q *wrapadmin.VersionInfoEndpoint) error {
 	return nil
 }
 
-func CreateUser(ctx context.Context, r *wrapadmin.CreateUserEndpoint) error {
+func (s *Service) CreateUser(ctx context.Context, r *wrapadmin.CreateUserEndpoint) error {
 	r2 := &wrapetop.RegisterEndpoint{
 		CreateUserRequest: r.Info,
 	}
@@ -58,7 +62,7 @@ func CreateUser(ctx context.Context, r *wrapadmin.CreateUserEndpoint) error {
 	return nil
 }
 
-func ResetPassword(ctx context.Context, r *wrapadmin.ResetPasswordEndpoint) error {
+func (s *Service) ResetPassword(ctx context.Context, r *wrapadmin.ResetPasswordEndpoint) error {
 	if len(r.Password) < 8 {
 		return cm.Error(cm.InvalidArgument, "Mật khẩu phải có ít nhất 8 ký tự", nil)
 	}
@@ -78,7 +82,7 @@ func ResetPassword(ctx context.Context, r *wrapadmin.ResetPasswordEndpoint) erro
 	return nil
 }
 
-func LoginAsAccount(ctx context.Context, r *wrapadmin.LoginAsAccountEndpoint) error {
+func (s *Service) LoginAsAccount(ctx context.Context, r *wrapadmin.LoginAsAccountEndpoint) error {
 	resp, err := api.CreateLoginResponse(ctx, nil, "", r.UserId, nil, r.AccountId, 0, true, 0)
 	r.Result = resp
 	return err

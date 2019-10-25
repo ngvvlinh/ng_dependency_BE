@@ -17,16 +17,16 @@ import (
 
 func init() {
 	bus.AddHandlers("api",
-		AnswerInvitation,
-		GetUsersInCurrentAccounts,
-		InviteUserToAccount,
-		LeaveAccount,
-		RemoveUserFromCurrentAccount,
+		s.AnswerInvitation,
+		s.GetUsersInCurrentAccounts,
+		s.InviteUserToAccount,
+		s.LeaveAccount,
+		s.RemoveUserFromCurrentAccount,
 	)
 }
 
-func AnswerInvitation(ctx context.Context, r *wrapetop.AnswerInvitationEndpoint) error {
-	resp, err := answerInvitation(ctx, r)
+func (s *Service) AnswerInvitation(ctx context.Context, r *wrapetop.AnswerInvitationEndpoint) error {
+	resp, err := s.answerInvitation(ctx, r)
 	if err != nil {
 		return err
 	}
@@ -34,7 +34,7 @@ func AnswerInvitation(ctx context.Context, r *wrapetop.AnswerInvitationEndpoint)
 	return nil
 }
 
-func answerInvitation(ctx context.Context, r *wrapetop.AnswerInvitationEndpoint) (*wrapetop.AnswerInvitationEndpoint, error) {
+func (s *Service) answerInvitation(ctx context.Context, r *wrapetop.AnswerInvitationEndpoint) (*wrapetop.AnswerInvitationEndpoint, error) {
 	if r.AccountId == 0 {
 		return r, cm.Error(cm.InvalidArgument, "Missing Name", nil)
 	}
@@ -107,7 +107,7 @@ func answerInvitation(ctx context.Context, r *wrapetop.AnswerInvitationEndpoint)
 	return r, nil
 }
 
-func GetUsersInCurrentAccounts(ctx context.Context, r *wrapetop.GetUsersInCurrentAccountsEndpoint) error {
+func (s *Service) GetUsersInCurrentAccounts(ctx context.Context, r *wrapetop.GetUsersInCurrentAccountsEndpoint) error {
 	accountIDs, err := MixAccount(r.Context.Claim, r.Mixed)
 	if err != nil {
 		return err
@@ -130,10 +130,10 @@ func GetUsersInCurrentAccounts(ctx context.Context, r *wrapetop.GetUsersInCurren
 	return nil
 }
 
-func InviteUserToAccount(ctx context.Context, r *wrapetop.InviteUserToAccountEndpoint) error {
+func (s *Service) InviteUserToAccount(ctx context.Context, r *wrapetop.InviteUserToAccountEndpoint) error {
 	key := fmt.Sprintf("InviteUserToAccount %v-%v", r.Context.User.ID, r.InviteeIdentifier)
 	resp, err := idempgroup.DoAndWrap(key, 10*time.Second, func() (interface{}, error) {
-		return inviteUserToAccount(ctx, r)
+		return s.inviteUserToAccount(ctx, r)
 	}, "thêm người dùng")
 
 	if err != nil {
@@ -143,7 +143,7 @@ func InviteUserToAccount(ctx context.Context, r *wrapetop.InviteUserToAccountEnd
 	return nil
 }
 
-func inviteUserToAccount(ctx context.Context, r *wrapetop.InviteUserToAccountEndpoint) (*wrapetop.InviteUserToAccountEndpoint, error) {
+func (s *Service) inviteUserToAccount(ctx context.Context, r *wrapetop.InviteUserToAccountEndpoint) (*wrapetop.InviteUserToAccountEndpoint, error) {
 
 	inviter := r.Context.User.User
 	accountQuery := &model.GetAccountRolesQuery{
@@ -184,10 +184,10 @@ func inviteUserToAccount(ctx context.Context, r *wrapetop.InviteUserToAccountEnd
 	return r, nil
 }
 
-func LeaveAccount(ctx context.Context, r *wrapetop.LeaveAccountEndpoint) error {
+func (s *Service) LeaveAccount(ctx context.Context, r *wrapetop.LeaveAccountEndpoint) error {
 	return nil
 }
 
-func RemoveUserFromCurrentAccount(ctx context.Context, r *wrapetop.RemoveUserFromCurrentAccountEndpoint) error {
+func (s *Service) RemoveUserFromCurrentAccount(ctx context.Context, r *wrapetop.RemoveUserFromCurrentAccountEndpoint) error {
 	return nil
 }

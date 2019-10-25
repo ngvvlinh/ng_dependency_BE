@@ -12,23 +12,27 @@ import (
 
 func init() {
 	bus.AddHandlers("api",
-		VersionInfo,
-		RegisterAffiliate,
-		UpdateAffiliate,
-		UpdateAffiliateBankAccount,
-		DeleteAffiliate,
+		s.VersionInfo,
+		s.RegisterAffiliate,
+		s.UpdateAffiliate,
+		s.UpdateAffiliateBankAccount,
+		s.DeleteAffiliate,
 	)
 }
 
 var (
 	identityAggr identity.CommandBus
+
+	s = &Service{}
 )
 
 func Init(identityA identity.CommandBus) {
 	identityAggr = identityA
 }
 
-func VersionInfo(ctx context.Context, q *wrapaffiliate.VersionInfoEndpoint) error {
+type Service struct{}
+
+func (s *Service) VersionInfo(ctx context.Context, q *wrapaffiliate.VersionInfoEndpoint) error {
 	q.Result = &pbcm.VersionInfoResponse{
 		Service: "etop.affiliate",
 		Version: "0.1",
@@ -36,7 +40,7 @@ func VersionInfo(ctx context.Context, q *wrapaffiliate.VersionInfoEndpoint) erro
 	return nil
 }
 
-func RegisterAffiliate(ctx context.Context, r *wrapaffiliate.RegisterAffiliateEndpoint) error {
+func (s *Service) RegisterAffiliate(ctx context.Context, r *wrapaffiliate.RegisterAffiliateEndpoint) error {
 	cmd := &identity.CreateAffiliateCommand{
 		Name:        r.Name,
 		OwnerID:     r.Context.UserID,
@@ -52,7 +56,7 @@ func RegisterAffiliate(ctx context.Context, r *wrapaffiliate.RegisterAffiliateEn
 	return nil
 }
 
-func UpdateAffiliate(ctx context.Context, r *wrapaffiliate.UpdateAffiliateEndpoint) error {
+func (s *Service) UpdateAffiliate(ctx context.Context, r *wrapaffiliate.UpdateAffiliateEndpoint) error {
 	affiliate := r.Context.Affiliate
 	cmd := &identity.UpdateAffiliateInfoCommand{
 		ID:      affiliate.ID,
@@ -68,7 +72,7 @@ func UpdateAffiliate(ctx context.Context, r *wrapaffiliate.UpdateAffiliateEndpoi
 	return nil
 }
 
-func UpdateAffiliateBankAccount(ctx context.Context, r *wrapaffiliate.UpdateAffiliateBankAccountEndpoint) error {
+func (s *Service) UpdateAffiliateBankAccount(ctx context.Context, r *wrapaffiliate.UpdateAffiliateBankAccountEndpoint) error {
 	cmd := &identity.UpdateAffiliateBankAccountCommand{
 		ID:          r.Context.Affiliate.ID,
 		OwnerID:     r.Context.Affiliate.OwnerID,
@@ -81,7 +85,7 @@ func UpdateAffiliateBankAccount(ctx context.Context, r *wrapaffiliate.UpdateAffi
 	return nil
 }
 
-func DeleteAffiliate(ctx context.Context, r *wrapaffiliate.DeleteAffiliateEndpoint) error {
+func (s *Service) DeleteAffiliate(ctx context.Context, r *wrapaffiliate.DeleteAffiliateEndpoint) error {
 	cmd := &identity.DeleteAffiliateCommand{
 		ID:      r.Id,
 		OwnerID: r.Context.Affiliate.OwnerID,

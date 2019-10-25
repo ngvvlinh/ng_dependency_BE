@@ -13,17 +13,17 @@ import (
 )
 
 func init() {
-	bus.AddHandler("api", UpdateExternalAccountAhamoveVerificationImages)
-	bus.AddHandler("api", GetShopProductSources)
-	bus.AddHandler("api", CreateProductSource)
+	bus.AddHandler("api", s.UpdateExternalAccountAhamoveVerificationImages)
+	bus.AddHandler("api", s.GetShopProductSources)
+	bus.AddHandler("api", s.CreateProductSource)
 
-	bus.AddHandler("api", GetCollection)
-	bus.AddHandler("api", GetCollections)
+	bus.AddHandler("api", s.GetCollection)
+	bus.AddHandler("api", s.GetCollections)
 
 }
 
 // deprecated
-func CreateProductSource(ctx context.Context, q *wrapshop.CreateProductSourceEndpoint) error {
+func (s *Service) CreateProductSource(ctx context.Context, q *wrapshop.CreateProductSourceEndpoint) error {
 	q.Result = &pbshop.ProductSource{
 		Id:     q.Context.Shop.ID,
 		Status: 1,
@@ -32,7 +32,7 @@ func CreateProductSource(ctx context.Context, q *wrapshop.CreateProductSourceEnd
 }
 
 // deprecated: 2018.07.24+14
-func GetShopProductSources(ctx context.Context, q *wrapshop.GetShopProductSourcesEndpoint) error {
+func (s *Service) GetShopProductSources(ctx context.Context, q *wrapshop.GetShopProductSourcesEndpoint) error {
 	q.Result = &pbshop.ProductSourcesResponse{
 		ProductSources: []*pbshop.ProductSource{
 			{
@@ -45,7 +45,7 @@ func GetShopProductSources(ctx context.Context, q *wrapshop.GetShopProductSource
 }
 
 // deprecated
-func UpdateExternalAccountAhamoveVerificationImages(ctx context.Context, r *wrapshop.UpdateExternalAccountAhamoveVerificationImagesEndpoint) error {
+func (s *Service) UpdateExternalAccountAhamoveVerificationImages(ctx context.Context, r *wrapshop.UpdateExternalAccountAhamoveVerificationImagesEndpoint) error {
 	if err := validateUrl(r.IdCardFrontImg, r.IdCardBackImg, r.PortraitImg, r.WebsiteUrl, r.FanpageUrl); err != nil {
 		return err
 	}
@@ -87,6 +87,6 @@ func UpdateExternalAccountAhamoveVerificationImages(ctx context.Context, r *wrap
 }
 
 // deprecated
-func AddProducts(ctx context.Context, q *wrapshop.AddProductsEndpoint) error {
+func (s *Service) AddProducts(ctx context.Context, q *wrapshop.AddProductsEndpoint) error {
 	return cm.ErrREMOVED
 }

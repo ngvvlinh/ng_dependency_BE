@@ -109,6 +109,19 @@ func (b *InProcBus) Publish(ctx context.Context, msg Event) (_err error) {
 	return nil
 }
 
+func Call(ctx context.Context, msg Msg, fn func() error) (_err error) {
+	node, _ := ctx.(*NodeContext)
+	if node != nil {
+		newNode := node.WithMessage(msg)
+		ctx = newNode
+		defer func() {
+			newNode.Error = _err
+			newNode.Time = time.Since(newNode.Start)
+		}()
+	}
+	return fn()
+}
+
 func call(node *NodeContext, msg Msg, params []reflect.Value, handler HandlerFunc) (_err error) {
 	if node != nil {
 		newNode := node.WithMessage(msg)

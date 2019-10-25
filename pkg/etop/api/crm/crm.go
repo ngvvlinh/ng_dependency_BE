@@ -24,20 +24,20 @@ import (
 
 func init() {
 	bus.AddHandlers("crm",
-		VersionInfo,
-		RefreshFulfillmentFromCarrier,
-		SendNotification,
-		CreateTicket,
-		UpdateTicket,
-		CreateOrUpdateContact,
-		CreateOrUpdateLead,
-		CreateOrUpdateCallHistoryBySDKCallID,
-		CreateOrUpdateCallHistoryByCallID,
-		GetCallHistories,
-		GetContacts,
-		GetTickets,
-		GetCategories,
-		GetTicketStatusCount,
+		s.VersionInfo,
+		s.RefreshFulfillmentFromCarrier,
+		s.SendNotification,
+		s.CreateTicket,
+		s.UpdateTicket,
+		s.CreateOrUpdateContact,
+		s.CreateOrUpdateLead,
+		s.CreateOrUpdateCallHistoryBySDKCallID,
+		s.CreateOrUpdateCallHistoryByCallID,
+		s.GetCallHistories,
+		s.GetContacts,
+		s.GetTickets,
+		s.GetCategories,
+		s.GetTicketStatusCount,
 	)
 }
 
@@ -47,6 +47,7 @@ var (
 	vtigerAgg  vtiger.CommandBus
 	vhtQS      vht.QueryBus
 	vhtAgg     vht.CommandBus
+	s          = &Service{}
 )
 
 func Init(ghn *ghn.Carrier,
@@ -62,7 +63,9 @@ func Init(ghn *ghn.Carrier,
 
 }
 
-func VersionInfo(ctx context.Context, q *wrapcrm.VersionInfoEndpoint) error {
+type Service struct{}
+
+func (s *Service) VersionInfo(ctx context.Context, q *wrapcrm.VersionInfoEndpoint) error {
 	q.Result = &pbcm.VersionInfoResponse{
 		Service:   "etop-crm",
 		Version:   "0.1",
@@ -71,7 +74,7 @@ func VersionInfo(ctx context.Context, q *wrapcrm.VersionInfoEndpoint) error {
 	return nil
 }
 
-func RefreshFulfillmentFromCarrier(ctx context.Context, r *wrapcrm.RefreshFulfillmentFromCarrierEndpoint) error {
+func (s *Service) RefreshFulfillmentFromCarrier(ctx context.Context, r *wrapcrm.RefreshFulfillmentFromCarrierEndpoint) error {
 	query := &shipmodelx.GetFulfillmentQuery{
 		ShippingCode: r.ShippingCode,
 	}
@@ -115,7 +118,7 @@ func RefreshFulfillmentFromCarrier(ctx context.Context, r *wrapcrm.RefreshFulfil
 	return nil
 }
 
-func SendNotification(ctx context.Context, r *wrapcrm.SendNotificationEndpoint) error {
+func (s *Service) SendNotification(ctx context.Context, r *wrapcrm.SendNotificationEndpoint) error {
 	cmd := &notimodel.CreateNotificationsArgs{
 		AccountIDs:       []int64{r.AccountId},
 		Title:            r.Title,
@@ -135,7 +138,7 @@ func SendNotification(ctx context.Context, r *wrapcrm.SendNotificationEndpoint) 
 	return nil
 }
 
-func CreateTicket(ctx context.Context, r *wrapcrm.CreateTicketEndpoint) error {
+func (s *Service) CreateTicket(ctx context.Context, r *wrapcrm.CreateTicketEndpoint) error {
 	cmd := &vtiger.CreateTicketCommand{
 		FfmCode:     r.FfmCode,
 		FfmID:       r.FfmId,
@@ -212,7 +215,7 @@ func CreateTicket(ctx context.Context, r *wrapcrm.CreateTicketEndpoint) error {
 	return nil
 }
 
-func UpdateTicket(ctx context.Context, r *wrapcrm.UpdateTicketEndpoint) error {
+func (s *Service) UpdateTicket(ctx context.Context, r *wrapcrm.UpdateTicketEndpoint) error {
 	cmd := &vtiger.UpdateTicketCommand{
 		FfmCode:     r.FfmCode,
 		FfmID:       r.FfmId,
@@ -281,7 +284,7 @@ func UpdateTicket(ctx context.Context, r *wrapcrm.UpdateTicketEndpoint) error {
 	return nil
 }
 
-func CreateOrUpdateContact(ctx context.Context, r *wrapcrm.CreateOrUpdateContactEndpoint) error {
+func (s *Service) CreateOrUpdateContact(ctx context.Context, r *wrapcrm.CreateOrUpdateContactEndpoint) error {
 	cmd := &vtiger.CreateOrUpdateContactCommand{
 		ID:                   r.Id,
 		EtopUserID:           r.Context.UserID,
@@ -337,7 +340,7 @@ func CreateOrUpdateContact(ctx context.Context, r *wrapcrm.CreateOrUpdateContact
 	}
 	return nil
 }
-func CreateOrUpdateLead(ctx context.Context, r *wrapcrm.CreateOrUpdateLeadEndpoint) error {
+func (s *Service) CreateOrUpdateLead(ctx context.Context, r *wrapcrm.CreateOrUpdateLeadEndpoint) error {
 	cmd := &vtiger.CreateOrUpdateLeadCommand{
 		ID:                   r.Id,
 		EtopUserID:           r.Context.UserID,
@@ -392,7 +395,7 @@ func CreateOrUpdateLead(ctx context.Context, r *wrapcrm.CreateOrUpdateLeadEndpoi
 	return nil
 }
 
-func CreateOrUpdateCallHistoryBySDKCallID(ctx context.Context, r *wrapcrm.CreateOrUpdateCallHistoryBySDKCallIDEndpoint) error {
+func (s *Service) CreateOrUpdateCallHistoryBySDKCallID(ctx context.Context, r *wrapcrm.CreateOrUpdateCallHistoryBySDKCallIDEndpoint) error {
 	cmd := &vht.CreateOrUpdateCallHistoryByCallIDCommand{
 		Direction:       r.Direction,
 		CdrID:           r.CdrId,
@@ -421,7 +424,7 @@ func CreateOrUpdateCallHistoryBySDKCallID(ctx context.Context, r *wrapcrm.Create
 	return nil
 }
 
-func CreateOrUpdateCallHistoryByCallID(ctx context.Context, r *wrapcrm.CreateOrUpdateCallHistoryByCallIDEndpoint) error {
+func (s *Service) CreateOrUpdateCallHistoryByCallID(ctx context.Context, r *wrapcrm.CreateOrUpdateCallHistoryByCallIDEndpoint) error {
 	cmd := &vht.CreateOrUpdateCallHistoryByCallIDCommand{
 		Direction:       r.Direction,
 		CdrID:           r.CdrId,
@@ -450,7 +453,7 @@ func CreateOrUpdateCallHistoryByCallID(ctx context.Context, r *wrapcrm.CreateOrU
 	return nil
 }
 
-func GetCallHistories(ctx context.Context, r *wrapcrm.GetCallHistoriesEndpoint) error {
+func (s *Service) GetCallHistories(ctx context.Context, r *wrapcrm.GetCallHistoriesEndpoint) error {
 	query := &vht.GetCallHistoriesQuery{
 		Paging:     pbcm.PagingToModel(r.Paging, 1, 100, 1000),
 		TextSearch: r.TextSearch,
@@ -489,7 +492,7 @@ func GetCallHistories(ctx context.Context, r *wrapcrm.GetCallHistoriesEndpoint) 
 	return nil
 }
 
-func GetContacts(ctx context.Context, r *wrapcrm.GetContactsEndpoint) error {
+func (s *Service) GetContacts(ctx context.Context, r *wrapcrm.GetContactsEndpoint) error {
 	query := &vtiger.GetContactsQuery{
 		Search: r.TextSearch,
 		Paging: pbcm.PagingToModel(r.Paging, 1, 100, 1000),
@@ -533,7 +536,7 @@ func GetContacts(ctx context.Context, r *wrapcrm.GetContactsEndpoint) error {
 	return nil
 }
 
-func GetTickets(ctx context.Context, r *wrapcrm.GetTicketsEndpoint) error {
+func (s *Service) GetTickets(ctx context.Context, r *wrapcrm.GetTicketsEndpoint) error {
 	paging := pbcm.PagingToModel(r.Paging, 1, 250, 250)
 	query := &vtiger.GetTicketsQuery{
 		Paging: paging,
@@ -616,7 +619,7 @@ func GetTickets(ctx context.Context, r *wrapcrm.GetTicketsEndpoint) error {
 	return nil
 }
 
-func GetCategories(ctx context.Context, r *wrapcrm.GetCategoriesEndpoint) error {
+func (s *Service) GetCategories(ctx context.Context, r *wrapcrm.GetCategoriesEndpoint) error {
 	query := &vtiger.GetCategoriesQuery{}
 	if err := vtigerQS.Dispatch(ctx, query); err != nil {
 		return err
@@ -634,7 +637,7 @@ func GetCategories(ctx context.Context, r *wrapcrm.GetCategoriesEndpoint) error 
 	return nil
 }
 
-func GetTicketStatusCount(ctx context.Context, r *wrapcrm.GetTicketStatusCountEndpoint) error {
+func (s *Service) GetTicketStatusCount(ctx context.Context, r *wrapcrm.GetTicketStatusCountEndpoint) error {
 	query := &vtiger.GetTicketStatusCountQuery{}
 	if err := vtigerQS.Dispatch(ctx, query); err != nil {
 		return err

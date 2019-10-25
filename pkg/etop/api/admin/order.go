@@ -13,14 +13,14 @@ import (
 )
 
 func init() {
-	bus.AddHandler("api", GetOrder)
-	bus.AddHandler("api", GetOrdersByIDs)
-	bus.AddHandler("api", GetOrders)
-	bus.AddHandler("api", GetFulfillment)
-	bus.AddHandler("api", GetFulfillments)
+	bus.AddHandler("api", s.GetOrder)
+	bus.AddHandler("api", s.GetOrdersByIDs)
+	bus.AddHandler("api", s.GetOrders)
+	bus.AddHandler("api", s.GetFulfillment)
+	bus.AddHandler("api", s.GetFulfillments)
 }
 
-func GetOrder(ctx context.Context, q *wrapadmin.GetOrderEndpoint) error {
+func (s *Service) GetOrder(ctx context.Context, q *wrapadmin.GetOrderEndpoint) error {
 	query := &ordermodelx.GetOrderQuery{
 		OrderID:            q.Id,
 		IncludeFulfillment: true,
@@ -37,7 +37,7 @@ func GetOrder(ctx context.Context, q *wrapadmin.GetOrderEndpoint) error {
 	return nil
 }
 
-func GetOrders(ctx context.Context, q *wrapadmin.GetOrdersEndpoint) error {
+func (s *Service) GetOrders(ctx context.Context, q *wrapadmin.GetOrdersEndpoint) error {
 	paging := q.Paging.CMPaging()
 	query := &ordermodelx.GetOrdersQuery{
 		Paging:  paging,
@@ -53,7 +53,7 @@ func GetOrders(ctx context.Context, q *wrapadmin.GetOrdersEndpoint) error {
 	return nil
 }
 
-func GetOrdersByIDs(ctx context.Context, q *wrapadmin.GetOrdersByIDsEndpoint) error {
+func (s *Service) GetOrdersByIDs(ctx context.Context, q *wrapadmin.GetOrdersByIDsEndpoint) error {
 	query := &ordermodelx.GetOrdersQuery{
 		IDs: q.Ids,
 	}
@@ -66,7 +66,7 @@ func GetOrdersByIDs(ctx context.Context, q *wrapadmin.GetOrdersByIDsEndpoint) er
 	return nil
 }
 
-func GetFulfillment(ctx context.Context, q *wrapadmin.GetFulfillmentEndpoint) error {
+func (s *Service) GetFulfillment(ctx context.Context, q *wrapadmin.GetFulfillmentEndpoint) error {
 	query := &shipmodelx.GetFulfillmentExtendedQuery{
 		FulfillmentID: q.Id,
 	}
@@ -77,7 +77,7 @@ func GetFulfillment(ctx context.Context, q *wrapadmin.GetFulfillmentEndpoint) er
 	return nil
 }
 
-func GetFulfillments(ctx context.Context, q *wrapadmin.GetFulfillmentsEndpoint) error {
+func (s *Service) GetFulfillments(ctx context.Context, q *wrapadmin.GetFulfillmentsEndpoint) error {
 	paging := q.Paging.CMPaging()
 	query := &shipmodelx.GetFulfillmentExtendedsQuery{
 		OrderID: q.OrderId,

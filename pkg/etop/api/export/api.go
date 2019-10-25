@@ -22,12 +22,16 @@ import (
 
 func init() {
 	bus.AddHandlers("export",
-		RequestExport,
-		GetExports,
+		s.RequestExport,
+		s.GetExports,
 	)
 }
 
-func RequestExport(ctx context.Context, r *wrappershop.RequestExportEndpoint) (_err error) {
+var s = &Service{}
+
+type Service struct{}
+
+func (s *Service) RequestExport(ctx context.Context, r *wrappershop.RequestExportEndpoint) (_err error) {
 	claim := r.Context.Claim
 	shop := r.Context.Shop
 	userID := r.Context.UserID
@@ -183,7 +187,7 @@ func RequestExport(ctx context.Context, r *wrappershop.RequestExportEndpoint) (_
 	return nil
 }
 
-func GetExports(ctx context.Context, r *wrappershop.GetExportsEndpoint) error {
+func (s *Service) GetExports(ctx context.Context, r *wrappershop.GetExportsEndpoint) error {
 	shopID := r.Context.Shop.ID
 	exportAttempts, err := sqlstore.ExportAttempt(ctx).AccountID(shopID).NotYetExpired().List()
 

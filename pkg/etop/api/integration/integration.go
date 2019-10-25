@@ -35,16 +35,17 @@ import (
 var ll = l.New()
 var idempgroup *idemp.RedisGroup
 var authStore auth.Generator
+var s = &Service{}
 
 func init() {
 	bus.AddHandlers("api",
-		VersionInfo,
-		InitIntegration,
-		RequestLogin,
-		LoginUsingToken,
-		Register,
-		GrantAccess,
-		SessionInfo,
+		s.VersionInfo,
+		s.InitIntegration,
+		s.RequestLogin,
+		s.LoginUsingToken,
+		s.Register,
+		s.GrantAccess,
+		s.SessionInfo,
 	)
 }
 
@@ -54,7 +55,9 @@ func Init(sd cmservice.Shutdowner, rd redis.Store, s auth.Generator) {
 	sd.Register(idempgroup.Shutdown)
 }
 
-func VersionInfo(ctx context.Context, q *wrapintegration.VersionInfoEndpoint) error {
+type Service struct{}
+
+func (s *Service) VersionInfo(ctx context.Context, q *wrapintegration.VersionInfoEndpoint) error {
 	q.Result = &pbcm.VersionInfoResponse{
 		Service: "etop.Integration",
 		Version: "0.1",
@@ -62,7 +65,7 @@ func VersionInfo(ctx context.Context, q *wrapintegration.VersionInfoEndpoint) er
 	return nil
 }
 
-func InitIntegration(ctx context.Context, q *wrapintegration.InitEndpoint) error {
+func (s *Service) InitIntegration(ctx context.Context, q *wrapintegration.InitEndpoint) error {
 	authToken := q.AuthToken
 	if authToken == "" {
 		return cm.Errorf(cm.InvalidArgument, nil, "Missing token")
@@ -119,12 +122,12 @@ func InitIntegration(ctx context.Context, q *wrapintegration.InitEndpoint) error
 		return cm.Errorf(cm.Unauthenticated, nil, "Mã xác thực không hợp lệ")
 	}
 
-	partner, err := validatePartner(ctx, partnerID)
+	partner, err := s.validatePartner(ctx, partnerID)
 	if err != nil {
 		return err
 	}
 	if requestInfo.ShopID == 0 {
-		resp, err := actionRequestLogin(ctx, partner, requestInfo)
+		resp, err := s.actionRequestLogin(ctx, partner, requestInfo)
 		q.Result = resp
 		return err
 	}
@@ -139,7 +142,7 @@ func InitIntegration(ctx context.Context, q *wrapintegration.InitEndpoint) error
 			shop.Status == model.S3Positive && shop.DeletedAt.IsZero() &&
 			user.Status == model.S3Positive {
 			// everything looks good
-			resp, err := generateNewSession(ctx, nil, partner, shop)
+			resp, err := s.generateNewSession(ctx, nil, partner, shop)
 			q.Result = resp
 			return err
 		}
@@ -147,12 +150,12 @@ func InitIntegration(ctx context.Context, q *wrapintegration.InitEndpoint) error
 			user.Status != model.S3Positive {
 			return cm.Errorf(cm.AccountClosed, nil, "")
 		}
-		resp, err := actionRequestLogin(ctx, partner, requestInfo)
+		resp, err := s.actionRequestLogin(ctx, partner, requestInfo)
 		q.Result = resp
 		return err
 
 	case cm.NotFound:
-		resp, err := actionRequestLogin(ctx, partner, requestInfo)
+		resp, err := s.actionRequestLogin(ctx, partner, requestInfo)
 		q.Result = resp
 		return err
 
@@ -161,7 +164,7 @@ func InitIntegration(ctx context.Context, q *wrapintegration.InitEndpoint) error
 	}
 }
 
-func validatePartner(ctx context.Context, partnerID int64) (*model.Partner, error) {
+func (s *Service) validatePartner(ctx context.Context, partnerID int64) (*model.Partner, error) {
 	partnerQuery := &model.GetPartner{PartnerID: partnerID}
 	if err := bus.Dispatch(ctx, partnerQuery); err != nil {
 		return nil, cm.MapError(err).Map(cm.NotFound, cm.PermissionDenied, "Mã xác thực không hợp lệ").Throw()
@@ -173,7 +176,7 @@ func validatePartner(ctx context.Context, partnerID int64) (*model.Partner, erro
 	return partner, nil
 }
 
-func actionRequestLogin(ctx context.Context, partner *model.Partner, info apipartner.PartnerShopToken) (*pbintegration.LoginResponse, error) {
+func (s *Service) actionRequestLogin(ctx context.Context, partner *model.Partner, info apipartner.PartnerShopToken) (*pbintegration.LoginResponse, error) {
 	tokenCmd := &tokens.GenerateTokenCommand{
 		ClaimInfo: claims.ClaimInfo{
 			Token:         "",
@@ -221,7 +224,7 @@ func actionRequestLogin(ctx context.Context, partner *model.Partner, info apipar
 	return resp, nil
 }
 
-func generateNewSession(ctx context.Context, user *model.User, partner *model.Partner, shop *model.Shop) (*pbintegration.LoginResponse, error) {
+func (s *Service) generateNewSession(ctx context.Context, user *model.User, partner *model.Partner, shop *model.Shop) (*pbintegration.LoginResponse, error) {
 	tokenCmd := &tokens.GenerateTokenCommand{
 		ClaimInfo: claims.ClaimInfo{
 			Token:         "",
@@ -245,11 +248,11 @@ func generateNewSession(ctx context.Context, user *model.User, partner *model.Pa
 	return resp, nil
 }
 
-func RequestLogin(ctx context.Context, r *wrapintegration.RequestLoginEndpoint) error {
+func (s *Service) RequestLogin(ctx context.Context, r *wrapintegration.RequestLoginEndpoint) error {
 	key := fmt.Sprintf("RequestLogin %v", r.Login)
 	res, err := idempgroup.DoAndWrap(key, 15*time.Second,
 		func() (interface{}, error) {
-			return requestLogin(ctx, r)
+			return s.requestLogin(ctx, r)
 		}, "gửi mã đăng nhập")
 
 	if err != nil {
@@ -263,7 +266,7 @@ func RequestLogin(ctx context.Context, r *wrapintegration.RequestLoginEndpoint) 
 // - Check whether the user exists in our database
 // - Generate verification code and send to email/phone
 // - Response action login_using_token
-func requestLogin(ctx context.Context, r *wrapintegration.RequestLoginEndpoint) (*wrapintegration.RequestLoginEndpoint, error) {
+func (s *Service) requestLogin(ctx context.Context, r *wrapintegration.RequestLoginEndpoint) (*wrapintegration.RequestLoginEndpoint, error) {
 	partner := r.CtxPartner
 	if partner == nil {
 		return r, cm.Errorf(cm.Internal, nil, "")
@@ -440,7 +443,7 @@ func generateTokenWithVerificationCode(partnerID int64, login string, extra map[
 	return tok, code, v, nil
 }
 
-func LoginUsingToken(ctx context.Context, r *wrapintegration.LoginUsingTokenEndpoint) (_err error) {
+func (s *Service) LoginUsingToken(ctx context.Context, r *wrapintegration.LoginUsingTokenEndpoint) (_err error) {
 	if r.Login == "" || r.VerificationCode == "" {
 		return cm.Errorf(cm.InvalidArgument, nil, "Thiếu thông tin")
 	}
@@ -666,7 +669,7 @@ func LoginUsingToken(ctx context.Context, r *wrapintegration.LoginUsingTokenEndp
 	return nil
 }
 
-func Register(ctx context.Context, r *wrapintegration.RegisterEndpoint) error {
+func (s *Service) Register(ctx context.Context, r *wrapintegration.RegisterEndpoint) error {
 	partner := r.CtxPartner
 	claim := r.Context.ClaimInfo
 	if claim.Extra == nil || claim.Extra["action:register"] == "" {
@@ -797,7 +800,7 @@ func Register(ctx context.Context, r *wrapintegration.RegisterEndpoint) error {
 	return nil
 }
 
-func GrantAccess(ctx context.Context, r *wrapintegration.GrantAccessEndpoint) error {
+func (s *Service) GrantAccess(ctx context.Context, r *wrapintegration.GrantAccessEndpoint) error {
 	var requestInfo apipartner.PartnerShopToken
 	if err := jsonx.Unmarshal([]byte(r.Context.Extra["request_login"]), &requestInfo); err != nil {
 		return cm.Errorf(cm.FailedPrecondition, nil, "Yêu cầu đăng nhập không còn hiệu lực")
@@ -881,7 +884,7 @@ func GrantAccess(ctx context.Context, r *wrapintegration.GrantAccessEndpoint) er
 	return nil
 }
 
-func SessionInfo(ctx context.Context, q *wrapintegration.SessionInfoEndpoint) error {
+func (s *Service) SessionInfo(ctx context.Context, q *wrapintegration.SessionInfoEndpoint) error {
 	var shop *model.Shop
 	if q.Context.Claim.AccountID != 0 {
 		query := &model.GetShopQuery{

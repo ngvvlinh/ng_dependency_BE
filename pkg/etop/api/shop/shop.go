@@ -52,101 +52,102 @@ import (
 
 var (
 	ll = l.New()
+	s  = &Service{}
 )
 
 func init() {
-	bus.AddHandler("api", VersionInfo)
+	bus.AddHandler("api", s.VersionInfo)
 
-	bus.AddHandler("api", CreateInventoryVoucher)
-	bus.AddHandler("api", UpdateInventoryVoucher)
-	bus.AddHandler("api", AdjustInventoryQuantity)
-	bus.AddHandler("api", ConfirmInventoryVoucher)
-	bus.AddHandler("api", CancelInventoryVoucher)
-	bus.AddHandler("api", GetInventory)
-	bus.AddHandler("api", GetInventories)
-	bus.AddHandler("api", GetInventoryByVariantIDs)
-	bus.AddHandler("api", GetInventoryVoucher)
-	bus.AddHandler("api", GetInventoryVouchers)
-	bus.AddHandler("api", GetInventoryVoucherByIDs)
+	bus.AddHandler("api", s.CreateInventoryVoucher)
+	bus.AddHandler("api", s.UpdateInventoryVoucher)
+	bus.AddHandler("api", s.AdjustInventoryQuantity)
+	bus.AddHandler("api", s.ConfirmInventoryVoucher)
+	bus.AddHandler("api", s.CancelInventoryVoucher)
+	bus.AddHandler("api", s.GetInventory)
+	bus.AddHandler("api", s.GetInventories)
+	bus.AddHandler("api", s.GetInventoryByVariantIDs)
+	bus.AddHandler("api", s.GetInventoryVoucher)
+	bus.AddHandler("api", s.GetInventoryVouchers)
+	bus.AddHandler("api", s.GetInventoryVoucherByIDs)
 
-	bus.AddHandler("api", RemoveVariants)
-	bus.AddHandler("api", UpdateVariant)
-	bus.AddHandler("api", UpdateVariantAttributes)
-	bus.AddHandler("api", UpdateVariantsStatus)
+	bus.AddHandler("api", s.RemoveVariants)
+	bus.AddHandler("api", s.UpdateVariant)
+	bus.AddHandler("api", s.UpdateVariantAttributes)
+	bus.AddHandler("api", s.UpdateVariantsStatus)
 
-	bus.AddHandler("api", AddProducts)
-	bus.AddHandler("api", GetProduct)
-	bus.AddHandler("api", GetProducts)
-	bus.AddHandler("api", GetProductsByIDs)
-	bus.AddHandler("api", CreateProduct)
-	bus.AddHandler("api", UpdateProduct)
-	bus.AddHandler("api", UpdateProductsStatus)
-	bus.AddHandler("api", UpdateProductsTags)
-	bus.AddHandler("api", RemoveProducts)
+	bus.AddHandler("api", s.AddProducts)
+	bus.AddHandler("api", s.GetProduct)
+	bus.AddHandler("api", s.GetProducts)
+	bus.AddHandler("api", s.GetProductsByIDs)
+	bus.AddHandler("api", s.CreateProduct)
+	bus.AddHandler("api", s.UpdateProduct)
+	bus.AddHandler("api", s.UpdateProductsStatus)
+	bus.AddHandler("api", s.UpdateProductsTags)
+	bus.AddHandler("api", s.RemoveProducts)
 
-	bus.AddHandler("api", CreateVariant)
-	bus.AddHandler("api", GetVariant)
-	bus.AddHandler("api", GetVariantsByIDs)
-	bus.AddHandler("api", DeprecatedCreateVariant)
-	bus.AddHandler("api", CreateProductSourceCategory)
-	bus.AddHandler("api", UpdateProductsPSCategory)
-	bus.AddHandler("api", UpdateProductImages)
-	bus.AddHandler("api", UpdateProductMetaFields)
-	bus.AddHandler("api", GetProductSourceCategory)
-	bus.AddHandler("api", GetProductSourceCategories)
-	bus.AddHandler("api", UpdateProductSourceCategory)
-	bus.AddHandler("api", RemoveProductSourceCategory)
-	bus.AddHandler("api", UpdateVariantImages)
+	bus.AddHandler("api", s.CreateVariant)
+	bus.AddHandler("api", s.GetVariant)
+	bus.AddHandler("api", s.GetVariantsByIDs)
+	bus.AddHandler("api", s.DeprecatedCreateVariant)
+	bus.AddHandler("api", s.CreateProductSourceCategory)
+	bus.AddHandler("api", s.UpdateProductsPSCategory)
+	bus.AddHandler("api", s.UpdateProductImages)
+	bus.AddHandler("api", s.UpdateProductMetaFields)
+	bus.AddHandler("api", s.GetProductSourceCategory)
+	bus.AddHandler("api", s.GetProductSourceCategories)
+	bus.AddHandler("api", s.UpdateProductSourceCategory)
+	bus.AddHandler("api", s.RemoveProductSourceCategory)
+	bus.AddHandler("api", s.UpdateVariantImages)
 
-	bus.AddHandler("api", GetMoneyTransaction)
-	bus.AddHandler("api", GetMoneyTransactions)
+	bus.AddHandler("api", s.GetMoneyTransaction)
+	bus.AddHandler("api", s.GetMoneyTransactions)
 
-	bus.AddHandler("api", SummarizeFulfillments)
-	bus.AddHandler("api", CalcBalance)
-	bus.AddHandler("api", CreateDevice)
-	bus.AddHandler("api", DeleteDevice)
-	bus.AddHandler("api", GetNotifications)
-	bus.AddHandler("api", GetNotification)
-	bus.AddHandler("api", UpdateNotifications)
+	bus.AddHandler("api", s.SummarizeFulfillments)
+	bus.AddHandler("api", s.CalcBalance)
+	bus.AddHandler("api", s.CreateDevice)
+	bus.AddHandler("api", s.DeleteDevice)
+	bus.AddHandler("api", s.GetNotifications)
+	bus.AddHandler("api", s.GetNotification)
+	bus.AddHandler("api", s.UpdateNotifications)
 
-	bus.AddHandler("api", GetShipnowFulfillment)
-	bus.AddHandler("api", GetShipnowFulfillments)
-	bus.AddHandler("api", CreateShipnowFulfillment)
-	bus.AddHandler("api", ConfirmShipnowFulfillment)
-	bus.AddHandler("api", UpdateShipnowFulfillment)
-	bus.AddHandler("api", CancelShipnowFulfillment)
-	bus.AddHandler("api", GetShipnowServices)
-	bus.AddHandler("api", CreateExternalAccountAhamove)
-	bus.AddHandler("api", GetExternalAccountAhamove)
-	bus.AddHandler("api", RequestVerifyExternalAccountAhamove)
-	bus.AddHandler("api", UpdateExternalAccountAhamoveVerification)
+	bus.AddHandler("api", s.GetShipnowFulfillment)
+	bus.AddHandler("api", s.GetShipnowFulfillments)
+	bus.AddHandler("api", s.CreateShipnowFulfillment)
+	bus.AddHandler("api", s.ConfirmShipnowFulfillment)
+	bus.AddHandler("api", s.UpdateShipnowFulfillment)
+	bus.AddHandler("api", s.CancelShipnowFulfillment)
+	bus.AddHandler("api", s.GetShipnowServices)
+	bus.AddHandler("api", s.CreateExternalAccountAhamove)
+	bus.AddHandler("api", s.GetExternalAccountAhamove)
+	bus.AddHandler("api", s.RequestVerifyExternalAccountAhamove)
+	bus.AddHandler("api", s.UpdateExternalAccountAhamoveVerification)
 
-	bus.AddHandler("api", GetExternalAccountHaravan)
-	bus.AddHandler("api", CreateExternalAccountHaravan)
-	bus.AddHandler("api", UpdateExternalAccountHaravanToken)
-	bus.AddHandler("api", ConnectCarrierServiceExternalAccountHaravan)
-	bus.AddHandler("api", DeleteConnectedCarrierServiceExternalAccountHaravan)
-	bus.AddHandler("api", PaymentTradingOrder)
-	bus.AddHandler("api", PaymentCheckReturnData)
+	bus.AddHandler("api", s.GetExternalAccountHaravan)
+	bus.AddHandler("api", s.CreateExternalAccountHaravan)
+	bus.AddHandler("api", s.UpdateExternalAccountHaravanToken)
+	bus.AddHandler("api", s.ConnectCarrierServiceExternalAccountHaravan)
+	bus.AddHandler("api", s.DeleteConnectedCarrierServiceExternalAccountHaravan)
+	bus.AddHandler("api", s.PaymentTradingOrder)
+	bus.AddHandler("api", s.PaymentCheckReturnData)
 
-	bus.AddHandler("api", CreateCategory)
-	bus.AddHandler("api", GetCategory)
-	bus.AddHandler("api", GetCategories)
-	bus.AddHandler("api", UpdateCategory)
-	bus.AddHandler("api", DeleteCategory)
+	bus.AddHandler("api", s.CreateCategory)
+	bus.AddHandler("api", s.GetCategory)
+	bus.AddHandler("api", s.GetCategories)
+	bus.AddHandler("api", s.UpdateCategory)
+	bus.AddHandler("api", s.DeleteCategory)
 
-	bus.AddHandler("api", UpdateProductCategory)
-	bus.AddHandler("api", RemoveProductCategory)
+	bus.AddHandler("api", s.UpdateProductCategory)
+	bus.AddHandler("api", s.RemoveProductCategory)
 
-	bus.AddHandler("api", GetCollection)
-	bus.AddHandler("api", GetCollections)
-	bus.AddHandler("api", CreateCollection)
-	bus.AddHandler("api", UpdateCollection)
+	bus.AddHandler("api", s.GetCollection)
+	bus.AddHandler("api", s.GetCollections)
+	bus.AddHandler("api", s.CreateCollection)
+	bus.AddHandler("api", s.UpdateCollection)
 
-	bus.AddHandler("api", AddProductCollections)
-	bus.AddHandler("api", RemoveProductCollection)
-	bus.AddHandler("api", GetCollectionsByProductID)
-	bus.AddHandler("api", GetSummarizePOS)
+	bus.AddHandler("api", s.AddProductCollections)
+	bus.AddHandler("api", s.RemoveProductCollection)
+	bus.AddHandler("api", s.GetCollectionsByProductID)
+	bus.AddHandler("api", s.GetSummarizePOS)
 }
 
 const (
@@ -254,7 +255,9 @@ func Init(
 	inventoryQuery = inventoryQ
 }
 
-func VersionInfo(ctx context.Context, q *wrapshop.VersionInfoEndpoint) error {
+type Service struct{}
+
+func (s *Service) VersionInfo(ctx context.Context, q *wrapshop.VersionInfoEndpoint) error {
 	q.Result = &pbcm.VersionInfoResponse{
 		Service: "etop.Shop",
 		Version: "0.1",
@@ -262,7 +265,7 @@ func VersionInfo(ctx context.Context, q *wrapshop.VersionInfoEndpoint) error {
 	return nil
 }
 
-func CreateInventoryVoucher(ctx context.Context, q *wrapshop.CreateInventoryVoucherEndpoint) error {
+func (s *Service) CreateInventoryVoucher(ctx context.Context, q *wrapshop.CreateInventoryVoucherEndpoint) error {
 	shopID := q.Context.Shop.ID
 	userID := q.Context.UserID
 	inventoryOverstock := q.Context.Shop.InventoryOverstock
@@ -294,7 +297,7 @@ func CreateInventoryVoucher(ctx context.Context, q *wrapshop.CreateInventoryVouc
 	return nil
 }
 
-func ConfirmInventoryVoucher(ctx context.Context, q *wrapshop.ConfirmInventoryVoucherEndpoint) error {
+func (s *Service) ConfirmInventoryVoucher(ctx context.Context, q *wrapshop.ConfirmInventoryVoucherEndpoint) error {
 	shopID := q.Context.Shop.ID
 	userID := q.Context.UserID
 
@@ -312,7 +315,7 @@ func ConfirmInventoryVoucher(ctx context.Context, q *wrapshop.ConfirmInventoryVo
 	return nil
 }
 
-func CancelInventoryVoucher(ctx context.Context, q *wrapshop.CancelInventoryVoucherEndpoint) error {
+func (s *Service) CancelInventoryVoucher(ctx context.Context, q *wrapshop.CancelInventoryVoucherEndpoint) error {
 	shopID := q.Context.Shop.ID
 	userID := q.Context.UserID
 
@@ -331,7 +334,7 @@ func CancelInventoryVoucher(ctx context.Context, q *wrapshop.CancelInventoryVouc
 	return nil
 }
 
-func UpdateInventoryVoucher(ctx context.Context, q *wrapshop.UpdateInventoryVoucherEndpoint) error {
+func (s *Service) UpdateInventoryVoucher(ctx context.Context, q *wrapshop.UpdateInventoryVoucherEndpoint) error {
 	shopID := q.Context.Shop.ID
 	userID := q.Context.UserID
 	var items []*inventory.InventoryVoucherItem
@@ -361,7 +364,7 @@ func UpdateInventoryVoucher(ctx context.Context, q *wrapshop.UpdateInventoryVouc
 	return nil
 }
 
-func AdjustInventoryQuantity(ctx context.Context, q *wrapshop.AdjustInventoryQuantityEndpoint) error {
+func (s *Service) AdjustInventoryQuantity(ctx context.Context, q *wrapshop.AdjustInventoryQuantityEndpoint) error {
 	shopID := q.Context.Shop.ID
 	userID := q.Context.UserID
 	inventoryOverstock := q.Context.Shop.InventoryOverstock
@@ -392,7 +395,7 @@ func AdjustInventoryQuantity(ctx context.Context, q *wrapshop.AdjustInventoryQua
 	return nil
 }
 
-func GetInventories(ctx context.Context, q *wrapshop.GetInventoriesEndpoint) error {
+func (s *Service) GetInventories(ctx context.Context, q *wrapshop.GetInventoriesEndpoint) error {
 	shopID := q.Context.Shop.ID
 	query := &inventory.GetInventoriesQuery{
 		ShopID: shopID,
@@ -410,7 +413,7 @@ func GetInventories(ctx context.Context, q *wrapshop.GetInventoriesEndpoint) err
 	return nil
 }
 
-func GetInventory(ctx context.Context, q *wrapshop.GetInventoryEndpoint) error {
+func (s *Service) GetInventory(ctx context.Context, q *wrapshop.GetInventoryEndpoint) error {
 	shopID := q.Context.Shop.ID
 	query := &inventory.GetInventoryQuery{
 		ShopID:    shopID,
@@ -423,7 +426,7 @@ func GetInventory(ctx context.Context, q *wrapshop.GetInventoryEndpoint) error {
 	return nil
 }
 
-func GetInventoryByVariantIDs(ctx context.Context, q *wrapshop.GetInventoriesByVariantIDsEndpoint) error {
+func (s *Service) GetInventoryByVariantIDs(ctx context.Context, q *wrapshop.GetInventoriesByVariantIDsEndpoint) error {
 	shopID := q.Context.Shop.ID
 	query := &inventory.GetInventoriesByVariantIDsQuery{
 		ShopID:     shopID,
@@ -438,7 +441,7 @@ func GetInventoryByVariantIDs(ctx context.Context, q *wrapshop.GetInventoriesByV
 	return nil
 }
 
-func GetInventoryVoucher(ctx context.Context, q *wrapshop.GetInventoryVoucherEndpoint) error {
+func (s *Service) GetInventoryVoucher(ctx context.Context, q *wrapshop.GetInventoryVoucherEndpoint) error {
 	shopID := q.Context.Shop.ID
 	query := &inventory.GetInventoryVoucherQuery{
 		ShopID: shopID,
@@ -451,7 +454,7 @@ func GetInventoryVoucher(ctx context.Context, q *wrapshop.GetInventoryVoucherEnd
 	return nil
 }
 
-func GetInventoryVouchers(ctx context.Context, q *wrapshop.GetInventoryVouchersEndpoint) error {
+func (s *Service) GetInventoryVouchers(ctx context.Context, q *wrapshop.GetInventoryVouchersEndpoint) error {
 	shopID := q.Context.Shop.ID
 	query := &inventory.GetInventoryVouchersQuery{
 		ShopID: shopID,
@@ -469,7 +472,7 @@ func GetInventoryVouchers(ctx context.Context, q *wrapshop.GetInventoryVouchersE
 	return nil
 }
 
-func GetInventoryVoucherByIDs(ctx context.Context, q *wrapshop.GetInventoryVouchersByIDsEndpoint) error {
+func (s *Service) GetInventoryVoucherByIDs(ctx context.Context, q *wrapshop.GetInventoryVouchersByIDsEndpoint) error {
 	shopID := q.Context.Shop.ID
 	query := &inventory.GetInventoryVouchersByIDsQuery{
 		ShopID: shopID,
@@ -484,7 +487,7 @@ func GetInventoryVoucherByIDs(ctx context.Context, q *wrapshop.GetInventoryVouch
 	return nil
 }
 
-func UpdateVariant(ctx context.Context, q *wrapshop.UpdateVariantEndpoint) error {
+func (s *Service) UpdateVariant(ctx context.Context, q *wrapshop.UpdateVariantEndpoint) error {
 	shopID := q.Context.Shop.ID
 	cmd := &catalog.UpdateShopVariantInfoCommand{
 		ShopID:    shopID,
@@ -508,7 +511,7 @@ func UpdateVariant(ctx context.Context, q *wrapshop.UpdateVariantEndpoint) error
 	return nil
 }
 
-func UpdateVariantAttributes(ctx context.Context, q *wrapshop.UpdateVariantAttributesEndpoint) error {
+func (s *Service) UpdateVariantAttributes(ctx context.Context, q *wrapshop.UpdateVariantAttributesEndpoint) error {
 	shopID := q.Context.Shop.ID
 
 	var attributes catalog.Attributes
@@ -530,7 +533,7 @@ func UpdateVariantAttributes(ctx context.Context, q *wrapshop.UpdateVariantAttri
 	return nil
 }
 
-func RemoveVariants(ctx context.Context, q *wrapshop.RemoveVariantsEndpoint) error {
+func (s *Service) RemoveVariants(ctx context.Context, q *wrapshop.RemoveVariantsEndpoint) error {
 	cmd := &catalog.DeleteShopVariantsCommand{
 		ShopID: q.Context.Shop.ID,
 		IDs:    q.Ids,
@@ -544,7 +547,7 @@ func RemoveVariants(ctx context.Context, q *wrapshop.RemoveVariantsEndpoint) err
 	return nil
 }
 
-func GetProduct(ctx context.Context, q *wrapshop.GetProductEndpoint) error {
+func (s *Service) GetProduct(ctx context.Context, q *wrapshop.GetProductEndpoint) error {
 	query := &catalog.GetShopProductWithVariantsByIDQuery{
 		ProductID: q.Id,
 		ShopID:    q.Context.Shop.ID,
@@ -556,7 +559,7 @@ func GetProduct(ctx context.Context, q *wrapshop.GetProductEndpoint) error {
 	return nil
 }
 
-func GetProductsByIDs(ctx context.Context, q *wrapshop.GetProductsByIDsEndpoint) error {
+func (s *Service) GetProductsByIDs(ctx context.Context, q *wrapshop.GetProductsByIDsEndpoint) error {
 	query := &catalog.ListShopProductsWithVariantsByIDsQuery{
 		IDs:    q.Ids,
 		ShopID: q.Context.Shop.ID,
@@ -570,7 +573,7 @@ func GetProductsByIDs(ctx context.Context, q *wrapshop.GetProductsByIDsEndpoint)
 	return nil
 }
 
-func GetProducts(ctx context.Context, q *wrapshop.GetProductsEndpoint) error {
+func (s *Service) GetProducts(ctx context.Context, q *wrapshop.GetProductsEndpoint) error {
 	paging := q.Paging.CMPaging()
 	query := &catalog.ListShopProductsWithVariantsQuery{
 		ShopID:  q.Context.Shop.ID,
@@ -588,7 +591,7 @@ func GetProducts(ctx context.Context, q *wrapshop.GetProductsEndpoint) error {
 	return nil
 }
 
-func CreateProduct(ctx context.Context, q *wrapshop.CreateProductEndpoint) error {
+func (s *Service) CreateProduct(ctx context.Context, q *wrapshop.CreateProductEndpoint) error {
 	metaFields := []*catalog.MetaField{}
 
 	for _, metaField := range q.MetaFields {
@@ -625,7 +628,7 @@ func CreateProduct(ctx context.Context, q *wrapshop.CreateProductEndpoint) error
 	return nil
 }
 
-func RemoveProducts(ctx context.Context, q *wrapshop.RemoveProductsEndpoint) error {
+func (s *Service) RemoveProducts(ctx context.Context, q *wrapshop.RemoveProductsEndpoint) error {
 	cmd := &catalog.DeleteShopProductsCommand{
 		ShopID: q.Context.Shop.ID,
 		IDs:    q.Ids,
@@ -639,7 +642,7 @@ func RemoveProducts(ctx context.Context, q *wrapshop.RemoveProductsEndpoint) err
 	return nil
 }
 
-func UpdateProduct(ctx context.Context, q *wrapshop.UpdateProductEndpoint) error {
+func (s *Service) UpdateProduct(ctx context.Context, q *wrapshop.UpdateProductEndpoint) error {
 	shopID := q.Context.Shop.ID
 	cmd := &catalog.UpdateShopProductInfoCommand{
 		ShopID:    shopID,
@@ -665,7 +668,7 @@ func UpdateProduct(ctx context.Context, q *wrapshop.UpdateProductEndpoint) error
 	return nil
 }
 
-func UpdateProductsStatus(ctx context.Context, q *wrapshop.UpdateProductsStatusEndpoint) error {
+func (s *Service) UpdateProductsStatus(ctx context.Context, q *wrapshop.UpdateProductsStatusEndpoint) error {
 	shopID := q.Context.Shop.ID
 	cmd := &catalog.UpdateShopProductStatusCommand{
 		IDs:    q.Ids,
@@ -679,7 +682,7 @@ func UpdateProductsStatus(ctx context.Context, q *wrapshop.UpdateProductsStatusE
 	return nil
 }
 
-func UpdateVariantsStatus(ctx context.Context, q *wrapshop.UpdateVariantsStatusEndpoint) error {
+func (s *Service) UpdateVariantsStatus(ctx context.Context, q *wrapshop.UpdateVariantsStatusEndpoint) error {
 	shopID := q.Context.Shop.ID
 	cmd := &catalog.UpdateShopVariantStatusCommand{
 		IDs:    q.Ids,
@@ -693,7 +696,7 @@ func UpdateVariantsStatus(ctx context.Context, q *wrapshop.UpdateVariantsStatusE
 	return nil
 }
 
-func UpdateProductsTags(ctx context.Context, q *wrapshop.UpdateProductsTagsEndpoint) error {
+func (s *Service) UpdateProductsTags(ctx context.Context, q *wrapshop.UpdateProductsTagsEndpoint) error {
 	shopID := q.Context.Shop.ID
 	cmd := &catalogmodelx.UpdateShopProductsTagsCommand{
 		ShopID:     shopID,
@@ -715,15 +718,15 @@ func UpdateProductsTags(ctx context.Context, q *wrapshop.UpdateProductsTagsEndpo
 	return nil
 }
 
-func GetVariant(ctx context.Context, q *wrapshop.GetVariantEndpoint) error {
+func (s *Service) GetVariant(ctx context.Context, q *wrapshop.GetVariantEndpoint) error {
 	return cm.ErrTODO
 }
 
-func GetVariantsByIDs(ctx context.Context, q *wrapshop.GetVariantsByIDsEndpoint) error {
+func (s *Service) GetVariantsByIDs(ctx context.Context, q *wrapshop.GetVariantsByIDsEndpoint) error {
 	return cm.ErrTODO
 }
 
-func CreateVariant(ctx context.Context, q *wrapshop.CreateVariantEndpoint) error {
+func (s *Service) CreateVariant(ctx context.Context, q *wrapshop.CreateVariantEndpoint) error {
 	cmd := &catalog.CreateShopVariantCommand{
 		ShopID:     q.Context.Shop.ID,
 		ProductID:  q.ProductId,
@@ -750,7 +753,7 @@ func CreateVariant(ctx context.Context, q *wrapshop.CreateVariantEndpoint) error
 	return nil
 }
 
-func DeprecatedCreateVariant(ctx context.Context, q *wrapshop.DeprecatedCreateVariantEndpoint) error {
+func (s *Service) DeprecatedCreateVariant(ctx context.Context, q *wrapshop.DeprecatedCreateVariantEndpoint) error {
 	cmd := &catalogmodelx.DeprecatedCreateVariantCommand{
 		ShopID:      q.Context.Shop.ID,
 		ProductID:   q.ProductId,
@@ -784,7 +787,7 @@ func DeprecatedCreateVariant(ctx context.Context, q *wrapshop.DeprecatedCreateVa
 	return nil
 }
 
-func CreateProductSourceCategory(ctx context.Context, q *wrapshop.CreateProductSourceCategoryEndpoint) error {
+func (s *Service) CreateProductSourceCategory(ctx context.Context, q *wrapshop.CreateProductSourceCategoryEndpoint) error {
 	cmd := &catalogmodelx.CreateShopCategoryCommand{
 		ShopID:   q.Context.Shop.ID,
 		Name:     q.Name,
@@ -798,7 +801,7 @@ func CreateProductSourceCategory(ctx context.Context, q *wrapshop.CreateProductS
 	return nil
 }
 
-func UpdateProductsPSCategory(ctx context.Context, q *wrapshop.UpdateProductsPSCategoryEndpoint) error {
+func (s *Service) UpdateProductsPSCategory(ctx context.Context, q *wrapshop.UpdateProductsPSCategoryEndpoint) error {
 	cmd := &catalogmodelx.UpdateProductsShopCategoryCommand{
 		CategoryID: q.CategoryId,
 		ProductIDs: q.ProductIds,
@@ -813,7 +816,7 @@ func UpdateProductsPSCategory(ctx context.Context, q *wrapshop.UpdateProductsPSC
 	return nil
 }
 
-func GetProductSourceCategory(ctx context.Context, q *wrapshop.GetProductSourceCategoryEndpoint) error {
+func (s *Service) GetProductSourceCategory(ctx context.Context, q *wrapshop.GetProductSourceCategoryEndpoint) error {
 	cmd := &catalogmodelx.GetShopCategoryQuery{
 		ShopID:     q.Context.Shop.ID,
 		CategoryID: q.Id,
@@ -827,7 +830,7 @@ func GetProductSourceCategory(ctx context.Context, q *wrapshop.GetProductSourceC
 	return nil
 }
 
-func GetProductSourceCategories(ctx context.Context, q *wrapshop.GetProductSourceCategoriesEndpoint) error {
+func (s *Service) GetProductSourceCategories(ctx context.Context, q *wrapshop.GetProductSourceCategoriesEndpoint) error {
 	cmd := &catalogmodelx.GetProductSourceCategoriesQuery{
 		ShopID: q.Context.Shop.ID,
 	}
@@ -842,7 +845,7 @@ func GetProductSourceCategories(ctx context.Context, q *wrapshop.GetProductSourc
 	return nil
 }
 
-func UpdateProductSourceCategory(ctx context.Context, q *wrapshop.UpdateProductSourceCategoryEndpoint) error {
+func (s *Service) UpdateProductSourceCategory(ctx context.Context, q *wrapshop.UpdateProductSourceCategoryEndpoint) error {
 	cmd := &catalogmodelx.UpdateShopCategoryCommand{
 		ID:       q.Id,
 		ShopID:   q.Context.Shop.ID,
@@ -856,7 +859,7 @@ func UpdateProductSourceCategory(ctx context.Context, q *wrapshop.UpdateProductS
 	return nil
 }
 
-func RemoveProductSourceCategory(ctx context.Context, q *wrapshop.RemoveProductSourceCategoryEndpoint) error {
+func (s *Service) RemoveProductSourceCategory(ctx context.Context, q *wrapshop.RemoveProductSourceCategoryEndpoint) error {
 	cmd := &catalogmodelx.RemoveShopCategoryCommand{
 		ID:     q.Id,
 		ShopID: q.Context.Shop.ID,
@@ -870,7 +873,7 @@ func RemoveProductSourceCategory(ctx context.Context, q *wrapshop.RemoveProductS
 	return nil
 }
 
-func UpdateProductImages(ctx context.Context, q *wrapshop.UpdateProductImagesEndpoint) error {
+func (s *Service) UpdateProductImages(ctx context.Context, q *wrapshop.UpdateProductImagesEndpoint) error {
 	shopID := q.Context.Shop.ID
 
 	var metaUpdate []*meta.UpdateSet
@@ -907,7 +910,7 @@ func UpdateProductImages(ctx context.Context, q *wrapshop.UpdateProductImagesEnd
 	return nil
 }
 
-func UpdateProductMetaFields(ctx context.Context, q *wrapshop.UpdateProductMetaFieldsEndpoint) error {
+func (s *Service) UpdateProductMetaFields(ctx context.Context, q *wrapshop.UpdateProductMetaFieldsEndpoint) error {
 	metaFields := []*catalog.MetaField{}
 	for _, metaField := range q.MetaFields {
 		metaFields = append(metaFields, &catalog.MetaField{
@@ -927,7 +930,7 @@ func UpdateProductMetaFields(ctx context.Context, q *wrapshop.UpdateProductMetaF
 	return nil
 }
 
-func UpdateVariantImages(ctx context.Context, q *wrapshop.UpdateVariantImagesEndpoint) error {
+func (s *Service) UpdateVariantImages(ctx context.Context, q *wrapshop.UpdateVariantImagesEndpoint) error {
 	shopID := q.Context.Shop.ID
 
 	var metaUpdate []*meta.UpdateSet
@@ -963,7 +966,7 @@ func UpdateVariantImages(ctx context.Context, q *wrapshop.UpdateVariantImagesEnd
 	return nil
 }
 
-func GetMoneyTransaction(ctx context.Context, q *wrapshop.GetMoneyTransactionEndpoint) error {
+func (s *Service) GetMoneyTransaction(ctx context.Context, q *wrapshop.GetMoneyTransactionEndpoint) error {
 	query := &moneymodelx.GetMoneyTransaction{
 		ShopID: q.Context.Shop.ID,
 		ID:     q.Id,
@@ -975,7 +978,7 @@ func GetMoneyTransaction(ctx context.Context, q *wrapshop.GetMoneyTransactionEnd
 	return nil
 }
 
-func GetMoneyTransactions(ctx context.Context, q *wrapshop.GetMoneyTransactionsEndpoint) error {
+func (s *Service) GetMoneyTransactions(ctx context.Context, q *wrapshop.GetMoneyTransactionsEndpoint) error {
 	paging := q.Paging.CMPaging()
 	query := &moneymodelx.GetMoneyTransactions{
 		ShopID:  q.Context.Shop.ID,
@@ -992,7 +995,7 @@ func GetMoneyTransactions(ctx context.Context, q *wrapshop.GetMoneyTransactionsE
 	return nil
 }
 
-func SummarizeFulfillments(ctx context.Context, q *wrapshop.SummarizeFulfillmentsEndpoint) error {
+func (s *Service) SummarizeFulfillments(ctx context.Context, q *wrapshop.SummarizeFulfillmentsEndpoint) error {
 	query := &model.SummarizeFulfillmentsRequest{
 		ShopID:   q.Context.Shop.ID,
 		DateFrom: q.DateFrom,
@@ -1008,7 +1011,7 @@ func SummarizeFulfillments(ctx context.Context, q *wrapshop.SummarizeFulfillment
 	return nil
 }
 
-func GetSummarizePOS(ctx context.Context, q *wrapshop.SummarizePOSEndpoint) error {
+func (s *Service) GetSummarizePOS(ctx context.Context, q *wrapshop.SummarizePOSEndpoint) error {
 	dateFrom, dateTo, err := cm.ParseDateFromTo(q.DateFrom, q.DateTo)
 	if err != nil {
 		return err
@@ -1027,7 +1030,7 @@ func GetSummarizePOS(ctx context.Context, q *wrapshop.SummarizePOSEndpoint) erro
 	return nil
 }
 
-func CalcBalance(ctx context.Context, q *wrapshop.CalcBalanceShopEndpoint) error {
+func (s *Service) CalcBalance(ctx context.Context, q *wrapshop.CalcBalanceShopEndpoint) error {
 	query := &model.GetBalanceShopCommand{
 		ShopID: q.Context.Shop.ID,
 	}
@@ -1041,7 +1044,7 @@ func CalcBalance(ctx context.Context, q *wrapshop.CalcBalanceShopEndpoint) error
 	return nil
 }
 
-func CreateDevice(ctx context.Context, q *wrapshop.CreateDeviceEndpoint) error {
+func (s *Service) CreateDevice(ctx context.Context, q *wrapshop.CreateDeviceEndpoint) error {
 	cmd := &notimodel.CreateDeviceArgs{
 		UserID:           q.Context.UserID,
 		AccountID:        q.Context.Shop.ID,
@@ -1057,7 +1060,7 @@ func CreateDevice(ctx context.Context, q *wrapshop.CreateDeviceEndpoint) error {
 	return nil
 }
 
-func DeleteDevice(ctx context.Context, q *wrapshop.DeleteDeviceEndpoint) error {
+func (s *Service) DeleteDevice(ctx context.Context, q *wrapshop.DeleteDeviceEndpoint) error {
 	device := &notimodel.Device{
 		DeviceID:         q.DeviceId,
 		ExternalDeviceID: q.ExternalDeviceId,
@@ -1073,7 +1076,7 @@ func DeleteDevice(ctx context.Context, q *wrapshop.DeleteDeviceEndpoint) error {
 	return nil
 }
 
-func GetNotification(ctx context.Context, q *wrapshop.GetNotificationEndpoint) error {
+func (s *Service) GetNotification(ctx context.Context, q *wrapshop.GetNotificationEndpoint) error {
 	query := &notimodel.GetNotificationArgs{
 		AccountID: q.Context.Shop.ID,
 		ID:        q.Id,
@@ -1086,7 +1089,7 @@ func GetNotification(ctx context.Context, q *wrapshop.GetNotificationEndpoint) e
 	return nil
 }
 
-func GetNotifications(ctx context.Context, q *wrapshop.GetNotificationsEndpoint) error {
+func (s *Service) GetNotifications(ctx context.Context, q *wrapshop.GetNotificationsEndpoint) error {
 	paging := q.Paging.CMPaging()
 	query := &notimodel.GetNotificationsArgs{
 		Paging:    paging,
@@ -1103,7 +1106,7 @@ func GetNotifications(ctx context.Context, q *wrapshop.GetNotificationsEndpoint)
 	return nil
 }
 
-func UpdateNotifications(ctx context.Context, q *wrapshop.UpdateNotificationsEndpoint) error {
+func (s *Service) UpdateNotifications(ctx context.Context, q *wrapshop.UpdateNotificationsEndpoint) error {
 	cmd := &notimodel.UpdateNotificationsArgs{
 		IDs:    q.Ids,
 		IsRead: q.IsRead,
@@ -1117,7 +1120,7 @@ func UpdateNotifications(ctx context.Context, q *wrapshop.UpdateNotificationsEnd
 	return nil
 }
 
-func GetShipnowFulfillment(ctx context.Context, q *wrapshop.GetShipnowFulfillmentEndpoint) error {
+func (s *Service) GetShipnowFulfillment(ctx context.Context, q *wrapshop.GetShipnowFulfillmentEndpoint) error {
 	query := &shipnow.GetShipnowFulfillmentQuery{
 		Id:     q.Id,
 		ShopId: q.Context.Shop.ID,
@@ -1131,7 +1134,7 @@ func GetShipnowFulfillment(ctx context.Context, q *wrapshop.GetShipnowFulfillmen
 	return nil
 }
 
-func GetShipnowFulfillments(ctx context.Context, q *wrapshop.GetShipnowFulfillmentsEndpoint) error {
+func (s *Service) GetShipnowFulfillments(ctx context.Context, q *wrapshop.GetShipnowFulfillmentsEndpoint) error {
 	shopIDs, err := api.MixAccount(q.Context.Claim, q.Mixed)
 	if err != nil {
 		return err
@@ -1153,7 +1156,7 @@ func GetShipnowFulfillments(ctx context.Context, q *wrapshop.GetShipnowFulfillme
 	return nil
 }
 
-func CreateShipnowFulfillment(ctx context.Context, q *wrapshop.CreateShipnowFulfillmentEndpoint) error {
+func (s *Service) CreateShipnowFulfillment(ctx context.Context, q *wrapshop.CreateShipnowFulfillmentEndpoint) error {
 	pickupAddress, err := q.PickupAddress.Fulfilled()
 	if err != nil {
 		return err
@@ -1175,7 +1178,7 @@ func CreateShipnowFulfillment(ctx context.Context, q *wrapshop.CreateShipnowFulf
 	return nil
 }
 
-func ConfirmShipnowFulfillment(ctx context.Context, q *wrapshop.ConfirmShipnowFulfillmentEndpoint) error {
+func (s *Service) ConfirmShipnowFulfillment(ctx context.Context, q *wrapshop.ConfirmShipnowFulfillmentEndpoint) error {
 	cmd := &shipnow.ConfirmShipnowFulfillmentCommand{
 		Id:     q.Id,
 		ShopId: q.Context.Shop.ID,
@@ -1187,7 +1190,7 @@ func ConfirmShipnowFulfillment(ctx context.Context, q *wrapshop.ConfirmShipnowFu
 	return nil
 }
 
-func UpdateShipnowFulfillment(ctx context.Context, q *wrapshop.UpdateShipnowFulfillmentEndpoint) error {
+func (s *Service) UpdateShipnowFulfillment(ctx context.Context, q *wrapshop.UpdateShipnowFulfillmentEndpoint) error {
 	pickupAddress, err := q.PickupAddress.Fulfilled()
 	if err != nil {
 		return err
@@ -1210,7 +1213,7 @@ func UpdateShipnowFulfillment(ctx context.Context, q *wrapshop.UpdateShipnowFulf
 	return nil
 }
 
-func CancelShipnowFulfillment(ctx context.Context, q *wrapshop.CancelShipnowFulfillmentEndpoint) error {
+func (s *Service) CancelShipnowFulfillment(ctx context.Context, q *wrapshop.CancelShipnowFulfillmentEndpoint) error {
 	cmd := &shipnow.CancelShipnowFulfillmentCommand{
 		Id:           q.Id,
 		ShopId:       q.Context.Shop.ID,
@@ -1226,7 +1229,7 @@ func CancelShipnowFulfillment(ctx context.Context, q *wrapshop.CancelShipnowFulf
 	return nil
 }
 
-func GetShipnowServices(ctx context.Context, q *wrapshop.GetShipnowServicesEndpoint) error {
+func (s *Service) GetShipnowServices(ctx context.Context, q *wrapshop.GetShipnowServicesEndpoint) error {
 	pickupAddress, err := q.PickupAddress.Fulfilled()
 	if err != nil {
 		return err
@@ -1262,7 +1265,7 @@ func GetShipnowServices(ctx context.Context, q *wrapshop.GetShipnowServicesEndpo
 	return nil
 }
 
-func CreateExternalAccountAhamove(ctx context.Context, q *wrapshop.CreateExternalAccountAhamoveEndpoint) error {
+func (s *Service) CreateExternalAccountAhamove(ctx context.Context, q *wrapshop.CreateExternalAccountAhamoveEndpoint) error {
 	query := &identity.GetUserByIDQuery{
 		UserID: q.Context.Shop.OwnerID,
 	}
@@ -1292,7 +1295,7 @@ func CreateExternalAccountAhamove(ctx context.Context, q *wrapshop.CreateExterna
 	return nil
 }
 
-func GetExternalAccountAhamove(ctx context.Context, q *wrapshop.GetExternalAccountAhamoveEndpoint) error {
+func (s *Service) GetExternalAccountAhamove(ctx context.Context, q *wrapshop.GetExternalAccountAhamoveEndpoint) error {
 	queryUser := &identity.GetUserByIDQuery{
 		UserID: q.Context.Shop.OwnerID,
 	}
@@ -1326,7 +1329,7 @@ func GetExternalAccountAhamove(ctx context.Context, q *wrapshop.GetExternalAccou
 	return nil
 }
 
-func RequestVerifyExternalAccountAhamove(ctx context.Context, q *wrapshop.RequestVerifyExternalAccountAhamoveEndpoint) error {
+func (s *Service) RequestVerifyExternalAccountAhamove(ctx context.Context, q *wrapshop.RequestVerifyExternalAccountAhamoveEndpoint) error {
 	query := &model.GetUserByIDQuery{
 		UserID: q.Context.Shop.OwnerID,
 	}
@@ -1350,7 +1353,7 @@ func RequestVerifyExternalAccountAhamove(ctx context.Context, q *wrapshop.Reques
 	return nil
 }
 
-func UpdateExternalAccountAhamoveVerification(ctx context.Context, r *wrapshop.UpdateExternalAccountAhamoveVerificationEndpoint) error {
+func (s *Service) UpdateExternalAccountAhamoveVerification(ctx context.Context, r *wrapshop.UpdateExternalAccountAhamoveVerificationEndpoint) error {
 	if err := validateUrl(r.IdCardFrontImg, r.IdCardBackImg, r.PortraitImg, r.WebsiteUrl, r.FanpageUrl); err != nil {
 		return err
 	}
@@ -1403,7 +1406,7 @@ func validateUrl(imgsUrl ...string) error {
 	return nil
 }
 
-func GetExternalAccountHaravan(ctx context.Context, r *wrapshop.GetExternalAccountHaravanEndpoint) error {
+func (s *Service) GetExternalAccountHaravan(ctx context.Context, r *wrapshop.GetExternalAccountHaravanEndpoint) error {
 	query := &haravanidentity.GetExternalAccountHaravanByShopIDQuery{
 		ShopID: r.Context.Shop.ID,
 	}
@@ -1414,7 +1417,7 @@ func GetExternalAccountHaravan(ctx context.Context, r *wrapshop.GetExternalAccou
 	return nil
 }
 
-func CreateExternalAccountHaravan(ctx context.Context, r *wrapshop.CreateExternalAccountHaravanEndpoint) error {
+func (s *Service) CreateExternalAccountHaravan(ctx context.Context, r *wrapshop.CreateExternalAccountHaravanEndpoint) error {
 	cmd := &haravanidentity.CreateExternalAccountHaravanCommand{
 		ShopID:      r.Context.Shop.ID,
 		Subdomain:   r.Subdomain,
@@ -1428,7 +1431,7 @@ func CreateExternalAccountHaravan(ctx context.Context, r *wrapshop.CreateExterna
 	return nil
 }
 
-func UpdateExternalAccountHaravanToken(ctx context.Context, r *wrapshop.UpdateExternalAccountHaravanTokenEndpoint) error {
+func (s *Service) UpdateExternalAccountHaravanToken(ctx context.Context, r *wrapshop.UpdateExternalAccountHaravanTokenEndpoint) error {
 	cmd := &haravanidentity.UpdateExternalAccountHaravanTokenCommand{
 		ShopID:      r.Context.Shop.ID,
 		Subdomain:   r.Subdomain,
@@ -1442,7 +1445,7 @@ func UpdateExternalAccountHaravanToken(ctx context.Context, r *wrapshop.UpdateEx
 	return nil
 }
 
-func ConnectCarrierServiceExternalAccountHaravan(ctx context.Context, r *wrapshop.ConnectCarrierServiceExternalAccountHaravanEndpoint) error {
+func (s *Service) ConnectCarrierServiceExternalAccountHaravan(ctx context.Context, r *wrapshop.ConnectCarrierServiceExternalAccountHaravanEndpoint) error {
 	cmd := &haravanidentity.ConnectCarrierServiceExternalAccountHaravanCommand{
 		ShopID: r.Context.Shop.ID,
 	}
@@ -1455,7 +1458,7 @@ func ConnectCarrierServiceExternalAccountHaravan(ctx context.Context, r *wrapsho
 	return nil
 }
 
-func DeleteConnectedCarrierServiceExternalAccountHaravan(ctx context.Context, r *wrapshop.DeleteConnectedCarrierServiceExternalAccountHaravanEndpoint) error {
+func (s *Service) DeleteConnectedCarrierServiceExternalAccountHaravan(ctx context.Context, r *wrapshop.DeleteConnectedCarrierServiceExternalAccountHaravanEndpoint) error {
 	cmd := &haravanidentity.DeleteConnectedCarrierServiceExternalAccountHaravanCommand{
 		ShopID: r.Context.Shop.ID,
 	}
@@ -1468,7 +1471,7 @@ func DeleteConnectedCarrierServiceExternalAccountHaravan(ctx context.Context, r 
 	return nil
 }
 
-func PaymentTradingOrder(ctx context.Context, q *wrapshop.PaymentTradingOrderEndpoint) error {
+func (s *Service) PaymentTradingOrder(ctx context.Context, q *wrapshop.PaymentTradingOrderEndpoint) error {
 	if q.OrderId == 0 {
 		return cm.Errorf(cm.InvalidArgument, nil, "Missing OrderID")
 	}
@@ -1500,7 +1503,7 @@ func PaymentTradingOrder(ctx context.Context, q *wrapshop.PaymentTradingOrderEnd
 	return nil
 }
 
-func PaymentCheckReturnData(ctx context.Context, q *wrapshop.PaymentCheckReturnDataEndpoint) error {
+func (s *Service) PaymentCheckReturnData(ctx context.Context, q *wrapshop.PaymentCheckReturnDataEndpoint) error {
 	if q.Id == "" {
 		return cm.Errorf(cm.InvalidArgument, nil, "Mã giao dịch không được để trống")
 	}
@@ -1525,7 +1528,7 @@ func PaymentCheckReturnData(ctx context.Context, q *wrapshop.PaymentCheckReturnD
 	return nil
 }
 
-func CreateCategory(ctx context.Context, q *wrapshop.CreateCategoryEndpoint) error {
+func (s *Service) CreateCategory(ctx context.Context, q *wrapshop.CreateCategoryEndpoint) error {
 	cmd := &catalog.CreateShopCategoryCommand{
 		ShopID:   q.Context.Shop.ID,
 		Name:     q.Name,
@@ -1538,7 +1541,7 @@ func CreateCategory(ctx context.Context, q *wrapshop.CreateCategoryEndpoint) err
 	return nil
 }
 
-func GetCategory(ctx context.Context, q *wrapshop.GetCategoryEndpoint) error {
+func (s *Service) GetCategory(ctx context.Context, q *wrapshop.GetCategoryEndpoint) error {
 	query := &catalog.GetShopCategoryQuery{
 		ID:     q.Id,
 		ShopID: q.Context.Shop.ID,
@@ -1550,7 +1553,7 @@ func GetCategory(ctx context.Context, q *wrapshop.GetCategoryEndpoint) error {
 	return nil
 }
 
-func GetCategories(ctx context.Context, q *wrapshop.GetCategoriesEndpoint) error {
+func (s *Service) GetCategories(ctx context.Context, q *wrapshop.GetCategoriesEndpoint) error {
 	paging := q.Paging.CMPaging()
 	query := &catalog.ListShopCategoriesQuery{
 		ShopID:  q.Context.Shop.ID,
@@ -1568,7 +1571,7 @@ func GetCategories(ctx context.Context, q *wrapshop.GetCategoriesEndpoint) error
 	return nil
 }
 
-func UpdateCategory(ctx context.Context, q *wrapshop.UpdateCategoryEndpoint) error {
+func (s *Service) UpdateCategory(ctx context.Context, q *wrapshop.UpdateCategoryEndpoint) error {
 	shopID := q.Context.Shop.ID
 	cmd := &catalog.UpdateShopCategoryCommand{
 		ID:       q.Id,
@@ -1583,7 +1586,7 @@ func UpdateCategory(ctx context.Context, q *wrapshop.UpdateCategoryEndpoint) err
 	return nil
 }
 
-func DeleteCategory(ctx context.Context, r *wrapshop.DeleteCategoryEndpoint) error {
+func (s *Service) DeleteCategory(ctx context.Context, r *wrapshop.DeleteCategoryEndpoint) error {
 	cmd := &catalog.DeleteShopCategoryCommand{
 		ID:     r.Id,
 		ShopID: r.Context.Shop.ID,
@@ -1595,7 +1598,7 @@ func DeleteCategory(ctx context.Context, r *wrapshop.DeleteCategoryEndpoint) err
 	return nil
 }
 
-func UpdateProductCategory(ctx context.Context, q *wrapshop.UpdateProductCategoryEndpoint) error {
+func (s *Service) UpdateProductCategory(ctx context.Context, q *wrapshop.UpdateProductCategoryEndpoint) error {
 	shopID := q.Context.Shop.ID
 	cmd := &catalog.UpdateShopProductCategoryCommand{
 		ProductID:  q.ProductId,
@@ -1609,7 +1612,7 @@ func UpdateProductCategory(ctx context.Context, q *wrapshop.UpdateProductCategor
 	return nil
 }
 
-func GetCollection(ctx context.Context, q *wrapshop.GetCollectionEndpoint) error {
+func (s *Service) GetCollection(ctx context.Context, q *wrapshop.GetCollectionEndpoint) error {
 	query := &catalog.GetShopCollectionQuery{
 		ID:     q.Id,
 		ShopID: q.Context.Shop.ID,
@@ -1621,7 +1624,7 @@ func GetCollection(ctx context.Context, q *wrapshop.GetCollectionEndpoint) error
 	return nil
 }
 
-func GetCollections(ctx context.Context, q *wrapshop.GetCollectionsEndpoint) error {
+func (s *Service) GetCollections(ctx context.Context, q *wrapshop.GetCollectionsEndpoint) error {
 	paging := q.Paging.CMPaging()
 	query := &catalog.ListShopCollectionsQuery{
 		ShopID:  q.Context.Shop.ID,
@@ -1638,7 +1641,7 @@ func GetCollections(ctx context.Context, q *wrapshop.GetCollectionsEndpoint) err
 	return nil
 }
 
-func UpdateCollection(ctx context.Context, q *wrapshop.UpdateCollectionEndpoint) error {
+func (s *Service) UpdateCollection(ctx context.Context, q *wrapshop.UpdateCollectionEndpoint) error {
 	shopID := q.Context.Shop.ID
 	cmd := &catalog.UpdateShopCollectionCommand{
 		ID:          q.Id,
@@ -1655,7 +1658,7 @@ func UpdateCollection(ctx context.Context, q *wrapshop.UpdateCollectionEndpoint)
 	return nil
 }
 
-func CreateCollection(ctx context.Context, q *wrapshop.CreateCollectionEndpoint) error {
+func (s *Service) CreateCollection(ctx context.Context, q *wrapshop.CreateCollectionEndpoint) error {
 	cmd := &catalog.CreateShopCollectionCommand{
 		ShopID:      q.Context.Shop.ID,
 		Name:        q.Name,
@@ -1670,7 +1673,7 @@ func CreateCollection(ctx context.Context, q *wrapshop.CreateCollectionEndpoint)
 	return nil
 }
 
-func AddProductCollections(ctx context.Context, r *wrapshop.AddProductCollectionEndpoint) error {
+func (s *Service) AddProductCollections(ctx context.Context, r *wrapshop.AddProductCollectionEndpoint) error {
 	cmd := &catalog.AddShopProductCollectionCommand{
 		ProductID:     r.ProductId,
 		CollectionIDs: r.CollectionIds,
@@ -1683,7 +1686,7 @@ func AddProductCollections(ctx context.Context, r *wrapshop.AddProductCollection
 	return nil
 }
 
-func RemoveProductCollection(ctx context.Context, r *wrapshop.RemoveProductCollectionEndpoint) error {
+func (s *Service) RemoveProductCollection(ctx context.Context, r *wrapshop.RemoveProductCollectionEndpoint) error {
 	cmd := &catalog.RemoveShopProductCollectionCommand{
 		ProductID:     r.ProductId,
 		CollectionIDs: r.CollectionIds,
@@ -1696,7 +1699,7 @@ func RemoveProductCollection(ctx context.Context, r *wrapshop.RemoveProductColle
 	return nil
 }
 
-func GetCollectionsByProductID(ctx context.Context, q *wrapshop.GetCollectionsByProductIDEndpoint) error {
+func (s *Service) GetCollectionsByProductID(ctx context.Context, q *wrapshop.GetCollectionsByProductIDEndpoint) error {
 	query := &catalog.ListShopCollectionsByProductIDQuery{
 		ShopID:    q.Context.Shop.ID,
 		ProductID: q.ProductId,
@@ -1710,7 +1713,7 @@ func GetCollectionsByProductID(ctx context.Context, q *wrapshop.GetCollectionsBy
 	return nil
 }
 
-func RemoveProductCategory(ctx context.Context, r *wrapshop.RemoveProductCategoryEndpoint) error {
+func (s *Service) RemoveProductCategory(ctx context.Context, r *wrapshop.RemoveProductCategoryEndpoint) error {
 	cmd := &catalog.RemoveShopProductCategoryCommand{
 		ShopID:    r.Context.Shop.ID,
 		ProductID: r.Id,

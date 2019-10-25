@@ -3,63 +3,65 @@ package admin
 import (
 	"context"
 
+	notimodel "etop.vn/backend/com/handler/notifier/model"
 	"etop.vn/backend/com/main/moneytx/modelx"
 	shippingmodelx "etop.vn/backend/com/main/shipping/modelx"
+	pbcm "etop.vn/backend/pb/common"
+	pbetop "etop.vn/backend/pb/etop"
+	pbadmin "etop.vn/backend/pb/etop/admin"
+	pborder "etop.vn/backend/pb/etop/order"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/etop/api"
 	"etop.vn/backend/pkg/etop/authorize/login"
 	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/backend/pkg/etop/sqlstore"
-	"etop.vn/common/l"
-
-	notimodel "etop.vn/backend/com/handler/notifier/model"
-	pbcm "etop.vn/backend/pb/common"
-	pbetop "etop.vn/backend/pb/etop"
-	pbadmin "etop.vn/backend/pb/etop/admin"
-	pborder "etop.vn/backend/pb/etop/order"
 	wrapadmin "etop.vn/backend/wrapper/etop/admin"
+	"etop.vn/common/l"
 )
 
 var ll = l.New()
+var s = &Service{}
 
 func init() {
 	bus.AddHandlers("api",
-		VersionInfo,
-		LoginAsAccount,
-		GetMoneyTransaction,
-		GetMoneyTransactions,
-		ConfirmMoneyTransaction,
-		UpdateMoneyTransaction,
-		GetMoneyTransactionShippingExternal,
-		GetMoneyTransactionShippingExternals,
-		RemoveMoneyTransactionShippingExternalLines,
-		DeleteMoneyTransactionShippingExternal,
-		ConfirmMoneyTransactionShippingExternal,
-		ConfirmMoneyTransactionShippingExternals,
-		UpdateMoneyTransactionShippingExternal,
-		GetShop,
-		GetShops,
-		CreateCredit,
-		GetCredit,
-		GetCredits,
-		UpdateCredit,
-		ConfirmCredit,
-		DeleteCredit,
-		CreatePartner,
-		GenerateAPIKey,
-		UpdateFulfillment,
-		CreateMoneyTransactionShippingEtop,
-		GetMoneyTransactionShippingEtop,
-		GetMoneyTransactionShippingEtops,
-		UpdateMoneyTransactionShippingEtop,
-		ConfirmMoneyTransactionShippingEtop,
-		DeleteMoneyTransactionShippingEtop,
-		CreateNotifications,
+		s.VersionInfo,
+		s.LoginAsAccount,
+		s.GetMoneyTransaction,
+		s.GetMoneyTransactions,
+		s.ConfirmMoneyTransaction,
+		s.UpdateMoneyTransaction,
+		s.GetMoneyTransactionShippingExternal,
+		s.GetMoneyTransactionShippingExternals,
+		s.RemoveMoneyTransactionShippingExternalLines,
+		s.DeleteMoneyTransactionShippingExternal,
+		s.ConfirmMoneyTransactionShippingExternal,
+		s.ConfirmMoneyTransactionShippingExternals,
+		s.UpdateMoneyTransactionShippingExternal,
+		s.GetShop,
+		s.GetShops,
+		s.CreateCredit,
+		s.GetCredit,
+		s.GetCredits,
+		s.UpdateCredit,
+		s.ConfirmCredit,
+		s.DeleteCredit,
+		s.CreatePartner,
+		s.GenerateAPIKey,
+		s.UpdateFulfillment,
+		s.CreateMoneyTransactionShippingEtop,
+		s.GetMoneyTransactionShippingEtop,
+		s.GetMoneyTransactionShippingEtops,
+		s.UpdateMoneyTransactionShippingEtop,
+		s.ConfirmMoneyTransactionShippingEtop,
+		s.DeleteMoneyTransactionShippingEtop,
+		s.CreateNotifications,
 	)
 }
 
-func VersionInfo(ctx context.Context, q *wrapadmin.VersionInfoEndpoint) error {
+type Service struct{}
+
+func (s *Service) VersionInfo(ctx context.Context, q *wrapadmin.VersionInfoEndpoint) error {
 	q.Result = &pbcm.VersionInfoResponse{
 		Service: "etop.Admin",
 		Version: "0.1",
@@ -67,7 +69,7 @@ func VersionInfo(ctx context.Context, q *wrapadmin.VersionInfoEndpoint) error {
 	return nil
 }
 
-func LoginAsAccount(ctx context.Context, q *wrapadmin.AdminLoginAsAccountEndpoint) error {
+func (s *Service) LoginAsAccount(ctx context.Context, q *wrapadmin.AdminLoginAsAccountEndpoint) error {
 	loginQuery := &login.LoginUserQuery{
 		UserID:   q.Context.UserID,
 		Password: q.Password,
@@ -84,12 +86,12 @@ func LoginAsAccount(ctx context.Context, q *wrapadmin.AdminLoginAsAccountEndpoin
 		return cm.Error(cm.InvalidArgument, "Must be shop account", nil)
 	}
 
-	resp, err := adminCreateLoginResponse(ctx, q.Context.UserID, q.UserId, q.AccountId)
+	resp, err := s.adminCreateLoginResponse(ctx, q.Context.UserID, q.UserId, q.AccountId)
 	q.Result = resp
 	return err
 }
 
-func adminCreateLoginResponse(ctx context.Context, adminID, userID, accountID int64) (*pbetop.LoginResponse, error) {
+func (s *Service) adminCreateLoginResponse(ctx context.Context, adminID, userID, accountID int64) (*pbetop.LoginResponse, error) {
 	if adminID == 0 {
 		return nil, cm.Error(cm.InvalidArgument, "Missing AdminID", nil)
 	}
@@ -101,7 +103,7 @@ func adminCreateLoginResponse(ctx context.Context, adminID, userID, accountID in
 	return resp, nil
 }
 
-func GetMoneyTransaction(ctx context.Context, q *wrapadmin.GetMoneyTransactionEndpoint) error {
+func (s *Service) GetMoneyTransaction(ctx context.Context, q *wrapadmin.GetMoneyTransactionEndpoint) error {
 	query := &modelx.GetMoneyTransaction{
 		ID: q.Id,
 	}
@@ -112,7 +114,7 @@ func GetMoneyTransaction(ctx context.Context, q *wrapadmin.GetMoneyTransactionEn
 	return nil
 }
 
-func GetMoneyTransactions(ctx context.Context, q *wrapadmin.GetMoneyTransactionsEndpoint) error {
+func (s *Service) GetMoneyTransactions(ctx context.Context, q *wrapadmin.GetMoneyTransactionsEndpoint) error {
 	paging := q.Paging.CMPaging()
 	query := &modelx.GetMoneyTransactions{
 		IDs:                                q.Ids,
@@ -131,7 +133,7 @@ func GetMoneyTransactions(ctx context.Context, q *wrapadmin.GetMoneyTransactions
 	return nil
 }
 
-func UpdateMoneyTransaction(ctx context.Context, q *wrapadmin.UpdateMoneyTransactionEndpoint) error {
+func (s *Service) UpdateMoneyTransaction(ctx context.Context, q *wrapadmin.UpdateMoneyTransactionEndpoint) error {
 	cmd := &modelx.UpdateMoneyTransaction{
 		ID:            q.Id,
 		Note:          q.Note,
@@ -145,7 +147,7 @@ func UpdateMoneyTransaction(ctx context.Context, q *wrapadmin.UpdateMoneyTransac
 	return nil
 }
 
-func ConfirmMoneyTransaction(ctx context.Context, q *wrapadmin.ConfirmMoneyTransactionEndpoint) error {
+func (s *Service) ConfirmMoneyTransaction(ctx context.Context, q *wrapadmin.ConfirmMoneyTransactionEndpoint) error {
 	cmd := &modelx.ConfirmMoneyTransaction{
 		MoneyTransactionID: q.MoneyTransactionId,
 		ShopID:             q.ShopId,
@@ -162,7 +164,7 @@ func ConfirmMoneyTransaction(ctx context.Context, q *wrapadmin.ConfirmMoneyTrans
 	return nil
 }
 
-func GetMoneyTransactionShippingExternal(ctx context.Context, q *wrapadmin.GetMoneyTransactionShippingExternalEndpoint) error {
+func (s *Service) GetMoneyTransactionShippingExternal(ctx context.Context, q *wrapadmin.GetMoneyTransactionShippingExternalEndpoint) error {
 	query := &modelx.GetMoneyTransactionShippingExternal{
 		ID: q.Id,
 	}
@@ -173,7 +175,7 @@ func GetMoneyTransactionShippingExternal(ctx context.Context, q *wrapadmin.GetMo
 	return nil
 }
 
-func GetMoneyTransactionShippingExternals(ctx context.Context, q *wrapadmin.GetMoneyTransactionShippingExternalsEndpoint) error {
+func (s *Service) GetMoneyTransactionShippingExternals(ctx context.Context, q *wrapadmin.GetMoneyTransactionShippingExternalsEndpoint) error {
 	paging := q.Paging.CMPaging()
 	query := &modelx.GetMoneyTransactionShippingExternals{
 		IDs:     q.Ids,
@@ -190,7 +192,7 @@ func GetMoneyTransactionShippingExternals(ctx context.Context, q *wrapadmin.GetM
 	return nil
 }
 
-func RemoveMoneyTransactionShippingExternalLines(ctx context.Context, q *wrapadmin.RemoveMoneyTransactionShippingExternalLinesEndpoint) error {
+func (s *Service) RemoveMoneyTransactionShippingExternalLines(ctx context.Context, q *wrapadmin.RemoveMoneyTransactionShippingExternalLinesEndpoint) error {
 	cmd := &modelx.RemoveMoneyTransactionShippingExternalLines{
 		MoneyTransactionShippingExternalID: q.MoneyTransactionShippingExternalId,
 		LineIDs:                            q.LineIds,
@@ -202,7 +204,7 @@ func RemoveMoneyTransactionShippingExternalLines(ctx context.Context, q *wrapadm
 	return nil
 }
 
-func DeleteMoneyTransactionShippingExternal(ctx context.Context, q *wrapadmin.DeleteMoneyTransactionShippingExternalEndpoint) error {
+func (s *Service) DeleteMoneyTransactionShippingExternal(ctx context.Context, q *wrapadmin.DeleteMoneyTransactionShippingExternalEndpoint) error {
 	cmd := &modelx.DeleteMoneyTransactionShippingExternal{
 		ID: q.Id,
 	}
@@ -215,7 +217,7 @@ func DeleteMoneyTransactionShippingExternal(ctx context.Context, q *wrapadmin.De
 	return nil
 }
 
-func ConfirmMoneyTransactionShippingExternal(ctx context.Context, q *wrapadmin.ConfirmMoneyTransactionShippingExternalEndpoint) error {
+func (s *Service) ConfirmMoneyTransactionShippingExternal(ctx context.Context, q *wrapadmin.ConfirmMoneyTransactionShippingExternalEndpoint) error {
 	cmd := &modelx.ConfirmMoneyTransactionShippingExternal{
 		ID: q.Id,
 	}
@@ -229,7 +231,7 @@ func ConfirmMoneyTransactionShippingExternal(ctx context.Context, q *wrapadmin.C
 	return nil
 }
 
-func ConfirmMoneyTransactionShippingExternals(ctx context.Context, q *wrapadmin.ConfirmMoneyTransactionShippingExternalsEndpoint) error {
+func (s *Service) ConfirmMoneyTransactionShippingExternals(ctx context.Context, q *wrapadmin.ConfirmMoneyTransactionShippingExternalsEndpoint) error {
 	cmd := &modelx.ConfirmMoneyTransactionShippingExternals{
 		IDs: q.Ids,
 	}
@@ -243,7 +245,7 @@ func ConfirmMoneyTransactionShippingExternals(ctx context.Context, q *wrapadmin.
 	return nil
 }
 
-func UpdateMoneyTransactionShippingExternal(ctx context.Context, q *wrapadmin.UpdateMoneyTransactionShippingExternalEndpoint) error {
+func (s *Service) UpdateMoneyTransactionShippingExternal(ctx context.Context, q *wrapadmin.UpdateMoneyTransactionShippingExternalEndpoint) error {
 	cmd := &modelx.UpdateMoneyTransactionShippingExternal{
 		ID:            q.Id,
 		Note:          q.Note,
@@ -257,7 +259,7 @@ func UpdateMoneyTransactionShippingExternal(ctx context.Context, q *wrapadmin.Up
 	return nil
 }
 
-func GetShop(ctx context.Context, q *wrapadmin.GetShopEndpoint) error {
+func (s *Service) GetShop(ctx context.Context, q *wrapadmin.GetShopEndpoint) error {
 	query := &model.GetShopExtendedQuery{
 		ShopID: q.Id,
 	}
@@ -268,7 +270,7 @@ func GetShop(ctx context.Context, q *wrapadmin.GetShopEndpoint) error {
 	return nil
 }
 
-func GetShops(ctx context.Context, q *wrapadmin.GetShopsEndpoint) error {
+func (s *Service) GetShops(ctx context.Context, q *wrapadmin.GetShopsEndpoint) error {
 	paging := q.Paging.CMPaging()
 	query := &model.GetAllShopExtendedsQuery{
 		Paging: paging,
@@ -283,7 +285,7 @@ func GetShops(ctx context.Context, q *wrapadmin.GetShopsEndpoint) error {
 	return nil
 }
 
-func CreateCredit(ctx context.Context, q *wrapadmin.CreateCreditEndpoint) error {
+func (s *Service) CreateCredit(ctx context.Context, q *wrapadmin.CreateCreditEndpoint) error {
 	cmd := &model.CreateCreditCommand{
 		Amount: int(q.Amount),
 		ShopID: q.ShopId,
@@ -297,7 +299,7 @@ func CreateCredit(ctx context.Context, q *wrapadmin.CreateCreditEndpoint) error 
 	return nil
 }
 
-func GetCredit(ctx context.Context, q *wrapadmin.GetCreditEndpoint) error {
+func (s *Service) GetCredit(ctx context.Context, q *wrapadmin.GetCreditEndpoint) error {
 	query := &model.GetCreditQuery{
 		ID:     q.Id,
 		ShopID: q.ShopId,
@@ -309,7 +311,7 @@ func GetCredit(ctx context.Context, q *wrapadmin.GetCreditEndpoint) error {
 	return nil
 }
 
-func GetCredits(ctx context.Context, q *wrapadmin.GetCreditsEndpoint) error {
+func (s *Service) GetCredits(ctx context.Context, q *wrapadmin.GetCreditsEndpoint) error {
 	paging := q.Paging.CMPaging()
 	query := &model.GetCreditsQuery{
 		ShopID: q.ShopId,
@@ -325,7 +327,7 @@ func GetCredits(ctx context.Context, q *wrapadmin.GetCreditsEndpoint) error {
 	return nil
 }
 
-func UpdateCredit(ctx context.Context, q *wrapadmin.UpdateCreditEndpoint) error {
+func (s *Service) UpdateCredit(ctx context.Context, q *wrapadmin.UpdateCreditEndpoint) error {
 	cmd := &model.UpdateCreditCommand{
 		ID:     q.Id,
 		ShopID: q.ShopId,
@@ -339,7 +341,7 @@ func UpdateCredit(ctx context.Context, q *wrapadmin.UpdateCreditEndpoint) error 
 	return nil
 }
 
-func ConfirmCredit(ctx context.Context, q *wrapadmin.ConfirmCreditEndpoint) error {
+func (s *Service) ConfirmCredit(ctx context.Context, q *wrapadmin.ConfirmCreditEndpoint) error {
 	cmd := &model.ConfirmCreditCommand{
 		ID:     q.Id,
 		ShopID: q.ShopId,
@@ -353,7 +355,7 @@ func ConfirmCredit(ctx context.Context, q *wrapadmin.ConfirmCreditEndpoint) erro
 	return nil
 }
 
-func DeleteCredit(ctx context.Context, q *wrapadmin.DeleteCreditEndpoint) error {
+func (s *Service) DeleteCredit(ctx context.Context, q *wrapadmin.DeleteCreditEndpoint) error {
 	cmd := &model.DeleteCreditCommand{
 		ID: q.Id,
 	}
@@ -366,7 +368,7 @@ func DeleteCredit(ctx context.Context, q *wrapadmin.DeleteCreditEndpoint) error 
 	return nil
 }
 
-func CreatePartner(ctx context.Context, q *wrapadmin.CreatePartnerEndpoint) error {
+func (s *Service) CreatePartner(ctx context.Context, q *wrapadmin.CreatePartnerEndpoint) error {
 	cmd := &model.CreatePartnerCommand{
 		Partner: q.ToModel(),
 	}
@@ -377,7 +379,7 @@ func CreatePartner(ctx context.Context, q *wrapadmin.CreatePartnerEndpoint) erro
 	return nil
 }
 
-func UpdateFulfillment(ctx context.Context, q *wrapadmin.UpdateFulfillmentEndpoint) error {
+func (s *Service) UpdateFulfillment(ctx context.Context, q *wrapadmin.UpdateFulfillmentEndpoint) error {
 	cmd := &shippingmodelx.AdminUpdateFulfillmentCommand{
 		FulfillmentID:            q.Id,
 		FullName:                 q.FullName,
@@ -397,7 +399,7 @@ func UpdateFulfillment(ctx context.Context, q *wrapadmin.UpdateFulfillmentEndpoi
 	return nil
 }
 
-func GenerateAPIKey(ctx context.Context, q *wrapadmin.GenerateAPIKeyEndpoint) error {
+func (s *Service) GenerateAPIKey(ctx context.Context, q *wrapadmin.GenerateAPIKeyEndpoint) error {
 	_, err := sqlstore.AccountAuth(ctx).AccountID(q.AccountId).Get()
 	if cm.ErrorCode(err) != cm.NotFound {
 		return cm.MapError(err).
@@ -419,7 +421,7 @@ func GenerateAPIKey(ctx context.Context, q *wrapadmin.GenerateAPIKeyEndpoint) er
 	return err
 }
 
-func GetMoneyTransactionShippingEtop(ctx context.Context, q *wrapadmin.GetMoneyTransactionShippingEtopEndpoint) error {
+func (s *Service) GetMoneyTransactionShippingEtop(ctx context.Context, q *wrapadmin.GetMoneyTransactionShippingEtopEndpoint) error {
 	query := &modelx.GetMoneyTransactionShippingEtop{
 		ID: q.Id,
 	}
@@ -430,7 +432,7 @@ func GetMoneyTransactionShippingEtop(ctx context.Context, q *wrapadmin.GetMoneyT
 	return nil
 }
 
-func GetMoneyTransactionShippingEtops(ctx context.Context, q *wrapadmin.GetMoneyTransactionShippingEtopsEndpoint) error {
+func (s *Service) GetMoneyTransactionShippingEtops(ctx context.Context, q *wrapadmin.GetMoneyTransactionShippingEtopsEndpoint) error {
 	paging := q.Paging.CMPaging()
 	query := &modelx.GetMoneyTransactionShippingEtops{
 		IDs:     q.Ids,
@@ -448,7 +450,7 @@ func GetMoneyTransactionShippingEtops(ctx context.Context, q *wrapadmin.GetMoney
 	return nil
 }
 
-func CreateMoneyTransactionShippingEtop(ctx context.Context, q *wrapadmin.CreateMoneyTransactionShippingEtopEndpoint) error {
+func (s *Service) CreateMoneyTransactionShippingEtop(ctx context.Context, q *wrapadmin.CreateMoneyTransactionShippingEtopEndpoint) error {
 	cmd := &modelx.CreateMoneyTransactionShippingEtop{
 		MoneyTransactionShippingIDs: q.Ids,
 	}
@@ -459,7 +461,7 @@ func CreateMoneyTransactionShippingEtop(ctx context.Context, q *wrapadmin.Create
 	return nil
 }
 
-func UpdateMoneyTransactionShippingEtop(ctx context.Context, q *wrapadmin.UpdateMoneyTransactionShippingEtopEndpoint) error {
+func (s *Service) UpdateMoneyTransactionShippingEtop(ctx context.Context, q *wrapadmin.UpdateMoneyTransactionShippingEtopEndpoint) error {
 	cmd := &modelx.UpdateMoneyTransactionShippingEtop{
 		ID:            q.Id,
 		Adds:          q.Adds,
@@ -476,7 +478,7 @@ func UpdateMoneyTransactionShippingEtop(ctx context.Context, q *wrapadmin.Update
 	return nil
 }
 
-func DeleteMoneyTransactionShippingEtop(ctx context.Context, q *wrapadmin.DeleteMoneyTransactionShippingEtopEndpoint) error {
+func (s *Service) DeleteMoneyTransactionShippingEtop(ctx context.Context, q *wrapadmin.DeleteMoneyTransactionShippingEtopEndpoint) error {
 	cmd := &modelx.DeleteMoneyTransactionShippingEtop{
 		ID: q.Id,
 	}
@@ -489,7 +491,7 @@ func DeleteMoneyTransactionShippingEtop(ctx context.Context, q *wrapadmin.Delete
 	return nil
 }
 
-func ConfirmMoneyTransactionShippingEtop(ctx context.Context, q *wrapadmin.ConfirmMoneyTransactionShippingEtopEndpoint) error {
+func (s *Service) ConfirmMoneyTransactionShippingEtop(ctx context.Context, q *wrapadmin.ConfirmMoneyTransactionShippingEtopEndpoint) error {
 	cmd := &modelx.ConfirmMoneyTransactionShippingEtop{
 		ID:          q.Id,
 		TotalCOD:    int(q.TotalCod),
@@ -505,7 +507,7 @@ func ConfirmMoneyTransactionShippingEtop(ctx context.Context, q *wrapadmin.Confi
 	return nil
 }
 
-func CreateNotifications(ctx context.Context, q *wrapadmin.CreateNotificationsEndpoint) error {
+func (s *Service) CreateNotifications(ctx context.Context, q *wrapadmin.CreateNotificationsEndpoint) error {
 	cmd := &notimodel.CreateNotificationsArgs{
 		AccountIDs:       q.AccountIds,
 		Title:            q.Title,

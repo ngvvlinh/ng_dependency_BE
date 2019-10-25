@@ -3,27 +3,26 @@ package shop
 import (
 	"context"
 
+	pbcm "etop.vn/backend/pb/common"
+	pbetop "etop.vn/backend/pb/etop"
+	pbshop "etop.vn/backend/pb/etop/shop"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/validate"
 	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/backend/pkg/etop/sqlstore"
-
-	pbcm "etop.vn/backend/pb/common"
-	pbetop "etop.vn/backend/pb/etop"
-	pbshop "etop.vn/backend/pb/etop/shop"
 	wrapetop "etop.vn/backend/wrapper/etop"
 	wrapshop "etop.vn/backend/wrapper/etop/shop"
 )
 
 func init() {
-	bus.AddHandler("api", RegisterShop)
-	bus.AddHandler("api", UpdateShop)
-	bus.AddHandler("api", deleteShop)
-	bus.AddHandler("api", SetDefaultAddress)
+	bus.AddHandler("api", s.RegisterShop)
+	bus.AddHandler("api", s.UpdateShop)
+	bus.AddHandler("api", s.deleteShop)
+	bus.AddHandler("api", s.SetDefaultAddress)
 }
 
-func RegisterShop(ctx context.Context, q *wrapshop.RegisterShopEndpoint) error {
+func (s *Service) RegisterShop(ctx context.Context, q *wrapshop.RegisterShopEndpoint) error {
 	if q.UrlSlug != "" && !validate.URLSlug(q.UrlSlug) {
 		return cm.Error(cm.InvalidArgument, "Thông tin url_slug không hợp lệ. Vui lòng kiểm tra lại.", nil)
 	}
@@ -58,7 +57,7 @@ func RegisterShop(ctx context.Context, q *wrapshop.RegisterShopEndpoint) error {
 	return nil
 }
 
-func UpdateShop(ctx context.Context, q *wrapshop.UpdateShopEndpoint) error {
+func (s *Service) UpdateShop(ctx context.Context, q *wrapshop.UpdateShopEndpoint) error {
 	shop := q.Context.Shop
 	if q.BankAccount != nil {
 		user, err := sqlstore.User(ctx).ID(shop.OwnerID).Get()
@@ -118,7 +117,7 @@ func UpdateShop(ctx context.Context, q *wrapshop.UpdateShopEndpoint) error {
 	return nil
 }
 
-func deleteShop(ctx context.Context, q *wrapshop.DeleteShopEndpoint) error {
+func (s *Service) deleteShop(ctx context.Context, q *wrapshop.DeleteShopEndpoint) error {
 	cmd := &model.DeleteShopCommand{
 		ID:      q.Id,
 		OwnerID: q.Context.UserID,
@@ -130,7 +129,7 @@ func deleteShop(ctx context.Context, q *wrapshop.DeleteShopEndpoint) error {
 	return nil
 }
 
-func SetDefaultAddress(ctx context.Context, q *wrapshop.SetDefaultAddressEndpoint) error {
+func (s *Service) SetDefaultAddress(ctx context.Context, q *wrapshop.SetDefaultAddressEndpoint) error {
 	cmd := &model.SetDefaultAddressShopCommand{
 		ShopID:    q.Context.Shop.ID,
 		Type:      q.Type.ToModel(),

@@ -13,15 +13,15 @@ import (
 
 func init() {
 	bus.AddHandlers("api",
-		GetVendor,
-		GetVendors,
-		GetVendorsByIDs,
-		CreateVendor,
-		UpdateVendor,
-		DeleteVendor)
+		s.GetVendor,
+		s.GetVendors,
+		s.GetVendorsByIDs,
+		s.CreateVendor,
+		s.UpdateVendor,
+		s.DeleteVendor)
 }
 
-func GetVendor(ctx context.Context, r *wrapshop.GetVendorEndpoint) error {
+func (s *Service) GetVendor(ctx context.Context, r *wrapshop.GetVendorEndpoint) error {
 	query := &vendoring.GetVendorByIDQuery{
 		ID:     r.Id,
 		ShopID: r.Context.Shop.ID,
@@ -33,7 +33,7 @@ func GetVendor(ctx context.Context, r *wrapshop.GetVendorEndpoint) error {
 	return nil
 }
 
-func GetVendors(ctx context.Context, r *wrapshop.GetVendorsEndpoint) error {
+func (s *Service) GetVendors(ctx context.Context, r *wrapshop.GetVendorsEndpoint) error {
 	paging := r.Paging.CMPaging()
 	query := &vendoring.ListVendorsQuery{
 		ShopID:  r.Context.Shop.ID,
@@ -50,7 +50,7 @@ func GetVendors(ctx context.Context, r *wrapshop.GetVendorsEndpoint) error {
 	return nil
 }
 
-func GetVendorsByIDs(ctx context.Context, r *wrapshop.GetVendorsByIDsEndpoint) error {
+func (s *Service) GetVendorsByIDs(ctx context.Context, r *wrapshop.GetVendorsByIDsEndpoint) error {
 	query := &vendoring.ListVendorsByIDsQuery{
 		IDs:    r.Ids,
 		ShopID: r.Context.Shop.ID,
@@ -64,7 +64,7 @@ func GetVendorsByIDs(ctx context.Context, r *wrapshop.GetVendorsByIDsEndpoint) e
 	return nil
 }
 
-func CreateVendor(ctx context.Context, r *wrapshop.CreateVendorEndpoint) error {
+func (s *Service) CreateVendor(ctx context.Context, r *wrapshop.CreateVendorEndpoint) error {
 	cmd := &vendoring.CreateVendorCommand{
 		ShopID:   r.Context.Shop.ID,
 		FullName: r.FullName,
@@ -77,7 +77,7 @@ func CreateVendor(ctx context.Context, r *wrapshop.CreateVendorEndpoint) error {
 	return nil
 }
 
-func UpdateVendor(ctx context.Context, r *wrapshop.UpdateVendorEndpoint) error {
+func (s *Service) UpdateVendor(ctx context.Context, r *wrapshop.UpdateVendorEndpoint) error {
 	cmd := &vendoring.UpdateVendorCommand{
 		ID:       r.Id,
 		ShopID:   r.Context.Shop.ID,
@@ -91,7 +91,7 @@ func UpdateVendor(ctx context.Context, r *wrapshop.UpdateVendorEndpoint) error {
 	return nil
 }
 
-func DeleteVendor(ctx context.Context, r *wrapshop.DeleteVendorEndpoint) error {
+func (s *Service) DeleteVendor(ctx context.Context, r *wrapshop.DeleteVendorEndpoint) error {
 	cmd := &vendoring.DeleteVendorCommand{
 		ID:     r.Id,
 		ShopID: r.Context.Shop.ID,

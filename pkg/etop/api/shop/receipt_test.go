@@ -87,7 +87,7 @@ func TestValidateReceiptLines(t *testing.T) {
 				},
 			},
 		}
-		err := validateReceiptForCreateOrUpdate(bus.Ctx(), 0, receipt)
+		err := s.validateReceiptForCreateOrUpdate(bus.Ctx(), 0, receipt)
 		require.NoError(t, err)
 	})
 	t.Run("No OrderID", func(t *testing.T) {
@@ -112,7 +112,7 @@ func TestValidateReceiptLines(t *testing.T) {
 			Lines:  lines,
 			Amount: 300000,
 		}
-		err := validateReceiptLines(bus.Ctx(), tradering.CustomerType, receipt)
+		err := s.validateReceiptLines(bus.Ctx(), tradering.CustomerType, receipt)
 		require.NoError(t, err)
 	})
 
@@ -139,7 +139,7 @@ func TestValidateReceiptLines(t *testing.T) {
 			Lines:  lines,
 			Amount: 300000,
 		}
-		err := validateReceiptLines(bus.Ctx(), tradering.CustomerType, receipt)
+		err := s.validateReceiptLines(bus.Ctx(), tradering.CustomerType, receipt)
 		require.EqualError(t, err, "Duplicated OrderId 123456 in receipt")
 	})
 
@@ -171,7 +171,7 @@ func TestValidateReceiptLines(t *testing.T) {
 			Lines:  lines,
 			Amount: 300000,
 		}
-		err := validateReceiptLines(bus.Ctx(), tradering.CustomerType, receipt)
+		err := s.validateReceiptLines(bus.Ctx(), tradering.CustomerType, receipt)
 		require.EqualError(t, err, "OrderID 1002 not found")
 	})
 
