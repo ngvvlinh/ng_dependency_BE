@@ -16,15 +16,15 @@ import (
 
 func init() {
 	bus.AddHandlers("api",
-		s.CreateCustomerAddress,
-		s.DeleteCustomerAddress,
-		s.GetCustomerAddresses,
-		s.UpdateCustomerAddress,
-		s.SetDefaultCustomerAddress,
+		customerService.CreateCustomerAddress,
+		customerService.DeleteCustomerAddress,
+		customerService.GetCustomerAddresses,
+		customerService.UpdateCustomerAddress,
+		customerService.SetDefaultCustomerAddress,
 	)
 }
 
-func (s *Service) CreateCustomerAddress(ctx context.Context, r *wrapshop.CreateCustomerAddressEndpoint) error {
+func (s *CustomerService) CreateCustomerAddress(ctx context.Context, r *wrapshop.CreateCustomerAddressEndpoint) error {
 	query := &location.GetLocationQuery{
 		DistrictCode: r.DistrictCode,
 		WardCode:     r.WardCode,
@@ -58,7 +58,7 @@ func (s *Service) CreateCustomerAddress(ctx context.Context, r *wrapshop.CreateC
 	return nil
 }
 
-func (s *Service) DeleteCustomerAddress(ctx context.Context, r *wrapshop.DeleteCustomerAddressEndpoint) error {
+func (s *CustomerService) DeleteCustomerAddress(ctx context.Context, r *wrapshop.DeleteCustomerAddressEndpoint) error {
 	cmd := &addressing.DeleteAddressCommand{
 		ID:     r.Id,
 		ShopID: r.Context.Shop.ID,
@@ -70,7 +70,7 @@ func (s *Service) DeleteCustomerAddress(ctx context.Context, r *wrapshop.DeleteC
 	return nil
 }
 
-func (s *Service) GetCustomerAddresses(ctx context.Context, r *wrapshop.GetCustomerAddressesEndpoint) error {
+func (s *CustomerService) GetCustomerAddresses(ctx context.Context, r *wrapshop.GetCustomerAddressesEndpoint) error {
 	query := &addressing.ListAddressesByTraderIDQuery{
 		ShopID:   r.Context.Shop.ID,
 		TraderID: r.CustomerId,
@@ -86,7 +86,7 @@ func (s *Service) GetCustomerAddresses(ctx context.Context, r *wrapshop.GetCusto
 	return nil
 }
 
-func (s *Service) UpdateCustomerAddress(ctx context.Context, r *wrapshop.UpdateCustomerAddressEndpoint) error {
+func (s *CustomerService) UpdateCustomerAddress(ctx context.Context, r *wrapshop.UpdateCustomerAddressEndpoint) error {
 	if r.DistrictCode != nil && r.WardCode != nil {
 		query := &location.GetLocationQuery{
 			DistrictCode: *r.DistrictCode,
@@ -122,7 +122,7 @@ func (s *Service) UpdateCustomerAddress(ctx context.Context, r *wrapshop.UpdateC
 	return nil
 }
 
-func (s *Service) SetDefaultCustomerAddress(ctx context.Context, r *wrapshop.SetDefaultCustomerAddressEndpoint) error {
+func (s *CustomerService) SetDefaultCustomerAddress(ctx context.Context, r *wrapshop.SetDefaultCustomerAddressEndpoint) error {
 	query := &addressing.GetAddressByIDQuery{
 		ID:     r.Id,
 		ShopID: r.Context.Shop.ID,

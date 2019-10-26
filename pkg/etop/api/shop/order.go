@@ -22,29 +22,26 @@ import (
 
 func init() {
 	bus.AddHandlers("api",
-		s.CancelFulfillment,
-		s.CancelOrder,
-		s.ConfirmOrderAndCreateFulfillments,
-		s.ConfirmOrdersAndCreateFulfillments,
-		s.CreateFulfillmentsForOrder,
-		s.CreateOrder,
-		s.GetExternalShippingServices,
-		s.GetPublicExternalShippingServices,
-		s.GetFulfillment,
-		s.GetOrder,
-		s.GetOrders,
-		s.GetOrdersByIDs,
-		s.UpdateOrder,
-		s.UpdateOrdersStatus,
-		s.GetFulfillments,
-		s.GetPublicFulfillment,
-		s.UpdateFulfillmentsShippingState,
-		s.UpdateOrderPaymentStatus,
-		s.GetOrderByReceiptID,
+		orderService.CancelOrder,
+		orderService.ConfirmOrderAndCreateFulfillments,
+		orderService.CreateOrder,
+		fulfillmentService.GetExternalShippingServices,
+		fulfillmentService.GetPublicExternalShippingServices,
+		fulfillmentService.GetFulfillment,
+		orderService.GetOrder,
+		orderService.GetOrders,
+		orderService.GetOrdersByIDs,
+		orderService.UpdateOrder,
+		orderService.UpdateOrdersStatus,
+		fulfillmentService.GetFulfillments,
+		fulfillmentService.GetPublicFulfillment,
+		fulfillmentService.UpdateFulfillmentsShippingState,
+		orderService.UpdateOrderPaymentStatus,
+		orderService.GetOrdersByReceiptID,
 	)
 }
 
-func (s *Service) GetOrder(ctx context.Context, q *wrapshop.GetOrderEndpoint) error {
+func (s *OrderService) GetOrder(ctx context.Context, q *wrapshop.GetOrderEndpoint) error {
 	query := &ordermodelx.GetOrderQuery{
 		OrderID:            q.Id,
 		ShopID:             q.Context.Shop.ID,
@@ -66,7 +63,7 @@ func (s *Service) GetOrder(ctx context.Context, q *wrapshop.GetOrderEndpoint) er
 	return nil
 }
 
-func (s *Service) GetOrders(ctx context.Context, q *wrapshop.GetOrdersEndpoint) error {
+func (s *OrderService) GetOrders(ctx context.Context, q *wrapshop.GetOrdersEndpoint) error {
 	shopIDs, err := api.MixAccount(q.Context.Claim, q.Mixed)
 	if err != nil {
 		return err
@@ -94,7 +91,7 @@ func (s *Service) GetOrders(ctx context.Context, q *wrapshop.GetOrdersEndpoint) 
 	return nil
 }
 
-func (s *Service) GetOrdersByIDs(ctx context.Context, q *wrapshop.GetOrdersByIDsEndpoint) error {
+func (s *OrderService) GetOrdersByIDs(ctx context.Context, q *wrapshop.GetOrdersByIDsEndpoint) error {
 	shopIDs, err := api.MixAccount(q.Context.Claim, q.Mixed)
 	if err != nil {
 		return err
@@ -119,7 +116,7 @@ func (s *Service) GetOrdersByIDs(ctx context.Context, q *wrapshop.GetOrdersByIDs
 	return nil
 }
 
-func (s *Service) GetOrderByReceiptID(ctx context.Context, q *wrapshop.GetOrdersByReceiptIDEndpoint) error {
+func (s *OrderService) GetOrdersByReceiptID(ctx context.Context, q *wrapshop.GetOrdersByReceiptIDEndpoint) error {
 	shopID := q.Context.Shop.ID
 	queryReceipt := &receipting.GetReceiptByIDQuery{
 		ID:     q.ReceiptId,
@@ -152,7 +149,7 @@ func (s *Service) GetOrderByReceiptID(ctx context.Context, q *wrapshop.GetOrders
 	return nil
 }
 
-func (s *Service) UpdateOrdersStatus(ctx context.Context, q *wrapshop.UpdateOrdersStatusEndpoint) error {
+func (s *OrderService) UpdateOrdersStatus(ctx context.Context, q *wrapshop.UpdateOrdersStatusEndpoint) error {
 	cmd := &ordermodelx.UpdateOrdersStatusCommand{
 		ShopID:       q.Context.Shop.ID,
 		PartnerID:    q.CtxPartner.GetID(),
@@ -168,7 +165,7 @@ func (s *Service) UpdateOrdersStatus(ctx context.Context, q *wrapshop.UpdateOrde
 	return nil
 }
 
-func (s *Service) CreateOrder(ctx context.Context, q *wrapshop.CreateOrderEndpoint) error {
+func (s *OrderService) CreateOrder(ctx context.Context, q *wrapshop.CreateOrderEndpoint) error {
 	if q.CustomerId == 0 && q.Customer == nil {
 		return cm.Errorf(cm.InvalidArgument, nil, "Thiếu thông tin tên khách hàng, vui lòng kiểm tra lại.")
 	}
@@ -195,23 +192,19 @@ func (s *Service) CreateOrder(ctx context.Context, q *wrapshop.CreateOrderEndpoi
 	return nil
 }
 
-func (s *Service) createOrder(ctx context.Context, q *wrapshop.CreateOrderEndpoint) (*wrapshop.CreateOrderEndpoint, error) {
+func (s *OrderService) createOrder(ctx context.Context, q *wrapshop.CreateOrderEndpoint) (*wrapshop.CreateOrderEndpoint, error) {
 	result, err := logicorder.CreateOrder(ctx, &q.Context, q.CtxPartner, q.CreateOrderRequest, nil)
 	q.Result = result
 	return q, err
 }
 
-func (s *Service) UpdateOrder(ctx context.Context, q *wrapshop.UpdateOrderEndpoint) error {
+func (s *OrderService) UpdateOrder(ctx context.Context, q *wrapshop.UpdateOrderEndpoint) error {
 	result, err := logicorder.UpdateOrder(ctx, &q.Context, q.CtxPartner, q.UpdateOrderRequest)
 	q.Result = result
 	return err
 }
 
-func (s *Service) CancelFulfillment(ctx context.Context, q *wrapshop.CancelFulfillmentEndpoint) error {
-	return cm.ErrTODO
-}
-
-func (s *Service) CancelOrder(ctx context.Context, q *wrapshop.CancelOrderEndpoint) error {
+func (s *OrderService) CancelOrder(ctx context.Context, q *wrapshop.CancelOrderEndpoint) error {
 	key := fmt.Sprintf("cancelOrder %v-%v", q.Context.Shop.ID, q.OrderId)
 	res, err := idempgroup.DoAndWrap(key, 5*time.Second,
 		func() (interface{}, error) {
@@ -225,7 +218,7 @@ func (s *Service) CancelOrder(ctx context.Context, q *wrapshop.CancelOrderEndpoi
 	return nil
 }
 
-func (s *Service) cancelOrder(ctx context.Context, q *wrapshop.CancelOrderEndpoint) (*wrapshop.CancelOrderEndpoint, error) {
+func (s *OrderService) cancelOrder(ctx context.Context, q *wrapshop.CancelOrderEndpoint) (*wrapshop.CancelOrderEndpoint, error) {
 	resp, err := logicorder.CancelOrder(ctx, q.Context.Shop.ID, q.Context.AuthPartnerID, q.OrderId, q.CancelReason)
 	q.Result = resp
 	return q, err
@@ -244,7 +237,7 @@ func (s *Service) cancelOrder(ctx context.Context, q *wrapshop.CancelOrderEndpoi
 	4. UpdateInfo fulfillment information and status from GHN
 */
 
-func (s *Service) ConfirmOrderAndCreateFulfillments(ctx context.Context, q *wrapshop.ConfirmOrderAndCreateFulfillmentsEndpoint) (_err error) {
+func (s *OrderService) ConfirmOrderAndCreateFulfillments(ctx context.Context, q *wrapshop.ConfirmOrderAndCreateFulfillmentsEndpoint) (_err error) {
 	key := fmt.Sprintf("ConfirmOrderAndCreateFulfillments %v-%v", q.Context.Shop.ID, q.OrderId)
 	res, err := idempgroup.DoAndWrap(key, 10*time.Second,
 		func() (interface{}, error) {
@@ -258,7 +251,7 @@ func (s *Service) ConfirmOrderAndCreateFulfillments(ctx context.Context, q *wrap
 	return err
 }
 
-func (s *Service) addReceivedAmountToOrders(ctx context.Context, shopID int64, orders []*pborder.Order) error {
+func (s *OrderService) addReceivedAmountToOrders(ctx context.Context, shopID int64, orders []*pborder.Order) error {
 	var orderIDs []int64
 	mOrderIDsAndReceivedAmounts := make(map[int64]int32)
 
@@ -298,7 +291,7 @@ func (s *Service) addReceivedAmountToOrders(ctx context.Context, shopID int64, o
 	return nil
 }
 
-func (s *Service) confirmOrderAndCreateFulfillments(ctx context.Context, q *wrapshop.ConfirmOrderAndCreateFulfillmentsEndpoint) (_ *wrapshop.ConfirmOrderAndCreateFulfillmentsEndpoint, _err error) {
+func (s *OrderService) confirmOrderAndCreateFulfillments(ctx context.Context, q *wrapshop.ConfirmOrderAndCreateFulfillmentsEndpoint) (_ *wrapshop.ConfirmOrderAndCreateFulfillmentsEndpoint, _err error) {
 	resp, err := logicorder.ConfirmOrderAndCreateFulfillments(ctx, q.Context.Shop, q.Context.AuthPartnerID, q.OrderIDRequest)
 	if err != nil {
 		return q, err
@@ -307,15 +300,7 @@ func (s *Service) confirmOrderAndCreateFulfillments(ctx context.Context, q *wrap
 	return q, nil
 }
 
-func (s *Service) ConfirmOrdersAndCreateFulfillments(ctx context.Context, q *wrapshop.ConfirmOrdersAndCreateFulfillmentsEndpoint) error {
-	return cm.ErrTODO
-}
-
-func (s *Service) CreateFulfillmentsForOrder(ctx context.Context, q *wrapshop.CreateFulfillmentsForOrderEndpoint) error {
-	return cm.ErrTODO
-}
-
-func (s *Service) GetFulfillment(ctx context.Context, q *wrapshop.GetFulfillmentEndpoint) error {
+func (s *FulfillmentService) GetFulfillment(ctx context.Context, q *wrapshop.GetFulfillmentEndpoint) error {
 	query := &shipmodelx.GetFulfillmentExtendedQuery{
 		ShopID:        q.Context.Shop.ID,
 		PartnerID:     q.CtxPartner.GetID(),
@@ -328,7 +313,7 @@ func (s *Service) GetFulfillment(ctx context.Context, q *wrapshop.GetFulfillment
 	return nil
 }
 
-func (s *Service) GetFulfillments(ctx context.Context, q *wrapshop.GetFulfillmentsEndpoint) error {
+func (s *FulfillmentService) GetFulfillments(ctx context.Context, q *wrapshop.GetFulfillmentsEndpoint) error {
 	shopIDs, err := api.MixAccount(q.Context.Claim, q.Mixed)
 	if err != nil {
 		return err
@@ -353,7 +338,7 @@ func (s *Service) GetFulfillments(ctx context.Context, q *wrapshop.GetFulfillmen
 	return nil
 }
 
-func (s *Service) GetExternalShippingServices(ctx context.Context, q *wrapshop.GetExternalShippingServicesEndpoint) error {
+func (s *FulfillmentService) GetExternalShippingServices(ctx context.Context, q *wrapshop.GetExternalShippingServicesEndpoint) error {
 	resp, err := shippingCtrl.GetExternalShippingServices(ctx, q.Context.Shop.ID, q.GetExternalShippingServicesRequest)
 	q.Result = &pborder.GetExternalShippingServicesResponse{
 		Services: pborder.PbAvailableShippingServices(resp),
@@ -361,7 +346,7 @@ func (s *Service) GetExternalShippingServices(ctx context.Context, q *wrapshop.G
 	return err
 }
 
-func (s *Service) GetPublicExternalShippingServices(ctx context.Context, q *wrapshop.GetPublicExternalShippingServicesEndpoint) error {
+func (s *FulfillmentService) GetPublicExternalShippingServices(ctx context.Context, q *wrapshop.GetPublicExternalShippingServicesEndpoint) error {
 	resp, err := shippingCtrl.GetExternalShippingServices(ctx, model.EtopAccountID, q.GetExternalShippingServicesRequest)
 	q.Result = &pborder.GetExternalShippingServicesResponse{
 		Services: pborder.PbAvailableShippingServices(resp),
@@ -369,7 +354,7 @@ func (s *Service) GetPublicExternalShippingServices(ctx context.Context, q *wrap
 	return err
 }
 
-func (s *Service) GetPublicFulfillment(ctx context.Context, q *wrapshop.GetPublicFulfillmentEndpoint) error {
+func (s *FulfillmentService) GetPublicFulfillment(ctx context.Context, q *wrapshop.GetPublicFulfillmentEndpoint) error {
 	query := &shipmodelx.GetFulfillmentQuery{
 		ShippingCode: q.Code,
 	}
@@ -380,7 +365,7 @@ func (s *Service) GetPublicFulfillment(ctx context.Context, q *wrapshop.GetPubli
 	return nil
 }
 
-func (s *Service) UpdateFulfillmentsShippingState(ctx context.Context, q *wrapshop.UpdateFulfillmentsShippingStateEndpoint) error {
+func (s *FulfillmentService) UpdateFulfillmentsShippingState(ctx context.Context, q *wrapshop.UpdateFulfillmentsShippingStateEndpoint) error {
 	shopID := q.Context.Shop.ID
 	cmd := &shipmodelx.UpdateFulfillmentsShippingStateCommand{
 		ShopID:        shopID,
@@ -396,7 +381,7 @@ func (s *Service) UpdateFulfillmentsShippingState(ctx context.Context, q *wrapsh
 	return nil
 }
 
-func (s *Service) UpdateOrderPaymentStatus(ctx context.Context, q *wrapshop.UpdateOrderPaymentStatusEndpoint) error {
+func (s *OrderService) UpdateOrderPaymentStatus(ctx context.Context, q *wrapshop.UpdateOrderPaymentStatusEndpoint) error {
 	cmd := &ordermodelx.UpdateOrderPaymentStatusCommand{
 		ShopID:  q.Context.Shop.ID,
 		OrderID: q.OrderId,

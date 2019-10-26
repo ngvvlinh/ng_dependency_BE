@@ -14,14 +14,18 @@ import (
 
 func init() {
 	bus.AddHandlers("api",
-		s.UpdateURLSlug,
-		s.UpdatePermission,
-		s.GetPublicPartnerInfo,
-		s.GetPublicPartners,
+		accountService.UpdateURLSlug,
+		accountService.UpdatePermission,
+		accountService.GetPublicPartnerInfo,
+		accountService.GetPublicPartners,
 	)
 }
 
-func (s *Service) UpdateURLSlug(ctx context.Context, r *wrapetop.UpdateURLSlugEndpoint) error {
+type AccountService struct{}
+
+var accountService = &AccountService{}
+
+func (s *AccountService) UpdateURLSlug(ctx context.Context, r *wrapetop.UpdateURLSlugEndpoint) error {
 	if r.AccountId == 0 {
 		return cm.Error(cm.InvalidArgument, "Missing account_id", nil)
 	}
@@ -54,11 +58,11 @@ func (s *Service) UpdateURLSlug(ctx context.Context, r *wrapetop.UpdateURLSlugEn
 	return bus.Dispatch(ctx, cmd)
 }
 
-func (s *Service) UpdatePermission(ctx context.Context, q *wrapetop.UpdatePermissionEndpoint) error {
+func (s *AccountService) UpdatePermission(ctx context.Context, q *wrapetop.UpdatePermissionEndpoint) error {
 	return cm.ErrTODO
 }
 
-func (s *Service) GetPublicPartnerInfo(ctx context.Context, q *wrapetop.GetPublicPartnerInfoEndpoint) error {
+func (s *AccountService) GetPublicPartnerInfo(ctx context.Context, q *wrapetop.GetPublicPartnerInfoEndpoint) error {
 	partner, err := sqlstore.Partner(ctx).ID(q.Id).Get()
 	if err != nil {
 		return err
@@ -71,7 +75,7 @@ func (s *Service) GetPublicPartnerInfo(ctx context.Context, q *wrapetop.GetPubli
 // - get info by given ids
 // - list all partners if the account is an admin
 // - list all connected partner
-func (s *Service) GetPublicPartners(ctx context.Context, q *wrapetop.GetPublicPartnersEndpoint) error {
+func (s *AccountService) GetPublicPartners(ctx context.Context, q *wrapetop.GetPublicPartnersEndpoint) error {
 	if len(q.Ids) != 0 {
 		partners, err := sqlstore.Partner(ctx).IDs(q.Ids...).IncludeDeleted().List()
 		if err != nil {

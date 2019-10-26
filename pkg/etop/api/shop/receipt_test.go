@@ -3,14 +3,12 @@ package shop
 import (
 	"testing"
 
-	cm "etop.vn/backend/pkg/common"
-
-	"etop.vn/api/shopping/tradering"
-
 	"github.com/stretchr/testify/require"
 
 	"etop.vn/api/main/ordering"
 	"etop.vn/api/main/receipting"
+	"etop.vn/api/shopping/tradering"
+	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
 )
 
@@ -87,7 +85,7 @@ func TestValidateReceiptLines(t *testing.T) {
 				},
 			},
 		}
-		err := s.validateReceiptForCreateOrUpdate(bus.Ctx(), 0, receipt)
+		err := receiptService.validateReceiptForCreateOrUpdate(bus.Ctx(), 0, receipt)
 		require.NoError(t, err)
 	})
 	t.Run("No OrderID", func(t *testing.T) {
@@ -112,7 +110,7 @@ func TestValidateReceiptLines(t *testing.T) {
 			Lines:  lines,
 			Amount: 300000,
 		}
-		err := s.validateReceiptLines(bus.Ctx(), tradering.CustomerType, receipt)
+		err := receiptService.validateReceiptLines(bus.Ctx(), tradering.CustomerType, receipt)
 		require.NoError(t, err)
 	})
 
@@ -139,7 +137,7 @@ func TestValidateReceiptLines(t *testing.T) {
 			Lines:  lines,
 			Amount: 300000,
 		}
-		err := s.validateReceiptLines(bus.Ctx(), tradering.CustomerType, receipt)
+		err := receiptService.validateReceiptLines(bus.Ctx(), tradering.CustomerType, receipt)
 		require.EqualError(t, err, "Duplicated OrderId 123456 in receipt")
 	})
 
@@ -171,7 +169,7 @@ func TestValidateReceiptLines(t *testing.T) {
 			Lines:  lines,
 			Amount: 300000,
 		}
-		err := s.validateReceiptLines(bus.Ctx(), tradering.CustomerType, receipt)
+		err := receiptService.validateReceiptLines(bus.Ctx(), tradering.CustomerType, receipt)
 		require.EqualError(t, err, "OrderID 1002 not found")
 	})
 

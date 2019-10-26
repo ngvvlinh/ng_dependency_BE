@@ -153,10 +153,6 @@ service ProductService {
     //-- collection --//
     rpc AddProductCollection(AddShopProductCollectionRequest) returns (cm.UpdatedResponse);
     rpc RemoveProductCollection(RemoveShopProductCollectionRequest) returns (cm.RemovedResponse);
-
-    // deprecated
-    rpc AddProducts (AddProductsRequest) returns (AddProductsResponse);
-
 }
 
 service CategoryService{
@@ -193,7 +189,6 @@ service OrderService {
     rpc UpdateOrdersStatus(UpdateOrdersStatusRequest) returns (cm.UpdatedResponse);
 
     rpc ConfirmOrderAndCreateFulfillments(OrderIDRequest) returns (order.OrderWithErrorsResponse);
-    rpc ConfirmOrdersAndCreateFulfillments(OrderIDsRequest) returns (cm.ErrorsResponse);
     rpc CancelOrder(CancelOrderRequest) returns (order.OrderWithErrorsResponse);
     rpc UpdateOrderPaymentStatus(UpdateOrderPaymentStatusRequest) returns (cm.UpdatedResponse);
 }
@@ -201,8 +196,6 @@ service OrderService {
 service FulfillmentService {
     rpc GetFulfillment(cm.IDRequest) returns (order.Fulfillment);
     rpc GetFulfillments(GetFulfillmentsRequest) returns (order.FulfillmentsResponse);
-    rpc CreateFulfillmentsForOrder(CreateFulfillmentsForOrderRequest) returns (order.Order);
-    rpc CancelFulfillment(cm.IDRequest) returns (cm.UpdatedResponse);
 
     rpc GetPublicExternalShippingServices(order.GetExternalShippingServicesRequest) returns (order.GetExternalShippingServicesResponse);
     rpc GetExternalShippingServices(order.GetExternalShippingServicesRequest) returns (order.GetExternalShippingServicesResponse);
@@ -676,18 +669,6 @@ message AddVariantsRequest {
 
 message AddVariantsResponse {
     repeated ShopVariant variants = 1;
-    repeated cm.Error    errors = 2;
-}
-
-message AddProductsRequest {
-    repeated int64  ids  = 1;
-    repeated string tags = 2;
-
-    optional int64 collection_id = 3 [(gogoproto.nullable)=false];
-}
-
-message AddProductsResponse {
-    repeated ShopProduct products = 1;
     repeated cm.Error    errors = 2;
 }
 

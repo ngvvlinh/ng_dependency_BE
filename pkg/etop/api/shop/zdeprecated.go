@@ -6,24 +6,23 @@ import (
 	"etop.vn/api/main/identity"
 	pbcm "etop.vn/backend/pb/common"
 	pbshop "etop.vn/backend/pb/etop/shop"
-	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/etop/model"
 	wrapshop "etop.vn/backend/wrapper/etop/shop"
 )
 
 func init() {
-	bus.AddHandler("api", s.UpdateExternalAccountAhamoveVerificationImages)
-	bus.AddHandler("api", s.GetShopProductSources)
-	bus.AddHandler("api", s.CreateProductSource)
+	bus.AddHandler("api", accountService.UpdateExternalAccountAhamoveVerificationImages)
+	bus.AddHandler("api", productSourceService.GetShopProductSources)
+	bus.AddHandler("api", productSourceService.CreateProductSource)
 
-	bus.AddHandler("api", s.GetCollection)
-	bus.AddHandler("api", s.GetCollections)
+	bus.AddHandler("api", collectionService.GetCollection)
+	bus.AddHandler("api", collectionService.GetCollections)
 
 }
 
 // deprecated
-func (s *Service) CreateProductSource(ctx context.Context, q *wrapshop.CreateProductSourceEndpoint) error {
+func (s *ProductSourceService) CreateProductSource(ctx context.Context, q *wrapshop.CreateProductSourceEndpoint) error {
 	q.Result = &pbshop.ProductSource{
 		Id:     q.Context.Shop.ID,
 		Status: 1,
@@ -32,7 +31,7 @@ func (s *Service) CreateProductSource(ctx context.Context, q *wrapshop.CreatePro
 }
 
 // deprecated: 2018.07.24+14
-func (s *Service) GetShopProductSources(ctx context.Context, q *wrapshop.GetShopProductSourcesEndpoint) error {
+func (s *ProductSourceService) GetShopProductSources(ctx context.Context, q *wrapshop.GetShopProductSourcesEndpoint) error {
 	q.Result = &pbshop.ProductSourcesResponse{
 		ProductSources: []*pbshop.ProductSource{
 			{
@@ -45,7 +44,7 @@ func (s *Service) GetShopProductSources(ctx context.Context, q *wrapshop.GetShop
 }
 
 // deprecated
-func (s *Service) UpdateExternalAccountAhamoveVerificationImages(ctx context.Context, r *wrapshop.UpdateExternalAccountAhamoveVerificationImagesEndpoint) error {
+func (s *AccountService) UpdateExternalAccountAhamoveVerificationImages(ctx context.Context, r *wrapshop.UpdateExternalAccountAhamoveVerificationImagesEndpoint) error {
 	if err := validateUrl(r.IdCardFrontImg, r.IdCardBackImg, r.PortraitImg, r.WebsiteUrl, r.FanpageUrl); err != nil {
 		return err
 	}
@@ -84,9 +83,4 @@ func (s *Service) UpdateExternalAccountAhamoveVerificationImages(ctx context.Con
 		Updated: 1,
 	}
 	return nil
-}
-
-// deprecated
-func (s *Service) AddProducts(ctx context.Context, q *wrapshop.AddProductsEndpoint) error {
-	return cm.ErrREMOVED
 }

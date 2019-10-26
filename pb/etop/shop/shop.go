@@ -27,36 +27,6 @@ import (
 	"etop.vn/common/jsonx"
 )
 
-func PbCollections(items []*catalogmodel.ShopCollection) []*Collection {
-	res := make([]*Collection, len(items))
-	for i, item := range items {
-		res[i] = PbCollection(item)
-	}
-	return res
-}
-
-func PbCollection(c *catalogmodel.ShopCollection) *Collection {
-	return &Collection{
-		Id:          c.ID,
-		Name:        c.Name,
-		Description: c.Description,
-		DescHtml:    c.DescHTML,
-		ShortDesc:   c.ShortDesc,
-		CreatedAt:   common.PbTime(c.CreatedAt),
-		UpdatedAt:   common.PbTime(c.UpdatedAt),
-	}
-}
-
-func PbCreateCollection(shopID int64, p *CreateCollectionRequest) *catalogmodel.ShopCollection {
-	return &catalogmodel.ShopCollection{
-		ShopID:      shopID,
-		Name:        p.Name,
-		DescHTML:    p.DescHtml,
-		Description: p.Description,
-		ShortDesc:   p.ShortDesc,
-	}
-}
-
 func PbSummaryTables(tables []*model.SummaryTable) []*SummaryTable {
 	res := make([]*SummaryTable, len(tables))
 	for i, table := range tables {

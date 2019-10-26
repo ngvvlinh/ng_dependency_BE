@@ -35,17 +35,16 @@ import (
 var ll = l.New()
 var idempgroup *idemp.RedisGroup
 var authStore auth.Generator
-var s = &Service{}
 
 func init() {
 	bus.AddHandlers("api",
-		s.VersionInfo,
-		s.InitIntegration,
-		s.RequestLogin,
-		s.LoginUsingToken,
-		s.Register,
-		s.GrantAccess,
-		s.SessionInfo,
+		miscService.VersionInfo,
+		integrationService.InitIntegration,
+		integrationService.RequestLogin,
+		integrationService.LoginUsingToken,
+		integrationService.Register,
+		integrationService.GrantAccess,
+		integrationService.SessionInfo,
 	)
 }
 
@@ -55,9 +54,13 @@ func Init(sd cmservice.Shutdowner, rd redis.Store, s auth.Generator) {
 	sd.Register(idempgroup.Shutdown)
 }
 
-type Service struct{}
+type MiscService struct{}
+type IntegrationService struct{}
 
-func (s *Service) VersionInfo(ctx context.Context, q *wrapintegration.VersionInfoEndpoint) error {
+var integrationService = &IntegrationService{}
+var miscService = &MiscService{}
+
+func (s *MiscService) VersionInfo(ctx context.Context, q *wrapintegration.VersionInfoEndpoint) error {
 	q.Result = &pbcm.VersionInfoResponse{
 		Service: "etop.Integration",
 		Version: "0.1",
@@ -65,7 +68,7 @@ func (s *Service) VersionInfo(ctx context.Context, q *wrapintegration.VersionInf
 	return nil
 }
 
-func (s *Service) InitIntegration(ctx context.Context, q *wrapintegration.InitEndpoint) error {
+func (s *IntegrationService) InitIntegration(ctx context.Context, q *wrapintegration.InitEndpoint) error {
 	authToken := q.AuthToken
 	if authToken == "" {
 		return cm.Errorf(cm.InvalidArgument, nil, "Missing token")
@@ -164,7 +167,7 @@ func (s *Service) InitIntegration(ctx context.Context, q *wrapintegration.InitEn
 	}
 }
 
-func (s *Service) validatePartner(ctx context.Context, partnerID int64) (*model.Partner, error) {
+func (s *IntegrationService) validatePartner(ctx context.Context, partnerID int64) (*model.Partner, error) {
 	partnerQuery := &model.GetPartner{PartnerID: partnerID}
 	if err := bus.Dispatch(ctx, partnerQuery); err != nil {
 		return nil, cm.MapError(err).Map(cm.NotFound, cm.PermissionDenied, "Mã xác thực không hợp lệ").Throw()
@@ -176,7 +179,7 @@ func (s *Service) validatePartner(ctx context.Context, partnerID int64) (*model.
 	return partner, nil
 }
 
-func (s *Service) actionRequestLogin(ctx context.Context, partner *model.Partner, info apipartner.PartnerShopToken) (*pbintegration.LoginResponse, error) {
+func (s *IntegrationService) actionRequestLogin(ctx context.Context, partner *model.Partner, info apipartner.PartnerShopToken) (*pbintegration.LoginResponse, error) {
 	tokenCmd := &tokens.GenerateTokenCommand{
 		ClaimInfo: claims.ClaimInfo{
 			Token:         "",
@@ -224,7 +227,7 @@ func (s *Service) actionRequestLogin(ctx context.Context, partner *model.Partner
 	return resp, nil
 }
 
-func (s *Service) generateNewSession(ctx context.Context, user *model.User, partner *model.Partner, shop *model.Shop) (*pbintegration.LoginResponse, error) {
+func (s *IntegrationService) generateNewSession(ctx context.Context, user *model.User, partner *model.Partner, shop *model.Shop) (*pbintegration.LoginResponse, error) {
 	tokenCmd := &tokens.GenerateTokenCommand{
 		ClaimInfo: claims.ClaimInfo{
 			Token:         "",
@@ -248,7 +251,7 @@ func (s *Service) generateNewSession(ctx context.Context, user *model.User, part
 	return resp, nil
 }
 
-func (s *Service) RequestLogin(ctx context.Context, r *wrapintegration.RequestLoginEndpoint) error {
+func (s *IntegrationService) RequestLogin(ctx context.Context, r *wrapintegration.RequestLoginEndpoint) error {
 	key := fmt.Sprintf("RequestLogin %v", r.Login)
 	res, err := idempgroup.DoAndWrap(key, 15*time.Second,
 		func() (interface{}, error) {
@@ -266,7 +269,7 @@ func (s *Service) RequestLogin(ctx context.Context, r *wrapintegration.RequestLo
 // - Check whether the user exists in our database
 // - Generate verification code and send to email/phone
 // - Response action login_using_token
-func (s *Service) requestLogin(ctx context.Context, r *wrapintegration.RequestLoginEndpoint) (*wrapintegration.RequestLoginEndpoint, error) {
+func (s *IntegrationService) requestLogin(ctx context.Context, r *wrapintegration.RequestLoginEndpoint) (*wrapintegration.RequestLoginEndpoint, error) {
 	partner := r.CtxPartner
 	if partner == nil {
 		return r, cm.Errorf(cm.Internal, nil, "")
@@ -443,7 +446,7 @@ func generateTokenWithVerificationCode(partnerID int64, login string, extra map[
 	return tok, code, v, nil
 }
 
-func (s *Service) LoginUsingToken(ctx context.Context, r *wrapintegration.LoginUsingTokenEndpoint) (_err error) {
+func (s *IntegrationService) LoginUsingToken(ctx context.Context, r *wrapintegration.LoginUsingTokenEndpoint) (_err error) {
 	if r.Login == "" || r.VerificationCode == "" {
 		return cm.Errorf(cm.InvalidArgument, nil, "Thiếu thông tin")
 	}
@@ -669,7 +672,7 @@ func (s *Service) LoginUsingToken(ctx context.Context, r *wrapintegration.LoginU
 	return nil
 }
 
-func (s *Service) Register(ctx context.Context, r *wrapintegration.RegisterEndpoint) error {
+func (s *IntegrationService) Register(ctx context.Context, r *wrapintegration.RegisterEndpoint) error {
 	partner := r.CtxPartner
 	claim := r.Context.ClaimInfo
 	if claim.Extra == nil || claim.Extra["action:register"] == "" {
@@ -800,7 +803,7 @@ func (s *Service) Register(ctx context.Context, r *wrapintegration.RegisterEndpo
 	return nil
 }
 
-func (s *Service) GrantAccess(ctx context.Context, r *wrapintegration.GrantAccessEndpoint) error {
+func (s *IntegrationService) GrantAccess(ctx context.Context, r *wrapintegration.GrantAccessEndpoint) error {
 	var requestInfo apipartner.PartnerShopToken
 	if err := jsonx.Unmarshal([]byte(r.Context.Extra["request_login"]), &requestInfo); err != nil {
 		return cm.Errorf(cm.FailedPrecondition, nil, "Yêu cầu đăng nhập không còn hiệu lực")
@@ -884,7 +887,7 @@ func (s *Service) GrantAccess(ctx context.Context, r *wrapintegration.GrantAcces
 	return nil
 }
 
-func (s *Service) SessionInfo(ctx context.Context, q *wrapintegration.SessionInfoEndpoint) error {
+func (s *IntegrationService) SessionInfo(ctx context.Context, q *wrapintegration.SessionInfoEndpoint) error {
 	var shop *model.Shop
 	if q.Context.Claim.AccountID != 0 {
 		query := &model.GetShopQuery{

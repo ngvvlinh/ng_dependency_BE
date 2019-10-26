@@ -18,13 +18,13 @@ import (
 )
 
 func init() {
-	bus.AddHandler("api", s.RegisterShop)
-	bus.AddHandler("api", s.UpdateShop)
-	bus.AddHandler("api", s.deleteShop)
-	bus.AddHandler("api", s.SetDefaultAddress)
+	bus.AddHandler("api", accountService.RegisterShop)
+	bus.AddHandler("api", accountService.UpdateShop)
+	bus.AddHandler("api", accountService.deleteShop)
+	bus.AddHandler("api", accountService.SetDefaultAddress)
 }
 
-func (s *Service) RegisterShop(ctx context.Context, q *wrapshop.RegisterShopEndpoint) error {
+func (s *AccountService) RegisterShop(ctx context.Context, q *wrapshop.RegisterShopEndpoint) error {
 	if q.UrlSlug != "" && !validate.URLSlug(q.UrlSlug) {
 		return cm.Error(cm.InvalidArgument, "Thông tin url_slug không hợp lệ. Vui lòng kiểm tra lại.", nil)
 	}
@@ -66,7 +66,7 @@ func (s *Service) RegisterShop(ctx context.Context, q *wrapshop.RegisterShopEndp
 	return nil
 }
 
-func (s *Service) UpdateShop(ctx context.Context, q *wrapshop.UpdateShopEndpoint) error {
+func (s *AccountService) UpdateShop(ctx context.Context, q *wrapshop.UpdateShopEndpoint) error {
 	shop := q.Context.Shop
 	if q.BankAccount != nil {
 		user, err := sqlstore.User(ctx).ID(shop.OwnerID).Get()
@@ -126,7 +126,7 @@ func (s *Service) UpdateShop(ctx context.Context, q *wrapshop.UpdateShopEndpoint
 	return nil
 }
 
-func (s *Service) deleteShop(ctx context.Context, q *wrapshop.DeleteShopEndpoint) error {
+func (s *AccountService) deleteShop(ctx context.Context, q *wrapshop.DeleteShopEndpoint) error {
 	cmd := &model.DeleteShopCommand{
 		ID:      q.Id,
 		OwnerID: q.Context.UserID,
@@ -138,7 +138,7 @@ func (s *Service) deleteShop(ctx context.Context, q *wrapshop.DeleteShopEndpoint
 	return nil
 }
 
-func (s *Service) SetDefaultAddress(ctx context.Context, q *wrapshop.SetDefaultAddressEndpoint) error {
+func (s *AccountService) SetDefaultAddress(ctx context.Context, q *wrapshop.SetDefaultAddressEndpoint) error {
 	cmd := &model.SetDefaultAddressShopCommand{
 		ShopID:    q.Context.Shop.ID,
 		Type:      q.Type.ToModel(),

@@ -26,14 +26,14 @@ import (
 
 func init() {
 	bus.AddHandlers("api",
-		s.CreateReceipt,
-		s.UpdateReceipt,
-		s.DeleteReceipt,
-		s.GetReceipt,
-		s.GetReceipts)
+		receiptService.CreateReceipt,
+		receiptService.UpdateReceipt,
+		receiptService.DeleteReceipt,
+		receiptService.GetReceipt,
+		receiptService.GetReceipts)
 }
 
-func (s *Service) CreateReceipt(ctx context.Context, q *wrapshop.CreateReceiptEndpoint) (_err error) {
+func (s *ReceiptService) CreateReceipt(ctx context.Context, q *wrapshop.CreateReceiptEndpoint) (_err error) {
 	key := fmt.Sprintf("Create receipt %v-%v-%v-%v-%v-%v-%v-%v",
 		q.Context.Shop.ID, q.Context.UserID, q.TraderId, q.Title, q.Description, q.Amount, q.Code, q.Type)
 	result, err := idempgroup.DoAndWrap(
@@ -47,7 +47,7 @@ func (s *Service) CreateReceipt(ctx context.Context, q *wrapshop.CreateReceiptEn
 	return nil
 }
 
-func (s *Service) createReceipt(ctx context.Context, q *wrapshop.CreateReceiptEndpoint) (*receipting.CreateReceiptCommand, error) {
+func (s *ReceiptService) createReceipt(ctx context.Context, q *wrapshop.CreateReceiptEndpoint) (*receipting.CreateReceiptCommand, error) {
 	receipt := &receipting.Receipt{
 		TraderID:    q.TraderId,
 		ShopID:      q.Context.Shop.ID,
@@ -97,7 +97,7 @@ func (s *Service) createReceipt(ctx context.Context, q *wrapshop.CreateReceiptEn
 	return cmd, nil
 }
 
-func (s *Service) UpdateReceipt(ctx context.Context, q *wrapshop.UpdateReceiptEndpoint) error {
+func (s *ReceiptService) UpdateReceipt(ctx context.Context, q *wrapshop.UpdateReceiptEndpoint) error {
 	query := &receipting.GetReceiptByIDQuery{
 		ID:     q.Id,
 		ShopID: q.Context.Shop.ID,
@@ -148,7 +148,7 @@ func (s *Service) UpdateReceipt(ctx context.Context, q *wrapshop.UpdateReceiptEn
 	return nil
 }
 
-func (s *Service) validateReceiptForCreateOrUpdate(ctx context.Context, shopID int64, receipt *receipting.Receipt) error {
+func (s *ReceiptService) validateReceiptForCreateOrUpdate(ctx context.Context, shopID int64, receipt *receipting.Receipt) error {
 	if receipt.ID == 0 && receipt.Title == "" {
 		return cm.Errorf(cm.InvalidArgument, nil, "Tiêu đề không hợp lệ")
 	}
@@ -217,7 +217,7 @@ func (s *Service) validateReceiptForCreateOrUpdate(ctx context.Context, shopID i
 	return nil
 }
 
-func (s *Service) validateReceiptLines(ctx context.Context, traderType string, receipt *receipting.Receipt) error {
+func (s *ReceiptService) validateReceiptLines(ctx context.Context, traderType string, receipt *receipting.Receipt) error {
 	totalAmountOfReceiptLines, orderIDs, mapOrdersAmount, err := calcReceiptLinesTotalAmount(receipt)
 	if err != nil {
 		return err
@@ -335,7 +335,7 @@ func calcReceiptLinesTotalAmount(receipt *receipting.Receipt) (totalAmount int32
 	return
 }
 
-func (s *Service) DeleteReceipt(ctx context.Context, q *wrapshop.DeleteReceiptEndpoint) error {
+func (s *ReceiptService) DeleteReceipt(ctx context.Context, q *wrapshop.DeleteReceiptEndpoint) error {
 	cmd := &receipting.DeleteReceiptCommand{
 		ID:     q.Id,
 		ShopID: q.Context.Shop.ID,
@@ -349,7 +349,7 @@ func (s *Service) DeleteReceipt(ctx context.Context, q *wrapshop.DeleteReceiptEn
 	return nil
 }
 
-func (s *Service) GetReceipt(ctx context.Context, q *wrapshop.GetReceiptEndpoint) error {
+func (s *ReceiptService) GetReceipt(ctx context.Context, q *wrapshop.GetReceiptEndpoint) error {
 	// Check receipt is exist
 	getReceiptQuery := &receipting.GetReceiptByIDQuery{
 		ID:     q.Id,
@@ -370,7 +370,7 @@ func (s *Service) GetReceipt(ctx context.Context, q *wrapshop.GetReceiptEndpoint
 	return nil
 }
 
-func (s *Service) GetReceipts(ctx context.Context, q *wrapshop.GetReceiptsEndpoint) error {
+func (s *ReceiptService) GetReceipts(ctx context.Context, q *wrapshop.GetReceiptsEndpoint) error {
 	paging := q.Paging.CMPaging()
 	listReceiptsQuery := &receipting.ListReceiptsQuery{
 		ShopID:  q.Context.Shop.ID,
@@ -393,7 +393,7 @@ func (s *Service) GetReceipts(ctx context.Context, q *wrapshop.GetReceiptsEndpoi
 	return nil
 }
 
-func (s *Service) getInfosForReceipts(ctx context.Context, shopID int64, receipts []*receipting.Receipt) (receiptsResult []*pbshop.Receipt, _ error) {
+func (s *ReceiptService) getInfosForReceipts(ctx context.Context, shopID int64, receipts []*receipting.Receipt) (receiptsResult []*pbshop.Receipt, _ error) {
 	mapOrderIDAndReceivedAmount := make(map[int64]int32)
 	var orderIDs, userIDs, traderIDs []int64
 

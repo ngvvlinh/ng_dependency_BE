@@ -1446,58 +1446,6 @@
         ]
       }
     },
-    "/api/shop.Fulfillment/CancelFulfillment": {
-      "post": {
-        "operationId": "CancelFulfillment",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/cmUpdatedResponse"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/cmIDRequest"
-            }
-          }
-        ],
-        "tags": [
-          "Fulfillment"
-        ]
-      }
-    },
-    "/api/shop.Fulfillment/CreateFulfillmentsForOrder": {
-      "post": {
-        "operationId": "CreateFulfillmentsForOrder",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/orderOrder"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/shopCreateFulfillmentsForOrderRequest"
-            }
-          }
-        ],
-        "tags": [
-          "Fulfillment"
-        ]
-      }
-    },
     "/api/shop.Fulfillment/GetExternalShippingServices": {
       "post": {
         "operationId": "GetExternalShippingServices",
@@ -2356,32 +2304,6 @@
         ]
       }
     },
-    "/api/shop.Order/ConfirmOrdersAndCreateFulfillments": {
-      "post": {
-        "operationId": "ConfirmOrdersAndCreateFulfillments",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/cmErrorsResponse"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/shopOrderIDsRequest"
-            }
-          }
-        ],
-        "tags": [
-          "Order"
-        ]
-      }
-    },
     "/api/shop.Order/CreateOrder": {
       "post": {
         "operationId": "CreateOrder",
@@ -2661,33 +2583,6 @@
             "required": true,
             "schema": {
               "$ref": "#/definitions/shopAddShopProductCollectionRequest"
-            }
-          }
-        ],
-        "tags": [
-          "Product"
-        ]
-      }
-    },
-    "/api/shop.Product/AddProducts": {
-      "post": {
-        "summary": "deprecated",
-        "operationId": "AddProducts",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/shopAddProductsResponse"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/shopAddProductsRequest"
             }
           }
         ],
@@ -4206,17 +4101,6 @@
           "type": "object",
           "additionalProperties": {
             "type": "string"
-          }
-        }
-      }
-    },
-    "cmErrorsResponse": {
-      "type": "object",
-      "properties": {
-        "errors": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/cmError"
           }
         }
       }
@@ -7242,45 +7126,6 @@
         }
       }
     },
-    "shopAddProductsRequest": {
-      "type": "object",
-      "properties": {
-        "ids": {
-          "type": "array",
-          "items": {
-            "type": "string",
-            "format": "int64"
-          }
-        },
-        "tags": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "collection_id": {
-          "type": "string",
-          "format": "int64"
-        }
-      }
-    },
-    "shopAddProductsResponse": {
-      "type": "object",
-      "properties": {
-        "products": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/shopShopProduct"
-          }
-        },
-        "errors": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/cmError"
-          }
-        }
-      }
-    },
     "shopAddShopProductCollectionRequest": {
       "type": "object",
       "properties": {
@@ -7636,22 +7481,6 @@
         "full_name",
         "phone"
       ]
-    },
-    "shopCreateFulfillmentsForOrderRequest": {
-      "type": "object",
-      "properties": {
-        "order_id": {
-          "type": "string",
-          "format": "int64"
-        },
-        "variant_ids": {
-          "type": "array",
-          "items": {
-            "type": "string",
-            "format": "int64"
-          }
-        }
-      }
     },
     "shopCreateInventoryVoucherRequest": {
       "type": "object",
@@ -8976,18 +8805,6 @@
         "order_id": {
           "type": "string",
           "format": "int64"
-        }
-      }
-    },
-    "shopOrderIDsRequest": {
-      "type": "object",
-      "properties": {
-        "order_ids": {
-          "type": "array",
-          "items": {
-            "type": "string",
-            "format": "int64"
-          }
         }
       }
     },

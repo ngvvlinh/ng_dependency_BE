@@ -13,15 +13,15 @@ import (
 
 func init() {
 	bus.AddHandlers("api",
-		s.GetCarrier,
-		s.GetCarriers,
-		s.GetCarriersByIDs,
-		s.CreateCarrier,
-		s.UpdateCarrier,
-		s.DeleteCarrier)
+		carrierService.GetCarrier,
+		carrierService.GetCarriers,
+		carrierService.GetCarriersByIDs,
+		carrierService.CreateCarrier,
+		carrierService.UpdateCarrier,
+		carrierService.DeleteCarrier)
 }
 
-func (s *Service) GetCarrier(ctx context.Context, r *wrapshop.GetCarrierEndpoint) error {
+func (s *CarrierService) GetCarrier(ctx context.Context, r *wrapshop.GetCarrierEndpoint) error {
 	query := &carrying.GetCarrierByIDQuery{
 		ID:     r.Id,
 		ShopID: r.Context.Shop.ID,
@@ -33,7 +33,7 @@ func (s *Service) GetCarrier(ctx context.Context, r *wrapshop.GetCarrierEndpoint
 	return nil
 }
 
-func (s *Service) GetCarriers(ctx context.Context, r *wrapshop.GetCarriersEndpoint) error {
+func (s *CarrierService) GetCarriers(ctx context.Context, r *wrapshop.GetCarriersEndpoint) error {
 	paging := r.Paging.CMPaging()
 	query := &carrying.ListCarriersQuery{
 		ShopID:  r.Context.Shop.ID,
@@ -50,7 +50,7 @@ func (s *Service) GetCarriers(ctx context.Context, r *wrapshop.GetCarriersEndpoi
 	return nil
 }
 
-func (s *Service) GetCarriersByIDs(ctx context.Context, r *wrapshop.GetCarriersByIDsEndpoint) error {
+func (s *CarrierService) GetCarriersByIDs(ctx context.Context, r *wrapshop.GetCarriersByIDsEndpoint) error {
 	query := &carrying.ListCarriersByIDsQuery{
 		IDs:    r.Ids,
 		ShopID: r.Context.Shop.ID,
@@ -64,7 +64,7 @@ func (s *Service) GetCarriersByIDs(ctx context.Context, r *wrapshop.GetCarriersB
 	return nil
 }
 
-func (s *Service) CreateCarrier(ctx context.Context, r *wrapshop.CreateCarrierEndpoint) error {
+func (s *CarrierService) CreateCarrier(ctx context.Context, r *wrapshop.CreateCarrierEndpoint) error {
 	cmd := &carrying.CreateCarrierCommand{
 		ShopID:   r.Context.Shop.ID,
 		FullName: r.FullName,
@@ -77,7 +77,7 @@ func (s *Service) CreateCarrier(ctx context.Context, r *wrapshop.CreateCarrierEn
 	return nil
 }
 
-func (s *Service) UpdateCarrier(ctx context.Context, r *wrapshop.UpdateCarrierEndpoint) error {
+func (s *CarrierService) UpdateCarrier(ctx context.Context, r *wrapshop.UpdateCarrierEndpoint) error {
 	cmd := &carrying.UpdateCarrierCommand{
 		ID:       r.Id,
 		ShopID:   r.Context.Shop.ID,
@@ -91,7 +91,7 @@ func (s *Service) UpdateCarrier(ctx context.Context, r *wrapshop.UpdateCarrierEn
 	return nil
 }
 
-func (s *Service) DeleteCarrier(ctx context.Context, r *wrapshop.DeleteCarrierEndpoint) error {
+func (s *CarrierService) DeleteCarrier(ctx context.Context, r *wrapshop.DeleteCarrierEndpoint) error {
 	cmd := &carrying.DeleteCarrierCommand{
 		ID:     r.Id,
 		ShopID: r.Context.Shop.ID,

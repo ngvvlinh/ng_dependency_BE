@@ -91,7 +91,6 @@ func NewShopServer(mux Muxer, hooks *twirp.ServerHooks) {
 	bus.Expect(&GetCustomerGroupsEndpoint{})
 	bus.Expect(&UpdateCustomerGroupEndpoint{})
 	bus.Expect(&AddProductCollectionEndpoint{})
-	bus.Expect(&AddProductsEndpoint{})
 	bus.Expect(&CreateProductEndpoint{})
 	bus.Expect(&CreateVariantEndpoint{})
 	bus.Expect(&GetProductEndpoint{})
@@ -129,7 +128,6 @@ func NewShopServer(mux Muxer, hooks *twirp.ServerHooks) {
 	bus.Expect(&UpdateProductsPSCategoryEndpoint{})
 	bus.Expect(&CancelOrderEndpoint{})
 	bus.Expect(&ConfirmOrderAndCreateFulfillmentsEndpoint{})
-	bus.Expect(&ConfirmOrdersAndCreateFulfillmentsEndpoint{})
 	bus.Expect(&CreateOrderEndpoint{})
 	bus.Expect(&GetOrderEndpoint{})
 	bus.Expect(&GetOrdersEndpoint{})
@@ -138,8 +136,6 @@ func NewShopServer(mux Muxer, hooks *twirp.ServerHooks) {
 	bus.Expect(&UpdateOrderEndpoint{})
 	bus.Expect(&UpdateOrderPaymentStatusEndpoint{})
 	bus.Expect(&UpdateOrdersStatusEndpoint{})
-	bus.Expect(&CancelFulfillmentEndpoint{})
-	bus.Expect(&CreateFulfillmentsForOrderEndpoint{})
 	bus.Expect(&GetExternalShippingServicesEndpoint{})
 	bus.Expect(&GetFulfillmentEndpoint{})
 	bus.Expect(&GetFulfillmentsEndpoint{})
@@ -2567,57 +2563,6 @@ func (s ProductService) AddProductCollection(ctx context.Context, req *shop.AddS
 	return resp, err
 }
 
-type AddProductsEndpoint struct {
-	*shop.AddProductsRequest
-	Result     *shop.AddProductsResponse
-	Context    ShopClaim
-	CtxPartner *model.Partner
-}
-
-func (s ProductService) AddProducts(ctx context.Context, req *shop.AddProductsRequest) (resp *shop.AddProductsResponse, err error) {
-	t0 := time.Now()
-	var session *middleware.Session
-	var errs []*cm.Error
-	const rpcName = "shop.Product/AddProducts"
-	defer func() {
-		recovered := recover()
-		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
-		metrics.CountRequest(rpcName, err)
-	}()
-	defer cmwrapper.Censor(req)
-	sessionQuery := &middleware.StartSessionQuery{
-		Context:     ctx,
-		RequireAuth: true,
-		RequireShop: true,
-		AuthPartner: 1,
-	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
-		return nil, err
-	}
-	session = sessionQuery.Result
-	query := &AddProductsEndpoint{AddProductsRequest: req}
-	query.Context.Claim = session.Claim
-	query.Context.Shop = session.Shop
-	query.CtxPartner = session.CtxPartner
-	query.Context.IsOwner = session.IsOwner
-	query.Context.Roles = session.Roles
-	query.Context.Permissions = session.Permissions
-	// Verify that the user has role "staff"
-	if !session.IsOwner && permission.MaxRoleLevel(session.Roles) < 2 {
-		return nil, common.ErrPermissionDenied
-	}
-	ctx = bus.NewRootContext(ctx)
-	err = bus.Dispatch(ctx, query)
-	resp = query.Result
-	if err == nil {
-		if resp == nil {
-			return nil, common.Error(common.Internal, "", nil).Log("nil response")
-		}
-		errs = cmwrapper.HasErrors(resp)
-	}
-	return resp, err
-}
-
 type CreateProductEndpoint struct {
 	*shop.CreateProductRequest
 	Result  *shop.ShopProduct
@@ -4369,57 +4314,6 @@ func (s OrderService) ConfirmOrderAndCreateFulfillments(ctx context.Context, req
 	return resp, err
 }
 
-type ConfirmOrdersAndCreateFulfillmentsEndpoint struct {
-	*shop.OrderIDsRequest
-	Result     *cm.ErrorsResponse
-	Context    ShopClaim
-	CtxPartner *model.Partner
-}
-
-func (s OrderService) ConfirmOrdersAndCreateFulfillments(ctx context.Context, req *shop.OrderIDsRequest) (resp *cm.ErrorsResponse, err error) {
-	t0 := time.Now()
-	var session *middleware.Session
-	var errs []*cm.Error
-	const rpcName = "shop.Order/ConfirmOrdersAndCreateFulfillments"
-	defer func() {
-		recovered := recover()
-		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
-		metrics.CountRequest(rpcName, err)
-	}()
-	defer cmwrapper.Censor(req)
-	sessionQuery := &middleware.StartSessionQuery{
-		Context:     ctx,
-		RequireAuth: true,
-		RequireShop: true,
-		AuthPartner: 1,
-	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
-		return nil, err
-	}
-	session = sessionQuery.Result
-	query := &ConfirmOrdersAndCreateFulfillmentsEndpoint{OrderIDsRequest: req}
-	query.Context.Claim = session.Claim
-	query.Context.Shop = session.Shop
-	query.CtxPartner = session.CtxPartner
-	query.Context.IsOwner = session.IsOwner
-	query.Context.Roles = session.Roles
-	query.Context.Permissions = session.Permissions
-	// Verify that the user has role "staff"
-	if !session.IsOwner && permission.MaxRoleLevel(session.Roles) < 2 {
-		return nil, common.ErrPermissionDenied
-	}
-	ctx = bus.NewRootContext(ctx)
-	err = bus.Dispatch(ctx, query)
-	resp = query.Result
-	if err == nil {
-		if resp == nil {
-			return nil, common.Error(common.Internal, "", nil).Log("nil response")
-		}
-		errs = cmwrapper.HasErrors(resp)
-	}
-	return resp, err
-}
-
 type CreateOrderEndpoint struct {
 	*order.CreateOrderRequest
 	Result     *order.Order
@@ -4813,105 +4707,6 @@ func (s OrderService) UpdateOrdersStatus(ctx context.Context, req *shop.UpdateOr
 }
 
 type FulfillmentService struct{}
-
-type CancelFulfillmentEndpoint struct {
-	*cm.IDRequest
-	Result     *cm.UpdatedResponse
-	Context    ShopClaim
-	CtxPartner *model.Partner
-}
-
-func (s FulfillmentService) CancelFulfillment(ctx context.Context, req *cm.IDRequest) (resp *cm.UpdatedResponse, err error) {
-	t0 := time.Now()
-	var session *middleware.Session
-	var errs []*cm.Error
-	const rpcName = "shop.Fulfillment/CancelFulfillment"
-	defer func() {
-		recovered := recover()
-		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
-		metrics.CountRequest(rpcName, err)
-	}()
-	defer cmwrapper.Censor(req)
-	sessionQuery := &middleware.StartSessionQuery{
-		Context:     ctx,
-		RequireAuth: true,
-		RequireShop: true,
-		AuthPartner: 1,
-	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
-		return nil, err
-	}
-	session = sessionQuery.Result
-	query := &CancelFulfillmentEndpoint{IDRequest: req}
-	query.Context.Claim = session.Claim
-	query.Context.Shop = session.Shop
-	query.CtxPartner = session.CtxPartner
-	query.Context.IsOwner = session.IsOwner
-	query.Context.Roles = session.Roles
-	query.Context.Permissions = session.Permissions
-	// Verify that the user has role "staff"
-	if !session.IsOwner && permission.MaxRoleLevel(session.Roles) < 2 {
-		return nil, common.ErrPermissionDenied
-	}
-	ctx = bus.NewRootContext(ctx)
-	err = bus.Dispatch(ctx, query)
-	resp = query.Result
-	if err == nil {
-		if resp == nil {
-			return nil, common.Error(common.Internal, "", nil).Log("nil response")
-		}
-		errs = cmwrapper.HasErrors(resp)
-	}
-	return resp, err
-}
-
-type CreateFulfillmentsForOrderEndpoint struct {
-	*shop.CreateFulfillmentsForOrderRequest
-	Result  *order.Order
-	Context ShopClaim
-}
-
-func (s FulfillmentService) CreateFulfillmentsForOrder(ctx context.Context, req *shop.CreateFulfillmentsForOrderRequest) (resp *order.Order, err error) {
-	t0 := time.Now()
-	var session *middleware.Session
-	var errs []*cm.Error
-	const rpcName = "shop.Fulfillment/CreateFulfillmentsForOrder"
-	defer func() {
-		recovered := recover()
-		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
-		metrics.CountRequest(rpcName, err)
-	}()
-	defer cmwrapper.Censor(req)
-	sessionQuery := &middleware.StartSessionQuery{
-		Context:     ctx,
-		RequireAuth: true,
-		RequireShop: true,
-	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
-		return nil, err
-	}
-	session = sessionQuery.Result
-	query := &CreateFulfillmentsForOrderEndpoint{CreateFulfillmentsForOrderRequest: req}
-	query.Context.Claim = session.Claim
-	query.Context.Shop = session.Shop
-	query.Context.IsOwner = session.IsOwner
-	query.Context.Roles = session.Roles
-	query.Context.Permissions = session.Permissions
-	// Verify that the user has role "staff"
-	if !session.IsOwner && permission.MaxRoleLevel(session.Roles) < 2 {
-		return nil, common.ErrPermissionDenied
-	}
-	ctx = bus.NewRootContext(ctx)
-	err = bus.Dispatch(ctx, query)
-	resp = query.Result
-	if err == nil {
-		if resp == nil {
-			return nil, common.Error(common.Internal, "", nil).Log("nil response")
-		}
-		errs = cmwrapper.HasErrors(resp)
-	}
-	return resp, err
-}
 
 type GetExternalShippingServicesEndpoint struct {
 	*order.GetExternalShippingServicesRequest

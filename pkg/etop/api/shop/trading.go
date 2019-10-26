@@ -24,15 +24,15 @@ import (
 
 func init() {
 	bus.AddHandlers("api",
-		s.TradingGetProduct,
-		s.TradingGetProducts,
-		s.TradingCreateOrder,
-		s.TradingGetOrder,
-		s.TradingGetOrders,
+		tradingService.TradingGetProduct,
+		tradingService.TradingGetProducts,
+		tradingService.TradingCreateOrder,
+		tradingService.TradingGetOrder,
+		tradingService.TradingGetOrders,
 	)
 }
 
-func (s *Service) TradingGetProduct(ctx context.Context, q *wrapshop.TradingGetProductEndpoint) error {
+func (s *TradingService) TradingGetProduct(ctx context.Context, q *wrapshop.TradingGetProductEndpoint) error {
 	query := &catalog.GetShopProductWithVariantsByIDQuery{
 		ProductID: q.Id,
 		ShopID:    model.EtopTradingAccountID,
@@ -45,7 +45,7 @@ func (s *Service) TradingGetProduct(ctx context.Context, q *wrapshop.TradingGetP
 
 }
 
-func (s *Service) TradingGetProducts(ctx context.Context, q *wrapshop.TradingGetProductsEndpoint) error {
+func (s *TradingService) TradingGetProducts(ctx context.Context, q *wrapshop.TradingGetProductsEndpoint) error {
 	paging := q.Paging.CMPaging()
 	query := &catalog.ListShopProductsWithVariantsQuery{
 		ShopID:  model.EtopTradingAccountID,
@@ -63,12 +63,12 @@ func (s *Service) TradingGetProducts(ctx context.Context, q *wrapshop.TradingGet
 	return nil
 }
 
-func (s *Service) TradingCreateOrder(ctx context.Context, r *wrapshop.TradingCreateOrderEndpoint) error {
+func (s *TradingService) TradingCreateOrder(ctx context.Context, r *wrapshop.TradingCreateOrderEndpoint) error {
 	_, err := s.tradingCreateOrder(ctx, r)
 	return err
 }
 
-func (s *Service) tradingCreateOrder(ctx context.Context, r *wrapshop.TradingCreateOrderEndpoint) (_orderID int64, _err error) {
+func (s *TradingService) tradingCreateOrder(ctx context.Context, r *wrapshop.TradingCreateOrderEndpoint) (_orderID int64, _err error) {
 	defer func() {
 		if _err == nil {
 			return
@@ -148,7 +148,7 @@ func (s *Service) tradingCreateOrder(ctx context.Context, r *wrapshop.TradingCre
 	return resp.Id, nil
 }
 
-func (s *Service) TradingGetOrder(ctx context.Context, q *wrapshop.TradingGetOrderEndpoint) error {
+func (s *TradingService) TradingGetOrder(ctx context.Context, q *wrapshop.TradingGetOrderEndpoint) error {
 	query := &ordermodelx.GetOrderQuery{
 		OrderID:            q.Id,
 		ShopID:             model.EtopTradingAccountID,
@@ -163,7 +163,7 @@ func (s *Service) TradingGetOrder(ctx context.Context, q *wrapshop.TradingGetOrd
 	return nil
 }
 
-func (s *Service) TradingGetOrders(ctx context.Context, q *wrapshop.TradingGetOrdersEndpoint) error {
+func (s *TradingService) TradingGetOrders(ctx context.Context, q *wrapshop.TradingGetOrdersEndpoint) error {
 	paging := q.Paging.CMPaging()
 	query := &ordermodelx.GetOrdersQuery{
 		ShopIDs:       []int64{model.EtopTradingAccountID},

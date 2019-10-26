@@ -17,25 +17,25 @@ import (
 
 func init() {
 	bus.AddHandlers("api",
-		s.CreateCustomer,
-		s.UpdateCustomer,
-		s.DeleteCustomer,
-		s.GetCustomer,
-		s.GetCustomers,
-		s.GetCustomersByIDs,
-		s.GetCustomerDetails,
-		s.BatchSetCustomersStatus,
+		customerService.CreateCustomer,
+		customerService.UpdateCustomer,
+		customerService.DeleteCustomer,
+		customerService.GetCustomer,
+		customerService.GetCustomers,
+		customerService.GetCustomersByIDs,
+		customerService.GetCustomerDetails,
+		customerService.BatchSetCustomersStatus,
 
-		s.CreateCustomerGroup,
-		s.GetCustomerGroup,
-		s.GetCustomerGroups,
-		s.UpdateCustomerGroup,
-		s.AddCustomersToGroup,
-		s.RemoveCustomersFromGroup,
+		customerService.CreateCustomerGroup,
+		customerService.GetCustomerGroup,
+		customerService.GetCustomerGroups,
+		customerService.UpdateCustomerGroup,
+		customerService.AddCustomersToGroup,
+		customerService.RemoveCustomersFromGroup,
 	)
 }
 
-func (s *Service) CreateCustomer(ctx context.Context, r *wrapshop.CreateCustomerEndpoint) error {
+func (s *CustomerService) CreateCustomer(ctx context.Context, r *wrapshop.CreateCustomerEndpoint) error {
 	cmd := &customering.CreateCustomerCommand{
 		ShopID:   r.Context.Shop.ID,
 		Code:     strings.ToUpper(r.Code),
@@ -63,7 +63,7 @@ func (s *Service) CreateCustomer(ctx context.Context, r *wrapshop.CreateCustomer
 	return nil
 }
 
-func (s *Service) UpdateCustomer(ctx context.Context, r *wrapshop.UpdateCustomerEndpoint) error {
+func (s *CustomerService) UpdateCustomer(ctx context.Context, r *wrapshop.UpdateCustomerEndpoint) error {
 	cmd := &customering.UpdateCustomerCommand{
 		ID:       r.Id,
 		ShopID:   r.Context.Shop.ID,
@@ -92,7 +92,7 @@ func (s *Service) UpdateCustomer(ctx context.Context, r *wrapshop.UpdateCustomer
 	return nil
 }
 
-func (s *Service) BatchSetCustomersStatus(ctx context.Context, r *wrapshop.BatchSetCustomersStatusEndpoint) error {
+func (s *CustomerService) BatchSetCustomersStatus(ctx context.Context, r *wrapshop.BatchSetCustomersStatusEndpoint) error {
 	cmd := &customering.BatchSetCustomersStatusCommand{
 		IDs:    r.Ids,
 		ShopID: r.Context.Shop.ID,
@@ -105,7 +105,7 @@ func (s *Service) BatchSetCustomersStatus(ctx context.Context, r *wrapshop.Batch
 	return nil
 }
 
-func (s *Service) DeleteCustomer(ctx context.Context, r *wrapshop.DeleteCustomerEndpoint) error {
+func (s *CustomerService) DeleteCustomer(ctx context.Context, r *wrapshop.DeleteCustomerEndpoint) error {
 	cmd := &customering.DeleteCustomerCommand{
 		ID:     r.Id,
 		ShopID: r.Context.Shop.ID,
@@ -117,7 +117,7 @@ func (s *Service) DeleteCustomer(ctx context.Context, r *wrapshop.DeleteCustomer
 	return nil
 }
 
-func (s *Service) GetCustomer(ctx context.Context, r *wrapshop.GetCustomerEndpoint) error {
+func (s *CustomerService) GetCustomer(ctx context.Context, r *wrapshop.GetCustomerEndpoint) error {
 	query := &customering.GetCustomerByIDQuery{
 		ID:     r.Id,
 		ShopID: r.Context.Shop.ID,
@@ -132,7 +132,7 @@ func (s *Service) GetCustomer(ctx context.Context, r *wrapshop.GetCustomerEndpoi
 	return nil
 }
 
-func (s *Service) GetCustomers(ctx context.Context, r *wrapshop.GetCustomersEndpoint) error {
+func (s *CustomerService) GetCustomers(ctx context.Context, r *wrapshop.GetCustomersEndpoint) error {
 	paging := r.Paging.CMPaging()
 	query := &customering.ListCustomersQuery{
 		ShopID:  r.Context.Shop.ID,
@@ -152,7 +152,7 @@ func (s *Service) GetCustomers(ctx context.Context, r *wrapshop.GetCustomersEndp
 	return nil
 }
 
-func (s *Service) GetCustomersByIDs(ctx context.Context, r *wrapshop.GetCustomersByIDsEndpoint) error {
+func (s *CustomerService) GetCustomersByIDs(ctx context.Context, r *wrapshop.GetCustomersByIDsEndpoint) error {
 	query := &customering.ListCustomersByIDsQuery{
 		IDs:    r.Ids,
 		ShopID: r.Context.Shop.ID,
@@ -169,11 +169,11 @@ func (s *Service) GetCustomersByIDs(ctx context.Context, r *wrapshop.GetCustomer
 	return nil
 }
 
-func (s *Service) GetCustomerDetails(ctx context.Context, r *wrapshop.GetCustomerDetailsEndpoint) error {
+func (s *CustomerService) GetCustomerDetails(ctx context.Context, r *wrapshop.GetCustomerDetailsEndpoint) error {
 	return cm.ErrTODO
 }
 
-func (s *Service) CreateCustomerGroup(ctx context.Context, r *wrapshop.CreateCustomerGroupEndpoint) error {
+func (s *CustomerService) CreateCustomerGroup(ctx context.Context, r *wrapshop.CreateCustomerGroupEndpoint) error {
 	cmd := &customering.CreateCustomerGroupCommand{
 		Name: r.Name,
 	}
@@ -184,7 +184,7 @@ func (s *Service) CreateCustomerGroup(ctx context.Context, r *wrapshop.CreateCus
 	return nil
 }
 
-func (s *Service) GetCustomerGroup(ctx context.Context, q *wrapshop.GetCustomerGroupEndpoint) error {
+func (s *CustomerService) GetCustomerGroup(ctx context.Context, q *wrapshop.GetCustomerGroupEndpoint) error {
 	query := &customering.GetCustomerGroupQuery{
 		ID: q.Id,
 	}
@@ -195,7 +195,7 @@ func (s *Service) GetCustomerGroup(ctx context.Context, q *wrapshop.GetCustomerG
 	return nil
 }
 
-func (s *Service) GetCustomerGroups(ctx context.Context, q *wrapshop.GetCustomerGroupsEndpoint) error {
+func (s *CustomerService) GetCustomerGroups(ctx context.Context, q *wrapshop.GetCustomerGroupsEndpoint) error {
 	paging := q.Paging.CMPaging()
 	query := &customering.ListCustomerGroupsQuery{
 		Paging:  *paging,
@@ -211,7 +211,7 @@ func (s *Service) GetCustomerGroups(ctx context.Context, q *wrapshop.GetCustomer
 	return nil
 }
 
-func (s *Service) UpdateCustomerGroup(ctx context.Context, r *wrapshop.UpdateCustomerGroupEndpoint) error {
+func (s *CustomerService) UpdateCustomerGroup(ctx context.Context, r *wrapshop.UpdateCustomerGroupEndpoint) error {
 	cmd := &customering.UpdateCustomerGroupCommand{
 		ID:   r.GroupId,
 		Name: r.Name,
@@ -223,7 +223,7 @@ func (s *Service) UpdateCustomerGroup(ctx context.Context, r *wrapshop.UpdateCus
 	return nil
 }
 
-func (s *Service) AddCustomersToGroup(ctx context.Context, r *wrapshop.AddCustomersToGroupEndpoint) error {
+func (s *CustomerService) AddCustomersToGroup(ctx context.Context, r *wrapshop.AddCustomersToGroupEndpoint) error {
 	cmd := &customering.AddCustomersToGroupCommand{
 		GroupID:     r.GroupId,
 		CustomerIDs: r.CustomerIds,
@@ -235,7 +235,7 @@ func (s *Service) AddCustomersToGroup(ctx context.Context, r *wrapshop.AddCustom
 	return nil
 }
 
-func (s *Service) RemoveCustomersFromGroup(ctx context.Context, r *wrapshop.RemoveCustomersFromGroupEndpoint) error {
+func (s *CustomerService) RemoveCustomersFromGroup(ctx context.Context, r *wrapshop.RemoveCustomersFromGroupEndpoint) error {
 	cmd := &customering.RemoveCustomersFromGroupCommand{
 		GroupID:     r.GroupId,
 		CustomerIDs: r.CustomerIds,
@@ -247,7 +247,7 @@ func (s *Service) RemoveCustomersFromGroup(ctx context.Context, r *wrapshop.Remo
 	return nil
 }
 
-func (s *Service) listLiabilities(ctx context.Context, shopID int64, customers []*pbshop.Customer) error {
+func (s *CustomerService) listLiabilities(ctx context.Context, shopID int64, customers []*pbshop.Customer) error {
 	var customerIDs []int64
 	mapCustomerIDAndNumberOfOrders := make(map[int64]int)
 	mapCustomerIDAndTotalAmountOrders := make(map[int64]int64)

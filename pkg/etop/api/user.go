@@ -47,23 +47,27 @@ const PrefixIdempUser = "IdempUser"
 
 func init() {
 	bus.AddHandlers("api",
-		s.ChangePassword,
-		s.ChangePasswordUsingToken,
-		s.Login,
-		s.Register,
-		s.ResetPassword,
-		s.SendEmailVerification,
-		s.SendPhoneVerification,
-		s.SendSTokenEmail,
-		s.SessionInfo,
-		s.SwitchAccount,
-		s.UpgradeAccessToken,
-		s.VerifyEmailUsingToken,
-		s.VerifyPhoneUsingToken,
-		s.UpdateReferenceUser,
-		s.UpdateReferenceSale,
+		userService.ChangePassword,
+		userService.ChangePasswordUsingToken,
+		userService.Login,
+		userService.Register,
+		userService.ResetPassword,
+		userService.SendEmailVerification,
+		userService.SendPhoneVerification,
+		userService.SendSTokenEmail,
+		userService.SessionInfo,
+		userService.SwitchAccount,
+		userService.UpgradeAccessToken,
+		userService.VerifyEmailUsingToken,
+		userService.VerifyPhoneUsingToken,
+		userService.UpdateReferenceUser,
+		userService.UpdateReferenceSale,
 	)
 }
+
+type UserService struct{}
+
+var userService = &UserService{}
 
 type EmailConfig = config.EmailConfig
 
@@ -97,7 +101,7 @@ func Init(
 // 1b. If any email or phone is activated -> AlreadyExists.
 //   - If both email and phone exist (but not activated) -> Merge them.
 //   - Otherwise, update existing user with the other identifier.
-func (s *Service) Register(ctx context.Context, r *wrapetop.RegisterEndpoint) error {
+func (s *UserService) Register(ctx context.Context, r *wrapetop.RegisterEndpoint) error {
 	if !r.AgreeTos {
 		return cm.Error(cm.InvalidArgument, "Bạn cần đồng ý với điều khoản sử dụng dịch vụ để tiếp tục. Nếu cần thêm thông tin, vui lòng liên hệ hotro@etop.vn.", nil)
 	}
@@ -251,7 +255,7 @@ func createRegisterResponse(user *model.User) *pbetop.RegisterResponse {
 	}
 }
 
-func (s *Service) getUserByPhoneAndByEmail(ctx context.Context, phone, email string) (userByPhone, userByEmail model.UserExtended, err error) {
+func (s *UserService) getUserByPhoneAndByEmail(ctx context.Context, phone, email string) (userByPhone, userByEmail model.UserExtended, err error) {
 	userByPhoneQuery := &model.GetUserByLoginQuery{
 		PhoneOrEmail: phone,
 	}
@@ -274,11 +278,11 @@ func (s *Service) getUserByPhoneAndByEmail(ctx context.Context, phone, email str
 	return
 }
 
-func (s *Service) mergeUserByPhoneAndEmail(ctx context.Context, userByPhone, userByEmail model.UserExtended) (*pbetop.RegisterResponse, error) {
+func (s *UserService) mergeUserByPhoneAndEmail(ctx context.Context, userByPhone, userByEmail model.UserExtended) (*pbetop.RegisterResponse, error) {
 	return nil, cm.ErrTODO
 }
 
-func (s *Service) Login(ctx context.Context, r *wrapetop.LoginEndpoint) error {
+func (s *UserService) Login(ctx context.Context, r *wrapetop.LoginEndpoint) error {
 	query := &login.LoginUserQuery{
 		PhoneOrEmail: r.Login,
 		Password:     r.Password,
@@ -298,7 +302,7 @@ func (s *Service) Login(ctx context.Context, r *wrapetop.LoginEndpoint) error {
 	return err
 }
 
-func (s *Service) ResetPassword(ctx context.Context, r *wrapetop.ResetPasswordEndpoint) error {
+func (s *UserService) ResetPassword(ctx context.Context, r *wrapetop.ResetPasswordEndpoint) error {
 	key := fmt.Sprintf("ResetPassword %v", r.Email)
 	res, err := idempgroup.DoAndWrap(key, 15*time.Second,
 		func() (interface{}, error) {
@@ -312,7 +316,7 @@ func (s *Service) ResetPassword(ctx context.Context, r *wrapetop.ResetPasswordEn
 	return err
 }
 
-func (s *Service) resetPassword(ctx context.Context, r *wrapetop.ResetPasswordEndpoint) (*wrapetop.ResetPasswordEndpoint, error) {
+func (s *UserService) resetPassword(ctx context.Context, r *wrapetop.ResetPasswordEndpoint) (*wrapetop.ResetPasswordEndpoint, error) {
 	if !enabledEmail {
 		return r, cm.Error(cm.FailedPrecondition, "Không thể gửi email khôi phục mật khẩu. Nếu cần thêm thông tin vui lòng liên hệ hotro@etop.vn.", nil).WithMeta("reason", "not configured")
 	}
@@ -377,7 +381,7 @@ func (s *Service) resetPassword(ctx context.Context, r *wrapetop.ResetPasswordEn
 	return r, nil
 }
 
-func (s *Service) ChangePassword(ctx context.Context, r *wrapetop.ChangePasswordEndpoint) error {
+func (s *UserService) ChangePassword(ctx context.Context, r *wrapetop.ChangePasswordEndpoint) error {
 	if r.CurrentPassword == "" {
 		return cm.Error(cm.InvalidArgument, "Missing current_password", nil)
 	}
@@ -411,7 +415,7 @@ func (s *Service) ChangePassword(ctx context.Context, r *wrapetop.ChangePassword
 	return nil
 }
 
-func (s *Service) ChangePasswordUsingToken(ctx context.Context, r *wrapetop.ChangePasswordUsingTokenEndpoint) error {
+func (s *UserService) ChangePasswordUsingToken(ctx context.Context, r *wrapetop.ChangePasswordUsingTokenEndpoint) error {
 	key := fmt.Sprintf("ChangePasswordUsingToken %v-%v-%v", r.ResetPasswordToken, r.NewPassword, r.ConfirmPassword)
 	res, err := idempgroup.DoAndWrap(key, 30*time.Second,
 		func() (interface{}, error) {
@@ -425,7 +429,7 @@ func (s *Service) ChangePasswordUsingToken(ctx context.Context, r *wrapetop.Chan
 	return err
 }
 
-func (s *Service) changePasswordUsingToken(ctx context.Context, r *wrapetop.ChangePasswordUsingTokenEndpoint) (*wrapetop.ChangePasswordUsingTokenEndpoint, error) {
+func (s *UserService) changePasswordUsingToken(ctx context.Context, r *wrapetop.ChangePasswordUsingTokenEndpoint) (*wrapetop.ChangePasswordUsingTokenEndpoint, error) {
 	if r.ResetPasswordToken == "" {
 		return r, cm.Error(cm.InvalidArgument, "Missing reset_password_token", nil)
 	}
@@ -476,7 +480,7 @@ func (s *Service) changePasswordUsingToken(ctx context.Context, r *wrapetop.Chan
 	return r, nil
 }
 
-func (s *Service) SessionInfo(ctx context.Context, r *wrapetop.SessionInfoEndpoint) error {
+func (s *UserService) SessionInfo(ctx context.Context, r *wrapetop.SessionInfoEndpoint) error {
 	resp, err := s.CreateLoginResponse(
 		ctx,
 		&r.Context.ClaimInfo,
@@ -492,7 +496,7 @@ func (s *Service) SessionInfo(ctx context.Context, r *wrapetop.SessionInfoEndpoi
 	return err
 }
 
-func (s *Service) SwitchAccount(ctx context.Context, r *wrapetop.SwitchAccountEndpoint) error {
+func (s *UserService) SwitchAccount(ctx context.Context, r *wrapetop.SwitchAccountEndpoint) error {
 	if r.AccountId == 0 && !r.RegenerateTokens {
 		return cm.Error(cm.InvalidArgument, "Missing account_id", nil)
 	}
@@ -516,7 +520,7 @@ func (s *Service) SwitchAccount(ctx context.Context, r *wrapetop.SwitchAccountEn
 	return err
 }
 
-func (s *Service) CreateSessionResponse(ctx context.Context, claim *claims.ClaimInfo, token string, userID int64, user *model.User, preferAccountID int64, preferAccountType int, adminID int64) (*pbetop.AccessTokenResponse, error) {
+func (s *UserService) CreateSessionResponse(ctx context.Context, claim *claims.ClaimInfo, token string, userID int64, user *model.User, preferAccountID int64, preferAccountType int, adminID int64) (*pbetop.AccessTokenResponse, error) {
 	resp, err := s.CreateLoginResponse(ctx, claim, token, userID, user, preferAccountID, preferAccountType, false, adminID)
 	if err != nil {
 		return nil, err
@@ -533,12 +537,12 @@ func (s *Service) CreateSessionResponse(ctx context.Context, claim *claims.Claim
 	}, nil
 }
 
-func (s *Service) CreateLoginResponse(ctx context.Context, claim *claims.ClaimInfo, token string, userID int64, user *model.User, preferAccountID int64, preferAccountType int, generateAllTokens bool, adminID int64) (*pbetop.LoginResponse, error) {
+func (s *UserService) CreateLoginResponse(ctx context.Context, claim *claims.ClaimInfo, token string, userID int64, user *model.User, preferAccountID int64, preferAccountType int, generateAllTokens bool, adminID int64) (*pbetop.LoginResponse, error) {
 	resp, _, err := s.CreateLoginResponse2(ctx, claim, token, userID, user, preferAccountID, preferAccountType, generateAllTokens, adminID)
 	return resp, err
 }
 
-func (s *Service) CreateLoginResponse2(ctx context.Context, claim *claims.ClaimInfo, token string, userID int64, user *model.User, preferAccountID int64, preferAccountType int, generateAllTokens bool, adminID int64) (_ *pbetop.LoginResponse, respShop *model.Shop, _ error) {
+func (s *UserService) CreateLoginResponse2(ctx context.Context, claim *claims.ClaimInfo, token string, userID int64, user *model.User, preferAccountID int64, preferAccountType int, generateAllTokens bool, adminID int64) (_ *pbetop.LoginResponse, respShop *model.Shop, _ error) {
 
 	// Retrieve user info
 	if user != nil && user.ID != userID {
@@ -674,7 +678,7 @@ func (s *Service) CreateLoginResponse2(ctx context.Context, claim *claims.ClaimI
 	return resp, respShop, nil
 }
 
-func (s *Service) SendEmailVerification(ctx context.Context, r *wrapetop.SendEmailVerificationEndpoint) error {
+func (s *UserService) SendEmailVerification(ctx context.Context, r *wrapetop.SendEmailVerificationEndpoint) error {
 	key := fmt.Sprintf("SendEmailVerification %v-%v", r.Context.User.ID, r.Email)
 	res, err := idempgroup.DoAndWrap(key, 30*time.Second,
 		func() (interface{}, error) {
@@ -688,7 +692,7 @@ func (s *Service) SendEmailVerification(ctx context.Context, r *wrapetop.SendEma
 	return err
 }
 
-func (s *Service) sendEmailVerification(ctx context.Context, r *wrapetop.SendEmailVerificationEndpoint) (*wrapetop.SendEmailVerificationEndpoint, error) {
+func (s *UserService) sendEmailVerification(ctx context.Context, r *wrapetop.SendEmailVerificationEndpoint) (*wrapetop.SendEmailVerificationEndpoint, error) {
 	if !enabledEmail {
 		return r, cm.Error(cm.FailedPrecondition, "Không thể gửi email xác nhận tài khoản. Nếu cần thêm thông tin vui lòng liên hệ hotro@etop.vn.", nil).WithMeta("reason", "not configured")
 	}
@@ -761,7 +765,7 @@ func (s *Service) sendEmailVerification(ctx context.Context, r *wrapetop.SendEma
 	return r, nil
 }
 
-func (s *Service) SendPhoneVerification(ctx context.Context, r *wrapetop.SendPhoneVerificationEndpoint) error {
+func (s *UserService) SendPhoneVerification(ctx context.Context, r *wrapetop.SendPhoneVerificationEndpoint) error {
 	key := fmt.Sprintf("SendPhoneVerification %v-%v", r.Context.User.ID, r.Phone)
 	res, err := idempgroup.DoAndWrap(key, 60*time.Second,
 		func() (interface{}, error) {
@@ -775,7 +779,7 @@ func (s *Service) SendPhoneVerification(ctx context.Context, r *wrapetop.SendPho
 	return err
 }
 
-func (s *Service) sendPhoneVerification(ctx context.Context, r *wrapetop.SendPhoneVerificationEndpoint) (*wrapetop.SendPhoneVerificationEndpoint, error) {
+func (s *UserService) sendPhoneVerification(ctx context.Context, r *wrapetop.SendPhoneVerificationEndpoint) (*wrapetop.SendPhoneVerificationEndpoint, error) {
 	if !enabledSMS {
 		return r, cm.Error(cm.FailedPrecondition, "Không thể gửi tin nhắn xác nhận tài khoản. Nếu cần thêm thông tin vui lòng liên hệ hotro@etop.vn.", nil).WithMeta("reason", "not configured")
 	}
@@ -820,7 +824,7 @@ func (s *Service) sendPhoneVerification(ctx context.Context, r *wrapetop.SendPho
 	return r, nil
 }
 
-func (s *Service) VerifyEmailUsingToken(ctx context.Context, r *wrapetop.VerifyEmailUsingTokenEndpoint) error {
+func (s *UserService) VerifyEmailUsingToken(ctx context.Context, r *wrapetop.VerifyEmailUsingTokenEndpoint) error {
 	key := fmt.Sprintf("VerifyEmailUsingToken %v-%v", r.Context.User.ID, r.VerificationToken)
 	res, err := idempgroup.DoAndWrap(key, 30*time.Second,
 		func() (interface{}, error) {
@@ -834,7 +838,7 @@ func (s *Service) VerifyEmailUsingToken(ctx context.Context, r *wrapetop.VerifyE
 	return err
 }
 
-func (s *Service) verifyEmailUsingToken(ctx context.Context, r *wrapetop.VerifyEmailUsingTokenEndpoint) (*wrapetop.VerifyEmailUsingTokenEndpoint, error) {
+func (s *UserService) verifyEmailUsingToken(ctx context.Context, r *wrapetop.VerifyEmailUsingTokenEndpoint) (*wrapetop.VerifyEmailUsingTokenEndpoint, error) {
 	if r.VerificationToken == "" {
 		return r, cm.Error(cm.InvalidArgument, "Missing verification_token", nil)
 	}
@@ -866,7 +870,7 @@ func (s *Service) verifyEmailUsingToken(ctx context.Context, r *wrapetop.VerifyE
 	return r, nil
 }
 
-func (s *Service) VerifyPhoneUsingToken(ctx context.Context, r *wrapetop.VerifyPhoneUsingTokenEndpoint) error {
+func (s *UserService) VerifyPhoneUsingToken(ctx context.Context, r *wrapetop.VerifyPhoneUsingTokenEndpoint) error {
 	key := fmt.Sprintf("VerifyPhoneUsingToken %v-%v", r.Context.User.ID, r.VerificationToken)
 	res, err := idempgroup.DoAndWrap(key, 15*time.Second,
 		func() (interface{}, error) {
@@ -880,7 +884,7 @@ func (s *Service) VerifyPhoneUsingToken(ctx context.Context, r *wrapetop.VerifyP
 	return err
 }
 
-func (s *Service) verifyPhoneUsingToken(ctx context.Context, r *wrapetop.VerifyPhoneUsingTokenEndpoint) (*wrapetop.VerifyPhoneUsingTokenEndpoint, error) {
+func (s *UserService) verifyPhoneUsingToken(ctx context.Context, r *wrapetop.VerifyPhoneUsingTokenEndpoint) (*wrapetop.VerifyPhoneUsingTokenEndpoint, error) {
 	if r.VerificationToken == "" {
 		return r, cm.Error(cm.InvalidArgument, "Missing code", nil)
 	}
@@ -925,7 +929,7 @@ func (s *Service) verifyPhoneUsingToken(ctx context.Context, r *wrapetop.VerifyP
 	return r, nil
 }
 
-func (s *Service) UpgradeAccessToken(ctx context.Context, r *wrapetop.UpgradeAccessTokenEndpoint) error {
+func (s *UserService) UpgradeAccessToken(ctx context.Context, r *wrapetop.UpgradeAccessTokenEndpoint) error {
 	key := fmt.Sprintf("UpgradeAccessToken %v-%v", r.Context.User.ID, r.Stoken)
 	res, err := idempgroup.DoAndWrap(key, 15*time.Second,
 		func() (interface{}, error) {
@@ -939,7 +943,7 @@ func (s *Service) UpgradeAccessToken(ctx context.Context, r *wrapetop.UpgradeAcc
 	return err
 }
 
-func (s *Service) upgradeAccessToken(ctx context.Context, r *wrapetop.UpgradeAccessTokenEndpoint) (*wrapetop.UpgradeAccessTokenEndpoint, error) {
+func (s *UserService) upgradeAccessToken(ctx context.Context, r *wrapetop.UpgradeAccessTokenEndpoint) (*wrapetop.UpgradeAccessTokenEndpoint, error) {
 	if r.Stoken == "" {
 		return r, cm.Error(cm.InvalidArgument, "Missing code", nil)
 	}
@@ -991,7 +995,7 @@ func (s *Service) upgradeAccessToken(ctx context.Context, r *wrapetop.UpgradeAcc
 	return r, cm.Errorf(cm.PermissionDenied, nil, "Mã xác nhận không hợp lệ. Nếu cần thêm thông tin vui lòng liên hệ hotro@etop.vn.")
 }
 
-func (s *Service) SendSTokenEmail(ctx context.Context, r *wrapetop.SendSTokenEmailEndpoint) error {
+func (s *UserService) SendSTokenEmail(ctx context.Context, r *wrapetop.SendSTokenEmailEndpoint) error {
 	key := fmt.Sprintf("SendSTokenEmail %v-%v-%v", r.Context.User.ID, r.Email, r.AccountId)
 	res, err := idempgroup.DoAndWrap(key, 60*time.Second,
 		func() (interface{}, error) {
@@ -1005,7 +1009,7 @@ func (s *Service) SendSTokenEmail(ctx context.Context, r *wrapetop.SendSTokenEma
 	return err
 }
 
-func (s *Service) sendSTokenEmail(ctx context.Context, r *wrapetop.SendSTokenEmailEndpoint) (*wrapetop.SendSTokenEmailEndpoint, error) {
+func (s *UserService) sendSTokenEmail(ctx context.Context, r *wrapetop.SendSTokenEmailEndpoint) (*wrapetop.SendSTokenEmailEndpoint, error) {
 	if !enabledEmail {
 		return r, cm.Error(cm.FailedPrecondition, "Không thể gửi email xác nhận. Nếu cần thêm thông tin vui lòng liên hệ hotro@etop.vn.", nil).WithMeta("reason", "not configured")
 	}
@@ -1125,7 +1129,7 @@ func generateToken(usage string, userID int64, generate bool, ttl int, extra str
 	return tok, code, v, nil
 }
 
-func (s *Service) UpdateReferenceUser(ctx context.Context, r *wrapetop.UpdateReferenceUserEndpoint) error {
+func (s *UserService) UpdateReferenceUser(ctx context.Context, r *wrapetop.UpdateReferenceUserEndpoint) error {
 	cmd := &identity.UpdateUserReferenceUserIDCommand{
 		UserID:       r.Context.UserID,
 		RefUserPhone: r.Phone,
@@ -1139,7 +1143,7 @@ func (s *Service) UpdateReferenceUser(ctx context.Context, r *wrapetop.UpdateRef
 	return nil
 }
 
-func (s *Service) UpdateReferenceSale(ctx context.Context, r *wrapetop.UpdateReferenceSaleEndpoint) error {
+func (s *UserService) UpdateReferenceSale(ctx context.Context, r *wrapetop.UpdateReferenceSaleEndpoint) error {
 	cmd := &identity.UpdateUserReferenceSaleIDCommand{
 		UserID:       r.Context.UserID,
 		RefSalePhone: r.Phone,
