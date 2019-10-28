@@ -258,7 +258,10 @@ func (a *Aggregate) OnTradingOrderCreated(ctx context.Context, args *affiliate.O
 		notifyUpdate.CommissionSnapshotErr = notify.CommissionSnapshotErr
 		_ = a.orderCreatedNotify(bus.Ctx()).UpdateOrderCreatedNotify(notifyUpdate)
 
-		go a.ProcessOrderNotify(bus.Ctx(), notify.ID)
+		if err = a.ProcessOrderNotify(bus.Ctx(), notify.ID); err != nil {
+			ll.Error("ProcessOrderNotify Error", l.Object("err", err))
+		}
+
 	}()
 
 	return nil
@@ -713,7 +716,8 @@ func (a *Aggregate) ProcessOrderNotify(ctx context.Context, orderCreatedNotifyID
 
 			basePrice := float64(line.TotalPrice)
 			tradingPromotion, err := a.productPromotion(ctx).ProductID(line.ProductId).GetProductPromotionDB()
-			if err == nil {
+			ll.Info("TRADING", l.Object("tradingPromotion", tradingPromotion), l.Object("err", err))
+			if err == nil && tradingPromotion != nil {
 				switch tradingPromotion.Unit {
 				case "vnd":
 					basePrice = basePrice - float64(tradingPromotion.Amount)
@@ -721,14 +725,21 @@ func (a *Aggregate) ProcessOrderNotify(ctx context.Context, orderCreatedNotifyID
 					basePrice = math.Round(basePrice - basePrice*(float64(tradingPromotion.Amount)/100/100))
 				}
 			}
+			var countByUser uint64 = math.MaxInt64
+			var countByProduct uint64 = math.MaxInt64
 
-			countByUser, err := a.shopOrderProductHistory(ctx).UserID(shopQ.Result.OwnerID).CustomerPolicyGroup(orderCommissionSetting.CustomerPolicyGroupID).Count()
-			if err != nil {
-				return err
+			if orderCommissionSetting.DependOn == "customer" {
+				countByUser, err = a.shopOrderProductHistory(ctx).UserID(shopQ.Result.OwnerID).CustomerPolicyGroup(orderCommissionSetting.CustomerPolicyGroupID).Count()
+				if err != nil {
+					return err
+				}
 			}
-			countByProduct, err := a.shopOrderProductHistory(ctx).UserID(shopQ.Result.OwnerID).ProductID(line.ProductId).Count()
-			if err != nil {
-				return err
+
+			if orderCommissionSetting.DependOn == "product" {
+				countByProduct, err = a.shopOrderProductHistory(ctx).UserID(shopQ.Result.OwnerID).ProductID(line.ProductId).Count()
+				if err != nil {
+					return err
+				}
 			}
 
 			var directCommission float64
