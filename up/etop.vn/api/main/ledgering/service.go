@@ -21,6 +21,7 @@ type Aggregate interface {
 type QueryService interface {
 	GetLedgerByID(context.Context, *shopping.IDQueryShopArg) (*ShopLedger, error)
 	ListLedgers(context.Context, *shopping.ListQueryShopArgs) (*ShopLedgersResponse, error)
+	ListLedgersByIDs(ctx context.Context, shopID int64, IDs []int64) (*ShopLedgersResponse, error)
 }
 
 //-- queries --//
@@ -39,7 +40,7 @@ type CreateLedgerArgs struct {
 	Name        string
 	BankAccount *identity.BankAccount
 	Note        string
-	Type        string
+	Type        LedgerType
 	CreatedBy   int64
 }
 

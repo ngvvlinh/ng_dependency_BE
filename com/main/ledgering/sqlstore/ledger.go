@@ -4,6 +4,8 @@ import (
 	"context"
 	"time"
 
+	"etop.vn/backend/pkg/common/sq"
+
 	"etop.vn/api/main/ledgering"
 	"etop.vn/api/meta"
 	identityconvert "etop.vn/backend/com/main/identity/convert"
@@ -59,6 +61,11 @@ func (s *LedgerStore) Filters(filters meta.Filters) *LedgerStore {
 
 func (s *LedgerStore) ID(id int64) *LedgerStore {
 	s.preds = append(s.preds, s.ft.ByID(id))
+	return s
+}
+
+func (s *LedgerStore) IDs(ids ...int64) *LedgerStore {
+	s.preds = append(s.preds, sq.PrefixedIn(&s.ft.prefix, "id", ids))
 	return s
 }
 

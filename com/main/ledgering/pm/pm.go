@@ -34,7 +34,7 @@ func (m *ProcessManager) AccountCreated(ctx context.Context, event *ledgering.Ac
 		Name:        "Tiền mặt",
 		BankAccount: nil,
 		Note:        "Số quỹ mặc định",
-		Type:        string(ledgering.LedgerTypeCash),
+		Type:        ledgering.LedgerTypeCash,
 		CreatedBy:   event.UserID,
 	}
 	if err := m.ledgerAggregate.Dispatch(ctx, cmd); err != nil {

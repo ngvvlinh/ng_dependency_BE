@@ -139,7 +139,7 @@ func apply_ledgering_CreateLedgerArgs_ledgering_ShopLedger(arg *ledgering.Create
 	out.Name = arg.Name               // simple assign
 	out.BankAccount = arg.BankAccount // simple assign
 	out.Note = arg.Note               // simple assign
-	out.Type = arg.Type               // simple assign
+	out.Type = string(arg.Type)       // simple conversion
 	out.Status = 0                    // zero value
 	out.CreatedBy = arg.CreatedBy     // simple assign
 	out.CreatedAt = time.Time{}       // zero value

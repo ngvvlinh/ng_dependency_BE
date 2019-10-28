@@ -3373,6 +3373,58 @@
         ]
       }
     },
+    "/api/shop.Receipt/CancelReceipt": {
+      "post": {
+        "operationId": "CancelReceipt",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/cmUpdatedResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/shopCancelReceiptRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Receipt"
+        ]
+      }
+    },
+    "/api/shop.Receipt/ConfirmReceipt": {
+      "post": {
+        "operationId": "ConfirmReceipt",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/cmUpdatedResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/cmIDRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Receipt"
+        ]
+      }
+    },
     "/api/shop.Receipt/CreateReceipt": {
       "post": {
         "operationId": "CreateReceipt",
@@ -7245,6 +7297,18 @@
         }
       }
     },
+    "shopCancelReceiptRequest": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "reason": {
+          "type": "string"
+        }
+      }
+    },
     "shopCarrier": {
       "type": "object",
       "properties": {
@@ -7624,9 +7688,6 @@
           "type": "string",
           "title": "enum('receipt', 'payment')"
         },
-        "code": {
-          "type": "string"
-        },
         "description": {
           "type": "string"
         },
@@ -7637,6 +7698,10 @@
         "ledger_id": {
           "type": "string",
           "format": "int64"
+        },
+        "paid_at": {
+          "type": "string",
+          "format": "date-time"
         },
         "lines": {
           "type": "array",
@@ -8808,26 +8873,6 @@
         }
       }
     },
-    "shopOrderOfReceiptLine": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "string",
-          "format": "int64"
-        },
-        "shop_id": {
-          "type": "string",
-          "format": "int64"
-        },
-        "code": {
-          "type": "string"
-        },
-        "total_amount": {
-          "type": "integer",
-          "format": "int32"
-        }
-      }
-    },
     "shopPartner": {
       "type": "object",
       "properties": {
@@ -8839,6 +8884,9 @@
           "type": "string"
         },
         "full_name": {
+          "type": "string"
+        },
+        "phone": {
           "type": "string"
         }
       }
@@ -8953,6 +9001,9 @@
           "type": "string",
           "format": "int64"
         },
+        "created_type": {
+          "type": "string"
+        },
         "code": {
           "type": "string"
         },
@@ -8982,6 +9033,13 @@
         "status": {
           "$ref": "#/definitions/status3Status"
         },
+        "reason": {
+          "type": "string"
+        },
+        "paid_at": {
+          "type": "string",
+          "format": "date-time"
+        },
         "created_at": {
           "type": "string",
           "format": "date-time"
@@ -8990,18 +9048,29 @@
           "type": "string",
           "format": "date-time"
         },
+        "confirmed_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "cancelled_at": {
+          "type": "string",
+          "format": "date-time"
+        },
         "user": {
           "$ref": "#/definitions/etopUser"
         },
         "partner": {
           "$ref": "#/definitions/shopPartner"
+        },
+        "ledger": {
+          "$ref": "#/definitions/shopLedger"
         }
       }
     },
     "shopReceiptLine": {
       "type": "object",
       "properties": {
-        "order_id": {
+        "ref_id": {
           "type": "string",
           "format": "int64"
         },
@@ -9011,13 +9080,6 @@
         "amount": {
           "type": "integer",
           "format": "int32"
-        },
-        "received_amount": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "order": {
-          "$ref": "#/definitions/shopOrderOfReceiptLine"
         }
       }
     },
@@ -10098,9 +10160,6 @@
         "title": {
           "type": "string"
         },
-        "code": {
-          "type": "string"
-        },
         "description": {
           "type": "string"
         },
@@ -10111,6 +10170,10 @@
         "ledger_id": {
           "type": "string",
           "format": "int64"
+        },
+        "paid_at": {
+          "type": "string",
+          "format": "date-time"
         },
         "lines": {
           "type": "array",

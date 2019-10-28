@@ -45,7 +45,7 @@ type CreateLedgerCommand struct {
 	Name        string
 	BankAccount *identity.BankAccount
 	Note        string
-	Type        string
+	Type        LedgerType
 	CreatedBy   int64
 
 	Result *ShopLedger `json:"-"`
@@ -108,6 +108,18 @@ func (h QueryServiceHandler) HandleListLedgers(ctx context.Context, msg *ListLed
 	return err
 }
 
+type ListLedgersByIDsQuery struct {
+	ShopID int64
+	IDs    []int64
+
+	Result *ShopLedgersResponse `json:"-"`
+}
+
+func (h QueryServiceHandler) HandleListLedgersByIDs(ctx context.Context, msg *ListLedgersByIDsQuery) (err error) {
+	msg.Result, err = h.inner.ListLedgersByIDs(msg.GetArgs(ctx))
+	return err
+}
+
 // implement interfaces
 
 func (q *CreateLedgerCommand) command() {}
@@ -115,6 +127,7 @@ func (q *DeleteLedgerCommand) command() {}
 func (q *UpdateLedgerCommand) command() {}
 func (q *GetLedgerByIDQuery) query()    {}
 func (q *ListLedgersQuery) query()      {}
+func (q *ListLedgersByIDsQuery) query() {}
 
 // implement conversion
 
@@ -192,6 +205,12 @@ func (q *ListLedgersQuery) SetListQueryShopArgs(args *shopping.ListQueryShopArgs
 	q.Filters = args.Filters
 }
 
+func (q *ListLedgersByIDsQuery) GetArgs(ctx context.Context) (_ context.Context, shopID int64, IDs []int64) {
+	return ctx,
+		q.ShopID,
+		q.IDs
+}
+
 // implement dispatching
 
 type AggregateHandler struct {
@@ -224,5 +243,6 @@ func (h QueryServiceHandler) RegisterHandlers(b interface {
 }) QueryBus {
 	b.AddHandler(h.HandleGetLedgerByID)
 	b.AddHandler(h.HandleListLedgers)
+	b.AddHandler(h.HandleListLedgersByIDs)
 	return QueryBus{b}
 }

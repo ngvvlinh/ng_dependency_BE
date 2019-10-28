@@ -3,6 +3,8 @@ package aggregate
 import (
 	"context"
 
+	cm "etop.vn/backend/pkg/common"
+
 	"etop.vn/api/main/receipting"
 	"etop.vn/backend/com/main/receipting/convert"
 	"etop.vn/backend/com/main/receipting/model"
@@ -37,7 +39,26 @@ func (a *ReceiptAggregate) CreateReceipt(
 	if err := scheme.Convert(args, receipt); err != nil {
 		return nil, err
 	}
-	err := a.store(ctx).CreateReceipt(receipt)
+
+	var maxCodeNorm int32
+	receiptTemp, err := a.store(ctx).ShopID(args.ShopID).GetReceiptByMaximumCodeNorm()
+	switch cm.ErrorCode(err) {
+	case cm.NoError:
+		maxCodeNorm = receiptTemp.CodeNorm
+	case cm.NotFound:
+	// no-op
+	default:
+		return nil, err
+	}
+
+	if maxCodeNorm >= convert.MaxCodeNorm {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "Vui lòng nhập mã")
+	}
+	codeNorm := maxCodeNorm + 1
+	receipt.Code = convert.GenerateCode(int(codeNorm))
+	receipt.CodeNorm = codeNorm
+
+	err = a.store(ctx).CreateReceipt(receipt)
 	return receipt, err
 }
 
@@ -48,9 +69,11 @@ func (a *ReceiptAggregate) UpdateReceipt(
 	if err != nil {
 		return nil, err
 	}
+
 	if err := scheme.Convert(args, receipt); err != nil {
 		return nil, err
 	}
+
 	receiptDB := new(model.Receipt)
 	if err := scheme.Convert(receipt, receiptDB); err != nil {
 		return nil, err
@@ -65,4 +88,18 @@ func (a *ReceiptAggregate) DeleteReceipt(
 ) (deleted int, _ error) {
 	deleted, err := a.store(ctx).ID(id).ShopID(shopID).SoftDelete()
 	return deleted, err
+}
+
+func (a *ReceiptAggregate) CancelReceipt(
+	ctx context.Context, args *receipting.CancelReceiptArgs,
+) (updated int, _ error) {
+	updated, err := a.store(ctx).ID(args.ID).ShopID(args.ShopID).CancelReceipt(args.Reason)
+	return updated, err
+}
+
+func (a *ReceiptAggregate) ConfirmReceipt(
+	ctx context.Context, args *receipting.ConfirmReceiptArgs,
+) (updated int, _ error) {
+	updated, err := a.store(ctx).ID(args.ID).ShopID(args.ShopID).ConfirmReceipt()
+	return updated, err
 }

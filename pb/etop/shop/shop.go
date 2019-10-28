@@ -374,6 +374,10 @@ func PbReceipt(m *receipting.Receipt) *Receipt {
 		Lines:       PbReceiptLines(m.Lines),
 		Status:      pbs3.Pb(model.Status3(m.Status)),
 		CreatedBy:   m.CreatedBy,
+		CreatedType: m.CreatedType,
+		PaidAt:      pbcm.PbTime(m.PaidAt),
+		ConfirmedAt: pbcm.PbTime(m.ConfirmedAt),
+		CancelledAt: pbcm.PbTime(m.CancelledAt),
 		CreatedAt:   pbcm.PbTime(m.CreatedAt),
 		UpdatedAt:   pbcm.PbTime(m.UpdatedAt),
 	}
@@ -389,9 +393,9 @@ func PbReceipts(ms []*receipting.Receipt) []*Receipt {
 
 func PbReceiptLine(m *receipting.ReceiptLine) *ReceiptLine {
 	return &ReceiptLine{
-		OrderId: m.OrderID,
-		Title:   m.Title,
-		Amount:  m.Amount,
+		RefId:  m.RefID,
+		Title:  m.Title,
+		Amount: m.Amount,
 	}
 }
 

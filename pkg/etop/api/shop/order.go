@@ -127,7 +127,7 @@ func (s *OrderService) GetOrdersByReceiptID(ctx context.Context, q *wrapshop.Get
 	}
 	var arrOrderID []int64
 	for _, value := range queryReceipt.Result.Lines {
-		arrOrderID = append(arrOrderID, value.OrderID)
+		arrOrderID = append(arrOrderID, value.RefID)
 	}
 
 	query := &ordermodelx.GetOrdersQuery{
@@ -260,7 +260,7 @@ func (s *OrderService) addReceivedAmountToOrders(ctx context.Context, shopID int
 		orderIDs = append(orderIDs, order.Id)
 	}
 
-	getReceiptsByOrderIDs := &receipting.ListReceiptsByOrderIDsQuery{
+	getReceiptsByOrderIDs := &receipting.ListReceiptsByRefIDsQuery{
 		IDs:    orderIDs,
 		ShopID: shopID,
 	}
@@ -270,15 +270,15 @@ func (s *OrderService) addReceivedAmountToOrders(ctx context.Context, shopID int
 
 	for _, receipt := range getReceiptsByOrderIDs.Result.Receipts {
 		for _, receiptLine := range receipt.Lines {
-			if receiptLine.OrderID == 0 {
+			if receiptLine.RefID == 0 {
 				continue
 			}
-			if _, ok := mOrderIDsAndReceivedAmounts[receiptLine.OrderID]; ok {
+			if _, ok := mOrderIDsAndReceivedAmounts[receiptLine.RefID]; ok {
 				switch receipt.Type {
-				case receipting.ReceiptType:
-					mOrderIDsAndReceivedAmounts[receiptLine.OrderID] += receiptLine.Amount
-				case receipting.PaymentType:
-					mOrderIDsAndReceivedAmounts[receiptLine.OrderID] -= receiptLine.Amount
+				case string(receipting.ReceiptTypeReceipt):
+					mOrderIDsAndReceivedAmounts[receiptLine.RefID] += receiptLine.Amount
+				case string(receipting.ReceiptTypePayment):
+					mOrderIDsAndReceivedAmounts[receiptLine.RefID] -= receiptLine.Amount
 				}
 			}
 		}

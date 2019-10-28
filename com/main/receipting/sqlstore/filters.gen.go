@@ -6,6 +6,8 @@ import (
 	"time"
 
 	"etop.vn/backend/pkg/common/sq"
+
+	"etop.vn/backend/pkg/etop/model"
 )
 
 type ReceiptFilters struct{ prefix string }
@@ -98,6 +100,25 @@ func (ft *ReceiptFilters) ByCodePtr(Code *string) *sq.ColumnFilterPtr {
 	}
 }
 
+func (ft *ReceiptFilters) ByCodeNorm(CodeNorm int32) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "code_norm",
+		Value:  CodeNorm,
+		IsNil:  CodeNorm == 0,
+	}
+}
+
+func (ft *ReceiptFilters) ByCodeNormPtr(CodeNorm *int32) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "code_norm",
+		Value:  CodeNorm,
+		IsNil:  CodeNorm == nil,
+		IsZero: CodeNorm != nil && (*CodeNorm) == 0,
+	}
+}
+
 func (ft *ReceiptFilters) ByTitle(Title string) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
@@ -174,7 +195,7 @@ func (ft *ReceiptFilters) ByAmountPtr(Amount *int32) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft *ReceiptFilters) ByStatus(Status int32) *sq.ColumnFilter {
+func (ft *ReceiptFilters) ByStatus(Status model.Status3) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "status",
@@ -183,7 +204,7 @@ func (ft *ReceiptFilters) ByStatus(Status int32) *sq.ColumnFilter {
 	}
 }
 
-func (ft *ReceiptFilters) ByStatusPtr(Status *int32) *sq.ColumnFilterPtr {
+func (ft *ReceiptFilters) ByStatusPtr(Status *model.Status3) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "status",
@@ -209,6 +230,25 @@ func (ft *ReceiptFilters) ByLedgerIDPtr(LedgerID *int64) *sq.ColumnFilterPtr {
 		Value:  LedgerID,
 		IsNil:  LedgerID == nil,
 		IsZero: LedgerID != nil && (*LedgerID) == 0,
+	}
+}
+
+func (ft *ReceiptFilters) ByCancelledReason(CancelledReason string) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "cancelled_reason",
+		Value:  CancelledReason,
+		IsNil:  CancelledReason == "",
+	}
+}
+
+func (ft *ReceiptFilters) ByCancelledReasonPtr(CancelledReason *string) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "cancelled_reason",
+		Value:  CancelledReason,
+		IsNil:  CancelledReason == nil,
+		IsZero: CancelledReason != nil && (*CancelledReason) == "",
 	}
 }
 
@@ -247,6 +287,63 @@ func (ft *ReceiptFilters) ByCreatedByPtr(CreatedBy *int64) *sq.ColumnFilterPtr {
 		Value:  CreatedBy,
 		IsNil:  CreatedBy == nil,
 		IsZero: CreatedBy != nil && (*CreatedBy) == 0,
+	}
+}
+
+func (ft *ReceiptFilters) ByPaidAt(PaidAt time.Time) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "paid_at",
+		Value:  PaidAt,
+		IsNil:  PaidAt.IsZero(),
+	}
+}
+
+func (ft *ReceiptFilters) ByPaidAtPtr(PaidAt *time.Time) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "paid_at",
+		Value:  PaidAt,
+		IsNil:  PaidAt == nil,
+		IsZero: PaidAt != nil && (*PaidAt).IsZero(),
+	}
+}
+
+func (ft *ReceiptFilters) ByConfirmedAt(ConfirmedAt time.Time) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "confirmed_at",
+		Value:  ConfirmedAt,
+		IsNil:  ConfirmedAt.IsZero(),
+	}
+}
+
+func (ft *ReceiptFilters) ByConfirmedAtPtr(ConfirmedAt *time.Time) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "confirmed_at",
+		Value:  ConfirmedAt,
+		IsNil:  ConfirmedAt == nil,
+		IsZero: ConfirmedAt != nil && (*ConfirmedAt).IsZero(),
+	}
+}
+
+func (ft *ReceiptFilters) ByCancelledAt(CancelledAt time.Time) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "cancelled_at",
+		Value:  CancelledAt,
+		IsNil:  CancelledAt.IsZero(),
+	}
+}
+
+func (ft *ReceiptFilters) ByCancelledAtPtr(CancelledAt *time.Time) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "cancelled_at",
+		Value:  CancelledAt,
+		IsNil:  CancelledAt == nil,
+		IsZero: CancelledAt != nil && (*CancelledAt).IsZero(),
 	}
 }
 

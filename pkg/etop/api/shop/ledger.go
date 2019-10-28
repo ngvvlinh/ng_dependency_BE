@@ -61,7 +61,7 @@ func CreateLedger(ctx context.Context, r *wrapshop.CreateLedgerEndpoint) error {
 		Name:        r.Name,
 		BankAccount: pbshop.Convert_api_BankAccount_To_core_BankAccount(r.BankAccount),
 		Note:        r.Note,
-		Type:        string(ledgering.LedgerTypeBank),
+		Type:        ledgering.LedgerTypeBank,
 		CreatedBy:   r.Context.UserID,
 	}
 	if err := ledgerAggr.Dispatch(ctx, cmd); err != nil {

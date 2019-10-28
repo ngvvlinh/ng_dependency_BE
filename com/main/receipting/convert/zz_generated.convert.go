@@ -10,6 +10,7 @@ import (
 	receipting "etop.vn/api/main/receipting"
 	receiptingmodel "etop.vn/backend/com/main/receipting/model"
 	conversion "etop.vn/backend/pkg/common/conversion"
+	etopmodel "etop.vn/backend/pkg/etop/model"
 )
 
 /*
@@ -18,7 +19,9 @@ Custom conversions:
     receiptDB        // in use
     updateReceipt    // in use
 
-Ignored functions: (none)
+Ignored functions:
+    GenerateCode     // params are not pointer to named types
+    ParseCodeNorm    // not recognized
 */
 
 func RegisterConversions(s *conversion.Scheme) {
@@ -90,16 +93,21 @@ func convert_receiptingmodel_Receipt_receipting_Receipt(arg *receiptingmodel.Rec
 	out.ShopID = arg.ShopID           // simple assign
 	out.TraderID = arg.TraderID       // simple assign
 	out.Code = arg.Code               // simple assign
+	out.CodeNorm = arg.CodeNorm       // simple assign
 	out.Title = arg.Title             // simple assign
 	out.Type = arg.Type               // simple assign
 	out.Description = arg.Description // simple assign
 	out.Amount = arg.Amount           // simple assign
-	out.Status = arg.Status           // simple assign
+	out.Status = int32(arg.Status)    // simple conversion
 	out.LedgerID = arg.LedgerID       // simple assign
 	out.Lines = Convert_receiptingmodel_ReceiptLines_receipting_ReceiptLines(arg.Lines)
-	out.CreatedBy = arg.CreatedBy // simple assign
-	out.CreatedAt = arg.CreatedAt // simple assign
-	out.UpdatedAt = arg.UpdatedAt // simple assign
+	out.PaidAt = arg.PaidAt           // simple assign
+	out.ConfirmedAt = arg.ConfirmedAt // simple assign
+	out.CancelledAt = arg.CancelledAt // simple assign
+	out.CreatedBy = arg.CreatedBy     // simple assign
+	out.CreatedType = arg.CreatedType // simple assign
+	out.CreatedAt = arg.CreatedAt     // simple assign
+	out.UpdatedAt = arg.UpdatedAt     // simple assign
 }
 
 func Convert_receiptingmodel_Receipts_receipting_Receipts(args []*receiptingmodel.Receipt) (outs []*receipting.Receipt) {
@@ -123,23 +131,28 @@ func Convert_receipting_Receipt_receiptingmodel_Receipt(arg *receipting.Receipt,
 }
 
 func convert_receipting_Receipt_receiptingmodel_Receipt(arg *receipting.Receipt, out *receiptingmodel.Receipt) {
-	out.ID = arg.ID                   // simple assign
-	out.ShopID = arg.ShopID           // simple assign
-	out.TraderID = arg.TraderID       // simple assign
-	out.Code = arg.Code               // simple assign
-	out.Title = arg.Title             // simple assign
-	out.Type = arg.Type               // simple assign
-	out.Description = arg.Description // simple assign
-	out.Amount = arg.Amount           // simple assign
-	out.Status = arg.Status           // simple assign
-	out.OrderIDs = nil                // zero value
+	out.ID = arg.ID                            // simple assign
+	out.ShopID = arg.ShopID                    // simple assign
+	out.TraderID = arg.TraderID                // simple assign
+	out.Code = arg.Code                        // simple assign
+	out.CodeNorm = arg.CodeNorm                // simple assign
+	out.Title = arg.Title                      // simple assign
+	out.Type = arg.Type                        // simple assign
+	out.Description = arg.Description          // simple assign
+	out.Amount = arg.Amount                    // simple assign
+	out.Status = etopmodel.Status3(arg.Status) // simple conversion
+	out.RefIDs = nil                           // zero value
 	out.Lines = Convert_receipting_ReceiptLines_receiptingmodel_ReceiptLines(arg.Lines)
-	out.LedgerID = arg.LedgerID   // simple assign
-	out.CreatedType = ""          // zero value
-	out.CreatedBy = arg.CreatedBy // simple assign
-	out.CreatedAt = arg.CreatedAt // simple assign
-	out.UpdatedAt = arg.UpdatedAt // simple assign
-	out.DeletedAt = time.Time{}   // zero value
+	out.LedgerID = arg.LedgerID       // simple assign
+	out.CancelledReason = ""          // zero value
+	out.CreatedType = arg.CreatedType // simple assign
+	out.CreatedBy = arg.CreatedBy     // simple assign
+	out.PaidAt = arg.PaidAt           // simple assign
+	out.ConfirmedAt = arg.ConfirmedAt // simple assign
+	out.CancelledAt = arg.CancelledAt // simple assign
+	out.CreatedAt = arg.CreatedAt     // simple assign
+	out.UpdatedAt = arg.UpdatedAt     // simple assign
+	out.DeletedAt = time.Time{}       // zero value
 }
 
 func Convert_receipting_Receipts_receiptingmodel_Receipts(args []*receipting.Receipt) (outs []*receiptingmodel.Receipt) {
@@ -166,15 +179,20 @@ func apply_receipting_CreateReceiptArgs_receipting_Receipt(arg *receipting.Creat
 	out.ID = 0                        // zero value
 	out.ShopID = arg.ShopID           // simple assign
 	out.TraderID = arg.TraderID       // simple assign
-	out.Code = arg.Code               // simple assign
+	out.Code = ""                     // zero value
+	out.CodeNorm = 0                  // zero value
 	out.Title = arg.Title             // simple assign
-	out.Type = arg.Type               // simple assign
+	out.Type = string(arg.Type)       // simple conversion
 	out.Description = arg.Description // simple assign
 	out.Amount = arg.Amount           // simple assign
-	out.Status = 0                    // zero value
+	out.Status = arg.Status           // simple assign
 	out.LedgerID = arg.LedgerID       // simple assign
 	out.Lines = arg.Lines             // simple assign
+	out.PaidAt = arg.PaidAt           // simple assign
+	out.ConfirmedAt = time.Time{}     // zero value
+	out.CancelledAt = time.Time{}     // zero value
 	out.CreatedBy = arg.CreatedBy     // simple assign
+	out.CreatedType = arg.CreatedType // simple assign
 	out.CreatedAt = time.Time{}       // zero value
 	out.UpdatedAt = time.Time{}       // zero value
 }
@@ -194,7 +212,8 @@ func apply_receipting_UpdateReceiptArgs_receipting_Receipt(arg *receipting.Updat
 	out.ID = out.ID                                          // identifier
 	out.ShopID = out.ShopID                                  // identifier
 	out.TraderID = arg.TraderID.Apply(out.TraderID)          // apply change
-	out.Code = arg.Code.Apply(out.Code)                      // apply change
+	out.Code = out.Code                                      // no change
+	out.CodeNorm = out.CodeNorm                              // no change
 	out.Title = arg.Title.Apply(out.Title)                   // apply change
 	out.Type = out.Type                                      // no change
 	out.Description = arg.Description.Apply(out.Description) // apply change
@@ -202,7 +221,11 @@ func apply_receipting_UpdateReceiptArgs_receipting_Receipt(arg *receipting.Updat
 	out.Status = out.Status                                  // no change
 	out.LedgerID = arg.LedgerID.Apply(out.LedgerID)          // apply change
 	out.Lines = arg.Lines                                    // simple assign
+	out.PaidAt = arg.PaidAt                                  // simple assign
+	out.ConfirmedAt = out.ConfirmedAt                        // no change
+	out.CancelledAt = out.CancelledAt                        // no change
 	out.CreatedBy = out.CreatedBy                            // no change
+	out.CreatedType = arg.CreatedType.Apply(out.CreatedType) // apply change
 	out.CreatedAt = out.CreatedAt                            // no change
 	out.UpdatedAt = out.UpdatedAt                            // no change
 }
@@ -221,10 +244,9 @@ func Convert_receiptingmodel_ReceiptLine_receipting_ReceiptLine(arg *receiptingm
 }
 
 func convert_receiptingmodel_ReceiptLine_receipting_ReceiptLine(arg *receiptingmodel.ReceiptLine, out *receipting.ReceiptLine) {
-	out.OrderID = arg.OrderID // simple assign
-	out.Title = arg.Title     // simple assign
-	out.Amount = arg.Amount   // simple assign
-	out.ReceivedAmount = 0    // zero value
+	out.RefID = arg.RefID   // simple assign
+	out.Title = arg.Title   // simple assign
+	out.Amount = arg.Amount // simple assign
 }
 
 func Convert_receiptingmodel_ReceiptLines_receipting_ReceiptLines(args []*receiptingmodel.ReceiptLine) (outs []*receipting.ReceiptLine) {
@@ -248,9 +270,9 @@ func Convert_receipting_ReceiptLine_receiptingmodel_ReceiptLine(arg *receipting.
 }
 
 func convert_receipting_ReceiptLine_receiptingmodel_ReceiptLine(arg *receipting.ReceiptLine, out *receiptingmodel.ReceiptLine) {
-	out.OrderID = arg.OrderID // simple assign
-	out.Title = arg.Title     // simple assign
-	out.Amount = arg.Amount   // simple assign
+	out.RefID = arg.RefID   // simple assign
+	out.Title = arg.Title   // simple assign
+	out.Amount = arg.Amount // simple assign
 }
 
 func Convert_receipting_ReceiptLines_receiptingmodel_ReceiptLines(args []*receipting.ReceiptLine) (outs []*receiptingmodel.ReceiptLine) {

@@ -3,11 +3,11 @@ package shop
 import (
 	"context"
 	"fmt"
-	"strings"
 	"time"
 
-	"etop.vn/api/main/ledgering"
+	"github.com/golang/protobuf/ptypes"
 
+	"etop.vn/api/main/ledgering"
 	"etop.vn/api/main/ordering"
 	"etop.vn/api/main/receipting"
 	"etop.vn/api/shopping/carrying"
@@ -29,13 +29,15 @@ func init() {
 		receiptService.CreateReceipt,
 		receiptService.UpdateReceipt,
 		receiptService.DeleteReceipt,
+		receiptService.ConfirmReceipt,
+		receiptService.CancelReceipt,
 		receiptService.GetReceipt,
 		receiptService.GetReceipts)
 }
 
 func (s *ReceiptService) CreateReceipt(ctx context.Context, q *wrapshop.CreateReceiptEndpoint) (_err error) {
-	key := fmt.Sprintf("Create receipt %v-%v-%v-%v-%v-%v-%v-%v",
-		q.Context.Shop.ID, q.Context.UserID, q.TraderId, q.Title, q.Description, q.Amount, q.Code, q.Type)
+	key := fmt.Sprintf("Create receipt %v-%v-%v-%v-%v-%v-%v",
+		q.Context.Shop.ID, q.Context.UserID, q.TraderId, q.Title, q.Description, q.Amount, q.Type)
 	result, err := idempgroup.DoAndWrap(
 		key, 15*time.Second,
 		func() (interface{}, error) { return s.createReceipt(ctx, q) },
@@ -48,6 +50,23 @@ func (s *ReceiptService) CreateReceipt(ctx context.Context, q *wrapshop.CreateRe
 }
 
 func (s *ReceiptService) createReceipt(ctx context.Context, q *wrapshop.CreateReceiptEndpoint) (*receipting.CreateReceiptCommand, error) {
+	if q.PaidAt == nil {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "Ngày tạo phiếu không hợp lệ")
+	}
+	if q.TraderId == 0 {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "Đối tác không hợp lệ")
+	}
+	if q.LedgerId == 0 {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "Sổ quỹ không hợp lệ")
+	}
+	if q.Type != string(receipting.ReceiptTypeReceipt) && q.Type != string(receipting.ReceiptTypePayment) {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "Loại đối tác không hợp lệ")
+	}
+
+	paidAt, err := ptypes.Timestamp(q.PaidAt)
+	if err != nil {
+		return nil, err
+	}
 	receipt := &receipting.Receipt{
 		TraderID:    q.TraderId,
 		ShopID:      q.Context.Shop.ID,
@@ -55,40 +74,31 @@ func (s *ReceiptService) createReceipt(ctx context.Context, q *wrapshop.CreateRe
 		Title:       q.Title,
 		Type:        q.Type,
 		Description: q.Description,
-		Code:        q.Code,
 		Amount:      q.Amount,
 		LedgerID:    q.LedgerId,
+		PaidAt:      paidAt,
 		Lines:       pbshop.Convert_api_ReceiptLines_To_core_ReceiptLines(q.Lines),
 	}
-	if receipt.TraderID == 0 {
-		return nil, cm.Errorf(cm.InvalidArgument, nil, "Đối tác không hợp lệ")
-	}
-	if receipt.LedgerID == 0 {
-		return nil, cm.Errorf(cm.InvalidArgument, nil, "Sổ quỹ không hợp lệ")
-	}
-	if receipt.Type != receipting.ReceiptType && receipt.Type != receipting.PaymentType {
-		return nil, cm.Errorf(cm.InvalidArgument, nil, "Loại đối tác không hợp lệ")
-	}
+
+	//if receipt.PaidAt == nil {
+	//	return nil, cm.Errorf(cm.InvalidArgument, nil, "Ngày tạo phiếu không hợp lệ")
+	//}
 	if err := s.validateReceiptForCreateOrUpdate(ctx, q.Context.Shop.ID, receipt); err != nil {
 		return nil, err
-	}
-
-	code := strings.TrimSpace(q.Code)
-	if code == "" {
-		// TODO: generate code
-		code = "TODO"
 	}
 
 	cmd := &receipting.CreateReceiptCommand{
 		ShopID:      q.Context.Shop.ID,
 		CreatedBy:   q.Context.UserID,
 		TraderID:    q.TraderId,
-		Code:        code,
 		Title:       q.Title,
 		Description: q.Description,
 		Amount:      q.Amount,
 		LedgerID:    q.LedgerId,
-		Type:        q.Type,
+		PaidAt:      paidAt,
+		Type:        receipting.ReceiptType(q.Type),
+		CreatedType: string(receipting.ReceiptCreatedTypeManual),
+		Status:      int32(model.S3Zero),
 		Lines:       receipt.Lines,
 	}
 	if err := receiptAggr.Dispatch(ctx, cmd); err != nil {
@@ -104,21 +114,33 @@ func (s *ReceiptService) UpdateReceipt(ctx context.Context, q *wrapshop.UpdateRe
 	}
 	if err := receiptQuery.Dispatch(ctx, query); err != nil {
 		return cm.MapError(err).
-			Wrap(cm.NotFound, "Không tìm thấy phiếu thu").
+			Wrap(cm.NotFound, "Không tìm thấy phiếu").
 			Throw()
+	}
+
+	if query.Result.Status == int32(model.S3Negative) {
+		return cm.Errorf(cm.FailedPrecondition, nil, "Không thể thay đổi phiếu đã hủy.")
+	}
+
+	paidAt, err := ptypes.Timestamp(&q.PaidAt)
+	if err != nil {
+		return err
 	}
 
 	lines := pbshop.Convert_api_ReceiptLines_To_core_ReceiptLines(q.Lines)
 	receipt := &receipting.Receipt{
 		ID:          q.Id,
-		TraderID:    PInt64(q.TraderId).Apply(0),
 		Title:       PString(q.Title).Apply(""),
 		Description: PString(q.Description).Apply(""),
-		Code:        PString(q.Code).Apply(""),
-		Amount:      PInt32(q.Amount).Apply(0),
 		LedgerID:    PInt64(q.LedgerId).Apply(0),
-		Lines:       lines,
 	}
+	if query.Result.Status == int32(model.S3Zero) {
+		receipt.TraderID = PInt64(q.TraderId).Apply(0)
+		receipt.Amount = PInt32(q.Amount).Apply(0)
+		receipt.Lines = lines
+		receipt.PaidAt = paidAt
+	}
+
 	if err := s.validateReceiptForCreateOrUpdate(ctx, q.Context.Shop.ID, receipt); err != nil {
 		return err
 	}
@@ -126,21 +148,18 @@ func (s *ReceiptService) UpdateReceipt(ctx context.Context, q *wrapshop.UpdateRe
 	cmd := &receipting.UpdateReceiptCommand{
 		ID:          q.Id,
 		ShopID:      q.Context.Shop.ID,
-		TraderID:    PInt64(q.TraderId),
-		Code:        PString(q.Code),
 		Title:       PString(q.Title),
 		Description: PString(q.Description),
-		Amount:      PInt32(q.Amount),
 		LedgerID:    PInt64(q.LedgerId),
-		Lines:       lines,
 	}
-	err := receiptAggr.Dispatch(ctx, cmd)
+	if query.Result.Status == int32(model.S3Zero) {
+		cmd.TraderID = PInt64(q.TraderId)
+		cmd.Amount = PInt32(q.Amount)
+		cmd.Lines = lines
+		cmd.PaidAt = paidAt
+	}
+	err = receiptAggr.Dispatch(ctx, cmd)
 	if err != nil {
-		errMgs := err.Error()
-		switch {
-		case strings.Contains(errMgs, "receipt_shop_id_code_idx"):
-			err = cm.Errorf(cm.FailedPrecondition, nil, "Mã phiếu %v đã tồn tại. Vui lòng chọn mã khác.", *q.Code)
-		}
 		return err
 	}
 
@@ -195,6 +214,7 @@ func (s *ReceiptService) validateReceiptForCreateOrUpdate(ctx context.Context, s
 		traderType = query.Result.Type
 	}
 
+	// Validate ledger
 	if receipt.LedgerID != 0 {
 		query := &ledgering.GetLedgerByIDQuery{
 			ID:     receipt.LedgerID,
@@ -270,7 +290,7 @@ func (s *ReceiptService) validateReceiptLines(ctx context.Context, traderType st
 	}
 
 	// List all receipts IN orderIDs
-	listReceiptsQuery := &receipting.ListReceiptsByOrderIDsQuery{
+	listReceiptsQuery := &receipting.ListReceiptsByRefIDsQuery{
 		IDs:    orderIDs,
 		ShopID: receipt.ShopID,
 	}
@@ -287,11 +307,11 @@ func (s *ReceiptService) validateReceiptLines(ctx context.Context, traderType st
 			continue
 		}
 		for _, receiptLine := range receipt.Lines {
-			if receiptLine.OrderID == 0 {
+			if receiptLine.RefID == 0 {
 				continue
 			}
-			if _, has := mapOrdersAmount[receiptLine.OrderID]; has {
-				mapOrdersAmountOld[receiptLine.OrderID] += receiptLine.Amount
+			if _, has := mapOrdersAmount[receiptLine.RefID]; has {
+				mapOrdersAmountOld[receiptLine.RefID] += receiptLine.Amount
 			}
 		}
 	}
@@ -317,20 +337,20 @@ func calcReceiptLinesTotalAmount(receipt *receipting.Receipt) (totalAmount int32
 		}
 		totalAmount += receiptLine.Amount
 
-		if receiptLine.OrderID == 0 {
+		if receiptLine.RefID == 0 {
 			continue
 		}
 
 		// Check has key in map
 		// hasKey = true -> duplicate orderId in receipt
 		// hasKey = false -> add orderId in map
-		if _, has := mapOrdersAmount[receiptLine.OrderID]; has {
-			err = cm.Errorf(cm.FailedPrecondition, nil, "Duplicated OrderId %d in receipt", receiptLine.OrderID)
+		if _, has := mapOrdersAmount[receiptLine.RefID]; has {
+			err = cm.Errorf(cm.FailedPrecondition, nil, "Duplicated OrderId %d in receipt", receiptLine.RefID)
 			return
 		}
 
-		mapOrdersAmount[receiptLine.OrderID] = receiptLine.Amount
-		orderIDs = append(orderIDs, receiptLine.OrderID)
+		mapOrdersAmount[receiptLine.RefID] = receiptLine.Amount
+		orderIDs = append(orderIDs, receiptLine.RefID)
 	}
 	return
 }
@@ -346,6 +366,69 @@ func (s *ReceiptService) DeleteReceipt(ctx context.Context, q *wrapshop.DeleteRe
 			Throw()
 	}
 	q.Result = &pbcm.DeletedResponse{Deleted: int32(cmd.Result)}
+	return nil
+}
+
+func (s *ReceiptService) ConfirmReceipt(ctx context.Context, q *wrapshop.ConfirmReceiptEndpoint) error {
+	query := &receipting.GetReceiptByIDQuery{
+		ID:     q.Id,
+		ShopID: q.Context.Shop.ID,
+	}
+	if err := receiptQuery.Dispatch(ctx, query); err != nil {
+		return cm.MapError(err).
+			Wrap(cm.NotFound, "Không tìm thấy phiếu").
+			Throw()
+	}
+	switch query.Result.Status {
+	case int32(model.S3Positive):
+		return cm.Errorf(cm.FailedPrecondition, nil, "Phiếu đã xác nhận")
+	case int32(model.S3Negative):
+		return cm.Errorf(cm.FailedPrecondition, nil, "Phiếu đã hủy")
+	default:
+		//no-op
+	}
+
+	cmd := &receipting.ConfirmReceiptCommand{
+		ID:     q.Id,
+		ShopID: q.Context.Shop.ID,
+	}
+	if err := receiptAggr.Dispatch(ctx, cmd); err != nil {
+		return err
+	}
+	q.Result = &pbcm.UpdatedResponse{Updated: int32(cmd.Result)}
+
+	return nil
+}
+
+func (s *ReceiptService) CancelReceipt(ctx context.Context, q *wrapshop.CancelReceiptEndpoint) error {
+	query := &receipting.GetReceiptByIDQuery{
+		ID:     q.Id,
+		ShopID: q.Context.Shop.ID,
+	}
+	if err := receiptQuery.Dispatch(ctx, query); err != nil {
+		return cm.MapError(err).
+			Wrap(cm.NotFound, "Không tìm thấy phiếu").
+			Throw()
+	}
+	switch query.Result.Status {
+	case int32(model.S3Positive):
+		return cm.Errorf(cm.FailedPrecondition, nil, "Phiếu đã xác nhận")
+	case int32(model.S3Negative):
+		return cm.Errorf(cm.FailedPrecondition, nil, "Phiếu đã hủy")
+	default:
+		// no-op
+	}
+
+	cmd := &receipting.CancelReceiptCommand{
+		ID:     q.Id,
+		ShopID: q.Context.Shop.ID,
+		Reason: q.Reason,
+	}
+	if err := receiptAggr.Dispatch(ctx, cmd); err != nil {
+		return err
+	}
+	q.Result = &pbcm.UpdatedResponse{Updated: int32(cmd.Result)}
+
 	return nil
 }
 
@@ -395,30 +478,26 @@ func (s *ReceiptService) GetReceipts(ctx context.Context, q *wrapshop.GetReceipt
 
 func (s *ReceiptService) getInfosForReceipts(ctx context.Context, shopID int64, receipts []*receipting.Receipt) (receiptsResult []*pbshop.Receipt, _ error) {
 	mapOrderIDAndReceivedAmount := make(map[int64]int32)
-	var orderIDs, userIDs, traderIDs []int64
+	mapLedger := make(map[int64]*ledgering.ShopLedger)
+	var refIDs, userIDs, traderIDs, ledgerIDs []int64
 
 	receiptsResult = pbshop.PbReceipts(receipts)
 
-	// Get orderIDs into receiptLines
+	// Get ref_ids into receiptLines
 	for _, receipt := range receipts {
 		userIDs = append(userIDs, receipt.CreatedBy)
 		traderIDs = append(traderIDs, receipt.TraderID)
+		ledgerIDs = append(ledgerIDs, receipt.LedgerID)
 
 		for _, receiptLine := range receipt.Lines {
-			if receiptLine.OrderID == 0 {
+			if receiptLine.RefID == 0 {
 				continue
 			}
-			if _, ok := mapOrderIDAndReceivedAmount[receiptLine.OrderID]; !ok {
-				orderIDs = append(orderIDs, receiptLine.OrderID)
-				mapOrderIDAndReceivedAmount[receiptLine.OrderID] = 0
+			if _, ok := mapOrderIDAndReceivedAmount[receiptLine.RefID]; !ok {
+				refIDs = append(refIDs, receiptLine.RefID)
+				mapOrderIDAndReceivedAmount[receiptLine.RefID] = 0
 			}
 		}
-	}
-
-	// Get receipts have orderID into orderIDs(above)
-	// Calculate received amount each of orderID
-	if err := calcReceivedAmounts(ctx, shopID, orderIDs, mapOrderIDAndReceivedAmount); err != nil {
-		return nil, err
 	}
 
 	// Get all users into receipts
@@ -436,18 +515,25 @@ func (s *ReceiptService) getInfosForReceipts(ctx context.Context, shopID int64, 
 		receipt.User = pbetop.PbUser(mapUserIDAndUser[receipt.CreatedBy])
 	}
 
-	// List orders
-	if len(orderIDs) > 0 {
-		if err := listOrdersAndRecalcReceivedAmounts(ctx, shopID, orderIDs, mapOrderIDAndReceivedAmount, receiptsResult); err != nil {
-			return nil, err
-		}
-	}
-
 	// List traders
 	if err := listTraders(ctx, shopID, traderIDs, receiptsResult); err != nil {
 		return nil, err
 	}
 
+	// List ledgers
+	getLedgersByIDs := &ledgering.ListLedgersByIDsQuery{
+		ShopID: shopID,
+		IDs:    ledgerIDs,
+	}
+	if err := ledgerQuery.Dispatch(ctx, getLedgersByIDs); err != nil {
+		return nil, err
+	}
+	for _, ledger := range getLedgersByIDs.Result.Ledger {
+		mapLedger[ledger.ID] = ledger
+	}
+	for _, receipt := range receiptsResult {
+		receipt.Ledger = pbshop.PbLedger(mapLedger[receipt.LedgerId])
+	}
 	return receiptsResult, nil
 }
 
@@ -526,6 +612,7 @@ func listTraders(
 				Id:       customer.ID,
 				Type:     tradering.CustomerType,
 				FullName: customer.FullName,
+				Phone:    customer.Phone,
 			}
 		}
 		if carrier, ok := mapCarrier[receipt.TraderId]; ok {
@@ -533,79 +620,6 @@ func listTraders(
 				Id:       carrier.ID,
 				Type:     tradering.CarrierType,
 				FullName: carrier.FullName,
-			}
-		}
-	}
-	return nil
-}
-
-func listOrdersAndRecalcReceivedAmounts(
-	ctx context.Context, shopID int64, orderIDs []int64,
-	mapOrderIDAndReceivedAmount map[int64]int32, receiptsResult []*pbshop.Receipt,
-) error {
-	mapOrders := make(map[int64]*ordering.Order)
-	getOrdersQuery := &ordering.GetOrdersQuery{
-		ShopID: shopID,
-		IDs:    orderIDs,
-	}
-	err := orderQuery.Dispatch(ctx, getOrdersQuery)
-	switch cm.ErrorCode(err) {
-	case cm.NoError:
-		for _, order := range getOrdersQuery.Result.Orders {
-			mapOrders[order.ID] = order
-		}
-	default:
-		return err
-	}
-	for _, receipt := range receiptsResult {
-		for _, receiptLine := range receipt.Lines {
-			if receiptLine.OrderId == 0 {
-				continue
-			}
-			switch receipt.Type {
-			case receipting.ReceiptType:
-				receiptLine.ReceivedAmount = mapOrderIDAndReceivedAmount[receiptLine.OrderId] - receiptLine.Amount
-			case receipting.PaymentType:
-				receiptLine.ReceivedAmount = -(mapOrderIDAndReceivedAmount[receiptLine.OrderId] + receiptLine.Amount)
-			}
-
-			orderID := receiptLine.OrderId
-			receiptLine.Order = &pbshop.OrderOfReceiptLine{
-				Id:          orderID,
-				ShopId:      shopID,
-				Code:        mapOrders[orderID].Code,
-				TotalAmount: int32(mapOrders[orderID].TotalAmount),
-			}
-		}
-	}
-	return nil
-}
-
-func calcReceivedAmounts(
-	ctx context.Context, shopID int64,
-	orderIDs []int64, mapOrderIDAndReceivedAmount map[int64]int32,
-) error {
-	getReceiptsByOrderIDs := &receipting.ListReceiptsByOrderIDsQuery{
-		IDs:    orderIDs,
-		ShopID: shopID,
-	}
-	if err := receiptQuery.Dispatch(ctx, getReceiptsByOrderIDs); err != nil {
-		return err
-	}
-	for _, receipt := range getReceiptsByOrderIDs.Result.Receipts {
-		for _, receiptLine := range receipt.Lines {
-			if receiptLine.OrderID == 0 {
-				continue
-			}
-			if _, ok := mapOrderIDAndReceivedAmount[receiptLine.OrderID]; !ok {
-				continue
-			}
-
-			switch receipt.Type {
-			case receipting.ReceiptType:
-				mapOrderIDAndReceivedAmount[receiptLine.OrderID] += receiptLine.Amount
-			case receipting.PaymentType:
-				mapOrderIDAndReceivedAmount[receiptLine.OrderID] -= receiptLine.Amount
 			}
 		}
 	}

@@ -10,19 +10,16 @@ func (ft *ReceiptFilters) NotDeleted() sq.WriterTo {
 }
 
 var SortReceipt = map[string]string{
-	"id":         "",
-	"created_at": "",
-	"updated_at": "",
-	"title":      "",
+	"id":         "id",
+	"created_at": "created_at",
+	"updated_at": "updated_at",
+	"title":      "title",
+	"paid_at":    "paid_at",
 }
 
-var FilterReceipt = sqlstore.FilterWhitelist{}
-
-var SortReceiptLine = map[string]string{
-	"id":         "",
-	"created_at": "",
-	"updated_at": "",
-	"title":      "",
+var FilterReceipt = sqlstore.FilterWhitelist{
+	Dates:   []string{"created_at", "update_at", "paid_at", "cancelled_at", "confirmed_at"},
+	Equals:  []string{"type", "ledger_id", "code", "created_by"},
+	Numbers: []string{"amount"},
+	Status:  []string{"status"},
 }
-
-var FilterReceiptLine = sqlstore.FilterWhitelist{}

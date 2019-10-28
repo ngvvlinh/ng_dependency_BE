@@ -54,10 +54,9 @@ func Convert_api_ReceiptLine_To_core_ReceiptLine(in *ReceiptLine) *receipting.Re
 		return nil
 	}
 	return &receipting.ReceiptLine{
-		OrderID:        in.OrderId,
-		Title:          in.Title,
-		Amount:         in.Amount,
-		ReceivedAmount: in.ReceivedAmount,
+		RefID:  in.RefId,
+		Title:  in.Title,
+		Amount: in.Amount,
 	}
 }
 

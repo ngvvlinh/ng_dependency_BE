@@ -269,18 +269,18 @@ func (s *CustomerService) listLiabilities(ctx context.Context, shopID int64, cus
 		mapCustomerIDAndTotalAmountOrders[order.CustomerID] += int64(order.TotalAmount)
 	}
 
-	getReceiptsByCustomerIDs := &receipting.ListReceiptsByCustomerIDsQuery{
-		ShopID:      shopID,
-		CustomerIDs: customerIDs,
+	getReceiptsByCustomerIDs := &receipting.ListReceiptsByTraderIDsQuery{
+		ShopID:    shopID,
+		TraderIDs: customerIDs,
 	}
 	if err := receiptQuery.Dispatch(ctx, getReceiptsByCustomerIDs); err != nil {
 		return err
 	}
 	for _, receipt := range getReceiptsByCustomerIDs.Result.Receipts {
 		switch receipt.Type {
-		case receipting.ReceiptType:
+		case string(receipting.ReceiptTypeReceipt):
 			mapCustomerIDAndTotalAmountReceipts[receipt.TraderID] += int64(receipt.Amount)
-		case receipting.PaymentType:
+		case string(receipting.ReceiptTypePayment):
 			mapCustomerIDAndTotalAmountReceipts[receipt.TraderID] -= int64(receipt.Amount)
 		}
 	}

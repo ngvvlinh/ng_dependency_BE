@@ -2,6 +2,7 @@ package receipting
 
 import (
 	"context"
+	"time"
 
 	"etop.vn/api/meta"
 	"etop.vn/api/shopping"
@@ -13,7 +14,9 @@ import (
 type Aggregate interface {
 	CreateReceipt(ctx context.Context, _ *CreateReceiptArgs) (*Receipt, error)
 	UpdateReceipt(ctx context.Context, _ *UpdateReceiptArgs) (*Receipt, error)
-	DeleteReceipt(ctx context.Context, ID int64, shopID int64) (deleted int, _ error)
+	CancelReceipt(ctx context.Context, _ *CancelReceiptArgs) (updated int, _ error)
+	ConfirmReceipt(ctx context.Context, _ *ConfirmReceiptArgs) (updated int, _ error)
+	DeleteReceipt(ctx context.Context, ID, shopID int64) (deleted int, _ error)
 }
 
 type QueryService interface {
@@ -21,8 +24,8 @@ type QueryService interface {
 	GetReceiptByCode(ctx context.Context, code string, shopID int64) (*Receipt, error)
 	ListReceipts(context.Context, *shopping.ListQueryShopArgs) (*ReceiptsResponse, error)
 	ListReceiptsByIDs(context.Context, *shopping.IDsQueryShopArgs) (*ReceiptsResponse, error)
-	ListReceiptsByOrderIDs(context.Context, *shopping.IDsQueryShopArgs) (*ReceiptsResponse, error)
-	ListReceiptsByCustomerIDs(ctx context.Context, shopID int64, customerIDs []int64) (*ReceiptsResponse, error)
+	ListReceiptsByRefIDs(context.Context, *shopping.IDsQueryShopArgs) (*ReceiptsResponse, error)
+	ListReceiptsByTraderIDs(ctx context.Context, shopID int64, traderIDs []int64) (*ReceiptsResponse, error)
 	ListReceiptsByLedgerID(ctx context.Context, shopID, ledgerID int64) (*ReceiptsResponse, error)
 }
 
@@ -34,25 +37,21 @@ type ReceiptsResponse struct {
 	Paging   meta.PageInfo
 }
 
-type OrderIDsQueryArgs struct {
-	OrderIDs []int64
-	ShopID   int64
-}
-
 //-- commands --//
 
 // +convert:create=Receipt
 type CreateReceiptArgs struct {
 	ShopID      int64
 	TraderID    int64
-	Code        string
 	Title       string
-	Type        string
+	Type        ReceiptType
+	Status      int32
 	Description string
 	Amount      int32
 	LedgerID    int64
-	OrderIDs    []int64
+	RefIDs      []int64
 	Lines       []*ReceiptLine
+	PaidAt      time.Time
 	CreatedBy   int64
 	CreatedType string
 }
@@ -63,11 +62,22 @@ type UpdateReceiptArgs struct {
 	ShopID      int64
 	TraderID    NullInt64
 	Title       NullString
-	Code        NullString
 	Description NullString
 	Amount      NullInt32
 	LedgerID    NullInt64
-	OrderIDs    []int64
+	RefIDs      []int64
 	Lines       []*ReceiptLine
+	PaidAt      time.Time
 	CreatedType NullString
+}
+
+type CancelReceiptArgs struct {
+	ID     int64
+	ShopID int64
+	Reason string
+}
+
+type ConfirmReceiptArgs struct {
+	ID     int64
+	ShopID int64
 }

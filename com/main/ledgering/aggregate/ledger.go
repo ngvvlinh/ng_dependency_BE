@@ -5,6 +5,7 @@ import (
 
 	"etop.vn/api/main/identity"
 	"etop.vn/api/main/ledgering"
+	identityconvert "etop.vn/backend/com/main/identity/convert"
 	"etop.vn/backend/com/main/ledgering/convert"
 	"etop.vn/backend/com/main/ledgering/model"
 	"etop.vn/backend/com/main/ledgering/sqlstore"
@@ -35,16 +36,19 @@ func (a *LedgerAggregate) MessageBus() ledgering.CommandBus {
 func (a *LedgerAggregate) CreateLedger(
 	ctx context.Context, args *ledgering.CreateLedgerArgs,
 ) (*ledgering.ShopLedger, error) {
-	if args.Type != string(ledgering.LedgerTypeCash) && args.Type != string(ledgering.LedgerTypeBank) {
+	if args.Type != ledgering.LedgerTypeCash && args.Type != ledgering.LedgerTypeBank {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "type %v không hợp lệ", args.Type)
 	}
 	if args.Name == "" {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "name không được bỏ trống")
 	}
 
-	if args.Type == string(ledgering.LedgerTypeCash) {
+	if args.Type == ledgering.LedgerTypeCash {
 		args.BankAccount = nil
 	} else {
+		if args.BankAccount == nil {
+			return nil, cm.Errorf(cm.InvalidArgument, nil, "Sổ quỹ chuyển khoản không được bỏ trống thông tin tài khoản")
+		}
 		if err := verifyBankAccount(args.BankAccount); err != nil {
 			return nil, err
 		}
@@ -75,6 +79,9 @@ func (a *LedgerAggregate) UpdateLedger(
 		if err := verifyBankAccount(args.BankAccount); err != nil {
 			return nil, err
 		}
+		if args.BankAccount == nil {
+			args.BankAccount = shopLedger.BankAccount
+		}
 	}
 
 	if err := scheme.Convert(args, shopLedger); err != nil {
@@ -85,11 +92,16 @@ func (a *LedgerAggregate) UpdateLedger(
 	if err := scheme.Convert(shopLedger, shopLedgerDB); err != nil {
 		return nil, err
 	}
+	shopLedgerDB.BankAccount = identityconvert.BankAccountDB(shopLedger.BankAccount)
+
 	err = a.store(ctx).UpdateLedgerDB(shopLedgerDB)
 	return shopLedger, err
 }
 
 func verifyBankAccount(bankAccount *identity.BankAccount) error {
+	if bankAccount == nil {
+		return nil
+	}
 	if bankAccount.Name == "" {
 		return cm.Errorf(cm.InvalidArgument, nil, "tên ngân hàng không được để trống")
 	}

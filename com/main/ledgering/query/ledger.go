@@ -56,3 +56,21 @@ func (q *LedgerQuery) ListLedgers(
 		Count:  int32(count),
 	}, nil
 }
+
+func (q *LedgerQuery) ListLedgersByIDs(
+	ctx context.Context, shopID int64, IDs []int64,
+) (*ledgering.ShopLedgersResponse, error) {
+	query := q.store(ctx).ShopID(shopID).IDs(IDs...)
+	ledgers, err := query.ListLedgers()
+	if err != nil {
+		return nil, err
+	}
+	count, err := query.Count()
+	if err != nil {
+		return nil, err
+	}
+	return &ledgering.ShopLedgersResponse{
+		Ledger: ledgers,
+		Count:  int32(count),
+	}, nil
+}

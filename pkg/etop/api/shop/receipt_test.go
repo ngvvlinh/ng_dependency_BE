@@ -27,7 +27,7 @@ func TestValidateReceiptLines(t *testing.T) {
 		mockBus.MockHandler(func(query *receipting.GetReceiptByCodeQuery) error {
 			return cm.Errorf(cm.NotFound, nil, "receipt not found")
 		})
-		mockBus.MockHandler(func(query *receipting.ListReceiptsByOrderIDsQuery) error {
+		mockBus.MockHandler(func(query *receipting.ListReceiptsByRefIDsQuery) error {
 			query.Result = &receipting.ReceiptsResponse{
 				Receipts: []*receipting.Receipt{},
 			}
@@ -74,14 +74,14 @@ func TestValidateReceiptLines(t *testing.T) {
 			Amount:      1100,
 			Lines: []*receipting.ReceiptLine{
 				&receipting.ReceiptLine{
-					OrderID: 1096051083316051903,
-					Title:   "receiptLine 1",
-					Amount:  600,
+					RefID:  1096051083316051903,
+					Title:  "receiptLine 1",
+					Amount: 600,
 				},
 				&receipting.ReceiptLine{
-					OrderID: 1096052621074709928,
-					Title:   "receiptLine 2",
-					Amount:  500,
+					RefID:  1096052621074709928,
+					Title:  "receiptLine 2",
+					Amount: 500,
 				},
 			},
 		}
@@ -96,14 +96,12 @@ func TestValidateReceiptLines(t *testing.T) {
 		orderQuery = ordering.NewQueryBus(mockBus)
 		lines := []*receipting.ReceiptLine{
 			{
-				OrderID:        0,
-				Amount:         100000,
-				ReceivedAmount: 100000,
+				RefID:  0,
+				Amount: 100000,
 			},
 			{
-				OrderID:        0,
-				Amount:         200000,
-				ReceivedAmount: 200000,
+				RefID:  0,
+				Amount: 200000,
 			},
 		}
 		receipt := &receipting.Receipt{
@@ -123,14 +121,12 @@ func TestValidateReceiptLines(t *testing.T) {
 		orderQuery = ordering.NewQueryBus(mockBus)
 		lines := []*receipting.ReceiptLine{
 			{
-				OrderID:        123456,
-				Amount:         100000,
-				ReceivedAmount: 100000,
+				RefID:  123456,
+				Amount: 100000,
 			},
 			{
-				OrderID:        123456,
-				Amount:         200000,
-				ReceivedAmount: 200000,
+				RefID:  123456,
+				Amount: 200000,
 			},
 		}
 		receipt := &receipting.Receipt{
@@ -155,14 +151,12 @@ func TestValidateReceiptLines(t *testing.T) {
 		orderQuery = ordering.NewQueryBus(mockBus)
 		lines := []*receipting.ReceiptLine{
 			{
-				OrderID:        1001,
-				Amount:         100000,
-				ReceivedAmount: 100000,
+				RefID:  1001,
+				Amount: 100000,
 			},
 			{
-				OrderID:        1002,
-				Amount:         200000,
-				ReceivedAmount: 200000,
+				RefID:  1002,
+				Amount: 200000,
 			},
 		}
 		receipt := &receipting.Receipt{

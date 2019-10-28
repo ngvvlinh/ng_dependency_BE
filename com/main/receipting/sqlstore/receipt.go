@@ -13,6 +13,7 @@ import (
 	"etop.vn/backend/pkg/common/cmsql"
 	"etop.vn/backend/pkg/common/sq"
 	"etop.vn/backend/pkg/common/sqlstore"
+	etopmodel "etop.vn/backend/pkg/etop/model"
 )
 
 type ReceiptStoreFactory func(ctx context.Context) *ReceiptStore
@@ -81,18 +82,18 @@ func (s *ReceiptStore) TraderIDs(traderIDs ...int64) *ReceiptStore {
 	return s
 }
 
-func (s *ReceiptStore) OrderID(id int64) *ReceiptStore {
-	s.preds = append(s.preds, sq.NewExpr("order_ids @> '{?}'", strconv.FormatInt(id, 10)))
+func (s *ReceiptStore) RefsID(id int64) *ReceiptStore {
+	s.preds = append(s.preds, sq.NewExpr("ref_ids @> '{?}'", strconv.FormatInt(id, 10)))
 	return s
 }
 
-func (s *ReceiptStore) OrderIDs(ids ...int64) *ReceiptStore {
+func (s *ReceiptStore) RefIDs(ids ...int64) *ReceiptStore {
 	if len(ids) == 0 {
 		s.preds = append(s.preds, sq.NewExpr("false"))
 		return s
 	}
 
-	strConditions := "order_ids && '{"
+	strConditions := "ref_ids && '{"
 	for i, id := range ids {
 		strConditions += fmt.Sprintf("%d", id)
 		if i < len(ids)-1 {
@@ -123,6 +124,29 @@ func (s *ReceiptStore) SoftDelete() (int, error) {
 		"deleted_at": time.Now(),
 	})
 	return int(_deleted), err
+}
+
+func (s *ReceiptStore) ConfirmReceipt() (int, error) {
+	query := s.query().Where(s.preds)
+	query = s.includeDeleted.Check(query, s.ft.NotDeleted())
+	_updated, err := query.Table("receipt").UpdateMap(map[string]interface{}{
+		"status":       int32(etopmodel.S3Positive),
+		"confirmed_at": time.Now(),
+	})
+
+	return int(_updated), err
+}
+
+func (s *ReceiptStore) CancelReceipt(reason string) (int, error) {
+	query := s.query().Where(s.preds)
+	query = s.includeDeleted.Check(query, s.ft.NotDeleted())
+	_updated, err := query.Table("receipt").UpdateMap(map[string]interface{}{
+		"status":           int32(etopmodel.S3Negative),
+		"cancelled_reason": reason,
+		"cancelled_at":     time.Now(),
+	})
+
+	return int(_updated), err
 }
 
 func (s *ReceiptStore) GetReceiptDB() (*model.Receipt, error) {
@@ -173,9 +197,26 @@ func (s *ReceiptStore) UpdateReceiptDB(receipt *model.Receipt) error {
 	return err
 }
 
+func (s *ReceiptStore) GetReceiptByMaximumCodeNorm() (*model.Receipt, error) {
+	query := s.query().Where(s.preds).Where("code_norm != 0")
+	query = s.includeDeleted.Check(query, s.ft.NotDeleted())
+	query = query.OrderBy("code_norm desc").Limit(1)
+
+	var receipt model.Receipt
+	if err := query.ShouldGet(&receipt); err != nil {
+		return nil, err
+	}
+	return &receipt, nil
+}
+
 func (s *ReceiptStore) ListReceiptsDB() ([]*model.Receipt, error) {
 	query := s.query().Where(s.preds)
 	query = s.includeDeleted.Check(query, s.ft.NotDeleted())
+
+	// default sort by paid_at
+	if s.paging.Sort == nil || len(s.paging.Sort) == 0 {
+		s.paging.Sort = append(s.paging.Sort, "-created_at")
+	}
 	query, err := sqlstore.LimitSort(query, &s.paging, SortReceipt)
 	if err != nil {
 		return nil, err

@@ -66,10 +66,10 @@ func (q *ReceiptQuery) ListReceiptsByIDs(context.Context, *shopping.IDsQueryShop
 	panic("implement me")
 }
 
-func (q *ReceiptQuery) ListReceiptsByOrderIDs(
+func (q *ReceiptQuery) ListReceiptsByRefIDs(
 	ctx context.Context, args *shopping.IDsQueryShopArgs,
 ) (*receipting.ReceiptsResponse, error) {
-	receipts, err := q.store(ctx).ShopID(args.ShopID).OrderIDs(args.IDs...).ListReceipts()
+	receipts, err := q.store(ctx).ShopID(args.ShopID).RefIDs(args.IDs...).ListReceipts()
 	if err != nil {
 		return nil, err
 	}
@@ -81,10 +81,10 @@ func (q *ReceiptQuery) GetReceiptByCode(ctx context.Context, code string, shopID
 	return receipt, err
 }
 
-func (q *ReceiptQuery) ListReceiptsByCustomerIDs(
-	ctx context.Context, shopID int64, customerIDs []int64,
+func (q *ReceiptQuery) ListReceiptsByTraderIDs(
+	ctx context.Context, shopID int64, traderIDs []int64,
 ) (*receipting.ReceiptsResponse, error) {
-	receipts, err := q.store(ctx).ShopID(shopID).TraderIDs(customerIDs...).ListReceipts()
+	receipts, err := q.store(ctx).ShopID(shopID).TraderIDs(traderIDs...).ListReceipts()
 	return &receipting.ReceiptsResponse{Receipts: receipts}, err
 }
 
