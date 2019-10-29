@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"go/ast"
 	"regexp"
-	"sort"
 	"strings"
 
 	"github.com/pkg/errors"
@@ -20,19 +19,22 @@ const startDirectiveStr = "// +"
 var ll = l.New()
 var reCommand = regexp.MustCompile(`[a-z]([a-z0-9.:-]*[a-z0-9])?`)
 
-func FilterByCommand(command string) Filter {
+func FilterByCommand(command string) Filterer {
 	return filterByCommand(command)
 }
 
 type filterByCommand string
 
-func (cmd filterByCommand) FilterPackage(p *PreparsedPackage) (bool, error) {
-	for _, d := range p.Directives {
-		if d.Cmd == string(cmd) {
-			return true, nil
+func (cmd filterByCommand) Filter(ng FilterEngine) error {
+	for _, p := range ng.ParsingPackages() {
+		for _, d := range p.Directives {
+			if d.Cmd == string(cmd) {
+				p.Include()
+				continue
+			}
 		}
 	}
-	return false, nil
+	return nil
 }
 
 func defaultGeneratedFileName(tpl string) func(GenerateFileNameInput) string {
@@ -153,82 +155,6 @@ func parseDirective(text string, result []Directive) ([]Directive, error) {
 		return parseDirective(text[idx:], result)
 	}
 	return nil, Errorf(nil, "invalid directive")
-}
-
-// TODO: handle "unicode..." for being compatible with
-// https://golang.org/cmd/go/#hdr-Package_lists_and_patterns
-
-// a trie for quickly match package path
-type patternsStruct struct {
-	paths map[string]struct{}
-
-	// A path prefix like "example.com/world/water/..." will be splitted to
-	//
-	//   "example.com":             1
-	//   "example.com/world":       1
-	//   "example.com/world/water": 2
-	prefixes map[string]int
-}
-
-func parsePatterns(patterns []string) patternsStruct {
-	paths := make(map[string]struct{})
-	prefixes := make(map[string]int)
-
-	sort.Strings(patterns)
-	var lastPath, lastPattern_ string
-	for _, pattern := range patterns {
-		if !strings.HasSuffix(pattern, "/...") {
-			if lastPattern_ == "" || !strings.HasPrefix(pattern, lastPattern_) {
-				paths[pattern] = struct{}{}
-				lastPath = pattern
-			}
-			continue
-		}
-
-		pattern = strings.TrimSuffix(pattern, "...")
-		lastPattern_ = pattern
-		if lastPath == pattern[:len(pattern)-1] {
-			delete(paths, lastPath)
-		}
-
-		var part string
-		var found bool
-		for idx := 0; idx < len(pattern); idx++ {
-			if pattern[idx] != '/' {
-				continue
-			}
-			part = pattern[:idx+1]
-			if prefixes[part] == 2 {
-				found = true
-				break
-			}
-			prefixes[part] = 1
-		}
-		if !found {
-			prefixes[pattern] = 2
-		}
-	}
-	result := patternsStruct{
-		paths:    paths,
-		prefixes: prefixes,
-	}
-	return result
-}
-
-func (ps patternsStruct) match(pkgPath string) bool {
-	for idx := 0; idx < len(pkgPath); idx++ {
-		if pkgPath[idx] != '/' {
-			continue
-		}
-		part := pkgPath[:idx+1]
-		if ps.prefixes[part] == 2 {
-			return true
-		}
-		if ps.prefixes[part] == 0 {
-			return false
-		}
-	}
-	return ps.prefixes[pkgPath+"/"] == 2
 }
 
 type listErrors struct {

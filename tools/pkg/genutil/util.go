@@ -16,7 +16,7 @@ type Qualifier struct{}
 
 func (q Qualifier) Qualify(pkg *types.Package) string {
 	alias := pkg.Name()
-	if alias == "model" || alias == "types" {
+	if alias == "model" || alias == "types" || alias == "convert" {
 		super := filepath.Base(filepath.Dir(pkg.Path()))
 		alias = strings.ToLower(super) + alias
 	}

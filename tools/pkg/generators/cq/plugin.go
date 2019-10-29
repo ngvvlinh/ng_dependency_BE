@@ -13,12 +13,12 @@ import (
 
 func New() generator.Plugin {
 	return &gen{
-		Filter: generator.FilterByCommand("gen:api"),
+		Filterer: generator.FilterByCommand("gen:api"),
 	}
 }
 
 type gen struct {
-	generator.Filter
+	generator.Filterer
 }
 
 func (g *gen) Name() string { return "cq" }

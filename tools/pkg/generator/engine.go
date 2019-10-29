@@ -16,12 +16,6 @@ type Positioner interface {
 	Pos() token.Pos
 }
 
-type PreparsedPackage struct {
-	PkgPath    string
-	Imports    map[string]*packages.Package
-	Directives []Directive
-}
-
 type GeneratingPackage struct {
 	*packages.Package
 
@@ -53,6 +47,7 @@ func (g *GeneratingPackage) GetObjects() []types.Object {
 type Engine interface {
 	GenerateEachPackage(func(Engine, *packages.Package, Printer) error) error
 	GeneratingPackages() []*GeneratingPackage
+	GeneratePackage(pkg *packages.Package, filename string) Printer
 
 	GetComment(Positioner) Comment
 	GetDirectives(Positioner) []Directive
@@ -80,11 +75,13 @@ type engine struct {
 	srcMap  map[string][]byte
 	bufPool sync.Pool
 
-	cleanedFileNames  map[string]bool
-	mapPkgDirectives  map[string][]Directive
-	collectedPackages []PreparsedPackage
-	includes          []bool
-	generatedFile     []string
+	cleanedFileNames       map[string]bool
+	mapPkgDirectives       map[string][]Directive
+	collectedPackages      []filteringPackage
+	includedPatterns       []string
+	includedPackages       map[string][]bool
+	sortedIncludedPackages []includedPackage
+	generatedFiles         []string
 }
 
 type wrapEngine struct {
@@ -199,11 +196,11 @@ func (ng *wrapEngine) GeneratingPackages() []*GeneratingPackage {
 }
 
 func (ng *wrapEngine) generatingPackages() []*GeneratingPackage {
-	pkgs := make([]*GeneratingPackage, 0, ng.plugin.includesN)
-	includes := ng.plugin.includes
-	for i, ppkg := range ng.collectedPackages {
-		if includes[i] {
-			pkg := ng.pkgMap[ppkg.PkgPath]
+	index := ng.plugin.index
+	pkgs := make([]*GeneratingPackage, 0, len(ng.sortedIncludedPackages))
+	for _, p := range ng.sortedIncludedPackages {
+		if p.Included != nil && p.Included[index] {
+			pkg := ng.pkgMap[p.PkgPath]
 			gpkg := ng.generatingPackage(pkg)
 			pkgs = append(pkgs, gpkg)
 		}
@@ -220,6 +217,11 @@ func (ng *wrapEngine) generatingPackage(pkg *packages.Package) *GeneratingPackag
 		engine:     ng.engine,
 	}
 	return gpkg
+}
+
+func (ng *wrapEngine) GeneratePackage(pkg *packages.Package, filename string) Printer {
+	filePath := filepath.Dir(pkg.GoFiles[0])
+	return newPrinter(ng.engine, ng.plugin, pkg, filePath)
 }
 
 func (ng *wrapEngine) GetDirectivesByPackage(pkg *packages.Package) []Directive {
@@ -249,6 +251,9 @@ func (ng *wrapEngine) GetDirectivesByPackage(pkg *packages.Package) []Directive 
 }
 
 func cloneDirectives(directives []Directive) []Directive {
+	if len(directives) == 0 {
+		return nil
+	}
 	result := make([]Directive, len(directives))
 	for i, d := range directives {
 		result[i] = d

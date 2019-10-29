@@ -15,13 +15,13 @@ var ll = l.New()
 var _ generator.Plugin = &plugin{}
 
 type plugin struct {
-	generator.Filter
+	generator.Filterer
 	ng generator.Engine
 }
 
 func New() generator.Plugin {
 	return &plugin{
-		Filter: generator.FilterByCommand("gen:apix"),
+		Filterer: generator.FilterByCommand("gen:apix"),
 	}
 }
 

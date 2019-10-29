@@ -2,8 +2,8 @@ package generator
 
 import "go/types"
 
-type Filter interface {
-	FilterPackage(*PreparsedPackage) (bool, error)
+type Filterer interface {
+	Filter(FilterEngine) error
 }
 
 type Qualifier interface {
@@ -12,18 +12,16 @@ type Qualifier interface {
 
 type Plugin interface {
 	Name() string
-	FilterPackage(*PreparsedPackage) (bool, error)
+	Filter(FilterEngine) error
 	Generate(Engine) error
 }
 
 type pluginStruct struct {
 	name      string
+	index     int
 	plugin    Plugin
 	enabled   bool
 	qualifier types.Qualifier
-
-	includes  []bool
-	includesN int
 }
 
 func RegisterPlugin(plugins ...Plugin) error {
@@ -47,7 +45,7 @@ func (ng *engine) registerPlugin(plugin Plugin) error {
 		return Errorf(nil, "duplicated pluginStruct name: %v", name)
 	}
 
-	pl := &pluginStruct{name: name, plugin: plugin}
+	pl := &pluginStruct{name: name, plugin: plugin, index: len(ng.plugins)}
 	if q, ok := plugin.(Qualifier); ok {
 		pl.qualifier = q.Qualify
 	}

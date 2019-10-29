@@ -15,12 +15,12 @@ const CmdTopic = "gen:event:topic"
 
 func New() generator.Plugin {
 	return &gen{
-		Filter: generator.FilterByCommand(CmdTopic),
+		Filterer: generator.FilterByCommand(CmdTopic),
 	}
 }
 
 type gen struct {
-	generator.Filter
+	generator.Filterer
 }
 
 func (g gen) Name() string { return "event" }

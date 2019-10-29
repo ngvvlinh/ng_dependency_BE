@@ -25,13 +25,13 @@ const ModeUpdate = "convert:update"
 
 func New() generator.Plugin {
 	return &plugin{
-		Filter:    generator.FilterByCommand(Command),
+		Filterer:  generator.FilterByCommand(Command),
 		Qualifier: genutil.Qualifier{},
 	}
 }
 
 type plugin struct {
-	generator.Filter
+	generator.Filterer
 	generator.Qualifier
 }
 

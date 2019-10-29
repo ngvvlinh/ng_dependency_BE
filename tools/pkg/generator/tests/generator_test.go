@@ -3,6 +3,7 @@ package tests_test
 import (
 	"io"
 	"os/exec"
+	"path/filepath"
 	"testing"
 
 	"github.com/stretchr/testify/require"
@@ -16,7 +17,7 @@ const testPatterns = testPath + "/..."
 type mockPlugin struct {
 	ng generator.Engine
 
-	filter   func(*generator.PreparsedPackage) (bool, error)
+	filter   func(generator.FilterEngine) error
 	generate func(generator.Engine) error
 	imAlias  func(string, string) string
 }
@@ -24,11 +25,14 @@ type mockPlugin struct {
 func (m *mockPlugin) Name() string    { return "mock" }
 func (m *mockPlugin) Command() string { return "gen:mock" }
 
-func (m *mockPlugin) FilterPackage(p *generator.PreparsedPackage) (bool, error) {
+func (m *mockPlugin) Filter(ng generator.FilterEngine) error {
 	if m.filter != nil {
-		return m.filter(p)
+		return m.filter(ng)
 	}
-	return true, nil
+	for _, p := range ng.ParsingPackages() {
+		p.Include()
+	}
+	return nil
 }
 
 func (m *mockPlugin) Generate(ng generator.Engine) error {
@@ -60,72 +64,6 @@ func reset() {
 	}
 }
 
-func TestFilter(t *testing.T) {
-	reset()
-	{
-		var pkgs []*generator.PreparsedPackage
-		mock.filter = func(pkg *generator.PreparsedPackage) (bool, error) {
-			pkgs = append(pkgs, pkg)
-			// skip package "one"
-			if pkg.PkgPath == testPath+"/one" {
-				return false, nil
-			}
-			return true, nil
-		}
-
-		cfg := generator.Config{}
-		err := generator.Start(cfg, testPatterns)
-		require.NoError(t, err)
-
-		// verify preparsed packages
-		expecteds := []struct {
-			pkgPath    string
-			directives []generator.Directive
-		}{
-			{
-				pkgPath: testPath,
-			},
-			{
-				pkgPath: testPath + "/one",
-				directives: []generator.Directive{
-					{Raw: "+gen", Cmd: "gen", Arg: ""},
-					{Raw: "+gen:sample=10", Cmd: "gen:sample", Arg: "10"},
-					{Raw: "+gen:last: 20: number:int * x", Cmd: "gen:last", Arg: "20: number:int * x"},
-				},
-			},
-			{
-				pkgPath: testPath + "/one/one-and-a-half",
-			},
-			{
-				pkgPath: testPath + "/two",
-			},
-		}
-		require.Len(t, pkgs, len(expecteds))
-		for i, pkg := range pkgs {
-			expected := expecteds[i]
-			require.Equal(t, expected.pkgPath, pkg.PkgPath)
-			require.EqualValues(t, expected.directives, pkg.Directives)
-		}
-	}
-	{
-		// verify that package "one" is skipped
-		expecteds := []string{
-			testPath,
-			testPath + "/one/one-and-a-half",
-			testPath + "/two",
-		}
-
-		pkgs := mock.ng.GeneratingPackages()
-		for _, p := range pkgs {
-			t.Logf("generating package %v", p.Package.PkgPath)
-		}
-		require.Equal(t, len(expecteds), len(pkgs))
-		for i, p := range pkgs {
-			require.Equal(t, expecteds[i], p.Package.PkgPath)
-		}
-	}
-}
-
 func TestObjects(t *testing.T) {
 	reset()
 	cfg := generator.Config{}
@@ -153,6 +91,7 @@ func TestGenerate(t *testing.T) {
 		for _, pkg := range pkgs {
 			// skip package "two"
 			if pkg.Package.PkgPath == testPath+"/two" {
+				_ = pkg.GetPrinter()
 				continue
 			}
 
@@ -188,6 +127,31 @@ func TestClean(t *testing.T) {
 		CombinedOutput()
 	require.NoError(t, err)
 	require.Equal(t, "", string(output))
+}
+
+func TestInclude(t *testing.T) {
+	reset()
+
+	parentPath := filepath.Dir(testPath)
+	mock.filter = func(ng generator.FilterEngine) error {
+		ng.IncludePackage(testPath + "/two")
+		ng.IncludePackage(parentPath) // parentPath is outside of testPatterns
+		return nil
+	}
+
+	cfg := generator.Config{}
+	err := generator.Start(cfg, testPatterns)
+	require.NoError(t, err)
+
+	expecteds := []string{
+		parentPath,
+		testPath + "/two",
+	}
+	pkgs := mock.ng.GeneratingPackages()
+	require.Len(t, pkgs, 2)
+	for i, pkg := range pkgs {
+		require.Equal(t, expecteds[i], pkg.PkgPath)
+	}
 }
 
 func mustWrite(w io.Writer, p []byte) {

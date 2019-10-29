@@ -85,8 +85,7 @@ func (ng *engine) start(cfg Config, patterns ...string) (_err error) {
 		}
 
 		// populate collectedPackages, includes, srcMap
-		ps := parsePatterns(patterns)
-		if err = ng.collectPackages(ps, pkgs); err != nil {
+		if err = ng.collectPackages(pkgs); err != nil {
 			return err
 		}
 
@@ -97,11 +96,20 @@ func (ng *engine) start(cfg Config, patterns ...string) (_err error) {
 		}
 	}
 	{
-		var pkgPatterns []string
-		for i, pkg := range ng.collectedPackages {
-			if ng.includes[i] {
-				pkgPatterns = append(pkgPatterns, pkg.PkgPath)
-			}
+		sortedIncludedPackages := make([]includedPackage, 0, len(ng.includedPackages))
+		for pkgPath, included := range ng.includedPackages {
+			sortedIncludedPackages = append(sortedIncludedPackages, includedPackage{pkgPath, included})
+		}
+		sort.Slice(sortedIncludedPackages, func(i, j int) bool {
+			return sortedIncludedPackages[i].PkgPath < sortedIncludedPackages[j].PkgPath
+		})
+		ng.sortedIncludedPackages = sortedIncludedPackages
+	}
+	{
+		pkgPatterns := make([]string, len(ng.includedPatterns)+len(ng.sortedIncludedPackages))
+		copy(pkgPatterns, ng.includedPatterns)
+		for i, pkg := range ng.sortedIncludedPackages {
+			pkgPatterns[i] = pkg.PkgPath
 		}
 		ll.V(3).Debug("load all syntax from", l.Any("patterns", pkgPatterns))
 		if len(pkgPatterns) == 0 {
@@ -144,7 +152,7 @@ func (ng *engine) start(cfg Config, patterns ...string) (_err error) {
 			}, nil)
 	}
 	{
-		// populate generatedFile
+		// populate generatedFiles
 		for _, pl := range ng.enabledPlugins {
 			wrapNg := &wrapEngine{engine: ng, plugin: pl}
 			if err := pl.plugin.Generate(wrapNg); err != nil {
@@ -152,7 +160,7 @@ func (ng *engine) start(cfg Config, patterns ...string) (_err error) {
 			}
 			for _, gpkg := range wrapNg.pkgs {
 				printer := gpkg.printer
-				if printer != nil {
+				if printer != nil && printer.buf.Len() != 0 {
 					// close the printer for writing to file, but only if there
 					// are any bytes written
 					if err := printer.Close(); err != nil {
@@ -163,47 +171,45 @@ func (ng *engine) start(cfg Config, patterns ...string) (_err error) {
 		}
 	}
 	{
-		sort.Strings(ng.generatedFile)
-		fmt.Println("Generated file:")
+		sort.Strings(ng.generatedFiles)
+		fmt.Println("Generated files:")
 		pwd, err := os.Getwd()
 		must(err)
-		for _, filename := range ng.generatedFile {
+		for _, filename := range ng.generatedFiles {
 			filename, err = filepath.Rel(pwd, filename)
 			must(err)
 			fmt.Printf("\t./%v\n", filename)
 		}
-		if err := ng.execGoimport(ng.generatedFile); err != nil {
+		if err := ng.execGoimport(ng.generatedFiles); err != nil {
 			return err
 		}
 	}
 	return nil
 }
 
-func (ng *engine) collectPackages(ps patternsStruct, pkgs []*packages.Package) error {
-	collectedPackages, fileContents, err := collectPackages(ps, pkgs, ng.cleanedFileNames)
+func (ng *engine) collectPackages(pkgs []*packages.Package) error {
+	collectedPackages, fileContents, err := collectPackages(pkgs, ng.cleanedFileNames)
 	if err != nil {
 		return err
 	}
 	sort.Slice(collectedPackages, func(i, j int) bool {
 		return collectedPackages[i].PkgPath < collectedPackages[j].PkgPath
 	})
-	ng.includes = make([]bool, len(collectedPackages))
+	pkgMap := map[string][]bool{}
 	for _, pl := range ng.enabledPlugins {
-		pl.includes = make([]bool, len(collectedPackages))
-		for i := range collectedPackages {
-			ppkg := collectedPackages[i] // capture the value
-			include, err := pl.plugin.FilterPackage(&ppkg)
-			if err != nil {
-				return Errorf(err, "%v: filter %v: %v", pl.name, ppkg.PkgPath, err)
-			}
-			ng.includes[i] = ng.includes[i] || include
-			pl.includes[i] = include
-			if include {
-				pl.includesN++
-			}
+		filterNg := &filterEngine{
+			ng:       ng,
+			plugin:   pl,
+			pkgs:     collectedPackages,
+			pkgMap:   pkgMap,
+			patterns: &ng.includedPatterns,
+		}
+		if err = pl.plugin.Filter(filterNg); err != nil {
+			return Errorf(err, "plugin %v: %v", pl.name, err)
 		}
 	}
 	ng.collectedPackages = collectedPackages
+	ng.includedPackages = pkgMap
 	ng.mapPkgDirectives = make(map[string][]Directive)
 	for _, pkg := range collectedPackages {
 		ng.mapPkgDirectives[pkg.PkgPath] = pkg.Directives
@@ -223,13 +229,12 @@ type fileContent struct {
 }
 
 func collectPackages(
-	ps patternsStruct, pkgs []*packages.Package, cleanedFileNames map[string]bool,
-) (collectedPackages []PreparsedPackage, files []fileContent, _err error) {
+	pkgs []*packages.Package, cleanedFileNames map[string]bool,
+) (collectedPackages []filteringPackage, files []fileContent, _err error) {
 
 	var wg0, wg sync.WaitGroup
 	wg0.Add(2)
 
-	// collection file contents
 	fileCh := make(chan fileContent, 4)
 	go func() {
 		defer wg0.Done()
@@ -249,7 +254,7 @@ func collectPackages(
 	}()
 
 	limit := make(chan struct{}, 16) // limit concurrency
-	collectedPackages = make([]PreparsedPackage, len(pkgs))
+	collectedPackages = make([]filteringPackage, len(pkgs))
 	for i := range pkgs {
 		i, pkg := i, pkgs[i] // capture values for closure
 		limit <- struct{}{}  // limit
@@ -260,7 +265,7 @@ func collectPackages(
 			if err != nil {
 				_err = Errorf(err, "parsing %v: %v", pkg.PkgPath, err)
 			}
-			p := PreparsedPackage{
+			p := filteringPackage{
 				PkgPath:    pkg.PkgPath,
 				Imports:    pkg.Imports,
 				Directives: directives,
@@ -389,7 +394,7 @@ func (ng *engine) writeFile(filePath string) (io.WriteCloser, error) {
 	if err != nil {
 		return nil, err
 	}
-	ng.generatedFile = append(ng.generatedFile, filePath)
+	ng.generatedFiles = append(ng.generatedFiles, filePath)
 	return f, nil
 }
 

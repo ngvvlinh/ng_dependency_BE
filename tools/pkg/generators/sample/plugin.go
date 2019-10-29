@@ -10,15 +10,15 @@ func New() generator.Plugin {
 	return plugin{}
 }
 
-var _ generator.Filter = plugin{}
+var _ generator.Filterer = plugin{}
 
 type plugin struct{}
 
 func (p plugin) Name() string    { return "sample" }
 func (p plugin) Command() string { return "sample" }
 
-func (p plugin) FilterPackage(*generator.PreparsedPackage) (bool, error) {
-	return true, nil
+func (p plugin) Filter(_ generator.FilterEngine) error {
+	return nil
 }
 
 func (p plugin) Generate(ng generator.Engine) error {
