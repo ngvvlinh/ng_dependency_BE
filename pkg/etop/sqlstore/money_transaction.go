@@ -31,7 +31,7 @@ func init() {
 		CreateMoneyTransactionShippingExternal,
 		CreateMoneyTransactionShippingExternalLine,
 		RemoveMoneyTransactionShippingExternalLines,
-		ComfirmMoneyTransactionShippingExternals,
+		ConfirmMoneyTransactionShippingExternals,
 		GetMoneyTransactionShippingExternal,
 		GetMoneyTransactionShippingExternals,
 		DeleteMoneyTransactionShippingExternal,
@@ -931,7 +931,7 @@ func PreprocessMoneyTransactionExternal(ctx context.Context, externalMoneyTransa
 * Confirm multiplelity money transaction Shipping Externals
 * Collect lines to create money transaction for shop.
  */
-func ComfirmMoneyTransactionShippingExternals(ctx context.Context, cmd *modelx.ConfirmMoneyTransactionShippingExternals) error {
+func ConfirmMoneyTransactionShippingExternals(ctx context.Context, cmd *modelx.ConfirmMoneyTransactionShippingExternals) error {
 	if len(cmd.IDs) == 0 {
 		return cm.Error(cm.InvalidArgument, "Missing Money transaction shipping external ID", nil)
 	}

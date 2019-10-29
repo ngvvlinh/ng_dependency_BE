@@ -54,7 +54,7 @@ func PbShopInventoryVoucher(args *inventory.InventoryVoucher) *pbshop.InventoryV
 		CreatedAt:    pbcm.PbTime(args.CreatedAt),
 		UpdatedAt:    pbcm.PbTime(args.UpdatedAt),
 		CancelledAt:  pbcm.PbTime(args.CancelledAt),
-		ComfirmedAt:  pbcm.PbTime(args.ConfirmedAt),
+		ConfirmedAt:  pbcm.PbTime(args.ConfirmedAt),
 		CancelReason: args.CancelledReason,
 	}
 }

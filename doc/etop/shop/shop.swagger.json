@@ -8769,7 +8769,7 @@
           "type": "string",
           "format": "date-time"
         },
-        "comfirmed_at": {
+        "confirmed_at": {
           "type": "string",
           "format": "date-time"
         },
