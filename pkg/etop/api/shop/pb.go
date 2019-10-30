@@ -31,6 +31,25 @@ func PbInventories(args []*inventory.InventoryVariant) []*pbshop.Inventory {
 	return inventories
 }
 
+func PbBrand(args *catalog.ShopBrand) *pbshop.Brand {
+	return &pbshop.Brand{
+		ShopId:      args.ShopID,
+		Id:          args.ID,
+		Name:        args.BrandName,
+		Description: args.Description,
+		CreatedAt:   pbcm.PbTime(args.CreatedAt),
+		UpdatedAt:   pbcm.PbTime(args.UpdatedAt),
+	}
+}
+
+func PbBrands(args []*catalog.ShopBrand) []*pbshop.Brand {
+	var brands []*pbshop.Brand
+	for _, value := range args {
+		brands = append(brands, PbBrand(value))
+	}
+	return brands
+}
+
 func PbShopInventoryVoucher(args *inventory.InventoryVoucher) *pbshop.InventoryVoucher {
 	var inventoryVoucherItem []*pbshop.InventoryVoucherLine
 	for _, value := range args.Lines {
@@ -104,42 +123,6 @@ func PbShopVariant(m *catalog.ShopVariant) *pbshop.ShopVariant {
 		RetailPrice: coalesceInt32(m.RetailPrice, m.ListPrice),
 		CostPrice:   m.CostPrice,
 		Attributes:  convertpb.PbAttributes(m.Attributes),
-	}
-	return res
-}
-
-func PbShopProducts(items []*catalog.ShopProduct) []*pbshop.ShopProduct {
-	res := make([]*pbshop.ShopProduct, len(items))
-	for i, item := range items {
-		res[i] = PbShopProduct(item)
-	}
-	return res
-}
-
-func PbShopProduct(m *catalog.ShopProduct) *pbshop.ShopProduct {
-	res := &pbshop.ShopProduct{
-		Id:            m.ProductID,
-		Info:          nil,
-		Code:          m.Code,
-		EdCode:        "",
-		Name:          m.Name,
-		Description:   m.Description,
-		ShortDesc:     m.ShortDesc,
-		DescHtml:      m.DescHTML,
-		ImageUrls:     m.ImageURLs,
-		Tags:          m.Tags,
-		Stags:         nil,
-		Note:          m.Note,
-		Status:        pbs3.Pb(model.Status3(m.Status)),
-		IsAvailable:   true,
-		ListPrice:     m.ListPrice,
-		RetailPrice:   m.RetailPrice,
-		CostPrice:     m.CostPrice,
-		CollectionIds: m.CollectionIDs,
-		Variants:      nil,
-		CategoryId:    m.CategoryID,
-
-		ProductSourceId: m.ShopID, // deprecated
 	}
 	return res
 }
@@ -241,6 +224,7 @@ func PbShopProductWithVariants(m *catalog.ShopProductWithVariants) *pbshop.ShopP
 		UpdatedAt:       pbcm.PbTime(m.UpdatedAt),
 		ProductType:     pbproducttype.PbProductType(string(m.ProductType)),
 		MetaFields:      metaFields,
+		BrandId:         m.BrandID,
 	}
 	return res
 }

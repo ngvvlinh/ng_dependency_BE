@@ -5,6 +5,8 @@
 package convert
 
 import (
+	time "time"
+
 	catalog "etop.vn/api/main/catalog"
 	catalogtypes "etop.vn/api/main/catalog/types"
 	catalogmodel "etop.vn/backend/com/main/catalog/model"
@@ -29,6 +31,7 @@ Custom conversions:
     ShopVariant                // in use
     ShopVariantDB              // in use
     ShopVariantWithProduct     // not use, no conversions between params
+    createShopBrand            // in use
 
 Ignored functions:
     Attributes                   // params are not pointer to named types
@@ -68,6 +71,32 @@ func registerConversions(s *conversion.Scheme) {
 	s.Register(([]*catalogtypes.Attribute)(nil), (*[]*catalogmodel.ProductAttribute)(nil), func(arg, out interface{}) error {
 		out0 := Convert_catalogtypes_Attributes_catalogmodel_ProductAttributes(arg.([]*catalogtypes.Attribute))
 		*out.(*[]*catalogmodel.ProductAttribute) = out0
+		return nil
+	})
+	s.Register((*catalogmodel.ShopBrand)(nil), (*catalog.ShopBrand)(nil), func(arg, out interface{}) error {
+		Convert_catalogmodel_ShopBrand_catalog_ShopBrand(arg.(*catalogmodel.ShopBrand), out.(*catalog.ShopBrand))
+		return nil
+	})
+	s.Register(([]*catalogmodel.ShopBrand)(nil), (*[]*catalog.ShopBrand)(nil), func(arg, out interface{}) error {
+		out0 := Convert_catalogmodel_ShopBrands_catalog_ShopBrands(arg.([]*catalogmodel.ShopBrand))
+		*out.(*[]*catalog.ShopBrand) = out0
+		return nil
+	})
+	s.Register((*catalog.ShopBrand)(nil), (*catalogmodel.ShopBrand)(nil), func(arg, out interface{}) error {
+		Convert_catalog_ShopBrand_catalogmodel_ShopBrand(arg.(*catalog.ShopBrand), out.(*catalogmodel.ShopBrand))
+		return nil
+	})
+	s.Register(([]*catalog.ShopBrand)(nil), (*[]*catalogmodel.ShopBrand)(nil), func(arg, out interface{}) error {
+		out0 := Convert_catalog_ShopBrands_catalogmodel_ShopBrands(arg.([]*catalog.ShopBrand))
+		*out.(*[]*catalogmodel.ShopBrand) = out0
+		return nil
+	})
+	s.Register((*catalog.CreateBrandArgs)(nil), (*catalog.ShopBrand)(nil), func(arg, out interface{}) error {
+		Apply_catalog_CreateBrandArgs_catalog_ShopBrand(arg.(*catalog.CreateBrandArgs), out.(*catalog.ShopBrand))
+		return nil
+	})
+	s.Register((*catalog.UpdateBrandArgs)(nil), (*catalog.ShopBrand)(nil), func(arg, out interface{}) error {
+		Apply_catalog_UpdateBrandArgs_catalog_ShopBrand(arg.(*catalog.UpdateBrandArgs), out.(*catalog.ShopBrand))
 		return nil
 	})
 	s.Register((*catalogmodel.ShopCategory)(nil), (*catalog.ShopCategory)(nil), func(arg, out interface{}) error {
@@ -205,6 +234,110 @@ func Convert_catalogtypes_Attributes_catalogmodel_ProductAttributes(args []*cata
 		outs[i] = Convert_catalogtypes_Attribute_catalogmodel_ProductAttribute(args[i], &tmps[i])
 	}
 	return outs
+}
+
+//-- convert etop.vn/api/main/catalog.ShopBrand --//
+
+func Convert_catalogmodel_ShopBrand_catalog_ShopBrand(arg *catalogmodel.ShopBrand, out *catalog.ShopBrand) *catalog.ShopBrand {
+	if arg == nil {
+		return nil
+	}
+	if out == nil {
+		out = &catalog.ShopBrand{}
+	}
+	convert_catalogmodel_ShopBrand_catalog_ShopBrand(arg, out)
+	return out
+}
+
+func convert_catalogmodel_ShopBrand_catalog_ShopBrand(arg *catalogmodel.ShopBrand, out *catalog.ShopBrand) {
+	out.ID = arg.ID                   // simple assign
+	out.ShopID = arg.ShopID           // simple assign
+	out.BrandName = arg.BrandName     // simple assign
+	out.Description = arg.Description // simple assign
+	out.CreatedAt = arg.CreatedAt     // simple assign
+	out.UpdatedAt = arg.UpdatedAt     // simple assign
+	out.DeletedAt = arg.DeletedAt     // simple assign
+}
+
+func Convert_catalogmodel_ShopBrands_catalog_ShopBrands(args []*catalogmodel.ShopBrand) (outs []*catalog.ShopBrand) {
+	tmps := make([]catalog.ShopBrand, len(args))
+	outs = make([]*catalog.ShopBrand, len(args))
+	for i := range tmps {
+		outs[i] = Convert_catalogmodel_ShopBrand_catalog_ShopBrand(args[i], &tmps[i])
+	}
+	return outs
+}
+
+func Convert_catalog_ShopBrand_catalogmodel_ShopBrand(arg *catalog.ShopBrand, out *catalogmodel.ShopBrand) *catalogmodel.ShopBrand {
+	if arg == nil {
+		return nil
+	}
+	if out == nil {
+		out = &catalogmodel.ShopBrand{}
+	}
+	convert_catalog_ShopBrand_catalogmodel_ShopBrand(arg, out)
+	return out
+}
+
+func convert_catalog_ShopBrand_catalogmodel_ShopBrand(arg *catalog.ShopBrand, out *catalogmodel.ShopBrand) {
+	out.ID = arg.ID                   // simple assign
+	out.ShopID = arg.ShopID           // simple assign
+	out.BrandName = arg.BrandName     // simple assign
+	out.Description = arg.Description // simple assign
+	out.CreatedAt = arg.CreatedAt     // simple assign
+	out.UpdatedAt = arg.UpdatedAt     // simple assign
+	out.DeletedAt = arg.DeletedAt     // simple assign
+}
+
+func Convert_catalog_ShopBrands_catalogmodel_ShopBrands(args []*catalog.ShopBrand) (outs []*catalogmodel.ShopBrand) {
+	tmps := make([]catalogmodel.ShopBrand, len(args))
+	outs = make([]*catalogmodel.ShopBrand, len(args))
+	for i := range tmps {
+		outs[i] = Convert_catalog_ShopBrand_catalogmodel_ShopBrand(args[i], &tmps[i])
+	}
+	return outs
+}
+
+func Apply_catalog_CreateBrandArgs_catalog_ShopBrand(arg *catalog.CreateBrandArgs, out *catalog.ShopBrand) *catalog.ShopBrand {
+	if arg == nil {
+		return nil
+	}
+	if out == nil {
+		out = &catalog.ShopBrand{}
+	}
+	createShopBrand(arg, out)
+	return out
+}
+
+func apply_catalog_CreateBrandArgs_catalog_ShopBrand(arg *catalog.CreateBrandArgs, out *catalog.ShopBrand) {
+	out.ID = 0                        // zero value
+	out.ShopID = arg.ShopID           // simple assign
+	out.BrandName = arg.BrandName     // simple assign
+	out.Description = arg.Description // simple assign
+	out.CreatedAt = time.Time{}       // zero value
+	out.UpdatedAt = time.Time{}       // zero value
+	out.DeletedAt = time.Time{}       // zero value
+}
+
+func Apply_catalog_UpdateBrandArgs_catalog_ShopBrand(arg *catalog.UpdateBrandArgs, out *catalog.ShopBrand) *catalog.ShopBrand {
+	if arg == nil {
+		return nil
+	}
+	if out == nil {
+		out = &catalog.ShopBrand{}
+	}
+	apply_catalog_UpdateBrandArgs_catalog_ShopBrand(arg, out)
+	return out
+}
+
+func apply_catalog_UpdateBrandArgs_catalog_ShopBrand(arg *catalog.UpdateBrandArgs, out *catalog.ShopBrand) {
+	out.ID = arg.ID                   // simple assign
+	out.ShopID = arg.ShopID           // simple assign
+	out.BrandName = arg.BrandName     // simple assign
+	out.Description = arg.Description // simple assign
+	out.CreatedAt = out.CreatedAt     // no change
+	out.UpdatedAt = out.UpdatedAt     // no change
+	out.DeletedAt = out.DeletedAt     // no change
 }
 
 //-- convert etop.vn/api/main/catalog.ShopCategory --//
@@ -361,6 +494,7 @@ func convert_catalogmodel_ShopProduct_catalog_ShopProduct(arg *catalogmodel.Shop
 	out.DeletedAt = arg.DeletedAt                   // simple assign
 	out.ProductType = arg.ProductType               // simple assign
 	out.MetaFields = nil                            // types do not match
+	out.BrandID = arg.BrandID                       // simple assign
 }
 
 func Convert_catalogmodel_ShopProducts_catalog_ShopProducts(args []*catalogmodel.ShopProduct) (outs []*catalog.ShopProduct) {
@@ -394,6 +528,7 @@ func convert_catalog_ShopProduct_catalogmodel_ShopProduct(arg *catalog.ShopProdu
 	out.CostPrice = 0                          // zero value
 	out.ListPrice = 0                          // zero value
 	out.RetailPrice = 0                        // zero value
+	out.BrandID = arg.BrandID                  // simple assign
 	out.Status = etopmodel.Status3(arg.Status) // simple conversion
 	out.CreatedAt = arg.CreatedAt              // simple assign
 	out.UpdatedAt = arg.UpdatedAt              // simple assign

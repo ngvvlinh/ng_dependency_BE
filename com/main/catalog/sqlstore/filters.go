@@ -21,6 +21,10 @@ func (ft ShopCollectionFilters) NotDeleted() sq.WriterTo {
 	return ft.Filter("$.deleted_at IS NULL")
 }
 
+func (ft ShopBrandFilters) NotDeleted() sq.WriterTo {
+	return ft.Filter("$.deleted_at IS NULL")
+}
+
 var SortShopVariant = map[string]string{
 	"id":         "",
 	"created_at": "",
@@ -50,6 +54,11 @@ var SortShopProductCollection = map[string]string{
 	"collection_id": "",
 	"created_at":    "",
 	"updated_at":    "",
+}
+
+var SortShopBrand = map[string]string{
+	"id":         "",
+	"created_at": "",
 }
 
 var FilterShopProduct = sqlstore.FilterWhitelist{

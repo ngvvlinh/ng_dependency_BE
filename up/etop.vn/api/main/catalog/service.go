@@ -2,6 +2,7 @@ package catalog
 
 import (
 	"context"
+	"time"
 
 	"etop.vn/api/meta"
 	"etop.vn/api/shopping"
@@ -62,6 +63,14 @@ type Aggregate interface {
 
 	UpdateShopCollection(context.Context, *UpdateShopCollectionArgs) (*ShopCollection, error)
 
+	//-- brand --//
+
+	CreateBrand(context.Context, *CreateBrandArgs) (*ShopBrand, error)
+
+	UpdateBrandInfo(context.Context, *UpdateBrandArgs) (*ShopBrand, error)
+
+	DeleteShopBrand(ctx context.Context, ids []int64, shopId int64) (int32, error)
+
 	//-- tag --//
 }
 
@@ -88,6 +97,11 @@ type QueryService interface {
 	GetShopCollection(context.Context, *GetShopCollectionArgs) (*ShopCollection, error)
 	ListShopCollections(context.Context, *shopping.ListQueryShopArgs) (*ShopCollectionsResponse, error)
 	ListShopCollectionsByProductID(context.Context, *ListShopCollectionsByProductIDArgs) ([]*ShopCollection, error)
+
+	//-- Brand --//
+	GetBrandByID(ctx context.Context, id int64, shopID int64) (*ShopBrand, error)
+	GetBrandsByIDs(ctx context.Context, ids []int64, shopID int64) ([]*ShopBrand, error)
+	ListBrands(ctx context.Context, paging meta.Paging, shopId int64) (*ListBrandsResult, error)
 }
 
 //-- query --//
@@ -172,6 +186,7 @@ type CreateShopProductArgs struct {
 	PriceInfo
 	ProductType ProductType
 	MetaFields  []*MetaField
+	BrandID     int64
 }
 
 type CreateShopCategoryArgs struct {
@@ -196,6 +211,7 @@ type UpdateShopProductInfoArgs struct {
 	CostPrice   NullInt32
 	ListPrice   NullInt32
 	RetailPrice NullInt32
+	BrandID     NullInt64
 	ProductType ProductType
 	CategoryID  int64
 	VendorID    int64
@@ -311,4 +327,37 @@ type ValidVendorIDEvent struct {
 type RemoveShopProductCategoryArgs struct {
 	ProductID int64
 	ShopID    int64
+}
+
+// +convert:create=ShopBrand
+type CreateBrandArgs struct {
+	ShopID      int64
+	BrandName   string
+	Description string
+}
+
+// +convert:update=ShopBrand
+type UpdateBrandArgs struct {
+	ShopID      int64
+	ID          int64
+	BrandName   string
+	Description string
+}
+
+type ShopBrand struct {
+	ID     int64
+	ShopID int64
+
+	BrandName   string
+	Description string
+
+	CreatedAt time.Time
+	UpdatedAt time.Time
+	DeletedAt time.Time
+}
+
+type ListBrandsResult struct {
+	ShopBrands []*ShopBrand
+	PageInfo   meta.PageInfo
+	Total      int32
 }

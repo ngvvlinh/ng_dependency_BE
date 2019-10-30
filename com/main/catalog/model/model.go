@@ -121,6 +121,7 @@ type ShopProduct struct {
 	CostPrice   int32
 	ListPrice   int32
 	RetailPrice int32
+	BrandID     int64
 
 	Status model.Status3
 
@@ -245,4 +246,19 @@ type ShopProductCollection struct {
 
 	CreatedAt time.Time `sq:"create"`
 	UpdatedAt time.Time `sq:"update"`
+}
+
+var _ = sqlgenShopBrand(&ShopBrand{})
+
+// +convert:type=catalog.ShopBrand
+type ShopBrand struct {
+	ID     int64
+	ShopID int64
+
+	BrandName   string
+	Description string
+
+	CreatedAt time.Time `sq:"create"`
+	UpdatedAt time.Time `sq:"update"`
+	DeletedAt time.Time
 }

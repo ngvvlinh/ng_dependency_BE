@@ -3178,6 +3178,10 @@
           "items": {
             "$ref": "#/definitions/cmMetaField"
           }
+        },
+        "brand_id": {
+          "type": "string",
+          "format": "int64"
         }
       },
       "required": [

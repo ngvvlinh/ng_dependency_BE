@@ -41,6 +41,17 @@ service MiscService {
     rpc VersionInfo(cm.Empty) returns (cm.VersionInfoResponse);
 }
 
+
+service BrandService {
+    rpc CreateBrand(CreateBrandRequest) returns (Brand);
+    rpc UpdateBrandInfo(UpdateBrandRequest) returns (Brand);
+    rpc DeleteBrand(cm.IDsRequest) returns (DeleteBrandResponse);
+
+    rpc GetBrandByID(cm.IDRequest) returns (Brand);
+    rpc GetBrandsByIDs(cm.IDsRequest) returns (GetBrandsByIDsResponse);
+    rpc GetBrands(GetBrandsRequest) returns (GetBrandsResponse);
+}
+
 service InventoryService {
     rpc CreateInventoryVoucher (CreateInventoryVoucherRequest) returns (CreateInventoryVoucherResponse);
     rpc ConfirmInventoryVoucher (ConfirmInventoryVoucherRequest) returns (ConfirmInventoryVoucherResponse);
@@ -555,8 +566,8 @@ message ShopProduct {
     optional google.protobuf.Timestamp created_at = 21;
     optional google.protobuf.Timestamp updated_at = 20;
     optional product_type.ProductType product_type = 23;
-
     repeated cm.MetaField meta_fields = 26;
+    optional int64 brand_id = 27 [(gogoproto.nullable)=false];
 }
 
 message  ShopCollection {
@@ -637,6 +648,7 @@ message UpdateProductRequest {
     optional product_type.ProductType product_type = 12;
 
     optional cm.MetaField meta_fields = 14;
+    optional int64 brand_id = 15;
 }
 
 message UpdateCategoryRequest {
@@ -750,12 +762,11 @@ message CreateProductRequest {
     optional string desc_html   = 7 [(gogoproto.nullable)=false];
     repeated string image_urls  = 9;
     optional int64 vendor_id = 10 [(gogoproto.nullable)=false];
-
     optional int32  cost_price = 16 [(gogoproto.nullable)=false];
     optional int32  list_price = 15 [(gogoproto.nullable)=false];
     optional int32  retail_price = 26 [(gogoproto.nullable)=false];
     optional product_type.ProductType product_type = 27;
-
+    optional int64 brand_id = 29 [(gogoproto.nullable)=false];
     repeated cm.MetaField meta_fields = 28;
 }
 
@@ -1667,4 +1678,43 @@ message GetOrdersByReceiptIDRequest{
 
 message GetInventoryRequest {
     optional int64 variant_id = 1 [(gogoproto.nullable) = false];
+}
+
+message CreateBrandRequest {
+    optional string name = 1 [(gogoproto.nullable) = false];
+    optional string description = 2 [(gogoproto.nullable) = false];
+}
+
+message UpdateBrandRequest {
+    optional int64 id = 3 [(gogoproto.nullable) = false];
+    optional string name = 1 [(gogoproto.nullable) = false];
+    optional string description = 2 [(gogoproto.nullable) = false];
+}
+
+message DeleteBrandResponse {
+    optional int32 count = 1 [(gogoproto.nullable) = false];
+}
+
+message Brand {
+    optional int64 shop_id = 1 [(gogoproto.nullable) = false];
+    optional int64 id = 2 [(gogoproto.nullable) = false];
+
+    optional string name = 3 [(gogoproto.nullable) = false];
+    optional string description = 4 [(gogoproto.nullable) = false];
+
+    optional google.protobuf.Timestamp created_at = 5;
+    optional google.protobuf.Timestamp updated_at = 6;
+}
+
+message GetBrandsByIDsResponse {
+    repeated Brand brands = 1 ;
+}
+
+message GetBrandsRequest {
+    optional cm.Paging paging = 1 [(gogoproto.nullable) = false];
+}
+
+message GetBrandsResponse {
+    repeated Brand brands = 1 ;
+    optional cm.PageInfo paging = 2;
 }

@@ -149,7 +149,12 @@ func init() {
 	bus.AddHandler("api", productService.AddProductCollections)
 	bus.AddHandler("api", productService.RemoveProductCollection)
 	bus.AddHandler("api", collectionService.GetCollectionsByProductID)
-
+	bus.AddHandler("api", categoryService.GetBrandsByIDs)
+	bus.AddHandler("api", categoryService.DeleteShopBrand)
+	bus.AddHandler("api", categoryService.UpdateBrandInfo)
+	bus.AddHandler("api", categoryService.CreateBrand)
+	bus.AddHandler("api", categoryService.GetBrandByID)
+	bus.AddHandler("api", categoryService.GetBrands)
 }
 
 const (
@@ -319,6 +324,97 @@ func (s *MiscService) VersionInfo(ctx context.Context, q *wrapshop.VersionInfoEn
 	q.Result = &pbcm.VersionInfoResponse{
 		Service: "etop.Shop",
 		Version: "0.1",
+	}
+	return nil
+}
+
+func (s *CategoryService) GetBrandByID(ctx context.Context, q *wrapshop.GetBrandByIDEndpoint) error {
+	shopID := q.Context.Shop.ID
+	query := &catalog.GetBrandByIDQuery{
+		Id:     q.Id,
+		ShopID: shopID,
+	}
+	if err := catalogQuery.Dispatch(ctx, query); err != nil {
+		return err
+	}
+	q.Result = PbBrand(query.Result)
+	return nil
+}
+
+func (s *CategoryService) GetBrandsByIDs(ctx context.Context, q *wrapshop.GetBrandsByIDsEndpoint) error {
+	shopID := q.Context.Shop.ID
+	query := &catalog.GetBrandsByIDsQuery{
+		Ids:    q.Ids,
+		ShopID: shopID,
+	}
+	if err := catalogQuery.Dispatch(ctx, query); err != nil {
+		return err
+	}
+	q.Result = &pbshop.GetBrandsByIDsResponse{
+		Brands: PbBrands(query.Result),
+	}
+	return nil
+}
+
+func (s *CategoryService) GetBrands(ctx context.Context, q *wrapshop.GetBrandsEndpoint) error {
+	shopID := q.Context.Shop.ID
+	query := &catalog.ListBrandsQuery{
+		Paging: meta.Paging{
+			Offset: q.Paging.Offset,
+			Limit:  q.Paging.Limit,
+		},
+		ShopId: shopID,
+	}
+	if err := catalogQuery.Dispatch(ctx, query); err != nil {
+		return err
+	}
+	q.Result = &pbshop.GetBrandsResponse{
+		Brands: PbBrands(query.Result.ShopBrands),
+		Paging: pbcm.PbPaging(query.Paging, query.Result.Total),
+	}
+	return nil
+}
+
+func (s *CategoryService) CreateBrand(ctx context.Context, q *wrapshop.CreateBrandEndpoint) error {
+	shopID := q.Context.Shop.ID
+	cmd := &catalog.CreateBrandCommand{
+		ShopID:      shopID,
+		BrandName:   q.Name,
+		Description: q.Description,
+	}
+	if err := catalogAggr.Dispatch(ctx, cmd); err != nil {
+		return err
+	}
+	q.Result = PbBrand(cmd.Result)
+	return nil
+}
+
+func (s *CategoryService) UpdateBrandInfo(ctx context.Context, q *wrapshop.UpdateBrandInfoEndpoint) error {
+	shopID := q.Context.Shop.ID
+	cmd := &catalog.UpdateBrandInfoCommand{
+		ShopID:      shopID,
+		ID:          q.Id,
+		BrandName:   q.Name,
+		Description: q.Description,
+	}
+	if err := catalogAggr.Dispatch(ctx, cmd); err != nil {
+		return err
+	}
+	q.Result = PbBrand(cmd.Result)
+	return nil
+}
+
+func (s *CategoryService) DeleteShopBrand(ctx context.Context, q *wrapshop.DeleteBrandEndpoint) error {
+	shopID := q.Context.Shop.ID
+	cmd := &catalog.DeleteShopBrandCommand{
+		ShopId: shopID,
+		Ids:    q.Ids,
+	}
+	if err := catalogAggr.Dispatch(ctx, cmd); err != nil {
+		return err
+	}
+	q.Result = &pbshop.DeleteBrandResponse{
+		Count: cmd.Result,
 	}
 	return nil
 }
@@ -675,6 +771,7 @@ func (s *ProductService) CreateProduct(ctx context.Context, q *wrapshop.CreatePr
 			ListPrice:   q.ListPrice,
 			RetailPrice: q.RetailPrice,
 		},
+		BrandID:     q.BrandId,
 		VendorID:    q.VendorId,
 		ProductType: q.ProductType.ToProductType(),
 		MetaFields:  metaFields,
@@ -710,6 +807,7 @@ func (s *ProductService) UpdateProduct(ctx context.Context, q *wrapshop.UpdatePr
 		Name:      PString(q.Name),
 		Unit:      PString(q.Unit),
 		Note:      PString(q.Note),
+		BrandID:   PInt64(q.BrandId),
 
 		ShortDesc:   PString(q.ShortDesc),
 		Description: PString(q.Description),

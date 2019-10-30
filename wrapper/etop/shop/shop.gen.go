@@ -40,6 +40,12 @@ type Muxer interface {
 
 func NewShopServer(mux Muxer, hooks *twirp.ServerHooks) {
 	bus.Expect(&VersionInfoEndpoint{})
+	bus.Expect(&CreateBrandEndpoint{})
+	bus.Expect(&DeleteBrandEndpoint{})
+	bus.Expect(&GetBrandByIDEndpoint{})
+	bus.Expect(&GetBrandsEndpoint{})
+	bus.Expect(&GetBrandsByIDsEndpoint{})
+	bus.Expect(&UpdateBrandInfoEndpoint{})
 	bus.Expect(&AdjustInventoryQuantityEndpoint{})
 	bus.Expect(&CancelInventoryVoucherEndpoint{})
 	bus.Expect(&ConfirmInventoryVoucherEndpoint{})
@@ -198,6 +204,7 @@ func NewShopServer(mux Muxer, hooks *twirp.ServerHooks) {
 	bus.Expect(&GetLedgersEndpoint{})
 	bus.Expect(&UpdateLedgerEndpoint{})
 	mux.Handle(shop.MiscServicePathPrefix, shop.NewMiscServiceServer(MiscService{}, hooks))
+	mux.Handle(shop.BrandServicePathPrefix, shop.NewBrandServiceServer(BrandService{}, hooks))
 	mux.Handle(shop.InventoryServicePathPrefix, shop.NewInventoryServiceServer(InventoryService{}, hooks))
 	mux.Handle(shop.AccountServicePathPrefix, shop.NewAccountServiceServer(AccountService{}, hooks))
 	mux.Handle(shop.ExternalAccountServicePathPrefix, shop.NewExternalAccountServiceServer(ExternalAccountService{}, hooks))
@@ -226,6 +233,7 @@ func NewShopServer(mux Muxer, hooks *twirp.ServerHooks) {
 
 type ShopImpl struct {
 	MiscService
+	BrandService
 	InventoryService
 	AccountService
 	ExternalAccountService
@@ -271,6 +279,275 @@ func (s MiscService) VersionInfo(ctx context.Context, req *cm.Empty) (resp *cm.V
 	}()
 	defer cmwrapper.Censor(req)
 	query := &VersionInfoEndpoint{Empty: req}
+	ctx = bus.NewRootContext(ctx)
+	err = bus.Dispatch(ctx, query)
+	resp = query.Result
+	if err == nil {
+		if resp == nil {
+			return nil, common.Error(common.Internal, "", nil).Log("nil response")
+		}
+		errs = cmwrapper.HasErrors(resp)
+	}
+	return resp, err
+}
+
+type BrandService struct{}
+
+type CreateBrandEndpoint struct {
+	*shop.CreateBrandRequest
+	Result  *shop.Brand
+	Context ShopClaim
+}
+
+func (s BrandService) CreateBrand(ctx context.Context, req *shop.CreateBrandRequest) (resp *shop.Brand, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "shop.Brand/CreateBrand"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:     ctx,
+		RequireAuth: true,
+		RequireShop: true,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &CreateBrandEndpoint{CreateBrandRequest: req}
+	query.Context.Claim = session.Claim
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = bus.Dispatch(ctx, query)
+	resp = query.Result
+	if err == nil {
+		if resp == nil {
+			return nil, common.Error(common.Internal, "", nil).Log("nil response")
+		}
+		errs = cmwrapper.HasErrors(resp)
+	}
+	return resp, err
+}
+
+type DeleteBrandEndpoint struct {
+	*cm.IDsRequest
+	Result  *shop.DeleteBrandResponse
+	Context ShopClaim
+}
+
+func (s BrandService) DeleteBrand(ctx context.Context, req *cm.IDsRequest) (resp *shop.DeleteBrandResponse, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "shop.Brand/DeleteBrand"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:     ctx,
+		RequireAuth: true,
+		RequireShop: true,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &DeleteBrandEndpoint{IDsRequest: req}
+	query.Context.Claim = session.Claim
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = bus.Dispatch(ctx, query)
+	resp = query.Result
+	if err == nil {
+		if resp == nil {
+			return nil, common.Error(common.Internal, "", nil).Log("nil response")
+		}
+		errs = cmwrapper.HasErrors(resp)
+	}
+	return resp, err
+}
+
+type GetBrandByIDEndpoint struct {
+	*cm.IDRequest
+	Result  *shop.Brand
+	Context ShopClaim
+}
+
+func (s BrandService) GetBrandByID(ctx context.Context, req *cm.IDRequest) (resp *shop.Brand, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "shop.Brand/GetBrandByID"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:     ctx,
+		RequireAuth: true,
+		RequireShop: true,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &GetBrandByIDEndpoint{IDRequest: req}
+	query.Context.Claim = session.Claim
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = bus.Dispatch(ctx, query)
+	resp = query.Result
+	if err == nil {
+		if resp == nil {
+			return nil, common.Error(common.Internal, "", nil).Log("nil response")
+		}
+		errs = cmwrapper.HasErrors(resp)
+	}
+	return resp, err
+}
+
+type GetBrandsEndpoint struct {
+	*shop.GetBrandsRequest
+	Result     *shop.GetBrandsResponse
+	Context    ShopClaim
+	CtxPartner *model.Partner
+}
+
+func (s BrandService) GetBrands(ctx context.Context, req *shop.GetBrandsRequest) (resp *shop.GetBrandsResponse, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "shop.Brand/GetBrands"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:     ctx,
+		RequireAuth: true,
+		RequireShop: true,
+		AuthPartner: 1,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &GetBrandsEndpoint{GetBrandsRequest: req}
+	query.Context.Claim = session.Claim
+	query.Context.Shop = session.Shop
+	query.CtxPartner = session.CtxPartner
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = bus.Dispatch(ctx, query)
+	resp = query.Result
+	if err == nil {
+		if resp == nil {
+			return nil, common.Error(common.Internal, "", nil).Log("nil response")
+		}
+		errs = cmwrapper.HasErrors(resp)
+	}
+	return resp, err
+}
+
+type GetBrandsByIDsEndpoint struct {
+	*cm.IDsRequest
+	Result  *shop.GetBrandsByIDsResponse
+	Context ShopClaim
+}
+
+func (s BrandService) GetBrandsByIDs(ctx context.Context, req *cm.IDsRequest) (resp *shop.GetBrandsByIDsResponse, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "shop.Brand/GetBrandsByIDs"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:     ctx,
+		RequireAuth: true,
+		RequireShop: true,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &GetBrandsByIDsEndpoint{IDsRequest: req}
+	query.Context.Claim = session.Claim
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = bus.Dispatch(ctx, query)
+	resp = query.Result
+	if err == nil {
+		if resp == nil {
+			return nil, common.Error(common.Internal, "", nil).Log("nil response")
+		}
+		errs = cmwrapper.HasErrors(resp)
+	}
+	return resp, err
+}
+
+type UpdateBrandInfoEndpoint struct {
+	*shop.UpdateBrandRequest
+	Result  *shop.Brand
+	Context ShopClaim
+}
+
+func (s BrandService) UpdateBrandInfo(ctx context.Context, req *shop.UpdateBrandRequest) (resp *shop.Brand, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "shop.Brand/UpdateBrandInfo"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:     ctx,
+		RequireAuth: true,
+		RequireShop: true,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &UpdateBrandInfoEndpoint{UpdateBrandRequest: req}
+	query.Context.Claim = session.Claim
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
 	err = bus.Dispatch(ctx, query)
 	resp = query.Result

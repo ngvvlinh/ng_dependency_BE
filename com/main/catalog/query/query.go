@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"etop.vn/api/main/catalog"
+	"etop.vn/api/meta"
 	"etop.vn/api/shopping"
 	"etop.vn/backend/com/main/catalog/sqlstore"
 	cm "etop.vn/backend/pkg/common"
@@ -19,6 +20,7 @@ type QueryService struct {
 	shopCategory          sqlstore.ShopCategoryStoreFactory
 	shopCollection        sqlstore.ShopCollectionStoreFactory
 	shopProductCollection sqlstore.ShopProductCollectionStoreFactory
+	shopBrand             sqlstore.ShopBrandStoreFactory
 }
 
 func New(db *cmsql.Database) *QueryService {
@@ -28,6 +30,7 @@ func New(db *cmsql.Database) *QueryService {
 		shopCategory:          sqlstore.NewShopCategoryStore(db),
 		shopCollection:        sqlstore.NewShopCollectionStore(db),
 		shopProductCollection: sqlstore.NewShopProductCollectionStore(db),
+		shopBrand:             sqlstore.NewShopBrandStore(db),
 	}
 }
 
@@ -288,4 +291,41 @@ func (s *QueryService) ListShopCollectionsByProductID(
 	qc := s.shopCollection(ctx).OptionalShopID(args.ShopID).IDs(collectionIDs) // qc=querycollection
 	collections, err := qc.ListShopCollections()
 	return collections, err
+}
+
+func (s *QueryService) GetBrandByID(ctx context.Context, id int64, shopID int64) (*catalog.ShopBrand, error) {
+	if shopID == 0 {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing value requirement")
+	}
+	result, err := s.shopBrand(ctx).ShopID(shopID).ID(id).GetShopBrand()
+	return result, err
+}
+
+func (s *QueryService) GetBrandsByIDs(ctx context.Context, ids []int64, shopID int64) ([]*catalog.ShopBrand, error) {
+	if shopID == 0 {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing value requirement")
+	}
+	result, err := s.shopBrand(ctx).ShopID(shopID).IDs(ids...).ListShopBrands()
+	return result, err
+}
+
+func (s *QueryService) ListBrands(ctx context.Context, paging meta.Paging, shopID int64) (*catalog.ListBrandsResult, error) {
+	if shopID == 0 {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing value requirement")
+	}
+	query := s.shopBrand(ctx).ShopID(shopID).Paging(paging)
+	result, err := query.ListShopBrands()
+	if err != nil {
+		return nil, err
+	}
+	total, err := query.Count()
+	if err != nil {
+		return nil, err
+	}
+	listBrandResult := &catalog.ListBrandsResult{
+		ShopBrands: result,
+		PageInfo:   query.GetPaging(),
+		Total:      int32(total),
+	}
+	return listBrandResult, err
 }

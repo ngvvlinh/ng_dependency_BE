@@ -353,6 +353,162 @@
         ]
       }
     },
+    "/api/shop.Brand/CreateBrand": {
+      "post": {
+        "operationId": "CreateBrand",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/shopBrand"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/shopCreateBrandRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Brand"
+        ]
+      }
+    },
+    "/api/shop.Brand/DeleteBrand": {
+      "post": {
+        "operationId": "DeleteBrand",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/shopDeleteBrandResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/cmIDsRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Brand"
+        ]
+      }
+    },
+    "/api/shop.Brand/GetBrandByID": {
+      "post": {
+        "operationId": "GetBrandByID",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/shopBrand"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/cmIDRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Brand"
+        ]
+      }
+    },
+    "/api/shop.Brand/GetBrands": {
+      "post": {
+        "operationId": "GetBrands",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/shopGetBrandsResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/shopGetBrandsRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Brand"
+        ]
+      }
+    },
+    "/api/shop.Brand/GetBrandsByIDs": {
+      "post": {
+        "operationId": "GetBrandsByIDs",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/shopGetBrandsByIDsResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/cmIDsRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Brand"
+        ]
+      }
+    },
+    "/api/shop.Brand/UpdateBrandInfo": {
+      "post": {
+        "operationId": "UpdateBrandInfo",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/shopBrand"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/shopUpdateBrandRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Brand"
+        ]
+      }
+    },
     "/api/shop.Carrier/CreateCarrier": {
       "post": {
         "operationId": "CreateCarrier",
@@ -7282,6 +7438,33 @@
         }
       }
     },
+    "shopBrand": {
+      "type": "object",
+      "properties": {
+        "shop_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
     "shopCalcBalanceShopResponse": {
       "type": "object",
       "properties": {
@@ -7439,6 +7622,17 @@
       "properties": {
         "inventory": {
           "$ref": "#/definitions/shopInventoryVoucher"
+        }
+      }
+    },
+    "shopCreateBrandRequest": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
         }
       }
     },
@@ -7687,6 +7881,10 @@
         },
         "product_type": {
           "$ref": "#/definitions/product_typeProductType"
+        },
+        "brand_id": {
+          "type": "string",
+          "format": "int64"
         },
         "meta_fields": {
           "type": "array",
@@ -7973,6 +8171,15 @@
         },
         "paging": {
           "$ref": "#/definitions/cmPageInfo"
+        }
+      }
+    },
+    "shopDeleteBrandResponse": {
+      "type": "object",
+      "properties": {
+        "count": {
+          "type": "integer",
+          "format": "int32"
         }
       }
     },
@@ -8351,6 +8558,39 @@
         "amount": {
           "type": "integer",
           "format": "int32"
+        }
+      }
+    },
+    "shopGetBrandsByIDsResponse": {
+      "type": "object",
+      "properties": {
+        "brands": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/shopBrand"
+          }
+        }
+      }
+    },
+    "shopGetBrandsRequest": {
+      "type": "object",
+      "properties": {
+        "paging": {
+          "$ref": "#/definitions/cmPaging"
+        }
+      }
+    },
+    "shopGetBrandsResponse": {
+      "type": "object",
+      "properties": {
+        "brands": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/shopBrand"
+          }
+        },
+        "paging": {
+          "$ref": "#/definitions/cmPageInfo"
         }
       }
     },
@@ -9503,6 +9743,10 @@
           "items": {
             "$ref": "#/definitions/cmMetaField"
           }
+        },
+        "brand_id": {
+          "type": "string",
+          "format": "int64"
         }
       },
       "required": [
@@ -9744,6 +9988,21 @@
           "format": "int64"
         },
         "label": {
+          "type": "string"
+        }
+      }
+    },
+    "shopUpdateBrandRequest": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "name": {
+          "type": "string"
+        },
+        "description": {
           "type": "string"
         }
       }
@@ -10090,6 +10349,10 @@
         },
         "meta_fields": {
           "$ref": "#/definitions/cmMetaField"
+        },
+        "brand_id": {
+          "type": "string",
+          "format": "int64"
         }
       },
       "required": [
@@ -10568,6 +10831,9 @@
     },
     {
       "name": "Authorize"
+    },
+    {
+      "name": "Brand"
     },
     {
       "name": "Carrier"

@@ -6,6 +6,7 @@ import (
 	"etop.vn/api/main/catalog"
 	catalogtypes "etop.vn/api/main/catalog/types"
 	catalogmodel "etop.vn/backend/com/main/catalog/model"
+	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/validate"
 	"etop.vn/backend/pkg/etop/model"
 	. "etop.vn/capi/dot"
@@ -75,6 +76,7 @@ func ShopProduct(in *catalogmodel.ShopProduct) (out *catalog.ShopProduct) {
 		VendorID:    in.VendorID,
 		ProductType: catalog.ProductType(in.ProductType),
 		MetaFields:  metaFields,
+		BrandID:     in.BrandID,
 	}
 	return out
 }
@@ -151,6 +153,7 @@ func ShopProductDB(in *catalog.ShopProduct) (out *catalogmodel.ShopProduct) {
 		NameNormUa:  validate.NormalizeUnaccent(in.Name),
 		ProductType: string(in.ProductType),
 		MetaFields:  metaFields,
+		BrandID:     in.BrandID,
 	}
 	return out
 }
@@ -284,6 +287,7 @@ func UpdateShopProduct(in *catalogmodel.ShopProduct, args *catalog.UpdateShopPro
 	shopProduct.CostPrice = args.CostPrice.Apply(in.CostPrice)
 	shopProduct.ListPrice = args.ListPrice.Apply(in.ListPrice)
 	shopProduct.RetailPrice = args.RetailPrice.Apply(in.RetailPrice)
+	shopProduct.BrandID = args.BrandID.Apply(in.BrandID)
 	return shopProduct
 }
 func UpdateShopCategory(in *catalogmodel.ShopCategory, args *catalog.UpdateShopCategoryArgs) (out *catalogmodel.ShopCategory) {
@@ -367,4 +371,9 @@ func UpdateShopProductCategory(in *catalogmodel.ShopProduct, args *catalog.Updat
 		CategoryID: args.CategoryID,
 	}
 	return shopProduct
+}
+
+func createShopBrand(args *catalog.CreateBrandArgs, out *catalog.ShopBrand) {
+	apply_catalog_CreateBrandArgs_catalog_ShopBrand(args, out)
+	out.ID = cm.NewID()
 }

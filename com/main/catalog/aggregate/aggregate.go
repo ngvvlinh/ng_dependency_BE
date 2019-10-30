@@ -2,8 +2,7 @@ package aggregate
 
 import (
 	"context"
-
-	"etop.vn/capi"
+	"time"
 
 	"etop.vn/api/main/catalog"
 	"etop.vn/api/meta"
@@ -14,6 +13,7 @@ import (
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/cmsql"
+	"etop.vn/capi"
 )
 
 var _ catalog.Aggregate = &Aggregate{}
@@ -25,6 +25,7 @@ type Aggregate struct {
 	shopCategory          sqlstore.ShopCategoryStoreFactory
 	shopCollection        sqlstore.ShopCollectionStoreFactory
 	shopProductCollection sqlstore.ShopProductCollectionStoreFactory
+	shopBrand             sqlstore.ShopBrandStoreFactory
 	eventBus              capi.EventBus
 }
 
@@ -36,6 +37,7 @@ func New(eventBus capi.EventBus, db *cmsql.Database) *Aggregate {
 		shopCategory:          sqlstore.NewShopCategoryStore(db),
 		shopCollection:        sqlstore.NewShopCollectionStore(db),
 		shopProductCollection: sqlstore.NewShopProductCollectionStore(db),
+		shopBrand:             sqlstore.NewShopBrandStore(db),
 		eventBus:              eventBus,
 	}
 }
@@ -46,6 +48,14 @@ func (a *Aggregate) MessageBus() catalog.CommandBus {
 }
 
 func (a *Aggregate) CreateShopProduct(ctx context.Context, args *catalog.CreateShopProductArgs) (*catalog.ShopProductWithVariants, error) {
+	if args.BrandID != 0 {
+		_, err := a.shopBrand(ctx).ShopID(args.ShopID).ID(args.BrandID).GetShopBrand()
+		if err != nil {
+			return nil, cm.MapError(err).
+				Mapf(cm.NotFound, cm.InvalidArgument, "Mã thương hiệu không tồn tại").
+				Throw()
+		}
+	}
 	product := &catalog.ShopProduct{
 		ProductID: cm.NewID(),
 		ShopID:    args.ShopID,
@@ -67,6 +77,7 @@ func (a *Aggregate) CreateShopProduct(ctx context.Context, args *catalog.CreateS
 		},
 		ProductType: args.ProductType,
 		MetaFields:  args.MetaFields,
+		BrandID:     args.BrandID,
 	}
 	event := &catalog.ShopProductCreatingEvent{
 		ShopID:   product.ShopID,
@@ -83,6 +94,14 @@ func (a *Aggregate) CreateShopProduct(ctx context.Context, args *catalog.CreateS
 }
 
 func (a *Aggregate) UpdateShopProductInfo(ctx context.Context, args *catalog.UpdateShopProductInfoArgs) (*catalog.ShopProductWithVariants, error) {
+	if args.BrandID.Valid {
+		_, err := a.shopBrand(ctx).ShopID(args.ShopID).ID(args.BrandID.Int64).GetShopBrand()
+		if err != nil {
+			return nil, cm.MapError(err).
+				Map(cm.NotFound, cm.InvalidArgument, "Mã thương hiệu không tồn tại").
+				Throw()
+		}
+	}
 	productDB, err := a.shopProduct(ctx).ShopID(args.ShopID).ID(args.ProductID).GetShopProductDB()
 	if err != nil {
 		return nil, err
@@ -92,7 +111,7 @@ func (a *Aggregate) UpdateShopProductInfo(ctx context.Context, args *catalog.Upd
 		ShopID:   updated.ShopID,
 		VendorID: updated.VendorID,
 	}
-	if err := a.eventBus.Publish(ctx, event); err != nil {
+	if err = a.eventBus.Publish(ctx, event); err != nil {
 		return nil, err
 	}
 	if err = a.shopProduct(ctx).UpdateShopProduct(updated); err != nil {
@@ -319,7 +338,7 @@ func (a *Aggregate) UpdateShopCategory(ctx context.Context, args *catalog.Update
 		return nil, err
 	}
 	if args.ParentID != 0 {
-		if _, err := a.shopCategory(ctx).ID(args.ParentID).GetShopCategory(); err != nil {
+		if _, err = a.shopCategory(ctx).ID(args.ParentID).GetShopCategory(); err != nil {
 			return nil, err
 		}
 	}
@@ -457,4 +476,57 @@ func (a *Aggregate) UpdateShopProductMetaFields(ctx context.Context, args *catal
 	}
 	result, err := a.shopProduct(ctx).ShopID(args.ShopID).ID(args.ID).GetShopProductWithVariants()
 	return result, nil
+}
+
+func (a *Aggregate) CreateBrand(ctx context.Context, brand *catalog.CreateBrandArgs) (*catalog.ShopBrand, error) {
+	brandCreate := convert.Apply_catalog_CreateBrandArgs_catalog_ShopBrand(brand, nil)
+	err := a.shopBrand(ctx).CreateShopBrand(brandCreate)
+	if err != nil {
+		return nil, err
+	}
+	resultDB, err := a.shopBrand(ctx).ShopID(brandCreate.ShopID).ID(brandCreate.ID).GetShopBrand()
+	return resultDB, err
+}
+
+func (a *Aggregate) UpdateBrandInfo(ctx context.Context, brand *catalog.UpdateBrandArgs) (*catalog.ShopBrand, error) {
+	if brand.ShopID == 0 && brand.ID == 0 {
+		return nil, cm.Error(cm.InvalidArgument, "Invalid Argument ShopId or ID ", nil)
+	}
+	brandDb, err := a.shopBrand(ctx).ShopID(brand.ShopID).ID(brand.ID).GetShopBrand()
+	if err != nil {
+		return nil, err
+	}
+	brandDb = convert.Apply_catalog_UpdateBrandArgs_catalog_ShopBrand(brand, brandDb)
+	brandDb.UpdatedAt = time.Now()
+	err = a.shopBrand(ctx).ShopID(brand.ShopID).ID(brand.ID).UpdateShopBrand(brandDb)
+	if err != nil {
+		return nil, err
+	}
+	resultDB, err := a.shopBrand(ctx).ShopID(brandDb.ShopID).ID(brandDb.ID).GetShopBrand()
+	return resultDB, err
+}
+
+func (a *Aggregate) DeleteShopBrand(ctx context.Context, ids []int64, shopID int64) (int32, error) {
+	var count int32 = 0
+	err := a.db.InTransaction(ctx, func(tx cmsql.QueryInterface) error {
+		countRecord, errTrans := a.shopBrand(ctx).ShopID(shopID).IDs(ids...).SoftDelete()
+		if errTrans != nil {
+			return errTrans
+		}
+		count = int32(countRecord)
+		products, errTrans := a.shopProduct(ctx).BrandIDs(ids...).ListShopProductsDB()
+		if errTrans != nil {
+			return errTrans
+		}
+		var productIDs []int64
+		for _, value := range products {
+			productIDs = append(productIDs, value.ProductID)
+		}
+		errTrans = a.shopProduct(ctx).ShopID(shopID).IDs(productIDs...).RemoveBrands()
+		if errTrans != nil {
+			return errTrans
+		}
+		return nil
+	})
+	return count, err
 }

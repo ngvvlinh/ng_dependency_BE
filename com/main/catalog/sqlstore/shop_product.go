@@ -23,6 +23,7 @@ func NewShopProductStore(db *cmsql.Database) ShopProductStoreFactory {
 		return &ShopProductStore{
 			query:       cmsql.NewQueryFactory(ctx, db),
 			shopVariant: NewShopVariantStore(db)(ctx),
+			shopBrand:   NewShopBrandStore(db)(ctx),
 		}
 	}
 }
@@ -30,6 +31,7 @@ func NewShopProductStore(db *cmsql.Database) ShopProductStoreFactory {
 type ShopProductStore struct {
 	FtShopProduct ShopProductFilters
 	shopVariant   *ShopVariantStore
+	shopBrand     *ShopBrandStore
 
 	query   cmsql.QueryFactory
 	preds   []interface{}
@@ -64,6 +66,16 @@ func (s *ShopProductStore) Filters(filters meta.Filters) *ShopProductStore {
 
 func (s *ShopProductStore) ID(id int64) *ShopProductStore {
 	s.preds = append(s.preds, s.FtShopProduct.ByProductID(id))
+	return s
+}
+
+func (s *ShopProductStore) BrandID(brandID int64) *ShopProductStore {
+	s.preds = append(s.preds, s.FtShopProduct.ByBrandID(brandID))
+	return s
+}
+
+func (s *ShopProductStore) BrandIDs(ids ...int64) *ShopProductStore {
+	s.preds = append(s.preds, sq.In("brand_id", ids))
 	return s
 }
 
@@ -264,6 +276,14 @@ func (s *ShopProductStore) UpdateMetaFieldsShopProduct(product *catalog.ShopProd
 	query := s.query().Where(s.preds)
 	productDB := convert.ShopProductDB(product)
 	err := query.ShouldUpdate(productDB)
+	return err
+}
+
+func (s *ShopProductStore) RemoveBrands() error {
+	_, err := s.query().Where(s.preds).Table("shop_product").
+		UpdateMap(map[string]interface{}{
+			"brand_id": nil,
+		})
 	return err
 }
 

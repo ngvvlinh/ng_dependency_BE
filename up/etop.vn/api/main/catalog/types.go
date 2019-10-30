@@ -56,6 +56,8 @@ type ShopProduct struct {
 	ProductType ProductType
 
 	MetaFields []*MetaField
+
+	BrandID int64
 }
 
 type ShopVariant struct {
