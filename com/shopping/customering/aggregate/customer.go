@@ -53,10 +53,10 @@ func (a *CustomerAggregate) CreateCustomer(
 	ctx context.Context, args *customering.CreateCustomerArgs,
 ) (_ *customering.ShopCustomer, err error) {
 	if args.FullName == "" {
-		return nil, cm.Error(cm.InvalidArgument, "Vui lòng nhập tên đầy đủ", nil)
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "Vui lòng nhập tên đầy đủ")
 	}
 	if args.Phone == "" {
-		return nil, cm.Error(cm.InvalidArgument, "Vui lòng nhập số điện thoại", nil)
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "Vui lòng nhập số điện thoại")
 	}
 
 	phone, isPhone := validate.NormalizePhone(args.Phone)
@@ -88,7 +88,7 @@ func (a *CustomerAggregate) CreateCustomer(
 		}
 	} else {
 		var maxCodeNorm int32
-		customerTemp, err := a.store(ctx).ShopID(args.ShopID).GetCustomerByMaximumCodeNorm()
+		customerTemp, err := a.store(ctx).ShopID(args.ShopID).IncludeDeleted().GetCustomerByMaximumCodeNorm()
 		switch cm.ErrorCode(err) {
 		case cm.NoError:
 			maxCodeNorm = customerTemp.CodeNorm

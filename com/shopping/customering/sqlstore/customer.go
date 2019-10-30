@@ -155,7 +155,6 @@ func (s *CustomerStore) GetCustomer() (*customering.ShopCustomer, error) {
 
 func (s *CustomerStore) GetCustomerByMaximumCodeNorm() (*model.ShopCustomer, error) {
 	query := s.query().Where(s.preds).Where("code_norm != 0")
-	query = s.includeDeleted.Check(query, s.ft.NotDeleted())
 	query = query.OrderBy("code_norm desc").Limit(1)
 
 	var customer model.ShopCustomer
@@ -205,4 +204,9 @@ func CheckErrorCustomer(e error, email string, phone string) error {
 		}
 	}
 	return e
+}
+
+func (s *CustomerStore) IncludeDeleted() *CustomerStore {
+	s.includeDeleted = true
+	return s
 }
