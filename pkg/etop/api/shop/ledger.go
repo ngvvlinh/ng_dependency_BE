@@ -49,7 +49,7 @@ func GetLedgers(ctx context.Context, r *wrapshop.GetLedgersEndpoint) error {
 	}
 
 	r.Result = &pbshop.LedgersResponse{
-		Ledgers: pbshop.PbLedgers(query.Result.Ledger),
+		Ledgers: pbshop.PbLedgers(query.Result.Ledgers),
 		Paging:  pbcm.PbPageInfo(paging, query.Result.Count),
 	}
 	return nil
@@ -105,9 +105,9 @@ func UpdateLedger(ctx context.Context, r *wrapshop.UpdateLedgerEndpoint) error {
 }
 
 func DeleteLedger(ctx context.Context, r *wrapshop.DeleteLedgerEndpoint) error {
-	query := &receipting.ListReceiptsByLedgerIDQuery{
-		ShopID:   r.Context.Shop.ID,
-		LedgerID: r.Id,
+	query := &receipting.ListReceiptsByLedgerIDsQuery{
+		ShopID:    r.Context.Shop.ID,
+		LedgerIDs: []int64{r.Id},
 	}
 	if err := receiptQuery.Dispatch(ctx, query); err != nil {
 		return err

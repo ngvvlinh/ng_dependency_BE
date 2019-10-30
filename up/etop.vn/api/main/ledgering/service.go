@@ -22,14 +22,15 @@ type QueryService interface {
 	GetLedgerByID(context.Context, *shopping.IDQueryShopArg) (*ShopLedger, error)
 	ListLedgers(context.Context, *shopping.ListQueryShopArgs) (*ShopLedgersResponse, error)
 	ListLedgersByIDs(ctx context.Context, shopID int64, IDs []int64) (*ShopLedgersResponse, error)
+	ListLedgersByType(ctx context.Context, ledgerType string, shopID int64) (*ShopLedgersResponse, error)
 }
 
 //-- queries --//
 
 type ShopLedgersResponse struct {
-	Ledger []*ShopLedger
-	Count  int32
-	Paging meta.PageInfo
+	Ledgers []*ShopLedger
+	Count   int32
+	Paging  meta.PageInfo
 }
 
 //-- commands --//

@@ -26,7 +26,7 @@ type QueryService interface {
 	ListReceiptsByIDs(context.Context, *shopping.IDsQueryShopArgs) (*ReceiptsResponse, error)
 	ListReceiptsByRefIDs(context.Context, *shopping.IDsQueryShopArgs) (*ReceiptsResponse, error)
 	ListReceiptsByTraderIDs(ctx context.Context, shopID int64, traderIDs []int64) (*ReceiptsResponse, error)
-	ListReceiptsByLedgerID(ctx context.Context, shopID, ledgerID int64) (*ReceiptsResponse, error)
+	ListReceiptsByLedgerIDs(context.Context, *ListReceiptsByLedgerIDsArgs) (*ReceiptsResponse, error)
 }
 
 //-- queries --//
@@ -80,4 +80,11 @@ type CancelReceiptArgs struct {
 type ConfirmReceiptArgs struct {
 	ID     int64
 	ShopID int64
+}
+
+type ListReceiptsByLedgerIDsArgs struct {
+	ShopID    int64
+	LedgerIDs []int64
+	Paging    meta.Paging
+	Filters   meta.Filters
 }

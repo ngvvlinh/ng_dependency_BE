@@ -32,7 +32,8 @@ func init() {
 		receiptService.ConfirmReceipt,
 		receiptService.CancelReceipt,
 		receiptService.GetReceipt,
-		receiptService.GetReceipts)
+		receiptService.GetReceipts,
+		receiptService.GetReceiptsByLedgerType)
 }
 
 func (s *ReceiptService) CreateReceipt(ctx context.Context, q *wrapshop.CreateReceiptEndpoint) (_err error) {
@@ -46,6 +47,7 @@ func (s *ReceiptService) CreateReceipt(ctx context.Context, q *wrapshop.CreateRe
 		return err
 	}
 	q.Result = pbshop.PbReceipt(result.(*receipting.CreateReceiptCommand).Result)
+
 	return nil
 }
 
@@ -80,9 +82,6 @@ func (s *ReceiptService) createReceipt(ctx context.Context, q *wrapshop.CreateRe
 		Lines:       pbshop.Convert_api_ReceiptLines_To_core_ReceiptLines(q.Lines),
 	}
 
-	//if receipt.PaidAt == nil {
-	//	return nil, cm.Errorf(cm.InvalidArgument, nil, "Ngày tạo phiếu không hợp lệ")
-	//}
 	if err := s.validateReceiptForCreateOrUpdate(ctx, q.Context.Shop.ID, receipt); err != nil {
 		return nil, err
 	}
@@ -151,6 +150,10 @@ func (s *ReceiptService) UpdateReceipt(ctx context.Context, q *wrapshop.UpdateRe
 		Title:       PString(q.Title),
 		Description: PString(q.Description),
 		LedgerID:    PInt64(q.LedgerId),
+		TraderID:    PInt64(&query.Result.TraderID),
+		Amount:      PInt32(&query.Result.Amount),
+		Lines:       query.Result.Lines,
+		PaidAt:      query.Result.PaidAt,
 	}
 	if query.Result.Status == int32(model.S3Zero) {
 		cmd.TraderID = PInt64(q.TraderId)
@@ -172,11 +175,11 @@ func (s *ReceiptService) validateReceiptForCreateOrUpdate(ctx context.Context, s
 		return cm.Errorf(cm.InvalidArgument, nil, "Tiêu đề không hợp lệ")
 	}
 	if receipt.ID == 0 && receipt.Amount <= 0 {
-		return cm.Errorf(cm.InvalidArgument, nil, "Amount must rather than 0")
+		return cm.Errorf(cm.InvalidArgument, nil, "Giá trị phiếu phải lớn hơn 0")
 	}
 
 	if receipt.Amount > 0 && len(receipt.Lines) == 0 {
-		return cm.Errorf(cm.InvalidArgument, nil, "Amount is invalid")
+		return cm.Errorf(cm.InvalidArgument, nil, "Giá trị phiếu không hợp lệ")
 	}
 
 	// validate that the updated code does not exist
@@ -284,7 +287,7 @@ func (s *ReceiptService) validateReceiptLines(ctx context.Context, traderType st
 	if len(orderIDs) != len(mOrders) {
 		for _, v := range orderIDs {
 			if _, ok := mOrders[v]; !ok {
-				return cm.Errorf(cm.FailedPrecondition, nil, "OrderID %d not found", v)
+				return cm.Errorf(cm.FailedPrecondition, nil, "ref_id %d không tìm thấy", v)
 			}
 		}
 	}
@@ -318,8 +321,8 @@ func (s *ReceiptService) validateReceiptLines(ctx context.Context, traderType st
 
 	// Check each of amount of receiptLine (param) with (total amount of old receiptLines + total amount of order)
 	for key, value := range mapOrdersAmount {
-		if value >= int32(mOrders[key].TotalAmount)-mapOrdersAmountOld[key] {
-			return cm.Errorf(cm.InvalidArgument, nil, "Amount of order_id %d is valid", key)
+		if value > int32(mOrders[key].TotalAmount)-mapOrdersAmountOld[key] {
+			return cm.Errorf(cm.InvalidArgument, nil, "gía trị của tham chiếu ref_ id %d không hợp lệ", key)
 		}
 	}
 
@@ -332,7 +335,7 @@ func calcReceiptLinesTotalAmount(receipt *receipting.Receipt) (totalAmount int32
 	for _, receiptLine := range receipt.Lines {
 		// check amount of a receiptLine < 0
 		if receiptLine.Amount <= 0 {
-			err = cm.Errorf(cm.FailedPrecondition, nil, "Amount of receiptLine must be greater than 0")
+			err = cm.Errorf(cm.FailedPrecondition, nil, "Giá trị mỗi hàng phải lớn hơn 0")
 			return
 		}
 		totalAmount += receiptLine.Amount
@@ -345,7 +348,7 @@ func calcReceiptLinesTotalAmount(receipt *receipting.Receipt) (totalAmount int32
 		// hasKey = true -> duplicate orderId in receipt
 		// hasKey = false -> add orderId in map
 		if _, has := mapOrdersAmount[receiptLine.RefID]; has {
-			err = cm.Errorf(cm.FailedPrecondition, nil, "Duplicated OrderId %d in receipt", receiptLine.RefID)
+			err = cm.Errorf(cm.FailedPrecondition, nil, "ref_id %d trùng nhau trong phiếu", receiptLine.RefID)
 			return
 		}
 
@@ -362,7 +365,7 @@ func (s *ReceiptService) DeleteReceipt(ctx context.Context, q *wrapshop.DeleteRe
 	}
 	if err := receiptAggr.Dispatch(ctx, cmd); err != nil {
 		return cm.MapError(err).
-			Wrap(cm.NotFound, "Receipt not found").
+			Wrap(cm.NotFound, "Không tìm thấy phiếu").
 			Throw()
 	}
 	q.Result = &pbcm.DeletedResponse{Deleted: int32(cmd.Result)}
@@ -410,13 +413,9 @@ func (s *ReceiptService) CancelReceipt(ctx context.Context, q *wrapshop.CancelRe
 			Wrap(cm.NotFound, "Không tìm thấy phiếu").
 			Throw()
 	}
-	switch query.Result.Status {
-	case int32(model.S3Positive):
-		return cm.Errorf(cm.FailedPrecondition, nil, "Phiếu đã xác nhận")
-	case int32(model.S3Negative):
+
+	if query.Result.Status == int32(model.S3Negative) {
 		return cm.Errorf(cm.FailedPrecondition, nil, "Phiếu đã hủy")
-	default:
-		// no-op
 	}
 
 	cmd := &receipting.CancelReceiptCommand{
@@ -440,7 +439,7 @@ func (s *ReceiptService) GetReceipt(ctx context.Context, q *wrapshop.GetReceiptE
 	}
 	if err := receiptQuery.Dispatch(ctx, getReceiptQuery); err != nil {
 		return cm.MapError(err).
-			Wrap(cm.NotFound, "Receipt not found").
+			Wrap(cm.NotFound, "Không tìm thấy phiếu").
 			Throw()
 	}
 
@@ -473,6 +472,41 @@ func (s *ReceiptService) GetReceipts(ctx context.Context, q *wrapshop.GetReceipt
 		}
 	}
 
+	return nil
+}
+
+func (s *ReceiptService) GetReceiptsByLedgerType(ctx context.Context, q *wrapshop.GetReceiptsByLedgerTypeEndpoint) error {
+	paging := q.Paging.CMPaging()
+	listLedgersByType := &ledgering.ListLedgersByTypeQuery{
+		LedgerType: q.Type,
+		ShopID:     q.Context.Shop.ID,
+	}
+	if err := ledgerQuery.Dispatch(ctx, listLedgersByType); err != nil {
+		return err
+	}
+
+	var ledgerIDs []int64
+	for _, ledger := range listLedgersByType.Result.Ledgers {
+		ledgerIDs = append(ledgerIDs, ledger.ID)
+	}
+
+	query := &receipting.ListReceiptsByLedgerIDsQuery{
+		ShopID:    q.Context.Shop.ID,
+		LedgerIDs: ledgerIDs,
+		Paging:    *paging,
+		Filters:   pbcm.ToFilters(q.Filters),
+	}
+	if err := receiptQuery.Dispatch(ctx, query); err != nil {
+		return err
+	}
+	if receipts, err := s.getInfosForReceipts(ctx, q.Context.Shop.ID, query.Result.Receipts); err != nil {
+		return err
+	} else {
+		q.Result = &pbshop.ReceiptsResponse{
+			Receipts: receipts,
+			Paging:   pbcm.PbPageInfo(paging, query.Result.Count),
+		}
+	}
 	return nil
 }
 
@@ -528,7 +562,7 @@ func (s *ReceiptService) getInfosForReceipts(ctx context.Context, shopID int64, 
 	if err := ledgerQuery.Dispatch(ctx, getLedgersByIDs); err != nil {
 		return nil, err
 	}
-	for _, ledger := range getLedgersByIDs.Result.Ledger {
+	for _, ledger := range getLedgersByIDs.Result.Ledgers {
 		mapLedger[ledger.ID] = ledger
 	}
 	for _, receipt := range receiptsResult {

@@ -120,14 +120,27 @@ func (h QueryServiceHandler) HandleListLedgersByIDs(ctx context.Context, msg *Li
 	return err
 }
 
+type ListLedgersByTypeQuery struct {
+	LedgerType string
+	ShopID     int64
+
+	Result *ShopLedgersResponse `json:"-"`
+}
+
+func (h QueryServiceHandler) HandleListLedgersByType(ctx context.Context, msg *ListLedgersByTypeQuery) (err error) {
+	msg.Result, err = h.inner.ListLedgersByType(msg.GetArgs(ctx))
+	return err
+}
+
 // implement interfaces
 
-func (q *CreateLedgerCommand) command() {}
-func (q *DeleteLedgerCommand) command() {}
-func (q *UpdateLedgerCommand) command() {}
-func (q *GetLedgerByIDQuery) query()    {}
-func (q *ListLedgersQuery) query()      {}
-func (q *ListLedgersByIDsQuery) query() {}
+func (q *CreateLedgerCommand) command()  {}
+func (q *DeleteLedgerCommand) command()  {}
+func (q *UpdateLedgerCommand) command()  {}
+func (q *GetLedgerByIDQuery) query()     {}
+func (q *ListLedgersQuery) query()       {}
+func (q *ListLedgersByIDsQuery) query()  {}
+func (q *ListLedgersByTypeQuery) query() {}
 
 // implement conversion
 
@@ -211,6 +224,12 @@ func (q *ListLedgersByIDsQuery) GetArgs(ctx context.Context) (_ context.Context,
 		q.IDs
 }
 
+func (q *ListLedgersByTypeQuery) GetArgs(ctx context.Context) (_ context.Context, ledgerType string, shopID int64) {
+	return ctx,
+		q.LedgerType,
+		q.ShopID
+}
+
 // implement dispatching
 
 type AggregateHandler struct {
@@ -244,5 +263,6 @@ func (h QueryServiceHandler) RegisterHandlers(b interface {
 	b.AddHandler(h.HandleGetLedgerByID)
 	b.AddHandler(h.HandleListLedgers)
 	b.AddHandler(h.HandleListLedgersByIDs)
+	b.AddHandler(h.HandleListLedgersByType)
 	return QueryBus{b}
 }

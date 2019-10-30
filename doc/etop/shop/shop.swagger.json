@@ -3529,6 +3529,32 @@
         ]
       }
     },
+    "/api/shop.Receipt/GetReceiptsByLedgerType": {
+      "post": {
+        "operationId": "GetReceiptsByLedgerType",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/shopReceiptsResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/shopGetReceiptsByLedgerTypeRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Receipt"
+        ]
+      }
+    },
     "/api/shop.Receipt/UpdateReceipt": {
       "post": {
         "operationId": "UpdateReceipt",
@@ -8611,6 +8637,23 @@
         "code": {
           "type": "string",
           "title": "@Required"
+        }
+      }
+    },
+    "shopGetReceiptsByLedgerTypeRequest": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string"
+        },
+        "paging": {
+          "$ref": "#/definitions/cmPaging"
+        },
+        "filters": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/cmFilter"
+          }
         }
       }
     },

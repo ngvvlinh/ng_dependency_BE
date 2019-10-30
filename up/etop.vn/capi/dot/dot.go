@@ -1,6 +1,8 @@
 package dot
 
-import "strconv"
+import (
+	"strconv"
+)
 
 type ID int64
 
@@ -26,7 +28,6 @@ type NullInt64 struct {
 	Int64 int64
 	Valid bool
 }
-
 type NullInt32 struct {
 	Int32 int32
 	Valid bool

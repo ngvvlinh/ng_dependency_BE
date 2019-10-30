@@ -271,6 +271,7 @@ service ReceiptService {
     rpc DeleteReceipt(cm.IDRequest) returns (cm.DeletedResponse);
     rpc GetReceipt(cm.IDRequest) returns (Receipt);
     rpc GetReceipts(GetReceiptsRequest) returns (ReceiptsResponse);
+    rpc GetReceiptsByLedgerType(GetReceiptsByLedgerTypeRequest) returns (ReceiptsResponse);
     rpc ConfirmReceipt(cm.IDRequest) returns (cm.UpdatedResponse);
     rpc CancelReceipt(CancelReceiptRequest) returns (cm.UpdatedResponse);
 }
@@ -1501,6 +1502,12 @@ message CancelReceiptRequest {
 message GetReceiptsRequest {
     optional cm.Paging paging = 1;
     repeated cm.Filter filters = 2;
+}
+
+message GetReceiptsByLedgerTypeRequest {
+    optional string type = 1 [(gogoproto.nullable)=false];
+    optional cm.Paging paging = 2;
+    repeated cm.Filter filters = 3;
 }
 
 message ReceiptsResponse {

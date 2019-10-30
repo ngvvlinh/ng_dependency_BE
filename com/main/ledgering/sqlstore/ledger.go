@@ -74,6 +74,11 @@ func (s *LedgerStore) ShopID(id int64) *LedgerStore {
 	return s
 }
 
+func (s *LedgerStore) Type(ledgerType string) *LedgerStore {
+	s.preds = append(s.preds, s.ft.ByType(ledgerType))
+	return s
+}
+
 func (s *LedgerStore) Count() (uint64, error) {
 	query := s.query().Where(s.preds)
 	query = s.includeDeleted.Check(query, s.ft.NotDeleted())

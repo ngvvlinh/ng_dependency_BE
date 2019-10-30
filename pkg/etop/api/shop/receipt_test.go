@@ -25,7 +25,7 @@ func TestValidateReceiptLines(t *testing.T) {
 		traderQuery = tradering.NewQueryBus(mockBus)
 
 		mockBus.MockHandler(func(query *receipting.GetReceiptByCodeQuery) error {
-			return cm.Errorf(cm.NotFound, nil, "receipt not found")
+			return cm.Errorf(cm.NotFound, nil, "không tìm thấy phiếu")
 		})
 		mockBus.MockHandler(func(query *receipting.ListReceiptsByRefIDsQuery) error {
 			query.Result = &receipting.ReceiptsResponse{
@@ -134,7 +134,7 @@ func TestValidateReceiptLines(t *testing.T) {
 			Amount: 300000,
 		}
 		err := receiptService.validateReceiptLines(bus.Ctx(), tradering.CustomerType, receipt)
-		require.EqualError(t, err, "Duplicated OrderId 123456 in receipt")
+		require.EqualError(t, err, "ref_id 123456 trùng nhau trong phiếu")
 	})
 
 	t.Run("OrderID does not exist (error)", func(t *testing.T) {
@@ -164,7 +164,7 @@ func TestValidateReceiptLines(t *testing.T) {
 			Amount: 300000,
 		}
 		err := receiptService.validateReceiptLines(bus.Ctx(), tradering.CustomerType, receipt)
-		require.EqualError(t, err, "OrderID 1002 not found")
+		require.EqualError(t, err, "ref_id 1002 không tìm thấy")
 	})
 
 	t.Run("Amount > TotalAmount - ReceivedAmount (orderID)", func(t *testing.T) {

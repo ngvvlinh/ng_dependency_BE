@@ -178,6 +178,7 @@ func NewShopServer(mux Muxer, hooks *twirp.ServerHooks) {
 	bus.Expect(&DeleteReceiptEndpoint{})
 	bus.Expect(&GetReceiptEndpoint{})
 	bus.Expect(&GetReceiptsEndpoint{})
+	bus.Expect(&GetReceiptsByLedgerTypeEndpoint{})
 	bus.Expect(&UpdateReceiptEndpoint{})
 	bus.Expect(&CreateVendorEndpoint{})
 	bus.Expect(&DeleteVendorEndpoint{})
@@ -6554,6 +6555,50 @@ func (s ReceiptService) GetReceipts(ctx context.Context, req *shop.GetReceiptsRe
 	}
 	session = sessionQuery.Result
 	query := &GetReceiptsEndpoint{GetReceiptsRequest: req}
+	query.Context.Claim = session.Claim
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = bus.Dispatch(ctx, query)
+	resp = query.Result
+	if err == nil {
+		if resp == nil {
+			return nil, common.Error(common.Internal, "", nil).Log("nil response")
+		}
+		errs = cmwrapper.HasErrors(resp)
+	}
+	return resp, err
+}
+
+type GetReceiptsByLedgerTypeEndpoint struct {
+	*shop.GetReceiptsByLedgerTypeRequest
+	Result  *shop.ReceiptsResponse
+	Context ShopClaim
+}
+
+func (s ReceiptService) GetReceiptsByLedgerType(ctx context.Context, req *shop.GetReceiptsByLedgerTypeRequest) (resp *shop.ReceiptsResponse, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "shop.Receipt/GetReceiptsByLedgerType"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:     ctx,
+		RequireAuth: true,
+		RequireShop: true,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &GetReceiptsByLedgerTypeEndpoint{GetReceiptsByLedgerTypeRequest: req}
 	query.Context.Claim = session.Claim
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner

@@ -106,8 +106,8 @@ func (s *ReceiptStore) RefIDs(ids ...int64) *ReceiptStore {
 	return s
 }
 
-func (s *ReceiptStore) LedgerID(LedgerID int64) *ReceiptStore {
-	s.preds = append(s.preds, s.ft.ByLedgerID(LedgerID))
+func (s *ReceiptStore) LedgerIDs(LedgerIDs ...int64) *ReceiptStore {
+	s.preds = append(s.preds, sq.PrefixedIn(&s.ft.prefix, "ledger_id", LedgerIDs))
 	return s
 }
 

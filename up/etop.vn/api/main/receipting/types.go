@@ -28,6 +28,7 @@ type Receipt struct {
 	Amount      int32
 	Status      int32
 	LedgerID    int64
+	RefIDs      []int64
 	Lines       []*ReceiptLine
 	PaidAt      time.Time
 	ConfirmedAt time.Time

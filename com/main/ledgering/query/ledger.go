@@ -52,8 +52,8 @@ func (q *LedgerQuery) ListLedgers(
 		return nil, err
 	}
 	return &ledgering.ShopLedgersResponse{
-		Ledger: ledgers,
-		Count:  int32(count),
+		Ledgers: ledgers,
+		Count:   int32(count),
 	}, nil
 }
 
@@ -70,7 +70,25 @@ func (q *LedgerQuery) ListLedgersByIDs(
 		return nil, err
 	}
 	return &ledgering.ShopLedgersResponse{
-		Ledger: ledgers,
-		Count:  int32(count),
+		Ledgers: ledgers,
+		Count:   int32(count),
+	}, nil
+}
+
+func (q *LedgerQuery) ListLedgersByType(
+	ctx context.Context, ledgerType string, shopID int64,
+) (*ledgering.ShopLedgersResponse, error) {
+	query := q.store(ctx).ShopID(shopID).Type(ledgerType)
+	ledgers, err := query.ListLedgers()
+	if err != nil {
+		return nil, err
+	}
+	count, err := query.Count()
+	if err != nil {
+		return nil, err
+	}
+	return &ledgering.ShopLedgersResponse{
+		Ledgers: ledgers,
+		Count:   int32(count),
 	}, nil
 }

@@ -88,9 +88,10 @@ func (q *ReceiptQuery) ListReceiptsByTraderIDs(
 	return &receipting.ReceiptsResponse{Receipts: receipts}, err
 }
 
-func (q *ReceiptQuery) ListReceiptsByLedgerID(
-	ctx context.Context, shopID, ledgerID int64,
+func (q *ReceiptQuery) ListReceiptsByLedgerIDs(
+	ctx context.Context, args *receipting.ListReceiptsByLedgerIDsArgs,
 ) (*receipting.ReceiptsResponse, error) {
-	receipts, err := q.store(ctx).ShopID(shopID).LedgerID(ledgerID).ListReceipts()
+	receipts, err := q.store(ctx).ShopID(args.ShopID).LedgerIDs(args.LedgerIDs...).
+		Paging(args.Paging).Filters(args.Filters).ListReceipts()
 	return &receipting.ReceiptsResponse{Receipts: receipts}, err
 }
