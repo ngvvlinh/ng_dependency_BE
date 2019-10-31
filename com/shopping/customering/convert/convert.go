@@ -100,7 +100,7 @@ func ShopTraderAddress(args *model.ShopTraderAddress, out *addressing.ShopTrader
 }
 
 func ShopTraderAddressDB(args *addressing.ShopTraderAddress, out *model.ShopTraderAddress) {
-	Convert_addressing_ShopTraderAddress_customeringmodel_ShopTraderAddress(args, out)
+	convert_addressing_ShopTraderAddress_customeringmodel_ShopTraderAddress(args, out)
 	out.Coordinates = orderconvert.CoordinatesDB(args.Coordinates)
 	out.Status = etop.S3Positive
 }
