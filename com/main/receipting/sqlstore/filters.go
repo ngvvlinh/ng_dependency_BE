@@ -18,8 +18,9 @@ var SortReceipt = map[string]string{
 }
 
 var FilterReceipt = sqlstore.FilterWhitelist{
-	Dates:   []string{"created_at", "update_at", "paid_at", "cancelled_at", "confirmed_at"},
-	Equals:  []string{"type", "ledger_id", "code", "created_by"},
-	Numbers: []string{"amount"},
+	Dates:   []string{"created_at", "updated_at", "paid_at", "cancelled_at", "confirmed_at"},
+	Equals:  []string{"type", "ledger_id", "code", "created_by", "id", "trader_id"},
+	Numbers: []string{"amount", "id", "trader_id"},
 	Status:  []string{"status"},
+	Arrays:  []string{"ref_ids", "id"},
 }

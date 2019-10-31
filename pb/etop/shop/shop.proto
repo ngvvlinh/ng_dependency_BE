@@ -279,7 +279,6 @@ service PaymentService {
 service ReceiptService {
     rpc CreateReceipt(CreateReceiptRequest) returns (Receipt);
     rpc UpdateReceipt(UpdateReceiptRequest) returns (Receipt);
-    rpc DeleteReceipt(cm.IDRequest) returns (cm.DeletedResponse);
     rpc GetReceipt(cm.IDRequest) returns (Receipt);
     rpc GetReceipts(GetReceiptsRequest) returns (ReceiptsResponse);
     rpc GetReceiptsByLedgerType(GetReceiptsByLedgerTypeRequest) returns (ReceiptsResponse);
@@ -1522,14 +1521,10 @@ message GetReceiptsByLedgerTypeRequest {
 }
 
 message ReceiptsResponse {
-    repeated Receipt receipts = 1;
-    optional cm.PageInfo paging = 2;
-}
-
-message GetReceivedAmountByOrderIDResponse {
-    optional int32 total_amount = 1 [(gogoproto.nullable) = false];
-    optional int32 received_amount = 2 [(gogoproto.nullable) = false];
-    optional int64 user_id = 3 [(gogoproto.nullable) = false];
+    optional int64 total_amount_confirmed_receipt = 1 [(gogoproto.nullable) = false];
+    optional int64 total_amount_confirmed_payment = 2 [(gogoproto.nullable) = false];
+    repeated Receipt receipts = 3;
+    optional cm.PageInfo paging = 4;
 }
 
 message GetShopCollectionsByProductIDRequest {

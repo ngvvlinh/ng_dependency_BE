@@ -10,6 +10,8 @@ import (
 	"syscall"
 	"time"
 
+	"etop.vn/api/main/receipting"
+
 	"etop.vn/api/main/identity"
 	"etop.vn/api/main/ordering"
 	"etop.vn/api/main/shipnow"
@@ -64,6 +66,7 @@ import (
 	cmService "etop.vn/backend/pkg/common/service"
 	"etop.vn/backend/pkg/common/telebot"
 	"etop.vn/backend/pkg/etop/api"
+	"etop.vn/backend/pkg/etop/api/admin"
 	"etop.vn/backend/pkg/etop/api/affiliate"
 	"etop.vn/backend/pkg/etop/api/crm"
 	"etop.vn/backend/pkg/etop/api/export"
@@ -127,6 +130,8 @@ var (
 	identityQuery identity.QueryBus
 
 	vtpayClient *vtpayclient.Client
+
+	receiptQuery receipting.QueryBus
 )
 
 func main() {
@@ -351,13 +356,13 @@ func main() {
 	affiliatePM := affiliatepm.New(affiliateCmd)
 	affiliatePM.RegisterEventHandlers(eventBus)
 
-	receiptAggr := receiptaggregate.NewReceiptAggregate(db).MessageBus()
-	receiptQuery := receiptquery.NewReceiptQuery(db).MessageBus()
-
-	ledgerAggr := ledgeraggregate.NewLedgerAggregate(db).MessageBus()
+	ledgerAggr := ledgeraggregate.NewLedgerAggregate(db, &receiptQuery).MessageBus()
 	ledgerQuery := ledgerquery.NewLedgerQuery(db).MessageBus()
 	ledgerPM := ledgerpm.New(eventBus, ledgerAggr)
 	ledgerPM.RegisterEventHandlers(eventBus)
+
+	receiptAggr := receiptaggregate.NewReceiptAggregate(db, eventBus, traderQuery, ledgerQuery, orderQuery).MessageBus()
+	receiptQuery = receiptquery.NewReceiptQuery(db).MessageBus()
 
 	vendorPM := vendorpm.New(eventBus, vendorQuery)
 	vendorPM.RegisterEventHandlers(eventBus)
@@ -418,6 +423,7 @@ func main() {
 	crm.Init(ghnCarrier, vtigerQuery, vtigerAggregate, vhtQuery, vhtAggregate)
 	affiliate.Init(identityAggr)
 	apiaff.Init(affiliateCmd, affilateQuery, catalogQuery, identityQuery, orderQuery)
+	admin.Init(eventBus)
 
 	err = db.GetSchemaErrors()
 	if err != nil && cm.IsDev() {

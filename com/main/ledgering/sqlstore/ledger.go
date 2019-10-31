@@ -2,6 +2,7 @@ package sqlstore
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"etop.vn/backend/pkg/common/sq"
@@ -76,6 +77,12 @@ func (s *LedgerStore) ShopID(id int64) *LedgerStore {
 
 func (s *LedgerStore) Type(ledgerType string) *LedgerStore {
 	s.preds = append(s.preds, s.ft.ByType(ledgerType))
+	return s
+}
+
+func (s *LedgerStore) AccountNumber(accountNumber string) *LedgerStore {
+	condition := fmt.Sprintf("bank_account @> '{\"account_number\": \"%v\"}'", accountNumber)
+	s.preds = append(s.preds, sq.NewExpr(condition))
 	return s
 }
 

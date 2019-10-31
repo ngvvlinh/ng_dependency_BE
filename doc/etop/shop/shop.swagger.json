@@ -3607,32 +3607,6 @@
         ]
       }
     },
-    "/api/shop.Receipt/DeleteReceipt": {
-      "post": {
-        "operationId": "DeleteReceipt",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/cmDeletedResponse"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/cmIDRequest"
-            }
-          }
-        ],
-        "tags": [
-          "Receipt"
-        ]
-      }
-    },
     "/api/shop.Receipt/GetReceipt": {
       "post": {
         "operationId": "GetReceipt",
@@ -9369,6 +9343,14 @@
     "shopReceiptsResponse": {
       "type": "object",
       "properties": {
+        "total_amount_confirmed_receipt": {
+          "type": "string",
+          "format": "int64"
+        },
+        "total_amount_confirmed_payment": {
+          "type": "string",
+          "format": "int64"
+        },
         "receipts": {
           "type": "array",
           "items": {

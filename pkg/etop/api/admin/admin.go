@@ -3,6 +3,8 @@ package admin
 import (
 	"context"
 
+	"etop.vn/capi"
+
 	notimodel "etop.vn/backend/com/handler/notifier/model"
 	"etop.vn/backend/com/main/moneytx/modelx"
 	shippingmodelx "etop.vn/backend/com/main/shipping/modelx"
@@ -22,6 +24,16 @@ import (
 
 var ll = l.New()
 var s = &Service{}
+
+var (
+	eventBus capi.EventBus
+)
+
+func Init(
+	eventB capi.EventBus,
+) {
+	eventBus = eventB
+}
 
 func init() {
 	bus.AddHandlers("api",

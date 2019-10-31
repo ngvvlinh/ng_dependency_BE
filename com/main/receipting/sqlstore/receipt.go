@@ -2,6 +2,7 @@ package sqlstore
 
 import (
 	"context"
+	"database/sql"
 	"fmt"
 	"strconv"
 	"time"
@@ -39,8 +40,9 @@ type ReceiptStore struct {
 }
 
 func (s *ReceiptStore) Paging(paging meta.Paging) *ReceiptStore {
-	s.paging = paging
-	return s
+	ss := *s
+	ss.paging = paging
+	return &ss
 }
 
 func (s *ReceiptStore) Filters(filters meta.Filters) *ReceiptStore {
@@ -106,14 +108,25 @@ func (s *ReceiptStore) RefIDs(ids ...int64) *ReceiptStore {
 	return s
 }
 
+func (s *ReceiptStore) Status(status etopmodel.Status3) *ReceiptStore {
+	s.preds = append(s.preds, s.ft.ByStatus(status))
+	return s
+}
+
 func (s *ReceiptStore) LedgerIDs(LedgerIDs ...int64) *ReceiptStore {
 	s.preds = append(s.preds, sq.PrefixedIn(&s.ft.prefix, "ledger_id", LedgerIDs))
 	return s
 }
 
-func (s *ReceiptStore) Count() (uint64, error) {
+func (s *ReceiptStore) Count() (_ uint64, err error) {
 	query := s.query().Where(s.preds)
 	query = s.includeDeleted.Check(query, s.ft.NotDeleted())
+
+	query, _, err = sqlstore.Filters(query, s.filters, FilterReceipt)
+	if err != nil {
+		return 0, err
+	}
+
 	return query.Count((*model.Receipt)(nil))
 }
 
@@ -213,7 +226,7 @@ func (s *ReceiptStore) ListReceiptsDB() ([]*model.Receipt, error) {
 	query := s.query().Where(s.preds)
 	query = s.includeDeleted.Check(query, s.ft.NotDeleted())
 
-	// default sort by paid_at
+	// default sort by created_at
 	if s.paging.Sort == nil || len(s.paging.Sort) == 0 {
 		s.paging.Sort = append(s.paging.Sort, "-created_at")
 	}
@@ -243,4 +256,15 @@ func (s *ReceiptStore) ListReceipts() (receiptsResult []*receipting.Receipt, _ e
 	}
 
 	return receiptsResult, nil
+}
+
+func (s *ReceiptStore) SumAmountReceiptAndPayment() (receipt, payment int64, err error) {
+	var sqlReceipt, sqlPayment sql.NullInt64
+	query := s.query().Where(s.preds)
+	err = query.Table("receipt").Select(
+		"SUM(amount) FILTER(WHERE type = 'receipt')",
+		"SUM(amount) FILTER(WHERE type = 'payment')").
+		Scan(&sqlReceipt, &sqlPayment)
+
+	return sqlReceipt.Int64, sqlPayment.Int64, err
 }

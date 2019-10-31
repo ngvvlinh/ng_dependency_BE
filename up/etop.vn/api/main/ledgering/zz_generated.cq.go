@@ -83,6 +83,18 @@ func (h AggregateHandler) HandleUpdateLedger(ctx context.Context, msg *UpdateLed
 	return err
 }
 
+type GetLedgerByAccountNumberQuery struct {
+	AccountNumber string
+	ShopID        int64
+
+	Result *ShopLedger `json:"-"`
+}
+
+func (h QueryServiceHandler) HandleGetLedgerByAccountNumber(ctx context.Context, msg *GetLedgerByAccountNumberQuery) (err error) {
+	msg.Result, err = h.inner.GetLedgerByAccountNumber(msg.GetArgs(ctx))
+	return err
+}
+
 type GetLedgerByIDQuery struct {
 	ID     int64
 	ShopID int64
@@ -121,7 +133,7 @@ func (h QueryServiceHandler) HandleListLedgersByIDs(ctx context.Context, msg *Li
 }
 
 type ListLedgersByTypeQuery struct {
-	LedgerType string
+	LedgerType LedgerType
 	ShopID     int64
 
 	Result *ShopLedgersResponse `json:"-"`
@@ -134,13 +146,14 @@ func (h QueryServiceHandler) HandleListLedgersByType(ctx context.Context, msg *L
 
 // implement interfaces
 
-func (q *CreateLedgerCommand) command()  {}
-func (q *DeleteLedgerCommand) command()  {}
-func (q *UpdateLedgerCommand) command()  {}
-func (q *GetLedgerByIDQuery) query()     {}
-func (q *ListLedgersQuery) query()       {}
-func (q *ListLedgersByIDsQuery) query()  {}
-func (q *ListLedgersByTypeQuery) query() {}
+func (q *CreateLedgerCommand) command()         {}
+func (q *DeleteLedgerCommand) command()         {}
+func (q *UpdateLedgerCommand) command()         {}
+func (q *GetLedgerByAccountNumberQuery) query() {}
+func (q *GetLedgerByIDQuery) query()            {}
+func (q *ListLedgersQuery) query()              {}
+func (q *ListLedgersByIDsQuery) query()         {}
+func (q *ListLedgersByTypeQuery) query()        {}
 
 // implement conversion
 
@@ -190,6 +203,12 @@ func (q *UpdateLedgerCommand) SetUpdateLedgerArgs(args *UpdateLedgerArgs) {
 	q.Note = args.Note
 }
 
+func (q *GetLedgerByAccountNumberQuery) GetArgs(ctx context.Context) (_ context.Context, accountNumber string, shopID int64) {
+	return ctx,
+		q.AccountNumber,
+		q.ShopID
+}
+
 func (q *GetLedgerByIDQuery) GetArgs(ctx context.Context) (_ context.Context, _ *shopping.IDQueryShopArg) {
 	return ctx,
 		&shopping.IDQueryShopArg{
@@ -224,7 +243,7 @@ func (q *ListLedgersByIDsQuery) GetArgs(ctx context.Context) (_ context.Context,
 		q.IDs
 }
 
-func (q *ListLedgersByTypeQuery) GetArgs(ctx context.Context) (_ context.Context, ledgerType string, shopID int64) {
+func (q *ListLedgersByTypeQuery) GetArgs(ctx context.Context) (_ context.Context, ledgerType LedgerType, shopID int64) {
 	return ctx,
 		q.LedgerType,
 		q.ShopID
@@ -260,6 +279,7 @@ func (h QueryServiceHandler) RegisterHandlers(b interface {
 	capi.Bus
 	AddHandler(handler interface{})
 }) QueryBus {
+	b.AddHandler(h.HandleGetLedgerByAccountNumber)
 	b.AddHandler(h.HandleGetLedgerByID)
 	b.AddHandler(h.HandleListLedgers)
 	b.AddHandler(h.HandleListLedgersByIDs)

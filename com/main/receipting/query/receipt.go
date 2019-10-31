@@ -3,6 +3,8 @@ package query
 import (
 	"context"
 
+	"etop.vn/backend/pkg/etop/model"
+
 	"etop.vn/api/shopping"
 
 	"etop.vn/backend/pkg/common/bus"
@@ -47,18 +49,27 @@ func (q *ReceiptQuery) GetReceiptByID(ctx context.Context, args *shopping.IDQuer
 func (q *ReceiptQuery) ListReceipts(
 	ctx context.Context, args *shopping.ListQueryShopArgs,
 ) (*receipting.ReceiptsResponse, error) {
-	query := q.store(ctx).ShopID(args.ShopID).Paging(args.Paging).Filters(args.Filters)
-	receipts, err := query.ListReceipts()
+	query := q.store(ctx).ShopID(args.ShopID).Filters(args.Filters)
+	receipts, err := query.Paging(args.Paging).ListReceipts()
 	if err != nil {
 		return nil, err
 	}
+
 	count, err := query.Count()
 	if err != nil {
 		return nil, err
 	}
+
+	totalAmountConfirmedReceipt, totalAmountConfirmedPayment, err := query.Status(model.S3Positive).SumAmountReceiptAndPayment()
+	if err != nil {
+		return nil, err
+	}
+
 	return &receipting.ReceiptsResponse{
-		Receipts: receipts,
-		Count:    int32(count),
+		Receipts:                    receipts,
+		Count:                       int32(count),
+		TotalAmountConfirmedReceipt: totalAmountConfirmedReceipt,
+		TotalAmountConfirmedPayment: totalAmountConfirmedPayment,
 	}, nil
 }
 
@@ -66,10 +77,10 @@ func (q *ReceiptQuery) ListReceiptsByIDs(context.Context, *shopping.IDsQueryShop
 	panic("implement me")
 }
 
-func (q *ReceiptQuery) ListReceiptsByRefIDs(
-	ctx context.Context, args *shopping.IDsQueryShopArgs,
+func (q *ReceiptQuery) ListReceiptsByRefIDsAndStatus(
+	ctx context.Context, args *receipting.ListReceiptsByRefIDsAndStatusArgs,
 ) (*receipting.ReceiptsResponse, error) {
-	receipts, err := q.store(ctx).ShopID(args.ShopID).RefIDs(args.IDs...).ListReceipts()
+	receipts, err := q.store(ctx).ShopID(args.ShopID).RefIDs(args.RefIDs...).Status(model.Status3(args.Status)).ListReceipts()
 	if err != nil {
 		return nil, err
 	}
@@ -91,7 +102,26 @@ func (q *ReceiptQuery) ListReceiptsByTraderIDs(
 func (q *ReceiptQuery) ListReceiptsByLedgerIDs(
 	ctx context.Context, args *receipting.ListReceiptsByLedgerIDsArgs,
 ) (*receipting.ReceiptsResponse, error) {
-	receipts, err := q.store(ctx).ShopID(args.ShopID).LedgerIDs(args.LedgerIDs...).
-		Paging(args.Paging).Filters(args.Filters).ListReceipts()
-	return &receipting.ReceiptsResponse{Receipts: receipts}, err
+	query := q.store(ctx).ShopID(args.ShopID).LedgerIDs(args.LedgerIDs...).Filters(args.Filters)
+	receipts, err := query.Paging(args.Paging).ListReceipts()
+	if err != nil {
+		return nil, err
+	}
+
+	count, err := query.Count()
+	if err != nil {
+		return nil, err
+	}
+
+	totalAmountConfirmedReceipt, totalAmountConfirmedPayment, err := query.Status(model.S3Positive).SumAmountReceiptAndPayment()
+	if err != nil {
+		return nil, err
+	}
+
+	return &receipting.ReceiptsResponse{
+		Receipts:                    receipts,
+		Count:                       int32(count),
+		TotalAmountConfirmedReceipt: totalAmountConfirmedReceipt,
+		TotalAmountConfirmedPayment: totalAmountConfirmedPayment,
+	}, nil
 }

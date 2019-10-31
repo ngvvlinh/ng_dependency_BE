@@ -3,10 +3,6 @@ package shop
 import (
 	"context"
 
-	cm "etop.vn/backend/pkg/common"
-
-	"etop.vn/api/main/receipting"
-
 	"etop.vn/api/main/ledgering"
 	pbcm "etop.vn/backend/pb/common"
 	pbshop "etop.vn/backend/pb/etop/shop"
@@ -73,22 +69,6 @@ func CreateLedger(ctx context.Context, r *wrapshop.CreateLedgerEndpoint) error {
 }
 
 func UpdateLedger(ctx context.Context, r *wrapshop.UpdateLedgerEndpoint) error {
-	query := &ledgering.GetLedgerByIDQuery{
-		ID:     r.Id,
-		ShopID: r.Context.Shop.ID,
-	}
-	err := ledgerQuery.Dispatch(ctx, query)
-	switch cm.ErrorCode(err) {
-	case cm.NotFound:
-		return cm.Errorf(cm.NotFound, err, "sổ quỹ không tồn tại")
-	case cm.NoError:
-		if query.Result.Type == string(ledgering.LedgerTypeCash) {
-			return cm.Errorf(cm.FailedPrecondition, nil, "bạn không được sửa sổ quỹ mặc định")
-		}
-	default:
-		return err
-	}
-
 	cmd := &ledgering.UpdateLedgerCommand{
 		ID:          r.Id,
 		ShopID:      r.Context.Shop.ID,
@@ -105,17 +85,6 @@ func UpdateLedger(ctx context.Context, r *wrapshop.UpdateLedgerEndpoint) error {
 }
 
 func DeleteLedger(ctx context.Context, r *wrapshop.DeleteLedgerEndpoint) error {
-	query := &receipting.ListReceiptsByLedgerIDsQuery{
-		ShopID:    r.Context.Shop.ID,
-		LedgerIDs: []int64{r.Id},
-	}
-	if err := receiptQuery.Dispatch(ctx, query); err != nil {
-		return err
-	}
-	if len(query.Result.Receipts) != 0 {
-		return cm.Errorf(cm.InvalidArgument, nil, "sổ quỹ đã được được sử dụng, không thể xóa")
-	}
-
 	cmd := &ledgering.DeleteLedgerCommand{
 		ID:     r.Id,
 		ShopID: r.Context.Shop.ID,

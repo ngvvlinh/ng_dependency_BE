@@ -382,7 +382,6 @@ var ACL = map[string]*permission.PermissionDecl{
 	//-- Receipt --//
 	"shop.Receipt/CreateReceipt":           {Type: Shop},
 	"shop.Receipt/UpdateReceipt":           {Type: Shop},
-	"shop.Receipt/DeleteReceipt":           {Type: Shop},
 	"shop.Receipt/GetReceipt":              {Type: Shop},
 	"shop.Receipt/GetReceipts":             {Type: Shop},
 	"shop.Receipt/GetReceiptsByLedgerType": {Type: Shop},

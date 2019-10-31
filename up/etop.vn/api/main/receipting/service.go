@@ -24,7 +24,7 @@ type QueryService interface {
 	GetReceiptByCode(ctx context.Context, code string, shopID int64) (*Receipt, error)
 	ListReceipts(context.Context, *shopping.ListQueryShopArgs) (*ReceiptsResponse, error)
 	ListReceiptsByIDs(context.Context, *shopping.IDsQueryShopArgs) (*ReceiptsResponse, error)
-	ListReceiptsByRefIDs(context.Context, *shopping.IDsQueryShopArgs) (*ReceiptsResponse, error)
+	ListReceiptsByRefIDsAndStatus(context.Context, *ListReceiptsByRefIDsAndStatusArgs) (*ReceiptsResponse, error)
 	ListReceiptsByTraderIDs(ctx context.Context, shopID int64, traderIDs []int64) (*ReceiptsResponse, error)
 	ListReceiptsByLedgerIDs(context.Context, *ListReceiptsByLedgerIDsArgs) (*ReceiptsResponse, error)
 }
@@ -32,9 +32,11 @@ type QueryService interface {
 //-- queries --//
 
 type ReceiptsResponse struct {
-	Receipts []*Receipt
-	Count    int32
-	Paging   meta.PageInfo
+	Receipts                    []*Receipt
+	Count                       int32
+	TotalAmountConfirmedReceipt int64
+	TotalAmountConfirmedPayment int64
+	Paging                      meta.PageInfo
 }
 
 //-- commands --//
@@ -53,7 +55,7 @@ type CreateReceiptArgs struct {
 	Lines       []*ReceiptLine
 	PaidAt      time.Time
 	CreatedBy   int64
-	CreatedType string
+	CreatedType ReceiptCreatedType
 }
 
 // +convert:update=Receipt(ID,ShopID)
@@ -68,7 +70,6 @@ type UpdateReceiptArgs struct {
 	RefIDs      []int64
 	Lines       []*ReceiptLine
 	PaidAt      time.Time
-	CreatedType NullString
 }
 
 type CancelReceiptArgs struct {
@@ -87,4 +88,12 @@ type ListReceiptsByLedgerIDsArgs struct {
 	LedgerIDs []int64
 	Paging    meta.Paging
 	Filters   meta.Filters
+}
+
+type ListReceiptsByRefIDsAndStatusArgs struct {
+	ShopID  int64
+	RefIDs  []int64
+	Status  int32
+	Paging  meta.Paging
+	Filters meta.Filters
 }

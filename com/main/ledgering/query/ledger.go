@@ -32,7 +32,7 @@ func (q *LedgerQuery) GetLedgerByID(ctx context.Context, args *shopping.IDQueryS
 	ledger, err := q.store(ctx).ID(args.ID).ShopID(args.ShopID).GetLedger()
 	if err != nil {
 		return nil, cm.MapError(err).
-			Wrap(cm.NotFound, "không tìm thấy sổ quỹ").
+			Wrap(cm.NotFound, "không tìm thấy tài khoản thanh toán").
 			Throw()
 	}
 
@@ -76,9 +76,9 @@ func (q *LedgerQuery) ListLedgersByIDs(
 }
 
 func (q *LedgerQuery) ListLedgersByType(
-	ctx context.Context, ledgerType string, shopID int64,
+	ctx context.Context, ledgerType ledgering.LedgerType, shopID int64,
 ) (*ledgering.ShopLedgersResponse, error) {
-	query := q.store(ctx).ShopID(shopID).Type(ledgerType)
+	query := q.store(ctx).ShopID(shopID).Type(string(ledgerType))
 	ledgers, err := query.ListLedgers()
 	if err != nil {
 		return nil, err
@@ -91,4 +91,14 @@ func (q *LedgerQuery) ListLedgersByType(
 		Ledgers: ledgers,
 		Count:   int32(count),
 	}, nil
+}
+
+func (q *LedgerQuery) GetLedgerByAccountNumber(
+	ctx context.Context, accountNumber string, shopID int64,
+) (*ledgering.ShopLedger, error) {
+	ledger, err := q.store(ctx).ShopID(shopID).AccountNumber(accountNumber).GetLedger()
+	if err != nil {
+		return nil, err
+	}
+	return ledger, nil
 }

@@ -44,12 +44,16 @@ func GenerateCode(codeNorm int) string {
 func createReceipt(args *receipting.CreateReceiptArgs, out *receipting.Receipt) {
 	apply_receipting_CreateReceiptArgs_receipting_Receipt(args, out)
 	out.ID = cm.NewID()
-	out.Lines = args.Lines
 }
 
 func updateReceipt(args *receipting.UpdateReceiptArgs, out *receipting.Receipt) {
+	if len(args.Lines) == 0 {
+		args.Lines = out.Lines
+	}
+	if args.PaidAt.IsZero() {
+		args.PaidAt = out.PaidAt
+	}
 	apply_receipting_UpdateReceiptArgs_receipting_Receipt(args, out)
-	out.Lines = args.Lines
 	out.UpdatedAt = time.Now()
 }
 

@@ -278,9 +278,9 @@ func (s *CustomerService) listLiabilities(ctx context.Context, shopID int64, cus
 	}
 	for _, receipt := range getReceiptsByCustomerIDs.Result.Receipts {
 		switch receipt.Type {
-		case string(receipting.ReceiptTypeReceipt):
+		case receipting.ReceiptTypeReceipt:
 			mapCustomerIDAndTotalAmountReceipts[receipt.TraderID] += int64(receipt.Amount)
-		case string(receipting.ReceiptTypePayment):
+		case receipting.ReceiptTypePayment:
 			mapCustomerIDAndTotalAmountReceipts[receipt.TraderID] -= int64(receipt.Amount)
 		}
 	}

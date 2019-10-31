@@ -3,6 +3,8 @@ package aggregate
 import (
 	"context"
 
+	"etop.vn/api/main/receipting"
+
 	"etop.vn/api/main/identity"
 	"etop.vn/api/main/ledgering"
 	identityconvert "etop.vn/backend/com/main/identity/convert"
@@ -19,12 +21,14 @@ var _ ledgering.Aggregate = &LedgerAggregate{}
 var scheme = conversion.Build(convert.RegisterConversions)
 
 type LedgerAggregate struct {
-	store sqlstore.LedgerStoreFactory
+	store        sqlstore.LedgerStoreFactory
+	receiptQuery *receipting.QueryBus
 }
 
-func NewLedgerAggregate(db *cmsql.Database) *LedgerAggregate {
+func NewLedgerAggregate(db *cmsql.Database, receiptQuery *receipting.QueryBus) *LedgerAggregate {
 	return &LedgerAggregate{
-		store: sqlstore.NewLedgerStore(db),
+		store:        sqlstore.NewLedgerStore(db),
+		receiptQuery: receiptQuery,
 	}
 }
 
@@ -47,9 +51,9 @@ func (a *LedgerAggregate) CreateLedger(
 		args.BankAccount = nil
 	} else {
 		if args.BankAccount == nil {
-			return nil, cm.Errorf(cm.InvalidArgument, nil, "Sổ quỹ chuyển khoản không được bỏ trống thông tin tài khoản")
+			return nil, cm.Errorf(cm.InvalidArgument, nil, "Tài khoản thanh toán chuyển khoản không được bỏ trống thông tin tài khoản")
 		}
-		if err := verifyBankAccount(args.BankAccount); err != nil {
+		if err := a.verifyBankAccount(ctx, 0, args.ShopID, args.BankAccount); err != nil {
 			return nil, err
 		}
 	}
@@ -68,15 +72,15 @@ func (a *LedgerAggregate) UpdateLedger(
 	shopLedger, err := a.store(ctx).ID(args.ID).ShopID(args.ShopID).GetLedger()
 	if err != nil {
 		return nil, cm.MapError(err).
-			Wrap(cm.NotFound, "không tìm thấy sổ quỹ").
+			Wrap(cm.NotFound, "không tìm thấy tài khoản thanh toán").
 			Throw()
 	}
 
 	// ignore bankAccount where type equal "cash"
 	if shopLedger.Type == string(ledgering.LedgerTypeCash) {
-		args.BankAccount = nil
+		return nil, cm.Errorf(cm.FailedPrecondition, nil, "bạn không được sửa tài khoản thanh toán mặc định")
 	} else {
-		if err := verifyBankAccount(args.BankAccount); err != nil {
+		if err := a.verifyBankAccount(ctx, args.ID, args.ShopID, args.BankAccount); err != nil {
 			return nil, err
 		}
 		if args.BankAccount == nil {
@@ -98,7 +102,7 @@ func (a *LedgerAggregate) UpdateLedger(
 	return shopLedger, err
 }
 
-func verifyBankAccount(bankAccount *identity.BankAccount) error {
+func (a *LedgerAggregate) verifyBankAccount(ctx context.Context, ledgerID, shopID int64, bankAccount *identity.BankAccount) error {
 	if bankAccount == nil {
 		return nil
 	}
@@ -111,6 +115,18 @@ func verifyBankAccount(bankAccount *identity.BankAccount) error {
 	if bankAccount.AccountNumber == "" {
 		return cm.Errorf(cm.InvalidArgument, nil, "số tài khoản không được để trống")
 	}
+	ledger, err := a.store(ctx).ShopID(shopID).AccountNumber(bankAccount.AccountNumber).GetLedger()
+	switch cm.ErrorCode(err) {
+	case cm.NoError:
+		if ledger.ID != ledgerID {
+			return cm.Errorf(cm.FailedPrecondition, nil, "Số tài khoản này đã tồn tại trong shop")
+		}
+	case cm.NotFound:
+	// no-op
+	default:
+		return err
+	}
+
 	return nil
 }
 
@@ -125,6 +141,18 @@ func (a *LedgerAggregate) DeleteLedger(
 	}
 	if shopLedger.Type == string(ledgering.LedgerTypeCash) {
 		return 0, cm.Errorf(cm.FailedPrecondition, nil, "không thể xóa số quỹ mặc định")
+	}
+
+	// Check ledger_id exists into any receipts
+	query := &receipting.ListReceiptsByLedgerIDsQuery{
+		ShopID:    shopID,
+		LedgerIDs: []int64{ID},
+	}
+	if err := a.receiptQuery.Dispatch(ctx, query); err != nil {
+		return 0, err
+	}
+	if len(query.Result.Receipts) != 0 {
+		return 0, cm.Errorf(cm.FailedPrecondition, nil, "Tài khoản thanh toánF đã được được sử dụng, không thể xóa")
 	}
 
 	deleted, err = a.store(ctx).ID(ID).ShopID(shopID).SoftDelete()

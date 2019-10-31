@@ -4,6 +4,8 @@ import (
 	"time"
 )
 
+// +gen:event:topic=event/receipting
+
 type ReceiptType string
 type ReceiptCreatedType string
 
@@ -23,7 +25,7 @@ type Receipt struct {
 	Code        string
 	CodeNorm    int32
 	Title       string
-	Type        string
+	Type        ReceiptType
 	Description string
 	Amount      int32
 	Status      int32
@@ -34,7 +36,7 @@ type Receipt struct {
 	ConfirmedAt time.Time
 	CancelledAt time.Time
 	CreatedBy   int64
-	CreatedType string
+	CreatedType ReceiptCreatedType
 	CreatedAt   time.Time
 	UpdatedAt   time.Time
 }
