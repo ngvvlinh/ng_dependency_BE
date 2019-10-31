@@ -30,6 +30,9 @@ var AvailablePromotionTypes = []string{"cashback", "discount"}
 var AvailableDependOnValues = []string{"product", "customer"}
 var AvailableDurationTypes = []string{"day", "month", "year"}
 
+const DependOnProduct = "product"
+const DependOnCustomer = "customer"
+
 type Aggregate struct {
 	commissionSetting       sqlstore.CommissionSettingStoreFactory
 	supplyCommissionSetting sqlstore.SupplyCommissionSettingStoreFactory
@@ -378,6 +381,20 @@ func (a *Aggregate) CreateOrUpdateUserReferral(ctx context.Context, args *affili
 }
 
 func (a *Aggregate) CreateOrUpdateSupplyCommissionSetting(ctx context.Context, args *affiliate.CreateOrUpdateSupplyCommissionSettingArgs) (*affiliate.SupplyCommissionSetting, error) {
+	if args.DependOn == DependOnProduct {
+		args.Group = ""
+	}
+
+	if args.Level1LimitDurationType == "" {
+		args.Level1LimitDurationType = "day"
+		args.Level1LimitDuration = 0
+	}
+
+	if args.LifetimeDurationType == "" {
+		args.LifetimeDurationType = "day"
+		args.LifetimeDuration = 0
+	}
+
 	if args.ShopID == 0 {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "ShopID is invalid")
 	}
@@ -409,22 +426,25 @@ func (a *Aggregate) CreateOrUpdateSupplyCommissionSetting(ctx context.Context, a
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Giá trị số phải lớn hơn 0")
 	}
 
-	customerPolicyGroup, err := a.customerPolicyGroup(ctx).Name(args.Group).GetCustomerPolicyGroupDB()
-	if cm.ErrorCode(err) == cm.NotFound {
-		customerPolicyGroup = &model.CustomerPolicyGroup{
-			ID:        cm.NewID(),
-			SupplyID:  args.ShopID,
-			Name:      args.Group,
-			CreatedAt: time.Now(),
-			UpdatedAt: time.Now(),
+	customerPolicyGroupID := int64(0)
+	customerPolicyGroupName := args.Group
+	if customerPolicyGroupName != "" {
+		customerPolicyGroup, err := a.customerPolicyGroup(ctx).Name(customerPolicyGroupName).GetCustomerPolicyGroupDB()
+		if cm.ErrorCode(err) == cm.NotFound {
+			customerPolicyGroup = &model.CustomerPolicyGroup{
+				ID:        cm.NewID(),
+				SupplyID:  args.ShopID,
+				Name:      args.Group,
+				CreatedAt: time.Now(),
+				UpdatedAt: time.Now(),
+			}
+			err = a.customerPolicyGroup(ctx).CreateCustomerPolicyGroup(customerPolicyGroup)
+			if err != nil {
+				return nil, err
+			}
 		}
-		err = a.customerPolicyGroup(ctx).CreateCustomerPolicyGroup(customerPolicyGroup)
-		if err != nil {
-			return nil, err
-		}
+		customerPolicyGroupID = customerPolicyGroup.ID
 	}
-
-	ll.Info("CHECK CUSTOMER GROUP", l.Object("customerPolicyGroup", customerPolicyGroup))
 
 	var level1LimitDuration int64 = 0
 	var lifetimeDuration int64 = 0
@@ -469,13 +489,13 @@ func (a *Aggregate) CreateOrUpdateSupplyCommissionSetting(ctx context.Context, a
 			Duration: int32(args.LifetimeDuration),
 			Type:     args.LifetimeDurationType,
 		},
-		CustomerPolicyGroupID: customerPolicyGroup.ID,
-		Group:                 customerPolicyGroup.Name,
+		CustomerPolicyGroupID: customerPolicyGroupID,
+		Group:                 customerPolicyGroupName,
 		CreatedAt:             time.Now(),
 		UpdatedAt:             time.Now(),
 	}
 
-	_, err = a.supplyCommissionSetting(ctx).ProductID(args.ProductID).ShopID(args.ShopID).GetSupplyCommissionSettingDB()
+	_, err := a.supplyCommissionSetting(ctx).ProductID(args.ProductID).ShopID(args.ShopID).GetSupplyCommissionSettingDB()
 
 	if cm.ErrorCode(err) == cm.NotFound {
 		createOrUpdateErr = a.supplyCommissionSetting(ctx).CreateSupplyCommissionSetting(supplyCommissionSetting)
@@ -728,14 +748,14 @@ func (a *Aggregate) ProcessOrderNotify(ctx context.Context, orderCreatedNotifyID
 			var countByUser uint64 = math.MaxInt64
 			var countByProduct uint64 = math.MaxInt64
 
-			if orderCommissionSetting.DependOn == "customer" {
+			if orderCommissionSetting.DependOn == DependOnCustomer {
 				countByUser, err = a.shopOrderProductHistory(ctx).UserID(shopQ.Result.OwnerID).CustomerPolicyGroup(orderCommissionSetting.CustomerPolicyGroupID).Count()
 				if err != nil {
 					return err
 				}
 			}
 
-			if orderCommissionSetting.DependOn == "product" {
+			if orderCommissionSetting.DependOn == DependOnProduct {
 				countByProduct, err = a.shopOrderProductHistory(ctx).UserID(shopQ.Result.OwnerID).ProductID(line.ProductId).Count()
 				if err != nil {
 					return err
@@ -745,8 +765,8 @@ func (a *Aggregate) ProcessOrderNotify(ctx context.Context, orderCreatedNotifyID
 			var directCommission float64
 			var indirectCommission float64
 
-			if (orderCommissionSetting.DependOn == "product" && countByProduct < uint64(orderCommissionSetting.Level1LimitCount)) ||
-				(orderCommissionSetting.DependOn == "customer" && countByUser < uint64(orderCommissionSetting.Level1LimitCount)) {
+			if (orderCommissionSetting.DependOn == DependOnProduct && countByProduct < uint64(orderCommissionSetting.Level1LimitCount)) ||
+				(orderCommissionSetting.DependOn == DependOnCustomer && countByUser < uint64(orderCommissionSetting.Level1LimitCount)) {
 				directCommission = float64(orderCommissionSetting.Level1DirectCommission)
 				indirectCommission = float64(orderCommissionSetting.Level1IndirectCommission)
 			} else {
