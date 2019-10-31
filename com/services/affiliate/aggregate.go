@@ -158,7 +158,7 @@ func (a *Aggregate) UpdateProductPromotion(ctx context.Context, args *affiliate.
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "ID is missing")
 	}
 
-	if args.Amount <= 0 {
+	if args.Amount < 0 {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Amount must be greater than 0")
 	}
 	if !cm.StringsContain(AvailablePromotionTypes, args.Type) {
