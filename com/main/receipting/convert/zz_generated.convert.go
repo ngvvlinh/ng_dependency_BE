@@ -191,7 +191,7 @@ func apply_receipting_CreateReceiptArgs_receipting_Receipt(arg *receipting.Creat
 	out.RefIDs = arg.RefIDs           // simple assign
 	out.Lines = arg.Lines             // simple assign
 	out.PaidAt = arg.PaidAt           // simple assign
-	out.ConfirmedAt = time.Time{}     // zero value
+	out.ConfirmedAt = arg.ConfirmedAt // simple assign
 	out.CancelledAt = time.Time{}     // zero value
 	out.CreatedBy = arg.CreatedBy     // simple assign
 	out.CreatedType = arg.CreatedType // simple assign

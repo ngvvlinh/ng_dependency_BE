@@ -79,6 +79,7 @@ type CreateReceiptCommand struct {
 	PaidAt      time.Time
 	CreatedBy   int64
 	CreatedType ReceiptCreatedType
+	ConfirmedAt time.Time
 
 	Result *Receipt `json:"-"`
 }
@@ -271,6 +272,7 @@ func (q *CreateReceiptCommand) GetArgs(ctx context.Context) (_ context.Context, 
 			PaidAt:      q.PaidAt,
 			CreatedBy:   q.CreatedBy,
 			CreatedType: q.CreatedType,
+			ConfirmedAt: q.ConfirmedAt,
 		}
 }
 
@@ -288,6 +290,7 @@ func (q *CreateReceiptCommand) SetCreateReceiptArgs(args *CreateReceiptArgs) {
 	q.PaidAt = args.PaidAt
 	q.CreatedBy = args.CreatedBy
 	q.CreatedType = args.CreatedType
+	q.ConfirmedAt = args.ConfirmedAt
 }
 
 func (q *DeleteReceiptCommand) GetArgs(ctx context.Context) (_ context.Context, ID int64, shopID int64) {

@@ -5,6 +5,8 @@ import (
 	"strings"
 	"time"
 
+	"etop.vn/capi"
+
 	notisqlstore "etop.vn/backend/com/handler/notifier/sqlstore"
 	catalogsqlstore "etop.vn/backend/com/main/catalog/sqlstore"
 	cm "etop.vn/backend/pkg/common"
@@ -23,6 +25,7 @@ var (
 	ll                = l.New()
 	deviceStore       *notisqlstore.DeviceStore
 	notificationStore *notisqlstore.NotificationStore
+	eventBus          capi.EventBus
 )
 
 type (
@@ -40,8 +43,11 @@ func Init(db *cmsql.Database) {
 		}
 	}
 	x = db
-
 	shopProductStore = catalogsqlstore.NewShopProductStore(db)
+}
+
+func AddEventBus(_eventBus capi.EventBus) {
+	eventBus = _eventBus
 }
 
 func InitDBNotifier(db *cmsql.Database) {

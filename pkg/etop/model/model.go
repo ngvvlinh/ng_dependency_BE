@@ -136,11 +136,13 @@ const (
 	TagEtop      = 101
 	TagImport    = 111
 
-	EtopAccountID        = TagEtop
-	EtopTradingAccountID = 1000015764575267699
-	StatusActive         = 1
-	StatusCreated        = 0
-	StatusDisabled       = -1
+	EtopAccountID         = TagEtop
+	EtopTradingAccountID  = 1000015764575267699
+	TopShipID             = 1000030662086749358
+	IndependentCustomerID = 1000080135776788835
+	StatusActive          = 1
+	StatusCreated         = 0
+	StatusDisabled        = -1
 
 	StateDefault    ShippingState = "default"    //  0
 	StateCreated    ShippingState = "created"    //  2

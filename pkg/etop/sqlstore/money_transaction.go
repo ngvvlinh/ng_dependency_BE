@@ -6,6 +6,7 @@ import (
 	"strconv"
 	"time"
 
+	"etop.vn/api/main/receipting"
 	txmodel "etop.vn/backend/com/main/moneytx/model"
 	"etop.vn/backend/com/main/moneytx/modelx"
 	txmodely "etop.vn/backend/com/main/moneytx/modely"
@@ -502,6 +503,14 @@ func ConfirmMoneyTransaction(ctx context.Context, cmd *modelx.ConfirmMoneyTransa
 			return err
 		}
 		cmd.Result.Updated = 1
+
+		event := &receipting.MoneyTransactionConfirmedEvent{
+			ShopID:             cmd.ShopID,
+			MoneyTransactionID: cmd.MoneyTransactionID,
+		}
+		if err := eventBus.Publish(ctx, event); err != nil {
+			return err
+		}
 
 		return nil
 	})

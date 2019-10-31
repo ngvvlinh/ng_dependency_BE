@@ -34,6 +34,7 @@ import (
 	serviceorderingpm "etop.vn/backend/com/main/ordering/pm"
 	ordersqlstore "etop.vn/backend/com/main/ordering/sqlstore"
 	receiptaggregate "etop.vn/backend/com/main/receipting/aggregate"
+	receiptpm "etop.vn/backend/com/main/receipting/pm"
 	receiptquery "etop.vn/backend/com/main/receipting/query"
 	serviceshipnow "etop.vn/backend/com/main/shipnow"
 	shipnowcarrier "etop.vn/backend/com/main/shipnow-carrier"
@@ -211,7 +212,10 @@ func main() {
 	if err != nil {
 		ll.Fatal("Unable to connect to Postgres", l.Error(err))
 	}
+
+	eventBus := bus.New()
 	sqlstore.Init(db)
+	sqlstore.AddEventBus(eventBus)
 	summary.Init(db)
 
 	dbLogs, err = cmsql.Connect(cfg.PostgresLogs)
@@ -304,7 +308,6 @@ func main() {
 		DirExport: cfg.Export.DirExport,
 	})
 
-	eventBus := bus.New()
 	crmDB, err := cmsql.Connect(cfg.PostgresCRM)
 	if err != nil {
 		ll.Fatal("Unable to connect to Postgres", l.Error(err))
@@ -361,8 +364,10 @@ func main() {
 	ledgerPM := ledgerpm.New(eventBus, ledgerAggr)
 	ledgerPM.RegisterEventHandlers(eventBus)
 
-	receiptAggr := receiptaggregate.NewReceiptAggregate(db, eventBus, traderQuery, ledgerQuery, orderQuery).MessageBus()
+	receiptAggr := receiptaggregate.NewReceiptAggregate(db, eventBus, traderQuery, ledgerQuery, orderQuery, customerQuery).MessageBus()
 	receiptQuery = receiptquery.NewReceiptQuery(db).MessageBus()
+	receiptPM := receiptpm.New(eventBus, receiptQuery, receiptAggr, ledgerQuery, ledgerAggr)
+	receiptPM.RegisterEventHandlers(eventBus)
 
 	vendorPM := vendorpm.New(eventBus, vendorQuery)
 	vendorPM.RegisterEventHandlers(eventBus)

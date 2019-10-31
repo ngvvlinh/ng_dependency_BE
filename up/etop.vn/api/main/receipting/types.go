@@ -2,6 +2,8 @@ package receipting
 
 import (
 	"time"
+
+	"etop.vn/api/meta"
 )
 
 // +gen:event:topic=event/receipting
@@ -55,4 +57,10 @@ func (r *Receipt) GetRefIDs() []int64 {
 		}
 	}
 	return ids
+}
+
+type MoneyTransactionConfirmedEvent struct {
+	meta.EventMeta
+	ShopID             int64
+	MoneyTransactionID int64
 }

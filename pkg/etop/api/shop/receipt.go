@@ -296,9 +296,17 @@ func listTraders(
 	traderIDs []int64, receiptsResult []*pbshop.Receipt,
 ) error {
 	mapVendor := make(map[int64]*vendoring.ShopVendor)
-	var vendorIDs, customerIDs, carrierIDs []int64
 	mapCustomer := make(map[int64]*customering.ShopCustomer)
 	mapCarrier := make(map[int64]*carrying.ShopCarrier)
+	var vendorIDs, customerIDs, carrierIDs []int64
+	for _, traderID := range traderIDs {
+		if traderID == model.IndependentCustomerID {
+			customerIDs = append(customerIDs, traderID)
+		}
+		if traderID == model.TopShipID {
+			carrierIDs = append(carrierIDs, traderID)
+		}
+	}
 	getTradersByIDsQuery := &tradering.ListTradersByIDsQuery{
 		ShopID: shopID,
 		IDs:    traderIDs,
@@ -340,6 +348,24 @@ func listTraders(
 		for _, customer := range query.Result.Customers {
 			mapCustomer[customer.ID] = customer
 		}
+
+		var hasIndependentCustomerID bool
+		for _, customerID := range customerIDs {
+			if customerID == model.IndependentCustomerID {
+				hasIndependentCustomerID = true
+				break
+			}
+		}
+
+		if hasIndependentCustomerID {
+			getIndependentCustomerQuery := &customering.GetCustomerByIDQuery{
+				ID: model.IndependentCustomerID,
+			}
+			if err := customerQuery.Dispatch(ctx, getIndependentCustomerQuery); err != nil {
+				return err
+			}
+			mapCustomer[model.IndependentCustomerID] = getIndependentCustomerQuery.Result
+		}
 	}
 	if carrierIDs != nil && len(carrierIDs) > 0 {
 		query := &carrying.ListCarriersByIDsQuery{
@@ -351,6 +377,23 @@ func listTraders(
 		}
 		for _, carrier := range query.Result.Carriers {
 			mapCarrier[carrier.ID] = carrier
+		}
+
+		var hasTopShipID bool
+		for _, carrierID := range carrierIDs {
+			if carrierID == model.TopShipID {
+				hasTopShipID = true
+				break
+			}
+		}
+		if hasTopShipID {
+			getTopShipCarrierQuery := &carrying.GetCarrierByIDQuery{
+				ID: model.TopShipID,
+			}
+			if err := carrierQuery.Dispatch(ctx, getTopShipCarrierQuery); err != nil {
+				return err
+			}
+			mapCarrier[model.TopShipID] = getTopShipCarrierQuery.Result
 		}
 	}
 	for _, receipt := range receiptsResult {

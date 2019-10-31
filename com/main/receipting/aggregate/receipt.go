@@ -3,6 +3,8 @@ package aggregate
 import (
 	"context"
 
+	"etop.vn/api/shopping/customering"
+
 	"etop.vn/api/main/ledgering"
 	"etop.vn/api/main/ordering"
 	"etop.vn/api/main/receipting"
@@ -23,24 +25,26 @@ var _ receipting.Aggregate = &ReceiptAggregate{}
 var scheme = conversion.Build(convert.RegisterConversions)
 
 type ReceiptAggregate struct {
-	store       sqlstore.ReceiptStoreFactory
-	eventBus    capi.EventBus
-	traderQuery tradering.QueryBus
-	ledgerQuery ledgering.QueryBus
-	orderQuery  ordering.QueryBus
+	store         sqlstore.ReceiptStoreFactory
+	eventBus      capi.EventBus
+	traderQuery   tradering.QueryBus
+	ledgerQuery   ledgering.QueryBus
+	orderQuery    ordering.QueryBus
+	customerQuery customering.QueryBus
 }
 
 func NewReceiptAggregate(
 	db *cmsql.Database, eventBus capi.EventBus,
 	traderQuery tradering.QueryBus, ledgerQuery ledgering.QueryBus,
-	orderQuery ordering.QueryBus,
+	orderQuery ordering.QueryBus, customerQuery customering.QueryBus,
 ) *ReceiptAggregate {
 	return &ReceiptAggregate{
-		store:       sqlstore.NewReceiptStore(db),
-		eventBus:    eventBus,
-		traderQuery: traderQuery,
-		ledgerQuery: ledgerQuery,
-		orderQuery:  orderQuery,
+		store:         sqlstore.NewReceiptStore(db),
+		eventBus:      eventBus,
+		traderQuery:   traderQuery,
+		ledgerQuery:   ledgerQuery,
+		orderQuery:    orderQuery,
+		customerQuery: customerQuery,
 	}
 }
 
@@ -129,7 +133,9 @@ func (a *ReceiptAggregate) UpdateReceipt(
 		LedgerID:    args.LedgerID.Int64,
 	}
 	if receipt.Status == int32(etopmodel.S3Zero) {
-		receiptNeedValidate.TraderID = args.TraderID.Int64
+		if args.TraderID.Int64 != receipt.TraderID {
+			receiptNeedValidate.TraderID = args.TraderID.Int64
+		}
 		receiptNeedValidate.Amount = args.Amount.Int32
 		receiptNeedValidate.Lines = args.Lines
 		receiptNeedValidate.PaidAt = args.PaidAt
@@ -172,16 +178,39 @@ func (a *ReceiptAggregate) validateReceiptForCreateOrUpdate(ctx context.Context,
 	var traderType string
 	// validate TraderID
 	if receipt.TraderID != 0 {
-		query := &tradering.GetTraderByIDQuery{
-			ID:     receipt.TraderID,
-			ShopID: shopID,
+		switch receipt.TraderID {
+		case etopmodel.TopShipID:
+			traderType = tradering.CarrierType
+		case etopmodel.IndependentCustomerID:
+			traderType = tradering.CustomerType
+		default:
+			query := &tradering.GetTraderByIDQuery{
+				ID:     receipt.TraderID,
+				ShopID: shopID,
+			}
+			if err := a.traderQuery.Dispatch(ctx, query); err != nil {
+				return cm.MapError(err).
+					Map(cm.NotFound, cm.FailedPrecondition, "Đối tác không hợp lệ").
+					Throw()
+			}
+			traderType = query.Result.Type
+
+			switch traderType {
+			case tradering.CustomerType:
+				query := &customering.GetCustomerByIDQuery{
+					ID:     receipt.TraderID,
+					ShopID: shopID,
+				}
+				err := a.customerQuery.Dispatch(ctx, query)
+				if err != nil {
+					return cm.MapError(err).
+						Map(cm.NotFound, cm.FailedPrecondition, "Đối tác không hợp lệ").
+						Throw()
+				}
+			case tradering.CarrierType, tradering.VendorType:
+				// TODO:
+			}
 		}
-		if err := a.traderQuery.Dispatch(ctx, query); err != nil {
-			return cm.MapError(err).
-				Map(cm.NotFound, cm.FailedPrecondition, "Đối tác không hợp lệ").
-				Throw()
-		}
-		traderType = query.Result.Type
 	}
 
 	// Validate ledger
@@ -226,10 +255,9 @@ func (a *ReceiptAggregate) validateReceiptLines(ctx context.Context, traderType 
 
 	switch traderType {
 	case tradering.CustomerType:
-		query := &ordering.GetOrdersByIDsAndCustomerIDQuery{
-			ShopID:     receipt.ShopID,
-			IDs:        refIDs,
-			CustomerID: receipt.TraderID,
+		query := &ordering.GetOrdersQuery{
+			ShopID: receipt.ShopID,
+			IDs:    refIDs,
 		}
 		if err := a.orderQuery.Dispatch(ctx, query); err != nil {
 			return err

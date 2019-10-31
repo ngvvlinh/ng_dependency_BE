@@ -35,6 +35,9 @@ func (q *CustomerQuery) GetCustomerByID(
 	ctx context.Context, args *shopping.IDQueryShopArg,
 ) (*customering.ShopCustomer, error) {
 	customer, err := q.store(ctx).ID(args.ID).OptionalShopID(args.ShopID).GetCustomer()
+	if err != nil {
+		return nil, err
+	}
 	q1 := q.customerGroupCustomerStore(ctx).CustomerID(args.ID)
 	customerGroups, err := q1.ListShopCustomerGroupsCustomerByCustomerID()
 	if err != nil {

@@ -56,6 +56,7 @@ type CreateReceiptArgs struct {
 	PaidAt      time.Time
 	CreatedBy   int64
 	CreatedType ReceiptCreatedType
+	ConfirmedAt time.Time
 }
 
 // +convert:update=Receipt(ID,ShopID)
