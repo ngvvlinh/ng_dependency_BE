@@ -1,4 +1,4 @@
-package main
+package acl
 
 import (
 	"strings"
@@ -9,14 +9,18 @@ import (
 func init() {
 	ACL2 := make(map[string]*permission.PermissionDecl)
 	for key, p := range ACL {
-		key2 := strings.TrimSpace(key)
-		idx := strings.LastIndex(key2, "/")
-		key2 = key2[:idx] + "Service" + key2[idx:]
-
+		key2 := ConvertKey(key)
 		delete(ACL, key)
 		ACL2[key2] = p
 	}
 	ACL = ACL2
+}
+
+func ConvertKey(key string) string {
+	key2 := strings.TrimSpace(key)
+	idx := strings.LastIndex(key2, "/")
+	key2 = key2[:idx] + "Service" + key2[idx:]
+	return key2
 }
 
 const (

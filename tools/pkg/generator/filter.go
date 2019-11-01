@@ -5,7 +5,7 @@ import "golang.org/x/tools/go/packages"
 type FilteringPackage struct {
 	PkgPath    string
 	Imports    map[string]*packages.Package
-	Directives []Directive
+	Directives Directives
 
 	ng *filterEngine
 }

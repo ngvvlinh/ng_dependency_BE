@@ -12,6 +12,7 @@ import (
 	"etop.vn/backend/tools/pkg/generators/cq"
 	"etop.vn/backend/tools/pkg/generators/event"
 	"etop.vn/backend/tools/pkg/generators/sample"
+	"etop.vn/backend/tools/pkg/generators/wrapper"
 )
 
 var flClean = flag.Bool("clean", false, "clean generated files without generating new files")
@@ -35,6 +36,7 @@ func main() {
 		cq.New(),
 		event.New(),
 		sample.New(),
+		wrapper.New(),
 	}
 
 	flag.Parse()

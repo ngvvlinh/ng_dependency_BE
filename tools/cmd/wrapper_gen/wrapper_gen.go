@@ -8,6 +8,8 @@ import (
 	"strings"
 	"text/template"
 
+	"etop.vn/backend/pkg/etop/authorize/permission"
+	"etop.vn/backend/tools/pkg/acl"
 	"etop.vn/backend/tools/pkg/gen"
 	"etop.vn/backend/tools/pkg/grpcgen"
 )
@@ -174,8 +176,8 @@ func toPascalCase(name string) string {
 
 func hasSecret(pkgName string) bool {
 	prefix := pkgName + "."
-	for k, perm := range ACL {
-		if strings.HasPrefix(k, prefix) && perm.Type == Secret {
+	for k, perm := range acl.ACL {
+		if strings.HasPrefix(k, prefix) && perm.Type == permission.Secret {
 			return true
 		}
 	}

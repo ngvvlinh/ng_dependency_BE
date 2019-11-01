@@ -10,10 +10,9 @@ import (
 	"syscall"
 	"time"
 
-	"etop.vn/api/main/receipting"
-
 	"etop.vn/api/main/identity"
 	"etop.vn/api/main/ordering"
+	"etop.vn/api/main/receipting"
 	"etop.vn/api/main/shipnow"
 	"etop.vn/backend/cmd/etop-server/config"
 	haravanidentity "etop.vn/backend/com/external/haravan/identity"

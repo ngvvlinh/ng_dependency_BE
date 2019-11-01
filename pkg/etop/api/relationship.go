@@ -11,7 +11,6 @@ import (
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/etop/logic/relationship"
 	"etop.vn/backend/pkg/etop/model"
-	wrapetop "etop.vn/backend/wrapper/etop"
 	"etop.vn/common/l"
 )
 
@@ -29,7 +28,7 @@ type RelationshipService struct{}
 
 var relationshipService = &RelationshipService{}
 
-func (s *RelationshipService) AnswerInvitation(ctx context.Context, r *wrapetop.AnswerInvitationEndpoint) error {
+func (s *RelationshipService) AnswerInvitation(ctx context.Context, r *AnswerInvitationEndpoint) error {
 	resp, err := s.answerInvitation(ctx, r)
 	if err != nil {
 		return err
@@ -38,7 +37,7 @@ func (s *RelationshipService) AnswerInvitation(ctx context.Context, r *wrapetop.
 	return nil
 }
 
-func (s *RelationshipService) answerInvitation(ctx context.Context, r *wrapetop.AnswerInvitationEndpoint) (*wrapetop.AnswerInvitationEndpoint, error) {
+func (s *RelationshipService) answerInvitation(ctx context.Context, r *AnswerInvitationEndpoint) (*AnswerInvitationEndpoint, error) {
 	if r.AccountId == 0 {
 		return r, cm.Error(cm.InvalidArgument, "Missing Name", nil)
 	}
@@ -111,7 +110,7 @@ func (s *RelationshipService) answerInvitation(ctx context.Context, r *wrapetop.
 	return r, nil
 }
 
-func (s *RelationshipService) GetUsersInCurrentAccounts(ctx context.Context, r *wrapetop.GetUsersInCurrentAccountsEndpoint) error {
+func (s *RelationshipService) GetUsersInCurrentAccounts(ctx context.Context, r *GetUsersInCurrentAccountsEndpoint) error {
 	accountIDs, err := MixAccount(r.Context.Claim, r.Mixed)
 	if err != nil {
 		return err
@@ -134,7 +133,7 @@ func (s *RelationshipService) GetUsersInCurrentAccounts(ctx context.Context, r *
 	return nil
 }
 
-func (s *RelationshipService) InviteUserToAccount(ctx context.Context, r *wrapetop.InviteUserToAccountEndpoint) error {
+func (s *RelationshipService) InviteUserToAccount(ctx context.Context, r *InviteUserToAccountEndpoint) error {
 	key := fmt.Sprintf("InviteUserToAccount %v-%v", r.Context.User.ID, r.InviteeIdentifier)
 	resp, err := idempgroup.DoAndWrap(key, 10*time.Second, func() (interface{}, error) {
 		return s.inviteUserToAccount(ctx, r)
@@ -143,11 +142,11 @@ func (s *RelationshipService) InviteUserToAccount(ctx context.Context, r *wrapet
 	if err != nil {
 		return err
 	}
-	r.Result = resp.(*wrapetop.InviteUserToAccountEndpoint).Result
+	r.Result = resp.(*InviteUserToAccountEndpoint).Result
 	return nil
 }
 
-func (s *RelationshipService) inviteUserToAccount(ctx context.Context, r *wrapetop.InviteUserToAccountEndpoint) (*wrapetop.InviteUserToAccountEndpoint, error) {
+func (s *RelationshipService) inviteUserToAccount(ctx context.Context, r *InviteUserToAccountEndpoint) (*InviteUserToAccountEndpoint, error) {
 
 	inviter := r.Context.User.User
 	accountQuery := &model.GetAccountRolesQuery{
@@ -188,10 +187,10 @@ func (s *RelationshipService) inviteUserToAccount(ctx context.Context, r *wrapet
 	return r, nil
 }
 
-func (s *RelationshipService) LeaveAccount(ctx context.Context, r *wrapetop.LeaveAccountEndpoint) error {
+func (s *RelationshipService) LeaveAccount(ctx context.Context, r *LeaveAccountEndpoint) error {
 	return nil
 }
 
-func (s *RelationshipService) RemoveUserFromCurrentAccount(ctx context.Context, r *wrapetop.RemoveUserFromCurrentAccountEndpoint) error {
+func (s *RelationshipService) RemoveUserFromCurrentAccount(ctx context.Context, r *RemoveUserFromCurrentAccountEndpoint) error {
 	return nil
 }

@@ -23,7 +23,9 @@
         "etop.vn/backend/pkg/models",
         "etop.vn/backend/pkg/notifier/model",
         "etop.vn/backend/pkg/services",
-        "etop.vn/backend/wrapper"
+        "etop.vn/backend/wrapper",
+        "etop.vn/backend/zexp/api",
+        "etop.vn/backend/pkg/etop/eventstream"
       ],
       "ForbiddenPrefixes": [
       ]

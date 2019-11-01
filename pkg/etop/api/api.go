@@ -5,15 +5,16 @@ import (
 
 	"etop.vn/api/main/location"
 	servicelocation "etop.vn/backend/com/main/location"
+	pbcm "etop.vn/backend/pb/common"
+	pbetop "etop.vn/backend/pb/etop"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/backend/pkg/integration/bank"
 	"etop.vn/common/l"
-
-	pbcm "etop.vn/backend/pb/common"
-	pbetop "etop.vn/backend/pb/etop"
-	wrapetop "etop.vn/backend/wrapper/etop"
 )
+
+// +gen:wrapper=etop.vn/backend/pb/etop
+// +gen:wrapper:package=etop
 
 func init() {
 	bus.AddHandlers("api",
@@ -47,7 +48,7 @@ var locationService = &LocationService{}
 var bankService = &BankService{}
 var addressService = &AddressService{}
 
-func (s *MiscService) VersionInfo(ctx context.Context, q *wrapetop.VersionInfoEndpoint) error {
+func (s *MiscService) VersionInfo(ctx context.Context, q *VersionInfoEndpoint) error {
 	q.Result = &pbcm.VersionInfoResponse{
 		Service: "etop",
 		Version: "0.1",
@@ -55,7 +56,7 @@ func (s *MiscService) VersionInfo(ctx context.Context, q *wrapetop.VersionInfoEn
 	return nil
 }
 
-func (s *LocationService) GetProvinces(ctx context.Context, q *wrapetop.GetProvincesEndpoint) error {
+func (s *LocationService) GetProvinces(ctx context.Context, q *GetProvincesEndpoint) error {
 	query := &location.GetAllLocationsQuery{All: true}
 	if err := locationBus.Dispatch(ctx, query); err != nil {
 		return err
@@ -66,7 +67,7 @@ func (s *LocationService) GetProvinces(ctx context.Context, q *wrapetop.GetProvi
 	return nil
 }
 
-func (s *LocationService) GetDistricts(ctx context.Context, q *wrapetop.GetDistrictsEndpoint) error {
+func (s *LocationService) GetDistricts(ctx context.Context, q *GetDistrictsEndpoint) error {
 	query := &location.GetAllLocationsQuery{All: true}
 	if err := locationBus.Dispatch(ctx, query); err != nil {
 		return err
@@ -77,7 +78,7 @@ func (s *LocationService) GetDistricts(ctx context.Context, q *wrapetop.GetDistr
 	return nil
 }
 
-func (s *LocationService) GetDistrictsByProvince(ctx context.Context, q *wrapetop.GetDistrictsByProvinceEndpoint) error {
+func (s *LocationService) GetDistrictsByProvince(ctx context.Context, q *GetDistrictsByProvinceEndpoint) error {
 	query := &location.GetAllLocationsQuery{ProvinceCode: q.ProvinceCode}
 	if err := locationBus.Dispatch(ctx, query); err != nil {
 		return err
@@ -88,7 +89,7 @@ func (s *LocationService) GetDistrictsByProvince(ctx context.Context, q *wrapeto
 	return nil
 }
 
-func (s *LocationService) GetWards(ctx context.Context, q *wrapetop.GetWardsEndpoint) error {
+func (s *LocationService) GetWards(ctx context.Context, q *GetWardsEndpoint) error {
 	query := &location.GetAllLocationsQuery{All: true}
 	if err := locationBus.Dispatch(ctx, query); err != nil {
 		return err
@@ -99,7 +100,7 @@ func (s *LocationService) GetWards(ctx context.Context, q *wrapetop.GetWardsEndp
 	return nil
 }
 
-func (s *LocationService) GetWardsByDistrict(ctx context.Context, q *wrapetop.GetWardsByDistrictEndpoint) error {
+func (s *LocationService) GetWardsByDistrict(ctx context.Context, q *GetWardsByDistrictEndpoint) error {
 	query := &location.GetAllLocationsQuery{DistrictCode: q.DistrictCode}
 	if err := locationBus.Dispatch(ctx, query); err != nil {
 		return err
@@ -110,7 +111,7 @@ func (s *LocationService) GetWardsByDistrict(ctx context.Context, q *wrapetop.Ge
 	return nil
 }
 
-func (s *LocationService) ParseLocation(ctx context.Context, q *wrapetop.ParseLocationEndpoint) error {
+func (s *LocationService) ParseLocation(ctx context.Context, q *ParseLocationEndpoint) error {
 	query := &location.FindLocationQuery{
 		Province: q.ProvinceName,
 		District: q.DistrictName,
@@ -134,14 +135,14 @@ func (s *LocationService) ParseLocation(ctx context.Context, q *wrapetop.ParseLo
 	return nil
 }
 
-func (s *BankService) GetBanks(ctx context.Context, q *wrapetop.GetBanksEndpoint) error {
+func (s *BankService) GetBanks(ctx context.Context, q *GetBanksEndpoint) error {
 	q.Result = &pbetop.GetBanksResponse{
 		Banks: pbetop.PbBanks(bank.Banks),
 	}
 	return nil
 }
 
-func (s *BankService) GetProvincesByBank(ctx context.Context, q *wrapetop.GetProvincesByBankEndpoint) error {
+func (s *BankService) GetProvincesByBank(ctx context.Context, q *GetProvincesByBankEndpoint) error {
 	query := &bank.BankQuery{
 		Code: q.BankCode,
 		Name: q.BankName,
@@ -154,7 +155,7 @@ func (s *BankService) GetProvincesByBank(ctx context.Context, q *wrapetop.GetPro
 	return nil
 }
 
-func (s *BankService) GetBranchesByBankProvince(ctx context.Context, q *wrapetop.GetBranchesByBankProvinceEndpoint) error {
+func (s *BankService) GetBranchesByBankProvince(ctx context.Context, q *GetBranchesByBankProvinceEndpoint) error {
 	bankQuery := &bank.BankQuery{
 		Code: q.BankCode,
 		Name: q.BankName,
@@ -171,7 +172,7 @@ func (s *BankService) GetBranchesByBankProvince(ctx context.Context, q *wrapetop
 	return nil
 }
 
-func (s *AddressService) CreateAddress(ctx context.Context, q *wrapetop.CreateAddressEndpoint) error {
+func (s *AddressService) CreateAddress(ctx context.Context, q *CreateAddressEndpoint) error {
 	address, err := pbetop.PbCreateAddressToModel(q.Context.AccountID, q.CreateAddressRequest)
 	if err != nil {
 		return err
@@ -186,7 +187,7 @@ func (s *AddressService) CreateAddress(ctx context.Context, q *wrapetop.CreateAd
 	return nil
 }
 
-func (s *AddressService) GetAddresses(ctx context.Context, q *wrapetop.GetAddressesEndpoint) error {
+func (s *AddressService) GetAddresses(ctx context.Context, q *GetAddressesEndpoint) error {
 	accountID := q.Context.AccountID
 	query := &model.GetAddressesQuery{
 		AccountID: accountID,
@@ -200,7 +201,7 @@ func (s *AddressService) GetAddresses(ctx context.Context, q *wrapetop.GetAddres
 	return nil
 }
 
-func (s *AddressService) UpdateAddress(ctx context.Context, q *wrapetop.UpdateAddressEndpoint) error {
+func (s *AddressService) UpdateAddress(ctx context.Context, q *UpdateAddressEndpoint) error {
 	accountID := q.Context.AccountID
 	address, err := pbetop.PbUpdateAddressToModel(accountID, q.UpdateAddressRequest)
 	if err != nil {
@@ -217,7 +218,7 @@ func (s *AddressService) UpdateAddress(ctx context.Context, q *wrapetop.UpdateAd
 	return nil
 }
 
-func (s *AddressService) RemoveAddress(ctx context.Context, q *wrapetop.RemoveAddressEndpoint) error {
+func (s *AddressService) RemoveAddress(ctx context.Context, q *RemoveAddressEndpoint) error {
 	accountID := q.Context.AccountID
 	cmd := &model.DeleteAddressCommand{
 		ID:        q.Id,

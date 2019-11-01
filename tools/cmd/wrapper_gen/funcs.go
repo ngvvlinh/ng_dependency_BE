@@ -5,6 +5,7 @@ import (
 	"text/template"
 
 	"etop.vn/backend/pkg/etop/authorize/permission"
+	"etop.vn/backend/tools/pkg/acl"
 	"etop.vn/backend/tools/pkg/gen"
 	g "etop.vn/backend/tools/pkg/grpcgen"
 )
@@ -33,7 +34,7 @@ var funcs = template.FuncMap{
 }
 
 func getPermission(m *g.Method) *permission.PermissionDecl {
-	p := ACL[m.FullPath()]
+	p := acl.ACL[m.FullPath()]
 	if p == nil {
 		gen.Fatalf("Method %v does not exist in ACL map", m.FullPath())
 	}
@@ -60,17 +61,17 @@ func methodName(m *g.Method) string {
 
 func requireAuth(m *g.Method) bool {
 	p := getPermission(m)
-	return p.Type >= Protected
+	return p.Type >= permission.Protected
 }
 
 func requireLogin(m *g.Method) bool {
 	p := getPermission(m)
-	return p.Type >= Protected && p.Type <= EtopAdmin
+	return p.Type >= permission.Protected && p.Type <= permission.EtopAdmin
 }
 
 func requireUser(m *g.Method) bool {
 	p := getPermission(m)
-	return p.Type == CurUsr
+	return p.Type == permission.CurUsr
 }
 
 func requireAPIKey(m *g.Method) bool {
@@ -85,32 +86,32 @@ func requireAPIPartnerShopKey(m *g.Method) bool {
 
 func requirePartner(m *g.Method) bool {
 	p := getPermission(m)
-	return p.Type == Partner
+	return p.Type == permission.Partner
 }
 
 func requireShop(m *g.Method) bool {
 	p := getPermission(m)
-	return p.Type == Shop
+	return p.Type == permission.Shop
 }
 
 func requireAffiliate(m *g.Method) bool {
 	p := getPermission(m)
-	return p.Type == Affiliate
+	return p.Type == permission.Affiliate
 }
 
 func requireEtopAdmin(m *g.Method) bool {
 	p := getPermission(m)
-	return p.Type == EtopAdmin
+	return p.Type == permission.EtopAdmin
 }
 
 func requireSuperAdmin(m *g.Method) bool {
 	p := getPermission(m)
-	return p.Type == SuperAdmin
+	return p.Type == permission.SuperAdmin
 }
 
 func requireRole(m *g.Method) bool {
 	p := getPermission(m)
-	return p.Type >= Partner && p.Type <= EtopAdmin
+	return p.Type >= permission.Partner && p.Type <= permission.EtopAdmin
 }
 
 func getRole(m *g.Method) string {
@@ -129,23 +130,23 @@ func getRoleLevel(m *g.Method) int {
 
 func requireSecret(m *g.Method) bool {
 	p := getPermission(m)
-	return p.Type == Secret
+	return p.Type == permission.Secret
 }
 
 func getClaim(m *g.Method) string {
 	p := getPermission(m)
 	switch p.Type {
-	case CurUsr:
+	case permission.CurUsr:
 		return "UserClaim"
-	case EtopAdmin:
+	case permission.EtopAdmin:
 		return "AdminClaim"
-	case Partner:
+	case permission.Partner:
 		return "PartnerClaim"
-	case Shop:
+	case permission.Shop:
 		return "ShopClaim"
-	case Affiliate:
+	case permission.Affiliate:
 		return "AffiliateClaim"
-	case Public, Protected, Custom, Secret, SuperAdmin:
+	case permission.Public, permission.Protected, permission.Custom, permission.Secret, permission.SuperAdmin:
 		return "EmptyClaim"
 	}
 

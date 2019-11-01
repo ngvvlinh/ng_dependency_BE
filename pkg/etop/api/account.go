@@ -9,13 +9,11 @@ import (
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/backend/pkg/etop/sqlstore"
-	wrapetop "etop.vn/backend/wrapper/etop"
 )
 
 func init() {
 	bus.AddHandlers("api",
 		accountService.UpdateURLSlug,
-		accountService.UpdatePermission,
 		accountService.GetPublicPartnerInfo,
 		accountService.GetPublicPartners,
 	)
@@ -25,7 +23,7 @@ type AccountService struct{}
 
 var accountService = &AccountService{}
 
-func (s *AccountService) UpdateURLSlug(ctx context.Context, r *wrapetop.UpdateURLSlugEndpoint) error {
+func (s *AccountService) UpdateURLSlug(ctx context.Context, r *UpdateURLSlugEndpoint) error {
 	if r.AccountId == 0 {
 		return cm.Error(cm.InvalidArgument, "Missing account_id", nil)
 	}
@@ -58,11 +56,11 @@ func (s *AccountService) UpdateURLSlug(ctx context.Context, r *wrapetop.UpdateUR
 	return bus.Dispatch(ctx, cmd)
 }
 
-func (s *AccountService) UpdatePermission(ctx context.Context, q *wrapetop.UpdatePermissionEndpoint) error {
+func (s *UserService) UpdatePermission(ctx context.Context, q *UpdatePermissionEndpoint) error {
 	return cm.ErrTODO
 }
 
-func (s *AccountService) GetPublicPartnerInfo(ctx context.Context, q *wrapetop.GetPublicPartnerInfoEndpoint) error {
+func (s *AccountService) GetPublicPartnerInfo(ctx context.Context, q *GetPublicPartnerInfoEndpoint) error {
 	partner, err := sqlstore.Partner(ctx).ID(q.Id).Get()
 	if err != nil {
 		return err
@@ -75,7 +73,7 @@ func (s *AccountService) GetPublicPartnerInfo(ctx context.Context, q *wrapetop.G
 // - get info by given ids
 // - list all partners if the account is an admin
 // - list all connected partner
-func (s *AccountService) GetPublicPartners(ctx context.Context, q *wrapetop.GetPublicPartnersEndpoint) error {
+func (s *AccountService) GetPublicPartners(ctx context.Context, q *GetPublicPartnersEndpoint) error {
 	if len(q.Ids) != 0 {
 		partners, err := sqlstore.Partner(ctx).IDs(q.Ids...).IncludeDeleted().List()
 		if err != nil {
