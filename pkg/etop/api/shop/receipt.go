@@ -235,7 +235,9 @@ func (s *ReceiptService) getInfosForReceipts(ctx context.Context, shopID int64, 
 
 	// Get ref_ids into receiptLines
 	for _, receipt := range receipts {
-		userIDs = append(userIDs, receipt.CreatedBy)
+		if receipt.CreatedBy != 0 {
+			userIDs = append(userIDs, receipt.CreatedBy)
+		}
 		traderIDs = append(traderIDs, receipt.TraderID)
 		ledgerIDs = append(ledgerIDs, receipt.LedgerID)
 
@@ -262,7 +264,9 @@ func (s *ReceiptService) getInfosForReceipts(ctx context.Context, shopID int64, 
 		mapUserIDAndUser[accountUser.User.ID] = accountUser.User
 	}
 	for _, receipt := range receiptsResult {
-		receipt.User = pbetop.PbUser(mapUserIDAndUser[receipt.CreatedBy])
+		if receipt.CreatedBy != 0 {
+			receipt.User = pbetop.PbUser(mapUserIDAndUser[receipt.CreatedBy])
+		}
 	}
 
 	// List traders
