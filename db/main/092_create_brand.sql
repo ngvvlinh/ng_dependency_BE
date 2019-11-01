@@ -10,4 +10,5 @@ create table shop_brand (
 
 CREATE UNIQUE INDEX ON "shop_brand" (shop_id, id);
 
-alter table history.shop_product add brand_id bigint;
+alter table shop_product add column brand_id int8;
+alter table history.shop_product add column brand_id int8;
