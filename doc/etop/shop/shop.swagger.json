@@ -7897,6 +7897,10 @@
           "type": "string",
           "format": "int64"
         },
+        "ref_type": {
+          "type": "string",
+          "title": "enum ('order', 'fulfillment', 'inventory voucher'"
+        },
         "paid_at": {
           "type": "string",
           "format": "date-time"
@@ -9281,6 +9285,9 @@
           "type": "string",
           "format": "int64"
         },
+        "ref_type": {
+          "type": "string"
+        },
         "lines": {
           "type": "array",
           "items": {
@@ -10458,6 +10465,10 @@
         "ledger_id": {
           "type": "string",
           "format": "int64"
+        },
+        "ref_type": {
+          "type": "string",
+          "title": "enum ('order', 'fulfillment', 'inventory voucher'"
         },
         "paid_at": {
           "type": "string",

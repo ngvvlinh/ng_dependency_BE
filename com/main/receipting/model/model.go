@@ -22,6 +22,7 @@ type Receipt struct {
 	Amount          int32
 	Status          model.Status3
 	RefIDs          []int64
+	RefType         string
 	Lines           []*ReceiptLine
 	LedgerID        int64
 	CancelledReason string

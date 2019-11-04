@@ -52,6 +52,7 @@ type CreateReceiptArgs struct {
 	Amount      int32
 	LedgerID    int64
 	RefIDs      []int64
+	RefType     ReceiptRefType
 	Lines       []*ReceiptLine
 	PaidAt      time.Time
 	CreatedBy   int64
@@ -69,6 +70,7 @@ type UpdateReceiptArgs struct {
 	Amount      NullInt32
 	LedgerID    NullInt64
 	RefIDs      []int64
+	RefType     ReceiptRefType
 	Lines       []*ReceiptLine
 	PaidAt      time.Time
 }

@@ -1467,6 +1467,7 @@ message Receipt {
     optional string description = 9 [(gogoproto.nullable) = false];
     optional int32 amount = 10 [(gogoproto.nullable) = false];
     optional int64 ledger_id = 11 [(gogoproto.nullable) = false];
+    optional string ref_type = 23 [(gogoproto.nullable) = false];
     repeated ReceiptLine lines = 12;
     optional status3.Status status = 13 [(gogoproto.nullable) = false];
     optional string reason = 14 [(gogoproto.nullable)=false];
@@ -1489,6 +1490,8 @@ message CreateReceiptRequest {
     optional string description = 4 [(gogoproto.nullable) = false];
     optional int32 amount = 5 [(gogoproto.nullable) = false];
     optional int64 ledger_id = 6 [(gogoproto.nullable) = false];
+    // enum ('order', 'fulfillment', 'inventory voucher'
+    optional string ref_type = 9 [(gogoproto.nullable) = false];
     required google.protobuf.Timestamp paid_at = 7;
     repeated ReceiptLine lines = 8;
 }
@@ -1500,6 +1503,8 @@ message UpdateReceiptRequest {
     optional string description = 4;
     optional int32 amount = 5;
     optional int64 ledger_id = 6;
+    // enum ('order', 'fulfillment', 'inventory voucher'
+    optional string ref_type = 9;
     optional google.protobuf.Timestamp paid_at = 7 [(gogoproto.nullable)=false];
     repeated ReceiptLine lines = 8;
 }

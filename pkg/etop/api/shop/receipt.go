@@ -68,6 +68,7 @@ func (s *ReceiptService) createReceipt(ctx context.Context, q *wrapshop.CreateRe
 		Description: q.Description,
 		Amount:      q.Amount,
 		LedgerID:    q.LedgerId,
+		RefType:     receipting.ReceiptRefType(q.RefType),
 		Type:        receipting.ReceiptType(q.Type),
 		CreatedType: receipting.ReceiptCreatedTypeManual,
 		Status:      int32(model.S3Zero),
@@ -105,6 +106,9 @@ func (s *ReceiptService) UpdateReceipt(ctx context.Context, q *wrapshop.UpdateRe
 	}
 	if checkHavePaidAt {
 		cmd.PaidAt = paidAt
+	}
+	if q.RefType != nil {
+		cmd.RefType = receipting.ReceiptRefType(*q.RefType)
 	}
 	err = receiptAggr.Dispatch(ctx, cmd)
 	if err != nil {

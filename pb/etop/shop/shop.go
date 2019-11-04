@@ -371,6 +371,7 @@ func PbReceipt(m *receipting.Receipt) *Receipt {
 		Description: m.Description,
 		Amount:      m.Amount,
 		LedgerId:    m.LedgerID,
+		RefType:     string(m.RefType),
 		Lines:       PbReceiptLines(m.Lines),
 		Status:      pbs3.Pb(model.Status3(m.Status)),
 		CreatedBy:   m.CreatedBy,

@@ -214,6 +214,25 @@ func (ft *ReceiptFilters) ByStatusPtr(Status *model.Status3) *sq.ColumnFilterPtr
 	}
 }
 
+func (ft *ReceiptFilters) ByRefType(RefType string) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "ref_type",
+		Value:  RefType,
+		IsNil:  RefType == "",
+	}
+}
+
+func (ft *ReceiptFilters) ByRefTypePtr(RefType *string) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "ref_type",
+		Value:  RefType,
+		IsNil:  RefType == nil,
+		IsZero: RefType != nil && (*RefType) == "",
+	}
+}
+
 func (ft *ReceiptFilters) ByLedgerID(LedgerID int64) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,

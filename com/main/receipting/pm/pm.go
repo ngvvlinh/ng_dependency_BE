@@ -123,20 +123,25 @@ func (m *ProcessManager) MoneyTransactionConfirmed(ctx context.Context, event *r
 	}
 
 	// Create receipt type payment
-	if err := m.createPayment(totalShippingFee, event, ledgerID, ctx); err != nil {
+	if err := m.createPayment(totalShippingFee, fulfillments, event, ledgerID, ctx); err != nil {
 		return err
 	}
 
 	return nil
 }
 
-func (m *ProcessManager) createPayment(totalShippingFee int32, event *receipting.MoneyTransactionConfirmedEvent, ledgerID int64, ctx context.Context) error {
+func (m *ProcessManager) createPayment(
+	totalShippingFee int32, fulfillments []*modely.FulfillmentExtended,
+	event *receipting.MoneyTransactionConfirmedEvent, ledgerID int64, ctx context.Context,
+) error {
 	{
 		receiptLines := []*receipting.ReceiptLine{}
-		receiptLines = append(receiptLines, &receipting.ReceiptLine{
-			Title:  "Thanh toán phí vận chuyển",
-			Amount: totalShippingFee,
-		})
+		for _, fulfillment := range fulfillments {
+			receiptLines = append(receiptLines, &receipting.ReceiptLine{
+				RefID:  fulfillment.ID,
+				Amount: int32(fulfillment.ShippingFeeShop),
+			})
+		}
 
 		cmd := &receipting.CreateReceiptCommand{
 			ShopID:      event.ShopID,
@@ -147,6 +152,7 @@ func (m *ProcessManager) createPayment(totalShippingFee int32, event *receipting
 			Status:      int32(etopmodel.S3Positive),
 			Amount:      totalShippingFee,
 			LedgerID:    ledgerID,
+			RefType:     receipting.ReceiptRefTypeFulfillment,
 			Lines:       receiptLines,
 			PaidAt:      time.Now(),
 			CreatedType: receipting.ReceiptCreatedTypeAuto,
@@ -186,6 +192,7 @@ func createReceipts(mapOrderAndTotalAmount map[int64]int, mapOrderAndReceivedAmo
 			Amount:      int32(value) - mapOrderAndReceivedAmount[key],
 			LedgerID:    ledgerID,
 			RefIDs:      []int64{key},
+			RefType:     receipting.ReceiptRefTypeOrder,
 			Lines:       receiptLines,
 			PaidAt:      time.Now(),
 			CreatedType: receipting.ReceiptCreatedTypeAuto,

@@ -75,6 +75,7 @@ type CreateReceiptCommand struct {
 	Amount      int32
 	LedgerID    int64
 	RefIDs      []int64
+	RefType     ReceiptRefType
 	Lines       []*ReceiptLine
 	PaidAt      time.Time
 	CreatedBy   int64
@@ -110,6 +111,7 @@ type UpdateReceiptCommand struct {
 	Amount      dot.NullInt32
 	LedgerID    dot.NullInt64
 	RefIDs      []int64
+	RefType     ReceiptRefType
 	Lines       []*ReceiptLine
 	PaidAt      time.Time
 
@@ -268,6 +270,7 @@ func (q *CreateReceiptCommand) GetArgs(ctx context.Context) (_ context.Context, 
 			Amount:      q.Amount,
 			LedgerID:    q.LedgerID,
 			RefIDs:      q.RefIDs,
+			RefType:     q.RefType,
 			Lines:       q.Lines,
 			PaidAt:      q.PaidAt,
 			CreatedBy:   q.CreatedBy,
@@ -286,6 +289,7 @@ func (q *CreateReceiptCommand) SetCreateReceiptArgs(args *CreateReceiptArgs) {
 	q.Amount = args.Amount
 	q.LedgerID = args.LedgerID
 	q.RefIDs = args.RefIDs
+	q.RefType = args.RefType
 	q.Lines = args.Lines
 	q.PaidAt = args.PaidAt
 	q.CreatedBy = args.CreatedBy
@@ -310,6 +314,7 @@ func (q *UpdateReceiptCommand) GetArgs(ctx context.Context) (_ context.Context, 
 			Amount:      q.Amount,
 			LedgerID:    q.LedgerID,
 			RefIDs:      q.RefIDs,
+			RefType:     q.RefType,
 			Lines:       q.Lines,
 			PaidAt:      q.PaidAt,
 		}
@@ -324,6 +329,7 @@ func (q *UpdateReceiptCommand) SetUpdateReceiptArgs(args *UpdateReceiptArgs) {
 	q.Amount = args.Amount
 	q.LedgerID = args.LedgerID
 	q.RefIDs = args.RefIDs
+	q.RefType = args.RefType
 	q.Lines = args.Lines
 	q.PaidAt = args.PaidAt
 }

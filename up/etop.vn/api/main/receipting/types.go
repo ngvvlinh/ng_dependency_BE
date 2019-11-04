@@ -10,6 +10,7 @@ import (
 
 type ReceiptType string
 type ReceiptCreatedType string
+type ReceiptRefType string
 
 const (
 	ReceiptTypeReceipt ReceiptType = "receipt"
@@ -18,6 +19,10 @@ const (
 	// Created type
 	ReceiptCreatedTypeManual ReceiptCreatedType = "manual"
 	ReceiptCreatedTypeAuto   ReceiptCreatedType = "auto"
+
+	ReceiptRefTypeOrder            ReceiptRefType = "order"
+	ReceiptRefTypeFulfillment      ReceiptRefType = "fulfillment"
+	ReceiptRefTypeInventoryVoucher ReceiptRefType = "inventory_voucher"
 )
 
 type Receipt struct {
@@ -33,6 +38,7 @@ type Receipt struct {
 	Status      int32
 	LedgerID    int64
 	RefIDs      []int64
+	RefType     ReceiptRefType
 	Lines       []*ReceiptLine
 	PaidAt      time.Time
 	ConfirmedAt time.Time
