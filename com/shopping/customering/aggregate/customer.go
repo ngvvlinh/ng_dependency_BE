@@ -142,16 +142,12 @@ func (a *CustomerAggregate) UpdateCustomer(
 	}
 
 	// Verify email
-	if args.Email.Valid {
-		if args.Email.String == "" {
-			return nil, cm.Error(cm.InvalidArgument, "Email không thể rỗng", err)
-		} else {
-			email, isEmail := validate.NormalizeEmail(args.Email.String)
-			if isEmail != true {
-				return nil, cm.Error(cm.InvalidArgument, "Vui lòng nhập đúng định dạng email", nil)
-			}
-			args.Email.String = email.String()
+	if args.Email.Valid && args.Email.String != "" {
+		email, isEmail := validate.NormalizeEmail(args.Email.String)
+		if isEmail != true {
+			return nil, cm.Error(cm.InvalidArgument, "Vui lòng nhập đúng định dạng email", nil)
 		}
+		args.Email.String = email.String()
 	}
 
 	// Check phone
