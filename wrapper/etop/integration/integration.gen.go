@@ -17,6 +17,7 @@ import (
 	claims "etop.vn/backend/pkg/etop/authorize/claims"
 	middleware "etop.vn/backend/pkg/etop/authorize/middleware"
 	model "etop.vn/backend/pkg/etop/model"
+	integrationz "etop.vn/backend/zexp/api/root/int/integration"
 	l "etop.vn/common/l"
 )
 
@@ -43,8 +44,8 @@ func NewIntegrationServer(mux Muxer, hooks *twirp.ServerHooks) {
 	bus.Expect(&RegisterEndpoint{})
 	bus.Expect(&RequestLoginEndpoint{})
 	bus.Expect(&SessionInfoEndpoint{})
-	mux.Handle(integration.MiscServicePathPrefix, integration.NewMiscServiceServer(MiscService{}, hooks))
-	mux.Handle(integration.IntegrationServicePathPrefix, integration.NewIntegrationServiceServer(IntegrationService{}, hooks))
+	mux.Handle(integrationz.MiscServicePathPrefix, integrationz.NewMiscServiceServer(MiscService{}))
+	mux.Handle(integrationz.IntegrationServicePathPrefix, integrationz.NewIntegrationServiceServer(IntegrationService{}))
 }
 
 type IntegrationImpl struct {

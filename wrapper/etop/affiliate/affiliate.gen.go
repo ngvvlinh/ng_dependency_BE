@@ -17,6 +17,7 @@ import (
 	cmwrapper "etop.vn/backend/pkg/common/wrapper"
 	claims "etop.vn/backend/pkg/etop/authorize/claims"
 	middleware "etop.vn/backend/pkg/etop/authorize/middleware"
+	affiliatez "etop.vn/backend/zexp/api/root/int/etop_affiliate"
 	l "etop.vn/common/l"
 )
 
@@ -44,8 +45,8 @@ func NewAffiliateServer(mux Muxer, hooks *twirp.ServerHooks, secret string) {
 	bus.Expect(&RegisterAffiliateEndpoint{})
 	bus.Expect(&UpdateAffiliateEndpoint{})
 	bus.Expect(&UpdateAffiliateBankAccountEndpoint{})
-	mux.Handle(affiliate.MiscServicePathPrefix, affiliate.NewMiscServiceServer(MiscService{secret: secret}, hooks))
-	mux.Handle(affiliate.AccountServicePathPrefix, affiliate.NewAccountServiceServer(AccountService{secret: secret}, hooks))
+	mux.Handle(affiliatez.MiscServicePathPrefix, affiliatez.NewMiscServiceServer(MiscService{secret: secret}))
+	mux.Handle(affiliatez.AccountServicePathPrefix, affiliatez.NewAccountServiceServer(AccountService{secret: secret}))
 }
 
 type AffiliateImpl struct {

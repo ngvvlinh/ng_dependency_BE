@@ -16,6 +16,7 @@ import (
 	cmwrapper "etop.vn/backend/pkg/common/wrapper"
 	claims "etop.vn/backend/pkg/etop/authorize/claims"
 	middleware "etop.vn/backend/pkg/etop/authorize/middleware"
+	handlerz "etop.vn/backend/zexp/api/root/int/handler"
 	l "etop.vn/common/l"
 )
 
@@ -40,8 +41,8 @@ func NewHandlerServer(mux Muxer, hooks *twirp.ServerHooks, secret string) {
 	}
 	bus.Expect(&VersionInfoEndpoint{})
 	bus.Expect(&ResetStateEndpoint{})
-	mux.Handle(handler.MiscServicePathPrefix, handler.NewMiscServiceServer(MiscService{secret: secret}, hooks))
-	mux.Handle(handler.WebhookServicePathPrefix, handler.NewWebhookServiceServer(WebhookService{secret: secret}, hooks))
+	mux.Handle(handlerz.MiscServicePathPrefix, handlerz.NewMiscServiceServer(MiscService{secret: secret}))
+	mux.Handle(handlerz.WebhookServicePathPrefix, handlerz.NewWebhookServiceServer(WebhookService{secret: secret}))
 }
 
 type HandlerImpl struct {

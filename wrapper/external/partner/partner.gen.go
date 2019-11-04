@@ -18,6 +18,7 @@ import (
 	cmwrapper "etop.vn/backend/pkg/common/wrapper"
 	claims "etop.vn/backend/pkg/etop/authorize/claims"
 	middleware "etop.vn/backend/pkg/etop/authorize/middleware"
+	partnerz "etop.vn/backend/zexp/api/root/int/partner"
 	l "etop.vn/common/l"
 )
 
@@ -51,11 +52,11 @@ func NewPartnerServer(mux Muxer, hooks *twirp.ServerHooks) {
 	bus.Expect(&GetFulfillmentEndpoint{})
 	bus.Expect(&GetOrderEndpoint{})
 	bus.Expect(&GetShippingServicesEndpoint{})
-	mux.Handle(partner.MiscServicePathPrefix, partner.NewMiscServiceServer(MiscService{}, hooks))
-	mux.Handle(partner.ShopServicePathPrefix, partner.NewShopServiceServer(ShopService{}, hooks))
-	mux.Handle(partner.WebhookServicePathPrefix, partner.NewWebhookServiceServer(WebhookService{}, hooks))
-	mux.Handle(partner.HistoryServicePathPrefix, partner.NewHistoryServiceServer(HistoryService{}, hooks))
-	mux.Handle(partner.ShippingServicePathPrefix, partner.NewShippingServiceServer(ShippingService{}, hooks))
+	mux.Handle(partnerz.MiscServicePathPrefix, partnerz.NewMiscServiceServer(MiscService{}))
+	mux.Handle(partnerz.ShopServicePathPrefix, partnerz.NewShopServiceServer(ShopService{}))
+	mux.Handle(partnerz.WebhookServicePathPrefix, partnerz.NewWebhookServiceServer(WebhookService{}))
+	mux.Handle(partnerz.HistoryServicePathPrefix, partnerz.NewHistoryServiceServer(HistoryService{}))
+	mux.Handle(partnerz.ShippingServicePathPrefix, partnerz.NewShippingServiceServer(ShippingService{}))
 }
 
 type PartnerImpl struct {

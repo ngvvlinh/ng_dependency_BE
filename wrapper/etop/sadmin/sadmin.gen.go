@@ -17,6 +17,7 @@ import (
 	cmwrapper "etop.vn/backend/pkg/common/wrapper"
 	claims "etop.vn/backend/pkg/etop/authorize/claims"
 	middleware "etop.vn/backend/pkg/etop/authorize/middleware"
+	sadminz "etop.vn/backend/zexp/api/root/int/sadmin"
 	l "etop.vn/common/l"
 )
 
@@ -40,8 +41,8 @@ func NewSadminServer(mux Muxer, hooks *twirp.ServerHooks) {
 	bus.Expect(&CreateUserEndpoint{})
 	bus.Expect(&LoginAsAccountEndpoint{})
 	bus.Expect(&ResetPasswordEndpoint{})
-	mux.Handle(sadmin.MiscServicePathPrefix, sadmin.NewMiscServiceServer(MiscService{}, hooks))
-	mux.Handle(sadmin.UserServicePathPrefix, sadmin.NewUserServiceServer(UserService{}, hooks))
+	mux.Handle(sadminz.MiscServicePathPrefix, sadminz.NewMiscServiceServer(MiscService{}))
+	mux.Handle(sadminz.UserServicePathPrefix, sadminz.NewUserServiceServer(UserService{}))
 }
 
 type SadminImpl struct {

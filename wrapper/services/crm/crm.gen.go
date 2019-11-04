@@ -16,6 +16,7 @@ import (
 	cmwrapper "etop.vn/backend/pkg/common/wrapper"
 	claims "etop.vn/backend/pkg/etop/authorize/claims"
 	middleware "etop.vn/backend/pkg/etop/authorize/middleware"
+	crmz "etop.vn/backend/zexp/api/root/int/crm"
 	l "etop.vn/common/l"
 )
 
@@ -54,10 +55,10 @@ func NewCrmServer(mux Muxer, hooks *twirp.ServerHooks, secret string) {
 	bus.Expect(&CreateOrUpdateCallHistoryByCallIDEndpoint{})
 	bus.Expect(&CreateOrUpdateCallHistoryBySDKCallIDEndpoint{})
 	bus.Expect(&GetCallHistoriesEndpoint{})
-	mux.Handle(crm.MiscServicePathPrefix, crm.NewMiscServiceServer(MiscService{secret: secret}, hooks))
-	mux.Handle(crm.CrmServicePathPrefix, crm.NewCrmServiceServer(CrmService{secret: secret}, hooks))
-	mux.Handle(crm.VtigerServicePathPrefix, crm.NewVtigerServiceServer(VtigerService{secret: secret}, hooks))
-	mux.Handle(crm.VhtServicePathPrefix, crm.NewVhtServiceServer(VhtService{secret: secret}, hooks))
+	mux.Handle(crmz.MiscServicePathPrefix, crmz.NewMiscServiceServer(MiscService{secret: secret}))
+	mux.Handle(crmz.CrmServicePathPrefix, crmz.NewCrmServiceServer(CrmService{secret: secret}))
+	mux.Handle(crmz.VtigerServicePathPrefix, crmz.NewVtigerServiceServer(VtigerService{secret: secret}))
+	mux.Handle(crmz.VhtServicePathPrefix, crmz.NewVhtServiceServer(VhtService{secret: secret}))
 }
 
 type CrmImpl struct {

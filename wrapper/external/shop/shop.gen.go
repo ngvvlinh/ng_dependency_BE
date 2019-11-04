@@ -11,13 +11,13 @@ import (
 	cm "etop.vn/backend/pb/common"
 	etop "etop.vn/backend/pb/etop"
 	external "etop.vn/backend/pb/external"
-	shop "etop.vn/backend/pb/external/shop"
 	common "etop.vn/backend/pkg/common"
 	bus "etop.vn/backend/pkg/common/bus"
 	metrics "etop.vn/backend/pkg/common/metrics"
 	cmwrapper "etop.vn/backend/pkg/common/wrapper"
 	claims "etop.vn/backend/pkg/etop/authorize/claims"
 	middleware "etop.vn/backend/pkg/etop/authorize/middleware"
+	shopz "etop.vn/backend/zexp/api/root/int/external_shop"
 	l "etop.vn/common/l"
 )
 
@@ -49,10 +49,10 @@ func NewShopServer(mux Muxer, hooks *twirp.ServerHooks) {
 	bus.Expect(&GetFulfillmentEndpoint{})
 	bus.Expect(&GetOrderEndpoint{})
 	bus.Expect(&GetShippingServicesEndpoint{})
-	mux.Handle(shop.MiscServicePathPrefix, shop.NewMiscServiceServer(MiscService{}, hooks))
-	mux.Handle(shop.WebhookServicePathPrefix, shop.NewWebhookServiceServer(WebhookService{}, hooks))
-	mux.Handle(shop.HistoryServicePathPrefix, shop.NewHistoryServiceServer(HistoryService{}, hooks))
-	mux.Handle(shop.ShippingServicePathPrefix, shop.NewShippingServiceServer(ShippingService{}, hooks))
+	mux.Handle(shopz.MiscServicePathPrefix, shopz.NewMiscServiceServer(MiscService{}))
+	mux.Handle(shopz.WebhookServicePathPrefix, shopz.NewWebhookServiceServer(WebhookService{}))
+	mux.Handle(shopz.HistoryServicePathPrefix, shopz.NewHistoryServiceServer(HistoryService{}))
+	mux.Handle(shopz.ShippingServicePathPrefix, shopz.NewShippingServiceServer(ShippingService{}))
 }
 
 type ShopImpl struct {

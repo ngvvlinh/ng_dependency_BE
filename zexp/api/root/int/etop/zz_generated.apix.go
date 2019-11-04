@@ -21,6 +21,372 @@ type Server interface {
 	PathPrefix() string
 }
 
+type AccountServiceServer struct {
+	AccountAPI
+}
+
+func NewAccountServiceServer(svc AccountAPI) Server {
+	return &AccountServiceServer{
+		AccountAPI: svc,
+	}
+}
+
+const AccountServicePathPrefix = "/api/etop.Account/"
+
+func (s *AccountServiceServer) PathPrefix() string {
+	return AccountServicePathPrefix
+}
+
+func (s *AccountServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
+	ctx := req.Context()
+	serve, err := httprpc.ParseRequestHeader(req)
+	if err != nil {
+		httprpc.WriteError(ctx, resp, err)
+		return
+	}
+	reqMsg, exec, err := s.parseRoute(req.URL.Path)
+	if err != nil {
+		httprpc.WriteError(ctx, resp, err)
+		return
+	}
+	serve(ctx, resp, req, reqMsg, exec)
+}
+
+func (s *AccountServiceServer) parseRoute(path string) (reqMsg proto.Message, _ httprpc.ExecFunc, _ error) {
+	switch path {
+	case "/api/etop.Account/GetPublicPartnerInfo":
+		msg := new(common.IDRequest)
+		fn := func(ctx context.Context) (proto.Message, error) {
+			return s.AccountAPI.GetPublicPartnerInfo(ctx, msg)
+		}
+		return msg, fn, nil
+	case "/api/etop.Account/GetPublicPartners":
+		msg := new(common.IDsRequest)
+		fn := func(ctx context.Context) (proto.Message, error) {
+			return s.AccountAPI.GetPublicPartners(ctx, msg)
+		}
+		return msg, fn, nil
+	case "/api/etop.Account/UpdateURLSlug":
+		msg := new(etop.UpdateURLSlugRequest)
+		fn := func(ctx context.Context) (proto.Message, error) {
+			return s.AccountAPI.UpdateURLSlug(ctx, msg)
+		}
+		return msg, fn, nil
+	default:
+		msg := fmt.Sprintf("no handler for path %q", path)
+		return nil, nil, httprpc.BadRouteError(msg, "POST", path)
+	}
+}
+
+type AddressServiceServer struct {
+	AddressAPI
+}
+
+func NewAddressServiceServer(svc AddressAPI) Server {
+	return &AddressServiceServer{
+		AddressAPI: svc,
+	}
+}
+
+const AddressServicePathPrefix = "/api/etop.Address/"
+
+func (s *AddressServiceServer) PathPrefix() string {
+	return AddressServicePathPrefix
+}
+
+func (s *AddressServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
+	ctx := req.Context()
+	serve, err := httprpc.ParseRequestHeader(req)
+	if err != nil {
+		httprpc.WriteError(ctx, resp, err)
+		return
+	}
+	reqMsg, exec, err := s.parseRoute(req.URL.Path)
+	if err != nil {
+		httprpc.WriteError(ctx, resp, err)
+		return
+	}
+	serve(ctx, resp, req, reqMsg, exec)
+}
+
+func (s *AddressServiceServer) parseRoute(path string) (reqMsg proto.Message, _ httprpc.ExecFunc, _ error) {
+	switch path {
+	case "/api/etop.Address/CreateAddress":
+		msg := new(etop.CreateAddressRequest)
+		fn := func(ctx context.Context) (proto.Message, error) {
+			return s.AddressAPI.CreateAddress(ctx, msg)
+		}
+		return msg, fn, nil
+	case "/api/etop.Address/GetAddresses":
+		msg := new(common.Empty)
+		fn := func(ctx context.Context) (proto.Message, error) {
+			return s.AddressAPI.GetAddresses(ctx, msg)
+		}
+		return msg, fn, nil
+	case "/api/etop.Address/RemoveAddress":
+		msg := new(common.IDRequest)
+		fn := func(ctx context.Context) (proto.Message, error) {
+			return s.AddressAPI.RemoveAddress(ctx, msg)
+		}
+		return msg, fn, nil
+	case "/api/etop.Address/UpdateAddress":
+		msg := new(etop.UpdateAddressRequest)
+		fn := func(ctx context.Context) (proto.Message, error) {
+			return s.AddressAPI.UpdateAddress(ctx, msg)
+		}
+		return msg, fn, nil
+	default:
+		msg := fmt.Sprintf("no handler for path %q", path)
+		return nil, nil, httprpc.BadRouteError(msg, "POST", path)
+	}
+}
+
+type BankServiceServer struct {
+	BankAPI
+}
+
+func NewBankServiceServer(svc BankAPI) Server {
+	return &BankServiceServer{
+		BankAPI: svc,
+	}
+}
+
+const BankServicePathPrefix = "/api/etop.Bank/"
+
+func (s *BankServiceServer) PathPrefix() string {
+	return BankServicePathPrefix
+}
+
+func (s *BankServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
+	ctx := req.Context()
+	serve, err := httprpc.ParseRequestHeader(req)
+	if err != nil {
+		httprpc.WriteError(ctx, resp, err)
+		return
+	}
+	reqMsg, exec, err := s.parseRoute(req.URL.Path)
+	if err != nil {
+		httprpc.WriteError(ctx, resp, err)
+		return
+	}
+	serve(ctx, resp, req, reqMsg, exec)
+}
+
+func (s *BankServiceServer) parseRoute(path string) (reqMsg proto.Message, _ httprpc.ExecFunc, _ error) {
+	switch path {
+	case "/api/etop.Bank/GetBanks":
+		msg := new(common.Empty)
+		fn := func(ctx context.Context) (proto.Message, error) {
+			return s.BankAPI.GetBanks(ctx, msg)
+		}
+		return msg, fn, nil
+	case "/api/etop.Bank/GetBranchesByBankProvince":
+		msg := new(etop.GetBranchesByBankProvinceResquest)
+		fn := func(ctx context.Context) (proto.Message, error) {
+			return s.BankAPI.GetBranchesByBankProvince(ctx, msg)
+		}
+		return msg, fn, nil
+	case "/api/etop.Bank/GetProvincesByBank":
+		msg := new(etop.GetProvincesByBankResquest)
+		fn := func(ctx context.Context) (proto.Message, error) {
+			return s.BankAPI.GetProvincesByBank(ctx, msg)
+		}
+		return msg, fn, nil
+	default:
+		msg := fmt.Sprintf("no handler for path %q", path)
+		return nil, nil, httprpc.BadRouteError(msg, "POST", path)
+	}
+}
+
+type LocationServiceServer struct {
+	LocationAPI
+}
+
+func NewLocationServiceServer(svc LocationAPI) Server {
+	return &LocationServiceServer{
+		LocationAPI: svc,
+	}
+}
+
+const LocationServicePathPrefix = "/api/etop.Location/"
+
+func (s *LocationServiceServer) PathPrefix() string {
+	return LocationServicePathPrefix
+}
+
+func (s *LocationServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
+	ctx := req.Context()
+	serve, err := httprpc.ParseRequestHeader(req)
+	if err != nil {
+		httprpc.WriteError(ctx, resp, err)
+		return
+	}
+	reqMsg, exec, err := s.parseRoute(req.URL.Path)
+	if err != nil {
+		httprpc.WriteError(ctx, resp, err)
+		return
+	}
+	serve(ctx, resp, req, reqMsg, exec)
+}
+
+func (s *LocationServiceServer) parseRoute(path string) (reqMsg proto.Message, _ httprpc.ExecFunc, _ error) {
+	switch path {
+	case "/api/etop.Location/GetDistricts":
+		msg := new(common.Empty)
+		fn := func(ctx context.Context) (proto.Message, error) {
+			return s.LocationAPI.GetDistricts(ctx, msg)
+		}
+		return msg, fn, nil
+	case "/api/etop.Location/GetDistrictsByProvince":
+		msg := new(etop.GetDistrictsByProvinceRequest)
+		fn := func(ctx context.Context) (proto.Message, error) {
+			return s.LocationAPI.GetDistrictsByProvince(ctx, msg)
+		}
+		return msg, fn, nil
+	case "/api/etop.Location/GetProvinces":
+		msg := new(common.Empty)
+		fn := func(ctx context.Context) (proto.Message, error) {
+			return s.LocationAPI.GetProvinces(ctx, msg)
+		}
+		return msg, fn, nil
+	case "/api/etop.Location/GetWards":
+		msg := new(common.Empty)
+		fn := func(ctx context.Context) (proto.Message, error) {
+			return s.LocationAPI.GetWards(ctx, msg)
+		}
+		return msg, fn, nil
+	case "/api/etop.Location/GetWardsByDistrict":
+		msg := new(etop.GetWardsByDistrictRequest)
+		fn := func(ctx context.Context) (proto.Message, error) {
+			return s.LocationAPI.GetWardsByDistrict(ctx, msg)
+		}
+		return msg, fn, nil
+	case "/api/etop.Location/ParseLocation":
+		msg := new(etop.ParseLocationRequest)
+		fn := func(ctx context.Context) (proto.Message, error) {
+			return s.LocationAPI.ParseLocation(ctx, msg)
+		}
+		return msg, fn, nil
+	default:
+		msg := fmt.Sprintf("no handler for path %q", path)
+		return nil, nil, httprpc.BadRouteError(msg, "POST", path)
+	}
+}
+
+type MiscServiceServer struct {
+	MiscAPI
+}
+
+func NewMiscServiceServer(svc MiscAPI) Server {
+	return &MiscServiceServer{
+		MiscAPI: svc,
+	}
+}
+
+const MiscServicePathPrefix = "/api/etop.Misc/"
+
+func (s *MiscServiceServer) PathPrefix() string {
+	return MiscServicePathPrefix
+}
+
+func (s *MiscServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
+	ctx := req.Context()
+	serve, err := httprpc.ParseRequestHeader(req)
+	if err != nil {
+		httprpc.WriteError(ctx, resp, err)
+		return
+	}
+	reqMsg, exec, err := s.parseRoute(req.URL.Path)
+	if err != nil {
+		httprpc.WriteError(ctx, resp, err)
+		return
+	}
+	serve(ctx, resp, req, reqMsg, exec)
+}
+
+func (s *MiscServiceServer) parseRoute(path string) (reqMsg proto.Message, _ httprpc.ExecFunc, _ error) {
+	switch path {
+	case "/api/etop.Misc/VersionInfo":
+		msg := new(common.Empty)
+		fn := func(ctx context.Context) (proto.Message, error) {
+			return s.MiscAPI.VersionInfo(ctx, msg)
+		}
+		return msg, fn, nil
+	default:
+		msg := fmt.Sprintf("no handler for path %q", path)
+		return nil, nil, httprpc.BadRouteError(msg, "POST", path)
+	}
+}
+
+type RelationshipServiceServer struct {
+	RelationshipAPI
+}
+
+func NewRelationshipServiceServer(svc RelationshipAPI) Server {
+	return &RelationshipServiceServer{
+		RelationshipAPI: svc,
+	}
+}
+
+const RelationshipServicePathPrefix = "/api/etop.Relationship/"
+
+func (s *RelationshipServiceServer) PathPrefix() string {
+	return RelationshipServicePathPrefix
+}
+
+func (s *RelationshipServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
+	ctx := req.Context()
+	serve, err := httprpc.ParseRequestHeader(req)
+	if err != nil {
+		httprpc.WriteError(ctx, resp, err)
+		return
+	}
+	reqMsg, exec, err := s.parseRoute(req.URL.Path)
+	if err != nil {
+		httprpc.WriteError(ctx, resp, err)
+		return
+	}
+	serve(ctx, resp, req, reqMsg, exec)
+}
+
+func (s *RelationshipServiceServer) parseRoute(path string) (reqMsg proto.Message, _ httprpc.ExecFunc, _ error) {
+	switch path {
+	case "/api/etop.Relationship/AnswerInvitation":
+		msg := new(etop.AnswerInvitationRequest)
+		fn := func(ctx context.Context) (proto.Message, error) {
+			return s.RelationshipAPI.AnswerInvitation(ctx, msg)
+		}
+		return msg, fn, nil
+	case "/api/etop.Relationship/GetUsersInCurrentAccounts":
+		msg := new(etop.GetUsersInCurrentAccountsRequest)
+		fn := func(ctx context.Context) (proto.Message, error) {
+			return s.RelationshipAPI.GetUsersInCurrentAccounts(ctx, msg)
+		}
+		return msg, fn, nil
+	case "/api/etop.Relationship/InviteUserToAccount":
+		msg := new(etop.InviteUserToAccountRequest)
+		fn := func(ctx context.Context) (proto.Message, error) {
+			return s.RelationshipAPI.InviteUserToAccount(ctx, msg)
+		}
+		return msg, fn, nil
+	case "/api/etop.Relationship/LeaveAccount":
+		msg := new(etop.LeaveAccountRequest)
+		fn := func(ctx context.Context) (proto.Message, error) {
+			return s.RelationshipAPI.LeaveAccount(ctx, msg)
+		}
+		return msg, fn, nil
+	case "/api/etop.Relationship/RemoveUserFromCurrentAccount":
+		msg := new(etop.RemoveUserFromCurrentAccountRequest)
+		fn := func(ctx context.Context) (proto.Message, error) {
+			return s.RelationshipAPI.RemoveUserFromCurrentAccount(ctx, msg)
+		}
+		return msg, fn, nil
+	default:
+		msg := fmt.Sprintf("no handler for path %q", path)
+		return nil, nil, httprpc.BadRouteError(msg, "POST", path)
+	}
+}
+
 type UserServiceServer struct {
 	UserAPI
 }

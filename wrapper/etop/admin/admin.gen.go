@@ -18,6 +18,7 @@ import (
 	cmwrapper "etop.vn/backend/pkg/common/wrapper"
 	claims "etop.vn/backend/pkg/etop/authorize/claims"
 	middleware "etop.vn/backend/pkg/etop/authorize/middleware"
+	adminz "etop.vn/backend/zexp/api/root/int/admin"
 	l "etop.vn/common/l"
 )
 
@@ -73,14 +74,14 @@ func NewAdminServer(mux Muxer, hooks *twirp.ServerHooks) {
 	bus.Expect(&GetCreditsEndpoint{})
 	bus.Expect(&UpdateCreditEndpoint{})
 	bus.Expect(&CreateNotificationsEndpoint{})
-	mux.Handle(admin.MiscServicePathPrefix, admin.NewMiscServiceServer(MiscService{}, hooks))
-	mux.Handle(admin.AccountServicePathPrefix, admin.NewAccountServiceServer(AccountService{}, hooks))
-	mux.Handle(admin.OrderServicePathPrefix, admin.NewOrderServiceServer(OrderService{}, hooks))
-	mux.Handle(admin.FulfillmentServicePathPrefix, admin.NewFulfillmentServiceServer(FulfillmentService{}, hooks))
-	mux.Handle(admin.MoneyTransactionServicePathPrefix, admin.NewMoneyTransactionServiceServer(MoneyTransactionService{}, hooks))
-	mux.Handle(admin.ShopServicePathPrefix, admin.NewShopServiceServer(ShopService{}, hooks))
-	mux.Handle(admin.CreditServicePathPrefix, admin.NewCreditServiceServer(CreditService{}, hooks))
-	mux.Handle(admin.NotificationServicePathPrefix, admin.NewNotificationServiceServer(NotificationService{}, hooks))
+	mux.Handle(adminz.MiscServicePathPrefix, adminz.NewMiscServiceServer(MiscService{}))
+	mux.Handle(adminz.AccountServicePathPrefix, adminz.NewAccountServiceServer(AccountService{}))
+	mux.Handle(adminz.OrderServicePathPrefix, adminz.NewOrderServiceServer(OrderService{}))
+	mux.Handle(adminz.FulfillmentServicePathPrefix, adminz.NewFulfillmentServiceServer(FulfillmentService{}))
+	mux.Handle(adminz.MoneyTransactionServicePathPrefix, adminz.NewMoneyTransactionServiceServer(MoneyTransactionService{}))
+	mux.Handle(adminz.ShopServicePathPrefix, adminz.NewShopServiceServer(ShopService{}))
+	mux.Handle(adminz.CreditServicePathPrefix, adminz.NewCreditServiceServer(CreditService{}))
+	mux.Handle(adminz.NotificationServicePathPrefix, adminz.NewNotificationServiceServer(NotificationService{}))
 }
 
 type AdminImpl struct {

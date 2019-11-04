@@ -16,6 +16,7 @@ import (
 	cmwrapper "etop.vn/backend/pkg/common/wrapper"
 	claims "etop.vn/backend/pkg/etop/authorize/claims"
 	middleware "etop.vn/backend/pkg/etop/authorize/middleware"
+	pgeventz "etop.vn/backend/zexp/api/root/int/pgevent"
 	l "etop.vn/common/l"
 )
 
@@ -40,8 +41,8 @@ func NewPgeventServer(mux Muxer, hooks *twirp.ServerHooks, secret string) {
 	}
 	bus.Expect(&VersionInfoEndpoint{})
 	bus.Expect(&GenerateEventsEndpoint{})
-	mux.Handle(pgevent.MiscServicePathPrefix, pgevent.NewMiscServiceServer(MiscService{secret: secret}, hooks))
-	mux.Handle(pgevent.EventServicePathPrefix, pgevent.NewEventServiceServer(EventService{secret: secret}, hooks))
+	mux.Handle(pgeventz.MiscServicePathPrefix, pgeventz.NewMiscServiceServer(MiscService{secret: secret}))
+	mux.Handle(pgeventz.EventServicePathPrefix, pgeventz.NewEventServiceServer(EventService{secret: secret}))
 }
 
 type PgeventImpl struct {

@@ -9,6 +9,11 @@ import (
 
 // +gen:apix
 
+// +apix:path=/etop.Misc
+type MiscAPI interface {
+	VersionInfo(context.Context, *cm.Empty) (*cm.VersionInfoResponse, error)
+}
+
 // +apix:path=/etop.User
 type UserAPI interface {
 	// Register
@@ -63,4 +68,60 @@ type UserAPI interface {
 	UpdateReferenceUser(context.Context, *pbetop.UpdateReferenceUserRequest) (*cm.UpdatedResponse, error)
 
 	UpdateReferenceSale(context.Context, *pbetop.UpdateReferenceSaleRequest) (*cm.UpdatedResponse, error)
+}
+
+// +apix:path=/etop.Account
+type AccountAPI interface {
+	UpdateURLSlug(context.Context, *pbetop.UpdateURLSlugRequest) (*cm.Empty, error)
+	GetPublicPartnerInfo(context.Context, *cm.IDRequest) (*pbetop.PublicAccountInfo, error)
+
+	// leave ids empty to get all connected partners
+	GetPublicPartners(context.Context, *cm.IDsRequest) (*pbetop.PublicAccountsResponse, error)
+}
+
+// +apix:path=/etop.Relationship
+type RelationshipAPI interface {
+	InviteUserToAccount(context.Context, *pbetop.InviteUserToAccountRequest) (*pbetop.UserAccountInfo, error)
+	AnswerInvitation(context.Context, *pbetop.AnswerInvitationRequest) (*pbetop.UserAccountInfo, error)
+
+	GetUsersInCurrentAccounts(context.Context, *pbetop.GetUsersInCurrentAccountsRequest) (*pbetop.ProtectedUsersResponse, error)
+
+	LeaveAccount(context.Context, *pbetop.LeaveAccountRequest) (*cm.Empty, error)
+
+	RemoveUserFromCurrentAccount(context.Context, *pbetop.RemoveUserFromCurrentAccountRequest) (*cm.Empty, error)
+}
+
+// +apix:path=/etop.Location
+type LocationAPI interface {
+	GetProvinces(context.Context, *cm.Empty) (*pbetop.GetProvincesResponse, error)
+
+	GetDistricts(context.Context, *cm.Empty) (*pbetop.GetDistrictsResponse, error)
+
+	GetDistrictsByProvince(context.Context, *pbetop.GetDistrictsByProvinceRequest) (*pbetop.GetDistrictsResponse, error)
+
+	GetWards(context.Context, *cm.Empty) (*pbetop.GetWardsResponse, error)
+
+	GetWardsByDistrict(context.Context, *pbetop.GetWardsByDistrictRequest) (*pbetop.GetWardsResponse, error)
+
+	ParseLocation(context.Context, *pbetop.ParseLocationRequest) (*pbetop.ParseLocationResponse, error)
+}
+
+// +apix:path=/etop.Bank
+type BankAPI interface {
+	GetBanks(context.Context, *cm.Empty) (*pbetop.GetBanksResponse, error)
+
+	GetProvincesByBank(context.Context, *pbetop.GetProvincesByBankResquest) (*pbetop.GetBankProvincesResponse, error)
+
+	GetBranchesByBankProvince(context.Context, *pbetop.GetBranchesByBankProvinceResquest) (*pbetop.GetBranchesByBankProvinceResponse, error)
+}
+
+// +apix:path=/etop.Address
+type AddressAPI interface {
+	CreateAddress(context.Context, *pbetop.CreateAddressRequest) (*pbetop.Address, error)
+
+	GetAddresses(context.Context, *cm.Empty) (*pbetop.GetAddressResponse, error)
+
+	UpdateAddress(context.Context, *pbetop.UpdateAddressRequest) (*pbetop.Address, error)
+
+	RemoveAddress(context.Context, *cm.IDRequest) (*cm.Empty, error)
 }
