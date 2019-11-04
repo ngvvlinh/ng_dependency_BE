@@ -85,6 +85,7 @@ func UpdateShopCustomer(args *customering.UpdateCustomerArgs, in *customering.Sh
 		Email:     args.Email.Apply(in.Email),
 		Status:    in.Status,
 		CreatedAt: in.CreatedAt,
+		UpdatedAt: time.Now(),
 	}
 }
 

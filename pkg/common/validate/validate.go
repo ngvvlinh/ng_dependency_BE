@@ -613,6 +613,9 @@ func NormalizeSearchPhone(s string) string {
 }
 
 func normalizeSearchPhone(s string) (int, string) {
+	if s == "" {
+		return 0, ""
+	}
 	ln := len(s) - 1
 	n := (1+ln)*ln/2 + 2*ln - 1
 	b := make([]byte, 0, n)

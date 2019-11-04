@@ -128,16 +128,49 @@ func (a *CustomerAggregate) UpdateCustomer(
 	if err != nil {
 		return nil, err
 	}
-
-	if err = scheme.Convert(args, customer); err != nil {
-		return nil, err
+	// Verify phone
+	if args.Phone.Valid {
+		if args.Phone.String == "" {
+			return nil, cm.Error(cm.InvalidArgument, "Số điện thoại không thể rỗng", err)
+		} else {
+			phone, isPhone := validate.NormalizePhone(args.Phone.String)
+			if isPhone != true {
+				return nil, cm.Error(cm.InvalidArgument, "Vui lòng nhập đúng định dạng số điện thoại", nil)
+			}
+			args.Phone.String = phone.String()
+		}
 	}
-	if customer.Phone != customer.Phone {
-		_, err := a.store(ctx).ShopID(args.ShopID).Phone(customer.Phone).GetCustomerDB()
+
+	// Verify email
+	if args.Email.Valid {
+		if args.Email.String == "" {
+			return nil, cm.Error(cm.InvalidArgument, "Email không thể rỗng", err)
+		} else {
+			email, isEmail := validate.NormalizeEmail(args.Email.String)
+			if isEmail != true {
+				return nil, cm.Error(cm.InvalidArgument, "Vui lòng nhập đúng định dạng email", nil)
+			}
+			args.Email.String = email.String()
+		}
+	}
+
+	// Check phone
+	if args.Phone.Valid && customer.Phone != args.Phone.String {
+		_, err = a.store(ctx).ShopID(args.ShopID).Phone(args.Phone.String).GetCustomerDB()
 		if err == nil {
 			return nil, cm.Error(cm.InvalidArgument, "Số điện thoại đã tồn tại", err)
 		}
 	}
+
+	// Check email
+	if args.Email.Valid && customer.Email != args.Email.String {
+		_, err = a.store(ctx).ShopID(args.ShopID).Phone(args.Email.String).GetCustomerDB()
+		if err == nil {
+			return nil, cm.Error(cm.InvalidArgument, "Email đã tồn tại", err)
+		}
+	}
+
+	customer = convert.Apply_customering_UpdateCustomerArgs_customering_ShopCustomer(args, customer)
 	customerModel := &model.ShopCustomer{}
 	if err = scheme.Convert(customer, customerModel); err != nil {
 		return nil, err

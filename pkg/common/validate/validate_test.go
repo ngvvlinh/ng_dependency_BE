@@ -510,6 +510,9 @@ func TestNormalizeSearchPhone(t *testing.T) {
 		{
 			"0945389709",
 			"09 094 0945 09453 094538 0945389 09453897 094538970 0945389709",
+		}, {
+			"",
+			"",
 		},
 	}
 	for _, tt := range tests {
