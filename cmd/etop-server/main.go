@@ -434,7 +434,8 @@ func main() {
 	if err != nil && cm.IsDev() {
 		ll.Error("Fail to verify Database", l.Error(err))
 	} else if err != nil {
-		ll.Fatal("Fail to verify Database", l.Error(err))
+		// should move struct `callback` out of etop/model before change to ll.Fatal
+		ll.Error("Fail to verify Database", l.Error(err))
 	}
 
 	svrs := startServers()
