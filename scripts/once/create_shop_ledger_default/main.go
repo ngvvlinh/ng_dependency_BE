@@ -30,7 +30,9 @@ func main() {
 	}
 	cm.SetEnvironment(cfg.Env)
 
-	if db, err = cmsql.Connect(cfg.Postgres); err != nil {
+	postgres := cfg.Postgres
+
+	if db, err = cmsql.Connect(postgres); err != nil {
 		ll.Fatal("Error while connecting database", l.Error(err))
 	}
 
@@ -77,30 +79,45 @@ func main() {
 	}
 
 	{
-		count, created := len(mapshopIDUserID), 0
+		count, errCount, createdCount := len(mapshopIDUserID), 0, 0
+		maxGoroutines := 8
+		ch := make(chan int64, maxGoroutines)
+		chInsert := make(chan error, maxGoroutines)
 		for key, value := range mapshopIDUserID {
-			_, err = db.
-				Table("shop_ledger").
-				Insert(&ledgeringmodel.ShopLedger{
-					ID:          cm.NewID(),
-					ShopID:      key,
-					Name:        "Tiền mặt",
-					BankAccount: nil,
-					Note:        "Số quỹ mặc định",
-					Type:        string(ledgering.LedgerTypeCash),
-					Status:      0,
-					CreatedBy:   value,
-					CreatedAt:   time.Now(),
-					UpdatedAt:   time.Now(),
-				})
-
+			ch <- key
+			shopID := key
+			ownerID := value
+			go func() (_err error) {
+				defer func() {
+					<-ch
+					chInsert <- _err
+				}()
+				_, _err = db.
+					Table("shop_ledger").
+					Insert(&ledgeringmodel.ShopLedger{
+						ID:          cm.NewID(),
+						ShopID:      shopID,
+						Name:        "Tiền mặt",
+						BankAccount: nil,
+						Note:        "Số quỹ mặc định",
+						Type:        string(ledgering.LedgerTypeCash),
+						Status:      0,
+						CreatedBy:   ownerID,
+						CreatedAt:   time.Now(),
+						UpdatedAt:   time.Now(),
+					})
+				return _err
+			}()
+		}
+		for i, n := 0, len(mapshopIDUserID); i < n; i++ {
+			err := <-chInsert
 			if err != nil {
-				ll.S.Errorf("Insert ledger for shop %v", value)
+				errCount++
 			} else {
-				created++
+				createdCount++
 			}
 		}
-		ll.S.Infof("Created %v/%v", created, count)
+		ll.S.Infof("Created shop ledger tien mat: success %v/%v, error %v/%v", createdCount, count, errCount, count)
 	}
 }
 
