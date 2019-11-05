@@ -30,7 +30,9 @@ func main() {
 	}
 	cm.SetEnvironment(cfg.Env)
 
-	if db, err = cmsql.Connect(cfg.Postgres); err != nil {
+	postgres := cfg.Postgres
+
+	if db, err = cmsql.Connect(postgres); err != nil {
 		ll.Fatal("Error while connecting database", l.Error(err))
 	}
 	{
@@ -49,10 +51,15 @@ func main() {
 			count += len(customers)
 			for _, customer := range customers {
 				phoneNorm := validate.NormalizeSearchPhone(customer.Phone)
+				fullNameNorm := validate.NormalizeSearch(customer.FullName)
+				update := M{}
 				if customer.PhoneNorm == "" || customer.PhoneNorm != phoneNorm {
-					update := M{
-						"phone_norm": phoneNorm,
-					}
+					update["phone_norm"] = phoneNorm
+				}
+				if customer.FullNameNorm == "" || customer.FullNameNorm != fullNameNorm {
+					update["full_name_norm"] = fullNameNorm
+				}
+				if len(update) > 0 {
 					err = db.
 						Table("shop_customer").
 						Where("id = ?", customer.ID).
