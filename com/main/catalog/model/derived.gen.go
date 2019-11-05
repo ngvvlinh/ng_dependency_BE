@@ -567,7 +567,7 @@ func sqlgenShopProduct(_ *ShopProduct) bool { return true }
 type ShopProducts []*ShopProduct
 
 const __sqlShopProduct_Table = "shop_product"
-const __sqlShopProduct_ListCols = "\"shop_id\",\"product_id\",\"code\",\"name\",\"description\",\"desc_html\",\"short_desc\",\"image_urls\",\"note\",\"tags\",\"unit\",\"category_id\",\"vendor_id\",\"cost_price\",\"list_price\",\"retail_price\",\"brand_id\",\"status\",\"created_at\",\"updated_at\",\"deleted_at\",\"name_norm\",\"name_norm_ua\",\"product_type\",\"meta_fields\""
+const __sqlShopProduct_ListCols = "\"shop_id\",\"product_id\",\"code\",\"name\",\"description\",\"desc_html\",\"short_desc\",\"image_urls\",\"note\",\"tags\",\"unit\",\"category_id\",\"supplier_id\",\"cost_price\",\"list_price\",\"retail_price\",\"brand_id\",\"status\",\"created_at\",\"updated_at\",\"deleted_at\",\"name_norm\",\"name_norm_ua\",\"product_type\",\"meta_fields\""
 const __sqlShopProduct_Insert = "INSERT INTO \"shop_product\" (" + __sqlShopProduct_ListCols + ") VALUES"
 const __sqlShopProduct_Select = "SELECT " + __sqlShopProduct_ListCols + " FROM \"shop_product\""
 const __sqlShopProduct_Select_history = "SELECT " + __sqlShopProduct_ListCols + " FROM history.\"shop_product\""
@@ -806,7 +806,7 @@ func (m *ShopProduct) SQLUpdate(w SQLWriter) error {
 	}
 	if m.VendorID != 0 {
 		flag = true
-		w.WriteName("vendor_id")
+		w.WriteName("supplier_id")
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
@@ -952,7 +952,7 @@ func (m ShopProductHistory) Note() core.Interface        { return core.Interface
 func (m ShopProductHistory) Tags() core.Interface        { return core.Interface{m["tags"]} }
 func (m ShopProductHistory) Unit() core.Interface        { return core.Interface{m["unit"]} }
 func (m ShopProductHistory) CategoryID() core.Interface  { return core.Interface{m["category_id"]} }
-func (m ShopProductHistory) VendorID() core.Interface    { return core.Interface{m["vendor_id"]} }
+func (m ShopProductHistory) VendorID() core.Interface    { return core.Interface{m["supplier_id"]} }
 func (m ShopProductHistory) CostPrice() core.Interface   { return core.Interface{m["cost_price"]} }
 func (m ShopProductHistory) ListPrice() core.Interface   { return core.Interface{m["list_price"]} }
 func (m ShopProductHistory) RetailPrice() core.Interface { return core.Interface{m["retail_price"]} }
@@ -988,7 +988,7 @@ func (m *ShopProductHistory) SQLScan(opts core.Opts, row *sql.Row) error {
 	res["tags"] = data[9]
 	res["unit"] = data[10]
 	res["category_id"] = data[11]
-	res["vendor_id"] = data[12]
+	res["supplier_id"] = data[12]
 	res["cost_price"] = data[13]
 	res["list_price"] = data[14]
 	res["retail_price"] = data[15]
@@ -1029,7 +1029,7 @@ func (ms *ShopProductHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
 		m["tags"] = data[9]
 		m["unit"] = data[10]
 		m["category_id"] = data[11]
-		m["vendor_id"] = data[12]
+		m["supplier_id"] = data[12]
 		m["cost_price"] = data[13]
 		m["list_price"] = data[14]
 		m["retail_price"] = data[15]

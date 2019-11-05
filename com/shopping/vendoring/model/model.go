@@ -4,9 +4,10 @@ import "time"
 
 //go:generate $ETOPDIR/backend/scripts/derive.sh
 
-var _ = sqlgenShopVendor(&ShopVendor{})
+var _ = sqlgenShopSupplier(&ShopSupplier{})
 
-type ShopVendor struct {
+// +convert:type=vendoring.ShopVendor
+type ShopSupplier struct {
 	ID        int64
 	ShopID    int64
 	FullName  string

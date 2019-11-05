@@ -25,22 +25,22 @@ func RegisterConversions(s *conversion.Scheme) {
 }
 
 func registerConversions(s *conversion.Scheme) {
-	s.Register((*vendoringmodel.ShopVendor)(nil), (*vendoring.ShopVendor)(nil), func(arg, out interface{}) error {
-		Convert_vendoringmodel_ShopVendor_vendoring_ShopVendor(arg.(*vendoringmodel.ShopVendor), out.(*vendoring.ShopVendor))
+	s.Register((*vendoringmodel.ShopSupplier)(nil), (*vendoring.ShopVendor)(nil), func(arg, out interface{}) error {
+		Convert_vendoringmodel_ShopSupplier_vendoring_ShopVendor(arg.(*vendoringmodel.ShopSupplier), out.(*vendoring.ShopVendor))
 		return nil
 	})
-	s.Register(([]*vendoringmodel.ShopVendor)(nil), (*[]*vendoring.ShopVendor)(nil), func(arg, out interface{}) error {
-		out0 := Convert_vendoringmodel_ShopVendors_vendoring_ShopVendors(arg.([]*vendoringmodel.ShopVendor))
+	s.Register(([]*vendoringmodel.ShopSupplier)(nil), (*[]*vendoring.ShopVendor)(nil), func(arg, out interface{}) error {
+		out0 := Convert_vendoringmodel_ShopSuppliers_vendoring_ShopVendors(arg.([]*vendoringmodel.ShopSupplier))
 		*out.(*[]*vendoring.ShopVendor) = out0
 		return nil
 	})
-	s.Register((*vendoring.ShopVendor)(nil), (*vendoringmodel.ShopVendor)(nil), func(arg, out interface{}) error {
-		Convert_vendoring_ShopVendor_vendoringmodel_ShopVendor(arg.(*vendoring.ShopVendor), out.(*vendoringmodel.ShopVendor))
+	s.Register((*vendoring.ShopVendor)(nil), (*vendoringmodel.ShopSupplier)(nil), func(arg, out interface{}) error {
+		Convert_vendoring_ShopVendor_vendoringmodel_ShopSupplier(arg.(*vendoring.ShopVendor), out.(*vendoringmodel.ShopSupplier))
 		return nil
 	})
-	s.Register(([]*vendoring.ShopVendor)(nil), (*[]*vendoringmodel.ShopVendor)(nil), func(arg, out interface{}) error {
-		out0 := Convert_vendoring_ShopVendors_vendoringmodel_ShopVendors(arg.([]*vendoring.ShopVendor))
-		*out.(*[]*vendoringmodel.ShopVendor) = out0
+	s.Register(([]*vendoring.ShopVendor)(nil), (*[]*vendoringmodel.ShopSupplier)(nil), func(arg, out interface{}) error {
+		out0 := Convert_vendoring_ShopVendors_vendoringmodel_ShopSuppliers(arg.([]*vendoring.ShopVendor))
+		*out.(*[]*vendoringmodel.ShopSupplier) = out0
 		return nil
 	})
 	s.Register((*vendoring.CreateVendorArgs)(nil), (*vendoring.ShopVendor)(nil), func(arg, out interface{}) error {
@@ -55,18 +55,18 @@ func registerConversions(s *conversion.Scheme) {
 
 //-- convert etop.vn/api/shopping/vendoring.ShopVendor --//
 
-func Convert_vendoringmodel_ShopVendor_vendoring_ShopVendor(arg *vendoringmodel.ShopVendor, out *vendoring.ShopVendor) *vendoring.ShopVendor {
+func Convert_vendoringmodel_ShopSupplier_vendoring_ShopVendor(arg *vendoringmodel.ShopSupplier, out *vendoring.ShopVendor) *vendoring.ShopVendor {
 	if arg == nil {
 		return nil
 	}
 	if out == nil {
 		out = &vendoring.ShopVendor{}
 	}
-	convert_vendoringmodel_ShopVendor_vendoring_ShopVendor(arg, out)
+	convert_vendoringmodel_ShopSupplier_vendoring_ShopVendor(arg, out)
 	return out
 }
 
-func convert_vendoringmodel_ShopVendor_vendoring_ShopVendor(arg *vendoringmodel.ShopVendor, out *vendoring.ShopVendor) {
+func convert_vendoringmodel_ShopSupplier_vendoring_ShopVendor(arg *vendoringmodel.ShopSupplier, out *vendoring.ShopVendor) {
 	out.ID = arg.ID               // simple assign
 	out.ShopID = arg.ShopID       // simple assign
 	out.FullName = arg.FullName   // simple assign
@@ -76,27 +76,27 @@ func convert_vendoringmodel_ShopVendor_vendoring_ShopVendor(arg *vendoringmodel.
 	out.UpdatedAt = arg.UpdatedAt // simple assign
 }
 
-func Convert_vendoringmodel_ShopVendors_vendoring_ShopVendors(args []*vendoringmodel.ShopVendor) (outs []*vendoring.ShopVendor) {
+func Convert_vendoringmodel_ShopSuppliers_vendoring_ShopVendors(args []*vendoringmodel.ShopSupplier) (outs []*vendoring.ShopVendor) {
 	tmps := make([]vendoring.ShopVendor, len(args))
 	outs = make([]*vendoring.ShopVendor, len(args))
 	for i := range tmps {
-		outs[i] = Convert_vendoringmodel_ShopVendor_vendoring_ShopVendor(args[i], &tmps[i])
+		outs[i] = Convert_vendoringmodel_ShopSupplier_vendoring_ShopVendor(args[i], &tmps[i])
 	}
 	return outs
 }
 
-func Convert_vendoring_ShopVendor_vendoringmodel_ShopVendor(arg *vendoring.ShopVendor, out *vendoringmodel.ShopVendor) *vendoringmodel.ShopVendor {
+func Convert_vendoring_ShopVendor_vendoringmodel_ShopSupplier(arg *vendoring.ShopVendor, out *vendoringmodel.ShopSupplier) *vendoringmodel.ShopSupplier {
 	if arg == nil {
 		return nil
 	}
 	if out == nil {
-		out = &vendoringmodel.ShopVendor{}
+		out = &vendoringmodel.ShopSupplier{}
 	}
-	convert_vendoring_ShopVendor_vendoringmodel_ShopVendor(arg, out)
+	convert_vendoring_ShopVendor_vendoringmodel_ShopSupplier(arg, out)
 	return out
 }
 
-func convert_vendoring_ShopVendor_vendoringmodel_ShopVendor(arg *vendoring.ShopVendor, out *vendoringmodel.ShopVendor) {
+func convert_vendoring_ShopVendor_vendoringmodel_ShopSupplier(arg *vendoring.ShopVendor, out *vendoringmodel.ShopSupplier) {
 	out.ID = arg.ID               // simple assign
 	out.ShopID = arg.ShopID       // simple assign
 	out.FullName = arg.FullName   // simple assign
@@ -107,11 +107,11 @@ func convert_vendoring_ShopVendor_vendoringmodel_ShopVendor(arg *vendoring.ShopV
 	out.DeletedAt = time.Time{}   // zero value
 }
 
-func Convert_vendoring_ShopVendors_vendoringmodel_ShopVendors(args []*vendoring.ShopVendor) (outs []*vendoringmodel.ShopVendor) {
-	tmps := make([]vendoringmodel.ShopVendor, len(args))
-	outs = make([]*vendoringmodel.ShopVendor, len(args))
+func Convert_vendoring_ShopVendors_vendoringmodel_ShopSuppliers(args []*vendoring.ShopVendor) (outs []*vendoringmodel.ShopSupplier) {
+	tmps := make([]vendoringmodel.ShopSupplier, len(args))
+	outs = make([]*vendoringmodel.ShopSupplier, len(args))
 	for i := range tmps {
-		outs[i] = Convert_vendoring_ShopVendor_vendoringmodel_ShopVendor(args[i], &tmps[i])
+		outs[i] = Convert_vendoring_ShopVendor_vendoringmodel_ShopSupplier(args[i], &tmps[i])
 	}
 	return outs
 }

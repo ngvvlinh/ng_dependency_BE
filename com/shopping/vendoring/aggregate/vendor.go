@@ -51,7 +51,7 @@ func (a *VendorAggregate) UpdateVendor(
 	if err := scheme.Convert(args, vendor); err != nil {
 		return nil, err
 	}
-	vendorDB := new(model.ShopVendor)
+	vendorDB := new(model.ShopSupplier)
 	if err := scheme.Convert(vendor, vendorDB); err != nil {
 		return nil, err
 	}

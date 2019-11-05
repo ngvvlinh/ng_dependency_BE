@@ -27,7 +27,7 @@ func NewVendorStore(db *cmsql.Database) VendorStoreFactory {
 }
 
 type VendorStore struct {
-	ft ShopVendorFilters
+	ft ShopSupplierFilters
 
 	query   cmsql.QueryFactory
 	preds   []interface{}
@@ -78,7 +78,7 @@ func (s *VendorStore) OptionalShopID(id int64) *VendorStore {
 func (s *VendorStore) Count() (uint64, error) {
 	query := s.query().Where(s.preds)
 	query = s.includeDeleted.Check(query, s.ft.NotDeleted())
-	return query.Count((*model.ShopVendor)(nil))
+	return query.Count((*model.ShopSupplier)(nil))
 }
 
 func (s *VendorStore) CreateVendor(vendor *vendoring.ShopVendor) error {
@@ -88,7 +88,7 @@ func (s *VendorStore) CreateVendor(vendor *vendoring.ShopVendor) error {
 		ShopID: vendor.ShopID,
 		Type:   tradering.VendorType,
 	}
-	vendorDB := new(model.ShopVendor)
+	vendorDB := new(model.ShopSupplier)
 	if err := scheme.Convert(vendor, vendorDB); err != nil {
 		return err
 	}
@@ -96,7 +96,7 @@ func (s *VendorStore) CreateVendor(vendor *vendoring.ShopVendor) error {
 		return err
 	}
 
-	var tempVendor model.ShopVendor
+	var tempVendor model.ShopSupplier
 	if err := s.query().Where(s.ft.ByID(vendor.ID), s.ft.ByShopID(vendor.ShopID)).ShouldGet(&tempVendor); err != nil {
 		return err
 	}
@@ -107,7 +107,7 @@ func (s *VendorStore) CreateVendor(vendor *vendoring.ShopVendor) error {
 	return nil
 }
 
-func (s *VendorStore) UpdateVendorDB(vendor *model.ShopVendor) error {
+func (s *VendorStore) UpdateVendorDB(vendor *model.ShopSupplier) error {
 	sqlstore.MustNoPreds(s.preds)
 	err := s.query().Where(s.ft.ByID(vendor.ID)).UpdateAll().ShouldUpdate(vendor)
 	return err
@@ -123,15 +123,15 @@ func (s *VendorStore) SoftDelete() (int, error) {
 }
 
 func (s *VendorStore) DeleteCustomer() (int, error) {
-	n, err := s.query().Where(s.preds).Delete((*model.ShopVendor)(nil))
+	n, err := s.query().Where(s.preds).Delete((*model.ShopSupplier)(nil))
 	return int(n), err
 }
 
-func (s *VendorStore) GetVendorDB() (*model.ShopVendor, error) {
+func (s *VendorStore) GetVendorDB() (*model.ShopSupplier, error) {
 	query := s.query().Where(s.preds)
 	query = s.includeDeleted.Check(query, s.ft.NotDeleted())
 
-	var vendor model.ShopVendor
+	var vendor model.ShopSupplier
 	err := query.ShouldGet(&vendor)
 	return &vendor, err
 }
@@ -141,10 +141,10 @@ func (s *VendorStore) GetVendor() (vendorResult *vendoring.ShopVendor, _ error) 
 	if err != nil {
 		return nil, err
 	}
-	return convert.Convert_vendoringmodel_ShopVendor_vendoring_ShopVendor(vendor, vendorResult), nil
+	return convert.Convert_vendoringmodel_ShopSupplier_vendoring_ShopVendor(vendor, vendorResult), nil
 }
 
-func (s *VendorStore) ListVendorsDB() ([]*model.ShopVendor, error) {
+func (s *VendorStore) ListVendorsDB() ([]*model.ShopSupplier, error) {
 	query := s.query().Where(s.preds)
 	query = s.includeDeleted.Check(query, s.ft.NotDeleted())
 	query, err := sqlstore.LimitSort(query, &s.paging, SortVendor)
@@ -156,7 +156,7 @@ func (s *VendorStore) ListVendorsDB() ([]*model.ShopVendor, error) {
 		return nil, err
 	}
 
-	var vendors model.ShopVendors
+	var vendors model.ShopSuppliers
 	err = query.Find(&vendors)
 	return vendors, err
 }
@@ -166,5 +166,5 @@ func (s *VendorStore) ListVendors() ([]*vendoring.ShopVendor, error) {
 	if err != nil {
 		return nil, err
 	}
-	return convert.Convert_vendoringmodel_ShopVendors_vendoring_ShopVendors(vendors), nil
+	return convert.Convert_vendoringmodel_ShopSuppliers_vendoring_ShopVendors(vendors), nil
 }

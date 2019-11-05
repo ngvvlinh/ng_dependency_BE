@@ -8,21 +8,21 @@ import (
 	"etop.vn/backend/pkg/common/sq"
 )
 
-type ShopVendorFilters struct{ prefix string }
+type ShopSupplierFilters struct{ prefix string }
 
-func NewShopVendorFilters(prefix string) ShopVendorFilters {
-	return ShopVendorFilters{prefix}
+func NewShopSupplierFilters(prefix string) ShopSupplierFilters {
+	return ShopSupplierFilters{prefix}
 }
 
-func (ft *ShopVendorFilters) Filter(pred string, args ...interface{}) sq.WriterTo {
+func (ft *ShopSupplierFilters) Filter(pred string, args ...interface{}) sq.WriterTo {
 	return sq.Filter(&ft.prefix, pred, args...)
 }
 
-func (ft ShopVendorFilters) Prefix() string {
+func (ft ShopSupplierFilters) Prefix() string {
 	return ft.prefix
 }
 
-func (ft *ShopVendorFilters) ByID(ID int64) *sq.ColumnFilter {
+func (ft *ShopSupplierFilters) ByID(ID int64) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "id",
@@ -31,7 +31,7 @@ func (ft *ShopVendorFilters) ByID(ID int64) *sq.ColumnFilter {
 	}
 }
 
-func (ft *ShopVendorFilters) ByIDPtr(ID *int64) *sq.ColumnFilterPtr {
+func (ft *ShopSupplierFilters) ByIDPtr(ID *int64) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "id",
@@ -41,7 +41,7 @@ func (ft *ShopVendorFilters) ByIDPtr(ID *int64) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft *ShopVendorFilters) ByShopID(ShopID int64) *sq.ColumnFilter {
+func (ft *ShopSupplierFilters) ByShopID(ShopID int64) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "shop_id",
@@ -50,7 +50,7 @@ func (ft *ShopVendorFilters) ByShopID(ShopID int64) *sq.ColumnFilter {
 	}
 }
 
-func (ft *ShopVendorFilters) ByShopIDPtr(ShopID *int64) *sq.ColumnFilterPtr {
+func (ft *ShopSupplierFilters) ByShopIDPtr(ShopID *int64) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "shop_id",
@@ -60,7 +60,7 @@ func (ft *ShopVendorFilters) ByShopIDPtr(ShopID *int64) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft *ShopVendorFilters) ByFullName(FullName string) *sq.ColumnFilter {
+func (ft *ShopSupplierFilters) ByFullName(FullName string) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "full_name",
@@ -69,7 +69,7 @@ func (ft *ShopVendorFilters) ByFullName(FullName string) *sq.ColumnFilter {
 	}
 }
 
-func (ft *ShopVendorFilters) ByFullNamePtr(FullName *string) *sq.ColumnFilterPtr {
+func (ft *ShopSupplierFilters) ByFullNamePtr(FullName *string) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "full_name",
@@ -79,7 +79,7 @@ func (ft *ShopVendorFilters) ByFullNamePtr(FullName *string) *sq.ColumnFilterPtr
 	}
 }
 
-func (ft *ShopVendorFilters) ByNote(Note string) *sq.ColumnFilter {
+func (ft *ShopSupplierFilters) ByNote(Note string) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "note",
@@ -88,7 +88,7 @@ func (ft *ShopVendorFilters) ByNote(Note string) *sq.ColumnFilter {
 	}
 }
 
-func (ft *ShopVendorFilters) ByNotePtr(Note *string) *sq.ColumnFilterPtr {
+func (ft *ShopSupplierFilters) ByNotePtr(Note *string) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "note",
@@ -98,7 +98,7 @@ func (ft *ShopVendorFilters) ByNotePtr(Note *string) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft *ShopVendorFilters) ByStatus(Status int32) *sq.ColumnFilter {
+func (ft *ShopSupplierFilters) ByStatus(Status int32) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "status",
@@ -107,7 +107,7 @@ func (ft *ShopVendorFilters) ByStatus(Status int32) *sq.ColumnFilter {
 	}
 }
 
-func (ft *ShopVendorFilters) ByStatusPtr(Status *int32) *sq.ColumnFilterPtr {
+func (ft *ShopSupplierFilters) ByStatusPtr(Status *int32) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "status",
@@ -117,7 +117,7 @@ func (ft *ShopVendorFilters) ByStatusPtr(Status *int32) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft *ShopVendorFilters) ByCreatedAt(CreatedAt time.Time) *sq.ColumnFilter {
+func (ft *ShopSupplierFilters) ByCreatedAt(CreatedAt time.Time) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "created_at",
@@ -126,7 +126,7 @@ func (ft *ShopVendorFilters) ByCreatedAt(CreatedAt time.Time) *sq.ColumnFilter {
 	}
 }
 
-func (ft *ShopVendorFilters) ByCreatedAtPtr(CreatedAt *time.Time) *sq.ColumnFilterPtr {
+func (ft *ShopSupplierFilters) ByCreatedAtPtr(CreatedAt *time.Time) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "created_at",
@@ -136,7 +136,7 @@ func (ft *ShopVendorFilters) ByCreatedAtPtr(CreatedAt *time.Time) *sq.ColumnFilt
 	}
 }
 
-func (ft *ShopVendorFilters) ByUpdatedAt(UpdatedAt time.Time) *sq.ColumnFilter {
+func (ft *ShopSupplierFilters) ByUpdatedAt(UpdatedAt time.Time) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "updated_at",
@@ -145,7 +145,7 @@ func (ft *ShopVendorFilters) ByUpdatedAt(UpdatedAt time.Time) *sq.ColumnFilter {
 	}
 }
 
-func (ft *ShopVendorFilters) ByUpdatedAtPtr(UpdatedAt *time.Time) *sq.ColumnFilterPtr {
+func (ft *ShopSupplierFilters) ByUpdatedAtPtr(UpdatedAt *time.Time) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "updated_at",
@@ -155,7 +155,7 @@ func (ft *ShopVendorFilters) ByUpdatedAtPtr(UpdatedAt *time.Time) *sq.ColumnFilt
 	}
 }
 
-func (ft *ShopVendorFilters) ByDeletedAt(DeletedAt time.Time) *sq.ColumnFilter {
+func (ft *ShopSupplierFilters) ByDeletedAt(DeletedAt time.Time) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "deleted_at",
@@ -164,7 +164,7 @@ func (ft *ShopVendorFilters) ByDeletedAt(DeletedAt time.Time) *sq.ColumnFilter {
 	}
 }
 
-func (ft *ShopVendorFilters) ByDeletedAtPtr(DeletedAt *time.Time) *sq.ColumnFilterPtr {
+func (ft *ShopSupplierFilters) ByDeletedAtPtr(DeletedAt *time.Time) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "deleted_at",

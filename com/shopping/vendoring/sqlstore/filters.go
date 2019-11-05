@@ -5,7 +5,7 @@ import (
 	"etop.vn/backend/pkg/etop/sqlstore"
 )
 
-func (ft *ShopVendorFilters) NotDeleted() sq.WriterTo {
+func (ft *ShopSupplierFilters) NotDeleted() sq.WriterTo {
 	return ft.Filter("$.deleted_at IS NULL")
 }
 

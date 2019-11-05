@@ -116,7 +116,7 @@ type ShopProduct struct {
 	Tags        []string
 	Unit        string
 	CategoryID  int64
-	VendorID    int64
+	VendorID    int64 `sq:"'supplier_id'"`
 
 	CostPrice   int32
 	ListPrice   int32
