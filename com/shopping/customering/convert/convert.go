@@ -53,7 +53,6 @@ func CreateShopCustomer(args *customering.CreateCustomerArgs) (out *model.ShopCu
 	result := &model.ShopCustomer{
 		ID:       cm.NewID(),
 		ShopID:   args.ShopID,
-		Code:     args.Code,
 		FullName: args.FullName,
 		Gender:   args.Gender,
 		Type:     args.Type,
@@ -63,8 +62,6 @@ func CreateShopCustomer(args *customering.CreateCustomerArgs) (out *model.ShopCu
 		Email:    args.Email,
 		Status:   1,
 	}
-	codeNorm, _ := ParseCodeNorm(args.Code)
-	result.CodeNorm = int32(codeNorm)
 	return result
 }
 
@@ -75,7 +72,7 @@ func UpdateShopCustomer(args *customering.UpdateCustomerArgs, in *customering.Sh
 	return &customering.ShopCustomer{
 		ID:        in.ID,
 		ShopID:    in.ShopID,
-		Code:      args.Code.Apply(in.Code),
+		Code:      in.Code,
 		FullName:  args.FullName.Apply(in.FullName),
 		Gender:    args.Gender.Apply(in.Gender),
 		Type:      args.Type.Apply(in.Type),

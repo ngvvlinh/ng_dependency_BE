@@ -2,7 +2,6 @@ package aggregate
 
 import (
 	"context"
-	"fmt"
 	"regexp"
 	"strings"
 
@@ -74,41 +73,23 @@ func (a *CustomerAggregate) CreateCustomer(
 	}
 
 	customer := convert.CreateShopCustomer(args)
-	if customer.Code != "" { // check code exists
-		_, err := a.store(ctx).ShopID(args.ShopID).Code(customer.Code).GetCustomerDB()
-		switch cm.ErrorCode(err) {
-		case cm.NoError:
-			return nil, cm.Errorf(cm.FailedPrecondition, nil, "Mã khách hàng đã tồn tại")
-		case cm.NotFound:
-			if codeNorm, err := convert.ParseCodeNorm(customer.Code); err {
-				customer.CodeNorm = int32(codeNorm)
-			}
-		default:
-			return nil, err
-		}
-	} else {
-		var maxCodeNorm int32
-		customerTemp, err := a.store(ctx).ShopID(args.ShopID).IncludeDeleted().GetCustomerByMaximumCodeNorm()
-		switch cm.ErrorCode(err) {
-		case cm.NoError:
-			maxCodeNorm = customerTemp.CodeNorm
-		case cm.NotFound:
-			// no-op
-		default:
-			return nil, err
-		}
-
-		if maxCodeNorm >= convert.MaxCodeNorm {
-			return nil, cm.Errorf(cm.InvalidArgument, nil, "Vui lòng nhập mã")
-		}
-		codeNorm := maxCodeNorm + 1
-		customer.Code = convert.GenerateCode(int(codeNorm))
-		customer.CodeNorm = codeNorm
+	var maxCodeNorm int32
+	customerTemp, err := a.store(ctx).ShopID(args.ShopID).IncludeDeleted().GetCustomerByMaximumCodeNorm()
+	switch cm.ErrorCode(err) {
+	case cm.NoError:
+		maxCodeNorm = customerTemp.CodeNorm
+	case cm.NotFound:
+		// no-op
+	default:
+		return nil, err
 	}
 
-	if true {
-		fmt.Printf("%v", customer)
+	if maxCodeNorm >= convert.MaxCodeNorm {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "Vui lòng nhập mã")
 	}
+	codeNorm := maxCodeNorm + 1
+	customer.Code = convert.GenerateCode(int(codeNorm))
+	customer.CodeNorm = codeNorm
 
 	err = a.store(ctx).CreateCustomer(customer)
 	if err != nil {
@@ -168,30 +149,9 @@ func (a *CustomerAggregate) UpdateCustomer(
 
 	customer = convert.Apply_customering_UpdateCustomerArgs_customering_ShopCustomer(args, customer)
 	customerModel := &model.ShopCustomer{}
-	if err = scheme.Convert(customer, customerModel); err != nil {
-		return nil, err
-	}
+	customerModel = convert.Convert_customering_ShopCustomer_customeringmodel_ShopCustomer(customer, customerModel)
 	err = a.store(ctx).UpdateCustomerDB(customerModel)
-
-	if args.Code.Valid && args.Code.String != "" {
-		customerTemp, err := a.store(ctx).ShopID(args.ShopID).Code(args.Code.String).GetCustomerDB()
-		switch cm.ErrorCode(err) {
-		case cm.NoError:
-			if customerTemp.ID != customer.ID {
-				return nil, cm.Errorf(cm.FailedPrecondition, nil, "Mã khách hàng đã tồn tại")
-			}
-		case cm.NotFound:
-			// no-op
-		default:
-			return nil, err
-		}
-		if codeNorm, err := convert.ParseCodeNorm(args.Code.String); err {
-			customerModel.CodeNorm = int32(codeNorm)
-		}
-	}
-
-	err = a.store(ctx).UpdateCustomerDB(customerModel)
-	return customer, err
+	return convert.Convert_customeringmodel_ShopCustomer_customering_ShopCustomer(customerModel, nil), err
 }
 
 func (a *CustomerAggregate) DeleteCustomer(

@@ -376,7 +376,7 @@ func apply_customering_CreateCustomerArgs_customering_ShopCustomer(arg *customer
 	out.ID = 0                  // zero value
 	out.ShopID = arg.ShopID     // simple assign
 	out.GroupIDs = nil          // zero value
-	out.Code = arg.Code         // simple assign
+	out.Code = ""               // zero value
 	out.FullName = arg.FullName // simple assign
 	out.Gender = arg.Gender     // simple assign
 	out.Type = arg.Type         // simple assign
@@ -397,7 +397,7 @@ func apply_customering_UpdateCustomerArgs_customering_ShopCustomer(arg *customer
 	out.ID = out.ID                                 // identifier
 	out.ShopID = out.ShopID                         // identifier
 	out.GroupIDs = out.GroupIDs                     // no change
-	out.Code = arg.Code.Apply(out.Code)             // apply change
+	out.Code = out.Code                             // no change
 	out.FullName = arg.FullName.Apply(out.FullName) // apply change
 	out.Gender = arg.Gender.Apply(out.Gender)       // apply change
 	out.Type = arg.Type.Apply(out.Type)             // apply change

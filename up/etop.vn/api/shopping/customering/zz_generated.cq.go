@@ -66,7 +66,6 @@ func (h AggregateHandler) HandleBatchSetCustomersStatus(ctx context.Context, msg
 
 type CreateCustomerCommand struct {
 	ShopID   int64
-	Code     string
 	FullName string
 	Gender   string
 	Type     string
@@ -121,7 +120,6 @@ func (h AggregateHandler) HandleRemoveCustomersFromGroup(ctx context.Context, ms
 type UpdateCustomerCommand struct {
 	ID       int64
 	ShopID   int64
-	Code     dot.NullString
 	FullName dot.NullString
 	Gender   dot.NullString
 	Type     dot.NullString
@@ -265,7 +263,6 @@ func (q *CreateCustomerCommand) GetArgs(ctx context.Context) (_ context.Context,
 	return ctx,
 		&CreateCustomerArgs{
 			ShopID:   q.ShopID,
-			Code:     q.Code,
 			FullName: q.FullName,
 			Gender:   q.Gender,
 			Type:     q.Type,
@@ -278,7 +275,6 @@ func (q *CreateCustomerCommand) GetArgs(ctx context.Context) (_ context.Context,
 
 func (q *CreateCustomerCommand) SetCreateCustomerArgs(args *CreateCustomerArgs) {
 	q.ShopID = args.ShopID
-	q.Code = args.Code
 	q.FullName = args.FullName
 	q.Gender = args.Gender
 	q.Type = args.Type
@@ -323,7 +319,6 @@ func (q *UpdateCustomerCommand) GetArgs(ctx context.Context) (_ context.Context,
 		&UpdateCustomerArgs{
 			ID:       q.ID,
 			ShopID:   q.ShopID,
-			Code:     q.Code,
 			FullName: q.FullName,
 			Gender:   q.Gender,
 			Type:     q.Type,
@@ -337,7 +332,6 @@ func (q *UpdateCustomerCommand) GetArgs(ctx context.Context) (_ context.Context,
 func (q *UpdateCustomerCommand) SetUpdateCustomerArgs(args *UpdateCustomerArgs) {
 	q.ID = args.ID
 	q.ShopID = args.ShopID
-	q.Code = args.Code
 	q.FullName = args.FullName
 	q.Gender = args.Gender
 	q.Type = args.Type

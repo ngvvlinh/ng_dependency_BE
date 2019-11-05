@@ -38,7 +38,6 @@ func init() {
 func (s *CustomerService) CreateCustomer(ctx context.Context, r *wrapshop.CreateCustomerEndpoint) error {
 	cmd := &customering.CreateCustomerCommand{
 		ShopID:   r.Context.Shop.ID,
-		Code:     strings.ToUpper(r.Code),
 		FullName: r.FullName,
 		Gender:   r.Gender,
 		Type:     r.Type,
@@ -67,7 +66,6 @@ func (s *CustomerService) UpdateCustomer(ctx context.Context, r *wrapshop.Update
 	cmd := &customering.UpdateCustomerCommand{
 		ID:       r.Id,
 		ShopID:   r.Context.Shop.ID,
-		Code:     PString(r.Code),
 		FullName: PString(r.FullName),
 		Gender:   PString(r.Gender),
 		Type:     PString(r.Type),

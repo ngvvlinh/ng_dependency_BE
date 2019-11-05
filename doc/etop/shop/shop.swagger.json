@@ -7712,9 +7712,6 @@
         "full_name": {
           "type": "string"
         },
-        "code": {
-          "type": "string"
-        },
         "gender": {
           "type": "string"
         },
@@ -10115,9 +10112,6 @@
         "id": {
           "type": "string",
           "format": "int64"
-        },
-        "code": {
-          "type": "string"
         },
         "full_name": {
           "type": "string"

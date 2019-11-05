@@ -74,7 +74,6 @@ type CreateCustomerGroupArgs struct {
 // +convert:create=ShopCustomer
 type CreateCustomerArgs struct {
 	ShopID   int64
-	Code     string
 	FullName string
 	Gender   string
 	Type     string
@@ -88,7 +87,6 @@ type CreateCustomerArgs struct {
 type UpdateCustomerArgs struct {
 	ID       int64
 	ShopID   int64
-	Code     NullString
 	FullName NullString
 	Gender   NullString
 	Type     NullString
