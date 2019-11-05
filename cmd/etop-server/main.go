@@ -375,7 +375,7 @@ func main() {
 		vtpayProvider = vtpay.New(cfg.VTPay)
 	}
 	paymentManager := servicepaymentmanager.NewManager(vtpayProvider, orderQuery).MesssageBus()
-	orderPM := serviceorderingpm.New(orderAggr.MessageBus(), orderQuery, affiliateCmd)
+	orderPM := serviceorderingpm.New(orderAggr.MessageBus(), orderQuery, affiliateCmd, receiptQuery)
 	orderPM.RegisterEventHandlers(eventBus)
 
 	middleware.Init(cfg.SAdminToken, identityQuery)

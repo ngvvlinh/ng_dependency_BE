@@ -70,3 +70,9 @@ type MoneyTransactionConfirmedEvent struct {
 	ShopID             int64
 	MoneyTransactionID int64
 }
+
+type ReceiptConfirmedOrCancelledEvent struct {
+	meta.EventMeta
+	ShopID    int64
+	ReceiptID int64
+}

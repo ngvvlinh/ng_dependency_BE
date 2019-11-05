@@ -4,4 +4,5 @@
 
 package receipting
 
-func (e *MoneyTransactionConfirmedEvent) GetTopic() string { return "event/receipting" }
+func (e *MoneyTransactionConfirmedEvent) GetTopic() string   { return "event/receipting" }
+func (e *ReceiptConfirmedOrCancelledEvent) GetTopic() string { return "event/receipting" }

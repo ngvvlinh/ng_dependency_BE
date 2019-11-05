@@ -83,6 +83,7 @@ func (m *ProcessManager) MoneyTransactionConfirmed(ctx context.Context, event *r
 	}
 	for _, order := range getOrdersQuery.Result.Orders {
 		mapOrderAndTotalAmount[order.ID] = order.TotalAmount
+		mapOrderAndReceivedAmount[order.ID] = 0
 		mapOrder[order.ID] = order
 	}
 
@@ -95,6 +96,9 @@ func (m *ProcessManager) MoneyTransactionConfirmed(ctx context.Context, event *r
 		return err
 	}
 	for _, receipt := range getReceiptsByOrderIDs.Result.Receipts {
+		if receipt.RefType != receipting.ReceiptRefTypeOrder {
+			continue
+		}
 		for _, receiptLine := range receipt.Lines {
 			if receiptLine.RefID == 0 {
 				continue
@@ -113,17 +117,17 @@ func (m *ProcessManager) MoneyTransactionConfirmed(ctx context.Context, event *r
 	// Get bank_account
 	var bankAccount *model.BankAccount
 	var haveBankAccount bool
-	ledgerID, err := m.getOrCreateBankAccount(getMoneyTransaction, bankAccount, haveBankAccount, event, ctx, ledgerID)
+	ledgerID, err := m.getOrCreateBankAccount(getMoneyTransaction, bankAccount, haveBankAccount, event.ShopID, ctx, ledgerID)
 	if err != nil {
 		return err
 	}
 
-	if err := createReceipts(mapOrderAndTotalAmount, mapOrderAndReceivedAmount, mapOrder, event, ledgerID, m, ctx); err != nil {
+	if err := createReceipts(mapOrderAndTotalAmount, mapOrderAndReceivedAmount, mapOrder, event.ShopID, ledgerID, m, ctx); err != nil {
 		return err
 	}
 
 	// Create receipt type payment
-	if err := m.createPayment(totalShippingFee, fulfillments, event, ledgerID, ctx); err != nil {
+	if err := m.createPayment(totalShippingFee, fulfillments, event.ShopID, ledgerID, ctx); err != nil {
 		return err
 	}
 
@@ -131,8 +135,7 @@ func (m *ProcessManager) MoneyTransactionConfirmed(ctx context.Context, event *r
 }
 
 func (m *ProcessManager) createPayment(
-	totalShippingFee int32, fulfillments []*modely.FulfillmentExtended,
-	event *receipting.MoneyTransactionConfirmedEvent, ledgerID int64, ctx context.Context,
+	totalShippingFee int32, fulfillments []*modely.FulfillmentExtended, shopID, ledgerID int64, ctx context.Context,
 ) error {
 	{
 		receiptLines := []*receipting.ReceiptLine{}
@@ -144,7 +147,7 @@ func (m *ProcessManager) createPayment(
 		}
 
 		cmd := &receipting.CreateReceiptCommand{
-			ShopID:      event.ShopID,
+			ShopID:      shopID,
 			TraderID:    model.TopShipID,
 			Title:       "Thanh toán phí vận chuyển Topship",
 			Description: "Phiếu được tạo tự động qua thông qua đối soát Topship",
@@ -165,7 +168,10 @@ func (m *ProcessManager) createPayment(
 	return nil
 }
 
-func createReceipts(mapOrderAndTotalAmount map[int64]int, mapOrderAndReceivedAmount map[int64]int32, mapOrder map[int64]ordermodelx.OrderWithFulfillments, event *receipting.MoneyTransactionConfirmedEvent, ledgerID int64, m *ProcessManager, ctx context.Context) error {
+func createReceipts(
+	mapOrderAndTotalAmount map[int64]int, mapOrderAndReceivedAmount map[int64]int32,
+	mapOrder map[int64]ordermodelx.OrderWithFulfillments, shopID, ledgerID int64,
+	m *ProcessManager, ctx context.Context) error {
 	for key, value := range mapOrderAndTotalAmount {
 		if int32(value)-mapOrderAndReceivedAmount[key] == 0 {
 			continue
@@ -183,7 +189,7 @@ func createReceipts(mapOrderAndTotalAmount map[int64]int, mapOrderAndReceivedAmo
 		}
 
 		cmd := &receipting.CreateReceiptCommand{
-			ShopID:      event.ShopID,
+			ShopID:      shopID,
 			TraderID:    traderID,
 			Title:       "Thanh toán đơn hàng",
 			Description: "Phiếu được tạo tự động qua thông qua đối soát Topship",
@@ -205,7 +211,9 @@ func createReceipts(mapOrderAndTotalAmount map[int64]int, mapOrderAndReceivedAmo
 	return nil
 }
 
-func (m *ProcessManager) getOrCreateBankAccount(getMoneyTransaction *modelx.GetMoneyTransaction, bankAccount *etopmodel.BankAccount, haveBankAccount bool, event *receipting.MoneyTransactionConfirmedEvent, ctx context.Context, ledgerID int64) (int64, error) {
+func (m *ProcessManager) getOrCreateBankAccount(
+	getMoneyTransaction *modelx.GetMoneyTransaction, bankAccount *etopmodel.BankAccount,
+	haveBankAccount bool, shopID int64, ctx context.Context, ledgerID int64) (int64, error) {
 	if getMoneyTransaction.Result.BankAccount != nil {
 		bankAccount = getMoneyTransaction.Result.BankAccount
 		haveBankAccount = true
@@ -214,23 +222,25 @@ func (m *ProcessManager) getOrCreateBankAccount(getMoneyTransaction *modelx.GetM
 	if !haveBankAccount {
 		query := &ledgering.ListLedgersByTypeQuery{
 			LedgerType: ledgering.LedgerTypeCash,
-			ShopID:     event.ShopID,
+			ShopID:     shopID,
 		}
 		if err := m.ledgerQuery.Dispatch(ctx, query); err != nil {
-			return 0, err
+			return 0, cm.MapError(err).
+				Wrap(cm.NotFound, "tài khoản thanh toán tiền mặt không tìm thấy").
+				Throw()
 		}
 		ledgerID = query.Result.Ledgers[0].ID
 	} else { // Check accountNumber exists into ledgers, if it isn't then create
 		query := &ledgering.GetLedgerByAccountNumberQuery{
 			AccountNumber: bankAccount.AccountNumber,
-			ShopID:        event.ShopID,
+			ShopID:        shopID,
 		}
 		err := m.ledgerQuery.Dispatch(ctx, query)
 		switch cm.ErrorCode(err) {
 		case cm.NotFound:
 			// Create ledger
 			cmd := &ledgering.CreateLedgerCommand{
-				ShopID:      event.ShopID,
+				ShopID:      shopID,
 				Name:        fmt.Sprintf("[%v] %v", bankAccount.Branch, bankAccount.AccountName),
 				BankAccount: identityconvert.BankAccount(bankAccount),
 				Note:        "Sổ quỹ tự tạo",

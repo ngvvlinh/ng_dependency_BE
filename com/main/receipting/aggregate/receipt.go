@@ -3,6 +3,8 @@ package aggregate
 import (
 	"context"
 
+	"etop.vn/common/l"
+
 	"etop.vn/api/shopping/customering"
 
 	"etop.vn/api/main/ledgering"
@@ -21,10 +23,12 @@ import (
 	. "etop.vn/capi/dot"
 )
 
+var ll = l.New()
 var _ receipting.Aggregate = &ReceiptAggregate{}
 var scheme = conversion.Build(convert.RegisterConversions)
 
 type ReceiptAggregate struct {
+	db            *cmsql.Database
 	store         sqlstore.ReceiptStoreFactory
 	eventBus      capi.EventBus
 	traderQuery   tradering.QueryBus
@@ -34,12 +38,13 @@ type ReceiptAggregate struct {
 }
 
 func NewReceiptAggregate(
-	db *cmsql.Database, eventBus capi.EventBus,
+	database *cmsql.Database, eventBus capi.EventBus,
 	traderQuery tradering.QueryBus, ledgerQuery ledgering.QueryBus,
 	orderQuery ordering.QueryBus, customerQuery customering.QueryBus,
 ) *ReceiptAggregate {
 	return &ReceiptAggregate{
-		store:         sqlstore.NewReceiptStore(db),
+		db:            database,
+		store:         sqlstore.NewReceiptStore(database),
 		eventBus:      eventBus,
 		traderQuery:   traderQuery,
 		ledgerQuery:   ledgerQuery,
@@ -109,7 +114,20 @@ func (a *ReceiptAggregate) CreateReceipt(
 	receipt.Code = convert.GenerateCode(int(codeNorm))
 	receipt.CodeNorm = codeNorm
 
-	err = a.store(ctx).CreateReceipt(receipt)
+	if err = a.store(ctx).CreateReceipt(receipt); err != nil {
+		return nil, err
+	}
+
+	if !args.ConfirmedAt.IsZero() {
+		receiptConfirmEvent := &receipting.ReceiptConfirmedOrCancelledEvent{
+			ShopID:    args.ShopID,
+			ReceiptID: receipt.ID,
+		}
+		if err := a.eventBus.Publish(ctx, receiptConfirmEvent); err != nil {
+			ll.Error("receiptConfirmedEvent", l.Error(err))
+		}
+	}
+
 	return receipt, err
 }
 
@@ -401,6 +419,18 @@ func (a *ReceiptAggregate) CancelReceipt(
 	}
 
 	updated, err = a.store(ctx).ID(args.ID).ShopID(args.ShopID).CancelReceipt(args.Reason)
+	if err != nil {
+		return 0, err
+	}
+
+	receiptConfirmOrCancelledEvent := &receipting.ReceiptConfirmedOrCancelledEvent{
+		ShopID:    args.ShopID,
+		ReceiptID: args.ID,
+	}
+	if err := a.eventBus.Publish(ctx, receiptConfirmOrCancelledEvent); err != nil {
+		ll.Error("receiptConfirmedOrCancelledEvent", l.Error(err))
+	}
+
 	return updated, err
 }
 
@@ -428,5 +458,17 @@ func (a *ReceiptAggregate) ConfirmReceipt(
 	}
 
 	updated, err = a.store(ctx).ID(args.ID).ShopID(args.ShopID).ConfirmReceipt()
+	if err != nil {
+		return 0, err
+	}
+
+	receiptConfirmedOrCancelledEvent := &receipting.ReceiptConfirmedOrCancelledEvent{
+		ShopID:    args.ShopID,
+		ReceiptID: args.ID,
+	}
+	if err := a.eventBus.Publish(ctx, receiptConfirmedOrCancelledEvent); err != nil {
+		ll.Error("receiptConfirmedOrCancelledEvent", l.Error(err))
+	}
+
 	return updated, err
 }
