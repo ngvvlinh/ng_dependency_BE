@@ -1,6 +1,7 @@
 package tests_test
 
 import (
+	"go/types"
 	"io"
 	"os/exec"
 	"path/filepath"
@@ -78,9 +79,35 @@ func TestObjects(t *testing.T) {
 	require.Len(t, objects, 2)
 	require.Equal(t, "A", objects[0].Name())
 	require.Equal(t, "B", objects[1].Name())
-	directives := ng.GetDirectives(objects[1])
-	require.Len(t, directives, 1)
-	require.Equal(t, "gen:b", directives[0].Cmd)
+
+	{
+		directives := ng.GetDirectives(objects[0])
+		require.Len(t, directives, 1)
+		require.Equal(t, "gen", directives[0].Cmd)
+	}
+	{
+		directives := ng.GetDirectives(objects[1])
+		require.Len(t, directives, 1)
+		require.Equal(t, "gen:b", directives[0].Cmd)
+	}
+	{
+		objA := objects[0]
+		cmt := ng.GetComment(objA)
+		require.Equal(t, "this is comment of A\n", cmt.Text())
+		require.Len(t, cmt.Directives, 1)
+		require.Equal(t, "gen", cmt.Directives[0].Cmd)
+
+		st, ok := objA.Type().Underlying().(*types.Struct)
+		require.True(t, ok, "should be *types.Struct")
+		zero := st.Field(0)
+		one := st.Field(1)
+		two := st.Field(2)
+		thr := st.Field(3)
+		require.Equal(t, "", ng.GetComment(zero).Text())
+		require.Equal(t, "comment of One\n", ng.GetComment(one).Text())
+		require.Equal(t, "", ng.GetComment(two).Text())
+		require.Equal(t, "comment of Three\n", ng.GetComment(thr).Text())
+	}
 }
 
 func TestGenerate(t *testing.T) {
