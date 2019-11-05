@@ -62,6 +62,8 @@ func CreateShopCustomer(args *customering.CreateCustomerArgs) (out *model.ShopCu
 		Email:    args.Email,
 		Status:   1,
 	}
+	result.PhoneNorm = validate.NormalizeSearchPhone(args.Phone)
+	result.FullNameNorm = validate.NormalizeSearch(args.FullName)
 	return result
 }
 
