@@ -286,13 +286,13 @@ service ReceiptService {
     rpc CancelReceipt(CancelReceiptRequest) returns (cm.UpdatedResponse);
 }
 
-service VendorService {
-    rpc GetVendor(cm.IDRequest) returns (Vendor);
-    rpc GetVendors(GetVendorsRequest) returns (VendorsResponse);
-    rpc GetVendorsByIDs(cm.IDsRequest) returns (VendorsResponse);
-    rpc CreateVendor(CreateVendorRequest) returns (Vendor);
-    rpc UpdateVendor(UpdateVendorRequest) returns (Vendor);
-    rpc DeleteVendor(cm.IDRequest) returns (cm.DeletedResponse);
+service SupplierService {
+    rpc GetSupplier(cm.IDRequest) returns (Supplier);
+    rpc GetSuppliers(GetSuppliersRequest) returns (SuppliersResponse);
+    rpc GetSuppliersByIDs(cm.IDsRequest) returns (SuppliersResponse);
+    rpc CreateSupplier(CreateSupplierRequest) returns (Supplier);
+    rpc UpdateSupplier(UpdateSupplierRequest) returns (Supplier);
+    rpc DeleteSupplier(cm.IDRequest) returns (cm.DeletedResponse);
 }
 
 service CarrierService {
@@ -543,7 +543,6 @@ message ShopProduct {
     optional string desc_html   = 7 [(gogoproto.nullable)=false];
     repeated string image_urls  = 9;
     optional int64 category_id = 24 [(gogoproto.nullable)=false];
-    optional int64 vendor_id = 25  [(gogoproto.nullable)=false];
 
     // @deprecated use stags instead
     repeated string  tags = 10;
@@ -630,7 +629,6 @@ message UpdateVariantRequest {
 message UpdateProductRequest {
     // @required
     optional int64 id = 1 [(gogoproto.nullable)=false];
-    optional int64 vendor_id = 13 [(gogoproto.nullable)=false];
 
     optional string name = 2;
     optional string code = 3;
@@ -760,7 +758,6 @@ message CreateProductRequest {
     optional string short_desc  = 6 [(gogoproto.nullable)=false];
     optional string desc_html   = 7 [(gogoproto.nullable)=false];
     repeated string image_urls  = 9;
-    optional int64 vendor_id = 10 [(gogoproto.nullable)=false];
     optional int32  cost_price = 16 [(gogoproto.nullable)=false];
     optional int32  list_price = 15 [(gogoproto.nullable)=false];
     optional int32  retail_price = 26 [(gogoproto.nullable)=false];
@@ -1376,7 +1373,7 @@ message RemoveCustomerOutOfGroupRequest {
    optional int64 group_id = 2 [(gogoproto.nullable) = false];
 }
 
-message Vendor {
+message Supplier {
     optional int64 id = 1 [(gogoproto.nullable) = false];
     optional int64 shop_id = 2 [(gogoproto.nullable) = false];
     optional string full_name = 3 [(gogoproto.nullable) = false];
@@ -1386,24 +1383,24 @@ message Vendor {
     optional google.protobuf.Timestamp updated_at = 7;
 }
 
-message CreateVendorRequest {
+message CreateSupplierRequest {
     optional string full_name = 1 [(gogoproto.nullable) = false];
     optional string note = 2 [(gogoproto.nullable) = false];
 }
 
-message UpdateVendorRequest {
+message UpdateSupplierRequest {
     optional int64 id = 1 [(gogoproto.nullable) = false];
     optional string full_name = 2;
     optional string note = 3;
 }
 
-message GetVendorsRequest {
+message GetSuppliersRequest {
     optional cm.Paging paging = 1;
     repeated cm.Filter filters = 2;
 }
 
-message VendorsResponse {
-    repeated Vendor vendors = 1;
+message SuppliersResponse {
+    repeated Supplier suppliers = 1;
     optional cm.PageInfo paging = 2;
 }
 

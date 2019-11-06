@@ -185,12 +185,12 @@ func NewShopServer(mux Muxer, hooks *twirp.ServerHooks) {
 	bus.Expect(&GetReceiptsEndpoint{})
 	bus.Expect(&GetReceiptsByLedgerTypeEndpoint{})
 	bus.Expect(&UpdateReceiptEndpoint{})
-	bus.Expect(&CreateVendorEndpoint{})
-	bus.Expect(&DeleteVendorEndpoint{})
-	bus.Expect(&GetVendorEndpoint{})
-	bus.Expect(&GetVendorsEndpoint{})
-	bus.Expect(&GetVendorsByIDsEndpoint{})
-	bus.Expect(&UpdateVendorEndpoint{})
+	bus.Expect(&CreateSupplierEndpoint{})
+	bus.Expect(&DeleteSupplierEndpoint{})
+	bus.Expect(&GetSupplierEndpoint{})
+	bus.Expect(&GetSuppliersEndpoint{})
+	bus.Expect(&GetSuppliersByIDsEndpoint{})
+	bus.Expect(&UpdateSupplierEndpoint{})
 	bus.Expect(&CreateCarrierEndpoint{})
 	bus.Expect(&DeleteCarrierEndpoint{})
 	bus.Expect(&GetCarrierEndpoint{})
@@ -225,7 +225,7 @@ func NewShopServer(mux Muxer, hooks *twirp.ServerHooks) {
 	mux.Handle(shop.TradingServicePathPrefix, shop.NewTradingServiceServer(TradingService{}, hooks))
 	mux.Handle(shop.PaymentServicePathPrefix, shop.NewPaymentServiceServer(PaymentService{}, hooks))
 	mux.Handle(shop.ReceiptServicePathPrefix, shop.NewReceiptServiceServer(ReceiptService{}, hooks))
-	mux.Handle(shop.VendorServicePathPrefix, shop.NewVendorServiceServer(VendorService{}, hooks))
+	mux.Handle(shop.SupplierServicePathPrefix, shop.NewSupplierServiceServer(SupplierService{}, hooks))
 	mux.Handle(shop.CarrierServicePathPrefix, shop.NewCarrierServiceServer(CarrierService{}, hooks))
 	mux.Handle(shop.LedgerServicePathPrefix, shop.NewLedgerServiceServer(LedgerService{}, hooks))
 }
@@ -254,7 +254,7 @@ type ShopImpl struct {
 	TradingService
 	PaymentService
 	ReceiptService
-	VendorService
+	SupplierService
 	CarrierService
 	LedgerService
 }
@@ -6892,19 +6892,19 @@ func (s ReceiptService) UpdateReceipt(ctx context.Context, req *shop.UpdateRecei
 	return resp, err
 }
 
-type VendorService struct{}
+type SupplierService struct{}
 
-type CreateVendorEndpoint struct {
-	*shop.CreateVendorRequest
-	Result  *shop.Vendor
+type CreateSupplierEndpoint struct {
+	*shop.CreateSupplierRequest
+	Result  *shop.Supplier
 	Context ShopClaim
 }
 
-func (s VendorService) CreateVendor(ctx context.Context, req *shop.CreateVendorRequest) (resp *shop.Vendor, err error) {
+func (s SupplierService) CreateSupplier(ctx context.Context, req *shop.CreateSupplierRequest) (resp *shop.Supplier, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
-	const rpcName = "shop.Vendor/CreateVendor"
+	const rpcName = "shop.Supplier/CreateSupplier"
 	defer func() {
 		recovered := recover()
 		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
@@ -6920,7 +6920,7 @@ func (s VendorService) CreateVendor(ctx context.Context, req *shop.CreateVendorR
 		return nil, err
 	}
 	session = sessionQuery.Result
-	query := &CreateVendorEndpoint{CreateVendorRequest: req}
+	query := &CreateSupplierEndpoint{CreateSupplierRequest: req}
 	query.Context.Claim = session.Claim
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
@@ -6938,17 +6938,17 @@ func (s VendorService) CreateVendor(ctx context.Context, req *shop.CreateVendorR
 	return resp, err
 }
 
-type DeleteVendorEndpoint struct {
+type DeleteSupplierEndpoint struct {
 	*cm.IDRequest
 	Result  *cm.DeletedResponse
 	Context ShopClaim
 }
 
-func (s VendorService) DeleteVendor(ctx context.Context, req *cm.IDRequest) (resp *cm.DeletedResponse, err error) {
+func (s SupplierService) DeleteSupplier(ctx context.Context, req *cm.IDRequest) (resp *cm.DeletedResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
-	const rpcName = "shop.Vendor/DeleteVendor"
+	const rpcName = "shop.Supplier/DeleteSupplier"
 	defer func() {
 		recovered := recover()
 		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
@@ -6964,7 +6964,7 @@ func (s VendorService) DeleteVendor(ctx context.Context, req *cm.IDRequest) (res
 		return nil, err
 	}
 	session = sessionQuery.Result
-	query := &DeleteVendorEndpoint{IDRequest: req}
+	query := &DeleteSupplierEndpoint{IDRequest: req}
 	query.Context.Claim = session.Claim
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
@@ -6982,17 +6982,17 @@ func (s VendorService) DeleteVendor(ctx context.Context, req *cm.IDRequest) (res
 	return resp, err
 }
 
-type GetVendorEndpoint struct {
+type GetSupplierEndpoint struct {
 	*cm.IDRequest
-	Result  *shop.Vendor
+	Result  *shop.Supplier
 	Context ShopClaim
 }
 
-func (s VendorService) GetVendor(ctx context.Context, req *cm.IDRequest) (resp *shop.Vendor, err error) {
+func (s SupplierService) GetSupplier(ctx context.Context, req *cm.IDRequest) (resp *shop.Supplier, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
-	const rpcName = "shop.Vendor/GetVendor"
+	const rpcName = "shop.Supplier/GetSupplier"
 	defer func() {
 		recovered := recover()
 		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
@@ -7008,7 +7008,7 @@ func (s VendorService) GetVendor(ctx context.Context, req *cm.IDRequest) (resp *
 		return nil, err
 	}
 	session = sessionQuery.Result
-	query := &GetVendorEndpoint{IDRequest: req}
+	query := &GetSupplierEndpoint{IDRequest: req}
 	query.Context.Claim = session.Claim
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
@@ -7026,17 +7026,17 @@ func (s VendorService) GetVendor(ctx context.Context, req *cm.IDRequest) (resp *
 	return resp, err
 }
 
-type GetVendorsEndpoint struct {
-	*shop.GetVendorsRequest
-	Result  *shop.VendorsResponse
+type GetSuppliersEndpoint struct {
+	*shop.GetSuppliersRequest
+	Result  *shop.SuppliersResponse
 	Context ShopClaim
 }
 
-func (s VendorService) GetVendors(ctx context.Context, req *shop.GetVendorsRequest) (resp *shop.VendorsResponse, err error) {
+func (s SupplierService) GetSuppliers(ctx context.Context, req *shop.GetSuppliersRequest) (resp *shop.SuppliersResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
-	const rpcName = "shop.Vendor/GetVendors"
+	const rpcName = "shop.Supplier/GetSuppliers"
 	defer func() {
 		recovered := recover()
 		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
@@ -7052,7 +7052,7 @@ func (s VendorService) GetVendors(ctx context.Context, req *shop.GetVendorsReque
 		return nil, err
 	}
 	session = sessionQuery.Result
-	query := &GetVendorsEndpoint{GetVendorsRequest: req}
+	query := &GetSuppliersEndpoint{GetSuppliersRequest: req}
 	query.Context.Claim = session.Claim
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
@@ -7070,17 +7070,17 @@ func (s VendorService) GetVendors(ctx context.Context, req *shop.GetVendorsReque
 	return resp, err
 }
 
-type GetVendorsByIDsEndpoint struct {
+type GetSuppliersByIDsEndpoint struct {
 	*cm.IDsRequest
-	Result  *shop.VendorsResponse
+	Result  *shop.SuppliersResponse
 	Context ShopClaim
 }
 
-func (s VendorService) GetVendorsByIDs(ctx context.Context, req *cm.IDsRequest) (resp *shop.VendorsResponse, err error) {
+func (s SupplierService) GetSuppliersByIDs(ctx context.Context, req *cm.IDsRequest) (resp *shop.SuppliersResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
-	const rpcName = "shop.Vendor/GetVendorsByIDs"
+	const rpcName = "shop.Supplier/GetSuppliersByIDs"
 	defer func() {
 		recovered := recover()
 		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
@@ -7096,7 +7096,7 @@ func (s VendorService) GetVendorsByIDs(ctx context.Context, req *cm.IDsRequest) 
 		return nil, err
 	}
 	session = sessionQuery.Result
-	query := &GetVendorsByIDsEndpoint{IDsRequest: req}
+	query := &GetSuppliersByIDsEndpoint{IDsRequest: req}
 	query.Context.Claim = session.Claim
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
@@ -7114,17 +7114,17 @@ func (s VendorService) GetVendorsByIDs(ctx context.Context, req *cm.IDsRequest) 
 	return resp, err
 }
 
-type UpdateVendorEndpoint struct {
-	*shop.UpdateVendorRequest
-	Result  *shop.Vendor
+type UpdateSupplierEndpoint struct {
+	*shop.UpdateSupplierRequest
+	Result  *shop.Supplier
 	Context ShopClaim
 }
 
-func (s VendorService) UpdateVendor(ctx context.Context, req *shop.UpdateVendorRequest) (resp *shop.Vendor, err error) {
+func (s SupplierService) UpdateSupplier(ctx context.Context, req *shop.UpdateSupplierRequest) (resp *shop.Supplier, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
-	const rpcName = "shop.Vendor/UpdateVendor"
+	const rpcName = "shop.Supplier/UpdateSupplier"
 	defer func() {
 		recovered := recover()
 		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
@@ -7140,7 +7140,7 @@ func (s VendorService) UpdateVendor(ctx context.Context, req *shop.UpdateVendorR
 		return nil, err
 	}
 	session = sessionQuery.Result
-	query := &UpdateVendorEndpoint{UpdateVendorRequest: req}
+	query := &UpdateSupplierEndpoint{UpdateSupplierRequest: req}
 	query.Context.Claim = session.Claim
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner

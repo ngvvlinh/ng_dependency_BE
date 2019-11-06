@@ -2,7 +2,7 @@ package tradering
 
 var (
 	CustomerType = "customer"
-	VendorType   = "vendor"
+	SupplierType = "supplier"
 	CarrierType  = "carrier"
 )
 

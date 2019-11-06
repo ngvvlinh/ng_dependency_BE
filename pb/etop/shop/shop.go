@@ -16,7 +16,7 @@ import (
 	"etop.vn/api/shopping/addressing"
 	"etop.vn/api/shopping/carrying"
 	"etop.vn/api/shopping/customering"
-	"etop.vn/api/shopping/vendoring"
+	"etop.vn/api/shopping/suppliering"
 	summary "etop.vn/api/summary"
 	catalogmodel "etop.vn/backend/com/main/catalog/model"
 	"etop.vn/backend/pb/common"
@@ -272,8 +272,8 @@ func PbCustomers(ms []*customering.ShopCustomer) []*Customer {
 	return res
 }
 
-func PbVendor(m *vendoring.ShopVendor) *Vendor {
-	return &Vendor{
+func PbSupplier(m *suppliering.ShopSupplier) *Supplier {
+	return &Supplier{
 		Id:        m.ID,
 		ShopId:    m.ShopID,
 		FullName:  m.FullName,
@@ -284,10 +284,10 @@ func PbVendor(m *vendoring.ShopVendor) *Vendor {
 	}
 }
 
-func PbVendors(ms []*vendoring.ShopVendor) []*Vendor {
-	res := make([]*Vendor, len(ms))
+func PbSuppliers(ms []*suppliering.ShopSupplier) []*Supplier {
+	res := make([]*Supplier, len(ms))
 	for i, m := range ms {
-		res[i] = PbVendor(m)
+		res[i] = PbSupplier(m)
 	}
 	return res
 }

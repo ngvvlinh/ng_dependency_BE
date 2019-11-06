@@ -6,7 +6,6 @@ import "time"
 
 var _ = sqlgenShopSupplier(&ShopSupplier{})
 
-// +convert:type=vendoring.ShopVendor
 type ShopSupplier struct {
 	ID        int64
 	ShopID    int64

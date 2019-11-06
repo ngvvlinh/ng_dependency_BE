@@ -217,7 +217,6 @@ func PbShopProductWithVariants(m *catalog.ShopProductWithVariants) *pbshop.ShopP
 		RetailPrice:     coalesceInt32(m.ShopProduct.RetailPrice, m.ShopProduct.ListPrice),
 		CostPrice:       m.ShopProduct.CostPrice,
 		CollectionIds:   m.ShopProduct.CollectionIDs,
-		VendorId:        m.VendorID,
 		Variants:        PbShopVariants(m.Variants),
 		ProductSourceId: shopID, // backward-compatible: use shop_id in place of product_source_id
 		CreatedAt:       pbcm.PbTime(m.CreatedAt),

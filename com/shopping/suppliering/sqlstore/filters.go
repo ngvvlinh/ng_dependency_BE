@@ -9,11 +9,11 @@ func (ft *ShopSupplierFilters) NotDeleted() sq.WriterTo {
 	return ft.Filter("$.deleted_at IS NULL")
 }
 
-var SortVendor = map[string]string{
+var SortSupplier = map[string]string{
 	"id":         "",
 	"created_at": "",
 	"updated_at": "",
 	"full_name":  "",
 }
 
-var FilterVendor = sqlstore.FilterWhitelist{}
+var FilterSupplier = sqlstore.FilterWhitelist{}

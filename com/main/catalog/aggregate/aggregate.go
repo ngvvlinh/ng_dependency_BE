@@ -60,7 +60,6 @@ func (a *Aggregate) CreateShopProduct(ctx context.Context, args *catalog.CreateS
 		ProductID: cm.NewID(),
 		ShopID:    args.ShopID,
 		Code:      args.Code,
-		VendorID:  args.VendorID,
 		Name:      args.Name,
 		Unit:      args.Unit,
 		ImageURLs: args.ImageURLs,
@@ -78,13 +77,6 @@ func (a *Aggregate) CreateShopProduct(ctx context.Context, args *catalog.CreateS
 		ProductType: args.ProductType,
 		MetaFields:  args.MetaFields,
 		BrandID:     args.BrandID,
-	}
-	event := &catalog.ShopProductCreatingEvent{
-		ShopID:   product.ShopID,
-		VendorID: product.VendorID,
-	}
-	if err := a.eventBus.Publish(ctx, event); err != nil {
-		return nil, err
 	}
 	if err := a.shopProduct(ctx).CreateShopProduct(product); err != nil {
 		return nil, err
@@ -107,13 +99,6 @@ func (a *Aggregate) UpdateShopProductInfo(ctx context.Context, args *catalog.Upd
 		return nil, err
 	}
 	updated := convert.UpdateShopProduct(productDB, args)
-	event := &catalog.ShopProductUpdatingEvent{
-		ShopID:   updated.ShopID,
-		VendorID: updated.VendorID,
-	}
-	if err = a.eventBus.Publish(ctx, event); err != nil {
-		return nil, err
-	}
 	if err = a.shopProduct(ctx).UpdateShopProduct(updated); err != nil {
 		return nil, err
 	}

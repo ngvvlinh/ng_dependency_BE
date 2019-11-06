@@ -127,7 +127,7 @@ func (i *ImportRestriction) forbiddenImportsFor(pkg Package) []string {
 		imports = append(imports, append(pkg.TestImports, pkg.XTestImports...)...)
 	}
 	for _, imp := range imports {
-		path := extractVendorPath(imp)
+		path := extractSupplierPath(imp)
 		if i.isForbidden(path) {
 			forbiddenImportSet[path] = struct{}{}
 		}
@@ -140,14 +140,14 @@ func (i *ImportRestriction) forbiddenImportsFor(pkg Package) []string {
 	return forbiddenImports
 }
 
-// extractVendorPath removes a vendor prefix if one exists
-func extractVendorPath(path string) string {
-	vendorPath := "/vendor/"
-	if !strings.Contains(path, vendorPath) {
+// extractSupplierPath removes a supplier prefix if one exists
+func extractSupplierPath(path string) string {
+	supplierPath := "/supplier/"
+	if !strings.Contains(path, supplierPath) {
 		return path
 	}
 
-	return path[strings.Index(path, vendorPath)+len(vendorPath):]
+	return path[strings.Index(path, supplierPath)+len(supplierPath):]
 }
 
 // isForbidden determines if an import is forbidden,

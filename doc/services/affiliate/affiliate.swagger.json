@@ -3106,10 +3106,6 @@
           "type": "string",
           "format": "int64"
         },
-        "vendor_id": {
-          "type": "string",
-          "format": "int64"
-        },
         "tags": {
           "type": "array",
           "items": {

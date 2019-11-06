@@ -46,10 +46,9 @@ import (
 	carrierquery "etop.vn/backend/com/shopping/carrying/query"
 	customeraggregate "etop.vn/backend/com/shopping/customering/aggregate"
 	customerquery "etop.vn/backend/com/shopping/customering/query"
-	vendorpm "etop.vn/backend/com/shopping/pm"
+	supplieraggregate "etop.vn/backend/com/shopping/suppliering/aggregate"
+	supplierquery "etop.vn/backend/com/shopping/suppliering/query"
 	traderquery "etop.vn/backend/com/shopping/tradering/query"
-	vendoraggregate "etop.vn/backend/com/shopping/vendoring/aggregate"
-	vendorquery "etop.vn/backend/com/shopping/vendoring/query"
 	summaryquery "etop.vn/backend/com/summary/query"
 	vhtaggregate "etop.vn/backend/com/supporting/crm/vht/aggregate"
 	vhtquery "etop.vn/backend/com/supporting/crm/vht/query"
@@ -346,11 +345,11 @@ func main() {
 	shipnowPM.RegisterEventHandlers(eventBus)
 
 	customerAggr := customeraggregate.NewCustomerAggregate(db).MessageBus()
-	vendorAggr := vendoraggregate.NewVendorAggregate(db).MessageBus()
+	supplierAggr := supplieraggregate.NewSupplierAggregate(db).MessageBus()
 	carrierAggr := carrieraggregate.NewCarrierAggregate(db).MessageBus()
 	traderAddressAggr := customeraggregate.NewAddressAggregate(db).MessageBus()
 	customerQuery := customerquery.NewCustomerQuery(db).MessageBus()
-	vendorQuery := vendorquery.NewVendorQuery(db).MessageBus()
+	supplierQuery := supplierquery.NewSupplierQuery(db).MessageBus()
 	carrierQuery := carrierquery.NewCarrierQuery(db).MessageBus()
 	traderQuery := traderquery.NewTraderQuery(db).MessageBus()
 	traderAddressQuery := customerquery.NewAddressQuery(db).MessageBus()
@@ -369,8 +368,6 @@ func main() {
 	receiptPM := receiptpm.New(eventBus, receiptQuery, receiptAggr, ledgerQuery, ledgerAggr)
 	receiptPM.RegisterEventHandlers(eventBus)
 
-	vendorPM := vendorpm.New(eventBus, vendorQuery)
-	vendorPM.RegisterEventHandlers(eventBus)
 	// payment
 	var vtpayProvider *vtpay.Provider
 	if cfg.VTPay.MerchantCode != "" {
@@ -402,8 +399,8 @@ func main() {
 		orderAggr.MessageBus(),
 		orderQuery,
 		paymentManager,
-		vendorAggr,
-		vendorQuery,
+		supplierAggr,
+		supplierQuery,
 		carrierAggr,
 		carrierQuery,
 		traderQuery,

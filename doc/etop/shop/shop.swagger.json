@@ -3971,6 +3971,162 @@
         ]
       }
     },
+    "/api/shop.Supplier/CreateSupplier": {
+      "post": {
+        "operationId": "CreateSupplier",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/shopSupplier"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/shopCreateSupplierRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Supplier"
+        ]
+      }
+    },
+    "/api/shop.Supplier/DeleteSupplier": {
+      "post": {
+        "operationId": "DeleteSupplier",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/cmDeletedResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/cmIDRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Supplier"
+        ]
+      }
+    },
+    "/api/shop.Supplier/GetSupplier": {
+      "post": {
+        "operationId": "GetSupplier",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/shopSupplier"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/cmIDRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Supplier"
+        ]
+      }
+    },
+    "/api/shop.Supplier/GetSuppliers": {
+      "post": {
+        "operationId": "GetSuppliers",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/shopSuppliersResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/shopGetSuppliersRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Supplier"
+        ]
+      }
+    },
+    "/api/shop.Supplier/GetSuppliersByIDs": {
+      "post": {
+        "operationId": "GetSuppliersByIDs",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/shopSuppliersResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/cmIDsRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Supplier"
+        ]
+      }
+    },
+    "/api/shop.Supplier/UpdateSupplier": {
+      "post": {
+        "operationId": "UpdateSupplier",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/shopSupplier"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/shopUpdateSupplierRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Supplier"
+        ]
+      }
+    },
     "/api/shop.Trading/TradingCreateOrder": {
       "post": {
         "operationId": "TradingCreateOrder",
@@ -4098,162 +4254,6 @@
         ],
         "tags": [
           "Trading"
-        ]
-      }
-    },
-    "/api/shop.Vendor/CreateVendor": {
-      "post": {
-        "operationId": "CreateVendor",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/shopVendor"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/shopCreateVendorRequest"
-            }
-          }
-        ],
-        "tags": [
-          "Vendor"
-        ]
-      }
-    },
-    "/api/shop.Vendor/DeleteVendor": {
-      "post": {
-        "operationId": "DeleteVendor",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/cmDeletedResponse"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/cmIDRequest"
-            }
-          }
-        ],
-        "tags": [
-          "Vendor"
-        ]
-      }
-    },
-    "/api/shop.Vendor/GetVendor": {
-      "post": {
-        "operationId": "GetVendor",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/shopVendor"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/cmIDRequest"
-            }
-          }
-        ],
-        "tags": [
-          "Vendor"
-        ]
-      }
-    },
-    "/api/shop.Vendor/GetVendors": {
-      "post": {
-        "operationId": "GetVendors",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/shopVendorsResponse"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/shopGetVendorsRequest"
-            }
-          }
-        ],
-        "tags": [
-          "Vendor"
-        ]
-      }
-    },
-    "/api/shop.Vendor/GetVendorsByIDs": {
-      "post": {
-        "operationId": "GetVendorsByIDs",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/shopVendorsResponse"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/cmIDsRequest"
-            }
-          }
-        ],
-        "tags": [
-          "Vendor"
-        ]
-      }
-    },
-    "/api/shop.Vendor/UpdateVendor": {
-      "post": {
-        "operationId": "UpdateVendor",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/shopVendor"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/shopUpdateVendorRequest"
-            }
-          }
-        ],
-        "tags": [
-          "Vendor"
         ]
       }
     }
@@ -7834,10 +7834,6 @@
             "type": "string"
           }
         },
-        "vendor_id": {
-          "type": "string",
-          "format": "int64"
-        },
         "cost_price": {
           "type": "integer",
           "format": "int32"
@@ -7910,6 +7906,17 @@
         }
       }
     },
+    "shopCreateSupplierRequest": {
+      "type": "object",
+      "properties": {
+        "full_name": {
+          "type": "string"
+        },
+        "note": {
+          "type": "string"
+        }
+      }
+    },
     "shopCreateVariantRequest": {
       "type": "object",
       "properties": {
@@ -7958,17 +7965,6 @@
         "retail_price": {
           "type": "integer",
           "format": "int32"
-        }
-      }
-    },
-    "shopCreateVendorRequest": {
-      "type": "object",
-      "properties": {
-        "full_name": {
-          "type": "string"
-        },
-        "note": {
-          "type": "string"
         }
       }
     },
@@ -8895,7 +8891,7 @@
         }
       }
     },
-    "shopGetVariantsRequest": {
+    "shopGetSuppliersRequest": {
       "type": "object",
       "properties": {
         "paging": {
@@ -8909,7 +8905,7 @@
         }
       }
     },
-    "shopGetVendorsRequest": {
+    "shopGetVariantsRequest": {
       "type": "object",
       "properties": {
         "paging": {
@@ -9657,10 +9653,6 @@
           "type": "string",
           "format": "int64"
         },
-        "vendor_id": {
-          "type": "string",
-          "format": "int64"
-        },
         "tags": {
           "type": "array",
           "items": {
@@ -9963,6 +9955,50 @@
           "items": {
             "$ref": "#/definitions/shopSummaryItem"
           }
+        }
+      }
+    },
+    "shopSupplier": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "shop_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "full_name": {
+          "type": "string"
+        },
+        "note": {
+          "type": "string"
+        },
+        "status": {
+          "$ref": "#/definitions/status3Status"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "shopSuppliersResponse": {
+      "type": "object",
+      "properties": {
+        "suppliers": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/shopSupplier"
+          }
+        },
+        "paging": {
+          "$ref": "#/definitions/cmPageInfo"
         }
       }
     },
@@ -10290,10 +10326,6 @@
           "type": "string",
           "format": "int64"
         },
-        "vendor_id": {
-          "type": "string",
-          "format": "int64"
-        },
         "name": {
           "type": "string"
         },
@@ -10544,6 +10576,21 @@
         }
       }
     },
+    "shopUpdateSupplierRequest": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "full_name": {
+          "type": "string"
+        },
+        "note": {
+          "type": "string"
+        }
+      }
+    },
     "shopUpdateVariantAttributesRequest": {
       "type": "object",
       "properties": {
@@ -10648,21 +10695,6 @@
         "id"
       ]
     },
-    "shopUpdateVendorRequest": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "string",
-          "format": "int64"
-        },
-        "full_name": {
-          "type": "string"
-        },
-        "note": {
-          "type": "string"
-        }
-      }
-    },
     "shopUpdateXAccountAhamoveVerificationRequest": {
       "type": "object",
       "properties": {
@@ -10696,50 +10728,6 @@
           "items": {
             "type": "string"
           }
-        }
-      }
-    },
-    "shopVendor": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "string",
-          "format": "int64"
-        },
-        "shop_id": {
-          "type": "string",
-          "format": "int64"
-        },
-        "full_name": {
-          "type": "string"
-        },
-        "note": {
-          "type": "string"
-        },
-        "status": {
-          "$ref": "#/definitions/status3Status"
-        },
-        "created_at": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "updated_at": {
-          "type": "string",
-          "format": "date-time"
-        }
-      }
-    },
-    "shopVendorsResponse": {
-      "type": "object",
-      "properties": {
-        "vendors": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/shopVendor"
-          }
-        },
-        "paging": {
-          "$ref": "#/definitions/cmPageInfo"
         }
       }
     },
@@ -10886,10 +10874,10 @@
       "name": "Summary"
     },
     {
-      "name": "Trading"
+      "name": "Supplier"
     },
     {
-      "name": "Vendor"
+      "name": "Trading"
     }
   ]
 }

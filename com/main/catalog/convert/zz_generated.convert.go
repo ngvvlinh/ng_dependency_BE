@@ -485,7 +485,6 @@ func convert_catalogmodel_ShopProduct_catalog_ShopProduct(arg *catalogmodel.Shop
 	out.DescriptionInfo = catalog.DescriptionInfo{} // zero value
 	out.PriceInfo = catalog.PriceInfo{}             // zero value
 	out.CategoryID = arg.CategoryID                 // simple assign
-	out.VendorID = arg.VendorID                     // simple assign
 	out.CollectionIDs = arg.CollectionIDs           // simple assign
 	out.Tags = arg.Tags                             // simple assign
 	out.Status = int32(arg.Status)                  // simple conversion
@@ -524,7 +523,6 @@ func convert_catalog_ShopProduct_catalogmodel_ShopProduct(arg *catalog.ShopProdu
 	out.Tags = arg.Tags                        // simple assign
 	out.Unit = arg.Unit                        // simple assign
 	out.CategoryID = arg.CategoryID            // simple assign
-	out.VendorID = arg.VendorID                // simple assign
 	out.CostPrice = 0                          // zero value
 	out.ListPrice = 0                          // zero value
 	out.RetailPrice = 0                        // zero value

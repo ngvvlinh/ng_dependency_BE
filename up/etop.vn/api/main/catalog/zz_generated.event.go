@@ -4,6 +4,4 @@
 
 package catalog
 
-func (e *ShopProductCreatingEvent) GetTopic() string { return "event/catalog" }
-func (e *ShopProductUpdatingEvent) GetTopic() string { return "event/catalog" }
-func (e *ValidVendorIDEvent) GetTopic() string       { return "event/catalog" }
+func (e *ValidSupplierIDEvent) GetTopic() string { return "event/catalog" }

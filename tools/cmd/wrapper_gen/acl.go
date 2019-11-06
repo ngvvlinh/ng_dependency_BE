@@ -487,13 +487,13 @@ var ACL = map[string]*permission.PermissionDecl{
 	"affiliate.Affiliate/GetReferralCodes":                         {Type: Affiliate},
 	"affiliate.Affiliate/GetReferrals":                             {Type: Affiliate},
 
-	// vendor:
-	"shop.Vendor/GetVendor":       {Type: Shop},
-	"shop.Vendor/GetVendors":      {Type: Shop},
-	"shop.Vendor/GetVendorsByIDs": {Type: Shop},
-	"shop.Vendor/CreateVendor":    {Type: Shop},
-	"shop.Vendor/UpdateVendor":    {Type: Shop},
-	"shop.Vendor/DeleteVendor":    {Type: Shop},
+	// supplier:
+	"shop.Supplier/GetSupplier":       {Type: Shop},
+	"shop.Supplier/GetSuppliers":      {Type: Shop},
+	"shop.Supplier/GetSuppliersByIDs": {Type: Shop},
+	"shop.Supplier/CreateSupplier":    {Type: Shop},
+	"shop.Supplier/UpdateSupplier":    {Type: Shop},
+	"shop.Supplier/DeleteSupplier":    {Type: Shop},
 
 	// carrier:
 	"shop.Carrier/GetCarrier":       {Type: Shop},

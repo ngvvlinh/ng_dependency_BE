@@ -228,7 +228,7 @@ func (a *ReceiptAggregate) validateReceiptForCreateOrUpdate(ctx context.Context,
 					return cm.Errorf(cm.InvalidArgument, nil, "Ref_type không hợp lệ")
 				}
 				// TODO:
-			case tradering.VendorType:
+			case tradering.SupplierType:
 				if receipt.RefType != receipting.ReceiptRefTypeInventoryVoucher {
 					return cm.Errorf(cm.InvalidArgument, nil, "Ref_type không hợp lệ")
 				}

@@ -569,25 +569,6 @@ func (ft *ShopProductFilters) ByCategoryIDPtr(CategoryID *int64) *sq.ColumnFilte
 	}
 }
 
-func (ft *ShopProductFilters) ByVendorID(VendorID int64) *sq.ColumnFilter {
-	return &sq.ColumnFilter{
-		Prefix: &ft.prefix,
-		Column: "supplier_id",
-		Value:  VendorID,
-		IsNil:  VendorID == 0,
-	}
-}
-
-func (ft *ShopProductFilters) ByVendorIDPtr(VendorID *int64) *sq.ColumnFilterPtr {
-	return &sq.ColumnFilterPtr{
-		Prefix: &ft.prefix,
-		Column: "supplier_id",
-		Value:  VendorID,
-		IsNil:  VendorID == nil,
-		IsZero: VendorID != nil && (*VendorID) == 0,
-	}
-}
-
 func (ft *ShopProductFilters) ByCostPrice(CostPrice int32) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,

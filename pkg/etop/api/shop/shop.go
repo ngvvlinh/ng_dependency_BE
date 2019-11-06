@@ -25,8 +25,8 @@ import (
 	"etop.vn/api/shopping/addressing"
 	"etop.vn/api/shopping/carrying"
 	"etop.vn/api/shopping/customering"
+	"etop.vn/api/shopping/suppliering"
 	"etop.vn/api/shopping/tradering"
-	"etop.vn/api/shopping/vendoring"
 	"etop.vn/api/summary"
 	notimodel "etop.vn/backend/com/handler/notifier/model"
 	catalogmodelx "etop.vn/backend/com/main/catalog/modelx"
@@ -182,8 +182,8 @@ var (
 	traderAddressAggr    addressing.CommandBus
 	traderAddressQuery   addressing.QueryBus
 	paymentCtrl          paymentmanager.CommandBus
-	vendorAggr           vendoring.CommandBus
-	vendorQuery          vendoring.QueryBus
+	supplierAggr         suppliering.CommandBus
+	supplierQuery        suppliering.QueryBus
 	carrierAggr          carrying.CommandBus
 	carrierQuery         carrying.QueryBus
 	traderQuery          tradering.QueryBus
@@ -216,8 +216,8 @@ func Init(
 	orderA ordering.CommandBus,
 	orderQ ordering.QueryBus,
 	paymentManager paymentmanager.CommandBus,
-	vendorA vendoring.CommandBus,
-	vendorQ vendoring.QueryBus,
+	supplierA suppliering.CommandBus,
+	supplierQ suppliering.QueryBus,
 	carrierA carrying.CommandBus,
 	carrierQ carrying.QueryBus,
 	traderQ tradering.QueryBus,
@@ -254,8 +254,8 @@ func Init(
 	receiptAggr = receiptA
 	receiptQuery = receiptQS
 	paymentCtrl = paymentManager
-	vendorAggr = vendorA
-	vendorQuery = vendorQ
+	supplierAggr = supplierA
+	supplierQuery = supplierQ
 	carrierAggr = carrierA
 	carrierQuery = carrierQ
 	traderQuery = traderQ
@@ -290,7 +290,7 @@ type AuthorizeService struct{}
 type TradingService struct{}
 type PaymentService struct{}
 type ReceiptService struct{}
-type VendorService struct{}
+type SupplierService struct{}
 type CarrierService struct{}
 type DeviceService struct{}
 
@@ -316,7 +316,7 @@ var authorizeService = &AuthorizeService{}
 var tradingService = &TradingService{}
 var paymentService = &PaymentService{}
 var receiptService = &ReceiptService{}
-var vendorService = &VendorService{}
+var supplierService = &SupplierService{}
 var carrierService = &CarrierService{}
 var deviceService = &DeviceService{}
 
@@ -772,7 +772,6 @@ func (s *ProductService) CreateProduct(ctx context.Context, q *wrapshop.CreatePr
 			RetailPrice: q.RetailPrice,
 		},
 		BrandID:     q.BrandId,
-		VendorID:    q.VendorId,
 		ProductType: q.ProductType.ToProductType(),
 		MetaFields:  metaFields,
 	}
@@ -802,7 +801,6 @@ func (s *ProductService) UpdateProduct(ctx context.Context, q *wrapshop.UpdatePr
 	cmd := &catalog.UpdateShopProductInfoCommand{
 		ShopID:    shopID,
 		ProductID: q.Id,
-		VendorID:  q.VendorId,
 		Code:      PString(q.Code),
 		Name:      PString(q.Name),
 		Unit:      PString(q.Unit),

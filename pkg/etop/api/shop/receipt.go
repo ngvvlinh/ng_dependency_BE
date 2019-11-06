@@ -11,8 +11,8 @@ import (
 	"etop.vn/api/main/receipting"
 	"etop.vn/api/shopping/carrying"
 	"etop.vn/api/shopping/customering"
+	"etop.vn/api/shopping/suppliering"
 	"etop.vn/api/shopping/tradering"
-	"etop.vn/api/shopping/vendoring"
 	pbcm "etop.vn/backend/pb/common"
 	pbetop "etop.vn/backend/pb/etop"
 	pbshop "etop.vn/backend/pb/etop/shop"
@@ -299,10 +299,10 @@ func listTraders(
 	ctx context.Context, shopID int64,
 	traderIDs []int64, receiptsResult []*pbshop.Receipt,
 ) error {
-	mapVendor := make(map[int64]*vendoring.ShopVendor)
+	mapSupplier := make(map[int64]*suppliering.ShopSupplier)
 	mapCustomer := make(map[int64]*customering.ShopCustomer)
 	mapCarrier := make(map[int64]*carrying.ShopCarrier)
-	var vendorIDs, customerIDs, carrierIDs []int64
+	var supplierIDs, customerIDs, carrierIDs []int64
 	for _, traderID := range traderIDs {
 		if traderID == model.IndependentCustomerID {
 			customerIDs = append(customerIDs, traderID)
@@ -324,21 +324,21 @@ func listTraders(
 			carrierIDs = append(carrierIDs, trader.ID)
 		case tradering.CustomerType:
 			customerIDs = append(customerIDs, trader.ID)
-		case tradering.VendorType:
-			vendorIDs = append(vendorIDs, trader.ID)
+		case tradering.SupplierType:
+			supplierIDs = append(supplierIDs, trader.ID)
 		}
 	}
 	// Get elements for each of type
-	if vendorIDs != nil && len(vendorIDs) > 0 {
-		query := &vendoring.ListVendorsByIDsQuery{
+	if supplierIDs != nil && len(supplierIDs) > 0 {
+		query := &suppliering.ListSuppliersByIDsQuery{
 			ShopID: shopID,
-			IDs:    vendorIDs,
+			IDs:    supplierIDs,
 		}
-		if err := vendorQuery.Dispatch(ctx, query); err != nil {
+		if err := supplierQuery.Dispatch(ctx, query); err != nil {
 			return err
 		}
-		for _, vendor := range query.Result.Vendors {
-			mapVendor[vendor.ID] = vendor
+		for _, supplier := range query.Result.Suppliers {
+			mapSupplier[supplier.ID] = supplier
 		}
 	}
 	if customerIDs != nil && len(customerIDs) > 0 {
@@ -401,11 +401,11 @@ func listTraders(
 		}
 	}
 	for _, receipt := range receiptsResult {
-		if vendor, ok := mapVendor[receipt.TraderId]; ok {
+		if supplier, ok := mapSupplier[receipt.TraderId]; ok {
 			receipt.Partner = &pbshop.Partner{
-				Id:       vendor.ID,
-				Type:     tradering.VendorType,
-				FullName: vendor.FullName,
+				Id:       supplier.ID,
+				Type:     tradering.SupplierType,
+				FullName: supplier.FullName,
 			}
 		}
 		if customer, ok := mapCustomer[receipt.TraderId]; ok {

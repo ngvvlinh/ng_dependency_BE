@@ -73,7 +73,6 @@ func ShopProduct(in *catalogmodel.ShopProduct) (out *catalog.ShopProduct) {
 		CreatedAt:   in.CreatedAt,
 		UpdatedAt:   in.UpdatedAt,
 		CategoryID:  in.CategoryID,
-		VendorID:    in.VendorID,
 		ProductType: catalog.ProductType(in.ProductType),
 		MetaFields:  metaFields,
 		BrandID:     in.BrandID,
@@ -140,7 +139,6 @@ func ShopProductDB(in *catalog.ShopProduct) (out *catalogmodel.ShopProduct) {
 		Tags:          in.Tags,
 		Unit:          in.Unit,
 		CategoryID:    in.CategoryID,
-		VendorID:      in.VendorID,
 		CostPrice:     in.CostPrice,
 		ListPrice:     in.ListPrice,
 		RetailPrice:   in.RetailPrice,
@@ -276,7 +274,6 @@ func UpdateShopProduct(in *catalogmodel.ShopProduct, args *catalog.UpdateShopPro
 		return nil
 	}
 	shopProduct := in
-	shopProduct.VendorID = args.VendorID
 	shopProduct.Code = args.Code.Apply(in.Code)
 	shopProduct.Name = args.Name.Apply(in.Name)
 	shopProduct.Description = args.Description.Apply(in.Description)

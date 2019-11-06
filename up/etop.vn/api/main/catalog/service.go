@@ -176,7 +176,6 @@ type ShopCollectionsResponse struct {
 type CreateShopProductArgs struct {
 	ShopID int64
 
-	VendorID  int64
 	Code      string
 	Name      string
 	Unit      string
@@ -214,7 +213,6 @@ type UpdateShopProductInfoArgs struct {
 	BrandID     NullInt64
 	ProductType ProductType
 	CategoryID  int64
-	VendorID    int64
 }
 
 type UpdateShopProductCategoryArgs struct {
@@ -319,9 +317,9 @@ type RemoveShopProductColelctionArgs struct {
 	CollectionIDs []int64
 }
 
-type ValidVendorIDEvent struct {
-	VendorID int64
-	ShopID   int64
+type ValidSupplierIDEvent struct {
+	SupplierID int64
+	ShopID     int64
 }
 
 type RemoveShopProductCategoryArgs struct {

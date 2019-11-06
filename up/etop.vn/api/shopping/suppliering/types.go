@@ -1,8 +1,8 @@
-package vendoring
+package suppliering
 
 import "time"
 
-type ShopVendor struct {
+type ShopSupplier struct {
 	ID        int64
 	ShopID    int64
 	FullName  string

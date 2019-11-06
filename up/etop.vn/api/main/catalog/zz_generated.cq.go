@@ -99,7 +99,6 @@ func (h AggregateHandler) HandleCreateShopCollection(ctx context.Context, msg *C
 
 type CreateShopProductCommand struct {
 	ShopID          int64
-	VendorID        int64
 	Code            string
 	Name            string
 	Unit            string
@@ -297,7 +296,6 @@ type UpdateShopProductInfoCommand struct {
 	BrandID     dot.NullInt64
 	ProductType string
 	CategoryID  int64
-	VendorID    int64
 
 	Result *ShopProductWithVariants `json:"-"`
 }
@@ -761,7 +759,6 @@ func (q *CreateShopProductCommand) GetArgs(ctx context.Context) (_ context.Conte
 	return ctx,
 		&CreateShopProductArgs{
 			ShopID:          q.ShopID,
-			VendorID:        q.VendorID,
 			Code:            q.Code,
 			Name:            q.Name,
 			Unit:            q.Unit,
@@ -777,7 +774,6 @@ func (q *CreateShopProductCommand) GetArgs(ctx context.Context) (_ context.Conte
 
 func (q *CreateShopProductCommand) SetCreateShopProductArgs(args *CreateShopProductArgs) {
 	q.ShopID = args.ShopID
-	q.VendorID = args.VendorID
 	q.Code = args.Code
 	q.Name = args.Name
 	q.Unit = args.Unit
@@ -993,7 +989,6 @@ func (q *UpdateShopProductInfoCommand) GetArgs(ctx context.Context) (_ context.C
 			BrandID:     q.BrandID,
 			ProductType: q.ProductType,
 			CategoryID:  q.CategoryID,
-			VendorID:    q.VendorID,
 		}
 }
 
@@ -1013,7 +1008,6 @@ func (q *UpdateShopProductInfoCommand) SetUpdateShopProductInfoArgs(args *Update
 	q.BrandID = args.BrandID
 	q.ProductType = args.ProductType
 	q.CategoryID = args.CategoryID
-	q.VendorID = args.VendorID
 }
 
 func (q *UpdateShopProductMetaFieldsCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateShopProductMetaFieldsArgs) {

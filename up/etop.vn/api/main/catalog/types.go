@@ -3,8 +3,6 @@ package catalog
 import (
 	"time"
 
-	"etop.vn/api/meta"
-
 	"etop.vn/api/main/catalog/types"
 	cmutil "etop.vn/capi/util"
 )
@@ -38,8 +36,6 @@ type ShopProduct struct {
 	PriceInfo
 
 	CategoryID int64
-
-	VendorID int64
 
 	CollectionIDs []int64
 
@@ -207,18 +203,6 @@ type ShopProductCollection struct {
 
 	CreatedAt time.Time
 	UpdatedAt time.Time
-}
-
-type ShopProductCreatingEvent struct {
-	meta.EventMeta
-	VendorID int64
-	ShopID   int64
-}
-
-type ShopProductUpdatingEvent struct {
-	meta.EventMeta
-	VendorID int64
-	ShopID   int64
 }
 
 type MetaField struct {
