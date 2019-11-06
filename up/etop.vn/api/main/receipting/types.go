@@ -40,6 +40,7 @@ type Receipt struct {
 	RefIDs      []int64
 	RefType     ReceiptRefType
 	Lines       []*ReceiptLine
+	Trader      *Trader
 	PaidAt      time.Time
 	ConfirmedAt time.Time
 	CancelledAt time.Time
@@ -53,6 +54,13 @@ type ReceiptLine struct {
 	RefID  int64
 	Title  string
 	Amount int32
+}
+
+type Trader struct {
+	ID       int64
+	Type     string
+	FullName string
+	Phone    string
 }
 
 func (r *Receipt) GetRefIDs() []int64 {

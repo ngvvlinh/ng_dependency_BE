@@ -303,6 +303,7 @@ func listTraders(
 	mapCustomer := make(map[int64]*customering.ShopCustomer)
 	mapCarrier := make(map[int64]*carrying.ShopCarrier)
 	var supplierIDs, customerIDs, carrierIDs []int64
+	mapTraderID := make(map[int64]bool)
 	for _, traderID := range traderIDs {
 		if traderID == model.IndependentCustomerID {
 			customerIDs = append(customerIDs, traderID)
@@ -339,6 +340,7 @@ func listTraders(
 		}
 		for _, supplier := range query.Result.Suppliers {
 			mapSupplier[supplier.ID] = supplier
+			mapTraderID[supplier.ID] = true
 		}
 	}
 	if customerIDs != nil && len(customerIDs) > 0 {
@@ -351,6 +353,7 @@ func listTraders(
 		}
 		for _, customer := range query.Result.Customers {
 			mapCustomer[customer.ID] = customer
+			mapTraderID[customer.ID] = true
 		}
 
 		var hasIndependentCustomerID bool
@@ -369,6 +372,7 @@ func listTraders(
 				return err
 			}
 			mapCustomer[model.IndependentCustomerID] = getIndependentCustomerQuery.Result
+			mapTraderID[model.IndependentCustomerID] = true
 		}
 	}
 	if carrierIDs != nil && len(carrierIDs) > 0 {
@@ -381,6 +385,7 @@ func listTraders(
 		}
 		for _, carrier := range query.Result.Carriers {
 			mapCarrier[carrier.ID] = carrier
+			mapTraderID[carrier.ID] = true
 		}
 
 		var hasTopShipID bool
@@ -398,30 +403,12 @@ func listTraders(
 				return err
 			}
 			mapCarrier[model.TopShipID] = getTopShipCarrierQuery.Result
+			mapTraderID[model.TopShipID] = true
 		}
 	}
 	for _, receipt := range receiptsResult {
-		if supplier, ok := mapSupplier[receipt.TraderId]; ok {
-			receipt.Partner = &pbshop.Partner{
-				Id:       supplier.ID,
-				Type:     tradering.SupplierType,
-				FullName: supplier.FullName,
-			}
-		}
-		if customer, ok := mapCustomer[receipt.TraderId]; ok {
-			receipt.Partner = &pbshop.Partner{
-				Id:       customer.ID,
-				Type:     tradering.CustomerType,
-				FullName: customer.FullName,
-				Phone:    customer.Phone,
-			}
-		}
-		if carrier, ok := mapCarrier[receipt.TraderId]; ok {
-			receipt.Partner = &pbshop.Partner{
-				Id:       carrier.ID,
-				Type:     tradering.CarrierType,
-				FullName: carrier.FullName,
-			}
+		if _, ok := mapTraderID[receipt.TraderId]; !ok {
+			receipt.Trader.Deleted = true
 		}
 	}
 	return nil

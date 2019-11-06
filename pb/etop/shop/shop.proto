@@ -1441,11 +1441,12 @@ message ReceiptLine {
     required int32 amount = 3 [(gogoproto.nullable) = false];
 }
 
-message Partner {
+message Trader {
     optional int64 id = 1 [(gogoproto.nullable) = false];
     optional string type = 2 [(gogoproto.nullable) = false];
     optional string full_name = 3 [(gogoproto.nullable) = false];
     optional string phone = 4 [(gogoproto.nullable)=false];
+    optional bool deleted = 5 [(gogoproto.nullable)=false];
 }
 
 message Receipt {
@@ -1471,7 +1472,7 @@ message Receipt {
     optional google.protobuf.Timestamp cancelled_at = 19;
 
     optional etop.User user = 20;
-    optional Partner partner = 21;
+    optional Trader trader = 21;
     optional Ledger ledger = 22;
 }
 

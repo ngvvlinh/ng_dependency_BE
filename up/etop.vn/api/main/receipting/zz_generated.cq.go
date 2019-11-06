@@ -77,6 +77,7 @@ type CreateReceiptCommand struct {
 	RefIDs      []int64
 	RefType     ReceiptRefType
 	Lines       []*ReceiptLine
+	Trader      *Trader
 	PaidAt      time.Time
 	CreatedBy   int64
 	CreatedType ReceiptCreatedType
@@ -113,6 +114,7 @@ type UpdateReceiptCommand struct {
 	RefIDs      []int64
 	RefType     ReceiptRefType
 	Lines       []*ReceiptLine
+	Trader      *Trader
 	PaidAt      time.Time
 
 	Result *Receipt `json:"-"`
@@ -272,6 +274,7 @@ func (q *CreateReceiptCommand) GetArgs(ctx context.Context) (_ context.Context, 
 			RefIDs:      q.RefIDs,
 			RefType:     q.RefType,
 			Lines:       q.Lines,
+			Trader:      q.Trader,
 			PaidAt:      q.PaidAt,
 			CreatedBy:   q.CreatedBy,
 			CreatedType: q.CreatedType,
@@ -291,6 +294,7 @@ func (q *CreateReceiptCommand) SetCreateReceiptArgs(args *CreateReceiptArgs) {
 	q.RefIDs = args.RefIDs
 	q.RefType = args.RefType
 	q.Lines = args.Lines
+	q.Trader = args.Trader
 	q.PaidAt = args.PaidAt
 	q.CreatedBy = args.CreatedBy
 	q.CreatedType = args.CreatedType
@@ -316,6 +320,7 @@ func (q *UpdateReceiptCommand) GetArgs(ctx context.Context) (_ context.Context, 
 			RefIDs:      q.RefIDs,
 			RefType:     q.RefType,
 			Lines:       q.Lines,
+			Trader:      q.Trader,
 			PaidAt:      q.PaidAt,
 		}
 }
@@ -331,6 +336,7 @@ func (q *UpdateReceiptCommand) SetUpdateReceiptArgs(args *UpdateReceiptArgs) {
 	q.RefIDs = args.RefIDs
 	q.RefType = args.RefType
 	q.Lines = args.Lines
+	q.Trader = args.Trader
 	q.PaidAt = args.PaidAt
 }
 

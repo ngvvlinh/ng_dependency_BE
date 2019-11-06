@@ -3,13 +3,12 @@ package aggregate
 import (
 	"context"
 
-	"etop.vn/common/l"
-
-	"etop.vn/api/shopping/customering"
-
 	"etop.vn/api/main/ledgering"
 	"etop.vn/api/main/ordering"
 	"etop.vn/api/main/receipting"
+	"etop.vn/api/shopping/carrying"
+	"etop.vn/api/shopping/customering"
+	"etop.vn/api/shopping/suppliering"
 	"etop.vn/api/shopping/tradering"
 	"etop.vn/backend/com/main/receipting/convert"
 	"etop.vn/backend/com/main/receipting/model"
@@ -21,6 +20,7 @@ import (
 	etopmodel "etop.vn/backend/pkg/etop/model"
 	"etop.vn/capi"
 	. "etop.vn/capi/dot"
+	"etop.vn/common/l"
 )
 
 var ll = l.New()
@@ -35,12 +35,15 @@ type ReceiptAggregate struct {
 	ledgerQuery   ledgering.QueryBus
 	orderQuery    ordering.QueryBus
 	customerQuery customering.QueryBus
+	carrierQuery  carrying.QueryBus
+	supplierQuery suppliering.QueryBus
 }
 
 func NewReceiptAggregate(
 	database *cmsql.Database, eventBus capi.EventBus,
 	traderQuery tradering.QueryBus, ledgerQuery ledgering.QueryBus,
 	orderQuery ordering.QueryBus, customerQuery customering.QueryBus,
+	carrierQuery carrying.QueryBus, supplierQuery suppliering.QueryBus,
 ) *ReceiptAggregate {
 	return &ReceiptAggregate{
 		db:            database,
@@ -50,6 +53,8 @@ func NewReceiptAggregate(
 		ledgerQuery:   ledgerQuery,
 		orderQuery:    orderQuery,
 		customerQuery: customerQuery,
+		carrierQuery:  carrierQuery,
+		supplierQuery: supplierQuery,
 	}
 }
 
@@ -91,6 +96,7 @@ func (a *ReceiptAggregate) CreateReceipt(
 		return nil, err
 	}
 
+	args.Trader = receiptNeedValidate.Trader
 	receipt := new(receipting.Receipt)
 	if err := scheme.Convert(args, receipt); err != nil {
 		return nil, err
@@ -170,11 +176,15 @@ func (a *ReceiptAggregate) UpdateReceipt(
 		args.Amount = PInt32(&receipt.Amount)
 		args.RefType = receipt.RefType
 		args.Lines = receipt.Lines
+		args.Trader = receipt.Trader
 		args.PaidAt = receipt.PaidAt
 	} else {
 		if !args.TraderID.Valid || args.TraderID.Int64 == receipt.TraderID {
 			args.TraderID = PInt64(&receipt.TraderID)
 			args.RefType = receipt.RefType
+			args.Trader = receipt.Trader
+		} else {
+			args.Trader = receiptNeedValidate.Trader
 		}
 	}
 
@@ -231,26 +241,59 @@ func (a *ReceiptAggregate) validateReceiptForCreateOrUpdate(ctx context.Context,
 					ID:     receipt.TraderID,
 					ShopID: shopID,
 				}
-				err := a.customerQuery.Dispatch(ctx, query)
-				if err != nil {
+				if err := a.customerQuery.Dispatch(ctx, query); err != nil {
 					return cm.MapError(err).
 						Map(cm.NotFound, cm.FailedPrecondition, "Đối tác không hợp lệ").
 						Throw()
 				}
-
 				if receipt.RefType != receipting.ReceiptRefTypeOrder {
 					return cm.Errorf(cm.InvalidArgument, nil, "Ref_type không hợp lệ")
 				}
+
+				receipt.Trader = &receipting.Trader{
+					ID:       query.Result.ID,
+					Type:     tradering.CustomerType,
+					FullName: query.Result.FullName,
+					Phone:    query.Result.Phone,
+				}
 			case tradering.CarrierType:
+				query := &carrying.GetCarrierByIDQuery{
+					ID:     receipt.TraderID,
+					ShopID: shopID,
+				}
+				if err := a.carrierQuery.Dispatch(ctx, query); err != nil {
+					return cm.MapError(err).
+						Map(cm.NotFound, cm.FailedPrecondition, "Đối tác không hợp lệ").
+						Throw()
+				}
 				if receipt.RefType != receipting.ReceiptRefTypeFulfillment {
 					return cm.Errorf(cm.InvalidArgument, nil, "Ref_type không hợp lệ")
 				}
-				// TODO:
+
+				receipt.Trader = &receipting.Trader{
+					ID:       query.Result.ID,
+					Type:     tradering.CarrierType,
+					FullName: query.Result.FullName,
+				}
 			case tradering.SupplierType:
+				query := &suppliering.GetSupplierByIDQuery{
+					ID:     receipt.TraderID,
+					ShopID: shopID,
+				}
+				if err := a.supplierQuery.Dispatch(ctx, query); err != nil {
+					return cm.MapError(err).
+						Map(cm.NotFound, cm.FailedPrecondition, "Đối tác không hợp lệ").
+						Throw()
+				}
 				if receipt.RefType != receipting.ReceiptRefTypeInventoryVoucher {
 					return cm.Errorf(cm.InvalidArgument, nil, "Ref_type không hợp lệ")
 				}
-				// TODO:
+
+				receipt.Trader = &receipting.Trader{
+					ID:       query.Result.ID,
+					Type:     tradering.SupplierType,
+					FullName: query.Result.FullName,
+				}
 			}
 		}
 	}

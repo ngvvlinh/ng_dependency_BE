@@ -9127,24 +9127,6 @@
         }
       }
     },
-    "shopPartner": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "string",
-          "format": "int64"
-        },
-        "type": {
-          "type": "string"
-        },
-        "full_name": {
-          "type": "string"
-        },
-        "phone": {
-          "type": "string"
-        }
-      }
-    },
     "shopPaymentCheckReturnDataRequest": {
       "type": "object",
       "properties": {
@@ -9316,8 +9298,8 @@
         "user": {
           "$ref": "#/definitions/etopUser"
         },
-        "partner": {
-          "$ref": "#/definitions/shopPartner"
+        "trader": {
+          "$ref": "#/definitions/shopTrader"
         },
         "ledger": {
           "$ref": "#/definitions/shopLedger"
@@ -10011,6 +9993,28 @@
         },
         "label": {
           "type": "string"
+        }
+      }
+    },
+    "shopTrader": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "type": {
+          "type": "string"
+        },
+        "full_name": {
+          "type": "string"
+        },
+        "phone": {
+          "type": "string"
+        },
+        "deleted": {
+          "type": "boolean",
+          "format": "boolean"
         }
       }
     },

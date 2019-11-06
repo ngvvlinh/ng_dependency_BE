@@ -73,6 +73,24 @@ func registerConversions(s *conversion.Scheme) {
 		*out.(*[]*receiptingmodel.ReceiptLine) = out0
 		return nil
 	})
+	s.Register((*receiptingmodel.Trader)(nil), (*receipting.Trader)(nil), func(arg, out interface{}) error {
+		Convert_receiptingmodel_Trader_receipting_Trader(arg.(*receiptingmodel.Trader), out.(*receipting.Trader))
+		return nil
+	})
+	s.Register(([]*receiptingmodel.Trader)(nil), (*[]*receipting.Trader)(nil), func(arg, out interface{}) error {
+		out0 := Convert_receiptingmodel_Traders_receipting_Traders(arg.([]*receiptingmodel.Trader))
+		*out.(*[]*receipting.Trader) = out0
+		return nil
+	})
+	s.Register((*receipting.Trader)(nil), (*receiptingmodel.Trader)(nil), func(arg, out interface{}) error {
+		Convert_receipting_Trader_receiptingmodel_Trader(arg.(*receipting.Trader), out.(*receiptingmodel.Trader))
+		return nil
+	})
+	s.Register(([]*receipting.Trader)(nil), (*[]*receiptingmodel.Trader)(nil), func(arg, out interface{}) error {
+		out0 := Convert_receipting_Traders_receiptingmodel_Traders(arg.([]*receipting.Trader))
+		*out.(*[]*receiptingmodel.Trader) = out0
+		return nil
+	})
 }
 
 //-- convert etop.vn/api/main/receipting.Receipt --//
@@ -103,6 +121,7 @@ func convert_receiptingmodel_Receipt_receipting_Receipt(arg *receiptingmodel.Rec
 	out.RefIDs = arg.RefIDs                              // simple assign
 	out.RefType = receipting.ReceiptRefType(arg.RefType) // simple conversion
 	out.Lines = Convert_receiptingmodel_ReceiptLines_receipting_ReceiptLines(arg.Lines)
+	out.Trader = Convert_receiptingmodel_Trader_receipting_Trader(arg.Trader, nil)
 	out.PaidAt = arg.PaidAt                                          // simple assign
 	out.ConfirmedAt = arg.ConfirmedAt                                // simple assign
 	out.CancelledAt = arg.CancelledAt                                // simple assign
@@ -146,7 +165,8 @@ func convert_receipting_Receipt_receiptingmodel_Receipt(arg *receipting.Receipt,
 	out.RefIDs = arg.RefIDs                    // simple assign
 	out.RefType = string(arg.RefType)          // simple conversion
 	out.Lines = Convert_receipting_ReceiptLines_receiptingmodel_ReceiptLines(arg.Lines)
-	out.LedgerID = arg.LedgerID               // simple assign
+	out.LedgerID = arg.LedgerID // simple assign
+	out.Trader = Convert_receipting_Trader_receiptingmodel_Trader(arg.Trader, nil)
 	out.CancelledReason = ""                  // zero value
 	out.CreatedType = string(arg.CreatedType) // simple conversion
 	out.CreatedBy = arg.CreatedBy             // simple assign
@@ -193,6 +213,7 @@ func apply_receipting_CreateReceiptArgs_receipting_Receipt(arg *receipting.Creat
 	out.RefIDs = arg.RefIDs           // simple assign
 	out.RefType = arg.RefType         // simple assign
 	out.Lines = arg.Lines             // simple assign
+	out.Trader = arg.Trader           // simple assign
 	out.PaidAt = arg.PaidAt           // simple assign
 	out.ConfirmedAt = arg.ConfirmedAt // simple assign
 	out.CancelledAt = time.Time{}     // zero value
@@ -228,6 +249,7 @@ func apply_receipting_UpdateReceiptArgs_receipting_Receipt(arg *receipting.Updat
 	out.RefIDs = arg.RefIDs                                  // simple assign
 	out.RefType = arg.RefType                                // simple assign
 	out.Lines = arg.Lines                                    // simple assign
+	out.Trader = arg.Trader                                  // simple assign
 	out.PaidAt = arg.PaidAt                                  // simple assign
 	out.ConfirmedAt = out.ConfirmedAt                        // no change
 	out.CancelledAt = out.CancelledAt                        // no change
@@ -287,6 +309,62 @@ func Convert_receipting_ReceiptLines_receiptingmodel_ReceiptLines(args []*receip
 	outs = make([]*receiptingmodel.ReceiptLine, len(args))
 	for i := range tmps {
 		outs[i] = Convert_receipting_ReceiptLine_receiptingmodel_ReceiptLine(args[i], &tmps[i])
+	}
+	return outs
+}
+
+//-- convert etop.vn/api/main/receipting.Trader --//
+
+func Convert_receiptingmodel_Trader_receipting_Trader(arg *receiptingmodel.Trader, out *receipting.Trader) *receipting.Trader {
+	if arg == nil {
+		return nil
+	}
+	if out == nil {
+		out = &receipting.Trader{}
+	}
+	convert_receiptingmodel_Trader_receipting_Trader(arg, out)
+	return out
+}
+
+func convert_receiptingmodel_Trader_receipting_Trader(arg *receiptingmodel.Trader, out *receipting.Trader) {
+	out.ID = arg.ID             // simple assign
+	out.Type = arg.Type         // simple assign
+	out.FullName = arg.FullName // simple assign
+	out.Phone = arg.Phone       // simple assign
+}
+
+func Convert_receiptingmodel_Traders_receipting_Traders(args []*receiptingmodel.Trader) (outs []*receipting.Trader) {
+	tmps := make([]receipting.Trader, len(args))
+	outs = make([]*receipting.Trader, len(args))
+	for i := range tmps {
+		outs[i] = Convert_receiptingmodel_Trader_receipting_Trader(args[i], &tmps[i])
+	}
+	return outs
+}
+
+func Convert_receipting_Trader_receiptingmodel_Trader(arg *receipting.Trader, out *receiptingmodel.Trader) *receiptingmodel.Trader {
+	if arg == nil {
+		return nil
+	}
+	if out == nil {
+		out = &receiptingmodel.Trader{}
+	}
+	convert_receipting_Trader_receiptingmodel_Trader(arg, out)
+	return out
+}
+
+func convert_receipting_Trader_receiptingmodel_Trader(arg *receipting.Trader, out *receiptingmodel.Trader) {
+	out.ID = arg.ID             // simple assign
+	out.Type = arg.Type         // simple assign
+	out.FullName = arg.FullName // simple assign
+	out.Phone = arg.Phone       // simple assign
+}
+
+func Convert_receipting_Traders_receiptingmodel_Traders(args []*receipting.Trader) (outs []*receiptingmodel.Trader) {
+	tmps := make([]receiptingmodel.Trader, len(args))
+	outs = make([]*receiptingmodel.Trader, len(args))
+	for i := range tmps {
+		outs[i] = Convert_receipting_Trader_receiptingmodel_Trader(args[i], &tmps[i])
 	}
 	return outs
 }

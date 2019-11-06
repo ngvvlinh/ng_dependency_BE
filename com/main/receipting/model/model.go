@@ -25,6 +25,7 @@ type Receipt struct {
 	RefType         string
 	Lines           []*ReceiptLine
 	LedgerID        int64
+	Trader          *Trader
 	CancelledReason string
 	CreatedType     string
 	CreatedBy       int64
@@ -40,4 +41,11 @@ type ReceiptLine struct {
 	RefID  int64  `json:"ref_id"`
 	Title  string `json:"title"`
 	Amount int32  `json:"amount"`
+}
+
+type Trader struct {
+	ID       int64  `json:"id"`
+	Type     string `json:"type"`
+	FullName string `json:"full_name"`
+	Phone    string `json:"phone"`
 }

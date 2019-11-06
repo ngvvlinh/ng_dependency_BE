@@ -363,7 +363,7 @@ func main() {
 	ledgerPM := ledgerpm.New(eventBus, ledgerAggr)
 	ledgerPM.RegisterEventHandlers(eventBus)
 
-	receiptAggr := receiptaggregate.NewReceiptAggregate(db, eventBus, traderQuery, ledgerQuery, orderQuery, customerQuery).MessageBus()
+	receiptAggr := receiptaggregate.NewReceiptAggregate(db, eventBus, traderQuery, ledgerQuery, orderQuery, customerQuery, carrierQuery, supplierQuery).MessageBus()
 	receiptQuery = receiptquery.NewReceiptQuery(db).MessageBus()
 	receiptPM := receiptpm.New(eventBus, receiptQuery, receiptAggr, ledgerQuery, ledgerAggr)
 	receiptPM.RegisterEventHandlers(eventBus)

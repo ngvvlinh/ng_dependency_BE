@@ -373,6 +373,7 @@ func PbReceipt(m *receipting.Receipt) *Receipt {
 		LedgerId:    m.LedgerID,
 		RefType:     string(m.RefType),
 		Lines:       PbReceiptLines(m.Lines),
+		Trader:      PbTrader(m.Trader),
 		Status:      pbs3.Pb(model.Status3(m.Status)),
 		CreatedBy:   m.CreatedBy,
 		CreatedType: string(m.CreatedType),
@@ -392,7 +393,31 @@ func PbReceipts(ms []*receipting.Receipt) []*Receipt {
 	return res
 }
 
+func PbTrader(m *receipting.Trader) *Trader {
+	if m == nil {
+		return nil
+	}
+	return &Trader{
+		Id:       m.ID,
+		Type:     m.Type,
+		FullName: m.FullName,
+		Phone:    m.Phone,
+		Deleted:  false,
+	}
+}
+
+func PbTraders(ms []*receipting.Trader) []*Trader {
+	res := make([]*Trader, len(ms))
+	for i, m := range ms {
+		res[i] = PbTrader(m)
+	}
+	return res
+}
+
 func PbReceiptLine(m *receipting.ReceiptLine) *ReceiptLine {
+	if m == nil {
+		return nil
+	}
 	return &ReceiptLine{
 		RefId:  m.RefID,
 		Title:  m.Title,
