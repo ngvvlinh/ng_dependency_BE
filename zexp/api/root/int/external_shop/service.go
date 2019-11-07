@@ -10,26 +10,26 @@ import (
 
 // +gen:apix
 
-// +apix:path=/external_shop.Misc
+// +apix:path=/shop.Misc
 type MiscAPI interface {
 	VersionInfo(context.Context, *cm.Empty) (*cm.VersionInfoResponse, error)
 	CurrentAccount(context.Context, *cm.Empty) (*etop.PublicAccountInfo, error)
 	GetLocationList(context.Context, *cm.Empty) (*external.LocationResponse, error)
 }
 
-// +apix:path=/external_shop.Webhook
+// +apix:path=/shop.Webhook
 type WebhookAPI interface {
 	CreateWebhook(context.Context, *external.CreateWebhookRequest) (*external.Webhook, error)
 	GetWebhooks(context.Context, *cm.Empty) (*external.WebhooksResponse, error)
 	DeleteWebhook(context.Context, *external.DeleteWebhookRequest) (*external.WebhooksResponse, error)
 }
 
-// +apix:path=/external_shop.History
+// +apix:path=/shop.History
 type HistoryAPI interface {
 	GetChanges(context.Context, *external.GetChangesRequest) (*external.Callback, error)
 }
 
-// +apix:path=/external_shop.Shipping
+// +apix:path=/shop.Shipping
 type ShippingAPI interface {
 	GetShippingServices(context.Context, *external.GetShippingServicesRequest) (*external.GetShippingServicesResponse, error)
 	CreateAndConfirmOrder(context.Context, *external.CreateOrderRequest) (*external.OrderAndFulfillments, error)

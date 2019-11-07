@@ -1,4 +1,4 @@
-package etop_affiliate
+package services_affiliate
 
 import (
 	"context"
@@ -9,12 +9,12 @@ import (
 
 // +gen:apix
 
-// +apix:path=/etop_affiliatetop.User
+// +apix:path=/affiliate.User
 type UserAPI interface {
 	UpdateReferral(context.Context, *aff.UpdateReferralRequest) (*aff.UserReferral, error)
 }
 
-// +apix:path=/etop_affiliatetop.Trading
+// +apix:path=/affiliate.Trading
 type TradingAPI interface {
 	TradingGetProducts(context.Context, *cm.CommonListRequest) (*aff.SupplyGetProductsResponse, error)
 	CreateOrUpdateTradingCommissionSetting(context.Context, *aff.CreateOrUpdateTradingCommissionSettingRequest) (*aff.SupplyCommissionSetting, error)
@@ -24,14 +24,14 @@ type TradingAPI interface {
 	UpdateTradingProductPromotion(context.Context, *aff.CreateOrUpdateProductPromotionRequest) (*aff.ProductPromotion, error)
 }
 
-// +apix:path=/etop_affiliatetop.Shop
+// +apix:path=/affiliate.Shop
 type ShopAPI interface {
 	GetProductPromotion(context.Context, *aff.GetProductPromotionRequest) (*aff.GetProductPromotionResponse, error)
 	ShopGetProducts(context.Context, *cm.CommonListRequest) (*aff.ShopGetProductsResponse, error)
 	CheckReferralCodeValid(context.Context, *aff.CheckReferralCodeValidRequest) (*aff.GetProductPromotionResponse, error)
 }
 
-// +apix:path=/etop_affiliate.Affiliate
+// +apix:path=/affiliate.Affiliate
 type AffiliateAPI interface {
 	GetCommissions(context.Context, *cm.CommonListRequest) (*aff.GetCommissionsResponse, error)
 	NotifyNewShopPurchase(context.Context, *aff.NotifyNewShopPurchaseRequest) (*aff.NotifyNewShopPurchaseResponse, error)

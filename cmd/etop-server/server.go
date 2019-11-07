@@ -83,8 +83,8 @@ func startEtopServer() *http.Server {
 
 		// /api/
 		apiMux := http.NewServeMux()
-		apiMux.Handle("/api/", http.NotFoundHandler())
-		mux.Handle("/api/", middleware.ForwardHeaders(apiMux))
+		apiMux.Handle("/api/", http.StripPrefix("/api", http.NotFoundHandler()))
+		mux.Handle("/api/", http.StripPrefix("/api", middleware.ForwardHeaders(apiMux)))
 
 		wrapetop.NewEtopServer(apiMux, nil)
 		wrapsadmin.NewSadminServer(apiMux, nil)
@@ -96,8 +96,8 @@ func startEtopServer() *http.Server {
 		wrapaff.NewAffiliateServer(apiMux, nil, cfg.Secret)
 		// /v1/
 		v1Mux := http.NewServeMux()
-		v1Mux.Handle("/v1/", http.NotFoundHandler())
-		mux.Handle("/v1/", middleware.ForwardHeaders(v1Mux))
+		v1Mux.Handle("/v1/", http.StripPrefix("/v1", http.NotFoundHandler()))
+		mux.Handle("/v1/", http.StripPrefix("/v1", middleware.ForwardHeaders(v1Mux)))
 
 		wrapxpartner.NewPartnerServer(v1Mux, nil)
 		wrapxshop.NewShopServer(v1Mux, nil)

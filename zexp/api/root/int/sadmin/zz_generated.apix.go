@@ -31,7 +31,7 @@ func NewMiscServiceServer(svc MiscAPI) Server {
 	}
 }
 
-const MiscServicePathPrefix = "/api/sadmin.Misc/"
+const MiscServicePathPrefix = "/sadmin.Misc/"
 
 func (s *MiscServiceServer) PathPrefix() string {
 	return MiscServicePathPrefix
@@ -54,7 +54,7 @@ func (s *MiscServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Reques
 
 func (s *MiscServiceServer) parseRoute(path string) (reqMsg proto.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
-	case "/api/sadmin.Misc/VersionInfo":
+	case "/sadmin.Misc/VersionInfo":
 		msg := new(common.Empty)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.MiscAPI.VersionInfo(ctx, msg)
@@ -76,7 +76,7 @@ func NewUserServiceServer(svc UserAPI) Server {
 	}
 }
 
-const UserServicePathPrefix = "/api/sadmin.User/"
+const UserServicePathPrefix = "/sadmin.User/"
 
 func (s *UserServiceServer) PathPrefix() string {
 	return UserServicePathPrefix
@@ -99,19 +99,19 @@ func (s *UserServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Reques
 
 func (s *UserServiceServer) parseRoute(path string) (reqMsg proto.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
-	case "/api/sadmin.User/CreateUser":
+	case "/sadmin.User/CreateUser":
 		msg := new(sadmin.SAdminCreateUserRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.UserAPI.CreateUser(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/api/sadmin.User/LoginAsAccount":
+	case "/sadmin.User/LoginAsAccount":
 		msg := new(sadmin.LoginAsAccountRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.UserAPI.LoginAsAccount(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/api/sadmin.User/ResetPassword":
+	case "/sadmin.User/ResetPassword":
 		msg := new(sadmin.SAdminResetPasswordRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.UserAPI.ResetPassword(ctx, msg)

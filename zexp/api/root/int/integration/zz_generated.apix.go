@@ -31,7 +31,7 @@ func NewIntegrationServiceServer(svc IntegrationAPI) Server {
 	}
 }
 
-const IntegrationServicePathPrefix = "/api/integration.Integration/"
+const IntegrationServicePathPrefix = "/integration.Integration/"
 
 func (s *IntegrationServiceServer) PathPrefix() string {
 	return IntegrationServicePathPrefix
@@ -54,37 +54,37 @@ func (s *IntegrationServiceServer) ServeHTTP(resp http.ResponseWriter, req *http
 
 func (s *IntegrationServiceServer) parseRoute(path string) (reqMsg proto.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
-	case "/api/integration.Integration/GrantAccess":
+	case "/integration.Integration/GrantAccess":
 		msg := new(integration.GrantAccessRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.IntegrationAPI.GrantAccess(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/api/integration.Integration/Init":
+	case "/integration.Integration/Init":
 		msg := new(integration.InitRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.IntegrationAPI.Init(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/api/integration.Integration/LoginUsingToken":
+	case "/integration.Integration/LoginUsingToken":
 		msg := new(integration.LoginUsingTokenRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.IntegrationAPI.LoginUsingToken(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/api/integration.Integration/Register":
+	case "/integration.Integration/Register":
 		msg := new(integration.RegisterRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.IntegrationAPI.Register(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/api/integration.Integration/RequestLogin":
+	case "/integration.Integration/RequestLogin":
 		msg := new(integration.RequestLoginRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.IntegrationAPI.RequestLogin(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/api/integration.Integration/SessionInfo":
+	case "/integration.Integration/SessionInfo":
 		msg := new(common.Empty)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.IntegrationAPI.SessionInfo(ctx, msg)
@@ -106,7 +106,7 @@ func NewMiscServiceServer(svc MiscAPI) Server {
 	}
 }
 
-const MiscServicePathPrefix = "/api/integration.Misc/"
+const MiscServicePathPrefix = "/integration.Misc/"
 
 func (s *MiscServiceServer) PathPrefix() string {
 	return MiscServicePathPrefix
@@ -129,7 +129,7 @@ func (s *MiscServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Reques
 
 func (s *MiscServiceServer) parseRoute(path string) (reqMsg proto.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
-	case "/api/integration.Misc/VersionInfo":
+	case "/integration.Misc/VersionInfo":
 		msg := new(common.Empty)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.MiscAPI.VersionInfo(ctx, msg)

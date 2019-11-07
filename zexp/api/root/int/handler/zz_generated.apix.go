@@ -31,7 +31,7 @@ func NewMiscServiceServer(svc MiscAPI) Server {
 	}
 }
 
-const MiscServicePathPrefix = "/api/handler.Misc/"
+const MiscServicePathPrefix = "/handler.Misc/"
 
 func (s *MiscServiceServer) PathPrefix() string {
 	return MiscServicePathPrefix
@@ -54,7 +54,7 @@ func (s *MiscServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Reques
 
 func (s *MiscServiceServer) parseRoute(path string) (reqMsg proto.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
-	case "/api/handler.Misc/VersionInfo":
+	case "/handler.Misc/VersionInfo":
 		msg := new(common.Empty)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.MiscAPI.VersionInfo(ctx, msg)
@@ -76,7 +76,7 @@ func NewWebhookServiceServer(svc WebhookAPI) Server {
 	}
 }
 
-const WebhookServicePathPrefix = "/api/handler.Webhook/"
+const WebhookServicePathPrefix = "/handler.Webhook/"
 
 func (s *WebhookServiceServer) PathPrefix() string {
 	return WebhookServicePathPrefix
@@ -99,7 +99,7 @@ func (s *WebhookServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Req
 
 func (s *WebhookServiceServer) parseRoute(path string) (reqMsg proto.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
-	case "/api/handler.Webhook/ResetState":
+	case "/handler.Webhook/ResetState":
 		msg := new(handler.ResetStateRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.WebhookAPI.ResetState(ctx, msg)

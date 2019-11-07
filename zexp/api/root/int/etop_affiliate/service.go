@@ -1,4 +1,4 @@
-package affiliate
+package etop_affiliate
 
 import (
 	"context"

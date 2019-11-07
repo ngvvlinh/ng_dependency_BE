@@ -32,7 +32,7 @@ func NewHistoryServiceServer(svc HistoryAPI) Server {
 	}
 }
 
-const HistoryServicePathPrefix = "/api/partner.History/"
+const HistoryServicePathPrefix = "/partner.History/"
 
 func (s *HistoryServiceServer) PathPrefix() string {
 	return HistoryServicePathPrefix
@@ -55,7 +55,7 @@ func (s *HistoryServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Req
 
 func (s *HistoryServiceServer) parseRoute(path string) (reqMsg proto.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
-	case "/api/partner.History/GetChanges":
+	case "/partner.History/GetChanges":
 		msg := new(external.GetChangesRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.HistoryAPI.GetChanges(ctx, msg)
@@ -77,7 +77,7 @@ func NewMiscServiceServer(svc MiscAPI) Server {
 	}
 }
 
-const MiscServicePathPrefix = "/api/partner.Misc/"
+const MiscServicePathPrefix = "/partner.Misc/"
 
 func (s *MiscServiceServer) PathPrefix() string {
 	return MiscServicePathPrefix
@@ -100,19 +100,19 @@ func (s *MiscServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Reques
 
 func (s *MiscServiceServer) parseRoute(path string) (reqMsg proto.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
-	case "/api/partner.Misc/CurrentAccount":
+	case "/partner.Misc/CurrentAccount":
 		msg := new(common.Empty)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.MiscAPI.CurrentAccount(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/api/partner.Misc/GetLocationList":
+	case "/partner.Misc/GetLocationList":
 		msg := new(common.Empty)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.MiscAPI.GetLocationList(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/api/partner.Misc/VersionInfo":
+	case "/partner.Misc/VersionInfo":
 		msg := new(common.Empty)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.MiscAPI.VersionInfo(ctx, msg)
@@ -134,7 +134,7 @@ func NewShippingServiceServer(svc ShippingAPI) Server {
 	}
 }
 
-const ShippingServicePathPrefix = "/api/partner.Shipping/"
+const ShippingServicePathPrefix = "/partner.Shipping/"
 
 func (s *ShippingServiceServer) PathPrefix() string {
 	return ShippingServicePathPrefix
@@ -157,31 +157,31 @@ func (s *ShippingServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Re
 
 func (s *ShippingServiceServer) parseRoute(path string) (reqMsg proto.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
-	case "/api/partner.Shipping/CancelOrder":
+	case "/partner.Shipping/CancelOrder":
 		msg := new(external.CancelOrderRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.ShippingAPI.CancelOrder(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/api/partner.Shipping/CreateAndConfirmOrder":
+	case "/partner.Shipping/CreateAndConfirmOrder":
 		msg := new(external.CreateOrderRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.ShippingAPI.CreateAndConfirmOrder(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/api/partner.Shipping/GetFulfillment":
+	case "/partner.Shipping/GetFulfillment":
 		msg := new(external.FulfillmentIDRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.ShippingAPI.GetFulfillment(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/api/partner.Shipping/GetOrder":
+	case "/partner.Shipping/GetOrder":
 		msg := new(external.OrderIDRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.ShippingAPI.GetOrder(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/api/partner.Shipping/GetShippingServices":
+	case "/partner.Shipping/GetShippingServices":
 		msg := new(external.GetShippingServicesRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.ShippingAPI.GetShippingServices(ctx, msg)
@@ -203,7 +203,7 @@ func NewShopServiceServer(svc ShopAPI) Server {
 	}
 }
 
-const ShopServicePathPrefix = "/api/partner.Shop/"
+const ShopServicePathPrefix = "/partner.Shop/"
 
 func (s *ShopServiceServer) PathPrefix() string {
 	return ShopServicePathPrefix
@@ -226,13 +226,13 @@ func (s *ShopServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Reques
 
 func (s *ShopServiceServer) parseRoute(path string) (reqMsg proto.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
-	case "/api/partner.Shop/AuthorizeShop":
+	case "/partner.Shop/AuthorizeShop":
 		msg := new(partner.AuthorizeShopRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.ShopAPI.AuthorizeShop(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/api/partner.Shop/CurrentShop":
+	case "/partner.Shop/CurrentShop":
 		msg := new(common.Empty)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.ShopAPI.CurrentShop(ctx, msg)
@@ -254,7 +254,7 @@ func NewWebhookServiceServer(svc WebhookAPI) Server {
 	}
 }
 
-const WebhookServicePathPrefix = "/api/partner.Webhook/"
+const WebhookServicePathPrefix = "/partner.Webhook/"
 
 func (s *WebhookServiceServer) PathPrefix() string {
 	return WebhookServicePathPrefix
@@ -277,19 +277,19 @@ func (s *WebhookServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Req
 
 func (s *WebhookServiceServer) parseRoute(path string) (reqMsg proto.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
-	case "/api/partner.Webhook/CreateWebhook":
+	case "/partner.Webhook/CreateWebhook":
 		msg := new(external.CreateWebhookRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.WebhookAPI.CreateWebhook(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/api/partner.Webhook/DeleteWebhook":
+	case "/partner.Webhook/DeleteWebhook":
 		msg := new(external.DeleteWebhookRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.WebhookAPI.DeleteWebhook(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/api/partner.Webhook/GetWebhooks":
+	case "/partner.Webhook/GetWebhooks":
 		msg := new(common.Empty)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.WebhookAPI.GetWebhooks(ctx, msg)

@@ -31,7 +31,7 @@ func NewEventServiceServer(svc EventAPI) Server {
 	}
 }
 
-const EventServicePathPrefix = "/api/pgevent.Event/"
+const EventServicePathPrefix = "/pgevent.Event/"
 
 func (s *EventServiceServer) PathPrefix() string {
 	return EventServicePathPrefix
@@ -54,7 +54,7 @@ func (s *EventServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Reque
 
 func (s *EventServiceServer) parseRoute(path string) (reqMsg proto.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
-	case "/api/pgevent.Event/GenerateEvents":
+	case "/pgevent.Event/GenerateEvents":
 		msg := new(pgevent.GenerateEventsRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.EventAPI.GenerateEvents(ctx, msg)
@@ -76,7 +76,7 @@ func NewMiscServiceServer(svc MiscAPI) Server {
 	}
 }
 
-const MiscServicePathPrefix = "/api/pgevent.Misc/"
+const MiscServicePathPrefix = "/pgevent.Misc/"
 
 func (s *MiscServiceServer) PathPrefix() string {
 	return MiscServicePathPrefix
@@ -99,7 +99,7 @@ func (s *MiscServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Reques
 
 func (s *MiscServiceServer) parseRoute(path string) (reqMsg proto.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
-	case "/api/pgevent.Misc/VersionInfo":
+	case "/pgevent.Misc/VersionInfo":
 		msg := new(common.Empty)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.MiscAPI.VersionInfo(ctx, msg)

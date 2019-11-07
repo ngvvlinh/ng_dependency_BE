@@ -33,7 +33,7 @@ func NewAccountServiceServer(svc AccountAPI) Server {
 	}
 }
 
-const AccountServicePathPrefix = "/api/shop.Account/"
+const AccountServicePathPrefix = "/shop.Account/"
 
 func (s *AccountServiceServer) PathPrefix() string {
 	return AccountServicePathPrefix
@@ -56,61 +56,61 @@ func (s *AccountServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Req
 
 func (s *AccountServiceServer) parseRoute(path string) (reqMsg proto.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
-	case "/api/shop.Account/CreateExternalAccountAhamove":
+	case "/shop.Account/CreateExternalAccountAhamove":
 		msg := new(common.Empty)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.AccountAPI.CreateExternalAccountAhamove(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/api/shop.Account/DeleteShop":
+	case "/shop.Account/DeleteShop":
 		msg := new(common.IDRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.AccountAPI.DeleteShop(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/api/shop.Account/GetBalanceShop":
+	case "/shop.Account/GetBalanceShop":
 		msg := new(common.Empty)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.AccountAPI.GetBalanceShop(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/api/shop.Account/GetExternalAccountAhamove":
+	case "/shop.Account/GetExternalAccountAhamove":
 		msg := new(common.Empty)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.AccountAPI.GetExternalAccountAhamove(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/api/shop.Account/RegisterShop":
+	case "/shop.Account/RegisterShop":
 		msg := new(shop.RegisterShopRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.AccountAPI.RegisterShop(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/api/shop.Account/RequestVerifyExternalAccountAhamove":
+	case "/shop.Account/RequestVerifyExternalAccountAhamove":
 		msg := new(common.Empty)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.AccountAPI.RequestVerifyExternalAccountAhamove(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/api/shop.Account/SetDefaultAddress":
+	case "/shop.Account/SetDefaultAddress":
 		msg := new(etop.SetDefaultAddressRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.AccountAPI.SetDefaultAddress(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/api/shop.Account/UpdateExternalAccountAhamoveVerification":
+	case "/shop.Account/UpdateExternalAccountAhamoveVerification":
 		msg := new(shop.UpdateXAccountAhamoveVerificationRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.AccountAPI.UpdateExternalAccountAhamoveVerification(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/api/shop.Account/UpdateExternalAccountAhamoveVerificationImages":
+	case "/shop.Account/UpdateExternalAccountAhamoveVerificationImages":
 		msg := new(shop.UpdateXAccountAhamoveVerificationRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.AccountAPI.UpdateExternalAccountAhamoveVerificationImages(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/api/shop.Account/UpdateShop":
+	case "/shop.Account/UpdateShop":
 		msg := new(shop.UpdateShopRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.AccountAPI.UpdateShop(ctx, msg)
@@ -132,7 +132,7 @@ func NewAuthorizeServiceServer(svc AuthorizeAPI) Server {
 	}
 }
 
-const AuthorizeServicePathPrefix = "/api/shop.Authorize/"
+const AuthorizeServicePathPrefix = "/shop.Authorize/"
 
 func (s *AuthorizeServiceServer) PathPrefix() string {
 	return AuthorizeServicePathPrefix
@@ -155,19 +155,19 @@ func (s *AuthorizeServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.R
 
 func (s *AuthorizeServiceServer) parseRoute(path string) (reqMsg proto.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
-	case "/api/shop.Authorize/AuthorizePartner":
+	case "/shop.Authorize/AuthorizePartner":
 		msg := new(shop.AuthorizePartnerRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.AuthorizeAPI.AuthorizePartner(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/api/shop.Authorize/GetAuthorizedPartners":
+	case "/shop.Authorize/GetAuthorizedPartners":
 		msg := new(common.Empty)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.AuthorizeAPI.GetAuthorizedPartners(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/api/shop.Authorize/GetAvailablePartners":
+	case "/shop.Authorize/GetAvailablePartners":
 		msg := new(common.Empty)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.AuthorizeAPI.GetAvailablePartners(ctx, msg)
@@ -189,7 +189,7 @@ func NewBrandServiceServer(svc BrandAPI) Server {
 	}
 }
 
-const BrandServicePathPrefix = "/api/shop.Brand/"
+const BrandServicePathPrefix = "/shop.Brand/"
 
 func (s *BrandServiceServer) PathPrefix() string {
 	return BrandServicePathPrefix
@@ -212,37 +212,37 @@ func (s *BrandServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Reque
 
 func (s *BrandServiceServer) parseRoute(path string) (reqMsg proto.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
-	case "/api/shop.Brand/CreateBrand":
+	case "/shop.Brand/CreateBrand":
 		msg := new(shop.CreateBrandRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.BrandAPI.CreateBrand(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/api/shop.Brand/DeleteBrand":
+	case "/shop.Brand/DeleteBrand":
 		msg := new(common.IDsRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.BrandAPI.DeleteBrand(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/api/shop.Brand/GetBrandByID":
+	case "/shop.Brand/GetBrandByID":
 		msg := new(common.IDRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.BrandAPI.GetBrandByID(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/api/shop.Brand/GetBrands":
+	case "/shop.Brand/GetBrands":
 		msg := new(shop.GetBrandsRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.BrandAPI.GetBrands(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/api/shop.Brand/GetBrandsByIDs":
+	case "/shop.Brand/GetBrandsByIDs":
 		msg := new(common.IDsRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.BrandAPI.GetBrandsByIDs(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/api/shop.Brand/UpdateBrandInfo":
+	case "/shop.Brand/UpdateBrandInfo":
 		msg := new(shop.UpdateBrandRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.BrandAPI.UpdateBrandInfo(ctx, msg)
@@ -264,7 +264,7 @@ func NewCarrierServiceServer(svc CarrierAPI) Server {
 	}
 }
 
-const CarrierServicePathPrefix = "/api/shop.Carrier/"
+const CarrierServicePathPrefix = "/shop.Carrier/"
 
 func (s *CarrierServiceServer) PathPrefix() string {
 	return CarrierServicePathPrefix
@@ -287,37 +287,37 @@ func (s *CarrierServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Req
 
 func (s *CarrierServiceServer) parseRoute(path string) (reqMsg proto.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
-	case "/api/shop.Carrier/CreateCarrier":
+	case "/shop.Carrier/CreateCarrier":
 		msg := new(shop.CreateCarrierRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.CarrierAPI.CreateCarrier(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/api/shop.Carrier/DeleteCarrier":
+	case "/shop.Carrier/DeleteCarrier":
 		msg := new(common.IDRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.CarrierAPI.DeleteCarrier(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/api/shop.Carrier/GetCarrier":
+	case "/shop.Carrier/GetCarrier":
 		msg := new(common.IDRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.CarrierAPI.GetCarrier(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/api/shop.Carrier/GetCarriers":
+	case "/shop.Carrier/GetCarriers":
 		msg := new(shop.GetCarriersRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.CarrierAPI.GetCarriers(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/api/shop.Carrier/GetCarriersByIDs":
+	case "/shop.Carrier/GetCarriersByIDs":
 		msg := new(common.IDsRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.CarrierAPI.GetCarriersByIDs(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/api/shop.Carrier/UpdateCarrier":
+	case "/shop.Carrier/UpdateCarrier":
 		msg := new(shop.UpdateCarrierRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.CarrierAPI.UpdateCarrier(ctx, msg)
@@ -339,7 +339,7 @@ func NewCategoryServiceServer(svc CategoryAPI) Server {
 	}
 }
 
-const CategoryServicePathPrefix = "/api/shop.Category/"
+const CategoryServicePathPrefix = "/shop.Category/"
 
 func (s *CategoryServiceServer) PathPrefix() string {
 	return CategoryServicePathPrefix
@@ -362,31 +362,31 @@ func (s *CategoryServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Re
 
 func (s *CategoryServiceServer) parseRoute(path string) (reqMsg proto.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
-	case "/api/shop.Category/CreateCategory":
+	case "/shop.Category/CreateCategory":
 		msg := new(shop.CreateCategoryRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.CategoryAPI.CreateCategory(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/api/shop.Category/DeleteCategory":
+	case "/shop.Category/DeleteCategory":
 		msg := new(common.IDRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.CategoryAPI.DeleteCategory(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/api/shop.Category/GetCategories":
+	case "/shop.Category/GetCategories":
 		msg := new(shop.GetCategoriesRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.CategoryAPI.GetCategories(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/api/shop.Category/GetCategory":
+	case "/shop.Category/GetCategory":
 		msg := new(common.IDRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.CategoryAPI.GetCategory(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/api/shop.Category/UpdateCategory":
+	case "/shop.Category/UpdateCategory":
 		msg := new(shop.UpdateCategoryRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.CategoryAPI.UpdateCategory(ctx, msg)
@@ -408,7 +408,7 @@ func NewCollectionServiceServer(svc CollectionAPI) Server {
 	}
 }
 
-const CollectionServicePathPrefix = "/api/shop.Collection/"
+const CollectionServicePathPrefix = "/shop.Collection/"
 
 func (s *CollectionServiceServer) PathPrefix() string {
 	return CollectionServicePathPrefix
@@ -431,31 +431,31 @@ func (s *CollectionServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.
 
 func (s *CollectionServiceServer) parseRoute(path string) (reqMsg proto.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
-	case "/api/shop.Collection/CreateCollection":
+	case "/shop.Collection/CreateCollection":
 		msg := new(shop.CreateCollectionRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.CollectionAPI.CreateCollection(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/api/shop.Collection/GetCollection":
+	case "/shop.Collection/GetCollection":
 		msg := new(common.IDRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.CollectionAPI.GetCollection(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/api/shop.Collection/GetCollections":
+	case "/shop.Collection/GetCollections":
 		msg := new(shop.GetCollectionsRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.CollectionAPI.GetCollections(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/api/shop.Collection/GetCollectionsByProductID":
+	case "/shop.Collection/GetCollectionsByProductID":
 		msg := new(shop.GetShopCollectionsByProductIDRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.CollectionAPI.GetCollectionsByProductID(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/api/shop.Collection/UpdateCollection":
+	case "/shop.Collection/UpdateCollection":
 		msg := new(shop.UpdateCollectionRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.CollectionAPI.UpdateCollection(ctx, msg)
@@ -477,7 +477,7 @@ func NewCustomerServiceServer(svc CustomerAPI) Server {
 	}
 }
 
-const CustomerServicePathPrefix = "/api/shop.Customer/"
+const CustomerServicePathPrefix = "/shop.Customer/"
 
 func (s *CustomerServiceServer) PathPrefix() string {
 	return CustomerServicePathPrefix
@@ -500,91 +500,91 @@ func (s *CustomerServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Re
 
 func (s *CustomerServiceServer) parseRoute(path string) (reqMsg proto.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
-	case "/api/shop.Customer/AddCustomersToGroup":
+	case "/shop.Customer/AddCustomersToGroup":
 		msg := new(shop.AddCustomerToGroupRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.CustomerAPI.AddCustomersToGroup(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/api/shop.Customer/BatchSetCustomersStatus":
+	case "/shop.Customer/BatchSetCustomersStatus":
 		msg := new(shop.SetCustomersStatusRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.CustomerAPI.BatchSetCustomersStatus(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/api/shop.Customer/CreateCustomer":
+	case "/shop.Customer/CreateCustomer":
 		msg := new(shop.CreateCustomerRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.CustomerAPI.CreateCustomer(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/api/shop.Customer/CreateCustomerAddress":
+	case "/shop.Customer/CreateCustomerAddress":
 		msg := new(shop.CreateCustomerAddressRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.CustomerAPI.CreateCustomerAddress(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/api/shop.Customer/DeleteCustomer":
+	case "/shop.Customer/DeleteCustomer":
 		msg := new(common.IDRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.CustomerAPI.DeleteCustomer(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/api/shop.Customer/DeleteCustomerAddress":
+	case "/shop.Customer/DeleteCustomerAddress":
 		msg := new(common.IDRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.CustomerAPI.DeleteCustomerAddress(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/api/shop.Customer/GetCustomer":
+	case "/shop.Customer/GetCustomer":
 		msg := new(common.IDRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.CustomerAPI.GetCustomer(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/api/shop.Customer/GetCustomerAddresses":
+	case "/shop.Customer/GetCustomerAddresses":
 		msg := new(shop.GetCustomerAddressesRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.CustomerAPI.GetCustomerAddresses(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/api/shop.Customer/GetCustomerDetails":
+	case "/shop.Customer/GetCustomerDetails":
 		msg := new(common.IDRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.CustomerAPI.GetCustomerDetails(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/api/shop.Customer/GetCustomers":
+	case "/shop.Customer/GetCustomers":
 		msg := new(shop.GetCustomersRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.CustomerAPI.GetCustomers(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/api/shop.Customer/GetCustomersByIDs":
+	case "/shop.Customer/GetCustomersByIDs":
 		msg := new(common.IDsRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.CustomerAPI.GetCustomersByIDs(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/api/shop.Customer/RemoveCustomersFromGroup":
+	case "/shop.Customer/RemoveCustomersFromGroup":
 		msg := new(shop.RemoveCustomerOutOfGroupRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.CustomerAPI.RemoveCustomersFromGroup(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/api/shop.Customer/SetDefaultCustomerAddress":
+	case "/shop.Customer/SetDefaultCustomerAddress":
 		msg := new(common.IDRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.CustomerAPI.SetDefaultCustomerAddress(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/api/shop.Customer/UpdateCustomer":
+	case "/shop.Customer/UpdateCustomer":
 		msg := new(shop.UpdateCustomerRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.CustomerAPI.UpdateCustomer(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/api/shop.Customer/UpdateCustomerAddress":
+	case "/shop.Customer/UpdateCustomerAddress":
 		msg := new(shop.UpdateCustomerAddressRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.CustomerAPI.UpdateCustomerAddress(ctx, msg)
@@ -606,7 +606,7 @@ func NewCustomerGroupServiceServer(svc CustomerGroupAPI) Server {
 	}
 }
 
-const CustomerGroupServicePathPrefix = "/api/shop.CustomerGroup/"
+const CustomerGroupServicePathPrefix = "/shop.CustomerGroup/"
 
 func (s *CustomerGroupServiceServer) PathPrefix() string {
 	return CustomerGroupServicePathPrefix
@@ -629,25 +629,25 @@ func (s *CustomerGroupServiceServer) ServeHTTP(resp http.ResponseWriter, req *ht
 
 func (s *CustomerGroupServiceServer) parseRoute(path string) (reqMsg proto.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
-	case "/api/shop.CustomerGroup/CreateCustomerGroup":
+	case "/shop.CustomerGroup/CreateCustomerGroup":
 		msg := new(shop.CreateCustomerGroupRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.CustomerGroupAPI.CreateCustomerGroup(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/api/shop.CustomerGroup/GetCustomerGroup":
+	case "/shop.CustomerGroup/GetCustomerGroup":
 		msg := new(common.IDRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.CustomerGroupAPI.GetCustomerGroup(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/api/shop.CustomerGroup/GetCustomerGroups":
+	case "/shop.CustomerGroup/GetCustomerGroups":
 		msg := new(shop.GetCustomerGroupsRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.CustomerGroupAPI.GetCustomerGroups(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/api/shop.CustomerGroup/UpdateCustomerGroup":
+	case "/shop.CustomerGroup/UpdateCustomerGroup":
 		msg := new(shop.UpdateCustomerGroupRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.CustomerGroupAPI.UpdateCustomerGroup(ctx, msg)
@@ -669,7 +669,7 @@ func NewExportServiceServer(svc ExportAPI) Server {
 	}
 }
 
-const ExportServicePathPrefix = "/api/shop.Export/"
+const ExportServicePathPrefix = "/shop.Export/"
 
 func (s *ExportServiceServer) PathPrefix() string {
 	return ExportServicePathPrefix
@@ -692,13 +692,13 @@ func (s *ExportServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Requ
 
 func (s *ExportServiceServer) parseRoute(path string) (reqMsg proto.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
-	case "/api/shop.Export/GetExports":
+	case "/shop.Export/GetExports":
 		msg := new(shop.GetExportsRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.ExportAPI.GetExports(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/api/shop.Export/RequestExport":
+	case "/shop.Export/RequestExport":
 		msg := new(shop.RequestExportRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.ExportAPI.RequestExport(ctx, msg)
@@ -720,7 +720,7 @@ func NewExternalAccountServiceServer(svc ExternalAccountAPI) Server {
 	}
 }
 
-const ExternalAccountServicePathPrefix = "/api/shop.ExternalAccount/"
+const ExternalAccountServicePathPrefix = "/shop.ExternalAccount/"
 
 func (s *ExternalAccountServiceServer) PathPrefix() string {
 	return ExternalAccountServicePathPrefix
@@ -743,31 +743,31 @@ func (s *ExternalAccountServiceServer) ServeHTTP(resp http.ResponseWriter, req *
 
 func (s *ExternalAccountServiceServer) parseRoute(path string) (reqMsg proto.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
-	case "/api/shop.ExternalAccount/ConnectCarrierServiceExternalAccountHaravan":
+	case "/shop.ExternalAccount/ConnectCarrierServiceExternalAccountHaravan":
 		msg := new(common.Empty)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.ExternalAccountAPI.ConnectCarrierServiceExternalAccountHaravan(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/api/shop.ExternalAccount/CreateExternalAccountHaravan":
+	case "/shop.ExternalAccount/CreateExternalAccountHaravan":
 		msg := new(shop.ExternalAccountHaravanRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.ExternalAccountAPI.CreateExternalAccountHaravan(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/api/shop.ExternalAccount/DeleteConnectedCarrierServiceExternalAccountHaravan":
+	case "/shop.ExternalAccount/DeleteConnectedCarrierServiceExternalAccountHaravan":
 		msg := new(common.Empty)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.ExternalAccountAPI.DeleteConnectedCarrierServiceExternalAccountHaravan(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/api/shop.ExternalAccount/GetExternalAccountHaravan":
+	case "/shop.ExternalAccount/GetExternalAccountHaravan":
 		msg := new(common.Empty)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.ExternalAccountAPI.GetExternalAccountHaravan(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/api/shop.ExternalAccount/UpdateExternalAccountHaravanToken":
+	case "/shop.ExternalAccount/UpdateExternalAccountHaravanToken":
 		msg := new(shop.ExternalAccountHaravanRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.ExternalAccountAPI.UpdateExternalAccountHaravanToken(ctx, msg)
@@ -789,7 +789,7 @@ func NewFulfillmentServiceServer(svc FulfillmentAPI) Server {
 	}
 }
 
-const FulfillmentServicePathPrefix = "/api/shop.Fulfillment/"
+const FulfillmentServicePathPrefix = "/shop.Fulfillment/"
 
 func (s *FulfillmentServiceServer) PathPrefix() string {
 	return FulfillmentServicePathPrefix
@@ -812,37 +812,37 @@ func (s *FulfillmentServiceServer) ServeHTTP(resp http.ResponseWriter, req *http
 
 func (s *FulfillmentServiceServer) parseRoute(path string) (reqMsg proto.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
-	case "/api/shop.Fulfillment/GetExternalShippingServices":
+	case "/shop.Fulfillment/GetExternalShippingServices":
 		msg := new(order.GetExternalShippingServicesRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.FulfillmentAPI.GetExternalShippingServices(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/api/shop.Fulfillment/GetFulfillment":
+	case "/shop.Fulfillment/GetFulfillment":
 		msg := new(common.IDRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.FulfillmentAPI.GetFulfillment(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/api/shop.Fulfillment/GetFulfillments":
+	case "/shop.Fulfillment/GetFulfillments":
 		msg := new(shop.GetFulfillmentsRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.FulfillmentAPI.GetFulfillments(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/api/shop.Fulfillment/GetPublicExternalShippingServices":
+	case "/shop.Fulfillment/GetPublicExternalShippingServices":
 		msg := new(order.GetExternalShippingServicesRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.FulfillmentAPI.GetPublicExternalShippingServices(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/api/shop.Fulfillment/GetPublicFulfillment":
+	case "/shop.Fulfillment/GetPublicFulfillment":
 		msg := new(shop.GetPublicFulfillmentRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.FulfillmentAPI.GetPublicFulfillment(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/api/shop.Fulfillment/UpdateFulfillmentsShippingState":
+	case "/shop.Fulfillment/UpdateFulfillmentsShippingState":
 		msg := new(shop.UpdateFulfillmentsShippingStateRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.FulfillmentAPI.UpdateFulfillmentsShippingState(ctx, msg)
@@ -864,7 +864,7 @@ func NewHistoryServiceServer(svc HistoryAPI) Server {
 	}
 }
 
-const HistoryServicePathPrefix = "/api/shop.History/"
+const HistoryServicePathPrefix = "/shop.History/"
 
 func (s *HistoryServiceServer) PathPrefix() string {
 	return HistoryServicePathPrefix
@@ -887,7 +887,7 @@ func (s *HistoryServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Req
 
 func (s *HistoryServiceServer) parseRoute(path string) (reqMsg proto.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
-	case "/api/shop.History/GetFulfillmentHistory":
+	case "/shop.History/GetFulfillmentHistory":
 		msg := new(shop.GetFulfillmentHistoryRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.HistoryAPI.GetFulfillmentHistory(ctx, msg)
@@ -909,7 +909,7 @@ func NewInventoryServiceServer(svc InventoryAPI) Server {
 	}
 }
 
-const InventoryServicePathPrefix = "/api/shop.Inventory/"
+const InventoryServicePathPrefix = "/shop.Inventory/"
 
 func (s *InventoryServiceServer) PathPrefix() string {
 	return InventoryServicePathPrefix
@@ -932,67 +932,67 @@ func (s *InventoryServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.R
 
 func (s *InventoryServiceServer) parseRoute(path string) (reqMsg proto.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
-	case "/api/shop.Inventory/AdjustInventoryQuantity":
+	case "/shop.Inventory/AdjustInventoryQuantity":
 		msg := new(shop.AdjustInventoryQuantityRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.InventoryAPI.AdjustInventoryQuantity(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/api/shop.Inventory/CancelInventoryVoucher":
+	case "/shop.Inventory/CancelInventoryVoucher":
 		msg := new(shop.CancelInventoryVoucherRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.InventoryAPI.CancelInventoryVoucher(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/api/shop.Inventory/ConfirmInventoryVoucher":
+	case "/shop.Inventory/ConfirmInventoryVoucher":
 		msg := new(shop.ConfirmInventoryVoucherRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.InventoryAPI.ConfirmInventoryVoucher(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/api/shop.Inventory/CreateInventoryVoucher":
+	case "/shop.Inventory/CreateInventoryVoucher":
 		msg := new(shop.CreateInventoryVoucherRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.InventoryAPI.CreateInventoryVoucher(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/api/shop.Inventory/GetInventories":
+	case "/shop.Inventory/GetInventories":
 		msg := new(shop.GetInventoriesRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.InventoryAPI.GetInventories(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/api/shop.Inventory/GetInventoriesByVariantIDs":
+	case "/shop.Inventory/GetInventoriesByVariantIDs":
 		msg := new(shop.GetInventoriesByVariantIDsRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.InventoryAPI.GetInventoriesByVariantIDs(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/api/shop.Inventory/GetInventory":
+	case "/shop.Inventory/GetInventory":
 		msg := new(shop.GetInventoryRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.InventoryAPI.GetInventory(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/api/shop.Inventory/GetInventoryVoucher":
+	case "/shop.Inventory/GetInventoryVoucher":
 		msg := new(common.IDRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.InventoryAPI.GetInventoryVoucher(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/api/shop.Inventory/GetInventoryVouchers":
+	case "/shop.Inventory/GetInventoryVouchers":
 		msg := new(shop.GetInventoryVouchersRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.InventoryAPI.GetInventoryVouchers(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/api/shop.Inventory/GetInventoryVouchersByIDs":
+	case "/shop.Inventory/GetInventoryVouchersByIDs":
 		msg := new(shop.GetInventoryVouchersByIDsRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.InventoryAPI.GetInventoryVouchersByIDs(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/api/shop.Inventory/UpdateInventoryVoucher":
+	case "/shop.Inventory/UpdateInventoryVoucher":
 		msg := new(shop.UpdateInventoryVoucherRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.InventoryAPI.UpdateInventoryVoucher(ctx, msg)
@@ -1014,7 +1014,7 @@ func NewLedgerServiceServer(svc LedgerAPI) Server {
 	}
 }
 
-const LedgerServicePathPrefix = "/api/shop.Ledger/"
+const LedgerServicePathPrefix = "/shop.Ledger/"
 
 func (s *LedgerServiceServer) PathPrefix() string {
 	return LedgerServicePathPrefix
@@ -1037,31 +1037,31 @@ func (s *LedgerServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Requ
 
 func (s *LedgerServiceServer) parseRoute(path string) (reqMsg proto.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
-	case "/api/shop.Ledger/CreateLedger":
+	case "/shop.Ledger/CreateLedger":
 		msg := new(shop.CreateLedgerRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.LedgerAPI.CreateLedger(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/api/shop.Ledger/DeleteLedger":
+	case "/shop.Ledger/DeleteLedger":
 		msg := new(common.IDRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.LedgerAPI.DeleteLedger(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/api/shop.Ledger/GetLedger":
+	case "/shop.Ledger/GetLedger":
 		msg := new(common.IDRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.LedgerAPI.GetLedger(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/api/shop.Ledger/GetLedgers":
+	case "/shop.Ledger/GetLedgers":
 		msg := new(shop.GetLedgersRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.LedgerAPI.GetLedgers(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/api/shop.Ledger/UpdateLedger":
+	case "/shop.Ledger/UpdateLedger":
 		msg := new(shop.UpdateLedgerRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.LedgerAPI.UpdateLedger(ctx, msg)
@@ -1083,7 +1083,7 @@ func NewMiscServiceServer(svc MiscAPI) Server {
 	}
 }
 
-const MiscServicePathPrefix = "/api/shop.Misc/"
+const MiscServicePathPrefix = "/shop.Misc/"
 
 func (s *MiscServiceServer) PathPrefix() string {
 	return MiscServicePathPrefix
@@ -1106,7 +1106,7 @@ func (s *MiscServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Reques
 
 func (s *MiscServiceServer) parseRoute(path string) (reqMsg proto.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
-	case "/api/shop.Misc/VersionInfo":
+	case "/shop.Misc/VersionInfo":
 		msg := new(common.Empty)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.MiscAPI.VersionInfo(ctx, msg)
@@ -1128,7 +1128,7 @@ func NewMoneyTransactionServiceServer(svc MoneyTransactionAPI) Server {
 	}
 }
 
-const MoneyTransactionServicePathPrefix = "/api/shop.MoneyTransaction/"
+const MoneyTransactionServicePathPrefix = "/shop.MoneyTransaction/"
 
 func (s *MoneyTransactionServiceServer) PathPrefix() string {
 	return MoneyTransactionServicePathPrefix
@@ -1151,13 +1151,13 @@ func (s *MoneyTransactionServiceServer) ServeHTTP(resp http.ResponseWriter, req 
 
 func (s *MoneyTransactionServiceServer) parseRoute(path string) (reqMsg proto.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
-	case "/api/shop.MoneyTransaction/GetMoneyTransaction":
+	case "/shop.MoneyTransaction/GetMoneyTransaction":
 		msg := new(common.IDRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.MoneyTransactionAPI.GetMoneyTransaction(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/api/shop.MoneyTransaction/GetMoneyTransactions":
+	case "/shop.MoneyTransaction/GetMoneyTransactions":
 		msg := new(shop.GetMoneyTransactionsRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.MoneyTransactionAPI.GetMoneyTransactions(ctx, msg)
@@ -1179,7 +1179,7 @@ func NewNotificationServiceServer(svc NotificationAPI) Server {
 	}
 }
 
-const NotificationServicePathPrefix = "/api/shop.Notification/"
+const NotificationServicePathPrefix = "/shop.Notification/"
 
 func (s *NotificationServiceServer) PathPrefix() string {
 	return NotificationServicePathPrefix
@@ -1202,31 +1202,31 @@ func (s *NotificationServiceServer) ServeHTTP(resp http.ResponseWriter, req *htt
 
 func (s *NotificationServiceServer) parseRoute(path string) (reqMsg proto.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
-	case "/api/shop.Notification/CreateDevice":
+	case "/shop.Notification/CreateDevice":
 		msg := new(etop.CreateDeviceRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.NotificationAPI.CreateDevice(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/api/shop.Notification/DeleteDevice":
+	case "/shop.Notification/DeleteDevice":
 		msg := new(etop.DeleteDeviceRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.NotificationAPI.DeleteDevice(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/api/shop.Notification/GetNotification":
+	case "/shop.Notification/GetNotification":
 		msg := new(common.IDRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.NotificationAPI.GetNotification(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/api/shop.Notification/GetNotifications":
+	case "/shop.Notification/GetNotifications":
 		msg := new(etop.GetNotificationsRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.NotificationAPI.GetNotifications(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/api/shop.Notification/UpdateNotifications":
+	case "/shop.Notification/UpdateNotifications":
 		msg := new(etop.UpdateNotificationsRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.NotificationAPI.UpdateNotifications(ctx, msg)
@@ -1248,7 +1248,7 @@ func NewOrderServiceServer(svc OrderAPI) Server {
 	}
 }
 
-const OrderServicePathPrefix = "/api/shop.Order/"
+const OrderServicePathPrefix = "/shop.Order/"
 
 func (s *OrderServiceServer) PathPrefix() string {
 	return OrderServicePathPrefix
@@ -1271,61 +1271,61 @@ func (s *OrderServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Reque
 
 func (s *OrderServiceServer) parseRoute(path string) (reqMsg proto.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
-	case "/api/shop.Order/CancelOrder":
+	case "/shop.Order/CancelOrder":
 		msg := new(shop.CancelOrderRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.OrderAPI.CancelOrder(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/api/shop.Order/ConfirmOrderAndCreateFulfillments":
+	case "/shop.Order/ConfirmOrderAndCreateFulfillments":
 		msg := new(shop.OrderIDRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.OrderAPI.ConfirmOrderAndCreateFulfillments(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/api/shop.Order/CreateOrder":
+	case "/shop.Order/CreateOrder":
 		msg := new(order.CreateOrderRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.OrderAPI.CreateOrder(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/api/shop.Order/GetOrder":
+	case "/shop.Order/GetOrder":
 		msg := new(common.IDRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.OrderAPI.GetOrder(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/api/shop.Order/GetOrders":
+	case "/shop.Order/GetOrders":
 		msg := new(shop.GetOrdersRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.OrderAPI.GetOrders(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/api/shop.Order/GetOrdersByIDs":
+	case "/shop.Order/GetOrdersByIDs":
 		msg := new(etop.IDsRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.OrderAPI.GetOrdersByIDs(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/api/shop.Order/GetOrdersByReceiptID":
+	case "/shop.Order/GetOrdersByReceiptID":
 		msg := new(shop.GetOrdersByReceiptIDRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.OrderAPI.GetOrdersByReceiptID(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/api/shop.Order/UpdateOrder":
+	case "/shop.Order/UpdateOrder":
 		msg := new(order.UpdateOrderRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.OrderAPI.UpdateOrder(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/api/shop.Order/UpdateOrderPaymentStatus":
+	case "/shop.Order/UpdateOrderPaymentStatus":
 		msg := new(shop.UpdateOrderPaymentStatusRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.OrderAPI.UpdateOrderPaymentStatus(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/api/shop.Order/UpdateOrdersStatus":
+	case "/shop.Order/UpdateOrdersStatus":
 		msg := new(shop.UpdateOrdersStatusRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.OrderAPI.UpdateOrdersStatus(ctx, msg)
@@ -1347,7 +1347,7 @@ func NewPaymentServiceServer(svc PaymentAPI) Server {
 	}
 }
 
-const PaymentServicePathPrefix = "/api/shop.Payment/"
+const PaymentServicePathPrefix = "/shop.Payment/"
 
 func (s *PaymentServiceServer) PathPrefix() string {
 	return PaymentServicePathPrefix
@@ -1370,13 +1370,13 @@ func (s *PaymentServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Req
 
 func (s *PaymentServiceServer) parseRoute(path string) (reqMsg proto.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
-	case "/api/shop.Payment/PaymentCheckReturnData":
+	case "/shop.Payment/PaymentCheckReturnData":
 		msg := new(shop.PaymentCheckReturnDataRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.PaymentAPI.PaymentCheckReturnData(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/api/shop.Payment/PaymentTradingOrder":
+	case "/shop.Payment/PaymentTradingOrder":
 		msg := new(shop.PaymentTradingOrderRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.PaymentAPI.PaymentTradingOrder(ctx, msg)
@@ -1398,7 +1398,7 @@ func NewProductServiceServer(svc ProductAPI) Server {
 	}
 }
 
-const ProductServicePathPrefix = "/api/shop.Product/"
+const ProductServicePathPrefix = "/shop.Product/"
 
 func (s *ProductServiceServer) PathPrefix() string {
 	return ProductServicePathPrefix
@@ -1421,133 +1421,133 @@ func (s *ProductServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Req
 
 func (s *ProductServiceServer) parseRoute(path string) (reqMsg proto.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
-	case "/api/shop.Product/AddProductCollection":
+	case "/shop.Product/AddProductCollection":
 		msg := new(shop.AddShopProductCollectionRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.ProductAPI.AddProductCollection(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/api/shop.Product/CreateProduct":
+	case "/shop.Product/CreateProduct":
 		msg := new(shop.CreateProductRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.ProductAPI.CreateProduct(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/api/shop.Product/CreateVariant":
+	case "/shop.Product/CreateVariant":
 		msg := new(shop.CreateVariantRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.ProductAPI.CreateVariant(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/api/shop.Product/GetProduct":
+	case "/shop.Product/GetProduct":
 		msg := new(common.IDRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.ProductAPI.GetProduct(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/api/shop.Product/GetProducts":
+	case "/shop.Product/GetProducts":
 		msg := new(shop.GetVariantsRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.ProductAPI.GetProducts(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/api/shop.Product/GetProductsByIDs":
+	case "/shop.Product/GetProductsByIDs":
 		msg := new(common.IDsRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.ProductAPI.GetProductsByIDs(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/api/shop.Product/GetVariant":
+	case "/shop.Product/GetVariant":
 		msg := new(common.IDRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.ProductAPI.GetVariant(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/api/shop.Product/GetVariantsByIDs":
+	case "/shop.Product/GetVariantsByIDs":
 		msg := new(common.IDsRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.ProductAPI.GetVariantsByIDs(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/api/shop.Product/RemoveProductCategory":
+	case "/shop.Product/RemoveProductCategory":
 		msg := new(common.IDRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.ProductAPI.RemoveProductCategory(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/api/shop.Product/RemoveProductCollection":
+	case "/shop.Product/RemoveProductCollection":
 		msg := new(shop.RemoveShopProductCollectionRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.ProductAPI.RemoveProductCollection(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/api/shop.Product/RemoveProducts":
+	case "/shop.Product/RemoveProducts":
 		msg := new(shop.RemoveVariantsRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.ProductAPI.RemoveProducts(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/api/shop.Product/RemoveVariants":
+	case "/shop.Product/RemoveVariants":
 		msg := new(shop.RemoveVariantsRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.ProductAPI.RemoveVariants(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/api/shop.Product/UpdateProduct":
+	case "/shop.Product/UpdateProduct":
 		msg := new(shop.UpdateProductRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.ProductAPI.UpdateProduct(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/api/shop.Product/UpdateProductCategory":
+	case "/shop.Product/UpdateProductCategory":
 		msg := new(shop.UpdateProductCategoryRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.ProductAPI.UpdateProductCategory(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/api/shop.Product/UpdateProductImages":
+	case "/shop.Product/UpdateProductImages":
 		msg := new(shop.UpdateVariantImagesRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.ProductAPI.UpdateProductImages(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/api/shop.Product/UpdateProductMetaFields":
+	case "/shop.Product/UpdateProductMetaFields":
 		msg := new(shop.UpdateProductMetaFieldsRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.ProductAPI.UpdateProductMetaFields(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/api/shop.Product/UpdateProductsStatus":
+	case "/shop.Product/UpdateProductsStatus":
 		msg := new(shop.UpdateProductStatusRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.ProductAPI.UpdateProductsStatus(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/api/shop.Product/UpdateProductsTags":
+	case "/shop.Product/UpdateProductsTags":
 		msg := new(shop.UpdateProductsTagsRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.ProductAPI.UpdateProductsTags(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/api/shop.Product/UpdateVariant":
+	case "/shop.Product/UpdateVariant":
 		msg := new(shop.UpdateVariantRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.ProductAPI.UpdateVariant(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/api/shop.Product/UpdateVariantAttributes":
+	case "/shop.Product/UpdateVariantAttributes":
 		msg := new(shop.UpdateVariantAttributesRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.ProductAPI.UpdateVariantAttributes(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/api/shop.Product/UpdateVariantImages":
+	case "/shop.Product/UpdateVariantImages":
 		msg := new(shop.UpdateVariantImagesRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.ProductAPI.UpdateVariantImages(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/api/shop.Product/UpdateVariantsStatus":
+	case "/shop.Product/UpdateVariantsStatus":
 		msg := new(shop.UpdateProductStatusRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.ProductAPI.UpdateVariantsStatus(ctx, msg)
@@ -1569,7 +1569,7 @@ func NewProductSourceServiceServer(svc ProductSourceAPI) Server {
 	}
 }
 
-const ProductSourceServicePathPrefix = "/api/shop.ProductSource/"
+const ProductSourceServicePathPrefix = "/shop.ProductSource/"
 
 func (s *ProductSourceServiceServer) PathPrefix() string {
 	return ProductSourceServicePathPrefix
@@ -1592,55 +1592,55 @@ func (s *ProductSourceServiceServer) ServeHTTP(resp http.ResponseWriter, req *ht
 
 func (s *ProductSourceServiceServer) parseRoute(path string) (reqMsg proto.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
-	case "/api/shop.ProductSource/CreateProductSource":
+	case "/shop.ProductSource/CreateProductSource":
 		msg := new(shop.CreateProductSourceRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.ProductSourceAPI.CreateProductSource(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/api/shop.ProductSource/CreateProductSourceCategory":
+	case "/shop.ProductSource/CreateProductSourceCategory":
 		msg := new(shop.CreatePSCategoryRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.ProductSourceAPI.CreateProductSourceCategory(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/api/shop.ProductSource/CreateVariant":
+	case "/shop.ProductSource/CreateVariant":
 		msg := new(shop.DeprecatedCreateVariantRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.ProductSourceAPI.CreateVariant(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/api/shop.ProductSource/GetProductSourceCategories":
+	case "/shop.ProductSource/GetProductSourceCategories":
 		msg := new(shop.GetProductSourceCategoriesRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.ProductSourceAPI.GetProductSourceCategories(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/api/shop.ProductSource/GetProductSourceCategory":
+	case "/shop.ProductSource/GetProductSourceCategory":
 		msg := new(common.IDRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.ProductSourceAPI.GetProductSourceCategory(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/api/shop.ProductSource/GetShopProductSources":
+	case "/shop.ProductSource/GetShopProductSources":
 		msg := new(common.Empty)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.ProductSourceAPI.GetShopProductSources(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/api/shop.ProductSource/RemoveProductSourceCategory":
+	case "/shop.ProductSource/RemoveProductSourceCategory":
 		msg := new(common.IDRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.ProductSourceAPI.RemoveProductSourceCategory(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/api/shop.ProductSource/UpdateProductSourceCategory":
+	case "/shop.ProductSource/UpdateProductSourceCategory":
 		msg := new(shop.UpdateProductSourceCategoryRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.ProductSourceAPI.UpdateProductSourceCategory(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/api/shop.ProductSource/UpdateProductsPSCategory":
+	case "/shop.ProductSource/UpdateProductsPSCategory":
 		msg := new(shop.UpdateProductsPSCategoryRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.ProductSourceAPI.UpdateProductsPSCategory(ctx, msg)
@@ -1662,7 +1662,7 @@ func NewReceiptServiceServer(svc ReceiptAPI) Server {
 	}
 }
 
-const ReceiptServicePathPrefix = "/api/shop.Receipt/"
+const ReceiptServicePathPrefix = "/shop.Receipt/"
 
 func (s *ReceiptServiceServer) PathPrefix() string {
 	return ReceiptServicePathPrefix
@@ -1685,43 +1685,43 @@ func (s *ReceiptServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Req
 
 func (s *ReceiptServiceServer) parseRoute(path string) (reqMsg proto.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
-	case "/api/shop.Receipt/CancelReceipt":
+	case "/shop.Receipt/CancelReceipt":
 		msg := new(shop.CancelReceiptRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.ReceiptAPI.CancelReceipt(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/api/shop.Receipt/ConfirmReceipt":
+	case "/shop.Receipt/ConfirmReceipt":
 		msg := new(common.IDRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.ReceiptAPI.ConfirmReceipt(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/api/shop.Receipt/CreateReceipt":
+	case "/shop.Receipt/CreateReceipt":
 		msg := new(shop.CreateReceiptRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.ReceiptAPI.CreateReceipt(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/api/shop.Receipt/GetReceipt":
+	case "/shop.Receipt/GetReceipt":
 		msg := new(common.IDRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.ReceiptAPI.GetReceipt(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/api/shop.Receipt/GetReceipts":
+	case "/shop.Receipt/GetReceipts":
 		msg := new(shop.GetReceiptsRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.ReceiptAPI.GetReceipts(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/api/shop.Receipt/GetReceiptsByLedgerType":
+	case "/shop.Receipt/GetReceiptsByLedgerType":
 		msg := new(shop.GetReceiptsByLedgerTypeRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.ReceiptAPI.GetReceiptsByLedgerType(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/api/shop.Receipt/UpdateReceipt":
+	case "/shop.Receipt/UpdateReceipt":
 		msg := new(shop.UpdateReceiptRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.ReceiptAPI.UpdateReceipt(ctx, msg)
@@ -1743,7 +1743,7 @@ func NewShipnowServiceServer(svc ShipnowAPI) Server {
 	}
 }
 
-const ShipnowServicePathPrefix = "/api/etop.Shipnow/"
+const ShipnowServicePathPrefix = "/etop.Shipnow/"
 
 func (s *ShipnowServiceServer) PathPrefix() string {
 	return ShipnowServicePathPrefix
@@ -1766,43 +1766,43 @@ func (s *ShipnowServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Req
 
 func (s *ShipnowServiceServer) parseRoute(path string) (reqMsg proto.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
-	case "/api/etop.Shipnow/CancelShipnowFulfillment":
+	case "/etop.Shipnow/CancelShipnowFulfillment":
 		msg := new(order.CancelShipnowFulfillmentRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.ShipnowAPI.CancelShipnowFulfillment(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/api/etop.Shipnow/ConfirmShipnowFulfillment":
+	case "/etop.Shipnow/ConfirmShipnowFulfillment":
 		msg := new(common.IDRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.ShipnowAPI.ConfirmShipnowFulfillment(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/api/etop.Shipnow/CreateShipnowFulfillment":
+	case "/etop.Shipnow/CreateShipnowFulfillment":
 		msg := new(order.CreateShipnowFulfillmentRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.ShipnowAPI.CreateShipnowFulfillment(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/api/etop.Shipnow/GetShipnowFulfillment":
+	case "/etop.Shipnow/GetShipnowFulfillment":
 		msg := new(common.IDRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.ShipnowAPI.GetShipnowFulfillment(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/api/etop.Shipnow/GetShipnowFulfillments":
+	case "/etop.Shipnow/GetShipnowFulfillments":
 		msg := new(order.GetShipnowFulfillmentsRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.ShipnowAPI.GetShipnowFulfillments(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/api/etop.Shipnow/GetShipnowServices":
+	case "/etop.Shipnow/GetShipnowServices":
 		msg := new(order.GetShipnowServicesRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.ShipnowAPI.GetShipnowServices(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/api/etop.Shipnow/UpdateShipnowFulfillment":
+	case "/etop.Shipnow/UpdateShipnowFulfillment":
 		msg := new(order.UpdateShipnowFulfillmentRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.ShipnowAPI.UpdateShipnowFulfillment(ctx, msg)
@@ -1824,7 +1824,7 @@ func NewSummaryServiceServer(svc SummaryAPI) Server {
 	}
 }
 
-const SummaryServicePathPrefix = "/api/shop.Summary/"
+const SummaryServicePathPrefix = "/shop.Summary/"
 
 func (s *SummaryServiceServer) PathPrefix() string {
 	return SummaryServicePathPrefix
@@ -1847,19 +1847,19 @@ func (s *SummaryServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Req
 
 func (s *SummaryServiceServer) parseRoute(path string) (reqMsg proto.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
-	case "/api/shop.Summary/CalcBalanceShop":
+	case "/shop.Summary/CalcBalanceShop":
 		msg := new(common.Empty)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.SummaryAPI.CalcBalanceShop(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/api/shop.Summary/SummarizeFulfillments":
+	case "/shop.Summary/SummarizeFulfillments":
 		msg := new(shop.SummarizeFulfillmentsRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.SummaryAPI.SummarizeFulfillments(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/api/shop.Summary/SummarizePOS":
+	case "/shop.Summary/SummarizePOS":
 		msg := new(shop.SummarizePOSRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.SummaryAPI.SummarizePOS(ctx, msg)
@@ -1881,7 +1881,7 @@ func NewSupplierServiceServer(svc SupplierAPI) Server {
 	}
 }
 
-const SupplierServicePathPrefix = "/api/shop.Supplier/"
+const SupplierServicePathPrefix = "/shop.Supplier/"
 
 func (s *SupplierServiceServer) PathPrefix() string {
 	return SupplierServicePathPrefix
@@ -1904,37 +1904,37 @@ func (s *SupplierServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Re
 
 func (s *SupplierServiceServer) parseRoute(path string) (reqMsg proto.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
-	case "/api/shop.Supplier/CreateSupplier":
+	case "/shop.Supplier/CreateSupplier":
 		msg := new(shop.CreateSupplierRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.SupplierAPI.CreateSupplier(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/api/shop.Supplier/DeleteSupplier":
+	case "/shop.Supplier/DeleteSupplier":
 		msg := new(common.IDRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.SupplierAPI.DeleteSupplier(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/api/shop.Supplier/GetSupplier":
+	case "/shop.Supplier/GetSupplier":
 		msg := new(common.IDRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.SupplierAPI.GetSupplier(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/api/shop.Supplier/GetSuppliers":
+	case "/shop.Supplier/GetSuppliers":
 		msg := new(shop.GetSuppliersRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.SupplierAPI.GetSuppliers(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/api/shop.Supplier/GetSuppliersByIDs":
+	case "/shop.Supplier/GetSuppliersByIDs":
 		msg := new(common.IDsRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.SupplierAPI.GetSuppliersByIDs(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/api/shop.Supplier/UpdateSupplier":
+	case "/shop.Supplier/UpdateSupplier":
 		msg := new(shop.UpdateSupplierRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.SupplierAPI.UpdateSupplier(ctx, msg)
@@ -1956,7 +1956,7 @@ func NewTradingServiceServer(svc TradingAPI) Server {
 	}
 }
 
-const TradingServicePathPrefix = "/api/shop.Trading/"
+const TradingServicePathPrefix = "/shop.Trading/"
 
 func (s *TradingServiceServer) PathPrefix() string {
 	return TradingServicePathPrefix
@@ -1979,31 +1979,31 @@ func (s *TradingServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Req
 
 func (s *TradingServiceServer) parseRoute(path string) (reqMsg proto.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
-	case "/api/shop.Trading/TradingCreateOrder":
+	case "/shop.Trading/TradingCreateOrder":
 		msg := new(order.TradingCreateOrderRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.TradingAPI.TradingCreateOrder(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/api/shop.Trading/TradingGetOrder":
+	case "/shop.Trading/TradingGetOrder":
 		msg := new(common.IDRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.TradingAPI.TradingGetOrder(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/api/shop.Trading/TradingGetOrders":
+	case "/shop.Trading/TradingGetOrders":
 		msg := new(shop.GetOrdersRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.TradingAPI.TradingGetOrders(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/api/shop.Trading/TradingGetProduct":
+	case "/shop.Trading/TradingGetProduct":
 		msg := new(common.IDRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.TradingAPI.TradingGetProduct(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/api/shop.Trading/TradingGetProducts":
+	case "/shop.Trading/TradingGetProducts":
 		msg := new(common.CommonListRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.TradingAPI.TradingGetProducts(ctx, msg)
