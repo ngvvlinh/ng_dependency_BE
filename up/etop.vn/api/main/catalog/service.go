@@ -71,6 +71,12 @@ type Aggregate interface {
 
 	DeleteShopBrand(ctx context.Context, ids []int64, shopId int64) (int32, error)
 
+	// -- variant_supplier -- //
+
+	CreateVariantSupplier(context.Context, *CreateVariantSupplier) (*ShopVariantSupplier, error)
+
+	DeleteVariantSupplier(ctx context.Context, variantID int64, supplierID int64, shopID int64) error
+
 	//-- tag --//
 }
 
@@ -102,9 +108,15 @@ type QueryService interface {
 	GetBrandByID(ctx context.Context, id int64, shopID int64) (*ShopBrand, error)
 	GetBrandsByIDs(ctx context.Context, ids []int64, shopID int64) ([]*ShopBrand, error)
 	ListBrands(ctx context.Context, paging meta.Paging, shopId int64) (*ListBrandsResult, error)
-}
 
-//-- query --//
+	// -- variant_supplier -- //
+
+	GetSuppliersByVariantID(ctx context.Context, variantID int64, shopID int64) (*GetSuppliersByVariantIDResponse, error)
+
+	GetVariantsBySupplierID(ctx context.Context, variantID int64, shopID int64) (*GetVariantsBySupplierIDResponse, error)
+
+	//-- query --//
+}
 
 type IDsArgs struct {
 	IDs []int64
@@ -358,4 +370,23 @@ type ListBrandsResult struct {
 	ShopBrands []*ShopBrand
 	PageInfo   meta.PageInfo
 	Total      int32
+}
+
+type GetVariantsBySupplierIDResponse struct {
+	ShopID     int64
+	SupplierID int64
+	VariantIDs []int64
+}
+
+type GetSuppliersByVariantIDResponse struct {
+	ShopID      int64
+	VariantID   int64
+	SupplierIDs []int64
+}
+
+// +convert:create=ShopVariantSupplier
+type CreateVariantSupplier struct {
+	ShopID     int64
+	SupplierID int64
+	VariantID  int64
 }

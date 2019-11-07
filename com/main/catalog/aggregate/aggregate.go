@@ -26,6 +26,7 @@ type Aggregate struct {
 	shopCollection        sqlstore.ShopCollectionStoreFactory
 	shopProductCollection sqlstore.ShopProductCollectionStoreFactory
 	shopBrand             sqlstore.ShopBrandStoreFactory
+	shopVariantSupplier   sqlstore.ShopVariantSupplierStoreFactory
 	eventBus              capi.EventBus
 }
 
@@ -38,6 +39,7 @@ func New(eventBus capi.EventBus, db *cmsql.Database) *Aggregate {
 		shopCollection:        sqlstore.NewShopCollectionStore(db),
 		shopProductCollection: sqlstore.NewShopProductCollectionStore(db),
 		shopBrand:             sqlstore.NewShopBrandStore(db),
+		shopVariantSupplier:   sqlstore.NewSupplierVariantStore(db),
 		eventBus:              eventBus,
 	}
 }
@@ -514,4 +516,34 @@ func (a *Aggregate) DeleteShopBrand(ctx context.Context, ids []int64, shopID int
 		return nil
 	})
 	return count, err
+}
+
+func (a *Aggregate) CreateVariantSupplier(ctx context.Context, sv *catalog.CreateVariantSupplier) (*catalog.ShopVariantSupplier, error) {
+	if sv.ShopID == 0 || sv.VariantID == 0 || sv.SupplierID == 0 {
+		return nil, cm.Error(cm.InvalidArgument, "Missing shop_id, variant_id or supplier_id in request", nil)
+	}
+	variantSupplier := convert.Apply_catalog_CreateVariantSupplier_catalog_ShopVariantSupplier(sv, nil)
+	err := a.shopVariantSupplier(ctx).CreateVariantSupplier(variantSupplier)
+	if err != nil {
+		return nil, err
+	}
+	return variantSupplier, nil
+}
+
+func (a *Aggregate) DeleteVariantSupplier(ctx context.Context, variantID int64, supplierID int64, shopID int64) error {
+	if shopID == 0 {
+		return cm.Error(cm.InvalidArgument, "Missing shop_id in request", nil)
+	}
+	if supplierID == 0 && variantID == 0 {
+		return cm.Error(cm.InvalidArgument, "Missing variant_id or supplier_id in request", nil)
+	}
+	var query = a.shopVariantSupplier(ctx).ShopID(shopID)
+	if supplierID != 0 {
+		query = query.SupplierID(supplierID)
+	}
+	if variantID != 0 {
+		query = query.VariantID(variantID)
+	}
+	err := query.DeleteVariantSupplier()
+	return err
 }

@@ -2328,3 +2328,237 @@ func (ms *ShopBrandHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
 	*ms = res
 	return nil
 }
+
+// Type ShopVariantSupplier represents table shop_variant_supplier
+func sqlgenShopSupplierVariant(_ *ShopVariantSupplier) bool { return true }
+
+type ShopVariantSuppliers []*ShopVariantSupplier
+
+const __sqlShopVariantSupplier_Table = "shop_variant_supplier"
+const __sqlShopVariantSupplier_ListCols = "\"shop_id\",\"supplier_id\",\"variant_id\",\"created_at\",\"updated_at\""
+const __sqlShopVariantSupplier_Insert = "INSERT INTO \"shop_variant_supplier\" (" + __sqlShopVariantSupplier_ListCols + ") VALUES"
+const __sqlShopVariantSupplier_Select = "SELECT " + __sqlShopVariantSupplier_ListCols + " FROM \"shop_variant_supplier\""
+const __sqlShopVariantSupplier_Select_history = "SELECT " + __sqlShopVariantSupplier_ListCols + " FROM history.\"shop_variant_supplier\""
+const __sqlShopVariantSupplier_UpdateAll = "UPDATE \"shop_variant_supplier\" SET (" + __sqlShopVariantSupplier_ListCols + ")"
+
+func (m *ShopVariantSupplier) SQLTableName() string  { return "shop_variant_supplier" }
+func (m *ShopVariantSuppliers) SQLTableName() string { return "shop_variant_supplier" }
+func (m *ShopVariantSupplier) SQLListCols() string   { return __sqlShopVariantSupplier_ListCols }
+
+func (m *ShopVariantSupplier) SQLVerifySchema(db *cmsql.Database) {
+	query := "SELECT " + __sqlShopVariantSupplier_ListCols + " FROM \"shop_variant_supplier\" WHERE false"
+	if _, err := db.SQL(query).Exec(); err != nil {
+		db.RecordError(err)
+	}
+}
+
+func init() {
+	__sqlModels = append(__sqlModels, (*ShopVariantSupplier)(nil))
+}
+
+func (m *ShopVariantSupplier) SQLArgs(opts core.Opts, create bool) []interface{} {
+	now := time.Now()
+	return []interface{}{
+		core.Int64(m.ShopID),
+		core.Int64(m.SupplierID),
+		core.Int64(m.VariantID),
+		core.Now(m.CreatedAt, now, create),
+		core.Now(m.UpdatedAt, now, true),
+	}
+}
+
+func (m *ShopVariantSupplier) SQLScanArgs(opts core.Opts) []interface{} {
+	return []interface{}{
+		(*core.Int64)(&m.ShopID),
+		(*core.Int64)(&m.SupplierID),
+		(*core.Int64)(&m.VariantID),
+		(*core.Time)(&m.CreatedAt),
+		(*core.Time)(&m.UpdatedAt),
+	}
+}
+
+func (m *ShopVariantSupplier) SQLScan(opts core.Opts, row *sql.Row) error {
+	return row.Scan(m.SQLScanArgs(opts)...)
+}
+
+func (ms *ShopVariantSuppliers) SQLScan(opts core.Opts, rows *sql.Rows) error {
+	res := make(ShopVariantSuppliers, 0, 128)
+	for rows.Next() {
+		m := new(ShopVariantSupplier)
+		args := m.SQLScanArgs(opts)
+		if err := rows.Scan(args...); err != nil {
+			return err
+		}
+		res = append(res, m)
+	}
+	if err := rows.Err(); err != nil {
+		return err
+	}
+	*ms = res
+	return nil
+}
+
+func (_ *ShopVariantSupplier) SQLSelect(w SQLWriter) error {
+	w.WriteQueryString(__sqlShopVariantSupplier_Select)
+	return nil
+}
+
+func (_ *ShopVariantSuppliers) SQLSelect(w SQLWriter) error {
+	w.WriteQueryString(__sqlShopVariantSupplier_Select)
+	return nil
+}
+
+func (m *ShopVariantSupplier) SQLInsert(w SQLWriter) error {
+	w.WriteQueryString(__sqlShopVariantSupplier_Insert)
+	w.WriteRawString(" (")
+	w.WriteMarkers(5)
+	w.WriteByte(')')
+	w.WriteArgs(m.SQLArgs(w.Opts(), true))
+	return nil
+}
+
+func (ms ShopVariantSuppliers) SQLInsert(w SQLWriter) error {
+	w.WriteQueryString(__sqlShopVariantSupplier_Insert)
+	w.WriteRawString(" (")
+	for i := 0; i < len(ms); i++ {
+		w.WriteMarkers(5)
+		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
+		w.WriteRawString("),(")
+	}
+	w.TrimLast(2)
+	return nil
+}
+
+func (m *ShopVariantSupplier) SQLUpdate(w SQLWriter) error {
+	now, opts := time.Now(), w.Opts()
+	_, _ = now, opts // suppress unuse error
+	var flag bool
+	w.WriteRawString("UPDATE ")
+	w.WriteName("shop_variant_supplier")
+	w.WriteRawString(" SET ")
+	if m.ShopID != 0 {
+		flag = true
+		w.WriteName("shop_id")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.ShopID)
+	}
+	if m.SupplierID != 0 {
+		flag = true
+		w.WriteName("supplier_id")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.SupplierID)
+	}
+	if m.VariantID != 0 {
+		flag = true
+		w.WriteName("variant_id")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.VariantID)
+	}
+	if !m.CreatedAt.IsZero() {
+		flag = true
+		w.WriteName("created_at")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.CreatedAt)
+	}
+	if !m.UpdatedAt.IsZero() {
+		flag = true
+		w.WriteName("updated_at")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(core.Now(m.UpdatedAt, time.Now(), true))
+	}
+	if !flag {
+		return core.ErrNoColumn
+	}
+	w.TrimLast(1)
+	return nil
+}
+
+func (m *ShopVariantSupplier) SQLUpdateAll(w SQLWriter) error {
+	w.WriteQueryString(__sqlShopVariantSupplier_UpdateAll)
+	w.WriteRawString(" = (")
+	w.WriteMarkers(5)
+	w.WriteByte(')')
+	w.WriteArgs(m.SQLArgs(w.Opts(), false))
+	return nil
+}
+
+type ShopVariantSupplierHistory map[string]interface{}
+type ShopVariantSupplierHistories []map[string]interface{}
+
+func (m *ShopVariantSupplierHistory) SQLTableName() string { return "history.\"shop_variant_supplier\"" }
+func (m ShopVariantSupplierHistories) SQLTableName() string {
+	return "history.\"shop_variant_supplier\""
+}
+
+func (m *ShopVariantSupplierHistory) SQLSelect(w SQLWriter) error {
+	w.WriteQueryString(__sqlShopVariantSupplier_Select_history)
+	return nil
+}
+
+func (m ShopVariantSupplierHistories) SQLSelect(w SQLWriter) error {
+	w.WriteQueryString(__sqlShopVariantSupplier_Select_history)
+	return nil
+}
+
+func (m ShopVariantSupplierHistory) ShopID() core.Interface { return core.Interface{m["shop_id"]} }
+func (m ShopVariantSupplierHistory) SupplierID() core.Interface {
+	return core.Interface{m["supplier_id"]}
+}
+func (m ShopVariantSupplierHistory) VariantID() core.Interface { return core.Interface{m["variant_id"]} }
+func (m ShopVariantSupplierHistory) CreatedAt() core.Interface { return core.Interface{m["created_at"]} }
+func (m ShopVariantSupplierHistory) UpdatedAt() core.Interface { return core.Interface{m["updated_at"]} }
+
+func (m *ShopVariantSupplierHistory) SQLScan(opts core.Opts, row *sql.Row) error {
+	data := make([]interface{}, 5)
+	args := make([]interface{}, 5)
+	for i := 0; i < 5; i++ {
+		args[i] = &data[i]
+	}
+	if err := row.Scan(args...); err != nil {
+		return err
+	}
+	res := make(ShopVariantSupplierHistory, 5)
+	res["shop_id"] = data[0]
+	res["supplier_id"] = data[1]
+	res["variant_id"] = data[2]
+	res["created_at"] = data[3]
+	res["updated_at"] = data[4]
+	*m = res
+	return nil
+}
+
+func (ms *ShopVariantSupplierHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
+	data := make([]interface{}, 5)
+	args := make([]interface{}, 5)
+	for i := 0; i < 5; i++ {
+		args[i] = &data[i]
+	}
+	res := make(ShopVariantSupplierHistories, 0, 128)
+	for rows.Next() {
+		if err := rows.Scan(args...); err != nil {
+			return err
+		}
+		m := make(ShopVariantSupplierHistory)
+		m["shop_id"] = data[0]
+		m["supplier_id"] = data[1]
+		m["variant_id"] = data[2]
+		m["created_at"] = data[3]
+		m["updated_at"] = data[4]
+		res = append(res, m)
+	}
+	if err := rows.Err(); err != nil {
+		return err
+	}
+	*ms = res
+	return nil
+}

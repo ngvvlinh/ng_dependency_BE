@@ -261,3 +261,14 @@ type ShopBrand struct {
 	UpdatedAt time.Time `sq:"update"`
 	DeletedAt time.Time
 }
+
+var _ = sqlgenShopSupplierVariant(&ShopVariantSupplier{})
+
+// +convert:type=catalog.ShopVariantSupplier
+type ShopVariantSupplier struct {
+	ShopID     int64
+	SupplierID int64
+	VariantID  int64
+	CreatedAt  time.Time `sq:"create"`
+	UpdatedAt  time.Time `sq:"update"`
+}

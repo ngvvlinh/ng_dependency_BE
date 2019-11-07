@@ -209,3 +209,11 @@ type MetaField struct {
 	Key   string
 	Value string
 }
+
+type ShopVariantSupplier struct {
+	ShopID     int64
+	SupplierID int64
+	VariantID  int64
+	CreatedAt  time.Time
+	UpdatedAt  time.Time
+}

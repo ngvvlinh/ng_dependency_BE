@@ -189,6 +189,28 @@ func registerConversions(s *conversion.Scheme) {
 		*out.(*[]*catalogmodel.ShopVariant) = out0
 		return nil
 	})
+	s.Register((*catalogmodel.ShopVariantSupplier)(nil), (*catalog.ShopVariantSupplier)(nil), func(arg, out interface{}) error {
+		Convert_catalogmodel_ShopVariantSupplier_catalog_ShopVariantSupplier(arg.(*catalogmodel.ShopVariantSupplier), out.(*catalog.ShopVariantSupplier))
+		return nil
+	})
+	s.Register(([]*catalogmodel.ShopVariantSupplier)(nil), (*[]*catalog.ShopVariantSupplier)(nil), func(arg, out interface{}) error {
+		out0 := Convert_catalogmodel_ShopVariantSuppliers_catalog_ShopVariantSuppliers(arg.([]*catalogmodel.ShopVariantSupplier))
+		*out.(*[]*catalog.ShopVariantSupplier) = out0
+		return nil
+	})
+	s.Register((*catalog.ShopVariantSupplier)(nil), (*catalogmodel.ShopVariantSupplier)(nil), func(arg, out interface{}) error {
+		Convert_catalog_ShopVariantSupplier_catalogmodel_ShopVariantSupplier(arg.(*catalog.ShopVariantSupplier), out.(*catalogmodel.ShopVariantSupplier))
+		return nil
+	})
+	s.Register(([]*catalog.ShopVariantSupplier)(nil), (*[]*catalogmodel.ShopVariantSupplier)(nil), func(arg, out interface{}) error {
+		out0 := Convert_catalog_ShopVariantSuppliers_catalogmodel_ShopVariantSuppliers(arg.([]*catalog.ShopVariantSupplier))
+		*out.(*[]*catalogmodel.ShopVariantSupplier) = out0
+		return nil
+	})
+	s.Register((*catalog.CreateVariantSupplier)(nil), (*catalog.ShopVariantSupplier)(nil), func(arg, out interface{}) error {
+		Apply_catalog_CreateVariantSupplier_catalog_ShopVariantSupplier(arg.(*catalog.CreateVariantSupplier), out.(*catalog.ShopVariantSupplier))
+		return nil
+	})
 }
 
 //-- convert etop.vn/api/main/catalog.Attribute --//
@@ -671,4 +693,81 @@ func Convert_catalog_ShopVariants_catalogmodel_ShopVariants(args []*catalog.Shop
 		outs[i] = Convert_catalog_ShopVariant_catalogmodel_ShopVariant(args[i], &tmps[i])
 	}
 	return outs
+}
+
+//-- convert etop.vn/api/main/catalog.ShopVariantSupplier --//
+
+func Convert_catalogmodel_ShopVariantSupplier_catalog_ShopVariantSupplier(arg *catalogmodel.ShopVariantSupplier, out *catalog.ShopVariantSupplier) *catalog.ShopVariantSupplier {
+	if arg == nil {
+		return nil
+	}
+	if out == nil {
+		out = &catalog.ShopVariantSupplier{}
+	}
+	convert_catalogmodel_ShopVariantSupplier_catalog_ShopVariantSupplier(arg, out)
+	return out
+}
+
+func convert_catalogmodel_ShopVariantSupplier_catalog_ShopVariantSupplier(arg *catalogmodel.ShopVariantSupplier, out *catalog.ShopVariantSupplier) {
+	out.ShopID = arg.ShopID         // simple assign
+	out.SupplierID = arg.SupplierID // simple assign
+	out.VariantID = arg.VariantID   // simple assign
+	out.CreatedAt = arg.CreatedAt   // simple assign
+	out.UpdatedAt = arg.UpdatedAt   // simple assign
+}
+
+func Convert_catalogmodel_ShopVariantSuppliers_catalog_ShopVariantSuppliers(args []*catalogmodel.ShopVariantSupplier) (outs []*catalog.ShopVariantSupplier) {
+	tmps := make([]catalog.ShopVariantSupplier, len(args))
+	outs = make([]*catalog.ShopVariantSupplier, len(args))
+	for i := range tmps {
+		outs[i] = Convert_catalogmodel_ShopVariantSupplier_catalog_ShopVariantSupplier(args[i], &tmps[i])
+	}
+	return outs
+}
+
+func Convert_catalog_ShopVariantSupplier_catalogmodel_ShopVariantSupplier(arg *catalog.ShopVariantSupplier, out *catalogmodel.ShopVariantSupplier) *catalogmodel.ShopVariantSupplier {
+	if arg == nil {
+		return nil
+	}
+	if out == nil {
+		out = &catalogmodel.ShopVariantSupplier{}
+	}
+	convert_catalog_ShopVariantSupplier_catalogmodel_ShopVariantSupplier(arg, out)
+	return out
+}
+
+func convert_catalog_ShopVariantSupplier_catalogmodel_ShopVariantSupplier(arg *catalog.ShopVariantSupplier, out *catalogmodel.ShopVariantSupplier) {
+	out.ShopID = arg.ShopID         // simple assign
+	out.SupplierID = arg.SupplierID // simple assign
+	out.VariantID = arg.VariantID   // simple assign
+	out.CreatedAt = arg.CreatedAt   // simple assign
+	out.UpdatedAt = arg.UpdatedAt   // simple assign
+}
+
+func Convert_catalog_ShopVariantSuppliers_catalogmodel_ShopVariantSuppliers(args []*catalog.ShopVariantSupplier) (outs []*catalogmodel.ShopVariantSupplier) {
+	tmps := make([]catalogmodel.ShopVariantSupplier, len(args))
+	outs = make([]*catalogmodel.ShopVariantSupplier, len(args))
+	for i := range tmps {
+		outs[i] = Convert_catalog_ShopVariantSupplier_catalogmodel_ShopVariantSupplier(args[i], &tmps[i])
+	}
+	return outs
+}
+
+func Apply_catalog_CreateVariantSupplier_catalog_ShopVariantSupplier(arg *catalog.CreateVariantSupplier, out *catalog.ShopVariantSupplier) *catalog.ShopVariantSupplier {
+	if arg == nil {
+		return nil
+	}
+	if out == nil {
+		out = &catalog.ShopVariantSupplier{}
+	}
+	apply_catalog_CreateVariantSupplier_catalog_ShopVariantSupplier(arg, out)
+	return out
+}
+
+func apply_catalog_CreateVariantSupplier_catalog_ShopVariantSupplier(arg *catalog.CreateVariantSupplier, out *catalog.ShopVariantSupplier) {
+	out.ShopID = arg.ShopID         // simple assign
+	out.SupplierID = arg.SupplierID // simple assign
+	out.VariantID = arg.VariantID   // simple assign
+	out.CreatedAt = time.Time{}     // zero value
+	out.UpdatedAt = time.Time{}     // zero value
 }

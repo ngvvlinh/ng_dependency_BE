@@ -1493,3 +1493,112 @@ func (ft *ShopBrandFilters) ByDeletedAtPtr(DeletedAt *time.Time) *sq.ColumnFilte
 		IsZero: DeletedAt != nil && (*DeletedAt).IsZero(),
 	}
 }
+
+type ShopVariantSupplierFilters struct{ prefix string }
+
+func NewShopVariantSupplierFilters(prefix string) ShopVariantSupplierFilters {
+	return ShopVariantSupplierFilters{prefix}
+}
+
+func (ft *ShopVariantSupplierFilters) Filter(pred string, args ...interface{}) sq.WriterTo {
+	return sq.Filter(&ft.prefix, pred, args...)
+}
+
+func (ft ShopVariantSupplierFilters) Prefix() string {
+	return ft.prefix
+}
+
+func (ft *ShopVariantSupplierFilters) ByShopID(ShopID int64) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "shop_id",
+		Value:  ShopID,
+		IsNil:  ShopID == 0,
+	}
+}
+
+func (ft *ShopVariantSupplierFilters) ByShopIDPtr(ShopID *int64) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "shop_id",
+		Value:  ShopID,
+		IsNil:  ShopID == nil,
+		IsZero: ShopID != nil && (*ShopID) == 0,
+	}
+}
+
+func (ft *ShopVariantSupplierFilters) BySupplierID(SupplierID int64) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "supplier_id",
+		Value:  SupplierID,
+		IsNil:  SupplierID == 0,
+	}
+}
+
+func (ft *ShopVariantSupplierFilters) BySupplierIDPtr(SupplierID *int64) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "supplier_id",
+		Value:  SupplierID,
+		IsNil:  SupplierID == nil,
+		IsZero: SupplierID != nil && (*SupplierID) == 0,
+	}
+}
+
+func (ft *ShopVariantSupplierFilters) ByVariantID(VariantID int64) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "variant_id",
+		Value:  VariantID,
+		IsNil:  VariantID == 0,
+	}
+}
+
+func (ft *ShopVariantSupplierFilters) ByVariantIDPtr(VariantID *int64) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "variant_id",
+		Value:  VariantID,
+		IsNil:  VariantID == nil,
+		IsZero: VariantID != nil && (*VariantID) == 0,
+	}
+}
+
+func (ft *ShopVariantSupplierFilters) ByCreatedAt(CreatedAt time.Time) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "created_at",
+		Value:  CreatedAt,
+		IsNil:  CreatedAt.IsZero(),
+	}
+}
+
+func (ft *ShopVariantSupplierFilters) ByCreatedAtPtr(CreatedAt *time.Time) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "created_at",
+		Value:  CreatedAt,
+		IsNil:  CreatedAt == nil,
+		IsZero: CreatedAt != nil && (*CreatedAt).IsZero(),
+	}
+}
+
+func (ft *ShopVariantSupplierFilters) ByUpdatedAt(UpdatedAt time.Time) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "updated_at",
+		Value:  UpdatedAt,
+		IsNil:  UpdatedAt.IsZero(),
+	}
+}
+
+func (ft *ShopVariantSupplierFilters) ByUpdatedAtPtr(UpdatedAt *time.Time) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "updated_at",
+		Value:  UpdatedAt,
+		IsNil:  UpdatedAt == nil,
+		IsZero: UpdatedAt != nil && (*UpdatedAt).IsZero(),
+	}
+}
