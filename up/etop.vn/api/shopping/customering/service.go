@@ -34,6 +34,10 @@ type QueryService interface {
 	// unused
 	GetCustomerByCode(ctx context.Context, code string, shopID int64) (*ShopCustomer, error)
 
+	GetCustomerByPhone(ctx context.Context, phone string, shopID int64) (*ShopCustomer, error)
+
+	GetCustomerByEmail(ctx context.Context, email string, shopID int64) (*ShopCustomer, error)
+
 	ListCustomers(context.Context, *shopping.ListQueryShopArgs) (*CustomersResponse, error)
 
 	ListCustomersByIDs(context.Context, *shopping.IDsQueryShopArgs) (*CustomersResponse, error)

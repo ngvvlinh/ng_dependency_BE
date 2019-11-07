@@ -24,6 +24,7 @@ import (
 	"etop.vn/backend/pkg/etop/authorize/claims"
 	"etop.vn/backend/pkg/etop/logic/etop_shipping_price"
 	"etop.vn/backend/pkg/etop/model"
+	. "etop.vn/capi/dot"
 	"etop.vn/common/jsonx"
 	"etop.vn/common/l"
 	"etop.vn/common/xerrors"
@@ -125,6 +126,84 @@ func CreateOrder(
 		}
 	}
 
+	shippingAddress := r.ShippingAddress
+	if r.CustomerId == 0 && shippingAddress != nil &&
+		shippingAddress.Phone != "" && shippingAddress.FullName != "" {
+		getCustomerByPhone := &customering.GetCustomerByPhoneQuery{
+			Phone:  shippingAddress.Phone,
+			ShopID: claim.Shop.ID,
+		}
+		if err := customerQuery.Dispatch(ctx, getCustomerByPhone); err != nil && cm.ErrorCode(err) != cm.NotFound {
+			return nil, err
+		}
+		phoneCustomer := getCustomerByPhone.Result
+
+		var emailCustomer *customering.ShopCustomer
+		if shippingAddress.Email != "" {
+			getCustomerByEmail := &customering.GetCustomerByEmailQuery{
+				Email:  shippingAddress.Email,
+				ShopID: claim.Shop.ID,
+			}
+			if err := customerQuery.Dispatch(ctx, getCustomerByEmail); err != nil && cm.ErrorCode(err) != cm.NotFound {
+				return nil, err
+			}
+			emailCustomer = getCustomerByEmail.Result
+		}
+
+		if phoneCustomer == nil {
+			if emailCustomer == nil {
+				createCustomerCmd := &customering.CreateCustomerCommand{
+					ShopID:   claim.Shop.ID,
+					FullName: shippingAddress.FullName,
+					Type:     "individual",
+					Phone:    shippingAddress.Phone,
+					Email:    shippingAddress.Email,
+				}
+				if err := customerAggr.Dispatch(ctx, createCustomerCmd); err != nil {
+					return nil, err
+				}
+				r.CustomerId = createCustomerCmd.Result.ID
+			} else {
+				createCustomerCmd := &customering.CreateCustomerCommand{
+					ShopID:   claim.Shop.ID,
+					FullName: shippingAddress.FullName,
+					Type:     "individual",
+					Phone:    shippingAddress.Phone,
+				}
+				if err := customerAggr.Dispatch(ctx, createCustomerCmd); err != nil {
+					return nil, err
+				}
+				r.CustomerId = createCustomerCmd.Result.ID
+			}
+		} else {
+			if emailCustomer == nil {
+				cmd := &customering.UpdateCustomerCommand{
+					ID:       phoneCustomer.ID,
+					ShopID:   claim.Shop.ID,
+					FullName: PString(&shippingAddress.FullName),
+					Email:    PString(&shippingAddress.Email),
+				}
+				if err := customerAggr.Dispatch(ctx, cmd); err != nil {
+					return nil, err
+				}
+			} else {
+				cmd := &customering.UpdateCustomerCommand{
+					ID:       phoneCustomer.ID,
+					ShopID:   claim.Shop.ID,
+					FullName: PString(&shippingAddress.FullName),
+				}
+				if err := customerAggr.Dispatch(ctx, cmd); err != nil {
+					return nil, err
+				}
+			}
+			r.CustomerId = phoneCustomer.ID
+		}
+		// ignore err
+		if _err := updateOrCreateCustomerAddress(ctx, claim.Shop.ID, r.CustomerId, shippingAddress); _err != nil {
+			ll.Error("Auto cập nhật Customer Address lỗi", l.Error(_err))
+		}
+	}
+
 	shop := claim.Shop
 	lines, err := PrepareOrderLines(ctx, shop.ID, r.Lines)
 	if err != nil {
@@ -198,6 +277,64 @@ func CreateOrder(
 	result := pborder.PbOrder(order, nil, model.TagShop)
 	result.ShopName = claim.Shop.Name
 	return result, nil
+}
+
+func updateOrCreateCustomerAddress(ctx context.Context, shopID, customerID int64, orderAddress *pborder.OrderAddress) error {
+	address, err := orderAddress.ToModel()
+	if err != nil {
+		return err
+	}
+
+	getAddressQuery := &addressing.GetAddressActiveByTraderIDQuery{
+		TraderID: customerID,
+		ShopID:   shopID,
+	}
+	err = traderAddressQuery.Dispatch(ctx, getAddressQuery)
+	if err != nil && cm.ErrorCode(err) != cm.NotFound {
+		return err
+	}
+	addressDB := getAddressQuery.Result
+	if err == nil && addressDB != nil {
+		updateCustomerAddressCmd := &addressing.UpdateAddressCommand{
+			ID:           addressDB.ID,
+			ShopID:       shopID,
+			FullName:     PString(&address.FullName),
+			Phone:        PString(&address.Phone),
+			Email:        PString(&address.Email),
+			Company:      PString(&address.Company),
+			Address1:     PString(&address.Address1),
+			Address2:     PString(&address.Address2),
+			DistrictCode: PString(&address.DistrictCode),
+			WardCode:     PString(&address.WardCode),
+		}
+		if err := traderAddressAggr.Dispatch(ctx, updateCustomerAddressCmd); err != nil {
+			return err
+		}
+	} else {
+		return createCustomerAddress(ctx, shopID, customerID, address)
+	}
+	return nil
+}
+
+func createCustomerAddress(
+	ctx context.Context, shopID, traderID int64, orderAddress *ordermodel.OrderAddress) error {
+	createAddressCmd := &addressing.CreateAddressCommand{
+		ShopID:       shopID,
+		TraderID:     traderID,
+		FullName:     orderAddress.FullName,
+		Phone:        orderAddress.Phone,
+		Email:        orderAddress.Email,
+		Company:      orderAddress.Company,
+		Address1:     orderAddress.Address1,
+		Address2:     orderAddress.Address2,
+		DistrictCode: orderAddress.DistrictCode,
+		WardCode:     orderAddress.WardCode,
+		IsDefault:    true,
+	}
+	if err := traderAddressAggr.Dispatch(ctx, createAddressCmd); err != nil {
+		return err
+	}
+	return nil
 }
 
 func PrepareOrderLines(

@@ -125,3 +125,23 @@ func (q *CustomerQuery) ListCustomerGroups(
 		Paging:         query.GetPaging(),
 	}, nil
 }
+
+func (q *CustomerQuery) GetCustomerByPhone(
+	ctx context.Context, phone string, shopID int64,
+) (*customering.ShopCustomer, error) {
+	customer, err := q.store(ctx).ShopID(shopID).Phone(phone).GetCustomer()
+	if err != nil {
+		return nil, err
+	}
+	return customer, nil
+}
+
+func (q *CustomerQuery) GetCustomerByEmail(
+	ctx context.Context, email string, shopID int64,
+) (*customering.ShopCustomer, error) {
+	customer, err := q.store(ctx).ShopID(shopID).Email(email).GetCustomer()
+	if err != nil {
+		return nil, err
+	}
+	return customer, nil
+}

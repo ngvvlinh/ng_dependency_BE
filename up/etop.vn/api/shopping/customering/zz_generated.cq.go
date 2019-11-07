@@ -160,6 +160,18 @@ func (h QueryServiceHandler) HandleGetCustomerByCode(ctx context.Context, msg *G
 	return err
 }
 
+type GetCustomerByEmailQuery struct {
+	Email  string
+	ShopID int64
+
+	Result *ShopCustomer `json:"-"`
+}
+
+func (h QueryServiceHandler) HandleGetCustomerByEmail(ctx context.Context, msg *GetCustomerByEmailQuery) (err error) {
+	msg.Result, err = h.inner.GetCustomerByEmail(msg.GetArgs(ctx))
+	return err
+}
+
 type GetCustomerByIDQuery struct {
 	ID     int64
 	ShopID int64
@@ -169,6 +181,18 @@ type GetCustomerByIDQuery struct {
 
 func (h QueryServiceHandler) HandleGetCustomerByID(ctx context.Context, msg *GetCustomerByIDQuery) (err error) {
 	msg.Result, err = h.inner.GetCustomerByID(msg.GetArgs(ctx))
+	return err
+}
+
+type GetCustomerByPhoneQuery struct {
+	Phone  string
+	ShopID int64
+
+	Result *ShopCustomer `json:"-"`
+}
+
+func (h QueryServiceHandler) HandleGetCustomerByPhone(ctx context.Context, msg *GetCustomerByPhoneQuery) (err error) {
+	msg.Result, err = h.inner.GetCustomerByPhone(msg.GetArgs(ctx))
 	return err
 }
 
@@ -231,7 +255,9 @@ func (q *RemoveCustomersFromGroupCommand) command() {}
 func (q *UpdateCustomerCommand) command()           {}
 func (q *UpdateCustomerGroupCommand) command()      {}
 func (q *GetCustomerByCodeQuery) query()            {}
+func (q *GetCustomerByEmailQuery) query()           {}
 func (q *GetCustomerByIDQuery) query()              {}
+func (q *GetCustomerByPhoneQuery) query()           {}
 func (q *GetCustomerGroupQuery) query()             {}
 func (q *ListCustomerGroupsQuery) query()           {}
 func (q *ListCustomersQuery) query()                {}
@@ -360,6 +386,12 @@ func (q *GetCustomerByCodeQuery) GetArgs(ctx context.Context) (_ context.Context
 		q.ShopID
 }
 
+func (q *GetCustomerByEmailQuery) GetArgs(ctx context.Context) (_ context.Context, email string, shopID int64) {
+	return ctx,
+		q.Email,
+		q.ShopID
+}
+
 func (q *GetCustomerByIDQuery) GetArgs(ctx context.Context) (_ context.Context, _ *shopping.IDQueryShopArg) {
 	return ctx,
 		&shopping.IDQueryShopArg{
@@ -371,6 +403,12 @@ func (q *GetCustomerByIDQuery) GetArgs(ctx context.Context) (_ context.Context, 
 func (q *GetCustomerByIDQuery) SetIDQueryShopArg(args *shopping.IDQueryShopArg) {
 	q.ID = args.ID
 	q.ShopID = args.ShopID
+}
+
+func (q *GetCustomerByPhoneQuery) GetArgs(ctx context.Context) (_ context.Context, phone string, shopID int64) {
+	return ctx,
+		q.Phone,
+		q.ShopID
 }
 
 func (q *GetCustomerGroupQuery) GetArgs(ctx context.Context) (_ context.Context, _ *GetCustomerGroupArgs) {
@@ -461,7 +499,9 @@ func (h QueryServiceHandler) RegisterHandlers(b interface {
 	AddHandler(handler interface{})
 }) QueryBus {
 	b.AddHandler(h.HandleGetCustomerByCode)
+	b.AddHandler(h.HandleGetCustomerByEmail)
 	b.AddHandler(h.HandleGetCustomerByID)
+	b.AddHandler(h.HandleGetCustomerByPhone)
 	b.AddHandler(h.HandleGetCustomerGroup)
 	b.AddHandler(h.HandleListCustomerGroups)
 	b.AddHandler(h.HandleListCustomers)
