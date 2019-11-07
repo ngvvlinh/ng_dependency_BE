@@ -9,6 +9,7 @@ type ShopCustomer struct {
 	ShopID    int64
 	GroupIDs  []int64
 	Code      string
+	CodeNorm  int32
 	FullName  string
 	Gender    string
 	Type      string

@@ -2,7 +2,6 @@ package shop
 
 import (
 	"context"
-	"strings"
 
 	"etop.vn/api/main/ordering"
 	"etop.vn/api/main/receipting"
@@ -48,13 +47,6 @@ func (s *CustomerService) CreateCustomer(ctx context.Context, r *wrapshop.Create
 	}
 	err := customerAggr.Dispatch(ctx, cmd)
 	if err != nil {
-		errMgs := err.Error()
-		switch {
-		case strings.Contains(errMgs, "shop_customer_shop_id_phone_idx"):
-			err = cm.Errorf(cm.FailedPrecondition, nil, "Số điện thoại này đã tồn tại")
-		case strings.Contains(errMgs, "shop_customer_shop_id_email_idx"):
-			err = cm.Errorf(cm.FailedPrecondition, nil, "Email này đã tồn tại")
-		}
 		return err
 	}
 
@@ -76,13 +68,6 @@ func (s *CustomerService) UpdateCustomer(ctx context.Context, r *wrapshop.Update
 	}
 	err := customerAggr.Dispatch(ctx, cmd)
 	if err != nil {
-		errMgs := err.Error()
-		switch {
-		case strings.Contains(errMgs, "shop_customer_shop_id_phone_idx"):
-			err = cm.Errorf(cm.FailedPrecondition, nil, "Số điện thoại này đã tồn tại")
-		case strings.Contains(errMgs, "shop_customer_shop_id_email_idx"):
-			err = cm.Errorf(cm.FailedPrecondition, nil, "Email này đã tồn tại")
-		}
 		return err
 	}
 

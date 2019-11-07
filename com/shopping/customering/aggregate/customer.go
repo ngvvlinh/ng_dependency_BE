@@ -96,10 +96,13 @@ func (a *CustomerAggregate) CreateCustomer(
 		if strings.Contains(err.Error(), "gender_type") {
 			return nil, cm.Error(cm.InvalidArgument, `Giới tính chỉ nằm trong "male", "female", "other"`, err)
 		}
+		return nil, err
 	}
-	// TODO: created_at, updated_at
-	var customerResult customering.ShopCustomer
-	return convert.Convert_customeringmodel_ShopCustomer_customering_ShopCustomer(customer, &customerResult), err
+	customerResult, err := a.store(ctx).ShopID(customer.ShopID).ID(customer.ID).GetCustomer()
+	if err != nil {
+		return nil, err
+	}
+	return customerResult, err
 }
 
 func (a *CustomerAggregate) UpdateCustomer(

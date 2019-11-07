@@ -67,25 +67,13 @@ func CreateShopCustomer(args *customering.CreateCustomerArgs) (out *model.ShopCu
 	return result
 }
 
-func UpdateShopCustomer(args *customering.UpdateCustomerArgs, in *customering.ShopCustomer) (out *customering.ShopCustomer) {
+func updateShopCustomer(args *customering.UpdateCustomerArgs, in *customering.ShopCustomer) (out *customering.ShopCustomer) {
 	if in == nil {
 		return nil
 	}
-	return &customering.ShopCustomer{
-		ID:        in.ID,
-		ShopID:    in.ShopID,
-		Code:      in.Code,
-		FullName:  args.FullName.Apply(in.FullName),
-		Gender:    args.Gender.Apply(in.Gender),
-		Type:      args.Type.Apply(in.Type),
-		Birthday:  args.Birthday.Apply(in.Birthday),
-		Note:      args.Note.Apply(in.Note),
-		Phone:     args.Phone.Apply(in.Phone),
-		Email:     args.Email.Apply(in.Email),
-		Status:    in.Status,
-		CreatedAt: in.CreatedAt,
-		UpdatedAt: time.Now(),
-	}
+	apply_customering_UpdateCustomerArgs_customering_ShopCustomer(args, in)
+	in.UpdatedAt = time.Now()
+	return in
 }
 
 func shopCustomerDB(args *customering.ShopCustomer, out *model.ShopCustomer) {

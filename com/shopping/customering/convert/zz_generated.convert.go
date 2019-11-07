@@ -20,9 +20,9 @@ Custom conversions:
     CreateShopTraderAddress    // in use
     ShopTraderAddress          // in use
     ShopTraderAddressDB        // in use
-    UpdateShopCustomer         // in use
     UpdateShopTraderAddress    // in use
     shopCustomerDB             // in use
+    updateShopCustomer         // in use
 
 Ignored functions:
     GenerateCode           // params are not pointer to named types
@@ -299,6 +299,7 @@ func convert_customeringmodel_ShopCustomer_customering_ShopCustomer(arg *custome
 	out.ShopID = arg.ShopID       // simple assign
 	out.GroupIDs = arg.GroupIDs   // simple assign
 	out.Code = arg.Code           // simple assign
+	out.CodeNorm = arg.CodeNorm   // simple assign
 	out.FullName = arg.FullName   // simple assign
 	out.Gender = arg.Gender       // simple assign
 	out.Type = arg.Type           // simple assign
@@ -335,7 +336,7 @@ func convert_customering_ShopCustomer_customeringmodel_ShopCustomer(arg *custome
 	out.ID = arg.ID               // simple assign
 	out.ShopID = arg.ShopID       // simple assign
 	out.Code = arg.Code           // simple assign
-	out.CodeNorm = 0              // zero value
+	out.CodeNorm = arg.CodeNorm   // simple assign
 	out.FullName = arg.FullName   // simple assign
 	out.Gender = arg.Gender       // simple assign
 	out.Type = arg.Type           // simple assign
@@ -377,6 +378,7 @@ func apply_customering_CreateCustomerArgs_customering_ShopCustomer(arg *customer
 	out.ShopID = arg.ShopID     // simple assign
 	out.GroupIDs = nil          // zero value
 	out.Code = ""               // zero value
+	out.CodeNorm = 0            // zero value
 	out.FullName = arg.FullName // simple assign
 	out.Gender = arg.Gender     // simple assign
 	out.Type = arg.Type         // simple assign
@@ -390,7 +392,7 @@ func apply_customering_CreateCustomerArgs_customering_ShopCustomer(arg *customer
 }
 
 func Apply_customering_UpdateCustomerArgs_customering_ShopCustomer(arg *customering.UpdateCustomerArgs, out *customering.ShopCustomer) *customering.ShopCustomer {
-	return UpdateShopCustomer(arg, out)
+	return updateShopCustomer(arg, out)
 }
 
 func apply_customering_UpdateCustomerArgs_customering_ShopCustomer(arg *customering.UpdateCustomerArgs, out *customering.ShopCustomer) {
@@ -398,6 +400,7 @@ func apply_customering_UpdateCustomerArgs_customering_ShopCustomer(arg *customer
 	out.ShopID = out.ShopID                         // identifier
 	out.GroupIDs = out.GroupIDs                     // no change
 	out.Code = out.Code                             // no change
+	out.CodeNorm = out.CodeNorm                     // no change
 	out.FullName = arg.FullName.Apply(out.FullName) // apply change
 	out.Gender = arg.Gender.Apply(out.Gender)       // apply change
 	out.Type = arg.Type.Apply(out.Type)             // apply change
