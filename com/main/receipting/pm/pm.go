@@ -68,11 +68,13 @@ func (m *ProcessManager) MoneyTransactionConfirmed(ctx context.Context, event *r
 		return err
 	}
 	for _, fulfillment := range getMoneyTransaction.Result.Fulfillments {
-		if fulfillment.ShippingState == etopmodel.StateDelivered && fulfillment.ShippingFeeShopTransferedAt.IsZero() {
-			fulfillments = append(fulfillments, fulfillment)
-			orderIDs = append(orderIDs, fulfillment.OrderID)
-			totalShippingFee += int32(fulfillment.ShippingFeeShop)
-		}
+		fulfillments = append(fulfillments, fulfillment)
+		orderIDs = append(orderIDs, fulfillment.OrderID)
+		totalShippingFee += int32(fulfillment.ShippingFeeShop)
+	}
+
+	if len(orderIDs) == 0 {
+		return nil
 	}
 
 	getOrdersQuery := &ordermodelx.GetOrdersQuery{
