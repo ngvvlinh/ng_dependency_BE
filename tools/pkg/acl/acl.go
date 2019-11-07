@@ -527,4 +527,13 @@ var ACL = map[string]*permission.PermissionDecl{
 	"shop.PurchaseOrder/DeletePurchaseOrder":          {Type: Shop},
 	"shop.PurchaseOrder/ConfirmPurchaseOrder":         {Type: Shop},
 	"shop.PurchaseOrder/CancelPurchaseOrder":          {Type: Shop},
+
+	// Stocktake:
+	"shop.Stocktake/CreateStocktake":    {Type: Shop},
+	"shop.Stocktake/UpdateStocktake":    {Type: Shop},
+	"shop.Stocktake/ConfirmStocktake":   {Type: Shop},
+	"shop.Stocktake/CancelStocktake":    {Type: Shop},
+	"shop.Stocktake/GetStocktake":       {Type: Shop},
+	"shop.Stocktake/GetStocktakesByIDs": {Type: Shop},
+	"shop.Stocktake/GetStocktakes":      {Type: Shop},
 }

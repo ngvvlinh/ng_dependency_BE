@@ -41,6 +41,17 @@ service MiscService {
     rpc VersionInfo(cm.Empty) returns (cm.VersionInfoResponse);
 }
 
+service StocktakeService {
+    rpc CreateStocktake(CreateStocktakeRequest) returns (Stocktake);
+    rpc UpdateStocktake(UpdateStocktakeRequest) returns (Stocktake);
+    rpc ConfirmStocktake(ConfirmStocktakeRequest) returns (Stocktake);
+    rpc CancelStocktake(cm.IDRequest) returns (Stocktake);
+
+    rpc GetStocktake(cm.IDRequest) returns (Stocktake);
+    rpc GetStocktakesByIDs(cm.IDsRequest) returns (GetStocktakesByIDsResponse);
+    rpc  GetStocktakes(GetStocktakesRequest) returns (GetStocktakesResponse);
+}
+
 service BrandService {
     rpc CreateBrand(CreateBrandRequest) returns (Brand);
     rpc UpdateBrandInfo(UpdateBrandRequest) returns (Brand);
@@ -1878,4 +1889,74 @@ message UpdateOrderShippingInfoRequest {
     optional int64 order_id = 1 [(gogoproto.nullable) = false];
     optional order.OrderShipping shipping = 2;
     optional order.OrderAddress shipping_address = 3;
+}
+
+
+message GetStocktakesByIDsResponse {
+    repeated Stocktake stocktakes = 1;
+}
+message CreateStocktakeRequest {
+    optional int32 total_quantity = 1 [(gogoproto.nullable) = false];
+    optional string note = 2 [(gogoproto.nullable) = false];
+
+    //  length more than one
+    repeated StocktakeLine lines = 3;
+}
+
+message UpdateStocktakeRequest {
+
+    optional int64 id = 4 [(gogoproto.nullable) = false];
+
+    optional int32 total_quantity = 1 [(gogoproto.nullable) = false];
+    optional string note = 2 [(gogoproto.nullable) = false];
+
+    //  length more than one
+    repeated StocktakeLine lines = 3;
+}
+
+message Stocktake {
+    optional int64 id = 1 [(gogoproto.nullable) = false];
+    optional int64 shop_id = 2 [(gogoproto.nullable) = false];
+
+    optional int32 total_quantity = 3 [(gogoproto.nullable) = false];
+    optional string note = 4 [(gogoproto.nullable) = false];
+    optional string code = 13 [(gogoproto.nullable)=false];
+
+    optional int64 created_by = 5 [(gogoproto.nullable) = false];
+    optional int64 updated_by = 6 [(gogoproto.nullable) = false];
+
+    optional google.protobuf.Timestamp created_at = 7;
+    optional google.protobuf.Timestamp updated_at = 8;
+    optional google.protobuf.Timestamp confirmed_at = 9;
+    optional google.protobuf.Timestamp cancelled_at = 10;
+    optional status3.Status status = 12 [(gogoproto.nullable)=false];
+
+    repeated StocktakeLine lines = 11;
+}
+
+message GetStocktakesRequest {
+    optional cm.Paging paging = 1;
+    repeated cm.Filter filters = 2;
+}
+
+message GetStocktakesResponse {
+    repeated Stocktake stocktakes = 1;
+    optional cm.PageInfo paging = 2;
+}
+
+message StocktakeLine {
+    optional int64 product_id = 9 [(gogoproto.nullable) = false];
+    optional string product_name = 10 [(gogoproto.nullable) = false];
+    optional string variant_name = 4 [(gogoproto.nullable) = false];
+    optional int64 variant_id = 1 [(gogoproto.nullable) = false];
+    optional int32 old_quantity = 2 [(gogoproto.nullable) = false];
+    optional int32 new_quantity = 3 [(gogoproto.nullable) = false];
+    optional string code = 5 [(gogoproto.nullable) = false];
+    optional string image_url = 6 [(gogoproto.nullable) = false];
+    repeated Attribute attributes = 7;
+}
+
+message ConfirmStocktakeRequest {
+    optional int64 id = 1 [(gogoproto.nullable) = false];
+    optional string auto_inventory_voucher = 2 [(gogoproto.nullable) = false];
 }

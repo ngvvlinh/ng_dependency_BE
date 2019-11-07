@@ -1925,6 +1925,87 @@ func (s *ShipnowServiceServer) parseRoute(path string) (reqMsg proto.Message, _ 
 	}
 }
 
+type StocktakeServiceServer struct {
+	StocktakeAPI
+}
+
+func NewStocktakeServiceServer(svc StocktakeAPI) Server {
+	return &StocktakeServiceServer{
+		StocktakeAPI: svc,
+	}
+}
+
+const StocktakeServicePathPrefix = "/shop.Stocktake/"
+
+func (s *StocktakeServiceServer) PathPrefix() string {
+	return StocktakeServicePathPrefix
+}
+
+func (s *StocktakeServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
+	ctx := req.Context()
+	serve, err := httprpc.ParseRequestHeader(req)
+	if err != nil {
+		httprpc.WriteError(ctx, resp, err)
+		return
+	}
+	reqMsg, exec, err := s.parseRoute(req.URL.Path)
+	if err != nil {
+		httprpc.WriteError(ctx, resp, err)
+		return
+	}
+	serve(ctx, resp, req, reqMsg, exec)
+}
+
+func (s *StocktakeServiceServer) parseRoute(path string) (reqMsg proto.Message, _ httprpc.ExecFunc, _ error) {
+	switch path {
+	case "/shop.Stocktake/CancelStocktake":
+		msg := new(common.IDRequest)
+		fn := func(ctx context.Context) (proto.Message, error) {
+			return s.StocktakeAPI.CancelStocktake(ctx, msg)
+		}
+		return msg, fn, nil
+	case "/shop.Stocktake/ConfirmStocktake":
+		msg := new(shop.ConfirmStocktakeRequest)
+		fn := func(ctx context.Context) (proto.Message, error) {
+			return s.StocktakeAPI.ConfirmStocktake(ctx, msg)
+		}
+		return msg, fn, nil
+	case "/shop.Stocktake/CreateStocktake":
+		msg := new(shop.CreateStocktakeRequest)
+		fn := func(ctx context.Context) (proto.Message, error) {
+			return s.StocktakeAPI.CreateStocktake(ctx, msg)
+		}
+		return msg, fn, nil
+	case "/shop.Stocktake/GetStocktake":
+		msg := new(common.IDRequest)
+		fn := func(ctx context.Context) (proto.Message, error) {
+			return s.StocktakeAPI.GetStocktake(ctx, msg)
+		}
+		return msg, fn, nil
+	case "/shop.Stocktake/GetStocktakes":
+		msg := new(shop.GetStocktakesRequest)
+		fn := func(ctx context.Context) (proto.Message, error) {
+			return s.StocktakeAPI.GetStocktakes(ctx, msg)
+		}
+		return msg, fn, nil
+	case "/shop.Stocktake/GetStocktakesByIDs":
+		msg := new(common.IDsRequest)
+		fn := func(ctx context.Context) (proto.Message, error) {
+			return s.StocktakeAPI.GetStocktakesByIDs(ctx, msg)
+		}
+		return msg, fn, nil
+	case "/shop.Stocktake/UpdateStocktake":
+		msg := new(shop.UpdateStocktakeRequest)
+		fn := func(ctx context.Context) (proto.Message, error) {
+			return s.StocktakeAPI.UpdateStocktake(ctx, msg)
+		}
+		return msg, fn, nil
+	default:
+		msg := fmt.Sprintf("no handler for path %q", path)
+		return nil, nil, httprpc.BadRouteError(msg, "POST", path)
+	}
+}
+
 type SummaryServiceServer struct {
 	SummaryAPI
 }

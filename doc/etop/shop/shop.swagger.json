@@ -4205,6 +4205,188 @@
         ]
       }
     },
+    "/api/shop.Stocktake/CancelStocktake": {
+      "post": {
+        "operationId": "CancelStocktake",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/shopStocktake"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/cmIDRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Stocktake"
+        ]
+      }
+    },
+    "/api/shop.Stocktake/ConfirmStocktake": {
+      "post": {
+        "operationId": "ConfirmStocktake",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/shopStocktake"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/shopConfirmStocktakeRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Stocktake"
+        ]
+      }
+    },
+    "/api/shop.Stocktake/CreateStocktake": {
+      "post": {
+        "operationId": "CreateStocktake",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/shopStocktake"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/shopCreateStocktakeRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Stocktake"
+        ]
+      }
+    },
+    "/api/shop.Stocktake/GetStocktake": {
+      "post": {
+        "operationId": "GetStocktake",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/shopStocktake"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/cmIDRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Stocktake"
+        ]
+      }
+    },
+    "/api/shop.Stocktake/GetStocktakes": {
+      "post": {
+        "operationId": "GetStocktakes",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/shopGetStocktakesResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/shopGetStocktakesRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Stocktake"
+        ]
+      }
+    },
+    "/api/shop.Stocktake/GetStocktakesByIDs": {
+      "post": {
+        "operationId": "GetStocktakesByIDs",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/shopGetStocktakesByIDsResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/cmIDsRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Stocktake"
+        ]
+      }
+    },
+    "/api/shop.Stocktake/UpdateStocktake": {
+      "post": {
+        "operationId": "UpdateStocktake",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/shopStocktake"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/shopUpdateStocktakeRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Stocktake"
+        ]
+      }
+    },
     "/api/shop.Summary/CalcBalanceShop": {
       "post": {
         "operationId": "CalcBalanceShop",
@@ -7953,6 +8135,18 @@
         }
       }
     },
+    "shopConfirmStocktakeRequest": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "auto_inventory_voucher": {
+          "type": "string"
+        }
+      }
+    },
     "shopCreateBrandRequest": {
       "type": "object",
       "properties": {
@@ -8294,6 +8488,25 @@
           "items": {
             "$ref": "#/definitions/shopReceiptLine"
           }
+        }
+      }
+    },
+    "shopCreateStocktakeRequest": {
+      "type": "object",
+      "properties": {
+        "total_quantity": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "note": {
+          "type": "string"
+        },
+        "lines": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/shopStocktakeLine"
+          },
+          "title": "length more than one"
         }
       }
     },
@@ -9362,6 +9575,45 @@
         "product_id": {
           "type": "string",
           "format": "int64"
+        }
+      }
+    },
+    "shopGetStocktakesByIDsResponse": {
+      "type": "object",
+      "properties": {
+        "stocktakes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/shopStocktake"
+          }
+        }
+      }
+    },
+    "shopGetStocktakesRequest": {
+      "type": "object",
+      "properties": {
+        "paging": {
+          "$ref": "#/definitions/cmPaging"
+        },
+        "filters": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/cmFilter"
+          }
+        }
+      }
+    },
+    "shopGetStocktakesResponse": {
+      "type": "object",
+      "properties": {
+        "stocktakes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/shopStocktake"
+          }
+        },
+        "paging": {
+          "$ref": "#/definitions/cmPageInfo"
         }
       }
     },
@@ -10465,6 +10717,101 @@
         }
       }
     },
+    "shopStocktake": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "shop_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "total_quantity": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "note": {
+          "type": "string"
+        },
+        "code": {
+          "type": "string"
+        },
+        "created_by": {
+          "type": "string",
+          "format": "int64"
+        },
+        "updated_by": {
+          "type": "string",
+          "format": "int64"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "confirmed_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "cancelled_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "status": {
+          "$ref": "#/definitions/status3Status"
+        },
+        "lines": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/shopStocktakeLine"
+          }
+        }
+      }
+    },
+    "shopStocktakeLine": {
+      "type": "object",
+      "properties": {
+        "product_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "product_name": {
+          "type": "string"
+        },
+        "variant_name": {
+          "type": "string"
+        },
+        "variant_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "old_quantity": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "new_quantity": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "code": {
+          "type": "string"
+        },
+        "image_url": {
+          "type": "string"
+        },
+        "attributes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/shopAttribute"
+          }
+        }
+      }
+    },
     "shopSummarizeFulfillmentsRequest": {
       "type": "object",
       "properties": {
@@ -11314,6 +11661,29 @@
         }
       }
     },
+    "shopUpdateStocktakeRequest": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "total_quantity": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "note": {
+          "type": "string"
+        },
+        "lines": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/shopStocktakeLine"
+          },
+          "title": "length more than one"
+        }
+      }
+    },
     "shopUpdateSupplierRequest": {
       "type": "object",
       "properties": {
@@ -11625,6 +11995,9 @@
     },
     {
       "name": "Shipnow"
+    },
+    {
+      "name": "Stocktake"
     },
     {
       "name": "Summary"

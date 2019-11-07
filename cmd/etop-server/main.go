@@ -43,6 +43,8 @@ import (
 	shipnowcarrier "etop.vn/backend/com/main/shipnow-carrier"
 	shipnowpm "etop.vn/backend/com/main/shipnow/pm"
 	shipsqlstore "etop.vn/backend/com/main/shipping/sqlstore"
+	stocktakeaggregate "etop.vn/backend/com/main/stocktaking/aggregate"
+	stocktakequery "etop.vn/backend/com/main/stocktaking/query"
 	serviceaffiliate "etop.vn/backend/com/services/affiliate"
 	affiliatepm "etop.vn/backend/com/services/affiliate/pm"
 	carrieraggregate "etop.vn/backend/com/shopping/carrying/aggregate"
@@ -350,6 +352,8 @@ func main() {
 	shipnowPM := shipnowpm.New(eventBus, shipnowQuery, shipnowAggr, orderAggr.MessageBus(), shipnowCarrierManager)
 	shipnowPM.RegisterEventHandlers(eventBus)
 
+	stocktakeAggr := stocktakeaggregate.NewAggregateStocktake(db, eventBus).MessageBus()
+	stocktakeQuery := stocktakequery.NewQueryStocktake(db).MessageBus()
 	customerAggr := customeraggregate.NewCustomerAggregate(eventBus, db).MessageBus()
 	supplierAggr := supplieraggregate.NewSupplierAggregate(eventBus, db).MessageBus()
 	carrierAggr := carrieraggregate.NewCarrierAggregate(eventBus, db).MessageBus()
@@ -436,6 +440,8 @@ func main() {
 		purchaseOrderAggr,
 		purchaseOrderQuery,
 		summaryQuery,
+		stocktakeQuery,
+		stocktakeAggr,
 	)
 	partner.Init(shutdowner, redisStore, authStore, cfg.URL.Auth)
 	xshop.Init(shutdowner, redisStore, authStore)

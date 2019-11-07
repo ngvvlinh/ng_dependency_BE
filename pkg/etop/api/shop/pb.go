@@ -3,6 +3,8 @@ package shop
 import (
 	"etop.vn/api/main/catalog"
 	"etop.vn/api/main/inventory"
+
+	stocktaking "etop.vn/api/main/stocktaking"
 	common "etop.vn/backend/pb/common"
 	pbcm "etop.vn/backend/pb/common"
 	pbproducttype "etop.vn/backend/pb/etop/etc/product_type"
@@ -46,6 +48,57 @@ func PbVariantQuantity(shopVariant *catalog.ShopVariant, inventoryVariant *inven
 		}
 	}
 	return shopVariantDB
+}
+
+func PbStocktakes(args []*stocktaking.ShopStocktake) []*pbshop.Stocktake {
+	var stocktakesPb []*pbshop.Stocktake
+	for _, value := range args {
+		stocktakesPb = append(stocktakesPb, PbStocktake(value))
+	}
+	return stocktakesPb
+}
+
+func PbStocktake(args *stocktaking.ShopStocktake) *pbshop.Stocktake {
+	return &pbshop.Stocktake{
+		Id:            args.ID,
+		ShopId:        args.ShopID,
+		TotalQuantity: args.TotalQuantity,
+		Note:          args.Note,
+		CreatedBy:     args.CreatedBy,
+		UpdatedBy:     args.UpdatedBy,
+		CreatedAt:     pbcm.PbTime(args.CreatedAt),
+		UpdatedAt:     pbcm.PbTime(args.UpdatedAt),
+		ConfirmedAt:   pbcm.PbTime(args.ConfirmedAt),
+		CancelledAt:   pbcm.PbTime(args.CancelledAt),
+		Status:        pbs3.Pb(model.Status3(args.Status)),
+		Code:          args.Code,
+		Lines:         PbstocktakeLines(args.Lines),
+	}
+}
+
+func PbstocktakeLines(args []*stocktaking.StocktakeLine) []*pbshop.StocktakeLine {
+	var lines []*pbshop.StocktakeLine
+	for _, value := range args {
+		var attributes []*pbshop.Attribute
+		for _, attribute := range value.Attributes {
+			attributes = append(attributes, &pbshop.Attribute{
+				Name:  attribute.Name,
+				Value: attribute.Value,
+			})
+		}
+		lines = append(lines, &pbshop.StocktakeLine{
+			VariantId:   value.VariantID,
+			OldQuantity: value.OldQuantity,
+			NewQuantity: value.NewQuantity,
+			VariantName: value.VariantName,
+			ProductName: value.ProductName,
+			ProductId:   value.ProductID,
+			Code:        value.Code,
+			ImageUrl:    value.ImageURL,
+			Attributes:  attributes,
+		})
+	}
+	return lines
 }
 
 func PbInventory(args *inventory.InventoryVariant) *pbshop.InventoryVariant {

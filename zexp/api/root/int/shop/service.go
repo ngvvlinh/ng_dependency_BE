@@ -324,3 +324,15 @@ type PurchaseOrderAPI interface {
 	ConfirmPurchaseOrder(context.Context, *shop.ConfirmPurchaseOrderRequest) (*cm.UpdatedResponse, error)
 	CancelPurchaseOrder(context.Context, *shop.CancelPurchaseOrderRequest) (*cm.UpdatedResponse, error)
 }
+
+// +apix:path=/shop.Stocktake
+type StocktakeAPI interface {
+	CreateStocktake(context.Context, *shop.CreateStocktakeRequest) (*shop.Stocktake, error)
+	UpdateStocktake(context.Context, *shop.UpdateStocktakeRequest) (*shop.Stocktake, error)
+	ConfirmStocktake(context.Context, *shop.ConfirmStocktakeRequest) (*shop.Stocktake, error)
+	CancelStocktake(context.Context, *cm.IDRequest) (*shop.Stocktake, error)
+
+	GetStocktake(context.Context, *cm.IDRequest) (*shop.Stocktake, error)
+	GetStocktakesByIDs(context.Context, *cm.IDsRequest) (*shop.GetStocktakesByIDsResponse, error)
+	GetStocktakes(context.Context, *shop.GetStocktakesRequest) (*shop.GetStocktakesResponse, error)
+}

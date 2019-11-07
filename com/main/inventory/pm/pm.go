@@ -8,6 +8,7 @@ import (
 	"etop.vn/api/main/catalog"
 	"etop.vn/api/main/inventory"
 	"etop.vn/api/main/ordering"
+	stocktake "etop.vn/api/main/stocktaking"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/capi"
 )
@@ -37,6 +38,7 @@ func (m *ProcessManager) RegisterEventHandlers(eventBus bus.EventRegistry) {
 	eventBus.AddEventListener(m.PurchaseOrderConfirmed)
 	eventBus.AddEventListener(m.OrderConfirmingEvent)
 	eventBus.AddEventListener(m.OrderConfirmedEvent)
+	eventBus.AddEventListener(m.StocktakeConfirmed)
 }
 
 func (m *ProcessManager) PurchaseOrderConfirmed(ctx context.Context, event *purchaseorder.PurchaseOrderConfirmedEvent) error {
@@ -159,6 +161,58 @@ func (p *ProcessManager) OrderConfirmingEvent(ctx context.Context, event *orderi
 	err = p.inventoryAgg.Dispatch(ctx, cmd)
 	if err != nil {
 		return err
+	}
+	return nil
+}
+
+func (p *ProcessManager) StocktakeConfirmed(ctx context.Context, event *stocktake.StocktakeConfirmedEvent) error {
+	if event.AutoInventoryVoucher == inventory.AutoCreateInventory || event.AutoInventoryVoucher == inventory.AutoCreateAndConfirmInventory {
+		var inventoryVariantChange []*inventory.InventoryVariantQuantityChange
+		for _, value := range event.Stocktake.Lines {
+			inventoryVariantChange = append(inventoryVariantChange, &inventory.InventoryVariantQuantityChange{
+				VariantID:      value.VariantID,
+				QuantityChange: value.NewQuantity - value.OldQuantity,
+			})
+		}
+		cmdCreate := &inventory.CreateInventoryVoucherByQuantityChangeCommand{
+			ShopID:    event.Stocktake.ShopID,
+			RefID:     event.Stocktake.ID,
+			RefType:   inventory.RefTypeStockTake,
+			RefName:   inventory.RefNameStockTake,
+			Note:      "Tạo tự động khi xác nhận phiếu kiểm kho",
+			Title:     "Phiếu kiểm kho",
+			Overstock: event.Overstock,
+			CreatedBy: event.ConfirmedBy,
+			Variants:  inventoryVariantChange,
+		}
+		err := p.inventoryAgg.Dispatch(ctx, cmdCreate)
+		if err != nil {
+			return err
+		}
+		if event.AutoInventoryVoucher == inventory.AutoCreateAndConfirmInventory {
+			if cmdCreate.Result.TypeIn.ID != 0 {
+				cmdConfirmInVoucher := &inventory.ConfirmInventoryVoucherCommand{
+					ShopID:    event.Stocktake.ShopID,
+					ID:        cmdCreate.Result.TypeIn.ID,
+					UpdatedBy: event.ConfirmedBy,
+				}
+				err = p.inventoryAgg.Dispatch(ctx, cmdConfirmInVoucher)
+				if err != nil {
+					return err
+				}
+			}
+			if cmdCreate.Result.TypeOut.ID != 0 {
+				cmdConfirmOutVoucher := &inventory.ConfirmInventoryVoucherCommand{
+					ShopID:    event.Stocktake.ShopID,
+					ID:        cmdCreate.Result.TypeOut.ID,
+					UpdatedBy: event.ConfirmedBy,
+				}
+				err = p.inventoryAgg.Dispatch(ctx, cmdConfirmOutVoucher)
+				if err != nil {
+					return err
+				}
+			}
+		}
 	}
 	return nil
 }

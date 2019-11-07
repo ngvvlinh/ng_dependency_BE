@@ -4,11 +4,10 @@ import (
 	"context"
 	"fmt"
 
-	"etop.vn/api/shopping/tradering"
-
-	"etop.vn/api/main/etop"
 	"etop.vn/api/main/inventory"
+	stocktake "etop.vn/api/main/stocktaking"
 	"etop.vn/api/meta"
+	"etop.vn/api/shopping/tradering"
 	ordermodelx "etop.vn/backend/com/main/ordering/modelx"
 	pbcm "etop.vn/backend/pb/common"
 	pbs4 "etop.vn/backend/pb/etop/etc/status4"
@@ -20,16 +19,27 @@ import (
 )
 
 func (s *InventoryService) CreateInventoryVoucher(ctx context.Context, q *CreateInventoryVoucherEndpoint) error {
-	cmd, err := PreCreateInventoryVoucher(ctx, q)
-	if err != nil {
-		return err
+	if q.RefType == string(inventory.RefTypeStockTake) {
+		cmd, err := PreCreateInventoryVoucherRefStocktake(ctx, q)
+		if err != nil {
+			return err
+		}
+		if err := inventoryAggregate.Dispatch(ctx, cmd); err != nil {
+			return err
+		}
+		return nil
 	}
-
-	if err := inventoryAggregate.Dispatch(ctx, cmd); err != nil {
-		return err
-	}
-	q.Result = &pbshop.CreateInventoryVoucherResponse{
-		Inventory: PbShopInventoryVoucher(cmd.Result),
+	{
+		cmd, err := PreCreateInventoryVoucher(ctx, q)
+		if err != nil {
+			return err
+		}
+		if err := inventoryAggregate.Dispatch(ctx, cmd); err != nil {
+			return err
+		}
+		q.Result = &pbshop.CreateInventoryVoucherResponse{
+			Inventory: PbShopInventoryVoucher(cmd.Result),
+		}
 	}
 	return nil
 }
@@ -285,6 +295,38 @@ func (s *InventoryService) GetInventoryVouchersByIDs(ctx context.Context, q *Get
 	return nil
 }
 
+func PreCreateInventoryVoucherRefStocktake(ctx context.Context, q *CreateInventoryVoucherEndpoint) (*inventory.CreateInventoryVoucherByQuantityChangeCommand, error) {
+	// check order_id exit
+	queryStocktake := &stocktake.GetStocktakeByIDQuery{
+		Id:     q.RefId,
+		ShopID: q.Context.Shop.ID,
+	}
+	if err := bus.Dispatch(ctx, queryStocktake); err != nil {
+		return nil, err
+	}
+
+	// GET info and put it to cmd
+	var inventoryVariantChange []*inventory.InventoryVariantQuantityChange
+	for _, value := range queryStocktake.Result.Lines {
+		inventoryVariantChange = append(inventoryVariantChange, &inventory.InventoryVariantQuantityChange{
+			VariantID:      value.VariantID,
+			QuantityChange: value.NewQuantity - value.OldQuantity,
+		})
+	}
+	cmd := &inventory.CreateInventoryVoucherByQuantityChangeCommand{
+		ShopID:    q.Context.Shop.ID,
+		RefID:     q.RefId,
+		RefType:   inventory.RefTypeStockTake,
+		RefName:   inventory.RefNameStockTake,
+		Note:      q.Note,
+		Title:     "Phiếu kiểm kho",
+		Overstock: cm.BoolDefault(q.Context.Shop.InventoryOverstock, true),
+		CreatedBy: q.Context.UserID,
+		Variants:  inventoryVariantChange,
+	}
+	return cmd, nil
+}
+
 func PreCreateInventoryVoucherRefOrder(ctx context.Context, cmd *inventory.CreateInventoryVoucherCommand) error {
 	var items []*inventory.InventoryVoucherItem
 
@@ -296,23 +338,6 @@ func PreCreateInventoryVoucherRefOrder(ctx context.Context, cmd *inventory.Creat
 	if err := bus.Dispatch(ctx, queryOrder); err != nil {
 		return err
 	}
-	// check voucher already create
-	queryInventoryVoucher := &inventory.GetInventoryVoucherByReferenceQuery{
-		ShopID:  cmd.ShopID,
-		RefID:   cmd.RefID,
-		RefType: inventory.RefTypeOrder,
-		Result:  nil,
-	}
-	err := inventoryQuery.Dispatch(ctx, queryInventoryVoucher)
-	if err != nil {
-		return err
-	}
-	for _, value := range queryInventoryVoucher.Result.InventoryVouchers {
-		if value.Status == etop.S3Positive || value.Status == etop.S3Zero {
-			return cm.Errorf(cm.InvalidArgument, nil, "Order đã có phiếu xuất kho inventory_voucher_id = %v, Vui lòng kiểm tra lại ", value.ID)
-		}
-	}
-
 	// GET info and put it to cmd
 	for _, value := range queryOrder.Result.Order.Lines {
 		items = append(items, &inventory.InventoryVoucherItem{

@@ -7629,6 +7629,329 @@ func (s wrapShipnowService) UpdateShipnowFulfillment(ctx context.Context, req *o
 	return resp, nil
 }
 
+func WrapStocktakeService(s *StocktakeService) api.StocktakeService {
+	return wrapStocktakeService{s: s}
+}
+
+type wrapStocktakeService struct {
+	s *StocktakeService
+}
+
+type CancelStocktakeEndpoint struct {
+	*cm.IDRequest
+	Result  *api.Stocktake
+	Context claims.ShopClaim
+}
+
+func (s wrapStocktakeService) CancelStocktake(ctx context.Context, req *cm.IDRequest) (resp *api.Stocktake, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "shop.Stocktake/CancelStocktake"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:     ctx,
+		RequireAuth: true,
+		RequireShop: true,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &CancelStocktakeEndpoint{IDRequest: req}
+	query.Context.Claim = session.Claim
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = s.s.CancelStocktake(ctx, query)
+	resp = query.Result
+	if err != nil {
+		return nil, err
+	}
+	if resp == nil {
+		return nil, common.Error(common.Internal, "", nil).Log("nil response")
+	}
+	errs = cmwrapper.HasErrors(resp)
+	return resp, nil
+}
+
+type ConfirmStocktakeEndpoint struct {
+	*api.ConfirmStocktakeRequest
+	Result  *api.Stocktake
+	Context claims.ShopClaim
+}
+
+func (s wrapStocktakeService) ConfirmStocktake(ctx context.Context, req *api.ConfirmStocktakeRequest) (resp *api.Stocktake, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "shop.Stocktake/ConfirmStocktake"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:     ctx,
+		RequireAuth: true,
+		RequireShop: true,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &ConfirmStocktakeEndpoint{ConfirmStocktakeRequest: req}
+	query.Context.Claim = session.Claim
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = s.s.ConfirmStocktake(ctx, query)
+	resp = query.Result
+	if err != nil {
+		return nil, err
+	}
+	if resp == nil {
+		return nil, common.Error(common.Internal, "", nil).Log("nil response")
+	}
+	errs = cmwrapper.HasErrors(resp)
+	return resp, nil
+}
+
+type CreateStocktakeEndpoint struct {
+	*api.CreateStocktakeRequest
+	Result  *api.Stocktake
+	Context claims.ShopClaim
+}
+
+func (s wrapStocktakeService) CreateStocktake(ctx context.Context, req *api.CreateStocktakeRequest) (resp *api.Stocktake, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "shop.Stocktake/CreateStocktake"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:     ctx,
+		RequireAuth: true,
+		RequireShop: true,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &CreateStocktakeEndpoint{CreateStocktakeRequest: req}
+	query.Context.Claim = session.Claim
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = s.s.CreateStocktake(ctx, query)
+	resp = query.Result
+	if err != nil {
+		return nil, err
+	}
+	if resp == nil {
+		return nil, common.Error(common.Internal, "", nil).Log("nil response")
+	}
+	errs = cmwrapper.HasErrors(resp)
+	return resp, nil
+}
+
+type GetStocktakeEndpoint struct {
+	*cm.IDRequest
+	Result  *api.Stocktake
+	Context claims.ShopClaim
+}
+
+func (s wrapStocktakeService) GetStocktake(ctx context.Context, req *cm.IDRequest) (resp *api.Stocktake, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "shop.Stocktake/GetStocktake"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:     ctx,
+		RequireAuth: true,
+		RequireShop: true,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &GetStocktakeEndpoint{IDRequest: req}
+	query.Context.Claim = session.Claim
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = s.s.GetStocktake(ctx, query)
+	resp = query.Result
+	if err != nil {
+		return nil, err
+	}
+	if resp == nil {
+		return nil, common.Error(common.Internal, "", nil).Log("nil response")
+	}
+	errs = cmwrapper.HasErrors(resp)
+	return resp, nil
+}
+
+type GetStocktakesEndpoint struct {
+	*api.GetStocktakesRequest
+	Result  *api.GetStocktakesResponse
+	Context claims.ShopClaim
+}
+
+func (s wrapStocktakeService) GetStocktakes(ctx context.Context, req *api.GetStocktakesRequest) (resp *api.GetStocktakesResponse, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "shop.Stocktake/GetStocktakes"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:     ctx,
+		RequireAuth: true,
+		RequireShop: true,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &GetStocktakesEndpoint{GetStocktakesRequest: req}
+	query.Context.Claim = session.Claim
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = s.s.GetStocktakes(ctx, query)
+	resp = query.Result
+	if err != nil {
+		return nil, err
+	}
+	if resp == nil {
+		return nil, common.Error(common.Internal, "", nil).Log("nil response")
+	}
+	errs = cmwrapper.HasErrors(resp)
+	return resp, nil
+}
+
+type GetStocktakesByIDsEndpoint struct {
+	*cm.IDsRequest
+	Result  *api.GetStocktakesByIDsResponse
+	Context claims.ShopClaim
+}
+
+func (s wrapStocktakeService) GetStocktakesByIDs(ctx context.Context, req *cm.IDsRequest) (resp *api.GetStocktakesByIDsResponse, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "shop.Stocktake/GetStocktakesByIDs"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:     ctx,
+		RequireAuth: true,
+		RequireShop: true,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &GetStocktakesByIDsEndpoint{IDsRequest: req}
+	query.Context.Claim = session.Claim
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = s.s.GetStocktakesByIDs(ctx, query)
+	resp = query.Result
+	if err != nil {
+		return nil, err
+	}
+	if resp == nil {
+		return nil, common.Error(common.Internal, "", nil).Log("nil response")
+	}
+	errs = cmwrapper.HasErrors(resp)
+	return resp, nil
+}
+
+type UpdateStocktakeEndpoint struct {
+	*api.UpdateStocktakeRequest
+	Result  *api.Stocktake
+	Context claims.ShopClaim
+}
+
+func (s wrapStocktakeService) UpdateStocktake(ctx context.Context, req *api.UpdateStocktakeRequest) (resp *api.Stocktake, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "shop.Stocktake/UpdateStocktake"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:     ctx,
+		RequireAuth: true,
+		RequireShop: true,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &UpdateStocktakeEndpoint{UpdateStocktakeRequest: req}
+	query.Context.Claim = session.Claim
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = s.s.UpdateStocktake(ctx, query)
+	resp = query.Result
+	if err != nil {
+		return nil, err
+	}
+	if resp == nil {
+		return nil, common.Error(common.Internal, "", nil).Log("nil response")
+	}
+	errs = cmwrapper.HasErrors(resp)
+	return resp, nil
+}
+
 func WrapSummaryService(s *SummaryService) api.SummaryService {
 	return wrapSummaryService{s: s}
 }

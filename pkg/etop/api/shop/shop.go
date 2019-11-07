@@ -22,6 +22,7 @@ import (
 	"etop.vn/api/main/shipnow"
 	carriertypes "etop.vn/api/main/shipnow/carrier/types"
 	"etop.vn/api/main/shipping/types"
+	st "etop.vn/api/main/stocktaking"
 	"etop.vn/api/meta"
 	"etop.vn/api/shopping/addressing"
 	"etop.vn/api/shopping/carrying"
@@ -149,6 +150,15 @@ func init() {
 	bus.AddHandler("api", productService.AddProductCollection)
 	bus.AddHandler("api", productService.RemoveProductCollection)
 	bus.AddHandler("api", collectionService.GetCollectionsByProductID)
+
+	bus.AddHandler("api", stocktakeService.CancelStocktake)
+	bus.AddHandler("api", stocktakeService.ConfirmStocktake)
+	bus.AddHandler("api", stocktakeService.UpdateStocktake)
+	bus.AddHandler("api", stocktakeService.CreateStocktake)
+	bus.AddHandler("api", stocktakeService.GetStocktake)
+	bus.AddHandler("api", stocktakeService.GetStocktakes)
+	bus.AddHandler("api", stocktakeService.GetStocktakesByIDs)
+
 	bus.AddHandler("api", brandService.GetBrandsByIDs)
 	bus.AddHandler("api", brandService.DeleteBrand)
 	bus.AddHandler("api", brandService.UpdateBrandInfo)
@@ -197,6 +207,8 @@ var (
 	ledgerQuery          ledgering.QueryBus
 	purchaseOrderAggr    purchaseorder.CommandBus
 	purchaseOrderQuery   purchaseorder.QueryBus
+	StocktakeQuery       st.QueryBus
+	StocktakeAggregate   st.CommandBus
 )
 
 func Init(
@@ -236,6 +248,8 @@ func Init(
 	purchaseOrderQ purchaseorder.QueryBus,
 
 	summary summary.QueryBus,
+	StocktakeQ st.QueryBus,
+	StocktakeA st.CommandBus,
 ) {
 	idempgroup = idemp.NewRedisGroup(rd, PrefixIdemp, 5*60)
 	locationQuery = locationQ
@@ -272,6 +286,8 @@ func Init(
 	ledgerQuery = ledgerQ
 	purchaseOrderAggr = purchaseOrderA
 	purchaseOrderQuery = purchaseOrderQ
+	StocktakeQuery = StocktakeQ
+	StocktakeAggregate = StocktakeA
 }
 
 type MiscService struct{}
@@ -301,6 +317,7 @@ type CarrierService struct{}
 type BrandService struct{}
 type LedgerService struct{}
 type PurchaseOrderService struct{}
+type StocktakeService struct{}
 
 var miscService = &MiscService{}
 var inventoryService = &InventoryService{}
@@ -329,6 +346,7 @@ var carrierService = &CarrierService{}
 var brandService = &BrandService{}
 var ledgerService = &LedgerService{}
 var purchaseOrderService = &PurchaseOrderService{}
+var stocktakeService = &StocktakeService{}
 
 func (s *MiscService) VersionInfo(ctx context.Context, q *VersionInfoEndpoint) error {
 	q.Result = &pbcm.VersionInfoResponse{
