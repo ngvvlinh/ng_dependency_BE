@@ -4,10 +4,7 @@ import (
 	"time"
 
 	"etop.vn/api/main/identity"
-	"etop.vn/api/meta"
 )
-
-// +gen:event:topic=event/ledgering
 
 type LedgerType string
 
@@ -27,10 +24,4 @@ type ShopLedger struct {
 	CreatedBy   int64
 	CreatedAt   time.Time
 	UpdatedAt   time.Time
-}
-
-type AccountCreatedEvent struct {
-	meta.EventMeta
-	ShopID int64
-	UserID int64
 }

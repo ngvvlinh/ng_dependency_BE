@@ -4,7 +4,10 @@ import (
 	"time"
 
 	etoptypes "etop.vn/api/main/etop"
+	"etop.vn/api/meta"
 )
+
+// +gen:event:topic=event/identity
 
 type Permission struct {
 	Roles       []string
@@ -91,4 +94,10 @@ type BankAccount struct {
 	Branch        string
 	AccountNumber string
 	AccountName   string
+}
+
+type AccountCreatedEvent struct {
+	meta.EventMeta
+	ShopID int64
+	UserID int64
 }

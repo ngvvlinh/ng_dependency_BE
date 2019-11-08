@@ -3,6 +3,7 @@ package pm
 import (
 	"context"
 
+	"etop.vn/api/main/identity"
 	"etop.vn/api/main/ledgering"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/capi"
@@ -28,7 +29,7 @@ func (m *ProcessManager) RegisterEventHandlers(eventBus bus.EventRegistry) {
 	eventBus.AddEventListener(m.AccountCreated)
 }
 
-func (m *ProcessManager) AccountCreated(ctx context.Context, event *ledgering.AccountCreatedEvent) error {
+func (m *ProcessManager) AccountCreated(ctx context.Context, event *identity.AccountCreatedEvent) error {
 	cmd := &ledgering.CreateLedgerCommand{
 		ShopID:      event.ShopID,
 		Name:        "Tiền mặt",

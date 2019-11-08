@@ -3,7 +3,7 @@ package shop
 import (
 	"context"
 
-	"etop.vn/api/main/ledgering"
+	"etop.vn/api/main/identity"
 	pbcm "etop.vn/backend/pb/common"
 	pbetop "etop.vn/backend/pb/etop"
 	pbshop "etop.vn/backend/pb/etop/shop"
@@ -52,7 +52,7 @@ func (s *AccountService) RegisterShop(ctx context.Context, q *wrapshop.RegisterS
 	if err := bus.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
-	event := &ledgering.AccountCreatedEvent{
+	event := &identity.AccountCreatedEvent{
 		ShopID: cmd.Result.ID,
 		UserID: q.Context.UserID,
 	}
