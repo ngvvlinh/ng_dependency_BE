@@ -4,10 +4,14 @@ import (
 	"bytes"
 	"fmt"
 	"go/ast"
+	"go/types"
+	"io"
+	"reflect"
 	"regexp"
 	"strings"
 
 	"github.com/pkg/errors"
+	"golang.org/x/tools/go/packages"
 
 	"etop.vn/common/l"
 )
@@ -41,6 +45,24 @@ func defaultGeneratedFileName(tpl string) func(GenerateFileNameInput) string {
 	return func(input GenerateFileNameInput) string {
 		return fmt.Sprintf(tpl, input.PluginName)
 	}
+}
+
+var builtinPath = reflect.TypeOf((*Engine)(nil)).Elem().PkgPath() + "/builtin"
+
+func parseBuiltinTypes(pkg *packages.Package) map[string]types.Type {
+	if pkg.PkgPath != builtinPath {
+		panic(fmt.Sprintf("unexpected path %v", pkg.PkgPath))
+	}
+	m := map[string]types.Type{}
+	s := pkg.Types.Scope()
+	for _, name := range s.Names() {
+		if !strings.HasPrefix(name, "_") {
+			continue
+		}
+		typ := s.Lookup(name).Type()
+		m[typ.String()] = typ
+	}
+	return m
 }
 
 // processDoc splits directive and text comment
@@ -216,14 +238,39 @@ type stacker interface {
 	StackTrace() errors.StackTrace
 }
 
+type withMessage struct {
+	cause error
+	msg   string
+}
+
+func (w *withMessage) Error() string { return w.msg }
+func (w *withMessage) Cause() error  { return w.cause }
+
+func (w *withMessage) Format(s fmt.State, verb rune) {
+	switch verb {
+	case 'v':
+		if s.Flag('+') {
+			fmt.Fprintf(s, "%+v\n", w.Cause())
+			io.WriteString(s, w.msg)
+			return
+		}
+		fallthrough
+	case 's', 'q':
+		io.WriteString(s, w.Error())
+	}
+}
+
 func Errorf(err error, format string, args ...interface{}) error {
+	msg := fmt.Sprintf(format, args...)
 	if err != nil {
 		if _, ok := err.(stacker); !ok {
 			err = errors.WithStack(err)
 		}
-		return errors.WithMessagef(err, format, args...)
+		return &withMessage{
+			cause: err,
+			msg:   msg,
+		}
 	}
-	msg := fmt.Sprintf(format, args...)
 	return errors.New(msg)
 }
 

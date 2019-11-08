@@ -54,6 +54,8 @@ type Engine interface {
 	GetDirectivesByPackage(*packages.Package) []Directive
 	GetIdent(Positioner) *ast.Ident
 	GetObject(Positioner) types.Object
+	GetObjectByName(pkgPath, name string) types.Object
+	GetBuiltinType(name string) types.Type
 	GetObjectsByPackage(*packages.Package) []types.Object
 	GetObjectsByScope(*types.Scope) []types.Object
 	GetPackage(Positioner) *packages.Package
@@ -75,6 +77,7 @@ type engine struct {
 	srcMap  map[string][]byte
 	bufPool sync.Pool
 
+	builtinTypes           map[string]types.Type
 	cleanedFileNames       map[string]bool
 	mapPkgDirectives       map[string][]Directive
 	collectedPackages      []filteringPackage
@@ -142,6 +145,18 @@ func (ng *engine) GetObject(p Positioner) types.Object {
 
 func (ng *engine) GetObjectByIdent(ident *ast.Ident) types.Object {
 	return ng.xinfo.GetObject(ident)
+}
+
+func (ng *engine) GetObjectByName(pkgPath, name string) types.Object {
+	pkg := ng.GetPackageByPath(pkgPath)
+	if pkg == nil {
+		return nil
+	}
+	return pkg.Types.Scope().Lookup(name)
+}
+
+func (ng *engine) GetBuiltinType(name string) types.Type {
+	return ng.builtinTypes[name]
 }
 
 func (ng *engine) GetPackage(p Positioner) *packages.Package {

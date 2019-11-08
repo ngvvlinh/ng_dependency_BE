@@ -61,9 +61,6 @@ type extendedInfo struct {
 
 	// Map from token.Pos to Ident
 	Positions map[token.Pos]*ast.Ident
-
-	// SortedIdents is only available after calling Finalize()
-	SortedIdents []*ast.Ident
 }
 
 func newExtendedInfo(fset *token.FileSet) *extendedInfo {
@@ -86,9 +83,13 @@ func (x *extendedInfo) AddPackage(pkg *packages.Package) error {
 
 func (x *extendedInfo) addFile(pkg *packages.Package, file *ast.File) error {
 	var genDoc *ast.CommentGroup
-	processDoc := func(doc, cmt *ast.CommentGroup) *declaration {
-		if doc == nil {
-			doc = genDoc
+	processDoc := func(doc, cmt *ast.CommentGroup, fallback bool) *declaration {
+		if fallback {
+			if doc == nil {
+				doc = genDoc
+			}
+		} else {
+			genDoc = nil
 		}
 		comment, err := processDoc(doc, cmt)
 		if err != nil {
@@ -105,9 +106,8 @@ func (x *extendedInfo) addFile(pkg *packages.Package, file *ast.File) error {
 	ast.Inspect(file, func(node ast.Node) bool {
 		switch node := node.(type) {
 		case *ast.FuncDecl:
-			genDoc = nil
 			ident := node.Name
-			declarations[ident] = processDoc(node.Doc, nil)
+			declarations[ident] = processDoc(node.Doc, nil, false)
 			positions[ident.NamePos] = ident
 
 		case *ast.GenDecl:
@@ -121,19 +121,18 @@ func (x *extendedInfo) addFile(pkg *packages.Package, file *ast.File) error {
 
 		case *ast.TypeSpec:
 			ident := node.Name
-			declarations[ident] = processDoc(node.Doc, node.Comment)
+			declarations[ident] = processDoc(node.Doc, node.Comment, true)
 			positions[ident.NamePos] = ident
 
 		case *ast.ValueSpec:
 			for _, ident := range node.Names {
-				declarations[ident] = processDoc(node.Doc, node.Comment)
+				declarations[ident] = processDoc(node.Doc, node.Comment, true)
 				positions[ident.NamePos] = ident
 			}
 
 		case *ast.Field:
-			genDoc = nil
 			for _, ident := range node.Names {
-				declarations[ident] = processDoc(node.Doc, node.Comment)
+				declarations[ident] = processDoc(node.Doc, node.Comment, false)
 				positions[ident.NamePos] = ident
 			}
 		}

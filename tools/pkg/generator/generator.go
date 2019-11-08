@@ -116,6 +116,7 @@ func (ng *engine) start(cfg Config, patterns ...string) (_err error) {
 			fmt.Println("no packages for generating")
 			return nil
 		}
+		pkgPatterns = append(pkgPatterns, builtinPath) // load builtin types
 
 		ng.pkgcfg = packages.Config{
 			Mode:       packages.LoadAllSyntax,
@@ -150,6 +151,10 @@ func (ng *engine) start(cfg Config, patterns ...string) (_err error) {
 				ng.pkgMap[pkg.PkgPath] = pkg
 				return true
 			}, nil)
+
+		// populate builtin types
+		ng.builtinTypes = parseBuiltinTypes(ng.pkgMap[builtinPath])
+		delete(ng.pkgMap, builtinPath)
 	}
 	{
 		// populate generatedFiles
