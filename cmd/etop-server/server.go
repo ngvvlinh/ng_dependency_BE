@@ -222,11 +222,7 @@ func startEtopServer() *http.Server {
 		mux.Handle("/doc/ext/"+s+"/swagger.json", cmservice.SwaggerHandler("external/"+s+"/"+s+".swagger.json"))
 	}
 
-	var handler http.Handler = mux
-	if cm.IsDev() {
-		ll.Warn("Enabled CORS for local development")
-		handler = middleware.DevelopmentCORS(mux)
-	}
+	handler := middleware.CORS(mux)
 	svr := &http.Server{
 		Addr:    cfg.HTTP.Address(),
 		Handler: handler,

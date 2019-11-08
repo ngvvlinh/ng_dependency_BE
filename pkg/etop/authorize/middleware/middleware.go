@@ -51,9 +51,22 @@ func CtxDebug(ctx context.Context) string {
 	return v.(string)
 }
 
-func DevelopmentCORS(next http.Handler) http.HandlerFunc {
+func CORS(next http.Handler) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Add("Access-Control-Allow-Origin", "*")
+		enabled := false
+		if r.URL.Scheme == "capacitor" || r.URL.Scheme == "ionic" {
+			origin := r.URL.Scheme + "://localhost"
+			w.Header().Add("Access-Control-Allow-Origin", origin)
+			enabled = true
+		} else if cm.IsDev() {
+			w.Header().Add("Access-Control-Allow-Origin", "*")
+			enabled = true
+		}
+		if !enabled {
+			next.ServeHTTP(w, r)
+			return
+		}
+
 		w.Header().Add("Access-Control-Allow-Methods", "GET,POST,OPTIONS")
 		w.Header().Add("Access-Control-Allow-Credentials", "true")
 		w.Header().Add("Access-Control-Allow-Headers", r.Header.Get("Access-Control-Request-Headers"))
