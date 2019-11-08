@@ -7921,6 +7921,21 @@
         },
         "note": {
           "type": "string"
+        },
+        "phone": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "company_name": {
+          "type": "string"
+        },
+        "tax_number": {
+          "type": "string"
+        },
+        "headquater_address": {
+          "type": "string"
         }
       }
     },
@@ -9974,6 +9989,21 @@
         "note": {
           "type": "string"
         },
+        "phone": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "company_name": {
+          "type": "string"
+        },
+        "tax_number": {
+          "type": "string"
+        },
+        "headquater_address": {
+          "type": "string"
+        },
         "status": {
           "$ref": "#/definitions/status3Status"
         },
@@ -10608,6 +10638,21 @@
           "type": "string"
         },
         "note": {
+          "type": "string"
+        },
+        "phone": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "company_name": {
+          "type": "string"
+        },
+        "tax_number": {
+          "type": "string"
+        },
+        "headquater_address": {
           "type": "string"
         }
       }

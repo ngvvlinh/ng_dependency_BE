@@ -1377,6 +1377,11 @@ message Supplier {
     optional int64 shop_id = 2 [(gogoproto.nullable) = false];
     optional string full_name = 3 [(gogoproto.nullable) = false];
     optional string note = 4 [(gogoproto.nullable) = false];
+    optional string phone = 8 [(gogoproto.nullable) = false];
+    optional string email = 9 [(gogoproto.nullable) = false];
+    optional string company_name = 10 [(gogoproto.nullable) = false];
+    optional string tax_number =11 [(gogoproto.nullable) = false];
+    optional string headquater_address = 12 [(gogoproto.nullable) = false];
     optional status3.Status status = 5 [(gogoproto.nullable) = false];
     optional google.protobuf.Timestamp created_at = 6;
     optional google.protobuf.Timestamp updated_at = 7;
@@ -1385,12 +1390,22 @@ message Supplier {
 message CreateSupplierRequest {
     optional string full_name = 1 [(gogoproto.nullable) = false];
     optional string note = 2 [(gogoproto.nullable) = false];
+    optional string phone = 3[(gogoproto.nullable) = false];
+    optional string email = 4 [(gogoproto.nullable) = false];
+    optional string company_name = 5 [(gogoproto.nullable) = false];
+    optional string tax_number=6 [(gogoproto.nullable) = false];
+    optional string headquater_address = 7 [(gogoproto.nullable) = false];
 }
 
 message UpdateSupplierRequest {
     optional int64 id = 1 [(gogoproto.nullable) = false];
     optional string full_name = 2;
     optional string note = 3;
+    optional string phone = 4;
+    optional string email = 5;
+    optional string company_name = 6;
+    optional string tax_number =7;
+    optional string headquater_address = 8;
 }
 
 message GetSuppliersRequest {

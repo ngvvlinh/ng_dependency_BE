@@ -67,13 +67,18 @@ func Convert_supplieringmodel_ShopSupplier_suppliering_ShopSupplier(arg *supplie
 }
 
 func convert_supplieringmodel_ShopSupplier_suppliering_ShopSupplier(arg *supplieringmodel.ShopSupplier, out *suppliering.ShopSupplier) {
-	out.ID = arg.ID               // simple assign
-	out.ShopID = arg.ShopID       // simple assign
-	out.FullName = arg.FullName   // simple assign
-	out.Note = arg.Note           // simple assign
-	out.Status = arg.Status       // simple assign
-	out.CreatedAt = arg.CreatedAt // simple assign
-	out.UpdatedAt = arg.UpdatedAt // simple assign
+	out.ID = arg.ID                               // simple assign
+	out.ShopID = arg.ShopID                       // simple assign
+	out.FullName = arg.FullName                   // simple assign
+	out.Phone = arg.Phone                         // simple assign
+	out.Email = arg.Email                         // simple assign
+	out.CompanyName = arg.CompanyName             // simple assign
+	out.TaxNumber = arg.TaxNumber                 // simple assign
+	out.HeadquaterAddress = arg.HeadquaterAddress // simple assign
+	out.Note = arg.Note                           // simple assign
+	out.Status = arg.Status                       // simple assign
+	out.CreatedAt = arg.CreatedAt                 // simple assign
+	out.UpdatedAt = arg.UpdatedAt                 // simple assign
 }
 
 func Convert_supplieringmodel_ShopSuppliers_suppliering_ShopSuppliers(args []*supplieringmodel.ShopSupplier) (outs []*suppliering.ShopSupplier) {
@@ -97,14 +102,21 @@ func Convert_suppliering_ShopSupplier_supplieringmodel_ShopSupplier(arg *supplie
 }
 
 func convert_suppliering_ShopSupplier_supplieringmodel_ShopSupplier(arg *suppliering.ShopSupplier, out *supplieringmodel.ShopSupplier) {
-	out.ID = arg.ID               // simple assign
-	out.ShopID = arg.ShopID       // simple assign
-	out.FullName = arg.FullName   // simple assign
-	out.Note = arg.Note           // simple assign
-	out.Status = arg.Status       // simple assign
-	out.CreatedAt = arg.CreatedAt // simple assign
-	out.UpdatedAt = arg.UpdatedAt // simple assign
-	out.DeletedAt = time.Time{}   // zero value
+	out.ID = arg.ID                               // simple assign
+	out.ShopID = arg.ShopID                       // simple assign
+	out.FullName = arg.FullName                   // simple assign
+	out.Phone = arg.Phone                         // simple assign
+	out.Email = arg.Email                         // simple assign
+	out.CompanyName = arg.CompanyName             // simple assign
+	out.TaxNumber = arg.TaxNumber                 // simple assign
+	out.HeadquaterAddress = arg.HeadquaterAddress // simple assign
+	out.Note = arg.Note                           // simple assign
+	out.FullNameNorm = ""                         // zero value
+	out.PhoneNorm = ""                            // zero value
+	out.Status = arg.Status                       // simple assign
+	out.CreatedAt = arg.CreatedAt                 // simple assign
+	out.UpdatedAt = arg.UpdatedAt                 // simple assign
+	out.DeletedAt = time.Time{}                   // zero value
 }
 
 func Convert_suppliering_ShopSuppliers_supplieringmodel_ShopSuppliers(args []*suppliering.ShopSupplier) (outs []*supplieringmodel.ShopSupplier) {
@@ -128,13 +140,18 @@ func Apply_suppliering_CreateSupplierArgs_suppliering_ShopSupplier(arg *supplier
 }
 
 func apply_suppliering_CreateSupplierArgs_suppliering_ShopSupplier(arg *suppliering.CreateSupplierArgs, out *suppliering.ShopSupplier) {
-	out.ID = 0                  // zero value
-	out.ShopID = arg.ShopID     // simple assign
-	out.FullName = arg.FullName // simple assign
-	out.Note = arg.Note         // simple assign
-	out.Status = 0              // zero value
-	out.CreatedAt = time.Time{} // zero value
-	out.UpdatedAt = time.Time{} // zero value
+	out.ID = 0                                    // zero value
+	out.ShopID = arg.ShopID                       // simple assign
+	out.FullName = arg.FullName                   // simple assign
+	out.Phone = arg.Phone                         // simple assign
+	out.Email = arg.Email                         // simple assign
+	out.CompanyName = arg.CompanyName             // simple assign
+	out.TaxNumber = arg.TaxNumber                 // simple assign
+	out.HeadquaterAddress = arg.HeadquaterAddress // simple assign
+	out.Note = arg.Note                           // simple assign
+	out.Status = 0                                // zero value
+	out.CreatedAt = time.Time{}                   // zero value
+	out.UpdatedAt = time.Time{}                   // zero value
 }
 
 func Apply_suppliering_UpdateSupplierArgs_suppliering_ShopSupplier(arg *suppliering.UpdateSupplierArgs, out *suppliering.ShopSupplier) *suppliering.ShopSupplier {
@@ -149,11 +166,16 @@ func Apply_suppliering_UpdateSupplierArgs_suppliering_ShopSupplier(arg *supplier
 }
 
 func apply_suppliering_UpdateSupplierArgs_suppliering_ShopSupplier(arg *suppliering.UpdateSupplierArgs, out *suppliering.ShopSupplier) {
-	out.ID = out.ID                                 // identifier
-	out.ShopID = out.ShopID                         // identifier
-	out.FullName = arg.FullName.Apply(out.FullName) // apply change
-	out.Note = arg.Note.Apply(out.Note)             // apply change
-	out.Status = out.Status                         // no change
-	out.CreatedAt = out.CreatedAt                   // no change
-	out.UpdatedAt = out.UpdatedAt                   // no change
+	out.ID = out.ID                                                            // identifier
+	out.ShopID = out.ShopID                                                    // identifier
+	out.FullName = arg.FullName.Apply(out.FullName)                            // apply change
+	out.Phone = arg.Phone.Apply(out.Phone)                                     // apply change
+	out.Email = arg.Email.Apply(out.Email)                                     // apply change
+	out.CompanyName = arg.CompanyName.Apply(out.CompanyName)                   // apply change
+	out.TaxNumber = arg.TaxNumber.Apply(out.TaxNumber)                         // apply change
+	out.HeadquaterAddress = arg.HeadquaterAddress.Apply(out.HeadquaterAddress) // apply change
+	out.Note = arg.Note.Apply(out.Note)                                        // apply change
+	out.Status = out.Status                                                    // no change
+	out.CreatedAt = out.CreatedAt                                              // no change
+	out.UpdatedAt = out.UpdatedAt                                              // no change
 }

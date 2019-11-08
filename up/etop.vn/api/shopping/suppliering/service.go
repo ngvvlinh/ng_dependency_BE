@@ -38,15 +38,25 @@ type SuppliersResponse struct {
 
 // +convert:create=ShopSupplier
 type CreateSupplierArgs struct {
-	ShopID   int64
-	FullName string
-	Note     string
+	ShopID            int64
+	FullName          string
+	Phone             string
+	Email             string
+	CompanyName       string
+	TaxNumber         string
+	HeadquaterAddress string
+	Note              string
 }
 
 // +convert:update=ShopSupplier(ID,ShopID)
 type UpdateSupplierArgs struct {
-	ID       int64
-	ShopID   int64
-	FullName NullString
-	Note     NullString
+	ID                int64
+	ShopID            int64
+	FullName          NullString
+	Note              NullString
+	Phone             NullString
+	Email             NullString
+	CompanyName       NullString
+	TaxNumber         NullString
+	HeadquaterAddress NullString
 }

@@ -272,10 +272,17 @@ func PbCustomers(ms []*customering.ShopCustomer) []*Customer {
 
 func PbSupplier(m *suppliering.ShopSupplier) *Supplier {
 	return &Supplier{
-		Id:        m.ID,
-		ShopId:    m.ShopID,
-		FullName:  m.FullName,
-		Note:      m.Note,
+		Id:       m.ID,
+		ShopId:   m.ShopID,
+		FullName: m.FullName,
+		Note:     m.Note,
+
+		Phone:             m.Phone,
+		Email:             m.Email,
+		CompanyName:       m.CompanyName,
+		TaxNumber:         m.TaxNumber,
+		HeadquaterAddress: m.HeadquaterAddress,
+
 		Status:    pbs3.Pb(model.Status3(m.Status)),
 		CreatedAt: pbcm.PbTime(m.CreatedAt),
 		UpdatedAt: pbcm.PbTime(m.UpdatedAt),

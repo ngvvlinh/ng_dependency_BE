@@ -40,9 +40,14 @@ func (c QueryBus) DispatchAll(ctx context.Context, msgs ...Query) error {
 }
 
 type CreateSupplierCommand struct {
-	ShopID   int64
-	FullName string
-	Note     string
+	ShopID            int64
+	FullName          string
+	Phone             string
+	Email             string
+	CompanyName       string
+	TaxNumber         string
+	HeadquaterAddress string
+	Note              string
 
 	Result *ShopSupplier `json:"-"`
 }
@@ -65,10 +70,15 @@ func (h AggregateHandler) HandleDeleteSupplier(ctx context.Context, msg *DeleteS
 }
 
 type UpdateSupplierCommand struct {
-	ID       int64
-	ShopID   int64
-	FullName dot.NullString
-	Note     dot.NullString
+	ID                int64
+	ShopID            int64
+	FullName          dot.NullString
+	Note              dot.NullString
+	Phone             dot.NullString
+	Email             dot.NullString
+	CompanyName       dot.NullString
+	TaxNumber         dot.NullString
+	HeadquaterAddress dot.NullString
 
 	Result *ShopSupplier `json:"-"`
 }
@@ -129,15 +139,25 @@ func (q *ListSuppliersByIDsQuery) query() {}
 func (q *CreateSupplierCommand) GetArgs(ctx context.Context) (_ context.Context, _ *CreateSupplierArgs) {
 	return ctx,
 		&CreateSupplierArgs{
-			ShopID:   q.ShopID,
-			FullName: q.FullName,
-			Note:     q.Note,
+			ShopID:            q.ShopID,
+			FullName:          q.FullName,
+			Phone:             q.Phone,
+			Email:             q.Email,
+			CompanyName:       q.CompanyName,
+			TaxNumber:         q.TaxNumber,
+			HeadquaterAddress: q.HeadquaterAddress,
+			Note:              q.Note,
 		}
 }
 
 func (q *CreateSupplierCommand) SetCreateSupplierArgs(args *CreateSupplierArgs) {
 	q.ShopID = args.ShopID
 	q.FullName = args.FullName
+	q.Phone = args.Phone
+	q.Email = args.Email
+	q.CompanyName = args.CompanyName
+	q.TaxNumber = args.TaxNumber
+	q.HeadquaterAddress = args.HeadquaterAddress
 	q.Note = args.Note
 }
 
@@ -150,10 +170,15 @@ func (q *DeleteSupplierCommand) GetArgs(ctx context.Context) (_ context.Context,
 func (q *UpdateSupplierCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateSupplierArgs) {
 	return ctx,
 		&UpdateSupplierArgs{
-			ID:       q.ID,
-			ShopID:   q.ShopID,
-			FullName: q.FullName,
-			Note:     q.Note,
+			ID:                q.ID,
+			ShopID:            q.ShopID,
+			FullName:          q.FullName,
+			Note:              q.Note,
+			Phone:             q.Phone,
+			Email:             q.Email,
+			CompanyName:       q.CompanyName,
+			TaxNumber:         q.TaxNumber,
+			HeadquaterAddress: q.HeadquaterAddress,
 		}
 }
 
@@ -162,6 +187,11 @@ func (q *UpdateSupplierCommand) SetUpdateSupplierArgs(args *UpdateSupplierArgs) 
 	q.ShopID = args.ShopID
 	q.FullName = args.FullName
 	q.Note = args.Note
+	q.Phone = args.Phone
+	q.Email = args.Email
+	q.CompanyName = args.CompanyName
+	q.TaxNumber = args.TaxNumber
+	q.HeadquaterAddress = args.HeadquaterAddress
 }
 
 func (q *GetSupplierByIDQuery) GetArgs(ctx context.Context) (_ context.Context, _ *shopping.IDQueryShopArg) {

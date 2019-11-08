@@ -4,6 +4,8 @@ import (
 	"context"
 	"time"
 
+	"etop.vn/backend/pkg/common/validate"
+
 	"etop.vn/api/meta"
 	"etop.vn/api/shopping/suppliering"
 	"etop.vn/api/shopping/tradering"
@@ -60,6 +62,16 @@ func (s *SupplierStore) ID(id int64) *SupplierStore {
 	return s
 }
 
+func (s *SupplierStore) Phone(phone string) *SupplierStore {
+	s.preds = append(s.preds, s.ft.ByPhone(phone))
+	return s
+}
+
+func (s *SupplierStore) Email(email string) *SupplierStore {
+	s.preds = append(s.preds, s.ft.ByEmail(email))
+	return s
+}
+
 func (s *SupplierStore) IDs(ids ...int64) *SupplierStore {
 	s.preds = append(s.preds, sq.PrefixedIn(&s.ft.prefix, "id", ids))
 	return s
@@ -92,6 +104,8 @@ func (s *SupplierStore) CreateSupplier(supplier *suppliering.ShopSupplier) error
 	if err := scheme.Convert(supplier, supplierDB); err != nil {
 		return err
 	}
+	supplierDB.PhoneNorm = validate.NormalizeSearchPhone(supplierDB.Phone)
+	supplierDB.FullNameNorm = validate.NormalizeSearch(supplierDB.FullName)
 	if _, err := s.query().Insert(trader, supplierDB); err != nil {
 		return err
 	}
@@ -109,6 +123,8 @@ func (s *SupplierStore) CreateSupplier(supplier *suppliering.ShopSupplier) error
 
 func (s *SupplierStore) UpdateSupplierDB(supplier *model.ShopSupplier) error {
 	sqlstore.MustNoPreds(s.preds)
+	supplier.PhoneNorm = validate.NormalizeSearchPhone(supplier.Phone)
+	supplier.FullNameNorm = validate.NormalizeSearch(supplier.FullName)
 	err := s.query().Where(s.ft.ByID(supplier.ID)).UpdateAll().ShouldUpdate(supplier)
 	return err
 }
@@ -147,7 +163,10 @@ func (s *SupplierStore) GetSupplier() (supplierResult *suppliering.ShopSupplier,
 func (s *SupplierStore) ListSuppliersDB() ([]*model.ShopSupplier, error) {
 	query := s.query().Where(s.preds)
 	query = s.includeDeleted.Check(query, s.ft.NotDeleted())
-	query, err := sqlstore.LimitSort(query, &s.paging, SortSupplier)
+	if len(s.paging.Sort) == 0 {
+		s.paging.Sort = []string{"-created_at"}
+	}
+	query, err := sqlstore.PrefixedLimitSort(query, &s.paging, SortSupplier, s.ft.prefix)
 	if err != nil {
 		return nil, err
 	}

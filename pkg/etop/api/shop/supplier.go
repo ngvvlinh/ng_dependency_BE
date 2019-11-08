@@ -65,9 +65,14 @@ func (s *SupplierService) GetSuppliersByIDs(ctx context.Context, r *GetSuppliers
 
 func (s *SupplierService) CreateSupplier(ctx context.Context, r *CreateSupplierEndpoint) error {
 	cmd := &suppliering.CreateSupplierCommand{
-		ShopID:   r.Context.Shop.ID,
-		FullName: r.FullName,
-		Note:     r.Note,
+		ShopID:            r.Context.Shop.ID,
+		FullName:          r.FullName,
+		Note:              r.Note,
+		Phone:             r.Phone,
+		Email:             r.Email,
+		CompanyName:       r.CompanyName,
+		TaxNumber:         r.TaxNumber,
+		HeadquaterAddress: r.HeadquaterAddress,
 	}
 	if err := supplierAggr.Dispatch(ctx, cmd); err != nil {
 		return err
@@ -78,10 +83,14 @@ func (s *SupplierService) CreateSupplier(ctx context.Context, r *CreateSupplierE
 
 func (s *SupplierService) UpdateSupplier(ctx context.Context, r *UpdateSupplierEndpoint) error {
 	cmd := &suppliering.UpdateSupplierCommand{
-		ID:       r.Id,
-		ShopID:   r.Context.Shop.ID,
-		FullName: PString(r.FullName),
-		Note:     PString(r.Note),
+		ID:                r.Id,
+		ShopID:            r.Context.Shop.ID,
+		FullName:          PString(r.FullName),
+		Phone:             PString(r.Phone),
+		Email:             PString(r.Email),
+		CompanyName:       PString(r.CompanyName),
+		TaxNumber:         PString(r.TaxNumber),
+		HeadquaterAddress: PString(r.HeadquaterAddress),
 	}
 	if err := supplierAggr.Dispatch(ctx, cmd); err != nil {
 		return err

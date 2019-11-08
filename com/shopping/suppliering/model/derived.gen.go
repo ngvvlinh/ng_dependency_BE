@@ -30,7 +30,7 @@ func sqlgenShopSupplier(_ *ShopSupplier) bool { return true }
 type ShopSuppliers []*ShopSupplier
 
 const __sqlShopSupplier_Table = "shop_supplier"
-const __sqlShopSupplier_ListCols = "\"id\",\"shop_id\",\"full_name\",\"note\",\"status\",\"created_at\",\"updated_at\",\"deleted_at\""
+const __sqlShopSupplier_ListCols = "\"id\",\"shop_id\",\"full_name\",\"phone\",\"email\",\"company_name\",\"tax_number\",\"headquater_address\",\"note\",\"full_name_norm\",\"phone_norm\",\"status\",\"created_at\",\"updated_at\",\"deleted_at\""
 const __sqlShopSupplier_Insert = "INSERT INTO \"shop_supplier\" (" + __sqlShopSupplier_ListCols + ") VALUES"
 const __sqlShopSupplier_Select = "SELECT " + __sqlShopSupplier_ListCols + " FROM \"shop_supplier\""
 const __sqlShopSupplier_Select_history = "SELECT " + __sqlShopSupplier_ListCols + " FROM history.\"shop_supplier\""
@@ -57,7 +57,14 @@ func (m *ShopSupplier) SQLArgs(opts core.Opts, create bool) []interface{} {
 		core.Int64(m.ID),
 		core.Int64(m.ShopID),
 		core.String(m.FullName),
+		core.String(m.Phone),
+		core.String(m.Email),
+		core.String(m.CompanyName),
+		core.String(m.TaxNumber),
+		core.String(m.HeadquaterAddress),
 		core.String(m.Note),
+		core.String(m.FullNameNorm),
+		core.String(m.PhoneNorm),
 		core.Int32(m.Status),
 		core.Now(m.CreatedAt, now, create),
 		core.Now(m.UpdatedAt, now, true),
@@ -70,7 +77,14 @@ func (m *ShopSupplier) SQLScanArgs(opts core.Opts) []interface{} {
 		(*core.Int64)(&m.ID),
 		(*core.Int64)(&m.ShopID),
 		(*core.String)(&m.FullName),
+		(*core.String)(&m.Phone),
+		(*core.String)(&m.Email),
+		(*core.String)(&m.CompanyName),
+		(*core.String)(&m.TaxNumber),
+		(*core.String)(&m.HeadquaterAddress),
 		(*core.String)(&m.Note),
+		(*core.String)(&m.FullNameNorm),
+		(*core.String)(&m.PhoneNorm),
 		(*core.Int32)(&m.Status),
 		(*core.Time)(&m.CreatedAt),
 		(*core.Time)(&m.UpdatedAt),
@@ -112,7 +126,7 @@ func (_ *ShopSuppliers) SQLSelect(w SQLWriter) error {
 func (m *ShopSupplier) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlShopSupplier_Insert)
 	w.WriteRawString(" (")
-	w.WriteMarkers(8)
+	w.WriteMarkers(15)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), true))
 	return nil
@@ -122,7 +136,7 @@ func (ms ShopSuppliers) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlShopSupplier_Insert)
 	w.WriteRawString(" (")
 	for i := 0; i < len(ms); i++ {
-		w.WriteMarkers(8)
+		w.WriteMarkers(15)
 		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
 		w.WriteRawString("),(")
 	}
@@ -161,6 +175,46 @@ func (m *ShopSupplier) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(m.FullName)
 	}
+	if m.Phone != "" {
+		flag = true
+		w.WriteName("phone")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.Phone)
+	}
+	if m.Email != "" {
+		flag = true
+		w.WriteName("email")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.Email)
+	}
+	if m.CompanyName != "" {
+		flag = true
+		w.WriteName("company_name")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.CompanyName)
+	}
+	if m.TaxNumber != "" {
+		flag = true
+		w.WriteName("tax_number")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.TaxNumber)
+	}
+	if m.HeadquaterAddress != "" {
+		flag = true
+		w.WriteName("headquater_address")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.HeadquaterAddress)
+	}
 	if m.Note != "" {
 		flag = true
 		w.WriteName("note")
@@ -168,6 +222,22 @@ func (m *ShopSupplier) SQLUpdate(w SQLWriter) error {
 		w.WriteMarker()
 		w.WriteByte(',')
 		w.WriteArg(m.Note)
+	}
+	if m.FullNameNorm != "" {
+		flag = true
+		w.WriteName("full_name_norm")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.FullNameNorm)
+	}
+	if m.PhoneNorm != "" {
+		flag = true
+		w.WriteName("phone_norm")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.PhoneNorm)
 	}
 	if m.Status != 0 {
 		flag = true
@@ -211,7 +281,7 @@ func (m *ShopSupplier) SQLUpdate(w SQLWriter) error {
 func (m *ShopSupplier) SQLUpdateAll(w SQLWriter) error {
 	w.WriteQueryString(__sqlShopSupplier_UpdateAll)
 	w.WriteRawString(" = (")
-	w.WriteMarkers(8)
+	w.WriteMarkers(15)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), false))
 	return nil
@@ -233,41 +303,57 @@ func (m ShopSupplierHistories) SQLSelect(w SQLWriter) error {
 	return nil
 }
 
-func (m ShopSupplierHistory) ID() core.Interface        { return core.Interface{m["id"]} }
-func (m ShopSupplierHistory) ShopID() core.Interface    { return core.Interface{m["shop_id"]} }
-func (m ShopSupplierHistory) FullName() core.Interface  { return core.Interface{m["full_name"]} }
-func (m ShopSupplierHistory) Note() core.Interface      { return core.Interface{m["note"]} }
-func (m ShopSupplierHistory) Status() core.Interface    { return core.Interface{m["status"]} }
-func (m ShopSupplierHistory) CreatedAt() core.Interface { return core.Interface{m["created_at"]} }
-func (m ShopSupplierHistory) UpdatedAt() core.Interface { return core.Interface{m["updated_at"]} }
-func (m ShopSupplierHistory) DeletedAt() core.Interface { return core.Interface{m["deleted_at"]} }
+func (m ShopSupplierHistory) ID() core.Interface          { return core.Interface{m["id"]} }
+func (m ShopSupplierHistory) ShopID() core.Interface      { return core.Interface{m["shop_id"]} }
+func (m ShopSupplierHistory) FullName() core.Interface    { return core.Interface{m["full_name"]} }
+func (m ShopSupplierHistory) Phone() core.Interface       { return core.Interface{m["phone"]} }
+func (m ShopSupplierHistory) Email() core.Interface       { return core.Interface{m["email"]} }
+func (m ShopSupplierHistory) CompanyName() core.Interface { return core.Interface{m["company_name"]} }
+func (m ShopSupplierHistory) TaxNumber() core.Interface   { return core.Interface{m["tax_number"]} }
+func (m ShopSupplierHistory) HeadquaterAddress() core.Interface {
+	return core.Interface{m["headquater_address"]}
+}
+func (m ShopSupplierHistory) Note() core.Interface         { return core.Interface{m["note"]} }
+func (m ShopSupplierHistory) FullNameNorm() core.Interface { return core.Interface{m["full_name_norm"]} }
+func (m ShopSupplierHistory) PhoneNorm() core.Interface    { return core.Interface{m["phone_norm"]} }
+func (m ShopSupplierHistory) Status() core.Interface       { return core.Interface{m["status"]} }
+func (m ShopSupplierHistory) CreatedAt() core.Interface    { return core.Interface{m["created_at"]} }
+func (m ShopSupplierHistory) UpdatedAt() core.Interface    { return core.Interface{m["updated_at"]} }
+func (m ShopSupplierHistory) DeletedAt() core.Interface    { return core.Interface{m["deleted_at"]} }
 
 func (m *ShopSupplierHistory) SQLScan(opts core.Opts, row *sql.Row) error {
-	data := make([]interface{}, 8)
-	args := make([]interface{}, 8)
-	for i := 0; i < 8; i++ {
+	data := make([]interface{}, 15)
+	args := make([]interface{}, 15)
+	for i := 0; i < 15; i++ {
 		args[i] = &data[i]
 	}
 	if err := row.Scan(args...); err != nil {
 		return err
 	}
-	res := make(ShopSupplierHistory, 8)
+	res := make(ShopSupplierHistory, 15)
 	res["id"] = data[0]
 	res["shop_id"] = data[1]
 	res["full_name"] = data[2]
-	res["note"] = data[3]
-	res["status"] = data[4]
-	res["created_at"] = data[5]
-	res["updated_at"] = data[6]
-	res["deleted_at"] = data[7]
+	res["phone"] = data[3]
+	res["email"] = data[4]
+	res["company_name"] = data[5]
+	res["tax_number"] = data[6]
+	res["headquater_address"] = data[7]
+	res["note"] = data[8]
+	res["full_name_norm"] = data[9]
+	res["phone_norm"] = data[10]
+	res["status"] = data[11]
+	res["created_at"] = data[12]
+	res["updated_at"] = data[13]
+	res["deleted_at"] = data[14]
 	*m = res
 	return nil
 }
 
 func (ms *ShopSupplierHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	data := make([]interface{}, 8)
-	args := make([]interface{}, 8)
-	for i := 0; i < 8; i++ {
+	data := make([]interface{}, 15)
+	args := make([]interface{}, 15)
+	for i := 0; i < 15; i++ {
 		args[i] = &data[i]
 	}
 	res := make(ShopSupplierHistories, 0, 128)
@@ -279,11 +365,18 @@ func (ms *ShopSupplierHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
 		m["id"] = data[0]
 		m["shop_id"] = data[1]
 		m["full_name"] = data[2]
-		m["note"] = data[3]
-		m["status"] = data[4]
-		m["created_at"] = data[5]
-		m["updated_at"] = data[6]
-		m["deleted_at"] = data[7]
+		m["phone"] = data[3]
+		m["email"] = data[4]
+		m["company_name"] = data[5]
+		m["tax_number"] = data[6]
+		m["headquater_address"] = data[7]
+		m["note"] = data[8]
+		m["full_name_norm"] = data[9]
+		m["phone_norm"] = data[10]
+		m["status"] = data[11]
+		m["created_at"] = data[12]
+		m["updated_at"] = data[13]
+		m["deleted_at"] = data[14]
 		res = append(res, m)
 	}
 	if err := rows.Err(); err != nil {

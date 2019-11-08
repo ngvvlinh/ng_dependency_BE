@@ -79,6 +79,101 @@ func (ft *ShopSupplierFilters) ByFullNamePtr(FullName *string) *sq.ColumnFilterP
 	}
 }
 
+func (ft *ShopSupplierFilters) ByPhone(Phone string) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "phone",
+		Value:  Phone,
+		IsNil:  Phone == "",
+	}
+}
+
+func (ft *ShopSupplierFilters) ByPhonePtr(Phone *string) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "phone",
+		Value:  Phone,
+		IsNil:  Phone == nil,
+		IsZero: Phone != nil && (*Phone) == "",
+	}
+}
+
+func (ft *ShopSupplierFilters) ByEmail(Email string) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "email",
+		Value:  Email,
+		IsNil:  Email == "",
+	}
+}
+
+func (ft *ShopSupplierFilters) ByEmailPtr(Email *string) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "email",
+		Value:  Email,
+		IsNil:  Email == nil,
+		IsZero: Email != nil && (*Email) == "",
+	}
+}
+
+func (ft *ShopSupplierFilters) ByCompanyName(CompanyName string) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "company_name",
+		Value:  CompanyName,
+		IsNil:  CompanyName == "",
+	}
+}
+
+func (ft *ShopSupplierFilters) ByCompanyNamePtr(CompanyName *string) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "company_name",
+		Value:  CompanyName,
+		IsNil:  CompanyName == nil,
+		IsZero: CompanyName != nil && (*CompanyName) == "",
+	}
+}
+
+func (ft *ShopSupplierFilters) ByTaxNumber(TaxNumber string) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "tax_number",
+		Value:  TaxNumber,
+		IsNil:  TaxNumber == "",
+	}
+}
+
+func (ft *ShopSupplierFilters) ByTaxNumberPtr(TaxNumber *string) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "tax_number",
+		Value:  TaxNumber,
+		IsNil:  TaxNumber == nil,
+		IsZero: TaxNumber != nil && (*TaxNumber) == "",
+	}
+}
+
+func (ft *ShopSupplierFilters) ByHeadquaterAddress(HeadquaterAddress string) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "headquater_address",
+		Value:  HeadquaterAddress,
+		IsNil:  HeadquaterAddress == "",
+	}
+}
+
+func (ft *ShopSupplierFilters) ByHeadquaterAddressPtr(HeadquaterAddress *string) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "headquater_address",
+		Value:  HeadquaterAddress,
+		IsNil:  HeadquaterAddress == nil,
+		IsZero: HeadquaterAddress != nil && (*HeadquaterAddress) == "",
+	}
+}
+
 func (ft *ShopSupplierFilters) ByNote(Note string) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
@@ -95,6 +190,44 @@ func (ft *ShopSupplierFilters) ByNotePtr(Note *string) *sq.ColumnFilterPtr {
 		Value:  Note,
 		IsNil:  Note == nil,
 		IsZero: Note != nil && (*Note) == "",
+	}
+}
+
+func (ft *ShopSupplierFilters) ByFullNameNorm(FullNameNorm string) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "full_name_norm",
+		Value:  FullNameNorm,
+		IsNil:  FullNameNorm == "",
+	}
+}
+
+func (ft *ShopSupplierFilters) ByFullNameNormPtr(FullNameNorm *string) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "full_name_norm",
+		Value:  FullNameNorm,
+		IsNil:  FullNameNorm == nil,
+		IsZero: FullNameNorm != nil && (*FullNameNorm) == "",
+	}
+}
+
+func (ft *ShopSupplierFilters) ByPhoneNorm(PhoneNorm string) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "phone_norm",
+		Value:  PhoneNorm,
+		IsNil:  PhoneNorm == "",
+	}
+}
+
+func (ft *ShopSupplierFilters) ByPhoneNormPtr(PhoneNorm *string) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "phone_norm",
+		Value:  PhoneNorm,
+		IsNil:  PhoneNorm == nil,
+		IsZero: PhoneNorm != nil && (*PhoneNorm) == "",
 	}
 }
 
