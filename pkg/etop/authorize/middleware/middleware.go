@@ -53,16 +53,20 @@ func CtxDebug(ctx context.Context) string {
 
 func CORS(next http.Handler) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		enabled := false
-		if r.URL.Scheme == "capacitor" || r.URL.Scheme == "ionic" {
-			origin := r.URL.Scheme + "://localhost"
+		origin := r.Header.Get("origin")
+		switch {
+		case
+			origin == "ionic://localhost",
+			origin == "capacitor://localhost",
+			origin == "http://localhost",
+			origin == "http://localhost:8080",
+			origin == "http://localhost:8100":
 			w.Header().Add("Access-Control-Allow-Origin", origin)
-			enabled = true
-		} else if cm.IsDev() {
+
+		case cm.IsDev():
 			w.Header().Add("Access-Control-Allow-Origin", "*")
-			enabled = true
-		}
-		if !enabled {
+
+		default:
 			next.ServeHTTP(w, r)
 			return
 		}
