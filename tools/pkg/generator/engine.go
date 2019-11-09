@@ -236,7 +236,11 @@ func (ng *wrapEngine) generatingPackage(pkg *packages.Package) *GeneratingPackag
 
 func (ng *wrapEngine) GeneratePackage(pkg *packages.Package, filename string) Printer {
 	filePath := filepath.Dir(pkg.GoFiles[0])
-	return newPrinter(ng.engine, ng.plugin, pkg, filePath)
+	if filename == "" {
+		input := GenerateFileNameInput{PluginName: ng.plugin.name}
+		filename = ng.genFilename(input)
+	}
+	return newPrinter(ng.engine, ng.plugin, pkg, filepath.Join(filePath, filename))
 }
 
 func (ng *wrapEngine) GetDirectivesByPackage(pkg *packages.Package) []Directive {

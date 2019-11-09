@@ -1,7 +1,6 @@
 package genutil
 
 import (
-	"fmt"
 	"go/types"
 	"testing"
 
@@ -26,8 +25,6 @@ func initOnce(t *testing.T) {
 	require.NoError(t, err)
 	testPkg = pkgs[0]
 	require.Equal(t, testPkg.PkgPath, testPath)
-	fmt.Println("--", testPkg.PkgPath)
-	fmt.Println("--", testPkg.Types)
 	testScope = testPkg.Types.Scope()
 }
 
@@ -112,17 +109,23 @@ func TestCompatible(t *testing.T) {
 	bType := testScope.Lookup("B").Type()
 	cType := testScope.Lookup("C").Type()
 	dType := testScope.Lookup("D").Type()
+	namedInt := testScope.Lookup("NamedInt").Type()
+	bareInt := testScope.Lookup("I").Type()
 
 	mustCheckType(t, aType, Slice, Pointer, Named, Struct)
 	mustCheckType(t, bType, Slice, Pointer, Named, Struct)
 	mustCheckType(t, cType, Named, Slice, Pointer, Named, Struct)
 	mustCheckType(t, dType, Named, Slice, Pointer, Named, Struct)
+	mustCheckType(t, namedInt, Named, Basic)
+	mustCheckType(t, bareInt, Basic)
 
 	require.True(t, Compatible(aType, bType), "a and b should be compatible")
-	require.False(t, Compatible(aType, cType), "a and c should not be compatible")
+	require.True(t, Compatible(aType, cType), "a and c should be compatible")
 	require.True(t, Convertible(aType, bType), "a and b should be convertible")
 	require.True(t, Convertible(aType, cType), "a and c should be convertible")
 	require.False(t, Convertible(cType, dType), "c and d should not be convertible")
+	require.False(t, Compatible(namedInt, bareInt), "NamedInt and int should not be compatible")
+	require.True(t, Convertible(namedInt, bareInt), "NamedInt and int should be convertible")
 }
 
 func getType(t *testing.T, name string) *types.Named {

@@ -96,6 +96,16 @@ func checkType(typ types.Type, typs ...types.Type) (types.Type, error) {
 		return typ, nil
 	}
 	switch typs[0] {
+	case Basic:
+		_, ok := typ.(*types.Basic)
+		if len(typs) > 1 {
+			return nil, generator.Errorf(nil, "unexpected type after struct")
+		}
+		if !ok {
+			return nil, generator.Errorf(nil, "basic type")
+		}
+		return typ, nil
+
 	case Named:
 		named, ok := typ.(*types.Named)
 		if !ok {
@@ -160,6 +170,16 @@ func checkType(typ types.Type, typs ...types.Type) (types.Type, error) {
 		return st, nil
 	}
 
+	// exact basic type
+	if basic, ok := typs[0].(*types.Basic); ok {
+		if len(typs) > 1 {
+			return nil, generator.Errorf(nil, "unexpected type after basic")
+		}
+		if typ != basic {
+			return nil, generator.Errorf(nil, "basic type %v", basic.String())
+		}
+		return basic, nil
+	}
 	// exact named type
 	if named, ok := typs[0].(*types.Named); ok {
 		if len(typs) > 1 {
@@ -178,9 +198,12 @@ func Compatible(typ1, typ2 types.Type) bool {
 	if typ1 == typ2 {
 		return true
 	}
-	typs1, inner1 := ExtractType(typ1)
-	typs2, inner2 := ExtractType(typ2)
+	typs1, inner1 := ExtractTypeUnwrapNamed(typ1)
+	typs2, inner2 := ExtractTypeUnwrapNamed(typ2)
 	if typs1[0] == Named && typs2[0] == Named {
+		return false
+	}
+	if typs1[0] == Basic || typs1[1] == Basic {
 		return false
 	}
 	return inner1 == inner2 && EqualTypes(TrimNamed(typs1), TrimNamed(typs2))

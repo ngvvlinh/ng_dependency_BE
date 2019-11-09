@@ -11,6 +11,7 @@ type NamedSliceOfPtrNamedStruct2 []*NamedStruct2
 
 // A, B and C should be compatible
 
+var I int
 var A []*NamedStruct
 var B []*NamedStruct
 var C NamedSliceOfPtrNamedStruct
