@@ -10,29 +10,33 @@ import (
 	"github.com/lib/pq"
 
 	"etop.vn/backend/com/handler/pgevent"
+	pbcm "etop.vn/backend/pb/common"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/common/l"
-
-	pbcm "etop.vn/backend/pb/common"
-	wrappgevent "etop.vn/backend/wrapper/services/pgevent"
 )
 
 func init() {
 	bus.AddHandlers("pgevent/api",
-		VersionInfo,
-		GenerateEvents,
+		miscService.VersionInfo,
+		eventService.GenerateEvents,
 	)
 }
 
-var service *pgevent.Service
+var pgservice *pgevent.Service
 var ll = l.New()
 
+type MiscService struct{}
+type EventService struct{}
+
+var miscService = &MiscService{}
+var eventService = &EventService{}
+
 func Init(s *pgevent.Service) {
-	service = s
+	pgservice = s
 }
 
-func VersionInfo(ctx context.Context, q *wrappgevent.VersionInfoEndpoint) error {
+func (s *MiscService) VersionInfo(ctx context.Context, q *VersionInfoEndpoint) error {
 	q.Result = &pbcm.VersionInfoResponse{
 		Service: "pgevent-forwarder",
 		Version: "0.1",
@@ -40,7 +44,7 @@ func VersionInfo(ctx context.Context, q *wrappgevent.VersionInfoEndpoint) error 
 	return nil
 }
 
-func GenerateEvents(ctx context.Context, q *wrappgevent.GenerateEventsEndpoint) error {
+func (s *EventService) GenerateEvents(ctx context.Context, q *GenerateEventsEndpoint) error {
 	defer func() {
 		e := recover()
 		if e != nil {
@@ -107,7 +111,7 @@ func generateEvents(ctx context.Context, events []string) error {
 			Channel: pgevent.PgChannel,
 			Extra:   event,
 		}
-		err := service.HandleNotificationWithError(fakeEvent)
+		err := pgservice.HandleNotificationWithError(fakeEvent)
 		if err != nil {
 			return cm.Errorf(cm.InvalidArgument, err, "invalid event").
 				WithMeta("event", event)

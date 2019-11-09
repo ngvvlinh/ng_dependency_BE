@@ -18,34 +18,33 @@ import (
 	"etop.vn/backend/pkg/common/bus"
 	pbshop "etop.vn/backend/pkg/etop/api/shop"
 	modeletop "etop.vn/backend/pkg/etop/model"
-	wrapaff "etop.vn/backend/wrapper/services/affiliate"
 	"etop.vn/common/l"
 )
 
 func init() {
 	bus.AddHandlers("",
-		UpdateReferral,
+		userService.UpdateReferral,
 
-		TradingGetProducts,
-		GetTradingProductPromotions,
-		CreateOrUpdateTradingCommissionSetting,
-		GetTradingProductPromotionByProductIDs,
-		CreateTradingProductPromotion,
-		UpdateTradingProductPromotion,
+		tradingService.TradingGetProducts,
+		tradingService.GetTradingProductPromotions,
+		tradingService.CreateOrUpdateTradingCommissionSetting,
+		tradingService.GetTradingProductPromotionByProductIDs,
+		tradingService.CreateTradingProductPromotion,
+		tradingService.UpdateTradingProductPromotion,
 
-		GetProductPromotion,
-		ShopGetProducts,
-		CheckReferralCodeValid,
+		shopService.GetProductPromotion,
+		shopService.ShopGetProducts,
+		shopService.CheckReferralCodeValid,
 
-		GetCommissions,
-		NotifyNewShopPurchase,
-		GetTransactions,
-		CreateOrUpdateAffiliateCommissionSetting,
-		GetProductPromotionByProductID,
-		AffiliateGetProducts,
-		CreateReferralCode,
-		GetReferralCodes,
-		GetReferrals,
+		affiliateService.GetCommissions,
+		affiliateService.NotifyNewShopPurchase,
+		affiliateService.GetTransactions,
+		affiliateService.CreateOrUpdateAffiliateCommissionSetting,
+		affiliateService.GetProductPromotionByProductID,
+		affiliateService.AffiliateGetProducts,
+		affiliateService.CreateReferralCode,
+		affiliateService.GetReferralCodes,
+		affiliateService.GetReferrals,
 	)
 }
 
@@ -58,6 +57,16 @@ var (
 	identityQuery  identity.QueryBus
 	orderingQuery  ordering.QueryBus
 )
+
+type UserService struct{}
+type TradingService struct{}
+type ShopService struct{}
+type AffiliateService struct{}
+
+var userService = &UserService{}
+var tradingService = &TradingService{}
+var shopService = &ShopService{}
+var affiliateService = &AffiliateService{}
 
 func Init(
 	affCmd affiliate.CommandBus,
@@ -73,7 +82,7 @@ func Init(
 	orderingQuery = orderingQ
 }
 
-func UpdateReferral(ctx context.Context, q *wrapaff.UpdateReferralEndpoint) error {
+func (s *UserService) UpdateReferral(ctx context.Context, q *UpdateReferralEndpoint) error {
 	cmd := &affiliate.CreateOrUpdateUserReferralCommand{
 		UserID:           q.Context.UserID,
 		ReferralCode:     q.ReferralCode,
@@ -91,7 +100,7 @@ func UpdateReferral(ctx context.Context, q *wrapaff.UpdateReferralEndpoint) erro
 	return nil
 }
 
-func TradingGetProducts(ctx context.Context, q *wrapaff.TradingGetProductsEndpoint) error {
+func (s *TradingService) TradingGetProducts(ctx context.Context, q *TradingGetProductsEndpoint) error {
 	if q.Context.Shop.ID != modeletop.EtopTradingAccountID {
 		return cm.Errorf(cm.PermissionDenied, nil, "PermissionDenied")
 	}
@@ -138,7 +147,7 @@ func TradingGetProducts(ctx context.Context, q *wrapaff.TradingGetProductsEndpoi
 	return nil
 }
 
-func GetTradingProductPromotions(ctx context.Context, q *wrapaff.GetTradingProductPromotionsEndpoint) error {
+func (s *TradingService) GetTradingProductPromotions(ctx context.Context, q *GetTradingProductPromotionsEndpoint) error {
 	if q.Context.Shop.ID != modeletop.EtopTradingAccountID {
 		return cm.Errorf(cm.PermissionDenied, nil, "PermissionDenied")
 	}
@@ -160,7 +169,7 @@ func GetTradingProductPromotions(ctx context.Context, q *wrapaff.GetTradingProdu
 	return nil
 }
 
-func CreateOrUpdateTradingCommissionSetting(ctx context.Context, q *wrapaff.CreateOrUpdateTradingCommissionSettingEndpoint) error {
+func (s *TradingService) CreateOrUpdateTradingCommissionSetting(ctx context.Context, q *CreateOrUpdateTradingCommissionSettingEndpoint) error {
 	if q.Context.Shop.ID != modeletop.EtopTradingAccountID {
 		return cm.Errorf(cm.PermissionDenied, nil, "PermissionDenied")
 	}
@@ -193,7 +202,7 @@ func CreateOrUpdateTradingCommissionSetting(ctx context.Context, q *wrapaff.Crea
 	return nil
 }
 
-func GetTradingProductPromotionByProductIDs(ctx context.Context, q *wrapaff.GetTradingProductPromotionByProductIDsEndpoint) error {
+func (s *TradingService) GetTradingProductPromotionByProductIDs(ctx context.Context, q *GetTradingProductPromotionByProductIDsEndpoint) error {
 	if q.Context.Shop.ID != modeletop.EtopTradingAccountID {
 		return cm.Errorf(cm.PermissionDenied, nil, "PermissionDenied")
 	}
@@ -210,7 +219,7 @@ func GetTradingProductPromotionByProductIDs(ctx context.Context, q *wrapaff.GetT
 	return nil
 }
 
-func CreateTradingProductPromotion(ctx context.Context, q *wrapaff.CreateTradingProductPromotionEndpoint) error {
+func (s *TradingService) CreateTradingProductPromotion(ctx context.Context, q *CreateTradingProductPromotionEndpoint) error {
 	if q.Context.Shop.ID != modeletop.EtopTradingAccountID {
 		return cm.Errorf(cm.PermissionDenied, nil, "PermissionDenied")
 	}
@@ -239,7 +248,7 @@ func CreateTradingProductPromotion(ctx context.Context, q *wrapaff.CreateTrading
 	return nil
 }
 
-func UpdateTradingProductPromotion(ctx context.Context, q *wrapaff.UpdateTradingProductPromotionEndpoint) error {
+func (s *TradingService) UpdateTradingProductPromotion(ctx context.Context, q *UpdateTradingProductPromotionEndpoint) error {
 	if q.Context.Shop.ID != modeletop.EtopTradingAccountID {
 		return cm.Errorf(cm.PermissionDenied, nil, "PermissionDenied")
 	}
@@ -259,7 +268,7 @@ func UpdateTradingProductPromotion(ctx context.Context, q *wrapaff.UpdateTrading
 	return nil
 }
 
-func GetProductPromotion(ctx context.Context, q *wrapaff.GetProductPromotionEndpoint) error {
+func (s *ShopService) GetProductPromotion(ctx context.Context, q *GetProductPromotionEndpoint) error {
 	promotionQuery := &affiliate.GetShopProductPromotionQuery{
 		ShopID:    modeletop.EtopTradingAccountID,
 		ProductID: q.ProductId,
@@ -281,7 +290,7 @@ func GetProductPromotion(ctx context.Context, q *wrapaff.GetProductPromotionEndp
 	return nil
 }
 
-func ShopGetProducts(ctx context.Context, q *wrapaff.ShopGetProductsEndpoint) error {
+func (s *ShopService) ShopGetProducts(ctx context.Context, q *ShopGetProductsEndpoint) error {
 	paging := q.Paging.CMPaging()
 	query := &catalog.ListShopProductsWithVariantsQuery{
 		ShopID:  modeletop.EtopTradingAccountID,
@@ -317,7 +326,7 @@ func ShopGetProducts(ctx context.Context, q *wrapaff.ShopGetProductsEndpoint) er
 	return nil
 }
 
-func CheckReferralCodeValid(ctx context.Context, q *wrapaff.CheckReferralCodeValidEndpoint) error {
+func (s *ShopService) CheckReferralCodeValid(ctx context.Context, q *CheckReferralCodeValidEndpoint) error {
 	affiliateAccountReferralQ := &affiliate.GetAffiliateAccountReferralByCodeQuery{
 		Code: q.ReferralCode,
 	}
@@ -347,7 +356,7 @@ func CheckReferralCodeValid(ctx context.Context, q *wrapaff.CheckReferralCodeVal
 	return nil
 }
 
-func GetCommissions(ctx context.Context, q *wrapaff.GetCommissionsEndpoint) error {
+func (s *AffiliateService) GetCommissions(ctx context.Context, q *GetCommissionsEndpoint) error {
 	commissionQ := &affiliate.GetSellerCommissionsQuery{
 		SellerID: q.Context.Affiliate.ID,
 		Paging:   meta.Paging{},
@@ -399,15 +408,15 @@ func GetCommissions(ctx context.Context, q *wrapaff.GetCommissionsEndpoint) erro
 	return nil
 }
 
-func NotifyNewShopPurchase(ctx context.Context, q *wrapaff.NotifyNewShopPurchaseEndpoint) error {
+func (s *AffiliateService) NotifyNewShopPurchase(ctx context.Context, q *NotifyNewShopPurchaseEndpoint) error {
 	panic("IMPLEMENT ME")
 }
 
-func GetTransactions(ctx context.Context, q *wrapaff.GetTransactionsEndpoint) error {
+func (s *AffiliateService) GetTransactions(ctx context.Context, q *GetTransactionsEndpoint) error {
 	panic("IMPLEMENT ME")
 }
 
-func CreateOrUpdateAffiliateCommissionSetting(ctx context.Context, q *wrapaff.CreateOrUpdateAffiliateCommissionSettingEndpoint) error {
+func (s *AffiliateService) CreateOrUpdateAffiliateCommissionSetting(ctx context.Context, q *CreateOrUpdateAffiliateCommissionSettingEndpoint) error {
 	cmd := &affiliate.CreateOrUpdateCommissionSettingCommand{
 		ProductID: q.ProductId,
 		AccountID: q.Context.Affiliate.ID,
@@ -422,11 +431,11 @@ func CreateOrUpdateAffiliateCommissionSetting(ctx context.Context, q *wrapaff.Cr
 	return nil
 }
 
-func GetProductPromotionByProductID(ctx context.Context, q *wrapaff.GetProductPromotionByProductIDEndpoint) error {
+func (s *AffiliateService) GetProductPromotionByProductID(ctx context.Context, q *GetProductPromotionByProductIDEndpoint) error {
 	panic("IMPLEMENT ME")
 }
 
-func AffiliateGetProducts(ctx context.Context, q *wrapaff.AffiliateGetProductsEndpoint) error {
+func (s *AffiliateService) AffiliateGetProducts(ctx context.Context, q *AffiliateGetProductsEndpoint) error {
 	paging := q.Paging.CMPaging()
 	query := &catalog.ListShopProductsWithVariantsQuery{
 		ShopID:  modeletop.EtopTradingAccountID,
@@ -548,7 +557,7 @@ func GetCommissionSettingByReferralCode(ctx context.Context, referralCode string
 	return commissionSettingQ.Result, nil
 }
 
-func CreateReferralCode(ctx context.Context, q *wrapaff.CreateReferralCodeEndpoint) error {
+func (s *AffiliateService) CreateReferralCode(ctx context.Context, q *CreateReferralCodeEndpoint) error {
 	cmd := &affiliate.CreateAffiliateReferralCodeCommand{
 		AffiliateAccountID: q.Context.Affiliate.ID,
 		Code:               q.Code,
@@ -562,7 +571,7 @@ func CreateReferralCode(ctx context.Context, q *wrapaff.CreateReferralCodeEndpoi
 	return nil
 }
 
-func GetReferralCodes(ctx context.Context, q *wrapaff.GetReferralCodesEndpoint) error {
+func (s *AffiliateService) GetReferralCodes(ctx context.Context, q *GetReferralCodesEndpoint) error {
 	query := &affiliate.GetAffiliateAccountReferralCodesQuery{
 		AffiliateAccountID: q.Context.Affiliate.ID,
 	}
@@ -577,7 +586,7 @@ func GetReferralCodes(ctx context.Context, q *wrapaff.GetReferralCodesEndpoint) 
 	return nil
 }
 
-func GetReferrals(ctx context.Context, q *wrapaff.GetReferralsEndpoint) error {
+func (s *AffiliateService) GetReferrals(ctx context.Context, q *GetReferralsEndpoint) error {
 	referralQ := &affiliate.GetReferralsByReferralIDQuery{
 		ID: q.Context.Affiliate.ID,
 	}

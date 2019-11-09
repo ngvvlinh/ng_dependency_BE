@@ -7,32 +7,33 @@ import (
 	pbcm "etop.vn/backend/pb/common"
 	pbaffiliate "etop.vn/backend/pb/etop/affiliate"
 	"etop.vn/backend/pkg/common/bus"
-	wrapaffiliate "etop.vn/backend/wrapper/etop/affiliate"
 )
 
 func init() {
 	bus.AddHandlers("api",
-		s.VersionInfo,
-		s.RegisterAffiliate,
-		s.UpdateAffiliate,
-		s.UpdateAffiliateBankAccount,
-		s.DeleteAffiliate,
+		miscService.VersionInfo,
+		accountService.RegisterAffiliate,
+		accountService.UpdateAffiliate,
+		accountService.UpdateAffiliateBankAccount,
+		accountService.DeleteAffiliate,
 	)
 }
 
 var (
 	identityAggr identity.CommandBus
-
-	s = &Service{}
 )
 
 func Init(identityA identity.CommandBus) {
 	identityAggr = identityA
 }
 
-type Service struct{}
+type MiscService struct{}
+type AccountService struct{}
 
-func (s *Service) VersionInfo(ctx context.Context, q *wrapaffiliate.VersionInfoEndpoint) error {
+var miscService = &MiscService{}
+var accountService = &AccountService{}
+
+func (s *MiscService) VersionInfo(ctx context.Context, q *VersionInfoEndpoint) error {
 	q.Result = &pbcm.VersionInfoResponse{
 		Service: "etop.affiliate",
 		Version: "0.1",
@@ -40,7 +41,7 @@ func (s *Service) VersionInfo(ctx context.Context, q *wrapaffiliate.VersionInfoE
 	return nil
 }
 
-func (s *Service) RegisterAffiliate(ctx context.Context, r *wrapaffiliate.RegisterAffiliateEndpoint) error {
+func (s *AccountService) RegisterAffiliate(ctx context.Context, r *RegisterAffiliateEndpoint) error {
 	cmd := &identity.CreateAffiliateCommand{
 		Name:        r.Name,
 		OwnerID:     r.Context.UserID,
@@ -56,7 +57,7 @@ func (s *Service) RegisterAffiliate(ctx context.Context, r *wrapaffiliate.Regist
 	return nil
 }
 
-func (s *Service) UpdateAffiliate(ctx context.Context, r *wrapaffiliate.UpdateAffiliateEndpoint) error {
+func (s *AccountService) UpdateAffiliate(ctx context.Context, r *UpdateAffiliateEndpoint) error {
 	affiliate := r.Context.Affiliate
 	cmd := &identity.UpdateAffiliateInfoCommand{
 		ID:      affiliate.ID,
@@ -72,7 +73,7 @@ func (s *Service) UpdateAffiliate(ctx context.Context, r *wrapaffiliate.UpdateAf
 	return nil
 }
 
-func (s *Service) UpdateAffiliateBankAccount(ctx context.Context, r *wrapaffiliate.UpdateAffiliateBankAccountEndpoint) error {
+func (s *AccountService) UpdateAffiliateBankAccount(ctx context.Context, r *UpdateAffiliateBankAccountEndpoint) error {
 	cmd := &identity.UpdateAffiliateBankAccountCommand{
 		ID:          r.Context.Affiliate.ID,
 		OwnerID:     r.Context.Affiliate.OwnerID,
@@ -85,7 +86,7 @@ func (s *Service) UpdateAffiliateBankAccount(ctx context.Context, r *wrapaffilia
 	return nil
 }
 
-func (s *Service) DeleteAffiliate(ctx context.Context, r *wrapaffiliate.DeleteAffiliateEndpoint) error {
+func (s *AccountService) DeleteAffiliate(ctx context.Context, r *DeleteAffiliateEndpoint) error {
 	cmd := &identity.DeleteAffiliateCommand{
 		ID:      r.Id,
 		OwnerID: r.Context.Affiliate.OwnerID,

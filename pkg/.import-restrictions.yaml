@@ -4,8 +4,8 @@ rules:
   - etop.vn/api
   - etop.vn/backend/com
   - etop.vn/backend/pb
-  - etop.vn/backend/wrapper
   - etop.vn/backend/pkg
   - etop.vn/backend/res/dl
   - etop.vn/capi
   - etop.vn/common
+  - etop.vn/backend/zexp/api

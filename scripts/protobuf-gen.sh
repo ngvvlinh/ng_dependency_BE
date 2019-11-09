@@ -127,16 +127,4 @@ done
 cd ${BACKEND}/doc
 go-bindata -pkg doc -o bindata.gen.go -ignore '\.(md|go|xlsx)$' ./...
 
-# Generate wrapper files
-WRAPPER_ARGS=
-for PKG in $(find "${BACKEND}/pb${filter}" -type d | grep -v common); do
-    FILES="${PKG}/*.twirp.go"
-    if ls $FILES 1>/dev/null 2>/dev/null; then
-        WRAPPER_ARGS="$WRAPPER_ARGS $(prefixext $PKG) -s pb -o wrapper $FILES"
-    fi
-done
-
-wrapper_gen=$(::get cmd etop.vn/backend/tools/cmd/wrapper_gen)
-"${wrapper_gen}" $WRAPPER_ARGS
-
 printf "\n✔ Done\n"

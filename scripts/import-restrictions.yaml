@@ -1,12 +1,14 @@
 - baseImportPath: "./cmd/pgevent-forwarder"
   allowedImports:
   - etop.vn/backend/cmd/pgevent-forwarder
-  - etop.vn/backend/pb/common
-  - etop.vn/backend/pkg/common
-  - etop.vn/backend/pkg/etop/authorize/middleware
   - etop.vn/backend/com/handler/pgevent
-  - etop.vn/backend/wrapper/services/pgevent
+  - etop.vn/backend/pb/common
+  - etop.vn/backend/pb/services/pgevent
+  - etop.vn/backend/pkg/common
+  - etop.vn/backend/pkg/etop/authorize/claims
+  - etop.vn/backend/pkg/etop/authorize/middleware
   - etop.vn/backend/pkg/etop/model
+  - etop.vn/backend/zexp/api/root/int/pgevent
 
 - baseImportPath: "./cmd/etop-uploader"
   allowedImports:
@@ -17,16 +19,16 @@
 - baseImportPath: "./cmd/supporting/crm-sync-service"
   allowedImports:
   - etop.vn/backend/cmd/supporting/crm-sync-service
+  - etop.vn/backend/com/supporting/crm
   - etop.vn/backend/pb/common
   - etop.vn/backend/pb/services/crmservice
   - etop.vn/backend/pkg/common
   - etop.vn/backend/pkg/etop/authorize/middleware
   - etop.vn/backend/pkg/etop/authorize/tokens
-  - etop.vn/backend/pkg/services/crm-service
   - etop.vn/backend/pkg/integration/vht/client
   - etop.vn/backend/pkg/integration/vtiger/client
-  - etop.vn/backend/com/supporting/crm
-  - etop.vn/backend/wrapper/services/crmservice
+  - etop.vn/backend/pkg/services/crm-service
+  - etop.vn/backend/zexp/api
   - etop.vn/common
 
 - baseImportPath: "./pkg/common"
@@ -59,5 +61,4 @@
   - etop.vn/backend/pb
   - etop.vn/backend/pkg
   - etop.vn/backend/res/dl
-  - etop.vn/backend/wrapper
-  - etop.vn/backend/zexp/api/root/int/etop
+  - etop.vn/backend/zexp/api

@@ -54,8 +54,8 @@ service VtigerService {
     rpc CreateTicket(CreateOrUpdateTicketRequest) returns (Ticket);
     rpc UpdateTicket(CreateOrUpdateTicketRequest) returns (Ticket);
     rpc GetCategories(cm.Empty) returns (GetCategoriesResponse);
-    rpc GetStatus(cm.Empty) returns (GetStatusResponse);
-    rpc CountTicketByStatus(CountTicketByStatusRequest) returns (CountTicketByStatusResponse);
+//    rpc GetStatus(cm.Empty) returns (GetStatusResponse);
+//    rpc CountTicketByStatus(CountTicketByStatusRequest) returns (CountTicketByStatusResponse);
     rpc GetTicketStatusCount(cm.Empty) returns (GetTicketStatusCountResponse);
 }
 

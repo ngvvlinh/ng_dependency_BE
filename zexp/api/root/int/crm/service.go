@@ -30,8 +30,8 @@ type VtigerAPI interface {
 	CreateTicket(context.Context, *crm.CreateOrUpdateTicketRequest) (*crm.Ticket, error)
 	UpdateTicket(context.Context, *crm.CreateOrUpdateTicketRequest) (*crm.Ticket, error)
 	GetCategories(context.Context, *cm.Empty) (*crm.GetCategoriesResponse, error)
-	GetStatus(context.Context, *cm.Empty) (*crm.GetStatusResponse, error)
-	CountTicketByStatus(context.Context, *crm.CountTicketByStatusRequest) (*crm.CountTicketByStatusResponse, error)
+	// GetStatus(context.Context, *cm.Empty) (*crm.GetStatusResponse, error)
+	// 	CountTicketByStatus(context.Context, *crm.CountTicketByStatusRequest) (*crm.CountTicketByStatusResponse, error)
 	GetTicketStatusCount(context.Context, *cm.Empty) (*crm.GetTicketStatusCountResponse, error)
 }
 

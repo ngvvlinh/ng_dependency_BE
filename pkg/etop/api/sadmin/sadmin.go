@@ -8,25 +8,22 @@ import (
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/etop/api"
 	"etop.vn/backend/pkg/etop/model"
-	wrapetop "etop.vn/backend/wrapper/etop"
-	wrapadmin "etop.vn/backend/wrapper/etop/sadmin"
 )
 
-var s = &Service{}
+var miscService = &MiscService{}
+var userService = &UserService{}
 
 func init() {
-	bus.AddHandler("api", s.VersionInfo)
-	bus.AddHandler("api", s.CreateUser)
-	bus.AddHandler("api", s.ResetPassword)
-	bus.AddHandler("api", s.LoginAsAccount)
-
-	bus.Expect(&model.UpdateRoleCommand{})
-	bus.Expect(&model.SetPasswordCommand{})
+	bus.AddHandler("api", miscService.VersionInfo)
+	bus.AddHandler("api", userService.CreateUser)
+	bus.AddHandler("api", userService.ResetPassword)
+	bus.AddHandler("api", userService.LoginAsAccount)
 }
 
-type Service struct{}
+type MiscService struct{}
+type UserService struct{}
 
-func (s *Service) VersionInfo(ctx context.Context, q *wrapadmin.VersionInfoEndpoint) error {
+func (s *MiscService) VersionInfo(ctx context.Context, q *VersionInfoEndpoint) error {
 	q.Result = &pbcm.VersionInfoResponse{
 		Service: "etop.SuperAdmin",
 		Version: "0.1",
@@ -34,8 +31,8 @@ func (s *Service) VersionInfo(ctx context.Context, q *wrapadmin.VersionInfoEndpo
 	return nil
 }
 
-func (s *Service) CreateUser(ctx context.Context, r *wrapadmin.CreateUserEndpoint) error {
-	r2 := &wrapetop.RegisterEndpoint{
+func (s *UserService) CreateUser(ctx context.Context, r *CreateUserEndpoint) error {
+	r2 := &api.RegisterEndpoint{
 		CreateUserRequest: r.Info,
 	}
 	if err := bus.Dispatch(ctx, r2); err != nil {
@@ -62,7 +59,7 @@ func (s *Service) CreateUser(ctx context.Context, r *wrapadmin.CreateUserEndpoin
 	return nil
 }
 
-func (s *Service) ResetPassword(ctx context.Context, r *wrapadmin.ResetPasswordEndpoint) error {
+func (s *UserService) ResetPassword(ctx context.Context, r *ResetPasswordEndpoint) error {
 	if len(r.Password) < 8 {
 		return cm.Error(cm.InvalidArgument, "Mật khẩu phải có ít nhất 8 ký tự", nil)
 	}
@@ -82,7 +79,7 @@ func (s *Service) ResetPassword(ctx context.Context, r *wrapadmin.ResetPasswordE
 	return nil
 }
 
-func (s *Service) LoginAsAccount(ctx context.Context, r *wrapadmin.LoginAsAccountEndpoint) error {
+func (s *UserService) LoginAsAccount(ctx context.Context, r *LoginAsAccountEndpoint) error {
 	resp, err := api.CreateLoginResponse(ctx, nil, "", r.UserId, nil, r.AccountId, 0, true, 0)
 	r.Result = resp
 	return err

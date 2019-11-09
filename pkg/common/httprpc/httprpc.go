@@ -14,6 +14,15 @@ import (
 	"github.com/twitchtv/twirp"
 )
 
+type Server interface {
+	http.Handler
+	PathPrefix() string
+}
+
+type Muxer interface {
+	Handle(path string, Handler http.Handler)
+}
+
 func BadRouteError(msg string, method, url string) twirp.Error {
 	err := twirp.NewError(twirp.BadRoute, msg)
 	err = err.WithMeta("invalid_route", method+" "+url)

@@ -7,20 +7,19 @@ import (
 	pbcm "etop.vn/backend/pb/common"
 	pbshop "etop.vn/backend/pb/etop/shop"
 	"etop.vn/backend/pkg/common/bus"
-	wrapshop "etop.vn/backend/wrapper/etop/shop"
 	. "etop.vn/capi/dot"
 )
 
 func init() {
 	bus.AddHandlers("api",
-		GetLedger,
-		GetLedgers,
-		CreateLedger,
-		UpdateLedger,
-		DeleteLedger)
+		ledgerService.GetLedger,
+		ledgerService.GetLedgers,
+		ledgerService.CreateLedger,
+		ledgerService.UpdateLedger,
+		ledgerService.DeleteLedger)
 }
 
-func GetLedger(ctx context.Context, r *wrapshop.GetLedgerEndpoint) error {
+func (s LedgerService) GetLedger(ctx context.Context, r *GetLedgerEndpoint) error {
 	query := &ledgering.GetLedgerByIDQuery{
 		ID:     r.Id,
 		ShopID: r.Context.Shop.ID,
@@ -33,7 +32,7 @@ func GetLedger(ctx context.Context, r *wrapshop.GetLedgerEndpoint) error {
 	return nil
 }
 
-func GetLedgers(ctx context.Context, r *wrapshop.GetLedgersEndpoint) error {
+func (s LedgerService) GetLedgers(ctx context.Context, r *GetLedgersEndpoint) error {
 	paging := r.Paging.CMPaging()
 	query := &ledgering.ListLedgersQuery{
 		ShopID:  r.Context.Shop.ID,
@@ -51,7 +50,7 @@ func GetLedgers(ctx context.Context, r *wrapshop.GetLedgersEndpoint) error {
 	return nil
 }
 
-func CreateLedger(ctx context.Context, r *wrapshop.CreateLedgerEndpoint) error {
+func (s LedgerService) CreateLedger(ctx context.Context, r *CreateLedgerEndpoint) error {
 	cmd := &ledgering.CreateLedgerCommand{
 		ShopID:      r.Context.Shop.ID,
 		Name:        r.Name,
@@ -68,7 +67,7 @@ func CreateLedger(ctx context.Context, r *wrapshop.CreateLedgerEndpoint) error {
 	return nil
 }
 
-func UpdateLedger(ctx context.Context, r *wrapshop.UpdateLedgerEndpoint) error {
+func (s LedgerService) UpdateLedger(ctx context.Context, r *UpdateLedgerEndpoint) error {
 	cmd := &ledgering.UpdateLedgerCommand{
 		ID:          r.Id,
 		ShopID:      r.Context.Shop.ID,
@@ -84,7 +83,7 @@ func UpdateLedger(ctx context.Context, r *wrapshop.UpdateLedgerEndpoint) error {
 	return nil
 }
 
-func DeleteLedger(ctx context.Context, r *wrapshop.DeleteLedgerEndpoint) error {
+func (s LedgerService) DeleteLedger(ctx context.Context, r *DeleteLedgerEndpoint) error {
 	cmd := &ledgering.DeleteLedgerCommand{
 		ID:     r.Id,
 		ShopID: r.Context.Shop.ID,

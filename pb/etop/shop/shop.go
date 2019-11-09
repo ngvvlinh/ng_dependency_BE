@@ -5,12 +5,10 @@ import (
 	"net/url"
 	"strconv"
 
-	"etop.vn/api/main/identity"
-
-	"etop.vn/api/main/ledgering"
-
 	"github.com/golang/protobuf/jsonpb"
 
+	"etop.vn/api/main/identity"
+	"etop.vn/api/main/ledgering"
 	"etop.vn/api/main/location"
 	"etop.vn/api/main/receipting"
 	"etop.vn/api/shopping/addressing"

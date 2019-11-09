@@ -34,26 +34,19 @@ import (
 	webhookghn "etop.vn/backend/pkg/integration/shipping/ghn/webhook"
 	webhookghtk "etop.vn/backend/pkg/integration/shipping/ghtk/webhook"
 	webhookvtpost "etop.vn/backend/pkg/integration/shipping/vtpost/webhook"
-	wrapetop "etop.vn/backend/wrapper/etop"
-	wrapadmin "etop.vn/backend/wrapper/etop/admin"
-	wrapaffiliate "etop.vn/backend/wrapper/etop/affiliate"
-	wrapintegration "etop.vn/backend/wrapper/etop/integration"
-	wrapsadmin "etop.vn/backend/wrapper/etop/sadmin"
-	wrapshop "etop.vn/backend/wrapper/etop/shop"
-	wrapxpartner "etop.vn/backend/wrapper/external/partner"
-	wrapxshop "etop.vn/backend/wrapper/external/shop"
-	wrapaff "etop.vn/backend/wrapper/services/affiliate"
-	wrapcrm "etop.vn/backend/wrapper/services/crm"
 	"etop.vn/common/jsonx"
 	"etop.vn/common/l"
 
-	_ "etop.vn/backend/pkg/etop/api"
-	_ "etop.vn/backend/pkg/etop/api/admin"
-	_ "etop.vn/backend/pkg/etop/api/affiliate"
-	_ "etop.vn/backend/pkg/etop/api/crm"
-	_ "etop.vn/backend/pkg/etop/api/sadmin"
-	_ "etop.vn/backend/pkg/etop/api/shop"
-	_ "etop.vn/backend/pkg/etop/apix/partner"
+	api "etop.vn/backend/pkg/etop/api"
+	admin "etop.vn/backend/pkg/etop/api/admin"
+	affiliate "etop.vn/backend/pkg/etop/api/affiliate"
+	crm "etop.vn/backend/pkg/etop/api/crm"
+	integration "etop.vn/backend/pkg/etop/api/integration"
+	sadmin "etop.vn/backend/pkg/etop/api/sadmin"
+	shop "etop.vn/backend/pkg/etop/api/shop"
+	partner "etop.vn/backend/pkg/etop/apix/partner"
+	xshop "etop.vn/backend/pkg/etop/apix/shop"
+	aff "etop.vn/backend/pkg/services/affiliate/api"
 )
 
 func startServers() []*http.Server {
@@ -85,21 +78,21 @@ func startEtopServer() *http.Server {
 		apiMux.Handle("/api/", http.StripPrefix("/api", http.NotFoundHandler()))
 		mux.Handle("/api/", http.StripPrefix("/api", middleware.ForwardHeaders(apiMux)))
 
-		wrapetop.NewEtopServer(apiMux, nil)
-		wrapsadmin.NewSadminServer(apiMux, nil)
-		wrapadmin.NewAdminServer(apiMux, nil)
-		wrapshop.NewShopServer(apiMux, nil)
-		wrapaffiliate.NewAffiliateServer(apiMux, nil, cfg.Secret)
-		wrapintegration.NewIntegrationServer(apiMux, nil)
-		wrapcrm.NewCrmServer(apiMux, nil, cfg.Secret)
-		wrapaff.NewAffiliateServer(apiMux, nil, cfg.Secret)
+		api.NewEtopServer(apiMux)
+		sadmin.NewSadminServer(apiMux)
+		admin.NewAdminServer(apiMux)
+		shop.NewShopServer(apiMux)
+		affiliate.NewAffiliateServer(apiMux)
+		integration.NewIntegrationServer(apiMux)
+		crm.NewCrmServer(apiMux, cfg.Secret)
+		aff.NewAffiliateServer(apiMux, cfg.Secret)
 		// /v1/
 		v1Mux := http.NewServeMux()
 		v1Mux.Handle("/v1/", http.StripPrefix("/v1", http.NotFoundHandler()))
 		mux.Handle("/v1/", http.StripPrefix("/v1", middleware.ForwardHeaders(v1Mux)))
 
-		wrapxpartner.NewPartnerServer(v1Mux, nil)
-		wrapxshop.NewShopServer(v1Mux, nil)
+		partner.NewPartnerServer(v1Mux)
+		xshop.NewShopServer(v1Mux)
 
 		botDefault := cfg.TelegramBot.MustConnectChannel("")
 		botImport := cfg.TelegramBot.MustConnectChannel(config.ChannelImport)

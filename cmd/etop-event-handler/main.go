@@ -28,7 +28,6 @@ import (
 	"etop.vn/backend/pkg/common/telebot"
 	"etop.vn/backend/pkg/etop/authorize/middleware"
 	"etop.vn/backend/pkg/etop/sqlstore"
-	wraphandler "etop.vn/backend/wrapper/services/handler"
 	"etop.vn/common/l"
 )
 
@@ -144,7 +143,7 @@ func main() {
 
 	apiMux := http.NewServeMux()
 	apiMux.Handle("/api/", http.NotFoundHandler())
-	wraphandler.NewHandlerServer(apiMux, nil, cfg.Secret)
+	handlerapi.NewHandlerServer(apiMux, cfg.Secret)
 
 	mux := http.NewServeMux()
 	mux.Handle("/api/", middleware.ForwardHeaders(apiMux))

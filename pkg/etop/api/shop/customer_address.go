@@ -10,7 +10,6 @@ import (
 	pbshop "etop.vn/backend/pb/etop/shop"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
-	wrapshop "etop.vn/backend/wrapper/etop/shop"
 	. "etop.vn/capi/dot"
 )
 
@@ -24,7 +23,7 @@ func init() {
 	)
 }
 
-func (s *CustomerService) CreateCustomerAddress(ctx context.Context, r *wrapshop.CreateCustomerAddressEndpoint) error {
+func (s *CustomerService) CreateCustomerAddress(ctx context.Context, r *CreateCustomerAddressEndpoint) error {
 	query := &location.GetLocationQuery{
 		DistrictCode: r.DistrictCode,
 		WardCode:     r.WardCode,
@@ -58,7 +57,7 @@ func (s *CustomerService) CreateCustomerAddress(ctx context.Context, r *wrapshop
 	return nil
 }
 
-func (s *CustomerService) DeleteCustomerAddress(ctx context.Context, r *wrapshop.DeleteCustomerAddressEndpoint) error {
+func (s *CustomerService) DeleteCustomerAddress(ctx context.Context, r *DeleteCustomerAddressEndpoint) error {
 	cmd := &addressing.DeleteAddressCommand{
 		ID:     r.Id,
 		ShopID: r.Context.Shop.ID,
@@ -70,7 +69,7 @@ func (s *CustomerService) DeleteCustomerAddress(ctx context.Context, r *wrapshop
 	return nil
 }
 
-func (s *CustomerService) GetCustomerAddresses(ctx context.Context, r *wrapshop.GetCustomerAddressesEndpoint) error {
+func (s *CustomerService) GetCustomerAddresses(ctx context.Context, r *GetCustomerAddressesEndpoint) error {
 	query := &addressing.ListAddressesByTraderIDQuery{
 		ShopID:   r.Context.Shop.ID,
 		TraderID: r.CustomerId,
@@ -86,7 +85,7 @@ func (s *CustomerService) GetCustomerAddresses(ctx context.Context, r *wrapshop.
 	return nil
 }
 
-func (s *CustomerService) UpdateCustomerAddress(ctx context.Context, r *wrapshop.UpdateCustomerAddressEndpoint) error {
+func (s *CustomerService) UpdateCustomerAddress(ctx context.Context, r *UpdateCustomerAddressEndpoint) error {
 	if r.DistrictCode != nil && r.WardCode != nil {
 		query := &location.GetLocationQuery{
 			DistrictCode: *r.DistrictCode,
@@ -122,7 +121,7 @@ func (s *CustomerService) UpdateCustomerAddress(ctx context.Context, r *wrapshop
 	return nil
 }
 
-func (s *CustomerService) SetDefaultCustomerAddress(ctx context.Context, r *wrapshop.SetDefaultCustomerAddressEndpoint) error {
+func (s *CustomerService) SetDefaultCustomerAddress(ctx context.Context, r *SetDefaultCustomerAddressEndpoint) error {
 	query := &addressing.GetAddressByIDQuery{
 		ID:     r.Id,
 		ShopID: r.Context.Shop.ID,

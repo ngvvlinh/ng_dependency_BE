@@ -16,8 +16,8 @@ import (
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/imcsv"
 	"etop.vn/backend/pkg/common/validate"
+	apishop "etop.vn/backend/pkg/etop/api/shop"
 	"etop.vn/backend/pkg/etop/model"
-	wrapshop "etop.vn/backend/wrapper/etop/shop"
 )
 
 var maxPaging = meta.Paging{Limit: 5000}
@@ -221,11 +221,11 @@ func loadAndCreateProducts(
 
 		} else {
 			productReq := rowToCreateProduct(rowProduct, now)
-			createProductCmd := &wrapshop.CreateProductEndpoint{
+			createProductCmd := &apishop.CreateProductEndpoint{
 				CreateProductRequest: productReq,
 			}
 			createProductCmd.Context.Shop = shop
-			if err := bus.Dispatch(ctx, createProductCmd); err != nil {
+			if err := apishop.ProductServiceImpl.CreateProduct(ctx, createProductCmd); err != nil {
 				err = imcsv.CellErrorWithCode(idx.indexer, cm.Unknown, err, rowProduct.RowIndex, -1,
 					`Không thể tạo sản phẩm "%v": %v`,
 					rowProduct.GetProductNameOrCode(), err).
@@ -236,11 +236,11 @@ func loadAndCreateProducts(
 			variantReq.ProductId = createProductCmd.Result.Id
 		}
 
-		createVariantCmd := &wrapshop.CreateVariantEndpoint{
+		createVariantCmd := &apishop.CreateVariantEndpoint{
 			CreateVariantRequest: variantReq,
 		}
 		createVariantCmd.Context.Shop = shop
-		if err := bus.Dispatch(ctx, createVariantCmd); err != nil {
+		if err := apishop.ProductServiceImpl.CreateVariant(ctx, createVariantCmd); err != nil {
 			err = imcsv.CellErrorWithCode(idx.indexer, cm.Unknown, err, rowProduct.RowIndex, -1,
 				`Không thể tạo phiên bản "%v" của sản phẩm "%v": %v`,
 				variantReq.Name, rowProduct.GetProductNameOrCode(), err).

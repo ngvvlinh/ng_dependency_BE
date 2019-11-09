@@ -207,12 +207,6 @@ func (s *VtigerServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Requ
 
 func (s *VtigerServiceServer) parseRoute(path string) (reqMsg proto.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
-	case "/crm.Vtiger/CountTicketByStatus":
-		msg := new(crm.CountTicketByStatusRequest)
-		fn := func(ctx context.Context) (proto.Message, error) {
-			return s.VtigerAPI.CountTicketByStatus(ctx, msg)
-		}
-		return msg, fn, nil
 	case "/crm.Vtiger/CreateOrUpdateContact":
 		msg := new(crm.ContactRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
@@ -241,12 +235,6 @@ func (s *VtigerServiceServer) parseRoute(path string) (reqMsg proto.Message, _ h
 		msg := new(crm.GetContactsRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.VtigerAPI.GetContacts(ctx, msg)
-		}
-		return msg, fn, nil
-	case "/crm.Vtiger/GetStatus":
-		msg := new(common.Empty)
-		fn := func(ctx context.Context) (proto.Message, error) {
-			return s.VtigerAPI.GetStatus(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/crm.Vtiger/GetTicketStatusCount":

@@ -7,24 +7,22 @@ import (
 	pbcm "etop.vn/backend/pb/common"
 	pbetop "etop.vn/backend/pb/etop"
 	pbshop "etop.vn/backend/pb/etop/shop"
-
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/validate"
+	etop "etop.vn/backend/pkg/etop/api"
 	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/backend/pkg/etop/sqlstore"
-	wrapetop "etop.vn/backend/wrapper/etop"
-	wrapshop "etop.vn/backend/wrapper/etop/shop"
 )
 
 func init() {
 	bus.AddHandler("api", accountService.RegisterShop)
 	bus.AddHandler("api", accountService.UpdateShop)
-	bus.AddHandler("api", accountService.deleteShop)
+	bus.AddHandler("api", accountService.DeleteShop)
 	bus.AddHandler("api", accountService.SetDefaultAddress)
 }
 
-func (s *AccountService) RegisterShop(ctx context.Context, q *wrapshop.RegisterShopEndpoint) error {
+func (s *AccountService) RegisterShop(ctx context.Context, q *RegisterShopEndpoint) error {
 	if q.UrlSlug != "" && !validate.URLSlug(q.UrlSlug) {
 		return cm.Error(cm.InvalidArgument, "Thông tin url_slug không hợp lệ. Vui lòng kiểm tra lại.", nil)
 	}
@@ -66,7 +64,7 @@ func (s *AccountService) RegisterShop(ctx context.Context, q *wrapshop.RegisterS
 	return nil
 }
 
-func (s *AccountService) UpdateShop(ctx context.Context, q *wrapshop.UpdateShopEndpoint) error {
+func (s *AccountService) UpdateShop(ctx context.Context, q *UpdateShopEndpoint) error {
 	shop := q.Context.Shop
 	if q.BankAccount != nil {
 		user, err := sqlstore.User(ctx).ID(shop.OwnerID).Get()
@@ -75,7 +73,7 @@ func (s *AccountService) UpdateShop(ctx context.Context, q *wrapshop.UpdateShopE
 		}
 
 		if !q.Context.Claim.SToken {
-			stokenCmd := &wrapetop.SendSTokenEmailEndpoint{
+			stokenCmd := &etop.SendSTokenEmailEndpoint{
 				SendSTokenEmailRequest: &pbetop.SendSTokenEmailRequest{
 					Email:     user.Email,
 					AccountId: q.Context.Shop.ID,
@@ -126,7 +124,7 @@ func (s *AccountService) UpdateShop(ctx context.Context, q *wrapshop.UpdateShopE
 	return nil
 }
 
-func (s *AccountService) deleteShop(ctx context.Context, q *wrapshop.DeleteShopEndpoint) error {
+func (s *AccountService) DeleteShop(ctx context.Context, q *DeleteShopEndpoint) error {
 	cmd := &model.DeleteShopCommand{
 		ID:      q.Id,
 		OwnerID: q.Context.UserID,
@@ -138,7 +136,7 @@ func (s *AccountService) deleteShop(ctx context.Context, q *wrapshop.DeleteShopE
 	return nil
 }
 
-func (s *AccountService) SetDefaultAddress(ctx context.Context, q *wrapshop.SetDefaultAddressEndpoint) error {
+func (s *AccountService) SetDefaultAddress(ctx context.Context, q *SetDefaultAddressEndpoint) error {
 	cmd := &model.SetDefaultAddressShopCommand{
 		ShopID:    q.Context.Shop.ID,
 		Type:      q.Type.ToModel(),

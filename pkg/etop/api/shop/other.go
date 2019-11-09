@@ -9,7 +9,6 @@ import (
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/etop/model"
-	wrapshop "etop.vn/backend/wrapper/etop/shop"
 )
 
 func init() {
@@ -22,7 +21,7 @@ func init() {
 	)
 }
 
-func (s *HistoryService) GetFulfillmentHistory(ctx context.Context, r *wrapshop.GetFulfillmentHistoryEndpoint) error {
+func (s *HistoryService) GetFulfillmentHistory(ctx context.Context, r *GetFulfillmentHistoryEndpoint) error {
 
 	filters := map[string]interface{}{
 		"shop_id": r.Context.Shop.ID,
@@ -60,7 +59,7 @@ func (s *HistoryService) GetFulfillmentHistory(ctx context.Context, r *wrapshop.
 	return nil
 }
 
-func (s *AccountService) GetBalanceShop(ctx context.Context, q *wrapshop.GetBalanceShopEndpoint) error {
+func (s *AccountService) GetBalanceShop(ctx context.Context, q *GetBalanceShopEndpoint) error {
 	shopID := q.Context.Shop.ID
 	cmd := &model.GetBalanceShopCommand{
 		ShopID: shopID,
@@ -75,7 +74,7 @@ func (s *AccountService) GetBalanceShop(ctx context.Context, q *wrapshop.GetBala
 	return nil
 }
 
-func (s *AuthorizeService) AuthorizePartner(ctx context.Context, q *wrapshop.AuthorizePartnerEndpoint) error {
+func (s *AuthorizeService) AuthorizePartner(ctx context.Context, q *AuthorizePartnerEndpoint) error {
 	shopID := q.Context.Shop.ID
 	partnerID := q.PartnerId
 
@@ -114,7 +113,7 @@ func (s *AuthorizeService) AuthorizePartner(ctx context.Context, q *wrapshop.Aut
 	return nil
 }
 
-func (s *AuthorizeService) GetAvailablePartners(ctx context.Context, q *wrapshop.GetAvailablePartnersEndpoint) error {
+func (s *AuthorizeService) GetAvailablePartners(ctx context.Context, q *GetAvailablePartnersEndpoint) error {
 	query := &model.GetPartnersQuery{
 		AvailableFromEtop: true,
 	}
@@ -127,7 +126,7 @@ func (s *AuthorizeService) GetAvailablePartners(ctx context.Context, q *wrapshop
 	return nil
 }
 
-func (s *AuthorizeService) GetAuthorizedPartners(ctx context.Context, q *wrapshop.GetAuthorizedPartnersEndpoint) error {
+func (s *AuthorizeService) GetAuthorizedPartners(ctx context.Context, q *GetAuthorizedPartnersEndpoint) error {
 	query := &model.GetPartnersFromRelationQuery{
 		AccountIDs: []int64{q.Context.Shop.ID},
 	}

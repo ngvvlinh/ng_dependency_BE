@@ -19,7 +19,6 @@ import (
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/etop/model"
-	wrapshop "etop.vn/backend/wrapper/etop/shop"
 	. "etop.vn/capi/dot"
 )
 
@@ -34,7 +33,7 @@ func init() {
 		receiptService.GetReceiptsByLedgerType)
 }
 
-func (s *ReceiptService) CreateReceipt(ctx context.Context, q *wrapshop.CreateReceiptEndpoint) (_err error) {
+func (s *ReceiptService) CreateReceipt(ctx context.Context, q *CreateReceiptEndpoint) (_err error) {
 	key := fmt.Sprintf("Create receipt %v-%v-%v-%v-%v-%v-%v-%v",
 		q.Context.Shop.ID, q.Context.UserID, q.TraderId, q.LedgerId, q.Title, q.Description, q.Amount, q.Type)
 	result, err := idempgroup.DoAndWrap(
@@ -49,7 +48,7 @@ func (s *ReceiptService) CreateReceipt(ctx context.Context, q *wrapshop.CreateRe
 	return nil
 }
 
-func (s *ReceiptService) createReceipt(ctx context.Context, q *wrapshop.CreateReceiptEndpoint) (_ *receipting.CreateReceiptCommand, err error) {
+func (s *ReceiptService) createReceipt(ctx context.Context, q *CreateReceiptEndpoint) (_ *receipting.CreateReceiptCommand, err error) {
 	var paidAt time.Time
 	var checkHavePaidAt bool
 	if q.PaidAt.Seconds != 0 {
@@ -83,7 +82,7 @@ func (s *ReceiptService) createReceipt(ctx context.Context, q *wrapshop.CreateRe
 	return cmd, nil
 }
 
-func (s *ReceiptService) UpdateReceipt(ctx context.Context, q *wrapshop.UpdateReceiptEndpoint) (err error) {
+func (s *ReceiptService) UpdateReceipt(ctx context.Context, q *UpdateReceiptEndpoint) (err error) {
 	var paidAt time.Time
 	var checkHavePaidAt bool
 	if q.PaidAt.Seconds != 0 {
@@ -119,7 +118,7 @@ func (s *ReceiptService) UpdateReceipt(ctx context.Context, q *wrapshop.UpdateRe
 	return nil
 }
 
-func (s *ReceiptService) ConfirmReceipt(ctx context.Context, q *wrapshop.ConfirmReceiptEndpoint) error {
+func (s *ReceiptService) ConfirmReceipt(ctx context.Context, q *ConfirmReceiptEndpoint) error {
 	cmd := &receipting.ConfirmReceiptCommand{
 		ID:     q.Id,
 		ShopID: q.Context.Shop.ID,
@@ -132,7 +131,7 @@ func (s *ReceiptService) ConfirmReceipt(ctx context.Context, q *wrapshop.Confirm
 	return nil
 }
 
-func (s *ReceiptService) CancelReceipt(ctx context.Context, q *wrapshop.CancelReceiptEndpoint) error {
+func (s *ReceiptService) CancelReceipt(ctx context.Context, q *CancelReceiptEndpoint) error {
 	cmd := &receipting.CancelReceiptCommand{
 		ID:     q.Id,
 		ShopID: q.Context.Shop.ID,
@@ -146,7 +145,7 @@ func (s *ReceiptService) CancelReceipt(ctx context.Context, q *wrapshop.CancelRe
 	return nil
 }
 
-func (s *ReceiptService) GetReceipt(ctx context.Context, q *wrapshop.GetReceiptEndpoint) error {
+func (s *ReceiptService) GetReceipt(ctx context.Context, q *GetReceiptEndpoint) error {
 	// Check receipt is exist
 	getReceiptQuery := &receipting.GetReceiptByIDQuery{
 		ID:     q.Id,
@@ -167,7 +166,7 @@ func (s *ReceiptService) GetReceipt(ctx context.Context, q *wrapshop.GetReceiptE
 	return nil
 }
 
-func (s *ReceiptService) GetReceipts(ctx context.Context, q *wrapshop.GetReceiptsEndpoint) error {
+func (s *ReceiptService) GetReceipts(ctx context.Context, q *GetReceiptsEndpoint) error {
 	paging := q.Paging.CMPaging()
 	query := &receipting.ListReceiptsQuery{
 		ShopID:  q.Context.Shop.ID,
@@ -193,7 +192,7 @@ func (s *ReceiptService) GetReceipts(ctx context.Context, q *wrapshop.GetReceipt
 	return nil
 }
 
-func (s *ReceiptService) GetReceiptsByLedgerType(ctx context.Context, q *wrapshop.GetReceiptsByLedgerTypeEndpoint) error {
+func (s *ReceiptService) GetReceiptsByLedgerType(ctx context.Context, q *GetReceiptsByLedgerTypeEndpoint) error {
 	paging := q.Paging.CMPaging()
 	listLedgersByType := &ledgering.ListLedgersByTypeQuery{
 		LedgerType: ledgering.LedgerType(q.Type),

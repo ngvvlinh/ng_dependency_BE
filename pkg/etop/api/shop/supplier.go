@@ -7,7 +7,6 @@ import (
 	pbcm "etop.vn/backend/pb/common"
 	pbshop "etop.vn/backend/pb/etop/shop"
 	"etop.vn/backend/pkg/common/bus"
-	wrapshop "etop.vn/backend/wrapper/etop/shop"
 	. "etop.vn/capi/dot"
 )
 
@@ -21,7 +20,7 @@ func init() {
 		supplierService.DeleteSupplier)
 }
 
-func (s *SupplierService) GetSupplier(ctx context.Context, r *wrapshop.GetSupplierEndpoint) error {
+func (s *SupplierService) GetSupplier(ctx context.Context, r *GetSupplierEndpoint) error {
 	query := &suppliering.GetSupplierByIDQuery{
 		ID:     r.Id,
 		ShopID: r.Context.Shop.ID,
@@ -33,7 +32,7 @@ func (s *SupplierService) GetSupplier(ctx context.Context, r *wrapshop.GetSuppli
 	return nil
 }
 
-func (s *SupplierService) GetSuppliers(ctx context.Context, r *wrapshop.GetSuppliersEndpoint) error {
+func (s *SupplierService) GetSuppliers(ctx context.Context, r *GetSuppliersEndpoint) error {
 	paging := r.Paging.CMPaging()
 	query := &suppliering.ListSuppliersQuery{
 		ShopID:  r.Context.Shop.ID,
@@ -50,7 +49,7 @@ func (s *SupplierService) GetSuppliers(ctx context.Context, r *wrapshop.GetSuppl
 	return nil
 }
 
-func (s *SupplierService) GetSuppliersByIDs(ctx context.Context, r *wrapshop.GetSuppliersByIDsEndpoint) error {
+func (s *SupplierService) GetSuppliersByIDs(ctx context.Context, r *GetSuppliersByIDsEndpoint) error {
 	query := &suppliering.ListSuppliersByIDsQuery{
 		IDs:    r.Ids,
 		ShopID: r.Context.Shop.ID,
@@ -64,7 +63,7 @@ func (s *SupplierService) GetSuppliersByIDs(ctx context.Context, r *wrapshop.Get
 	return nil
 }
 
-func (s *SupplierService) CreateSupplier(ctx context.Context, r *wrapshop.CreateSupplierEndpoint) error {
+func (s *SupplierService) CreateSupplier(ctx context.Context, r *CreateSupplierEndpoint) error {
 	cmd := &suppliering.CreateSupplierCommand{
 		ShopID:   r.Context.Shop.ID,
 		FullName: r.FullName,
@@ -77,7 +76,7 @@ func (s *SupplierService) CreateSupplier(ctx context.Context, r *wrapshop.Create
 	return nil
 }
 
-func (s *SupplierService) UpdateSupplier(ctx context.Context, r *wrapshop.UpdateSupplierEndpoint) error {
+func (s *SupplierService) UpdateSupplier(ctx context.Context, r *UpdateSupplierEndpoint) error {
 	cmd := &suppliering.UpdateSupplierCommand{
 		ID:       r.Id,
 		ShopID:   r.Context.Shop.ID,
@@ -91,7 +90,7 @@ func (s *SupplierService) UpdateSupplier(ctx context.Context, r *wrapshop.Update
 	return nil
 }
 
-func (s *SupplierService) DeleteSupplier(ctx context.Context, r *wrapshop.DeleteSupplierEndpoint) error {
+func (s *SupplierService) DeleteSupplier(ctx context.Context, r *DeleteSupplierEndpoint) error {
 	cmd := &suppliering.DeleteSupplierCommand{
 		ID:     r.Id,
 		ShopID: r.Context.Shop.ID,

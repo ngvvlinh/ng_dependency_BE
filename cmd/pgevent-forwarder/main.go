@@ -20,8 +20,6 @@ import (
 	"etop.vn/backend/pkg/etop/authorize/middleware"
 	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/common/l"
-
-	wrappgevent "etop.vn/backend/wrapper/services/pgevent"
 )
 
 var (
@@ -92,7 +90,7 @@ func main() {
 
 	apiMux := http.NewServeMux()
 	apiMux.Handle("/api/", http.NotFoundHandler())
-	wrappgevent.NewPgeventServer(apiMux, nil, cfg.Secret)
+	pgeventapi.NewPgeventServer(apiMux, cfg.Secret)
 
 	mux := http.NewServeMux()
 	mux.Handle("/api/", middleware.ForwardHeaders(apiMux))

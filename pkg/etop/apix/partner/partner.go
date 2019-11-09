@@ -19,7 +19,6 @@ import (
 	pbetop "etop.vn/backend/pb/etop"
 	pbexternal "etop.vn/backend/pb/external"
 	pbpartner "etop.vn/backend/pb/external/partner"
-	wrappartner "etop.vn/backend/wrapper/external/partner"
 )
 
 var (
@@ -38,12 +37,24 @@ const msgShopKey = `Sử dụng mã này để tạo đơn hàng với tư cách
 
 func init() {
 	bus.AddHandlers("apix",
-		VersionInfo,
-		CurrentAccount,
-		CurrentShop,
-		AuthorizeShop,
+		miscService.VersionInfo,
+		miscService.CurrentAccount,
+		shopService.CurrentShop,
+		shopService.AuthorizeShop,
 	)
 }
+
+type MiscService struct{}
+type ShopService struct{}
+type WebhookService struct{}
+type HistoryService struct{}
+type ShippingService struct{}
+
+var miscService = &MiscService{}
+var shopService = &ShopService{}
+var webhookService = &WebhookService{}
+var historyService = &HistoryService{}
+var shippingService = &ShippingService{}
 
 func Init(sd cmService.Shutdowner, rd redis.Store, s auth.Generator, _authURL string) {
 	if _authURL == "" {
@@ -60,7 +71,7 @@ func Init(sd cmService.Shutdowner, rd redis.Store, s auth.Generator, _authURL st
 	sd.Register(idempgroup.Shutdown)
 }
 
-func VersionInfo(ctx context.Context, q *wrappartner.VersionInfoEndpoint) error {
+func (s *MiscService) VersionInfo(ctx context.Context, q *VersionInfoEndpoint) error {
 	q.Result = &pbcm.VersionInfoResponse{
 		Service: "partner",
 		Version: "1.0.0",
@@ -68,7 +79,7 @@ func VersionInfo(ctx context.Context, q *wrappartner.VersionInfoEndpoint) error 
 	return nil
 }
 
-func CurrentAccount(ctx context.Context, q *wrappartner.CurrentAccountEndpoint) error {
+func (s *MiscService) CurrentAccount(ctx context.Context, q *CurrentAccountEndpoint) error {
 	if q.Context.Partner == nil {
 		return cm.Errorf(cm.Internal, nil, "")
 	}
@@ -76,7 +87,7 @@ func CurrentAccount(ctx context.Context, q *wrappartner.CurrentAccountEndpoint) 
 	return nil
 }
 
-func CurrentShop(ctx context.Context, q *wrappartner.CurrentShopEndpoint) error {
+func (s *ShopService) CurrentShop(ctx context.Context, q *CurrentShopEndpoint) error {
 	if q.Context.Shop == nil {
 		return cm.Errorf(cm.Internal, nil, "")
 	}
@@ -84,7 +95,7 @@ func CurrentShop(ctx context.Context, q *wrappartner.CurrentShopEndpoint) error 
 	return nil
 }
 
-func AuthorizeShop(ctx context.Context, q *wrappartner.AuthorizeShopEndpoint) error {
+func (s *ShopService) AuthorizeShop(ctx context.Context, q *AuthorizeShopEndpoint) error {
 	partner := q.Context.Partner
 
 	if q.RedirectUrl != "" {
@@ -201,17 +212,7 @@ func AuthorizeShop(ctx context.Context, q *wrappartner.AuthorizeShopEndpoint) er
 	return generateAuthTokenWithRequestLogin(ctx, q)
 }
 
-func getUserByLogin(ctx context.Context, phoneOrEmail string) (*model.User, error) {
-	query := &model.GetUserByLoginQuery{PhoneOrEmail: phoneOrEmail}
-	if err := bus.Dispatch(ctx, query); err != nil {
-		return nil, cm.MapError(err).
-			Map(cm.NotFound, cm.PermissionDenied, "").
-			Throw()
-	}
-	return query.Result.User, nil
-}
-
-func generateAuthTokenWithRequestLogin(ctx context.Context, q *wrappartner.AuthorizeShopEndpoint) error {
+func generateAuthTokenWithRequestLogin(ctx context.Context, q *AuthorizeShopEndpoint) error {
 	info := PartnerShopToken{
 		PartnerID: q.Context.Partner.ID,
 

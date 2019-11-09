@@ -13,9 +13,6 @@ import (
 	"etop.vn/common/l"
 )
 
-// +gen:wrapper=etop.vn/backend/pb/etop
-// +gen:wrapper:package=etop
-
 func init() {
 	bus.AddHandlers("api",
 		miscService.VersionInfo,

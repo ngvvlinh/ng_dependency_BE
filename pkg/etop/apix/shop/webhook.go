@@ -6,36 +6,35 @@ import (
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/etop/apix/webhook"
-	wrapxshop "etop.vn/backend/wrapper/external/shop"
 )
 
 func init() {
 	bus.AddHandlers("apix",
-		CreateWebhook,
-		DeleteWebhook,
-		GetWebhooks,
-		GetChanges,
+		webhookService.CreateWebhook,
+		webhookService.DeleteWebhook,
+		webhookService.GetWebhooks,
+		historyService.GetChanges,
 	)
 }
 
-func CreateWebhook(ctx context.Context, r *wrapxshop.CreateWebhookEndpoint) error {
+func (s *WebhookService) CreateWebhook(ctx context.Context, r *CreateWebhookEndpoint) error {
 	resp, err := webhook.CreateWebhook(ctx, r.Context.Shop.ID, r.CreateWebhookRequest)
 	r.Result = resp
 	return err
 }
 
-func DeleteWebhook(ctx context.Context, r *wrapxshop.DeleteWebhookEndpoint) error {
+func (s *WebhookService) DeleteWebhook(ctx context.Context, r *DeleteWebhookEndpoint) error {
 	resp, err := webhook.DeleteWebhook(ctx, r.Context.Shop.ID, r.DeleteWebhookRequest)
 	r.Result = resp
 	return err
 }
 
-func GetWebhooks(ctx context.Context, r *wrapxshop.GetWebhooksEndpoint) error {
+func (s *WebhookService) GetWebhooks(ctx context.Context, r *GetWebhooksEndpoint) error {
 	resp, err := webhook.GetWebhooks(ctx, r.Context.Shop.ID)
 	r.Result = resp
 	return err
 }
 
-func GetChanges(ctx context.Context, r *wrapxshop.GetChangesEndpoint) error {
+func (s *HistoryService) GetChanges(ctx context.Context, r *GetChangesEndpoint) error {
 	return cm.ErrTODO
 }

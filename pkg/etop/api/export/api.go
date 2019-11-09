@@ -15,34 +15,24 @@ import (
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/idemp"
+	"etop.vn/backend/pkg/etop/authorize/claims"
 	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/backend/pkg/etop/sqlstore"
-	wrappershop "etop.vn/backend/wrapper/etop/shop"
 )
 
-func init() {
-	bus.AddHandlers("export",
-		s.RequestExport,
-		s.GetExports,
-	)
-}
-
-var s = &Service{}
+var ServiceImpl = &Service{}
 
 type Service struct{}
 
-func (s *Service) RequestExport(ctx context.Context, r *wrappershop.RequestExportEndpoint) (_err error) {
-	claim := r.Context.Claim
-	shop := r.Context.Shop
-	userID := r.Context.UserID
+func (s *Service) RequestExport(ctx context.Context, claim claims.ShopClaim, shop *model.Shop, userID int64, r *pbshop.RequestExportRequest) (_ *pbshop.RequestExportResponse, _err error) {
 	if userID == 0 {
-		return cm.Errorf(cm.PermissionDenied, nil, "")
+		return nil, cm.Errorf(cm.PermissionDenied, nil, "")
 	}
 
 	// idempotency
 	key1 := strconv.FormatInt(shop.ID, 10)
 	if err := idempgroup.Acquire(key1, claim.Token); err != nil {
-		return idemp.WrapError(err, "xuất dữ liệu")
+		return nil, idemp.WrapError(err, "xuất dữ liệu")
 	}
 	defer func() {
 		e := recover()
@@ -57,7 +47,7 @@ func (s *Service) RequestExport(ctx context.Context, r *wrappershop.RequestExpor
 	}()
 
 	if r.ExportType != PathShopOrders && r.ExportType != PathShopFulfillments {
-		return cm.Errorf(cm.InvalidArgument, nil, "export type is not supported")
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "export type is not supported")
 	}
 
 	var delimiter rune
@@ -67,7 +57,7 @@ func (s *Service) RequestExport(ctx context.Context, r *wrappershop.RequestExpor
 	case ",", ";", "\t":
 		delimiter = rune(r.Delimiter[0])
 	default:
-		return cm.Errorf(cm.InvalidArgument, nil, "invalid delimiter")
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "invalid delimiter")
 	}
 	exportOpts := ExportOption{
 		Delimiter: delimiter,
@@ -76,7 +66,7 @@ func (s *Service) RequestExport(ctx context.Context, r *wrappershop.RequestExpor
 
 	from, to, err := cm.ParseDateFromTo(r.DateFrom, r.DateTo)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	tableNameExport := ""
@@ -106,7 +96,7 @@ func (s *Service) RequestExport(ctx context.Context, r *wrappershop.RequestExpor
 		AccountID:    shop.ID,
 		UserID:       userID,
 		CreatedAt:    time.Now(),
-		RequestQuery: pbcm.MustMarshalToString(r.RequestExportRequest),
+		RequestQuery: pbcm.MustMarshalToString(r),
 		MimeType:     "text/csv",
 		Status:       model.S4Zero,
 	}
@@ -118,7 +108,7 @@ func (s *Service) RequestExport(ctx context.Context, r *wrappershop.RequestExpor
 	}
 
 	if err := sqlstore.ExportAttempt(ctx).Create(exportItem); err != nil {
-		return err
+		return nil, err
 	}
 
 	switch r.ExportType {
@@ -140,10 +130,10 @@ func (s *Service) RequestExport(ctx context.Context, r *wrappershop.RequestExpor
 			}
 		}()
 		if err := bus.Dispatch(ctx, query); err != nil {
-			return err
+			return nil, err
 		}
 		if query.Result.Total == 0 {
-			return cm.Errorf(cm.ResourceExhausted, nil, "Không có dữ liệu để xuất. Vui lòng thử lại với điều kiện tìm kiếm khác.")
+			return nil, cm.Errorf(cm.ResourceExhausted, nil, "Không có dữ liệu để xuất. Vui lòng thử lại với điều kiện tìm kiếm khác.")
 		}
 
 		go ignoreError(exportAndReportProgress(
@@ -169,10 +159,10 @@ func (s *Service) RequestExport(ctx context.Context, r *wrappershop.RequestExpor
 			}
 		}()
 		if err := bus.Dispatch(ctx, query); err != nil {
-			return err
+			return nil, err
 		}
 		if query.Result.Total == 0 {
-			return cm.Errorf(cm.ResourceExhausted, nil, "Không có dữ liệu để xuất. Vui lòng thử lại với điều kiện tìm kiếm khác.")
+			return nil, cm.Errorf(cm.ResourceExhausted, nil, "Không có dữ liệu để xuất. Vui lòng thử lại với điều kiện tìm kiếm khác.")
 		}
 
 		go ignoreError(exportAndReportProgress(
@@ -182,19 +172,14 @@ func (s *Service) RequestExport(ctx context.Context, r *wrappershop.RequestExpor
 			ExportOrders,
 		))
 	}
-
-	r.Result = resp
-	return nil
+	return resp, nil
 }
 
-func (s *Service) GetExports(ctx context.Context, r *wrappershop.GetExportsEndpoint) error {
-	shopID := r.Context.Shop.ID
+func (s *Service) GetExports(ctx context.Context, shopID int64, r *pbshop.GetExportsRequest) (*pbshop.GetExportsResponse, error) {
 	exportAttempts, err := sqlstore.ExportAttempt(ctx).AccountID(shopID).NotYetExpired().List()
-
-	r.Result = &pbshop.GetExportsResponse{
+	return &pbshop.GetExportsResponse{
 		ExportItems: pbshop.PbExportAttempts(exportAttempts),
-	}
-	return err
+	}, err
 }
 
 func ignoreError(err error) {}

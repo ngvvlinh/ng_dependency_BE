@@ -41,7 +41,6 @@ service MiscService {
     rpc VersionInfo(cm.Empty) returns (cm.VersionInfoResponse);
 }
 
-
 service BrandService {
     rpc CreateBrand(CreateBrandRequest) returns (Brand);
     rpc UpdateBrandInfo(UpdateBrandRequest) returns (Brand);

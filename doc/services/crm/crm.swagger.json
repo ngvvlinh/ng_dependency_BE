@@ -171,32 +171,6 @@
         ]
       }
     },
-    "/api/crm.Vtiger/CountTicketByStatus": {
-      "post": {
-        "operationId": "CountTicketByStatus",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/crmCountTicketByStatusResponse"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/crmCountTicketByStatusRequest"
-            }
-          }
-        ],
-        "tags": [
-          "Vtiger"
-        ]
-      }
-    },
     "/api/crm.Vtiger/CreateOrUpdateContact": {
       "post": {
         "operationId": "CreateOrUpdateContact",
@@ -327,34 +301,9 @@
         ]
       }
     },
-    "/api/crm.Vtiger/GetStatus": {
-      "post": {
-        "operationId": "GetStatus",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/crmGetStatusResponse"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/cmEmpty"
-            }
-          }
-        ],
-        "tags": [
-          "Vtiger"
-        ]
-      }
-    },
     "/api/crm.Vtiger/GetTicketStatusCount": {
       "post": {
+        "summary": "rpc GetStatus(cm.Empty) returns (GetStatusResponse);\n   rpc CountTicketByStatus(CountTicketByStatusRequest) returns (CountTicketByStatusResponse);",
         "operationId": "GetTicketStatusCount",
         "responses": {
           "200": {
@@ -691,14 +640,6 @@
         }
       }
     },
-    "crmCountTicketByStatusRequest": {
-      "type": "object",
-      "properties": {
-        "status": {
-          "type": "string"
-        }
-      }
-    },
     "crmCountTicketByStatusResponse": {
       "type": "object",
       "properties": {
@@ -824,17 +765,6 @@
           "type": "array",
           "items": {
             "$ref": "#/definitions/crmContactResponse"
-          }
-        }
-      }
-    },
-    "crmGetStatusResponse": {
-      "type": "object",
-      "properties": {
-        "status": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/crmStatus"
           }
         }
       }
@@ -1063,17 +993,6 @@
         "entity_id": {
           "type": "string",
           "format": "int64"
-        }
-      }
-    },
-    "crmStatus": {
-      "type": "object",
-      "properties": {
-        "code": {
-          "type": "string"
-        },
-        "count": {
-          "type": "string"
         }
       }
     },

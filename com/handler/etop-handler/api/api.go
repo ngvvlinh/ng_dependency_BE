@@ -7,23 +7,28 @@ import (
 	pbcm "etop.vn/backend/pb/common"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
-	wraphandler "etop.vn/backend/wrapper/services/handler"
 )
 
 var whsender *sender.WebhookSender
 
 func init() {
 	bus.AddHandlers("handler",
-		VersionInfo,
-		ResetState,
+		miscService.VersionInfo,
+		webhookService.ResetState,
 	)
 }
+
+type MiscService struct{}
+type WebhookService struct{}
+
+var miscService = &MiscService{}
+var webhookService = &WebhookService{}
 
 func Init(s *sender.WebhookSender) {
 	whsender = s
 }
 
-func VersionInfo(ctx context.Context, q *wraphandler.VersionInfoEndpoint) error {
+func (s *MiscService) VersionInfo(ctx context.Context, q *VersionInfoEndpoint) error {
 	q.Result = &pbcm.VersionInfoResponse{
 		Service:   "etop-event-handler",
 		Version:   "0.1",
@@ -32,7 +37,7 @@ func VersionInfo(ctx context.Context, q *wraphandler.VersionInfoEndpoint) error 
 	return nil
 }
 
-func ResetState(ctx context.Context, q *wraphandler.ResetStateEndpoint) error {
+func (s *WebhookService) ResetState(ctx context.Context, q *ResetStateEndpoint) error {
 	if q.AccountId == 0 {
 		return cm.Errorf(cm.InvalidArgument, nil, "invalid account_id")
 	}
