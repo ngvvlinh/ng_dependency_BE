@@ -46,6 +46,17 @@ type Directive struct {
 	Arg string // foo,bar
 }
 
+type Directives []Directive
+
+func (ds Directives) Get(cmd string) (Directive, bool) {
+	for _, d := range ds {
+		if d.Cmd == cmd {
+			return d, true
+		}
+	}
+	return Directive{}, false
+}
+
 type declaration struct {
 	Pkg *packages.Package
 
