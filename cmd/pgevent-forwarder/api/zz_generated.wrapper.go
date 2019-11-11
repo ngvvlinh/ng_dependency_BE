@@ -18,7 +18,7 @@ import (
 	middleware "etop.vn/backend/pkg/etop/authorize/middleware"
 )
 
-func NewEventService(s *EventService, secret string) api.EventService {
+func WrapEventService(s *EventService, secret string) api.EventService {
 	return wrapEventService{s: s, secret: secret}
 }
 
@@ -62,7 +62,7 @@ func (s wrapEventService) GenerateEvents(ctx context.Context, req *api.GenerateE
 	return resp, nil
 }
 
-func NewMiscService(s *MiscService, secret string) api.MiscService {
+func WrapMiscService(s *MiscService, secret string) api.MiscService {
 	return wrapMiscService{s: s, secret: secret}
 }
 

@@ -18,7 +18,7 @@ import (
 	middleware "etop.vn/backend/pkg/etop/authorize/middleware"
 )
 
-func NewCrmService(s *CrmService, secret string) api.CrmService {
+func WrapCrmService(s *CrmService, secret string) api.CrmService {
 	return wrapCrmService{s: s, secret: secret}
 }
 
@@ -97,7 +97,7 @@ func (s wrapCrmService) SendNotification(ctx context.Context, req *api.SendNotif
 	return resp, nil
 }
 
-func NewMiscService(s *MiscService, secret string) api.MiscService {
+func WrapMiscService(s *MiscService, secret string) api.MiscService {
 	return wrapMiscService{s: s, secret: secret}
 }
 
@@ -141,7 +141,7 @@ func (s wrapMiscService) VersionInfo(ctx context.Context, req *cm.Empty) (resp *
 	return resp, nil
 }
 
-func NewVhtService(s *VhtService) api.VhtService {
+func WrapVhtService(s *VhtService) api.VhtService {
 	return wrapVhtService{s: s}
 }
 
@@ -284,7 +284,7 @@ func (s wrapVhtService) GetCallHistories(ctx context.Context, req *api.GetCallHi
 	return resp, nil
 }
 
-func NewVtigerService(s *VtigerService) api.VtigerService {
+func WrapVtigerService(s *VtigerService) api.VtigerService {
 	return wrapVtigerService{s: s}
 }
 

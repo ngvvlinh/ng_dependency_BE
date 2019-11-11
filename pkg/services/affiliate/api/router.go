@@ -10,10 +10,10 @@ import (
 
 func NewAffiliateServer(m httprpc.Muxer, secret string) {
 	servers := []httprpc.Server{
-		service.NewUserServiceServer(NewUserService(userService)),
-		service.NewTradingServiceServer(NewTradingService(tradingService)),
-		service.NewShopServiceServer(NewShopService(shopService)),
-		service.NewAffiliateServiceServer(NewAffiliateService(affiliateService, secret)),
+		service.NewUserServiceServer(WrapUserService(userService)),
+		service.NewTradingServiceServer(WrapTradingService(tradingService)),
+		service.NewShopServiceServer(WrapShopService(shopService)),
+		service.NewAffiliateServiceServer(WrapAffiliateService(affiliateService, secret)),
 	}
 	for _, s := range servers {
 		m.Handle(s.PathPrefix(), s)

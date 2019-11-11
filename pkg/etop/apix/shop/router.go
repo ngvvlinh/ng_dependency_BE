@@ -11,10 +11,10 @@ import (
 
 func NewShopServer(m httprpc.Muxer) {
 	servers := []httprpc.Server{
-		service.NewMiscServiceServer(NewMiscService(miscService)),
-		service.NewWebhookServiceServer(NewWebhookService(webhookService)),
-		service.NewHistoryServiceServer(NewHistoryService(historyService)),
-		service.NewShippingServiceServer(NewShippingService(shippingService)),
+		service.NewMiscServiceServer(WrapMiscService(miscService)),
+		service.NewWebhookServiceServer(WrapWebhookService(webhookService)),
+		service.NewHistoryServiceServer(WrapHistoryService(historyService)),
+		service.NewShippingServiceServer(WrapShippingService(shippingService)),
 	}
 	for _, s := range servers {
 		m.Handle(s.PathPrefix(), s)

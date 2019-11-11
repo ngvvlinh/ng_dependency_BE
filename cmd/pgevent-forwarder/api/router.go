@@ -10,8 +10,8 @@ import (
 
 func NewPgeventServer(m httprpc.Muxer, secret string) {
 	servers := []httprpc.Server{
-		service.NewMiscServiceServer(NewMiscService(miscService, secret)),
-		service.NewEventServiceServer(NewEventService(eventService, secret)),
+		service.NewMiscServiceServer(WrapMiscService(miscService, secret)),
+		service.NewEventServiceServer(WrapEventService(eventService, secret)),
 	}
 	for _, s := range servers {
 		m.Handle(s.PathPrefix(), s)

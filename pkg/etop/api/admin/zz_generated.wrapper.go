@@ -20,7 +20,7 @@ import (
 	middleware "etop.vn/backend/pkg/etop/authorize/middleware"
 )
 
-func NewAccountService(s *AccountService) api.AccountService {
+func WrapAccountService(s *AccountService) api.AccountService {
 	return wrapAccountService{s: s}
 }
 
@@ -118,7 +118,7 @@ func (s wrapAccountService) GenerateAPIKey(ctx context.Context, req *api.Generat
 	return resp, nil
 }
 
-func NewCreditService(s *CreditService) api.CreditService {
+func WrapCreditService(s *CreditService) api.CreditService {
 	return wrapCreditService{s: s}
 }
 
@@ -396,7 +396,7 @@ func (s wrapCreditService) UpdateCredit(ctx context.Context, req *api.UpdateCred
 	return resp, nil
 }
 
-func NewFulfillmentService(s *FulfillmentService) api.FulfillmentService {
+func WrapFulfillmentService(s *FulfillmentService) api.FulfillmentService {
 	return wrapFulfillmentService{s: s}
 }
 
@@ -539,7 +539,7 @@ func (s wrapFulfillmentService) UpdateFulfillment(ctx context.Context, req *api.
 	return resp, nil
 }
 
-func NewMiscService(s *MiscService) api.MiscService {
+func WrapMiscService(s *MiscService) api.MiscService {
 	return wrapMiscService{s: s}
 }
 
@@ -622,7 +622,7 @@ func (s wrapMiscService) VersionInfo(ctx context.Context, req *cm.Empty) (resp *
 	return resp, nil
 }
 
-func NewMoneyTransactionService(s *MoneyTransactionService) api.MoneyTransactionService {
+func WrapMoneyTransactionService(s *MoneyTransactionService) api.MoneyTransactionService {
 	return wrapMoneyTransactionService{s: s}
 }
 
@@ -1395,7 +1395,7 @@ func (s wrapMoneyTransactionService) UpdateMoneyTransactionShippingExternal(ctx 
 	return resp, nil
 }
 
-func NewNotificationService(s *NotificationService) api.NotificationService {
+func WrapNotificationService(s *NotificationService) api.NotificationService {
 	return wrapNotificationService{s: s}
 }
 
@@ -1448,7 +1448,7 @@ func (s wrapNotificationService) CreateNotifications(ctx context.Context, req *a
 	return resp, nil
 }
 
-func NewOrderService(s *OrderService) api.OrderService {
+func WrapOrderService(s *OrderService) api.OrderService {
 	return wrapOrderService{s: s}
 }
 
@@ -1591,7 +1591,7 @@ func (s wrapOrderService) GetOrdersByIDs(ctx context.Context, req *cm.IDsRequest
 	return resp, nil
 }
 
-func NewShopService(s *ShopService) api.ShopService {
+func WrapShopService(s *ShopService) api.ShopService {
 	return wrapShopService{s: s}
 }
 

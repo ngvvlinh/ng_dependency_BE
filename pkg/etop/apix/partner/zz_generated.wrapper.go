@@ -20,7 +20,7 @@ import (
 	middleware "etop.vn/backend/pkg/etop/authorize/middleware"
 )
 
-func NewHistoryService(s *HistoryService) api.HistoryService {
+func WrapHistoryService(s *HistoryService) api.HistoryService {
 	return wrapHistoryService{s: s}
 }
 
@@ -74,7 +74,7 @@ func (s wrapHistoryService) GetChanges(ctx context.Context, req *external.GetCha
 	return resp, nil
 }
 
-func NewMiscService(s *MiscService) api.MiscService {
+func WrapMiscService(s *MiscService) api.MiscService {
 	return wrapMiscService{s: s}
 }
 
@@ -204,7 +204,7 @@ func (s wrapMiscService) VersionInfo(ctx context.Context, req *cm.Empty) (resp *
 	return resp, nil
 }
 
-func NewShippingService(s *ShippingService) api.ShippingService {
+func WrapShippingService(s *ShippingService) api.ShippingService {
 	return wrapShippingService{s: s}
 }
 
@@ -442,7 +442,7 @@ func (s wrapShippingService) GetShippingServices(ctx context.Context, req *exter
 	return resp, nil
 }
 
-func NewShopService(s *ShopService) api.ShopService {
+func WrapShopService(s *ShopService) api.ShopService {
 	return wrapShopService{s: s}
 }
 
@@ -542,7 +542,7 @@ func (s wrapShopService) CurrentShop(ctx context.Context, req *cm.Empty) (resp *
 	return resp, nil
 }
 
-func NewWebhookService(s *WebhookService) api.WebhookService {
+func WrapWebhookService(s *WebhookService) api.WebhookService {
 	return wrapWebhookService{s: s}
 }
 

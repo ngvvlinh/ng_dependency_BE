@@ -19,7 +19,7 @@ import (
 	model "etop.vn/backend/pkg/etop/model"
 )
 
-func NewIntegrationService(s *IntegrationService) api.IntegrationService {
+func WrapIntegrationService(s *IntegrationService) api.IntegrationService {
 	return wrapIntegrationService{s: s}
 }
 
@@ -279,7 +279,7 @@ func (s wrapIntegrationService) SessionInfo(ctx context.Context, req *cm.Empty) 
 	return resp, nil
 }
 
-func NewMiscService(s *MiscService) api.MiscService {
+func WrapMiscService(s *MiscService) api.MiscService {
 	return wrapMiscService{s: s}
 }
 

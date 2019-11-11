@@ -19,7 +19,7 @@ import (
 	middleware "etop.vn/backend/pkg/etop/authorize/middleware"
 )
 
-func NewAccountService(s *AccountService) api.AccountService {
+func WrapAccountService(s *AccountService) api.AccountService {
 	return wrapAccountService{s: s}
 }
 
@@ -197,7 +197,7 @@ func (s wrapAccountService) UpdateAffiliateBankAccount(ctx context.Context, req 
 	return resp, nil
 }
 
-func NewMiscService(s *MiscService) api.MiscService {
+func WrapMiscService(s *MiscService) api.MiscService {
 	return wrapMiscService{s: s}
 }
 

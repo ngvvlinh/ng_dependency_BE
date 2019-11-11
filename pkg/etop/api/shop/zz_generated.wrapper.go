@@ -22,7 +22,7 @@ import (
 	model "etop.vn/backend/pkg/etop/model"
 )
 
-func NewAccountService(s *AccountService) api.AccountService {
+func WrapAccountService(s *AccountService) api.AccountService {
 	return wrapAccountService{s: s}
 }
 
@@ -497,7 +497,7 @@ func (s wrapAccountService) UpdateShop(ctx context.Context, req *api.UpdateShopR
 	return resp, nil
 }
 
-func NewAuthorizeService(s *AuthorizeService) api.AuthorizeService {
+func WrapAuthorizeService(s *AuthorizeService) api.AuthorizeService {
 	return wrapAuthorizeService{s: s}
 }
 
@@ -640,7 +640,7 @@ func (s wrapAuthorizeService) GetAvailablePartners(ctx context.Context, req *cm.
 	return resp, nil
 }
 
-func NewBrandService(s *BrandService) api.BrandService {
+func WrapBrandService(s *BrandService) api.BrandService {
 	return wrapBrandService{s: s}
 }
 
@@ -921,7 +921,7 @@ func (s wrapBrandService) UpdateBrandInfo(ctx context.Context, req *api.UpdateBr
 	return resp, nil
 }
 
-func NewCarrierService(s *CarrierService) api.CarrierService {
+func WrapCarrierService(s *CarrierService) api.CarrierService {
 	return wrapCarrierService{s: s}
 }
 
@@ -1199,7 +1199,7 @@ func (s wrapCarrierService) UpdateCarrier(ctx context.Context, req *api.UpdateCa
 	return resp, nil
 }
 
-func NewCategoryService(s *CategoryService) api.CategoryService {
+func WrapCategoryService(s *CategoryService) api.CategoryService {
 	return wrapCategoryService{s: s}
 }
 
@@ -1432,7 +1432,7 @@ func (s wrapCategoryService) UpdateCategory(ctx context.Context, req *api.Update
 	return resp, nil
 }
 
-func NewCollectionService(s *CollectionService) api.CollectionService {
+func WrapCollectionService(s *CollectionService) api.CollectionService {
 	return wrapCollectionService{s: s}
 }
 
@@ -1673,7 +1673,7 @@ func (s wrapCollectionService) UpdateCollection(ctx context.Context, req *api.Up
 	return resp, nil
 }
 
-func NewCustomerService(s *CustomerService) api.CustomerService {
+func WrapCustomerService(s *CustomerService) api.CustomerService {
 	return wrapCustomerService{s: s}
 }
 
@@ -2356,7 +2356,7 @@ func (s wrapCustomerService) UpdateCustomerAddress(ctx context.Context, req *api
 	return resp, nil
 }
 
-func NewCustomerGroupService(s *CustomerGroupService) api.CustomerGroupService {
+func WrapCustomerGroupService(s *CustomerGroupService) api.CustomerGroupService {
 	return wrapCustomerGroupService{s: s}
 }
 
@@ -2544,7 +2544,7 @@ func (s wrapCustomerGroupService) UpdateCustomerGroup(ctx context.Context, req *
 	return resp, nil
 }
 
-func NewExportService(s *ExportService) api.ExportService {
+func WrapExportService(s *ExportService) api.ExportService {
 	return wrapExportService{s: s}
 }
 
@@ -2642,7 +2642,7 @@ func (s wrapExportService) RequestExport(ctx context.Context, req *api.RequestEx
 	return resp, nil
 }
 
-func NewExternalAccountService(s *ExternalAccountService) api.ExternalAccountService {
+func WrapExternalAccountService(s *ExternalAccountService) api.ExternalAccountService {
 	return wrapExternalAccountService{s: s}
 }
 
@@ -2875,7 +2875,7 @@ func (s wrapExternalAccountService) UpdateExternalAccountHaravanToken(ctx contex
 	return resp, nil
 }
 
-func NewFulfillmentService(s *FulfillmentService) api.FulfillmentService {
+func WrapFulfillmentService(s *FulfillmentService) api.FulfillmentService {
 	return wrapFulfillmentService{s: s}
 }
 
@@ -3136,7 +3136,7 @@ func (s wrapFulfillmentService) UpdateFulfillmentsShippingState(ctx context.Cont
 	return resp, nil
 }
 
-func NewHistoryService(s *HistoryService) api.HistoryService {
+func WrapHistoryService(s *HistoryService) api.HistoryService {
 	return wrapHistoryService{s: s}
 }
 
@@ -3192,7 +3192,7 @@ func (s wrapHistoryService) GetFulfillmentHistory(ctx context.Context, req *api.
 	return resp, nil
 }
 
-func NewInventoryService(s *InventoryService) api.InventoryService {
+func WrapInventoryService(s *InventoryService) api.InventoryService {
 	return wrapInventoryService{s: s}
 }
 
@@ -3695,7 +3695,7 @@ func (s wrapInventoryService) UpdateInventoryVoucher(ctx context.Context, req *a
 	return resp, nil
 }
 
-func NewLedgerService(s *LedgerService) api.LedgerService {
+func WrapLedgerService(s *LedgerService) api.LedgerService {
 	return wrapLedgerService{s: s}
 }
 
@@ -3928,7 +3928,7 @@ func (s wrapLedgerService) UpdateLedger(ctx context.Context, req *api.UpdateLedg
 	return resp, nil
 }
 
-func NewMiscService(s *MiscService) api.MiscService {
+func WrapMiscService(s *MiscService) api.MiscService {
 	return wrapMiscService{s: s}
 }
 
@@ -3966,7 +3966,7 @@ func (s wrapMiscService) VersionInfo(ctx context.Context, req *cm.Empty) (resp *
 	return resp, nil
 }
 
-func NewMoneyTransactionService(s *MoneyTransactionService) api.MoneyTransactionService {
+func WrapMoneyTransactionService(s *MoneyTransactionService) api.MoneyTransactionService {
 	return wrapMoneyTransactionService{s: s}
 }
 
@@ -4064,7 +4064,7 @@ func (s wrapMoneyTransactionService) GetMoneyTransactions(ctx context.Context, r
 	return resp, nil
 }
 
-func NewNotificationService(s *NotificationService) api.NotificationService {
+func WrapNotificationService(s *NotificationService) api.NotificationService {
 	return wrapNotificationService{s: s}
 }
 
@@ -4297,7 +4297,7 @@ func (s wrapNotificationService) UpdateNotifications(ctx context.Context, req *e
 	return resp, nil
 }
 
-func NewOrderService(s *OrderService) api.OrderService {
+func WrapOrderService(s *OrderService) api.OrderService {
 	return wrapOrderService{s: s}
 }
 
@@ -4809,7 +4809,7 @@ func (s wrapOrderService) UpdateOrdersStatus(ctx context.Context, req *api.Updat
 	return resp, nil
 }
 
-func NewPaymentService(s *PaymentService) api.PaymentService {
+func WrapPaymentService(s *PaymentService) api.PaymentService {
 	return wrapPaymentService{s: s}
 }
 
@@ -4907,7 +4907,7 @@ func (s wrapPaymentService) PaymentTradingOrder(ctx context.Context, req *api.Pa
 	return resp, nil
 }
 
-func NewProductService(s *ProductService) api.ProductService {
+func WrapProductService(s *ProductService) api.ProductService {
 	return wrapProductService{s: s}
 }
 
@@ -5972,7 +5972,7 @@ func (s wrapProductService) UpdateVariantsStatus(ctx context.Context, req *api.U
 	return resp, nil
 }
 
-func NewProductSourceService(s *ProductSourceService) api.ProductSourceService {
+func WrapProductSourceService(s *ProductSourceService) api.ProductSourceService {
 	return wrapProductSourceService{s: s}
 }
 
@@ -6421,7 +6421,7 @@ func (s wrapProductSourceService) UpdateProductsPSCategory(ctx context.Context, 
 	return resp, nil
 }
 
-func NewReceiptService(s *ReceiptService) api.ReceiptService {
+func WrapReceiptService(s *ReceiptService) api.ReceiptService {
 	return wrapReceiptService{s: s}
 }
 
@@ -6744,7 +6744,7 @@ func (s wrapReceiptService) UpdateReceipt(ctx context.Context, req *api.UpdateRe
 	return resp, nil
 }
 
-func NewShipnowService(s *ShipnowService) api.ShipnowService {
+func WrapShipnowService(s *ShipnowService) api.ShipnowService {
 	return wrapShipnowService{s: s}
 }
 
@@ -7067,7 +7067,7 @@ func (s wrapShipnowService) UpdateShipnowFulfillment(ctx context.Context, req *o
 	return resp, nil
 }
 
-func NewSummaryService(s *SummaryService) api.SummaryService {
+func WrapSummaryService(s *SummaryService) api.SummaryService {
 	return wrapSummaryService{s: s}
 }
 
@@ -7217,7 +7217,7 @@ func (s wrapSummaryService) SummarizePOS(ctx context.Context, req *api.Summarize
 	return resp, nil
 }
 
-func NewSupplierService(s *SupplierService) api.SupplierService {
+func WrapSupplierService(s *SupplierService) api.SupplierService {
 	return wrapSupplierService{s: s}
 }
 
@@ -7495,7 +7495,7 @@ func (s wrapSupplierService) UpdateSupplier(ctx context.Context, req *api.Update
 	return resp, nil
 }
 
-func NewTradingService(s *TradingService) api.TradingService {
+func WrapTradingService(s *TradingService) api.TradingService {
 	return wrapTradingService{s: s}
 }
 

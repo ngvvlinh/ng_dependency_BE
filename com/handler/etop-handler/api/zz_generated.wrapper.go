@@ -18,7 +18,7 @@ import (
 	middleware "etop.vn/backend/pkg/etop/authorize/middleware"
 )
 
-func NewMiscService(s *MiscService, secret string) api.MiscService {
+func WrapMiscService(s *MiscService, secret string) api.MiscService {
 	return wrapMiscService{s: s, secret: secret}
 }
 
@@ -62,7 +62,7 @@ func (s wrapMiscService) VersionInfo(ctx context.Context, req *cm.Empty) (resp *
 	return resp, nil
 }
 
-func NewWebhookService(s *WebhookService, secret string) api.WebhookService {
+func WrapWebhookService(s *WebhookService, secret string) api.WebhookService {
 	return wrapWebhookService{s: s, secret: secret}
 }
 

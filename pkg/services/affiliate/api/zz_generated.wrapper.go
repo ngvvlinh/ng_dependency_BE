@@ -18,7 +18,7 @@ import (
 	middleware "etop.vn/backend/pkg/etop/authorize/middleware"
 )
 
-func NewAffiliateService(s *AffiliateService, secret string) api.AffiliateService {
+func WrapAffiliateService(s *AffiliateService, secret string) api.AffiliateService {
 	return wrapAffiliateService{s: s, secret: secret}
 }
 
@@ -390,7 +390,7 @@ func (s wrapAffiliateService) NotifyNewShopPurchase(ctx context.Context, req *ap
 	return resp, nil
 }
 
-func NewShopService(s *ShopService) api.ShopService {
+func WrapShopService(s *ShopService) api.ShopService {
 	return wrapShopService{s: s}
 }
 
@@ -533,7 +533,7 @@ func (s wrapShopService) ShopGetProducts(ctx context.Context, req *cm.CommonList
 	return resp, nil
 }
 
-func NewTradingService(s *TradingService) api.TradingService {
+func WrapTradingService(s *TradingService) api.TradingService {
 	return wrapTradingService{s: s}
 }
 
@@ -811,7 +811,7 @@ func (s wrapTradingService) UpdateTradingProductPromotion(ctx context.Context, r
 	return resp, nil
 }
 
-func NewUserService(s *UserService) api.UserService {
+func WrapUserService(s *UserService) api.UserService {
 	return wrapUserService{s: s}
 }
 

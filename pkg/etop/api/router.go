@@ -10,13 +10,13 @@ import (
 
 func NewEtopServer(m httprpc.Muxer) {
 	servers := []httprpc.Server{
-		service.NewMiscServiceServer(NewMiscService(miscService)),
-		service.NewUserServiceServer(NewUserService(userService)),
-		service.NewAccountServiceServer(NewAccountService(accountService)),
-		service.NewRelationshipServiceServer(NewRelationshipService(relationshipService)),
-		service.NewLocationServiceServer(NewLocationService(locationService)),
-		service.NewBankServiceServer(NewBankService(bankService)),
-		service.NewAddressServiceServer(NewAddressService(addressService)),
+		service.NewMiscServiceServer(WrapMiscService(miscService)),
+		service.NewUserServiceServer(WrapUserService(userService)),
+		service.NewAccountServiceServer(WrapAccountService(accountService)),
+		service.NewRelationshipServiceServer(WrapRelationshipService(relationshipService)),
+		service.NewLocationServiceServer(WrapLocationService(locationService)),
+		service.NewBankServiceServer(WrapBankService(bankService)),
+		service.NewAddressServiceServer(WrapAddressService(addressService)),
 	}
 	for _, s := range servers {
 		m.Handle(s.PathPrefix(), s)

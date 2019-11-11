@@ -19,7 +19,7 @@ import (
 	model "etop.vn/backend/pkg/etop/model"
 )
 
-func NewAccountService(s *AccountService) api.AccountService {
+func WrapAccountService(s *AccountService) api.AccountService {
 	return wrapAccountService{s: s}
 }
 
@@ -154,7 +154,7 @@ func (s wrapAccountService) UpdateURLSlug(ctx context.Context, req *api.UpdateUR
 	return resp, nil
 }
 
-func NewAddressService(s *AddressService) api.AddressService {
+func WrapAddressService(s *AddressService) api.AddressService {
 	return wrapAddressService{s: s}
 }
 
@@ -349,7 +349,7 @@ func (s wrapAddressService) UpdateAddress(ctx context.Context, req *api.UpdateAd
 	return resp, nil
 }
 
-func NewBankService(s *BankService) api.BankService {
+func WrapBankService(s *BankService) api.BankService {
 	return wrapBankService{s: s}
 }
 
@@ -498,7 +498,7 @@ func (s wrapBankService) GetProvincesByBank(ctx context.Context, req *api.GetPro
 	return resp, nil
 }
 
-func NewLocationService(s *LocationService) api.LocationService {
+func WrapLocationService(s *LocationService) api.LocationService {
 	return wrapLocationService{s: s}
 }
 
@@ -696,7 +696,7 @@ func (s wrapLocationService) ParseLocation(ctx context.Context, req *api.ParseLo
 	return resp, nil
 }
 
-func NewMiscService(s *MiscService) api.MiscService {
+func WrapMiscService(s *MiscService) api.MiscService {
 	return wrapMiscService{s: s}
 }
 
@@ -734,7 +734,7 @@ func (s wrapMiscService) VersionInfo(ctx context.Context, req *cm.Empty) (resp *
 	return resp, nil
 }
 
-func NewRelationshipService(s *RelationshipService) api.RelationshipService {
+func WrapRelationshipService(s *RelationshipService) api.RelationshipService {
 	return wrapRelationshipService{s: s}
 }
 
@@ -977,7 +977,7 @@ func (s wrapRelationshipService) RemoveUserFromCurrentAccount(ctx context.Contex
 	return resp, nil
 }
 
-func NewUserService(s *UserService) api.UserService {
+func WrapUserService(s *UserService) api.UserService {
 	return wrapUserService{s: s}
 }
 

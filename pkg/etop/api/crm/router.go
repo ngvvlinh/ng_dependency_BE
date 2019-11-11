@@ -10,10 +10,10 @@ import (
 
 func NewCrmServer(m httprpc.Muxer, secret string) {
 	servers := []httprpc.Server{
-		service.NewMiscServiceServer(NewMiscService(miscService, secret)),
-		service.NewCrmServiceServer(NewCrmService(crmService, secret)),
-		service.NewVtigerServiceServer(NewVtigerService(vtigerService)),
-		service.NewVhtServiceServer(NewVhtService(vhtService)),
+		service.NewMiscServiceServer(WrapMiscService(miscService, secret)),
+		service.NewCrmServiceServer(WrapCrmService(crmService, secret)),
+		service.NewVtigerServiceServer(WrapVtigerService(vtigerService)),
+		service.NewVhtServiceServer(WrapVhtService(vhtService)),
 	}
 	for _, s := range servers {
 		m.Handle(s.PathPrefix(), s)

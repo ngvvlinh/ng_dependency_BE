@@ -10,14 +10,14 @@ import (
 
 func NewAdminServer(m httprpc.Muxer) {
 	servers := []httprpc.Server{
-		service.NewMiscServiceServer(NewMiscService(miscService)),
-		service.NewAccountServiceServer(NewAccountService(accountService)),
-		service.NewOrderServiceServer(NewOrderService(orderService)),
-		service.NewFulfillmentServiceServer(NewFulfillmentService(fulfillmentService)),
-		service.NewMoneyTransactionServiceServer(NewMoneyTransactionService(moneyTransactionService)),
-		service.NewShopServiceServer(NewShopService(shopService)),
-		service.NewCreditServiceServer(NewCreditService(creditService)),
-		service.NewNotificationServiceServer(NewNotificationService(notificationService)),
+		service.NewMiscServiceServer(WrapMiscService(miscService)),
+		service.NewAccountServiceServer(WrapAccountService(accountService)),
+		service.NewOrderServiceServer(WrapOrderService(orderService)),
+		service.NewFulfillmentServiceServer(WrapFulfillmentService(fulfillmentService)),
+		service.NewMoneyTransactionServiceServer(WrapMoneyTransactionService(moneyTransactionService)),
+		service.NewShopServiceServer(WrapShopService(shopService)),
+		service.NewCreditServiceServer(WrapCreditService(creditService)),
+		service.NewNotificationServiceServer(WrapNotificationService(notificationService)),
 	}
 	for _, s := range servers {
 		m.Handle(s.PathPrefix(), s)

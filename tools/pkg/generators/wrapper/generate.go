@@ -191,7 +191,7 @@ var tpl = template.Must(template.New("tpl").Funcs(funcs).Parse(tplText))
 
 const tplText = `
 {{range $s := .Services}}
-func New{{.Name}}Service(s *{{.Name}}Service{{if $s|hasSecret}}, secret string{{end}}) api.{{.Name}}Service {
+func Wrap{{.Name}}Service(s *{{.Name}}Service{{if $s|hasSecret}}, secret string{{end}}) api.{{.Name}}Service {
 	return wrap{{.Name}}Service{s: s{{if $s|hasSecret}}, secret: secret{{end}}}
 }
 

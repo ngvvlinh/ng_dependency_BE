@@ -19,7 +19,7 @@ import (
 	middleware "etop.vn/backend/pkg/etop/authorize/middleware"
 )
 
-func NewMiscService(s *MiscService) api.MiscService {
+func WrapMiscService(s *MiscService) api.MiscService {
 	return wrapMiscService{s: s}
 }
 
@@ -68,7 +68,7 @@ func (s wrapMiscService) VersionInfo(ctx context.Context, req *cm.Empty) (resp *
 	return resp, nil
 }
 
-func NewUserService(s *UserService) api.UserService {
+func WrapUserService(s *UserService) api.UserService {
 	return wrapUserService{s: s}
 }
 

@@ -10,8 +10,8 @@ import (
 
 func NewHandlerServer(m httprpc.Muxer, secret string) {
 	servers := []httprpc.Server{
-		service.NewMiscServiceServer(NewMiscService(miscService, secret)),
-		service.NewWebhookServiceServer(NewWebhookService(webhookService, secret)),
+		service.NewMiscServiceServer(WrapMiscService(miscService, secret)),
+		service.NewWebhookServiceServer(WrapWebhookService(webhookService, secret)),
 	}
 	for _, s := range servers {
 		m.Handle(s.PathPrefix(), s)

@@ -10,8 +10,8 @@ import (
 
 func NewSadminServer(m httprpc.Muxer) {
 	servers := []httprpc.Server{
-		service.NewMiscServiceServer(NewMiscService(miscService)),
-		service.NewUserServiceServer(NewUserService(userService)),
+		service.NewMiscServiceServer(WrapMiscService(miscService)),
+		service.NewUserServiceServer(WrapUserService(userService)),
 	}
 	for _, s := range servers {
 		m.Handle(s.PathPrefix(), s)
