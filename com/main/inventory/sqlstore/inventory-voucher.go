@@ -51,8 +51,14 @@ func (s *InventoryVoucherStore) Status(status etop.Status3) *InventoryVoucherSto
 	s.preds = append(s.preds, s.ft.ByStatus(status))
 	return s
 }
+
 func (s *InventoryVoucherStore) ShopID(id int64) *InventoryVoucherStore {
 	s.preds = append(s.preds, s.ft.ByShopID(id))
+	return s
+}
+
+func (s *InventoryVoucherStore) RefID(id int64) *InventoryVoucherStore {
+	s.preds = append(s.preds, s.ft.ByRefID(id))
 	return s
 }
 

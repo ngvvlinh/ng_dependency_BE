@@ -65,16 +65,19 @@ func PbShopInventoryVoucher(args *inventory.InventoryVoucher) *pbshop.InventoryV
 		CreatedBy:    args.CreatedBy,
 		UpdatedBy:    args.UpdatedBy,
 		Lines:        inventoryVoucherItem,
+		RefId:        args.RefID,
+		RefType:      string(args.RefType),
+		RefName:      string(args.RefName),
 		TraderId:     args.TraderID,
 		Note:         args.Note,
-		Type:         args.Type,
+		Type:         string(args.Type),
 		Id:           args.ID,
 		ShopId:       args.ShopID,
 		CreatedAt:    pbcm.PbTime(args.CreatedAt),
 		UpdatedAt:    pbcm.PbTime(args.UpdatedAt),
 		CancelledAt:  pbcm.PbTime(args.CancelledAt),
 		ConfirmedAt:  pbcm.PbTime(args.ConfirmedAt),
-		CancelReason: args.CancelledReason,
+		CancelReason: args.CancelReason,
 	}
 }
 

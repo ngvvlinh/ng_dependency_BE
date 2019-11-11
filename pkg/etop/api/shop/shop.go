@@ -424,6 +424,10 @@ func (s *InventoryService) CreateInventoryVoucher(ctx context.Context, q *Create
 	shopID := q.Context.Shop.ID
 	userID := q.Context.UserID
 	inventoryOverstock := q.Context.Shop.InventoryOverstock
+
+	// TODO Check ref ID here "order", "purchaseorder", "stocktake", "return"
+	// GET info and put it to cmd
+
 	var items []*inventory.InventoryVoucherItem
 	for _, value := range q.Lines {
 		items = append(items, &inventory.InventoryVoucherItem{
@@ -432,16 +436,30 @@ func (s *InventoryService) CreateInventoryVoucher(ctx context.Context, q *Create
 			Quantity:  value.Quantity,
 		})
 	}
+
+	// TODO modify value flow reftype
+	title := q.Title
+	overstock := cm.BoolDefault(inventoryOverstock, true)
+	refType := inventory.InventoryRefType(q.RefType)
+	refID := q.RefId
+	totalAmount := q.TotalAmount
+	traderID := q.TraderId
+	inventoryType := inventory.InventoryVoucherType(q.Type)
+	note := q.Note
+	lines := items
+
 	cmd := &inventory.CreateInventoryVoucherCommand{
-		Title:       q.Title,
+		Title:       title,
 		ShopID:      shopID,
-		Overstock:   cm.BoolDefault(inventoryOverstock, true),
-		TotalAmount: q.TotalAmount,
+		Overstock:   overstock,
+		RefType:     refType,
+		RefID:       refID,
+		TotalAmount: totalAmount,
 		CreatedBy:   userID,
-		TraderID:    q.TraderId,
-		Type:        q.Type,
-		Note:        q.Note,
-		Lines:       items,
+		TraderID:    traderID,
+		Type:        inventoryType,
+		Note:        note,
+		Lines:       lines,
 	}
 	if err := inventoryAggregate.Dispatch(ctx, cmd); err != nil {
 		return err
@@ -501,13 +519,13 @@ func (s *InventoryService) UpdateInventoryVoucher(ctx context.Context, q *Update
 		})
 	}
 	cmd := &inventory.UpdateInventoryVoucherCommand{
-		Title:       q.Title,
+		Title:       PString(q.Title),
 		ID:          q.Id,
 		ShopID:      shopID,
 		TotalAmount: q.TotalAmount,
 		UpdatedBy:   userID,
-		TraderID:    q.TraderId,
-		Note:        q.Note,
+		TraderID:    PInt64(q.TraderId),
+		Note:        PString(q.Note),
 		Lines:       items,
 	}
 	if err := inventoryAggregate.Dispatch(ctx, cmd); err != nil {

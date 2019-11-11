@@ -9,6 +9,7 @@ import (
 
 	meta "etop.vn/api/meta"
 	capi "etop.vn/capi"
+	dot "etop.vn/capi/dot"
 )
 
 type Command interface{ command() }
@@ -97,9 +98,12 @@ type CreateInventoryVoucherCommand struct {
 	ShopID      int64
 	CreatedBy   int64
 	Title       string
+	RefID       int64
+	RefType     InventoryRefType
+	RefName     InventoryVoucherRefName
 	TraderID    int64
 	TotalAmount int32
-	Type        string
+	Type        InventoryVoucherType
 	Note        string
 	Lines       []*InventoryVoucherItem
 
@@ -112,15 +116,14 @@ func (h AggregateHandler) HandleCreateInventoryVoucher(ctx context.Context, msg 
 }
 
 type UpdateInventoryVoucherCommand struct {
-	ID              int64
-	ShopID          int64
-	Title           string
-	UpdatedBy       int64
-	TraderID        int64
-	TotalAmount     int32
-	CancelledReason string
-	Note            string
-	Lines           []*InventoryVoucherItem
+	ID          int64
+	ShopID      int64
+	Title       dot.NullString
+	UpdatedBy   int64
+	TraderID    dot.NullInt64
+	TotalAmount int32
+	Note        dot.NullString
+	Lines       []*InventoryVoucherItem
 
 	Result *InventoryVoucher `json:"-"`
 }
@@ -293,6 +296,9 @@ func (q *CreateInventoryVoucherCommand) GetArgs(ctx context.Context) (_ context.
 			ShopID:      q.ShopID,
 			CreatedBy:   q.CreatedBy,
 			Title:       q.Title,
+			RefID:       q.RefID,
+			RefType:     q.RefType,
+			RefName:     q.RefName,
 			TraderID:    q.TraderID,
 			TotalAmount: q.TotalAmount,
 			Type:        q.Type,
@@ -305,6 +311,9 @@ func (q *CreateInventoryVoucherCommand) SetCreateInventoryVoucherArgs(args *Crea
 	q.ShopID = args.ShopID
 	q.CreatedBy = args.CreatedBy
 	q.Title = args.Title
+	q.RefID = args.RefID
+	q.RefType = args.RefType
+	q.RefName = args.RefName
 	q.TraderID = args.TraderID
 	q.TotalAmount = args.TotalAmount
 	q.Type = args.Type
@@ -315,15 +324,14 @@ func (q *CreateInventoryVoucherCommand) SetCreateInventoryVoucherArgs(args *Crea
 func (q *UpdateInventoryVoucherCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateInventoryVoucherArgs) {
 	return ctx,
 		&UpdateInventoryVoucherArgs{
-			ID:              q.ID,
-			ShopID:          q.ShopID,
-			Title:           q.Title,
-			UpdatedBy:       q.UpdatedBy,
-			TraderID:        q.TraderID,
-			TotalAmount:     q.TotalAmount,
-			CancelledReason: q.CancelledReason,
-			Note:            q.Note,
-			Lines:           q.Lines,
+			ID:          q.ID,
+			ShopID:      q.ShopID,
+			Title:       q.Title,
+			UpdatedBy:   q.UpdatedBy,
+			TraderID:    q.TraderID,
+			TotalAmount: q.TotalAmount,
+			Note:        q.Note,
+			Lines:       q.Lines,
 		}
 }
 
@@ -334,7 +342,6 @@ func (q *UpdateInventoryVoucherCommand) SetUpdateInventoryVoucherArgs(args *Upda
 	q.UpdatedBy = args.UpdatedBy
 	q.TraderID = args.TraderID
 	q.TotalAmount = args.TotalAmount
-	q.CancelledReason = args.CancelledReason
 	q.Note = args.Note
 	q.Lines = args.Lines
 }

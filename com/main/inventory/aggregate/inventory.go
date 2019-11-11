@@ -18,9 +18,6 @@ import (
 var _ inventory.Aggregate = &InventoryAggregate{}
 var scheme = conversion.Build(convert.RegisterConversions)
 
-const TypeIn = "in"
-const TypeOut = "out"
-
 type InventoryAggregate struct {
 	InventoryStore        sqlstore.InventoryFactory
 	InventoryVoucherStore sqlstore.InventoryVoucherFactory
@@ -72,7 +69,10 @@ func (q *InventoryAggregate) CreateInventoryVoucher(ctx context.Context, Oversto
 	if err = scheme.Convert(args, &voucher); err != nil {
 		return nil, err
 	}
-
+	err = checkInventoryVoucherRefType(&voucher)
+	if err != nil {
+		return nil, err
+	}
 	err = q.InventoryVoucherStore(ctx).Create(&voucher)
 	if err != nil {
 		return nil, err
@@ -104,7 +104,7 @@ func (q *InventoryAggregate) ProcessInventoryVariantForVoucher(ctx context.Conte
 		if cm.ErrorCode(err) == cm.NotFound {
 			return 0, nil, err
 		}
-		if args.Type == TypeOut {
+		if args.Type == inventory.InventoryVoucherTypeOut {
 			if overStock == false && inventoryCore.QuantityOnHand < value.Quantity {
 				return 0, nil, cm.Error(cm.InvalidArgument, "not enough quantity in inventory", nil)
 			}
@@ -127,7 +127,7 @@ func (q *InventoryAggregate) UpdateInventoryVoucher(ctx context.Context, args *i
 	if dbResult.Status != etop.S3Zero {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "This inventory is already confirmed or cancelled")
 	}
-	if dbResult.Type == TypeOut {
+	if dbResult.Type == inventory.InventoryVoucherTypeOut {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Can not update inventory delivery voucher")
 	}
 	event := &inventory.InventoryVoucherCreatedEvent{
@@ -180,14 +180,14 @@ func (q *InventoryAggregate) AdjustInventoryQuantity(ctx context.Context, overSt
 	}
 	var inventoryVoucherInID int64
 	if len(linesCheckin) > 0 {
-		inventoryVoucherInID, err = q.PreCreateVoucher(ctx, overStock, args, linesCheckin, TypeIn)
+		inventoryVoucherInID, err = q.PreCreateVoucher(ctx, overStock, args, linesCheckin, inventory.InventoryVoucherTypeIn)
 		if err != nil {
 			return nil, err
 		}
 	}
 	var inventoryVoucherOutID int64
 	if len(linesCheckout) > 0 {
-		inventoryVoucherOutID, err = q.PreCreateVoucher(ctx, overStock, args, linesCheckout, TypeOut)
+		inventoryVoucherOutID, err = q.PreCreateVoucher(ctx, overStock, args, linesCheckout, inventory.InventoryVoucherTypeOut)
 		if err != nil {
 			return nil, err
 		}
@@ -247,7 +247,7 @@ func (q *InventoryAggregate) DevideInOutInventoryVoucher(ctx context.Context,
 
 func (q *InventoryAggregate) PreCreateVoucher(ctx context.Context, overStock bool, info *inventory.AdjustInventoryQuantityArgs,
 	lines []*inventory.InventoryVoucherItem,
-	typeVoucher string) (int64, error) {
+	typeVoucher inventory.InventoryVoucherType) (int64, error) {
 	var totalValue int32 = 0
 	for _, value := range lines {
 		totalValue = totalValue + value.Price*value.Quantity
@@ -284,9 +284,9 @@ func (q *InventoryAggregate) ConfirmInventoryVoucher(ctx context.Context, args *
 		if err != nil {
 			return nil, err
 		}
-		if inventoryVoucher.Type == TypeOut {
+		if inventoryVoucher.Type == string(inventory.InventoryVoucherTypeOut) {
 			data.QuantityPicked = data.QuantityPicked - value.Quantity
-		} else if inventoryVoucher.Type == TypeIn {
+		} else if inventoryVoucher.Type == string(inventory.InventoryVoucherTypeIn) {
 			if inventoryVoucher.TraderID != 0 {
 				if data.QuantityOnHand < 0 {
 					data.PurchasePrice = value.Price
@@ -330,7 +330,7 @@ func (q *InventoryAggregate) CancelInventoryVoucher(ctx context.Context, args *i
 	if inventoryVoucher.Status != etop.S3Zero {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Inventory voucher already confirmed or cancelled")
 	}
-	if inventoryVoucher.Type == TypeOut {
+	if inventoryVoucher.Type == string(inventory.InventoryVoucherTypeOut) {
 		for _, value := range inventoryVoucher.Lines {
 			var data *inventory.InventoryVariant
 			data, err = q.InventoryStore(ctx).ShopID(args.ShopID).VariantID(value.VariantID).Get()
@@ -349,7 +349,7 @@ func (q *InventoryAggregate) CancelInventoryVoucher(ctx context.Context, args *i
 	}
 	inventoryVoucher.Status = etop.S3Negative
 	inventoryVoucher.CancelledAt = time.Now()
-	inventoryVoucher.CancelledReason = args.Reason
+	inventoryVoucher.CancelReason = args.Reason
 	err = q.InventoryVoucherStore(ctx).ShopID(args.ShopID).ID(args.ID).UpdateInventoryVoucherAllDB(inventoryVoucher)
 	if err != nil {
 		return nil, err
@@ -385,6 +385,35 @@ func validateInventoryVoucher(args *inventory.InventoryVoucherItem) error {
 	}
 	if args.Quantity < 1 {
 		return cm.Errorf(cm.InvalidArgument, nil, "Số lượng nhập xuất phải lớn hơn 0")
+	}
+	return nil
+}
+
+func checkInventoryVoucherRefType(inventoryVoucher *inventory.InventoryVoucher) error {
+	switch inventoryVoucher.RefType {
+	case inventory.RefTypeOrder:
+		if inventoryVoucher.Type != inventory.InventoryVoucherTypeOut {
+			return cm.Error(cm.InvalidArgument, "'type' không đúng. Bán hàng chỉ có thể là 'out'", nil)
+		}
+		inventoryVoucher.RefName = inventory.RefNameOrder
+	case inventory.RefTypeStockTake:
+		if inventoryVoucher.Type != inventory.InventoryVoucherTypeOut && inventoryVoucher.Type != inventory.InventoryVoucherTypeIn {
+			return cm.Error(cm.InvalidArgument, "'type' không đúng.Kiểm kho chỉ có thể là 'in' hoặc 'out'", nil)
+		}
+		inventoryVoucher.RefName = inventory.RefNameStockTake
+	case inventory.RefTypePurchaseOrder:
+		if inventoryVoucher.Type != inventory.InventoryVoucherTypeIn {
+			return cm.Error(cm.InvalidArgument, "'type' không đúng.Nhập hàng chỉ có thể là 'in'", nil)
+		}
+		inventoryVoucher.RefName = inventory.RefNamePurchaseOrder
+	case inventory.RefTypeReturns:
+		if inventoryVoucher.Type != inventory.InventoryVoucherTypeIn {
+			return cm.Error(cm.InvalidArgument, "'type' không đúng.Trả hàng chỉ có thể là 'in'", nil)
+		}
+		inventoryVoucher.RefName = inventory.RefNameReturns
+	default:
+		return cm.Error(cm.InvalidArgument, "'ref_type' không đúng. Vui lòng nhập đúng ref_type", nil)
+
 	}
 	return nil
 }

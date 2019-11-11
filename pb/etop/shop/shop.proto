@@ -1535,6 +1535,10 @@ message CreateInventoryVoucherRequest{
     repeated InventoryVoucherLine lines = 6;
     optional string type = 5 [(gogoproto.nullable) = false];
     optional string title = 7 [(gogoproto.nullable) = false];
+
+    optional int64 ref_id = 16 [(gogoproto.nullable) = false];
+    optional string ref_type = 17 [(gogoproto.nullable) = false];
+
     optional int32 total_amount = 8 [(gogoproto.nullable) = false];
 
 }
@@ -1568,11 +1572,11 @@ message CancelInventoryVoucherResponse {
 
 message UpdateInventoryVoucherRequest {
     optional int64 id = 1 [(gogoproto.nullable) = false];
-    optional int64 trader_id = 3 [(gogoproto.nullable) = false];
+    optional int64 trader_id = 3;
     repeated InventoryVoucherLine lines = 6 [(gogoproto.nullable) = false];
-    optional string note = 2 [(gogoproto.nullable) = false];
+    optional string note = 2 ;
     optional string type = 4 [(gogoproto.nullable) = false];
-    optional string title = 7 [(gogoproto.nullable) = false];
+    optional string title = 7 ;
     optional int32 total_amount = 8 [(gogoproto.nullable) = false];
 }
 
@@ -1622,6 +1626,11 @@ message InventoryVoucher {
     optional int64 id = 5 [(gogoproto.nullable) = false];
     optional int64 shop_id = 6 [(gogoproto.nullable) = false];
     optional string title = 15 [(gogoproto.nullable) = false];
+
+    optional int64 ref_id = 16 [(gogoproto.nullable) = false];
+    optional string ref_type = 17 [(gogoproto.nullable) = false];
+    optional string ref_name = 18 [(gogoproto.nullable) = false];
+
     optional google.protobuf.Timestamp created_at = 10;
     optional google.protobuf.Timestamp updated_at = 11;
     optional google.protobuf.Timestamp cancelled_at = 12;

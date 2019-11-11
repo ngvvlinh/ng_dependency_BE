@@ -24,23 +24,25 @@ type InventoryVariant struct {
 var _ = sqlgenInventoryVoucher(&InventoryVoucher{})
 
 type InventoryVoucher struct {
-	ShopID      int64
-	ID          int64
-	CreatedBy   int64
-	UpdatedBy   int64
-	Status      etop.Status3
-	Note        string
-	TraderID    int64
-	TotalAmount int32
-	Type        string
-	Lines       []*InventoryVoucherItem
-	Title       string
-	CreatedAt   time.Time `sq:"create"`
-	UpdatedAt   time.Time `sq:"update"`
-	ConfirmedAt time.Time
-	CancelledAt time.Time
-
-	CancelledReason string
+	ShopID       int64
+	ID           int64
+	CreatedBy    int64
+	UpdatedBy    int64
+	Status       etop.Status3
+	Note         string
+	TraderID     int64
+	TotalAmount  int32
+	Type         string
+	Lines        []*InventoryVoucherItem
+	RefID        int64
+	RefType      string
+	RefName      string
+	Title        string
+	CreatedAt    time.Time `sq:"create"`
+	UpdatedAt    time.Time `sq:"update"`
+	ConfirmedAt  time.Time
+	CancelledAt  time.Time
+	CancelReason string
 }
 
 type InventoryVoucherItem struct {

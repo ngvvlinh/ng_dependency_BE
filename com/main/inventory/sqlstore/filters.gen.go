@@ -341,6 +341,63 @@ func (ft *InventoryVoucherFilters) ByTypePtr(Type *string) *sq.ColumnFilterPtr {
 	}
 }
 
+func (ft *InventoryVoucherFilters) ByRefID(RefID int64) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "ref_id",
+		Value:  RefID,
+		IsNil:  RefID == 0,
+	}
+}
+
+func (ft *InventoryVoucherFilters) ByRefIDPtr(RefID *int64) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "ref_id",
+		Value:  RefID,
+		IsNil:  RefID == nil,
+		IsZero: RefID != nil && (*RefID) == 0,
+	}
+}
+
+func (ft *InventoryVoucherFilters) ByRefType(RefType string) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "ref_type",
+		Value:  RefType,
+		IsNil:  RefType == "",
+	}
+}
+
+func (ft *InventoryVoucherFilters) ByRefTypePtr(RefType *string) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "ref_type",
+		Value:  RefType,
+		IsNil:  RefType == nil,
+		IsZero: RefType != nil && (*RefType) == "",
+	}
+}
+
+func (ft *InventoryVoucherFilters) ByRefName(RefName string) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "ref_name",
+		Value:  RefName,
+		IsNil:  RefName == "",
+	}
+}
+
+func (ft *InventoryVoucherFilters) ByRefNamePtr(RefName *string) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "ref_name",
+		Value:  RefName,
+		IsNil:  RefName == nil,
+		IsZero: RefName != nil && (*RefName) == "",
+	}
+}
+
 func (ft *InventoryVoucherFilters) ByTitle(Title string) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
@@ -436,21 +493,21 @@ func (ft *InventoryVoucherFilters) ByCancelledAtPtr(CancelledAt *time.Time) *sq.
 	}
 }
 
-func (ft *InventoryVoucherFilters) ByCancelledReason(CancelledReason string) *sq.ColumnFilter {
+func (ft *InventoryVoucherFilters) ByCancelReason(CancelReason string) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
-		Column: "cancelled_reason",
-		Value:  CancelledReason,
-		IsNil:  CancelledReason == "",
+		Column: "cancel_reason",
+		Value:  CancelReason,
+		IsNil:  CancelReason == "",
 	}
 }
 
-func (ft *InventoryVoucherFilters) ByCancelledReasonPtr(CancelledReason *string) *sq.ColumnFilterPtr {
+func (ft *InventoryVoucherFilters) ByCancelReasonPtr(CancelReason *string) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
-		Column: "cancelled_reason",
-		Value:  CancelledReason,
-		IsNil:  CancelledReason == nil,
-		IsZero: CancelledReason != nil && (*CancelledReason) == "",
+		Column: "cancel_reason",
+		Value:  CancelReason,
+		IsNil:  CancelReason == nil,
+		IsZero: CancelReason != nil && (*CancelReason) == "",
 	}
 }

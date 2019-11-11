@@ -7759,6 +7759,13 @@
         "title": {
           "type": "string"
         },
+        "ref_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "ref_type": {
+          "type": "string"
+        },
         "total_amount": {
           "type": "integer",
           "format": "int32"
@@ -9009,6 +9016,16 @@
           "format": "int64"
         },
         "title": {
+          "type": "string"
+        },
+        "ref_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "ref_type": {
+          "type": "string"
+        },
+        "ref_name": {
           "type": "string"
         },
         "created_at": {

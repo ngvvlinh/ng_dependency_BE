@@ -4,6 +4,8 @@ import (
 	"context"
 	"time"
 
+	"etop.vn/capi/dot"
+
 	"etop.vn/api/main/etop"
 	"etop.vn/api/meta"
 )
@@ -42,15 +44,14 @@ type QueryService interface {
 type UpdateInventoryVoucherArgs struct {
 	ID        int64
 	ShopID    int64
-	Title     string
+	Title     dot.NullString
 	UpdatedBy int64
 
-	TraderID    int64
+	TraderID    dot.NullInt64
 	TotalAmount int32
 
-	CancelledReason string
-	Note            string
-	Lines           []*InventoryVoucherItem
+	Note  dot.NullString
+	Lines []*InventoryVoucherItem
 }
 
 type CreateInventoryVariantArgs struct {
@@ -110,12 +111,17 @@ type GetInventoryVouchersByIDArgs struct {
 
 // +convert:create=InventoryVoucher
 type CreateInventoryVoucherArgs struct {
-	ShopID      int64
-	CreatedBy   int64
-	Title       string
+	ShopID    int64
+	CreatedBy int64
+	Title     string
+
+	RefID   int64
+	RefType InventoryRefType
+	RefName InventoryVoucherRefName
+
 	TraderID    int64
 	TotalAmount int32
-	Type        string
+	Type        InventoryVoucherType
 	Note        string
 	Lines       []*InventoryVoucherItem
 }
@@ -133,16 +139,20 @@ type InventoryVoucher struct {
 	ConfirmedAt time.Time
 	CancelledAt time.Time
 
+	RefID   int64
+	RefType InventoryRefType
+	RefName InventoryVoucherRefName
+
 	TraderID    int64
 	TotalAmount int32
 
 	// enum "in" or "out"
-	Type string
+	Type InventoryVoucherType
 
-	CancelledReason string
-	Note            string
-	Lines           []*InventoryVoucherItem
-	Status          etop.Status3
+	CancelReason string
+	Note         string
+	Lines        []*InventoryVoucherItem
+	Status       etop.Status3
 }
 
 type InventoryVoucherItem struct {

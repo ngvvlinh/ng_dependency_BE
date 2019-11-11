@@ -149,20 +149,23 @@ func Convert_inventorymodel_InventoryVoucher_inventory_InventoryVoucher(arg *inv
 }
 
 func convert_inventorymodel_InventoryVoucher_inventory_InventoryVoucher(arg *inventorymodel.InventoryVoucher, out *inventory.InventoryVoucher) {
-	out.ID = arg.ID                           // simple assign
-	out.ShopID = arg.ShopID                   // simple assign
-	out.Title = arg.Title                     // simple assign
-	out.CreatedBy = arg.CreatedBy             // simple assign
-	out.UpdatedBy = arg.UpdatedBy             // simple assign
-	out.CreatedAt = arg.CreatedAt             // simple assign
-	out.UpdatedAt = arg.UpdatedAt             // simple assign
-	out.ConfirmedAt = arg.ConfirmedAt         // simple assign
-	out.CancelledAt = arg.CancelledAt         // simple assign
-	out.TraderID = arg.TraderID               // simple assign
-	out.TotalAmount = arg.TotalAmount         // simple assign
-	out.Type = arg.Type                       // simple assign
-	out.CancelledReason = arg.CancelledReason // simple assign
-	out.Note = arg.Note                       // simple assign
+	out.ID = arg.ID                                              // simple assign
+	out.ShopID = arg.ShopID                                      // simple assign
+	out.Title = arg.Title                                        // simple assign
+	out.CreatedBy = arg.CreatedBy                                // simple assign
+	out.UpdatedBy = arg.UpdatedBy                                // simple assign
+	out.CreatedAt = arg.CreatedAt                                // simple assign
+	out.UpdatedAt = arg.UpdatedAt                                // simple assign
+	out.ConfirmedAt = arg.ConfirmedAt                            // simple assign
+	out.CancelledAt = arg.CancelledAt                            // simple assign
+	out.RefID = arg.RefID                                        // simple assign
+	out.RefType = inventory.InventoryRefType(arg.RefType)        // simple conversion
+	out.RefName = inventory.InventoryVoucherRefName(arg.RefName) // simple conversion
+	out.TraderID = arg.TraderID                                  // simple assign
+	out.TotalAmount = arg.TotalAmount                            // simple assign
+	out.Type = inventory.InventoryVoucherType(arg.Type)          // simple conversion
+	out.CancelReason = arg.CancelReason                          // simple assign
+	out.Note = arg.Note                                          // simple assign
 	out.Lines = Convert_inventorymodel_InventoryVoucherItems_inventory_InventoryVoucherItems(arg.Lines)
 	out.Status = arg.Status // simple assign
 }
@@ -189,14 +192,17 @@ func convert_inventory_InventoryVoucher_inventorymodel_InventoryVoucher(arg *inv
 	out.Note = arg.Note               // simple assign
 	out.TraderID = arg.TraderID       // simple assign
 	out.TotalAmount = arg.TotalAmount // simple assign
-	out.Type = arg.Type               // simple assign
+	out.Type = string(arg.Type)       // simple conversion
 	out.Lines = Convert_inventory_InventoryVoucherItems_inventorymodel_InventoryVoucherItems(arg.Lines)
-	out.Title = arg.Title                     // simple assign
-	out.CreatedAt = arg.CreatedAt             // simple assign
-	out.UpdatedAt = arg.UpdatedAt             // simple assign
-	out.ConfirmedAt = arg.ConfirmedAt         // simple assign
-	out.CancelledAt = arg.CancelledAt         // simple assign
-	out.CancelledReason = arg.CancelledReason // simple assign
+	out.RefID = arg.RefID               // simple assign
+	out.RefType = string(arg.RefType)   // simple conversion
+	out.RefName = string(arg.RefName)   // simple conversion
+	out.Title = arg.Title               // simple assign
+	out.CreatedAt = arg.CreatedAt       // simple assign
+	out.UpdatedAt = arg.UpdatedAt       // simple assign
+	out.ConfirmedAt = arg.ConfirmedAt   // simple assign
+	out.CancelledAt = arg.CancelledAt   // simple assign
+	out.CancelReason = arg.CancelReason // simple assign
 }
 
 func Convert_inventory_InventoryVouchers_inventorymodel_InventoryVouchers(args []*inventory.InventoryVoucher) (outs []*inventorymodel.InventoryVoucher) {
@@ -229,10 +235,13 @@ func apply_inventory_CreateInventoryVoucherArgs_inventory_InventoryVoucher(arg *
 	out.UpdatedAt = time.Time{}       // zero value
 	out.ConfirmedAt = time.Time{}     // zero value
 	out.CancelledAt = time.Time{}     // zero value
+	out.RefID = arg.RefID             // simple assign
+	out.RefType = arg.RefType         // simple assign
+	out.RefName = arg.RefName         // simple assign
 	out.TraderID = arg.TraderID       // simple assign
 	out.TotalAmount = arg.TotalAmount // simple assign
 	out.Type = arg.Type               // simple assign
-	out.CancelledReason = ""          // zero value
+	out.CancelReason = ""             // zero value
 	out.Note = arg.Note               // simple assign
 	out.Lines = arg.Lines             // simple assign
 	out.Status = 0                    // zero value
@@ -243,22 +252,25 @@ func Apply_inventory_UpdateInventoryVoucherArgs_inventory_InventoryVoucher(arg *
 }
 
 func apply_inventory_UpdateInventoryVoucherArgs_inventory_InventoryVoucher(arg *inventory.UpdateInventoryVoucherArgs, out *inventory.InventoryVoucher) {
-	out.ID = arg.ID                           // simple assign
-	out.ShopID = arg.ShopID                   // simple assign
-	out.Title = arg.Title                     // simple assign
-	out.CreatedBy = out.CreatedBy             // no change
-	out.UpdatedBy = arg.UpdatedBy             // simple assign
-	out.CreatedAt = out.CreatedAt             // no change
-	out.UpdatedAt = out.UpdatedAt             // no change
-	out.ConfirmedAt = out.ConfirmedAt         // no change
-	out.CancelledAt = out.CancelledAt         // no change
-	out.TraderID = arg.TraderID               // simple assign
-	out.TotalAmount = arg.TotalAmount         // simple assign
-	out.Type = out.Type                       // no change
-	out.CancelledReason = arg.CancelledReason // simple assign
-	out.Note = arg.Note                       // simple assign
-	out.Lines = arg.Lines                     // simple assign
-	out.Status = out.Status                   // no change
+	out.ID = arg.ID                                 // simple assign
+	out.ShopID = arg.ShopID                         // simple assign
+	out.Title = arg.Title.Apply(out.Title)          // apply change
+	out.CreatedBy = out.CreatedBy                   // no change
+	out.UpdatedBy = arg.UpdatedBy                   // simple assign
+	out.CreatedAt = out.CreatedAt                   // no change
+	out.UpdatedAt = out.UpdatedAt                   // no change
+	out.ConfirmedAt = out.ConfirmedAt               // no change
+	out.CancelledAt = out.CancelledAt               // no change
+	out.RefID = out.RefID                           // no change
+	out.RefType = out.RefType                       // no change
+	out.RefName = out.RefName                       // no change
+	out.TraderID = arg.TraderID.Apply(out.TraderID) // apply change
+	out.TotalAmount = arg.TotalAmount               // simple assign
+	out.Type = out.Type                             // no change
+	out.CancelReason = out.CancelReason             // no change
+	out.Note = arg.Note.Apply(out.Note)             // apply change
+	out.Lines = arg.Lines                           // simple assign
+	out.Status = out.Status                         // no change
 }
 
 //-- convert etop.vn/api/main/inventory.InventoryVoucherItem --//
