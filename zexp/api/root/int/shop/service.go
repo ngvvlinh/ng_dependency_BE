@@ -309,3 +309,14 @@ type LedgerAPI interface {
 	UpdateLedger(context.Context, *shop.UpdateLedgerRequest) (*shop.Ledger, error)
 	DeleteLedger(context.Context, *cm.IDRequest) (*cm.DeletedResponse, error)
 }
+
+// +apix:path=/shop.PurchaseOrder
+type PurchaseOrderAPI interface {
+	GetPurchaseOrder(context.Context, *cm.IDRequest) (*shop.PurchaseOrder, error)
+	GetPurchaseOrders(context.Context, *shop.GetPurchaseOrdersRequest) (*shop.PurchaseOrdersResponse, error)
+	CreatePurchaseOrder(context.Context, *shop.CreatePurchaseOrderRequest) (*shop.PurchaseOrder, error)
+	UpdatePurchaseOrder(context.Context, *shop.UpdatePurchaseOrderRequest) (*shop.PurchaseOrder, error)
+	DeletePurchaseOrder(context.Context, *cm.IDRequest) (*cm.DeletedResponse, error)
+	ConfirmPurchaseOrder(context.Context, *shop.ConfirmPurchaseOrderRequest) (*cm.UpdatedResponse, error)
+	CancelPurchaseOrder(context.Context, *shop.CancelPurchaseOrderRequest) (*cm.UpdatedResponse, error)
+}

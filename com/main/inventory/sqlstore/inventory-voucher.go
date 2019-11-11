@@ -62,6 +62,11 @@ func (s *InventoryVoucherStore) RefID(id int64) *InventoryVoucherStore {
 	return s
 }
 
+func (s *InventoryVoucherStore) RefIDs(ids ...int64) *InventoryVoucherStore {
+	s.preds = append(s.preds, sq.PrefixedIn(&s.ft.prefix, "ref_id", ids))
+	return s
+}
+
 func (s *InventoryVoucherStore) UpdateInventoryVoucher(inventory *model.InventoryVoucher) error {
 	query := s.query().Where(s.preds)
 	return query.ShouldUpdate(inventory)

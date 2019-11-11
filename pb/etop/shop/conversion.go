@@ -3,6 +3,7 @@ package shop
 import (
 	haravanidentity "etop.vn/api/external/haravan/identity"
 	"etop.vn/api/main/identity"
+	"etop.vn/api/main/purchaseorder"
 	"etop.vn/api/main/receipting"
 	pbcm "etop.vn/backend/pb/common"
 	"etop.vn/backend/pb/etop"
@@ -80,4 +81,24 @@ func Convert_api_BankAccount_To_core_BankAccount(in *etop.BankAccount) *identity
 		AccountNumber: in.AccountNumber,
 		AccountName:   in.AccountName,
 	}
+}
+
+func Convert_api_PurchaseOrderLine_To_core_PurchaseOrderLine(in *PurchaseOrderLine) *purchaseorder.PurchaseOrderLine {
+	if in == nil {
+		return nil
+	}
+	return &purchaseorder.PurchaseOrderLine{
+		VariantID: in.VariantId,
+		Quantity:  in.Quantity,
+		Price:     in.Price,
+	}
+}
+
+func Convert_api_PurchaseOrderLines_To_core_PurchaseOrderLines(in []*PurchaseOrderLine) []*purchaseorder.PurchaseOrderLine {
+	out := make([]*purchaseorder.PurchaseOrderLine, len(in))
+	for i := range in {
+		out[i] = Convert_api_PurchaseOrderLine_To_core_PurchaseOrderLine(in[i])
+	}
+
+	return out
 }

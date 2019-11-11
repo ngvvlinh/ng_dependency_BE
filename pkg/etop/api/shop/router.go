@@ -41,6 +41,7 @@ func NewShopServer(m httprpc.Muxer) {
 		service.NewSupplierServiceServer(WrapSupplierService(supplierService)),
 		service.NewCarrierServiceServer(WrapCarrierService(carrierService)),
 		service.NewLedgerServiceServer(WrapLedgerService(ledgerService)),
+		service.NewPurchaseOrderServiceServer(WrapPurchaseOrderService(purchaseOrderService)),
 	}
 	for _, s := range servers {
 		m.Handle(s.PathPrefix(), s)

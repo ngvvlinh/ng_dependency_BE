@@ -181,7 +181,6 @@ func (s *ReceiptService) GetReceipts(ctx context.Context, q *GetReceiptsEndpoint
 		return err
 	} else {
 		q.Result = &pbshop.ReceiptsResponse{
-
 			TotalAmountConfirmedReceipt: query.Result.TotalAmountConfirmedReceipt,
 			TotalAmountConfirmedPayment: query.Result.TotalAmountConfirmedPayment,
 			Receipts:                    receipts,

@@ -5,6 +5,8 @@ import (
 	"strconv"
 	"time"
 
+	"etop.vn/api/main/purchaseorder"
+
 	"github.com/asaskevich/govalidator"
 
 	haravanidentity "etop.vn/api/external/haravan/identity"
@@ -194,6 +196,8 @@ var (
 	inventoryQuery       inventory.QueryBus
 	ledgerAggr           ledgering.CommandBus
 	ledgerQuery          ledgering.QueryBus
+	purchaseOrderAggr    purchaseorder.CommandBus
+	purchaseOrderQuery   purchaseorder.QueryBus
 )
 
 func Init(
@@ -229,6 +233,8 @@ func Init(
 	inventoryQ inventory.QueryBus,
 	ledgerA ledgering.CommandBus,
 	ledgerQ ledgering.QueryBus,
+	purchaseOrderA purchaseorder.CommandBus,
+	purchaseOrderQ purchaseorder.QueryBus,
 
 	summary summary.QueryBus,
 ) {
@@ -265,6 +271,8 @@ func Init(
 	inventoryQuery = inventoryQ
 	ledgerAggr = ledgerA
 	ledgerQuery = ledgerQ
+	purchaseOrderAggr = purchaseOrderA
+	purchaseOrderQuery = purchaseOrderQ
 }
 
 type MiscService struct{}
@@ -293,6 +301,7 @@ type SupplierService struct{}
 type CarrierService struct{}
 type BrandService struct{}
 type LedgerService struct{}
+type PurchaseOrderService struct{}
 
 var miscService = &MiscService{}
 var inventoryService = &InventoryService{}
@@ -320,6 +329,7 @@ var supplierService = &SupplierService{}
 var carrierService = &CarrierService{}
 var brandService = &BrandService{}
 var ledgerService = &LedgerService{}
+var purchaseOrderService = &PurchaseOrderService{}
 
 func (s *MiscService) VersionInfo(ctx context.Context, q *VersionInfoEndpoint) error {
 	q.Result = &pbcm.VersionInfoResponse{

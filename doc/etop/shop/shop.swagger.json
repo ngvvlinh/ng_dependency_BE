@@ -3529,6 +3529,188 @@
         ]
       }
     },
+    "/api/shop.PurchaseOrder/CancelPurchaseOrder": {
+      "post": {
+        "operationId": "CancelPurchaseOrder",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/cmUpdatedResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/shopCancelPurchaseOrderRequest"
+            }
+          }
+        ],
+        "tags": [
+          "PurchaseOrder"
+        ]
+      }
+    },
+    "/api/shop.PurchaseOrder/ConfirmPurchaseOrder": {
+      "post": {
+        "operationId": "ConfirmPurchaseOrder",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/cmUpdatedResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/shopConfirmPurchaseOrderRequest"
+            }
+          }
+        ],
+        "tags": [
+          "PurchaseOrder"
+        ]
+      }
+    },
+    "/api/shop.PurchaseOrder/CreatePurchaseOrder": {
+      "post": {
+        "operationId": "CreatePurchaseOrder",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/shopPurchaseOrder"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/shopCreatePurchaseOrderRequest"
+            }
+          }
+        ],
+        "tags": [
+          "PurchaseOrder"
+        ]
+      }
+    },
+    "/api/shop.PurchaseOrder/DeletePurchaseOrder": {
+      "post": {
+        "operationId": "DeletePurchaseOrder",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/cmDeletedResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/cmIDRequest"
+            }
+          }
+        ],
+        "tags": [
+          "PurchaseOrder"
+        ]
+      }
+    },
+    "/api/shop.PurchaseOrder/GetPurchaseOrder": {
+      "post": {
+        "operationId": "GetPurchaseOrder",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/shopPurchaseOrder"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/cmIDRequest"
+            }
+          }
+        ],
+        "tags": [
+          "PurchaseOrder"
+        ]
+      }
+    },
+    "/api/shop.PurchaseOrder/GetPurchaseOrders": {
+      "post": {
+        "operationId": "GetPurchaseOrders",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/shopPurchaseOrdersResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/shopGetPurchaseOrdersRequest"
+            }
+          }
+        ],
+        "tags": [
+          "PurchaseOrder"
+        ]
+      }
+    },
+    "/api/shop.PurchaseOrder/UpdatePurchaseOrder": {
+      "post": {
+        "operationId": "UpdatePurchaseOrder",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/shopPurchaseOrder"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/shopUpdatePurchaseOrderRequest"
+            }
+          }
+        ],
+        "tags": [
+          "PurchaseOrder"
+        ]
+      }
+    },
     "/api/shop.Receipt/CancelReceipt": {
       "post": {
         "operationId": "CancelReceipt",
@@ -7480,6 +7662,18 @@
         }
       }
     },
+    "shopCancelPurchaseOrderRequest": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "reason": {
+          "type": "string"
+        }
+      }
+    },
     "shopCancelReceiptRequest": {
       "type": "object",
       "properties": {
@@ -7596,6 +7790,19 @@
       "properties": {
         "inventory": {
           "$ref": "#/definitions/shopInventoryVoucher"
+        }
+      }
+    },
+    "shopConfirmPurchaseOrderRequest": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "auto_confirm_inventory_voucher": {
+          "type": "boolean",
+          "format": "boolean"
         }
       }
     },
@@ -7871,6 +8078,36 @@
     "shopCreateProductSourceRequest": {
       "type": "object",
       "title": "deprecated"
+    },
+    "shopCreatePurchaseOrderRequest": {
+      "type": "object",
+      "properties": {
+        "supplier_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "basket_value": {
+          "type": "string",
+          "format": "int64"
+        },
+        "total_discount": {
+          "type": "string",
+          "format": "int64"
+        },
+        "total_amount": {
+          "type": "string",
+          "format": "int64"
+        },
+        "note": {
+          "type": "string"
+        },
+        "lines": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/shopPurchaseOrderLine"
+          }
+        }
+      }
     },
     "shopCreateReceiptRequest": {
       "type": "object",
@@ -8873,6 +9110,20 @@
         }
       }
     },
+    "shopGetPurchaseOrdersRequest": {
+      "type": "object",
+      "properties": {
+        "paging": {
+          "$ref": "#/definitions/cmPaging"
+        },
+        "filters": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/cmFilter"
+          }
+        }
+      }
+    },
     "shopGetReceiptsByLedgerTypeRequest": {
       "type": "object",
       "properties": {
@@ -9247,6 +9498,148 @@
           "items": {
             "$ref": "#/definitions/shopProductSource"
           }
+        }
+      }
+    },
+    "shopPurchaseOrder": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "shop_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "supplier_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "supplier": {
+          "$ref": "#/definitions/shopPurchaseOrderSupplier"
+        },
+        "basket_value": {
+          "type": "string",
+          "format": "int64"
+        },
+        "total_discount": {
+          "type": "string",
+          "format": "int64"
+        },
+        "total_amount": {
+          "type": "string",
+          "format": "int64"
+        },
+        "code": {
+          "type": "string"
+        },
+        "note": {
+          "type": "string"
+        },
+        "status": {
+          "$ref": "#/definitions/status3Status"
+        },
+        "purchase_order_lines": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/shopPurchaseOrderLine"
+          }
+        },
+        "created_by": {
+          "type": "string",
+          "format": "int64"
+        },
+        "cancelled_reason": {
+          "type": "string"
+        },
+        "confirmed_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "cancelled_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "deleted_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "inventory_voucher": {
+          "$ref": "#/definitions/shopInventoryVoucher"
+        },
+        "variant_ids": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "format": "int64"
+          }
+        }
+      }
+    },
+    "shopPurchaseOrderLine": {
+      "type": "object",
+      "properties": {
+        "variant_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "quantity": {
+          "type": "string",
+          "format": "int64"
+        },
+        "price": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "shopPurchaseOrderSupplier": {
+      "type": "object",
+      "properties": {
+        "full_name": {
+          "type": "string"
+        },
+        "phone": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "company_name": {
+          "type": "string"
+        },
+        "tax_number": {
+          "type": "string"
+        },
+        "headquarter_address": {
+          "type": "string"
+        },
+        "deleted": {
+          "type": "boolean",
+          "format": "boolean"
+        }
+      }
+    },
+    "shopPurchaseOrdersResponse": {
+      "type": "object",
+      "properties": {
+        "purchaseOrders": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/shopPurchaseOrder"
+          }
+        },
+        "paging": {
+          "$ref": "#/definitions/cmPageInfo"
         }
       }
     },
@@ -10518,6 +10911,40 @@
         "ids"
       ]
     },
+    "shopUpdatePurchaseOrderRequest": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "supplier_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "basket_value": {
+          "type": "string",
+          "format": "int64"
+        },
+        "total_discount": {
+          "type": "string",
+          "format": "int64"
+        },
+        "total_amount": {
+          "type": "string",
+          "format": "int64"
+        },
+        "note": {
+          "type": "string"
+        },
+        "lines": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/shopPurchaseOrderLine"
+          }
+        }
+      }
+    },
     "shopUpdateReceiptRequest": {
       "type": "object",
       "properties": {
@@ -10929,6 +11356,9 @@
     },
     {
       "name": "ProductSource"
+    },
+    {
+      "name": "PurchaseOrder"
     },
     {
       "name": "Receipt"

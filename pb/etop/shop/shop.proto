@@ -311,6 +311,94 @@ service LedgerService {
     rpc DeleteLedger(cm.IDRequest) returns (cm.DeletedResponse);
 }
 
+service PurchaseOrderService {
+    rpc GetPurchaseOrder(cm.IDRequest) returns (PurchaseOrder);
+    rpc GetPurchaseOrders(GetPurchaseOrdersRequest) returns (PurchaseOrdersResponse);
+    rpc CreatePurchaseOrder(CreatePurchaseOrderRequest) returns (PurchaseOrder);
+    rpc UpdatePurchaseOrder(UpdatePurchaseOrderRequest) returns (PurchaseOrder);
+    rpc DeletePurchaseOrder(cm.IDRequest) returns (cm.DeletedResponse);
+    rpc ConfirmPurchaseOrder(ConfirmPurchaseOrderRequest) returns (cm.UpdatedResponse);
+    rpc CancelPurchaseOrder(CancelPurchaseOrderRequest) returns (cm.UpdatedResponse);
+}
+
+message PurchaseOrder {
+    optional int64 id = 1 [(gogoproto.nullable)=false];
+    optional int64 shop_id = 2 [(gogoproto.nullable)=false];
+    optional int64 supplier_id = 3 [(gogoproto.nullable)=false];
+    optional PurchaseOrderSupplier supplier = 4;
+    optional int64 basket_value = 5 [(gogoproto.nullable)=false];
+    optional int64 total_discount = 6 [(gogoproto.nullable)=false];
+    optional int64 total_amount = 7 [(gogoproto.nullable)=false];
+    optional string code = 8 [(gogoproto.nullable)=false];
+    optional string note = 9 [(gogoproto.nullable)=false];
+    optional status3.Status status = 10 [(gogoproto.nullable)=false];
+    repeated PurchaseOrderLine purchase_order_lines = 11;
+    optional int64 created_by = 12 [(gogoproto.nullable)=false];
+    optional string cancelled_reason = 13 [(gogoproto.nullable)=false];
+    optional google.protobuf.Timestamp confirmed_at = 14;
+    optional google.protobuf.Timestamp cancelled_at = 15;
+    optional google.protobuf.Timestamp created_at = 16;
+    optional google.protobuf.Timestamp updated_at = 17;
+    optional google.protobuf.Timestamp deleted_at = 18;
+    optional InventoryVoucher inventory_voucher = 19;
+    repeated int64 variant_ids = 20 [(gogoproto.nullable)=false];
+}
+
+message PurchaseOrderSupplier {
+    optional string full_name = 1 [(gogoproto.nullable) = false];
+    optional string phone = 2 [(gogoproto.nullable) = false];
+    optional string email = 3 [(gogoproto.nullable) = false];
+    optional string company_name = 4 [(gogoproto.nullable) = false];
+    optional string tax_number = 5 [(gogoproto.nullable) = false];
+    optional string headquarter_address = 6 [(gogoproto.nullable) = false];
+    optional bool deleted = 7 [(gogoproto.nullable) = false];
+}
+
+message GetPurchaseOrdersRequest {
+    optional cm.Paging paging = 1;
+    repeated cm.Filter filters = 2;
+}
+
+message PurchaseOrdersResponse {
+    repeated PurchaseOrder purchaseOrders = 1;
+    optional cm.PageInfo paging = 2;
+}
+
+message CreatePurchaseOrderRequest {
+    optional int64 supplier_id = 1 [(gogoproto.nullable)=false];
+    optional int64 basket_value = 2 [(gogoproto.nullable)=false];
+    optional int64 total_discount = 3 [(gogoproto.nullable)=false];
+    optional int64 total_amount = 4 [(gogoproto.nullable)=false];
+    optional string note = 5 [(gogoproto.nullable)=false];
+    repeated PurchaseOrderLine lines = 6;
+}
+
+message UpdatePurchaseOrderRequest {
+    optional int64 id = 1 [(gogoproto.nullable)=false];
+    optional int64 supplier_id = 2;
+    optional int64 basket_value = 3;
+    optional int64 total_discount = 4;
+    optional int64 total_amount = 5;
+    optional string note = 6;
+    repeated PurchaseOrderLine lines = 7;
+}
+
+message PurchaseOrderLine {
+    optional int64 variant_id = 1 [(gogoproto.nullable)=false];
+    optional int64 quantity = 2 [(gogoproto.nullable)=false];
+    optional int64 price = 3 [(gogoproto.nullable)=false];
+}
+
+message CancelPurchaseOrderRequest {
+    optional int64 id = 1 [(gogoproto.nullable)=false];
+    optional string reason = 2 [(gogoproto.nullable)=false];
+}
+
+message ConfirmPurchaseOrderRequest {
+    optional int64 id = 1 [(gogoproto.nullable)=false];
+    optional bool auto_confirm_inventory_voucher = 2 [(gogoproto.nullable)=false];
+}
+
 message GetLedgersRequest {
     optional cm.Paging paging = 1;
     repeated cm.Filter filters = 2;

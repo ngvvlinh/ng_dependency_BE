@@ -152,7 +152,7 @@ func (a *LedgerAggregate) DeleteLedger(
 		return 0, err
 	}
 	if len(query.Result.Receipts) != 0 {
-		return 0, cm.Errorf(cm.FailedPrecondition, nil, "Tài khoản thanh toán đã được được sử dụng, không thể xóa")
+		return 0, cm.Errorf(cm.FailedPrecondition, nil, "Tài khoản thanh toán đã được sử dụng, không thể xóa")
 	}
 
 	deleted, err = a.store(ctx).ID(ID).ShopID(shopID).SoftDelete()

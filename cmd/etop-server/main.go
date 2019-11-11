@@ -32,6 +32,8 @@ import (
 	serviceordering "etop.vn/backend/com/main/ordering"
 	serviceorderingpm "etop.vn/backend/com/main/ordering/pm"
 	ordersqlstore "etop.vn/backend/com/main/ordering/sqlstore"
+	purchaseorderaggregate "etop.vn/backend/com/main/purchaseorder/aggregate"
+	purchaseorderquery "etop.vn/backend/com/main/purchaseorder/query"
 	receiptaggregate "etop.vn/backend/com/main/receipting/aggregate"
 	receiptpm "etop.vn/backend/com/main/receipting/pm"
 	receiptquery "etop.vn/backend/com/main/receipting/query"
@@ -377,6 +379,9 @@ func main() {
 	orderPM := serviceorderingpm.New(orderAggr.MessageBus(), orderQuery, affiliateCmd, receiptQuery)
 	orderPM.RegisterEventHandlers(eventBus)
 
+	purchaseOrderAggr := purchaseorderaggregate.NewPurchaseOrderAggregate(db, eventBus, catalogQuery, supplierQuery, inventoryQuery).MessageBus()
+	purchaseOrderQuery := purchaseorderquery.NewPurchaseOrderQuery(db, eventBus, supplierQuery, inventoryQuery).MessageBus()
+
 	middleware.Init(cfg.SAdminToken, identityQuery)
 	api.Init(identityAggr, identityQuery, shutdowner, redisStore, authStore, cfg.Email, cfg.SMS)
 	shop.Init(
@@ -412,6 +417,8 @@ func main() {
 		inventoryQuery,
 		ledgerAggr,
 		ledgerQuery,
+		purchaseOrderAggr,
+		purchaseOrderQuery,
 		summaryQuery,
 	)
 	partner.Init(shutdowner, redisStore, authStore, cfg.URL.Auth)

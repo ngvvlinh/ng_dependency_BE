@@ -5,6 +5,8 @@ import (
 	"net/url"
 	"strconv"
 
+	"etop.vn/api/main/purchaseorder"
+
 	"github.com/golang/protobuf/jsonpb"
 
 	"etop.vn/api/main/identity"
@@ -271,6 +273,9 @@ func PbCustomers(ms []*customering.ShopCustomer) []*Customer {
 }
 
 func PbSupplier(m *suppliering.ShopSupplier) *Supplier {
+	if m == nil {
+		return nil
+	}
 	return &Supplier{
 		Id:       m.ID,
 		ShopId:   m.ShopID,
@@ -472,5 +477,73 @@ func PbBankAccount(m *identity.BankAccount) *pbetop.BankAccount {
 		Branch:        m.Branch,
 		AccountNumber: m.AccountNumber,
 		AccountName:   m.AccountName,
+	}
+}
+
+func PbPurchaseOrderLine(m *purchaseorder.PurchaseOrderLine) *PurchaseOrderLine {
+	if m == nil {
+		return nil
+	}
+	return &PurchaseOrderLine{
+		VariantId: m.VariantID,
+		Quantity:  m.Quantity,
+		Price:     m.Price,
+	}
+}
+
+func PbPurchaseOrderLines(ms []*purchaseorder.PurchaseOrderLine) []*PurchaseOrderLine {
+	res := make([]*PurchaseOrderLine, len(ms))
+	for i, m := range ms {
+		res[i] = PbPurchaseOrderLine(m)
+	}
+	return res
+}
+
+func PbPurchaseOrder(m *purchaseorder.PurchaseOrder) *PurchaseOrder {
+	if m == nil {
+		return nil
+	}
+	return &PurchaseOrder{
+		Id:                 m.ID,
+		ShopId:             m.ShopID,
+		SupplierId:         m.SupplierID,
+		Supplier:           PbPurchaseOrderSupplier(m.Supplier),
+		BasketValue:        m.BasketValue,
+		TotalDiscount:      m.TotalDiscount,
+		TotalAmount:        m.TotalAmount,
+		Code:               m.Code,
+		Note:               m.Note,
+		Status:             pbs3.Pb(model.Status3(m.Status)),
+		PurchaseOrderLines: PbPurchaseOrderLines(m.Lines),
+		VariantIds:         m.VariantIDs,
+		CreatedBy:          m.CreatedBy,
+		CancelledReason:    m.CancelledReason,
+		ConfirmedAt:        pbcm.PbTime(m.ConfirmedAt),
+		CancelledAt:        pbcm.PbTime(m.CancelledAt),
+		CreatedAt:          pbcm.PbTime(m.CreatedAt),
+		UpdatedAt:          pbcm.PbTime(m.UpdatedAt),
+	}
+}
+
+func PbPurchaseOrders(ms []*purchaseorder.PurchaseOrder) []*PurchaseOrder {
+	res := make([]*PurchaseOrder, len(ms))
+	for i, m := range ms {
+		res[i] = PbPurchaseOrder(m)
+	}
+	return res
+}
+
+func PbPurchaseOrderSupplier(m *purchaseorder.PurchaseOrderSupplier) *PurchaseOrderSupplier {
+	if m == nil {
+		return nil
+	}
+	return &PurchaseOrderSupplier{
+		FullName:           m.FullName,
+		Phone:              m.Phone,
+		Email:              m.Email,
+		CompanyName:        m.CompanyName,
+		TaxNumber:          m.TaxNumber,
+		HeadquarterAddress: m.HeadquarterAddress,
+		Deleted:            m.Deleted,
 	}
 }

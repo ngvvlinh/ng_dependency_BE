@@ -3,6 +3,8 @@ package pm
 import (
 	"context"
 
+	"etop.vn/api/main/purchaseorder"
+
 	"etop.vn/api/main/catalog"
 	"etop.vn/api/main/inventory"
 	"etop.vn/api/main/ordering"
@@ -33,6 +35,7 @@ func New(
 
 func (m *ProcessManager) RegisterEventHandlers(eventBus bus.EventRegistry) {
 	eventBus.AddEventListener(m.ValidateVariant)
+	eventBus.AddEventListener(m.PurchaseOrderConfirmed)
 }
 
 func (m *ProcessManager) ValidateVariant(ctx context.Context, event *inventory.InventoryVoucherCreatedEvent) error {
@@ -65,5 +68,37 @@ func (m *ProcessManager) ListenOrderCreatedEvent(ctx context.Context, event *ord
 			return err
 		}
 	}
+	return nil
+}
+
+func (m *ProcessManager) PurchaseOrderConfirmed(ctx context.Context, event *purchaseorder.PurchaseOrderConfirmedEvent) error {
+	createInventoryVoucherCmd := &inventory.CreateInventoryVoucherCommand{
+		Overstock:   false,
+		ShopID:      event.ShopID,
+		CreatedBy:   event.UserID,
+		Title:       "Nhập kho khi kiểm hàng",
+		RefID:       event.PurchaseOrderID,
+		RefType:     inventory.RefTypePurchaseOrder,
+		RefName:     inventory.RefNamePurchaseOrder,
+		TraderID:    event.TraderID,
+		TotalAmount: int32(event.TotalAmount),
+		Type:        inventory.InventoryVoucherTypeIn,
+		Lines:       event.Lines,
+	}
+	if err := m.inventoryAggregate.Dispatch(ctx, createInventoryVoucherCmd); err != nil {
+		return err
+	}
+
+	if event.AutoConfirmInventoryVoucher {
+		confirmInventoryVoucherCmd := &inventory.ConfirmInventoryVoucherCommand{
+			ShopID:    event.ShopID,
+			ID:        createInventoryVoucherCmd.Result.ID,
+			UpdatedBy: event.UserID,
+		}
+		if err := m.inventoryAggregate.Dispatch(ctx, confirmInventoryVoucherCmd); err != nil {
+			return err
+		}
+	}
+
 	return nil
 }

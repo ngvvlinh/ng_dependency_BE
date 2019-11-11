@@ -107,3 +107,13 @@ func (q *InventoryQueryService) GetInventory(ctx context.Context, ShopID int64, 
 	}
 	return result, nil
 }
+
+func (q *InventoryQueryService) GetInventoryVouchersByRefIDs(
+	ctx context.Context, RefIDs []int64, ShopID int64,
+) (*inventory.GetInventoryVouchersResponse, error) {
+	inventoryVouchers, err := q.InventoryVoucherStore(ctx).RefIDs(RefIDs...).ShopID(ShopID).ListInventoryVoucher()
+	if err != nil {
+		return nil, err
+	}
+	return &inventory.GetInventoryVouchersResponse{InventoryVoucher: inventoryVouchers}, nil
+}

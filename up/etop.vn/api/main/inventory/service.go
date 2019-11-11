@@ -38,6 +38,8 @@ type QueryService interface {
 	GetInventoriesByVariantIDs(context.Context, *GetInventoriesByVariantIDsArgs) (*GetInventoriesResponse, error)
 
 	GetInventoryVouchersByIDs(context.Context, *GetInventoryVouchersByIDArgs) (*GetInventoryVouchersResponse, error)
+
+	GetInventoryVouchersByRefIDs(_ context.Context, RefIDs []int64, ShopID int64) (*GetInventoryVouchersResponse, error)
 }
 
 // +convert:update=InventoryVoucher

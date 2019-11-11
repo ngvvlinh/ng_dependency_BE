@@ -207,20 +207,33 @@ func (h QueryServiceHandler) HandleGetInventoryVouchersByIDs(ctx context.Context
 	return err
 }
 
+type GetInventoryVouchersByRefIDsQuery struct {
+	RefIDs []int64
+	ShopID int64
+
+	Result *GetInventoryVouchersResponse `json:"-"`
+}
+
+func (h QueryServiceHandler) HandleGetInventoryVouchersByRefIDs(ctx context.Context, msg *GetInventoryVouchersByRefIDsQuery) (err error) {
+	msg.Result, err = h.inner.GetInventoryVouchersByRefIDs(msg.GetArgs(ctx))
+	return err
+}
+
 // implement interfaces
 
-func (q *AdjustInventoryQuantityCommand) command() {}
-func (q *CancelInventoryVoucherCommand) command()  {}
-func (q *ConfirmInventoryVoucherCommand) command() {}
-func (q *CreateInventoryVariantCommand) command()  {}
-func (q *CreateInventoryVoucherCommand) command()  {}
-func (q *UpdateInventoryVoucherCommand) command()  {}
-func (q *GetInventoriesQuery) query()              {}
-func (q *GetInventoriesByVariantIDsQuery) query()  {}
-func (q *GetInventoryQuery) query()                {}
-func (q *GetInventoryVoucherQuery) query()         {}
-func (q *GetInventoryVouchersQuery) query()        {}
-func (q *GetInventoryVouchersByIDsQuery) query()   {}
+func (q *AdjustInventoryQuantityCommand) command()  {}
+func (q *CancelInventoryVoucherCommand) command()   {}
+func (q *ConfirmInventoryVoucherCommand) command()  {}
+func (q *CreateInventoryVariantCommand) command()   {}
+func (q *CreateInventoryVoucherCommand) command()   {}
+func (q *UpdateInventoryVoucherCommand) command()   {}
+func (q *GetInventoriesQuery) query()               {}
+func (q *GetInventoriesByVariantIDsQuery) query()   {}
+func (q *GetInventoryQuery) query()                 {}
+func (q *GetInventoryVoucherQuery) query()          {}
+func (q *GetInventoryVouchersQuery) query()         {}
+func (q *GetInventoryVouchersByIDsQuery) query()    {}
+func (q *GetInventoryVouchersByRefIDsQuery) query() {}
 
 // implement conversion
 
@@ -407,6 +420,12 @@ func (q *GetInventoryVouchersByIDsQuery) SetGetInventoryVouchersByIDArgs(args *G
 	q.IDs = args.IDs
 }
 
+func (q *GetInventoryVouchersByRefIDsQuery) GetArgs(ctx context.Context) (_ context.Context, RefIDs []int64, ShopID int64) {
+	return ctx,
+		q.RefIDs,
+		q.ShopID
+}
+
 // implement dispatching
 
 type AggregateHandler struct {
@@ -446,5 +465,6 @@ func (h QueryServiceHandler) RegisterHandlers(b interface {
 	b.AddHandler(h.HandleGetInventoryVoucher)
 	b.AddHandler(h.HandleGetInventoryVouchers)
 	b.AddHandler(h.HandleGetInventoryVouchersByIDs)
+	b.AddHandler(h.HandleGetInventoryVouchersByRefIDs)
 	return QueryBus{b}
 }

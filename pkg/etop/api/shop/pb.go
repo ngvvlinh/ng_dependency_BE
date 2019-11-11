@@ -51,6 +51,10 @@ func PbBrands(args []*catalog.ShopBrand) []*pbshop.Brand {
 }
 
 func PbShopInventoryVoucher(args *inventory.InventoryVoucher) *pbshop.InventoryVoucher {
+	if args == nil {
+		return nil
+	}
+
 	var inventoryVoucherItem []*pbshop.InventoryVoucherLine
 	for _, value := range args.Lines {
 		inventoryVoucherItem = append(inventoryVoucherItem, &pbshop.InventoryVoucherLine{

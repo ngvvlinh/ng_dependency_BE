@@ -1652,6 +1652,87 @@ func (s *ProductSourceServiceServer) parseRoute(path string) (reqMsg proto.Messa
 	}
 }
 
+type PurchaseOrderServiceServer struct {
+	PurchaseOrderAPI
+}
+
+func NewPurchaseOrderServiceServer(svc PurchaseOrderAPI) Server {
+	return &PurchaseOrderServiceServer{
+		PurchaseOrderAPI: svc,
+	}
+}
+
+const PurchaseOrderServicePathPrefix = "/shop.PurchaseOrder/"
+
+func (s *PurchaseOrderServiceServer) PathPrefix() string {
+	return PurchaseOrderServicePathPrefix
+}
+
+func (s *PurchaseOrderServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
+	ctx := req.Context()
+	serve, err := httprpc.ParseRequestHeader(req)
+	if err != nil {
+		httprpc.WriteError(ctx, resp, err)
+		return
+	}
+	reqMsg, exec, err := s.parseRoute(req.URL.Path)
+	if err != nil {
+		httprpc.WriteError(ctx, resp, err)
+		return
+	}
+	serve(ctx, resp, req, reqMsg, exec)
+}
+
+func (s *PurchaseOrderServiceServer) parseRoute(path string) (reqMsg proto.Message, _ httprpc.ExecFunc, _ error) {
+	switch path {
+	case "/shop.PurchaseOrder/CancelPurchaseOrder":
+		msg := new(shop.CancelPurchaseOrderRequest)
+		fn := func(ctx context.Context) (proto.Message, error) {
+			return s.PurchaseOrderAPI.CancelPurchaseOrder(ctx, msg)
+		}
+		return msg, fn, nil
+	case "/shop.PurchaseOrder/ConfirmPurchaseOrder":
+		msg := new(shop.ConfirmPurchaseOrderRequest)
+		fn := func(ctx context.Context) (proto.Message, error) {
+			return s.PurchaseOrderAPI.ConfirmPurchaseOrder(ctx, msg)
+		}
+		return msg, fn, nil
+	case "/shop.PurchaseOrder/CreatePurchaseOrder":
+		msg := new(shop.CreatePurchaseOrderRequest)
+		fn := func(ctx context.Context) (proto.Message, error) {
+			return s.PurchaseOrderAPI.CreatePurchaseOrder(ctx, msg)
+		}
+		return msg, fn, nil
+	case "/shop.PurchaseOrder/DeletePurchaseOrder":
+		msg := new(common.IDRequest)
+		fn := func(ctx context.Context) (proto.Message, error) {
+			return s.PurchaseOrderAPI.DeletePurchaseOrder(ctx, msg)
+		}
+		return msg, fn, nil
+	case "/shop.PurchaseOrder/GetPurchaseOrder":
+		msg := new(common.IDRequest)
+		fn := func(ctx context.Context) (proto.Message, error) {
+			return s.PurchaseOrderAPI.GetPurchaseOrder(ctx, msg)
+		}
+		return msg, fn, nil
+	case "/shop.PurchaseOrder/GetPurchaseOrders":
+		msg := new(shop.GetPurchaseOrdersRequest)
+		fn := func(ctx context.Context) (proto.Message, error) {
+			return s.PurchaseOrderAPI.GetPurchaseOrders(ctx, msg)
+		}
+		return msg, fn, nil
+	case "/shop.PurchaseOrder/UpdatePurchaseOrder":
+		msg := new(shop.UpdatePurchaseOrderRequest)
+		fn := func(ctx context.Context) (proto.Message, error) {
+			return s.PurchaseOrderAPI.UpdatePurchaseOrder(ctx, msg)
+		}
+		return msg, fn, nil
+	default:
+		msg := fmt.Sprintf("no handler for path %q", path)
+		return nil, nil, httprpc.BadRouteError(msg, "POST", path)
+	}
+}
+
 type ReceiptServiceServer struct {
 	ReceiptAPI
 }
