@@ -202,8 +202,21 @@ func CreateOrder(
 		if _err := updateOrCreateCustomerAddress(ctx, claim.Shop.ID, r.CustomerId, shippingAddress); _err != nil {
 			ll.Error("Auto cập nhật Customer Address lỗi", l.Error(_err))
 		}
+		r.Customer = getCustomerByID(ctx, claim.Shop.ID, r.CustomerId)
 	}
-
+	if r.CustomerId == 0 && r.ShippingAddress == nil {
+		q := &customering.GetCustomerIndependentByShopQuery{
+			ShopID: claim.Shop.ID,
+		}
+		err := customerQuery.Dispatch(ctx, q)
+		if err == nil {
+			r.CustomerId = q.Result.ID
+			r.Customer = &pborder.OrderCustomer{
+				FullName: q.Result.FullName,
+				Type:     string(customering.CustomerTypeIndependent),
+			}
+		}
+	}
 	shop := claim.Shop
 	lines, err := PrepareOrderLines(ctx, shop.ID, r.Lines)
 	if err != nil {
@@ -277,6 +290,35 @@ func CreateOrder(
 	result := pborder.PbOrder(order, nil, model.TagShop)
 	result.ShopName = claim.Shop.Name
 	return result, nil
+}
+
+func getCustomerByID(ctx context.Context, shopID, customerID int64) *pborder.OrderCustomer {
+	getCustomer := &customering.GetCustomerByIDQuery{
+		ID:     customerID,
+		ShopID: shopID,
+	}
+	err := customerQuery.Dispatch(ctx, getCustomer)
+	if err != nil {
+		return nil
+	}
+	customer := &pborder.OrderCustomer{
+		FullName: getCustomer.Result.FullName,
+		Email:    getCustomer.Result.Email,
+		Phone:    getCustomer.Result.Phone,
+		Type:     string(getCustomer.Result.Type),
+	}
+	switch getCustomer.Result.Gender {
+	case "male":
+		customer.Gender = gender.Gender_male
+	case "female":
+		customer.Gender = gender.Gender_female
+	case "other":
+		customer.Gender = gender.Gender_other
+	default:
+		customer.Gender = gender.Gender_unknown
+	}
+
+	return customer
 }
 
 func updateOrCreateCustomerAddress(ctx context.Context, shopID, customerID int64, orderAddress *pborder.OrderAddress) error {
@@ -574,7 +616,7 @@ func UpdateOrder(ctx context.Context, claim *claims.ShopClaim, authPartner *mode
 			Email:    query.Result.Email,
 			Phone:    query.Result.Phone,
 			Gender:   gender.PbGender(query.Result.Gender),
-			Type:     query.Result.Type,
+			Type:     string(query.Result.Type),
 		}
 
 		isHaveAddress := true

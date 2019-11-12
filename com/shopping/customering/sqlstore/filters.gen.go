@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"etop.vn/api/main/etop"
+	"etop.vn/api/shopping/customering"
 	"etop.vn/backend/pkg/common/sq"
 )
 
@@ -208,7 +209,7 @@ func (ft *ShopCustomerFilters) ByGenderPtr(Gender *string) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft *ShopCustomerFilters) ByType(Type string) *sq.ColumnFilter {
+func (ft *ShopCustomerFilters) ByType(Type customering.CustomerType) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "type",
@@ -217,7 +218,7 @@ func (ft *ShopCustomerFilters) ByType(Type string) *sq.ColumnFilter {
 	}
 }
 
-func (ft *ShopCustomerFilters) ByTypePtr(Type *string) *sq.ColumnFilterPtr {
+func (ft *ShopCustomerFilters) ByTypePtr(Type *customering.CustomerType) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "type",

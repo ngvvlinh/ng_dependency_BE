@@ -70,6 +70,11 @@ func (s *CustomerStore) ShopID(id int64) *CustomerStore {
 	return s
 }
 
+func (s *CustomerStore) Type(typ customering.CustomerType) *CustomerStore {
+	s.preds = append(s.preds, s.ft.ByType(typ))
+	return s
+}
+
 func (s *CustomerStore) Code(code string) *CustomerStore {
 	s.preds = append(s.preds, s.ft.ByCode(code))
 	return s

@@ -106,6 +106,15 @@ func (q *CustomerQuery) GetCustomerGroup(ctx context.Context, args *customering.
 	}
 	return customerGroup, err
 }
+func (q *CustomerQuery) GetCustomerIndependentByShop(
+	ctx context.Context, args *customering.GetCustomerIndependentByShop,
+) (*customering.ShopCustomer, error) {
+	customer, err := q.store(ctx).ShopID(args.ShopID).Type(customering.CustomerTypeIndependent).GetCustomer()
+	if err != nil {
+		return nil, err
+	}
+	return customer, err
+}
 
 func (q *CustomerQuery) ListCustomerGroups(
 	ctx context.Context, args *customering.ListCustomerGroupArgs,

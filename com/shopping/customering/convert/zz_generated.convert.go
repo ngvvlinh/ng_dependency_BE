@@ -403,7 +403,7 @@ func apply_customering_UpdateCustomerArgs_customering_ShopCustomer(arg *customer
 	out.CodeNorm = out.CodeNorm                     // no change
 	out.FullName = arg.FullName.Apply(out.FullName) // apply change
 	out.Gender = arg.Gender.Apply(out.Gender)       // apply change
-	out.Type = arg.Type.Apply(out.Type)             // apply change
+	out.Type = arg.Type                             // simple assign
 	out.Birthday = arg.Birthday.Apply(out.Birthday) // apply change
 	out.Note = arg.Note.Apply(out.Note)             // apply change
 	out.Phone = arg.Phone.Apply(out.Phone)          // apply change

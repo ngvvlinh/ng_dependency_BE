@@ -1259,7 +1259,7 @@ message UpdateCustomerRequest {
 
     optional string birthday = 13;
 
-    // enum ('individual', 'organization')
+    // enum ('individual', 'organization','independent')
     optional string type = 14;
 
     optional string note = 2;

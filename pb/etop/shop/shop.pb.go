@@ -6993,7 +6993,7 @@ type UpdateCustomerRequest struct {
 	FullName *string `protobuf:"bytes,1,opt,name=full_name,json=fullName" json:"full_name,omitempty"`
 	Gender   *string `protobuf:"bytes,12,opt,name=gender" json:"gender,omitempty"`
 	Birthday *string `protobuf:"bytes,13,opt,name=birthday" json:"birthday,omitempty"`
-	// enum ('individual', 'organization')
+	// enum ('individual', 'organization','independent')
 	Type                 *string  `protobuf:"bytes,14,opt,name=type" json:"type,omitempty"`
 	Note                 *string  `protobuf:"bytes,2,opt,name=note" json:"note,omitempty"`
 	Phone                *string  `protobuf:"bytes,3,opt,name=phone" json:"phone,omitempty"`

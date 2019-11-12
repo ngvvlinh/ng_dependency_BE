@@ -74,21 +74,17 @@ func (a *SupplierAggregate) CreateSupplier(
 func (a *SupplierAggregate) UpdateSupplier(
 	ctx context.Context, args *suppliering.UpdateSupplierArgs,
 ) (*suppliering.ShopSupplier, error) {
-	supplier, err := a.store(ctx).ID(args.ID).ShopID(args.ShopID).GetSupplier()
-	if err != nil {
-		return nil, err
-	}
 	if args.Phone.Valid {
 		if args.Phone.String == "" {
-			return nil, cm.Error(cm.InvalidArgument, "Số điện thoại không thể rỗng", err)
+			return nil, cm.Error(cm.InvalidArgument, "Số điện thoại không thể rỗng", nil)
 		} else {
 			phone, isPhone := validate.NormalizePhone(args.Phone.String)
 			if isPhone != true {
 				return nil, cm.Error(cm.InvalidArgument, "Vui lòng nhập đúng định dạng số điện thoại", nil)
 			}
 			args.Phone.String = phone.String()
-			supplier, err = a.store(ctx).Phone(args.Phone.String).ShopID(args.ShopID).GetSupplier()
-			if err == nil && args.ID != supplier.ID {
+			supPhone, err := a.store(ctx).Phone(args.Phone.String).ShopID(args.ShopID).GetSupplier()
+			if err == nil && args.ID != supPhone.ID {
 				return nil, cm.Error(cm.InvalidArgument, "số điện thoại đã tồn tại", nil)
 			}
 		}
@@ -99,11 +95,16 @@ func (a *SupplierAggregate) UpdateSupplier(
 			return nil, cm.Error(cm.InvalidArgument, "Vui lòng nhập đúng định dạng email", nil)
 		}
 		args.Email.String = email.String()
-		supplier, err = a.store(ctx).Email(args.Email.String).ShopID(args.ShopID).GetSupplier()
-		if err == nil && args.ID != supplier.ID {
+		supEmail, err := a.store(ctx).Email(args.Email.String).ShopID(args.ShopID).GetSupplier()
+		if err == nil && args.ID != supEmail.ID {
 			return nil, cm.Error(cm.InvalidArgument, "Email đã tồn tại", nil)
 		}
 	}
+	supplier, err := a.store(ctx).ID(args.ID).ShopID(args.ShopID).GetSupplier()
+	if err != nil {
+		return nil, err
+	}
+
 	if err = scheme.Convert(args, supplier); err != nil {
 		return nil, err
 	}

@@ -4,6 +4,14 @@ import (
 	"time"
 )
 
+type CustomerType string
+
+const (
+	CustomerTypeIndividual   CustomerType = "individual"
+	CustomerTypeOrganization CustomerType = "organization"
+	CustomerTypeIndependent  CustomerType = "independent"
+)
+
 type ShopCustomer struct {
 	ID        int64
 	ShopID    int64
@@ -12,7 +20,7 @@ type ShopCustomer struct {
 	CodeNorm  int32
 	FullName  string
 	Gender    string
-	Type      string
+	Type      CustomerType
 	Birthday  string
 	Note      string
 	Phone     string

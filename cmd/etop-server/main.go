@@ -46,6 +46,7 @@ import (
 	carrieraggregate "etop.vn/backend/com/shopping/carrying/aggregate"
 	carrierquery "etop.vn/backend/com/shopping/carrying/query"
 	customeraggregate "etop.vn/backend/com/shopping/customering/aggregate"
+	customerpm "etop.vn/backend/com/shopping/customering/pm"
 	customerquery "etop.vn/backend/com/shopping/customering/query"
 	supplieraggregate "etop.vn/backend/com/shopping/suppliering/aggregate"
 	supplierquery "etop.vn/backend/com/shopping/suppliering/query"
@@ -349,6 +350,8 @@ func main() {
 	supplierAggr := supplieraggregate.NewSupplierAggregate(db).MessageBus()
 	carrierAggr := carrieraggregate.NewCarrierAggregate(db).MessageBus()
 	traderAddressAggr := customeraggregate.NewAddressAggregate(db).MessageBus()
+	customerPM := customerpm.New(eventBus, customerAggr)
+	customerPM.RegisterEventHandlers(eventBus)
 	customerQuery := customerquery.NewCustomerQuery(db).MessageBus()
 	supplierQuery := supplierquery.NewSupplierQuery(db).MessageBus()
 	carrierQuery := carrierquery.NewCarrierQuery(db).MessageBus()

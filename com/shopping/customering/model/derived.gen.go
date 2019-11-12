@@ -412,7 +412,7 @@ func (m *ShopCustomer) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(m.Type)
+		w.WriteArg(string(m.Type))
 	}
 	if m.Birthday != "" {
 		flag = true

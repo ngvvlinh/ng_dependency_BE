@@ -241,7 +241,7 @@ func PbCustomer(m *customering.ShopCustomer) *Customer {
 		Phone:     m.Phone,
 		Email:     m.Email,
 		Gender:    m.Gender,
-		Type:      m.Type,
+		Type:      string(m.Type),
 		Birthday:  m.Birthday,
 		CreatedAt: pbcm.PbTime(m.CreatedAt),
 		UpdatedAt: pbcm.PbTime(m.UpdatedAt),

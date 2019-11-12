@@ -51,13 +51,34 @@ var reCode = regexp.MustCompile(codeRegex)
 func (a *CustomerAggregate) CreateCustomer(
 	ctx context.Context, args *customering.CreateCustomerArgs,
 ) (_ *customering.ShopCustomer, err error) {
+	if args.Type == customering.CustomerTypeIndependent {
+		cust, err := a.store(ctx).ShopID(args.ShopID).Type(args.Type).GetCustomer()
+		// khách lẻ là duy nhất, nếu có lỗi khác lỗi "NotFound" thì trả về lỗi
+		if err == nil {
+			return cust, nil
+		}
+		if cm.ErrorCode(err) != cm.NotFound {
+			return nil, err
+		}
+		ct := &model.ShopCustomer{
+			ID:       cm.NewID(),
+			FullName: "Khach Le",
+			ShopID:   args.ShopID,
+			Type:     customering.CustomerTypeIndependent,
+		}
+		err = a.store(ctx).CreateCustomer(ct)
+		customerResult, err := a.store(ctx).ShopID(ct.ShopID).ID(ct.ID).GetCustomer()
+		if err != nil {
+			return nil, err
+		}
+		return customerResult, err
+	}
 	if args.FullName == "" {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Vui lòng nhập tên đầy đủ")
 	}
 	if args.Phone == "" {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Vui lòng nhập số điện thoại")
 	}
-
 	phone, isPhone := validate.NormalizePhone(args.Phone)
 	if isPhone != true {
 		return nil, cm.Error(cm.InvalidArgument, "Vui lòng nhập đúng định dạng số điện thoại", nil)
@@ -83,7 +104,6 @@ func (a *CustomerAggregate) CreateCustomer(
 	default:
 		return nil, err
 	}
-
 	if maxCodeNorm >= convert.MaxCodeNorm {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Vui lòng nhập mã")
 	}
@@ -111,6 +131,13 @@ func (a *CustomerAggregate) UpdateCustomer(
 	customer, err := a.store(ctx).ID(args.ID).ShopID(args.ShopID).GetCustomer()
 	if err != nil {
 		return nil, err
+	}
+
+	if customer.Type == customering.CustomerTypeIndependent {
+		return nil, cm.Error(cm.InvalidArgument, "Không dược phép thay đổi khách lẻ", nil)
+	}
+	if args.Type == customering.CustomerTypeIndependent {
+		return nil, cm.Error(cm.InvalidArgument, "Không dược phép thay đổi thành khách lẻ", nil)
 	}
 	// Verify phone
 	if args.Phone.Valid {
@@ -160,7 +187,15 @@ func (a *CustomerAggregate) UpdateCustomer(
 func (a *CustomerAggregate) DeleteCustomer(
 	ctx context.Context, id int64, shopID int64,
 ) (deleted int, _ error) {
-	err := a.db.InTransaction(ctx, func(tx cmsql.QueryInterface) error {
+	customer, err := a.store(ctx).ShopID(shopID).ID(id).GetCustomerDB()
+	if err != nil {
+		return 0, err
+	}
+	if customer.Type == customering.CustomerTypeIndependent {
+		return 0, cm.Errorf(cm.FailedPrecondition, nil, "Không thể xoá khách lẻ")
+	}
+
+	err = a.db.InTransaction(ctx, func(tx cmsql.QueryInterface) error {
 		var errTr error
 		deleted, errTr = a.store(ctx).ID(id).ShopID(shopID).SoftDelete()
 		if errTr != nil {

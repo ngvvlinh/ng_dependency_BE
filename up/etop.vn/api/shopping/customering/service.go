@@ -38,6 +38,8 @@ type QueryService interface {
 
 	GetCustomerByEmail(ctx context.Context, email string, shopID int64) (*ShopCustomer, error)
 
+	GetCustomerIndependentByShop(ctx context.Context, _ *GetCustomerIndependentByShop) (*ShopCustomer, error)
+
 	ListCustomers(context.Context, *shopping.ListQueryShopArgs) (*CustomersResponse, error)
 
 	ListCustomersByIDs(context.Context, *shopping.IDsQueryShopArgs) (*CustomersResponse, error)
@@ -80,7 +82,7 @@ type CreateCustomerArgs struct {
 	ShopID   int64
 	FullName string
 	Gender   string
-	Type     string
+	Type     CustomerType
 	Birthday string
 	Note     string
 	Phone    string
@@ -93,7 +95,7 @@ type UpdateCustomerArgs struct {
 	ShopID   int64
 	FullName NullString
 	Gender   NullString
-	Type     NullString
+	Type     CustomerType
 	Birthday NullString
 	Note     NullString
 	Phone    NullString
@@ -119,4 +121,8 @@ type RemoveCustomerOutOfGroupArgs struct {
 type UpdateCustomerGroupArgs struct {
 	ID   int64
 	Name string
+}
+
+type GetCustomerIndependentByShop struct {
+	ShopID int64
 }

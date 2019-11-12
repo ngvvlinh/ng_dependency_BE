@@ -101,3 +101,8 @@ type AccountCreatedEvent struct {
 	ShopID int64
 	UserID int64
 }
+
+type GetCustomersByShop struct {
+	meta.EventMeta
+	ShopID int64
+}

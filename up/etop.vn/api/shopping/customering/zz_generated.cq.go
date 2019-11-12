@@ -68,7 +68,7 @@ type CreateCustomerCommand struct {
 	ShopID   int64
 	FullName string
 	Gender   string
-	Type     string
+	Type     CustomerType
 	Birthday string
 	Note     string
 	Phone    string
@@ -122,7 +122,7 @@ type UpdateCustomerCommand struct {
 	ShopID   int64
 	FullName dot.NullString
 	Gender   dot.NullString
-	Type     dot.NullString
+	Type     CustomerType
 	Birthday dot.NullString
 	Note     dot.NullString
 	Phone    dot.NullString
@@ -207,6 +207,17 @@ func (h QueryServiceHandler) HandleGetCustomerGroup(ctx context.Context, msg *Ge
 	return err
 }
 
+type GetCustomerIndependentByShopQuery struct {
+	ShopID int64
+
+	Result *ShopCustomer `json:"-"`
+}
+
+func (h QueryServiceHandler) HandleGetCustomerIndependentByShop(ctx context.Context, msg *GetCustomerIndependentByShopQuery) (err error) {
+	msg.Result, err = h.inner.GetCustomerIndependentByShop(msg.GetArgs(ctx))
+	return err
+}
+
 type ListCustomerGroupsQuery struct {
 	Paging  meta.Paging
 	Filters meta.Filters
@@ -259,6 +270,7 @@ func (q *GetCustomerByEmailQuery) query()           {}
 func (q *GetCustomerByIDQuery) query()              {}
 func (q *GetCustomerByPhoneQuery) query()           {}
 func (q *GetCustomerGroupQuery) query()             {}
+func (q *GetCustomerIndependentByShopQuery) query() {}
 func (q *ListCustomerGroupsQuery) query()           {}
 func (q *ListCustomersQuery) query()                {}
 func (q *ListCustomersByIDsQuery) query()           {}
@@ -422,6 +434,17 @@ func (q *GetCustomerGroupQuery) SetGetCustomerGroupArgs(args *GetCustomerGroupAr
 	q.ID = args.ID
 }
 
+func (q *GetCustomerIndependentByShopQuery) GetArgs(ctx context.Context) (_ context.Context, _ *GetCustomerIndependentByShop) {
+	return ctx,
+		&GetCustomerIndependentByShop{
+			ShopID: q.ShopID,
+		}
+}
+
+func (q *GetCustomerIndependentByShopQuery) SetGetCustomerIndependentByShop(args *GetCustomerIndependentByShop) {
+	q.ShopID = args.ShopID
+}
+
 func (q *ListCustomerGroupsQuery) GetArgs(ctx context.Context) (_ context.Context, _ *ListCustomerGroupArgs) {
 	return ctx,
 		&ListCustomerGroupArgs{
@@ -503,6 +526,7 @@ func (h QueryServiceHandler) RegisterHandlers(b interface {
 	b.AddHandler(h.HandleGetCustomerByID)
 	b.AddHandler(h.HandleGetCustomerByPhone)
 	b.AddHandler(h.HandleGetCustomerGroup)
+	b.AddHandler(h.HandleGetCustomerIndependentByShop)
 	b.AddHandler(h.HandleListCustomerGroups)
 	b.AddHandler(h.HandleListCustomers)
 	b.AddHandler(h.HandleListCustomersByIDs)

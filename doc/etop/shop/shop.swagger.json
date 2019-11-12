@@ -10604,7 +10604,7 @@
         },
         "type": {
           "type": "string",
-          "title": "enum ('individual', 'organization')"
+          "title": "enum ('individual', 'organization','independent')"
         },
         "note": {
           "type": "string"

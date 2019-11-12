@@ -38,7 +38,7 @@ func (s *CustomerService) CreateCustomer(ctx context.Context, r *CreateCustomerE
 		ShopID:   r.Context.Shop.ID,
 		FullName: r.FullName,
 		Gender:   r.Gender,
-		Type:     r.Type,
+		Type:     customering.CustomerType(r.Type),
 		Birthday: r.Birthday,
 		Note:     r.Note,
 		Phone:    r.Phone,
@@ -59,11 +59,13 @@ func (s *CustomerService) UpdateCustomer(ctx context.Context, r *UpdateCustomerE
 		ShopID:   r.Context.Shop.ID,
 		FullName: PString(r.FullName),
 		Gender:   PString(r.Gender),
-		Type:     PString(r.Type),
 		Birthday: PString(r.Birthday),
 		Note:     PString(r.Note),
 		Phone:    PString(r.Phone),
 		Email:    PString(r.Email),
+	}
+	if r.Type != nil {
+		cmd.Type = customering.CustomerType(*r.Type)
 	}
 	err := customerAggr.Dispatch(ctx, cmd)
 	if err != nil {
