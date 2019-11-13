@@ -82,6 +82,16 @@ func (s *PurchaseOrderStore) Status(status etop.Status3) *PurchaseOrderStore {
 	return s
 }
 
+func (s *PurchaseOrderStore) Statuses(statuses ...etop.Status3) *PurchaseOrderStore {
+	s.preds = append(s.preds, sq.PrefixedIn(&s.ft.prefix, "status", statuses))
+	return s
+}
+
+func (s *PurchaseOrderStore) SupplierIDs(supplierIDs ...int64) *PurchaseOrderStore {
+	s.preds = append(s.preds, sq.PrefixedIn(&s.ft.prefix, "supplier_id", supplierIDs))
+	return s
+}
+
 func (s *PurchaseOrderStore) Count() (uint64, error) {
 	query := s.query().Where(s.preds)
 	query = s.includeDeleted.Check(query, s.ft.NotDeleted())

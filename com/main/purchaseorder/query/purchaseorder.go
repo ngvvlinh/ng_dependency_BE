@@ -3,6 +3,7 @@ package query
 import (
 	"context"
 
+	"etop.vn/api/main/etop"
 	"etop.vn/api/main/inventory"
 	"etop.vn/api/main/purchaseorder"
 	"etop.vn/api/main/receipting"
@@ -210,6 +211,28 @@ func (q *PurchaseOrderQuery) GetPurchaseOrdersByIDs(
 		return nil, err
 	}
 
+	return &purchaseorder.PurchaseOrdersResponse{
+		PurchaseOrders: purchaseOrders,
+		Count:          int32(count),
+	}, nil
+}
+
+func (q *PurchaseOrderQuery) ListPurchaseOrdersBySupplierIDsAndStatuses(
+	ctx context.Context, shopID int64, supplierIDs []int64, statuses []etop.Status3,
+) (*purchaseorder.PurchaseOrdersResponse, error) {
+	query := q.store(ctx).ShopID(shopID).SupplierIDs(supplierIDs...)
+	if len(statuses) != 0 {
+		query.Statuses(statuses...)
+	}
+	purchaseOrders, err := query.ListPurchaseOrders()
+	if err != nil {
+		return nil, err
+	}
+
+	count, err := query.Count()
+	if err != nil {
+		return nil, err
+	}
 	return &purchaseorder.PurchaseOrdersResponse{
 		PurchaseOrders: purchaseOrders,
 		Count:          int32(count),

@@ -3,6 +3,7 @@ package query
 import (
 	"context"
 
+	"etop.vn/api/main/etop"
 	"etop.vn/api/main/receipting"
 	"etop.vn/api/shopping"
 	"etop.vn/backend/com/main/receipting/sqlstore"
@@ -90,10 +91,15 @@ func (q *ReceiptQuery) GetReceiptByCode(ctx context.Context, code string, shopID
 	return receipt, err
 }
 
-func (q *ReceiptQuery) ListReceiptsByTraderIDs(
-	ctx context.Context, shopID int64, traderIDs []int64,
+func (q *ReceiptQuery) ListReceiptsByTraderIDsAndStatuses(
+	ctx context.Context, shopID int64, traderIDs []int64, statuses []etop.Status3,
 ) (*receipting.ReceiptsResponse, error) {
-	receipts, err := q.store(ctx).ShopID(shopID).TraderIDs(traderIDs...).ListReceipts()
+	query := q.store(ctx).ShopID(shopID).TraderIDs(traderIDs...)
+	if len(statuses) != 0 {
+		query = query.Statuses(statuses...)
+	}
+
+	receipts, err := query.ListReceipts()
 	return &receipting.ReceiptsResponse{Receipts: receipts}, err
 }
 

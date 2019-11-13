@@ -8307,7 +8307,7 @@
           }
         },
         "liability": {
-          "$ref": "#/definitions/shopLiability"
+          "$ref": "#/definitions/shopCustomerLiability"
         }
       }
     },
@@ -8413,6 +8413,27 @@
         },
         "paging": {
           "$ref": "#/definitions/cmPageInfo"
+        }
+      }
+    },
+    "shopCustomerLiability": {
+      "type": "object",
+      "properties": {
+        "total_orders": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "total_amount": {
+          "type": "string",
+          "format": "int64"
+        },
+        "received_amount": {
+          "type": "string",
+          "format": "int64"
+        },
+        "liability": {
+          "type": "string",
+          "format": "int64"
         }
       }
     },
@@ -9433,27 +9454,6 @@
         }
       }
     },
-    "shopLiability": {
-      "type": "object",
-      "properties": {
-        "total_orders": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "total_amount": {
-          "type": "string",
-          "format": "int64"
-        },
-        "received_amount": {
-          "type": "string",
-          "format": "int64"
-        },
-        "liability": {
-          "type": "string",
-          "format": "int64"
-        }
-      }
-    },
     "shopOrderIDRequest": {
       "type": "object",
       "properties": {
@@ -10464,6 +10464,30 @@
         "updated_at": {
           "type": "string",
           "format": "date-time"
+        },
+        "liability": {
+          "$ref": "#/definitions/shopSupplierLiability"
+        }
+      }
+    },
+    "shopSupplierLiability": {
+      "type": "object",
+      "properties": {
+        "total_purchase_orders": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "total_amount": {
+          "type": "string",
+          "format": "int64"
+        },
+        "paid_amount": {
+          "type": "string",
+          "format": "int64"
+        },
+        "liability": {
+          "type": "string",
+          "format": "int64"
         }
       }
     },

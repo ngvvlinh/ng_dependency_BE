@@ -7,6 +7,7 @@ import (
 	"strconv"
 	"time"
 
+	"etop.vn/api/main/etop"
 	"etop.vn/api/main/receipting"
 	"etop.vn/api/meta"
 	"etop.vn/backend/com/main/receipting/convert"
@@ -115,6 +116,11 @@ func (s *ReceiptStore) RefType(refType receipting.ReceiptRefType) *ReceiptStore 
 
 func (s *ReceiptStore) Status(status etopmodel.Status3) *ReceiptStore {
 	s.preds = append(s.preds, s.ft.ByStatus(status))
+	return s
+}
+
+func (s *ReceiptStore) Statuses(statuses ...etop.Status3) *ReceiptStore {
+	s.preds = append(s.preds, sq.PrefixedIn(&s.ft.prefix, "status", statuses))
 	return s
 }
 

@@ -3,6 +3,7 @@ package shop
 import (
 	"context"
 
+	"etop.vn/api/main/etop"
 	"etop.vn/api/main/ordering"
 	"etop.vn/api/main/receipting"
 	"etop.vn/api/shopping/customering"
@@ -253,9 +254,10 @@ func (s *CustomerService) listLiabilities(ctx context.Context, shopID int64, cus
 		mapCustomerIDAndTotalAmountOrders[order.CustomerID] += int64(order.TotalAmount)
 	}
 
-	getReceiptsByCustomerIDs := &receipting.ListReceiptsByTraderIDsQuery{
+	getReceiptsByCustomerIDs := &receipting.ListReceiptsByTraderIDsAndStatusesQuery{
 		ShopID:    shopID,
 		TraderIDs: customerIDs,
+		Statuses:  []etop.Status3{etop.S3Positive},
 	}
 	if err := receiptQuery.Dispatch(ctx, getReceiptsByCustomerIDs); err != nil {
 		return err
@@ -270,7 +272,7 @@ func (s *CustomerService) listLiabilities(ctx context.Context, shopID int64, cus
 	}
 
 	for _, customer := range customers {
-		customer.Liability = &pbshop.Liability{
+		customer.Liability = &pbshop.CustomerLiability{
 			TotalOrders:    int32(mapCustomerIDAndNumberOfOrders[customer.Id]),
 			TotalAmount:    mapCustomerIDAndTotalAmountOrders[customer.Id],
 			ReceivedAmount: mapCustomerIDAndTotalAmountReceipts[customer.Id],

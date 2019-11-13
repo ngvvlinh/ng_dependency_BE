@@ -3,6 +3,7 @@ package purchaseorder
 import (
 	"context"
 
+	"etop.vn/api/main/etop"
 	"etop.vn/api/meta"
 	"etop.vn/api/shopping"
 	. "etop.vn/capi/dot"
@@ -22,6 +23,7 @@ type QueryService interface {
 	GetPurchaseOrderByID(context.Context, *shopping.IDQueryShopArg) (*PurchaseOrder, error)
 	GetPurchaseOrdersByIDs(ctx context.Context, IDs []int64, ShopID int64) (*PurchaseOrdersResponse, error)
 	ListPurchaseOrders(context.Context, *shopping.ListQueryShopArgs) (*PurchaseOrdersResponse, error)
+	ListPurchaseOrdersBySupplierIDsAndStatuses(ctx context.Context, shopID int64, supplierIDs []int64, statuses []etop.Status3) (*PurchaseOrdersResponse, error)
 }
 
 //-- queries --//
