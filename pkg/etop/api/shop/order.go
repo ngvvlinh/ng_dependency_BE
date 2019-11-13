@@ -259,10 +259,11 @@ func (s *OrderService) addReceivedAmountToOrders(ctx context.Context, shopID int
 		orderIDs = append(orderIDs, order.Id)
 	}
 
-	listReceiptsByRefIDsAndStatusQuery := &receipting.ListReceiptsByRefIDsAndStatusQuery{
-		ShopID: shopID,
-		RefIDs: orderIDs,
-		Status: int32(model.S3Positive),
+	listReceiptsByRefIDsAndStatusQuery := &receipting.ListReceiptsByRefsAndStatusQuery{
+		ShopID:  shopID,
+		RefIDs:  orderIDs,
+		RefType: receipting.ReceiptRefTypeOrder,
+		Status:  int32(model.S3Positive),
 	}
 	if err := receiptQuery.Dispatch(ctx, listReceiptsByRefIDsAndStatusQuery); err != nil {
 		return err

@@ -4,18 +4,16 @@ import (
 	"context"
 
 	"etop.vn/api/main/inventory"
-
-	"etop.vn/api/shopping/suppliering"
-
-	cm "etop.vn/backend/pkg/common"
-
-	"etop.vn/capi"
-
 	"etop.vn/api/main/purchaseorder"
+	"etop.vn/api/main/receipting"
 	"etop.vn/api/shopping"
+	"etop.vn/api/shopping/suppliering"
 	"etop.vn/backend/com/main/purchaseorder/sqlstore"
+	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/cmsql"
+	"etop.vn/backend/pkg/etop/model"
+	"etop.vn/capi"
 )
 
 var _ purchaseorder.QueryService = &PurchaseOrderQuery{}
@@ -26,11 +24,13 @@ type PurchaseOrderQuery struct {
 	eventBus              capi.EventBus
 	supplierQuery         suppliering.QueryBus
 	inventoryVoucherQuery inventory.QueryBus
+	receiptQuery          *receipting.QueryBus
 }
 
 func NewPurchaseOrderQuery(
 	database *cmsql.Database, eventBus capi.EventBus,
 	supplierQ suppliering.QueryBus, inventoryVoucherQ inventory.QueryBus,
+	receiptQ *receipting.QueryBus,
 ) *PurchaseOrderQuery {
 	return &PurchaseOrderQuery{
 		db:                    database,
@@ -38,6 +38,7 @@ func NewPurchaseOrderQuery(
 		eventBus:              eventBus,
 		supplierQuery:         supplierQ,
 		inventoryVoucherQuery: inventoryVoucherQ,
+		receiptQuery:          receiptQ,
 	}
 }
 
@@ -80,6 +81,10 @@ func (q *PurchaseOrderQuery) GetPurchaseOrderByID(
 		purchaseOrder.InventoryVoucher = getInventoryVouchersQuery.Result.InventoryVoucher[0]
 	}
 
+	if err := q.addPaidAmount(ctx, args.ShopID, []*purchaseorder.PurchaseOrder{purchaseOrder}); err != nil {
+		return nil, err
+	}
+
 	return purchaseOrder, nil
 }
 
@@ -103,7 +108,6 @@ func (q *PurchaseOrderQuery) ListPurchaseOrders(
 	for _, purchaseOrder := range purchaseOrders {
 		supplierIDs = append(supplierIDs, purchaseOrder.SupplierID)
 		purchaseOrderIDs = append(purchaseOrderIDs, purchaseOrder.ID)
-		mapPurchaseOrderIDAndInventoryVoucher[purchaseOrder.ID] = &inventory.InventoryVoucher{}
 	}
 
 	if len(supplierIDs) != 0 {
@@ -146,8 +150,64 @@ func (q *PurchaseOrderQuery) ListPurchaseOrders(
 		for _, purchaseOrder := range purchaseOrders {
 			if _, ok := mapPurchaseOrderIDAndInventoryVoucher[purchaseOrder.ID]; ok {
 				purchaseOrder.InventoryVoucher = mapPurchaseOrderIDAndInventoryVoucher[purchaseOrder.ID]
+			} else {
+				purchaseOrder.InventoryVoucher = nil
 			}
 		}
+	}
+
+	if err := q.addPaidAmount(ctx, args.ShopID, purchaseOrders); err != nil {
+		return nil, err
+	}
+
+	return &purchaseorder.PurchaseOrdersResponse{
+		PurchaseOrders: purchaseOrders,
+		Count:          int32(count),
+	}, nil
+}
+
+func (q *PurchaseOrderQuery) addPaidAmount(ctx context.Context, shopID int64, purchaseOrders []*purchaseorder.PurchaseOrder) error {
+	mapPurchaseOrderIDAndPaidAmount := make(map[int64]int64)
+	var purchaseOrderIDs []int64
+	for _, purchaseOrder := range purchaseOrders {
+		mapPurchaseOrderIDAndPaidAmount[purchaseOrder.ID] = 0
+		purchaseOrderIDs = append(purchaseOrderIDs, purchaseOrder.ID)
+	}
+	listReceiptsQuery := &receipting.ListReceiptsByRefsAndStatusQuery{
+		ShopID:  shopID,
+		RefIDs:  purchaseOrderIDs,
+		RefType: receipting.ReceiptRefTypePurchaseOrder,
+		Status:  int32(model.S3Positive),
+	}
+	if err := q.receiptQuery.Dispatch(ctx, listReceiptsQuery); err != nil {
+		return err
+	}
+	receipts := listReceiptsQuery.Result.Receipts
+	for _, receipt := range receipts {
+		for _, line := range receipt.Lines {
+			if _, ok := mapPurchaseOrderIDAndPaidAmount[line.RefID]; ok {
+				mapPurchaseOrderIDAndPaidAmount[line.RefID] += int64(line.Amount)
+			}
+		}
+	}
+	for _, purchaseOrder := range purchaseOrders {
+		purchaseOrder.PaidAmount = mapPurchaseOrderIDAndPaidAmount[purchaseOrder.ID]
+	}
+	return nil
+}
+
+func (q *PurchaseOrderQuery) GetPurchaseOrdersByIDs(
+	ctx context.Context, IDs []int64, ShopID int64,
+) (*purchaseorder.PurchaseOrdersResponse, error) {
+	query := q.store(ctx).ShopID(ShopID).IDs(IDs...)
+	count, err := query.Count()
+	if err != nil {
+		return nil, err
+	}
+
+	purchaseOrders, err := query.ListPurchaseOrders()
+	if err != nil {
+		return nil, err
 	}
 
 	return &purchaseorder.PurchaseOrdersResponse{

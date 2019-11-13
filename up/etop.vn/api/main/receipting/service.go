@@ -24,7 +24,7 @@ type QueryService interface {
 	GetReceiptByCode(ctx context.Context, code string, shopID int64) (*Receipt, error)
 	ListReceipts(context.Context, *shopping.ListQueryShopArgs) (*ReceiptsResponse, error)
 	ListReceiptsByIDs(context.Context, *shopping.IDsQueryShopArgs) (*ReceiptsResponse, error)
-	ListReceiptsByRefIDsAndStatus(context.Context, *ListReceiptsByRefIDsAndStatusArgs) (*ReceiptsResponse, error)
+	ListReceiptsByRefsAndStatus(context.Context, *ListReceiptsByRefsAndStatusArgs) (*ReceiptsResponse, error)
 	ListReceiptsByTraderIDs(ctx context.Context, shopID int64, traderIDs []int64) (*ReceiptsResponse, error)
 	ListReceiptsByLedgerIDs(context.Context, *ListReceiptsByLedgerIDsArgs) (*ReceiptsResponse, error)
 }
@@ -95,10 +95,9 @@ type ListReceiptsByLedgerIDsArgs struct {
 	Filters   meta.Filters
 }
 
-type ListReceiptsByRefIDsAndStatusArgs struct {
+type ListReceiptsByRefsAndStatusArgs struct {
 	ShopID  int64
 	RefIDs  []int64
+	RefType ReceiptRefType
 	Status  int32
-	Paging  meta.Paging
-	Filters meta.Filters
 }

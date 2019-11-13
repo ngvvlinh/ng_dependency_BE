@@ -77,6 +77,11 @@ func (s *PurchaseOrderStore) ShopID(id int64) *PurchaseOrderStore {
 	return s
 }
 
+func (s *PurchaseOrderStore) Status(status etop.Status3) *PurchaseOrderStore {
+	s.preds = append(s.preds, s.ft.ByStatus(status))
+	return s
+}
+
 func (s *PurchaseOrderStore) Count() (uint64, error) {
 	query := s.query().Where(s.preds)
 	query = s.includeDeleted.Check(query, s.ft.NotDeleted())

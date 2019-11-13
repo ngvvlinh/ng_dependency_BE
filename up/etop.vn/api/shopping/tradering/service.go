@@ -4,7 +4,6 @@ import (
 	"context"
 
 	"etop.vn/api/meta"
-
 	"etop.vn/api/shopping"
 )
 
@@ -12,6 +11,7 @@ import (
 
 type QueryService interface {
 	GetTraderByID(ctx context.Context, _ *shopping.IDQueryShopArg) (*ShopTrader, error)
+	GetTraderInfoByID(ctx context.Context, ID, ShopID int64) (*ShopTrader, error)
 	ListTradersByIDs(context.Context, *shopping.IDsQueryShopArgs) (*TradersResponse, error)
 }
 

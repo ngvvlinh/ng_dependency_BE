@@ -333,7 +333,7 @@ message PurchaseOrder {
     optional string code = 8 [(gogoproto.nullable)=false];
     optional string note = 9 [(gogoproto.nullable)=false];
     optional status3.Status status = 10 [(gogoproto.nullable)=false];
-    repeated PurchaseOrderLine purchase_order_lines = 11;
+    repeated PurchaseOrderLine lines = 11;
     optional int64 created_by = 12 [(gogoproto.nullable)=false];
     optional string cancelled_reason = 13 [(gogoproto.nullable)=false];
     optional google.protobuf.Timestamp confirmed_at = 14;
@@ -342,7 +342,8 @@ message PurchaseOrder {
     optional google.protobuf.Timestamp updated_at = 17;
     optional google.protobuf.Timestamp deleted_at = 18;
     optional InventoryVoucher inventory_voucher = 19;
-    repeated int64 variant_ids = 20 [(gogoproto.nullable)=false];
+
+    optional int64 paid_amount = 20 [(gogoproto.nullable)=false];
 }
 
 message PurchaseOrderSupplier {
@@ -361,7 +362,7 @@ message GetPurchaseOrdersRequest {
 }
 
 message PurchaseOrdersResponse {
-    repeated PurchaseOrder purchaseOrders = 1;
+    repeated PurchaseOrder purchase_orders = 1;
     optional cm.PageInfo paging = 2;
 }
 

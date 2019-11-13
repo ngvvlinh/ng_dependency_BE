@@ -58,6 +58,8 @@ func convert_traderingmodel_ShopTrader_tradering_ShopTrader(arg *traderingmodel.
 	out.ID = arg.ID         // simple assign
 	out.ShopID = arg.ShopID // simple assign
 	out.Type = arg.Type     // simple assign
+	out.FullName = ""       // zero value
+	out.Phone = ""          // zero value
 }
 
 func Convert_traderingmodel_ShopTraders_tradering_ShopTraders(args []*traderingmodel.ShopTrader) (outs []*tradering.ShopTrader) {

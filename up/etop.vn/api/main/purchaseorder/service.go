@@ -20,6 +20,7 @@ type Aggregate interface {
 
 type QueryService interface {
 	GetPurchaseOrderByID(context.Context, *shopping.IDQueryShopArg) (*PurchaseOrder, error)
+	GetPurchaseOrdersByIDs(ctx context.Context, IDs []int64, ShopID int64) (*PurchaseOrdersResponse, error)
 	ListPurchaseOrders(context.Context, *shopping.ListQueryShopArgs) (*PurchaseOrdersResponse, error)
 }
 

@@ -89,10 +89,11 @@ func (m *ProcessManager) MoneyTransactionConfirmed(ctx context.Context, event *r
 		mapOrder[order.ID] = order
 	}
 
-	getReceiptsByOrderIDs := &receipting.ListReceiptsByRefIDsAndStatusQuery{
-		ShopID: event.ShopID,
-		RefIDs: orderIDs,
-		Status: int32(etopmodel.S3Positive),
+	getReceiptsByOrderIDs := &receipting.ListReceiptsByRefsAndStatusQuery{
+		ShopID:  event.ShopID,
+		RefIDs:  orderIDs,
+		RefType: receipting.ReceiptRefTypeOrder,
+		Status:  int32(etopmodel.S3Positive),
 	}
 	if err := m.receiptQuery.Dispatch(ctx, getReceiptsByOrderIDs); err != nil {
 		return err

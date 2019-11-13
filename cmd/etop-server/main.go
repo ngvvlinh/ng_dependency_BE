@@ -34,6 +34,7 @@ import (
 	serviceorderingpm "etop.vn/backend/com/main/ordering/pm"
 	ordersqlstore "etop.vn/backend/com/main/ordering/sqlstore"
 	purchaseorderaggregate "etop.vn/backend/com/main/purchaseorder/aggregate"
+	purchaseorderpm "etop.vn/backend/com/main/purchaseorder/pm"
 	purchaseorderquery "etop.vn/backend/com/main/purchaseorder/query"
 	receiptaggregate "etop.vn/backend/com/main/receipting/aggregate"
 	receiptpm "etop.vn/backend/com/main/receipting/pm"
@@ -359,7 +360,7 @@ func main() {
 	customerQuery := customerquery.NewCustomerQuery(db).MessageBus()
 	supplierQuery := supplierquery.NewSupplierQuery(db).MessageBus()
 	carrierQuery := carrierquery.NewCarrierQuery(db).MessageBus()
-	traderQuery := traderquery.NewTraderQuery(db).MessageBus()
+	traderQuery := traderquery.NewTraderQuery(db, customerQuery, carrierQuery, supplierQuery).MessageBus()
 	traderAddressQuery := customerquery.NewAddressQuery(db).MessageBus()
 	affiliateCmd := serviceaffiliate.NewAggregate(dbaff, identityQuery, catalogQuery, orderQuery).MessageBus()
 	affilateQuery := serviceaffiliate.NewQuery(dbaff).MessageBus()
@@ -371,7 +372,12 @@ func main() {
 	ledgerPM := ledgerpm.New(eventBus, ledgerAggr)
 	ledgerPM.RegisterEventHandlers(eventBus)
 
-	receiptAggr := receiptaggregate.NewReceiptAggregate(db, eventBus, traderQuery, ledgerQuery, orderQuery, customerQuery, carrierQuery, supplierQuery).MessageBus()
+	purchaseOrderAggr := purchaseorderaggregate.NewPurchaseOrderAggregate(db, eventBus, catalogQuery, supplierQuery, inventoryQuery).MessageBus()
+	purchaseOrderQuery := purchaseorderquery.NewPurchaseOrderQuery(db, eventBus, supplierQuery, inventoryQuery, &receiptQuery).MessageBus()
+	purchaseOrderPM := purchaseorderpm.New(&purchaseOrderQuery, &receiptQuery)
+	purchaseOrderPM.RegisterEventHandlers(eventBus)
+
+	receiptAggr := receiptaggregate.NewReceiptAggregate(db, eventBus, traderQuery, ledgerQuery, orderQuery, customerQuery, carrierQuery, supplierQuery, purchaseOrderQuery).MessageBus()
 	receiptQuery = receiptquery.NewReceiptQuery(db).MessageBus()
 	receiptPM := receiptpm.New(eventBus, receiptQuery, receiptAggr, ledgerQuery, ledgerAggr)
 	receiptPM.RegisterEventHandlers(eventBus)
@@ -383,11 +389,8 @@ func main() {
 		vtpayProvider = vtpay.New(cfg.VTPay)
 	}
 	paymentManager := servicepaymentmanager.NewManager(vtpayProvider, orderQuery).MesssageBus()
-	orderPM := serviceorderingpm.New(orderAggr.MessageBus(), orderQuery, affiliateCmd, receiptQuery, inventoryAggr)
+	orderPM := serviceorderingpm.New(orderAggr.MessageBus(), affiliateCmd, receiptQuery, inventoryAggr, orderQuery)
 	orderPM.RegisterEventHandlers(eventBus)
-
-	purchaseOrderAggr := purchaseorderaggregate.NewPurchaseOrderAggregate(db, eventBus, catalogQuery, supplierQuery, inventoryQuery).MessageBus()
-	purchaseOrderQuery := purchaseorderquery.NewPurchaseOrderQuery(db, eventBus, supplierQuery, inventoryQuery).MessageBus()
 
 	middleware.Init(cfg.SAdminToken, identityQuery)
 	api.Init(identityAggr, identityQuery, shutdowner, redisStore, authStore, cfg.Email, cfg.SMS)

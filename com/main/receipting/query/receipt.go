@@ -3,15 +3,12 @@ package query
 import (
 	"context"
 
-	"etop.vn/backend/pkg/etop/model"
-
-	"etop.vn/api/shopping"
-
-	"etop.vn/backend/pkg/common/bus"
-
 	"etop.vn/api/main/receipting"
+	"etop.vn/api/shopping"
 	"etop.vn/backend/com/main/receipting/sqlstore"
+	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/cmsql"
+	"etop.vn/backend/pkg/etop/model"
 )
 
 var _ receipting.QueryService = &ReceiptQuery{}
@@ -77,10 +74,11 @@ func (q *ReceiptQuery) ListReceiptsByIDs(context.Context, *shopping.IDsQueryShop
 	panic("implement me")
 }
 
-func (q *ReceiptQuery) ListReceiptsByRefIDsAndStatus(
-	ctx context.Context, args *receipting.ListReceiptsByRefIDsAndStatusArgs,
+func (q *ReceiptQuery) ListReceiptsByRefsAndStatus(
+	ctx context.Context, args *receipting.ListReceiptsByRefsAndStatusArgs,
 ) (*receipting.ReceiptsResponse, error) {
-	receipts, err := q.store(ctx).ShopID(args.ShopID).RefIDs(args.RefIDs...).Status(model.Status3(args.Status)).ListReceipts()
+	query := q.store(ctx).ShopID(args.ShopID).RefIDs(args.RefIDs...).RefType(args.RefType).Status(model.Status3(args.Status))
+	receipts, err := query.ListReceipts()
 	if err != nil {
 		return nil, err
 	}

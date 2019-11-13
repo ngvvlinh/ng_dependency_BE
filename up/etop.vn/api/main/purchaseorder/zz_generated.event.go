@@ -4,4 +4,4 @@
 
 package purchaseorder
 
-func (e *PurchaseOrderConfirmedEvent) GetTopic() string { return "event/purchaseOrder" }
+func (e *PurchaseOrderConfirmedEvent) GetTopic() string { return "event/purchaseorder" }

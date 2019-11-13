@@ -20,9 +20,9 @@ const (
 	ReceiptCreatedTypeManual ReceiptCreatedType = "manual"
 	ReceiptCreatedTypeAuto   ReceiptCreatedType = "auto"
 
-	ReceiptRefTypeOrder            ReceiptRefType = "order"
-	ReceiptRefTypeFulfillment      ReceiptRefType = "fulfillment"
-	ReceiptRefTypeInventoryVoucher ReceiptRefType = "inventory_voucher"
+	ReceiptRefTypeOrder         ReceiptRefType = "order"
+	ReceiptRefTypeFulfillment   ReceiptRefType = "fulfillment"
+	ReceiptRefTypePurchaseOrder ReceiptRefType = "purchase_order"
 )
 
 type Receipt struct {
@@ -79,8 +79,21 @@ type MoneyTransactionConfirmedEvent struct {
 	MoneyTransactionID int64
 }
 
-type ReceiptConfirmedOrCancelledEvent struct {
+type ReceiptConfirmedEvent struct {
 	meta.EventMeta
 	ShopID    int64
 	ReceiptID int64
+}
+
+type ReceiptCancelledEvent struct {
+	meta.EventMeta
+	ShopID    int64
+	ReceiptID int64
+}
+
+type ReceiptCreatingEvent struct {
+	meta.EventMeta
+	RefIDs         []int64
+	MapRefIDAmount map[int64]int32
+	Receipt        *Receipt
 }

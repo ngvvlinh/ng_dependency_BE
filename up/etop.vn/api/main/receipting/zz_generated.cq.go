@@ -188,18 +188,17 @@ func (h QueryServiceHandler) HandleListReceiptsByLedgerIDs(ctx context.Context, 
 	return err
 }
 
-type ListReceiptsByRefIDsAndStatusQuery struct {
+type ListReceiptsByRefsAndStatusQuery struct {
 	ShopID  int64
 	RefIDs  []int64
+	RefType ReceiptRefType
 	Status  int32
-	Paging  meta.Paging
-	Filters meta.Filters
 
 	Result *ReceiptsResponse `json:"-"`
 }
 
-func (h QueryServiceHandler) HandleListReceiptsByRefIDsAndStatus(ctx context.Context, msg *ListReceiptsByRefIDsAndStatusQuery) (err error) {
-	msg.Result, err = h.inner.ListReceiptsByRefIDsAndStatus(msg.GetArgs(ctx))
+func (h QueryServiceHandler) HandleListReceiptsByRefsAndStatus(ctx context.Context, msg *ListReceiptsByRefsAndStatusQuery) (err error) {
+	msg.Result, err = h.inner.ListReceiptsByRefsAndStatus(msg.GetArgs(ctx))
 	return err
 }
 
@@ -217,18 +216,18 @@ func (h QueryServiceHandler) HandleListReceiptsByTraderIDs(ctx context.Context, 
 
 // implement interfaces
 
-func (q *CancelReceiptCommand) command()             {}
-func (q *ConfirmReceiptCommand) command()            {}
-func (q *CreateReceiptCommand) command()             {}
-func (q *DeleteReceiptCommand) command()             {}
-func (q *UpdateReceiptCommand) command()             {}
-func (q *GetReceiptByCodeQuery) query()              {}
-func (q *GetReceiptByIDQuery) query()                {}
-func (q *ListReceiptsQuery) query()                  {}
-func (q *ListReceiptsByIDsQuery) query()             {}
-func (q *ListReceiptsByLedgerIDsQuery) query()       {}
-func (q *ListReceiptsByRefIDsAndStatusQuery) query() {}
-func (q *ListReceiptsByTraderIDsQuery) query()       {}
+func (q *CancelReceiptCommand) command()           {}
+func (q *ConfirmReceiptCommand) command()          {}
+func (q *CreateReceiptCommand) command()           {}
+func (q *DeleteReceiptCommand) command()           {}
+func (q *UpdateReceiptCommand) command()           {}
+func (q *GetReceiptByCodeQuery) query()            {}
+func (q *GetReceiptByIDQuery) query()              {}
+func (q *ListReceiptsQuery) query()                {}
+func (q *ListReceiptsByIDsQuery) query()           {}
+func (q *ListReceiptsByLedgerIDsQuery) query()     {}
+func (q *ListReceiptsByRefsAndStatusQuery) query() {}
+func (q *ListReceiptsByTraderIDsQuery) query()     {}
 
 // implement conversion
 
@@ -404,23 +403,21 @@ func (q *ListReceiptsByLedgerIDsQuery) SetListReceiptsByLedgerIDsArgs(args *List
 	q.Filters = args.Filters
 }
 
-func (q *ListReceiptsByRefIDsAndStatusQuery) GetArgs(ctx context.Context) (_ context.Context, _ *ListReceiptsByRefIDsAndStatusArgs) {
+func (q *ListReceiptsByRefsAndStatusQuery) GetArgs(ctx context.Context) (_ context.Context, _ *ListReceiptsByRefsAndStatusArgs) {
 	return ctx,
-		&ListReceiptsByRefIDsAndStatusArgs{
+		&ListReceiptsByRefsAndStatusArgs{
 			ShopID:  q.ShopID,
 			RefIDs:  q.RefIDs,
+			RefType: q.RefType,
 			Status:  q.Status,
-			Paging:  q.Paging,
-			Filters: q.Filters,
 		}
 }
 
-func (q *ListReceiptsByRefIDsAndStatusQuery) SetListReceiptsByRefIDsAndStatusArgs(args *ListReceiptsByRefIDsAndStatusArgs) {
+func (q *ListReceiptsByRefsAndStatusQuery) SetListReceiptsByRefsAndStatusArgs(args *ListReceiptsByRefsAndStatusArgs) {
 	q.ShopID = args.ShopID
 	q.RefIDs = args.RefIDs
+	q.RefType = args.RefType
 	q.Status = args.Status
-	q.Paging = args.Paging
-	q.Filters = args.Filters
 }
 
 func (q *ListReceiptsByTraderIDsQuery) GetArgs(ctx context.Context) (_ context.Context, shopID int64, traderIDs []int64) {
@@ -466,7 +463,7 @@ func (h QueryServiceHandler) RegisterHandlers(b interface {
 	b.AddHandler(h.HandleListReceipts)
 	b.AddHandler(h.HandleListReceiptsByIDs)
 	b.AddHandler(h.HandleListReceiptsByLedgerIDs)
-	b.AddHandler(h.HandleListReceiptsByRefIDsAndStatus)
+	b.AddHandler(h.HandleListReceiptsByRefsAndStatus)
 	b.AddHandler(h.HandleListReceiptsByTraderIDs)
 	return QueryBus{b}
 }

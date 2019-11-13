@@ -15,7 +15,7 @@ const (
 	AutoInventoryVoucherConfirm PurchaseOrderAutoInventoryVoucher = "confirm"
 )
 
-// +gen:event:topic=event/purchaseOrder
+// +gen:event:topic=event/purchaseorder
 
 type PurchaseOrder struct {
 	ID               int64
@@ -32,6 +32,7 @@ type PurchaseOrder struct {
 	Status           etop.Status3
 	VariantIDs       []int64
 	Lines            []*PurchaseOrderLine
+	PaidAmount       int64
 	CreatedBy        int64
 	CancelledReason  string
 	ConfirmedAt      time.Time

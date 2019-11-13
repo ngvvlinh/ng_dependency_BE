@@ -9597,7 +9597,7 @@
         "status": {
           "$ref": "#/definitions/status3Status"
         },
-        "purchase_order_lines": {
+        "lines": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/shopPurchaseOrderLine"
@@ -9633,12 +9633,9 @@
         "inventory_voucher": {
           "$ref": "#/definitions/shopInventoryVoucher"
         },
-        "variant_ids": {
-          "type": "array",
-          "items": {
-            "type": "string",
-            "format": "int64"
-          }
+        "paid_amount": {
+          "type": "string",
+          "format": "int64"
         }
       }
     },
@@ -9689,7 +9686,7 @@
     "shopPurchaseOrdersResponse": {
       "type": "object",
       "properties": {
-        "purchaseOrders": {
+        "purchase_orders": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/shopPurchaseOrder"

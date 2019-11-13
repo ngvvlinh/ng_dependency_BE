@@ -3,16 +3,13 @@ package aggregate
 import (
 	"context"
 
-	"etop.vn/api/main/inventory"
-
-	"etop.vn/api/main/etop"
-
-	"etop.vn/backend/com/main/purchaseorder/model"
-
 	"etop.vn/api/main/catalog"
+	"etop.vn/api/main/etop"
+	"etop.vn/api/main/inventory"
 	"etop.vn/api/main/purchaseorder"
 	"etop.vn/api/shopping/suppliering"
 	"etop.vn/backend/com/main/purchaseorder/convert"
+	"etop.vn/backend/com/main/purchaseorder/model"
 	"etop.vn/backend/com/main/purchaseorder/sqlstore"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"

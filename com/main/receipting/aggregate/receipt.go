@@ -5,6 +5,7 @@ import (
 
 	"etop.vn/api/main/ledgering"
 	"etop.vn/api/main/ordering"
+	"etop.vn/api/main/purchaseorder"
 	"etop.vn/api/main/receipting"
 	"etop.vn/api/shopping/carrying"
 	"etop.vn/api/shopping/customering"
@@ -28,15 +29,16 @@ var _ receipting.Aggregate = &ReceiptAggregate{}
 var scheme = conversion.Build(convert.RegisterConversions)
 
 type ReceiptAggregate struct {
-	db            *cmsql.Database
-	store         sqlstore.ReceiptStoreFactory
-	eventBus      capi.EventBus
-	traderQuery   tradering.QueryBus
-	ledgerQuery   ledgering.QueryBus
-	orderQuery    ordering.QueryBus
-	customerQuery customering.QueryBus
-	carrierQuery  carrying.QueryBus
-	supplierQuery suppliering.QueryBus
+	db                 *cmsql.Database
+	store              sqlstore.ReceiptStoreFactory
+	eventBus           capi.EventBus
+	traderQuery        tradering.QueryBus
+	ledgerQuery        ledgering.QueryBus
+	orderQuery         ordering.QueryBus
+	customerQuery      customering.QueryBus
+	carrierQuery       carrying.QueryBus
+	supplierQuery      suppliering.QueryBus
+	purchaseOrderQuery purchaseorder.QueryBus
 }
 
 func NewReceiptAggregate(
@@ -44,17 +46,19 @@ func NewReceiptAggregate(
 	traderQuery tradering.QueryBus, ledgerQuery ledgering.QueryBus,
 	orderQuery ordering.QueryBus, customerQuery customering.QueryBus,
 	carrierQuery carrying.QueryBus, supplierQuery suppliering.QueryBus,
+	purchaseOrderQ purchaseorder.QueryBus,
 ) *ReceiptAggregate {
 	return &ReceiptAggregate{
-		db:            database,
-		store:         sqlstore.NewReceiptStore(database),
-		eventBus:      eventBus,
-		traderQuery:   traderQuery,
-		ledgerQuery:   ledgerQuery,
-		orderQuery:    orderQuery,
-		customerQuery: customerQuery,
-		carrierQuery:  carrierQuery,
-		supplierQuery: supplierQuery,
+		db:                 database,
+		store:              sqlstore.NewReceiptStore(database),
+		eventBus:           eventBus,
+		traderQuery:        traderQuery,
+		ledgerQuery:        ledgerQuery,
+		orderQuery:         orderQuery,
+		customerQuery:      customerQuery,
+		carrierQuery:       carrierQuery,
+		supplierQuery:      supplierQuery,
+		purchaseOrderQuery: purchaseOrderQ,
 	}
 }
 
@@ -125,7 +129,7 @@ func (a *ReceiptAggregate) CreateReceipt(
 	}
 
 	if !args.ConfirmedAt.IsZero() {
-		receiptConfirmEvent := &receipting.ReceiptConfirmedOrCancelledEvent{
+		receiptConfirmEvent := &receipting.ReceiptConfirmedEvent{
 			ShopID:    args.ShopID,
 			ReceiptID: receipt.ID,
 		}
@@ -208,110 +212,30 @@ func (a *ReceiptAggregate) validateReceiptForCreateOrUpdate(ctx context.Context,
 	if receipt.ID == 0 && receipt.Amount <= 0 {
 		return cm.Errorf(cm.InvalidArgument, nil, "Giá trị phiếu phải lớn hơn 0")
 	}
-
 	if receipt.Amount > 0 && len(receipt.Lines) == 0 {
 		return cm.Errorf(cm.InvalidArgument, nil, "Giá trị phiếu không hợp lệ")
 	}
 
-	// validate TraderID
+	// Validate type and refID
+	if err := a.validateTypeAndRefType(receipt.Type, receipt.RefType); err != nil {
+		return err
+	}
+
+	// Validate TraderID
 	if receipt.TraderID != 0 {
-		switch receipt.TraderID {
-		case etopmodel.TopShipID:
-			if receipt.RefType != receipting.ReceiptRefTypeFulfillment {
-				return cm.Errorf(cm.InvalidArgument, nil, "Ref_type không hợp lệ")
-			}
-		case etopmodel.IndependentCustomerID:
-			if receipt.RefType != receipting.ReceiptRefTypeOrder {
-				return cm.Errorf(cm.InvalidArgument, nil, "Ref_type không hợp lệ")
-			}
-		default:
-			query := &tradering.GetTraderByIDQuery{
-				ID:     receipt.TraderID,
-				ShopID: shopID,
-			}
-			if err := a.traderQuery.Dispatch(ctx, query); err != nil {
-				return cm.MapError(err).
-					Map(cm.NotFound, cm.FailedPrecondition, "Đối tác không hợp lệ").
-					Throw()
-			}
-
-			switch query.Result.Type {
-			case tradering.CustomerType:
-				query := &customering.GetCustomerByIDQuery{
-					ID:     receipt.TraderID,
-					ShopID: shopID,
-				}
-				if err := a.customerQuery.Dispatch(ctx, query); err != nil {
-					return cm.MapError(err).
-						Map(cm.NotFound, cm.FailedPrecondition, "Đối tác không hợp lệ").
-						Throw()
-				}
-				if receipt.RefType != receipting.ReceiptRefTypeOrder {
-					return cm.Errorf(cm.InvalidArgument, nil, "Ref_type không hợp lệ")
-				}
-
-				receipt.Trader = &receipting.Trader{
-					ID:       query.Result.ID,
-					Type:     tradering.CustomerType,
-					FullName: query.Result.FullName,
-					Phone:    query.Result.Phone,
-				}
-			case tradering.CarrierType:
-				query := &carrying.GetCarrierByIDQuery{
-					ID:     receipt.TraderID,
-					ShopID: shopID,
-				}
-				if err := a.carrierQuery.Dispatch(ctx, query); err != nil {
-					return cm.MapError(err).
-						Map(cm.NotFound, cm.FailedPrecondition, "Đối tác không hợp lệ").
-						Throw()
-				}
-				if receipt.RefType != receipting.ReceiptRefTypeFulfillment {
-					return cm.Errorf(cm.InvalidArgument, nil, "Ref_type không hợp lệ")
-				}
-
-				receipt.Trader = &receipting.Trader{
-					ID:       query.Result.ID,
-					Type:     tradering.CarrierType,
-					FullName: query.Result.FullName,
-				}
-			case tradering.SupplierType:
-				query := &suppliering.GetSupplierByIDQuery{
-					ID:     receipt.TraderID,
-					ShopID: shopID,
-				}
-				if err := a.supplierQuery.Dispatch(ctx, query); err != nil {
-					return cm.MapError(err).
-						Map(cm.NotFound, cm.FailedPrecondition, "Đối tác không hợp lệ").
-						Throw()
-				}
-				if receipt.RefType != receipting.ReceiptRefTypeInventoryVoucher {
-					return cm.Errorf(cm.InvalidArgument, nil, "Ref_type không hợp lệ")
-				}
-
-				receipt.Trader = &receipting.Trader{
-					ID:       query.Result.ID,
-					Type:     tradering.SupplierType,
-					FullName: query.Result.FullName,
-				}
-			}
+		if err := a.validateAndFillTrader(ctx, shopID, receipt); err != nil {
+			return err
 		}
 	}
 
 	// Validate ledger
 	if receipt.LedgerID != 0 {
-		query := &ledgering.GetLedgerByIDQuery{
-			ID:     receipt.LedgerID,
-			ShopID: shopID,
-		}
-		if err := a.ledgerQuery.Dispatch(ctx, query); err != nil {
-			return cm.MapError(err).
-				Map(cm.NotFound, cm.FailedPrecondition, "Tài khoản thanh toán không tồn tại").
-				Throw()
+		if err := a.validateLedger(ctx, receipt.LedgerID, shopID); err != nil {
+			return err
 		}
 	}
 
-	// validate receipt lines
+	// Validate receipt lines
 	if receipt.Lines != nil && len(receipt.Lines) > 0 {
 		if err := a.validateReceiptLines(ctx, receipt.RefType, receipt); err != nil {
 			return err
@@ -321,99 +245,69 @@ func (a *ReceiptAggregate) validateReceiptForCreateOrUpdate(ctx context.Context,
 	return nil
 }
 
-func (a *ReceiptAggregate) validateReceiptLines(ctx context.Context, refType receipting.ReceiptRefType, receipt *receipting.Receipt) error {
-	totalAmountOfReceiptLines, refIDs, mapOrdersAmount, err := calcReceiptLinesTotalAmount(receipt)
-	if err != nil {
-		return err
-	}
-	if totalAmountOfReceiptLines != receipt.Amount {
-		return cm.Errorf(cm.FailedPrecondition, nil, "Amount of receipt must be equal to total amount of receiptLines")
+func (a *ReceiptAggregate) validateTypeAndRefType(receiptType receipting.ReceiptType, receiptRefType receipting.ReceiptRefType) error {
+	if receiptRefType != receipting.ReceiptRefTypeOrder &&
+		receiptRefType != receipting.ReceiptRefTypePurchaseOrder &&
+		receiptRefType != receipting.ReceiptRefTypeFulfillment {
+		return cm.Errorf(cm.InvalidArgument, nil, "ref_type không hợp lệ")
 	}
 
-	if len(refIDs) == 0 {
-		return nil
+	if receiptRefType == receipting.ReceiptRefTypePurchaseOrder && receiptType == receipting.ReceiptTypeReceipt {
+		return cm.Errorf(cm.InvalidArgument, nil, "Loại phiếu không hợp lệ")
 	}
-
-	// List all erf in orderIDs
-	mOrders := make(map[int64]*ordering.Order)
-	var ordersTemp []*ordering.Order
-
-	switch refType {
-	case receipting.ReceiptRefTypeOrder:
-		query := &ordering.GetOrdersQuery{
-			ShopID: receipt.ShopID,
-			IDs:    refIDs,
-		}
-		if err := a.orderQuery.Dispatch(ctx, query); err != nil {
-			return err
-		}
-
-		ordersTemp = query.Result.Orders
-		for _, order := range ordersTemp {
-			mOrders[order.ID] = order
-		}
-	case receipting.ReceiptRefTypeFulfillment, receipting.ReceiptRefTypeInventoryVoucher:
-		// TODO: handle with refType fulfillment and inventory voucher
-		return nil
-	}
-
-	// Check orderIds with orderIds of listOrdersQuery.Result
-	// When different len
-	if len(refIDs) != len(mOrders) {
-		for _, v := range refIDs {
-			if _, ok := mOrders[v]; !ok {
-				return cm.Errorf(cm.FailedPrecondition, nil, "ref_id %d không tìm thấy", v)
-			}
-		}
-	}
-
-	// Don't check received_amount of receipt type payment
-	if receipt.Type == receipting.ReceiptTypePayment {
-		return nil
-	}
-
-	// List all receipts IN orderIDs
-	receipts, err := a.store(ctx).ShopID(receipt.ShopID).RefIDs(refIDs...).Status(etopmodel.S3Positive).ListReceipts()
-	if err != nil {
-		return err
-	}
-
-	// Get total amount each of orderId in orderIDs
-	// Map of [ orderId ] amount of receiptLines (old receipts)
-	mapOrdersAmountOld := make(map[int64]int32)
-	for _, receiptElem := range receipts {
-		// Ignore current receipt when updating
-		if receiptElem.ID == receipt.ID {
-			continue
-		}
-		for _, receiptLine := range receiptElem.Lines {
-			if receiptLine.RefID == 0 {
-				continue
-			}
-			if _, has := mapOrdersAmount[receiptLine.RefID]; has {
-				switch receipt.Type {
-				case receipting.ReceiptTypeReceipt:
-					mapOrdersAmountOld[receiptLine.RefID] += receiptLine.Amount
-				case receipting.ReceiptTypePayment:
-					mapOrdersAmountOld[receiptLine.RefID] -= receiptLine.Amount
-				}
-			}
-		}
-	}
-
-	// Check each of amount of receiptLine (param) with (total amount of old receiptLines + total amount of order)
-	for key, value := range mapOrdersAmount {
-		if value > int32(mOrders[key].TotalAmount)-mapOrdersAmountOld[key] {
-			return cm.Errorf(cm.InvalidArgument, nil, "Giá trị của đơn hàng không hợp lệ, Vui lòng tải lại trang và thử lại")
-		}
-	}
-
 	return nil
 }
 
-func calcReceiptLinesTotalAmount(receipt *receipting.Receipt) (totalAmount int32, orderIDs []int64, mapOrdersAmount map[int64]int32, err error) {
-	// Map of [ orderId ] amount of receiptLines (params)
-	mapOrdersAmount = make(map[int64]int32)
+func (a *ReceiptAggregate) validateLedger(ctx context.Context, ledgerID, shopID int64) error {
+	query := &ledgering.GetLedgerByIDQuery{
+		ID:     ledgerID,
+		ShopID: shopID,
+	}
+	if err := a.ledgerQuery.Dispatch(ctx, query); err != nil {
+		return cm.MapError(err).
+			Map(cm.NotFound, cm.FailedPrecondition, "Tài khoản thanh toán không tồn tại").
+			Throw()
+	}
+	return nil
+}
+
+func (a *ReceiptAggregate) validateAndFillTrader(ctx context.Context, shopID int64, receipt *receipting.Receipt) error {
+	query := &tradering.GetTraderInfoByIDQuery{
+		ID:     receipt.TraderID,
+		ShopID: shopID,
+	}
+	if err := a.traderQuery.Dispatch(ctx, query); err != nil {
+		return cm.MapError(err).
+			Map(cm.NotFound, cm.FailedPrecondition, "Đối tác không hợp lệ").
+			Throw()
+	}
+	receipt.Trader = &receipting.Trader{
+		ID:       query.Result.ID,
+		Type:     query.Result.Type,
+		FullName: query.Result.FullName,
+		Phone:    query.Result.Phone,
+	}
+	traderType := query.Result.Type
+	switch receipt.RefType {
+	case receipting.ReceiptRefTypeOrder:
+		if traderType != tradering.CustomerType {
+			return cm.Errorf(cm.FailedPrecondition, nil, "Đối tác không hợp lệ")
+		}
+	case receipting.ReceiptRefTypeFulfillment:
+		if traderType != tradering.CarrierType {
+			return cm.Errorf(cm.FailedPrecondition, nil, "Đối tác không hợp lệ")
+		}
+	case receipting.ReceiptRefTypePurchaseOrder:
+		if traderType != tradering.SupplierType {
+			return cm.Errorf(cm.FailedPrecondition, nil, "Đối tác không hợp lệ")
+		}
+	}
+	return nil
+}
+
+func calcReceiptLinesTotalAmount(receipt *receipting.Receipt) (totalAmount int32, refIDs []int64, mapRefIDAmount map[int64]int32, err error) {
+	// Map of [ ref_id ] amount of line
+	mapRefIDAmount = make(map[int64]int32)
 	for _, receiptLine := range receipt.Lines {
 		// check amount of a receiptLine < 0
 		if receiptLine.Amount <= 0 {
@@ -426,18 +320,41 @@ func calcReceiptLinesTotalAmount(receipt *receipting.Receipt) (totalAmount int32
 			continue
 		}
 
-		// Check has key in map
-		// hasKey = true -> duplicate orderId in receipt
-		// hasKey = false -> add orderId in map
-		if _, has := mapOrdersAmount[receiptLine.RefID]; has {
+		if _, ok := mapRefIDAmount[receiptLine.RefID]; ok {
 			err = cm.Errorf(cm.FailedPrecondition, nil, "ref_id %d trùng nhau trong phiếu", receiptLine.RefID)
 			return
 		}
 
-		mapOrdersAmount[receiptLine.RefID] = receiptLine.Amount
-		orderIDs = append(orderIDs, receiptLine.RefID)
+		mapRefIDAmount[receiptLine.RefID] = receiptLine.Amount
+		refIDs = append(refIDs, receiptLine.RefID)
 	}
 	return
+}
+
+func (a *ReceiptAggregate) validateReceiptLines(
+	ctx context.Context, refType receipting.ReceiptRefType, receipt *receipting.Receipt,
+) error {
+	totalAmountOfReceiptLines, refIDs, mapRefIDAmount, err := calcReceiptLinesTotalAmount(receipt)
+	if err != nil {
+		return err
+	}
+	if totalAmountOfReceiptLines != receipt.Amount {
+		return cm.Errorf(cm.FailedPrecondition, nil, "Amount of receipt must be equal to total amount of receiptLines")
+	}
+	if len(refIDs) == 0 {
+		return nil
+	}
+
+	event := &receipting.ReceiptCreatingEvent{
+		RefIDs:         refIDs,
+		MapRefIDAmount: mapRefIDAmount,
+		Receipt:        receipt,
+	}
+	if err := a.eventBus.Publish(ctx, event); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 func (a *ReceiptAggregate) DeleteReceipt(
@@ -466,12 +383,12 @@ func (a *ReceiptAggregate) CancelReceipt(
 		return 0, err
 	}
 
-	receiptConfirmOrCancelledEvent := &receipting.ReceiptConfirmedOrCancelledEvent{
+	receiptCancelledEvent := &receipting.ReceiptCancelledEvent{
 		ShopID:    args.ShopID,
 		ReceiptID: args.ID,
 	}
-	if err := a.eventBus.Publish(ctx, receiptConfirmOrCancelledEvent); err != nil {
-		ll.Error("receiptConfirmedOrCancelledEvent", l.Error(err))
+	if err := a.eventBus.Publish(ctx, receiptCancelledEvent); err != nil {
+		ll.Error("receiptCancelledEvent", l.Error(err))
 	}
 
 	return updated, err
@@ -505,12 +422,12 @@ func (a *ReceiptAggregate) ConfirmReceipt(
 		return 0, err
 	}
 
-	receiptConfirmedOrCancelledEvent := &receipting.ReceiptConfirmedOrCancelledEvent{
+	receiptConfirmedEvent := &receipting.ReceiptConfirmedEvent{
 		ShopID:    args.ShopID,
 		ReceiptID: args.ID,
 	}
-	if err := a.eventBus.Publish(ctx, receiptConfirmedOrCancelledEvent); err != nil {
-		ll.Error("receiptConfirmedOrCancelledEvent", l.Error(err))
+	if err := a.eventBus.Publish(ctx, receiptConfirmedEvent); err != nil {
+		ll.Error("receiptConfirmedEvent", l.Error(err))
 	}
 
 	return updated, err

@@ -540,6 +540,8 @@ func convert_customeringmodel_ShopTrader_tradering_ShopTrader(arg *customeringmo
 	out.ID = arg.ID         // simple assign
 	out.ShopID = arg.ShopID // simple assign
 	out.Type = arg.Type     // simple assign
+	out.FullName = ""       // zero value
+	out.Phone = ""          // zero value
 }
 
 func Convert_customeringmodel_ShopTraders_tradering_ShopTraders(args []*customeringmodel.ShopTrader) (outs []*tradering.ShopTrader) {

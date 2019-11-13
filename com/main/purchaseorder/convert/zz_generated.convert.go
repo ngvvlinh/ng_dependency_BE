@@ -120,6 +120,7 @@ func convert_purchaseordermodel_PurchaseOrder_purchaseorder_PurchaseOrder(arg *p
 	out.Status = arg.Status               // simple assign
 	out.VariantIDs = arg.VariantIDs       // simple assign
 	out.Lines = Convert_purchaseordermodel_PurchaseOrderLines_purchaseorder_PurchaseOrderLines(arg.Lines)
+	out.PaidAmount = 0                        // zero value
 	out.CreatedBy = arg.CreatedBy             // simple assign
 	out.CancelledReason = arg.CancelledReason // simple assign
 	out.ConfirmedAt = arg.ConfirmedAt         // simple assign
@@ -206,6 +207,7 @@ func apply_purchaseorder_CreatePurchaseOrderArgs_purchaseorder_PurchaseOrder(arg
 	out.Status = 0                        // zero value
 	out.VariantIDs = nil                  // zero value
 	out.Lines = arg.Lines                 // simple assign
+	out.PaidAmount = 0                    // zero value
 	out.CreatedBy = arg.CreatedBy         // simple assign
 	out.CancelledReason = ""              // zero value
 	out.ConfirmedAt = time.Time{}         // zero value
@@ -240,6 +242,7 @@ func apply_purchaseorder_UpdatePurchaseOrderArgs_purchaseorder_PurchaseOrder(arg
 	out.Status = out.Status                                        // no change
 	out.VariantIDs = out.VariantIDs                                // no change
 	out.Lines = arg.Lines                                          // simple assign
+	out.PaidAmount = out.PaidAmount                                // no change
 	out.CreatedBy = out.CreatedBy                                  // no change
 	out.CancelledReason = out.CancelledReason                      // no change
 	out.ConfirmedAt = out.ConfirmedAt                              // no change

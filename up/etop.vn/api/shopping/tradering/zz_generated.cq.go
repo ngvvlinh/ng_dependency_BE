@@ -49,6 +49,18 @@ func (h QueryServiceHandler) HandleGetTraderByID(ctx context.Context, msg *GetTr
 	return err
 }
 
+type GetTraderInfoByIDQuery struct {
+	ID     int64
+	ShopID int64
+
+	Result *ShopTrader `json:"-"`
+}
+
+func (h QueryServiceHandler) HandleGetTraderInfoByID(ctx context.Context, msg *GetTraderInfoByIDQuery) (err error) {
+	msg.Result, err = h.inner.GetTraderInfoByID(msg.GetArgs(ctx))
+	return err
+}
+
 type ListTradersByIDsQuery struct {
 	IDs    []int64
 	ShopID int64
@@ -63,8 +75,9 @@ func (h QueryServiceHandler) HandleListTradersByIDs(ctx context.Context, msg *Li
 
 // implement interfaces
 
-func (q *GetTraderByIDQuery) query()    {}
-func (q *ListTradersByIDsQuery) query() {}
+func (q *GetTraderByIDQuery) query()     {}
+func (q *GetTraderInfoByIDQuery) query() {}
+func (q *ListTradersByIDsQuery) query()  {}
 
 // implement conversion
 
@@ -79,6 +92,12 @@ func (q *GetTraderByIDQuery) GetArgs(ctx context.Context) (_ context.Context, _ 
 func (q *GetTraderByIDQuery) SetIDQueryShopArg(args *shopping.IDQueryShopArg) {
 	q.ID = args.ID
 	q.ShopID = args.ShopID
+}
+
+func (q *GetTraderInfoByIDQuery) GetArgs(ctx context.Context) (_ context.Context, ID int64, ShopID int64) {
+	return ctx,
+		q.ID,
+		q.ShopID
 }
 
 func (q *ListTradersByIDsQuery) GetArgs(ctx context.Context) (_ context.Context, _ *shopping.IDsQueryShopArgs) {
@@ -109,6 +128,7 @@ func (h QueryServiceHandler) RegisterHandlers(b interface {
 	AddHandler(handler interface{})
 }) QueryBus {
 	b.AddHandler(h.HandleGetTraderByID)
+	b.AddHandler(h.HandleGetTraderInfoByID)
 	b.AddHandler(h.HandleListTradersByIDs)
 	return QueryBus{b}
 }

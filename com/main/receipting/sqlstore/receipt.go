@@ -108,6 +108,11 @@ func (s *ReceiptStore) RefIDs(ids ...int64) *ReceiptStore {
 	return s
 }
 
+func (s *ReceiptStore) RefType(refType receipting.ReceiptRefType) *ReceiptStore {
+	s.preds = append(s.preds, s.ft.ByRefType(string(refType)))
+	return s
+}
+
 func (s *ReceiptStore) Status(status etopmodel.Status3) *ReceiptStore {
 	s.preds = append(s.preds, s.ft.ByStatus(status))
 	return s

@@ -1,0 +1,1 @@
+ALTER TYPE receipt_ref_type ADD VALUE 'purchase_order';

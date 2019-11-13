@@ -7,7 +7,9 @@ var (
 )
 
 type ShopTrader struct {
-	ID     int64
-	ShopID int64
-	Type   string
+	ID       int64
+	ShopID   int64
+	Type     string
+	FullName string
+	Phone    string
 }

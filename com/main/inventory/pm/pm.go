@@ -48,7 +48,8 @@ func (m *ProcessManager) PurchaseOrderConfirmed(ctx context.Context, event *purc
 		isCreate = true
 		isConfirm = true
 	}
-	var inventoryVourcherID int64
+
+	var inventoryVoucherID int64
 	if isCreate {
 		cmd := &inventory.CreateInventoryVoucherCommand{
 			Overstock:   false,
@@ -66,13 +67,13 @@ func (m *ProcessManager) PurchaseOrderConfirmed(ctx context.Context, event *purc
 		if err := m.inventoryAgg.Dispatch(ctx, cmd); err != nil {
 			return err
 		}
-		inventoryVourcherID = cmd.Result.ID
+		inventoryVoucherID = cmd.Result.ID
 	}
 
 	if isConfirm {
 		cmd := &inventory.ConfirmInventoryVoucherCommand{
 			ShopID:    event.ShopID,
-			ID:        inventoryVourcherID,
+			ID:        inventoryVoucherID,
 			UpdatedBy: event.UserID,
 		}
 		if err := m.inventoryAgg.Dispatch(ctx, cmd); err != nil {
