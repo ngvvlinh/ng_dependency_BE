@@ -37,6 +37,18 @@ func (c QueryBus) DispatchAll(ctx context.Context, msgs ...Query) error {
 	return nil
 }
 
+type DeleteTraderCommand struct {
+	ID     int64
+	ShopID int64
+
+	Result int `json:"-"`
+}
+
+func (h AggregateHandler) HandleDeleteTrader(ctx context.Context, msg *DeleteTraderCommand) (err error) {
+	msg.Result, err = h.inner.DeleteTrader(msg.GetArgs(ctx))
+	return err
+}
+
 type GetTraderByIDQuery struct {
 	ID     int64
 	ShopID int64
@@ -75,11 +87,18 @@ func (h QueryServiceHandler) HandleListTradersByIDs(ctx context.Context, msg *Li
 
 // implement interfaces
 
+func (q *DeleteTraderCommand) command()  {}
 func (q *GetTraderByIDQuery) query()     {}
 func (q *GetTraderInfoByIDQuery) query() {}
 func (q *ListTradersByIDsQuery) query()  {}
 
 // implement conversion
+
+func (q *DeleteTraderCommand) GetArgs(ctx context.Context) (_ context.Context, ID int64, shopID int64) {
+	return ctx,
+		q.ID,
+		q.ShopID
+}
 
 func (q *GetTraderByIDQuery) GetArgs(ctx context.Context) (_ context.Context, _ *shopping.IDQueryShopArg) {
 	return ctx,
@@ -114,6 +133,20 @@ func (q *ListTradersByIDsQuery) SetIDsQueryShopArgs(args *shopping.IDsQueryShopA
 }
 
 // implement dispatching
+
+type AggregateHandler struct {
+	inner Aggregate
+}
+
+func NewAggregateHandler(service Aggregate) AggregateHandler { return AggregateHandler{service} }
+
+func (h AggregateHandler) RegisterHandlers(b interface {
+	capi.Bus
+	AddHandler(handler interface{})
+}) CommandBus {
+	b.AddHandler(h.HandleDeleteTrader)
+	return CommandBus{b}
+}
 
 type QueryServiceHandler struct {
 	inner QueryService

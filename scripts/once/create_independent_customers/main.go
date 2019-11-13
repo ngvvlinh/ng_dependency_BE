@@ -4,6 +4,8 @@ import (
 	"context"
 	"flag"
 
+	"etop.vn/capi"
+
 	"etop.vn/api/shopping/customering"
 	"etop.vn/backend/cmd/etop-server/config"
 	customeraggregate "etop.vn/backend/com/shopping/customering/aggregate"
@@ -15,9 +17,10 @@ import (
 )
 
 var (
-	ll  = l.New()
-	cfg config.Config
-	db  *cmsql.Database
+	ll       = l.New()
+	cfg      config.Config
+	db       *cmsql.Database
+	eventBus capi.EventBus
 )
 
 func main() {
@@ -36,7 +39,7 @@ func main() {
 		ll.Fatal("Error while connecting database", l.Error(err))
 	}
 
-	customerAggr := customeraggregate.NewCustomerAggregate(db).MessageBus()
+	customerAggr := customeraggregate.NewCustomerAggregate(eventBus, db).MessageBus()
 	{
 		var arrayShops []model.Shops
 		fromID := int64(0)

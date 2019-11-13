@@ -5,6 +5,10 @@ import (
 	"regexp"
 	"strings"
 
+	"etop.vn/capi"
+
+	"etop.vn/api/shopping/tradering"
+
 	"etop.vn/api/meta"
 	"etop.vn/api/shopping/customering"
 	"etop.vn/backend/com/shopping/customering/convert"
@@ -24,15 +28,17 @@ type CustomerAggregate struct {
 	customerGroupStore         sqlstore.CustomerGroupStoreFactory
 	customerGroupCustomerStore sqlstore.CustomerGroupCustomerStoreFactory
 	addressStore               sqlstore.AddressStoreFactory
+	eventBus                   capi.EventBus
 }
 
-func NewCustomerAggregate(db *cmsql.Database) *CustomerAggregate {
+func NewCustomerAggregate(eventBus capi.EventBus, db *cmsql.Database) *CustomerAggregate {
 	return &CustomerAggregate{
 		db:                         db,
 		store:                      sqlstore.NewCustomerStore(db),
 		customerGroupStore:         sqlstore.NewCustomerGroupStore(db),
 		customerGroupCustomerStore: sqlstore.NewCustomerGroupCustomerStore(db),
 		addressStore:               sqlstore.NewAddressStore(db),
+		eventBus:                   eventBus,
 	}
 }
 
@@ -202,6 +208,14 @@ func (a *CustomerAggregate) DeleteCustomer(
 			return errTr
 		}
 		_, errTr = a.addressStore(ctx).ShopTraderID(shopID, id).SoftDelete()
+		event := &tradering.TraderDeletedEvent{
+			EventMeta: meta.NewEvent(),
+			ShopID:    shopID,
+			TraderID:  id,
+		}
+		if err := a.eventBus.Publish(ctx, event); err != nil {
+			return err
+		}
 		return errTr
 	})
 	return deleted, err

@@ -4,6 +4,8 @@ import (
 	"context"
 	"fmt"
 
+	"etop.vn/api/shopping/tradering"
+
 	"etop.vn/api/main/etop"
 	"etop.vn/api/main/inventory"
 	"etop.vn/api/meta"
@@ -202,7 +204,18 @@ func (s *InventoryService) GetInventoryVoucher(ctx context.Context, q *GetInvent
 	if err := inventoryQuery.Dispatch(ctx, query); err != nil {
 		return err
 	}
+
 	q.Result = PbShopInventoryVoucher(query.Result)
+	getTrader := &tradering.GetTraderByIDQuery{
+		ID:     q.Result.TraderId,
+		ShopID: shopID,
+	}
+	if err := traderQuery.Dispatch(ctx, getTrader); err != nil {
+		if cm.ErrorCode(err) != cm.NotFound {
+			return err
+		}
+		q.Result.Trader.Deleted = true
+	}
 	return nil
 }
 
@@ -217,10 +230,44 @@ func (s *InventoryService) GetInventoryVouchers(ctx context.Context, q *GetInven
 	if err := inventoryQuery.Dispatch(ctx, query); err != nil {
 		return err
 	}
+	inventoryVouchers, err := s.checkValidateListTrader(ctx, shopID, query.Result.InventoryVoucher)
+	if err != nil {
+		return err
+	}
 	q.Result = &pbshop.GetInventoryVouchersResponse{
-		InventoryVouchers: PbShopInventoryVouchers(query.Result.InventoryVoucher),
+		InventoryVouchers: inventoryVouchers,
 	}
 	return nil
+}
+
+func (s *InventoryService) checkValidateListTrader(ctx context.Context, shopID int64, inventoryVouchers []*inventory.InventoryVoucher) (result []*pbshop.InventoryVoucher, err error) {
+	if inventoryVouchers == nil {
+		return result, err
+	}
+	traderIDs := make([]int64, 0, len(inventoryVouchers))
+	for _, trader := range inventoryVouchers {
+		traderIDs = append(traderIDs, trader.TraderID)
+	}
+	queryTraders := &tradering.ListTradersByIDsQuery{
+		IDs:    traderIDs,
+		ShopID: shopID,
+	}
+	if err := traderQuery.Dispatch(ctx, queryTraders); err != nil {
+		return result, err
+	}
+	traders := queryTraders.Result.Traders
+	var mapTraderValidate = map[int64]bool{}
+	for _, trader := range traders {
+		mapTraderValidate[trader.ID] = true
+	}
+	for _, inventoryVoucher := range inventoryVouchers {
+		inventory := PbShopInventoryVoucher(inventoryVoucher)
+		if !mapTraderValidate[inventoryVoucher.TraderID] {
+			inventory.Trader.Deleted = true
+		}
+		result = append(result, inventory)
+	}
+	return result, err
 }
 
 func (s *InventoryService) GetInventoryVouchersByIDs(ctx context.Context, q *GetInventoryVouchersByIDsEndpoint) error {

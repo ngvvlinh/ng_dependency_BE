@@ -3,7 +3,11 @@ package aggregate
 import (
 	"context"
 
+	"etop.vn/capi"
+
+	"etop.vn/api/meta"
 	"etop.vn/api/shopping/carrying"
+	"etop.vn/api/shopping/tradering"
 	"etop.vn/backend/com/shopping/carrying/convert"
 	"etop.vn/backend/com/shopping/carrying/model"
 	"etop.vn/backend/com/shopping/carrying/sqlstore"
@@ -16,12 +20,14 @@ var _ carrying.Aggregate = &CarrierAggregate{}
 var scheme = conversion.Build(convert.RegisterConversions)
 
 type CarrierAggregate struct {
-	store sqlstore.CarrierStoreFactory
+	store    sqlstore.CarrierStoreFactory
+	eventBus capi.EventBus
 }
 
-func NewCarrierAggregate(db *cmsql.Database) *CarrierAggregate {
+func NewCarrierAggregate(eventBus capi.EventBus, db *cmsql.Database) *CarrierAggregate {
 	return &CarrierAggregate{
-		store: sqlstore.NewCarrierStore(db),
+		store:    sqlstore.NewCarrierStore(db),
+		eventBus: eventBus,
 	}
 }
 
@@ -63,5 +69,13 @@ func (a *CarrierAggregate) DeleteCarrier(
 	ctx context.Context, id int64, shopID int64,
 ) (deleted int, _ error) {
 	deleted, err := a.store(ctx).ID(id).ShopID(shopID).SoftDelete()
+	event := &tradering.TraderDeletedEvent{
+		EventMeta: meta.NewEvent(),
+		ShopID:    shopID,
+		TraderID:  id,
+	}
+	if err := a.eventBus.Publish(ctx, event); err != nil {
+		return 0, err
+	}
 	return deleted, err
 }

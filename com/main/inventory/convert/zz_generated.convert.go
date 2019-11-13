@@ -94,6 +94,24 @@ func registerConversions(s *conversion.Scheme) {
 		*out.(*[]*inventorymodel.InventoryVoucherItem) = out0
 		return nil
 	})
+	s.Register((*inventorymodel.Trader)(nil), (*inventory.Trader)(nil), func(arg, out interface{}) error {
+		Convert_inventorymodel_Trader_inventory_Trader(arg.(*inventorymodel.Trader), out.(*inventory.Trader))
+		return nil
+	})
+	s.Register(([]*inventorymodel.Trader)(nil), (*[]*inventory.Trader)(nil), func(arg, out interface{}) error {
+		out0 := Convert_inventorymodel_Traders_inventory_Traders(arg.([]*inventorymodel.Trader))
+		*out.(*[]*inventory.Trader) = out0
+		return nil
+	})
+	s.Register((*inventory.Trader)(nil), (*inventorymodel.Trader)(nil), func(arg, out interface{}) error {
+		Convert_inventory_Trader_inventorymodel_Trader(arg.(*inventory.Trader), out.(*inventorymodel.Trader))
+		return nil
+	})
+	s.Register(([]*inventory.Trader)(nil), (*[]*inventorymodel.Trader)(nil), func(arg, out interface{}) error {
+		out0 := Convert_inventory_Traders_inventorymodel_Traders(arg.([]*inventory.Trader))
+		*out.(*[]*inventorymodel.Trader) = out0
+		return nil
+	})
 }
 
 //-- convert etop.vn/api/main/inventory.InventoryVariant --//
@@ -167,10 +185,11 @@ func convert_inventorymodel_InventoryVoucher_inventory_InventoryVoucher(arg *inv
 	out.RefType = inventory.InventoryRefType(arg.RefType)        // simple conversion
 	out.RefName = inventory.InventoryVoucherRefName(arg.RefName) // simple conversion
 	out.TraderID = arg.TraderID                                  // simple assign
-	out.TotalAmount = arg.TotalAmount                            // simple assign
-	out.Type = inventory.InventoryVoucherType(arg.Type)          // simple conversion
-	out.CancelReason = arg.CancelReason                          // simple assign
-	out.Note = arg.Note                                          // simple assign
+	out.Trader = Convert_inventorymodel_Trader_inventory_Trader(arg.Trader, nil)
+	out.TotalAmount = arg.TotalAmount                   // simple assign
+	out.Type = inventory.InventoryVoucherType(arg.Type) // simple conversion
+	out.CancelReason = arg.CancelReason                 // simple assign
+	out.Note = arg.Note                                 // simple assign
 	out.Lines = Convert_inventorymodel_InventoryVoucherItems_inventory_InventoryVoucherItems(arg.Lines)
 	out.Status = arg.Status // simple assign
 }
@@ -189,15 +208,16 @@ func Convert_inventory_InventoryVoucher_inventorymodel_InventoryVoucher(arg *inv
 }
 
 func convert_inventory_InventoryVoucher_inventorymodel_InventoryVoucher(arg *inventory.InventoryVoucher, out *inventorymodel.InventoryVoucher) {
-	out.ShopID = arg.ShopID           // simple assign
-	out.ID = arg.ID                   // simple assign
-	out.CreatedBy = arg.CreatedBy     // simple assign
-	out.UpdatedBy = arg.UpdatedBy     // simple assign
-	out.Code = arg.Code               // simple assign
-	out.CodeNorm = arg.CodeNorm       // simple assign
-	out.Status = arg.Status           // simple assign
-	out.Note = arg.Note               // simple assign
-	out.TraderID = arg.TraderID       // simple assign
+	out.ShopID = arg.ShopID       // simple assign
+	out.ID = arg.ID               // simple assign
+	out.CreatedBy = arg.CreatedBy // simple assign
+	out.UpdatedBy = arg.UpdatedBy // simple assign
+	out.Code = arg.Code           // simple assign
+	out.CodeNorm = arg.CodeNorm   // simple assign
+	out.Status = arg.Status       // simple assign
+	out.Note = arg.Note           // simple assign
+	out.TraderID = arg.TraderID   // simple assign
+	out.Trader = Convert_inventory_Trader_inventorymodel_Trader(arg.Trader, nil)
 	out.TotalAmount = arg.TotalAmount // simple assign
 	out.Type = string(arg.Type)       // simple conversion
 	out.Lines = Convert_inventory_InventoryVoucherItems_inventorymodel_InventoryVoucherItems(arg.Lines)
@@ -248,6 +268,7 @@ func apply_inventory_CreateInventoryVoucherArgs_inventory_InventoryVoucher(arg *
 	out.RefType = arg.RefType         // simple assign
 	out.RefName = arg.RefName         // simple assign
 	out.TraderID = arg.TraderID       // simple assign
+	out.Trader = nil                  // zero value
 	out.TotalAmount = arg.TotalAmount // simple assign
 	out.Type = arg.Type               // simple assign
 	out.CancelReason = ""             // zero value
@@ -276,6 +297,7 @@ func apply_inventory_UpdateInventoryVoucherArgs_inventory_InventoryVoucher(arg *
 	out.RefType = out.RefType                       // no change
 	out.RefName = out.RefName                       // no change
 	out.TraderID = arg.TraderID.Apply(out.TraderID) // apply change
+	out.Trader = out.Trader                         // no change
 	out.TotalAmount = arg.TotalAmount               // simple assign
 	out.Type = out.Type                             // no change
 	out.CancelReason = out.CancelReason             // no change
@@ -335,6 +357,62 @@ func Convert_inventory_InventoryVoucherItems_inventorymodel_InventoryVoucherItem
 	outs = make([]*inventorymodel.InventoryVoucherItem, len(args))
 	for i := range tmps {
 		outs[i] = Convert_inventory_InventoryVoucherItem_inventorymodel_InventoryVoucherItem(args[i], &tmps[i])
+	}
+	return outs
+}
+
+//-- convert etop.vn/api/main/inventory.Trader --//
+
+func Convert_inventorymodel_Trader_inventory_Trader(arg *inventorymodel.Trader, out *inventory.Trader) *inventory.Trader {
+	if arg == nil {
+		return nil
+	}
+	if out == nil {
+		out = &inventory.Trader{}
+	}
+	convert_inventorymodel_Trader_inventory_Trader(arg, out)
+	return out
+}
+
+func convert_inventorymodel_Trader_inventory_Trader(arg *inventorymodel.Trader, out *inventory.Trader) {
+	out.ID = arg.ID             // simple assign
+	out.Type = arg.Type         // simple assign
+	out.FullName = arg.FullName // simple assign
+	out.Phone = arg.Phone       // simple assign
+}
+
+func Convert_inventorymodel_Traders_inventory_Traders(args []*inventorymodel.Trader) (outs []*inventory.Trader) {
+	tmps := make([]inventory.Trader, len(args))
+	outs = make([]*inventory.Trader, len(args))
+	for i := range tmps {
+		outs[i] = Convert_inventorymodel_Trader_inventory_Trader(args[i], &tmps[i])
+	}
+	return outs
+}
+
+func Convert_inventory_Trader_inventorymodel_Trader(arg *inventory.Trader, out *inventorymodel.Trader) *inventorymodel.Trader {
+	if arg == nil {
+		return nil
+	}
+	if out == nil {
+		out = &inventorymodel.Trader{}
+	}
+	convert_inventory_Trader_inventorymodel_Trader(arg, out)
+	return out
+}
+
+func convert_inventory_Trader_inventorymodel_Trader(arg *inventory.Trader, out *inventorymodel.Trader) {
+	out.ID = arg.ID             // simple assign
+	out.Type = arg.Type         // simple assign
+	out.FullName = arg.FullName // simple assign
+	out.Phone = arg.Phone       // simple assign
+}
+
+func Convert_inventory_Traders_inventorymodel_Traders(args []*inventory.Trader) (outs []*inventorymodel.Trader) {
+	tmps := make([]inventorymodel.Trader, len(args))
+	outs = make([]*inventorymodel.Trader, len(args))
+	for i := range tmps {
+		outs[i] = Convert_inventory_Trader_inventorymodel_Trader(args[i], &tmps[i])
 	}
 	return outs
 }

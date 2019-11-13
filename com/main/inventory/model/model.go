@@ -33,6 +33,7 @@ type InventoryVoucher struct {
 	Status       etop.Status3
 	Note         string
 	TraderID     int64
+	Trader       *Trader
 	TotalAmount  int32
 	Type         string
 	Lines        []*InventoryVoucherItem
@@ -52,4 +53,11 @@ type InventoryVoucherItem struct {
 	Price     int32 `json:"price"`
 	Quantity  int32 `json:"quantity"`
 	Discount  int32 `json:"discount"`
+}
+
+type Trader struct {
+	ID       int64  `json:"id"`
+	Type     string `json:"type"`
+	FullName string `json:"full_name"`
+	Phone    string `json:"phone"`
 }

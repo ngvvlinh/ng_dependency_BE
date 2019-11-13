@@ -52,6 +52,8 @@ import (
 	customerquery "etop.vn/backend/com/shopping/customering/query"
 	supplieraggregate "etop.vn/backend/com/shopping/suppliering/aggregate"
 	supplierquery "etop.vn/backend/com/shopping/suppliering/query"
+	traderAgg "etop.vn/backend/com/shopping/tradering/aggregate"
+	traderpm "etop.vn/backend/com/shopping/tradering/pm"
 	traderquery "etop.vn/backend/com/shopping/tradering/query"
 	summaryquery "etop.vn/backend/com/summary/query"
 	vhtaggregate "etop.vn/backend/com/supporting/crm/vht/aggregate"
@@ -319,8 +321,7 @@ func main() {
 	vtigerClient := vtigerclient.NewVigerClient(cfg.Vtiger.ServiceURL, cfg.Vtiger.Username, cfg.Vtiger.APIKey)
 	// create aggregate, query service
 	summaryQuery := summaryquery.NewDashboardQuery(db, redisStore).MessageBus()
-	inventoryAggr := inventoryaggregate.NewAggregateInventory(eventBus, db).MessageBus()
-	inventoryQuery := inventoryquery.NewQueryInventory(eventBus, db).MessageBus()
+
 	vhtQuery := vhtquery.New(crmDB).MessageBus()
 	vhtAggregate := vhtaggregate.New(crmDB, nil).MessageBus()
 	vtigerQuery := vtigerquery.New(crmDB, configMap, vtigerClient).MessageBus()
@@ -346,15 +347,16 @@ func main() {
 	identityAggr := serviceidentity.NewAggregate(db, shipnowCarrierManager).MessageBus()
 	shipnowAggr = serviceshipnow.NewAggregate(eventBus, db, locationBus, identityQuery, addressQuery, orderQuery, shipnowCarrierManager).MessageBus()
 
-	inventoryPm := inventorypm.New(eventBus, catalogQuery, orderQuery, inventoryAggr)
-	inventoryPm.RegisterEventHandlers(eventBus)
 	shipnowPM := shipnowpm.New(eventBus, shipnowQuery, shipnowAggr, orderAggr.MessageBus(), shipnowCarrierManager)
 	shipnowPM.RegisterEventHandlers(eventBus)
 
-	customerAggr := customeraggregate.NewCustomerAggregate(db).MessageBus()
-	supplierAggr := supplieraggregate.NewSupplierAggregate(db).MessageBus()
-	carrierAggr := carrieraggregate.NewCarrierAggregate(db).MessageBus()
+	customerAggr := customeraggregate.NewCustomerAggregate(eventBus, db).MessageBus()
+	supplierAggr := supplieraggregate.NewSupplierAggregate(eventBus, db).MessageBus()
+	carrierAggr := carrieraggregate.NewCarrierAggregate(eventBus, db).MessageBus()
 	traderAddressAggr := customeraggregate.NewAddressAggregate(db).MessageBus()
+	traderAgg := traderAgg.NewTraderAgg(db).MessageBus()
+	traderPM := traderpm.New(eventBus, traderAgg)
+	traderPM.RegisterEventHandlers(eventBus)
 	customerPM := customerpm.New(eventBus, customerAggr)
 	customerPM.RegisterEventHandlers(eventBus)
 	customerQuery := customerquery.NewCustomerQuery(db).MessageBus()
@@ -371,6 +373,10 @@ func main() {
 	ledgerQuery := ledgerquery.NewLedgerQuery(db).MessageBus()
 	ledgerPM := ledgerpm.New(eventBus, ledgerAggr)
 	ledgerPM.RegisterEventHandlers(eventBus)
+	inventoryAggr := inventoryaggregate.NewAggregateInventory(eventBus, db, traderQuery).MessageBus()
+	inventoryQuery := inventoryquery.NewQueryInventory(eventBus, db).MessageBus()
+	inventoryPm := inventorypm.New(eventBus, catalogQuery, orderQuery, inventoryAggr)
+	inventoryPm.RegisterEventHandlers(eventBus)
 
 	purchaseOrderAggr := purchaseorderaggregate.NewPurchaseOrderAggregate(db, eventBus, catalogQuery, supplierQuery, inventoryQuery).MessageBus()
 	purchaseOrderQuery := purchaseorderquery.NewPurchaseOrderQuery(db, eventBus, supplierQuery, inventoryQuery, &receiptQuery).MessageBus()

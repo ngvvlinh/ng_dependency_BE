@@ -110,6 +110,7 @@ func PbShopInventoryVoucher(args *inventory.InventoryVoucher) *pbshop.InventoryV
 		RefType:      string(args.RefType),
 		RefName:      string(args.RefName),
 		TraderId:     args.TraderID,
+		Trader:       PbShopTrader(args.Trader),
 		Note:         args.Note,
 		Type:         string(args.Type),
 		Id:           args.ID,
@@ -119,6 +120,19 @@ func PbShopInventoryVoucher(args *inventory.InventoryVoucher) *pbshop.InventoryV
 		CancelledAt:  pbcm.PbTime(args.CancelledAt),
 		ConfirmedAt:  pbcm.PbTime(args.ConfirmedAt),
 		CancelReason: args.CancelReason,
+	}
+}
+
+func PbShopTrader(args *inventory.Trader) *pbshop.Trader {
+	if args == nil {
+		return nil
+	}
+	return &pbshop.Trader{
+		Id:       args.ID,
+		Type:     args.Type,
+		FullName: args.FullName,
+		Phone:    args.Phone,
+		Deleted:  false,
 	}
 }
 

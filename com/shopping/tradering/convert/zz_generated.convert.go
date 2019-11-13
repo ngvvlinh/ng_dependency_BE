@@ -5,6 +5,8 @@
 package convert
 
 import (
+	time "time"
+
 	tradering "etop.vn/api/shopping/tradering"
 	traderingmodel "etop.vn/backend/com/shopping/tradering/model"
 	conversion "etop.vn/backend/pkg/common/conversion"
@@ -83,9 +85,10 @@ func Convert_tradering_ShopTrader_traderingmodel_ShopTrader(arg *tradering.ShopT
 }
 
 func convert_tradering_ShopTrader_traderingmodel_ShopTrader(arg *tradering.ShopTrader, out *traderingmodel.ShopTrader) {
-	out.ID = arg.ID         // simple assign
-	out.ShopID = arg.ShopID // simple assign
-	out.Type = arg.Type     // simple assign
+	out.ID = arg.ID             // simple assign
+	out.ShopID = arg.ShopID     // simple assign
+	out.Type = arg.Type         // simple assign
+	out.DeletedAt = time.Time{} // zero value
 }
 
 func Convert_tradering_ShopTraders_traderingmodel_ShopTraders(args []*tradering.ShopTrader) (outs []*traderingmodel.ShopTrader) {

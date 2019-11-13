@@ -6,6 +6,7 @@ import (
 
 	"etop.vn/api/main/etop"
 	"etop.vn/api/main/inventory"
+	"etop.vn/api/shopping/tradering"
 	"etop.vn/backend/com/main/inventory/convert"
 	"etop.vn/backend/com/main/inventory/model"
 	"etop.vn/backend/com/main/inventory/sqlstore"
@@ -21,15 +22,17 @@ var scheme = conversion.Build(convert.RegisterConversions)
 type InventoryAggregate struct {
 	InventoryStore        sqlstore.InventoryFactory
 	InventoryVoucherStore sqlstore.InventoryVoucherFactory
+	traderQuery           tradering.QueryBus
 	EventBus              bus.Bus
 	db                    *cmsql.Database
 }
 
-func NewAggregateInventory(eventBus bus.Bus, db *cmsql.Database) *InventoryAggregate {
+func NewAggregateInventory(eventBus bus.Bus, db *cmsql.Database, traderQuery tradering.QueryBus) *InventoryAggregate {
 	return &InventoryAggregate{
 		InventoryStore:        sqlstore.NewInventoryStore(db),
 		InventoryVoucherStore: sqlstore.NewInventoryVoucherStore(db),
 		EventBus:              eventBus,
+		traderQuery:           traderQuery,
 		db:                    db,
 	}
 }
@@ -68,6 +71,12 @@ func (q *InventoryAggregate) CreateInventoryVoucher(ctx context.Context, Oversto
 	if err != nil {
 		return nil, err
 	}
+	if voucher.TraderID != 0 {
+		err := q.validateTrader(ctx, voucher.ShopID, &voucher)
+		if err != nil {
+			return nil, err
+		}
+	}
 	err = q.db.InTransaction(ctx, func(tx cmsql.QueryInterface) error {
 		for _, value := range listInventoryModel {
 			err = q.InventoryStore(ctx).ShopID(args.ShopID).VariantID(value.VariantID).UpdateInventoryVariantAll(value)
@@ -101,6 +110,25 @@ func (q *InventoryAggregate) CreateInventoryVoucher(ctx context.Context, Oversto
 		return nil, err
 	}
 	return q.InventoryVoucherStore(ctx).ShopID(args.ShopID).ID(voucher.ID).Get()
+}
+
+func (q *InventoryAggregate) validateTrader(ctx context.Context, shopID int64, voucher *inventory.InventoryVoucher) error {
+	query := &tradering.GetTraderInfoByIDQuery{
+		ID:     voucher.TraderID,
+		ShopID: shopID,
+	}
+	if err := q.traderQuery.Dispatch(ctx, query); err != nil {
+		return cm.MapError(err).
+			Map(cm.NotFound, cm.FailedPrecondition, "Đối tác không hợp lệ").
+			Throw()
+	}
+	voucher.Trader = &inventory.Trader{
+		ID:       query.Result.ID,
+		Type:     query.Result.Type,
+		FullName: query.Result.FullName,
+		Phone:    query.Result.Phone,
+	}
+	return nil
 }
 
 func (q *InventoryAggregate) PreInventoryVariantForVoucher(ctx context.Context, overStock bool, args *inventory.CreateInventoryVoucherArgs) (totalAmount int32, listInventoryVariants []*inventory.InventoryVariant, err error) {
@@ -198,6 +226,14 @@ func (q *InventoryAggregate) UpdateInventoryVoucher(ctx context.Context, args *i
 	}
 
 	updateInventoryCore := convert.ApplyUpdateInventoryVoucher(args, dbResult)
+	if args.TraderID.Valid {
+		if args.TraderID.Int64 != updateInventoryCore.TraderID {
+			err := q.validateTrader(ctx, updateInventoryCore.ShopID, updateInventoryCore)
+			if err != nil {
+				return nil, err
+			}
+		}
+	}
 	err = q.InventoryVoucherStore(ctx).ShopID(args.ShopID).ID(args.ID).UpdateInventoryVoucherAll(updateInventoryCore)
 	if err != nil {
 		return nil, err

@@ -2,6 +2,7 @@ package sqlstore
 
 import (
 	"context"
+	"time"
 
 	"etop.vn/api/meta"
 	"etop.vn/api/shopping/tradering"
@@ -26,10 +27,11 @@ func NewTraderStore(db *cmsql.Database) TraderStoreFactory {
 type TraderStore struct {
 	ft ShopTraderFilters
 
-	query   cmsql.QueryFactory
-	preds   []interface{}
-	filters meta.Filters
-	paging  meta.Paging
+	query          cmsql.QueryFactory
+	preds          []interface{}
+	filters        meta.Filters
+	paging         meta.Paging
+	includeDeleted sqlstore.IncludeDeleted
 }
 
 func (s *TraderStore) Paging(paging meta.Paging) *TraderStore {
@@ -77,7 +79,7 @@ func (s *TraderStore) Count() (uint64, error) {
 
 func (s *TraderStore) GetTraderDB() (*model.ShopTrader, error) {
 	query := s.query().Where(s.preds)
-
+	query = s.includeDeleted.Check(query, s.ft.NotDeleted())
 	var trader model.ShopTrader
 	err := query.ShouldGet(&trader)
 	return &trader, err
@@ -93,6 +95,7 @@ func (s *TraderStore) GetTrader() (traderResult *tradering.ShopTrader, _ error) 
 
 func (s *TraderStore) ListTradersDB() ([]*model.ShopTrader, error) {
 	query := s.query().Where(s.preds)
+	query = s.includeDeleted.Check(query, s.ft.NotDeleted())
 	query, err := sqlstore.LimitSort(query, &s.paging, SortTrader)
 	if err != nil {
 		return nil, err
@@ -113,4 +116,13 @@ func (s *TraderStore) ListTraders() ([]*tradering.ShopTrader, error) {
 		return nil, err
 	}
 	return convert.Convert_traderingmodel_ShopTraders_tradering_ShopTraders(traders), nil
+}
+
+func (s *TraderStore) SoftDelete() (int, error) {
+	query := s.query().Where(s.preds)
+	query = s.includeDeleted.Check(query, s.ft.NotDeleted())
+	_deleted, err := query.Table("shop_trader").UpdateMap(map[string]interface{}{
+		"deleted_at": time.Now(),
+	})
+	return int(_deleted), err
 }

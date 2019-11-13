@@ -9507,6 +9507,9 @@
         },
         "cancel_reason": {
           "type": "string"
+        },
+        "trader": {
+          "$ref": "#/definitions/shopTrader"
         }
       }
     },

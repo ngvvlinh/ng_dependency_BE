@@ -3,6 +3,11 @@ package aggregate
 import (
 	"context"
 
+	"etop.vn/capi"
+
+	"etop.vn/api/meta"
+	"etop.vn/api/shopping/tradering"
+
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/validate"
 
@@ -19,12 +24,14 @@ var _ suppliering.Aggregate = &SupplierAggregate{}
 var scheme = conversion.Build(convert.RegisterConversions)
 
 type SupplierAggregate struct {
-	store sqlstore.SupplierStoreFactory
+	store    sqlstore.SupplierStoreFactory
+	eventBus capi.EventBus
 }
 
-func NewSupplierAggregate(db *cmsql.Database) *SupplierAggregate {
+func NewSupplierAggregate(eventBus capi.EventBus, db *cmsql.Database) *SupplierAggregate {
 	return &SupplierAggregate{
-		store: sqlstore.NewSupplierStore(db),
+		store:    sqlstore.NewSupplierStore(db),
+		eventBus: eventBus,
 	}
 }
 
@@ -137,5 +144,13 @@ func (a *SupplierAggregate) DeleteSupplier(
 	ctx context.Context, ID int64, shopID int64,
 ) (deleted int, _ error) {
 	deleted, err := a.store(ctx).ID(ID).ShopID(shopID).SoftDelete()
+	event := &tradering.TraderDeletedEvent{
+		EventMeta: meta.NewEvent(),
+		ShopID:    shopID,
+		TraderID:  ID,
+	}
+	if err := a.eventBus.Publish(ctx, event); err != nil {
+		return 0, err
+	}
 	return deleted, err
 }

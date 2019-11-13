@@ -34,7 +34,7 @@ func startServers() *http.Server {
 
 	catalogQueryService := catalogquery.New(db).MessageBus()
 	orderAggr := serviceordering.NewAggregate(eventBus, db).MessageBus()
-	customerAggr := customeraggregate.NewCustomerAggregate(db).MessageBus()
+	customerAggr := customeraggregate.NewCustomerAggregate(eventBus, db).MessageBus()
 	customerQuery := customerquery.NewCustomerQuery(db).MessageBus()
 	traderAddressAggr := customeraggregate.NewAddressAggregate(db).MessageBus()
 	traderAddressQuery := customerquery.NewAddressQuery(db).MessageBus()

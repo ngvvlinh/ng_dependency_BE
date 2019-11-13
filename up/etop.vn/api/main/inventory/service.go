@@ -167,6 +167,7 @@ type InventoryVoucher struct {
 	RefName InventoryVoucherRefName
 
 	TraderID    int64
+	Trader      *Trader
 	TotalAmount int32
 
 	// enum "in" or "out"
@@ -176,6 +177,13 @@ type InventoryVoucher struct {
 	Note         string
 	Lines        []*InventoryVoucherItem
 	Status       etop.Status3
+}
+
+type Trader struct {
+	ID       int64
+	Type     string
+	FullName string
+	Phone    string
 }
 
 type InventoryVoucherItem struct {

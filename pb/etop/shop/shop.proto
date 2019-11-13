@@ -1775,6 +1775,7 @@ message InventoryVoucher {
     optional google.protobuf.Timestamp cancelled_at = 12;
     optional google.protobuf.Timestamp confirmed_at = 13;
     optional string cancel_reason = 14 [(gogoproto.nullable) = false];
+    optional Trader trader = 20;
 }
 
 message GetInventoryVouchersRequest {
