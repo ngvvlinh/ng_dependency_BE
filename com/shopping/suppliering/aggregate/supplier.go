@@ -67,6 +67,24 @@ func (a *SupplierAggregate) CreateSupplier(
 	if err = scheme.Convert(args, supplier); err != nil {
 		return nil, err
 	}
+	var maxCodeNorm int32
+	supplierTemp, err := a.store(ctx).ShopID(args.ShopID).IncludeDeleted().GetSupplierByMaximumCodeNorm()
+	switch cm.ErrorCode(err) {
+	case cm.NoError:
+		maxCodeNorm = supplierTemp.CodeNorm
+	case cm.NotFound:
+		// no-op
+	default:
+		return nil, err
+	}
+
+	if maxCodeNorm >= convert.MaxCodeNorm {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "Vui lòng nhập mã")
+	}
+	codeNorm := maxCodeNorm + 1
+	supplier.Code = convert.GenerateCode(int(codeNorm))
+	supplier.CodeNorm = codeNorm
+
 	err = a.store(ctx).CreateSupplier(supplier)
 	return supplier, err
 }
@@ -74,6 +92,10 @@ func (a *SupplierAggregate) CreateSupplier(
 func (a *SupplierAggregate) UpdateSupplier(
 	ctx context.Context, args *suppliering.UpdateSupplierArgs,
 ) (*suppliering.ShopSupplier, error) {
+	supplier, err := a.store(ctx).ID(args.ID).ShopID(args.ShopID).GetSupplier()
+	if err != nil {
+		return nil, err
+	}
 	if args.Phone.Valid {
 		if args.Phone.String == "" {
 			return nil, cm.Error(cm.InvalidArgument, "Số điện thoại không thể rỗng", nil)
@@ -100,11 +122,6 @@ func (a *SupplierAggregate) UpdateSupplier(
 			return nil, cm.Error(cm.InvalidArgument, "Email đã tồn tại", nil)
 		}
 	}
-	supplier, err := a.store(ctx).ID(args.ID).ShopID(args.ShopID).GetSupplier()
-	if err != nil {
-		return nil, err
-	}
-
 	if err = scheme.Convert(args, supplier); err != nil {
 		return nil, err
 	}

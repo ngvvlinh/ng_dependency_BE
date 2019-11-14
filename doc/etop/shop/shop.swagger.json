@@ -10397,6 +10397,9 @@
         "headquater_address": {
           "type": "string"
         },
+        "code": {
+          "type": "string"
+        },
         "status": {
           "$ref": "#/definitions/status3Status"
         },

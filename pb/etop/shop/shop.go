@@ -277,11 +277,11 @@ func PbSupplier(m *suppliering.ShopSupplier) *Supplier {
 		return nil
 	}
 	return &Supplier{
-		Id:       m.ID,
-		ShopId:   m.ShopID,
-		FullName: m.FullName,
-		Note:     m.Note,
-
+		Id:                m.ID,
+		ShopId:            m.ShopID,
+		FullName:          m.FullName,
+		Note:              m.Note,
+		Code:              m.Code,
 		Phone:             m.Phone,
 		Email:             m.Email,
 		CompanyName:       m.CompanyName,

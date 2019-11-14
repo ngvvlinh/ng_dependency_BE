@@ -9,6 +9,8 @@ type ShopSupplier struct {
 	ShopID            int64
 	FullName          string
 	Phone             string
+	Code              string
+	CodeNorm          int32
 	Email             string
 	CompanyName       string
 	TaxNumber         string

@@ -152,6 +152,17 @@ func (s *SupplierStore) GetSupplierDB() (*model.ShopSupplier, error) {
 	return &supplier, err
 }
 
+func (s *SupplierStore) GetSupplierByMaximumCodeNorm() (*model.ShopSupplier, error) {
+	query := s.query().Where(s.preds).Where("code_norm != 0")
+	query = query.OrderBy("code_norm desc").Limit(1)
+
+	var supplier model.ShopSupplier
+	if err := query.ShouldGet(&supplier); err != nil {
+		return nil, err
+	}
+	return &supplier, nil
+}
+
 func (s *SupplierStore) GetSupplier() (supplierResult *suppliering.ShopSupplier, _ error) {
 	supplier, err := s.GetSupplierDB()
 	if err != nil {
@@ -186,4 +197,9 @@ func (s *SupplierStore) ListSuppliers() ([]*suppliering.ShopSupplier, error) {
 		return nil, err
 	}
 	return convert.Convert_supplieringmodel_ShopSuppliers_suppliering_ShopSuppliers(suppliers), nil
+}
+
+func (s *SupplierStore) IncludeDeleted() *SupplierStore {
+	s.includeDeleted = true
+	return s
 }

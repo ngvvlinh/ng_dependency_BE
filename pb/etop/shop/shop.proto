@@ -1471,6 +1471,7 @@ message Supplier {
     optional string company_name = 10 [(gogoproto.nullable) = false];
     optional string tax_number =11 [(gogoproto.nullable) = false];
     optional string headquater_address = 12 [(gogoproto.nullable) = false];
+    optional string code =13 [(gogoproto.nullable) = false];
     optional status3.Status status = 5 [(gogoproto.nullable) = false];
     optional google.protobuf.Timestamp created_at = 6;
     optional google.protobuf.Timestamp updated_at = 7;

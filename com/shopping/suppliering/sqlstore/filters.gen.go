@@ -117,6 +117,44 @@ func (ft *ShopSupplierFilters) ByEmailPtr(Email *string) *sq.ColumnFilterPtr {
 	}
 }
 
+func (ft *ShopSupplierFilters) ByCode(Code string) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "code",
+		Value:  Code,
+		IsNil:  Code == "",
+	}
+}
+
+func (ft *ShopSupplierFilters) ByCodePtr(Code *string) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "code",
+		Value:  Code,
+		IsNil:  Code == nil,
+		IsZero: Code != nil && (*Code) == "",
+	}
+}
+
+func (ft *ShopSupplierFilters) ByCodeNorm(CodeNorm int32) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "code_norm",
+		Value:  CodeNorm,
+		IsNil:  CodeNorm == 0,
+	}
+}
+
+func (ft *ShopSupplierFilters) ByCodeNormPtr(CodeNorm *int32) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "code_norm",
+		Value:  CodeNorm,
+		IsNil:  CodeNorm == nil,
+		IsZero: CodeNorm != nil && (*CodeNorm) == 0,
+	}
+}
+
 func (ft *ShopSupplierFilters) ByCompanyName(CompanyName string) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,

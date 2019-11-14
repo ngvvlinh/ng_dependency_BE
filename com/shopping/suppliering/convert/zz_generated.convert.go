@@ -17,7 +17,8 @@ Custom conversions:
     createShopSupplier    // in use
     updateShopSupplier    // in use
 
-Ignored functions: (none)
+Ignored functions:
+    GenerateCode    // params are not pointer to named types
 */
 
 func RegisterConversions(s *conversion.Scheme) {
@@ -71,6 +72,8 @@ func convert_supplieringmodel_ShopSupplier_suppliering_ShopSupplier(arg *supplie
 	out.ShopID = arg.ShopID                       // simple assign
 	out.FullName = arg.FullName                   // simple assign
 	out.Phone = arg.Phone                         // simple assign
+	out.Code = arg.Code                           // simple assign
+	out.CodeNorm = arg.CodeNorm                   // simple assign
 	out.Email = arg.Email                         // simple assign
 	out.CompanyName = arg.CompanyName             // simple assign
 	out.TaxNumber = arg.TaxNumber                 // simple assign
@@ -107,6 +110,8 @@ func convert_suppliering_ShopSupplier_supplieringmodel_ShopSupplier(arg *supplie
 	out.FullName = arg.FullName                   // simple assign
 	out.Phone = arg.Phone                         // simple assign
 	out.Email = arg.Email                         // simple assign
+	out.Code = arg.Code                           // simple assign
+	out.CodeNorm = arg.CodeNorm                   // simple assign
 	out.CompanyName = arg.CompanyName             // simple assign
 	out.TaxNumber = arg.TaxNumber                 // simple assign
 	out.HeadquaterAddress = arg.HeadquaterAddress // simple assign
@@ -144,6 +149,8 @@ func apply_suppliering_CreateSupplierArgs_suppliering_ShopSupplier(arg *supplier
 	out.ShopID = arg.ShopID                       // simple assign
 	out.FullName = arg.FullName                   // simple assign
 	out.Phone = arg.Phone                         // simple assign
+	out.Code = ""                                 // zero value
+	out.CodeNorm = 0                              // zero value
 	out.Email = arg.Email                         // simple assign
 	out.CompanyName = arg.CompanyName             // simple assign
 	out.TaxNumber = arg.TaxNumber                 // simple assign
@@ -170,6 +177,8 @@ func apply_suppliering_UpdateSupplierArgs_suppliering_ShopSupplier(arg *supplier
 	out.ShopID = out.ShopID                                                    // identifier
 	out.FullName = arg.FullName.Apply(out.FullName)                            // apply change
 	out.Phone = arg.Phone.Apply(out.Phone)                                     // apply change
+	out.Code = out.Code                                                        // no change
+	out.CodeNorm = out.CodeNorm                                                // no change
 	out.Email = arg.Email.Apply(out.Email)                                     // apply change
 	out.CompanyName = arg.CompanyName.Apply(out.CompanyName)                   // apply change
 	out.TaxNumber = arg.TaxNumber.Apply(out.TaxNumber)                         // apply change
