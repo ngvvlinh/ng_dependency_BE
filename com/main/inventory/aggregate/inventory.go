@@ -22,6 +22,7 @@ type InventoryAggregate struct {
 	InventoryStore        sqlstore.InventoryFactory
 	InventoryVoucherStore sqlstore.InventoryVoucherFactory
 	EventBus              bus.Bus
+	db                    *cmsql.Database
 }
 
 func NewAggregateInventory(eventBus bus.Bus, db *cmsql.Database) *InventoryAggregate {
@@ -29,6 +30,7 @@ func NewAggregateInventory(eventBus bus.Bus, db *cmsql.Database) *InventoryAggre
 		InventoryStore:        sqlstore.NewInventoryStore(db),
 		InventoryVoucherStore: sqlstore.NewInventoryVoucherStore(db),
 		EventBus:              eventBus,
+		db:                    db,
 	}
 }
 
@@ -41,7 +43,7 @@ func (q *InventoryAggregate) CreateInventoryVoucher(ctx context.Context, Oversto
 	if args.ShopID == 0 || args.Type == "" {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing value requirement")
 	}
-	event := &inventory.InventoryVoucherCreatedEvent{
+	event := &inventory.InventoryVoucherCreatingEvent{
 		ShopID: args.ShopID,
 		Line:   args.Lines,
 	}
@@ -51,20 +53,13 @@ func (q *InventoryAggregate) CreateInventoryVoucher(ctx context.Context, Oversto
 	}
 	var totalAmount int32 = 0
 	var listInventoryModel []*inventory.InventoryVariant
-	totalAmount, listInventoryModel, err = q.ProcessInventoryVariantForVoucher(ctx, Overstock, args)
+	totalAmount, listInventoryModel, err = q.PreInventoryVariantForVoucher(ctx, Overstock, args)
 	if err != nil {
 		return nil, err
-	}
-	for _, value := range listInventoryModel {
-		err = q.InventoryStore(ctx).ShopID(args.ShopID).VariantID(value.VariantID).UpdateInventoryVariantAll(value)
-		if err != nil {
-			return nil, err
-		}
 	}
 	if args.TotalAmount != totalAmount {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Tổng giá trị phiếu không hợp lệ")
 	}
-
 	var voucher inventory.InventoryVoucher
 	if err = scheme.Convert(args, &voucher); err != nil {
 		return nil, err
@@ -73,47 +68,84 @@ func (q *InventoryAggregate) CreateInventoryVoucher(ctx context.Context, Oversto
 	if err != nil {
 		return nil, err
 	}
-	err = q.InventoryVoucherStore(ctx).Create(&voucher)
+	err = q.db.InTransaction(ctx, func(tx cmsql.QueryInterface) error {
+		for _, value := range listInventoryModel {
+			err = q.InventoryStore(ctx).ShopID(args.ShopID).VariantID(value.VariantID).UpdateInventoryVariantAll(value)
+			if err != nil {
+				return err
+			}
+		}
+		err = q.InventoryVoucherStore(ctx).Create(&voucher)
+		if err != nil {
+			return err
+		}
+		return nil
+	})
 	if err != nil {
 		return nil, err
 	}
-	inventoryVoucherCreated, err := q.InventoryVoucherStore(ctx).ShopID(args.ShopID).ID(voucher.ID).Get()
-	if err != nil {
-		return nil, err
-	}
-	return inventoryVoucherCreated, err
+	return q.InventoryVoucherStore(ctx).ShopID(args.ShopID).ID(voucher.ID).Get()
 }
 
-func (q *InventoryAggregate) ProcessInventoryVariantForVoucher(ctx context.Context, overStock bool, args *inventory.CreateInventoryVoucherArgs) (int32, []*inventory.InventoryVariant, error) {
-	var err error
-	var totalAmount int32 = 0
-	var inventoryCore *inventory.InventoryVariant
-	var listInventoryModel []*inventory.InventoryVariant
+func (q *InventoryAggregate) PreInventoryVariantForVoucher(ctx context.Context, overStock bool, args *inventory.CreateInventoryVoucherArgs) (totalAmount int32, listInventoryVariants []*inventory.InventoryVariant, err error) {
+
+	totalAmount = 0
+	var inventoryvariant *inventory.InventoryVariant
+
+	// Check have been existed variant_id in database table inventory_variant
 	for _, value := range args.Lines {
-		if errValidate := validateInventoryVoucher(value); errValidate != nil {
+		if errValidate := validateInventoryVoucherItem(value); errValidate != nil {
 			return 0, nil, errValidate
 		}
 		totalAmount = totalAmount + value.Price*value.Quantity
-		inventoryCore, err = q.InventoryStore(ctx).ShopID(args.ShopID).VariantID(value.VariantID).Get()
+		inventoryvariant, err = q.InventoryStore(ctx).ShopID(args.ShopID).VariantID(value.VariantID).Get()
 		if err != nil && cm.ErrorCode(err) == cm.NotFound {
+
+			// Create InventoryVariant follow variant_id if it have not been exit
 			err = q.CreateInventoryVariant(ctx, &inventory.CreateInventoryVariantArgs{
 				ShopID:    args.ShopID,
 				VariantID: value.VariantID,
 			})
 		}
-		if cm.ErrorCode(err) == cm.NotFound {
+		if err != nil && cm.ErrorCode(err) != cm.NotFound {
 			return 0, nil, err
 		}
+
+		// if InventoryVoucher is type 'out' move InventoryVariant quantity from onhand -> picked
 		if args.Type == inventory.InventoryVoucherTypeOut {
-			if overStock == false && inventoryCore.QuantityOnHand < value.Quantity {
+			if !overStock && inventoryvariant.QuantityOnHand < value.Quantity {
 				return 0, nil, cm.Error(cm.InvalidArgument, "not enough quantity in inventory", nil)
 			}
-			inventoryCore.QuantityOnHand = inventoryCore.QuantityOnHand - value.Quantity
-			inventoryCore.QuantityPicked = inventoryCore.QuantityPicked + value.Quantity
-			listInventoryModel = append(listInventoryModel, inventoryCore)
+			inventoryvariant.QuantityOnHand = inventoryvariant.QuantityOnHand - value.Quantity
+			inventoryvariant.QuantityPicked = inventoryvariant.QuantityPicked + value.Quantity
+			listInventoryVariants = append(listInventoryVariants, inventoryvariant)
 		}
 	}
-	return totalAmount, listInventoryModel, err
+	return totalAmount, listInventoryVariants, err
+}
+
+func (q *InventoryAggregate) CheckInventoryVariantsQuantity(ctx context.Context, args *inventory.CheckInventoryVariantQuantityRequest) error {
+	for _, value := range args.Lines {
+		inventoryCore, err := q.InventoryStore(ctx).ShopID(args.ShopID).VariantID(value.VariantID).Get()
+		if err != nil && cm.ErrorCode(err) == cm.NotFound {
+			err = q.CreateInventoryVariant(ctx, &inventory.CreateInventoryVariantArgs{
+				ShopID:    args.ShopID,
+				VariantID: value.VariantID,
+			})
+			if !args.InventoryOverStock && value.Quantity > 0 {
+				return cm.Error(cm.InvalidArgument, "not enough quantity in inventory", nil)
+			}
+		}
+		if err != nil && cm.ErrorCode(err) != cm.NotFound {
+			return err
+		}
+		if args.Type == inventory.InventoryVoucherTypeOut {
+			if !args.InventoryOverStock && inventoryCore.QuantityOnHand < value.Quantity {
+				return cm.Error(cm.InvalidArgument, "not enough quantity in inventory", nil)
+			}
+		}
+	}
+	return nil
 }
 
 func (q *InventoryAggregate) UpdateInventoryVoucher(ctx context.Context, args *inventory.UpdateInventoryVoucherArgs) (*inventory.InventoryVoucher, error) {
@@ -130,7 +162,7 @@ func (q *InventoryAggregate) UpdateInventoryVoucher(ctx context.Context, args *i
 	if dbResult.Type == inventory.InventoryVoucherTypeOut {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Can not update inventory delivery voucher")
 	}
-	event := &inventory.InventoryVoucherCreatedEvent{
+	event := &inventory.InventoryVoucherUpdatingEvent{
 		ShopID: args.ShopID,
 		Line:   args.Lines,
 	}
@@ -140,7 +172,7 @@ func (q *InventoryAggregate) UpdateInventoryVoucher(ctx context.Context, args *i
 	}
 	var totalAmount int32 = 0
 	for _, value := range args.Lines {
-		if errValidate := validateInventoryVoucher(value); errValidate != nil {
+		if errValidate := validateInventoryVoucherItem(value); errValidate != nil {
 			return nil, errValidate
 		}
 		totalAmount = totalAmount + value.Quantity*value.Price
@@ -150,17 +182,12 @@ func (q *InventoryAggregate) UpdateInventoryVoucher(ctx context.Context, args *i
 	}
 
 	updateInventoryCore := convert.ApplyUpdateInventoryVoucher(args, dbResult)
-	updateInventoryCore.UpdatedAt = time.Time{}
 	err = q.InventoryVoucherStore(ctx).ShopID(args.ShopID).ID(args.ID).UpdateInventoryVoucherAll(updateInventoryCore)
 	if err != nil {
 		return nil, err
 	}
 
-	inventoryVoucherUpdated, err := q.InventoryVoucherStore(ctx).ShopID(args.ShopID).ID(args.ID).Get()
-	if err != nil {
-		return nil, err
-	}
-	return inventoryVoucherUpdated, nil
+	return q.InventoryVoucherStore(ctx).ShopID(args.ShopID).ID(args.ID).Get()
 }
 
 func (q *InventoryAggregate) AdjustInventoryQuantity(ctx context.Context, overStock bool, args *inventory.AdjustInventoryQuantityArgs) (*inventory.AdjustInventoryQuantityRespone, error) {
@@ -180,27 +207,30 @@ func (q *InventoryAggregate) AdjustInventoryQuantity(ctx context.Context, overSt
 	}
 	var inventoryVoucherInID int64
 	if len(linesCheckin) > 0 {
-		inventoryVoucherInID, err = q.PreCreateVoucher(ctx, overStock, args, linesCheckin, inventory.InventoryVoucherTypeIn)
+		inventoryVoucherInID, err = q.CreateVoucherForAdjustInventoryQuantity(ctx, overStock, args, linesCheckin, inventory.InventoryVoucherTypeIn)
 		if err != nil {
 			return nil, err
 		}
 	}
 	var inventoryVoucherOutID int64
 	if len(linesCheckout) > 0 {
-		inventoryVoucherOutID, err = q.PreCreateVoucher(ctx, overStock, args, linesCheckout, inventory.InventoryVoucherTypeOut)
+		inventoryVoucherOutID, err = q.CreateVoucherForAdjustInventoryQuantity(ctx, overStock, args, linesCheckout, inventory.InventoryVoucherTypeOut)
 		if err != nil {
 			return nil, err
 		}
 	}
 
-	inventoryVoucher, err := q.InventoryVoucherStore(ctx).ShopID(args.ShopID).IDs(inventoryVoucherInID, inventoryVoucherOutID).ListInventoryVoucherDB()
+	inventoryVouchers, err := q.InventoryVoucherStore(ctx).ShopID(args.ShopID).IDs(inventoryVoucherInID, inventoryVoucherOutID).ListInventoryVoucherDB()
+	if err != nil {
+		return nil, err
+	}
 	resultUpdate, err := q.InventoryStore(ctx).ShopID(args.ShopID).VariantIDs(listVariantID...).ListInventoryDB()
 	if err != nil {
 		return nil, err
 	}
 	return &inventory.AdjustInventoryQuantityRespone{
-		Inventory:         convert.InventoryVariantsFromModel(resultUpdate),
-		InventoryVouchers: convert.InventoryVouchersFromModel(inventoryVoucher),
+		InventoryVariants: convert.InventoryVariantsFromModel(resultUpdate),
+		InventoryVouchers: convert.InventoryVouchersFromModel(inventoryVouchers),
 	}, nil
 }
 
@@ -245,7 +275,7 @@ func (q *InventoryAggregate) DevideInOutInventoryVoucher(ctx context.Context,
 	return linesCheckin, linesCheckout, listVariantID, nil
 }
 
-func (q *InventoryAggregate) PreCreateVoucher(ctx context.Context, overStock bool, info *inventory.AdjustInventoryQuantityArgs,
+func (q *InventoryAggregate) CreateVoucherForAdjustInventoryQuantity(ctx context.Context, overStock bool, info *inventory.AdjustInventoryQuantityArgs,
 	lines []*inventory.InventoryVoucherItem,
 	typeVoucher inventory.InventoryVoucherType) (int64, error) {
 	var totalValue int32 = 0
@@ -308,8 +338,7 @@ func (q *InventoryAggregate) ConfirmInventoryVoucher(ctx context.Context, args *
 	if err != nil {
 		return nil, err
 	}
-	inventoryVoucherConfirmed, err := q.InventoryVoucherStore(ctx).ShopID(args.ShopID).ID(args.ID).Get()
-	return inventoryVoucherConfirmed, nil
+	return q.InventoryVoucherStore(ctx).ShopID(args.ShopID).ID(args.ID).Get()
 }
 
 func AvgValue(value1 int32, value2 int32, quantity1 int32, quantity2 int32) int32 {
@@ -379,7 +408,7 @@ func (q *InventoryAggregate) CreateInventoryVariant(ctx context.Context, args *i
 	return nil
 }
 
-func validateInventoryVoucher(args *inventory.InventoryVoucherItem) error {
+func validateInventoryVoucherItem(args *inventory.InventoryVoucherItem) error {
 	if args.Price < 0 {
 		return cm.Errorf(cm.InvalidArgument, nil, "Giá sản phẩm không được âm")
 	}

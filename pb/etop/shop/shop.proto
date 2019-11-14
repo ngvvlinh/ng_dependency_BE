@@ -58,13 +58,14 @@ service InventoryService {
     rpc UpdateInventoryVoucher (UpdateInventoryVoucherRequest) returns (UpdateInventoryVoucherResponse);
     rpc AdjustInventoryQuantity (AdjustInventoryQuantityRequest) returns (AdjustInventoryQuantityResponse);
 
-    rpc GetInventory (GetInventoryRequest) returns (Inventory);
-    rpc GetInventories (GetInventoriesRequest) returns (GetInventoriesResponse);
-    rpc GetInventoriesByVariantIDs (GetInventoriesByVariantIDsRequest) returns (GetInventoriesResponse);
+    rpc GetInventoryVariant (GetInventoryVariantRequest) returns (InventoryVariant);
+    rpc GetInventoryVariants (GetInventoryVariantsRequest) returns (GetInventoryVariantsResponse);
+    rpc GetInventoryVariantsByVariantIDs (GetInventoryVariantsByVariantIDsRequest) returns (GetInventoryVariantsResponse);
 
     rpc GetInventoryVoucher (cm.IDRequest) returns (InventoryVoucher);
     rpc GetInventoryVouchers (GetInventoryVouchersRequest) returns (GetInventoryVouchersResponse);
     rpc GetInventoryVouchersByIDs (GetInventoryVouchersByIDsRequest) returns (GetInventoryVouchersResponse);
+    rpc GetInventoryVouchersByReference (GetInventoryVouchersByReferenceRequest) returns (GetInventoryVouchersByReferenceResponse);
 }
 
 service AccountService {
@@ -794,6 +795,9 @@ message UpdateOrdersStatusRequest {
 
 message OrderIDRequest {
     optional int64 order_id = 1 [(gogoproto.nullable)=false];
+
+    // enum ('', 'create', 'create')
+    optional string auto_inventory_voucher = 2 [(gogoproto.nullable)=false];
 }
 
 message OrderIDsRequest {
@@ -1663,7 +1667,7 @@ message ConfirmInventoryVoucherRequest{
 }
 
 message ConfirmInventoryVoucherResponse{
-    optional InventoryVoucher  inventory = 1;
+    optional InventoryVoucher  inventory_voucher = 1;
 }
 
 message CancelInventoryVoucherRequest{
@@ -1686,32 +1690,32 @@ message UpdateInventoryVoucherRequest {
 }
 
 message UpdateInventoryVoucherResponse {
-    optional InventoryVoucher inventory = 1;
+    optional InventoryVoucher inventory_voucher = 1;
 }
 
 message AdjustInventoryQuantityRequest {
-    repeated Inventory inventories = 1;
+    repeated InventoryVariant inventory_variants = 1;
     optional string note = 2 [(gogoproto.nullable) = false];
 }
 
 message AdjustInventoryQuantityResponse {
-    repeated Inventory inventories = 1;
+    repeated InventoryVariant inventory_variants = 1;
     repeated InventoryVoucher inventory_vouchers = 2;
 }
 
-message GetInventoriesRequest {
+message GetInventoryVariantsRequest {
     optional cm.Paging paging   = 1 [(gogoproto.nullable) = false];
 }
 
-message GetInventoriesResponse {
-    repeated Inventory inventories = 1;
+message GetInventoryVariantsResponse {
+    repeated InventoryVariant inventory_variants = 1;
 }
 
-message GetInventoriesByVariantIDsRequest {
+message GetInventoryVariantsByVariantIDsRequest {
     repeated int64 variant_ids = 1;
 }
 
-message Inventory {
+message InventoryVariant {
     optional int64 shop_id = 1 [(gogoproto.nullable) = false];
     optional int64 variant_id = 2 [(gogoproto.nullable) = false];
     optional int32 quantity_on_hand = 3 [(gogoproto.nullable) = false];
@@ -1783,7 +1787,7 @@ message GetOrdersByReceiptIDRequest{
     optional int64 receipt_id = 1 [(gogoproto.nullable) = false];
 }
 
-message GetInventoryRequest {
+message GetInventoryVariantRequest {
     optional int64 variant_id = 1 [(gogoproto.nullable) = false];
 }
 
@@ -1824,4 +1828,15 @@ message GetBrandsRequest {
 message GetBrandsResponse {
     repeated Brand brands = 1 ;
     optional cm.PageInfo paging = 2;
+}
+
+message GetInventoryVouchersByReferenceRequest {
+    optional int64 ref_id  = 1 [(gogoproto.nullable)=false];
+    // enum ('order', 'purchase_order', 'return', 'purchase_order')
+    optional string ref_type = 2 [(gogoproto.nullable)=false];
+}
+
+message GetInventoryVouchersByReferenceResponse {
+    repeated InventoryVoucher inventory_voucher = 1;
+    optional status4.Status status = 12 [(gogoproto.nullable)=false];
 }

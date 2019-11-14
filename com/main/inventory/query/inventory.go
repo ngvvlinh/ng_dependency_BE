@@ -3,6 +3,7 @@ package query
 import (
 	"context"
 
+	"etop.vn/api/main/etop"
 	"etop.vn/api/main/inventory"
 	"etop.vn/api/meta"
 	"etop.vn/backend/com/main/inventory/convert"
@@ -34,7 +35,7 @@ func (q *InventoryQueryService) MessageBus() inventory.QueryBus {
 	return inventory.NewQueryServiceHandler(q).RegisterHandlers(b)
 }
 
-func (q *InventoryQueryService) GetInventories(ctx context.Context, args *inventory.GetInventoryRequest) (*inventory.GetInventoriesResponse, error) {
+func (q *InventoryQueryService) GetInventoryVariants(ctx context.Context, args *inventory.GetInventoryRequest) (*inventory.GetInventoryVariantsResponse, error) {
 	if args.ShopID == 0 {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing value requirement")
 	}
@@ -45,7 +46,7 @@ func (q *InventoryQueryService) GetInventories(ctx context.Context, args *invent
 	if err != nil {
 		return nil, err
 	}
-	return &inventory.GetInventoriesResponse{Inventories: convert.InventoryVariantsFromModel(result)}, nil
+	return &inventory.GetInventoryVariantsResponse{InventoryVariants: convert.InventoryVariantsFromModel(result)}, nil
 }
 
 func (q *InventoryQueryService) GetInventoryVouchers(ctx context.Context, ShopID int64, Paging *meta.Paging) (*inventory.GetInventoryVouchersResponse, error) {
@@ -66,7 +67,7 @@ func (q *InventoryQueryService) GetInventoryVouchers(ctx context.Context, ShopID
 	return &inventory.GetInventoryVouchersResponse{InventoryVoucher: inventoryVoucherItems}, nil
 }
 
-func (q *InventoryQueryService) GetInventoriesByVariantIDs(ctx context.Context, args *inventory.GetInventoriesByVariantIDsArgs) (*inventory.GetInventoriesResponse, error) {
+func (q *InventoryQueryService) GetInventoryVariantsByVariantIDs(ctx context.Context, args *inventory.GetInventoryVariantsByVariantIDsArgs) (*inventory.GetInventoryVariantsResponse, error) {
 	if args.ShopID == 0 || args.VariantIDs == nil {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing value requirement")
 	}
@@ -74,7 +75,7 @@ func (q *InventoryQueryService) GetInventoriesByVariantIDs(ctx context.Context, 
 	if err != nil {
 		return nil, err
 	}
-	return &inventory.GetInventoriesResponse{Inventories: convert.InventoryVariantsFromModel(result)}, nil
+	return &inventory.GetInventoryVariantsResponse{InventoryVariants: convert.InventoryVariantsFromModel(result)}, nil
 }
 
 func (q *InventoryQueryService) GetInventoryVouchersByIDs(ctx context.Context, args *inventory.GetInventoryVouchersByIDArgs) (*inventory.GetInventoryVouchersResponse, error) {
@@ -100,7 +101,7 @@ func (q *InventoryQueryService) GetInventoryVoucher(ctx context.Context, ShopID 
 	return result, nil
 }
 
-func (q *InventoryQueryService) GetInventory(ctx context.Context, ShopID int64, VariantID int64) (*inventory.InventoryVariant, error) {
+func (q *InventoryQueryService) GetInventoryVariant(ctx context.Context, ShopID int64, VariantID int64) (*inventory.InventoryVariant, error) {
 	result, err := q.InventoryStore(ctx).VariantIDs(VariantID).ShopID(ShopID).Get()
 	if err != nil {
 		return nil, err
@@ -116,4 +117,30 @@ func (q *InventoryQueryService) GetInventoryVouchersByRefIDs(
 		return nil, err
 	}
 	return &inventory.GetInventoryVouchersResponse{InventoryVoucher: inventoryVouchers}, nil
+}
+
+func (q *InventoryQueryService) GetInventoryVoucherByReference(ctx context.Context, ShopID int64, refID int64, refType inventory.InventoryRefType) (*inventory.GetInventoryVoucherByReferenceResponse, error) {
+	result, err := q.InventoryVoucherStore(ctx).ShopID(ShopID).RefID(refID).RefType(string(refType)).ListInventoryVoucher()
+	if err != nil {
+		return nil, err
+	}
+	var status etop.Status4 = etop.S4Negative
+	if len(result) == 0 {
+		status = etop.S4Zero
+	} else {
+		for _, value := range result {
+			if value.Status == etop.S3Zero {
+				status = etop.S4SuperPos
+				break
+			}
+			if value.Status == etop.S3Positive {
+				status = etop.S4Positive
+				break
+			}
+		}
+	}
+	return &inventory.GetInventoryVoucherByReferenceResponse{
+		InventoryVouchers: result,
+		Status:            status,
+	}, nil
 }

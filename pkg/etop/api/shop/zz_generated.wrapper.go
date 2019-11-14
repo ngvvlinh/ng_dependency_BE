@@ -3380,17 +3380,17 @@ func (s wrapInventoryService) CreateInventoryVoucher(ctx context.Context, req *a
 	return resp, nil
 }
 
-type GetInventoriesEndpoint struct {
-	*api.GetInventoriesRequest
-	Result  *api.GetInventoriesResponse
+type GetInventoryVariantEndpoint struct {
+	*api.GetInventoryVariantRequest
+	Result  *api.InventoryVariant
 	Context claims.ShopClaim
 }
 
-func (s wrapInventoryService) GetInventories(ctx context.Context, req *api.GetInventoriesRequest) (resp *api.GetInventoriesResponse, err error) {
+func (s wrapInventoryService) GetInventoryVariant(ctx context.Context, req *api.GetInventoryVariantRequest) (resp *api.InventoryVariant, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
-	const rpcName = "shop.Inventory/GetInventories"
+	const rpcName = "shop.Inventory/GetInventoryVariant"
 	defer func() {
 		recovered := recover()
 		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
@@ -3406,14 +3406,14 @@ func (s wrapInventoryService) GetInventories(ctx context.Context, req *api.GetIn
 		return nil, err
 	}
 	session = sessionQuery.Result
-	query := &GetInventoriesEndpoint{GetInventoriesRequest: req}
+	query := &GetInventoryVariantEndpoint{GetInventoryVariantRequest: req}
 	query.Context.Claim = session.Claim
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetInventories(ctx, query)
+	err = s.s.GetInventoryVariant(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -3425,17 +3425,17 @@ func (s wrapInventoryService) GetInventories(ctx context.Context, req *api.GetIn
 	return resp, nil
 }
 
-type GetInventoriesByVariantIDsEndpoint struct {
-	*api.GetInventoriesByVariantIDsRequest
-	Result  *api.GetInventoriesResponse
+type GetInventoryVariantsEndpoint struct {
+	*api.GetInventoryVariantsRequest
+	Result  *api.GetInventoryVariantsResponse
 	Context claims.ShopClaim
 }
 
-func (s wrapInventoryService) GetInventoriesByVariantIDs(ctx context.Context, req *api.GetInventoriesByVariantIDsRequest) (resp *api.GetInventoriesResponse, err error) {
+func (s wrapInventoryService) GetInventoryVariants(ctx context.Context, req *api.GetInventoryVariantsRequest) (resp *api.GetInventoryVariantsResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
-	const rpcName = "shop.Inventory/GetInventoriesByVariantIDs"
+	const rpcName = "shop.Inventory/GetInventoryVariants"
 	defer func() {
 		recovered := recover()
 		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
@@ -3451,14 +3451,14 @@ func (s wrapInventoryService) GetInventoriesByVariantIDs(ctx context.Context, re
 		return nil, err
 	}
 	session = sessionQuery.Result
-	query := &GetInventoriesByVariantIDsEndpoint{GetInventoriesByVariantIDsRequest: req}
+	query := &GetInventoryVariantsEndpoint{GetInventoryVariantsRequest: req}
 	query.Context.Claim = session.Claim
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetInventoriesByVariantIDs(ctx, query)
+	err = s.s.GetInventoryVariants(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -3470,17 +3470,17 @@ func (s wrapInventoryService) GetInventoriesByVariantIDs(ctx context.Context, re
 	return resp, nil
 }
 
-type GetInventoryEndpoint struct {
-	*api.GetInventoryRequest
-	Result  *api.Inventory
+type GetInventoryVariantsByVariantIDsEndpoint struct {
+	*api.GetInventoryVariantsByVariantIDsRequest
+	Result  *api.GetInventoryVariantsResponse
 	Context claims.ShopClaim
 }
 
-func (s wrapInventoryService) GetInventory(ctx context.Context, req *api.GetInventoryRequest) (resp *api.Inventory, err error) {
+func (s wrapInventoryService) GetInventoryVariantsByVariantIDs(ctx context.Context, req *api.GetInventoryVariantsByVariantIDsRequest) (resp *api.GetInventoryVariantsResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
-	const rpcName = "shop.Inventory/GetInventory"
+	const rpcName = "shop.Inventory/GetInventoryVariantsByVariantIDs"
 	defer func() {
 		recovered := recover()
 		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
@@ -3496,14 +3496,14 @@ func (s wrapInventoryService) GetInventory(ctx context.Context, req *api.GetInve
 		return nil, err
 	}
 	session = sessionQuery.Result
-	query := &GetInventoryEndpoint{GetInventoryRequest: req}
+	query := &GetInventoryVariantsByVariantIDsEndpoint{GetInventoryVariantsByVariantIDsRequest: req}
 	query.Context.Claim = session.Claim
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetInventory(ctx, query)
+	err = s.s.GetInventoryVariantsByVariantIDs(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -3639,6 +3639,51 @@ func (s wrapInventoryService) GetInventoryVouchersByIDs(ctx context.Context, req
 	query.Context.Permissions = session.Permissions
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetInventoryVouchersByIDs(ctx, query)
+	resp = query.Result
+	if err != nil {
+		return nil, err
+	}
+	if resp == nil {
+		return nil, common.Error(common.Internal, "", nil).Log("nil response")
+	}
+	errs = cmwrapper.HasErrors(resp)
+	return resp, nil
+}
+
+type GetInventoryVouchersByReferenceEndpoint struct {
+	*api.GetInventoryVouchersByReferenceRequest
+	Result  *api.GetInventoryVouchersByReferenceResponse
+	Context claims.ShopClaim
+}
+
+func (s wrapInventoryService) GetInventoryVouchersByReference(ctx context.Context, req *api.GetInventoryVouchersByReferenceRequest) (resp *api.GetInventoryVouchersByReferenceResponse, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "shop.Inventory/GetInventoryVouchersByReference"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:     ctx,
+		RequireAuth: true,
+		RequireShop: true,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &GetInventoryVouchersByReferenceEndpoint{GetInventoryVouchersByReferenceRequest: req}
+	query.Context.Claim = session.Claim
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = s.s.GetInventoryVouchersByReference(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err

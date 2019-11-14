@@ -4,5 +4,6 @@
 
 package ordering
 
-func (e *OrderCreatedEvent) GetTopic() string        { return "event/ordering" }
+func (e *OrderConfirmedEvent) GetTopic() string      { return "event/ordering" }
+func (e *OrderConfirmingEvent) GetTopic() string     { return "event/ordering" }
 func (e *OrderPaymentSuccessEvent) GetTopic() string { return "event/ordering" }

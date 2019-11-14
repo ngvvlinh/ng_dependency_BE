@@ -1,6 +1,8 @@
 package convert
 
 import (
+	"time"
+
 	"etop.vn/api/main/inventory"
 	"etop.vn/backend/com/main/inventory/model"
 	cm "etop.vn/backend/pkg/common"
@@ -55,6 +57,7 @@ func InventoryVouchersFromModel(args []*model.InventoryVoucher) []*inventory.Inv
 func ApplyUpdateInventoryVoucher(arg *inventory.UpdateInventoryVoucherArgs,
 	out *inventory.InventoryVoucher) *inventory.InventoryVoucher {
 	apply_inventory_UpdateInventoryVoucherArgs_inventory_InventoryVoucher(arg, out)
+	out.UpdatedAt = time.Time{}
 	return out
 }
 

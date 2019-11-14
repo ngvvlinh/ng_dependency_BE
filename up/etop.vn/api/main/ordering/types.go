@@ -163,7 +163,20 @@ type OrderPaymentSuccessEvent struct {
 	OrderID int64
 }
 
-type OrderCreatedEvent struct {
-	ShopID  int64
-	OrderID int64
+type OrderConfirmingEvent struct {
+	OrderID            int64
+	ShopID             int64
+	InventoryOverStock bool
+	Lines              []*types.ItemLine
+	CustomerID         int64
+}
+
+type OrderConfirmedEvent struct {
+	OrderID              int64
+	ShopID               int64
+	InventoryOverStock   bool
+	Lines                []*types.ItemLine
+	CustomerID           int64
+	AutoInventoryVoucher string
+	UpdatedBy            int64
 }

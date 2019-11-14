@@ -13,10 +13,10 @@ import (
 )
 
 type ProcessManager struct {
-	eventBus           capi.EventBus
-	shopVariantQuery   catalog.QueryBus
-	inventoryAggregate inventory.CommandBus
-	orderQuery         ordering.QueryBus
+	eventBus     capi.EventBus
+	catalogQ     catalog.QueryBus
+	inventoryAgg inventory.CommandBus
+	orderQuery   ordering.QueryBus
 }
 
 func New(
@@ -26,49 +26,17 @@ func New(
 	inventoryAggregate inventory.CommandBus,
 ) *ProcessManager {
 	return &ProcessManager{
-		eventBus:           eventBusArgs,
-		shopVariantQuery:   shopVariantQueryArgs,
-		orderQuery:         orderQuery,
-		inventoryAggregate: inventoryAggregate,
+		eventBus:     eventBusArgs,
+		catalogQ:     shopVariantQueryArgs,
+		orderQuery:   orderQuery,
+		inventoryAgg: inventoryAggregate,
 	}
 }
 
 func (m *ProcessManager) RegisterEventHandlers(eventBus bus.EventRegistry) {
-	eventBus.AddEventListener(m.ValidateVariant)
 	eventBus.AddEventListener(m.PurchaseOrderConfirmed)
-}
-
-func (m *ProcessManager) ValidateVariant(ctx context.Context, event *inventory.InventoryVoucherCreatedEvent) error {
-	var variantId []int64
-	for _, value := range event.Line {
-		variantId = append(variantId, value.VariantID)
-	}
-	query := catalog.ValidateVariantIDsQuery{
-		ShopId:         event.ShopID,
-		ShopVariantIds: variantId,
-	}
-	return m.shopVariantQuery.Dispatch(ctx, &query)
-}
-
-// TODO: handle OrderCreatedEvent later
-func (m *ProcessManager) ListenOrderCreatedEvent(ctx context.Context, event *ordering.OrderCreatedEvent) error {
-	query := ordering.GetOrderByIDQuery{ID: event.OrderID}
-	err := m.orderQuery.Dispatch(ctx, &query)
-	if err != nil {
-		return err
-	}
-	result := query.Result.Lines
-	for _, value := range result {
-		cmd := &inventory.CreateInventoryVariantCommand{
-			ShopID:    event.ShopID,
-			VariantID: value.VariantId,
-		}
-		err = m.inventoryAggregate.Dispatch(ctx, cmd)
-		if err != nil {
-			return err
-		}
-	}
-	return nil
+	eventBus.AddEventListener(m.OrderConfirmingEvent)
+	eventBus.AddEventListener(m.OrderConfirmedEvent)
 }
 
 func (m *ProcessManager) PurchaseOrderConfirmed(ctx context.Context, event *purchaseorder.PurchaseOrderConfirmedEvent) error {
@@ -80,7 +48,6 @@ func (m *ProcessManager) PurchaseOrderConfirmed(ctx context.Context, event *purc
 		isCreate = true
 		isConfirm = true
 	}
-
 	var inventoryVourcherID int64
 	if isCreate {
 		cmd := &inventory.CreateInventoryVoucherCommand{
@@ -96,7 +63,7 @@ func (m *ProcessManager) PurchaseOrderConfirmed(ctx context.Context, event *purc
 			Type:        inventory.InventoryVoucherTypeIn,
 			Lines:       event.Lines,
 		}
-		if err := m.inventoryAggregate.Dispatch(ctx, cmd); err != nil {
+		if err := m.inventoryAgg.Dispatch(ctx, cmd); err != nil {
 			return err
 		}
 		inventoryVourcherID = cmd.Result.ID
@@ -108,10 +75,85 @@ func (m *ProcessManager) PurchaseOrderConfirmed(ctx context.Context, event *purc
 			ID:        inventoryVourcherID,
 			UpdatedBy: event.UserID,
 		}
-		if err := m.inventoryAggregate.Dispatch(ctx, cmd); err != nil {
+		if err := m.inventoryAgg.Dispatch(ctx, cmd); err != nil {
 			return err
 		}
 	}
 
+	return nil
+}
+
+func (p *ProcessManager) OrderConfirmedEvent(ctx context.Context, event *ordering.OrderConfirmedEvent) error {
+	if event.AutoInventoryVoucher == string(inventory.AutoCreateInventory) ||
+		event.AutoInventoryVoucher == string(inventory.AutoCreateAndConfirmInventory) {
+		// Create inventory voucher
+		inventoryVoucherLines := []*inventory.InventoryVoucherItem{}
+		for _, value := range event.Lines {
+			inventoryVoucherLines = append(inventoryVoucherLines, &inventory.InventoryVoucherItem{
+				VariantID: value.VariantId,
+				Quantity:  value.Quantity,
+			})
+		}
+
+		cmdCreate := &inventory.CreateInventoryVoucherCommand{
+			Overstock: event.InventoryOverStock,
+			ShopID:    event.ShopID,
+			Title:     "Xuất kho khi bán hàng",
+			RefID:     event.OrderID,
+			RefType:   "order",
+			TraderID:  event.CustomerID,
+			Type:      "out",
+			Note:      "Tạo tự động khi xác nhận đơn hàng",
+			Lines:     inventoryVoucherLines,
+		}
+		err := p.inventoryAgg.Dispatch(ctx, cmdCreate)
+		if err != nil {
+			return err
+		}
+		if event.AutoInventoryVoucher == string(inventory.AutoCreateAndConfirmInventory) {
+			cmdConfirm := &inventory.ConfirmInventoryVoucherCommand{
+				ShopID: event.ShopID,
+				ID:     cmdCreate.Result.ID,
+				Result: nil,
+			}
+			err = p.inventoryAgg.Dispatch(ctx, cmdConfirm)
+			if err != nil {
+				return err
+			}
+		}
+	}
+	return nil
+}
+
+func (p *ProcessManager) OrderConfirmingEvent(ctx context.Context, event *ordering.OrderConfirmingEvent) error {
+	// Create InventoryVariant if not exist
+	// Validate quantity in case of InventoryVoucherTypeOut
+	inventoryVoucherLines := []*inventory.InventoryVoucherItem{}
+	var variantIDs []int64
+	for _, value := range event.Lines {
+		inventoryVoucherLines = append(inventoryVoucherLines, &inventory.InventoryVoucherItem{
+			VariantID: value.VariantId,
+			Quantity:  value.Quantity,
+		})
+		variantIDs = append(variantIDs, value.VariantId)
+	}
+	query := catalog.ValidateVariantIDsQuery{
+		ShopId:         event.ShopID,
+		ShopVariantIds: variantIDs,
+	}
+	err := p.catalogQ.Dispatch(ctx, &query)
+	if err != nil {
+		return err
+	}
+	cmd := &inventory.CheckInventoryVariantsQuantityCommand{
+		InventoryOverStock: event.InventoryOverStock,
+		ShopID:             event.ShopID,
+		Type:               "out",
+		Lines:              inventoryVoucherLines,
+	}
+	err = p.inventoryAgg.Dispatch(ctx, cmd)
+	if err != nil {
+		return err
+	}
 	return nil
 }

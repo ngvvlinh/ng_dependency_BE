@@ -4,5 +4,6 @@
 
 package inventory
 
-func (e *InventoryVoucherConfirmEvent) GetTopic() string { return "event/inventory" }
-func (e *InventoryVoucherCreatedEvent) GetTopic() string { return "event/inventory" }
+func (e *InventoryVoucherConfirmEvent) GetTopic() string  { return "event/inventory" }
+func (e *InventoryVoucherCreatingEvent) GetTopic() string { return "event/inventory" }
+func (e *InventoryVoucherUpdatingEvent) GetTopic() string { return "event/inventory" }

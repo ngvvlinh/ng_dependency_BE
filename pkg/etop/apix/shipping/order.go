@@ -146,7 +146,7 @@ func CreateAndConfirmOrder(ctx context.Context, accountID int64, shopClaim *clai
 	cfmResp, err := logicorder.ConfirmOrderAndCreateFulfillments(ctx, shopClaim.Shop, shopClaim.AuthPartnerID,
 		&shop.OrderIDRequest{
 			OrderId: orderID,
-		})
+		}, "")
 	if err != nil {
 		return nil, err
 	}

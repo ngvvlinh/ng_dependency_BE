@@ -24,22 +24,26 @@ type Aggregate interface {
 	UpdateInventoryVoucher(context.Context, *UpdateInventoryVoucherArgs) (*InventoryVoucher, error)
 
 	CreateInventoryVariant(context.Context, *CreateInventoryVariantArgs) error
+
+	CheckInventoryVariantsQuantity(context.Context, *CheckInventoryVariantQuantityRequest) error
 }
 
 type QueryService interface {
+	GetInventoryVariant(_ context.Context, ShopID int64, VariantID int64) (*InventoryVariant, error)
+
+	GetInventoryVariants(context.Context, *GetInventoryRequest) (*GetInventoryVariantsResponse, error)
+
 	GetInventoryVoucher(_ context.Context, ShopID int64, ID int64) (*InventoryVoucher, error)
-
-	GetInventory(_ context.Context, ShopID int64, VariantID int64) (*InventoryVariant, error)
-
-	GetInventories(context.Context, *GetInventoryRequest) (*GetInventoriesResponse, error)
 
 	GetInventoryVouchers(_ context.Context, ShopID int64, Paging *meta.Paging) (*GetInventoryVouchersResponse, error)
 
-	GetInventoriesByVariantIDs(context.Context, *GetInventoriesByVariantIDsArgs) (*GetInventoriesResponse, error)
+	GetInventoryVariantsByVariantIDs(context.Context, *GetInventoryVariantsByVariantIDsArgs) (*GetInventoryVariantsResponse, error)
 
 	GetInventoryVouchersByIDs(context.Context, *GetInventoryVouchersByIDArgs) (*GetInventoryVouchersResponse, error)
 
 	GetInventoryVouchersByRefIDs(_ context.Context, RefIDs []int64, ShopID int64) (*GetInventoryVouchersResponse, error)
+
+	GetInventoryVoucherByReference(ctx context.Context, ShopID int64, refID int64, refType InventoryRefType) (*GetInventoryVoucherByReferenceResponse, error)
 }
 
 // +convert:update=InventoryVoucher
@@ -66,18 +70,18 @@ type GetInventoryRequest struct {
 	Paging *meta.Paging
 }
 
-type GetInventoriesResponse struct {
-	Inventories []*InventoryVariant
+type GetInventoryVariantsResponse struct {
+	InventoryVariants []*InventoryVariant
 }
 
-type GetInventoriesByVariantIDsArgs struct {
+type GetInventoryVariantsByVariantIDsArgs struct {
 	ShopID     int64
 	Paging     *meta.Paging
 	VariantIDs []int64
 }
 
 type AdjustInventoryQuantityRespone struct {
-	Inventory         []*InventoryVariant
+	InventoryVariants []*InventoryVariant
 	InventoryVouchers []*InventoryVoucher
 }
 
@@ -126,6 +130,13 @@ type CreateInventoryVoucherArgs struct {
 	Type        InventoryVoucherType
 	Note        string
 	Lines       []*InventoryVoucherItem
+}
+
+type CheckInventoryVariantQuantityRequest struct {
+	Lines              []*InventoryVoucherItem
+	InventoryOverStock bool
+	ShopID             int64
+	Type               InventoryVoucherType
 }
 
 type InventoryVoucher struct {
@@ -181,4 +192,9 @@ type AdjustInventoryQuantityArgs struct {
 type InventoryVoucherConfirmEvent struct {
 	ShopID int64
 	Line   []*InventoryVoucherItem
+}
+
+type GetInventoryVoucherByReferenceResponse struct {
+	InventoryVouchers []*InventoryVoucher
+	Status            etop.Status4
 }

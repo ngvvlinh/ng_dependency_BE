@@ -20,6 +20,7 @@ import (
 	"etop.vn/backend/com/handler/etop-handler/intctl"
 	"etop.vn/backend/com/main/address"
 	catalogaggregate "etop.vn/backend/com/main/catalog/aggregate"
+	catalogpm "etop.vn/backend/com/main/catalog/pm"
 	catalogquery "etop.vn/backend/com/main/catalog/query"
 	serviceidentity "etop.vn/backend/com/main/identity"
 	inventoryaggregate "etop.vn/backend/com/main/inventory/aggregate"
@@ -317,7 +318,7 @@ func main() {
 	vtigerClient := vtigerclient.NewVigerClient(cfg.Vtiger.ServiceURL, cfg.Vtiger.Username, cfg.Vtiger.APIKey)
 	// create aggregate, query service
 	summaryQuery := summaryquery.NewDashboardQuery(db, redisStore).MessageBus()
-	inventoryaggregate := inventoryaggregate.NewAggregateInventory(eventBus, db).MessageBus()
+	inventoryAggr := inventoryaggregate.NewAggregateInventory(eventBus, db).MessageBus()
 	inventoryQuery := inventoryquery.NewQueryInventory(eventBus, db).MessageBus()
 	vhtQuery := vhtquery.New(crmDB).MessageBus()
 	vhtAggregate := vhtaggregate.New(crmDB, nil).MessageBus()
@@ -327,6 +328,9 @@ func main() {
 	identityQuery = serviceidentity.NewQueryService(db).MessageBus()
 	catalogQuery := catalogquery.New(db).MessageBus()
 	catalogAggr := catalogaggregate.New(eventBus, db).MessageBus()
+	catalogPm := catalogpm.New(eventBus, catalogQuery)
+	catalogPm.RegisterEventHandlers(eventBus)
+
 	addressQuery := address.NewQueryService(db).MessageBus()
 	shipnowQuery = serviceshipnow.NewQueryService(db).MessageBus()
 	orderQuery = serviceordering.NewQueryService(db).MessageBus()
@@ -341,7 +345,7 @@ func main() {
 	identityAggr := serviceidentity.NewAggregate(db, shipnowCarrierManager).MessageBus()
 	shipnowAggr = serviceshipnow.NewAggregate(eventBus, db, locationBus, identityQuery, addressQuery, orderQuery, shipnowCarrierManager).MessageBus()
 
-	inventoryPm := inventorypm.New(eventBus, catalogQuery, orderQuery, inventoryaggregate)
+	inventoryPm := inventorypm.New(eventBus, catalogQuery, orderQuery, inventoryAggr)
 	inventoryPm.RegisterEventHandlers(eventBus)
 	shipnowPM := shipnowpm.New(eventBus, shipnowQuery, shipnowAggr, orderAggr.MessageBus(), shipnowCarrierManager)
 	shipnowPM.RegisterEventHandlers(eventBus)
@@ -379,7 +383,7 @@ func main() {
 		vtpayProvider = vtpay.New(cfg.VTPay)
 	}
 	paymentManager := servicepaymentmanager.NewManager(vtpayProvider, orderQuery).MesssageBus()
-	orderPM := serviceorderingpm.New(orderAggr.MessageBus(), orderQuery, affiliateCmd, receiptQuery)
+	orderPM := serviceorderingpm.New(orderAggr.MessageBus(), orderQuery, affiliateCmd, receiptQuery, inventoryAggr)
 	orderPM.RegisterEventHandlers(eventBus)
 
 	purchaseOrderAggr := purchaseorderaggregate.NewPurchaseOrderAggregate(db, eventBus, catalogQuery, supplierQuery, inventoryQuery).MessageBus()
@@ -416,7 +420,7 @@ func main() {
 		receiptQuery,
 		shutdowner,
 		redisStore,
-		inventoryaggregate,
+		inventoryAggr,
 		inventoryQuery,
 		ledgerAggr,
 		ledgerQuery,
@@ -430,7 +434,7 @@ func main() {
 	webhook.Init(ctlProducer, redisStore)
 	xshipping.Init(shippingManager, ordersqlstore.NewOrderStore(db), shipsqlstore.NewFulfillmentStore(db))
 	orderS.Init(shippingManager, catalogQuery, orderAggr.MessageBus(),
-		customerAggr, customerQuery, traderAddressAggr, traderAddressQuery, locationBus)
+		customerAggr, customerQuery, traderAddressAggr, traderAddressQuery, locationBus, eventBus)
 	crm.Init(ghnCarrier, vtigerQuery, vtigerAggregate, vhtQuery, vhtAggregate)
 	affiliate.Init(identityAggr)
 	apiaff.Init(affiliateCmd, affilateQuery, catalogQuery, identityQuery, orderQuery)

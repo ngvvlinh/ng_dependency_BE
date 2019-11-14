@@ -12,8 +12,8 @@ import (
 	"etop.vn/backend/pkg/etop/model"
 )
 
-func PbInventory(args *inventory.InventoryVariant) *pbshop.Inventory {
-	return &pbshop.Inventory{
+func PbInventory(args *inventory.InventoryVariant) *pbshop.InventoryVariant {
+	return &pbshop.InventoryVariant{
 		ShopId:         args.ShopID,
 		VariantId:      args.VariantID,
 		QuantityOnHand: args.QuantityOnHand,
@@ -23,12 +23,12 @@ func PbInventory(args *inventory.InventoryVariant) *pbshop.Inventory {
 	}
 }
 
-func PbInventories(args []*inventory.InventoryVariant) []*pbshop.Inventory {
-	var inventories []*pbshop.Inventory
+func PbInventoryVariants(args []*inventory.InventoryVariant) []*pbshop.InventoryVariant {
+	var inventoryVariants []*pbshop.InventoryVariant
 	for _, value := range args {
-		inventories = append(inventories, PbInventory(value))
+		inventoryVariants = append(inventoryVariants, PbInventory(value))
 	}
-	return inventories
+	return inventoryVariants
 }
 
 func PbBrand(args *catalog.ShopBrand) *pbshop.Brand {

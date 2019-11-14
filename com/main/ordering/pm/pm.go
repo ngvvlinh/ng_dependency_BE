@@ -3,6 +3,8 @@ package pm
 import (
 	"context"
 
+	"etop.vn/api/main/inventory"
+
 	"etop.vn/api/main/ordering"
 	ordertrading "etop.vn/api/main/ordering/trading"
 	"etop.vn/api/main/receipting"
@@ -19,6 +21,7 @@ type ProcessManager struct {
 	orderQS      ordering.QueryBus
 	affiliate    affiliate.CommandBus
 	receiptQuery receipting.QueryBus
+	inventoryAgg inventory.CommandBus
 }
 
 var (
@@ -30,12 +33,14 @@ func New(
 	orderQuery ordering.QueryBus,
 	affiliateAggr affiliate.CommandBus,
 	receiptQs receipting.QueryBus,
+	inventoryAgg inventory.CommandBus,
 ) *ProcessManager {
 	return &ProcessManager{
 		order:        orderAggr,
 		orderQS:      orderQuery,
 		affiliate:    affiliateAggr,
 		receiptQuery: receiptQs,
+		inventoryAgg: inventoryAgg,
 	}
 }
 

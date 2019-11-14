@@ -40,7 +40,7 @@ func startServers() *http.Server {
 	traderAddressQuery := customerquery.NewAddressQuery(db).MessageBus()
 	locationBus := servicelocation.New().MessageBus()
 	orderS.Init(shippingManager, catalogQueryService, orderAggr, customerAggr,
-		customerQuery, traderAddressAggr, traderAddressQuery, locationBus)
+		customerQuery, traderAddressAggr, traderAddressQuery, locationBus, eventBus)
 	haravanServer := haravanserver.New(haravan, haravanIdentityQuery)
 
 	mux := http.NewServeMux()

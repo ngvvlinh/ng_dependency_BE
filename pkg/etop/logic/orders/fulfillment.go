@@ -5,6 +5,10 @@ import (
 	"sync"
 	"time"
 
+	"etop.vn/api/main/inventory"
+
+	"etop.vn/capi"
+
 	"etop.vn/api/main/location"
 
 	"etop.vn/api/shopping/addressing"
@@ -36,6 +40,7 @@ var (
 	traderAddressAggr  addressing.CommandBus
 	traderAddressQuery addressing.QueryBus
 	locationQuery      location.QueryBus
+	eventBus           capi.EventBus
 )
 
 func Init(shippingProviderCtrl *shipping_provider.ProviderManager,
@@ -45,7 +50,8 @@ func Init(shippingProviderCtrl *shipping_provider.ProviderManager,
 	customerQueryBus customering.QueryBus,
 	traderAddressAggregate addressing.CommandBus,
 	traderAddressQueryBus addressing.QueryBus,
-	locationQueryBus location.QueryBus) {
+	locationQueryBus location.QueryBus,
+	eventB capi.EventBus) {
 	ctrl = shippingProviderCtrl
 	catalogQuery = catalogQueryBus
 	orderAggr = orderAggregate
@@ -54,9 +60,10 @@ func Init(shippingProviderCtrl *shipping_provider.ProviderManager,
 	traderAddressAggr = traderAddressAggregate
 	traderAddressQuery = traderAddressQueryBus
 	locationQuery = locationQueryBus
+	eventBus = eventB
 }
 
-func ConfirmOrderAndCreateFulfillments(ctx context.Context, shop *model.Shop, partnerID int64, r *shop.OrderIDRequest) (resp *pborder.OrderWithErrorsResponse, _err error) {
+func ConfirmOrderAndCreateFulfillments(ctx context.Context, shop *model.Shop, partnerID int64, r *shop.OrderIDRequest, autoInventoryVoucher string) (resp *pborder.OrderWithErrorsResponse, _err error) {
 	shopID := shop.ID
 	resp = &pborder.OrderWithErrorsResponse{}
 	query := &ordermodelx.GetOrderQuery{
@@ -83,6 +90,12 @@ func ConfirmOrderAndCreateFulfillments(ctx context.Context, shop *model.Shop, pa
 	if order.ConfirmStatus == model.S3Negative ||
 		order.ShopConfirm == model.S3Negative {
 		return resp, cm.Error(cm.FailedPrecondition, "Đơn hàng đã huỷ.", nil)
+	}
+
+	// convert to ordering
+	err := RaiseOrderConfirmingEvent(ctx, shop, autoInventoryVoucher, order)
+	if err != nil {
+		return nil, err
 	}
 
 	// Fill response
@@ -141,6 +154,11 @@ func ConfirmOrderAndCreateFulfillments(ctx context.Context, shop *model.Shop, pa
 		}
 		order.ConfirmStatus = model.S3Positive
 		order.ShopConfirm = model.S3Positive
+
+		err = RaiseOrderConfirmedEvent(ctx, shop, autoInventoryVoucher, order)
+		if err != nil {
+			_err = err
+		}
 	}
 
 	totalChanges := len(creates) + len(updates)
@@ -189,6 +207,73 @@ func ConfirmOrderAndCreateFulfillments(ctx context.Context, shop *model.Shop, pa
 
 	// Order will be filled by above defer
 	return resp, nil
+}
+
+func RaiseOrderConfirmingEvent(ctx context.Context, shop *model.Shop, autoInventoryVoucher string, order *ordermodel.Order) error {
+	if autoInventoryVoucher != "" && autoInventoryVoucher != string(inventory.AutoCreateInventory) && autoInventoryVoucher != string(inventory.AutoCreateAndConfirmInventory) {
+		return cm.Error(cm.InvalidArgument, "auto_inventory_voucher in create, confirm", nil)
+	}
+	if autoInventoryVoucher != "" {
+		orderLines := []*ordertypes.ItemLine{}
+		for _, value := range order.Lines {
+			if value.VariantID != 0 {
+				orderLines = append(orderLines, &ordertypes.ItemLine{
+					OrderId:     value.OrderID,
+					Quantity:    int32(value.Quantity),
+					ProductId:   value.ProductID,
+					VariantId:   value.VariantID,
+					IsOutside:   value.IsOutsideEtop,
+					ProductInfo: ordertypes.ProductInfo{},
+					TotalPrice:  int32(value.TotalLineAmount),
+				})
+			}
+		}
+		if orderLines != nil {
+			cmdIV := &ordering.OrderConfirmingEvent{
+				OrderID:            order.ID,
+				ShopID:             shop.ID,
+				InventoryOverStock: cm.BoolDefault(shop.InventoryOverstock, true),
+				Lines:              orderLines,
+			}
+			if err := eventBus.Publish(ctx, cmdIV); err != nil {
+				return err
+			}
+		}
+	}
+	return nil
+}
+
+func RaiseOrderConfirmedEvent(ctx context.Context, shop *model.Shop, autoInventoryVoucher string, order *ordermodel.Order) error {
+	if autoInventoryVoucher != "" {
+		orderLines := []*ordertypes.ItemLine{}
+		for _, value := range order.Lines {
+			if value.VariantID != 0 {
+				orderLines = append(orderLines, &ordertypes.ItemLine{
+					OrderId:     value.OrderID,
+					Quantity:    int32(value.Quantity),
+					ProductId:   value.ProductID,
+					VariantId:   value.VariantID,
+					IsOutside:   value.IsOutsideEtop,
+					ProductInfo: ordertypes.ProductInfo{},
+					TotalPrice:  int32(value.TotalLineAmount),
+				})
+			}
+		}
+		if orderLines != nil {
+			cmdIV := &ordering.OrderConfirmedEvent{
+				OrderID:              order.ID,
+				ShopID:               shop.ID,
+				InventoryOverStock:   cm.BoolDefault(shop.InventoryOverstock, true),
+				Lines:                orderLines,
+				CustomerID:           order.CustomerID,
+				AutoInventoryVoucher: autoInventoryVoucher,
+			}
+			if err := eventBus.Publish(ctx, cmdIV); err != nil {
+				return err
+			}
+		}
+	}
+	return nil
 }
 
 func prepareFulfillmentFromOrder(ctx context.Context, order *ordermodel.Order, shop *model.Shop) (*shipmodel.Fulfillment, error) {

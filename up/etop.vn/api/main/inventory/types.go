@@ -2,7 +2,13 @@ package inventory
 
 // +gen:event:topic=event/inventory
 
-type InventoryVoucherCreatedEvent struct {
+type InventoryVoucherCreatingEvent struct {
+	ShopID             int64
+	InventoryVoucherID int64
+	Line               []*InventoryVoucherItem
+}
+
+type InventoryVoucherUpdatingEvent struct {
 	ShopID             int64
 	InventoryVoucherID int64
 	Line               []*InventoryVoucherItem
@@ -31,4 +37,11 @@ type InventoryVoucherType string
 const (
 	InventoryVoucherTypeIn  InventoryVoucherType = "in"
 	InventoryVoucherTypeOut InventoryVoucherType = "out"
+)
+
+type AutoInventoryVoucher string
+
+const (
+	AutoCreateInventory           AutoInventoryVoucher = "create"
+	AutoCreateAndConfirmInventory AutoInventoryVoucher = "confirm"
 )

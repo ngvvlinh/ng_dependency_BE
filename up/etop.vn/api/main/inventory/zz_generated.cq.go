@@ -68,6 +68,20 @@ func (h AggregateHandler) HandleCancelInventoryVoucher(ctx context.Context, msg 
 	return err
 }
 
+type CheckInventoryVariantsQuantityCommand struct {
+	Lines              []*InventoryVoucherItem
+	InventoryOverStock bool
+	ShopID             int64
+	Type               InventoryVoucherType
+
+	Result struct {
+	} `json:"-"`
+}
+
+func (h AggregateHandler) HandleCheckInventoryVariantsQuantity(ctx context.Context, msg *CheckInventoryVariantsQuantityCommand) (err error) {
+	return h.inner.CheckInventoryVariantsQuantity(msg.GetArgs(ctx))
+}
+
 type ConfirmInventoryVoucherCommand struct {
 	ShopID    int64
 	ID        int64
@@ -133,40 +147,40 @@ func (h AggregateHandler) HandleUpdateInventoryVoucher(ctx context.Context, msg 
 	return err
 }
 
-type GetInventoriesQuery struct {
-	ShopID int64
-	Paging *meta.Paging
-
-	Result *GetInventoriesResponse `json:"-"`
-}
-
-func (h QueryServiceHandler) HandleGetInventories(ctx context.Context, msg *GetInventoriesQuery) (err error) {
-	msg.Result, err = h.inner.GetInventories(msg.GetArgs(ctx))
-	return err
-}
-
-type GetInventoriesByVariantIDsQuery struct {
-	ShopID     int64
-	Paging     *meta.Paging
-	VariantIDs []int64
-
-	Result *GetInventoriesResponse `json:"-"`
-}
-
-func (h QueryServiceHandler) HandleGetInventoriesByVariantIDs(ctx context.Context, msg *GetInventoriesByVariantIDsQuery) (err error) {
-	msg.Result, err = h.inner.GetInventoriesByVariantIDs(msg.GetArgs(ctx))
-	return err
-}
-
-type GetInventoryQuery struct {
+type GetInventoryVariantQuery struct {
 	ShopID    int64
 	VariantID int64
 
 	Result *InventoryVariant `json:"-"`
 }
 
-func (h QueryServiceHandler) HandleGetInventory(ctx context.Context, msg *GetInventoryQuery) (err error) {
-	msg.Result, err = h.inner.GetInventory(msg.GetArgs(ctx))
+func (h QueryServiceHandler) HandleGetInventoryVariant(ctx context.Context, msg *GetInventoryVariantQuery) (err error) {
+	msg.Result, err = h.inner.GetInventoryVariant(msg.GetArgs(ctx))
+	return err
+}
+
+type GetInventoryVariantsQuery struct {
+	ShopID int64
+	Paging *meta.Paging
+
+	Result *GetInventoryVariantsResponse `json:"-"`
+}
+
+func (h QueryServiceHandler) HandleGetInventoryVariants(ctx context.Context, msg *GetInventoryVariantsQuery) (err error) {
+	msg.Result, err = h.inner.GetInventoryVariants(msg.GetArgs(ctx))
+	return err
+}
+
+type GetInventoryVariantsByVariantIDsQuery struct {
+	ShopID     int64
+	Paging     *meta.Paging
+	VariantIDs []int64
+
+	Result *GetInventoryVariantsResponse `json:"-"`
+}
+
+func (h QueryServiceHandler) HandleGetInventoryVariantsByVariantIDs(ctx context.Context, msg *GetInventoryVariantsByVariantIDsQuery) (err error) {
+	msg.Result, err = h.inner.GetInventoryVariantsByVariantIDs(msg.GetArgs(ctx))
 	return err
 }
 
@@ -179,6 +193,19 @@ type GetInventoryVoucherQuery struct {
 
 func (h QueryServiceHandler) HandleGetInventoryVoucher(ctx context.Context, msg *GetInventoryVoucherQuery) (err error) {
 	msg.Result, err = h.inner.GetInventoryVoucher(msg.GetArgs(ctx))
+	return err
+}
+
+type GetInventoryVoucherByReferenceQuery struct {
+	ShopID  int64
+	RefID   int64
+	RefType InventoryRefType
+
+	Result *GetInventoryVoucherByReferenceResponse `json:"-"`
+}
+
+func (h QueryServiceHandler) HandleGetInventoryVoucherByReference(ctx context.Context, msg *GetInventoryVoucherByReferenceQuery) (err error) {
+	msg.Result, err = h.inner.GetInventoryVoucherByReference(msg.GetArgs(ctx))
 	return err
 }
 
@@ -221,19 +248,21 @@ func (h QueryServiceHandler) HandleGetInventoryVouchersByRefIDs(ctx context.Cont
 
 // implement interfaces
 
-func (q *AdjustInventoryQuantityCommand) command()  {}
-func (q *CancelInventoryVoucherCommand) command()   {}
-func (q *ConfirmInventoryVoucherCommand) command()  {}
-func (q *CreateInventoryVariantCommand) command()   {}
-func (q *CreateInventoryVoucherCommand) command()   {}
-func (q *UpdateInventoryVoucherCommand) command()   {}
-func (q *GetInventoriesQuery) query()               {}
-func (q *GetInventoriesByVariantIDsQuery) query()   {}
-func (q *GetInventoryQuery) query()                 {}
-func (q *GetInventoryVoucherQuery) query()          {}
-func (q *GetInventoryVouchersQuery) query()         {}
-func (q *GetInventoryVouchersByIDsQuery) query()    {}
-func (q *GetInventoryVouchersByRefIDsQuery) query() {}
+func (q *AdjustInventoryQuantityCommand) command()        {}
+func (q *CancelInventoryVoucherCommand) command()         {}
+func (q *CheckInventoryVariantsQuantityCommand) command() {}
+func (q *ConfirmInventoryVoucherCommand) command()        {}
+func (q *CreateInventoryVariantCommand) command()         {}
+func (q *CreateInventoryVoucherCommand) command()         {}
+func (q *UpdateInventoryVoucherCommand) command()         {}
+func (q *GetInventoryVariantQuery) query()                {}
+func (q *GetInventoryVariantsQuery) query()               {}
+func (q *GetInventoryVariantsByVariantIDsQuery) query()   {}
+func (q *GetInventoryVoucherQuery) query()                {}
+func (q *GetInventoryVoucherByReferenceQuery) query()     {}
+func (q *GetInventoryVouchersQuery) query()               {}
+func (q *GetInventoryVouchersByIDsQuery) query()          {}
+func (q *GetInventoryVouchersByRefIDsQuery) query()       {}
 
 // implement conversion
 
@@ -272,6 +301,23 @@ func (q *CancelInventoryVoucherCommand) SetCancelInventoryVoucherArgs(args *Canc
 	q.ID = args.ID
 	q.UpdatedBy = args.UpdatedBy
 	q.Reason = args.Reason
+}
+
+func (q *CheckInventoryVariantsQuantityCommand) GetArgs(ctx context.Context) (_ context.Context, _ *CheckInventoryVariantQuantityRequest) {
+	return ctx,
+		&CheckInventoryVariantQuantityRequest{
+			Lines:              q.Lines,
+			InventoryOverStock: q.InventoryOverStock,
+			ShopID:             q.ShopID,
+			Type:               q.Type,
+		}
+}
+
+func (q *CheckInventoryVariantsQuantityCommand) SetCheckInventoryVariantQuantityRequest(args *CheckInventoryVariantQuantityRequest) {
+	q.Lines = args.Lines
+	q.InventoryOverStock = args.InventoryOverStock
+	q.ShopID = args.ShopID
+	q.Type = args.Type
 }
 
 func (q *ConfirmInventoryVoucherCommand) GetArgs(ctx context.Context) (_ context.Context, _ *ConfirmInventoryVoucherArgs) {
@@ -359,7 +405,13 @@ func (q *UpdateInventoryVoucherCommand) SetUpdateInventoryVoucherArgs(args *Upda
 	q.Lines = args.Lines
 }
 
-func (q *GetInventoriesQuery) GetArgs(ctx context.Context) (_ context.Context, _ *GetInventoryRequest) {
+func (q *GetInventoryVariantQuery) GetArgs(ctx context.Context) (_ context.Context, ShopID int64, VariantID int64) {
+	return ctx,
+		q.ShopID,
+		q.VariantID
+}
+
+func (q *GetInventoryVariantsQuery) GetArgs(ctx context.Context) (_ context.Context, _ *GetInventoryRequest) {
 	return ctx,
 		&GetInventoryRequest{
 			ShopID: q.ShopID,
@@ -367,36 +419,37 @@ func (q *GetInventoriesQuery) GetArgs(ctx context.Context) (_ context.Context, _
 		}
 }
 
-func (q *GetInventoriesQuery) SetGetInventoryRequest(args *GetInventoryRequest) {
+func (q *GetInventoryVariantsQuery) SetGetInventoryRequest(args *GetInventoryRequest) {
 	q.ShopID = args.ShopID
 	q.Paging = args.Paging
 }
 
-func (q *GetInventoriesByVariantIDsQuery) GetArgs(ctx context.Context) (_ context.Context, _ *GetInventoriesByVariantIDsArgs) {
+func (q *GetInventoryVariantsByVariantIDsQuery) GetArgs(ctx context.Context) (_ context.Context, _ *GetInventoryVariantsByVariantIDsArgs) {
 	return ctx,
-		&GetInventoriesByVariantIDsArgs{
+		&GetInventoryVariantsByVariantIDsArgs{
 			ShopID:     q.ShopID,
 			Paging:     q.Paging,
 			VariantIDs: q.VariantIDs,
 		}
 }
 
-func (q *GetInventoriesByVariantIDsQuery) SetGetInventoriesByVariantIDsArgs(args *GetInventoriesByVariantIDsArgs) {
+func (q *GetInventoryVariantsByVariantIDsQuery) SetGetInventoryVariantsByVariantIDsArgs(args *GetInventoryVariantsByVariantIDsArgs) {
 	q.ShopID = args.ShopID
 	q.Paging = args.Paging
 	q.VariantIDs = args.VariantIDs
-}
-
-func (q *GetInventoryQuery) GetArgs(ctx context.Context) (_ context.Context, ShopID int64, VariantID int64) {
-	return ctx,
-		q.ShopID,
-		q.VariantID
 }
 
 func (q *GetInventoryVoucherQuery) GetArgs(ctx context.Context) (_ context.Context, ShopID int64, ID int64) {
 	return ctx,
 		q.ShopID,
 		q.ID
+}
+
+func (q *GetInventoryVoucherByReferenceQuery) GetArgs(ctx context.Context) (_ context.Context, ShopID int64, refID int64, refType InventoryRefType) {
+	return ctx,
+		q.ShopID,
+		q.RefID,
+		q.RefType
 }
 
 func (q *GetInventoryVouchersQuery) GetArgs(ctx context.Context) (_ context.Context, ShopID int64, Paging *meta.Paging) {
@@ -440,6 +493,7 @@ func (h AggregateHandler) RegisterHandlers(b interface {
 }) CommandBus {
 	b.AddHandler(h.HandleAdjustInventoryQuantity)
 	b.AddHandler(h.HandleCancelInventoryVoucher)
+	b.AddHandler(h.HandleCheckInventoryVariantsQuantity)
 	b.AddHandler(h.HandleConfirmInventoryVoucher)
 	b.AddHandler(h.HandleCreateInventoryVariant)
 	b.AddHandler(h.HandleCreateInventoryVoucher)
@@ -459,10 +513,11 @@ func (h QueryServiceHandler) RegisterHandlers(b interface {
 	capi.Bus
 	AddHandler(handler interface{})
 }) QueryBus {
-	b.AddHandler(h.HandleGetInventories)
-	b.AddHandler(h.HandleGetInventoriesByVariantIDs)
-	b.AddHandler(h.HandleGetInventory)
+	b.AddHandler(h.HandleGetInventoryVariant)
+	b.AddHandler(h.HandleGetInventoryVariants)
+	b.AddHandler(h.HandleGetInventoryVariantsByVariantIDs)
 	b.AddHandler(h.HandleGetInventoryVoucher)
+	b.AddHandler(h.HandleGetInventoryVoucherByReference)
 	b.AddHandler(h.HandleGetInventoryVouchers)
 	b.AddHandler(h.HandleGetInventoryVouchersByIDs)
 	b.AddHandler(h.HandleGetInventoryVouchersByRefIDs)

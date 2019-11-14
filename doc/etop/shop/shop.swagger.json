@@ -1888,14 +1888,14 @@
         ]
       }
     },
-    "/api/shop.Inventory/GetInventories": {
+    "/api/shop.Inventory/GetInventoryVariant": {
       "post": {
-        "operationId": "GetInventories",
+        "operationId": "GetInventoryVariant",
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/shopGetInventoriesResponse"
+              "$ref": "#/definitions/shopInventoryVariant"
             }
           }
         },
@@ -1905,7 +1905,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/shopGetInventoriesRequest"
+              "$ref": "#/definitions/shopGetInventoryVariantRequest"
             }
           }
         ],
@@ -1914,14 +1914,14 @@
         ]
       }
     },
-    "/api/shop.Inventory/GetInventoriesByVariantIDs": {
+    "/api/shop.Inventory/GetInventoryVariants": {
       "post": {
-        "operationId": "GetInventoriesByVariantIDs",
+        "operationId": "GetInventoryVariants",
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/shopGetInventoriesResponse"
+              "$ref": "#/definitions/shopGetInventoryVariantsResponse"
             }
           }
         },
@@ -1931,7 +1931,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/shopGetInventoriesByVariantIDsRequest"
+              "$ref": "#/definitions/shopGetInventoryVariantsRequest"
             }
           }
         ],
@@ -1940,14 +1940,14 @@
         ]
       }
     },
-    "/api/shop.Inventory/GetInventory": {
+    "/api/shop.Inventory/GetInventoryVariantsByVariantIDs": {
       "post": {
-        "operationId": "GetInventory",
+        "operationId": "GetInventoryVariantsByVariantIDs",
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/shopInventory"
+              "$ref": "#/definitions/shopGetInventoryVariantsResponse"
             }
           }
         },
@@ -1957,7 +1957,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/shopGetInventoryRequest"
+              "$ref": "#/definitions/shopGetInventoryVariantsByVariantIDsRequest"
             }
           }
         ],
@@ -2036,6 +2036,32 @@
             "required": true,
             "schema": {
               "$ref": "#/definitions/shopGetInventoryVouchersByIDsRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Inventory"
+        ]
+      }
+    },
+    "/api/shop.Inventory/GetInventoryVouchersByReference": {
+      "post": {
+        "operationId": "GetInventoryVouchersByReference",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/shopGetInventoryVouchersByReferenceResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/shopGetInventoryVouchersByReferenceRequest"
             }
           }
         ],
@@ -7535,10 +7561,10 @@
     "shopAdjustInventoryQuantityRequest": {
       "type": "object",
       "properties": {
-        "inventories": {
+        "inventory_variants": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/shopInventory"
+            "$ref": "#/definitions/shopInventoryVariant"
           }
         },
         "note": {
@@ -7549,10 +7575,10 @@
     "shopAdjustInventoryQuantityResponse": {
       "type": "object",
       "properties": {
-        "inventories": {
+        "inventory_variants": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/shopInventory"
+            "$ref": "#/definitions/shopInventoryVariant"
           }
         },
         "inventory_vouchers": {
@@ -7788,7 +7814,7 @@
     "shopConfirmInventoryVoucherResponse": {
       "type": "object",
       "properties": {
-        "inventory": {
+        "inventory_voucher": {
           "$ref": "#/definitions/shopInventoryVoucher"
         }
       }
@@ -8961,7 +8987,16 @@
         }
       }
     },
-    "shopGetInventoriesByVariantIDsRequest": {
+    "shopGetInventoryVariantRequest": {
+      "type": "object",
+      "properties": {
+        "variant_id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "shopGetInventoryVariantsByVariantIDsRequest": {
       "type": "object",
       "properties": {
         "variant_ids": {
@@ -8973,7 +9008,7 @@
         }
       }
     },
-    "shopGetInventoriesRequest": {
+    "shopGetInventoryVariantsRequest": {
       "type": "object",
       "properties": {
         "paging": {
@@ -8981,23 +9016,14 @@
         }
       }
     },
-    "shopGetInventoriesResponse": {
+    "shopGetInventoryVariantsResponse": {
       "type": "object",
       "properties": {
-        "inventories": {
+        "inventory_variants": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/shopInventory"
+            "$ref": "#/definitions/shopInventoryVariant"
           }
-        }
-      }
-    },
-    "shopGetInventoryRequest": {
-      "type": "object",
-      "properties": {
-        "variant_id": {
-          "type": "string",
-          "format": "int64"
         }
       }
     },
@@ -9010,6 +9036,33 @@
             "type": "string",
             "format": "int64"
           }
+        }
+      }
+    },
+    "shopGetInventoryVouchersByReferenceRequest": {
+      "type": "object",
+      "properties": {
+        "ref_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "ref_type": {
+          "type": "string",
+          "title": "enum ('order', 'purchase_order', 'return', 'purchase_order')"
+        }
+      }
+    },
+    "shopGetInventoryVouchersByReferenceResponse": {
+      "type": "object",
+      "properties": {
+        "inventory_voucher": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/shopInventoryVoucher"
+          }
+        },
+        "status": {
+          "$ref": "#/definitions/status4Status"
         }
       }
     },
@@ -9213,7 +9266,7 @@
         }
       }
     },
-    "shopInventory": {
+    "shopInventoryVariant": {
       "type": "object",
       "properties": {
         "shop_id": {
@@ -9407,6 +9460,10 @@
         "order_id": {
           "type": "string",
           "format": "int64"
+        },
+        "auto_inventory_voucher": {
+          "type": "string",
+          "title": "enum ('', 'create', 'create')"
         }
       }
     },
@@ -10674,7 +10731,7 @@
     "shopUpdateInventoryVoucherResponse": {
       "type": "object",
       "properties": {
-        "inventory": {
+        "inventory_voucher": {
           "$ref": "#/definitions/shopInventoryVoucher"
         }
       }

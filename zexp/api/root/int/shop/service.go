@@ -35,10 +35,10 @@ type InventoryAPI interface {
 	UpdateInventoryVoucher(context.Context, *shop.UpdateInventoryVoucherRequest) (*shop.UpdateInventoryVoucherResponse, error)
 	AdjustInventoryQuantity(context.Context, *shop.AdjustInventoryQuantityRequest) (*shop.AdjustInventoryQuantityResponse, error)
 
-	GetInventory(context.Context, *shop.GetInventoryRequest) (*shop.Inventory, error)
-	GetInventories(context.Context, *shop.GetInventoriesRequest) (*shop.GetInventoriesResponse, error)
-	GetInventoriesByVariantIDs(context.Context, *shop.GetInventoriesByVariantIDsRequest) (*shop.GetInventoriesResponse, error)
-
+	GetInventoryVariant(context.Context, *shop.GetInventoryVariantRequest) (*shop.InventoryVariant, error)
+	GetInventoryVariants(context.Context, *shop.GetInventoryVariantsRequest) (*shop.GetInventoryVariantsResponse, error)
+	GetInventoryVariantsByVariantIDs(context.Context, *shop.GetInventoryVariantsByVariantIDsRequest) (*shop.GetInventoryVariantsResponse, error)
+	GetInventoryVouchersByReference(context.Context, *shop.GetInventoryVouchersByReferenceRequest) (*shop.GetInventoryVouchersByReferenceResponse, error)
 	GetInventoryVoucher(context.Context, *cm.IDRequest) (*shop.InventoryVoucher, error)
 	GetInventoryVouchers(context.Context, *shop.GetInventoryVouchersRequest) (*shop.GetInventoryVouchersResponse, error)
 	GetInventoryVouchersByIDs(context.Context, *shop.GetInventoryVouchersByIDsRequest) (*shop.GetInventoryVouchersResponse, error)

@@ -956,22 +956,22 @@ func (s *InventoryServiceServer) parseRoute(path string) (reqMsg proto.Message, 
 			return s.InventoryAPI.CreateInventoryVoucher(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/shop.Inventory/GetInventories":
-		msg := new(shop.GetInventoriesRequest)
+	case "/shop.Inventory/GetInventoryVariant":
+		msg := new(shop.GetInventoryVariantRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
-			return s.InventoryAPI.GetInventories(ctx, msg)
+			return s.InventoryAPI.GetInventoryVariant(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/shop.Inventory/GetInventoriesByVariantIDs":
-		msg := new(shop.GetInventoriesByVariantIDsRequest)
+	case "/shop.Inventory/GetInventoryVariants":
+		msg := new(shop.GetInventoryVariantsRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
-			return s.InventoryAPI.GetInventoriesByVariantIDs(ctx, msg)
+			return s.InventoryAPI.GetInventoryVariants(ctx, msg)
 		}
 		return msg, fn, nil
-	case "/shop.Inventory/GetInventory":
-		msg := new(shop.GetInventoryRequest)
+	case "/shop.Inventory/GetInventoryVariantsByVariantIDs":
+		msg := new(shop.GetInventoryVariantsByVariantIDsRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
-			return s.InventoryAPI.GetInventory(ctx, msg)
+			return s.InventoryAPI.GetInventoryVariantsByVariantIDs(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/shop.Inventory/GetInventoryVoucher":
@@ -990,6 +990,12 @@ func (s *InventoryServiceServer) parseRoute(path string) (reqMsg proto.Message, 
 		msg := new(shop.GetInventoryVouchersByIDsRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.InventoryAPI.GetInventoryVouchersByIDs(ctx, msg)
+		}
+		return msg, fn, nil
+	case "/shop.Inventory/GetInventoryVouchersByReference":
+		msg := new(shop.GetInventoryVouchersByReferenceRequest)
+		fn := func(ctx context.Context) (proto.Message, error) {
+			return s.InventoryAPI.GetInventoryVouchersByReference(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/shop.Inventory/UpdateInventoryVoucher":
