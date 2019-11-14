@@ -108,9 +108,9 @@ func (s *PurchaseOrderService) DeletePurchaseOrder(ctx context.Context, r *Delet
 
 func (s *PurchaseOrderService) ConfirmPurchaseOrder(ctx context.Context, r *ConfirmPurchaseOrderEndpoint) error {
 	cmd := &purchaseorder.ConfirmPurchaseOrderCommand{
-		ID:                          r.Id,
-		AutoConfirmInventoryVoucher: r.AutoConfirmInventoryVoucher,
-		ShopID:                      r.Context.Shop.ID,
+		ID:                   r.Id,
+		AutoInventoryVoucher: purchaseorder.PurchaseOrderAutoInventoryVoucher(r.AutoInventoryVoucher),
+		ShopID:               r.Context.Shop.ID,
 	}
 	if err := purchaseOrderAggr.Dispatch(ctx, cmd); err != nil {
 		return err

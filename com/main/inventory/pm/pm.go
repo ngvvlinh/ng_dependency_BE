@@ -72,30 +72,43 @@ func (m *ProcessManager) ListenOrderCreatedEvent(ctx context.Context, event *ord
 }
 
 func (m *ProcessManager) PurchaseOrderConfirmed(ctx context.Context, event *purchaseorder.PurchaseOrderConfirmedEvent) error {
-	createInventoryVoucherCmd := &inventory.CreateInventoryVoucherCommand{
-		Overstock:   false,
-		ShopID:      event.ShopID,
-		CreatedBy:   event.UserID,
-		Title:       "Nhập kho khi kiểm hàng",
-		RefID:       event.PurchaseOrderID,
-		RefType:     inventory.RefTypePurchaseOrder,
-		RefName:     inventory.RefNamePurchaseOrder,
-		TraderID:    event.TraderID,
-		TotalAmount: int32(event.TotalAmount),
-		Type:        inventory.InventoryVoucherTypeIn,
-		Lines:       event.Lines,
+	var isCreate, isConfirm bool
+	if event.AutoInventoryVoucher == purchaseorder.AutoInventoryVoucherCreate {
+		isCreate = true
 	}
-	if err := m.inventoryAggregate.Dispatch(ctx, createInventoryVoucherCmd); err != nil {
-		return err
+	if event.AutoInventoryVoucher == purchaseorder.AutoInventoryVoucherConfirm {
+		isCreate = true
+		isConfirm = true
 	}
 
-	if event.AutoConfirmInventoryVoucher {
-		confirmInventoryVoucherCmd := &inventory.ConfirmInventoryVoucherCommand{
+	var inventoryVourcherID int64
+	if isCreate {
+		cmd := &inventory.CreateInventoryVoucherCommand{
+			Overstock:   false,
+			ShopID:      event.ShopID,
+			CreatedBy:   event.UserID,
+			Title:       "Nhập kho khi kiểm hàng",
+			RefID:       event.PurchaseOrderID,
+			RefType:     inventory.RefTypePurchaseOrder,
+			RefName:     inventory.RefNamePurchaseOrder,
+			TraderID:    event.TraderID,
+			TotalAmount: int32(event.TotalAmount),
+			Type:        inventory.InventoryVoucherTypeIn,
+			Lines:       event.Lines,
+		}
+		if err := m.inventoryAggregate.Dispatch(ctx, cmd); err != nil {
+			return err
+		}
+		inventoryVourcherID = cmd.Result.ID
+	}
+
+	if isConfirm {
+		cmd := &inventory.ConfirmInventoryVoucherCommand{
 			ShopID:    event.ShopID,
-			ID:        createInventoryVoucherCmd.Result.ID,
+			ID:        inventoryVourcherID,
 			UpdatedBy: event.UserID,
 		}
-		if err := m.inventoryAggregate.Dispatch(ctx, confirmInventoryVoucherCmd); err != nil {
+		if err := m.inventoryAggregate.Dispatch(ctx, cmd); err != nil {
 			return err
 		}
 	}

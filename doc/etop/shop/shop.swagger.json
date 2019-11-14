@@ -7800,9 +7800,9 @@
           "type": "string",
           "format": "int64"
         },
-        "auto_confirm_inventory_voucher": {
-          "type": "boolean",
-          "format": "boolean"
+        "auto_inventory_voucher": {
+          "type": "string",
+          "title": "enum create, confirm"
         }
       }
     },

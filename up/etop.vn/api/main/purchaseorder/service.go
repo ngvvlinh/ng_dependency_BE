@@ -64,7 +64,7 @@ type CancelPurchaseOrderArgs struct {
 }
 
 type ConfirmPurchaseOrderArgs struct {
-	ID                          int64
-	AutoConfirmInventoryVoucher bool
-	ShopID                      int64
+	ID                   int64
+	AutoInventoryVoucher PurchaseOrderAutoInventoryVoucher
+	ShopID               int64
 }

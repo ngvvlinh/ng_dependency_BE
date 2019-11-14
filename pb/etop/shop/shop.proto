@@ -396,7 +396,8 @@ message CancelPurchaseOrderRequest {
 
 message ConfirmPurchaseOrderRequest {
     optional int64 id = 1 [(gogoproto.nullable)=false];
-    optional bool auto_confirm_inventory_voucher = 2 [(gogoproto.nullable)=false];
+    // enum create, confirm
+    optional string auto_inventory_voucher = 2 [(gogoproto.nullable)=false];
 }
 
 message GetLedgersRequest {

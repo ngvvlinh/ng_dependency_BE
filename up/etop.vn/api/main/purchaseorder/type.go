@@ -3,11 +3,16 @@ package purchaseorder
 import (
 	"time"
 
-	"etop.vn/api/main/inventory"
-
-	"etop.vn/api/meta"
-
 	"etop.vn/api/main/etop"
+	"etop.vn/api/main/inventory"
+	"etop.vn/api/meta"
+)
+
+type PurchaseOrderAutoInventoryVoucher string
+
+const (
+	AutoInventoryVoucherCreate  PurchaseOrderAutoInventoryVoucher = "create"
+	AutoInventoryVoucherConfirm PurchaseOrderAutoInventoryVoucher = "confirm"
 )
 
 // +gen:event:topic=event/purchaseOrder
@@ -63,12 +68,12 @@ func (r *PurchaseOrder) GetVariantIDs() []int64 {
 
 type PurchaseOrderConfirmedEvent struct {
 	meta.EventMeta
-	ShopID                      int64
-	UserID                      int64
-	PurchaseOrderID             int64
-	TraderID                    int64
-	TotalAmount                 int64
-	AutoConfirmInventoryVoucher bool
+	ShopID               int64
+	UserID               int64
+	PurchaseOrderID      int64
+	TraderID             int64
+	TotalAmount          int64
+	AutoInventoryVoucher PurchaseOrderAutoInventoryVoucher
 
 	Lines []*inventory.InventoryVoucherItem
 }

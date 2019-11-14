@@ -249,6 +249,12 @@ func (a *PurchaseOrderAggregate) CancelPurchaseOrder(
 func (a *PurchaseOrderAggregate) ConfirmPurchaseOrder(
 	ctx context.Context, args *purchaseorder.ConfirmPurchaseOrderArgs,
 ) (updated int, err error) {
+	if args.AutoInventoryVoucher != "" &&
+		args.AutoInventoryVoucher != purchaseorder.AutoInventoryVoucherCreate &&
+		args.AutoInventoryVoucher != purchaseorder.AutoInventoryVoucherConfirm {
+		return 0, cm.Errorf(cm.InvalidArgument, nil, "AutoInventoryVoucher không hợp lệ")
+	}
+
 	purchaseOrder, err := a.store(ctx).ID(args.ID).ShopID(args.ShopID).GetPurchaseOrder()
 	if err != nil {
 		return 0, cm.MapError(err).
@@ -275,13 +281,13 @@ func (a *PurchaseOrderAggregate) ConfirmPurchaseOrder(
 		}
 
 		event := &purchaseorder.PurchaseOrderConfirmedEvent{
-			ShopID:                      args.ShopID,
-			UserID:                      purchaseOrder.CreatedBy,
-			PurchaseOrderID:             args.ID,
-			TraderID:                    purchaseOrder.SupplierID,
-			TotalAmount:                 purchaseOrder.BasketValue,
-			AutoConfirmInventoryVoucher: args.AutoConfirmInventoryVoucher,
-			Lines:                       lines,
+			ShopID:               args.ShopID,
+			UserID:               purchaseOrder.CreatedBy,
+			PurchaseOrderID:      args.ID,
+			TraderID:             purchaseOrder.SupplierID,
+			TotalAmount:          purchaseOrder.BasketValue,
+			AutoInventoryVoucher: args.AutoInventoryVoucher,
+			Lines:                lines,
 		}
 		if err := a.eventBus.Publish(ctx, event); err != nil {
 			return err

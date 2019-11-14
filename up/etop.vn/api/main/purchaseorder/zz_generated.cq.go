@@ -53,9 +53,9 @@ func (h AggregateHandler) HandleCancelPurchaseOrder(ctx context.Context, msg *Ca
 }
 
 type ConfirmPurchaseOrderCommand struct {
-	ID                          int64
-	AutoConfirmInventoryVoucher bool
-	ShopID                      int64
+	ID                   int64
+	AutoInventoryVoucher PurchaseOrderAutoInventoryVoucher
+	ShopID               int64
 
 	Result int `json:"-"`
 }
@@ -168,15 +168,15 @@ func (q *CancelPurchaseOrderCommand) SetCancelPurchaseOrderArgs(args *CancelPurc
 func (q *ConfirmPurchaseOrderCommand) GetArgs(ctx context.Context) (_ context.Context, _ *ConfirmPurchaseOrderArgs) {
 	return ctx,
 		&ConfirmPurchaseOrderArgs{
-			ID:                          q.ID,
-			AutoConfirmInventoryVoucher: q.AutoConfirmInventoryVoucher,
-			ShopID:                      q.ShopID,
+			ID:                   q.ID,
+			AutoInventoryVoucher: q.AutoInventoryVoucher,
+			ShopID:               q.ShopID,
 		}
 }
 
 func (q *ConfirmPurchaseOrderCommand) SetConfirmPurchaseOrderArgs(args *ConfirmPurchaseOrderArgs) {
 	q.ID = args.ID
-	q.AutoConfirmInventoryVoucher = args.AutoConfirmInventoryVoucher
+	q.AutoInventoryVoucher = args.AutoInventoryVoucher
 	q.ShopID = args.ShopID
 }
 
