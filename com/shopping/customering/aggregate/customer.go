@@ -142,7 +142,7 @@ func (a *CustomerAggregate) UpdateCustomer(
 	// Verify phone
 	if args.Phone.Valid {
 		if args.Phone.String == "" {
-			return nil, cm.Error(cm.InvalidArgument, "Số điện thoại không thể rỗng", err)
+			return nil, cm.Error(cm.InvalidArgument, "Số điện thoại không thể để trống", err)
 		} else {
 			phone, isPhone := validate.NormalizePhone(args.Phone.String)
 			if isPhone != true {
@@ -163,17 +163,17 @@ func (a *CustomerAggregate) UpdateCustomer(
 
 	// Check phone
 	if args.Phone.Valid && customer.Phone != args.Phone.String {
-		_, err = a.store(ctx).ShopID(args.ShopID).Phone(args.Phone.String).GetCustomerDB()
+		ct, err := a.store(ctx).ShopID(args.ShopID).Phone(args.Phone.String).GetCustomerDB()
 		if err == nil {
-			return nil, cm.Error(cm.InvalidArgument, "Số điện thoại đã tồn tại", err)
+			return nil, cm.Errorf(cm.InvalidArgument, err, "Số điện thoại %v đã tồn tại", ct.Phone)
 		}
 	}
 
 	// Check email
 	if args.Email.Valid && customer.Email != args.Email.String {
-		_, err = a.store(ctx).ShopID(args.ShopID).Phone(args.Email.String).GetCustomerDB()
+		ct, err := a.store(ctx).ShopID(args.ShopID).Email(args.Email.String).GetCustomerDB()
 		if err == nil {
-			return nil, cm.Error(cm.InvalidArgument, "Email đã tồn tại", err)
+			return nil, cm.Errorf(cm.InvalidArgument, err, "Khách hàng với email: %v đã tồn tại", ct.Email)
 		}
 	}
 
