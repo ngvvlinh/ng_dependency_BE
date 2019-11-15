@@ -3067,6 +3067,23 @@
         }
       }
     },
+    "shopInventoryVariantQuantity": {
+      "type": "object",
+      "properties": {
+        "quantity_on_hand": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "quantity_picked": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "quantity": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
     "shopShopProduct": {
       "type": "object",
       "properties": {
@@ -3252,6 +3269,9 @@
         "is_available": {
           "type": "boolean",
           "format": "boolean"
+        },
+        "inventory_variant": {
+          "$ref": "#/definitions/shopInventoryVariantQuantity"
         },
         "tags": {
           "type": "array",

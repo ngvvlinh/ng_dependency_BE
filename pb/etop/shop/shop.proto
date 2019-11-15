@@ -612,6 +612,8 @@ message ShopVariant {
     optional status3.Status status = 12 [(gogoproto.nullable)=false];
     optional bool is_available  = 13 [(gogoproto.nullable)=false];
 
+    optional InventoryVariantQuantity inventory_variant = 17;
+
     // @deprecated use stags instead
     repeated string  tags = 10;
     repeated Tag    stags = 22;
@@ -1737,6 +1739,12 @@ message InventoryVariant {
     optional int32 quantity_picked = 4 [(gogoproto.nullable) = false];
     optional int32 purchase_price = 5 [(gogoproto.nullable) = false];
     optional int32 quantity = 6 [(gogoproto.nullable) = false];
+}
+
+message InventoryVariantQuantity {
+    optional int32 quantity_on_hand = 1 [(gogoproto.nullable) = false];
+    optional int32 quantity_picked = 2 [(gogoproto.nullable) = false];
+    optional int32 quantity = 4 [(gogoproto.nullable) = false];
 }
 
 message InventoryVoucher {

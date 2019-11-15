@@ -241,6 +241,7 @@ func (q *InventoryAggregate) DevideInOutInventoryVoucher(ctx context.Context,
 	var listVariantID []int64
 	var linesCheckin []*inventory.InventoryVoucherItem
 	var linesCheckout []*inventory.InventoryVoucherItem
+
 	for _, value := range args.Lines {
 		if value.QuantitySummary < 0 {
 			return nil, nil, nil, cm.Errorf(cm.InvalidArgument, nil, "Số lượng sản phẩm cân bằng kho phải lớn hơn 0")
@@ -250,7 +251,7 @@ func (q *InventoryAggregate) DevideInOutInventoryVoucher(ctx context.Context,
 		if err != nil && cm.ErrorCode(err) == cm.NotFound {
 			linesCheckin = append(linesCheckin, &inventory.InventoryVoucherItem{
 				VariantID: value.VariantID,
-				Price:     result.PurchasePrice,
+				Price:     value.PurchasePrice,
 				Quantity:  value.QuantitySummary,
 			})
 			continue

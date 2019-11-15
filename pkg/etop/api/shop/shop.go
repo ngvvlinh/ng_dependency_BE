@@ -490,6 +490,7 @@ func (s *ProductService) RemoveVariants(ctx context.Context, q *RemoveVariantsEn
 }
 
 func (s *ProductService) GetProduct(ctx context.Context, q *GetProductEndpoint) error {
+	shopID := q.Context.Shop.ID
 	query := &catalog.GetShopProductWithVariantsByIDQuery{
 		ProductID: q.Id,
 		ShopID:    q.Context.Shop.ID,
@@ -497,38 +498,51 @@ func (s *ProductService) GetProduct(ctx context.Context, q *GetProductEndpoint) 
 	if err := catalogQuery.Dispatch(ctx, query); err != nil {
 		return err
 	}
-	q.Result = PbShopProductWithVariants(query.Result)
+	productPb, err := s.GetProductQuantity(ctx, shopID, query.Result)
+	if err != nil {
+		return err
+	}
+	q.Result = productPb
 	return nil
 }
 
 func (s *ProductService) GetProductsByIDs(ctx context.Context, q *GetProductsByIDsEndpoint) error {
+	shopID := q.Context.Shop.ID
 	query := &catalog.ListShopProductsWithVariantsByIDsQuery{
 		IDs:    q.Ids,
-		ShopID: q.Context.Shop.ID,
+		ShopID: shopID,
 	}
 	if err := catalogQuery.Dispatch(ctx, query); err != nil {
 		return err
 	}
+	products, err := s.GetProductsQuantity(ctx, shopID, query.Result.Products)
+	if err != nil {
+		return err
+	}
 	q.Result = &pbshop.ShopProductsResponse{
-		Products: PbShopProductsWithVariants(query.Result.Products),
+		Products: products,
 	}
 	return nil
 }
 
 func (s *ProductService) GetProducts(ctx context.Context, q *GetProductsEndpoint) error {
 	paging := q.Paging.CMPaging()
+	shopID := q.Context.Shop.ID
 	query := &catalog.ListShopProductsWithVariantsQuery{
-		ShopID:  q.Context.Shop.ID,
+		ShopID:  shopID,
 		Paging:  *paging,
 		Filters: pbcm.ToFilters(q.Filters),
 	}
 	if err := catalogQuery.Dispatch(ctx, query); err != nil {
 		return err
 	}
-
+	products, err := s.GetProductsQuantity(ctx, shopID, query.Result.Products)
+	if err != nil {
+		return err
+	}
 	q.Result = &pbshop.ShopProductsResponse{
 		Paging:   pbcm.PbPaging(cm.Paging(query.Result.Paging), query.Result.Count),
-		Products: PbShopProductsWithVariants(query.Result.Products),
+		Products: products,
 	}
 	return nil
 }
@@ -1675,4 +1689,51 @@ func (s *ProductService) RemoveProductCategory(ctx context.Context, r *RemovePro
 	}
 	r.Result = PbShopProductWithVariants(cmd.Result)
 	return nil
+}
+
+func (s *ProductService) GetProductsQuantity(ctx context.Context, shopID int64, products []*catalog.ShopProductWithVariants) ([]*pbshop.ShopProduct, error) {
+	var variantIDs []int64
+	for _, valueProduct := range products {
+		for _, valueVariant := range valueProduct.Variants {
+			variantIDs = append(variantIDs, valueVariant.VariantID)
+		}
+	}
+	inventoryVariants, err := s.GetVariantsQuantity(ctx, shopID, variantIDs)
+	if err != nil {
+		return nil, err
+	}
+	return PbInventoryProductsQuantity(products, inventoryVariants), nil
+}
+
+func (s *ProductService) GetProductQuantity(ctx context.Context, shopID int64, shopProduct *catalog.ShopProductWithVariants) (*pbshop.ShopProduct, error) {
+	var variantIDs []int64
+	for _, value := range shopProduct.Variants {
+		variantIDs = append(variantIDs, value.VariantID)
+	}
+	inventoryVariants, err := s.GetVariantsQuantity(ctx, shopID, variantIDs)
+	if err != nil {
+		return nil, err
+	}
+	shopProductPb := PbInventoryProductQuantity(shopProduct, inventoryVariants)
+	return shopProductPb, nil
+}
+
+func (s *ProductService) GetVariantsQuantity(ctx context.Context, shopID int64, variantIDs []int64) (map[int64]*inventory.InventoryVariant, error) {
+
+	var mapInventoryVariant = make(map[int64]*inventory.InventoryVariant)
+	if len(variantIDs) == 0 {
+		return mapInventoryVariant, nil
+	}
+	q := &inventory.GetInventoryVariantsByVariantIDsQuery{
+		ShopID:     shopID,
+		VariantIDs: variantIDs,
+	}
+	if err := inventoryQuery.Dispatch(ctx, q); err != nil {
+		return nil, err
+	}
+
+	for _, value := range q.Result.InventoryVariants {
+		mapInventoryVariant[value.VariantID] = value
+	}
+	return mapInventoryVariant, nil
 }
