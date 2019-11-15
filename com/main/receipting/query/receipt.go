@@ -5,7 +5,6 @@ import (
 
 	"etop.vn/api/main/etop"
 	"etop.vn/api/main/receipting"
-	"etop.vn/api/shopping"
 	"etop.vn/backend/com/main/receipting/sqlstore"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/cmsql"
@@ -39,20 +38,19 @@ func (q *ReceiptQuery) GetReceipts(ctx context.Context, shopID int64) ([]*receip
 	return receipts, err
 }
 
-func (q *ReceiptQuery) GetReceiptByID(ctx context.Context, args *shopping.IDQueryShopArg) (*receipting.Receipt, error) {
+func (q *ReceiptQuery) GetReceiptByID(ctx context.Context, args *receipting.GetReceiptByIDArg) (*receipting.Receipt, error) {
 	receipt, err := q.store(ctx).ID(args.ID).ShopID(args.ShopID).GetReceipt()
 	return receipt, err
 }
 
 func (q *ReceiptQuery) ListReceipts(
-	ctx context.Context, args *shopping.ListQueryShopArgs,
+	ctx context.Context, args *receipting.ListReceiptsArgs,
 ) (*receipting.ReceiptsResponse, error) {
 	query := q.store(ctx).ShopID(args.ShopID).Filters(args.Filters)
 	receipts, err := query.Paging(args.Paging).ListReceipts()
 	if err != nil {
 		return nil, err
 	}
-
 	count, err := query.Count()
 	if err != nil {
 		return nil, err
@@ -71,7 +69,7 @@ func (q *ReceiptQuery) ListReceipts(
 	}, nil
 }
 
-func (q *ReceiptQuery) ListReceiptsByIDs(context.Context, *shopping.IDsQueryShopArgs) (*receipting.ReceiptsResponse, error) {
+func (q *ReceiptQuery) ListReceiptsByIDs(context.Context, *receipting.GetReceiptbyIDsArgs) (*receipting.ReceiptsResponse, error) {
 	panic("implement me")
 }
 

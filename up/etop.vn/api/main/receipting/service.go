@@ -6,7 +6,6 @@ import (
 
 	"etop.vn/api/main/etop"
 	"etop.vn/api/meta"
-	"etop.vn/api/shopping"
 	. "etop.vn/capi/dot"
 )
 
@@ -21,16 +20,31 @@ type Aggregate interface {
 }
 
 type QueryService interface {
-	GetReceiptByID(context.Context, *shopping.IDQueryShopArg) (*Receipt, error)
+	GetReceiptByID(context.Context, *GetReceiptByIDArg) (*Receipt, error)
 	GetReceiptByCode(ctx context.Context, code string, shopID int64) (*Receipt, error)
-	ListReceipts(context.Context, *shopping.ListQueryShopArgs) (*ReceiptsResponse, error)
-	ListReceiptsByIDs(context.Context, *shopping.IDsQueryShopArgs) (*ReceiptsResponse, error)
+	ListReceipts(context.Context, *ListReceiptsArgs) (*ReceiptsResponse, error)
+	ListReceiptsByIDs(context.Context, *GetReceiptbyIDsArgs) (*ReceiptsResponse, error)
 	ListReceiptsByRefsAndStatus(context.Context, *ListReceiptsByRefsAndStatusArgs) (*ReceiptsResponse, error)
 	ListReceiptsByTraderIDsAndStatuses(ctx context.Context, shopID int64, traderIDs []int64, statuses []etop.Status3) (*ReceiptsResponse, error)
 	ListReceiptsByLedgerIDs(context.Context, *ListReceiptsByLedgerIDsArgs) (*ReceiptsResponse, error)
 }
 
 //-- queries --//
+type GetReceiptByIDArg struct {
+	ID     int64
+	ShopID int64
+}
+
+type GetReceiptbyIDsArgs struct {
+	IDs    []int64
+	ShopID int64
+}
+
+type ListReceiptsArgs struct {
+	ShopID  int64
+	Paging  meta.Paging
+	Filters meta.Filters
+}
 
 type ReceiptsResponse struct {
 	Receipts                    []*Receipt

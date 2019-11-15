@@ -8,6 +8,8 @@ import (
 	"time"
 
 	"etop.vn/api/main/etop"
+	"etop.vn/backend/pkg/common/validate"
+
 	"etop.vn/api/main/receipting"
 	"etop.vn/api/meta"
 	"etop.vn/backend/com/main/receipting/convert"
@@ -198,6 +200,9 @@ func (s *ReceiptStore) CreateReceipt(receipt *receipting.Receipt) error {
 		return err
 	}
 	receiptDB.Lines = convert.Convert_receipting_ReceiptLines_receiptingmodel_ReceiptLines(receipt.Lines)
+	if receiptDB.Trader != nil {
+		receiptDB.TraderFullNameNorm = validate.NormalizeSearch(receiptDB.Trader.FullName)
+	}
 	if _, err := s.query().Insert(receiptDB); err != nil {
 		return err
 	}
@@ -214,6 +219,9 @@ func (s *ReceiptStore) CreateReceipt(receipt *receipting.Receipt) error {
 
 func (s *ReceiptStore) UpdateReceiptDB(receipt *model.Receipt) error {
 	sqlstore.MustNoPreds(s.preds)
+	if receipt.Trader != nil {
+		receipt.TraderFullNameNorm = validate.NormalizeSearch(receipt.Trader.FullName)
+	}
 	err := s.query().Where(
 		s.ft.ByID(receipt.ID),
 		s.ft.ByShopID(receipt.ShopID),

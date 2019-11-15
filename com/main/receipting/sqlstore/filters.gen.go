@@ -175,6 +175,25 @@ func (ft *ReceiptFilters) ByDescriptionPtr(Description *string) *sq.ColumnFilter
 	}
 }
 
+func (ft *ReceiptFilters) ByTraderFullNameNorm(TraderFullNameNorm string) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "trader_full_name_norm",
+		Value:  TraderFullNameNorm,
+		IsNil:  TraderFullNameNorm == "",
+	}
+}
+
+func (ft *ReceiptFilters) ByTraderFullNameNormPtr(TraderFullNameNorm *string) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "trader_full_name_norm",
+		Value:  TraderFullNameNorm,
+		IsNil:  TraderFullNameNorm == nil,
+		IsZero: TraderFullNameNorm != nil && (*TraderFullNameNorm) == "",
+	}
+}
+
 func (ft *ReceiptFilters) ByAmount(Amount int32) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,

@@ -11,14 +11,16 @@ import (
 var _ = sqlgenReceipt(&Receipt{})
 
 type Receipt struct {
-	ID              int64
-	ShopID          int64
-	TraderID        int64
-	Code            string
-	CodeNorm        int32
-	Title           string
-	Type            string
-	Description     string
+	ID                 int64
+	ShopID             int64
+	TraderID           int64
+	Code               string
+	CodeNorm           int32
+	Title              string
+	Type               string
+	Description        string
+	TraderFullNameNorm string
+
 	Amount          int32
 	Status          model.Status3
 	RefIDs          []int64

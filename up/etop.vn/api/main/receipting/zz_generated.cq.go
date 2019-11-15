@@ -10,7 +10,6 @@ import (
 
 	etop "etop.vn/api/main/etop"
 	meta "etop.vn/api/meta"
-	shopping "etop.vn/api/shopping"
 	capi "etop.vn/capi"
 	dot "etop.vn/capi/dot"
 )
@@ -347,43 +346,43 @@ func (q *GetReceiptByCodeQuery) GetArgs(ctx context.Context) (_ context.Context,
 		q.ShopID
 }
 
-func (q *GetReceiptByIDQuery) GetArgs(ctx context.Context) (_ context.Context, _ *shopping.IDQueryShopArg) {
+func (q *GetReceiptByIDQuery) GetArgs(ctx context.Context) (_ context.Context, _ *GetReceiptByIDArg) {
 	return ctx,
-		&shopping.IDQueryShopArg{
+		&GetReceiptByIDArg{
 			ID:     q.ID,
 			ShopID: q.ShopID,
 		}
 }
 
-func (q *GetReceiptByIDQuery) SetIDQueryShopArg(args *shopping.IDQueryShopArg) {
+func (q *GetReceiptByIDQuery) SetGetReceiptByIDArg(args *GetReceiptByIDArg) {
 	q.ID = args.ID
 	q.ShopID = args.ShopID
 }
 
-func (q *ListReceiptsQuery) GetArgs(ctx context.Context) (_ context.Context, _ *shopping.ListQueryShopArgs) {
+func (q *ListReceiptsQuery) GetArgs(ctx context.Context) (_ context.Context, _ *ListReceiptsArgs) {
 	return ctx,
-		&shopping.ListQueryShopArgs{
+		&ListReceiptsArgs{
 			ShopID:  q.ShopID,
 			Paging:  q.Paging,
 			Filters: q.Filters,
 		}
 }
 
-func (q *ListReceiptsQuery) SetListQueryShopArgs(args *shopping.ListQueryShopArgs) {
+func (q *ListReceiptsQuery) SetListReceiptsArgs(args *ListReceiptsArgs) {
 	q.ShopID = args.ShopID
 	q.Paging = args.Paging
 	q.Filters = args.Filters
 }
 
-func (q *ListReceiptsByIDsQuery) GetArgs(ctx context.Context) (_ context.Context, _ *shopping.IDsQueryShopArgs) {
+func (q *ListReceiptsByIDsQuery) GetArgs(ctx context.Context) (_ context.Context, _ *GetReceiptbyIDsArgs) {
 	return ctx,
-		&shopping.IDsQueryShopArgs{
+		&GetReceiptbyIDsArgs{
 			IDs:    q.IDs,
 			ShopID: q.ShopID,
 		}
 }
 
-func (q *ListReceiptsByIDsQuery) SetIDsQueryShopArgs(args *shopping.IDsQueryShopArgs) {
+func (q *ListReceiptsByIDsQuery) SetGetReceiptbyIDsArgs(args *GetReceiptbyIDsArgs) {
 	q.IDs = args.IDs
 	q.ShopID = args.ShopID
 }

@@ -160,6 +160,7 @@ func convert_receipting_Receipt_receiptingmodel_Receipt(arg *receipting.Receipt,
 	out.Title = arg.Title                      // simple assign
 	out.Type = string(arg.Type)                // simple conversion
 	out.Description = arg.Description          // simple assign
+	out.TraderFullNameNorm = ""                // zero value
 	out.Amount = arg.Amount                    // simple assign
 	out.Status = etopmodel.Status3(arg.Status) // simple conversion
 	out.RefIDs = arg.RefIDs                    // simple assign
