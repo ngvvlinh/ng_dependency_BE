@@ -9118,6 +9118,12 @@
       "properties": {
         "paging": {
           "$ref": "#/definitions/cmPaging"
+        },
+        "filters": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/cmFilter"
+          }
         }
       }
     },

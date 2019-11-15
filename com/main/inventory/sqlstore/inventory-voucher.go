@@ -7,6 +7,7 @@ import (
 
 	"etop.vn/api/main/etop"
 	"etop.vn/api/main/inventory"
+	"etop.vn/api/meta"
 	"etop.vn/backend/com/main/inventory/model"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/cmsql"
@@ -26,14 +27,24 @@ func NewInventoryVoucherStore(db *cmsql.Database) InventoryVoucherFactory {
 }
 
 type InventoryVoucherStore struct {
-	query  cmsql.QueryFactory
-	ft     InventoryVoucherFilters
-	preds  []interface{}
-	paging *cm.Paging
+	query   cmsql.QueryFactory
+	ft      InventoryVoucherFilters
+	preds   []interface{}
+	paging  *cm.Paging
+	filters meta.Filters
 }
 
 func (s *InventoryVoucherStore) Paging(page *cm.Paging) *InventoryVoucherStore {
 	s.paging = page
+	return s
+}
+
+func (s *InventoryVoucherStore) Filters(filters meta.Filters) *InventoryVoucherStore {
+	if s.filters == nil {
+		s.filters = filters
+	} else {
+		s.filters = append(s.filters, filters...)
+	}
 	return s
 }
 
@@ -117,7 +128,15 @@ func (s *InventoryVoucherStore) Get() (*inventory.InventoryVoucher, error) {
 
 func (s *InventoryVoucherStore) ListInventoryVoucherDB() ([]*model.InventoryVoucher, error) {
 	query := s.query().Where(s.preds)
-	query, err := sqlstore.LimitSort(query, s.paging, Sort)
+	// default sort by created_at
+	if s.paging.Sort == nil || len(s.paging.Sort) == 0 {
+		s.paging.Sort = append(s.paging.Sort, "-created_at")
+	}
+	query, err := sqlstore.LimitSort(query, s.paging, SortInventoryVoucher)
+	if err != nil {
+		return nil, err
+	}
+	query, _, err = sqlstore.Filters(query, s.filters, FilterInventoryVoucher)
 	if err != nil {
 		return nil, err
 	}

@@ -1763,7 +1763,8 @@ message InventoryVoucher {
 }
 
 message GetInventoryVouchersRequest {
-    optional cm.Paging paging   = 1 [(gogoproto.nullable) = false];
+    optional cm.Paging paging   = 1 ;
+     repeated cm.Filter filters = 2;
 }
 
 message GetInventoryVouchersByIDsRequest {

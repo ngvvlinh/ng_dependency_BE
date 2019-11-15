@@ -35,7 +35,7 @@ type QueryService interface {
 
 	GetInventoryVoucher(_ context.Context, ShopID int64, ID int64) (*InventoryVoucher, error)
 
-	GetInventoryVouchers(_ context.Context, ShopID int64, Paging *meta.Paging) (*GetInventoryVouchersResponse, error)
+	GetInventoryVouchers(ctx context.Context, _ *ListInventoryVouchersArgs) (*GetInventoryVouchersResponse, error)
 
 	GetInventoryVariantsByVariantIDs(context.Context, *GetInventoryVariantsByVariantIDsArgs) (*GetInventoryVariantsResponse, error)
 
@@ -58,6 +58,12 @@ type UpdateInventoryVoucherArgs struct {
 
 	Note  dot.NullString
 	Lines []*InventoryVoucherItem
+}
+
+type ListInventoryVouchersArgs struct {
+	ShopID  int64
+	Paging  meta.Paging
+	Filters meta.Filters
 }
 
 type CreateInventoryVariantArgs struct {

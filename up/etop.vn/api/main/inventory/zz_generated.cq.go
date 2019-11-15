@@ -210,8 +210,9 @@ func (h QueryServiceHandler) HandleGetInventoryVoucherByReference(ctx context.Co
 }
 
 type GetInventoryVouchersQuery struct {
-	ShopID int64
-	Paging *meta.Paging
+	ShopID  int64
+	Paging  meta.Paging
+	Filters meta.Filters
 
 	Result *GetInventoryVouchersResponse `json:"-"`
 }
@@ -452,10 +453,19 @@ func (q *GetInventoryVoucherByReferenceQuery) GetArgs(ctx context.Context) (_ co
 		q.RefType
 }
 
-func (q *GetInventoryVouchersQuery) GetArgs(ctx context.Context) (_ context.Context, ShopID int64, Paging *meta.Paging) {
+func (q *GetInventoryVouchersQuery) GetArgs(ctx context.Context) (_ context.Context, _ *ListInventoryVouchersArgs) {
 	return ctx,
-		q.ShopID,
-		q.Paging
+		&ListInventoryVouchersArgs{
+			ShopID:  q.ShopID,
+			Paging:  q.Paging,
+			Filters: q.Filters,
+		}
+}
+
+func (q *GetInventoryVouchersQuery) SetListInventoryVouchersArgs(args *ListInventoryVouchersArgs) {
+	q.ShopID = args.ShopID
+	q.Paging = args.Paging
+	q.Filters = args.Filters
 }
 
 func (q *GetInventoryVouchersByIDsQuery) GetArgs(ctx context.Context) (_ context.Context, _ *GetInventoryVouchersByIDArgs) {

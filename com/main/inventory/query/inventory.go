@@ -5,7 +5,6 @@ import (
 
 	"etop.vn/api/main/etop"
 	"etop.vn/api/main/inventory"
-	"etop.vn/api/meta"
 	"etop.vn/backend/com/main/inventory/convert"
 	"etop.vn/backend/com/main/inventory/sqlstore"
 	cm "etop.vn/backend/pkg/common"
@@ -49,14 +48,12 @@ func (q *InventoryQueryService) GetInventoryVariants(ctx context.Context, args *
 	return &inventory.GetInventoryVariantsResponse{InventoryVariants: convert.InventoryVariantsFromModel(result)}, nil
 }
 
-func (q *InventoryQueryService) GetInventoryVouchers(ctx context.Context, ShopID int64, Paging *meta.Paging) (*inventory.GetInventoryVouchersResponse, error) {
-	if ShopID == 0 {
+func (q *InventoryQueryService) GetInventoryVouchers(ctx context.Context, args *inventory.ListInventoryVouchersArgs) (*inventory.GetInventoryVouchersResponse, error) {
+	if args.ShopID == 0 {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing value requirement")
 	}
-	var page cm.Paging
-	page.Limit = Paging.Limit
-	page.Offset = Paging.Offset
-	result, err := q.InventoryVoucherStore(ctx).ShopID(ShopID).Paging(&page).ListInventoryVoucherDB()
+
+	result, err := q.InventoryVoucherStore(ctx).ShopID(args.ShopID).Filters(args.Filters).Paging(&args.Paging).ListInventoryVoucherDB()
 	if err != nil {
 		return nil, err
 	}
