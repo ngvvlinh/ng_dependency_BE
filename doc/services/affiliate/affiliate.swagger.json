@@ -3184,6 +3184,18 @@
         "id"
       ]
     },
+    "shopShopShortProduct": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "name": {
+          "type": "string"
+        }
+      }
+    },
     "shopShopVariant": {
       "type": "object",
       "properties": {
@@ -3259,6 +3271,9 @@
           "items": {
             "$ref": "#/definitions/shopAttribute"
           }
+        },
+        "product": {
+          "$ref": "#/definitions/shopShopShortProduct"
         }
       },
       "required": [

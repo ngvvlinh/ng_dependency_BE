@@ -665,7 +665,17 @@ func (s *ProductService) GetVariant(ctx context.Context, q *GetVariantEndpoint) 
 }
 
 func (s *ProductService) GetVariantsByIDs(ctx context.Context, q *GetVariantsByIDsEndpoint) error {
-	return cm.ErrTODO
+	query := &catalog.ListShopVariantsWithProductByIDsQuery{
+		IDs:    q.Ids,
+		ShopID: q.Context.Shop.ID,
+	}
+	if err := catalogQuery.Dispatch(ctx, query); err != nil {
+		return err
+	}
+
+	q.Result = &pbshop.ShopVariantsResponse{Variants: PbShopVariantsWithProducts(query.Result.Variants)}
+
+	return nil
 }
 
 func (s *ProductService) CreateVariant(ctx context.Context, q *CreateVariantEndpoint) error {

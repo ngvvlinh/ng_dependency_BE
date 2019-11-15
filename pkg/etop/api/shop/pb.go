@@ -181,6 +181,57 @@ func PbShopCategories(items []*catalog.ShopCategory) []*pbshop.ShopCategory {
 	return res
 }
 
+func PbShopVariantWithProduct(m *catalog.ShopVariantWithProduct) *pbshop.ShopVariant {
+	if m == nil {
+		return nil
+	}
+	res := &pbshop.ShopVariant{
+		Id: m.VariantID,
+		Info: &pbshop.EtopVariant{
+			Id:          0,
+			Code:        m.Code,
+			Name:        m.Name,
+			Description: m.Description,
+			ShortDesc:   m.ShortDesc,
+			DescHtml:    m.DescHTML,
+			ImageUrls:   m.ImageURLs,
+			ListPrice:   m.ListPrice,
+			CostPrice:   m.CostPrice,
+			Attributes:  convertpb.PbAttributes(m.Attributes),
+		},
+		Code:        m.Code,
+		EdCode:      m.Code,
+		Name:        m.Name,
+		Description: m.Description,
+		ShortDesc:   m.ShortDesc,
+		DescHtml:    m.DescHTML,
+		ImageUrls:   m.ImageURLs,
+		Tags:        nil,
+		Note:        m.Note,
+		Status:      pbs3.Pb(model.Status3(m.Status)),
+		ListPrice:   m.ListPrice,
+		RetailPrice: coalesceInt32(m.RetailPrice, m.ListPrice),
+		CostPrice:   m.CostPrice,
+		Attributes:  convertpb.PbAttributes(m.Attributes),
+	}
+	if m.ShopProduct != nil {
+		res.Product = &pbshop.ShopShortProduct{
+			Id:   m.ShopProduct.ProductID,
+			Name: m.ShopProduct.Name,
+		}
+	}
+
+	return res
+}
+
+func PbShopVariantsWithProducts(items []*catalog.ShopVariantWithProduct) []*pbshop.ShopVariant {
+	res := make([]*pbshop.ShopVariant, len(items))
+	for i, item := range items {
+		res[i] = PbShopVariantWithProduct(item)
+	}
+	return res
+}
+
 func PbShopProductWithVariants(m *catalog.ShopProductWithVariants) *pbshop.ShopProduct {
 	shopID := m.ShopProduct.ShopID
 	metaFields := []*common.MetaField{}

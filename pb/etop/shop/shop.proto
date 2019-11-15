@@ -616,6 +616,8 @@ message ShopVariant {
     repeated Tag    stags = 22;
 
     repeated Attribute attributes = 18;
+
+    optional ShopShortProduct product = 23;
 }
 
 message ShopProduct {
@@ -656,6 +658,11 @@ message ShopProduct {
     optional product_type.ProductType product_type = 23;
     repeated cm.MetaField meta_fields = 26;
     optional int64 brand_id = 27 [(gogoproto.nullable)=false];
+}
+
+message ShopShortProduct {
+    optional int64 id = 1 [(gogoproto.nullable)=false];
+    optional string name = 2 [(gogoproto.nullable)=false];
 }
 
 message  ShopCollection {
