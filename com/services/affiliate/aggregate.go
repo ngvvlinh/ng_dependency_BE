@@ -206,7 +206,7 @@ func (a *Aggregate) TradingOrderCreating(ctx context.Context, args *affiliate.Tr
 	}
 
 	if userQ.Result.ID == affiliateReferralCode.UserID {
-		return cm.Errorf(cm.ValidationFailed, nil, "Mã giới thiệu không hợp lệ")
+		return cm.Errorf(cm.ValidationFailed, nil, "Không thể sử dụng mã giới thiệu của chính bạn")
 	}
 
 	return nil

@@ -346,7 +346,7 @@ func (s *ShopService) CheckReferralCodeValid(ctx context.Context, q *CheckReferr
 
 	commissionSetting, err := GetCommissionSettingByReferralCode(ctx, q.ReferralCode, q.ProductId)
 	if err != nil {
-		return cm.Errorf(cm.ValidationFailed, nil, "Mã giới thiệu không hợp lệ")
+		return cm.Errorf(cm.ValidationFailed, nil, "Không thể sử dụng mã giới thiệu của chính bạn")
 	}
 	pbReferralDiscount := pbaff.PbCommissionSetting(commissionSetting)
 	q.Result = &pbaff.GetProductPromotionResponse{
