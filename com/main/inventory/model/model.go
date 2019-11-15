@@ -28,6 +28,8 @@ type InventoryVoucher struct {
 	ID           int64
 	CreatedBy    int64
 	UpdatedBy    int64
+	Code         string
+	CodeNorm     int32
 	Status       etop.Status3
 	Note         string
 	TraderID     int64

@@ -154,3 +154,14 @@ func (s *InventoryVoucherStore) ListInventoryVoucher() ([]*inventory.InventoryVo
 	resultCore = convert.InventoryVouchersFromModel(resultDB)
 	return resultCore, nil
 }
+
+func (s *InventoryVoucherStore) GetInventoryVoucherByMaximumCodeNorm() (*model.InventoryVoucher, error) {
+	query := s.query().Where(s.preds).Where("code_norm != 0")
+	query = query.OrderBy("code_norm desc").Limit(1)
+
+	var inventoryVoucher model.InventoryVoucher
+	if err := query.ShouldGet(&inventoryVoucher); err != nil {
+		return nil, err
+	}
+	return &inventoryVoucher, nil
+}

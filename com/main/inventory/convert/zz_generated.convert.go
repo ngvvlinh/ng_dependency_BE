@@ -22,6 +22,7 @@ Custom conversions:
     createInventoryVoucher         // in use
 
 Ignored functions:
+    GenerateCode                  // params are not pointer to named types
     InventoryVariantsFromModel    // params are not pointer to named types
     InventoryVouchersFromModel    // params are not pointer to named types
 */
@@ -154,6 +155,8 @@ func convert_inventorymodel_InventoryVoucher_inventory_InventoryVoucher(arg *inv
 	out.ID = arg.ID                                              // simple assign
 	out.ShopID = arg.ShopID                                      // simple assign
 	out.Title = arg.Title                                        // simple assign
+	out.Code = arg.Code                                          // simple assign
+	out.CodeNorm = arg.CodeNorm                                  // simple assign
 	out.CreatedBy = arg.CreatedBy                                // simple assign
 	out.UpdatedBy = arg.UpdatedBy                                // simple assign
 	out.CreatedAt = arg.CreatedAt                                // simple assign
@@ -190,6 +193,8 @@ func convert_inventory_InventoryVoucher_inventorymodel_InventoryVoucher(arg *inv
 	out.ID = arg.ID                   // simple assign
 	out.CreatedBy = arg.CreatedBy     // simple assign
 	out.UpdatedBy = arg.UpdatedBy     // simple assign
+	out.Code = arg.Code               // simple assign
+	out.CodeNorm = arg.CodeNorm       // simple assign
 	out.Status = arg.Status           // simple assign
 	out.Note = arg.Note               // simple assign
 	out.TraderID = arg.TraderID       // simple assign
@@ -231,6 +236,8 @@ func apply_inventory_CreateInventoryVoucherArgs_inventory_InventoryVoucher(arg *
 	out.ID = 0                        // zero value
 	out.ShopID = arg.ShopID           // simple assign
 	out.Title = arg.Title             // simple assign
+	out.Code = ""                     // zero value
+	out.CodeNorm = 0                  // zero value
 	out.CreatedBy = arg.CreatedBy     // simple assign
 	out.UpdatedBy = 0                 // zero value
 	out.CreatedAt = time.Time{}       // zero value
@@ -257,6 +264,8 @@ func apply_inventory_UpdateInventoryVoucherArgs_inventory_InventoryVoucher(arg *
 	out.ID = arg.ID                                 // simple assign
 	out.ShopID = arg.ShopID                         // simple assign
 	out.Title = arg.Title.Apply(out.Title)          // apply change
+	out.Code = out.Code                             // no change
+	out.CodeNorm = out.CodeNorm                     // no change
 	out.CreatedBy = out.CreatedBy                   // no change
 	out.UpdatedBy = arg.UpdatedBy                   // simple assign
 	out.CreatedAt = out.CreatedAt                   // no change

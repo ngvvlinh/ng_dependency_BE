@@ -1,6 +1,7 @@
 package convert
 
 import (
+	"fmt"
 	"time"
 
 	"etop.vn/api/main/inventory"
@@ -10,6 +11,16 @@ import (
 
 // +gen:convert: etop.vn/backend/com/main/inventory/model->etop.vn/api/main/inventory
 // +gen:convert: etop.vn/api/main/inventory
+
+const (
+	MaxCodeNorm = 999999
+	codeRegex   = "^PTK([0-9]{6})$"
+	codePrefix  = "PTK"
+)
+
+func GenerateCode(codeNorm int) string {
+	return fmt.Sprintf("%v%06v", codePrefix, codeNorm)
+}
 
 func createInventoryVoucher(args *inventory.CreateInventoryVoucherArgs, out *inventory.InventoryVoucher) {
 	apply_inventory_CreateInventoryVoucherArgs_inventory_InventoryVoucher(args, out)

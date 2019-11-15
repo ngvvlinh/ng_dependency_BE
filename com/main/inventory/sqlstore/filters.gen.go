@@ -246,6 +246,44 @@ func (ft *InventoryVoucherFilters) ByUpdatedByPtr(UpdatedBy *int64) *sq.ColumnFi
 	}
 }
 
+func (ft *InventoryVoucherFilters) ByCode(Code string) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "code",
+		Value:  Code,
+		IsNil:  Code == "",
+	}
+}
+
+func (ft *InventoryVoucherFilters) ByCodePtr(Code *string) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "code",
+		Value:  Code,
+		IsNil:  Code == nil,
+		IsZero: Code != nil && (*Code) == "",
+	}
+}
+
+func (ft *InventoryVoucherFilters) ByCodeNorm(CodeNorm int32) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "code_norm",
+		Value:  CodeNorm,
+		IsNil:  CodeNorm == 0,
+	}
+}
+
+func (ft *InventoryVoucherFilters) ByCodeNormPtr(CodeNorm *int32) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "code_norm",
+		Value:  CodeNorm,
+		IsNil:  CodeNorm == nil,
+		IsZero: CodeNorm != nil && (*CodeNorm) == 0,
+	}
+}
+
 func (ft *InventoryVoucherFilters) ByStatus(Status etop.Status3) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,

@@ -149,10 +149,11 @@ type CheckInventoryVariantQuantityRequest struct {
 }
 
 type InventoryVoucher struct {
-	ID     int64
-	ShopID int64
-	Title  string
-
+	ID        int64
+	ShopID    int64
+	Title     string
+	Code      string
+	CodeNorm  int32
 	CreatedBy int64
 	UpdatedBy int64
 

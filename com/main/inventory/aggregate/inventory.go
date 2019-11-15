@@ -75,6 +75,22 @@ func (q *InventoryAggregate) CreateInventoryVoucher(ctx context.Context, Oversto
 				return err
 			}
 		}
+		var maxCodeNorm int32
+		inventoryVoucherTemp, err := q.InventoryVoucherStore(ctx).ShopID(args.ShopID).GetInventoryVoucherByMaximumCodeNorm()
+		switch cm.ErrorCode(err) {
+		case cm.NoError:
+			maxCodeNorm = inventoryVoucherTemp.CodeNorm
+		case cm.NotFound:
+			// no-op
+		default:
+			return err
+		}
+		if maxCodeNorm >= convert.MaxCodeNorm {
+			return cm.Errorf(cm.InvalidArgument, nil, "Vui lòng nhập mã")
+		}
+		codeNorm := maxCodeNorm + 1
+		voucher.Code = convert.GenerateCode(int(codeNorm))
+		voucher.CodeNorm = codeNorm
 		err = q.InventoryVoucherStore(ctx).Create(&voucher)
 		if err != nil {
 			return err
