@@ -85,58 +85,62 @@ func (m *ProcessManager) PurchaseOrderConfirmed(ctx context.Context, event *purc
 }
 
 func (p *ProcessManager) OrderConfirmedEvent(ctx context.Context, event *ordering.OrderConfirmedEvent) error {
-	if event.AutoInventoryVoucher == string(inventory.AutoCreateInventory) ||
-		event.AutoInventoryVoucher == string(inventory.AutoCreateAndConfirmInventory) {
-		// Create inventory voucher
-		inventoryVoucherLines := []*inventory.InventoryVoucherItem{}
-		for _, value := range event.Lines {
-			inventoryVoucherLines = append(inventoryVoucherLines, &inventory.InventoryVoucherItem{
-				VariantID: value.VariantId,
-				Quantity:  value.Quantity,
-			})
-		}
-
-		cmdCreate := &inventory.CreateInventoryVoucherCommand{
-			Overstock: event.InventoryOverStock,
-			ShopID:    event.ShopID,
-			Title:     "Xuất kho khi bán hàng",
-			RefID:     event.OrderID,
-			RefType:   "order",
-			TraderID:  event.CustomerID,
-			Type:      "out",
-			Note:      "Tạo tự động khi xác nhận đơn hàng",
-			Lines:     inventoryVoucherLines,
-		}
-		err := p.inventoryAgg.Dispatch(ctx, cmdCreate)
-		if err != nil {
-			return err
-		}
-		if event.AutoInventoryVoucher == string(inventory.AutoCreateAndConfirmInventory) {
-			cmdConfirm := &inventory.ConfirmInventoryVoucherCommand{
-				ShopID: event.ShopID,
-				ID:     cmdCreate.Result.ID,
-				Result: nil,
-			}
-			err = p.inventoryAgg.Dispatch(ctx, cmdConfirm)
-			if err != nil {
-				return err
-			}
-		}
+	if !event.AutoInventoryVoucher.ValidateAutoInventoryVoucher() {
+		return nil
 	}
-	return nil
-}
-
-func (p *ProcessManager) OrderConfirmingEvent(ctx context.Context, event *ordering.OrderConfirmingEvent) error {
-	// Create InventoryVariant if not exist
-	// Validate quantity in case of InventoryVoucherTypeOut
+	// Create inventory voucher
 	inventoryVoucherLines := []*inventory.InventoryVoucherItem{}
-	var variantIDs []int64
 	for _, value := range event.Lines {
 		inventoryVoucherLines = append(inventoryVoucherLines, &inventory.InventoryVoucherItem{
 			VariantID: value.VariantId,
 			Quantity:  value.Quantity,
 		})
-		variantIDs = append(variantIDs, value.VariantId)
+	}
+
+	cmdCreate := &inventory.CreateInventoryVoucherCommand{
+		Overstock: event.InventoryOverStock,
+		ShopID:    event.ShopID,
+		Title:     "Xuất kho khi bán hàng",
+		RefID:     event.OrderID,
+		RefType:   inventory.RefTypeOrder,
+		TraderID:  event.CustomerID,
+		Type:      inventory.InventoryVoucherTypeOut,
+		Note:      "Tạo tự động khi xác nhận đơn hàng",
+		Lines:     inventoryVoucherLines,
+	}
+	err := p.inventoryAgg.Dispatch(ctx, cmdCreate)
+	if err != nil {
+		return err
+	}
+	if event.AutoInventoryVoucher == inventory.AutoCreateAndConfirmInventory {
+		cmdConfirm := &inventory.ConfirmInventoryVoucherCommand{
+			ShopID: event.ShopID,
+			ID:     cmdCreate.Result.ID,
+			Result: nil,
+		}
+		err = p.inventoryAgg.Dispatch(ctx, cmdConfirm)
+		if err != nil {
+			return err
+		}
+	}
+	return nil
+}
+
+// OrderConfirmingEvent
+// Create InventoryVariant if not exist
+// Validate quantity in case of InventoryVoucherTypeOut
+func (p *ProcessManager) OrderConfirmingEvent(ctx context.Context, event *ordering.OrderConfirmingEvent) error {
+	if !event.AutoInventoryVoucher.ValidateAutoInventoryVoucher() {
+		return nil
+	}
+	inventoryVoucherLines := []*inventory.InventoryVoucherItem{}
+	var variantIDs []int64
+	for _, line := range event.Lines {
+		inventoryVoucherLines = append(inventoryVoucherLines, &inventory.InventoryVoucherItem{
+			VariantID: line.VariantId,
+			Quantity:  line.Quantity,
+		})
+		variantIDs = append(variantIDs, line.VariantId)
 	}
 	query := catalog.ValidateVariantIDsQuery{
 		ShopId:         event.ShopID,
@@ -149,7 +153,7 @@ func (p *ProcessManager) OrderConfirmingEvent(ctx context.Context, event *orderi
 	cmd := &inventory.CheckInventoryVariantsQuantityCommand{
 		InventoryOverStock: event.InventoryOverStock,
 		ShopID:             event.ShopID,
-		Type:               "out",
+		Type:               inventory.InventoryVoucherTypeOut,
 		Lines:              inventoryVoucherLines,
 	}
 	err = p.inventoryAgg.Dispatch(ctx, cmd)

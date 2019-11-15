@@ -5,6 +5,7 @@ import (
 	"time"
 
 	etoptypes "etop.vn/api/main/etop"
+	"etop.vn/api/main/inventory"
 	"etop.vn/api/main/ordering/types"
 	ordertypes "etop.vn/api/main/ordering/types"
 	shippingtypes "etop.vn/api/main/shipping/types"
@@ -164,11 +165,12 @@ type OrderPaymentSuccessEvent struct {
 }
 
 type OrderConfirmingEvent struct {
-	OrderID            int64
-	ShopID             int64
-	InventoryOverStock bool
-	Lines              []*types.ItemLine
-	CustomerID         int64
+	OrderID              int64
+	ShopID               int64
+	InventoryOverStock   bool
+	Lines                []*types.ItemLine
+	CustomerID           int64
+	AutoInventoryVoucher inventory.AutoInventoryVoucher
 }
 
 type OrderConfirmedEvent struct {
@@ -177,6 +179,6 @@ type OrderConfirmedEvent struct {
 	InventoryOverStock   bool
 	Lines                []*types.ItemLine
 	CustomerID           int64
-	AutoInventoryVoucher string
+	AutoInventoryVoucher inventory.AutoInventoryVoucher
 	UpdatedBy            int64
 }

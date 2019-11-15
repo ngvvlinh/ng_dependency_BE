@@ -45,3 +45,10 @@ const (
 	AutoCreateInventory           AutoInventoryVoucher = "create"
 	AutoCreateAndConfirmInventory AutoInventoryVoucher = "confirm"
 )
+
+func (s AutoInventoryVoucher) ValidateAutoInventoryVoucher() bool {
+	if s == AutoCreateInventory || s == AutoCreateAndConfirmInventory {
+		return true
+	}
+	return false
+}

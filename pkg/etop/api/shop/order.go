@@ -223,6 +223,28 @@ func (s *OrderService) cancelOrder(ctx context.Context, q *CancelOrderEndpoint) 
 	return q, err
 }
 
+func (s *OrderService) ConfirmOrder(ctx context.Context, q *ConfirmOrderEndpoint) error {
+	key := fmt.Sprintf("ConfirmOrder %v-%v", q.Context.Shop.ID, q.OrderId)
+	res, err := idempgroup.DoAndWrap(key, 10*time.Second,
+		func() (interface{}, error) {
+			return s.confirmOrder(ctx, q)
+		}, "Xác nhận đơn hàng")
+	if err != nil {
+		return err
+	}
+	q.Result = res.(*ConfirmOrderEndpoint).Result
+	return nil
+}
+
+func (s *OrderService) confirmOrder(ctx context.Context, q *ConfirmOrderEndpoint) (_ *ConfirmOrderEndpoint, _err error) {
+	resp, err := logicorder.ConfirmOrder(ctx, q.Context.Shop, q.ConfirmOrderRequest)
+	if err != nil {
+		return q, err
+	}
+	q.Result = resp
+	return q, nil
+}
+
 /*
 	0. Check idempotent
 	1. Get order
@@ -293,7 +315,7 @@ func (s *OrderService) addReceivedAmountToOrders(ctx context.Context, shopID int
 }
 
 func (s *OrderService) confirmOrderAndCreateFulfillments(ctx context.Context, q *ConfirmOrderAndCreateFulfillmentsEndpoint) (_ *ConfirmOrderAndCreateFulfillmentsEndpoint, _err error) {
-	resp, err := logicorder.ConfirmOrderAndCreateFulfillments(ctx, q.Context.Shop, q.Context.AuthPartnerID, q.OrderIDRequest, q.AutoInventoryVoucher)
+	resp, err := logicorder.ConfirmOrderAndCreateFulfillments(ctx, q.Context.Shop, q.Context.AuthPartnerID, q.OrderIDRequest)
 	if err != nil {
 		return q, err
 	}

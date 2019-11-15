@@ -22,7 +22,7 @@ import (
 	shipmodel "etop.vn/backend/com/main/shipping/model"
 	shipmodelx "etop.vn/backend/com/main/shipping/modelx"
 	pborder "etop.vn/backend/pb/etop/order"
-	"etop.vn/backend/pb/etop/shop"
+	pbshop "etop.vn/backend/pb/etop/shop"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/validate"
@@ -63,7 +63,75 @@ func Init(shippingProviderCtrl *shipping_provider.ProviderManager,
 	eventBus = eventB
 }
 
-func ConfirmOrderAndCreateFulfillments(ctx context.Context, shop *model.Shop, partnerID int64, r *shop.OrderIDRequest, autoInventoryVoucher string) (resp *pborder.OrderWithErrorsResponse, _err error) {
+func ConfirmOrder(ctx context.Context, shop *model.Shop, r *pbshop.ConfirmOrderRequest) (resp *pborder.Order, _err error) {
+	var autoInventoryVoucher inventory.AutoInventoryVoucher
+	if r.AutoInventoryVoucher != nil {
+		autoInventoryVoucher = inventory.AutoInventoryVoucher(*r.AutoInventoryVoucher)
+		if !autoInventoryVoucher.ValidateAutoInventoryVoucher() {
+			return nil, cm.Errorf(cm.InvalidArgument, nil, "AutoInventoryVoucher không hợp lệ, vui lòng kiểm tra lại. Giá trị hợp lệ: create | confirm")
+		}
+	}
+	autoCreateFfm := r.AutoCreateFulfillment
+
+	query := &ordermodelx.GetOrderQuery{
+		OrderID: r.OrderId,
+		ShopID:  shop.ID,
+	}
+	resp = &pborder.Order{}
+	if err := bus.Dispatch(ctx, query); err != nil {
+		return resp, err
+	}
+	order := query.Result.Order
+	switch order.Status {
+	case model.S5Negative:
+		return resp, cm.Errorf(cm.FailedPrecondition, nil, "Đơn hàng đã hủy")
+	case model.S5Positive:
+		return resp, cm.Error(cm.FailedPrecondition, "Đơn hàng đã hoàn thành.", nil)
+	case model.S5NegSuper:
+		return resp, cm.Error(cm.FailedPrecondition, "Đơn hàng đã trả hàng.", nil)
+	}
+	if order.ConfirmStatus == model.S3Negative || order.ShopConfirm == model.S3Negative {
+		return resp, cm.Errorf(cm.FailedPrecondition, nil, "Đơn hàng đã hủy")
+	}
+
+	if err := RaiseOrderConfirmingEvent(ctx, shop, autoInventoryVoucher, order); err != nil {
+		return nil, err
+	}
+
+	// Only update order status when success.
+	// This disallow updating order.
+	if order.ConfirmStatus != model.S3Positive ||
+		order.ShopConfirm != model.S3Positive {
+		cmd := &ordermodelx.UpdateOrdersStatusCommand{
+			OrderIDs:      []int64{r.OrderId},
+			ConfirmStatus: model.S3Positive.P(),
+			ShopConfirm:   model.S3Positive.P(),
+		}
+		if err := bus.Dispatch(ctx, cmd); err != nil {
+			return resp, err
+		}
+		order.ConfirmStatus = model.S3Positive
+		order.ShopConfirm = model.S3Positive
+
+		if err := RaiseOrderConfirmedEvent(ctx, shop, autoInventoryVoucher, order); err != nil {
+			ll.Error("RaiseOrderConfirmedEvent", l.Error(err))
+		}
+	}
+	resp = pborder.PbOrder(order, nil, model.TagShop)
+	if autoCreateFfm {
+		req := &pbshop.OrderIDRequest{
+			OrderId: r.OrderId,
+		}
+		_res, err := ConfirmOrderAndCreateFulfillments(ctx, shop, 0, req)
+		if err != nil {
+			return nil, err
+		}
+		resp = _res.Order
+	}
+	return resp, nil
+}
+
+func ConfirmOrderAndCreateFulfillments(ctx context.Context, shop *model.Shop, partnerID int64, r *pbshop.OrderIDRequest) (resp *pborder.OrderWithErrorsResponse, _err error) {
 	shopID := shop.ID
 	resp = &pborder.OrderWithErrorsResponse{}
 	query := &ordermodelx.GetOrderQuery{
@@ -90,12 +158,6 @@ func ConfirmOrderAndCreateFulfillments(ctx context.Context, shop *model.Shop, pa
 	if order.ConfirmStatus == model.S3Negative ||
 		order.ShopConfirm == model.S3Negative {
 		return resp, cm.Error(cm.FailedPrecondition, "Đơn hàng đã huỷ.", nil)
-	}
-
-	// convert to ordering
-	err := RaiseOrderConfirmingEvent(ctx, shop, autoInventoryVoucher, order)
-	if err != nil {
-		return nil, err
 	}
 
 	// Fill response
@@ -154,11 +216,6 @@ func ConfirmOrderAndCreateFulfillments(ctx context.Context, shop *model.Shop, pa
 		}
 		order.ConfirmStatus = model.S3Positive
 		order.ShopConfirm = model.S3Positive
-
-		err = RaiseOrderConfirmedEvent(ctx, shop, autoInventoryVoucher, order)
-		if err != nil {
-			_err = err
-		}
 	}
 
 	totalChanges := len(creates) + len(updates)
@@ -209,69 +266,59 @@ func ConfirmOrderAndCreateFulfillments(ctx context.Context, shop *model.Shop, pa
 	return resp, nil
 }
 
-func RaiseOrderConfirmingEvent(ctx context.Context, shop *model.Shop, autoInventoryVoucher string, order *ordermodel.Order) error {
-	if autoInventoryVoucher != "" && autoInventoryVoucher != string(inventory.AutoCreateInventory) && autoInventoryVoucher != string(inventory.AutoCreateAndConfirmInventory) {
-		return cm.Error(cm.InvalidArgument, "auto_inventory_voucher in create, confirm", nil)
+func RaiseOrderConfirmingEvent(ctx context.Context, shop *model.Shop, autoInventoryVoucher inventory.AutoInventoryVoucher, order *ordermodel.Order) error {
+	orderLines := []*ordertypes.ItemLine{}
+	for _, line := range order.Lines {
+		if line.VariantID != 0 {
+			_line := &ordertypes.ItemLine{
+				OrderId:    line.OrderID,
+				Quantity:   int32(line.Quantity),
+				ProductId:  line.ProductID,
+				VariantId:  line.VariantID,
+				IsOutside:  line.IsOutsideEtop,
+				TotalPrice: int32(line.TotalLineAmount),
+			}
+			orderLines = append(orderLines, _line)
+		}
 	}
-	if autoInventoryVoucher != "" {
-		orderLines := []*ordertypes.ItemLine{}
-		for _, value := range order.Lines {
-			if value.VariantID != 0 {
-				orderLines = append(orderLines, &ordertypes.ItemLine{
-					OrderId:     value.OrderID,
-					Quantity:    int32(value.Quantity),
-					ProductId:   value.ProductID,
-					VariantId:   value.VariantID,
-					IsOutside:   value.IsOutsideEtop,
-					ProductInfo: ordertypes.ProductInfo{},
-					TotalPrice:  int32(value.TotalLineAmount),
-				})
-			}
-		}
-		if orderLines != nil {
-			cmdIV := &ordering.OrderConfirmingEvent{
-				OrderID:            order.ID,
-				ShopID:             shop.ID,
-				InventoryOverStock: cm.BoolDefault(shop.InventoryOverstock, true),
-				Lines:              orderLines,
-			}
-			if err := eventBus.Publish(ctx, cmdIV); err != nil {
-				return err
-			}
-		}
+	event := &ordering.OrderConfirmingEvent{
+		OrderID:              order.ID,
+		ShopID:               shop.ID,
+		InventoryOverStock:   cm.BoolDefault(shop.InventoryOverstock, true),
+		Lines:                orderLines,
+		AutoInventoryVoucher: autoInventoryVoucher,
+	}
+	if err := eventBus.Publish(ctx, event); err != nil {
+		return err
 	}
 	return nil
 }
 
-func RaiseOrderConfirmedEvent(ctx context.Context, shop *model.Shop, autoInventoryVoucher string, order *ordermodel.Order) error {
-	if autoInventoryVoucher != "" {
-		orderLines := []*ordertypes.ItemLine{}
-		for _, value := range order.Lines {
-			if value.VariantID != 0 {
-				orderLines = append(orderLines, &ordertypes.ItemLine{
-					OrderId:     value.OrderID,
-					Quantity:    int32(value.Quantity),
-					ProductId:   value.ProductID,
-					VariantId:   value.VariantID,
-					IsOutside:   value.IsOutsideEtop,
-					ProductInfo: ordertypes.ProductInfo{},
-					TotalPrice:  int32(value.TotalLineAmount),
-				})
+func RaiseOrderConfirmedEvent(ctx context.Context, shop *model.Shop, autoInventoryVoucher inventory.AutoInventoryVoucher, order *ordermodel.Order) error {
+	orderLines := []*ordertypes.ItemLine{}
+	for _, line := range order.Lines {
+		if line.VariantID != 0 {
+			_line := &ordertypes.ItemLine{
+				OrderId:    line.OrderID,
+				Quantity:   int32(line.Quantity),
+				ProductId:  line.ProductID,
+				VariantId:  line.VariantID,
+				IsOutside:  line.IsOutsideEtop,
+				TotalPrice: int32(line.TotalLineAmount),
 			}
+			orderLines = append(orderLines, _line)
 		}
-		if orderLines != nil {
-			cmdIV := &ordering.OrderConfirmedEvent{
-				OrderID:              order.ID,
-				ShopID:               shop.ID,
-				InventoryOverStock:   cm.BoolDefault(shop.InventoryOverstock, true),
-				Lines:                orderLines,
-				CustomerID:           order.CustomerID,
-				AutoInventoryVoucher: autoInventoryVoucher,
-			}
-			if err := eventBus.Publish(ctx, cmdIV); err != nil {
-				return err
-			}
-		}
+	}
+	event := &ordering.OrderConfirmedEvent{
+		OrderID:              order.ID,
+		ShopID:               shop.ID,
+		InventoryOverStock:   cm.BoolDefault(shop.InventoryOverstock, true),
+		Lines:                orderLines,
+		CustomerID:           order.CustomerID,
+		AutoInventoryVoucher: autoInventoryVoucher,
+	}
+	if err := eventBus.Publish(ctx, event); err != nil {
+		return err
 	}
 	return nil
 }

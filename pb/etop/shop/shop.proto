@@ -199,6 +199,7 @@ service OrderService {
     // @deprecated
     rpc UpdateOrdersStatus(UpdateOrdersStatusRequest) returns (cm.UpdatedResponse);
 
+    rpc ConfirmOrder(ConfirmOrderRequest) returns (order.Order);
     rpc ConfirmOrderAndCreateFulfillments(OrderIDRequest) returns (order.OrderWithErrorsResponse);
     rpc CancelOrder(CancelOrderRequest) returns (order.OrderWithErrorsResponse);
     rpc UpdateOrderPaymentStatus(UpdateOrderPaymentStatusRequest) returns (cm.UpdatedResponse);
@@ -804,11 +805,16 @@ message UpdateOrdersStatusRequest {
     optional status4.Status status = 4 [(gogoproto.nullable)=false];
 }
 
+message ConfirmOrderRequest {
+  optional int64 order_id = 1 [(gogoproto.nullable)=false];
+
+  // enum ('create', 'create')
+  optional string auto_inventory_voucher = 2;
+  optional bool auto_create_fulfillment = 3 [(gogoproto.nullable)=false];
+}
+
 message OrderIDRequest {
     optional int64 order_id = 1 [(gogoproto.nullable)=false];
-
-    // enum ('', 'create', 'create')
-    optional string auto_inventory_voucher = 2 [(gogoproto.nullable)=false];
 }
 
 message OrderIDsRequest {

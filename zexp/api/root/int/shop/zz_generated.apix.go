@@ -1283,6 +1283,12 @@ func (s *OrderServiceServer) parseRoute(path string) (reqMsg proto.Message, _ ht
 			return s.OrderAPI.CancelOrder(ctx, msg)
 		}
 		return msg, fn, nil
+	case "/shop.Order/ConfirmOrder":
+		msg := new(shop.ConfirmOrderRequest)
+		fn := func(ctx context.Context) (proto.Message, error) {
+			return s.OrderAPI.ConfirmOrder(ctx, msg)
+		}
+		return msg, fn, nil
 	case "/shop.Order/ConfirmOrderAndCreateFulfillments":
 		msg := new(shop.OrderIDRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {

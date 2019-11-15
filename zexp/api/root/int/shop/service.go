@@ -184,6 +184,7 @@ type OrderAPI interface {
 	// @deprecated
 	UpdateOrdersStatus(context.Context, *shop.UpdateOrdersStatusRequest) (*cm.UpdatedResponse, error)
 
+	ConfirmOrder(context.Context, *shop.ConfirmOrderRequest) (*order.Order, error)
 	ConfirmOrderAndCreateFulfillments(context.Context, *shop.OrderIDRequest) (*order.OrderWithErrorsResponse, error)
 	CancelOrder(context.Context, *shop.CancelOrderRequest) (*order.OrderWithErrorsResponse, error)
 	UpdateOrderPaymentStatus(context.Context, *shop.UpdateOrderPaymentStatusRequest) (*cm.UpdatedResponse, error)

@@ -2460,6 +2460,32 @@
         ]
       }
     },
+    "/api/shop.Order/ConfirmOrder": {
+      "post": {
+        "operationId": "ConfirmOrder",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/orderOrder"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/shopConfirmOrderRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Order"
+        ]
+      }
+    },
     "/api/shop.Order/ConfirmOrderAndCreateFulfillments": {
       "post": {
         "operationId": "ConfirmOrderAndCreateFulfillments",
@@ -7845,6 +7871,23 @@
         }
       }
     },
+    "shopConfirmOrderRequest": {
+      "type": "object",
+      "properties": {
+        "order_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "auto_inventory_voucher": {
+          "type": "string",
+          "title": "enum ('create', 'create')"
+        },
+        "auto_create_fulfillment": {
+          "type": "boolean",
+          "format": "boolean"
+        }
+      }
+    },
     "shopConfirmPurchaseOrderRequest": {
       "type": "object",
       "properties": {
@@ -9509,10 +9552,6 @@
         "order_id": {
           "type": "string",
           "format": "int64"
-        },
-        "auto_inventory_voucher": {
-          "type": "string",
-          "title": "enum ('', 'create', 'create')"
         }
       }
     },
