@@ -167,6 +167,26 @@ func (q *PurchaseOrderQuery) ListPurchaseOrders(
 	}, nil
 }
 
+func (q *PurchaseOrderQuery) ListPurchaseOrdersByReceiptID(
+	ctx context.Context, receiptID, shopID int64,
+) (*purchaseorder.PurchaseOrdersResponse, error) {
+	getReceipt := &receipting.GetReceiptByIDQuery{
+		ID:     receiptID,
+		ShopID: shopID,
+	}
+	if err := q.receiptQuery.Dispatch(ctx, getReceipt); err != nil {
+		return nil, cm.MapError(err).
+			Wrap(cm.NotFound, "Không tìm thấy phiếu").
+			Throw()
+	}
+
+	purchaseOrders, err := q.store(ctx).IDs(getReceipt.Result.RefIDs...).ShopID(shopID).ListPurchaseOrders()
+	if err != nil {
+		return nil, err
+	}
+	return &purchaseorder.PurchaseOrdersResponse{PurchaseOrders: purchaseOrders}, nil
+}
+
 func (q *PurchaseOrderQuery) addPaidAmount(ctx context.Context, shopID int64, purchaseOrders []*purchaseorder.PurchaseOrder) error {
 	mapPurchaseOrderIDAndPaidAmount := make(map[int64]int64)
 	var purchaseOrderIDs []int64

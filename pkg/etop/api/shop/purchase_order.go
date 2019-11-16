@@ -14,6 +14,7 @@ func init() {
 	bus.AddHandlers("api",
 		purchaseOrderService.GetPurchaseOrder,
 		purchaseOrderService.GetPurchaseOrders,
+		purchaseOrderService.GetPurchaseOrdersByReceiptID,
 		purchaseOrderService.CreatePurchaseOrder,
 		purchaseOrderService.UpdatePurchaseOrder,
 		purchaseOrderService.DeletePurchaseOrder,
@@ -56,6 +57,19 @@ func (s *PurchaseOrderService) GetPurchaseOrders(ctx context.Context, r *GetPurc
 		PurchaseOrders: purchaseOrders,
 		Paging:         pbcm.PbPageInfo(paging, query.Result.Count),
 	}
+	return nil
+}
+
+func (s *PurchaseOrderService) GetPurchaseOrdersByReceiptID(ctx context.Context, r *GetPurchaseOrdersByReceiptIDEndpoint) error {
+	query := &purchaseorder.ListPurchaseOrdersByReceiptIDQuery{
+		ReceiptID: r.Id,
+		ShopID:    r.Context.Shop.ID,
+		Result:    nil,
+	}
+	if err := purchaseOrderQuery.Dispatch(ctx, query); err != nil {
+		return err
+	}
+	r.Result = &pbshop.PurchaseOrdersResponse{PurchaseOrders: pbshop.PbPurchaseOrders(query.Result.PurchaseOrders)}
 	return nil
 }
 

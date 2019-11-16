@@ -1727,6 +1727,12 @@ func (s *PurchaseOrderServiceServer) parseRoute(path string) (reqMsg proto.Messa
 			return s.PurchaseOrderAPI.GetPurchaseOrders(ctx, msg)
 		}
 		return msg, fn, nil
+	case "/shop.PurchaseOrder/GetPurchaseOrdersByReceiptID":
+		msg := new(common.IDRequest)
+		fn := func(ctx context.Context) (proto.Message, error) {
+			return s.PurchaseOrderAPI.GetPurchaseOrdersByReceiptID(ctx, msg)
+		}
+		return msg, fn, nil
 	case "/shop.PurchaseOrder/UpdatePurchaseOrder":
 		msg := new(shop.UpdatePurchaseOrderRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {

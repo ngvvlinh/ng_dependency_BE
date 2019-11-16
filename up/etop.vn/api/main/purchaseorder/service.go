@@ -24,6 +24,7 @@ type QueryService interface {
 	GetPurchaseOrdersByIDs(ctx context.Context, IDs []int64, ShopID int64) (*PurchaseOrdersResponse, error)
 	ListPurchaseOrders(context.Context, *shopping.ListQueryShopArgs) (*PurchaseOrdersResponse, error)
 	ListPurchaseOrdersBySupplierIDsAndStatuses(ctx context.Context, shopID int64, supplierIDs []int64, statuses []etop.Status3) (*PurchaseOrdersResponse, error)
+	ListPurchaseOrdersByReceiptID(ctx context.Context, receiptID, shopID int64) (*PurchaseOrdersResponse, error)
 }
 
 //-- queries --//

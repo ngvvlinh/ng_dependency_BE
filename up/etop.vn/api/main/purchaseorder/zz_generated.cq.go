@@ -151,6 +151,18 @@ func (h QueryServiceHandler) HandleListPurchaseOrders(ctx context.Context, msg *
 	return err
 }
 
+type ListPurchaseOrdersByReceiptIDQuery struct {
+	ReceiptID int64
+	ShopID    int64
+
+	Result *PurchaseOrdersResponse `json:"-"`
+}
+
+func (h QueryServiceHandler) HandleListPurchaseOrdersByReceiptID(ctx context.Context, msg *ListPurchaseOrdersByReceiptIDQuery) (err error) {
+	msg.Result, err = h.inner.ListPurchaseOrdersByReceiptID(msg.GetArgs(ctx))
+	return err
+}
+
 type ListPurchaseOrdersBySupplierIDsAndStatusesQuery struct {
 	ShopID      int64
 	SupplierIDs []int64
@@ -174,6 +186,7 @@ func (q *UpdatePurchaseOrderCommand) command()                    {}
 func (q *GetPurchaseOrderByIDQuery) query()                       {}
 func (q *GetPurchaseOrdersByIDsQuery) query()                     {}
 func (q *ListPurchaseOrdersQuery) query()                         {}
+func (q *ListPurchaseOrdersByReceiptIDQuery) query()              {}
 func (q *ListPurchaseOrdersBySupplierIDsAndStatusesQuery) query() {}
 
 // implement conversion
@@ -298,6 +311,12 @@ func (q *ListPurchaseOrdersQuery) SetListQueryShopArgs(args *shopping.ListQueryS
 	q.Filters = args.Filters
 }
 
+func (q *ListPurchaseOrdersByReceiptIDQuery) GetArgs(ctx context.Context) (_ context.Context, receiptID int64, shopID int64) {
+	return ctx,
+		q.ReceiptID,
+		q.ShopID
+}
+
 func (q *ListPurchaseOrdersBySupplierIDsAndStatusesQuery) GetArgs(ctx context.Context) (_ context.Context, shopID int64, supplierIDs []int64, statuses []etop.Status3) {
 	return ctx,
 		q.ShopID,
@@ -340,6 +359,7 @@ func (h QueryServiceHandler) RegisterHandlers(b interface {
 	b.AddHandler(h.HandleGetPurchaseOrderByID)
 	b.AddHandler(h.HandleGetPurchaseOrdersByIDs)
 	b.AddHandler(h.HandleListPurchaseOrders)
+	b.AddHandler(h.HandleListPurchaseOrdersByReceiptID)
 	b.AddHandler(h.HandleListPurchaseOrdersBySupplierIDsAndStatuses)
 	return QueryBus{b}
 }

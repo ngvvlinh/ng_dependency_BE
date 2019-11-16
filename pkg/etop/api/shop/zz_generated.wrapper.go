@@ -6744,6 +6744,51 @@ func (s wrapPurchaseOrderService) GetPurchaseOrders(ctx context.Context, req *ap
 	return resp, nil
 }
 
+type GetPurchaseOrdersByReceiptIDEndpoint struct {
+	*cm.IDRequest
+	Result  *api.PurchaseOrdersResponse
+	Context claims.ShopClaim
+}
+
+func (s wrapPurchaseOrderService) GetPurchaseOrdersByReceiptID(ctx context.Context, req *cm.IDRequest) (resp *api.PurchaseOrdersResponse, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "shop.PurchaseOrder/GetPurchaseOrdersByReceiptID"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:     ctx,
+		RequireAuth: true,
+		RequireShop: true,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &GetPurchaseOrdersByReceiptIDEndpoint{IDRequest: req}
+	query.Context.Claim = session.Claim
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = s.s.GetPurchaseOrdersByReceiptID(ctx, query)
+	resp = query.Result
+	if err != nil {
+		return nil, err
+	}
+	if resp == nil {
+		return nil, common.Error(common.Internal, "", nil).Log("nil response")
+	}
+	errs = cmwrapper.HasErrors(resp)
+	return resp, nil
+}
+
 type UpdatePurchaseOrderEndpoint struct {
 	*api.UpdatePurchaseOrderRequest
 	Result  *api.PurchaseOrder
