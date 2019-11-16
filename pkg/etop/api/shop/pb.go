@@ -12,43 +12,40 @@ import (
 	"etop.vn/backend/pkg/etop/model"
 )
 
-func PbInventoryProductsQuantity(shopProduct []*catalog.ShopProductWithVariants, inventoryVariants map[int64]*inventory.InventoryVariant) []*pbshop.ShopProduct {
-	shopProductPb := PbShopProductsWithVariants(shopProduct)
-	for key, value := range shopProduct {
-		shopProductPb[key] = PbInventoryProductQuantity(value, inventoryVariants)
+func PbProductsQuantity(shopProducts []*catalog.ShopProductWithVariants, inventoryVariants map[int64]*inventory.InventoryVariant) (res []*pbshop.ShopProduct) {
+	for _, product := range shopProducts {
+		productPb := PbProductQuantity(product, inventoryVariants)
+		res = append(res, productPb)
 	}
-	return shopProductPb
+	return
 }
 
-func PbInventoryProductQuantity(shopProduct *catalog.ShopProductWithVariants, inventoryVariants map[int64]*inventory.InventoryVariant) *pbshop.ShopProduct {
+func PbProductQuantity(shopProduct *catalog.ShopProductWithVariants, inventoryVariants map[int64]*inventory.InventoryVariant) *pbshop.ShopProduct {
 	shopProductPb := PbShopProductWithVariants(shopProduct)
-	shopProductPb.Variants = PbInventoryVariantsQuantity(shopProduct.Variants, inventoryVariants)
+	shopProductPb.Variants = PbVariantsQuantity(shopProduct.Variants, inventoryVariants)
 	return shopProductPb
 }
 
-func PbInventoryVariantsQuantity(shopVariant []*catalog.ShopVariant, inventoryVariants map[int64]*inventory.InventoryVariant) []*pbshop.ShopVariant {
+func PbVariantsQuantity(shopVariants []*catalog.ShopVariant, inventoryVariants map[int64]*inventory.InventoryVariant) []*pbshop.ShopVariant {
 	var variants []*pbshop.ShopVariant
-	for _, value := range shopVariant {
-		valuePb := PbInventoryVariantQuantityInfo(value, inventoryVariants)
+	for _, variant := range shopVariants {
+		inventoryVariant := inventoryVariants[variant.VariantID]
+		valuePb := PbVariantQuantity(variant, inventoryVariant)
 		variants = append(variants, valuePb)
 	}
 	return variants
 }
 
-func PbInventoryVariantQuantityInfo(shopVariant *catalog.ShopVariant, inventoryVariants map[int64]*inventory.InventoryVariant) *pbshop.ShopVariant {
+func PbVariantQuantity(shopVariant *catalog.ShopVariant, inventoryVariant *inventory.InventoryVariant) *pbshop.ShopVariant {
 	shopVariantDB := PbShopVariant(shopVariant)
-	if inventoryVariants[shopVariantDB.Id] != nil {
-		shopVariantDB.InventoryVariant = PbInventoryVariantQuantity(inventoryVariants[shopVariant.VariantID])
+	if inventoryVariant != nil {
+		shopVariantDB.InventoryVariant = &pbshop.InventoryVariantQuantity{
+			QuantityOnHand: inventoryVariant.QuantityOnHand,
+			QuantityPicked: inventoryVariant.QuantityPicked,
+			Quantity:       inventoryVariant.QuantitySummary,
+		}
 	}
 	return shopVariantDB
-}
-
-func PbInventoryVariantQuantity(args *inventory.InventoryVariant) *pbshop.InventoryVariantQuantity {
-	return &pbshop.InventoryVariantQuantity{
-		QuantityOnHand: args.QuantityOnHand,
-		QuantityPicked: args.QuantityPicked,
-		Quantity:       args.QuantitySummary,
-	}
 }
 
 func PbInventory(args *inventory.InventoryVariant) *pbshop.InventoryVariant {

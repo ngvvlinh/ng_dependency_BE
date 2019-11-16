@@ -498,7 +498,7 @@ func (s *ProductService) GetProduct(ctx context.Context, q *GetProductEndpoint) 
 	if err := catalogQuery.Dispatch(ctx, query); err != nil {
 		return err
 	}
-	productPb, err := s.GetProductQuantity(ctx, shopID, query.Result)
+	productPb, err := getProductQuantity(ctx, shopID, query.Result)
 	if err != nil {
 		return err
 	}
@@ -515,7 +515,7 @@ func (s *ProductService) GetProductsByIDs(ctx context.Context, q *GetProductsByI
 	if err := catalogQuery.Dispatch(ctx, query); err != nil {
 		return err
 	}
-	products, err := s.GetProductsQuantity(ctx, shopID, query.Result.Products)
+	products, err := getProductsQuantity(ctx, shopID, query.Result.Products)
 	if err != nil {
 		return err
 	}
@@ -536,7 +536,7 @@ func (s *ProductService) GetProducts(ctx context.Context, q *GetProductsEndpoint
 	if err := catalogQuery.Dispatch(ctx, query); err != nil {
 		return err
 	}
-	products, err := s.GetProductsQuantity(ctx, shopID, query.Result.Products)
+	products, err := getProductsQuantity(ctx, shopID, query.Result.Products)
 	if err != nil {
 		return err
 	}
@@ -1691,34 +1691,34 @@ func (s *ProductService) RemoveProductCategory(ctx context.Context, r *RemovePro
 	return nil
 }
 
-func (s *ProductService) GetProductsQuantity(ctx context.Context, shopID int64, products []*catalog.ShopProductWithVariants) ([]*pbshop.ShopProduct, error) {
+func getProductsQuantity(ctx context.Context, shopID int64, products []*catalog.ShopProductWithVariants) ([]*pbshop.ShopProduct, error) {
 	var variantIDs []int64
 	for _, valueProduct := range products {
 		for _, valueVariant := range valueProduct.Variants {
 			variantIDs = append(variantIDs, valueVariant.VariantID)
 		}
 	}
-	inventoryVariants, err := s.GetVariantsQuantity(ctx, shopID, variantIDs)
+	inventoryVariants, err := getVariantsQuantity(ctx, shopID, variantIDs)
 	if err != nil {
 		return nil, err
 	}
-	return PbInventoryProductsQuantity(products, inventoryVariants), nil
+	return PbProductsQuantity(products, inventoryVariants), nil
 }
 
-func (s *ProductService) GetProductQuantity(ctx context.Context, shopID int64, shopProduct *catalog.ShopProductWithVariants) (*pbshop.ShopProduct, error) {
+func getProductQuantity(ctx context.Context, shopID int64, shopProduct *catalog.ShopProductWithVariants) (*pbshop.ShopProduct, error) {
 	var variantIDs []int64
-	for _, value := range shopProduct.Variants {
-		variantIDs = append(variantIDs, value.VariantID)
+	for _, variant := range shopProduct.Variants {
+		variantIDs = append(variantIDs, variant.VariantID)
 	}
-	inventoryVariants, err := s.GetVariantsQuantity(ctx, shopID, variantIDs)
+	inventoryVariants, err := getVariantsQuantity(ctx, shopID, variantIDs)
 	if err != nil {
 		return nil, err
 	}
-	shopProductPb := PbInventoryProductQuantity(shopProduct, inventoryVariants)
+	shopProductPb := PbProductQuantity(shopProduct, inventoryVariants)
 	return shopProductPb, nil
 }
 
-func (s *ProductService) GetVariantsQuantity(ctx context.Context, shopID int64, variantIDs []int64) (map[int64]*inventory.InventoryVariant, error) {
+func getVariantsQuantity(ctx context.Context, shopID int64, variantIDs []int64) (map[int64]*inventory.InventoryVariant, error) {
 
 	var mapInventoryVariant = make(map[int64]*inventory.InventoryVariant)
 	if len(variantIDs) == 0 {
