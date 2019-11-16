@@ -35,45 +35,40 @@ func main() {
 	if db, err = cmsql.Connect(postgres); err != nil {
 		ll.Fatal("Error while connecting database", l.Error(err))
 	}
-	{
-		fromID := int64(0)
-		count, updated := 0, 0
-		var arrayReceipt []receipting.Receipts
-		for {
-			receipts, err := scanReceipt(fromID)
-			if err != nil {
-				ll.Fatal("Error", l.Error(err))
-			}
-			if len(receipts) == 0 {
-				ll.S.Infof("Done: updated %v/%v", updated, count)
-				break
-			}
-			fromID = receipts[len(receipts)-1].ID
-			count += len(receipts)
-			arrayReceipt = append(arrayReceipt, receipts)
+	fromID := int64(0)
+	count, updated := 0, 0
+	var arrayReceipt []*receipting.Receipt
+	for {
+		receipts, err := scanReceipt(fromID)
+		if err != nil {
+			ll.Fatal("Error", l.Error(err))
 		}
-		for _, receipts := range arrayReceipt {
-			for _, receipt := range receipts {
-				traderFullNameNorm := validate.NormalizeSearch(receipt.Trader.FullName)
-				update := M{}
-
-				if receipt.TraderFullNameNorm == "" || receipt.TraderFullNameNorm != traderFullNameNorm {
-					update["trader_full_name_norm"] = traderFullNameNorm
-				}
-				if len(update) > 0 {
-					err = db.
-						Table("receipt").
-						Where("id = ?", receipt.ID).
-						ShouldUpdateMap(update)
-					if err != nil {
-						ll.S.Fatalf("can't update receipt id=%v", receipt.ID)
-					}
-					updated++
-				}
-			}
+		if len(receipts) == 0 {
+			break
 		}
-		ll.S.Infof("Updated %v/%v", updated, count)
+		fromID = receipts[len(receipts)-1].ID
+		count += len(receipts)
+		arrayReceipt = append(arrayReceipt, receipts...)
 	}
+	for _, receipt := range arrayReceipt {
+		traderFullNameNorm := validate.NormalizeSearch(receipt.Trader.FullName)
+		update := M{}
+
+		if receipt.TraderFullNameNorm == "" || receipt.TraderFullNameNorm != traderFullNameNorm {
+			update["trader_full_name_norm"] = traderFullNameNorm
+		}
+		if len(update) > 0 {
+			err = db.
+				Table("receipt").
+				Where("id = ?", receipt.ID).
+				ShouldUpdateMap(update)
+			if err != nil {
+				ll.S.Fatalf("can't update receipt id=%v", receipt.ID)
+			}
+			updated++
+		}
+	}
+	ll.S.Infof("Updated %v/%v", updated, count)
 }
 
 func scanReceipt(fromID int64) (receipts receipting.Receipts, err error) {
