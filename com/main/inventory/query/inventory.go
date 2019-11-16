@@ -53,7 +53,7 @@ func (q *InventoryQueryService) GetInventoryVouchers(ctx context.Context, args *
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing value requirement")
 	}
 
-	result, err := q.InventoryVoucherStore(ctx).ShopID(args.ShopID).Filters(args.Filters).Paging(&args.Paging).ListInventoryVoucherDB()
+	result, err := q.InventoryVoucherStore(ctx).ShopID(args.ShopID).Filters(args.Filters).Paging(args.Paging).ListInventoryVoucherDB()
 	if err != nil {
 		return nil, err
 	}
