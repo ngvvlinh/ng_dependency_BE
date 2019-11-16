@@ -143,7 +143,7 @@ func (q *PurchaseOrderQuery) ListPurchaseOrders(
 		}
 
 		for _, inventoryVoucher := range getInventoryVouchersQuery.Result.InventoryVoucher {
-			if _, ok := mapPurchaseOrderIDAndInventoryVoucher[inventoryVoucher.RefID]; ok {
+			if _, ok := mapPurchaseOrderIDAndInventoryVoucher[inventoryVoucher.RefID]; !ok {
 				mapPurchaseOrderIDAndInventoryVoucher[inventoryVoucher.RefID] = inventoryVoucher
 			}
 		}
