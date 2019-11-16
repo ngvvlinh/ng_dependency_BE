@@ -108,6 +108,8 @@ func convert_inventorymodel_InventoryVariant_inventory_InventoryVariant(arg *inv
 	out.QuantityPicked = arg.QuantityPicked // simple assign
 	out.PurchasePrice = arg.PurchasePrice   // simple assign
 	out.QuantitySummary = 0                 // zero value
+	out.CreatedAt = arg.CreatedAt           // simple assign
+	out.UpdatedAt = arg.UpdatedAt           // simple assign
 }
 
 func Convert_inventorymodel_InventoryVariants_inventory_InventoryVariants(args []*inventorymodel.InventoryVariant) (outs []*inventory.InventoryVariant) {
@@ -129,8 +131,8 @@ func convert_inventory_InventoryVariant_inventorymodel_InventoryVariant(arg *inv
 	out.QuantityOnHand = arg.QuantityOnHand // simple assign
 	out.QuantityPicked = arg.QuantityPicked // simple assign
 	out.PurchasePrice = arg.PurchasePrice   // simple assign
-	out.CreatedAt = time.Time{}             // zero value
-	out.UpdatedAt = time.Time{}             // zero value
+	out.CreatedAt = arg.CreatedAt           // simple assign
+	out.UpdatedAt = arg.UpdatedAt           // simple assign
 }
 
 func Convert_inventory_InventoryVariants_inventorymodel_InventoryVariants(args []*inventory.InventoryVariant) (outs []*inventorymodel.InventoryVariant) {

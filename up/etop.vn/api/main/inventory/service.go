@@ -92,6 +92,9 @@ type InventoryVariant struct {
 	QuantityPicked  int32
 	PurchasePrice   int32
 	QuantitySummary int32
+
+	CreatedAt time.Time
+	UpdatedAt time.Time
 }
 
 type GetInventoryVouchersResponse struct {
