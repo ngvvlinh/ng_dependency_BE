@@ -65,7 +65,6 @@ func (a *PurchaseOrderAggregate) CreatePurchaseOrder(
 	if err := a.checkPurchaseOrder(ctx, purchaseOrderNeedValidate); err != nil {
 		return nil, err
 	}
-
 	// check supplier_id
 	getSupplier := &suppliering.GetSupplierByIDQuery{
 		ID:     args.SupplierID,
@@ -107,7 +106,9 @@ func (a *PurchaseOrderAggregate) CreatePurchaseOrder(
 	codeNorm := maxCodeNorm + 1
 	purchaseOrder.Code = convert.GenerateCode(int(codeNorm))
 	purchaseOrder.CodeNorm = codeNorm
-
+	if err := a.getLinesInPurchaseOrder(ctx, purchaseOrder.Lines, args.ShopID); err != nil {
+		return nil, err
+	}
 	if err := a.store(ctx).CreatePurchaseOrder(purchaseOrder); err != nil {
 		return nil, err
 	}
@@ -123,7 +124,6 @@ func (a *PurchaseOrderAggregate) UpdatePurchaseOrder(
 			Wrap(cm.NotFound, "Không tìm thấy đơn nhập hàng.").
 			Throw()
 	}
-
 	if purchaseOrder.Status != etop.S3Zero {
 		return nil, cm.Errorf(cm.FailedPrecondition, nil, "Không thể chỉnh sửa đơn nhập hàng, kiểm tra trạng thái đơn.")
 	}
@@ -153,18 +153,83 @@ func (a *PurchaseOrderAggregate) UpdatePurchaseOrder(
 	if err := scheme.Convert(args, purchaseOrder); err != nil {
 		return nil, err
 	}
-
 	if err := a.checkPurchaseOrder(ctx, purchaseOrder); err != nil {
 		return nil, err
 	}
-
+	if err := a.getLinesInPurchaseOrder(ctx, purchaseOrder.Lines, args.ShopID); err != nil {
+		return nil, err
+	}
 	purchaseOrderDB := new(model.PurchaseOrder)
 	if err := scheme.Convert(purchaseOrder, purchaseOrderDB); err != nil {
 		return nil, err
 	}
-
 	err = a.store(ctx).UpdatePurchaseOrderDB(purchaseOrderDB)
 	return purchaseOrder, err
+}
+
+func (a *PurchaseOrderAggregate) getLinesInPurchaseOrder(ctx context.Context, lines []*purchaseorder.PurchaseOrderLine, ShopID int64) error {
+	var variantIDs []int64
+	var productIDs []int64
+	mapVariantShopVariant := make(map[int64]*catalog.ShopVariant)
+	mapProductShopProduct := make(map[int64]*catalog.ShopProduct)
+	for _, ln := range lines {
+		variantIDs = append(variantIDs, ln.VariantID)
+	}
+	query := &catalog.ListShopVariantsByIDsQuery{
+		IDs:    variantIDs,
+		ShopID: ShopID,
+	}
+	if err := a.catalogQuery.Dispatch(ctx, query); err != nil {
+		return err
+	}
+	for _, variant := range query.Result.Variants {
+		mapVariantShopVariant[variant.VariantID] = variant
+		productIDs = append(productIDs, variant.ProductID)
+	}
+	q := &catalog.ListShopProductsByIDsQuery{
+		IDs:    productIDs,
+		ShopID: ShopID,
+	}
+	if err := a.catalogQuery.Dispatch(ctx, q); err != nil {
+		return err
+	}
+	for _, product := range q.Result.Products {
+		mapProductShopProduct[product.ProductID] = product
+	}
+	for _, ln := range lines {
+		variant := mapVariantShopVariant[ln.VariantID]
+		product := mapProductShopProduct[variant.ProductID]
+		fillPOLineInfo(ln, variant, product)
+	}
+	return nil
+}
+
+func fillPOLineInfo(line *purchaseorder.PurchaseOrderLine, variant *catalog.ShopVariant, product *catalog.ShopProduct) {
+	line.VariantID = variant.VariantID
+	line.ProductID = product.ProductID
+	line.ProductName = product.Name
+	line.Code = variant.Code
+	var attributes []*catalog.Attribute
+	if variant.ImageURLs != nil {
+		if len(variant.ImageURLs) > 0 {
+			line.ImageUrl = variant.ImageURLs[0]
+		}
+	} else {
+		if product.ImageURLs != nil {
+			if len(product.ImageURLs) > 0 {
+				line.ImageUrl = product.ImageURLs[0]
+			}
+		}
+	}
+	for _, value := range variant.Attributes {
+		attribute := &catalog.Attribute{
+			Name:  value.Name,
+			Value: value.Value,
+		}
+		attributes = append(attributes, attribute)
+	}
+	line.Attributes = attributes
+
 }
 
 func (a *PurchaseOrderAggregate) checkPurchaseOrder(

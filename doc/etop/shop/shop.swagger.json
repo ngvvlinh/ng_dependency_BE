@@ -10031,6 +10031,25 @@
         "price": {
           "type": "string",
           "format": "int64"
+        },
+        "product_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "product_name": {
+          "type": "string"
+        },
+        "image_url": {
+          "type": "string"
+        },
+        "code": {
+          "type": "string"
+        },
+        "attributes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/shopAttribute"
+          }
         }
       }
     },

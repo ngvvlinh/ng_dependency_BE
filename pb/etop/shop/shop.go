@@ -5,6 +5,7 @@ import (
 	"net/url"
 	"strconv"
 
+	"etop.vn/api/main/catalog"
 	"etop.vn/api/main/purchaseorder"
 
 	"github.com/golang/protobuf/jsonpb"
@@ -17,7 +18,7 @@ import (
 	"etop.vn/api/shopping/carrying"
 	"etop.vn/api/shopping/customering"
 	"etop.vn/api/shopping/suppliering"
-	summary "etop.vn/api/summary"
+	"etop.vn/api/summary"
 	catalogmodel "etop.vn/backend/com/main/catalog/model"
 	"etop.vn/backend/pb/common"
 	pbcm "etop.vn/backend/pb/common"
@@ -485,10 +486,25 @@ func PbPurchaseOrderLine(m *purchaseorder.PurchaseOrderLine) *PurchaseOrderLine 
 		return nil
 	}
 	return &PurchaseOrderLine{
-		VariantId: m.VariantID,
-		Quantity:  m.Quantity,
-		Price:     m.Price,
+		ProductName: m.ProductName,
+		ImageUrl:    m.ImageUrl,
+		ProductId:   m.ProductID,
+		Code:        m.Code,
+		Attributes:  PbAttributes(m.Attributes),
+		VariantId:   m.VariantID,
+		Quantity:    m.Quantity,
+		Price:       m.Price,
 	}
+}
+func PbAttributes(as catalog.Attributes) []*Attribute {
+	attrs := make([]*Attribute, len(as))
+	for i, a := range as {
+		attrs[i] = &Attribute{
+			Name:  a.Name,
+			Value: a.Value,
+		}
+	}
+	return attrs
 }
 
 func PbPurchaseOrderLines(ms []*purchaseorder.PurchaseOrderLine) []*PurchaseOrderLine {

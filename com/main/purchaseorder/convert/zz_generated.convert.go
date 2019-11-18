@@ -8,6 +8,7 @@ import (
 	time "time"
 
 	purchaseorder "etop.vn/api/main/purchaseorder"
+	catalogconvert "etop.vn/backend/com/main/catalog/convert"
 	purchaseordermodel "etop.vn/backend/com/main/purchaseorder/model"
 	conversion "etop.vn/backend/pkg/common/conversion"
 )
@@ -265,9 +266,14 @@ func Convert_purchaseordermodel_PurchaseOrderLine_purchaseorder_PurchaseOrderLin
 }
 
 func convert_purchaseordermodel_PurchaseOrderLine_purchaseorder_PurchaseOrderLine(arg *purchaseordermodel.PurchaseOrderLine, out *purchaseorder.PurchaseOrderLine) {
-	out.VariantID = arg.VariantID // simple assign
-	out.Quantity = arg.Quantity   // simple assign
-	out.Price = arg.Price         // simple assign
+	out.VariantID = arg.VariantID     // simple assign
+	out.Quantity = arg.Quantity       // simple assign
+	out.Price = arg.Price             // simple assign
+	out.ProductID = arg.ProductID     // simple assign
+	out.ProductName = arg.ProductName // simple assign
+	out.Code = arg.Code               // simple assign
+	out.ImageUrl = arg.ImageUrl       // simple assign
+	out.Attributes = catalogconvert.Convert_catalogmodel_ProductAttributes_catalogtypes_Attributes(arg.Attributes)
 }
 
 func Convert_purchaseordermodel_PurchaseOrderLines_purchaseorder_PurchaseOrderLines(args []*purchaseordermodel.PurchaseOrderLine) (outs []*purchaseorder.PurchaseOrderLine) {
@@ -291,9 +297,14 @@ func Convert_purchaseorder_PurchaseOrderLine_purchaseordermodel_PurchaseOrderLin
 }
 
 func convert_purchaseorder_PurchaseOrderLine_purchaseordermodel_PurchaseOrderLine(arg *purchaseorder.PurchaseOrderLine, out *purchaseordermodel.PurchaseOrderLine) {
-	out.VariantID = arg.VariantID // simple assign
-	out.Quantity = arg.Quantity   // simple assign
-	out.Price = arg.Price         // simple assign
+	out.ProductName = arg.ProductName // simple assign
+	out.ProductID = arg.ProductID     // simple assign
+	out.VariantID = arg.VariantID     // simple assign
+	out.Quantity = arg.Quantity       // simple assign
+	out.Price = arg.Price             // simple assign
+	out.Code = arg.Code               // simple assign
+	out.ImageUrl = arg.ImageUrl       // simple assign
+	out.Attributes = catalogconvert.Convert_catalogtypes_Attributes_catalogmodel_ProductAttributes(arg.Attributes)
 }
 
 func Convert_purchaseorder_PurchaseOrderLines_purchaseordermodel_PurchaseOrderLines(args []*purchaseorder.PurchaseOrderLine) (outs []*purchaseordermodel.PurchaseOrderLine) {

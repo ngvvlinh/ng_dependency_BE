@@ -3,10 +3,13 @@ package purchaseorder
 import (
 	"time"
 
+	"etop.vn/api/main/catalog"
 	"etop.vn/api/main/etop"
 	"etop.vn/api/main/inventory"
 	"etop.vn/api/meta"
 )
+
+// +gen:event:topic=event/purchaseorder
 
 type PurchaseOrderAutoInventoryVoucher string
 
@@ -14,8 +17,6 @@ const (
 	AutoInventoryVoucherCreate  PurchaseOrderAutoInventoryVoucher = "create"
 	AutoInventoryVoucherConfirm PurchaseOrderAutoInventoryVoucher = "confirm"
 )
-
-// +gen:event:topic=event/purchaseorder
 
 type PurchaseOrder struct {
 	ID               int64
@@ -42,9 +43,14 @@ type PurchaseOrder struct {
 }
 
 type PurchaseOrderLine struct {
-	VariantID int64
-	Quantity  int64
-	Price     int64
+	VariantID   int64
+	Quantity    int64
+	Price       int64
+	ProductID   int64
+	ProductName string
+	Code        string
+	ImageUrl    string
+	Attributes  []*catalog.Attribute
 }
 
 type PurchaseOrderSupplier struct {

@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"etop.vn/api/main/etop"
+	catalogmodel "etop.vn/backend/com/main/catalog/model"
 )
 
 //go:generate $ETOPDIR/backend/scripts/derive.sh
@@ -34,9 +35,16 @@ type PurchaseOrder struct {
 }
 
 type PurchaseOrderLine struct {
-	VariantID int64 `json:"variant_id"`
-	Quantity  int64 `json:"quantity"`
-	Price     int64 `json:"price"`
+	ProductName string `json:"product_name"`
+	ProductID   int64  `json:"product_id"`
+
+	VariantID int64  `json:"variant_id"`
+	Quantity  int64  `json:"quantity"`
+	Price     int64  `json:"price"`
+	Code      string `json:"code"`
+
+	ImageUrl   string                           `json:"image_url"`
+	Attributes []*catalogmodel.ProductAttribute `json:"attributes"`
 }
 
 type PurchaseOrderSupplier struct {

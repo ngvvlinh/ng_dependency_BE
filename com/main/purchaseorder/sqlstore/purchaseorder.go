@@ -171,7 +171,6 @@ func (s *PurchaseOrderStore) CreatePurchaseOrder(purchaseOrder *purchaseorder.Pu
 	if err := scheme.Convert(purchaseOrder, purchaseOrderDB); err != nil {
 		return err
 	}
-
 	if _, err := s.query().Insert(purchaseOrderDB); err != nil {
 		return err
 	}

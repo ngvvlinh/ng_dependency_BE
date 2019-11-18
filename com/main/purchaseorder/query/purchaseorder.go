@@ -55,7 +55,6 @@ func (q *PurchaseOrderQuery) GetPurchaseOrderByID(
 	if err != nil {
 		return nil, err
 	}
-
 	query := &suppliering.GetSupplierByIDQuery{
 		ID:     purchaseOrder.SupplierID,
 		ShopID: args.ShopID,
@@ -85,7 +84,6 @@ func (q *PurchaseOrderQuery) GetPurchaseOrderByID(
 	if err := q.addPaidAmount(ctx, args.ShopID, []*purchaseorder.PurchaseOrder{purchaseOrder}); err != nil {
 		return nil, err
 	}
-
 	return purchaseOrder, nil
 }
 
