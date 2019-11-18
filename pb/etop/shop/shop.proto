@@ -203,6 +203,7 @@ service OrderService {
     rpc ConfirmOrderAndCreateFulfillments(OrderIDRequest) returns (order.OrderWithErrorsResponse);
     rpc CancelOrder(CancelOrderRequest) returns (order.OrderWithErrorsResponse);
     rpc UpdateOrderPaymentStatus(UpdateOrderPaymentStatusRequest) returns (cm.UpdatedResponse);
+    rpc UpdateOrderShippingInfo(UpdateOrderShippingInfoRequest) returns (cm.UpdatedResponse);
 }
 
 service FulfillmentService {
@@ -1869,4 +1870,10 @@ message GetInventoryVouchersByReferenceRequest {
 message GetInventoryVouchersByReferenceResponse {
     repeated InventoryVoucher inventory_voucher = 1;
     optional status4.Status status = 12 [(gogoproto.nullable)=false];
+}
+
+message UpdateOrderShippingInfoRequest {
+    optional int64 order_id = 1 [(gogoproto.nullable) = false];
+    optional order.OrderShipping shipping = 2;
+    optional order.OrderAddress shipping_address = 3;
 }

@@ -341,6 +341,7 @@ var ACL = map[string]*permission.PermissionDecl{
 	"shop.Order/ConfirmOrdersAndCreateFulfillments": {Type: Shop, Role: Staff, AuthPartner: Opt},
 	"shop.Order/CancelOrder":                        {Type: Shop, Role: Staff, AuthPartner: Opt},
 	"shop.Order/UpdateOrderPaymentStatus":           {Type: Shop, Role: Staff, AuthPartner: Opt},
+	"shop.Order/UpdateOrderShippingInfo":            {Type: Shop, Role: Staff, AuthPartner: Opt},
 
 	"shop.Fulfillment/GetPublicExternalShippingServices": {Type: Public, Role: _____},
 	"shop.Fulfillment/GetPublicFulfillment":              {Type: Public, Role: _____},

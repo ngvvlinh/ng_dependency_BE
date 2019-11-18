@@ -188,6 +188,7 @@ type OrderAPI interface {
 	ConfirmOrderAndCreateFulfillments(context.Context, *shop.OrderIDRequest) (*order.OrderWithErrorsResponse, error)
 	CancelOrder(context.Context, *shop.CancelOrderRequest) (*order.OrderWithErrorsResponse, error)
 	UpdateOrderPaymentStatus(context.Context, *shop.UpdateOrderPaymentStatusRequest) (*cm.UpdatedResponse, error)
+	UpdateOrderShippingInfo(context.Context, *shop.UpdateOrderShippingInfoRequest) (*cm.UpdatedResponse, error)
 }
 
 // +apix:path=/shop.Fulfillment

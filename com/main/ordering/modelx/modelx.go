@@ -174,6 +174,17 @@ type UpdateOrderPaymentStatusCommand struct {
 	}
 }
 
+type UpdateOrderShippingInfoCommand struct {
+	ShopID          int64
+	OrderID         int64
+	ShippingAddress *ordermodel.OrderAddress
+	Shipping        *ordermodel.OrderShipping
+
+	Result struct {
+		Updated int
+	}
+}
+
 type Fulfillment struct {
 	Shipment *shipmodel.Fulfillment
 	Shipnow  *shipnow.ShipnowFulfillment

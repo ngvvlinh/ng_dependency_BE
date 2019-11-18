@@ -2694,6 +2694,32 @@
         ]
       }
     },
+    "/api/shop.Order/UpdateOrderShippingInfo": {
+      "post": {
+        "operationId": "UpdateOrderShippingInfo",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/cmUpdatedResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/shopUpdateOrderShippingInfoRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Order"
+        ]
+      }
+    },
     "/api/shop.Order/UpdateOrdersStatus": {
       "post": {
         "operationId": "UpdateOrdersStatus",
@@ -10894,6 +10920,21 @@
         },
         "status": {
           "$ref": "#/definitions/status3Status"
+        }
+      }
+    },
+    "shopUpdateOrderShippingInfoRequest": {
+      "type": "object",
+      "properties": {
+        "order_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "shipping": {
+          "$ref": "#/definitions/orderOrderShipping"
+        },
+        "shipping_address": {
+          "$ref": "#/definitions/orderOrderAddress"
         }
       }
     },

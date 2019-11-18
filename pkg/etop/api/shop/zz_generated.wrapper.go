@@ -4854,6 +4854,58 @@ func (s wrapOrderService) UpdateOrderPaymentStatus(ctx context.Context, req *api
 	return resp, nil
 }
 
+type UpdateOrderShippingInfoEndpoint struct {
+	*api.UpdateOrderShippingInfoRequest
+	Result     *cm.UpdatedResponse
+	Context    claims.ShopClaim
+	CtxPartner *model.Partner
+}
+
+func (s wrapOrderService) UpdateOrderShippingInfo(ctx context.Context, req *api.UpdateOrderShippingInfoRequest) (resp *cm.UpdatedResponse, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "shop.Order/UpdateOrderShippingInfo"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:     ctx,
+		RequireAuth: true,
+		RequireShop: true,
+		AuthPartner: 1,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &UpdateOrderShippingInfoEndpoint{UpdateOrderShippingInfoRequest: req}
+	query.Context.Claim = session.Claim
+	query.Context.Shop = session.Shop
+	query.CtxPartner = session.CtxPartner
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	// Verify that the user has role "staff"
+	if !session.IsOwner && permission.MaxRoleLevel(session.Roles) < 2 {
+		return nil, common.ErrPermissionDenied
+	}
+	ctx = bus.NewRootContext(ctx)
+	err = s.s.UpdateOrderShippingInfo(ctx, query)
+	resp = query.Result
+	if err != nil {
+		return nil, err
+	}
+	if resp == nil {
+		return nil, common.Error(common.Internal, "", nil).Log("nil response")
+	}
+	errs = cmwrapper.HasErrors(resp)
+	return resp, nil
+}
+
 type UpdateOrdersStatusEndpoint struct {
 	*api.UpdateOrdersStatusRequest
 	Result     *cm.UpdatedResponse

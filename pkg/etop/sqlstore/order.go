@@ -50,6 +50,7 @@ func init() {
 		GetUnCompleteFulfillments,
 		UpdateFulfillmentsWithoutTransaction,
 		AdminUpdateFulfillment,
+		UpdateOrderShippingInfo,
 	)
 }
 
@@ -1189,7 +1190,7 @@ func UpdateFulfillmentsShippingState(ctx context.Context, cmd *shipmodelx.Update
 
 func UpdateOrderPaymentStatus(ctx context.Context, cmd *ordermodelx.UpdateOrderPaymentStatusCommand) error {
 	if cmd.ShopID == 0 {
-		return cm.Error(cm.InvalidArgument, "Missing Name", nil)
+		return cm.Error(cm.InvalidArgument, "Missing ShopID", nil)
 	}
 	if cmd.OrderID == 0 {
 		return cm.Error(cm.InvalidArgument, "Missing OrderID", nil)
@@ -1211,6 +1212,31 @@ func UpdateOrderPaymentStatus(ctx context.Context, cmd *ordermodelx.UpdateOrderP
 	if err := x.Table("order").Where("shop_id = ? AND id = ?", cmd.ShopID, cmd.OrderID).ShouldUpdateMap(M{
 		"payment_status": cmd.Status,
 	}); err != nil {
+		return err
+	}
+	cmd.Result.Updated = 1
+	return nil
+}
+
+func UpdateOrderShippingInfo(ctx context.Context, cmd *ordermodelx.UpdateOrderShippingInfoCommand) error {
+	if cmd.ShopID == 0 {
+		return cm.Error(cm.InvalidArgument, "Missing ShopID", nil)
+	}
+	if cmd.OrderID == 0 {
+		return cm.Error(cm.InvalidArgument, "Missing OrderID", nil)
+	}
+	var order = new(ordermodel.Order)
+	if err := x.Table("order").Where("shop_id = ? AND id = ?", cmd.ShopID, cmd.OrderID).ShouldGet(order); err != nil {
+		return err
+	}
+	if _, err := canUpdateOrder(order); err != nil {
+		return err
+	}
+	update := &ordermodel.Order{
+		ShippingAddress: cmd.ShippingAddress,
+		ShopShipping:    cmd.Shipping,
+	}
+	if err := x.Where("shop_id = ? AND id = ?", cmd.ShopID, cmd.OrderID).ShouldUpdate(update); err != nil {
 		return err
 	}
 	cmd.Result.Updated = 1

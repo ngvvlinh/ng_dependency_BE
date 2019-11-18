@@ -1337,6 +1337,12 @@ func (s *OrderServiceServer) parseRoute(path string) (reqMsg proto.Message, _ ht
 			return s.OrderAPI.UpdateOrderPaymentStatus(ctx, msg)
 		}
 		return msg, fn, nil
+	case "/shop.Order/UpdateOrderShippingInfo":
+		msg := new(shop.UpdateOrderShippingInfoRequest)
+		fn := func(ctx context.Context) (proto.Message, error) {
+			return s.OrderAPI.UpdateOrderShippingInfo(ctx, msg)
+		}
+		return msg, fn, nil
 	case "/shop.Order/UpdateOrdersStatus":
 		msg := new(shop.UpdateOrdersStatusRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {

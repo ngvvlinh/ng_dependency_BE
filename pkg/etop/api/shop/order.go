@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"etop.vn/api/main/receipting"
+	ordermodel "etop.vn/backend/com/main/ordering/model"
 	ordermodelx "etop.vn/backend/com/main/ordering/modelx"
 	shipmodelx "etop.vn/backend/com/main/shipping/modelx"
 	pbcm "etop.vn/backend/pb/common"
@@ -414,6 +415,31 @@ func (s *OrderService) UpdateOrderPaymentStatus(ctx context.Context, q *UpdateOr
 	if err := bus.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
+	q.Result = &pbcm.UpdatedResponse{
+		Updated: int32(cmd.Result.Updated),
+	}
+	return nil
+}
+
+func (s *OrderService) UpdateOrderShippingInfo(ctx context.Context, q *UpdateOrderShippingInfoEndpoint) error {
+	shippingAddressModel, err := q.ShippingAddress.ToModel()
+	if err != nil {
+		return cm.Errorf(cm.InvalidArgument, err, "Địa chỉ giao hàng không hợp lệ: %v", err)
+	}
+	var order = new(ordermodel.Order)
+	if err := q.Shipping.ToModel(order); err != nil {
+		return err
+	}
+	cmd := &ordermodelx.UpdateOrderShippingInfoCommand{
+		ShopID:          q.Context.Shop.ID,
+		OrderID:         q.OrderId,
+		ShippingAddress: shippingAddressModel,
+		Shipping:        order.ShopShipping,
+	}
+	if err := bus.Dispatch(ctx, cmd); err != nil {
+		return err
+	}
+
 	q.Result = &pbcm.UpdatedResponse{
 		Updated: int32(cmd.Result.Updated),
 	}
