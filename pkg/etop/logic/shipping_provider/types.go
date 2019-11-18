@@ -17,6 +17,8 @@ type ShippingProvider interface {
 
 	// Return "chuẩn" or "nhanh"
 	ParseServiceCode(code string) (serviceName string, ok bool)
+
+	GetMaxValueFreeInsuranceFee() int
 }
 
 type GetShippingServicesArgs struct {
@@ -33,9 +35,12 @@ type GetShippingServicesArgs struct {
 	CODAmount        int
 }
 
-func (args *GetShippingServicesArgs) GetInsuranceAmount() int {
+func (args *GetShippingServicesArgs) GetInsuranceAmount(maxValueFreeInsuranceFee int) int {
 	if args.IncludeInsurance {
 		return args.BasketValue
 	}
-	return 0
+	if args.BasketValue <= maxValueFreeInsuranceFee {
+		return args.BasketValue
+	}
+	return maxValueFreeInsuranceFee
 }

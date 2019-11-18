@@ -128,10 +128,8 @@ func (c *Carrier) CreateFulfillment(ctx context.Context, order *ordermodel.Order
 
 	// add total COD amount when get shipping service (it use for calc: phí thu hộ)
 	// this is different with another provider, we must get providerResponse when calc shipping fee
-	valueInsurance := 0
-	if order.ShopShipping.IncludeInsurance {
-		valueInsurance = order.BasketValue
-	}
+	maxValueFreeInsuranceFee := c.GetMaxValueFreeInsuranceFee()
+	valueInsurance := args.GetInsuranceAmount(maxValueFreeInsuranceFee)
 
 	if ffm.AddressFrom.WardCode == "" || ffm.AddressTo.WardCode == "" {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "ViettelPost yêu cầu thông tin phường xã hợp lệ để giao hàng")
@@ -284,6 +282,7 @@ func (c *Carrier) GetShippingServices(ctx context.Context, args shippingprovider
 
 	fromDistrict, fromProvince := fromQuery.Result.District, fromQuery.Result.Province
 	toDistrict, toProvince := toQuery.Result.District, toQuery.Result.Province
+	maxValueFreeInsuranceFee := c.GetMaxValueFreeInsuranceFee()
 
 	cmd := &CalcShippingFeeAllServicesArgs{
 		ArbitraryID:  args.AccountID,
@@ -297,7 +296,7 @@ func (c *Carrier) GetShippingServices(ctx context.Context, args shippingprovider
 			ReceiverProvince: int(toProvince.VtpostId),
 			ReceiverDistrict: int(toDistrict.VtpostId),
 			ProductWeight:    args.ChargeableWeight,
-			ProductPrice:     args.GetInsuranceAmount(),
+			ProductPrice:     args.GetInsuranceAmount(maxValueFreeInsuranceFee),
 			MoneyCollection:  args.CODAmount,
 		},
 	}
@@ -310,4 +309,9 @@ func (c *Carrier) GetShippingServices(ctx context.Context, args shippingprovider
 
 func (c *Carrier) GetAllShippingServices(ctx context.Context, args shipping_provider.GetShippingServicesArgs) ([]*model.AvailableShippingService, error) {
 	return c.GetShippingServices(ctx, args)
+}
+
+func (p *Carrier) GetMaxValueFreeInsuranceFee() int {
+	// Follow the policy of provider
+	return 0
 }

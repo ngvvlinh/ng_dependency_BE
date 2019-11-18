@@ -74,6 +74,7 @@ func (p *Carrier) CreateFulfillment(
 		return nil, err
 	}
 	toDistrict := toQuery.Result.District
+	maxValueFreeInsuranceFee := p.GetMaxValueFreeInsuranceFee()
 
 	ghnCmd := &RequestCreateOrderCommand{
 		ServiceID: service.ProviderServiceID,
@@ -94,7 +95,7 @@ func (p *Carrier) CreateFulfillment(
 			Length:             args.Length,
 			Width:              args.Width,
 			Height:             args.Height,
-			InsuranceFee:       args.GetInsuranceAmount(),
+			InsuranceFee:       args.GetInsuranceAmount(maxValueFreeInsuranceFee),
 		},
 	}
 
@@ -200,6 +201,7 @@ func (p *Carrier) GetShippingServices(ctx context.Context, args shipping_provide
 	if toDistrict.GhnId == 0 {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "GHN: Địa chỉ nhận hàng %v không được hỗ trợ bởi đơn vị vận chuyển!", toDistrict.Name)
 	}
+	maxValueFreeInsuranceFee := p.GetMaxValueFreeInsuranceFee()
 
 	cmd := &RequestFindAvailableServicesCommand{
 		FromDistrict: fromDistrict,
@@ -212,7 +214,7 @@ func (p *Carrier) GetShippingServices(ctx context.Context, args shipping_provide
 			Height:         args.Height,
 			FromDistrictID: int(fromDistrict.GhnId),
 			ToDistrictID:   int(toDistrict.GhnId),
-			InsuranceFee:   args.GetInsuranceAmount(),
+			InsuranceFee:   args.GetInsuranceAmount(maxValueFreeInsuranceFee),
 		},
 	}
 	err := p.FindAvailableServices(ctx, cmd)
@@ -234,6 +236,7 @@ func (c *Carrier) GetAllShippingServices(ctx context.Context, args shipping_prov
 	if toDistrict.GhnId == 0 {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "GHN: Địa chỉ nhận hàng %v không được hỗ trợ bởi đơn vị vận chuyển!", toDistrict.Name)
 	}
+	maxValueFreeInsuranceFee := c.GetMaxValueFreeInsuranceFee()
 
 	cmd := &RequestFindAvailableServicesCommand{
 		FromDistrict: fromDistrict,
@@ -246,7 +249,7 @@ func (c *Carrier) GetAllShippingServices(ctx context.Context, args shipping_prov
 			Height:         args.Height,
 			FromDistrictID: int(fromDistrict.GhnId),
 			ToDistrictID:   int(toDistrict.GhnId),
-			InsuranceFee:   args.GetInsuranceAmount(),
+			InsuranceFee:   args.GetInsuranceAmount(maxValueFreeInsuranceFee),
 		},
 	}
 	err := c.FindAvailableServices(ctx, cmd)
@@ -325,4 +328,8 @@ func (c *Carrier) CalcRefreshFulfillmentInfo(ctx context.Context, ffm *shipmodel
 	addressTo.WardCode = ""
 	addressTo.Ward = ""
 	return update, nil
+}
+
+func (p *Carrier) GetMaxValueFreeInsuranceFee() int {
+	return 1000000
 }

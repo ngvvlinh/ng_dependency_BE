@@ -59,10 +59,12 @@ func (p *Carrier) CreateFulfillment(ctx context.Context, order *ordermodel.Order
 	// set default value for GHTK
 	// phần bảo hiểm truyền 0 hoặc ko truyền bên ghtk sẽ lấy theo giá trị tiền
 	// thu hộ nên nếu ko muốn đóng bảo hiểm truyền ví dụ value=1000
-	valueInsurance := 1000
-	if order.ShopShipping.IncludeInsurance {
-		valueInsurance = order.BasketValue
-	}
+	// valueInsurance := 1000
+	// if order.ShopShipping.IncludeInsurance {
+	// 	valueInsurance = order.BasketValue
+	// }
+	maxValueFreeInsuranceFee := p.GetMaxValueFreeInsuranceFee()
+	valueInsurance := args.GetInsuranceAmount(maxValueFreeInsuranceFee)
 
 	fromQuery := &location.GetLocationQuery{DistrictCode: args.FromDistrictCode}
 	toQuery := &location.GetLocationQuery{DistrictCode: args.ToDistrictCode}
@@ -71,11 +73,6 @@ func (p *Carrier) CreateFulfillment(ctx context.Context, order *ordermodel.Order
 	}
 	fromDistrict, fromProvince := fromQuery.Result.District, fromQuery.Result.Province
 	toDistrict, toProvince := toQuery.Result.District, toQuery.Result.Province
-
-	// service, etopService, err := p.GetShippingService(ctx, args, order.ShopShipping.ProviderServiceID)
-	// if err != nil {
-	// 	return err
-	// }
 
 	// prepare products for ghtk
 	var products []*ghtkclient.ProductRequest
@@ -202,6 +199,7 @@ func (p *Carrier) GetShippingServices(ctx context.Context, args shipping_provide
 	}
 	fromDistrict, fromProvince := fromQuery.Result.District, fromQuery.Result.Province
 	toDistrict, toProvince := toQuery.Result.District, toQuery.Result.Province
+	maxValueFreeInsuranceFee := p.GetMaxValueFreeInsuranceFee()
 
 	cmd := &CalcShippingFeeCommand{
 		ArbitraryID:      args.AccountID,
@@ -209,7 +207,7 @@ func (p *Carrier) GetShippingServices(ctx context.Context, args shipping_provide
 		ToDistrictCode:   args.ToDistrictCode,
 		Request: &ghtkclient.CalcShippingFeeRequest{
 			Weight:          args.ChargeableWeight,
-			Value:           args.GetInsuranceAmount(),
+			Value:           args.GetInsuranceAmount(maxValueFreeInsuranceFee),
 			PickingProvince: fromProvince.Name,
 			PickingDistrict: fromDistrict.Name,
 			Province:        toProvince.Name,
@@ -229,6 +227,7 @@ func (p *Carrier) GetAllShippingServices(ctx context.Context, args shipping_prov
 	}
 	fromDistrict, fromProvince := fromQuery.Result.District, fromQuery.Result.Province
 	toDistrict, toProvince := toQuery.Result.District, toQuery.Result.Province
+	maxValueFreeInsuranceFee := p.GetMaxValueFreeInsuranceFee()
 
 	cmd := &CalcShippingFeeCommand{
 		ArbitraryID:      args.AccountID,
@@ -236,7 +235,7 @@ func (p *Carrier) GetAllShippingServices(ctx context.Context, args shipping_prov
 		ToDistrictCode:   args.ToDistrictCode,
 		Request: &ghtkclient.CalcShippingFeeRequest{
 			Weight:          args.ChargeableWeight,
-			Value:           args.GetInsuranceAmount(),
+			Value:           args.GetInsuranceAmount(maxValueFreeInsuranceFee),
 			PickingProvince: fromProvince.Name,
 			PickingDistrict: fromDistrict.Name,
 			Province:        toProvince.Name,
@@ -262,4 +261,8 @@ func (p *Carrier) GetAllShippingServices(ctx context.Context, args shipping_prov
 
 	allServices := append(providerServices, etopServices...)
 	return allServices, nil
+}
+
+func (p *Carrier) GetMaxValueFreeInsuranceFee() int {
+	return 3000000
 }
