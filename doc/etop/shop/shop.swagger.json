@@ -8288,43 +8288,23 @@
     "shopCreateInventoryVoucherRequest": {
       "type": "object",
       "properties": {
-        "trader_id": {
-          "type": "string",
-          "format": "int64"
-        },
-        "note": {
-          "type": "string"
-        },
-        "lines": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/shopInventoryVoucherLine"
-          }
-        },
-        "type": {
-          "type": "string"
-        },
-        "title": {
-          "type": "string"
-        },
         "ref_id": {
           "type": "string",
           "format": "int64"
         },
         "ref_type": {
           "type": "string"
-        },
-        "total_amount": {
-          "type": "integer",
-          "format": "int32"
         }
       }
     },
     "shopCreateInventoryVoucherResponse": {
       "type": "object",
       "properties": {
-        "inventory": {
-          "$ref": "#/definitions/shopInventoryVoucher"
+        "inventory_vouchers": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/shopInventoryVoucher"
+          }
         }
       }
     },

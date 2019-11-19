@@ -1675,17 +1675,8 @@ message GetShopCollectionsByProductIDRequest {
 }
 
 message CreateInventoryVoucherRequest{
-    optional int64 trader_id = 3 [(gogoproto.nullable) = false];
-    optional string note = 4  [(gogoproto.nullable) = false];
-    repeated InventoryVoucherLine lines = 6;
-    optional string type = 5 [(gogoproto.nullable) = false];
-    optional string title = 7 [(gogoproto.nullable) = false];
-
     optional int64 ref_id = 16 [(gogoproto.nullable) = false];
     optional string ref_type = 17 [(gogoproto.nullable) = false];
-
-    optional int32 total_amount = 8 [(gogoproto.nullable) = false];
-
 }
 
 message InventoryVoucherLine{
@@ -1695,7 +1686,7 @@ message InventoryVoucherLine{
 }
 
 message CreateInventoryVoucherResponse {
-    optional InventoryVoucher inventory= 1;
+    repeated InventoryVoucher inventory_vouchers= 1;
 }
 
 message ConfirmInventoryVoucherRequest{

@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 
+	"etop.vn/api/main/etop"
 	"etop.vn/api/main/inventory"
 	stocktake "etop.vn/api/main/stocktaking"
 	"etop.vn/api/meta"
@@ -27,6 +28,16 @@ func (s *InventoryService) CreateInventoryVoucher(ctx context.Context, q *Create
 		if err := inventoryAggregate.Dispatch(ctx, cmd); err != nil {
 			return err
 		}
+		var inventoryVouchers []*pbshop.InventoryVoucher
+		if cmd.Result.TypeIn.ID != 0 {
+			inventoryVouchers = append(inventoryVouchers, PbShopInventoryVoucher(cmd.Result.TypeIn))
+		}
+		if cmd.Result.TypeOut.ID != 0 {
+			inventoryVouchers = append(inventoryVouchers, PbShopInventoryVoucher(cmd.Result.TypeOut))
+		}
+		q.Result = &pbshop.CreateInventoryVoucherResponse{
+			InventoryVouchers: inventoryVouchers,
+		}
 		return nil
 	}
 	{
@@ -38,7 +49,7 @@ func (s *InventoryService) CreateInventoryVoucher(ctx context.Context, q *Create
 			return err
 		}
 		q.Result = &pbshop.CreateInventoryVoucherResponse{
-			Inventory: PbShopInventoryVoucher(cmd.Result),
+			InventoryVouchers: []*pbshop.InventoryVoucher{PbShopInventoryVoucher(cmd.Result)},
 		}
 	}
 	return nil
@@ -266,7 +277,7 @@ func (s *InventoryService) checkValidateListTrader(ctx context.Context, shopID i
 		return result, err
 	}
 	traders := queryTraders.Result.Traders
-	var mapTraderValidate = map[int64]bool{}
+	var mapTraderValidate = make(map[int64]bool)
 	for _, trader := range traders {
 		mapTraderValidate[trader.ID] = true
 	}
@@ -301,10 +312,12 @@ func PreCreateInventoryVoucherRefStocktake(ctx context.Context, q *CreateInvento
 		Id:     q.RefId,
 		ShopID: q.Context.Shop.ID,
 	}
-	if err := bus.Dispatch(ctx, queryStocktake); err != nil {
+	if err := StocktakeQuery.Dispatch(ctx, queryStocktake); err != nil {
 		return nil, err
 	}
-
+	if queryStocktake.Result.Status != etop.S3Positive {
+		return nil, cm.Error(cm.InvalidArgument, "không thể tạo phiếu kiểm kho cho stocktake chưa được xác nhận.", nil)
+	}
 	// GET info and put it to cmd
 	var inventoryVariantChange []*inventory.InventoryVariantQuantityChange
 	for _, value := range queryStocktake.Result.Lines {
@@ -318,12 +331,12 @@ func PreCreateInventoryVoucherRefStocktake(ctx context.Context, q *CreateInvento
 		RefID:     q.RefId,
 		RefType:   inventory.RefTypeStockTake,
 		RefName:   inventory.RefNameStockTake,
-		Note:      q.Note,
 		Title:     "Phiếu kiểm kho",
 		Overstock: cm.BoolDefault(q.Context.Shop.InventoryOverstock, true),
 		CreatedBy: q.Context.UserID,
 		Variants:  inventoryVariantChange,
 	}
+	cmd.Note = fmt.Sprintf("Tạo phiếu xuất nhập kho theo phiếu kiểm kho mã %v", queryStocktake.Result.ID)
 	return cmd, nil
 }
 
@@ -357,28 +370,12 @@ func PreCreateInventoryVoucher(ctx context.Context, q *CreateInventoryVoucherEnd
 	shopID := q.Context.Shop.ID
 	inventoryOverstock := q.Context.Shop.InventoryOverstock
 
-	// default when not have ref_id, ref_type
-	var items []*inventory.InventoryVoucherItem
-	for _, value := range q.Lines {
-		items = append(items, &inventory.InventoryVoucherItem{
-			VariantID: value.VariantId,
-			Price:     value.Price,
-			Quantity:  value.Quantity,
-		})
-	}
-
 	cmd := &inventory.CreateInventoryVoucherCommand{
-		Title:       q.Title,
-		ShopID:      shopID,
-		Overstock:   cm.BoolDefault(inventoryOverstock, true),
-		RefType:     inventory.InventoryRefType(q.RefType),
-		RefID:       q.RefId,
-		TotalAmount: q.TotalAmount,
-		CreatedBy:   q.Context.UserID,
-		TraderID:    q.TraderId,
-		Type:        inventory.InventoryVoucherType(q.Type),
-		Note:        q.Note,
-		Lines:       items,
+		ShopID:    shopID,
+		Overstock: cm.BoolDefault(inventoryOverstock, true),
+		RefType:   inventory.InventoryRefType(q.RefType),
+		RefID:     q.RefId,
+		CreatedBy: q.Context.UserID,
 	}
 	// Check ref ID here "order", "purchaseorder", "stocktake", "return"
 	// modify value flow reftype
@@ -388,10 +385,11 @@ func PreCreateInventoryVoucher(ctx context.Context, q *CreateInventoryVoucherEnd
 			return nil, err
 		}
 	case inventory.RefTypeReturns:
+		return nil, cm.Error(cm.InvalidArgument, "not support ref_type = 'return' now", nil)
 	case inventory.RefTypePurchaseOrder:
-	case inventory.RefTypeStockTake:
+		return nil, cm.Error(cm.InvalidArgument, "not support ref_type = 'perchaseorder' now", nil)
 	default:
-
+		return nil, cm.Error(cm.InvalidArgument, "wrong ref_type", nil)
 	}
 	return cmd, nil
 }
