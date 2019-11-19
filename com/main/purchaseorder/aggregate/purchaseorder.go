@@ -170,8 +170,8 @@ func (a *PurchaseOrderAggregate) UpdatePurchaseOrder(
 func (a *PurchaseOrderAggregate) checkPurchaseOrder(
 	ctx context.Context, args *purchaseorder.PurchaseOrder,
 ) error {
-	if args.BasketValue <= 0 {
-		return cm.Errorf(cm.InvalidArgument, nil, "Tiền hàng phải lớn hơn 0")
+	if args.BasketValue < 0 {
+		return cm.Errorf(cm.InvalidArgument, nil, "Tiền hàng phải lớn hơn hoặc bằng 0")
 	}
 	if args.TotalDiscount < 0 {
 		return cm.Errorf(cm.InvalidArgument, nil, "Giảm giá phải lớn hơn hoặc bằng 0")
@@ -179,8 +179,7 @@ func (a *PurchaseOrderAggregate) checkPurchaseOrder(
 	if args.TotalAmount < 0 {
 		return cm.Errorf(cm.InvalidArgument, nil, "Tiền thanh toán phải lớn hơn hoặc bằng 0")
 	}
-	if (args.BasketValue-args.TotalDiscount > 0 && args.BasketValue-args.TotalDiscount != args.TotalAmount) ||
-		(args.BasketValue-args.TotalDiscount <= 0 && args.TotalAmount != 0) {
+	if args.BasketValue-args.TotalDiscount != args.TotalAmount {
 		return cm.Errorf(cm.InvalidArgument, nil, "Tiền thanh toán không hợp lệ")
 	}
 
@@ -191,7 +190,7 @@ func (a *PurchaseOrderAggregate) checkPurchaseOrder(
 		if line.VariantID == 0 {
 			return cm.Errorf(cm.NotFound, nil, "variant_id không thể bằng 0")
 		}
-		if line.Price <= 0 {
+		if line.Price < 0 {
 			return cm.Errorf(cm.InvalidArgument, nil, "gía của phiên bản sản phẩm không hợp lệ")
 		}
 		if line.Quantity <= 0 {
