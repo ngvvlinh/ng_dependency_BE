@@ -105,6 +105,11 @@ func ConvertInfoVariants(stocktakeLine *stocktaking.StocktakeLine, shopVariant *
 	if len(shopVariant.ImageURLs) > 0 {
 		stocktakeLine.ImageURL = shopVariant.ImageURLs[0]
 	}
+	if stocktakeLine.ImageURL == "" {
+		if len(shopProduct.ImageURLs) > 0 {
+			stocktakeLine.ImageURL = shopProduct.ImageURLs[0]
+		}
+	}
 	stocktakeLine.Attributes = attributes
 	return stocktakeLine
 }
