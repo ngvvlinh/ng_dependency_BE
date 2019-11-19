@@ -6,6 +6,7 @@ import (
 
 	"etop.vn/api/main/etop"
 	"etop.vn/api/main/inventory"
+	"etop.vn/api/main/purchaseorder"
 	stocktake "etop.vn/api/main/stocktaking"
 	"etop.vn/api/meta"
 	"etop.vn/api/shopping/tradering"
@@ -345,6 +346,34 @@ func PreCreateInventoryVoucherRefStocktake(ctx context.Context, q *CreateInvento
 	cmd.Note = fmt.Sprintf("Tạo phiếu xuất nhập kho theo phiếu kiểm kho mã %v", queryStocktake.Result.ID)
 	return cmd, nil
 }
+func PreCreateInventoryVoucherRefPurchaseOrder(ctx context.Context, cmd *inventory.CreateInventoryVoucherCommand) error {
+	var items []*inventory.InventoryVoucherItem
+
+	// check order_id exit
+	queryPurchaseOrder := &purchaseorder.GetPurchaseOrderByIDQuery{
+		ID:     cmd.RefID,
+		ShopID: cmd.ShopID,
+	}
+	if err := purchaseOrderQuery.Dispatch(ctx, queryPurchaseOrder); err != nil {
+		return err
+	}
+	if queryPurchaseOrder.Result.Status != etop.S3Positive {
+		return cm.Error(cm.InvalidArgument, "không thể tạo phiếu kiểm kho cho Purchase Order chưa được xác nhận.", nil)
+	}
+	// GET info and put it to cmd
+	for _, value := range queryPurchaseOrder.Result.Lines {
+		items = append(items, &inventory.InventoryVoucherItem{
+			VariantID: value.VariantID,
+			Quantity:  int32(value.Quantity),
+		})
+	}
+	cmd.Title = "Nhập kho khi nhập hàng"
+	cmd.Lines = items
+	cmd.Type = "in"
+	cmd.TraderID = queryPurchaseOrder.Result.SupplierID
+	cmd.Note = fmt.Sprintf("Tạo phiếu nhập kho theo đơn nhập mã %v", queryPurchaseOrder.Result.ID)
+	return nil
+}
 
 func PreCreateInventoryVoucherRefOrder(ctx context.Context, cmd *inventory.CreateInventoryVoucherCommand) error {
 	var items []*inventory.InventoryVoucherItem
@@ -368,7 +397,7 @@ func PreCreateInventoryVoucherRefOrder(ctx context.Context, cmd *inventory.Creat
 	cmd.Lines = items
 	cmd.Type = "out"
 	cmd.TraderID = queryOrder.Result.Order.CustomerID
-	cmd.Note = fmt.Sprintf("Tạo phiếu nhập kho theo đơn đặt hàng mã %v", queryOrder.Result.Order.ID)
+	cmd.Note = fmt.Sprintf("Tạo phiếu xuất nhập kho theo đơn đặt hàng mã %v", queryOrder.Result.Order.ID)
 	return nil
 }
 
@@ -390,10 +419,12 @@ func PreCreateInventoryVoucher(ctx context.Context, q *CreateInventoryVoucherEnd
 		if err := PreCreateInventoryVoucherRefOrder(ctx, cmd); err != nil {
 			return nil, err
 		}
+	case inventory.RefTypePurchaseOrder:
+		if err := PreCreateInventoryVoucherRefPurchaseOrder(ctx, cmd); err != nil {
+			return nil, err
+		}
 	case inventory.RefTypeReturns:
 		return nil, cm.Error(cm.InvalidArgument, "not support ref_type = 'return' now", nil)
-	case inventory.RefTypePurchaseOrder:
-		return nil, cm.Error(cm.InvalidArgument, "not support ref_type = 'perchaseorder' now", nil)
 	default:
 		return nil, cm.Error(cm.InvalidArgument, "wrong ref_type", nil)
 	}

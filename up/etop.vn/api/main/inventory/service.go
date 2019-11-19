@@ -23,7 +23,7 @@ type Aggregate interface {
 
 	UpdateInventoryVoucher(context.Context, *UpdateInventoryVoucherArgs) (*InventoryVoucher, error)
 
-	CreateInventoryVariant(context.Context, *CreateInventoryVariantArgs) error
+	CreateInventoryVariant(context.Context, *CreateInventoryVariantArgs) (*InventoryVariant, error)
 
 	CheckInventoryVariantsQuantity(context.Context, *CheckInventoryVariantQuantityRequest) error
 

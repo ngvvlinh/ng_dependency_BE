@@ -155,12 +155,14 @@ func (q *InventoryAggregate) PreInventoryVariantForVoucher(ctx context.Context, 
 		totalAmount = totalAmount + value.Price*value.Quantity
 		inventoryvariant, err = q.InventoryStore(ctx).ShopID(args.ShopID).VariantID(value.VariantID).Get()
 		if err != nil && cm.ErrorCode(err) == cm.NotFound {
-
 			// Create InventoryVariant follow variant_id if it have not been exit
-			err = q.CreateInventoryVariant(ctx, &inventory.CreateInventoryVariantArgs{
+			inventoryvariant, err = q.CreateInventoryVariant(ctx, &inventory.CreateInventoryVariantArgs{
 				ShopID:    args.ShopID,
 				VariantID: value.VariantID,
 			})
+			if err != nil {
+				return 0, nil, err
+			}
 		}
 		if err != nil && cm.ErrorCode(err) != cm.NotFound {
 			return 0, nil, err
@@ -183,7 +185,7 @@ func (q *InventoryAggregate) CheckInventoryVariantsQuantity(ctx context.Context,
 	for _, value := range args.Lines {
 		inventoryCore, err := q.InventoryStore(ctx).ShopID(args.ShopID).VariantID(value.VariantID).Get()
 		if err != nil && cm.ErrorCode(err) == cm.NotFound {
-			err = q.CreateInventoryVariant(ctx, &inventory.CreateInventoryVariantArgs{
+			_, err = q.CreateInventoryVariant(ctx, &inventory.CreateInventoryVariantArgs{
 				ShopID:    args.ShopID,
 				VariantID: value.VariantID,
 			})
@@ -451,9 +453,9 @@ func (q *InventoryAggregate) CancelInventoryVoucher(ctx context.Context, args *i
 	return inventoryVoucherConfirmed, err
 }
 
-func (q *InventoryAggregate) CreateInventoryVariant(ctx context.Context, args *inventory.CreateInventoryVariantArgs) error {
+func (q *InventoryAggregate) CreateInventoryVariant(ctx context.Context, args *inventory.CreateInventoryVariantArgs) (*inventory.InventoryVariant, error) {
 	if args.ShopID == 0 && args.VariantID == 0 {
-		return cm.Errorf(cm.InvalidArgument, nil, "Missing value requirement")
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing value requirement")
 	}
 	_, err := q.InventoryStore(ctx).ShopID(args.ShopID).VariantID(args.VariantID).Get()
 	if err != nil && cm.ErrorCode(err) == cm.NotFound {
@@ -464,12 +466,16 @@ func (q *InventoryAggregate) CreateInventoryVariant(ctx context.Context, args *i
 			QuantityPicked: 0,
 			PurchasePrice:  0,
 		})
-		return err
+		return nil, err
 	}
 	if err != nil {
-		return err
+		return nil, err
 	}
-	return nil
+	result, err := q.InventoryStore(ctx).ShopID(args.ShopID).VariantID(args.VariantID).Get()
+	if err != nil {
+		return nil, err
+	}
+	return result, nil
 }
 
 func validateInventoryVoucherItem(args *inventory.InventoryVoucherItem) error {

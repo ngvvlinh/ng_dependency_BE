@@ -99,12 +99,12 @@ type CreateInventoryVariantCommand struct {
 	ShopID    int64
 	VariantID int64
 
-	Result struct {
-	} `json:"-"`
+	Result *InventoryVariant `json:"-"`
 }
 
 func (h AggregateHandler) HandleCreateInventoryVariant(ctx context.Context, msg *CreateInventoryVariantCommand) (err error) {
-	return h.inner.CreateInventoryVariant(msg.GetArgs(ctx))
+	msg.Result, err = h.inner.CreateInventoryVariant(msg.GetArgs(ctx))
+	return err
 }
 
 type CreateInventoryVoucherCommand struct {
