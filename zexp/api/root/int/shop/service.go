@@ -316,6 +316,7 @@ type LedgerAPI interface {
 type PurchaseOrderAPI interface {
 	GetPurchaseOrder(context.Context, *cm.IDRequest) (*shop.PurchaseOrder, error)
 	GetPurchaseOrders(context.Context, *shop.GetPurchaseOrdersRequest) (*shop.PurchaseOrdersResponse, error)
+	GetPurchaseOrdersByIDs(context.Context, *cm.IDsRequest) (*shop.PurchaseOrdersResponse, error)
 	GetPurchaseOrdersByReceiptID(context.Context, *cm.IDRequest) (*shop.PurchaseOrdersResponse, error)
 	CreatePurchaseOrder(context.Context, *shop.CreatePurchaseOrderRequest) (*shop.PurchaseOrder, error)
 	UpdatePurchaseOrder(context.Context, *shop.UpdatePurchaseOrderRequest) (*shop.PurchaseOrder, error)

@@ -1739,6 +1739,12 @@ func (s *PurchaseOrderServiceServer) parseRoute(path string) (reqMsg proto.Messa
 			return s.PurchaseOrderAPI.GetPurchaseOrders(ctx, msg)
 		}
 		return msg, fn, nil
+	case "/shop.PurchaseOrder/GetPurchaseOrdersByIDs":
+		msg := new(common.IDsRequest)
+		fn := func(ctx context.Context) (proto.Message, error) {
+			return s.PurchaseOrderAPI.GetPurchaseOrdersByIDs(ctx, msg)
+		}
+		return msg, fn, nil
 	case "/shop.PurchaseOrder/GetPurchaseOrdersByReceiptID":
 		msg := new(common.IDRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {

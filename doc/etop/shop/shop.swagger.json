@@ -3763,6 +3763,32 @@
         ]
       }
     },
+    "/api/shop.PurchaseOrder/GetPurchaseOrdersByIDs": {
+      "post": {
+        "operationId": "GetPurchaseOrdersByIDs",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/shopPurchaseOrdersResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/cmIDsRequest"
+            }
+          }
+        ],
+        "tags": [
+          "PurchaseOrder"
+        ]
+      }
+    },
     "/api/shop.PurchaseOrder/GetPurchaseOrdersByReceiptID": {
       "post": {
         "operationId": "GetPurchaseOrdersByReceiptID",

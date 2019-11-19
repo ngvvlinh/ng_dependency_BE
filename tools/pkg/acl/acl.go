@@ -520,6 +520,7 @@ var ACL = map[string]*permission.PermissionDecl{
 	// PurchaseOrder:
 	"shop.PurchaseOrder/GetPurchaseOrder":             {Type: Shop},
 	"shop.PurchaseOrder/GetPurchaseOrders":            {Type: Shop},
+	"shop.PurchaseOrder/GetPurchaseOrdersByIDs":       {Type: Shop},
 	"shop.PurchaseOrder/GetPurchaseOrdersByReceiptID": {Type: Shop},
 	"shop.PurchaseOrder/CreatePurchaseOrder":          {Type: Shop},
 	"shop.PurchaseOrder/UpdatePurchaseOrder":          {Type: Shop},

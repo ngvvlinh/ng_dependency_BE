@@ -187,6 +187,30 @@ func (q *PurchaseOrderQuery) ListPurchaseOrdersByReceiptID(
 	return &purchaseorder.PurchaseOrdersResponse{PurchaseOrders: purchaseOrders}, nil
 }
 
+func (q *PurchaseOrderQuery) GetPurchaseOrdersByIDs(
+	ctx context.Context, IDs []int64, ShopID int64,
+) (*purchaseorder.PurchaseOrdersResponse, error) {
+	query := q.store(ctx).ShopID(ShopID).IDs(IDs...)
+	count, err := query.Count()
+	if err != nil {
+		return nil, err
+	}
+
+	purchaseOrders, err := query.ListPurchaseOrders()
+	if err != nil {
+		return nil, err
+	}
+
+	if err := q.addPaidAmount(ctx, ShopID, purchaseOrders); err != nil {
+		return nil, err
+	}
+
+	return &purchaseorder.PurchaseOrdersResponse{
+		PurchaseOrders: purchaseOrders,
+		Count:          int32(count),
+	}, nil
+}
+
 func (q *PurchaseOrderQuery) addPaidAmount(ctx context.Context, shopID int64, purchaseOrders []*purchaseorder.PurchaseOrder) error {
 	mapPurchaseOrderIDAndPaidAmount := make(map[int64]int64)
 	var purchaseOrderIDs []int64
@@ -215,26 +239,6 @@ func (q *PurchaseOrderQuery) addPaidAmount(ctx context.Context, shopID int64, pu
 		purchaseOrder.PaidAmount = mapPurchaseOrderIDAndPaidAmount[purchaseOrder.ID]
 	}
 	return nil
-}
-
-func (q *PurchaseOrderQuery) GetPurchaseOrdersByIDs(
-	ctx context.Context, IDs []int64, ShopID int64,
-) (*purchaseorder.PurchaseOrdersResponse, error) {
-	query := q.store(ctx).ShopID(ShopID).IDs(IDs...)
-	count, err := query.Count()
-	if err != nil {
-		return nil, err
-	}
-
-	purchaseOrders, err := query.ListPurchaseOrders()
-	if err != nil {
-		return nil, err
-	}
-
-	return &purchaseorder.PurchaseOrdersResponse{
-		PurchaseOrders: purchaseOrders,
-		Count:          int32(count),
-	}, nil
 }
 
 func (q *PurchaseOrderQuery) ListPurchaseOrdersBySupplierIDsAndStatuses(

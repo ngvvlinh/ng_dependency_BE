@@ -14,6 +14,7 @@ func init() {
 	bus.AddHandlers("api",
 		purchaseOrderService.GetPurchaseOrder,
 		purchaseOrderService.GetPurchaseOrders,
+		purchaseOrderService.GetPurchaseOrdersByIDs,
 		purchaseOrderService.GetPurchaseOrdersByReceiptID,
 		purchaseOrderService.CreatePurchaseOrder,
 		purchaseOrderService.UpdatePurchaseOrder,
@@ -60,11 +61,22 @@ func (s *PurchaseOrderService) GetPurchaseOrders(ctx context.Context, r *GetPurc
 	return nil
 }
 
+func (s *PurchaseOrderService) GetPurchaseOrdersByIDs(ctx context.Context, r *GetPurchaseOrdersByIDsEndpoint) error {
+	query := &purchaseorder.GetPurchaseOrdersByIDsQuery{
+		IDs:    r.Ids,
+		ShopID: r.Context.Shop.ID,
+	}
+	if err := purchaseOrderQuery.Dispatch(ctx, query); err != nil {
+		return err
+	}
+	r.Result = &pbshop.PurchaseOrdersResponse{PurchaseOrders: pbshop.PbPurchaseOrders(query.Result.PurchaseOrders)}
+	return nil
+}
+
 func (s *PurchaseOrderService) GetPurchaseOrdersByReceiptID(ctx context.Context, r *GetPurchaseOrdersByReceiptIDEndpoint) error {
 	query := &purchaseorder.ListPurchaseOrdersByReceiptIDQuery{
 		ReceiptID: r.Id,
 		ShopID:    r.Context.Shop.ID,
-		Result:    nil,
 	}
 	if err := purchaseOrderQuery.Dispatch(ctx, query); err != nil {
 		return err

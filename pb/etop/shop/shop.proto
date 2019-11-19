@@ -317,6 +317,7 @@ service LedgerService {
 service PurchaseOrderService {
     rpc GetPurchaseOrder(cm.IDRequest) returns (PurchaseOrder);
     rpc GetPurchaseOrders(GetPurchaseOrdersRequest) returns (PurchaseOrdersResponse);
+    rpc GetPurchaseOrdersByIDs(cm.IDsRequest) returns (PurchaseOrdersResponse);
     rpc GetPurchaseOrdersByReceiptID(cm.IDRequest) returns (PurchaseOrdersResponse);
     rpc CreatePurchaseOrder(CreatePurchaseOrderRequest) returns (PurchaseOrder);
     rpc UpdatePurchaseOrder(UpdatePurchaseOrderRequest) returns (PurchaseOrder);
