@@ -3,6 +3,8 @@ package pm
 import (
 	"context"
 
+	"etop.vn/api/shopping/customering"
+
 	"etop.vn/api/main/etop"
 	"etop.vn/api/main/inventory"
 	"etop.vn/api/main/ordering"
@@ -17,11 +19,12 @@ import (
 )
 
 type ProcessManager struct {
-	order        ordering.CommandBus
-	affiliate    affiliate.CommandBus
-	receiptQuery receipting.QueryBus
-	inventoryAgg inventory.CommandBus
-	orderQuery   ordering.QueryBus
+	order         ordering.CommandBus
+	affiliate     affiliate.CommandBus
+	receiptQuery  receipting.QueryBus
+	inventoryAgg  inventory.CommandBus
+	orderQuery    ordering.QueryBus
+	customerQuery customering.QueryBus
 }
 
 var (
@@ -34,13 +37,15 @@ func New(
 	receiptQs receipting.QueryBus,
 	inventoryAgg inventory.CommandBus,
 	orderQ ordering.QueryBus,
+	customerQ customering.QueryBus,
 ) *ProcessManager {
 	return &ProcessManager{
-		order:        orderAggr,
-		affiliate:    affiliateAggr,
-		receiptQuery: receiptQs,
-		inventoryAgg: inventoryAgg,
-		orderQuery:   orderQ,
+		order:         orderAggr,
+		affiliate:     affiliateAggr,
+		receiptQuery:  receiptQs,
+		inventoryAgg:  inventoryAgg,
+		orderQuery:    orderQ,
+		customerQuery: customerQ,
 	}
 }
 
@@ -205,13 +210,24 @@ func (p *ProcessManager) validateTotalAmountAndReceivedAmount(
 
 func (p *ProcessManager) ReceiptCreating(ctx context.Context, event *receipting.ReceiptCreatingEvent) error {
 	var orders []*ordering.Order
+	var isIndependentCustomer bool
 	mOrder := make(map[int64]*ordering.Order)
 	receipt := event.Receipt
 	refIDs := event.RefIDs
 	mapRefIDAmount := event.MapRefIDAmount
-
 	if receipt.RefType != receipting.ReceiptRefTypeOrder {
 		return nil
+	}
+
+	getCustomerQuery := &customering.GetCustomerByIDQuery{
+		ID:     receipt.TraderID,
+		ShopID: receipt.ShopID,
+	}
+	if err := p.customerQuery.Dispatch(ctx, getCustomerQuery); err != nil {
+		return err
+	}
+	if getCustomerQuery.Result.Type == customering.CustomerTypeIndependent {
+		isIndependentCustomer = true
 	}
 
 	// List orders depend on refIDs
@@ -225,8 +241,11 @@ func (p *ProcessManager) ReceiptCreating(ctx context.Context, event *receipting.
 	orders = query.Result.Orders
 	for _, order := range orders {
 		mOrder[order.ID] = order
+		if isIndependentCustomer && order.CustomerID == 0 {
+			continue
+		}
 		if order.CustomerID != receipt.TraderID {
-			return cm.Errorf(cm.FailedPrecondition, nil, "Đơn nhập hàng %v không thuộc đối tác đã chọn")
+			return cm.Errorf(cm.FailedPrecondition, nil, "Đơn nhập hàng %v không thuộc đối tác đã chọn", order.Code)
 		}
 	}
 

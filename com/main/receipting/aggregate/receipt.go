@@ -160,11 +160,14 @@ func (a *ReceiptAggregate) UpdateReceipt(
 		Title:       args.Title.String,
 		Description: args.Description.String,
 		LedgerID:    args.LedgerID.Int64,
+		TraderID:    receipt.TraderID,
+		Type:        receipt.Type,
+		RefType:     receipt.RefType,
+		ShopID:      receipt.ShopID,
 	}
 	if receipt.Status == int32(etopmodel.S3Zero) {
 		if args.TraderID.Valid && args.TraderID.Int64 != receipt.TraderID {
 			receiptNeedValidate.TraderID = args.TraderID.Int64
-			//receiptNeedValidate.RefType = args.RefType
 		}
 		receiptNeedValidate.RefType = args.RefType
 		receiptNeedValidate.Amount = args.Amount.Int32
