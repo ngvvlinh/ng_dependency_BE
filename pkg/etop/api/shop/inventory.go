@@ -227,15 +227,17 @@ func (s *InventoryService) GetInventoryVoucher(ctx context.Context, q *GetInvent
 	}
 
 	q.Result = PbShopInventoryVoucher(query.Result)
-	getTrader := &tradering.GetTraderByIDQuery{
-		ID:     q.Result.TraderId,
-		ShopID: shopID,
-	}
-	if err := traderQuery.Dispatch(ctx, getTrader); err != nil {
-		if cm.ErrorCode(err) != cm.NotFound {
-			return err
+	if q.Result.TraderId != 0 {
+		getTrader := &tradering.GetTraderByIDQuery{
+			ID:     q.Result.TraderId,
+			ShopID: shopID,
 		}
-		q.Result.Trader.Deleted = true
+		if err := traderQuery.Dispatch(ctx, getTrader); err != nil {
+			if cm.ErrorCode(err) != cm.NotFound {
+				return err
+			}
+			q.Result.Trader.Deleted = true
+		}
 	}
 	return nil
 }
@@ -283,7 +285,7 @@ func (s *InventoryService) checkValidateListTrader(ctx context.Context, shopID i
 	}
 	for _, inventoryVoucher := range inventoryVouchers {
 		inventory := PbShopInventoryVoucher(inventoryVoucher)
-		if !mapTraderValidate[inventoryVoucher.TraderID] {
+		if !mapTraderValidate[inventoryVoucher.TraderID] && inventoryVoucher.TraderID != 0 {
 			inventory.Trader.Deleted = true
 		}
 		result = append(result, inventory)
