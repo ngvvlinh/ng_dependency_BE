@@ -285,7 +285,11 @@ func (s *InventoryService) checkValidateListTrader(ctx context.Context, shopID i
 	}
 	for _, inventoryVoucher := range inventoryVouchers {
 		inventory := PbShopInventoryVoucher(inventoryVoucher)
-		if !mapTraderValidate[inventoryVoucher.TraderID] && inventoryVoucher.TraderID != 0 {
+		if inventoryVoucher.TraderID == 0 || inventory.Trader == nil {
+			result = append(result, inventory)
+			continue
+		}
+		if !mapTraderValidate[inventoryVoucher.TraderID] {
 			inventory.Trader.Deleted = true
 		}
 		result = append(result, inventory)
