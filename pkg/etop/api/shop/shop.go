@@ -14,6 +14,7 @@ import (
 	"etop.vn/api/main/catalog"
 	"etop.vn/api/main/identity"
 	"etop.vn/api/main/inventory"
+	"etop.vn/api/main/invitation"
 	"etop.vn/api/main/ledgering"
 	"etop.vn/api/main/location"
 	"etop.vn/api/main/ordering"
@@ -209,6 +210,8 @@ var (
 	purchaseOrderQuery   purchaseorder.QueryBus
 	StocktakeQuery       st.QueryBus
 	StocktakeAggregate   st.CommandBus
+	invitationAggregate  invitation.CommandBus
+	invitationQuery      invitation.QueryBus
 )
 
 func Init(
@@ -250,6 +253,8 @@ func Init(
 	summary summary.QueryBus,
 	StocktakeQ st.QueryBus,
 	StocktakeA st.CommandBus,
+	invitationA invitation.CommandBus,
+	invitationQ invitation.QueryBus,
 ) {
 	idempgroup = idemp.NewRedisGroup(rd, PrefixIdemp, 5*60)
 	locationQuery = locationQ
@@ -288,6 +293,8 @@ func Init(
 	purchaseOrderQuery = purchaseOrderQ
 	StocktakeQuery = StocktakeQ
 	StocktakeAggregate = StocktakeA
+	invitationAggregate = invitationA
+	invitationQuery = invitationQ
 }
 
 type MiscService struct{}
@@ -318,6 +325,7 @@ type BrandService struct{}
 type LedgerService struct{}
 type PurchaseOrderService struct{}
 type StocktakeService struct{}
+type InvitationService struct{}
 
 var miscService = &MiscService{}
 var inventoryService = &InventoryService{}
@@ -347,6 +355,7 @@ var brandService = &BrandService{}
 var ledgerService = &LedgerService{}
 var purchaseOrderService = &PurchaseOrderService{}
 var stocktakeService = &StocktakeService{}
+var invitationService = &InvitationService{}
 
 func (s *MiscService) VersionInfo(ctx context.Context, q *VersionInfoEndpoint) error {
 	q.Result = &pbcm.VersionInfoResponse{

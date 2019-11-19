@@ -38,6 +38,11 @@ func (s *UserStore) ByPhone(phone string) *UserStore {
 	return s
 }
 
+func (s *UserStore) ByEmail(email string) *UserStore {
+	s.preds = append(s.preds, s.ft.ByEmail(email))
+	return s
+}
+
 func (s *UserStore) GetUserDB() (*model.User, error) {
 	var user model.User
 	err := s.query().Where(s.preds).ShouldGet(&user)

@@ -10,6 +10,8 @@ import (
 	"syscall"
 	"time"
 
+	"etop.vn/api/main/invitation"
+
 	"etop.vn/api/main/identity"
 	"etop.vn/api/main/ordering"
 	"etop.vn/api/main/receipting"
@@ -23,9 +25,13 @@ import (
 	catalogpm "etop.vn/backend/com/main/catalog/pm"
 	catalogquery "etop.vn/backend/com/main/catalog/query"
 	serviceidentity "etop.vn/backend/com/main/identity"
+	identitypm "etop.vn/backend/com/main/identity/pm"
 	inventoryaggregate "etop.vn/backend/com/main/inventory/aggregate"
 	inventorypm "etop.vn/backend/com/main/inventory/pm"
 	inventoryquery "etop.vn/backend/com/main/inventory/query"
+	invitationaggregate "etop.vn/backend/com/main/invitation/aggregate"
+	invitationpm "etop.vn/backend/com/main/invitation/pm"
+	invitationquery "etop.vn/backend/com/main/invitation/query"
 	ledgeraggregate "etop.vn/backend/com/main/ledgering/aggregate"
 	ledgerpm "etop.vn/backend/com/main/ledgering/pm"
 	ledgerquery "etop.vn/backend/com/main/ledgering/query"
@@ -136,6 +142,8 @@ var (
 	orderQuery   ordering.QueryBus
 
 	identityQuery identity.QueryBus
+
+	invitationQuery invitation.QueryBus
 
 	vtpayClient *vtpayclient.Client
 
@@ -330,6 +338,8 @@ func main() {
 	vtigerAggregate := vtigeraggregate.New(crmDB, configMap, vtigerClient).MessageBus()
 
 	identityQuery = serviceidentity.NewQueryService(db).MessageBus()
+	identityPM := identitypm.New(identityQuery, &invitationQuery)
+	identityPM.RegisterEventHandlers(eventBus)
 	catalogQuery := catalogquery.New(db).MessageBus()
 	catalogAggr := catalogaggregate.New(eventBus, db).MessageBus()
 	catalogPm := catalogpm.New(eventBus, catalogQuery, catalogAggr)
@@ -403,8 +413,13 @@ func main() {
 	orderPM := serviceorderingpm.New(orderAggr.MessageBus(), affiliateCmd, receiptQuery, inventoryAggr, orderQuery, customerQuery)
 	orderPM.RegisterEventHandlers(eventBus)
 
+	invitationAggr := invitationaggregate.NewInvitationAggregate(db, cfg.Invitation.Secret, customerQuery, identityQuery, eventBus).MessageBus()
+	invitationQuery = invitationquery.NewInvitationQuery(db).MessageBus()
+	invitationPM := invitationpm.New(eventBus, invitationQuery, invitationAggr)
+	invitationPM.RegisterEventHandlers(eventBus)
+
 	middleware.Init(cfg.SAdminToken, identityQuery)
-	api.Init(identityAggr, identityQuery, shutdowner, redisStore, authStore, cfg.Email, cfg.SMS)
+	api.Init(eventBus, identityAggr, identityQuery, invitationAggr, invitationQuery, shutdowner, redisStore, authStore, cfg.Email, cfg.SMS)
 	shop.Init(
 		locationBus,
 		catalogQuery,
@@ -443,6 +458,8 @@ func main() {
 		summaryQuery,
 		stocktakeQuery,
 		stocktakeAggr,
+		invitationAggr,
+		invitationQuery,
 	)
 	partner.Init(shutdowner, redisStore, authStore, cfg.URL.Auth)
 	xshop.Init(shutdowner, redisStore, authStore)

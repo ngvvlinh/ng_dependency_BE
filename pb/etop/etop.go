@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"etop.vn/api/main/identity"
-
+	"etop.vn/api/main/invitation"
 	"etop.vn/api/main/location"
 	ordertypes "etop.vn/api/main/ordering/types"
 	notimodel "etop.vn/backend/com/handler/notifier/model"
@@ -801,4 +801,36 @@ func PbCoordinatesToModel(in *Coordinates) *ordertypes.Coordinates {
 		Latitude:  in.Latitude,
 		Longitude: in.Longitude,
 	}
+}
+
+func PbInvitation(m *invitation.Invitation) *Invitation {
+	if m == nil {
+		return nil
+	}
+	var roles []string
+	for _, role := range m.Roles {
+		roles = append(roles, string(role))
+	}
+	return &Invitation{
+		Id:         m.ID,
+		ShopId:     m.AccountID,
+		Email:      m.Email,
+		Roles:      roles,
+		Token:      m.Token,
+		Status:     pbs3.Pb(model.Status3(m.Status)),
+		InvitedBy:  m.InvitedBy,
+		AcceptedAt: common.PbTime(m.AcceptedAt),
+		DeclinedAt: common.PbTime(m.RejectedAt),
+		ExpiredAt:  common.PbTime(m.ExpiresAt),
+		CreatedAt:  common.PbTime(m.CreatedAt),
+		UpdatedAt:  common.PbTime(m.UpdatedAt),
+	}
+}
+
+func PbInvitations(ms []*invitation.Invitation) []*Invitation {
+	res := make([]*Invitation, len(ms))
+	for i, m := range ms {
+		res[i] = PbInvitation(m)
+	}
+	return res
 }

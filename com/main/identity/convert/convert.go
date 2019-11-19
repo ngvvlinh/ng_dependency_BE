@@ -73,14 +73,15 @@ func User(in *model.User) (out *identity.User) {
 		return nil
 	}
 	out = &identity.User{
-		ID:        in.ID,
-		FullName:  in.FullName,
-		ShortName: in.ShortName,
-		Email:     in.Email,
-		Phone:     in.Phone,
-		Status:    etoptypes.Status3(in.Status),
-		CreatedAt: in.CreatedAt,
-		UpdatedAt: in.UpdatedAt,
+		ID:              in.ID,
+		FullName:        in.FullName,
+		ShortName:       in.ShortName,
+		Email:           in.Email,
+		Phone:           in.Phone,
+		Status:          etoptypes.Status3(in.Status),
+		EmailVerifiedAt: in.EmailVerifiedAt,
+		CreatedAt:       in.CreatedAt,
+		UpdatedAt:       in.UpdatedAt,
 	}
 	return
 }

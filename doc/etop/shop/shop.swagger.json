@@ -2122,6 +2122,58 @@
         ]
       }
     },
+    "/api/shop.Invitation/CreateInvitation": {
+      "post": {
+        "operationId": "CreateInvitation",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/shopInvitation"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/shopCreateInvitationRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Invitation"
+        ]
+      }
+    },
+    "/api/shop.Invitation/GetInvitations": {
+      "post": {
+        "operationId": "GetInvitations",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/shopInvitationsResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/shopGetInvitationsRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Invitation"
+        ]
+      }
+    },
     "/api/shop.Ledger/CreateLedger": {
       "post": {
         "operationId": "CreateLedger",
@@ -8405,6 +8457,20 @@
         }
       }
     },
+    "shopCreateInvitationRequest": {
+      "type": "object",
+      "properties": {
+        "email": {
+          "type": "string"
+        },
+        "roles": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
     "shopCreateLedgerRequest": {
       "type": "object",
       "properties": {
@@ -9520,6 +9586,20 @@
         }
       }
     },
+    "shopGetInvitationsRequest": {
+      "type": "object",
+      "properties": {
+        "paging": {
+          "$ref": "#/definitions/cmPaging"
+        },
+        "filters": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/cmFilter"
+          }
+        }
+      }
+    },
     "shopGetLedgersRequest": {
       "type": "object",
       "properties": {
@@ -9930,6 +10010,72 @@
         "quantity": {
           "type": "integer",
           "format": "int32"
+        }
+      }
+    },
+    "shopInvitation": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "shop_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "email": {
+          "type": "string"
+        },
+        "roles": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "token": {
+          "type": "string"
+        },
+        "status": {
+          "$ref": "#/definitions/status3Status"
+        },
+        "invited_by": {
+          "type": "string",
+          "format": "int64"
+        },
+        "accepted_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "declined_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "expired_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "shopInvitationsResponse": {
+      "type": "object",
+      "properties": {
+        "invitations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/shopInvitation"
+          }
+        },
+        "paging": {
+          "$ref": "#/definitions/cmPageInfo"
         }
       }
     },
@@ -12134,6 +12280,9 @@
     },
     {
       "name": "Inventory"
+    },
+    {
+      "name": "Invitation"
     },
     {
       "name": "Ledger"

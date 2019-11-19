@@ -338,3 +338,9 @@ type StocktakeAPI interface {
 	GetStocktakesByIDs(context.Context, *cm.IDsRequest) (*shop.GetStocktakesByIDsResponse, error)
 	GetStocktakes(context.Context, *shop.GetStocktakesRequest) (*shop.GetStocktakesResponse, error)
 }
+
+// +apix:path=/shop.Invitation
+type InvitationAPI interface {
+	CreateInvitation(context.Context, *shop.CreateInvitationRequest) (*shop.Invitation, error)
+	GetInvitations(context.Context, *shop.GetInvitationsRequest) (*shop.InvitationsResponse, error)
+}

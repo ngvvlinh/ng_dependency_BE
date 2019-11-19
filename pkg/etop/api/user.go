@@ -8,7 +8,10 @@ import (
 	"strings"
 	"time"
 
+	"etop.vn/capi"
+
 	"etop.vn/api/main/identity"
+	"etop.vn/api/main/invitation"
 	"etop.vn/backend/cmd/etop-server/config"
 	pbcm "etop.vn/backend/pb/common"
 	pbetop "etop.vn/backend/pb/etop"
@@ -33,13 +36,16 @@ import (
 )
 
 var (
-	idempgroup   *idemp.RedisGroup
-	authStore    auth.Generator
-	enabledEmail bool
-	enabledSMS   bool
-	cfgEmail     EmailConfig
-	identityAggr identity.CommandBus
-	identityQS   identity.QueryBus
+	eventBus            capi.EventBus
+	idempgroup          *idemp.RedisGroup
+	authStore           auth.Generator
+	enabledEmail        bool
+	enabledSMS          bool
+	cfgEmail            EmailConfig
+	identityAggr        identity.CommandBus
+	identityQS          identity.QueryBus
+	invitationAggregate invitation.CommandBus
+	invitationQuery     invitation.QueryBus
 )
 
 const PrefixIdempUser = "IdempUser"
@@ -72,16 +78,22 @@ var userService = &UserService{}
 type EmailConfig = config.EmailConfig
 
 func Init(
+	bus capi.EventBus,
 	identityCommandBus identity.CommandBus,
 	identityQueryBus identity.QueryBus,
+	invitationAggr invitation.CommandBus,
+	invitationQS invitation.QueryBus,
 	sd cmservice.Shutdowner,
 	rd redis.Store,
 	s auth.Generator,
 	_cfgEmail EmailConfig,
 	_cfgSMS sms.Config,
 ) {
+	eventBus = bus
 	identityAggr = identityCommandBus
 	identityQS = identityQueryBus
+	invitationAggregate = invitationAggr
+	invitationQuery = invitationQS
 	authStore = s
 	enabledEmail = _cfgEmail.Enabled
 	enabledSMS = _cfgSMS.Enabled
@@ -130,6 +142,22 @@ func (s *UserService) Register(ctx context.Context, r *RegisterEndpoint) error {
 		}
 	}
 
+	if r.RegisterToken != "" {
+		getInvitationByToken := &invitation.GetInvitationByTokenQuery{
+			Token:  r.RegisterToken,
+			Result: nil,
+		}
+		if err := invitationQuery.Dispatch(ctx, getInvitationByToken); err != nil {
+			return cm.MapError(err).
+				Wrap(cm.NotFound, "Token không hợp lệ").
+				Throw()
+		}
+		invitation := getInvitationByToken.Result
+		if r.Email != invitation.Email {
+			return cm.Errorf(cm.InvalidArgument, nil, "Email gửi lên và email trong token không khớp nhau")
+		}
+	}
+
 	userByPhone, userByEmail, err := s.getUserByPhoneAndByEmail(ctx, phoneNorm.String(), emailNorm.String())
 	if err != nil {
 		return err
@@ -152,6 +180,10 @@ func (s *UserService) Register(ctx context.Context, r *RegisterEndpoint) error {
 			Source:         r.Source.ToModel(),
 		}
 		if err := bus.Dispatch(ctx, cmd); err != nil {
+			return err
+		}
+
+		if err := s.publishUserCreatedEvent(ctx, cmd.Result.User); err != nil {
 			return err
 		}
 
@@ -245,7 +277,24 @@ func (s *UserService) Register(ctx context.Context, r *RegisterEndpoint) error {
 		return cm.Error(cm.Internal, "", err)
 	}
 
+	if err := s.publishUserCreatedEvent(ctx, updateUserCmd.Result.User); err != nil {
+		return err
+	}
+
 	r.Result = createRegisterResponse(updateUserCmd.Result.User)
+	return nil
+}
+
+func (s *UserService) publishUserCreatedEvent(ctx context.Context, user *model.User) error {
+	event := &identity.UserCreatedEvent{
+		UserID:    user.ID,
+		Email:     user.Email,
+		FullName:  user.FullName,
+		ShortName: user.ShortName,
+	}
+	if err := eventBus.Publish(ctx, event); err != nil {
+		return err
+	}
 	return nil
 }
 

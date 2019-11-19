@@ -252,6 +252,17 @@ func (h QueryServiceHandler) HandleGetShopByID(ctx context.Context, msg *GetShop
 	return err
 }
 
+type GetUserByEmailQuery struct {
+	Email string
+
+	Result *User `json:"-"`
+}
+
+func (h QueryServiceHandler) HandleGetUserByEmail(ctx context.Context, msg *GetUserByEmailQuery) (err error) {
+	msg.Result, err = h.inner.GetUserByEmail(msg.GetArgs(ctx))
+	return err
+}
+
 type GetUserByIDQuery struct {
 	UserID int64
 
@@ -293,6 +304,7 @@ func (q *GetAffiliatesByOwnerIDQuery) query()                       {}
 func (q *GetExternalAccountAhamoveQuery) query()                    {}
 func (q *GetExternalAccountAhamoveByExternalIDQuery) query()        {}
 func (q *GetShopByIDQuery) query()                                  {}
+func (q *GetUserByEmailQuery) query()                               {}
 func (q *GetUserByIDQuery) query()                                  {}
 func (q *GetUserByPhoneQuery) query()                               {}
 
@@ -524,6 +536,11 @@ func (q *GetShopByIDQuery) GetArgs(ctx context.Context) (_ context.Context, ID i
 		q.ID
 }
 
+func (q *GetUserByEmailQuery) GetArgs(ctx context.Context) (_ context.Context, email string) {
+	return ctx,
+		q.Email
+}
+
 func (q *GetUserByIDQuery) GetArgs(ctx context.Context) (_ context.Context, _ *GetUserByIDQueryArgs) {
 	return ctx,
 		&GetUserByIDQueryArgs{
@@ -584,6 +601,7 @@ func (h QueryServiceHandler) RegisterHandlers(b interface {
 	b.AddHandler(h.HandleGetExternalAccountAhamove)
 	b.AddHandler(h.HandleGetExternalAccountAhamoveByExternalID)
 	b.AddHandler(h.HandleGetShopByID)
+	b.AddHandler(h.HandleGetUserByEmail)
 	b.AddHandler(h.HandleGetUserByID)
 	b.AddHandler(h.HandleGetUserByPhone)
 	return QueryBus{b}

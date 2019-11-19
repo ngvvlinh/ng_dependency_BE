@@ -114,6 +114,11 @@ var ACL = map[string]*permission.PermissionDecl{
 	"etop.Address/UpdateAddress": {Type: CurUsr},
 	"etop.Address/RemoveAddress": {Type: CurUsr},
 
+	"etop.Invitation/AcceptInvitation":     {Type: CurUsr},
+	"etop.Invitation/RejectInvitation":     {Type: CurUsr},
+	"etop.Invitation/GetInvitationByToken": {Type: Public},
+	"etop.Invitation/GetInvitations":       {Type: CurUsr},
+
 	//-- external: partner --//
 
 	"ext/partner.Misc/CurrentAccount":   {Type: Partner, Auth: APIKey},
@@ -539,4 +544,8 @@ var ACL = map[string]*permission.PermissionDecl{
 	"shop.Stocktake/GetStocktake":       {Type: Shop},
 	"shop.Stocktake/GetStocktakesByIDs": {Type: Shop},
 	"shop.Stocktake/GetStocktakes":      {Type: Shop},
+
+	// Invitation:
+	"shop.Invitation/CreateInvitation": {Type: Shop},
+	"shop.Invitation/GetInvitations":   {Type: Shop},
 }

@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"strings"
 
+	"etop.vn/api/main/invitation"
 	crmsyncconfig "etop.vn/backend/cmd/supporting/crm-sync-service/config"
 	"etop.vn/backend/com/supporting/crm/vtiger/mapping"
 	cm "etop.vn/backend/pkg/common"
@@ -90,6 +91,8 @@ type Config struct {
 
 	Vtiger crmsyncconfig.Vtiger `yaml:"vtiger"`
 	Vht    crmsyncconfig.Vht    `yaml:"vht"`
+
+	Invitation invitation.Config
 }
 
 // Default ...
@@ -138,6 +141,10 @@ func Default() Config {
 		ThirdPartyHost: "https://etop.d.etop.vn",
 		Vtiger:         crmsyncconfig.DefaultVtiger(),
 		Vht:            crmsyncconfig.DefaultVht(),
+
+		Invitation: invitation.Config{
+			Secret: "IBVEhECSHtJiBoxQKOVafHW58zt9qRK7",
+		},
 	}
 	cfg.Postgres.Database = "etop_dev"
 	cfg.PostgresAffiliate.Database = "etop_dev"

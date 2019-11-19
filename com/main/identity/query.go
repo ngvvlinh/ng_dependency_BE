@@ -47,6 +47,10 @@ func (q *QueryService) GetUserByPhone(ctx context.Context, phone string) (*ident
 	return q.userStore(ctx).ByPhone(phone).GetUser()
 }
 
+func (q *QueryService) GetUserByEmail(ctx context.Context, email string) (*identity.User, error) {
+	return q.userStore(ctx).ByEmail(email).GetUser()
+}
+
 func (q *QueryService) GetExternalAccountAhamove(ctx context.Context, args *identity.GetExternalAccountAhamoveArgs) (*identity.ExternalAccountAhamove, error) {
 	phone := args.Phone
 	return q.xAccountAhamove(ctx).Phone(phone).OwnerID(args.OwnerID).GetXAccountAhamove()

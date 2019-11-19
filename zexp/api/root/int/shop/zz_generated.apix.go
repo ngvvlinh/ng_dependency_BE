@@ -1016,6 +1016,57 @@ func (s *InventoryServiceServer) parseRoute(path string) (reqMsg proto.Message, 
 	}
 }
 
+type InvitationServiceServer struct {
+	InvitationAPI
+}
+
+func NewInvitationServiceServer(svc InvitationAPI) Server {
+	return &InvitationServiceServer{
+		InvitationAPI: svc,
+	}
+}
+
+const InvitationServicePathPrefix = "/shop.Invitation/"
+
+func (s *InvitationServiceServer) PathPrefix() string {
+	return InvitationServicePathPrefix
+}
+
+func (s *InvitationServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
+	ctx := req.Context()
+	serve, err := httprpc.ParseRequestHeader(req)
+	if err != nil {
+		httprpc.WriteError(ctx, resp, err)
+		return
+	}
+	reqMsg, exec, err := s.parseRoute(req.URL.Path)
+	if err != nil {
+		httprpc.WriteError(ctx, resp, err)
+		return
+	}
+	serve(ctx, resp, req, reqMsg, exec)
+}
+
+func (s *InvitationServiceServer) parseRoute(path string) (reqMsg proto.Message, _ httprpc.ExecFunc, _ error) {
+	switch path {
+	case "/shop.Invitation/CreateInvitation":
+		msg := new(shop.CreateInvitationRequest)
+		fn := func(ctx context.Context) (proto.Message, error) {
+			return s.InvitationAPI.CreateInvitation(ctx, msg)
+		}
+		return msg, fn, nil
+	case "/shop.Invitation/GetInvitations":
+		msg := new(shop.GetInvitationsRequest)
+		fn := func(ctx context.Context) (proto.Message, error) {
+			return s.InvitationAPI.GetInvitations(ctx, msg)
+		}
+		return msg, fn, nil
+	default:
+		msg := fmt.Sprintf("no handler for path %q", path)
+		return nil, nil, httprpc.BadRouteError(msg, "POST", path)
+	}
+}
+
 type LedgerServiceServer struct {
 	LedgerAPI
 }

@@ -3,6 +3,7 @@ package api
 import (
 	"context"
 
+	"etop.vn/api/main/invitation"
 	"etop.vn/api/main/location"
 	servicelocation "etop.vn/backend/com/main/location"
 	pbcm "etop.vn/backend/pb/common"
@@ -29,6 +30,10 @@ func init() {
 		addressService.GetAddresses,
 		addressService.UpdateAddress,
 		addressService.RemoveAddress,
+		invitationService.AcceptInvitation,
+		invitationService.RejectInvitation,
+		invitationService.GetInvitationByToken,
+		invitationService.GetInvitations,
 	)
 }
 
@@ -39,11 +44,13 @@ type MiscService struct{}
 type LocationService struct{}
 type BankService struct{}
 type AddressService struct{}
+type InvitationService struct{}
 
 var miscService = &MiscService{}
 var locationService = &LocationService{}
 var bankService = &BankService{}
 var addressService = &AddressService{}
+var invitationService = &InvitationService{}
 
 func (s *MiscService) VersionInfo(ctx context.Context, q *VersionInfoEndpoint) error {
 	q.Result = &pbcm.VersionInfoResponse{
@@ -225,5 +232,59 @@ func (s *AddressService) RemoveAddress(ctx context.Context, q *RemoveAddressEndp
 		return err
 	}
 	q.Result = &pbcm.Empty{}
+	return nil
+}
+
+func (s *InvitationService) AcceptInvitation(ctx context.Context, q *AcceptInvitationEndpoint) error {
+	cmd := &invitation.AcceptInvitationCommand{
+		UserID: q.Context.UserID,
+		Token:  q.Token,
+	}
+	if err := invitationAggregate.Dispatch(ctx, cmd); err != nil {
+		return err
+	}
+
+	q.Result = &pbcm.UpdatedResponse{Updated: int32(cmd.Result)}
+	return nil
+}
+
+func (s *InvitationService) RejectInvitation(ctx context.Context, q *RejectInvitationEndpoint) error {
+	cmd := &invitation.AcceptInvitationCommand{
+		UserID: q.Context.UserID,
+		Token:  q.Token,
+	}
+	if err := invitationAggregate.Dispatch(ctx, cmd); err != nil {
+		return err
+	}
+
+	q.Result = &pbcm.UpdatedResponse{Updated: int32(cmd.Result)}
+	return nil
+}
+
+func (s *InvitationService) GetInvitationByToken(ctx context.Context, q *GetInvitationByTokenEndpoint) error {
+	query := &invitation.GetInvitationByTokenQuery{
+		Token: q.Token,
+	}
+	if err := invitationQuery.Dispatch(ctx, query); err != nil {
+		return err
+	}
+	q.Result = pbetop.PbInvitation(query.Result)
+	return nil
+}
+
+func (s *InvitationService) GetInvitations(ctx context.Context, q *GetInvitationsEndpoint) error {
+	paging := q.Paging.CMPaging()
+	query := &invitation.ListInvitationsByEmailQuery{
+		Email:   q.Context.User.Email,
+		Paging:  *paging,
+		Filters: pbcm.ToFilters(q.Filters),
+	}
+	if err := invitationQuery.Dispatch(ctx, query); err != nil {
+		return err
+	}
+	q.Result = &pbetop.InvitationsResponse{
+		Invitations: pbetop.PbInvitations(query.Result.Invitations),
+		Paging:      pbcm.PbPageInfo(paging, query.Result.Count),
+	}
 	return nil
 }

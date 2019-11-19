@@ -342,6 +342,41 @@ service PurchaseOrderService {
     rpc CancelPurchaseOrder(CancelPurchaseOrderRequest) returns (cm.UpdatedResponse);
 }
 
+service InvitationService {
+    rpc CreateInvitation(CreateInvitationRequest) returns (Invitation);
+    rpc GetInvitations(GetInvitationsRequest) returns (InvitationsResponse);
+}
+
+message Invitation {
+    optional int64 id = 1 [(gogoproto.nullable)=false];
+    optional int64 shop_id = 2 [(gogoproto.nullable)=false];
+    optional string email = 3 [(gogoproto.nullable)=false];
+    repeated string roles = 4 [(gogoproto.nullable)=false];
+    optional string token = 5 [(gogoproto.nullable)=false];
+    optional status3.Status status = 6 [(gogoproto.nullable)=false];
+    optional int64 invited_by = 7 [(gogoproto.nullable)=false];
+    optional google.protobuf.Timestamp accepted_at = 8;
+    optional google.protobuf.Timestamp declined_at = 9;
+    optional google.protobuf.Timestamp expired_at = 10;
+    optional google.protobuf.Timestamp created_at = 11;
+    optional google.protobuf.Timestamp updated_at = 12;
+}
+
+message InvitationsResponse {
+    repeated Invitation invitations = 1;
+    optional cm.PageInfo paging = 2;
+}
+
+message GetInvitationsRequest {
+    optional cm.Paging paging = 1;
+    repeated cm.Filter filters = 2;
+}
+
+message CreateInvitationRequest {
+    optional string email = 1 [(gogoproto.nullable)=false];
+    repeated string roles = 2 [(gogoproto.nullable)=false];
+}
+
 message PurchaseOrder {
     optional int64 id = 1 [(gogoproto.nullable)=false];
     optional int64 shop_id = 2 [(gogoproto.nullable)=false];

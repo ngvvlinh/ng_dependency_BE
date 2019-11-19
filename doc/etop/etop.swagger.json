@@ -290,6 +290,116 @@
         ]
       }
     },
+    "/api/etop.Invitation/AcceptInvitation": {
+      "post": {
+        "operationId": "AcceptInvitation",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/cmUpdatedResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/etopAcceptInvitationRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Invitation"
+        ]
+      }
+    },
+    "/api/etop.Invitation/GetInvitationByToken": {
+      "post": {
+        "summary": "SessionInfo",
+        "description": "Return current session info.",
+        "operationId": "GetInvitationByToken",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/etopInvitation"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/etopGetInvitationByTokenRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Invitation"
+        ]
+      }
+    },
+    "/api/etop.Invitation/GetInvitations": {
+      "post": {
+        "summary": "SwitchAccount",
+        "description": "Response error if the user does not have permission to the requested account.",
+        "operationId": "GetInvitations",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/etopInvitationsResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/etopGetInvitationsRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Invitation"
+        ]
+      }
+    },
+    "/api/etop.Invitation/RejectInvitation": {
+      "post": {
+        "summary": "Login",
+        "description": "Log the user in and generate access token.",
+        "operationId": "RejectInvitation",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/cmUpdatedResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/etopRejectInvitationRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Invitation"
+        ]
+      }
+    },
     "/api/etop.Location/GetDistricts": {
       "post": {
         "summary": "Login",
@@ -1173,6 +1283,14 @@
         }
       }
     },
+    "etopAcceptInvitationRequest": {
+      "type": "object",
+      "properties": {
+        "token": {
+          "type": "string"
+        }
+      }
+    },
     "etopAccessTokenResponse": {
       "type": "object",
       "properties": {
@@ -1726,6 +1844,28 @@
         }
       }
     },
+    "etopGetInvitationByTokenRequest": {
+      "type": "object",
+      "properties": {
+        "token": {
+          "type": "string"
+        }
+      }
+    },
+    "etopGetInvitationsRequest": {
+      "type": "object",
+      "properties": {
+        "paging": {
+          "$ref": "#/definitions/cmPaging"
+        },
+        "filters": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/cmFilter"
+          }
+        }
+      }
+    },
     "etopGetProvincesByBankResquest": {
       "type": "object",
       "properties": {
@@ -1784,6 +1924,72 @@
           "items": {
             "$ref": "#/definitions/etopWard"
           }
+        }
+      }
+    },
+    "etopInvitation": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "shop_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "email": {
+          "type": "string"
+        },
+        "roles": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "token": {
+          "type": "string"
+        },
+        "status": {
+          "$ref": "#/definitions/status3Status"
+        },
+        "invited_by": {
+          "type": "string",
+          "format": "int64"
+        },
+        "accepted_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "declined_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "expired_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "etopInvitationsResponse": {
+      "type": "object",
+      "properties": {
+        "invitations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/etopInvitation"
+          }
+        },
+        "paging": {
+          "$ref": "#/definitions/cmPageInfo"
         }
       }
     },
@@ -2076,6 +2282,14 @@
       "required": [
         "user"
       ]
+    },
+    "etopRejectInvitationRequest": {
+      "type": "object",
+      "properties": {
+        "token": {
+          "type": "string"
+        }
+      }
     },
     "etopRemoveUserFromCurrentAccountRequest": {
       "type": "object"
@@ -2655,6 +2869,9 @@
     },
     {
       "name": "Bank"
+    },
+    {
+      "name": "Invitation"
     },
     {
       "name": "Location"

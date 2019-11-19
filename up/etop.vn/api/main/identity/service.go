@@ -41,6 +41,8 @@ type QueryService interface {
 
 	GetUserByPhone(ctx context.Context, phone string) (*User, error)
 
+	GetUserByEmail(ctx context.Context, email string) (*User, error)
+
 	// -- ExternalAccountAhamove -- //
 	GetExternalAccountAhamove(context.Context, *GetExternalAccountAhamoveArgs) (*ExternalAccountAhamove, error)
 

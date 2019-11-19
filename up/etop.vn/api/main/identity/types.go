@@ -60,6 +60,8 @@ type User struct {
 
 	Status etoptypes.Status3 // 1: actual user, 0: stub, -1: disabled
 
+	EmailVerifiedAt time.Time
+
 	CreatedAt time.Time
 	UpdatedAt time.Time
 	RefUserID int64
@@ -100,6 +102,14 @@ type AccountCreatedEvent struct {
 	meta.EventMeta
 	ShopID int64
 	UserID int64
+}
+
+type UserCreatedEvent struct {
+	meta.EventMeta
+	UserID    int64
+	Email     string
+	FullName  string
+	ShortName string
 }
 
 type GetCustomersByShop struct {

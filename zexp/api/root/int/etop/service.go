@@ -125,3 +125,11 @@ type AddressAPI interface {
 
 	RemoveAddress(context.Context, *cm.IDRequest) (*cm.Empty, error)
 }
+
+// +apix:path=/etop.Invitation
+type InvitationAPI interface {
+	AcceptInvitation(context.Context, *pbetop.AcceptInvitationRequest) (*cm.UpdatedResponse, error)
+	RejectInvitation(context.Context, *pbetop.RejectInvitationRequest) (*cm.UpdatedResponse, error)
+	GetInvitationByToken(context.Context, *pbetop.GetInvitationByTokenRequest) (*pbetop.Invitation, error)
+	GetInvitations(context.Context, *pbetop.GetInvitationsRequest) (*pbetop.InvitationsResponse, error)
+}

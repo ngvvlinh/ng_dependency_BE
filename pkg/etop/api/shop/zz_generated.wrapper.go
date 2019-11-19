@@ -3785,6 +3785,104 @@ func (s wrapInventoryService) UpdateInventoryVoucher(ctx context.Context, req *a
 	return resp, nil
 }
 
+func WrapInvitationService(s *InvitationService) api.InvitationService {
+	return wrapInvitationService{s: s}
+}
+
+type wrapInvitationService struct {
+	s *InvitationService
+}
+
+type CreateInvitationEndpoint struct {
+	*api.CreateInvitationRequest
+	Result  *api.Invitation
+	Context claims.ShopClaim
+}
+
+func (s wrapInvitationService) CreateInvitation(ctx context.Context, req *api.CreateInvitationRequest) (resp *api.Invitation, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "shop.Invitation/CreateInvitation"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:     ctx,
+		RequireAuth: true,
+		RequireShop: true,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &CreateInvitationEndpoint{CreateInvitationRequest: req}
+	query.Context.Claim = session.Claim
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = s.s.CreateInvitation(ctx, query)
+	resp = query.Result
+	if err != nil {
+		return nil, err
+	}
+	if resp == nil {
+		return nil, common.Error(common.Internal, "", nil).Log("nil response")
+	}
+	errs = cmwrapper.HasErrors(resp)
+	return resp, nil
+}
+
+type GetInvitationsEndpoint struct {
+	*api.GetInvitationsRequest
+	Result  *api.InvitationsResponse
+	Context claims.ShopClaim
+}
+
+func (s wrapInvitationService) GetInvitations(ctx context.Context, req *api.GetInvitationsRequest) (resp *api.InvitationsResponse, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "shop.Invitation/GetInvitations"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:     ctx,
+		RequireAuth: true,
+		RequireShop: true,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &GetInvitationsEndpoint{GetInvitationsRequest: req}
+	query.Context.Claim = session.Claim
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = s.s.GetInvitations(ctx, query)
+	resp = query.Result
+	if err != nil {
+		return nil, err
+	}
+	if resp == nil {
+		return nil, common.Error(common.Internal, "", nil).Log("nil response")
+	}
+	errs = cmwrapper.HasErrors(resp)
+	return resp, nil
+}
+
 func WrapLedgerService(s *LedgerService) api.LedgerService {
 	return wrapLedgerService{s: s}
 }
