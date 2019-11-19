@@ -219,7 +219,7 @@ func (s *OrderService) CancelOrder(ctx context.Context, q *CancelOrderEndpoint) 
 }
 
 func (s *OrderService) cancelOrder(ctx context.Context, q *CancelOrderEndpoint) (*CancelOrderEndpoint, error) {
-	resp, err := logicorder.CancelOrder(ctx, q.Context.Shop.ID, q.Context.AuthPartnerID, q.OrderId, q.CancelReason)
+	resp, err := logicorder.CancelOrder(ctx, q.Context.Shop.ID, q.Context.AuthPartnerID, q.OrderId, q.CancelReason, q.AutoInventoryVoucher)
 	q.Result = resp
 	return q, err
 }

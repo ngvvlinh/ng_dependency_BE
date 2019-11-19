@@ -136,7 +136,7 @@ func CreateAndConfirmOrder(ctx context.Context, accountID int64, shopClaim *clai
 	defer func() {
 		if _err != nil {
 			// always cancel order if confirm unsuccessfully
-			_, err := logicorder.CancelOrder(ctx, shopClaim.Shop.ID, shopClaim.AuthPartnerID, orderID, fmt.Sprintf("Tạo đơn không thành công: %v", err))
+			_, err := logicorder.CancelOrder(ctx, shopClaim.Shop.ID, shopClaim.AuthPartnerID, orderID, fmt.Sprintf("Tạo đơn không thành công: %v", err), "")
 			if err != nil {
 				ll.Error("error cancelling order", l.Error(err))
 			}
@@ -202,7 +202,7 @@ func CancelOrder(ctx context.Context, shopID int64, r *pbexternal.CancelOrderReq
 		orderID = order.ID
 	}
 
-	resp, err := logicorder.CancelOrder(ctx, shopID, 0, orderID, r.CancelReason)
+	resp, err := logicorder.CancelOrder(ctx, shopID, 0, orderID, r.CancelReason, "")
 	if err != nil {
 		return nil, err
 	}

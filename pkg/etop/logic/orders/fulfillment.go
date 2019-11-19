@@ -233,7 +233,7 @@ func ConfirmOrderAndCreateFulfillments(ctx context.Context, shop *model.Shop, pa
 			order.ShopShipping.ShippingProvider != model.TypeGHTK {
 			go func() {
 				time.Sleep(5 * time.Minute)
-				_, err := CancelOrder(ctx, shop.ID, partnerID, order.ID, "Đơn hàng TEST, tự động huỷ")
+				_, err := CancelOrder(ctx, shop.ID, partnerID, order.ID, "Đơn hàng TEST, tự động huỷ", "")
 				if err != nil {
 					ll.Error("Can not cancel order on sandbox", l.Error(err))
 				}

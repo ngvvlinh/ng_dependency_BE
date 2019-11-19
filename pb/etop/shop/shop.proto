@@ -847,6 +847,7 @@ message CreateFulfillmentsForOrderRequest {
 message CancelOrderRequest {
     optional int64  order_id = 1 [(gogoproto.nullable)=false];
     optional string cancel_reason = 2 [(gogoproto.nullable)=false];
+    optional string auto_inventory_voucher = 3 [(gogoproto.nullable)=false];
 }
 
 message CancelOrdersRequest {

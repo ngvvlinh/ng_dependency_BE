@@ -77,6 +77,11 @@ func (s *InventoryVoucherStore) RefType(refType string) *InventoryVoucherStore {
 	return s
 }
 
+func (s *InventoryVoucherStore) Type(inventoryVoucherType string) *InventoryVoucherStore {
+	s.preds = append(s.preds, s.ft.ByType(inventoryVoucherType))
+	return s
+}
+
 func (s *InventoryVoucherStore) RefIDs(ids ...int64) *InventoryVoucherStore {
 	s.preds = append(s.preds, sq.PrefixedIn(&s.ft.prefix, "ref_id", ids))
 	return s

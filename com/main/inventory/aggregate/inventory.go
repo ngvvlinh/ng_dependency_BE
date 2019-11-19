@@ -47,7 +47,7 @@ func (q *InventoryAggregate) CreateInventoryVoucher(ctx context.Context, Oversto
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing value requirement")
 	}
 	if inventoryVoucher.RefID != 0 {
-		inventoryVoucherRefIDs, err := q.InventoryVoucherStore(ctx).ShopID(inventoryVoucher.ShopID).RefID(inventoryVoucher.RefID).ListInventoryVoucher()
+		inventoryVoucherRefIDs, err := q.InventoryVoucherStore(ctx).ShopID(inventoryVoucher.ShopID).Type(string(inventoryVoucher.Type)).RefID(inventoryVoucher.RefID).ListInventoryVoucher()
 		if err != nil {
 			return nil, err
 		}
@@ -485,8 +485,8 @@ func validateInventoryVoucherItem(args *inventory.InventoryVoucherItem) error {
 func checkInventoryVoucherRefType(inventoryVoucher *inventory.InventoryVoucher) error {
 	switch inventoryVoucher.RefType {
 	case inventory.RefTypeOrder:
-		if inventoryVoucher.Type != inventory.InventoryVoucherTypeOut {
-			return cm.Error(cm.InvalidArgument, "'type' không đúng. Bán hàng chỉ có thể là 'out'", nil)
+		if inventoryVoucher.Type != inventory.InventoryVoucherTypeIn && inventoryVoucher.Type != inventory.InventoryVoucherTypeOut {
+			return cm.Error(cm.InvalidArgument, "'type' không đúng. Bán hàng chỉ có thể là 'in' hoặc 'out'", nil)
 		}
 		inventoryVoucher.RefName = inventory.RefNameOrder
 	case inventory.RefTypeStockTake:

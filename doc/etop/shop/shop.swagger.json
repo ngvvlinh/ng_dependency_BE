@@ -7971,6 +7971,9 @@
         },
         "cancel_reason": {
           "type": "string"
+        },
+        "auto_inventory_voucher": {
+          "type": "string"
         }
       }
     },

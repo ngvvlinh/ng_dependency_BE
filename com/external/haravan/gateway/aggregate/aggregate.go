@@ -271,7 +271,7 @@ func (a *Aggregate) CancelOrder(ctx context.Context, args *gateway.CancelOrderRe
 	ffm := ffmQuery.Result
 	orderID := ffm.OrderID
 
-	_, err := logicorder.CancelOrder(ctx, args.EtopShopID, 0, orderID, "Yêu cầu hủy đơn hàng")
+	_, err := logicorder.CancelOrder(ctx, args.EtopShopID, 0, orderID, "Yêu cầu hủy đơn hàng", "")
 	if err != nil {
 		return nil, err
 	}

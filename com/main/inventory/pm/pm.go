@@ -39,6 +39,7 @@ func (m *ProcessManager) RegisterEventHandlers(eventBus bus.EventRegistry) {
 	eventBus.AddEventListener(m.OrderConfirmingEvent)
 	eventBus.AddEventListener(m.OrderConfirmedEvent)
 	eventBus.AddEventListener(m.StocktakeConfirmed)
+	eventBus.AddEventListener(m.OrderCancelledEvent)
 }
 
 func (m *ProcessManager) PurchaseOrderConfirmed(ctx context.Context, event *purchaseorder.PurchaseOrderConfirmedEvent) error {
@@ -212,6 +213,48 @@ func (p *ProcessManager) StocktakeConfirmed(ctx context.Context, event *stocktak
 					return err
 				}
 			}
+		}
+	}
+	return nil
+}
+
+func (p *ProcessManager) OrderCancelledEvent(ctx context.Context, event *ordering.OrderCancelledEvent) error {
+	if !event.AutoInventoryVoucher.ValidateAutoInventoryVoucher() {
+		return nil
+	}
+	// Create inventory voucher
+	inventoryVoucherLines := []*inventory.InventoryVoucherItem{}
+	for _, value := range event.Lines {
+		inventoryVoucherLines = append(inventoryVoucherLines, &inventory.InventoryVoucherItem{
+			VariantID: value.VariantId,
+			Quantity:  value.Quantity,
+		})
+	}
+
+	cmdCreate := &inventory.CreateInventoryVoucherCommand{
+		Overstock: false,
+		ShopID:    event.ShopID,
+		Title:     "Nhập kho khi hủy đơn hàng",
+		RefID:     event.OrderID,
+		RefType:   inventory.RefTypeOrder,
+		TraderID:  event.CustomerID,
+		Type:      inventory.InventoryVoucherTypeIn,
+		Note:      "Tạo tự động khi hủy đơn hàng",
+		Lines:     inventoryVoucherLines,
+	}
+	err := p.inventoryAgg.Dispatch(ctx, cmdCreate)
+	if err != nil {
+		return err
+	}
+	if event.AutoInventoryVoucher == inventory.AutoCreateAndConfirmInventory {
+		cmdConfirm := &inventory.ConfirmInventoryVoucherCommand{
+			ShopID: event.ShopID,
+			ID:     cmdCreate.Result.ID,
+			Result: nil,
+		}
+		err = p.inventoryAgg.Dispatch(ctx, cmdConfirm)
+		if err != nil {
+			return err
 		}
 	}
 	return nil

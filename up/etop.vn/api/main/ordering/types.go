@@ -182,3 +182,12 @@ type OrderConfirmedEvent struct {
 	AutoInventoryVoucher inventory.AutoInventoryVoucher
 	UpdatedBy            int64
 }
+
+type OrderCancelledEvent struct {
+	OrderID              int64
+	ShopID               int64
+	Lines                []*types.ItemLine
+	CustomerID           int64
+	AutoInventoryVoucher inventory.AutoInventoryVoucher
+	UpdatedBy            int64
+}

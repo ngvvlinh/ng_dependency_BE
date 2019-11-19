@@ -7,6 +7,10 @@ import (
 	"strings"
 	"time"
 
+	"etop.vn/api/main/inventory"
+	"etop.vn/api/main/ordering"
+	ordertypes "etop.vn/api/main/ordering/types"
+
 	"etop.vn/api/shopping/addressing"
 	"etop.vn/api/shopping/customering"
 	"etop.vn/backend/pb/etop/etc/gender"
@@ -1017,7 +1021,7 @@ func PrepareOrder(ctx context.Context, shopID int64, m *pborder.CreateOrderReque
 	return order, nil
 }
 
-func CancelOrder(ctx context.Context, shopID int64, authPartnerID int64, orderID int64, cancelReason string) (*pborder.OrderWithErrorsResponse, error) {
+func CancelOrder(ctx context.Context, shopID int64, authPartnerID int64, orderID int64, cancelReason string, autoInventoryVoucher string) (*pborder.OrderWithErrorsResponse, error) {
 	getOrderQuery := &ordermodelx.GetOrderQuery{
 		ShopID:             shopID,
 		PartnerID:          authPartnerID,
@@ -1055,6 +1059,10 @@ func CancelOrder(ctx context.Context, shopID int64, authPartnerID int64, orderID
 		return nil, err
 	}
 
+	if err := RaiseOrderCancelledEvent(ctx, shopID, inventory.AutoInventoryVoucher(autoInventoryVoucher), order); err != nil {
+		ll.Error("RaiseOrderCancelledEvent", l.Error(err))
+	}
+
 	// fulfillment errors when canceling order, it will appear in response
 	var errs []error
 	fulfillments := getOrderQuery.Result.Fulfillments
@@ -1078,6 +1086,34 @@ func CancelOrder(ctx context.Context, shopID int64, authPartnerID int64, orderID
 		FulfillmentErrors: pbcm.PbErrors(errs),
 	}
 	return resp, nil
+}
+
+func RaiseOrderCancelledEvent(ctx context.Context, shopID int64, autoInventoryVoucher inventory.AutoInventoryVoucher, order *ordermodel.Order) error {
+	orderLines := []*ordertypes.ItemLine{}
+	for _, line := range order.Lines {
+		if line.VariantID != 0 {
+			_line := &ordertypes.ItemLine{
+				OrderId:    line.OrderID,
+				Quantity:   int32(line.Quantity),
+				ProductId:  line.ProductID,
+				VariantId:  line.VariantID,
+				IsOutside:  line.IsOutsideEtop,
+				TotalPrice: int32(line.TotalLineAmount),
+			}
+			orderLines = append(orderLines, _line)
+		}
+	}
+	event := &ordering.OrderCancelledEvent{
+		OrderID:              order.ID,
+		ShopID:               shopID,
+		Lines:                orderLines,
+		CustomerID:           order.CustomerID,
+		AutoInventoryVoucher: autoInventoryVoucher,
+	}
+	if err := eventBus.Publish(ctx, event); err != nil {
+		return err
+	}
+	return nil
 }
 
 var reSubdomain = regexp.MustCompile("^[a-z0-9]([a-z0-9-]{0,126}[a-z0-9])?$")
