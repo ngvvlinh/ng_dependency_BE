@@ -88,9 +88,11 @@ func Convert_api_PurchaseOrderLine_To_core_PurchaseOrderLine(in *PurchaseOrderLi
 		return nil
 	}
 	return &purchaseorder.PurchaseOrderLine{
-		VariantID: in.VariantId,
-		Quantity:  in.Quantity,
-		Price:     in.Price,
+		ImageUrl:    in.ImageUrl,
+		ProductName: in.ProductName,
+		VariantID:   in.VariantId,
+		Quantity:    in.Quantity,
+		Price:       in.Price,
 	}
 }
 

@@ -207,19 +207,13 @@ func (a *PurchaseOrderAggregate) getLinesInPurchaseOrder(ctx context.Context, li
 func fillPOLineInfo(line *purchaseorder.PurchaseOrderLine, variant *catalog.ShopVariant, product *catalog.ShopProduct) {
 	line.VariantID = variant.VariantID
 	line.ProductID = product.ProductID
-	line.ProductName = product.Name
+	if line.ProductName == "" {
+		line.ProductName = product.Name
+	}
 	line.Code = variant.Code
 	var attributes []*catalog.Attribute
-	if variant.ImageURLs != nil {
-		if len(variant.ImageURLs) > 0 {
-			line.ImageUrl = variant.ImageURLs[0]
-		}
-	} else {
-		if product.ImageURLs != nil {
-			if len(product.ImageURLs) > 0 {
-				line.ImageUrl = product.ImageURLs[0]
-			}
-		}
+	if line.ImageUrl == "" {
+		line.ImageUrl = getImage(variant, product)
 	}
 	for _, value := range variant.Attributes {
 		attribute := &catalog.Attribute{
@@ -229,7 +223,16 @@ func fillPOLineInfo(line *purchaseorder.PurchaseOrderLine, variant *catalog.Shop
 		attributes = append(attributes, attribute)
 	}
 	line.Attributes = attributes
+}
 
+func getImage(variant *catalog.ShopVariant, product *catalog.ShopProduct) string {
+	if variant.ImageURLs != nil {
+		return variant.ImageURLs[0]
+	}
+	if product.ImageURLs != nil {
+		return product.ImageURLs[0]
+	}
+	return ""
 }
 
 func (a *PurchaseOrderAggregate) checkPurchaseOrder(
