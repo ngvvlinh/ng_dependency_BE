@@ -37,6 +37,7 @@ type InventoryVoucher struct {
 	TotalAmount  int32
 	Type         string
 	Lines        []*InventoryVoucherItem
+	VariantIDs   []int64
 	RefID        int64
 	RefType      string
 	RefName      string

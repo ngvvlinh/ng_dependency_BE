@@ -7,7 +7,9 @@ var SortInventoryVoucher = map[string]string{
 	"created_at": "created_at",
 	"updated_at": "updated_at",
 }
+
 var FilterInventoryVoucher = sqlstore.FilterWhitelist{
-	Equals: []string{"trader_id", "variant_id", "type", "ref_name", "code"},
+	Equals: []string{"trader_id", "type", "ref_name", "code"},
 	Status: []string{"status"},
+	Arrays: []string{"variant_ids"},
 }

@@ -87,14 +87,19 @@ func (s *InventoryVoucherStore) RefIDs(ids ...int64) *InventoryVoucherStore {
 	return s
 }
 
-func (s *InventoryVoucherStore) UpdateInventoryVoucher(inventory *model.InventoryVoucher) error {
+func (s *InventoryVoucherStore) UpdateInventoryVoucher(inventoryVoucher *model.InventoryVoucher) error {
 	query := s.query().Where(s.preds)
-	return query.ShouldUpdate(inventory)
+	return query.ShouldUpdate(inventoryVoucher)
 }
 
-func (s *InventoryVoucherStore) UpdateInventoryVoucherAllDB(inventory *model.InventoryVoucher) error {
+func (s *InventoryVoucherStore) UpdateInventoryVoucherAllDB(inventoryVoucher *model.InventoryVoucher) error {
 	query := s.query().Where(s.preds)
-	return query.UpdateAll().ShouldUpdate(inventory)
+	var variant_ids []int64
+	for _, value := range inventoryVoucher.Lines {
+		variant_ids = append(variant_ids, value.VariantID)
+	}
+	inventoryVoucher.VariantIDs = variant_ids
+	return query.UpdateAll().ShouldUpdate(inventoryVoucher)
 }
 
 func (s *InventoryVoucherStore) UpdateInventoryVoucherAll(inventory *inventory.InventoryVoucher) error {
@@ -109,8 +114,13 @@ func (s *InventoryVoucherStore) Create(inventoryVoucher *inventory.InventoryVouc
 	return s.CreateDB(voucherDB)
 }
 
-func (s *InventoryVoucherStore) CreateDB(voucher *model.InventoryVoucher) error {
-	return s.query().ShouldInsert(voucher)
+func (s *InventoryVoucherStore) CreateDB(InventoryVoucher *model.InventoryVoucher) error {
+	var variant_ids []int64
+	for _, value := range InventoryVoucher.Lines {
+		variant_ids = append(variant_ids, value.VariantID)
+	}
+	InventoryVoucher.VariantIDs = variant_ids
+	return s.query().ShouldInsert(InventoryVoucher)
 }
 
 func (s *InventoryVoucherStore) GetDB() (*model.InventoryVoucher, error) {

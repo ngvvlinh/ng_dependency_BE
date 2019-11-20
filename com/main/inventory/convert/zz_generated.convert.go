@@ -221,6 +221,7 @@ func convert_inventory_InventoryVoucher_inventorymodel_InventoryVoucher(arg *inv
 	out.TotalAmount = arg.TotalAmount // simple assign
 	out.Type = string(arg.Type)       // simple conversion
 	out.Lines = Convert_inventory_InventoryVoucherItems_inventorymodel_InventoryVoucherItems(arg.Lines)
+	out.VariantIDs = nil                // zero value
 	out.RefID = arg.RefID               // simple assign
 	out.RefType = string(arg.RefType)   // simple conversion
 	out.RefName = string(arg.RefName)   // simple conversion
