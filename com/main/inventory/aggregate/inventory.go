@@ -466,7 +466,6 @@ func (q *InventoryAggregate) CreateInventoryVariant(ctx context.Context, args *i
 			QuantityPicked: 0,
 			PurchasePrice:  0,
 		})
-		return nil, err
 	}
 	if err != nil {
 		return nil, err
