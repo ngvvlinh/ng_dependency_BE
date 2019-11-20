@@ -346,6 +346,7 @@ func (a *PurchaseOrderAggregate) ConfirmPurchaseOrder(
 
 		event := &purchaseorder.PurchaseOrderConfirmedEvent{
 			ShopID:               args.ShopID,
+			PurchaseOrderCode:    purchaseOrder.Code,
 			UserID:               purchaseOrder.CreatedBy,
 			PurchaseOrderID:      args.ID,
 			TraderID:             purchaseOrder.SupplierID,

@@ -176,6 +176,7 @@ type OrderConfirmingEvent struct {
 type OrderConfirmedEvent struct {
 	OrderID              int64
 	ShopID               int64
+	OrderCode            string
 	InventoryOverStock   bool
 	Lines                []*types.ItemLine
 	CustomerID           int64

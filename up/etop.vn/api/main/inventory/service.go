@@ -135,6 +135,7 @@ type CreateInventoryVoucherArgs struct {
 	RefID   int64
 	RefType InventoryRefType
 	RefName InventoryVoucherRefName
+	RefCode string
 
 	TraderID    int64
 	TotalAmount int32
@@ -149,6 +150,7 @@ type CreateInventoryVoucherByQuantityChangeRequest struct {
 	RefID   int64
 	RefType InventoryRefType
 	RefName InventoryVoucherRefName
+	RefCode string
 
 	Note  string
 	Title string
@@ -188,6 +190,7 @@ type InventoryVoucher struct {
 	RefID   int64
 	RefType InventoryRefType
 	RefName InventoryVoucherRefName
+	RefCode string
 
 	TraderID    int64
 	Trader      *Trader

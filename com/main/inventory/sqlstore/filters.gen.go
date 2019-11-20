@@ -398,6 +398,25 @@ func (ft *InventoryVoucherFilters) ByRefIDPtr(RefID *int64) *sq.ColumnFilterPtr 
 	}
 }
 
+func (ft *InventoryVoucherFilters) ByRefCode(RefCode string) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "ref_code",
+		Value:  RefCode,
+		IsNil:  RefCode == "",
+	}
+}
+
+func (ft *InventoryVoucherFilters) ByRefCodePtr(RefCode *string) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "ref_code",
+		Value:  RefCode,
+		IsNil:  RefCode == nil,
+		IsZero: RefCode != nil && (*RefCode) == "",
+	}
+}
+
 func (ft *InventoryVoucherFilters) ByRefType(RefType string) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,

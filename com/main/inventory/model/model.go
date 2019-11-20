@@ -39,6 +39,7 @@ type InventoryVoucher struct {
 	Lines        []*InventoryVoucherItem
 	VariantIDs   []int64
 	RefID        int64
+	RefCode      string
 	RefType      string
 	RefName      string
 	Title        string

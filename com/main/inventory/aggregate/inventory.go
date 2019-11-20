@@ -551,7 +551,7 @@ func (q *InventoryAggregate) CreateInventoryVoucherByQuantityChange(ctx context.
 			}
 			inventoryVoucherIn = append(inventoryVoucherIn, inventoryVoucherItem)
 			totalAmountIn += value.QuantityChange * inventoryVoucherItem.Price
-		} else {
+		} else if value.QuantityChange < 0 {
 			inventoryVoucherItem := &inventory.InventoryVoucherItem{
 				VariantID: value.VariantID,
 				Quantity:  value.QuantityChange * -1,
@@ -574,6 +574,7 @@ func (q *InventoryAggregate) CreateInventoryVoucherByQuantityChange(ctx context.
 			RefID:       args.RefID,
 			RefType:     args.RefType,
 			RefName:     args.RefName,
+			RefCode:     args.RefCode,
 			TraderID:    0,
 			TotalAmount: totalAmountIn,
 			Type:        "in",
@@ -593,6 +594,7 @@ func (q *InventoryAggregate) CreateInventoryVoucherByQuantityChange(ctx context.
 			RefID:       args.RefID,
 			RefType:     args.RefType,
 			RefName:     args.RefName,
+			RefCode:     args.RefCode,
 			TraderID:    0,
 			TotalAmount: totalAmountIn,
 			Type:        "out",

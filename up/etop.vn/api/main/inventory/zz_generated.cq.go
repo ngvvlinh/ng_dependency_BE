@@ -115,6 +115,7 @@ type CreateInventoryVoucherCommand struct {
 	RefID       int64
 	RefType     InventoryRefType
 	RefName     InventoryVoucherRefName
+	RefCode     string
 	TraderID    int64
 	TotalAmount int32
 	Type        InventoryVoucherType
@@ -134,6 +135,7 @@ type CreateInventoryVoucherByQuantityChangeCommand struct {
 	RefID     int64
 	RefType   InventoryRefType
 	RefName   InventoryVoucherRefName
+	RefCode   string
 	Note      string
 	Title     string
 	Overstock bool
@@ -379,6 +381,7 @@ func (q *CreateInventoryVoucherCommand) GetArgs(ctx context.Context) (_ context.
 			RefID:       q.RefID,
 			RefType:     q.RefType,
 			RefName:     q.RefName,
+			RefCode:     q.RefCode,
 			TraderID:    q.TraderID,
 			TotalAmount: q.TotalAmount,
 			Type:        q.Type,
@@ -394,6 +397,7 @@ func (q *CreateInventoryVoucherCommand) SetCreateInventoryVoucherArgs(args *Crea
 	q.RefID = args.RefID
 	q.RefType = args.RefType
 	q.RefName = args.RefName
+	q.RefCode = args.RefCode
 	q.TraderID = args.TraderID
 	q.TotalAmount = args.TotalAmount
 	q.Type = args.Type
@@ -408,6 +412,7 @@ func (q *CreateInventoryVoucherByQuantityChangeCommand) GetArgs(ctx context.Cont
 			RefID:     q.RefID,
 			RefType:   q.RefType,
 			RefName:   q.RefName,
+			RefCode:   q.RefCode,
 			Note:      q.Note,
 			Title:     q.Title,
 			Overstock: q.Overstock,
@@ -421,6 +426,7 @@ func (q *CreateInventoryVoucherByQuantityChangeCommand) SetCreateInventoryVouche
 	q.RefID = args.RefID
 	q.RefType = args.RefType
 	q.RefName = args.RefName
+	q.RefCode = args.RefCode
 	q.Note = args.Note
 	q.Title = args.Title
 	q.Overstock = args.Overstock

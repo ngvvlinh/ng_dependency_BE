@@ -348,7 +348,6 @@ func PreCreateInventoryVoucherRefStocktake(ctx context.Context, q *CreateInvento
 }
 func PreCreateInventoryVoucherRefPurchaseOrder(ctx context.Context, cmd *inventory.CreateInventoryVoucherCommand) error {
 	var items []*inventory.InventoryVoucherItem
-
 	// check order_id exit
 	queryPurchaseOrder := &purchaseorder.GetPurchaseOrderByIDQuery{
 		ID:     cmd.RefID,
@@ -370,6 +369,7 @@ func PreCreateInventoryVoucherRefPurchaseOrder(ctx context.Context, cmd *invento
 	cmd.Title = "Nhập kho khi nhập hàng"
 	cmd.Lines = items
 	cmd.Type = "in"
+	cmd.RefCode = queryPurchaseOrder.Result.Code
 	cmd.TraderID = queryPurchaseOrder.Result.SupplierID
 	cmd.Note = fmt.Sprintf("Tạo phiếu nhập kho theo đơn nhập mã %v", queryPurchaseOrder.Result.ID)
 	return nil
@@ -396,6 +396,7 @@ func PreCreateInventoryVoucherRefOrder(ctx context.Context, cmd *inventory.Creat
 	cmd.Title = "Xuất kho khi bán hàng"
 	cmd.Lines = items
 	cmd.Type = "out"
+	cmd.RefCode = queryOrder.Result.Order.Code
 	cmd.TraderID = queryOrder.Result.Order.CustomerID
 	cmd.Note = fmt.Sprintf("Tạo phiếu xuất nhập kho theo đơn đặt hàng mã %v", queryOrder.Result.Order.ID)
 	return nil

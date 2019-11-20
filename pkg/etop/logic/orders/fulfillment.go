@@ -312,6 +312,7 @@ func RaiseOrderConfirmedEvent(ctx context.Context, shop *model.Shop, autoInvento
 	event := &ordering.OrderConfirmedEvent{
 		OrderID:              order.ID,
 		ShopID:               shop.ID,
+		OrderCode:            order.Code,
 		InventoryOverStock:   cm.BoolDefault(shop.InventoryOverstock, true),
 		Lines:                orderLines,
 		CustomerID:           order.CustomerID,

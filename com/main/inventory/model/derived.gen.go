@@ -292,7 +292,7 @@ func sqlgenInventoryVoucher(_ *InventoryVoucher) bool { return true }
 type InventoryVouchers []*InventoryVoucher
 
 const __sqlInventoryVoucher_Table = "inventory_voucher"
-const __sqlInventoryVoucher_ListCols = "\"shop_id\",\"id\",\"created_by\",\"updated_by\",\"code\",\"code_norm\",\"status\",\"note\",\"trader_id\",\"trader\",\"total_amount\",\"type\",\"lines\",\"variant_ids\",\"ref_id\",\"ref_type\",\"ref_name\",\"title\",\"created_at\",\"updated_at\",\"confirmed_at\",\"cancelled_at\",\"cancel_reason\""
+const __sqlInventoryVoucher_ListCols = "\"shop_id\",\"id\",\"created_by\",\"updated_by\",\"code\",\"code_norm\",\"status\",\"note\",\"trader_id\",\"trader\",\"total_amount\",\"type\",\"lines\",\"variant_ids\",\"ref_id\",\"ref_code\",\"ref_type\",\"ref_name\",\"title\",\"created_at\",\"updated_at\",\"confirmed_at\",\"cancelled_at\",\"cancel_reason\""
 const __sqlInventoryVoucher_Insert = "INSERT INTO \"inventory_voucher\" (" + __sqlInventoryVoucher_ListCols + ") VALUES"
 const __sqlInventoryVoucher_Select = "SELECT " + __sqlInventoryVoucher_ListCols + " FROM \"inventory_voucher\""
 const __sqlInventoryVoucher_Select_history = "SELECT " + __sqlInventoryVoucher_ListCols + " FROM history.\"inventory_voucher\""
@@ -331,6 +331,7 @@ func (m *InventoryVoucher) SQLArgs(opts core.Opts, create bool) []interface{} {
 		core.JSON{m.Lines},
 		core.Array{m.VariantIDs, opts},
 		core.Int64(m.RefID),
+		core.String(m.RefCode),
 		core.String(m.RefType),
 		core.String(m.RefName),
 		core.String(m.Title),
@@ -359,6 +360,7 @@ func (m *InventoryVoucher) SQLScanArgs(opts core.Opts) []interface{} {
 		core.JSON{&m.Lines},
 		core.Array{&m.VariantIDs, opts},
 		(*core.Int64)(&m.RefID),
+		(*core.String)(&m.RefCode),
 		(*core.String)(&m.RefType),
 		(*core.String)(&m.RefName),
 		(*core.String)(&m.Title),
@@ -404,7 +406,7 @@ func (_ *InventoryVouchers) SQLSelect(w SQLWriter) error {
 func (m *InventoryVoucher) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlInventoryVoucher_Insert)
 	w.WriteRawString(" (")
-	w.WriteMarkers(23)
+	w.WriteMarkers(24)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), true))
 	return nil
@@ -414,7 +416,7 @@ func (ms InventoryVouchers) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlInventoryVoucher_Insert)
 	w.WriteRawString(" (")
 	for i := 0; i < len(ms); i++ {
-		w.WriteMarkers(23)
+		w.WriteMarkers(24)
 		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
 		w.WriteRawString("),(")
 	}
@@ -549,6 +551,14 @@ func (m *InventoryVoucher) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(m.RefID)
 	}
+	if m.RefCode != "" {
+		flag = true
+		w.WriteName("ref_code")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.RefCode)
+	}
 	if m.RefType != "" {
 		flag = true
 		w.WriteName("ref_type")
@@ -623,7 +633,7 @@ func (m *InventoryVoucher) SQLUpdate(w SQLWriter) error {
 func (m *InventoryVoucher) SQLUpdateAll(w SQLWriter) error {
 	w.WriteQueryString(__sqlInventoryVoucher_UpdateAll)
 	w.WriteRawString(" = (")
-	w.WriteMarkers(23)
+	w.WriteMarkers(24)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), false))
 	return nil
@@ -662,6 +672,7 @@ func (m InventoryVoucherHistory) Type() core.Interface       { return core.Inter
 func (m InventoryVoucherHistory) Lines() core.Interface      { return core.Interface{m["lines"]} }
 func (m InventoryVoucherHistory) VariantIDs() core.Interface { return core.Interface{m["variant_ids"]} }
 func (m InventoryVoucherHistory) RefID() core.Interface      { return core.Interface{m["ref_id"]} }
+func (m InventoryVoucherHistory) RefCode() core.Interface    { return core.Interface{m["ref_code"]} }
 func (m InventoryVoucherHistory) RefType() core.Interface    { return core.Interface{m["ref_type"]} }
 func (m InventoryVoucherHistory) RefName() core.Interface    { return core.Interface{m["ref_name"]} }
 func (m InventoryVoucherHistory) Title() core.Interface      { return core.Interface{m["title"]} }
@@ -678,15 +689,15 @@ func (m InventoryVoucherHistory) CancelReason() core.Interface {
 }
 
 func (m *InventoryVoucherHistory) SQLScan(opts core.Opts, row *sql.Row) error {
-	data := make([]interface{}, 23)
-	args := make([]interface{}, 23)
-	for i := 0; i < 23; i++ {
+	data := make([]interface{}, 24)
+	args := make([]interface{}, 24)
+	for i := 0; i < 24; i++ {
 		args[i] = &data[i]
 	}
 	if err := row.Scan(args...); err != nil {
 		return err
 	}
-	res := make(InventoryVoucherHistory, 23)
+	res := make(InventoryVoucherHistory, 24)
 	res["shop_id"] = data[0]
 	res["id"] = data[1]
 	res["created_by"] = data[2]
@@ -702,22 +713,23 @@ func (m *InventoryVoucherHistory) SQLScan(opts core.Opts, row *sql.Row) error {
 	res["lines"] = data[12]
 	res["variant_ids"] = data[13]
 	res["ref_id"] = data[14]
-	res["ref_type"] = data[15]
-	res["ref_name"] = data[16]
-	res["title"] = data[17]
-	res["created_at"] = data[18]
-	res["updated_at"] = data[19]
-	res["confirmed_at"] = data[20]
-	res["cancelled_at"] = data[21]
-	res["cancel_reason"] = data[22]
+	res["ref_code"] = data[15]
+	res["ref_type"] = data[16]
+	res["ref_name"] = data[17]
+	res["title"] = data[18]
+	res["created_at"] = data[19]
+	res["updated_at"] = data[20]
+	res["confirmed_at"] = data[21]
+	res["cancelled_at"] = data[22]
+	res["cancel_reason"] = data[23]
 	*m = res
 	return nil
 }
 
 func (ms *InventoryVoucherHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	data := make([]interface{}, 23)
-	args := make([]interface{}, 23)
-	for i := 0; i < 23; i++ {
+	data := make([]interface{}, 24)
+	args := make([]interface{}, 24)
+	for i := 0; i < 24; i++ {
 		args[i] = &data[i]
 	}
 	res := make(InventoryVoucherHistories, 0, 128)
@@ -741,14 +753,15 @@ func (ms *InventoryVoucherHistories) SQLScan(opts core.Opts, rows *sql.Rows) err
 		m["lines"] = data[12]
 		m["variant_ids"] = data[13]
 		m["ref_id"] = data[14]
-		m["ref_type"] = data[15]
-		m["ref_name"] = data[16]
-		m["title"] = data[17]
-		m["created_at"] = data[18]
-		m["updated_at"] = data[19]
-		m["confirmed_at"] = data[20]
-		m["cancelled_at"] = data[21]
-		m["cancel_reason"] = data[22]
+		m["ref_code"] = data[15]
+		m["ref_type"] = data[16]
+		m["ref_name"] = data[17]
+		m["title"] = data[18]
+		m["created_at"] = data[19]
+		m["updated_at"] = data[20]
+		m["confirmed_at"] = data[21]
+		m["cancelled_at"] = data[22]
+		m["cancel_reason"] = data[23]
 		res = append(res, m)
 	}
 	if err := rows.Err(); err != nil {

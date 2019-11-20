@@ -76,6 +76,7 @@ func (r *PurchaseOrder) GetVariantIDs() []int64 {
 type PurchaseOrderConfirmedEvent struct {
 	meta.EventMeta
 	ShopID               int64
+	PurchaseOrderCode    string
 	UserID               int64
 	PurchaseOrderID      int64
 	TraderID             int64

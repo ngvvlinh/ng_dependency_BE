@@ -160,6 +160,7 @@ func PbShopInventoryVoucher(args *inventory.InventoryVoucher) *pbshop.InventoryV
 		Lines:        inventoryVoucherItem,
 		RefId:        args.RefID,
 		Code:         args.Code,
+		RefCode:      args.RefCode,
 		RefType:      string(args.RefType),
 		RefName:      string(args.RefName),
 		TraderId:     args.TraderID,

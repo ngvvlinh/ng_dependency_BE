@@ -184,6 +184,7 @@ func convert_inventorymodel_InventoryVoucher_inventory_InventoryVoucher(arg *inv
 	out.RefID = arg.RefID                                        // simple assign
 	out.RefType = inventory.InventoryRefType(arg.RefType)        // simple conversion
 	out.RefName = inventory.InventoryVoucherRefName(arg.RefName) // simple conversion
+	out.RefCode = arg.RefCode                                    // simple assign
 	out.TraderID = arg.TraderID                                  // simple assign
 	out.Trader = Convert_inventorymodel_Trader_inventory_Trader(arg.Trader, nil)
 	out.TotalAmount = arg.TotalAmount                   // simple assign
@@ -223,6 +224,7 @@ func convert_inventory_InventoryVoucher_inventorymodel_InventoryVoucher(arg *inv
 	out.Lines = Convert_inventory_InventoryVoucherItems_inventorymodel_InventoryVoucherItems(arg.Lines)
 	out.VariantIDs = nil                // zero value
 	out.RefID = arg.RefID               // simple assign
+	out.RefCode = arg.RefCode           // simple assign
 	out.RefType = string(arg.RefType)   // simple conversion
 	out.RefName = string(arg.RefName)   // simple conversion
 	out.Title = arg.Title               // simple assign
@@ -268,6 +270,7 @@ func apply_inventory_CreateInventoryVoucherArgs_inventory_InventoryVoucher(arg *
 	out.RefID = arg.RefID             // simple assign
 	out.RefType = arg.RefType         // simple assign
 	out.RefName = arg.RefName         // simple assign
+	out.RefCode = arg.RefCode         // simple assign
 	out.TraderID = arg.TraderID       // simple assign
 	out.Trader = nil                  // zero value
 	out.TotalAmount = arg.TotalAmount // simple assign
@@ -297,6 +300,7 @@ func apply_inventory_UpdateInventoryVoucherArgs_inventory_InventoryVoucher(arg *
 	out.RefID = out.RefID                           // no change
 	out.RefType = out.RefType                       // no change
 	out.RefName = out.RefName                       // no change
+	out.RefCode = out.RefCode                       // no change
 	out.TraderID = arg.TraderID.Apply(out.TraderID) // apply change
 	out.Trader = out.Trader                         // no change
 	out.TotalAmount = arg.TotalAmount               // simple assign

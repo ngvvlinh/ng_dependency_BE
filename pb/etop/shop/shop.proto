@@ -1778,6 +1778,8 @@ message InventoryVoucher {
     optional int64 ref_id = 16 [(gogoproto.nullable) = false];
     optional string ref_type = 17 [(gogoproto.nullable) = false];
     optional string ref_name = 18 [(gogoproto.nullable) = false];
+    optional string ref_code = 21 [(gogoproto.nullable) = false];
+
     optional string code   = 19[(gogoproto.nullable)=false];
     optional google.protobuf.Timestamp created_at = 10;
     optional google.protobuf.Timestamp updated_at = 11;

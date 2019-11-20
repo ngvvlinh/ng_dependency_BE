@@ -9747,6 +9747,9 @@
         "ref_name": {
           "type": "string"
         },
+        "ref_code": {
+          "type": "string"
+        },
         "code": {
           "type": "string"
         },
