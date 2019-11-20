@@ -24,11 +24,18 @@ func Convert_vtpost_ClientStates_To_model_ShippingSourceInternal(in *vtpostclien
 }
 
 func Convert_model_ShippingSourceInternal_To_vtpost_ClientStates(in *model.ShippingSourceInternal) *vtpostclient.ClientStates {
-	return &vtpostclient.ClientStates{
+	if in == nil {
+		return nil
+	}
+	res := &vtpostclient.ClientStates{
 		AccessToken:          in.AccessToken,
 		ExpiresAt:            in.ExpiresAt,
 		AccessTokenCreatedAt: in.LastSyncAt,
-		CustomerID:           in.Secret.CustomerID,
-		GroupAddressID:       in.Secret.GroupAddressID,
 	}
+	if in.Secret != nil {
+		res.CustomerID = in.Secret.CustomerID
+		res.GroupAddressID = in.Secret.GroupAddressID
+	}
+
+	return res
 }

@@ -57,9 +57,11 @@ func CreateShippingSource(code byte, client vtpostclient.Client) error {
 	if err != nil {
 		return err
 	}
+
 	cmd := &model.CreateShippingSource{
-		Name: clientName,
-		Type: model.TypeVTPost,
+		Name:     clientName,
+		Type:     model.TypeVTPost,
+		Username: client.GetUserName(),
 	}
 	if err := bus.Dispatch(ctx, cmd); err != nil {
 		return err
@@ -90,26 +92,6 @@ func CreateShippingSource(code byte, client vtpostclient.Client) error {
 		}
 	}
 
-	// UpdateInfo GroupAddressID (use for create order api)
-	warehouseResponse, err := client.GetWarehouses(ctx)
-	if err != nil {
-		return err
-	}
-	warehouses := warehouseResponse.Data
-	warehouseID := warehouses[0].GroupAddressID
-	internal := cmd.Result.ShippingSourceInternal
-	update := &model.UpdateOrCreateShippingSourceInternal{
-		ID: internal.ID,
-		Secret: &model.ShippingSourceSecret{
-			CustomerID:     internal.Secret.CustomerID,
-			Username:       internal.Secret.Username,
-			Password:       internal.Secret.Password,
-			GroupAddressID: warehouseID,
-		},
-	}
-	if err := bus.Dispatch(ctx, update); err != nil {
-		return nil
-	}
 	return nil
 }
 

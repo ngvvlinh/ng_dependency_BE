@@ -34,6 +34,7 @@ type ClientStates struct {
 type Client interface {
 	InitFromSavedStates(states ClientStates)
 	GetStatesForSerialization() ClientStates
+	GetUserName() string
 	LoginAndRefreshToken(ctx context.Context) error
 	AutoLoginAndRefreshToken(ctx context.Context) (bool, error)
 
@@ -121,6 +122,10 @@ func (c *ClientImpl) Ping() error {
 	return err
 }
 
+func (c *ClientImpl) GetUserName() string {
+	return c.Username
+}
+
 func (c *ClientImpl) InitFromSavedStates(states ClientStates) {
 	c.ClientStates = states
 }
@@ -149,6 +154,7 @@ func (c *ClientImpl) LoginAndRefreshToken(ctx context.Context) error {
 	c.AccessToken = token
 	c.ExpiresAt = expiresAt
 	c.AccessTokenCreatedAt = time.Now()
+	c.CustomerID = resp.Data.UserId
 	return c.Ping()
 }
 
