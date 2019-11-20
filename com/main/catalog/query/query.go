@@ -273,7 +273,7 @@ func (s *QueryService) ValidateVariantIDs(ctx context.Context, shopId int64, sho
 		return err
 	}
 	if len(dbResult) != len(shopVariantIds) {
-		return cm.Error(cm.InvalidArgument, "Vui lòng kiểm tra lại thông tin, variant_id sai", nil)
+		return cm.Error(cm.InvalidArgument, "Phiên bản của sản phẩm không còn tồn tại. Vui lòng kiểm tra lại.", nil)
 	}
 	return nil
 }
