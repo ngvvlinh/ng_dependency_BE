@@ -285,7 +285,7 @@ func (a *PurchaseOrderAggregate) checkPurchaseOrder(
 	if len(variantIDs) != len(query.Result.Variants) {
 		for _, variantID := range variantIDs {
 			if _, ok := mapVariant[variantID]; !ok {
-				return cm.Errorf(cm.FailedPrecondition, nil, "variant_id %v không tồn tại", variantID)
+				return cm.Errorf(cm.FailedPrecondition, nil, "Phiên bản của sản phẩm không còn tồn tại.")
 			}
 		}
 	}
