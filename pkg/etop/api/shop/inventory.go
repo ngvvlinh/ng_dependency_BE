@@ -343,7 +343,7 @@ func PreCreateInventoryVoucherRefStocktake(ctx context.Context, q *CreateInvento
 		CreatedBy: q.Context.UserID,
 		Variants:  inventoryVariantChange,
 	}
-	cmd.Note = fmt.Sprintf("Tạo phiếu xuất nhập kho theo phiếu kiểm kho mã %v", queryStocktake.Result.ID)
+	cmd.Note = fmt.Sprintf("Tạo phiếu xuất nhập kho theo phiếu kiểm kho mã %v", queryStocktake.Result.Code)
 	return cmd, nil
 }
 func PreCreateInventoryVoucherRefPurchaseOrder(ctx context.Context, cmd *inventory.CreateInventoryVoucherCommand) error {
@@ -371,7 +371,7 @@ func PreCreateInventoryVoucherRefPurchaseOrder(ctx context.Context, cmd *invento
 	cmd.Type = "in"
 	cmd.RefCode = queryPurchaseOrder.Result.Code
 	cmd.TraderID = queryPurchaseOrder.Result.SupplierID
-	cmd.Note = fmt.Sprintf("Tạo phiếu nhập kho theo đơn nhập mã %v", queryPurchaseOrder.Result.ID)
+	cmd.Note = fmt.Sprintf("Tạo phiếu nhập kho theo đơn nhập mã %v", queryPurchaseOrder.Result.Code)
 	return nil
 }
 
@@ -398,7 +398,7 @@ func PreCreateInventoryVoucherRefOrder(ctx context.Context, cmd *inventory.Creat
 	cmd.Type = "out"
 	cmd.RefCode = queryOrder.Result.Order.Code
 	cmd.TraderID = queryOrder.Result.Order.CustomerID
-	cmd.Note = fmt.Sprintf("Tạo phiếu xuất nhập kho theo đơn đặt hàng mã %v", queryOrder.Result.Order.ID)
+	cmd.Note = fmt.Sprintf("Tạo phiếu xuất nhập kho theo đơn đặt hàng mã %v", queryOrder.Result.Order.Code)
 	return nil
 }
 

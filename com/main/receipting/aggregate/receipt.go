@@ -82,6 +82,9 @@ func (a *ReceiptAggregate) CreateReceipt(
 	if args.Type != receipting.ReceiptTypeReceipt && args.Type != receipting.ReceiptTypePayment {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Kiểu phiếu không hợp lệ")
 	}
+	if args.Type != receipting.ReceiptTypeReceipt && args.RefType != receipting.ReceiptRefTypeOrder {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "Không thể tạo phiếu khi type là %v và ref_type là %v", args.Type, args.RefType)
+	}
 
 	receiptNeedValidate := &receipting.Receipt{
 		TraderID:    args.TraderID,
