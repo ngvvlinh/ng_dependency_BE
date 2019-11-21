@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"etop.vn/api/main/etop"
+	"etop.vn/api/main/inventory"
 	"etop.vn/api/meta"
 	"etop.vn/api/shopping"
 	. "etop.vn/capi/dot"
@@ -69,6 +70,6 @@ type CancelPurchaseOrderArgs struct {
 
 type ConfirmPurchaseOrderArgs struct {
 	ID                   int64
-	AutoInventoryVoucher PurchaseOrderAutoInventoryVoucher
+	AutoInventoryVoucher inventory.AutoInventoryVoucher
 	ShopID               int64
 }

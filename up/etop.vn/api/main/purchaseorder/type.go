@@ -11,13 +11,6 @@ import (
 
 // +gen:event:topic=event/purchaseorder
 
-type PurchaseOrderAutoInventoryVoucher string
-
-const (
-	AutoInventoryVoucherCreate  PurchaseOrderAutoInventoryVoucher = "create"
-	AutoInventoryVoucherConfirm PurchaseOrderAutoInventoryVoucher = "confirm"
-)
-
 type PurchaseOrder struct {
 	ID               int64
 	ShopID           int64
@@ -81,7 +74,7 @@ type PurchaseOrderConfirmedEvent struct {
 	PurchaseOrderID      int64
 	TraderID             int64
 	TotalAmount          int64
-	AutoInventoryVoucher PurchaseOrderAutoInventoryVoucher
+	AutoInventoryVoucher inventory.AutoInventoryVoucher
 
 	Lines []*inventory.InventoryVoucherItem
 }

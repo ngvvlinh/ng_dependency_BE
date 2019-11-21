@@ -3,6 +3,7 @@ package shop
 import (
 	"context"
 
+	"etop.vn/api/main/inventory"
 	"etop.vn/api/main/purchaseorder"
 	pbcm "etop.vn/backend/pb/common"
 	pbshop "etop.vn/backend/pb/etop/shop"
@@ -135,7 +136,7 @@ func (s *PurchaseOrderService) DeletePurchaseOrder(ctx context.Context, r *Delet
 func (s *PurchaseOrderService) ConfirmPurchaseOrder(ctx context.Context, r *ConfirmPurchaseOrderEndpoint) error {
 	cmd := &purchaseorder.ConfirmPurchaseOrderCommand{
 		ID:                   r.Id,
-		AutoInventoryVoucher: purchaseorder.PurchaseOrderAutoInventoryVoucher(r.AutoInventoryVoucher),
+		AutoInventoryVoucher: inventory.AutoInventoryVoucher(r.AutoInventoryVoucher),
 		ShopID:               r.Context.Shop.ID,
 	}
 	if err := purchaseOrderAggr.Dispatch(ctx, cmd); err != nil {

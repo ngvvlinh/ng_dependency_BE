@@ -377,15 +377,16 @@ func main() {
 	ledgerQuery := ledgerquery.NewLedgerQuery(db).MessageBus()
 	ledgerPM := ledgerpm.New(eventBus, ledgerAggr)
 	ledgerPM.RegisterEventHandlers(eventBus)
-	inventoryAggr := inventoryaggregate.NewAggregateInventory(eventBus, db, traderQuery).MessageBus()
-	inventoryQuery := inventoryquery.NewQueryInventory(eventBus, db).MessageBus()
-	inventoryPm := inventorypm.New(eventBus, catalogQuery, orderQuery, inventoryAggr)
-	inventoryPm.RegisterEventHandlers(eventBus)
 
+	inventoryQuery := inventoryquery.NewQueryInventory(eventBus, db).MessageBus()
 	purchaseOrderAggr := purchaseorderaggregate.NewPurchaseOrderAggregate(db, eventBus, catalogQuery, supplierQuery, inventoryQuery).MessageBus()
 	purchaseOrderQuery := purchaseorderquery.NewPurchaseOrderQuery(db, eventBus, supplierQuery, inventoryQuery, &receiptQuery).MessageBus()
 	purchaseOrderPM := purchaseorderpm.New(&purchaseOrderQuery, &receiptQuery)
 	purchaseOrderPM.RegisterEventHandlers(eventBus)
+
+	inventoryAggr := inventoryaggregate.NewAggregateInventory(eventBus, db, traderQuery, purchaseOrderQuery, stocktakeQuery).MessageBus()
+	inventoryPm := inventorypm.New(eventBus, catalogQuery, orderQuery, inventoryAggr)
+	inventoryPm.RegisterEventHandlers(eventBus)
 
 	receiptAggr := receiptaggregate.NewReceiptAggregate(db, eventBus, traderQuery, ledgerQuery, orderQuery, customerQuery, carrierQuery, supplierQuery, purchaseOrderQuery).MessageBus()
 	receiptQuery = receiptquery.NewReceiptQuery(db).MessageBus()

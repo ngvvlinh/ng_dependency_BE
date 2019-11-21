@@ -9,7 +9,6 @@ import (
 
 	"etop.vn/api/main/inventory"
 	"etop.vn/api/main/ordering"
-	ordertypes "etop.vn/api/main/ordering/types"
 
 	"etop.vn/api/shopping/addressing"
 	"etop.vn/api/shopping/customering"
@@ -1058,8 +1057,12 @@ func CancelOrder(ctx context.Context, shopID int64, authPartnerID int64, orderID
 	if err := bus.Dispatch(ctx, updateOrderCmd); err != nil {
 		return nil, err
 	}
-
-	if err := RaiseOrderCancelledEvent(ctx, shopID, inventory.AutoInventoryVoucher(autoInventoryVoucher), order); err != nil {
+	event := &ordering.OrderCancelledEvent{
+		OrderID:              order.ID,
+		ShopID:               shopID,
+		AutoInventoryVoucher: inventory.AutoInventoryVoucher(autoInventoryVoucher),
+	}
+	if err := eventBus.Publish(ctx, event); err != nil {
 		ll.Error("RaiseOrderCancelledEvent", l.Error(err))
 	}
 
@@ -1086,34 +1089,6 @@ func CancelOrder(ctx context.Context, shopID int64, authPartnerID int64, orderID
 		FulfillmentErrors: pbcm.PbErrors(errs),
 	}
 	return resp, nil
-}
-
-func RaiseOrderCancelledEvent(ctx context.Context, shopID int64, autoInventoryVoucher inventory.AutoInventoryVoucher, order *ordermodel.Order) error {
-	orderLines := []*ordertypes.ItemLine{}
-	for _, line := range order.Lines {
-		if line.VariantID != 0 {
-			_line := &ordertypes.ItemLine{
-				OrderId:    line.OrderID,
-				Quantity:   int32(line.Quantity),
-				ProductId:  line.ProductID,
-				VariantId:  line.VariantID,
-				IsOutside:  line.IsOutsideEtop,
-				TotalPrice: int32(line.TotalLineAmount),
-			}
-			orderLines = append(orderLines, _line)
-		}
-	}
-	event := &ordering.OrderCancelledEvent{
-		OrderID:              order.ID,
-		ShopID:               shopID,
-		Lines:                orderLines,
-		CustomerID:           order.CustomerID,
-		AutoInventoryVoucher: autoInventoryVoucher,
-	}
-	if err := eventBus.Publish(ctx, event); err != nil {
-		return err
-	}
-	return nil
 }
 
 var reSubdomain = regexp.MustCompile("^[a-z0-9]([a-z0-9-]{0,126}[a-z0-9])?$")

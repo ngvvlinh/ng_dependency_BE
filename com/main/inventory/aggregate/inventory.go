@@ -2,14 +2,18 @@ package aggregate
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"etop.vn/api/main/etop"
 	"etop.vn/api/main/inventory"
+	"etop.vn/api/main/purchaseorder"
+	"etop.vn/api/main/stocktaking"
 	"etop.vn/api/shopping/tradering"
 	"etop.vn/backend/com/main/inventory/convert"
 	"etop.vn/backend/com/main/inventory/model"
 	"etop.vn/backend/com/main/inventory/sqlstore"
+	ordermodelx "etop.vn/backend/com/main/ordering/modelx"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/cmsql"
@@ -25,15 +29,23 @@ type InventoryAggregate struct {
 	traderQuery           tradering.QueryBus
 	EventBus              bus.Bus
 	db                    *cmsql.Database
+	PurchaseOrderQuery    purchaseorder.QueryBus
+	StocktakeQuery        stocktaking.QueryBus
 }
 
-func NewAggregateInventory(eventBus bus.Bus, db *cmsql.Database, traderQuery tradering.QueryBus) *InventoryAggregate {
+func NewAggregateInventory(eventBus bus.Bus,
+	db *cmsql.Database,
+	traderQuery tradering.QueryBus,
+	purchaseOrderQuery purchaseorder.QueryBus,
+	StocktakeQuery stocktaking.QueryBus) *InventoryAggregate {
 	return &InventoryAggregate{
 		InventoryStore:        sqlstore.NewInventoryStore(db),
 		InventoryVoucherStore: sqlstore.NewInventoryVoucherStore(db),
 		EventBus:              eventBus,
 		traderQuery:           traderQuery,
 		db:                    db,
+		PurchaseOrderQuery:    purchaseOrderQuery,
+		StocktakeQuery:        StocktakeQuery,
 	}
 }
 
@@ -609,4 +621,150 @@ func (q *InventoryAggregate) CreateInventoryVoucherByQuantityChange(ctx context.
 		TypeIn:  typeIn,
 		TypeOut: typeOut,
 	}, nil
+}
+
+func (q *InventoryAggregate) CreateInventoryVoucherByReference(ctx context.Context, args *inventory.CreateInventoryVoucherByReferenceArgs) ([]*inventory.InventoryVoucher, error) {
+	switch args.RefType {
+	case inventory.RefTypePurchaseOrder:
+		return q.CreateInventoryVoucherByPurchaseOrder(ctx, args)
+	case inventory.RefTypeStockTake:
+		return q.CreateInventoryVoucherByStockTake(ctx, args)
+	case inventory.RefTypeOrder:
+		return q.CreateInventoryVoucherByOrder(ctx, args)
+	default:
+		return nil, cm.Error(cm.InvalidArgument, "wrong ref_type", nil)
+	}
+}
+
+func (q *InventoryAggregate) CreateInventoryVoucherByPurchaseOrder(ctx context.Context, args *inventory.CreateInventoryVoucherByReferenceArgs) ([]*inventory.InventoryVoucher, error) {
+	var items []*inventory.InventoryVoucherItem
+	// check order_id exit
+	queryPurchaseOrder := &purchaseorder.GetPurchaseOrderByIDQuery{
+		ID:     args.RefID,
+		ShopID: args.ShopID,
+	}
+	if err := q.PurchaseOrderQuery.Dispatch(ctx, queryPurchaseOrder); err != nil {
+		return nil, err
+	}
+	if queryPurchaseOrder.Result.Status != etop.S3Positive {
+		return nil, cm.Error(cm.InvalidArgument, "không thể tạo phiếu kiểm kho cho Purchase Order chưa được xác nhận.", nil)
+	}
+	// GET info and put it to cmd
+	for _, value := range queryPurchaseOrder.Result.Lines {
+		items = append(items, &inventory.InventoryVoucherItem{
+			VariantID: value.VariantID,
+			Quantity:  int32(value.Quantity),
+		})
+	}
+	inventoryVoucherCreateRequest := &inventory.CreateInventoryVoucherArgs{
+		ShopID:    args.ShopID,
+		CreatedBy: args.UserID,
+		Title:     "Nhập kho khi nhập hàng",
+		RefID:     args.RefID,
+		RefType:   args.RefType,
+		RefName:   inventory.RefNamePurchaseOrder,
+		RefCode:   queryPurchaseOrder.Result.Code,
+		TraderID:  queryPurchaseOrder.Result.SupplierID,
+		Type:      inventory.InventoryVoucherTypeIn,
+		Note:      fmt.Sprintf("Tạo phiếu nhập kho theo đơn nhập mã %v", queryPurchaseOrder.Result.Code),
+		Lines:     items,
+	}
+	createResult, err := q.CreateInventoryVoucher(ctx, args.OverStock, inventoryVoucherCreateRequest)
+	if err != nil {
+		return nil, err
+	}
+	var listInventoryVoucher []*inventory.InventoryVoucher
+	listInventoryVoucher = append(listInventoryVoucher, createResult)
+	return listInventoryVoucher, err
+
+}
+
+func (q *InventoryAggregate) CreateInventoryVoucherByOrder(ctx context.Context, args *inventory.CreateInventoryVoucherByReferenceArgs) ([]*inventory.InventoryVoucher, error) {
+	var items []*inventory.InventoryVoucherItem
+	// check order_id exit
+	queryOrder := &ordermodelx.GetOrderQuery{
+		OrderID: args.RefID,
+		ShopID:  args.ShopID,
+	}
+	if err := bus.Dispatch(ctx, queryOrder); err != nil {
+		return nil, err
+	}
+	// GET info and put it to cmd
+	for _, value := range queryOrder.Result.Order.Lines {
+		if value.VariantID != 0 {
+			items = append(items, &inventory.InventoryVoucherItem{
+				VariantID: value.VariantID,
+				Quantity:  int32(value.Quantity),
+			})
+		}
+	}
+	if len(items) == 0 {
+		return []*inventory.InventoryVoucher{}, nil
+	}
+	inventoryVoucherCreateRequest := &inventory.CreateInventoryVoucherArgs{
+		ShopID:    args.ShopID,
+		CreatedBy: args.UserID,
+		Title:     "Xuất kho khi bán hàng",
+		RefID:     args.RefID,
+		RefType:   args.RefType,
+		RefName:   inventory.RefNameOrder,
+		RefCode:   queryOrder.Result.Order.Code,
+		TraderID:  queryOrder.Result.Order.CustomerID,
+		Type:      args.Type,
+		Note:      fmt.Sprintf("Tạo phiếu xuất nhập kho theo đơn đặt hàng mã %v", queryOrder.Result.Order.Code),
+		Lines:     items,
+	}
+	createResult, err := q.CreateInventoryVoucher(ctx, args.OverStock, inventoryVoucherCreateRequest)
+	if err != nil {
+		return nil, err
+	}
+	var listInventoryVoucher []*inventory.InventoryVoucher
+	listInventoryVoucher = append(listInventoryVoucher, createResult)
+	return listInventoryVoucher, err
+}
+
+func (q *InventoryAggregate) CreateInventoryVoucherByStockTake(ctx context.Context, args *inventory.CreateInventoryVoucherByReferenceArgs) ([]*inventory.InventoryVoucher, error) {
+	// check order_id exit
+	queryStocktake := &stocktaking.GetStocktakeByIDQuery{
+		Id:     args.RefID,
+		ShopID: args.ShopID,
+	}
+	if err := q.StocktakeQuery.Dispatch(ctx, queryStocktake); err != nil {
+		return nil, err
+	}
+	if queryStocktake.Result.Status != etop.S3Positive {
+		return nil, cm.Error(cm.InvalidArgument, "không thể tạo phiếu kiểm kho cho stocktake chưa được xác nhận.", nil)
+	}
+	// GET info and put it to cmd
+	var inventoryVariantChange []*inventory.InventoryVariantQuantityChange
+	for _, value := range queryStocktake.Result.Lines {
+		inventoryVariantChange = append(inventoryVariantChange, &inventory.InventoryVariantQuantityChange{
+			VariantID:      value.VariantID,
+			QuantityChange: value.NewQuantity - value.OldQuantity,
+		})
+	}
+	inventoryVoucherCreateRequest := &inventory.CreateInventoryVoucherByQuantityChangeRequest{
+		ShopID:    args.ShopID,
+		RefID:     args.RefID,
+		RefType:   inventory.RefTypeStockTake,
+		RefName:   inventory.RefNameStockTake,
+		Title:     "Phiếu kiểm kho",
+		RefCode:   queryStocktake.Result.Code,
+		Overstock: args.OverStock,
+		CreatedBy: args.UserID,
+		Variants:  inventoryVariantChange,
+		Note:      fmt.Sprintf("Tạo phiếu xuất nhập kho theo phiếu kiểm kho mã %v", queryStocktake.Result.Code),
+	}
+	createResult, err := q.CreateInventoryVoucherByQuantityChange(ctx, inventoryVoucherCreateRequest)
+	if err != nil {
+		return nil, err
+	}
+	var listInventoryVoucher []*inventory.InventoryVoucher
+	if createResult.TypeIn.ID != 0 {
+		listInventoryVoucher = append(listInventoryVoucher, createResult.TypeIn)
+	}
+	if createResult.TypeOut.ID != 0 {
+		listInventoryVoucher = append(listInventoryVoucher, createResult.TypeOut)
+	}
+	return listInventoryVoucher, err
 }

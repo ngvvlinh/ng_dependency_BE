@@ -1687,6 +1687,8 @@ message GetShopCollectionsByProductIDRequest {
 message CreateInventoryVoucherRequest{
     optional int64 ref_id = 16 [(gogoproto.nullable) = false];
     optional string ref_type = 17 [(gogoproto.nullable) = false];
+    //enum "in" or "out" only for ref_type = "order"
+    optional string type = 15 [(gogoproto.nullable) = false];
 }
 
 message InventoryVoucherLine{

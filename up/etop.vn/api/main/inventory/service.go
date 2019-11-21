@@ -28,6 +28,8 @@ type Aggregate interface {
 	CheckInventoryVariantsQuantity(context.Context, *CheckInventoryVariantQuantityRequest) error
 
 	CreateInventoryVoucherByQuantityChange(context.Context, *CreateInventoryVoucherByQuantityChangeRequest) (*CreateInventoryVoucherByQuantityChangeResponse, error)
+
+	CreateInventoryVoucherByReference(context.Context, *CreateInventoryVoucherByReferenceArgs) ([]*InventoryVoucher, error)
 }
 
 type QueryService interface {
@@ -246,4 +248,13 @@ type GetInventoryVoucherByReferenceResponse struct {
 type CreateInventoryVoucherByQuantityChangeResponse struct {
 	TypeIn  *InventoryVoucher
 	TypeOut *InventoryVoucher
+}
+
+type CreateInventoryVoucherByReferenceArgs struct {
+	RefType   InventoryRefType
+	RefID     int64
+	Type      InventoryVoucherType
+	ShopID    int64
+	UserID    int64
+	OverStock bool
 }

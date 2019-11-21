@@ -97,7 +97,8 @@ func (q *StocktakeAggregate) ConfirmStocktake(ctx context.Context, args *stockta
 	err = q.DB.InTransaction(ctx, func(tx cmsql.QueryInterface) error {
 		err = q.StocktakeStore(ctx).ShopID(args.ShopID).ID(args.ID).UpdateAll(stocktakeDB)
 		event := stocktake.StocktakeConfirmedEvent{
-			Stocktake:            stocktakeDB,
+			StocktakeID:          stocktakeDB.ID,
+			ShopID:               stocktakeDB.ShopID,
 			Overstock:            args.OverStock,
 			ConfirmedBy:          args.ConfirmedBy,
 			AutoInventoryVoucher: args.AutoInventoryVoucher,

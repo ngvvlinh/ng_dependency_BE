@@ -8361,6 +8361,10 @@
         },
         "ref_type": {
           "type": "string"
+        },
+        "type": {
+          "type": "string",
+          "title": "enum \"in\" or \"out\" only for ref_type = \"order\""
         }
       }
     },

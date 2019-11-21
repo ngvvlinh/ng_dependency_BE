@@ -43,35 +43,31 @@ func (m *ProcessManager) RegisterEventHandlers(eventBus bus.EventRegistry) {
 }
 
 func (m *ProcessManager) PurchaseOrderConfirmed(ctx context.Context, event *purchaseorder.PurchaseOrderConfirmedEvent) error {
+	if !event.AutoInventoryVoucher.ValidateAutoInventoryVoucher() {
+		return nil
+	}
 	var isCreate, isConfirm bool
-	if event.AutoInventoryVoucher == purchaseorder.AutoInventoryVoucherCreate {
+	if event.AutoInventoryVoucher == inventory.AutoCreateInventory {
 		isCreate = true
 	}
-	if event.AutoInventoryVoucher == purchaseorder.AutoInventoryVoucherConfirm {
+	if event.AutoInventoryVoucher == inventory.AutoCreateAndConfirmInventory {
 		isCreate = true
 		isConfirm = true
 	}
 
 	var inventoryVoucherID int64
 	if isCreate {
-		cmd := &inventory.CreateInventoryVoucherCommand{
-			Overstock:   false,
-			ShopID:      event.ShopID,
-			CreatedBy:   event.UserID,
-			Title:       "Nhập kho khi kiểm hàng",
-			RefID:       event.PurchaseOrderID,
-			RefType:     inventory.RefTypePurchaseOrder,
-			RefName:     inventory.RefNamePurchaseOrder,
-			RefCode:     event.PurchaseOrderCode,
-			TraderID:    event.TraderID,
-			TotalAmount: int32(event.TotalAmount),
-			Type:        inventory.InventoryVoucherTypeIn,
-			Lines:       event.Lines,
+		cmd := &inventory.CreateInventoryVoucherByReferenceCommand{
+			RefType:   inventory.RefTypePurchaseOrder,
+			RefID:     event.PurchaseOrderID,
+			ShopID:    event.ShopID,
+			UserID:    0,
+			OverStock: false,
 		}
 		if err := m.inventoryAgg.Dispatch(ctx, cmd); err != nil {
 			return err
 		}
-		inventoryVoucherID = cmd.Result.ID
+		inventoryVoucherID = cmd.Result[0].ID
 	}
 
 	if isConfirm {
@@ -92,43 +88,44 @@ func (p *ProcessManager) OrderConfirmedEvent(ctx context.Context, event *orderin
 	if !event.AutoInventoryVoucher.ValidateAutoInventoryVoucher() {
 		return nil
 	}
-	// Create inventory voucher
-	inventoryVoucherLines := []*inventory.InventoryVoucherItem{}
-	for _, value := range event.Lines {
-		inventoryVoucherLines = append(inventoryVoucherLines, &inventory.InventoryVoucherItem{
-			VariantID: value.VariantId,
-			Quantity:  value.Quantity,
-		})
-	}
-
-	cmdCreate := &inventory.CreateInventoryVoucherCommand{
-		Overstock: event.InventoryOverStock,
-		ShopID:    event.ShopID,
-		Title:     "Xuất kho khi bán hàng",
-		RefCode:   event.OrderCode,
-		RefID:     event.OrderID,
-		RefType:   inventory.RefTypeOrder,
-		TraderID:  event.CustomerID,
-		Type:      inventory.InventoryVoucherTypeOut,
-		Note:      "Tạo tự động khi xác nhận đơn hàng",
-		Lines:     inventoryVoucherLines,
-	}
-	err := p.inventoryAgg.Dispatch(ctx, cmdCreate)
-	if err != nil {
-		return err
+	var isCreate, isConfirm bool
+	if event.AutoInventoryVoucher == inventory.AutoCreateInventory {
+		isCreate = true
 	}
 	if event.AutoInventoryVoucher == inventory.AutoCreateAndConfirmInventory {
-		cmdConfirm := &inventory.ConfirmInventoryVoucherCommand{
-			ShopID: event.ShopID,
-			ID:     cmdCreate.Result.ID,
-			Result: nil,
+		isCreate = true
+		isConfirm = true
+	}
+	var err error
+	var inventoryVoucherID int64
+	if isCreate {
+		cmdCreate := &inventory.CreateInventoryVoucherByReferenceCommand{
+			RefType:   inventory.RefTypeOrder,
+			RefID:     event.OrderID,
+			ShopID:    event.ShopID,
+			UserID:    event.UpdatedBy,
+			Type:      inventory.InventoryVoucherTypeIn,
+			OverStock: event.InventoryOverStock,
 		}
-		err = p.inventoryAgg.Dispatch(ctx, cmdConfirm)
+		err = p.inventoryAgg.Dispatch(ctx, cmdCreate)
 		if err != nil {
 			return err
 		}
+		if len(cmdCreate.Result) == 0 {
+			return nil
+		}
+		inventoryVoucherID = cmdCreate.Result[0].ID
 	}
-	return nil
+
+	if isConfirm {
+		cmdConfirm := &inventory.ConfirmInventoryVoucherCommand{
+			ShopID:    event.ShopID,
+			ID:        inventoryVoucherID,
+			UpdatedBy: event.UpdatedBy,
+		}
+		err = p.inventoryAgg.Dispatch(ctx, cmdConfirm)
+	}
+	return err
 }
 
 // OrderConfirmingEvent
@@ -169,55 +166,50 @@ func (p *ProcessManager) OrderConfirmingEvent(ctx context.Context, event *orderi
 }
 
 func (p *ProcessManager) StocktakeConfirmed(ctx context.Context, event *stocktake.StocktakeConfirmedEvent) error {
-	if event.AutoInventoryVoucher == inventory.AutoCreateInventory || event.AutoInventoryVoucher == inventory.AutoCreateAndConfirmInventory {
-		var inventoryVariantChange []*inventory.InventoryVariantQuantityChange
-		for _, value := range event.Stocktake.Lines {
-			inventoryVariantChange = append(inventoryVariantChange, &inventory.InventoryVariantQuantityChange{
-				VariantID:      value.VariantID,
-				QuantityChange: value.NewQuantity - value.OldQuantity,
-			})
-		}
-		cmdCreate := &inventory.CreateInventoryVoucherByQuantityChangeCommand{
-			ShopID:    event.Stocktake.ShopID,
-			RefID:     event.Stocktake.ID,
+	if !event.AutoInventoryVoucher.ValidateAutoInventoryVoucher() {
+		return nil
+	}
+	var isCreate, isConfirm bool
+	if event.AutoInventoryVoucher == inventory.AutoCreateInventory {
+		isCreate = true
+	}
+	if event.AutoInventoryVoucher == inventory.AutoCreateAndConfirmInventory {
+		isCreate = true
+		isConfirm = true
+	}
+
+	var inventoryVoucherIDs []int64
+	if isCreate {
+		cmdCreate := &inventory.CreateInventoryVoucherByReferenceCommand{
 			RefType:   inventory.RefTypeStockTake,
-			RefName:   inventory.RefNameStockTake,
-			RefCode:   event.Stocktake.Code,
-			Note:      "Tạo tự động khi xác nhận phiếu kiểm kho",
-			Title:     "Phiếu kiểm kho",
-			Overstock: event.Overstock,
-			CreatedBy: event.ConfirmedBy,
-			Variants:  inventoryVariantChange,
+			RefID:     event.StocktakeID,
+			ShopID:    event.ShopID,
+			UserID:    event.ConfirmedBy,
+			Type:      inventory.InventoryVoucherTypeOut,
+			OverStock: event.Overstock,
 		}
 		err := p.inventoryAgg.Dispatch(ctx, cmdCreate)
 		if err != nil {
 			return err
 		}
-		if event.AutoInventoryVoucher == inventory.AutoCreateAndConfirmInventory {
-			if cmdCreate.Result.TypeIn.ID != 0 {
-				cmdConfirmInVoucher := &inventory.ConfirmInventoryVoucherCommand{
-					ShopID:    event.Stocktake.ShopID,
-					ID:        cmdCreate.Result.TypeIn.ID,
-					UpdatedBy: event.ConfirmedBy,
-				}
-				err = p.inventoryAgg.Dispatch(ctx, cmdConfirmInVoucher)
-				if err != nil {
-					return err
-				}
+		for _, value := range cmdCreate.Result {
+			inventoryVoucherIDs = append(inventoryVoucherIDs, value.ID)
+		}
+	}
+	if isConfirm {
+		for _, value := range inventoryVoucherIDs {
+			cmdConfirm := &inventory.ConfirmInventoryVoucherCommand{
+				ShopID:    event.ShopID,
+				ID:        value,
+				UpdatedBy: event.ConfirmedBy,
 			}
-			if cmdCreate.Result.TypeOut.ID != 0 {
-				cmdConfirmOutVoucher := &inventory.ConfirmInventoryVoucherCommand{
-					ShopID:    event.Stocktake.ShopID,
-					ID:        cmdCreate.Result.TypeOut.ID,
-					UpdatedBy: event.ConfirmedBy,
-				}
-				err = p.inventoryAgg.Dispatch(ctx, cmdConfirmOutVoucher)
-				if err != nil {
-					return err
-				}
+			err := p.inventoryAgg.Dispatch(ctx, cmdConfirm)
+			if err != nil {
+				return err
 			}
 		}
 	}
+
 	return nil
 }
 
@@ -225,40 +217,42 @@ func (p *ProcessManager) OrderCancelledEvent(ctx context.Context, event *orderin
 	if !event.AutoInventoryVoucher.ValidateAutoInventoryVoucher() {
 		return nil
 	}
-	// Create inventory voucher
-	inventoryVoucherLines := []*inventory.InventoryVoucherItem{}
-	for _, value := range event.Lines {
-		inventoryVoucherLines = append(inventoryVoucherLines, &inventory.InventoryVoucherItem{
-			VariantID: value.VariantId,
-			Quantity:  value.Quantity,
-		})
-	}
-
-	cmdCreate := &inventory.CreateInventoryVoucherCommand{
-		Overstock: false,
-		ShopID:    event.ShopID,
-		Title:     "Nhập kho khi hủy đơn hàng",
-		RefID:     event.OrderID,
-		RefType:   inventory.RefTypeOrder,
-		TraderID:  event.CustomerID,
-		Type:      inventory.InventoryVoucherTypeIn,
-		Note:      "Tạo tự động khi hủy đơn hàng",
-		Lines:     inventoryVoucherLines,
-	}
-	err := p.inventoryAgg.Dispatch(ctx, cmdCreate)
-	if err != nil {
-		return err
+	var isCreate, isConfirm bool
+	if event.AutoInventoryVoucher == inventory.AutoCreateInventory {
+		isCreate = true
 	}
 	if event.AutoInventoryVoucher == inventory.AutoCreateAndConfirmInventory {
-		cmdConfirm := &inventory.ConfirmInventoryVoucherCommand{
-			ShopID: event.ShopID,
-			ID:     cmdCreate.Result.ID,
-			Result: nil,
+		isCreate = true
+		isConfirm = true
+	}
+	var err error
+	var inventoryVoucherID int64
+	if isCreate {
+		cmdCreate := &inventory.CreateInventoryVoucherByReferenceCommand{
+			RefType:   inventory.RefTypeOrder,
+			RefID:     event.OrderID,
+			ShopID:    event.ShopID,
+			UserID:    event.UpdatedBy,
+			Type:      inventory.InventoryVoucherTypeIn,
+			OverStock: false,
 		}
-		err = p.inventoryAgg.Dispatch(ctx, cmdConfirm)
+		err = p.inventoryAgg.Dispatch(ctx, cmdCreate)
 		if err != nil {
 			return err
 		}
+		if len(cmdCreate.Result) == 0 {
+			return nil
+		}
+		inventoryVoucherID = cmdCreate.Result[0].ID
 	}
-	return nil
+
+	if isConfirm {
+		cmdConfirm := &inventory.ConfirmInventoryVoucherCommand{
+			ShopID:    event.ShopID,
+			ID:        inventoryVoucherID,
+			UpdatedBy: event.UpdatedBy,
+		}
+		err = p.inventoryAgg.Dispatch(ctx, cmdConfirm)
+	}
+	return err
 }

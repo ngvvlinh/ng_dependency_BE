@@ -176,10 +176,7 @@ type OrderConfirmingEvent struct {
 type OrderConfirmedEvent struct {
 	OrderID              int64
 	ShopID               int64
-	OrderCode            string
 	InventoryOverStock   bool
-	Lines                []*types.ItemLine
-	CustomerID           int64
 	AutoInventoryVoucher inventory.AutoInventoryVoucher
 	UpdatedBy            int64
 }
@@ -187,8 +184,6 @@ type OrderConfirmedEvent struct {
 type OrderCancelledEvent struct {
 	OrderID              int64
 	ShopID               int64
-	Lines                []*types.ItemLine
-	CustomerID           int64
 	AutoInventoryVoucher inventory.AutoInventoryVoucher
 	UpdatedBy            int64
 }

@@ -113,7 +113,13 @@ func ConfirmOrder(ctx context.Context, shop *model.Shop, r *pbshop.ConfirmOrderR
 		order.ConfirmStatus = model.S3Positive
 		order.ShopConfirm = model.S3Positive
 
-		if err := RaiseOrderConfirmedEvent(ctx, shop, autoInventoryVoucher, order); err != nil {
+		event := &ordering.OrderConfirmedEvent{
+			OrderID:              order.ID,
+			AutoInventoryVoucher: autoInventoryVoucher,
+			ShopID:               shop.ID,
+			InventoryOverStock:   cm.BoolDefault(shop.InventoryOverstock, true),
+		}
+		if err := eventBus.Publish(ctx, event); err != nil {
 			ll.Error("RaiseOrderConfirmedEvent", l.Error(err))
 		}
 	}
@@ -286,36 +292,6 @@ func RaiseOrderConfirmingEvent(ctx context.Context, shop *model.Shop, autoInvent
 		ShopID:               shop.ID,
 		InventoryOverStock:   cm.BoolDefault(shop.InventoryOverstock, true),
 		Lines:                orderLines,
-		AutoInventoryVoucher: autoInventoryVoucher,
-	}
-	if err := eventBus.Publish(ctx, event); err != nil {
-		return err
-	}
-	return nil
-}
-
-func RaiseOrderConfirmedEvent(ctx context.Context, shop *model.Shop, autoInventoryVoucher inventory.AutoInventoryVoucher, order *ordermodel.Order) error {
-	orderLines := []*ordertypes.ItemLine{}
-	for _, line := range order.Lines {
-		if line.VariantID != 0 {
-			_line := &ordertypes.ItemLine{
-				OrderId:    line.OrderID,
-				Quantity:   int32(line.Quantity),
-				ProductId:  line.ProductID,
-				VariantId:  line.VariantID,
-				IsOutside:  line.IsOutsideEtop,
-				TotalPrice: int32(line.TotalLineAmount),
-			}
-			orderLines = append(orderLines, _line)
-		}
-	}
-	event := &ordering.OrderConfirmedEvent{
-		OrderID:              order.ID,
-		ShopID:               shop.ID,
-		OrderCode:            order.Code,
-		InventoryOverStock:   cm.BoolDefault(shop.InventoryOverstock, true),
-		Lines:                orderLines,
-		CustomerID:           order.CustomerID,
 		AutoInventoryVoucher: autoInventoryVoucher,
 	}
 	if err := eventBus.Publish(ctx, event); err != nil {

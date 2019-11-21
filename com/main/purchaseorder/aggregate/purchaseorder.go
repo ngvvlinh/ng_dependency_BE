@@ -313,11 +313,6 @@ func (a *PurchaseOrderAggregate) CancelPurchaseOrder(
 func (a *PurchaseOrderAggregate) ConfirmPurchaseOrder(
 	ctx context.Context, args *purchaseorder.ConfirmPurchaseOrderArgs,
 ) (updated int, err error) {
-	if args.AutoInventoryVoucher != "" &&
-		args.AutoInventoryVoucher != purchaseorder.AutoInventoryVoucherCreate &&
-		args.AutoInventoryVoucher != purchaseorder.AutoInventoryVoucherConfirm {
-		return 0, cm.Errorf(cm.InvalidArgument, nil, "AutoInventoryVoucher không hợp lệ")
-	}
 
 	purchaseOrder, err := a.store(ctx).ID(args.ID).ShopID(args.ShopID).GetPurchaseOrder()
 	if err != nil {

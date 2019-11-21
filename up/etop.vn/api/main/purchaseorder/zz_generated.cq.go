@@ -8,6 +8,7 @@ import (
 	context "context"
 
 	etop "etop.vn/api/main/etop"
+	inventory "etop.vn/api/main/inventory"
 	meta "etop.vn/api/meta"
 	shopping "etop.vn/api/shopping"
 	capi "etop.vn/capi"
@@ -55,7 +56,7 @@ func (h AggregateHandler) HandleCancelPurchaseOrder(ctx context.Context, msg *Ca
 
 type ConfirmPurchaseOrderCommand struct {
 	ID                   int64
-	AutoInventoryVoucher PurchaseOrderAutoInventoryVoucher
+	AutoInventoryVoucher inventory.AutoInventoryVoucher
 	ShopID               int64
 
 	Result int `json:"-"`

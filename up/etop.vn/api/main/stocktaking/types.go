@@ -11,9 +11,9 @@ import (
 // +gen:event:topic=event/stocktake
 
 type StocktakeConfirmedEvent struct {
-	Stocktake            *ShopStocktake
+	StocktakeID          int64
+	ShopID               int64
 	Overstock            bool
-	Note                 string
 	ConfirmedBy          int64
 	AutoInventoryVoucher inventory.AutoInventoryVoucher
 }

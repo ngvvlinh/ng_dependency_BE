@@ -150,6 +150,22 @@ func (h AggregateHandler) HandleCreateInventoryVoucherByQuantityChange(ctx conte
 	return err
 }
 
+type CreateInventoryVoucherByReferenceCommand struct {
+	RefType   InventoryRefType
+	RefID     int64
+	Type      InventoryVoucherType
+	ShopID    int64
+	UserID    int64
+	OverStock bool
+
+	Result []*InventoryVoucher `json:"-"`
+}
+
+func (h AggregateHandler) HandleCreateInventoryVoucherByReference(ctx context.Context, msg *CreateInventoryVoucherByReferenceCommand) (err error) {
+	msg.Result, err = h.inner.CreateInventoryVoucherByReference(msg.GetArgs(ctx))
+	return err
+}
+
 type UpdateInventoryVoucherCommand struct {
 	ID          int64
 	ShopID      int64
@@ -277,6 +293,7 @@ func (q *ConfirmInventoryVoucherCommand) command()                {}
 func (q *CreateInventoryVariantCommand) command()                 {}
 func (q *CreateInventoryVoucherCommand) command()                 {}
 func (q *CreateInventoryVoucherByQuantityChangeCommand) command() {}
+func (q *CreateInventoryVoucherByReferenceCommand) command()      {}
 func (q *UpdateInventoryVoucherCommand) command()                 {}
 func (q *GetInventoryVariantQuery) query()                        {}
 func (q *GetInventoryVariantsQuery) query()                       {}
@@ -434,6 +451,27 @@ func (q *CreateInventoryVoucherByQuantityChangeCommand) SetCreateInventoryVouche
 	q.Variants = args.Variants
 }
 
+func (q *CreateInventoryVoucherByReferenceCommand) GetArgs(ctx context.Context) (_ context.Context, _ *CreateInventoryVoucherByReferenceArgs) {
+	return ctx,
+		&CreateInventoryVoucherByReferenceArgs{
+			RefType:   q.RefType,
+			RefID:     q.RefID,
+			Type:      q.Type,
+			ShopID:    q.ShopID,
+			UserID:    q.UserID,
+			OverStock: q.OverStock,
+		}
+}
+
+func (q *CreateInventoryVoucherByReferenceCommand) SetCreateInventoryVoucherByReferenceArgs(args *CreateInventoryVoucherByReferenceArgs) {
+	q.RefType = args.RefType
+	q.RefID = args.RefID
+	q.Type = args.Type
+	q.ShopID = args.ShopID
+	q.UserID = args.UserID
+	q.OverStock = args.OverStock
+}
+
 func (q *UpdateInventoryVoucherCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateInventoryVoucherArgs) {
 	return ctx,
 		&UpdateInventoryVoucherArgs{
@@ -561,6 +599,7 @@ func (h AggregateHandler) RegisterHandlers(b interface {
 	b.AddHandler(h.HandleCreateInventoryVariant)
 	b.AddHandler(h.HandleCreateInventoryVoucher)
 	b.AddHandler(h.HandleCreateInventoryVoucherByQuantityChange)
+	b.AddHandler(h.HandleCreateInventoryVoucherByReference)
 	b.AddHandler(h.HandleUpdateInventoryVoucher)
 	return CommandBus{b}
 }
