@@ -1487,6 +1487,12 @@ func (s *ProductServiceServer) parseRoute(path string) (reqMsg proto.Message, _ 
 			return s.ProductAPI.GetVariantsByIDs(ctx, msg)
 		}
 		return msg, fn, nil
+	case "/shop.Product/GetVariantsBySupplierID":
+		msg := new(shop.GetVariantsBySupplierIDRequest)
+		fn := func(ctx context.Context) (proto.Message, error) {
+			return s.ProductAPI.GetVariantsBySupplierID(ctx, msg)
+		}
+		return msg, fn, nil
 	case "/shop.Product/RemoveProductCategory":
 		msg := new(common.IDRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
@@ -2124,6 +2130,12 @@ func (s *SupplierServiceServer) parseRoute(path string) (reqMsg proto.Message, _
 		msg := new(common.IDsRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.SupplierAPI.GetSuppliersByIDs(ctx, msg)
+		}
+		return msg, fn, nil
+	case "/shop.Supplier/GetSuppliersByVariantID":
+		msg := new(shop.GetSuppliersByVariantIDRequest)
+		fn := func(ctx context.Context) (proto.Message, error) {
+			return s.SupplierAPI.GetSuppliersByVariantID(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/shop.Supplier/UpdateSupplier":

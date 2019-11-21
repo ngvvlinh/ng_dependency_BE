@@ -75,6 +75,8 @@ type Aggregate interface {
 
 	CreateVariantSupplier(context.Context, *CreateVariantSupplier) (*ShopVariantSupplier, error)
 
+	CreateVariantsSupplier(context.Context, *CreateVariantsSupplier) (int, error)
+
 	DeleteVariantSupplier(ctx context.Context, variantID int64, supplierID int64, shopID int64) error
 
 	//-- tag --//
@@ -94,7 +96,6 @@ type QueryService interface {
 	ListShopVariantsByIDs(context.Context, *shopping.IDsQueryShopArgs) (*ShopVariantsResponse, error)
 	ListShopVariantsWithProductByIDs(context.Context, *shopping.IDsQueryShopArgs) (*ShopVariantsWithProductResponse, error)
 	ValidateVariantIDs(ctx context.Context, shopId int64, shopVariantIds []int64) error
-
 	//--Category --//
 	GetShopCategory(context.Context, *GetShopCategoryArgs) (*ShopCategory, error)
 	ListShopCategories(context.Context, *shopping.ListQueryShopArgs) (*ShopCategoriesResponse, error)
@@ -111,9 +112,9 @@ type QueryService interface {
 
 	// -- variant_supplier -- //
 
-	GetSuppliersByVariantID(ctx context.Context, variantID int64, shopID int64) (*GetSuppliersByVariantIDResponse, error)
+	GetSupplierIDsByVariantID(ctx context.Context, variantID int64, shopID int64) ([]int64, error)
 
-	GetVariantsBySupplierID(ctx context.Context, variantID int64, shopID int64) (*GetVariantsBySupplierIDResponse, error)
+	GetVariantsBySupplierID(ctx context.Context, supplierID int64, shopID int64) (*ShopVariantsResponse, error)
 
 	//-- query --//
 }
@@ -130,6 +131,12 @@ type GetShopCategoryArgs struct {
 type GetShopProductByIDQueryArgs struct {
 	ProductID int64
 	ShopID    int64
+}
+
+type CreateVariantsSupplier struct {
+	ShopID     int64
+	SupplierID int64
+	VariantIDs []int64
 }
 
 type GetShopVariantByIDQueryArgs struct {

@@ -305,6 +305,7 @@ var ACL = map[string]*permission.PermissionDecl{
 	"shop.Product/GetVariant":                  {Type: Shop, Role: _____, AuthPartner: Opt},
 	"shop.Product/GetVariants":                 {Type: Shop, Role: _____, AuthPartner: Opt},
 	"shop.Product/GetVariantsByIDs":            {Type: Shop, Role: _____, AuthPartner: Opt},
+	"shop.Product/GetVariantsBySupplierID":     {Type: Shop},
 	"shop.Product/CreateVariant":               {Type: Shop, Role: Staff},
 	"shop.Product/AddVariants":                 {Type: Shop, Role: Staff, AuthPartner: Opt},
 	"shop.Product/RemoveVariants":              {Type: Shop, Role: Staff},
@@ -495,12 +496,13 @@ var ACL = map[string]*permission.PermissionDecl{
 	"affiliate.Affiliate/GetReferrals":                             {Type: Affiliate},
 
 	// supplier:
-	"shop.Supplier/GetSupplier":       {Type: Shop},
-	"shop.Supplier/GetSuppliers":      {Type: Shop},
-	"shop.Supplier/GetSuppliersByIDs": {Type: Shop},
-	"shop.Supplier/CreateSupplier":    {Type: Shop},
-	"shop.Supplier/UpdateSupplier":    {Type: Shop},
-	"shop.Supplier/DeleteSupplier":    {Type: Shop},
+	"shop.Supplier/GetSupplier":             {Type: Shop},
+	"shop.Supplier/GetSuppliers":            {Type: Shop},
+	"shop.Supplier/GetSuppliersByIDs":       {Type: Shop},
+	"shop.Supplier/CreateSupplier":          {Type: Shop},
+	"shop.Supplier/UpdateSupplier":          {Type: Shop},
+	"shop.Supplier/DeleteSupplier":          {Type: Shop},
+	"shop.Supplier/GetSuppliersByVariantID": {Type: Shop},
 
 	// carrier:
 	"shop.Carrier/GetCarrier":       {Type: Shop},

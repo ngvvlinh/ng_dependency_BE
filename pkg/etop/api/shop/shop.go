@@ -1755,3 +1755,15 @@ func getVariantsQuantity(ctx context.Context, shopID int64, variantIDs []int64) 
 	}
 	return mapInventoryVariant, nil
 }
+
+func (s *ProductService) GetVariantsBySupplierID(ctx context.Context, q *GetVariantsBySupplierIDEndpoint) error {
+	query := &catalog.GetVariantsBySupplierIDQuery{
+		SupplierID: q.SupplierId,
+		ShopID:     q.Context.Shop.ID,
+	}
+	if err := catalogQuery.Dispatch(ctx, query); err != nil {
+		return err
+	}
+	q.Result = &pbshop.ShopVariantsResponse{Variants: PbShopVariants(query.Result.Variants)}
+	return nil
+}

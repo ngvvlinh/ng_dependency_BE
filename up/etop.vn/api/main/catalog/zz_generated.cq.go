@@ -150,6 +150,19 @@ func (h AggregateHandler) HandleCreateVariantSupplier(ctx context.Context, msg *
 	return err
 }
 
+type CreateVariantsSupplierCommand struct {
+	ShopID     int64
+	SupplierID int64
+	VariantIDs []int64
+
+	Result int `json:"-"`
+}
+
+func (h AggregateHandler) HandleCreateVariantsSupplier(ctx context.Context, msg *CreateVariantsSupplierCommand) (err error) {
+	msg.Result, err = h.inner.CreateVariantsSupplier(msg.GetArgs(ctx))
+	return err
+}
+
 type DeleteShopBrandCommand struct {
 	Ids    []int64
 	ShopId int64
@@ -513,23 +526,23 @@ func (h QueryServiceHandler) HandleGetShopVariantWithProductByID(ctx context.Con
 	return err
 }
 
-type GetSuppliersByVariantIDQuery struct {
+type GetSupplierIDsByVariantIDQuery struct {
 	VariantID int64
 	ShopID    int64
 
-	Result *GetSuppliersByVariantIDResponse `json:"-"`
+	Result []int64 `json:"-"`
 }
 
-func (h QueryServiceHandler) HandleGetSuppliersByVariantID(ctx context.Context, msg *GetSuppliersByVariantIDQuery) (err error) {
-	msg.Result, err = h.inner.GetSuppliersByVariantID(msg.GetArgs(ctx))
+func (h QueryServiceHandler) HandleGetSupplierIDsByVariantID(ctx context.Context, msg *GetSupplierIDsByVariantIDQuery) (err error) {
+	msg.Result, err = h.inner.GetSupplierIDsByVariantID(msg.GetArgs(ctx))
 	return err
 }
 
 type GetVariantsBySupplierIDQuery struct {
-	VariantID int64
-	ShopID    int64
+	SupplierID int64
+	ShopID     int64
 
-	Result *GetVariantsBySupplierIDResponse `json:"-"`
+	Result *ShopVariantsResponse `json:"-"`
 }
 
 func (h QueryServiceHandler) HandleGetVariantsBySupplierID(ctx context.Context, msg *GetVariantsBySupplierIDQuery) (err error) {
@@ -695,6 +708,7 @@ func (q *CreateShopCollectionCommand) command()          {}
 func (q *CreateShopProductCommand) command()             {}
 func (q *CreateShopVariantCommand) command()             {}
 func (q *CreateVariantSupplierCommand) command()         {}
+func (q *CreateVariantsSupplierCommand) command()        {}
 func (q *DeleteShopBrandCommand) command()               {}
 func (q *DeleteShopCategoryCommand) command()            {}
 func (q *DeleteShopProductsCommand) command()            {}
@@ -722,7 +736,7 @@ func (q *GetShopProductByIDQuery) query()                {}
 func (q *GetShopProductWithVariantsByIDQuery) query()    {}
 func (q *GetShopVariantByIDQuery) query()                {}
 func (q *GetShopVariantWithProductByIDQuery) query()     {}
-func (q *GetSuppliersByVariantIDQuery) query()           {}
+func (q *GetSupplierIDsByVariantIDQuery) query()         {}
 func (q *GetVariantsBySupplierIDQuery) query()           {}
 func (q *ListBrandsQuery) query()                        {}
 func (q *ListShopCategoriesQuery) query()                {}
@@ -880,6 +894,21 @@ func (q *CreateVariantSupplierCommand) SetCreateVariantSupplier(args *CreateVari
 	q.ShopID = args.ShopID
 	q.SupplierID = args.SupplierID
 	q.VariantID = args.VariantID
+}
+
+func (q *CreateVariantsSupplierCommand) GetArgs(ctx context.Context) (_ context.Context, _ *CreateVariantsSupplier) {
+	return ctx,
+		&CreateVariantsSupplier{
+			ShopID:     q.ShopID,
+			SupplierID: q.SupplierID,
+			VariantIDs: q.VariantIDs,
+		}
+}
+
+func (q *CreateVariantsSupplierCommand) SetCreateVariantsSupplier(args *CreateVariantsSupplier) {
+	q.ShopID = args.ShopID
+	q.SupplierID = args.SupplierID
+	q.VariantIDs = args.VariantIDs
 }
 
 func (q *DeleteShopBrandCommand) GetArgs(ctx context.Context) (_ context.Context, ids []int64, shopId int64) {
@@ -1282,15 +1311,15 @@ func (q *GetShopVariantWithProductByIDQuery) SetGetShopVariantByIDQueryArgs(args
 	q.ShopID = args.ShopID
 }
 
-func (q *GetSuppliersByVariantIDQuery) GetArgs(ctx context.Context) (_ context.Context, variantID int64, shopID int64) {
+func (q *GetSupplierIDsByVariantIDQuery) GetArgs(ctx context.Context) (_ context.Context, variantID int64, shopID int64) {
 	return ctx,
 		q.VariantID,
 		q.ShopID
 }
 
-func (q *GetVariantsBySupplierIDQuery) GetArgs(ctx context.Context) (_ context.Context, variantID int64, shopID int64) {
+func (q *GetVariantsBySupplierIDQuery) GetArgs(ctx context.Context) (_ context.Context, supplierID int64, shopID int64) {
 	return ctx,
-		q.VariantID,
+		q.SupplierID,
 		q.ShopID
 }
 
@@ -1465,6 +1494,7 @@ func (h AggregateHandler) RegisterHandlers(b interface {
 	b.AddHandler(h.HandleCreateShopProduct)
 	b.AddHandler(h.HandleCreateShopVariant)
 	b.AddHandler(h.HandleCreateVariantSupplier)
+	b.AddHandler(h.HandleCreateVariantsSupplier)
 	b.AddHandler(h.HandleDeleteShopBrand)
 	b.AddHandler(h.HandleDeleteShopCategory)
 	b.AddHandler(h.HandleDeleteShopProducts)
@@ -1507,7 +1537,7 @@ func (h QueryServiceHandler) RegisterHandlers(b interface {
 	b.AddHandler(h.HandleGetShopProductWithVariantsByID)
 	b.AddHandler(h.HandleGetShopVariantByID)
 	b.AddHandler(h.HandleGetShopVariantWithProductByID)
-	b.AddHandler(h.HandleGetSuppliersByVariantID)
+	b.AddHandler(h.HandleGetSupplierIDsByVariantID)
 	b.AddHandler(h.HandleGetVariantsBySupplierID)
 	b.AddHandler(h.HandleListBrands)
 	b.AddHandler(h.HandleListShopCategories)

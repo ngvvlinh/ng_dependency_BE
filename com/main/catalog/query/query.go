@@ -32,7 +32,7 @@ func New(db *cmsql.Database) *QueryService {
 		shopCollection:        sqlstore.NewShopCollectionStore(db),
 		shopProductCollection: sqlstore.NewShopProductCollectionStore(db),
 		shopBrand:             sqlstore.NewShopBrandStore(db),
-		shopVariantSupplier:   sqlstore.NewSupplierVariantStore(db),
+		shopVariantSupplier:   sqlstore.NewVariantSupplierStore(db),
 	}
 }
 
@@ -332,7 +332,7 @@ func (s *QueryService) ListBrands(ctx context.Context, paging meta.Paging, shopI
 	return listBrandResult, err
 }
 
-func (s *QueryService) GetSuppliersByVariantID(ctx context.Context, variantID int64, shopID int64) (*catalog.GetSuppliersByVariantIDResponse, error) {
+func (s *QueryService) GetSupplierIDsByVariantID(ctx context.Context, variantID int64, shopID int64) ([]int64, error) {
 	if shopID == 0 || variantID == 0 {
 		return nil, cm.Error(cm.InvalidArgument, "Missing shop_id or supplier_id in request", nil)
 	}
@@ -340,18 +340,14 @@ func (s *QueryService) GetSuppliersByVariantID(ctx context.Context, variantID in
 	if err != nil {
 		return nil, err
 	}
-	var listSuppliers = make([]int64, len(variantSupplier))
+	var listSupplierIDs = make([]int64, len(variantSupplier))
 	for _, value := range variantSupplier {
-		listSuppliers = append(listSuppliers, value.SupplierID)
+		listSupplierIDs = append(listSupplierIDs, value.SupplierID)
 	}
-	return &catalog.GetSuppliersByVariantIDResponse{
-		ShopID:      shopID,
-		VariantID:   variantID,
-		SupplierIDs: listSuppliers,
-	}, nil
+	return listSupplierIDs, nil
 }
 
-func (s *QueryService) GetVariantsBySupplierID(ctx context.Context, supplierID int64, shopID int64) (*catalog.GetVariantsBySupplierIDResponse, error) {
+func (s *QueryService) GetVariantsBySupplierID(ctx context.Context, supplierID int64, shopID int64) (*catalog.ShopVariantsResponse, error) {
 	if shopID == 0 || supplierID == 0 {
 		return nil, cm.Error(cm.InvalidArgument, "Missing shop_id or supplier_id in request", nil)
 	}
@@ -361,11 +357,13 @@ func (s *QueryService) GetVariantsBySupplierID(ctx context.Context, supplierID i
 	}
 	var listVariants = make([]int64, len(variantSupplier))
 	for _, value := range variantSupplier {
-		listVariants = append(listVariants, value.SupplierID)
+		listVariants = append(listVariants, value.VariantID)
 	}
-	return &catalog.GetVariantsBySupplierIDResponse{
-		ShopID:     shopID,
-		VariantIDs: listVariants,
-		SupplierID: supplierID,
-	}, nil
+	variants, err := s.shopVariant(ctx).ShopID(shopID).IDs(listVariants...).ListShopVariants()
+	if err != nil {
+		return nil, err
+	}
+	return &catalog.ShopVariantsResponse{
+		Variants: variants,
+	}, err
 }

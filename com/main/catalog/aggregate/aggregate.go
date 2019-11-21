@@ -39,7 +39,7 @@ func New(eventBus capi.EventBus, db *cmsql.Database) *Aggregate {
 		shopCollection:        sqlstore.NewShopCollectionStore(db),
 		shopProductCollection: sqlstore.NewShopProductCollectionStore(db),
 		shopBrand:             sqlstore.NewShopBrandStore(db),
-		shopVariantSupplier:   sqlstore.NewSupplierVariantStore(db),
+		shopVariantSupplier:   sqlstore.NewVariantSupplierStore(db),
 		eventBus:              eventBus,
 	}
 }
@@ -195,6 +195,22 @@ func (a *Aggregate) UpdateShopVariantInfo(ctx context.Context, args *catalog.Upd
 
 func (a *Aggregate) DeleteShopVariants(ctx context.Context, args *shopping.IDsQueryShopArgs) (int, error) {
 	deleted, err := a.shopVariant(ctx).ShopID(args.ShopID).IDs(args.IDs...).SoftDelete()
+	if err != nil {
+		return 0, err
+	}
+	variants, err := a.shopVariantSupplier(ctx).ShopID(args.ShopID).VariantIDs(args.IDs...).ListVariantSupplier()
+	if err != nil {
+		return deleted, err
+	}
+	if len(variants) != 0 {
+		variantIDs := make([]int64, 0, len(variants))
+		for _, variant := range variants {
+			variantIDs = append(variantIDs, variant.VariantID)
+		}
+		if err := a.deleteVariantsSupplier(ctx, variantIDs, args.ShopID); err != nil {
+			return deleted, err
+		}
+	}
 	return deleted, err
 }
 
@@ -529,6 +545,28 @@ func (a *Aggregate) CreateVariantSupplier(ctx context.Context, sv *catalog.Creat
 	}
 	return variantSupplier, nil
 }
+func (a *Aggregate) CreateVariantsSupplier(ctx context.Context, vs *catalog.CreateVariantsSupplier) (int, error) {
+	if vs.VariantIDs == nil {
+		return 0, cm.Error(cm.InvalidArgument, "Miss variant_ids ", nil)
+	}
+	var lineCreate int
+	err := a.db.InTransaction(ctx, func(tx cmsql.QueryInterface) error {
+		for _, variant := range vs.VariantIDs {
+			create := &catalog.CreateVariantSupplier{
+				ShopID:     vs.ShopID,
+				SupplierID: vs.SupplierID,
+				VariantID:  variant,
+			}
+			_, errTrans := a.CreateVariantSupplier(ctx, create)
+			if errTrans != nil {
+				return errTrans
+			}
+			lineCreate = lineCreate + 1
+		}
+		return nil
+	})
+	return lineCreate, err
+}
 
 func (a *Aggregate) DeleteVariantSupplier(ctx context.Context, variantID int64, supplierID int64, shopID int64) error {
 	if shopID == 0 {
@@ -546,4 +584,14 @@ func (a *Aggregate) DeleteVariantSupplier(ctx context.Context, variantID int64, 
 	}
 	err := query.DeleteVariantSupplier()
 	return err
+}
+
+func (a *Aggregate) deleteVariantsSupplier(ctx context.Context, variantIDs []int64, shopID int64) error {
+	if shopID == 0 {
+		return cm.Error(cm.InvalidArgument, "Missing shop_id in request", nil)
+	}
+	if variantIDs == nil {
+		return cm.Error(cm.InvalidArgument, "Missing varianIDs in request", nil)
+	}
+	return a.shopVariantSupplier(ctx).ShopID(shopID).VariantIDs(variantIDs...).DeleteVariantSupplier()
 }

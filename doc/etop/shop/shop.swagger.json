@@ -3007,6 +3007,32 @@
         ]
       }
     },
+    "/api/shop.Product/GetVariantsBySupplierID": {
+      "post": {
+        "operationId": "GetVariantsBySupplierID",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/shopShopVariantsResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/shopGetVariantsBySupplierIDRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Product"
+        ]
+      }
+    },
     "/api/shop.Product/RemoveProductCategory": {
       "post": {
         "operationId": "RemoveProductCategory",
@@ -4587,6 +4613,32 @@
             "required": true,
             "schema": {
               "$ref": "#/definitions/cmIDsRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Supplier"
+        ]
+      }
+    },
+    "/api/shop.Supplier/GetSuppliersByVariantID": {
+      "post": {
+        "operationId": "GetSuppliersByVariantID",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/shopSuppliersResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/shopGetSuppliersByVariantIDRequest"
             }
           }
         ],
@@ -9600,6 +9652,15 @@
         }
       }
     },
+    "shopGetSuppliersByVariantIDRequest": {
+      "type": "object",
+      "properties": {
+        "variant_id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
     "shopGetSuppliersRequest": {
       "type": "object",
       "properties": {
@@ -9611,6 +9672,15 @@
           "items": {
             "$ref": "#/definitions/cmFilter"
           }
+        }
+      }
+    },
+    "shopGetVariantsBySupplierIDRequest": {
+      "type": "object",
+      "properties": {
+        "supplier_id": {
+          "type": "string",
+          "format": "int64"
         }
       }
     },

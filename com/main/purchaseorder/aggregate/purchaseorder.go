@@ -343,7 +343,6 @@ func (a *PurchaseOrderAggregate) ConfirmPurchaseOrder(
 		if err != nil {
 			return err
 		}
-
 		event := &purchaseorder.PurchaseOrderConfirmedEvent{
 			ShopID:               args.ShopID,
 			PurchaseOrderCode:    purchaseOrder.Code,
@@ -357,7 +356,6 @@ func (a *PurchaseOrderAggregate) ConfirmPurchaseOrder(
 		if err := a.eventBus.Publish(ctx, event); err != nil {
 			return err
 		}
-
 		return nil
 	})
 	if err != nil {

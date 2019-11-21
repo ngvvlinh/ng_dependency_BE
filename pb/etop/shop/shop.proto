@@ -168,6 +168,8 @@ service ProductService {
     rpc UpdateVariantAttributes (UpdateVariantAttributesRequest) returns (ShopVariant);
     rpc RemoveVariants (RemoveVariantsRequest) returns (cm.RemovedResponse);
 
+    rpc GetVariantsBySupplierID(GetVariantsBySupplierIDRequest) returns (ShopVariantsResponse);
+
     //-- category --//
     rpc UpdateProductCategory(UpdateProductCategoryRequest) returns (ShopProduct);
     rpc RemoveProductCategory(cm.IDRequest) returns (ShopProduct);
@@ -306,6 +308,8 @@ service SupplierService {
     rpc CreateSupplier(CreateSupplierRequest) returns (Supplier);
     rpc UpdateSupplier(UpdateSupplierRequest) returns (Supplier);
     rpc DeleteSupplier(cm.IDRequest) returns (cm.DeletedResponse);
+    rpc GetSuppliersByVariantID(GetSuppliersByVariantIDRequest) returns (SuppliersResponse);
+
 }
 
 service CarrierService {
@@ -1958,4 +1962,12 @@ message StocktakeLine {
 message ConfirmStocktakeRequest {
     optional int64 id = 1 [(gogoproto.nullable) = false];
     optional string auto_inventory_voucher = 2 [(gogoproto.nullable) = false];
+}
+
+message GetVariantsBySupplierIDRequest {
+    optional int64 supplier_id = 1 [(gogoproto.nullable) = false];
+}
+
+message GetSuppliersByVariantIDRequest {
+ optional int64 variant_id = 1 [(gogoproto.nullable) = false];
 }

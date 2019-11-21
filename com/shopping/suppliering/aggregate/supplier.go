@@ -152,5 +152,12 @@ func (a *SupplierAggregate) DeleteSupplier(
 	if err := a.eventBus.Publish(ctx, event); err != nil {
 		return 0, err
 	}
+	eventDeleVariantSupplier := &suppliering.VariantSupplierDeletedEvent{
+		ShopID:     shopID,
+		SupplierID: ID,
+	}
+	if err := a.eventBus.Publish(ctx, eventDeleVariantSupplier); err != nil {
+		return 0, err
+	}
 	return deleted, err
 }

@@ -2,7 +2,11 @@ package suppliering
 
 import (
 	"time"
+
+	"etop.vn/api/meta"
 )
+
+// +gen:event:topic=event/suppliering
 
 type ShopSupplier struct {
 	ID                int64
@@ -19,4 +23,11 @@ type ShopSupplier struct {
 	Status            int32
 	CreatedAt         time.Time
 	UpdatedAt         time.Time
+}
+
+type VariantSupplierDeletedEvent struct {
+	meta.EventMeta
+
+	SupplierID int64
+	ShopID     int64
 }

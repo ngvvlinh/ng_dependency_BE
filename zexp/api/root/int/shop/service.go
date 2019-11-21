@@ -138,7 +138,7 @@ type ProductAPI interface {
 	UpdateVariantsStatus(context.Context, *shop.UpdateProductStatusRequest) (*shop.UpdateProductStatusResponse, error)
 	UpdateVariantAttributes(context.Context, *shop.UpdateVariantAttributesRequest) (*shop.ShopVariant, error)
 	RemoveVariants(context.Context, *shop.RemoveVariantsRequest) (*cm.RemovedResponse, error)
-
+	GetVariantsBySupplierID(context.Context, *shop.GetVariantsBySupplierIDRequest) (*shop.ShopVariantsResponse, error)
 	//-- category --//
 	UpdateProductCategory(context.Context, *shop.UpdateProductCategoryRequest) (*shop.ShopProduct, error)
 	RemoveProductCategory(context.Context, *cm.IDRequest) (*shop.ShopProduct, error)
@@ -291,6 +291,7 @@ type SupplierAPI interface {
 	CreateSupplier(context.Context, *shop.CreateSupplierRequest) (*shop.Supplier, error)
 	UpdateSupplier(context.Context, *shop.UpdateSupplierRequest) (*shop.Supplier, error)
 	DeleteSupplier(context.Context, *cm.IDRequest) (*cm.DeletedResponse, error)
+	GetSuppliersByVariantID(context.Context, *shop.GetSuppliersByVariantIDRequest) (*shop.SuppliersResponse, error)
 }
 
 // +apix:path=/shop.Carrier

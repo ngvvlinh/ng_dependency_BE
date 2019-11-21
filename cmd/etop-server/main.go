@@ -332,7 +332,7 @@ func main() {
 	identityQuery = serviceidentity.NewQueryService(db).MessageBus()
 	catalogQuery := catalogquery.New(db).MessageBus()
 	catalogAggr := catalogaggregate.New(eventBus, db).MessageBus()
-	catalogPm := catalogpm.New(eventBus, catalogQuery)
+	catalogPm := catalogpm.New(eventBus, catalogQuery, catalogAggr)
 	catalogPm.RegisterEventHandlers(eventBus)
 
 	addressQuery := address.NewQueryService(db).MessageBus()

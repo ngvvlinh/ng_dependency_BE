@@ -3,6 +3,8 @@ package shop
 import (
 	"context"
 
+	"etop.vn/api/main/catalog"
+
 	"etop.vn/api/main/etop"
 	"etop.vn/api/main/purchaseorder"
 	"etop.vn/api/main/receipting"
@@ -167,6 +169,29 @@ func (s *SupplierService) listLiabilities(ctx context.Context, shopID int64, sup
 			PaidAmount:          mapSupplierIDAndTotalAmountReceipts[supplier.Id],
 			Liability:           mapSupplierIDAndTotalAmountPurchaseOrders[supplier.Id] - mapSupplierIDAndTotalAmountReceipts[supplier.Id],
 		}
+	}
+	return nil
+}
+
+func (s *SupplierService) GetSuppliersByVariantID(ctx context.Context, r *GetSuppliersByVariantIDEndpoint) error {
+	query := &catalog.GetSupplierIDsByVariantIDQuery{
+		VariantID: r.VariantId,
+		ShopID:    r.Context.Shop.ID,
+	}
+	if err := catalogQuery.Dispatch(ctx, query); err != nil {
+		return err
+	}
+	querySuppplies := &suppliering.ListSuppliersByIDsQuery{
+		IDs:    query.Result,
+		ShopID: r.Context.Shop.ID,
+	}
+	if err := supplierQuery.Dispatch(ctx, querySuppplies); err != nil {
+		return err
+	}
+	r.Result = &pbshop.SuppliersResponse{Suppliers: pbshop.PbSuppliers(querySuppplies.Result.Suppliers)}
+
+	if err := s.listLiabilities(ctx, r.Context.Shop.ID, r.Result.Suppliers); err != nil {
+		return err
 	}
 	return nil
 }

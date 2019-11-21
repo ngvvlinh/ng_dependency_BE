@@ -17,18 +17,18 @@ import (
 
 var scheme = conversion.Build(convert.RegisterConversions)
 
-type ShopVariantSupplierStoreFactory func(ctx context.Context) *SupplierVariantStore
+type ShopVariantSupplierStoreFactory func(ctx context.Context) *VariantSupplierStore
 
-func NewSupplierVariantStore(db *cmsql.Database) ShopVariantSupplierStoreFactory {
+func NewVariantSupplierStore(db *cmsql.Database) ShopVariantSupplierStoreFactory {
 	model.SQLVerifySchema(db)
-	return func(ctx context.Context) *SupplierVariantStore {
-		return &SupplierVariantStore{
+	return func(ctx context.Context) *VariantSupplierStore {
+		return &VariantSupplierStore{
 			query: cmsql.NewQueryFactory(ctx, db),
 		}
 	}
 }
 
-type SupplierVariantStore struct {
+type VariantSupplierStore struct {
 	ft ShopVariantSupplierFilters
 
 	query   cmsql.QueryFactory
@@ -39,16 +39,16 @@ type SupplierVariantStore struct {
 	includeDeleted sqlstore.IncludeDeleted
 }
 
-func (s *SupplierVariantStore) Paging(paging meta.Paging) *SupplierVariantStore {
+func (s *VariantSupplierStore) Paging(paging meta.Paging) *VariantSupplierStore {
 	s.paging = paging
 	return s
 }
 
-func (s *SupplierVariantStore) GetPaging() meta.PageInfo {
+func (s *VariantSupplierStore) GetPaging() meta.PageInfo {
 	return meta.FromPaging(s.paging)
 }
 
-func (s *SupplierVariantStore) Filters(filters meta.Filters) *SupplierVariantStore {
+func (s *VariantSupplierStore) Filters(filters meta.Filters) *VariantSupplierStore {
 	if s.filters == nil {
 		s.filters = filters
 	} else {
@@ -57,32 +57,32 @@ func (s *SupplierVariantStore) Filters(filters meta.Filters) *SupplierVariantSto
 	return s
 }
 
-func (s *SupplierVariantStore) VariantID(variantID int64) *SupplierVariantStore {
+func (s *VariantSupplierStore) VariantID(variantID int64) *VariantSupplierStore {
 	s.preds = append(s.preds, s.ft.ByVariantID(variantID))
 	return s
 }
 
-func (s *SupplierVariantStore) VariantIDs(variantIDs ...int64) *SupplierVariantStore {
+func (s *VariantSupplierStore) VariantIDs(variantIDs ...int64) *VariantSupplierStore {
 	s.preds = append(s.preds, sq.PrefixedIn(&s.ft.prefix, "variant_id", variantIDs))
 	return s
 }
 
-func (s *SupplierVariantStore) SupplierID(supplierID int64) *SupplierVariantStore {
+func (s *VariantSupplierStore) SupplierID(supplierID int64) *VariantSupplierStore {
 	s.preds = append(s.preds, s.ft.BySupplierID(supplierID))
 	return s
 }
 
-func (s *SupplierVariantStore) SupplierIDs(supplierIDs ...int64) *SupplierVariantStore {
+func (s *VariantSupplierStore) SupplierIDs(supplierIDs ...int64) *VariantSupplierStore {
 	s.preds = append(s.preds, sq.PrefixedIn(&s.ft.prefix, "Supplier_id", supplierIDs))
 	return s
 }
 
-func (s *SupplierVariantStore) ShopID(id int64) *SupplierVariantStore {
+func (s *VariantSupplierStore) ShopID(id int64) *VariantSupplierStore {
 	s.preds = append(s.preds, s.ft.ByShopID(id))
 	return s
 }
 
-func (s *SupplierVariantStore) CreateVariantSupplier(vs *catalog.ShopVariantSupplier) error {
+func (s *VariantSupplierStore) CreateVariantSupplier(vs *catalog.ShopVariantSupplier) error {
 	sqlstore.MustNoPreds(s.preds)
 
 	var vsDB = &model.ShopVariantSupplier{}
@@ -93,13 +93,13 @@ func (s *SupplierVariantStore) CreateVariantSupplier(vs *catalog.ShopVariantSupp
 	return err
 }
 
-func (s *SupplierVariantStore) DeleteVariantSupplier() error {
+func (s *VariantSupplierStore) DeleteVariantSupplier() error {
 	query := s.query().Where(s.preds)
-	err := query.ShouldDelete(&model.ShopCategory{})
+	err := query.ShouldDelete(&model.ShopVariantSupplier{})
 	return err
 }
 
-func (s *SupplierVariantStore) ListVariantSupplier() ([]*model.ShopVariantSupplier, error) {
+func (s *VariantSupplierStore) ListVariantSupplier() ([]*model.ShopVariantSupplier, error) {
 	query := s.query().Where(s.preds)
 	s.paging.Sort = []string{"-created_at"}
 
