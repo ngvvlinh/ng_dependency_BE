@@ -39,8 +39,9 @@ func (c QueryBus) DispatchAll(ctx context.Context, msgs ...Query) error {
 }
 
 type CancelStocktakeCommand struct {
-	Id     int64
-	ShopID int64
+	ShopID       int64
+	ID           int64
+	CancelReason string
 
 	Result *ShopStocktake `json:"-"`
 }
@@ -145,10 +146,19 @@ func (q *ListStocktakeQuery) query()        {}
 
 // implement conversion
 
-func (q *CancelStocktakeCommand) GetArgs(ctx context.Context) (_ context.Context, id int64, shopID int64) {
+func (q *CancelStocktakeCommand) GetArgs(ctx context.Context) (_ context.Context, _ *CancelStocktakeRequest) {
 	return ctx,
-		q.Id,
-		q.ShopID
+		&CancelStocktakeRequest{
+			ShopID:       q.ShopID,
+			ID:           q.ID,
+			CancelReason: q.CancelReason,
+		}
+}
+
+func (q *CancelStocktakeCommand) SetCancelStocktakeRequest(args *CancelStocktakeRequest) {
+	q.ShopID = args.ShopID
+	q.ID = args.ID
+	q.CancelReason = args.CancelReason
 }
 
 func (q *ConfirmStocktakeCommand) GetArgs(ctx context.Context) (_ context.Context, _ *ConfirmStocktakeRequest) {

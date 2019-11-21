@@ -17,7 +17,7 @@ type Aggregate interface {
 
 	ConfirmStocktake(context.Context, *ConfirmStocktakeRequest) (*ShopStocktake, error)
 
-	CancelStocktake(ctx context.Context, id int64, shopID int64) (*ShopStocktake, error)
+	CancelStocktake(context.Context, *CancelStocktakeRequest) (*ShopStocktake, error)
 }
 
 type QueryService interface {
@@ -45,6 +45,17 @@ type UpdateStocktakeRequest struct {
 	UpdatedBy     int64
 	Lines         []*StocktakeLine
 	Note          string
+}
+
+type CancelStocktakeRequest struct {
+	ShopID       int64
+	ID           int64
+	CancelReason string
+}
+
+type CancelStockatakeResponse struct {
+	Stocktake    ShopStocktake
+	CancelReason string
 }
 
 type ConfirmStocktakeRequest struct {

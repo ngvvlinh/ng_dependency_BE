@@ -16,6 +16,7 @@ type ShopStocktake struct {
 	TotalQuantity int32
 	CreatedBy     int64
 	UpdatedBy     int64
+	CancelReason  string
 	Code          string
 	CodeNorm      int32
 	Status        model.Status3

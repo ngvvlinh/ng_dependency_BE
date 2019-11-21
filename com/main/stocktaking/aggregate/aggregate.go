@@ -114,16 +114,17 @@ func (q *StocktakeAggregate) ConfirmStocktake(ctx context.Context, args *stockta
 	return stocktakeDB, nil
 }
 
-func (q *StocktakeAggregate) CancelStocktake(ctx context.Context, id int64, shopID int64) (*stocktake.ShopStocktake, error) {
-	stocktakeDB, err := q.StocktakeStore(ctx).ShopID(shopID).ID(id).GetShopStocktake()
+func (q *StocktakeAggregate) CancelStocktake(ctx context.Context, args *stocktake.CancelStocktakeRequest) (*stocktake.ShopStocktake, error) {
+	stocktake, err := q.StocktakeStore(ctx).ShopID(args.ShopID).ID(args.ID).GetShopStocktake()
 	if err != nil {
 		return nil, err
 	}
-	if stocktakeDB.Status != etop.S3Zero {
+	if stocktake.Status != etop.S3Zero {
 		return nil, cm.Error(cm.InvalidArgument, "Stocktake đã được xác nhận hoặc hủy bỏ, Vui lòng kiểm tra lại", nil)
 	}
-	stocktakeDB.CancelledAt = time.Now()
-	stocktakeDB.Status = etop.S3Negative
-	err = q.StocktakeStore(ctx).ShopID(shopID).ID(id).UpdateAll(stocktakeDB)
-	return stocktakeDB, nil
+	stocktake.CancelledAt = time.Now()
+	stocktake.Status = etop.S3Negative
+	stocktake.CancelReason = args.CancelReason
+	err = q.StocktakeStore(ctx).ShopID(args.ShopID).ID(args.ID).UpdateAll(stocktake)
+	return stocktake, nil
 }

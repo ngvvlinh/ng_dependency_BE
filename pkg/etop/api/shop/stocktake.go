@@ -168,8 +168,9 @@ func (s *StocktakeService) ConfirmStocktake(ctx context.Context, q *ConfirmStock
 func (s *StocktakeService) CancelStocktake(ctx context.Context, q *CancelStocktakeEndpoint) error {
 	shopID := q.Context.Shop.ID
 	cmd := &stocktaking.CancelStocktakeCommand{
-		ShopID: shopID,
-		Id:     q.Id,
+		ShopID:       shopID,
+		ID:           q.StocktakeId,
+		CancelReason: q.CancelReason,
 	}
 	err := StocktakeAggregate.Dispatch(ctx, cmd)
 	if err != nil {

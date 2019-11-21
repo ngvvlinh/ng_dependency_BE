@@ -119,6 +119,25 @@ func (ft *ShopStocktakeFilters) ByUpdatedByPtr(UpdatedBy *int64) *sq.ColumnFilte
 	}
 }
 
+func (ft *ShopStocktakeFilters) ByCancelReason(CancelReason string) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "cancel_reason",
+		Value:  CancelReason,
+		IsNil:  CancelReason == "",
+	}
+}
+
+func (ft *ShopStocktakeFilters) ByCancelReasonPtr(CancelReason *string) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "cancel_reason",
+		Value:  CancelReason,
+		IsNil:  CancelReason == nil,
+		IsZero: CancelReason != nil && (*CancelReason) == "",
+	}
+}
+
 func (ft *ShopStocktakeFilters) ByCode(Code string) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,

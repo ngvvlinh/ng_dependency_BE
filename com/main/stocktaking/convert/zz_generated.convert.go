@@ -163,6 +163,7 @@ func convert_stocktakingmodel_ShopStocktake_stocktaking_ShopStocktake(arg *stock
 	out.TotalQuantity = arg.TotalQuantity // simple assign
 	out.CreatedBy = arg.CreatedBy         // simple assign
 	out.UpdatedBy = arg.UpdatedBy         // simple assign
+	out.CancelReason = arg.CancelReason   // simple assign
 	out.Note = arg.Note                   // simple assign
 	out.Code = arg.Code                   // simple assign
 	out.CodeNorm = arg.CodeNorm           // simple assign
@@ -200,6 +201,7 @@ func convert_stocktaking_ShopStocktake_stocktakingmodel_ShopStocktake(arg *stock
 	out.TotalQuantity = arg.TotalQuantity      // simple assign
 	out.CreatedBy = arg.CreatedBy              // simple assign
 	out.UpdatedBy = arg.UpdatedBy              // simple assign
+	out.CancelReason = arg.CancelReason        // simple assign
 	out.Code = arg.Code                        // simple assign
 	out.CodeNorm = arg.CodeNorm                // simple assign
 	out.Status = etopmodel.Status3(arg.Status) // simple conversion
@@ -230,6 +232,7 @@ func apply_stocktaking_CreateStocktakeRequest_stocktaking_ShopStocktake(arg *sto
 	out.TotalQuantity = arg.TotalQuantity // simple assign
 	out.CreatedBy = arg.CreatedBy         // simple assign
 	out.UpdatedBy = 0                     // zero value
+	out.CancelReason = ""                 // zero value
 	out.Note = arg.Note                   // simple assign
 	out.Code = ""                         // zero value
 	out.CodeNorm = 0                      // zero value
@@ -251,6 +254,7 @@ func apply_stocktaking_UpdateStocktakeRequest_stocktaking_ShopStocktake(arg *sto
 	out.TotalQuantity = arg.TotalQuantity // simple assign
 	out.CreatedBy = out.CreatedBy         // no change
 	out.UpdatedBy = arg.UpdatedBy         // simple assign
+	out.CancelReason = out.CancelReason   // no change
 	out.Note = arg.Note                   // simple assign
 	out.Code = out.Code                   // no change
 	out.CodeNorm = out.CodeNorm           // no change

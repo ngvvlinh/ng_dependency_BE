@@ -1965,7 +1965,7 @@ func (s *StocktakeServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.R
 func (s *StocktakeServiceServer) parseRoute(path string) (reqMsg proto.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
 	case "/shop.Stocktake/CancelStocktake":
-		msg := new(common.IDRequest)
+		msg := new(shop.CancelStocktakeRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.StocktakeAPI.CancelStocktake(ctx, msg)
 		}

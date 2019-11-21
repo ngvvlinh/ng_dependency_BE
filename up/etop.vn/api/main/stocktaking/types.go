@@ -23,8 +23,9 @@ type ShopStocktake struct {
 	ShopID        int64
 	TotalQuantity int32
 
-	CreatedBy int64
-	UpdatedBy int64
+	CreatedBy    int64
+	UpdatedBy    int64
+	CancelReason string
 
 	Note     string
 	Code     string

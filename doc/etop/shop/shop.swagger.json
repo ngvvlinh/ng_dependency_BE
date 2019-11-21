@@ -4248,7 +4248,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/cmIDRequest"
+              "$ref": "#/definitions/shopCancelStocktakeRequest"
             }
           }
         ],
@@ -8053,6 +8053,18 @@
         }
       }
     },
+    "shopCancelStocktakeRequest": {
+      "type": "object",
+      "properties": {
+        "stocktake_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "cancel_reason": {
+          "type": "string"
+        }
+      }
+    },
     "shopCarrier": {
       "type": "object",
       "properties": {
@@ -10811,6 +10823,9 @@
           "type": "string"
         },
         "code": {
+          "type": "string"
+        },
+        "cancel_reason": {
           "type": "string"
         },
         "created_by": {

@@ -7683,12 +7683,12 @@ type wrapStocktakeService struct {
 }
 
 type CancelStocktakeEndpoint struct {
-	*cm.IDRequest
+	*api.CancelStocktakeRequest
 	Result  *api.Stocktake
 	Context claims.ShopClaim
 }
 
-func (s wrapStocktakeService) CancelStocktake(ctx context.Context, req *cm.IDRequest) (resp *api.Stocktake, err error) {
+func (s wrapStocktakeService) CancelStocktake(ctx context.Context, req *api.CancelStocktakeRequest) (resp *api.Stocktake, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -7708,7 +7708,7 @@ func (s wrapStocktakeService) CancelStocktake(ctx context.Context, req *cm.IDReq
 		return nil, err
 	}
 	session = sessionQuery.Result
-	query := &CancelStocktakeEndpoint{IDRequest: req}
+	query := &CancelStocktakeEndpoint{CancelStocktakeRequest: req}
 	query.Context.Claim = session.Claim
 	query.Context.Shop = session.Shop
 	query.Context.IsOwner = session.IsOwner

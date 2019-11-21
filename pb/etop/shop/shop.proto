@@ -45,7 +45,7 @@ service StocktakeService {
     rpc CreateStocktake(CreateStocktakeRequest) returns (Stocktake);
     rpc UpdateStocktake(UpdateStocktakeRequest) returns (Stocktake);
     rpc ConfirmStocktake(ConfirmStocktakeRequest) returns (Stocktake);
-    rpc CancelStocktake(cm.IDRequest) returns (Stocktake);
+    rpc CancelStocktake(CancelStocktakeRequest) returns (Stocktake);
 
     rpc GetStocktake(cm.IDRequest) returns (Stocktake);
     rpc GetStocktakesByIDs(cm.IDsRequest) returns (GetStocktakesByIDsResponse);
@@ -1924,6 +1924,7 @@ message Stocktake {
     optional int32 total_quantity = 3 [(gogoproto.nullable) = false];
     optional string note = 4 [(gogoproto.nullable) = false];
     optional string code = 13 [(gogoproto.nullable)=false];
+    optional string cancel_reason = 14 [(gogoproto.nullable)=false];
 
     optional int64 created_by = 5 [(gogoproto.nullable) = false];
     optional int64 updated_by = 6 [(gogoproto.nullable) = false];
@@ -1969,5 +1970,10 @@ message GetVariantsBySupplierIDRequest {
 }
 
 message GetSuppliersByVariantIDRequest {
- optional int64 variant_id = 1 [(gogoproto.nullable) = false];
+    optional int64 variant_id = 1 [(gogoproto.nullable) = false];
+}
+
+message CancelStocktakeRequest {
+    optional int64 stocktake_id = 1 [(gogoproto.nullable) = false];
+    optional string cancel_reason = 2 [(gogoproto.nullable) = false];
 }

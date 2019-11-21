@@ -66,6 +66,7 @@ func PbStocktake(args *stocktaking.ShopStocktake) *pbshop.Stocktake {
 		Note:          args.Note,
 		CreatedBy:     args.CreatedBy,
 		UpdatedBy:     args.UpdatedBy,
+		CancelReason:  args.CancelReason,
 		CreatedAt:     pbcm.PbTime(args.CreatedAt),
 		UpdatedAt:     pbcm.PbTime(args.UpdatedAt),
 		ConfirmedAt:   pbcm.PbTime(args.ConfirmedAt),

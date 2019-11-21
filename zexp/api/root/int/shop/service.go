@@ -331,7 +331,7 @@ type StocktakeAPI interface {
 	CreateStocktake(context.Context, *shop.CreateStocktakeRequest) (*shop.Stocktake, error)
 	UpdateStocktake(context.Context, *shop.UpdateStocktakeRequest) (*shop.Stocktake, error)
 	ConfirmStocktake(context.Context, *shop.ConfirmStocktakeRequest) (*shop.Stocktake, error)
-	CancelStocktake(context.Context, *cm.IDRequest) (*shop.Stocktake, error)
+	CancelStocktake(context.Context, *shop.CancelStocktakeRequest) (*shop.Stocktake, error)
 
 	GetStocktake(context.Context, *cm.IDRequest) (*shop.Stocktake, error)
 	GetStocktakesByIDs(context.Context, *cm.IDsRequest) (*shop.GetStocktakesByIDsResponse, error)
