@@ -4,10 +4,9 @@ import (
 	"context"
 	"time"
 
-	"etop.vn/capi/dot"
-
 	"etop.vn/api/main/etop"
 	"etop.vn/api/meta"
+	"etop.vn/capi/dot"
 )
 
 // +gen:api
@@ -30,6 +29,8 @@ type Aggregate interface {
 	CreateInventoryVoucherByQuantityChange(context.Context, *CreateInventoryVoucherByQuantityChangeRequest) (*CreateInventoryVoucherByQuantityChangeResponse, error)
 
 	CreateInventoryVoucherByReference(context.Context, *CreateInventoryVoucherByReferenceArgs) ([]*InventoryVoucher, error)
+
+	UpdateInventoryVariantCostPrice(context.Context, *UpdateInventoryVariantCostPriceRequest) (*InventoryVariant, error)
 }
 
 type QueryService interface {
@@ -257,4 +258,10 @@ type CreateInventoryVoucherByReferenceArgs struct {
 	ShopID    int64
 	UserID    int64
 	OverStock bool
+}
+
+type UpdateInventoryVariantCostPriceRequest struct {
+	ShopID    int64
+	VariantID int64
+	CostPrice int32
 }

@@ -998,6 +998,12 @@ func (s *InventoryServiceServer) parseRoute(path string) (reqMsg proto.Message, 
 			return s.InventoryAPI.GetInventoryVouchersByReference(ctx, msg)
 		}
 		return msg, fn, nil
+	case "/shop.Inventory/UpdateInventoryVariantCostPrice":
+		msg := new(shop.UpdateInventoryVariantCostPriceRequest)
+		fn := func(ctx context.Context) (proto.Message, error) {
+			return s.InventoryAPI.UpdateInventoryVariantCostPrice(ctx, msg)
+		}
+		return msg, fn, nil
 	case "/shop.Inventory/UpdateInventoryVoucher":
 		msg := new(shop.UpdateInventoryVoucherRequest)
 		fn := func(ctx context.Context) (proto.Message, error) {

@@ -7,10 +7,8 @@ import (
 	"etop.vn/api/meta"
 	"etop.vn/api/shopping/tradering"
 	pbcm "etop.vn/backend/pb/common"
-	pbs4 "etop.vn/backend/pb/etop/etc/status4"
 	pbshop "etop.vn/backend/pb/etop/shop"
 	cm "etop.vn/backend/pkg/common"
-	"etop.vn/backend/pkg/etop/model"
 	. "etop.vn/capi/dot"
 )
 
@@ -160,8 +158,7 @@ func (s *InventoryService) GetInventoryVouchersByReference(ctx context.Context, 
 		return err
 	}
 	q.Result = &pbshop.GetInventoryVouchersByReferenceResponse{
-		InventoryVoucher: PbShopInventoryVouchers(query.Result.InventoryVouchers),
-		Status:           pbs4.Pb(model.Status4(query.Result.Status)),
+		InventoryVouchers: PbShopInventoryVouchers(query.Result.InventoryVouchers),
 	}
 	return nil
 }
@@ -286,6 +283,22 @@ func (s *InventoryService) GetInventoryVouchersByIDs(ctx context.Context, q *Get
 	}
 	q.Result = &pbshop.GetInventoryVouchersResponse{
 		InventoryVouchers: PbShopInventoryVouchers(query.Result.InventoryVoucher),
+	}
+	return nil
+}
+
+func (s *InventoryService) UpdateInventoryVariantCostPrice(ctx context.Context, q *UpdateInventoryVariantCostPriceEndpoint) error {
+	cmd := &inventory.UpdateInventoryVariantCostPriceCommand{
+		ShopID:    q.Context.Shop.ID,
+		VariantID: q.VariantId,
+		CostPrice: q.CostPrice,
+	}
+	err := inventoryAggregate.Dispatch(ctx, cmd)
+	if err != nil {
+		return err
+	}
+	q.Result = &pbshop.UpdateInventoryVariantCostPriceResponse{
+		InventoryVariant: PbInventory(cmd.Result),
 	}
 	return nil
 }

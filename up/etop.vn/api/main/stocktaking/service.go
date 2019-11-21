@@ -53,11 +53,6 @@ type CancelStocktakeRequest struct {
 	CancelReason string
 }
 
-type CancelStockatakeResponse struct {
-	Stocktake    ShopStocktake
-	CancelReason string
-}
-
 type ConfirmStocktakeRequest struct {
 	ID                   int64
 	ShopID               int64

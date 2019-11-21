@@ -34,6 +34,7 @@ type InventoryAPI interface {
 	CancelInventoryVoucher(context.Context, *shop.CancelInventoryVoucherRequest) (*shop.CancelInventoryVoucherResponse, error)
 	UpdateInventoryVoucher(context.Context, *shop.UpdateInventoryVoucherRequest) (*shop.UpdateInventoryVoucherResponse, error)
 	AdjustInventoryQuantity(context.Context, *shop.AdjustInventoryQuantityRequest) (*shop.AdjustInventoryQuantityResponse, error)
+	UpdateInventoryVariantCostPrice(context.Context, *shop.UpdateInventoryVariantCostPriceRequest) (*shop.UpdateInventoryVariantCostPriceResponse, error)
 
 	GetInventoryVariant(context.Context, *shop.GetInventoryVariantRequest) (*shop.InventoryVariant, error)
 	GetInventoryVariants(context.Context, *shop.GetInventoryVariantsRequest) (*shop.GetInventoryVariantsResponse, error)

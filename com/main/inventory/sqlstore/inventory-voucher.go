@@ -3,14 +3,14 @@ package sqlstore
 import (
 	"context"
 
-	"etop.vn/backend/com/main/inventory/convert"
-
 	"etop.vn/api/main/etop"
 	"etop.vn/api/main/inventory"
 	"etop.vn/api/meta"
+	"etop.vn/backend/com/main/inventory/convert"
 	"etop.vn/backend/com/main/inventory/model"
 	"etop.vn/backend/pkg/common/cmsql"
 	"etop.vn/backend/pkg/common/sq"
+	"etop.vn/backend/pkg/common/sq/core"
 	"etop.vn/backend/pkg/common/sqlstore"
 )
 
@@ -64,6 +64,11 @@ func (s *InventoryVoucherStore) Status(status etop.Status3) *InventoryVoucherSto
 
 func (s *InventoryVoucherStore) ShopID(id int64) *InventoryVoucherStore {
 	s.preds = append(s.preds, s.ft.ByShopID(id))
+	return s
+}
+
+func (s *InventoryVoucherStore) VariantId(id int64) *InventoryVoucherStore {
+	s.preds = append(s.preds, sq.NewExpr("variant_ids @> ?", core.Array{V: []int64{id}}))
 	return s
 }
 

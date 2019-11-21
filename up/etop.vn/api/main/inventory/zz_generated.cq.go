@@ -166,6 +166,19 @@ func (h AggregateHandler) HandleCreateInventoryVoucherByReference(ctx context.Co
 	return err
 }
 
+type UpdateInventoryVariantCostPriceCommand struct {
+	ShopID    int64
+	VariantID int64
+	CostPrice int32
+
+	Result *InventoryVariant `json:"-"`
+}
+
+func (h AggregateHandler) HandleUpdateInventoryVariantCostPrice(ctx context.Context, msg *UpdateInventoryVariantCostPriceCommand) (err error) {
+	msg.Result, err = h.inner.UpdateInventoryVariantCostPrice(msg.GetArgs(ctx))
+	return err
+}
+
 type UpdateInventoryVoucherCommand struct {
 	ID          int64
 	ShopID      int64
@@ -294,6 +307,7 @@ func (q *CreateInventoryVariantCommand) command()                 {}
 func (q *CreateInventoryVoucherCommand) command()                 {}
 func (q *CreateInventoryVoucherByQuantityChangeCommand) command() {}
 func (q *CreateInventoryVoucherByReferenceCommand) command()      {}
+func (q *UpdateInventoryVariantCostPriceCommand) command()        {}
 func (q *UpdateInventoryVoucherCommand) command()                 {}
 func (q *GetInventoryVariantQuery) query()                        {}
 func (q *GetInventoryVariantsQuery) query()                       {}
@@ -472,6 +486,21 @@ func (q *CreateInventoryVoucherByReferenceCommand) SetCreateInventoryVoucherByRe
 	q.OverStock = args.OverStock
 }
 
+func (q *UpdateInventoryVariantCostPriceCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateInventoryVariantCostPriceRequest) {
+	return ctx,
+		&UpdateInventoryVariantCostPriceRequest{
+			ShopID:    q.ShopID,
+			VariantID: q.VariantID,
+			CostPrice: q.CostPrice,
+		}
+}
+
+func (q *UpdateInventoryVariantCostPriceCommand) SetUpdateInventoryVariantCostPriceRequest(args *UpdateInventoryVariantCostPriceRequest) {
+	q.ShopID = args.ShopID
+	q.VariantID = args.VariantID
+	q.CostPrice = args.CostPrice
+}
+
 func (q *UpdateInventoryVoucherCommand) GetArgs(ctx context.Context) (_ context.Context, _ *UpdateInventoryVoucherArgs) {
 	return ctx,
 		&UpdateInventoryVoucherArgs{
@@ -600,6 +629,7 @@ func (h AggregateHandler) RegisterHandlers(b interface {
 	b.AddHandler(h.HandleCreateInventoryVoucher)
 	b.AddHandler(h.HandleCreateInventoryVoucherByQuantityChange)
 	b.AddHandler(h.HandleCreateInventoryVoucherByReference)
+	b.AddHandler(h.HandleUpdateInventoryVariantCostPrice)
 	b.AddHandler(h.HandleUpdateInventoryVoucher)
 	return CommandBus{b}
 }

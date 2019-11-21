@@ -623,6 +623,47 @@ func (q *InventoryAggregate) CreateInventoryVoucherByQuantityChange(ctx context.
 	}, nil
 }
 
+func (q *InventoryAggregate) UpdateInventoryVariantCostPrice(ctx context.Context, args *inventory.UpdateInventoryVariantCostPriceRequest) (*inventory.InventoryVariant, error) {
+	if args.ShopID == 0 || args.VariantID == 0 || args.CostPrice == 0 {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing shop_id, variant_id, cost_price")
+	}
+	inventoryVouchers, err := q.InventoryVoucherStore(ctx).ShopID(args.ShopID).RefType(string(inventory.RefTypePurchaseOrder)).VariantId(args.VariantID).ListInventoryVoucher()
+	if err != nil {
+		return nil, err
+	}
+	POExists := false
+	for _, value := range inventoryVouchers {
+		if value.Status == etop.S3Positive {
+			POExists = true
+			break
+		}
+	}
+	if POExists {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "Không thể cập nhập giá vốn cho phiên bản đã có phiếu nhập hàng đã xác nhận")
+	}
+	inventoryVariant, err := q.InventoryStore(ctx).ShopID(args.ShopID).VariantID(args.VariantID).Get()
+	switch cm.ErrorCode(err) {
+	case cm.NoError:
+	case cm.NotFound:
+		inventoryVariant, err = q.CreateInventoryVariant(ctx, &inventory.CreateInventoryVariantArgs{
+			ShopID:    args.ShopID,
+			VariantID: args.VariantID,
+		})
+		if err != nil {
+			return nil, err
+		}
+	default:
+		return nil, err
+	}
+	inventoryVariant.PurchasePrice = args.CostPrice
+	inventoryVariant.UpdatedAt = time.Now()
+	err = q.InventoryStore(ctx).VariantID(args.VariantID).ShopID(args.ShopID).UpdateInventoryVariantAll(inventoryVariant)
+	if err != nil {
+		return nil, err
+	}
+	return q.InventoryStore(ctx).ShopID(args.ShopID).VariantID(args.VariantID).Get()
+}
+
 func (q *InventoryAggregate) CreateInventoryVoucherByReference(ctx context.Context, args *inventory.CreateInventoryVoucherByReferenceArgs) ([]*inventory.InventoryVoucher, error) {
 	switch args.RefType {
 	case inventory.RefTypePurchaseOrder:

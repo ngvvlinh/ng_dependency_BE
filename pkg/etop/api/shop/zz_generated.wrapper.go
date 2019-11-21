@@ -3695,6 +3695,51 @@ func (s wrapInventoryService) GetInventoryVouchersByReference(ctx context.Contex
 	return resp, nil
 }
 
+type UpdateInventoryVariantCostPriceEndpoint struct {
+	*api.UpdateInventoryVariantCostPriceRequest
+	Result  *api.UpdateInventoryVariantCostPriceResponse
+	Context claims.ShopClaim
+}
+
+func (s wrapInventoryService) UpdateInventoryVariantCostPrice(ctx context.Context, req *api.UpdateInventoryVariantCostPriceRequest) (resp *api.UpdateInventoryVariantCostPriceResponse, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "shop.Inventory/UpdateInventoryVariantCostPrice"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:     ctx,
+		RequireAuth: true,
+		RequireShop: true,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &UpdateInventoryVariantCostPriceEndpoint{UpdateInventoryVariantCostPriceRequest: req}
+	query.Context.Claim = session.Claim
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	ctx = bus.NewRootContext(ctx)
+	err = s.s.UpdateInventoryVariantCostPrice(ctx, query)
+	resp = query.Result
+	if err != nil {
+		return nil, err
+	}
+	if resp == nil {
+		return nil, common.Error(common.Internal, "", nil).Log("nil response")
+	}
+	errs = cmwrapper.HasErrors(resp)
+	return resp, nil
+}
+
 type UpdateInventoryVoucherEndpoint struct {
 	*api.UpdateInventoryVoucherRequest
 	Result  *api.UpdateInventoryVoucherResponse

@@ -2070,6 +2070,32 @@
         ]
       }
     },
+    "/api/shop.Inventory/UpdateInventoryVariantCostPrice": {
+      "post": {
+        "operationId": "UpdateInventoryVariantCostPrice",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/shopUpdateInventoryVariantCostPriceResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/shopUpdateInventoryVariantCostPriceRequest"
+            }
+          }
+        ],
+        "tags": [
+          "Inventory"
+        ]
+      }
+    },
     "/api/shop.Inventory/UpdateInventoryVoucher": {
       "post": {
         "operationId": "UpdateInventoryVoucher",
@@ -9461,14 +9487,11 @@
     "shopGetInventoryVouchersByReferenceResponse": {
       "type": "object",
       "properties": {
-        "inventory_voucher": {
+        "inventory_vouchers": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/shopInventoryVoucher"
           }
-        },
-        "status": {
-          "$ref": "#/definitions/status4Status"
         }
       }
     },
@@ -9761,6 +9784,14 @@
         "quantity": {
           "type": "integer",
           "format": "int32"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "updated_at": {
+          "type": "string",
+          "format": "date-time"
         }
       }
     },
@@ -9860,6 +9891,9 @@
         },
         "trader": {
           "$ref": "#/definitions/shopTrader"
+        },
+        "status": {
+          "$ref": "#/definitions/status3Status"
         }
       }
     },
@@ -11321,6 +11355,27 @@
       "required": [
         "shipping_state"
       ]
+    },
+    "shopUpdateInventoryVariantCostPriceRequest": {
+      "type": "object",
+      "properties": {
+        "variant_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "cost_price": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "shopUpdateInventoryVariantCostPriceResponse": {
+      "type": "object",
+      "properties": {
+        "inventory_variant": {
+          "$ref": "#/definitions/shopInventoryVariant"
+        }
+      }
     },
     "shopUpdateInventoryVoucherRequest": {
       "type": "object",

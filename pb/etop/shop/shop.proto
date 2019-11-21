@@ -49,7 +49,7 @@ service StocktakeService {
 
     rpc GetStocktake(cm.IDRequest) returns (Stocktake);
     rpc GetStocktakesByIDs(cm.IDsRequest) returns (GetStocktakesByIDsResponse);
-    rpc  GetStocktakes(GetStocktakesRequest) returns (GetStocktakesResponse);
+    rpc GetStocktakes(GetStocktakesRequest) returns (GetStocktakesResponse);
 }
 
 service BrandService {
@@ -68,6 +68,7 @@ service InventoryService {
     rpc CancelInventoryVoucher (CancelInventoryVoucherRequest) returns (CancelInventoryVoucherResponse);
     rpc UpdateInventoryVoucher (UpdateInventoryVoucherRequest) returns (UpdateInventoryVoucherResponse);
     rpc AdjustInventoryQuantity (AdjustInventoryQuantityRequest) returns (AdjustInventoryQuantityResponse);
+    rpc UpdateInventoryVariantCostPrice (UpdateInventoryVariantCostPriceRequest) returns (UpdateInventoryVariantCostPriceResponse);
 
     rpc GetInventoryVariant (GetInventoryVariantRequest) returns (InventoryVariant);
     rpc GetInventoryVariants (GetInventoryVariantsRequest) returns (GetInventoryVariantsResponse);
@@ -1761,6 +1762,10 @@ message InventoryVariant {
     optional int32 quantity_picked = 4 [(gogoproto.nullable) = false];
     optional int32 purchase_price = 5 [(gogoproto.nullable) = false];
     optional int32 quantity = 6 [(gogoproto.nullable) = false];
+
+    optional google.protobuf.Timestamp created_at = 7;
+    optional google.protobuf.Timestamp updated_at = 8;
+
 }
 
 message InventoryVariantQuantity {
@@ -1793,6 +1798,7 @@ message InventoryVoucher {
     optional google.protobuf.Timestamp confirmed_at = 13;
     optional string cancel_reason = 14 [(gogoproto.nullable) = false];
     optional Trader trader = 20;
+    optional status3.Status status = 22 [(gogoproto.nullable)=false];
 }
 
 message GetInventoryVouchersRequest {
@@ -1886,8 +1892,7 @@ message GetInventoryVouchersByReferenceRequest {
 }
 
 message GetInventoryVouchersByReferenceResponse {
-    repeated InventoryVoucher inventory_voucher = 1;
-    optional status4.Status status = 12 [(gogoproto.nullable)=false];
+    repeated InventoryVoucher inventory_vouchers     = 1;
 }
 
 message UpdateOrderShippingInfoRequest {
@@ -1979,3 +1984,12 @@ message CancelStocktakeRequest {
     optional int64 id = 1 [(gogoproto.nullable) = false];
     optional string cancel_reason = 2 [(gogoproto.nullable) = false];
 }
+message UpdateInventoryVariantCostPriceResponse{
+    optional InventoryVariant inventory_variant = 2;
+}
+
+message UpdateInventoryVariantCostPriceRequest {
+    optional int64 variant_id = 1 [(gogoproto.nullable) = false];
+    optional int32 cost_price = 2 [(gogoproto.nullable) = false];
+}
+

@@ -4,19 +4,18 @@ import (
 	"context"
 	"database/sql"
 	"fmt"
-	"strconv"
 	"time"
 
 	"etop.vn/api/main/etop"
-	"etop.vn/backend/pkg/common/validate"
-
 	"etop.vn/api/main/receipting"
 	"etop.vn/api/meta"
 	"etop.vn/backend/com/main/receipting/convert"
 	"etop.vn/backend/com/main/receipting/model"
 	"etop.vn/backend/pkg/common/cmsql"
 	"etop.vn/backend/pkg/common/sq"
+	"etop.vn/backend/pkg/common/sq/core"
 	"etop.vn/backend/pkg/common/sqlstore"
+	"etop.vn/backend/pkg/common/validate"
 	etopmodel "etop.vn/backend/pkg/etop/model"
 )
 
@@ -88,7 +87,7 @@ func (s *ReceiptStore) TraderIDs(traderIDs ...int64) *ReceiptStore {
 }
 
 func (s *ReceiptStore) RefsID(id int64) *ReceiptStore {
-	s.preds = append(s.preds, sq.NewExpr("ref_ids @> '{?}'", strconv.FormatInt(id, 10)))
+	s.preds = append(s.preds, sq.NewExpr("ref_ids @> ?", core.Array{V: []int64{id}}))
 	return s
 }
 

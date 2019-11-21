@@ -4,8 +4,8 @@ import (
 	"etop.vn/api/main/catalog"
 	"etop.vn/api/main/inventory"
 
-	stocktaking "etop.vn/api/main/stocktaking"
-	common "etop.vn/backend/pb/common"
+	"etop.vn/api/main/stocktaking"
+	"etop.vn/backend/pb/common"
 	pbcm "etop.vn/backend/pb/common"
 	pbproducttype "etop.vn/backend/pb/etop/etc/product_type"
 	pbs3 "etop.vn/backend/pb/etop/etc/status3"
@@ -110,6 +110,8 @@ func PbInventory(args *inventory.InventoryVariant) *pbshop.InventoryVariant {
 		QuantityPicked: args.QuantityPicked,
 		Quantity:       args.QuantitySummary,
 		PurchasePrice:  args.PurchasePrice,
+		CreatedAt:      pbcm.PbTime(args.CreatedAt),
+		UpdatedAt:      pbcm.PbTime(args.UpdatedAt),
 	}
 }
 
@@ -166,6 +168,7 @@ func PbShopInventoryVoucher(args *inventory.InventoryVoucher) *pbshop.InventoryV
 		RefName:      string(args.RefName),
 		TraderId:     args.TraderID,
 		Trader:       PbShopTrader(args.Trader),
+		Status:       pbs3.Pb(model.Status3(args.Status)),
 		Note:         args.Note,
 		Type:         string(args.Type),
 		Id:           args.ID,
