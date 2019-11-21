@@ -68,10 +68,7 @@ func (ctrl *ProviderManager) GetExternalShippingServices(ctx context.Context, ac
 	if q.BasketValue != 0 {
 		value = int(q.BasketValue)
 	}
-	if q.IncludeInsurance != nil && !*q.IncludeInsurance {
-		value = 0
-	}
-	includeInsurance := true
+	includeInsurance := false
 	if q.IncludeInsurance != nil {
 		includeInsurance = *q.IncludeInsurance
 	}
@@ -108,7 +105,7 @@ func (ctrl *ProviderManager) GetExternalShippingServices(ctx context.Context, ac
 		}
 		res = append(res, services...)
 	case pbsp.ShippingProvider_vtpost:
-		services, err := ctrl.VTPost.GetShippingServices(ctx, args)
+		services, err := ctrl.VTPost.GetAllShippingServices(ctx, args)
 		if err != nil {
 			return nil, err
 		}
@@ -135,7 +132,7 @@ func (ctrl *ProviderManager) GetExternalShippingServices(ctx context.Context, ac
 			var services []*model.AvailableShippingService
 			var err error
 			defer func() { sendServices(ch, services, err) }()
-			services, err = ctrl.VTPost.GetShippingServices(ctx, args)
+			services, err = ctrl.VTPost.GetAllShippingServices(ctx, args)
 		}()
 		for i := 0; i < 3; i++ {
 			res = append(res, <-ch...)
