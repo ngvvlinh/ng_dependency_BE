@@ -166,6 +166,14 @@ func CanUpdateFulfillmentFromWebhook(ffm *shipmodel.Fulfillment) bool {
 		ffm.ShippingState == model.StateReturning
 }
 
+func CanUpdateFulfillmentFeelines(ffm *shipmodel.Fulfillment) bool {
+	if ffm.MoneyTransactionShippingExternalID != 0 ||
+		ffm.MoneyTransactionID != 0 {
+		return false
+	}
+	return true
+}
+
 type ShipnowTimestamp struct {
 	ShippingCreatedAt    time.Time
 	ShippingPickingAt    time.Time

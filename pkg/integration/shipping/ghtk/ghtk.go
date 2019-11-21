@@ -240,8 +240,8 @@ func CalcUpdateFulfillment(ffm *shipmodel.Fulfillment, msg *ghtkclient.CallbackO
 		ShippingStatus:            stateID.ToStatus5(),
 	}
 
-	// make sure can not update ffm's shipping fee when it belong to a money traction
-	if ffm.MoneyTransactionShippingExternalID == 0 {
+	// make sure can not update ffm's shipping fee when it belong to a money transaction
+	if shipping.CanUpdateFulfillmentFeelines(ffm) {
 		update.ProviderShippingFeeLines = CalcAndConvertShippingFeeLines(ghtkOrder)
 		var shippingFeeShopLines []*model.ShippingFeeLine
 		shippingFeeShopLines = model.GetShippingFeeShopLines(update.ProviderShippingFeeLines, ffm.EtopPriceRule, &ffm.EtopAdjustedShippingFeeMain)

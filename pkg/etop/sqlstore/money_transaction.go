@@ -1401,7 +1401,7 @@ func CreateMoneyTransactionShippingEtop(ctx context.Context, cmd *modelx.CreateM
 		return cm.Error(cm.InvalidArgument, "MoneyTransactionIDs can not be empty", nil)
 	}
 
-	mtse, err := prepairMoneyTransactionShippingEtop(ctx, 0, ids)
+	mtse, err := prepareMoneyTransactionShippingEtop(ctx, 0, ids)
 	if err != nil {
 		return err
 	}
@@ -1568,7 +1568,7 @@ func UpdateMoneyTransactionShippingEtop(ctx context.Context, cmd *modelx.UpdateM
 		oldIDs[i] = mt.ID
 	}
 	newIDs := PatchID(oldIDs, cmd.Adds, cmd.Deletes, cmd.ReplaceAll)
-	mtse, err := prepairMoneyTransactionShippingEtop(ctx, cmd.ID, newIDs)
+	mtse, err := prepareMoneyTransactionShippingEtop(ctx, cmd.ID, newIDs)
 	if err != nil {
 		return err
 	}
@@ -1627,7 +1627,7 @@ func PatchID(list []int64, adds, deletes, replaceAll []int64) []int64 {
 	return newList
 }
 
-func prepairMoneyTransactionShippingEtop(ctx context.Context, mtseID int64, mtIDs []int64) (*txmodel.MoneyTransactionShippingEtop, error) {
+func prepareMoneyTransactionShippingEtop(ctx context.Context, mtseID int64, mtIDs []int64) (*txmodel.MoneyTransactionShippingEtop, error) {
 	query := &modelx.GetMoneyTransactions{
 		IDs:                 mtIDs,
 		IncludeFulfillments: true,

@@ -234,7 +234,7 @@ func CalcUpdateFulfillment(ffm *shipmodel.Fulfillment, orderMsg vtpostclient.Cal
 		update.TotalWeight = orderMsg.ProductWeight
 		update.AdminNote = ffm.AdminNote + "\n" + changeWeightNote
 	}
-	if ffm.ShippingFeeShop != orderMsg.MoneyTotal && ffm.MoneyTransactionShippingExternalID == 0 {
+	if ffm.ShippingFeeShop != orderMsg.MoneyTotal && shipping.CanUpdateFulfillmentFeelines(ffm) {
 		// keep all shipping fee lines except shippingFeeMain
 		mainFee := orderMsg.MoneyTotal
 		for _, line := range ffm.ProviderShippingFeeLines {

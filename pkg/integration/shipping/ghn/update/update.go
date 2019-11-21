@@ -70,13 +70,16 @@ func CalcUpdateFulfillment(ffm *shipmodel.Fulfillment, msg *ghnclient.CallbackOr
 		ExternalShippingLogs:      ffm.ExternalShippingLogs,
 		ShippingCode:              ffm.ShippingCode,
 	}
-	shippingFeeShopLines := model.GetShippingFeeShopLines(update.ProviderShippingFeeLines, ffm.EtopPriceRule, &ffm.EtopAdjustedShippingFeeMain)
-	shippingFeeShop := 0
-	for _, line := range shippingFeeShopLines {
-		shippingFeeShop += line.Cost
+
+	if shipping.CanUpdateFulfillmentFeelines(ffm) {
+		shippingFeeShopLines := model.GetShippingFeeShopLines(update.ProviderShippingFeeLines, ffm.EtopPriceRule, &ffm.EtopAdjustedShippingFeeMain)
+		shippingFeeShop := 0
+		for _, line := range shippingFeeShopLines {
+			shippingFeeShop += line.Cost
+		}
+		update.ShippingFeeShopLines = shippingFeeShopLines
+		update.ShippingFeeShop = shipmodel.CalcShopShippingFee(shippingFeeShop, ffm)
 	}
-	update.ShippingFeeShopLines = shippingFeeShopLines
-	update.ShippingFeeShop = shipmodel.CalcShopShippingFee(shippingFeeShop, ffm)
 
 	// Only update status4 if the current status is not ending status
 	newStatus := state.ToStatus5(ffm.ShippingState)
