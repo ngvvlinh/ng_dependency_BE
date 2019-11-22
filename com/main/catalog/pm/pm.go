@@ -72,9 +72,25 @@ func (m *ProcessManager) DeleteVariantSupplier(ctx context.Context, event *suppl
 }
 
 func (m *ProcessManager) CreateVariantSupplier(ctx context.Context, event *purchaseorder.PurchaseOrderConfirmedEvent) error {
+	mapVariantSupplier := make(map[int64]int64)
+	query := catalog.GetVariantsBySupplierIDQuery{
+		SupplierID: event.TraderID,
+		ShopID:     event.ShopID,
+	}
+	if err := m.catalogQ.Dispatch(ctx, &query); err != nil {
+		return err
+	}
+	for _, value := range query.Result.Variants {
+		mapVariantSupplier[value.VariantID] = event.TraderID
+	}
 	var variantIDs []int64
 	for _, variant := range event.Lines {
-		variantIDs = append(variantIDs, variant.VariantID)
+		if mapVariantSupplier[variant.VariantID] == 0 {
+			variantIDs = append(variantIDs, variant.VariantID)
+		}
+	}
+	if len(variantIDs) == 0 {
+		return nil
 	}
 	cmd := catalog.CreateVariantsSupplierCommand{
 		ShopID:     event.ShopID,

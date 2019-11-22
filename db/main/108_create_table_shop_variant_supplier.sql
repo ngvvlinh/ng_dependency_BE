@@ -1,9 +1,9 @@
 drop table shop_supplier_variant;
 
 create table shop_variant_supplier (
-	shop_id int8,
-	supplier_id int8,
-	variant_id int8,
+	shop_id int8 REFERENCES shop(id),
+	supplier_id int8 REFERENCES shop_supplier(id),
+	variant_id int8 REFERENCES shop_variant(variant_id),
 	created_at timestamptz,
 	updated_at timestamptz
 );
