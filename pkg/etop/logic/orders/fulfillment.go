@@ -5,18 +5,13 @@ import (
 	"sync"
 	"time"
 
-	"etop.vn/api/main/inventory"
-
-	"etop.vn/capi"
-
-	"etop.vn/api/main/location"
-
-	"etop.vn/api/shopping/addressing"
-	"etop.vn/api/shopping/customering"
-
 	"etop.vn/api/main/catalog"
+	"etop.vn/api/main/inventory"
+	"etop.vn/api/main/location"
 	"etop.vn/api/main/ordering"
 	ordertypes "etop.vn/api/main/ordering/types"
+	"etop.vn/api/shopping/addressing"
+	"etop.vn/api/shopping/customering"
 	ordermodel "etop.vn/backend/com/main/ordering/model"
 	ordermodelx "etop.vn/backend/com/main/ordering/modelx"
 	shipmodel "etop.vn/backend/com/main/shipping/model"
@@ -28,6 +23,7 @@ import (
 	"etop.vn/backend/pkg/common/validate"
 	"etop.vn/backend/pkg/etop/logic/shipping_provider"
 	"etop.vn/backend/pkg/etop/model"
+	"etop.vn/capi"
 	"etop.vn/common/l"
 )
 
@@ -207,23 +203,6 @@ func ConfirmOrderAndCreateFulfillments(ctx context.Context, shop *model.Shop, pa
 	}
 
 	ll.S.Infof("Compare fulfillments: create %v update %v", len(creates), len(updates))
-
-	// Only update order status when success.
-	// This disallow updating order.
-	if order.ConfirmStatus != model.S3Positive ||
-		order.ShopConfirm != model.S3Positive {
-		cmd := &ordermodelx.UpdateOrdersStatusCommand{
-			OrderIDs:      []int64{r.OrderId},
-			ConfirmStatus: model.S3Positive.P(),
-			ShopConfirm:   model.S3Positive.P(),
-		}
-		if err := bus.Dispatch(ctx, cmd); err != nil {
-			_err = err
-		}
-		order.ConfirmStatus = model.S3Positive
-		order.ShopConfirm = model.S3Positive
-	}
-
 	totalChanges := len(creates) + len(updates)
 	if totalChanges == 0 {
 		return resp, nil
@@ -245,6 +224,22 @@ func ConfirmOrderAndCreateFulfillments(ctx context.Context, shop *model.Shop, pa
 				}
 			}()
 		}
+	}
+
+	// Only update order status when success.
+	// This disallow updating order.
+	if order.ConfirmStatus != model.S3Positive ||
+		order.ShopConfirm != model.S3Positive {
+		cmd := &ordermodelx.UpdateOrdersStatusCommand{
+			OrderIDs:      []int64{r.OrderId},
+			ConfirmStatus: model.S3Positive.P(),
+			ShopConfirm:   model.S3Positive.P(),
+		}
+		if err := bus.Dispatch(ctx, cmd); err != nil {
+			_err = err
+		}
+		order.ConfirmStatus = model.S3Positive
+		order.ShopConfirm = model.S3Positive
 	}
 
 	// update order fulfillment_type: `shipment`
