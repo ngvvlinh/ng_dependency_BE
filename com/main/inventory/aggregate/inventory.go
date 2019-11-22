@@ -83,9 +83,7 @@ func (q *InventoryAggregate) CreateInventoryVoucher(ctx context.Context, Oversto
 	if err != nil {
 		return nil, err
 	}
-	if inventoryVoucher.TotalAmount != totalAmount {
-		return nil, cm.Errorf(cm.InvalidArgument, nil, "Tổng giá trị phiếu không hợp lệ")
-	}
+	inventoryVoucher.TotalAmount = totalAmount
 	var voucher inventory.InventoryVoucher
 	if err = scheme.Convert(inventoryVoucher, &voucher); err != nil {
 		return nil, err
