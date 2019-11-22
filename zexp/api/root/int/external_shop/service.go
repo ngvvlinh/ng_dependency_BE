@@ -9,6 +9,8 @@ import (
 )
 
 // +gen:apix
+// +gen:apix:base-path=/v1
+// +gen:apix:doc-path=external/shop
 
 // +apix:path=/shop.Misc
 type MiscAPI interface {

@@ -86,11 +86,6 @@ func validDir(path string) error {
 	return nil
 }
 
-// GoPath ...
-func GoPath() string {
-	return gopath
-}
-
 // ProjectPath is absolute path to etop.vn/backend
 func ProjectPath() string {
 	return projectPath

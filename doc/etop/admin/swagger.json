@@ -1,0 +1,3965 @@
+{
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "schemes": [
+    "http",
+    "https"
+  ],
+  "swagger": "2.0",
+  "info": {
+    "description": "API Documentation:\n- [/doc/etop](/doc/etop) Shared API for managing login and account\n- [/doc/shop](/doc/shop) API for shops\n- [/doc/affiliate](/doc/affiliate) API for affiliates\n- [/doc/services/affiliate](/doc/services/affiliate) API for affiliate service\n- [/doc/integration](/doc/integration) API for shop to integrate with external partners\n- [/doc/admin](/doc/admin) API for eTop admins\n- [/doc/ext/shop](/doc/ext/shop) External API for shops\n- [/doc/ext/partner](/doc/ext/partner) External API for partners\n- [/doc/sadmin](/doc/sadmin) Special API for super admins\n",
+    "title": "etop API",
+    "version": "v1"
+  },
+  "paths": {
+    "/api/admin.Account/CreatePartner": {
+      "post": {
+        "tags": [
+          "Account"
+        ],
+        "operationId": "CreatePartner",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/hiCreatePartnerRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ocPartner"
+            }
+          }
+        }
+      }
+    },
+    "/api/admin.Account/GenerateAPIKey": {
+      "post": {
+        "tags": [
+          "Account"
+        ],
+        "operationId": "GenerateAPIKey",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/hiGenerateAPIKeyRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/hiGenerateAPIKeyResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/admin.Credit/ConfirmCredit": {
+      "post": {
+        "tags": [
+          "Credit"
+        ],
+        "operationId": "ConfirmCredit",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/hiConfirmCreditRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/maUpdatedResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/admin.Credit/CreateCredit": {
+      "post": {
+        "tags": [
+          "Credit"
+        ],
+        "operationId": "CreateCredit",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/hiCreateCreditRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ocCredit"
+            }
+          }
+        }
+      }
+    },
+    "/api/admin.Credit/DeleteCredit": {
+      "post": {
+        "tags": [
+          "Credit"
+        ],
+        "operationId": "DeleteCredit",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/maIDRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/maRemovedResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/admin.Credit/GetCredit": {
+      "post": {
+        "tags": [
+          "Credit"
+        ],
+        "operationId": "GetCredit",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/hiGetCreditRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ocCredit"
+            }
+          }
+        }
+      }
+    },
+    "/api/admin.Credit/GetCredits": {
+      "post": {
+        "tags": [
+          "Credit"
+        ],
+        "operationId": "GetCredits",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/hiGetCreditsRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ocCreditsResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/admin.Credit/UpdateCredit": {
+      "post": {
+        "tags": [
+          "Credit"
+        ],
+        "operationId": "UpdateCredit",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/hiUpdateCreditRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ocCredit"
+            }
+          }
+        }
+      }
+    },
+    "/api/admin.Fulfillment/GetFulfillment": {
+      "post": {
+        "tags": [
+          "Fulfillment"
+        ],
+        "operationId": "GetFulfillment",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/maIDRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/vmFulfillment"
+            }
+          }
+        }
+      }
+    },
+    "/api/admin.Fulfillment/GetFulfillments": {
+      "post": {
+        "tags": [
+          "Fulfillment"
+        ],
+        "operationId": "GetFulfillments",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/hiGetFulfillmentsRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/vmFulfillmentsResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/admin.Fulfillment/UpdateFulfillment": {
+      "post": {
+        "tags": [
+          "Fulfillment"
+        ],
+        "operationId": "UpdateFulfillment",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/hiUpdateFulfillmentRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/maUpdatedResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/admin.Misc/AdminLoginAsAccount": {
+      "post": {
+        "tags": [
+          "Misc"
+        ],
+        "operationId": "AdminLoginAsAccount",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/hiLoginAsAccountRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ocLoginResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/admin.Misc/VersionInfo": {
+      "post": {
+        "tags": [
+          "Misc"
+        ],
+        "operationId": "VersionInfo",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/maEmpty"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/maVersionInfoResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/admin.MoneyTransaction/ConfirmMoneyTransaction": {
+      "post": {
+        "tags": [
+          "MoneyTransaction"
+        ],
+        "operationId": "ConfirmMoneyTransaction",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/hiConfirmMoneyTransactionRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/maUpdatedResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/admin.MoneyTransaction/ConfirmMoneyTransactionShippingEtop": {
+      "post": {
+        "tags": [
+          "MoneyTransaction"
+        ],
+        "operationId": "ConfirmMoneyTransactionShippingEtop",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/hiConfirmMoneyTransactionShippingEtopRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/maUpdatedResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/admin.MoneyTransaction/ConfirmMoneyTransactionShippingExternal": {
+      "post": {
+        "tags": [
+          "MoneyTransaction"
+        ],
+        "operationId": "ConfirmMoneyTransactionShippingExternal",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/maIDRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/maUpdatedResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/admin.MoneyTransaction/ConfirmMoneyTransactionShippingExternals": {
+      "post": {
+        "tags": [
+          "MoneyTransaction"
+        ],
+        "operationId": "ConfirmMoneyTransactionShippingExternals",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/maIDsRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/maUpdatedResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/admin.MoneyTransaction/CreateMoneyTransactionShippingEtop": {
+      "post": {
+        "tags": [
+          "MoneyTransaction"
+        ],
+        "operationId": "CreateMoneyTransactionShippingEtop",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/maIDsRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/vmMoneyTransactionShippingEtop"
+            }
+          }
+        }
+      }
+    },
+    "/api/admin.MoneyTransaction/DeleteMoneyTransactionShippingEtop": {
+      "post": {
+        "tags": [
+          "MoneyTransaction"
+        ],
+        "operationId": "DeleteMoneyTransactionShippingEtop",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/maIDRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/maDeletedResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/admin.MoneyTransaction/DeleteMoneyTransactionShippingExternal": {
+      "post": {
+        "tags": [
+          "MoneyTransaction"
+        ],
+        "operationId": "DeleteMoneyTransactionShippingExternal",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/maIDRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/maRemovedResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/admin.MoneyTransaction/GetMoneyTransaction": {
+      "post": {
+        "tags": [
+          "MoneyTransaction"
+        ],
+        "operationId": "GetMoneyTransaction",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/maIDRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/vmMoneyTransaction"
+            }
+          }
+        }
+      }
+    },
+    "/api/admin.MoneyTransaction/GetMoneyTransactionShippingEtop": {
+      "post": {
+        "tags": [
+          "MoneyTransaction"
+        ],
+        "operationId": "GetMoneyTransactionShippingEtop",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/maIDRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/vmMoneyTransactionShippingEtop"
+            }
+          }
+        }
+      }
+    },
+    "/api/admin.MoneyTransaction/GetMoneyTransactionShippingEtops": {
+      "post": {
+        "tags": [
+          "MoneyTransaction"
+        ],
+        "operationId": "GetMoneyTransactionShippingEtops",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/hiGetMoneyTransactionShippingEtopsRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/vmMoneyTransactionShippingEtopsResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/admin.MoneyTransaction/GetMoneyTransactionShippingExternal": {
+      "post": {
+        "tags": [
+          "MoneyTransaction"
+        ],
+        "operationId": "GetMoneyTransactionShippingExternal",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/maIDRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/vmMoneyTransactionShippingExternal"
+            }
+          }
+        }
+      }
+    },
+    "/api/admin.MoneyTransaction/GetMoneyTransactionShippingExternals": {
+      "post": {
+        "tags": [
+          "MoneyTransaction"
+        ],
+        "operationId": "GetMoneyTransactionShippingExternals",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/hiGetMoneyTransactionShippingExternalsRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/vmMoneyTransactionShippingExternalsResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/admin.MoneyTransaction/GetMoneyTransactions": {
+      "post": {
+        "tags": [
+          "MoneyTransaction"
+        ],
+        "operationId": "GetMoneyTransactions",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/hiGetMoneyTransactionsRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/vmMoneyTransactionsResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/admin.MoneyTransaction/RemoveMoneyTransactionShippingExternalLines": {
+      "post": {
+        "tags": [
+          "MoneyTransaction"
+        ],
+        "operationId": "RemoveMoneyTransactionShippingExternalLines",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/hiRemoveMoneyTransactionShippingExternalLinesRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/vmMoneyTransactionShippingExternal"
+            }
+          }
+        }
+      }
+    },
+    "/api/admin.MoneyTransaction/UpdateMoneyTransaction": {
+      "post": {
+        "tags": [
+          "MoneyTransaction"
+        ],
+        "operationId": "UpdateMoneyTransaction",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/hiUpdateMoneyTransactionRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/vmMoneyTransaction"
+            }
+          }
+        }
+      }
+    },
+    "/api/admin.MoneyTransaction/UpdateMoneyTransactionShippingEtop": {
+      "post": {
+        "tags": [
+          "MoneyTransaction"
+        ],
+        "operationId": "UpdateMoneyTransactionShippingEtop",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/hiUpdateMoneyTransactionShippingEtopRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/vmMoneyTransactionShippingEtop"
+            }
+          }
+        }
+      }
+    },
+    "/api/admin.MoneyTransaction/UpdateMoneyTransactionShippingExternal": {
+      "post": {
+        "tags": [
+          "MoneyTransaction"
+        ],
+        "operationId": "UpdateMoneyTransactionShippingExternal",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/hiUpdateMoneyTransactionShippingExternalRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/vmMoneyTransactionShippingExternal"
+            }
+          }
+        }
+      }
+    },
+    "/api/admin.Notification/CreateNotifications": {
+      "post": {
+        "tags": [
+          "Notification"
+        ],
+        "operationId": "CreateNotifications",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/hiCreateNotificationsRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/hiCreateNotificationsResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/admin.Order/GetOrder": {
+      "post": {
+        "tags": [
+          "Order"
+        ],
+        "operationId": "GetOrder",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/maIDRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/vmOrder"
+            }
+          }
+        }
+      }
+    },
+    "/api/admin.Order/GetOrders": {
+      "post": {
+        "tags": [
+          "Order"
+        ],
+        "operationId": "GetOrders",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/hiGetOrdersRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/vmOrdersResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/admin.Order/GetOrdersByIDs": {
+      "post": {
+        "tags": [
+          "Order"
+        ],
+        "operationId": "GetOrdersByIDs",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/maIDsRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/vmOrdersResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/admin.Shop/GetShop": {
+      "post": {
+        "tags": [
+          "Shop"
+        ],
+        "operationId": "GetShop",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/maIDRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ocShop"
+            }
+          }
+        }
+      }
+    },
+    "/api/admin.Shop/GetShops": {
+      "post": {
+        "tags": [
+          "Shop"
+        ],
+        "operationId": "GetShops",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/hiGetShopsRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/hiGetShopsResponse"
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "euAddressType": {
+      "type": "string",
+      "enum": [
+        "general",
+        "shipfrom",
+        "shipto",
+        "unknown",
+        "warehouse"
+      ]
+    },
+    "gjSource": {
+      "type": "string",
+      "enum": [
+        "api",
+        "etop_cmx",
+        "etop_pos",
+        "etop_pxs",
+        "import",
+        "self",
+        "ts_app",
+        "unknown"
+      ]
+    },
+    "guCreditType": {
+      "type": "string",
+      "enum": [
+        "shop"
+      ]
+    },
+    "hiConfirmCreditRequest": {
+      "type": "object",
+      "properties": {
+        "Id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "ShopId": {
+          "type": "integer",
+          "format": "int64"
+        }
+      }
+    },
+    "hiConfirmMoneyTransactionRequest": {
+      "type": "object",
+      "properties": {
+        "MoneyTransactionId": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "ShopId": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "TotalAmount": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "TotalCod": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "TotalOrders": {
+          "type": "integer",
+          "format": "int64"
+        }
+      }
+    },
+    "hiConfirmMoneyTransactionShippingEtopRequest": {
+      "type": "object",
+      "properties": {
+        "Id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "TotalAmount": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "TotalCod": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "TotalOrders": {
+          "type": "integer",
+          "format": "int64"
+        }
+      }
+    },
+    "hiCreateCreditRequest": {
+      "type": "object",
+      "properties": {
+        "Amount": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "PaidAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "ShopId": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "Type": {
+          "$ref": "#/definitions/guCreditType"
+        }
+      }
+    },
+    "hiCreateNotificationsRequest": {
+      "type": "object",
+      "properties": {
+        "AccountIds": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "format": "int64"
+          }
+        },
+        "Entity": {
+          "$ref": "#/definitions/roNotifierEntity"
+        },
+        "EntityId": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "Message": {
+          "type": "string"
+        },
+        "SendAll": {
+          "type": "boolean"
+        },
+        "Title": {
+          "type": "string"
+        }
+      }
+    },
+    "hiCreateNotificationsResponse": {
+      "type": "object",
+      "properties": {
+        "Created": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "Errored": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "hiCreatePartnerRequest": {
+      "type": "object",
+      "properties": {
+        "Partner": {
+          "$ref": "#/definitions/ocPartner"
+        }
+      }
+    },
+    "hiGenerateAPIKeyRequest": {
+      "type": "object",
+      "properties": {
+        "AccountId": {
+          "type": "integer",
+          "format": "int64"
+        }
+      }
+    },
+    "hiGenerateAPIKeyResponse": {
+      "type": "object",
+      "properties": {
+        "AccountId": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "ApiKey": {
+          "type": "string"
+        }
+      }
+    },
+    "hiGetCreditRequest": {
+      "type": "object",
+      "properties": {
+        "Id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "ShopId": {
+          "type": "integer",
+          "format": "int64"
+        }
+      }
+    },
+    "hiGetCreditsRequest": {
+      "type": "object",
+      "properties": {
+        "Paging": {
+          "$ref": "#/definitions/maPaging"
+        },
+        "ShopId": {
+          "type": "integer",
+          "format": "int64"
+        }
+      }
+    },
+    "hiGetFulfillmentsRequest": {
+      "type": "object",
+      "properties": {
+        "Filters": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/maFilter"
+          }
+        },
+        "OrderId": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "Paging": {
+          "$ref": "#/definitions/maPaging"
+        },
+        "ShopId": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "Status": {
+          "$ref": "#/definitions/wwStatus"
+        }
+      }
+    },
+    "hiGetMoneyTransactionShippingEtopsRequest": {
+      "type": "object",
+      "properties": {
+        "Filters": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/maFilter"
+          }
+        },
+        "Ids": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "format": "int64"
+          }
+        },
+        "Paging": {
+          "$ref": "#/definitions/maPaging"
+        },
+        "Status": {
+          "$ref": "#/definitions/wwStatus"
+        }
+      }
+    },
+    "hiGetMoneyTransactionShippingExternalsRequest": {
+      "type": "object",
+      "properties": {
+        "Filters": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/maFilter"
+          }
+        },
+        "Ids": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "format": "int64"
+          }
+        },
+        "Paging": {
+          "$ref": "#/definitions/maPaging"
+        }
+      }
+    },
+    "hiGetMoneyTransactionsRequest": {
+      "type": "object",
+      "properties": {
+        "Filters": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/maFilter"
+          }
+        },
+        "Ids": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "format": "int64"
+          }
+        },
+        "MoneyTransactionShippingExternalId": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "Paging": {
+          "$ref": "#/definitions/maPaging"
+        },
+        "ShopId": {
+          "type": "integer",
+          "format": "int64"
+        }
+      }
+    },
+    "hiGetOrdersRequest": {
+      "type": "object",
+      "properties": {
+        "Filters": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/maFilter"
+          }
+        },
+        "Paging": {
+          "$ref": "#/definitions/maPaging"
+        }
+      }
+    },
+    "hiGetShopsRequest": {
+      "type": "object",
+      "properties": {
+        "Paging": {
+          "$ref": "#/definitions/maPaging"
+        }
+      }
+    },
+    "hiGetShopsResponse": {
+      "type": "object",
+      "properties": {
+        "Paging": {
+          "$ref": "#/definitions/maPageInfo"
+        },
+        "Shops": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ocShop"
+          }
+        }
+      }
+    },
+    "hiLoginAsAccountRequest": {
+      "type": "object",
+      "properties": {
+        "AccountId": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "Password": {
+          "type": "string"
+        },
+        "UserId": {
+          "type": "integer",
+          "format": "int64"
+        }
+      }
+    },
+    "hiRemoveMoneyTransactionShippingExternalLinesRequest": {
+      "type": "object",
+      "properties": {
+        "LineIds": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "format": "int64"
+          }
+        },
+        "MoneyTransactionShippingExternalId": {
+          "type": "integer",
+          "format": "int64"
+        }
+      }
+    },
+    "hiUpdateCreditRequest": {
+      "type": "object",
+      "properties": {
+        "Amount": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "Id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "PaidAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "ShopId": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "Type": {
+          "$ref": "#/definitions/guCreditType"
+        }
+      }
+    },
+    "hiUpdateFulfillmentRequest": {
+      "type": "object",
+      "properties": {
+        "ActualCompensationAmount": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "AdminNote": {
+          "type": "string"
+        },
+        "FullName": {
+          "type": "string"
+        },
+        "Id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "IsPartialDelivery": {
+          "type": "boolean"
+        },
+        "Phone": {
+          "type": "string"
+        },
+        "ShippingState": {
+          "$ref": "#/definitions/nqState"
+        },
+        "TotalCodAmount": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "hiUpdateMoneyTransactionRequest": {
+      "type": "object",
+      "properties": {
+        "BankAccount": {
+          "$ref": "#/definitions/ocBankAccount"
+        },
+        "Id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "InvoiceNumber": {
+          "type": "string"
+        },
+        "Note": {
+          "type": "string"
+        }
+      }
+    },
+    "hiUpdateMoneyTransactionShippingEtopRequest": {
+      "type": "object",
+      "properties": {
+        "Adds": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "format": "int64"
+          }
+        },
+        "BankAccount": {
+          "$ref": "#/definitions/ocBankAccount"
+        },
+        "Deletes": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "format": "int64"
+          }
+        },
+        "Id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "InvoiceNumber": {
+          "type": "string"
+        },
+        "Note": {
+          "type": "string"
+        },
+        "ReplaceAll": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "format": "int64"
+          }
+        }
+      }
+    },
+    "hiUpdateMoneyTransactionShippingExternalRequest": {
+      "type": "object",
+      "properties": {
+        "BankAccount": {
+          "$ref": "#/definitions/ocBankAccount"
+        },
+        "Id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "InvoiceNumber": {
+          "type": "string"
+        },
+        "Note": {
+          "type": "string"
+        }
+      }
+    },
+    "juFeeType": {
+      "type": "string",
+      "enum": [
+        "other",
+        "shipping",
+        "tax"
+      ]
+    },
+    "khGender": {
+      "type": "string",
+      "enum": [
+        "female",
+        "male",
+        "other",
+        "unknown"
+      ]
+    },
+    "maDeletedResponse": {
+      "type": "object",
+      "properties": {
+        "Deleted": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "maEmpty": {
+      "type": "object"
+    },
+    "maError": {
+      "type": "object",
+      "properties": {
+        "Code": {
+          "type": "string"
+        },
+        "Meta": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "Msg": {
+          "type": "string"
+        }
+      }
+    },
+    "maFilter": {
+      "type": "object",
+      "properties": {
+        "Name": {
+          "type": "string"
+        },
+        "Op": {
+          "type": "string"
+        },
+        "Value": {
+          "type": "string"
+        }
+      }
+    },
+    "maIDRequest": {
+      "type": "object",
+      "properties": {
+        "Id": {
+          "type": "integer",
+          "format": "int64"
+        }
+      }
+    },
+    "maIDsRequest": {
+      "type": "object",
+      "properties": {
+        "Ids": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "format": "int64"
+          }
+        }
+      }
+    },
+    "maPageInfo": {
+      "type": "object",
+      "properties": {
+        "Limit": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "Sort": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "Total": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "maPaging": {
+      "type": "object",
+      "properties": {
+        "Limit": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "Offset": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "Sort": {
+          "type": "string"
+        }
+      }
+    },
+    "maRemovedResponse": {
+      "type": "object",
+      "properties": {
+        "Removed": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "maUpdatedResponse": {
+      "type": "object",
+      "properties": {
+        "Updated": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "maVersionInfoResponse": {
+      "type": "object",
+      "properties": {
+        "Service": {
+          "type": "string"
+        },
+        "UpdatedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "Version": {
+          "type": "string"
+        }
+      }
+    },
+    "nqState": {
+      "type": "string",
+      "enum": [
+        "cancelled",
+        "confirmed",
+        "created",
+        "default",
+        "delivered",
+        "delivering",
+        "holding",
+        "picking",
+        "processing",
+        "returned",
+        "returning",
+        "undeliverable",
+        "unknown"
+      ]
+    },
+    "ocAccountType": {
+      "type": "string",
+      "enum": [
+        "affiliate",
+        "etop",
+        "partner",
+        "shop",
+        "unknown"
+      ]
+    },
+    "ocAddress": {
+      "type": "object",
+      "properties": {
+        "Address1": {
+          "type": "string"
+        },
+        "Address2": {
+          "type": "string"
+        },
+        "Coordinates": {
+          "$ref": "#/definitions/ocCoordinates"
+        },
+        "Country": {
+          "type": "string"
+        },
+        "District": {
+          "type": "string"
+        },
+        "DistrictCode": {
+          "type": "string"
+        },
+        "Email": {
+          "type": "string"
+        },
+        "ExportedFields": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "FirstName": {
+          "type": "string"
+        },
+        "FullName": {
+          "type": "string"
+        },
+        "Id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "LastName": {
+          "type": "string"
+        },
+        "Notes": {
+          "$ref": "#/definitions/ocAddressNote"
+        },
+        "Phone": {
+          "type": "string"
+        },
+        "Position": {
+          "type": "string"
+        },
+        "Province": {
+          "type": "string"
+        },
+        "ProvinceCode": {
+          "type": "string"
+        },
+        "Type": {
+          "$ref": "#/definitions/euAddressType"
+        },
+        "Ward": {
+          "type": "string"
+        },
+        "WardCode": {
+          "type": "string"
+        },
+        "Zip": {
+          "type": "string"
+        }
+      }
+    },
+    "ocAddressNote": {
+      "type": "object",
+      "properties": {
+        "LunchBreak": {
+          "type": "string"
+        },
+        "Note": {
+          "type": "string"
+        },
+        "OpenTime": {
+          "type": "string"
+        },
+        "Other": {
+          "type": "string"
+        }
+      }
+    },
+    "ocAffiliate": {
+      "type": "object",
+      "properties": {
+        "BankAccount": {
+          "$ref": "#/definitions/ocBankAccount"
+        },
+        "Email": {
+          "type": "string"
+        },
+        "Id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "IsTest": {
+          "type": "boolean"
+        },
+        "Name": {
+          "type": "string"
+        },
+        "Phone": {
+          "type": "string"
+        },
+        "Status": {
+          "$ref": "#/definitions/wwStatus"
+        }
+      }
+    },
+    "ocBankAccount": {
+      "type": "object",
+      "properties": {
+        "AccountName": {
+          "type": "string"
+        },
+        "AccountNumber": {
+          "type": "string"
+        },
+        "Branch": {
+          "type": "string"
+        },
+        "Name": {
+          "type": "string"
+        },
+        "Province": {
+          "type": "string"
+        }
+      }
+    },
+    "ocCompanyInfo": {
+      "type": "object",
+      "properties": {
+        "Address": {
+          "type": "string"
+        },
+        "LegalRepresentative": {
+          "$ref": "#/definitions/ocContactPerson"
+        },
+        "Name": {
+          "type": "string"
+        },
+        "TaxCode": {
+          "type": "string"
+        },
+        "Website": {
+          "type": "string"
+        }
+      }
+    },
+    "ocContactPerson": {
+      "type": "object",
+      "properties": {
+        "Email": {
+          "type": "string"
+        },
+        "Name": {
+          "type": "string"
+        },
+        "Phone": {
+          "type": "string"
+        },
+        "Position": {
+          "type": "string"
+        }
+      }
+    },
+    "ocCoordinates": {
+      "type": "object",
+      "properties": {
+        "Latitude": {
+          "type": "integer",
+          "format": "float32"
+        },
+        "Longitude": {
+          "type": "integer",
+          "format": "float32"
+        }
+      }
+    },
+    "ocCredit": {
+      "type": "object",
+      "properties": {
+        "Amount": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "CreatedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "Id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "PaidAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "Shop": {
+          "$ref": "#/definitions/ocShop"
+        },
+        "ShopId": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "Status": {
+          "$ref": "#/definitions/wwStatus"
+        },
+        "Type": {
+          "type": "string"
+        },
+        "UpdatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "ocCreditsResponse": {
+      "type": "object",
+      "properties": {
+        "Credits": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ocCredit"
+          }
+        },
+        "Paging": {
+          "$ref": "#/definitions/maPageInfo"
+        }
+      }
+    },
+    "ocLoginAccount": {
+      "type": "object",
+      "properties": {
+        "AccessToken": {
+          "type": "string"
+        },
+        "ExpiresIn": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "ExportedFields": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "Id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "ImageUrl": {
+          "type": "string"
+        },
+        "Name": {
+          "type": "string"
+        },
+        "Type": {
+          "$ref": "#/definitions/ocAccountType"
+        },
+        "UrlSlug": {
+          "type": "string"
+        },
+        "UserAccount": {
+          "$ref": "#/definitions/ocUserAccountInfo"
+        }
+      }
+    },
+    "ocLoginResponse": {
+      "type": "object",
+      "properties": {
+        "AccessToken": {
+          "type": "string"
+        },
+        "Account": {
+          "$ref": "#/definitions/ocLoginAccount"
+        },
+        "Affiliate": {
+          "$ref": "#/definitions/ocAffiliate"
+        },
+        "AvailableAccounts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ocLoginAccount"
+          }
+        },
+        "ExpiresIn": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "InvitationAccounts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ocUserAccountInfo"
+          }
+        },
+        "Shop": {
+          "$ref": "#/definitions/ocShop"
+        },
+        "Stoken": {
+          "type": "boolean"
+        },
+        "StokenExpiresAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "User": {
+          "$ref": "#/definitions/ocUser"
+        }
+      }
+    },
+    "ocPartner": {
+      "type": "object",
+      "properties": {
+        "ContactPersons": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ocContactPerson"
+          }
+        },
+        "Email": {
+          "type": "string"
+        },
+        "Id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "ImageUrl": {
+          "type": "string"
+        },
+        "IsTest": {
+          "type": "boolean"
+        },
+        "Name": {
+          "type": "string"
+        },
+        "OwnerId": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "Phone": {
+          "type": "string"
+        },
+        "PublicName": {
+          "type": "string"
+        },
+        "Status": {
+          "$ref": "#/definitions/wwStatus"
+        },
+        "User": {
+          "$ref": "#/definitions/ocUser"
+        },
+        "WebsiteUrl": {
+          "type": "string"
+        }
+      }
+    },
+    "ocPermission": {
+      "type": "object",
+      "properties": {
+        "Permissions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "Roles": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "ocShippingServiceSelectStrategyItem": {
+      "type": "object",
+      "properties": {
+        "Key": {
+          "type": "string"
+        },
+        "Value": {
+          "type": "string"
+        }
+      }
+    },
+    "ocShop": {
+      "type": "object",
+      "properties": {
+        "Address": {
+          "$ref": "#/definitions/ocAddress"
+        },
+        "AutoCreateFfm": {
+          "type": "boolean"
+        },
+        "BankAccount": {
+          "$ref": "#/definitions/ocBankAccount"
+        },
+        "Code": {
+          "type": "string"
+        },
+        "CompanyInfo": {
+          "$ref": "#/definitions/ocCompanyInfo"
+        },
+        "Email": {
+          "type": "string"
+        },
+        "ExportedFields": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "GhnNoteCode": {
+          "type": "string"
+        },
+        "Id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "ImageUrl": {
+          "type": "string"
+        },
+        "InventoryOverstock": {
+          "type": "boolean"
+        },
+        "IsTest": {
+          "type": "boolean"
+        },
+        "MoneyTransactionRrule": {
+          "type": "string"
+        },
+        "Name": {
+          "type": "string"
+        },
+        "OwnerId": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "Phone": {
+          "type": "string"
+        },
+        "ProductSourceId": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "ShipFromAddressId": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "ShipToAddressId": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "ShippingServiceSelectStrategy": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ocShippingServiceSelectStrategyItem"
+          }
+        },
+        "Status": {
+          "$ref": "#/definitions/wwStatus"
+        },
+        "SurveyInfo": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ocSurveyInfo"
+          }
+        },
+        "TryOn": {
+          "$ref": "#/definitions/xdTryOnCode"
+        },
+        "User": {
+          "$ref": "#/definitions/ocUser"
+        },
+        "WebsiteUrl": {
+          "type": "string"
+        }
+      }
+    },
+    "ocSurveyInfo": {
+      "type": "object",
+      "properties": {
+        "Answer": {
+          "type": "string"
+        },
+        "Key": {
+          "type": "string"
+        },
+        "Question": {
+          "type": "string"
+        }
+      }
+    },
+    "ocUser": {
+      "type": "object",
+      "properties": {
+        "CreatedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "Email": {
+          "type": "string"
+        },
+        "EmailVerificationSentAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "EmailVerifiedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "FullName": {
+          "type": "string"
+        },
+        "Id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "Phone": {
+          "type": "string"
+        },
+        "PhoneVerificationSentAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "PhoneVerifiedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "ShortName": {
+          "type": "string"
+        },
+        "Source": {
+          "$ref": "#/definitions/yuUserSource"
+        },
+        "UpdatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "ocUserAccountInfo": {
+      "type": "object",
+      "properties": {
+        "AccountId": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "AccountName": {
+          "type": "string"
+        },
+        "AccountType": {
+          "$ref": "#/definitions/ocAccountType"
+        },
+        "DisableReason": {
+          "type": "string"
+        },
+        "DisabledAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "DisabledBy": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "InvitationAcceptedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "InvitationRejectedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "InvitationSentAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "InvitationSentBy": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "Permission": {
+          "$ref": "#/definitions/ocPermission"
+        },
+        "Position": {
+          "type": "string"
+        },
+        "ResponseStatus": {
+          "$ref": "#/definitions/wwStatus"
+        },
+        "Status": {
+          "$ref": "#/definitions/wwStatus"
+        },
+        "UserFullName": {
+          "type": "string"
+        },
+        "UserId": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "UserShortName": {
+          "type": "string"
+        }
+      }
+    },
+    "roNotifierEntity": {
+      "type": "string",
+      "enum": [
+        "fulfillment",
+        "money_transaction_shipping",
+        "unknown"
+      ]
+    },
+    "vmAttribute": {
+      "type": "object",
+      "properties": {
+        "Name": {
+          "type": "string"
+        },
+        "Value": {
+          "type": "string"
+        }
+      }
+    },
+    "vmDeliveryPoint": {
+      "type": "object",
+      "properties": {
+        "Lines": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/vmOrderLine"
+          }
+        },
+        "OrderId": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "ShippingAddress": {
+          "$ref": "#/definitions/vmOrderAddress"
+        },
+        "ShippingNote": {
+          "type": "string"
+        },
+        "TryOn": {
+          "$ref": "#/definitions/xdTryOnCode"
+        },
+        "ValueInfo": {
+          "$ref": "#/definitions/vmValueInfo"
+        },
+        "WeightInfo": {
+          "$ref": "#/definitions/vmWeightInfo"
+        }
+      }
+    },
+    "vmExternalShippingLog": {
+      "type": "object",
+      "properties": {
+        "Message": {
+          "type": "string"
+        },
+        "StateText": {
+          "type": "string"
+        },
+        "Time": {
+          "type": "string"
+        }
+      }
+    },
+    "vmFulfillment": {
+      "type": "object",
+      "properties": {
+        "ActualCompensationAmount": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "AddressFrom": {
+          "$ref": "#/definitions/ocAddress"
+        },
+        "AddressTo": {
+          "$ref": "#/definitions/ocAddress"
+        },
+        "BasketValue": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "CancelReason": {
+          "type": "string"
+        },
+        "CancelledAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "Carrier": {
+          "$ref": "#/definitions/whShippingProvider"
+        },
+        "ChargeableWeight": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "ClosedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "CodAmount": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "CodEtopTransferedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "Code": {
+          "type": "string"
+        },
+        "CreatedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "EstimatedDeliveryAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "EstimatedPickupAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "EtopDiscount": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "EtopPaymentStatus": {
+          "$ref": "#/definitions/wxStatus"
+        },
+        "ExpectedDeliveryAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "ExpectedPickAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "ExportedFields": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "Id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "IncludeInsurance": {
+          "type": "boolean"
+        },
+        "Lines": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/vmOrderLine"
+          }
+        },
+        "MoneyTransactionShippingExternalId": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "MoneyTransactionShippingId": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "Order": {
+          "$ref": "#/definitions/vmOrder"
+        },
+        "OrderId": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "PartnerId": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "PickupAddress": {
+          "$ref": "#/definitions/vmOrderAddress"
+        },
+        "ProviderShippingFeeLines": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/vmShippingFeeLine"
+          }
+        },
+        "ReturnAddress": {
+          "$ref": "#/definitions/vmOrderAddress"
+        },
+        "SelfUrl": {
+          "type": "string"
+        },
+        "ShConfirm": {
+          "$ref": "#/definitions/wwStatus"
+        },
+        "ShippingAddress": {
+          "$ref": "#/definitions/vmOrderAddress"
+        },
+        "ShippingCode": {
+          "type": "string"
+        },
+        "ShippingFeeCustomer": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "ShippingFeeShop": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "ShippingFeeShopLines": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/vmShippingFeeLine"
+          }
+        },
+        "ShippingFeeShopTransferedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "ShippingNote": {
+          "type": "string"
+        },
+        "ShippingProvider": {
+          "type": "string"
+        },
+        "ShippingServiceCode": {
+          "type": "string"
+        },
+        "ShippingServiceFee": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "ShippingServiceName": {
+          "type": "string"
+        },
+        "ShippingState": {
+          "$ref": "#/definitions/nqState"
+        },
+        "ShippingStatus": {
+          "$ref": "#/definitions/wyStatus"
+        },
+        "Shop": {
+          "$ref": "#/definitions/ocShop"
+        },
+        "ShopId": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "Status": {
+          "$ref": "#/definitions/wyStatus"
+        },
+        "TotalAmount": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "TotalCodAmount": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "TotalItems": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "TotalWeight": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "TryOn": {
+          "$ref": "#/definitions/xdTryOnCode"
+        },
+        "UpdatedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "XShippingCancelledAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "XShippingCode": {
+          "type": "string"
+        },
+        "XShippingCreatedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "XShippingDeliveredAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "XShippingFee": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "XShippingId": {
+          "type": "string"
+        },
+        "XShippingLogs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/vmExternalShippingLog"
+          }
+        },
+        "XShippingNote": {
+          "type": "string"
+        },
+        "XShippingReturnedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "XShippingState": {
+          "type": "string"
+        },
+        "XShippingStatus": {
+          "$ref": "#/definitions/wyStatus"
+        },
+        "XShippingSubState": {
+          "type": "string"
+        },
+        "XShippingUpdatedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "XSyncStates": {
+          "$ref": "#/definitions/vmFulfillmentSyncStates"
+        },
+        "XSyncStatus": {
+          "$ref": "#/definitions/wxStatus"
+        }
+      }
+    },
+    "vmFulfillmentSyncStates": {
+      "type": "object",
+      "properties": {
+        "Error": {
+          "$ref": "#/definitions/maError"
+        },
+        "NextShippingState": {
+          "type": "string"
+        },
+        "SyncAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "vmFulfillmentsResponse": {
+      "type": "object",
+      "properties": {
+        "Fulfillments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/vmFulfillment"
+          }
+        },
+        "Paging": {
+          "$ref": "#/definitions/maPageInfo"
+        }
+      }
+    },
+    "vmMoneyTransaction": {
+      "type": "object",
+      "properties": {
+        "BankAccount": {
+          "$ref": "#/definitions/ocBankAccount"
+        },
+        "ClosedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "Code": {
+          "type": "string"
+        },
+        "ConfirmedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "CreatedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "EtopTransferedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "Id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "InvoiceNumber": {
+          "type": "string"
+        },
+        "MoneyTransactionShippingEtopId": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "MoneyTransactionShippingExternalId": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "Note": {
+          "type": "string"
+        },
+        "Provider": {
+          "type": "string"
+        },
+        "ShopId": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "Status": {
+          "$ref": "#/definitions/wwStatus"
+        },
+        "TotalAmount": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "TotalCod": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "TotalOrders": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "UpdatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "vmMoneyTransactionShippingEtop": {
+      "type": "object",
+      "properties": {
+        "BankAccount": {
+          "$ref": "#/definitions/ocBankAccount"
+        },
+        "Code": {
+          "type": "string"
+        },
+        "ConfirmedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "CreatedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "Id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "InvoiceNumber": {
+          "type": "string"
+        },
+        "MoneyTransactions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/vmMoneyTransaction"
+          }
+        },
+        "Note": {
+          "type": "string"
+        },
+        "Status": {
+          "$ref": "#/definitions/wwStatus"
+        },
+        "TotalAmount": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "TotalCod": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "TotalFee": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "TotalOrders": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "UpdatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "vmMoneyTransactionShippingEtopsResponse": {
+      "type": "object",
+      "properties": {
+        "MoneyTransactionShippingEtops": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/vmMoneyTransactionShippingEtop"
+          }
+        },
+        "Paging": {
+          "$ref": "#/definitions/maPageInfo"
+        }
+      }
+    },
+    "vmMoneyTransactionShippingExternal": {
+      "type": "object",
+      "properties": {
+        "BankAccount": {
+          "$ref": "#/definitions/ocBankAccount"
+        },
+        "Code": {
+          "type": "string"
+        },
+        "CreatedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "ExternalPaidAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "Id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "InvoiceNumber": {
+          "type": "string"
+        },
+        "Lines": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/vmMoneyTransactionShippingExternalLine"
+          }
+        },
+        "Note": {
+          "type": "string"
+        },
+        "Provider": {
+          "type": "string"
+        },
+        "Status": {
+          "$ref": "#/definitions/wwStatus"
+        },
+        "TotalCod": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "TotalOrders": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "UpdatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "vmMoneyTransactionShippingExternalLine": {
+      "type": "object",
+      "properties": {
+        "CreatedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "EtopFulfillmentId": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "EtopFulfillmentIdRaw": {
+          "type": "string"
+        },
+        "ExternalAddress": {
+          "type": "string"
+        },
+        "ExternalClosedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "ExternalCode": {
+          "type": "string"
+        },
+        "ExternalCreatedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "ExternalCustomer": {
+          "type": "string"
+        },
+        "ExternalTotalCod": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "ExternalTotalShippingFee": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "Fulfillment": {
+          "$ref": "#/definitions/vmFulfillment"
+        },
+        "Id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "ImportError": {
+          "$ref": "#/definitions/maError"
+        },
+        "MoneyTransactionShippingExternalId": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "Note": {
+          "type": "string"
+        },
+        "UpdatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "vmMoneyTransactionShippingExternalsResponse": {
+      "type": "object",
+      "properties": {
+        "MoneyTransactions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/vmMoneyTransactionShippingExternal"
+          }
+        },
+        "Paging": {
+          "$ref": "#/definitions/maPageInfo"
+        }
+      }
+    },
+    "vmMoneyTransactionsResponse": {
+      "type": "object",
+      "properties": {
+        "MoneyTransactions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/vmMoneyTransaction"
+          }
+        },
+        "Paging": {
+          "$ref": "#/definitions/maPageInfo"
+        }
+      }
+    },
+    "vmOrder": {
+      "type": "object",
+      "properties": {
+        "BasketValue": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "BillingAddress": {
+          "$ref": "#/definitions/vmOrderAddress"
+        },
+        "CancelReason": {
+          "type": "string"
+        },
+        "CancelledAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "ClosedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "Code": {
+          "type": "string"
+        },
+        "Confirm": {
+          "$ref": "#/definitions/wwStatus"
+        },
+        "ConfirmStatus": {
+          "$ref": "#/definitions/wwStatus"
+        },
+        "ConfirmedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "CreatedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "Customer": {
+          "$ref": "#/definitions/vmOrderCustomer"
+        },
+        "CustomerAddress": {
+          "$ref": "#/definitions/vmOrderAddress"
+        },
+        "CustomerId": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "CustomerPaymentStatus": {
+          "$ref": "#/definitions/wwStatus"
+        },
+        "Discounts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/vmOrderDiscount"
+          }
+        },
+        "EdCode": {
+          "type": "string"
+        },
+        "EtopPaymentStatus": {
+          "$ref": "#/definitions/wxStatus"
+        },
+        "ExportedFields": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "ExternalCode": {
+          "type": "string"
+        },
+        "ExternalId": {
+          "type": "string"
+        },
+        "ExternalUrl": {
+          "type": "string"
+        },
+        "FeeLines": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/vmOrderFeeLine"
+          }
+        },
+        "FulfillmentIds": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "format": "int64"
+          }
+        },
+        "FulfillmentShippingStatus": {
+          "$ref": "#/definitions/wyStatus"
+        },
+        "FulfillmentStatus": {
+          "$ref": "#/definitions/wyStatus"
+        },
+        "FulfillmentType": {
+          "type": "string"
+        },
+        "Fulfillments": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/vmXFulfillment"
+          }
+        },
+        "GhnNoteCode": {
+          "type": "string"
+        },
+        "Id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "Lines": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/vmOrderLine"
+          }
+        },
+        "OrderDiscount": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "OrderNote": {
+          "type": "string"
+        },
+        "PartnerId": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "PaymentMethod": {
+          "type": "string"
+        },
+        "PaymentStatus": {
+          "$ref": "#/definitions/wxStatus"
+        },
+        "ProcessedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "ReceivedAmount": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "ReferenceUrl": {
+          "type": "string"
+        },
+        "SelfUrl": {
+          "type": "string"
+        },
+        "ShConfirm": {
+          "$ref": "#/definitions/wwStatus"
+        },
+        "Shipping": {
+          "$ref": "#/definitions/vmOrderShipping"
+        },
+        "ShippingAddress": {
+          "$ref": "#/definitions/vmOrderAddress"
+        },
+        "ShippingFee": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "ShippingNote": {
+          "type": "string"
+        },
+        "ShopCod": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "ShopId": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "ShopName": {
+          "type": "string"
+        },
+        "ShopShipping": {
+          "$ref": "#/definitions/vmOrderShipping"
+        },
+        "ShopShippingFee": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "Source": {
+          "$ref": "#/definitions/gjSource"
+        },
+        "Status": {
+          "$ref": "#/definitions/wyStatus"
+        },
+        "TotalAmount": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "TotalDiscount": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "TotalFee": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "TotalItems": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "TotalWeight": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "UpdatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "vmOrderAddress": {
+      "type": "object",
+      "properties": {
+        "Address1": {
+          "type": "string"
+        },
+        "Address2": {
+          "type": "string"
+        },
+        "City": {
+          "type": "string"
+        },
+        "Company": {
+          "type": "string"
+        },
+        "Coordinates": {
+          "$ref": "#/definitions/ocCoordinates"
+        },
+        "Country": {
+          "type": "string"
+        },
+        "District": {
+          "type": "string"
+        },
+        "DistrictCode": {
+          "type": "string"
+        },
+        "Email": {
+          "type": "string"
+        },
+        "ExportedFields": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "FirstName": {
+          "type": "string"
+        },
+        "FullName": {
+          "type": "string"
+        },
+        "LastName": {
+          "type": "string"
+        },
+        "Phone": {
+          "type": "string"
+        },
+        "Province": {
+          "type": "string"
+        },
+        "ProvinceCode": {
+          "type": "string"
+        },
+        "Ward": {
+          "type": "string"
+        },
+        "WardCode": {
+          "type": "string"
+        },
+        "Zip": {
+          "type": "string"
+        }
+      }
+    },
+    "vmOrderCustomer": {
+      "type": "object",
+      "properties": {
+        "Email": {
+          "type": "string"
+        },
+        "ExportedFields": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "FirstName": {
+          "type": "string"
+        },
+        "FullName": {
+          "type": "string"
+        },
+        "Gender": {
+          "$ref": "#/definitions/khGender"
+        },
+        "LastName": {
+          "type": "string"
+        },
+        "Phone": {
+          "type": "string"
+        },
+        "Type": {
+          "type": "string"
+        }
+      }
+    },
+    "vmOrderDiscount": {
+      "type": "object",
+      "properties": {
+        "Amount": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "Code": {
+          "type": "string"
+        },
+        "Type": {
+          "type": "string"
+        }
+      }
+    },
+    "vmOrderFeeLine": {
+      "type": "object",
+      "properties": {
+        "Amount": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "Code": {
+          "type": "string"
+        },
+        "Desc": {
+          "type": "string"
+        },
+        "Name": {
+          "type": "string"
+        },
+        "Type": {
+          "$ref": "#/definitions/juFeeType"
+        }
+      }
+    },
+    "vmOrderLine": {
+      "type": "object",
+      "properties": {
+        "Attributes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/vmAttribute"
+          }
+        },
+        "ExportedFields": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "ImageUrl": {
+          "type": "string"
+        },
+        "IsOutsideEtop": {
+          "type": "boolean"
+        },
+        "ListPrice": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "MetaFields": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/vmOrderLineMetaField"
+          }
+        },
+        "OrderId": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "PaymentPrice": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "ProductId": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "ProductName": {
+          "type": "string"
+        },
+        "Quantity": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "RetailPrice": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "TotalDiscount": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "VariantId": {
+          "type": "integer",
+          "format": "int64"
+        }
+      }
+    },
+    "vmOrderLineMetaField": {
+      "type": "object",
+      "properties": {
+        "Key": {
+          "type": "string"
+        },
+        "Name": {
+          "type": "string"
+        },
+        "Value": {
+          "type": "string"
+        }
+      }
+    },
+    "vmOrderShipping": {
+      "type": "object",
+      "properties": {
+        "Carrier": {
+          "$ref": "#/definitions/whShippingProvider"
+        },
+        "ChargeableWeight": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "CodAmount": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "ExportedFields": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "GrossWeight": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "Height": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "IncludeInsurance": {
+          "type": "boolean"
+        },
+        "Length": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "PickupAddress": {
+          "$ref": "#/definitions/vmOrderAddress"
+        },
+        "ReturnAddress": {
+          "$ref": "#/definitions/vmOrderAddress"
+        },
+        "ShAddress": {
+          "$ref": "#/definitions/vmOrderAddress"
+        },
+        "ShippingNote": {
+          "type": "string"
+        },
+        "ShippingProvider": {
+          "$ref": "#/definitions/whShippingProvider"
+        },
+        "ShippingServiceCode": {
+          "type": "string"
+        },
+        "ShippingServiceFee": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "ShippingServiceName": {
+          "type": "string"
+        },
+        "TryOn": {
+          "$ref": "#/definitions/xdTryOnCode"
+        },
+        "Weight": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "Width": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "XServiceId": {
+          "type": "string"
+        },
+        "XServiceName": {
+          "type": "string"
+        },
+        "XShippingFee": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "vmOrdersResponse": {
+      "type": "object",
+      "properties": {
+        "Orders": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/vmOrder"
+          }
+        },
+        "Paging": {
+          "$ref": "#/definitions/maPageInfo"
+        }
+      }
+    },
+    "vmShipnowFulfillment": {
+      "type": "object",
+      "properties": {
+        "CancelReason": {
+          "type": "string"
+        },
+        "Carrier": {
+          "type": "string"
+        },
+        "CodEtopTransferedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "ConfirmStatus": {
+          "$ref": "#/definitions/wwStatus"
+        },
+        "CreatedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "DeliveryPoints": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/vmDeliveryPoint"
+          }
+        },
+        "EtopPaymentStatus": {
+          "$ref": "#/definitions/wxStatus"
+        },
+        "Id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "OrderIds": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "format": "int64"
+          }
+        },
+        "PartnerId": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "PickupAddress": {
+          "$ref": "#/definitions/vmOrderAddress"
+        },
+        "RequestPickupAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "ShippingCancelledAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "ShippingCode": {
+          "type": "string"
+        },
+        "ShippingCreatedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "ShippingDeliveredAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "ShippingDeliveringAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "ShippingNote": {
+          "type": "string"
+        },
+        "ShippingPickingAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "ShippingServiceCode": {
+          "type": "string"
+        },
+        "ShippingServiceDescription": {
+          "type": "string"
+        },
+        "ShippingServiceFee": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "ShippingServiceName": {
+          "type": "string"
+        },
+        "ShippingSharedLink": {
+          "type": "string"
+        },
+        "ShippingState": {
+          "type": "string"
+        },
+        "ShippingStatus": {
+          "$ref": "#/definitions/wyStatus"
+        },
+        "ShopId": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "Status": {
+          "$ref": "#/definitions/wyStatus"
+        },
+        "UpdatedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "ValueInfo": {
+          "$ref": "#/definitions/vmValueInfo"
+        },
+        "WeightInfo": {
+          "$ref": "#/definitions/vmWeightInfo"
+        }
+      }
+    },
+    "vmShippingFeeLine": {
+      "type": "object",
+      "properties": {
+        "Cost": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "ExternalPaymentChannelId": {
+          "type": "string"
+        },
+        "ExternalServiceId": {
+          "type": "string"
+        },
+        "ExternalServiceName": {
+          "type": "string"
+        },
+        "ExternalServiceType": {
+          "type": "string"
+        },
+        "ExternalShippingOrderId": {
+          "type": "string"
+        },
+        "ShippingFeeType": {
+          "$ref": "#/definitions/wuShippingFeeType"
+        }
+      }
+    },
+    "vmValueInfo": {
+      "type": "object",
+      "properties": {
+        "BasketValue": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "CodAmount": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "IncludeInsurance": {
+          "type": "boolean"
+        }
+      }
+    },
+    "vmWeightInfo": {
+      "type": "object",
+      "properties": {
+        "ChargeableWeight": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "GrossWeight": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "Height": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "Length": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "Width": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "vmXFulfillment": {
+      "type": "object",
+      "properties": {
+        "ActualCompensationAmount": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "AddressFrom": {
+          "$ref": "#/definitions/ocAddress"
+        },
+        "AddressTo": {
+          "$ref": "#/definitions/ocAddress"
+        },
+        "BasketValue": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "CancelReason": {
+          "type": "string"
+        },
+        "CancelledAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "Carrier": {
+          "$ref": "#/definitions/whShippingProvider"
+        },
+        "ChargeableWeight": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "ClosedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "CodAmount": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "CodEtopTransferedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "Code": {
+          "type": "string"
+        },
+        "CreatedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "EstimatedDeliveryAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "EstimatedPickupAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "EtopDiscount": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "EtopPaymentStatus": {
+          "$ref": "#/definitions/wxStatus"
+        },
+        "ExpectedDeliveryAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "ExpectedPickAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "Id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "IncludeInsurance": {
+          "type": "boolean"
+        },
+        "Lines": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/vmOrderLine"
+          }
+        },
+        "MoneyTransactionShippingExternalId": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "MoneyTransactionShippingId": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "Order": {
+          "$ref": "#/definitions/vmOrder"
+        },
+        "OrderId": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "PartnerId": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "PickupAddress": {
+          "$ref": "#/definitions/vmOrderAddress"
+        },
+        "ProviderShippingFeeLines": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/vmShippingFeeLine"
+          }
+        },
+        "ReturnAddress": {
+          "$ref": "#/definitions/vmOrderAddress"
+        },
+        "SelfUrl": {
+          "type": "string"
+        },
+        "ShConfirm": {
+          "$ref": "#/definitions/wwStatus"
+        },
+        "Shipment": {
+          "$ref": "#/definitions/vmFulfillment"
+        },
+        "Shipnow": {
+          "$ref": "#/definitions/vmShipnowFulfillment"
+        },
+        "ShippingAddress": {
+          "$ref": "#/definitions/vmOrderAddress"
+        },
+        "ShippingCode": {
+          "type": "string"
+        },
+        "ShippingFeeCustomer": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "ShippingFeeShop": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "ShippingFeeShopLines": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/vmShippingFeeLine"
+          }
+        },
+        "ShippingFeeShopTransferedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "ShippingNote": {
+          "type": "string"
+        },
+        "ShippingProvider": {
+          "type": "string"
+        },
+        "ShippingServiceCode": {
+          "type": "string"
+        },
+        "ShippingServiceFee": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "ShippingServiceName": {
+          "type": "string"
+        },
+        "ShippingState": {
+          "$ref": "#/definitions/nqState"
+        },
+        "ShippingStatus": {
+          "$ref": "#/definitions/wyStatus"
+        },
+        "Shop": {
+          "$ref": "#/definitions/ocShop"
+        },
+        "ShopId": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "Status": {
+          "$ref": "#/definitions/wyStatus"
+        },
+        "TotalAmount": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "TotalCodAmount": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "TotalItems": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "TotalWeight": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "TryOn": {
+          "$ref": "#/definitions/xdTryOnCode"
+        },
+        "UpdatedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "XShippingCancelledAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "XShippingCode": {
+          "type": "string"
+        },
+        "XShippingCreatedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "XShippingDeliveredAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "XShippingFee": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "XShippingId": {
+          "type": "string"
+        },
+        "XShippingLogs": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/vmExternalShippingLog"
+          }
+        },
+        "XShippingNote": {
+          "type": "string"
+        },
+        "XShippingReturnedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "XShippingState": {
+          "type": "string"
+        },
+        "XShippingStatus": {
+          "$ref": "#/definitions/wyStatus"
+        },
+        "XShippingSubState": {
+          "type": "string"
+        },
+        "XShippingUpdatedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "XSyncStates": {
+          "$ref": "#/definitions/vmFulfillmentSyncStates"
+        },
+        "XSyncStatus": {
+          "$ref": "#/definitions/wxStatus"
+        }
+      }
+    },
+    "whShippingProvider": {
+      "type": "string",
+      "enum": [
+        "all",
+        "ghn",
+        "ghtk",
+        "manual",
+        "unknown",
+        "vtpost"
+      ]
+    },
+    "wuShippingFeeType": {
+      "type": "string",
+      "enum": [
+        "address_change",
+        "adjustment",
+        "cods",
+        "discount",
+        "insurance",
+        "main",
+        "other",
+        "return",
+        "tax",
+        "unknown"
+      ]
+    },
+    "wwStatus": {
+      "type": "string",
+      "enum": [
+        "N",
+        "P",
+        "Z"
+      ]
+    },
+    "wxStatus": {
+      "type": "string",
+      "enum": [
+        "N",
+        "P",
+        "S",
+        "Z"
+      ]
+    },
+    "wyStatus": {
+      "type": "string",
+      "enum": [
+        "N",
+        "NS",
+        "P",
+        "S",
+        "Z"
+      ]
+    },
+    "xdTryOnCode": {
+      "type": "string",
+      "enum": [
+        "none",
+        "open",
+        "try",
+        "unknown"
+      ]
+    },
+    "yuUserSource": {
+      "type": "string",
+      "enum": [
+        "etop",
+        "partner",
+        "psx",
+        "topship",
+        "ts_app_android",
+        "ts_app_ios",
+        "ts_app_web",
+        "unknown"
+      ]
+    }
+  },
+  "tags": [
+    {
+      "name": "Account"
+    },
+    {
+      "name": "Credit"
+    },
+    {
+      "name": "Fulfillment"
+    },
+    {
+      "name": "Misc"
+    },
+    {
+      "name": "MoneyTransaction"
+    },
+    {
+      "name": "Notification"
+    },
+    {
+      "name": "Order"
+    },
+    {
+      "name": "Shop"
+    }
+  ]
+}

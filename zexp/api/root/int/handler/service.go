@@ -8,6 +8,7 @@ import (
 )
 
 // +gen:apix
+// +gen:apix:doc-path=services/handler
 
 // +apix:path=/handler.Misc
 type MiscAPI interface {

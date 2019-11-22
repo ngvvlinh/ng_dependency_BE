@@ -61,7 +61,7 @@ func generatePackage(ng generator.Engine, pkg *packages.Package, printer generat
 	writeCommonDeclaration(ws)
 	for _, item := range services {
 		debugf("processing service %v", item.Name)
-		processService(ws, item)
+		processService(ws, ng, item)
 	}
 
 	p(w, "\n// implement interfaces\n\n")

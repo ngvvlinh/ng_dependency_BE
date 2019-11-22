@@ -280,7 +280,7 @@ message Shop {
     optional bool is_test = 4 [(gogoproto.nullable) = false];
     optional Address address = 5;
     optional string phone = 9 [(gogoproto.nullable) = false];
-    optional etop.BankAccount bank_account = 10;
+    optional BankAccount bank_account = 10;
     optional bool auto_create_ffm = 20 [(gogoproto.nullable) = false];
 
     optional string website_url = 14 [(gogoproto.nullable) = false];
@@ -950,5 +950,5 @@ message Affiliate {
     optional bool is_test = 4 [(gogoproto.nullable) = false];
     optional string phone = 5 [(gogoproto.nullable) = false];
     optional string email = 6 [(gogoproto.nullable) = false];
-    optional etop.BankAccount bank_account = 7;
+    optional BankAccount bank_account = 7;
 }

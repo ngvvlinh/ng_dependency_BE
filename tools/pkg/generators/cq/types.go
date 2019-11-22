@@ -6,6 +6,7 @@ import (
 
 const QueryService = "QueryService"
 const Aggregate = "Aggregate"
+const API = "API"
 
 type ServiceDef struct {
 	Kind    string
@@ -15,9 +16,15 @@ type ServiceDef struct {
 }
 
 type HandlerDef struct {
-	Method    *types.Func
-	Requests  ArgItems
-	Responses ArgItems
+	Name     string
+	Comment  string
+	Method   *types.Func
+	Request  *Message
+	Response *Message
+}
+
+type Message struct {
+	Items ArgItems
 }
 
 type ArgItems []*ArgItem

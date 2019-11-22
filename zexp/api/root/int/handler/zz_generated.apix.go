@@ -55,7 +55,7 @@ func (s *MiscServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Reques
 func (s *MiscServiceServer) parseRoute(path string) (reqMsg proto.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
 	case "/handler.Misc/VersionInfo":
-		msg := new(common.Empty)
+		msg := &common.Empty{}
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.MiscAPI.VersionInfo(ctx, msg)
 		}
@@ -100,7 +100,7 @@ func (s *WebhookServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Req
 func (s *WebhookServiceServer) parseRoute(path string) (reqMsg proto.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
 	case "/handler.Webhook/ResetState":
-		msg := new(handler.ResetStateRequest)
+		msg := &handler.ResetStateRequest{}
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.WebhookAPI.ResetState(ctx, msg)
 		}

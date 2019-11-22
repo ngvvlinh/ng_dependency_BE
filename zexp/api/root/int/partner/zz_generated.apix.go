@@ -56,7 +56,7 @@ func (s *HistoryServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Req
 func (s *HistoryServiceServer) parseRoute(path string) (reqMsg proto.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
 	case "/partner.History/GetChanges":
-		msg := new(external.GetChangesRequest)
+		msg := &external.GetChangesRequest{}
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.HistoryAPI.GetChanges(ctx, msg)
 		}
@@ -101,19 +101,19 @@ func (s *MiscServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Reques
 func (s *MiscServiceServer) parseRoute(path string) (reqMsg proto.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
 	case "/partner.Misc/CurrentAccount":
-		msg := new(common.Empty)
+		msg := &common.Empty{}
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.MiscAPI.CurrentAccount(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/partner.Misc/GetLocationList":
-		msg := new(common.Empty)
+		msg := &common.Empty{}
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.MiscAPI.GetLocationList(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/partner.Misc/VersionInfo":
-		msg := new(common.Empty)
+		msg := &common.Empty{}
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.MiscAPI.VersionInfo(ctx, msg)
 		}
@@ -158,31 +158,31 @@ func (s *ShippingServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Re
 func (s *ShippingServiceServer) parseRoute(path string) (reqMsg proto.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
 	case "/partner.Shipping/CancelOrder":
-		msg := new(external.CancelOrderRequest)
+		msg := &external.CancelOrderRequest{}
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.ShippingAPI.CancelOrder(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/partner.Shipping/CreateAndConfirmOrder":
-		msg := new(external.CreateOrderRequest)
+		msg := &external.CreateOrderRequest{}
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.ShippingAPI.CreateAndConfirmOrder(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/partner.Shipping/GetFulfillment":
-		msg := new(external.FulfillmentIDRequest)
+		msg := &external.FulfillmentIDRequest{}
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.ShippingAPI.GetFulfillment(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/partner.Shipping/GetOrder":
-		msg := new(external.OrderIDRequest)
+		msg := &external.OrderIDRequest{}
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.ShippingAPI.GetOrder(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/partner.Shipping/GetShippingServices":
-		msg := new(external.GetShippingServicesRequest)
+		msg := &external.GetShippingServicesRequest{}
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.ShippingAPI.GetShippingServices(ctx, msg)
 		}
@@ -227,13 +227,13 @@ func (s *ShopServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Reques
 func (s *ShopServiceServer) parseRoute(path string) (reqMsg proto.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
 	case "/partner.Shop/AuthorizeShop":
-		msg := new(partner.AuthorizeShopRequest)
+		msg := &partner.AuthorizeShopRequest{}
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.ShopAPI.AuthorizeShop(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/partner.Shop/CurrentShop":
-		msg := new(common.Empty)
+		msg := &common.Empty{}
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.ShopAPI.CurrentShop(ctx, msg)
 		}
@@ -278,19 +278,19 @@ func (s *WebhookServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Req
 func (s *WebhookServiceServer) parseRoute(path string) (reqMsg proto.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
 	case "/partner.Webhook/CreateWebhook":
-		msg := new(external.CreateWebhookRequest)
+		msg := &external.CreateWebhookRequest{}
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.WebhookAPI.CreateWebhook(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/partner.Webhook/DeleteWebhook":
-		msg := new(external.DeleteWebhookRequest)
+		msg := &external.DeleteWebhookRequest{}
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.WebhookAPI.DeleteWebhook(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/partner.Webhook/GetWebhooks":
-		msg := new(common.Empty)
+		msg := &common.Empty{}
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.WebhookAPI.GetWebhooks(ctx, msg)
 		}

@@ -867,10 +867,8 @@ message ShippnowService {
 }
 
 message _Fulfillment {
-    oneof fulfill {
-        ShipnowFulfillment shipnow = 77;
-        Fulfillment shipment = 78;
-    }
+    optional ShipnowFulfillment shipnow = 77;
+    optional Fulfillment shipment = 78;
 
     // backward-compatible fields from shipment
     optional int64 id          = 1 [(gogoproto.nullable)=false];

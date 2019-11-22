@@ -55,25 +55,25 @@ func (s *AccountServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Req
 func (s *AccountServiceServer) parseRoute(path string) (reqMsg proto.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
 	case "/affiliate.Account/DeleteAffiliate":
-		msg := new(common.IDRequest)
+		msg := &common.IDRequest{}
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.AccountAPI.DeleteAffiliate(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/affiliate.Account/RegisterAffiliate":
-		msg := new(affiliate.RegisterAffiliateRequest)
+		msg := &affiliate.RegisterAffiliateRequest{}
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.AccountAPI.RegisterAffiliate(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/affiliate.Account/UpdateAffiliate":
-		msg := new(affiliate.UpdateAffiliateRequest)
+		msg := &affiliate.UpdateAffiliateRequest{}
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.AccountAPI.UpdateAffiliate(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/affiliate.Account/UpdateAffiliateBankAccount":
-		msg := new(affiliate.UpdateAffiliateBankAccountRequest)
+		msg := &affiliate.UpdateAffiliateBankAccountRequest{}
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.AccountAPI.UpdateAffiliateBankAccount(ctx, msg)
 		}
@@ -118,7 +118,7 @@ func (s *MiscServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Reques
 func (s *MiscServiceServer) parseRoute(path string) (reqMsg proto.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
 	case "/affiliate.Misc/VersionInfo":
-		msg := new(common.Empty)
+		msg := &common.Empty{}
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.MiscAPI.VersionInfo(ctx, msg)
 		}

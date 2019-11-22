@@ -2,7 +2,6 @@ package main
 
 import (
 	"net/http"
-	"path/filepath"
 	"regexp"
 	"strconv"
 	"strings"
@@ -193,14 +192,13 @@ func startEtopServer() *http.Server {
 			swaggerPath := "/doc/" + s + "/swagger.json"
 			mux.Handle("/doc/"+s, cmservice.RedocHandler())
 			if strings.Contains(s, "/") {
-				base := filepath.Base(s)
-				mux.Handle(swaggerPath, cmservice.SwaggerHandler(s+"/"+base+".swagger.json"))
+				mux.Handle(swaggerPath, cmservice.SwaggerHandler(s+"/swagger.json"))
 			} else {
-				mux.Handle(swaggerPath, cmservice.SwaggerHandler("etop/"+s+"/"+s+".swagger.json"))
+				mux.Handle(swaggerPath, cmservice.SwaggerHandler("etop/"+s+"/swagger.json"))
 			}
 		}
 		mux.Handle("/doc/etop", cmservice.RedocHandler())
-		mux.Handle("/doc/etop/swagger.json", cmservice.SwaggerHandler("etop/etop.swagger.json"))
+		mux.Handle("/doc/etop/swagger.json", cmservice.SwaggerHandler("etop/swagger.json"))
 
 	} else {
 		ll.Warn("DOCUMENTATION IS DISABLED (config.serve_doc = false)")
@@ -211,7 +209,7 @@ func startEtopServer() *http.Server {
 	mux.Handle("/doc/ext", http.RedirectHandler("/doc", http.StatusTemporaryRedirect))
 	for _, s := range strings.Split("shop,partner", ",") {
 		mux.Handle("/doc/ext/"+s, cmservice.RedocHandler())
-		mux.Handle("/doc/ext/"+s+"/swagger.json", cmservice.SwaggerHandler("external/"+s+"/"+s+".swagger.json"))
+		mux.Handle("/doc/ext/"+s+"/swagger.json", cmservice.SwaggerHandler("external/"+s+"/swagger.json"))
 	}
 
 	handler := middleware.CORS(mux)

@@ -55,19 +55,19 @@ func (s *AccountServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Req
 func (s *AccountServiceServer) parseRoute(path string) (reqMsg proto.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
 	case "/etop.Account/GetPublicPartnerInfo":
-		msg := new(common.IDRequest)
+		msg := &common.IDRequest{}
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.AccountAPI.GetPublicPartnerInfo(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/etop.Account/GetPublicPartners":
-		msg := new(common.IDsRequest)
+		msg := &common.IDsRequest{}
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.AccountAPI.GetPublicPartners(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/etop.Account/UpdateURLSlug":
-		msg := new(etop.UpdateURLSlugRequest)
+		msg := &etop.UpdateURLSlugRequest{}
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.AccountAPI.UpdateURLSlug(ctx, msg)
 		}
@@ -112,25 +112,25 @@ func (s *AddressServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Req
 func (s *AddressServiceServer) parseRoute(path string) (reqMsg proto.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
 	case "/etop.Address/CreateAddress":
-		msg := new(etop.CreateAddressRequest)
+		msg := &etop.CreateAddressRequest{}
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.AddressAPI.CreateAddress(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/etop.Address/GetAddresses":
-		msg := new(common.Empty)
+		msg := &common.Empty{}
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.AddressAPI.GetAddresses(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/etop.Address/RemoveAddress":
-		msg := new(common.IDRequest)
+		msg := &common.IDRequest{}
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.AddressAPI.RemoveAddress(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/etop.Address/UpdateAddress":
-		msg := new(etop.UpdateAddressRequest)
+		msg := &etop.UpdateAddressRequest{}
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.AddressAPI.UpdateAddress(ctx, msg)
 		}
@@ -175,19 +175,19 @@ func (s *BankServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Reques
 func (s *BankServiceServer) parseRoute(path string) (reqMsg proto.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
 	case "/etop.Bank/GetBanks":
-		msg := new(common.Empty)
+		msg := &common.Empty{}
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.BankAPI.GetBanks(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/etop.Bank/GetBranchesByBankProvince":
-		msg := new(etop.GetBranchesByBankProvinceResquest)
+		msg := &etop.GetBranchesByBankProvinceResquest{}
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.BankAPI.GetBranchesByBankProvince(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/etop.Bank/GetProvincesByBank":
-		msg := new(etop.GetProvincesByBankResquest)
+		msg := &etop.GetProvincesByBankResquest{}
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.BankAPI.GetProvincesByBank(ctx, msg)
 		}
@@ -232,25 +232,25 @@ func (s *InvitationServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.
 func (s *InvitationServiceServer) parseRoute(path string) (reqMsg proto.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
 	case "/etop.Invitation/AcceptInvitation":
-		msg := new(etop.AcceptInvitationRequest)
+		msg := &etop.AcceptInvitationRequest{}
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.InvitationAPI.AcceptInvitation(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/etop.Invitation/GetInvitationByToken":
-		msg := new(etop.GetInvitationByTokenRequest)
+		msg := &etop.GetInvitationByTokenRequest{}
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.InvitationAPI.GetInvitationByToken(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/etop.Invitation/GetInvitations":
-		msg := new(etop.GetInvitationsRequest)
+		msg := &etop.GetInvitationsRequest{}
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.InvitationAPI.GetInvitations(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/etop.Invitation/RejectInvitation":
-		msg := new(etop.RejectInvitationRequest)
+		msg := &etop.RejectInvitationRequest{}
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.InvitationAPI.RejectInvitation(ctx, msg)
 		}
@@ -295,37 +295,37 @@ func (s *LocationServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Re
 func (s *LocationServiceServer) parseRoute(path string) (reqMsg proto.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
 	case "/etop.Location/GetDistricts":
-		msg := new(common.Empty)
+		msg := &common.Empty{}
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.LocationAPI.GetDistricts(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/etop.Location/GetDistrictsByProvince":
-		msg := new(etop.GetDistrictsByProvinceRequest)
+		msg := &etop.GetDistrictsByProvinceRequest{}
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.LocationAPI.GetDistrictsByProvince(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/etop.Location/GetProvinces":
-		msg := new(common.Empty)
+		msg := &common.Empty{}
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.LocationAPI.GetProvinces(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/etop.Location/GetWards":
-		msg := new(common.Empty)
+		msg := &common.Empty{}
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.LocationAPI.GetWards(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/etop.Location/GetWardsByDistrict":
-		msg := new(etop.GetWardsByDistrictRequest)
+		msg := &etop.GetWardsByDistrictRequest{}
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.LocationAPI.GetWardsByDistrict(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/etop.Location/ParseLocation":
-		msg := new(etop.ParseLocationRequest)
+		msg := &etop.ParseLocationRequest{}
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.LocationAPI.ParseLocation(ctx, msg)
 		}
@@ -370,7 +370,7 @@ func (s *MiscServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Reques
 func (s *MiscServiceServer) parseRoute(path string) (reqMsg proto.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
 	case "/etop.Misc/VersionInfo":
-		msg := new(common.Empty)
+		msg := &common.Empty{}
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.MiscAPI.VersionInfo(ctx, msg)
 		}
@@ -415,31 +415,31 @@ func (s *RelationshipServiceServer) ServeHTTP(resp http.ResponseWriter, req *htt
 func (s *RelationshipServiceServer) parseRoute(path string) (reqMsg proto.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
 	case "/etop.Relationship/AnswerInvitation":
-		msg := new(etop.AnswerInvitationRequest)
+		msg := &etop.AnswerInvitationRequest{}
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.RelationshipAPI.AnswerInvitation(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/etop.Relationship/GetUsersInCurrentAccounts":
-		msg := new(etop.GetUsersInCurrentAccountsRequest)
+		msg := &etop.GetUsersInCurrentAccountsRequest{}
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.RelationshipAPI.GetUsersInCurrentAccounts(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/etop.Relationship/InviteUserToAccount":
-		msg := new(etop.InviteUserToAccountRequest)
+		msg := &etop.InviteUserToAccountRequest{}
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.RelationshipAPI.InviteUserToAccount(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/etop.Relationship/LeaveAccount":
-		msg := new(etop.LeaveAccountRequest)
+		msg := &etop.LeaveAccountRequest{}
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.RelationshipAPI.LeaveAccount(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/etop.Relationship/RemoveUserFromCurrentAccount":
-		msg := new(etop.RemoveUserFromCurrentAccountRequest)
+		msg := &etop.RemoveUserFromCurrentAccountRequest{}
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.RelationshipAPI.RemoveUserFromCurrentAccount(ctx, msg)
 		}
@@ -484,97 +484,97 @@ func (s *UserServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Reques
 func (s *UserServiceServer) parseRoute(path string) (reqMsg proto.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
 	case "/etop.User/ChangePassword":
-		msg := new(etop.ChangePasswordRequest)
+		msg := &etop.ChangePasswordRequest{}
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.UserAPI.ChangePassword(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/etop.User/ChangePasswordUsingToken":
-		msg := new(etop.ChangePasswordUsingTokenRequest)
+		msg := &etop.ChangePasswordUsingTokenRequest{}
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.UserAPI.ChangePasswordUsingToken(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/etop.User/Login":
-		msg := new(etop.LoginRequest)
+		msg := &etop.LoginRequest{}
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.UserAPI.Login(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/etop.User/Register":
-		msg := new(etop.CreateUserRequest)
+		msg := &etop.CreateUserRequest{}
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.UserAPI.Register(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/etop.User/ResetPassword":
-		msg := new(etop.ResetPasswordRequest)
+		msg := &etop.ResetPasswordRequest{}
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.UserAPI.ResetPassword(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/etop.User/SendEmailVerification":
-		msg := new(etop.SendEmailVerificationRequest)
+		msg := &etop.SendEmailVerificationRequest{}
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.UserAPI.SendEmailVerification(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/etop.User/SendPhoneVerification":
-		msg := new(etop.SendPhoneVerificationRequest)
+		msg := &etop.SendPhoneVerificationRequest{}
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.UserAPI.SendPhoneVerification(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/etop.User/SendSTokenEmail":
-		msg := new(etop.SendSTokenEmailRequest)
+		msg := &etop.SendSTokenEmailRequest{}
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.UserAPI.SendSTokenEmail(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/etop.User/SessionInfo":
-		msg := new(common.Empty)
+		msg := &common.Empty{}
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.UserAPI.SessionInfo(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/etop.User/SwitchAccount":
-		msg := new(etop.SwitchAccountRequest)
+		msg := &etop.SwitchAccountRequest{}
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.UserAPI.SwitchAccount(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/etop.User/UpdatePermission":
-		msg := new(etop.UpdatePermissionRequest)
+		msg := &etop.UpdatePermissionRequest{}
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.UserAPI.UpdatePermission(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/etop.User/UpdateReferenceSale":
-		msg := new(etop.UpdateReferenceSaleRequest)
+		msg := &etop.UpdateReferenceSaleRequest{}
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.UserAPI.UpdateReferenceSale(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/etop.User/UpdateReferenceUser":
-		msg := new(etop.UpdateReferenceUserRequest)
+		msg := &etop.UpdateReferenceUserRequest{}
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.UserAPI.UpdateReferenceUser(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/etop.User/UpgradeAccessToken":
-		msg := new(etop.UpgradeAccessTokenRequest)
+		msg := &etop.UpgradeAccessTokenRequest{}
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.UserAPI.UpgradeAccessToken(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/etop.User/VerifyEmailUsingToken":
-		msg := new(etop.VerifyEmailUsingTokenRequest)
+		msg := &etop.VerifyEmailUsingTokenRequest{}
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.UserAPI.VerifyEmailUsingToken(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/etop.User/VerifyPhoneUsingToken":
-		msg := new(etop.VerifyPhoneUsingTokenRequest)
+		msg := &etop.VerifyPhoneUsingTokenRequest{}
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.UserAPI.VerifyPhoneUsingToken(ctx, msg)
 		}

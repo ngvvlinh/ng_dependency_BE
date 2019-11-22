@@ -9,6 +9,7 @@ import (
 )
 
 // +gen:apix
+// +gen:apix:doc-path=etop/affiliate
 
 // +apix:path=/affiliate.Misc
 type MiscAPI interface {

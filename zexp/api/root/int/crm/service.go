@@ -8,6 +8,7 @@ import (
 )
 
 // +gen:apix
+// +gen:apix:doc-path=services/crm
 
 // +apix:path=/crm.Misc
 type MiscAPI interface {

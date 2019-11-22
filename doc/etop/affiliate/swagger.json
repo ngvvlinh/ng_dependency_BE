@@ -1,0 +1,281 @@
+{
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "schemes": [
+    "http",
+    "https"
+  ],
+  "swagger": "2.0",
+  "info": {
+    "description": "API Documentation:\n- [/doc/etop](/doc/etop) Shared API for managing login and account\n- [/doc/shop](/doc/shop) API for shops\n- [/doc/affiliate](/doc/affiliate) API for affiliates\n- [/doc/services/affiliate](/doc/services/affiliate) API for affiliate service\n- [/doc/integration](/doc/integration) API for shop to integrate with external partners\n- [/doc/admin](/doc/admin) API for eTop admins\n- [/doc/ext/shop](/doc/ext/shop) External API for shops\n- [/doc/ext/partner](/doc/ext/partner) External API for partners\n- [/doc/sadmin](/doc/sadmin) Special API for super admins\n",
+    "title": "etop API",
+    "version": "v1"
+  },
+  "paths": {
+    "/api/affiliate.Account/DeleteAffiliate": {
+      "post": {
+        "tags": [
+          "Account"
+        ],
+        "operationId": "DeleteAffiliate",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/maIDRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/maEmpty"
+            }
+          }
+        }
+      }
+    },
+    "/api/affiliate.Account/RegisterAffiliate": {
+      "post": {
+        "tags": [
+          "Account"
+        ],
+        "operationId": "RegisterAffiliate",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/hzRegisterAffiliateRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ocAffiliate"
+            }
+          }
+        }
+      }
+    },
+    "/api/affiliate.Account/UpdateAffiliate": {
+      "post": {
+        "tags": [
+          "Account"
+        ],
+        "operationId": "UpdateAffiliate",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/hzUpdateAffiliateRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ocAffiliate"
+            }
+          }
+        }
+      }
+    },
+    "/api/affiliate.Account/UpdateAffiliateBankAccount": {
+      "post": {
+        "tags": [
+          "Account"
+        ],
+        "operationId": "UpdateAffiliateBankAccount",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/hzUpdateAffiliateBankAccountRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ocAffiliate"
+            }
+          }
+        }
+      }
+    },
+    "/api/affiliate.Misc/VersionInfo": {
+      "post": {
+        "tags": [
+          "Misc"
+        ],
+        "operationId": "VersionInfo",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/maEmpty"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/maVersionInfoResponse"
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "hzRegisterAffiliateRequest": {
+      "type": "object",
+      "properties": {
+        "BankAccount": {
+          "$ref": "#/definitions/ocBankAccount"
+        },
+        "Email": {
+          "type": "string"
+        },
+        "Name": {
+          "type": "string"
+        },
+        "Phone": {
+          "type": "string"
+        }
+      }
+    },
+    "hzUpdateAffiliateBankAccountRequest": {
+      "type": "object",
+      "properties": {
+        "BankAccount": {
+          "$ref": "#/definitions/ocBankAccount"
+        }
+      }
+    },
+    "hzUpdateAffiliateRequest": {
+      "type": "object",
+      "properties": {
+        "Email": {
+          "type": "string"
+        },
+        "Name": {
+          "type": "string"
+        },
+        "Phone": {
+          "type": "string"
+        }
+      }
+    },
+    "maEmpty": {
+      "type": "object"
+    },
+    "maIDRequest": {
+      "type": "object",
+      "properties": {
+        "Id": {
+          "type": "integer",
+          "format": "int64"
+        }
+      }
+    },
+    "maVersionInfoResponse": {
+      "type": "object",
+      "properties": {
+        "Service": {
+          "type": "string"
+        },
+        "UpdatedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "Version": {
+          "type": "string"
+        }
+      }
+    },
+    "ocAffiliate": {
+      "type": "object",
+      "properties": {
+        "BankAccount": {
+          "$ref": "#/definitions/ocBankAccount"
+        },
+        "Email": {
+          "type": "string"
+        },
+        "Id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "IsTest": {
+          "type": "boolean"
+        },
+        "Name": {
+          "type": "string"
+        },
+        "Phone": {
+          "type": "string"
+        },
+        "Status": {
+          "$ref": "#/definitions/wwStatus"
+        }
+      }
+    },
+    "ocBankAccount": {
+      "type": "object",
+      "properties": {
+        "AccountName": {
+          "type": "string"
+        },
+        "AccountNumber": {
+          "type": "string"
+        },
+        "Branch": {
+          "type": "string"
+        },
+        "Name": {
+          "type": "string"
+        },
+        "Province": {
+          "type": "string"
+        }
+      }
+    },
+    "wwStatus": {
+      "type": "string",
+      "enum": [
+        "N",
+        "P",
+        "Z"
+      ]
+    }
+  },
+  "tags": [
+    {
+      "name": "Account"
+    },
+    {
+      "name": "Misc"
+    }
+  ]
+}

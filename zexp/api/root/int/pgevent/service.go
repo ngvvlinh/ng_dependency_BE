@@ -8,6 +8,7 @@ import (
 )
 
 // +gen:apix
+// +gen:apix:doc-path=services/pgevent
 
 // +apix:path=/pgevent.Misc
 type MiscAPI interface {

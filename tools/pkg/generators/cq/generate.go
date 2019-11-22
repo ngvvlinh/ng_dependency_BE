@@ -9,57 +9,66 @@ import (
 	"etop.vn/backend/tools/pkg/genutil"
 )
 
-func processService(w *MultiWriter, def ServiceDef) {
+func processService(w *MultiWriter, ng generator.Engine, def ServiceDef) {
 	switch def.Kind {
 	case QueryService:
-		processQueryService(w, def.PkgPath, def.Name, def.Type)
+		processQueryService(w, ng, def.PkgPath, def.Name, def.Type)
 	case Aggregate:
-		processAggregate(w, def.PkgPath, def.Name, def.Type)
+		processAggregate(w, ng, def.PkgPath, def.Name, def.Type)
 	default:
 		panic("unexpected")
 	}
 }
 
-func processQueryService(w *MultiWriter, pkgPath string, name string, typ *types.Interface) {
-	defs := extractHandlerDefs(pkgPath, name, typ)
+func processQueryService(w *MultiWriter, ng generator.Engine, pkgPath string, name string, typ *types.Interface) {
+	defs := ExtractHandlerDefs(ng, pkgPath, name, typ)
 	generateQueries(w, name, defs)
 	mustNoError("type %v.%v:\n", pkgPath, name)
 }
 
-func processAggregate(w *MultiWriter, pkgPath string, name string, typ *types.Interface) {
-	defs := extractHandlerDefs(pkgPath, name, typ)
+func processAggregate(w *MultiWriter, ng generator.Engine, pkgPath string, name string, typ *types.Interface) {
+	defs := ExtractHandlerDefs(ng, pkgPath, name, typ)
 	generateCommands(w, name, defs)
 	mustNoError("type %v.%v:\n", pkgPath, name)
 }
 
-func extractHandlerDefs(pkgPath string, name string, typ *types.Interface) (defs []HandlerDef) {
+func ExtractHandlerDefs(ng generator.Engine, pkgPath string, name string, typ *types.Interface) (defs []*HandlerDef) {
 	n := typ.NumMethods()
 	for i := 0; i < n; i++ {
 		method := typ.Method(i)
 		if !method.Exported() {
 			continue
 		}
-
-		mtyp := method.Type()
-		styp := mtyp.(*types.Signature)
-		params := styp.Params()
-		results := styp.Results()
-		requests, responses, err := checkMethodSignature(method.Name(), params, results)
+		def, err := ExtractHandlerDef(ng, method)
 		if err != nil {
-			errorf("%v: %v", method.Name(), err)
+			errorf("%v", err)
 			continue
 		}
-		defs = append(defs, HandlerDef{
-			Method:    method,
-			Requests:  requests,
-			Responses: responses,
-		})
+		defs = append(defs, def)
 	}
 	mustNoError("type %v.%v:\n", pkgPath, name)
 	return defs
 }
 
-func checkMethodSignature(name string, params *types.Tuple, results *types.Tuple) (requests []*ArgItem, responses []*ArgItem, err error) {
+func ExtractHandlerDef(ng generator.Engine, method *types.Func) (*HandlerDef, error) {
+	mtyp := method.Type()
+	styp := mtyp.(*types.Signature)
+	params := styp.Params()
+	results := styp.Results()
+	requests, responses, err := CheckMethodSignature(method.Name(), params, results)
+	if err != nil {
+		return nil, fmt.Errorf("%v: %v", method.Name(), err)
+	}
+	return &HandlerDef{
+		Name:     method.Name(),
+		Comment:  ng.GetComment(method).Text(),
+		Method:   method,
+		Request:  requests,
+		Response: responses,
+	}, nil
+}
+
+func CheckMethodSignature(name string, params *types.Tuple, results *types.Tuple) (request, response *Message, err error) {
 	if params.Len() == 0 {
 		err = generator.Errorf(nil, "expect at least 1 param")
 		return
@@ -68,6 +77,7 @@ func checkMethodSignature(name string, params *types.Tuple, results *types.Tuple
 		err = generator.Errorf(nil, "expect at least 1 param")
 		return
 	}
+	var requestItems, responseItems []*ArgItem
 	{
 		t := params.At(0)
 		if t.Type().String() != "context.Context" {
@@ -89,7 +99,7 @@ func checkMethodSignature(name string, params *types.Tuple, results *types.Tuple
 			if err != nil {
 				errorf("%v: %v", name, err)
 			}
-			requests = append(requests, arg)
+			requestItems = append(requestItems, arg)
 			if !arg.Inline && arg.Name == "" {
 				errorf("%v: must provide name for param %v", name, arg.Type)
 			}
@@ -102,17 +112,19 @@ func checkMethodSignature(name string, params *types.Tuple, results *types.Tuple
 			if err != nil {
 				errorf("%v: %v", name, err)
 			}
-			responses = append(responses, arg)
+			responseItems = append(responseItems, arg)
 		}
-		if len(responses) > 1 {
-			for _, arg := range responses {
+		if len(responseItems) > 1 {
+			for _, arg := range responseItems {
 				if arg.Name == "" || strings.HasPrefix(arg.Name, "_") {
 					errorf("%v: must provide name for result %v", name, arg.Type)
 				}
 			}
 		}
 	}
-	return
+	request = &Message{Items: requestItems}
+	response = &Message{Items: responseItems}
+	return request, response, nil
 }
 
 func checkArg(v *types.Var, autoInline bool) (*ArgItem, error) {
@@ -189,7 +201,7 @@ func (c QueryBus) DispatchAll(ctx context.Context, msgs ...Query) error {
 	mustWrite(w, []byte(tmpl))
 }
 
-func generateQueries(w *MultiWriter, serviceName string, defs []HandlerDef) {
+func generateQueries(w *MultiWriter, serviceName string, defs []*HandlerDef) {
 	w.Import("context", "context")
 
 	genHandlerName := serviceName + "Handler"
@@ -222,7 +234,7 @@ func (h %v) RegisterHandlers(b interface{
 		// generate declaration
 		{
 			p(w, "type %v struct {\n", genQueryName)
-			generateStruct(w.Writer, item.Requests)
+			generateStruct(w.Writer, item.Request)
 			mustNoError("method %v:\n", item.Method)
 			generateResult(w, item)
 			p(w, "}\n\n")
@@ -234,8 +246,8 @@ func (h %v) RegisterHandlers(b interface{
 		// implement GetArgs()
 		{
 			w2 := w.GetImportWriter(&w.WriteArgs)
-			generateGetArgs(w2, genQueryName, item.Requests)
-			generateSetArgs(w2, genQueryName, item.Requests)
+			generateGetArgs(w2, genQueryName, item.Request)
+			generateSetArgs(w2, genQueryName, item.Request)
 		}
 		// implement Query
 		{
@@ -246,7 +258,7 @@ func (h %v) RegisterHandlers(b interface{
 	}
 }
 
-func generateCommands(w *MultiWriter, serviceName string, defs []HandlerDef) {
+func generateCommands(w *MultiWriter, serviceName string, defs []*HandlerDef) {
 	w.Import("context", "context")
 
 	genHandlerName := serviceName + "Handler"
@@ -277,7 +289,7 @@ func (h %v) RegisterHandlers(b interface{
 		genCommandName := item.Method.Name() + "Command"
 
 		p(w, "type %v struct {\n", genCommandName)
-		generateStruct(w.Writer, item.Requests)
+		generateStruct(w.Writer, item.Request)
 		mustNoError("method %v:\n", item.Method)
 		generateResult(w, item)
 		p(w, "}\n\n")
@@ -285,8 +297,8 @@ func (h %v) RegisterHandlers(b interface{
 		// implement GetArgs()
 		{
 			w2 := w.GetImportWriter(&w.WriteArgs)
-			generateGetArgs(w2, genCommandName, item.Requests)
-			generateSetArgs(w2, genCommandName, item.Requests)
+			generateGetArgs(w2, genCommandName, item.Request)
+			generateSetArgs(w2, genCommandName, item.Request)
 		}
 		// implement Handle()
 		{
@@ -300,15 +312,15 @@ func (h %v) RegisterHandlers(b interface{
 	}
 }
 
-func generateGetArgs(w ImportWriter, wrapperName string, requests ArgItems) {
+func generateGetArgs(w ImportWriter, wrapperName string, requests *Message) {
 	p(w, "func (q *%v) GetArgs(ctx context.Context) (_ context.Context, ", wrapperName)
-	generateArgList(w, requests)
+	generateArgList(w, requests.Items)
 	p(w, ") {\n")
 	p(w, "\treturn ctx,\n")
 
 	comma := false
 	inline := false
-	err := requests.Walk(
+	err := requests.Items.Walk(
 		func(node NodeType, name string, field *types.Var, tag string) error {
 			if comma {
 				p(w, ",\n")
@@ -342,8 +354,8 @@ func generateGetArgs(w ImportWriter, wrapperName string, requests ArgItems) {
 	p(w, "}\n\n")
 }
 
-func generateSetArgs(w ImportWriter, wrapperName string, requests ArgItems) {
-	for _, req := range requests {
+func generateSetArgs(w ImportWriter, wrapperName string, requests *Message) {
+	for _, req := range requests.Items {
 		if !req.Inline {
 			continue
 		}
@@ -385,8 +397,8 @@ func renderTypeName(typ types.Type) string {
 	return typ.(*types.Named).Obj().Name()
 }
 
-func generateStruct(w ImportWriter, args ArgItems) {
-	err := args.Walk(
+func generateStruct(w ImportWriter, args *Message) {
+	err := args.Items.Walk(
 		func(node NodeType, name string, field *types.Var, tag string) error {
 			switch node {
 			case NodeField:
@@ -402,28 +414,29 @@ func generateStruct(w ImportWriter, args ArgItems) {
 	must(err)
 }
 
-func generateResult(w ImportWriter, item HandlerDef) {
-	if len(item.Responses) == 1 {
-		p(w, "\nResult %v `json:\"-\"`\n", renderType(w, item.Responses[0].Type, false))
+func generateResult(w ImportWriter, item *HandlerDef) {
+	items := item.Response.Items
+	if len(items) == 1 {
+		p(w, "\nResult %v `json:\"-\"`\n", renderType(w, items[0].Type, false))
 	} else {
 		p(w, "\nResult struct {\n")
-		for _, arg := range item.Responses {
+		for _, arg := range items {
 			p(w, "%v %v\n", arg.Name, renderType(w, arg.Type, false))
 		}
 		p(w, "} `json:\"-\"`\n")
 	}
 }
 
-func generateHandle(w ImportWriter, item HandlerDef, methodName, genHandlerName, genQueryName string) {
+func generateHandle(w ImportWriter, item *HandlerDef, methodName, genHandlerName, genQueryName string) {
 	p(w, "\nfunc (h %v) Handle%v(ctx context.Context, msg *%v) (err error) {\n", genHandlerName, methodName, genQueryName)
-	switch len(item.Responses) {
+	switch len(item.Response.Items) {
 	case 0:
 		p(w, "return h.inner.%v(msg.GetArgs(ctx))\n", methodName)
 	case 1:
 		p(w, "msg.Result, err = h.inner.%v(msg.GetArgs(ctx))\n", methodName)
 		p(w, "return err\n")
 	default:
-		for _, arg := range item.Responses {
+		for _, arg := range item.Response.Items {
 			p(w, "msg.Result.%v, ", arg.Var.Name())
 		}
 		p(w, "err = h.inner.%v(msg.GetArgs(ctx))\n", methodName)

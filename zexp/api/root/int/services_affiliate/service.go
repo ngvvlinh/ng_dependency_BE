@@ -8,6 +8,7 @@ import (
 )
 
 // +gen:apix
+// +gen:apix:doc-path=services/affiliate
 
 // +apix:path=/affiliate.User
 type UserAPI interface {

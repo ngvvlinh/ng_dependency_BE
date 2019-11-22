@@ -55,55 +55,55 @@ func (s *AffiliateServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.R
 func (s *AffiliateServiceServer) parseRoute(path string) (reqMsg proto.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
 	case "/affiliate.Affiliate/AffiliateGetProducts":
-		msg := new(common.CommonListRequest)
+		msg := &common.CommonListRequest{}
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.AffiliateAPI.AffiliateGetProducts(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/affiliate.Affiliate/CreateOrUpdateAffiliateCommissionSetting":
-		msg := new(affiliate.CreateOrUpdateCommissionSettingRequest)
+		msg := &affiliate.CreateOrUpdateCommissionSettingRequest{}
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.AffiliateAPI.CreateOrUpdateAffiliateCommissionSetting(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/affiliate.Affiliate/CreateReferralCode":
-		msg := new(affiliate.CreateReferralCodeRequest)
+		msg := &affiliate.CreateReferralCodeRequest{}
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.AffiliateAPI.CreateReferralCode(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/affiliate.Affiliate/GetCommissions":
-		msg := new(common.CommonListRequest)
+		msg := &common.CommonListRequest{}
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.AffiliateAPI.GetCommissions(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/affiliate.Affiliate/GetProductPromotionByProductID":
-		msg := new(affiliate.GetProductPromotionByProductIDRequest)
+		msg := &affiliate.GetProductPromotionByProductIDRequest{}
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.AffiliateAPI.GetProductPromotionByProductID(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/affiliate.Affiliate/GetReferralCodes":
-		msg := new(common.CommonListRequest)
+		msg := &common.CommonListRequest{}
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.AffiliateAPI.GetReferralCodes(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/affiliate.Affiliate/GetReferrals":
-		msg := new(common.CommonListRequest)
+		msg := &common.CommonListRequest{}
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.AffiliateAPI.GetReferrals(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/affiliate.Affiliate/GetTransactions":
-		msg := new(common.CommonListRequest)
+		msg := &common.CommonListRequest{}
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.AffiliateAPI.GetTransactions(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/affiliate.Affiliate/NotifyNewShopPurchase":
-		msg := new(affiliate.NotifyNewShopPurchaseRequest)
+		msg := &affiliate.NotifyNewShopPurchaseRequest{}
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.AffiliateAPI.NotifyNewShopPurchase(ctx, msg)
 		}
@@ -148,19 +148,19 @@ func (s *ShopServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Reques
 func (s *ShopServiceServer) parseRoute(path string) (reqMsg proto.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
 	case "/affiliate.Shop/CheckReferralCodeValid":
-		msg := new(affiliate.CheckReferralCodeValidRequest)
+		msg := &affiliate.CheckReferralCodeValidRequest{}
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.ShopAPI.CheckReferralCodeValid(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/affiliate.Shop/GetProductPromotion":
-		msg := new(affiliate.GetProductPromotionRequest)
+		msg := &affiliate.GetProductPromotionRequest{}
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.ShopAPI.GetProductPromotion(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/affiliate.Shop/ShopGetProducts":
-		msg := new(common.CommonListRequest)
+		msg := &common.CommonListRequest{}
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.ShopAPI.ShopGetProducts(ctx, msg)
 		}
@@ -205,37 +205,37 @@ func (s *TradingServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Req
 func (s *TradingServiceServer) parseRoute(path string) (reqMsg proto.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
 	case "/affiliate.Trading/CreateOrUpdateTradingCommissionSetting":
-		msg := new(affiliate.CreateOrUpdateTradingCommissionSettingRequest)
+		msg := &affiliate.CreateOrUpdateTradingCommissionSettingRequest{}
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.TradingAPI.CreateOrUpdateTradingCommissionSetting(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/affiliate.Trading/CreateTradingProductPromotion":
-		msg := new(affiliate.CreateOrUpdateProductPromotionRequest)
+		msg := &affiliate.CreateOrUpdateProductPromotionRequest{}
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.TradingAPI.CreateTradingProductPromotion(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/affiliate.Trading/GetTradingProductPromotionByProductIDs":
-		msg := new(affiliate.GetTradingProductPromotionByIDsRequest)
+		msg := &affiliate.GetTradingProductPromotionByIDsRequest{}
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.TradingAPI.GetTradingProductPromotionByProductIDs(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/affiliate.Trading/GetTradingProductPromotions":
-		msg := new(common.CommonListRequest)
+		msg := &common.CommonListRequest{}
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.TradingAPI.GetTradingProductPromotions(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/affiliate.Trading/TradingGetProducts":
-		msg := new(common.CommonListRequest)
+		msg := &common.CommonListRequest{}
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.TradingAPI.TradingGetProducts(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/affiliate.Trading/UpdateTradingProductPromotion":
-		msg := new(affiliate.CreateOrUpdateProductPromotionRequest)
+		msg := &affiliate.CreateOrUpdateProductPromotionRequest{}
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.TradingAPI.UpdateTradingProductPromotion(ctx, msg)
 		}
@@ -280,7 +280,7 @@ func (s *UserServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Reques
 func (s *UserServiceServer) parseRoute(path string) (reqMsg proto.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
 	case "/affiliate.User/UpdateReferral":
-		msg := new(affiliate.UpdateReferralRequest)
+		msg := &affiliate.UpdateReferralRequest{}
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.UserAPI.UpdateReferral(ctx, msg)
 		}

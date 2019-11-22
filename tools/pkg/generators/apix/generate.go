@@ -5,6 +5,7 @@ import (
 	"text/template"
 
 	"etop.vn/backend/tools/pkg/generator"
+	"etop.vn/backend/tools/pkg/generators/apix/defs"
 )
 
 var tpl = template.Must(template.New("tpl").Funcs(funcs).Parse(tplText))
@@ -12,9 +13,10 @@ var currentPrinter generator.Printer
 
 var funcs = map[string]interface{}{
 	"type": renderType,
+	"new":  renderNew,
 }
 
-func (p *plugin) generateServices(printer generator.Printer, services []*Service) error {
+func (p *plugin) generateServices(printer generator.Printer, services []*defs.Service) error {
 	currentPrinter = printer
 	printer.Import("context", "context")
 	printer.Import("fmt", "fmt")
@@ -29,4 +31,9 @@ func (p *plugin) generateServices(printer generator.Printer, services []*Service
 
 func renderType(typ types.Type) string {
 	return currentPrinter.TypeString(typ)
+}
+
+func renderNew(typ types.Type) string {
+	named := typ.(*types.Pointer).Elem().(*types.Named)
+	return "&" + currentPrinter.TypeString(named) + "{}"
 }

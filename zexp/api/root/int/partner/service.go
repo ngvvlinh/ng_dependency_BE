@@ -10,6 +10,8 @@ import (
 )
 
 // +gen:apix
+// +gen:apix:base-path=/v1
+// +gen:apix:doc-path=external/partner
 
 // +apix:path=/partner.Misc
 type MiscAPI interface {

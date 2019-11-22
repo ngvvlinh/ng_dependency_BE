@@ -10,6 +10,7 @@ import (
 )
 
 // +gen:apix
+// +gen:apix:doc-path=etop/admin
 
 // +apix:path=/admin.Misc
 type MiscAPI interface {

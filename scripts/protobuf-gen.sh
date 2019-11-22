@@ -76,7 +76,7 @@ for PKG in $(find "${BACKEND}/pb${filter}" -type d); do
     PKGNAME=$(basename $PKG)
     PROTO=$PKG/*.proto
     if ls $PROTO 1>/dev/null 2>/dev/null; then
-        protoc $IMPORT --twirp_out=$ROOTDIR --gogo_out=$ROOTDIR --twirp_swagger_out=${BACKEND}/doc $PROTO
+        protoc $IMPORT --twirp_out=$ROOTDIR --gogo_out=$ROOTDIR $PROTO
 
         sedtwirp $PKG/*.twirp.go "$(prefixpath $PKG)"
         echo "Generated from: $PKG"
@@ -91,40 +91,5 @@ if [[ -n "$GENERATED_FILES" ]]; then
     "${twirp_modifier}" $GENERATED_FILES
     goimports -local etop.vn -w $GENERATED_FILES
 fi
-
-# Sort swagger tags and parse @required fields
-for FILE in $(find "${BACKEND}/doc" -name *.swagger.json); do
-    if [ "$(cat $FILE | jq '.paths | length')" -eq 0 ]; then
-        rm $FILE
-        continue
-    fi
-
-    cat $FILE \
-        | jq '.tags = ([.paths[][].tags[0]] | unique | [.[]|{name:.}])' \
-        | jq '
-        def reqs:
-            .properties
-            | to_entries
-            | map(select(.value.title // "" | startswith("@required")))
-            | map(.key);
-        def req:
-            if (. | reqs | length) > 0 then
-               .required = (. | reqs)
-            else . end;
-        (.definitions[] | select(.properties != null)) |= req' \
-        | sed 's/@required\s*//g' \
-        | tr '\n' '~' \
-        | sed 's/,~\s*"title":\s*""//g' \
-        | tr '~' '\n' \
-        > $FILE.jq
-
-    sedtwirp $FILE.jq "$(prefixpath $FILE)"
-    mv $FILE.jq $FILE
-    echo "Updated doc:    $FILE"
-done
-
-# Generate go-bindata
-cd ${BACKEND}/doc
-go-bindata -pkg doc -o bindata.gen.go -ignore '\.(md|go|xlsx)$' ./...
 
 printf "\n✔ Done\n"

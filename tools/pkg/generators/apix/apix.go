@@ -1,12 +1,20 @@
 package apix
 
 import (
+	"encoding/json"
+	"fmt"
 	"go/types"
+	"os"
+	"path/filepath"
 	"strings"
 
 	"golang.org/x/tools/go/packages"
 
+	"etop.vn/backend/tools/pkg/gen"
 	"etop.vn/backend/tools/pkg/generator"
+	"etop.vn/backend/tools/pkg/generators/apix/defs"
+	"etop.vn/backend/tools/pkg/generators/apix/swagger"
+	"etop.vn/backend/tools/pkg/generators/cq"
 	"etop.vn/common/l"
 )
 
@@ -31,10 +39,21 @@ func (p *plugin) Generate(ng generator.Engine) error {
 	return ng.GenerateEachPackage(p.generatePackage)
 }
 
-func (p *plugin) generatePackage(ng generator.Engine, pkg *packages.Package, printer generator.Printer) error {
+func (p *plugin) generatePackage(ng generator.Engine, pkg *packages.Package, printer generator.Printer) (_err error) {
 	ll.V(2).Debugf("apix: generating package %v", pkg.PkgPath)
+
+	pkgDirectives := ng.GetDirectivesByPackage(pkg)
+	basePath := pkgDirectives.GetArg("gen:apix:base-path")
+	if basePath == "" {
+		basePath = "/api"
+	}
+	docPath := pkgDirectives.GetArg("gen:apix:doc-path")
+	if docPath == "" {
+		panic(fmt.Sprintf("no doc-path for pkg %v", pkg.Name))
+	}
+
 	objects := ng.GetObjectsByPackage(pkg)
-	var services []*Service
+	var services []*defs.Service
 	for _, obj := range objects {
 		ll.V(2).Debugf("  object %v: %v", obj.Name(), obj.Type())
 		directives := ng.GetDirectives(obj)
@@ -42,125 +61,78 @@ func (p *plugin) generatePackage(ng generator.Engine, pkg *packages.Package, pri
 		case *types.TypeName:
 			ll.V(2).Debugf("  type %v", obj.Name())
 			switch typ := obj.Type().(type) {
-
 			case *types.Named:
-				switch typ := typ.Underlying().(type) {
+				switch underlyingType := typ.Underlying().(type) {
 				case *types.Interface:
 					if !strings.HasSuffix(obj.Name(), "API") {
 						ll.V(1).Debugf("ignore unrecognized interface %v", obj.Name())
 						continue
 					}
-					service, err := p.parseService(typ)
+					service, err := p.parseService(underlyingType)
 					if err != nil {
 						return generator.Errorf(err, "service %v: %v", obj.Name(), err)
 					}
 					service.Name = strings.TrimSuffix(obj.Name(), "API")
-					service.APIPath = parseAPIPath(directives)
+					service.APIPath = directives.GetArg("apix:path")
+					if service.APIPath == "" {
+						return generator.Errorf(nil, "no api path for %v", obj.Name())
+					}
+					service.BasePath = basePath
 					services = append(services, service)
 				}
 			}
 		}
 	}
-	return p.generateServices(printer, services)
-}
 
-func parseAPIPath(directives []generator.Directive) string {
-	for _, d := range directives {
-		if d.Cmd == "apix:path" {
-			return d.Arg
+	if err := p.generateServices(printer, services); err != nil {
+		return err
+	}
+	swaggerDoc, err := swagger.GenerateSwagger(ng, services)
+	if err != nil {
+		return generator.Errorf(err, "generate swagger: %v", err)
+	}
+	{
+		dir := filepath.Join(gen.ProjectPath(), "doc", docPath)
+		filename := filepath.Join(dir, "swagger.json")
+		f, err := os.OpenFile(filename, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0644)
+		if err != nil {
+			return err
+		}
+		defer func() {
+			err := f.Close()
+			if _err == nil {
+				_err = err
+			}
+		}()
+		encoder := json.NewEncoder(f)
+		encoder.SetIndent("", "  ")
+		if err := encoder.Encode(swaggerDoc); err != nil {
+			return generator.Errorf(nil, "generate swagger: %v", err)
 		}
 	}
-	return ""
+	return nil
 }
 
-func (p *plugin) parseService(iface *types.Interface) (*Service, error) {
-	ng := p.ng
-	methods := make([]*Method, 0, iface.NumMethods())
+func (p *plugin) parseService(iface *types.Interface) (*defs.Service, error) {
+	methods := make([]*defs.Method, 0, iface.NumMethods())
 	for i, n := 0, iface.NumMethods(); i < n; i++ {
 		method := iface.Method(i)
-		req, resp, err := p.parseMethod(method)
+		if !method.Exported() {
+			continue
+		}
+		m, err := p.parseMethod(method)
 		if err != nil {
 			return nil, generator.Errorf(err, "method %v: %v", method.Name(), err)
 		}
-		m := &Method{
-			Name:     method.Name(),
-			Comment:  ng.GetComment(method).Text(),
-			Request:  req,
-			Response: resp,
-		}
 		methods = append(methods, m)
 	}
-	return &Service{Methods: methods}, nil
+	return &defs.Service{Methods: methods}, nil
 }
 
-func (p *plugin) parseMethod(method *types.Func) (req, resp Message, err error) {
-	sign := method.Type().(*types.Signature)
-	{
-		params := sign.Params()
-		if params.Len() != 2 {
-			err = generator.Errorf(nil, "must have 2 params")
-			return
-		}
-		if err = validateType(params.At(0).Type(), "context", "Context"); err != nil {
-			return
-		}
-		req, err = parseMessage(params.At(1))
-		if err != nil {
-			err = generator.Errorf(err, "param %v", err)
-			return
-		}
+func (p *plugin) parseMethod(method *types.Func) (_ *defs.Method, err error) {
+	def, err := cq.ExtractHandlerDef(p.ng, method)
+	if err != nil {
+		return nil, generator.Errorf(err, "%v", err)
 	}
-	{
-		results := sign.Results()
-		if results.Len() != 2 {
-			err = generator.Errorf(nil, "must have 2 results")
-			return
-		}
-		if err = validateType(results.At(1).Type(), "", "error"); err != nil {
-			err = generator.Errorf(err, "result %v", err)
-			return
-		}
-		resp, err = parseMessage(results.At(0))
-		if err != nil {
-			return
-		}
-	}
-	return
-}
-
-func parseMessage(m *types.Var) (_ Message, err error) {
-	typ := m.Type()
-	ptr, ok := typ.(*types.Pointer)
-	if !ok {
-		err = generator.Errorf(nil, "must be pointer")
-		return
-	}
-	typ = ptr.Elem()
-	named, ok := typ.(*types.Named)
-	if !ok {
-		err = generator.Errorf(nil, "must be pointer to named type")
-		return
-	}
-	return Message{
-		Type:    named,
-		PkgPath: m.Pkg().Path(),
-		Name:    named.Obj().Name(),
-	}, nil
-
-	// TODO: parse struct
-}
-
-func validateType(typ types.Type, pkgPath, name string) error {
-	named, ok := typ.(*types.Named)
-	if !ok {
-		return generator.Errorf(nil, "must be a named type")
-	}
-	var typPkgPath string
-	if named.Obj().Pkg() != nil {
-		typPkgPath = named.Obj().Pkg().Path()
-	}
-	if typPkgPath == pkgPath && named.Obj().Name() == name {
-		return nil
-	}
-	return generator.Errorf(nil, "must be %v.%v (got %v)", pkgPath, name, typ)
+	return def, nil
 }

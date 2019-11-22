@@ -1,0 +1,687 @@
+{
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "schemes": [
+    "http",
+    "https"
+  ],
+  "swagger": "2.0",
+  "info": {
+    "description": "API Documentation:\n- [/doc/etop](/doc/etop) Shared API for managing login and account\n- [/doc/shop](/doc/shop) API for shops\n- [/doc/affiliate](/doc/affiliate) API for affiliates\n- [/doc/services/affiliate](/doc/services/affiliate) API for affiliate service\n- [/doc/integration](/doc/integration) API for shop to integrate with external partners\n- [/doc/admin](/doc/admin) API for eTop admins\n- [/doc/ext/shop](/doc/ext/shop) External API for shops\n- [/doc/ext/partner](/doc/ext/partner) External API for partners\n- [/doc/sadmin](/doc/sadmin) Special API for super admins\n",
+    "title": "etop API",
+    "version": "v1"
+  },
+  "paths": {
+    "/api/integration.Integration/GrantAccess": {
+      "post": {
+        "tags": [
+          "Integration"
+        ],
+        "operationId": "GrantAccess",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/piGrantAccessRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/piGrantAccessResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/integration.Integration/Init": {
+      "post": {
+        "tags": [
+          "Integration"
+        ],
+        "operationId": "Init",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/piInitRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/piLoginResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/integration.Integration/LoginUsingToken": {
+      "post": {
+        "tags": [
+          "Integration"
+        ],
+        "operationId": "LoginUsingToken",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/piLoginUsingTokenRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/piLoginResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/integration.Integration/Register": {
+      "post": {
+        "tags": [
+          "Integration"
+        ],
+        "operationId": "Register",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/piRegisterRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/piRegisterResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/integration.Integration/RequestLogin": {
+      "post": {
+        "tags": [
+          "Integration"
+        ],
+        "operationId": "RequestLogin",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/piRequestLoginRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/piRequestLoginResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/integration.Integration/SessionInfo": {
+      "post": {
+        "tags": [
+          "Integration"
+        ],
+        "operationId": "SessionInfo",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/maEmpty"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/piLoginResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/integration.Misc/VersionInfo": {
+      "post": {
+        "tags": [
+          "Misc"
+        ],
+        "operationId": "VersionInfo",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/maEmpty"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/maVersionInfoResponse"
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "euAddressType": {
+      "type": "string",
+      "enum": [
+        "general",
+        "shipfrom",
+        "shipto",
+        "unknown",
+        "warehouse"
+      ]
+    },
+    "maEmpty": {
+      "type": "object"
+    },
+    "maVersionInfoResponse": {
+      "type": "object",
+      "properties": {
+        "Service": {
+          "type": "string"
+        },
+        "UpdatedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "Version": {
+          "type": "string"
+        }
+      }
+    },
+    "ocAccountType": {
+      "type": "string",
+      "enum": [
+        "affiliate",
+        "etop",
+        "partner",
+        "shop",
+        "unknown"
+      ]
+    },
+    "ocAddress": {
+      "type": "object",
+      "properties": {
+        "Address1": {
+          "type": "string"
+        },
+        "Address2": {
+          "type": "string"
+        },
+        "Coordinates": {
+          "$ref": "#/definitions/ocCoordinates"
+        },
+        "Country": {
+          "type": "string"
+        },
+        "District": {
+          "type": "string"
+        },
+        "DistrictCode": {
+          "type": "string"
+        },
+        "Email": {
+          "type": "string"
+        },
+        "ExportedFields": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "FirstName": {
+          "type": "string"
+        },
+        "FullName": {
+          "type": "string"
+        },
+        "Id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "LastName": {
+          "type": "string"
+        },
+        "Notes": {
+          "$ref": "#/definitions/ocAddressNote"
+        },
+        "Phone": {
+          "type": "string"
+        },
+        "Position": {
+          "type": "string"
+        },
+        "Province": {
+          "type": "string"
+        },
+        "ProvinceCode": {
+          "type": "string"
+        },
+        "Type": {
+          "$ref": "#/definitions/euAddressType"
+        },
+        "Ward": {
+          "type": "string"
+        },
+        "WardCode": {
+          "type": "string"
+        },
+        "Zip": {
+          "type": "string"
+        }
+      }
+    },
+    "ocAddressNote": {
+      "type": "object",
+      "properties": {
+        "LunchBreak": {
+          "type": "string"
+        },
+        "Note": {
+          "type": "string"
+        },
+        "OpenTime": {
+          "type": "string"
+        },
+        "Other": {
+          "type": "string"
+        }
+      }
+    },
+    "ocCoordinates": {
+      "type": "object",
+      "properties": {
+        "Latitude": {
+          "type": "integer",
+          "format": "float32"
+        },
+        "Longitude": {
+          "type": "integer",
+          "format": "float32"
+        }
+      }
+    },
+    "ocPublicAccountInfo": {
+      "type": "object",
+      "properties": {
+        "Id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "ImageUrl": {
+          "type": "string"
+        },
+        "Name": {
+          "type": "string"
+        },
+        "Type": {
+          "$ref": "#/definitions/ocAccountType"
+        },
+        "Website": {
+          "type": "string"
+        }
+      }
+    },
+    "ocUser": {
+      "type": "object",
+      "properties": {
+        "CreatedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "Email": {
+          "type": "string"
+        },
+        "EmailVerificationSentAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "EmailVerifiedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "FullName": {
+          "type": "string"
+        },
+        "Id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "Phone": {
+          "type": "string"
+        },
+        "PhoneVerificationSentAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "PhoneVerifiedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "ShortName": {
+          "type": "string"
+        },
+        "Source": {
+          "$ref": "#/definitions/yuUserSource"
+        },
+        "UpdatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "piAction": {
+      "type": "object",
+      "properties": {
+        "Label": {
+          "type": "string"
+        },
+        "Meta": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "Msg": {
+          "type": "string"
+        },
+        "Name": {
+          "type": "string"
+        }
+      }
+    },
+    "piGrantAccessRequest": {
+      "type": "object",
+      "properties": {
+        "ShopId": {
+          "type": "integer",
+          "format": "int64"
+        }
+      }
+    },
+    "piGrantAccessResponse": {
+      "type": "object",
+      "properties": {
+        "AccessToken": {
+          "type": "string"
+        },
+        "ExpiresIn": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "piInitRequest": {
+      "type": "object",
+      "properties": {
+        "AuthToken": {
+          "type": "string"
+        }
+      }
+    },
+    "piLoginResponse": {
+      "type": "object",
+      "properties": {
+        "AccessToken": {
+          "type": "string"
+        },
+        "Account": {
+          "$ref": "#/definitions/piPartnerShopLoginAccount"
+        },
+        "Actions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/piAction"
+          }
+        },
+        "AuthPartner": {
+          "$ref": "#/definitions/ocPublicAccountInfo"
+        },
+        "AvailableAccounts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/piPartnerShopLoginAccount"
+          }
+        },
+        "ExpiresIn": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "RedirectUrl": {
+          "type": "string"
+        },
+        "Shop": {
+          "$ref": "#/definitions/piPartnerShopInfo"
+        },
+        "User": {
+          "$ref": "#/definitions/piPartnerUserLogin"
+        }
+      }
+    },
+    "piLoginUsingTokenRequest": {
+      "type": "object",
+      "properties": {
+        "Login": {
+          "type": "string"
+        },
+        "VerificationCode": {
+          "type": "string"
+        }
+      }
+    },
+    "piPartnerShopInfo": {
+      "type": "object",
+      "properties": {
+        "Address": {
+          "$ref": "#/definitions/ocAddress"
+        },
+        "Email": {
+          "type": "string"
+        },
+        "Id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "ImageUrl": {
+          "type": "string"
+        },
+        "IsTest": {
+          "type": "boolean"
+        },
+        "Name": {
+          "type": "string"
+        },
+        "Phone": {
+          "type": "string"
+        },
+        "ShipFromAddressId": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "Status": {
+          "$ref": "#/definitions/wwStatus"
+        }
+      }
+    },
+    "piPartnerShopLoginAccount": {
+      "type": "object",
+      "properties": {
+        "AccessToken": {
+          "type": "string"
+        },
+        "ExpiresIn": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "ExternalId": {
+          "type": "string"
+        },
+        "Id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "ImageUrl": {
+          "type": "string"
+        },
+        "Name": {
+          "type": "string"
+        },
+        "Type": {
+          "$ref": "#/definitions/ocAccountType"
+        }
+      }
+    },
+    "piPartnerUserLogin": {
+      "type": "object",
+      "properties": {
+        "Email": {
+          "type": "string"
+        },
+        "FullName": {
+          "type": "string"
+        },
+        "Id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "Phone": {
+          "type": "string"
+        },
+        "ShortName": {
+          "type": "string"
+        }
+      }
+    },
+    "piRegisterRequest": {
+      "type": "object",
+      "properties": {
+        "AgreeEmailInfo": {
+          "type": "boolean"
+        },
+        "AgreeTos": {
+          "type": "boolean"
+        },
+        "Email": {
+          "type": "string"
+        },
+        "FullName": {
+          "type": "string"
+        },
+        "Phone": {
+          "type": "string"
+        }
+      }
+    },
+    "piRegisterResponse": {
+      "type": "object",
+      "properties": {
+        "AccessToken": {
+          "type": "string"
+        },
+        "ExpiresIn": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "User": {
+          "$ref": "#/definitions/ocUser"
+        }
+      }
+    },
+    "piRequestLoginRequest": {
+      "type": "object",
+      "properties": {
+        "Login": {
+          "type": "string"
+        },
+        "RecaptchaToken": {
+          "type": "string"
+        }
+      }
+    },
+    "piRequestLoginResponse": {
+      "type": "object",
+      "properties": {
+        "Actions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/piAction"
+          }
+        },
+        "Code": {
+          "type": "string"
+        },
+        "Msg": {
+          "type": "string"
+        }
+      }
+    },
+    "wwStatus": {
+      "type": "string",
+      "enum": [
+        "N",
+        "P",
+        "Z"
+      ]
+    },
+    "yuUserSource": {
+      "type": "string",
+      "enum": [
+        "etop",
+        "partner",
+        "psx",
+        "topship",
+        "ts_app_android",
+        "ts_app_ios",
+        "ts_app_web",
+        "unknown"
+      ]
+    }
+  },
+  "tags": [
+    {
+      "name": "Integration"
+    },
+    {
+      "name": "Misc"
+    }
+  ]
+}

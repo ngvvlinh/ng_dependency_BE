@@ -8,6 +8,7 @@ import (
 )
 
 // +gen:apix
+// +gen:apix:doc-path=etop/integration
 
 // +apix:path=/integration.Misc
 type MiscAPI interface {

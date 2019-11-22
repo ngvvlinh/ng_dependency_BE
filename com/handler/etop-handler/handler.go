@@ -202,10 +202,10 @@ func (h *Handler) HandleOrderEvent(ctx context.Context, event *pgevent.PgEvent) 
 	pbexternal.PbOrderHistory(history)
 	change := pbChange(event)
 	change.Latest = &pbexternal.LatestOneOf{
-		Latest: &pbexternal.LatestOneOf_Order{pbexternal.PbOrder(&order)},
+		Order: pbexternal.PbOrder(&order),
 	}
 	change.Changed = &pbexternal.ChangeOneOf{
-		Changed: &pbexternal.ChangeOneOf_Order{changed},
+		Order: changed,
 	}
 	accountIDs := []int64{order.ShopID, order.PartnerID}
 	return h.sender.CollectPb(ctx, event.Table, id, accountIDs, change)
@@ -239,10 +239,10 @@ func (h *Handler) HandleFulfillmentEvent(ctx context.Context, event *pgevent.PgE
 	pbexternal.PbFulfillmentHistory(history)
 	change := pbChange(event)
 	change.Latest = &pbexternal.LatestOneOf{
-		Latest: &pbexternal.LatestOneOf_Fulfillment{pbexternal.PbFulfillment(&ffm)},
+		Fulfillment: pbexternal.PbFulfillment(&ffm),
 	}
 	change.Changed = &pbexternal.ChangeOneOf{
-		Changed: &pbexternal.ChangeOneOf_Fulfillment{changed},
+		Fulfillment: changed,
 	}
 	accountIDs := []int64{ffm.ShopID, ffm.PartnerID}
 	return h.sender.CollectPb(ctx, event.Table, id, accountIDs, change)

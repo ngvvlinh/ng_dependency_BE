@@ -10,6 +10,7 @@ import (
 )
 
 // +gen:apix
+// +gen:apix:doc-path=etop/shop
 
 // +apix:path=/shop.Misc
 type MiscAPI interface {
@@ -203,7 +204,7 @@ type FulfillmentAPI interface {
 	UpdateFulfillmentsShippingState(context.Context, *shop.UpdateFulfillmentsShippingStateRequest) (*cm.UpdatedResponse, error)
 }
 
-// +apix:path=/etop.Shipnow
+// +apix:path=/shop.Shipnow
 type ShipnowAPI interface {
 	GetShipnowFulfillment(context.Context, *cm.IDRequest) (*order.ShipnowFulfillment, error)
 	GetShipnowFulfillments(context.Context, *order.GetShipnowFulfillmentsRequest) (*order.ShipnowFulfillments, error)

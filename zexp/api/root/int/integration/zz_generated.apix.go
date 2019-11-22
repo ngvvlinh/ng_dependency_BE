@@ -55,37 +55,37 @@ func (s *IntegrationServiceServer) ServeHTTP(resp http.ResponseWriter, req *http
 func (s *IntegrationServiceServer) parseRoute(path string) (reqMsg proto.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
 	case "/integration.Integration/GrantAccess":
-		msg := new(integration.GrantAccessRequest)
+		msg := &integration.GrantAccessRequest{}
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.IntegrationAPI.GrantAccess(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/integration.Integration/Init":
-		msg := new(integration.InitRequest)
+		msg := &integration.InitRequest{}
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.IntegrationAPI.Init(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/integration.Integration/LoginUsingToken":
-		msg := new(integration.LoginUsingTokenRequest)
+		msg := &integration.LoginUsingTokenRequest{}
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.IntegrationAPI.LoginUsingToken(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/integration.Integration/Register":
-		msg := new(integration.RegisterRequest)
+		msg := &integration.RegisterRequest{}
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.IntegrationAPI.Register(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/integration.Integration/RequestLogin":
-		msg := new(integration.RequestLoginRequest)
+		msg := &integration.RequestLoginRequest{}
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.IntegrationAPI.RequestLogin(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/integration.Integration/SessionInfo":
-		msg := new(common.Empty)
+		msg := &common.Empty{}
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.IntegrationAPI.SessionInfo(ctx, msg)
 		}
@@ -130,7 +130,7 @@ func (s *MiscServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Reques
 func (s *MiscServiceServer) parseRoute(path string) (reqMsg proto.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
 	case "/integration.Misc/VersionInfo":
-		msg := new(common.Empty)
+		msg := &common.Empty{}
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.MiscAPI.VersionInfo(ctx, msg)
 		}

@@ -57,6 +57,15 @@ func (ds Directives) Get(cmd string) (Directive, bool) {
 	return Directive{}, false
 }
 
+func (ds Directives) GetArg(cmd string) string {
+	for _, d := range ds {
+		if d.Cmd == cmd {
+			return d.Arg
+		}
+	}
+	return ""
+}
+
 type declaration struct {
 	Pkg *packages.Package
 

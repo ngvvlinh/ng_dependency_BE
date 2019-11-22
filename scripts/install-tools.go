@@ -5,7 +5,6 @@
 package scripts
 
 import (
-	_ "github.com/elliots/protoc-gen-twirp_swagger"
 	_ "github.com/gogo/protobuf/protoc-gen-gogo"
 	_ "github.com/jteeuwen/go-bindata/go-bindata"
 	_ "github.com/twitchtv/twirp/protoc-gen-twirp"

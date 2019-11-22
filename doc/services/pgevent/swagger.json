@@ -1,0 +1,118 @@
+{
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "schemes": [
+    "http",
+    "https"
+  ],
+  "swagger": "2.0",
+  "info": {
+    "description": "API Documentation:\n- [/doc/etop](/doc/etop) Shared API for managing login and account\n- [/doc/shop](/doc/shop) API for shops\n- [/doc/affiliate](/doc/affiliate) API for affiliates\n- [/doc/services/affiliate](/doc/services/affiliate) API for affiliate service\n- [/doc/integration](/doc/integration) API for shop to integrate with external partners\n- [/doc/admin](/doc/admin) API for eTop admins\n- [/doc/ext/shop](/doc/ext/shop) External API for shops\n- [/doc/ext/partner](/doc/ext/partner) External API for partners\n- [/doc/sadmin](/doc/sadmin) Special API for super admins\n",
+    "title": "etop API",
+    "version": "v1"
+  },
+  "paths": {
+    "/api/pgevent.Event/GenerateEvents": {
+      "post": {
+        "tags": [
+          "Event"
+        ],
+        "operationId": "GenerateEvents",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/krGenerateEventsRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/maEmpty"
+            }
+          }
+        }
+      }
+    },
+    "/api/pgevent.Misc/VersionInfo": {
+      "post": {
+        "tags": [
+          "Misc"
+        ],
+        "operationId": "VersionInfo",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/maEmpty"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/maVersionInfoResponse"
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "krGenerateEventsRequest": {
+      "type": "object",
+      "properties": {
+        "ItemsPerBatch": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "RawEvents": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "RawEventsPg": {
+          "type": "string"
+        }
+      }
+    },
+    "maEmpty": {
+      "type": "object"
+    },
+    "maVersionInfoResponse": {
+      "type": "object",
+      "properties": {
+        "Service": {
+          "type": "string"
+        },
+        "UpdatedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "Version": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  "tags": [
+    {
+      "name": "Event"
+    },
+    {
+      "name": "Misc"
+    }
+  ]
+}

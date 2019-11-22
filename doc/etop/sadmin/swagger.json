@@ -1,0 +1,798 @@
+{
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "schemes": [
+    "http",
+    "https"
+  ],
+  "swagger": "2.0",
+  "info": {
+    "description": "API Documentation:\n- [/doc/etop](/doc/etop) Shared API for managing login and account\n- [/doc/shop](/doc/shop) API for shops\n- [/doc/affiliate](/doc/affiliate) API for affiliates\n- [/doc/services/affiliate](/doc/services/affiliate) API for affiliate service\n- [/doc/integration](/doc/integration) API for shop to integrate with external partners\n- [/doc/admin](/doc/admin) API for eTop admins\n- [/doc/ext/shop](/doc/ext/shop) External API for shops\n- [/doc/ext/partner](/doc/ext/partner) External API for partners\n- [/doc/sadmin](/doc/sadmin) Special API for super admins\n",
+    "title": "etop API",
+    "version": "v1"
+  },
+  "paths": {
+    "/api/sadmin.Misc/VersionInfo": {
+      "post": {
+        "tags": [
+          "Misc"
+        ],
+        "operationId": "VersionInfo",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/maEmpty"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/maVersionInfoResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/sadmin.User/CreateUser": {
+      "post": {
+        "tags": [
+          "User"
+        ],
+        "operationId": "CreateUser",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ziSAdminCreateUserRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ocRegisterResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/sadmin.User/LoginAsAccount": {
+      "post": {
+        "tags": [
+          "User"
+        ],
+        "operationId": "LoginAsAccount",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ziLoginAsAccountRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ocLoginResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/sadmin.User/ResetPassword": {
+      "post": {
+        "tags": [
+          "User"
+        ],
+        "operationId": "ResetPassword",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ziSAdminResetPasswordRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/maEmpty"
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "euAddressType": {
+      "type": "string",
+      "enum": [
+        "general",
+        "shipfrom",
+        "shipto",
+        "unknown",
+        "warehouse"
+      ]
+    },
+    "maEmpty": {
+      "type": "object"
+    },
+    "maVersionInfoResponse": {
+      "type": "object",
+      "properties": {
+        "Service": {
+          "type": "string"
+        },
+        "UpdatedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "Version": {
+          "type": "string"
+        }
+      }
+    },
+    "ocAccountType": {
+      "type": "string",
+      "enum": [
+        "affiliate",
+        "etop",
+        "partner",
+        "shop",
+        "unknown"
+      ]
+    },
+    "ocAddress": {
+      "type": "object",
+      "properties": {
+        "Address1": {
+          "type": "string"
+        },
+        "Address2": {
+          "type": "string"
+        },
+        "Coordinates": {
+          "$ref": "#/definitions/ocCoordinates"
+        },
+        "Country": {
+          "type": "string"
+        },
+        "District": {
+          "type": "string"
+        },
+        "DistrictCode": {
+          "type": "string"
+        },
+        "Email": {
+          "type": "string"
+        },
+        "ExportedFields": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "FirstName": {
+          "type": "string"
+        },
+        "FullName": {
+          "type": "string"
+        },
+        "Id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "LastName": {
+          "type": "string"
+        },
+        "Notes": {
+          "$ref": "#/definitions/ocAddressNote"
+        },
+        "Phone": {
+          "type": "string"
+        },
+        "Position": {
+          "type": "string"
+        },
+        "Province": {
+          "type": "string"
+        },
+        "ProvinceCode": {
+          "type": "string"
+        },
+        "Type": {
+          "$ref": "#/definitions/euAddressType"
+        },
+        "Ward": {
+          "type": "string"
+        },
+        "WardCode": {
+          "type": "string"
+        },
+        "Zip": {
+          "type": "string"
+        }
+      }
+    },
+    "ocAddressNote": {
+      "type": "object",
+      "properties": {
+        "LunchBreak": {
+          "type": "string"
+        },
+        "Note": {
+          "type": "string"
+        },
+        "OpenTime": {
+          "type": "string"
+        },
+        "Other": {
+          "type": "string"
+        }
+      }
+    },
+    "ocAffiliate": {
+      "type": "object",
+      "properties": {
+        "BankAccount": {
+          "$ref": "#/definitions/ocBankAccount"
+        },
+        "Email": {
+          "type": "string"
+        },
+        "Id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "IsTest": {
+          "type": "boolean"
+        },
+        "Name": {
+          "type": "string"
+        },
+        "Phone": {
+          "type": "string"
+        },
+        "Status": {
+          "$ref": "#/definitions/wwStatus"
+        }
+      }
+    },
+    "ocBankAccount": {
+      "type": "object",
+      "properties": {
+        "AccountName": {
+          "type": "string"
+        },
+        "AccountNumber": {
+          "type": "string"
+        },
+        "Branch": {
+          "type": "string"
+        },
+        "Name": {
+          "type": "string"
+        },
+        "Province": {
+          "type": "string"
+        }
+      }
+    },
+    "ocCompanyInfo": {
+      "type": "object",
+      "properties": {
+        "Address": {
+          "type": "string"
+        },
+        "LegalRepresentative": {
+          "$ref": "#/definitions/ocContactPerson"
+        },
+        "Name": {
+          "type": "string"
+        },
+        "TaxCode": {
+          "type": "string"
+        },
+        "Website": {
+          "type": "string"
+        }
+      }
+    },
+    "ocContactPerson": {
+      "type": "object",
+      "properties": {
+        "Email": {
+          "type": "string"
+        },
+        "Name": {
+          "type": "string"
+        },
+        "Phone": {
+          "type": "string"
+        },
+        "Position": {
+          "type": "string"
+        }
+      }
+    },
+    "ocCoordinates": {
+      "type": "object",
+      "properties": {
+        "Latitude": {
+          "type": "integer",
+          "format": "float32"
+        },
+        "Longitude": {
+          "type": "integer",
+          "format": "float32"
+        }
+      }
+    },
+    "ocCreateUserRequest": {
+      "type": "object",
+      "properties": {
+        "AgreeEmailInfo": {
+          "type": "boolean"
+        },
+        "AgreeTos": {
+          "type": "boolean"
+        },
+        "Email": {
+          "type": "string"
+        },
+        "FullName": {
+          "type": "string"
+        },
+        "Password": {
+          "type": "string"
+        },
+        "Phone": {
+          "type": "string"
+        },
+        "RegisterToken": {
+          "type": "string"
+        },
+        "ShortName": {
+          "type": "string"
+        },
+        "Source": {
+          "$ref": "#/definitions/yuUserSource"
+        }
+      }
+    },
+    "ocLoginAccount": {
+      "type": "object",
+      "properties": {
+        "AccessToken": {
+          "type": "string"
+        },
+        "ExpiresIn": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "ExportedFields": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "Id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "ImageUrl": {
+          "type": "string"
+        },
+        "Name": {
+          "type": "string"
+        },
+        "Type": {
+          "$ref": "#/definitions/ocAccountType"
+        },
+        "UrlSlug": {
+          "type": "string"
+        },
+        "UserAccount": {
+          "$ref": "#/definitions/ocUserAccountInfo"
+        }
+      }
+    },
+    "ocLoginResponse": {
+      "type": "object",
+      "properties": {
+        "AccessToken": {
+          "type": "string"
+        },
+        "Account": {
+          "$ref": "#/definitions/ocLoginAccount"
+        },
+        "Affiliate": {
+          "$ref": "#/definitions/ocAffiliate"
+        },
+        "AvailableAccounts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ocLoginAccount"
+          }
+        },
+        "ExpiresIn": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "InvitationAccounts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ocUserAccountInfo"
+          }
+        },
+        "Shop": {
+          "$ref": "#/definitions/ocShop"
+        },
+        "Stoken": {
+          "type": "boolean"
+        },
+        "StokenExpiresAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "User": {
+          "$ref": "#/definitions/ocUser"
+        }
+      }
+    },
+    "ocPermission": {
+      "type": "object",
+      "properties": {
+        "Permissions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "Roles": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "ocRegisterResponse": {
+      "type": "object",
+      "properties": {
+        "User": {
+          "$ref": "#/definitions/ocUser"
+        }
+      }
+    },
+    "ocShippingServiceSelectStrategyItem": {
+      "type": "object",
+      "properties": {
+        "Key": {
+          "type": "string"
+        },
+        "Value": {
+          "type": "string"
+        }
+      }
+    },
+    "ocShop": {
+      "type": "object",
+      "properties": {
+        "Address": {
+          "$ref": "#/definitions/ocAddress"
+        },
+        "AutoCreateFfm": {
+          "type": "boolean"
+        },
+        "BankAccount": {
+          "$ref": "#/definitions/ocBankAccount"
+        },
+        "Code": {
+          "type": "string"
+        },
+        "CompanyInfo": {
+          "$ref": "#/definitions/ocCompanyInfo"
+        },
+        "Email": {
+          "type": "string"
+        },
+        "ExportedFields": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "GhnNoteCode": {
+          "type": "string"
+        },
+        "Id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "ImageUrl": {
+          "type": "string"
+        },
+        "InventoryOverstock": {
+          "type": "boolean"
+        },
+        "IsTest": {
+          "type": "boolean"
+        },
+        "MoneyTransactionRrule": {
+          "type": "string"
+        },
+        "Name": {
+          "type": "string"
+        },
+        "OwnerId": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "Phone": {
+          "type": "string"
+        },
+        "ProductSourceId": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "ShipFromAddressId": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "ShipToAddressId": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "ShippingServiceSelectStrategy": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ocShippingServiceSelectStrategyItem"
+          }
+        },
+        "Status": {
+          "$ref": "#/definitions/wwStatus"
+        },
+        "SurveyInfo": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ocSurveyInfo"
+          }
+        },
+        "TryOn": {
+          "$ref": "#/definitions/xdTryOnCode"
+        },
+        "User": {
+          "$ref": "#/definitions/ocUser"
+        },
+        "WebsiteUrl": {
+          "type": "string"
+        }
+      }
+    },
+    "ocSurveyInfo": {
+      "type": "object",
+      "properties": {
+        "Answer": {
+          "type": "string"
+        },
+        "Key": {
+          "type": "string"
+        },
+        "Question": {
+          "type": "string"
+        }
+      }
+    },
+    "ocUser": {
+      "type": "object",
+      "properties": {
+        "CreatedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "Email": {
+          "type": "string"
+        },
+        "EmailVerificationSentAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "EmailVerifiedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "FullName": {
+          "type": "string"
+        },
+        "Id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "Phone": {
+          "type": "string"
+        },
+        "PhoneVerificationSentAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "PhoneVerifiedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "ShortName": {
+          "type": "string"
+        },
+        "Source": {
+          "$ref": "#/definitions/yuUserSource"
+        },
+        "UpdatedAt": {
+          "type": "string",
+          "format": "date-time"
+        }
+      }
+    },
+    "ocUserAccountInfo": {
+      "type": "object",
+      "properties": {
+        "AccountId": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "AccountName": {
+          "type": "string"
+        },
+        "AccountType": {
+          "$ref": "#/definitions/ocAccountType"
+        },
+        "DisableReason": {
+          "type": "string"
+        },
+        "DisabledAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "DisabledBy": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "InvitationAcceptedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "InvitationRejectedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "InvitationSentAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "InvitationSentBy": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "Permission": {
+          "$ref": "#/definitions/ocPermission"
+        },
+        "Position": {
+          "type": "string"
+        },
+        "ResponseStatus": {
+          "$ref": "#/definitions/wwStatus"
+        },
+        "Status": {
+          "$ref": "#/definitions/wwStatus"
+        },
+        "UserFullName": {
+          "type": "string"
+        },
+        "UserId": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "UserShortName": {
+          "type": "string"
+        }
+      }
+    },
+    "wwStatus": {
+      "type": "string",
+      "enum": [
+        "N",
+        "P",
+        "Z"
+      ]
+    },
+    "xdTryOnCode": {
+      "type": "string",
+      "enum": [
+        "none",
+        "open",
+        "try",
+        "unknown"
+      ]
+    },
+    "yuUserSource": {
+      "type": "string",
+      "enum": [
+        "etop",
+        "partner",
+        "psx",
+        "topship",
+        "ts_app_android",
+        "ts_app_ios",
+        "ts_app_web",
+        "unknown"
+      ]
+    },
+    "ziLoginAsAccountRequest": {
+      "type": "object",
+      "properties": {
+        "AccountId": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "UserId": {
+          "type": "integer",
+          "format": "int64"
+        }
+      }
+    },
+    "ziSAdminCreateUserRequest": {
+      "type": "object",
+      "properties": {
+        "Info": {
+          "$ref": "#/definitions/ocCreateUserRequest"
+        },
+        "IsEtopAdmin": {
+          "type": "boolean"
+        },
+        "Permission": {
+          "$ref": "#/definitions/ocPermission"
+        }
+      }
+    },
+    "ziSAdminResetPasswordRequest": {
+      "type": "object",
+      "properties": {
+        "Confirm": {
+          "type": "string"
+        },
+        "Password": {
+          "type": "string"
+        },
+        "UserId": {
+          "type": "integer",
+          "format": "int64"
+        }
+      }
+    }
+  },
+  "tags": [
+    {
+      "name": "Misc"
+    },
+    {
+      "name": "User"
+    }
+  ]
+}

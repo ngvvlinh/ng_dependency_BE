@@ -801,9 +801,7 @@ func XPbFulfillment(m *ordermodelx.Fulfillment, accType int, shop *model.Shop, o
 	shipment := PbFulfillment(m.Shipment, accType, shop, order)
 	if shipment != nil {
 		res = &XFulfillment{
-			Fulfill: &XFulfillment_Shipment{
-				Shipment: shipment,
-			},
+			Shipment:                           shipment,
 			Id:                                 shipment.Id,
 			OrderId:                            shipment.OrderId,
 			ShopId:                             shipment.ShopId,
@@ -876,9 +874,7 @@ func XPbFulfillment(m *ordermodelx.Fulfillment, accType int, shop *model.Shop, o
 		}
 	}
 	if m.Shipnow != nil {
-		res.Fulfill = &XFulfillment_Shipnow{
-			Shipnow: Convert_core_ShipnowFulfillment_To_api_ShipnowFulfillment(m.Shipnow),
-		}
+		res.Shipnow = Convert_core_ShipnowFulfillment_To_api_ShipnowFulfillment(m.Shipnow)
 	}
 
 	return res

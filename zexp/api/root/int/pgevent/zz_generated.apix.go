@@ -55,7 +55,7 @@ func (s *EventServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Reque
 func (s *EventServiceServer) parseRoute(path string) (reqMsg proto.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
 	case "/pgevent.Event/GenerateEvents":
-		msg := new(pgevent.GenerateEventsRequest)
+		msg := &pgevent.GenerateEventsRequest{}
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.EventAPI.GenerateEvents(ctx, msg)
 		}
@@ -100,7 +100,7 @@ func (s *MiscServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Reques
 func (s *MiscServiceServer) parseRoute(path string) (reqMsg proto.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
 	case "/pgevent.Misc/VersionInfo":
-		msg := new(common.Empty)
+		msg := &common.Empty{}
 		fn := func(ctx context.Context) (proto.Message, error) {
 			return s.MiscAPI.VersionInfo(ctx, msg)
 		}

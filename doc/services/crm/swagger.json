@@ -1,0 +1,1282 @@
+{
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "schemes": [
+    "http",
+    "https"
+  ],
+  "swagger": "2.0",
+  "info": {
+    "description": "API Documentation:\n- [/doc/etop](/doc/etop) Shared API for managing login and account\n- [/doc/shop](/doc/shop) API for shops\n- [/doc/affiliate](/doc/affiliate) API for affiliates\n- [/doc/services/affiliate](/doc/services/affiliate) API for affiliate service\n- [/doc/integration](/doc/integration) API for shop to integrate with external partners\n- [/doc/admin](/doc/admin) API for eTop admins\n- [/doc/ext/shop](/doc/ext/shop) External API for shops\n- [/doc/ext/partner](/doc/ext/partner) External API for partners\n- [/doc/sadmin](/doc/sadmin) Special API for super admins\n",
+    "title": "etop API",
+    "version": "v1"
+  },
+  "paths": {
+    "/api/crm.Crm/RefreshFulfillmentFromCarrier": {
+      "post": {
+        "tags": [
+          "Crm"
+        ],
+        "operationId": "RefreshFulfillmentFromCarrier",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/xkRefreshFulfillmentFromCarrierRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/maUpdatedResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/crm.Crm/SendNotification": {
+      "post": {
+        "tags": [
+          "Crm"
+        ],
+        "operationId": "SendNotification",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/xkSendNotificationRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/maMessageResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/crm.Misc/VersionInfo": {
+      "post": {
+        "tags": [
+          "Misc"
+        ],
+        "operationId": "VersionInfo",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/maEmpty"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/maVersionInfoResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/crm.Vht/CreateOrUpdateCallHistoryByCallID": {
+      "post": {
+        "tags": [
+          "Vht"
+        ],
+        "operationId": "CreateOrUpdateCallHistoryByCallID",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/xkVHTCallLog"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/xkVHTCallLog"
+            }
+          }
+        }
+      }
+    },
+    "/api/crm.Vht/CreateOrUpdateCallHistoryBySDKCallID": {
+      "post": {
+        "tags": [
+          "Vht"
+        ],
+        "operationId": "CreateOrUpdateCallHistoryBySDKCallID",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/xkVHTCallLog"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/xkVHTCallLog"
+            }
+          }
+        }
+      }
+    },
+    "/api/crm.Vht/GetCallHistories": {
+      "post": {
+        "tags": [
+          "Vht"
+        ],
+        "operationId": "GetCallHistories",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/xkGetCallHistoriesRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/xkGetCallHistoriesResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/crm.Vtiger/CreateOrUpdateContact": {
+      "post": {
+        "tags": [
+          "Vtiger"
+        ],
+        "operationId": "CreateOrUpdateContact",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/xkContactRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/xkContactResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/crm.Vtiger/CreateOrUpdateLead": {
+      "post": {
+        "tags": [
+          "Vtiger"
+        ],
+        "operationId": "CreateOrUpdateLead",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/xkLeadRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/xkLeadResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/crm.Vtiger/CreateTicket": {
+      "post": {
+        "tags": [
+          "Vtiger"
+        ],
+        "operationId": "CreateTicket",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/xkCreateOrUpdateTicketRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/xkTicket"
+            }
+          }
+        }
+      }
+    },
+    "/api/crm.Vtiger/GetCategories": {
+      "post": {
+        "tags": [
+          "Vtiger"
+        ],
+        "operationId": "GetCategories",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/maEmpty"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/xkGetCategoriesResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/crm.Vtiger/GetContacts": {
+      "post": {
+        "tags": [
+          "Vtiger"
+        ],
+        "operationId": "GetContacts",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/xkGetContactsRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/xkGetContactsResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/crm.Vtiger/GetTicketStatusCount": {
+      "post": {
+        "tags": [
+          "Vtiger"
+        ],
+        "operationId": "GetTicketStatusCount",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/maEmpty"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/xkGetTicketStatusCountResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/crm.Vtiger/GetTickets": {
+      "post": {
+        "tags": [
+          "Vtiger"
+        ],
+        "operationId": "GetTickets",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/xkGetTicketsRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/xkGetTicketsResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/crm.Vtiger/UpdateTicket": {
+      "post": {
+        "tags": [
+          "Vtiger"
+        ],
+        "operationId": "UpdateTicket",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/xkCreateOrUpdateTicketRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/xkTicket"
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "maEmpty": {
+      "type": "object"
+    },
+    "maMessageResponse": {
+      "type": "object",
+      "properties": {
+        "Code": {
+          "type": "string"
+        },
+        "Msg": {
+          "type": "string"
+        }
+      }
+    },
+    "maPaging": {
+      "type": "object",
+      "properties": {
+        "Limit": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "Offset": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "Sort": {
+          "type": "string"
+        }
+      }
+    },
+    "maRawJSONObject": {
+      "type": "object",
+      "properties": {
+        "Data": {
+          "type": "string",
+          "format": "byte"
+        }
+      }
+    },
+    "maUpdatedResponse": {
+      "type": "object",
+      "properties": {
+        "Updated": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "maVersionInfoResponse": {
+      "type": "object",
+      "properties": {
+        "Service": {
+          "type": "string"
+        },
+        "UpdatedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "Version": {
+          "type": "string"
+        }
+      }
+    },
+    "roNotifierEntity": {
+      "type": "string",
+      "enum": [
+        "fulfillment",
+        "money_transaction_shipping",
+        "unknown"
+      ]
+    },
+    "xkAccount": {
+      "type": "object",
+      "properties": {
+        "Company": {
+          "type": "string"
+        },
+        "Email": {
+          "type": "string"
+        },
+        "FullName": {
+          "type": "string"
+        },
+        "Id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "Phone": {
+          "type": "string"
+        },
+        "ShortName": {
+          "type": "string"
+        }
+      }
+    },
+    "xkCategory": {
+      "type": "object",
+      "properties": {
+        "Code": {
+          "type": "string"
+        },
+        "Label": {
+          "type": "string"
+        }
+      }
+    },
+    "xkContactRequest": {
+      "type": "object",
+      "properties": {
+        "AssignedUserId": {
+          "type": "string"
+        },
+        "City": {
+          "type": "string"
+        },
+        "Company": {
+          "type": "string"
+        },
+        "ContactNo": {
+          "type": "string"
+        },
+        "Country": {
+          "type": "string"
+        },
+        "Createdtime": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "Description": {
+          "type": "string"
+        },
+        "Email": {
+          "type": "string"
+        },
+        "EtopUserId": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "Firstname": {
+          "type": "string"
+        },
+        "Id": {
+          "type": "string"
+        },
+        "Lane": {
+          "type": "string"
+        },
+        "Lastname": {
+          "type": "string"
+        },
+        "Leadsource": {
+          "type": "string"
+        },
+        "Mobile": {
+          "type": "string"
+        },
+        "Modifiedby": {
+          "type": "string"
+        },
+        "Modifiedtime": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "OrdersPerDay": {
+          "type": "string"
+        },
+        "Phone": {
+          "type": "string"
+        },
+        "Secondaryemail": {
+          "type": "string"
+        },
+        "Source": {
+          "type": "string"
+        },
+        "State": {
+          "type": "string"
+        },
+        "UsedShippingProvider": {
+          "type": "string"
+        },
+        "Website": {
+          "type": "string"
+        }
+      }
+    },
+    "xkContactResponse": {
+      "type": "object",
+      "properties": {
+        "AssignedUserId": {
+          "type": "string"
+        },
+        "City": {
+          "type": "string"
+        },
+        "Company": {
+          "type": "string"
+        },
+        "ContactNo": {
+          "type": "string"
+        },
+        "Country": {
+          "type": "string"
+        },
+        "Createdtime": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "Description": {
+          "type": "string"
+        },
+        "Email": {
+          "type": "string"
+        },
+        "EtopUserId": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "Firstname": {
+          "type": "string"
+        },
+        "Id": {
+          "type": "string"
+        },
+        "Lane": {
+          "type": "string"
+        },
+        "Lastname": {
+          "type": "string"
+        },
+        "Leadsource": {
+          "type": "string"
+        },
+        "Mobile": {
+          "type": "string"
+        },
+        "Modifiedby": {
+          "type": "string"
+        },
+        "Modifiedtime": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "OrdersPerDay": {
+          "type": "string"
+        },
+        "Phone": {
+          "type": "string"
+        },
+        "Secondaryemail": {
+          "type": "string"
+        },
+        "Source": {
+          "type": "string"
+        },
+        "State": {
+          "type": "string"
+        },
+        "UsedShippingProvider": {
+          "type": "string"
+        },
+        "Website": {
+          "type": "string"
+        }
+      }
+    },
+    "xkCountTicketByStatusResponse": {
+      "type": "object",
+      "properties": {
+        "Code": {
+          "type": "string"
+        },
+        "Count": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "xkCreateOrUpdateTicketRequest": {
+      "type": "object",
+      "properties": {
+        "Account": {
+          "$ref": "#/definitions/xkAccount"
+        },
+        "Code": {
+          "type": "string"
+        },
+        "Company": {
+          "type": "string"
+        },
+        "Environment": {
+          "type": "string"
+        },
+        "EtopUserId": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "FfmCode": {
+          "type": "string"
+        },
+        "FfmId": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "FfmUrl": {
+          "type": "string"
+        },
+        "FromApp": {
+          "type": "string"
+        },
+        "Id": {
+          "type": "string"
+        },
+        "Note": {
+          "type": "string"
+        },
+        "OldValue": {
+          "type": "string"
+        },
+        "OrderCode": {
+          "type": "string"
+        },
+        "OrderId": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "Provider": {
+          "type": "string"
+        },
+        "Reason": {
+          "type": "string"
+        },
+        "Title": {
+          "type": "string"
+        },
+        "Value": {
+          "type": "string"
+        }
+      }
+    },
+    "xkGetCallHistoriesRequest": {
+      "type": "object",
+      "properties": {
+        "Paging": {
+          "$ref": "#/definitions/maPaging"
+        },
+        "TextSearch": {
+          "type": "string"
+        }
+      }
+    },
+    "xkGetCallHistoriesResponse": {
+      "type": "object",
+      "properties": {
+        "VhtCallLog": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/xkVHTCallLog"
+          }
+        }
+      }
+    },
+    "xkGetCategoriesResponse": {
+      "type": "object",
+      "properties": {
+        "Categories": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/xkCategory"
+          }
+        }
+      }
+    },
+    "xkGetContactsRequest": {
+      "type": "object",
+      "properties": {
+        "Paging": {
+          "$ref": "#/definitions/maPaging"
+        },
+        "TextSearch": {
+          "type": "string"
+        }
+      }
+    },
+    "xkGetContactsResponse": {
+      "type": "object",
+      "properties": {
+        "Contacts": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/xkContactResponse"
+          }
+        }
+      }
+    },
+    "xkGetTicketStatusCountResponse": {
+      "type": "object",
+      "properties": {
+        "StatusCount": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/xkCountTicketByStatusResponse"
+          }
+        }
+      }
+    },
+    "xkGetTicketsRequest": {
+      "type": "object",
+      "properties": {
+        "Orderby": {
+          "$ref": "#/definitions/xkOrderBy"
+        },
+        "Paging": {
+          "$ref": "#/definitions/maPaging"
+        },
+        "Ticket": {
+          "$ref": "#/definitions/xkTicketRequest"
+        }
+      }
+    },
+    "xkGetTicketsResponse": {
+      "type": "object",
+      "properties": {
+        "Tickets": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/xkTicket"
+          }
+        }
+      }
+    },
+    "xkLeadRequest": {
+      "type": "object",
+      "properties": {
+        "AssignedUserId": {
+          "type": "string"
+        },
+        "City": {
+          "type": "string"
+        },
+        "Company": {
+          "type": "string"
+        },
+        "ContactNo": {
+          "type": "string"
+        },
+        "Country": {
+          "type": "string"
+        },
+        "Description": {
+          "type": "string"
+        },
+        "Email": {
+          "type": "string"
+        },
+        "EtopUserId": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "Firstname": {
+          "type": "string"
+        },
+        "Id": {
+          "type": "string"
+        },
+        "Lane": {
+          "type": "string"
+        },
+        "Lastname": {
+          "type": "string"
+        },
+        "Leadsource": {
+          "type": "string"
+        },
+        "Mobile": {
+          "type": "string"
+        },
+        "Modifiedby": {
+          "type": "string"
+        },
+        "OrdersPerDay": {
+          "type": "string"
+        },
+        "Phone": {
+          "type": "string"
+        },
+        "Secondaryemail": {
+          "type": "string"
+        },
+        "Source": {
+          "type": "string"
+        },
+        "State": {
+          "type": "string"
+        },
+        "UsedShippingProvider": {
+          "type": "string"
+        },
+        "Website": {
+          "type": "string"
+        }
+      }
+    },
+    "xkLeadResponse": {
+      "type": "object",
+      "properties": {
+        "AssignedUserId": {
+          "type": "string"
+        },
+        "City": {
+          "type": "string"
+        },
+        "Company": {
+          "type": "string"
+        },
+        "ContactNo": {
+          "type": "string"
+        },
+        "Country": {
+          "type": "string"
+        },
+        "Description": {
+          "type": "string"
+        },
+        "Email": {
+          "type": "string"
+        },
+        "EtopUserId": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "Firstname": {
+          "type": "string"
+        },
+        "Id": {
+          "type": "string"
+        },
+        "Lane": {
+          "type": "string"
+        },
+        "Lastname": {
+          "type": "string"
+        },
+        "Leadsource": {
+          "type": "string"
+        },
+        "Mobile": {
+          "type": "string"
+        },
+        "Modifiedby": {
+          "type": "string"
+        },
+        "OrdersPerDay": {
+          "type": "string"
+        },
+        "Phone": {
+          "type": "string"
+        },
+        "Secondaryemail": {
+          "type": "string"
+        },
+        "Source": {
+          "type": "string"
+        },
+        "State": {
+          "type": "string"
+        },
+        "UsedShippingProvider": {
+          "type": "string"
+        },
+        "Website": {
+          "type": "string"
+        }
+      }
+    },
+    "xkOrderBy": {
+      "type": "object",
+      "properties": {
+        "Field": {
+          "type": "string"
+        },
+        "Sort": {
+          "type": "string"
+        }
+      }
+    },
+    "xkRefreshFulfillmentFromCarrierRequest": {
+      "type": "object",
+      "properties": {
+        "ShippingCode": {
+          "type": "string"
+        }
+      }
+    },
+    "xkSendNotificationRequest": {
+      "type": "object",
+      "properties": {
+        "AccountId": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "Entity": {
+          "$ref": "#/definitions/roNotifierEntity"
+        },
+        "EntityId": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "Message": {
+          "type": "string"
+        },
+        "MetaData": {
+          "$ref": "#/definitions/maRawJSONObject"
+        },
+        "Title": {
+          "type": "string"
+        }
+      }
+    },
+    "xkTicket": {
+      "type": "object",
+      "properties": {
+        "AssignedUserId": {
+          "type": "string"
+        },
+        "Code": {
+          "type": "string"
+        },
+        "Company": {
+          "type": "string"
+        },
+        "ContactId": {
+          "type": "string"
+        },
+        "Createdtime": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "Days": {
+          "type": "string"
+        },
+        "Description": {
+          "type": "string"
+        },
+        "Environment": {
+          "type": "string"
+        },
+        "EtopNote": {
+          "type": "string"
+        },
+        "EtopUserId": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "FfmCode": {
+          "type": "string"
+        },
+        "FfmId": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "FfmUrl": {
+          "type": "string"
+        },
+        "FromApp": {
+          "type": "string"
+        },
+        "FromPortal": {
+          "type": "string"
+        },
+        "Hours": {
+          "type": "string"
+        },
+        "Id": {
+          "type": "string"
+        },
+        "Modifiedby": {
+          "type": "string"
+        },
+        "Modifiedtime": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "NewValue": {
+          "type": "string"
+        },
+        "Note": {
+          "type": "string"
+        },
+        "OldValue": {
+          "type": "string"
+        },
+        "OrderCode": {
+          "type": "string"
+        },
+        "OrderId": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "ParentId": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "ProductId": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "Provider": {
+          "type": "string"
+        },
+        "Reason": {
+          "type": "string"
+        },
+        "Solution": {
+          "type": "string"
+        },
+        "Source": {
+          "type": "string"
+        },
+        "Starred": {
+          "type": "string"
+        },
+        "Substatus": {
+          "type": "string"
+        },
+        "Tags": {
+          "type": "string"
+        },
+        "TicketNo": {
+          "type": "string"
+        },
+        "TicketTitle": {
+          "type": "string"
+        },
+        "Ticketcategories": {
+          "type": "string"
+        },
+        "Ticketpriorities": {
+          "type": "string"
+        },
+        "Ticketseverities": {
+          "type": "string"
+        },
+        "Ticketstatus": {
+          "type": "string"
+        },
+        "UpdateLog": {
+          "type": "string"
+        }
+      }
+    },
+    "xkTicketRequest": {
+      "type": "object",
+      "properties": {
+        "Code": {
+          "type": "string"
+        },
+        "Company": {
+          "type": "string"
+        },
+        "Environment": {
+          "type": "string"
+        },
+        "EtopUserId": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "FfmCode": {
+          "type": "string"
+        },
+        "FfmId": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "FfmUrl": {
+          "type": "string"
+        },
+        "FromApp": {
+          "type": "string"
+        },
+        "Id": {
+          "type": "string"
+        },
+        "Note": {
+          "type": "string"
+        },
+        "OldValue": {
+          "type": "string"
+        },
+        "OrderCode": {
+          "type": "string"
+        },
+        "OrderId": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "Provider": {
+          "type": "string"
+        },
+        "Reason": {
+          "type": "string"
+        },
+        "Title": {
+          "type": "string"
+        },
+        "Value": {
+          "type": "string"
+        }
+      }
+    },
+    "xkVHTCallLog": {
+      "type": "object",
+      "properties": {
+        "CallId": {
+          "type": "string"
+        },
+        "Cause": {
+          "type": "string"
+        },
+        "CdrId": {
+          "type": "string"
+        },
+        "Direction": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "Duration": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "EtopAccountId": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "FromExtension": {
+          "type": "string"
+        },
+        "FromNumber": {
+          "type": "string"
+        },
+        "Q850Cause": {
+          "type": "string"
+        },
+        "RecordFileSize": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "RecordingPath": {
+          "type": "string"
+        },
+        "RecordingUrl": {
+          "type": "string"
+        },
+        "SdkCallId": {
+          "type": "string"
+        },
+        "SipCallId": {
+          "type": "string"
+        },
+        "TimeConnected": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "TimeEnded": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "TimeStarted": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "ToExtension": {
+          "type": "string"
+        },
+        "ToNumber": {
+          "type": "string"
+        },
+        "VtigerAccountId": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  "tags": [
+    {
+      "name": "Crm"
+    },
+    {
+      "name": "Misc"
+    },
+    {
+      "name": "Vht"
+    },
+    {
+      "name": "Vtiger"
+    }
+  ]
+}

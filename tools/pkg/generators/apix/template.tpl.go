@@ -6,7 +6,6 @@ type Server interface {
 	PathPrefix() string
 }
 
-
 {{range $s := .Services}}
 
 type {{.Name}}ServiceServer struct {
@@ -43,7 +42,7 @@ func (s *{{$s.Name}}ServiceServer) parseRoute(path string) (reqMsg proto.Message
 	switch path {
 {{range $m := .Methods -}}
 	case "{{$s.APIPath}}/{{.Name}}":
-	msg := new({{.Request.Type|type}})
+	msg := {{(index .Request.Items 0).Type|new}}
 	fn := func(ctx context.Context) (proto.Message, error) {
 		return s.{{$s.Name}}API.{{.Name}}(ctx, msg)
 	}
