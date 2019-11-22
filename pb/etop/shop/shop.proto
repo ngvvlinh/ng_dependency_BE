@@ -1974,6 +1974,6 @@ message GetSuppliersByVariantIDRequest {
 }
 
 message CancelStocktakeRequest {
-    optional int64 stocktake_id = 1 [(gogoproto.nullable) = false];
+    optional int64 id = 1 [(gogoproto.nullable) = false];
     optional string cancel_reason = 2 [(gogoproto.nullable) = false];
 }

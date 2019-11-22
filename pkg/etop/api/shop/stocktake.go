@@ -169,7 +169,7 @@ func (s *StocktakeService) CancelStocktake(ctx context.Context, q *CancelStockta
 	shopID := q.Context.Shop.ID
 	cmd := &stocktaking.CancelStocktakeCommand{
 		ShopID:       shopID,
-		ID:           q.StocktakeId,
+		ID:           q.Id,
 		CancelReason: q.CancelReason,
 	}
 	err := StocktakeAggregate.Dispatch(ctx, cmd)

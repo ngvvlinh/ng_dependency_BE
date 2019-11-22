@@ -8056,7 +8056,7 @@
     "shopCancelStocktakeRequest": {
       "type": "object",
       "properties": {
-        "stocktake_id": {
+        "id": {
           "type": "string",
           "format": "int64"
         },
