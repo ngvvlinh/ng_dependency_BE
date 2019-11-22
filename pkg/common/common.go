@@ -38,7 +38,7 @@ var (
 
 func init() {
 	commit = strings.ReplaceAll(commit, "·", " ")
-	commit = strings.ReplaceAll(commit, "⮐", "\n")
+	commit = strings.ReplaceAll(commit, "↵", "\n")
 }
 
 func CommitMessage() string {

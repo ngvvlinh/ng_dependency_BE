@@ -1,8 +1,18 @@
 #!/bin/bash
 set -e
 
-COMMIT=$(git log -10 --pretty='%h %B' | grep ':' | grep -E '^([0-9a-f]{6,10} )|(Change-Id:)')
-COMMIT=$(echo "${COMMIT}" | tr '\n' '⮐' | sed 's/\s/·/g')
+replace() { echo "$1" | sed "s/$2/$3/g"; }
+
+COMMIT=$(git log -10 --pretty='%h <%ae> %B' | grep ':' | grep -E '^([0-9a-f]{6,10} <[^@>]+@[^@>]+>)|(Change-Id:)')
+COMMIT=$(echo -e "${COMMIT}\n\n@thangtran268")
+COMMIT=$(echo "${COMMIT}" | tr '\n' '↵' | sed 's/\s/·/g')
+
+COMMIT=$(replace "$COMMIT" "<builamquangngoc91@gmail.com>" "@quangngoc430")
+COMMIT=$(replace "$COMMIT" "<congvan2498@gmail.com>" "@congvan2498")
+COMMIT=$(replace "$COMMIT" "<huynhhainam96qt@gmail.com>" "@hai_nam_qt")
+COMMIT=$(replace "$COMMIT" "<olvrng@gmail.com>" "@vunmq")
+COMMIT=$(replace "$COMMIT" "<tuan@eye-solution.vn>" "@tuanpn")
+
 function build() {
     FILE=$1
     NAME=$(echo $FILE | rev | cut -f1 -d'/' | rev)
