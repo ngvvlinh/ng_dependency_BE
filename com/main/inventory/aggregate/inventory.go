@@ -750,7 +750,7 @@ func (q *InventoryAggregate) CreateInventoryVoucherByOrder(ctx context.Context, 
 		RefCode:   queryOrder.Result.Order.Code,
 		TraderID:  queryOrder.Result.Order.CustomerID,
 		Type:      args.Type,
-		Note:      fmt.Sprintf("Tạo phiếu xuất nhập kho theo đơn đặt hàng mã %v", queryOrder.Result.Order.Code),
+		Note:      fmt.Sprintf("Tạo phiếu xuất kho theo đơn đặt hàng mã %v", queryOrder.Result.Order.Code),
 		Lines:     items,
 	}
 	createResult, err := q.CreateInventoryVoucher(ctx, args.OverStock, inventoryVoucherCreateRequest)
