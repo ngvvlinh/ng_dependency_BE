@@ -34,11 +34,12 @@ type StocktakeLine struct {
 	VariantID   int64        `json:"variant_id"`
 	OldQuantity int32        `json:"old_quantity"`
 	NewQuantity int32        `json:"new_quantity"`
+	VariantName string       `json:"variant_name"`
 	Name        string       `json:"name"`
 	Code        string       `json:"code"`
-	Price       int32        `json:"price"`
 	ImageURL    string       `json:"image_url"`
 	Attributes  []*Attribute `json:"attributes"`
+	CostPrice   int32        `json:"cost_price"`
 }
 
 type Attribute struct {

@@ -486,14 +486,14 @@ func PbPurchaseOrderLine(m *purchaseorder.PurchaseOrderLine) *PurchaseOrderLine 
 		return nil
 	}
 	return &PurchaseOrderLine{
-		ProductName: m.ProductName,
-		ImageUrl:    m.ImageUrl,
-		ProductId:   m.ProductID,
-		Code:        m.Code,
-		Attributes:  PbAttributes(m.Attributes),
-		VariantId:   m.VariantID,
-		Quantity:    m.Quantity,
-		Price:       m.Price,
+		ProductName:  m.ProductName,
+		ImageUrl:     m.ImageUrl,
+		ProductId:    m.ProductID,
+		Code:         m.Code,
+		Attributes:   PbAttributes(m.Attributes),
+		VariantId:    m.VariantID,
+		Quantity:     m.Quantity,
+		PaymentPrice: m.PaymentPrice,
 	}
 }
 func PbAttributes(as catalog.Attributes) []*Attribute {

@@ -285,10 +285,10 @@ func convert_stocktakingmodel_StocktakeLine_stocktaking_StocktakeLine(arg *stock
 	out.VariantID = arg.VariantID     // simple assign
 	out.OldQuantity = arg.OldQuantity // simple assign
 	out.NewQuantity = arg.NewQuantity // simple assign
-	out.VariantName = ""              // zero value
+	out.VariantName = arg.VariantName // simple assign
 	out.Code = arg.Code               // simple assign
-	out.Price = arg.Price             // simple assign
 	out.ImageURL = arg.ImageURL       // simple assign
+	out.CostPrice = arg.CostPrice     // simple assign
 	out.Attributes = Convert_stocktakingmodel_Attributes_stocktaking_Attributes(arg.Attributes)
 }
 
@@ -318,11 +318,12 @@ func convert_stocktaking_StocktakeLine_stocktakingmodel_StocktakeLine(arg *stock
 	out.VariantID = arg.VariantID     // simple assign
 	out.OldQuantity = arg.OldQuantity // simple assign
 	out.NewQuantity = arg.NewQuantity // simple assign
+	out.VariantName = arg.VariantName // simple assign
 	out.Name = ""                     // zero value
 	out.Code = arg.Code               // simple assign
-	out.Price = arg.Price             // simple assign
 	out.ImageURL = arg.ImageURL       // simple assign
 	out.Attributes = Convert_stocktaking_Attributes_stocktakingmodel_Attributes(arg.Attributes)
+	out.CostPrice = arg.CostPrice // simple assign
 }
 
 func Convert_stocktaking_StocktakeLines_stocktakingmodel_StocktakeLines(args []*stocktaking.StocktakeLine) (outs []*stocktakingmodel.StocktakeLine) {

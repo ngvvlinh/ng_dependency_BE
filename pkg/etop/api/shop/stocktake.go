@@ -80,21 +80,40 @@ func (s *StocktakeService) AttachShopVariantsInformation(ctx context.Context, sh
 	for _, value := range queryProducts.Result.Products {
 		mapProducts[value.ProductID] = value
 	}
+
+	queryInventoryVariant := &inventory.GetInventoryVariantsByVariantIDsQuery{
+		ShopID:     shopID,
+		VariantIDs: variantIDs,
+	}
+	err = inventoryQuery.Dispatch(ctx, queryInventoryVariant)
+	if err != nil {
+		return err
+	}
+
+	var mapInventoryVariant = make(map[int64]*inventory.InventoryVariant)
+	for _, value := range queryInventoryVariant.Result.InventoryVariants {
+		mapInventoryVariant[value.VariantID] = value
+	}
+
 	for key, value := range stocktakeLines {
 		if mapVariants[value.VariantID] == nil {
 			return cm.Errorf(cm.InvalidArgument, nil, "Phiên bản không tồn tại")
 		}
 		product := mapProducts[mapVariants[value.VariantID].ProductID]
-		stocktakeLines[key] = ConvertInfoVariants(stocktakeLines[key], mapVariants[value.VariantID], product)
+		inventoryVariant := mapInventoryVariant[value.VariantID]
+		stocktakeLines[key] = ConvertInfoVariants(stocktakeLines[key], mapVariants[value.VariantID], product, inventoryVariant)
 	}
 	return nil
 }
 
-func ConvertInfoVariants(stocktakeLine *stocktaking.StocktakeLine, shopVariant *catalog.ShopVariant, shopProduct *catalog.ShopProduct) *stocktaking.StocktakeLine {
+func ConvertInfoVariants(stocktakeLine *stocktaking.StocktakeLine, shopVariant *catalog.ShopVariant, shopProduct *catalog.ShopProduct, inventoryVariant *inventory.InventoryVariant) *stocktaking.StocktakeLine {
 	stocktakeLine.VariantName = shopVariant.Name
 	stocktakeLine.Code = shopVariant.Code
 	stocktakeLine.ProductID = shopProduct.ProductID
 	stocktakeLine.ProductName = shopProduct.Name
+	if inventoryVariant != nil {
+		stocktakeLine.CostPrice = inventoryVariant.PurchasePrice
+	}
 	var attributes []*stocktaking.Attribute
 	for _, value := range shopVariant.Attributes {
 		attributes = append(attributes, &stocktaking.Attribute{

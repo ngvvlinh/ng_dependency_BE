@@ -72,16 +72,17 @@ func (q *StocktakeAggregate) UpdateStocktake(ctx context.Context, args *stocktak
 	if args.ShopID == 0 {
 		return nil, cm.Error(cm.InvalidArgument, "Missing shop_id in request", nil)
 	}
-	stockTake, err := q.StocktakeStore(ctx).ShopID(args.ShopID).ID(args.ShopID).GetShopStocktake()
+	_stockTake, err := q.StocktakeStore(ctx).ShopID(args.ShopID).ID(args.ID).GetShopStocktake()
 	if err != nil {
 		return nil, err
 	}
-	err = scheme.Convert(args, stockTake)
+	err = scheme.Convert(args, _stockTake)
 	if err != nil {
 		return nil, err
 	}
-	err = q.StocktakeStore(ctx).ShopID(args.ShopID).ID(args.ID).UpdateAll(stockTake)
-	return stockTake, err
+	_stockTake.UpdatedAt = time.Now()
+	err = q.StocktakeStore(ctx).ShopID(args.ShopID).ID(args.ID).UpdateAll(_stockTake)
+	return _stockTake, err
 }
 
 func (q *StocktakeAggregate) ConfirmStocktake(ctx context.Context, args *stocktake.ConfirmStocktakeRequest) (*stocktake.ShopStocktake, error) {

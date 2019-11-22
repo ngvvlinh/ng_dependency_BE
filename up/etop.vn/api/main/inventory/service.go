@@ -161,11 +161,11 @@ type CreateInventoryVoucherByQuantityChangeRequest struct {
 	Overstock bool
 
 	CreatedBy int64
-	Variants  []*InventoryVariantQuantityChange
+	Lines     []*InventoryVariantQuantityChange
 }
 
 type InventoryVariantQuantityChange struct {
-	VariantID      int64
+	ItemInfo       *InventoryVoucherItem
 	QuantityChange int32
 }
 
@@ -216,9 +216,22 @@ type Trader struct {
 }
 
 type InventoryVoucherItem struct {
-	VariantID int64
-	Price     int32
-	Quantity  int32
+	ProductID   int64
+	ProductName string
+	VariantID   int64
+	VariantName string
+
+	Quantity int32
+	Price    int32
+
+	Code       string
+	ImageURL   string
+	Attributes []*Attribute
+}
+
+type Attribute struct {
+	Name  string
+	Value string
 }
 
 type CancelInventoryVoucherArgs struct {

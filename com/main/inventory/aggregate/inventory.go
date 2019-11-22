@@ -535,8 +535,8 @@ func (q *InventoryAggregate) CreateInventoryVoucherByQuantityChange(ctx context.
 	var inventoryVariantIDs []int64
 	var inventoryVoucherIn []*inventory.InventoryVoucherItem
 	var inventoryVoucherOut []*inventory.InventoryVoucherItem
-	for _, value := range args.Variants {
-		inventoryVariantIDs = append(inventoryVariantIDs, value.VariantID)
+	for _, value := range args.Lines {
+		inventoryVariantIDs = append(inventoryVariantIDs, value.ItemInfo.VariantID)
 	}
 	listVariant, err := q.InventoryStore(ctx).ShopID(args.ShopID).VariantIDs(inventoryVariantIDs...).ListInventory()
 	if err != nil {
@@ -549,24 +549,28 @@ func (q *InventoryAggregate) CreateInventoryVoucherByQuantityChange(ctx context.
 
 	var totalAmountIn int32 = 0
 	var totalAmountOut int32 = 0
-	for _, value := range args.Variants {
+	for _, value := range args.Lines {
+		inventoryVoucherItem := &inventory.InventoryVoucherItem{
+			ProductID:   value.ItemInfo.ProductID,
+			ProductName: value.ItemInfo.ProductName,
+			VariantID:   value.ItemInfo.VariantID,
+			VariantName: value.ItemInfo.VariantName,
+			Price:       value.ItemInfo.Price,
+			Code:        value.ItemInfo.Code,
+			ImageURL:    value.ItemInfo.ImageURL,
+			Attributes:  value.ItemInfo.Attributes,
+		}
 		if value.QuantityChange > 0 {
-			inventoryVoucherItem := &inventory.InventoryVoucherItem{
-				VariantID: value.VariantID,
-				Quantity:  value.QuantityChange,
-			}
-			if mapInventoryVariantInfo[value.VariantID] != nil {
-				inventoryVoucherItem.Price = mapInventoryVariantInfo[value.VariantID].PurchasePrice
+			inventoryVoucherItem.Quantity = value.QuantityChange
+			if mapInventoryVariantInfo[value.ItemInfo.VariantID] != nil {
+				inventoryVoucherItem.Price = mapInventoryVariantInfo[value.ItemInfo.VariantID].PurchasePrice
 			}
 			inventoryVoucherIn = append(inventoryVoucherIn, inventoryVoucherItem)
 			totalAmountIn += value.QuantityChange * inventoryVoucherItem.Price
 		} else if value.QuantityChange < 0 {
-			inventoryVoucherItem := &inventory.InventoryVoucherItem{
-				VariantID: value.VariantID,
-				Quantity:  value.QuantityChange * -1,
-			}
-			if mapInventoryVariantInfo[value.VariantID] != nil {
-				inventoryVoucherItem.Price = mapInventoryVariantInfo[value.VariantID].PurchasePrice
+			inventoryVoucherItem.Quantity = value.QuantityChange * -1
+			if mapInventoryVariantInfo[value.ItemInfo.VariantID] != nil {
+				inventoryVoucherItem.Price = mapInventoryVariantInfo[value.ItemInfo.VariantID].PurchasePrice
 			}
 			inventoryVoucherOut = append(inventoryVoucherOut, inventoryVoucherItem)
 			totalAmountOut += value.QuantityChange * inventoryVoucherItem.Price
@@ -622,8 +626,8 @@ func (q *InventoryAggregate) CreateInventoryVoucherByQuantityChange(ctx context.
 }
 
 func (q *InventoryAggregate) UpdateInventoryVariantCostPrice(ctx context.Context, args *inventory.UpdateInventoryVariantCostPriceRequest) (*inventory.InventoryVariant, error) {
-	if args.ShopID == 0 || args.VariantID == 0 || args.CostPrice == 0 {
-		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing shop_id, variant_id, cost_price")
+	if args.ShopID == 0 || args.VariantID == 0 {
+		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing shop_id, variant_id")
 	}
 	inventoryVouchers, err := q.InventoryVoucherStore(ctx).ShopID(args.ShopID).RefType(string(inventory.RefTypePurchaseOrder)).VariantId(args.VariantID).ListInventoryVoucher()
 	if err != nil {
@@ -691,8 +695,14 @@ func (q *InventoryAggregate) CreateInventoryVoucherByPurchaseOrder(ctx context.C
 	// GET info and put it to cmd
 	for _, value := range queryPurchaseOrder.Result.Lines {
 		items = append(items, &inventory.InventoryVoucherItem{
-			VariantID: value.VariantID,
-			Quantity:  int32(value.Quantity),
+			ProductID:   value.ProductID,
+			ProductName: value.ProductName,
+			VariantID:   value.VariantID,
+			Quantity:    int32(value.Quantity),
+			Price:       int32(value.PaymentPrice),
+			Code:        value.Code,
+			ImageURL:    value.ImageUrl,
+			Attributes:  convert.ConvertAttributesPurchaseOrder(value.Attributes),
 		})
 	}
 	inventoryVoucherCreateRequest := &inventory.CreateInventoryVoucherArgs{
@@ -715,7 +725,6 @@ func (q *InventoryAggregate) CreateInventoryVoucherByPurchaseOrder(ctx context.C
 	var listInventoryVoucher []*inventory.InventoryVoucher
 	listInventoryVoucher = append(listInventoryVoucher, createResult)
 	return listInventoryVoucher, err
-
 }
 
 func (q *InventoryAggregate) CreateInventoryVoucherByOrder(ctx context.Context, args *inventory.CreateInventoryVoucherByReferenceArgs) ([]*inventory.InventoryVoucher, error) {
@@ -732,8 +741,13 @@ func (q *InventoryAggregate) CreateInventoryVoucherByOrder(ctx context.Context, 
 	for _, value := range queryOrder.Result.Order.Lines {
 		if value.VariantID != 0 {
 			items = append(items, &inventory.InventoryVoucherItem{
-				VariantID: value.VariantID,
-				Quantity:  int32(value.Quantity),
+				ProductID:   value.ProductID,
+				ProductName: value.ProductName,
+				VariantID:   value.VariantID,
+				Quantity:    int32(value.Quantity),
+				Code:        value.Code,
+				ImageURL:    value.ImageURL,
+				Attributes:  convert.ConvertAttributesOrder(value.Attributes),
 			})
 		}
 	}
@@ -778,7 +792,16 @@ func (q *InventoryAggregate) CreateInventoryVoucherByStockTake(ctx context.Conte
 	var inventoryVariantChange []*inventory.InventoryVariantQuantityChange
 	for _, value := range queryStocktake.Result.Lines {
 		inventoryVariantChange = append(inventoryVariantChange, &inventory.InventoryVariantQuantityChange{
-			VariantID:      value.VariantID,
+			ItemInfo: &inventory.InventoryVoucherItem{
+				ProductID:   value.ProductID,
+				ProductName: value.ProductName,
+				VariantID:   value.VariantID,
+				VariantName: value.VariantName,
+				Price:       value.CostPrice,
+				Code:        value.Code,
+				ImageURL:    value.ImageURL,
+				Attributes:  convert.ConvertAttributesStocktake(value.Attributes),
+			},
 			QuantityChange: value.NewQuantity - value.OldQuantity,
 		})
 	}
@@ -791,7 +814,7 @@ func (q *InventoryAggregate) CreateInventoryVoucherByStockTake(ctx context.Conte
 		RefCode:   queryStocktake.Result.Code,
 		Overstock: args.OverStock,
 		CreatedBy: args.UserID,
-		Variants:  inventoryVariantChange,
+		Lines:     inventoryVariantChange,
 		Note:      fmt.Sprintf("Tạo phiếu xuất nhập kho theo phiếu kiểm kho mã %v", queryStocktake.Result.Code),
 	}
 	createResult, err := q.CreateInventoryVoucherByQuantityChange(ctx, inventoryVoucherCreateRequest)

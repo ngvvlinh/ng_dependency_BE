@@ -51,10 +51,17 @@ type InventoryVoucher struct {
 }
 
 type InventoryVoucherItem struct {
-	VariantID int64 `json:"variant_id"`
-	Price     int32 `json:"price"`
-	Quantity  int32 `json:"quantity"`
-	Discount  int32 `json:"discount"`
+	ProductName string `json:"product_name"`
+	ProductID   int64  `json:"product_id"`
+	VariantID   int64  `json:"variant_id"`
+	VariantName string `json:"variant_name"`
+
+	Price    int32 `json:"price"`
+	Quantity int32 `json:"quantity"`
+
+	Code       string       `json:"code"`
+	ImageURL   string       `json:"image_url"`
+	Attributes []*Attribute `json:"attributes"`
 }
 
 type Trader struct {
@@ -62,4 +69,9 @@ type Trader struct {
 	Type     string `json:"type"`
 	FullName string `json:"full_name"`
 	Phone    string `json:"phone"`
+}
+
+type Attribute struct {
+	Name  string `json:"name"`
+	Value string `json:"value"`
 }

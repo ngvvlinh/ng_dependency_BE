@@ -88,10 +88,7 @@ func (s *ShopStocktakeStore) UpdateAll(stocktake *st.ShopStocktake) error {
 	if err != nil {
 		return err
 	}
-	if err = s.query().Where(s.preds).UpdateAll().ShouldUpdate(stocktakeDB); err != nil {
-		return err
-	}
-	return nil
+	return s.query().Where(s.preds).UpdateAll().ShouldUpdate(stocktakeDB)
 }
 
 func (s *ShopStocktakeStore) CreateStocktakeDB(stocktake *model.ShopStocktake) error {

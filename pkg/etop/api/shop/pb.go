@@ -93,6 +93,7 @@ func PbstocktakeLines(args []*stocktaking.StocktakeLine) []*pbshop.StocktakeLine
 			NewQuantity: value.NewQuantity,
 			VariantName: value.VariantName,
 			ProductName: value.ProductName,
+			CostPrice:   value.CostPrice,
 			ProductId:   value.ProductID,
 			Code:        value.Code,
 			ImageUrl:    value.ImageURL,
@@ -149,10 +150,22 @@ func PbShopInventoryVoucher(args *inventory.InventoryVoucher) *pbshop.InventoryV
 
 	var inventoryVoucherItem []*pbshop.InventoryVoucherLine
 	for _, value := range args.Lines {
+		var attributes []pbshop.Attribute
+		for _, attribute := range value.Attributes {
+			attributes = append(attributes, pbshop.Attribute{
+				Name:  attribute.Name,
+				Value: attribute.Value,
+			})
+		}
 		inventoryVoucherItem = append(inventoryVoucherItem, &pbshop.InventoryVoucherLine{
-			VariantId: value.VariantID,
-			Price:     value.Price,
-			Quantity:  value.Quantity,
+			VariantId:   value.VariantID,
+			VariantName: value.VariantName,
+			ProductId:   value.ProductID,
+			ProductName: value.ProductName,
+			ImageUrl:    value.ImageURL,
+			Attributes:  attributes,
+			Price:       value.Price,
+			Quantity:    value.Quantity,
 		})
 	}
 	return &pbshop.InventoryVoucher{

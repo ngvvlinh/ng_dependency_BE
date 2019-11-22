@@ -140,7 +140,7 @@ type CreateInventoryVoucherByQuantityChangeCommand struct {
 	Title     string
 	Overstock bool
 	CreatedBy int64
-	Variants  []*InventoryVariantQuantityChange
+	Lines     []*InventoryVariantQuantityChange
 
 	Result *CreateInventoryVoucherByQuantityChangeResponse `json:"-"`
 }
@@ -448,7 +448,7 @@ func (q *CreateInventoryVoucherByQuantityChangeCommand) GetArgs(ctx context.Cont
 			Title:     q.Title,
 			Overstock: q.Overstock,
 			CreatedBy: q.CreatedBy,
-			Variants:  q.Variants,
+			Lines:     q.Lines,
 		}
 }
 
@@ -462,7 +462,7 @@ func (q *CreateInventoryVoucherByQuantityChangeCommand) SetCreateInventoryVouche
 	q.Title = args.Title
 	q.Overstock = args.Overstock
 	q.CreatedBy = args.CreatedBy
-	q.Variants = args.Variants
+	q.Lines = args.Lines
 }
 
 func (q *CreateInventoryVoucherByReferenceCommand) GetArgs(ctx context.Context) (_ context.Context, _ *CreateInventoryVoucherByReferenceArgs) {

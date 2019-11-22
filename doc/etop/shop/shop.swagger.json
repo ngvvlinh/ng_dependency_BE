@@ -9904,6 +9904,25 @@
           "type": "string",
           "format": "int64"
         },
+        "variant_name": {
+          "type": "string"
+        },
+        "product_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "product_name": {
+          "type": "string"
+        },
+        "image_url": {
+          "type": "string"
+        },
+        "attributes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/shopAttribute"
+          }
+        },
         "price": {
           "type": "integer",
           "format": "int32"
@@ -10154,7 +10173,7 @@
           "type": "string",
           "format": "int64"
         },
-        "price": {
+        "payment_price": {
           "type": "string",
           "format": "int64"
         },
@@ -10931,6 +10950,10 @@
         },
         "image_url": {
           "type": "string"
+        },
+        "cost_price": {
+          "type": "integer",
+          "format": "int32"
         },
         "attributes": {
           "type": "array",

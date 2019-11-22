@@ -4,7 +4,10 @@ import (
 	"fmt"
 	"time"
 
+	"etop.vn/api/main/catalog"
 	"etop.vn/api/main/inventory"
+	"etop.vn/api/main/stocktaking"
+	catalogmodel "etop.vn/backend/com/main/catalog/model"
 	"etop.vn/backend/com/main/inventory/model"
 	cm "etop.vn/backend/pkg/common"
 )
@@ -94,4 +97,37 @@ func InventoryVoucherFromModel(args *model.InventoryVoucher,
 	}
 	convert_inventorymodel_InventoryVoucher_inventory_InventoryVoucher(args, out)
 	return out
+}
+
+func ConvertAttributesOrder(attributes []*catalogmodel.ProductAttribute) []*inventory.Attribute {
+	var result []*inventory.Attribute
+	for _, value := range attributes {
+		result = append(result, &inventory.Attribute{
+			Name:  value.Name,
+			Value: value.Value,
+		})
+	}
+	return result
+}
+
+func ConvertAttributesPurchaseOrder(attributes []*catalog.Attribute) []*inventory.Attribute {
+	var result []*inventory.Attribute
+	for _, value := range attributes {
+		result = append(result, &inventory.Attribute{
+			Name:  value.Name,
+			Value: value.Value,
+		})
+	}
+	return result
+}
+
+func ConvertAttributesStocktake(attributes []*stocktaking.Attribute) []*inventory.Attribute {
+	var result []*inventory.Attribute
+	for _, value := range attributes {
+		result = append(result, &inventory.Attribute{
+			Name:  value.Name,
+			Value: value.Value,
+		})
+	}
+	return result
 }

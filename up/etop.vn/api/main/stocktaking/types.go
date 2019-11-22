@@ -49,9 +49,10 @@ type StocktakeLine struct {
 	NewQuantity int32
 	VariantName string
 	Code        string
-	Price       int32
 	ImageURL    string
-	Attributes  []*Attribute
+
+	CostPrice  int32
+	Attributes []*Attribute
 }
 
 type Attribute struct {

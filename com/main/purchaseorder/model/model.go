@@ -38,10 +38,10 @@ type PurchaseOrderLine struct {
 	ProductName string `json:"product_name"`
 	ProductID   int64  `json:"product_id"`
 
-	VariantID int64  `json:"variant_id"`
-	Quantity  int64  `json:"quantity"`
-	Price     int64  `json:"price"`
-	Code      string `json:"code"`
+	VariantID    int64  `json:"variant_id"`
+	Quantity     int64  `json:"quantity"`
+	PaymentPrice int64  `json:"payment_price"`
+	Code         string `json:"code"`
 
 	ImageUrl   string                           `json:"image_url"`
 	Attributes []*catalogmodel.ProductAttribute `json:"attributes"`

@@ -22,9 +22,12 @@ Custom conversions:
     createInventoryVoucher         // in use
 
 Ignored functions:
-    GenerateCode                  // params are not pointer to named types
-    InventoryVariantsFromModel    // params are not pointer to named types
-    InventoryVouchersFromModel    // params are not pointer to named types
+    ConvertAttributesOrder            // params are not pointer to named types
+    ConvertAttributesPurchaseOrder    // params are not pointer to named types
+    ConvertAttributesStocktake        // params are not pointer to named types
+    GenerateCode                      // params are not pointer to named types
+    InventoryVariantsFromModel        // params are not pointer to named types
+    InventoryVouchersFromModel        // params are not pointer to named types
 */
 
 func RegisterConversions(s *conversion.Scheme) {
@@ -32,6 +35,24 @@ func RegisterConversions(s *conversion.Scheme) {
 }
 
 func registerConversions(s *conversion.Scheme) {
+	s.Register((*inventorymodel.Attribute)(nil), (*inventory.Attribute)(nil), func(arg, out interface{}) error {
+		Convert_inventorymodel_Attribute_inventory_Attribute(arg.(*inventorymodel.Attribute), out.(*inventory.Attribute))
+		return nil
+	})
+	s.Register(([]*inventorymodel.Attribute)(nil), (*[]*inventory.Attribute)(nil), func(arg, out interface{}) error {
+		out0 := Convert_inventorymodel_Attributes_inventory_Attributes(arg.([]*inventorymodel.Attribute))
+		*out.(*[]*inventory.Attribute) = out0
+		return nil
+	})
+	s.Register((*inventory.Attribute)(nil), (*inventorymodel.Attribute)(nil), func(arg, out interface{}) error {
+		Convert_inventory_Attribute_inventorymodel_Attribute(arg.(*inventory.Attribute), out.(*inventorymodel.Attribute))
+		return nil
+	})
+	s.Register(([]*inventory.Attribute)(nil), (*[]*inventorymodel.Attribute)(nil), func(arg, out interface{}) error {
+		out0 := Convert_inventory_Attributes_inventorymodel_Attributes(arg.([]*inventory.Attribute))
+		*out.(*[]*inventorymodel.Attribute) = out0
+		return nil
+	})
 	s.Register((*inventorymodel.InventoryVariant)(nil), (*inventory.InventoryVariant)(nil), func(arg, out interface{}) error {
 		Convert_inventorymodel_InventoryVariant_inventory_InventoryVariant(arg.(*inventorymodel.InventoryVariant), out.(*inventory.InventoryVariant))
 		return nil
@@ -112,6 +133,58 @@ func registerConversions(s *conversion.Scheme) {
 		*out.(*[]*inventorymodel.Trader) = out0
 		return nil
 	})
+}
+
+//-- convert etop.vn/api/main/inventory.Attribute --//
+
+func Convert_inventorymodel_Attribute_inventory_Attribute(arg *inventorymodel.Attribute, out *inventory.Attribute) *inventory.Attribute {
+	if arg == nil {
+		return nil
+	}
+	if out == nil {
+		out = &inventory.Attribute{}
+	}
+	convert_inventorymodel_Attribute_inventory_Attribute(arg, out)
+	return out
+}
+
+func convert_inventorymodel_Attribute_inventory_Attribute(arg *inventorymodel.Attribute, out *inventory.Attribute) {
+	out.Name = arg.Name   // simple assign
+	out.Value = arg.Value // simple assign
+}
+
+func Convert_inventorymodel_Attributes_inventory_Attributes(args []*inventorymodel.Attribute) (outs []*inventory.Attribute) {
+	tmps := make([]inventory.Attribute, len(args))
+	outs = make([]*inventory.Attribute, len(args))
+	for i := range tmps {
+		outs[i] = Convert_inventorymodel_Attribute_inventory_Attribute(args[i], &tmps[i])
+	}
+	return outs
+}
+
+func Convert_inventory_Attribute_inventorymodel_Attribute(arg *inventory.Attribute, out *inventorymodel.Attribute) *inventorymodel.Attribute {
+	if arg == nil {
+		return nil
+	}
+	if out == nil {
+		out = &inventorymodel.Attribute{}
+	}
+	convert_inventory_Attribute_inventorymodel_Attribute(arg, out)
+	return out
+}
+
+func convert_inventory_Attribute_inventorymodel_Attribute(arg *inventory.Attribute, out *inventorymodel.Attribute) {
+	out.Name = arg.Name   // simple assign
+	out.Value = arg.Value // simple assign
+}
+
+func Convert_inventory_Attributes_inventorymodel_Attributes(args []*inventory.Attribute) (outs []*inventorymodel.Attribute) {
+	tmps := make([]inventorymodel.Attribute, len(args))
+	outs = make([]*inventorymodel.Attribute, len(args))
+	for i := range tmps {
+		outs[i] = Convert_inventory_Attribute_inventorymodel_Attribute(args[i], &tmps[i])
+	}
+	return outs
 }
 
 //-- convert etop.vn/api/main/inventory.InventoryVariant --//
@@ -325,9 +398,15 @@ func Convert_inventorymodel_InventoryVoucherItem_inventory_InventoryVoucherItem(
 }
 
 func convert_inventorymodel_InventoryVoucherItem_inventory_InventoryVoucherItem(arg *inventorymodel.InventoryVoucherItem, out *inventory.InventoryVoucherItem) {
-	out.VariantID = arg.VariantID // simple assign
-	out.Price = arg.Price         // simple assign
-	out.Quantity = arg.Quantity   // simple assign
+	out.ProductID = arg.ProductID     // simple assign
+	out.ProductName = arg.ProductName // simple assign
+	out.VariantID = arg.VariantID     // simple assign
+	out.VariantName = arg.VariantName // simple assign
+	out.Quantity = arg.Quantity       // simple assign
+	out.Price = arg.Price             // simple assign
+	out.Code = arg.Code               // simple assign
+	out.ImageURL = arg.ImageURL       // simple assign
+	out.Attributes = Convert_inventorymodel_Attributes_inventory_Attributes(arg.Attributes)
 }
 
 func Convert_inventorymodel_InventoryVoucherItems_inventory_InventoryVoucherItems(args []*inventorymodel.InventoryVoucherItem) (outs []*inventory.InventoryVoucherItem) {
@@ -351,10 +430,15 @@ func Convert_inventory_InventoryVoucherItem_inventorymodel_InventoryVoucherItem(
 }
 
 func convert_inventory_InventoryVoucherItem_inventorymodel_InventoryVoucherItem(arg *inventory.InventoryVoucherItem, out *inventorymodel.InventoryVoucherItem) {
-	out.VariantID = arg.VariantID // simple assign
-	out.Price = arg.Price         // simple assign
-	out.Quantity = arg.Quantity   // simple assign
-	out.Discount = 0              // zero value
+	out.ProductName = arg.ProductName // simple assign
+	out.ProductID = arg.ProductID     // simple assign
+	out.VariantID = arg.VariantID     // simple assign
+	out.VariantName = arg.VariantName // simple assign
+	out.Price = arg.Price             // simple assign
+	out.Quantity = arg.Quantity       // simple assign
+	out.Code = arg.Code               // simple assign
+	out.ImageURL = arg.ImageURL       // simple assign
+	out.Attributes = Convert_inventory_Attributes_inventorymodel_Attributes(arg.Attributes)
 }
 
 func Convert_inventory_InventoryVoucherItems_inventorymodel_InventoryVoucherItems(args []*inventory.InventoryVoucherItem) (outs []*inventorymodel.InventoryVoucherItem) {

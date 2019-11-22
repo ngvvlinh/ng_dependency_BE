@@ -36,14 +36,14 @@ type PurchaseOrder struct {
 }
 
 type PurchaseOrderLine struct {
-	VariantID   int64
-	Quantity    int64
-	Price       int64
-	ProductID   int64
-	ProductName string
-	Code        string
-	ImageUrl    string
-	Attributes  []*catalog.Attribute
+	VariantID    int64
+	Quantity     int64
+	PaymentPrice int64
+	ProductID    int64
+	ProductName  string
+	Code         string
+	ImageUrl     string
+	Attributes   []*catalog.Attribute
 }
 
 type PurchaseOrderSupplier struct {

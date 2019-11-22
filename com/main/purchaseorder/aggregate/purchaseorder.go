@@ -258,14 +258,14 @@ func (a *PurchaseOrderAggregate) checkPurchaseOrder(
 		if line.VariantID == 0 {
 			return cm.Errorf(cm.NotFound, nil, "variant_id không thể bằng 0")
 		}
-		if line.Price < 0 {
+		if line.PaymentPrice < 0 {
 			return cm.Errorf(cm.InvalidArgument, nil, "gía của phiên bản sản phẩm không hợp lệ")
 		}
 		if line.Quantity <= 0 {
 			return cm.Errorf(cm.InvalidArgument, nil, "số lượng của phiên bản sản phẩm không hợp lệ")
 		}
 		variantIDs = append(variantIDs, line.VariantID)
-		totalPrice += line.Quantity * line.Price
+		totalPrice += line.Quantity * line.PaymentPrice
 	}
 	if totalPrice != args.BasketValue {
 		return cm.Errorf(cm.NotFound, nil, "Tiền hàng không hợp lệ")
@@ -328,7 +328,7 @@ func (a *PurchaseOrderAggregate) ConfirmPurchaseOrder(
 	for _, line := range purchaseOrder.Lines {
 		lines = append(lines, &inventory.InventoryVoucherItem{
 			VariantID: line.VariantID,
-			Price:     int32(line.Price),
+			Price:     int32(line.PaymentPrice),
 			Quantity:  int32(line.Quantity),
 		})
 	}
