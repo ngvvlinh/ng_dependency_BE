@@ -3,12 +3,17 @@ package convert
 import (
 	"time"
 
+	"etop.vn/capi/dot"
+
+	"etop.vn/backend/com/main/authorization/convert"
+
+	"etop.vn/api/main/authorization"
+
 	"github.com/dgrijalva/jwt-go"
 
 	"etop.vn/api/main/invitation"
 	"etop.vn/backend/com/main/invitation/model"
 	cm "etop.vn/backend/pkg/common"
-	"etop.vn/capi/dot"
 )
 
 // +gen:convert: etop.vn/backend/com/main/invitation/model -> etop.vn/api/main/invitation
@@ -21,27 +26,27 @@ func createInvitation(args *invitation.CreateInvitationArgs, out *invitation.Inv
 	out.ID = cm.NewID()
 }
 
-func ConvertStringsToRoles(args []string) (roles []invitation.Role) {
+func ConvertStringsToRoles(args []string) (roles []authorization.Role) {
 	for _, arg := range args {
-		roles = append(roles, invitation.Role(arg))
+		roles = append(roles, authorization.Role(arg))
 	}
 	return
 }
 
-func ConvertRolesToStrings(roles []invitation.Role) (outs []string) {
+func ConvertRolesToStrings(roles []authorization.Role) (outs []string) {
 	for _, role := range roles {
 		outs = append(outs, string(role))
 	}
 	return
 }
 
-func GenerateToken(secretKey, email string, accountID dot.ID, roles []invitation.Role, expiresAt int64) (string, error) {
+func GenerateToken(secretKey, email string, accountID int64, roles []authorization.Role, expiresAt int64) (string, error) {
 	if expiresAt == 0 {
 		expiresAt = time.Now().Add(ExpiresIn).Unix()
 	}
 	claims := &invitation.Claims{
 		Email:     email,
-		AccountID: accountID,
+		AccountID: dot.ID(accountID),
 		Roles:     roles,
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: expiresAt,
@@ -70,10 +75,10 @@ func GetExpiresAt(secretKey string, token string) (time.Time, error) {
 
 func InvitationDB(args *invitation.Invitation, out *model.Invitation) {
 	convert_invitation_Invitation_invitationmodel_Invitation(args, out)
-	out.Roles = ConvertRolesToStrings(args.Roles)
+	out.Roles = convert.ConvertRolesToStrings(args.Roles)
 }
 
 func Invitation(args *model.Invitation, out *invitation.Invitation) {
 	convert_invitationmodel_Invitation_invitation_Invitation(args, out)
-	out.Roles = ConvertStringsToRoles(args.Roles)
+	out.Roles = convert.ConvertStringsToRoles(args.Roles)
 }

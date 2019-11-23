@@ -56,13 +56,31 @@ func (x *AccountType) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-type GetInvitationsRequest struct {
-	Paging  *common.Paging   `json:"paging"`
-	Filters []*common.Filter `json:"filters"`
+type Authorization struct {
+	UserId  dot.ID   `json:"user_id"`
+	Name    string   `json:"name"`
+	Email   string   `json:"email"`
+	Roles   []string `json:"roles"`
+	Actions []string `json:"actions"`
 }
 
-func (m *GetInvitationsRequest) Reset()         { *m = GetInvitationsRequest{} }
-func (m *GetInvitationsRequest) String() string { return jsonx.MustMarshalToString(m) }
+func (m *Authorization) Reset()         { *m = Authorization{} }
+func (m *Authorization) String() string { return jsonx.MustMarshalToString(m) }
+
+type UpdateAuthorizationRequest struct {
+	UserId dot.ID   `json:"user_id"`
+	Roles  []string `json:"roles"`
+}
+
+func (m *UpdateAuthorizationRequest) Reset()         { *m = UpdateAuthorizationRequest{} }
+func (m *UpdateAuthorizationRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type AuthorizationsResponse struct {
+	Authorizations []*Authorization `json:"authorizations"`
+}
+
+func (m *AuthorizationsResponse) Reset()         { *m = AuthorizationsResponse{} }
+func (m *AuthorizationsResponse) String() string { return jsonx.MustMarshalToString(m) }
 
 type GetInvitationByTokenRequest struct {
 	Token string `json:"token"`
@@ -72,22 +90,89 @@ func (m *GetInvitationByTokenRequest) Reset()         { *m = GetInvitationByToke
 func (m *GetInvitationByTokenRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type Invitation struct {
-	Id         dot.ID         `json:"id"`
-	ShopId     dot.ID         `json:"shop_id"`
-	Email      string         `json:"email"`
-	Roles      []string       `json:"roles"`
-	Token      string         `json:"token"`
-	Status     status3.Status `json:"status"`
-	InvitedBy  dot.ID         `json:"invited_by"`
-	AcceptedAt dot.Time       `json:"accepted_at"`
-	DeclinedAt dot.Time       `json:"declined_at"`
-	ExpiredAt  dot.Time       `json:"expired_at"`
-	CreatedAt  dot.Time       `json:"created_at"`
-	UpdatedAt  dot.Time       `json:"updated_at"`
+	Id            dot.ID         `json:"id"`
+	UserId        dot.ID         `json:"user_id"`
+	ShopId        dot.ID         `json:"shop_id"`
+	Email         string         `json:"email"`
+	FullName      string         `json:"full_name"`
+	ShortName     string         `json:"short_name"`
+	ShopShort     *ShopShort     `json:"shop"`
+	InvitedByUser string         `json:"invited_by_user"`
+	Roles         []string       `json:"roles"`
+	Token         string         `json:"token"`
+	Status        status3.Status `json:"status"`
+	InvitedBy     dot.ID         `json:"invited_by"`
+	AcceptedAt    dot.Time       `json:"accepted_at"`
+	DeclinedAt    dot.Time       `json:"declined_at"`
+	ExpiredAt     dot.Time       `json:"expired_at"`
+	CreatedAt     dot.Time       `json:"created_at"`
+	UpdatedAt     dot.Time       `json:"updated_at"`
 }
 
 func (m *Invitation) Reset()         { *m = Invitation{} }
 func (m *Invitation) String() string { return jsonx.MustMarshalToString(m) }
+
+type InvitationsResponse struct {
+	Invitations []*Invitation    `json:"invitations"`
+	Paging      *common.PageInfo `json:"paging"`
+}
+
+func (m *InvitationsResponse) Reset()         { *m = InvitationsResponse{} }
+func (m *InvitationsResponse) String() string { return jsonx.MustMarshalToString(m) }
+
+type UpdateAccountUserPermissionRequest struct {
+	UserID dot.ID   `json:"user_id"`
+	Roles  []string `json:"roles"`
+}
+
+func (m *UpdateAccountUserPermissionRequest) Reset()         { *m = UpdateAccountUserPermissionRequest{} }
+func (m *UpdateAccountUserPermissionRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type UpdateRelationshipRequest struct {
+	UserID    dot.ID         `json:"user_id"`
+	FullName  dot.NullString `json:"full_name"`
+	ShortName dot.NullString `json:"short_name"`
+	Position  dot.NullString `json:"position"`
+}
+
+func (m *UpdateRelationshipRequest) Reset()         { *m = UpdateRelationshipRequest{} }
+func (m *UpdateRelationshipRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type GetInvitationsRequest struct {
+	Paging  *common.Paging   `json:"paging"`
+	Filters []*common.Filter `json:"filters"`
+}
+
+func (m *GetInvitationsRequest) Reset()         { *m = GetInvitationsRequest{} }
+func (m *GetInvitationsRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type DeleteInvitationRequest struct {
+	Token string `json:"token""`
+}
+
+func (m *DeleteInvitationRequest) Reset()         { *m = DeleteInvitationRequest{} }
+func (m *DeleteInvitationRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type UserRelationshipLeaveAccountRequest struct {
+	AccountID dot.ID `json:"account_id"`
+}
+
+func (m *UserRelationshipLeaveAccountRequest) Reset()         { *m = UserRelationshipLeaveAccountRequest{} }
+func (m *UserRelationshipLeaveAccountRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type CreateInvitationRequest struct {
+	// @Required
+	Email string `json:"email"`
+	// @Optional
+	FullName  string `json:"full_name"`
+	ShortName string `json:"short_name"`
+	Position  string `json:"position"`
+	// @Required
+	Roles []string `json:"roles"`
+}
+
+func (m *CreateInvitationRequest) Reset()         { *m = CreateInvitationRequest{} }
+func (m *CreateInvitationRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 type AcceptInvitationRequest struct {
 	Token string `json:"token"`
@@ -102,6 +187,44 @@ type RejectInvitationRequest struct {
 
 func (m *RejectInvitationRequest) Reset()         { *m = RejectInvitationRequest{} }
 func (m *RejectInvitationRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type Relationship struct {
+	UserID      dot.ID   `json:"user_id"`
+	AccountID   dot.ID   `json:"account_id"`
+	Roles       []string `json:"roles"`
+	Permissions []string `json:"permissions"`
+	FullName    string   `json:"full_name"`
+	ShortName   string   `json:"short_name"`
+	Email       string   `json:"email"`
+	Position    string   `json:"position"`
+	Deleted     bool     `json:"deleted"`
+}
+
+func (m *Relationship) Reset()         { *m = Relationship{} }
+func (m *Relationship) String() string { return jsonx.MustMarshalToString(m) }
+
+type RelationshipsResponse struct {
+	Relationships []*Relationship  `json:"relationships"`
+	Paging        *common.PageInfo `json:"paging"`
+}
+
+func (m *RelationshipsResponse) Reset()         { *m = RelationshipsResponse{} }
+func (m *RelationshipsResponse) String() string { return jsonx.MustMarshalToString(m) }
+
+type GetRelationshipsRequest struct {
+	Paging  *common.Paging   `json:"paging"`
+	Filters []*common.Filter `json:"filters"`
+}
+
+func (m *GetRelationshipsRequest) Reset()         { *m = GetRelationshipsRequest{} }
+func (m *GetRelationshipsRequest) String() string { return jsonx.MustMarshalToString(m) }
+
+type RemoveUserRequest struct {
+	UserID dot.ID `json:"user_id"`
+}
+
+func (m *RemoveUserRequest) Reset()         { *m = RemoveUserRequest{} }
+func (m *RemoveUserRequest) String() string { return jsonx.MustMarshalToString(m) }
 
 // Represents a user in eTop system. The user may or may not have associated accounts.
 type User struct {
@@ -228,6 +351,16 @@ type Shop struct {
 func (m *Shop) Reset()         { *m = Shop{} }
 func (m *Shop) String() string { return jsonx.MustMarshalToString(m) }
 
+type ShopShort struct {
+	ID       dot.ID `json:"id"`
+	Name     string `json:"name"`
+	Code     string `json:"code"`
+	ImageUrl string `json:"image_url"`
+}
+
+func (m *ShopShort) Reset()         { *m = ShopShort{} }
+func (m *ShopShort) String() string { return jsonx.MustMarshalToString(m) }
+
 type ShippingServiceSelectStrategyItem struct {
 	Key   string `json:"key"`
 	Value string `json:"value"`
@@ -264,6 +397,8 @@ type CreateUserRequest struct {
 	// Automatically set phone_verified if it's sent within a specific time.
 	RegisterToken string                 `json:"register_token"`
 	Source        user_source.UserSource `json:"source"`
+
+	AutoAcceptInvitation bool `json:"auto_accept_invitation"`
 }
 
 func (m *CreateUserRequest) Reset()         { *m = CreateUserRequest{} }

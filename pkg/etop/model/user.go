@@ -24,6 +24,18 @@ type GetUserByIDQuery struct {
 	Result *User
 }
 
+type GetUserByEmailQuery struct {
+	Email string
+
+	Result *User
+}
+
+type GetUsersByIDsQuery struct {
+	UserIDs []dot.ID
+
+	Result []*User
+}
+
 type GetUserByLoginQuery struct {
 	UserID       dot.ID
 	PhoneOrEmail string

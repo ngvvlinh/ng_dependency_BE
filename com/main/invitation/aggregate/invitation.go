@@ -2,19 +2,29 @@ package aggregate
 
 import (
 	"context"
+	"net/url"
+	"strings"
 	"time"
 
+	"etop.vn/backend/cmd/etop-server/config"
+
+	"etop.vn/backend/pkg/etop/api"
+
+	"etop.vn/api/main/authorization"
 	"etop.vn/api/main/etop"
 	"etop.vn/api/main/identity"
 	"etop.vn/api/main/invitation"
 	"etop.vn/api/shopping/customering"
+	authorizationconvert "etop.vn/backend/com/main/authorization/convert"
 	"etop.vn/backend/com/main/invitation/convert"
 	"etop.vn/backend/com/main/invitation/model"
 	"etop.vn/backend/com/main/invitation/sqlstore"
 	cm "etop.vn/backend/pkg/common"
+	"etop.vn/backend/pkg/common/auth"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/cmsql"
 	"etop.vn/backend/pkg/common/conversion"
+	"etop.vn/backend/pkg/common/validate"
 	etopmodel "etop.vn/backend/pkg/etop/model"
 	"etop.vn/backend/pkg/integration/email"
 	"etop.vn/capi"
@@ -27,6 +37,7 @@ var scheme = conversion.Build(convert.RegisterConversions)
 type InvitationAggregate struct {
 	db            *cmsql.Database
 	eventBus      capi.EventBus
+	cfg           config.Config
 	jwtKey        string
 	store         sqlstore.InvitationStoreFactory
 	customerQuery customering.QueryBus
@@ -36,11 +47,12 @@ type InvitationAggregate struct {
 func NewInvitationAggregate(
 	database *cmsql.Database, secretKey string,
 	customerQ customering.QueryBus, identityQ identity.QueryBus,
-	eventBus capi.EventBus,
+	eventBus capi.EventBus, config config.Config,
 ) *InvitationAggregate {
 	return &InvitationAggregate{
 		db:            database,
 		eventBus:      eventBus,
+		cfg:           config,
 		store:         sqlstore.NewInvitationStore(database),
 		jwtKey:        secretKey,
 		customerQuery: customerQ,
@@ -56,6 +68,7 @@ func (a *InvitationAggregate) MessageBus() invitation.CommandBus {
 func (a *InvitationAggregate) CreateInvitation(
 	ctx context.Context, args *invitation.CreateInvitationArgs,
 ) (*invitation.Invitation, error) {
+	emailArg := args.Email
 	if !a.checkRoles(args.Roles) {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "role không hợp lệ")
 	}
@@ -69,7 +82,7 @@ func (a *InvitationAggregate) CreateInvitation(
 	}
 
 	// check have invitation that was sent to email
-	_, err := a.store(ctx).AccountID(args.AccountID).Email(args.Email).NotExpires(time.Now()).
+	_, err := a.store(ctx).AccountID(args.AccountID).Email(args.Email).NotExpires().
 		AcceptedAt(nil).RejectedAt(nil).GetInvitation()
 	switch cm.ErrorCode(err) {
 	case cm.NotFound:
@@ -80,6 +93,11 @@ func (a *InvitationAggregate) CreateInvitation(
 		return nil, err
 	}
 
+	emailNorm, ok := validate.NormalizeEmail(args.Email)
+	if !ok {
+		return nil, cm.Error(cm.InvalidArgument, "Email không hợp lệ", nil)
+	}
+	args.Email = emailNorm.String()
 	invitation := new(invitation.Invitation)
 	if err := scheme.Convert(args, invitation); err != nil {
 		return nil, err
@@ -87,26 +105,71 @@ func (a *InvitationAggregate) CreateInvitation(
 
 	// generate token
 	expiresAt := time.Now().Add(convert.ExpiresIn)
-	token, err := convert.GenerateToken(a.jwtKey, args.Email, args.AccountID, args.Roles, expiresAt.Unix())
-	if err != nil {
-		return nil, err
-	}
+
+	token := "iv:" + auth.RandomToken(auth.DefaultTokenLength)
 	invitation.ExpiresAt = expiresAt
 	invitation.Token = token
 
-	if err := a.store(ctx).CreateInvitation(invitation); err != nil {
-		return nil, err
-	}
+	err = a.db.InTransaction(ctx, func(s cmsql.QueryInterface) error {
+		if err := a.store(ctx).CreateInvitation(invitation); err != nil {
+			return err
+		}
 
-	// send mail
-	// TODO: change content and subject
-	cmd := &email.SendEmailCommand{
-		FromName:    "eTop.vn (no-reply)",
-		ToAddresses: []string{args.Email},
-		Subject:     "Invitation",
-		Content:     token,
-	}
-	if err := bus.Dispatch(ctx, cmd); err != nil {
+		var b strings.Builder
+
+		getUserQuery := &etopmodel.GetUserByIDQuery{
+			UserID: invitation.InvitedBy,
+		}
+		if err := bus.Dispatch(ctx, getUserQuery); err != nil {
+			return err
+		}
+
+		getAccountQuery := &etopmodel.GetShopQuery{
+			ShopID: invitation.AccountID,
+		}
+		if err := bus.Dispatch(ctx, getAccountQuery); err != nil {
+			return err
+		}
+
+		invitationUrl := a.cfg.URL.MainSite + "/invitation"
+		URL, err := url.Parse(invitationUrl)
+		if err != nil {
+			return cm.Errorf(cm.Internal, err, "Can not parse url")
+		}
+		urlQuery := URL.Query()
+		urlQuery.Set("t", token)
+		URL.RawQuery = urlQuery.Encode()
+
+		fullName := "bạn"
+		if args.FullName != "" {
+			fullName = args.FullName
+		}
+		if err := api.EmailInvitationTpl.Execute(&b, map[string]interface{}{
+			"FullName":         fullName,
+			"URL":              URL.String(),
+			"Email":            emailArg,
+			"ShopRoles":        strings.Join(convert.ConvertRolesToStrings(invitation.Roles), ", "),
+			"ShopName":         getAccountQuery.Result.Name,
+			"InvitingUsername": getUserQuery.Result.FullName,
+		}); err != nil {
+			return cm.Errorf(cm.Internal, err, "Không thể xác nhận địa chỉ email").WithMeta("reason", "can not generate email content")
+		}
+
+		// send mail
+		// TODO: change content and subject
+		cmd := &email.SendEmailCommand{
+			FromName:    "eTop.vn (no-reply)",
+			ToAddresses: []string{emailArg},
+			Subject:     "Invitation",
+			Content:     b.String(),
+		}
+		if err := bus.Dispatch(ctx, cmd); err != nil {
+			return err
+		}
+
+		return nil
+	})
+	if err != nil {
 		return nil, err
 	}
 
@@ -165,20 +228,21 @@ func (a *InvitationAggregate) havePermissionToInvite(ctx context.Context, args *
 	if err := bus.Dispatch(ctx, getAccountUserQuery); err != nil {
 		return err
 	}
-	customerRoles := convert.ConvertStringsToRoles(getAccountUserQuery.Result.Roles)
-	if !invitation.IsContainsRole(customerRoles, invitation.RoleShopOwner) &&
-		!invitation.IsContainsRole(customerRoles, invitation.RoleStaffManagement) {
+	customerRoles := authorizationconvert.ConvertStringsToRoles(getAccountUserQuery.Result.Roles)
+	if !authorization.IsContainsRole(customerRoles, authorization.RoleShopOwner) &&
+		!authorization.IsContainsRole(customerRoles, authorization.RoleStaffManagement) &&
+		!authorization.IsContainsRole(customerRoles, authorization.RoleAdmin) {
 		return cm.Errorf(cm.FailedPrecondition, nil, "Người dùng hiện tại không có quyền mời người khác vào shop")
 	}
 	return nil
 }
 
-func (a *InvitationAggregate) checkRoles(roles []invitation.Role) bool {
+func (a *InvitationAggregate) checkRoles(roles []authorization.Role) bool {
 	for _, role := range roles {
-		if string(role) == string(invitation.RoleShopOwner) {
+		if string(role) == string(authorization.RoleShopOwner) || string(role) == string(authorization.RoleAdmin) {
 			return false
 		}
-		if !invitation.IsRole(role) {
+		if !authorization.IsRole(role) {
 			return false
 		}
 	}
@@ -257,4 +321,30 @@ func (a *InvitationAggregate) checkTokenBelongsToUser(ctx context.Context, userI
 		return cm.Errorf(cm.FailedPrecondition, nil, "Không tìm thấy lời mời")
 	}
 	return nil
+}
+
+func (a *InvitationAggregate) DeleteInvitation(
+	ctx context.Context, userID, accountID dot.ID, token string,
+) (updated int, _ error) {
+	getAccountUserQuery := &etopmodel.GetAccountUserExtendedQuery{
+		AccountID: accountID,
+		UserID:    userID,
+	}
+	if err := bus.Dispatch(ctx, getAccountUserQuery); err != nil {
+		return 0, cm.MapError(err).
+			Wrap(cm.NotFound, "tài khoản bạn không thuộc shop này").
+			Throw()
+	}
+	roles := convert.ConvertStringsToRoles(getAccountUserQuery.Result.AccountUser.Permission.Roles)
+
+	if !authorization.IsContainsRole(roles, authorization.RoleShopOwner) &&
+		!authorization.IsContainsRole(roles, authorization.RoleStaffManagement) {
+		return 0, cm.Error(cm.FailedPrecondition, "Bạn không có quyền thực hiện thao tác này", nil)
+	}
+
+	updated, err := a.store(ctx).AccountID(accountID).Token(token).SoftDelete()
+	if err != nil {
+		return 0, err
+	}
+	return updated, err
 }

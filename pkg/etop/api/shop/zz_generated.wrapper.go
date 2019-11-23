@@ -6,6 +6,7 @@ package shop
 
 import (
 	"context"
+	"strings"
 	"time"
 
 	cm "etop.vn/api/pb/common"
@@ -17,9 +18,9 @@ import (
 	bus "etop.vn/backend/pkg/common/bus"
 	metrics "etop.vn/backend/pkg/common/metrics"
 	cmwrapper "etop.vn/backend/pkg/common/wrapper"
+	"etop.vn/backend/pkg/etop/authorize/auth"
 	claims "etop.vn/backend/pkg/etop/authorize/claims"
 	middleware "etop.vn/backend/pkg/etop/authorize/middleware"
-	permission "etop.vn/backend/pkg/etop/authorize/permission"
 	model "etop.vn/backend/pkg/etop/model"
 )
 
@@ -63,6 +64,15 @@ func (s wrapAccountService) CreateExternalAccountAhamove(ctx context.Context, re
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/external_account:manage", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/external_account:manage", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.CreateExternalAccountAhamove(ctx, query)
 	resp = query.Result
@@ -108,10 +118,15 @@ func (s wrapAccountService) DeleteShop(ctx context.Context, req *cm.IDRequest) (
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
-	// Verify that the user has role "owner"
-	if !session.IsOwner && permission.MaxRoleLevel(session.Roles) < 8 {
-		return nil, common.ErrPermissionDenied
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
 	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/account:delete", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/account:delete", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.DeleteShop(ctx, query)
 	resp = query.Result
@@ -157,10 +172,15 @@ func (s wrapAccountService) GetBalanceShop(ctx context.Context, req *cm.Empty) (
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
-	// Verify that the user has role "staff"
-	if !session.IsOwner && permission.MaxRoleLevel(session.Roles) < 2 {
-		return nil, common.ErrPermissionDenied
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
 	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/balance:view", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/balance:view", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetBalanceShop(ctx, query)
 	resp = query.Result
@@ -297,6 +317,15 @@ func (s wrapAccountService) RequestVerifyExternalAccountAhamove(ctx context.Cont
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/external_account:manage", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/external_account:manage", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.RequestVerifyExternalAccountAhamove(ctx, query)
 	resp = query.Result
@@ -342,10 +371,15 @@ func (s wrapAccountService) SetDefaultAddress(ctx context.Context, req *etop.Set
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
-	// Verify that the user has role "staff"
-	if !session.IsOwner && permission.MaxRoleLevel(session.Roles) < 2 {
-		return nil, common.ErrPermissionDenied
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
 	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/settings/shop_info:update", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/settings/shop_info:update", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.SetDefaultAddress(ctx, query)
 	resp = query.Result
@@ -391,6 +425,15 @@ func (s wrapAccountService) UpdateExternalAccountAhamoveVerification(ctx context
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/external_account:manage", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/external_account:manage", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.UpdateExternalAccountAhamoveVerification(ctx, query)
 	resp = query.Result
@@ -436,6 +479,15 @@ func (s wrapAccountService) UpdateExternalAccountAhamoveVerificationImages(ctx c
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/external_account:manage", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/external_account:manage", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.UpdateExternalAccountAhamoveVerificationImages(ctx, query)
 	resp = query.Result
@@ -481,10 +533,15 @@ func (s wrapAccountService) UpdateShop(ctx context.Context, req *shop.UpdateShop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
-	// Verify that the user has role "admin"
-	if !session.IsOwner && permission.MaxRoleLevel(session.Roles) < 4 {
-		return nil, common.ErrPermissionDenied
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
 	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/settings/shop_info:update", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/settings/shop_info:update", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.UpdateShop(ctx, query)
 	resp = query.Result
@@ -538,6 +595,15 @@ func (s wrapAuthorizeService) AuthorizePartner(ctx context.Context, req *shop.Au
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/external_account:manage", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/external_account:manage", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.AuthorizePartner(ctx, query)
 	resp = query.Result
@@ -681,6 +747,15 @@ func (s wrapBrandService) CreateBrand(ctx context.Context, req *shop.CreateBrand
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/product:create", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/product:create", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.CreateBrand(ctx, query)
 	resp = query.Result
@@ -726,6 +801,15 @@ func (s wrapBrandService) DeleteBrand(ctx context.Context, req *cm.IDsRequest) (
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/product:delete", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/product:delete", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.DeleteBrand(ctx, query)
 	resp = query.Result
@@ -771,6 +855,15 @@ func (s wrapBrandService) GetBrandByID(ctx context.Context, req *cm.IDRequest) (
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/product/basic_info:view", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/product/basic_info:view", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetBrandByID(ctx, query)
 	resp = query.Result
@@ -819,6 +912,15 @@ func (s wrapBrandService) GetBrands(ctx context.Context, req *shop.GetBrandsRequ
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/product/basic_info:view", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/product/basic_info:view", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetBrands(ctx, query)
 	resp = query.Result
@@ -864,6 +966,15 @@ func (s wrapBrandService) GetBrandsByIDs(ctx context.Context, req *cm.IDsRequest
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/product/basic_info:view", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/product/basic_info:view", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetBrandsByIDs(ctx, query)
 	resp = query.Result
@@ -909,6 +1020,15 @@ func (s wrapBrandService) UpdateBrandInfo(ctx context.Context, req *shop.UpdateB
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/product/basic_info:update", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/product/basic_info:update", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.UpdateBrandInfo(ctx, query)
 	resp = query.Result
@@ -962,6 +1082,15 @@ func (s wrapCarrierService) CreateCarrier(ctx context.Context, req *shop.CreateC
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/carrier:create", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/carrier:create", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.CreateCarrier(ctx, query)
 	resp = query.Result
@@ -1007,6 +1136,15 @@ func (s wrapCarrierService) DeleteCarrier(ctx context.Context, req *cm.IDRequest
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/carrier:delete", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/carrier:delete", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.DeleteCarrier(ctx, query)
 	resp = query.Result
@@ -1052,6 +1190,15 @@ func (s wrapCarrierService) GetCarrier(ctx context.Context, req *cm.IDRequest) (
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/carrier:view", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/carrier:view", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetCarrier(ctx, query)
 	resp = query.Result
@@ -1097,6 +1244,15 @@ func (s wrapCarrierService) GetCarriers(ctx context.Context, req *shop.GetCarrie
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/carrier:view", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/carrier:view", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetCarriers(ctx, query)
 	resp = query.Result
@@ -1142,6 +1298,15 @@ func (s wrapCarrierService) GetCarriersByIDs(ctx context.Context, req *cm.IDsReq
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/carrier:view", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/carrier:view", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetCarriersByIDs(ctx, query)
 	resp = query.Result
@@ -1187,6 +1352,15 @@ func (s wrapCarrierService) UpdateCarrier(ctx context.Context, req *shop.UpdateC
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/carrier:update", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/carrier:update", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.UpdateCarrier(ctx, query)
 	resp = query.Result
@@ -1240,6 +1414,15 @@ func (s wrapCategoryService) CreateCategory(ctx context.Context, req *shop.Creat
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/category:create", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/category:create", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.CreateCategory(ctx, query)
 	resp = query.Result
@@ -1285,6 +1468,15 @@ func (s wrapCategoryService) DeleteCategory(ctx context.Context, req *cm.IDReque
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/category:delete", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/category:delete", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.DeleteCategory(ctx, query)
 	resp = query.Result
@@ -1330,6 +1522,15 @@ func (s wrapCategoryService) GetCategories(ctx context.Context, req *shop.GetCat
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/category:view", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/category:view", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetCategories(ctx, query)
 	resp = query.Result
@@ -1375,6 +1576,15 @@ func (s wrapCategoryService) GetCategory(ctx context.Context, req *cm.IDRequest)
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/category:view", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/category:view", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetCategory(ctx, query)
 	resp = query.Result
@@ -1420,6 +1630,15 @@ func (s wrapCategoryService) UpdateCategory(ctx context.Context, req *shop.Updat
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/category:update", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/category:update", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.UpdateCategory(ctx, query)
 	resp = query.Result
@@ -1473,10 +1692,15 @@ func (s wrapCollectionService) CreateCollection(ctx context.Context, req *shop.C
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
-	// Verify that the user has role "staff"
-	if !session.IsOwner && permission.MaxRoleLevel(session.Roles) < 2 {
-		return nil, common.ErrPermissionDenied
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
 	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/collection:create", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/collection:create", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.CreateCollection(ctx, query)
 	resp = query.Result
@@ -1522,6 +1746,15 @@ func (s wrapCollectionService) GetCollection(ctx context.Context, req *cm.IDRequ
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/collection:view", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/collection:view", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetCollection(ctx, query)
 	resp = query.Result
@@ -1567,6 +1800,15 @@ func (s wrapCollectionService) GetCollections(ctx context.Context, req *shop.Get
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/collection:view", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/collection:view", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetCollections(ctx, query)
 	resp = query.Result
@@ -1612,6 +1854,15 @@ func (s wrapCollectionService) GetCollectionsByProductID(ctx context.Context, re
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/collection:view", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/collection:view", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetCollectionsByProductID(ctx, query)
 	resp = query.Result
@@ -1657,10 +1908,15 @@ func (s wrapCollectionService) UpdateCollection(ctx context.Context, req *shop.U
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
-	// Verify that the user has role "staff"
-	if !session.IsOwner && permission.MaxRoleLevel(session.Roles) < 2 {
-		return nil, common.ErrPermissionDenied
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
 	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/collection:update", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/collection:update", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.UpdateCollection(ctx, query)
 	resp = query.Result
@@ -1714,6 +1970,15 @@ func (s wrapCustomerService) AddCustomersToGroup(ctx context.Context, req *shop.
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/customer:manage", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/customer:manage", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.AddCustomersToGroup(ctx, query)
 	resp = query.Result
@@ -1759,6 +2024,15 @@ func (s wrapCustomerService) BatchSetCustomersStatus(ctx context.Context, req *s
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/customer:update", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/customer:update", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.BatchSetCustomersStatus(ctx, query)
 	resp = query.Result
@@ -1804,6 +2078,15 @@ func (s wrapCustomerService) CreateCustomer(ctx context.Context, req *shop.Creat
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/customer:create", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/customer:create", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.CreateCustomer(ctx, query)
 	resp = query.Result
@@ -1849,6 +2132,15 @@ func (s wrapCustomerService) CreateCustomerAddress(ctx context.Context, req *sho
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/customer:create|shop/customer:update", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/customer:create|shop/customer:update", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.CreateCustomerAddress(ctx, query)
 	resp = query.Result
@@ -1894,6 +2186,15 @@ func (s wrapCustomerService) DeleteCustomer(ctx context.Context, req *cm.IDReque
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/customer:delete", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/customer:delete", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.DeleteCustomer(ctx, query)
 	resp = query.Result
@@ -1939,6 +2240,15 @@ func (s wrapCustomerService) DeleteCustomerAddress(ctx context.Context, req *cm.
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/customer:update|shop/customer:delete", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/customer:update|shop/customer:delete", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.DeleteCustomerAddress(ctx, query)
 	resp = query.Result
@@ -1984,6 +2294,15 @@ func (s wrapCustomerService) GetCustomer(ctx context.Context, req *cm.IDRequest)
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/customer:view", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/customer:view", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetCustomer(ctx, query)
 	resp = query.Result
@@ -2029,6 +2348,15 @@ func (s wrapCustomerService) GetCustomerAddresses(ctx context.Context, req *shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/customer:view", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/customer:view", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetCustomerAddresses(ctx, query)
 	resp = query.Result
@@ -2074,6 +2402,15 @@ func (s wrapCustomerService) GetCustomerDetails(ctx context.Context, req *cm.IDR
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/customer:view", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/customer:view", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetCustomerDetails(ctx, query)
 	resp = query.Result
@@ -2119,6 +2456,15 @@ func (s wrapCustomerService) GetCustomers(ctx context.Context, req *shop.GetCust
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/customer:view", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/customer:view", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetCustomers(ctx, query)
 	resp = query.Result
@@ -2164,6 +2510,15 @@ func (s wrapCustomerService) GetCustomersByIDs(ctx context.Context, req *cm.IDsR
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/customer:view", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/customer:view", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetCustomersByIDs(ctx, query)
 	resp = query.Result
@@ -2209,6 +2564,15 @@ func (s wrapCustomerService) RemoveCustomersFromGroup(ctx context.Context, req *
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/customer:manage", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/customer:manage", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.RemoveCustomersFromGroup(ctx, query)
 	resp = query.Result
@@ -2254,6 +2618,15 @@ func (s wrapCustomerService) SetDefaultCustomerAddress(ctx context.Context, req 
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/customer:update", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/customer:update", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.SetDefaultCustomerAddress(ctx, query)
 	resp = query.Result
@@ -2299,6 +2672,15 @@ func (s wrapCustomerService) UpdateCustomer(ctx context.Context, req *shop.Updat
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/customer:update", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/customer:update", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.UpdateCustomer(ctx, query)
 	resp = query.Result
@@ -2344,6 +2726,15 @@ func (s wrapCustomerService) UpdateCustomerAddress(ctx context.Context, req *sho
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/customer:update", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/customer:update", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.UpdateCustomerAddress(ctx, query)
 	resp = query.Result
@@ -2397,6 +2788,15 @@ func (s wrapCustomerGroupService) CreateCustomerGroup(ctx context.Context, req *
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/customer_group:manage", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/customer_group:manage", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.CreateCustomerGroup(ctx, query)
 	resp = query.Result
@@ -2442,6 +2842,15 @@ func (s wrapCustomerGroupService) GetCustomerGroup(ctx context.Context, req *cm.
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/customer:view", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/customer:view", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetCustomerGroup(ctx, query)
 	resp = query.Result
@@ -2487,6 +2896,15 @@ func (s wrapCustomerGroupService) GetCustomerGroups(ctx context.Context, req *sh
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/customer:view", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/customer:view", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetCustomerGroups(ctx, query)
 	resp = query.Result
@@ -2532,6 +2950,15 @@ func (s wrapCustomerGroupService) UpdateCustomerGroup(ctx context.Context, req *
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/customer_group:manage", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/customer_group:manage", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.UpdateCustomerGroup(ctx, query)
 	resp = query.Result
@@ -2683,6 +3110,15 @@ func (s wrapExternalAccountService) ConnectCarrierServiceExternalAccountHaravan(
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/external_account:manage", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/external_account:manage", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.ConnectCarrierServiceExternalAccountHaravan(ctx, query)
 	resp = query.Result
@@ -2728,6 +3164,15 @@ func (s wrapExternalAccountService) CreateExternalAccountHaravan(ctx context.Con
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/external_account:manage", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/external_account:manage", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.CreateExternalAccountHaravan(ctx, query)
 	resp = query.Result
@@ -2773,6 +3218,15 @@ func (s wrapExternalAccountService) DeleteConnectedCarrierServiceExternalAccount
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/external_account:manage", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/external_account:manage", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.DeleteConnectedCarrierServiceExternalAccountHaravan(ctx, query)
 	resp = query.Result
@@ -2863,6 +3317,15 @@ func (s wrapExternalAccountService) UpdateExternalAccountHaravanToken(ctx contex
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/external_account:manage", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/external_account:manage", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.UpdateExternalAccountHaravanToken(ctx, query)
 	resp = query.Result
@@ -2919,6 +3382,15 @@ func (s wrapFulfillmentService) GetExternalShippingServices(ctx context.Context,
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/fulfillment:create", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/fulfillment:create", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetExternalShippingServices(ctx, query)
 	resp = query.Result
@@ -2967,6 +3439,15 @@ func (s wrapFulfillmentService) GetFulfillment(ctx context.Context, req *cm.IDRe
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/fulfillment:view", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/fulfillment:view", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetFulfillment(ctx, query)
 	resp = query.Result
@@ -3015,6 +3496,15 @@ func (s wrapFulfillmentService) GetFulfillments(ctx context.Context, req *shop.G
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/fulfillment:view", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/fulfillment:view", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetFulfillments(ctx, query)
 	resp = query.Result
@@ -3120,10 +3610,6 @@ func (s wrapFulfillmentService) UpdateFulfillmentsShippingState(ctx context.Cont
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
-	// Verify that the user has role "staff"
-	if !session.IsOwner && permission.MaxRoleLevel(session.Roles) < 2 {
-		return nil, common.ErrPermissionDenied
-	}
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.UpdateFulfillmentsShippingState(ctx, query)
 	resp = query.Result
@@ -3233,6 +3719,15 @@ func (s wrapInventoryService) AdjustInventoryQuantity(ctx context.Context, req *
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/inventory:confirm", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/inventory:confirm", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.AdjustInventoryQuantity(ctx, query)
 	resp = query.Result
@@ -3278,6 +3773,15 @@ func (s wrapInventoryService) CancelInventoryVoucher(ctx context.Context, req *s
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/inventory:cancel", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/inventory:cancel", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.CancelInventoryVoucher(ctx, query)
 	resp = query.Result
@@ -3323,6 +3827,15 @@ func (s wrapInventoryService) ConfirmInventoryVoucher(ctx context.Context, req *
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/inventory:confirm", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/inventory:confirm", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.ConfirmInventoryVoucher(ctx, query)
 	resp = query.Result
@@ -3368,6 +3881,15 @@ func (s wrapInventoryService) CreateInventoryVoucher(ctx context.Context, req *s
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/inventory:create", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/inventory:create", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.CreateInventoryVoucher(ctx, query)
 	resp = query.Result
@@ -3413,6 +3935,15 @@ func (s wrapInventoryService) GetInventoryVariant(ctx context.Context, req *shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/inventory:view", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/inventory:view", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetInventoryVariant(ctx, query)
 	resp = query.Result
@@ -3458,6 +3989,15 @@ func (s wrapInventoryService) GetInventoryVariants(ctx context.Context, req *sho
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/inventory:view", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/inventory:view", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetInventoryVariants(ctx, query)
 	resp = query.Result
@@ -3503,6 +4043,15 @@ func (s wrapInventoryService) GetInventoryVariantsByVariantIDs(ctx context.Conte
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/inventory:view", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/inventory:view", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetInventoryVariantsByVariantIDs(ctx, query)
 	resp = query.Result
@@ -3548,6 +4097,15 @@ func (s wrapInventoryService) GetInventoryVoucher(ctx context.Context, req *cm.I
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/inventory:view", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/inventory:view", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetInventoryVoucher(ctx, query)
 	resp = query.Result
@@ -3593,6 +4151,15 @@ func (s wrapInventoryService) GetInventoryVouchers(ctx context.Context, req *sho
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/inventory:view", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/inventory:view", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetInventoryVouchers(ctx, query)
 	resp = query.Result
@@ -3638,6 +4205,15 @@ func (s wrapInventoryService) GetInventoryVouchersByIDs(ctx context.Context, req
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/inventory:view", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/inventory:view", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetInventoryVouchersByIDs(ctx, query)
 	resp = query.Result
@@ -3683,6 +4259,15 @@ func (s wrapInventoryService) GetInventoryVouchersByReference(ctx context.Contex
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/inventory:view", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/inventory:view", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetInventoryVouchersByReference(ctx, query)
 	resp = query.Result
@@ -3728,6 +4313,15 @@ func (s wrapInventoryService) UpdateInventoryVariantCostPrice(ctx context.Contex
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/product/cost_price:update", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/product/cost_price:update", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.UpdateInventoryVariantCostPrice(ctx, query)
 	resp = query.Result
@@ -3773,106 +4367,17 @@ func (s wrapInventoryService) UpdateInventoryVoucher(ctx context.Context, req *s
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/inventory:update", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/inventory:update", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.UpdateInventoryVoucher(ctx, query)
-	resp = query.Result
-	if err != nil {
-		return nil, err
-	}
-	if resp == nil {
-		return nil, common.Error(common.Internal, "", nil).Log("nil response")
-	}
-	errs = cmwrapper.HasErrors(resp)
-	return resp, nil
-}
-
-func WrapInvitationService(s *InvitationService) api.InvitationService {
-	return wrapInvitationService{s: s}
-}
-
-type wrapInvitationService struct {
-	s *InvitationService
-}
-
-type CreateInvitationEndpoint struct {
-	*shop.CreateInvitationRequest
-	Result  *etop.Invitation
-	Context claims.ShopClaim
-}
-
-func (s wrapInvitationService) CreateInvitation(ctx context.Context, req *shop.CreateInvitationRequest) (resp *etop.Invitation, err error) {
-	t0 := time.Now()
-	var session *middleware.Session
-	var errs []*cm.Error
-	const rpcName = "shop.Invitation/CreateInvitation"
-	defer func() {
-		recovered := recover()
-		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
-		metrics.CountRequest(rpcName, err)
-	}()
-	defer cmwrapper.Censor(req)
-	sessionQuery := &middleware.StartSessionQuery{
-		Context:     ctx,
-		RequireAuth: true,
-		RequireShop: true,
-	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
-		return nil, err
-	}
-	session = sessionQuery.Result
-	query := &CreateInvitationEndpoint{CreateInvitationRequest: req}
-	query.Context.Claim = session.Claim
-	query.Context.Shop = session.Shop
-	query.Context.IsOwner = session.IsOwner
-	query.Context.Roles = session.Roles
-	query.Context.Permissions = session.Permissions
-	ctx = bus.NewRootContext(ctx)
-	err = s.s.CreateInvitation(ctx, query)
-	resp = query.Result
-	if err != nil {
-		return nil, err
-	}
-	if resp == nil {
-		return nil, common.Error(common.Internal, "", nil).Log("nil response")
-	}
-	errs = cmwrapper.HasErrors(resp)
-	return resp, nil
-}
-
-type GetInvitationsEndpoint struct {
-	*shop.GetInvitationsRequest
-	Result  *shop.InvitationsResponse
-	Context claims.ShopClaim
-}
-
-func (s wrapInvitationService) GetInvitations(ctx context.Context, req *shop.GetInvitationsRequest) (resp *shop.InvitationsResponse, err error) {
-	t0 := time.Now()
-	var session *middleware.Session
-	var errs []*cm.Error
-	const rpcName = "shop.Invitation/GetInvitations"
-	defer func() {
-		recovered := recover()
-		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
-		metrics.CountRequest(rpcName, err)
-	}()
-	defer cmwrapper.Censor(req)
-	sessionQuery := &middleware.StartSessionQuery{
-		Context:     ctx,
-		RequireAuth: true,
-		RequireShop: true,
-	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
-		return nil, err
-	}
-	session = sessionQuery.Result
-	query := &GetInvitationsEndpoint{GetInvitationsRequest: req}
-	query.Context.Claim = session.Claim
-	query.Context.Shop = session.Shop
-	query.Context.IsOwner = session.IsOwner
-	query.Context.Roles = session.Roles
-	query.Context.Permissions = session.Permissions
-	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetInvitations(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -3924,6 +4429,15 @@ func (s wrapLedgerService) CreateLedger(ctx context.Context, req *shop.CreateLed
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/ledger:create", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/ledger:create", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.CreateLedger(ctx, query)
 	resp = query.Result
@@ -3969,6 +4483,15 @@ func (s wrapLedgerService) DeleteLedger(ctx context.Context, req *cm.IDRequest) 
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/ledger:delete", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/ledger:delete", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.DeleteLedger(ctx, query)
 	resp = query.Result
@@ -4014,6 +4537,15 @@ func (s wrapLedgerService) GetLedger(ctx context.Context, req *cm.IDRequest) (re
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/ledger:view", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/ledger:view", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetLedger(ctx, query)
 	resp = query.Result
@@ -4059,6 +4591,15 @@ func (s wrapLedgerService) GetLedgers(ctx context.Context, req *shop.GetLedgersR
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/ledger:view", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/ledger:view", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetLedgers(ctx, query)
 	resp = query.Result
@@ -4104,6 +4645,15 @@ func (s wrapLedgerService) UpdateLedger(ctx context.Context, req *shop.UpdateLed
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/ledger:update", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/ledger:update", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.UpdateLedger(ctx, query)
 	resp = query.Result
@@ -4195,6 +4745,15 @@ func (s wrapMoneyTransactionService) GetMoneyTransaction(ctx context.Context, re
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/money_transaction:view", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/money_transaction:view", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetMoneyTransaction(ctx, query)
 	resp = query.Result
@@ -4240,6 +4799,15 @@ func (s wrapMoneyTransactionService) GetMoneyTransactions(ctx context.Context, r
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/money_transaction:view", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/money_transaction:view", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetMoneyTransactions(ctx, query)
 	resp = query.Result
@@ -4529,10 +5097,15 @@ func (s wrapOrderService) CancelOrder(ctx context.Context, req *shop.CancelOrder
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
-	// Verify that the user has role "staff"
-	if !session.IsOwner && permission.MaxRoleLevel(session.Roles) < 2 {
-		return nil, common.ErrPermissionDenied
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
 	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/order:cancel", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/order:cancel", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.CancelOrder(ctx, query)
 	resp = query.Result
@@ -4581,10 +5154,15 @@ func (s wrapOrderService) ConfirmOrder(ctx context.Context, req *shop.ConfirmOrd
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
-	// Verify that the user has role "staff"
-	if !session.IsOwner && permission.MaxRoleLevel(session.Roles) < 2 {
-		return nil, common.ErrPermissionDenied
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
 	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/order:confirm", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/order:confirm", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.ConfirmOrder(ctx, query)
 	resp = query.Result
@@ -4633,10 +5211,15 @@ func (s wrapOrderService) ConfirmOrderAndCreateFulfillments(ctx context.Context,
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
-	// Verify that the user has role "staff"
-	if !session.IsOwner && permission.MaxRoleLevel(session.Roles) < 2 {
-		return nil, common.ErrPermissionDenied
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
 	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/order:confirm", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/order:confirm", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.ConfirmOrderAndCreateFulfillments(ctx, query)
 	resp = query.Result
@@ -4685,10 +5268,15 @@ func (s wrapOrderService) CreateOrder(ctx context.Context, req *order.CreateOrde
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
-	// Verify that the user has role "staff"
-	if !session.IsOwner && permission.MaxRoleLevel(session.Roles) < 2 {
-		return nil, common.ErrPermissionDenied
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
 	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/order:create", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/order:create", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.CreateOrder(ctx, query)
 	resp = query.Result
@@ -4737,6 +5325,15 @@ func (s wrapOrderService) GetOrder(ctx context.Context, req *cm.IDRequest) (resp
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/order:view", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/order:view", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetOrder(ctx, query)
 	resp = query.Result
@@ -4785,6 +5382,15 @@ func (s wrapOrderService) GetOrders(ctx context.Context, req *shop.GetOrdersRequ
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/order:view", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/order:view", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetOrders(ctx, query)
 	resp = query.Result
@@ -4833,6 +5439,15 @@ func (s wrapOrderService) GetOrdersByIDs(ctx context.Context, req *etop.IDsReque
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/order:view", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/order:view", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetOrdersByIDs(ctx, query)
 	resp = query.Result
@@ -4881,6 +5496,15 @@ func (s wrapOrderService) GetOrdersByReceiptID(ctx context.Context, req *shop.Ge
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/order:view", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/order:view", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetOrdersByReceiptID(ctx, query)
 	resp = query.Result
@@ -4929,10 +5553,15 @@ func (s wrapOrderService) UpdateOrder(ctx context.Context, req *order.UpdateOrde
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
-	// Verify that the user has role "staff"
-	if !session.IsOwner && permission.MaxRoleLevel(session.Roles) < 2 {
-		return nil, common.ErrPermissionDenied
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
 	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/order:update", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/order:update", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.UpdateOrder(ctx, query)
 	resp = query.Result
@@ -4981,10 +5610,15 @@ func (s wrapOrderService) UpdateOrderPaymentStatus(ctx context.Context, req *sho
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
-	// Verify that the user has role "staff"
-	if !session.IsOwner && permission.MaxRoleLevel(session.Roles) < 2 {
-		return nil, common.ErrPermissionDenied
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
 	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/order:update", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/order:update", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.UpdateOrderPaymentStatus(ctx, query)
 	resp = query.Result
@@ -5033,10 +5667,15 @@ func (s wrapOrderService) UpdateOrderShippingInfo(ctx context.Context, req *shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
-	// Verify that the user has role "staff"
-	if !session.IsOwner && permission.MaxRoleLevel(session.Roles) < 2 {
-		return nil, common.ErrPermissionDenied
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
 	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/order:update", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/order:update", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.UpdateOrderShippingInfo(ctx, query)
 	resp = query.Result
@@ -5085,10 +5724,15 @@ func (s wrapOrderService) UpdateOrdersStatus(ctx context.Context, req *shop.Upda
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
-	// Verify that the user has role "staff"
-	if !session.IsOwner && permission.MaxRoleLevel(session.Roles) < 2 {
-		return nil, common.ErrPermissionDenied
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
 	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/order:update", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/order:update", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.UpdateOrdersStatus(ctx, query)
 	resp = query.Result
@@ -5142,6 +5786,15 @@ func (s wrapPaymentService) PaymentCheckReturnData(ctx context.Context, req *sho
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/trading/order:create", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/trading/order:create", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.PaymentCheckReturnData(ctx, query)
 	resp = query.Result
@@ -5187,6 +5840,15 @@ func (s wrapPaymentService) PaymentTradingOrder(ctx context.Context, req *shop.P
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/trading/order:create", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/trading/order:create", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.PaymentTradingOrder(ctx, query)
 	resp = query.Result
@@ -5240,6 +5902,15 @@ func (s wrapProductService) AddProductCollection(ctx context.Context, req *shop.
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/product:create|shop/product/basic_info:update", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/product:create|shop/product/basic_info:update", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.AddProductCollection(ctx, query)
 	resp = query.Result
@@ -5285,10 +5956,15 @@ func (s wrapProductService) CreateProduct(ctx context.Context, req *shop.CreateP
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
-	// Verify that the user has role "staff"
-	if !session.IsOwner && permission.MaxRoleLevel(session.Roles) < 2 {
-		return nil, common.ErrPermissionDenied
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
 	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/product:create", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/product:create", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.CreateProduct(ctx, query)
 	resp = query.Result
@@ -5334,10 +6010,15 @@ func (s wrapProductService) CreateVariant(ctx context.Context, req *shop.CreateV
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
-	// Verify that the user has role "staff"
-	if !session.IsOwner && permission.MaxRoleLevel(session.Roles) < 2 {
-		return nil, common.ErrPermissionDenied
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
 	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/product:create", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/product:create", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.CreateVariant(ctx, query)
 	resp = query.Result
@@ -5386,6 +6067,15 @@ func (s wrapProductService) GetProduct(ctx context.Context, req *cm.IDRequest) (
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/product/basic_info:view", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/product/basic_info:view", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetProduct(ctx, query)
 	resp = query.Result
@@ -5434,6 +6124,15 @@ func (s wrapProductService) GetProducts(ctx context.Context, req *shop.GetVarian
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/product/basic_info:view", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/product/basic_info:view", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetProducts(ctx, query)
 	resp = query.Result
@@ -5482,6 +6181,15 @@ func (s wrapProductService) GetProductsByIDs(ctx context.Context, req *cm.IDsReq
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/product/basic_info:view", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/product/basic_info:view", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetProductsByIDs(ctx, query)
 	resp = query.Result
@@ -5530,6 +6238,15 @@ func (s wrapProductService) GetVariant(ctx context.Context, req *cm.IDRequest) (
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/product/basic_info:view", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/product/basic_info:view", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetVariant(ctx, query)
 	resp = query.Result
@@ -5578,6 +6295,15 @@ func (s wrapProductService) GetVariantsByIDs(ctx context.Context, req *cm.IDsReq
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/product/basic_info:view", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/product/basic_info:view", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetVariantsByIDs(ctx, query)
 	resp = query.Result
@@ -5623,6 +6349,15 @@ func (s wrapProductService) GetVariantsBySupplierID(ctx context.Context, req *sh
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/product/basic_info:view", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/product/basic_info:view", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetVariantsBySupplierID(ctx, query)
 	resp = query.Result
@@ -5668,6 +6403,15 @@ func (s wrapProductService) RemoveProductCategory(ctx context.Context, req *cm.I
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/product/basic_info:update|shop/product:delete", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/product/basic_info:update|shop/product:delete", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.RemoveProductCategory(ctx, query)
 	resp = query.Result
@@ -5713,6 +6457,15 @@ func (s wrapProductService) RemoveProductCollection(ctx context.Context, req *sh
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/product/basic_info:update|shop/product:delete", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/product/basic_info:update|shop/product:delete", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.RemoveProductCollection(ctx, query)
 	resp = query.Result
@@ -5758,10 +6511,15 @@ func (s wrapProductService) RemoveProducts(ctx context.Context, req *shop.Remove
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
-	// Verify that the user has role "staff"
-	if !session.IsOwner && permission.MaxRoleLevel(session.Roles) < 2 {
-		return nil, common.ErrPermissionDenied
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
 	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/product:delete", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/product:delete", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.RemoveProducts(ctx, query)
 	resp = query.Result
@@ -5807,10 +6565,15 @@ func (s wrapProductService) RemoveVariants(ctx context.Context, req *shop.Remove
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
-	// Verify that the user has role "staff"
-	if !session.IsOwner && permission.MaxRoleLevel(session.Roles) < 2 {
-		return nil, common.ErrPermissionDenied
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
 	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/product:delete|shop/product/basic_info:update", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/product:delete|shop/product/basic_info:update", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.RemoveVariants(ctx, query)
 	resp = query.Result
@@ -5856,10 +6619,15 @@ func (s wrapProductService) UpdateProduct(ctx context.Context, req *shop.UpdateP
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
-	// Verify that the user has role "staff"
-	if !session.IsOwner && permission.MaxRoleLevel(session.Roles) < 2 {
-		return nil, common.ErrPermissionDenied
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
 	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/product/basic_info:update", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/product/basic_info:update", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.UpdateProduct(ctx, query)
 	resp = query.Result
@@ -5905,6 +6673,15 @@ func (s wrapProductService) UpdateProductCategory(ctx context.Context, req *shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/product/basic_info:update", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/product/basic_info:update", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.UpdateProductCategory(ctx, query)
 	resp = query.Result
@@ -5950,10 +6727,15 @@ func (s wrapProductService) UpdateProductImages(ctx context.Context, req *shop.U
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
-	// Verify that the user has role "staff"
-	if !session.IsOwner && permission.MaxRoleLevel(session.Roles) < 2 {
-		return nil, common.ErrPermissionDenied
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
 	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/product/basic_info:update", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/product/basic_info:update", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.UpdateProductImages(ctx, query)
 	resp = query.Result
@@ -5999,10 +6781,15 @@ func (s wrapProductService) UpdateProductMetaFields(ctx context.Context, req *sh
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
-	// Verify that the user has role "staff"
-	if !session.IsOwner && permission.MaxRoleLevel(session.Roles) < 2 {
-		return nil, common.ErrPermissionDenied
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
 	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/product/basic_info:update", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/product/basic_info:update", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.UpdateProductMetaFields(ctx, query)
 	resp = query.Result
@@ -6048,10 +6835,15 @@ func (s wrapProductService) UpdateProductsStatus(ctx context.Context, req *shop.
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
-	// Verify that the user has role "staff"
-	if !session.IsOwner && permission.MaxRoleLevel(session.Roles) < 2 {
-		return nil, common.ErrPermissionDenied
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
 	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/product/basic_info:update", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/product/basic_info:update", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.UpdateProductsStatus(ctx, query)
 	resp = query.Result
@@ -6097,10 +6889,15 @@ func (s wrapProductService) UpdateProductsTags(ctx context.Context, req *shop.Up
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
-	// Verify that the user has role "staff"
-	if !session.IsOwner && permission.MaxRoleLevel(session.Roles) < 2 {
-		return nil, common.ErrPermissionDenied
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
 	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/product/basic_info:update", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/product/basic_info:update", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.UpdateProductsTags(ctx, query)
 	resp = query.Result
@@ -6146,10 +6943,15 @@ func (s wrapProductService) UpdateVariant(ctx context.Context, req *shop.UpdateV
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
-	// Verify that the user has role "staff"
-	if !session.IsOwner && permission.MaxRoleLevel(session.Roles) < 2 {
-		return nil, common.ErrPermissionDenied
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
 	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/product/basic_info:update", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/product/basic_info:update", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.UpdateVariant(ctx, query)
 	resp = query.Result
@@ -6195,10 +6997,15 @@ func (s wrapProductService) UpdateVariantAttributes(ctx context.Context, req *sh
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
-	// Verify that the user has role "staff"
-	if !session.IsOwner && permission.MaxRoleLevel(session.Roles) < 2 {
-		return nil, common.ErrPermissionDenied
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
 	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/product/basic_info:update", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/product/basic_info:update", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.UpdateVariantAttributes(ctx, query)
 	resp = query.Result
@@ -6244,10 +7051,15 @@ func (s wrapProductService) UpdateVariantImages(ctx context.Context, req *shop.U
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
-	// Verify that the user has role "staff"
-	if !session.IsOwner && permission.MaxRoleLevel(session.Roles) < 2 {
-		return nil, common.ErrPermissionDenied
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
 	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/product/basic_info:update", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/product/basic_info:update", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.UpdateVariantImages(ctx, query)
 	resp = query.Result
@@ -6293,10 +7105,15 @@ func (s wrapProductService) UpdateVariantsStatus(ctx context.Context, req *shop.
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
-	// Verify that the user has role "staff"
-	if !session.IsOwner && permission.MaxRoleLevel(session.Roles) < 2 {
-		return nil, common.ErrPermissionDenied
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
 	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/product/basic_info:update", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/product/basic_info:update", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.UpdateVariantsStatus(ctx, query)
 	resp = query.Result
@@ -6350,10 +7167,15 @@ func (s wrapProductSourceService) CreateProductSource(ctx context.Context, req *
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
-	// Verify that the user has role "staff"
-	if !session.IsOwner && permission.MaxRoleLevel(session.Roles) < 2 {
-		return nil, common.ErrPermissionDenied
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
 	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/product:create|shop/product/basic_info:update", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/product:create|shop/product/basic_info:update", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.CreateProductSource(ctx, query)
 	resp = query.Result
@@ -6399,10 +7221,15 @@ func (s wrapProductSourceService) CreateProductSourceCategory(ctx context.Contex
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
-	// Verify that the user has role "staff"
-	if !session.IsOwner && permission.MaxRoleLevel(session.Roles) < 2 {
-		return nil, common.ErrPermissionDenied
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
 	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/product:create|shop/product/basic_info:update", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/product:create|shop/product/basic_info:update", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.CreateProductSourceCategory(ctx, query)
 	resp = query.Result
@@ -6451,10 +7278,15 @@ func (s wrapProductSourceService) CreateVariant(ctx context.Context, req *shop.D
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
-	// Verify that the user has role "staff"
-	if !session.IsOwner && permission.MaxRoleLevel(session.Roles) < 2 {
-		return nil, common.ErrPermissionDenied
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
 	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/product:create|shop/product/basic_info:update", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/product:create|shop/product/basic_info:update", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.CreateVariant(ctx, query)
 	resp = query.Result
@@ -6503,6 +7335,15 @@ func (s wrapProductSourceService) GetProductSourceCategories(ctx context.Context
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/product/basic_info:view", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/product/basic_info:view", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetProductSourceCategories(ctx, query)
 	resp = query.Result
@@ -6551,6 +7392,15 @@ func (s wrapProductSourceService) GetProductSourceCategory(ctx context.Context, 
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/product/basic_info:view", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/product/basic_info:view", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetProductSourceCategory(ctx, query)
 	resp = query.Result
@@ -6599,6 +7449,15 @@ func (s wrapProductSourceService) GetShopProductSources(ctx context.Context, req
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/product/basic_info:view", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/product/basic_info:view", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetShopProductSources(ctx, query)
 	resp = query.Result
@@ -6644,10 +7503,15 @@ func (s wrapProductSourceService) RemoveProductSourceCategory(ctx context.Contex
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
-	// Verify that the user has role "admin"
-	if !session.IsOwner && permission.MaxRoleLevel(session.Roles) < 4 {
-		return nil, common.ErrPermissionDenied
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
 	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/product:delete|shop/product/basic_info:update", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/product:delete|shop/product/basic_info:update", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.RemoveProductSourceCategory(ctx, query)
 	resp = query.Result
@@ -6693,10 +7557,15 @@ func (s wrapProductSourceService) UpdateProductSourceCategory(ctx context.Contex
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
-	// Verify that the user has role "staff"
-	if !session.IsOwner && permission.MaxRoleLevel(session.Roles) < 2 {
-		return nil, common.ErrPermissionDenied
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
 	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/product:create|shop/product/basic_info:update", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/product:create|shop/product/basic_info:update", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.UpdateProductSourceCategory(ctx, query)
 	resp = query.Result
@@ -6742,10 +7611,15 @@ func (s wrapProductSourceService) UpdateProductsPSCategory(ctx context.Context, 
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
-	// Verify that the user has role "staff"
-	if !session.IsOwner && permission.MaxRoleLevel(session.Roles) < 2 {
-		return nil, common.ErrPermissionDenied
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
 	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/product:create|shop/product/basic_info:update", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/product:create|shop/product/basic_info:update", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.UpdateProductsPSCategory(ctx, query)
 	resp = query.Result
@@ -6799,6 +7673,15 @@ func (s wrapPurchaseOrderService) CancelPurchaseOrder(ctx context.Context, req *
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/purchase_order:cancel", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/purchase_order:cancel", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.CancelPurchaseOrder(ctx, query)
 	resp = query.Result
@@ -6844,6 +7727,15 @@ func (s wrapPurchaseOrderService) ConfirmPurchaseOrder(ctx context.Context, req 
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/purchase_order:confirm", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/purchase_order:confirm", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.ConfirmPurchaseOrder(ctx, query)
 	resp = query.Result
@@ -6889,6 +7781,15 @@ func (s wrapPurchaseOrderService) CreatePurchaseOrder(ctx context.Context, req *
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/purchase_order:create", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/purchase_order:create", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.CreatePurchaseOrder(ctx, query)
 	resp = query.Result
@@ -6979,6 +7880,15 @@ func (s wrapPurchaseOrderService) GetPurchaseOrder(ctx context.Context, req *cm.
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/purchase_order:view", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/purchase_order:view", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetPurchaseOrder(ctx, query)
 	resp = query.Result
@@ -7024,6 +7934,15 @@ func (s wrapPurchaseOrderService) GetPurchaseOrders(ctx context.Context, req *sh
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/purchase_order:view", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/purchase_order:view", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetPurchaseOrders(ctx, query)
 	resp = query.Result
@@ -7069,6 +7988,15 @@ func (s wrapPurchaseOrderService) GetPurchaseOrdersByIDs(ctx context.Context, re
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/purchase_order:view", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/purchase_order:view", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetPurchaseOrdersByIDs(ctx, query)
 	resp = query.Result
@@ -7114,6 +8042,15 @@ func (s wrapPurchaseOrderService) GetPurchaseOrdersByReceiptID(ctx context.Conte
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/purchase_order:view", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/purchase_order:view", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetPurchaseOrdersByReceiptID(ctx, query)
 	resp = query.Result
@@ -7159,6 +8096,15 @@ func (s wrapPurchaseOrderService) UpdatePurchaseOrder(ctx context.Context, req *
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/purchase_order:update", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/purchase_order:update", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.UpdatePurchaseOrder(ctx, query)
 	resp = query.Result
@@ -7212,6 +8158,15 @@ func (s wrapReceiptService) CancelReceipt(ctx context.Context, req *shop.CancelR
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/receipt:cancel", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/receipt:cancel", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.CancelReceipt(ctx, query)
 	resp = query.Result
@@ -7257,6 +8212,15 @@ func (s wrapReceiptService) ConfirmReceipt(ctx context.Context, req *cm.IDReques
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/receipt:confirm", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/receipt:confirm", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.ConfirmReceipt(ctx, query)
 	resp = query.Result
@@ -7302,6 +8266,15 @@ func (s wrapReceiptService) CreateReceipt(ctx context.Context, req *shop.CreateR
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/receipt:create", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/receipt:create", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.CreateReceipt(ctx, query)
 	resp = query.Result
@@ -7347,6 +8320,15 @@ func (s wrapReceiptService) GetReceipt(ctx context.Context, req *cm.IDRequest) (
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/receipt:view", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/receipt:view", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetReceipt(ctx, query)
 	resp = query.Result
@@ -7392,6 +8374,15 @@ func (s wrapReceiptService) GetReceipts(ctx context.Context, req *shop.GetReceip
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/receipt:view", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/receipt:view", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetReceipts(ctx, query)
 	resp = query.Result
@@ -7437,6 +8428,15 @@ func (s wrapReceiptService) GetReceiptsByLedgerType(ctx context.Context, req *sh
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/receipt:view", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/receipt:view", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetReceiptsByLedgerType(ctx, query)
 	resp = query.Result
@@ -7482,6 +8482,15 @@ func (s wrapReceiptService) UpdateReceipt(ctx context.Context, req *shop.UpdateR
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/receipt:update", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/receipt:update", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.UpdateReceipt(ctx, query)
 	resp = query.Result
@@ -7535,6 +8544,15 @@ func (s wrapShipnowService) CancelShipnowFulfillment(ctx context.Context, req *o
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/shipnow:cancel", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/shipnow:cancel", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.CancelShipnowFulfillment(ctx, query)
 	resp = query.Result
@@ -7580,6 +8598,15 @@ func (s wrapShipnowService) ConfirmShipnowFulfillment(ctx context.Context, req *
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/shipnow:confirm", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/shipnow:confirm", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.ConfirmShipnowFulfillment(ctx, query)
 	resp = query.Result
@@ -7625,6 +8652,15 @@ func (s wrapShipnowService) CreateShipnowFulfillment(ctx context.Context, req *o
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/shipnow:create", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/shipnow:create", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.CreateShipnowFulfillment(ctx, query)
 	resp = query.Result
@@ -7670,6 +8706,15 @@ func (s wrapShipnowService) GetShipnowFulfillment(ctx context.Context, req *cm.I
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/shipnow:view", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/shipnow:view", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetShipnowFulfillment(ctx, query)
 	resp = query.Result
@@ -7715,6 +8760,15 @@ func (s wrapShipnowService) GetShipnowFulfillments(ctx context.Context, req *ord
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/shipnow:view", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/shipnow:view", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetShipnowFulfillments(ctx, query)
 	resp = query.Result
@@ -7760,6 +8814,15 @@ func (s wrapShipnowService) GetShipnowServices(ctx context.Context, req *order.G
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/shipnow:view", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/shipnow:view", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetShipnowServices(ctx, query)
 	resp = query.Result
@@ -7805,6 +8868,15 @@ func (s wrapShipnowService) UpdateShipnowFulfillment(ctx context.Context, req *o
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/shipnow:update", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/shipnow:update", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.UpdateShipnowFulfillment(ctx, query)
 	resp = query.Result
@@ -7858,6 +8930,15 @@ func (s wrapStocktakeService) CancelStocktake(ctx context.Context, req *shop.Can
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/stocktake:cancel", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/stocktake:cancel", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.CancelStocktake(ctx, query)
 	resp = query.Result
@@ -7903,6 +8984,15 @@ func (s wrapStocktakeService) ConfirmStocktake(ctx context.Context, req *shop.Co
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/stocktake:confirm", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/stocktake:confirm", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.ConfirmStocktake(ctx, query)
 	resp = query.Result
@@ -7955,6 +9045,15 @@ func (s wrapStocktakeService) CreateStocktake(ctx context.Context, req *shop.Cre
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/stocktake:create", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/stocktake:create", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.CreateStocktake(ctx, query)
 	resp = query.Result
@@ -8000,6 +9099,15 @@ func (s wrapStocktakeService) GetStocktake(ctx context.Context, req *cm.IDReques
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/stocktake:view", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/stocktake:view", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetStocktake(ctx, query)
 	resp = query.Result
@@ -8045,6 +9153,15 @@ func (s wrapStocktakeService) GetStocktakes(ctx context.Context, req *shop.GetSt
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/stocktake:view", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/stocktake:view", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetStocktakes(ctx, query)
 	resp = query.Result
@@ -8090,6 +9207,15 @@ func (s wrapStocktakeService) GetStocktakesByIDs(ctx context.Context, req *cm.ID
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/stocktake:view", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/stocktake:view", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetStocktakesByIDs(ctx, query)
 	resp = query.Result
@@ -8135,6 +9261,15 @@ func (s wrapStocktakeService) UpdateStocktake(ctx context.Context, req *shop.Upd
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/stocktake:update", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/stocktake:update", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.UpdateStocktake(ctx, query)
 	resp = query.Result
@@ -8191,6 +9326,15 @@ func (s wrapSummaryService) CalcBalanceShop(ctx context.Context, req *cm.Empty) 
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/dashboard:view", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/dashboard:view", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.CalcBalanceShop(ctx, query)
 	resp = query.Result
@@ -8236,10 +9380,15 @@ func (s wrapSummaryService) SummarizeFulfillments(ctx context.Context, req *shop
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
-	// Verify that the user has role "admin"
-	if !session.IsOwner && permission.MaxRoleLevel(session.Roles) < 4 {
-		return nil, common.ErrPermissionDenied
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
 	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/dashboard:view", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/dashboard:view", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.SummarizeFulfillments(ctx, query)
 	resp = query.Result
@@ -8285,6 +9434,15 @@ func (s wrapSummaryService) SummarizePOS(ctx context.Context, req *shop.Summariz
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/dashboard:view", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/dashboard:view", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.SummarizePOS(ctx, query)
 	resp = query.Result
@@ -8338,6 +9496,15 @@ func (s wrapSupplierService) CreateSupplier(ctx context.Context, req *shop.Creat
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/supplier:create", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/supplier:create", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.CreateSupplier(ctx, query)
 	resp = query.Result
@@ -8383,6 +9550,15 @@ func (s wrapSupplierService) DeleteSupplier(ctx context.Context, req *cm.IDReque
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/supplier:delete", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/supplier:delete", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.DeleteSupplier(ctx, query)
 	resp = query.Result
@@ -8428,6 +9604,15 @@ func (s wrapSupplierService) GetSupplier(ctx context.Context, req *cm.IDRequest)
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/supplier:view", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/supplier:view", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetSupplier(ctx, query)
 	resp = query.Result
@@ -8473,6 +9658,15 @@ func (s wrapSupplierService) GetSuppliers(ctx context.Context, req *shop.GetSupp
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/supplier:view", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/supplier:view", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetSuppliers(ctx, query)
 	resp = query.Result
@@ -8518,6 +9712,15 @@ func (s wrapSupplierService) GetSuppliersByIDs(ctx context.Context, req *cm.IDsR
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/supplier:view", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/supplier:view", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetSuppliersByIDs(ctx, query)
 	resp = query.Result
@@ -8563,6 +9766,15 @@ func (s wrapSupplierService) GetSuppliersByVariantID(ctx context.Context, req *s
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/supplier:view", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/supplier:view", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetSuppliersByVariantID(ctx, query)
 	resp = query.Result
@@ -8608,6 +9820,15 @@ func (s wrapSupplierService) UpdateSupplier(ctx context.Context, req *shop.Updat
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/supplier:update", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/supplier:update", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.UpdateSupplier(ctx, query)
 	resp = query.Result
@@ -8661,6 +9882,15 @@ func (s wrapTradingService) TradingCreateOrder(ctx context.Context, req *order.T
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/trading/order:view", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/trading/order:view", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.TradingCreateOrder(ctx, query)
 	resp = query.Result
@@ -8706,6 +9936,15 @@ func (s wrapTradingService) TradingGetOrder(ctx context.Context, req *cm.IDReque
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/trading/order:create", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/trading/order:create", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.TradingGetOrder(ctx, query)
 	resp = query.Result
@@ -8751,6 +9990,15 @@ func (s wrapTradingService) TradingGetOrders(ctx context.Context, req *shop.GetO
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/trading/order:create", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/trading/order:create", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.TradingGetOrders(ctx, query)
 	resp = query.Result
@@ -8796,6 +10044,15 @@ func (s wrapTradingService) TradingGetProduct(ctx context.Context, req *cm.IDReq
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/trading/product:view", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/trading/product:view", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.TradingGetProduct(ctx, query)
 	resp = query.Result
@@ -8841,6 +10098,15 @@ func (s wrapTradingService) TradingGetProducts(ctx context.Context, req *cm.Comm
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "shop/trading/product:view", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("shop/trading/product:view", "|")
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.TradingGetProducts(ctx, query)
 	resp = query.Result

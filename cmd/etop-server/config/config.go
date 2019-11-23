@@ -93,6 +93,8 @@ type Config struct {
 	Vht    crmsyncconfig.Vht    `yaml:"vht"`
 
 	Invitation invitation.Config
+
+	FlagEnablePermission string `yaml:"flag_enable_permission"`
 }
 
 // Default ...
@@ -147,6 +149,7 @@ func Default() Config {
 		Invitation: invitation.Config{
 			Secret: "IBVEhECSHtJiBoxQKOVafHW58zt9qRK7",
 		},
+		FlagEnablePermission: "all",
 	}
 	cfg.Postgres.Database = "etop_dev"
 	cfg.PostgresAffiliate.Database = "etop_dev"

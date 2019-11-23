@@ -17,7 +17,8 @@ func NewEtopServer(m httprpc.Muxer) {
 		service.NewLocationServiceServer(WrapLocationService(locationService)),
 		service.NewBankServiceServer(WrapBankService(bankService)),
 		service.NewAddressServiceServer(WrapAddressService(addressService)),
-		service.NewInvitationServiceServer(WrapInvitationService(invitationService)),
+		service.NewAccountRelationshipServiceServer(WrapAccountRelationshipService(accountRelationshipService)),
+		service.NewUserRelationshipServiceServer(WrapUserRelationshipService(userRelationshipService)),
 	}
 	for _, s := range servers {
 		m.Handle(s.PathPrefix(), s)

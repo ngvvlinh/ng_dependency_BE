@@ -64,7 +64,7 @@ func (p *plugin) generatePackage(ng generator.Engine, pkg *packages.Package, pri
 	if pbPkg == nil {
 		return generator.Errorf(nil, "package %v not found", directive.Arg)
 	}
-	ifaces := filterServiceInterfaces(ng.GetObjectsByPackage(pbPkg))
+	ifaces := filterServiceInterfaces(ng, ng.GetObjectsByPackage(pbPkg))
 	structs := filterServiceStructs(ng.GetObjectsByPackage(pkg))
 	structNames := getKeys(structs)
 	ifaceNames := getKeys(ifaces)
@@ -112,11 +112,12 @@ func (p *plugin) generatePackage(ng generator.Engine, pkg *packages.Package, pri
 		structMethods := getMethods(named)
 
 		service := &Service{
-			PkgPb:     pbPkg.PkgPath,
-			PkgPrefix: pkgPrefix.Arg,
-			PkgName:   pkgName.Arg,
-			PkgPath:   pkg.PkgPath,
-			Name:      strings.TrimSuffix(name, SuffixService),
+			PkgPb:          pbPkg.PkgPath,
+			PkgPrefix:      pkgPrefix.Arg,
+			PkgName:        pkgName.Arg,
+			PkgPath:        pkg.PkgPath,
+			EndpointPrefix: iface.EndpointPrefix.Arg,
+			Name:           strings.TrimSuffix(name, SuffixService),
 		}
 		var methods []*Method
 		for methodName := range ifaceMethods {
@@ -151,12 +152,13 @@ func (p *plugin) generatePackage(ng generator.Engine, pkg *packages.Package, pri
 }
 
 type Service struct {
-	PkgPb     string
-	PkgPrefix string // hack for etop/apix (external API)
-	PkgName   string
-	PkgPath   string
-	Name      string
-	Methods   []*Method
+	PkgPb          string
+	PkgPrefix      string // hack for etop/apix (external API)
+	PkgName        string
+	PkgPath        string
+	EndpointPrefix string
+	Name           string
+	Methods        []*Method
 }
 
 type Method struct {
@@ -198,14 +200,23 @@ func parseMethod(name string, ifaceMethod, method *types.Func) (*Method, error) 
 	return m, nil
 }
 
-func filterServiceInterfaces(objs []types.Object) map[string]*types.Interface {
-	result := map[string]*types.Interface{}
+type Interface struct {
+	*types.Interface
+	EndpointPrefix generator.Directive
+}
+
+func filterServiceInterfaces(ng generator.Engine, objs []types.Object) map[string]*Interface {
+	result := map[string]*Interface{}
 	for _, obj := range objs {
+		endpointPrefix, _ := ng.GetDirectives(obj).Get("wrapper:endpoint-prefix")
 		if named, ok := obj.Type().(*types.Named); ok {
 			if typ, ok := named.Underlying().(*types.Interface); ok {
 				name := obj.Name()
 				if strings.HasSuffix(name, SuffixService) && name != "QueryService" {
-					result[name] = typ
+					result[name] = &Interface{
+						Interface:      typ,
+						EndpointPrefix: endpointPrefix,
+					}
 				}
 			}
 		}

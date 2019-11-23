@@ -6,7 +6,7 @@ var resetPasswordTpl = template.Must(template.New("reset-password").Parse(`
 Gửi {{.FullName}},<br><br>
 
 Bạn (hoặc một ai đó) đang muốn khôi phục mật khẩu của tài khoản <b>{{.Email}}</b>.<br>
-Nếu là bạn, hãy bấm vào đường link bên dưới để khôi phục mật khẩu: (có hiệu lực trong 24 giờ)<br><br>
+Nếu là bạn, hãy bấm vào liên kết bên dưới để khôi phục mật khẩu: (có hiệu lực trong 24 giờ)<br><br>
 
 <a href="{{.URL}}">{{.URL}}</a><br><br>
 
@@ -19,11 +19,23 @@ var emailVerificationTpl = template.Must(template.New("email-verification").Pars
 Gửi {{.FullName}},<br><br>
 
 Bạn (hoặc một ai đó) đang muốn xác nhận địa chỉ email của tài khoản <b>{{.Email}}</b>.<br>
-Nếu là bạn, hãy bấm vào đường link bên dưới để xác nhận địa chỉ email: (có hiệu lực trong 24 giờ)<br><br>
+Nếu là bạn, hãy bấm vào liên kết bên dưới để xác nhận địa chỉ email: (có hiệu lực trong 24 giờ)<br><br>
 
 <a href="{{.URL}}">{{.URL}}</a><br><br>
 
 Nếu không phải bạn, hãy bỏ qua email này. Bạn cũng có thể sử dụng chức năng khôi phục mật khẩu để lấy lại tài khoản.<br><br>
+
+Đội ngũ eTop
+`))
+
+var EmailInvitationTpl = template.Must(template.New("email-verification").Parse(`
+Gửi {{.FullName}},<br><br>
+
+Bạn được <b>{{.InvitingUsername}}</b> mời tham gia cửa hàng <b>{{.ShopName}}</b> với vai trò <b>{{.ShopRoles}}</b>.<br>
+Hãy bấm vào liên kết bên dưới để xác nhận lời mời: (có hiệu lực trong 24 giờ)<br><br>
+<a href="{{.URL}}">{{.URL}}</a><br><br>
+
+Nếu bạn không nhận ra shop trên, hãy bỏ qua email này.<br><br>
 
 Đội ngũ eTop
 `))

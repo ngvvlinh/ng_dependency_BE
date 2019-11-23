@@ -27,6 +27,8 @@ type GetAccountUserExtendedsQuery struct {
 	Filters []cm.Filter
 	Status  dot.NullInt
 
+	IncludeDeleted bool
+
 	Result struct {
 		AccountUsers []*AccountUserExtended
 
@@ -64,6 +66,25 @@ type UpdateRoleCommand struct {
 	Permission
 
 	Result *AccountUser
+}
+
+type UpdateInfosCommand struct {
+	AccountID dot.ID
+	UserID    dot.ID
+	FullName  dot.NullString
+	ShortName dot.NullString
+	Position  dot.NullString
+
+	Result *AccountUser
+}
+
+type DeleteAccountUserCommand struct {
+	AccountID dot.ID
+	UserID    dot.ID
+
+	Result struct {
+		Updated int
+	}
 }
 
 type GetAllAccountRolesQuery struct {

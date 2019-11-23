@@ -8,6 +8,7 @@ import (
 	context "context"
 	time "time"
 
+	authorization "etop.vn/api/main/authorization"
 	etop "etop.vn/api/main/etop"
 	meta "etop.vn/api/meta"
 	shopping "etop.vn/api/shopping"
@@ -43,7 +44,10 @@ func (h AggregateHandler) HandleAcceptInvitation(ctx context.Context, msg *Accep
 type CreateInvitationCommand struct {
 	AccountID dot.ID
 	Email     string
-	Roles     []Role
+	FullName  string
+	ShortName string
+	Position  string
+	Roles     []authorization.Role
 	Status    etop.Status3
 	InvitedBy dot.ID
 	CreatedBy time.Time
@@ -53,6 +57,19 @@ type CreateInvitationCommand struct {
 
 func (h AggregateHandler) HandleCreateInvitation(ctx context.Context, msg *CreateInvitationCommand) (err error) {
 	msg.Result, err = h.inner.CreateInvitation(msg.GetArgs(ctx))
+	return err
+}
+
+type DeleteInvitationCommand struct {
+	UserID    dot.ID
+	AccountID dot.ID
+	Token     string
+
+	Result int `json:"-"`
+}
+
+func (h AggregateHandler) HandleDeleteInvitation(ctx context.Context, msg *DeleteInvitationCommand) (err error) {
+	msg.Result, err = h.inner.DeleteInvitation(msg.GetArgs(ctx))
 	return err
 }
 
@@ -130,6 +147,7 @@ func (h QueryServiceHandler) HandleListInvitationsByEmail(ctx context.Context, m
 // implement interfaces
 func (q *AcceptInvitationCommand) command() {}
 func (q *CreateInvitationCommand) command() {}
+func (q *DeleteInvitationCommand) command() {}
 func (q *RejectInvitationCommand) command() {}
 
 func (q *GetInvitationQuery) query()                  {}
@@ -151,6 +169,9 @@ func (q *CreateInvitationCommand) GetArgs(ctx context.Context) (_ context.Contex
 		&CreateInvitationArgs{
 			AccountID: q.AccountID,
 			Email:     q.Email,
+			FullName:  q.FullName,
+			ShortName: q.ShortName,
+			Position:  q.Position,
 			Roles:     q.Roles,
 			Status:    q.Status,
 			InvitedBy: q.InvitedBy,
@@ -161,10 +182,20 @@ func (q *CreateInvitationCommand) GetArgs(ctx context.Context) (_ context.Contex
 func (q *CreateInvitationCommand) SetCreateInvitationArgs(args *CreateInvitationArgs) {
 	q.AccountID = args.AccountID
 	q.Email = args.Email
+	q.FullName = args.FullName
+	q.ShortName = args.ShortName
+	q.Position = args.Position
 	q.Roles = args.Roles
 	q.Status = args.Status
 	q.InvitedBy = args.InvitedBy
 	q.CreatedBy = args.CreatedBy
+}
+
+func (q *DeleteInvitationCommand) GetArgs(ctx context.Context) (_ context.Context, userID dot.ID, accountID dot.ID, token string) {
+	return ctx,
+		q.UserID,
+		q.AccountID,
+		q.Token
 }
 
 func (q *RejectInvitationCommand) GetArgs(ctx context.Context) (_ context.Context, userID dot.ID, token string) {
@@ -232,6 +263,7 @@ func (h AggregateHandler) RegisterHandlers(b interface {
 }) CommandBus {
 	b.AddHandler(h.HandleAcceptInvitation)
 	b.AddHandler(h.HandleCreateInvitation)
+	b.AddHandler(h.HandleDeleteInvitation)
 	b.AddHandler(h.HandleRejectInvitation)
 	return CommandBus{b}
 }

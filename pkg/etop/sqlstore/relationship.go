@@ -2,7 +2,9 @@ package sqlstore
 
 import (
 	"context"
+	"strings"
 	"sync"
+	"time"
 
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
@@ -17,13 +19,29 @@ func init() {
 		GetAccountUserExtendeds,
 		GetAllAccountRoles,
 		UpdateRole,
+		UpdateInfos,
 		CreateAccountUser,
 		UpdateAccountUser,
 		GetAllAccountUsers,
+		DeleteAccountUser,
 	)
 }
 
-var filterAccountUserWhitelist = FilterWhitelist{}
+var filterAccountUserWhitelist = FilterWhitelist{
+	Arrays:   nil,
+	Bools:    nil,
+	Contains: nil,
+	Dates:    nil,
+	Equals:   nil,
+	Nullable: []string{"deleted_at"},
+	Numbers:  nil,
+	Status:   []string{"status"},
+	Unaccent: nil,
+	PrefixOrRename: map[string]string{
+		"status":     `"au".status`,
+		"deleted_at": `"au".deleted_at`,
+	},
+}
 
 func GetAllAccountRoles(ctx context.Context, query *model.GetAllAccountRolesQuery) error {
 	if query.UserID == 0 {
@@ -39,6 +57,40 @@ func GetAllAccountRoles(ctx context.Context, query *model.GetAllAccountRolesQuer
 	return s.Find((*model.AccountUserExtendeds)(&query.Result))
 }
 
+func UpdateInfos(ctx context.Context, cmd *model.UpdateInfosCommand) error {
+	return inTransaction(func(s Qx) error {
+		return updateInfos(ctx, s, cmd)
+	})
+}
+
+func updateInfos(ctx context.Context, s Qx, cmd *model.UpdateInfosCommand) error {
+	mapUpdate := make(map[string]interface{})
+	if cmd.ShortName.Valid {
+		mapUpdate["short_name"] = cmd.ShortName.String
+	}
+	if cmd.FullName.Valid {
+		mapUpdate["full_name"] = cmd.FullName.String
+	}
+	if cmd.Position.Valid {
+		mapUpdate["position"] = cmd.Position.String
+	}
+	if _, err := s.Table("account_user").
+		Where("account_id = ?", cmd.AccountID).
+		Where("user_id = ?", cmd.UserID).
+		Where("deleted_at is NULL").
+		UpdateMap(mapUpdate); err != nil {
+		return err
+	}
+
+	cmd.Result = new(model.AccountUser)
+	s = x.
+		Where("deleted_at is NULL").
+		Where("account_id = ?", cmd.AccountID).
+		Where("user_id = ?", cmd.UserID)
+
+	return s.ShouldGet(cmd.Result)
+}
+
 func UpdateRole(ctx context.Context, cmd *model.UpdateRoleCommand) error {
 	return inTransaction(func(s Qx) error {
 		return updateRole(ctx, s, cmd)
@@ -51,7 +103,15 @@ func updateRole(ctx context.Context, s Qx, cmd *model.UpdateRoleCommand) error {
 		UserID:     cmd.UserID,
 		Permission: cmd.Permission,
 	}
-	_, err := s.Insert(permission)
+	roles := "{" + strings.Join(cmd.Permission.Roles, ",") + "}"
+	permissions := "{" + strings.Join(cmd.Permission.Permissions, ",") + "}"
+	_, err := s.Table("account_user").
+		Where("account_id = ?", cmd.AccountID).
+		Where("user_id = ?", cmd.UserID).
+		UpdateMap(map[string]interface{}{
+			"roles":       roles,
+			"permissions": permissions,
+		})
 	cmd.Result = permission
 	return err
 }
@@ -95,8 +155,10 @@ func GetAccountUserExtendeds(ctx context.Context, query *model.GetAccountUserExt
 	}
 
 	s := x.Table("account_user").
-		In("au.account_id", query.AccountIDs).
-		Where("au.deleted_at IS NULL")
+		In("au.account_id", query.AccountIDs)
+	if !query.IncludeDeleted {
+		s = s.Where("au.deleted_at IS NULL")
+	}
 
 	s, _, err := Filters(s, query.Filters, filterAccountUserWhitelist)
 	if err != nil {
@@ -181,5 +243,24 @@ func GetAllAccountUsers(ctx context.Context, query *model.GetAllAccountUsersQuer
 	}
 
 	query.Result = res
+	return nil
+}
+
+func DeleteAccountUser(ctx context.Context, cmd *model.DeleteAccountUserCommand) error {
+	if cmd.UserID == 0 || cmd.AccountID == 0 {
+		return cm.Error(cm.InvalidArgument, "Missing required params", nil)
+	}
+	updated, err := x.Table("account_user").
+		Where("account_id = ?", cmd.AccountID).
+		Where("user_id = ?", cmd.UserID).
+		UpdateMap(map[string]interface{}{
+			"deleted_at": time.Now(),
+			"status":     int(model.S3Negative),
+		})
+	if err != nil {
+		return err
+	}
+
+	cmd.Result.Updated = int(updated)
 	return nil
 }

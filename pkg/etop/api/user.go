@@ -7,6 +7,8 @@ import (
 	"strings"
 	"time"
 
+	"etop.vn/api/main/authorization"
+
 	"etop.vn/api/main/identity"
 	"etop.vn/api/main/invitation"
 	pbcm "etop.vn/api/pb/common"
@@ -22,6 +24,7 @@ import (
 	cmservice "etop.vn/backend/pkg/common/service"
 	"etop.vn/backend/pkg/common/validate"
 	"etop.vn/backend/pkg/etop/api/convertpb"
+	authservice "etop.vn/backend/pkg/etop/authorize/auth"
 	"etop.vn/backend/pkg/etop/authorize/claims"
 	"etop.vn/backend/pkg/etop/authorize/login"
 	"etop.vn/backend/pkg/etop/authorize/tokens"
@@ -36,16 +39,18 @@ import (
 )
 
 var (
-	eventBus            capi.EventBus
-	idempgroup          *idemp.RedisGroup
-	authStore           auth.Generator
-	enabledEmail        bool
-	enabledSMS          bool
-	cfgEmail            EmailConfig
-	identityAggr        identity.CommandBus
-	identityQS          identity.QueryBus
-	invitationAggregate invitation.CommandBus
-	invitationQuery     invitation.QueryBus
+	eventBus               capi.EventBus
+	idempgroup             *idemp.RedisGroup
+	authStore              auth.Generator
+	enabledEmail           bool
+	enabledSMS             bool
+	cfgEmail               EmailConfig
+	identityAggr           identity.CommandBus
+	identityQS             identity.QueryBus
+	invitationAggregate    invitation.CommandBus
+	invitationQuery        invitation.QueryBus
+	authorizationQuery     authorization.QueryBus
+	authorizationAggregate authorization.CommandBus
 )
 
 const PrefixIdempUser = "IdempUser"
@@ -84,6 +89,8 @@ func Init(
 	identityQueryBus identity.QueryBus,
 	invitationAggr invitation.CommandBus,
 	invitationQS invitation.QueryBus,
+	authorizationQ authorization.QueryBus,
+	authorizationA authorization.CommandBus,
 	sd cmservice.Shutdowner,
 	rd redis.Store,
 	s auth.Generator,
@@ -95,6 +102,8 @@ func Init(
 	identityQS = identityQueryBus
 	invitationAggregate = invitationAggr
 	invitationQuery = invitationQS
+	authorizationQuery = authorizationQ
+	authorizationAggregate = authorizationA
 	authStore = s
 	enabledEmail = _cfgEmail.Enabled
 	enabledSMS = _cfgSMS.Enabled
@@ -142,8 +151,8 @@ func (s *UserService) Register(ctx context.Context, r *RegisterEndpoint) error {
 			return cm.Error(cm.InvalidArgument, "Email không hợp lệ", nil)
 		}
 	}
-
-	if r.RegisterToken != "" {
+	var invitationTemp *invitation.Invitation
+	if strings.HasPrefix(r.RegisterToken, "iv:") {
 		getInvitationByToken := &invitation.GetInvitationByTokenQuery{
 			Token:  r.RegisterToken,
 			Result: nil,
@@ -153,8 +162,8 @@ func (s *UserService) Register(ctx context.Context, r *RegisterEndpoint) error {
 				Wrap(cm.NotFound, "Token không hợp lệ").
 				Throw()
 		}
-		invitation := getInvitationByToken.Result
-		if r.Email != invitation.Email {
+		invitationTemp = getInvitationByToken.Result
+		if r.Email != invitationTemp.Email {
 			return cm.Errorf(cm.InvalidArgument, nil, "Email gửi lên và email trong token không khớp nhau")
 		}
 	}
@@ -184,7 +193,7 @@ func (s *UserService) Register(ctx context.Context, r *RegisterEndpoint) error {
 			return err
 		}
 
-		if err := s.publishUserCreatedEvent(ctx, cmd.Result.User); err != nil {
+		if err := s.publishUserCreatedEvent(ctx, cmd.Result.User, invitationTemp, r.RegisterToken, r.AutoAcceptInvitation); err != nil {
 			return err
 		}
 
@@ -278,7 +287,7 @@ func (s *UserService) Register(ctx context.Context, r *RegisterEndpoint) error {
 		return cm.Error(cm.Internal, "", err)
 	}
 
-	if err := s.publishUserCreatedEvent(ctx, updateUserCmd.Result.User); err != nil {
+	if err := s.publishUserCreatedEvent(ctx, updateUserCmd.Result.User, invitationTemp, r.RegisterToken, r.AutoAcceptInvitation); err != nil {
 		return err
 	}
 
@@ -286,12 +295,46 @@ func (s *UserService) Register(ctx context.Context, r *RegisterEndpoint) error {
 	return nil
 }
 
-func (s *UserService) publishUserCreatedEvent(ctx context.Context, user *model.User) error {
+func (s *UserService) publishUserCreatedEvent(
+	ctx context.Context, user *model.User, invitationArg *invitation.Invitation,
+	invitationToken string, autoAcceptInvitation bool) error {
+	if autoAcceptInvitation {
+		query := &model.GetUserByIDQuery{
+			UserID: user.ID,
+		}
+		if err := bus.Dispatch(ctx, query); err != nil {
+			return err
+		}
+
+		if query.Result.EmailVerifiedAt.IsZero() {
+			cmd := &model.UpdateUserVerificationCommand{
+				UserID: user.ID,
+
+				EmailVerifiedAt: time.Now(),
+			}
+			if err := bus.Dispatch(ctx, cmd); err != nil {
+				return err
+			}
+		}
+	}
+
+	fullName := user.FullName
+	shortName := user.ShortName
+	position := ""
+	if invitationArg != nil {
+		fullName = invitationArg.FullName
+		shortName = invitationArg.ShortName
+		position = invitationArg.Position
+	}
 	event := &identity.UserCreatedEvent{
 		UserID:    user.ID,
 		Email:     user.Email,
-		FullName:  user.FullName,
-		ShortName: user.ShortName,
+		FullName:  fullName,
+		ShortName: shortName,
+		Position:  position,
+
+		InvitationToken:      invitationToken,
+		AutoAcceptInvitation: autoAcceptInvitation,
 	}
 	if err := eventBus.Publish(ctx, event); err != nil {
 		return err
@@ -747,6 +790,15 @@ func (s *UserService) CreateLoginResponse2(ctx context.Context, claim *claims.Cl
 		resp.Stoken = claim.SToken
 		resp.StokenExpiresAt = cmapi.PbTime(*claim.STokenExpiresAt)
 	}
+
+	// Add actions into permission
+	if resp.Account != nil {
+		resp.Account.UserAccount.Permission.Permissions = authservice.ListActionsByRoles(resp.Account.UserAccount.Permission.Roles)
+	}
+	for _, account := range resp.AvailableAccounts {
+		account.UserAccount.Permission.Permissions = authservice.ListActionsByRoles(account.UserAccount.Permission.Roles)
+	}
+
 	return resp, respShop, nil
 }
 

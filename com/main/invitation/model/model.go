@@ -15,6 +15,8 @@ type Invitation struct {
 	ID         dot.ID
 	AccountID  dot.ID
 	Email      string
+	FullName   string
+	ShortName  string
 	Roles      []string
 	Token      string
 	Status     etop.Status3

@@ -4,6 +4,8 @@ import (
 	"context"
 	"time"
 
+	"etop.vn/api/main/authorization"
+
 	"etop.vn/api/main/etop"
 	"etop.vn/api/meta"
 	"etop.vn/api/shopping"
@@ -16,6 +18,7 @@ type Aggregate interface {
 	CreateInvitation(ctx context.Context, _ *CreateInvitationArgs) (*Invitation, error)
 	AcceptInvitation(ctx context.Context, userID dot.ID, token string) (updated int, _ error)
 	RejectInvitation(ctx context.Context, userID dot.ID, token string) (updated int, _ error)
+	DeleteInvitation(ctx context.Context, userID, accountID dot.ID, token string) (updated int, _ error)
 }
 
 type QueryService interface {
@@ -47,7 +50,10 @@ type ListInvitationsByEmailArgs struct {
 type CreateInvitationArgs struct {
 	AccountID dot.ID
 	Email     string
-	Roles     []Role
+	FullName  string
+	ShortName string
+	Position  string
+	Roles     []authorization.Role
 	Status    etop.Status3
 	InvitedBy dot.ID
 	CreatedBy time.Time

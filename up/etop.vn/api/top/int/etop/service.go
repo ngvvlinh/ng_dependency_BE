@@ -5,7 +5,6 @@ import (
 
 	cm "etop.vn/api/pb/common"
 	pbetop "etop.vn/api/pb/etop"
-	"etop.vn/api/pb/etop/shop"
 )
 
 // +gen:apix
@@ -131,10 +130,24 @@ type AddressService interface {
 	RemoveAddress(context.Context, *cm.IDRequest) (*cm.Empty, error)
 }
 
-// +apix:path=/etop.Invitation
-type InvitationService interface {
+// +apix:path=/etop.UserRelationship
+// +wrapper:endpoint-prefix=UserRelationship
+type UserRelationshipService interface {
 	AcceptInvitation(context.Context, *pbetop.AcceptInvitationRequest) (*cm.UpdatedResponse, error)
 	RejectInvitation(context.Context, *pbetop.RejectInvitationRequest) (*cm.UpdatedResponse, error)
 	GetInvitationByToken(context.Context, *pbetop.GetInvitationByTokenRequest) (*pbetop.Invitation, error)
-	GetInvitations(context.Context, *pbetop.GetInvitationsRequest) (*shop.InvitationsResponse, error)
+	GetInvitations(context.Context, *pbetop.GetInvitationsRequest) (*pbetop.InvitationsResponse, error)
+	LeaveAccount(context.Context, *pbetop.UserRelationshipLeaveAccountRequest) (*cm.UpdatedResponse, error)
+}
+
+// +apix:path=/etop.AccountRelationship
+// +wrapper:endpoint-prefix=AccountRelationship
+type AccountRelationshipService interface {
+	CreateInvitation(context.Context, *pbetop.CreateInvitationRequest) (*pbetop.Invitation, error)
+	GetInvitations(context.Context, *pbetop.GetInvitationsRequest) (*pbetop.InvitationsResponse, error)
+	DeleteInvitation(context.Context, *pbetop.DeleteInvitationRequest) (*cm.UpdatedResponse, error)
+	UpdatePermission(context.Context, *pbetop.UpdateAccountUserPermissionRequest) (*pbetop.Relationship, error)
+	UpdateRelationship(context.Context, *pbetop.UpdateRelationshipRequest) (*pbetop.Relationship, error)
+	GetRelationships(context.Context, *pbetop.GetRelationshipsRequest) (*pbetop.RelationshipsResponse, error)
+	RemoveUser(context.Context, *pbetop.RemoveUserRequest) (*cm.UpdatedResponse, error)
 }

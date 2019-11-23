@@ -9,6 +9,7 @@ import (
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/cmsql"
+	"etop.vn/backend/pkg/common/validate"
 	"etop.vn/capi/dot"
 )
 
@@ -49,7 +50,7 @@ func (q *InvitationQuery) GetInvitation(
 func (q *InvitationQuery) GetInvitationByToken(
 	ctx context.Context, token string,
 ) (*invitation.Invitation, error) {
-	invitation, err := q.store(ctx).Token(token).GetInvitation()
+	invitation, err := q.store(ctx).Token(token).NotExpires().GetInvitation()
 	if err != nil {
 		return nil, cm.MapError(err).
 			Wrap(cm.NotFound, "Không tìm thấy lời mời").
@@ -98,7 +99,11 @@ func (q *InvitationQuery) ListInvitations(
 func (q *InvitationQuery) ListInvitationsAcceptedByEmail(
 	ctx context.Context, email string,
 ) (*invitation.InvitationsResponse, error) {
-	query := q.store(ctx).Email(email).Accepted()
+	emailNorm, ok := validate.NormalizeEmail(email)
+	if !ok {
+		return nil, cm.Error(cm.InvalidArgument, "Email không hợp lệ", nil)
+	}
+	query := q.store(ctx).Email(emailNorm.String()).Accepted()
 	count, err := query.Count()
 	if err != nil {
 		return nil, err

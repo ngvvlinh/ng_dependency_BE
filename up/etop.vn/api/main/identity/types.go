@@ -111,6 +111,10 @@ type UserCreatedEvent struct {
 	Email     string
 	FullName  string
 	ShortName string
+	Position  string
+
+	InvitationToken      string
+	AutoAcceptInvitation bool
 }
 
 type GetCustomersByShop struct {

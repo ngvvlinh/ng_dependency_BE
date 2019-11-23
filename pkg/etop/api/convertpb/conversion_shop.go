@@ -10,9 +10,14 @@ import (
 	"etop.vn/backend/pkg/common/cmapi"
 )
 
-func Convert_core_XAccountAhamove_To_api_XAccountAhamove(in *identity.ExternalAccountAhamove) *shop.ExternalAccountAhamove {
+func Convert_core_XAccountAhamove_To_api_XAccountAhamove(in *identity.ExternalAccountAhamove, hideInfo bool) *shop.ExternalAccountAhamove {
 	if in == nil {
 		return nil
+	}
+	if hideInfo {
+		return &shop.ExternalAccountAhamove{
+			Id: in.ID,
+		}
 	}
 	return &shop.ExternalAccountAhamove{
 		Id:                  in.ID,
@@ -35,9 +40,14 @@ func Convert_core_XAccountAhamove_To_api_XAccountAhamove(in *identity.ExternalAc
 	}
 }
 
-func Convert_core_XAccountHaravan_To_api_XAccountHaravan(in *haravanidentity.ExternalAccountHaravan) *shop.ExternalAccountHaravan {
+func Convert_core_XAccountHaravan_To_api_XAccountHaravan(in *haravanidentity.ExternalAccountHaravan, hide bool) *shop.ExternalAccountHaravan {
 	if in == nil {
 		return nil
+	}
+	if hide {
+		return &shop.ExternalAccountHaravan{
+			Id: in.ID,
+		}
 	}
 	return &shop.ExternalAccountHaravan{
 		Id:                                in.ID,

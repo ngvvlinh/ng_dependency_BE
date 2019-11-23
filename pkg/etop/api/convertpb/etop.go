@@ -3,6 +3,8 @@ package convertpb
 import (
 	"context"
 
+	"etop.vn/api/main/authorization"
+
 	"etop.vn/api/main/identity"
 	"etop.vn/api/main/invitation"
 	"etop.vn/api/main/location"
@@ -770,6 +772,8 @@ func PbInvitation(m *invitation.Invitation) *etop.Invitation {
 		Id:         m.ID,
 		ShopId:     m.AccountID,
 		Email:      m.Email,
+		FullName:   m.FullName,
+		ShortName:  m.ShortName,
 		Roles:      roles,
 		Token:      m.Token,
 		Status:     Pb3(model.Status3(m.Status)),
@@ -786,6 +790,66 @@ func PbInvitations(ms []*invitation.Invitation) []*etop.Invitation {
 	res := make([]*etop.Invitation, len(ms))
 	for i, m := range ms {
 		res[i] = PbInvitation(m)
+	}
+	return res
+}
+
+func PbAuthorization(m *authorization.Authorization) *etop.Authorization {
+	if m == nil {
+		return nil
+	}
+	var roles, actions []string
+	for _, role := range m.Roles {
+		roles = append(roles, string(role))
+	}
+	for _, action := range m.Actions {
+		actions = append(actions, string(action))
+	}
+	return &etop.Authorization{
+		UserId: m.UserID,
+		// TODO: fix
+		Name:    m.FullName,
+		Email:   m.Email,
+		Roles:   roles,
+		Actions: actions,
+	}
+}
+
+func PbAuthorizations(ms []*authorization.Authorization) []*etop.Authorization {
+	res := make([]*etop.Authorization, len(ms))
+	for i, m := range ms {
+		res[i] = PbAuthorization(m)
+	}
+	return res
+}
+
+func PbRelationship(m *authorization.Relationship) *etop.Relationship {
+	if m == nil {
+		return nil
+	}
+	var roles, actions []string
+	for _, role := range m.Roles {
+		roles = append(roles, string(role))
+	}
+	for _, action := range m.Actions {
+		actions = append(actions, string(action))
+	}
+	return &etop.Relationship{
+		UserID:      m.UserID,
+		AccountID:   m.AccountID,
+		FullName:    m.FullName,
+		ShortName:   m.ShortName,
+		Position:    m.Position,
+		Roles:       roles,
+		Permissions: actions,
+		Deleted:     m.Deleted,
+	}
+}
+
+func PbRelationships(ms []*authorization.Relationship) []*etop.Relationship {
+	res := make([]*etop.Relationship, len(ms))
+	for i, m := range ms {
+		res[i] = PbRelationship(m)
 	}
 	return res
 }

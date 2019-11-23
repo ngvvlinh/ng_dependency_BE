@@ -81,6 +81,44 @@ func (ft *InvitationFilters) ByEmailPtr(Email *string) *sq.ColumnFilterPtr {
 	}
 }
 
+func (ft *InvitationFilters) ByFullName(FullName string) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "full_name",
+		Value:  FullName,
+		IsNil:  FullName == "",
+	}
+}
+
+func (ft *InvitationFilters) ByFullNamePtr(FullName *string) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "full_name",
+		Value:  FullName,
+		IsNil:  FullName == nil,
+		IsZero: FullName != nil && (*FullName) == "",
+	}
+}
+
+func (ft *InvitationFilters) ByShortName(ShortName string) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "short_name",
+		Value:  ShortName,
+		IsNil:  ShortName == "",
+	}
+}
+
+func (ft *InvitationFilters) ByShortNamePtr(ShortName *string) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "short_name",
+		Value:  ShortName,
+		IsNil:  ShortName == nil,
+		IsZero: ShortName != nil && (*ShortName) == "",
+	}
+}
+
 func (ft *InvitationFilters) ByToken(Token string) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
@@ -128,7 +166,7 @@ func (ft *InvitationFilters) ByInvitedBy(InvitedBy dot.ID) *sq.ColumnFilter {
 	}
 }
 
-func (ft *InvitationFilters) ByInvitedByPtr(InvitedBy *int64) *sq.ColumnFilterPtr {
+func (ft *InvitationFilters) ByInvitedByPtr(InvitedBy *dot.ID) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "invited_by",

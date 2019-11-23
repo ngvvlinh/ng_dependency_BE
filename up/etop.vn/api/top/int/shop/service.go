@@ -339,9 +339,3 @@ type StocktakeService interface {
 	GetStocktakesByIDs(context.Context, *cm.IDsRequest) (*shop.GetStocktakesByIDsResponse, error)
 	GetStocktakes(context.Context, *shop.GetStocktakesRequest) (*shop.GetStocktakesResponse, error)
 }
-
-// +apix:path=/shop.Invitation
-type InvitationService interface {
-	CreateInvitation(context.Context, *shop.CreateInvitationRequest) (*etop.Invitation, error)
-	GetInvitations(context.Context, *shop.GetInvitationsRequest) (*shop.InvitationsResponse, error)
-}

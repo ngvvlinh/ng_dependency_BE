@@ -5,7 +5,8 @@ import (
 	"strings"
 	"time"
 
-	"etop.vn/api/main/invitation"
+	"etop.vn/api/main/authorization"
+
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/validate"
@@ -58,7 +59,7 @@ func CreateShop(ctx context.Context, cmd *model.CreateShopCommand) error {
 			UserID:    cmd.OwnerID,
 			Status:    model.StatusActive,
 			Permission: model.Permission{
-				Roles: []string{string(invitation.RoleShopOwner)},
+				Roles: []string{string(authorization.RoleShopOwner)},
 			},
 		}
 		if _, err := x.Insert(account); err != nil {

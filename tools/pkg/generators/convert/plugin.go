@@ -789,10 +789,10 @@ func includeBaseConversion(p generator.Printer, vars map[string]interface{}, mod
 
 	switch mode {
 	case ModeType:
-		vars["Action"] = "Convert"
+		vars["Actions"] = "Convert"
 		vars["action"] = "convert"
 	case ModeCreate, ModeUpdate:
-		vars["Action"] = "Apply"
+		vars["Actions"] = "Apply"
 		vars["action"] = "apply"
 	default:
 		panic("unexpected")

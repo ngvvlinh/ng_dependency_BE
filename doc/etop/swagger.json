@@ -94,6 +94,188 @@
         }
       }
     },
+    "/api/etop.AccountRelationship/CreateInvitation": {
+      "post": {
+        "tags": [
+          "AccountRelationship"
+        ],
+        "operationId": "CreateInvitation",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ocCreateInvitationRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ocInvitation"
+            }
+          }
+        }
+      }
+    },
+    "/api/etop.AccountRelationship/DeleteInvitation": {
+      "post": {
+        "tags": [
+          "AccountRelationship"
+        ],
+        "operationId": "DeleteInvitation",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ocDeleteInvitationRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/maUpdatedResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/etop.AccountRelationship/GetInvitations": {
+      "post": {
+        "tags": [
+          "AccountRelationship"
+        ],
+        "operationId": "GetInvitations",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ocGetInvitationsRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ocInvitationsResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/etop.AccountRelationship/GetRelationships": {
+      "post": {
+        "tags": [
+          "AccountRelationship"
+        ],
+        "operationId": "GetRelationships",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ocGetRelationshipsRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ocRelationshipsResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/etop.AccountRelationship/RemoveUser": {
+      "post": {
+        "tags": [
+          "AccountRelationship"
+        ],
+        "operationId": "RemoveUser",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ocRemoveUserRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/maUpdatedResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/etop.AccountRelationship/UpdatePermission": {
+      "post": {
+        "tags": [
+          "AccountRelationship"
+        ],
+        "operationId": "UpdatePermission",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ocUpdateAccountUserPermissionRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ocRelationship"
+            }
+          }
+        }
+      }
+    },
+    "/api/etop.AccountRelationship/UpdateRelationship": {
+      "post": {
+        "tags": [
+          "AccountRelationship"
+        ],
+        "operationId": "UpdateRelationship",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ocUpdateRelationshipRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ocRelationship"
+            }
+          }
+        }
+      }
+    },
     "/api/etop.Address/CreateAddress": {
       "post": {
         "tags": [
@@ -271,110 +453,6 @@
             "description": "A successful response",
             "schema": {
               "$ref": "#/definitions/ocGetBankProvincesResponse"
-            }
-          }
-        }
-      }
-    },
-    "/api/etop.Invitation/AcceptInvitation": {
-      "post": {
-        "tags": [
-          "Invitation"
-        ],
-        "operationId": "AcceptInvitation",
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/ocAcceptInvitationRequest"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "A successful response",
-            "schema": {
-              "$ref": "#/definitions/maUpdatedResponse"
-            }
-          }
-        }
-      }
-    },
-    "/api/etop.Invitation/GetInvitationByToken": {
-      "post": {
-        "tags": [
-          "Invitation"
-        ],
-        "operationId": "GetInvitationByToken",
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/ocGetInvitationByTokenRequest"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "A successful response",
-            "schema": {
-              "$ref": "#/definitions/ocInvitation"
-            }
-          }
-        }
-      }
-    },
-    "/api/etop.Invitation/GetInvitations": {
-      "post": {
-        "tags": [
-          "Invitation"
-        ],
-        "operationId": "GetInvitations",
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/ocGetInvitationsRequest"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "A successful response",
-            "schema": {
-              "$ref": "#/definitions/zkInvitationsResponse"
-            }
-          }
-        }
-      }
-    },
-    "/api/etop.Invitation/RejectInvitation": {
-      "post": {
-        "tags": [
-          "Invitation"
-        ],
-        "operationId": "RejectInvitation",
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/ocRejectInvitationRequest"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "A successful response",
-            "schema": {
-              "$ref": "#/definitions/maUpdatedResponse"
             }
           }
         }
@@ -1133,6 +1211,136 @@
           }
         }
       }
+    },
+    "/api/etop.UserRelationship/AcceptInvitation": {
+      "post": {
+        "tags": [
+          "UserRelationship"
+        ],
+        "operationId": "AcceptInvitation",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ocAcceptInvitationRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/maUpdatedResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/etop.UserRelationship/GetInvitationByToken": {
+      "post": {
+        "tags": [
+          "UserRelationship"
+        ],
+        "operationId": "GetInvitationByToken",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ocGetInvitationByTokenRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ocInvitation"
+            }
+          }
+        }
+      }
+    },
+    "/api/etop.UserRelationship/GetInvitations": {
+      "post": {
+        "tags": [
+          "UserRelationship"
+        ],
+        "operationId": "GetInvitations",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ocGetInvitationsRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/ocInvitationsResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/etop.UserRelationship/LeaveAccount": {
+      "post": {
+        "tags": [
+          "UserRelationship"
+        ],
+        "operationId": "LeaveAccount",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ocUserRelationshipLeaveAccountRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/maUpdatedResponse"
+            }
+          }
+        }
+      }
+    },
+    "/api/etop.UserRelationship/RejectInvitation": {
+      "post": {
+        "tags": [
+          "UserRelationship"
+        ],
+        "operationId": "RejectInvitation",
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ocRejectInvitationRequest"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "A successful response",
+            "schema": {
+              "$ref": "#/definitions/maUpdatedResponse"
+            }
+          }
+        }
+      }
     }
   },
   "definitions": {
@@ -1636,6 +1844,29 @@
         }
       }
     },
+    "ocCreateInvitationRequest": {
+      "type": "object",
+      "properties": {
+        "email": {
+          "type": "string"
+        },
+        "full_name": {
+          "type": "string"
+        },
+        "position": {
+          "type": "string"
+        },
+        "roles": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "short_name": {
+          "type": "string"
+        }
+      }
+    },
     "ocCreateUserRequest": {
       "type": "object",
       "properties": {
@@ -1643,6 +1874,9 @@
           "type": "boolean"
         },
         "agree_tos": {
+          "type": "boolean"
+        },
+        "auto_accept_invitation": {
           "type": "boolean"
         },
         "email": {
@@ -1665,6 +1899,14 @@
         },
         "source": {
           "$ref": "#/definitions/yuUserSource"
+        }
+      }
+    },
+    "ocDeleteInvitationRequest": {
+      "type": "object",
+      "properties": {
+        "token": {
+          "type": "string"
         }
       }
     },
@@ -1812,6 +2054,20 @@
         }
       }
     },
+    "ocGetRelationshipsRequest": {
+      "type": "object",
+      "properties": {
+        "filters": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/maFilter"
+          }
+        },
+        "paging": {
+          "$ref": "#/definitions/maPaging"
+        }
+      }
+    },
     "ocGetUserByPhoneRequest": {
       "type": "object",
       "properties": {
@@ -1892,6 +2148,9 @@
           "type": "string",
           "format": "date-time"
         },
+        "full_name": {
+          "type": "string"
+        },
         "id": {
           "type": "string",
           "format": "int64"
@@ -1900,15 +2159,24 @@
           "type": "string",
           "format": "int64"
         },
+        "invited_by_user": {
+          "type": "string"
+        },
         "roles": {
           "type": "array",
           "items": {
             "type": "string"
           }
         },
+        "shop": {
+          "$ref": "#/definitions/ocShopShort"
+        },
         "shop_id": {
           "type": "string",
           "format": "int64"
+        },
+        "short_name": {
+          "type": "string"
         },
         "status": {
           "$ref": "#/definitions/wwStatus"
@@ -1919,6 +2187,24 @@
         "updated_at": {
           "type": "string",
           "format": "date-time"
+        },
+        "user_id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "ocInvitationsResponse": {
+      "type": "object",
+      "properties": {
+        "invitations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ocInvitation"
+          }
+        },
+        "paging": {
+          "$ref": "#/definitions/maPageInfo"
         }
       }
     },
@@ -2178,8 +2464,71 @@
         }
       }
     },
+    "ocRelationship": {
+      "type": "object",
+      "properties": {
+        "account_id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "deleted": {
+          "type": "boolean"
+        },
+        "email": {
+          "type": "string"
+        },
+        "full_name": {
+          "type": "string"
+        },
+        "permissions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "position": {
+          "type": "string"
+        },
+        "roles": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "short_name": {
+          "type": "string"
+        },
+        "user_id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "ocRelationshipsResponse": {
+      "type": "object",
+      "properties": {
+        "paging": {
+          "$ref": "#/definitions/maPageInfo"
+        },
+        "relationships": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ocRelationship"
+          }
+        }
+      }
+    },
     "ocRemoveUserFromCurrentAccountRequest": {
       "type": "object"
+    },
+    "ocRemoveUserRequest": {
+      "type": "object",
+      "properties": {
+        "user_id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
     },
     "ocResetPasswordRequest": {
       "type": "object",
@@ -2325,6 +2674,24 @@
         }
       }
     },
+    "ocShopShort": {
+      "type": "object",
+      "properties": {
+        "code": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string",
+          "format": "int64"
+        },
+        "image_url": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        }
+      }
+    },
     "ocSurveyInfo": {
       "type": "object",
       "properties": {
@@ -2348,6 +2715,21 @@
         },
         "regenerate_tokens": {
           "type": "boolean"
+        }
+      }
+    },
+    "ocUpdateAccountUserPermissionRequest": {
+      "type": "object",
+      "properties": {
+        "roles": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "user_id": {
+          "type": "string",
+          "format": "int64"
         }
       }
     },
@@ -2481,6 +2863,24 @@
       "properties": {
         "phone": {
           "type": "string"
+        }
+      }
+    },
+    "ocUpdateRelationshipRequest": {
+      "type": "object",
+      "properties": {
+        "full_name": {
+          "type": "string"
+        },
+        "position": {
+          "type": "string"
+        },
+        "short_name": {
+          "type": "string"
+        },
+        "user_id": {
+          "type": "string",
+          "format": "int64"
         }
       }
     },
@@ -2619,6 +3019,15 @@
         }
       }
     },
+    "ocUserRelationshipLeaveAccountRequest": {
+      "type": "object",
+      "properties": {
+        "account_id": {
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
     "ocVerifyEmailUsingTokenRequest": {
       "type": "object",
       "properties": {
@@ -2678,20 +3087,6 @@
         "ts_app_web",
         "unknown"
       ]
-    },
-    "zkInvitationsResponse": {
-      "type": "object",
-      "properties": {
-        "invitations": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/ocInvitation"
-          }
-        },
-        "paging": {
-          "$ref": "#/definitions/maPageInfo"
-        }
-      }
     }
   },
   "tags": [
@@ -2699,13 +3094,13 @@
       "name": "Account"
     },
     {
+      "name": "AccountRelationship"
+    },
+    {
       "name": "Address"
     },
     {
       "name": "Bank"
-    },
-    {
-      "name": "Invitation"
     },
     {
       "name": "Location"
@@ -2718,6 +3113,9 @@
     },
     {
       "name": "User"
+    },
+    {
+      "name": "UserRelationship"
     }
   ]
 }

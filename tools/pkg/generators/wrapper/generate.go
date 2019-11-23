@@ -36,6 +36,7 @@ var funcs = map[string]interface{}{
 	"getClaim":                 getClaim,
 	"requireCaptcha":           requireCaptcha,
 	"authPartner":              authPartner,
+	"requireActions":           requireActions,
 }
 
 func getPermission(m *Method) *permission.PermissionDecl {
@@ -187,6 +188,15 @@ func authPartner(m *Method) int {
 	return int(p.AuthPartner)
 }
 
+func requireActions(m *Method) string {
+	p := getPermission(m)
+	var actionsTemp []string
+	for _, action := range p.Actions {
+		actionsTemp = append(actionsTemp, string(action))
+	}
+	return strings.Join(actionsTemp, "|")
+}
+
 var tpl = template.Must(template.New("tpl").Funcs(funcs).Parse(tplText))
 
 const tplText = `
@@ -202,7 +212,7 @@ type wrap{{.Name}}Service struct {
 
 {{range $m := .Methods}}
 {{if $m.Kind|eq 1}}
-type {{$m|methodName}}Endpoint struct {
+type {{$s.EndpointPrefix}}{{$m|methodName}}Endpoint struct {
 	{{$m.Req|type}}
 	Result {{$m.Resp|type}}
 	Context {{$m|getClaim}}
@@ -243,7 +253,7 @@ func (s wrap{{$s.Name}}Service) {{$m.Name}}(ctx context.Context, req {{.Req|type
 	}
 	session = sessionQuery.Result
 {{- end}}
-	query := &{{$m|methodName}}Endpoint{ {{$m.Req|baseName}}: req }
+	query := &{{$s.EndpointPrefix}}{{$m|methodName}}Endpoint{ {{$m.Req|baseName}}: req }
 	{{if requireLogin $m -}}
 	query.Context.Claim = session.Claim
 	{{end -}}
@@ -279,13 +289,20 @@ func (s wrap{{$s.Name}}Service) {{$m.Name}}(ctx context.Context, req {{.Req|type
 	query.Context.IsOwner = session.IsOwner
 	query.Context.Roles = session.Roles
 	query.Context.Permissions = session.Permissions
-		{{if $m|getRole|ne "" -}}
-	// Verify that the user has role "{{$m|getRole}}"
-	if !session.IsOwner && permission.MaxRoleLevel(session.Roles) < {{$m|getRoleLevel}} {
-		return nil, common.ErrPermissionDenied
-	}
-		{{end -}}
 	{{end -}}
+
+	{{if requireActions $m -}}
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "{{$m|requireActions}}", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("{{$m|requireActions}}", "|")
+	{{end -}}
+
 	{{if requireSecret $m -}}
 	// Verify secret token
 	token := middleware.GetBearerTokenFromCtx(ctx)
@@ -335,6 +352,7 @@ func generate(printer generator.Printer, pkg *packages.Package, services []*Serv
 	printer.Import("middleware", "etop.vn/backend/pkg/etop/authorize/middleware")
 	printer.Import("model", "etop.vn/backend/pkg/etop/model")
 	printer.Import("permission", "etop.vn/backend/pkg/etop/authorize/permission")
+	printer.Import("", "etop.vn/backend/pkg/etop/authorize/auth")
 
 	vars := map[string]interface{}{
 		"PackageName":   services[0].PkgName,

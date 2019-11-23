@@ -6,6 +6,7 @@ import "etop.vn/backend/pkg/etop/model"
 type PermType int
 type AuthType int
 type AuthOpt int
+type ActionType string
 
 // PermType constants
 const (
@@ -43,6 +44,7 @@ type PermissionDecl struct {
 	Validate    string
 	Captcha     string
 	AuthPartner AuthOpt
+	Actions     []ActionType
 
 	Rename string
 }

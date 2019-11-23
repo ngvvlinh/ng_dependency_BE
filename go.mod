@@ -18,6 +18,7 @@ require (
 	github.com/Shopify/sarama v1.23.1
 	github.com/asaskevich/govalidator v0.0.0-20190424111038-f61b66f89f4a
 	github.com/awalterschulze/goderive v0.0.0-20190728081913-2613afbe1240
+	github.com/casbin/casbin v1.9.1
 	github.com/dgrijalva/jwt-go v3.2.0+incompatible
 	github.com/dpapathanasiou/go-recaptcha v0.0.0-20190121160230-be5090b17804
 	github.com/dustin/go-humanize v1.0.0

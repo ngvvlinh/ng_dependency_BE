@@ -46,6 +46,125 @@ const (
 
 	Req = permission.Required
 	Opt = permission.Optional
+
+	// Actions
+
+	ShopCarrierCreate permission.ActionType = "shop/carrier:create"
+	ShopCarrierUpdate permission.ActionType = "shop/carrier:update"
+	ShopCarrierDelete permission.ActionType = "shop/carrier:delete"
+	ShopCarrierView   permission.ActionType = "shop/carrier:view"
+
+	ShopCategoryCreate permission.ActionType = "shop/category:create"
+	ShopCategoryUpdate permission.ActionType = "shop/category:update"
+	ShopCategoryDelete permission.ActionType = "shop/category:delete"
+	ShopCategoryView   permission.ActionType = "shop/category:view"
+
+	ShopCollectionCreate permission.ActionType = "shop/collection:create"
+	ShopCollectionView   permission.ActionType = "shop/collection:view"
+	ShopCollectionUpdate permission.ActionType = "shop/collection:update"
+
+	ShopCustomerCreate      permission.ActionType = "shop/customer:create"
+	ShopCustomerUpdate      permission.ActionType = "shop/customer:update"
+	ShopCustomerDelete      permission.ActionType = "shop/customer:delete"
+	ShopCustomerView        permission.ActionType = "shop/customer:view"
+	ShopCustomerManage      permission.ActionType = "shop/customer:manage"
+	ShopCustomerGroupManage permission.ActionType = "shop/customer_group:manage"
+
+	ShopDashboardView permission.ActionType = "shop/dashboard:view"
+
+	ShopExternalAccountManage permission.ActionType = "shop/external_account:manage"
+
+	ShopFulfillmentCreate permission.ActionType = "shop/fulfillment:create"
+	ShopFulfillmentCancel permission.ActionType = "shop/fulfillment:cancel"
+	ShopFulfillmentView   permission.ActionType = "shop/fulfillment:view"
+	ShopFulfillmentExport permission.ActionType = "shop/fulfillment:export"
+
+	ShopInventoryView    permission.ActionType = "shop/inventory:view"
+	ShopInventoryCreate  permission.ActionType = "shop/inventory:create"
+	ShopInventoryUpdate  permission.ActionType = "shop/inventory:update"
+	ShopInventoryConfirm permission.ActionType = "shop/inventory:confirm"
+	ShopInventoryCancel  permission.ActionType = "shop/inventory:cancel"
+
+	ShopLedgerCreate permission.ActionType = "shop/ledger:create"
+	ShopLedgerView   permission.ActionType = "shop/ledger:view"
+	ShopLedgerUpdate permission.ActionType = "shop/ledger:update"
+	ShopLedgerDelete permission.ActionType = "shop/ledger:delete"
+
+	ShopMoneyTransactionView   permission.ActionType = "shop/money_transaction:view"
+	ShopMoneyTransactionExport permission.ActionType = "shop/money_transaction:export"
+
+	ShopOrderCreate  permission.ActionType = "shop/order:create"
+	ShopOrderConfirm permission.ActionType = "shop/order:confirm"
+	ShopOrderUpdate  permission.ActionType = "shop/order:update"
+	ShopOrderCancel  permission.ActionType = "shop/order:cancel"
+	ShopOrderView    permission.ActionType = "shop/order:view"
+
+	ShopPurchaseOrderCreate  permission.ActionType = "shop/purchase_order:create"
+	ShopPurchaseOrderConfirm permission.ActionType = "shop/purchase_order:confirm"
+	ShopPurchaseOrderUpdate  permission.ActionType = "shop/purchase_order:update"
+	ShopPurchaseOrderCancel  permission.ActionType = "shop/purchase_order:cancel"
+	ShopPurchaseOrderView    permission.ActionType = "shop/purchase_order:view"
+
+	ShopProductCreate          permission.ActionType = "shop/product:create"
+	ShopProductDelete          permission.ActionType = "shop/product:delete"
+	ShopProductImport          permission.ActionType = "shop/product:import"
+	ShopProductCostPriceView   permission.ActionType = "shop/product/cost_price:view"
+	ShopProductCostPriceUpdate permission.ActionType = "shop/product/cost_price:update"
+	ShopProductBasicInfoUpdate permission.ActionType = "shop/product/basic_info:update"
+	ShopProductBasicInfoView   permission.ActionType = "shop/product/basic_info:view"
+
+	ShopReceiptView    permission.ActionType = "shop/receipt:view"
+	ShopReceiptCreate  permission.ActionType = "shop/receipt:create"
+	ShopReceiptUpdate  permission.ActionType = "shop/receipt:update"
+	ShopReceiptConfirm permission.ActionType = "shop/receipt:confirm"
+	ShopReceiptCancel  permission.ActionType = "shop/receipt:cancel"
+
+	ShopSettingsShopInfoUpdate        permission.ActionType = "shop/settings/shop_info:update"
+	ShopSettingsShopInfoView          permission.ActionType = "shop/settings/shop_info:view"
+	ShopSettingsCompanyInfoView       permission.ActionType = "shop/settings/company_info:view"
+	ShopSettingsCompanyInfoUpdate     permission.ActionType = "shop/settings/company_info:update"
+	ShopSettingsBankInfoView          permission.ActionType = "shop/settings/bank_info:view"
+	ShopSettingsBankInfoUpdate        permission.ActionType = "shop/settings/bank_info:update"
+	ShopSettingsPaymentScheduleView   permission.ActionType = "shop/settings/payment_schedule:view"
+	ShopSettingsPaymentScheduleUpdate permission.ActionType = "shop/settings/payment_schedule:update"
+	ShopSettingsTopshipBalanceView    permission.ActionType = "shop/settings/topship_balance:view"
+	ShopSettingsWalletBalanceView     permission.ActionType = "shop/settings/wallet_balance:view"
+	ShopSettingsShippingSettingView   permission.ActionType = "shop/settings/shipping_setting:view"
+	ShopSettingsShippingSettingUpdate permission.ActionType = "shop/settings/shipping_setting:update"
+
+	ShopShipNowView    permission.ActionType = "shop/shipnow:view"
+	ShopShipNowCreate  permission.ActionType = "shop/shipnow:create"
+	ShopShipNowUpdate  permission.ActionType = "shop/shipnow:update"
+	ShopShipNowCancel  permission.ActionType = "shop/shipnow:cancel"
+	ShopShipNowConfirm permission.ActionType = "shop/shipnow:confirm"
+
+	ShopBalanceView   permission.ActionType = "shop/balance:view"
+	ShopAccountDelete permission.ActionType = "shop/account:delete"
+
+	RelationshipInvitationCreate   permission.ActionType = "relationship/invitation:create"
+	RelationshipInvitationView     permission.ActionType = "relationship/invitation:view"
+	RelationshipInvitationDelete   permission.ActionType = "relationship/invitation:delete"
+	RelationshipPermissionUpdate   permission.ActionType = "relationship/permission:update"
+	RelationshipRelationshipUpdate permission.ActionType = "relationship/relationship:update"
+	RelationshipRelationshipView   permission.ActionType = "relationship/relationship:view"
+	RelationshipUserRemove         permission.ActionType = "relationship/user:remove"
+
+	ShopStocktakeCreate  permission.ActionType = "shop/stocktake:create"
+	ShopStocktakeUpdate  permission.ActionType = "shop/stocktake:update"
+	ShopStocktakeConfirm permission.ActionType = "shop/stocktake:confirm"
+	ShopStocktakeCancel  permission.ActionType = "shop/stocktake:cancel"
+	ShopStocktakeView    permission.ActionType = "shop/stocktake:view"
+
+	ShopSupplierCreate permission.ActionType = "shop/supplier:create"
+	ShopSupplierUpdate permission.ActionType = "shop/supplier:update"
+	ShopSupplierDelete permission.ActionType = "shop/supplier:delete"
+	ShopSupplierView   permission.ActionType = "shop/supplier:view"
+
+	TradingOrderView       permission.ActionType = "trading/order:view"
+	TradingOrderCreate     permission.ActionType = "trading/order:create"
+	ShopTradingProductView permission.ActionType = "shop/trading/product:view"
+	ShopTradingOrderCreate permission.ActionType = "shop/trading/order:create"
+	ShopTradingOrderView   permission.ActionType = "shop/trading/order:view"
 )
 
 // ACL declares access control list
@@ -115,11 +234,6 @@ var ACL = map[string]*permission.PermissionDecl{
 	"etop.Address/GetAddresses":  {Type: CurUsr, AuthPartner: Opt},
 	"etop.Address/UpdateAddress": {Type: CurUsr},
 	"etop.Address/RemoveAddress": {Type: CurUsr},
-
-	"etop.Invitation/AcceptInvitation":     {Type: CurUsr},
-	"etop.Invitation/RejectInvitation":     {Type: CurUsr},
-	"etop.Invitation/GetInvitationByToken": {Type: Public},
-	"etop.Invitation/GetInvitations":       {Type: CurUsr},
 
 	//-- external: partner --//
 
@@ -228,26 +342,26 @@ var ACL = map[string]*permission.PermissionDecl{
 
 	// permission: owner
 
-	"shop.Account/UpdateShop": {Type: Shop, Role: Admin},
-	"shop.Account/DeleteShop": {Type: Shop, Role: Owner},
+	"shop.Account/UpdateShop": {Type: Shop, Role: Admin, Actions: actions(ShopSettingsShopInfoUpdate)},
+	"shop.Account/DeleteShop": {Type: Shop, Role: Owner, Actions: actions(ShopAccountDelete)},
 
 	// permission: admin
 
-	"shop.Account/SetDefaultAddress": {Type: Shop, Role: Staff},
-	"shop.Account/GetBalanceShop":    {Type: Shop, Role: Staff},
+	"shop.Account/SetDefaultAddress": {Type: Shop, Role: Staff, Actions: actions(ShopSettingsShopInfoUpdate)},
+	"shop.Account/GetBalanceShop":    {Type: Shop, Role: Staff, Actions: actions(ShopBalanceView)},
 
-	"shop.Account/CreateExternalAccountAhamove":                   {Type: Shop},
+	"shop.Account/CreateExternalAccountAhamove":                   {Type: Shop, Actions: actions(ShopExternalAccountManage)},
 	"shop.Account/GetExternalAccountAhamove":                      {Type: Shop},
-	"shop.Account/RequestVerifyExternalAccountAhamove":            {Type: Shop},
-	"shop.Account/UpdateExternalAccountAhamoveVerification":       {Type: Shop},
-	"shop.Account/UpdateExternalAccountAhamoveVerificationImages": {Type: Shop},
+	"shop.Account/RequestVerifyExternalAccountAhamove":            {Type: Shop, Actions: actions(ShopExternalAccountManage)},
+	"shop.Account/UpdateExternalAccountAhamoveVerification":       {Type: Shop, Actions: actions(ShopExternalAccountManage)},
+	"shop.Account/UpdateExternalAccountAhamoveVerificationImages": {Type: Shop, Actions: actions(ShopExternalAccountManage)},
 
 	"shop.ExternalAccount/GetExternalAccountHaravan":                           {Type: Shop},
-	"shop.ExternalAccount/CreateExternalAccountHaravan":                        {Type: Shop},
-	"shop.ExternalAccount/UpdateExternalAccountHaravanToken":                   {Type: Shop},
-	"shop.ExternalAccount/UpdateExternalAccountHaravan":                        {Type: Shop},
-	"shop.ExternalAccount/ConnectCarrierServiceExternalAccountHaravan":         {Type: Shop},
-	"shop.ExternalAccount/DeleteConnectedCarrierServiceExternalAccountHaravan": {Type: Shop},
+	"shop.ExternalAccount/CreateExternalAccountHaravan":                        {Type: Shop, Actions: actions(ShopExternalAccountManage)},
+	"shop.ExternalAccount/UpdateExternalAccountHaravanToken":                   {Type: Shop, Actions: actions(ShopExternalAccountManage)},
+	"shop.ExternalAccount/UpdateExternalAccountHaravan":                        {Type: Shop, Actions: actions(ShopExternalAccountManage)},
+	"shop.ExternalAccount/ConnectCarrierServiceExternalAccountHaravan":         {Type: Shop, Actions: actions(ShopExternalAccountManage)},
+	"shop.ExternalAccount/DeleteConnectedCarrierServiceExternalAccountHaravan": {Type: Shop, Actions: actions(ShopExternalAccountManage)},
 
 	"shop.Browse/BrowseCategories":    {Type: Shop},
 	"shop.Browse/BrowseProduct":       {Type: Shop},
@@ -257,128 +371,127 @@ var ACL = map[string]*permission.PermissionDecl{
 	"shop.Browse/BrowseProductsByIDs": {Type: Shop},
 	"shop.Browse/BrowseVariantsByIDs": {Type: Shop},
 
-	"shop.Collection/GetCollection":             {Type: Shop, Role: _____},
-	"shop.Collection/GetCollections":            {Type: Shop, Role: _____},
-	"shop.Collection/CreateCollection":          {Type: Shop, Role: Staff},
-	"shop.Collection/UpdateCollection":          {Type: Shop, Role: Staff},
-	"shop.Collection/GetCollectionsByProductID": {Type: Shop},
+	"shop.Collection/GetCollection":             {Type: Shop, Role: _____, Actions: actions(ShopCollectionView)},
+	"shop.Collection/GetCollections":            {Type: Shop, Role: _____, Actions: actions(ShopCollectionView)},
+	"shop.Collection/CreateCollection":          {Type: Shop, Role: Staff, Actions: actions(ShopCollectionCreate)},
+	"shop.Collection/UpdateCollection":          {Type: Shop, Role: Staff, Actions: actions(ShopCollectionUpdate)},
+	"shop.Collection/GetCollectionsByProductID": {Type: Shop, Actions: actions(ShopCollectionView)},
 
-	"shop.Customer/CreateCustomer":          {Type: Shop},
-	"shop.Customer/UpdateCustomer":          {Type: Shop},
-	"shop.Customer/DeleteCustomer":          {Type: Shop},
-	"shop.Customer/GetCustomer":             {Type: Shop},
-	"shop.Customer/GetCustomerDetails":      {Type: Shop},
-	"shop.Customer/GetCustomers":            {Type: Shop},
-	"shop.Customer/GetCustomersByIDs":       {Type: Shop},
-	"shop.Customer/BatchSetCustomersStatus": {Type: Shop},
+	"shop.Customer/CreateCustomer":          {Type: Shop, Actions: actions(ShopCustomerCreate)},
+	"shop.Customer/UpdateCustomer":          {Type: Shop, Actions: actions(ShopCustomerUpdate)},
+	"shop.Customer/DeleteCustomer":          {Type: Shop, Actions: actions(ShopCustomerDelete)},
+	"shop.Customer/GetCustomer":             {Type: Shop, Actions: actions(ShopCustomerView)},
+	"shop.Customer/GetCustomerDetails":      {Type: Shop, Actions: actions(ShopCustomerView)},
+	"shop.Customer/GetCustomers":            {Type: Shop, Actions: actions(ShopCustomerView)},
+	"shop.Customer/GetCustomersByIDs":       {Type: Shop, Actions: actions(ShopCustomerView)},
+	"shop.Customer/BatchSetCustomersStatus": {Type: Shop, Actions: actions(ShopCustomerUpdate)},
 
-	"shop.Customer/GetCustomerAddresses":      {Type: Shop},
-	"shop.Customer/CreateCustomerAddress":     {Type: Shop},
-	"shop.Customer/UpdateCustomerAddress":     {Type: Shop},
-	"shop.Customer/DeleteCustomerAddress":     {Type: Shop},
-	"shop.Customer/SetDefaultCustomerAddress": {Type: Shop},
+	"shop.Customer/GetCustomerAddresses":      {Type: Shop, Actions: actions(ShopCustomerView)},
+	"shop.Customer/CreateCustomerAddress":     {Type: Shop, Actions: actions(ShopCustomerCreate, ShopCustomerUpdate)},
+	"shop.Customer/UpdateCustomerAddress":     {Type: Shop, Actions: actions(ShopCustomerUpdate)},
+	"shop.Customer/DeleteCustomerAddress":     {Type: Shop, Actions: actions(ShopCustomerUpdate, ShopCustomerDelete)},
+	"shop.Customer/SetDefaultCustomerAddress": {Type: Shop, Actions: actions(ShopCustomerUpdate)},
 
-	"shop.Customer/AddCustomersToGroup":      {Type: Shop},
-	"shop.Customer/RemoveCustomersFromGroup": {Type: Shop},
+	"shop.Customer/AddCustomersToGroup":      {Type: Shop, Actions: actions(ShopCustomerManage)},
+	"shop.Customer/RemoveCustomersFromGroup": {Type: Shop, Actions: actions(ShopCustomerManage)},
 
-	"shop.CustomerGroup/CreateCustomerGroup": {Type: Shop},
-	"shop.CustomerGroup/GetCustomerGroup":    {Type: Shop},
-	"shop.CustomerGroup/GetCustomerGroups":   {Type: Shop},
-	"shop.CustomerGroup/UpdateCustomerGroup": {Type: Shop},
+	"shop.CustomerGroup/CreateCustomerGroup": {Type: Shop, Actions: actions(ShopCustomerGroupManage)},
+	"shop.CustomerGroup/GetCustomerGroup":    {Type: Shop, Actions: actions(ShopCustomerView)},
+	"shop.CustomerGroup/GetCustomerGroups":   {Type: Shop, Actions: actions(ShopCustomerView)},
+	"shop.CustomerGroup/UpdateCustomerGroup": {Type: Shop, Actions: actions(ShopCustomerGroupManage)},
 
-	"shop.Category/GetCategory":    {Type: Shop},
-	"shop.Category/GetCategories":  {Type: Shop},
-	"shop.Category/CreateCategory": {Type: Shop},
-	"shop.Category/UpdateCategory": {Type: Shop},
-	"shop.Category/DeleteCategory": {Type: Shop},
+	"shop.Category/GetCategory":    {Type: Shop, Actions: actions(ShopCategoryView)},
+	"shop.Category/GetCategories":  {Type: Shop, Actions: actions(ShopCategoryView)},
+	"shop.Category/CreateCategory": {Type: Shop, Actions: actions(ShopCategoryCreate)},
+	"shop.Category/UpdateCategory": {Type: Shop, Actions: actions(ShopCategoryUpdate)},
+	"shop.Category/DeleteCategory": {Type: Shop, Actions: actions(ShopCategoryDelete)},
 
-	"shop.Product/GetProduct":              {Type: Shop, Role: _____, AuthPartner: Opt},
-	"shop.Product/GetProducts":             {Type: Shop, Role: _____, AuthPartner: Opt},
-	"shop.Product/GetProductsByIDs":        {Type: Shop, Role: _____, AuthPartner: Opt},
-	"shop.Product/RemoveProducts":          {Type: Shop, Role: Staff},
-	"shop.Product/UpdateProduct":           {Type: Shop, Role: Staff},
-	"shop.Product/UpdateProductsStatus":    {Type: Shop, Role: Staff},
-	"shop.Product/UpdateProductsTags":      {Type: Shop, Role: Staff},
-	"shop.Product/UpdateProductImages":     {Type: Shop, Role: Staff},
-	"shop.Product/UpdateProductMetaFields": {Type: Shop, Role: Staff},
-	"shop.Product/CreateProduct":           {Type: Shop, Role: Staff},
-	"shop.Product/UpdateProductStatus":     {Type: Shop, Role: Staff},
-	"shop.Product/AddProducts":             {Type: Shop, Role: Staff, AuthPartner: Opt},
-	"shop.Product/UpdateProductCategory":   {Type: Shop},
-	"shop.Product/RemoveProductCategory":   {Type: Shop},
-	"shop.Product/AddProductCollection":    {Type: Shop},
-	"shop.Product/RemoveProductCollection": {Type: Shop},
+	"shop.Product/GetProduct":              {Type: Shop, Role: _____, AuthPartner: Opt, Actions: actions(ShopProductBasicInfoView)},
+	"shop.Product/GetProducts":             {Type: Shop, Role: _____, AuthPartner: Opt, Actions: actions(ShopProductBasicInfoView)},
+	"shop.Product/GetProductsByIDs":        {Type: Shop, Role: _____, AuthPartner: Opt, Actions: actions(ShopProductBasicInfoView)},
+	"shop.Product/RemoveProducts":          {Type: Shop, Role: Staff, Actions: actions(ShopProductDelete)},
+	"shop.Product/UpdateProduct":           {Type: Shop, Role: Staff, Actions: actions(ShopProductBasicInfoUpdate)},
+	"shop.Product/UpdateProductsStatus":    {Type: Shop, Role: Staff, Actions: actions(ShopProductBasicInfoUpdate)},
+	"shop.Product/UpdateProductsTags":      {Type: Shop, Role: Staff, Actions: actions(ShopProductBasicInfoUpdate)},
+	"shop.Product/UpdateProductImages":     {Type: Shop, Role: Staff, Actions: actions(ShopProductBasicInfoUpdate)},
+	"shop.Product/UpdateProductMetaFields": {Type: Shop, Role: Staff, Actions: actions(ShopProductBasicInfoUpdate)},
+	"shop.Product/CreateProduct":           {Type: Shop, Role: Staff, Actions: actions(ShopProductCreate)},
+	"shop.Product/UpdateProductStatus":     {Type: Shop, Role: Staff, Actions: actions(ShopProductBasicInfoUpdate)},
+	"shop.Product/UpdateProductCategory":   {Type: Shop, Actions: actions(ShopProductBasicInfoUpdate)},
+	"shop.Product/RemoveProductCategory":   {Type: Shop, Actions: actions(ShopProductBasicInfoUpdate, ShopProductDelete)},
+	"shop.Product/AddProductCollection":    {Type: Shop, Actions: actions(ShopProductCreate, ShopProductBasicInfoUpdate)},
+	"shop.Product/RemoveProductCollection": {Type: Shop, Actions: actions(ShopProductBasicInfoUpdate, ShopProductDelete)},
 
-	"shop.Product/GetVariant":                  {Type: Shop, Role: _____, AuthPartner: Opt},
-	"shop.Product/GetVariants":                 {Type: Shop, Role: _____, AuthPartner: Opt},
-	"shop.Product/GetVariantsByIDs":            {Type: Shop, Role: _____, AuthPartner: Opt},
-	"shop.Product/GetVariantsBySupplierID":     {Type: Shop},
-	"shop.Product/CreateVariant":               {Type: Shop, Role: Staff},
-	"shop.Product/AddVariants":                 {Type: Shop, Role: Staff, AuthPartner: Opt},
-	"shop.Product/RemoveVariants":              {Type: Shop, Role: Staff},
-	"shop.Product/UpdateVariant":               {Type: Shop, Role: Staff},
-	"shop.Product/UpdateVariants":              {Type: Shop, Role: Staff},
-	"shop.Product/UpdateVariantsStatus":        {Type: Shop, Role: Staff},
-	"shop.Product/UpdateVariantsTags":          {Type: Shop, Role: Staff},
-	"shop.Product/UpdateVariantImages":         {Type: Shop, Role: Staff},
-	"shop.Product/UpdateVariantAttributes":     {Type: Shop, Role: Staff},
-	"shop.ProductSource/GetShopProductSources": {Type: Shop, Role: _____, AuthPartner: Opt},
-	"shop.ProductSource/CreateProductSource":   {Type: Shop, Role: Staff},
-	"shop.ProductSource/ConnectProductSource":  {Type: Shop, Role: Staff},
+	"shop.Product/GetVariant":                  {Type: Shop, Role: _____, AuthPartner: Opt, Actions: actions(ShopProductBasicInfoView)},
+	"shop.Product/GetVariants":                 {Type: Shop, Role: _____, AuthPartner: Opt, Actions: actions(ShopProductBasicInfoView)},
+	"shop.Product/GetVariantsByIDs":            {Type: Shop, Role: _____, AuthPartner: Opt, Actions: actions(ShopProductBasicInfoView)},
+	"shop.Product/GetVariantsBySupplierID":     {Type: Shop, Actions: actions(ShopProductBasicInfoView)},
+	"shop.Product/CreateVariant":               {Type: Shop, Role: Staff, Actions: actions(ShopProductCreate)},
+	"shop.Product/AddVariants":                 {Type: Shop, Role: Staff, AuthPartner: Opt, Actions: actions(ShopProductCreate, ShopProductBasicInfoUpdate)},
+	"shop.Product/RemoveVariants":              {Type: Shop, Role: Staff, Actions: actions(ShopProductDelete, ShopProductBasicInfoUpdate)},
+	"shop.Product/UpdateVariant":               {Type: Shop, Role: Staff, Actions: actions(ShopProductBasicInfoUpdate)},
+	"shop.Product/UpdateVariants":              {Type: Shop, Role: Staff, Actions: actions(ShopProductBasicInfoUpdate)},
+	"shop.Product/UpdateVariantsStatus":        {Type: Shop, Role: Staff, Actions: actions(ShopProductBasicInfoUpdate)},
+	"shop.Product/UpdateVariantsTags":          {Type: Shop, Role: Staff, Actions: actions(ShopProductBasicInfoUpdate)},
+	"shop.Product/UpdateVariantImages":         {Type: Shop, Role: Staff, Actions: actions(ShopProductBasicInfoUpdate)},
+	"shop.Product/UpdateVariantAttributes":     {Type: Shop, Role: Staff, Actions: actions(ShopProductBasicInfoUpdate)},
+	"shop.ProductSource/GetShopProductSources": {Type: Shop, Role: _____, AuthPartner: Opt, Actions: actions(ShopProductBasicInfoView)},
+	"shop.ProductSource/CreateProductSource":   {Type: Shop, Role: Staff, Actions: actions(ShopProductCreate, ShopProductBasicInfoUpdate)},
+	"shop.ProductSource/ConnectProductSource":  {Type: Shop, Role: Staff, Actions: actions(ShopProductCreate, ShopProductBasicInfoUpdate)},
 
-	"shop.ProductSource/GetProductSourceCategories":  {Type: Shop, Role: _____, AuthPartner: Opt},
-	"shop.ProductSource/GetProductSourceCategory":    {Type: Shop, Role: _____, AuthPartner: Opt},
-	"shop.ProductSource/CreateVariant":               {Type: Shop, Role: Staff, AuthPartner: Opt, Rename: "DeprecatedCreateVariant"},
-	"shop.ProductSource/CreateProductSourceCategory": {Type: Shop, Role: Staff},
-	"shop.ProductSource/UpdateProductsPSCategory":    {Type: Shop, Role: Staff},
-	"shop.ProductSource/UpdateProductSourceCategory": {Type: Shop, Role: Staff},
-	"shop.ProductSource/RemoveProductSourceCategory": {Type: Shop, Role: Admin},
+	"shop.ProductSource/GetProductSourceCategories":  {Type: Shop, Role: _____, AuthPartner: Opt, Actions: actions(ShopProductBasicInfoView)},
+	"shop.ProductSource/GetProductSourceCategory":    {Type: Shop, Role: _____, AuthPartner: Opt, Actions: actions(ShopProductBasicInfoView)},
+	"shop.ProductSource/CreateVariant":               {Type: Shop, Role: Staff, Actions: actions(ShopProductCreate, ShopProductBasicInfoUpdate), AuthPartner: Opt, Rename: "DeprecatedCreateVariant"},
+	"shop.ProductSource/CreateProductSourceCategory": {Type: Shop, Role: Staff, Actions: actions(ShopProductCreate, ShopProductBasicInfoUpdate)},
+	"shop.ProductSource/UpdateProductsPSCategory":    {Type: Shop, Role: Staff, Actions: actions(ShopProductCreate, ShopProductBasicInfoUpdate)},
+	"shop.ProductSource/UpdateProductSourceCategory": {Type: Shop, Role: Staff, Actions: actions(ShopProductCreate, ShopProductBasicInfoUpdate)},
+	"shop.ProductSource/RemoveProductSourceCategory": {Type: Shop, Role: Admin, Actions: actions(ShopProductDelete, ShopProductBasicInfoUpdate)},
 
 	"shop.Price/GetPriceRules":    {Type: Shop, Role: _____},
 	"shop.Price/UpdatePriceRules": {Type: Shop, Role: _____},
 
-	"shop.Order/CreateOrder":                        {Type: Shop, Role: Staff, AuthPartner: Opt},
-	"shop.Order/GetOrder":                           {Type: Shop, Role: _____, AuthPartner: Opt},
-	"shop.Order/GetOrders":                          {Type: Shop, Role: _____, AuthPartner: Opt},
-	"shop.Order/GetOrdersByIDs":                     {Type: Shop, Role: _____, AuthPartner: Opt},
-	"shop.Order/GetOrdersByReceiptID":               {Type: Shop, Role: _____, AuthPartner: Opt},
-	"shop.Order/UpdateOrder":                        {Type: Shop, Role: Staff, AuthPartner: Opt},
-	"shop.Order/UpdateOrdersStatus":                 {Type: Shop, Role: Staff, AuthPartner: Opt},
-	"shop.Order/ConfirmOrder":                       {Type: Shop, Role: Staff, AuthPartner: Opt},
-	"shop.Order/ConfirmOrderAndCreateFulfillments":  {Type: Shop, Role: Staff, AuthPartner: Opt},
-	"shop.Order/ConfirmOrdersAndCreateFulfillments": {Type: Shop, Role: Staff, AuthPartner: Opt},
-	"shop.Order/CancelOrder":                        {Type: Shop, Role: Staff, AuthPartner: Opt},
-	"shop.Order/UpdateOrderPaymentStatus":           {Type: Shop, Role: Staff, AuthPartner: Opt},
-	"shop.Order/UpdateOrderShippingInfo":            {Type: Shop, Role: Staff, AuthPartner: Opt},
+	"shop.Order/CreateOrder":                        {Type: Shop, Role: Staff, AuthPartner: Opt, Actions: actions(ShopOrderCreate)},
+	"shop.Order/GetOrder":                           {Type: Shop, Role: _____, AuthPartner: Opt, Actions: actions(ShopOrderView)},
+	"shop.Order/GetOrders":                          {Type: Shop, Role: _____, AuthPartner: Opt, Actions: actions(ShopOrderView)},
+	"shop.Order/GetOrdersByIDs":                     {Type: Shop, Role: _____, AuthPartner: Opt, Actions: actions(ShopOrderView)},
+	"shop.Order/GetOrdersByReceiptID":               {Type: Shop, Role: _____, AuthPartner: Opt, Actions: actions(ShopOrderView)},
+	"shop.Order/UpdateOrder":                        {Type: Shop, Role: Staff, AuthPartner: Opt, Actions: actions(ShopOrderUpdate)},
+	"shop.Order/UpdateOrdersStatus":                 {Type: Shop, Role: Staff, AuthPartner: Opt, Actions: actions(ShopOrderUpdate)},
+	"shop.Order/ConfirmOrder":                       {Type: Shop, Role: Staff, AuthPartner: Opt, Actions: actions(ShopOrderConfirm)},
+	"shop.Order/ConfirmOrderAndCreateFulfillments":  {Type: Shop, Role: Staff, AuthPartner: Opt, Actions: actions(ShopOrderConfirm)},
+	"shop.Order/ConfirmOrdersAndCreateFulfillments": {Type: Shop, Role: Staff, AuthPartner: Opt, Actions: actions(ShopOrderConfirm)},
+	"shop.Order/CancelOrder":                        {Type: Shop, Role: Staff, AuthPartner: Opt, Actions: actions(ShopOrderCancel)},
+	"shop.Order/UpdateOrderPaymentStatus":           {Type: Shop, Role: Staff, AuthPartner: Opt, Actions: actions(ShopOrderUpdate)},
+	"shop.Order/UpdateOrderShippingInfo":            {Type: Shop, Role: Staff, AuthPartner: Opt, Actions: actions(ShopOrderUpdate)},
 
 	"shop.Fulfillment/GetPublicExternalShippingServices": {Type: Public, Role: _____},
 	"shop.Fulfillment/GetPublicFulfillment":              {Type: Public, Role: _____},
-	"shop.Fulfillment/GetExternalShippingServices":       {Type: Shop, Role: _____, AuthPartner: Opt},
-	"shop.Fulfillment/CancelFulfillment":                 {Type: Shop, Role: Staff, AuthPartner: Opt},
-	"shop.Fulfillment/CreateFulfillmentsForOrder":        {Type: Shop, Role: Staff},
-	"shop.Fulfillment/GetFulfillment":                    {Type: Shop, Role: _____, AuthPartner: Opt},
-	"shop.Fulfillment/GetFulfillments":                   {Type: Shop, Role: _____, AuthPartner: Opt},
+	"shop.Fulfillment/GetExternalShippingServices":       {Type: Shop, Role: _____, AuthPartner: Opt, Actions: actions(ShopFulfillmentCreate)},
+	"shop.Fulfillment/CancelFulfillment":                 {Type: Shop, Role: Staff, AuthPartner: Opt, Actions: actions(ShopFulfillmentCancel)},
+	"shop.Fulfillment/CreateFulfillmentsForOrder":        {Type: Shop, Role: Staff, Actions: actions(ShopFulfillmentCreate)},
+	"shop.Fulfillment/GetFulfillment":                    {Type: Shop, Role: _____, AuthPartner: Opt, Actions: actions(ShopFulfillmentView)},
+	"shop.Fulfillment/GetFulfillments":                   {Type: Shop, Role: _____, AuthPartner: Opt, Actions: actions(ShopFulfillmentView)},
 	"shop.Fulfillment/UpdateFulfillmentsShippingState":   {Type: Shop, Role: Staff},
 
-	"shop.Shipnow/GetShipnowFulfillment":     {Type: Shop},
-	"shop.Shipnow/GetShipnowFulfillments":    {Type: Shop},
-	"shop.Shipnow/CreateShipnowFulfillment":  {Type: Shop},
-	"shop.Shipnow/ConfirmShipnowFulfillment": {Type: Shop},
-	"shop.Shipnow/UpdateShipnowFulfillment":  {Type: Shop},
-	"shop.Shipnow/CancelShipnowFulfillment":  {Type: Shop},
-	"shop.Shipnow/GetShipnowServices":        {Type: Shop},
+	"shop.Shipnow/GetShipnowFulfillment":     {Type: Shop, Actions: actions(ShopShipNowView)},
+	"shop.Shipnow/GetShipnowFulfillments":    {Type: Shop, Actions: actions(ShopShipNowView)},
+	"shop.Shipnow/CreateShipnowFulfillment":  {Type: Shop, Actions: actions(ShopShipNowCreate)},
+	"shop.Shipnow/ConfirmShipnowFulfillment": {Type: Shop, Actions: actions(ShopShipNowConfirm)},
+	"shop.Shipnow/UpdateShipnowFulfillment":  {Type: Shop, Actions: actions(ShopShipNowUpdate)},
+	"shop.Shipnow/CancelShipnowFulfillment":  {Type: Shop, Actions: actions(ShopShipNowCancel)},
+	"shop.Shipnow/GetShipnowServices":        {Type: Shop, Actions: actions(ShopShipNowView)},
 
-	"shop.Brand/GetBrand":  {Type: Shop, Role: _____, AuthPartner: Opt},
-	"shop.Brand/GetBrands": {Type: Shop, Role: _____, AuthPartner: Opt},
+	"shop.Brand/GetBrand":  {Type: Shop, Role: _____, AuthPartner: Opt, Actions: actions(ShopProductBasicInfoView)},
+	"shop.Brand/GetBrands": {Type: Shop, Role: _____, AuthPartner: Opt, Actions: actions(ShopProductBasicInfoView)},
 
 	"shop.History/GetFulfillmentHistory": {Type: Shop, Role: _____, AuthPartner: Opt},
 
-	"shop.MoneyTransaction/GetMoneyTransaction":  {Type: Shop, Role: _____},
-	"shop.MoneyTransaction/GetMoneyTransactions": {Type: Shop, Role: _____},
+	"shop.MoneyTransaction/GetMoneyTransaction":  {Type: Shop, Role: _____, Actions: actions(ShopMoneyTransactionView)},
+	"shop.MoneyTransaction/GetMoneyTransactions": {Type: Shop, Role: _____, Actions: actions(ShopMoneyTransactionView)},
 
-	"shop.Summary/SummarizeFulfillments": {Type: Shop, Role: Admin},
-	"shop.Summary/SummarizePOS":          {Type: Shop},
-	"shop.Summary/CalcBalanceShop":       {Type: Shop, AuthPartner: Opt},
+	"shop.Summary/SummarizeFulfillments": {Type: Shop, Role: Admin, Actions: actions(ShopDashboardView)},
+	"shop.Summary/SummarizePOS":          {Type: Shop, Actions: actions(ShopDashboardView)},
+	"shop.Summary/CalcBalanceShop":       {Type: Shop, AuthPartner: Opt, Actions: actions(ShopDashboardView)},
 
 	"shop.Export/GetExports":    {Type: Shop},
 	"shop.Export/RequestExport": {Type: Shop},
@@ -391,48 +504,47 @@ var ACL = map[string]*permission.PermissionDecl{
 
 	"shop.Authorize/GetAuthorizedPartners": {Type: Shop},
 	"shop.Authorize/GetAvailablePartners":  {Type: Shop},
-	"shop.Authorize/AuthorizePartner":      {Type: Shop},
+	"shop.Authorize/AuthorizePartner":      {Type: Shop, Actions: actions(ShopExternalAccountManage)},
 
 	//-- Receipt --//
-	"shop.Receipt/CreateReceipt":           {Type: Shop},
-	"shop.Receipt/UpdateReceipt":           {Type: Shop},
-	"shop.Receipt/GetReceipt":              {Type: Shop},
-	"shop.Receipt/GetReceipts":             {Type: Shop},
-	"shop.Receipt/GetReceiptsByLedgerType": {Type: Shop},
-	"shop.Receipt/ConfirmReceipt":          {Type: Shop},
-	"shop.Receipt/CancelReceipt":           {Type: Shop},
+	"shop.Receipt/CreateReceipt":           {Type: Shop, Actions: actions(ShopReceiptCreate)},
+	"shop.Receipt/UpdateReceipt":           {Type: Shop, Actions: actions(ShopReceiptUpdate)},
+	"shop.Receipt/GetReceipt":              {Type: Shop, Actions: actions(ShopReceiptView)},
+	"shop.Receipt/GetReceipts":             {Type: Shop, Actions: actions(ShopReceiptView)},
+	"shop.Receipt/GetReceiptsByLedgerType": {Type: Shop, Actions: actions(ShopReceiptView)},
+	"shop.Receipt/ConfirmReceipt":          {Type: Shop, Actions: actions(ShopReceiptConfirm)},
+	"shop.Receipt/CancelReceipt":           {Type: Shop, Actions: actions(ShopReceiptCancel)},
 
-	"shop.Trading/TradingPaymentOrder": {Type: Shop},
-	"shop.Trading/TradingGetProduct":   {Type: Shop},
-	"shop.Trading/TradingGetProducts":  {Type: Shop},
-	"shop.Trading/TradingCreateOrder":  {Type: Shop},
-	"shop.Trading/TradingGetOrder":     {Type: Shop},
-	"shop.Trading/TradingGetOrders":    {Type: Shop},
+	"shop.Trading/TradingGetProduct":  {Type: Shop, Actions: actions(ShopTradingProductView)},
+	"shop.Trading/TradingGetProducts": {Type: Shop, Actions: actions(ShopTradingProductView)},
+	"shop.Trading/TradingCreateOrder": {Type: Shop, Actions: actions(ShopTradingOrderView)},
+	"shop.Trading/TradingGetOrder":    {Type: Shop, Actions: actions(ShopTradingOrderCreate)},
+	"shop.Trading/TradingGetOrders":   {Type: Shop, Actions: actions(ShopTradingOrderCreate)},
 
-	"shop.Payment/PaymentTradingOrder":    {Type: Shop},
-	"shop.Payment/PaymentCheckReturnData": {Type: Shop},
+	"shop.Payment/PaymentTradingOrder":    {Type: Shop, Actions: actions(ShopTradingOrderCreate)},
+	"shop.Payment/PaymentCheckReturnData": {Type: Shop, Actions: actions(ShopTradingOrderCreate)},
 
-	"shop.Inventory/CreateInventoryVoucher":          {Type: Shop},
-	"shop.Inventory/ConfirmInventoryVoucher":         {Type: Shop},
-	"shop.Inventory/CancelInventoryVoucher":          {Type: Shop},
-	"shop.Inventory/UpdateInventoryVoucher":          {Type: Shop},
-	"shop.Inventory/AdjustInventoryQuantity":         {Type: Shop},
-	"shop.Inventory/UpdateInventoryVariantCostPrice": {Type: Shop},
+	"shop.Inventory/CreateInventoryVoucher":          {Type: Shop, Actions: actions(ShopInventoryCreate)},
+	"shop.Inventory/ConfirmInventoryVoucher":         {Type: Shop, Actions: actions(ShopInventoryConfirm)},
+	"shop.Inventory/CancelInventoryVoucher":          {Type: Shop, Actions: actions(ShopInventoryCancel)},
+	"shop.Inventory/UpdateInventoryVoucher":          {Type: Shop, Actions: actions(ShopInventoryUpdate)},
+	"shop.Inventory/AdjustInventoryQuantity":         {Type: Shop, Actions: actions(ShopInventoryConfirm)},
+	"shop.Inventory/UpdateInventoryVariantCostPrice": {Type: Shop, Actions: actions(ShopProductCostPriceUpdate)},
 
-	"shop.Inventory/GetInventoryVariants":             {Type: Shop},
-	"shop.Inventory/GetInventoryVariantsByVariantIDs": {Type: Shop},
-	"shop.Inventory/GetInventoryVouchersByIDs":        {Type: Shop},
-	"shop.Inventory/GetInventoryVouchers":             {Type: Shop},
-	"shop.Inventory/GetInventoryVoucher":              {Type: Shop},
-	"shop.Inventory/GetInventoryVouchersByReference":  {Type: Shop},
-	"shop.Inventory/GetInventoryVariant":              {Type: Shop},
+	"shop.Inventory/GetInventoryVariants":             {Type: Shop, Actions: actions(ShopInventoryView)},
+	"shop.Inventory/GetInventoryVariantsByVariantIDs": {Type: Shop, Actions: actions(ShopInventoryView)},
+	"shop.Inventory/GetInventoryVouchersByIDs":        {Type: Shop, Actions: actions(ShopInventoryView)},
+	"shop.Inventory/GetInventoryVouchers":             {Type: Shop, Actions: actions(ShopInventoryView)},
+	"shop.Inventory/GetInventoryVoucher":              {Type: Shop, Actions: actions(ShopInventoryView)},
+	"shop.Inventory/GetInventoryVouchersByReference":  {Type: Shop, Actions: actions(ShopInventoryView)},
+	"shop.Inventory/GetInventoryVariant":              {Type: Shop, Actions: actions(ShopInventoryView)},
 
-	"shop.Brand/CreateBrand":     {Type: Shop},
-	"shop.Brand/UpdateBrandInfo": {Type: Shop},
-	"shop.Brand/DeleteBrand":     {Type: Shop},
-	"shop.Brand/GetBrandByID":    {Type: Shop},
-	"shop.Brand/GetBrandsByIDs":  {Type: Shop},
-	"shop.Brand/ListBrands":      {Type: Shop},
+	"shop.Brand/CreateBrand":     {Type: Shop, Actions: actions(ShopProductCreate)},
+	"shop.Brand/UpdateBrandInfo": {Type: Shop, Actions: actions(ShopProductBasicInfoUpdate)},
+	"shop.Brand/DeleteBrand":     {Type: Shop, Actions: actions(ShopProductDelete)},
+	"shop.Brand/GetBrandByID":    {Type: Shop, Actions: actions(ShopProductBasicInfoView)},
+	"shop.Brand/GetBrandsByIDs":  {Type: Shop, Actions: actions(ShopProductBasicInfoView)},
+	"shop.Brand/ListBrands":      {Type: Shop, Actions: actions(ShopProductBasicInfoView)},
 
 	//-- pgevent --//
 	"pgevent.Misc/VersionInfo":     {Type: Secret},
@@ -504,50 +616,67 @@ var ACL = map[string]*permission.PermissionDecl{
 	"affiliate.Affiliate/GetReferrals":                             {Type: Affiliate},
 
 	// supplier:
-	"shop.Supplier/GetSupplier":             {Type: Shop},
-	"shop.Supplier/GetSuppliers":            {Type: Shop},
-	"shop.Supplier/GetSuppliersByIDs":       {Type: Shop},
-	"shop.Supplier/CreateSupplier":          {Type: Shop},
-	"shop.Supplier/UpdateSupplier":          {Type: Shop},
-	"shop.Supplier/DeleteSupplier":          {Type: Shop},
-	"shop.Supplier/GetSuppliersByVariantID": {Type: Shop},
+	"shop.Supplier/GetSupplier":             {Type: Shop, Actions: actions(ShopSupplierView)},
+	"shop.Supplier/GetSuppliers":            {Type: Shop, Actions: actions(ShopSupplierView)},
+	"shop.Supplier/GetSuppliersByIDs":       {Type: Shop, Actions: actions(ShopSupplierView)},
+	"shop.Supplier/CreateSupplier":          {Type: Shop, Actions: actions(ShopSupplierCreate)},
+	"shop.Supplier/UpdateSupplier":          {Type: Shop, Actions: actions(ShopSupplierUpdate)},
+	"shop.Supplier/DeleteSupplier":          {Type: Shop, Actions: actions(ShopSupplierDelete)},
+	"shop.Supplier/GetSuppliersByVariantID": {Type: Shop, Actions: actions(ShopSupplierView)},
 
 	// carrier:
-	"shop.Carrier/GetCarrier":       {Type: Shop},
-	"shop.Carrier/GetCarriers":      {Type: Shop},
-	"shop.Carrier/GetCarriersByIDs": {Type: Shop},
-	"shop.Carrier/CreateCarrier":    {Type: Shop},
-	"shop.Carrier/UpdateCarrier":    {Type: Shop},
-	"shop.Carrier/DeleteCarrier":    {Type: Shop},
+	"shop.Carrier/GetCarrier":       {Type: Shop, Actions: actions(ShopCarrierView)},
+	"shop.Carrier/GetCarriers":      {Type: Shop, Actions: actions(ShopCarrierView)},
+	"shop.Carrier/GetCarriersByIDs": {Type: Shop, Actions: actions(ShopCarrierView)},
+	"shop.Carrier/CreateCarrier":    {Type: Shop, Actions: actions(ShopCarrierCreate)},
+	"shop.Carrier/UpdateCarrier":    {Type: Shop, Actions: actions(ShopCarrierUpdate)},
+	"shop.Carrier/DeleteCarrier":    {Type: Shop, Actions: actions(ShopCarrierDelete)},
 
 	// Ledger:
-	"shop.Ledger/GetLedger":    {Type: Shop},
-	"shop.Ledger/GetLedgers":   {Type: Shop},
-	"shop.Ledger/CreateLedger": {Type: Shop},
-	"shop.Ledger/UpdateLedger": {Type: Shop},
-	"shop.Ledger/DeleteLedger": {Type: Shop},
+	"shop.Ledger/GetLedger":    {Type: Shop, Actions: actions(ShopLedgerView)},
+	"shop.Ledger/GetLedgers":   {Type: Shop, Actions: actions(ShopLedgerView)},
+	"shop.Ledger/CreateLedger": {Type: Shop, Actions: actions(ShopLedgerCreate)},
+	"shop.Ledger/UpdateLedger": {Type: Shop, Actions: actions(ShopLedgerUpdate)},
+	"shop.Ledger/DeleteLedger": {Type: Shop, Actions: actions(ShopLedgerDelete)},
 
 	// PurchaseOrder:
-	"shop.PurchaseOrder/GetPurchaseOrder":             {Type: Shop},
-	"shop.PurchaseOrder/GetPurchaseOrders":            {Type: Shop},
-	"shop.PurchaseOrder/GetPurchaseOrdersByIDs":       {Type: Shop},
-	"shop.PurchaseOrder/GetPurchaseOrdersByReceiptID": {Type: Shop},
-	"shop.PurchaseOrder/CreatePurchaseOrder":          {Type: Shop},
-	"shop.PurchaseOrder/UpdatePurchaseOrder":          {Type: Shop},
+	"shop.PurchaseOrder/GetPurchaseOrder":             {Type: Shop, Actions: actions(ShopPurchaseOrderView)},
+	"shop.PurchaseOrder/GetPurchaseOrders":            {Type: Shop, Actions: actions(ShopPurchaseOrderView)},
+	"shop.PurchaseOrder/GetPurchaseOrdersByIDs":       {Type: Shop, Actions: actions(ShopPurchaseOrderView)},
+	"shop.PurchaseOrder/GetPurchaseOrdersByReceiptID": {Type: Shop, Actions: actions(ShopPurchaseOrderView)},
+	"shop.PurchaseOrder/CreatePurchaseOrder":          {Type: Shop, Actions: actions(ShopPurchaseOrderCreate)},
+	"shop.PurchaseOrder/UpdatePurchaseOrder":          {Type: Shop, Actions: actions(ShopPurchaseOrderUpdate)},
 	"shop.PurchaseOrder/DeletePurchaseOrder":          {Type: Shop},
-	"shop.PurchaseOrder/ConfirmPurchaseOrder":         {Type: Shop},
-	"shop.PurchaseOrder/CancelPurchaseOrder":          {Type: Shop},
+	"shop.PurchaseOrder/ConfirmPurchaseOrder":         {Type: Shop, Actions: actions(ShopPurchaseOrderConfirm)},
+	"shop.PurchaseOrder/CancelPurchaseOrder":          {Type: Shop, Actions: actions(ShopPurchaseOrderCancel)},
 
 	// Stocktake:
-	"shop.Stocktake/CreateStocktake":    {Type: Shop, Auth: User},
-	"shop.Stocktake/UpdateStocktake":    {Type: Shop},
-	"shop.Stocktake/ConfirmStocktake":   {Type: Shop},
-	"shop.Stocktake/CancelStocktake":    {Type: Shop},
-	"shop.Stocktake/GetStocktake":       {Type: Shop},
-	"shop.Stocktake/GetStocktakesByIDs": {Type: Shop},
-	"shop.Stocktake/GetStocktakes":      {Type: Shop},
+	"shop.Stocktake/CreateStocktake":    {Type: Shop, Auth: User, Actions: actions(ShopStocktakeCreate)},
+	"shop.Stocktake/UpdateStocktake":    {Type: Shop, Actions: actions(ShopStocktakeUpdate)},
+	"shop.Stocktake/ConfirmStocktake":   {Type: Shop, Actions: actions(ShopStocktakeConfirm)},
+	"shop.Stocktake/CancelStocktake":    {Type: Shop, Actions: actions(ShopStocktakeCancel)},
+	"shop.Stocktake/GetStocktake":       {Type: Shop, Actions: actions(ShopStocktakeView)},
+	"shop.Stocktake/GetStocktakesByIDs": {Type: Shop, Actions: actions(ShopStocktakeView)},
+	"shop.Stocktake/GetStocktakes":      {Type: Shop, Actions: actions(ShopStocktakeView)},
 
-	// Invitation:
-	"shop.Invitation/CreateInvitation": {Type: Shop},
-	"shop.Invitation/GetInvitations":   {Type: Shop},
+	// Relationship:
+	"etop.UserRelationship/AcceptInvitation":     {Type: CurUsr},
+	"etop.UserRelationship/RejectInvitation":     {Type: CurUsr},
+	"etop.UserRelationship/GetInvitationByToken": {Type: Public},
+	"etop.UserRelationship/GetInvitations":       {Type: CurUsr},
+	"etop.UserRelationship/LeaveAccount":         {Type: CurUsr},
+
+	// Authorization:
+	"etop.AccountRelationship/CreateInvitation":   {Type: Shop, Actions: actions(RelationshipInvitationCreate)},
+	"etop.AccountRelationship/GetInvitations":     {Type: Shop, Actions: actions(RelationshipInvitationView)},
+	"etop.AccountRelationship/DeleteInvitation":   {Type: Shop, Actions: actions(RelationshipInvitationDelete)},
+	"etop.AccountRelationship/UpdatePermission":   {Type: Shop, Actions: actions(RelationshipPermissionUpdate)},
+	"etop.AccountRelationship/UpdateRelationship": {Type: Shop, Actions: actions(RelationshipRelationshipUpdate)},
+	"etop.AccountRelationship/GetRelationships":   {Type: Shop, Actions: actions(RelationshipRelationshipView)},
+	"etop.AccountRelationship/RemoveUser":         {Type: Shop, Actions: actions(RelationshipUserRemove)},
+}
+
+func actions(actions ...permission.ActionType) (actionsResult []permission.ActionType) {
+	actionsResult = append(actionsResult, actions...)
+	return
 }

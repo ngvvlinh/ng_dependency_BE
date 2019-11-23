@@ -20,6 +20,87 @@ type Server interface {
 	PathPrefix() string
 }
 
+type AccountRelationshipServiceServer struct {
+	inner AccountRelationshipService
+}
+
+func NewAccountRelationshipServiceServer(svc AccountRelationshipService) Server {
+	return &AccountRelationshipServiceServer{
+		inner: svc,
+	}
+}
+
+const AccountRelationshipServicePathPrefix = "/etop.AccountRelationship/"
+
+func (s *AccountRelationshipServiceServer) PathPrefix() string {
+	return AccountRelationshipServicePathPrefix
+}
+
+func (s *AccountRelationshipServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
+	ctx := req.Context()
+	serve, err := httprpc.ParseRequestHeader(req)
+	if err != nil {
+		httprpc.WriteError(ctx, resp, err)
+		return
+	}
+	reqMsg, exec, err := s.parseRoute(req.URL.Path)
+	if err != nil {
+		httprpc.WriteError(ctx, resp, err)
+		return
+	}
+	serve(ctx, resp, req, reqMsg, exec)
+}
+
+func (s *AccountRelationshipServiceServer) parseRoute(path string) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
+	switch path {
+	case "/etop.AccountRelationship/CreateInvitation":
+		msg := &etop.CreateInvitationRequest{}
+		fn := func(ctx context.Context) (capi.Message, error) {
+			return s.inner.CreateInvitation(ctx, msg)
+		}
+		return msg, fn, nil
+	case "/etop.AccountRelationship/DeleteInvitation":
+		msg := &etop.DeleteInvitationRequest{}
+		fn := func(ctx context.Context) (capi.Message, error) {
+			return s.inner.DeleteInvitation(ctx, msg)
+		}
+		return msg, fn, nil
+	case "/etop.AccountRelationship/GetInvitations":
+		msg := &etop.GetInvitationsRequest{}
+		fn := func(ctx context.Context) (capi.Message, error) {
+			return s.inner.GetInvitations(ctx, msg)
+		}
+		return msg, fn, nil
+	case "/etop.AccountRelationship/GetRelationships":
+		msg := &etop.GetRelationshipsRequest{}
+		fn := func(ctx context.Context) (capi.Message, error) {
+			return s.inner.GetRelationships(ctx, msg)
+		}
+		return msg, fn, nil
+	case "/etop.AccountRelationship/RemoveUser":
+		msg := &etop.RemoveUserRequest{}
+		fn := func(ctx context.Context) (capi.Message, error) {
+			return s.inner.RemoveUser(ctx, msg)
+		}
+		return msg, fn, nil
+	case "/etop.AccountRelationship/UpdatePermission":
+		msg := &etop.UpdateAccountUserPermissionRequest{}
+		fn := func(ctx context.Context) (capi.Message, error) {
+			return s.inner.UpdatePermission(ctx, msg)
+		}
+		return msg, fn, nil
+	case "/etop.AccountRelationship/UpdateRelationship":
+		msg := &etop.UpdateRelationshipRequest{}
+		fn := func(ctx context.Context) (capi.Message, error) {
+			return s.inner.UpdateRelationship(ctx, msg)
+		}
+		return msg, fn, nil
+	default:
+		msg := fmt.Sprintf("no handler for path %q", path)
+		return nil, nil, httprpc.BadRouteError(msg, "POST", path)
+	}
+}
+
 type AccountServiceServer struct {
 	inner AccountService
 }
@@ -189,69 +270,6 @@ func (s *BankServiceServer) parseRoute(path string) (reqMsg capi.Message, _ http
 		msg := &etop.GetProvincesByBankResquest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.GetProvincesByBank(ctx, msg)
-		}
-		return msg, fn, nil
-	default:
-		msg := fmt.Sprintf("no handler for path %q", path)
-		return nil, nil, httprpc.BadRouteError(msg, "POST", path)
-	}
-}
-
-type InvitationServiceServer struct {
-	inner InvitationService
-}
-
-func NewInvitationServiceServer(svc InvitationService) Server {
-	return &InvitationServiceServer{
-		inner: svc,
-	}
-}
-
-const InvitationServicePathPrefix = "/etop.Invitation/"
-
-func (s *InvitationServiceServer) PathPrefix() string {
-	return InvitationServicePathPrefix
-}
-
-func (s *InvitationServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
-	ctx := req.Context()
-	serve, err := httprpc.ParseRequestHeader(req)
-	if err != nil {
-		httprpc.WriteError(ctx, resp, err)
-		return
-	}
-	reqMsg, exec, err := s.parseRoute(req.URL.Path)
-	if err != nil {
-		httprpc.WriteError(ctx, resp, err)
-		return
-	}
-	serve(ctx, resp, req, reqMsg, exec)
-}
-
-func (s *InvitationServiceServer) parseRoute(path string) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
-	switch path {
-	case "/etop.Invitation/AcceptInvitation":
-		msg := &etop.AcceptInvitationRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.AcceptInvitation(ctx, msg)
-		}
-		return msg, fn, nil
-	case "/etop.Invitation/GetInvitationByToken":
-		msg := &etop.GetInvitationByTokenRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.GetInvitationByToken(ctx, msg)
-		}
-		return msg, fn, nil
-	case "/etop.Invitation/GetInvitations":
-		msg := &etop.GetInvitationsRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.GetInvitations(ctx, msg)
-		}
-		return msg, fn, nil
-	case "/etop.Invitation/RejectInvitation":
-		msg := &etop.RejectInvitationRequest{}
-		fn := func(ctx context.Context) (capi.Message, error) {
-			return s.inner.RejectInvitation(ctx, msg)
 		}
 		return msg, fn, nil
 	default:
@@ -441,6 +459,75 @@ func (s *RelationshipServiceServer) parseRoute(path string) (reqMsg capi.Message
 		msg := &etop.RemoveUserFromCurrentAccountRequest{}
 		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.RemoveUserFromCurrentAccount(ctx, msg)
+		}
+		return msg, fn, nil
+	default:
+		msg := fmt.Sprintf("no handler for path %q", path)
+		return nil, nil, httprpc.BadRouteError(msg, "POST", path)
+	}
+}
+
+type UserRelationshipServiceServer struct {
+	inner UserRelationshipService
+}
+
+func NewUserRelationshipServiceServer(svc UserRelationshipService) Server {
+	return &UserRelationshipServiceServer{
+		inner: svc,
+	}
+}
+
+const UserRelationshipServicePathPrefix = "/etop.UserRelationship/"
+
+func (s *UserRelationshipServiceServer) PathPrefix() string {
+	return UserRelationshipServicePathPrefix
+}
+
+func (s *UserRelationshipServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Request) {
+	ctx := req.Context()
+	serve, err := httprpc.ParseRequestHeader(req)
+	if err != nil {
+		httprpc.WriteError(ctx, resp, err)
+		return
+	}
+	reqMsg, exec, err := s.parseRoute(req.URL.Path)
+	if err != nil {
+		httprpc.WriteError(ctx, resp, err)
+		return
+	}
+	serve(ctx, resp, req, reqMsg, exec)
+}
+
+func (s *UserRelationshipServiceServer) parseRoute(path string) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
+	switch path {
+	case "/etop.UserRelationship/AcceptInvitation":
+		msg := &etop.AcceptInvitationRequest{}
+		fn := func(ctx context.Context) (capi.Message, error) {
+			return s.inner.AcceptInvitation(ctx, msg)
+		}
+		return msg, fn, nil
+	case "/etop.UserRelationship/GetInvitationByToken":
+		msg := &etop.GetInvitationByTokenRequest{}
+		fn := func(ctx context.Context) (capi.Message, error) {
+			return s.inner.GetInvitationByToken(ctx, msg)
+		}
+		return msg, fn, nil
+	case "/etop.UserRelationship/GetInvitations":
+		msg := &etop.GetInvitationsRequest{}
+		fn := func(ctx context.Context) (capi.Message, error) {
+			return s.inner.GetInvitations(ctx, msg)
+		}
+		return msg, fn, nil
+	case "/etop.UserRelationship/LeaveAccount":
+		msg := &etop.UserRelationshipLeaveAccountRequest{}
+		fn := func(ctx context.Context) (capi.Message, error) {
+			return s.inner.LeaveAccount(ctx, msg)
+		}
+		return msg, fn, nil
+	case "/etop.UserRelationship/RejectInvitation":
+		msg := &etop.RejectInvitationRequest{}
+		fn := func(ctx context.Context) (capi.Message, error) {
+			return s.inner.RejectInvitation(ctx, msg)
 		}
 		return msg, fn, nil
 	default:

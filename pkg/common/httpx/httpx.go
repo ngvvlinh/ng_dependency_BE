@@ -356,6 +356,23 @@ func Auth(perm permission.PermType) func(Handler) Handler {
 			}
 
 			session := sessionQuery.Result
+			//var actions []string
+			//switch c.Req.RequestURI {
+			//case "/api/shop.Import/Products":
+			//	actions = []string{"shop/product:import"}
+			//}
+			//
+			//if len(actions) > 0 {
+			//	isTest := 0
+			//	if session.Shop != nil {
+			//		isTest = session.Shop.IsTest
+			//	}
+			//	authorization := auth.New()
+			//	if !authorization.Check(session.Roles, "relationship/user:remove", isTest) {
+			//		return cm.Error(cm.PermissionDenied, "", nil)
+			//	}
+			//}
+
 			userClaim := claims.UserClaim{
 				Claim: session.Claim,
 				Admin: session.Admin,

@@ -4,9 +4,10 @@ import (
 	"context"
 	"time"
 
+	"etop.vn/backend/com/main/authorization/convert"
+
 	"etop.vn/api/main/identity"
 	"etop.vn/api/main/invitation"
-	invitationconvert "etop.vn/backend/com/main/invitation/convert"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/etop/model"
@@ -116,7 +117,7 @@ func (m *ProcessManager) createAccountUserWithRoles(
 			CreatedAt: time.Now(),
 			UpdatedAt: time.Now(),
 			Permission: model.Permission{
-				Roles: invitationconvert.ConvertRolesToStrings(currInvitation.Roles),
+				Roles: convert.ConvertRolesToStrings(currInvitation.Roles),
 			},
 			FullName:  currUser.FullName,
 			ShortName: currUser.ShortName,

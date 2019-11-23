@@ -189,13 +189,13 @@ func Filters(s cmsql.Query, filters []cm.Filter, whitelist FilterWhitelist) (cms
 			if isArray {
 				value := "{}"
 				if filter.Op == "=" {
-					s = buildQuery(s, names, value, func(name string) string {
+					s = buildQuery(s, names, value, simpleQuery(func(name string) string {
 						return whitelist.ToCol(name, "") + ` = ? OR ` + whitelist.ToCol(name, "") + " IS NULL"
-					})
+					}))
 				} else {
-					s = buildQuery(s, names, value, func(name string) string {
+					s = buildQuery(s, names, value, simpleQuery(func(name string) string {
 						return whitelist.ToCol(name, "") + ` != ? AND ` + whitelist.ToCol(name, "") + " IS NOT NULL"
-					})
+					}))
 				}
 				break
 			}
@@ -207,17 +207,17 @@ func Filters(s cmsql.Query, filters []cm.Filter, whitelist FilterWhitelist) (cms
 					return cmsql.Query{}, false, err
 				}
 				if isNullable {
-					s = buildQuery(s, names, value, func(name string) string {
+					s = buildQuery(s, names, nil, simpleQuery(func(name string) string {
 						query := "IS NULL"
 						if value.(bool) {
 							query = "IS NOT NULL"
 						}
-						return whitelist.ToCol(name, "") + query
-					})
+						return whitelist.ToCol(name, "") + ` ` + query
+					}))
 				} else {
-					s = buildQuery(s, names, value, func(name string) string {
+					s = buildQuery(s, names, value, simpleQuery(func(name string) string {
 						return whitelist.ToCol(name, "") + op + ` ?`
-					})
+					}))
 				}
 
 			} else {
@@ -260,9 +260,9 @@ func Filters(s cmsql.Query, filters []cm.Filter, whitelist FilterWhitelist) (cms
 			if err != nil {
 				return cmsql.Query{}, false, err
 			}
-			s = buildQuery(s, names, value, func(name string) string {
+			s = buildQuery(s, names, value, simpleQuery(func(name string) string {
 				return whitelist.ToCol(name, "") + ` ` + op + ` ?`
-			})
+			}))
 
 		case "⊃", "c", "∩", "n":
 			isContains := filter.Op == "⊃" || filter.Op == "c"
@@ -280,9 +280,9 @@ func Filters(s cmsql.Query, filters []cm.Filter, whitelist FilterWhitelist) (cms
 					value = validate.NormalizeSearchQueryOr(filter.Value)
 				}
 
-				s = buildQuery(s, names, value, func(name string) string {
+				s = buildQuery(s, names, value, simpleQuery(func(name string) string {
 					return whitelist.ToCol(name, "_norm") + ` @@ ?::tsquery`
-				})
+				}))
 
 			} else {
 				value, err := parseValueAsList(filter.Value, valueConfig{})
@@ -296,9 +296,9 @@ func Filters(s cmsql.Query, filters []cm.Filter, whitelist FilterWhitelist) (cms
 				} else {
 					op = "&&"
 				}
-				s = buildQuery(s, names, pq.Array(value), func(name string) string {
+				s = buildQuery(s, names, pq.Array(value), simpleQuery(func(name string) string {
 					return whitelist.ToCol(name, "") + ` ` + op + ` ?`
-				})
+				}))
 			}
 
 		case "~=", "≃":
@@ -307,9 +307,9 @@ func Filters(s cmsql.Query, filters []cm.Filter, whitelist FilterWhitelist) (cms
 				return cmsql.Query{}, false, cm.Errorf(cm.InvalidArgument, nil, "Almost equal is not allowed for %v", filter.Name)
 			}
 			value := validate.NormalizeUnaccent(filter.Value)
-			s = buildQuery(s, names, value, func(name string) string {
+			s = buildQuery(s, names, value, simpleQuery(func(name string) string {
 				return whitelist.ToCol(name, "_norm_ua") + ` = ?`
-			})
+			}))
 
 		default:
 			return cmsql.Query{}, false, cm.Error(cm.InvalidArgument, "Invalid filter operation", nil)
@@ -325,21 +325,33 @@ func combineArgs(sql string, args []interface{}) []interface{} {
 	return res
 }
 
-func buildQuery(s cmsql.Query, names []string, value interface{}, fn func(name string) string) cmsql.Query {
+func simpleQuery(fn func(name string) string) func(value interface{}, name string) (string, interface{}) {
+	return func(value interface{}, name string) (string, interface{}) {
+		return fn(name), value
+	}
+}
+
+func buildQuery(s cmsql.Query, names []string, value interface{}, fn func(value interface{}, name string) (string, interface{})) cmsql.Query {
 	if len(names) == 1 {
-		return s.Where(fn(names[0]), value)
+		_expr, _args := fn(value, names[0])
+		if _args == nil {
+			return s.Where(_expr)
+		}
+		return s.Where(_expr, _args)
 	}
 
 	buf := make([]byte, 0, 64)
-	args := make([]interface{}, len(names))
+	args := make([]interface{}, 0, len(names))
 	for i, name := range names {
 		if i > 0 {
 			buf = append(buf, " OR "...)
 		}
-		buf = append(buf, fn(name)...)
-		args[i] = value
+		_expr, _args := fn(value, name)
+		buf = append(buf, _expr...)
+		if _args != nil {
+			args = append(args, _args)
+		}
 	}
-
 	s = s.Where(combineArgs(string(buf), args)...)
 	return s
 }

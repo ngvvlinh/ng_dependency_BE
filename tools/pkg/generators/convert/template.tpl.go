@@ -8,12 +8,12 @@ func RegisterConversions(s *conversion.Scheme) {
 func registerConversions(s *conversion.Scheme) {
 {{range .Conversions -}}
     s.Register((*{{.ArgType}})(nil), (*{{.OutType}})(nil), func(arg, out interface{}) error {
-        {{.Action}}_{{.ArgStr}}_{{.OutStr}}(arg.(*{{.ArgType}}), out.(*{{.OutType}}))
+        {{.Actions}}_{{.ArgStr}}_{{.OutStr}}(arg.(*{{.ArgType}}), out.(*{{.OutType}}))
         return nil
     })
-    {{if .Action|eq "Convert" -}}
+    {{if .Actions|eq "Convert" -}}
     s.Register(([]*{{.ArgType}})(nil), (*[]*{{.OutType}})(nil), func(arg, out interface{}) error {
-        out0 := {{.Action}}_{{.ArgStr|plural}}_{{.OutStr|plural}}(arg.([]*{{.ArgType}}))
+        out0 := {{.Actions}}_{{.ArgStr|plural}}_{{.OutStr|plural}}(arg.([]*{{.ArgType}}))
         *out.(*[]*{{.OutType}}) = out0
         return nil
     })
@@ -23,7 +23,7 @@ func registerConversions(s *conversion.Scheme) {
 `
 
 const tplConvertCustomText = `
-func {{.Action}}_{{.ArgStr}}_{{.OutStr}}(arg *{{.ArgType}}, out *{{.OutType}}) *{{.OutType}} {
+func {{.Actions}}_{{.ArgStr}}_{{.OutStr}}(arg *{{.ArgType}}, out *{{.OutType}}) *{{.OutType}} {
   {{- if .CustomConversionMode|eq 1}}
     return {{.CustomConversionFuncName}}(arg)
   {{- else if .CustomConversionMode|eq 2}}
@@ -57,7 +57,7 @@ func {{.action}}_{{.ArgStr}}_{{.OutStr}}(arg *{{.ArgType}}, out *{{.OutType}}) {
   {{end}}
 }
 
-func {{.Action}}_{{.ArgStr|plural}}_{{.OutStr|plural}}(args []*{{.ArgType}})(outs []*{{.OutType}}) {
+func {{.Actions}}_{{.ArgStr|plural}}_{{.OutStr|plural}}(args []*{{.ArgType}})(outs []*{{.OutType}}) {
   tmps := make([]{{.OutType}}, len(args))
   outs = make([]*{{.OutType}}, len(args))
 	for i := range tmps {

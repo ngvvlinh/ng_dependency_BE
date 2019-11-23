@@ -354,6 +354,9 @@
         "agree_tos": {
           "type": "boolean"
         },
+        "auto_accept_invitation": {
+          "type": "boolean"
+        },
         "email": {
           "type": "string"
         },

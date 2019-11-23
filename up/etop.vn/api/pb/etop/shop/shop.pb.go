@@ -16,30 +16,6 @@ import (
 	"etop.vn/common/jsonx"
 )
 
-type InvitationsResponse struct {
-	Invitations []*etop.Invitation `json:"invitations"`
-	Paging      *common.PageInfo   `json:"paging"`
-}
-
-func (m *InvitationsResponse) Reset()         { *m = InvitationsResponse{} }
-func (m *InvitationsResponse) String() string { return jsonx.MustMarshalToString(m) }
-
-type GetInvitationsRequest struct {
-	Paging  *common.Paging   `json:"paging"`
-	Filters []*common.Filter `json:"filters"`
-}
-
-func (m *GetInvitationsRequest) Reset()         { *m = GetInvitationsRequest{} }
-func (m *GetInvitationsRequest) String() string { return jsonx.MustMarshalToString(m) }
-
-type CreateInvitationRequest struct {
-	Email string   `json:"email"`
-	Roles []string `json:"roles"`
-}
-
-func (m *CreateInvitationRequest) Reset()         { *m = CreateInvitationRequest{} }
-func (m *CreateInvitationRequest) String() string { return jsonx.MustMarshalToString(m) }
-
 type PurchaseOrder struct {
 	Id               dot.ID                 `json:"id"`
 	ShopId           dot.ID                 `json:"shop_id"`

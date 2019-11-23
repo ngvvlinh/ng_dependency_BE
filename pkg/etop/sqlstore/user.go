@@ -5,6 +5,8 @@ import (
 	"strings"
 	"time"
 
+	"etop.vn/backend/pkg/common/sq"
+
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/validate"
@@ -17,6 +19,7 @@ import (
 func init() {
 	bus.AddHandlers("sql",
 		GetUserByID,
+		GetUserByEmail,
 		GetUserByLogin,
 		CreateUser,
 		SetPassword,
@@ -38,6 +41,11 @@ func User(ctx context.Context) *UserStore {
 
 func (s *UserStore) ID(id dot.ID) *UserStore {
 	s.preds = append(s.preds, s.ft.ByID(id))
+	return s
+}
+
+func (s *UserStore) IDs(ids ...dot.ID) *UserStore {
+	s.preds = append(s.preds, sq.PrefixedIn(&s.ft.prefix, "id", ids))
 	return s
 }
 
@@ -71,6 +79,15 @@ func GetUserByID(ctx context.Context, query *model.GetUserByIDQuery) error {
 
 	query.Result = new(model.User)
 	return x.Where("id = ?", query.UserID).
+		ShouldGet(query.Result)
+}
+
+func GetUserByEmail(ctx context.Context, query *model.GetUserByEmailQuery) error {
+	if query.Email == "" {
+		return cm.Error(cm.InvalidArgument, "", nil)
+	}
+	query.Result = new(model.User)
+	return x.Where("email = ?", query.Email).
 		ShouldGet(query.Result)
 }
 

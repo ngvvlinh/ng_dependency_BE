@@ -71,6 +71,7 @@ type PartnerClaim struct {
 type ShopClaim struct {
 	UserClaim
 	CommonAccountClaim
+	Actions []string
 
 	Shop *model.Shop
 }

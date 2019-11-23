@@ -6,16 +6,17 @@ package api
 
 import (
 	"context"
+	"strings"
 	"time"
 
 	cm "etop.vn/api/pb/common"
 	etop "etop.vn/api/pb/etop"
-	shop "etop.vn/api/pb/etop/shop"
 	api "etop.vn/api/top/int/etop"
 	common "etop.vn/backend/pkg/common"
 	bus "etop.vn/backend/pkg/common/bus"
 	metrics "etop.vn/backend/pkg/common/metrics"
 	cmwrapper "etop.vn/backend/pkg/common/wrapper"
+	"etop.vn/backend/pkg/etop/authorize/auth"
 	claims "etop.vn/backend/pkg/etop/authorize/claims"
 	middleware "etop.vn/backend/pkg/etop/authorize/middleware"
 	model "etop.vn/backend/pkg/etop/model"
@@ -145,6 +146,392 @@ func (s wrapAccountService) UpdateURLSlug(ctx context.Context, req *etop.UpdateU
 	}
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.UpdateURLSlug(ctx, query)
+	resp = query.Result
+	if err != nil {
+		return nil, err
+	}
+	if resp == nil {
+		return nil, common.Error(common.Internal, "", nil).Log("nil response")
+	}
+	errs = cmwrapper.HasErrors(resp)
+	return resp, nil
+}
+
+func WrapAccountRelationshipService(s *AccountRelationshipService) api.AccountRelationshipService {
+	return wrapAccountRelationshipService{s: s}
+}
+
+type wrapAccountRelationshipService struct {
+	s *AccountRelationshipService
+}
+
+type AccountRelationshipCreateInvitationEndpoint struct {
+	*etop.CreateInvitationRequest
+	Result  *etop.Invitation
+	Context claims.ShopClaim
+}
+
+func (s wrapAccountRelationshipService) CreateInvitation(ctx context.Context, req *etop.CreateInvitationRequest) (resp *etop.Invitation, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "etop.AccountRelationship/CreateInvitation"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:     ctx,
+		RequireAuth: true,
+		RequireShop: true,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &AccountRelationshipCreateInvitationEndpoint{CreateInvitationRequest: req}
+	query.Context.Claim = session.Claim
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "relationship/invitation:create", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("relationship/invitation:create", "|")
+	ctx = bus.NewRootContext(ctx)
+	err = s.s.CreateInvitation(ctx, query)
+	resp = query.Result
+	if err != nil {
+		return nil, err
+	}
+	if resp == nil {
+		return nil, common.Error(common.Internal, "", nil).Log("nil response")
+	}
+	errs = cmwrapper.HasErrors(resp)
+	return resp, nil
+}
+
+type AccountRelationshipDeleteInvitationEndpoint struct {
+	*etop.DeleteInvitationRequest
+	Result  *cm.UpdatedResponse
+	Context claims.ShopClaim
+}
+
+func (s wrapAccountRelationshipService) DeleteInvitation(ctx context.Context, req *etop.DeleteInvitationRequest) (resp *cm.UpdatedResponse, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "etop.AccountRelationship/DeleteInvitation"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:     ctx,
+		RequireAuth: true,
+		RequireShop: true,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &AccountRelationshipDeleteInvitationEndpoint{DeleteInvitationRequest: req}
+	query.Context.Claim = session.Claim
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "relationship/invitation:delete", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("relationship/invitation:delete", "|")
+	ctx = bus.NewRootContext(ctx)
+	err = s.s.DeleteInvitation(ctx, query)
+	resp = query.Result
+	if err != nil {
+		return nil, err
+	}
+	if resp == nil {
+		return nil, common.Error(common.Internal, "", nil).Log("nil response")
+	}
+	errs = cmwrapper.HasErrors(resp)
+	return resp, nil
+}
+
+type AccountRelationshipGetInvitationsEndpoint struct {
+	*etop.GetInvitationsRequest
+	Result  *etop.InvitationsResponse
+	Context claims.ShopClaim
+}
+
+func (s wrapAccountRelationshipService) GetInvitations(ctx context.Context, req *etop.GetInvitationsRequest) (resp *etop.InvitationsResponse, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "etop.AccountRelationship/GetInvitations"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:     ctx,
+		RequireAuth: true,
+		RequireShop: true,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &AccountRelationshipGetInvitationsEndpoint{GetInvitationsRequest: req}
+	query.Context.Claim = session.Claim
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "relationship/invitation:view", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("relationship/invitation:view", "|")
+	ctx = bus.NewRootContext(ctx)
+	err = s.s.GetInvitations(ctx, query)
+	resp = query.Result
+	if err != nil {
+		return nil, err
+	}
+	if resp == nil {
+		return nil, common.Error(common.Internal, "", nil).Log("nil response")
+	}
+	errs = cmwrapper.HasErrors(resp)
+	return resp, nil
+}
+
+type AccountRelationshipGetRelationshipsEndpoint struct {
+	*etop.GetRelationshipsRequest
+	Result  *etop.RelationshipsResponse
+	Context claims.ShopClaim
+}
+
+func (s wrapAccountRelationshipService) GetRelationships(ctx context.Context, req *etop.GetRelationshipsRequest) (resp *etop.RelationshipsResponse, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "etop.AccountRelationship/GetRelationships"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:     ctx,
+		RequireAuth: true,
+		RequireShop: true,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &AccountRelationshipGetRelationshipsEndpoint{GetRelationshipsRequest: req}
+	query.Context.Claim = session.Claim
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "relationship/relationship:view", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("relationship/relationship:view", "|")
+	ctx = bus.NewRootContext(ctx)
+	err = s.s.GetRelationships(ctx, query)
+	resp = query.Result
+	if err != nil {
+		return nil, err
+	}
+	if resp == nil {
+		return nil, common.Error(common.Internal, "", nil).Log("nil response")
+	}
+	errs = cmwrapper.HasErrors(resp)
+	return resp, nil
+}
+
+type AccountRelationshipRemoveUserEndpoint struct {
+	*etop.RemoveUserRequest
+	Result  *cm.UpdatedResponse
+	Context claims.ShopClaim
+}
+
+func (s wrapAccountRelationshipService) RemoveUser(ctx context.Context, req *etop.RemoveUserRequest) (resp *cm.UpdatedResponse, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "etop.AccountRelationship/RemoveUser"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:     ctx,
+		RequireAuth: true,
+		RequireShop: true,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &AccountRelationshipRemoveUserEndpoint{RemoveUserRequest: req}
+	query.Context.Claim = session.Claim
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "relationship/user:remove", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("relationship/user:remove", "|")
+	ctx = bus.NewRootContext(ctx)
+	err = s.s.RemoveUser(ctx, query)
+	resp = query.Result
+	if err != nil {
+		return nil, err
+	}
+	if resp == nil {
+		return nil, common.Error(common.Internal, "", nil).Log("nil response")
+	}
+	errs = cmwrapper.HasErrors(resp)
+	return resp, nil
+}
+
+type AccountRelationshipUpdatePermissionEndpoint struct {
+	*etop.UpdateAccountUserPermissionRequest
+	Result  *etop.Relationship
+	Context claims.ShopClaim
+}
+
+func (s wrapAccountRelationshipService) UpdatePermission(ctx context.Context, req *etop.UpdateAccountUserPermissionRequest) (resp *etop.Relationship, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "etop.AccountRelationship/UpdatePermission"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:     ctx,
+		RequireAuth: true,
+		RequireShop: true,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &AccountRelationshipUpdatePermissionEndpoint{UpdateAccountUserPermissionRequest: req}
+	query.Context.Claim = session.Claim
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "relationship/permission:update", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("relationship/permission:update", "|")
+	ctx = bus.NewRootContext(ctx)
+	err = s.s.UpdatePermission(ctx, query)
+	resp = query.Result
+	if err != nil {
+		return nil, err
+	}
+	if resp == nil {
+		return nil, common.Error(common.Internal, "", nil).Log("nil response")
+	}
+	errs = cmwrapper.HasErrors(resp)
+	return resp, nil
+}
+
+type AccountRelationshipUpdateRelationshipEndpoint struct {
+	*etop.UpdateRelationshipRequest
+	Result  *etop.Relationship
+	Context claims.ShopClaim
+}
+
+func (s wrapAccountRelationshipService) UpdateRelationship(ctx context.Context, req *etop.UpdateRelationshipRequest) (resp *etop.Relationship, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "etop.AccountRelationship/UpdateRelationship"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:     ctx,
+		RequireAuth: true,
+		RequireShop: true,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &AccountRelationshipUpdateRelationshipEndpoint{UpdateRelationshipRequest: req}
+	query.Context.Claim = session.Claim
+	query.Context.Shop = session.Shop
+	query.Context.IsOwner = session.IsOwner
+	query.Context.Roles = session.Roles
+	query.Context.Permissions = session.Permissions
+	isTest := 0
+	if query.Context.Shop != nil {
+		isTest = query.Context.Shop.IsTest
+	}
+	authorization := auth.New()
+	if !authorization.Check(query.Context.Roles, "relationship/relationship:update", isTest) {
+		return nil, common.Error(common.PermissionDenied, "", nil)
+	}
+	query.Context.Actions = strings.Split("relationship/relationship:update", "|")
+	ctx = bus.NewRootContext(ctx)
+	err = s.s.UpdateRelationship(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -489,185 +876,6 @@ func (s wrapBankService) GetProvincesByBank(ctx context.Context, req *etop.GetPr
 	}
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.GetProvincesByBank(ctx, query)
-	resp = query.Result
-	if err != nil {
-		return nil, err
-	}
-	if resp == nil {
-		return nil, common.Error(common.Internal, "", nil).Log("nil response")
-	}
-	errs = cmwrapper.HasErrors(resp)
-	return resp, nil
-}
-
-func WrapInvitationService(s *InvitationService) api.InvitationService {
-	return wrapInvitationService{s: s}
-}
-
-type wrapInvitationService struct {
-	s *InvitationService
-}
-
-type AcceptInvitationEndpoint struct {
-	*etop.AcceptInvitationRequest
-	Result  *cm.UpdatedResponse
-	Context claims.UserClaim
-}
-
-func (s wrapInvitationService) AcceptInvitation(ctx context.Context, req *etop.AcceptInvitationRequest) (resp *cm.UpdatedResponse, err error) {
-	t0 := time.Now()
-	var session *middleware.Session
-	var errs []*cm.Error
-	const rpcName = "etop.Invitation/AcceptInvitation"
-	defer func() {
-		recovered := recover()
-		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
-		metrics.CountRequest(rpcName, err)
-	}()
-	defer cmwrapper.Censor(req)
-	sessionQuery := &middleware.StartSessionQuery{
-		Context:     ctx,
-		RequireAuth: true,
-		RequireUser: true,
-	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
-		return nil, err
-	}
-	session = sessionQuery.Result
-	query := &AcceptInvitationEndpoint{AcceptInvitationRequest: req}
-	query.Context.Claim = session.Claim
-	query.Context.User = session.User
-	query.Context.Admin = session.Admin
-	// Verify that the user has correct service type
-	if session.Claim.AuthPartnerID != 0 {
-		return nil, common.ErrPermissionDenied
-	}
-	ctx = bus.NewRootContext(ctx)
-	err = s.s.AcceptInvitation(ctx, query)
-	resp = query.Result
-	if err != nil {
-		return nil, err
-	}
-	if resp == nil {
-		return nil, common.Error(common.Internal, "", nil).Log("nil response")
-	}
-	errs = cmwrapper.HasErrors(resp)
-	return resp, nil
-}
-
-type GetInvitationByTokenEndpoint struct {
-	*etop.GetInvitationByTokenRequest
-	Result  *etop.Invitation
-	Context claims.EmptyClaim
-}
-
-func (s wrapInvitationService) GetInvitationByToken(ctx context.Context, req *etop.GetInvitationByTokenRequest) (resp *etop.Invitation, err error) {
-	t0 := time.Now()
-	var errs []*cm.Error
-	const rpcName = "etop.Invitation/GetInvitationByToken"
-	defer func() {
-		recovered := recover()
-		err = cmwrapper.RecoverAndLog(ctx, rpcName, nil, req, resp, recovered, err, errs, t0)
-		metrics.CountRequest(rpcName, err)
-	}()
-	defer cmwrapper.Censor(req)
-	query := &GetInvitationByTokenEndpoint{GetInvitationByTokenRequest: req}
-	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetInvitationByToken(ctx, query)
-	resp = query.Result
-	if err != nil {
-		return nil, err
-	}
-	if resp == nil {
-		return nil, common.Error(common.Internal, "", nil).Log("nil response")
-	}
-	errs = cmwrapper.HasErrors(resp)
-	return resp, nil
-}
-
-type GetInvitationsEndpoint struct {
-	*etop.GetInvitationsRequest
-	Result  *shop.InvitationsResponse
-	Context claims.UserClaim
-}
-
-func (s wrapInvitationService) GetInvitations(ctx context.Context, req *etop.GetInvitationsRequest) (resp *shop.InvitationsResponse, err error) {
-	t0 := time.Now()
-	var session *middleware.Session
-	var errs []*cm.Error
-	const rpcName = "etop.Invitation/GetInvitations"
-	defer func() {
-		recovered := recover()
-		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
-		metrics.CountRequest(rpcName, err)
-	}()
-	defer cmwrapper.Censor(req)
-	sessionQuery := &middleware.StartSessionQuery{
-		Context:     ctx,
-		RequireAuth: true,
-		RequireUser: true,
-	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
-		return nil, err
-	}
-	session = sessionQuery.Result
-	query := &GetInvitationsEndpoint{GetInvitationsRequest: req}
-	query.Context.Claim = session.Claim
-	query.Context.User = session.User
-	query.Context.Admin = session.Admin
-	// Verify that the user has correct service type
-	if session.Claim.AuthPartnerID != 0 {
-		return nil, common.ErrPermissionDenied
-	}
-	ctx = bus.NewRootContext(ctx)
-	err = s.s.GetInvitations(ctx, query)
-	resp = query.Result
-	if err != nil {
-		return nil, err
-	}
-	if resp == nil {
-		return nil, common.Error(common.Internal, "", nil).Log("nil response")
-	}
-	errs = cmwrapper.HasErrors(resp)
-	return resp, nil
-}
-
-type RejectInvitationEndpoint struct {
-	*etop.RejectInvitationRequest
-	Result  *cm.UpdatedResponse
-	Context claims.UserClaim
-}
-
-func (s wrapInvitationService) RejectInvitation(ctx context.Context, req *etop.RejectInvitationRequest) (resp *cm.UpdatedResponse, err error) {
-	t0 := time.Now()
-	var session *middleware.Session
-	var errs []*cm.Error
-	const rpcName = "etop.Invitation/RejectInvitation"
-	defer func() {
-		recovered := recover()
-		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
-		metrics.CountRequest(rpcName, err)
-	}()
-	defer cmwrapper.Censor(req)
-	sessionQuery := &middleware.StartSessionQuery{
-		Context:     ctx,
-		RequireAuth: true,
-		RequireUser: true,
-	}
-	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
-		return nil, err
-	}
-	session = sessionQuery.Result
-	query := &RejectInvitationEndpoint{RejectInvitationRequest: req}
-	query.Context.Claim = session.Claim
-	query.Context.User = session.User
-	query.Context.Admin = session.Admin
-	// Verify that the user has correct service type
-	if session.Claim.AuthPartnerID != 0 {
-		return nil, common.ErrPermissionDenied
-	}
-	ctx = bus.NewRootContext(ctx)
-	err = s.s.RejectInvitation(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err
@@ -1873,6 +2081,232 @@ func (s wrapUserService) VerifyPhoneUsingToken(ctx context.Context, req *etop.Ve
 	}
 	ctx = bus.NewRootContext(ctx)
 	err = s.s.VerifyPhoneUsingToken(ctx, query)
+	resp = query.Result
+	if err != nil {
+		return nil, err
+	}
+	if resp == nil {
+		return nil, common.Error(common.Internal, "", nil).Log("nil response")
+	}
+	errs = cmwrapper.HasErrors(resp)
+	return resp, nil
+}
+
+func WrapUserRelationshipService(s *UserRelationshipService) api.UserRelationshipService {
+	return wrapUserRelationshipService{s: s}
+}
+
+type wrapUserRelationshipService struct {
+	s *UserRelationshipService
+}
+
+type UserRelationshipAcceptInvitationEndpoint struct {
+	*etop.AcceptInvitationRequest
+	Result  *cm.UpdatedResponse
+	Context claims.UserClaim
+}
+
+func (s wrapUserRelationshipService) AcceptInvitation(ctx context.Context, req *etop.AcceptInvitationRequest) (resp *cm.UpdatedResponse, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "etop.UserRelationship/AcceptInvitation"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:     ctx,
+		RequireAuth: true,
+		RequireUser: true,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &UserRelationshipAcceptInvitationEndpoint{AcceptInvitationRequest: req}
+	query.Context.Claim = session.Claim
+	query.Context.User = session.User
+	query.Context.Admin = session.Admin
+	// Verify that the user has correct service type
+	if session.Claim.AuthPartnerID != 0 {
+		return nil, common.ErrPermissionDenied
+	}
+	ctx = bus.NewRootContext(ctx)
+	err = s.s.AcceptInvitation(ctx, query)
+	resp = query.Result
+	if err != nil {
+		return nil, err
+	}
+	if resp == nil {
+		return nil, common.Error(common.Internal, "", nil).Log("nil response")
+	}
+	errs = cmwrapper.HasErrors(resp)
+	return resp, nil
+}
+
+type UserRelationshipGetInvitationByTokenEndpoint struct {
+	*etop.GetInvitationByTokenRequest
+	Result  *etop.Invitation
+	Context claims.EmptyClaim
+}
+
+func (s wrapUserRelationshipService) GetInvitationByToken(ctx context.Context, req *etop.GetInvitationByTokenRequest) (resp *etop.Invitation, err error) {
+	t0 := time.Now()
+	var errs []*cm.Error
+	const rpcName = "etop.UserRelationship/GetInvitationByToken"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, nil, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
+	}()
+	defer cmwrapper.Censor(req)
+	query := &UserRelationshipGetInvitationByTokenEndpoint{GetInvitationByTokenRequest: req}
+	ctx = bus.NewRootContext(ctx)
+	err = s.s.GetInvitationByToken(ctx, query)
+	resp = query.Result
+	if err != nil {
+		return nil, err
+	}
+	if resp == nil {
+		return nil, common.Error(common.Internal, "", nil).Log("nil response")
+	}
+	errs = cmwrapper.HasErrors(resp)
+	return resp, nil
+}
+
+type UserRelationshipGetInvitationsEndpoint struct {
+	*etop.GetInvitationsRequest
+	Result  *etop.InvitationsResponse
+	Context claims.UserClaim
+}
+
+func (s wrapUserRelationshipService) GetInvitations(ctx context.Context, req *etop.GetInvitationsRequest) (resp *etop.InvitationsResponse, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "etop.UserRelationship/GetInvitations"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:     ctx,
+		RequireAuth: true,
+		RequireUser: true,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &UserRelationshipGetInvitationsEndpoint{GetInvitationsRequest: req}
+	query.Context.Claim = session.Claim
+	query.Context.User = session.User
+	query.Context.Admin = session.Admin
+	// Verify that the user has correct service type
+	if session.Claim.AuthPartnerID != 0 {
+		return nil, common.ErrPermissionDenied
+	}
+	ctx = bus.NewRootContext(ctx)
+	err = s.s.GetInvitations(ctx, query)
+	resp = query.Result
+	if err != nil {
+		return nil, err
+	}
+	if resp == nil {
+		return nil, common.Error(common.Internal, "", nil).Log("nil response")
+	}
+	errs = cmwrapper.HasErrors(resp)
+	return resp, nil
+}
+
+type UserRelationshipLeaveAccountEndpoint struct {
+	*etop.UserRelationshipLeaveAccountRequest
+	Result  *cm.UpdatedResponse
+	Context claims.UserClaim
+}
+
+func (s wrapUserRelationshipService) LeaveAccount(ctx context.Context, req *etop.UserRelationshipLeaveAccountRequest) (resp *cm.UpdatedResponse, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "etop.UserRelationship/LeaveAccount"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:     ctx,
+		RequireAuth: true,
+		RequireUser: true,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &UserRelationshipLeaveAccountEndpoint{UserRelationshipLeaveAccountRequest: req}
+	query.Context.Claim = session.Claim
+	query.Context.User = session.User
+	query.Context.Admin = session.Admin
+	// Verify that the user has correct service type
+	if session.Claim.AuthPartnerID != 0 {
+		return nil, common.ErrPermissionDenied
+	}
+	ctx = bus.NewRootContext(ctx)
+	err = s.s.LeaveAccount(ctx, query)
+	resp = query.Result
+	if err != nil {
+		return nil, err
+	}
+	if resp == nil {
+		return nil, common.Error(common.Internal, "", nil).Log("nil response")
+	}
+	errs = cmwrapper.HasErrors(resp)
+	return resp, nil
+}
+
+type UserRelationshipRejectInvitationEndpoint struct {
+	*etop.RejectInvitationRequest
+	Result  *cm.UpdatedResponse
+	Context claims.UserClaim
+}
+
+func (s wrapUserRelationshipService) RejectInvitation(ctx context.Context, req *etop.RejectInvitationRequest) (resp *cm.UpdatedResponse, err error) {
+	t0 := time.Now()
+	var session *middleware.Session
+	var errs []*cm.Error
+	const rpcName = "etop.UserRelationship/RejectInvitation"
+	defer func() {
+		recovered := recover()
+		err = cmwrapper.RecoverAndLog(ctx, rpcName, session, req, resp, recovered, err, errs, t0)
+		metrics.CountRequest(rpcName, err)
+	}()
+	defer cmwrapper.Censor(req)
+	sessionQuery := &middleware.StartSessionQuery{
+		Context:     ctx,
+		RequireAuth: true,
+		RequireUser: true,
+	}
+	if err := bus.Dispatch(ctx, sessionQuery); err != nil {
+		return nil, err
+	}
+	session = sessionQuery.Result
+	query := &UserRelationshipRejectInvitationEndpoint{RejectInvitationRequest: req}
+	query.Context.Claim = session.Claim
+	query.Context.User = session.User
+	query.Context.Admin = session.Admin
+	// Verify that the user has correct service type
+	if session.Claim.AuthPartnerID != 0 {
+		return nil, common.ErrPermissionDenied
+	}
+	ctx = bus.NewRootContext(ctx)
+	err = s.s.RejectInvitation(ctx, query)
 	resp = query.Result
 	if err != nil {
 		return nil, err

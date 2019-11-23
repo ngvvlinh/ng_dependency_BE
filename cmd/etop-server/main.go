@@ -21,6 +21,8 @@ import (
 	servicepaymentmanager "etop.vn/backend/com/external/payment/manager"
 	"etop.vn/backend/com/handler/etop-handler/intctl"
 	"etop.vn/backend/com/main/address"
+	authorizationaggregate "etop.vn/backend/com/main/authorization/aggregate"
+	authorizationquery "etop.vn/backend/com/main/authorization/query"
 	catalogaggregate "etop.vn/backend/com/main/catalog/aggregate"
 	catalogpm "etop.vn/backend/com/main/catalog/pm"
 	catalogquery "etop.vn/backend/com/main/catalog/query"
@@ -90,6 +92,7 @@ import (
 	xshipping "etop.vn/backend/pkg/etop/apix/shipping"
 	xshop "etop.vn/backend/pkg/etop/apix/shop"
 	"etop.vn/backend/pkg/etop/apix/webhook"
+	authorizeauth "etop.vn/backend/pkg/etop/authorize/auth"
 	"etop.vn/backend/pkg/etop/authorize/middleware"
 	"etop.vn/backend/pkg/etop/authorize/tokens"
 	"etop.vn/backend/pkg/etop/eventstream"
@@ -413,14 +416,33 @@ func main() {
 	orderPM := serviceorderingpm.New(orderAggr.MessageBus(), affiliateCmd, receiptQuery, inventoryAggr, orderQuery, customerQuery)
 	orderPM.RegisterEventHandlers(eventBus)
 
-	invitationAggr := invitationaggregate.NewInvitationAggregate(db, cfg.Invitation.Secret, customerQuery, identityQuery, eventBus).MessageBus()
+	invitationAggr := invitationaggregate.NewInvitationAggregate(db, cfg.Invitation.Secret, customerQuery, identityQuery, eventBus, cfg).MessageBus()
 	invitationQuery = invitationquery.NewInvitationQuery(db).MessageBus()
 	invitationPM := invitationpm.New(eventBus, invitationQuery, invitationAggr)
 	invitationPM.RegisterEventHandlers(eventBus)
+
+	authorizationQuery := authorizationquery.NewAuthorizationQuery().MessageBus()
+	authorizationAggregate := authorizationaggregate.NewAuthorizationAggregate().MessageBus()
+
+	authorizeauth.SetMode(cfg.FlagEnablePermission)
+
 	smsArg := smsAgg.NewSmsLogAggregate(eventBus, dbLogs).MessageBus()
 	middleware.Init(cfg.SAdminToken, identityQuery)
-	api.Init(eventBus, identityAggr, identityQuery, invitationAggr, invitationQuery, shutdowner, redisStore, authStore, cfg.Email, cfg.SMS)
 	sms.Init(smsArg)
+	api.Init(
+		eventBus,
+		identityAggr,
+		identityQuery,
+		invitationAggr,
+		invitationQuery,
+		authorizationQuery,
+		authorizationAggregate,
+		shutdowner,
+		redisStore,
+		authStore,
+		cfg.Email,
+		cfg.SMS,
+	)
 	shop.Init(
 		locationBus,
 		catalogQuery,
@@ -459,8 +481,6 @@ func main() {
 		summaryQuery,
 		stocktakeQuery,
 		stocktakeAggr,
-		invitationAggr,
-		invitationQuery,
 	)
 	partner.Init(shutdowner, redisStore, authStore, cfg.URL.Auth)
 	xshop.Init(shutdowner, redisStore)

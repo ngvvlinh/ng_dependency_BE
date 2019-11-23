@@ -2121,58 +2121,6 @@
         }
       }
     },
-    "/api/shop.Invitation/CreateInvitation": {
-      "post": {
-        "tags": [
-          "Invitation"
-        ],
-        "operationId": "CreateInvitation",
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/zkCreateInvitationRequest"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "A successful response",
-            "schema": {
-              "$ref": "#/definitions/ocInvitation"
-            }
-          }
-        }
-      }
-    },
-    "/api/shop.Invitation/GetInvitations": {
-      "post": {
-        "tags": [
-          "Invitation"
-        ],
-        "operationId": "GetInvitations",
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/zkGetInvitationsRequest"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "A successful response",
-            "schema": {
-              "$ref": "#/definitions/zkInvitationsResponse"
-            }
-          }
-        }
-      }
-    },
     "/api/shop.Ledger/CreateLedger": {
       "post": {
         "tags": [
@@ -5377,58 +5325,6 @@
         }
       }
     },
-    "ocInvitation": {
-      "type": "object",
-      "properties": {
-        "accepted_at": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "created_at": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "declined_at": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "email": {
-          "type": "string"
-        },
-        "expired_at": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "id": {
-          "type": "string",
-          "format": "int64"
-        },
-        "invited_by": {
-          "type": "string",
-          "format": "int64"
-        },
-        "roles": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "shop_id": {
-          "type": "string",
-          "format": "int64"
-        },
-        "status": {
-          "$ref": "#/definitions/wwStatus"
-        },
-        "token": {
-          "type": "string"
-        },
-        "updated_at": {
-          "type": "string",
-          "format": "date-time"
-        }
-      }
-    },
     "ocMixedAccount": {
       "type": "object",
       "properties": {
@@ -8320,20 +8216,6 @@
         }
       }
     },
-    "zkCreateInvitationRequest": {
-      "type": "object",
-      "properties": {
-        "email": {
-          "type": "string"
-        },
-        "roles": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        }
-      }
-    },
     "zkCreateLedgerRequest": {
       "type": "object",
       "properties": {
@@ -9399,20 +9281,6 @@
         }
       }
     },
-    "zkGetInvitationsRequest": {
-      "type": "object",
-      "properties": {
-        "filters": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/maFilter"
-          }
-        },
-        "paging": {
-          "$ref": "#/definitions/maPaging"
-        }
-      }
-    },
     "zkGetLedgersRequest": {
       "type": "object",
       "properties": {
@@ -9816,20 +9684,6 @@
         },
         "variant_name": {
           "type": "string"
-        }
-      }
-    },
-    "zkInvitationsResponse": {
-      "type": "object",
-      "properties": {
-        "invitations": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/ocInvitation"
-          }
-        },
-        "paging": {
-          "$ref": "#/definitions/maPageInfo"
         }
       }
     },
@@ -11863,9 +11717,6 @@
     },
     {
       "name": "Inventory"
-    },
-    {
-      "name": "Invitation"
     },
     {
       "name": "Ledger"

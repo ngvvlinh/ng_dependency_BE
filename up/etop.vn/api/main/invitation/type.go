@@ -3,6 +3,8 @@ package invitation
 import (
 	"time"
 
+	"etop.vn/api/main/authorization"
+
 	"github.com/dgrijalva/jwt-go"
 
 	"etop.vn/api/main/etop"
@@ -12,19 +14,6 @@ import (
 
 // +gen:event:topic=event/invitation
 
-type Role string
-
-const (
-	RoleInventoryManagement  Role = "inventory_management"
-	RoleSalesMan             Role = "salesman"
-	RoleShopOwner            Role = "owner"
-	RoleAnalyst              Role = "analyst"
-	RolePurchasingManagement Role = "purchasing_management"
-	RoleStaffManagement      Role = "staff_management"
-)
-
-var Roles = [6]Role{RoleInventoryManagement, RoleSalesMan, RoleShopOwner, RoleAnalyst, RolePurchasingManagement, RoleStaffManagement}
-
 type Config struct {
 	Secret string `yaml:"secret"`
 }
@@ -33,7 +22,10 @@ type Invitation struct {
 	ID         dot.ID
 	AccountID  dot.ID
 	Email      string
-	Roles      []Role
+	FullName   string
+	ShortName  string
+	Position   string
+	Roles      []authorization.Role
 	Token      string
 	Status     etop.Status3
 	InvitedBy  dot.ID
@@ -45,32 +37,14 @@ type Invitation struct {
 }
 
 type Claims struct {
-	Email          string `json:"email"`
-	AccountID      dot.ID `json:"account_id"`
-	Roles          []Role `json:"roles"`
+	Email          string               `json:"email"`
+	AccountID      dot.ID               `json:"account_id"`
+	Roles          []authorization.Role `json:"roles"`
 	StandardClaims jwt.StandardClaims
 }
 
 func (c Claims) Valid() error {
 	panic("implement me")
-}
-
-func IsRole(arg Role) bool {
-	for _, role := range Roles {
-		if arg == role {
-			return true
-		}
-	}
-	return false
-}
-
-func IsContainsRole(roles []Role, arg Role) bool {
-	for _, role := range roles {
-		if role == arg {
-			return true
-		}
-	}
-	return false
 }
 
 type InvitationAcceptedEvent struct {

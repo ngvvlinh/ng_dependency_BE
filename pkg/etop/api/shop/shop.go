@@ -4,6 +4,10 @@ import (
 	"context"
 	"time"
 
+	"etop.vn/api/main/authorization"
+
+	"etop.vn/backend/pkg/common/cmapi"
+
 	"github.com/asaskevich/govalidator"
 
 	haravanidentity "etop.vn/api/external/haravan/identity"
@@ -13,7 +17,6 @@ import (
 	"etop.vn/api/main/catalog"
 	"etop.vn/api/main/identity"
 	"etop.vn/api/main/inventory"
-	"etop.vn/api/main/invitation"
 	"etop.vn/api/main/ledgering"
 	"etop.vn/api/main/location"
 	"etop.vn/api/main/ordering"
@@ -39,7 +42,6 @@ import (
 	moneymodelx "etop.vn/backend/com/main/moneytx/modelx"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
-	"etop.vn/backend/pkg/common/cmapi"
 	"etop.vn/backend/pkg/common/idemp"
 	"etop.vn/backend/pkg/common/redis"
 	cmservice "etop.vn/backend/pkg/common/service"
@@ -210,8 +212,6 @@ var (
 	purchaseOrderQuery   purchaseorder.QueryBus
 	StocktakeQuery       st.QueryBus
 	StocktakeAggregate   st.CommandBus
-	invitationAggregate  invitation.CommandBus
-	invitationQuery      invitation.QueryBus
 )
 
 func Init(
@@ -249,12 +249,9 @@ func Init(
 	ledgerQ ledgering.QueryBus,
 	purchaseOrderA purchaseorder.CommandBus,
 	purchaseOrderQ purchaseorder.QueryBus,
-
 	summary summary.QueryBus,
 	StocktakeQ st.QueryBus,
 	StocktakeA st.CommandBus,
-	invitationA invitation.CommandBus,
-	invitationQ invitation.QueryBus,
 ) {
 	idempgroup = idemp.NewRedisGroup(rd, PrefixIdemp, 5*60)
 	locationQuery = locationQ
@@ -293,8 +290,6 @@ func Init(
 	purchaseOrderQuery = purchaseOrderQ
 	StocktakeQuery = StocktakeQ
 	StocktakeAggregate = StocktakeA
-	invitationAggregate = invitationA
-	invitationQuery = invitationQ
 }
 
 type MiscService struct{}
@@ -325,7 +320,6 @@ type BrandService struct{}
 type LedgerService struct{}
 type PurchaseOrderService struct{}
 type StocktakeService struct{}
-type InvitationService struct{}
 
 var miscService = &MiscService{}
 var inventoryService = &InventoryService{}
@@ -355,7 +349,6 @@ var brandService = &BrandService{}
 var ledgerService = &LedgerService{}
 var purchaseOrderService = &PurchaseOrderService{}
 var stocktakeService = &StocktakeService{}
-var invitationService = &InvitationService{}
 
 func (s *MiscService) VersionInfo(ctx context.Context, q *VersionInfoEndpoint) error {
 	q.Result = &pbcm.VersionInfoResponse{
@@ -1284,7 +1277,7 @@ func (s *AccountService) CreateExternalAccountAhamove(ctx context.Context, q *Cr
 	if err := identityAggr.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
-	q.Result = convertpb.Convert_core_XAccountAhamove_To_api_XAccountAhamove(cmd.Result)
+	q.Result = convertpb.Convert_core_XAccountAhamove_To_api_XAccountAhamove(cmd.Result, false)
 	return nil
 }
 
@@ -1318,7 +1311,11 @@ func (s *AccountService) GetExternalAccountAhamove(ctx context.Context, q *GetEx
 		account = cmd.Result
 	}
 
-	q.Result = convertpb.Convert_core_XAccountAhamove_To_api_XAccountAhamove(account)
+	var hideInfo bool
+	if !authorization.IsContainsActionString(q.Context.Actions, "shop/external_account:manage") {
+		hideInfo = true
+	}
+	q.Result = convertpb.Convert_core_XAccountAhamove_To_api_XAccountAhamove(account, hideInfo)
 	return nil
 }
 
@@ -1406,7 +1403,12 @@ func (s *ExternalAccountService) GetExternalAccountHaravan(ctx context.Context, 
 	if err := haravanIdentityQuery.Dispatch(ctx, query); err != nil {
 		return err
 	}
-	r.Result = convertpb.Convert_core_XAccountHaravan_To_api_XAccountHaravan(query.Result)
+
+	var hideInfo bool
+	if !authorization.IsContainsActionString(r.Context.Actions, "shop/external_account:manage") {
+		hideInfo = true
+	}
+	r.Result = convertpb.Convert_core_XAccountHaravan_To_api_XAccountHaravan(query.Result, hideInfo)
 	return nil
 }
 
@@ -1420,7 +1422,7 @@ func (s *ExternalAccountService) CreateExternalAccountHaravan(ctx context.Contex
 	if err := haravanIdentityAggr.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
-	r.Result = convertpb.Convert_core_XAccountHaravan_To_api_XAccountHaravan(cmd.Result)
+	r.Result = convertpb.Convert_core_XAccountHaravan_To_api_XAccountHaravan(cmd.Result, false)
 	return nil
 }
 
@@ -1434,7 +1436,7 @@ func (s *ExternalAccountService) UpdateExternalAccountHaravanToken(ctx context.C
 	if err := haravanIdentityAggr.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
-	r.Result = convertpb.Convert_core_XAccountHaravan_To_api_XAccountHaravan(cmd.Result)
+	r.Result = convertpb.Convert_core_XAccountHaravan_To_api_XAccountHaravan(cmd.Result, false)
 	return nil
 }
 

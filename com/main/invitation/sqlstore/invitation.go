@@ -83,8 +83,8 @@ func (s *InvitationStore) Status(status etop.Status3) *InvitationStore {
 	return s
 }
 
-func (s *InvitationStore) NotExpires(t time.Time) *InvitationStore {
-	s.preds = append(s.preds, sq.NewExpr("expires_at > ?", t))
+func (s *InvitationStore) NotExpires() *InvitationStore {
+	s.preds = append(s.preds, sq.NewExpr("expires_at > ?", time.Now()))
 	return s
 }
 
