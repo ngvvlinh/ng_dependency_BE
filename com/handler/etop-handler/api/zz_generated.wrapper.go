@@ -9,13 +9,14 @@ import (
 	"time"
 
 	cm "etop.vn/backend/pb/common"
-	api "etop.vn/backend/pb/services/handler"
+	handler "etop.vn/backend/pb/services/handler"
 	common "etop.vn/backend/pkg/common"
 	bus "etop.vn/backend/pkg/common/bus"
 	metrics "etop.vn/backend/pkg/common/metrics"
 	cmwrapper "etop.vn/backend/pkg/common/wrapper"
 	claims "etop.vn/backend/pkg/etop/authorize/claims"
 	middleware "etop.vn/backend/pkg/etop/authorize/middleware"
+	api "etop.vn/backend/zexp/api/root/services/handler"
 )
 
 func WrapMiscService(s *MiscService, secret string) api.MiscService {
@@ -72,12 +73,12 @@ type wrapWebhookService struct {
 }
 
 type ResetStateEndpoint struct {
-	*api.ResetStateRequest
+	*handler.ResetStateRequest
 	Result  *cm.Empty
 	Context claims.EmptyClaim
 }
 
-func (s wrapWebhookService) ResetState(ctx context.Context, req *api.ResetStateRequest) (resp *cm.Empty, err error) {
+func (s wrapWebhookService) ResetState(ctx context.Context, req *handler.ResetStateRequest) (resp *cm.Empty, err error) {
 	t0 := time.Now()
 	var errs []*cm.Error
 	const rpcName = "handler.Webhook/ResetState"

@@ -1,4 +1,4 @@
-package services_affiliate
+package affiliate
 
 import (
 	"context"
@@ -11,12 +11,12 @@ import (
 // +gen:apix:doc-path=services/affiliate
 
 // +apix:path=/affiliate.User
-type UserAPI interface {
+type UserService interface {
 	UpdateReferral(context.Context, *aff.UpdateReferralRequest) (*aff.UserReferral, error)
 }
 
 // +apix:path=/affiliate.Trading
-type TradingAPI interface {
+type TradingService interface {
 	TradingGetProducts(context.Context, *cm.CommonListRequest) (*aff.SupplyGetProductsResponse, error)
 	CreateOrUpdateTradingCommissionSetting(context.Context, *aff.CreateOrUpdateTradingCommissionSettingRequest) (*aff.SupplyCommissionSetting, error)
 	GetTradingProductPromotionByProductIDs(context.Context, *aff.GetTradingProductPromotionByIDsRequest) (*aff.GetTradingProductPromotionByIDsResponse, error)
@@ -26,14 +26,14 @@ type TradingAPI interface {
 }
 
 // +apix:path=/affiliate.Shop
-type ShopAPI interface {
+type ShopService interface {
 	GetProductPromotion(context.Context, *aff.GetProductPromotionRequest) (*aff.GetProductPromotionResponse, error)
 	ShopGetProducts(context.Context, *cm.CommonListRequest) (*aff.ShopGetProductsResponse, error)
 	CheckReferralCodeValid(context.Context, *aff.CheckReferralCodeValidRequest) (*aff.GetProductPromotionResponse, error)
 }
 
 // +apix:path=/affiliate.Affiliate
-type AffiliateAPI interface {
+type AffiliateService interface {
 	GetCommissions(context.Context, *cm.CommonListRequest) (*aff.GetCommissionsResponse, error)
 	NotifyNewShopPurchase(context.Context, *aff.NotifyNewShopPurchaseRequest) (*aff.NotifyNewShopPurchaseResponse, error)
 	GetTransactions(context.Context, *cm.CommonListRequest) (*aff.GetTransactionsResponse, error)

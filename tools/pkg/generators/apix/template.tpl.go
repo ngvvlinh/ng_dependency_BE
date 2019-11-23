@@ -9,12 +9,12 @@ type Server interface {
 {{range $s := .Services}}
 
 type {{.Name}}ServiceServer struct {
-	{{.Name}}API
+	inner {{.Name}}Service
 }
 
-func New{{.Name}}ServiceServer(svc {{.Name}}API) Server{
+func New{{.Name}}ServiceServer(svc {{.Name}}Service) Server{
 	return &{{.Name}}ServiceServer {
-		{{.Name}}API: svc,
+		inner: svc,
 	}
 }
 
@@ -44,7 +44,7 @@ func (s *{{$s.Name}}ServiceServer) parseRoute(path string) (reqMsg proto.Message
 	case "{{$s.APIPath}}/{{.Name}}":
 	msg := {{(index .Request.Items 0).Type|new}}
 	fn := func(ctx context.Context) (proto.Message, error) {
-		return s.{{$s.Name}}API.{{.Name}}(ctx, msg)
+		return s.inner.{{.Name}}(ctx, msg)
 	}
 	return msg, fn, nil
 {{end -}}

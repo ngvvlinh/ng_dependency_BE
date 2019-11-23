@@ -1,4 +1,4 @@
-package external_shop
+package shop
 
 import (
 	"context"
@@ -13,26 +13,26 @@ import (
 // +gen:apix:doc-path=external/shop
 
 // +apix:path=/shop.Misc
-type MiscAPI interface {
+type MiscService interface {
 	VersionInfo(context.Context, *cm.Empty) (*cm.VersionInfoResponse, error)
 	CurrentAccount(context.Context, *cm.Empty) (*etop.PublicAccountInfo, error)
 	GetLocationList(context.Context, *cm.Empty) (*external.LocationResponse, error)
 }
 
 // +apix:path=/shop.Webhook
-type WebhookAPI interface {
+type WebhookService interface {
 	CreateWebhook(context.Context, *external.CreateWebhookRequest) (*external.Webhook, error)
 	GetWebhooks(context.Context, *cm.Empty) (*external.WebhooksResponse, error)
 	DeleteWebhook(context.Context, *external.DeleteWebhookRequest) (*external.WebhooksResponse, error)
 }
 
 // +apix:path=/shop.History
-type HistoryAPI interface {
+type HistoryService interface {
 	GetChanges(context.Context, *external.GetChangesRequest) (*external.Callback, error)
 }
 
 // +apix:path=/shop.Shipping
-type ShippingAPI interface {
+type ShippingService interface {
 	GetShippingServices(context.Context, *external.GetShippingServicesRequest) (*external.GetShippingServicesResponse, error)
 	CreateAndConfirmOrder(context.Context, *external.CreateOrderRequest) (*external.OrderAndFulfillments, error)
 	CancelOrder(context.Context, *external.CancelOrderRequest) (*external.OrderAndFulfillments, error)

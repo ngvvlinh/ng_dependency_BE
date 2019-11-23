@@ -12,12 +12,12 @@ import (
 // +gen:apix:doc-path=etop/sadmin
 
 // +apix:path=/sadmin.Misc
-type MiscAPI interface {
+type MiscService interface {
 	VersionInfo(context.Context, *cm.Empty) (*cm.VersionInfoResponse, error)
 }
 
 // +apix:path=/sadmin.User
-type UserAPI interface {
+type UserService interface {
 	CreateUser(context.Context, *sadmin.SAdminCreateUserRequest) (*etop.RegisterResponse, error)
 	ResetPassword(context.Context, *sadmin.SAdminResetPasswordRequest) (*cm.Empty, error)
 	LoginAsAccount(context.Context, *sadmin.LoginAsAccountRequest) (*etop.LoginResponse, error)

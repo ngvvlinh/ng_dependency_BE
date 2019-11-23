@@ -2,14 +2,6 @@ syntax = "proto2";
 package shop;
 option go_package = "etop.vn/backend/pb/external/shop";
 
-import "protoc-gen-swagger/options/annotations.proto";
-option (grpc.gateway.protoc_gen_swagger.options.openapiv2_swagger) = {
-    info: {
-        title: "eTop External API: Shop";
-        version: "v1";
-    };
-};
-
 import "gogoproto/gogo.proto";
 option (gogoproto.equal_all)                = false;
 option (gogoproto.gogoproto_import)         = false;
@@ -27,27 +19,3 @@ option (gogoproto.verbose_equal_all)        = false;
 import "common/common.proto";
 import "etop/etop.proto";
 import "external/external.proto";
-
-service MiscService {
-    rpc VersionInfo(cm.Empty) returns (cm.VersionInfoResponse);
-    rpc CurrentAccount(cm.Empty) returns (etop.PublicAccountInfo);
-    rpc GetLocationList(cm.Empty) returns (external.LocationResponse);
-}
-
-service WebhookService {
-    rpc CreateWebhook(external.CreateWebhookRequest) returns (external.Webhook);
-    rpc GetWebhooks(cm.Empty) returns (external.WebhooksResponse);
-    rpc DeleteWebhook(external.DeleteWebhookRequest) returns (external.WebhooksResponse);
-}
-
-service HistoryService {
-    rpc GetChanges (external.GetChangesRequest) returns (external.Callback);
-}
-
-service ShippingService {
-    rpc GetShippingServices(external.GetShippingServicesRequest) returns (external.GetShippingServicesResponse);
-    rpc CreateAndConfirmOrder(external.CreateOrderRequest) returns (external.OrderAndFulfillments);
-    rpc CancelOrder(external.CancelOrderRequest) returns (external.OrderAndFulfillments);
-    rpc GetOrder(external.OrderIDRequest) returns (external.OrderAndFulfillments);
-    rpc GetFulfillment(external.FulfillmentIDRequest) returns (external.Fulfillment);
-}

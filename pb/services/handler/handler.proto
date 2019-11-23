@@ -2,8 +2,6 @@ syntax = "proto2";
 package handler;
 option go_package = "etop.vn/backend/pb/services/handler";
 
-import "protoc-gen-swagger/options/annotations.proto";
-
 import "gogoproto/gogo.proto";
 option (gogoproto.equal_all)                = false;
 option (gogoproto.gogoproto_import)         = false;
@@ -19,14 +17,6 @@ option (gogoproto.unmarshaler_all)          = false;
 option (gogoproto.verbose_equal_all)        = false;
 
 import "common/common.proto";
-
-service MiscService {
-    rpc VersionInfo(cm.Empty) returns (cm.VersionInfoResponse);
-}
-
-service WebhookService {
-    rpc ResetState(ResetStateRequest) returns (cm.Empty);
-}
 
 message ResetStateRequest {
     optional int64 webhook_id = 1 [(gogoproto.nullable)=false];

@@ -2,10 +2,10 @@ package crm
 
 import (
 	"etop.vn/backend/pkg/common/httprpc"
-	service "etop.vn/backend/zexp/api/root/int/crm"
+	service "etop.vn/backend/zexp/api/root/services/crm"
 )
 
-// +gen:wrapper=etop.vn/backend/pb/services/crm
+// +gen:wrapper=etop.vn/backend/zexp/api/root/services/crm
 // +gen:wrapper:package=crm
 
 func NewCrmServer(m httprpc.Muxer, secret string) {

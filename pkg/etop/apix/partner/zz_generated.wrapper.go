@@ -11,13 +11,14 @@ import (
 	cm "etop.vn/backend/pb/common"
 	etop "etop.vn/backend/pb/etop"
 	external "etop.vn/backend/pb/external"
-	api "etop.vn/backend/pb/external/partner"
+	partner "etop.vn/backend/pb/external/partner"
 	common "etop.vn/backend/pkg/common"
 	bus "etop.vn/backend/pkg/common/bus"
 	metrics "etop.vn/backend/pkg/common/metrics"
 	cmwrapper "etop.vn/backend/pkg/common/wrapper"
 	claims "etop.vn/backend/pkg/etop/authorize/claims"
 	middleware "etop.vn/backend/pkg/etop/authorize/middleware"
+	api "etop.vn/backend/zexp/api/root/external/partner"
 )
 
 func WrapHistoryService(s *HistoryService) api.HistoryService {
@@ -451,12 +452,12 @@ type wrapShopService struct {
 }
 
 type AuthorizeShopEndpoint struct {
-	*api.AuthorizeShopRequest
-	Result  *api.AuthorizeShopResponse
+	*partner.AuthorizeShopRequest
+	Result  *partner.AuthorizeShopResponse
 	Context claims.PartnerClaim
 }
 
-func (s wrapShopService) AuthorizeShop(ctx context.Context, req *api.AuthorizeShopRequest) (resp *api.AuthorizeShopResponse, err error) {
+func (s wrapShopService) AuthorizeShop(ctx context.Context, req *partner.AuthorizeShopRequest) (resp *partner.AuthorizeShopResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error

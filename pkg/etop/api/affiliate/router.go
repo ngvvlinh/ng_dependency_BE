@@ -2,10 +2,10 @@ package affiliate
 
 import (
 	"etop.vn/backend/pkg/common/httprpc"
-	service "etop.vn/backend/zexp/api/root/int/etop_affiliate"
+	service "etop.vn/backend/zexp/api/root/int/affiliate"
 )
 
-// +gen:wrapper=etop.vn/backend/pb/etop/affiliate
+// +gen:wrapper=etop.vn/backend/zexp/api/root/int/affiliate
 // +gen:wrapper:package=affiliate
 
 func NewAffiliateServer(m httprpc.Muxer) {

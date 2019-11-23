@@ -2,14 +2,6 @@ syntax = "proto2";
 package admin;
 option go_package = "etop.vn/backend/pb/etop/admin";
 
-import "protoc-gen-swagger/options/annotations.proto";
-option (grpc.gateway.protoc_gen_swagger.options.openapiv2_swagger) = {
-    info: {
-        title: "eTop API: Admin";
-        version: "v1";
-    };
-};
-
 import "gogoproto/gogo.proto";
 option (gogoproto.equal_all)                = false;
 option (gogoproto.gogoproto_import)         = false;
@@ -32,75 +24,6 @@ import "etop/etc/shipping/state.proto";
 import "etop/etc/credit_type/type.proto";
 import "etop/etc/notifier_entity/entity.proto";
 import "google/protobuf/timestamp.proto";
-
-service MiscService {
-    rpc VersionInfo(cm.Empty) returns (cm.VersionInfoResponse);
-    rpc AdminLoginAsAccount(LoginAsAccountRequest) returns (etop.LoginResponse);
-}
-
-service AccountService {
-    rpc CreatePartner(CreatePartnerRequest) returns (etop.Partner);
-    rpc GenerateAPIKey(GenerateAPIKeyRequest) returns (GenerateAPIKeyResponse);
-}
-
-service OrderService {
-    rpc GetOrder(cm.IDRequest) returns (order.Order);
-    rpc GetOrders(GetOrdersRequest) returns (order.OrdersResponse);
-    rpc GetOrdersByIDs(cm.IDsRequest) returns (order.OrdersResponse);
-}
-
-service FulfillmentService {
-    rpc GetFulfillment(cm.IDRequest) returns (order.Fulfillment);
-    rpc GetFulfillments(GetFulfillmentsRequest) returns (order.FulfillmentsResponse);
-
-    // UpdateFulfillment
-    //
-    // `shipping_state`
-    //
-    // Only update from any state to `undeliverable`
-    // Or update from `undeliverable`to any state
-    rpc UpdateFulfillment(UpdateFulfillmentRequest) returns (cm.UpdatedResponse);
-}
-
-service MoneyTransactionService {
-    rpc GetMoneyTransaction(cm.IDRequest) returns (order.MoneyTransaction);
-    rpc GetMoneyTransactions(GetMoneyTransactionsRequest) returns (order.MoneyTransactionsResponse);
-    rpc ConfirmMoneyTransaction(ConfirmMoneyTransactionRequest) returns (cm.UpdatedResponse);
-    rpc UpdateMoneyTransaction(UpdateMoneyTransactionRequest) returns (order.MoneyTransaction);
-
-    rpc GetMoneyTransactionShippingExternal(cm.IDRequest) returns (order.MoneyTransactionShippingExternal);
-    rpc GetMoneyTransactionShippingExternals(GetMoneyTransactionShippingExternalsRequest) returns (order.MoneyTransactionShippingExternalsResponse);
-    rpc RemoveMoneyTransactionShippingExternalLines(RemoveMoneyTransactionShippingExternalLinesRequest) returns (order.MoneyTransactionShippingExternal);
-    rpc DeleteMoneyTransactionShippingExternal(cm.IDRequest) returns (cm.RemovedResponse);
-    rpc ConfirmMoneyTransactionShippingExternal(cm.IDRequest) returns (cm.UpdatedResponse);
-    rpc ConfirmMoneyTransactionShippingExternals(cm.IDsRequest) returns (cm.UpdatedResponse);
-    rpc UpdateMoneyTransactionShippingExternal(UpdateMoneyTransactionShippingExternalRequest) returns (order.MoneyTransactionShippingExternal);
-
-    rpc GetMoneyTransactionShippingEtop(cm.IDRequest) returns (order.MoneyTransactionShippingEtop);
-    rpc GetMoneyTransactionShippingEtops(GetMoneyTransactionShippingEtopsRequest) returns (order.MoneyTransactionShippingEtopsResponse);
-    rpc CreateMoneyTransactionShippingEtop(cm.IDsRequest) returns (order.MoneyTransactionShippingEtop);
-    rpc UpdateMoneyTransactionShippingEtop(UpdateMoneyTransactionShippingEtopRequest) returns (order.MoneyTransactionShippingEtop);
-    rpc DeleteMoneyTransactionShippingEtop(cm.IDRequest) returns (cm.DeletedResponse);
-    rpc ConfirmMoneyTransactionShippingEtop(ConfirmMoneyTransactionShippingEtopRequest) returns (cm.UpdatedResponse);
-}
-
-service ShopService {
-    rpc GetShop(cm.IDRequest) returns (etop.Shop);
-    rpc GetShops(GetShopsRequest) returns (GetShopsResponse);
-}
-
-service CreditService {
-    rpc GetCredit(GetCreditRequest) returns (etop.Credit);
-    rpc GetCredits(GetCreditsRequest) returns (etop.CreditsResponse);
-    rpc CreateCredit(CreateCreditRequest) returns (etop.Credit);
-    rpc UpdateCredit(UpdateCreditRequest) returns (etop.Credit);
-    rpc ConfirmCredit(ConfirmCreditRequest) returns (cm.UpdatedResponse);
-    rpc DeleteCredit(cm.IDRequest) returns (cm.RemovedResponse);
-}
-
-service NotificationService {
-    rpc CreateNotifications(CreateNotificationsRequest) returns (CreateNotificationsResponse);
-}
 
 message GetOrdersRequest {
     optional cm.Paging paging = 1;

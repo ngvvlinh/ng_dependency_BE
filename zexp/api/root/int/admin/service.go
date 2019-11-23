@@ -13,26 +13,26 @@ import (
 // +gen:apix:doc-path=etop/admin
 
 // +apix:path=/admin.Misc
-type MiscAPI interface {
+type MiscService interface {
 	VersionInfo(context.Context, *cm.Empty) (*cm.VersionInfoResponse, error)
 	AdminLoginAsAccount(context.Context, *admin.LoginAsAccountRequest) (*etop.LoginResponse, error)
 }
 
 // +apix:path=/admin.Account
-type AccountAPI interface {
+type AccountService interface {
 	CreatePartner(context.Context, *admin.CreatePartnerRequest) (*etop.Partner, error)
 	GenerateAPIKey(context.Context, *admin.GenerateAPIKeyRequest) (*admin.GenerateAPIKeyResponse, error)
 }
 
 // +apix:path=/admin.Order
-type OrderAPI interface {
+type OrderService interface {
 	GetOrder(context.Context, *cm.IDRequest) (*order.Order, error)
 	GetOrders(context.Context, *admin.GetOrdersRequest) (*order.OrdersResponse, error)
 	GetOrdersByIDs(context.Context, *cm.IDsRequest) (*order.OrdersResponse, error)
 }
 
 // +apix:path=/admin.Fulfillment
-type FulfillmentAPI interface {
+type FulfillmentService interface {
 	GetFulfillment(context.Context, *cm.IDRequest) (*order.Fulfillment, error)
 	GetFulfillments(context.Context, *admin.GetFulfillmentsRequest) (*order.FulfillmentsResponse, error)
 
@@ -46,7 +46,7 @@ type FulfillmentAPI interface {
 }
 
 // +apix:path=/admin.MoneyTransaction
-type MoneyTransactionAPI interface {
+type MoneyTransactionService interface {
 	GetMoneyTransaction(context.Context, *cm.IDRequest) (*order.MoneyTransaction, error)
 	GetMoneyTransactions(context.Context, *admin.GetMoneyTransactionsRequest) (*order.MoneyTransactionsResponse, error)
 	ConfirmMoneyTransaction(context.Context, *admin.ConfirmMoneyTransactionRequest) (*cm.UpdatedResponse, error)
@@ -69,13 +69,13 @@ type MoneyTransactionAPI interface {
 }
 
 // +apix:path=/admin.Shop
-type ShopAPI interface {
+type ShopService interface {
 	GetShop(context.Context, *cm.IDRequest) (*etop.Shop, error)
 	GetShops(context.Context, *admin.GetShopsRequest) (*admin.GetShopsResponse, error)
 }
 
 // +apix:path=/admin.Credit
-type CreditAPI interface {
+type CreditService interface {
 	GetCredit(context.Context, *admin.GetCreditRequest) (*etop.Credit, error)
 	GetCredits(context.Context, *admin.GetCreditsRequest) (*etop.CreditsResponse, error)
 	CreateCredit(context.Context, *admin.CreateCreditRequest) (*etop.Credit, error)
@@ -85,6 +85,6 @@ type CreditAPI interface {
 }
 
 // +apix:path=/admin.Notification
-type NotificationAPI interface {
+type NotificationService interface {
 	CreateNotifications(context.Context, *admin.CreateNotificationsRequest) (*admin.CreateNotificationsResponse, error)
 }

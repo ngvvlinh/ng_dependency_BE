@@ -1,4 +1,4 @@
-package etop_affiliate
+package affiliate
 
 import (
 	"context"
@@ -12,12 +12,12 @@ import (
 // +gen:apix:doc-path=etop/affiliate
 
 // +apix:path=/affiliate.Misc
-type MiscAPI interface {
+type MiscService interface {
 	VersionInfo(context.Context, *cm.Empty) (*cm.VersionInfoResponse, error)
 }
 
 // +apix:path=/affiliate.Account
-type AccountAPI interface {
+type AccountService interface {
 	RegisterAffiliate(context.Context, *aff.RegisterAffiliateRequest) (*etop.Affiliate, error)
 	UpdateAffiliate(context.Context, *aff.UpdateAffiliateRequest) (*etop.Affiliate, error)
 	UpdateAffiliateBankAccount(context.Context, *aff.UpdateAffiliateBankAccountRequest) (*etop.Affiliate, error)

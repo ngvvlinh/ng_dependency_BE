@@ -11,11 +11,11 @@ import (
 // +gen:apix:doc-path=services/handler
 
 // +apix:path=/handler.Misc
-type MiscAPI interface {
+type MiscService interface {
 	VersionInfo(context.Context, *cm.Empty) (*cm.VersionInfoResponse, error)
 }
 
 // +apix:path=/handler.Webhook
-type WebhookAPI interface {
+type WebhookService interface {
 	ResetState(context.Context, *handler.ResetStateRequest) (*cm.Empty, error)
 }

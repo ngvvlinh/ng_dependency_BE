@@ -13,12 +13,12 @@ import (
 // +gen:apix:doc-path=etop/shop
 
 // +apix:path=/shop.Misc
-type MiscAPI interface {
+type MiscService interface {
 	VersionInfo(context.Context, *cm.Empty) (*cm.VersionInfoResponse, error)
 }
 
 // +apix:path=/shop.Brand
-type BrandAPI interface {
+type BrandService interface {
 	CreateBrand(context.Context, *shop.CreateBrandRequest) (*shop.Brand, error)
 	UpdateBrandInfo(context.Context, *shop.UpdateBrandRequest) (*shop.Brand, error)
 	DeleteBrand(context.Context, *cm.IDsRequest) (*shop.DeleteBrandResponse, error)
@@ -29,7 +29,7 @@ type BrandAPI interface {
 }
 
 // +apix:path=/shop.Inventory
-type InventoryAPI interface {
+type InventoryService interface {
 	CreateInventoryVoucher(context.Context, *shop.CreateInventoryVoucherRequest) (*shop.CreateInventoryVoucherResponse, error)
 	ConfirmInventoryVoucher(context.Context, *shop.ConfirmInventoryVoucherRequest) (*shop.ConfirmInventoryVoucherResponse, error)
 	CancelInventoryVoucher(context.Context, *shop.CancelInventoryVoucherRequest) (*shop.CancelInventoryVoucherResponse, error)
@@ -47,7 +47,7 @@ type InventoryAPI interface {
 }
 
 // +apix:path=/shop.Account
-type AccountAPI interface {
+type AccountService interface {
 	RegisterShop(context.Context, *shop.RegisterShopRequest) (*shop.RegisterShopResponse, error)
 	UpdateShop(context.Context, *shop.UpdateShopRequest) (*shop.UpdateShopResponse, error)
 	DeleteShop(context.Context, *cm.IDRequest) (*cm.Empty, error)
@@ -64,7 +64,7 @@ type AccountAPI interface {
 }
 
 // +apix:path=/shop.ExternalAccount
-type ExternalAccountAPI interface {
+type ExternalAccountService interface {
 	GetExternalAccountHaravan(context.Context, *cm.Empty) (*shop.ExternalAccountHaravan, error)
 	CreateExternalAccountHaravan(context.Context, *shop.ExternalAccountHaravanRequest) (*shop.ExternalAccountHaravan, error)
 	UpdateExternalAccountHaravanToken(context.Context, *shop.ExternalAccountHaravanRequest) (*shop.ExternalAccountHaravan, error)
@@ -73,7 +73,7 @@ type ExternalAccountAPI interface {
 }
 
 // +apix:path=/shop.Collection
-type CollectionAPI interface {
+type CollectionService interface {
 	CreateCollection(context.Context, *shop.CreateCollectionRequest) (*shop.ShopCollection, error)
 	GetCollection(context.Context, *cm.IDRequest) (*shop.ShopCollection, error)
 	GetCollections(context.Context, *shop.GetCollectionsRequest) (*shop.ShopCollectionsResponse, error)
@@ -82,7 +82,7 @@ type CollectionAPI interface {
 }
 
 // +apix:path=/shop.Customer
-type CustomerAPI interface {
+type CustomerService interface {
 	CreateCustomer(context.Context, *shop.CreateCustomerRequest) (*shop.Customer, error)
 	UpdateCustomer(context.Context, *shop.UpdateCustomerRequest) (*shop.Customer, error)
 	DeleteCustomer(context.Context, *cm.IDRequest) (*cm.DeletedResponse, error)
@@ -106,7 +106,7 @@ type CustomerAPI interface {
 }
 
 // +apix:path=/shop.CustomerGroup
-type CustomerGroupAPI interface {
+type CustomerGroupService interface {
 	CreateCustomerGroup(context.Context, *shop.CreateCustomerGroupRequest) (*shop.CustomerGroup, error)
 	GetCustomerGroup(context.Context, *cm.IDRequest) (*shop.CustomerGroup, error)
 	GetCustomerGroups(context.Context, *shop.GetCustomerGroupsRequest) (*shop.CustomerGroupsResponse, error)
@@ -114,7 +114,7 @@ type CustomerGroupAPI interface {
 }
 
 // +apix:path=/shop.Product
-type ProductAPI interface {
+type ProductService interface {
 
 	//-- product --//
 
@@ -151,7 +151,7 @@ type ProductAPI interface {
 }
 
 // +apix:path=/shop.Category
-type CategoryAPI interface {
+type CategoryService interface {
 	CreateCategory(context.Context, *shop.CreateCategoryRequest) (*shop.ShopCategory, error)
 	GetCategory(context.Context, *cm.IDRequest) (*shop.ShopCategory, error)
 	GetCategories(context.Context, *shop.GetCategoriesRequest) (*shop.ShopCategoriesResponse, error)
@@ -161,7 +161,7 @@ type CategoryAPI interface {
 
 // +apix:path=/shop.ProductSource
 // deprecated: 2018.07.31+14
-type ProductSourceAPI interface {
+type ProductSourceService interface {
 	CreateProductSource(context.Context, *shop.CreateProductSourceRequest) (*shop.ProductSource, error)
 	GetShopProductSources(context.Context, *cm.Empty) (*shop.ProductSourcesResponse, error)
 	// deprecated: use shop.Product/CreateVariant instead
@@ -175,7 +175,7 @@ type ProductSourceAPI interface {
 }
 
 // +apix:path=/shop.Order
-type OrderAPI interface {
+type OrderService interface {
 	CreateOrder(context.Context, *order.CreateOrderRequest) (*order.Order, error)
 	GetOrder(context.Context, *cm.IDRequest) (*order.Order, error)
 	GetOrders(context.Context, *shop.GetOrdersRequest) (*order.OrdersResponse, error)
@@ -194,7 +194,7 @@ type OrderAPI interface {
 }
 
 // +apix:path=/shop.Fulfillment
-type FulfillmentAPI interface {
+type FulfillmentService interface {
 	GetFulfillment(context.Context, *cm.IDRequest) (*order.Fulfillment, error)
 	GetFulfillments(context.Context, *shop.GetFulfillmentsRequest) (*order.FulfillmentsResponse, error)
 
@@ -205,7 +205,7 @@ type FulfillmentAPI interface {
 }
 
 // +apix:path=/shop.Shipnow
-type ShipnowAPI interface {
+type ShipnowService interface {
 	GetShipnowFulfillment(context.Context, *cm.IDRequest) (*order.ShipnowFulfillment, error)
 	GetShipnowFulfillments(context.Context, *order.GetShipnowFulfillmentsRequest) (*order.ShipnowFulfillments, error)
 
@@ -218,31 +218,31 @@ type ShipnowAPI interface {
 }
 
 // +apix:path=/shop.History
-type HistoryAPI interface {
+type HistoryService interface {
 	GetFulfillmentHistory(context.Context, *shop.GetFulfillmentHistoryRequest) (*etop.HistoryResponse, error)
 }
 
 // +apix:path=/shop.MoneyTransaction
-type MoneyTransactionAPI interface {
+type MoneyTransactionService interface {
 	GetMoneyTransaction(context.Context, *cm.IDRequest) (*order.MoneyTransaction, error)
 	GetMoneyTransactions(context.Context, *shop.GetMoneyTransactionsRequest) (*order.MoneyTransactionsResponse, error)
 }
 
 // +apix:path=/shop.Summary
-type SummaryAPI interface {
+type SummaryService interface {
 	SummarizeFulfillments(context.Context, *shop.SummarizeFulfillmentsRequest) (*shop.SummarizeFulfillmentsResponse, error)
 	SummarizePOS(context.Context, *shop.SummarizePOSRequest) (*shop.SummarizePOSResponse, error)
 	CalcBalanceShop(context.Context, *cm.Empty) (*shop.CalcBalanceShopResponse, error)
 }
 
 // +apix:path=/shop.Export
-type ExportAPI interface {
+type ExportService interface {
 	GetExports(context.Context, *shop.GetExportsRequest) (*shop.GetExportsResponse, error)
 	RequestExport(context.Context, *shop.RequestExportRequest) (*shop.RequestExportResponse, error)
 }
 
 // +apix:path=/shop.Notification
-type NotificationAPI interface {
+type NotificationService interface {
 	CreateDevice(context.Context, *etop.CreateDeviceRequest) (*etop.Device, error)
 	DeleteDevice(context.Context, *etop.DeleteDeviceRequest) (*cm.DeletedResponse, error)
 
@@ -252,14 +252,14 @@ type NotificationAPI interface {
 }
 
 // +apix:path=/shop.Authorize
-type AuthorizeAPI interface {
+type AuthorizeService interface {
 	GetAuthorizedPartners(context.Context, *cm.Empty) (*shop.GetAuthorizedPartnersResponse, error)
 	GetAvailablePartners(context.Context, *cm.Empty) (*shop.GetPartnersResponse, error)
 	AuthorizePartner(context.Context, *shop.AuthorizePartnerRequest) (*shop.AuthorizedPartnerResponse, error)
 }
 
 // +apix:path=/shop.Trading
-type TradingAPI interface {
+type TradingService interface {
 	TradingGetProduct(context.Context, *cm.IDRequest) (*shop.ShopProduct, error)
 	TradingGetProducts(context.Context, *cm.CommonListRequest) (*shop.ShopProductsResponse, error)
 
@@ -269,13 +269,13 @@ type TradingAPI interface {
 }
 
 // +apix:path=/shop.Payment
-type PaymentAPI interface {
+type PaymentService interface {
 	PaymentTradingOrder(context.Context, *shop.PaymentTradingOrderRequest) (*shop.PaymentTradingOrderResponse, error)
 	PaymentCheckReturnData(context.Context, *shop.PaymentCheckReturnDataRequest) (*cm.MessageResponse, error)
 }
 
 // +apix:path=/shop.Receipt
-type ReceiptAPI interface {
+type ReceiptService interface {
 	CreateReceipt(context.Context, *shop.CreateReceiptRequest) (*shop.Receipt, error)
 	UpdateReceipt(context.Context, *shop.UpdateReceiptRequest) (*shop.Receipt, error)
 	GetReceipt(context.Context, *cm.IDRequest) (*shop.Receipt, error)
@@ -286,7 +286,7 @@ type ReceiptAPI interface {
 }
 
 // +apix:path=/shop.Supplier
-type SupplierAPI interface {
+type SupplierService interface {
 	GetSupplier(context.Context, *cm.IDRequest) (*shop.Supplier, error)
 	GetSuppliers(context.Context, *shop.GetSuppliersRequest) (*shop.SuppliersResponse, error)
 	GetSuppliersByIDs(context.Context, *cm.IDsRequest) (*shop.SuppliersResponse, error)
@@ -297,7 +297,7 @@ type SupplierAPI interface {
 }
 
 // +apix:path=/shop.Carrier
-type CarrierAPI interface {
+type CarrierService interface {
 	GetCarrier(context.Context, *cm.IDRequest) (*shop.Carrier, error)
 	GetCarriers(context.Context, *shop.GetCarriersRequest) (*shop.CarriersResponse, error)
 	GetCarriersByIDs(context.Context, *cm.IDsRequest) (*shop.CarriersResponse, error)
@@ -307,7 +307,7 @@ type CarrierAPI interface {
 }
 
 // +apix:path=/shop.Ledger
-type LedgerAPI interface {
+type LedgerService interface {
 	GetLedger(context.Context, *cm.IDRequest) (*shop.Ledger, error)
 	GetLedgers(context.Context, *shop.GetLedgersRequest) (*shop.LedgersResponse, error)
 	CreateLedger(context.Context, *shop.CreateLedgerRequest) (*shop.Ledger, error)
@@ -316,7 +316,7 @@ type LedgerAPI interface {
 }
 
 // +apix:path=/shop.PurchaseOrder
-type PurchaseOrderAPI interface {
+type PurchaseOrderService interface {
 	GetPurchaseOrder(context.Context, *cm.IDRequest) (*shop.PurchaseOrder, error)
 	GetPurchaseOrders(context.Context, *shop.GetPurchaseOrdersRequest) (*shop.PurchaseOrdersResponse, error)
 	GetPurchaseOrdersByIDs(context.Context, *cm.IDsRequest) (*shop.PurchaseOrdersResponse, error)
@@ -329,7 +329,7 @@ type PurchaseOrderAPI interface {
 }
 
 // +apix:path=/shop.Stocktake
-type StocktakeAPI interface {
+type StocktakeService interface {
 	CreateStocktake(context.Context, *shop.CreateStocktakeRequest) (*shop.Stocktake, error)
 	UpdateStocktake(context.Context, *shop.UpdateStocktakeRequest) (*shop.Stocktake, error)
 	ConfirmStocktake(context.Context, *shop.ConfirmStocktakeRequest) (*shop.Stocktake, error)
@@ -341,7 +341,7 @@ type StocktakeAPI interface {
 }
 
 // +apix:path=/shop.Invitation
-type InvitationAPI interface {
+type InvitationService interface {
 	CreateInvitation(context.Context, *shop.CreateInvitationRequest) (*shop.Invitation, error)
 	GetInvitations(context.Context, *shop.GetInvitationsRequest) (*shop.InvitationsResponse, error)
 }

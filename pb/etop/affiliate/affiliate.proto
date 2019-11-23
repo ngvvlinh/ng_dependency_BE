@@ -2,14 +2,6 @@ syntax = "proto2";
 package affiliate;
 option go_package = "etop.vn/backend/pb/etop/affiliate";
 
-import "protoc-gen-swagger/options/annotations.proto";
-option (grpc.gateway.protoc_gen_swagger.options.openapiv2_swagger) = {
-    info: {
-        title: "eTop API: Affiliate";
-version:"v1"
-};
-};
-
 import "gogoproto/gogo.proto";
 option (gogoproto.equal_all)                = false;
 option (gogoproto.gogoproto_import)         = false;
@@ -27,17 +19,6 @@ option (gogoproto.verbose_equal_all)        = false;
 import "common/common.proto";
 import "etop/etc/status3/status.proto";
 import "etop/etop.proto";
-
-service MiscService {
-    rpc VersionInfo(cm.Empty) returns (cm.VersionInfoResponse);
-}
-
-service AccountService {
-    rpc RegisterAffiliate (RegisterAffiliateRequest) returns (etop.Affiliate);
-    rpc UpdateAffiliate (UpdateAffiliateRequest) returns (etop.Affiliate);
-    rpc UpdateAffiliateBankAccount(UpdateAffiliateBankAccountRequest) returns (etop.Affiliate);
-    rpc DeleteAffiliate (cm.IDRequest) returns (cm.Empty);
-}
 
 message RegisterAffiliateRequest {
     // @required

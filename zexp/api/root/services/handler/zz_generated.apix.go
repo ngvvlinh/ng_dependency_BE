@@ -22,12 +22,12 @@ type Server interface {
 }
 
 type MiscServiceServer struct {
-	MiscAPI
+	inner MiscService
 }
 
-func NewMiscServiceServer(svc MiscAPI) Server {
+func NewMiscServiceServer(svc MiscService) Server {
 	return &MiscServiceServer{
-		MiscAPI: svc,
+		inner: svc,
 	}
 }
 
@@ -57,7 +57,7 @@ func (s *MiscServiceServer) parseRoute(path string) (reqMsg proto.Message, _ htt
 	case "/handler.Misc/VersionInfo":
 		msg := &common.Empty{}
 		fn := func(ctx context.Context) (proto.Message, error) {
-			return s.MiscAPI.VersionInfo(ctx, msg)
+			return s.inner.VersionInfo(ctx, msg)
 		}
 		return msg, fn, nil
 	default:
@@ -67,12 +67,12 @@ func (s *MiscServiceServer) parseRoute(path string) (reqMsg proto.Message, _ htt
 }
 
 type WebhookServiceServer struct {
-	WebhookAPI
+	inner WebhookService
 }
 
-func NewWebhookServiceServer(svc WebhookAPI) Server {
+func NewWebhookServiceServer(svc WebhookService) Server {
 	return &WebhookServiceServer{
-		WebhookAPI: svc,
+		inner: svc,
 	}
 }
 
@@ -102,7 +102,7 @@ func (s *WebhookServiceServer) parseRoute(path string) (reqMsg proto.Message, _ 
 	case "/handler.Webhook/ResetState":
 		msg := &handler.ResetStateRequest{}
 		fn := func(ctx context.Context) (proto.Message, error) {
-			return s.WebhookAPI.ResetState(ctx, msg)
+			return s.inner.ResetState(ctx, msg)
 		}
 		return msg, fn, nil
 	default:

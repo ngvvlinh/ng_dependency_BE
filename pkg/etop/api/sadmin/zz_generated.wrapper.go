@@ -10,13 +10,14 @@ import (
 
 	cm "etop.vn/backend/pb/common"
 	etop "etop.vn/backend/pb/etop"
-	api "etop.vn/backend/pb/etop/sadmin"
+	sadmin "etop.vn/backend/pb/etop/sadmin"
 	common "etop.vn/backend/pkg/common"
 	bus "etop.vn/backend/pkg/common/bus"
 	metrics "etop.vn/backend/pkg/common/metrics"
 	cmwrapper "etop.vn/backend/pkg/common/wrapper"
 	claims "etop.vn/backend/pkg/etop/authorize/claims"
 	middleware "etop.vn/backend/pkg/etop/authorize/middleware"
+	api "etop.vn/backend/zexp/api/root/int/sadmin"
 )
 
 func WrapMiscService(s *MiscService) api.MiscService {
@@ -77,12 +78,12 @@ type wrapUserService struct {
 }
 
 type CreateUserEndpoint struct {
-	*api.SAdminCreateUserRequest
+	*sadmin.SAdminCreateUserRequest
 	Result  *etop.RegisterResponse
 	Context claims.EmptyClaim
 }
 
-func (s wrapUserService) CreateUser(ctx context.Context, req *api.SAdminCreateUserRequest) (resp *etop.RegisterResponse, err error) {
+func (s wrapUserService) CreateUser(ctx context.Context, req *sadmin.SAdminCreateUserRequest) (resp *etop.RegisterResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -118,12 +119,12 @@ func (s wrapUserService) CreateUser(ctx context.Context, req *api.SAdminCreateUs
 }
 
 type LoginAsAccountEndpoint struct {
-	*api.LoginAsAccountRequest
+	*sadmin.LoginAsAccountRequest
 	Result  *etop.LoginResponse
 	Context claims.EmptyClaim
 }
 
-func (s wrapUserService) LoginAsAccount(ctx context.Context, req *api.LoginAsAccountRequest) (resp *etop.LoginResponse, err error) {
+func (s wrapUserService) LoginAsAccount(ctx context.Context, req *sadmin.LoginAsAccountRequest) (resp *etop.LoginResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error
@@ -159,12 +160,12 @@ func (s wrapUserService) LoginAsAccount(ctx context.Context, req *api.LoginAsAcc
 }
 
 type ResetPasswordEndpoint struct {
-	*api.SAdminResetPasswordRequest
+	*sadmin.SAdminResetPasswordRequest
 	Result  *cm.Empty
 	Context claims.EmptyClaim
 }
 
-func (s wrapUserService) ResetPassword(ctx context.Context, req *api.SAdminResetPasswordRequest) (resp *cm.Empty, err error) {
+func (s wrapUserService) ResetPassword(ctx context.Context, req *sadmin.SAdminResetPasswordRequest) (resp *cm.Empty, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error

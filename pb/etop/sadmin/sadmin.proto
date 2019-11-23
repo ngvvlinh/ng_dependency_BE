@@ -2,14 +2,6 @@ syntax = "proto2";
 package sadmin;
 option go_package = "etop.vn/backend/pb/etop/sadmin";
 
-import "protoc-gen-swagger/options/annotations.proto";
-option (grpc.gateway.protoc_gen_swagger.options.openapiv2_swagger) = {
-    info: {
-        title: "eTop API: SuperAdmin";
-        version: "v1";
-    };
-};
-
 import "gogoproto/gogo.proto";
 option (gogoproto.equal_all)                = false;
 option (gogoproto.gogoproto_import)         = false;
@@ -26,16 +18,6 @@ option (gogoproto.verbose_equal_all)        = false;
 
 import "common/common.proto";
 import "etop/etop.proto";
-
-service MiscService {
-    rpc VersionInfo(cm.Empty) returns (cm.VersionInfoResponse);
-}
-
-service UserService {
-    rpc CreateUser(SAdminCreateUserRequest) returns (etop.RegisterResponse);
-    rpc ResetPassword(SAdminResetPasswordRequest) returns (cm.Empty);
-    rpc LoginAsAccount(LoginAsAccountRequest) returns (etop.LoginResponse);
-}
 
 message SAdminResetPasswordRequest {
     optional int64  user_id  = 1 [(gogoproto.nullable)=false];

@@ -1,13 +1,6 @@
 syntax = "proto2";
 package affiliate;
 option go_package = "etop.vn/backend/pb/services/affiliate";
-import "protoc-gen-swagger/options/annotations.proto";
-option (grpc.gateway.protoc_gen_swagger.options.openapiv2_swagger) = {
-    info: {
-        title: "eTop API: Affiliate service";
-version:"v1";
-};
-};
 
 import "gogoproto/gogo.proto";
 option (gogoproto.equal_all) = false;
@@ -28,40 +21,6 @@ import "etop/shop/shop.proto";
 import "etop/order/order.proto";
 import "etop/etop.proto";
 import "etop/etc/status4/status.proto";
-//service MiscService {
-//    rpc VersionInfo(cm.Empty) returns (cm.VersionInfoResponse);
-//}
-
-service UserService {
-    rpc UpdateReferral(UpdateReferralRequest) returns (UserReferral);
-}
-
-service TradingService {
-    rpc TradingGetProducts (cm.CommonListRequest) returns (SupplyGetProductsResponse);
-    rpc CreateOrUpdateTradingCommissionSetting (CreateOrUpdateTradingCommissionSettingRequest) returns (SupplyCommissionSetting);
-    rpc GetTradingProductPromotionByProductIDs (GetTradingProductPromotionByIDsRequest) returns (GetTradingProductPromotionByIDsResponse);
-    rpc GetTradingProductPromotions (cm.CommonListRequest) returns (GetProductPromotionsResponse);
-    rpc CreateTradingProductPromotion (CreateOrUpdateProductPromotionRequest) returns (ProductPromotion);
-    rpc UpdateTradingProductPromotion (CreateOrUpdateProductPromotionRequest) returns (ProductPromotion);
-}
-
-service ShopService {
-    rpc GetProductPromotion (GetProductPromotionRequest) returns (GetProductPromotionResponse);
-    rpc ShopGetProducts (cm.CommonListRequest) returns (ShopGetProductsResponse);
-    rpc CheckReferralCodeValid(CheckReferralCodeValidRequest) returns (GetProductPromotionResponse);
-}
-
-service AffiliateService {
-    rpc GetCommissions (cm.CommonListRequest) returns (GetCommissionsResponse);
-    rpc NotifyNewShopPurchase (NotifyNewShopPurchaseRequest) returns (NotifyNewShopPurchaseResponse);
-    rpc GetTransactions (cm.CommonListRequest) returns (GetTransactionsResponse);
-    rpc CreateOrUpdateAffiliateCommissionSetting (CreateOrUpdateCommissionSettingRequest) returns (CommissionSetting);
-    rpc GetProductPromotionByProductID (GetProductPromotionByProductIDRequest) returns (GetProductPromotionByProductIDResponse);
-    rpc AffiliateGetProducts (cm.CommonListRequest) returns (AffiliateGetProductsResponse);
-    rpc CreateReferralCode (CreateReferralCodeRequest) returns (ReferralCode);
-    rpc GetReferralCodes (cm.CommonListRequest) returns (GetReferralCodesResponse);
-    rpc GetReferrals (cm.CommonListRequest) returns (GetReferralsResponse);
-}
 
 message UpdateReferralRequest {
     optional string referral_code = 2 [(gogoproto.nullable) = false];

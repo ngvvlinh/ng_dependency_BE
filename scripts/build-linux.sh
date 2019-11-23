@@ -3,7 +3,7 @@ set -e
 
 replace() { echo "$1" | sed "s/$2/$3/g"; }
 
-COMMIT=$(git log -10 --pretty='%h <%ae> %B' | grep ':' | grep -E '^([0-9a-f]{6,10} <[^@>]+@[^@>]+>)|(Change-Id:)')
+COMMIT=$(git log -10 --pretty='%h <%ae> %B' | grep -E '^([0-9a-f]{6,10} <[^@>]+@[^@>]+>)|(Change-Id:)')
 COMMIT=$(echo -e "${COMMIT}\n\n@thangtran268")
 COMMIT=$(echo "${COMMIT}" | tr '\n' '↵' | sed 's/\s/·/g')
 

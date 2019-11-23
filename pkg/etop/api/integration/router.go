@@ -5,7 +5,7 @@ import (
 	service "etop.vn/backend/zexp/api/root/int/integration"
 )
 
-// +gen:wrapper=etop.vn/backend/pb/etop/integration
+// +gen:wrapper=etop.vn/backend/zexp/api/root/int/integration
 // +gen:wrapper:package=integration
 
 func NewIntegrationServer(m httprpc.Muxer) {

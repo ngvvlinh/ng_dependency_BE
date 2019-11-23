@@ -15,6 +15,8 @@ import (
 var ll = l.New()
 var _ generator.Plugin = &plugin{}
 
+const SuffixService = "Service"
+
 type plugin struct {
 }
 
@@ -114,7 +116,7 @@ func (p *plugin) generatePackage(ng generator.Engine, pkg *packages.Package, pri
 			PkgPrefix: pkgPrefix.Arg,
 			PkgName:   pkgName.Arg,
 			PkgPath:   pkg.PkgPath,
-			Name:      strings.TrimSuffix(name, "Service"),
+			Name:      strings.TrimSuffix(name, SuffixService),
 		}
 		var methods []*Method
 		for methodName := range ifaceMethods {
@@ -201,8 +203,9 @@ func filterServiceInterfaces(objs []types.Object) map[string]*types.Interface {
 	for _, obj := range objs {
 		if named, ok := obj.Type().(*types.Named); ok {
 			if typ, ok := named.Underlying().(*types.Interface); ok {
-				if strings.HasSuffix(obj.Name(), "Service") {
-					result[obj.Name()] = typ
+				name := obj.Name()
+				if strings.HasSuffix(name, SuffixService) && name != "QueryService" {
+					result[name] = typ
 				}
 			}
 		}
@@ -215,8 +218,9 @@ func filterServiceStructs(objs []types.Object) map[string]*types.Named {
 	for _, obj := range objs {
 		if named, ok := obj.Type().(*types.Named); ok {
 			if _, ok := named.Underlying().(*types.Struct); ok {
-				if strings.HasSuffix(obj.Name(), "Service") {
-					result[obj.Name()] = named
+				name := obj.Name()
+				if strings.HasSuffix(name, SuffixService) {
+					result[name] = named
 				}
 			}
 		}

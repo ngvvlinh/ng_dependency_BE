@@ -1,29 +1,20 @@
 package health
 
 import (
-	"context"
 	"net/http"
 
 	"go.uber.org/atomic"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/health/grpc_health_v1"
 )
 
 const DefaultRoute = "/healthcheck"
 
-// New returns new grpchealth.Service
+// New returns new health.Service
 func New() *Service {
 	return &Service{}
 }
 
-// Service implements grpc_health_v1.HealthServer
 type Service struct {
 	ready atomic.Bool
-}
-
-// Register registers health service.
-func (s *Service) Register(grpcServer *grpc.Server) {
-	grpc_health_v1.RegisterHealthServer(grpcServer, s)
 }
 
 // RegisterHTTPHandler registers health service.
@@ -39,22 +30,6 @@ func (s *Service) MarkReady() {
 // Shutdown marks the service not ready
 func (s *Service) Shutdown() {
 	s.ready.Store(false)
-}
-
-// Check reports whether the service is ready
-func (s *Service) Check(context.Context, *grpc_health_v1.HealthCheckRequest) (*grpc_health_v1.HealthCheckResponse, error) {
-	resp := &grpc_health_v1.HealthCheckResponse{
-		Status: grpc_health_v1.HealthCheckResponse_NOT_SERVING,
-	}
-	if s.ready.Load() {
-		resp.Status = grpc_health_v1.HealthCheckResponse_SERVING
-	}
-	return resp, nil
-}
-
-// Watch is unimplemented
-func (s *Service) Watch(*grpc_health_v1.HealthCheckRequest, grpc_health_v1.Health_WatchServer) error {
-	return nil
 }
 
 // ServeHTTP implements http healthcheck

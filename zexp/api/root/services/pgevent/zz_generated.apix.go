@@ -22,12 +22,12 @@ type Server interface {
 }
 
 type EventServiceServer struct {
-	EventAPI
+	inner EventService
 }
 
-func NewEventServiceServer(svc EventAPI) Server {
+func NewEventServiceServer(svc EventService) Server {
 	return &EventServiceServer{
-		EventAPI: svc,
+		inner: svc,
 	}
 }
 
@@ -57,7 +57,7 @@ func (s *EventServiceServer) parseRoute(path string) (reqMsg proto.Message, _ ht
 	case "/pgevent.Event/GenerateEvents":
 		msg := &pgevent.GenerateEventsRequest{}
 		fn := func(ctx context.Context) (proto.Message, error) {
-			return s.EventAPI.GenerateEvents(ctx, msg)
+			return s.inner.GenerateEvents(ctx, msg)
 		}
 		return msg, fn, nil
 	default:
@@ -67,12 +67,12 @@ func (s *EventServiceServer) parseRoute(path string) (reqMsg proto.Message, _ ht
 }
 
 type MiscServiceServer struct {
-	MiscAPI
+	inner MiscService
 }
 
-func NewMiscServiceServer(svc MiscAPI) Server {
+func NewMiscServiceServer(svc MiscService) Server {
 	return &MiscServiceServer{
-		MiscAPI: svc,
+		inner: svc,
 	}
 }
 
@@ -102,7 +102,7 @@ func (s *MiscServiceServer) parseRoute(path string) (reqMsg proto.Message, _ htt
 	case "/pgevent.Misc/VersionInfo":
 		msg := &common.Empty{}
 		fn := func(ctx context.Context) (proto.Message, error) {
-			return s.MiscAPI.VersionInfo(ctx, msg)
+			return s.inner.VersionInfo(ctx, msg)
 		}
 		return msg, fn, nil
 	default:

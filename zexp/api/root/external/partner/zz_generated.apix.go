@@ -23,12 +23,12 @@ type Server interface {
 }
 
 type HistoryServiceServer struct {
-	HistoryAPI
+	inner HistoryService
 }
 
-func NewHistoryServiceServer(svc HistoryAPI) Server {
+func NewHistoryServiceServer(svc HistoryService) Server {
 	return &HistoryServiceServer{
-		HistoryAPI: svc,
+		inner: svc,
 	}
 }
 
@@ -58,7 +58,7 @@ func (s *HistoryServiceServer) parseRoute(path string) (reqMsg proto.Message, _ 
 	case "/partner.History/GetChanges":
 		msg := &external.GetChangesRequest{}
 		fn := func(ctx context.Context) (proto.Message, error) {
-			return s.HistoryAPI.GetChanges(ctx, msg)
+			return s.inner.GetChanges(ctx, msg)
 		}
 		return msg, fn, nil
 	default:
@@ -68,12 +68,12 @@ func (s *HistoryServiceServer) parseRoute(path string) (reqMsg proto.Message, _ 
 }
 
 type MiscServiceServer struct {
-	MiscAPI
+	inner MiscService
 }
 
-func NewMiscServiceServer(svc MiscAPI) Server {
+func NewMiscServiceServer(svc MiscService) Server {
 	return &MiscServiceServer{
-		MiscAPI: svc,
+		inner: svc,
 	}
 }
 
@@ -103,19 +103,19 @@ func (s *MiscServiceServer) parseRoute(path string) (reqMsg proto.Message, _ htt
 	case "/partner.Misc/CurrentAccount":
 		msg := &common.Empty{}
 		fn := func(ctx context.Context) (proto.Message, error) {
-			return s.MiscAPI.CurrentAccount(ctx, msg)
+			return s.inner.CurrentAccount(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/partner.Misc/GetLocationList":
 		msg := &common.Empty{}
 		fn := func(ctx context.Context) (proto.Message, error) {
-			return s.MiscAPI.GetLocationList(ctx, msg)
+			return s.inner.GetLocationList(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/partner.Misc/VersionInfo":
 		msg := &common.Empty{}
 		fn := func(ctx context.Context) (proto.Message, error) {
-			return s.MiscAPI.VersionInfo(ctx, msg)
+			return s.inner.VersionInfo(ctx, msg)
 		}
 		return msg, fn, nil
 	default:
@@ -125,12 +125,12 @@ func (s *MiscServiceServer) parseRoute(path string) (reqMsg proto.Message, _ htt
 }
 
 type ShippingServiceServer struct {
-	ShippingAPI
+	inner ShippingService
 }
 
-func NewShippingServiceServer(svc ShippingAPI) Server {
+func NewShippingServiceServer(svc ShippingService) Server {
 	return &ShippingServiceServer{
-		ShippingAPI: svc,
+		inner: svc,
 	}
 }
 
@@ -160,31 +160,31 @@ func (s *ShippingServiceServer) parseRoute(path string) (reqMsg proto.Message, _
 	case "/partner.Shipping/CancelOrder":
 		msg := &external.CancelOrderRequest{}
 		fn := func(ctx context.Context) (proto.Message, error) {
-			return s.ShippingAPI.CancelOrder(ctx, msg)
+			return s.inner.CancelOrder(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/partner.Shipping/CreateAndConfirmOrder":
 		msg := &external.CreateOrderRequest{}
 		fn := func(ctx context.Context) (proto.Message, error) {
-			return s.ShippingAPI.CreateAndConfirmOrder(ctx, msg)
+			return s.inner.CreateAndConfirmOrder(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/partner.Shipping/GetFulfillment":
 		msg := &external.FulfillmentIDRequest{}
 		fn := func(ctx context.Context) (proto.Message, error) {
-			return s.ShippingAPI.GetFulfillment(ctx, msg)
+			return s.inner.GetFulfillment(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/partner.Shipping/GetOrder":
 		msg := &external.OrderIDRequest{}
 		fn := func(ctx context.Context) (proto.Message, error) {
-			return s.ShippingAPI.GetOrder(ctx, msg)
+			return s.inner.GetOrder(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/partner.Shipping/GetShippingServices":
 		msg := &external.GetShippingServicesRequest{}
 		fn := func(ctx context.Context) (proto.Message, error) {
-			return s.ShippingAPI.GetShippingServices(ctx, msg)
+			return s.inner.GetShippingServices(ctx, msg)
 		}
 		return msg, fn, nil
 	default:
@@ -194,12 +194,12 @@ func (s *ShippingServiceServer) parseRoute(path string) (reqMsg proto.Message, _
 }
 
 type ShopServiceServer struct {
-	ShopAPI
+	inner ShopService
 }
 
-func NewShopServiceServer(svc ShopAPI) Server {
+func NewShopServiceServer(svc ShopService) Server {
 	return &ShopServiceServer{
-		ShopAPI: svc,
+		inner: svc,
 	}
 }
 
@@ -229,13 +229,13 @@ func (s *ShopServiceServer) parseRoute(path string) (reqMsg proto.Message, _ htt
 	case "/partner.Shop/AuthorizeShop":
 		msg := &partner.AuthorizeShopRequest{}
 		fn := func(ctx context.Context) (proto.Message, error) {
-			return s.ShopAPI.AuthorizeShop(ctx, msg)
+			return s.inner.AuthorizeShop(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/partner.Shop/CurrentShop":
 		msg := &common.Empty{}
 		fn := func(ctx context.Context) (proto.Message, error) {
-			return s.ShopAPI.CurrentShop(ctx, msg)
+			return s.inner.CurrentShop(ctx, msg)
 		}
 		return msg, fn, nil
 	default:
@@ -245,12 +245,12 @@ func (s *ShopServiceServer) parseRoute(path string) (reqMsg proto.Message, _ htt
 }
 
 type WebhookServiceServer struct {
-	WebhookAPI
+	inner WebhookService
 }
 
-func NewWebhookServiceServer(svc WebhookAPI) Server {
+func NewWebhookServiceServer(svc WebhookService) Server {
 	return &WebhookServiceServer{
-		WebhookAPI: svc,
+		inner: svc,
 	}
 }
 
@@ -280,19 +280,19 @@ func (s *WebhookServiceServer) parseRoute(path string) (reqMsg proto.Message, _ 
 	case "/partner.Webhook/CreateWebhook":
 		msg := &external.CreateWebhookRequest{}
 		fn := func(ctx context.Context) (proto.Message, error) {
-			return s.WebhookAPI.CreateWebhook(ctx, msg)
+			return s.inner.CreateWebhook(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/partner.Webhook/DeleteWebhook":
 		msg := &external.DeleteWebhookRequest{}
 		fn := func(ctx context.Context) (proto.Message, error) {
-			return s.WebhookAPI.DeleteWebhook(ctx, msg)
+			return s.inner.DeleteWebhook(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/partner.Webhook/GetWebhooks":
 		msg := &common.Empty{}
 		fn := func(ctx context.Context) (proto.Message, error) {
-			return s.WebhookAPI.GetWebhooks(ctx, msg)
+			return s.inner.GetWebhooks(ctx, msg)
 		}
 		return msg, fn, nil
 	default:

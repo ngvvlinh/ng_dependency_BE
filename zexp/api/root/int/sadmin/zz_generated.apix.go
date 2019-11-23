@@ -22,12 +22,12 @@ type Server interface {
 }
 
 type MiscServiceServer struct {
-	MiscAPI
+	inner MiscService
 }
 
-func NewMiscServiceServer(svc MiscAPI) Server {
+func NewMiscServiceServer(svc MiscService) Server {
 	return &MiscServiceServer{
-		MiscAPI: svc,
+		inner: svc,
 	}
 }
 
@@ -57,7 +57,7 @@ func (s *MiscServiceServer) parseRoute(path string) (reqMsg proto.Message, _ htt
 	case "/sadmin.Misc/VersionInfo":
 		msg := &common.Empty{}
 		fn := func(ctx context.Context) (proto.Message, error) {
-			return s.MiscAPI.VersionInfo(ctx, msg)
+			return s.inner.VersionInfo(ctx, msg)
 		}
 		return msg, fn, nil
 	default:
@@ -67,12 +67,12 @@ func (s *MiscServiceServer) parseRoute(path string) (reqMsg proto.Message, _ htt
 }
 
 type UserServiceServer struct {
-	UserAPI
+	inner UserService
 }
 
-func NewUserServiceServer(svc UserAPI) Server {
+func NewUserServiceServer(svc UserService) Server {
 	return &UserServiceServer{
-		UserAPI: svc,
+		inner: svc,
 	}
 }
 
@@ -102,19 +102,19 @@ func (s *UserServiceServer) parseRoute(path string) (reqMsg proto.Message, _ htt
 	case "/sadmin.User/CreateUser":
 		msg := &sadmin.SAdminCreateUserRequest{}
 		fn := func(ctx context.Context) (proto.Message, error) {
-			return s.UserAPI.CreateUser(ctx, msg)
+			return s.inner.CreateUser(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/sadmin.User/LoginAsAccount":
 		msg := &sadmin.LoginAsAccountRequest{}
 		fn := func(ctx context.Context) (proto.Message, error) {
-			return s.UserAPI.LoginAsAccount(ctx, msg)
+			return s.inner.LoginAsAccount(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/sadmin.User/ResetPassword":
 		msg := &sadmin.SAdminResetPasswordRequest{}
 		fn := func(ctx context.Context) (proto.Message, error) {
-			return s.UserAPI.ResetPassword(ctx, msg)
+			return s.inner.ResetPassword(ctx, msg)
 		}
 		return msg, fn, nil
 	default:

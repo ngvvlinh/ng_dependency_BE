@@ -11,13 +11,13 @@ import (
 	cm "etop.vn/backend/pb/common"
 	etop "etop.vn/backend/pb/etop"
 	external "etop.vn/backend/pb/external"
-	api "etop.vn/backend/pb/external/shop"
 	common "etop.vn/backend/pkg/common"
 	bus "etop.vn/backend/pkg/common/bus"
 	metrics "etop.vn/backend/pkg/common/metrics"
 	cmwrapper "etop.vn/backend/pkg/common/wrapper"
 	claims "etop.vn/backend/pkg/etop/authorize/claims"
 	middleware "etop.vn/backend/pkg/etop/authorize/middleware"
+	api "etop.vn/backend/zexp/api/root/external/shop"
 )
 
 func WrapHistoryService(s *HistoryService) api.HistoryService {

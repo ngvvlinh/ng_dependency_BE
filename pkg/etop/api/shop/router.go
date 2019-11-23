@@ -5,7 +5,7 @@ import (
 	service "etop.vn/backend/zexp/api/root/int/shop"
 )
 
-// +gen:wrapper=etop.vn/backend/pb/etop/shop
+// +gen:wrapper=etop.vn/backend/zexp/api/root/int/shop
 // +gen:wrapper:package=shop
 
 // hack for imcsv

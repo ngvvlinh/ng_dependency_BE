@@ -3,8 +3,8 @@ package common
 import (
 	"testing"
 
+	"github.com/golang/protobuf/jsonpb"
 	"github.com/golang/protobuf/proto"
-	"github.com/grpc-ecosystem/grpc-gateway/runtime"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -21,7 +21,7 @@ func (f *Foo) ProtoMessage()  {}
 var _ proto.Message = &Foo{}
 
 func TestRawJSONObject(t *testing.T) {
-	var jSON = runtime.JSONPb{
+	var jSON = jsonpb.Marshaler{
 		OrigName:     true,
 		EmitDefaults: true,
 	}
@@ -33,30 +33,30 @@ func TestRawJSONObject(t *testing.T) {
 		},
 	}
 	t.Run("Marshal object", func(t *testing.T) {
-		data, err := jSON.Marshal(v)
+		data, err := jSON.MarshalToString(v)
 		assert.NoError(t, err)
-		assert.Equal(t, `{"number":10,"object":{"foo":"bar"}}`, string(data))
+		assert.Equal(t, `{"number":10,"object":{"foo":"bar"}}`, data)
 	})
 
 	t.Run("Marshal nil", func(t *testing.T) {
 		v.Object = nil
-		data, err := jSON.Marshal(v)
+		data, err := jSON.MarshalToString(v)
 		assert.NoError(t, err)
-		assert.Equal(t, `{"number":10,"object":null}`, string(data))
+		assert.Equal(t, `{"number":10,"object":null}`, data)
 	})
 
 	t.Run("Marshal empty", func(t *testing.T) {
 		v.Object = &RawJSONObject{Data: []byte(`{}`)}
-		data, err := jSON.Marshal(v)
+		data, err := jSON.MarshalToString(v)
 		assert.NoError(t, err)
-		assert.Equal(t, `{"number":10,"object":{}}`, string(data))
+		assert.Equal(t, `{"number":10,"object":{}}`, data)
 	})
 
 	t.Run("Unmarshal object", func(t *testing.T) {
 		data := `{"number":10,"object":{"foo":123}}`
 
 		v.Object = nil
-		err := jSON.Unmarshal([]byte(data), &v)
+		err := jsonpb.UnmarshalString(data, v)
 		assert.NoError(t, err)
 		assert.Equal(t, `{"foo":123}`, string(v.Object.Data))
 	})
@@ -65,7 +65,7 @@ func TestRawJSONObject(t *testing.T) {
 		data := `{"number":10,"object":{}}`
 
 		v.Object = nil
-		err := jSON.Unmarshal([]byte(data), &v)
+		err := jsonpb.UnmarshalString(data, v)
 		assert.NoError(t, err)
 		assert.Equal(t, `{}`, string(v.Object.Data))
 	})
@@ -74,7 +74,7 @@ func TestRawJSONObject(t *testing.T) {
 		data := `{"number":10,"object":null}`
 
 		v.Object = nil
-		err := jSON.Unmarshal([]byte(data), &v)
+		err := jsonpb.UnmarshalString(data, v)
 		assert.EqualError(t, err, "expect JSON object")
 	})
 
@@ -82,7 +82,7 @@ func TestRawJSONObject(t *testing.T) {
 		data := `{"number":10}`
 
 		v.Object = nil
-		err := jSON.Unmarshal([]byte(data), &v)
+		err := jsonpb.UnmarshalString(data, v)
 		assert.NoError(t, err)
 		assert.Nil(t, v.Object)
 	})

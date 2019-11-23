@@ -22,12 +22,12 @@ type Server interface {
 }
 
 type IntegrationServiceServer struct {
-	IntegrationAPI
+	inner IntegrationService
 }
 
-func NewIntegrationServiceServer(svc IntegrationAPI) Server {
+func NewIntegrationServiceServer(svc IntegrationService) Server {
 	return &IntegrationServiceServer{
-		IntegrationAPI: svc,
+		inner: svc,
 	}
 }
 
@@ -57,37 +57,37 @@ func (s *IntegrationServiceServer) parseRoute(path string) (reqMsg proto.Message
 	case "/integration.Integration/GrantAccess":
 		msg := &integration.GrantAccessRequest{}
 		fn := func(ctx context.Context) (proto.Message, error) {
-			return s.IntegrationAPI.GrantAccess(ctx, msg)
+			return s.inner.GrantAccess(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/integration.Integration/Init":
 		msg := &integration.InitRequest{}
 		fn := func(ctx context.Context) (proto.Message, error) {
-			return s.IntegrationAPI.Init(ctx, msg)
+			return s.inner.Init(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/integration.Integration/LoginUsingToken":
 		msg := &integration.LoginUsingTokenRequest{}
 		fn := func(ctx context.Context) (proto.Message, error) {
-			return s.IntegrationAPI.LoginUsingToken(ctx, msg)
+			return s.inner.LoginUsingToken(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/integration.Integration/Register":
 		msg := &integration.RegisterRequest{}
 		fn := func(ctx context.Context) (proto.Message, error) {
-			return s.IntegrationAPI.Register(ctx, msg)
+			return s.inner.Register(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/integration.Integration/RequestLogin":
 		msg := &integration.RequestLoginRequest{}
 		fn := func(ctx context.Context) (proto.Message, error) {
-			return s.IntegrationAPI.RequestLogin(ctx, msg)
+			return s.inner.RequestLogin(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/integration.Integration/SessionInfo":
 		msg := &common.Empty{}
 		fn := func(ctx context.Context) (proto.Message, error) {
-			return s.IntegrationAPI.SessionInfo(ctx, msg)
+			return s.inner.SessionInfo(ctx, msg)
 		}
 		return msg, fn, nil
 	default:
@@ -97,12 +97,12 @@ func (s *IntegrationServiceServer) parseRoute(path string) (reqMsg proto.Message
 }
 
 type MiscServiceServer struct {
-	MiscAPI
+	inner MiscService
 }
 
-func NewMiscServiceServer(svc MiscAPI) Server {
+func NewMiscServiceServer(svc MiscService) Server {
 	return &MiscServiceServer{
-		MiscAPI: svc,
+		inner: svc,
 	}
 }
 
@@ -132,7 +132,7 @@ func (s *MiscServiceServer) parseRoute(path string) (reqMsg proto.Message, _ htt
 	case "/integration.Misc/VersionInfo":
 		msg := &common.Empty{}
 		fn := func(ctx context.Context) (proto.Message, error) {
-			return s.MiscAPI.VersionInfo(ctx, msg)
+			return s.inner.VersionInfo(ctx, msg)
 		}
 		return msg, fn, nil
 	default:

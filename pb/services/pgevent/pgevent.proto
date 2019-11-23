@@ -2,8 +2,6 @@ syntax = "proto2";
 package pgevent;
 option go_package = "etop.vn/backend/pb/services/pgevent";
 
-import "protoc-gen-swagger/options/annotations.proto";
-
 import "gogoproto/gogo.proto";
 option (gogoproto.equal_all)                = false;
 option (gogoproto.gogoproto_import)         = false;
@@ -19,14 +17,6 @@ option (gogoproto.unmarshaler_all)          = false;
 option (gogoproto.verbose_equal_all)        = false;
 
 import "common/common.proto";
-
-service MiscService {
-    rpc VersionInfo(cm.Empty) returns (cm.VersionInfoResponse);
-}
-
-service EventService {
-    rpc GenerateEvents(GenerateEventsRequest) returns (cm.Empty);
-}
 
 message GenerateEventsRequest {
     // Be careful, as invalid message can cause errors in other services!

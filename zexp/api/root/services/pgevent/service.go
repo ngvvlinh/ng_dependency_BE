@@ -11,11 +11,11 @@ import (
 // +gen:apix:doc-path=services/pgevent
 
 // +apix:path=/pgevent.Misc
-type MiscAPI interface {
+type MiscService interface {
 	VersionInfo(context.Context, *cm.Empty) (*cm.VersionInfoResponse, error)
 }
 
 // +apix:path=/pgevent.Event
-type EventAPI interface {
+type EventService interface {
 	GenerateEvents(context.Context, *event.GenerateEventsRequest) (*cm.Empty, error)
 }

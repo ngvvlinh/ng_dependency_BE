@@ -11,12 +11,12 @@ import (
 // +gen:apix:doc-path=etop/integration
 
 // +apix:path=/integration.Misc
-type MiscAPI interface {
+type MiscService interface {
 	VersionInfo(context.Context, *cm.Empty) (*cm.VersionInfoResponse, error)
 }
 
 // +apix:path=/integration.Integration
-type IntegrationAPI interface {
+type IntegrationService interface {
 	Init(context.Context, *inte.InitRequest) (*inte.LoginResponse, error)
 	// RequestLogin
 	//

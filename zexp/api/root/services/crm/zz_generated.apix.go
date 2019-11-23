@@ -22,12 +22,12 @@ type Server interface {
 }
 
 type CrmServiceServer struct {
-	CrmAPI
+	inner CrmService
 }
 
-func NewCrmServiceServer(svc CrmAPI) Server {
+func NewCrmServiceServer(svc CrmService) Server {
 	return &CrmServiceServer{
-		CrmAPI: svc,
+		inner: svc,
 	}
 }
 
@@ -57,13 +57,13 @@ func (s *CrmServiceServer) parseRoute(path string) (reqMsg proto.Message, _ http
 	case "/crm.Crm/RefreshFulfillmentFromCarrier":
 		msg := &crm.RefreshFulfillmentFromCarrierRequest{}
 		fn := func(ctx context.Context) (proto.Message, error) {
-			return s.CrmAPI.RefreshFulfillmentFromCarrier(ctx, msg)
+			return s.inner.RefreshFulfillmentFromCarrier(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/crm.Crm/SendNotification":
 		msg := &crm.SendNotificationRequest{}
 		fn := func(ctx context.Context) (proto.Message, error) {
-			return s.CrmAPI.SendNotification(ctx, msg)
+			return s.inner.SendNotification(ctx, msg)
 		}
 		return msg, fn, nil
 	default:
@@ -73,12 +73,12 @@ func (s *CrmServiceServer) parseRoute(path string) (reqMsg proto.Message, _ http
 }
 
 type MiscServiceServer struct {
-	MiscAPI
+	inner MiscService
 }
 
-func NewMiscServiceServer(svc MiscAPI) Server {
+func NewMiscServiceServer(svc MiscService) Server {
 	return &MiscServiceServer{
-		MiscAPI: svc,
+		inner: svc,
 	}
 }
 
@@ -108,7 +108,7 @@ func (s *MiscServiceServer) parseRoute(path string) (reqMsg proto.Message, _ htt
 	case "/crm.Misc/VersionInfo":
 		msg := &common.Empty{}
 		fn := func(ctx context.Context) (proto.Message, error) {
-			return s.MiscAPI.VersionInfo(ctx, msg)
+			return s.inner.VersionInfo(ctx, msg)
 		}
 		return msg, fn, nil
 	default:
@@ -118,12 +118,12 @@ func (s *MiscServiceServer) parseRoute(path string) (reqMsg proto.Message, _ htt
 }
 
 type VhtServiceServer struct {
-	VhtAPI
+	inner VhtService
 }
 
-func NewVhtServiceServer(svc VhtAPI) Server {
+func NewVhtServiceServer(svc VhtService) Server {
 	return &VhtServiceServer{
-		VhtAPI: svc,
+		inner: svc,
 	}
 }
 
@@ -153,19 +153,19 @@ func (s *VhtServiceServer) parseRoute(path string) (reqMsg proto.Message, _ http
 	case "/crm.Vht/CreateOrUpdateCallHistoryByCallID":
 		msg := &crm.VHTCallLog{}
 		fn := func(ctx context.Context) (proto.Message, error) {
-			return s.VhtAPI.CreateOrUpdateCallHistoryByCallID(ctx, msg)
+			return s.inner.CreateOrUpdateCallHistoryByCallID(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/crm.Vht/CreateOrUpdateCallHistoryBySDKCallID":
 		msg := &crm.VHTCallLog{}
 		fn := func(ctx context.Context) (proto.Message, error) {
-			return s.VhtAPI.CreateOrUpdateCallHistoryBySDKCallID(ctx, msg)
+			return s.inner.CreateOrUpdateCallHistoryBySDKCallID(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/crm.Vht/GetCallHistories":
 		msg := &crm.GetCallHistoriesRequest{}
 		fn := func(ctx context.Context) (proto.Message, error) {
-			return s.VhtAPI.GetCallHistories(ctx, msg)
+			return s.inner.GetCallHistories(ctx, msg)
 		}
 		return msg, fn, nil
 	default:
@@ -175,12 +175,12 @@ func (s *VhtServiceServer) parseRoute(path string) (reqMsg proto.Message, _ http
 }
 
 type VtigerServiceServer struct {
-	VtigerAPI
+	inner VtigerService
 }
 
-func NewVtigerServiceServer(svc VtigerAPI) Server {
+func NewVtigerServiceServer(svc VtigerService) Server {
 	return &VtigerServiceServer{
-		VtigerAPI: svc,
+		inner: svc,
 	}
 }
 
@@ -210,49 +210,49 @@ func (s *VtigerServiceServer) parseRoute(path string) (reqMsg proto.Message, _ h
 	case "/crm.Vtiger/CreateOrUpdateContact":
 		msg := &crm.ContactRequest{}
 		fn := func(ctx context.Context) (proto.Message, error) {
-			return s.VtigerAPI.CreateOrUpdateContact(ctx, msg)
+			return s.inner.CreateOrUpdateContact(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/crm.Vtiger/CreateOrUpdateLead":
 		msg := &crm.LeadRequest{}
 		fn := func(ctx context.Context) (proto.Message, error) {
-			return s.VtigerAPI.CreateOrUpdateLead(ctx, msg)
+			return s.inner.CreateOrUpdateLead(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/crm.Vtiger/CreateTicket":
 		msg := &crm.CreateOrUpdateTicketRequest{}
 		fn := func(ctx context.Context) (proto.Message, error) {
-			return s.VtigerAPI.CreateTicket(ctx, msg)
+			return s.inner.CreateTicket(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/crm.Vtiger/GetCategories":
 		msg := &common.Empty{}
 		fn := func(ctx context.Context) (proto.Message, error) {
-			return s.VtigerAPI.GetCategories(ctx, msg)
+			return s.inner.GetCategories(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/crm.Vtiger/GetContacts":
 		msg := &crm.GetContactsRequest{}
 		fn := func(ctx context.Context) (proto.Message, error) {
-			return s.VtigerAPI.GetContacts(ctx, msg)
+			return s.inner.GetContacts(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/crm.Vtiger/GetTicketStatusCount":
 		msg := &common.Empty{}
 		fn := func(ctx context.Context) (proto.Message, error) {
-			return s.VtigerAPI.GetTicketStatusCount(ctx, msg)
+			return s.inner.GetTicketStatusCount(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/crm.Vtiger/GetTickets":
 		msg := &crm.GetTicketsRequest{}
 		fn := func(ctx context.Context) (proto.Message, error) {
-			return s.VtigerAPI.GetTickets(ctx, msg)
+			return s.inner.GetTickets(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/crm.Vtiger/UpdateTicket":
 		msg := &crm.CreateOrUpdateTicketRequest{}
 		fn := func(ctx context.Context) (proto.Message, error) {
-			return s.VtigerAPI.UpdateTicket(ctx, msg)
+			return s.inner.UpdateTicket(ctx, msg)
 		}
 		return msg, fn, nil
 	default:

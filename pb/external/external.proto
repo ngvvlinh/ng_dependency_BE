@@ -2,14 +2,6 @@ syntax = "proto2";
 package external;
 option go_package = "etop.vn/backend/pb/external";
 
-import "protoc-gen-swagger/options/annotations.proto";
-option (grpc.gateway.protoc_gen_swagger.options.openapiv2_swagger) = {
-    info: {
-        title: "eTop External API: Common";
-        version:"v1";
-    };
-};
-
 import "gogoproto/gogo.proto";
 option (gogoproto.equal_all)                = false;
 option (gogoproto.gogoproto_import)         = false;

@@ -5,7 +5,7 @@ import (
 	service "etop.vn/backend/zexp/api/root/int/etop"
 )
 
-// +gen:wrapper=etop.vn/backend/pb/etop
+// +gen:wrapper=etop.vn/backend/zexp/api/root/int/etop
 // +gen:wrapper:package=etop
 
 func NewEtopServer(m httprpc.Muxer) {

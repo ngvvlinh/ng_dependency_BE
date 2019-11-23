@@ -2,15 +2,6 @@ syntax = "proto2";
 package etop;
 option go_package = "etop.vn/backend/pb/etop";
 
-import "protoc-gen-swagger/options/annotations.proto";
-option (grpc.gateway.protoc_gen_swagger.options.openapiv2_swagger) = {
-    info: {
-        title: "eTop API";
-version:"v1";
-description:"API Documentation:\n- [/doc/etop](/doc/etop) Shared API for managing login and account\n- [/doc/shop](/doc/shop) API for shops\n- [/doc/affiliate](/doc/affiliate) API for affiliates\n- [/doc/services/affiliate](/doc/services/affiliate) API for affiliate service\n- [/doc/integration](/doc/integration) API for shop to integrate with external partners\n- [/doc/admin](/doc/admin) API for eTop admins\n- [/doc/ext/shop](/doc/ext/shop) External API for shops\n- [/doc/ext/partner](/doc/ext/partner) External API for partners\n\n- [/doc/sadmin](/doc/sadmin) Special API for super admins";
-};
-};
-
 import "gogoproto/gogo.proto";
 option (gogoproto.equal_all)                = false;
 option (gogoproto.gogoproto_import)         = false;
@@ -31,116 +22,6 @@ import "etop/etc/try_on/code.proto";
 import "etop/etc/status3/status.proto";
 import "etop/etc/address_type/type.proto";
 import "etop/etc/user_source/user_source.proto";
-
-service MiscService {
-    rpc VersionInfo(cm.Empty) returns (cm.VersionInfoResponse);
-}
-
-service UserService {
-    // Register
-    //
-    // Register a new user or after a user has login using generated password.
-    rpc Register(CreateUserRequest) returns (RegisterResponse);
-
-    // Login
-    //
-    // Log the user in and generate access token.
-    rpc Login(LoginRequest) returns (LoginResponse);
-
-    // SessionInfo
-    //
-    // Return current session info.
-    rpc SessionInfo(cm.Empty) returns (LoginResponse);
-
-    // SwitchAccount
-    //
-    // Response error if the user does not have permission to the requested account.
-    rpc SwitchAccount(SwitchAccountRequest) returns (AccessTokenResponse);
-
-    //== SToken ==//
-
-    rpc SendSTokenEmail(SendSTokenEmailRequest) returns (cm.MessageResponse);
-
-    rpc UpgradeAccessToken(UpgradeAccessTokenRequest) returns (AccessTokenResponse);
-
-    // Password
-
-    // ResetPassword
-    //
-    // Send email or sms to allow the user reset their password.
-    rpc ResetPassword(ResetPasswordRequest) returns (cm.MessageResponse);
-
-    // ChangePassword
-    //
-    // Change the user password
-    rpc ChangePassword(ChangePasswordRequest) returns (cm.Empty);
-
-    // ChangePasswordUsingToken
-    //
-    // Reset password by providing the token sent to email or phone
-    rpc ChangePasswordUsingToken(ChangePasswordUsingTokenRequest) returns (cm.Empty);
-
-    // Verification
-
-    rpc SendEmailVerification (SendEmailVerificationRequest) returns (cm.MessageResponse);
-
-    rpc SendPhoneVerification (SendPhoneVerificationRequest) returns (cm.MessageResponse);
-
-    rpc VerifyEmailUsingToken (VerifyEmailUsingTokenRequest) returns (cm.MessageResponse);
-
-    rpc VerifyPhoneUsingToken (VerifyPhoneUsingTokenRequest) returns (cm.MessageResponse);
-
-    rpc UpdatePermission (UpdatePermissionRequest) returns (UpdatePermissionResponse);
-
-    rpc UpdateReferenceUser (UpdateReferenceUserRequest) returns (cm.UpdatedResponse);
-
-    rpc UpdateReferenceSale (UpdateReferenceSaleRequest) returns (cm.UpdatedResponse);
-}
-
-service AccountService {
-    rpc UpdateURLSlug(UpdateURLSlugRequest) returns (cm.Empty);
-    rpc GetPublicPartnerInfo(cm.IDRequest) returns (PublicAccountInfo);
-
-    // leave ids empty to get all connected partners
-    rpc GetPublicPartners(cm.IDsRequest) returns (PublicAccountsResponse);
-}
-
-service RelationshipService {
-    rpc InviteUserToAccount (InviteUserToAccountRequest) returns (UserAccountInfo);
-    rpc AnswerInvitation (AnswerInvitationRequest) returns (UserAccountInfo);
-    rpc GetUsersInCurrentAccounts (GetUsersInCurrentAccountsRequest) returns (ProtectedUsersResponse);
-    rpc LeaveAccount (LeaveAccountRequest) returns (cm.Empty);
-    rpc RemoveUserFromCurrentAccount (RemoveUserFromCurrentAccountRequest) returns (cm.Empty);
-}
-
-service LocationService {
-    rpc GetProvinces(cm.Empty) returns (GetProvincesResponse);
-    rpc GetDistricts(cm.Empty) returns (GetDistrictsResponse);
-    rpc GetDistrictsByProvince(GetDistrictsByProvinceRequest) returns (GetDistrictsResponse);
-    rpc GetWards(cm.Empty) returns (GetWardsResponse);
-    rpc GetWardsByDistrict(GetWardsByDistrictRequest) returns (GetWardsResponse);
-    rpc ParseLocation(ParseLocationRequest) returns (ParseLocationResponse);
-}
-
-service BankService {
-    rpc GetBanks(cm.Empty) returns (GetBanksResponse);
-    rpc GetProvincesByBank(GetProvincesByBankResquest) returns (GetBankProvincesResponse);
-    rpc GetBranchesByBankProvince(GetBranchesByBankProvinceResquest) returns (GetBranchesByBankProvinceResponse);
-}
-
-service AddressService {
-    rpc CreateAddress(CreateAddressRequest) returns (Address);
-    rpc GetAddresses(cm.Empty) returns (GetAddressResponse);
-    rpc UpdateAddress(UpdateAddressRequest) returns (Address);
-    rpc RemoveAddress(cm.IDRequest) returns (cm.Empty);
-}
-
-service InvitationService {
-    rpc AcceptInvitation(AcceptInvitationRequest) returns (cm.UpdatedResponse);
-    rpc RejectInvitation(RejectInvitationRequest) returns (cm.UpdatedResponse);
-    rpc GetInvitationByToken(GetInvitationByTokenRequest) returns (Invitation);
-    rpc GetInvitations(GetInvitationsRequest) returns (InvitationsResponse);
-}
 
 message InvitationsResponse {
     repeated Invitation invitations = 1;

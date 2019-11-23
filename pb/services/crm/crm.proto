@@ -2,8 +2,6 @@ syntax = "proto2";
 package crm;
 option go_package = "etop.vn/backend/pb/services/crm";
 
-import "protoc-gen-swagger/options/annotations.proto";
-
 import "gogoproto/gogo.proto";
 option (gogoproto.equal_all)                = false;
 option (gogoproto.gogoproto_import)         = false;
@@ -21,49 +19,6 @@ option (gogoproto.verbose_equal_all)        = false;
 import "common/common.proto";
 import "etop/etc/notifier_entity/entity.proto";
 import "google/protobuf/timestamp.proto";
-//import "common/common.proto";
-//import "common/spreadsheet/spreadsheet.proto";
-//import "etop/etc/fee/type.proto";
-//import "etop/etc/gender/gender.proto";
-//import "etop/etc/ghn_note_code/code.proto";
-//import "etop/etc/shipping/state.proto";
-//import "etop/etc/shipping_fee_type/type.proto";
-//import "etop/etc/status3/status.proto";
-//import "etop/etc/status4/status.proto";
-//import "etop/etc/status5/status.proto";
-//import "etop/etc/try_on/code.proto";
-//import "etop/etc/shipping_provider/provider.proto";
-//import "etop/etop.proto";
-//import "etop/order/source/source.proto";
-
-service MiscService {
-    rpc VersionInfo(cm.Empty) returns (cm.VersionInfoResponse);
-}
-
-service CrmService {
-    rpc RefreshFulfillmentFromCarrier (RefreshFulfillmentFromCarrierRequest) returns (cm.UpdatedResponse);
-
-    rpc SendNotification (SendNotificationRequest) returns (cm.MessageResponse);
-}
-
-service VtigerService {
-    rpc GetContacts(GetContactsRequest) returns (GetContactsResponse);
-    rpc CreateOrUpdateContact(ContactRequest) returns (ContactResponse);
-    rpc CreateOrUpdateLead(LeadRequest) returns (LeadResponse);
-    rpc GetTickets(GetTicketsRequest) returns (GetTicketsResponse);
-    rpc CreateTicket(CreateOrUpdateTicketRequest) returns (Ticket);
-    rpc UpdateTicket(CreateOrUpdateTicketRequest) returns (Ticket);
-    rpc GetCategories(cm.Empty) returns (GetCategoriesResponse);
-//    rpc GetStatus(cm.Empty) returns (GetStatusResponse);
-//    rpc CountTicketByStatus(CountTicketByStatusRequest) returns (CountTicketByStatusResponse);
-    rpc GetTicketStatusCount(cm.Empty) returns (GetTicketStatusCountResponse);
-}
-
-service VhtService{
-    rpc GetCallHistories(GetCallHistoriesRequest) returns (GetCallHistoriesResponse);
-    rpc CreateOrUpdateCallHistoryBySDKCallID(VHTCallLog) returns (VHTCallLog);
-    rpc CreateOrUpdateCallHistoryByCallID(VHTCallLog) returns (VHTCallLog);
-}
 
 message RefreshFulfillmentFromCarrierRequest {
     // @required

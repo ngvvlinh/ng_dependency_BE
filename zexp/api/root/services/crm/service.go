@@ -11,19 +11,19 @@ import (
 // +gen:apix:doc-path=services/crm
 
 // +apix:path=/crm.Misc
-type MiscAPI interface {
+type MiscService interface {
 	VersionInfo(context.Context, *cm.Empty) (*cm.VersionInfoResponse, error)
 }
 
 // +apix:path=/crm.Crm
-type CrmAPI interface {
+type CrmService interface {
 	RefreshFulfillmentFromCarrier(context.Context, *crm.RefreshFulfillmentFromCarrierRequest) (*cm.UpdatedResponse, error)
 
 	SendNotification(context.Context, *crm.SendNotificationRequest) (*cm.MessageResponse, error)
 }
 
 // +apix:path=/crm.Vtiger
-type VtigerAPI interface {
+type VtigerService interface {
 	GetContacts(context.Context, *crm.GetContactsRequest) (*crm.GetContactsResponse, error)
 	CreateOrUpdateContact(context.Context, *crm.ContactRequest) (*crm.ContactResponse, error)
 	CreateOrUpdateLead(context.Context, *crm.LeadRequest) (*crm.LeadResponse, error)
@@ -37,7 +37,7 @@ type VtigerAPI interface {
 }
 
 // +apix:path=/crm.Vht
-type VhtAPI interface {
+type VhtService interface {
 	GetCallHistories(context.Context, *crm.GetCallHistoriesRequest) (*crm.GetCallHistoriesResponse, error)
 	CreateOrUpdateCallHistoryBySDKCallID(context.Context, *crm.VHTCallLog) (*crm.VHTCallLog, error)
 	CreateOrUpdateCallHistoryByCallID(context.Context, *crm.VHTCallLog) (*crm.VHTCallLog, error)

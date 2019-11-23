@@ -15,6 +15,7 @@ import (
 	"etop.vn/backend/tools/pkg/generators/apix/defs"
 	"etop.vn/backend/tools/pkg/generators/apix/swagger"
 	"etop.vn/backend/tools/pkg/generators/cq"
+	"etop.vn/backend/tools/pkg/generators/wrapper"
 	"etop.vn/common/l"
 )
 
@@ -64,7 +65,7 @@ func (p *plugin) generatePackage(ng generator.Engine, pkg *packages.Package, pri
 			case *types.Named:
 				switch underlyingType := typ.Underlying().(type) {
 				case *types.Interface:
-					if !strings.HasSuffix(obj.Name(), "API") {
+					if !strings.HasSuffix(obj.Name(), wrapper.SuffixService) {
 						ll.V(1).Debugf("ignore unrecognized interface %v", obj.Name())
 						continue
 					}
@@ -72,7 +73,7 @@ func (p *plugin) generatePackage(ng generator.Engine, pkg *packages.Package, pri
 					if err != nil {
 						return generator.Errorf(err, "service %v: %v", obj.Name(), err)
 					}
-					service.Name = strings.TrimSuffix(obj.Name(), "API")
+					service.Name = strings.TrimSuffix(obj.Name(), wrapper.SuffixService)
 					service.APIPath = directives.GetArg("apix:path")
 					if service.APIPath == "" {
 						return generator.Errorf(nil, "no api path for %v", obj.Name())

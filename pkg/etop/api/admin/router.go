@@ -5,7 +5,7 @@ import (
 	service "etop.vn/backend/zexp/api/root/int/admin"
 )
 
-// +gen:wrapper=etop.vn/backend/pb/etop/admin
+// +gen:wrapper=etop.vn/backend/zexp/api/root/int/admin
 // +gen:wrapper:package=admin
 
 func NewAdminServer(m httprpc.Muxer) {

@@ -2,14 +2,6 @@ syntax = "proto2";
 package integration;
 option go_package = "etop.vn/backend/pb/etop/integration";
 
-import "protoc-gen-swagger/options/annotations.proto";
-option (grpc.gateway.protoc_gen_swagger.options.openapiv2_swagger) = {
-    info: {
-        title: "eTop API: Integration";
-        version: "v1";
-    };
-};
-
 import "gogoproto/gogo.proto";
 option (gogoproto.equal_all)                = false;
 option (gogoproto.gogoproto_import)         = false;
@@ -27,26 +19,6 @@ option (gogoproto.verbose_equal_all)        = false;
 import "common/common.proto";
 import "etop/etc/status3/status.proto";
 import "etop/etop.proto";
-
-service MiscService {
-    rpc VersionInfo(cm.Empty) returns (cm.VersionInfoResponse);
-}
-
-service IntegrationService {
-    rpc Init(InitRequest) returns (LoginResponse);
-    // RequestLogin
-    //
-    // Check if the requested phone or email exists and take corresponding action.
-    rpc RequestLogin(RequestLoginRequest) returns (RequestLoginResponse);
-
-    rpc LoginUsingToken(LoginUsingTokenRequest) returns (LoginResponse);
-
-    rpc Register(RegisterRequest) returns (RegisterResponse);
-
-    rpc GrantAccess(GrantAccessRequest) returns (GrantAccessResponse);
-
-    rpc SessionInfo(cm.Empty) returns (LoginResponse);
-}
 
 message InitRequest {
     optional string auth_token = 1 [(gogoproto.nullable)=false];

@@ -11,12 +11,12 @@ import (
 // +gen:apix:doc-path=etop
 
 // +apix:path=/etop.Misc
-type MiscAPI interface {
+type MiscService interface {
 	VersionInfo(context.Context, *cm.Empty) (*cm.VersionInfoResponse, error)
 }
 
 // +apix:path=/etop.User
-type UserAPI interface {
+type UserService interface {
 	// Register
 	//
 	// Register a new user or after a user has login using generated password.
@@ -72,7 +72,7 @@ type UserAPI interface {
 }
 
 // +apix:path=/etop.Account
-type AccountAPI interface {
+type AccountService interface {
 	UpdateURLSlug(context.Context, *pbetop.UpdateURLSlugRequest) (*cm.Empty, error)
 	GetPublicPartnerInfo(context.Context, *cm.IDRequest) (*pbetop.PublicAccountInfo, error)
 
@@ -81,7 +81,7 @@ type AccountAPI interface {
 }
 
 // +apix:path=/etop.Relationship
-type RelationshipAPI interface {
+type RelationshipService interface {
 	InviteUserToAccount(context.Context, *pbetop.InviteUserToAccountRequest) (*pbetop.UserAccountInfo, error)
 	AnswerInvitation(context.Context, *pbetop.AnswerInvitationRequest) (*pbetop.UserAccountInfo, error)
 
@@ -93,7 +93,7 @@ type RelationshipAPI interface {
 }
 
 // +apix:path=/etop.Location
-type LocationAPI interface {
+type LocationService interface {
 	GetProvinces(context.Context, *cm.Empty) (*pbetop.GetProvincesResponse, error)
 
 	GetDistricts(context.Context, *cm.Empty) (*pbetop.GetDistrictsResponse, error)
@@ -108,7 +108,7 @@ type LocationAPI interface {
 }
 
 // +apix:path=/etop.Bank
-type BankAPI interface {
+type BankService interface {
 	GetBanks(context.Context, *cm.Empty) (*pbetop.GetBanksResponse, error)
 
 	GetProvincesByBank(context.Context, *pbetop.GetProvincesByBankResquest) (*pbetop.GetBankProvincesResponse, error)
@@ -117,7 +117,7 @@ type BankAPI interface {
 }
 
 // +apix:path=/etop.Address
-type AddressAPI interface {
+type AddressService interface {
 	CreateAddress(context.Context, *pbetop.CreateAddressRequest) (*pbetop.Address, error)
 
 	GetAddresses(context.Context, *cm.Empty) (*pbetop.GetAddressResponse, error)
@@ -128,7 +128,7 @@ type AddressAPI interface {
 }
 
 // +apix:path=/etop.Invitation
-type InvitationAPI interface {
+type InvitationService interface {
 	AcceptInvitation(context.Context, *pbetop.AcceptInvitationRequest) (*cm.UpdatedResponse, error)
 	RejectInvitation(context.Context, *pbetop.RejectInvitationRequest) (*cm.UpdatedResponse, error)
 	GetInvitationByToken(context.Context, *pbetop.GetInvitationByTokenRequest) (*pbetop.Invitation, error)
