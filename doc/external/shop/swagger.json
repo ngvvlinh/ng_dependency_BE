@@ -343,16 +343,16 @@
     "maError": {
       "type": "object",
       "properties": {
-        "Code": {
+        "code": {
           "type": "string"
         },
-        "Meta": {
+        "meta": {
           "type": "object",
           "additionalProperties": {
             "type": "string"
           }
         },
-        "Msg": {
+        "msg": {
           "type": "string"
         }
       }
@@ -360,11 +360,11 @@
     "maForwardPaging": {
       "type": "object",
       "properties": {
-        "Limit": {
+        "limit": {
           "type": "integer",
           "format": "int32"
         },
-        "Since": {
+        "since": {
           "type": "string"
         }
       }
@@ -372,14 +372,14 @@
     "maVersionInfoResponse": {
       "type": "object",
       "properties": {
-        "Service": {
+        "service": {
           "type": "string"
         },
-        "UpdatedAt": {
+        "updated_at": {
           "type": "string",
           "format": "date-time"
         },
-        "Version": {
+        "version": {
           "type": "string"
         }
       }
@@ -415,20 +415,20 @@
     "ocPublicAccountInfo": {
       "type": "object",
       "properties": {
-        "Id": {
+        "id": {
           "type": "integer",
           "format": "int64"
         },
-        "ImageUrl": {
+        "image_url": {
           "type": "string"
         },
-        "Name": {
+        "name": {
           "type": "string"
         },
-        "Type": {
+        "type": {
           "$ref": "#/definitions/ocAccountType"
         },
-        "Website": {
+        "website": {
           "type": "string"
         }
       }
@@ -436,13 +436,13 @@
     "oyCallback": {
       "type": "object",
       "properties": {
-        "Changes": {
+        "changes": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/oyChange"
           }
         },
-        "Id": {
+        "id": {
           "type": "integer",
           "format": "int64"
         }
@@ -451,16 +451,16 @@
     "oyCancelOrderRequest": {
       "type": "object",
       "properties": {
-        "CancelReason": {
+        "cancel_reason": {
           "type": "string"
         },
-        "Code": {
+        "code": {
           "type": "string"
         },
-        "ExternalId": {
+        "external_id": {
           "type": "string"
         },
-        "Id": {
+        "id": {
           "type": "integer",
           "format": "int64"
         }
@@ -469,19 +469,19 @@
     "oyChange": {
       "type": "object",
       "properties": {
-        "ChangeType": {
+        "change_type": {
           "type": "string"
         },
-        "Changed": {
+        "changed": {
           "$ref": "#/definitions/oyChangeOneOf"
         },
-        "Entity": {
+        "entity": {
           "type": "string"
         },
-        "Latest": {
+        "latest": {
           "$ref": "#/definitions/oyLatestOneOf"
         },
-        "Time": {
+        "time": {
           "type": "string",
           "format": "date-time"
         }
@@ -490,10 +490,10 @@
     "oyChangeOneOf": {
       "type": "object",
       "properties": {
-        "Fulfillment": {
+        "fulfillment": {
           "$ref": "#/definitions/oyFulfillment"
         },
-        "Order": {
+        "order": {
           "$ref": "#/definitions/oyOrder"
         }
       }
@@ -501,66 +501,66 @@
     "oyCreateOrderRequest": {
       "type": "object",
       "properties": {
-        "BasketValue": {
+        "basket_value": {
           "type": "integer",
           "format": "int32"
         },
-        "CustomerAddress": {
+        "customer_address": {
           "$ref": "#/definitions/oyOrderAddress"
         },
-        "ExternalCode": {
+        "external_code": {
           "type": "string"
         },
-        "ExternalId": {
+        "external_id": {
           "type": "string"
         },
-        "ExternalMeta": {
+        "external_meta": {
           "type": "object",
           "additionalProperties": {
             "type": "string"
           }
         },
-        "ExternalUrl": {
+        "external_url": {
           "type": "string"
         },
-        "FeeLines": {
+        "fee_lines": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/vmOrderFeeLine"
           }
         },
-        "Lines": {
+        "lines": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/oyOrderLine"
           }
         },
-        "OrderDiscount": {
+        "order_discount": {
           "type": "integer",
           "format": "int32"
         },
-        "OrderNote": {
+        "order_note": {
           "type": "string"
         },
-        "Shipping": {
+        "shipping": {
           "$ref": "#/definitions/oyOrderShipping"
         },
-        "ShippingAddress": {
+        "shipping_address": {
           "$ref": "#/definitions/oyOrderAddress"
         },
-        "TotalAmount": {
+        "total_amount": {
           "type": "integer",
           "format": "int32"
         },
-        "TotalDiscount": {
+        "total_discount": {
           "type": "integer",
           "format": "int32"
         },
-        "TotalFee": {
+        "total_fee": {
           "type": "integer",
           "format": "int32"
         },
-        "TotalItems": {
+        "total_items": {
           "type": "integer",
           "format": "int32"
         }
@@ -569,22 +569,22 @@
     "oyCreateWebhookRequest": {
       "type": "object",
       "properties": {
-        "Entities": {
+        "entities": {
           "type": "array",
           "items": {
             "type": "string"
           }
         },
-        "Fields": {
+        "fields": {
           "type": "array",
           "items": {
             "type": "string"
           }
         },
-        "Metadata": {
+        "metadata": {
           "type": "string"
         },
-        "Url": {
+        "url": {
           "type": "string"
         }
       }
@@ -592,7 +592,7 @@
     "oyDeleteWebhookRequest": {
       "type": "object",
       "properties": {
-        "Id": {
+        "id": {
           "type": "integer",
           "format": "int64"
         }
@@ -601,10 +601,10 @@
     "oyDistrict": {
       "type": "object",
       "properties": {
-        "Name": {
+        "name": {
           "type": "string"
         },
-        "Wards": {
+        "wards": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/oyWard"
@@ -615,118 +615,118 @@
     "oyFulfillment": {
       "type": "object",
       "properties": {
-        "ActualCodAmount": {
+        "actual_cod_amount": {
           "type": "integer",
           "format": "int32"
         },
-        "ActualShippingServiceFee": {
+        "actual_shipping_service_fee": {
           "type": "integer",
           "format": "int32"
         },
-        "BasketValue": {
+        "basket_value": {
           "type": "integer",
           "format": "int32"
         },
-        "CancelReason": {
+        "cancel_reason": {
           "type": "string"
         },
-        "CancelledAt": {
+        "cancelled_at": {
           "type": "string",
           "format": "date-time"
         },
-        "Carrier": {
+        "carrier": {
           "$ref": "#/definitions/whShippingProvider"
         },
-        "ChargeableWeight": {
+        "chargeable_weight": {
           "type": "integer",
           "format": "int32"
         },
-        "ClosedAt": {
+        "closed_at": {
           "type": "string",
           "format": "date-time"
         },
-        "CodAmount": {
+        "cod_amount": {
           "type": "integer",
           "format": "int32"
         },
-        "ConfirmStatus": {
+        "confirm_status": {
           "$ref": "#/definitions/wwStatus"
         },
-        "CreatedAt": {
+        "created_at": {
           "type": "string",
           "format": "date-time"
         },
-        "EstimatedDeliveryAt": {
+        "estimated_delivery_at": {
           "type": "string",
           "format": "date-time"
         },
-        "EstimatedPickupAt": {
+        "estimated_pickup_at": {
           "type": "string",
           "format": "date-time"
         },
-        "EtopPaymentStatus": {
+        "etop_payment_status": {
           "$ref": "#/definitions/wxStatus"
         },
-        "Id": {
+        "id": {
           "type": "integer",
           "format": "int64"
         },
-        "IncludeInsurance": {
+        "include_insurance": {
           "type": "boolean"
         },
-        "OrderId": {
+        "order_id": {
           "type": "integer",
           "format": "int64"
         },
-        "PickupAddress": {
+        "pickup_address": {
           "$ref": "#/definitions/oyOrderAddress"
         },
-        "ReturnAddress": {
+        "return_address": {
           "$ref": "#/definitions/oyOrderAddress"
         },
-        "SelfUrl": {
+        "self_url": {
           "type": "string"
         },
-        "ShippingAddress": {
+        "shipping_address": {
           "$ref": "#/definitions/oyOrderAddress"
         },
-        "ShippingCode": {
+        "shipping_code": {
           "type": "string"
         },
-        "ShippingNote": {
+        "shipping_note": {
           "type": "string"
         },
-        "ShippingServiceCode": {
+        "shipping_service_code": {
           "type": "string"
         },
-        "ShippingServiceFee": {
+        "shipping_service_fee": {
           "type": "integer",
           "format": "int32"
         },
-        "ShippingServiceName": {
+        "shipping_service_name": {
           "type": "string"
         },
-        "ShippingState": {
+        "shipping_state": {
           "$ref": "#/definitions/nqState"
         },
-        "ShippingStatus": {
+        "shipping_status": {
           "$ref": "#/definitions/wyStatus"
         },
-        "ShopId": {
+        "shop_id": {
           "type": "integer",
           "format": "int64"
         },
-        "Status": {
+        "status": {
           "$ref": "#/definitions/wyStatus"
         },
-        "TotalItems": {
+        "total_items": {
           "type": "integer",
           "format": "int32"
         },
-        "TryOn": {
+        "try_on": {
           "$ref": "#/definitions/xdTryOnCode"
         },
-        "UpdatedAt": {
+        "updated_at": {
           "type": "string",
           "format": "date-time"
         }
@@ -735,11 +735,11 @@
     "oyFulfillmentIDRequest": {
       "type": "object",
       "properties": {
-        "Id": {
+        "id": {
           "type": "integer",
           "format": "int64"
         },
-        "ShippingCode": {
+        "shipping_code": {
           "type": "string"
         }
       }
@@ -747,13 +747,13 @@
     "oyGetChangesRequest": {
       "type": "object",
       "properties": {
-        "Entity": {
+        "entity": {
           "type": "string"
         },
-        "EntityId": {
+        "entity_id": {
           "type": "string"
         },
-        "Paging": {
+        "paging": {
           "$ref": "#/definitions/maForwardPaging"
         }
       }
@@ -761,40 +761,40 @@
     "oyGetShippingServicesRequest": {
       "type": "object",
       "properties": {
-        "BasketValue": {
+        "basket_value": {
           "type": "integer",
           "format": "int32"
         },
-        "ChargeableWeight": {
+        "chargeable_weight": {
           "type": "integer",
           "format": "int32"
         },
-        "CodAmount": {
+        "cod_amount": {
           "type": "integer",
           "format": "int32"
         },
-        "GrossWeight": {
+        "gross_weight": {
           "type": "integer",
           "format": "int32"
         },
-        "Height": {
+        "height": {
           "type": "integer",
           "format": "int32"
         },
-        "IncludeInsurance": {
+        "include_insurance": {
           "type": "boolean"
         },
-        "Length": {
+        "length": {
           "type": "integer",
           "format": "int32"
         },
-        "PickupAddress": {
+        "pickup_address": {
           "$ref": "#/definitions/oyLocationAddress"
         },
-        "ShippingAddress": {
+        "shipping_address": {
           "$ref": "#/definitions/oyLocationAddress"
         },
-        "Width": {
+        "width": {
           "type": "integer",
           "format": "int32"
         }
@@ -803,7 +803,7 @@
     "oyGetShippingServicesResponse": {
       "type": "object",
       "properties": {
-        "Services": {
+        "services": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/oyShippingService"
@@ -814,10 +814,10 @@
     "oyLatestOneOf": {
       "type": "object",
       "properties": {
-        "Fulfillment": {
+        "fulfillment": {
           "$ref": "#/definitions/oyFulfillment"
         },
-        "Order": {
+        "order": {
           "$ref": "#/definitions/oyOrder"
         }
       }
@@ -825,10 +825,10 @@
     "oyLocationAddress": {
       "type": "object",
       "properties": {
-        "District": {
+        "district": {
           "type": "string"
         },
-        "Province": {
+        "province": {
           "type": "string"
         }
       }
@@ -836,7 +836,7 @@
     "oyLocationResponse": {
       "type": "object",
       "properties": {
-        "Provinces": {
+        "provinces": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/oyProvince"
@@ -847,113 +847,113 @@
     "oyOrder": {
       "type": "object",
       "properties": {
-        "BasketValue": {
+        "basket_value": {
           "type": "integer",
           "format": "int32"
         },
-        "CancelReason": {
+        "cancel_reason": {
           "type": "string"
         },
-        "CancelledAt": {
+        "cancelled_at": {
           "type": "string",
           "format": "date-time"
         },
-        "ClosedAt": {
+        "closed_at": {
           "type": "string",
           "format": "date-time"
         },
-        "Code": {
+        "code": {
           "type": "string"
         },
-        "ConfirmStatus": {
+        "confirm_status": {
           "$ref": "#/definitions/wwStatus"
         },
-        "ConfirmedAt": {
+        "confirmed_at": {
           "type": "string",
           "format": "date-time"
         },
-        "CreatedAt": {
+        "created_at": {
           "type": "string",
           "format": "date-time"
         },
-        "CustomerAddress": {
+        "customer_address": {
           "$ref": "#/definitions/oyOrderAddress"
         },
-        "EtopPaymentStatus": {
+        "etop_payment_status": {
           "$ref": "#/definitions/wxStatus"
         },
-        "ExternalCode": {
+        "external_code": {
           "type": "string"
         },
-        "ExternalId": {
+        "external_id": {
           "type": "string"
         },
-        "ExternalUrl": {
+        "external_url": {
           "type": "string"
         },
-        "FeeLines": {
+        "fee_lines": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/vmOrderFeeLine"
           }
         },
-        "FulfillmentShippingStatus": {
+        "fulfillment_shipping_status": {
           "$ref": "#/definitions/wyStatus"
         },
-        "Id": {
+        "id": {
           "type": "integer",
           "format": "int64"
         },
-        "Lines": {
+        "lines": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/oyOrderLine"
           }
         },
-        "OrderDiscount": {
+        "order_discount": {
           "type": "integer",
           "format": "int32"
         },
-        "OrderNote": {
+        "order_note": {
           "type": "string"
         },
-        "ProcessedAt": {
+        "processed_at": {
           "type": "string",
           "format": "date-time"
         },
-        "SelfUrl": {
+        "self_url": {
           "type": "string"
         },
-        "Shipping": {
+        "shipping": {
           "$ref": "#/definitions/oyOrderShipping"
         },
-        "ShippingAddress": {
+        "shipping_address": {
           "$ref": "#/definitions/oyOrderAddress"
         },
-        "ShopId": {
+        "shop_id": {
           "type": "integer",
           "format": "int64"
         },
-        "Status": {
+        "status": {
           "$ref": "#/definitions/wyStatus"
         },
-        "TotalAmount": {
+        "total_amount": {
           "type": "integer",
           "format": "int32"
         },
-        "TotalDiscount": {
+        "total_discount": {
           "type": "integer",
           "format": "int32"
         },
-        "TotalFee": {
+        "total_fee": {
           "type": "integer",
           "format": "int32"
         },
-        "TotalItems": {
+        "total_items": {
           "type": "integer",
           "format": "int32"
         },
-        "UpdatedAt": {
+        "updated_at": {
           "type": "string",
           "format": "date-time"
         }
@@ -962,31 +962,31 @@
     "oyOrderAddress": {
       "type": "object",
       "properties": {
-        "Address1": {
+        "address1": {
           "type": "string"
         },
-        "Address2": {
+        "address2": {
           "type": "string"
         },
-        "Company": {
+        "company": {
           "type": "string"
         },
-        "District": {
+        "district": {
           "type": "string"
         },
-        "Email": {
+        "email": {
           "type": "string"
         },
-        "FullName": {
+        "full_name": {
           "type": "string"
         },
-        "Phone": {
+        "phone": {
           "type": "string"
         },
-        "Province": {
+        "province": {
           "type": "string"
         },
-        "Ward": {
+        "ward": {
           "type": "string"
         }
       }
@@ -994,19 +994,19 @@
     "oyOrderAndFulfillments": {
       "type": "object",
       "properties": {
-        "FulfillmentErrors": {
+        "fulfillment_errors": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/maError"
           }
         },
-        "Fulfillments": {
+        "fulfillments": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/oyFulfillment"
           }
         },
-        "Order": {
+        "order": {
           "$ref": "#/definitions/oyOrder"
         }
       }
@@ -1014,13 +1014,13 @@
     "oyOrderIDRequest": {
       "type": "object",
       "properties": {
-        "Code": {
+        "code": {
           "type": "string"
         },
-        "ExternalId": {
+        "external_id": {
           "type": "string"
         },
-        "Id": {
+        "id": {
           "type": "integer",
           "format": "int64"
         }
@@ -1029,39 +1029,39 @@
     "oyOrderLine": {
       "type": "object",
       "properties": {
-        "Attributes": {
+        "attributes": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/vmAttribute"
           }
         },
-        "ImageUrl": {
+        "image_url": {
           "type": "string"
         },
-        "ListPrice": {
+        "list_price": {
           "type": "integer",
           "format": "int32"
         },
-        "PaymentPrice": {
+        "payment_price": {
           "type": "integer",
           "format": "int32"
         },
-        "ProductId": {
+        "product_id": {
           "type": "integer",
           "format": "int64"
         },
-        "ProductName": {
+        "product_name": {
           "type": "string"
         },
-        "Quantity": {
+        "quantity": {
           "type": "integer",
           "format": "int32"
         },
-        "RetailPrice": {
+        "retail_price": {
           "type": "integer",
           "format": "int32"
         },
-        "VariantId": {
+        "variant_id": {
           "type": "integer",
           "format": "int64"
         }
@@ -1070,55 +1070,55 @@
     "oyOrderShipping": {
       "type": "object",
       "properties": {
-        "Carrier": {
+        "carrier": {
           "$ref": "#/definitions/whShippingProvider"
         },
-        "ChargeableWeight": {
+        "chargeable_weight": {
           "type": "integer",
           "format": "int32"
         },
-        "CodAmount": {
+        "cod_amount": {
           "type": "integer",
           "format": "int32"
         },
-        "GrossWeight": {
+        "gross_weight": {
           "type": "integer",
           "format": "int32"
         },
-        "Height": {
+        "height": {
           "type": "integer",
           "format": "int32"
         },
-        "IncludeInsurance": {
+        "include_insurance": {
           "type": "boolean"
         },
-        "Length": {
+        "length": {
           "type": "integer",
           "format": "int32"
         },
-        "PickupAddress": {
+        "pickup_address": {
           "$ref": "#/definitions/oyOrderAddress"
         },
-        "ReturnAddress": {
+        "return_address": {
           "$ref": "#/definitions/oyOrderAddress"
         },
-        "ShippingNote": {
+        "shipping_note": {
           "type": "string"
         },
-        "ShippingServiceCode": {
+        "shipping_service_code": {
           "type": "string"
         },
-        "ShippingServiceFee": {
+        "shipping_service_fee": {
           "type": "integer",
           "format": "int32"
         },
-        "ShippingServiceName": {
+        "shipping_service_name": {
           "type": "string"
         },
-        "TryOn": {
+        "try_on": {
           "$ref": "#/definitions/xdTryOnCode"
         },
-        "Width": {
+        "width": {
           "type": "integer",
           "format": "int32"
         }
@@ -1127,13 +1127,13 @@
     "oyProvince": {
       "type": "object",
       "properties": {
-        "Districts": {
+        "districts": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/oyDistrict"
           }
         },
-        "Name": {
+        "name": {
           "type": "string"
         }
       }
@@ -1141,25 +1141,25 @@
     "oyShippingService": {
       "type": "object",
       "properties": {
-        "Carrier": {
+        "carrier": {
           "$ref": "#/definitions/whShippingProvider"
         },
-        "Code": {
+        "code": {
           "type": "string"
         },
-        "EstimatedDeliveryAt": {
+        "estimated_delivery_at": {
           "type": "string",
           "format": "date-time"
         },
-        "EstimatedPickupAt": {
+        "estimated_pickup_at": {
           "type": "string",
           "format": "date-time"
         },
-        "Fee": {
+        "fee": {
           "type": "integer",
           "format": "int32"
         },
-        "Name": {
+        "name": {
           "type": "string"
         }
       }
@@ -1167,7 +1167,7 @@
     "oyWard": {
       "type": "object",
       "properties": {
-        "Name": {
+        "name": {
           "type": "string"
         }
       }
@@ -1175,33 +1175,33 @@
     "oyWebhook": {
       "type": "object",
       "properties": {
-        "CreatedAt": {
+        "created_at": {
           "type": "string",
           "format": "date-time"
         },
-        "Entities": {
+        "entities": {
           "type": "array",
           "items": {
             "type": "string"
           }
         },
-        "Fields": {
+        "fields": {
           "type": "array",
           "items": {
             "type": "string"
           }
         },
-        "Id": {
+        "id": {
           "type": "integer",
           "format": "int64"
         },
-        "Metadata": {
+        "metadata": {
           "type": "string"
         },
-        "States": {
+        "states": {
           "$ref": "#/definitions/oyWebhookStates"
         },
-        "Url": {
+        "url": {
           "type": "string"
         }
       }
@@ -1209,21 +1209,21 @@
     "oyWebhookError": {
       "type": "object",
       "properties": {
-        "Error": {
+        "error": {
           "type": "string"
         },
-        "RespBody": {
+        "resp_body": {
           "type": "string"
         },
-        "RespStatus": {
+        "resp_status": {
           "type": "integer",
           "format": "int32"
         },
-        "Retried": {
+        "retried": {
           "type": "integer",
           "format": "int32"
         },
-        "SentAt": {
+        "sent_at": {
           "type": "string",
           "format": "date-time"
         }
@@ -1232,14 +1232,14 @@
     "oyWebhookStates": {
       "type": "object",
       "properties": {
-        "LastError": {
+        "last_error": {
           "$ref": "#/definitions/oyWebhookError"
         },
-        "LastSentAt": {
+        "last_sent_at": {
           "type": "string",
           "format": "date-time"
         },
-        "State": {
+        "state": {
           "type": "string"
         }
       }
@@ -1247,7 +1247,7 @@
     "oyWebhooksResponse": {
       "type": "object",
       "properties": {
-        "Webhooks": {
+        "webhooks": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/oyWebhook"
@@ -1258,10 +1258,10 @@
     "vmAttribute": {
       "type": "object",
       "properties": {
-        "Name": {
+        "name": {
           "type": "string"
         },
-        "Value": {
+        "value": {
           "type": "string"
         }
       }
@@ -1269,20 +1269,20 @@
     "vmOrderFeeLine": {
       "type": "object",
       "properties": {
-        "Amount": {
+        "amount": {
           "type": "integer",
           "format": "int32"
         },
-        "Code": {
+        "code": {
           "type": "string"
         },
-        "Desc": {
+        "desc": {
           "type": "string"
         },
-        "Name": {
+        "name": {
           "type": "string"
         },
-        "Type": {
+        "type": {
           "$ref": "#/definitions/juFeeType"
         }
       }

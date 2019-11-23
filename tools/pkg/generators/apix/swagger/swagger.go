@@ -223,11 +223,18 @@ func parseSchema(ng generator.Engine, definitions map[string]spec.Schema, typ ty
 		// TODO: use message.Walk
 		for i, n := 0, st.NumFields(); i < n; i++ {
 			field := st.Field(i)
-			if strings.HasPrefix(field.Name(), "XXX_") {
+			if !field.Exported() {
+				continue
+			}
+			jsonTag := parseJsonTag(st.Tag(i))
+			switch jsonTag {
+			case "":
+				panic(fmt.Sprintf("no tag on field %v of struct %v", field.Name(), typ))
+			case "-":
 				continue
 			}
 			fieldSchema := parseSchema(ng, definitions, field.Type())
-			props[field.Name()] = fieldSchema
+			props[jsonTag] = fieldSchema
 		}
 		s := spec.Schema{
 			SchemaProps: spec.SchemaProps{
@@ -340,4 +347,18 @@ func simpleType(typ, format string) spec.Schema {
 			Format: format,
 		},
 	}
+}
+
+func parseJsonTag(tag string) string {
+	st, err := ParseStructTags(tag)
+	if err != nil {
+		panic(fmt.Sprint("invalid tag %v", tag))
+	}
+	for _, t := range st {
+		if t.Name == "json" {
+			parts := strings.Split(t.Value, ",")
+			return parts[0]
+		}
+	}
+	return ""
 }

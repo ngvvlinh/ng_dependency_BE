@@ -151,16 +151,16 @@
     "hzRegisterAffiliateRequest": {
       "type": "object",
       "properties": {
-        "BankAccount": {
+        "bank_account": {
           "$ref": "#/definitions/ocBankAccount"
         },
-        "Email": {
+        "email": {
           "type": "string"
         },
-        "Name": {
+        "name": {
           "type": "string"
         },
-        "Phone": {
+        "phone": {
           "type": "string"
         }
       }
@@ -168,7 +168,7 @@
     "hzUpdateAffiliateBankAccountRequest": {
       "type": "object",
       "properties": {
-        "BankAccount": {
+        "bank_account": {
           "$ref": "#/definitions/ocBankAccount"
         }
       }
@@ -176,13 +176,13 @@
     "hzUpdateAffiliateRequest": {
       "type": "object",
       "properties": {
-        "Email": {
+        "email": {
           "type": "string"
         },
-        "Name": {
+        "name": {
           "type": "string"
         },
-        "Phone": {
+        "phone": {
           "type": "string"
         }
       }
@@ -193,7 +193,7 @@
     "maIDRequest": {
       "type": "object",
       "properties": {
-        "Id": {
+        "id": {
           "type": "integer",
           "format": "int64"
         }
@@ -202,14 +202,14 @@
     "maVersionInfoResponse": {
       "type": "object",
       "properties": {
-        "Service": {
+        "service": {
           "type": "string"
         },
-        "UpdatedAt": {
+        "updated_at": {
           "type": "string",
           "format": "date-time"
         },
-        "Version": {
+        "version": {
           "type": "string"
         }
       }
@@ -217,26 +217,26 @@
     "ocAffiliate": {
       "type": "object",
       "properties": {
-        "BankAccount": {
+        "bank_account": {
           "$ref": "#/definitions/ocBankAccount"
         },
-        "Email": {
+        "email": {
           "type": "string"
         },
-        "Id": {
+        "id": {
           "type": "integer",
           "format": "int64"
         },
-        "IsTest": {
+        "is_test": {
           "type": "boolean"
         },
-        "Name": {
+        "name": {
           "type": "string"
         },
-        "Phone": {
+        "phone": {
           "type": "string"
         },
-        "Status": {
+        "status": {
           "$ref": "#/definitions/wwStatus"
         }
       }
@@ -244,19 +244,19 @@
     "ocBankAccount": {
       "type": "object",
       "properties": {
-        "AccountName": {
+        "account_name": {
           "type": "string"
         },
-        "AccountNumber": {
+        "account_number": {
           "type": "string"
         },
-        "Branch": {
+        "branch": {
           "type": "string"
         },
-        "Name": {
+        "name": {
           "type": "string"
         },
-        "Province": {
+        "province": {
           "type": "string"
         }
       }

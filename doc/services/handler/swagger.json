@@ -73,11 +73,11 @@
     "cpResetStateRequest": {
       "type": "object",
       "properties": {
-        "AccountId": {
+        "account_id": {
           "type": "integer",
           "format": "int64"
         },
-        "WebhookId": {
+        "webhook_id": {
           "type": "integer",
           "format": "int64"
         }
@@ -89,14 +89,14 @@
     "maVersionInfoResponse": {
       "type": "object",
       "properties": {
-        "Service": {
+        "service": {
           "type": "string"
         },
-        "UpdatedAt": {
+        "updated_at": {
           "type": "string",
           "format": "date-time"
         },
-        "Version": {
+        "version": {
           "type": "string"
         }
       }

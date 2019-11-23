@@ -73,17 +73,17 @@
     "krGenerateEventsRequest": {
       "type": "object",
       "properties": {
-        "ItemsPerBatch": {
+        "items_per_batch": {
           "type": "integer",
           "format": "int32"
         },
-        "RawEvents": {
+        "raw_events": {
           "type": "array",
           "items": {
             "type": "string"
           }
         },
-        "RawEventsPg": {
+        "raw_events_pg": {
           "type": "string"
         }
       }
@@ -94,14 +94,14 @@
     "maVersionInfoResponse": {
       "type": "object",
       "properties": {
-        "Service": {
+        "service": {
           "type": "string"
         },
-        "UpdatedAt": {
+        "updated_at": {
           "type": "string",
           "format": "date-time"
         },
-        "Version": {
+        "version": {
           "type": "string"
         }
       }

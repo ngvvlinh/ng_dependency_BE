@@ -1126,13 +1126,13 @@
     "maFilter": {
       "type": "object",
       "properties": {
-        "Name": {
+        "name": {
           "type": "string"
         },
-        "Op": {
+        "op": {
           "type": "string"
         },
-        "Value": {
+        "value": {
           "type": "string"
         }
       }
@@ -1140,7 +1140,7 @@
     "maIDRequest": {
       "type": "object",
       "properties": {
-        "Id": {
+        "id": {
           "type": "integer",
           "format": "int64"
         }
@@ -1149,7 +1149,7 @@
     "maIDsRequest": {
       "type": "object",
       "properties": {
-        "Ids": {
+        "ids": {
           "type": "array",
           "items": {
             "type": "integer",
@@ -1161,10 +1161,10 @@
     "maMessageResponse": {
       "type": "object",
       "properties": {
-        "Code": {
+        "code": {
           "type": "string"
         },
-        "Msg": {
+        "msg": {
           "type": "string"
         }
       }
@@ -1172,17 +1172,17 @@
     "maPageInfo": {
       "type": "object",
       "properties": {
-        "Limit": {
+        "limit": {
           "type": "integer",
           "format": "int32"
         },
-        "Sort": {
+        "sort": {
           "type": "array",
           "items": {
             "type": "string"
           }
         },
-        "Total": {
+        "total": {
           "type": "integer",
           "format": "int32"
         }
@@ -1191,15 +1191,15 @@
     "maPaging": {
       "type": "object",
       "properties": {
-        "Limit": {
+        "limit": {
           "type": "integer",
           "format": "int32"
         },
-        "Offset": {
+        "offset": {
           "type": "integer",
           "format": "int32"
         },
-        "Sort": {
+        "sort": {
           "type": "string"
         }
       }
@@ -1207,7 +1207,7 @@
     "maUpdatedResponse": {
       "type": "object",
       "properties": {
-        "Updated": {
+        "updated": {
           "type": "integer",
           "format": "int32"
         }
@@ -1216,14 +1216,14 @@
     "maVersionInfoResponse": {
       "type": "object",
       "properties": {
-        "Service": {
+        "service": {
           "type": "string"
         },
-        "UpdatedAt": {
+        "updated_at": {
           "type": "string",
           "format": "date-time"
         },
-        "Version": {
+        "version": {
           "type": "string"
         }
       }
@@ -1231,7 +1231,7 @@
     "ocAcceptInvitationRequest": {
       "type": "object",
       "properties": {
-        "Token": {
+        "token": {
           "type": "string"
         }
       }
@@ -1239,30 +1239,30 @@
     "ocAccessTokenResponse": {
       "type": "object",
       "properties": {
-        "AccessToken": {
+        "access_token": {
           "type": "string"
         },
-        "Account": {
+        "account": {
           "$ref": "#/definitions/ocLoginAccount"
         },
-        "Affiliate": {
+        "affiliate": {
           "$ref": "#/definitions/ocAffiliate"
         },
-        "ExpiresIn": {
+        "expires_in": {
           "type": "integer",
           "format": "int32"
         },
-        "Shop": {
+        "shop": {
           "$ref": "#/definitions/ocShop"
         },
-        "Stoken": {
+        "stoken": {
           "type": "boolean"
         },
-        "StokenExpiresAt": {
+        "stoken_expires_at": {
           "type": "string",
           "format": "date-time"
         },
-        "User": {
+        "user": {
           "$ref": "#/definitions/ocUser"
         }
       }
@@ -1280,71 +1280,71 @@
     "ocAddress": {
       "type": "object",
       "properties": {
-        "Address1": {
+        "address1": {
           "type": "string"
         },
-        "Address2": {
+        "address2": {
           "type": "string"
         },
-        "Coordinates": {
+        "coordinates": {
           "$ref": "#/definitions/ocCoordinates"
         },
-        "Country": {
+        "country": {
           "type": "string"
         },
-        "District": {
+        "district": {
           "type": "string"
         },
-        "DistrictCode": {
+        "district_code": {
           "type": "string"
         },
-        "Email": {
+        "email": {
           "type": "string"
         },
-        "ExportedFields": {
+        "exported_fields": {
           "type": "array",
           "items": {
             "type": "string"
           }
         },
-        "FirstName": {
+        "first_name": {
           "type": "string"
         },
-        "FullName": {
+        "full_name": {
           "type": "string"
         },
-        "Id": {
+        "id": {
           "type": "integer",
           "format": "int64"
         },
-        "LastName": {
+        "last_name": {
           "type": "string"
         },
-        "Notes": {
+        "notes": {
           "$ref": "#/definitions/ocAddressNote"
         },
-        "Phone": {
+        "phone": {
           "type": "string"
         },
-        "Position": {
+        "position": {
           "type": "string"
         },
-        "Province": {
+        "province": {
           "type": "string"
         },
-        "ProvinceCode": {
+        "province_code": {
           "type": "string"
         },
-        "Type": {
+        "type": {
           "$ref": "#/definitions/euAddressType"
         },
-        "Ward": {
+        "ward": {
           "type": "string"
         },
-        "WardCode": {
+        "ward_code": {
           "type": "string"
         },
-        "Zip": {
+        "zip": {
           "type": "string"
         }
       }
@@ -1352,16 +1352,16 @@
     "ocAddressNote": {
       "type": "object",
       "properties": {
-        "LunchBreak": {
+        "lunch_break": {
           "type": "string"
         },
-        "Note": {
+        "note": {
           "type": "string"
         },
-        "OpenTime": {
+        "open_time": {
           "type": "string"
         },
-        "Other": {
+        "other": {
           "type": "string"
         }
       }
@@ -1369,26 +1369,26 @@
     "ocAffiliate": {
       "type": "object",
       "properties": {
-        "BankAccount": {
+        "bank_account": {
           "$ref": "#/definitions/ocBankAccount"
         },
-        "Email": {
+        "email": {
           "type": "string"
         },
-        "Id": {
+        "id": {
           "type": "integer",
           "format": "int64"
         },
-        "IsTest": {
+        "is_test": {
           "type": "boolean"
         },
-        "Name": {
+        "name": {
           "type": "string"
         },
-        "Phone": {
+        "phone": {
           "type": "string"
         },
-        "Status": {
+        "status": {
           "$ref": "#/definitions/wwStatus"
         }
       }
@@ -1396,11 +1396,11 @@
     "ocAnswerInvitationRequest": {
       "type": "object",
       "properties": {
-        "AccountId": {
+        "account_id": {
           "type": "integer",
           "format": "int64"
         },
-        "Response": {
+        "response": {
           "$ref": "#/definitions/wwStatus"
         }
       }
@@ -1408,13 +1408,13 @@
     "ocBank": {
       "type": "object",
       "properties": {
-        "Code": {
+        "code": {
           "type": "string"
         },
-        "Name": {
+        "name": {
           "type": "string"
         },
-        "Type": {
+        "type": {
           "type": "string"
         }
       }
@@ -1422,19 +1422,19 @@
     "ocBankAccount": {
       "type": "object",
       "properties": {
-        "AccountName": {
+        "account_name": {
           "type": "string"
         },
-        "AccountNumber": {
+        "account_number": {
           "type": "string"
         },
-        "Branch": {
+        "branch": {
           "type": "string"
         },
-        "Name": {
+        "name": {
           "type": "string"
         },
-        "Province": {
+        "province": {
           "type": "string"
         }
       }
@@ -1442,16 +1442,16 @@
     "ocBankBranch": {
       "type": "object",
       "properties": {
-        "BankCode": {
+        "bank_code": {
           "type": "string"
         },
-        "Code": {
+        "code": {
           "type": "string"
         },
-        "Name": {
+        "name": {
           "type": "string"
         },
-        "ProvinceCode": {
+        "province_code": {
           "type": "string"
         }
       }
@@ -1459,13 +1459,13 @@
     "ocBankProvince": {
       "type": "object",
       "properties": {
-        "BankCode": {
+        "bank_code": {
           "type": "string"
         },
-        "Code": {
+        "code": {
           "type": "string"
         },
-        "Name": {
+        "name": {
           "type": "string"
         }
       }
@@ -1473,13 +1473,13 @@
     "ocChangePasswordRequest": {
       "type": "object",
       "properties": {
-        "ConfirmPassword": {
+        "confirm_password": {
           "type": "string"
         },
-        "CurrentPassword": {
+        "current_password": {
           "type": "string"
         },
-        "NewPassword": {
+        "new_password": {
           "type": "string"
         }
       }
@@ -1487,19 +1487,19 @@
     "ocChangePasswordUsingTokenRequest": {
       "type": "object",
       "properties": {
-        "ConfirmPassword": {
+        "confirm_password": {
           "type": "string"
         },
-        "Email": {
+        "email": {
           "type": "string"
         },
-        "NewPassword": {
+        "new_password": {
           "type": "string"
         },
-        "Phone": {
+        "phone": {
           "type": "string"
         },
-        "ResetPasswordToken": {
+        "reset_password_token": {
           "type": "string"
         }
       }
@@ -1507,19 +1507,19 @@
     "ocCompanyInfo": {
       "type": "object",
       "properties": {
-        "Address": {
+        "address": {
           "type": "string"
         },
-        "LegalRepresentative": {
+        "legal_representative": {
           "$ref": "#/definitions/ocContactPerson"
         },
-        "Name": {
+        "name": {
           "type": "string"
         },
-        "TaxCode": {
+        "tax_code": {
           "type": "string"
         },
-        "Website": {
+        "website": {
           "type": "string"
         }
       }
@@ -1527,16 +1527,16 @@
     "ocContactPerson": {
       "type": "object",
       "properties": {
-        "Email": {
+        "email": {
           "type": "string"
         },
-        "Name": {
+        "name": {
           "type": "string"
         },
-        "Phone": {
+        "phone": {
           "type": "string"
         },
-        "Position": {
+        "position": {
           "type": "string"
         }
       }
@@ -1544,11 +1544,11 @@
     "ocCoordinates": {
       "type": "object",
       "properties": {
-        "Latitude": {
+        "latitude": {
           "type": "integer",
           "format": "float32"
         },
-        "Longitude": {
+        "longitude": {
           "type": "integer",
           "format": "float32"
         }
@@ -1557,61 +1557,61 @@
     "ocCreateAddressRequest": {
       "type": "object",
       "properties": {
-        "Address1": {
+        "address1": {
           "type": "string"
         },
-        "Address2": {
+        "address2": {
           "type": "string"
         },
-        "Coordinates": {
+        "coordinates": {
           "$ref": "#/definitions/ocCoordinates"
         },
-        "Country": {
+        "country": {
           "type": "string"
         },
-        "District": {
+        "district": {
           "type": "string"
         },
-        "DistrictCode": {
+        "district_code": {
           "type": "string"
         },
-        "Email": {
+        "email": {
           "type": "string"
         },
-        "FirstName": {
+        "first_name": {
           "type": "string"
         },
-        "FullName": {
+        "full_name": {
           "type": "string"
         },
-        "LastName": {
+        "last_name": {
           "type": "string"
         },
-        "Notes": {
+        "notes": {
           "$ref": "#/definitions/ocAddressNote"
         },
-        "Phone": {
+        "phone": {
           "type": "string"
         },
-        "Position": {
+        "position": {
           "type": "string"
         },
-        "Province": {
+        "province": {
           "type": "string"
         },
-        "ProvinceCode": {
+        "province_code": {
           "type": "string"
         },
-        "Type": {
+        "type": {
           "$ref": "#/definitions/euAddressType"
         },
-        "Ward": {
+        "ward": {
           "type": "string"
         },
-        "WardCode": {
+        "ward_code": {
           "type": "string"
         },
-        "Zip": {
+        "zip": {
           "type": "string"
         }
       }
@@ -1619,31 +1619,31 @@
     "ocCreateUserRequest": {
       "type": "object",
       "properties": {
-        "AgreeEmailInfo": {
+        "agree_email_info": {
           "type": "boolean"
         },
-        "AgreeTos": {
+        "agree_tos": {
           "type": "boolean"
         },
-        "Email": {
+        "email": {
           "type": "string"
         },
-        "FullName": {
+        "full_name": {
           "type": "string"
         },
-        "Password": {
+        "password": {
           "type": "string"
         },
-        "Phone": {
+        "phone": {
           "type": "string"
         },
-        "RegisterToken": {
+        "register_token": {
           "type": "string"
         },
-        "ShortName": {
+        "short_name": {
           "type": "string"
         },
-        "Source": {
+        "source": {
           "$ref": "#/definitions/yuUserSource"
         }
       }
@@ -1651,16 +1651,16 @@
     "ocDistrict": {
       "type": "object",
       "properties": {
-        "Code": {
+        "code": {
           "type": "string"
         },
-        "IsFreeship": {
+        "is_freeship": {
           "type": "boolean"
         },
-        "Name": {
+        "name": {
           "type": "string"
         },
-        "ProvinceCode": {
+        "province_code": {
           "type": "string"
         }
       }
@@ -1668,7 +1668,7 @@
     "ocGetAddressResponse": {
       "type": "object",
       "properties": {
-        "Addresses": {
+        "addresses": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/ocAddress"
@@ -1679,7 +1679,7 @@
     "ocGetBankProvincesResponse": {
       "type": "object",
       "properties": {
-        "Provinces": {
+        "provinces": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/ocBankProvince"
@@ -1690,7 +1690,7 @@
     "ocGetBanksResponse": {
       "type": "object",
       "properties": {
-        "Banks": {
+        "banks": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/ocBank"
@@ -1701,7 +1701,7 @@
     "ocGetBranchesByBankProvinceResponse": {
       "type": "object",
       "properties": {
-        "Branches": {
+        "branches": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/ocBankBranch"
@@ -1712,16 +1712,16 @@
     "ocGetBranchesByBankProvinceResquest": {
       "type": "object",
       "properties": {
-        "BankCode": {
+        "bank_code": {
           "type": "string"
         },
-        "BankName": {
+        "bank_name": {
           "type": "string"
         },
-        "ProvinceCode": {
+        "province_code": {
           "type": "string"
         },
-        "ProvinceName": {
+        "province_name": {
           "type": "string"
         }
       }
@@ -1729,10 +1729,10 @@
     "ocGetDistrictsByProvinceRequest": {
       "type": "object",
       "properties": {
-        "ProvinceCode": {
+        "province_code": {
           "type": "string"
         },
-        "ProvinceName": {
+        "province_name": {
           "type": "string"
         }
       }
@@ -1740,7 +1740,7 @@
     "ocGetDistrictsResponse": {
       "type": "object",
       "properties": {
-        "Districts": {
+        "districts": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/ocDistrict"
@@ -1751,7 +1751,7 @@
     "ocGetInvitationByTokenRequest": {
       "type": "object",
       "properties": {
-        "Token": {
+        "token": {
           "type": "string"
         }
       }
@@ -1759,13 +1759,13 @@
     "ocGetInvitationsRequest": {
       "type": "object",
       "properties": {
-        "Filters": {
+        "filters": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/maFilter"
           }
         },
-        "Paging": {
+        "paging": {
           "$ref": "#/definitions/maPaging"
         }
       }
@@ -1773,10 +1773,10 @@
     "ocGetProvincesByBankResquest": {
       "type": "object",
       "properties": {
-        "BankCode": {
+        "bank_code": {
           "type": "string"
         },
-        "BankName": {
+        "bank_name": {
           "type": "string"
         }
       }
@@ -1784,7 +1784,7 @@
     "ocGetProvincesResponse": {
       "type": "object",
       "properties": {
-        "Provinces": {
+        "provinces": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/ocProvince"
@@ -1795,16 +1795,16 @@
     "ocGetUsersInCurrentAccountsRequest": {
       "type": "object",
       "properties": {
-        "Filters": {
+        "filters": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/maFilter"
           }
         },
-        "Mixed": {
+        "mixed": {
           "$ref": "#/definitions/ocMixedAccount"
         },
-        "Paging": {
+        "paging": {
           "$ref": "#/definitions/maPaging"
         }
       }
@@ -1812,10 +1812,10 @@
     "ocGetWardsByDistrictRequest": {
       "type": "object",
       "properties": {
-        "DistrictCode": {
+        "district_code": {
           "type": "string"
         },
-        "DistrictName": {
+        "district_name": {
           "type": "string"
         }
       }
@@ -1823,7 +1823,7 @@
     "ocGetWardsResponse": {
       "type": "object",
       "properties": {
-        "Wards": {
+        "wards": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/ocWard"
@@ -1834,50 +1834,50 @@
     "ocInvitation": {
       "type": "object",
       "properties": {
-        "AcceptedAt": {
+        "accepted_at": {
           "type": "string",
           "format": "date-time"
         },
-        "CreatedAt": {
+        "created_at": {
           "type": "string",
           "format": "date-time"
         },
-        "DeclinedAt": {
+        "declined_at": {
           "type": "string",
           "format": "date-time"
         },
-        "Email": {
+        "email": {
           "type": "string"
         },
-        "ExpiredAt": {
+        "expired_at": {
           "type": "string",
           "format": "date-time"
         },
-        "Id": {
+        "id": {
           "type": "integer",
           "format": "int64"
         },
-        "InvitedBy": {
+        "invited_by": {
           "type": "integer",
           "format": "int64"
         },
-        "Roles": {
+        "roles": {
           "type": "array",
           "items": {
             "type": "string"
           }
         },
-        "ShopId": {
+        "shop_id": {
           "type": "integer",
           "format": "int64"
         },
-        "Status": {
+        "status": {
           "$ref": "#/definitions/wwStatus"
         },
-        "Token": {
+        "token": {
           "type": "string"
         },
-        "UpdatedAt": {
+        "updated_at": {
           "type": "string",
           "format": "date-time"
         }
@@ -1886,14 +1886,14 @@
     "ocInviteUserToAccountRequest": {
       "type": "object",
       "properties": {
-        "AccountId": {
+        "account_id": {
           "type": "integer",
           "format": "int64"
         },
-        "InviteeIdentifier": {
+        "invitee_identifier": {
           "type": "string"
         },
-        "Permission": {
+        "permission": {
           "$ref": "#/definitions/ocPermission"
         }
       }
@@ -1904,36 +1904,36 @@
     "ocLoginAccount": {
       "type": "object",
       "properties": {
-        "AccessToken": {
+        "access_token": {
           "type": "string"
         },
-        "ExpiresIn": {
+        "expires_in": {
           "type": "integer",
           "format": "int32"
         },
-        "ExportedFields": {
+        "exported_fields": {
           "type": "array",
           "items": {
             "type": "string"
           }
         },
-        "Id": {
+        "id": {
           "type": "integer",
           "format": "int64"
         },
-        "ImageUrl": {
+        "image_url": {
           "type": "string"
         },
-        "Name": {
+        "name": {
           "type": "string"
         },
-        "Type": {
+        "type": {
           "$ref": "#/definitions/ocAccountType"
         },
-        "UrlSlug": {
+        "url_slug": {
           "type": "string"
         },
-        "UserAccount": {
+        "user_account": {
           "$ref": "#/definitions/ocUserAccountInfo"
         }
       }
@@ -1941,20 +1941,20 @@
     "ocLoginRequest": {
       "type": "object",
       "properties": {
-        "AccountId": {
+        "account_id": {
           "type": "integer",
           "format": "int64"
         },
-        "AccountKey": {
+        "account_key": {
           "type": "string"
         },
-        "AccountType": {
+        "account_type": {
           "$ref": "#/definitions/ocAccountType"
         },
-        "Login": {
+        "login": {
           "type": "string"
         },
-        "Password": {
+        "password": {
           "type": "string"
         }
       }
@@ -1962,42 +1962,42 @@
     "ocLoginResponse": {
       "type": "object",
       "properties": {
-        "AccessToken": {
+        "access_token": {
           "type": "string"
         },
-        "Account": {
+        "account": {
           "$ref": "#/definitions/ocLoginAccount"
         },
-        "Affiliate": {
+        "affiliate": {
           "$ref": "#/definitions/ocAffiliate"
         },
-        "AvailableAccounts": {
+        "available_accounts": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/ocLoginAccount"
           }
         },
-        "ExpiresIn": {
+        "expires_in": {
           "type": "integer",
           "format": "int32"
         },
-        "InvitationAccounts": {
+        "invitation_accounts": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/ocUserAccountInfo"
           }
         },
-        "Shop": {
+        "shop": {
           "$ref": "#/definitions/ocShop"
         },
-        "Stoken": {
+        "stoken": {
           "type": "boolean"
         },
-        "StokenExpiresAt": {
+        "stoken_expires_at": {
           "type": "string",
           "format": "date-time"
         },
-        "User": {
+        "user": {
           "$ref": "#/definitions/ocUser"
         }
       }
@@ -2005,13 +2005,13 @@
     "ocMixedAccount": {
       "type": "object",
       "properties": {
-        "All": {
+        "all": {
           "type": "boolean"
         },
-        "AllShops": {
+        "all_shops": {
           "type": "boolean"
         },
-        "Ids": {
+        "ids": {
           "type": "array",
           "items": {
             "type": "integer",
@@ -2023,13 +2023,13 @@
     "ocParseLocationRequest": {
       "type": "object",
       "properties": {
-        "DistrictName": {
+        "district_name": {
           "type": "string"
         },
-        "ProvinceName": {
+        "province_name": {
           "type": "string"
         },
-        "WardName": {
+        "ward_name": {
           "type": "string"
         }
       }
@@ -2037,13 +2037,13 @@
     "ocParseLocationResponse": {
       "type": "object",
       "properties": {
-        "District": {
+        "district": {
           "$ref": "#/definitions/ocDistrict"
         },
-        "Province": {
+        "province": {
           "$ref": "#/definitions/ocProvince"
         },
-        "Ward": {
+        "ward": {
           "$ref": "#/definitions/ocWard"
         }
       }
@@ -2051,13 +2051,13 @@
     "ocPermission": {
       "type": "object",
       "properties": {
-        "Permissions": {
+        "permissions": {
           "type": "array",
           "items": {
             "type": "string"
           }
         },
-        "Roles": {
+        "roles": {
           "type": "array",
           "items": {
             "type": "string"
@@ -2068,10 +2068,10 @@
     "ocProtectedUsersResponse": {
       "type": "object",
       "properties": {
-        "Paging": {
+        "paging": {
           "$ref": "#/definitions/maPageInfo"
         },
-        "Users": {
+        "users": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/ocUserAccountInfo"
@@ -2082,16 +2082,16 @@
     "ocProvince": {
       "type": "object",
       "properties": {
-        "Code": {
+        "code": {
           "type": "string"
         },
-        "Name": {
+        "name": {
           "type": "string"
         },
-        "Region": {
+        "region": {
           "type": "string"
         },
-        "RegionCode": {
+        "region_code": {
           "type": "integer",
           "format": "int64"
         }
@@ -2100,20 +2100,20 @@
     "ocPublicAccountInfo": {
       "type": "object",
       "properties": {
-        "Id": {
+        "id": {
           "type": "integer",
           "format": "int64"
         },
-        "ImageUrl": {
+        "image_url": {
           "type": "string"
         },
-        "Name": {
+        "name": {
           "type": "string"
         },
-        "Type": {
+        "type": {
           "$ref": "#/definitions/ocAccountType"
         },
-        "Website": {
+        "website": {
           "type": "string"
         }
       }
@@ -2121,7 +2121,7 @@
     "ocPublicAccountsResponse": {
       "type": "object",
       "properties": {
-        "Accounts": {
+        "accounts": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/ocPublicAccountInfo"
@@ -2132,7 +2132,7 @@
     "ocRegisterResponse": {
       "type": "object",
       "properties": {
-        "User": {
+        "user": {
           "$ref": "#/definitions/ocUser"
         }
       }
@@ -2140,7 +2140,7 @@
     "ocRejectInvitationRequest": {
       "type": "object",
       "properties": {
-        "Token": {
+        "token": {
           "type": "string"
         }
       }
@@ -2151,10 +2151,10 @@
     "ocResetPasswordRequest": {
       "type": "object",
       "properties": {
-        "Email": {
+        "email": {
           "type": "string"
         },
-        "Phone": {
+        "phone": {
           "type": "string"
         }
       }
@@ -2162,7 +2162,7 @@
     "ocSendEmailVerificationRequest": {
       "type": "object",
       "properties": {
-        "Email": {
+        "email": {
           "type": "string"
         }
       }
@@ -2170,7 +2170,7 @@
     "ocSendPhoneVerificationRequest": {
       "type": "object",
       "properties": {
-        "Phone": {
+        "phone": {
           "type": "string"
         }
       }
@@ -2178,11 +2178,11 @@
     "ocSendSTokenEmailRequest": {
       "type": "object",
       "properties": {
-        "AccountId": {
+        "account_id": {
           "type": "integer",
           "format": "int64"
         },
-        "Email": {
+        "email": {
           "type": "string"
         }
       }
@@ -2190,10 +2190,10 @@
     "ocShippingServiceSelectStrategyItem": {
       "type": "object",
       "properties": {
-        "Key": {
+        "key": {
           "type": "string"
         },
-        "Value": {
+        "value": {
           "type": "string"
         }
       }
@@ -2201,93 +2201,93 @@
     "ocShop": {
       "type": "object",
       "properties": {
-        "Address": {
+        "address": {
           "$ref": "#/definitions/ocAddress"
         },
-        "AutoCreateFfm": {
+        "auto_create_ffm": {
           "type": "boolean"
         },
-        "BankAccount": {
+        "bank_account": {
           "$ref": "#/definitions/ocBankAccount"
         },
-        "Code": {
+        "code": {
           "type": "string"
         },
-        "CompanyInfo": {
+        "company_info": {
           "$ref": "#/definitions/ocCompanyInfo"
         },
-        "Email": {
+        "email": {
           "type": "string"
         },
-        "ExportedFields": {
+        "exported_fields": {
           "type": "array",
           "items": {
             "type": "string"
           }
         },
-        "GhnNoteCode": {
+        "ghn_note_code": {
           "type": "string"
         },
-        "Id": {
+        "id": {
           "type": "integer",
           "format": "int64"
         },
-        "ImageUrl": {
+        "image_url": {
           "type": "string"
         },
-        "InventoryOverstock": {
+        "inventory_overstock": {
           "type": "boolean"
         },
-        "IsTest": {
+        "is_test": {
           "type": "boolean"
         },
-        "MoneyTransactionRrule": {
+        "money_transaction_rrule": {
           "type": "string"
         },
-        "Name": {
+        "name": {
           "type": "string"
         },
-        "OwnerId": {
+        "owner_id": {
           "type": "integer",
           "format": "int64"
         },
-        "Phone": {
+        "phone": {
           "type": "string"
         },
-        "ProductSourceId": {
+        "product_source_id": {
           "type": "integer",
           "format": "int64"
         },
-        "ShipFromAddressId": {
+        "ship_from_address_id": {
           "type": "integer",
           "format": "int64"
         },
-        "ShipToAddressId": {
+        "ship_to_address_id": {
           "type": "integer",
           "format": "int64"
         },
-        "ShippingServiceSelectStrategy": {
+        "shipping_service_select_strategy": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/ocShippingServiceSelectStrategyItem"
           }
         },
-        "Status": {
+        "status": {
           "$ref": "#/definitions/wwStatus"
         },
-        "SurveyInfo": {
+        "survey_info": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/ocSurveyInfo"
           }
         },
-        "TryOn": {
+        "try_on": {
           "$ref": "#/definitions/xdTryOnCode"
         },
-        "User": {
+        "user": {
           "$ref": "#/definitions/ocUser"
         },
-        "WebsiteUrl": {
+        "website_url": {
           "type": "string"
         }
       }
@@ -2295,13 +2295,13 @@
     "ocSurveyInfo": {
       "type": "object",
       "properties": {
-        "Answer": {
+        "answer": {
           "type": "string"
         },
-        "Key": {
+        "key": {
           "type": "string"
         },
-        "Question": {
+        "question": {
           "type": "string"
         }
       }
@@ -2309,11 +2309,11 @@
     "ocSwitchAccountRequest": {
       "type": "object",
       "properties": {
-        "AccountId": {
+        "account_id": {
           "type": "integer",
           "format": "int64"
         },
-        "RegenerateTokens": {
+        "regenerate_tokens": {
           "type": "boolean"
         }
       }
@@ -2321,65 +2321,65 @@
     "ocUpdateAddressRequest": {
       "type": "object",
       "properties": {
-        "Address1": {
+        "address1": {
           "type": "string"
         },
-        "Address2": {
+        "address2": {
           "type": "string"
         },
-        "Coordinates": {
+        "coordinates": {
           "$ref": "#/definitions/ocCoordinates"
         },
-        "Country": {
+        "country": {
           "type": "string"
         },
-        "District": {
+        "district": {
           "type": "string"
         },
-        "DistrictCode": {
+        "district_code": {
           "type": "string"
         },
-        "Email": {
+        "email": {
           "type": "string"
         },
-        "FirstName": {
+        "first_name": {
           "type": "string"
         },
-        "FullName": {
+        "full_name": {
           "type": "string"
         },
-        "Id": {
+        "id": {
           "type": "integer",
           "format": "int64"
         },
-        "LastName": {
+        "last_name": {
           "type": "string"
         },
-        "Notes": {
+        "notes": {
           "$ref": "#/definitions/ocAddressNote"
         },
-        "Phone": {
+        "phone": {
           "type": "string"
         },
-        "Position": {
+        "position": {
           "type": "string"
         },
-        "Province": {
+        "province": {
           "type": "string"
         },
-        "ProvinceCode": {
+        "province_code": {
           "type": "string"
         },
-        "Type": {
+        "type": {
           "$ref": "#/definitions/euAddressType"
         },
-        "Ward": {
+        "ward": {
           "type": "string"
         },
-        "WardCode": {
+        "ward_code": {
           "type": "string"
         },
-        "Zip": {
+        "zip": {
           "type": "string"
         }
       }
@@ -2387,31 +2387,31 @@
     "ocUpdatePermissionItem": {
       "type": "object",
       "properties": {
-        "Grants": {
+        "grants": {
           "type": "array",
           "items": {
             "type": "string"
           }
         },
-        "Key": {
+        "key": {
           "type": "string"
         },
-        "ReplaceAll": {
+        "replace_all": {
           "type": "array",
           "items": {
             "type": "string"
           }
         },
-        "RevokeAll": {
+        "revoke_all": {
           "type": "boolean"
         },
-        "Revokes": {
+        "revokes": {
           "type": "array",
           "items": {
             "type": "string"
           }
         },
-        "Type": {
+        "type": {
           "type": "string"
         }
       }
@@ -2419,7 +2419,7 @@
     "ocUpdatePermissionRequest": {
       "type": "object",
       "properties": {
-        "Items": {
+        "items": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/ocUpdatePermissionItem"
@@ -2430,7 +2430,7 @@
     "ocUpdatePermissionResponse": {
       "type": "object",
       "properties": {
-        "Msg": {
+        "msg": {
           "type": "string"
         }
       }
@@ -2438,7 +2438,7 @@
     "ocUpdateReferenceSaleRequest": {
       "type": "object",
       "properties": {
-        "Phone": {
+        "phone": {
           "type": "string"
         }
       }
@@ -2446,7 +2446,7 @@
     "ocUpdateReferenceUserRequest": {
       "type": "object",
       "properties": {
-        "Phone": {
+        "phone": {
           "type": "string"
         }
       }
@@ -2454,11 +2454,11 @@
     "ocUpdateURLSlugRequest": {
       "type": "object",
       "properties": {
-        "AccountId": {
+        "account_id": {
           "type": "integer",
           "format": "int64"
         },
-        "UrlSlug": {
+        "url_slug": {
           "type": "string"
         }
       }
@@ -2466,10 +2466,10 @@
     "ocUpgradeAccessTokenRequest": {
       "type": "object",
       "properties": {
-        "Password": {
+        "password": {
           "type": "string"
         },
-        "Stoken": {
+        "stoken": {
           "type": "string"
         }
       }
@@ -2477,46 +2477,46 @@
     "ocUser": {
       "type": "object",
       "properties": {
-        "CreatedAt": {
+        "created_at": {
           "type": "string",
           "format": "date-time"
         },
-        "Email": {
+        "email": {
           "type": "string"
         },
-        "EmailVerificationSentAt": {
+        "email_verification_sent_at": {
           "type": "string",
           "format": "date-time"
         },
-        "EmailVerifiedAt": {
+        "email_verified_at": {
           "type": "string",
           "format": "date-time"
         },
-        "FullName": {
+        "full_name": {
           "type": "string"
         },
-        "Id": {
+        "id": {
           "type": "integer",
           "format": "int64"
         },
-        "Phone": {
+        "phone": {
           "type": "string"
         },
-        "PhoneVerificationSentAt": {
+        "phone_verification_sent_at": {
           "type": "string",
           "format": "date-time"
         },
-        "PhoneVerifiedAt": {
+        "phone_verified_at": {
           "type": "string",
           "format": "date-time"
         },
-        "ShortName": {
+        "short_name": {
           "type": "string"
         },
-        "Source": {
+        "source": {
           "$ref": "#/definitions/yuUserSource"
         },
-        "UpdatedAt": {
+        "updated_at": {
           "type": "string",
           "format": "date-time"
         }
@@ -2525,63 +2525,63 @@
     "ocUserAccountInfo": {
       "type": "object",
       "properties": {
-        "AccountId": {
+        "account_id": {
           "type": "integer",
           "format": "int64"
         },
-        "AccountName": {
+        "account_name": {
           "type": "string"
         },
-        "AccountType": {
+        "account_type": {
           "$ref": "#/definitions/ocAccountType"
         },
-        "DisableReason": {
+        "disable_reason": {
           "type": "string"
         },
-        "DisabledAt": {
+        "disabled_at": {
           "type": "string",
           "format": "date-time"
         },
-        "DisabledBy": {
+        "disabled_by": {
           "type": "integer",
           "format": "int64"
         },
-        "InvitationAcceptedAt": {
+        "invitation_accepted_at": {
           "type": "string",
           "format": "date-time"
         },
-        "InvitationRejectedAt": {
+        "invitation_rejected_at": {
           "type": "string",
           "format": "date-time"
         },
-        "InvitationSentAt": {
+        "invitation_sent_at": {
           "type": "string",
           "format": "date-time"
         },
-        "InvitationSentBy": {
+        "invitation_sent_by": {
           "type": "integer",
           "format": "int64"
         },
-        "Permission": {
+        "permission": {
           "$ref": "#/definitions/ocPermission"
         },
-        "Position": {
+        "position": {
           "type": "string"
         },
-        "ResponseStatus": {
+        "response_status": {
           "$ref": "#/definitions/wwStatus"
         },
-        "Status": {
+        "status": {
           "$ref": "#/definitions/wwStatus"
         },
-        "UserFullName": {
+        "user_full_name": {
           "type": "string"
         },
-        "UserId": {
+        "user_id": {
           "type": "integer",
           "format": "int64"
         },
-        "UserShortName": {
+        "user_short_name": {
           "type": "string"
         }
       }
@@ -2589,7 +2589,7 @@
     "ocVerifyEmailUsingTokenRequest": {
       "type": "object",
       "properties": {
-        "VerificationToken": {
+        "verification_token": {
           "type": "string"
         }
       }
@@ -2597,7 +2597,7 @@
     "ocVerifyPhoneUsingTokenRequest": {
       "type": "object",
       "properties": {
-        "VerificationToken": {
+        "verification_token": {
           "type": "string"
         }
       }
@@ -2605,13 +2605,13 @@
     "ocWard": {
       "type": "object",
       "properties": {
-        "Code": {
+        "code": {
           "type": "string"
         },
-        "DistrictCode": {
+        "district_code": {
           "type": "string"
         },
-        "Name": {
+        "name": {
           "type": "string"
         }
       }
@@ -2649,13 +2649,13 @@
     "zkInvitationsResponse": {
       "type": "object",
       "properties": {
-        "Invitations": {
+        "invitations": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/ocInvitation"
           }
         },
-        "Paging": {
+        "paging": {
           "$ref": "#/definitions/maPageInfo"
         }
       }

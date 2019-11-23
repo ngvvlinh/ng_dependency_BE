@@ -4932,13 +4932,13 @@
     "maCommonListRequest": {
       "type": "object",
       "properties": {
-        "Filters": {
+        "filters": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/maFilter"
           }
         },
-        "Paging": {
+        "paging": {
           "$ref": "#/definitions/maPaging"
         }
       }
@@ -4946,7 +4946,7 @@
     "maDeletedResponse": {
       "type": "object",
       "properties": {
-        "Deleted": {
+        "deleted": {
           "type": "integer",
           "format": "int32"
         }
@@ -4958,16 +4958,16 @@
     "maError": {
       "type": "object",
       "properties": {
-        "Code": {
+        "code": {
           "type": "string"
         },
-        "Meta": {
+        "meta": {
           "type": "object",
           "additionalProperties": {
             "type": "string"
           }
         },
-        "Msg": {
+        "msg": {
           "type": "string"
         }
       }
@@ -4975,13 +4975,13 @@
     "maFilter": {
       "type": "object",
       "properties": {
-        "Name": {
+        "name": {
           "type": "string"
         },
-        "Op": {
+        "op": {
           "type": "string"
         },
-        "Value": {
+        "value": {
           "type": "string"
         }
       }
@@ -4989,7 +4989,7 @@
     "maIDRequest": {
       "type": "object",
       "properties": {
-        "Id": {
+        "id": {
           "type": "integer",
           "format": "int64"
         }
@@ -4998,7 +4998,7 @@
     "maIDsRequest": {
       "type": "object",
       "properties": {
-        "Ids": {
+        "ids": {
           "type": "array",
           "items": {
             "type": "integer",
@@ -5010,10 +5010,10 @@
     "maMessageResponse": {
       "type": "object",
       "properties": {
-        "Code": {
+        "code": {
           "type": "string"
         },
-        "Msg": {
+        "msg": {
           "type": "string"
         }
       }
@@ -5021,10 +5021,10 @@
     "maMetaField": {
       "type": "object",
       "properties": {
-        "Key": {
+        "key": {
           "type": "string"
         },
-        "Value": {
+        "value": {
           "type": "string"
         }
       }
@@ -5032,17 +5032,17 @@
     "maPageInfo": {
       "type": "object",
       "properties": {
-        "Limit": {
+        "limit": {
           "type": "integer",
           "format": "int32"
         },
-        "Sort": {
+        "sort": {
           "type": "array",
           "items": {
             "type": "string"
           }
         },
-        "Total": {
+        "total": {
           "type": "integer",
           "format": "int32"
         }
@@ -5051,15 +5051,15 @@
     "maPaging": {
       "type": "object",
       "properties": {
-        "Limit": {
+        "limit": {
           "type": "integer",
           "format": "int32"
         },
-        "Offset": {
+        "offset": {
           "type": "integer",
           "format": "int32"
         },
-        "Sort": {
+        "sort": {
           "type": "string"
         }
       }
@@ -5067,7 +5067,7 @@
     "maRawJSONObject": {
       "type": "object",
       "properties": {
-        "Data": {
+        "data": {
           "type": "string",
           "format": "byte"
         }
@@ -5076,7 +5076,7 @@
     "maRemovedResponse": {
       "type": "object",
       "properties": {
-        "Removed": {
+        "removed": {
           "type": "integer",
           "format": "int32"
         }
@@ -5085,7 +5085,7 @@
     "maUpdatedResponse": {
       "type": "object",
       "properties": {
-        "Updated": {
+        "updated": {
           "type": "integer",
           "format": "int32"
         }
@@ -5094,14 +5094,14 @@
     "maVersionInfoResponse": {
       "type": "object",
       "properties": {
-        "Service": {
+        "service": {
           "type": "string"
         },
-        "UpdatedAt": {
+        "updated_at": {
           "type": "string",
           "format": "date-time"
         },
-        "Version": {
+        "version": {
           "type": "string"
         }
       }
@@ -5137,71 +5137,71 @@
     "ocAddress": {
       "type": "object",
       "properties": {
-        "Address1": {
+        "address1": {
           "type": "string"
         },
-        "Address2": {
+        "address2": {
           "type": "string"
         },
-        "Coordinates": {
+        "coordinates": {
           "$ref": "#/definitions/ocCoordinates"
         },
-        "Country": {
+        "country": {
           "type": "string"
         },
-        "District": {
+        "district": {
           "type": "string"
         },
-        "DistrictCode": {
+        "district_code": {
           "type": "string"
         },
-        "Email": {
+        "email": {
           "type": "string"
         },
-        "ExportedFields": {
+        "exported_fields": {
           "type": "array",
           "items": {
             "type": "string"
           }
         },
-        "FirstName": {
+        "first_name": {
           "type": "string"
         },
-        "FullName": {
+        "full_name": {
           "type": "string"
         },
-        "Id": {
+        "id": {
           "type": "integer",
           "format": "int64"
         },
-        "LastName": {
+        "last_name": {
           "type": "string"
         },
-        "Notes": {
+        "notes": {
           "$ref": "#/definitions/ocAddressNote"
         },
-        "Phone": {
+        "phone": {
           "type": "string"
         },
-        "Position": {
+        "position": {
           "type": "string"
         },
-        "Province": {
+        "province": {
           "type": "string"
         },
-        "ProvinceCode": {
+        "province_code": {
           "type": "string"
         },
-        "Type": {
+        "type": {
           "$ref": "#/definitions/euAddressType"
         },
-        "Ward": {
+        "ward": {
           "type": "string"
         },
-        "WardCode": {
+        "ward_code": {
           "type": "string"
         },
-        "Zip": {
+        "zip": {
           "type": "string"
         }
       }
@@ -5209,16 +5209,16 @@
     "ocAddressNote": {
       "type": "object",
       "properties": {
-        "LunchBreak": {
+        "lunch_break": {
           "type": "string"
         },
-        "Note": {
+        "note": {
           "type": "string"
         },
-        "OpenTime": {
+        "open_time": {
           "type": "string"
         },
-        "Other": {
+        "other": {
           "type": "string"
         }
       }
@@ -5226,19 +5226,19 @@
     "ocBankAccount": {
       "type": "object",
       "properties": {
-        "AccountName": {
+        "account_name": {
           "type": "string"
         },
-        "AccountNumber": {
+        "account_number": {
           "type": "string"
         },
-        "Branch": {
+        "branch": {
           "type": "string"
         },
-        "Name": {
+        "name": {
           "type": "string"
         },
-        "Province": {
+        "province": {
           "type": "string"
         }
       }
@@ -5246,19 +5246,19 @@
     "ocCompanyInfo": {
       "type": "object",
       "properties": {
-        "Address": {
+        "address": {
           "type": "string"
         },
-        "LegalRepresentative": {
+        "legal_representative": {
           "$ref": "#/definitions/ocContactPerson"
         },
-        "Name": {
+        "name": {
           "type": "string"
         },
-        "TaxCode": {
+        "tax_code": {
           "type": "string"
         },
-        "Website": {
+        "website": {
           "type": "string"
         }
       }
@@ -5266,16 +5266,16 @@
     "ocContactPerson": {
       "type": "object",
       "properties": {
-        "Email": {
+        "email": {
           "type": "string"
         },
-        "Name": {
+        "name": {
           "type": "string"
         },
-        "Phone": {
+        "phone": {
           "type": "string"
         },
-        "Position": {
+        "position": {
           "type": "string"
         }
       }
@@ -5283,11 +5283,11 @@
     "ocCoordinates": {
       "type": "object",
       "properties": {
-        "Latitude": {
+        "latitude": {
           "type": "integer",
           "format": "float32"
         },
-        "Longitude": {
+        "longitude": {
           "type": "integer",
           "format": "float32"
         }
@@ -5296,13 +5296,13 @@
     "ocCreateDeviceRequest": {
       "type": "object",
       "properties": {
-        "DeviceId": {
+        "device_id": {
           "type": "string"
         },
-        "DeviceName": {
+        "device_name": {
           "type": "string"
         },
-        "ExternalDeviceId": {
+        "external_device_id": {
           "type": "string"
         }
       }
@@ -5310,10 +5310,10 @@
     "ocDeleteDeviceRequest": {
       "type": "object",
       "properties": {
-        "DeviceId": {
+        "device_id": {
           "type": "string"
         },
-        "ExternalDeviceId": {
+        "external_device_id": {
           "type": "string"
         }
       }
@@ -5321,32 +5321,32 @@
     "ocDevice": {
       "type": "object",
       "properties": {
-        "AccountId": {
+        "account_id": {
           "type": "integer",
           "format": "int64"
         },
-        "CreatedAt": {
+        "created_at": {
           "type": "string",
           "format": "date-time"
         },
-        "DeviceId": {
+        "device_id": {
           "type": "string"
         },
-        "DeviceName": {
+        "device_name": {
           "type": "string"
         },
-        "ExternalDeviceId": {
+        "external_device_id": {
           "type": "string"
         },
-        "ExternalServiceId": {
+        "external_service_id": {
           "type": "integer",
           "format": "int32"
         },
-        "Id": {
+        "id": {
           "type": "integer",
           "format": "int64"
         },
-        "UpdatedAt": {
+        "updated_at": {
           "type": "string",
           "format": "date-time"
         }
@@ -5355,7 +5355,7 @@
     "ocGetNotificationsRequest": {
       "type": "object",
       "properties": {
-        "Paging": {
+        "paging": {
           "$ref": "#/definitions/maPaging"
         }
       }
@@ -5363,10 +5363,10 @@
     "ocHistoryResponse": {
       "type": "object",
       "properties": {
-        "Data": {
+        "data": {
           "$ref": "#/definitions/maRawJSONObject"
         },
-        "Paging": {
+        "paging": {
           "$ref": "#/definitions/maPageInfo"
         }
       }
@@ -5374,14 +5374,14 @@
     "ocIDsRequest": {
       "type": "object",
       "properties": {
-        "Ids": {
+        "ids": {
           "type": "array",
           "items": {
             "type": "integer",
             "format": "int64"
           }
         },
-        "Mixed": {
+        "mixed": {
           "$ref": "#/definitions/ocMixedAccount"
         }
       }
@@ -5389,50 +5389,50 @@
     "ocInvitation": {
       "type": "object",
       "properties": {
-        "AcceptedAt": {
+        "accepted_at": {
           "type": "string",
           "format": "date-time"
         },
-        "CreatedAt": {
+        "created_at": {
           "type": "string",
           "format": "date-time"
         },
-        "DeclinedAt": {
+        "declined_at": {
           "type": "string",
           "format": "date-time"
         },
-        "Email": {
+        "email": {
           "type": "string"
         },
-        "ExpiredAt": {
+        "expired_at": {
           "type": "string",
           "format": "date-time"
         },
-        "Id": {
+        "id": {
           "type": "integer",
           "format": "int64"
         },
-        "InvitedBy": {
+        "invited_by": {
           "type": "integer",
           "format": "int64"
         },
-        "Roles": {
+        "roles": {
           "type": "array",
           "items": {
             "type": "string"
           }
         },
-        "ShopId": {
+        "shop_id": {
           "type": "integer",
           "format": "int64"
         },
-        "Status": {
+        "status": {
           "$ref": "#/definitions/wwStatus"
         },
-        "Token": {
+        "token": {
           "type": "string"
         },
-        "UpdatedAt": {
+        "updated_at": {
           "type": "string",
           "format": "date-time"
         }
@@ -5441,13 +5441,13 @@
     "ocMixedAccount": {
       "type": "object",
       "properties": {
-        "All": {
+        "all": {
           "type": "boolean"
         },
-        "AllShops": {
+        "all_shops": {
           "type": "boolean"
         },
-        "Ids": {
+        "ids": {
           "type": "array",
           "items": {
             "type": "integer",
@@ -5459,45 +5459,45 @@
     "ocNotification": {
       "type": "object",
       "properties": {
-        "AccountId": {
+        "account_id": {
           "type": "integer",
           "format": "int64"
         },
-        "CreatedAt": {
+        "created_at": {
           "type": "string",
           "format": "date-time"
         },
-        "Entity": {
+        "entity": {
           "type": "string"
         },
-        "EntityId": {
+        "entity_id": {
           "type": "integer",
           "format": "int64"
         },
-        "Id": {
+        "id": {
           "type": "integer",
           "format": "int64"
         },
-        "IsRead": {
+        "is_read": {
           "type": "boolean"
         },
-        "Message": {
+        "message": {
           "type": "string"
         },
-        "SeenAt": {
+        "seen_at": {
           "type": "string",
           "format": "date-time"
         },
-        "SendNotification": {
+        "send_notification": {
           "type": "boolean"
         },
-        "SyncStatus": {
+        "sync_status": {
           "$ref": "#/definitions/wwStatus"
         },
-        "Title": {
+        "title": {
           "type": "string"
         },
-        "UpdatedAt": {
+        "updated_at": {
           "type": "string",
           "format": "date-time"
         }
@@ -5506,13 +5506,13 @@
     "ocNotificationsResponse": {
       "type": "object",
       "properties": {
-        "Notifications": {
+        "notifications": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/ocNotification"
           }
         },
-        "Paging": {
+        "paging": {
           "$ref": "#/definitions/maPageInfo"
         }
       }
@@ -5520,20 +5520,20 @@
     "ocPublicAccountInfo": {
       "type": "object",
       "properties": {
-        "Id": {
+        "id": {
           "type": "integer",
           "format": "int64"
         },
-        "ImageUrl": {
+        "image_url": {
           "type": "string"
         },
-        "Name": {
+        "name": {
           "type": "string"
         },
-        "Type": {
+        "type": {
           "$ref": "#/definitions/ocAccountType"
         },
-        "Website": {
+        "website": {
           "type": "string"
         }
       }
@@ -5541,11 +5541,11 @@
     "ocSetDefaultAddressRequest": {
       "type": "object",
       "properties": {
-        "Id": {
+        "id": {
           "type": "integer",
           "format": "int64"
         },
-        "Type": {
+        "type": {
           "$ref": "#/definitions/euAddressType"
         }
       }
@@ -5553,10 +5553,10 @@
     "ocShippingServiceSelectStrategyItem": {
       "type": "object",
       "properties": {
-        "Key": {
+        "key": {
           "type": "string"
         },
-        "Value": {
+        "value": {
           "type": "string"
         }
       }
@@ -5564,93 +5564,93 @@
     "ocShop": {
       "type": "object",
       "properties": {
-        "Address": {
+        "address": {
           "$ref": "#/definitions/ocAddress"
         },
-        "AutoCreateFfm": {
+        "auto_create_ffm": {
           "type": "boolean"
         },
-        "BankAccount": {
+        "bank_account": {
           "$ref": "#/definitions/ocBankAccount"
         },
-        "Code": {
+        "code": {
           "type": "string"
         },
-        "CompanyInfo": {
+        "company_info": {
           "$ref": "#/definitions/ocCompanyInfo"
         },
-        "Email": {
+        "email": {
           "type": "string"
         },
-        "ExportedFields": {
+        "exported_fields": {
           "type": "array",
           "items": {
             "type": "string"
           }
         },
-        "GhnNoteCode": {
+        "ghn_note_code": {
           "type": "string"
         },
-        "Id": {
+        "id": {
           "type": "integer",
           "format": "int64"
         },
-        "ImageUrl": {
+        "image_url": {
           "type": "string"
         },
-        "InventoryOverstock": {
+        "inventory_overstock": {
           "type": "boolean"
         },
-        "IsTest": {
+        "is_test": {
           "type": "boolean"
         },
-        "MoneyTransactionRrule": {
+        "money_transaction_rrule": {
           "type": "string"
         },
-        "Name": {
+        "name": {
           "type": "string"
         },
-        "OwnerId": {
+        "owner_id": {
           "type": "integer",
           "format": "int64"
         },
-        "Phone": {
+        "phone": {
           "type": "string"
         },
-        "ProductSourceId": {
+        "product_source_id": {
           "type": "integer",
           "format": "int64"
         },
-        "ShipFromAddressId": {
+        "ship_from_address_id": {
           "type": "integer",
           "format": "int64"
         },
-        "ShipToAddressId": {
+        "ship_to_address_id": {
           "type": "integer",
           "format": "int64"
         },
-        "ShippingServiceSelectStrategy": {
+        "shipping_service_select_strategy": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/ocShippingServiceSelectStrategyItem"
           }
         },
-        "Status": {
+        "status": {
           "$ref": "#/definitions/wwStatus"
         },
-        "SurveyInfo": {
+        "survey_info": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/ocSurveyInfo"
           }
         },
-        "TryOn": {
+        "try_on": {
           "$ref": "#/definitions/xdTryOnCode"
         },
-        "User": {
+        "user": {
           "$ref": "#/definitions/ocUser"
         },
-        "WebsiteUrl": {
+        "website_url": {
           "type": "string"
         }
       }
@@ -5658,13 +5658,13 @@
     "ocSurveyInfo": {
       "type": "object",
       "properties": {
-        "Answer": {
+        "answer": {
           "type": "string"
         },
-        "Key": {
+        "key": {
           "type": "string"
         },
-        "Question": {
+        "question": {
           "type": "string"
         }
       }
@@ -5672,14 +5672,14 @@
     "ocUpdateNotificationsRequest": {
       "type": "object",
       "properties": {
-        "Ids": {
+        "ids": {
           "type": "array",
           "items": {
             "type": "integer",
             "format": "int64"
           }
         },
-        "IsRead": {
+        "is_read": {
           "type": "boolean"
         }
       }
@@ -5687,46 +5687,46 @@
     "ocUser": {
       "type": "object",
       "properties": {
-        "CreatedAt": {
+        "created_at": {
           "type": "string",
           "format": "date-time"
         },
-        "Email": {
+        "email": {
           "type": "string"
         },
-        "EmailVerificationSentAt": {
+        "email_verification_sent_at": {
           "type": "string",
           "format": "date-time"
         },
-        "EmailVerifiedAt": {
+        "email_verified_at": {
           "type": "string",
           "format": "date-time"
         },
-        "FullName": {
+        "full_name": {
           "type": "string"
         },
-        "Id": {
+        "id": {
           "type": "integer",
           "format": "int64"
         },
-        "Phone": {
+        "phone": {
           "type": "string"
         },
-        "PhoneVerificationSentAt": {
+        "phone_verification_sent_at": {
           "type": "string",
           "format": "date-time"
         },
-        "PhoneVerifiedAt": {
+        "phone_verified_at": {
           "type": "string",
           "format": "date-time"
         },
-        "ShortName": {
+        "short_name": {
           "type": "string"
         },
-        "Source": {
+        "source": {
           "$ref": "#/definitions/yuUserSource"
         },
-        "UpdatedAt": {
+        "updated_at": {
           "type": "string",
           "format": "date-time"
         }
@@ -5750,10 +5750,10 @@
     "vmAttribute": {
       "type": "object",
       "properties": {
-        "Name": {
+        "name": {
           "type": "string"
         },
-        "Value": {
+        "value": {
           "type": "string"
         }
       }
@@ -5761,10 +5761,10 @@
     "vmCancelShipnowFulfillmentRequest": {
       "type": "object",
       "properties": {
-        "CancelReason": {
+        "cancel_reason": {
           "type": "string"
         },
-        "Id": {
+        "id": {
           "type": "integer",
           "format": "int64"
         }
@@ -5773,41 +5773,41 @@
     "vmCreateOrderLine": {
       "type": "object",
       "properties": {
-        "Attributes": {
+        "attributes": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/vmAttribute"
           }
         },
-        "ImageUrl": {
+        "image_url": {
           "type": "string"
         },
-        "ListPrice": {
+        "list_price": {
           "type": "integer",
           "format": "int32"
         },
-        "MetaFields": {
+        "meta_fields": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/vmOrderLineMetaField"
           }
         },
-        "PaymentPrice": {
+        "payment_price": {
           "type": "integer",
           "format": "int32"
         },
-        "ProductName": {
+        "product_name": {
           "type": "string"
         },
-        "Quantity": {
+        "quantity": {
           "type": "integer",
           "format": "int32"
         },
-        "RetailPrice": {
+        "retail_price": {
           "type": "integer",
           "format": "int32"
         },
-        "VariantId": {
+        "variant_id": {
           "type": "integer",
           "format": "int64"
         }
@@ -5816,124 +5816,124 @@
     "vmCreateOrderRequest": {
       "type": "object",
       "properties": {
-        "BasketValue": {
+        "basket_value": {
           "type": "integer",
           "format": "int32"
         },
-        "BillingAddress": {
+        "billing_address": {
           "$ref": "#/definitions/vmOrderAddress"
         },
-        "Customer": {
+        "customer": {
           "$ref": "#/definitions/vmOrderCustomer"
         },
-        "CustomerAddress": {
+        "customer_address": {
           "$ref": "#/definitions/vmOrderAddress"
         },
-        "CustomerId": {
+        "customer_id": {
           "type": "integer",
           "format": "int64"
         },
-        "Discounts": {
+        "discounts": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/vmOrderDiscount"
           }
         },
-        "ExternalCode": {
+        "external_code": {
           "type": "string"
         },
-        "ExternalId": {
+        "external_id": {
           "type": "string"
         },
-        "ExternalMeta": {
+        "external_meta": {
           "type": "object",
           "additionalProperties": {
             "type": "string"
           }
         },
-        "ExternalUrl": {
+        "external_url": {
           "type": "string"
         },
-        "FeeLines": {
+        "fee_lines": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/vmOrderFeeLine"
           }
         },
-        "GhnNoteCode": {
+        "ghn_note_code": {
           "$ref": "#/definitions/kuGHNNoteCode"
         },
-        "Lines": {
+        "lines": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/vmCreateOrderLine"
           }
         },
-        "OrderDiscount": {
+        "order_discount": {
           "type": "integer",
           "format": "int32"
         },
-        "OrderNote": {
+        "order_note": {
           "type": "string"
         },
-        "PaymentMethod": {
+        "payment_method": {
           "type": "string"
         },
-        "ReferenceUrl": {
+        "reference_url": {
           "type": "string"
         },
-        "ReferralMeta": {
+        "referral_meta": {
           "type": "object",
           "additionalProperties": {
             "type": "string"
           }
         },
-        "ShConfirm": {
+        "sh_confirm": {
           "$ref": "#/definitions/wwStatus"
         },
-        "Shipping": {
+        "shipping": {
           "$ref": "#/definitions/vmOrderShipping"
         },
-        "ShippingAddress": {
+        "shipping_address": {
           "$ref": "#/definitions/vmOrderAddress"
         },
-        "ShippingNote": {
+        "shipping_note": {
           "type": "string"
         },
-        "ShopAddress": {
+        "shop_address": {
           "$ref": "#/definitions/vmOrderAddress"
         },
-        "ShopCod": {
+        "shop_cod": {
           "type": "integer",
           "format": "int32"
         },
-        "ShopShipping": {
+        "shop_shipping": {
           "$ref": "#/definitions/vmOrderShipping"
         },
-        "ShopShippingFee": {
+        "shop_shipping_fee": {
           "type": "integer",
           "format": "int32"
         },
-        "Source": {
+        "source": {
           "$ref": "#/definitions/gjSource"
         },
-        "TotalAmount": {
+        "total_amount": {
           "type": "integer",
           "format": "int32"
         },
-        "TotalDiscount": {
+        "total_discount": {
           "type": "integer",
           "format": "int32"
         },
-        "TotalFee": {
+        "total_fee": {
           "type": "integer",
           "format": "int32"
         },
-        "TotalItems": {
+        "total_items": {
           "type": "integer",
           "format": "int32"
         },
-        "TotalWeight": {
+        "total_weight": {
           "type": "integer",
           "format": "int32"
         }
@@ -5942,30 +5942,30 @@
     "vmCreateShipnowFulfillmentRequest": {
       "type": "object",
       "properties": {
-        "Carrier": {
+        "carrier": {
           "type": "string"
         },
-        "OrderIds": {
+        "order_ids": {
           "type": "array",
           "items": {
             "type": "integer",
             "format": "int64"
           }
         },
-        "PickupAddress": {
+        "pickup_address": {
           "$ref": "#/definitions/vmOrderAddress"
         },
-        "RequestPickupAt": {
+        "request_pickup_at": {
           "type": "string",
           "format": "date-time"
         },
-        "ShippingNote": {
+        "shipping_note": {
           "type": "string"
         },
-        "ShippingServiceCode": {
+        "shipping_service_code": {
           "type": "string"
         },
-        "ShippingServiceFee": {
+        "shipping_service_fee": {
           "type": "integer",
           "format": "int32"
         }
@@ -5974,29 +5974,29 @@
     "vmDeliveryPoint": {
       "type": "object",
       "properties": {
-        "Lines": {
+        "lines": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/vmOrderLine"
           }
         },
-        "OrderId": {
+        "order_id": {
           "type": "integer",
           "format": "int64"
         },
-        "ShippingAddress": {
+        "shipping_address": {
           "$ref": "#/definitions/vmOrderAddress"
         },
-        "ShippingNote": {
+        "shipping_note": {
           "type": "string"
         },
-        "TryOn": {
+        "try_on": {
           "$ref": "#/definitions/xdTryOnCode"
         },
-        "ValueInfo": {
+        "value_info": {
           "$ref": "#/definitions/vmValueInfo"
         },
-        "WeightInfo": {
+        "weight_info": {
           "$ref": "#/definitions/vmWeightInfo"
         }
       }
@@ -6004,11 +6004,11 @@
     "vmDeliveryPointRequest": {
       "type": "object",
       "properties": {
-        "CodAmount": {
+        "cod_amount": {
           "type": "integer",
           "format": "int32"
         },
-        "ShippingAddress": {
+        "shipping_address": {
           "$ref": "#/definitions/vmOrderAddress"
         }
       }
@@ -6016,13 +6016,13 @@
     "vmExternalShippingLog": {
       "type": "object",
       "properties": {
-        "Message": {
+        "message": {
           "type": "string"
         },
-        "StateText": {
+        "state_text": {
           "type": "string"
         },
-        "Time": {
+        "time": {
           "type": "string"
         }
       }
@@ -6030,48 +6030,48 @@
     "vmExternalShippingService": {
       "type": "object",
       "properties": {
-        "Carrier": {
+        "carrier": {
           "$ref": "#/definitions/whShippingProvider"
         },
-        "Code": {
+        "code": {
           "type": "string"
         },
-        "EstimatedDeliveryAt": {
+        "estimated_delivery_at": {
           "type": "string",
           "format": "date-time"
         },
-        "EstimatedPickupAt": {
+        "estimated_pickup_at": {
           "type": "string",
           "format": "date-time"
         },
-        "ExpectedDeliveryAt": {
+        "expected_delivery_at": {
           "type": "string",
           "format": "date-time"
         },
-        "ExpectedPickAt": {
+        "expected_pick_at": {
           "type": "string",
           "format": "date-time"
         },
-        "ExportedFields": {
+        "exported_fields": {
           "type": "array",
           "items": {
             "type": "string"
           }
         },
-        "ExternalId": {
+        "external_id": {
           "type": "string"
         },
-        "Fee": {
+        "fee": {
           "type": "integer",
           "format": "int32"
         },
-        "Name": {
+        "name": {
           "type": "string"
         },
-        "Provider": {
+        "provider": {
           "$ref": "#/definitions/whShippingProvider"
         },
-        "ServiceFee": {
+        "service_fee": {
           "type": "integer",
           "format": "int32"
         }
@@ -6080,263 +6080,263 @@
     "vmFulfillment": {
       "type": "object",
       "properties": {
-        "ActualCompensationAmount": {
+        "actual_compensation_amount": {
           "type": "integer",
           "format": "int32"
         },
-        "AddressFrom": {
+        "address_from": {
           "$ref": "#/definitions/ocAddress"
         },
-        "AddressTo": {
+        "address_to": {
           "$ref": "#/definitions/ocAddress"
         },
-        "BasketValue": {
+        "basket_value": {
           "type": "integer",
           "format": "int32"
         },
-        "CancelReason": {
+        "cancel_reason": {
           "type": "string"
         },
-        "CancelledAt": {
+        "cancelled_at": {
           "type": "string",
           "format": "date-time"
         },
-        "Carrier": {
+        "carrier": {
           "$ref": "#/definitions/whShippingProvider"
         },
-        "ChargeableWeight": {
+        "chargeable_weight": {
           "type": "integer",
           "format": "int32"
         },
-        "ClosedAt": {
+        "closed_at": {
           "type": "string",
           "format": "date-time"
         },
-        "CodAmount": {
+        "cod_amount": {
           "type": "integer",
           "format": "int32"
         },
-        "CodEtopTransferedAt": {
+        "cod_etop_transfered_at": {
           "type": "string",
           "format": "date-time"
         },
-        "Code": {
+        "code": {
           "type": "string"
         },
-        "CreatedAt": {
+        "created_at": {
           "type": "string",
           "format": "date-time"
         },
-        "EstimatedDeliveryAt": {
+        "estimated_delivery_at": {
           "type": "string",
           "format": "date-time"
         },
-        "EstimatedPickupAt": {
+        "estimated_pickup_at": {
           "type": "string",
           "format": "date-time"
         },
-        "EtopDiscount": {
+        "etop_discount": {
           "type": "integer",
           "format": "int32"
         },
-        "EtopPaymentStatus": {
+        "etop_payment_status": {
           "$ref": "#/definitions/wxStatus"
         },
-        "ExpectedDeliveryAt": {
+        "expected_delivery_at": {
           "type": "string",
           "format": "date-time"
         },
-        "ExpectedPickAt": {
+        "expected_pick_at": {
           "type": "string",
           "format": "date-time"
         },
-        "ExportedFields": {
+        "exported_fields": {
           "type": "array",
           "items": {
             "type": "string"
           }
         },
-        "Id": {
+        "id": {
           "type": "integer",
           "format": "int64"
         },
-        "IncludeInsurance": {
+        "include_insurance": {
           "type": "boolean"
         },
-        "Lines": {
+        "lines": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/vmOrderLine"
           }
         },
-        "MoneyTransactionShippingExternalId": {
+        "money_transaction_shipping_external_id": {
           "type": "integer",
           "format": "int64"
         },
-        "MoneyTransactionShippingId": {
+        "money_transaction_shipping_id": {
           "type": "integer",
           "format": "int64"
         },
-        "Order": {
+        "order": {
           "$ref": "#/definitions/vmOrder"
         },
-        "OrderId": {
+        "order_id": {
           "type": "integer",
           "format": "int64"
         },
-        "PartnerId": {
+        "partner_id": {
           "type": "integer",
           "format": "int64"
         },
-        "PickupAddress": {
+        "pickup_address": {
           "$ref": "#/definitions/vmOrderAddress"
         },
-        "ProviderShippingFeeLines": {
+        "provider_shipping_fee_lines": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/vmShippingFeeLine"
           }
         },
-        "ReturnAddress": {
+        "return_address": {
           "$ref": "#/definitions/vmOrderAddress"
         },
-        "SelfUrl": {
+        "self_url": {
           "type": "string"
         },
-        "ShConfirm": {
+        "sh_confirm": {
           "$ref": "#/definitions/wwStatus"
         },
-        "ShippingAddress": {
+        "shipping_address": {
           "$ref": "#/definitions/vmOrderAddress"
         },
-        "ShippingCode": {
+        "shipping_code": {
           "type": "string"
         },
-        "ShippingFeeCustomer": {
+        "shipping_fee_customer": {
           "type": "integer",
           "format": "int32"
         },
-        "ShippingFeeShop": {
+        "shipping_fee_shop": {
           "type": "integer",
           "format": "int32"
         },
-        "ShippingFeeShopLines": {
+        "shipping_fee_shop_lines": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/vmShippingFeeLine"
           }
         },
-        "ShippingFeeShopTransferedAt": {
+        "shipping_fee_shop_transfered_at": {
           "type": "string",
           "format": "date-time"
         },
-        "ShippingNote": {
+        "shipping_note": {
           "type": "string"
         },
-        "ShippingProvider": {
+        "shipping_provider": {
           "type": "string"
         },
-        "ShippingServiceCode": {
+        "shipping_service_code": {
           "type": "string"
         },
-        "ShippingServiceFee": {
+        "shipping_service_fee": {
           "type": "integer",
           "format": "int32"
         },
-        "ShippingServiceName": {
+        "shipping_service_name": {
           "type": "string"
         },
-        "ShippingState": {
+        "shipping_state": {
           "$ref": "#/definitions/nqState"
         },
-        "ShippingStatus": {
+        "shipping_status": {
           "$ref": "#/definitions/wyStatus"
         },
-        "Shop": {
+        "shop": {
           "$ref": "#/definitions/ocShop"
         },
-        "ShopId": {
+        "shop_id": {
           "type": "integer",
           "format": "int64"
         },
-        "Status": {
+        "status": {
           "$ref": "#/definitions/wyStatus"
         },
-        "TotalAmount": {
+        "total_amount": {
           "type": "integer",
           "format": "int32"
         },
-        "TotalCodAmount": {
+        "total_cod_amount": {
           "type": "integer",
           "format": "int32"
         },
-        "TotalItems": {
+        "total_items": {
           "type": "integer",
           "format": "int32"
         },
-        "TotalWeight": {
+        "total_weight": {
           "type": "integer",
           "format": "int32"
         },
-        "TryOn": {
+        "try_on": {
           "$ref": "#/definitions/xdTryOnCode"
         },
-        "UpdatedAt": {
+        "updated_at": {
           "type": "string",
           "format": "date-time"
         },
-        "XShippingCancelledAt": {
+        "x_shipping_cancelled_at": {
           "type": "string",
           "format": "date-time"
         },
-        "XShippingCode": {
+        "x_shipping_code": {
           "type": "string"
         },
-        "XShippingCreatedAt": {
+        "x_shipping_created_at": {
           "type": "string",
           "format": "date-time"
         },
-        "XShippingDeliveredAt": {
+        "x_shipping_delivered_at": {
           "type": "string",
           "format": "date-time"
         },
-        "XShippingFee": {
+        "x_shipping_fee": {
           "type": "integer",
           "format": "int32"
         },
-        "XShippingId": {
+        "x_shipping_id": {
           "type": "string"
         },
-        "XShippingLogs": {
+        "x_shipping_logs": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/vmExternalShippingLog"
           }
         },
-        "XShippingNote": {
+        "x_shipping_note": {
           "type": "string"
         },
-        "XShippingReturnedAt": {
+        "x_shipping_returned_at": {
           "type": "string",
           "format": "date-time"
         },
-        "XShippingState": {
+        "x_shipping_state": {
           "type": "string"
         },
-        "XShippingStatus": {
+        "x_shipping_status": {
           "$ref": "#/definitions/wyStatus"
         },
-        "XShippingSubState": {
+        "x_shipping_sub_state": {
           "type": "string"
         },
-        "XShippingUpdatedAt": {
+        "x_shipping_updated_at": {
           "type": "string",
           "format": "date-time"
         },
-        "XSyncStates": {
+        "x_sync_states": {
           "$ref": "#/definitions/vmFulfillmentSyncStates"
         },
-        "XSyncStatus": {
+        "x_sync_status": {
           "$ref": "#/definitions/wxStatus"
         }
       }
@@ -6344,13 +6344,13 @@
     "vmFulfillmentSyncStates": {
       "type": "object",
       "properties": {
-        "Error": {
+        "error": {
           "$ref": "#/definitions/maError"
         },
-        "NextShippingState": {
+        "next_shipping_state": {
           "type": "string"
         },
-        "SyncAt": {
+        "sync_at": {
           "type": "string",
           "format": "date-time"
         }
@@ -6359,13 +6359,13 @@
     "vmFulfillmentsResponse": {
       "type": "object",
       "properties": {
-        "Fulfillments": {
+        "fulfillments": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/vmFulfillment"
           }
         },
-        "Paging": {
+        "paging": {
           "$ref": "#/definitions/maPageInfo"
         }
       }
@@ -6373,76 +6373,76 @@
     "vmGetExternalShippingServicesRequest": {
       "type": "object",
       "properties": {
-        "BasketValue": {
+        "basket_value": {
           "type": "integer",
           "format": "int32"
         },
-        "Carrier": {
+        "carrier": {
           "$ref": "#/definitions/whShippingProvider"
         },
-        "ChargeableWeight": {
+        "chargeable_weight": {
           "type": "integer",
           "format": "int32"
         },
-        "CodAmount": {
+        "cod_amount": {
           "type": "integer",
           "format": "int32"
         },
-        "FromDistrict": {
+        "from_district": {
           "type": "string"
         },
-        "FromDistrictCode": {
+        "from_district_code": {
           "type": "string"
         },
-        "FromProvince": {
+        "from_province": {
           "type": "string"
         },
-        "FromProvinceCode": {
+        "from_province_code": {
           "type": "string"
         },
-        "GrossWeight": {
+        "gross_weight": {
           "type": "integer",
           "format": "int32"
         },
-        "Height": {
+        "height": {
           "type": "integer",
           "format": "int32"
         },
-        "IncludeInsurance": {
+        "include_insurance": {
           "type": "boolean"
         },
-        "Length": {
+        "length": {
           "type": "integer",
           "format": "int32"
         },
-        "Provider": {
+        "provider": {
           "$ref": "#/definitions/whShippingProvider"
         },
-        "ToDistrict": {
+        "to_district": {
           "type": "string"
         },
-        "ToDistrictCode": {
+        "to_district_code": {
           "type": "string"
         },
-        "ToProvince": {
+        "to_province": {
           "type": "string"
         },
-        "ToProvinceCode": {
+        "to_province_code": {
           "type": "string"
         },
-        "TotalCodAmount": {
+        "total_cod_amount": {
           "type": "integer",
           "format": "int32"
         },
-        "Value": {
+        "value": {
           "type": "integer",
           "format": "int32"
         },
-        "Weight": {
+        "weight": {
           "type": "integer",
           "format": "int32"
         },
-        "Width": {
+        "width": {
           "type": "integer",
           "format": "int32"
         }
@@ -6451,7 +6451,7 @@
     "vmGetExternalShippingServicesResponse": {
       "type": "object",
       "properties": {
-        "Services": {
+        "services": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/vmExternalShippingService"
@@ -6462,16 +6462,16 @@
     "vmGetShipnowFulfillmentsRequest": {
       "type": "object",
       "properties": {
-        "Filters": {
+        "filters": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/maFilter"
           }
         },
-        "Mixed": {
+        "mixed": {
           "$ref": "#/definitions/ocMixedAccount"
         },
-        "Paging": {
+        "paging": {
           "$ref": "#/definitions/maPaging"
         }
       }
@@ -6479,20 +6479,20 @@
     "vmGetShipnowServicesRequest": {
       "type": "object",
       "properties": {
-        "DeliveryPoints": {
+        "delivery_points": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/vmDeliveryPointRequest"
           }
         },
-        "OrderIds": {
+        "order_ids": {
           "type": "array",
           "items": {
             "type": "integer",
             "format": "int64"
           }
         },
-        "PickupAddress": {
+        "pickup_address": {
           "$ref": "#/definitions/vmOrderAddress"
         }
       }
@@ -6500,7 +6500,7 @@
     "vmGetShipnowServicesResponse": {
       "type": "object",
       "properties": {
-        "Services": {
+        "services": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/vmShippnowService"
@@ -6511,69 +6511,69 @@
     "vmMoneyTransaction": {
       "type": "object",
       "properties": {
-        "BankAccount": {
+        "bank_account": {
           "$ref": "#/definitions/ocBankAccount"
         },
-        "ClosedAt": {
+        "closed_at": {
           "type": "string",
           "format": "date-time"
         },
-        "Code": {
+        "code": {
           "type": "string"
         },
-        "ConfirmedAt": {
+        "confirmed_at": {
           "type": "string",
           "format": "date-time"
         },
-        "CreatedAt": {
+        "created_at": {
           "type": "string",
           "format": "date-time"
         },
-        "EtopTransferedAt": {
+        "etop_transfered_at": {
           "type": "string",
           "format": "date-time"
         },
-        "Id": {
+        "id": {
           "type": "integer",
           "format": "int64"
         },
-        "InvoiceNumber": {
+        "invoice_number": {
           "type": "string"
         },
-        "MoneyTransactionShippingEtopId": {
+        "money_transaction_shipping_etop_id": {
           "type": "integer",
           "format": "int64"
         },
-        "MoneyTransactionShippingExternalId": {
+        "money_transaction_shipping_external_id": {
           "type": "integer",
           "format": "int64"
         },
-        "Note": {
+        "note": {
           "type": "string"
         },
-        "Provider": {
+        "provider": {
           "type": "string"
         },
-        "ShopId": {
+        "shop_id": {
           "type": "integer",
           "format": "int64"
         },
-        "Status": {
+        "status": {
           "$ref": "#/definitions/wwStatus"
         },
-        "TotalAmount": {
+        "total_amount": {
           "type": "integer",
           "format": "int64"
         },
-        "TotalCod": {
+        "total_cod": {
           "type": "integer",
           "format": "int64"
         },
-        "TotalOrders": {
+        "total_orders": {
           "type": "integer",
           "format": "int64"
         },
-        "UpdatedAt": {
+        "updated_at": {
           "type": "string",
           "format": "date-time"
         }
@@ -6582,13 +6582,13 @@
     "vmMoneyTransactionsResponse": {
       "type": "object",
       "properties": {
-        "MoneyTransactions": {
+        "money_transactions": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/vmMoneyTransaction"
           }
         },
-        "Paging": {
+        "paging": {
           "$ref": "#/definitions/maPageInfo"
         }
       }
@@ -6596,214 +6596,214 @@
     "vmOrder": {
       "type": "object",
       "properties": {
-        "BasketValue": {
+        "basket_value": {
           "type": "integer",
           "format": "int32"
         },
-        "BillingAddress": {
+        "billing_address": {
           "$ref": "#/definitions/vmOrderAddress"
         },
-        "CancelReason": {
+        "cancel_reason": {
           "type": "string"
         },
-        "CancelledAt": {
+        "cancelled_at": {
           "type": "string",
           "format": "date-time"
         },
-        "ClosedAt": {
+        "closed_at": {
           "type": "string",
           "format": "date-time"
         },
-        "Code": {
+        "code": {
           "type": "string"
         },
-        "Confirm": {
+        "confirm": {
           "$ref": "#/definitions/wwStatus"
         },
-        "ConfirmStatus": {
+        "confirm_status": {
           "$ref": "#/definitions/wwStatus"
         },
-        "ConfirmedAt": {
+        "confirmed_at": {
           "type": "string",
           "format": "date-time"
         },
-        "CreatedAt": {
+        "created_at": {
           "type": "string",
           "format": "date-time"
         },
-        "Customer": {
+        "customer": {
           "$ref": "#/definitions/vmOrderCustomer"
         },
-        "CustomerAddress": {
+        "customer_address": {
           "$ref": "#/definitions/vmOrderAddress"
         },
-        "CustomerId": {
+        "customer_id": {
           "type": "integer",
           "format": "int64"
         },
-        "CustomerPaymentStatus": {
+        "customer_payment_status": {
           "$ref": "#/definitions/wwStatus"
         },
-        "Discounts": {
+        "discounts": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/vmOrderDiscount"
           }
         },
-        "EdCode": {
+        "ed_code": {
           "type": "string"
         },
-        "EtopPaymentStatus": {
+        "etop_payment_status": {
           "$ref": "#/definitions/wxStatus"
         },
-        "ExportedFields": {
+        "exported_fields": {
           "type": "array",
           "items": {
             "type": "string"
           }
         },
-        "ExternalCode": {
+        "external_code": {
           "type": "string"
         },
-        "ExternalId": {
+        "external_id": {
           "type": "string"
         },
-        "ExternalUrl": {
+        "external_url": {
           "type": "string"
         },
-        "FeeLines": {
+        "fee_lines": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/vmOrderFeeLine"
           }
         },
-        "FulfillmentIds": {
+        "fulfillment_ids": {
           "type": "array",
           "items": {
             "type": "integer",
             "format": "int64"
           }
         },
-        "FulfillmentShippingStatus": {
+        "fulfillment_shipping_status": {
           "$ref": "#/definitions/wyStatus"
         },
-        "FulfillmentStatus": {
+        "fulfillment_status": {
           "$ref": "#/definitions/wyStatus"
         },
-        "FulfillmentType": {
+        "fulfillment_type": {
           "type": "string"
         },
-        "Fulfillments": {
+        "fulfillments": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/vmXFulfillment"
           }
         },
-        "GhnNoteCode": {
+        "ghn_note_code": {
           "type": "string"
         },
-        "Id": {
+        "id": {
           "type": "integer",
           "format": "int64"
         },
-        "Lines": {
+        "lines": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/vmOrderLine"
           }
         },
-        "OrderDiscount": {
+        "order_discount": {
           "type": "integer",
           "format": "int32"
         },
-        "OrderNote": {
+        "order_note": {
           "type": "string"
         },
-        "PartnerId": {
+        "partner_id": {
           "type": "integer",
           "format": "int64"
         },
-        "PaymentMethod": {
+        "payment_method": {
           "type": "string"
         },
-        "PaymentStatus": {
+        "payment_status": {
           "$ref": "#/definitions/wxStatus"
         },
-        "ProcessedAt": {
+        "processed_at": {
           "type": "string",
           "format": "date-time"
         },
-        "ReceivedAmount": {
+        "received_amount": {
           "type": "integer",
           "format": "int32"
         },
-        "ReferenceUrl": {
+        "reference_url": {
           "type": "string"
         },
-        "SelfUrl": {
+        "self_url": {
           "type": "string"
         },
-        "ShConfirm": {
+        "sh_confirm": {
           "$ref": "#/definitions/wwStatus"
         },
-        "Shipping": {
+        "shipping": {
           "$ref": "#/definitions/vmOrderShipping"
         },
-        "ShippingAddress": {
+        "shipping_address": {
           "$ref": "#/definitions/vmOrderAddress"
         },
-        "ShippingFee": {
+        "shipping_fee": {
           "type": "integer",
           "format": "int32"
         },
-        "ShippingNote": {
+        "shipping_note": {
           "type": "string"
         },
-        "ShopCod": {
+        "shop_cod": {
           "type": "integer",
           "format": "int32"
         },
-        "ShopId": {
+        "shop_id": {
           "type": "integer",
           "format": "int64"
         },
-        "ShopName": {
+        "shop_name": {
           "type": "string"
         },
-        "ShopShipping": {
+        "shop_shipping": {
           "$ref": "#/definitions/vmOrderShipping"
         },
-        "ShopShippingFee": {
+        "shop_shipping_fee": {
           "type": "integer",
           "format": "int32"
         },
-        "Source": {
+        "source": {
           "$ref": "#/definitions/gjSource"
         },
-        "Status": {
+        "status": {
           "$ref": "#/definitions/wyStatus"
         },
-        "TotalAmount": {
+        "total_amount": {
           "type": "integer",
           "format": "int32"
         },
-        "TotalDiscount": {
+        "total_discount": {
           "type": "integer",
           "format": "int32"
         },
-        "TotalFee": {
+        "total_fee": {
           "type": "integer",
           "format": "int32"
         },
-        "TotalItems": {
+        "total_items": {
           "type": "integer",
           "format": "int32"
         },
-        "TotalWeight": {
+        "total_weight": {
           "type": "integer",
           "format": "int32"
         },
-        "UpdatedAt": {
+        "updated_at": {
           "type": "string",
           "format": "date-time"
         }
@@ -6812,64 +6812,64 @@
     "vmOrderAddress": {
       "type": "object",
       "properties": {
-        "Address1": {
+        "address1": {
           "type": "string"
         },
-        "Address2": {
+        "address2": {
           "type": "string"
         },
-        "City": {
+        "city": {
           "type": "string"
         },
-        "Company": {
+        "company": {
           "type": "string"
         },
-        "Coordinates": {
+        "coordinates": {
           "$ref": "#/definitions/ocCoordinates"
         },
-        "Country": {
+        "country": {
           "type": "string"
         },
-        "District": {
+        "district": {
           "type": "string"
         },
-        "DistrictCode": {
+        "district_code": {
           "type": "string"
         },
-        "Email": {
+        "email": {
           "type": "string"
         },
-        "ExportedFields": {
+        "exported_fields": {
           "type": "array",
           "items": {
             "type": "string"
           }
         },
-        "FirstName": {
+        "first_name": {
           "type": "string"
         },
-        "FullName": {
+        "full_name": {
           "type": "string"
         },
-        "LastName": {
+        "last_name": {
           "type": "string"
         },
-        "Phone": {
+        "phone": {
           "type": "string"
         },
-        "Province": {
+        "province": {
           "type": "string"
         },
-        "ProvinceCode": {
+        "province_code": {
           "type": "string"
         },
-        "Ward": {
+        "ward": {
           "type": "string"
         },
-        "WardCode": {
+        "ward_code": {
           "type": "string"
         },
-        "Zip": {
+        "zip": {
           "type": "string"
         }
       }
@@ -6877,31 +6877,31 @@
     "vmOrderCustomer": {
       "type": "object",
       "properties": {
-        "Email": {
+        "email": {
           "type": "string"
         },
-        "ExportedFields": {
+        "exported_fields": {
           "type": "array",
           "items": {
             "type": "string"
           }
         },
-        "FirstName": {
+        "first_name": {
           "type": "string"
         },
-        "FullName": {
+        "full_name": {
           "type": "string"
         },
-        "Gender": {
+        "gender": {
           "$ref": "#/definitions/khGender"
         },
-        "LastName": {
+        "last_name": {
           "type": "string"
         },
-        "Phone": {
+        "phone": {
           "type": "string"
         },
-        "Type": {
+        "type": {
           "type": "string"
         }
       }
@@ -6909,14 +6909,14 @@
     "vmOrderDiscount": {
       "type": "object",
       "properties": {
-        "Amount": {
+        "amount": {
           "type": "integer",
           "format": "int32"
         },
-        "Code": {
+        "code": {
           "type": "string"
         },
-        "Type": {
+        "type": {
           "type": "string"
         }
       }
@@ -6924,20 +6924,20 @@
     "vmOrderFeeLine": {
       "type": "object",
       "properties": {
-        "Amount": {
+        "amount": {
           "type": "integer",
           "format": "int32"
         },
-        "Code": {
+        "code": {
           "type": "string"
         },
-        "Desc": {
+        "desc": {
           "type": "string"
         },
-        "Name": {
+        "name": {
           "type": "string"
         },
-        "Type": {
+        "type": {
           "$ref": "#/definitions/juFeeType"
         }
       }
@@ -6945,62 +6945,62 @@
     "vmOrderLine": {
       "type": "object",
       "properties": {
-        "Attributes": {
+        "attributes": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/vmAttribute"
           }
         },
-        "ExportedFields": {
+        "exported_fields": {
           "type": "array",
           "items": {
             "type": "string"
           }
         },
-        "ImageUrl": {
+        "image_url": {
           "type": "string"
         },
-        "IsOutsideEtop": {
+        "is_outside_etop": {
           "type": "boolean"
         },
-        "ListPrice": {
+        "list_price": {
           "type": "integer",
           "format": "int32"
         },
-        "MetaFields": {
+        "meta_fields": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/vmOrderLineMetaField"
           }
         },
-        "OrderId": {
+        "order_id": {
           "type": "integer",
           "format": "int64"
         },
-        "PaymentPrice": {
+        "payment_price": {
           "type": "integer",
           "format": "int32"
         },
-        "ProductId": {
+        "product_id": {
           "type": "integer",
           "format": "int64"
         },
-        "ProductName": {
+        "product_name": {
           "type": "string"
         },
-        "Quantity": {
+        "quantity": {
           "type": "integer",
           "format": "int32"
         },
-        "RetailPrice": {
+        "retail_price": {
           "type": "integer",
           "format": "int32"
         },
-        "TotalDiscount": {
+        "total_discount": {
           "type": "integer",
           "format": "int32"
         },
-        "VariantId": {
+        "variant_id": {
           "type": "integer",
           "format": "int64"
         }
@@ -7009,13 +7009,13 @@
     "vmOrderLineMetaField": {
       "type": "object",
       "properties": {
-        "Key": {
+        "key": {
           "type": "string"
         },
-        "Name": {
+        "name": {
           "type": "string"
         },
-        "Value": {
+        "value": {
           "type": "string"
         }
       }
@@ -7023,81 +7023,81 @@
     "vmOrderShipping": {
       "type": "object",
       "properties": {
-        "Carrier": {
+        "carrier": {
           "$ref": "#/definitions/whShippingProvider"
         },
-        "ChargeableWeight": {
+        "chargeable_weight": {
           "type": "integer",
           "format": "int32"
         },
-        "CodAmount": {
+        "cod_amount": {
           "type": "integer",
           "format": "int32"
         },
-        "ExportedFields": {
+        "exported_fields": {
           "type": "array",
           "items": {
             "type": "string"
           }
         },
-        "GrossWeight": {
+        "gross_weight": {
           "type": "integer",
           "format": "int32"
         },
-        "Height": {
+        "height": {
           "type": "integer",
           "format": "int32"
         },
-        "IncludeInsurance": {
+        "include_insurance": {
           "type": "boolean"
         },
-        "Length": {
+        "length": {
           "type": "integer",
           "format": "int32"
         },
-        "PickupAddress": {
+        "pickup_address": {
           "$ref": "#/definitions/vmOrderAddress"
         },
-        "ReturnAddress": {
+        "return_address": {
           "$ref": "#/definitions/vmOrderAddress"
         },
-        "ShAddress": {
+        "sh_address": {
           "$ref": "#/definitions/vmOrderAddress"
         },
-        "ShippingNote": {
+        "shipping_note": {
           "type": "string"
         },
-        "ShippingProvider": {
+        "shipping_provider": {
           "$ref": "#/definitions/whShippingProvider"
         },
-        "ShippingServiceCode": {
+        "shipping_service_code": {
           "type": "string"
         },
-        "ShippingServiceFee": {
+        "shipping_service_fee": {
           "type": "integer",
           "format": "int32"
         },
-        "ShippingServiceName": {
+        "shipping_service_name": {
           "type": "string"
         },
-        "TryOn": {
+        "try_on": {
           "$ref": "#/definitions/xdTryOnCode"
         },
-        "Weight": {
+        "weight": {
           "type": "integer",
           "format": "int32"
         },
-        "Width": {
+        "width": {
           "type": "integer",
           "format": "int32"
         },
-        "XServiceId": {
+        "x_service_id": {
           "type": "string"
         },
-        "XServiceName": {
+        "x_service_name": {
           "type": "string"
         },
-        "XShippingFee": {
+        "x_shipping_fee": {
           "type": "integer",
           "format": "int32"
         }
@@ -7106,19 +7106,19 @@
     "vmOrderWithErrorsResponse": {
       "type": "object",
       "properties": {
-        "Errors": {
+        "errors": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/maError"
           }
         },
-        "FulfillmentErrors": {
+        "fulfillment_errors": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/maError"
           }
         },
-        "Order": {
+        "order": {
           "$ref": "#/definitions/vmOrder"
         }
       }
@@ -7126,13 +7126,13 @@
     "vmOrdersResponse": {
       "type": "object",
       "properties": {
-        "Orders": {
+        "orders": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/vmOrder"
           }
         },
-        "Paging": {
+        "paging": {
           "$ref": "#/definitions/maPageInfo"
         }
       }
@@ -7140,43 +7140,43 @@
     "vmPublicFulfillment": {
       "type": "object",
       "properties": {
-        "DeliveredAt": {
+        "delivered_at": {
           "type": "string",
           "format": "date-time"
         },
-        "DeliveredAtText": {
+        "delivered_at_text": {
           "type": "string"
         },
-        "EstimatedDeliveryAt": {
+        "estimated_delivery_at": {
           "type": "string",
           "format": "date-time"
         },
-        "EstimatedPickupAt": {
+        "estimated_pickup_at": {
           "type": "string",
           "format": "date-time"
         },
-        "ExpectedDeliveryAt": {
+        "expected_delivery_at": {
           "type": "string",
           "format": "date-time"
         },
-        "Id": {
+        "id": {
           "type": "integer",
           "format": "int64"
         },
-        "OrderId": {
+        "order_id": {
           "type": "integer",
           "format": "int64"
         },
-        "ShippingCode": {
+        "shipping_code": {
           "type": "string"
         },
-        "ShippingState": {
+        "shipping_state": {
           "$ref": "#/definitions/nqState"
         },
-        "ShippingStateText": {
+        "shipping_state_text": {
           "type": "string"
         },
-        "Status": {
+        "status": {
           "$ref": "#/definitions/wyStatus"
         }
       }
@@ -7184,117 +7184,117 @@
     "vmShipnowFulfillment": {
       "type": "object",
       "properties": {
-        "CancelReason": {
+        "cancel_reason": {
           "type": "string"
         },
-        "Carrier": {
+        "carrier": {
           "type": "string"
         },
-        "CodEtopTransferedAt": {
+        "cod_etop_transfered_at": {
           "type": "string",
           "format": "date-time"
         },
-        "ConfirmStatus": {
+        "confirm_status": {
           "$ref": "#/definitions/wwStatus"
         },
-        "CreatedAt": {
+        "created_at": {
           "type": "string",
           "format": "date-time"
         },
-        "DeliveryPoints": {
+        "delivery_points": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/vmDeliveryPoint"
           }
         },
-        "EtopPaymentStatus": {
+        "etop_payment_status": {
           "$ref": "#/definitions/wxStatus"
         },
-        "Id": {
+        "id": {
           "type": "integer",
           "format": "int64"
         },
-        "OrderIds": {
+        "order_ids": {
           "type": "array",
           "items": {
             "type": "integer",
             "format": "int64"
           }
         },
-        "PartnerId": {
+        "partner_id": {
           "type": "integer",
           "format": "int64"
         },
-        "PickupAddress": {
+        "pickup_address": {
           "$ref": "#/definitions/vmOrderAddress"
         },
-        "RequestPickupAt": {
+        "request_pickup_at": {
           "type": "string",
           "format": "date-time"
         },
-        "ShippingCancelledAt": {
+        "shipping_cancelled_at": {
           "type": "string",
           "format": "date-time"
         },
-        "ShippingCode": {
+        "shipping_code": {
           "type": "string"
         },
-        "ShippingCreatedAt": {
+        "shipping_created_at": {
           "type": "string",
           "format": "date-time"
         },
-        "ShippingDeliveredAt": {
+        "shipping_delivered_at": {
           "type": "string",
           "format": "date-time"
         },
-        "ShippingDeliveringAt": {
+        "shipping_delivering_at": {
           "type": "string",
           "format": "date-time"
         },
-        "ShippingNote": {
+        "shipping_note": {
           "type": "string"
         },
-        "ShippingPickingAt": {
+        "shipping_picking_at": {
           "type": "string",
           "format": "date-time"
         },
-        "ShippingServiceCode": {
+        "shipping_service_code": {
           "type": "string"
         },
-        "ShippingServiceDescription": {
+        "shipping_service_description": {
           "type": "string"
         },
-        "ShippingServiceFee": {
+        "shipping_service_fee": {
           "type": "integer",
           "format": "int32"
         },
-        "ShippingServiceName": {
+        "shipping_service_name": {
           "type": "string"
         },
-        "ShippingSharedLink": {
+        "shipping_shared_link": {
           "type": "string"
         },
-        "ShippingState": {
+        "shipping_state": {
           "type": "string"
         },
-        "ShippingStatus": {
+        "shipping_status": {
           "$ref": "#/definitions/wyStatus"
         },
-        "ShopId": {
+        "shop_id": {
           "type": "integer",
           "format": "int64"
         },
-        "Status": {
+        "status": {
           "$ref": "#/definitions/wyStatus"
         },
-        "UpdatedAt": {
+        "updated_at": {
           "type": "string",
           "format": "date-time"
         },
-        "ValueInfo": {
+        "value_info": {
           "$ref": "#/definitions/vmValueInfo"
         },
-        "WeightInfo": {
+        "weight_info": {
           "$ref": "#/definitions/vmWeightInfo"
         }
       }
@@ -7302,10 +7302,10 @@
     "vmShipnowFulfillments": {
       "type": "object",
       "properties": {
-        "Paging": {
+        "paging": {
           "$ref": "#/definitions/maPageInfo"
         },
-        "ShipnowFulfillments": {
+        "shipnow_fulfillments": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/vmShipnowFulfillment"
@@ -7316,26 +7316,26 @@
     "vmShippingFeeLine": {
       "type": "object",
       "properties": {
-        "Cost": {
+        "cost": {
           "type": "integer",
           "format": "int32"
         },
-        "ExternalPaymentChannelId": {
+        "external_payment_channel_id": {
           "type": "string"
         },
-        "ExternalServiceId": {
+        "external_service_id": {
           "type": "string"
         },
-        "ExternalServiceName": {
+        "external_service_name": {
           "type": "string"
         },
-        "ExternalServiceType": {
+        "external_service_type": {
           "type": "string"
         },
-        "ExternalShippingOrderId": {
+        "external_shipping_order_id": {
           "type": "string"
         },
-        "ShippingFeeType": {
+        "shipping_fee_type": {
           "$ref": "#/definitions/wuShippingFeeType"
         }
       }
@@ -7343,20 +7343,20 @@
     "vmShippnowService": {
       "type": "object",
       "properties": {
-        "Carrier": {
+        "carrier": {
           "type": "string"
         },
-        "Code": {
+        "code": {
           "type": "string"
         },
-        "Description": {
+        "description": {
           "type": "string"
         },
-        "Fee": {
+        "fee": {
           "type": "integer",
           "format": "int32"
         },
-        "Name": {
+        "name": {
           "type": "string"
         }
       }
@@ -7364,69 +7364,69 @@
     "vmTradingCreateOrderRequest": {
       "type": "object",
       "properties": {
-        "BasketValue": {
+        "basket_value": {
           "type": "integer",
           "format": "int32"
         },
-        "BillingAddress": {
+        "billing_address": {
           "$ref": "#/definitions/vmOrderAddress"
         },
-        "Customer": {
+        "customer": {
           "$ref": "#/definitions/vmOrderCustomer"
         },
-        "CustomerAddress": {
+        "customer_address": {
           "$ref": "#/definitions/vmOrderAddress"
         },
-        "Discounts": {
+        "discounts": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/vmOrderDiscount"
           }
         },
-        "FeeLines": {
+        "fee_lines": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/vmOrderFeeLine"
           }
         },
-        "Lines": {
+        "lines": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/vmCreateOrderLine"
           }
         },
-        "OrderDiscount": {
+        "order_discount": {
           "type": "integer",
           "format": "int32"
         },
-        "OrderNote": {
+        "order_note": {
           "type": "string"
         },
-        "PaymentMethod": {
+        "payment_method": {
           "type": "string"
         },
-        "ReferralMeta": {
+        "referral_meta": {
           "type": "object",
           "additionalProperties": {
             "type": "string"
           }
         },
-        "ShippingAddress": {
+        "shipping_address": {
           "$ref": "#/definitions/vmOrderAddress"
         },
-        "TotalAmount": {
+        "total_amount": {
           "type": "integer",
           "format": "int32"
         },
-        "TotalDiscount": {
+        "total_discount": {
           "type": "integer",
           "format": "int32"
         },
-        "TotalFee": {
+        "total_fee": {
           "type": "integer",
           "format": "int32"
         },
-        "TotalItems": {
+        "total_items": {
           "type": "integer",
           "format": "int32"
         }
@@ -7435,86 +7435,86 @@
     "vmUpdateOrderRequest": {
       "type": "object",
       "properties": {
-        "BasketValue": {
+        "basket_value": {
           "type": "integer",
           "format": "int32"
         },
-        "BillingAddress": {
+        "billing_address": {
           "$ref": "#/definitions/vmOrderAddress"
         },
-        "ChargeableWeight": {
+        "chargeable_weight": {
           "type": "integer",
           "format": "int32"
         },
-        "Customer": {
+        "customer": {
           "$ref": "#/definitions/vmOrderCustomer"
         },
-        "CustomerAddress": {
+        "customer_address": {
           "$ref": "#/definitions/vmOrderAddress"
         },
-        "CustomerId": {
+        "customer_id": {
           "type": "integer",
           "format": "int64"
         },
-        "FeeLines": {
+        "fee_lines": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/vmOrderFeeLine"
           }
         },
-        "Id": {
+        "id": {
           "type": "integer",
           "format": "int64"
         },
-        "Lines": {
+        "lines": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/vmCreateOrderLine"
           }
         },
-        "OrderDiscount": {
+        "order_discount": {
           "type": "integer",
           "format": "int32"
         },
-        "OrderNote": {
+        "order_note": {
           "type": "string"
         },
-        "Shipping": {
+        "shipping": {
           "$ref": "#/definitions/vmOrderShipping"
         },
-        "ShippingAddress": {
+        "shipping_address": {
           "$ref": "#/definitions/vmOrderAddress"
         },
-        "ShippingNote": {
+        "shipping_note": {
           "type": "string"
         },
-        "ShopAddress": {
+        "shop_address": {
           "$ref": "#/definitions/vmOrderAddress"
         },
-        "ShopCod": {
+        "shop_cod": {
           "type": "integer",
           "format": "int32"
         },
-        "ShopShipping": {
+        "shop_shipping": {
           "$ref": "#/definitions/vmOrderShipping"
         },
-        "ShopShippingFee": {
+        "shop_shipping_fee": {
           "type": "integer",
           "format": "int32"
         },
-        "TotalAmount": {
+        "total_amount": {
           "type": "integer",
           "format": "int32"
         },
-        "TotalFee": {
+        "total_fee": {
           "type": "integer",
           "format": "int32"
         },
-        "TotalItems": {
+        "total_items": {
           "type": "integer",
           "format": "int32"
         },
-        "TotalWeight": {
+        "total_weight": {
           "type": "integer",
           "format": "int32"
         }
@@ -7523,34 +7523,34 @@
     "vmUpdateShipnowFulfillmentRequest": {
       "type": "object",
       "properties": {
-        "Carrier": {
+        "carrier": {
           "type": "string"
         },
-        "Id": {
+        "id": {
           "type": "integer",
           "format": "int64"
         },
-        "OrderIds": {
+        "order_ids": {
           "type": "array",
           "items": {
             "type": "integer",
             "format": "int64"
           }
         },
-        "PickupAddress": {
+        "pickup_address": {
           "$ref": "#/definitions/vmOrderAddress"
         },
-        "RequestPickupAt": {
+        "request_pickup_at": {
           "type": "string",
           "format": "date-time"
         },
-        "ShippingNote": {
+        "shipping_note": {
           "type": "string"
         },
-        "ShippingServiceCode": {
+        "shipping_service_code": {
           "type": "string"
         },
-        "ShippingServiceFee": {
+        "shipping_service_fee": {
           "type": "integer",
           "format": "int32"
         }
@@ -7559,15 +7559,15 @@
     "vmValueInfo": {
       "type": "object",
       "properties": {
-        "BasketValue": {
+        "basket_value": {
           "type": "integer",
           "format": "int32"
         },
-        "CodAmount": {
+        "cod_amount": {
           "type": "integer",
           "format": "int32"
         },
-        "IncludeInsurance": {
+        "include_insurance": {
           "type": "boolean"
         }
       }
@@ -7575,23 +7575,23 @@
     "vmWeightInfo": {
       "type": "object",
       "properties": {
-        "ChargeableWeight": {
+        "chargeable_weight": {
           "type": "integer",
           "format": "int32"
         },
-        "GrossWeight": {
+        "gross_weight": {
           "type": "integer",
           "format": "int32"
         },
-        "Height": {
+        "height": {
           "type": "integer",
           "format": "int32"
         },
-        "Length": {
+        "length": {
           "type": "integer",
           "format": "int32"
         },
-        "Width": {
+        "width": {
           "type": "integer",
           "format": "int32"
         }
@@ -7600,263 +7600,263 @@
     "vmXFulfillment": {
       "type": "object",
       "properties": {
-        "ActualCompensationAmount": {
+        "actual_compensation_amount": {
           "type": "integer",
           "format": "int32"
         },
-        "AddressFrom": {
+        "address_from": {
           "$ref": "#/definitions/ocAddress"
         },
-        "AddressTo": {
+        "address_to": {
           "$ref": "#/definitions/ocAddress"
         },
-        "BasketValue": {
+        "basket_value": {
           "type": "integer",
           "format": "int32"
         },
-        "CancelReason": {
+        "cancel_reason": {
           "type": "string"
         },
-        "CancelledAt": {
+        "cancelled_at": {
           "type": "string",
           "format": "date-time"
         },
-        "Carrier": {
+        "carrier": {
           "$ref": "#/definitions/whShippingProvider"
         },
-        "ChargeableWeight": {
+        "chargeable_weight": {
           "type": "integer",
           "format": "int32"
         },
-        "ClosedAt": {
+        "closed_at": {
           "type": "string",
           "format": "date-time"
         },
-        "CodAmount": {
+        "cod_amount": {
           "type": "integer",
           "format": "int32"
         },
-        "CodEtopTransferedAt": {
+        "cod_etop_transfered_at": {
           "type": "string",
           "format": "date-time"
         },
-        "Code": {
+        "code": {
           "type": "string"
         },
-        "CreatedAt": {
+        "created_at": {
           "type": "string",
           "format": "date-time"
         },
-        "EstimatedDeliveryAt": {
+        "estimated_delivery_at": {
           "type": "string",
           "format": "date-time"
         },
-        "EstimatedPickupAt": {
+        "estimated_pickup_at": {
           "type": "string",
           "format": "date-time"
         },
-        "EtopDiscount": {
+        "etop_discount": {
           "type": "integer",
           "format": "int32"
         },
-        "EtopPaymentStatus": {
+        "etop_payment_status": {
           "$ref": "#/definitions/wxStatus"
         },
-        "ExpectedDeliveryAt": {
+        "expected_delivery_at": {
           "type": "string",
           "format": "date-time"
         },
-        "ExpectedPickAt": {
+        "expected_pick_at": {
           "type": "string",
           "format": "date-time"
         },
-        "Id": {
+        "id": {
           "type": "integer",
           "format": "int64"
         },
-        "IncludeInsurance": {
+        "include_insurance": {
           "type": "boolean"
         },
-        "Lines": {
+        "lines": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/vmOrderLine"
           }
         },
-        "MoneyTransactionShippingExternalId": {
+        "money_transaction_shipping_external_id": {
           "type": "integer",
           "format": "int64"
         },
-        "MoneyTransactionShippingId": {
+        "money_transaction_shipping_id": {
           "type": "integer",
           "format": "int64"
         },
-        "Order": {
+        "order": {
           "$ref": "#/definitions/vmOrder"
         },
-        "OrderId": {
+        "order_id": {
           "type": "integer",
           "format": "int64"
         },
-        "PartnerId": {
+        "partner_id": {
           "type": "integer",
           "format": "int64"
         },
-        "PickupAddress": {
+        "pickup_address": {
           "$ref": "#/definitions/vmOrderAddress"
         },
-        "ProviderShippingFeeLines": {
+        "provider_shipping_fee_lines": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/vmShippingFeeLine"
           }
         },
-        "ReturnAddress": {
+        "return_address": {
           "$ref": "#/definitions/vmOrderAddress"
         },
-        "SelfUrl": {
+        "self_url": {
           "type": "string"
         },
-        "ShConfirm": {
+        "sh_confirm": {
           "$ref": "#/definitions/wwStatus"
         },
-        "Shipment": {
+        "shipment": {
           "$ref": "#/definitions/vmFulfillment"
         },
-        "Shipnow": {
+        "shipnow": {
           "$ref": "#/definitions/vmShipnowFulfillment"
         },
-        "ShippingAddress": {
+        "shipping_address": {
           "$ref": "#/definitions/vmOrderAddress"
         },
-        "ShippingCode": {
+        "shipping_code": {
           "type": "string"
         },
-        "ShippingFeeCustomer": {
+        "shipping_fee_customer": {
           "type": "integer",
           "format": "int32"
         },
-        "ShippingFeeShop": {
+        "shipping_fee_shop": {
           "type": "integer",
           "format": "int32"
         },
-        "ShippingFeeShopLines": {
+        "shipping_fee_shop_lines": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/vmShippingFeeLine"
           }
         },
-        "ShippingFeeShopTransferedAt": {
+        "shipping_fee_shop_transfered_at": {
           "type": "string",
           "format": "date-time"
         },
-        "ShippingNote": {
+        "shipping_note": {
           "type": "string"
         },
-        "ShippingProvider": {
+        "shipping_provider": {
           "type": "string"
         },
-        "ShippingServiceCode": {
+        "shipping_service_code": {
           "type": "string"
         },
-        "ShippingServiceFee": {
+        "shipping_service_fee": {
           "type": "integer",
           "format": "int32"
         },
-        "ShippingServiceName": {
+        "shipping_service_name": {
           "type": "string"
         },
-        "ShippingState": {
+        "shipping_state": {
           "$ref": "#/definitions/nqState"
         },
-        "ShippingStatus": {
+        "shipping_status": {
           "$ref": "#/definitions/wyStatus"
         },
-        "Shop": {
+        "shop": {
           "$ref": "#/definitions/ocShop"
         },
-        "ShopId": {
+        "shop_id": {
           "type": "integer",
           "format": "int64"
         },
-        "Status": {
+        "status": {
           "$ref": "#/definitions/wyStatus"
         },
-        "TotalAmount": {
+        "total_amount": {
           "type": "integer",
           "format": "int32"
         },
-        "TotalCodAmount": {
+        "total_cod_amount": {
           "type": "integer",
           "format": "int32"
         },
-        "TotalItems": {
+        "total_items": {
           "type": "integer",
           "format": "int32"
         },
-        "TotalWeight": {
+        "total_weight": {
           "type": "integer",
           "format": "int32"
         },
-        "TryOn": {
+        "try_on": {
           "$ref": "#/definitions/xdTryOnCode"
         },
-        "UpdatedAt": {
+        "updated_at": {
           "type": "string",
           "format": "date-time"
         },
-        "XShippingCancelledAt": {
+        "x_shipping_cancelled_at": {
           "type": "string",
           "format": "date-time"
         },
-        "XShippingCode": {
+        "x_shipping_code": {
           "type": "string"
         },
-        "XShippingCreatedAt": {
+        "x_shipping_created_at": {
           "type": "string",
           "format": "date-time"
         },
-        "XShippingDeliveredAt": {
+        "x_shipping_delivered_at": {
           "type": "string",
           "format": "date-time"
         },
-        "XShippingFee": {
+        "x_shipping_fee": {
           "type": "integer",
           "format": "int32"
         },
-        "XShippingId": {
+        "x_shipping_id": {
           "type": "string"
         },
-        "XShippingLogs": {
+        "x_shipping_logs": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/vmExternalShippingLog"
           }
         },
-        "XShippingNote": {
+        "x_shipping_note": {
           "type": "string"
         },
-        "XShippingReturnedAt": {
+        "x_shipping_returned_at": {
           "type": "string",
           "format": "date-time"
         },
-        "XShippingState": {
+        "x_shipping_state": {
           "type": "string"
         },
-        "XShippingStatus": {
+        "x_shipping_status": {
           "$ref": "#/definitions/wyStatus"
         },
-        "XShippingSubState": {
+        "x_shipping_sub_state": {
           "type": "string"
         },
-        "XShippingUpdatedAt": {
+        "x_shipping_updated_at": {
           "type": "string",
           "format": "date-time"
         },
-        "XSyncStates": {
+        "x_sync_states": {
           "$ref": "#/definitions/vmFulfillmentSyncStates"
         },
-        "XSyncStatus": {
+        "x_sync_status": {
           "$ref": "#/definitions/wxStatus"
         }
       }
@@ -7939,14 +7939,14 @@
     "zkAddCustomerToGroupRequest": {
       "type": "object",
       "properties": {
-        "CustomerIds": {
+        "customer_ids": {
           "type": "array",
           "items": {
             "type": "integer",
             "format": "int64"
           }
         },
-        "GroupId": {
+        "group_id": {
           "type": "integer",
           "format": "int64"
         }
@@ -7955,14 +7955,14 @@
     "zkAddShopProductCollectionRequest": {
       "type": "object",
       "properties": {
-        "CollectionIds": {
+        "collection_ids": {
           "type": "array",
           "items": {
             "type": "integer",
             "format": "int64"
           }
         },
-        "ProductId": {
+        "product_id": {
           "type": "integer",
           "format": "int64"
         }
@@ -7971,13 +7971,13 @@
     "zkAdjustInventoryQuantityRequest": {
       "type": "object",
       "properties": {
-        "InventoryVariants": {
+        "inventory_variants": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/zkInventoryVariant"
           }
         },
-        "Note": {
+        "note": {
           "type": "string"
         }
       }
@@ -7985,13 +7985,13 @@
     "zkAdjustInventoryQuantityResponse": {
       "type": "object",
       "properties": {
-        "InventoryVariants": {
+        "inventory_variants": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/zkInventoryVariant"
           }
         },
-        "InventoryVouchers": {
+        "inventory_vouchers": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/zkInventoryVoucher"
@@ -8002,10 +8002,10 @@
     "zkAttribute": {
       "type": "object",
       "properties": {
-        "Name": {
+        "name": {
           "type": "string"
         },
-        "Value": {
+        "value": {
           "type": "string"
         }
       }
@@ -8013,7 +8013,7 @@
     "zkAuthorizePartnerRequest": {
       "type": "object",
       "properties": {
-        "PartnerId": {
+        "partner_id": {
           "type": "integer",
           "format": "int64"
         }
@@ -8022,10 +8022,10 @@
     "zkAuthorizedPartnerResponse": {
       "type": "object",
       "properties": {
-        "Partner": {
+        "partner": {
           "$ref": "#/definitions/ocPublicAccountInfo"
         },
-        "RedirectUrl": {
+        "redirect_url": {
           "type": "string"
         }
       }
@@ -8033,25 +8033,25 @@
     "zkBrand": {
       "type": "object",
       "properties": {
-        "CreatedAt": {
+        "created_at": {
           "type": "string",
           "format": "date-time"
         },
-        "Description": {
+        "description": {
           "type": "string"
         },
-        "Id": {
+        "id": {
           "type": "integer",
           "format": "int64"
         },
-        "Name": {
+        "name": {
           "type": "string"
         },
-        "ShopId": {
+        "shop_id": {
           "type": "integer",
           "format": "int64"
         },
-        "UpdatedAt": {
+        "updated_at": {
           "type": "string",
           "format": "date-time"
         }
@@ -8060,7 +8060,7 @@
     "zkCalcBalanceShopResponse": {
       "type": "object",
       "properties": {
-        "Balance": {
+        "balance": {
           "type": "integer",
           "format": "int32"
         }
@@ -8069,11 +8069,11 @@
     "zkCancelInventoryVoucherRequest": {
       "type": "object",
       "properties": {
-        "Id": {
+        "id": {
           "type": "integer",
           "format": "int64"
         },
-        "Reason": {
+        "reason": {
           "type": "string"
         }
       }
@@ -8081,7 +8081,7 @@
     "zkCancelInventoryVoucherResponse": {
       "type": "object",
       "properties": {
-        "Inventory": {
+        "inventory": {
           "$ref": "#/definitions/zkInventoryVoucher"
         }
       }
@@ -8089,13 +8089,13 @@
     "zkCancelOrderRequest": {
       "type": "object",
       "properties": {
-        "AutoInventoryVoucher": {
+        "auto_inventory_voucher": {
           "type": "string"
         },
-        "CancelReason": {
+        "cancel_reason": {
           "type": "string"
         },
-        "OrderId": {
+        "order_id": {
           "type": "integer",
           "format": "int64"
         }
@@ -8104,11 +8104,11 @@
     "zkCancelPurchaseOrderRequest": {
       "type": "object",
       "properties": {
-        "Id": {
+        "id": {
           "type": "integer",
           "format": "int64"
         },
-        "Reason": {
+        "reason": {
           "type": "string"
         }
       }
@@ -8116,11 +8116,11 @@
     "zkCancelReceiptRequest": {
       "type": "object",
       "properties": {
-        "Id": {
+        "id": {
           "type": "integer",
           "format": "int64"
         },
-        "Reason": {
+        "reason": {
           "type": "string"
         }
       }
@@ -8128,10 +8128,10 @@
     "zkCancelStocktakeRequest": {
       "type": "object",
       "properties": {
-        "CancelReason": {
+        "cancel_reason": {
           "type": "string"
         },
-        "Id": {
+        "id": {
           "type": "integer",
           "format": "int64"
         }
@@ -8140,28 +8140,28 @@
     "zkCarrier": {
       "type": "object",
       "properties": {
-        "CreatedAt": {
+        "created_at": {
           "type": "string",
           "format": "date-time"
         },
-        "FullName": {
+        "full_name": {
           "type": "string"
         },
-        "Id": {
+        "id": {
           "type": "integer",
           "format": "int64"
         },
-        "Note": {
+        "note": {
           "type": "string"
         },
-        "ShopId": {
+        "shop_id": {
           "type": "integer",
           "format": "int64"
         },
-        "Status": {
+        "status": {
           "$ref": "#/definitions/wwStatus"
         },
-        "UpdatedAt": {
+        "updated_at": {
           "type": "string",
           "format": "date-time"
         }
@@ -8170,13 +8170,13 @@
     "zkCarriersResponse": {
       "type": "object",
       "properties": {
-        "Carriers": {
+        "carriers": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/zkCarrier"
           }
         },
-        "Paging": {
+        "paging": {
           "$ref": "#/definitions/maPageInfo"
         }
       }
@@ -8184,7 +8184,7 @@
     "zkCategoriesResponse": {
       "type": "object",
       "properties": {
-        "Categories": {
+        "categories": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/zkCategory"
@@ -8195,22 +8195,22 @@
     "zkCategory": {
       "type": "object",
       "properties": {
-        "Id": {
+        "id": {
           "type": "integer",
           "format": "int64"
         },
-        "Name": {
+        "name": {
           "type": "string"
         },
-        "ParentId": {
+        "parent_id": {
           "type": "integer",
           "format": "int64"
         },
-        "ProductSourceId": {
+        "product_source_id": {
           "type": "integer",
           "format": "int64"
         },
-        "ShopId": {
+        "shop_id": {
           "type": "integer",
           "format": "int64"
         }
@@ -8219,7 +8219,7 @@
     "zkCollectionsResponse": {
       "type": "object",
       "properties": {
-        "Collections": {
+        "collections": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/zkShopCollection"
@@ -8230,7 +8230,7 @@
     "zkConfirmInventoryVoucherRequest": {
       "type": "object",
       "properties": {
-        "Id": {
+        "id": {
           "type": "integer",
           "format": "int64"
         }
@@ -8239,7 +8239,7 @@
     "zkConfirmInventoryVoucherResponse": {
       "type": "object",
       "properties": {
-        "InventoryVoucher": {
+        "inventory_voucher": {
           "$ref": "#/definitions/zkInventoryVoucher"
         }
       }
@@ -8247,13 +8247,13 @@
     "zkConfirmOrderRequest": {
       "type": "object",
       "properties": {
-        "AutoCreateFulfillment": {
+        "auto_create_fulfillment": {
           "type": "boolean"
         },
-        "AutoInventoryVoucher": {
+        "auto_inventory_voucher": {
           "type": "string"
         },
-        "OrderId": {
+        "order_id": {
           "type": "integer",
           "format": "int64"
         }
@@ -8262,10 +8262,10 @@
     "zkConfirmPurchaseOrderRequest": {
       "type": "object",
       "properties": {
-        "AutoInventoryVoucher": {
+        "auto_inventory_voucher": {
           "type": "string"
         },
-        "Id": {
+        "id": {
           "type": "integer",
           "format": "int64"
         }
@@ -8274,10 +8274,10 @@
     "zkConfirmStocktakeRequest": {
       "type": "object",
       "properties": {
-        "AutoInventoryVoucher": {
+        "auto_inventory_voucher": {
           "type": "string"
         },
-        "Id": {
+        "id": {
           "type": "integer",
           "format": "int64"
         }
@@ -8286,10 +8286,10 @@
     "zkCreateBrandRequest": {
       "type": "object",
       "properties": {
-        "Description": {
+        "description": {
           "type": "string"
         },
-        "Name": {
+        "name": {
           "type": "string"
         }
       }
@@ -8297,10 +8297,10 @@
     "zkCreateCarrierRequest": {
       "type": "object",
       "properties": {
-        "FullName": {
+        "full_name": {
           "type": "string"
         },
-        "Note": {
+        "note": {
           "type": "string"
         }
       }
@@ -8308,10 +8308,10 @@
     "zkCreateCategoryRequest": {
       "type": "object",
       "properties": {
-        "Name": {
+        "name": {
           "type": "string"
         },
-        "ParentId": {
+        "parent_id": {
           "type": "integer",
           "format": "int64"
         }
@@ -8320,16 +8320,16 @@
     "zkCreateCollectionRequest": {
       "type": "object",
       "properties": {
-        "DescHtml": {
+        "desc_html": {
           "type": "string"
         },
-        "Description": {
+        "description": {
           "type": "string"
         },
-        "Name": {
+        "name": {
           "type": "string"
         },
-        "ShortDesc": {
+        "short_desc": {
           "type": "string"
         }
       }
@@ -8337,44 +8337,44 @@
     "zkCreateCustomerAddressRequest": {
       "type": "object",
       "properties": {
-        "Address1": {
+        "address1": {
           "type": "string"
         },
-        "Address2": {
+        "address2": {
           "type": "string"
         },
-        "Company": {
+        "company": {
           "type": "string"
         },
-        "Coordinates": {
+        "coordinates": {
           "$ref": "#/definitions/ocCoordinates"
         },
-        "Country": {
+        "country": {
           "type": "string"
         },
-        "CustomerId": {
+        "customer_id": {
           "type": "integer",
           "format": "int64"
         },
-        "DistrictCode": {
+        "district_code": {
           "type": "string"
         },
-        "Email": {
+        "email": {
           "type": "string"
         },
-        "FullName": {
+        "full_name": {
           "type": "string"
         },
-        "Phone": {
+        "phone": {
           "type": "string"
         },
-        "Position": {
+        "position": {
           "type": "string"
         },
-        "ProvinceCode": {
+        "province_code": {
           "type": "string"
         },
-        "WardCode": {
+        "ward_code": {
           "type": "string"
         }
       }
@@ -8382,7 +8382,7 @@
     "zkCreateCustomerGroupRequest": {
       "type": "object",
       "properties": {
-        "Name": {
+        "name": {
           "type": "string"
         }
       }
@@ -8390,25 +8390,25 @@
     "zkCreateCustomerRequest": {
       "type": "object",
       "properties": {
-        "Birthday": {
+        "birthday": {
           "type": "string"
         },
-        "Email": {
+        "email": {
           "type": "string"
         },
-        "FullName": {
+        "full_name": {
           "type": "string"
         },
-        "Gender": {
+        "gender": {
           "type": "string"
         },
-        "Note": {
+        "note": {
           "type": "string"
         },
-        "Phone": {
+        "phone": {
           "type": "string"
         },
-        "Type": {
+        "type": {
           "type": "string"
         }
       }
@@ -8416,14 +8416,14 @@
     "zkCreateInventoryVoucherRequest": {
       "type": "object",
       "properties": {
-        "RefId": {
+        "ref_id": {
           "type": "integer",
           "format": "int64"
         },
-        "RefType": {
+        "ref_type": {
           "type": "string"
         },
-        "Type": {
+        "type": {
           "type": "string"
         }
       }
@@ -8431,7 +8431,7 @@
     "zkCreateInventoryVoucherResponse": {
       "type": "object",
       "properties": {
-        "InventoryVouchers": {
+        "inventory_vouchers": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/zkInventoryVoucher"
@@ -8442,10 +8442,10 @@
     "zkCreateInvitationRequest": {
       "type": "object",
       "properties": {
-        "Email": {
+        "email": {
           "type": "string"
         },
-        "Roles": {
+        "roles": {
           "type": "array",
           "items": {
             "type": "string"
@@ -8456,16 +8456,16 @@
     "zkCreateLedgerRequest": {
       "type": "object",
       "properties": {
-        "BankAccount": {
+        "bank_account": {
           "$ref": "#/definitions/ocBankAccount"
         },
-        "CreatedBy": {
+        "created_by": {
           "type": "string"
         },
-        "Name": {
+        "name": {
           "type": "string"
         },
-        "Note": {
+        "note": {
           "type": "string"
         }
       }
@@ -8473,10 +8473,10 @@
     "zkCreatePSCategoryRequest": {
       "type": "object",
       "properties": {
-        "Name": {
+        "name": {
           "type": "string"
         },
-        "ParentId": {
+        "parent_id": {
           "type": "integer",
           "format": "int64"
         }
@@ -8485,56 +8485,56 @@
     "zkCreateProductRequest": {
       "type": "object",
       "properties": {
-        "BrandId": {
+        "brand_id": {
           "type": "integer",
           "format": "int64"
         },
-        "Code": {
+        "code": {
           "type": "string"
         },
-        "CostPrice": {
+        "cost_price": {
           "type": "integer",
           "format": "int32"
         },
-        "DescHtml": {
+        "desc_html": {
           "type": "string"
         },
-        "Description": {
+        "description": {
           "type": "string"
         },
-        "ImageUrls": {
+        "image_urls": {
           "type": "array",
           "items": {
             "type": "string"
           }
         },
-        "ListPrice": {
+        "list_price": {
           "type": "integer",
           "format": "int32"
         },
-        "MetaFields": {
+        "meta_fields": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/maMetaField"
           }
         },
-        "Name": {
+        "name": {
           "type": "string"
         },
-        "Note": {
+        "note": {
           "type": "string"
         },
-        "ProductType": {
+        "product_type": {
           "$ref": "#/definitions/tuProductType"
         },
-        "RetailPrice": {
+        "retail_price": {
           "type": "integer",
           "format": "int32"
         },
-        "ShortDesc": {
+        "short_desc": {
           "type": "string"
         },
-        "Unit": {
+        "unit": {
           "type": "string"
         }
       }
@@ -8545,28 +8545,28 @@
     "zkCreatePurchaseOrderRequest": {
       "type": "object",
       "properties": {
-        "BasketValue": {
+        "basket_value": {
           "type": "integer",
           "format": "int64"
         },
-        "Lines": {
+        "lines": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/zkPurchaseOrderLine"
           }
         },
-        "Note": {
+        "note": {
           "type": "string"
         },
-        "SupplierId": {
+        "supplier_id": {
           "type": "integer",
           "format": "int64"
         },
-        "TotalAmount": {
+        "total_amount": {
           "type": "integer",
           "format": "int64"
         },
-        "TotalDiscount": {
+        "total_discount": {
           "type": "integer",
           "format": "int64"
         }
@@ -8575,38 +8575,38 @@
     "zkCreateReceiptRequest": {
       "type": "object",
       "properties": {
-        "Amount": {
+        "amount": {
           "type": "integer",
           "format": "int32"
         },
-        "Description": {
+        "description": {
           "type": "string"
         },
-        "LedgerId": {
+        "ledger_id": {
           "type": "integer",
           "format": "int64"
         },
-        "Lines": {
+        "lines": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/zkReceiptLine"
           }
         },
-        "PaidAt": {
+        "paid_at": {
           "type": "string",
           "format": "date-time"
         },
-        "RefType": {
+        "ref_type": {
           "type": "string"
         },
-        "Title": {
+        "title": {
           "type": "string"
         },
-        "TraderId": {
+        "trader_id": {
           "type": "integer",
           "format": "int64"
         },
-        "Type": {
+        "type": {
           "type": "string"
         }
       }
@@ -8614,16 +8614,16 @@
     "zkCreateStocktakeRequest": {
       "type": "object",
       "properties": {
-        "Lines": {
+        "lines": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/zkStocktakeLine"
           }
         },
-        "Note": {
+        "note": {
           "type": "string"
         },
-        "TotalQuantity": {
+        "total_quantity": {
           "type": "integer",
           "format": "int32"
         }
@@ -8632,25 +8632,25 @@
     "zkCreateSupplierRequest": {
       "type": "object",
       "properties": {
-        "CompanyName": {
+        "company_name": {
           "type": "string"
         },
-        "Email": {
+        "email": {
           "type": "string"
         },
-        "FullName": {
+        "full_name": {
           "type": "string"
         },
-        "HeadquaterAddress": {
+        "headquater_address": {
           "type": "string"
         },
-        "Note": {
+        "note": {
           "type": "string"
         },
-        "Phone": {
+        "phone": {
           "type": "string"
         },
-        "TaxNumber": {
+        "tax_number": {
           "type": "string"
         }
       }
@@ -8658,50 +8658,50 @@
     "zkCreateVariantRequest": {
       "type": "object",
       "properties": {
-        "Attributes": {
+        "attributes": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/zkAttribute"
           }
         },
-        "Code": {
+        "code": {
           "type": "string"
         },
-        "CostPrice": {
+        "cost_price": {
           "type": "integer",
           "format": "int32"
         },
-        "DescHtml": {
+        "desc_html": {
           "type": "string"
         },
-        "Description": {
+        "description": {
           "type": "string"
         },
-        "ImageUrls": {
+        "image_urls": {
           "type": "array",
           "items": {
             "type": "string"
           }
         },
-        "ListPrice": {
+        "list_price": {
           "type": "integer",
           "format": "int32"
         },
-        "Name": {
+        "name": {
           "type": "string"
         },
-        "Note": {
+        "note": {
           "type": "string"
         },
-        "ProductId": {
+        "product_id": {
           "type": "integer",
           "format": "int64"
         },
-        "RetailPrice": {
+        "retail_price": {
           "type": "integer",
           "format": "int32"
         },
-        "ShortDesc": {
+        "short_desc": {
           "type": "string"
         }
       }
@@ -8709,56 +8709,56 @@
     "zkCustomer": {
       "type": "object",
       "properties": {
-        "Birthday": {
+        "birthday": {
           "type": "string"
         },
-        "Code": {
+        "code": {
           "type": "string"
         },
-        "CreatedAt": {
+        "created_at": {
           "type": "string",
           "format": "date-time"
         },
-        "Email": {
+        "email": {
           "type": "string"
         },
-        "FullName": {
+        "full_name": {
           "type": "string"
         },
-        "Gender": {
+        "gender": {
           "type": "string"
         },
-        "GroupIds": {
+        "group_ids": {
           "type": "array",
           "items": {
             "type": "integer",
             "format": "int64"
           }
         },
-        "Id": {
+        "id": {
           "type": "integer",
           "format": "int64"
         },
-        "Liability": {
+        "liability": {
           "$ref": "#/definitions/zkCustomerLiability"
         },
-        "Note": {
+        "note": {
           "type": "string"
         },
-        "Phone": {
+        "phone": {
           "type": "string"
         },
-        "ShopId": {
+        "shop_id": {
           "type": "integer",
           "format": "int64"
         },
-        "Status": {
+        "status": {
           "$ref": "#/definitions/wwStatus"
         },
-        "Type": {
+        "type": {
           "type": "string"
         },
-        "UpdatedAt": {
+        "updated_at": {
           "type": "string",
           "format": "date-time"
         }
@@ -8767,53 +8767,53 @@
     "zkCustomerAddress": {
       "type": "object",
       "properties": {
-        "Address1": {
+        "address1": {
           "type": "string"
         },
-        "Address2": {
+        "address2": {
           "type": "string"
         },
-        "Company": {
+        "company": {
           "type": "string"
         },
-        "Coordinates": {
+        "coordinates": {
           "$ref": "#/definitions/ocCoordinates"
         },
-        "Country": {
+        "country": {
           "type": "string"
         },
-        "District": {
+        "district": {
           "type": "string"
         },
-        "DistrictCode": {
+        "district_code": {
           "type": "string"
         },
-        "Email": {
+        "email": {
           "type": "string"
         },
-        "FullName": {
+        "full_name": {
           "type": "string"
         },
-        "Id": {
+        "id": {
           "type": "integer",
           "format": "int64"
         },
-        "Phone": {
+        "phone": {
           "type": "string"
         },
-        "Position": {
+        "position": {
           "type": "string"
         },
-        "Province": {
+        "province": {
           "type": "string"
         },
-        "ProvinceCode": {
+        "province_code": {
           "type": "string"
         },
-        "Ward": {
+        "ward": {
           "type": "string"
         },
-        "WardCode": {
+        "ward_code": {
           "type": "string"
         }
       }
@@ -8821,7 +8821,7 @@
     "zkCustomerAddressesResponse": {
       "type": "object",
       "properties": {
-        "Addresses": {
+        "addresses": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/zkCustomerAddress"
@@ -8832,10 +8832,10 @@
     "zkCustomerDetailsResponse": {
       "type": "object",
       "properties": {
-        "Customer": {
+        "customer": {
           "$ref": "#/definitions/zkCustomer"
         },
-        "SummaryItems": {
+        "summary_items": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/zkIndependentSummaryItem"
@@ -8846,11 +8846,11 @@
     "zkCustomerGroup": {
       "type": "object",
       "properties": {
-        "Id": {
+        "id": {
           "type": "integer",
           "format": "int64"
         },
-        "Name": {
+        "name": {
           "type": "string"
         }
       }
@@ -8858,13 +8858,13 @@
     "zkCustomerGroupsResponse": {
       "type": "object",
       "properties": {
-        "CustomerGroups": {
+        "customer_groups": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/zkCustomerGroup"
           }
         },
-        "Paging": {
+        "paging": {
           "$ref": "#/definitions/maPageInfo"
         }
       }
@@ -8872,19 +8872,19 @@
     "zkCustomerLiability": {
       "type": "object",
       "properties": {
-        "Liability": {
+        "liability": {
           "type": "integer",
           "format": "int64"
         },
-        "ReceivedAmount": {
+        "received_amount": {
           "type": "integer",
           "format": "int64"
         },
-        "TotalAmount": {
+        "total_amount": {
           "type": "integer",
           "format": "int64"
         },
-        "TotalOrders": {
+        "total_orders": {
           "type": "integer",
           "format": "int32"
         }
@@ -8893,13 +8893,13 @@
     "zkCustomersResponse": {
       "type": "object",
       "properties": {
-        "Customers": {
+        "customers": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/zkCustomer"
           }
         },
-        "Paging": {
+        "paging": {
           "$ref": "#/definitions/maPageInfo"
         }
       }
@@ -8907,7 +8907,7 @@
     "zkDeleteBrandResponse": {
       "type": "object",
       "properties": {
-        "Count": {
+        "count": {
           "type": "integer",
           "format": "int32"
         }
@@ -8916,81 +8916,81 @@
     "zkDeprecatedCreateVariantRequest": {
       "type": "object",
       "properties": {
-        "Attributes": {
+        "attributes": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/zkAttribute"
           }
         },
-        "Code": {
+        "code": {
           "type": "string"
         },
-        "CostPrice": {
+        "cost_price": {
           "type": "integer",
           "format": "int32"
         },
-        "DescHtml": {
+        "desc_html": {
           "type": "string"
         },
-        "Description": {
+        "description": {
           "type": "string"
         },
-        "ImageUrls": {
+        "image_urls": {
           "type": "array",
           "items": {
             "type": "string"
           }
         },
-        "ListPrice": {
+        "list_price": {
           "type": "integer",
           "format": "int32"
         },
-        "Name": {
+        "name": {
           "type": "string"
         },
-        "ProductId": {
+        "product_id": {
           "type": "integer",
           "format": "int64"
         },
-        "ProductName": {
+        "product_name": {
           "type": "string"
         },
-        "ProductSourceId": {
+        "product_source_id": {
           "type": "integer",
           "format": "int64"
         },
-        "QuantityAvailable": {
+        "quantity_available": {
           "type": "integer",
           "format": "int32"
         },
-        "QuantityOnHand": {
+        "quantity_on_hand": {
           "type": "integer",
           "format": "int32"
         },
-        "QuantityReserved": {
+        "quantity_reserved": {
           "type": "integer",
           "format": "int32"
         },
-        "RetailPrice": {
+        "retail_price": {
           "type": "integer",
           "format": "int32"
         },
-        "ShortDesc": {
+        "short_desc": {
           "type": "string"
         },
-        "Sku": {
+        "sku": {
           "type": "string"
         },
-        "Status": {
+        "status": {
           "$ref": "#/definitions/wwStatus"
         },
-        "Tags": {
+        "tags": {
           "type": "array",
           "items": {
             "type": "string"
           }
         },
-        "Unit": {
+        "unit": {
           "type": "string"
         }
       }
@@ -8998,48 +8998,48 @@
     "zkEtopProduct": {
       "type": "object",
       "properties": {
-        "CategoryId": {
+        "category_id": {
           "type": "integer",
           "format": "int64"
         },
-        "Code": {
+        "code": {
           "type": "string"
         },
-        "CostPrice": {
+        "cost_price": {
           "type": "integer",
           "format": "int32"
         },
-        "DescHtml": {
+        "desc_html": {
           "type": "string"
         },
-        "Description": {
+        "description": {
           "type": "string"
         },
-        "Id": {
+        "id": {
           "type": "integer",
           "format": "int64"
         },
-        "ImageUrls": {
+        "image_urls": {
           "type": "array",
           "items": {
             "type": "string"
           }
         },
-        "ListPrice": {
+        "list_price": {
           "type": "integer",
           "format": "int32"
         },
-        "Name": {
+        "name": {
           "type": "string"
         },
-        "ProductSourceCategoryId": {
+        "product_source_category_id": {
           "type": "integer",
           "format": "int64"
         },
-        "ShortDesc": {
+        "short_desc": {
           "type": "string"
         },
-        "Unit": {
+        "unit": {
           "type": "string"
         }
       }
@@ -9047,43 +9047,43 @@
     "zkEtopVariant": {
       "type": "object",
       "properties": {
-        "Attributes": {
+        "attributes": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/zkAttribute"
           }
         },
-        "Code": {
+        "code": {
           "type": "string"
         },
-        "CostPrice": {
+        "cost_price": {
           "type": "integer",
           "format": "int32"
         },
-        "DescHtml": {
+        "desc_html": {
           "type": "string"
         },
-        "Description": {
+        "description": {
           "type": "string"
         },
-        "Id": {
+        "id": {
           "type": "integer",
           "format": "int64"
         },
-        "ImageUrls": {
+        "image_urls": {
           "type": "array",
           "items": {
             "type": "string"
           }
         },
-        "ListPrice": {
+        "list_price": {
           "type": "integer",
           "format": "int32"
         },
-        "Name": {
+        "name": {
           "type": "string"
         },
-        "ShortDesc": {
+        "short_desc": {
           "type": "string"
         }
       }
@@ -9091,49 +9091,49 @@
     "zkExportItem": {
       "type": "object",
       "properties": {
-        "AccountId": {
+        "account_id": {
           "type": "integer",
           "format": "int64"
         },
-        "CreatedAt": {
+        "created_at": {
           "type": "string",
           "format": "date-time"
         },
-        "DeletedAt": {
+        "deleted_at": {
           "type": "string",
           "format": "date-time"
         },
-        "DownloadUrl": {
+        "download_url": {
           "type": "string"
         },
-        "Error": {
+        "error": {
           "$ref": "#/definitions/maError"
         },
-        "ExportErrors": {
+        "export_errors": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/maError"
           }
         },
-        "ExportType": {
+        "export_type": {
           "type": "string"
         },
-        "Filename": {
+        "filename": {
           "type": "string"
         },
-        "Id": {
+        "id": {
           "type": "string"
         },
-        "MimeType": {
+        "mime_type": {
           "type": "string"
         },
-        "RequestQuery": {
+        "request_query": {
           "type": "string"
         },
-        "Status": {
+        "status": {
           "$ref": "#/definitions/wxStatus"
         },
-        "UserId": {
+        "user_id": {
           "type": "integer",
           "format": "int64"
         }
@@ -9142,67 +9142,67 @@
     "zkExternalAccountAhamove": {
       "type": "object",
       "properties": {
-        "BusinessLicenseImgs": {
+        "business_license_imgs": {
           "type": "array",
           "items": {
             "type": "string"
           }
         },
-        "CompanyImgs": {
+        "company_imgs": {
           "type": "array",
           "items": {
             "type": "string"
           }
         },
-        "CreatedAt": {
+        "created_at": {
           "type": "string",
           "format": "date-time"
         },
-        "ExternalCreatedAt": {
+        "external_created_at": {
           "type": "string",
           "format": "date-time"
         },
-        "ExternalTicketId": {
+        "external_ticket_id": {
           "type": "string"
         },
-        "ExternalVerified": {
+        "external_verified": {
           "type": "boolean"
         },
-        "FanpageUrl": {
+        "fanpage_url": {
           "type": "string"
         },
-        "Id": {
+        "id": {
           "type": "integer",
           "format": "int64"
         },
-        "IdCardBackImg": {
+        "id_card_back_img": {
           "type": "string"
         },
-        "IdCardFrontImg": {
+        "id_card_front_img": {
           "type": "string"
         },
-        "LastSendVerifyAt": {
+        "last_send_verify_at": {
           "type": "string",
           "format": "date-time"
         },
-        "Name": {
+        "name": {
           "type": "string"
         },
-        "Phone": {
+        "phone": {
           "type": "string"
         },
-        "PortraitImg": {
+        "portrait_img": {
           "type": "string"
         },
-        "UpdatedAt": {
+        "updated_at": {
           "type": "string",
           "format": "date-time"
         },
-        "UploadedAt": {
+        "uploaded_at": {
           "type": "string",
           "format": "date-time"
         },
-        "WebsiteUrl": {
+        "website_url": {
           "type": "string"
         }
       }
@@ -9210,34 +9210,34 @@
     "zkExternalAccountHaravan": {
       "type": "object",
       "properties": {
-        "CreatedAt": {
+        "created_at": {
           "type": "string",
           "format": "date-time"
         },
-        "ExpiresAt": {
+        "expires_at": {
           "type": "string",
           "format": "date-time"
         },
-        "ExternalCarrierServiceId": {
+        "external_carrier_service_id": {
           "type": "integer",
           "format": "int32"
         },
-        "ExternalConnectedCarrierServiceAt": {
+        "external_connected_carrier_service_at": {
           "type": "string",
           "format": "date-time"
         },
-        "Id": {
+        "id": {
           "type": "integer",
           "format": "int64"
         },
-        "ShopId": {
+        "shop_id": {
           "type": "integer",
           "format": "int64"
         },
-        "Subdomain": {
+        "subdomain": {
           "type": "string"
         },
-        "UpdatedAt": {
+        "updated_at": {
           "type": "string",
           "format": "date-time"
         }
@@ -9246,13 +9246,13 @@
     "zkExternalAccountHaravanRequest": {
       "type": "object",
       "properties": {
-        "Code": {
+        "code": {
           "type": "string"
         },
-        "RedirectUri": {
+        "redirect_uri": {
           "type": "string"
         },
-        "Subdomain": {
+        "subdomain": {
           "type": "string"
         }
       }
@@ -9260,7 +9260,7 @@
     "zkGetAuthorizedPartnersResponse": {
       "type": "object",
       "properties": {
-        "Partners": {
+        "partners": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/zkAuthorizedPartnerResponse"
@@ -9271,7 +9271,7 @@
     "zkGetBalanceShopResponse": {
       "type": "object",
       "properties": {
-        "Amount": {
+        "amount": {
           "type": "integer",
           "format": "int32"
         }
@@ -9280,7 +9280,7 @@
     "zkGetBrandsByIDsResponse": {
       "type": "object",
       "properties": {
-        "Brands": {
+        "brands": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/zkBrand"
@@ -9291,7 +9291,7 @@
     "zkGetBrandsRequest": {
       "type": "object",
       "properties": {
-        "Paging": {
+        "paging": {
           "$ref": "#/definitions/maPaging"
         }
       }
@@ -9299,13 +9299,13 @@
     "zkGetBrandsResponse": {
       "type": "object",
       "properties": {
-        "Brands": {
+        "brands": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/zkBrand"
           }
         },
-        "Paging": {
+        "paging": {
           "$ref": "#/definitions/maPageInfo"
         }
       }
@@ -9313,13 +9313,13 @@
     "zkGetCarriersRequest": {
       "type": "object",
       "properties": {
-        "Filters": {
+        "filters": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/maFilter"
           }
         },
-        "Paging": {
+        "paging": {
           "$ref": "#/definitions/maPaging"
         }
       }
@@ -9327,13 +9327,13 @@
     "zkGetCategoriesRequest": {
       "type": "object",
       "properties": {
-        "Filters": {
+        "filters": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/maFilter"
           }
         },
-        "Paging": {
+        "paging": {
           "$ref": "#/definitions/maPaging"
         }
       }
@@ -9341,13 +9341,13 @@
     "zkGetCollectionsRequest": {
       "type": "object",
       "properties": {
-        "Filters": {
+        "filters": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/maFilter"
           }
         },
-        "Paging": {
+        "paging": {
           "$ref": "#/definitions/maPaging"
         }
       }
@@ -9355,7 +9355,7 @@
     "zkGetCustomerAddressesRequest": {
       "type": "object",
       "properties": {
-        "CustomerId": {
+        "customer_id": {
           "type": "integer",
           "format": "int64"
         }
@@ -9364,13 +9364,13 @@
     "zkGetCustomerGroupsRequest": {
       "type": "object",
       "properties": {
-        "Filters": {
+        "filters": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/maFilter"
           }
         },
-        "Paging": {
+        "paging": {
           "$ref": "#/definitions/maPaging"
         }
       }
@@ -9378,13 +9378,13 @@
     "zkGetCustomersRequest": {
       "type": "object",
       "properties": {
-        "Filters": {
+        "filters": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/maFilter"
           }
         },
-        "Paging": {
+        "paging": {
           "$ref": "#/definitions/maPaging"
         }
       }
@@ -9395,7 +9395,7 @@
     "zkGetExportsResponse": {
       "type": "object",
       "properties": {
-        "ExportItems": {
+        "export_items": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/zkExportItem"
@@ -9406,18 +9406,18 @@
     "zkGetFulfillmentHistoryRequest": {
       "type": "object",
       "properties": {
-        "All": {
+        "all": {
           "type": "boolean"
         },
-        "Id": {
+        "id": {
           "type": "integer",
           "format": "int64"
         },
-        "OrderId": {
+        "order_id": {
           "type": "integer",
           "format": "int64"
         },
-        "Paging": {
+        "paging": {
           "$ref": "#/definitions/maPaging"
         }
       }
@@ -9425,23 +9425,23 @@
     "zkGetFulfillmentsRequest": {
       "type": "object",
       "properties": {
-        "Filters": {
+        "filters": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/maFilter"
           }
         },
-        "Mixed": {
+        "mixed": {
           "$ref": "#/definitions/ocMixedAccount"
         },
-        "OrderId": {
+        "order_id": {
           "type": "integer",
           "format": "int64"
         },
-        "Paging": {
+        "paging": {
           "$ref": "#/definitions/maPaging"
         },
-        "Status": {
+        "status": {
           "$ref": "#/definitions/wwStatus"
         }
       }
@@ -9449,7 +9449,7 @@
     "zkGetInventoryVariantRequest": {
       "type": "object",
       "properties": {
-        "VariantId": {
+        "variant_id": {
           "type": "integer",
           "format": "int64"
         }
@@ -9458,7 +9458,7 @@
     "zkGetInventoryVariantsByVariantIDsRequest": {
       "type": "object",
       "properties": {
-        "VariantIds": {
+        "variant_ids": {
           "type": "array",
           "items": {
             "type": "integer",
@@ -9470,7 +9470,7 @@
     "zkGetInventoryVariantsRequest": {
       "type": "object",
       "properties": {
-        "Paging": {
+        "paging": {
           "$ref": "#/definitions/maPaging"
         }
       }
@@ -9478,7 +9478,7 @@
     "zkGetInventoryVariantsResponse": {
       "type": "object",
       "properties": {
-        "InventoryVariants": {
+        "inventory_variants": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/zkInventoryVariant"
@@ -9489,7 +9489,7 @@
     "zkGetInventoryVouchersByIDsRequest": {
       "type": "object",
       "properties": {
-        "Ids": {
+        "ids": {
           "type": "array",
           "items": {
             "type": "integer",
@@ -9501,11 +9501,11 @@
     "zkGetInventoryVouchersByReferenceRequest": {
       "type": "object",
       "properties": {
-        "RefId": {
+        "ref_id": {
           "type": "integer",
           "format": "int64"
         },
-        "RefType": {
+        "ref_type": {
           "type": "string"
         }
       }
@@ -9513,7 +9513,7 @@
     "zkGetInventoryVouchersByReferenceResponse": {
       "type": "object",
       "properties": {
-        "InventoryVouchers": {
+        "inventory_vouchers": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/zkInventoryVoucher"
@@ -9524,13 +9524,13 @@
     "zkGetInventoryVouchersRequest": {
       "type": "object",
       "properties": {
-        "Filters": {
+        "filters": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/maFilter"
           }
         },
-        "Paging": {
+        "paging": {
           "$ref": "#/definitions/maPaging"
         }
       }
@@ -9538,7 +9538,7 @@
     "zkGetInventoryVouchersResponse": {
       "type": "object",
       "properties": {
-        "InventoryVouchers": {
+        "inventory_vouchers": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/zkInventoryVoucher"
@@ -9549,13 +9549,13 @@
     "zkGetInvitationsRequest": {
       "type": "object",
       "properties": {
-        "Filters": {
+        "filters": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/maFilter"
           }
         },
-        "Paging": {
+        "paging": {
           "$ref": "#/definitions/maPaging"
         }
       }
@@ -9563,13 +9563,13 @@
     "zkGetLedgersRequest": {
       "type": "object",
       "properties": {
-        "Filters": {
+        "filters": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/maFilter"
           }
         },
-        "Paging": {
+        "paging": {
           "$ref": "#/definitions/maPaging"
         }
       }
@@ -9577,13 +9577,13 @@
     "zkGetMoneyTransactionsRequest": {
       "type": "object",
       "properties": {
-        "Filters": {
+        "filters": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/maFilter"
           }
         },
-        "Paging": {
+        "paging": {
           "$ref": "#/definitions/maPaging"
         }
       }
@@ -9591,7 +9591,7 @@
     "zkGetOrdersByReceiptIDRequest": {
       "type": "object",
       "properties": {
-        "ReceiptId": {
+        "receipt_id": {
           "type": "integer",
           "format": "int64"
         }
@@ -9600,16 +9600,16 @@
     "zkGetOrdersRequest": {
       "type": "object",
       "properties": {
-        "Filters": {
+        "filters": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/maFilter"
           }
         },
-        "Mixed": {
+        "mixed": {
           "$ref": "#/definitions/ocMixedAccount"
         },
-        "Paging": {
+        "paging": {
           "$ref": "#/definitions/maPaging"
         }
       }
@@ -9617,7 +9617,7 @@
     "zkGetPartnersResponse": {
       "type": "object",
       "properties": {
-        "Partners": {
+        "partners": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/ocPublicAccountInfo"
@@ -9631,7 +9631,7 @@
     "zkGetPublicFulfillmentRequest": {
       "type": "object",
       "properties": {
-        "Code": {
+        "code": {
           "type": "string"
         }
       }
@@ -9639,13 +9639,13 @@
     "zkGetPurchaseOrdersRequest": {
       "type": "object",
       "properties": {
-        "Filters": {
+        "filters": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/maFilter"
           }
         },
-        "Paging": {
+        "paging": {
           "$ref": "#/definitions/maPaging"
         }
       }
@@ -9653,16 +9653,16 @@
     "zkGetReceiptsByLedgerTypeRequest": {
       "type": "object",
       "properties": {
-        "Filters": {
+        "filters": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/maFilter"
           }
         },
-        "Paging": {
+        "paging": {
           "$ref": "#/definitions/maPaging"
         },
-        "Type": {
+        "type": {
           "type": "string"
         }
       }
@@ -9670,13 +9670,13 @@
     "zkGetReceiptsRequest": {
       "type": "object",
       "properties": {
-        "Filters": {
+        "filters": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/maFilter"
           }
         },
-        "Paging": {
+        "paging": {
           "$ref": "#/definitions/maPaging"
         }
       }
@@ -9684,7 +9684,7 @@
     "zkGetShopCollectionsByProductIDRequest": {
       "type": "object",
       "properties": {
-        "ProductId": {
+        "product_id": {
           "type": "integer",
           "format": "int64"
         }
@@ -9693,7 +9693,7 @@
     "zkGetStocktakesByIDsResponse": {
       "type": "object",
       "properties": {
-        "Stocktakes": {
+        "stocktakes": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/zkStocktake"
@@ -9704,13 +9704,13 @@
     "zkGetStocktakesRequest": {
       "type": "object",
       "properties": {
-        "Filters": {
+        "filters": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/maFilter"
           }
         },
-        "Paging": {
+        "paging": {
           "$ref": "#/definitions/maPaging"
         }
       }
@@ -9718,10 +9718,10 @@
     "zkGetStocktakesResponse": {
       "type": "object",
       "properties": {
-        "Paging": {
+        "paging": {
           "$ref": "#/definitions/maPageInfo"
         },
-        "Stocktakes": {
+        "stocktakes": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/zkStocktake"
@@ -9732,7 +9732,7 @@
     "zkGetSuppliersByVariantIDRequest": {
       "type": "object",
       "properties": {
-        "VariantId": {
+        "variant_id": {
           "type": "integer",
           "format": "int64"
         }
@@ -9741,13 +9741,13 @@
     "zkGetSuppliersRequest": {
       "type": "object",
       "properties": {
-        "Filters": {
+        "filters": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/maFilter"
           }
         },
-        "Paging": {
+        "paging": {
           "$ref": "#/definitions/maPaging"
         }
       }
@@ -9755,7 +9755,7 @@
     "zkGetVariantsBySupplierIDRequest": {
       "type": "object",
       "properties": {
-        "SupplierId": {
+        "supplier_id": {
           "type": "integer",
           "format": "int64"
         }
@@ -9764,13 +9764,13 @@
     "zkGetVariantsRequest": {
       "type": "object",
       "properties": {
-        "Filters": {
+        "filters": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/maFilter"
           }
         },
-        "Paging": {
+        "paging": {
           "$ref": "#/definitions/maPaging"
         }
       }
@@ -9778,19 +9778,19 @@
     "zkIndependentSummaryItem": {
       "type": "object",
       "properties": {
-        "Label": {
+        "label": {
           "type": "string"
         },
-        "Name": {
+        "name": {
           "type": "string"
         },
-        "Spec": {
+        "spec": {
           "type": "string"
         },
-        "Unit": {
+        "unit": {
           "type": "string"
         },
-        "Value": {
+        "value": {
           "type": "integer",
           "format": "int32"
         }
@@ -9799,35 +9799,35 @@
     "zkInventoryVariant": {
       "type": "object",
       "properties": {
-        "CostPrice": {
+        "cost_price": {
           "type": "integer",
           "format": "int32"
         },
-        "CreatedAt": {
+        "created_at": {
           "type": "string",
           "format": "date-time"
         },
-        "Quantity": {
+        "quantity": {
           "type": "integer",
           "format": "int32"
         },
-        "QuantityOnHand": {
+        "quantity_on_hand": {
           "type": "integer",
           "format": "int32"
         },
-        "QuantityPicked": {
+        "quantity_picked": {
           "type": "integer",
           "format": "int32"
         },
-        "ShopId": {
+        "shop_id": {
           "type": "integer",
           "format": "int64"
         },
-        "UpdatedAt": {
+        "updated_at": {
           "type": "string",
           "format": "date-time"
         },
-        "VariantId": {
+        "variant_id": {
           "type": "integer",
           "format": "int64"
         }
@@ -9836,19 +9836,19 @@
     "zkInventoryVariantShopVariant": {
       "type": "object",
       "properties": {
-        "CostPrice": {
+        "cost_price": {
           "type": "integer",
           "format": "int32"
         },
-        "Quantity": {
+        "quantity": {
           "type": "integer",
           "format": "int32"
         },
-        "QuantityOnHand": {
+        "quantity_on_hand": {
           "type": "integer",
           "format": "int32"
         },
-        "QuantityPicked": {
+        "quantity_picked": {
           "type": "integer",
           "format": "int32"
         }
@@ -9857,83 +9857,83 @@
     "zkInventoryVoucher": {
       "type": "object",
       "properties": {
-        "CancelReason": {
+        "cancel_reason": {
           "type": "string"
         },
-        "CancelledAt": {
+        "cancelled_at": {
           "type": "string",
           "format": "date-time"
         },
-        "Code": {
+        "code": {
           "type": "string"
         },
-        "ConfirmedAt": {
+        "confirmed_at": {
           "type": "string",
           "format": "date-time"
         },
-        "CreatedAt": {
+        "created_at": {
           "type": "string",
           "format": "date-time"
         },
-        "CreatedBy": {
+        "created_by": {
           "type": "integer",
           "format": "int64"
         },
-        "Id": {
+        "id": {
           "type": "integer",
           "format": "int64"
         },
-        "Lines": {
+        "lines": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/zkInventoryVoucherLine"
           }
         },
-        "Note": {
+        "note": {
           "type": "string"
         },
-        "RefCode": {
+        "ref_code": {
           "type": "string"
         },
-        "RefId": {
+        "ref_id": {
           "type": "integer",
           "format": "int64"
         },
-        "RefName": {
+        "ref_name": {
           "type": "string"
         },
-        "RefType": {
+        "ref_type": {
           "type": "string"
         },
-        "ShopId": {
+        "shop_id": {
           "type": "integer",
           "format": "int64"
         },
-        "Status": {
+        "status": {
           "$ref": "#/definitions/wwStatus"
         },
-        "Title": {
+        "title": {
           "type": "string"
         },
-        "TotalAmount": {
+        "total_amount": {
           "type": "integer",
           "format": "int32"
         },
-        "Trader": {
+        "trader": {
           "$ref": "#/definitions/zkTrader"
         },
-        "TraderId": {
+        "trader_id": {
           "type": "integer",
           "format": "int64"
         },
-        "Type": {
+        "type": {
           "type": "string"
         },
-        "UpdatedAt": {
+        "updated_at": {
           "type": "string",
           "format": "date-time"
         },
-        "UpdatedBy": {
+        "updated_by": {
           "type": "integer",
           "format": "int64"
         }
@@ -9942,38 +9942,38 @@
     "zkInventoryVoucherLine": {
       "type": "object",
       "properties": {
-        "Attributes": {
+        "attributes": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/zkAttribute"
           }
         },
-        "Code": {
+        "code": {
           "type": "string"
         },
-        "ImageUrl": {
+        "image_url": {
           "type": "string"
         },
-        "Price": {
+        "price": {
           "type": "integer",
           "format": "int32"
         },
-        "ProductId": {
+        "product_id": {
           "type": "integer",
           "format": "int64"
         },
-        "ProductName": {
+        "product_name": {
           "type": "string"
         },
-        "Quantity": {
+        "quantity": {
           "type": "integer",
           "format": "int32"
         },
-        "VariantId": {
+        "variant_id": {
           "type": "integer",
           "format": "int64"
         },
-        "VariantName": {
+        "variant_name": {
           "type": "string"
         }
       }
@@ -9981,13 +9981,13 @@
     "zkInvitationsResponse": {
       "type": "object",
       "properties": {
-        "Invitations": {
+        "invitations": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/ocInvitation"
           }
         },
-        "Paging": {
+        "paging": {
           "$ref": "#/definitions/maPageInfo"
         }
       }
@@ -9995,31 +9995,31 @@
     "zkLedger": {
       "type": "object",
       "properties": {
-        "BankAccount": {
+        "bank_account": {
           "$ref": "#/definitions/ocBankAccount"
         },
-        "CreatedAt": {
+        "created_at": {
           "type": "string",
           "format": "date-time"
         },
-        "CreatedBy": {
+        "created_by": {
           "type": "integer",
           "format": "int64"
         },
-        "Id": {
+        "id": {
           "type": "integer",
           "format": "int64"
         },
-        "Name": {
+        "name": {
           "type": "string"
         },
-        "Note": {
+        "note": {
           "type": "string"
         },
-        "Type": {
+        "type": {
           "type": "string"
         },
-        "UpdatedAt": {
+        "updated_at": {
           "type": "string",
           "format": "date-time"
         }
@@ -10028,13 +10028,13 @@
     "zkLedgersResponse": {
       "type": "object",
       "properties": {
-        "Ledgers": {
+        "ledgers": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/zkLedger"
           }
         },
-        "Paging": {
+        "paging": {
           "$ref": "#/definitions/maPageInfo"
         }
       }
@@ -10042,7 +10042,7 @@
     "zkOrderIDRequest": {
       "type": "object",
       "properties": {
-        "OrderId": {
+        "order_id": {
           "type": "integer",
           "format": "int64"
         }
@@ -10051,23 +10051,23 @@
     "zkPaymentCheckReturnDataRequest": {
       "type": "object",
       "properties": {
-        "Amount": {
+        "amount": {
           "type": "integer",
           "format": "int32"
         },
-        "Code": {
+        "code": {
           "type": "string"
         },
-        "ExternalTransactionId": {
+        "external_transaction_id": {
           "type": "string"
         },
-        "Id": {
+        "id": {
           "type": "string"
         },
-        "PaymentProvider": {
+        "payment_provider": {
           "$ref": "#/definitions/thPaymentProvider"
         },
-        "PaymentStatus": {
+        "payment_status": {
           "type": "string"
         }
       }
@@ -10075,21 +10075,21 @@
     "zkPaymentTradingOrderRequest": {
       "type": "object",
       "properties": {
-        "Amount": {
+        "amount": {
           "type": "integer",
           "format": "int32"
         },
-        "Desc": {
+        "desc": {
           "type": "string"
         },
-        "OrderId": {
+        "order_id": {
           "type": "integer",
           "format": "int64"
         },
-        "PaymentProvider": {
+        "payment_provider": {
           "$ref": "#/definitions/thPaymentProvider"
         },
-        "ReturnUrl": {
+        "return_url": {
           "type": "string"
         }
       }
@@ -10097,7 +10097,7 @@
     "zkPaymentTradingOrderResponse": {
       "type": "object",
       "properties": {
-        "Url": {
+        "url": {
           "type": "string"
         }
       }
@@ -10105,24 +10105,24 @@
     "zkProductSource": {
       "type": "object",
       "properties": {
-        "CreatedAt": {
+        "created_at": {
           "type": "string",
           "format": "date-time"
         },
-        "Id": {
+        "id": {
           "type": "integer",
           "format": "int64"
         },
-        "Name": {
+        "name": {
           "type": "string"
         },
-        "Status": {
+        "status": {
           "$ref": "#/definitions/wwStatus"
         },
-        "Type": {
+        "type": {
           "type": "string"
         },
-        "UpdatedAt": {
+        "updated_at": {
           "type": "string",
           "format": "date-time"
         }
@@ -10131,7 +10131,7 @@
     "zkProductSourcesResponse": {
       "type": "object",
       "properties": {
-        "ProductSources": {
+        "product_sources": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/zkProductSource"
@@ -10142,79 +10142,79 @@
     "zkPurchaseOrder": {
       "type": "object",
       "properties": {
-        "BasketValue": {
+        "basket_value": {
           "type": "integer",
           "format": "int64"
         },
-        "CancelledAt": {
+        "cancelled_at": {
           "type": "string",
           "format": "date-time"
         },
-        "CancelledReason": {
+        "cancelled_reason": {
           "type": "string"
         },
-        "Code": {
+        "code": {
           "type": "string"
         },
-        "ConfirmedAt": {
+        "confirmed_at": {
           "type": "string",
           "format": "date-time"
         },
-        "CreatedAt": {
+        "created_at": {
           "type": "string",
           "format": "date-time"
         },
-        "CreatedBy": {
+        "created_by": {
           "type": "integer",
           "format": "int64"
         },
-        "DeletedAt": {
+        "deleted_at": {
           "type": "string",
           "format": "date-time"
         },
-        "Id": {
+        "id": {
           "type": "integer",
           "format": "int64"
         },
-        "InventoryVoucher": {
+        "inventory_voucher": {
           "$ref": "#/definitions/zkInventoryVoucher"
         },
-        "Lines": {
+        "lines": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/zkPurchaseOrderLine"
           }
         },
-        "Note": {
+        "note": {
           "type": "string"
         },
-        "PaidAmount": {
+        "paid_amount": {
           "type": "integer",
           "format": "int64"
         },
-        "ShopId": {
+        "shop_id": {
           "type": "integer",
           "format": "int64"
         },
-        "Status": {
+        "status": {
           "$ref": "#/definitions/wwStatus"
         },
-        "Supplier": {
+        "supplier": {
           "$ref": "#/definitions/zkPurchaseOrderSupplier"
         },
-        "SupplierId": {
+        "supplier_id": {
           "type": "integer",
           "format": "int64"
         },
-        "TotalAmount": {
+        "total_amount": {
           "type": "integer",
           "format": "int64"
         },
-        "TotalDiscount": {
+        "total_discount": {
           "type": "integer",
           "format": "int64"
         },
-        "UpdatedAt": {
+        "updated_at": {
           "type": "string",
           "format": "date-time"
         }
@@ -10223,34 +10223,34 @@
     "zkPurchaseOrderLine": {
       "type": "object",
       "properties": {
-        "Attributes": {
+        "attributes": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/zkAttribute"
           }
         },
-        "Code": {
+        "code": {
           "type": "string"
         },
-        "ImageUrl": {
+        "image_url": {
           "type": "string"
         },
-        "PaymentPrice": {
+        "payment_price": {
           "type": "integer",
           "format": "int64"
         },
-        "ProductId": {
+        "product_id": {
           "type": "integer",
           "format": "int64"
         },
-        "ProductName": {
+        "product_name": {
           "type": "string"
         },
-        "Quantity": {
+        "quantity": {
           "type": "integer",
           "format": "int64"
         },
-        "VariantId": {
+        "variant_id": {
           "type": "integer",
           "format": "int64"
         }
@@ -10259,25 +10259,25 @@
     "zkPurchaseOrderSupplier": {
       "type": "object",
       "properties": {
-        "CompanyName": {
+        "company_name": {
           "type": "string"
         },
-        "Deleted": {
+        "deleted": {
           "type": "boolean"
         },
-        "Email": {
+        "email": {
           "type": "string"
         },
-        "FullName": {
+        "full_name": {
           "type": "string"
         },
-        "HeadquarterAddress": {
+        "headquarter_address": {
           "type": "string"
         },
-        "Phone": {
+        "phone": {
           "type": "string"
         },
-        "TaxNumber": {
+        "tax_number": {
           "type": "string"
         }
       }
@@ -10285,10 +10285,10 @@
     "zkPurchaseOrdersResponse": {
       "type": "object",
       "properties": {
-        "Paging": {
+        "paging": {
           "$ref": "#/definitions/maPageInfo"
         },
-        "PurchaseOrders": {
+        "purchase_orders": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/zkPurchaseOrder"
@@ -10299,87 +10299,87 @@
     "zkReceipt": {
       "type": "object",
       "properties": {
-        "Amount": {
+        "amount": {
           "type": "integer",
           "format": "int32"
         },
-        "CancelledAt": {
+        "cancelled_at": {
           "type": "string",
           "format": "date-time"
         },
-        "Code": {
+        "code": {
           "type": "string"
         },
-        "ConfirmedAt": {
+        "confirmed_at": {
           "type": "string",
           "format": "date-time"
         },
-        "CreatedAt": {
+        "created_at": {
           "type": "string",
           "format": "date-time"
         },
-        "CreatedBy": {
+        "created_by": {
           "type": "integer",
           "format": "int64"
         },
-        "CreatedType": {
+        "created_type": {
           "type": "string"
         },
-        "Description": {
+        "description": {
           "type": "string"
         },
-        "Id": {
+        "id": {
           "type": "integer",
           "format": "int64"
         },
-        "Ledger": {
+        "ledger": {
           "$ref": "#/definitions/zkLedger"
         },
-        "LedgerId": {
+        "ledger_id": {
           "type": "integer",
           "format": "int64"
         },
-        "Lines": {
+        "lines": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/zkReceiptLine"
           }
         },
-        "PaidAt": {
+        "paid_at": {
           "type": "string",
           "format": "date-time"
         },
-        "Reason": {
+        "reason": {
           "type": "string"
         },
-        "RefType": {
+        "ref_type": {
           "type": "string"
         },
-        "ShopId": {
+        "shop_id": {
           "type": "integer",
           "format": "int64"
         },
-        "Status": {
+        "status": {
           "$ref": "#/definitions/wwStatus"
         },
-        "Title": {
+        "title": {
           "type": "string"
         },
-        "Trader": {
+        "trader": {
           "$ref": "#/definitions/zkTrader"
         },
-        "TraderId": {
+        "trader_id": {
           "type": "integer",
           "format": "int64"
         },
-        "Type": {
+        "type": {
           "type": "string"
         },
-        "UpdatedAt": {
+        "updated_at": {
           "type": "string",
           "format": "date-time"
         },
-        "User": {
+        "user": {
           "$ref": "#/definitions/ocUser"
         }
       }
@@ -10387,15 +10387,15 @@
     "zkReceiptLine": {
       "type": "object",
       "properties": {
-        "Amount": {
+        "amount": {
           "type": "integer",
           "format": "int32"
         },
-        "RefId": {
+        "ref_id": {
           "type": "integer",
           "format": "int64"
         },
-        "Title": {
+        "title": {
           "type": "string"
         }
       }
@@ -10403,20 +10403,20 @@
     "zkReceiptsResponse": {
       "type": "object",
       "properties": {
-        "Paging": {
+        "paging": {
           "$ref": "#/definitions/maPageInfo"
         },
-        "Receipts": {
+        "receipts": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/zkReceipt"
           }
         },
-        "TotalAmountConfirmedPayment": {
+        "total_amount_confirmed_payment": {
           "type": "integer",
           "format": "int64"
         },
-        "TotalAmountConfirmedReceipt": {
+        "total_amount_confirmed_receipt": {
           "type": "integer",
           "format": "int64"
         }
@@ -10425,46 +10425,46 @@
     "zkRegisterShopRequest": {
       "type": "object",
       "properties": {
-        "Address": {
+        "address": {
           "$ref": "#/definitions/ocAddress"
         },
-        "BankAccount": {
+        "bank_account": {
           "$ref": "#/definitions/ocBankAccount"
         },
-        "CompanyInfo": {
+        "company_info": {
           "$ref": "#/definitions/ocCompanyInfo"
         },
-        "Email": {
+        "email": {
           "type": "string"
         },
-        "ImageUrl": {
+        "image_url": {
           "type": "string"
         },
-        "MoneyTransactionRrule": {
+        "money_transaction_rrule": {
           "type": "string"
         },
-        "Name": {
+        "name": {
           "type": "string"
         },
-        "Phone": {
+        "phone": {
           "type": "string"
         },
-        "ShippingServiceSelectStrategy": {
+        "shipping_service_select_strategy": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/ocShippingServiceSelectStrategyItem"
           }
         },
-        "SurveyInfo": {
+        "survey_info": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/ocSurveyInfo"
           }
         },
-        "UrlSlug": {
+        "url_slug": {
           "type": "string"
         },
-        "WebsiteUrl": {
+        "website_url": {
           "type": "string"
         }
       }
@@ -10472,7 +10472,7 @@
     "zkRegisterShopResponse": {
       "type": "object",
       "properties": {
-        "Shop": {
+        "shop": {
           "$ref": "#/definitions/ocShop"
         }
       }
@@ -10480,14 +10480,14 @@
     "zkRemoveCustomerOutOfGroupRequest": {
       "type": "object",
       "properties": {
-        "CustomerIds": {
+        "customer_ids": {
           "type": "array",
           "items": {
             "type": "integer",
             "format": "int64"
           }
         },
-        "GroupId": {
+        "group_id": {
           "type": "integer",
           "format": "int64"
         }
@@ -10496,14 +10496,14 @@
     "zkRemoveShopProductCollectionRequest": {
       "type": "object",
       "properties": {
-        "CollectionIds": {
+        "collection_ids": {
           "type": "array",
           "items": {
             "type": "integer",
             "format": "int64"
           }
         },
-        "ProductId": {
+        "product_id": {
           "type": "integer",
           "format": "int64"
         }
@@ -10512,7 +10512,7 @@
     "zkRemoveVariantsRequest": {
       "type": "object",
       "properties": {
-        "Ids": {
+        "ids": {
           "type": "array",
           "items": {
             "type": "integer",
@@ -10524,28 +10524,28 @@
     "zkRequestExportRequest": {
       "type": "object",
       "properties": {
-        "DateFrom": {
+        "date_from": {
           "type": "string"
         },
-        "DateTo": {
+        "date_to": {
           "type": "string"
         },
-        "Delimiter": {
+        "delimiter": {
           "type": "string"
         },
-        "ExcelCompatibleMode": {
+        "excel_compatible_mode": {
           "type": "boolean"
         },
-        "ExportType": {
+        "export_type": {
           "type": "string"
         },
-        "Filters": {
+        "filters": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/maFilter"
           }
         },
-        "Ids": {
+        "ids": {
           "type": "array",
           "items": {
             "type": "integer",
@@ -10557,16 +10557,16 @@
     "zkRequestExportResponse": {
       "type": "object",
       "properties": {
-        "ExportType": {
+        "export_type": {
           "type": "string"
         },
-        "Filename": {
+        "filename": {
           "type": "string"
         },
-        "Id": {
+        "id": {
           "type": "string"
         },
-        "Status": {
+        "status": {
           "$ref": "#/definitions/wxStatus"
         }
       }
@@ -10574,14 +10574,14 @@
     "zkSetCustomersStatusRequest": {
       "type": "object",
       "properties": {
-        "Ids": {
+        "ids": {
           "type": "array",
           "items": {
             "type": "integer",
             "format": "int64"
           }
         },
-        "Status": {
+        "status": {
           "$ref": "#/definitions/wwStatus"
         }
       }
@@ -10589,13 +10589,13 @@
     "zkShopCategoriesResponse": {
       "type": "object",
       "properties": {
-        "Categories": {
+        "categories": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/zkShopCategory"
           }
         },
-        "Paging": {
+        "paging": {
           "$ref": "#/definitions/maPageInfo"
         }
       }
@@ -10603,22 +10603,22 @@
     "zkShopCategory": {
       "type": "object",
       "properties": {
-        "Id": {
+        "id": {
           "type": "integer",
           "format": "int64"
         },
-        "Name": {
+        "name": {
           "type": "string"
         },
-        "ParentId": {
+        "parent_id": {
           "type": "integer",
           "format": "int64"
         },
-        "ShopId": {
+        "shop_id": {
           "type": "integer",
           "format": "int64"
         },
-        "Status": {
+        "status": {
           "type": "integer",
           "format": "int64"
         }
@@ -10627,24 +10627,24 @@
     "zkShopCollection": {
       "type": "object",
       "properties": {
-        "DescHtml": {
+        "desc_html": {
           "type": "string"
         },
-        "Description": {
+        "description": {
           "type": "string"
         },
-        "Id": {
+        "id": {
           "type": "integer",
           "format": "int64"
         },
-        "Name": {
+        "name": {
           "type": "string"
         },
-        "ShopId": {
+        "shop_id": {
           "type": "integer",
           "format": "int64"
         },
-        "ShortDesc": {
+        "short_desc": {
           "type": "string"
         }
       }
@@ -10652,13 +10652,13 @@
     "zkShopCollectionsResponse": {
       "type": "object",
       "properties": {
-        "Collections": {
+        "collections": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/zkShopCollection"
           }
         },
-        "Paging": {
+        "paging": {
           "$ref": "#/definitions/maPageInfo"
         }
       }
@@ -10666,103 +10666,103 @@
     "zkShopProduct": {
       "type": "object",
       "properties": {
-        "BrandId": {
+        "brand_id": {
           "type": "integer",
           "format": "int64"
         },
-        "CategoryId": {
+        "category_id": {
           "type": "integer",
           "format": "int64"
         },
-        "Code": {
+        "code": {
           "type": "string"
         },
-        "CollectionIds": {
+        "collection_ids": {
           "type": "array",
           "items": {
             "type": "integer",
             "format": "int64"
           }
         },
-        "CreatedAt": {
+        "created_at": {
           "type": "string",
           "format": "date-time"
         },
-        "DescHtml": {
+        "desc_html": {
           "type": "string"
         },
-        "Description": {
+        "description": {
           "type": "string"
         },
-        "EdCode": {
+        "ed_code": {
           "type": "string"
         },
-        "Id": {
+        "id": {
           "type": "integer",
           "format": "int64"
         },
-        "ImageUrls": {
+        "image_urls": {
           "type": "array",
           "items": {
             "type": "string"
           }
         },
-        "Info": {
+        "info": {
           "$ref": "#/definitions/zkEtopProduct"
         },
-        "IsAvailable": {
+        "is_available": {
           "type": "boolean"
         },
-        "ListPrice": {
+        "list_price": {
           "type": "integer",
           "format": "int32"
         },
-        "MetaFields": {
+        "meta_fields": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/maMetaField"
           }
         },
-        "Name": {
+        "name": {
           "type": "string"
         },
-        "Note": {
+        "note": {
           "type": "string"
         },
-        "ProductSourceId": {
+        "product_source_id": {
           "type": "integer",
           "format": "int64"
         },
-        "ProductType": {
+        "product_type": {
           "$ref": "#/definitions/tuProductType"
         },
-        "RetailPrice": {
+        "retail_price": {
           "type": "integer",
           "format": "int32"
         },
-        "ShortDesc": {
+        "short_desc": {
           "type": "string"
         },
-        "Stags": {
+        "stags": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/zkTag"
           }
         },
-        "Status": {
+        "status": {
           "$ref": "#/definitions/wwStatus"
         },
-        "Tags": {
+        "tags": {
           "type": "array",
           "items": {
             "type": "string"
           }
         },
-        "UpdatedAt": {
+        "updated_at": {
           "type": "string",
           "format": "date-time"
         },
-        "Variants": {
+        "variants": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/zkShopVariant"
@@ -10773,10 +10773,10 @@
     "zkShopProductsResponse": {
       "type": "object",
       "properties": {
-        "Paging": {
+        "paging": {
           "$ref": "#/definitions/maPageInfo"
         },
-        "Products": {
+        "products": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/zkShopProduct"
@@ -10787,11 +10787,11 @@
     "zkShopShortProduct": {
       "type": "object",
       "properties": {
-        "Id": {
+        "id": {
           "type": "integer",
           "format": "int64"
         },
-        "Name": {
+        "name": {
           "type": "string"
         }
       }
@@ -10799,73 +10799,73 @@
     "zkShopVariant": {
       "type": "object",
       "properties": {
-        "Attributes": {
+        "attributes": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/zkAttribute"
           }
         },
-        "Code": {
+        "code": {
           "type": "string"
         },
-        "DescHtml": {
+        "desc_html": {
           "type": "string"
         },
-        "Description": {
+        "description": {
           "type": "string"
         },
-        "EdCode": {
+        "ed_code": {
           "type": "string"
         },
-        "Id": {
+        "id": {
           "type": "integer",
           "format": "int64"
         },
-        "ImageUrls": {
+        "image_urls": {
           "type": "array",
           "items": {
             "type": "string"
           }
         },
-        "Info": {
+        "info": {
           "$ref": "#/definitions/zkEtopVariant"
         },
-        "InventoryVariant": {
+        "inventory_variant": {
           "$ref": "#/definitions/zkInventoryVariantShopVariant"
         },
-        "IsAvailable": {
+        "is_available": {
           "type": "boolean"
         },
-        "ListPrice": {
+        "list_price": {
           "type": "integer",
           "format": "int32"
         },
-        "Name": {
+        "name": {
           "type": "string"
         },
-        "Note": {
+        "note": {
           "type": "string"
         },
-        "Product": {
+        "product": {
           "$ref": "#/definitions/zkShopShortProduct"
         },
-        "RetailPrice": {
+        "retail_price": {
           "type": "integer",
           "format": "int32"
         },
-        "ShortDesc": {
+        "short_desc": {
           "type": "string"
         },
-        "Stags": {
+        "stags": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/zkTag"
           }
         },
-        "Status": {
+        "status": {
           "$ref": "#/definitions/wwStatus"
         },
-        "Tags": {
+        "tags": {
           "type": "array",
           "items": {
             "type": "string"
@@ -10876,10 +10876,10 @@
     "zkShopVariantsResponse": {
       "type": "object",
       "properties": {
-        "Paging": {
+        "paging": {
           "$ref": "#/definitions/maPageInfo"
         },
-        "Variants": {
+        "variants": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/zkShopVariant"
@@ -10890,57 +10890,57 @@
     "zkStocktake": {
       "type": "object",
       "properties": {
-        "CancelReason": {
+        "cancel_reason": {
           "type": "string"
         },
-        "CancelledAt": {
+        "cancelled_at": {
           "type": "string",
           "format": "date-time"
         },
-        "Code": {
+        "code": {
           "type": "string"
         },
-        "ConfirmedAt": {
+        "confirmed_at": {
           "type": "string",
           "format": "date-time"
         },
-        "CreatedAt": {
+        "created_at": {
           "type": "string",
           "format": "date-time"
         },
-        "CreatedBy": {
+        "created_by": {
           "type": "integer",
           "format": "int64"
         },
-        "Id": {
+        "id": {
           "type": "integer",
           "format": "int64"
         },
-        "Lines": {
+        "lines": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/zkStocktakeLine"
           }
         },
-        "Note": {
+        "note": {
           "type": "string"
         },
-        "ShopId": {
+        "shop_id": {
           "type": "integer",
           "format": "int64"
         },
-        "Status": {
+        "status": {
           "$ref": "#/definitions/wwStatus"
         },
-        "TotalQuantity": {
+        "total_quantity": {
           "type": "integer",
           "format": "int32"
         },
-        "UpdatedAt": {
+        "updated_at": {
           "type": "string",
           "format": "date-time"
         },
-        "UpdatedBy": {
+        "updated_by": {
           "type": "integer",
           "format": "int64"
         }
@@ -10949,42 +10949,42 @@
     "zkStocktakeLine": {
       "type": "object",
       "properties": {
-        "Attributes": {
+        "attributes": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/zkAttribute"
           }
         },
-        "Code": {
+        "code": {
           "type": "string"
         },
-        "CostPrice": {
+        "cost_price": {
           "type": "integer",
           "format": "int32"
         },
-        "ImageUrl": {
+        "image_url": {
           "type": "string"
         },
-        "NewQuantity": {
+        "new_quantity": {
           "type": "integer",
           "format": "int32"
         },
-        "OldQuantity": {
+        "old_quantity": {
           "type": "integer",
           "format": "int32"
         },
-        "ProductId": {
+        "product_id": {
           "type": "integer",
           "format": "int64"
         },
-        "ProductName": {
+        "product_name": {
           "type": "string"
         },
-        "VariantId": {
+        "variant_id": {
           "type": "integer",
           "format": "int64"
         },
-        "VariantName": {
+        "variant_name": {
           "type": "string"
         }
       }
@@ -10992,10 +10992,10 @@
     "zkSummarizeFulfillmentsRequest": {
       "type": "object",
       "properties": {
-        "DateFrom": {
+        "date_from": {
           "type": "string"
         },
-        "DateTo": {
+        "date_to": {
           "type": "string"
         }
       }
@@ -11003,7 +11003,7 @@
     "zkSummarizeFulfillmentsResponse": {
       "type": "object",
       "properties": {
-        "Tables": {
+        "tables": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/zkSummaryTable"
@@ -11014,10 +11014,10 @@
     "zkSummarizePOSRequest": {
       "type": "object",
       "properties": {
-        "DateFrom": {
+        "date_from": {
           "type": "string"
         },
-        "DateTo": {
+        "date_to": {
           "type": "string"
         }
       }
@@ -11025,7 +11025,7 @@
     "zkSummarizePOSResponse": {
       "type": "object",
       "properties": {
-        "Tables": {
+        "tables": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/zkSummaryTable"
@@ -11036,17 +11036,17 @@
     "zkSummaryColRow": {
       "type": "object",
       "properties": {
-        "Indent": {
+        "indent": {
           "type": "integer",
           "format": "int32"
         },
-        "Label": {
+        "label": {
           "type": "string"
         },
-        "Spec": {
+        "spec": {
           "type": "string"
         },
-        "Unit": {
+        "unit": {
           "type": "string"
         }
       }
@@ -11054,22 +11054,22 @@
     "zkSummaryItem": {
       "type": "object",
       "properties": {
-        "ImageUrls": {
+        "image_urls": {
           "type": "array",
           "items": {
             "type": "string"
           }
         },
-        "Label": {
+        "label": {
           "type": "string"
         },
-        "Spec": {
+        "spec": {
           "type": "string"
         },
-        "Unit": {
+        "unit": {
           "type": "string"
         },
-        "Value": {
+        "value": {
           "type": "integer",
           "format": "int32"
         }
@@ -11078,28 +11078,28 @@
     "zkSummaryTable": {
       "type": "object",
       "properties": {
-        "Columns": {
+        "columns": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/zkSummaryColRow"
           }
         },
-        "Data": {
+        "data": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/zkSummaryItem"
           }
         },
-        "Label": {
+        "label": {
           "type": "string"
         },
-        "Rows": {
+        "rows": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/zkSummaryColRow"
           }
         },
-        "Tags": {
+        "tags": {
           "type": "array",
           "items": {
             "type": "string"
@@ -11110,49 +11110,49 @@
     "zkSupplier": {
       "type": "object",
       "properties": {
-        "Code": {
+        "code": {
           "type": "string"
         },
-        "CompanyName": {
+        "company_name": {
           "type": "string"
         },
-        "CreatedAt": {
+        "created_at": {
           "type": "string",
           "format": "date-time"
         },
-        "Email": {
+        "email": {
           "type": "string"
         },
-        "FullName": {
+        "full_name": {
           "type": "string"
         },
-        "HeadquaterAddress": {
+        "headquater_address": {
           "type": "string"
         },
-        "Id": {
+        "id": {
           "type": "integer",
           "format": "int64"
         },
-        "Liability": {
+        "liability": {
           "$ref": "#/definitions/zkSupplierLiability"
         },
-        "Note": {
+        "note": {
           "type": "string"
         },
-        "Phone": {
+        "phone": {
           "type": "string"
         },
-        "ShopId": {
+        "shop_id": {
           "type": "integer",
           "format": "int64"
         },
-        "Status": {
+        "status": {
           "$ref": "#/definitions/wwStatus"
         },
-        "TaxNumber": {
+        "tax_number": {
           "type": "string"
         },
-        "UpdatedAt": {
+        "updated_at": {
           "type": "string",
           "format": "date-time"
         }
@@ -11161,19 +11161,19 @@
     "zkSupplierLiability": {
       "type": "object",
       "properties": {
-        "Liability": {
+        "liability": {
           "type": "integer",
           "format": "int64"
         },
-        "PaidAmount": {
+        "paid_amount": {
           "type": "integer",
           "format": "int64"
         },
-        "TotalAmount": {
+        "total_amount": {
           "type": "integer",
           "format": "int64"
         },
-        "TotalPurchaseOrders": {
+        "total_purchase_orders": {
           "type": "integer",
           "format": "int32"
         }
@@ -11182,10 +11182,10 @@
     "zkSuppliersResponse": {
       "type": "object",
       "properties": {
-        "Paging": {
+        "paging": {
           "$ref": "#/definitions/maPageInfo"
         },
-        "Suppliers": {
+        "suppliers": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/zkSupplier"
@@ -11196,11 +11196,11 @@
     "zkTag": {
       "type": "object",
       "properties": {
-        "Id": {
+        "id": {
           "type": "integer",
           "format": "int64"
         },
-        "Label": {
+        "label": {
           "type": "string"
         }
       }
@@ -11208,20 +11208,20 @@
     "zkTrader": {
       "type": "object",
       "properties": {
-        "Deleted": {
+        "deleted": {
           "type": "boolean"
         },
-        "FullName": {
+        "full_name": {
           "type": "string"
         },
-        "Id": {
+        "id": {
           "type": "integer",
           "format": "int64"
         },
-        "Phone": {
+        "phone": {
           "type": "string"
         },
-        "Type": {
+        "type": {
           "type": "string"
         }
       }
@@ -11229,14 +11229,14 @@
     "zkUpdateBrandRequest": {
       "type": "object",
       "properties": {
-        "Description": {
+        "description": {
           "type": "string"
         },
-        "Id": {
+        "id": {
           "type": "integer",
           "format": "int64"
         },
-        "Name": {
+        "name": {
           "type": "string"
         }
       }
@@ -11244,14 +11244,14 @@
     "zkUpdateCarrierRequest": {
       "type": "object",
       "properties": {
-        "FullName": {
+        "full_name": {
           "type": "string"
         },
-        "Id": {
+        "id": {
           "type": "integer",
           "format": "int64"
         },
-        "Note": {
+        "note": {
           "type": "string"
         }
       }
@@ -11259,14 +11259,14 @@
     "zkUpdateCategoryRequest": {
       "type": "object",
       "properties": {
-        "Id": {
+        "id": {
           "type": "integer",
           "format": "int64"
         },
-        "Name": {
+        "name": {
           "type": "string"
         },
-        "ParentId": {
+        "parent_id": {
           "type": "integer",
           "format": "int64"
         }
@@ -11275,20 +11275,20 @@
     "zkUpdateCollectionRequest": {
       "type": "object",
       "properties": {
-        "DescHtml": {
+        "desc_html": {
           "type": "string"
         },
-        "Description": {
+        "description": {
           "type": "string"
         },
-        "Id": {
+        "id": {
           "type": "integer",
           "format": "int64"
         },
-        "Name": {
+        "name": {
           "type": "string"
         },
-        "ShortDesc": {
+        "short_desc": {
           "type": "string"
         }
       }
@@ -11296,44 +11296,44 @@
     "zkUpdateCustomerAddressRequest": {
       "type": "object",
       "properties": {
-        "Address1": {
+        "address1": {
           "type": "string"
         },
-        "Address2": {
+        "address2": {
           "type": "string"
         },
-        "Company": {
+        "company": {
           "type": "string"
         },
-        "Coordinates": {
+        "coordinates": {
           "$ref": "#/definitions/ocCoordinates"
         },
-        "Country": {
+        "country": {
           "type": "string"
         },
-        "DistrictCode": {
+        "district_code": {
           "type": "string"
         },
-        "Email": {
+        "email": {
           "type": "string"
         },
-        "FullName": {
+        "full_name": {
           "type": "string"
         },
-        "Id": {
+        "id": {
           "type": "integer",
           "format": "int64"
         },
-        "Phone": {
+        "phone": {
           "type": "string"
         },
-        "Position": {
+        "position": {
           "type": "string"
         },
-        "ProvinceCode": {
+        "province_code": {
           "type": "string"
         },
-        "WardCode": {
+        "ward_code": {
           "type": "string"
         }
       }
@@ -11341,11 +11341,11 @@
     "zkUpdateCustomerGroupRequest": {
       "type": "object",
       "properties": {
-        "GroupId": {
+        "group_id": {
           "type": "integer",
           "format": "int64"
         },
-        "Name": {
+        "name": {
           "type": "string"
         }
       }
@@ -11353,29 +11353,29 @@
     "zkUpdateCustomerRequest": {
       "type": "object",
       "properties": {
-        "Birthday": {
+        "birthday": {
           "type": "string"
         },
-        "Email": {
+        "email": {
           "type": "string"
         },
-        "FullName": {
+        "full_name": {
           "type": "string"
         },
-        "Gender": {
+        "gender": {
           "type": "string"
         },
-        "Id": {
+        "id": {
           "type": "integer",
           "format": "int64"
         },
-        "Note": {
+        "note": {
           "type": "string"
         },
-        "Phone": {
+        "phone": {
           "type": "string"
         },
-        "Type": {
+        "type": {
           "type": "string"
         }
       }
@@ -11383,14 +11383,14 @@
     "zkUpdateFulfillmentsShippingStateRequest": {
       "type": "object",
       "properties": {
-        "Ids": {
+        "ids": {
           "type": "array",
           "items": {
             "type": "integer",
             "format": "int64"
           }
         },
-        "ShippingState": {
+        "shipping_state": {
           "$ref": "#/definitions/nqState"
         }
       }
@@ -11398,11 +11398,11 @@
     "zkUpdateInventoryVariantCostPriceRequest": {
       "type": "object",
       "properties": {
-        "CostPrice": {
+        "cost_price": {
           "type": "integer",
           "format": "int32"
         },
-        "VariantId": {
+        "variant_id": {
           "type": "integer",
           "format": "int64"
         }
@@ -11411,7 +11411,7 @@
     "zkUpdateInventoryVariantCostPriceResponse": {
       "type": "object",
       "properties": {
-        "InventoryVariant": {
+        "inventory_variant": {
           "$ref": "#/definitions/zkInventoryVariant"
         }
       }
@@ -11419,31 +11419,31 @@
     "zkUpdateInventoryVoucherRequest": {
       "type": "object",
       "properties": {
-        "Id": {
+        "id": {
           "type": "integer",
           "format": "int64"
         },
-        "Lines": {
+        "lines": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/zkInventoryVoucherLine"
           }
         },
-        "Note": {
+        "note": {
           "type": "string"
         },
-        "Title": {
+        "title": {
           "type": "string"
         },
-        "TotalAmount": {
+        "total_amount": {
           "type": "integer",
           "format": "int32"
         },
-        "TraderId": {
+        "trader_id": {
           "type": "integer",
           "format": "int64"
         },
-        "Type": {
+        "type": {
           "type": "string"
         }
       }
@@ -11451,7 +11451,7 @@
     "zkUpdateInventoryVoucherResponse": {
       "type": "object",
       "properties": {
-        "InventoryVoucher": {
+        "inventory_voucher": {
           "$ref": "#/definitions/zkInventoryVoucher"
         }
       }
@@ -11459,17 +11459,17 @@
     "zkUpdateLedgerRequest": {
       "type": "object",
       "properties": {
-        "BankAccount": {
+        "bank_account": {
           "$ref": "#/definitions/ocBankAccount"
         },
-        "Id": {
+        "id": {
           "type": "integer",
           "format": "int64"
         },
-        "Name": {
+        "name": {
           "type": "string"
         },
-        "Note": {
+        "note": {
           "type": "string"
         }
       }
@@ -11477,11 +11477,11 @@
     "zkUpdateOrderPaymentStatusRequest": {
       "type": "object",
       "properties": {
-        "OrderId": {
+        "order_id": {
           "type": "integer",
           "format": "int64"
         },
-        "Status": {
+        "status": {
           "$ref": "#/definitions/wwStatus"
         }
       }
@@ -11489,14 +11489,14 @@
     "zkUpdateOrderShippingInfoRequest": {
       "type": "object",
       "properties": {
-        "OrderId": {
+        "order_id": {
           "type": "integer",
           "format": "int64"
         },
-        "Shipping": {
+        "shipping": {
           "$ref": "#/definitions/vmOrderShipping"
         },
-        "ShippingAddress": {
+        "shipping_address": {
           "$ref": "#/definitions/vmOrderAddress"
         }
       }
@@ -11504,20 +11504,20 @@
     "zkUpdateOrdersStatusRequest": {
       "type": "object",
       "properties": {
-        "CancelReason": {
+        "cancel_reason": {
           "type": "string"
         },
-        "Confirm": {
+        "confirm": {
           "$ref": "#/definitions/wwStatus"
         },
-        "Ids": {
+        "ids": {
           "type": "array",
           "items": {
             "type": "integer",
             "format": "int64"
           }
         },
-        "Status": {
+        "status": {
           "$ref": "#/definitions/wxStatus"
         }
       }
@@ -11525,11 +11525,11 @@
     "zkUpdateProductCategoryRequest": {
       "type": "object",
       "properties": {
-        "CategoryId": {
+        "category_id": {
           "type": "integer",
           "format": "int64"
         },
-        "ProductId": {
+        "product_id": {
           "type": "integer",
           "format": "int64"
         }
@@ -11538,11 +11538,11 @@
     "zkUpdateProductMetaFieldsRequest": {
       "type": "object",
       "properties": {
-        "Id": {
+        "id": {
           "type": "integer",
           "format": "int64"
         },
-        "MetaFields": {
+        "meta_fields": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/maMetaField"
@@ -11553,51 +11553,51 @@
     "zkUpdateProductRequest": {
       "type": "object",
       "properties": {
-        "BrandId": {
+        "brand_id": {
           "type": "integer",
           "format": "int64"
         },
-        "Code": {
+        "code": {
           "type": "string"
         },
-        "CostPrice": {
+        "cost_price": {
           "type": "integer",
           "format": "int32"
         },
-        "DescHtml": {
+        "desc_html": {
           "type": "string"
         },
-        "Description": {
+        "description": {
           "type": "string"
         },
-        "Id": {
+        "id": {
           "type": "integer",
           "format": "int64"
         },
-        "ListPrice": {
+        "list_price": {
           "type": "integer",
           "format": "int32"
         },
-        "MetaFields": {
+        "meta_fields": {
           "$ref": "#/definitions/maMetaField"
         },
-        "Name": {
+        "name": {
           "type": "string"
         },
-        "Note": {
+        "note": {
           "type": "string"
         },
-        "ProductType": {
+        "product_type": {
           "$ref": "#/definitions/tuProductType"
         },
-        "RetailPrice": {
+        "retail_price": {
           "type": "integer",
           "format": "int32"
         },
-        "ShortDesc": {
+        "short_desc": {
           "type": "string"
         },
-        "Unit": {
+        "unit": {
           "type": "string"
         }
       }
@@ -11605,14 +11605,14 @@
     "zkUpdateProductSourceCategoryRequest": {
       "type": "object",
       "properties": {
-        "Id": {
+        "id": {
           "type": "integer",
           "format": "int64"
         },
-        "Name": {
+        "name": {
           "type": "string"
         },
-        "ParentId": {
+        "parent_id": {
           "type": "integer",
           "format": "int64"
         }
@@ -11621,14 +11621,14 @@
     "zkUpdateProductStatusRequest": {
       "type": "object",
       "properties": {
-        "Ids": {
+        "ids": {
           "type": "array",
           "items": {
             "type": "integer",
             "format": "int64"
           }
         },
-        "Status": {
+        "status": {
           "$ref": "#/definitions/wwStatus"
         }
       }
@@ -11636,7 +11636,7 @@
     "zkUpdateProductStatusResponse": {
       "type": "object",
       "properties": {
-        "Updated": {
+        "updated": {
           "type": "integer",
           "format": "int32"
         }
@@ -11645,11 +11645,11 @@
     "zkUpdateProductsPSCategoryRequest": {
       "type": "object",
       "properties": {
-        "CategoryId": {
+        "category_id": {
           "type": "integer",
           "format": "int64"
         },
-        "ProductIds": {
+        "product_ids": {
           "type": "array",
           "items": {
             "type": "integer",
@@ -11661,29 +11661,29 @@
     "zkUpdateProductsTagsRequest": {
       "type": "object",
       "properties": {
-        "Adds": {
+        "adds": {
           "type": "array",
           "items": {
             "type": "string"
           }
         },
-        "DeleteAll": {
+        "delete_all": {
           "type": "boolean"
         },
-        "Deletes": {
+        "deletes": {
           "type": "array",
           "items": {
             "type": "string"
           }
         },
-        "Ids": {
+        "ids": {
           "type": "array",
           "items": {
             "type": "integer",
             "format": "int64"
           }
         },
-        "ReplaceAll": {
+        "replace_all": {
           "type": "array",
           "items": {
             "type": "string"
@@ -11694,32 +11694,32 @@
     "zkUpdatePurchaseOrderRequest": {
       "type": "object",
       "properties": {
-        "BasketValue": {
+        "basket_value": {
           "type": "integer",
           "format": "int64"
         },
-        "Id": {
+        "id": {
           "type": "integer",
           "format": "int64"
         },
-        "Lines": {
+        "lines": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/zkPurchaseOrderLine"
           }
         },
-        "Note": {
+        "note": {
           "type": "string"
         },
-        "SupplierId": {
+        "supplier_id": {
           "type": "integer",
           "format": "int64"
         },
-        "TotalAmount": {
+        "total_amount": {
           "type": "integer",
           "format": "int64"
         },
-        "TotalDiscount": {
+        "total_discount": {
           "type": "integer",
           "format": "int64"
         }
@@ -11728,38 +11728,38 @@
     "zkUpdateReceiptRequest": {
       "type": "object",
       "properties": {
-        "Amount": {
+        "amount": {
           "type": "integer",
           "format": "int32"
         },
-        "Description": {
+        "description": {
           "type": "string"
         },
-        "Id": {
+        "id": {
           "type": "integer",
           "format": "int64"
         },
-        "LedgerId": {
+        "ledger_id": {
           "type": "integer",
           "format": "int64"
         },
-        "Lines": {
+        "lines": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/zkReceiptLine"
           }
         },
-        "PaidAt": {
+        "paid_at": {
           "type": "string",
           "format": "date-time"
         },
-        "RefType": {
+        "ref_type": {
           "type": "string"
         },
-        "Title": {
+        "title": {
           "type": "string"
         },
-        "TraderId": {
+        "trader_id": {
           "type": "integer",
           "format": "int64"
         }
@@ -11768,55 +11768,55 @@
     "zkUpdateShopRequest": {
       "type": "object",
       "properties": {
-        "Address": {
+        "address": {
           "$ref": "#/definitions/ocAddress"
         },
-        "AutoCreateFfm": {
+        "auto_create_ffm": {
           "type": "boolean"
         },
-        "BankAccount": {
+        "bank_account": {
           "$ref": "#/definitions/ocBankAccount"
         },
-        "CompanyInfo": {
+        "company_info": {
           "$ref": "#/definitions/ocCompanyInfo"
         },
-        "Email": {
+        "email": {
           "type": "string"
         },
-        "GhnNoteCode": {
+        "ghn_note_code": {
           "$ref": "#/definitions/kuGHNNoteCode"
         },
-        "ImageUrl": {
+        "image_url": {
           "type": "string"
         },
-        "InventoryOverstock": {
+        "inventory_overstock": {
           "type": "boolean"
         },
-        "MoneyTransactionRrule": {
+        "money_transaction_rrule": {
           "type": "string"
         },
-        "Name": {
+        "name": {
           "type": "string"
         },
-        "Phone": {
+        "phone": {
           "type": "string"
         },
-        "ShippingServiceSelectStrategy": {
+        "shipping_service_select_strategy": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/ocShippingServiceSelectStrategyItem"
           }
         },
-        "SurveyInfo": {
+        "survey_info": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/ocSurveyInfo"
           }
         },
-        "TryOn": {
+        "try_on": {
           "$ref": "#/definitions/xdTryOnCode"
         },
-        "WebsiteUrl": {
+        "website_url": {
           "type": "string"
         }
       }
@@ -11824,7 +11824,7 @@
     "zkUpdateShopResponse": {
       "type": "object",
       "properties": {
-        "Shop": {
+        "shop": {
           "$ref": "#/definitions/ocShop"
         }
       }
@@ -11832,20 +11832,20 @@
     "zkUpdateStocktakeRequest": {
       "type": "object",
       "properties": {
-        "Id": {
+        "id": {
           "type": "integer",
           "format": "int64"
         },
-        "Lines": {
+        "lines": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/zkStocktakeLine"
           }
         },
-        "Note": {
+        "note": {
           "type": "string"
         },
-        "TotalQuantity": {
+        "total_quantity": {
           "type": "integer",
           "format": "int32"
         }
@@ -11854,29 +11854,29 @@
     "zkUpdateSupplierRequest": {
       "type": "object",
       "properties": {
-        "CompanyName": {
+        "company_name": {
           "type": "string"
         },
-        "Email": {
+        "email": {
           "type": "string"
         },
-        "FullName": {
+        "full_name": {
           "type": "string"
         },
-        "HeadquaterAddress": {
+        "headquater_address": {
           "type": "string"
         },
-        "Id": {
+        "id": {
           "type": "integer",
           "format": "int64"
         },
-        "Note": {
+        "note": {
           "type": "string"
         },
-        "Phone": {
+        "phone": {
           "type": "string"
         },
-        "TaxNumber": {
+        "tax_number": {
           "type": "string"
         }
       }
@@ -11884,13 +11884,13 @@
     "zkUpdateVariantAttributesRequest": {
       "type": "object",
       "properties": {
-        "Attributes": {
+        "attributes": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/zkAttribute"
           }
         },
-        "VariantId": {
+        "variant_id": {
           "type": "integer",
           "format": "int64"
         }
@@ -11899,26 +11899,26 @@
     "zkUpdateVariantImagesRequest": {
       "type": "object",
       "properties": {
-        "Adds": {
+        "adds": {
           "type": "array",
           "items": {
             "type": "string"
           }
         },
-        "DeleteAll": {
+        "delete_all": {
           "type": "boolean"
         },
-        "Deletes": {
+        "deletes": {
           "type": "array",
           "items": {
             "type": "string"
           }
         },
-        "Id": {
+        "id": {
           "type": "integer",
           "format": "int64"
         },
-        "ReplaceAll": {
+        "replace_all": {
           "type": "array",
           "items": {
             "type": "string"
@@ -11929,47 +11929,47 @@
     "zkUpdateVariantRequest": {
       "type": "object",
       "properties": {
-        "Attributes": {
+        "attributes": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/zkAttribute"
           }
         },
-        "Code": {
+        "code": {
           "type": "string"
         },
-        "CostPrice": {
+        "cost_price": {
           "type": "integer",
           "format": "int32"
         },
-        "DescHtml": {
+        "desc_html": {
           "type": "string"
         },
-        "Description": {
+        "description": {
           "type": "string"
         },
-        "Id": {
+        "id": {
           "type": "integer",
           "format": "int64"
         },
-        "ListPrice": {
+        "list_price": {
           "type": "integer",
           "format": "int32"
         },
-        "Name": {
+        "name": {
           "type": "string"
         },
-        "Note": {
+        "note": {
           "type": "string"
         },
-        "RetailPrice": {
+        "retail_price": {
           "type": "integer",
           "format": "int32"
         },
-        "ShortDesc": {
+        "short_desc": {
           "type": "string"
         },
-        "Sku": {
+        "sku": {
           "type": "string"
         }
       }
@@ -11977,35 +11977,35 @@
     "zkUpdateXAccountAhamoveVerificationRequest": {
       "type": "object",
       "properties": {
-        "BusinessLicenseImgs": {
+        "business_license_imgs": {
           "type": "array",
           "items": {
             "type": "string"
           }
         },
-        "CompanyImgs": {
+        "company_imgs": {
           "type": "array",
           "items": {
             "type": "string"
           }
         },
-        "FanpageUrl": {
+        "fanpage_url": {
           "type": "string"
         },
-        "Id": {
+        "id": {
           "type": "integer",
           "format": "int64"
         },
-        "IdCardBackImg": {
+        "id_card_back_img": {
           "type": "string"
         },
-        "IdCardFrontImg": {
+        "id_card_front_img": {
           "type": "string"
         },
-        "PortraitImg": {
+        "portrait_img": {
           "type": "string"
         },
-        "WebsiteUrl": {
+        "website_url": {
           "type": "string"
         }
       }

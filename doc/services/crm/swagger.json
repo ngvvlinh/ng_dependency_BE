@@ -388,10 +388,10 @@
     "maMessageResponse": {
       "type": "object",
       "properties": {
-        "Code": {
+        "code": {
           "type": "string"
         },
-        "Msg": {
+        "msg": {
           "type": "string"
         }
       }
@@ -399,15 +399,15 @@
     "maPaging": {
       "type": "object",
       "properties": {
-        "Limit": {
+        "limit": {
           "type": "integer",
           "format": "int32"
         },
-        "Offset": {
+        "offset": {
           "type": "integer",
           "format": "int32"
         },
-        "Sort": {
+        "sort": {
           "type": "string"
         }
       }
@@ -415,7 +415,7 @@
     "maRawJSONObject": {
       "type": "object",
       "properties": {
-        "Data": {
+        "data": {
           "type": "string",
           "format": "byte"
         }
@@ -424,7 +424,7 @@
     "maUpdatedResponse": {
       "type": "object",
       "properties": {
-        "Updated": {
+        "updated": {
           "type": "integer",
           "format": "int32"
         }
@@ -433,14 +433,14 @@
     "maVersionInfoResponse": {
       "type": "object",
       "properties": {
-        "Service": {
+        "service": {
           "type": "string"
         },
-        "UpdatedAt": {
+        "updated_at": {
           "type": "string",
           "format": "date-time"
         },
-        "Version": {
+        "version": {
           "type": "string"
         }
       }
@@ -456,23 +456,23 @@
     "xkAccount": {
       "type": "object",
       "properties": {
-        "Company": {
+        "company": {
           "type": "string"
         },
-        "Email": {
+        "email": {
           "type": "string"
         },
-        "FullName": {
+        "full_name": {
           "type": "string"
         },
-        "Id": {
+        "id": {
           "type": "integer",
           "format": "int64"
         },
-        "Phone": {
+        "phone": {
           "type": "string"
         },
-        "ShortName": {
+        "short_name": {
           "type": "string"
         }
       }
@@ -480,10 +480,10 @@
     "xkCategory": {
       "type": "object",
       "properties": {
-        "Code": {
+        "code": {
           "type": "string"
         },
-        "Label": {
+        "label": {
           "type": "string"
         }
       }
@@ -491,79 +491,79 @@
     "xkContactRequest": {
       "type": "object",
       "properties": {
-        "AssignedUserId": {
+        "assigned_user_id": {
           "type": "string"
         },
-        "City": {
+        "city": {
           "type": "string"
         },
-        "Company": {
+        "company": {
           "type": "string"
         },
-        "ContactNo": {
+        "contact_no": {
           "type": "string"
         },
-        "Country": {
+        "country": {
           "type": "string"
         },
-        "Createdtime": {
+        "createdtime": {
           "type": "string",
           "format": "date-time"
         },
-        "Description": {
+        "description": {
           "type": "string"
         },
-        "Email": {
+        "email": {
           "type": "string"
         },
-        "EtopUserId": {
+        "etop_user_id": {
           "type": "integer",
           "format": "int64"
         },
-        "Firstname": {
+        "firstname": {
           "type": "string"
         },
-        "Id": {
+        "id": {
           "type": "string"
         },
-        "Lane": {
+        "lane": {
           "type": "string"
         },
-        "Lastname": {
+        "lastname": {
           "type": "string"
         },
-        "Leadsource": {
+        "leadsource": {
           "type": "string"
         },
-        "Mobile": {
+        "mobile": {
           "type": "string"
         },
-        "Modifiedby": {
+        "modifiedby": {
           "type": "string"
         },
-        "Modifiedtime": {
+        "modifiedtime": {
           "type": "string",
           "format": "date-time"
         },
-        "OrdersPerDay": {
+        "orders_per_day": {
           "type": "string"
         },
-        "Phone": {
+        "phone": {
           "type": "string"
         },
-        "Secondaryemail": {
+        "secondaryemail": {
           "type": "string"
         },
-        "Source": {
+        "source": {
           "type": "string"
         },
-        "State": {
+        "state": {
           "type": "string"
         },
-        "UsedShippingProvider": {
+        "used_shipping_provider": {
           "type": "string"
         },
-        "Website": {
+        "website": {
           "type": "string"
         }
       }
@@ -571,79 +571,79 @@
     "xkContactResponse": {
       "type": "object",
       "properties": {
-        "AssignedUserId": {
+        "assigned_user_id": {
           "type": "string"
         },
-        "City": {
+        "city": {
           "type": "string"
         },
-        "Company": {
+        "company": {
           "type": "string"
         },
-        "ContactNo": {
+        "contact_no": {
           "type": "string"
         },
-        "Country": {
+        "country": {
           "type": "string"
         },
-        "Createdtime": {
+        "createdtime": {
           "type": "string",
           "format": "date-time"
         },
-        "Description": {
+        "description": {
           "type": "string"
         },
-        "Email": {
+        "email": {
           "type": "string"
         },
-        "EtopUserId": {
+        "etop_user_id": {
           "type": "integer",
           "format": "int64"
         },
-        "Firstname": {
+        "firstname": {
           "type": "string"
         },
-        "Id": {
+        "id": {
           "type": "string"
         },
-        "Lane": {
+        "lane": {
           "type": "string"
         },
-        "Lastname": {
+        "lastname": {
           "type": "string"
         },
-        "Leadsource": {
+        "leadsource": {
           "type": "string"
         },
-        "Mobile": {
+        "mobile": {
           "type": "string"
         },
-        "Modifiedby": {
+        "modifiedby": {
           "type": "string"
         },
-        "Modifiedtime": {
+        "modifiedtime": {
           "type": "string",
           "format": "date-time"
         },
-        "OrdersPerDay": {
+        "orders_per_day": {
           "type": "string"
         },
-        "Phone": {
+        "phone": {
           "type": "string"
         },
-        "Secondaryemail": {
+        "secondaryemail": {
           "type": "string"
         },
-        "Source": {
+        "source": {
           "type": "string"
         },
-        "State": {
+        "state": {
           "type": "string"
         },
-        "UsedShippingProvider": {
+        "used_shipping_provider": {
           "type": "string"
         },
-        "Website": {
+        "website": {
           "type": "string"
         }
       }
@@ -651,10 +651,10 @@
     "xkCountTicketByStatusResponse": {
       "type": "object",
       "properties": {
-        "Code": {
+        "code": {
           "type": "string"
         },
-        "Count": {
+        "count": {
           "type": "integer",
           "format": "int32"
         }
@@ -663,61 +663,61 @@
     "xkCreateOrUpdateTicketRequest": {
       "type": "object",
       "properties": {
-        "Account": {
+        "account": {
           "$ref": "#/definitions/xkAccount"
         },
-        "Code": {
+        "code": {
           "type": "string"
         },
-        "Company": {
+        "company": {
           "type": "string"
         },
-        "Environment": {
+        "environment": {
           "type": "string"
         },
-        "EtopUserId": {
+        "etop_user_id": {
           "type": "integer",
           "format": "int64"
         },
-        "FfmCode": {
+        "ffm_code": {
           "type": "string"
         },
-        "FfmId": {
+        "ffm_id": {
           "type": "integer",
           "format": "int64"
         },
-        "FfmUrl": {
+        "ffm_url": {
           "type": "string"
         },
-        "FromApp": {
+        "from_app": {
           "type": "string"
         },
-        "Id": {
+        "id": {
           "type": "string"
         },
-        "Note": {
+        "note": {
           "type": "string"
         },
-        "OldValue": {
+        "old_value": {
           "type": "string"
         },
-        "OrderCode": {
+        "order_code": {
           "type": "string"
         },
-        "OrderId": {
+        "order_id": {
           "type": "integer",
           "format": "int64"
         },
-        "Provider": {
+        "provider": {
           "type": "string"
         },
-        "Reason": {
+        "reason": {
           "type": "string"
         },
-        "Title": {
+        "title": {
           "type": "string"
         },
-        "Value": {
+        "value": {
           "type": "string"
         }
       }
@@ -725,10 +725,10 @@
     "xkGetCallHistoriesRequest": {
       "type": "object",
       "properties": {
-        "Paging": {
+        "paging": {
           "$ref": "#/definitions/maPaging"
         },
-        "TextSearch": {
+        "text_search": {
           "type": "string"
         }
       }
@@ -736,7 +736,7 @@
     "xkGetCallHistoriesResponse": {
       "type": "object",
       "properties": {
-        "VhtCallLog": {
+        "vht_call_log": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/xkVHTCallLog"
@@ -747,7 +747,7 @@
     "xkGetCategoriesResponse": {
       "type": "object",
       "properties": {
-        "Categories": {
+        "categories": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/xkCategory"
@@ -758,10 +758,10 @@
     "xkGetContactsRequest": {
       "type": "object",
       "properties": {
-        "Paging": {
+        "paging": {
           "$ref": "#/definitions/maPaging"
         },
-        "TextSearch": {
+        "text_search": {
           "type": "string"
         }
       }
@@ -769,7 +769,7 @@
     "xkGetContactsResponse": {
       "type": "object",
       "properties": {
-        "Contacts": {
+        "contacts": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/xkContactResponse"
@@ -780,7 +780,7 @@
     "xkGetTicketStatusCountResponse": {
       "type": "object",
       "properties": {
-        "StatusCount": {
+        "status_count": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/xkCountTicketByStatusResponse"
@@ -791,13 +791,13 @@
     "xkGetTicketsRequest": {
       "type": "object",
       "properties": {
-        "Orderby": {
+        "orderby": {
           "$ref": "#/definitions/xkOrderBy"
         },
-        "Paging": {
+        "paging": {
           "$ref": "#/definitions/maPaging"
         },
-        "Ticket": {
+        "ticket": {
           "$ref": "#/definitions/xkTicketRequest"
         }
       }
@@ -805,7 +805,7 @@
     "xkGetTicketsResponse": {
       "type": "object",
       "properties": {
-        "Tickets": {
+        "tickets": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/xkTicket"
@@ -816,71 +816,71 @@
     "xkLeadRequest": {
       "type": "object",
       "properties": {
-        "AssignedUserId": {
+        "assigned_user_id": {
           "type": "string"
         },
-        "City": {
+        "city": {
           "type": "string"
         },
-        "Company": {
+        "company": {
           "type": "string"
         },
-        "ContactNo": {
+        "contact_no": {
           "type": "string"
         },
-        "Country": {
+        "country": {
           "type": "string"
         },
-        "Description": {
+        "description": {
           "type": "string"
         },
-        "Email": {
+        "email": {
           "type": "string"
         },
-        "EtopUserId": {
+        "etop_user_id": {
           "type": "integer",
           "format": "int64"
         },
-        "Firstname": {
+        "firstname": {
           "type": "string"
         },
-        "Id": {
+        "id": {
           "type": "string"
         },
-        "Lane": {
+        "lane": {
           "type": "string"
         },
-        "Lastname": {
+        "lastname": {
           "type": "string"
         },
-        "Leadsource": {
+        "leadsource": {
           "type": "string"
         },
-        "Mobile": {
+        "mobile": {
           "type": "string"
         },
-        "Modifiedby": {
+        "modifiedby": {
           "type": "string"
         },
-        "OrdersPerDay": {
+        "orders_per_day": {
           "type": "string"
         },
-        "Phone": {
+        "phone": {
           "type": "string"
         },
-        "Secondaryemail": {
+        "secondaryemail": {
           "type": "string"
         },
-        "Source": {
+        "source": {
           "type": "string"
         },
-        "State": {
+        "state": {
           "type": "string"
         },
-        "UsedShippingProvider": {
+        "used_shipping_provider": {
           "type": "string"
         },
-        "Website": {
+        "website": {
           "type": "string"
         }
       }
@@ -888,71 +888,71 @@
     "xkLeadResponse": {
       "type": "object",
       "properties": {
-        "AssignedUserId": {
+        "assigned_user_id": {
           "type": "string"
         },
-        "City": {
+        "city": {
           "type": "string"
         },
-        "Company": {
+        "company": {
           "type": "string"
         },
-        "ContactNo": {
+        "contact_no": {
           "type": "string"
         },
-        "Country": {
+        "country": {
           "type": "string"
         },
-        "Description": {
+        "description": {
           "type": "string"
         },
-        "Email": {
+        "email": {
           "type": "string"
         },
-        "EtopUserId": {
+        "etop_user_id": {
           "type": "integer",
           "format": "int64"
         },
-        "Firstname": {
+        "firstname": {
           "type": "string"
         },
-        "Id": {
+        "id": {
           "type": "string"
         },
-        "Lane": {
+        "lane": {
           "type": "string"
         },
-        "Lastname": {
+        "lastname": {
           "type": "string"
         },
-        "Leadsource": {
+        "leadsource": {
           "type": "string"
         },
-        "Mobile": {
+        "mobile": {
           "type": "string"
         },
-        "Modifiedby": {
+        "modifiedby": {
           "type": "string"
         },
-        "OrdersPerDay": {
+        "orders_per_day": {
           "type": "string"
         },
-        "Phone": {
+        "phone": {
           "type": "string"
         },
-        "Secondaryemail": {
+        "secondaryemail": {
           "type": "string"
         },
-        "Source": {
+        "source": {
           "type": "string"
         },
-        "State": {
+        "state": {
           "type": "string"
         },
-        "UsedShippingProvider": {
+        "used_shipping_provider": {
           "type": "string"
         },
-        "Website": {
+        "website": {
           "type": "string"
         }
       }
@@ -960,10 +960,10 @@
     "xkOrderBy": {
       "type": "object",
       "properties": {
-        "Field": {
+        "field": {
           "type": "string"
         },
-        "Sort": {
+        "sort": {
           "type": "string"
         }
       }
@@ -971,7 +971,7 @@
     "xkRefreshFulfillmentFromCarrierRequest": {
       "type": "object",
       "properties": {
-        "ShippingCode": {
+        "shipping_code": {
           "type": "string"
         }
       }
@@ -979,24 +979,24 @@
     "xkSendNotificationRequest": {
       "type": "object",
       "properties": {
-        "AccountId": {
+        "account_id": {
           "type": "integer",
           "format": "int64"
         },
-        "Entity": {
+        "entity": {
           "$ref": "#/definitions/roNotifierEntity"
         },
-        "EntityId": {
+        "entity_id": {
           "type": "integer",
           "format": "int64"
         },
-        "Message": {
+        "message": {
           "type": "string"
         },
-        "MetaData": {
+        "meta_data": {
           "$ref": "#/definitions/maRawJSONObject"
         },
-        "Title": {
+        "title": {
           "type": "string"
         }
       }
@@ -1004,131 +1004,131 @@
     "xkTicket": {
       "type": "object",
       "properties": {
-        "AssignedUserId": {
+        "assigned_user_id": {
           "type": "string"
         },
-        "Code": {
+        "code": {
           "type": "string"
         },
-        "Company": {
+        "company": {
           "type": "string"
         },
-        "ContactId": {
+        "contact_id": {
           "type": "string"
         },
-        "Createdtime": {
+        "createdtime": {
           "type": "string",
           "format": "date-time"
         },
-        "Days": {
+        "days": {
           "type": "string"
         },
-        "Description": {
+        "description": {
           "type": "string"
         },
-        "Environment": {
+        "environment": {
           "type": "string"
         },
-        "EtopNote": {
+        "etop_note": {
           "type": "string"
         },
-        "EtopUserId": {
+        "etop_user_id": {
           "type": "integer",
           "format": "int64"
         },
-        "FfmCode": {
+        "ffm_code": {
           "type": "string"
         },
-        "FfmId": {
+        "ffm_id": {
           "type": "integer",
           "format": "int64"
         },
-        "FfmUrl": {
+        "ffm_url": {
           "type": "string"
         },
-        "FromApp": {
+        "from_app": {
           "type": "string"
         },
-        "FromPortal": {
+        "from_portal": {
           "type": "string"
         },
-        "Hours": {
+        "hours": {
           "type": "string"
         },
-        "Id": {
+        "id": {
           "type": "string"
         },
-        "Modifiedby": {
+        "modifiedby": {
           "type": "string"
         },
-        "Modifiedtime": {
+        "modifiedtime": {
           "type": "string",
           "format": "date-time"
         },
-        "NewValue": {
+        "new_value": {
           "type": "string"
         },
-        "Note": {
+        "note": {
           "type": "string"
         },
-        "OldValue": {
+        "old_value": {
           "type": "string"
         },
-        "OrderCode": {
+        "order_code": {
           "type": "string"
         },
-        "OrderId": {
+        "order_id": {
           "type": "integer",
           "format": "int64"
         },
-        "ParentId": {
+        "parent_id": {
           "type": "integer",
           "format": "int64"
         },
-        "ProductId": {
+        "product_id": {
           "type": "integer",
           "format": "int64"
         },
-        "Provider": {
+        "provider": {
           "type": "string"
         },
-        "Reason": {
+        "reason": {
           "type": "string"
         },
-        "Solution": {
+        "solution": {
           "type": "string"
         },
-        "Source": {
+        "source": {
           "type": "string"
         },
-        "Starred": {
+        "starred": {
           "type": "string"
         },
-        "Substatus": {
+        "substatus": {
           "type": "string"
         },
-        "Tags": {
+        "tags": {
           "type": "string"
         },
-        "TicketNo": {
+        "ticket_no": {
           "type": "string"
         },
-        "TicketTitle": {
+        "ticket_title": {
           "type": "string"
         },
-        "Ticketcategories": {
+        "ticketcategories": {
           "type": "string"
         },
-        "Ticketpriorities": {
+        "ticketpriorities": {
           "type": "string"
         },
-        "Ticketseverities": {
+        "ticketseverities": {
           "type": "string"
         },
-        "Ticketstatus": {
+        "ticketstatus": {
           "type": "string"
         },
-        "UpdateLog": {
+        "update_log": {
           "type": "string"
         }
       }
@@ -1136,58 +1136,58 @@
     "xkTicketRequest": {
       "type": "object",
       "properties": {
-        "Code": {
+        "code": {
           "type": "string"
         },
-        "Company": {
+        "company": {
           "type": "string"
         },
-        "Environment": {
+        "environment": {
           "type": "string"
         },
-        "EtopUserId": {
+        "etop_user_id": {
           "type": "integer",
           "format": "int64"
         },
-        "FfmCode": {
+        "ffm_code": {
           "type": "string"
         },
-        "FfmId": {
+        "ffm_id": {
           "type": "integer",
           "format": "int64"
         },
-        "FfmUrl": {
+        "ffm_url": {
           "type": "string"
         },
-        "FromApp": {
+        "from_app": {
           "type": "string"
         },
-        "Id": {
+        "id": {
           "type": "string"
         },
-        "Note": {
+        "note": {
           "type": "string"
         },
-        "OldValue": {
+        "old_value": {
           "type": "string"
         },
-        "OrderCode": {
+        "order_code": {
           "type": "string"
         },
-        "OrderId": {
+        "order_id": {
           "type": "integer",
           "format": "int64"
         },
-        "Provider": {
+        "provider": {
           "type": "string"
         },
-        "Reason": {
+        "reason": {
           "type": "string"
         },
-        "Title": {
+        "title": {
           "type": "string"
         },
-        "Value": {
+        "value": {
           "type": "string"
         }
       }
@@ -1195,71 +1195,71 @@
     "xkVHTCallLog": {
       "type": "object",
       "properties": {
-        "CallId": {
+        "call_id": {
           "type": "string"
         },
-        "Cause": {
+        "cause": {
           "type": "string"
         },
-        "CdrId": {
+        "cdr_id": {
           "type": "string"
         },
-        "Direction": {
+        "direction": {
           "type": "integer",
           "format": "int32"
         },
-        "Duration": {
+        "duration": {
           "type": "integer",
           "format": "int32"
         },
-        "EtopAccountId": {
+        "etop_account_id": {
           "type": "integer",
           "format": "int64"
         },
-        "FromExtension": {
+        "from_extension": {
           "type": "string"
         },
-        "FromNumber": {
+        "from_number": {
           "type": "string"
         },
-        "Q850Cause": {
+        "q850_cause": {
           "type": "string"
         },
-        "RecordFileSize": {
+        "record_file_size": {
           "type": "integer",
           "format": "int32"
         },
-        "RecordingPath": {
+        "recording_path": {
           "type": "string"
         },
-        "RecordingUrl": {
+        "recording_url": {
           "type": "string"
         },
-        "SdkCallId": {
+        "sdk_call_id": {
           "type": "string"
         },
-        "SipCallId": {
+        "sip_call_id": {
           "type": "string"
         },
-        "TimeConnected": {
+        "time_connected": {
           "type": "string",
           "format": "date-time"
         },
-        "TimeEnded": {
+        "time_ended": {
           "type": "string",
           "format": "date-time"
         },
-        "TimeStarted": {
+        "time_started": {
           "type": "string",
           "format": "date-time"
         },
-        "ToExtension": {
+        "to_extension": {
           "type": "string"
         },
-        "ToNumber": {
+        "to_number": {
           "type": "string"
         },
-        "VtigerAccountId": {
+        "vtiger_account_id": {
           "type": "string"
         }
       }

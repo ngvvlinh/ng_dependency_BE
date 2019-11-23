@@ -216,14 +216,14 @@
     "maVersionInfoResponse": {
       "type": "object",
       "properties": {
-        "Service": {
+        "service": {
           "type": "string"
         },
-        "UpdatedAt": {
+        "updated_at": {
           "type": "string",
           "format": "date-time"
         },
-        "Version": {
+        "version": {
           "type": "string"
         }
       }
@@ -241,71 +241,71 @@
     "ocAddress": {
       "type": "object",
       "properties": {
-        "Address1": {
+        "address1": {
           "type": "string"
         },
-        "Address2": {
+        "address2": {
           "type": "string"
         },
-        "Coordinates": {
+        "coordinates": {
           "$ref": "#/definitions/ocCoordinates"
         },
-        "Country": {
+        "country": {
           "type": "string"
         },
-        "District": {
+        "district": {
           "type": "string"
         },
-        "DistrictCode": {
+        "district_code": {
           "type": "string"
         },
-        "Email": {
+        "email": {
           "type": "string"
         },
-        "ExportedFields": {
+        "exported_fields": {
           "type": "array",
           "items": {
             "type": "string"
           }
         },
-        "FirstName": {
+        "first_name": {
           "type": "string"
         },
-        "FullName": {
+        "full_name": {
           "type": "string"
         },
-        "Id": {
+        "id": {
           "type": "integer",
           "format": "int64"
         },
-        "LastName": {
+        "last_name": {
           "type": "string"
         },
-        "Notes": {
+        "notes": {
           "$ref": "#/definitions/ocAddressNote"
         },
-        "Phone": {
+        "phone": {
           "type": "string"
         },
-        "Position": {
+        "position": {
           "type": "string"
         },
-        "Province": {
+        "province": {
           "type": "string"
         },
-        "ProvinceCode": {
+        "province_code": {
           "type": "string"
         },
-        "Type": {
+        "type": {
           "$ref": "#/definitions/euAddressType"
         },
-        "Ward": {
+        "ward": {
           "type": "string"
         },
-        "WardCode": {
+        "ward_code": {
           "type": "string"
         },
-        "Zip": {
+        "zip": {
           "type": "string"
         }
       }
@@ -313,16 +313,16 @@
     "ocAddressNote": {
       "type": "object",
       "properties": {
-        "LunchBreak": {
+        "lunch_break": {
           "type": "string"
         },
-        "Note": {
+        "note": {
           "type": "string"
         },
-        "OpenTime": {
+        "open_time": {
           "type": "string"
         },
-        "Other": {
+        "other": {
           "type": "string"
         }
       }
@@ -330,11 +330,11 @@
     "ocCoordinates": {
       "type": "object",
       "properties": {
-        "Latitude": {
+        "latitude": {
           "type": "integer",
           "format": "float32"
         },
-        "Longitude": {
+        "longitude": {
           "type": "integer",
           "format": "float32"
         }
@@ -343,20 +343,20 @@
     "ocPublicAccountInfo": {
       "type": "object",
       "properties": {
-        "Id": {
+        "id": {
           "type": "integer",
           "format": "int64"
         },
-        "ImageUrl": {
+        "image_url": {
           "type": "string"
         },
-        "Name": {
+        "name": {
           "type": "string"
         },
-        "Type": {
+        "type": {
           "$ref": "#/definitions/ocAccountType"
         },
-        "Website": {
+        "website": {
           "type": "string"
         }
       }
@@ -364,46 +364,46 @@
     "ocUser": {
       "type": "object",
       "properties": {
-        "CreatedAt": {
+        "created_at": {
           "type": "string",
           "format": "date-time"
         },
-        "Email": {
+        "email": {
           "type": "string"
         },
-        "EmailVerificationSentAt": {
+        "email_verification_sent_at": {
           "type": "string",
           "format": "date-time"
         },
-        "EmailVerifiedAt": {
+        "email_verified_at": {
           "type": "string",
           "format": "date-time"
         },
-        "FullName": {
+        "full_name": {
           "type": "string"
         },
-        "Id": {
+        "id": {
           "type": "integer",
           "format": "int64"
         },
-        "Phone": {
+        "phone": {
           "type": "string"
         },
-        "PhoneVerificationSentAt": {
+        "phone_verification_sent_at": {
           "type": "string",
           "format": "date-time"
         },
-        "PhoneVerifiedAt": {
+        "phone_verified_at": {
           "type": "string",
           "format": "date-time"
         },
-        "ShortName": {
+        "short_name": {
           "type": "string"
         },
-        "Source": {
+        "source": {
           "$ref": "#/definitions/yuUserSource"
         },
-        "UpdatedAt": {
+        "updated_at": {
           "type": "string",
           "format": "date-time"
         }
@@ -412,19 +412,19 @@
     "piAction": {
       "type": "object",
       "properties": {
-        "Label": {
+        "label": {
           "type": "string"
         },
-        "Meta": {
+        "meta": {
           "type": "object",
           "additionalProperties": {
             "type": "string"
           }
         },
-        "Msg": {
+        "msg": {
           "type": "string"
         },
-        "Name": {
+        "name": {
           "type": "string"
         }
       }
@@ -432,7 +432,7 @@
     "piGrantAccessRequest": {
       "type": "object",
       "properties": {
-        "ShopId": {
+        "shop_id": {
           "type": "integer",
           "format": "int64"
         }
@@ -441,10 +441,10 @@
     "piGrantAccessResponse": {
       "type": "object",
       "properties": {
-        "AccessToken": {
+        "access_token": {
           "type": "string"
         },
-        "ExpiresIn": {
+        "expires_in": {
           "type": "integer",
           "format": "int32"
         }
@@ -453,7 +453,7 @@
     "piInitRequest": {
       "type": "object",
       "properties": {
-        "AuthToken": {
+        "auth_token": {
           "type": "string"
         }
       }
@@ -461,38 +461,38 @@
     "piLoginResponse": {
       "type": "object",
       "properties": {
-        "AccessToken": {
+        "access_token": {
           "type": "string"
         },
-        "Account": {
+        "account": {
           "$ref": "#/definitions/piPartnerShopLoginAccount"
         },
-        "Actions": {
+        "actions": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/piAction"
           }
         },
-        "AuthPartner": {
+        "auth_partner": {
           "$ref": "#/definitions/ocPublicAccountInfo"
         },
-        "AvailableAccounts": {
+        "available_accounts": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/piPartnerShopLoginAccount"
           }
         },
-        "ExpiresIn": {
+        "expires_in": {
           "type": "integer",
           "format": "int32"
         },
-        "RedirectUrl": {
+        "redirect_url": {
           "type": "string"
         },
-        "Shop": {
+        "shop": {
           "$ref": "#/definitions/piPartnerShopInfo"
         },
-        "User": {
+        "user": {
           "$ref": "#/definitions/piPartnerUserLogin"
         }
       }
@@ -500,10 +500,10 @@
     "piLoginUsingTokenRequest": {
       "type": "object",
       "properties": {
-        "Login": {
+        "login": {
           "type": "string"
         },
-        "VerificationCode": {
+        "verification_code": {
           "type": "string"
         }
       }
@@ -511,33 +511,33 @@
     "piPartnerShopInfo": {
       "type": "object",
       "properties": {
-        "Address": {
+        "address": {
           "$ref": "#/definitions/ocAddress"
         },
-        "Email": {
+        "email": {
           "type": "string"
         },
-        "Id": {
+        "id": {
           "type": "integer",
           "format": "int64"
         },
-        "ImageUrl": {
+        "image_url": {
           "type": "string"
         },
-        "IsTest": {
+        "is_test": {
           "type": "boolean"
         },
-        "Name": {
+        "name": {
           "type": "string"
         },
-        "Phone": {
+        "phone": {
           "type": "string"
         },
-        "ShipFromAddressId": {
+        "ship_from_address_id": {
           "type": "integer",
           "format": "int64"
         },
-        "Status": {
+        "status": {
           "$ref": "#/definitions/wwStatus"
         }
       }
@@ -545,27 +545,27 @@
     "piPartnerShopLoginAccount": {
       "type": "object",
       "properties": {
-        "AccessToken": {
+        "access_token": {
           "type": "string"
         },
-        "ExpiresIn": {
+        "expires_in": {
           "type": "integer",
           "format": "int32"
         },
-        "ExternalId": {
+        "external_id": {
           "type": "string"
         },
-        "Id": {
+        "id": {
           "type": "integer",
           "format": "int64"
         },
-        "ImageUrl": {
+        "image_url": {
           "type": "string"
         },
-        "Name": {
+        "name": {
           "type": "string"
         },
-        "Type": {
+        "type": {
           "$ref": "#/definitions/ocAccountType"
         }
       }
@@ -573,20 +573,20 @@
     "piPartnerUserLogin": {
       "type": "object",
       "properties": {
-        "Email": {
+        "email": {
           "type": "string"
         },
-        "FullName": {
+        "full_name": {
           "type": "string"
         },
-        "Id": {
+        "id": {
           "type": "integer",
           "format": "int64"
         },
-        "Phone": {
+        "phone": {
           "type": "string"
         },
-        "ShortName": {
+        "short_name": {
           "type": "string"
         }
       }
@@ -594,19 +594,19 @@
     "piRegisterRequest": {
       "type": "object",
       "properties": {
-        "AgreeEmailInfo": {
+        "agree_email_info": {
           "type": "boolean"
         },
-        "AgreeTos": {
+        "agree_tos": {
           "type": "boolean"
         },
-        "Email": {
+        "email": {
           "type": "string"
         },
-        "FullName": {
+        "full_name": {
           "type": "string"
         },
-        "Phone": {
+        "phone": {
           "type": "string"
         }
       }
@@ -614,14 +614,14 @@
     "piRegisterResponse": {
       "type": "object",
       "properties": {
-        "AccessToken": {
+        "access_token": {
           "type": "string"
         },
-        "ExpiresIn": {
+        "expires_in": {
           "type": "integer",
           "format": "int32"
         },
-        "User": {
+        "user": {
           "$ref": "#/definitions/ocUser"
         }
       }
@@ -629,10 +629,10 @@
     "piRequestLoginRequest": {
       "type": "object",
       "properties": {
-        "Login": {
+        "login": {
           "type": "string"
         },
-        "RecaptchaToken": {
+        "recaptcha_token": {
           "type": "string"
         }
       }
@@ -640,16 +640,16 @@
     "piRequestLoginResponse": {
       "type": "object",
       "properties": {
-        "Actions": {
+        "actions": {
           "type": "array",
           "items": {
             "$ref": "#/definitions/piAction"
           }
         },
-        "Code": {
+        "code": {
           "type": "string"
         },
-        "Msg": {
+        "msg": {
           "type": "string"
         }
       }
