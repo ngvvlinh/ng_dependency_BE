@@ -79,9 +79,6 @@ func (a *ReceiptAggregate) CreateReceipt(
 	if args.LedgerID == 0 {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Tài khoản thanh toán không hợp lệ")
 	}
-	if args.Type != receipting.ReceiptTypeReceipt && args.Type != receipting.ReceiptTypePayment {
-		return nil, cm.Errorf(cm.InvalidArgument, nil, "Kiểu phiếu không hợp lệ")
-	}
 
 	receiptNeedValidate := &receipting.Receipt{
 		TraderID:    args.TraderID,
@@ -249,12 +246,6 @@ func (a *ReceiptAggregate) validateReceiptForCreateOrUpdate(ctx context.Context,
 }
 
 func (a *ReceiptAggregate) validateTypeAndRefType(receiptType receipting.ReceiptType, receiptRefType receipting.ReceiptRefType) error {
-	if receiptRefType != receipting.ReceiptRefTypeOrder &&
-		receiptRefType != receipting.ReceiptRefTypePurchaseOrder &&
-		receiptRefType != receipting.ReceiptRefTypeFulfillment {
-		return cm.Errorf(cm.InvalidArgument, nil, "ref_type không hợp lệ")
-	}
-
 	if receiptRefType == receipting.ReceiptRefTypePurchaseOrder && receiptType == receipting.ReceiptTypeReceipt {
 		return cm.Errorf(cm.InvalidArgument, nil, "Loại phiếu không hợp lệ")
 	}
