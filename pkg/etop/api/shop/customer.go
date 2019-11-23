@@ -6,11 +6,13 @@ import (
 	"etop.vn/api/main/etop"
 	"etop.vn/api/main/ordering"
 	"etop.vn/api/main/receipting"
+	pbcm "etop.vn/api/pb/common"
+	pbshop "etop.vn/api/pb/etop/shop"
 	"etop.vn/api/shopping/customering"
-	pbcm "etop.vn/backend/pb/common"
-	pbshop "etop.vn/backend/pb/etop/shop"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
+	"etop.vn/backend/pkg/common/cmapi"
+	"etop.vn/backend/pkg/etop/api/convertpb"
 	. "etop.vn/capi/dot"
 )
 
@@ -50,7 +52,7 @@ func (s *CustomerService) CreateCustomer(ctx context.Context, r *CreateCustomerE
 		return err
 	}
 
-	r.Result = pbshop.PbCustomer(cmd.Result)
+	r.Result = convertpb.PbCustomer(cmd.Result)
 	return nil
 }
 
@@ -73,7 +75,7 @@ func (s *CustomerService) UpdateCustomer(ctx context.Context, r *UpdateCustomerE
 		return err
 	}
 
-	r.Result = pbshop.PbCustomer(cmd.Result)
+	r.Result = convertpb.PbCustomer(cmd.Result)
 	return nil
 }
 
@@ -110,7 +112,7 @@ func (s *CustomerService) GetCustomer(ctx context.Context, r *GetCustomerEndpoin
 	if err := customerQuery.Dispatch(ctx, query); err != nil {
 		return err
 	}
-	r.Result = pbshop.PbCustomer(query.Result)
+	r.Result = convertpb.PbCustomer(query.Result)
 	if err := s.listLiabilities(ctx, r.Context.Shop.ID, []*pbshop.Customer{r.Result}); err != nil {
 		return err
 	}
@@ -118,18 +120,18 @@ func (s *CustomerService) GetCustomer(ctx context.Context, r *GetCustomerEndpoin
 }
 
 func (s *CustomerService) GetCustomers(ctx context.Context, r *GetCustomersEndpoint) error {
-	paging := r.Paging.CMPaging()
+	paging := cmapi.CMPaging(r.Paging)
 	query := &customering.ListCustomersQuery{
 		ShopID:  r.Context.Shop.ID,
 		Paging:  *paging,
-		Filters: pbcm.ToFilters(r.Filters),
+		Filters: cmapi.ToFilters(r.Filters),
 	}
 	if err := customerQuery.Dispatch(ctx, query); err != nil {
 		return err
 	}
 	r.Result = &pbshop.CustomersResponse{
-		Customers: pbshop.PbCustomers(query.Result.Customers),
-		Paging:    pbcm.PbPageInfo(paging, query.Result.Count),
+		Customers: convertpb.PbCustomers(query.Result.Customers),
+		Paging:    cmapi.PbPageInfo(paging, query.Result.Count),
 	}
 	if err := s.listLiabilities(ctx, r.Context.Shop.ID, r.Result.Customers); err != nil {
 		return err
@@ -146,7 +148,7 @@ func (s *CustomerService) GetCustomersByIDs(ctx context.Context, r *GetCustomers
 		return err
 	}
 	r.Result = &pbshop.CustomersResponse{
-		Customers: pbshop.PbCustomers(query.Result.Customers),
+		Customers: convertpb.PbCustomers(query.Result.Customers),
 	}
 	if err := s.listLiabilities(ctx, r.Context.Shop.ID, r.Result.Customers); err != nil {
 		return err
@@ -165,7 +167,7 @@ func (s *CustomerGroupService) CreateCustomerGroup(ctx context.Context, r *Creat
 	if err := customerAggr.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
-	r.Result = pbshop.PbCustopmerGroup(cmd.Result)
+	r.Result = convertpb.PbCustopmerGroup(cmd.Result)
 	return nil
 }
 
@@ -176,22 +178,22 @@ func (s *CustomerGroupService) GetCustomerGroup(ctx context.Context, q *GetCusto
 	if err := customerQuery.Dispatch(ctx, query); err != nil {
 		return err
 	}
-	q.Result = pbshop.PbCustopmerGroup(query.Result)
+	q.Result = convertpb.PbCustopmerGroup(query.Result)
 	return nil
 }
 
 func (s *CustomerGroupService) GetCustomerGroups(ctx context.Context, q *GetCustomerGroupsEndpoint) error {
-	paging := q.Paging.CMPaging()
+	paging := cmapi.CMPaging(q.Paging)
 	query := &customering.ListCustomerGroupsQuery{
 		Paging:  *paging,
-		Filters: pbcm.ToFilters(q.Filters),
+		Filters: cmapi.ToFilters(q.Filters),
 	}
 	if err := customerQuery.Dispatch(ctx, query); err != nil {
 		return err
 	}
 	q.Result = &pbshop.CustomerGroupsResponse{
-		Paging:         pbcm.PbPageInfo(paging, query.Result.Count),
-		CustomerGroups: pbshop.PbCustomerGroups(query.Result.CustomerGroups),
+		Paging:         cmapi.PbPageInfo(paging, query.Result.Count),
+		CustomerGroups: convertpb.PbCustomerGroups(query.Result.CustomerGroups),
 	}
 	return nil
 }
@@ -204,7 +206,7 @@ func (s *CustomerGroupService) UpdateCustomerGroup(ctx context.Context, r *Updat
 	if err := customerAggr.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
-	r.Result = pbshop.PbCustopmerGroup(cmd.Result)
+	r.Result = convertpb.PbCustopmerGroup(cmd.Result)
 	return nil
 }
 

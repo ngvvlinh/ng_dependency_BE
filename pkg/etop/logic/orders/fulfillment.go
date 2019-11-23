@@ -10,17 +10,18 @@ import (
 	"etop.vn/api/main/location"
 	"etop.vn/api/main/ordering"
 	ordertypes "etop.vn/api/main/ordering/types"
+	pborder "etop.vn/api/pb/etop/order"
+	pbshop "etop.vn/api/pb/etop/shop"
 	"etop.vn/api/shopping/addressing"
 	"etop.vn/api/shopping/customering"
 	ordermodel "etop.vn/backend/com/main/ordering/model"
 	ordermodelx "etop.vn/backend/com/main/ordering/modelx"
 	shipmodel "etop.vn/backend/com/main/shipping/model"
 	shipmodelx "etop.vn/backend/com/main/shipping/modelx"
-	pborder "etop.vn/backend/pb/etop/order"
-	pbshop "etop.vn/backend/pb/etop/shop"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/validate"
+	"etop.vn/backend/pkg/etop/api/convertpb"
 	"etop.vn/backend/pkg/etop/logic/shipping_provider"
 	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/capi"
@@ -119,7 +120,7 @@ func ConfirmOrder(ctx context.Context, shop *model.Shop, r *pbshop.ConfirmOrderR
 			ll.Error("RaiseOrderConfirmedEvent", l.Error(err))
 		}
 	}
-	resp = pborder.PbOrder(order, nil, model.TagShop)
+	resp = convertpb.PbOrder(order, nil, model.TagShop)
 	if autoCreateFfm {
 		req := &pbshop.OrderIDRequest{
 			OrderId: r.OrderId,
@@ -169,7 +170,7 @@ func ConfirmOrderAndCreateFulfillments(ctx context.Context, shop *model.Shop, pa
 			return
 		}
 
-		resp.Order = pborder.PbOrder(order, fulfillments, model.TagShop)
+		resp.Order = convertpb.PbOrder(order, fulfillments, model.TagShop)
 		resp.Order.ShopName = "" // TODO: remove this line
 	}()
 

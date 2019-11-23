@@ -3,16 +3,12 @@ package sqlstore
 import (
 	"context"
 
-	"etop.vn/backend/pkg/common/sqlstore"
-
+	"etop.vn/api/meta"
 	"etop.vn/api/services/affiliate"
-
 	"etop.vn/backend/com/services/affiliate/convert"
 	"etop.vn/backend/com/services/affiliate/model"
-
-	"etop.vn/api/meta"
-
 	"etop.vn/backend/pkg/common/cmsql"
+	"etop.vn/backend/pkg/common/sqlstore"
 )
 
 type SellerCommissionStoreFactory func(ctx context.Context) *SellerCommissionStore

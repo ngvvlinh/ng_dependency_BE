@@ -5,6 +5,8 @@ import (
 	"net/url"
 	"regexp"
 
+	pbcm "etop.vn/api/pb/common"
+	pbpartner "etop.vn/api/pb/external/partner"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/auth"
 	"etop.vn/backend/pkg/common/bus"
@@ -12,13 +14,10 @@ import (
 	"etop.vn/backend/pkg/common/redis"
 	cmService "etop.vn/backend/pkg/common/service"
 	"etop.vn/backend/pkg/common/validate"
+	convertpb2 "etop.vn/backend/pkg/etop/api/convertpb"
+	"etop.vn/backend/pkg/etop/apix/convertpb"
 	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/common/l"
-
-	pbcm "etop.vn/backend/pb/common"
-	pbetop "etop.vn/backend/pb/etop"
-	pbexternal "etop.vn/backend/pb/external"
-	pbpartner "etop.vn/backend/pb/external/partner"
 )
 
 var (
@@ -83,7 +82,7 @@ func (s *MiscService) CurrentAccount(ctx context.Context, q *CurrentAccountEndpo
 	if q.Context.Partner == nil {
 		return cm.Errorf(cm.Internal, nil, "")
 	}
-	q.Result = pbexternal.PbPartner(q.Context.Partner)
+	q.Result = convertpb.PbPartner(q.Context.Partner)
 	return nil
 }
 
@@ -91,7 +90,7 @@ func (s *ShopService) CurrentShop(ctx context.Context, q *CurrentShopEndpoint) e
 	if q.Context.Shop == nil {
 		return cm.Errorf(cm.Internal, nil, "")
 	}
-	q.Result = pbetop.PbPublicAccountInfo(q.Context.Shop)
+	q.Result = convertpb2.PbPublicAccountInfo(q.Context.Shop)
 	return nil
 }
 

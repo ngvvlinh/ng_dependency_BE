@@ -1,0 +1,1713 @@
+syntax = "proto2";
+package shop;
+option go_package = "etop.vn/api/pb/etop/shop";
+
+import "gogoproto/gogo.proto";
+option (gogoproto.equal_all)                = false;
+option (gogoproto.gogoproto_import)         = false;
+option (gogoproto.goproto_enum_prefix_all)  = true;
+option (gogoproto.goproto_getters_all)      = true;
+option (gogoproto.goproto_unrecognized_all) = false;
+option (gogoproto.gostring_all)             = false;
+option (gogoproto.marshaler_all)            = false;
+option (gogoproto.onlyone_all)              = false;
+option (gogoproto.sizer_all)                = false;
+option (gogoproto.testgen_all)              = false;
+option (gogoproto.unmarshaler_all)          = false;
+option (gogoproto.verbose_equal_all)        = false;
+
+import "google/protobuf/timestamp.proto";
+import "common/common.proto";
+import "common/spreadsheet/spreadsheet.proto";
+import "etop/etc/ghn_note_code/code.proto";
+import "etop/etc/try_on/code.proto";
+import "etop/etc/shipping/state.proto";
+import "etop/etc/status3/status.proto";
+import "etop/etc/status4/status.proto";
+import "etop/etop.proto";
+import "etop/order/order.proto";
+import "etop/etc/payment_provider/payment_provider.proto";
+import "etop/etc/product_type/product_type.proto";
+
+message InvitationsResponse {
+    repeated etop.Invitation invitations = 1;
+    optional cm.PageInfo paging = 2;
+}
+
+message GetInvitationsRequest {
+    optional cm.Paging paging = 1;
+    repeated cm.Filter filters = 2;
+}
+
+message CreateInvitationRequest {
+    optional string email = 1 [(gogoproto.nullable)=false];
+    repeated string roles = 2 [(gogoproto.nullable)=false];
+}
+
+message PurchaseOrder {
+    optional int64 id = 1 [(gogoproto.nullable)=false];
+    optional int64 shop_id = 2 [(gogoproto.nullable)=false];
+    optional int64 supplier_id = 3 [(gogoproto.nullable)=false];
+    optional PurchaseOrderSupplier supplier = 4;
+    optional int64 basket_value = 5 [(gogoproto.nullable)=false];
+    optional int64 total_discount = 6 [(gogoproto.nullable)=false];
+    optional int64 total_amount = 7 [(gogoproto.nullable)=false];
+    optional string code = 8 [(gogoproto.nullable)=false];
+    optional string note = 9 [(gogoproto.nullable)=false];
+    optional status3.Status status = 10 [(gogoproto.nullable)=false];
+    repeated PurchaseOrderLine lines = 11;
+    optional int64 created_by = 12 [(gogoproto.nullable)=false];
+    optional string cancelled_reason = 13 [(gogoproto.nullable)=false];
+    optional google.protobuf.Timestamp confirmed_at = 14;
+    optional google.protobuf.Timestamp cancelled_at = 15;
+    optional google.protobuf.Timestamp created_at = 16;
+    optional google.protobuf.Timestamp updated_at = 17;
+    optional google.protobuf.Timestamp deleted_at = 18;
+    optional InventoryVoucher inventory_voucher = 19;
+
+    optional int64 paid_amount = 20 [(gogoproto.nullable)=false];
+}
+
+message PurchaseOrderSupplier {
+    optional string full_name = 1 [(gogoproto.nullable) = false];
+    optional string phone = 2 [(gogoproto.nullable) = false];
+    optional string email = 3 [(gogoproto.nullable) = false];
+    optional string company_name = 4 [(gogoproto.nullable) = false];
+    optional string tax_number = 5 [(gogoproto.nullable) = false];
+    optional string headquarter_address = 6 [(gogoproto.nullable) = false];
+    optional bool deleted = 7 [(gogoproto.nullable) = false];
+}
+
+message GetPurchaseOrdersRequest {
+    optional cm.Paging paging = 1;
+    repeated cm.Filter filters = 2;
+}
+
+message PurchaseOrdersResponse {
+    repeated PurchaseOrder purchase_orders = 1;
+    optional cm.PageInfo paging = 2;
+}
+
+message CreatePurchaseOrderRequest {
+    optional int64 supplier_id = 1 [(gogoproto.nullable)=false];
+    optional int64 basket_value = 2 [(gogoproto.nullable)=false];
+    optional int64 total_discount = 3 [(gogoproto.nullable)=false];
+    optional int64 total_amount = 4 [(gogoproto.nullable)=false];
+    optional string note = 5 [(gogoproto.nullable)=false];
+    repeated PurchaseOrderLine lines = 6;
+}
+
+message UpdatePurchaseOrderRequest {
+    optional int64 id = 1 [(gogoproto.nullable)=false];
+    optional int64 supplier_id = 2;
+    optional int64 basket_value = 3;
+    optional int64 total_discount = 4;
+    optional int64 total_amount = 5;
+    optional string note = 6;
+    repeated PurchaseOrderLine lines = 7;
+}
+
+message PurchaseOrderLine {
+    optional int64 variant_id = 1 [(gogoproto.nullable)=false];
+    optional int64 quantity = 2 [(gogoproto.nullable)=false];
+    optional int64 payment_price = 3 [(gogoproto.nullable)=false];
+    optional int64 product_id =4 [(gogoproto.nullable)=false];
+    optional string product_name =7 [(gogoproto.nullable)=false];
+    optional string image_url = 5 [(gogoproto.nullable)=false];
+    optional string code = 9 [(gogoproto.nullable)=false];
+    repeated Attribute attributes = 6;
+}
+
+message CancelPurchaseOrderRequest {
+    optional int64 id = 1 [(gogoproto.nullable)=false];
+    optional string reason = 2 [(gogoproto.nullable)=false];
+}
+
+message ConfirmPurchaseOrderRequest {
+    optional int64 id = 1 [(gogoproto.nullable)=false];
+    // enum create, confirm
+    optional string auto_inventory_voucher = 2 [(gogoproto.nullable)=false];
+}
+
+message GetLedgersRequest {
+    optional cm.Paging paging = 1;
+    repeated cm.Filter filters = 2;
+}
+
+message CreateLedgerRequest {
+    optional string name = 1 [(gogoproto.nullable)=false];
+    // required name, account_number, account_name
+    optional etop.BankAccount bank_account = 2;
+    optional string note = 3 [(gogoproto.nullable)=false];
+    optional string created_by = 4 [(gogoproto.nullable)=false];
+}
+
+message UpdateLedgerRequest {
+    optional int64 id = 1 [(gogoproto.nullable)=false];
+    optional string name = 2;
+    // required name, account_number, account_name
+    optional etop.BankAccount bank_account = 3;
+    optional string note = 4;
+}
+
+message LedgersResponse {
+    repeated Ledger ledgers = 1;
+    optional cm.PageInfo paging = 2;
+}
+
+message Ledger {
+    optional int64 id = 1 [(gogoproto.nullable)=false];
+    optional string name = 2 [(gogoproto.nullable)=false];
+    optional etop.BankAccount bank_account = 3;
+    optional string note = 4 [(gogoproto.nullable)=false];
+    // enum: cash, bank
+    optional string type = 5 [(gogoproto.nullable)=false];
+    optional int64 created_by = 6 [(gogoproto.nullable)=false];
+    optional google.protobuf.Timestamp created_at = 7;
+    optional google.protobuf.Timestamp updated_at = 8;
+}
+
+message RegisterShopRequest {
+    // @required
+    optional string name = 1 [(gogoproto.nullable)=false];
+    optional etop.Address address = 2;
+    optional string phone = 7 [(gogoproto.nullable)=false];
+    optional etop.BankAccount bank_account = 8;
+
+    optional string website_url = 12 [(gogoproto.nullable)=false];
+    optional string image_url = 13 [(gogoproto.nullable)=false];
+    optional string email = 14 [(gogoproto.nullable)=false];
+
+    optional string url_slug = 16 [(gogoproto.nullable)=false];
+    optional etop.CompanyInfo company_info = 17;
+    // referrence: https://icalendar.org/rrule-tool.html
+    optional string money_transaction_rrule = 18 [(gogoproto.nullable)=false];
+    repeated etop.SurveyInfo survey_info = 19;
+    repeated etop.ShippingServiceSelectStrategyItem shipping_service_select_strategy = 20;
+}
+
+message RegisterShopResponse {
+    // @required
+    optional etop.Shop shop = 1;
+}
+
+message UpdateShopRequest {
+    optional bool inventory_overstock = 4 ;
+    optional string name = 1 [(gogoproto.nullable)=false];
+    optional etop.Address address = 2;
+    optional string phone = 7 [(gogoproto.nullable)=false];
+    optional etop.BankAccount bank_account = 8;
+
+    optional string website_url = 12 [(gogoproto.nullable)=false];
+    optional string image_url = 13 [(gogoproto.nullable)=false];
+    optional string email = 14 [(gogoproto.nullable)=false];
+    optional bool auto_create_ffm = 15;
+
+    // @deprecated use try_on instead
+    optional ghn_note_code.GHNNoteCode ghn_note_code = 16;
+    optional try_on.TryOnCode try_on = 17;
+    optional etop.CompanyInfo company_info = 18;
+    // referrence: https://icalendar.org/rrule-tool.html
+    optional string money_transaction_rrule = 19 [(gogoproto.nullable)=false];
+    repeated etop.SurveyInfo survey_info = 20;
+    repeated etop.ShippingServiceSelectStrategyItem shipping_service_select_strategy = 21;
+}
+
+message UpdateShopResponse {
+    optional etop.Shop shop = 1;
+}
+
+message Collection {
+    // @required
+    optional int64 id = 1 [(gogoproto.nullable)=false];
+    optional int64 shop_id = 8 [(gogoproto.nullable)=false];
+
+    // @required
+    optional string name = 2 [(gogoproto.nullable)=false];
+
+    optional string description = 3 [(gogoproto.nullable)=false];
+    optional string short_desc  = 4 [(gogoproto.nullable)=false];
+    optional string desc_html   = 5 [(gogoproto.nullable)=false];
+
+    // @required
+    optional google.protobuf.Timestamp created_at = 6;
+
+    // @required
+    optional google.protobuf.Timestamp updated_at = 7;
+}
+
+message CreateCollectionRequest {
+     // @required
+     optional string name = 2 [(gogoproto.nullable)=false];
+
+     optional string description = 3 [(gogoproto.nullable)=false];
+     optional string short_desc  = 4 [(gogoproto.nullable)=false];
+     optional string desc_html   = 5 [(gogoproto.nullable)=false];
+}
+
+message UpdateProductCategoryRequest {
+    optional int64 product_id =1 [(gogoproto.nullable)=false];
+    optional int64 category_id =2 [(gogoproto.nullable)=false];
+}
+
+message CollectionsResponse {
+    repeated ShopCollection collections = 1;
+}
+
+message UpdateCollectionRequest {
+    // @required
+    optional int64 id = 1 [(gogoproto.nullable)=false];
+
+    // @required
+    optional string name = 2;
+
+    optional string description = 3;
+    optional string short_desc  = 4;
+    optional string desc_html   = 5;
+}
+
+message UpdateProductsCollectionRequest {
+    // @required
+    optional int64 collection_id = 1 [(gogoproto.nullable)=false];
+
+    repeated int64 product_ids = 2;
+}
+
+message RemoveProductsCollectionRequest {
+    // @required
+    optional int64 collection_id = 1 [(gogoproto.nullable)=false];
+
+    repeated int64 product_ids = 2;
+}
+
+message EtopVariant {
+    optional int64 id = 1 [(gogoproto.nullable)=false];
+    optional string code   = 2 [(gogoproto.nullable)=false];
+
+    optional string name  = 4 [(gogoproto.nullable)=false];
+    optional string description = 6 [(gogoproto.nullable)=false];
+    optional string short_desc  = 7 [(gogoproto.nullable)=false];
+    optional string desc_html   = 8 [(gogoproto.nullable)=false];
+    repeated string image_urls  = 9;
+
+    optional int32  list_price = 15 [(gogoproto.nullable)=false];
+    optional int32  cost_price = 16 [(gogoproto.nullable)=false];
+
+    repeated Attribute attributes = 18;
+}
+
+message EtopProduct {
+    optional int64 id = 1 [(gogoproto.nullable)=false];
+    optional string code   = 2 [(gogoproto.nullable)=false];
+
+    optional string name  = 4 [(gogoproto.nullable)=false];
+    optional string description = 6 [(gogoproto.nullable)=false];
+    optional string short_desc  = 7 [(gogoproto.nullable)=false];
+    optional string desc_html   = 8 [(gogoproto.nullable)=false];
+    optional string unit        = 12 [(gogoproto.nullable)=false];
+    repeated string image_urls  = 9;
+
+    optional int32  list_price = 15 [(gogoproto.nullable)=false];
+    optional int32  cost_price = 16 [(gogoproto.nullable)=false];
+
+    optional int64  category_id = 10 [(gogoproto.nullable)=false];
+    // @deprecated
+    optional int64 product_source_category_id = 11 [(gogoproto.nullable)=false];
+}
+
+message ShopVariant {
+    // @required
+    optional int64 id = 1 [(gogoproto.nullable)=false];
+    optional EtopVariant info = 8;
+
+    optional string code   = 2 [(gogoproto.nullable)=false];
+    // @deprecated use code instead
+    optional string ed_code   = 3 [(gogoproto.nullable)=false];
+
+    optional string name        = 4 [(gogoproto.nullable)=false];
+    optional string description = 5 [(gogoproto.nullable)=false];
+    optional string short_desc  = 6 [(gogoproto.nullable)=false];
+    optional string desc_html   = 7 [(gogoproto.nullable)=false];
+    repeated string image_urls  = 9;
+
+    optional int32  list_price = 14 [(gogoproto.nullable)=false];
+    optional int32  retail_price = 15 [(gogoproto.nullable)=false];
+
+    optional string note        = 11 [(gogoproto.nullable)=false];
+    optional status3.Status status = 12 [(gogoproto.nullable)=false];
+    optional bool is_available  = 13 [(gogoproto.nullable)=false];
+
+    optional InventoryVariantShopVariant inventory_variant = 17;
+
+    // @deprecated use stags instead
+    repeated string  tags = 10;
+    repeated Tag    stags = 22;
+
+    repeated Attribute attributes = 18;
+
+    optional ShopShortProduct product = 23;
+}
+
+message InventoryVariantShopVariant {
+    optional int32 quantity_on_hand = 3 [(gogoproto.nullable) = false];
+    optional int32 quantity_picked = 4 [(gogoproto.nullable) = false];
+    optional int32 cost_price = 5 [(gogoproto.nullable) = false];
+    optional int32 quantity = 6 [(gogoproto.nullable) = false];
+}
+
+message ShopProduct {
+    // @required
+    optional int64 id = 1 [(gogoproto.nullable)=false];
+    optional EtopProduct info = 8;
+
+    optional string code   = 2 [(gogoproto.nullable)=false];
+    // @deprecated use code instead
+    optional string ed_code   = 3 [(gogoproto.nullable)=false];
+
+    optional string name        = 4 [(gogoproto.nullable)=false];
+    optional string description = 5 [(gogoproto.nullable)=false];
+    optional string short_desc  = 6 [(gogoproto.nullable)=false];
+    optional string desc_html   = 7 [(gogoproto.nullable)=false];
+    repeated string image_urls  = 9;
+    optional int64 category_id = 24 [(gogoproto.nullable)=false];
+
+    // @deprecated use stags instead
+    repeated string  tags = 10;
+    repeated Tag    stags = 22;
+
+    optional string note        = 11 [(gogoproto.nullable)=false];
+    optional status3.Status status = 12 [(gogoproto.nullable)=false];
+    optional bool is_available  = 13 [(gogoproto.nullable)=false];
+
+    optional int32  list_price = 14 [(gogoproto.nullable)=false];
+    optional int32  retail_price = 15 [(gogoproto.nullable)=false];
+
+    repeated int64 collection_ids = 17;
+    repeated ShopVariant variants = 18;
+
+    optional int64 product_source_id = 19 [(gogoproto.nullable)=false];
+
+    optional google.protobuf.Timestamp created_at = 21;
+    optional google.protobuf.Timestamp updated_at = 20;
+    optional product_type.ProductType product_type = 23;
+    repeated cm.MetaField meta_fields = 26;
+    optional int64 brand_id = 27 [(gogoproto.nullable)=false];
+}
+
+message ShopShortProduct {
+    optional int64 id = 1 [(gogoproto.nullable)=false];
+    optional string name = 2 [(gogoproto.nullable)=false];
+}
+
+message  ShopCollection {
+	optional int64 id = 1 [(gogoproto.nullable)=false];
+	optional int64 shop_id = 2 [(gogoproto.nullable)=false];
+
+	optional string name = 3 [(gogoproto.nullable)=false];
+	optional string description = 4 [(gogoproto.nullable)=false];
+	optional string desc_html = 5 [(gogoproto.nullable)=false];
+	optional string short_desc = 6 [(gogoproto.nullable)=false];
+}
+
+message GetVariantsRequest {
+    optional cm.Paging paging = 1;
+    repeated cm.Filter filters = 4;
+}
+
+message GetCategoriesRequest {
+    optional cm.Paging paging = 1;
+    repeated cm.Filter filters = 4;
+}
+
+message ShopVariantsResponse {
+    optional cm.PageInfo paging   = 1;
+    repeated ShopVariant variants = 2;
+}
+
+message ShopProductsResponse {
+    optional cm.PageInfo paging   = 1;
+    repeated ShopProduct products = 2;
+}
+
+message ShopCategoriesResponse {
+    optional cm.PageInfo paging   = 1;
+    repeated ShopCategory categories = 2;
+}
+
+message UpdateVariantRequest {
+    // @required
+    optional int64 id = 1 [(gogoproto.nullable)=false];
+
+    optional string name        = 2;
+    optional string note        = 3;
+    optional string code       = 11;
+
+    optional int32  cost_price  = 4;
+    optional int32  list_price  = 5;
+    optional int32  retail_price  = 6;
+
+    optional string description = 7;
+    optional string short_desc  = 8;
+    optional string desc_html   = 9;
+
+    repeated Attribute attributes = 10;
+
+
+    // deprecated
+    optional string sku        = 16 [(gogoproto.nullable)=false];
+}
+
+message UpdateProductRequest {
+    // @required
+    optional int64 id = 1 [(gogoproto.nullable)=false];
+
+    optional string name = 2;
+    optional string code = 3;
+    optional string note = 4;
+    optional string unit = 5;
+
+    optional string description = 6;
+    optional string short_desc  = 7;
+    optional string desc_html   = 8;
+
+    optional int32 cost_price = 9;
+    optional int32 list_price = 10;
+    optional int32 retail_price = 11;
+    optional product_type.ProductType product_type = 12;
+
+    optional cm.MetaField meta_fields = 14;
+    optional int64 brand_id = 15;
+}
+
+message UpdateCategoryRequest {
+     optional int64 id = 1 [(gogoproto.nullable)=false];
+     optional string name = 2;
+     optional int64 parent_id = 3 [(gogoproto.nullable)=false];
+}
+
+message UpdateVariantsRequest {
+    repeated UpdateVariantRequest updates = 1;
+}
+
+message UpdateProductsTagsRequest {
+    // @required
+    repeated int64  ids         = 1;
+    repeated string adds        = 2;
+    repeated string deletes     = 3;
+    repeated string replace_all = 4;
+    optional bool   delete_all  = 5 [(gogoproto.nullable)=false];
+}
+
+message UpdateVariantsResponse {
+    repeated ShopVariant  variants = 2;
+    repeated cm.Error     errors   = 3;
+}
+
+message AddVariantsRequest {
+    repeated int64  ids  = 1;
+    repeated string tags = 2;
+
+    optional int64 collection_id = 3 [(gogoproto.nullable)=false];
+}
+
+message AddVariantsResponse {
+    repeated ShopVariant variants = 1;
+    repeated cm.Error    errors = 2;
+}
+
+message RemoveVariantsRequest {
+    repeated int64 ids   = 1;
+}
+
+message GetOrdersRequest {
+    optional cm.Paging paging = 1;
+    repeated cm.Filter filters = 4;
+    optional etop.MixedAccount mixed = 5;
+}
+
+message UpdateOrdersStatusRequest {
+    // @required
+    repeated int64 ids = 1;
+
+    // @required
+    optional status3.Status confirm = 2;
+    optional string cancel_reason = 3 [(gogoproto.nullable)=false];
+    optional status4.Status status = 4 [(gogoproto.nullable)=false];
+}
+
+message ConfirmOrderRequest {
+  optional int64 order_id = 1 [(gogoproto.nullable)=false];
+
+  // enum ('create', 'create')
+  optional string auto_inventory_voucher = 2;
+  optional bool auto_create_fulfillment = 3 [(gogoproto.nullable)=false];
+}
+
+message OrderIDRequest {
+    optional int64 order_id = 1 [(gogoproto.nullable)=false];
+}
+
+message OrderIDsRequest {
+    repeated int64 order_ids = 1;
+}
+
+message CreateFulfillmentsForOrderRequest {
+    optional int64 order_id = 1 [(gogoproto.nullable)=false];
+    repeated int64 variant_ids = 3;
+}
+
+message CancelOrderRequest {
+    optional int64  order_id = 1 [(gogoproto.nullable)=false];
+    optional string cancel_reason = 2 [(gogoproto.nullable)=false];
+    optional string auto_inventory_voucher = 3 [(gogoproto.nullable)=false];
+}
+
+message CancelOrdersRequest {
+    repeated int64 ids = 1;
+    optional string reason = 2 [(gogoproto.nullable)=false];
+}
+
+message ProductSource {
+    optional int64 id =  1 [(gogoproto.nullable)=false];
+    optional string type =  2 [(gogoproto.nullable)=false];
+    optional string name =  3 [(gogoproto.nullable)=false];
+    optional status3.Status status = 4 [(gogoproto.nullable)=false];
+    optional google.protobuf.Timestamp   updated_at = 5;
+    optional google.protobuf.Timestamp   created_at = 6;
+}
+
+// deprecated
+message CreateProductSourceRequest {
+}
+
+message ProductSourcesResponse {
+    repeated ProductSource product_sources = 1;
+}
+
+message CreateCategoryRequest {
+    optional string name = 1 [(gogoproto.nullable)=false];
+    optional int64 parent_id = 2 [(gogoproto.nullable)=false];
+}
+
+message CreateProductRequest {
+    optional string code = 1 [(gogoproto.nullable)=false];
+    optional string name = 2 [(gogoproto.nullable)=false];
+    optional string unit = 3 [(gogoproto.nullable)=false];
+    optional string note = 4 [(gogoproto.nullable)=false];
+    optional string description = 5 [(gogoproto.nullable)=false];
+    optional string short_desc  = 6 [(gogoproto.nullable)=false];
+    optional string desc_html   = 7 [(gogoproto.nullable)=false];
+    repeated string image_urls  = 9;
+    optional int32  cost_price = 16 [(gogoproto.nullable)=false];
+    optional int32  list_price = 15 [(gogoproto.nullable)=false];
+    optional int32  retail_price = 26 [(gogoproto.nullable)=false];
+    optional product_type.ProductType product_type = 27;
+    optional int64 brand_id = 29 [(gogoproto.nullable)=false];
+    repeated cm.MetaField meta_fields = 28;
+}
+
+message CreateVariantRequest {
+    optional string code = 1 [(gogoproto.nullable)=false];
+    optional string name = 2 [(gogoproto.nullable)=false];
+    optional int64  product_id = 3 [(gogoproto.nullable)=false];
+    optional string note = 4 [(gogoproto.nullable)=false];
+    optional string description = 5 [(gogoproto.nullable)=false];
+    optional string short_desc  = 6 [(gogoproto.nullable)=false];
+    optional string desc_html   = 7 [(gogoproto.nullable)=false];
+    repeated string image_urls  = 9;
+    repeated Attribute attributes = 14;
+
+    optional int32  cost_price = 16 [(gogoproto.nullable)=false];
+    optional int32  list_price = 15 [(gogoproto.nullable)=false];
+    optional int32  retail_price = 26 [(gogoproto.nullable)=false];
+}
+
+message DeprecatedCreateVariantRequest {
+    // required
+    optional int64 product_source_id = 23 [(gogoproto.nullable)=false];
+    optional int64 product_id = 1 [(gogoproto.nullable)=false];
+    // In `Dép Adidas Adilette Slides - Full Đỏ`, product_name is "Dép Adidas Adilette Slides"
+    optional string product_name = 2 [(gogoproto.nullable)=false];
+    // In `Dép Adidas Adilette Slides - Full Đỏ`, name is "Full Đỏ"
+    optional string name        = 3 [(gogoproto.nullable)=false];
+    optional string description = 5 [(gogoproto.nullable)=false];
+    optional string short_desc  = 6 [(gogoproto.nullable)=false];
+    optional string desc_html   = 7 [(gogoproto.nullable)=false];
+    repeated string image_urls  = 9;
+    repeated string tags        = 10;
+    optional status3.Status status = 12 [(gogoproto.nullable)=false];
+
+    optional int32  cost_price = 16 [(gogoproto.nullable)=false];
+    optional int32  list_price = 15 [(gogoproto.nullable)=false];
+    optional int32  retail_price = 26 [(gogoproto.nullable)=false];
+    optional string code = 19 [(gogoproto.nullable)=false];
+    optional int32 quantity_available = 20 [(gogoproto.nullable)=false];
+    optional int32 quantity_on_hand = 21 [(gogoproto.nullable)=false];
+    optional int32 quantity_reserved = 22 [(gogoproto.nullable)=false];
+    repeated Attribute attributes = 24;
+    optional string unit = 25 [(gogoproto.nullable)=false];
+
+    // deprecated: use code instead
+    optional string sku = 18 [(gogoproto.nullable)=false];
+}
+
+message ConnectProductSourceResquest {
+    optional int64 product_source_id = 1 [(gogoproto.nullable)=false];
+}
+
+// deprecated
+message CreatePSCategoryRequest {
+    optional string name = 1 [(gogoproto.nullable)=false];
+    optional int64 parent_id = 2 [(gogoproto.nullable)=false];
+}
+
+message UpdateProductsPSCategoryRequest {
+    optional int64 category_id = 1 [(gogoproto.nullable)=false];
+    repeated int64 product_ids = 2;
+}
+
+message UpdateProductsCollectionResponse {
+    optional int32 updated = 1 [(gogoproto.nullable)=false];
+    repeated cm.Error errors   = 2;
+}
+
+message UpdateProductSourceCategoryRequest {
+    optional int64 id = 1 [(gogoproto.nullable)=false];
+    optional int64 parent_id = 2 [(gogoproto.nullable)=false];
+    optional string name = 3 [(gogoproto.nullable)=false];
+}
+
+// deprecated
+message GetProductSourceCategoriesRequest {
+}
+
+message GetFulfillmentsRequest {
+    optional cm.Paging paging = 1;
+    repeated cm.Filter filters = 2;
+    optional etop.MixedAccount mixed = 3;
+    optional int64 order_id = 4 [(gogoproto.nullable)=false];
+    optional status3.Status status  = 5;
+}
+
+message GetFulfillmentHistoryRequest {
+    optional cm.Paging paging = 1;
+    optional bool  all = 2 [(gogoproto.nullable)=false];
+    optional int64 id = 3 [(gogoproto.nullable)=false];
+    optional int64 order_id = 4 [(gogoproto.nullable)=false];
+}
+
+message GetBalanceShopResponse {
+    optional int32 amount = 1 [(gogoproto.nullable)=false];
+}
+
+message GetMoneyTransactionsRequest {
+    optional cm.Paging paging = 1;
+    repeated cm.Filter filters = 2;
+}
+
+message GetPublicFulfillmentRequest {
+    // @Required
+    optional string code = 1 [(gogoproto.nullable)=false];
+}
+
+message UpdateFulfillmentsShippingStateRequest {
+    // Only support for manual order
+    repeated int64 ids = 1;
+    // @required
+    optional shipping.State shipping_state = 3 [(gogoproto.nullable)=false];
+}
+
+message UpdateOrderPaymentStatusRequest {
+    optional int64 order_id = 1 [(gogoproto.nullable)=false];
+    optional status3.Status status = 2;
+}
+
+message SummarizeFulfillmentsRequest {
+    optional string date_from = 1 [(gogoproto.nullable)=false];
+    optional string date_to   = 2 [(gogoproto.nullable)=false];
+}
+
+message SummarizeFulfillmentsResponse {
+    repeated SummaryTable tables = 1;
+}
+
+message SummarizePOSResponse {
+    repeated SummaryTable tables = 1;
+}
+
+message SummarizePOSRequest{
+    optional string date_from = 1 [(gogoproto.nullable)=false];
+    optional string date_to   = 2 [(gogoproto.nullable)=false];
+}
+
+message SummaryTable {
+    optional string label = 1 [(gogoproto.nullable)=false];
+    repeated string tags  = 2;
+
+    repeated SummaryColRow columns = 3 [(gogoproto.nullable)=false];
+    repeated SummaryColRow rows    = 4 [(gogoproto.nullable)=false];
+    repeated SummaryItem   data    = 5 [(gogoproto.nullable)=false];
+}
+
+message SummaryColRow {
+    optional string label = 1 [(gogoproto.nullable)=false];
+    optional string spec  = 2 [(gogoproto.nullable)=false];
+    optional string unit  = 3 [(gogoproto.nullable)=false];
+    optional int32 indent = 4 [(gogoproto.nullable)=false];
+}
+
+message SummaryItem {
+    optional string label = 1 [(gogoproto.nullable)=false];
+    optional string spec  = 2 [(gogoproto.nullable)=false];
+    optional int32  value = 3 [(gogoproto.nullable)=false];
+    optional string unit  = 4 [(gogoproto.nullable)=false];
+    repeated string image_urls = 5;
+}
+
+message ImportProductsResponse {
+    optional spreadsheet.SpreadsheetData data = 1;
+    repeated cm.Error import_errors = 3;
+    repeated cm.Error cell_errors = 4;
+    optional int64 import_id = 5 [(gogoproto.nullable)=false];
+}
+
+message CalcBalanceShopResponse {
+    optional int32 balance = 1 [(gogoproto.nullable)=false];
+}
+
+message RequestExportRequest {
+    optional string export_type = 1 [(gogoproto.nullable)=false];
+    repeated cm.Filter filters = 2;
+    optional string date_from = 3 [(gogoproto.nullable)=false];
+    optional string date_to = 4 [(gogoproto.nullable)=false];
+
+    // Accept '\t', ',' or ';'. Default to ','.
+    optional string delimiter = 5 [(gogoproto.nullable)=false];
+
+    // For exporting csv compatible with Excel
+    optional bool excel_compatible_mode = 6 [(gogoproto.nullable)=false];
+
+    // Export specific ids
+    repeated int64 ids = 7;
+}
+
+message RequestExportResponse {
+    optional string id = 1 [(gogoproto.nullable)=false];
+    optional string filename = 2 [(gogoproto.nullable)=false];
+    optional string export_type = 3 [(gogoproto.nullable)=false];
+    optional status4.Status status = 4 [(gogoproto.nullable)=false];
+}
+
+message GetExportsRequest {
+}
+
+message GetExportsResponse {
+    repeated ExportItem export_items = 1;
+}
+
+message ExportItem {
+    optional string id = 1 [(gogoproto.nullable)=false];
+    optional string filename = 2 [(gogoproto.nullable)=false];
+
+    // example: shop/fulfillments, admin/orders
+    optional string export_type = 3 [(gogoproto.nullable)=false];
+    optional string download_url = 4 [(gogoproto.nullable)=false];
+    optional int64 account_id = 5 [(gogoproto.nullable)=false];
+    optional int64 user_id = 6 [(gogoproto.nullable)=false];
+    optional google.protobuf.Timestamp created_at = 7;
+    optional google.protobuf.Timestamp deleted_at = 8;
+    optional string request_query = 9 [(gogoproto.nullable)=false];
+    optional string mime_type = 10 [(gogoproto.nullable)=false];
+    optional status4.Status status = 11 [(gogoproto.nullable)=false];
+    repeated cm.Error export_errors = 12;
+    optional cm.Error error = 13;
+}
+
+message GetExportsStatusRequest {
+}
+
+message ExportStatusItem {
+    optional string id = 1 [(gogoproto.nullable)=false];
+    optional int32 progress_max = 2 [(gogoproto.nullable)=false];
+    optional int32 progress_value = 3 [(gogoproto.nullable)=false];
+    optional int32 progress_error = 4 [(gogoproto.nullable)=false];
+    optional cm.Error error = 5;
+}
+
+message AuthorizePartnerRequest {
+    optional int64 partner_id = 1 [(gogoproto.nullable) = false];
+}
+
+message GetPartnersResponse {
+    repeated etop.PublicAccountInfo partners = 1;
+}
+
+message AuthorizedPartnerResponse {
+    optional etop.PublicAccountInfo partner = 1;
+    optional string redirect_url = 2 [(gogoproto.nullable) = false];
+}
+
+message GetAuthorizedPartnersResponse {
+    repeated AuthorizedPartnerResponse partners = 1;
+}
+
+message Attribute {
+    optional string name      = 1 [(gogoproto.nullable)=false];
+    optional string value     = 2 [(gogoproto.nullable)=false];
+}
+
+message UpdateVariantImagesRequest {
+    // @required
+    optional int64  id          = 1 [(gogoproto.nullable)=false];
+
+    repeated string adds        = 2;
+    repeated string deletes     = 3;
+    repeated string replace_all = 4;
+    optional bool   delete_all  = 5 [(gogoproto.nullable)=false];
+}
+
+message UpdateProductMetaFieldsRequest {
+    // @required
+    optional int64 id = 1 [(gogoproto.nullable)=false];
+
+    repeated cm.MetaField meta_fields = 2;
+}
+
+message CategoriesResponse {
+    repeated Category categories = 1;
+}
+
+message Category {
+    optional int64  id     = 1 [(gogoproto.nullable)=false];
+    optional string name   = 2 [(gogoproto.nullable)=false];
+    optional int64 product_source_id = 3 [(gogoproto.nullable)=false];
+    optional int64 parent_id = 6 [(gogoproto.nullable)=false];
+    optional int64 shop_id = 7 [(gogoproto.nullable)=false];
+}
+
+message Tag {
+    optional int64 id = 1 [(gogoproto.nullable)=false];
+    optional string label = 2 [(gogoproto.nullable)=false];
+}
+
+message ExternalAccountAhamove {
+    optional int64 id = 1 [(gogoproto.nullable) = false];
+    optional string phone = 2 [(gogoproto.nullable) = false];
+    optional string name = 3 [(gogoproto.nullable) = false];
+    optional bool external_verified = 4 [(gogoproto.nullable) = false];
+//    optional string external_token = 5 [(gogoproto.nullable) = false];
+    optional google.protobuf.Timestamp external_created_at = 6;
+    optional google.protobuf.Timestamp created_at = 7;
+    optional google.protobuf.Timestamp updated_at = 8;
+    optional google.protobuf.Timestamp last_send_verify_at = 9;
+    optional string external_ticket_id = 10 [(gogoproto.nullable) = false];
+    optional string id_card_front_img = 11 [(gogoproto.nullable) = false];
+    optional string id_card_back_img = 12 [(gogoproto.nullable) = false];
+    optional string portrait_img = 13 [(gogoproto.nullable) = false];
+    optional google.protobuf.Timestamp uploaded_at = 14;
+    optional string fanpage_url = 15 [(gogoproto.nullable) = false];
+    optional string website_url = 16 [(gogoproto.nullable) = false];
+    repeated string company_imgs = 17;
+    repeated string business_license_imgs = 18;
+}
+
+message UpdateXAccountAhamoveVerificationRequest {
+    optional int64 id = 1 [(gogoproto.nullable) = false];
+    optional string id_card_front_img = 2 [(gogoproto.nullable) = false];
+    optional string id_card_back_img = 3 [(gogoproto.nullable) = false];
+    optional string portrait_img = 4 [(gogoproto.nullable) = false];
+    optional string fanpage_url = 5 [(gogoproto.nullable) = false];
+    optional string website_url = 6 [(gogoproto.nullable) = false];
+    repeated string company_imgs = 7;
+    repeated string business_license_imgs = 8;
+}
+
+message ExternalAccountHaravan {
+    optional int64 id = 1 [(gogoproto.nullable) = false];
+    optional int64 shop_id = 2 [(gogoproto.nullable) = false];
+    optional string subdomain = 3 [(gogoproto.nullable) = false];
+    optional int32 external_carrier_service_id = 8 [(gogoproto.nullable) = false];
+    optional google.protobuf.Timestamp external_connected_carrier_service_at = 9;
+    optional google.protobuf.Timestamp expires_at = 5;
+    optional google.protobuf.Timestamp created_at = 6;
+    optional google.protobuf.Timestamp updated_at = 7;
+}
+
+message ExternalAccountHaravanRequest {
+    // @required
+    optional string subdomain = 1 [(gogoproto.nullable) = false];
+    // @required OAuth code
+    optional string code = 2 [(gogoproto.nullable) = false];
+    // @required
+    optional string redirect_uri = 3 [(gogoproto.nullable) = false];
+}
+
+message CustomerLiability {
+    optional int32 total_orders = 1 [(gogoproto.nullable) = false];
+    optional int64 total_amount = 2 [(gogoproto.nullable) = false];
+    optional int64 received_amount = 3 [(gogoproto.nullable) = false];
+    optional int64 liability = 4 [(gogoproto.nullable) = false];
+}
+
+message Customer {
+    optional int64 id = 1 [(gogoproto.nullable) = false];
+
+    optional int64 shop_id = 2 [(gogoproto.nullable) = false];
+
+    optional string full_name = 3 [(gogoproto.nullable) = false];
+
+    optional string code = 13 [(gogoproto.nullable) = false];
+
+    optional string note = 4 [(gogoproto.nullable) = false];
+
+    optional string phone = 5 [(gogoproto.nullable) = false];
+
+    optional string email = 6 [(gogoproto.nullable) = false];
+
+    optional string gender = 7 [(gogoproto.nullable) = false];
+
+    optional string type = 8 [(gogoproto.nullable) = false];
+
+    optional string birthday = 12 [(gogoproto.nullable) = false];
+
+    optional google.protobuf.Timestamp created_at = 9;
+
+    optional google.protobuf.Timestamp updated_at = 10;
+
+    optional status3.Status status = 11 [(gogoproto.nullable) = false];
+
+    repeated int64 group_ids = 14 [(gogoproto.nullable) = false];
+
+    optional CustomerLiability liability = 15;
+}
+
+message CreateCustomerRequest {
+    // @required
+    optional string full_name = 1 [(gogoproto.nullable) = false];
+
+    optional string gender = 12 [(gogoproto.nullable) = false];
+
+    optional string birthday = 13 [(gogoproto.nullable) = false];
+
+    // enum ('individual', 'organization')
+    optional string type = 14 [(gogoproto.nullable) = false];
+
+    optional string note = 2 [(gogoproto.nullable) = false];
+    // @required
+    optional string phone = 3 [(gogoproto.nullable) = false];
+
+    optional string email = 4 [(gogoproto.nullable) = false];
+}
+
+message UpdateCustomerRequest {
+    optional int64 id = 5 [(gogoproto.nullable) = false];
+
+    optional string full_name = 1;
+
+    optional string gender = 12;
+
+    optional string birthday = 13;
+
+    // enum ('individual', 'organization','independent')
+    optional string type = 14;
+
+    optional string note = 2;
+
+    optional string phone = 3;
+
+    optional string email = 4;
+}
+
+message GetCustomersRequest {
+    optional cm.Paging paging = 1;
+    repeated cm.Filter filters = 2;
+}
+
+message CustomersResponse {
+    repeated Customer customers = 1;
+    optional cm.PageInfo paging = 2;
+}
+
+message SetCustomersStatusRequest {
+    repeated int64 ids = 1;
+    optional status3.Status status = 2 [(gogoproto.nullable) = false];
+}
+
+message CustomerDetailsResponse {
+    optional Customer customer = 1;
+    repeated IndependentSummaryItem summary_items = 2;
+}
+
+message IndependentSummaryItem {
+    optional string name  = 1 [(gogoproto.nullable)=false];
+    optional string label = 2 [(gogoproto.nullable)=false];
+    optional string spec  = 3 [(gogoproto.nullable)=false];
+    optional int32  value = 4 [(gogoproto.nullable)=false];
+    optional string unit  = 5 [(gogoproto.nullable)=false];
+}
+
+message GetCustomerAddressesRequest {
+    optional int64 customer_id = 1 [(gogoproto.nullable)=false];
+}
+
+message CustomerAddress {
+    optional int64 id = 1 [(gogoproto.nullable) = false];
+    optional string province = 2 [(gogoproto.nullable) = false];
+    optional string province_code = 6 [(gogoproto.nullable) = false];
+    optional string district = 3 [(gogoproto.nullable) = false];
+    optional string district_code = 7 [(gogoproto.nullable) = false];
+    optional string ward = 4 [(gogoproto.nullable) = false];
+    optional string ward_code = 8 [(gogoproto.nullable) = false];
+    optional string address1 = 5 [(gogoproto.nullable) = false];
+    optional string address2 = 9 [(gogoproto.nullable) = false];
+
+    optional string country = 11 [(gogoproto.nullable) = false];
+
+    optional string full_name = 12 [(gogoproto.nullable) = false];
+
+    optional string company = 10 [(gogoproto.nullable) = false];
+
+    optional string phone = 15 [(gogoproto.nullable) = false];
+
+    optional string email = 16 [(gogoproto.nullable) = false];
+
+    optional string position = 17 [(gogoproto.nullable) = false];
+
+    optional etop.Coordinates coordinates = 20;
+}
+
+message CreateCustomerAddressRequest {
+    optional int64 customer_id = 1 [(gogoproto.nullable) = false];
+
+    optional string province_code = 2 [(gogoproto.nullable) = false];
+
+    optional string district_code = 3 [(gogoproto.nullable) = false];
+
+    optional string ward_code = 4 [(gogoproto.nullable) = false];
+
+    optional string address1 = 5 [(gogoproto.nullable) = false];
+
+    optional string address2 = 6 [(gogoproto.nullable) = false];
+
+    optional string country = 7 [(gogoproto.nullable) = false];
+
+    optional string full_name = 8 [(gogoproto.nullable) = false];
+
+    optional string company = 12 [(gogoproto.nullable) = false];
+
+    optional string phone = 9 [(gogoproto.nullable) = false];
+
+    optional string email = 10 [(gogoproto.nullable) = false];
+
+    optional string position = 11 [(gogoproto.nullable) = false];
+
+    optional etop.Coordinates coordinates = 18;
+}
+
+message UpdateCustomerAddressRequest {
+    optional int64 id = 1 [(gogoproto.nullable) = false];
+
+    optional string province_code = 2;
+
+    optional string district_code = 3;
+
+    optional string ward_code = 4;
+
+    optional string address1 = 5;
+
+    optional string address2 = 6;
+
+    optional string country = 7;
+
+    optional string full_name = 8;
+
+    optional string phone = 9;
+
+    optional string email = 10;
+
+    optional string position = 11;
+
+    optional string company = 12;
+
+    optional etop.Coordinates coordinates = 18;
+}
+
+message CustomerAddressesResponse {
+    repeated CustomerAddress addresses = 1;
+}
+
+message UpdateProductStatusRequest {
+    repeated int64 ids  = 1 ;
+    optional status3.Status status = 3 [(gogoproto.nullable) = false];
+}
+
+message UpdateProductStatusResponse {
+    optional int32 updated = 2 [(gogoproto.nullable) = false];
+}
+
+message PaymentTradingOrderRequest {
+    optional int64 order_id = 1 [(gogoproto.nullable) = false];
+    optional string desc = 2 [(gogoproto.nullable) = false];
+    optional string return_url = 3 [(gogoproto.nullable) = false];
+    optional int32 amount = 4 [(gogoproto.nullable) = false];
+    optional payment_provider.PaymentProvider payment_provider = 5 [(gogoproto.nullable) = false];
+}
+
+message PaymentTradingOrderResponse {
+    optional string url = 1 [(gogoproto.nullable) = false];
+}
+
+message UpdateVariantAttributesRequest {
+    // @required
+    optional int64 variant_id = 1 [(gogoproto.nullable) = false];
+    repeated Attribute attributes =2;
+}
+
+message PaymentCheckReturnDataRequest {
+    optional string id = 1 [(gogoproto.nullable) = false];
+    optional string code = 2 [(gogoproto.nullable) = false];
+    optional string payment_status = 3 [(gogoproto.nullable) = false];
+    optional int32 amount = 4 [(gogoproto.nullable) = false];
+    optional string external_transaction_id = 5 [(gogoproto.nullable) = false];
+    optional payment_provider.PaymentProvider payment_provider = 6 [(gogoproto.nullable) = false];
+}
+
+message ShopCategory {
+    optional int64 id = 1 [(gogoproto.nullable) = false];
+    optional string name = 2 [(gogoproto.nullable) = false];
+    optional int64 parent_id = 3 [(gogoproto.nullable) = false];
+    optional int64 shop_id = 4 [(gogoproto.nullable) = false];
+    optional int64 status = 5 [(gogoproto.nullable) = false];
+}
+
+message GetCollectionsRequest {
+    optional cm.Paging paging = 1;
+    repeated cm.Filter filters = 4;
+}
+
+message ShopCollectionsResponse {
+    optional cm.PageInfo paging   = 1;
+    repeated ShopCollection collections = 2;
+}
+
+message AddShopProductCollectionRequest {
+   optional int64 product_id = 1 [(gogoproto.nullable) = false];
+   repeated int64 collection_ids = 2 [(gogoproto.nullable) = false];
+}
+
+message RemoveShopProductCollectionRequest {
+   optional int64 product_id = 1 [(gogoproto.nullable) = false];
+   repeated int64 collection_ids = 2 [(gogoproto.nullable) = false];
+}
+
+message AddCustomerToGroupRequest {
+   repeated int64 customer_ids = 1 [(gogoproto.nullable) = false];
+   optional int64 group_id = 2 [(gogoproto.nullable) = false];
+}
+
+message RemoveCustomerOutOfGroupRequest {
+   repeated int64 customer_ids = 1 [(gogoproto.nullable) = false];
+   optional int64 group_id = 2 [(gogoproto.nullable) = false];
+}
+
+message SupplierLiability {
+    optional int32 total_purchase_orders = 1 [(gogoproto.nullable) = false];
+    optional int64 total_amount = 2 [(gogoproto.nullable) = false];
+    optional int64 paid_amount = 3 [(gogoproto.nullable) = false];
+    optional int64 liability = 4 [(gogoproto.nullable) = false];
+}
+
+message Supplier {
+    optional int64 id = 1 [(gogoproto.nullable) = false];
+    optional int64 shop_id = 2 [(gogoproto.nullable) = false];
+    optional string full_name = 3 [(gogoproto.nullable) = false];
+    optional string note = 4 [(gogoproto.nullable) = false];
+    optional string phone = 5 [(gogoproto.nullable) = false];
+    optional string email = 6 [(gogoproto.nullable) = false];
+    optional string company_name = 7 [(gogoproto.nullable) = false];
+    optional string tax_number = 8 [(gogoproto.nullable) = false];
+    optional string headquater_address = 9 [(gogoproto.nullable) = false];
+    optional string code =10 [(gogoproto.nullable) = false];
+    optional status3.Status status = 11 [(gogoproto.nullable) = false];
+    optional google.protobuf.Timestamp created_at = 12;
+    optional google.protobuf.Timestamp updated_at = 13;
+
+    optional SupplierLiability liability = 14;
+}
+
+message CreateSupplierRequest {
+    optional string full_name = 1 [(gogoproto.nullable) = false];
+    optional string note = 2 [(gogoproto.nullable) = false];
+    optional string phone = 3[(gogoproto.nullable) = false];
+    optional string email = 4 [(gogoproto.nullable) = false];
+    optional string company_name = 5 [(gogoproto.nullable) = false];
+    optional string tax_number=6 [(gogoproto.nullable) = false];
+    optional string headquater_address = 7 [(gogoproto.nullable) = false];
+}
+
+message UpdateSupplierRequest {
+    optional int64 id = 1 [(gogoproto.nullable) = false];
+    optional string full_name = 2;
+    optional string note = 3;
+    optional string phone = 4;
+    optional string email = 5;
+    optional string company_name = 6;
+    optional string tax_number =7;
+    optional string headquater_address = 8;
+}
+
+message GetSuppliersRequest {
+    optional cm.Paging paging = 1;
+    repeated cm.Filter filters = 2;
+}
+
+message SuppliersResponse {
+    repeated Supplier suppliers = 1;
+    optional cm.PageInfo paging = 2;
+}
+
+message Carrier {
+    optional int64 id = 1 [(gogoproto.nullable) = false];
+    optional int64 shop_id = 2 [(gogoproto.nullable) = false];
+    optional string full_name = 3 [(gogoproto.nullable) = false];
+    optional string note = 4 [(gogoproto.nullable) = false];
+    optional status3.Status status = 5 [(gogoproto.nullable) = false];
+    optional google.protobuf.Timestamp created_at = 6;
+    optional google.protobuf.Timestamp updated_at = 7;
+}
+
+message CreateCarrierRequest {
+    optional string full_name = 1 [(gogoproto.nullable) = false];
+    optional string note = 2 [(gogoproto.nullable) = false];
+}
+
+message UpdateCarrierRequest {
+    optional int64 id = 1 [(gogoproto.nullable) = false];
+    optional string full_name = 2;
+    optional string note = 3;
+}
+
+message GetCarriersRequest {
+    optional cm.Paging paging = 1;
+    repeated cm.Filter filters = 2;
+}
+
+message CarriersResponse {
+    repeated Carrier carriers = 1;
+    optional cm.PageInfo paging = 2;
+}
+
+message ReceiptLine {
+    optional int64 ref_id = 1 [(gogoproto.nullable) = false];
+    optional string title = 2 [(gogoproto.nullable) = false];
+    required int32 amount = 3 [(gogoproto.nullable) = false];
+}
+
+message Trader {
+    optional int64 id = 1 [(gogoproto.nullable) = false];
+    optional string type = 2 [(gogoproto.nullable) = false];
+    optional string full_name = 3 [(gogoproto.nullable) = false];
+    optional string phone = 4 [(gogoproto.nullable)=false];
+    optional bool deleted = 5 [(gogoproto.nullable)=false];
+}
+
+message Receipt {
+    optional int64 id = 1 [(gogoproto.nullable) = false];
+    optional int64 shop_id = 2 [(gogoproto.nullable) = false];
+    optional int64 trader_id = 3 [(gogoproto.nullable) = false];
+    optional int64 created_by = 4 [(gogoproto.nullable) = false];
+    optional string created_type = 5 [(gogoproto.nullable)=false];
+    optional string code = 6 [(gogoproto.nullable) = false];
+    optional string title = 7 [(gogoproto.nullable) = false];
+    optional string type = 8 [(gogoproto.nullable) = false];
+    optional string description = 9 [(gogoproto.nullable) = false];
+    optional int32 amount = 10 [(gogoproto.nullable) = false];
+    optional int64 ledger_id = 11 [(gogoproto.nullable) = false];
+    optional string ref_type = 23 [(gogoproto.nullable) = false];
+    repeated ReceiptLine lines = 12;
+    optional status3.Status status = 13 [(gogoproto.nullable) = false];
+    optional string reason = 14 [(gogoproto.nullable)=false];
+    optional google.protobuf.Timestamp paid_at = 15;
+    optional google.protobuf.Timestamp created_at = 16;
+    optional google.protobuf.Timestamp updated_at = 17;
+    optional google.protobuf.Timestamp confirmed_at = 18;
+    optional google.protobuf.Timestamp cancelled_at = 19;
+
+    optional etop.User user = 20;
+    optional Trader trader = 21;
+    optional Ledger ledger = 22;
+}
+
+message CreateReceiptRequest {
+    optional int64 trader_id = 1 [(gogoproto.nullable) = false];
+    optional string title = 2 [(gogoproto.nullable) = false];
+    // enum('receipt', 'payment')
+    optional string type = 3 [(gogoproto.nullable) = false];
+    optional string description = 4 [(gogoproto.nullable) = false];
+    optional int32 amount = 5 [(gogoproto.nullable) = false];
+    optional int64 ledger_id = 6 [(gogoproto.nullable) = false];
+    // enum ('order', 'fulfillment', 'inventory voucher'
+    optional string ref_type = 9 [(gogoproto.nullable) = false];
+    required google.protobuf.Timestamp paid_at = 7;
+    repeated ReceiptLine lines = 8;
+}
+
+message UpdateReceiptRequest {
+    optional int64 id = 1 [(gogoproto.nullable) = false];
+    optional int64 trader_id = 2;
+    optional string title = 3;
+    optional string description = 4;
+    optional int32 amount = 5;
+    optional int64 ledger_id = 6;
+    // enum ('order', 'fulfillment', 'inventory voucher'
+    optional string ref_type = 9;
+    optional google.protobuf.Timestamp paid_at = 7 [(gogoproto.nullable)=false];
+    repeated ReceiptLine lines = 8;
+}
+
+message CancelReceiptRequest {
+    optional int64 id = 1 [(gogoproto.nullable)=false];
+    optional string reason = 2 [(gogoproto.nullable)=false];
+}
+
+message GetReceiptsRequest {
+    optional cm.Paging paging = 1;
+    repeated cm.Filter filters = 2;
+}
+
+message GetReceiptsByLedgerTypeRequest {
+    optional string type = 1 [(gogoproto.nullable)=false];
+    optional cm.Paging paging = 2;
+    repeated cm.Filter filters = 3;
+}
+
+message ReceiptsResponse {
+    optional int64 total_amount_confirmed_receipt = 1 [(gogoproto.nullable) = false];
+    optional int64 total_amount_confirmed_payment = 2 [(gogoproto.nullable) = false];
+    repeated Receipt receipts = 3;
+    optional cm.PageInfo paging = 4;
+}
+
+message GetShopCollectionsByProductIDRequest {
+    optional int64 product_id =1  [(gogoproto.nullable) = false];
+}
+
+message CreateInventoryVoucherRequest{
+    optional int64 ref_id = 16 [(gogoproto.nullable) = false];
+    optional string ref_type = 17 [(gogoproto.nullable) = false];
+    //enum "in" or "out" only for ref_type = "order"
+    optional string type = 15 [(gogoproto.nullable) = false];
+}
+
+message InventoryVoucherLine{
+    optional int64 variant_id = 1 [(gogoproto.nullable) = false];
+    optional string code = 3 [(gogoproto.nullable) = false];
+    optional string variant_name = 6 [(gogoproto.nullable) = false];
+
+    optional int64 product_id = 7 [(gogoproto.nullable) = false];
+    optional string product_name = 8 [(gogoproto.nullable) = false];
+
+    optional string image_url = 9 [(gogoproto.nullable) = false];
+    repeated Attribute attributes = 10 [(gogoproto.nullable) = false];
+
+    optional int32 price = 2 [(gogoproto.nullable) = false];
+    optional int32 quantity = 5 [(gogoproto.nullable) = false];
+}
+
+message CreateInventoryVoucherResponse {
+    repeated InventoryVoucher inventory_vouchers= 1;
+}
+
+message ConfirmInventoryVoucherRequest{
+    optional int64 id = 1 [(gogoproto.nullable) = false];
+}
+
+message ConfirmInventoryVoucherResponse{
+    optional InventoryVoucher  inventory_voucher = 1;
+}
+
+message CancelInventoryVoucherRequest{
+    optional int64 id = 1 [(gogoproto.nullable) = false];
+    optional string reason = 2 [(gogoproto.nullable) = false];
+}
+
+message CancelInventoryVoucherResponse {
+    optional InventoryVoucher inventory= 1;
+}
+
+message UpdateInventoryVoucherRequest {
+    optional int64 id = 1 [(gogoproto.nullable) = false];
+    optional int64 trader_id = 3;
+    repeated InventoryVoucherLine lines = 6 [(gogoproto.nullable) = false];
+    optional string note = 2 ;
+    optional string type = 4 [(gogoproto.nullable) = false];
+    optional string title = 7 ;
+    optional int32 total_amount = 8 [(gogoproto.nullable) = false];
+}
+
+message UpdateInventoryVoucherResponse {
+    optional InventoryVoucher inventory_voucher = 1;
+}
+
+message AdjustInventoryQuantityRequest {
+    repeated InventoryVariant inventory_variants = 1;
+    optional string note = 2 [(gogoproto.nullable) = false];
+}
+
+message AdjustInventoryQuantityResponse {
+    repeated InventoryVariant inventory_variants = 1;
+    repeated InventoryVoucher inventory_vouchers = 2;
+}
+
+message GetInventoryVariantsRequest {
+    optional cm.Paging paging   = 1 [(gogoproto.nullable) = false];
+}
+
+message GetInventoryVariantsResponse {
+    repeated InventoryVariant inventory_variants = 1;
+}
+
+message GetInventoryVariantsByVariantIDsRequest {
+    repeated int64 variant_ids = 1;
+}
+
+message InventoryVariant {
+    optional int64 shop_id = 1 [(gogoproto.nullable) = false];
+    optional int64 variant_id = 2 [(gogoproto.nullable) = false];
+    optional int32 quantity_on_hand = 3 [(gogoproto.nullable) = false];
+    optional int32 quantity_picked = 4 [(gogoproto.nullable) = false];
+    optional int32 cost_price = 5 [(gogoproto.nullable) = false];
+    optional int32 quantity = 6 [(gogoproto.nullable) = false];
+
+    optional google.protobuf.Timestamp created_at = 7;
+    optional google.protobuf.Timestamp updated_at = 8;
+
+}
+
+message InventoryVariantQuantity {
+    optional int32 quantity_on_hand = 1 [(gogoproto.nullable) = false];
+    optional int32 quantity_picked = 2 [(gogoproto.nullable) = false];
+    optional int32 quantity = 4 [(gogoproto.nullable) = false];
+}
+
+message InventoryVoucher {
+    optional int32 total_amount = 7 [(gogoproto.nullable) = false];
+    optional int64 created_by = 8 [(gogoproto.nullable) = false];
+	optional int64 updated_by = 9 [(gogoproto.nullable) = false];
+    repeated InventoryVoucherLine lines = 1;
+    optional int64 trader_id = 2 [(gogoproto.nullable) = false];
+    optional string note = 3  [(gogoproto.nullable) = false];
+    optional string type = 4 [(gogoproto.nullable) = false];
+    optional int64 id = 5 [(gogoproto.nullable) = false];
+    optional int64 shop_id = 6 [(gogoproto.nullable) = false];
+    optional string title = 15 [(gogoproto.nullable) = false];
+
+    optional int64 ref_id = 16 [(gogoproto.nullable) = false];
+    optional string ref_type = 17 [(gogoproto.nullable) = false];
+    optional string ref_name = 18 [(gogoproto.nullable) = false];
+    optional string ref_code = 21 [(gogoproto.nullable) = false];
+
+    optional string code   = 19[(gogoproto.nullable)=false];
+    optional google.protobuf.Timestamp created_at = 10;
+    optional google.protobuf.Timestamp updated_at = 11;
+    optional google.protobuf.Timestamp cancelled_at = 12;
+    optional google.protobuf.Timestamp confirmed_at = 13;
+    optional string cancel_reason = 14 [(gogoproto.nullable) = false];
+    optional Trader trader = 20;
+    optional status3.Status status = 22 [(gogoproto.nullable)=false];
+}
+
+message GetInventoryVouchersRequest {
+    optional cm.Paging paging   = 1 ;
+     repeated cm.Filter filters = 2;
+}
+
+message GetInventoryVouchersByIDsRequest {
+    repeated int64 ids = 1;
+}
+
+message GetInventoryVouchersResponse {
+    repeated InventoryVoucher inventory_vouchers = 1;
+}
+
+message CustomerGroup {
+    optional int64 id = 1 [(gogoproto.nullable) = false];
+    optional string name = 2 [(gogoproto.nullable) = false];
+}
+
+message CreateCustomerGroupRequest {
+    optional string name = 1 [(gogoproto.nullable) = false];
+}
+
+message UpdateCustomerGroupRequest {
+    optional int64 group_id = 1 [(gogoproto.nullable) = false];
+    optional string name = 2 [(gogoproto.nullable) = false];
+}
+
+message GetCustomerGroupsRequest {
+    optional cm.Paging paging = 1;
+    repeated cm.Filter filters = 2;
+}
+
+message CustomerGroupsResponse {
+    repeated CustomerGroup customer_groups = 1;
+    optional cm.PageInfo paging = 2;
+}
+
+message GetOrdersByReceiptIDRequest{
+    optional int64 receipt_id = 1 [(gogoproto.nullable) = false];
+}
+
+message GetInventoryVariantRequest {
+    optional int64 variant_id = 1 [(gogoproto.nullable) = false];
+}
+
+message CreateBrandRequest {
+    optional string name = 1 [(gogoproto.nullable) = false];
+    optional string description = 2 [(gogoproto.nullable) = false];
+}
+
+message UpdateBrandRequest {
+    optional int64 id = 3 [(gogoproto.nullable) = false];
+    optional string name = 1 [(gogoproto.nullable) = false];
+    optional string description = 2 [(gogoproto.nullable) = false];
+}
+
+message DeleteBrandResponse {
+    optional int32 count = 1 [(gogoproto.nullable) = false];
+}
+
+message Brand {
+    optional int64 shop_id = 1 [(gogoproto.nullable) = false];
+    optional int64 id = 2 [(gogoproto.nullable) = false];
+
+    optional string name = 3 [(gogoproto.nullable) = false];
+    optional string description = 4 [(gogoproto.nullable) = false];
+
+    optional google.protobuf.Timestamp created_at = 5;
+    optional google.protobuf.Timestamp updated_at = 6;
+}
+
+message GetBrandsByIDsResponse {
+    repeated Brand brands = 1 ;
+}
+
+message GetBrandsRequest {
+    optional cm.Paging paging = 1 [(gogoproto.nullable) = false];
+}
+
+message GetBrandsResponse {
+    repeated Brand brands = 1 ;
+    optional cm.PageInfo paging = 2;
+}
+
+message GetInventoryVouchersByReferenceRequest {
+    optional int64 ref_id  = 1 [(gogoproto.nullable)=false];
+    // enum ('order', 'purchase_order', 'return', 'purchase_order')
+    optional string ref_type = 2 [(gogoproto.nullable)=false];
+}
+
+message GetInventoryVouchersByReferenceResponse {
+    repeated InventoryVoucher inventory_vouchers     = 1;
+}
+
+message UpdateOrderShippingInfoRequest {
+    optional int64 order_id = 1 [(gogoproto.nullable) = false];
+    optional order.OrderShipping shipping = 2;
+    optional order.OrderAddress shipping_address = 3;
+}
+
+
+message GetStocktakesByIDsResponse {
+    repeated Stocktake stocktakes = 1;
+}
+message CreateStocktakeRequest {
+    optional int32 total_quantity = 1 [(gogoproto.nullable) = false];
+    optional string note = 2 [(gogoproto.nullable) = false];
+
+    //  length more than one
+    repeated StocktakeLine lines = 3;
+}
+
+message UpdateStocktakeRequest {
+
+    optional int64 id = 4 [(gogoproto.nullable) = false];
+
+    optional int32 total_quantity = 1 [(gogoproto.nullable) = false];
+    optional string note = 2 [(gogoproto.nullable) = false];
+
+    //  length more than one
+    repeated StocktakeLine lines = 3;
+}
+
+message Stocktake {
+    optional int64 id = 1 [(gogoproto.nullable) = false];
+    optional int64 shop_id = 2 [(gogoproto.nullable) = false];
+
+    optional int32 total_quantity = 3 [(gogoproto.nullable) = false];
+    optional string note = 4 [(gogoproto.nullable) = false];
+    optional string code = 13 [(gogoproto.nullable)=false];
+    optional string cancel_reason = 14 [(gogoproto.nullable)=false];
+
+    optional int64 created_by = 5 [(gogoproto.nullable) = false];
+    optional int64 updated_by = 6 [(gogoproto.nullable) = false];
+
+    optional google.protobuf.Timestamp created_at = 7;
+    optional google.protobuf.Timestamp updated_at = 8;
+    optional google.protobuf.Timestamp confirmed_at = 9;
+    optional google.protobuf.Timestamp cancelled_at = 10;
+    optional status3.Status status = 12 [(gogoproto.nullable)=false];
+
+    repeated StocktakeLine lines = 11;
+}
+
+message GetStocktakesRequest {
+    optional cm.Paging paging = 1;
+    repeated cm.Filter filters = 2;
+}
+
+message GetStocktakesResponse {
+    repeated Stocktake stocktakes = 1;
+    optional cm.PageInfo paging = 2;
+}
+
+message StocktakeLine {
+    optional int64 product_id = 9 [(gogoproto.nullable) = false];
+    optional string product_name = 10 [(gogoproto.nullable) = false];
+    optional string variant_name = 4 [(gogoproto.nullable) = false];
+    optional int64 variant_id = 1 [(gogoproto.nullable) = false];
+    optional int32 old_quantity = 2 [(gogoproto.nullable) = false];
+    optional int32 new_quantity = 3 [(gogoproto.nullable) = false];
+    optional string code = 5 [(gogoproto.nullable) = false];
+    optional string image_url = 6 [(gogoproto.nullable) = false];
+    optional int32 cost_price = 8 [(gogoproto.nullable) = false];
+
+    repeated Attribute attributes = 7;
+}
+
+message ConfirmStocktakeRequest {
+    optional int64 id = 1 [(gogoproto.nullable) = false];
+    optional string auto_inventory_voucher = 2 [(gogoproto.nullable) = false];
+}
+
+message GetVariantsBySupplierIDRequest {
+    optional int64 supplier_id = 1 [(gogoproto.nullable) = false];
+}
+
+message GetSuppliersByVariantIDRequest {
+    optional int64 variant_id = 1 [(gogoproto.nullable) = false];
+}
+
+message CancelStocktakeRequest {
+    optional int64 id = 1 [(gogoproto.nullable) = false];
+    optional string cancel_reason = 2 [(gogoproto.nullable) = false];
+}
+message UpdateInventoryVariantCostPriceResponse{
+    optional InventoryVariant inventory_variant = 2;
+}
+
+message UpdateInventoryVariantCostPriceRequest {
+    optional int64 variant_id = 1 [(gogoproto.nullable) = false];
+    optional int32 cost_price = 2 [(gogoproto.nullable) = false];
+}
+

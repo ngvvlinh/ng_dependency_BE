@@ -7,9 +7,9 @@ import (
 	"etop.vn/api/main/inventory"
 	"etop.vn/api/main/stocktaking"
 	"etop.vn/api/meta"
-	pbcm "etop.vn/backend/pb/common"
-	pbshop "etop.vn/backend/pb/etop/shop"
+	pbshop "etop.vn/api/pb/etop/shop"
 	cm "etop.vn/backend/pkg/common"
+	"etop.vn/backend/pkg/common/cmapi"
 )
 
 func (s *StocktakeService) CreateStocktake(ctx context.Context, q *CreateStocktakeEndpoint) error {
@@ -240,7 +240,7 @@ func (s *StocktakeService) GetStocktakes(ctx context.Context, q *GetStocktakesEn
 			Value: value.Value,
 		})
 	}
-	paging := q.Paging.CMPaging()
+	paging := cmapi.CMPaging(q.Paging)
 	query := &stocktaking.ListStocktakeQuery{
 		Page:   *paging,
 		ShopID: shopID,
@@ -252,7 +252,7 @@ func (s *StocktakeService) GetStocktakes(ctx context.Context, q *GetStocktakesEn
 	}
 	q.Result = &pbshop.GetStocktakesResponse{
 		Stocktakes: PbStocktakes(query.Result.Stocktakes),
-		Paging:     pbcm.PbPaging(query.Page, query.Result.Total),
+		Paging:     cmapi.PbPaging(query.Page, query.Result.Total),
 	}
 	return nil
 }

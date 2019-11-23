@@ -8,13 +8,11 @@ import (
 	"syscall"
 	"time"
 
-	"etop.vn/backend/pkg/common/bus"
-	"etop.vn/capi"
-
 	"etop.vn/api/main/location"
 	"etop.vn/backend/cmd/haravan-gateway/config"
 	servicelocation "etop.vn/backend/com/main/location"
 	cm "etop.vn/backend/pkg/common"
+	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/cmsql"
 	cc "etop.vn/backend/pkg/common/config"
 	"etop.vn/backend/pkg/common/health"
@@ -23,6 +21,7 @@ import (
 	"etop.vn/backend/pkg/integration/shipping/ghn"
 	"etop.vn/backend/pkg/integration/shipping/ghtk"
 	"etop.vn/backend/pkg/integration/shipping/vtpost"
+	"etop.vn/capi"
 	"etop.vn/common/l"
 )
 

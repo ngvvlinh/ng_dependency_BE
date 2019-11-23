@@ -3,11 +3,12 @@ package shop
 import (
 	"context"
 
-	pbcm "etop.vn/backend/pb/common"
-	pbetop "etop.vn/backend/pb/etop"
-	pbshop "etop.vn/backend/pb/etop/shop"
+	pbetop "etop.vn/api/pb/etop"
+	pbshop "etop.vn/api/pb/etop/shop"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
+	"etop.vn/backend/pkg/common/cmapi"
+	"etop.vn/backend/pkg/etop/api/convertpb"
 	"etop.vn/backend/pkg/etop/model"
 )
 
@@ -42,7 +43,7 @@ func (s *HistoryService) GetFulfillmentHistory(ctx context.Context, r *GetFulfil
 		return cm.Error(cm.InvalidArgument, "Must provide either all, id or order_id", nil)
 	}
 
-	paging := r.Paging.CMPaging("-rid")
+	paging := cmapi.CMPaging(r.Paging, "-rid")
 	query := &model.GetHistoryQuery{
 		Paging:  paging,
 		Table:   "fulfillment",
@@ -53,8 +54,8 @@ func (s *HistoryService) GetFulfillmentHistory(ctx context.Context, r *GetFulfil
 	}
 
 	r.Result = &pbetop.HistoryResponse{
-		Paging: pbcm.PbPageInfo(paging, 0),
-		Data:   pbcm.RawJSONObjectMsg(query.Result.Data),
+		Paging: cmapi.PbPageInfo(paging, 0),
+		Data:   cmapi.RawJSONObjectMsg(query.Result.Data),
 	}
 	return nil
 }
@@ -106,7 +107,7 @@ func (s *AuthorizeService) AuthorizePartner(ctx context.Context, q *AuthorizePar
 		if err := bus.Dispatch(ctx, cmd); err != nil {
 			return err
 		}
-		q.Result = pbshop.PbAuthorizedPartner(partner, q.Context.Shop)
+		q.Result = convertpb.PbAuthorizedPartner(partner, q.Context.Shop)
 	default:
 		return err
 	}
@@ -121,7 +122,7 @@ func (s *AuthorizeService) GetAvailablePartners(ctx context.Context, q *GetAvail
 		return err
 	}
 	q.Result = &pbshop.GetPartnersResponse{
-		Partners: pbetop.PbPublicPartners(query.Result.Partners),
+		Partners: convertpb.PbPublicPartners(query.Result.Partners),
 	}
 	return nil
 }
@@ -134,7 +135,7 @@ func (s *AuthorizeService) GetAuthorizedPartners(ctx context.Context, q *GetAuth
 		return err
 	}
 	q.Result = &pbshop.GetAuthorizedPartnersResponse{
-		Partners: pbshop.PbAuthorizedPartners(query.Result.Partners, q.Context.Shop),
+		Partners: convertpb.PbAuthorizedPartners(query.Result.Partners, q.Context.Shop),
 	}
 	return nil
 }

@@ -5,6 +5,8 @@ import (
 	"strconv"
 	"time"
 
+	"etop.vn/backend/pkg/common/cmapi"
+
 	"github.com/asaskevich/govalidator"
 
 	haravanidentity "etop.vn/api/external/haravan/identity"
@@ -25,6 +27,10 @@ import (
 	"etop.vn/api/main/shipping/types"
 	st "etop.vn/api/main/stocktaking"
 	"etop.vn/api/meta"
+	pbcm "etop.vn/api/pb/common"
+	pbetop "etop.vn/api/pb/etop"
+	pborder "etop.vn/api/pb/etop/order"
+	pbshop "etop.vn/api/pb/etop/shop"
 	"etop.vn/api/shopping/addressing"
 	"etop.vn/api/shopping/carrying"
 	"etop.vn/api/shopping/customering"
@@ -34,10 +40,6 @@ import (
 	notimodel "etop.vn/backend/com/handler/notifier/model"
 	catalogmodelx "etop.vn/backend/com/main/catalog/modelx"
 	moneymodelx "etop.vn/backend/com/main/moneytx/modelx"
-	pbcm "etop.vn/backend/pb/common"
-	pbetop "etop.vn/backend/pb/etop"
-	pborder "etop.vn/backend/pb/etop/order"
-	pbshop "etop.vn/backend/pb/etop/shop"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/idemp"
@@ -407,7 +409,7 @@ func (s *BrandService) GetBrands(ctx context.Context, q *GetBrandsEndpoint) erro
 	}
 	q.Result = &pbshop.GetBrandsResponse{
 		Brands: PbBrands(query.Result.ShopBrands),
-		Paging: pbcm.PbPaging(query.Paging, query.Result.Total),
+		Paging: cmapi.PbPaging(query.Paging, query.Result.Total),
 	}
 	return nil
 }
@@ -553,12 +555,12 @@ func (s *ProductService) GetProductsByIDs(ctx context.Context, q *GetProductsByI
 }
 
 func (s *ProductService) GetProducts(ctx context.Context, q *GetProductsEndpoint) error {
-	paging := q.Paging.CMPaging()
+	paging := cmapi.CMPaging(q.Paging)
 	shopID := q.Context.Shop.ID
 	query := &catalog.ListShopProductsWithVariantsQuery{
 		ShopID:  shopID,
 		Paging:  *paging,
-		Filters: pbcm.ToFilters(q.Filters),
+		Filters: cmapi.ToFilters(q.Filters),
 	}
 	if err := catalogQuery.Dispatch(ctx, query); err != nil {
 		return err
@@ -568,7 +570,7 @@ func (s *ProductService) GetProducts(ctx context.Context, q *GetProductsEndpoint
 		return err
 	}
 	q.Result = &pbshop.ShopProductsResponse{
-		Paging:   pbcm.PbPaging(cm.Paging(query.Result.Paging), query.Result.Count),
+		Paging:   cmapi.PbPaging(cm.Paging(query.Result.Paging), query.Result.Count),
 		Products: products,
 	}
 	return nil
@@ -756,7 +758,7 @@ func (s *ProductSourceService) CreateVariant(ctx context.Context, q *DeprecatedC
 		ShortDesc:   q.ShortDesc,
 		ImageURLs:   q.ImageUrls,
 		Tags:        q.Tags,
-		Status:      *q.Status.ToModel(),
+		Status:      *convertpb.Status3ToModel(&q.Status),
 
 		CostPrice:   q.CostPrice,
 		ListPrice:   q.ListPrice,
@@ -768,7 +770,7 @@ func (s *ProductSourceService) CreateVariant(ctx context.Context, q *DeprecatedC
 		QuantityOnHand:    int(q.QuantityOnHand),
 		QuantityReserved:  int(q.QuantityReserved),
 
-		Attributes: convertpb.AttributesTomodel(q.Attributes),
+		Attributes: convertpb.AttributesToModel(q.Attributes),
 		DescHTML:   q.DescHtml,
 	}
 
@@ -967,23 +969,23 @@ func (s *MoneyTransactionService) GetMoneyTransaction(ctx context.Context, q *Ge
 	if err := bus.Dispatch(ctx, query); err != nil {
 		return err
 	}
-	q.Result = pborder.PbMoneyTransactionExtended(query.Result)
+	q.Result = convertpb.PbMoneyTransactionExtended(query.Result)
 	return nil
 }
 
 func (s *MoneyTransactionService) GetMoneyTransactions(ctx context.Context, q *GetMoneyTransactionsEndpoint) error {
-	paging := q.Paging.CMPaging()
+	paging := cmapi.CMPaging(q.Paging)
 	query := &moneymodelx.GetMoneyTransactions{
 		ShopID:  q.Context.Shop.ID,
 		Paging:  paging,
-		Filters: pbcm.ToFilters(q.Filters),
+		Filters: cmapi.ToFilters(q.Filters),
 	}
 	if err := bus.Dispatch(ctx, query); err != nil {
 		return err
 	}
 	q.Result = &pborder.MoneyTransactionsResponse{
-		MoneyTransactions: pborder.PbMoneyTransactionExtendeds(query.Result.MoneyTransactions),
-		Paging:            pbcm.PbPageInfo(paging, int32(query.Result.Total)),
+		MoneyTransactions: convertpb.PbMoneyTransactionExtendeds(query.Result.MoneyTransactions),
+		Paging:            cmapi.PbPageInfo(paging, int32(query.Result.Total)),
 	}
 	return nil
 }
@@ -999,7 +1001,7 @@ func (s *SummaryService) SummarizeFulfillments(ctx context.Context, q *Summarize
 	}
 
 	q.Result = &pbshop.SummarizeFulfillmentsResponse{
-		Tables: pbshop.PbSummaryTables(query.Result.Tables),
+		Tables: convertpb.PbSummaryTables(query.Result.Tables),
 	}
 	return nil
 }
@@ -1018,7 +1020,7 @@ func (s *SummaryService) SummarizePOS(ctx context.Context, q *SummarizePOSEndpoi
 		return err
 	}
 	q.Result = &pbshop.SummarizePOSResponse{
-		Tables: pbshop.PbSummaryTablesNew(query.Result.ListTable),
+		Tables: convertpb.PbSummaryTablesNew(query.Result.ListTable),
 	}
 	return nil
 }
@@ -1049,7 +1051,7 @@ func (s *NotificationService) CreateDevice(ctx context.Context, q *CreateDeviceE
 	if err != nil {
 		return err
 	}
-	q.Result = pbetop.PbDevice(device)
+	q.Result = convertpb.PbDevice(device)
 	return nil
 }
 
@@ -1078,12 +1080,12 @@ func (s *NotificationService) GetNotification(ctx context.Context, q *GetNotific
 	if err != nil {
 		return err
 	}
-	q.Result = pbetop.PbNotification(noti)
+	q.Result = convertpb.PbNotification(noti)
 	return nil
 }
 
 func (s *NotificationService) GetNotifications(ctx context.Context, q *GetNotificationsEndpoint) error {
-	paging := q.Paging.CMPaging()
+	paging := cmapi.CMPaging(q.Paging)
 	query := &notimodel.GetNotificationsArgs{
 		Paging:    paging,
 		AccountID: q.Context.Shop.ID,
@@ -1093,8 +1095,8 @@ func (s *NotificationService) GetNotifications(ctx context.Context, q *GetNotifi
 		return err
 	}
 	q.Result = &pbetop.NotificationsResponse{
-		Notifications: pbetop.PbNotifications(notis),
-		Paging:        pbcm.PbPageInfo(paging, int32(total)),
+		Notifications: convertpb.PbNotifications(notis),
+		Paging:        cmapi.PbPageInfo(paging, int32(total)),
 	}
 	return nil
 }
@@ -1123,7 +1125,7 @@ func (s *ShipnowService) GetShipnowFulfillment(ctx context.Context, q *GetShipno
 		return err
 	}
 
-	q.Result = pborder.Convert_core_ShipnowFulfillment_To_api_ShipnowFulfillment(query.Result.ShipnowFulfillment)
+	q.Result = convertpb.Convert_core_ShipnowFulfillment_To_api_ShipnowFulfillment(query.Result.ShipnowFulfillment)
 	return nil
 }
 
@@ -1132,25 +1134,25 @@ func (s *ShipnowService) GetShipnowFulfillments(ctx context.Context, q *GetShipn
 	if err != nil {
 		return err
 	}
-	paging := q.Paging.CMPaging()
+	paging := cmapi.CMPaging(q.Paging)
 
 	query := &shipnow.GetShipnowFulfillmentsQuery{
 		ShopIds: shopIDs,
 		Paging:  paging,
-		Filters: pbcm.ToFiltersPtr(q.Filters),
+		Filters: cmapi.ToFiltersPtr(q.Filters),
 	}
 	if err := shipnowQuery.Dispatch(ctx, query); err != nil {
 		return err
 	}
 	q.Result = &pborder.ShipnowFulfillments{
-		ShipnowFulfillments: pborder.Convert_core_ShipnowFulfillments_To_api_ShipnowFulfillments(query.Result.ShipnowFulfillments),
-		Paging:              pbcm.PbPageInfo(paging, query.Result.Count),
+		ShipnowFulfillments: convertpb.Convert_core_ShipnowFulfillments_To_api_ShipnowFulfillments(query.Result.ShipnowFulfillments),
+		Paging:              cmapi.PbPageInfo(paging, query.Result.Count),
 	}
 	return nil
 }
 
 func (s *ShipnowService) CreateShipnowFulfillment(ctx context.Context, q *CreateShipnowFulfillmentEndpoint) error {
-	pickupAddress, err := q.PickupAddress.Fulfilled()
+	pickupAddress, err := convertpb.OrderAddressFulfilled(q.PickupAddress)
 	if err != nil {
 		return err
 	}
@@ -1162,12 +1164,12 @@ func (s *ShipnowService) CreateShipnowFulfillment(ctx context.Context, q *Create
 		ShippingServiceFee:  q.ShippingServiceFee,
 		ShippingNote:        q.ShippingNote,
 		RequestPickupAt:     time.Time{},
-		PickupAddress:       pborder.Convert_api_OrderAddress_To_core_OrderAddress(pickupAddress),
+		PickupAddress:       convertpb.Convert_api_OrderAddress_To_core_OrderAddress(pickupAddress),
 	}
 	if err := shipnowAggr.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
-	q.Result = pborder.Convert_core_ShipnowFulfillment_To_api_ShipnowFulfillment(cmd.Result)
+	q.Result = convertpb.Convert_core_ShipnowFulfillment_To_api_ShipnowFulfillment(cmd.Result)
 	return nil
 }
 
@@ -1179,12 +1181,12 @@ func (s *ShipnowService) ConfirmShipnowFulfillment(ctx context.Context, q *Confi
 	if err := shipnowAggr.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
-	q.Result = pborder.Convert_core_ShipnowFulfillment_To_api_ShipnowFulfillment(cmd.Result)
+	q.Result = convertpb.Convert_core_ShipnowFulfillment_To_api_ShipnowFulfillment(cmd.Result)
 	return nil
 }
 
 func (s *ShipnowService) UpdateShipnowFulfillment(ctx context.Context, q *UpdateShipnowFulfillmentEndpoint) error {
-	pickupAddress, err := q.PickupAddress.Fulfilled()
+	pickupAddress, err := convertpb.OrderAddressFulfilled(q.PickupAddress)
 	if err != nil {
 		return err
 	}
@@ -1197,12 +1199,12 @@ func (s *ShipnowService) UpdateShipnowFulfillment(ctx context.Context, q *Update
 		ShippingServiceFee:  q.ShippingServiceFee,
 		ShippingNote:        q.ShippingNote,
 		RequestPickupAt:     time.Time{},
-		PickupAddress:       pborder.Convert_api_OrderAddress_To_core_OrderAddress(pickupAddress),
+		PickupAddress:       convertpb.Convert_api_OrderAddress_To_core_OrderAddress(pickupAddress),
 	}
 	if err := shipnowAggr.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
-	q.Result = pborder.Convert_core_ShipnowFulfillment_To_api_ShipnowFulfillment(cmd.Result)
+	q.Result = convertpb.Convert_core_ShipnowFulfillment_To_api_ShipnowFulfillment(cmd.Result)
 	return nil
 }
 
@@ -1223,19 +1225,19 @@ func (s *ShipnowService) CancelShipnowFulfillment(ctx context.Context, q *Cancel
 }
 
 func (s *ShipnowService) GetShipnowServices(ctx context.Context, q *GetShipnowServicesEndpoint) error {
-	pickupAddress, err := q.PickupAddress.Fulfilled()
+	pickupAddress, err := convertpb.OrderAddressFulfilled(q.PickupAddress)
 	if err != nil {
 		return err
 	}
 	var points []*shipnow.DeliveryPoint
 	if len(q.DeliveryPoints) > 0 {
 		for _, p := range q.DeliveryPoints {
-			addr, err := p.ShippingAddress.Fulfilled()
+			addr, err := convertpb.OrderAddressFulfilled(p.ShippingAddress)
 			if err != nil {
 				return err
 			}
 			points = append(points, &shipnow.DeliveryPoint{
-				ShippingAddress: pborder.Convert_api_OrderAddress_To_core_OrderAddress(addr),
+				ShippingAddress: convertpb.Convert_api_OrderAddress_To_core_OrderAddress(addr),
 				ValueInfo: types.ValueInfo{
 					CodAmount: p.CodAmount,
 				},
@@ -1246,14 +1248,14 @@ func (s *ShipnowService) GetShipnowServices(ctx context.Context, q *GetShipnowSe
 	cmd := &shipnow.GetShipnowServicesCommand{
 		ShopId:         q.Context.Shop.ID,
 		OrderIds:       q.OrderIds,
-		PickupAddress:  pborder.Convert_api_OrderAddress_To_core_OrderAddress(pickupAddress),
+		PickupAddress:  convertpb.Convert_api_OrderAddress_To_core_OrderAddress(pickupAddress),
 		DeliveryPoints: points,
 	}
 	if err := shipnowAggr.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
 	q.Result = &pborder.GetShipnowServicesResponse{
-		Services: pborder.Convert_core_ShipnowServices_To_api_ShipnowServices(cmd.Result.Services),
+		Services: convertpb.Convert_core_ShipnowServices_To_api_ShipnowServices(cmd.Result.Services),
 	}
 	return nil
 }
@@ -1284,7 +1286,7 @@ func (s *AccountService) CreateExternalAccountAhamove(ctx context.Context, q *Cr
 	if err := identityAggr.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
-	q.Result = pbshop.Convert_core_XAccountAhamove_To_api_XAccountAhamove(cmd.Result)
+	q.Result = convertpb.Convert_core_XAccountAhamove_To_api_XAccountAhamove(cmd.Result)
 	return nil
 }
 
@@ -1318,7 +1320,7 @@ func (s *AccountService) GetExternalAccountAhamove(ctx context.Context, q *GetEx
 		account = cmd.Result
 	}
 
-	q.Result = pbshop.Convert_core_XAccountAhamove_To_api_XAccountAhamove(account)
+	q.Result = convertpb.Convert_core_XAccountAhamove_To_api_XAccountAhamove(account)
 	return nil
 }
 
@@ -1406,7 +1408,7 @@ func (s *ExternalAccountService) GetExternalAccountHaravan(ctx context.Context, 
 	if err := haravanIdentityQuery.Dispatch(ctx, query); err != nil {
 		return err
 	}
-	r.Result = pbshop.Convert_core_XAccountHaravan_To_api_XAccountHaravan(query.Result)
+	r.Result = convertpb.Convert_core_XAccountHaravan_To_api_XAccountHaravan(query.Result)
 	return nil
 }
 
@@ -1420,7 +1422,7 @@ func (s *ExternalAccountService) CreateExternalAccountHaravan(ctx context.Contex
 	if err := haravanIdentityAggr.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
-	r.Result = pbshop.Convert_core_XAccountHaravan_To_api_XAccountHaravan(cmd.Result)
+	r.Result = convertpb.Convert_core_XAccountHaravan_To_api_XAccountHaravan(cmd.Result)
 	return nil
 }
 
@@ -1434,7 +1436,7 @@ func (s *ExternalAccountService) UpdateExternalAccountHaravanToken(ctx context.C
 	if err := haravanIdentityAggr.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
-	r.Result = pbshop.Convert_core_XAccountHaravan_To_api_XAccountHaravan(cmd.Result)
+	r.Result = convertpb.Convert_core_XAccountHaravan_To_api_XAccountHaravan(cmd.Result)
 	return nil
 }
 
@@ -1547,18 +1549,18 @@ func (s *CategoryService) GetCategory(ctx context.Context, q *GetCategoryEndpoin
 }
 
 func (s *CategoryService) GetCategories(ctx context.Context, q *GetCategoriesEndpoint) error {
-	paging := q.Paging.CMPaging()
+	paging := cmapi.CMPaging(q.Paging)
 	query := &catalog.ListShopCategoriesQuery{
 		ShopID:  q.Context.Shop.ID,
 		Paging:  *paging,
-		Filters: pbcm.ToFilters(q.Filters),
+		Filters: cmapi.ToFilters(q.Filters),
 	}
 	if err := catalogQuery.Dispatch(ctx, query); err != nil {
 		return err
 	}
 
 	q.Result = &pbshop.ShopCategoriesResponse{
-		Paging:     pbcm.PbPageInfo(paging, query.Result.Count),
+		Paging:     cmapi.PbPageInfo(paging, query.Result.Count),
 		Categories: PbShopCategories(query.Result.Categories),
 	}
 	return nil
@@ -1618,17 +1620,17 @@ func (s *CollectionService) GetCollection(ctx context.Context, q *GetCollectionE
 }
 
 func (s *CollectionService) GetCollections(ctx context.Context, q *GetCollectionsEndpoint) error {
-	paging := q.Paging.CMPaging()
+	paging := cmapi.CMPaging(q.Paging)
 	query := &catalog.ListShopCollectionsQuery{
 		ShopID:  q.Context.Shop.ID,
 		Paging:  *paging,
-		Filters: pbcm.ToFilters(q.Filters),
+		Filters: cmapi.ToFilters(q.Filters),
 	}
 	if err := catalogQuery.Dispatch(ctx, query); err != nil {
 		return err
 	}
 	q.Result = &pbshop.ShopCollectionsResponse{
-		Paging:      pbcm.PbPageInfo(paging, query.Result.Count),
+		Paging:      cmapi.PbPageInfo(paging, query.Result.Count),
 		Collections: PbShopCollections(query.Result.Collections),
 	}
 	return nil

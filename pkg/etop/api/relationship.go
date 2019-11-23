@@ -5,10 +5,11 @@ import (
 	"fmt"
 	"time"
 
-	pbcm "etop.vn/backend/pb/common"
-	pbetop "etop.vn/backend/pb/etop"
+	pbetop "etop.vn/api/pb/etop"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
+	"etop.vn/backend/pkg/common/cmapi"
+	"etop.vn/backend/pkg/etop/api/convertpb"
 	"etop.vn/backend/pkg/etop/logic/relationship"
 	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/common/l"
@@ -44,7 +45,7 @@ func (s *RelationshipService) answerInvitation(ctx context.Context, r *AnswerInv
 	if r.Response == nil {
 		return r, cm.Error(cm.InvalidArgument, "Invalid response", nil)
 	}
-	response := *r.Response.ToModel()
+	response := *convertpb.Status3ToModel(r.Response)
 
 	userID := r.Context.UserID
 	accountID := r.AccountId
@@ -75,7 +76,7 @@ func (s *RelationshipService) answerInvitation(ctx context.Context, r *AnswerInv
 	case model.S3Positive, model.S3Negative:
 		// If the response is the same as the status, just respond it
 		if response == accUser.Status {
-			r.Result = pbetop.PbUserAccount(&accUserQuery.Result)
+			r.Result = convertpb.PbUserAccount(&accUserQuery.Result)
 			return r, nil
 		}
 
@@ -106,7 +107,7 @@ func (s *RelationshipService) answerInvitation(ctx context.Context, r *AnswerInv
 		return r, cm.Error(cm.Internal, "", err).
 			Log("unexpected")
 	}
-	r.Result = pbetop.PbUserAccount(&accUserQuery.Result)
+	r.Result = convertpb.PbUserAccount(&accUserQuery.Result)
 	return r, nil
 }
 
@@ -116,19 +117,19 @@ func (s *RelationshipService) GetUsersInCurrentAccounts(ctx context.Context, r *
 		return err
 	}
 
-	paging := r.Paging.CMPaging()
+	paging := cmapi.CMPaging(r.Paging)
 	query := &model.GetAccountUserExtendedsQuery{
 		AccountIDs: accountIDs,
 		Paging:     paging,
-		Filters:    pbcm.ToFilters(r.Filters),
+		Filters:    cmapi.ToFilters(r.Filters),
 	}
 	if err := bus.Dispatch(ctx, query); err != nil {
 		return err
 	}
 
 	r.Result = &pbetop.ProtectedUsersResponse{
-		Paging: pbcm.PbPageInfo(paging, query.Result.Total),
-		Users:  pbetop.PbUserAccounts(query.Result.AccountUsers),
+		Paging: cmapi.PbPageInfo(paging, query.Result.Total),
+		Users:  convertpb.PbUserAccounts(query.Result.AccountUsers),
 	}
 	return nil
 }
@@ -183,7 +184,7 @@ func (s *RelationshipService) inviteUserToAccount(ctx context.Context, r *Invite
 		return r, err
 	}
 	accUser := inviteCmd.Result.AccountUser
-	r.Result = pbetop.PbUserAccountIncomplete(accUser, account)
+	r.Result = convertpb.PbUserAccountIncomplete(accUser, account)
 	return r, nil
 }
 

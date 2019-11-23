@@ -8,9 +8,8 @@ import (
 	"os"
 	"path/filepath"
 
-	locationlist "etop.vn/backend/com/main/location/list"
-
 	"etop.vn/backend/cmd/etop-server/config"
+	locationlist "etop.vn/backend/com/main/location/list"
 	"etop.vn/backend/pkg/common/bus"
 	cc "etop.vn/backend/pkg/common/config"
 	"etop.vn/backend/pkg/integration/shipping/vtpost"

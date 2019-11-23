@@ -4,8 +4,6 @@ import (
 	"context"
 	"time"
 
-	"etop.vn/capi"
-
 	"etop.vn/api/main/etop"
 	"etop.vn/api/main/identity"
 	"etop.vn/api/main/invitation"
@@ -19,6 +17,7 @@ import (
 	"etop.vn/backend/pkg/common/conversion"
 	etopmodel "etop.vn/backend/pkg/etop/model"
 	"etop.vn/backend/pkg/integration/email"
+	"etop.vn/capi"
 )
 
 var _ invitation.Aggregate = &InvitationAggregate{}

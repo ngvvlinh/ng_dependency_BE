@@ -8,10 +8,10 @@ import (
 	"strconv"
 	"time"
 
+	pbshop "etop.vn/api/pb/etop/shop"
 	orderingmodely "etop.vn/backend/com/main/ordering/modely"
-	pbcm "etop.vn/backend/pb/common"
-	pbshop "etop.vn/backend/pb/etop/shop"
 	cm "etop.vn/backend/pkg/common"
+	"etop.vn/backend/pkg/common/cmapi"
 	"etop.vn/backend/pkg/common/sq/core"
 	"etop.vn/backend/pkg/etop/model"
 )
@@ -46,10 +46,10 @@ func ExportOrders(
 		default:
 			countError++
 			statusItem := makeProgress()
-			statusItem.Error = pbcm.PbError(err)
+			statusItem.Error = cmapi.PbError(err)
 			if countError >= maxErrors {
 				err = cm.Errorf(cm.Aborted, nil, "Quá nhiều lỗi xảy ra")
-				statusItem.Error = pbcm.PbError(err)
+				statusItem.Error = cmapi.PbError(err)
 				result <- statusItem
 			}
 			return false

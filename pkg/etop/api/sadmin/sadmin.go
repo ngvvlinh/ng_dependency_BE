@@ -3,7 +3,7 @@ package admin
 import (
 	"context"
 
-	pbcm "etop.vn/backend/pb/common"
+	pbcm "etop.vn/api/pb/common"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/etop/api"

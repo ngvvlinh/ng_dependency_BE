@@ -4,9 +4,9 @@ import (
 	"context"
 
 	"etop.vn/api/main/identity"
-	pbcm "etop.vn/backend/pb/common"
-	pbaffiliate "etop.vn/backend/pb/etop/affiliate"
+	pbcm "etop.vn/api/pb/common"
 	"etop.vn/backend/pkg/common/bus"
+	"etop.vn/backend/pkg/etop/api/convertpb"
 )
 
 func init() {
@@ -47,13 +47,13 @@ func (s *AccountService) RegisterAffiliate(ctx context.Context, r *RegisterAffil
 		OwnerID:     r.Context.UserID,
 		Phone:       r.Phone,
 		Email:       r.Email,
-		BankAccount: r.BankAccount.ToCoreBankAccount(),
+		BankAccount: convertpb.BankAccountToCoreBankAccount(r.BankAccount),
 		IsTest:      r.Context.User.IsTest != 0,
 	}
 	if err := identityAggr.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
-	r.Result = pbaffiliate.Convert_core_Affiliate_To_api_Affiliate(cmd.Result)
+	r.Result = convertpb.Convert_core_Affiliate_To_api_Affiliate(cmd.Result)
 	return nil
 }
 
@@ -69,7 +69,7 @@ func (s *AccountService) UpdateAffiliate(ctx context.Context, r *UpdateAffiliate
 	if err := identityAggr.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
-	r.Result = pbaffiliate.Convert_core_Affiliate_To_api_Affiliate(cmd.Result)
+	r.Result = convertpb.Convert_core_Affiliate_To_api_Affiliate(cmd.Result)
 	return nil
 }
 
@@ -77,12 +77,12 @@ func (s *AccountService) UpdateAffiliateBankAccount(ctx context.Context, r *Upda
 	cmd := &identity.UpdateAffiliateBankAccountCommand{
 		ID:          r.Context.Affiliate.ID,
 		OwnerID:     r.Context.Affiliate.OwnerID,
-		BankAccount: r.BankAccount.ToCoreBankAccount(),
+		BankAccount: convertpb.BankAccountToCoreBankAccount(r.BankAccount),
 	}
 	if err := identityAggr.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
-	r.Result = pbaffiliate.Convert_core_Affiliate_To_api_Affiliate(cmd.Result)
+	r.Result = convertpb.Convert_core_Affiliate_To_api_Affiliate(cmd.Result)
 	return nil
 }
 

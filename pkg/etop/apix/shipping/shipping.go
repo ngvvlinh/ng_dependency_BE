@@ -4,13 +4,14 @@ import (
 	"context"
 
 	"etop.vn/api/main/location"
+	pborder "etop.vn/api/pb/etop/order"
+	pbexternal "etop.vn/api/pb/external"
 	servicelocation "etop.vn/backend/com/main/location"
 	locationlist "etop.vn/backend/com/main/location/list"
 	ordersqlstore "etop.vn/backend/com/main/ordering/sqlstore"
 	shipsqlstore "etop.vn/backend/com/main/shipping/sqlstore"
-	pborder "etop.vn/backend/pb/etop/order"
-	pbexternal "etop.vn/backend/pb/external"
 	cm "etop.vn/backend/pkg/common"
+	"etop.vn/backend/pkg/etop/apix/convertpb"
 	"etop.vn/backend/pkg/etop/logic/shipping_provider"
 	"etop.vn/common/l"
 )
@@ -104,6 +105,6 @@ func GetShippingServices(ctx context.Context, accountID int64, r *pbexternal.Get
 		return nil, err
 	}
 	return &pbexternal.GetShippingServicesResponse{
-		Services: pbexternal.PbShippingServices(services),
+		Services: convertpb.PbShippingServices(services),
 	}, nil
 }

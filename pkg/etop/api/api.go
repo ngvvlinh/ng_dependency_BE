@@ -5,10 +5,13 @@ import (
 
 	"etop.vn/api/main/invitation"
 	"etop.vn/api/main/location"
+	pbcm "etop.vn/api/pb/common"
+	pbetop "etop.vn/api/pb/etop"
+	pbshop "etop.vn/api/pb/etop/shop"
 	servicelocation "etop.vn/backend/com/main/location"
-	pbcm "etop.vn/backend/pb/common"
-	pbetop "etop.vn/backend/pb/etop"
 	"etop.vn/backend/pkg/common/bus"
+	"etop.vn/backend/pkg/common/cmapi"
+	"etop.vn/backend/pkg/etop/api/convertpb"
 	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/backend/pkg/integration/bank"
 	"etop.vn/common/l"
@@ -66,7 +69,7 @@ func (s *LocationService) GetProvinces(ctx context.Context, q *GetProvincesEndpo
 		return err
 	}
 	q.Result = &pbetop.GetProvincesResponse{
-		Provinces: pbetop.PbProvinces(query.Result.Provinces),
+		Provinces: convertpb.PbProvinces(query.Result.Provinces),
 	}
 	return nil
 }
@@ -77,7 +80,7 @@ func (s *LocationService) GetDistricts(ctx context.Context, q *GetDistrictsEndpo
 		return err
 	}
 	q.Result = &pbetop.GetDistrictsResponse{
-		Districts: pbetop.PbDistricts(query.Result.Districts),
+		Districts: convertpb.PbDistricts(query.Result.Districts),
 	}
 	return nil
 }
@@ -88,7 +91,7 @@ func (s *LocationService) GetDistrictsByProvince(ctx context.Context, q *GetDist
 		return err
 	}
 	q.Result = &pbetop.GetDistrictsResponse{
-		Districts: pbetop.PbDistricts(query.Result.Districts),
+		Districts: convertpb.PbDistricts(query.Result.Districts),
 	}
 	return nil
 }
@@ -99,7 +102,7 @@ func (s *LocationService) GetWards(ctx context.Context, q *GetWardsEndpoint) err
 		return err
 	}
 	q.Result = &pbetop.GetWardsResponse{
-		Wards: pbetop.PbWards(query.Result.Wards),
+		Wards: convertpb.PbWards(query.Result.Wards),
 	}
 	return nil
 }
@@ -110,7 +113,7 @@ func (s *LocationService) GetWardsByDistrict(ctx context.Context, q *GetWardsByD
 		return err
 	}
 	q.Result = &pbetop.GetWardsResponse{
-		Wards: pbetop.PbWards(query.Result.Wards),
+		Wards: convertpb.PbWards(query.Result.Wards),
 	}
 	return nil
 }
@@ -127,13 +130,13 @@ func (s *LocationService) ParseLocation(ctx context.Context, q *ParseLocationEnd
 	loc := query.Result
 	res := &pbetop.ParseLocationResponse{}
 	if loc.Province != nil {
-		res.Province = pbetop.PbProvince(loc.Province)
+		res.Province = convertpb.PbProvince(loc.Province)
 	}
 	if loc.District != nil {
-		res.District = pbetop.PbDistrict(loc.District)
+		res.District = convertpb.PbDistrict(loc.District)
 	}
 	if loc.Ward != nil {
-		res.Ward = pbetop.PbWard(loc.Ward)
+		res.Ward = convertpb.PbWard(loc.Ward)
 	}
 	q.Result = res
 	return nil
@@ -141,7 +144,7 @@ func (s *LocationService) ParseLocation(ctx context.Context, q *ParseLocationEnd
 
 func (s *BankService) GetBanks(ctx context.Context, q *GetBanksEndpoint) error {
 	q.Result = &pbetop.GetBanksResponse{
-		Banks: pbetop.PbBanks(bank.Banks),
+		Banks: convertpb.PbBanks(bank.Banks),
 	}
 	return nil
 }
@@ -154,7 +157,7 @@ func (s *BankService) GetProvincesByBank(ctx context.Context, q *GetProvincesByB
 
 	provinces := bank.GetProvinceByBank(query)
 	q.Result = &pbetop.GetBankProvincesResponse{
-		Provinces: pbetop.PbBankProvinces(provinces),
+		Provinces: convertpb.PbBankProvinces(provinces),
 	}
 	return nil
 }
@@ -171,13 +174,13 @@ func (s *BankService) GetBranchesByBankProvince(ctx context.Context, q *GetBranc
 
 	branches := bank.GetBranchByBankProvince(bankQuery, provinceQuery)
 	q.Result = &pbetop.GetBranchesByBankProvinceResponse{
-		Branches: pbetop.PbBankBranches(branches),
+		Branches: convertpb.PbBankBranches(branches),
 	}
 	return nil
 }
 
 func (s *AddressService) CreateAddress(ctx context.Context, q *CreateAddressEndpoint) error {
-	address, err := pbetop.PbCreateAddressToModel(q.Context.AccountID, q.CreateAddressRequest)
+	address, err := convertpb.PbCreateAddressToModel(q.Context.AccountID, q.CreateAddressRequest)
 	if err != nil {
 		return err
 	}
@@ -187,7 +190,7 @@ func (s *AddressService) CreateAddress(ctx context.Context, q *CreateAddressEndp
 	if err := bus.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
-	q.Result = pbetop.PbAddress(cmd.Result)
+	q.Result = convertpb.PbAddress(cmd.Result)
 	return nil
 }
 
@@ -200,14 +203,14 @@ func (s *AddressService) GetAddresses(ctx context.Context, q *GetAddressesEndpoi
 		return nil
 	}
 	q.Result = &pbetop.GetAddressResponse{
-		Addresses: pbetop.PbAddresses(query.Result.Addresses),
+		Addresses: convertpb.PbAddresses(query.Result.Addresses),
 	}
 	return nil
 }
 
 func (s *AddressService) UpdateAddress(ctx context.Context, q *UpdateAddressEndpoint) error {
 	accountID := q.Context.AccountID
-	address, err := pbetop.PbUpdateAddressToModel(accountID, q.UpdateAddressRequest)
+	address, err := convertpb.PbUpdateAddressToModel(accountID, q.UpdateAddressRequest)
 	if err != nil {
 		return err
 	}
@@ -218,7 +221,7 @@ func (s *AddressService) UpdateAddress(ctx context.Context, q *UpdateAddressEndp
 	if err := bus.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
-	q.Result = pbetop.PbAddress(cmd.Result)
+	q.Result = convertpb.PbAddress(cmd.Result)
 	return nil
 }
 
@@ -268,23 +271,23 @@ func (s *InvitationService) GetInvitationByToken(ctx context.Context, q *GetInvi
 	if err := invitationQuery.Dispatch(ctx, query); err != nil {
 		return err
 	}
-	q.Result = pbetop.PbInvitation(query.Result)
+	q.Result = convertpb.PbInvitation(query.Result)
 	return nil
 }
 
 func (s *InvitationService) GetInvitations(ctx context.Context, q *GetInvitationsEndpoint) error {
-	paging := q.Paging.CMPaging()
+	paging := cmapi.CMPaging(q.Paging)
 	query := &invitation.ListInvitationsByEmailQuery{
 		Email:   q.Context.User.Email,
 		Paging:  *paging,
-		Filters: pbcm.ToFilters(q.Filters),
+		Filters: cmapi.ToFilters(q.Filters),
 	}
 	if err := invitationQuery.Dispatch(ctx, query); err != nil {
 		return err
 	}
-	q.Result = &pbetop.InvitationsResponse{
-		Invitations: pbetop.PbInvitations(query.Result.Invitations),
-		Paging:      pbcm.PbPageInfo(paging, query.Result.Count),
+	q.Result = &pbshop.InvitationsResponse{
+		Invitations: convertpb.PbInvitations(query.Result.Invitations),
+		Paging:      cmapi.PbPageInfo(paging, query.Result.Count),
 	}
 	return nil
 }

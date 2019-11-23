@@ -5,10 +5,10 @@ import (
 
 	"etop.vn/api/main/inventory"
 	"etop.vn/api/meta"
+	pbshop "etop.vn/api/pb/etop/shop"
 	"etop.vn/api/shopping/tradering"
-	pbcm "etop.vn/backend/pb/common"
-	pbshop "etop.vn/backend/pb/etop/shop"
 	cm "etop.vn/backend/pkg/common"
+	"etop.vn/backend/pkg/common/cmapi"
 	. "etop.vn/capi/dot"
 )
 
@@ -219,11 +219,11 @@ func (s *InventoryService) GetInventoryVoucher(ctx context.Context, q *GetInvent
 
 func (s *InventoryService) GetInventoryVouchers(ctx context.Context, q *GetInventoryVouchersEndpoint) error {
 	shopID := q.Context.Shop.ID
-	paging := q.Paging.CMPaging()
+	paging := cmapi.CMPaging(q.Paging)
 	query := &inventory.GetInventoryVouchersQuery{
 		ShopID:  shopID,
 		Paging:  *paging,
-		Filters: pbcm.ToFilters(q.Filters),
+		Filters: cmapi.ToFilters(q.Filters),
 	}
 	if err := inventoryQuery.Dispatch(ctx, query); err != nil {
 		return err

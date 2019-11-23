@@ -6,16 +6,19 @@ import (
 	"fmt"
 	"strings"
 
+	pbcm "etop.vn/api/pb/common"
+	pborder "etop.vn/api/pb/etop/order"
+	pbsource "etop.vn/api/pb/etop/order/source"
+	"etop.vn/api/pb/etop/shop"
+	pbexternal "etop.vn/api/pb/external"
 	"etop.vn/backend/com/main/ordering/modelx"
 	ordersqlstore "etop.vn/backend/com/main/ordering/sqlstore"
-	pbcm "etop.vn/backend/pb/common"
-	pborder "etop.vn/backend/pb/etop/order"
-	pbsource "etop.vn/backend/pb/etop/order/source"
-	"etop.vn/backend/pb/etop/shop"
-	pbexternal "etop.vn/backend/pb/external"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
+	"etop.vn/backend/pkg/common/cmapi"
 	"etop.vn/backend/pkg/common/validate"
+	convertpbint "etop.vn/backend/pkg/etop/api/convertpb"
+	"etop.vn/backend/pkg/etop/apix/convertpb"
 	"etop.vn/backend/pkg/etop/authorize/claims"
 	logicorder "etop.vn/backend/pkg/etop/logic/orders"
 	"etop.vn/backend/pkg/etop/model"
@@ -29,7 +32,7 @@ func CreateAndConfirmOrder(ctx context.Context, accountID int64, shopClaim *clai
 	if shipping == nil {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Cần cung cấp mục shipping")
 	}
-	lines, err := pbexternal.OrderLinesToCreateOrderLines(r.Lines)
+	lines, err := convertpb.OrderLinesToCreateOrderLines(r.Lines)
 	if err != nil {
 		return nil, err
 	}
@@ -69,26 +72,26 @@ func CreateAndConfirmOrder(ctx context.Context, accountID int64, shopClaim *clai
 		ExternalMeta:    r.ExternalMeta,
 		ExternalUrl:     r.ExternalUrl,
 		PaymentMethod:   "", // will be set automatically
-		Customer:        r.CustomerAddress.ToPbCustomer(),
-		CustomerAddress: r.CustomerAddress.ToPbOrder(),
-		BillingAddress:  r.CustomerAddress.ToPbOrder(),
-		ShippingAddress: r.ShippingAddress.ToPbOrder(),
-		ShopAddress:     shipping.PickupAddress.ToPbOrder(),
+		Customer:        convertpb.OrderAddressToPbCustomer(r.CustomerAddress),
+		CustomerAddress: convertpb.OrderAddressToPbOrder(r.CustomerAddress),
+		BillingAddress:  convertpb.OrderAddressToPbOrder(r.CustomerAddress),
+		ShippingAddress: convertpb.OrderAddressToPbOrder(r.ShippingAddress),
+		ShopAddress:     convertpb.OrderAddressToPbOrder(shipping.PickupAddress),
 		ShConfirm:       nil,
 		Lines:           lines,
 		Discounts:       nil,
 		TotalItems:      r.TotalItems,
 		BasketValue:     r.BasketValue,
-		TotalWeight:     pbcm.BareInt32(shipping.ChargeableWeight),
+		TotalWeight:     cmapi.BareInt32(shipping.ChargeableWeight),
 		OrderDiscount:   r.OrderDiscount,
-		TotalFee:        pbcm.BareInt32(r.TotalFee),
+		TotalFee:        cmapi.BareInt32(r.TotalFee),
 		FeeLines:        r.FeeLines,
 		TotalDiscount:   &r.TotalDiscount,
 		TotalAmount:     r.TotalAmount,
 		OrderNote:       r.OrderNote,
-		ShippingNote:    pbcm.BareString(shipping.ShippingNote),
+		ShippingNote:    cmapi.BareString(shipping.ShippingNote),
 		ShopShippingFee: 0, // deprecated
-		ShopCod:         pbcm.BareInt32(shipping.CodAmount),
+		ShopCod:         cmapi.BareInt32(shipping.CodAmount),
 		ReferenceUrl:    "",
 		ShopShipping:    nil, // deprecated
 		Shipping: &pborder.OrderShipping{
@@ -97,16 +100,16 @@ func CreateAndConfirmOrder(ctx context.Context, accountID int64, shopClaim *clai
 			XServiceId:          "",
 			XShippingFee:        0,
 			XServiceName:        "",
-			PickupAddress:       shipping.PickupAddress.ToPbOrder(),
-			ReturnAddress:       shipping.ReturnAddress.ToPbOrder(),
+			PickupAddress:       convertpb.OrderAddressToPbOrder(shipping.PickupAddress),
+			ReturnAddress:       convertpb.OrderAddressToPbOrder(shipping.ReturnAddress),
 			ShippingServiceName: "", // TODO: be filled when confirm
-			ShippingServiceCode: pbcm.BareString(shipping.ShippingServiceCode),
-			ShippingServiceFee:  pbcm.BareInt32(shipping.ShippingServiceFee),
+			ShippingServiceCode: cmapi.BareString(shipping.ShippingServiceCode),
+			ShippingServiceFee:  cmapi.BareInt32(shipping.ShippingServiceFee),
 			ShippingProvider:    0,
 			Carrier:             *shipping.Carrier,
 			IncludeInsurance:    *shipping.IncludeInsurance,
 			TryOn:               *shipping.TryOn,
-			ShippingNote:        pbcm.BareString(shipping.ShippingNote),
+			ShippingNote:        cmapi.BareString(shipping.ShippingNote),
 			CodAmount:           shipping.CodAmount,
 			Weight:              nil,
 			GrossWeight:         shipping.GrossWeight,
@@ -117,13 +120,13 @@ func CreateAndConfirmOrder(ctx context.Context, accountID int64, shopClaim *clai
 		},
 		GhnNoteCode: 0, // will be over-written by try_on
 	}
-	if err := validateAddress(req.CustomerAddress, shipping.Carrier.ToModel()); err != nil {
+	if err := validateAddress(req.CustomerAddress, convertpbint.ShippingProviderToModel(shipping.Carrier)); err != nil {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Địa chỉ khách hàng không hợp lệ: %v", err)
 	}
-	if err := validateAddress(req.ShippingAddress, shipping.Carrier.ToModel()); err != nil {
+	if err := validateAddress(req.ShippingAddress, convertpbint.ShippingProviderToModel(shipping.Carrier)); err != nil {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Địa chỉ người nhận không hợp lệ: %v", err)
 	}
-	if err := validateAddress(req.Shipping.PickupAddress, shipping.Carrier.ToModel()); err != nil {
+	if err := validateAddress(req.Shipping.PickupAddress, convertpbint.ShippingProviderToModel(shipping.Carrier)); err != nil {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Địa chỉ lấy hàng không hợp lệ: %v", err)
 	}
 
@@ -171,7 +174,7 @@ func CreateAndConfirmOrder(ctx context.Context, accountID int64, shopClaim *clai
 			Map(cm.NotFound, cm.Internal, "").
 			Throw()
 	}
-	return pbexternal.PbOrderAndFulfillments(orderQuery.Result.Order, orderQuery.Result.Fulfillments), nil
+	return convertpb.PbOrderAndFulfillments(orderQuery.Result.Order, orderQuery.Result.Fulfillments), nil
 }
 
 func CancelOrder(ctx context.Context, shopID int64, r *pbexternal.CancelOrderRequest) (*pbexternal.OrderAndFulfillments, error) {
@@ -213,7 +216,7 @@ func CancelOrder(ctx context.Context, shopID int64, r *pbexternal.CancelOrderReq
 	if err := bus.Dispatch(ctx, orderQuery); err != nil {
 		return nil, err
 	}
-	resp2 := pbexternal.PbOrderAndFulfillments(orderQuery.Result.Order, orderQuery.Result.Fulfillments)
+	resp2 := convertpb.PbOrderAndFulfillments(orderQuery.Result.Order, orderQuery.Result.Fulfillments)
 	resp2.FulfillmentErrors = resp.Errors
 	return resp2, nil
 }
@@ -229,7 +232,7 @@ func GetOrder(ctx context.Context, shopID int64, r *pbexternal.OrderIDRequest) (
 	if err := bus.Dispatch(ctx, orderQuery); err != nil {
 		return nil, err
 	}
-	return pbexternal.PbOrderAndFulfillments(orderQuery.Result.Order, orderQuery.Result.Fulfillments), nil
+	return convertpb.PbOrderAndFulfillments(orderQuery.Result.Order, orderQuery.Result.Fulfillments), nil
 }
 
 func GetFulfillment(ctx context.Context, shopID int64, r *pbexternal.FulfillmentIDRequest) (*pbexternal.Fulfillment, error) {
@@ -243,7 +246,7 @@ func GetFulfillment(ctx context.Context, shopID int64, r *pbexternal.Fulfillment
 	if err != nil {
 		return nil, err
 	}
-	return pbexternal.PbFulfillment(ffm), nil
+	return convertpb.PbFulfillment(ffm), nil
 }
 
 func validateAddress(address *pborder.OrderAddress, shippingProvider model.ShippingProvider) error {
@@ -275,7 +278,7 @@ func validateAddress(address *pborder.OrderAddress, shippingProvider model.Shipp
 
 	if shippingProvider == model.TypeVTPost {
 		// required Ward
-		_address, err := address.ToModel()
+		_address, err := convertpbint.OrderAddressToModel(address)
 		if err != nil {
 			return err
 		}

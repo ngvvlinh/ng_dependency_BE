@@ -13,10 +13,13 @@ import (
 	"time"
 	"unicode/utf8"
 
+	"etop.vn/backend/pkg/common/cmapi"
+	"etop.vn/backend/pkg/etop/api/convertpb"
+
 	"github.com/golang/protobuf/jsonpb"
 
-	pbcm "etop.vn/backend/pb/common"
-	pbshop "etop.vn/backend/pb/etop/shop"
+	pbcm "etop.vn/api/pb/common"
+	pbshop "etop.vn/api/pb/etop/shop"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/idemp"
 	"etop.vn/backend/pkg/common/redis"
@@ -119,13 +122,13 @@ func exportAndReportProgress(
 
 		if _err != nil {
 			exportResult.Status = model.S4Negative
-			exportResult.Error = pbcm.ErrorToModel(pbcm.PbError(_err))
+			exportResult.Error = cmapi.ErrorToModel(cmapi.PbError(_err))
 
 			event := eventstream.Event{
 				Type:      "export/error",
 				AccountID: exportResult.AccountID,
 				UserID:    exportResult.UserID,
-				Payload:   pbcm.PbError(_err),
+				Payload:   cmapi.PbError(_err),
 			}
 			publisher.Publish(event)
 			return
@@ -137,7 +140,7 @@ func exportAndReportProgress(
 			Type:      "export/ok",
 			AccountID: exportResult.AccountID,
 			UserID:    exportResult.UserID,
-			Payload:   pbshop.PbExportAttempt(exportResult),
+			Payload:   convertpb.PbExportAttempt(exportResult),
 		}
 		publisher.Publish(event)
 	}()

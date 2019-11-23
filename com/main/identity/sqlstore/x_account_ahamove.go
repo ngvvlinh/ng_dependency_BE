@@ -5,10 +5,9 @@ import (
 	"encoding/json"
 	"time"
 
+	"etop.vn/api/main/identity"
 	"etop.vn/backend/com/main/identity/convert"
 	"etop.vn/backend/com/main/identity/model"
-
-	"etop.vn/api/main/identity"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/cmsql"
 )

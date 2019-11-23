@@ -5,14 +5,12 @@ import (
 	"flag"
 
 	"etop.vn/api/shopping/tradering"
-
+	"etop.vn/backend/cmd/etop-server/config"
 	"etop.vn/backend/com/main/receipting/model"
 	carriermodel "etop.vn/backend/com/shopping/carrying/model"
 	customermodel "etop.vn/backend/com/shopping/customering/model"
 	suppliermodel "etop.vn/backend/com/shopping/suppliering/model"
 	tradermodel "etop.vn/backend/com/shopping/tradering/model"
-
-	"etop.vn/backend/cmd/etop-server/config"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/cmsql"
 	cc "etop.vn/backend/pkg/common/config"

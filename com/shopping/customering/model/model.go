@@ -3,9 +3,8 @@ package model
 import (
 	"time"
 
-	"etop.vn/api/shopping/customering"
-
 	"etop.vn/api/main/etop"
+	"etop.vn/api/shopping/customering"
 	ordermodel "etop.vn/backend/com/main/ordering/model"
 )
 

@@ -4,8 +4,6 @@ import (
 	"context"
 	"time"
 
-	"etop.vn/capi"
-
 	"etop.vn/api/main/address"
 	etoptypes "etop.vn/api/main/etop"
 	"etop.vn/api/main/identity"
@@ -22,6 +20,7 @@ import (
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/cmsql"
+	"etop.vn/capi"
 )
 
 var _ shipnow.Aggregate = &Aggregate{}

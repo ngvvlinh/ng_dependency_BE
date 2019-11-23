@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"etop.vn/api/main/invitation"
-
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/validate"

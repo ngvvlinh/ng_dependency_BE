@@ -348,7 +348,7 @@
           "200": {
             "description": "A successful response",
             "schema": {
-              "$ref": "#/definitions/ocInvitationsResponse"
+              "$ref": "#/definitions/zkInvitationsResponse"
             }
           }
         }
@@ -1883,20 +1883,6 @@
         }
       }
     },
-    "ocInvitationsResponse": {
-      "type": "object",
-      "properties": {
-        "Invitations": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/ocInvitation"
-          }
-        },
-        "Paging": {
-          "$ref": "#/definitions/maPageInfo"
-        }
-      }
-    },
     "ocInviteUserToAccountRequest": {
       "type": "object",
       "properties": {
@@ -2659,6 +2645,20 @@
         "ts_app_web",
         "unknown"
       ]
+    },
+    "zkInvitationsResponse": {
+      "type": "object",
+      "properties": {
+        "Invitations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ocInvitation"
+          }
+        },
+        "Paging": {
+          "$ref": "#/definitions/maPageInfo"
+        }
+      }
     }
   },
   "tags": [

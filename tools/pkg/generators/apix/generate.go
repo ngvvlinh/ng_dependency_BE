@@ -22,7 +22,7 @@ func (p *plugin) generateServices(printer generator.Printer, services []*defs.Se
 	printer.Import("fmt", "fmt")
 	printer.Import("http", "net/http")
 	printer.Import("proto", "github.com/golang/protobuf/proto")
-	printer.Import("httprpc", "etop.vn/backend/pkg/common/httprpc")
+	printer.Import("httprpc", "etop.vn/capi/httprpc")
 	vars := map[string]interface{}{
 		"Services": services,
 	}

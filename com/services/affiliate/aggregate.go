@@ -6,19 +6,15 @@ import (
 	"time"
 
 	"etop.vn/api/main/catalog"
-
-	"etop.vn/api/main/ordering"
-
 	"etop.vn/api/main/identity"
-
+	"etop.vn/api/main/ordering"
+	"etop.vn/api/services/affiliate"
 	"etop.vn/backend/com/services/affiliate/model"
 	"etop.vn/backend/com/services/affiliate/sqlstore"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/cmsql"
 	"etop.vn/common/l"
-
-	"etop.vn/api/services/affiliate"
 )
 
 var _ affiliate.Aggregate = &Aggregate{}

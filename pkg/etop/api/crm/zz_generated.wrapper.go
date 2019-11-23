@@ -8,15 +8,15 @@ import (
 	"context"
 	"time"
 
-	cm "etop.vn/backend/pb/common"
-	crm "etop.vn/backend/pb/services/crm"
+	cm "etop.vn/api/pb/common"
+	crm "etop.vn/api/pb/services/crm"
+	api "etop.vn/api/root/services/crm"
 	common "etop.vn/backend/pkg/common"
 	bus "etop.vn/backend/pkg/common/bus"
 	metrics "etop.vn/backend/pkg/common/metrics"
 	cmwrapper "etop.vn/backend/pkg/common/wrapper"
 	claims "etop.vn/backend/pkg/etop/authorize/claims"
 	middleware "etop.vn/backend/pkg/etop/authorize/middleware"
-	api "etop.vn/backend/zexp/api/root/services/crm"
 )
 
 func WrapCrmService(s *CrmService, secret string) api.CrmService {

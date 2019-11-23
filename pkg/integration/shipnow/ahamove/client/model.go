@@ -1,13 +1,12 @@
 package client
 
 import (
-	"etop.vn/backend/pkg/common/httpreq"
-	"etop.vn/common/jsonx"
-
 	"etop.vn/api/main/etop"
 	shipnowtypes "etop.vn/api/main/shipnow/types"
 	cm "etop.vn/backend/pkg/common"
 	cc "etop.vn/backend/pkg/common/config"
+	"etop.vn/backend/pkg/common/httpreq"
+	"etop.vn/common/jsonx"
 )
 
 type Config struct {

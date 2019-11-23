@@ -1,0 +1,161 @@
+syntax = "proto2";
+package integration;
+option go_package = "etop.vn/api/pb/etop/integration";
+
+import "gogoproto/gogo.proto";
+option (gogoproto.equal_all)                = false;
+option (gogoproto.gogoproto_import)         = false;
+option (gogoproto.goproto_enum_prefix_all)  = true;
+option (gogoproto.goproto_getters_all)      = true;
+option (gogoproto.goproto_unrecognized_all) = false;
+option (gogoproto.gostring_all)             = false;
+option (gogoproto.marshaler_all)            = false;
+option (gogoproto.onlyone_all)              = false;
+option (gogoproto.sizer_all)                = false;
+option (gogoproto.testgen_all)              = false;
+option (gogoproto.unmarshaler_all)          = false;
+option (gogoproto.verbose_equal_all)        = false;
+
+import "common/common.proto";
+import "etop/etc/status3/status.proto";
+import "etop/etop.proto";
+
+message InitRequest {
+    optional string auth_token = 1 [(gogoproto.nullable)=false];
+}
+
+message LoginResponse {
+    optional string access_token = 1 [(gogoproto.nullable)=false];
+    optional int32  expires_in = 2 [(gogoproto.nullable)=false];
+
+    optional PartnerUserLogin   user          = 3;
+    optional PartnerShopLoginAccount account = 4;
+    optional PartnerShopInfo shop = 5;
+
+    repeated PartnerShopLoginAccount available_accounts = 7;
+
+    optional etop.PublicAccountInfo auth_partner = 11;
+
+    repeated Action actions = 12;
+    optional string redirect_url = 13 [(gogoproto.nullable)=false];
+}
+
+message Action {
+    optional string name = 1 [(gogoproto.nullable)=false];
+    optional string label = 2 [(gogoproto.nullable)=false];
+    optional string msg = 3 [(gogoproto.nullable)=false];
+    map<string, string> meta = 4;
+}
+
+message PartnerUserLogin {
+    // @required
+    optional int64  id         = 1 [(gogoproto.nullable)=false];
+
+    // @required
+    optional string full_name  = 2 [(gogoproto.nullable)=false];
+
+    // @required
+    optional string short_name = 3 [(gogoproto.nullable)=false];
+
+    // @required
+    optional string phone      = 4 [(gogoproto.nullable)=false];
+
+    // @required
+    optional string email      = 5 [(gogoproto.nullable)=false];
+}
+
+message PartnerShopLoginAccount {
+    // @required
+    optional int64      id         = 1 [(gogoproto.nullable)=false];
+
+    optional string external_id   = 10 [(gogoproto.nullable)=false];
+
+    // @required
+    optional string     name       = 2 [(gogoproto.nullable)=false];
+
+    // @required
+    optional etop.AccountType type       = 3 [(gogoproto.nullable)=false];
+
+    // Associated token for the account. It's returned when calling Login or
+    // SwitchAccount with regenerate_tokens set to true.
+    optional string access_token = 5 [(gogoproto.nullable)=false];
+
+    // The same as access_token.
+    optional int32  expires_in   = 6 [(gogoproto.nullable)=false];
+
+    optional string image_url = 7 [(gogoproto.nullable)=false];
+}
+
+message PartnerShopInfo {
+    optional int64  id   = 1 [(gogoproto.nullable)=false];
+    optional string name = 2 [(gogoproto.nullable)=false];
+    optional status3.Status status = 3 [(gogoproto.nullable)=false];
+    optional bool is_test = 4 [(gogoproto.nullable)=false];
+    optional etop.Address address = 5;
+    optional string phone = 9 [(gogoproto.nullable)=false];
+    //    optional etop.BankAccount bank_account = 10;
+    //    optional bool auto_create_ffm = 20 [(gogoproto.nullable)=false];
+
+    //    optional string website_url = 14 [(gogoproto.nullable)=false];
+    optional string image_url = 15 [(gogoproto.nullable)=false];
+    optional string email = 16 [(gogoproto.nullable)=false];
+    //    optional int64 product_source_id = 17 [(gogoproto.nullable)=false];
+    //    optional int64 ship_to_address_id = 18 [(gogoproto.nullable)=false];
+    optional int64 ship_from_address_id = 19 [(gogoproto.nullable)=false];
+    //    optional string ghn_note_code = 21 [(gogoproto.nullable)=false];
+    //    optional int64 owner_id = 22 [(gogoproto.nullable)=false];
+    //    optional User  user          = 23;
+}
+
+message RequestLoginRequest {
+    // @required Phone or email
+    optional string login        = 1 [(gogoproto.nullable)=false];
+
+    // @required
+    optional string recaptcha_token  = 2 [(gogoproto.nullable)=false];
+}
+
+message RequestLoginResponse {
+    // @required
+    optional string code = 1 [(gogoproto.nullable)=false];
+
+    // @required
+    optional string msg = 2 [(gogoproto.nullable)=false];
+
+    // @required
+    repeated Action actions = 3;
+}
+
+message LoginUsingTokenRequest {
+    optional string login = 1 [(gogoproto.nullable)=false];
+
+    optional string verification_code = 2 [(gogoproto.nullable)=false];
+}
+
+message RegisterRequest {
+    optional string full_name = 1 [(gogoproto.nullable)=false];
+
+    optional string phone     = 3 [(gogoproto.nullable)=false];
+
+    optional string email     = 4 [(gogoproto.nullable)=false];
+
+    optional bool agree_tos = 5 [(gogoproto.nullable)=false];
+
+    optional bool agree_email_info = 6;
+}
+
+message RegisterResponse {
+    optional etop.User user = 1;
+
+    optional string access_token = 2 [(gogoproto.nullable)=false];
+    optional int32 expires_in = 3 [(gogoproto.nullable)=false];
+}
+
+message GrantAccessRequest {
+    optional int64 shop_id = 1 [(gogoproto.nullable)=false];
+}
+
+message GrantAccessResponse {
+    optional string access_token = 1 [(gogoproto.nullable)=false];
+    optional int32 expires_in = 2 [(gogoproto.nullable)=false];
+}

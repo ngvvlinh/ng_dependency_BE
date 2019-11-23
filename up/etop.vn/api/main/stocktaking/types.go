@@ -3,9 +3,8 @@ package stocktaking
 import (
 	"time"
 
-	"etop.vn/api/main/inventory"
-
 	"etop.vn/api/main/etop"
+	"etop.vn/api/main/inventory"
 )
 
 // +gen:event:topic=event/stocktake

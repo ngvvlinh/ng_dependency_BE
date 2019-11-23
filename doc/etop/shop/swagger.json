@@ -2142,7 +2142,7 @@
           "200": {
             "description": "A successful response",
             "schema": {
-              "$ref": "#/definitions/zkInvitation"
+              "$ref": "#/definitions/ocInvitation"
             }
           }
         }
@@ -5383,6 +5383,58 @@
         },
         "Mixed": {
           "$ref": "#/definitions/ocMixedAccount"
+        }
+      }
+    },
+    "ocInvitation": {
+      "type": "object",
+      "properties": {
+        "AcceptedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "CreatedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "DeclinedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "Email": {
+          "type": "string"
+        },
+        "ExpiredAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "Id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "InvitedBy": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "Roles": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "ShopId": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "Status": {
+          "$ref": "#/definitions/wwStatus"
+        },
+        "Token": {
+          "type": "string"
+        },
+        "UpdatedAt": {
+          "type": "string",
+          "format": "date-time"
         }
       }
     },
@@ -9926,65 +9978,13 @@
         }
       }
     },
-    "zkInvitation": {
-      "type": "object",
-      "properties": {
-        "AcceptedAt": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "CreatedAt": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "DeclinedAt": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "Email": {
-          "type": "string"
-        },
-        "ExpiredAt": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "Id": {
-          "type": "integer",
-          "format": "int64"
-        },
-        "InvitedBy": {
-          "type": "integer",
-          "format": "int64"
-        },
-        "Roles": {
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "ShopId": {
-          "type": "integer",
-          "format": "int64"
-        },
-        "Status": {
-          "$ref": "#/definitions/wwStatus"
-        },
-        "Token": {
-          "type": "string"
-        },
-        "UpdatedAt": {
-          "type": "string",
-          "format": "date-time"
-        }
-      }
-    },
     "zkInvitationsResponse": {
       "type": "object",
       "properties": {
         "Invitations": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/zkInvitation"
+            "$ref": "#/definitions/ocInvitation"
           }
         },
         "Paging": {

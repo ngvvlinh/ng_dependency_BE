@@ -4,12 +4,12 @@ import (
 	"context"
 
 	"etop.vn/api/main/location"
+	pbcm "etop.vn/api/pb/common"
+	pbshop "etop.vn/api/pb/etop/shop"
 	"etop.vn/api/shopping/addressing"
-	pbcm "etop.vn/backend/pb/common"
-	pbetop "etop.vn/backend/pb/etop"
-	pbshop "etop.vn/backend/pb/etop/shop"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
+	"etop.vn/backend/pkg/etop/api/convertpb"
 	. "etop.vn/capi/dot"
 )
 
@@ -43,13 +43,13 @@ func (s *CustomerService) CreateCustomerAddress(ctx context.Context, r *CreateCu
 		Address2:     r.Address2,
 		DistrictCode: r.DistrictCode,
 		WardCode:     r.WardCode,
-		Coordinates:  pbetop.PbCoordinatesToModel(r.Coordinates),
+		Coordinates:  convertpb.PbCoordinatesToModel(r.Coordinates),
 		IsDefault:    true,
 	}
 	if err := traderAddressAggr.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
-	pbAddr, err := pbshop.PbShopAddress(ctx, cmd.Result, locationQuery)
+	pbAddr, err := convertpb.PbShopAddress(ctx, cmd.Result, locationQuery)
 	if err != nil {
 		return err
 	}
@@ -77,7 +77,7 @@ func (s *CustomerService) GetCustomerAddresses(ctx context.Context, r *GetCustom
 	if err := traderAddressQuery.Dispatch(ctx, query); err != nil {
 		return err
 	}
-	addrs, err := pbshop.PbShopAddresses(ctx, query.Result, locationQuery)
+	addrs, err := convertpb.PbShopAddresses(ctx, query.Result, locationQuery)
 	if err != nil {
 		return err
 	}
@@ -108,12 +108,12 @@ func (s *CustomerService) UpdateCustomerAddress(ctx context.Context, r *UpdateCu
 		Address2:     PString(r.Address2),
 		DistrictCode: PString(r.DistrictCode),
 		WardCode:     PString(r.WardCode),
-		Coordinates:  pbetop.PbCoordinatesToModel(r.Coordinates),
+		Coordinates:  convertpb.PbCoordinatesToModel(r.Coordinates),
 	}
 	if err := traderAddressAggr.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
-	addr, err := pbshop.PbShopAddress(ctx, cmd.Result, locationQuery)
+	addr, err := convertpb.PbShopAddress(ctx, cmd.Result, locationQuery)
 	if err != nil {
 		return err
 	}

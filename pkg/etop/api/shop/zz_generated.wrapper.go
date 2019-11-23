@@ -8,10 +8,11 @@ import (
 	"context"
 	"time"
 
-	cm "etop.vn/backend/pb/common"
-	etop "etop.vn/backend/pb/etop"
-	order "etop.vn/backend/pb/etop/order"
-	shop "etop.vn/backend/pb/etop/shop"
+	cm "etop.vn/api/pb/common"
+	etop "etop.vn/api/pb/etop"
+	order "etop.vn/api/pb/etop/order"
+	shop "etop.vn/api/pb/etop/shop"
+	api "etop.vn/api/root/int/shop"
 	common "etop.vn/backend/pkg/common"
 	bus "etop.vn/backend/pkg/common/bus"
 	metrics "etop.vn/backend/pkg/common/metrics"
@@ -20,7 +21,6 @@ import (
 	middleware "etop.vn/backend/pkg/etop/authorize/middleware"
 	permission "etop.vn/backend/pkg/etop/authorize/permission"
 	model "etop.vn/backend/pkg/etop/model"
-	api "etop.vn/backend/zexp/api/root/int/shop"
 )
 
 func WrapAccountService(s *AccountService) api.AccountService {
@@ -3796,11 +3796,11 @@ type wrapInvitationService struct {
 
 type CreateInvitationEndpoint struct {
 	*shop.CreateInvitationRequest
-	Result  *shop.Invitation
+	Result  *etop.Invitation
 	Context claims.ShopClaim
 }
 
-func (s wrapInvitationService) CreateInvitation(ctx context.Context, req *shop.CreateInvitationRequest) (resp *shop.Invitation, err error) {
+func (s wrapInvitationService) CreateInvitation(ctx context.Context, req *shop.CreateInvitationRequest) (resp *etop.Invitation, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error

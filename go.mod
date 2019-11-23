@@ -27,7 +27,7 @@ require (
 	github.com/go-telegram-bot-api/telegram-bot-api v4.6.4+incompatible
 	github.com/go-test/deep v1.0.4
 	github.com/go-xorm/builder v0.3.4
-	github.com/gogo/protobuf v1.3.0
+	github.com/gogo/protobuf v1.3.1
 	github.com/golang/protobuf v1.3.2
 	github.com/gorilla/schema v1.1.0
 	github.com/jteeuwen/go-bindata v3.0.7+incompatible
@@ -41,7 +41,7 @@ require (
 	github.com/smartystreets/goconvey v0.0.0-20190731233626-505e41936337
 	github.com/stretchr/testify v1.4.0
 	github.com/technoweenie/multipartstreamer v1.0.1 // indirect
-	github.com/twitchtv/twirp v5.8.0+incompatible
+	github.com/twitchtv/twirp v5.9.0+incompatible
 	github.com/valyala/tsvreader v1.0.0
 	go.uber.org/atomic v1.4.0
 	go.uber.org/zap v1.10.0

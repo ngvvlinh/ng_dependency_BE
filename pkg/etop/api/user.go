@@ -8,22 +8,21 @@ import (
 	"strings"
 	"time"
 
-	"etop.vn/capi"
-
 	"etop.vn/api/main/identity"
 	"etop.vn/api/main/invitation"
+	pbcm "etop.vn/api/pb/common"
+	pbetop "etop.vn/api/pb/etop"
 	"etop.vn/backend/cmd/etop-server/config"
-	pbcm "etop.vn/backend/pb/common"
-	pbetop "etop.vn/backend/pb/etop"
-	pbaffiliate "etop.vn/backend/pb/etop/affiliate"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/auth"
 	"etop.vn/backend/pkg/common/bus"
+	"etop.vn/backend/pkg/common/cmapi"
 	"etop.vn/backend/pkg/common/gencode"
 	"etop.vn/backend/pkg/common/idemp"
 	"etop.vn/backend/pkg/common/redis"
 	cmservice "etop.vn/backend/pkg/common/service"
 	"etop.vn/backend/pkg/common/validate"
+	"etop.vn/backend/pkg/etop/api/convertpb"
 	"etop.vn/backend/pkg/etop/authorize/claims"
 	"etop.vn/backend/pkg/etop/authorize/login"
 	"etop.vn/backend/pkg/etop/authorize/tokens"
@@ -32,6 +31,7 @@ import (
 	"etop.vn/backend/pkg/etop/sqlstore"
 	"etop.vn/backend/pkg/integration/email"
 	"etop.vn/backend/pkg/integration/sms"
+	"etop.vn/capi"
 	"etop.vn/common/l"
 )
 
@@ -177,7 +177,7 @@ func (s *UserService) Register(ctx context.Context, r *RegisterEndpoint) error {
 			Status:         model.StatusActive,
 			AgreeTOS:       r.AgreeTos,
 			AgreeEmailInfo: *r.AgreeEmailInfo,
-			Source:         r.Source.ToModel(),
+			Source:         convertpb.UserSourceToModel(&r.Source),
 		}
 		if err := bus.Dispatch(ctx, cmd); err != nil {
 			return err
@@ -188,7 +188,7 @@ func (s *UserService) Register(ctx context.Context, r *RegisterEndpoint) error {
 		}
 
 		r.Result = &pbetop.RegisterResponse{
-			User: pbetop.PbUser(cmd.Result.User),
+			User: convertpb.PbUser(cmd.Result.User),
 		}
 		return nil
 	}
@@ -300,7 +300,7 @@ func (s *UserService) publishUserCreatedEvent(ctx context.Context, user *model.U
 
 func createRegisterResponse(user *model.User) *pbetop.RegisterResponse {
 	return &pbetop.RegisterResponse{
-		User: pbetop.PbUser(user),
+		User: convertpb.PbUser(user),
 	}
 }
 
@@ -425,7 +425,7 @@ func (s *UserService) resetPassword(ctx context.Context, r *ResetPasswordEndpoin
 	if err := bus.Dispatch(ctx, cmd); err != nil {
 		return r, err
 	}
-	r.Result = pbcm.Message("ok", fmt.Sprintf(
+	r.Result = cmapi.Message("ok", fmt.Sprintf(
 		"Đã gửi email khôi phục mật khẩu đến địa chỉ %v. Vui lòng kiểm tra email (kể cả trong hộp thư spam). Nếu cần thêm thông tin, vui lòng liên hệ hotro@etop.vn.", address))
 	return r, nil
 }
@@ -619,7 +619,7 @@ func (s *UserService) CreateLoginResponse2(ctx context.Context, claim *claims.Cl
 	var currentAccountID int64
 	availableAccounts := make([]*pbetop.LoginAccount, len(accQuery.Result))
 	for i, accUserX := range accQuery.Result {
-		availableAccounts[i] = pbetop.PbLoginAccount(accUserX)
+		availableAccounts[i] = convertpb.PbLoginAccount(accUserX)
 		account := accUserX.Account
 		switch {
 		case preferAccountID == account.ID,
@@ -632,7 +632,7 @@ func (s *UserService) CreateLoginResponse2(ctx context.Context, claim *claims.Cl
 	}
 
 	resp := &pbetop.LoginResponse{
-		User:              pbetop.PbUser(user),
+		User:              convertpb.PbUser(user),
 		Account:           currentAccount,
 		AvailableAccounts: availableAccounts,
 	}
@@ -645,7 +645,7 @@ func (s *UserService) CreateLoginResponse2(ctx context.Context, claim *claims.Cl
 			if err := bus.Dispatch(ctx, query); err != nil {
 				return nil, nil, cm.ErrorTracef(cm.Internal, err, "")
 			}
-			resp.Shop = pbetop.PbShopExtended(query.Result)
+			resp.Shop = convertpb.PbShopExtended(query.Result)
 			respShop = query.Result.Shop
 
 		case model.IsAffiliateID(currentAccountID):
@@ -653,7 +653,7 @@ func (s *UserService) CreateLoginResponse2(ctx context.Context, claim *claims.Cl
 			if err := identityQS.Dispatch(ctx, query); err != nil {
 				return nil, nil, cm.ErrorTracef(cm.Internal, err, "Account affiliate not found")
 			}
-			resp.Affiliate = pbaffiliate.Convert_core_Affiliate_To_api_Affiliate(query.Result)
+			resp.Affiliate = convertpb.Convert_core_Affiliate_To_api_Affiliate(query.Result)
 		case model.IsEtopAccountID(currentAccountID):
 			// nothing
 		default:
@@ -722,7 +722,7 @@ func (s *UserService) CreateLoginResponse2(ctx context.Context, claim *claims.Cl
 	// TODO: refactor due to duplicated with token generation above
 	if claim != nil && claim.STokenExpiresAt != nil {
 		resp.Stoken = claim.SToken
-		resp.StokenExpiresAt = pbcm.PbTime(*claim.STokenExpiresAt)
+		resp.StokenExpiresAt = cmapi.PbTime(*claim.STokenExpiresAt)
 	}
 	return resp, respShop, nil
 }
@@ -758,7 +758,7 @@ func (s *UserService) sendEmailVerification(ctx context.Context, r *SendEmailVer
 		return r, cm.Error(cm.FailedPrecondition, "Địa chỉ email không đúng. Vui lòng kiểm tra lại. Nếu cần thêm thông tin vui lòng liên hệ hotro@etop.vn.", nil)
 	}
 	if !user.EmailVerifiedAt.IsZero() {
-		r.Result = pbcm.Message("ok", "Địa chỉ email đã được xác nhận thành công.")
+		r.Result = cmapi.Message("ok", "Địa chỉ email đã được xác nhận thành công.")
 		return r, nil
 	}
 
@@ -801,7 +801,7 @@ func (s *UserService) sendEmailVerification(ctx context.Context, r *SendEmailVer
 	if err := bus.Dispatch(ctx, cmd); err != nil {
 		return r, err
 	}
-	r.Result = pbcm.Message("ok", fmt.Sprintf(
+	r.Result = cmapi.Message("ok", fmt.Sprintf(
 		"Đã gửi email xác nhận đến địa chỉ %v. Vui lòng kiểm tra email (kể cả trong hộp thư spam). Nếu cần thêm thông tin, vui lòng liên hệ hotro@etop.vn.", address))
 
 	updateCmd := &model.UpdateUserVerificationCommand{
@@ -842,7 +842,7 @@ func (s *UserService) sendPhoneVerification(ctx context.Context, r *SendPhoneVer
 		return r, cm.Error(cm.FailedPrecondition, "Số điện thoại không đúng. Vui lòng kiểm tra lại. Nếu cần thêm thông tin vui lòng liên hệ hotro@etop.vn.", nil)
 	}
 	if !user.PhoneVerifiedAt.IsZero() {
-		r.Result = pbcm.Message("ok", "Số điện thoại đã được xác nhận thành công.")
+		r.Result = cmapi.Message("ok", "Số điện thoại đã được xác nhận thành công.")
 		return r, nil
 	}
 
@@ -860,7 +860,7 @@ func (s *UserService) sendPhoneVerification(ctx context.Context, r *SendPhoneVer
 	if err := bus.Dispatch(ctx, cmd); err != nil {
 		return r, err
 	}
-	r.Result = pbcm.Message("ok", fmt.Sprintf(
+	r.Result = cmapi.Message("ok", fmt.Sprintf(
 		"Đã gửi tin nhắn kèm mã xác nhận đến số điện thoại %v. Vui lòng kiểm tra tin nhắn. Nếu cần thêm thông tin, vui lòng liên hệ hotro@etop.vn.", phone))
 
 	updateCmd := &model.UpdateUserVerificationCommand{
@@ -915,7 +915,7 @@ func (s *UserService) verifyEmailUsingToken(ctx context.Context, r *VerifyEmailU
 	}
 
 	authStore.Revoke(auth.UsageEmailVerification, r.VerificationToken)
-	r.Result = pbcm.Message("ok", "Địa chỉ email đã được xác nhận thành công.")
+	r.Result = cmapi.Message("ok", "Địa chỉ email đã được xác nhận thành công.")
 	return r, nil
 }
 
@@ -974,7 +974,7 @@ func (s *UserService) verifyPhoneUsingToken(ctx context.Context, r *VerifyPhoneU
 	}
 
 	authStore.Revoke(auth.UsagePhoneVerification, tok.TokenStr)
-	r.Result = pbcm.Message("ok", "Số điện thoại đã được xác nhận thành công.")
+	r.Result = cmapi.Message("ok", "Số điện thoại đã được xác nhận thành công.")
 	return r, nil
 }
 
@@ -1125,7 +1125,7 @@ func (s *UserService) sendSTokenEmail(ctx context.Context, r *SendSTokenEmailEnd
 	if err := bus.Dispatch(ctx, cmd); err != nil {
 		return r, err
 	}
-	r.Result = pbcm.Message("ok", fmt.Sprintf(
+	r.Result = cmapi.Message("ok", fmt.Sprintf(
 		"Đã gửi email kèm mã xác nhận đến địa chỉ %v. Vui lòng kiểm tra email (kể cả trong hộp thư spam). Nếu cần thêm thông tin, vui lòng liên hệ hotro@etop.vn.", address))
 	return r, nil
 }

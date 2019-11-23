@@ -8,15 +8,15 @@ import (
 	"context"
 	"time"
 
-	cm "etop.vn/backend/pb/common"
-	pgevent "etop.vn/backend/pb/services/pgevent"
+	cm "etop.vn/api/pb/common"
+	pgevent "etop.vn/api/pb/services/pgevent"
+	api "etop.vn/api/root/services/pgevent"
 	common "etop.vn/backend/pkg/common"
 	bus "etop.vn/backend/pkg/common/bus"
 	metrics "etop.vn/backend/pkg/common/metrics"
 	cmwrapper "etop.vn/backend/pkg/common/wrapper"
 	claims "etop.vn/backend/pkg/etop/authorize/claims"
 	middleware "etop.vn/backend/pkg/etop/authorize/middleware"
-	api "etop.vn/backend/zexp/api/root/services/pgevent"
 )
 
 func WrapEventService(s *EventService, secret string) api.EventService {

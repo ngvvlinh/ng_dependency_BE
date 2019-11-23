@@ -5,16 +5,17 @@ import (
 	"fmt"
 	"time"
 
+	pbcm "etop.vn/api/pb/common"
+	crmservice "etop.vn/api/pb/services/crm"
 	"etop.vn/api/supporting/crm/vht"
 	"etop.vn/api/supporting/crm/vtiger"
 	notimodel "etop.vn/backend/com/handler/notifier/model"
 	shipmodel "etop.vn/backend/com/main/shipping/model"
 	"etop.vn/backend/com/main/shipping/modelx"
 	shipmodelx "etop.vn/backend/com/main/shipping/modelx"
-	pbcm "etop.vn/backend/pb/common"
-	crmservice "etop.vn/backend/pb/services/crm"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
+	"etop.vn/backend/pkg/common/cmapi"
 	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/backend/pkg/etop/sqlstore"
 	"etop.vn/backend/pkg/integration/shipping/ghn"
@@ -139,7 +140,7 @@ func (s *CrmService) SendNotification(ctx context.Context, r *SendNotificationEn
 		return err
 	}
 
-	r.Result = pbcm.Message("ok", fmt.Sprintf(
+	r.Result = cmapi.Message("ok", fmt.Sprintf(
 		"Create successful"))
 	return nil
 }
@@ -188,8 +189,8 @@ func (s *VtigerService) CreateTicket(ctx context.Context, r *CreateTicketEndpoin
 		UpdateLog:        cmd.Result.UpdateLog,
 		Hours:            cmd.Result.Hours,
 		Days:             cmd.Result.Days,
-		Createdtime:      pbcm.PbTime(cmd.Result.CreatedTime),
-		Modifiedtime:     pbcm.PbTime(cmd.Result.ModifiedTime),
+		Createdtime:      cmapi.PbTime(cmd.Result.CreatedTime),
+		Modifiedtime:     cmapi.PbTime(cmd.Result.ModifiedTime),
 		FromPortal:       cmd.Result.FromPortal,
 		Modifiedby:       cmd.Result.Modifiedby,
 		TicketTitle:      cmd.Result.TicketTitle,
@@ -257,8 +258,8 @@ func (s *VtigerService) UpdateTicket(ctx context.Context, r *UpdateTicketEndpoin
 		UpdateLog:        cmd.Result.UpdateLog,
 		Hours:            cmd.Result.Hours,
 		Days:             cmd.Result.Days,
-		Createdtime:      pbcm.PbTime(cmd.Result.CreatedTime),
-		Modifiedtime:     pbcm.PbTime(cmd.Result.ModifiedTime),
+		Createdtime:      cmapi.PbTime(cmd.Result.CreatedTime),
+		Modifiedtime:     cmapi.PbTime(cmd.Result.ModifiedTime),
 		FromPortal:       cmd.Result.FromPortal,
 		Modifiedby:       cmd.Result.Modifiedby,
 		TicketTitle:      cmd.Result.TicketTitle,
@@ -340,8 +341,8 @@ func (s *VtigerService) CreateOrUpdateContact(ctx context.Context, r *CreateOrUp
 		UsedShippingProvider: cmd.Result.UsedShippingProvider,
 		Id:                   cmd.Result.ID,
 		Firstname:            cmd.Result.Firstname,
-		Createdtime:          pbcm.PbTime(cmd.Result.Createdtime),
-		Modifiedtime:         pbcm.PbTime(cmd.Result.Createdtime),
+		Createdtime:          cmapi.PbTime(cmd.Result.Createdtime),
+		Modifiedtime:         cmapi.PbTime(cmd.Result.Createdtime),
 		AssignedUserId:       cmd.Result.AssignedUserID,
 	}
 	return nil
@@ -415,9 +416,9 @@ func (s *VhtService) CreateOrUpdateCallHistoryBySDKCallID(ctx context.Context, r
 		FromNumber:      r.FromNumber,
 		ToNumber:        r.ToNumber,
 		Duration:        r.Duration,
-		TimeStarted:     pbcm.PbTimeToModel(r.TimeStarted),
-		TimeConnected:   pbcm.PbTimeToModel(r.TimeConnected),
-		TimeEnded:       pbcm.PbTimeToModel(r.TimeEnded),
+		TimeStarted:     cmapi.PbTimeToModel(r.TimeStarted),
+		TimeConnected:   cmapi.PbTimeToModel(r.TimeConnected),
+		TimeEnded:       cmapi.PbTimeToModel(r.TimeEnded),
 		RecordingPath:   r.RecordingPath,
 		RecordingUrl:    r.RecordingUrl,
 		RecordFileSize:  r.RecordFileSize,
@@ -444,9 +445,9 @@ func (s *VhtService) CreateOrUpdateCallHistoryByCallID(ctx context.Context, r *C
 		FromNumber:      r.FromNumber,
 		ToNumber:        r.ToNumber,
 		Duration:        r.Duration,
-		TimeStarted:     pbcm.PbTimeToModel(r.TimeStarted),
-		TimeConnected:   pbcm.PbTimeToModel(r.TimeConnected),
-		TimeEnded:       pbcm.PbTimeToModel(r.TimeEnded),
+		TimeStarted:     cmapi.PbTimeToModel(r.TimeStarted),
+		TimeConnected:   cmapi.PbTimeToModel(r.TimeConnected),
+		TimeEnded:       cmapi.PbTimeToModel(r.TimeEnded),
 		RecordingPath:   r.RecordingPath,
 		RecordingUrl:    r.RecordingUrl,
 		RecordFileSize:  r.RecordFileSize,
@@ -461,7 +462,7 @@ func (s *VhtService) CreateOrUpdateCallHistoryByCallID(ctx context.Context, r *C
 
 func (s *VhtService) GetCallHistories(ctx context.Context, r *GetCallHistoriesEndpoint) error {
 	query := &vht.GetCallHistoriesQuery{
-		Paging:     pbcm.PagingToModel(r.Paging, 1, 100, 1000),
+		Paging:     cmapi.PagingToModel(r.Paging, 1, 100, 1000),
 		TextSearch: r.TextSearch,
 	}
 	if err := vhtQS.Dispatch(ctx, query); err != nil {
@@ -482,9 +483,9 @@ func (s *VhtService) GetCallHistories(ctx context.Context, r *GetCallHistoriesEn
 			ToNumber:        value.ToNumber,
 			Duration:        value.Duration,
 			Direction:       value.Direction,
-			TimeStarted:     pbcm.PbTime(value.TimeStarted),
-			TimeConnected:   pbcm.PbTime(value.TimeConnected),
-			TimeEnded:       pbcm.PbTime(value.TimeEnded),
+			TimeStarted:     cmapi.PbTime(value.TimeStarted),
+			TimeConnected:   cmapi.PbTime(value.TimeConnected),
+			TimeEnded:       cmapi.PbTime(value.TimeEnded),
 			RecordingPath:   value.RecordingPath,
 			RecordingUrl:    value.RecordingUrl,
 			RecordFileSize:  value.RecordFileSize,
@@ -501,7 +502,7 @@ func (s *VhtService) GetCallHistories(ctx context.Context, r *GetCallHistoriesEn
 func (s *VtigerService) GetContacts(ctx context.Context, r *GetContactsEndpoint) error {
 	query := &vtiger.GetContactsQuery{
 		Search: r.TextSearch,
-		Paging: pbcm.PagingToModel(r.Paging, 1, 100, 1000),
+		Paging: cmapi.PagingToModel(r.Paging, 1, 100, 1000),
 	}
 	if err := vtigerQS.Dispatch(ctx, query); err != nil {
 		return err
@@ -530,8 +531,8 @@ func (s *VtigerService) GetContacts(ctx context.Context, r *GetContactsEndpoint)
 			UsedShippingProvider: value.UsedShippingProvider,
 			Id:                   value.ID,
 			Firstname:            value.Firstname,
-			Createdtime:          pbcm.PbTime(value.Createdtime),
-			Modifiedtime:         pbcm.PbTime(value.Createdtime),
+			Createdtime:          cmapi.PbTime(value.Createdtime),
+			Modifiedtime:         cmapi.PbTime(value.Createdtime),
 			AssignedUserId:       value.AssignedUserID,
 		})
 	}
@@ -543,7 +544,7 @@ func (s *VtigerService) GetContacts(ctx context.Context, r *GetContactsEndpoint)
 }
 
 func (s *VtigerService) GetTickets(ctx context.Context, r *GetTicketsEndpoint) error {
-	paging := pbcm.PagingToModel(r.Paging, 1, 250, 250)
+	paging := cmapi.PagingToModel(r.Paging, 1, 250, 250)
 	query := &vtiger.GetTicketsQuery{
 		Paging: paging,
 		Ticket: vtiger.TicketArgs{
@@ -588,8 +589,8 @@ func (s *VtigerService) GetTickets(ctx context.Context, r *GetTicketsEndpoint) e
 			UpdateLog:        value.UpdateLog,
 			Hours:            value.Hours,
 			Days:             value.Days,
-			Createdtime:      pbcm.PbTime(value.CreatedTime),
-			Modifiedtime:     pbcm.PbTime(value.ModifiedTime),
+			Createdtime:      cmapi.PbTime(value.CreatedTime),
+			Modifiedtime:     cmapi.PbTime(value.ModifiedTime),
 			FromPortal:       value.FromPortal,
 			Modifiedby:       value.Modifiedby,
 			TicketTitle:      value.TicketTitle,

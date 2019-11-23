@@ -8,15 +8,15 @@ import (
 	"context"
 	"time"
 
-	cm "etop.vn/backend/pb/common"
-	handler "etop.vn/backend/pb/services/handler"
+	cm "etop.vn/api/pb/common"
+	handler "etop.vn/api/pb/services/handler"
+	api "etop.vn/api/root/services/handler"
 	common "etop.vn/backend/pkg/common"
 	bus "etop.vn/backend/pkg/common/bus"
 	metrics "etop.vn/backend/pkg/common/metrics"
 	cmwrapper "etop.vn/backend/pkg/common/wrapper"
 	claims "etop.vn/backend/pkg/etop/authorize/claims"
 	middleware "etop.vn/backend/pkg/etop/authorize/middleware"
-	api "etop.vn/backend/zexp/api/root/services/handler"
 )
 
 func WrapMiscService(s *MiscService, secret string) api.MiscService {

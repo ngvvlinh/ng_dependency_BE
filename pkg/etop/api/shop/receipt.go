@@ -5,17 +5,19 @@ import (
 	"fmt"
 	"time"
 
+	"etop.vn/backend/pkg/common/cmapi"
+	"etop.vn/backend/pkg/etop/api/convertpb"
+
 	"github.com/golang/protobuf/ptypes"
 
 	"etop.vn/api/main/ledgering"
 	"etop.vn/api/main/receipting"
+	pbcm "etop.vn/api/pb/common"
+	pbshop "etop.vn/api/pb/etop/shop"
 	"etop.vn/api/shopping/carrying"
 	"etop.vn/api/shopping/customering"
 	"etop.vn/api/shopping/suppliering"
 	"etop.vn/api/shopping/tradering"
-	pbcm "etop.vn/backend/pb/common"
-	pbetop "etop.vn/backend/pb/etop"
-	pbshop "etop.vn/backend/pb/etop/shop"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/etop/model"
@@ -43,7 +45,7 @@ func (s *ReceiptService) CreateReceipt(ctx context.Context, q *CreateReceiptEndp
 	if err != nil {
 		return err
 	}
-	q.Result = pbshop.PbReceipt(result.(*receipting.CreateReceiptCommand).Result)
+	q.Result = convertpb.PbReceipt(result.(*receipting.CreateReceiptCommand).Result)
 
 	return nil
 }
@@ -71,7 +73,7 @@ func (s *ReceiptService) createReceipt(ctx context.Context, q *CreateReceiptEndp
 		Type:        receipting.ReceiptType(q.Type),
 		CreatedType: receipting.ReceiptCreatedTypeManual,
 		Status:      int32(model.S3Zero),
-		Lines:       pbshop.Convert_api_ReceiptLines_To_core_ReceiptLines(q.Lines),
+		Lines:       convertpb.Convert_api_ReceiptLines_To_core_ReceiptLines(q.Lines),
 	}
 	if checkHavePaidAt {
 		cmd.PaidAt = paidAt
@@ -101,7 +103,7 @@ func (s *ReceiptService) UpdateReceipt(ctx context.Context, q *UpdateReceiptEndp
 		LedgerID:    PInt64(q.LedgerId),
 		TraderID:    PInt64(q.TraderId),
 		Amount:      PInt32(q.Amount),
-		Lines:       pbshop.Convert_api_ReceiptLines_To_core_ReceiptLines(q.Lines),
+		Lines:       convertpb.Convert_api_ReceiptLines_To_core_ReceiptLines(q.Lines),
 	}
 	if checkHavePaidAt {
 		cmd.PaidAt = paidAt
@@ -114,7 +116,7 @@ func (s *ReceiptService) UpdateReceipt(ctx context.Context, q *UpdateReceiptEndp
 		return err
 	}
 
-	q.Result = pbshop.PbReceipt(cmd.Result)
+	q.Result = convertpb.PbReceipt(cmd.Result)
 	return nil
 }
 
@@ -167,11 +169,11 @@ func (s *ReceiptService) GetReceipt(ctx context.Context, q *GetReceiptEndpoint) 
 }
 
 func (s *ReceiptService) GetReceipts(ctx context.Context, q *GetReceiptsEndpoint) error {
-	paging := q.Paging.CMPaging()
+	paging := cmapi.CMPaging(q.Paging)
 	query := &receipting.ListReceiptsQuery{
 		ShopID:  q.Context.Shop.ID,
 		Paging:  *paging,
-		Filters: pbcm.ToFilters(q.Filters),
+		Filters: cmapi.ToFilters(q.Filters),
 	}
 	if err := receiptQuery.Dispatch(ctx, query); err != nil {
 		return err
@@ -184,7 +186,7 @@ func (s *ReceiptService) GetReceipts(ctx context.Context, q *GetReceiptsEndpoint
 			TotalAmountConfirmedReceipt: query.Result.TotalAmountConfirmedReceipt,
 			TotalAmountConfirmedPayment: query.Result.TotalAmountConfirmedPayment,
 			Receipts:                    receipts,
-			Paging:                      pbcm.PbPageInfo(paging, query.Result.Count),
+			Paging:                      cmapi.PbPageInfo(paging, query.Result.Count),
 		}
 	}
 
@@ -192,7 +194,7 @@ func (s *ReceiptService) GetReceipts(ctx context.Context, q *GetReceiptsEndpoint
 }
 
 func (s *ReceiptService) GetReceiptsByLedgerType(ctx context.Context, q *GetReceiptsByLedgerTypeEndpoint) error {
-	paging := q.Paging.CMPaging()
+	paging := cmapi.CMPaging(q.Paging)
 	listLedgersByType := &ledgering.ListLedgersByTypeQuery{
 		LedgerType: ledgering.LedgerType(q.Type),
 		ShopID:     q.Context.Shop.ID,
@@ -210,7 +212,7 @@ func (s *ReceiptService) GetReceiptsByLedgerType(ctx context.Context, q *GetRece
 		ShopID:    q.Context.Shop.ID,
 		LedgerIDs: ledgerIDs,
 		Paging:    *paging,
-		Filters:   pbcm.ToFilters(q.Filters),
+		Filters:   cmapi.ToFilters(q.Filters),
 	}
 	if err := receiptQuery.Dispatch(ctx, query); err != nil {
 		return err
@@ -222,7 +224,7 @@ func (s *ReceiptService) GetReceiptsByLedgerType(ctx context.Context, q *GetRece
 			TotalAmountConfirmedReceipt: query.Result.TotalAmountConfirmedReceipt,
 			TotalAmountConfirmedPayment: query.Result.TotalAmountConfirmedPayment,
 			Receipts:                    receipts,
-			Paging:                      pbcm.PbPageInfo(paging, query.Result.Count),
+			Paging:                      cmapi.PbPageInfo(paging, query.Result.Count),
 		}
 	}
 	return nil
@@ -233,7 +235,7 @@ func (s *ReceiptService) getInfosForReceipts(ctx context.Context, shopID int64, 
 	mapLedger := make(map[int64]*ledgering.ShopLedger)
 	var refIDs, userIDs, traderIDs, ledgerIDs []int64
 
-	receiptsResult = pbshop.PbReceipts(receipts)
+	receiptsResult = convertpb.PbReceipts(receipts)
 
 	// Get ref_ids into receiptLines
 	for _, receipt := range receipts {
@@ -267,7 +269,7 @@ func (s *ReceiptService) getInfosForReceipts(ctx context.Context, shopID int64, 
 	}
 	for _, receipt := range receiptsResult {
 		if receipt.CreatedBy != 0 {
-			receipt.User = pbetop.PbUser(mapUserIDAndUser[receipt.CreatedBy])
+			receipt.User = convertpb.PbUser(mapUserIDAndUser[receipt.CreatedBy])
 		}
 	}
 
@@ -288,7 +290,7 @@ func (s *ReceiptService) getInfosForReceipts(ctx context.Context, shopID int64, 
 		mapLedger[ledger.ID] = ledger
 	}
 	for _, receipt := range receiptsResult {
-		receipt.Ledger = pbshop.PbLedger(mapLedger[receipt.LedgerId])
+		receipt.Ledger = convertpb.PbLedger(mapLedger[receipt.LedgerId])
 	}
 	return receiptsResult, nil
 }

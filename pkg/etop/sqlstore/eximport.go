@@ -4,9 +4,8 @@ import (
 	"context"
 	"time"
 
-	"etop.vn/backend/pkg/common/sq"
-
 	"etop.vn/backend/pkg/common/bus"
+	"etop.vn/backend/pkg/common/sq"
 	"etop.vn/backend/pkg/etop/model"
 )
 

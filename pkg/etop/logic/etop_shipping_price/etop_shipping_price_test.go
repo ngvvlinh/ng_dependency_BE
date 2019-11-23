@@ -4,11 +4,10 @@ import (
 	"context"
 	"testing"
 
-	"etop.vn/common/l"
-
 	"etop.vn/api/main/location"
 	servicelocation "etop.vn/backend/com/main/location"
 	"etop.vn/backend/pkg/etop/model"
+	"etop.vn/common/l"
 
 	"github.com/stretchr/testify/assert"
 )

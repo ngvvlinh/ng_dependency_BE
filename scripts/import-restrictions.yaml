@@ -8,7 +8,7 @@
   - etop.vn/backend/pkg/etop/authorize/claims
   - etop.vn/backend/pkg/etop/authorize/middleware
   - etop.vn/backend/pkg/etop/model
-  - etop.vn/backend/zexp/api/root/services/pgevent
+  - etop.vn/api/root/services/pgevent
 
 - baseImportPath: "./cmd/etop-uploader"
   allowedImports:
@@ -36,6 +36,7 @@
   - "./pkg/common/httpx"
   - "./pkg/common/service"
   - "./pkg/common/wrapper"
+  - "./pkg/common/cmapi"
   allowedImports:
   - etop.vn/backend/pkg/common
 

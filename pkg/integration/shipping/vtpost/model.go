@@ -3,12 +3,11 @@ package vtpost
 import (
 	"time"
 
-	vtpostclient "etop.vn/backend/pkg/integration/shipping/vtpost/client"
-
 	mdlocation "etop.vn/api/main/location"
 	cm "etop.vn/backend/pkg/common"
 	cc "etop.vn/backend/pkg/common/config"
 	"etop.vn/backend/pkg/etop/model"
+	vtpostclient "etop.vn/backend/pkg/integration/shipping/vtpost/client"
 )
 
 type Config struct {

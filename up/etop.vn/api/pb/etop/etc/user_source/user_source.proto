@@ -1,0 +1,17 @@
+syntax = "proto2";
+package user_source;
+option go_package = "etop.vn/api/pb/etop/etc/user_source";
+
+import "gogoproto/gogo.proto";
+option (gogoproto.gogoproto_import)         = false;
+
+enum UserSource {
+    unknown = 0;
+    psx = 1;
+    etop = 2;
+    topship = 3;
+    ts_app_android = 4;
+    ts_app_ios = 5;
+    ts_app_web = 6;
+    partner = 7;
+}

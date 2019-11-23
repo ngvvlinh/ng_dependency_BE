@@ -12,14 +12,16 @@ import (
 	"strings"
 	"time"
 
+	"etop.vn/backend/pkg/common/cmapi"
+	"etop.vn/backend/pkg/etop/api/convertpb"
+
 	"github.com/360EntSecGroup-Skylar/excelize"
 
 	"etop.vn/api/main/location"
+	"etop.vn/api/pb/etop/etc/ghn_note_code"
+	pborder "etop.vn/api/pb/etop/order"
 	ordermodel "etop.vn/backend/com/main/ordering/model"
 	"etop.vn/backend/com/main/ordering/modelx"
-	pbcm "etop.vn/backend/pb/common"
-	"etop.vn/backend/pb/etop/etc/ghn_note_code"
-	pborder "etop.vn/backend/pb/etop/order"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/httpx"
@@ -126,11 +128,11 @@ func handleImportOrder(ctx context.Context, c *httpx.Context, shop *model.Shop, 
 		case len(_resp.CellErrors) > 0:
 			attempt.Status = model.S4Negative
 			attempt.ErrorType = "cell_errors"
-			attempt.Errors = pbcm.ErrorsToModel(_resp.CellErrors)
+			attempt.Errors = cmapi.ErrorsToModel(_resp.CellErrors)
 			attempt.NError = len(_resp.CellErrors)
 
 		case len(_resp.ImportErrors) > 0:
-			count := pbcm.CountErrors(_resp.ImportErrors)
+			count := cmapi.CountErrors(_resp.ImportErrors)
 			if count == 0 {
 				attempt.Status = model.S4Positive
 				attempt.NCreated = len(_resp.ImportErrors)
@@ -138,7 +140,7 @@ func handleImportOrder(ctx context.Context, c *httpx.Context, shop *model.Shop, 
 			} else {
 				attempt.Status = model.S4SuperPos // partially error
 				attempt.ErrorType = "import_errors"
-				attempt.Errors = pbcm.ErrorsToModel(_resp.ImportErrors)
+				attempt.Errors = cmapi.ErrorsToModel(_resp.ImportErrors)
 				attempt.NError = count
 				attempt.NCreated = len(_resp.ImportErrors) - count
 			}
@@ -266,8 +268,8 @@ func handleImportOrder(ctx context.Context, c *httpx.Context, shop *model.Shop, 
 
 	resp := &pborder.ImportOrdersResponse{
 		Data:         imp.toSpreadsheetData(idx),
-		Orders:       pborder.PbOrders(orders, model.TagShop),
-		ImportErrors: pbcm.PbErrors(_errs),
+		Orders:       convertpb.PbOrders(orders, model.TagShop),
+		ImportErrors: cmapi.PbErrors(_errs),
 	}
 	// Remove failed order from the response
 	for i, err := range _errs {

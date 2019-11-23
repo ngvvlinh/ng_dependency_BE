@@ -6,9 +6,8 @@ import (
 
 	"etop.vn/api/external/haravan/identity"
 	"etop.vn/backend/com/external/haravan/identity/convert"
-	cm "etop.vn/backend/pkg/common"
-
 	identitymodel "etop.vn/backend/com/external/haravan/identity/model"
+	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/cmsql"
 )
 

@@ -141,7 +141,7 @@ func getDefinitionID(typ types.Type) string {
 	}
 
 	compPath := origPath
-	compPath = strings.TrimPrefix(compPath, "etop.vn/backend/pb/")
+	compPath = strings.TrimPrefix(compPath, "etop.vn/api/pb/")
 	compPath = strings.TrimPrefix(compPath, "etop.vn/backend/")
 	compPath = strings.TrimPrefix(compPath, "etop.vn/api/")
 	compPath = strings.TrimPrefix(compPath, "etop.vn/")

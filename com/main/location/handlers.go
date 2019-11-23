@@ -3,11 +3,10 @@ package location
 import (
 	"context"
 
+	"etop.vn/api/main/location"
 	"etop.vn/backend/com/main/location/convert"
 	"etop.vn/backend/com/main/location/list"
 	"etop.vn/backend/com/main/location/types"
-
-	"etop.vn/api/main/location"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/common/l"

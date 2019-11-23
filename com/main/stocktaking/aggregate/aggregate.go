@@ -5,9 +5,6 @@ import (
 	"time"
 
 	"etop.vn/api/main/etop"
-
-	"etop.vn/capi"
-
 	stocktake "etop.vn/api/main/stocktaking"
 	"etop.vn/backend/com/main/stocktaking/convert"
 	"etop.vn/backend/com/main/stocktaking/sqlstore"
@@ -15,6 +12,7 @@ import (
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/cmsql"
 	"etop.vn/backend/pkg/common/conversion"
+	"etop.vn/capi"
 )
 
 var _ stocktake.Aggregate = &StocktakeAggregate{}

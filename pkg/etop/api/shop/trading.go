@@ -9,13 +9,14 @@ import (
 	"etop.vn/api/main/ordering"
 	ordertrading "etop.vn/api/main/ordering/trading"
 	"etop.vn/api/meta"
+	pborder "etop.vn/api/pb/etop/order"
+	pbsource "etop.vn/api/pb/etop/order/source"
+	pbshop "etop.vn/api/pb/etop/shop"
 	identityconvert "etop.vn/backend/com/main/identity/convert"
 	ordermodelx "etop.vn/backend/com/main/ordering/modelx"
-	pbcm "etop.vn/backend/pb/common"
-	pborder "etop.vn/backend/pb/etop/order"
-	pbsource "etop.vn/backend/pb/etop/order/source"
-	pbshop "etop.vn/backend/pb/etop/shop"
 	"etop.vn/backend/pkg/common/bus"
+	"etop.vn/backend/pkg/common/cmapi"
+	"etop.vn/backend/pkg/etop/api/convertpb"
 	"etop.vn/backend/pkg/etop/authorize/claims"
 	logicorder "etop.vn/backend/pkg/etop/logic/orders"
 	"etop.vn/backend/pkg/etop/model"
@@ -45,18 +46,18 @@ func (s *TradingService) TradingGetProduct(ctx context.Context, q *TradingGetPro
 }
 
 func (s *TradingService) TradingGetProducts(ctx context.Context, q *TradingGetProductsEndpoint) error {
-	paging := q.Paging.CMPaging()
+	paging := cmapi.CMPaging(q.Paging)
 	query := &catalog.ListShopProductsWithVariantsQuery{
 		ShopID:  model.EtopTradingAccountID,
 		Paging:  *paging,
-		Filters: pbcm.ToFilters(q.Filters),
+		Filters: cmapi.ToFilters(q.Filters),
 	}
 	if err := catalogQuery.Dispatch(ctx, query); err != nil {
 		return err
 	}
 
 	q.Result = &pbshop.ShopProductsResponse{
-		Paging:   pbcm.PbPageInfo(paging, query.Result.Count),
+		Paging:   cmapi.PbPageInfo(paging, query.Result.Count),
 		Products: PbShopProductsWithVariants(query.Result.Products),
 	}
 	return nil
@@ -157,25 +158,25 @@ func (s *TradingService) TradingGetOrder(ctx context.Context, q *TradingGetOrder
 	if err := bus.Dispatch(ctx, query); err != nil {
 		return err
 	}
-	q.Result = pborder.PbOrder(query.Result.Order, nil, model.TagShop)
-	q.Result.Fulfillments = pborder.XPbFulfillments(query.Result.XFulfillments, model.TagShop)
+	q.Result = convertpb.PbOrder(query.Result.Order, nil, model.TagShop)
+	q.Result.Fulfillments = convertpb.XPbFulfillments(query.Result.XFulfillments, model.TagShop)
 	return nil
 }
 
 func (s *TradingService) TradingGetOrders(ctx context.Context, q *TradingGetOrdersEndpoint) error {
-	paging := q.Paging.CMPaging()
+	paging := cmapi.CMPaging(q.Paging)
 	query := &ordermodelx.GetOrdersQuery{
 		ShopIDs:       []int64{model.EtopTradingAccountID},
 		TradingShopID: q.Context.Shop.ID,
 		Paging:        paging,
-		Filters:       pbcm.ToFilters(q.Filters),
+		Filters:       cmapi.ToFilters(q.Filters),
 	}
 	if err := bus.Dispatch(ctx, query); err != nil {
 		return err
 	}
 	q.Result = &pborder.OrdersResponse{
-		Paging: pbcm.PbPageInfo(paging, int32(query.Result.Total)),
-		Orders: pborder.PbOrdersWithFulfillments(query.Result.Orders, model.TagShop, query.Result.Shops),
+		Paging: cmapi.PbPageInfo(paging, int32(query.Result.Total)),
+		Orders: convertpb.PbOrdersWithFulfillments(query.Result.Orders, model.TagShop, query.Result.Shops),
 	}
 	return nil
 }

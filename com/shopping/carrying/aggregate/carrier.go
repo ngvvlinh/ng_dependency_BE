@@ -3,8 +3,6 @@ package aggregate
 import (
 	"context"
 
-	"etop.vn/capi"
-
 	"etop.vn/api/meta"
 	"etop.vn/api/shopping/carrying"
 	"etop.vn/api/shopping/tradering"
@@ -14,6 +12,7 @@ import (
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/cmsql"
 	"etop.vn/backend/pkg/common/conversion"
+	"etop.vn/capi"
 )
 
 var _ carrying.Aggregate = &CarrierAggregate{}

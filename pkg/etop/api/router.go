@@ -1,11 +1,11 @@
 package api
 
 import (
-	"etop.vn/backend/pkg/common/httprpc"
-	service "etop.vn/backend/zexp/api/root/int/etop"
+	service "etop.vn/api/root/int/etop"
+	"etop.vn/capi/httprpc"
 )
 
-// +gen:wrapper=etop.vn/backend/zexp/api/root/int/etop
+// +gen:wrapper=etop.vn/api/root/int/etop
 // +gen:wrapper:package=etop
 
 func NewEtopServer(m httprpc.Muxer) {

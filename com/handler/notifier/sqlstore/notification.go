@@ -4,10 +4,9 @@ import (
 	"context"
 	"time"
 
-	"etop.vn/backend/pkg/common/bus"
-
 	"etop.vn/backend/com/handler/notifier/model"
 	cm "etop.vn/backend/pkg/common"
+	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/cmsql"
 	etopmodel "etop.vn/backend/pkg/etop/model"
 )

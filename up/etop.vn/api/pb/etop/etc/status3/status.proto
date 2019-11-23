@@ -1,0 +1,12 @@
+syntax = "proto2";
+package status3;
+option go_package = "etop.vn/api/pb/etop/etc/status3";
+
+import "gogoproto/gogo.proto";
+option (gogoproto.gogoproto_import)         = false;
+
+enum Status {
+    Z = 0;
+    P = 1;
+    N = 127;
+}

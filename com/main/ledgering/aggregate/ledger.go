@@ -3,10 +3,9 @@ package aggregate
 import (
 	"context"
 
-	"etop.vn/api/main/receipting"
-
 	"etop.vn/api/main/identity"
 	"etop.vn/api/main/ledgering"
+	"etop.vn/api/main/receipting"
 	identityconvert "etop.vn/backend/com/main/identity/convert"
 	"etop.vn/backend/com/main/ledgering/convert"
 	"etop.vn/backend/com/main/ledgering/model"

@@ -5,12 +5,9 @@ import (
 	"regexp"
 	"strings"
 
-	"etop.vn/capi"
-
-	"etop.vn/api/shopping/tradering"
-
 	"etop.vn/api/meta"
 	"etop.vn/api/shopping/customering"
+	"etop.vn/api/shopping/tradering"
 	"etop.vn/backend/com/shopping/customering/convert"
 	"etop.vn/backend/com/shopping/customering/model"
 	"etop.vn/backend/com/shopping/customering/sqlstore"
@@ -18,6 +15,7 @@ import (
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/cmsql"
 	"etop.vn/backend/pkg/common/validate"
+	"etop.vn/capi"
 )
 
 var _ customering.Aggregate = &CustomerAggregate{}

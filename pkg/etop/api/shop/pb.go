@@ -4,11 +4,10 @@ import (
 	"etop.vn/api/main/catalog"
 	"etop.vn/api/main/inventory"
 	"etop.vn/api/main/stocktaking"
-	"etop.vn/backend/pb/common"
-	pbcm "etop.vn/backend/pb/common"
-	pbproducttype "etop.vn/backend/pb/etop/etc/product_type"
-	pbs3 "etop.vn/backend/pb/etop/etc/status3"
-	pbshop "etop.vn/backend/pb/etop/shop"
+	pbcm "etop.vn/api/pb/common"
+	pbproducttype "etop.vn/api/pb/etop/etc/product_type"
+	pbshop "etop.vn/api/pb/etop/shop"
+	"etop.vn/backend/pkg/common/cmapi"
 	"etop.vn/backend/pkg/etop/api/convertpb"
 	"etop.vn/backend/pkg/etop/model"
 )
@@ -67,11 +66,11 @@ func PbStocktake(args *stocktaking.ShopStocktake) *pbshop.Stocktake {
 		CreatedBy:     args.CreatedBy,
 		UpdatedBy:     args.UpdatedBy,
 		CancelReason:  args.CancelReason,
-		CreatedAt:     pbcm.PbTime(args.CreatedAt),
-		UpdatedAt:     pbcm.PbTime(args.UpdatedAt),
-		ConfirmedAt:   pbcm.PbTime(args.ConfirmedAt),
-		CancelledAt:   pbcm.PbTime(args.CancelledAt),
-		Status:        pbs3.Pb(model.Status3(args.Status)),
+		CreatedAt:     cmapi.PbTime(args.CreatedAt),
+		UpdatedAt:     cmapi.PbTime(args.UpdatedAt),
+		ConfirmedAt:   cmapi.PbTime(args.ConfirmedAt),
+		CancelledAt:   cmapi.PbTime(args.CancelledAt),
+		Status:        convertpb.Pb3(model.Status3(args.Status)),
 		Code:          args.Code,
 		Lines:         PbstocktakeLines(args.Lines),
 	}
@@ -111,8 +110,8 @@ func PbInventory(args *inventory.InventoryVariant) *pbshop.InventoryVariant {
 		QuantityPicked: args.QuantityPicked,
 		Quantity:       args.QuantitySummary,
 		CostPrice:      args.CostPrice,
-		CreatedAt:      pbcm.PbTime(args.CreatedAt),
-		UpdatedAt:      pbcm.PbTime(args.UpdatedAt),
+		CreatedAt:      cmapi.PbTime(args.CreatedAt),
+		UpdatedAt:      cmapi.PbTime(args.UpdatedAt),
 	}
 }
 
@@ -130,8 +129,8 @@ func PbBrand(args *catalog.ShopBrand) *pbshop.Brand {
 		Id:          args.ID,
 		Name:        args.BrandName,
 		Description: args.Description,
-		CreatedAt:   pbcm.PbTime(args.CreatedAt),
-		UpdatedAt:   pbcm.PbTime(args.UpdatedAt),
+		CreatedAt:   cmapi.PbTime(args.CreatedAt),
+		UpdatedAt:   cmapi.PbTime(args.UpdatedAt),
 	}
 }
 
@@ -182,15 +181,15 @@ func PbShopInventoryVoucher(args *inventory.InventoryVoucher) *pbshop.InventoryV
 		RefName:      string(args.RefName),
 		TraderId:     args.TraderID,
 		Trader:       PbShopTrader(args.Trader),
-		Status:       pbs3.Pb(model.Status3(args.Status)),
+		Status:       convertpb.Pb3(model.Status3(args.Status)),
 		Note:         args.Note,
 		Type:         string(args.Type),
 		Id:           args.ID,
 		ShopId:       args.ShopID,
-		CreatedAt:    pbcm.PbTime(args.CreatedAt),
-		UpdatedAt:    pbcm.PbTime(args.UpdatedAt),
-		CancelledAt:  pbcm.PbTime(args.CancelledAt),
-		ConfirmedAt:  pbcm.PbTime(args.ConfirmedAt),
+		CreatedAt:    cmapi.PbTime(args.CreatedAt),
+		UpdatedAt:    cmapi.PbTime(args.UpdatedAt),
+		CancelledAt:  cmapi.PbTime(args.CancelledAt),
+		ConfirmedAt:  cmapi.PbTime(args.ConfirmedAt),
 		CancelReason: args.CancelReason,
 	}
 }
@@ -247,7 +246,7 @@ func PbShopVariant(m *catalog.ShopVariant) *pbshop.ShopVariant {
 		ImageUrls:   m.ImageURLs,
 		Tags:        nil,
 		Note:        m.Note,
-		Status:      pbs3.Pb(model.Status3(m.Status)),
+		Status:      convertpb.Pb3(model.Status3(m.Status)),
 		ListPrice:   m.ListPrice,
 		RetailPrice: coalesceInt32(m.RetailPrice, m.ListPrice),
 		Attributes:  convertpb.PbAttributes(m.Attributes),
@@ -329,7 +328,7 @@ func PbShopVariantWithProduct(m *catalog.ShopVariantWithProduct) *pbshop.ShopVar
 		ImageUrls:   m.ImageURLs,
 		Tags:        nil,
 		Note:        m.Note,
-		Status:      pbs3.Pb(model.Status3(m.Status)),
+		Status:      convertpb.Pb3(model.Status3(m.Status)),
 		ListPrice:   m.ListPrice,
 		RetailPrice: coalesceInt32(m.RetailPrice, m.ListPrice),
 		Attributes:  convertpb.PbAttributes(m.Attributes),
@@ -354,9 +353,9 @@ func PbShopVariantsWithProducts(items []*catalog.ShopVariantWithProduct) []*pbsh
 
 func PbShopProductWithVariants(m *catalog.ShopProductWithVariants) *pbshop.ShopProduct {
 	shopID := m.ShopProduct.ShopID
-	metaFields := []*common.MetaField{}
+	metaFields := []*pbcm.MetaField{}
 	for _, metaField := range m.MetaFields {
-		metaFields = append(metaFields, &common.MetaField{
+		metaFields = append(metaFields, &pbcm.MetaField{
 			Key:   metaField.Key,
 			Value: metaField.Value,
 		})
@@ -389,15 +388,15 @@ func PbShopProductWithVariants(m *catalog.ShopProductWithVariants) *pbshop.ShopP
 		Tags:            m.ShopProduct.Tags,
 		Stags:           nil,
 		Note:            m.Note,
-		Status:          pbs3.Pb(model.Status3(m.ShopProduct.Status)),
+		Status:          convertpb.Pb3(model.Status3(m.ShopProduct.Status)),
 		IsAvailable:     false,
 		ListPrice:       m.ShopProduct.ListPrice,
 		RetailPrice:     coalesceInt32(m.ShopProduct.RetailPrice, m.ShopProduct.ListPrice),
 		CollectionIds:   m.ShopProduct.CollectionIDs,
 		Variants:        PbShopVariants(m.Variants),
 		ProductSourceId: shopID, // backward-compatible: use shop_id in place of product_source_id
-		CreatedAt:       pbcm.PbTime(m.CreatedAt),
-		UpdatedAt:       pbcm.PbTime(m.UpdatedAt),
+		CreatedAt:       cmapi.PbTime(m.CreatedAt),
+		UpdatedAt:       cmapi.PbTime(m.UpdatedAt),
 		ProductType:     pbproducttype.PbProductType(string(m.ProductType)),
 		MetaFields:      metaFields,
 		BrandId:         m.BrandID,

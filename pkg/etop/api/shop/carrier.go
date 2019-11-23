@@ -3,10 +3,12 @@ package shop
 import (
 	"context"
 
+	pbcm "etop.vn/api/pb/common"
+	pbshop "etop.vn/api/pb/etop/shop"
 	"etop.vn/api/shopping/carrying"
-	pbcm "etop.vn/backend/pb/common"
-	pbshop "etop.vn/backend/pb/etop/shop"
 	"etop.vn/backend/pkg/common/bus"
+	"etop.vn/backend/pkg/common/cmapi"
+	"etop.vn/backend/pkg/etop/api/convertpb"
 	. "etop.vn/capi/dot"
 )
 
@@ -28,23 +30,23 @@ func (s *CarrierService) GetCarrier(ctx context.Context, r *GetCarrierEndpoint) 
 	if err := carrierQuery.Dispatch(ctx, query); err != nil {
 		return err
 	}
-	r.Result = pbshop.PbCarrier(query.Result)
+	r.Result = convertpb.PbCarrier(query.Result)
 	return nil
 }
 
 func (s *CarrierService) GetCarriers(ctx context.Context, r *GetCarriersEndpoint) error {
-	paging := r.Paging.CMPaging()
+	paging := cmapi.CMPaging(r.Paging)
 	query := &carrying.ListCarriersQuery{
 		ShopID:  r.Context.Shop.ID,
 		Paging:  *paging,
-		Filters: pbcm.ToFilters(r.Filters),
+		Filters: cmapi.ToFilters(r.Filters),
 	}
 	if err := carrierQuery.Dispatch(ctx, query); err != nil {
 		return err
 	}
 	r.Result = &pbshop.CarriersResponse{
-		Carriers: pbshop.PbCarriers(query.Result.Carriers),
-		Paging:   pbcm.PbPageInfo(paging, query.Result.Count),
+		Carriers: convertpb.PbCarriers(query.Result.Carriers),
+		Paging:   cmapi.PbPageInfo(paging, query.Result.Count),
 	}
 	return nil
 }
@@ -58,7 +60,7 @@ func (s *CarrierService) GetCarriersByIDs(ctx context.Context, r *GetCarriersByI
 		return err
 	}
 	r.Result = &pbshop.CarriersResponse{
-		Carriers: pbshop.PbCarriers(query.Result.Carriers),
+		Carriers: convertpb.PbCarriers(query.Result.Carriers),
 	}
 	return nil
 }
@@ -72,7 +74,7 @@ func (s *CarrierService) CreateCarrier(ctx context.Context, r *CreateCarrierEndp
 	if err := carrierAggr.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
-	r.Result = pbshop.PbCarrier(cmd.Result)
+	r.Result = convertpb.PbCarrier(cmd.Result)
 	return nil
 }
 
@@ -86,7 +88,7 @@ func (s *CarrierService) UpdateCarrier(ctx context.Context, r *UpdateCarrierEndp
 	if err := carrierAggr.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
-	r.Result = pbshop.PbCarrier(cmd.Result)
+	r.Result = convertpb.PbCarrier(cmd.Result)
 	return nil
 }
 

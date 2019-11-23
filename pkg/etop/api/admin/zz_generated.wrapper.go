@@ -8,17 +8,17 @@ import (
 	"context"
 	"time"
 
-	cm "etop.vn/backend/pb/common"
-	etop "etop.vn/backend/pb/etop"
-	admin "etop.vn/backend/pb/etop/admin"
-	order "etop.vn/backend/pb/etop/order"
+	cm "etop.vn/api/pb/common"
+	etop "etop.vn/api/pb/etop"
+	admin "etop.vn/api/pb/etop/admin"
+	order "etop.vn/api/pb/etop/order"
+	api "etop.vn/api/root/int/admin"
 	common "etop.vn/backend/pkg/common"
 	bus "etop.vn/backend/pkg/common/bus"
 	metrics "etop.vn/backend/pkg/common/metrics"
 	cmwrapper "etop.vn/backend/pkg/common/wrapper"
 	claims "etop.vn/backend/pkg/etop/authorize/claims"
 	middleware "etop.vn/backend/pkg/etop/authorize/middleware"
-	api "etop.vn/backend/zexp/api/root/int/admin"
 )
 
 func WrapAccountService(s *AccountService) api.AccountService {

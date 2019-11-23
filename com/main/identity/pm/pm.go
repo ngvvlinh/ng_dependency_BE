@@ -4,14 +4,12 @@ import (
 	"context"
 	"time"
 
-	"etop.vn/backend/pkg/etop/model"
-
-	cm "etop.vn/backend/pkg/common"
-
 	"etop.vn/api/main/identity"
 	"etop.vn/api/main/invitation"
 	invitationconvert "etop.vn/backend/com/main/invitation/convert"
+	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
+	"etop.vn/backend/pkg/etop/model"
 )
 
 type ProcessManager struct {

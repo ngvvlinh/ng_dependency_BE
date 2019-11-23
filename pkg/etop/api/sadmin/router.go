@@ -1,11 +1,11 @@
 package admin
 
 import (
-	"etop.vn/backend/pkg/common/httprpc"
-	service "etop.vn/backend/zexp/api/root/int/sadmin"
+	service "etop.vn/api/root/int/sadmin"
+	"etop.vn/capi/httprpc"
 )
 
-// +gen:wrapper=etop.vn/backend/zexp/api/root/int/sadmin
+// +gen:wrapper=etop.vn/api/root/int/sadmin
 // +gen:wrapper:package=sadmin
 
 func NewSadminServer(m httprpc.Muxer) {

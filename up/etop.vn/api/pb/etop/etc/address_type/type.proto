@@ -1,0 +1,14 @@
+syntax = "proto2";
+package address_type;
+option go_package = "etop.vn/api/pb/etop/etc/address_type";
+
+import "gogoproto/gogo.proto";
+option (gogoproto.gogoproto_import)         = false;
+
+enum AddressType {
+  unknown = 0;
+  general = 1;
+  warehouse = 2;
+  shipto = 3;
+  shipfrom = 4;
+}

@@ -1,7 +1,7 @@
 package api
 
 import (
-	pbetop "etop.vn/backend/pb/etop"
+	pbetop "etop.vn/api/pb/etop"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/etop/authorize/claims"
 	"etop.vn/backend/pkg/etop/model"

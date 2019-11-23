@@ -3,11 +3,12 @@ package admin
 import (
 	"context"
 
+	pborder "etop.vn/api/pb/etop/order"
 	ordermodelx "etop.vn/backend/com/main/ordering/modelx"
 	shipmodelx "etop.vn/backend/com/main/shipping/modelx"
-	pbcm "etop.vn/backend/pb/common"
-	pborder "etop.vn/backend/pb/etop/order"
 	"etop.vn/backend/pkg/common/bus"
+	"etop.vn/backend/pkg/common/cmapi"
+	"etop.vn/backend/pkg/etop/api/convertpb"
 	"etop.vn/backend/pkg/etop/model"
 )
 
@@ -28,7 +29,7 @@ func (s *OrderService) GetOrder(ctx context.Context, q *GetOrderEndpoint) error 
 		return err
 	}
 
-	q.Result = pborder.PbOrder(
+	q.Result = convertpb.PbOrder(
 		query.Result.Order,
 		query.Result.Fulfillments,
 		model.TagEtop,
@@ -37,17 +38,17 @@ func (s *OrderService) GetOrder(ctx context.Context, q *GetOrderEndpoint) error 
 }
 
 func (s *OrderService) GetOrders(ctx context.Context, q *GetOrdersEndpoint) error {
-	paging := q.Paging.CMPaging()
+	paging := cmapi.CMPaging(q.Paging)
 	query := &ordermodelx.GetOrdersQuery{
 		Paging:  paging,
-		Filters: pbcm.ToFilters(q.Filters),
+		Filters: cmapi.ToFilters(q.Filters),
 	}
 	if err := bus.Dispatch(ctx, query); err != nil {
 		return err
 	}
 	q.Result = &pborder.OrdersResponse{
-		Paging: pbcm.PbPageInfo(paging, int32(query.Result.Total)),
-		Orders: pborder.PbOrdersWithFulfillments(query.Result.Orders, model.TagEtop, query.Result.Shops),
+		Paging: cmapi.PbPageInfo(paging, int32(query.Result.Total)),
+		Orders: convertpb.PbOrdersWithFulfillments(query.Result.Orders, model.TagEtop, query.Result.Shops),
 	}
 	return nil
 }
@@ -60,7 +61,7 @@ func (s *OrderService) GetOrdersByIDs(ctx context.Context, q *GetOrdersByIDsEndp
 		return err
 	}
 	q.Result = &pborder.OrdersResponse{
-		Orders: pborder.PbOrdersWithFulfillments(query.Result.Orders, model.TagEtop, query.Result.Shops),
+		Orders: convertpb.PbOrdersWithFulfillments(query.Result.Orders, model.TagEtop, query.Result.Shops),
 	}
 	return nil
 }
@@ -72,17 +73,17 @@ func (s *FulfillmentService) GetFulfillment(ctx context.Context, q *GetFulfillme
 	if err := bus.Dispatch(ctx, query); err != nil {
 		return err
 	}
-	q.Result = pborder.PbFulfillment(query.Result.Fulfillment, model.TagEtop, query.Result.Shop, query.Result.Order)
+	q.Result = convertpb.PbFulfillment(query.Result.Fulfillment, model.TagEtop, query.Result.Shop, query.Result.Order)
 	return nil
 }
 
 func (s *FulfillmentService) GetFulfillments(ctx context.Context, q *GetFulfillmentsEndpoint) error {
-	paging := q.Paging.CMPaging()
+	paging := cmapi.CMPaging(q.Paging)
 	query := &shipmodelx.GetFulfillmentExtendedsQuery{
 		OrderID: q.OrderId,
-		Status:  q.Status.ToModel(),
+		Status:  convertpb.Status3ToModel(q.Status),
 		Paging:  paging,
-		Filters: pbcm.ToFilters(q.Filters),
+		Filters: cmapi.ToFilters(q.Filters),
 	}
 	if q.ShopId != 0 {
 		query.ShopIDs = []int64{q.ShopId}
@@ -91,8 +92,8 @@ func (s *FulfillmentService) GetFulfillments(ctx context.Context, q *GetFulfillm
 		return err
 	}
 	q.Result = &pborder.FulfillmentsResponse{
-		Fulfillments: pborder.PbFulfillmentExtendeds(query.Result.Fulfillments, model.TagEtop),
-		Paging:       pbcm.PbPageInfo(paging, int32(query.Result.Total)),
+		Fulfillments: convertpb.PbFulfillmentExtendeds(query.Result.Fulfillments, model.TagEtop),
+		Paging:       cmapi.PbPageInfo(paging, int32(query.Result.Total)),
 	}
 	return nil
 }

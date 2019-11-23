@@ -8,14 +8,16 @@ import (
 	"time"
 
 	"etop.vn/api/main/receipting"
+	pbcm "etop.vn/api/pb/common"
+	pborder "etop.vn/api/pb/etop/order"
 	ordermodel "etop.vn/backend/com/main/ordering/model"
 	ordermodelx "etop.vn/backend/com/main/ordering/modelx"
 	shipmodelx "etop.vn/backend/com/main/shipping/modelx"
-	pbcm "etop.vn/backend/pb/common"
-	pborder "etop.vn/backend/pb/etop/order"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
+	"etop.vn/backend/pkg/common/cmapi"
 	"etop.vn/backend/pkg/etop/api"
+	"etop.vn/backend/pkg/etop/api/convertpb"
 	logicorder "etop.vn/backend/pkg/etop/logic/orders"
 	"etop.vn/backend/pkg/etop/model"
 )
@@ -52,9 +54,9 @@ func (s *OrderService) GetOrder(ctx context.Context, q *GetOrderEndpoint) error 
 		return err
 	}
 
-	q.Result = pborder.PbOrder(query.Result.Order, nil, model.TagShop)
+	q.Result = convertpb.PbOrder(query.Result.Order, nil, model.TagShop)
 	q.Result.ShopName = q.Context.Shop.Name
-	q.Result.Fulfillments = pborder.XPbFulfillments(query.Result.XFulfillments, model.TagShop)
+	q.Result.Fulfillments = convertpb.XPbFulfillments(query.Result.XFulfillments, model.TagShop)
 
 	if err := s.addReceivedAmountToOrders(ctx, q.Context.Shop.ID, []*pborder.Order{q.Result}); err != nil {
 		return err
@@ -69,19 +71,19 @@ func (s *OrderService) GetOrders(ctx context.Context, q *GetOrdersEndpoint) erro
 		return err
 	}
 
-	paging := q.Paging.CMPaging()
+	paging := cmapi.CMPaging(q.Paging)
 	query := &ordermodelx.GetOrdersQuery{
 		ShopIDs:   shopIDs,
 		PartnerID: q.CtxPartner.GetID(),
 		Paging:    paging,
-		Filters:   pbcm.ToFilters(q.Filters),
+		Filters:   cmapi.ToFilters(q.Filters),
 	}
 	if err := bus.Dispatch(ctx, query); err != nil {
 		return err
 	}
 	q.Result = &pborder.OrdersResponse{
-		Paging: pbcm.PbPageInfo(paging, int32(query.Result.Total)),
-		Orders: pborder.PbOrdersWithFulfillments(query.Result.Orders, model.TagShop, query.Result.Shops),
+		Paging: cmapi.PbPageInfo(paging, int32(query.Result.Total)),
+		Orders: convertpb.PbOrdersWithFulfillments(query.Result.Orders, model.TagShop, query.Result.Shops),
 	}
 
 	if err := s.addReceivedAmountToOrders(ctx, q.Context.Shop.ID, q.Result.Orders); err != nil {
@@ -106,7 +108,7 @@ func (s *OrderService) GetOrdersByIDs(ctx context.Context, q *GetOrdersByIDsEndp
 		return err
 	}
 	q.Result = &pborder.OrdersResponse{
-		Orders: pborder.PbOrdersWithFulfillments(query.Result.Orders, model.TagShop, query.Result.Shops),
+		Orders: convertpb.PbOrdersWithFulfillments(query.Result.Orders, model.TagShop, query.Result.Shops),
 	}
 
 	if err := s.addReceivedAmountToOrders(ctx, q.Context.Shop.ID, q.Result.Orders); err != nil {
@@ -139,7 +141,7 @@ func (s *OrderService) GetOrdersByReceiptID(ctx context.Context, q *GetOrdersByR
 		return err
 	}
 	q.Result = &pborder.OrdersResponse{
-		Orders: pborder.PbOrdersWithFulfillments(query.Result.Orders, model.TagShop, query.Result.Shops),
+		Orders: convertpb.PbOrdersWithFulfillments(query.Result.Orders, model.TagShop, query.Result.Shops),
 	}
 
 	if err := s.addReceivedAmountToOrders(ctx, q.Context.Shop.ID, q.Result.Orders); err != nil {
@@ -154,9 +156,9 @@ func (s *OrderService) UpdateOrdersStatus(ctx context.Context, q *UpdateOrdersSt
 		ShopID:       q.Context.Shop.ID,
 		PartnerID:    q.CtxPartner.GetID(),
 		OrderIDs:     q.Ids,
-		ShopConfirm:  q.Confirm.ToModel(),
+		ShopConfirm:  convertpb.Status3ToModel(q.Confirm),
 		CancelReason: q.CancelReason,
-		Status:       q.Status.ToModel(),
+		Status:       convertpb.Status4ToModel(&q.Status),
 	}
 	if err := bus.Dispatch(ctx, cmd); err != nil {
 		return err
@@ -334,7 +336,7 @@ func (s *FulfillmentService) GetFulfillment(ctx context.Context, q *GetFulfillme
 	if err := bus.Dispatch(ctx, query); err != nil {
 		return err
 	}
-	q.Result = pborder.PbFulfillment(query.Result.Fulfillment, model.TagShop, query.Result.Shop, query.Result.Order)
+	q.Result = convertpb.PbFulfillment(query.Result.Fulfillment, model.TagShop, query.Result.Shop, query.Result.Order)
 	return nil
 }
 
@@ -344,21 +346,21 @@ func (s *FulfillmentService) GetFulfillments(ctx context.Context, q *GetFulfillm
 		return err
 	}
 
-	paging := q.Paging.CMPaging()
+	paging := cmapi.CMPaging(q.Paging)
 	query := &shipmodelx.GetFulfillmentExtendedsQuery{
 		ShopIDs:   shopIDs,
 		PartnerID: q.CtxPartner.GetID(),
 		OrderID:   q.OrderId,
-		Status:    q.Status.ToModel(),
+		Status:    convertpb.Status3ToModel(q.Status),
 		Paging:    paging,
-		Filters:   pbcm.ToFilters(q.Filters),
+		Filters:   cmapi.ToFilters(q.Filters),
 	}
 	if err := bus.Dispatch(ctx, query); err != nil {
 		return err
 	}
 	q.Result = &pborder.FulfillmentsResponse{
-		Fulfillments: pborder.PbFulfillmentExtendeds(query.Result.Fulfillments, model.TagShop),
-		Paging:       pbcm.PbPageInfo(paging, int32(query.Result.Total)),
+		Fulfillments: convertpb.PbFulfillmentExtendeds(query.Result.Fulfillments, model.TagShop),
+		Paging:       cmapi.PbPageInfo(paging, int32(query.Result.Total)),
 	}
 	return nil
 }
@@ -366,7 +368,7 @@ func (s *FulfillmentService) GetFulfillments(ctx context.Context, q *GetFulfillm
 func (s *FulfillmentService) GetExternalShippingServices(ctx context.Context, q *GetExternalShippingServicesEndpoint) error {
 	resp, err := shippingCtrl.GetExternalShippingServices(ctx, q.Context.Shop.ID, q.GetExternalShippingServicesRequest)
 	q.Result = &pborder.GetExternalShippingServicesResponse{
-		Services: pborder.PbAvailableShippingServices(resp),
+		Services: convertpb.PbAvailableShippingServices(resp),
 	}
 	return err
 }
@@ -374,7 +376,7 @@ func (s *FulfillmentService) GetExternalShippingServices(ctx context.Context, q 
 func (s *FulfillmentService) GetPublicExternalShippingServices(ctx context.Context, q *GetPublicExternalShippingServicesEndpoint) error {
 	resp, err := shippingCtrl.GetExternalShippingServices(ctx, model.EtopAccountID, q.GetExternalShippingServicesRequest)
 	q.Result = &pborder.GetExternalShippingServicesResponse{
-		Services: pborder.PbAvailableShippingServices(resp),
+		Services: convertpb.PbAvailableShippingServices(resp),
 	}
 	return err
 }
@@ -386,7 +388,7 @@ func (s *FulfillmentService) GetPublicFulfillment(ctx context.Context, q *GetPub
 	if err := bus.Dispatch(ctx, query); err != nil {
 		return err
 	}
-	q.Result = pborder.PbPublicFulfillment(query.Result)
+	q.Result = convertpb.PbPublicFulfillment(query.Result)
 	return nil
 }
 
@@ -395,7 +397,7 @@ func (s *FulfillmentService) UpdateFulfillmentsShippingState(ctx context.Context
 	cmd := &shipmodelx.UpdateFulfillmentsShippingStateCommand{
 		ShopID:        shopID,
 		IDs:           q.Ids,
-		ShippingState: q.ShippingState.ToModel(),
+		ShippingState: convertpb.ShippingStateToModel(&q.ShippingState),
 	}
 	if err := bus.Dispatch(ctx, cmd); err != nil {
 		return err
@@ -410,7 +412,7 @@ func (s *OrderService) UpdateOrderPaymentStatus(ctx context.Context, q *UpdateOr
 	cmd := &ordermodelx.UpdateOrderPaymentStatusCommand{
 		ShopID:  q.Context.Shop.ID,
 		OrderID: q.OrderId,
-		Status:  q.Status.ToModel(),
+		Status:  convertpb.Status3ToModel(q.Status),
 	}
 	if err := bus.Dispatch(ctx, cmd); err != nil {
 		return err
@@ -422,12 +424,12 @@ func (s *OrderService) UpdateOrderPaymentStatus(ctx context.Context, q *UpdateOr
 }
 
 func (s *OrderService) UpdateOrderShippingInfo(ctx context.Context, q *UpdateOrderShippingInfoEndpoint) error {
-	shippingAddressModel, err := q.ShippingAddress.ToModel()
+	shippingAddressModel, err := convertpb.OrderAddressToModel(q.ShippingAddress)
 	if err != nil {
 		return cm.Errorf(cm.InvalidArgument, err, "Địa chỉ giao hàng không hợp lệ: %v", err)
 	}
 	var order = new(ordermodel.Order)
-	if err := q.Shipping.ToModel(order); err != nil {
+	if err := convertpb.OrderShippingToModel(q.Shipping, order); err != nil {
 		return err
 	}
 	cmd := &ordermodelx.UpdateOrderShippingInfoCommand{

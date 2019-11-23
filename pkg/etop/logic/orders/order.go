@@ -7,23 +7,21 @@ import (
 	"strings"
 	"time"
 
+	"etop.vn/api/main/catalog"
 	"etop.vn/api/main/inventory"
 	"etop.vn/api/main/ordering"
-
+	"etop.vn/api/pb/etop/etc/gender"
+	pborder "etop.vn/api/pb/etop/order"
 	"etop.vn/api/shopping/addressing"
 	"etop.vn/api/shopping/customering"
-	"etop.vn/backend/pb/etop/etc/gender"
-
-	"etop.vn/api/main/catalog"
 	"etop.vn/backend/com/main/catalog/convert"
 	ordermodel "etop.vn/backend/com/main/ordering/model"
 	ordermodelx "etop.vn/backend/com/main/ordering/modelx"
-	pbcm "etop.vn/backend/pb/common"
-	pborder "etop.vn/backend/pb/etop/order"
-	pbshop "etop.vn/backend/pb/etop/shop"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
+	"etop.vn/backend/pkg/common/cmapi"
 	"etop.vn/backend/pkg/common/validate"
+	"etop.vn/backend/pkg/etop/api/convertpb"
 	"etop.vn/backend/pkg/etop/authorize/claims"
 	"etop.vn/backend/pkg/etop/logic/etop_shipping_price"
 	"etop.vn/backend/pkg/etop/model"
@@ -51,7 +49,7 @@ func CreateOrder(
 		shipping.Carrier = shipping.ShippingProvider
 	}
 	if (r.Shipping != nil || r.ShopShipping != nil) &&
-		!model.VerifyShippingProvider(shipping.Carrier.ToModel()) {
+		!model.VerifyShippingProvider(convertpb.ShippingProviderToModel(&shipping.Carrier)) {
 		return nil, cm.Error(cm.InvalidArgument, "Nhà vận chuyển không hợp lệ", nil)
 	}
 	if r.ExternalUrl != "" {
@@ -64,7 +62,7 @@ func CreateOrder(
 		}
 	}
 
-	src := r.Source.ToModel()
+	src := convertpb.SourceToModel(r.Source)
 	if !model.VerifyOrderSource(src) {
 		return nil, cm.Error(cm.InvalidArgument, "Invalid source", nil)
 	}
@@ -106,7 +104,7 @@ func CreateOrder(
 			}
 		}
 		if isHaveCustomerAddress {
-			customerAddress, err := pbshop.PbShopAddress(ctx, getAddressQuery.Result, locationQuery)
+			customerAddress, err := convertpb.PbShopAddress(ctx, getAddressQuery.Result, locationQuery)
 			if err != nil {
 				return nil, err
 			}
@@ -290,7 +288,7 @@ func CreateOrder(
 		}
 		return nil, err
 	}
-	result := pborder.PbOrder(order, nil, model.TagShop)
+	result := convertpb.PbOrder(order, nil, model.TagShop)
 	result.ShopName = claim.Shop.Name
 	return result, nil
 }
@@ -325,7 +323,7 @@ func getCustomerByID(ctx context.Context, shopID, customerID int64) *pborder.Ord
 }
 
 func updateOrCreateCustomerAddress(ctx context.Context, shopID, customerID int64, orderAddress *pborder.OrderAddress) error {
-	address, err := orderAddress.ToModel()
+	address, err := convertpb.OrderAddressToModel(orderAddress)
 	if err != nil {
 		return err
 	}
@@ -525,7 +523,7 @@ func UpdateOrder(ctx context.Context, claim *claims.ShopClaim, authPartner *mode
 	} else {
 		orderDiscount = oldOrder.OrderDiscount
 	}
-	feeLines := pborder.PbOrderFeeLinesToModel(q.FeeLines)
+	feeLines := convertpb.PbOrderFeeLinesToModel(q.FeeLines)
 	if len(feeLines) == 0 {
 		feeLines = oldOrder.FeeLines
 	} else {
@@ -571,15 +569,15 @@ func UpdateOrder(ctx context.Context, claim *claims.ShopClaim, authPartner *mode
 			WithMetap("expected total_items", totalItems)
 	}
 
-	customerAddress, err := q.CustomerAddress.ToModel()
+	customerAddress, err := convertpb.OrderAddressToModel(q.CustomerAddress)
 	if err != nil {
 		return nil, cm.Errorf(cm.InvalidArgument, err, "Địa chỉ khách hàng không hợp lệ: %v", err)
 	}
-	shippingAddress, err := q.ShippingAddress.ToModel()
+	shippingAddress, err := convertpb.OrderAddressToModel(q.ShippingAddress)
 	if err != nil {
 		return nil, cm.Errorf(cm.InvalidArgument, err, "Địa chỉ giao hàng không hợp lệ: %v", err)
 	}
-	billingAddress, err := q.BillingAddress.ToModel()
+	billingAddress, err := convertpb.OrderAddressToModel(q.BillingAddress)
 	if err != nil {
 		return nil, cm.Errorf(cm.InvalidArgument, err, "Địa chỉ thanh toán không hợp lệ: %v", err)
 	}
@@ -591,7 +589,7 @@ func UpdateOrder(ctx context.Context, claim *claims.ShopClaim, authPartner *mode
 		shopCod = shipping.CodAmount
 	}
 	fakeOrder := &ordermodel.Order{}
-	if err := shipping.ToModel(fakeOrder); err != nil {
+	if err := convertpb.OrderShippingToModel(shipping, fakeOrder); err != nil {
 		return nil, err
 	}
 
@@ -636,7 +634,7 @@ func UpdateOrder(ctx context.Context, claim *claims.ShopClaim, authPartner *mode
 			}
 		}
 		if isHaveAddress {
-			customerAddressResult, err := pbshop.PbShopAddress(ctx, getAddressQuery.Result, locationQuery)
+			customerAddressResult, err := convertpb.PbShopAddress(ctx, getAddressQuery.Result, locationQuery)
 			if err != nil {
 				return nil, err
 			}
@@ -659,7 +657,7 @@ func UpdateOrder(ctx context.Context, claim *claims.ShopClaim, authPartner *mode
 		}
 	}
 
-	customerAddress, err = q.CustomerAddress.ToModel()
+	customerAddress, err = convertpb.OrderAddressToModel(q.CustomerAddress)
 	if err != nil {
 		return nil, err
 	}
@@ -667,7 +665,7 @@ func UpdateOrder(ctx context.Context, claim *claims.ShopClaim, authPartner *mode
 	cmd := &ordermodelx.UpdateOrderCommand{
 		ID:              q.Id,
 		ShopID:          claim.Shop.ID,
-		Customer:        q.Customer.ToModel(),
+		Customer:        convertpb.OrderCustomerToModel(q.Customer),
 		CustomerAddress: customerAddress,
 		BillingAddress:  billingAddress,
 		ShippingAddress: shippingAddress,
@@ -700,7 +698,7 @@ func UpdateOrder(ctx context.Context, claim *claims.ShopClaim, authPartner *mode
 	if err := bus.Dispatch(ctx, query); err != nil {
 		return nil, err
 	}
-	result := pborder.PbOrder(query.Result.Order, nil, model.TagShop)
+	result := convertpb.PbOrder(query.Result.Order, nil, model.TagShop)
 	result.ShopName = claim.Shop.Name
 
 	return result, nil
@@ -767,7 +765,7 @@ func prepareOrderLine(
 		LineAmount:      int(m.Quantity) * int(m.RetailPrice),
 		ImageURL:        m.ImageUrl,
 		ProductName:     productName,
-		Attributes:      pborder.PbAttributesToModel(m.Attributes),
+		Attributes:      convertpb.PbAttributesToModel(m.Attributes),
 		TotalDiscount:   0, // will be filled later
 		TotalLineAmount: 0, // will be filled later
 		MetaFields:      metaFields,
@@ -824,7 +822,7 @@ func PrepareOrder(ctx context.Context, shopID int64, m *pborder.CreateOrderReque
 	}
 
 	// calculate fee lines from shop_shipping_fee
-	feeLines := pborder.PbOrderFeeLinesToModel(m.FeeLines)
+	feeLines := convertpb.PbOrderFeeLinesToModel(m.FeeLines)
 	feeLines = ordermodel.GetFeeLinesWithFallback(feeLines, &m.TotalFee, &m.ShopShippingFee)
 	totalFee := 0
 	for _, line := range feeLines {
@@ -891,19 +889,19 @@ func PrepareOrder(ctx context.Context, shopID int64, m *pborder.CreateOrderReque
 	}
 
 	var confirm model.Status3 = 0
-	if s := m.ShConfirm.ToModel(); s != nil {
+	if s := convertpb.Status3ToModel(m.ShConfirm); s != nil {
 		confirm = *s
 	}
 
-	customerAddress, err := m.CustomerAddress.ToModel()
+	customerAddress, err := convertpb.OrderAddressToModel(m.CustomerAddress)
 	if err != nil {
 		return nil, cm.Errorf(cm.InvalidArgument, err, "Địa chỉ khách hàng không hợp lệ: %v", err)
 	}
-	shippingAddress, err := m.ShippingAddress.ToModel()
+	shippingAddress, err := convertpb.OrderAddressToModel(m.ShippingAddress)
 	if err != nil {
 		return nil, cm.Errorf(cm.InvalidArgument, err, "Địa chỉ giao hàng không hợp lệ: %v", err)
 	}
-	billingAddress, err := m.BillingAddress.ToModel()
+	billingAddress, err := convertpb.OrderAddressToModel(m.BillingAddress)
 	if err != nil {
 		return nil, cm.Errorf(cm.InvalidArgument, err, "Địa chỉ thanh toán không hợp lệ: %v", err)
 	}
@@ -922,7 +920,7 @@ func PrepareOrder(ctx context.Context, shopID int64, m *pborder.CreateOrderReque
 				paymentMethod = model.PaymentMethodOther
 			}
 		}
-		tryOn = shipping.TryOn.ToModel()
+		tryOn = convertpb.TryOnCodeToModel(&shipping.TryOn)
 	}
 	if !model.VerifyPaymentMethod(paymentMethod) {
 		return nil, cm.Error(cm.InvalidArgument, "Phương thức thanh toán không hợp lệ", nil)
@@ -944,7 +942,7 @@ func PrepareOrder(ctx context.Context, shopID int64, m *pborder.CreateOrderReque
 		Currency:   "",
 		// Source:          m.Source.ToModel(),
 		PaymentMethod:              paymentMethod,
-		Customer:                   m.Customer.ToModel(),
+		Customer:                   convertpb.OrderCustomerToModel(m.Customer),
 		CustomerAddress:            customerAddress,
 		BillingAddress:             billingAddress,
 		ShippingAddress:            shippingAddress,
@@ -967,7 +965,7 @@ func PrepareOrder(ctx context.Context, shopID int64, m *pborder.CreateOrderReque
 		FulfillmentShippingStates:  nil,
 		FulfillmentPaymentStatuses: nil,
 		Lines:                      lines,
-		Discounts:                  pborder.PbOrderDiscountsToModel(m.Discounts),
+		Discounts:                  convertpb.PbOrderDiscountsToModel(m.Discounts),
 		TotalItems:                 int(m.TotalItems),
 		BasketValue:                int(m.BasketValue),
 		TotalWeight:                int(m.TotalWeight),
@@ -997,7 +995,7 @@ func PrepareOrder(ctx context.Context, shopID int64, m *pborder.CreateOrderReque
 		ReferralMeta:               referralMeta,
 		CustomerID:                 m.CustomerId,
 	}
-	if err = shipping.ToModel(order); err != nil {
+	if err = convertpb.OrderShippingToModel(shipping, order); err != nil {
 		return nil, err
 	}
 
@@ -1084,10 +1082,10 @@ func CancelOrder(ctx context.Context, shopID int64, authPartnerID int64, orderID
 	}
 
 	resp := &pborder.OrderWithErrorsResponse{
-		Order:  pborder.PbOrder(getOrderQuery.Result.Order, getOrderQuery.Result.Fulfillments, model.TagShop),
-		Errors: pbcm.PbErrors(errs),
+		Order:  convertpb.PbOrder(getOrderQuery.Result.Order, getOrderQuery.Result.Fulfillments, model.TagShop),
+		Errors: cmapi.PbErrors(errs),
 
-		FulfillmentErrors: pbcm.PbErrors(errs),
+		FulfillmentErrors: cmapi.PbErrors(errs),
 	}
 	return resp, nil
 }

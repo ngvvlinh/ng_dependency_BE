@@ -1,11 +1,11 @@
 package partner
 
 import (
-	"etop.vn/backend/pkg/common/httprpc"
-	service "etop.vn/backend/zexp/api/root/external/partner"
+	service "etop.vn/api/root/external/partner"
+	"etop.vn/capi/httprpc"
 )
 
-// +gen:wrapper=etop.vn/backend/zexp/api/root/external/partner
+// +gen:wrapper=etop.vn/api/root/external/partner
 // +gen:wrapper:package=partner
 // +gen:wrapper:prefix=ext
 

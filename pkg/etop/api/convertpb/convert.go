@@ -2,8 +2,8 @@ package convertpb
 
 import (
 	"etop.vn/api/main/catalog"
+	pbshop "etop.vn/api/pb/etop/shop"
 	catalogmodel "etop.vn/backend/com/main/catalog/model"
-	pbshop "etop.vn/backend/pb/etop/shop"
 )
 
 func PbAttributesToDomain(as []*pbshop.Attribute) []*catalog.Attribute {
@@ -28,13 +28,16 @@ func PbAttributes(as catalog.Attributes) []*pbshop.Attribute {
 	return attrs
 }
 
-func AttributesTomodel(items []*pbshop.Attribute) []*catalogmodel.ProductAttribute {
+func AttributesToModel(items []*pbshop.Attribute) []*catalogmodel.ProductAttribute {
 	result := make([]*catalogmodel.ProductAttribute, 0, len(items))
 	for _, item := range items {
 		if item.Name == "" {
 			continue
 		}
-		result = append(result, item.ToModel())
+		result = append(result, &catalogmodel.ProductAttribute{
+			Name:  item.Name,
+			Value: item.Value,
+		})
 	}
 	return result
 }

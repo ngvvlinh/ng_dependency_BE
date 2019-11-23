@@ -4,8 +4,6 @@ import (
 	"context"
 	"flag"
 
-	"etop.vn/capi"
-
 	"etop.vn/api/shopping/customering"
 	"etop.vn/backend/cmd/etop-server/config"
 	customeraggregate "etop.vn/backend/com/shopping/customering/aggregate"
@@ -13,6 +11,7 @@ import (
 	"etop.vn/backend/pkg/common/cmsql"
 	cc "etop.vn/backend/pkg/common/config"
 	"etop.vn/backend/pkg/etop/model"
+	"etop.vn/capi"
 	"etop.vn/common/l"
 )
 

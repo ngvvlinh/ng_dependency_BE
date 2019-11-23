@@ -7,9 +7,8 @@ import (
 	"strings"
 	"time"
 
-	pbcm "etop.vn/backend/pb/common"
-	pbetop "etop.vn/backend/pb/etop"
-	pbintegration "etop.vn/backend/pb/etop/integration"
+	pbcm "etop.vn/api/pb/common"
+	pbintegration "etop.vn/api/pb/etop/integration"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/auth"
 	"etop.vn/backend/pkg/common/bus"
@@ -19,6 +18,7 @@ import (
 	cmservice "etop.vn/backend/pkg/common/service"
 	"etop.vn/backend/pkg/common/validate"
 	"etop.vn/backend/pkg/etop/api"
+	"etop.vn/backend/pkg/etop/api/convertpb"
 	apipartner "etop.vn/backend/pkg/etop/apix/partner"
 	"etop.vn/backend/pkg/etop/authorize/authkey"
 	"etop.vn/backend/pkg/etop/authorize/claims"
@@ -220,7 +220,7 @@ func (s *IntegrationService) actionRequestLogin(ctx context.Context, partner *mo
 		AccessToken: tokenCmd.Result.TokenStr,
 		ExpiresIn:   int32(tokenCmd.Result.ExpiresIn),
 		Actions:     []*pbintegration.Action{action},
-		AuthPartner: pbetop.PbPublicAccountInfo(partner),
+		AuthPartner: convertpb.PbPublicAccountInfo(partner),
 		RedirectUrl: info.RedirectURL,
 	}
 	return resp, nil
@@ -533,7 +533,7 @@ func (s *IntegrationService) LoginUsingToken(ctx context.Context, r *LoginUsingT
 			Account:           nil,
 			Shop:              nil,
 			AvailableAccounts: nil,
-			AuthPartner:       pbetop.PbPublicAccountInfo(partner),
+			AuthPartner:       convertpb.PbPublicAccountInfo(partner),
 			Actions:           actions,
 		}
 		return nil
@@ -589,7 +589,7 @@ func (s *IntegrationService) LoginUsingToken(ctx context.Context, r *LoginUsingT
 		availAcc := &pbintegration.PartnerShopLoginAccount{
 			Id:       acc.Account.ID,
 			Name:     acc.Account.Name,
-			Type:     pbetop.PbAccountType(acc.Account.Type),
+			Type:     convertpb.PbAccountType(acc.Account.Type),
 			ImageUrl: acc.Account.ImageURL,
 		}
 		for _, rel := range relationQuery.Result.Relations {
@@ -661,11 +661,11 @@ func (s *IntegrationService) LoginUsingToken(ctx context.Context, r *LoginUsingT
 	r.Result = &pbintegration.LoginResponse{
 		AccessToken:       userTokenCmd.Result.TokenStr,
 		ExpiresIn:         int32(userTokenCmd.Result.ExpiresIn),
-		User:              pbintegration.PbPartnerUserInfo(userQuery.Result.User),
+		User:              convertpb.PbPartnerUserInfo(userQuery.Result.User),
 		Account:           nil,
 		Shop:              nil,
 		AvailableAccounts: availableAccounts,
-		AuthPartner:       pbetop.PbPublicAccountInfo(partner),
+		AuthPartner:       convertpb.PbPublicAccountInfo(partner),
 		Actions:           nil,
 	}
 	return nil
@@ -795,7 +795,7 @@ func (s *IntegrationService) Register(ctx context.Context, r *RegisterEndpoint) 
 	}
 
 	r.Result = &pbintegration.RegisterResponse{
-		User:        pbetop.PbUser(user),
+		User:        convertpb.PbUser(user),
 		AccessToken: tokenCmd.Result.TokenStr,
 		ExpiresIn:   int32(tokenCmd.Result.ExpiresIn),
 	}
@@ -914,9 +914,9 @@ func generateShopLoginResponse(accessToken string, expiresIn int, user *model.Us
 		ExpiresIn:         int32(expiresIn),
 		Account:           nil,
 		AvailableAccounts: nil,
-		User:              pbintegration.PbPartnerUserInfo(user),
+		User:              convertpb.PbPartnerUserInfo(user),
 		Shop:              nil,
-		AuthPartner:       pbetop.PbPublicAccountInfo(partner),
+		AuthPartner:       convertpb.PbPublicAccountInfo(partner),
 		Actions:           actions,
 	}
 
@@ -924,14 +924,14 @@ func generateShopLoginResponse(accessToken string, expiresIn int, user *model.Us
 		account := &pbintegration.PartnerShopLoginAccount{
 			Id:          shop.ID,
 			Name:        shop.Name,
-			Type:        pbetop.PbAccountType(model.TypeShop),
+			Type:        convertpb.PbAccountType(model.TypeShop),
 			AccessToken: accessToken,
 			ExpiresIn:   int32(expiresIn),
 			ImageUrl:    shop.ImageURL,
 		}
 		resp.Account = account
 		resp.AvailableAccounts = []*pbintegration.PartnerShopLoginAccount{account}
-		resp.Shop = pbintegration.PbPartnerShopInfo(shop)
+		resp.Shop = convertpb.PbPartnerShopInfo(shop)
 	}
 	return resp
 }

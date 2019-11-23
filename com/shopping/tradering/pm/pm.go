@@ -4,7 +4,6 @@ import (
 	"context"
 
 	"etop.vn/api/shopping/tradering"
-
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/capi"
 )

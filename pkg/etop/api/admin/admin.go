@@ -3,16 +3,18 @@ package admin
 import (
 	"context"
 
+	pbcm "etop.vn/api/pb/common"
+	pbetop "etop.vn/api/pb/etop"
+	pbadmin "etop.vn/api/pb/etop/admin"
+	pborder "etop.vn/api/pb/etop/order"
 	notimodel "etop.vn/backend/com/handler/notifier/model"
 	"etop.vn/backend/com/main/moneytx/modelx"
 	shippingmodelx "etop.vn/backend/com/main/shipping/modelx"
-	pbcm "etop.vn/backend/pb/common"
-	pbetop "etop.vn/backend/pb/etop"
-	pbadmin "etop.vn/backend/pb/etop/admin"
-	pborder "etop.vn/backend/pb/etop/order"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
+	"etop.vn/backend/pkg/common/cmapi"
 	"etop.vn/backend/pkg/etop/api"
+	"etop.vn/backend/pkg/etop/api/convertpb"
 	"etop.vn/backend/pkg/etop/authorize/login"
 	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/backend/pkg/etop/sqlstore"
@@ -135,25 +137,25 @@ func (s *MoneyTransactionService) GetMoneyTransaction(ctx context.Context, q *Ge
 	if err := bus.Dispatch(ctx, query); err != nil {
 		return err
 	}
-	q.Result = pborder.PbMoneyTransactionExtended(query.Result)
+	q.Result = convertpb.PbMoneyTransactionExtended(query.Result)
 	return nil
 }
 
 func (s *MoneyTransactionService) GetMoneyTransactions(ctx context.Context, q *GetMoneyTransactionsEndpoint) error {
-	paging := q.Paging.CMPaging()
+	paging := cmapi.CMPaging(q.Paging)
 	query := &modelx.GetMoneyTransactions{
 		IDs:                                q.Ids,
 		ShopID:                             q.ShopId,
 		Paging:                             paging,
 		MoneyTransactionShippingExternalID: q.MoneyTransactionShippingExternalId,
-		Filters:                            pbcm.ToFilters(q.Filters),
+		Filters:                            cmapi.ToFilters(q.Filters),
 	}
 	if err := bus.Dispatch(ctx, query); err != nil {
 		return err
 	}
 	q.Result = &pborder.MoneyTransactionsResponse{
-		MoneyTransactions: pborder.PbMoneyTransactionExtendeds(query.Result.MoneyTransactions),
-		Paging:            pbcm.PbPageInfo(paging, int32(query.Result.Total)),
+		MoneyTransactions: convertpb.PbMoneyTransactionExtendeds(query.Result.MoneyTransactions),
+		Paging:            cmapi.PbPageInfo(paging, int32(query.Result.Total)),
 	}
 	return nil
 }
@@ -163,12 +165,12 @@ func (s *MoneyTransactionService) UpdateMoneyTransaction(ctx context.Context, q 
 		ID:            q.Id,
 		Note:          q.Note,
 		InvoiceNumber: q.InvoiceNumber,
-		BankAccount:   q.BankAccount.ToModel(),
+		BankAccount:   convertpb.BankAccountToModel(q.BankAccount),
 	}
 	if err := bus.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
-	q.Result = pborder.PbMoneyTransactionExtended(cmd.Result)
+	q.Result = convertpb.PbMoneyTransactionExtended(cmd.Result)
 	return nil
 }
 
@@ -196,23 +198,23 @@ func (s *MoneyTransactionService) GetMoneyTransactionShippingExternal(ctx contex
 	if err := bus.Dispatch(ctx, query); err != nil {
 		return err
 	}
-	q.Result = pborder.PbMoneyTransactionShippingExternalExtended(query.Result)
+	q.Result = convertpb.PbMoneyTransactionShippingExternalExtended(query.Result)
 	return nil
 }
 
 func (s *MoneyTransactionService) GetMoneyTransactionShippingExternals(ctx context.Context, q *GetMoneyTransactionShippingExternalsEndpoint) error {
-	paging := q.Paging.CMPaging()
+	paging := cmapi.CMPaging(q.Paging)
 	query := &modelx.GetMoneyTransactionShippingExternals{
 		IDs:     q.Ids,
 		Paging:  paging,
-		Filters: pbcm.ToFilters(q.Filters),
+		Filters: cmapi.ToFilters(q.Filters),
 	}
 	if err := bus.Dispatch(ctx, query); err != nil {
 		return err
 	}
 	q.Result = &pborder.MoneyTransactionShippingExternalsResponse{
-		MoneyTransactions: pborder.PbMoneyTransactionShippingExternalExtendeds(query.Result.MoneyTransactionShippingExternals),
-		Paging:            pbcm.PbPageInfo(paging, int32(query.Result.Total)),
+		MoneyTransactions: convertpb.PbMoneyTransactionShippingExternalExtendeds(query.Result.MoneyTransactionShippingExternals),
+		Paging:            cmapi.PbPageInfo(paging, int32(query.Result.Total)),
 	}
 	return nil
 }
@@ -225,7 +227,7 @@ func (s *MoneyTransactionService) RemoveMoneyTransactionShippingExternalLines(ct
 	if err := bus.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
-	q.Result = pborder.PbMoneyTransactionShippingExternalExtended(cmd.Result)
+	q.Result = convertpb.PbMoneyTransactionShippingExternalExtended(cmd.Result)
 	return nil
 }
 
@@ -275,12 +277,12 @@ func (s *MoneyTransactionService) UpdateMoneyTransactionShippingExternal(ctx con
 		ID:            q.Id,
 		Note:          q.Note,
 		InvoiceNumber: q.InvoiceNumber,
-		BankAccount:   q.BankAccount.ToModel(),
+		BankAccount:   convertpb.BankAccountToModel(q.BankAccount),
 	}
 	if err := bus.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
-	q.Result = pborder.PbMoneyTransactionShippingExternalExtended(cmd.Result)
+	q.Result = convertpb.PbMoneyTransactionShippingExternalExtended(cmd.Result)
 	return nil
 }
 
@@ -291,12 +293,12 @@ func (s *ShopService) GetShop(ctx context.Context, q *GetShopEndpoint) error {
 	if err := bus.Dispatch(ctx, query); err != nil {
 		return err
 	}
-	q.Result = pbetop.PbShopExtended(query.Result)
+	q.Result = convertpb.PbShopExtended(query.Result)
 	return nil
 }
 
 func (s *ShopService) GetShops(ctx context.Context, q *GetShopsEndpoint) error {
-	paging := q.Paging.CMPaging()
+	paging := cmapi.CMPaging(q.Paging)
 	query := &model.GetAllShopExtendedsQuery{
 		Paging: paging,
 	}
@@ -304,8 +306,8 @@ func (s *ShopService) GetShops(ctx context.Context, q *GetShopsEndpoint) error {
 		return err
 	}
 	q.Result = &pbadmin.GetShopsResponse{
-		Paging: pbcm.PbPageInfo(paging, int32(query.Result.Total)),
-		Shops:  pbetop.PbShopExtendeds(query.Result.Shops),
+		Paging: cmapi.PbPageInfo(paging, int32(query.Result.Total)),
+		Shops:  convertpb.PbShopExtendeds(query.Result.Shops),
 	}
 	return nil
 }
@@ -315,12 +317,12 @@ func (s *CreditService) CreateCredit(ctx context.Context, q *CreateCreditEndpoin
 		Amount: int(q.Amount),
 		ShopID: q.ShopId,
 		Type:   model.AccountType(q.Type.ToModel()),
-		PaidAt: pbcm.PbTimeToModel(q.PaidAt),
+		PaidAt: cmapi.PbTimeToModel(q.PaidAt),
 	}
 	if err := bus.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
-	q.Result = pbetop.PbCreditExtended(cmd.Result)
+	q.Result = convertpb.PbCreditExtended(cmd.Result)
 	return nil
 }
 
@@ -332,12 +334,12 @@ func (s *CreditService) GetCredit(ctx context.Context, q *GetCreditEndpoint) err
 	if err := bus.Dispatch(ctx, query); err != nil {
 		return err
 	}
-	q.Result = pbetop.PbCreditExtended(query.Result)
+	q.Result = convertpb.PbCreditExtended(query.Result)
 	return nil
 }
 
 func (s *CreditService) GetCredits(ctx context.Context, q *GetCreditsEndpoint) error {
-	paging := q.Paging.CMPaging()
+	paging := cmapi.CMPaging(q.Paging)
 	query := &model.GetCreditsQuery{
 		ShopID: q.ShopId,
 		Paging: paging,
@@ -346,8 +348,8 @@ func (s *CreditService) GetCredits(ctx context.Context, q *GetCreditsEndpoint) e
 		return err
 	}
 	q.Result = &pbetop.CreditsResponse{
-		Credits: pbetop.PbCreditExtendeds(query.Result.Credits),
-		Paging:  pbcm.PbPageInfo(paging, int32(query.Result.Total)),
+		Credits: convertpb.PbCreditExtendeds(query.Result.Credits),
+		Paging:  cmapi.PbPageInfo(paging, int32(query.Result.Total)),
 	}
 	return nil
 }
@@ -357,12 +359,12 @@ func (s *CreditService) UpdateCredit(ctx context.Context, q *UpdateCreditEndpoin
 		ID:     q.Id,
 		ShopID: q.ShopId,
 		Amount: int(q.Amount),
-		PaidAt: pbcm.PbTimeToModel(q.PaidAt),
+		PaidAt: cmapi.PbTimeToModel(q.PaidAt),
 	}
 	if err := bus.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
-	q.Result = pbetop.PbCreditExtended(cmd.Result)
+	q.Result = convertpb.PbCreditExtended(cmd.Result)
 	return nil
 }
 
@@ -395,12 +397,12 @@ func (s *CreditService) DeleteCredit(ctx context.Context, q *DeleteCreditEndpoin
 
 func (s *AccountService) CreatePartner(ctx context.Context, q *CreatePartnerEndpoint) error {
 	cmd := &model.CreatePartnerCommand{
-		Partner: q.ToModel(),
+		Partner: convertpb.CreatePartnerRequestToModel(q.CreatePartnerRequest),
 	}
 	if err := bus.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
-	q.Result = pbetop.PbPartner(cmd.Result.Partner)
+	q.Result = convertpb.PbPartner(cmd.Result.Partner)
 	return nil
 }
 
@@ -413,7 +415,7 @@ func (s *FulfillmentService) UpdateFulfillment(ctx context.Context, q *UpdateFul
 		IsPartialDelivery:        q.IsPartialDelivery,
 		AdminNote:                q.AdminNote,
 		ActualCompensationAmount: int(q.ActualCompensationAmount),
-		ShippingState:            q.ShippingState.ToModel(),
+		ShippingState:            convertpb.ShippingStateToModel(q.ShippingState),
 	}
 	if err := bus.Dispatch(ctx, cmd); err != nil {
 		return err
@@ -453,24 +455,24 @@ func (s *MoneyTransactionService) GetMoneyTransactionShippingEtop(ctx context.Co
 	if err := bus.Dispatch(ctx, query); err != nil {
 		return err
 	}
-	q.Result = pborder.PbMoneyTransactionShippingEtopExtended(query.Result)
+	q.Result = convertpb.PbMoneyTransactionShippingEtopExtended(query.Result)
 	return nil
 }
 
 func (s *MoneyTransactionService) GetMoneyTransactionShippingEtops(ctx context.Context, q *GetMoneyTransactionShippingEtopsEndpoint) error {
-	paging := q.Paging.CMPaging()
+	paging := cmapi.CMPaging(q.Paging)
 	query := &modelx.GetMoneyTransactionShippingEtops{
 		IDs:     q.Ids,
-		Status:  q.Status.ToModel(),
+		Status:  convertpb.Status3ToModel(q.Status),
 		Paging:  paging,
-		Filters: pbcm.ToFilters(q.Filters),
+		Filters: cmapi.ToFilters(q.Filters),
 	}
 	if err := bus.Dispatch(ctx, query); err != nil {
 		return err
 	}
 	q.Result = &pborder.MoneyTransactionShippingEtopsResponse{
-		Paging:                        pbcm.PbPageInfo(paging, int32(query.Result.Total)),
-		MoneyTransactionShippingEtops: pborder.PbMoneyTransactionShippingEtopExtendeds(query.Result.MoneyTransactionShippingEtops),
+		Paging:                        cmapi.PbPageInfo(paging, int32(query.Result.Total)),
+		MoneyTransactionShippingEtops: convertpb.PbMoneyTransactionShippingEtopExtendeds(query.Result.MoneyTransactionShippingEtops),
 	}
 	return nil
 }
@@ -482,7 +484,7 @@ func (s *MoneyTransactionService) CreateMoneyTransactionShippingEtop(ctx context
 	if err := bus.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
-	q.Result = pborder.PbMoneyTransactionShippingEtopExtended(cmd.Result)
+	q.Result = convertpb.PbMoneyTransactionShippingEtopExtended(cmd.Result)
 	return nil
 }
 
@@ -494,12 +496,12 @@ func (s *MoneyTransactionService) UpdateMoneyTransactionShippingEtop(ctx context
 		ReplaceAll:    q.ReplaceAll,
 		Note:          q.Note,
 		InvoiceNumber: q.InvoiceNumber,
-		BankAccount:   q.BankAccount.ToModel(),
+		BankAccount:   convertpb.BankAccountToModel(q.BankAccount),
 	}
 	if err := bus.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
-	q.Result = pborder.PbMoneyTransactionShippingEtopExtended(cmd.Result)
+	q.Result = convertpb.PbMoneyTransactionShippingEtopExtended(cmd.Result)
 	return nil
 }
 

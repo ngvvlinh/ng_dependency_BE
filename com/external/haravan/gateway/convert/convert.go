@@ -3,7 +3,7 @@ package convert
 import (
 	"etop.vn/api/external/haravan"
 	"etop.vn/api/main/location"
-	pbexternal "etop.vn/backend/pb/external"
+	pbexternal "etop.vn/api/pb/external"
 	cm "etop.vn/backend/pkg/common"
 )
 

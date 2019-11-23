@@ -3,7 +3,7 @@ package api
 import (
 	"context"
 
-	pbetop "etop.vn/backend/pb/etop"
+	pbetop "etop.vn/api/pb/etop"
 	"etop.vn/backend/pkg/etop/authorize/claims"
 	"etop.vn/backend/pkg/etop/model"
 )

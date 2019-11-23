@@ -11,16 +11,17 @@ import (
 	"etop.vn/api/external/haravan/gateway"
 	"etop.vn/api/main/identity"
 	"etop.vn/api/main/location"
+	pbsp "etop.vn/api/pb/etop/etc/shipping_provider"
+	pbtryon "etop.vn/api/pb/etop/etc/try_on"
+	pborder "etop.vn/api/pb/etop/order"
+	pbexternal "etop.vn/api/pb/external"
 	"etop.vn/backend/com/external/haravan/gateway/convert"
 	identityconvert "etop.vn/backend/com/main/identity/convert"
 	shipmodelx "etop.vn/backend/com/main/shipping/modelx"
-	pbsp "etop.vn/backend/pb/etop/etc/shipping_provider"
-	pbtryon "etop.vn/backend/pb/etop/etc/try_on"
-	pborder "etop.vn/backend/pb/etop/order"
-	pbexternal "etop.vn/backend/pb/external"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/cmsql"
+	"etop.vn/backend/pkg/etop/api/convertpb"
 	"etop.vn/backend/pkg/etop/apix/shipping"
 	"etop.vn/backend/pkg/etop/authorize/claims"
 	logicorder "etop.vn/backend/pkg/etop/logic/orders"
@@ -171,7 +172,7 @@ func (a *Aggregate) CreateOrder(ctx context.Context, args *gateway.CreateOrderRe
 	totalValue := int32(getOrderValue(args.Items))
 	codAmount := int(args.CodAmount)
 	weight := int(args.TotalGrams)
-	carrier := pbsp.PbShippingProviderType(service.Provider)
+	carrier := convertpb.PbShippingProviderType(service.Provider)
 	// Haravan always set IncludeInsurance = false
 	includeInsurance := false
 	externalMeta := &haravan.ExternalMeta{

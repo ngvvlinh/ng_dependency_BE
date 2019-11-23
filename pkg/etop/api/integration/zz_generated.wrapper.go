@@ -8,8 +8,9 @@ import (
 	"context"
 	"time"
 
-	cm "etop.vn/backend/pb/common"
-	integration "etop.vn/backend/pb/etop/integration"
+	cm "etop.vn/api/pb/common"
+	integration "etop.vn/api/pb/etop/integration"
+	api "etop.vn/api/root/int/integration"
 	common "etop.vn/backend/pkg/common"
 	bus "etop.vn/backend/pkg/common/bus"
 	metrics "etop.vn/backend/pkg/common/metrics"
@@ -17,7 +18,6 @@ import (
 	claims "etop.vn/backend/pkg/etop/authorize/claims"
 	middleware "etop.vn/backend/pkg/etop/authorize/middleware"
 	model "etop.vn/backend/pkg/etop/model"
-	api "etop.vn/backend/zexp/api/root/int/integration"
 )
 
 func WrapIntegrationService(s *IntegrationService) api.IntegrationService {

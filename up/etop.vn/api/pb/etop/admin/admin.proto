@@ -1,0 +1,201 @@
+syntax = "proto2";
+package admin;
+option go_package = "etop.vn/api/pb/etop/admin";
+
+import "gogoproto/gogo.proto";
+option (gogoproto.equal_all)                = false;
+option (gogoproto.gogoproto_import)         = false;
+option (gogoproto.goproto_enum_prefix_all)  = true;
+option (gogoproto.goproto_getters_all)      = false;
+option (gogoproto.goproto_unrecognized_all) = false;
+option (gogoproto.gostring_all)             = false;
+option (gogoproto.marshaler_all)            = false;
+option (gogoproto.onlyone_all)              = false;
+option (gogoproto.sizer_all)                = false;
+option (gogoproto.testgen_all)              = false;
+option (gogoproto.unmarshaler_all)          = false;
+option (gogoproto.verbose_equal_all)        = false;
+
+import "common/common.proto";
+import "etop/etop.proto";
+import "etop/order/order.proto";
+import "etop/etc/status3/status.proto";
+import "etop/etc/shipping/state.proto";
+import "etop/etc/credit_type/type.proto";
+import "etop/etc/notifier_entity/entity.proto";
+import "google/protobuf/timestamp.proto";
+
+message GetOrdersRequest {
+    optional cm.Paging paging = 1;
+    repeated cm.Filter filters = 4;
+}
+
+message GetFulfillmentsRequest {
+    optional cm.Paging paging = 1;
+    optional int64 shop_id = 2 [(gogoproto.nullable)=false];
+    optional int64 order_id = 4 [(gogoproto.nullable)=false];
+    optional status3.Status status  = 5;
+    repeated cm.Filter filters = 6;
+}
+
+message LoginAsAccountRequest {
+    optional int64 user_id    = 1 [(gogoproto.nullable)=false];
+    optional int64 account_id = 2 [(gogoproto.nullable)=false];
+
+    // This is a sensitive API, so admin must provide password before processing!
+    optional string password  = 3 [(gogoproto.nullable)=false];
+}
+
+message GetMoneyTransactionsRequest {
+    repeated int64 ids = 1;
+    optional int64 shop_id = 2 [(gogoproto.nullable)=false];
+    optional int64 money_transaction_shipping_external_id = 3 [(gogoproto.nullable)=false];
+    optional cm.Paging paging = 4;
+    repeated cm.Filter filters = 5;
+}
+
+message RemoveFfmsMoneyTransactionRequest {
+    repeated int64 fulfillment_ids = 1;
+    optional int64 money_transaction_id = 2 [(gogoproto.nullable)=false];
+    optional int64 shop_id = 3 [(gogoproto.nullable)=false];
+}
+
+message GetMoneyTransactionShippingExternalsRequest {
+    repeated int64 ids = 1;
+    optional cm.Paging paging = 2;
+    repeated cm.Filter filters = 3;
+}
+
+message RemoveMoneyTransactionShippingExternalLinesRequest {
+    repeated int64 line_ids = 1;
+    optional int64 money_transaction_shipping_external_id = 2 [(gogoproto.nullable)=false];
+}
+
+message ConfirmMoneyTransactionRequest {
+    optional int64 money_transaction_id = 1 [(gogoproto.nullable)=false];
+    optional int64 shop_id = 2 [(gogoproto.nullable)=false];
+    optional int64 total_cod = 3 [(gogoproto.nullable)=false];
+    optional int64 total_amount = 4 [(gogoproto.nullable)=false];
+    optional int64 total_orders = 5 [(gogoproto.nullable)=false];
+}
+
+message DeleteMoneyTransactionRequest {
+    optional int64 money_transaction_id = 1 [(gogoproto.nullable)=false];
+    optional int64 shop_id = 2 [(gogoproto.nullable)=false];
+}
+
+message GetShopsRequest {
+    optional cm.Paging paging = 1;
+}
+
+message GetShopsResponse {
+    optional cm.PageInfo paging    = 1;
+    repeated etop.Shop shops = 2;
+}
+
+message GetCreditRequest {
+    optional int64 id = 1 [(gogoproto.nullable)=false];
+    optional int64 shop_id = 2 [(gogoproto.nullable)=false];
+}
+
+message GetCreditsRequest {
+    optional int64 shop_id = 1 [(gogoproto.nullable)=false];
+    optional cm.Paging paging = 2;
+}
+
+message CreateCreditRequest {
+    optional int64 amount = 1 [(gogoproto.nullable)=false];
+    optional int64 shop_id = 2 [(gogoproto.nullable)=false];
+    optional credit_type.CreditType type  = 3;
+    optional google.protobuf.Timestamp paid_at = 4;
+}
+
+message UpdateCreditRequest {
+    optional int64 id = 1 [(gogoproto.nullable)=false];
+    optional int64 amount = 2 [(gogoproto.nullable)=false];
+    optional int64 shop_id = 3 [(gogoproto.nullable)=false];
+    optional credit_type.CreditType type  = 4;
+    optional google.protobuf.Timestamp paid_at = 5;
+}
+
+message ConfirmCreditRequest {
+    optional int64 id = 1 [(gogoproto.nullable)=false];
+    optional int64 shop_id = 2 [(gogoproto.nullable)=false];
+}
+
+message CreatePartnerRequest {
+    optional etop.Partner partner = 1 [(gogoproto.nullable)=false];
+}
+
+message UpdateFulfillmentRequest {
+    optional int64 id = 1 [(gogoproto.nullable)=false];
+    optional string full_name = 2 [(gogoproto.nullable)=false];
+    optional string phone       = 3 [(gogoproto.nullable)=false];
+    optional int32 total_cod_amount =  5;
+    optional bool is_partial_delivery = 6 [(gogoproto.nullable)=false];
+    optional string admin_note = 7 [(gogoproto.nullable)=false];
+    optional int32 actual_compensation_amount = 8 [(gogoproto.nullable)=false];
+    optional shipping.State shipping_state = 9;
+}
+
+message GenerateAPIKeyRequest {
+    optional int64 account_id = 1 [(gogoproto.nullable)=false];
+}
+
+message GenerateAPIKeyResponse {
+    optional int64 account_id = 1 [(gogoproto.nullable)=false];
+    optional string api_key = 2 [(gogoproto.nullable)=false];
+}
+
+message UpdateMoneyTransactionShippingEtopRequest {
+    optional int64  id          = 1 [(gogoproto.nullable)=false];
+    repeated int64 adds        = 2;
+    repeated int64 deletes     = 3;
+    repeated int64 replace_all = 4;
+    optional string note = 5 [(gogoproto.nullable)=false];
+    optional string invoice_number = 6 [(gogoproto.nullable)=false];
+    optional etop.BankAccount bank_account = 7;
+}
+
+message GetMoneyTransactionShippingEtopsRequest {
+    repeated int64 ids = 1;
+    optional status3.Status status = 2;
+    optional cm.Paging paging = 3;
+    repeated cm.Filter filters = 4;
+}
+
+message ConfirmMoneyTransactionShippingEtopRequest {
+    optional int64 id = 1 [(gogoproto.nullable)=false];
+    optional int64 total_cod = 3 [(gogoproto.nullable)=false];
+    optional int64 total_amount = 4 [(gogoproto.nullable)=false];
+    optional int64 total_orders = 5 [(gogoproto.nullable)=false];
+}
+
+message UpdateMoneyTransactionRequest {
+    optional int64  id          = 1 [(gogoproto.nullable)=false];
+    optional string note = 2 [(gogoproto.nullable)=false];
+    optional string invoice_number = 3 [(gogoproto.nullable)=false];
+    optional etop.BankAccount bank_account = 4;
+}
+
+message UpdateMoneyTransactionShippingExternalRequest {
+    optional int64  id          = 1 [(gogoproto.nullable)=false];
+    optional string note = 2 [(gogoproto.nullable)=false];
+    optional string invoice_number = 3 [(gogoproto.nullable)=false];
+    optional etop.BankAccount bank_account = 4;
+}
+
+message CreateNotificationsRequest {
+    optional string title = 1 [(gogoproto.nullable) = false];
+    optional string message = 2 [(gogoproto.nullable) = false];
+    optional notifier_entity.NotifierEntity entity = 3 [(gogoproto.nullable) = false];
+    optional int64 entity_id = 4 [(gogoproto.nullable) = false];
+    repeated int64 account_ids = 5;
+    // Send to all subscribers
+    optional bool send_all = 6 [(gogoproto.nullable) = false];
+}
+
+message CreateNotificationsResponse {
+    optional int32 created = 1 [(gogoproto.nullable) = false];
+    optional int32 errored = 2 [(gogoproto.nullable) = false];
+}

@@ -7,14 +7,14 @@ import (
 	"strconv"
 	"time"
 
+	pbshop "etop.vn/api/pb/etop/shop"
 	ordering "etop.vn/backend/com/main/ordering/modelx"
 	shipping "etop.vn/backend/com/main/shipping/modelx"
-	pbcm "etop.vn/backend/pb/common"
-	pbs4 "etop.vn/backend/pb/etop/etc/status4"
-	pbshop "etop.vn/backend/pb/etop/shop"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
+	"etop.vn/backend/pkg/common/cmapi"
 	"etop.vn/backend/pkg/common/idemp"
+	"etop.vn/backend/pkg/etop/api/convertpb"
 	"etop.vn/backend/pkg/etop/authorize/claims"
 	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/backend/pkg/etop/sqlstore"
@@ -96,7 +96,7 @@ func (s *Service) RequestExport(ctx context.Context, claim claims.ShopClaim, sho
 		AccountID:    shop.ID,
 		UserID:       userID,
 		CreatedAt:    time.Now(),
-		RequestQuery: pbcm.MustMarshalToString(r),
+		RequestQuery: cmapi.MustMarshalToString(r),
 		MimeType:     "text/csv",
 		Status:       model.S4Zero,
 	}
@@ -104,7 +104,7 @@ func (s *Service) RequestExport(ctx context.Context, claim claims.ShopClaim, sho
 		Id:         exportID,
 		Filename:   zipFileName,
 		ExportType: r.ExportType,
-		Status:     pbs4.Pb(model.S4Zero),
+		Status:     convertpb.Pb4(model.S4Zero),
 	}
 
 	if err := sqlstore.ExportAttempt(ctx).Create(exportItem); err != nil {
@@ -119,7 +119,7 @@ func (s *Service) RequestExport(ctx context.Context, claim claims.ShopClaim, sho
 			ShopIDs:      []int64{shop.ID},
 			DateFrom:     from,
 			DateTo:       to,
-			Filters:      pbcm.ToFilters(r.Filters),
+			Filters:      cmapi.ToFilters(r.Filters),
 			ResultAsRows: true,
 		}
 
@@ -148,7 +148,7 @@ func (s *Service) RequestExport(ctx context.Context, claim claims.ShopClaim, sho
 			ShopIDs:      []int64{shop.ID},
 			DateFrom:     from,
 			DateTo:       to,
-			Filters:      pbcm.ToFilters(r.Filters),
+			Filters:      cmapi.ToFilters(r.Filters),
 			ResultAsRows: true,
 		}
 
@@ -178,7 +178,7 @@ func (s *Service) RequestExport(ctx context.Context, claim claims.ShopClaim, sho
 func (s *Service) GetExports(ctx context.Context, shopID int64, r *pbshop.GetExportsRequest) (*pbshop.GetExportsResponse, error) {
 	exportAttempts, err := sqlstore.ExportAttempt(ctx).AccountID(shopID).NotYetExpired().List()
 	return &pbshop.GetExportsResponse{
-		ExportItems: pbshop.PbExportAttempts(exportAttempts),
+		ExportItems: convertpb.PbExportAttempts(exportAttempts),
 	}, err
 }
 

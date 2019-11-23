@@ -4,13 +4,14 @@ import (
 	"context"
 
 	"etop.vn/api/main/identity"
-	pbcm "etop.vn/backend/pb/common"
-	pbetop "etop.vn/backend/pb/etop"
-	pbshop "etop.vn/backend/pb/etop/shop"
+	pbcm "etop.vn/api/pb/common"
+	pbetop "etop.vn/api/pb/etop"
+	pbshop "etop.vn/api/pb/etop/shop"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/validate"
 	etop "etop.vn/backend/pkg/etop/api"
+	"etop.vn/backend/pkg/etop/api/convertpb"
 	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/backend/pkg/etop/sqlstore"
 )
@@ -26,7 +27,7 @@ func (s *AccountService) RegisterShop(ctx context.Context, q *RegisterShopEndpoi
 	if q.UrlSlug != "" && !validate.URLSlug(q.UrlSlug) {
 		return cm.Error(cm.InvalidArgument, "Thông tin url_slug không hợp lệ. Vui lòng kiểm tra lại.", nil)
 	}
-	address, err := q.Address.ToModel()
+	address, err := convertpb.AddressToModel(q.Address)
 	if err != nil {
 		return err
 	}
@@ -34,7 +35,7 @@ func (s *AccountService) RegisterShop(ctx context.Context, q *RegisterShopEndpoi
 		Name:                        q.Name,
 		OwnerID:                     q.Context.UserID,
 		Phone:                       q.Phone,
-		BankAccount:                 q.BankAccount.ToModel(),
+		BankAccount:                 convertpb.BankAccountToModel(q.BankAccount),
 		WebsiteURL:                  q.WebsiteUrl,
 		ImageURL:                    q.ImageUrl,
 		Email:                       q.Email,
@@ -42,10 +43,10 @@ func (s *AccountService) RegisterShop(ctx context.Context, q *RegisterShopEndpoi
 		AutoCreateFFM:               true,
 		URLSlug:                     q.UrlSlug,
 		IsTest:                      q.Context.User.IsTest != 0,
-		CompanyInfo:                 q.CompanyInfo.ToModel(),
+		CompanyInfo:                 convertpb.CompanyInfoToModel(q.CompanyInfo),
 		MoneyTransactionRRule:       q.MoneyTransactionRrule,
-		SurveyInfo:                  pbetop.SurveyInfosToModel(q.SurveyInfo),
-		ShippingServicePickStrategy: pbetop.ShippingServiceSelectStrategyToModel(q.ShippingServiceSelectStrategy),
+		SurveyInfo:                  convertpb.SurveyInfosToModel(q.SurveyInfo),
+		ShippingServicePickStrategy: convertpb.ShippingServiceSelectStrategyToModel(q.ShippingServiceSelectStrategy),
 	}
 	if err := bus.Dispatch(ctx, cmd); err != nil {
 		return err
@@ -59,7 +60,7 @@ func (s *AccountService) RegisterShop(ctx context.Context, q *RegisterShopEndpoi
 	}
 
 	q.Result = &pbshop.RegisterShopResponse{
-		Shop: pbetop.PbShopExtended(cmd.Result),
+		Shop: convertpb.PbShopExtended(cmd.Result),
 	}
 	return nil
 }
@@ -90,7 +91,7 @@ func (s *AccountService) UpdateShop(ctx context.Context, q *UpdateShopEndpoint) 
 		}
 	}
 
-	address, err := q.Address.ToModel()
+	address, err := convertpb.AddressToModel(q.Address)
 	if err != nil {
 		return err
 	}
@@ -100,17 +101,17 @@ func (s *AccountService) UpdateShop(ctx context.Context, q *UpdateShopEndpoint) 
 			InventoryOverstock:            q.InventoryOverstock,
 			Name:                          q.Name,
 			Phone:                         q.Phone,
-			BankAccount:                   q.BankAccount.ToModel(),
+			BankAccount:                   convertpb.BankAccountToModel(q.BankAccount),
 			WebsiteURL:                    q.WebsiteUrl,
 			ImageURL:                      q.ImageUrl,
 			Email:                         q.Email,
 			Address:                       address,
-			TryOn:                         q.TryOn.ToModel(),
+			TryOn:                         convertpb.TryOnCodeToModel(q.TryOn),
 			GhnNoteCode:                   q.GhnNoteCode.ToModel(),
-			CompanyInfo:                   q.CompanyInfo.ToModel(),
+			CompanyInfo:                   convertpb.CompanyInfoToModel(q.CompanyInfo),
 			MoneyTransactionRRule:         q.MoneyTransactionRrule,
-			SurveyInfo:                    pbetop.SurveyInfosToModel(q.SurveyInfo),
-			ShippingServiceSelectStrategy: pbetop.ShippingServiceSelectStrategyToModel(q.ShippingServiceSelectStrategy),
+			SurveyInfo:                    convertpb.SurveyInfosToModel(q.SurveyInfo),
+			ShippingServiceSelectStrategy: convertpb.ShippingServiceSelectStrategyToModel(q.ShippingServiceSelectStrategy),
 		},
 		AutoCreateFFM: q.AutoCreateFfm,
 	}
@@ -119,7 +120,7 @@ func (s *AccountService) UpdateShop(ctx context.Context, q *UpdateShopEndpoint) 
 		return err
 	}
 	q.Result = &pbshop.UpdateShopResponse{
-		Shop: pbetop.PbShopExtended(cmd.Result),
+		Shop: convertpb.PbShopExtended(cmd.Result),
 	}
 	return nil
 }

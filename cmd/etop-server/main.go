@@ -10,9 +10,8 @@ import (
 	"syscall"
 	"time"
 
-	"etop.vn/api/main/invitation"
-
 	"etop.vn/api/main/identity"
+	"etop.vn/api/main/invitation"
 	"etop.vn/api/main/ordering"
 	"etop.vn/api/main/receipting"
 	"etop.vn/api/main/shipnow"

@@ -4,14 +4,15 @@ import (
 	"context"
 
 	"etop.vn/api/main/catalog"
-
 	"etop.vn/api/main/etop"
 	"etop.vn/api/main/purchaseorder"
 	"etop.vn/api/main/receipting"
+	pbcm "etop.vn/api/pb/common"
+	pbshop "etop.vn/api/pb/etop/shop"
 	"etop.vn/api/shopping/suppliering"
-	pbcm "etop.vn/backend/pb/common"
-	pbshop "etop.vn/backend/pb/etop/shop"
 	"etop.vn/backend/pkg/common/bus"
+	"etop.vn/backend/pkg/common/cmapi"
+	"etop.vn/backend/pkg/etop/api/convertpb"
 	. "etop.vn/capi/dot"
 )
 
@@ -33,7 +34,7 @@ func (s *SupplierService) GetSupplier(ctx context.Context, r *GetSupplierEndpoin
 	if err := supplierQuery.Dispatch(ctx, query); err != nil {
 		return err
 	}
-	r.Result = pbshop.PbSupplier(query.Result)
+	r.Result = convertpb.PbSupplier(query.Result)
 
 	if err := s.listLiabilities(ctx, r.Context.Shop.ID, []*pbshop.Supplier{r.Result}); err != nil {
 		return err
@@ -42,18 +43,18 @@ func (s *SupplierService) GetSupplier(ctx context.Context, r *GetSupplierEndpoin
 }
 
 func (s *SupplierService) GetSuppliers(ctx context.Context, r *GetSuppliersEndpoint) error {
-	paging := r.Paging.CMPaging()
+	paging := cmapi.CMPaging(r.Paging)
 	query := &suppliering.ListSuppliersQuery{
 		ShopID:  r.Context.Shop.ID,
 		Paging:  *paging,
-		Filters: pbcm.ToFilters(r.Filters),
+		Filters: cmapi.ToFilters(r.Filters),
 	}
 	if err := supplierQuery.Dispatch(ctx, query); err != nil {
 		return err
 	}
 	r.Result = &pbshop.SuppliersResponse{
-		Suppliers: pbshop.PbSuppliers(query.Result.Suppliers),
-		Paging:    pbcm.PbPageInfo(paging, query.Result.Count),
+		Suppliers: convertpb.PbSuppliers(query.Result.Suppliers),
+		Paging:    cmapi.PbPageInfo(paging, query.Result.Count),
 	}
 
 	if err := s.listLiabilities(ctx, r.Context.Shop.ID, r.Result.Suppliers); err != nil {
@@ -70,7 +71,7 @@ func (s *SupplierService) GetSuppliersByIDs(ctx context.Context, r *GetSuppliers
 	if err := supplierQuery.Dispatch(ctx, query); err != nil {
 		return err
 	}
-	r.Result = &pbshop.SuppliersResponse{Suppliers: pbshop.PbSuppliers(query.Result.Suppliers)}
+	r.Result = &pbshop.SuppliersResponse{Suppliers: convertpb.PbSuppliers(query.Result.Suppliers)}
 
 	if err := s.listLiabilities(ctx, r.Context.Shop.ID, r.Result.Suppliers); err != nil {
 		return err
@@ -92,7 +93,7 @@ func (s *SupplierService) CreateSupplier(ctx context.Context, r *CreateSupplierE
 	if err := supplierAggr.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
-	r.Result = pbshop.PbSupplier(cmd.Result)
+	r.Result = convertpb.PbSupplier(cmd.Result)
 	return nil
 }
 
@@ -110,7 +111,7 @@ func (s *SupplierService) UpdateSupplier(ctx context.Context, r *UpdateSupplierE
 	if err := supplierAggr.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
-	r.Result = pbshop.PbSupplier(cmd.Result)
+	r.Result = convertpb.PbSupplier(cmd.Result)
 	return nil
 }
 
@@ -188,7 +189,7 @@ func (s *SupplierService) GetSuppliersByVariantID(ctx context.Context, r *GetSup
 	if err := supplierQuery.Dispatch(ctx, querySuppplies); err != nil {
 		return err
 	}
-	r.Result = &pbshop.SuppliersResponse{Suppliers: pbshop.PbSuppliers(querySuppplies.Result.Suppliers)}
+	r.Result = &pbshop.SuppliersResponse{Suppliers: convertpb.PbSuppliers(querySuppplies.Result.Suppliers)}
 
 	if err := s.listLiabilities(ctx, r.Context.Shop.ID, r.Result.Suppliers); err != nil {
 		return err

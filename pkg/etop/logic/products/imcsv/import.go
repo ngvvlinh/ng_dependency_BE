@@ -11,11 +11,13 @@ import (
 	"strings"
 	"time"
 
+	"etop.vn/backend/pkg/common/cmapi"
+
 	"github.com/360EntSecGroup-Skylar/excelize"
 
+	pbcm "etop.vn/api/pb/common"
+	pbshop "etop.vn/api/pb/etop/shop"
 	catalogmodel "etop.vn/backend/com/main/catalog/model"
-	pbcm "etop.vn/backend/pb/common"
-	pbshop "etop.vn/backend/pb/etop/shop"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/httpx"
@@ -172,11 +174,11 @@ func handleShopImportProductsFromFile(ctx context.Context, c *httpx.Context, sho
 		case len(_resp.CellErrors) > 0:
 			attempt.Status = model.S4Negative
 			attempt.ErrorType = "cell_errors"
-			attempt.Errors = pbcm.ErrorsToModel(_resp.CellErrors)
+			attempt.Errors = cmapi.ErrorsToModel(_resp.CellErrors)
 			attempt.NError = len(_resp.CellErrors)
 
 		case len(_resp.ImportErrors) > 0:
-			count := pbcm.CountErrors(_resp.ImportErrors)
+			count := cmapi.CountErrors(_resp.ImportErrors)
 			if count == 0 {
 				attempt.Status = model.S4Positive
 				attempt.NCreated = len(_resp.ImportErrors)
@@ -184,7 +186,7 @@ func handleShopImportProductsFromFile(ctx context.Context, c *httpx.Context, sho
 			} else {
 				attempt.Status = model.S4SuperPos // partially error
 				attempt.ErrorType = "import_errors"
-				attempt.Errors = pbcm.ErrorsToModel(_resp.ImportErrors)
+				attempt.Errors = cmapi.ErrorsToModel(_resp.ImportErrors)
 				attempt.NError = count
 				attempt.NCreated = len(_resp.ImportErrors) - count
 			}
@@ -264,7 +266,7 @@ func handleShopImportProductsFromFile(ctx context.Context, c *httpx.Context, sho
 		})
 	}
 	for _, err := range _errs {
-		importErrors = append(importErrors, pbcm.PbError(err))
+		importErrors = append(importErrors, cmapi.PbError(err))
 	}
 	resp.ImportErrors = importErrors
 	return resp, nil

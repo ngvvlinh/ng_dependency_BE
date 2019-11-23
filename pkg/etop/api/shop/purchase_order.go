@@ -5,9 +5,11 @@ import (
 
 	"etop.vn/api/main/inventory"
 	"etop.vn/api/main/purchaseorder"
-	pbcm "etop.vn/backend/pb/common"
-	pbshop "etop.vn/backend/pb/etop/shop"
+	pbcm "etop.vn/api/pb/common"
+	pbshop "etop.vn/api/pb/etop/shop"
 	"etop.vn/backend/pkg/common/bus"
+	"etop.vn/backend/pkg/common/cmapi"
+	"etop.vn/backend/pkg/etop/api/convertpb"
 	. "etop.vn/capi/dot"
 )
 
@@ -32,17 +34,17 @@ func (s *PurchaseOrderService) GetPurchaseOrder(ctx context.Context, r *GetPurch
 	if err := purchaseOrderQuery.Dispatch(ctx, query); err != nil {
 		return err
 	}
-	r.Result = pbshop.PbPurchaseOrder(query.Result)
+	r.Result = convertpb.PbPurchaseOrder(query.Result)
 	r.Result.InventoryVoucher = PbShopInventoryVoucher(query.Result.InventoryVoucher)
 	return nil
 }
 
 func (s *PurchaseOrderService) GetPurchaseOrders(ctx context.Context, r *GetPurchaseOrdersEndpoint) error {
-	paging := r.Paging.CMPaging()
+	paging := cmapi.CMPaging(r.Paging)
 	query := &purchaseorder.ListPurchaseOrdersQuery{
 		ShopID:  r.Context.Shop.ID,
 		Paging:  *paging,
-		Filters: pbcm.ToFilters(r.Filters),
+		Filters: cmapi.ToFilters(r.Filters),
 	}
 	if err := purchaseOrderQuery.Dispatch(ctx, query); err != nil {
 		return err
@@ -50,14 +52,14 @@ func (s *PurchaseOrderService) GetPurchaseOrders(ctx context.Context, r *GetPurc
 
 	var purchaseOrders []*pbshop.PurchaseOrder
 	for _, purchaseOrder := range query.Result.PurchaseOrders {
-		purchaseOrderTemp := pbshop.PbPurchaseOrder(purchaseOrder)
+		purchaseOrderTemp := convertpb.PbPurchaseOrder(purchaseOrder)
 		purchaseOrderTemp.InventoryVoucher = PbShopInventoryVoucher(purchaseOrder.InventoryVoucher)
 		purchaseOrders = append(purchaseOrders, purchaseOrderTemp)
 	}
 
 	r.Result = &pbshop.PurchaseOrdersResponse{
 		PurchaseOrders: purchaseOrders,
-		Paging:         pbcm.PbPageInfo(paging, query.Result.Count),
+		Paging:         cmapi.PbPageInfo(paging, query.Result.Count),
 	}
 	return nil
 }
@@ -70,7 +72,7 @@ func (s *PurchaseOrderService) GetPurchaseOrdersByIDs(ctx context.Context, r *Ge
 	if err := purchaseOrderQuery.Dispatch(ctx, query); err != nil {
 		return err
 	}
-	r.Result = &pbshop.PurchaseOrdersResponse{PurchaseOrders: pbshop.PbPurchaseOrders(query.Result.PurchaseOrders)}
+	r.Result = &pbshop.PurchaseOrdersResponse{PurchaseOrders: convertpb.PbPurchaseOrders(query.Result.PurchaseOrders)}
 	return nil
 }
 
@@ -82,7 +84,7 @@ func (s *PurchaseOrderService) GetPurchaseOrdersByReceiptID(ctx context.Context,
 	if err := purchaseOrderQuery.Dispatch(ctx, query); err != nil {
 		return err
 	}
-	r.Result = &pbshop.PurchaseOrdersResponse{PurchaseOrders: pbshop.PbPurchaseOrders(query.Result.PurchaseOrders)}
+	r.Result = &pbshop.PurchaseOrdersResponse{PurchaseOrders: convertpb.PbPurchaseOrders(query.Result.PurchaseOrders)}
 	return nil
 }
 
@@ -94,13 +96,13 @@ func (s *PurchaseOrderService) CreatePurchaseOrder(ctx context.Context, r *Creat
 		TotalDiscount: r.TotalDiscount,
 		TotalAmount:   r.TotalAmount,
 		Note:          r.Note,
-		Lines:         pbshop.Convert_api_PurchaseOrderLines_To_core_PurchaseOrderLines(r.Lines),
+		Lines:         convertpb.Convert_api_PurchaseOrderLines_To_core_PurchaseOrderLines(r.Lines),
 		CreatedBy:     r.Context.UserID,
 	}
 	if err := purchaseOrderAggr.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
-	r.Result = pbshop.PbPurchaseOrder(cmd.Result)
+	r.Result = convertpb.PbPurchaseOrder(cmd.Result)
 	return nil
 }
 
@@ -113,12 +115,12 @@ func (s *PurchaseOrderService) UpdatePurchaseOrder(ctx context.Context, r *Updat
 		TotalDiscount: PInt64(r.TotalDiscount),
 		TotalAmount:   PInt64(r.TotalAmount),
 		Note:          PString(r.Note),
-		Lines:         pbshop.Convert_api_PurchaseOrderLines_To_core_PurchaseOrderLines(r.Lines),
+		Lines:         convertpb.Convert_api_PurchaseOrderLines_To_core_PurchaseOrderLines(r.Lines),
 	}
 	if err := purchaseOrderAggr.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
-	r.Result = pbshop.PbPurchaseOrder(cmd.Result)
+	r.Result = convertpb.PbPurchaseOrder(cmd.Result)
 	return nil
 }
 

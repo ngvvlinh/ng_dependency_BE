@@ -3,14 +3,13 @@ package pm
 import (
 	"context"
 
-	"etop.vn/api/shopping/customering"
-
 	"etop.vn/api/main/etop"
 	"etop.vn/api/main/inventory"
 	"etop.vn/api/main/ordering"
 	ordertrading "etop.vn/api/main/ordering/trading"
 	"etop.vn/api/main/receipting"
 	"etop.vn/api/services/affiliate"
+	"etop.vn/api/shopping/customering"
 	"etop.vn/backend/com/main/ordering/modelx"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"

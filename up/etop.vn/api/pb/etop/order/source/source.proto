@@ -1,0 +1,17 @@
+syntax = "proto2";
+package source;
+option go_package = "etop.vn/api/pb/etop/order/source";
+
+import "gogoproto/gogo.proto";
+option (gogoproto.gogoproto_import)         = false;
+
+enum Source {
+    unknown  = 0;
+    self     = 1;
+    import   = 2;
+    api      = 3;
+    etop_pos = 5;
+    etop_pxs = 6;
+    etop_cmx = 7;
+    ts_app   = 8;
+}

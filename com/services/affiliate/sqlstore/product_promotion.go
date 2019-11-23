@@ -3,19 +3,13 @@ package sqlstore
 import (
 	"context"
 
-	"etop.vn/backend/pkg/common/sq"
-
 	"etop.vn/api/meta"
-
-	"etop.vn/backend/pkg/common/sqlstore"
-
-	"etop.vn/backend/com/services/affiliate/convert"
-
 	"etop.vn/api/services/affiliate"
-
+	"etop.vn/backend/com/services/affiliate/convert"
 	"etop.vn/backend/com/services/affiliate/model"
-
 	"etop.vn/backend/pkg/common/cmsql"
+	"etop.vn/backend/pkg/common/sq"
+	"etop.vn/backend/pkg/common/sqlstore"
 )
 
 type ProductPromotionStoreFactory func(ctx context.Context) *ProductPromotionStore

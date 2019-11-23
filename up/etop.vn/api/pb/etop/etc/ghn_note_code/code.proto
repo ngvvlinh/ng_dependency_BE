@@ -1,0 +1,13 @@
+syntax = "proto2";
+package ghn_note_code;
+option go_package = "etop.vn/api/pb/etop/etc/ghn_note_code";
+
+import "gogoproto/gogo.proto";
+option (gogoproto.gogoproto_import)         = false;
+
+enum GHNNoteCode {
+  unknown = 0;
+  CHOTHUHANG = 1;
+  CHOXEMHANGKHONGTHU = 2;
+  KHONGCHOXEMHANG = 3;
+}

@@ -5,9 +5,10 @@ import (
 
 	"etop.vn/api/main/etop"
 	"etop.vn/api/main/invitation"
-	pbcm "etop.vn/backend/pb/common"
-	pbshop "etop.vn/backend/pb/etop/shop"
+	pbshop "etop.vn/api/pb/etop/shop"
 	"etop.vn/backend/pkg/common/bus"
+	"etop.vn/backend/pkg/common/cmapi"
+	"etop.vn/backend/pkg/etop/api/convertpb"
 )
 
 func init() {
@@ -32,23 +33,23 @@ func (s *InvitationService) CreateInvitation(ctx context.Context, q *CreateInvit
 		return err
 	}
 
-	q.Result = pbshop.PbInvitation(cmd.Result)
+	q.Result = convertpb.PbInvitation(cmd.Result)
 	return nil
 }
 
 func (s *InvitationService) GetInvitations(ctx context.Context, q *GetInvitationsEndpoint) error {
-	paging := q.Paging.CMPaging()
+	paging := cmapi.CMPaging(q.Paging)
 	query := &invitation.ListInvitationsQuery{
 		ShopID:  q.Context.Shop.ID,
 		Paging:  *paging,
-		Filters: pbcm.ToFilters(q.Filters),
+		Filters: cmapi.ToFilters(q.Filters),
 	}
 	if err := invitationQuery.Dispatch(ctx, query); err != nil {
 		return err
 	}
 	q.Result = &pbshop.InvitationsResponse{
-		Invitations: pbshop.PbInvitations(query.Result.Invitations),
-		Paging:      pbcm.PbPageInfo(paging, query.Result.Count),
+		Invitations: convertpb.PbInvitations(query.Result.Invitations),
+		Paging:      cmapi.PbPageInfo(paging, query.Result.Count),
 	}
 	return nil
 }

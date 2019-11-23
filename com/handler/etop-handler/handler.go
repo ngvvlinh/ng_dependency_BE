@@ -6,20 +6,22 @@ import (
 	"sync"
 	"time"
 
+	"etop.vn/backend/pkg/common/cmapi"
+
 	"github.com/Shopify/sarama"
 
+	pbexternal "etop.vn/api/pb/external"
 	"etop.vn/backend/com/handler/etop-handler/intctl"
 	"etop.vn/backend/com/handler/etop-handler/pgrid"
 	"etop.vn/backend/com/handler/etop-handler/webhook/sender"
 	"etop.vn/backend/com/handler/pgevent"
 	ordermodel "etop.vn/backend/com/main/ordering/model"
 	shipmodel "etop.vn/backend/com/main/shipping/model"
-	pbcm "etop.vn/backend/pb/common"
-	pbexternal "etop.vn/backend/pb/external"
 	"etop.vn/backend/pkg/common/cmsql"
 	"etop.vn/backend/pkg/common/mq"
 	"etop.vn/backend/pkg/common/telebot"
 	historysqlstore "etop.vn/backend/pkg/etop-history/sqlstore"
+	"etop.vn/backend/pkg/etop/apix/convertpb"
 	"etop.vn/common/jsonx"
 	"etop.vn/common/l"
 )
@@ -184,7 +186,7 @@ func (h *Handler) HandleOrderEvent(ctx context.Context, event *pgevent.PgEvent) 
 		return mq.CodeIgnore, nil
 	}
 
-	changed := pbexternal.PbOrderHistory(history)
+	changed := convertpb.PbOrderHistory(history)
 	if !changed.HasChanged() {
 		ll.Debug("skip uninsteresting changes", l.Int64("order_id", changed.Id))
 		return mq.CodeOK, nil
@@ -199,10 +201,10 @@ func (h *Handler) HandleOrderEvent(ctx context.Context, event *pgevent.PgEvent) 
 		return mq.CodeIgnore, nil
 	}
 
-	pbexternal.PbOrderHistory(history)
+	convertpb.PbOrderHistory(history)
 	change := pbChange(event)
 	change.Latest = &pbexternal.LatestOneOf{
-		Order: pbexternal.PbOrder(&order),
+		Order: convertpb.PbOrder(&order),
 	}
 	change.Changed = &pbexternal.ChangeOneOf{
 		Order: changed,
@@ -221,7 +223,7 @@ func (h *Handler) HandleFulfillmentEvent(ctx context.Context, event *pgevent.PgE
 		return mq.CodeIgnore, nil
 	}
 
-	changed := pbexternal.PbFulfillmentHistory(history)
+	changed := convertpb.PbFulfillmentHistory(history)
 	if !changed.HasChanged() {
 		ll.Debug("skip uninsteresting changes", l.Int64("fulfillment_id", changed.Id))
 		return mq.CodeOK, nil
@@ -236,10 +238,10 @@ func (h *Handler) HandleFulfillmentEvent(ctx context.Context, event *pgevent.PgE
 		return mq.CodeIgnore, nil
 	}
 
-	pbexternal.PbFulfillmentHistory(history)
+	convertpb.PbFulfillmentHistory(history)
 	change := pbChange(event)
 	change.Latest = &pbexternal.LatestOneOf{
-		Fulfillment: pbexternal.PbFulfillment(&ffm),
+		Fulfillment: convertpb.PbFulfillment(&ffm),
 	}
 	change.Changed = &pbexternal.ChangeOneOf{
 		Fulfillment: changed,
@@ -250,7 +252,7 @@ func (h *Handler) HandleFulfillmentEvent(ctx context.Context, event *pgevent.PgE
 
 func pbChange(event *pgevent.PgEvent) *pbexternal.Change {
 	return &pbexternal.Change{
-		Time:       pbcm.PbTime(time.Unix(event.Timestamp, 0)),
+		Time:       cmapi.PbTime(time.Unix(event.Timestamp, 0)),
 		ChangeType: pbChangeType(event.Op),
 		Entity:     event.Table,
 	}

@@ -7,11 +7,11 @@ import (
 	"mime/multipart"
 	"net/http"
 
+	pbsheet "etop.vn/api/pb/common/spreadsheet"
+	pbshop "etop.vn/api/pb/etop/shop"
 	catalogsqlstore "etop.vn/backend/com/main/catalog/sqlstore"
-	pbcm "etop.vn/backend/pb/common"
-	pbsheet "etop.vn/backend/pb/common/spreadsheet"
-	pbshop "etop.vn/backend/pb/etop/shop"
 	cm "etop.vn/backend/pkg/common"
+	"etop.vn/backend/pkg/common/cmapi"
 	"etop.vn/backend/pkg/common/cmsql"
 	"etop.vn/backend/pkg/common/httpx"
 	"etop.vn/backend/pkg/common/idemp"
@@ -101,13 +101,13 @@ func parseRequest(c *httpx.Context) (Mode, *multipart.FileHeader, error) {
 func (imp *Importer) generateErrorResponse(errs []error) (*pbshop.ImportProductsResponse, error) {
 	resp := &pbshop.ImportProductsResponse{
 		Data:       imp.toSpreadsheetData(imcsv.Indexer{}),
-		CellErrors: pbcm.PbErrors(errs),
+		CellErrors: cmapi.PbErrors(errs),
 	}
 	return resp, nil
 }
 
 func (imp *Importer) toSpreadsheetData(idx imcsv.Indexer) *pbsheet.SpreadsheetData {
-	return pbsheet.ToSpreadsheetData(imp.Schema, idx, imp.Rows, imp.LastRow)
+	return imcsv.ToSpreadsheetData(imp.Schema, idx, imp.Rows, imp.LastRow)
 }
 
 func uploadFile(id int64, data []byte) (*upload.StoreFileCommand, error) {

@@ -1,0 +1,1014 @@
+syntax = "proto2";
+package order;
+option go_package = "etop.vn/api/pb/etop/order";
+
+import "gogoproto/gogo.proto";
+option (gogoproto.equal_all)                = false;
+option (gogoproto.gogoproto_import)         = false;
+option (gogoproto.goproto_enum_prefix_all)  = true;
+option (gogoproto.goproto_getters_all)      = true;
+option (gogoproto.goproto_unrecognized_all) = false;
+option (gogoproto.gostring_all)             = false;
+option (gogoproto.marshaler_all)            = false;
+option (gogoproto.onlyone_all)              = false;
+option (gogoproto.sizer_all)                = false;
+option (gogoproto.testgen_all)              = false;
+option (gogoproto.unmarshaler_all)          = false;
+option (gogoproto.verbose_equal_all)        = false;
+
+import "google/protobuf/timestamp.proto";
+import "common/common.proto";
+import "common/spreadsheet/spreadsheet.proto";
+import "etop/etc/fee/type.proto";
+import "etop/etc/gender/gender.proto";
+import "etop/etc/ghn_note_code/code.proto";
+import "etop/etc/shipping/state.proto";
+import "etop/etc/shipping_fee_type/type.proto";
+import "etop/etc/status3/status.proto";
+import "etop/etc/status4/status.proto";
+import "etop/etc/status5/status.proto";
+import "etop/etc/try_on/code.proto";
+import "etop/etc/shipping_provider/provider.proto";
+import "etop/etop.proto";
+import "etop/order/source/source.proto";
+
+message OrdersResponse {
+    optional cm.PageInfo paging = 1;
+    repeated order.Order orders = 2;
+}
+
+message Order {
+    repeated string exported_fields = 100;
+
+    optional int64  id        = 1 [(gogoproto.nullable)=false];
+    optional int64  shop_id   = 2 [(gogoproto.nullable)=false];
+    optional string shop_name = 3 [(gogoproto.nullable)=false];
+    optional string code      = 4 [(gogoproto.nullable)=false];
+
+    // the same as external_code
+    optional string ed_code   = 5 [(gogoproto.nullable)=false];
+    optional string external_code   = 8 [(gogoproto.nullable)=false];
+    optional source.Source source = 6 [(gogoproto.nullable)=false];
+    optional int64 partner_id  = 55 [(gogoproto.nullable)=false];
+    optional string external_id = 56 [(gogoproto.nullable)=false];
+    optional string external_url = 57 [(gogoproto.nullable)=false];
+    optional string self_url = 58 [(gogoproto.nullable)=false];
+
+    optional string payment_method = 7 [(gogoproto.nullable)=false];
+
+    optional OrderCustomer  customer          =  9;
+    optional OrderAddress   customer_address  = 10;
+    optional OrderAddress   billing_address   = 11;
+    optional OrderAddress   shipping_address  = 12;
+
+    optional google.protobuf.Timestamp created_at   = 13;
+    optional google.protobuf.Timestamp processed_at = 14;
+    optional google.protobuf.Timestamp updated_at   = 15;
+    optional google.protobuf.Timestamp closed_at    = 16;
+    optional google.protobuf.Timestamp confirmed_at = 17;
+    optional google.protobuf.Timestamp cancelled_at = 18;
+    optional string cancel_reason = 19 [(gogoproto.nullable)=false];
+
+    optional status3.Status sh_confirm = 31 [(gogoproto.nullable)=false];
+
+    // optional status3.Status  e_confirm = 32;
+
+    // @deprecated replaced by confirm_status
+    optional status3.Status confirm = 33 [(gogoproto.nullable)=false];
+    optional status3.Status confirm_status = 70 [(gogoproto.nullable)=false];
+    optional status5.Status  status = 34 [(gogoproto.nullable)=false];
+
+    // @deprecated replaced by fulfillment_shipping_status
+    optional status5.Status  fulfillment_status = 35 [(gogoproto.nullable)=false];
+    optional status5.Status  fulfillment_shipping_status = 36 [(gogoproto.nullable)=false];
+    optional status3.Status  customer_payment_status = 37 [(gogoproto.nullable)=false];
+    optional status4.Status  etop_payment_status = 69 [(gogoproto.nullable)=false];
+
+    // PaymentState     string
+    // FulfillmentState string
+
+    repeated OrderLine lines = 41;
+    repeated OrderDiscount discounts = 42;
+    optional int32 total_items  = 43 [(gogoproto.nullable)=false];
+    optional int32 basket_value = 44 [(gogoproto.nullable)=false];
+    optional int32 total_weight = 45 [(gogoproto.nullable)=false];
+
+    optional int32 order_discount = 46 [(gogoproto.nullable)=false];
+    optional int32 total_discount = 47 [(gogoproto.nullable)=false];
+    optional int32 total_amount = 48 [(gogoproto.nullable)=false];
+
+    optional string order_note = 50 [(gogoproto.nullable)=false];
+
+    // @deprecated use fee_lines.shipping
+    optional int32 shipping_fee = 52 [(gogoproto.nullable)=false];
+
+    optional int32 total_fee = 53 [(gogoproto.nullable)=false];
+
+    repeated order.OrderFeeLine fee_lines = 54;
+
+    // @deperecated use fee_lines.shipping instead
+    optional int32 shop_shipping_fee = 61 [(gogoproto.nullable)=false];
+    // @deprecated use shop_shipping.shipping_note instead
+    optional string shipping_note = 51 [(gogoproto.nullable)=false];
+    // @deperecated use shop_shipping.cod_amount instead
+    optional int32 shop_cod = 62 [(gogoproto.nullable)=false];
+
+    optional string reference_url = 63 [(gogoproto.nullable)=false];
+
+//    repeated Fulfillment fulfillments = 65;
+
+    repeated _Fulfillment fulfillments = 74;
+
+    // @deprecated use shipping instead
+    optional OrderShipping shop_shipping = 66;
+
+    optional OrderShipping shipping = 71;
+
+    // @deprecated use try_on_code instead
+    optional string ghn_note_code = 68 [(gogoproto.nullable)=false];
+
+    optional string fulfillment_type = 72 [(gogoproto.nullable) = false];
+
+    repeated int64 fulfillment_ids = 73;
+
+    // received_amount get from receipt
+    optional int32 received_amount = 75 [(gogoproto.nullable) = false];
+
+    optional int64 customer_id = 76 [(gogoproto.nullable)=false];
+
+    optional status4.Status payment_status = 77 [(gogoproto.nullable)=false];
+}
+
+message OrderLineMetaField {
+    optional string key = 1 [(gogoproto.nullable)=false];
+    optional string value = 2 [(gogoproto.nullable)=false];
+    optional string name = 3 [(gogoproto.nullable)=false];
+}
+
+message OrderLine {
+    repeated string exported_fields = 100;
+
+    optional int64 order_id = 2 [(gogoproto.nullable)=false];
+    optional int64 variant_id = 3 [(gogoproto.nullable)=false];
+    optional string product_name = 7 [(gogoproto.nullable)=false];
+
+    optional bool is_outside_etop = 8 [(gogoproto.nullable)=false];
+
+    optional int32 quantity = 17 [(gogoproto.nullable)=false];
+
+    optional int32 list_price    = 18 [(gogoproto.nullable)=false];
+    optional int32 retail_price  = 19 [(gogoproto.nullable)=false];
+    optional int32 payment_price = 20 [(gogoproto.nullable)=false];
+
+    optional string image_url = 21 [(gogoproto.nullable)=false];
+    repeated Attribute attributes = 22;
+    optional int64 product_id = 23 [(gogoproto.nullable)=false];
+
+    optional int32 total_discount = 24 [(gogoproto.nullable)=false];
+
+    repeated OrderLineMetaField meta_fields = 25;
+}
+
+message OrderFeeLine {
+    optional fee.FeeType type = 1 [(gogoproto.nullable)=false];
+
+    // @required
+    optional string name  = 2 [(gogoproto.nullable)=false];
+
+    optional string code = 3 [(gogoproto.nullable)=false];
+
+    optional string desc   = 5 [(gogoproto.nullable)=false];
+
+    // @required
+    optional int32  amount = 6 [(gogoproto.nullable)=false];
+}
+
+message CreateOrderLine {
+    optional int64 variant_id    = 1 [(gogoproto.nullable)=false];
+    optional string product_name  = 2 [(gogoproto.nullable)=false];
+    optional int32 quantity      = 3 [(gogoproto.nullable)=false];
+    optional int32 list_price  = 7 [(gogoproto.nullable)=false];
+    optional int32 retail_price  = 4 [(gogoproto.nullable)=false];
+    optional int32 payment_price = 5 [(gogoproto.nullable)=false];
+
+    optional string image_url = 21 [(gogoproto.nullable)=false];
+    repeated order.Attribute attributes = 22;
+
+    repeated OrderLineMetaField meta_fields = 23;
+}
+
+message OrderCustomer {
+    repeated string exported_fields = 100;
+
+    optional string first_name = 1 [(gogoproto.nullable)=false];
+    optional string last_name = 2 [(gogoproto.nullable)=false];
+    optional string full_name = 3 [(gogoproto.nullable)=false];
+    optional string email = 4 [(gogoproto.nullable)=false];
+    optional string phone = 5 [(gogoproto.nullable)=false];
+
+    optional gender.Gender gender = 6 [(gogoproto.nullable)=false];
+    optional string type = 7 [(gogoproto.nullable)=false];
+}
+
+message OrderAddress {
+    repeated string exported_fields = 100;
+
+    optional string full_name   = 1 [(gogoproto.nullable)=false];
+    optional string first_name  = 2 [(gogoproto.nullable)=false];
+    optional string last_name   = 3 [(gogoproto.nullable)=false];
+    optional string phone       = 4 [(gogoproto.nullable)=false];
+    optional string email       = 17 [(gogoproto.nullable)=false];
+    optional string country     = 5 [(gogoproto.nullable)=false];
+    optional string city        = 6 [(gogoproto.nullable)=false];
+    optional string province    = 7 [(gogoproto.nullable)=false];
+    optional string district    = 8 [(gogoproto.nullable)=false];
+    optional string ward        = 9 [(gogoproto.nullable)=false];
+    optional string zip         = 10 [(gogoproto.nullable)=false];
+    optional string company     = 11 [(gogoproto.nullable)=false];
+    optional string address1    = 12 [(gogoproto.nullable)=false];
+    optional string address2    = 13 [(gogoproto.nullable)=false];
+    optional string province_code    = 14 [(gogoproto.nullable)=false];
+    optional string district_code    = 15 [(gogoproto.nullable)=false];
+    optional string ward_code        = 16 [(gogoproto.nullable)=false];
+    optional etop.Coordinates coordinates = 18;
+}
+
+
+
+message OrderDiscount {
+    optional string code  = 1 [(gogoproto.nullable)=false];
+    optional string type  = 2 [(gogoproto.nullable)=false];
+    optional int32 amount = 3 [(gogoproto.nullable)=false];
+}
+
+message CreateOrderRequest {
+    optional source.Source source = 1 [(gogoproto.nullable)=false];
+    optional string external_id = 2 [(gogoproto.nullable)=false];
+    optional string external_code = 3 [(gogoproto.nullable)=false];
+    optional string external_url = 5 [(gogoproto.nullable)=false];
+    optional string payment_method = 7 [(gogoproto.nullable)=false];
+
+    // If order_source is self, customer must be shop information
+    // and customer_address, shipping_address must be shop address.
+    optional OrderCustomer customer         =  9;
+    optional OrderAddress  customer_address = 10;
+    optional OrderAddress   billing_address = 11;
+    optional OrderAddress  shipping_address = 12;
+
+    // If there are products from shop, this field should be set.
+    // Otherwise, use shop default address.
+    optional OrderAddress  shop_address = 13;
+
+    optional status3.Status sh_confirm = 31;
+
+    repeated CreateOrderLine lines = 41;
+    repeated OrderDiscount discounts = 42;
+    optional int32 total_items  = 43 [(gogoproto.nullable)=false];
+    optional int32 basket_value = 44 [(gogoproto.nullable)=false];
+
+    // @deprecated use shipping.gross_weight, shipping.chargeable_weight
+    optional int32 total_weight = 45 [(gogoproto.nullable)=false];
+
+    optional int32 order_discount = 46 [(gogoproto.nullable)=false];
+
+    optional int32 total_fee = 60 [(gogoproto.nullable)=false];
+
+    repeated order.OrderFeeLine fee_lines = 61;
+
+    optional int32 total_discount = 47;
+
+    optional int32 total_amount = 48 [(gogoproto.nullable)=false];
+
+    optional string order_note = 50 [(gogoproto.nullable)=false];
+    optional string shipping_note = 51 [(gogoproto.nullable)=false];
+
+    // @deprecated use fee_lines.shipping instead
+    optional int32 shop_shipping_fee = 52 [(gogoproto.nullable)=false];
+    // @deprecated use shipping.cod_amount instead
+    optional int32 shop_cod = 53 [(gogoproto.nullable)=false];
+
+    optional string reference_url = 54 [(gogoproto.nullable)=false];
+
+    // @deprecated use shipping instead
+    optional OrderShipping shop_shipping = 55;
+
+    optional OrderShipping shipping = 57;
+
+    // @deprecated use shop_shipping.try_on instead
+    optional ghn_note_code.GHNNoteCode ghn_note_code = 56 [(gogoproto.nullable)=false];
+
+    map<string,string> external_meta = 62;
+    map<string,string> referral_meta = 63;
+
+    optional int64 customer_id = 64 [(gogoproto.nullable)=false];
+}
+
+message UpdateOrderRequest {
+    // @required
+    optional int64 id = 1 [(gogoproto.nullable)=false];
+    optional OrderCustomer  customer          =  2;
+    optional OrderAddress   customer_address  = 3;
+    optional OrderAddress   billing_address   = 4;
+    optional OrderAddress   shipping_address  = 5;
+    optional OrderAddress   shop_address = 9;
+    optional string order_note = 6 [(gogoproto.nullable)=false];
+    optional string shipping_note = 7 [(gogoproto.nullable)=false];
+
+    // @deprecated use fee_lines instead
+    optional int32 shop_shipping_fee = 8;
+    // @deprecated use shipping.cod_amount instead
+    optional int32 shop_cod = 11;
+
+    // @deprecated use shipping instead
+    optional OrderShipping shop_shipping = 10;
+    optional OrderShipping shipping = 15;
+
+    repeated order.OrderFeeLine fee_lines = 54;
+
+    // @deprecated use try_on_code instead
+    // optional ghn_note_code.GHNNoteCode ghn_note_code = 12 [(gogoproto.nullable)=false];
+
+    optional int32 order_discount = 13;
+
+    // @deprecated
+    optional int32 total_weight = 14 [(gogoproto.nullable)=false];
+
+    optional int32 chargeable_weight = 19 [(gogoproto.nullable)=false];
+    repeated CreateOrderLine lines = 20;
+    optional int32 basket_value = 21 [(gogoproto.nullable)=false];
+    optional int32 total_amount = 22 [(gogoproto.nullable)=false];
+    optional int32 total_items  = 23 [(gogoproto.nullable)=false];
+    optional int32 total_fee  = 24;
+
+    optional int64 customer_id = 25 [(gogoproto.nullable)=false];
+}
+
+message OrderShipping {
+    repeated string exported_fields = 100;
+
+    // @deprecated use pickup_address
+    optional OrderAddress sh_address = 1;
+    // @deprecated
+    optional string x_service_id  = 2 [(gogoproto.nullable)=false];
+    // @deprecated
+    optional int32 x_shipping_fee  = 3 [(gogoproto.nullable)=false];
+    // @deprecated
+    optional string x_service_name  = 4 [(gogoproto.nullable)=false];
+
+    optional OrderAddress pickup_address = 21;
+
+    optional OrderAddress return_address = 26;
+
+    optional string shipping_service_name = 24 [(gogoproto.nullable)=false];
+
+    optional string shipping_service_code = 22 [(gogoproto.nullable)=false];
+
+    optional int32 shipping_service_fee = 23 [(gogoproto.nullable)=false];
+
+    // @deprecated use carrier
+    optional shipping_provider.ShippingProvider shipping_provider = 5 [(gogoproto.nullable)=false];
+
+    optional shipping_provider.ShippingProvider carrier = 14 [(gogoproto.nullable)=false];
+
+    optional bool include_insurance = 6 [(gogoproto.nullable)=false];
+
+    optional try_on.TryOnCode try_on = 7 [(gogoproto.nullable)=false];
+
+    optional string shipping_note = 8 [(gogoproto.nullable)=false];
+
+    optional int32 cod_amount = 9;
+
+    // @deprecated
+    optional int32 weight = 25;
+
+    optional int32 gross_weight = 10;
+
+    optional int32 length = 11;
+
+    optional int32 width = 12;
+
+    optional int32 height = 13;
+
+    optional int32 chargeable_weight = 15;
+}
+
+message Fulfillment {
+    repeated string exported_fields = 100;
+
+    optional int64 id          = 1 [(gogoproto.nullable)=false];
+    optional int64 order_id    = 2 [(gogoproto.nullable)=false];
+    optional int64 shop_id     = 3 [(gogoproto.nullable)=false];
+    optional int64 partner_id  = 55 [(gogoproto.nullable)=false];
+    optional string self_url   = 59 [(gogoproto.nullable)=false];
+
+    repeated OrderLine lines = 5;
+
+    optional int32 total_items      =  6 [(gogoproto.nullable)=false];
+
+    // @deprecated use chargeable_weight
+    optional int32 total_weight     =  7 [(gogoproto.nullable)=false];
+
+    optional int32 basket_value     = 10 [(gogoproto.nullable)=false];
+
+    // @deprecated use cod_amount
+    optional int32 total_cod_amount =  9 [(gogoproto.nullable)=false];
+
+    optional int32 cod_amount =  60 [(gogoproto.nullable)=false];
+
+    // @deprecated
+    optional int32 total_amount     =  8 [(gogoproto.nullable)=false];
+
+    optional int32 chargeable_weight = 72 [(gogoproto.nullable)=false];
+
+    optional google.protobuf.Timestamp created_at   = 11;
+
+    optional google.protobuf.Timestamp updated_at   = 12;
+
+    optional google.protobuf.Timestamp closed_at    = 14;
+
+    optional google.protobuf.Timestamp cancelled_at = 13;
+
+    optional string cancel_reason = 15 [(gogoproto.nullable)=false];
+
+    // @deprecated use carrier instead
+    optional string shipping_provider = 17 [(gogoproto.nullable)=false];
+
+    optional shipping_provider.ShippingProvider carrier = 71 [(gogoproto.nullable)=false];
+
+    optional string shipping_service_name     = 70 [(gogoproto.nullable)=false];
+
+    optional int32 shipping_service_fee     = 68 [(gogoproto.nullable)=false];
+
+    optional string shipping_service_code     = 69 [(gogoproto.nullable)=false];
+
+    optional string shipping_code     = 18 [(gogoproto.nullable)=false];
+
+    optional string shipping_note     = 19 [(gogoproto.nullable)=false];
+
+    optional try_on.TryOnCode try_on  = 20 [(gogoproto.nullable)=false];
+
+    optional bool include_insurance  = 63 [(gogoproto.nullable)=false];
+
+    optional status3.Status sh_confirm = 23 [(gogoproto.nullable)=false];
+
+    optional shipping.State shipping_state = 25 [(gogoproto.nullable)=false];
+
+    optional status5.Status status         = 26 [(gogoproto.nullable)=false];
+
+    optional status5.Status shipping_status = 64 [(gogoproto.nullable)=false];
+
+    optional status4.Status etop_payment_status = 22 [(gogoproto.nullable)=false];
+
+    optional int32 shipping_fee_customer = 27 [(gogoproto.nullable)=false];
+    optional int32 shipping_fee_shop     = 28 [(gogoproto.nullable)=false];
+    optional int32 x_shipping_fee        = 29 [(gogoproto.nullable)=false];
+
+    optional string x_shipping_id   = 30 [(gogoproto.nullable)=false];
+    optional string x_shipping_code = 31 [(gogoproto.nullable)=false];
+
+    optional google.protobuf.Timestamp x_shipping_created_at   = 32;
+    optional google.protobuf.Timestamp x_shipping_updated_at   = 33;
+    optional google.protobuf.Timestamp x_shipping_cancelled_at = 34;
+    optional google.protobuf.Timestamp x_shipping_delivered_at = 35;
+    optional google.protobuf.Timestamp x_shipping_returned_at  = 36;
+
+    // @deprecated use estimated_delivery_at
+    optional google.protobuf.Timestamp expected_delivery_at  = 41;
+    // @deprecated use estimated_pickup_at
+    optional google.protobuf.Timestamp expected_pick_at  = 51;
+
+    optional google.protobuf.Timestamp estimated_delivery_at  = 74;
+    optional google.protobuf.Timestamp estimated_pickup_at  = 75;
+
+    optional google.protobuf.Timestamp cod_etop_transfered_at  = 43;
+    optional google.protobuf.Timestamp shipping_fee_shop_transfered_at  = 44;
+
+    optional string x_shipping_state  = 37 [(gogoproto.nullable)=false];
+    optional status5.Status x_shipping_status = 38 [(gogoproto.nullable)=false];
+    optional status4.Status x_sync_status = 39 [(gogoproto.nullable)=false];
+    optional FulfillmentSyncStates x_sync_states = 40;
+
+    // @deprecated use shipping_address instead
+    optional etop.Address  address_to  = 42;
+    // @deprecated use pickup_address instead
+    optional etop.Address  address_from  = 50;
+
+    optional OrderAddress  pickup_address  = 65;
+
+    optional OrderAddress  return_address  = 66;
+
+    optional OrderAddress  shipping_address  = 67;
+
+    optional etop.Shop shop = 45;
+    optional Order order = 46;
+    repeated ShippingFeeLine provider_shipping_fee_lines = 47;
+    repeated ShippingFeeLine shipping_fee_shop_lines = 48;
+    optional int32 etop_discount     = 49 [(gogoproto.nullable)=false];
+    optional int64 money_transaction_shipping_id   = 52 [(gogoproto.nullable)=false];
+    optional int64 money_transaction_shipping_external_id   = 53 [(gogoproto.nullable)=false];
+    repeated ExternalShippingLog x_shipping_logs = 54;
+    optional string x_shipping_note = 56 [(gogoproto.nullable)=false];
+    optional string x_shipping_sub_state = 57 [(gogoproto.nullable)=false];
+    optional string code = 58 [(gogoproto.nullable)=false];
+    optional int32 actual_compensation_amount = 76 [(gogoproto.nullable)=false];
+}
+
+message ShippingFeeLine {
+    optional shipping_fee_type.ShippingFeeType shipping_fee_type = 1 [(gogoproto.nullable)=false];
+    optional int32 cost      = 2 [(gogoproto.nullable)=false];
+    optional string external_service_id      = 3 [(gogoproto.nullable)=false];
+    optional string external_service_name      = 4 [(gogoproto.nullable)=false];
+    optional string external_service_type      = 5 [(gogoproto.nullable)=false];
+    optional string external_shipping_order_id      = 6 [(gogoproto.nullable)=false];
+    optional string external_payment_channel_id      = 7 [(gogoproto.nullable)=false];
+}
+
+message ExternalShippingLog {
+    optional string state_text = 1 [(gogoproto.nullable)=false];
+    optional string time = 2 [(gogoproto.nullable)=false];
+    optional string message = 3 [(gogoproto.nullable)=false];
+}
+
+message FulfillmentsResponse {
+    optional cm.PageInfo paging = 1;
+    repeated Fulfillment fulfillments = 2;
+}
+
+message Attribute {
+    optional string name      = 1 [(gogoproto.nullable)=false];
+    optional string value     = 2 [(gogoproto.nullable)=false];
+}
+
+message OrderWithErrorsResponse {
+    // @deprecated
+    repeated cm.Error errors = 1;
+
+    optional Order order = 2;
+
+    repeated cm.Error fulfillment_errors = 3;
+}
+
+message GetExternalShippingServicesRequest {
+    // @deprecated use carrier instead
+    optional shipping_provider.ShippingProvider provider = 1 [(gogoproto.nullable)=false];
+    optional shipping_provider.ShippingProvider carrier = 18 [(gogoproto.nullable)=false];
+
+    optional string from_district_code = 2 [(gogoproto.nullable)=false];
+    optional string from_province_code = 8 [(gogoproto.nullable)=false];
+    optional string to_district_code   = 3 [(gogoproto.nullable)=false];
+    optional string to_province_code   = 9 [(gogoproto.nullable)=false];
+
+    optional string from_province = 12 [(gogoproto.nullable)=false];
+    optional string from_district = 13 [(gogoproto.nullable)=false];
+    optional string to_province   = 14 [(gogoproto.nullable)=false];
+    optional string to_district   = 15 [(gogoproto.nullable)=false];
+
+    // @deprecated use gross_weight instead
+    optional int32  weight = 4 [(gogoproto.nullable)=false];
+
+    optional int32  gross_weight = 19 [(gogoproto.nullable)=false];
+    optional int32  chargeable_weight = 17 [(gogoproto.nullable)=false];
+    optional int32  length = 5 [(gogoproto.nullable)=false];
+    optional int32  width  = 6 [(gogoproto.nullable)=false];
+    optional int32  height = 7 [(gogoproto.nullable)=false];
+
+    // @deprecated use basket_value instead
+    optional int32  value = 10 [(gogoproto.nullable)=false];
+    // @deprecated use cod_amount instead
+    optional int32 total_cod_amount = 11 [(gogoproto.nullable)=false];
+
+    optional int32 cod_amount = 16 [(gogoproto.nullable)=false];
+
+    optional int32 basket_value = 21 [(gogoproto.nullable)=false];
+
+    optional bool include_insurance = 20;
+}
+
+message GetExternalShippingServicesResponse {
+    repeated ExternalShippingService services = 1;
+}
+
+message ExternalShippingService {
+    repeated string exported_fields = 100;
+
+    // @deprecated use code
+    optional string external_id  = 1 [(gogoproto.nullable)  = false];
+    // @deprecated use fee
+    optional int32  service_fee  = 3 [(gogoproto.nullable)  = false];
+    // @deprecated use carier
+    optional shipping_provider.ShippingProvider provider = 4 [(gogoproto.nullable)=false];
+    // @deprecated use estimated_pickup_at
+    optional google.protobuf.Timestamp expected_pick_at = 5;
+    // @deprecated use estimated_delivery_at
+    optional google.protobuf.Timestamp expected_delivery_at = 6;
+
+    optional string name  = 2 [(gogoproto.nullable)  = false];
+
+    optional string code = 11 [(gogoproto.nullable)  = false];
+
+    optional int32  fee = 13 [(gogoproto.nullable)  = false];
+
+    optional shipping_provider.ShippingProvider carrier = 14 [(gogoproto.nullable)=false];
+
+    optional google.protobuf.Timestamp estimated_pickup_at = 15;
+
+    optional google.protobuf.Timestamp estimated_delivery_at = 16;
+}
+
+message FulfillmentSyncStates {
+    optional google.protobuf.Timestamp sync_at = 1;
+    optional string next_shipping_state = 2 [(gogoproto.nullable)  = false];
+    optional cm.Error error = 3;
+}
+
+message MoneyTransaction {
+    optional int64 id = 1 [(gogoproto.nullable)=false];
+    optional int64 shop_id = 2 [(gogoproto.nullable)=false];
+    optional status3.Status status       = 4 [(gogoproto.nullable)=false];
+    optional int64 total_cod = 5 [(gogoproto.nullable)=false];
+    optional int64 total_orders = 6 [(gogoproto.nullable)=false];
+    optional string code = 7 [(gogoproto.nullable)=false];
+    optional string provider = 9 [(gogoproto.nullable)=false];
+    optional int64 money_transaction_shipping_external_id = 14 [(gogoproto.nullable)=false];
+    optional int64 money_transaction_shipping_etop_id = 17 [(gogoproto.nullable)=false];
+    optional int64 total_amount = 15 [(gogoproto.nullable)=false];
+
+    optional google.protobuf.Timestamp created_at = 10;
+    optional google.protobuf.Timestamp updated_at = 11;
+    optional google.protobuf.Timestamp closed_at = 12;
+    optional google.protobuf.Timestamp confirmed_at = 13;
+    optional google.protobuf.Timestamp etop_transfered_at = 16;
+    optional string note = 18 [(gogoproto.nullable)=false];
+    optional string invoice_number = 19[(gogoproto.nullable)=false];
+    optional etop.BankAccount bank_account = 20;
+}
+
+message MoneyTransactionsResponse {
+    optional cm.PageInfo paging = 1;
+    repeated MoneyTransaction money_transactions = 2;
+}
+
+message MoneyTransactionShippingExternalLine {
+    optional int64 id = 1 [(gogoproto.nullable)=false];
+    optional string external_code = 2 [(gogoproto.nullable)=false];
+    optional string external_customer = 3 [(gogoproto.nullable)=false];
+    optional string external_address = 4 [(gogoproto.nullable)=false];
+    optional int64 external_total_cod = 5 [(gogoproto.nullable)=false];
+    optional int64 external_total_shipping_fee = 15 [(gogoproto.nullable)=false];
+    optional int64 etop_fulfillment_id = 6 [(gogoproto.nullable)=false];
+    optional string etop_fulfillment_id_raw = 7 [(gogoproto.nullable)=false];
+    optional string note = 8 [(gogoproto.nullable)=false];
+    optional int64 money_transaction_shipping_external_id = 9 [(gogoproto.nullable)=false];
+    optional cm.Error import_error = 10;
+
+    optional google.protobuf.Timestamp created_at = 11;
+    optional google.protobuf.Timestamp updated_at = 12;
+    optional google.protobuf.Timestamp external_created_at = 13;
+    optional google.protobuf.Timestamp external_closed_at = 14;
+    optional Fulfillment fulfillment = 16;
+}
+
+message MoneyTransactionShippingExternal {
+    optional int64 id = 1 [(gogoproto.nullable)=false];
+    optional string code = 2 [(gogoproto.nullable)=false];
+    optional int64 total_cod = 3 [(gogoproto.nullable)=false];
+    optional int64 total_orders = 4 [(gogoproto.nullable)=false];
+    optional status3.Status status       = 5 [(gogoproto.nullable)=false];
+    optional string provider = 6 [(gogoproto.nullable)=false];
+    repeated MoneyTransactionShippingExternalLine lines = 7;
+
+    optional google.protobuf.Timestamp created_at = 8;
+    optional google.protobuf.Timestamp updated_at = 9;
+    optional google.protobuf.Timestamp external_paid_at = 10;
+    optional string note = 11 [(gogoproto.nullable)=false];
+    optional string invoice_number = 12[(gogoproto.nullable)=false];
+    optional etop.BankAccount bank_account = 13;
+}
+
+message MoneyTransactionShippingExternalsResponse {
+    optional cm.PageInfo paging = 1;
+    repeated MoneyTransactionShippingExternal money_transactions = 2;
+}
+
+message MoneyTransactionShippingEtop {
+    optional int64 id = 1 [(gogoproto.nullable)=false];
+    optional string code = 2 [(gogoproto.nullable)=false];
+    optional int64 total_cod = 3 [(gogoproto.nullable)=false];
+    optional int64 total_orders = 4 [(gogoproto.nullable)=false];
+    optional int64 total_amount = 5 [(gogoproto.nullable)=false];
+    optional int64 total_fee = 6 [(gogoproto.nullable)=false];
+    optional status3.Status status       = 7 [(gogoproto.nullable)=false];
+    repeated MoneyTransaction money_transactions = 8;
+
+    optional google.protobuf.Timestamp created_at = 9;
+    optional google.protobuf.Timestamp updated_at = 10;
+    optional google.protobuf.Timestamp confirmed_at = 11;
+    optional string note = 12 [(gogoproto.nullable)=false];
+    optional string invoice_number = 13[(gogoproto.nullable)=false];
+    optional etop.BankAccount bank_account = 14;
+}
+
+message MoneyTransactionShippingEtopsResponse {
+    optional cm.PageInfo paging = 1;
+    repeated MoneyTransactionShippingEtop money_transaction_shipping_etops = 2;
+}
+
+message ImportOrdersResponse {
+    optional spreadsheet.SpreadsheetData data = 1;
+    repeated Order orders = 2;
+    repeated cm.Error import_errors = 3;
+    repeated cm.Error cell_errors = 4;
+    optional int64 import_id = 5 [(gogoproto.nullable)=false];
+}
+
+// Public API for using with ManyChat
+message PublicFulfillment {
+    optional int64 id = 1 [(gogoproto.nullable)=false];
+    optional shipping.State shipping_state = 2 [(gogoproto.nullable)=false];
+    optional status5.Status status         = 3 [(gogoproto.nullable)=false];
+
+    // @deprecated use estimated_delivery_at
+    optional google.protobuf.Timestamp expected_delivery_at  = 4;
+    optional google.protobuf.Timestamp delivered_at  = 5;
+
+    optional google.protobuf.Timestamp estimated_pickup_at = 15;
+    optional google.protobuf.Timestamp estimated_delivery_at = 16;
+
+    optional string shipping_code = 6 [(gogoproto.nullable)=false];
+    optional int64 order_id = 8 [(gogoproto.nullable)=false];
+
+    // For using with ManyChat
+    optional string delivered_at_text = 9 [(gogoproto.nullable)=false];
+    optional string shipping_state_text = 10 [(gogoproto.nullable)=false];
+}
+
+
+message ShipnowFulfillment {
+    optional int64 id = 1 [(gogoproto.nullable)=false];
+    optional int64 shop_id = 2 [(gogoproto.nullable)=false];
+    optional int64 partner_id = 3 [(gogoproto.nullable)=false];
+
+    optional OrderAddress pickup_address = 4;
+    repeated DeliveryPoint delivery_points = 5;
+    optional string carrier = 6 [(gogoproto.nullable)=false];
+    optional string shipping_service_code = 7 [(gogoproto.nullable)=false];
+    optional int32 shipping_service_fee = 8 [(gogoproto.nullable)=false];
+    optional string shipping_service_name = 28 [(gogoproto.nullable) = false];
+    optional string shipping_service_description = 31 [(gogoproto.nullable) = false];
+    optional WeightInfo weight_info = 9 [(gogoproto.nullable)=false, (gogoproto.embed)=true];
+    optional ValueInfo value_info = 10 [(gogoproto.nullable)=false];
+    optional string shipping_note = 11 [(gogoproto.nullable)=false];
+    optional google.protobuf.Timestamp request_pickup_at = 12;
+    optional google.protobuf.Timestamp created_at = 13;
+    optional google.protobuf.Timestamp updated_at = 14;
+    optional status5.Status status = 15 [(gogoproto.nullable)=false];
+    optional status5.Status shipping_status = 16 [(gogoproto.nullable)=false];
+    optional string shipping_state = 17 [(gogoproto.nullable) = false];
+    optional status3.Status confirm_status = 18 [(gogoproto.nullable) = false];
+    repeated int64 order_ids = 19;
+    optional google.protobuf.Timestamp shipping_created_at = 20;
+    optional string shipping_code = 21 [(gogoproto.nullable) = false];
+    optional status4.Status etop_payment_status = 22 [(gogoproto.nullable) = false];
+    optional google.protobuf.Timestamp cod_etop_transfered_at = 23;
+    optional google.protobuf.Timestamp shipping_picking_at = 24;
+    optional google.protobuf.Timestamp shipping_delivering_at = 25;
+    optional google.protobuf.Timestamp shipping_delivered_at = 26;
+    optional google.protobuf.Timestamp shipping_cancelled_at = 27;
+    optional string shipping_shared_link = 29 [(gogoproto.nullable) = false];
+    optional string cancel_reason = 30 [(gogoproto.nullable) = false];
+}
+
+message GetShipnowFulfillmentsRequest {
+    optional cm.Paging paging = 1;
+    repeated cm.Filter filters = 2;
+    optional etop.MixedAccount mixed = 3;
+}
+
+message ShipnowFulfillments {
+    optional cm.PageInfo paging = 1;
+    repeated ShipnowFulfillment shipnow_fulfillments = 2;
+}
+
+message DeliveryPoint {
+    optional OrderAddress shipping_address = 1;
+    repeated OrderLine lines = 2;
+    optional string shipping_note = 3 [(gogoproto.nullable)=false];
+    optional int64 order_id = 4 [(gogoproto.nullable)=false];
+    optional WeightInfo weight_info = 5 [(gogoproto.nullable)=false, (gogoproto.embed)=true];
+    optional ValueInfo value_info = 6 [(gogoproto.nullable)=false, (gogoproto.embed)=true];
+    optional try_on.TryOnCode try_on = 7 [(gogoproto.nullable)=false];
+}
+
+message WeightInfo {
+    optional int32 gross_weight = 1 [(gogoproto.nullable)=false];
+    optional int32 chargeable_weight = 2 [(gogoproto.nullable)=false];
+    optional int32 length = 3 [(gogoproto.nullable)=false];
+    optional int32 width = 4 [(gogoproto.nullable)=false];
+    optional int32 height = 5 [(gogoproto.nullable)=false];
+}
+
+message ValueInfo {
+    optional int32 basket_value = 1 [(gogoproto.nullable)=false];
+    optional int32 cod_amount = 2 [(gogoproto.nullable)=false];
+    optional bool include_insurance = 3 [(gogoproto.nullable)=false];
+}
+
+message CreateShipnowFulfillmentRequest {
+    repeated int64 order_ids = 1;
+    optional string carrier = 2 [(gogoproto.nullable)=false];
+    optional string shipping_service_code = 3 [(gogoproto.nullable)=false];
+    optional int32 shipping_service_fee = 4 [(gogoproto.nullable)=false];
+    optional string shipping_note = 5 [(gogoproto.nullable)=false];
+    optional google.protobuf.Timestamp request_pickup_at = 6;
+    optional OrderAddress pickup_address = 7;
+}
+
+message UpdateShipnowFulfillmentRequest {
+    optional int64 id = 8 [(gogoproto.nullable) = false];
+    repeated int64 order_ids = 1;
+    optional string carrier = 2 [(gogoproto.nullable)=false];
+    optional string shipping_service_code = 3 [(gogoproto.nullable)=false];
+    optional int32 shipping_service_fee = 4 [(gogoproto.nullable)=false];
+    optional string shipping_note = 5 [(gogoproto.nullable)=false];
+    optional google.protobuf.Timestamp request_pickup_at = 6;
+    optional OrderAddress pickup_address = 7;
+}
+
+message CancelShipnowFulfillmentRequest {
+    optional int64 id = 1 [(gogoproto.nullable) = false];
+    optional string cancel_reason = 2 [(gogoproto.nullable) = false];
+}
+
+message GetShipnowServicesRequest {
+    repeated int64 order_ids = 1;
+    optional OrderAddress pickup_address = 2;
+    repeated DeliveryPointRequest delivery_points = 3;
+}
+
+message DeliveryPointRequest {
+    optional OrderAddress shipping_address = 1;
+    optional int32 cod_amount = 2 [(gogoproto.nullable)=false];
+}
+
+message GetShipnowServicesResponse {
+    repeated ShippnowService services = 1;
+}
+
+message ShippnowService {
+    optional string carrier = 1 [(gogoproto.nullable) = false];
+
+    optional string name  = 2 [(gogoproto.nullable)  = false];
+
+    optional string code = 3 [(gogoproto.nullable)  = false];
+
+    optional int32  fee = 4 [(gogoproto.nullable)  = false];
+
+    optional string description = 5 [(gogoproto.nullable) = false];
+}
+
+message _Fulfillment {
+    optional ShipnowFulfillment shipnow = 77;
+    optional Fulfillment shipment = 78;
+
+    // backward-compatible fields from shipment
+    optional int64 id          = 1 [(gogoproto.nullable)=false];
+    optional int64 order_id    = 2 [(gogoproto.nullable)=false];
+    optional int64 shop_id     = 3 [(gogoproto.nullable)=false];
+    optional int64 partner_id  = 55 [(gogoproto.nullable)=false];
+    optional string self_url   = 59 [(gogoproto.nullable)=false];
+
+    repeated OrderLine lines = 5;
+
+    optional int32 total_items      =  6 [(gogoproto.nullable)=false];
+
+    // @deprecated use chargeable_weight
+    optional int32 total_weight     =  7 [(gogoproto.nullable)=false];
+
+    optional int32 basket_value     = 10 [(gogoproto.nullable)=false];
+
+    // @deprecated use cod_amount
+    optional int32 total_cod_amount =  9 [(gogoproto.nullable)=false];
+
+    optional int32 cod_amount =  60 [(gogoproto.nullable)=false];
+
+    // @deprecated
+    optional int32 total_amount     =  8 [(gogoproto.nullable)=false];
+
+    optional int32 chargeable_weight = 72 [(gogoproto.nullable)=false];
+
+    optional google.protobuf.Timestamp created_at   = 11;
+
+    optional google.protobuf.Timestamp updated_at   = 12;
+
+    optional google.protobuf.Timestamp closed_at    = 14;
+
+    optional google.protobuf.Timestamp cancelled_at = 13;
+
+    optional string cancel_reason = 15 [(gogoproto.nullable)=false];
+
+    // @deprecated use carrier instead
+    optional string shipping_provider = 17 [(gogoproto.nullable)=false];
+
+    optional shipping_provider.ShippingProvider carrier = 71 [(gogoproto.nullable)=false];
+
+    optional string shipping_service_name     = 70 [(gogoproto.nullable)=false];
+
+    optional int32 shipping_service_fee     = 68 [(gogoproto.nullable)=false];
+
+    optional string shipping_service_code     = 69 [(gogoproto.nullable)=false];
+
+    optional string shipping_code     = 18 [(gogoproto.nullable)=false];
+
+    optional string shipping_note     = 19 [(gogoproto.nullable)=false];
+
+    optional try_on.TryOnCode try_on  = 20 [(gogoproto.nullable)=false];
+
+    optional bool include_insurance  = 63 [(gogoproto.nullable)=false];
+
+    optional status3.Status sh_confirm = 23 [(gogoproto.nullable)=false];
+
+    optional shipping.State shipping_state = 25 [(gogoproto.nullable)=false];
+
+    optional status5.Status status         = 26 [(gogoproto.nullable)=false];
+
+    optional status5.Status shipping_status = 64 [(gogoproto.nullable)=false];
+
+    optional status4.Status etop_payment_status = 22 [(gogoproto.nullable)=false];
+
+    optional int32 shipping_fee_customer = 27 [(gogoproto.nullable)=false];
+    optional int32 shipping_fee_shop     = 28 [(gogoproto.nullable)=false];
+    optional int32 x_shipping_fee        = 29 [(gogoproto.nullable)=false];
+
+    optional string x_shipping_id   = 30 [(gogoproto.nullable)=false];
+    optional string x_shipping_code = 31 [(gogoproto.nullable)=false];
+
+    optional google.protobuf.Timestamp x_shipping_created_at   = 32;
+    optional google.protobuf.Timestamp x_shipping_updated_at   = 33;
+    optional google.protobuf.Timestamp x_shipping_cancelled_at = 34;
+    optional google.protobuf.Timestamp x_shipping_delivered_at = 35;
+    optional google.protobuf.Timestamp x_shipping_returned_at  = 36;
+
+    // @deprecated use estimated_delivery_at
+    optional google.protobuf.Timestamp expected_delivery_at  = 41;
+    // @deprecated use estimated_pickup_at
+    optional google.protobuf.Timestamp expected_pick_at  = 51;
+
+    optional google.protobuf.Timestamp estimated_delivery_at  = 74;
+    optional google.protobuf.Timestamp estimated_pickup_at  = 75;
+
+    optional google.protobuf.Timestamp cod_etop_transfered_at  = 43;
+    optional google.protobuf.Timestamp shipping_fee_shop_transfered_at  = 44;
+
+    optional string x_shipping_state  = 37 [(gogoproto.nullable)=false];
+    optional status5.Status x_shipping_status = 38 [(gogoproto.nullable)=false];
+    optional status4.Status x_sync_status = 39 [(gogoproto.nullable)=false];
+    optional FulfillmentSyncStates x_sync_states = 40;
+
+    // @deprecated use shipping_address instead
+    optional etop.Address  address_to  = 42;
+    // @deprecated use pickup_address instead
+    optional etop.Address  address_from  = 50;
+
+    optional OrderAddress  pickup_address  = 65;
+
+    optional OrderAddress  return_address  = 66;
+
+    optional OrderAddress  shipping_address  = 67;
+
+    optional etop.Shop shop = 45;
+    optional Order order = 46;
+    repeated ShippingFeeLine provider_shipping_fee_lines = 47;
+    repeated ShippingFeeLine shipping_fee_shop_lines = 48;
+    optional int32 etop_discount     = 49 [(gogoproto.nullable)=false];
+    optional int64 money_transaction_shipping_id   = 52 [(gogoproto.nullable)=false];
+    optional int64 money_transaction_shipping_external_id   = 53 [(gogoproto.nullable)=false];
+    repeated ExternalShippingLog x_shipping_logs = 54;
+    optional string x_shipping_note = 56 [(gogoproto.nullable)=false];
+    optional string x_shipping_sub_state = 57 [(gogoproto.nullable)=false];
+    optional string code = 58 [(gogoproto.nullable)=false];
+    optional int32 actual_compensation_amount = 76 [(gogoproto.nullable)=false];
+}
+
+message TradingCreateOrderRequest {
+    // Customer should be shop's information
+    // and customer_address, shipping_address must be shop address.
+    optional OrderCustomer customer         =  1;
+    optional OrderAddress  customer_address = 2;
+    optional OrderAddress  billing_address = 3;
+    optional OrderAddress  shipping_address = 4;
+
+    repeated CreateOrderLine lines = 5;
+    repeated OrderDiscount discounts = 6;
+    optional int32 total_items  = 7 [(gogoproto.nullable)=false];
+    optional int32 basket_value = 8 [(gogoproto.nullable)=false];
+    optional int32 order_discount = 9 [(gogoproto.nullable)=false];
+    optional int32 total_fee = 10 [(gogoproto.nullable)=false];
+    repeated order.OrderFeeLine fee_lines = 11;
+    optional int32 total_discount = 12;
+    optional int32 total_amount = 13 [(gogoproto.nullable)=false];
+    optional string order_note = 14 [(gogoproto.nullable)=false];
+    optional string payment_method = 15 [(gogoproto.nullable)=false];
+    map<string,string> referral_meta = 16;
+}
+
+

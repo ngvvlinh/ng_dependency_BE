@@ -4,10 +4,9 @@ import (
 	"context"
 	"time"
 
-	"etop.vn/capi"
-
 	"etop.vn/api/main/shipping/types"
 	"etop.vn/api/meta"
+	"etop.vn/capi"
 )
 
 // +gen:api

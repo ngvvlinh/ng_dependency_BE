@@ -8,14 +8,13 @@ import (
 	"etop.vn/api/main/identity"
 	"etop.vn/api/main/ordering"
 	"etop.vn/api/meta"
+	pbaff "etop.vn/api/pb/services/affiliate"
 	"etop.vn/api/services/affiliate"
 	ordermodelx "etop.vn/backend/com/main/ordering/modelx"
-	pbcm "etop.vn/backend/pb/common"
-	pbetopaff "etop.vn/backend/pb/etop/affiliate"
-	pborder "etop.vn/backend/pb/etop/order"
-	pbaff "etop.vn/backend/pb/services/affiliate"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
+	"etop.vn/backend/pkg/common/cmapi"
+	"etop.vn/backend/pkg/etop/api/convertpb"
 	pbshop "etop.vn/backend/pkg/etop/api/shop"
 	modeletop "etop.vn/backend/pkg/etop/model"
 	"etop.vn/common/l"
@@ -104,11 +103,11 @@ func (s *TradingService) TradingGetProducts(ctx context.Context, q *TradingGetPr
 	if q.Context.Shop.ID != modeletop.EtopTradingAccountID {
 		return cm.Errorf(cm.PermissionDenied, nil, "PermissionDenied")
 	}
-	paging := q.Paging.CMPaging()
+	paging := cmapi.CMPaging(q.Paging)
 	query := &catalog.ListShopProductsWithVariantsQuery{
 		ShopID:  modeletop.EtopTradingAccountID,
 		Paging:  *paging,
-		Filters: pbcm.ToFilters(q.Filters),
+		Filters: cmapi.ToFilters(q.Filters),
 	}
 	if err := catalogQuery.Dispatch(ctx, query); err != nil {
 		return err
@@ -126,12 +125,12 @@ func (s *TradingService) TradingGetProducts(ctx context.Context, q *TradingGetPr
 		supplyCommissionSetting := supplyCommissionSettingMap[product.ProductID]
 		var pbSupplyCommissionSetting *pbaff.SupplyCommissionSetting = nil
 		if supplyCommissionSetting != nil {
-			pbSupplyCommissionSetting = pbaff.PbSupplyCommissionSetting(supplyCommissionSetting)
+			pbSupplyCommissionSetting = convertpb.PbSupplyCommissionSetting(supplyCommissionSetting)
 		}
 		productPromotion := productPromotionMap[product.ProductID]
 		var pbProductPromotion *pbaff.ProductPromotion = nil
 		if productPromotion != nil {
-			pbProductPromotion = pbaff.PbProductPromotion(productPromotion)
+			pbProductPromotion = convertpb.PbProductPromotion(productPromotion)
 		}
 		products = append(products, &pbaff.SupplyProductResponse{
 			Product:                 pbshop.PbShopProductWithVariants(product),
@@ -141,7 +140,7 @@ func (s *TradingService) TradingGetProducts(ctx context.Context, q *TradingGetPr
 	}
 
 	q.Result = &pbaff.SupplyGetProductsResponse{
-		Paging:   pbcm.PbPageInfo(paging, query.Result.Count),
+		Paging:   cmapi.PbPageInfo(paging, query.Result.Count),
 		Products: products,
 	}
 	return nil
@@ -151,11 +150,11 @@ func (s *TradingService) GetTradingProductPromotions(ctx context.Context, q *Get
 	if q.Context.Shop.ID != modeletop.EtopTradingAccountID {
 		return cm.Errorf(cm.PermissionDenied, nil, "PermissionDenied")
 	}
-	paging := q.Paging.CMPaging()
+	paging := cmapi.CMPaging(q.Paging)
 	query := &affiliate.ListShopProductPromotionsQuery{
 		ShopID:  modeletop.EtopTradingAccountID,
 		Paging:  *paging,
-		Filters: pbcm.ToFilters(q.Filters),
+		Filters: cmapi.ToFilters(q.Filters),
 	}
 
 	if err := affiliateQuery.Dispatch(ctx, query); err != nil {
@@ -163,8 +162,8 @@ func (s *TradingService) GetTradingProductPromotions(ctx context.Context, q *Get
 	}
 
 	q.Result = &pbaff.GetProductPromotionsResponse{
-		Paging:     pbcm.PbPageInfo(paging, query.Result.Count),
-		Promotions: pbaff.PbProductPromotions(query.Result.Promotions),
+		Paging:     cmapi.PbPageInfo(paging, query.Result.Count),
+		Promotions: convertpb.PbProductPromotions(query.Result.Promotions),
 	}
 	return nil
 }
@@ -197,7 +196,7 @@ func (s *TradingService) CreateOrUpdateTradingCommissionSetting(ctx context.Cont
 		return err
 	}
 
-	q.Result = pbaff.PbSupplyCommissionSetting(cmd.Result)
+	q.Result = convertpb.PbSupplyCommissionSetting(cmd.Result)
 
 	return nil
 }
@@ -214,7 +213,7 @@ func (s *TradingService) GetTradingProductPromotionByProductIDs(ctx context.Cont
 		return err
 	}
 	q.Result = &pbaff.GetTradingProductPromotionByIDsResponse{
-		Promotions: pbaff.PbProductPromotions(productPromotionsQ.Result),
+		Promotions: convertpb.PbProductPromotions(productPromotionsQ.Result),
 	}
 	return nil
 }
@@ -244,7 +243,7 @@ func (s *TradingService) CreateTradingProductPromotion(ctx context.Context, q *C
 	if err := affiliateCmd.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
-	q.Result = pbaff.PbProductPromotion(cmd.Result)
+	q.Result = convertpb.PbProductPromotion(cmd.Result)
 	return nil
 }
 
@@ -264,7 +263,7 @@ func (s *TradingService) UpdateTradingProductPromotion(ctx context.Context, q *U
 	if err := affiliateCmd.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
-	q.Result = pbaff.PbProductPromotion(cmd.Result)
+	q.Result = convertpb.PbProductPromotion(cmd.Result)
 	return nil
 }
 
@@ -280,22 +279,22 @@ func (s *ShopService) GetProductPromotion(ctx context.Context, q *GetProductProm
 	if q.ReferralCode != nil {
 		commissionSetting, err := GetCommissionSettingByReferralCode(ctx, *q.ReferralCode, q.ProductId)
 		if err == nil {
-			pbReferralDiscount = pbaff.PbCommissionSetting(commissionSetting)
+			pbReferralDiscount = convertpb.PbCommissionSetting(commissionSetting)
 		}
 	}
 	q.Result = &pbaff.GetProductPromotionResponse{
-		Promotion:        pbaff.PbProductPromotion(promotionQuery.Result),
+		Promotion:        convertpb.PbProductPromotion(promotionQuery.Result),
 		ReferralDiscount: pbReferralDiscount,
 	}
 	return nil
 }
 
 func (s *ShopService) ShopGetProducts(ctx context.Context, q *ShopGetProductsEndpoint) error {
-	paging := q.Paging.CMPaging()
+	paging := cmapi.CMPaging(q.Paging)
 	query := &catalog.ListShopProductsWithVariantsQuery{
 		ShopID:  modeletop.EtopTradingAccountID,
 		Paging:  *paging,
-		Filters: pbcm.ToFilters(q.Filters),
+		Filters: cmapi.ToFilters(q.Filters),
 	}
 	if err := catalogQuery.Dispatch(ctx, query); err != nil {
 		return err
@@ -311,7 +310,7 @@ func (s *ShopService) ShopGetProducts(ctx context.Context, q *ShopGetProductsEnd
 		productPromotion := productPromotionMap[product.ProductID]
 		var pbProductPromotion *pbaff.ProductPromotion = nil
 		if productPromotion != nil {
-			pbProductPromotion = pbaff.PbProductPromotion(productPromotion)
+			pbProductPromotion = convertpb.PbProductPromotion(productPromotion)
 		}
 		products = append(products, &pbaff.ShopProductResponse{
 			Product:   pbshop.PbShopProductWithVariants(product),
@@ -320,7 +319,7 @@ func (s *ShopService) ShopGetProducts(ctx context.Context, q *ShopGetProductsEnd
 	}
 
 	q.Result = &pbaff.ShopGetProductsResponse{
-		Paging:   pbcm.PbPageInfo(paging, query.Result.Count),
+		Paging:   cmapi.PbPageInfo(paging, query.Result.Count),
 		Products: products,
 	}
 	return nil
@@ -348,9 +347,9 @@ func (s *ShopService) CheckReferralCodeValid(ctx context.Context, q *CheckReferr
 	if err != nil {
 		return cm.Errorf(cm.ValidationFailed, nil, "Không thể sử dụng mã giới thiệu của chính bạn")
 	}
-	pbReferralDiscount := pbaff.PbCommissionSetting(commissionSetting)
+	pbReferralDiscount := convertpb.PbCommissionSetting(commissionSetting)
 	q.Result = &pbaff.GetProductPromotionResponse{
-		Promotion:        pbaff.PbProductPromotion(promotionQuery.Result),
+		Promotion:        convertpb.PbProductPromotion(promotionQuery.Result),
 		ReferralDiscount: pbReferralDiscount,
 	}
 	return nil
@@ -360,7 +359,7 @@ func (s *AffiliateService) GetCommissions(ctx context.Context, q *GetCommissions
 	commissionQ := &affiliate.GetSellerCommissionsQuery{
 		SellerID: q.Context.Affiliate.ID,
 		Paging:   meta.Paging{},
-		Filters:  pbcm.ToFilters(q.Filters),
+		Filters:  cmapi.ToFilters(q.Filters),
 	}
 	if err := affiliateQuery.Dispatch(ctx, commissionQ); err != nil {
 		return err
@@ -369,14 +368,14 @@ func (s *AffiliateService) GetCommissions(ctx context.Context, q *GetCommissions
 	var pbCommissions []*pbaff.SellerCommission
 
 	for _, commission := range commissionQ.Result {
-		pbCommission := pbaff.PbSellerCommission(commission)
+		pbCommission := convertpb.PbSellerCommission(commission)
 
 		if commission.FromSellerID != 0 {
 			affiliateQ := &identity.GetAffiliateByIDQuery{
 				ID: commission.FromSellerID,
 			}
 			if err := identityQuery.Dispatch(ctx, affiliateQ); err == nil {
-				pbCommission.FromSeller = pbetopaff.Convert_core_Affiliate_To_api_Affiliate(affiliateQ.Result)
+				pbCommission.FromSeller = convertpb.Convert_core_Affiliate_To_api_Affiliate(affiliateQ.Result)
 			}
 		}
 
@@ -388,7 +387,7 @@ func (s *AffiliateService) GetCommissions(ctx context.Context, q *GetCommissions
 				IncludeFulfillment: false,
 			}
 			if err := bus.Dispatch(ctx, orderQ); err == nil {
-				pbCommission.Order = pborder.PbOrder(orderQ.Result.Order, nil, modeletop.TagEtop)
+				pbCommission.Order = convertpb.PbOrder(orderQ.Result.Order, nil, modeletop.TagEtop)
 			}
 
 			shopQ := &identity.GetShopByIDQuery{
@@ -427,7 +426,7 @@ func (s *AffiliateService) CreateOrUpdateAffiliateCommissionSetting(ctx context.
 	if err := affiliateCmd.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
-	q.Result = pbaff.PbCommissionSetting(cmd.Result)
+	q.Result = convertpb.PbCommissionSetting(cmd.Result)
 	return nil
 }
 
@@ -436,11 +435,11 @@ func (s *AffiliateService) GetProductPromotionByProductID(ctx context.Context, q
 }
 
 func (s *AffiliateService) AffiliateGetProducts(ctx context.Context, q *AffiliateGetProductsEndpoint) error {
-	paging := q.Paging.CMPaging()
+	paging := cmapi.CMPaging(q.Paging)
 	query := &catalog.ListShopProductsWithVariantsQuery{
 		ShopID:  modeletop.EtopTradingAccountID,
 		Paging:  *paging,
-		Filters: pbcm.ToFilters(q.Filters),
+		Filters: cmapi.ToFilters(q.Filters),
 	}
 	if err := catalogQuery.Dispatch(ctx, query); err != nil {
 		return err
@@ -473,11 +472,11 @@ func (s *AffiliateService) AffiliateGetProducts(ctx context.Context, q *Affiliat
 		}
 		var pbAffCommissionSetting *pbaff.CommissionSetting = nil
 		if affCommissionSetting != nil {
-			pbAffCommissionSetting = pbaff.PbCommissionSetting(affCommissionSetting)
+			pbAffCommissionSetting = convertpb.PbCommissionSetting(affCommissionSetting)
 		}
 		var pbShopPromotion *pbaff.ProductPromotion = nil
 		if shopPromotion != nil {
-			pbShopPromotion = pbaff.PbProductPromotion(shopPromotion)
+			pbShopPromotion = convertpb.PbProductPromotion(shopPromotion)
 		}
 
 		products = append(products, &pbaff.AffiliateProductResponse{
@@ -489,7 +488,7 @@ func (s *AffiliateService) AffiliateGetProducts(ctx context.Context, q *Affiliat
 	}
 
 	q.Result = &pbaff.AffiliateGetProductsResponse{
-		Paging:   pbcm.PbPageInfo(paging, query.Result.Count),
+		Paging:   cmapi.PbPageInfo(paging, query.Result.Count),
 		Products: products,
 	}
 
@@ -566,7 +565,7 @@ func (s *AffiliateService) CreateReferralCode(ctx context.Context, q *CreateRefe
 		return err
 	}
 
-	q.Result = pbaff.PbReferralCode(cmd.Result)
+	q.Result = convertpb.PbReferralCode(cmd.Result)
 
 	return nil
 }
@@ -580,7 +579,7 @@ func (s *AffiliateService) GetReferralCodes(ctx context.Context, q *GetReferralC
 	}
 
 	q.Result = &pbaff.GetReferralCodesResponse{
-		ReferralCodes: pbaff.PbReferralCodes(query.Result),
+		ReferralCodes: convertpb.PbReferralCodes(query.Result),
 	}
 
 	return nil
@@ -611,7 +610,7 @@ func (s *AffiliateService) GetReferrals(ctx context.Context, q *GetReferralsEndp
 
 	var referrals []*pbaff.Referral
 	for _, aff := range affiliateQ.Result {
-		pbAffiliate := pbaff.PbReferral(aff)
+		pbAffiliate := convertpb.PbReferral(aff)
 		referrals = append(referrals, pbAffiliate)
 	}
 

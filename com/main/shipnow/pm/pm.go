@@ -4,8 +4,6 @@ import (
 	"context"
 	"time"
 
-	"etop.vn/capi"
-
 	"etop.vn/api/main/etop"
 	"etop.vn/api/main/ordering"
 	ordertypes "etop.vn/api/main/ordering/types"
@@ -15,6 +13,7 @@ import (
 	etopconvert "etop.vn/backend/com/main/etop/convert"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/etop/model"
+	"etop.vn/capi"
 )
 
 type ProcessManager struct {

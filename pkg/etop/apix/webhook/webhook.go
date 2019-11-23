@@ -3,15 +3,15 @@ package webhook
 import (
 	"context"
 
+	pbexternal "etop.vn/api/pb/external"
 	"etop.vn/backend/com/handler/etop-handler/intctl"
 	"etop.vn/backend/com/handler/etop-handler/webhook/sender"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/mq"
 	"etop.vn/backend/pkg/common/redis"
+	"etop.vn/backend/pkg/etop/apix/convertpb"
 	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/backend/pkg/etop/sqlstore"
-
-	pbexternal "etop.vn/backend/pb/external"
 )
 
 var producer mq.Producer
@@ -31,7 +31,7 @@ func CreateWebhook(ctx context.Context, accountID int64, r *pbexternal.CreateWeb
 		return nil, cm.Errorf(cm.FailedPrecondition, nil, "Bạn đã tạo quá nhiều webhook. Vui lòng xoá webhook cũ để tạo lại.")
 	}
 
-	item := r.ToModel(accountID)
+	item := convertpb.CreateWebhookRequestToModel(r, accountID)
 	err = sqlstore.Webhook(ctx).Create(item)
 	if err != nil {
 		return nil, err
@@ -42,7 +42,7 @@ func CreateWebhook(ctx context.Context, accountID int64, r *pbexternal.CreateWeb
 		return nil, err
 	}
 
-	resp := pbexternal.PbWebhook(item, sender.LoadWebhookStates(redisStore, item.ID))
+	resp := convertpb.PbWebhook(item, sender.LoadWebhookStates(redisStore, item.ID))
 
 	event := &intctl.ReloadWebhook{
 		AccountID: accountID,
@@ -65,7 +65,7 @@ func DeleteWebhook(ctx context.Context, accountID int64, r *pbexternal.DeleteWeb
 
 	items, err := sqlstore.Webhook(ctx).AccountID(accountID).List()
 	resp := &pbexternal.WebhooksResponse{
-		Webhooks: pbexternal.PbWebhooks(items, loadWebhookStates(items)),
+		Webhooks: convertpb.PbWebhooks(items, loadWebhookStates(items)),
 	}
 	return resp, nil
 }
@@ -73,7 +73,7 @@ func DeleteWebhook(ctx context.Context, accountID int64, r *pbexternal.DeleteWeb
 func GetWebhooks(ctx context.Context, accountID int64) (*pbexternal.WebhooksResponse, error) {
 	items, err := sqlstore.Webhook(ctx).AccountID(accountID).List()
 	resp := &pbexternal.WebhooksResponse{
-		Webhooks: pbexternal.PbWebhooks(items, loadWebhookStates(items)),
+		Webhooks: convertpb.PbWebhooks(items, loadWebhookStates(items)),
 	}
 	return resp, err
 }

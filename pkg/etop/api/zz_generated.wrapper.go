@@ -8,8 +8,10 @@ import (
 	"context"
 	"time"
 
-	cm "etop.vn/backend/pb/common"
-	etop "etop.vn/backend/pb/etop"
+	cm "etop.vn/api/pb/common"
+	etop "etop.vn/api/pb/etop"
+	shop "etop.vn/api/pb/etop/shop"
+	api "etop.vn/api/root/int/etop"
 	common "etop.vn/backend/pkg/common"
 	bus "etop.vn/backend/pkg/common/bus"
 	metrics "etop.vn/backend/pkg/common/metrics"
@@ -17,7 +19,6 @@ import (
 	claims "etop.vn/backend/pkg/etop/authorize/claims"
 	middleware "etop.vn/backend/pkg/etop/authorize/middleware"
 	model "etop.vn/backend/pkg/etop/model"
-	api "etop.vn/backend/zexp/api/root/int/etop"
 )
 
 func WrapAccountService(s *AccountService) api.AccountService {
@@ -586,11 +587,11 @@ func (s wrapInvitationService) GetInvitationByToken(ctx context.Context, req *et
 
 type GetInvitationsEndpoint struct {
 	*etop.GetInvitationsRequest
-	Result  *etop.InvitationsResponse
+	Result  *shop.InvitationsResponse
 	Context claims.UserClaim
 }
 
-func (s wrapInvitationService) GetInvitations(ctx context.Context, req *etop.GetInvitationsRequest) (resp *etop.InvitationsResponse, err error) {
+func (s wrapInvitationService) GetInvitations(ctx context.Context, req *etop.GetInvitationsRequest) (resp *shop.InvitationsResponse, err error) {
 	t0 := time.Now()
 	var session *middleware.Session
 	var errs []*cm.Error

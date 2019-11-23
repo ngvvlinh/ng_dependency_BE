@@ -3,12 +3,10 @@ package sqlstore
 import (
 	"context"
 
-	"etop.vn/backend/pkg/common/sqlstore"
-
-	"etop.vn/backend/com/services/affiliate/model"
-
 	"etop.vn/api/meta"
+	"etop.vn/backend/com/services/affiliate/model"
 	"etop.vn/backend/pkg/common/cmsql"
+	"etop.vn/backend/pkg/common/sqlstore"
 )
 
 func NewShopOrderProductHistoryStore(db *cmsql.Database) ShopOrderProductHistoryStoreFactory {

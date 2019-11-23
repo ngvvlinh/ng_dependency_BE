@@ -4,9 +4,11 @@ import (
 	"context"
 
 	"etop.vn/api/main/ledgering"
-	pbcm "etop.vn/backend/pb/common"
-	pbshop "etop.vn/backend/pb/etop/shop"
+	pbcm "etop.vn/api/pb/common"
+	pbshop "etop.vn/api/pb/etop/shop"
 	"etop.vn/backend/pkg/common/bus"
+	"etop.vn/backend/pkg/common/cmapi"
+	"etop.vn/backend/pkg/etop/api/convertpb"
 	. "etop.vn/capi/dot"
 )
 
@@ -28,24 +30,24 @@ func (s LedgerService) GetLedger(ctx context.Context, r *GetLedgerEndpoint) erro
 		return err
 	}
 
-	r.Result = pbshop.PbLedger(query.Result)
+	r.Result = convertpb.PbLedger(query.Result)
 	return nil
 }
 
 func (s LedgerService) GetLedgers(ctx context.Context, r *GetLedgersEndpoint) error {
-	paging := r.Paging.CMPaging()
+	paging := cmapi.CMPaging(r.Paging)
 	query := &ledgering.ListLedgersQuery{
 		ShopID:  r.Context.Shop.ID,
 		Paging:  *paging,
-		Filters: pbcm.ToFilters(r.Filters),
+		Filters: cmapi.ToFilters(r.Filters),
 	}
 	if err := ledgerQuery.Dispatch(ctx, query); err != nil {
 		return err
 	}
 
 	r.Result = &pbshop.LedgersResponse{
-		Ledgers: pbshop.PbLedgers(query.Result.Ledgers),
-		Paging:  pbcm.PbPageInfo(paging, query.Result.Count),
+		Ledgers: convertpb.PbLedgers(query.Result.Ledgers),
+		Paging:  cmapi.PbPageInfo(paging, query.Result.Count),
 	}
 	return nil
 }
@@ -54,7 +56,7 @@ func (s LedgerService) CreateLedger(ctx context.Context, r *CreateLedgerEndpoint
 	cmd := &ledgering.CreateLedgerCommand{
 		ShopID:      r.Context.Shop.ID,
 		Name:        r.Name,
-		BankAccount: pbshop.Convert_api_BankAccount_To_core_BankAccount(r.BankAccount),
+		BankAccount: convertpb.Convert_api_BankAccount_To_core_BankAccount(r.BankAccount),
 		Note:        r.Note,
 		Type:        ledgering.LedgerTypeBank,
 		CreatedBy:   r.Context.UserID,
@@ -62,7 +64,7 @@ func (s LedgerService) CreateLedger(ctx context.Context, r *CreateLedgerEndpoint
 	if err := ledgerAggr.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
-	r.Result = pbshop.PbLedger(cmd.Result)
+	r.Result = convertpb.PbLedger(cmd.Result)
 
 	return nil
 }
@@ -72,14 +74,14 @@ func (s LedgerService) UpdateLedger(ctx context.Context, r *UpdateLedgerEndpoint
 		ID:          r.Id,
 		ShopID:      r.Context.Shop.ID,
 		Name:        PString(r.Name),
-		BankAccount: pbshop.Convert_api_BankAccount_To_core_BankAccount(r.BankAccount),
+		BankAccount: convertpb.Convert_api_BankAccount_To_core_BankAccount(r.BankAccount),
 		Note:        PString(r.Note),
 	}
 	if err := ledgerAggr.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
 
-	r.Result = pbshop.PbLedger(cmd.Result)
+	r.Result = convertpb.PbLedger(cmd.Result)
 	return nil
 }
 

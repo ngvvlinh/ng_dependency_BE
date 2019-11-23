@@ -5,8 +5,8 @@ import (
 	"fmt"
 
 	"etop.vn/api/main/location"
-	pbsp "etop.vn/backend/pb/etop/etc/shipping_provider"
-	pborder "etop.vn/backend/pb/etop/order"
+	pbsp "etop.vn/api/pb/etop/etc/shipping_provider"
+	pborder "etop.vn/api/pb/etop/order"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/common/l"

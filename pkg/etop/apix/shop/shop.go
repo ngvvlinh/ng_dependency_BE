@@ -3,14 +3,14 @@ package xshop
 import (
 	"context"
 
-	pbcm "etop.vn/backend/pb/common"
-	pbetop "etop.vn/backend/pb/etop"
+	pbcm "etop.vn/api/pb/common"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/auth"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/idemp"
 	"etop.vn/backend/pkg/common/redis"
 	cmservice "etop.vn/backend/pkg/common/service"
+	"etop.vn/backend/pkg/etop/api/convertpb"
 )
 
 var (
@@ -46,6 +46,6 @@ func (s *MiscService) CurrentAccount(ctx context.Context, q *CurrentAccountEndpo
 	if q.Context.Shop == nil {
 		return cm.Errorf(cm.Internal, nil, "")
 	}
-	q.Result = pbetop.PbPublicAccountInfo(q.Context.Shop)
+	q.Result = convertpb.PbPublicAccountInfo(q.Context.Shop)
 	return nil
 }
