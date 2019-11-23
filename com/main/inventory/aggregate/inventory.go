@@ -159,7 +159,7 @@ func (q *InventoryAggregate) PreInventoryVariantForVoucher(ctx context.Context, 
 	var inventoryvariant *inventory.InventoryVariant
 
 	// Check have been existed variant_id in database table inventory_variant
-	for _, value := range args.Lines {
+	for key, value := range args.Lines {
 		if errValidate := validateInventoryVoucherItem(value); errValidate != nil {
 			return 0, nil, errValidate
 		}
@@ -179,6 +179,9 @@ func (q *InventoryAggregate) PreInventoryVariantForVoucher(ctx context.Context, 
 			return 0, nil, err
 		}
 
+		if args.RefType == inventory.RefTypeOrder || args.RefType == inventory.RefTypeStockTake {
+			args.Lines[key].Price = inventoryvariant.CostPrice
+		}
 		// if InventoryVoucher is type 'out' move InventoryVariant quantity from onhand -> picked
 		if args.Type == inventory.InventoryVoucherTypeOut {
 			if !overStock && inventoryvariant.QuantityOnHand < value.Quantity {
@@ -747,7 +750,6 @@ func (q *InventoryAggregate) CreateInventoryVoucherByOrder(ctx context.Context, 
 	inventoryVoucherCreateRequest := &inventory.CreateInventoryVoucherArgs{
 		ShopID:    args.ShopID,
 		CreatedBy: args.UserID,
-		Title:     "Xuất kho khi bán hàng",
 		RefID:     args.RefID,
 		RefType:   args.RefType,
 		RefCode:   queryOrder.Result.Order.Code,
@@ -758,8 +760,10 @@ func (q *InventoryAggregate) CreateInventoryVoucherByOrder(ctx context.Context, 
 	switch inventoryVoucherCreateRequest.Type {
 	case inventory.InventoryVoucherTypeOut:
 		inventoryVoucherCreateRequest.RefName = inventory.RefNameOrder
+		inventoryVoucherCreateRequest.Title = "Xuất kho khi bán hàng"
 		inventoryVoucherCreateRequest.Note = fmt.Sprintf("Tạo phiếu xuất kho theo đơn hàng %v", queryOrder.Result.Order.Code)
 	case inventory.InventoryVoucherTypeIn:
+		inventoryVoucherCreateRequest.Title = "Nhập kho khi Hủy bán hàng"
 		inventoryVoucherCreateRequest.RefName = inventory.RefNameCancelOrder
 		inventoryVoucherCreateRequest.Note = fmt.Sprintf("Tạo phiếu nhập kho theo đơn hàng %v", queryOrder.Result.Order.Code)
 	}
