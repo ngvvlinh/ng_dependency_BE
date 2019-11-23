@@ -322,7 +322,7 @@ func toShipnowService(sfResp *client.CalcShippingFeeResponse, service *AhamoveSh
 		Carrier:     carriertypes.Ahamove,
 		Name:        service.Name,
 		Code:        providerServiceID,
-		Fee:         int32(sfResp.TotalFee),
+		Fee:         int32(sfResp.TotalPrice),
 		Description: service.Description,
 	}
 	// BIKE/POOL: discount, total_fee, total_pay

@@ -14,6 +14,7 @@ import (
 	"etop.vn/backend/pkg/common/httpreq"
 	"etop.vn/common/jsonx"
 	"etop.vn/common/l"
+	"etop.vn/common/xerrors"
 )
 
 var ll = l.New()
@@ -265,6 +266,7 @@ func handleResponse(res *httpreq.RestyResponse, result interface{}, msg string) 
 
 	case status >= 400:
 		var meta map[string]string
+		var errJSON xerrors.ErrorJSON
 		if !httpreq.IsNullJsonRaw(body) {
 			if err = jsonx.Unmarshal(body, &meta); err != nil {
 				// The slow path
@@ -274,10 +276,11 @@ func handleResponse(res *httpreq.RestyResponse, result interface{}, msg string) 
 				for k, v := range metaX {
 					meta[k] = fmt.Sprint(v)
 				}
+				errJSON.Meta = meta
 			}
 		}
 
-		return cm.Errorf(cm.ExternalServiceError, nil, "Lỗi từ ahamove. Nếu cần thêm thông tin vui lòng liên hệ hotro@etop.vn.").WithMetaM(meta)
+		return cm.Errorf(cm.ExternalServiceError, &errJSON, "Lỗi từ ahamove: %v. Nếu cần thêm thông tin vui lòng liên hệ hotro@etop.vn.", errJSON.Error()).WithMetaM(meta)
 	default:
 		return cm.Errorf(cm.ExternalServiceError, nil, "Lỗi không xác định từ ahamove: Invalid status (%v). Chúng tôi đang liên hệ với ahamove để xử lý. Xin lỗi quý khách vì sự bất tiện này. Nếu cần thêm thông tin vui lòng liên hệ hotro@etop.vn.", status)
 	}

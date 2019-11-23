@@ -186,16 +186,21 @@ type DeliveryPoint struct {
 }
 
 type CalcShippingFeeResponse struct {
-	Distance         Float  `json:"distance"`           // 1.144
-	Duration         Int    `json:"duration"`           // 288
-	Currency         string `json:"currency"`           // "VND"
-	Discount         Int    `json:"discount"`           // 30000
-	DistanceFee      Int    `json:"distance_fee"`       // 140000,
-	StopFee          Int    `json:"stop_fee"`           // 0,
-	TotalFee         Int    `json:"total_fee"`          // 275000,  # Total = Distance Fee + Request Fee + Stop Fee
-	UserMainAccount  Int    `json:"user_main_account"`  // 0,
-	UserBonusAccount Int    `json:"user_bonus_account"` // 0,
-	TotalPay         Int    `json:"total_pay"`          // 275000,
+	Distance            Float  `json:"distance"`         // 1.144
+	Duration            Int    `json:"duration"`         // 288
+	Currency            string `json:"currency"`         // "VND"
+	VoucherDiscount     Int    `json:"voucher_discount"` // 30000
+	DistancePrice       Int    `json:"distance_price"`   // 140000,
+	StoppointPrice      Int    `json:"stoppoint_price"`  // 0,
+	SpecialRequestPrice Int    `json:"special_request_price"`
+	// SubtotalPrice = Distance Fee + Request Fee + Stop Fee
+	SubtotalPrice Int `json:"subtotal_price"`
+	// Final price, equals subtotal_price - voucher_discount
+	TotalPrice       Int `json:"total_price"`
+	UserMainAccount  Int `json:"user_main_account"`  // 0,
+	UserBonusAccount Int `json:"user_bonus_account"` // 0,
+	// Total pay by cash
+	TotalPay Int `json:"total_pay"` // 275000,
 	// Surcharge           string  `json:"surcharge"`             // 1.1 # 110% compared to normal fee, only returned if surcharge > 1,
 	BookingTimeError    string `json:"booking_time_error"`    // "Booking time not valid" #If booking time is not in opening hours period,
 	PaymentErrorMessage string `json:"payment_error_message"` // "Not enough credit" #If user does not have enough credit in balance
