@@ -421,7 +421,7 @@ func AvgValue(value1 int32, value2 int32, quantity1 int32, quantity2 int32) int3
 	if quantity1+quantity2 == 0 {
 		return 0
 	}
-	return (value1 + value2) / (quantity1 + quantity2)
+	return int32((int64(value1)*int64(quantity1) + int64(value2)*int64(quantity2)) / (int64(quantity1) + int64(quantity2)))
 }
 
 func (q *InventoryAggregate) CancelInventoryVoucher(ctx context.Context, args *inventory.CancelInventoryVoucherArgs) (*inventory.InventoryVoucher, error) {

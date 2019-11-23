@@ -22,7 +22,7 @@ require (
 	github.com/dpapathanasiou/go-recaptcha v0.0.0-20190121160230-be5090b17804
 	github.com/dustin/go-humanize v1.0.0
 	github.com/garyburd/redigo v1.6.0
-	github.com/go-openapi/jsonreference v0.19.2
+	github.com/go-openapi/jsonreference v0.19.3
 	github.com/go-openapi/spec v0.19.4
 	github.com/go-telegram-bot-api/telegram-bot-api v4.6.4+incompatible
 	github.com/go-test/deep v1.0.4
