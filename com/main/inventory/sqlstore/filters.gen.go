@@ -99,22 +99,22 @@ func (ft *InventoryVariantFilters) ByQuantityPickedPtr(QuantityPicked *int32) *s
 	}
 }
 
-func (ft *InventoryVariantFilters) ByPurchasePrice(PurchasePrice int32) *sq.ColumnFilter {
+func (ft *InventoryVariantFilters) ByCostPrice(CostPrice int32) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
-		Column: "purchase_price",
-		Value:  PurchasePrice,
-		IsNil:  PurchasePrice == 0,
+		Column: "cost_price",
+		Value:  CostPrice,
+		IsNil:  CostPrice == 0,
 	}
 }
 
-func (ft *InventoryVariantFilters) ByPurchasePricePtr(PurchasePrice *int32) *sq.ColumnFilterPtr {
+func (ft *InventoryVariantFilters) ByCostPricePtr(CostPrice *int32) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
-		Column: "purchase_price",
-		Value:  PurchasePrice,
-		IsNil:  PurchasePrice == nil,
-		IsZero: PurchasePrice != nil && (*PurchasePrice) == 0,
+		Column: "cost_price",
+		Value:  CostPrice,
+		IsNil:  CostPrice == nil,
+		IsZero: CostPrice != nil && (*CostPrice) == 0,
 	}
 }
 

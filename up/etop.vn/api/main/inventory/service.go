@@ -101,7 +101,7 @@ type InventoryVariant struct {
 	VariantID       int64
 	QuantityOnHand  int32
 	QuantityPicked  int32
-	PurchasePrice   int32
+	CostPrice       int32
 	QuantitySummary int32
 
 	CreatedAt time.Time

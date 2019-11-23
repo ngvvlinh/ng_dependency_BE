@@ -15,7 +15,7 @@ type InventoryVariant struct {
 	VariantID      int64
 	QuantityOnHand int32
 	QuantityPicked int32
-	PurchasePrice  int32
+	CostPrice      int32
 
 	CreatedAt time.Time `sq:"create"`
 	UpdatedAt time.Time `sq:"update"`

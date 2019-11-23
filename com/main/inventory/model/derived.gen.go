@@ -30,7 +30,7 @@ func sqlgenInventoryVariant(_ *InventoryVariant) bool { return true }
 type InventoryVariants []*InventoryVariant
 
 const __sqlInventoryVariant_Table = "inventory_variant"
-const __sqlInventoryVariant_ListCols = "\"shop_id\",\"variant_id\",\"quantity_on_hand\",\"quantity_picked\",\"purchase_price\",\"created_at\",\"updated_at\""
+const __sqlInventoryVariant_ListCols = "\"shop_id\",\"variant_id\",\"quantity_on_hand\",\"quantity_picked\",\"cost_price\",\"created_at\",\"updated_at\""
 const __sqlInventoryVariant_Insert = "INSERT INTO \"inventory_variant\" (" + __sqlInventoryVariant_ListCols + ") VALUES"
 const __sqlInventoryVariant_Select = "SELECT " + __sqlInventoryVariant_ListCols + " FROM \"inventory_variant\""
 const __sqlInventoryVariant_Select_history = "SELECT " + __sqlInventoryVariant_ListCols + " FROM history.\"inventory_variant\""
@@ -58,7 +58,7 @@ func (m *InventoryVariant) SQLArgs(opts core.Opts, create bool) []interface{} {
 		core.Int64(m.VariantID),
 		core.Int32(m.QuantityOnHand),
 		core.Int32(m.QuantityPicked),
-		core.Int32(m.PurchasePrice),
+		core.Int32(m.CostPrice),
 		core.Now(m.CreatedAt, now, create),
 		core.Now(m.UpdatedAt, now, true),
 	}
@@ -70,7 +70,7 @@ func (m *InventoryVariant) SQLScanArgs(opts core.Opts) []interface{} {
 		(*core.Int64)(&m.VariantID),
 		(*core.Int32)(&m.QuantityOnHand),
 		(*core.Int32)(&m.QuantityPicked),
-		(*core.Int32)(&m.PurchasePrice),
+		(*core.Int32)(&m.CostPrice),
 		(*core.Time)(&m.CreatedAt),
 		(*core.Time)(&m.UpdatedAt),
 	}
@@ -167,13 +167,13 @@ func (m *InventoryVariant) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(m.QuantityPicked)
 	}
-	if m.PurchasePrice != 0 {
+	if m.CostPrice != 0 {
 		flag = true
-		w.WriteName("purchase_price")
+		w.WriteName("cost_price")
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(m.PurchasePrice)
+		w.WriteArg(m.CostPrice)
 	}
 	if !m.CreatedAt.IsZero() {
 		flag = true
@@ -231,9 +231,7 @@ func (m InventoryVariantHistory) QuantityOnHand() core.Interface {
 func (m InventoryVariantHistory) QuantityPicked() core.Interface {
 	return core.Interface{m["quantity_picked"]}
 }
-func (m InventoryVariantHistory) PurchasePrice() core.Interface {
-	return core.Interface{m["purchase_price"]}
-}
+func (m InventoryVariantHistory) CostPrice() core.Interface { return core.Interface{m["cost_price"]} }
 func (m InventoryVariantHistory) CreatedAt() core.Interface { return core.Interface{m["created_at"]} }
 func (m InventoryVariantHistory) UpdatedAt() core.Interface { return core.Interface{m["updated_at"]} }
 
@@ -251,7 +249,7 @@ func (m *InventoryVariantHistory) SQLScan(opts core.Opts, row *sql.Row) error {
 	res["variant_id"] = data[1]
 	res["quantity_on_hand"] = data[2]
 	res["quantity_picked"] = data[3]
-	res["purchase_price"] = data[4]
+	res["cost_price"] = data[4]
 	res["created_at"] = data[5]
 	res["updated_at"] = data[6]
 	*m = res
@@ -274,7 +272,7 @@ func (ms *InventoryVariantHistories) SQLScan(opts core.Opts, rows *sql.Rows) err
 		m["variant_id"] = data[1]
 		m["quantity_on_hand"] = data[2]
 		m["quantity_picked"] = data[3]
-		m["purchase_price"] = data[4]
+		m["cost_price"] = data[4]
 		m["created_at"] = data[5]
 		m["updated_at"] = data[6]
 		res = append(res, m)

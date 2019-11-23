@@ -3,7 +3,6 @@ package shop
 import (
 	"etop.vn/api/main/catalog"
 	"etop.vn/api/main/inventory"
-
 	"etop.vn/api/main/stocktaking"
 	"etop.vn/backend/pb/common"
 	pbcm "etop.vn/backend/pb/common"
@@ -41,10 +40,11 @@ func PbVariantsQuantity(shopVariants []*catalog.ShopVariant, inventoryVariants m
 func PbVariantQuantity(shopVariant *catalog.ShopVariant, inventoryVariant *inventory.InventoryVariant) *pbshop.ShopVariant {
 	shopVariantDB := PbShopVariant(shopVariant)
 	if inventoryVariant != nil {
-		shopVariantDB.InventoryVariant = &pbshop.InventoryVariantQuantity{
+		shopVariantDB.InventoryVariant = &pbshop.InventoryVariantShopVariant{
 			QuantityOnHand: inventoryVariant.QuantityOnHand,
 			QuantityPicked: inventoryVariant.QuantityPicked,
 			Quantity:       inventoryVariant.QuantitySummary,
+			CostPrice:      inventoryVariant.CostPrice,
 		}
 	}
 	return shopVariantDB
@@ -110,7 +110,7 @@ func PbInventory(args *inventory.InventoryVariant) *pbshop.InventoryVariant {
 		QuantityOnHand: args.QuantityOnHand,
 		QuantityPicked: args.QuantityPicked,
 		Quantity:       args.QuantitySummary,
-		PurchasePrice:  args.PurchasePrice,
+		CostPrice:      args.CostPrice,
 		CreatedAt:      pbcm.PbTime(args.CreatedAt),
 		UpdatedAt:      pbcm.PbTime(args.UpdatedAt),
 	}
@@ -161,6 +161,7 @@ func PbShopInventoryVoucher(args *inventory.InventoryVoucher) *pbshop.InventoryV
 			VariantId:   value.VariantID,
 			VariantName: value.VariantName,
 			ProductId:   value.ProductID,
+			Code:        value.Code,
 			ProductName: value.ProductName,
 			ImageUrl:    value.ImageURL,
 			Attributes:  attributes,
@@ -235,7 +236,6 @@ func PbShopVariant(m *catalog.ShopVariant) *pbshop.ShopVariant {
 			DescHtml:    m.DescHTML,
 			ImageUrls:   m.ImageURLs,
 			ListPrice:   m.ListPrice,
-			CostPrice:   m.CostPrice,
 			Attributes:  convertpb.PbAttributes(m.Attributes),
 		},
 		Code:        m.Code,
@@ -250,7 +250,6 @@ func PbShopVariant(m *catalog.ShopVariant) *pbshop.ShopVariant {
 		Status:      pbs3.Pb(model.Status3(m.Status)),
 		ListPrice:   m.ListPrice,
 		RetailPrice: coalesceInt32(m.RetailPrice, m.ListPrice),
-		CostPrice:   m.CostPrice,
 		Attributes:  convertpb.PbAttributes(m.Attributes),
 	}
 	return res
@@ -333,7 +332,6 @@ func PbShopVariantWithProduct(m *catalog.ShopVariantWithProduct) *pbshop.ShopVar
 		Status:      pbs3.Pb(model.Status3(m.Status)),
 		ListPrice:   m.ListPrice,
 		RetailPrice: coalesceInt32(m.RetailPrice, m.ListPrice),
-		CostPrice:   m.CostPrice,
 		Attributes:  convertpb.PbAttributes(m.Attributes),
 	}
 	if m.ShopProduct != nil {
@@ -395,7 +393,6 @@ func PbShopProductWithVariants(m *catalog.ShopProductWithVariants) *pbshop.ShopP
 		IsAvailable:     false,
 		ListPrice:       m.ShopProduct.ListPrice,
 		RetailPrice:     coalesceInt32(m.ShopProduct.RetailPrice, m.ShopProduct.ListPrice),
-		CostPrice:       m.ShopProduct.CostPrice,
 		CollectionIds:   m.ShopProduct.CollectionIDs,
 		Variants:        PbShopVariants(m.Variants),
 		ProductSourceId: shopID, // backward-compatible: use shop_id in place of product_source_id

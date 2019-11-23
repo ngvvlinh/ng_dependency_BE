@@ -665,13 +665,12 @@ message ShopVariant {
 
     optional int32  list_price = 14 [(gogoproto.nullable)=false];
     optional int32  retail_price = 15 [(gogoproto.nullable)=false];
-    optional int32  cost_price = 16 [(gogoproto.nullable)=false];
 
     optional string note        = 11 [(gogoproto.nullable)=false];
     optional status3.Status status = 12 [(gogoproto.nullable)=false];
     optional bool is_available  = 13 [(gogoproto.nullable)=false];
 
-    optional InventoryVariantQuantity inventory_variant = 17;
+    optional InventoryVariantShopVariant inventory_variant = 17;
 
     // @deprecated use stags instead
     repeated string  tags = 10;
@@ -680,6 +679,13 @@ message ShopVariant {
     repeated Attribute attributes = 18;
 
     optional ShopShortProduct product = 23;
+}
+
+message InventoryVariantShopVariant {
+    optional int32 quantity_on_hand = 3 [(gogoproto.nullable) = false];
+    optional int32 quantity_picked = 4 [(gogoproto.nullable) = false];
+    optional int32 cost_price = 5 [(gogoproto.nullable) = false];
+    optional int32 quantity = 6 [(gogoproto.nullable) = false];
 }
 
 message ShopProduct {
@@ -708,7 +714,6 @@ message ShopProduct {
 
     optional int32  list_price = 14 [(gogoproto.nullable)=false];
     optional int32  retail_price = 15 [(gogoproto.nullable)=false];
-    optional int32  cost_price = 16 [(gogoproto.nullable)=false];
 
     repeated int64 collection_ids = 17;
     repeated ShopVariant variants = 18;
@@ -1729,6 +1734,7 @@ message CreateInventoryVoucherRequest{
 
 message InventoryVoucherLine{
     optional int64 variant_id = 1 [(gogoproto.nullable) = false];
+    optional string code = 3 [(gogoproto.nullable) = false];
     optional string variant_name = 6 [(gogoproto.nullable) = false];
 
     optional int64 product_id = 7 [(gogoproto.nullable) = false];
@@ -1803,7 +1809,7 @@ message InventoryVariant {
     optional int64 variant_id = 2 [(gogoproto.nullable) = false];
     optional int32 quantity_on_hand = 3 [(gogoproto.nullable) = false];
     optional int32 quantity_picked = 4 [(gogoproto.nullable) = false];
-    optional int32 purchase_price = 5 [(gogoproto.nullable) = false];
+    optional int32 cost_price = 5 [(gogoproto.nullable) = false];
     optional int32 quantity = 6 [(gogoproto.nullable) = false];
 
     optional google.protobuf.Timestamp created_at = 7;

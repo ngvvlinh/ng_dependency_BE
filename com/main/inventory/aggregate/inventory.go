@@ -326,7 +326,7 @@ func (q *InventoryAggregate) DevideInOutInventoryVoucher(ctx context.Context,
 		if err != nil && cm.ErrorCode(err) == cm.NotFound {
 			linesCheckin = append(linesCheckin, &inventory.InventoryVoucherItem{
 				VariantID: value.VariantID,
-				Price:     value.PurchasePrice,
+				Price:     value.CostPrice,
 				Quantity:  value.QuantitySummary,
 			})
 			continue
@@ -337,13 +337,13 @@ func (q *InventoryAggregate) DevideInOutInventoryVoucher(ctx context.Context,
 		if value.QuantitySummary > (result.QuantityOnHand + result.QuantityPicked) {
 			linesCheckin = append(linesCheckin, &inventory.InventoryVoucherItem{
 				VariantID: value.VariantID,
-				Price:     result.PurchasePrice,
+				Price:     result.CostPrice,
 				Quantity:  value.QuantitySummary - (result.QuantityOnHand + result.QuantityPicked),
 			})
 		} else if value.QuantitySummary < (result.QuantityOnHand + result.QuantityPicked) {
 			linesCheckout = append(linesCheckout, &inventory.InventoryVoucherItem{
 				VariantID: value.VariantID,
-				Price:     result.PurchasePrice,
+				Price:     result.CostPrice,
 				Quantity:  (result.QuantityOnHand + result.QuantityPicked) - value.QuantitySummary,
 			})
 		}
@@ -395,9 +395,9 @@ func (q *InventoryAggregate) ConfirmInventoryVoucher(ctx context.Context, args *
 		} else if inventoryVoucher.Type == string(inventory.InventoryVoucherTypeIn) {
 			if inventoryVoucher.TraderID != 0 {
 				if data.QuantityOnHand < 0 {
-					data.PurchasePrice = value.Price
+					data.CostPrice = value.Price
 				} else {
-					data.PurchasePrice = AvgValue(data.PurchasePrice, value.Price, data.QuantityOnHand, value.Quantity)
+					data.CostPrice = AvgValue(data.CostPrice, value.Price, data.QuantityOnHand, value.Quantity)
 				}
 			}
 			data.QuantityOnHand = data.QuantityOnHand + value.Quantity
@@ -442,7 +442,7 @@ func (q *InventoryAggregate) CancelInventoryVoucher(ctx context.Context, args *i
 			if err != nil {
 				return nil, err
 			}
-			data.PurchasePrice = AvgValue(data.PurchasePrice, value.Price, data.QuantityOnHand, value.Quantity)
+			data.CostPrice = AvgValue(data.CostPrice, value.Price, data.QuantityOnHand, value.Quantity)
 			data.QuantityPicked = data.QuantityPicked - value.Quantity
 			data.QuantityOnHand = data.QuantityOnHand + value.Quantity
 
@@ -474,7 +474,7 @@ func (q *InventoryAggregate) CreateInventoryVariant(ctx context.Context, args *i
 			VariantID:      args.VariantID,
 			QuantityOnHand: 0,
 			QuantityPicked: 0,
-			PurchasePrice:  0,
+			CostPrice:      0,
 		})
 	}
 	if err != nil {
@@ -563,14 +563,14 @@ func (q *InventoryAggregate) CreateInventoryVoucherByQuantityChange(ctx context.
 		if value.QuantityChange > 0 {
 			inventoryVoucherItem.Quantity = value.QuantityChange
 			if mapInventoryVariantInfo[value.ItemInfo.VariantID] != nil {
-				inventoryVoucherItem.Price = mapInventoryVariantInfo[value.ItemInfo.VariantID].PurchasePrice
+				inventoryVoucherItem.Price = mapInventoryVariantInfo[value.ItemInfo.VariantID].CostPrice
 			}
 			inventoryVoucherIn = append(inventoryVoucherIn, inventoryVoucherItem)
 			totalAmountIn += value.QuantityChange * inventoryVoucherItem.Price
 		} else if value.QuantityChange < 0 {
 			inventoryVoucherItem.Quantity = value.QuantityChange * -1
 			if mapInventoryVariantInfo[value.ItemInfo.VariantID] != nil {
-				inventoryVoucherItem.Price = mapInventoryVariantInfo[value.ItemInfo.VariantID].PurchasePrice
+				inventoryVoucherItem.Price = mapInventoryVariantInfo[value.ItemInfo.VariantID].CostPrice
 			}
 			inventoryVoucherOut = append(inventoryVoucherOut, inventoryVoucherItem)
 			totalAmountOut += value.QuantityChange * inventoryVoucherItem.Price
@@ -657,7 +657,7 @@ func (q *InventoryAggregate) UpdateInventoryVariantCostPrice(ctx context.Context
 	default:
 		return nil, err
 	}
-	inventoryVariant.PurchasePrice = args.CostPrice
+	inventoryVariant.CostPrice = args.CostPrice
 	inventoryVariant.UpdatedAt = time.Now()
 	err = q.InventoryStore(ctx).VariantID(args.VariantID).ShopID(args.ShopID).UpdateInventoryVariantAll(inventoryVariant)
 	if err != nil {

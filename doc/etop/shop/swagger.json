@@ -9747,13 +9747,13 @@
     "zkInventoryVariant": {
       "type": "object",
       "properties": {
+        "CostPrice": {
+          "type": "integer",
+          "format": "int32"
+        },
         "CreatedAt": {
           "type": "string",
           "format": "date-time"
-        },
-        "PurchasePrice": {
-          "type": "integer",
-          "format": "int32"
         },
         "Quantity": {
           "type": "integer",
@@ -9781,9 +9781,13 @@
         }
       }
     },
-    "zkInventoryVariantQuantity": {
+    "zkInventoryVariantShopVariant": {
       "type": "object",
       "properties": {
+        "CostPrice": {
+          "type": "integer",
+          "format": "int32"
+        },
         "Quantity": {
           "type": "integer",
           "format": "int32"
@@ -9891,6 +9895,9 @@
           "items": {
             "$ref": "#/definitions/zkAttribute"
           }
+        },
+        "Code": {
+          "type": "string"
         },
         "ImageUrl": {
           "type": "string"
@@ -10677,10 +10684,6 @@
             "format": "int64"
           }
         },
-        "CostPrice": {
-          "type": "integer",
-          "format": "int32"
-        },
         "CreatedAt": {
           "type": "string",
           "format": "date-time"
@@ -10805,10 +10808,6 @@
         "Code": {
           "type": "string"
         },
-        "CostPrice": {
-          "type": "integer",
-          "format": "int32"
-        },
         "DescHtml": {
           "type": "string"
         },
@@ -10832,7 +10831,7 @@
           "$ref": "#/definitions/zkEtopVariant"
         },
         "InventoryVariant": {
-          "$ref": "#/definitions/zkInventoryVariantQuantity"
+          "$ref": "#/definitions/zkInventoryVariantShopVariant"
         },
         "IsAvailable": {
           "type": "boolean"

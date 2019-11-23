@@ -112,7 +112,7 @@ func ConvertInfoVariants(stocktakeLine *stocktaking.StocktakeLine, shopVariant *
 	stocktakeLine.ProductID = shopProduct.ProductID
 	stocktakeLine.ProductName = shopProduct.Name
 	if inventoryVariant != nil {
-		stocktakeLine.CostPrice = inventoryVariant.PurchasePrice
+		stocktakeLine.CostPrice = inventoryVariant.CostPrice
 	}
 	var attributes []*stocktaking.Attribute
 	for _, value := range shopVariant.Attributes {
@@ -152,6 +152,7 @@ func (s *StocktakeService) UpdateStocktake(
 	cmd := &stocktaking.UpdateStocktakeCommand{
 		ShopID:        shopID,
 		TotalQuantity: q.TotalQuantity,
+		ID:            q.Id,
 		UpdatedBy:     UserID,
 		Lines:         lines,
 		Note:          q.Note,
