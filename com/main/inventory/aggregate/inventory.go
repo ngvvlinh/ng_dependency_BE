@@ -503,22 +503,18 @@ func checkInventoryVoucherRefType(inventoryVoucher *inventory.InventoryVoucher) 
 		if inventoryVoucher.Type != inventory.InventoryVoucherTypeIn && inventoryVoucher.Type != inventory.InventoryVoucherTypeOut {
 			return cm.Error(cm.InvalidArgument, "'type' không đúng. Bán hàng chỉ có thể là 'in' hoặc 'out'", nil)
 		}
-		inventoryVoucher.RefName = inventory.RefNameOrder
 	case inventory.RefTypeStockTake:
 		if inventoryVoucher.Type != inventory.InventoryVoucherTypeOut && inventoryVoucher.Type != inventory.InventoryVoucherTypeIn {
 			return cm.Error(cm.InvalidArgument, "'type' không đúng.Kiểm kho chỉ có thể là 'in' hoặc 'out'", nil)
 		}
-		inventoryVoucher.RefName = inventory.RefNameStockTake
 	case inventory.RefTypePurchaseOrder:
 		if inventoryVoucher.Type != inventory.InventoryVoucherTypeIn {
 			return cm.Error(cm.InvalidArgument, "'type' không đúng.Nhập hàng chỉ có thể là 'in'", nil)
 		}
-		inventoryVoucher.RefName = inventory.RefNamePurchaseOrder
 	case inventory.RefTypeReturns:
 		if inventoryVoucher.Type != inventory.InventoryVoucherTypeIn {
 			return cm.Error(cm.InvalidArgument, "'type' không đúng.Trả hàng chỉ có thể là 'in'", nil)
 		}
-		inventoryVoucher.RefName = inventory.RefNameReturns
 	case "":
 		if inventoryVoucher.RefName != "" || inventoryVoucher.RefID != 0 {
 			return cm.Error(cm.InvalidArgument, "'ref_type','ref_id' hoặc 'ref_name' không đúng. Vui lòng kiểm tra lại", nil)

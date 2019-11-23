@@ -775,6 +775,7 @@ func prepareOrderLine(
 
 	originalPrice := m.RetailPrice
 	if v != nil {
+		line.Code = v.Code
 		line.VariantID = m.VariantId
 		line.ProductID = v.ShopProduct.ProductID
 		line.ProductName = model.CoalesceString2(v.ShopProduct.Name, v.ShopProduct.Name)
