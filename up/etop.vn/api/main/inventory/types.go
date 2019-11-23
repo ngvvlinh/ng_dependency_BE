@@ -21,6 +21,7 @@ const (
 	RefNameStockTake     InventoryVoucherRefName = "Kiểm kho"
 	RefNamePurchaseOrder InventoryVoucherRefName = "Nhập hàng"
 	RefNameOrder         InventoryVoucherRefName = "Bán hàng"
+	RefNameCancelOrder   InventoryVoucherRefName = "Hủy đơn hàng"
 )
 
 type InventoryRefType string

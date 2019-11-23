@@ -155,8 +155,9 @@ type CreateInventoryVoucherByQuantityChangeRequest struct {
 	RefName InventoryVoucherRefName
 	RefCode string
 
-	Note  string
-	Title string
+	NoteIn  string
+	NoteOut string
+	Title   string
 
 	Overstock bool
 

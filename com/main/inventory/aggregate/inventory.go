@@ -547,8 +547,6 @@ func (q *InventoryAggregate) CreateInventoryVoucherByQuantityChange(ctx context.
 		mapInventoryVariantInfo[value.VariantID] = value
 	}
 
-	var totalAmountIn int32 = 0
-	var totalAmountOut int32 = 0
 	for _, value := range args.Lines {
 		inventoryVoucherItem := &inventory.InventoryVoucherItem{
 			ProductID:   value.ItemInfo.ProductID,
@@ -566,33 +564,29 @@ func (q *InventoryAggregate) CreateInventoryVoucherByQuantityChange(ctx context.
 				inventoryVoucherItem.Price = mapInventoryVariantInfo[value.ItemInfo.VariantID].CostPrice
 			}
 			inventoryVoucherIn = append(inventoryVoucherIn, inventoryVoucherItem)
-			totalAmountIn += value.QuantityChange * inventoryVoucherItem.Price
 		} else if value.QuantityChange < 0 {
 			inventoryVoucherItem.Quantity = value.QuantityChange * -1
 			if mapInventoryVariantInfo[value.ItemInfo.VariantID] != nil {
 				inventoryVoucherItem.Price = mapInventoryVariantInfo[value.ItemInfo.VariantID].CostPrice
 			}
 			inventoryVoucherOut = append(inventoryVoucherOut, inventoryVoucherItem)
-			totalAmountOut += value.QuantityChange * inventoryVoucherItem.Price
 		}
 
 	}
-	totalAmountOut = totalAmountOut * -1
 	var typeIn = &inventory.InventoryVoucher{}
 	if len(inventoryVoucherIn) != 0 {
 		typeIn, err = q.CreateInventoryVoucher(ctx, args.Overstock, &inventory.CreateInventoryVoucherArgs{
-			ShopID:      args.ShopID,
-			CreatedBy:   args.CreatedBy,
-			Title:       args.Title,
-			RefID:       args.RefID,
-			RefType:     args.RefType,
-			RefName:     args.RefName,
-			RefCode:     args.RefCode,
-			TraderID:    0,
-			TotalAmount: totalAmountIn,
-			Type:        "in",
-			Note:        args.Note,
-			Lines:       inventoryVoucherIn,
+			ShopID:    args.ShopID,
+			CreatedBy: args.CreatedBy,
+			Title:     args.Title,
+			RefID:     args.RefID,
+			RefType:   args.RefType,
+			RefName:   args.RefName,
+			RefCode:   args.RefCode,
+			TraderID:  0,
+			Type:      "in",
+			Note:      args.NoteIn,
+			Lines:     inventoryVoucherIn,
 		})
 		if err != nil {
 			return nil, err
@@ -601,18 +595,17 @@ func (q *InventoryAggregate) CreateInventoryVoucherByQuantityChange(ctx context.
 	var typeOut = &inventory.InventoryVoucher{}
 	if len(inventoryVoucherOut) != 0 {
 		typeOut, err = q.CreateInventoryVoucher(ctx, args.Overstock, &inventory.CreateInventoryVoucherArgs{
-			ShopID:      args.ShopID,
-			CreatedBy:   args.CreatedBy,
-			Title:       args.Title,
-			RefID:       args.RefID,
-			RefType:     args.RefType,
-			RefName:     args.RefName,
-			RefCode:     args.RefCode,
-			TraderID:    0,
-			TotalAmount: totalAmountIn,
-			Type:        "out",
-			Note:        args.Note,
-			Lines:       inventoryVoucherOut,
+			ShopID:    args.ShopID,
+			CreatedBy: args.CreatedBy,
+			Title:     args.Title,
+			RefID:     args.RefID,
+			RefType:   args.RefType,
+			RefName:   args.RefName,
+			RefCode:   args.RefCode,
+			TraderID:  0,
+			Type:      "out",
+			Note:      args.NoteOut,
+			Lines:     inventoryVoucherOut,
 		})
 		if err != nil {
 			return nil, err
@@ -715,7 +708,7 @@ func (q *InventoryAggregate) CreateInventoryVoucherByPurchaseOrder(ctx context.C
 		RefCode:   queryPurchaseOrder.Result.Code,
 		TraderID:  queryPurchaseOrder.Result.SupplierID,
 		Type:      inventory.InventoryVoucherTypeIn,
-		Note:      fmt.Sprintf("Tạo phiếu nhập kho theo đơn nhập mã %v", queryPurchaseOrder.Result.Code),
+		Note:      fmt.Sprintf("Tạo phiếu nhập kho theo đơn nhập hàng %v", queryPurchaseOrder.Result.Code),
 		Lines:     items,
 	}
 	createResult, err := q.CreateInventoryVoucher(ctx, args.OverStock, inventoryVoucherCreateRequest)
@@ -760,12 +753,18 @@ func (q *InventoryAggregate) CreateInventoryVoucherByOrder(ctx context.Context, 
 		Title:     "Xuất kho khi bán hàng",
 		RefID:     args.RefID,
 		RefType:   args.RefType,
-		RefName:   inventory.RefNameOrder,
 		RefCode:   queryOrder.Result.Order.Code,
 		TraderID:  queryOrder.Result.Order.CustomerID,
 		Type:      args.Type,
-		Note:      fmt.Sprintf("Tạo phiếu xuất kho theo đơn đặt hàng mã %v", queryOrder.Result.Order.Code),
 		Lines:     items,
+	}
+	switch inventoryVoucherCreateRequest.Type {
+	case inventory.InventoryVoucherTypeOut:
+		inventoryVoucherCreateRequest.RefName = inventory.RefNameOrder
+		inventoryVoucherCreateRequest.Note = fmt.Sprintf("Tạo phiếu xuất kho theo đơn hàng %v", queryOrder.Result.Order.Code)
+	case inventory.InventoryVoucherTypeIn:
+		inventoryVoucherCreateRequest.RefName = inventory.RefNameCancelOrder
+		inventoryVoucherCreateRequest.Note = fmt.Sprintf("Tạo phiếu nhập kho theo đơn hàng %v", queryOrder.Result.Order.Code)
 	}
 	createResult, err := q.CreateInventoryVoucher(ctx, args.OverStock, inventoryVoucherCreateRequest)
 	if err != nil {
@@ -815,7 +814,8 @@ func (q *InventoryAggregate) CreateInventoryVoucherByStockTake(ctx context.Conte
 		Overstock: args.OverStock,
 		CreatedBy: args.UserID,
 		Lines:     inventoryVariantChange,
-		Note:      fmt.Sprintf("Tạo phiếu xuất nhập kho theo phiếu kiểm kho mã %v", queryStocktake.Result.Code),
+		NoteIn:    fmt.Sprintf("Tạo phiếu nhập kho theo phiếu kiểm kho %v", queryStocktake.Result.Code),
+		NoteOut:   fmt.Sprintf("Tạo phiếu xuất kho theo phiếu kiểm kho  %v", queryStocktake.Result.Code),
 	}
 	createResult, err := q.CreateInventoryVoucherByQuantityChange(ctx, inventoryVoucherCreateRequest)
 	if err != nil {

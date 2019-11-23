@@ -104,7 +104,7 @@ func (p *ProcessManager) OrderConfirmedEvent(ctx context.Context, event *orderin
 			RefID:     event.OrderID,
 			ShopID:    event.ShopID,
 			UserID:    event.UpdatedBy,
-			Type:      inventory.InventoryVoucherTypeIn,
+			Type:      inventory.InventoryVoucherTypeOut,
 			OverStock: event.InventoryOverStock,
 		}
 		err = p.inventoryAgg.Dispatch(ctx, cmdCreate)

@@ -136,7 +136,8 @@ type CreateInventoryVoucherByQuantityChangeCommand struct {
 	RefType   InventoryRefType
 	RefName   InventoryVoucherRefName
 	RefCode   string
-	Note      string
+	NoteIn    string
+	NoteOut   string
 	Title     string
 	Overstock bool
 	CreatedBy int64
@@ -444,7 +445,8 @@ func (q *CreateInventoryVoucherByQuantityChangeCommand) GetArgs(ctx context.Cont
 			RefType:   q.RefType,
 			RefName:   q.RefName,
 			RefCode:   q.RefCode,
-			Note:      q.Note,
+			NoteIn:    q.NoteIn,
+			NoteOut:   q.NoteOut,
 			Title:     q.Title,
 			Overstock: q.Overstock,
 			CreatedBy: q.CreatedBy,
@@ -458,7 +460,8 @@ func (q *CreateInventoryVoucherByQuantityChangeCommand) SetCreateInventoryVouche
 	q.RefType = args.RefType
 	q.RefName = args.RefName
 	q.RefCode = args.RefCode
-	q.Note = args.Note
+	q.NoteIn = args.NoteIn
+	q.NoteOut = args.NoteOut
 	q.Title = args.Title
 	q.Overstock = args.Overstock
 	q.CreatedBy = args.CreatedBy
