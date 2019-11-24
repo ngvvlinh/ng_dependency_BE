@@ -13,6 +13,7 @@ import (
 	"etop.vn/backend/pkg/common/cmsql"
 	"etop.vn/backend/pkg/common/validate"
 	"etop.vn/backend/pkg/etop/model"
+	"etop.vn/capi/dot"
 	"etop.vn/common/jsonx"
 )
 
@@ -55,7 +56,7 @@ func (a *Aggregate) CreateExternalAccountAhamove(ctx context.Context, args *iden
 			return nil
 		}
 
-		var id int64
+		var id dot.ID
 		phone := args.Phone
 		if account == nil {
 			// create new account

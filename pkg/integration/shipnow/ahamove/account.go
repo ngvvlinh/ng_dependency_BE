@@ -13,6 +13,7 @@ import (
 	shipnowcarrier "etop.vn/backend/com/main/shipnow-carrier"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/integration/shipnow/ahamove/client"
+	"etop.vn/capi/dot"
 )
 
 var _ shipnowcarrier.ShipnowCarrierAccount = &CarrierAccount{}
@@ -118,7 +119,7 @@ func prepareAhamovePhotoUrl(
 
 // description format: <user._id>, <user.name>, <photo_urls>
 // photo_url format: <topship_domain>/upload/ahamove/user_verification/user_id_front<user.id>_<user.create_time>.jpg
-func getDescriptionForVerification(ctx context.Context, urlConfig URLConfig, userID int64) (des string, _err error) {
+func getDescriptionForVerification(ctx context.Context, urlConfig URLConfig, userID dot.ID) (des string, _err error) {
 	queryUser := &identity.GetUserByIDQuery{
 		UserID: userID,
 	}

@@ -44,3 +44,7 @@ func FromTryOn(code try_on2.TryOnCode) GHNNoteCode {
 		return 0
 	}
 }
+
+func (x GHNNoteCode) MarshalJSON() ([]byte, error) {
+	return []byte(`"` + x.String() + `"`), nil
+}

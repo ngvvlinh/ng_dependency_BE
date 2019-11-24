@@ -35,6 +35,10 @@ var (
 	Uintptr  = zap.Uintptr
 )
 
+func ID(key string, v interface{ Int64() int64 }) zap.Field {
+	return zap.Int64(key, v.Int64())
+}
+
 // DefaultConsoleEncoderConfig ...
 var DefaultConsoleEncoderConfig = zapcore.EncoderConfig{
 	TimeKey:        "time",

@@ -12,6 +12,7 @@ import (
 	"etop.vn/backend/pkg/common/sq"
 	"etop.vn/backend/pkg/common/sq/core"
 	"etop.vn/backend/pkg/common/sqlstore"
+	"etop.vn/capi/dot"
 )
 
 type InventoryVoucherFactory func(context.Context) *InventoryVoucherStore
@@ -47,12 +48,12 @@ func (s *InventoryVoucherStore) Filters(filters meta.Filters) *InventoryVoucherS
 	return s
 }
 
-func (s *InventoryVoucherStore) ID(id int64) *InventoryVoucherStore {
+func (s *InventoryVoucherStore) ID(id dot.ID) *InventoryVoucherStore {
 	s.preds = append(s.preds, s.ft.ByID(id))
 	return s
 }
 
-func (s *InventoryVoucherStore) IDs(ids ...int64) *InventoryVoucherStore {
+func (s *InventoryVoucherStore) IDs(ids ...dot.ID) *InventoryVoucherStore {
 	s.preds = append(s.preds, sq.PrefixedIn(&s.ft.prefix, "id", ids))
 	return s
 }
@@ -62,17 +63,17 @@ func (s *InventoryVoucherStore) Status(status etop.Status3) *InventoryVoucherSto
 	return s
 }
 
-func (s *InventoryVoucherStore) ShopID(id int64) *InventoryVoucherStore {
+func (s *InventoryVoucherStore) ShopID(id dot.ID) *InventoryVoucherStore {
 	s.preds = append(s.preds, s.ft.ByShopID(id))
 	return s
 }
 
-func (s *InventoryVoucherStore) VariantId(id int64) *InventoryVoucherStore {
-	s.preds = append(s.preds, sq.NewExpr("variant_ids @> ?", core.Array{V: []int64{id}}))
+func (s *InventoryVoucherStore) VariantId(id dot.ID) *InventoryVoucherStore {
+	s.preds = append(s.preds, sq.NewExpr("variant_ids @> ?", core.Array{V: []dot.ID{id}}))
 	return s
 }
 
-func (s *InventoryVoucherStore) RefID(id int64) *InventoryVoucherStore {
+func (s *InventoryVoucherStore) RefID(id dot.ID) *InventoryVoucherStore {
 	s.preds = append(s.preds, s.ft.ByRefID(id))
 	return s
 }
@@ -87,7 +88,7 @@ func (s *InventoryVoucherStore) Type(inventoryVoucherType string) *InventoryVouc
 	return s
 }
 
-func (s *InventoryVoucherStore) RefIDs(ids ...int64) *InventoryVoucherStore {
+func (s *InventoryVoucherStore) RefIDs(ids ...dot.ID) *InventoryVoucherStore {
 	s.preds = append(s.preds, sq.PrefixedIn(&s.ft.prefix, "ref_id", ids))
 	return s
 }
@@ -99,7 +100,7 @@ func (s *InventoryVoucherStore) UpdateInventoryVoucher(inventoryVoucher *model.I
 
 func (s *InventoryVoucherStore) UpdateInventoryVoucherAllDB(inventoryVoucher *model.InventoryVoucher) error {
 	query := s.query().Where(s.preds)
-	var variant_ids []int64
+	var variant_ids []dot.ID
 	for _, value := range inventoryVoucher.Lines {
 		variant_ids = append(variant_ids, value.VariantID)
 	}
@@ -120,7 +121,7 @@ func (s *InventoryVoucherStore) Create(inventoryVoucher *inventory.InventoryVouc
 }
 
 func (s *InventoryVoucherStore) CreateDB(InventoryVoucher *model.InventoryVoucher) error {
-	var variant_ids []int64
+	var variant_ids []dot.ID
 	for _, value := range InventoryVoucher.Lines {
 		variant_ids = append(variant_ids, value.VariantID)
 	}

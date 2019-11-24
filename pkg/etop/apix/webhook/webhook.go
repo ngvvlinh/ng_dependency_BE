@@ -12,6 +12,7 @@ import (
 	"etop.vn/backend/pkg/etop/apix/convertpb"
 	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/backend/pkg/etop/sqlstore"
+	"etop.vn/capi/dot"
 )
 
 var producer mq.Producer
@@ -22,7 +23,7 @@ func Init(p mq.Producer, r redis.Store) {
 	redisStore = r
 }
 
-func CreateWebhook(ctx context.Context, accountID int64, r *pbexternal.CreateWebhookRequest) (*pbexternal.Webhook, error) {
+func CreateWebhook(ctx context.Context, accountID dot.ID, r *pbexternal.CreateWebhookRequest) (*pbexternal.Webhook, error) {
 	n, err := sqlstore.Webhook(ctx).AccountID(accountID).Count()
 	if err != nil {
 		return nil, err
@@ -51,7 +52,7 @@ func CreateWebhook(ctx context.Context, accountID int64, r *pbexternal.CreateWeb
 	return resp, err
 }
 
-func DeleteWebhook(ctx context.Context, accountID int64, r *pbexternal.DeleteWebhookRequest) (*pbexternal.WebhooksResponse, error) {
+func DeleteWebhook(ctx context.Context, accountID dot.ID, r *pbexternal.DeleteWebhookRequest) (*pbexternal.WebhooksResponse, error) {
 	event := &intctl.ReloadWebhook{
 		AccountID: accountID,
 	}
@@ -70,7 +71,7 @@ func DeleteWebhook(ctx context.Context, accountID int64, r *pbexternal.DeleteWeb
 	return resp, nil
 }
 
-func GetWebhooks(ctx context.Context, accountID int64) (*pbexternal.WebhooksResponse, error) {
+func GetWebhooks(ctx context.Context, accountID dot.ID) (*pbexternal.WebhooksResponse, error) {
 	items, err := sqlstore.Webhook(ctx).AccountID(accountID).List()
 	resp := &pbexternal.WebhooksResponse{
 		Webhooks: convertpb.PbWebhooks(items, loadWebhookStates(items)),

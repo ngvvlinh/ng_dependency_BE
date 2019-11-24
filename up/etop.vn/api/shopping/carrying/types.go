@@ -1,10 +1,14 @@
 package carrying
 
-import "time"
+import (
+	"time"
+
+	dot "etop.vn/capi/dot"
+)
 
 type ShopCarrier struct {
-	ID        int64
-	ShopID    int64
+	ID        dot.ID
+	ShopID    dot.ID
 	FullName  string
 	Note      string
 	Status    int32

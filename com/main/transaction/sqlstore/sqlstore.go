@@ -13,6 +13,7 @@ import (
 	"etop.vn/backend/pkg/common/cmsql"
 	"etop.vn/backend/pkg/common/sqlstore"
 	"etop.vn/backend/pkg/etop/model"
+	"etop.vn/capi/dot"
 )
 
 type TransactionStoreFactory func(context.Context) *TransactionStore
@@ -38,12 +39,12 @@ var SortTransaction = map[string]string{
 	"updated_at": "",
 }
 
-func (s *TransactionStore) ID(id int64) *TransactionStore {
+func (s *TransactionStore) ID(id dot.ID) *TransactionStore {
 	s.preds = append(s.preds, s.ft.ByID(id))
 	return s
 }
 
-func (s *TransactionStore) AccountID(id int64) *TransactionStore {
+func (s *TransactionStore) AccountID(id dot.ID) *TransactionStore {
 	s.preds = append(s.preds, s.ft.ByAccountID(id))
 	return s
 }
@@ -120,8 +121,8 @@ func (s *TransactionStore) CreateTransaction(trxn *transaction.Transaction) (*tr
 }
 
 type UpdateTransactionStatusArgs struct {
-	ID        int64
-	AccountID int64
+	ID        dot.ID
+	AccountID dot.ID
 	Status    etoptypes.Status3
 }
 

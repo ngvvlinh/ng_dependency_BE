@@ -7,6 +7,7 @@ import (
 
 	ordermodel "etop.vn/backend/com/main/ordering/model"
 	"etop.vn/backend/pkg/etop/model"
+	"etop.vn/capi/dot"
 )
 
 //go:generate $ETOPDIR/backend/scripts/derive.sh
@@ -14,10 +15,10 @@ import (
 var _ = sqlgenFulfillment(&Fulfillment{})
 
 type Fulfillment struct {
-	ID        int64
-	OrderID   int64
-	ShopID    int64
-	PartnerID int64
+	ID        dot.ID
+	OrderID   dot.ID
+	ShopID    dot.ID
+	PartnerID dot.ID
 
 	ShopConfirm   model.Status3
 	ConfirmStatus model.Status3
@@ -56,7 +57,7 @@ type Fulfillment struct {
 	// EtopPriceRule: true khi áp dụng bảng giá eTop, với giá `EtopAdjustedShippingFeeMain`
 	EtopPriceRule bool
 
-	VariantIDs []int64
+	VariantIDs []dot.ID
 	Lines      ordermodel.OrderLinesList
 
 	TypeFrom      model.FulfillmentEndpoint
@@ -85,14 +86,14 @@ type Fulfillment struct {
 	ShippingDeliveringAt        time.Time
 	ShippingReturningAt         time.Time
 
-	MoneyTransactionID                 int64
-	MoneyTransactionShippingExternalID int64
+	MoneyTransactionID                 dot.ID
+	MoneyTransactionShippingExternalID dot.ID
 
 	CancelReason string
 
-	// CreatedBy   int64
-	// UpdatedBy   int64
-	// CancelledBy int64
+	// CreatedBy   dot.ID
+	// UpdatedBy   dot.ID
+	// CancelledBy dot.ID
 
 	ShippingProvider  model.ShippingProvider
 	ProviderServiceID string

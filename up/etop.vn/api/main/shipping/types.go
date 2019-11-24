@@ -7,6 +7,7 @@ import (
 	"etop.vn/api/main/shipping/types"
 	"etop.vn/api/meta"
 	"etop.vn/capi"
+	"etop.vn/capi/dot"
 )
 
 // +gen:api
@@ -63,10 +64,10 @@ type Location struct {
 }
 
 type Fulfillment struct {
-	ID        int64
-	OrderID   int64
-	ShopID    int64
-	PartnerID int64
+	ID        dot.ID
+	OrderID   dot.ID
+	ShopID    dot.ID
+	PartnerID dot.ID
 	SelfURL   string
 
 	Lines []*ItemLine
@@ -79,11 +80,11 @@ type Fulfillment struct {
 }
 
 type ItemLine struct {
-	OrderID int64
+	OrderID dot.ID
 
 	ProductName string
-	ProductID   int64
-	VariantID   int64
+	ProductID   dot.ID
+	VariantID   dot.ID
 	IsOutside   bool
 	ImageURL    string
 	Attribute   []Attribute
@@ -161,7 +162,7 @@ type ShippingFeeLine struct {
 //-- Commands --//
 
 type CreateFulfillmentArgs struct {
-	OrderID int64
+	OrderID dot.ID
 
 	PickupAddress *Address
 
@@ -185,11 +186,11 @@ type CreateFulfillmentArgs struct {
 }
 
 type ConfirmFulfillmentArgs struct {
-	FulfillmentID int64
+	FulfillmentID dot.ID
 }
 
 type CancelFulfillmentArgs struct {
-	FulfillmentID int64
+	FulfillmentID dot.ID
 
 	CancelReason string
 }
@@ -197,5 +198,5 @@ type CancelFulfillmentArgs struct {
 //-- Queries --//
 
 type GetFulfillmentByIDQueryArgs struct {
-	FulfillmentID int64
+	FulfillmentID dot.ID
 }

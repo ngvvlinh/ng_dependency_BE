@@ -11,6 +11,7 @@ import (
 	"etop.vn/backend/pkg/common/cmsql"
 	"etop.vn/backend/pkg/common/sq"
 	"etop.vn/backend/pkg/common/sqlstore"
+	"etop.vn/capi/dot"
 )
 
 type ShopCollectionStoreFactory func(context.Context) *ShopCollectionStore
@@ -58,22 +59,22 @@ func (s *ShopCollectionStore) Filters(filters meta.Filters) *ShopCollectionStore
 	return s
 }
 
-func (s *ShopCollectionStore) ID(id int64) *ShopCollectionStore {
+func (s *ShopCollectionStore) ID(id dot.ID) *ShopCollectionStore {
 	s.preds = append(s.preds, s.ftShopCollection.ByID(id))
 	return s
 }
 
-func (s *ShopCollectionStore) IDs(ids []int64) *ShopCollectionStore {
+func (s *ShopCollectionStore) IDs(ids []dot.ID) *ShopCollectionStore {
 	s.preds = append(s.preds, sq.In("id", ids))
 	return s
 }
 
-func (s *ShopCollectionStore) OptionalShopID(id int64) *ShopCollectionStore {
+func (s *ShopCollectionStore) OptionalShopID(id dot.ID) *ShopCollectionStore {
 	s.preds = append(s.preds, s.ftShopCollection.ByShopID(id).Optional())
 	return s
 }
 
-func (s *ShopCollectionStore) ShopID(id int64) *ShopCollectionStore {
+func (s *ShopCollectionStore) ShopID(id dot.ID) *ShopCollectionStore {
 	s.preds = append(s.preds, s.ftShopCollection.ByShopID(id))
 	return s
 }

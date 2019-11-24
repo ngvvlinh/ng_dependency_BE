@@ -80,7 +80,7 @@ func (c *Carrier) CalcShippingFee(ctx context.Context, cmd *CalcShippingFeeAllSe
 		return cm.Error(cm.ExternalServiceError, "Lỗi từ vtPost: không thể lấy thông tin gói cước dịch vụ", nil).
 			WithMeta("reason", "timeout")
 	}
-	generator := newServiceIDGenerator(cmd.ArbitraryID)
+	generator := newServiceIDGenerator(cmd.ArbitraryID.Int64())
 	var res []*model.AvailableShippingService
 	client, err := c.getClient(ctx, VTPostCodePublic)
 	if err != nil {

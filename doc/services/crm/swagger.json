@@ -466,7 +466,7 @@
           "type": "string"
         },
         "id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "phone": {
@@ -517,7 +517,7 @@
           "type": "string"
         },
         "etop_user_id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "firstname": {
@@ -597,7 +597,7 @@
           "type": "string"
         },
         "etop_user_id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "firstname": {
@@ -676,14 +676,14 @@
           "type": "string"
         },
         "etop_user_id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "ffm_code": {
           "type": "string"
         },
         "ffm_id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "ffm_url": {
@@ -705,7 +705,7 @@
           "type": "string"
         },
         "order_id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "provider": {
@@ -838,7 +838,7 @@
           "type": "string"
         },
         "etop_user_id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "firstname": {
@@ -910,7 +910,7 @@
           "type": "string"
         },
         "etop_user_id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "firstname": {
@@ -980,14 +980,14 @@
       "type": "object",
       "properties": {
         "account_id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "entity": {
           "$ref": "#/definitions/roNotifierEntity"
         },
         "entity_id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "message": {
@@ -1033,14 +1033,14 @@
           "type": "string"
         },
         "etop_user_id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "ffm_code": {
           "type": "string"
         },
         "ffm_id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "ffm_url": {
@@ -1078,15 +1078,15 @@
           "type": "string"
         },
         "order_id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "parent_id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "product_id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "provider": {
@@ -1146,14 +1146,14 @@
           "type": "string"
         },
         "etop_user_id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "ffm_code": {
           "type": "string"
         },
         "ffm_id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "ffm_url": {
@@ -1175,7 +1175,7 @@
           "type": "string"
         },
         "order_id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "provider": {
@@ -1213,7 +1213,7 @@
           "format": "int32"
         },
         "etop_account_id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "from_extension": {

@@ -14,6 +14,7 @@ import (
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/capi"
+	"etop.vn/capi/dot"
 )
 
 type ProcessManager struct {
@@ -54,7 +55,7 @@ func (m *ProcessManager) ShipnowOrderReservation(ctx context.Context, event *shi
 	cmd := &ordering.ReserveOrdersForFfmCommand{
 		OrderIDs:   event.OrderIds,
 		Fulfill:    ordertypes.FulfillShipnow,
-		FulfillIDs: []int64{event.ShipnowFulfillmentId},
+		FulfillIDs: []dot.ID{event.ShipnowFulfillmentId},
 	}
 	if err := m.order.Dispatch(ctx, cmd); err != nil {
 		return err
@@ -74,7 +75,7 @@ func (m *ProcessManager) ShipnowOrderChanged(ctx context.Context, event *shipnow
 	cmd2 := &ordering.ReserveOrdersForFfmCommand{
 		OrderIDs:   event.OrderIds,
 		Fulfill:    ordertypes.FulfillShipnow,
-		FulfillIDs: []int64{event.ShipnowFulfillmentId},
+		FulfillIDs: []dot.ID{event.ShipnowFulfillmentId},
 	}
 	if err := m.order.Dispatch(ctx, cmd2); err != nil {
 		return err

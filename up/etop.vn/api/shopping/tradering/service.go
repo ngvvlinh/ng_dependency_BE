@@ -5,17 +5,18 @@ import (
 
 	"etop.vn/api/meta"
 	"etop.vn/api/shopping"
+	"etop.vn/capi/dot"
 )
 
 // +gen:api
 
 type Aggregate interface {
-	DeleteTrader(ctx context.Context, ID int64, shopID int64) (deleted int, _ error)
+	DeleteTrader(ctx context.Context, ID dot.ID, shopID dot.ID) (deleted int, _ error)
 }
 
 type QueryService interface {
 	GetTraderByID(ctx context.Context, _ *shopping.IDQueryShopArg) (*ShopTrader, error)
-	GetTraderInfoByID(ctx context.Context, ID, ShopID int64) (*ShopTrader, error)
+	GetTraderInfoByID(ctx context.Context, ID, ShopID dot.ID) (*ShopTrader, error)
 	ListTradersByIDs(context.Context, *shopping.IDsQueryShopArgs) (*TradersResponse, error)
 }
 

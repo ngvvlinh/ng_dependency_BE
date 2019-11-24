@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"etop.vn/api/main/etop"
+	"etop.vn/capi/dot"
 )
 
 // +gen:api
@@ -17,7 +18,7 @@ type Aggregate interface {
 }
 
 type QueryService interface {
-	GetPaymentByID(ctx context.Context, ID int64) (*Payment, error)
+	GetPaymentByID(ctx context.Context, ID dot.ID) (*Payment, error)
 
 	GetPaymentByExternalTransID(ctx context.Context, TransactionID string) (*Payment, error)
 }
@@ -34,7 +35,7 @@ type CreatePaymentArgs struct {
 }
 
 type UpdateExternalPaymentInfoArgs struct {
-	ID              int64
+	ID              dot.ID
 	Amount          int
 	Status          etop.Status4
 	State           PaymentState

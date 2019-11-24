@@ -6,6 +6,7 @@ import (
 	ordermodel "etop.vn/backend/com/main/ordering/model"
 	shipmodel "etop.vn/backend/com/main/shipping/model"
 	"etop.vn/backend/pkg/etop/model"
+	"etop.vn/capi/dot"
 )
 
 type ShippingProvider interface {
@@ -22,7 +23,7 @@ type ShippingProvider interface {
 }
 
 type GetShippingServicesArgs struct {
-	AccountID        int64
+	AccountID        dot.ID
 	FromDistrictCode string
 	ToDistrictCode   string
 

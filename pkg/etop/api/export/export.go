@@ -13,21 +13,19 @@ import (
 	"time"
 	"unicode/utf8"
 
-	"etop.vn/backend/pkg/common/cmapi"
-	"etop.vn/backend/pkg/etop/api/convertpb"
-
-	"github.com/golang/protobuf/jsonpb"
-
 	pbcm "etop.vn/api/pb/common"
 	pbshop "etop.vn/api/pb/etop/shop"
 	cm "etop.vn/backend/pkg/common"
+	"etop.vn/backend/pkg/common/cmapi"
 	"etop.vn/backend/pkg/common/idemp"
 	"etop.vn/backend/pkg/common/redis"
 	cmService "etop.vn/backend/pkg/common/service"
 	"etop.vn/backend/pkg/common/sq/core"
+	"etop.vn/backend/pkg/etop/api/convertpb"
 	"etop.vn/backend/pkg/etop/eventstream"
 	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/backend/pkg/etop/sqlstore"
+	"etop.vn/common/jsonx"
 	"etop.vn/common/l"
 )
 
@@ -90,8 +88,6 @@ func verifyDir(dir string) (absPath string, err error) {
 func ensureDir(dir string) error {
 	return os.MkdirAll(dir, 0755)
 }
-
-var marshaler = jsonpb.Marshaler{OrigName: true, EmitDefaults: true}
 
 func exportAndReportProgress(
 	cleanup func(),
@@ -207,7 +203,7 @@ func exportAndReportProgress(
 	var statusItem *pbshop.ExportStatusItem
 	for statusItem = range result {
 		buf := &bytes.Buffer{}
-		if err := marshaler.Marshal(buf, statusItem); err != nil {
+		if err := jsonx.MarshalTo(buf, statusItem); err != nil {
 			panic(err)
 		}
 		event := eventstream.Event{

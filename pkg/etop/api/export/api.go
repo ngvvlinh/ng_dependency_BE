@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"path/filepath"
-	"strconv"
 	"time"
 
 	pbshop "etop.vn/api/pb/etop/shop"
@@ -18,20 +17,22 @@ import (
 	"etop.vn/backend/pkg/etop/authorize/claims"
 	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/backend/pkg/etop/sqlstore"
+	"etop.vn/capi/dot"
+	"etop.vn/common/jsonx"
 )
 
 var ServiceImpl = &Service{}
 
 type Service struct{}
 
-func (s *Service) RequestExport(ctx context.Context, claim claims.ShopClaim, shop *model.Shop, userID int64, r *pbshop.RequestExportRequest) (_ *pbshop.RequestExportResponse, _err error) {
+func (s *Service) RequestExport(ctx context.Context, claim claims.ShopClaim, shop *model.Shop, userID dot.ID, r *pbshop.RequestExportRequest) (_ *pbshop.RequestExportResponse, _err error) {
 	if userID == 0 {
 		return nil, cm.Errorf(cm.PermissionDenied, nil, "")
 	}
 
 	// idempotency
-	key1 := strconv.FormatInt(shop.ID, 10)
-	if err := idempgroup.Acquire(key1, claim.Token); err != nil {
+	key := shop.ID.String()
+	if err := idempgroup.Acquire(key, claim.Token); err != nil {
 		return nil, idemp.WrapError(err, "xuất dữ liệu")
 	}
 	defer func() {
@@ -42,7 +43,7 @@ func (s *Service) RequestExport(ctx context.Context, claim claims.ShopClaim, sho
 		}
 		// release key when error, keep key if export
 		if _err != nil {
-			idempgroup.ReleaseKey(key1, claim.Token)
+			idempgroup.ReleaseKey(key, claim.Token)
 		}
 	}()
 
@@ -96,7 +97,7 @@ func (s *Service) RequestExport(ctx context.Context, claim claims.ShopClaim, sho
 		AccountID:    shop.ID,
 		UserID:       userID,
 		CreatedAt:    time.Now(),
-		RequestQuery: cmapi.MustMarshalToString(r),
+		RequestQuery: jsonx.MustMarshalToString(r),
 		MimeType:     "text/csv",
 		Status:       model.S4Zero,
 	}
@@ -116,7 +117,7 @@ func (s *Service) RequestExport(ctx context.Context, claim claims.ShopClaim, sho
 		// prepare fulfillments for exporting
 		query := &shipping.GetFulfillmentExtendedsQuery{
 			IDs:          r.Ids,
-			ShopIDs:      []int64{shop.ID},
+			ShopIDs:      []dot.ID{shop.ID},
 			DateFrom:     from,
 			DateTo:       to,
 			Filters:      cmapi.ToFilters(r.Filters),
@@ -137,7 +138,7 @@ func (s *Service) RequestExport(ctx context.Context, claim claims.ShopClaim, sho
 		}
 
 		go ignoreError(exportAndReportProgress(
-			func() { idempgroup.ReleaseKey(key1, claim.Token) },
+			func() { idempgroup.ReleaseKey(key, claim.Token) },
 			exportItem, fileName, exportOpts,
 			query.Result.Total, query.Result.Rows, query.Result.Opts,
 			ExportFulfillments,
@@ -145,7 +146,7 @@ func (s *Service) RequestExport(ctx context.Context, claim claims.ShopClaim, sho
 	case PathShopOrders:
 		query := &ordering.GetOrderExtendedsQuery{
 			IDs:          r.Ids,
-			ShopIDs:      []int64{shop.ID},
+			ShopIDs:      []dot.ID{shop.ID},
 			DateFrom:     from,
 			DateTo:       to,
 			Filters:      cmapi.ToFilters(r.Filters),
@@ -166,7 +167,7 @@ func (s *Service) RequestExport(ctx context.Context, claim claims.ShopClaim, sho
 		}
 
 		go ignoreError(exportAndReportProgress(
-			func() { idempgroup.ReleaseKey(key1, claim.Token) },
+			func() { idempgroup.ReleaseKey(key, claim.Token) },
 			exportItem, fileName, exportOpts,
 			query.Result.Total, query.Result.Rows, query.Result.Opts,
 			ExportOrders,
@@ -175,7 +176,7 @@ func (s *Service) RequestExport(ctx context.Context, claim claims.ShopClaim, sho
 	return resp, nil
 }
 
-func (s *Service) GetExports(ctx context.Context, shopID int64, r *pbshop.GetExportsRequest) (*pbshop.GetExportsResponse, error) {
+func (s *Service) GetExports(ctx context.Context, shopID dot.ID, r *pbshop.GetExportsRequest) (*pbshop.GetExportsResponse, error) {
 	exportAttempts, err := sqlstore.ExportAttempt(ctx).AccountID(shopID).NotYetExpired().List()
 	return &pbshop.GetExportsResponse{
 		ExportItems: convertpb.PbExportAttempts(exportAttempts),

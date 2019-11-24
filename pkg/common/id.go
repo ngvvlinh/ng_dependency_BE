@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"etop.vn/backend/pkg/common/gencode"
+	"etop.vn/capi/dot"
 	"etop.vn/common/l"
 )
 
@@ -31,7 +32,11 @@ func NewIDWithTime(t time.Time) int64 {
 }
 
 // NewID create new int64 ID
-func NewID() int64 {
+func NewID() dot.ID {
+	return dot.ID(NewIDWithTime(time.Now()))
+}
+
+func RandomInt64() int64 {
 	return NewIDWithTime(time.Now())
 }
 
@@ -43,21 +48,21 @@ func NewIDWithTimeAndTag(t time.Time, tag byte) int64 {
 }
 
 // NewIDWithTag create new int64 ID with 8 bit tag
-func NewIDWithTag(tag byte) int64 {
-	return NewIDWithTimeAndTag(time.Now(), tag)
+func NewIDWithTag(tag byte) dot.ID {
+	return dot.ID(NewIDWithTimeAndTag(time.Now(), tag))
 }
 
 // GetTag ...
-func GetTag(id int64) int64 {
+func GetTag(id dot.ID) int64 {
 	tag := (id >> 24) & 255
 	if tag%2 == 0 {
 		return 0
 	}
-	return tag
+	return int64(tag)
 }
 
-func IDToDec(id int64) string {
-	return strconv.FormatInt(id, 10)
+func IDToDec(id dot.ID) string {
+	return strconv.FormatInt(int64(id), 10)
 }
 
 func DecToID(s string) (int64, bool) {
@@ -65,8 +70,8 @@ func DecToID(s string) (int64, bool) {
 	return id, id != 0
 }
 
-func IDToHex(id int64) string {
-	return strconv.FormatInt(id, 16)
+func IDToHex(id dot.ID) string {
+	return strconv.FormatInt(int64(id), 16)
 }
 
 func HexToID(s string) (int64, bool) {

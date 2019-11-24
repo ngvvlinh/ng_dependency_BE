@@ -18,6 +18,7 @@ import (
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/cmsql"
 	"etop.vn/backend/pkg/common/conversion"
+	"etop.vn/capi/dot"
 )
 
 var _ inventory.Aggregate = &InventoryAggregate{}
@@ -133,7 +134,7 @@ func (q *InventoryAggregate) CreateInventoryVoucher(ctx context.Context, Oversto
 	return q.InventoryVoucherStore(ctx).ShopID(inventoryVoucher.ShopID).ID(voucher.ID).Get()
 }
 
-func (q *InventoryAggregate) validateTrader(ctx context.Context, shopID int64, voucher *inventory.InventoryVoucher) error {
+func (q *InventoryAggregate) validateTrader(ctx context.Context, shopID dot.ID, voucher *inventory.InventoryVoucher) error {
 	query := &tradering.GetTraderInfoByIDQuery{
 		ID:     voucher.TraderID,
 		ShopID: shopID,
@@ -250,7 +251,7 @@ func (q *InventoryAggregate) UpdateInventoryVoucher(ctx context.Context, args *i
 
 	updateInventoryCore := convert.ApplyUpdateInventoryVoucher(args, dbResult)
 	if args.TraderID.Valid {
-		if args.TraderID.Int64 != updateInventoryCore.TraderID {
+		if args.TraderID.ID != updateInventoryCore.TraderID {
 			err := q.validateTrader(ctx, updateInventoryCore.ShopID, updateInventoryCore)
 			if err != nil {
 				return nil, err
@@ -271,7 +272,7 @@ func (q *InventoryAggregate) AdjustInventoryQuantity(ctx context.Context, overSt
 	}
 	var linesCheckin []*inventory.InventoryVoucherItem
 	var linesCheckout []*inventory.InventoryVoucherItem
-	var listVariantID []int64
+	var listVariantID []dot.ID
 	var err error
 	linesCheckin, linesCheckout, listVariantID, err = q.DevideInOutInventoryVoucher(ctx, args)
 	if err != nil {
@@ -280,14 +281,14 @@ func (q *InventoryAggregate) AdjustInventoryQuantity(ctx context.Context, overSt
 	if args.Title == "" {
 		args.Title = "Phiếu cân bằng kho"
 	}
-	var inventoryVoucherInID int64
+	var inventoryVoucherInID dot.ID
 	if len(linesCheckin) > 0 {
 		inventoryVoucherInID, err = q.CreateVoucherForAdjustInventoryQuantity(ctx, overStock, args, linesCheckin, inventory.InventoryVoucherTypeIn)
 		if err != nil {
 			return nil, err
 		}
 	}
-	var inventoryVoucherOutID int64
+	var inventoryVoucherOutID dot.ID
 	if len(linesCheckout) > 0 {
 		inventoryVoucherOutID, err = q.CreateVoucherForAdjustInventoryQuantity(ctx, overStock, args, linesCheckout, inventory.InventoryVoucherTypeOut)
 		if err != nil {
@@ -312,8 +313,8 @@ func (q *InventoryAggregate) AdjustInventoryQuantity(ctx context.Context, overSt
 func (q *InventoryAggregate) DevideInOutInventoryVoucher(ctx context.Context,
 	args *inventory.AdjustInventoryQuantityArgs) ([]*inventory.InventoryVoucherItem,
 	[]*inventory.InventoryVoucherItem,
-	[]int64, error) {
-	var listVariantID []int64
+	[]dot.ID, error) {
+	var listVariantID []dot.ID
 	var linesCheckin []*inventory.InventoryVoucherItem
 	var linesCheckout []*inventory.InventoryVoucherItem
 
@@ -332,7 +333,7 @@ func (q *InventoryAggregate) DevideInOutInventoryVoucher(ctx context.Context,
 			continue
 		}
 		if err != nil {
-			return nil, nil, []int64{}, err
+			return nil, nil, nil, err
 		}
 		if value.QuantitySummary > (result.QuantityOnHand + result.QuantityPicked) {
 			linesCheckin = append(linesCheckin, &inventory.InventoryVoucherItem{
@@ -353,7 +354,7 @@ func (q *InventoryAggregate) DevideInOutInventoryVoucher(ctx context.Context,
 
 func (q *InventoryAggregate) CreateVoucherForAdjustInventoryQuantity(ctx context.Context, overStock bool, info *inventory.AdjustInventoryQuantityArgs,
 	lines []*inventory.InventoryVoucherItem,
-	typeVoucher inventory.InventoryVoucherType) (int64, error) {
+	typeVoucher inventory.InventoryVoucherType) (dot.ID, error) {
 	var totalValue int32 = 0
 	for _, value := range lines {
 		totalValue = totalValue + value.Price*value.Quantity
@@ -528,7 +529,7 @@ func checkInventoryVoucherRefType(inventoryVoucher *inventory.InventoryVoucher) 
 }
 
 func (q *InventoryAggregate) CreateInventoryVoucherByQuantityChange(ctx context.Context, args *inventory.CreateInventoryVoucherByQuantityChangeRequest) (*inventory.CreateInventoryVoucherByQuantityChangeResponse, error) {
-	var inventoryVariantIDs []int64
+	var inventoryVariantIDs []dot.ID
 	var inventoryVoucherIn []*inventory.InventoryVoucherItem
 	var inventoryVoucherOut []*inventory.InventoryVoucherItem
 	for _, value := range args.Lines {
@@ -538,7 +539,7 @@ func (q *InventoryAggregate) CreateInventoryVoucherByQuantityChange(ctx context.
 	if err != nil {
 		return nil, err
 	}
-	var mapInventoryVariantInfo = make(map[int64]*inventory.InventoryVariant)
+	var mapInventoryVariantInfo = make(map[dot.ID]*inventory.InventoryVariant)
 	for _, value := range listVariant {
 		mapInventoryVariantInfo[value.VariantID] = value
 	}

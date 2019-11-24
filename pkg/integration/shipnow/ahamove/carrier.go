@@ -18,6 +18,7 @@ import (
 	shipnowcarrier "etop.vn/backend/com/main/shipnow-carrier"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/integration/shipnow/ahamove/client"
+	"etop.vn/capi/dot"
 )
 
 var _ shipnowcarrier.ShipnowCarrier = &Carrier{}
@@ -154,7 +155,7 @@ func (c *Carrier) GetShippingServices(ctx context.Context, args shipnowcarrier.G
 		IdleUntil:      0,
 		DeliveryPoints: deliveryPoints,
 	}
-	services, err := c.calcShippingFee(ctx, args.ShopID, request)
+	services, err := c.calcShippingFee(ctx, args.ShopID.Int64(), request)
 	if err != nil {
 		return nil, err
 	}
@@ -275,7 +276,7 @@ func (c *Carrier) ValidateAndGetAddress(ctx context.Context, in *ordertypes.Addr
 	return query.Result, nil
 }
 
-func getToken(ctx context.Context, userID int64) (token string, _err error) {
+func getToken(ctx context.Context, userID dot.ID) (token string, _err error) {
 	queryUser := &identity.GetUserByIDQuery{
 		UserID: userID,
 	}
@@ -294,7 +295,7 @@ func getToken(ctx context.Context, userID int64) (token string, _err error) {
 	return query.Result.ExternalToken, nil
 }
 
-func isXAccountAhamoveVerified(ctx context.Context, userID int64) (bool, error) {
+func isXAccountAhamoveVerified(ctx context.Context, userID dot.ID) (bool, error) {
 	queryUser := &identity.GetUserByIDQuery{
 		UserID: userID,
 	}

@@ -6,6 +6,7 @@ import (
 	"etop.vn/api/meta"
 	"etop.vn/api/shopping"
 	. "etop.vn/capi/dot"
+	dot "etop.vn/capi/dot"
 )
 
 // +gen:api
@@ -15,7 +16,7 @@ type Aggregate interface {
 
 	UpdateCarrier(ctx context.Context, _ *UpdateCarrierArgs) (*ShopCarrier, error)
 
-	DeleteCarrier(ctx context.Context, ID int64, shopID int64) (deleted int, _ error)
+	DeleteCarrier(ctx context.Context, ID dot.ID, shopID dot.ID) (deleted int, _ error)
 }
 
 type QueryService interface {
@@ -38,15 +39,15 @@ type CarriersResponse struct {
 
 // +convert:create=ShopCarrier
 type CreateCarrierArgs struct {
-	ShopID   int64
+	ShopID   dot.ID
 	FullName string
 	Note     string
 }
 
 // +convert:update=ShopCarrier(ID,ShopID)
 type UpdateCarrierArgs struct {
-	ID       int64
-	ShopID   int64
+	ID       dot.ID
+	ShopID   dot.ID
 	FullName NullString
 	Note     NullString
 }

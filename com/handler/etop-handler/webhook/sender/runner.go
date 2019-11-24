@@ -13,6 +13,7 @@ import (
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/redis"
 	"etop.vn/backend/pkg/etop/model"
+	"etop.vn/capi/dot"
 	"etop.vn/common/jsonx"
 	"etop.vn/common/l"
 )
@@ -86,7 +87,7 @@ func NewSingleSender(wh *model.Webhook) *SingleSender {
 	}
 }
 
-func LoadWebhookStates(redisStore redis.Store, id int64) WebhookStates {
+func LoadWebhookStates(redisStore redis.Store, id dot.ID) WebhookStates {
 	var current WebhookStates
 	err := redisStore.Get(redisKey(id), &current)
 	if err != nil && err != redis.ErrNil {
@@ -113,7 +114,7 @@ func NewSingleSenders(webhooks []*model.Webhook) []*SingleSender {
 	return ssenders
 }
 
-func (s *SingleSender) Collect(entity string, entityID int64, msg []byte) {
+func (s *SingleSender) Collect(entity string, entityID dot.ID, msg []byte) {
 	s.m.Lock()
 	defer s.m.Unlock()
 
@@ -135,7 +136,7 @@ func (s *SingleSender) Shutdown() {
 	// TODO
 }
 
-func (s *SingleSender) storeToDatabase(callbackID int64, mc *types.MessageCollector, states *WebhookStatesError) error {
+func (s *SingleSender) storeToDatabase(callbackID dot.ID, mc *types.MessageCollector, states *WebhookStatesError) error {
 	// TODO: refactor
 	changesData := buildJSON(callbackID, mc.Messages)
 	changesData = changesData[len(jsonOpen)-1 : len(changesData)-1]
@@ -149,12 +150,12 @@ func (s *SingleSender) storeToDatabase(callbackID int64, mc *types.MessageCollec
 		Changes:   changesData,
 		Result:    statesData,
 	}
-	ll.Debug("store to database", l.Int64("id", data.ID), l.Int64("account_id", s.webhook.AccountID), l.Int64("webhook_id", s.webhook.ID))
+	ll.Debug("store to database", l.ID("id", data.ID), l.ID("account_id", s.webhook.AccountID), l.ID("webhook_id", s.webhook.ID))
 	return changesStore.Insert(context.Background(), data)
 }
 
-func redisKey(id int64) string {
-	return PrefixRedisWebhook + strconv.FormatInt(id, 10)
+func redisKey(id dot.ID) string {
+	return PrefixRedisWebhook + id.String()
 }
 
 func truncate(items [][]byte, max int) [][]byte {
@@ -168,12 +169,12 @@ func truncate(items [][]byte, max int) [][]byte {
 }
 
 func (s *SingleSender) Run(ctx context.Context, startAfter time.Duration) {
-	ll.Debug("Sender start", l.Int64("webhook_id", s.webhook.ID), l.Int64("account_id", s.webhook.AccountID))
-	defer ll.Debug("Sender stopped", l.Int64("webhook_id", s.webhook.ID), l.Int64("account_id", s.webhook.AccountID))
+	ll.Debug("Sender start", l.ID("webhook_id", s.webhook.ID), l.ID("account_id", s.webhook.AccountID))
+	defer ll.Debug("Sender stopped", l.ID("webhook_id", s.webhook.ID), l.ID("account_id", s.webhook.AccountID))
 
 	current := LoadWebhookStates(redisStore, s.webhook.ID)
 	if current.State == StateStop {
-		ll.Warn("Webhook is stopped", l.Int64("webhook_id", s.webhook.ID))
+		ll.Warn("Webhook is stopped", l.ID("webhook_id", s.webhook.ID))
 		current.IntervalDuration = 24 * time.Hour
 		// TODO: refactor this
 	}
@@ -181,7 +182,7 @@ func (s *SingleSender) Run(ctx context.Context, startAfter time.Duration) {
 	interval := startAfter + current.IntervalDuration
 	t := time.NewTimer(interval)
 	for {
-		ll.Debug("Sender is running", l.Int64("webhook_id", s.webhook.ID), l.Int64("account_id", s.webhook.AccountID), l.Any("states", current))
+		ll.Debug("Sender is running", l.ID("webhook_id", s.webhook.ID), l.ID("account_id", s.webhook.AccountID), l.Any("states", current))
 
 		select {
 		case <-ctx.Done():
@@ -194,7 +195,7 @@ func (s *SingleSender) Run(ctx context.Context, startAfter time.Duration) {
 			t.Stop()
 			current.IntervalDuration = 5 * time.Second
 			t.Reset(current.IntervalDuration)
-			ll.Debug("reset webhook state", l.Int64("webhook_id", s.webhook.ID), l.Any("states", current))
+			ll.Debug("reset webhook state", l.ID("webhook_id", s.webhook.ID), l.Any("states", current))
 
 		case <-t.C:
 			states, err := s.Send()
@@ -207,7 +208,7 @@ func (s *SingleSender) Run(ctx context.Context, startAfter time.Duration) {
 			current.Interval = int(current.IntervalDuration / time.Second)
 			t = time.NewTimer(current.IntervalDuration)
 
-			ll.Debug("Store to redis", l.Int64("webhook_id", s.webhook.ID), l.Any("states", current))
+			ll.Debug("Store to redis", l.ID("webhook_id", s.webhook.ID), l.Any("states", current))
 			if err := redisStore.SetWithTTL(redisKey(s.webhook.ID), current, DefaultTTL); err != nil {
 				ll.Error("Can not store to redis", l.Error(err))
 			}
@@ -297,10 +298,10 @@ func (s *SingleSender) Send() (*WebhookStatesError, error) {
 	if err == nil {
 		// clean the last items
 		s.lastItems = nil
-		ll.Debug("Sent webhook", l.Int64("account_id", wh.AccountID), l.Int64("webhook_id", wh.ID), l.Int("status_code", status), l.String("url", wh.URL))
+		ll.Debug("Sent webhook", l.ID("account_id", wh.AccountID), l.ID("webhook_id", wh.ID), l.Int("status_code", status), l.String("url", wh.URL))
 
 	} else {
-		ll.Warn("Sent webhook (unexpected status)", l.Int64("account_id", wh.AccountID), l.Int64("webhook_id", wh.ID), l.Int("status_code", status), l.Error(err), l.String("url", wh.URL))
+		ll.Warn("Sent webhook (unexpected status)", l.ID("account_id", wh.AccountID), l.ID("webhook_id", wh.ID), l.Int("status_code", status), l.Error(err), l.String("url", wh.URL))
 	}
 
 	states := &WebhookStatesError{
@@ -344,7 +345,7 @@ func sendWebhookSingleRequest(ctx context.Context, wh *model.Webhook, data []byt
 const jsonOpen = `"changes":[`
 const jsonClose = `]}`
 
-func buildJSON(callbackID int64, msgs [][]byte) []byte {
+func buildJSON(callbackID dot.ID, msgs [][]byte) []byte {
 	size := 1 + len(jsonOpen) + len(jsonClose) + 30 // id:"",
 	for _, msg := range msgs {
 		size += len(msg) + 1
@@ -352,7 +353,7 @@ func buildJSON(callbackID int64, msgs [][]byte) []byte {
 
 	data := make([]byte, 0, size)
 	data = append(data, `{"id":"`...)
-	data = strconv.AppendInt(data, callbackID, 10)
+	data = strconv.AppendInt(data, callbackID.Int64(), 10)
 	data = append(data, `",`...)
 	data = append(data, jsonOpen...)
 	for _, msg := range msgs {

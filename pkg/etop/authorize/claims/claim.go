@@ -5,19 +5,20 @@ import (
 
 	identitymodel "etop.vn/backend/com/main/identity/model"
 	"etop.vn/backend/pkg/etop/model"
+	"etop.vn/capi/dot"
 )
 
 type ClaimInfo struct {
 	Token         string `json:"-"`
-	UserID        int64  `json:"-"`
-	AdminID       int64  `json:"adm,omitempty"`
-	AccountID     int64  `json:"acc,omitempty"`
-	AuthPartnerID int64  `json:"auth_partner,omitempty"` // authenticated via partner
+	UserID        dot.ID `json:"-"`
+	AdminID       dot.ID `json:"adm,omitempty"`
+	AccountID     dot.ID `json:"acc,omitempty"`
+	AuthPartnerID dot.ID `json:"auth_partner,omitempty"` // authenticated via partner
 
 	SToken bool `json:"stoken,omitempty"`
 
-	AccountIDs      map[int64]int `json:"acs,omitempty"`
-	STokenExpiresAt *time.Time    `json:"stoken_expires_at,omitempty"`
+	AccountIDs      map[dot.ID]int `json:"acs,omitempty"`
+	STokenExpiresAt *time.Time     `json:"stoken_expires_at,omitempty"`
 
 	// check-and-set token for atomic updating
 	CAS int64 `json:"cas,omitempty"`

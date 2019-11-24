@@ -6,6 +6,7 @@ import (
 	"etop.vn/backend/pkg/common/sq"
 	"etop.vn/backend/pkg/common/validate"
 	"etop.vn/backend/pkg/etop/model"
+	"etop.vn/capi/dot"
 )
 
 //go:generate $ETOPDIR/backend/scripts/derive.sh
@@ -63,9 +64,9 @@ var _ = sqlgenShopVariant(&ShopVariant{})
 
 // +convert:type=catalog.ShopVariant
 type ShopVariant struct {
-	ShopID    int64
-	VariantID int64
-	ProductID int64
+	ShopID    dot.ID
+	VariantID dot.ID
+	ProductID dot.ID
 
 	Code        string
 	Name        string
@@ -102,9 +103,9 @@ var _ = sqlgenShopProduct(&ShopProduct{})
 
 // +convert:type=catalog.ShopProduct
 type ShopProduct struct {
-	ShopID        int64
-	ProductID     int64
-	CollectionIDs []int64 `sq:"-"`
+	ShopID        dot.ID
+	ProductID     dot.ID
+	CollectionIDs []dot.ID `sq:"-"`
 
 	Code        string
 	Name        string
@@ -115,12 +116,12 @@ type ShopProduct struct {
 	Note        string
 	Tags        []string
 	Unit        string
-	CategoryID  int64
+	CategoryID  dot.ID
 
 	CostPrice   int32
 	ListPrice   int32
 	RetailPrice int32
-	BrandID     int64
+	BrandID     dot.ID
 
 	Status model.Status3
 
@@ -143,9 +144,9 @@ type ShopProductWithVariants struct {
 var _ = sqlgenProductShopCollection(&ProductShopCollection{})
 
 type ProductShopCollection struct {
-	CollectionID int64
-	ProductID    int64
-	ShopID       int64
+	CollectionID dot.ID
+	ProductID    dot.ID
+	ShopID       dot.ID
 	Status       int
 	CreatedAt    time.Time `sq:"create"`
 	UpdatedAt    time.Time `sq:"update"`
@@ -206,10 +207,10 @@ var _ = sqlgenShopCategory(&ShopCategory{})
 
 // +convert:type=catalog.ShopCategory
 type ShopCategory struct {
-	ID int64
+	ID dot.ID
 
-	ParentID int64
-	ShopID   int64
+	ParentID dot.ID
+	ShopID   dot.ID
 
 	Name string
 
@@ -223,8 +224,8 @@ var _ = sqlgenShopCollection(&ShopCollection{})
 
 // +convert:type=catalog.ShopCollection
 type ShopCollection struct {
-	ID     int64
-	ShopID int64
+	ID     dot.ID
+	ShopID dot.ID
 
 	Name        string
 	Description string
@@ -239,9 +240,9 @@ var _ = sqlgenShopProductCollection(&ShopProductCollection{})
 
 // +convert:type=catalog.ShopProductCollection
 type ShopProductCollection struct {
-	ProductID    int64
-	CollectionID int64
-	ShopID       int64
+	ProductID    dot.ID
+	CollectionID dot.ID
+	ShopID       dot.ID
 
 	CreatedAt time.Time `sq:"create"`
 	UpdatedAt time.Time `sq:"update"`
@@ -251,8 +252,8 @@ var _ = sqlgenShopBrand(&ShopBrand{})
 
 // +convert:type=catalog.ShopBrand
 type ShopBrand struct {
-	ID     int64
-	ShopID int64
+	ID     dot.ID
+	ShopID dot.ID
 
 	BrandName   string
 	Description string
@@ -266,9 +267,9 @@ var _ = sqlgenShopSupplierVariant(&ShopVariantSupplier{})
 
 // +convert:type=catalog.ShopVariantSupplier
 type ShopVariantSupplier struct {
-	ShopID     int64
-	SupplierID int64
-	VariantID  int64
+	ShopID     dot.ID
+	SupplierID dot.ID
+	VariantID  dot.ID
 	CreatedAt  time.Time `sq:"create"`
 	UpdatedAt  time.Time `sq:"update"`
 }

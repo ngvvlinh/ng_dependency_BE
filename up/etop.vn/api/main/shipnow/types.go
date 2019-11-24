@@ -9,14 +9,15 @@ import (
 	shipnowtypes "etop.vn/api/main/shipnow/types"
 	shippingtypes "etop.vn/api/main/shipping/types"
 	"etop.vn/api/meta"
+	"etop.vn/capi/dot"
 )
 
 // +gen:event:topic=event/shipnow
 
 type ShipnowFulfillment struct {
-	Id                         int64
-	ShopId                     int64
-	PartnerId                  int64
+	Id                         dot.ID
+	ShopId                     dot.ID
+	PartnerId                  dot.ID
 	PickupAddress              *types.Address
 	DeliveryPoints             []*DeliveryPoint
 	Carrier                    v1.Carrier
@@ -33,7 +34,7 @@ type ShipnowFulfillment struct {
 	ShippingCode         string
 	ShippingState        shipnowtypes.State
 	ConfirmStatus        etop.Status3
-	OrderIds             []int64
+	OrderIds             []dot.ID
 	ShippingCreatedAt    time.Time
 	CreatedAt            time.Time
 	UpdatedAt            time.Time
@@ -58,23 +59,23 @@ type SyncStates struct {
 type ShipnowOrderReservationEvent struct {
 	meta.EventMeta
 
-	ShipnowFulfillmentId int64
-	OrderIds             []int64
+	ShipnowFulfillmentId dot.ID
+	OrderIds             []dot.ID
 }
 
 type ShipnowOrderChangedEvent struct {
 	meta.EventMeta
 
-	ShipnowFulfillmentId int64
-	OldOrderIds          []int64
-	OrderIds             []int64
+	ShipnowFulfillmentId dot.ID
+	OldOrderIds          []dot.ID
+	OrderIds             []dot.ID
 }
 
 type ShipnowCancelledEvent struct {
 	meta.EventMeta
 
-	ShipnowFulfillmentId int64
-	OrderIds             []int64
+	ShipnowFulfillmentId dot.ID
+	OrderIds             []dot.ID
 	ExternalShipnowId    string
 	CarrierServiceCode   string
 	CancelReason         string
@@ -83,14 +84,14 @@ type ShipnowCancelledEvent struct {
 type ShipnowValidateConfirmedEvent struct {
 	meta.EventMeta
 
-	ShipnowFulfillmentId int64
-	OrderIds             []int64
+	ShipnowFulfillmentId dot.ID
+	OrderIds             []dot.ID
 }
 
 type ShipnowCreateExternalEvent struct {
 	meta.EventMeta
 
-	ShipnowFulfillmentId int64
+	ShipnowFulfillmentId dot.ID
 }
 
 func ShipnowStatus(state shipnowtypes.State, paymentStatus etop.Status4) etop.Status5 {

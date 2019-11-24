@@ -1,5 +1,7 @@
 package modelx
 
+import "etop.vn/capi/dot"
+
 type GetByIDArgs struct {
-	ID int64
+	ID dot.ID
 }

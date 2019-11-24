@@ -9,13 +9,14 @@ import (
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/sq/core"
 	"etop.vn/backend/pkg/etop/model"
+	"etop.vn/capi/dot"
 )
 
 type GetFulfillmentExtendedsQuery struct {
-	IDs           []int64
-	ShopIDs       []int64 // MixedAccount
-	PartnerID     int64
-	OrderID       int64
+	IDs           []dot.ID
+	ShopIDs       []dot.ID // MixedAccount
+	PartnerID     dot.ID
+	OrderID       dot.ID
 	Status        *model.Status3
 	ShippingCodes []string
 	DateFrom      time.Time
@@ -38,18 +39,18 @@ type GetFulfillmentExtendedsQuery struct {
 }
 
 type GetFulfillmentExtendedQuery struct {
-	ShopID               int64
-	PartnerID            int64
-	FulfillmentID        int64
+	ShopID               dot.ID
+	PartnerID            dot.ID
+	FulfillmentID        dot.ID
 	ExternalShippingCode string
 
 	Result *modely.FulfillmentExtended
 }
 
 type GetFulfillmentQuery struct {
-	ShopID        int64
-	PartnerID     int64
-	FulfillmentID int64
+	ShopID        dot.ID
+	PartnerID     dot.ID
+	FulfillmentID dot.ID
 
 	ShippingProvider     model.ShippingProvider
 	ShippingCode         string
@@ -59,14 +60,14 @@ type GetFulfillmentQuery struct {
 }
 
 type GetFulfillmentsQuery struct {
-	ShopIDs   []int64 // MixedAccount
-	PartnerID int64
-	OrderID   int64
+	ShopIDs   []dot.ID // MixedAccount
+	PartnerID dot.ID
+	OrderID   dot.ID
 
 	Status                *model.Status3
 	ShippingCodes         []string
 	ExternalShippingCodes []string
-	IDs                   []int64
+	IDs                   []dot.ID
 
 	Paging  *cm.Paging
 	Filters []cm.Filter
@@ -84,7 +85,7 @@ type GetUnCompleteFulfillmentsQuery struct {
 }
 
 type GetFulfillmentsCallbackLogs struct {
-	FromID                int64
+	FromID                dot.ID
 	Paging                *cm.Paging
 	ExcludeShippingStates []model.ShippingState
 
@@ -125,7 +126,7 @@ type UpdateFulfillmentsWithoutTransactionCommand struct {
 }
 
 type UpdateFulfillmentsStatusCommand struct {
-	FulfillmentIDs []int64
+	FulfillmentIDs []dot.ID
 	Status         *model.Status4
 	ShopConfirm    *model.Status3
 	SyncStatus     *model.Status4
@@ -133,15 +134,15 @@ type UpdateFulfillmentsStatusCommand struct {
 }
 
 type SyncUpdateFulfillmentsCommand struct {
-	ShippingSourceID int64
+	ShippingSourceID dot.ID
 	LastSyncAt       time.Time
 	Fulfillments     []*shipmodel.Fulfillment
 }
 
 type UpdateFulfillmentsShippingStateCommand struct {
-	ShopID        int64
-	PartnerID     int64
-	IDs           []int64
+	ShopID        dot.ID
+	PartnerID     dot.ID
+	IDs           []dot.ID
 	ShippingState model.ShippingState
 
 	Result struct {
@@ -150,7 +151,7 @@ type UpdateFulfillmentsShippingStateCommand struct {
 }
 
 type AdminUpdateFulfillmentCommand struct {
-	FulfillmentID            int64
+	FulfillmentID            dot.ID
 	FullName                 string
 	Phone                    string
 	TotalCODAmount           *int

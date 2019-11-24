@@ -7,6 +7,7 @@ import (
 
 	"etop.vn/api/main/etop"
 	"etop.vn/api/meta"
+	"etop.vn/capi/dot"
 )
 
 // +gen:event:topic=event/invitation
@@ -29,13 +30,13 @@ type Config struct {
 }
 
 type Invitation struct {
-	ID         int64
-	AccountID  int64
+	ID         dot.ID
+	AccountID  dot.ID
 	Email      string
 	Roles      []Role
 	Token      string
 	Status     etop.Status3
-	InvitedBy  int64
+	InvitedBy  dot.ID
 	AcceptedAt time.Time
 	RejectedAt time.Time
 	ExpiresAt  time.Time
@@ -45,7 +46,7 @@ type Invitation struct {
 
 type Claims struct {
 	Email          string `json:"email"`
-	AccountID      int64  `json:"account_id"`
+	AccountID      dot.ID `json:"account_id"`
 	Roles          []Role `json:"roles"`
 	StandardClaims jwt.StandardClaims
 }
@@ -74,5 +75,5 @@ func IsContainsRole(roles []Role, arg Role) bool {
 
 type InvitationAcceptedEvent struct {
 	meta.EventMeta
-	ID int64
+	ID dot.ID
 }

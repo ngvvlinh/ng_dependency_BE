@@ -6,9 +6,10 @@ import (
 
 	"etop.vn/api/external/payment"
 	cm "etop.vn/backend/pkg/common"
+	"etop.vn/capi/dot"
 )
 
-func ParseCode(code string) (payment.PaymentSource, int64, error) {
+func ParseCode(code string) (payment.PaymentSource, dot.ID, error) {
 	// Format: order_1092423469033452748
 	args := strings.Split(code, "_")
 	if len(args) < 2 {
@@ -18,5 +19,5 @@ func ParseCode(code string) (payment.PaymentSource, int64, error) {
 	if err != nil {
 		return "", 0, cm.Errorf(cm.InvalidArgument, err, "ID does not exist")
 	}
-	return payment.PaymentSource(args[0]), id, nil
+	return payment.PaymentSource(args[0]), dot.ID(id), nil
 }

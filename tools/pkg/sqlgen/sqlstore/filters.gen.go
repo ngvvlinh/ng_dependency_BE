@@ -7,6 +7,7 @@ import (
 
 	"etop.vn/backend/pkg/common/sq"
 	m "etop.vn/backend/tools/pkg/sqlgen/test"
+	"etop.vn/capi/dot"
 )
 
 type UserFilters struct{ prefix string }
@@ -427,7 +428,7 @@ func (ft UserInfoFilters) Prefix() string {
 	return ft.prefix
 }
 
-func (ft *UserInfoFilters) ByUserID(UserID int64) *sq.ColumnFilter {
+func (ft *UserInfoFilters) ByUserID(UserID dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "user_id",
@@ -436,7 +437,7 @@ func (ft *UserInfoFilters) ByUserID(UserID int64) *sq.ColumnFilter {
 	}
 }
 
-func (ft *UserInfoFilters) ByUserIDPtr(UserID *int64) *sq.ColumnFilterPtr {
+func (ft *UserInfoFilters) ByUserIDPtr(UserID *dot.ID) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "user_id",
@@ -906,7 +907,7 @@ func (ft ProfileFilters) Prefix() string {
 	return ft.prefix
 }
 
-func (ft *ProfileFilters) ByID(ID int64) *sq.ColumnFilter {
+func (ft *ProfileFilters) ByID(ID dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "id",
@@ -915,7 +916,7 @@ func (ft *ProfileFilters) ByID(ID int64) *sq.ColumnFilter {
 	}
 }
 
-func (ft *ProfileFilters) ByIDPtr(ID *int64) *sq.ColumnFilterPtr {
+func (ft *ProfileFilters) ByIDPtr(ID *dot.ID) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "id",

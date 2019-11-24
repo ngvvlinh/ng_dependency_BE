@@ -9,6 +9,7 @@ import (
 	time "time"
 
 	capi "etop.vn/capi"
+	dot "etop.vn/capi/dot"
 )
 
 type Command interface{ command() }
@@ -40,7 +41,7 @@ func (c QueryBus) DispatchAll(ctx context.Context, msgs ...Query) error {
 type SummaryPOSQuery struct {
 	DateFrom time.Time
 	DateTo   time.Time
-	ShopID   int64
+	ShopID   dot.ID
 
 	Result *SummaryPOSResponse `json:"-"`
 }

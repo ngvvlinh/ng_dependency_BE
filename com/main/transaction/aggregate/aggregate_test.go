@@ -13,14 +13,15 @@ import (
 	cc "etop.vn/backend/pkg/common/config"
 	. "etop.vn/backend/pkg/common/testing"
 	"etop.vn/backend/pkg/etop/model"
+	"etop.vn/capi/dot"
 	"etop.vn/common/l"
 )
 
 var (
 	ll        = l.New()
 	db        *cmsql.Database
-	tranID    = int64(123)
-	accountID = int64(123456)
+	tranID    = dot.ID(123)
+	accountID = dot.ID(123456)
 	amount    = 25000
 )
 
@@ -52,7 +53,7 @@ func TestTransactionAggregate(t *testing.T) {
 			Status:    int(model.S3Zero),
 			Metadata: &transactionmodel.TransactionMetadata{
 				ReferralType: string(transaction.ReferralTypeOrder),
-				ReferralIDs:  []int64{555555},
+				ReferralIDs:  []dot.ID{555555},
 			},
 			Note: "note",
 		}
@@ -73,7 +74,7 @@ func TestTransactionAggregate(t *testing.T) {
 				Note:      "123456",
 				Metadata: &transaction.TransactionMetadata{
 					ReferralType: transaction.ReferralTypeOrder,
-					ReferralIDs:  []int64{555555},
+					ReferralIDs:  []dot.ID{555555},
 				},
 			}
 			err := Aggr.Dispatch(ctx, cmd)

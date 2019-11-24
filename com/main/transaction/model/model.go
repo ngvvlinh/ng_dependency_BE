@@ -1,15 +1,19 @@
 package model
 
-import "time"
+import (
+	"time"
+
+	"etop.vn/capi/dot"
+)
 
 //go:generate $ETOPDIR/backend/scripts/derive.sh
 
 var _ = sqlgenTransaction(&Transaction{})
 
 type Transaction struct {
-	ID        int64
+	ID        dot.ID
 	Amount    int
-	AccountID int64
+	AccountID dot.ID
 	Status    int
 	Type      string
 	Note      string
@@ -20,5 +24,5 @@ type Transaction struct {
 
 type TransactionMetadata struct {
 	ReferralType string
-	ReferralIDs  []int64
+	ReferralIDs  []dot.ID
 }

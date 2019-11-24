@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"etop.vn/backend/pkg/common/sq"
+	"etop.vn/capi/dot"
 )
 
 //go:generate $ETOPDIR/backend/scripts/derive.sh
@@ -55,7 +56,7 @@ var _ = sqlgenUserInfo(&UserInfo{})
 
 // UserInfo ...
 type UserInfo struct {
-	UserID   int64
+	UserID   dot.ID
 	Metadata string
 
 	Bool    bool
@@ -206,7 +207,7 @@ type UserInline struct {
 var _ = sqlgenProfile(&Profile{})
 
 type Profile struct {
-	ID    int64
+	ID    dot.ID
 	Style string
 
 	UserInfos []*UserInfo `sq:"preload,fkey:'user_id'"`

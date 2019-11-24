@@ -8,6 +8,7 @@ import (
 	context "context"
 
 	capi "etop.vn/capi"
+	dot "etop.vn/capi/dot"
 )
 
 type Command interface{ command() }
@@ -38,7 +39,7 @@ func (c QueryBus) DispatchAll(ctx context.Context, msgs ...Query) error {
 
 type CreateAffiliateCommand struct {
 	Name        string
-	OwnerID     int64
+	OwnerID     dot.ID
 	Phone       string
 	Email       string
 	IsTest      bool
@@ -53,7 +54,7 @@ func (h AggregateHandler) HandleCreateAffiliate(ctx context.Context, msg *Create
 }
 
 type CreateExternalAccountAhamoveCommand struct {
-	OwnerID int64
+	OwnerID dot.ID
 	Phone   string
 	Name    string
 	Address string
@@ -67,8 +68,8 @@ func (h AggregateHandler) HandleCreateExternalAccountAhamove(ctx context.Context
 }
 
 type DeleteAffiliateCommand struct {
-	ID      int64
-	OwnerID int64
+	ID      dot.ID
+	OwnerID dot.ID
 
 	Result struct {
 	} `json:"-"`
@@ -79,7 +80,7 @@ func (h AggregateHandler) HandleDeleteAffiliate(ctx context.Context, msg *Delete
 }
 
 type RequestVerifyExternalAccountAhamoveCommand struct {
-	OwnerID int64
+	OwnerID dot.ID
 	Phone   string
 
 	Result *RequestVerifyExternalAccountAhamoveResult `json:"-"`
@@ -91,8 +92,8 @@ func (h AggregateHandler) HandleRequestVerifyExternalAccountAhamove(ctx context.
 }
 
 type UpdateAffiliateBankAccountCommand struct {
-	ID          int64
-	OwnerID     int64
+	ID          dot.ID
+	OwnerID     dot.ID
 	BankAccount *BankAccount
 
 	Result *Affiliate `json:"-"`
@@ -104,8 +105,8 @@ func (h AggregateHandler) HandleUpdateAffiliateBankAccount(ctx context.Context, 
 }
 
 type UpdateAffiliateInfoCommand struct {
-	ID      int64
-	OwnerID int64
+	ID      dot.ID
+	OwnerID dot.ID
 	Phone   string
 	Email   string
 	Name    string
@@ -119,7 +120,7 @@ func (h AggregateHandler) HandleUpdateAffiliateInfo(ctx context.Context, msg *Up
 }
 
 type UpdateExternalAccountAhamoveVerificationCommand struct {
-	OwnerID             int64
+	OwnerID             dot.ID
 	Phone               string
 	IDCardFrontImg      string
 	IDCardBackImg       string
@@ -138,7 +139,7 @@ func (h AggregateHandler) HandleUpdateExternalAccountAhamoveVerification(ctx con
 }
 
 type UpdateUserReferenceSaleIDCommand struct {
-	UserID       int64
+	UserID       dot.ID
 	RefSalePhone string
 
 	Result struct {
@@ -150,7 +151,7 @@ func (h AggregateHandler) HandleUpdateUserReferenceSaleID(ctx context.Context, m
 }
 
 type UpdateUserReferenceUserIDCommand struct {
-	UserID       int64
+	UserID       dot.ID
 	RefUserPhone string
 
 	Result struct {
@@ -162,7 +163,7 @@ func (h AggregateHandler) HandleUpdateUserReferenceUserID(ctx context.Context, m
 }
 
 type UpdateVerifiedExternalAccountAhamoveCommand struct {
-	OwnerID int64
+	OwnerID dot.ID
 	Phone   string
 
 	Result *ExternalAccountAhamove `json:"-"`
@@ -174,7 +175,7 @@ func (h AggregateHandler) HandleUpdateVerifiedExternalAccountAhamove(ctx context
 }
 
 type GetAffiliateByIDQuery struct {
-	ID int64
+	ID dot.ID
 
 	Result *Affiliate `json:"-"`
 }
@@ -185,8 +186,8 @@ func (h QueryServiceHandler) HandleGetAffiliateByID(ctx context.Context, msg *Ge
 }
 
 type GetAffiliateWithPermissionQuery struct {
-	AffiliateID int64
-	UserID      int64
+	AffiliateID dot.ID
+	UserID      dot.ID
 
 	Result *GetAffiliateWithPermissionResult `json:"-"`
 }
@@ -197,7 +198,7 @@ func (h QueryServiceHandler) HandleGetAffiliateWithPermission(ctx context.Contex
 }
 
 type GetAffiliatesByIDsQuery struct {
-	AffiliateIDs []int64
+	AffiliateIDs []dot.ID
 
 	Result []*Affiliate `json:"-"`
 }
@@ -208,7 +209,7 @@ func (h QueryServiceHandler) HandleGetAffiliatesByIDs(ctx context.Context, msg *
 }
 
 type GetAffiliatesByOwnerIDQuery struct {
-	ID int64
+	ID dot.ID
 
 	Result []*Affiliate `json:"-"`
 }
@@ -219,7 +220,7 @@ func (h QueryServiceHandler) HandleGetAffiliatesByOwnerID(ctx context.Context, m
 }
 
 type GetExternalAccountAhamoveQuery struct {
-	OwnerID int64
+	OwnerID dot.ID
 	Phone   string
 
 	Result *ExternalAccountAhamove `json:"-"`
@@ -242,7 +243,7 @@ func (h QueryServiceHandler) HandleGetExternalAccountAhamoveByExternalID(ctx con
 }
 
 type GetShopByIDQuery struct {
-	ID int64
+	ID dot.ID
 
 	Result *Shop `json:"-"`
 }
@@ -264,7 +265,7 @@ func (h QueryServiceHandler) HandleGetUserByEmail(ctx context.Context, msg *GetU
 }
 
 type GetUserByIDQuery struct {
-	UserID int64
+	UserID dot.ID
 
 	Result *User `json:"-"`
 }
@@ -474,12 +475,12 @@ func (q *UpdateVerifiedExternalAccountAhamoveCommand) SetUpdateVerifiedExternalA
 	q.Phone = args.Phone
 }
 
-func (q *GetAffiliateByIDQuery) GetArgs(ctx context.Context) (_ context.Context, ID int64) {
+func (q *GetAffiliateByIDQuery) GetArgs(ctx context.Context) (_ context.Context, ID dot.ID) {
 	return ctx,
 		q.ID
 }
 
-func (q *GetAffiliateWithPermissionQuery) GetArgs(ctx context.Context) (_ context.Context, AffiliateID int64, UserID int64) {
+func (q *GetAffiliateWithPermissionQuery) GetArgs(ctx context.Context) (_ context.Context, AffiliateID dot.ID, UserID dot.ID) {
 	return ctx,
 		q.AffiliateID,
 		q.UserID
@@ -531,7 +532,7 @@ func (q *GetExternalAccountAhamoveByExternalIDQuery) SetGetExternalAccountAhamov
 	q.ExternalID = args.ExternalID
 }
 
-func (q *GetShopByIDQuery) GetArgs(ctx context.Context) (_ context.Context, ID int64) {
+func (q *GetShopByIDQuery) GetArgs(ctx context.Context) (_ context.Context, ID dot.ID) {
 	return ctx,
 		q.ID
 }

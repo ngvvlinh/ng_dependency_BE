@@ -6,8 +6,6 @@ import (
 	"sync"
 	"time"
 
-	"etop.vn/backend/pkg/common/cmapi"
-
 	"github.com/Shopify/sarama"
 
 	pbexternal "etop.vn/api/pb/external"
@@ -17,11 +15,13 @@ import (
 	"etop.vn/backend/com/handler/pgevent"
 	ordermodel "etop.vn/backend/com/main/ordering/model"
 	shipmodel "etop.vn/backend/com/main/shipping/model"
+	"etop.vn/backend/pkg/common/cmapi"
 	"etop.vn/backend/pkg/common/cmsql"
 	"etop.vn/backend/pkg/common/mq"
 	"etop.vn/backend/pkg/common/telebot"
 	historysqlstore "etop.vn/backend/pkg/etop-history/sqlstore"
 	"etop.vn/backend/pkg/etop/apix/convertpb"
+	"etop.vn/capi/dot"
 	"etop.vn/common/jsonx"
 	"etop.vn/common/l"
 )
@@ -188,16 +188,16 @@ func (h *Handler) HandleOrderEvent(ctx context.Context, event *pgevent.PgEvent) 
 
 	changed := convertpb.PbOrderHistory(history)
 	if !changed.HasChanged() {
-		ll.Debug("skip uninsteresting changes", l.Int64("order_id", changed.Id))
+		ll.Debug("skip uninsteresting changes", l.ID("order_id", changed.Id))
 		return mq.CodeOK, nil
 	}
 
-	id := *history.ID().Int64()
+	id := *history.ID().ID()
 	var order ordermodel.Order
 	if ok, err := h.db.Where("id = ?", id).Get(&order); err != nil {
 		return mq.CodeStop, nil
 	} else if !ok {
-		ll.Warn("order not found", l.Int64("rid", event.RID), l.Int64("id", id))
+		ll.Warn("order not found", l.Int64("rid", event.RID), l.ID("id", id))
 		return mq.CodeIgnore, nil
 	}
 
@@ -209,7 +209,7 @@ func (h *Handler) HandleOrderEvent(ctx context.Context, event *pgevent.PgEvent) 
 	change.Changed = &pbexternal.ChangeOneOf{
 		Order: changed,
 	}
-	accountIDs := []int64{order.ShopID, order.PartnerID}
+	accountIDs := []dot.ID{order.ShopID, order.PartnerID}
 	return h.sender.CollectPb(ctx, event.Table, id, accountIDs, change)
 }
 
@@ -225,16 +225,16 @@ func (h *Handler) HandleFulfillmentEvent(ctx context.Context, event *pgevent.PgE
 
 	changed := convertpb.PbFulfillmentHistory(history)
 	if !changed.HasChanged() {
-		ll.Debug("skip uninsteresting changes", l.Int64("fulfillment_id", changed.Id))
+		ll.Debug("skip uninsteresting changes", l.ID("fulfillment_id", changed.Id))
 		return mq.CodeOK, nil
 	}
 
-	id := *history.ID().Int64()
+	id := *history.ID().ID()
 	var ffm shipmodel.Fulfillment
 	if ok, err := h.db.Where("id = ?", id).Get(&ffm); err != nil {
 		return mq.CodeStop, nil
 	} else if !ok {
-		ll.Warn("fulfillment not found", l.Int64("rid", event.RID), l.Int64("id", id))
+		ll.Warn("fulfillment not found", l.Int64("rid", event.RID), l.ID("id", id))
 		return mq.CodeIgnore, nil
 	}
 
@@ -246,7 +246,7 @@ func (h *Handler) HandleFulfillmentEvent(ctx context.Context, event *pgevent.PgE
 	change.Changed = &pbexternal.ChangeOneOf{
 		Fulfillment: changed,
 	}
-	accountIDs := []int64{ffm.ShopID, ffm.PartnerID}
+	accountIDs := []dot.ID{ffm.ShopID, ffm.PartnerID}
 	return h.sender.CollectPb(ctx, event.Table, id, accountIDs, change)
 }
 

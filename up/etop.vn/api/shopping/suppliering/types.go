@@ -4,13 +4,14 @@ import (
 	"time"
 
 	"etop.vn/api/meta"
+	dot "etop.vn/capi/dot"
 )
 
 // +gen:event:topic=event/suppliering
 
 type ShopSupplier struct {
-	ID                int64
-	ShopID            int64
+	ID                dot.ID
+	ShopID            dot.ID
 	FullName          string
 	Phone             string
 	Code              string
@@ -28,6 +29,6 @@ type ShopSupplier struct {
 type VariantSupplierDeletedEvent struct {
 	meta.EventMeta
 
-	SupplierID int64
-	ShopID     int64
+	SupplierID dot.ID
+	ShopID     dot.ID
 }

@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"etop.vn/backend/pkg/etop/model"
+	"etop.vn/capi/dot"
 )
 
 //go:generate $ETOPDIR/backend/scripts/derive.sh
@@ -11,11 +12,11 @@ import (
 var _ = sqlgenStocktake(&ShopStocktake{})
 
 type ShopStocktake struct {
-	ID            int64
-	ShopID        int64
+	ID            dot.ID
+	ShopID        dot.ID
 	TotalQuantity int32
-	CreatedBy     int64
-	UpdatedBy     int64
+	CreatedBy     dot.ID
+	UpdatedBy     dot.ID
 	CancelReason  string
 	Code          string
 	CodeNorm      int32
@@ -30,8 +31,8 @@ type ShopStocktake struct {
 
 type StocktakeLine struct {
 	ProductName string       `json:"product_name"`
-	ProductID   int64        `json:"product_id"`
-	VariantID   int64        `json:"variant_id"`
+	ProductID   dot.ID       `json:"product_id"`
+	VariantID   dot.ID       `json:"variant_id"`
 	OldQuantity int32        `json:"old_quantity"`
 	NewQuantity int32        `json:"new_quantity"`
 	VariantName string       `json:"variant_name"`

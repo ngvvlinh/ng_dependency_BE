@@ -9,6 +9,8 @@ import (
 	"etop.vn/backend/com/handler/notifier/model"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/cmsql"
+	"etop.vn/capi/dot"
+	"etop.vn/capi/util"
 )
 
 type DeviceStore struct {
@@ -57,7 +59,7 @@ func (s *DeviceStore) CreateDevice(args *model.CreateDeviceArgs) (*model.Device,
 		SubcribeAllShop: true,
 		Mute:            false,
 	}
-	var id int64
+	var id dot.ID
 	if ok && dbDevice.ID != 0 {
 		if !dbDevice.DeactivatedAt.IsZero() {
 			// active this device
@@ -174,7 +176,7 @@ func (s *DeviceStore) DeleteDevice(device *model.Device) error {
 	return err
 }
 
-func (s *DeviceStore) GetAllUsers() ([]int64, error) {
+func (s *DeviceStore) GetAllUsers() ([]dot.ID, error) {
 	var userIDs []int64
 	x := s.db.SQL(`SELECT DISTINCT user_id FROM device`)
 	sql, args, err := x.Build()
@@ -187,5 +189,5 @@ func (s *DeviceStore) GetAllUsers() ([]int64, error) {
 		sql,
 	)
 	err = s.db.QueryRow(sql2, args...).Scan((*pq.Int64Array)(&userIDs))
-	return userIDs, err
+	return util.Int64ToIDs(userIDs), err
 }

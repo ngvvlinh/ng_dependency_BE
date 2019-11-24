@@ -11,6 +11,7 @@ import (
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/gencode"
 	"etop.vn/backend/pkg/etop/model"
+	"etop.vn/capi/dot"
 	"etop.vn/common/l"
 )
 
@@ -74,7 +75,7 @@ func init() {
 }
 
 type GetEtopShippingServicesArgs struct {
-	ArbitraryID  int64
+	ArbitraryID  dot.ID
 	Carrier      model.ShippingProvider
 	FromProvince *location.Province
 	ToProvince   *location.Province
@@ -87,7 +88,7 @@ func GetEtopShippingServices(args *GetEtopShippingServicesArgs) []*model.Availab
 	pricings := priceRuleIndex[args.Carrier]
 	pricingsMatch := GetESPricingsMatch(pricings, args.FromProvince, args.ToProvince, args.ToDistrict)
 
-	generator := newServiceIDGenerator(args.ArbitraryID, args.Carrier)
+	generator := newServiceIDGenerator(int64(args.ArbitraryID), args.Carrier)
 	for _, price := range pricingsMatch {
 		if service, err := price.ToService(generator, args.Weight, args.Carrier); err == nil {
 			res = append(res, service)

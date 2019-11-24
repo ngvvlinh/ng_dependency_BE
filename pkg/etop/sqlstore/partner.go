@@ -10,6 +10,7 @@ import (
 	"etop.vn/backend/pkg/common/sq/core"
 	"etop.vn/backend/pkg/etop/authorize/authkey"
 	"etop.vn/backend/pkg/etop/model"
+	"etop.vn/capi/dot"
 )
 
 func init() {
@@ -37,12 +38,12 @@ func Partner(ctx context.Context) *PartnerStore {
 	return &PartnerStore{ctx: ctx}
 }
 
-func (s *PartnerStore) ID(id int64) *PartnerStore {
+func (s *PartnerStore) ID(id dot.ID) *PartnerStore {
 	s.preds = append(s.preds, s.ft.ByID(id))
 	return s
 }
 
-func (s *PartnerStore) IDs(ids ...int64) *PartnerStore {
+func (s *PartnerStore) IDs(ids ...dot.ID) *PartnerStore {
 	s.preds = append(s.preds, sq.In("id", ids))
 	return s
 }
@@ -163,7 +164,7 @@ func GetPartnersFromRelation(ctx context.Context, query *model.GetPartnersFromRe
 		return nil
 	}
 
-	var partnerIDs []int64
+	var partnerIDs []dot.ID
 	if err := x.SQL(`SELECT array_agg(partner_id) FROM partner_relation`).
 		Where("subject_type = ?", model.SubjectTypeAccount).
 		In("subject_id", query.AccountIDs).

@@ -11,6 +11,7 @@ import (
 	"etop.vn/backend/pkg/common/cmsql"
 	"etop.vn/backend/pkg/common/sq"
 	"etop.vn/backend/pkg/common/sqlstore"
+	"etop.vn/capi/dot"
 )
 
 type ShopBrandStoreFactory func(context.Context) *ShopBrandStore
@@ -44,17 +45,17 @@ func (s *ShopBrandStore) GetPaging() meta.PageInfo {
 	return meta.FromPaging(s.paging)
 }
 
-func (s *ShopBrandStore) ID(id int64) *ShopBrandStore {
+func (s *ShopBrandStore) ID(id dot.ID) *ShopBrandStore {
 	s.preds = append(s.preds, s.ftShopBrand.ByID(id))
 	return s
 }
 
-func (s *ShopBrandStore) IDs(ids ...int64) *ShopBrandStore {
+func (s *ShopBrandStore) IDs(ids ...dot.ID) *ShopBrandStore {
 	s.preds = append(s.preds, sq.In("id", ids))
 	return s
 }
 
-func (s *ShopBrandStore) ShopID(id int64) *ShopBrandStore {
+func (s *ShopBrandStore) ShopID(id dot.ID) *ShopBrandStore {
 	s.preds = append(s.preds, s.ftShopBrand.ByShopID(id))
 	return s
 }

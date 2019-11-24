@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"etop.vn/backend/pkg/etop/model"
+	"etop.vn/capi/dot"
 )
 
 //go:generate $ETOPDIR/backend/scripts/derive.sh
@@ -12,8 +13,8 @@ import (
 var _ = sqlgenExternalAccountAhamove(&ExternalAccountAhamove{})
 
 type ExternalAccountAhamove struct {
-	ID                  int64
-	OwnerID             int64
+	ID                  dot.ID
+	OwnerID             dot.ID
 	Phone               string
 	Name                string
 	ExternalID          string
@@ -40,8 +41,8 @@ type ExternalAccountAhamove struct {
 var _ = sqlgenSale(&Affiliate{})
 
 type Affiliate struct {
-	ID          int64
-	OwnerID     int64
+	ID          dot.ID
+	OwnerID     dot.ID
 	Name        string
 	Phone       string
 	Email       string

@@ -38,12 +38,12 @@ func (s *{{$s.Name}}ServiceServer) ServeHTTP(resp http.ResponseWriter, req *http
 	serve(ctx, resp, req, reqMsg, exec)
 }
 
-func (s *{{$s.Name}}ServiceServer) parseRoute(path string) (reqMsg proto.Message, _ httprpc.ExecFunc, _ error) {
+func (s *{{$s.Name}}ServiceServer) parseRoute(path string) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
 {{range $m := .Methods -}}
 	case "{{$s.APIPath}}/{{.Name}}":
 	msg := {{(index .Request.Items 0).Type|new}}
-	fn := func(ctx context.Context) (proto.Message, error) {
+	fn := func(ctx context.Context) (capi.Message, error) {
 		return s.inner.{{.Name}}(ctx, msg)
 	}
 	return msg, fn, nil

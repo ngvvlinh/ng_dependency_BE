@@ -10,6 +10,7 @@ import (
 	inventory "etop.vn/api/main/inventory"
 	meta "etop.vn/api/meta"
 	capi "etop.vn/capi"
+	dot "etop.vn/capi/dot"
 )
 
 type Command interface{ command() }
@@ -39,8 +40,8 @@ func (c QueryBus) DispatchAll(ctx context.Context, msgs ...Query) error {
 }
 
 type CancelStocktakeCommand struct {
-	ShopID       int64
-	ID           int64
+	ShopID       dot.ID
+	ID           dot.ID
 	CancelReason string
 
 	Result *ShopStocktake `json:"-"`
@@ -52,9 +53,9 @@ func (h AggregateHandler) HandleCancelStocktake(ctx context.Context, msg *Cancel
 }
 
 type ConfirmStocktakeCommand struct {
-	ID                   int64
-	ShopID               int64
-	ConfirmedBy          int64
+	ID                   dot.ID
+	ShopID               dot.ID
+	ConfirmedBy          dot.ID
 	OverStock            bool
 	AutoInventoryVoucher inventory.AutoInventoryVoucher
 
@@ -67,9 +68,9 @@ func (h AggregateHandler) HandleConfirmStocktake(ctx context.Context, msg *Confi
 }
 
 type CreateStocktakeCommand struct {
-	ShopID        int64
+	ShopID        dot.ID
 	TotalQuantity int32
-	CreatedBy     int64
+	CreatedBy     dot.ID
 	Lines         []*StocktakeLine
 	Note          string
 
@@ -82,10 +83,10 @@ func (h AggregateHandler) HandleCreateStocktake(ctx context.Context, msg *Create
 }
 
 type UpdateStocktakeCommand struct {
-	ShopID        int64
-	ID            int64
+	ShopID        dot.ID
+	ID            dot.ID
 	TotalQuantity int32
-	UpdatedBy     int64
+	UpdatedBy     dot.ID
 	Lines         []*StocktakeLine
 	Note          string
 
@@ -98,8 +99,8 @@ func (h AggregateHandler) HandleUpdateStocktake(ctx context.Context, msg *Update
 }
 
 type GetStocktakeByIDQuery struct {
-	Id     int64
-	ShopID int64
+	Id     dot.ID
+	ShopID dot.ID
 
 	Result *ShopStocktake `json:"-"`
 }
@@ -110,8 +111,8 @@ func (h QueryServiceHandler) HandleGetStocktakeByID(ctx context.Context, msg *Ge
 }
 
 type GetStocktakesByIDsQuery struct {
-	Ids    []int64
-	ShopID int64
+	Ids    []dot.ID
+	ShopID dot.ID
 
 	Result []*ShopStocktake `json:"-"`
 }
@@ -123,7 +124,7 @@ func (h QueryServiceHandler) HandleGetStocktakesByIDs(ctx context.Context, msg *
 
 type ListStocktakeQuery struct {
 	Page   meta.Paging
-	ShopID int64
+	ShopID dot.ID
 	Filter []meta.Filter
 
 	Result *ListStocktakeResponse `json:"-"`
@@ -220,13 +221,13 @@ func (q *UpdateStocktakeCommand) SetUpdateStocktakeRequest(args *UpdateStocktake
 	q.Note = args.Note
 }
 
-func (q *GetStocktakeByIDQuery) GetArgs(ctx context.Context) (_ context.Context, id int64, shopID int64) {
+func (q *GetStocktakeByIDQuery) GetArgs(ctx context.Context) (_ context.Context, id dot.ID, shopID dot.ID) {
 	return ctx,
 		q.Id,
 		q.ShopID
 }
 
-func (q *GetStocktakesByIDsQuery) GetArgs(ctx context.Context) (_ context.Context, ids []int64, shopID int64) {
+func (q *GetStocktakesByIDsQuery) GetArgs(ctx context.Context) (_ context.Context, ids []dot.ID, shopID dot.ID) {
 	return ctx,
 		q.Ids,
 		q.ShopID

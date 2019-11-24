@@ -6,7 +6,7 @@ tidy() {
   cd $1 && go mod tidy && cd $wd
 }
 
-scripts/protobuf-gen.sh
+scripts/install-tools.sh
 scripts/generate-all.sh
 
 # Generate go-bindata

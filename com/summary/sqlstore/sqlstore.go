@@ -8,6 +8,7 @@ import (
 	"etop.vn/backend/pkg/common/cmsql"
 	"etop.vn/backend/pkg/common/sq"
 	"etop.vn/backend/pkg/common/sq/core"
+	"etop.vn/capi/dot"
 )
 
 type OrderStoreFactory func(context.Context) *OrderStore
@@ -28,17 +29,17 @@ type OrderStore struct {
 	preds []interface{}
 }
 
-func (s *OrderStore) ID(id int64) *OrderStore {
+func (s *OrderStore) ID(id dot.ID) *OrderStore {
 	s.preds = append(s.preds, s.ft.ByID(id))
 	return s
 }
 
-func (s *OrderStore) ShopID(id int64) *OrderStore {
+func (s *OrderStore) ShopID(id dot.ID) *OrderStore {
 	s.preds = append(s.preds, s.ft.ByShopID(id))
 	return s
 }
 
-func (s *OrderStore) OrderIDs(ids int64) *OrderStore {
+func (s *OrderStore) OrderIDs(ids dot.ID) *OrderStore {
 	s.preds = append(s.preds, sq.PrefixedIn(&s.ft.prefix, "order_id", ids))
 	return s
 }
@@ -103,13 +104,13 @@ func (s *OrderStore) GetAmoumtPerDay(dateFrom time.Time, dateTo time.Time) ([]*T
 }
 
 type TopSellItem struct {
-	ProductId int64
+	ProductId dot.ID
 	Name      string
 	Count     int32
 	ImageUrls []string
 }
 
-func (s *OrderStore) GetTopSellItem(shopID int64, dateFrom time.Time, dateTo time.Time) ([]*TopSellItem, error) {
+func (s *OrderStore) GetTopSellItem(shopID dot.ID, dateFrom time.Time, dateTo time.Time) ([]*TopSellItem, error) {
 	var topItem []*TopSellItem
 
 	q := s.query().SQL("SELECT shop_product.image_urls , shop_product.name, order_line.product_id, SUM(quantity) as sum FROM order_line, \"order\", shop_product ")
@@ -123,7 +124,7 @@ func (s *OrderStore) GetTopSellItem(shopID int64, dateFrom time.Time, dateTo tim
 	}
 
 	for rows.Next() {
-		var productID int64
+		var productID dot.ID
 		var name string
 		var quantity int32
 		var imageUrls []string

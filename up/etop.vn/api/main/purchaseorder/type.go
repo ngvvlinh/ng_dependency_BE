@@ -7,27 +7,28 @@ import (
 	"etop.vn/api/main/etop"
 	"etop.vn/api/main/inventory"
 	"etop.vn/api/meta"
+	dot "etop.vn/capi/dot"
 )
 
 // +gen:event:topic=event/purchaseorder
 
 type PurchaseOrder struct {
-	ID               int64
-	ShopID           int64
-	SupplierID       int64
+	ID               dot.ID
+	ShopID           dot.ID
+	SupplierID       dot.ID
 	Supplier         *PurchaseOrderSupplier
 	InventoryVoucher *inventory.InventoryVoucher
-	BasketValue      int64
-	TotalDiscount    int64
-	TotalAmount      int64
+	BasketValue      int
+	TotalDiscount    int
+	TotalAmount      int
 	Code             string
 	CodeNorm         int32
 	Note             string
 	Status           etop.Status3
-	VariantIDs       []int64
+	VariantIDs       []dot.ID
 	Lines            []*PurchaseOrderLine
-	PaidAmount       int64
-	CreatedBy        int64
+	PaidAmount       int
+	CreatedBy        dot.ID
 	CancelledReason  string
 	ConfirmedAt      time.Time
 	CancelledAt      time.Time
@@ -36,10 +37,10 @@ type PurchaseOrder struct {
 }
 
 type PurchaseOrderLine struct {
-	VariantID    int64
-	Quantity     int64
-	PaymentPrice int64
-	ProductID    int64
+	VariantID    dot.ID
+	Quantity     int32
+	PaymentPrice int32
+	ProductID    dot.ID
 	ProductName  string
 	Code         string
 	ImageUrl     string
@@ -56,8 +57,8 @@ type PurchaseOrderSupplier struct {
 	Deleted            bool
 }
 
-func (r *PurchaseOrder) GetVariantIDs() []int64 {
-	ids := make([]int64, 0, len(r.Lines))
+func (r *PurchaseOrder) GetVariantIDs() []dot.ID {
+	ids := make([]dot.ID, 0, len(r.Lines))
 	for _, line := range r.Lines {
 		if line.VariantID != 0 {
 			ids = append(ids, line.VariantID)
@@ -68,12 +69,12 @@ func (r *PurchaseOrder) GetVariantIDs() []int64 {
 
 type PurchaseOrderConfirmedEvent struct {
 	meta.EventMeta
-	ShopID               int64
+	ShopID               dot.ID
 	PurchaseOrderCode    string
-	UserID               int64
-	PurchaseOrderID      int64
-	TraderID             int64
-	TotalAmount          int64
+	UserID               dot.ID
+	PurchaseOrderID      dot.ID
+	TraderID             dot.ID
+	TotalAmount          int
 	AutoInventoryVoucher inventory.AutoInventoryVoucher
 
 	Lines []*inventory.InventoryVoucherItem

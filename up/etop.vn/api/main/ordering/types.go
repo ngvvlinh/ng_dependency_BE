@@ -10,6 +10,7 @@ import (
 	ordertypes "etop.vn/api/main/ordering/types"
 	shippingtypes "etop.vn/api/main/shipping/types"
 	"etop.vn/api/meta"
+	"etop.vn/capi/dot"
 )
 
 // +gen:api
@@ -28,19 +29,19 @@ type Aggregate interface {
 type QueryService interface {
 	GetOrderByID(context.Context, *GetOrderByIDArgs) (*Order, error)
 	GetOrders(context.Context, *GetOrdersArgs) (*OrdersResponse, error)
-	GetOrdersByIDsAndCustomerID(ctx context.Context, shopID int64, IDs []int64, customerID int64) (*OrdersResponse, error)
+	GetOrdersByIDsAndCustomerID(ctx context.Context, shopID dot.ID, IDs []dot.ID, customerID dot.ID) (*OrdersResponse, error)
 	GetOrderByCode(context.Context, *GetOrderByCodeArgs) (*Order, error)
-	ListOrdersByCustomerID(ctx context.Context, shopID, customerID int64) (*OrdersResponse, error)
-	ListOrdersByCustomerIDs(ctx context.Context, shopID int64, customerIDs []int64) (*OrdersResponse, error)
+	ListOrdersByCustomerID(ctx context.Context, shopID, customerID dot.ID) (*OrdersResponse, error)
+	ListOrdersByCustomerIDs(ctx context.Context, shopID dot.ID, customerIDs []dot.ID) (*OrdersResponse, error)
 }
 
 type GetOrderByIDArgs struct {
-	ID int64
+	ID dot.ID
 }
 
 type GetOrdersArgs struct {
-	ShopID int64
-	IDs    []int64
+	ShopID dot.ID
+	IDs    []dot.ID
 }
 
 type GetOrderByCodeArgs struct {
@@ -59,8 +60,8 @@ type UpdateOrderShippingStatusResponse struct{}
 type UpdateOrdersConfirmStatusResponse struct{}
 
 type Order struct {
-	ID              int64
-	ShopID          int64
+	ID              dot.ID
+	ShopID          dot.ID
 	Code            string
 	CustomerAddress *types.Address
 	ShippingAddress *types.Address
@@ -85,7 +86,7 @@ type Order struct {
 	Shipping  *shippingtypes.ShippingInfo
 
 	FulfillmentType ordertypes.Fulfill
-	FulfillmentIDs  []int64
+	FulfillmentIDs  []dot.ID
 
 	CreatedAt   time.Time
 	UpdatedAt   time.Time
@@ -95,11 +96,11 @@ type Order struct {
 	CancelledAt time.Time
 
 	PaymentStatus etoptypes.Status4
-	PaymentID     int64
+	PaymentID     dot.ID
 	ReferralMeta  *ReferralMeta
 
-	TradingShopID int64
-	CustomerID    int64
+	TradingShopID dot.ID
+	CustomerID    dot.ID
 }
 
 type OrderFeeLine struct {
@@ -112,13 +113,13 @@ type OrderFeeLine struct {
 
 // shipping means manually fulfill, Fulfillment or ShipnowFulfillment
 type ValidateOrdersForShippingArgs struct {
-	OrderIDs []int64
+	OrderIDs []dot.ID
 }
 
 type ReserveOrdersForFfmArgs struct {
-	OrderIDs   []int64
+	OrderIDs   []dot.ID
 	Fulfill    ordertypes.Fulfill
-	FulfillIDs []int64
+	FulfillIDs []dot.ID
 }
 
 type ReserveOrdersForFfmResponse struct {
@@ -126,7 +127,7 @@ type ReserveOrdersForFfmResponse struct {
 }
 
 type ReleaseOrdersForFfmArgs struct {
-	OrderIDs []int64
+	OrderIDs []dot.ID
 }
 
 type ReleaseOrdersForFfmResponse struct {
@@ -134,7 +135,7 @@ type ReleaseOrdersForFfmResponse struct {
 }
 
 type UpdateOrderShippingStatusArgs struct {
-	ID                         int64
+	ID                         dot.ID
 	FulfillmentShippingStates  []string
 	FulfillmentShippingStatus  etoptypes.Status5
 	FulfillmentPaymentStatuses []int
@@ -143,15 +144,15 @@ type UpdateOrderShippingStatusArgs struct {
 }
 
 type UpdateOrdersConfirmStatusArgs struct {
-	IDs           []int64
+	IDs           []dot.ID
 	ShopConfirm   etoptypes.Status3
 	ConfirmStatus etoptypes.Status3
 }
 
 type UpdateOrderPaymentInfoArgs struct {
-	ID            int64
+	ID            dot.ID
 	PaymentStatus etoptypes.Status4
-	PaymentID     int64
+	PaymentID     dot.ID
 }
 
 type ReferralMeta struct {
@@ -161,29 +162,29 @@ type ReferralMeta struct {
 
 type OrderPaymentSuccessEvent struct {
 	meta.EventMeta
-	OrderID int64
+	OrderID dot.ID
 }
 
 type OrderConfirmingEvent struct {
-	OrderID              int64
-	ShopID               int64
+	OrderID              dot.ID
+	ShopID               dot.ID
 	InventoryOverStock   bool
 	Lines                []*types.ItemLine
-	CustomerID           int64
+	CustomerID           dot.ID
 	AutoInventoryVoucher inventory.AutoInventoryVoucher
 }
 
 type OrderConfirmedEvent struct {
-	OrderID              int64
-	ShopID               int64
+	OrderID              dot.ID
+	ShopID               dot.ID
 	InventoryOverStock   bool
 	AutoInventoryVoucher inventory.AutoInventoryVoucher
-	UpdatedBy            int64
+	UpdatedBy            dot.ID
 }
 
 type OrderCancelledEvent struct {
-	OrderID              int64
-	ShopID               int64
+	OrderID              dot.ID
+	ShopID               dot.ID
 	AutoInventoryVoucher inventory.AutoInventoryVoucher
-	UpdatedBy            int64
+	UpdatedBy            dot.ID
 }

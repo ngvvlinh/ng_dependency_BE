@@ -7,6 +7,7 @@ import (
 
 	"etop.vn/api/main/etop"
 	"etop.vn/backend/pkg/common/sq"
+	"etop.vn/capi/dot"
 )
 
 type InvitationFilters struct{ prefix string }
@@ -23,7 +24,7 @@ func (ft InvitationFilters) Prefix() string {
 	return ft.prefix
 }
 
-func (ft *InvitationFilters) ByID(ID int64) *sq.ColumnFilter {
+func (ft *InvitationFilters) ByID(ID dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "id",
@@ -32,7 +33,7 @@ func (ft *InvitationFilters) ByID(ID int64) *sq.ColumnFilter {
 	}
 }
 
-func (ft *InvitationFilters) ByIDPtr(ID *int64) *sq.ColumnFilterPtr {
+func (ft *InvitationFilters) ByIDPtr(ID *dot.ID) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "id",
@@ -42,7 +43,7 @@ func (ft *InvitationFilters) ByIDPtr(ID *int64) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft *InvitationFilters) ByAccountID(AccountID int64) *sq.ColumnFilter {
+func (ft *InvitationFilters) ByAccountID(AccountID dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "account_id",
@@ -51,7 +52,7 @@ func (ft *InvitationFilters) ByAccountID(AccountID int64) *sq.ColumnFilter {
 	}
 }
 
-func (ft *InvitationFilters) ByAccountIDPtr(AccountID *int64) *sq.ColumnFilterPtr {
+func (ft *InvitationFilters) ByAccountIDPtr(AccountID *dot.ID) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "account_id",
@@ -118,7 +119,7 @@ func (ft *InvitationFilters) ByStatusPtr(Status *etop.Status3) *sq.ColumnFilterP
 	}
 }
 
-func (ft *InvitationFilters) ByInvitedBy(InvitedBy int64) *sq.ColumnFilter {
+func (ft *InvitationFilters) ByInvitedBy(InvitedBy dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "invited_by",

@@ -9,6 +9,7 @@ import (
 	"etop.vn/backend/pkg/common/cmsql"
 	"etop.vn/backend/pkg/common/sq"
 	"etop.vn/backend/pkg/common/sqlstore"
+	"etop.vn/capi/dot"
 )
 
 type CustomerGroupStoreFactory func(context.Context) *CustomerGroupStore
@@ -51,12 +52,12 @@ func (s *CustomerGroupStore) Filters(filters meta.Filters) *CustomerGroupStore {
 	return s
 }
 
-func (s *CustomerGroupStore) ID(id int64) *CustomerGroupStore {
+func (s *CustomerGroupStore) ID(id dot.ID) *CustomerGroupStore {
 	s.preds = append(s.preds, s.ft.ByID(id))
 	return s
 }
 
-func (s *CustomerGroupStore) IDs(ids ...int64) *CustomerGroupStore {
+func (s *CustomerGroupStore) IDs(ids ...dot.ID) *CustomerGroupStore {
 	s.preds = append(s.preds, sq.PrefixedIn(&s.ft.prefix, "id", ids))
 	return s
 }

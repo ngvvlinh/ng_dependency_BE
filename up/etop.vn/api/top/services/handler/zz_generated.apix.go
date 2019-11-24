@@ -9,10 +9,9 @@ import (
 	fmt "fmt"
 	http "net/http"
 
-	proto "github.com/golang/protobuf/proto"
-
 	common "etop.vn/api/pb/common"
 	handler "etop.vn/api/pb/services/handler"
+	"etop.vn/capi"
 	httprpc "etop.vn/capi/httprpc"
 )
 
@@ -52,11 +51,11 @@ func (s *MiscServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Reques
 	serve(ctx, resp, req, reqMsg, exec)
 }
 
-func (s *MiscServiceServer) parseRoute(path string) (reqMsg proto.Message, _ httprpc.ExecFunc, _ error) {
+func (s *MiscServiceServer) parseRoute(path string) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
 	case "/handler.Misc/VersionInfo":
 		msg := &common.Empty{}
-		fn := func(ctx context.Context) (proto.Message, error) {
+		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.VersionInfo(ctx, msg)
 		}
 		return msg, fn, nil
@@ -97,11 +96,11 @@ func (s *WebhookServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Req
 	serve(ctx, resp, req, reqMsg, exec)
 }
 
-func (s *WebhookServiceServer) parseRoute(path string) (reqMsg proto.Message, _ httprpc.ExecFunc, _ error) {
+func (s *WebhookServiceServer) parseRoute(path string) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
 	case "/handler.Webhook/ResetState":
 		msg := &handler.ResetStateRequest{}
-		fn := func(ctx context.Context) (proto.Message, error) {
+		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.ResetState(ctx, msg)
 		}
 		return msg, fn, nil

@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"etop.vn/api/meta"
+	"etop.vn/capi/dot"
 )
 
 // +gen:api
@@ -48,19 +49,19 @@ type OrderBy struct {
 
 type TicketArgs struct {
 	ID          string
-	EtopUserID  int64 `json:"etop_user_id"`
-	shopID      int64
+	EtopUserID  dot.ID `json:"etop_user_id"`
+	shopID      dot.ID
 	Code        string
 	Title       string
 	Value       string
 	OldValue    string
 	Reason      string
-	ShopID      int64
-	OrderID     int64
+	ShopID      dot.ID
+	OrderID     dot.ID
 	OrderCode   string
 	FfmCode     string
 	FfmUrl      string
-	FfmID       int64
+	FfmID       dot.ID
 	Company     string
 	Provider    string
 	Note        string
@@ -74,7 +75,7 @@ type ContactsResponse struct {
 
 type Contact struct {
 	ID                   string    `json:"id"`
-	EtopUserID           int64     `json:"etop_user_id"`
+	EtopUserID           dot.ID    `json:"etop_user_id"`
 	ContactNo            string    `json:"contact_no"`
 	Phone                string    `json:"phone"`
 	Lastname             string    `json:"lastname"`
@@ -101,7 +102,7 @@ type Contact struct {
 
 type Lead struct {
 	ID                   string    `json:"id"`
-	EtopUserID           int64     `json:"etop_user_id"`
+	EtopUserID           dot.ID    `json:"etop_user_id"`
 	ContactNo            string    `json:"contact_no"`
 	Phone                string    `json:"phone"`
 	Lastname             string    `json:"lastname"`
@@ -128,12 +129,12 @@ type Lead struct {
 
 type Ticket struct {
 	ID               string    `json:"id"`
-	EtopUserID       int64     `json:"etop_user_id"`
-	ShopID           int64     `json:"shop_id"`
+	EtopUserID       dot.ID    `json:"etop_user_id"`
+	ShopID           dot.ID    `json:"shop_id"`
 	TicketNo         string    `json:"ticket_no"`
-	ParentID         int64     `json:"parent_id"`
+	ParentID         dot.ID    `json:"parent_id"`
 	Ticketpriorities string    `json:"ticketpriorities"`
-	ProductID        int64     `json:"productID"`
+	ProductID        dot.ID    `json:"productID"`
 	Ticketseverities string    `json:"ticketseverities"`
 	Ticketstatus     string    `json:"ticketstatus"`
 	Ticketcategories string    `json:"ticketcategories"`
@@ -154,8 +155,8 @@ type Ticket struct {
 	Note             string    `json:"note"`
 	FfmCode          string    `json:"ffm_code"`
 	FfmUrl           string    `json:"ffm_url"`
-	FfmId            int64     `json:"ffm_id"`
-	OrderId          int64     `json:"order_id"`
+	FfmId            dot.ID    `json:"ffm_id"`
+	OrderId          dot.ID    `json:"order_id"`
 	OrderCode        string    `json:"order_code"`
 	Company          string    `json:"company"`
 	Provider         string    `json:"provider"`
@@ -172,16 +173,16 @@ type Ticket struct {
 
 type CreateOrUpdateTicketArgs struct {
 	FfmCode     string
-	FfmID       int64
+	FfmID       dot.ID
 	ID          string
-	EtopUserID  int64 `json:"etop_user_id"`
+	EtopUserID  dot.ID `json:"etop_user_id"`
 	Code        string
 	Title       string
 	Value       string
 	OldValue    string
 	Reason      string
-	ShopID      int64
-	OrderID     int64
+	ShopID      dot.ID
+	OrderID     dot.ID
 	OrderCode   string
 	FfmUrl      string
 	Company     string
@@ -193,7 +194,7 @@ type CreateOrUpdateTicketArgs struct {
 }
 
 type Account struct {
-	ID        int64
+	ID        dot.ID
 	FullName  string
 	ShortName string
 	Phone     string

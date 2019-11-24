@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"etop.vn/backend/pkg/common/sq"
+	"etop.vn/capi/dot"
 )
 
 type CommissionSettingFilters struct{ prefix string }
@@ -22,7 +23,7 @@ func (ft CommissionSettingFilters) Prefix() string {
 	return ft.prefix
 }
 
-func (ft *CommissionSettingFilters) ByProductID(ProductID int64) *sq.ColumnFilter {
+func (ft *CommissionSettingFilters) ByProductID(ProductID dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "product_id",
@@ -31,7 +32,7 @@ func (ft *CommissionSettingFilters) ByProductID(ProductID int64) *sq.ColumnFilte
 	}
 }
 
-func (ft *CommissionSettingFilters) ByProductIDPtr(ProductID *int64) *sq.ColumnFilterPtr {
+func (ft *CommissionSettingFilters) ByProductIDPtr(ProductID *dot.ID) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "product_id",
@@ -41,7 +42,7 @@ func (ft *CommissionSettingFilters) ByProductIDPtr(ProductID *int64) *sq.ColumnF
 	}
 }
 
-func (ft *CommissionSettingFilters) ByAccountID(AccountID int64) *sq.ColumnFilter {
+func (ft *CommissionSettingFilters) ByAccountID(AccountID dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "account_id",
@@ -50,7 +51,7 @@ func (ft *CommissionSettingFilters) ByAccountID(AccountID int64) *sq.ColumnFilte
 	}
 }
 
-func (ft *CommissionSettingFilters) ByAccountIDPtr(AccountID *int64) *sq.ColumnFilterPtr {
+func (ft *CommissionSettingFilters) ByAccountIDPtr(AccountID *dot.ID) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "account_id",
@@ -169,7 +170,7 @@ func (ft ProductPromotionFilters) Prefix() string {
 	return ft.prefix
 }
 
-func (ft *ProductPromotionFilters) ByID(ID int64) *sq.ColumnFilter {
+func (ft *ProductPromotionFilters) ByID(ID dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "id",
@@ -178,7 +179,7 @@ func (ft *ProductPromotionFilters) ByID(ID int64) *sq.ColumnFilter {
 	}
 }
 
-func (ft *ProductPromotionFilters) ByIDPtr(ID *int64) *sq.ColumnFilterPtr {
+func (ft *ProductPromotionFilters) ByIDPtr(ID *dot.ID) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "id",
@@ -188,7 +189,7 @@ func (ft *ProductPromotionFilters) ByIDPtr(ID *int64) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft *ProductPromotionFilters) ByProductID(ProductID int64) *sq.ColumnFilter {
+func (ft *ProductPromotionFilters) ByProductID(ProductID dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "product_id",
@@ -197,7 +198,7 @@ func (ft *ProductPromotionFilters) ByProductID(ProductID int64) *sq.ColumnFilter
 	}
 }
 
-func (ft *ProductPromotionFilters) ByProductIDPtr(ProductID *int64) *sq.ColumnFilterPtr {
+func (ft *ProductPromotionFilters) ByProductIDPtr(ProductID *dot.ID) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "product_id",
@@ -207,7 +208,7 @@ func (ft *ProductPromotionFilters) ByProductIDPtr(ProductID *int64) *sq.ColumnFi
 	}
 }
 
-func (ft *ProductPromotionFilters) ByShopID(ShopID int64) *sq.ColumnFilter {
+func (ft *ProductPromotionFilters) ByShopID(ShopID dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "shop_id",
@@ -216,7 +217,7 @@ func (ft *ProductPromotionFilters) ByShopID(ShopID int64) *sq.ColumnFilter {
 	}
 }
 
-func (ft *ProductPromotionFilters) ByShopIDPtr(ShopID *int64) *sq.ColumnFilterPtr {
+func (ft *ProductPromotionFilters) ByShopIDPtr(ShopID *dot.ID) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "shop_id",
@@ -411,7 +412,7 @@ func (ft SellerCommissionFilters) Prefix() string {
 	return ft.prefix
 }
 
-func (ft *SellerCommissionFilters) ByID(ID int64) *sq.ColumnFilter {
+func (ft *SellerCommissionFilters) ByID(ID dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "id",
@@ -420,7 +421,7 @@ func (ft *SellerCommissionFilters) ByID(ID int64) *sq.ColumnFilter {
 	}
 }
 
-func (ft *SellerCommissionFilters) ByIDPtr(ID *int64) *sq.ColumnFilterPtr {
+func (ft *SellerCommissionFilters) ByIDPtr(ID *dot.ID) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "id",
@@ -430,7 +431,7 @@ func (ft *SellerCommissionFilters) ByIDPtr(ID *int64) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft *SellerCommissionFilters) BySellerID(SellerID int64) *sq.ColumnFilter {
+func (ft *SellerCommissionFilters) BySellerID(SellerID dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "seller_id",
@@ -439,7 +440,7 @@ func (ft *SellerCommissionFilters) BySellerID(SellerID int64) *sq.ColumnFilter {
 	}
 }
 
-func (ft *SellerCommissionFilters) BySellerIDPtr(SellerID *int64) *sq.ColumnFilterPtr {
+func (ft *SellerCommissionFilters) BySellerIDPtr(SellerID *dot.ID) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "seller_id",
@@ -449,7 +450,7 @@ func (ft *SellerCommissionFilters) BySellerIDPtr(SellerID *int64) *sq.ColumnFilt
 	}
 }
 
-func (ft *SellerCommissionFilters) ByFromSellerID(FromSellerID int64) *sq.ColumnFilter {
+func (ft *SellerCommissionFilters) ByFromSellerID(FromSellerID dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "from_seller_id",
@@ -458,7 +459,7 @@ func (ft *SellerCommissionFilters) ByFromSellerID(FromSellerID int64) *sq.Column
 	}
 }
 
-func (ft *SellerCommissionFilters) ByFromSellerIDPtr(FromSellerID *int64) *sq.ColumnFilterPtr {
+func (ft *SellerCommissionFilters) ByFromSellerIDPtr(FromSellerID *dot.ID) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "from_seller_id",
@@ -468,7 +469,7 @@ func (ft *SellerCommissionFilters) ByFromSellerIDPtr(FromSellerID *int64) *sq.Co
 	}
 }
 
-func (ft *SellerCommissionFilters) ByProductID(ProductID int64) *sq.ColumnFilter {
+func (ft *SellerCommissionFilters) ByProductID(ProductID dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "product_id",
@@ -477,7 +478,7 @@ func (ft *SellerCommissionFilters) ByProductID(ProductID int64) *sq.ColumnFilter
 	}
 }
 
-func (ft *SellerCommissionFilters) ByProductIDPtr(ProductID *int64) *sq.ColumnFilterPtr {
+func (ft *SellerCommissionFilters) ByProductIDPtr(ProductID *dot.ID) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "product_id",
@@ -487,7 +488,7 @@ func (ft *SellerCommissionFilters) ByProductIDPtr(ProductID *int64) *sq.ColumnFi
 	}
 }
 
-func (ft *SellerCommissionFilters) ByShopID(ShopID int64) *sq.ColumnFilter {
+func (ft *SellerCommissionFilters) ByShopID(ShopID dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "shop_id",
@@ -496,7 +497,7 @@ func (ft *SellerCommissionFilters) ByShopID(ShopID int64) *sq.ColumnFilter {
 	}
 }
 
-func (ft *SellerCommissionFilters) ByShopIDPtr(ShopID *int64) *sq.ColumnFilterPtr {
+func (ft *SellerCommissionFilters) ByShopIDPtr(ShopID *dot.ID) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "shop_id",
@@ -506,7 +507,7 @@ func (ft *SellerCommissionFilters) ByShopIDPtr(ShopID *int64) *sq.ColumnFilterPt
 	}
 }
 
-func (ft *SellerCommissionFilters) BySupplyID(SupplyID int64) *sq.ColumnFilter {
+func (ft *SellerCommissionFilters) BySupplyID(SupplyID dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "supply_id",
@@ -515,7 +516,7 @@ func (ft *SellerCommissionFilters) BySupplyID(SupplyID int64) *sq.ColumnFilter {
 	}
 }
 
-func (ft *SellerCommissionFilters) BySupplyIDPtr(SupplyID *int64) *sq.ColumnFilterPtr {
+func (ft *SellerCommissionFilters) BySupplyIDPtr(SupplyID *dot.ID) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "supply_id",
@@ -525,7 +526,7 @@ func (ft *SellerCommissionFilters) BySupplyIDPtr(SupplyID *int64) *sq.ColumnFilt
 	}
 }
 
-func (ft *SellerCommissionFilters) ByOrderId(OrderId int64) *sq.ColumnFilter {
+func (ft *SellerCommissionFilters) ByOrderId(OrderId dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "order_id",
@@ -534,7 +535,7 @@ func (ft *SellerCommissionFilters) ByOrderId(OrderId int64) *sq.ColumnFilter {
 	}
 }
 
-func (ft *SellerCommissionFilters) ByOrderIdPtr(OrderId *int64) *sq.ColumnFilterPtr {
+func (ft *SellerCommissionFilters) ByOrderIdPtr(OrderId *dot.ID) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "order_id",
@@ -748,7 +749,7 @@ func (ft OrderCreatedNotifyFilters) Prefix() string {
 	return ft.prefix
 }
 
-func (ft *OrderCreatedNotifyFilters) ByID(ID int64) *sq.ColumnFilter {
+func (ft *OrderCreatedNotifyFilters) ByID(ID dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "id",
@@ -757,7 +758,7 @@ func (ft *OrderCreatedNotifyFilters) ByID(ID int64) *sq.ColumnFilter {
 	}
 }
 
-func (ft *OrderCreatedNotifyFilters) ByIDPtr(ID *int64) *sq.ColumnFilterPtr {
+func (ft *OrderCreatedNotifyFilters) ByIDPtr(ID *dot.ID) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "id",
@@ -767,7 +768,7 @@ func (ft *OrderCreatedNotifyFilters) ByIDPtr(ID *int64) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft *OrderCreatedNotifyFilters) ByOrderID(OrderID int64) *sq.ColumnFilter {
+func (ft *OrderCreatedNotifyFilters) ByOrderID(OrderID dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "order_id",
@@ -776,7 +777,7 @@ func (ft *OrderCreatedNotifyFilters) ByOrderID(OrderID int64) *sq.ColumnFilter {
 	}
 }
 
-func (ft *OrderCreatedNotifyFilters) ByOrderIDPtr(OrderID *int64) *sq.ColumnFilterPtr {
+func (ft *OrderCreatedNotifyFilters) ByOrderIDPtr(OrderID *dot.ID) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "order_id",
@@ -786,7 +787,7 @@ func (ft *OrderCreatedNotifyFilters) ByOrderIDPtr(OrderID *int64) *sq.ColumnFilt
 	}
 }
 
-func (ft *OrderCreatedNotifyFilters) ByShopUserID(ShopUserID int64) *sq.ColumnFilter {
+func (ft *OrderCreatedNotifyFilters) ByShopUserID(ShopUserID dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "shop_user_id",
@@ -795,7 +796,7 @@ func (ft *OrderCreatedNotifyFilters) ByShopUserID(ShopUserID int64) *sq.ColumnFi
 	}
 }
 
-func (ft *OrderCreatedNotifyFilters) ByShopUserIDPtr(ShopUserID *int64) *sq.ColumnFilterPtr {
+func (ft *OrderCreatedNotifyFilters) ByShopUserIDPtr(ShopUserID *dot.ID) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "shop_user_id",
@@ -805,7 +806,7 @@ func (ft *OrderCreatedNotifyFilters) ByShopUserIDPtr(ShopUserID *int64) *sq.Colu
 	}
 }
 
-func (ft *OrderCreatedNotifyFilters) BySellerID(SellerID int64) *sq.ColumnFilter {
+func (ft *OrderCreatedNotifyFilters) BySellerID(SellerID dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "seller_id",
@@ -814,7 +815,7 @@ func (ft *OrderCreatedNotifyFilters) BySellerID(SellerID int64) *sq.ColumnFilter
 	}
 }
 
-func (ft *OrderCreatedNotifyFilters) BySellerIDPtr(SellerID *int64) *sq.ColumnFilterPtr {
+func (ft *OrderCreatedNotifyFilters) BySellerIDPtr(SellerID *dot.ID) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "seller_id",
@@ -824,7 +825,7 @@ func (ft *OrderCreatedNotifyFilters) BySellerIDPtr(SellerID *int64) *sq.ColumnFi
 	}
 }
 
-func (ft *OrderCreatedNotifyFilters) ByShopID(ShopID int64) *sq.ColumnFilter {
+func (ft *OrderCreatedNotifyFilters) ByShopID(ShopID dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "shop_id",
@@ -833,7 +834,7 @@ func (ft *OrderCreatedNotifyFilters) ByShopID(ShopID int64) *sq.ColumnFilter {
 	}
 }
 
-func (ft *OrderCreatedNotifyFilters) ByShopIDPtr(ShopID *int64) *sq.ColumnFilterPtr {
+func (ft *OrderCreatedNotifyFilters) ByShopIDPtr(ShopID *dot.ID) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "shop_id",
@@ -843,7 +844,7 @@ func (ft *OrderCreatedNotifyFilters) ByShopIDPtr(ShopID *int64) *sq.ColumnFilter
 	}
 }
 
-func (ft *OrderCreatedNotifyFilters) BySupplyID(SupplyID int64) *sq.ColumnFilter {
+func (ft *OrderCreatedNotifyFilters) BySupplyID(SupplyID dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "supply_id",
@@ -852,7 +853,7 @@ func (ft *OrderCreatedNotifyFilters) BySupplyID(SupplyID int64) *sq.ColumnFilter
 	}
 }
 
-func (ft *OrderCreatedNotifyFilters) BySupplyIDPtr(SupplyID *int64) *sq.ColumnFilterPtr {
+func (ft *OrderCreatedNotifyFilters) BySupplyIDPtr(SupplyID *dot.ID) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "supply_id",
@@ -1142,7 +1143,7 @@ func (ft AffiliateReferralCodeFilters) Prefix() string {
 	return ft.prefix
 }
 
-func (ft *AffiliateReferralCodeFilters) ByID(ID int64) *sq.ColumnFilter {
+func (ft *AffiliateReferralCodeFilters) ByID(ID dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "id",
@@ -1151,7 +1152,7 @@ func (ft *AffiliateReferralCodeFilters) ByID(ID int64) *sq.ColumnFilter {
 	}
 }
 
-func (ft *AffiliateReferralCodeFilters) ByIDPtr(ID *int64) *sq.ColumnFilterPtr {
+func (ft *AffiliateReferralCodeFilters) ByIDPtr(ID *dot.ID) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "id",
@@ -1180,7 +1181,7 @@ func (ft *AffiliateReferralCodeFilters) ByCodePtr(Code *string) *sq.ColumnFilter
 	}
 }
 
-func (ft *AffiliateReferralCodeFilters) ByAffiliateID(AffiliateID int64) *sq.ColumnFilter {
+func (ft *AffiliateReferralCodeFilters) ByAffiliateID(AffiliateID dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "affiliate_id",
@@ -1189,7 +1190,7 @@ func (ft *AffiliateReferralCodeFilters) ByAffiliateID(AffiliateID int64) *sq.Col
 	}
 }
 
-func (ft *AffiliateReferralCodeFilters) ByAffiliateIDPtr(AffiliateID *int64) *sq.ColumnFilterPtr {
+func (ft *AffiliateReferralCodeFilters) ByAffiliateIDPtr(AffiliateID *dot.ID) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "affiliate_id",
@@ -1199,7 +1200,7 @@ func (ft *AffiliateReferralCodeFilters) ByAffiliateIDPtr(AffiliateID *int64) *sq
 	}
 }
 
-func (ft *AffiliateReferralCodeFilters) ByUserID(UserID int64) *sq.ColumnFilter {
+func (ft *AffiliateReferralCodeFilters) ByUserID(UserID dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "user_id",
@@ -1208,7 +1209,7 @@ func (ft *AffiliateReferralCodeFilters) ByUserID(UserID int64) *sq.ColumnFilter 
 	}
 }
 
-func (ft *AffiliateReferralCodeFilters) ByUserIDPtr(UserID *int64) *sq.ColumnFilterPtr {
+func (ft *AffiliateReferralCodeFilters) ByUserIDPtr(UserID *dot.ID) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "user_id",
@@ -1270,7 +1271,7 @@ func (ft UserReferralFilters) Prefix() string {
 	return ft.prefix
 }
 
-func (ft *UserReferralFilters) ByUserID(UserID int64) *sq.ColumnFilter {
+func (ft *UserReferralFilters) ByUserID(UserID dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "user_id",
@@ -1279,7 +1280,7 @@ func (ft *UserReferralFilters) ByUserID(UserID int64) *sq.ColumnFilter {
 	}
 }
 
-func (ft *UserReferralFilters) ByUserIDPtr(UserID *int64) *sq.ColumnFilterPtr {
+func (ft *UserReferralFilters) ByUserIDPtr(UserID *dot.ID) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "user_id",
@@ -1289,7 +1290,7 @@ func (ft *UserReferralFilters) ByUserIDPtr(UserID *int64) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft *UserReferralFilters) ByReferralID(ReferralID int64) *sq.ColumnFilter {
+func (ft *UserReferralFilters) ByReferralID(ReferralID dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "referral_id",
@@ -1298,7 +1299,7 @@ func (ft *UserReferralFilters) ByReferralID(ReferralID int64) *sq.ColumnFilter {
 	}
 }
 
-func (ft *UserReferralFilters) ByReferralIDPtr(ReferralID *int64) *sq.ColumnFilterPtr {
+func (ft *UserReferralFilters) ByReferralIDPtr(ReferralID *dot.ID) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "referral_id",
@@ -1327,7 +1328,7 @@ func (ft *UserReferralFilters) ByReferralCodePtr(ReferralCode *string) *sq.Colum
 	}
 }
 
-func (ft *UserReferralFilters) BySaleReferralID(SaleReferralID int64) *sq.ColumnFilter {
+func (ft *UserReferralFilters) BySaleReferralID(SaleReferralID dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "sale_referral_id",
@@ -1336,7 +1337,7 @@ func (ft *UserReferralFilters) BySaleReferralID(SaleReferralID int64) *sq.Column
 	}
 }
 
-func (ft *UserReferralFilters) BySaleReferralIDPtr(SaleReferralID *int64) *sq.ColumnFilterPtr {
+func (ft *UserReferralFilters) BySaleReferralIDPtr(SaleReferralID *dot.ID) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "sale_referral_id",
@@ -1455,7 +1456,7 @@ func (ft SupplyCommissionSettingFilters) Prefix() string {
 	return ft.prefix
 }
 
-func (ft *SupplyCommissionSettingFilters) ByShopID(ShopID int64) *sq.ColumnFilter {
+func (ft *SupplyCommissionSettingFilters) ByShopID(ShopID dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "shop_id",
@@ -1464,7 +1465,7 @@ func (ft *SupplyCommissionSettingFilters) ByShopID(ShopID int64) *sq.ColumnFilte
 	}
 }
 
-func (ft *SupplyCommissionSettingFilters) ByShopIDPtr(ShopID *int64) *sq.ColumnFilterPtr {
+func (ft *SupplyCommissionSettingFilters) ByShopIDPtr(ShopID *dot.ID) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "shop_id",
@@ -1474,7 +1475,7 @@ func (ft *SupplyCommissionSettingFilters) ByShopIDPtr(ShopID *int64) *sq.ColumnF
 	}
 }
 
-func (ft *SupplyCommissionSettingFilters) ByProductID(ProductID int64) *sq.ColumnFilter {
+func (ft *SupplyCommissionSettingFilters) ByProductID(ProductID dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "product_id",
@@ -1483,7 +1484,7 @@ func (ft *SupplyCommissionSettingFilters) ByProductID(ProductID int64) *sq.Colum
 	}
 }
 
-func (ft *SupplyCommissionSettingFilters) ByProductIDPtr(ProductID *int64) *sq.ColumnFilterPtr {
+func (ft *SupplyCommissionSettingFilters) ByProductIDPtr(ProductID *dot.ID) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "product_id",
@@ -1645,7 +1646,7 @@ func (ft *SupplyCommissionSettingFilters) ByLifetimeDurationPtr(LifetimeDuration
 	}
 }
 
-func (ft *SupplyCommissionSettingFilters) ByCustomerPolicyGroupID(CustomerPolicyGroupID int64) *sq.ColumnFilter {
+func (ft *SupplyCommissionSettingFilters) ByCustomerPolicyGroupID(CustomerPolicyGroupID dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "customer_policy_group_id",
@@ -1654,7 +1655,7 @@ func (ft *SupplyCommissionSettingFilters) ByCustomerPolicyGroupID(CustomerPolicy
 	}
 }
 
-func (ft *SupplyCommissionSettingFilters) ByCustomerPolicyGroupIDPtr(CustomerPolicyGroupID *int64) *sq.ColumnFilterPtr {
+func (ft *SupplyCommissionSettingFilters) ByCustomerPolicyGroupIDPtr(CustomerPolicyGroupID *dot.ID) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "customer_policy_group_id",
@@ -1735,7 +1736,7 @@ func (ft OrderPromotionFilters) Prefix() string {
 	return ft.prefix
 }
 
-func (ft *OrderPromotionFilters) ByID(ID int64) *sq.ColumnFilter {
+func (ft *OrderPromotionFilters) ByID(ID dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "id",
@@ -1744,7 +1745,7 @@ func (ft *OrderPromotionFilters) ByID(ID int64) *sq.ColumnFilter {
 	}
 }
 
-func (ft *OrderPromotionFilters) ByIDPtr(ID *int64) *sq.ColumnFilterPtr {
+func (ft *OrderPromotionFilters) ByIDPtr(ID *dot.ID) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "id",
@@ -1754,7 +1755,7 @@ func (ft *OrderPromotionFilters) ByIDPtr(ID *int64) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft *OrderPromotionFilters) ByProductID(ProductID int64) *sq.ColumnFilter {
+func (ft *OrderPromotionFilters) ByProductID(ProductID dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "product_id",
@@ -1763,7 +1764,7 @@ func (ft *OrderPromotionFilters) ByProductID(ProductID int64) *sq.ColumnFilter {
 	}
 }
 
-func (ft *OrderPromotionFilters) ByProductIDPtr(ProductID *int64) *sq.ColumnFilterPtr {
+func (ft *OrderPromotionFilters) ByProductIDPtr(ProductID *dot.ID) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "product_id",
@@ -1773,7 +1774,7 @@ func (ft *OrderPromotionFilters) ByProductIDPtr(ProductID *int64) *sq.ColumnFilt
 	}
 }
 
-func (ft *OrderPromotionFilters) ByOrderID(OrderID int64) *sq.ColumnFilter {
+func (ft *OrderPromotionFilters) ByOrderID(OrderID dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "order_id",
@@ -1782,7 +1783,7 @@ func (ft *OrderPromotionFilters) ByOrderID(OrderID int64) *sq.ColumnFilter {
 	}
 }
 
-func (ft *OrderPromotionFilters) ByOrderIDPtr(OrderID *int64) *sq.ColumnFilterPtr {
+func (ft *OrderPromotionFilters) ByOrderIDPtr(OrderID *dot.ID) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "order_id",
@@ -1887,7 +1888,7 @@ func (ft *OrderPromotionFilters) ByTypePtr(Type *string) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft *OrderPromotionFilters) ByOrderCreatedNotifyID(OrderCreatedNotifyID int64) *sq.ColumnFilter {
+func (ft *OrderPromotionFilters) ByOrderCreatedNotifyID(OrderCreatedNotifyID dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "order_created_notify_id",
@@ -1896,7 +1897,7 @@ func (ft *OrderPromotionFilters) ByOrderCreatedNotifyID(OrderCreatedNotifyID int
 	}
 }
 
-func (ft *OrderPromotionFilters) ByOrderCreatedNotifyIDPtr(OrderCreatedNotifyID *int64) *sq.ColumnFilterPtr {
+func (ft *OrderPromotionFilters) ByOrderCreatedNotifyIDPtr(OrderCreatedNotifyID *dot.ID) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "order_created_notify_id",
@@ -1996,7 +1997,7 @@ func (ft OrderCommissionSettingFilters) Prefix() string {
 	return ft.prefix
 }
 
-func (ft *OrderCommissionSettingFilters) ByOrderID(OrderID int64) *sq.ColumnFilter {
+func (ft *OrderCommissionSettingFilters) ByOrderID(OrderID dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "order_id",
@@ -2005,7 +2006,7 @@ func (ft *OrderCommissionSettingFilters) ByOrderID(OrderID int64) *sq.ColumnFilt
 	}
 }
 
-func (ft *OrderCommissionSettingFilters) ByOrderIDPtr(OrderID *int64) *sq.ColumnFilterPtr {
+func (ft *OrderCommissionSettingFilters) ByOrderIDPtr(OrderID *dot.ID) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "order_id",
@@ -2015,7 +2016,7 @@ func (ft *OrderCommissionSettingFilters) ByOrderIDPtr(OrderID *int64) *sq.Column
 	}
 }
 
-func (ft *OrderCommissionSettingFilters) BySupplyID(SupplyID int64) *sq.ColumnFilter {
+func (ft *OrderCommissionSettingFilters) BySupplyID(SupplyID dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "supply_id",
@@ -2024,7 +2025,7 @@ func (ft *OrderCommissionSettingFilters) BySupplyID(SupplyID int64) *sq.ColumnFi
 	}
 }
 
-func (ft *OrderCommissionSettingFilters) BySupplyIDPtr(SupplyID *int64) *sq.ColumnFilterPtr {
+func (ft *OrderCommissionSettingFilters) BySupplyIDPtr(SupplyID *dot.ID) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "supply_id",
@@ -2034,7 +2035,7 @@ func (ft *OrderCommissionSettingFilters) BySupplyIDPtr(SupplyID *int64) *sq.Colu
 	}
 }
 
-func (ft *OrderCommissionSettingFilters) ByProductID(ProductID int64) *sq.ColumnFilter {
+func (ft *OrderCommissionSettingFilters) ByProductID(ProductID dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "product_id",
@@ -2043,7 +2044,7 @@ func (ft *OrderCommissionSettingFilters) ByProductID(ProductID int64) *sq.Column
 	}
 }
 
-func (ft *OrderCommissionSettingFilters) ByProductIDPtr(ProductID *int64) *sq.ColumnFilterPtr {
+func (ft *OrderCommissionSettingFilters) ByProductIDPtr(ProductID *dot.ID) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "product_id",
@@ -2243,7 +2244,7 @@ func (ft *OrderCommissionSettingFilters) ByGroupPtr(Group *string) *sq.ColumnFil
 	}
 }
 
-func (ft *OrderCommissionSettingFilters) ByCustomerPolicyGroupID(CustomerPolicyGroupID int64) *sq.ColumnFilter {
+func (ft *OrderCommissionSettingFilters) ByCustomerPolicyGroupID(CustomerPolicyGroupID dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "customer_policy_group_id",
@@ -2252,7 +2253,7 @@ func (ft *OrderCommissionSettingFilters) ByCustomerPolicyGroupID(CustomerPolicyG
 	}
 }
 
-func (ft *OrderCommissionSettingFilters) ByCustomerPolicyGroupIDPtr(CustomerPolicyGroupID *int64) *sq.ColumnFilterPtr {
+func (ft *OrderCommissionSettingFilters) ByCustomerPolicyGroupIDPtr(CustomerPolicyGroupID *dot.ID) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "customer_policy_group_id",
@@ -2314,7 +2315,7 @@ func (ft ShopCashbackFilters) Prefix() string {
 	return ft.prefix
 }
 
-func (ft *ShopCashbackFilters) ByID(ID int64) *sq.ColumnFilter {
+func (ft *ShopCashbackFilters) ByID(ID dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "id",
@@ -2323,7 +2324,7 @@ func (ft *ShopCashbackFilters) ByID(ID int64) *sq.ColumnFilter {
 	}
 }
 
-func (ft *ShopCashbackFilters) ByIDPtr(ID *int64) *sq.ColumnFilterPtr {
+func (ft *ShopCashbackFilters) ByIDPtr(ID *dot.ID) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "id",
@@ -2333,7 +2334,7 @@ func (ft *ShopCashbackFilters) ByIDPtr(ID *int64) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft *ShopCashbackFilters) ByShopID(ShopID int64) *sq.ColumnFilter {
+func (ft *ShopCashbackFilters) ByShopID(ShopID dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "shop_id",
@@ -2342,7 +2343,7 @@ func (ft *ShopCashbackFilters) ByShopID(ShopID int64) *sq.ColumnFilter {
 	}
 }
 
-func (ft *ShopCashbackFilters) ByShopIDPtr(ShopID *int64) *sq.ColumnFilterPtr {
+func (ft *ShopCashbackFilters) ByShopIDPtr(ShopID *dot.ID) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "shop_id",
@@ -2352,7 +2353,7 @@ func (ft *ShopCashbackFilters) ByShopIDPtr(ShopID *int64) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft *ShopCashbackFilters) ByOrderID(OrderID int64) *sq.ColumnFilter {
+func (ft *ShopCashbackFilters) ByOrderID(OrderID dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "order_id",
@@ -2361,7 +2362,7 @@ func (ft *ShopCashbackFilters) ByOrderID(OrderID int64) *sq.ColumnFilter {
 	}
 }
 
-func (ft *ShopCashbackFilters) ByOrderIDPtr(OrderID *int64) *sq.ColumnFilterPtr {
+func (ft *ShopCashbackFilters) ByOrderIDPtr(OrderID *dot.ID) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "order_id",
@@ -2390,7 +2391,7 @@ func (ft *ShopCashbackFilters) ByAmountPtr(Amount *int32) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft *ShopCashbackFilters) ByOrderCreatedNotifyID(OrderCreatedNotifyID int64) *sq.ColumnFilter {
+func (ft *ShopCashbackFilters) ByOrderCreatedNotifyID(OrderCreatedNotifyID dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "order_created_notify_id",
@@ -2399,7 +2400,7 @@ func (ft *ShopCashbackFilters) ByOrderCreatedNotifyID(OrderCreatedNotifyID int64
 	}
 }
 
-func (ft *ShopCashbackFilters) ByOrderCreatedNotifyIDPtr(OrderCreatedNotifyID *int64) *sq.ColumnFilterPtr {
+func (ft *ShopCashbackFilters) ByOrderCreatedNotifyIDPtr(OrderCreatedNotifyID *dot.ID) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "order_created_notify_id",
@@ -2518,7 +2519,7 @@ func (ft ShopOrderProductHistoryFilters) Prefix() string {
 	return ft.prefix
 }
 
-func (ft *ShopOrderProductHistoryFilters) ByUserID(UserID int64) *sq.ColumnFilter {
+func (ft *ShopOrderProductHistoryFilters) ByUserID(UserID dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "user_id",
@@ -2527,7 +2528,7 @@ func (ft *ShopOrderProductHistoryFilters) ByUserID(UserID int64) *sq.ColumnFilte
 	}
 }
 
-func (ft *ShopOrderProductHistoryFilters) ByUserIDPtr(UserID *int64) *sq.ColumnFilterPtr {
+func (ft *ShopOrderProductHistoryFilters) ByUserIDPtr(UserID *dot.ID) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "user_id",
@@ -2537,7 +2538,7 @@ func (ft *ShopOrderProductHistoryFilters) ByUserIDPtr(UserID *int64) *sq.ColumnF
 	}
 }
 
-func (ft *ShopOrderProductHistoryFilters) ByShopID(ShopID int64) *sq.ColumnFilter {
+func (ft *ShopOrderProductHistoryFilters) ByShopID(ShopID dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "shop_id",
@@ -2546,7 +2547,7 @@ func (ft *ShopOrderProductHistoryFilters) ByShopID(ShopID int64) *sq.ColumnFilte
 	}
 }
 
-func (ft *ShopOrderProductHistoryFilters) ByShopIDPtr(ShopID *int64) *sq.ColumnFilterPtr {
+func (ft *ShopOrderProductHistoryFilters) ByShopIDPtr(ShopID *dot.ID) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "shop_id",
@@ -2556,7 +2557,7 @@ func (ft *ShopOrderProductHistoryFilters) ByShopIDPtr(ShopID *int64) *sq.ColumnF
 	}
 }
 
-func (ft *ShopOrderProductHistoryFilters) ByOrderID(OrderID int64) *sq.ColumnFilter {
+func (ft *ShopOrderProductHistoryFilters) ByOrderID(OrderID dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "order_id",
@@ -2565,7 +2566,7 @@ func (ft *ShopOrderProductHistoryFilters) ByOrderID(OrderID int64) *sq.ColumnFil
 	}
 }
 
-func (ft *ShopOrderProductHistoryFilters) ByOrderIDPtr(OrderID *int64) *sq.ColumnFilterPtr {
+func (ft *ShopOrderProductHistoryFilters) ByOrderIDPtr(OrderID *dot.ID) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "order_id",
@@ -2575,7 +2576,7 @@ func (ft *ShopOrderProductHistoryFilters) ByOrderIDPtr(OrderID *int64) *sq.Colum
 	}
 }
 
-func (ft *ShopOrderProductHistoryFilters) BySupplyID(SupplyID int64) *sq.ColumnFilter {
+func (ft *ShopOrderProductHistoryFilters) BySupplyID(SupplyID dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "supply_id",
@@ -2584,7 +2585,7 @@ func (ft *ShopOrderProductHistoryFilters) BySupplyID(SupplyID int64) *sq.ColumnF
 	}
 }
 
-func (ft *ShopOrderProductHistoryFilters) BySupplyIDPtr(SupplyID *int64) *sq.ColumnFilterPtr {
+func (ft *ShopOrderProductHistoryFilters) BySupplyIDPtr(SupplyID *dot.ID) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "supply_id",
@@ -2594,7 +2595,7 @@ func (ft *ShopOrderProductHistoryFilters) BySupplyIDPtr(SupplyID *int64) *sq.Col
 	}
 }
 
-func (ft *ShopOrderProductHistoryFilters) ByProductID(ProductID int64) *sq.ColumnFilter {
+func (ft *ShopOrderProductHistoryFilters) ByProductID(ProductID dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "product_id",
@@ -2603,7 +2604,7 @@ func (ft *ShopOrderProductHistoryFilters) ByProductID(ProductID int64) *sq.Colum
 	}
 }
 
-func (ft *ShopOrderProductHistoryFilters) ByProductIDPtr(ProductID *int64) *sq.ColumnFilterPtr {
+func (ft *ShopOrderProductHistoryFilters) ByProductIDPtr(ProductID *dot.ID) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "product_id",
@@ -2613,7 +2614,7 @@ func (ft *ShopOrderProductHistoryFilters) ByProductIDPtr(ProductID *int64) *sq.C
 	}
 }
 
-func (ft *ShopOrderProductHistoryFilters) ByCustomerPolicyGroupID(CustomerPolicyGroupID int64) *sq.ColumnFilter {
+func (ft *ShopOrderProductHistoryFilters) ByCustomerPolicyGroupID(CustomerPolicyGroupID dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "customer_policy_group_id",
@@ -2622,7 +2623,7 @@ func (ft *ShopOrderProductHistoryFilters) ByCustomerPolicyGroupID(CustomerPolicy
 	}
 }
 
-func (ft *ShopOrderProductHistoryFilters) ByCustomerPolicyGroupIDPtr(CustomerPolicyGroupID *int64) *sq.ColumnFilterPtr {
+func (ft *ShopOrderProductHistoryFilters) ByCustomerPolicyGroupIDPtr(CustomerPolicyGroupID *dot.ID) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "customer_policy_group_id",
@@ -2703,7 +2704,7 @@ func (ft CustomerPolicyGroupFilters) Prefix() string {
 	return ft.prefix
 }
 
-func (ft *CustomerPolicyGroupFilters) ByID(ID int64) *sq.ColumnFilter {
+func (ft *CustomerPolicyGroupFilters) ByID(ID dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "id",
@@ -2712,7 +2713,7 @@ func (ft *CustomerPolicyGroupFilters) ByID(ID int64) *sq.ColumnFilter {
 	}
 }
 
-func (ft *CustomerPolicyGroupFilters) ByIDPtr(ID *int64) *sq.ColumnFilterPtr {
+func (ft *CustomerPolicyGroupFilters) ByIDPtr(ID *dot.ID) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "id",
@@ -2722,7 +2723,7 @@ func (ft *CustomerPolicyGroupFilters) ByIDPtr(ID *int64) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft *CustomerPolicyGroupFilters) BySupplyID(SupplyID int64) *sq.ColumnFilter {
+func (ft *CustomerPolicyGroupFilters) BySupplyID(SupplyID dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "supply_id",
@@ -2731,7 +2732,7 @@ func (ft *CustomerPolicyGroupFilters) BySupplyID(SupplyID int64) *sq.ColumnFilte
 	}
 }
 
-func (ft *CustomerPolicyGroupFilters) BySupplyIDPtr(SupplyID *int64) *sq.ColumnFilterPtr {
+func (ft *CustomerPolicyGroupFilters) BySupplyIDPtr(SupplyID *dot.ID) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "supply_id",

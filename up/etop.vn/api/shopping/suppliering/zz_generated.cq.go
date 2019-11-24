@@ -40,7 +40,7 @@ func (c QueryBus) DispatchAll(ctx context.Context, msgs ...Query) error {
 }
 
 type CreateSupplierCommand struct {
-	ShopID            int64
+	ShopID            dot.ID
 	FullName          string
 	Phone             string
 	Email             string
@@ -58,8 +58,8 @@ func (h AggregateHandler) HandleCreateSupplier(ctx context.Context, msg *CreateS
 }
 
 type DeleteSupplierCommand struct {
-	ID     int64
-	ShopID int64
+	ID     dot.ID
+	ShopID dot.ID
 
 	Result int `json:"-"`
 }
@@ -70,8 +70,8 @@ func (h AggregateHandler) HandleDeleteSupplier(ctx context.Context, msg *DeleteS
 }
 
 type UpdateSupplierCommand struct {
-	ID                int64
-	ShopID            int64
+	ID                dot.ID
+	ShopID            dot.ID
 	FullName          dot.NullString
 	Note              dot.NullString
 	Phone             dot.NullString
@@ -89,8 +89,8 @@ func (h AggregateHandler) HandleUpdateSupplier(ctx context.Context, msg *UpdateS
 }
 
 type GetSupplierByIDQuery struct {
-	ID     int64
-	ShopID int64
+	ID     dot.ID
+	ShopID dot.ID
 
 	Result *ShopSupplier `json:"-"`
 }
@@ -101,7 +101,7 @@ func (h QueryServiceHandler) HandleGetSupplierByID(ctx context.Context, msg *Get
 }
 
 type ListSuppliersQuery struct {
-	ShopID  int64
+	ShopID  dot.ID
 	Paging  meta.Paging
 	Filters meta.Filters
 
@@ -114,8 +114,8 @@ func (h QueryServiceHandler) HandleListSuppliers(ctx context.Context, msg *ListS
 }
 
 type ListSuppliersByIDsQuery struct {
-	IDs    []int64
-	ShopID int64
+	IDs    []dot.ID
+	ShopID dot.ID
 
 	Result *SuppliersResponse `json:"-"`
 }
@@ -161,7 +161,7 @@ func (q *CreateSupplierCommand) SetCreateSupplierArgs(args *CreateSupplierArgs) 
 	q.Note = args.Note
 }
 
-func (q *DeleteSupplierCommand) GetArgs(ctx context.Context) (_ context.Context, ID int64, shopID int64) {
+func (q *DeleteSupplierCommand) GetArgs(ctx context.Context) (_ context.Context, ID dot.ID, shopID dot.ID) {
 	return ctx,
 		q.ID,
 		q.ShopID

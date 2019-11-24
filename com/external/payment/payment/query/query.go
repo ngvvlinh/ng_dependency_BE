@@ -7,6 +7,7 @@ import (
 	"etop.vn/backend/com/external/payment/payment/sqlstore"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/cmsql"
+	"etop.vn/capi/dot"
 )
 
 var _ payment.QueryService = &QueryService{}
@@ -26,7 +27,7 @@ func (q *QueryService) MessageBus() payment.QueryBus {
 	return payment.NewQueryServiceHandler(q).RegisterHandlers(b)
 }
 
-func (q *QueryService) GetPaymentByID(ctx context.Context, id int64) (*payment.Payment, error) {
+func (q *QueryService) GetPaymentByID(ctx context.Context, id dot.ID) (*payment.Payment, error) {
 	return q.store(ctx).ID(id).GetPayment()
 }
 

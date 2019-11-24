@@ -4,11 +4,12 @@ import (
 	"time"
 
 	cm "etop.vn/backend/pkg/common"
+	"etop.vn/capi/dot"
 )
 
 type CreateCreditCommand struct {
 	Amount int
-	ShopID int64
+	ShopID dot.ID
 	Type   AccountType
 	PaidAt time.Time
 
@@ -16,14 +17,14 @@ type CreateCreditCommand struct {
 }
 
 type GetCreditQuery struct {
-	ID     int64
-	ShopID int64
+	ID     dot.ID
+	ShopID dot.ID
 
 	Result *CreditExtended
 }
 
 type GetCreditsQuery struct {
-	ShopID int64
+	ShopID dot.ID
 	Paging *cm.Paging
 
 	Result struct {
@@ -33,8 +34,8 @@ type GetCreditsQuery struct {
 }
 
 type ConfirmCreditCommand struct {
-	ID     int64
-	ShopID int64
+	ID     dot.ID
+	ShopID dot.ID
 
 	Result struct {
 		Updated int
@@ -42,8 +43,8 @@ type ConfirmCreditCommand struct {
 }
 
 type UpdateCreditCommand struct {
-	ID     int64
-	ShopID int64
+	ID     dot.ID
+	ShopID dot.ID
 	PaidAt time.Time
 	Amount int
 
@@ -51,8 +52,8 @@ type UpdateCreditCommand struct {
 }
 
 type DeleteCreditCommand struct {
-	ID     int64
-	ShopID int64
+	ID     dot.ID
+	ShopID dot.ID
 
 	Result struct {
 		Deleted int

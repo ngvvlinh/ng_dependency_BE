@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"etop.vn/api/external/haravan"
+	"etop.vn/capi/dot"
 )
 
 // +gen:api
@@ -19,7 +20,7 @@ type Aggregate interface {
 }
 
 type GetShippingRateRequestArgs struct {
-	EtopShopID  int64
+	EtopShopID  dot.ID
 	Origin      *haravan.Address `json:"origin"`
 	Destination *haravan.Address `json:"destination"`
 	CodAmount   float32          `json:"cod_amount"`
@@ -31,7 +32,7 @@ type GetShippingRateResponse struct {
 }
 
 type CreateOrderRequestArgs struct {
-	EtopShopID  int64
+	EtopShopID  dot.ID
 	Origin      *haravan.Address `json:"origin"`
 	Destination *haravan.Address `json:"destination"`
 	Items       []*haravan.Item  `json:"items"`
@@ -58,7 +59,7 @@ type CreateOrderResponse struct {
 }
 
 type GetOrderRequestArgs struct {
-	EtopShopID     int64
+	EtopShopID     dot.ID
 	TrackingNumber string `json:"tracking_number"`
 }
 
@@ -72,7 +73,7 @@ type GetOrderResponse struct {
 }
 
 type CancelOrderRequestArgs struct {
-	EtopShopID     int64
+	EtopShopID     dot.ID
 	TrackingNumber string `json:"tracking_number"`
 }
 

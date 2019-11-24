@@ -5,13 +5,14 @@ import (
 
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/onesignal"
+	"etop.vn/capi/dot"
 )
 
 type CreateNotificationArgs struct {
-	AccountID        int64
+	AccountID        dot.ID
 	Title            string
 	Message          string
-	EntityID         int64
+	EntityID         dot.ID
 	Entity           NotiEntity
 	SendNotification bool
 	MetaData         json.RawMessage
@@ -19,27 +20,27 @@ type CreateNotificationArgs struct {
 
 type CreateNotificationsArgs struct {
 	SendAll          bool
-	AccountIDs       []int64
+	AccountIDs       []dot.ID
 	Title            string
 	Message          string
-	EntityID         int64
+	EntityID         dot.ID
 	Entity           NotiEntity
 	SendNotification bool
 	MetaData         json.RawMessage
 }
 
 type GetNotificationArgs struct {
-	AccountID int64
-	ID        int64
+	AccountID dot.ID
+	ID        dot.ID
 }
 
 type GetNotificationsArgs struct {
-	AccountID int64
+	AccountID dot.ID
 	Paging    *cm.Paging
 }
 
 type UpdateNotificationsArgs struct {
-	IDs    []int64
+	IDs    []dot.ID
 	IsRead bool
 }
 

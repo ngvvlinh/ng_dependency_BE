@@ -9,6 +9,7 @@ import (
 	cc "etop.vn/backend/pkg/common/config"
 	"etop.vn/backend/pkg/common/validate"
 	"etop.vn/backend/pkg/etop/model"
+	"etop.vn/capi/dot"
 	"etop.vn/common/l"
 )
 
@@ -145,7 +146,7 @@ func main() {
 	}
 }
 
-func scanProduct(fromID int64) (products model.Products, err error) {
+func scanProduct(fromID dot.ID) (products model.Products, err error) {
 	err = db.
 		Where("id > ?", fromID).
 		OrderBy("id").
@@ -154,7 +155,7 @@ func scanProduct(fromID int64) (products model.Products, err error) {
 	return
 }
 
-func scanVariant(fromID int64) (variants model.Variants, err error) {
+func scanVariant(fromID dot.ID) (variants model.Variants, err error) {
 	err = db.
 		Where("id > ?", fromID).
 		OrderBy("id").
@@ -163,7 +164,7 @@ func scanVariant(fromID int64) (variants model.Variants, err error) {
 	return
 }
 
-func scanShopProduct(shopID, productID int64) (products model.ShopProducts, err error) {
+func scanShopProduct(shopID, productID dot.ID) (products model.ShopProducts, err error) {
 	err = db.
 		Where("(shop_id, product_id) > (?,?)", shopID, productID).
 		OrderBy("shop_id, product_id").

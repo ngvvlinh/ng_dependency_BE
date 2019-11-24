@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"etop.vn/backend/pkg/etop/model"
+	"etop.vn/capi/dot"
 	"etop.vn/common/jsonx"
 )
 
@@ -23,13 +24,13 @@ const (
 )
 
 type Notification struct {
-	ID                int64
+	ID                dot.ID
 	Title             string
 	Message           string
 	IsRead            bool
-	EntityID          int64
+	EntityID          dot.ID
 	Entity            NotiEntity
-	AccountID         int64
+	AccountID         dot.ID
 	SyncStatus        model.Status3
 	ExternalServiceID int
 	ExternalNotiID    string
@@ -44,15 +45,15 @@ type Notification struct {
 var _ = sqlgenDevice(&Device{})
 
 type Device struct {
-	ID int64
+	ID dot.ID
 	// DeviceID: deprecated
 	DeviceID          string
 	DeviceName        string
 	ExternalDeviceID  string
 	ExternalServiceID int
 	// Name: deprecated
-	AccountID     int64
-	UserID        int64
+	AccountID     dot.ID
+	UserID        dot.ID
 	CreatedAt     time.Time `sq:"create"`
 	UpdatedAt     time.Time `sq:"update"`
 	DeactivatedAt time.Time
@@ -73,7 +74,7 @@ func PrepareNotiData(args NotiDataAddition) json.RawMessage {
 }
 
 type DeviceConfig struct {
-	SubcribeAllShop bool    `json:"subcribe_all_shop"`
-	SubcribeShopIDs []int64 `json:"subcribe_shop_ids"`
-	Mute            bool    `json:"mute"`
+	SubcribeAllShop bool     `json:"subcribe_all_shop"`
+	SubcribeShopIDs []dot.ID `json:"subcribe_shop_ids"`
+	Mute            bool     `json:"mute"`
 }

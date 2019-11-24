@@ -987,11 +987,11 @@
       "type": "object",
       "properties": {
         "id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "shop_id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         }
       }
@@ -1000,23 +1000,23 @@
       "type": "object",
       "properties": {
         "money_transaction_id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "shop_id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "total_amount": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "total_cod": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "total_orders": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         }
       }
@@ -1025,19 +1025,19 @@
       "type": "object",
       "properties": {
         "id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "total_amount": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "total_cod": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "total_orders": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         }
       }
@@ -1046,7 +1046,7 @@
       "type": "object",
       "properties": {
         "amount": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "paid_at": {
@@ -1054,7 +1054,7 @@
           "format": "date-time"
         },
         "shop_id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "type": {
@@ -1068,7 +1068,7 @@
         "account_ids": {
           "type": "array",
           "items": {
-            "type": "integer",
+            "type": "string",
             "format": "int64"
           }
         },
@@ -1076,7 +1076,7 @@
           "$ref": "#/definitions/roNotifierEntity"
         },
         "entity_id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "message": {
@@ -1115,7 +1115,7 @@
       "type": "object",
       "properties": {
         "account_id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         }
       }
@@ -1124,7 +1124,7 @@
       "type": "object",
       "properties": {
         "account_id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "api_key": {
@@ -1136,11 +1136,11 @@
       "type": "object",
       "properties": {
         "id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "shop_id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         }
       }
@@ -1152,7 +1152,7 @@
           "$ref": "#/definitions/maPaging"
         },
         "shop_id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         }
       }
@@ -1167,14 +1167,14 @@
           }
         },
         "order_id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "paging": {
           "$ref": "#/definitions/maPaging"
         },
         "shop_id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "status": {
@@ -1194,7 +1194,7 @@
         "ids": {
           "type": "array",
           "items": {
-            "type": "integer",
+            "type": "string",
             "format": "int64"
           }
         },
@@ -1218,7 +1218,7 @@
         "ids": {
           "type": "array",
           "items": {
-            "type": "integer",
+            "type": "string",
             "format": "int64"
           }
         },
@@ -1239,19 +1239,19 @@
         "ids": {
           "type": "array",
           "items": {
-            "type": "integer",
+            "type": "string",
             "format": "int64"
           }
         },
         "money_transaction_shipping_external_id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "paging": {
           "$ref": "#/definitions/maPaging"
         },
         "shop_id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         }
       }
@@ -1296,14 +1296,14 @@
       "type": "object",
       "properties": {
         "account_id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "password": {
           "type": "string"
         },
         "user_id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         }
       }
@@ -1314,12 +1314,12 @@
         "line_ids": {
           "type": "array",
           "items": {
-            "type": "integer",
+            "type": "string",
             "format": "int64"
           }
         },
         "money_transaction_shipping_external_id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         }
       }
@@ -1328,11 +1328,11 @@
       "type": "object",
       "properties": {
         "amount": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "paid_at": {
@@ -1340,7 +1340,7 @@
           "format": "date-time"
         },
         "shop_id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "type": {
@@ -1362,7 +1362,7 @@
           "type": "string"
         },
         "id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "is_partial_delivery": {
@@ -1387,7 +1387,7 @@
           "$ref": "#/definitions/ocBankAccount"
         },
         "id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "invoice_number": {
@@ -1404,7 +1404,7 @@
         "adds": {
           "type": "array",
           "items": {
-            "type": "integer",
+            "type": "string",
             "format": "int64"
           }
         },
@@ -1414,12 +1414,12 @@
         "deletes": {
           "type": "array",
           "items": {
-            "type": "integer",
+            "type": "string",
             "format": "int64"
           }
         },
         "id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "invoice_number": {
@@ -1431,7 +1431,7 @@
         "replace_all": {
           "type": "array",
           "items": {
-            "type": "integer",
+            "type": "string",
             "format": "int64"
           }
         }
@@ -1444,7 +1444,7 @@
           "$ref": "#/definitions/ocBankAccount"
         },
         "id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "invoice_number": {
@@ -1519,7 +1519,7 @@
       "type": "object",
       "properties": {
         "id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         }
       }
@@ -1530,7 +1530,7 @@
         "ids": {
           "type": "array",
           "items": {
-            "type": "integer",
+            "type": "string",
             "format": "int64"
           }
         }
@@ -1669,7 +1669,7 @@
           "type": "string"
         },
         "id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "last_name": {
@@ -1731,7 +1731,7 @@
           "type": "string"
         },
         "id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "is_test": {
@@ -1822,15 +1822,14 @@
       "type": "object",
       "properties": {
         "amount": {
-          "type": "integer",
-          "format": "int64"
+          "type": "integer"
         },
         "created_at": {
           "type": "string",
           "format": "date-time"
         },
         "id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "paid_at": {
@@ -1841,7 +1840,7 @@
           "$ref": "#/definitions/ocShop"
         },
         "shop_id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "status": {
@@ -1887,7 +1886,7 @@
           }
         },
         "id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "image_url": {
@@ -1963,7 +1962,7 @@
           "type": "string"
         },
         "id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "image_url": {
@@ -1976,7 +1975,7 @@
           "type": "string"
         },
         "owner_id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "phone": {
@@ -2055,7 +2054,7 @@
           "type": "string"
         },
         "id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "image_url": {
@@ -2074,22 +2073,22 @@
           "type": "string"
         },
         "owner_id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "phone": {
           "type": "string"
         },
         "product_source_id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "ship_from_address_id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "ship_to_address_id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "shipping_service_select_strategy": {
@@ -2154,7 +2153,7 @@
           "type": "string"
         },
         "id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "phone": {
@@ -2184,7 +2183,7 @@
       "type": "object",
       "properties": {
         "account_id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "account_name": {
@@ -2201,7 +2200,7 @@
           "format": "date-time"
         },
         "disabled_by": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "invitation_accepted_at": {
@@ -2217,7 +2216,7 @@
           "format": "date-time"
         },
         "invitation_sent_by": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "permission": {
@@ -2236,7 +2235,7 @@
           "type": "string"
         },
         "user_id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "user_short_name": {
@@ -2273,7 +2272,7 @@
           }
         },
         "order_id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "shipping_address": {
@@ -2387,7 +2386,7 @@
           }
         },
         "id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "include_insurance": {
@@ -2400,22 +2399,22 @@
           }
         },
         "money_transaction_shipping_external_id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "money_transaction_shipping_id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "order": {
           "$ref": "#/definitions/vmOrder"
         },
         "order_id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "partner_id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "pickup_address": {
@@ -2486,7 +2485,7 @@
           "$ref": "#/definitions/ocShop"
         },
         "shop_id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "status": {
@@ -2626,18 +2625,18 @@
           "format": "date-time"
         },
         "id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "invoice_number": {
           "type": "string"
         },
         "money_transaction_shipping_etop_id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "money_transaction_shipping_external_id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "note": {
@@ -2647,23 +2646,20 @@
           "type": "string"
         },
         "shop_id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "status": {
           "$ref": "#/definitions/wwStatus"
         },
         "total_amount": {
-          "type": "integer",
-          "format": "int64"
+          "type": "integer"
         },
         "total_cod": {
-          "type": "integer",
-          "format": "int64"
+          "type": "integer"
         },
         "total_orders": {
-          "type": "integer",
-          "format": "int64"
+          "type": "integer"
         },
         "updated_at": {
           "type": "string",
@@ -2689,7 +2685,7 @@
           "format": "date-time"
         },
         "id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "invoice_number": {
@@ -2708,20 +2704,16 @@
           "$ref": "#/definitions/wwStatus"
         },
         "total_amount": {
-          "type": "integer",
-          "format": "int64"
+          "type": "integer"
         },
         "total_cod": {
-          "type": "integer",
-          "format": "int64"
+          "type": "integer"
         },
         "total_fee": {
-          "type": "integer",
-          "format": "int64"
+          "type": "integer"
         },
         "total_orders": {
-          "type": "integer",
-          "format": "int64"
+          "type": "integer"
         },
         "updated_at": {
           "type": "string",
@@ -2761,7 +2753,7 @@
           "format": "date-time"
         },
         "id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "invoice_number": {
@@ -2783,12 +2775,10 @@
           "$ref": "#/definitions/wwStatus"
         },
         "total_cod": {
-          "type": "integer",
-          "format": "int64"
+          "type": "integer"
         },
         "total_orders": {
-          "type": "integer",
-          "format": "int64"
+          "type": "integer"
         },
         "updated_at": {
           "type": "string",
@@ -2804,7 +2794,7 @@
           "format": "date-time"
         },
         "etop_fulfillment_id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "etop_fulfillment_id_raw": {
@@ -2828,25 +2818,23 @@
           "type": "string"
         },
         "external_total_cod": {
-          "type": "integer",
-          "format": "int64"
+          "type": "integer"
         },
         "external_total_shipping_fee": {
-          "type": "integer",
-          "format": "int64"
+          "type": "integer"
         },
         "fulfillment": {
           "$ref": "#/definitions/vmFulfillment"
         },
         "id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "import_error": {
           "$ref": "#/definitions/maError"
         },
         "money_transaction_shipping_external_id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "note": {
@@ -2931,7 +2919,7 @@
           "$ref": "#/definitions/vmOrderAddress"
         },
         "customer_id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "customer_payment_status": {
@@ -2973,7 +2961,7 @@
         "fulfillment_ids": {
           "type": "array",
           "items": {
-            "type": "integer",
+            "type": "string",
             "format": "int64"
           }
         },
@@ -2996,7 +2984,7 @@
           "type": "string"
         },
         "id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "lines": {
@@ -3013,7 +3001,7 @@
           "type": "string"
         },
         "partner_id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "payment_method": {
@@ -3027,8 +3015,7 @@
           "format": "date-time"
         },
         "received_amount": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "reference_url": {
           "type": "string"
@@ -3057,7 +3044,7 @@
           "format": "int32"
         },
         "shop_id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "shop_name": {
@@ -3267,7 +3254,7 @@
           }
         },
         "order_id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "payment_price": {
@@ -3275,7 +3262,7 @@
           "format": "int32"
         },
         "product_id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "product_name": {
@@ -3294,7 +3281,7 @@
           "format": "int32"
         },
         "variant_id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         }
       }
@@ -3440,18 +3427,18 @@
           "$ref": "#/definitions/wxStatus"
         },
         "id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "order_ids": {
           "type": "array",
           "items": {
-            "type": "integer",
+            "type": "string",
             "format": "int64"
           }
         },
         "partner_id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "pickup_address": {
@@ -3510,7 +3497,7 @@
           "$ref": "#/definitions/wyStatus"
         },
         "shop_id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "status": {
@@ -3670,7 +3657,7 @@
           "format": "date-time"
         },
         "id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "include_insurance": {
@@ -3683,22 +3670,22 @@
           }
         },
         "money_transaction_shipping_external_id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "money_transaction_shipping_id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "order": {
           "$ref": "#/definitions/vmOrder"
         },
         "order_id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "partner_id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "pickup_address": {
@@ -3775,7 +3762,7 @@
           "$ref": "#/definitions/ocShop"
         },
         "shop_id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "status": {

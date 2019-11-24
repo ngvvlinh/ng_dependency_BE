@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"etop.vn/backend/pkg/etop/model"
+	"etop.vn/capi/dot"
 )
 
 //go:generate $ETOPDIR/backend/scripts/derive.sh
@@ -11,9 +12,9 @@ import (
 var _ = sqlgenReceipt(&Receipt{})
 
 type Receipt struct {
-	ID                 int64
-	ShopID             int64
-	TraderID           int64
+	ID                 dot.ID
+	ShopID             dot.ID
+	TraderID           dot.ID
 	Code               string
 	CodeNorm           int32
 	Title              string
@@ -23,14 +24,14 @@ type Receipt struct {
 
 	Amount          int32
 	Status          model.Status3
-	RefIDs          []int64
+	RefIDs          []dot.ID
 	RefType         string
 	Lines           []*ReceiptLine
-	LedgerID        int64
+	LedgerID        dot.ID
 	Trader          *Trader
 	CancelledReason string
 	CreatedType     string
-	CreatedBy       int64
+	CreatedBy       dot.ID
 	PaidAt          time.Time
 	ConfirmedAt     time.Time
 	CancelledAt     time.Time
@@ -40,13 +41,13 @@ type Receipt struct {
 }
 
 type ReceiptLine struct {
-	RefID  int64  `json:"ref_id"`
+	RefID  dot.ID `json:"ref_id"`
 	Title  string `json:"title"`
 	Amount int32  `json:"amount"`
 }
 
 type Trader struct {
-	ID       int64  `json:"id"`
+	ID       dot.ID `json:"id"`
 	Type     string `json:"type"`
 	FullName string `json:"full_name"`
 	Phone    string `json:"phone"`

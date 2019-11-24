@@ -10,6 +10,7 @@ import (
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/cmsql"
 	"etop.vn/backend/pkg/etop/model"
+	"etop.vn/capi/dot"
 )
 
 var _ identity.QueryService = &QueryService{}
@@ -35,7 +36,7 @@ func (a *QueryService) MessageBus() identity.QueryBus {
 	return identity.NewQueryServiceHandler(a).RegisterHandlers(b)
 }
 
-func (q *QueryService) GetShopByID(ctx context.Context, id int64) (*identity.Shop, error) {
+func (q *QueryService) GetShopByID(ctx context.Context, id dot.ID) (*identity.Shop, error) {
 	return q.accountStore(ctx).ShopByID(id).GetShop()
 }
 
@@ -60,11 +61,11 @@ func (q *QueryService) GetExternalAccountAhamoveByExternalID(ctx context.Context
 	return q.xAccountAhamove(ctx).ExternalID(args.ExternalID).GetXAccountAhamove()
 }
 
-func (q *QueryService) GetAffiliateByID(ctx context.Context, id int64) (*identity.Affiliate, error) {
+func (q *QueryService) GetAffiliateByID(ctx context.Context, id dot.ID) (*identity.Affiliate, error) {
 	return q.accountStore(ctx).AffiliateByID(id).GetAffiliate()
 }
 
-func (q *QueryService) GetAffiliateWithPermission(ctx context.Context, affID int64, userID int64) (*identity.GetAffiliateWithPermissionResult, error) {
+func (q *QueryService) GetAffiliateWithPermission(ctx context.Context, affID dot.ID, userID dot.ID) (*identity.GetAffiliateWithPermissionResult, error) {
 	if affID == 0 || userID == 0 {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing required params")
 	}

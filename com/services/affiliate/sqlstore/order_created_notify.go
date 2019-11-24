@@ -7,6 +7,7 @@ import (
 	"etop.vn/backend/com/services/affiliate/model"
 	"etop.vn/backend/pkg/common/cmsql"
 	"etop.vn/backend/pkg/common/sqlstore"
+	"etop.vn/capi/dot"
 )
 
 type OrderCreatedNotifyStoreFactory func(ctx context.Context) *OrderCreatedNotifyStore
@@ -49,12 +50,12 @@ func (s *OrderCreatedNotifyStore) Paging(paging meta.Paging) *OrderCreatedNotify
 	return s
 }
 
-func (s *OrderCreatedNotifyStore) ID(id int64) *OrderCreatedNotifyStore {
+func (s *OrderCreatedNotifyStore) ID(id dot.ID) *OrderCreatedNotifyStore {
 	s.preds = append(s.preds, s.ft.ByID(id))
 	return s
 }
 
-func (s *OrderCreatedNotifyStore) OrderID(id int64) *OrderCreatedNotifyStore {
+func (s *OrderCreatedNotifyStore) OrderID(id dot.ID) *OrderCreatedNotifyStore {
 	s.preds = append(s.preds, s.ft.ByOrderID(id))
 	return s
 }

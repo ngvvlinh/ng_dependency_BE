@@ -19,6 +19,7 @@ import (
 	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/backend/pkg/etop/sqlstore"
 	"etop.vn/capi"
+	"etop.vn/capi/dot"
 	"etop.vn/common/l"
 )
 
@@ -118,7 +119,7 @@ func (s *MiscService) AdminLoginAsAccount(ctx context.Context, q *AdminLoginAsAc
 	return err
 }
 
-func (s *MiscService) adminCreateLoginResponse(ctx context.Context, adminID, userID, accountID int64) (*pbetop.LoginResponse, error) {
+func (s *MiscService) adminCreateLoginResponse(ctx context.Context, adminID, userID, accountID dot.ID) (*pbetop.LoginResponse, error) {
 	if adminID == 0 {
 		return nil, cm.Error(cm.InvalidArgument, "Missing AdminID", nil)
 	}

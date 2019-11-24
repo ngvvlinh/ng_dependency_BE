@@ -18,6 +18,7 @@ import (
 	"etop.vn/backend/pkg/common/cmsql"
 	"etop.vn/backend/pkg/common/sq"
 	"etop.vn/backend/pkg/common/sqlstore"
+	"etop.vn/capi/dot"
 )
 
 type ShipnowStoreFactory func(context.Context) *ShipnowStore
@@ -50,22 +51,22 @@ func (s *ShipnowStore) Count() (uint64, error) {
 	return query.Count((*model.ShipnowFulfillment)(nil))
 }
 
-func (s *ShipnowStore) ID(id int64) *ShipnowStore {
+func (s *ShipnowStore) ID(id dot.ID) *ShipnowStore {
 	s.preds = append(s.preds, s.ft.ByID(id))
 	return s
 }
 
-func (s *ShipnowStore) IDs(ids ...int64) *ShipnowStore {
+func (s *ShipnowStore) IDs(ids ...dot.ID) *ShipnowStore {
 	s.preds = append(s.preds, sq.In("id", ids))
 	return s
 }
 
-func (s *ShipnowStore) ShopID(id int64) *ShipnowStore {
+func (s *ShipnowStore) ShopID(id dot.ID) *ShipnowStore {
 	s.preds = append(s.preds, s.ft.ByShopID(id))
 	return s
 }
 
-func (s *ShipnowStore) ShopIDs(ids ...int64) *ShipnowStore {
+func (s *ShipnowStore) ShopIDs(ids ...dot.ID) *ShipnowStore {
 	s.preds = append(s.preds, sq.In("shop_id", ids))
 	return s
 }
@@ -75,7 +76,7 @@ func (s *ShipnowStore) ShippingCode(code string) *ShipnowStore {
 	return s
 }
 
-func (s *ShipnowStore) PartnerID(id int64) *ShipnowStore {
+func (s *ShipnowStore) PartnerID(id dot.ID) *ShipnowStore {
 	s.preds = append(s.preds, s.ft.ByPartnerID(id))
 	return s
 }
@@ -128,7 +129,7 @@ func (s *ShipnowStore) Create(shipnowFfm *shipnow.ShipnowFulfillment) error {
 }
 
 type UpdateInfoArgs struct {
-	ID                  int64
+	ID                  dot.ID
 	PickupAddress       *ordertypes.Address
 	Carrier             carriertypes.Carrier
 	ShippingServiceCode string
@@ -166,7 +167,7 @@ func (s *ShipnowStore) UpdateInfo(args UpdateInfoArgs) (*shipnow.ShipnowFulfillm
 }
 
 type UpdateStateArgs struct {
-	ID             int64
+	ID             dot.ID
 	SyncStatus     etop.Status4
 	Status         etop.Status5
 	ShippingState  shipnowtypes.State
@@ -193,7 +194,7 @@ func (s *ShipnowStore) UpdateSyncState(args UpdateStateArgs) (*shipnow.ShipnowFu
 }
 
 type UpdateCancelArgs struct {
-	ID            int64
+	ID            dot.ID
 	ConfirmStatus etop.Status3
 	Status        etop.Status5
 	ShippingState shipnowtypes.State
@@ -216,7 +217,7 @@ func (s *ShipnowStore) UpdateCancelled(args UpdateCancelArgs) (*shipnow.ShipnowF
 }
 
 type UpdateCarrierInfoArgs struct {
-	ID                  int64
+	ID                  dot.ID
 	FeeLines            []*shippingtypes.FeeLine
 	CarrierFeeLines     []*shippingtypes.FeeLine
 	TotalFee            int

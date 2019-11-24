@@ -8,6 +8,7 @@ import (
 	cc "etop.vn/backend/pkg/common/config"
 	"etop.vn/backend/pkg/etop/model"
 	vtpostclient "etop.vn/backend/pkg/integration/shipping/vtpost/client"
+	"etop.vn/capi/dot"
 )
 
 type Config struct {
@@ -43,7 +44,7 @@ type Connection struct {
 }
 
 type CalcShippingFeeAllServicesArgs struct {
-	ArbitraryID  int64 // This is provided as a seed, for stable randomization
+	ArbitraryID  dot.ID // This is provided as a seed, for stable randomization
 	FromProvince *mdlocation.Province
 	FromDistrict *mdlocation.District
 	ToProvince   *mdlocation.Province

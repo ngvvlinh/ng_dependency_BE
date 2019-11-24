@@ -8,6 +8,7 @@ import (
 	m "etop.vn/backend/com/main/shipnow/model"
 	"etop.vn/backend/pkg/common/sq"
 	"etop.vn/backend/pkg/etop/model"
+	"etop.vn/capi/dot"
 )
 
 type ShipnowFulfillmentFilters struct{ prefix string }
@@ -24,7 +25,7 @@ func (ft ShipnowFulfillmentFilters) Prefix() string {
 	return ft.prefix
 }
 
-func (ft *ShipnowFulfillmentFilters) ByID(ID int64) *sq.ColumnFilter {
+func (ft *ShipnowFulfillmentFilters) ByID(ID dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "id",
@@ -33,7 +34,7 @@ func (ft *ShipnowFulfillmentFilters) ByID(ID int64) *sq.ColumnFilter {
 	}
 }
 
-func (ft *ShipnowFulfillmentFilters) ByIDPtr(ID *int64) *sq.ColumnFilterPtr {
+func (ft *ShipnowFulfillmentFilters) ByIDPtr(ID *dot.ID) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "id",
@@ -43,7 +44,7 @@ func (ft *ShipnowFulfillmentFilters) ByIDPtr(ID *int64) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft *ShipnowFulfillmentFilters) ByShopID(ShopID int64) *sq.ColumnFilter {
+func (ft *ShipnowFulfillmentFilters) ByShopID(ShopID dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "shop_id",
@@ -52,7 +53,7 @@ func (ft *ShipnowFulfillmentFilters) ByShopID(ShopID int64) *sq.ColumnFilter {
 	}
 }
 
-func (ft *ShipnowFulfillmentFilters) ByShopIDPtr(ShopID *int64) *sq.ColumnFilterPtr {
+func (ft *ShipnowFulfillmentFilters) ByShopIDPtr(ShopID *dot.ID) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "shop_id",
@@ -62,7 +63,7 @@ func (ft *ShipnowFulfillmentFilters) ByShopIDPtr(ShopID *int64) *sq.ColumnFilter
 	}
 }
 
-func (ft *ShipnowFulfillmentFilters) ByPartnerID(PartnerID int64) *sq.ColumnFilter {
+func (ft *ShipnowFulfillmentFilters) ByPartnerID(PartnerID dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "partner_id",
@@ -71,7 +72,7 @@ func (ft *ShipnowFulfillmentFilters) ByPartnerID(PartnerID int64) *sq.ColumnFilt
 	}
 }
 
-func (ft *ShipnowFulfillmentFilters) ByPartnerIDPtr(PartnerID *int64) *sq.ColumnFilterPtr {
+func (ft *ShipnowFulfillmentFilters) ByPartnerIDPtr(PartnerID *dot.ID) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "partner_id",

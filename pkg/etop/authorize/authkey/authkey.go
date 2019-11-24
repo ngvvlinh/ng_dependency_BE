@@ -6,6 +6,7 @@ import (
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/gencode"
 	"etop.vn/backend/pkg/common/validate"
+	"etop.vn/capi/dot"
 	"etop.vn/common/l"
 )
 
@@ -22,7 +23,7 @@ const DefaultKeyLength = 64 // chars
 
 type KeyInfo struct {
 	Type      KeyType
-	AccountID int64
+	AccountID dot.ID
 	Subkey    string
 }
 
@@ -59,7 +60,7 @@ func ValidateAuthKeyWithType(typ KeyType, key string) (KeyInfo, bool) {
 	return info, ok && info.Type == typ
 }
 
-func GenerateAuthKey(typ KeyType, accountID int64) string {
+func GenerateAuthKey(typ KeyType, accountID dot.ID) string {
 	if accountID == 0 {
 		ll.Panic("Invalid id")
 	}

@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"etop.vn/api/main/etop"
+	"etop.vn/capi/dot"
 )
 
 //go:generate $ETOPDIR/backend/scripts/derive.sh
@@ -11,8 +12,8 @@ import (
 var _ = sqlgenInventoryVariant(&InventoryVariant{})
 
 type InventoryVariant struct {
-	ShopID         int64
-	VariantID      int64
+	ShopID         dot.ID
+	VariantID      dot.ID
 	QuantityOnHand int32
 	QuantityPicked int32
 	CostPrice      int32
@@ -24,21 +25,21 @@ type InventoryVariant struct {
 var _ = sqlgenInventoryVoucher(&InventoryVoucher{})
 
 type InventoryVoucher struct {
-	ShopID       int64
-	ID           int64
-	CreatedBy    int64
-	UpdatedBy    int64
+	ShopID       dot.ID
+	ID           dot.ID
+	CreatedBy    dot.ID
+	UpdatedBy    dot.ID
 	Code         string
 	CodeNorm     int32
 	Status       etop.Status3
 	Note         string
-	TraderID     int64
+	TraderID     dot.ID
 	Trader       *Trader
 	TotalAmount  int32
 	Type         string
 	Lines        []*InventoryVoucherItem
-	VariantIDs   []int64
-	RefID        int64
+	VariantIDs   []dot.ID
+	RefID        dot.ID
 	RefCode      string
 	RefType      string
 	RefName      string
@@ -52,8 +53,8 @@ type InventoryVoucher struct {
 
 type InventoryVoucherItem struct {
 	ProductName string `json:"product_name"`
-	ProductID   int64  `json:"product_id"`
-	VariantID   int64  `json:"variant_id"`
+	ProductID   dot.ID `json:"product_id"`
+	VariantID   dot.ID `json:"variant_id"`
 	VariantName string `json:"variant_name"`
 
 	Price    int32 `json:"price"`
@@ -65,7 +66,7 @@ type InventoryVoucherItem struct {
 }
 
 type Trader struct {
-	ID       int64  `json:"id"`
+	ID       dot.ID `json:"id"`
 	Type     string `json:"type"`
 	FullName string `json:"full_name"`
 	Phone    string `json:"phone"`

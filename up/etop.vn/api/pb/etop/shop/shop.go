@@ -1,8 +1,6 @@
 package shop
 
 import (
-	"github.com/golang/protobuf/jsonpb"
-
 	"etop.vn/api/pb/common"
 	"etop.vn/common/jsonx"
 )
@@ -15,8 +13,8 @@ type SummaryTableJSON struct {
 	Data    [][]SummaryItem `json:"data"`
 }
 
-// MarshalJSONPB implements JSONPBMarshaler
-func (m *SummaryTable) MarshalJSONPB(_ *jsonpb.Marshaler) ([]byte, error) {
+// MarshalJSON implements JSONMarshaler
+func (m *SummaryTable) MarshalJSON() ([]byte, error) {
 	ncol := len(m.Columns)
 	data := make([][]SummaryItem, len(m.Rows))
 	for r := range m.Rows {
@@ -32,8 +30,8 @@ func (m *SummaryTable) MarshalJSONPB(_ *jsonpb.Marshaler) ([]byte, error) {
 	return jsonx.Marshal(res)
 }
 
-// UnmarshalJSONPB implements JSONPBUnmarshaler
-func (m *SummaryTable) UnmarshalJSONPB(_ *jsonpb.Unmarshaler, data []byte) error {
+// UnmarshalJSON implements JSONUnmarshaler
+func (m *SummaryTable) UnmarshalJSON(data []byte) error {
 	var tmp SummaryTableJSON
 	if err := jsonx.Unmarshal(data, &tmp); err != nil {
 		return err

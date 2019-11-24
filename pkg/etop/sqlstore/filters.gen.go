@@ -7,6 +7,7 @@ import (
 
 	"etop.vn/backend/pkg/common/sq"
 	m "etop.vn/backend/pkg/etop/model"
+	"etop.vn/capi/dot"
 )
 
 type ImportAttemptFilters struct{ prefix string }
@@ -23,7 +24,7 @@ func (ft ImportAttemptFilters) Prefix() string {
 	return ft.prefix
 }
 
-func (ft *ImportAttemptFilters) ByID(ID int64) *sq.ColumnFilter {
+func (ft *ImportAttemptFilters) ByID(ID dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "id",
@@ -32,7 +33,7 @@ func (ft *ImportAttemptFilters) ByID(ID int64) *sq.ColumnFilter {
 	}
 }
 
-func (ft *ImportAttemptFilters) ByIDPtr(ID *int64) *sq.ColumnFilterPtr {
+func (ft *ImportAttemptFilters) ByIDPtr(ID *dot.ID) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "id",
@@ -42,7 +43,7 @@ func (ft *ImportAttemptFilters) ByIDPtr(ID *int64) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft *ImportAttemptFilters) ByUserID(UserID int64) *sq.ColumnFilter {
+func (ft *ImportAttemptFilters) ByUserID(UserID dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "user_id",
@@ -51,7 +52,7 @@ func (ft *ImportAttemptFilters) ByUserID(UserID int64) *sq.ColumnFilter {
 	}
 }
 
-func (ft *ImportAttemptFilters) ByUserIDPtr(UserID *int64) *sq.ColumnFilterPtr {
+func (ft *ImportAttemptFilters) ByUserIDPtr(UserID *dot.ID) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "user_id",
@@ -61,7 +62,7 @@ func (ft *ImportAttemptFilters) ByUserIDPtr(UserID *int64) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft *ImportAttemptFilters) ByAccountID(AccountID int64) *sq.ColumnFilter {
+func (ft *ImportAttemptFilters) ByAccountID(AccountID dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "account_id",
@@ -70,7 +71,7 @@ func (ft *ImportAttemptFilters) ByAccountID(AccountID int64) *sq.ColumnFilter {
 	}
 }
 
-func (ft *ImportAttemptFilters) ByAccountIDPtr(AccountID *int64) *sq.ColumnFilterPtr {
+func (ft *ImportAttemptFilters) ByAccountIDPtr(AccountID *dot.ID) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "account_id",
@@ -303,7 +304,7 @@ func (ft *ExportAttemptFilters) ByIDPtr(ID *string) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft *ExportAttemptFilters) ByUserID(UserID int64) *sq.ColumnFilter {
+func (ft *ExportAttemptFilters) ByUserID(UserID dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "user_id",
@@ -312,7 +313,7 @@ func (ft *ExportAttemptFilters) ByUserID(UserID int64) *sq.ColumnFilter {
 	}
 }
 
-func (ft *ExportAttemptFilters) ByUserIDPtr(UserID *int64) *sq.ColumnFilterPtr {
+func (ft *ExportAttemptFilters) ByUserIDPtr(UserID *dot.ID) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "user_id",
@@ -322,7 +323,7 @@ func (ft *ExportAttemptFilters) ByUserIDPtr(UserID *int64) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft *ExportAttemptFilters) ByAccountID(AccountID int64) *sq.ColumnFilter {
+func (ft *ExportAttemptFilters) ByAccountID(AccountID dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "account_id",
@@ -331,7 +332,7 @@ func (ft *ExportAttemptFilters) ByAccountID(AccountID int64) *sq.ColumnFilter {
 	}
 }
 
-func (ft *ExportAttemptFilters) ByAccountIDPtr(AccountID *int64) *sq.ColumnFilterPtr {
+func (ft *ExportAttemptFilters) ByAccountIDPtr(AccountID *dot.ID) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "account_id",
@@ -640,7 +641,7 @@ func (ft AccountFilters) Prefix() string {
 	return ft.prefix
 }
 
-func (ft *AccountFilters) ByID(ID int64) *sq.ColumnFilter {
+func (ft *AccountFilters) ByID(ID dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "id",
@@ -649,7 +650,7 @@ func (ft *AccountFilters) ByID(ID int64) *sq.ColumnFilter {
 	}
 }
 
-func (ft *AccountFilters) ByIDPtr(ID *int64) *sq.ColumnFilterPtr {
+func (ft *AccountFilters) ByIDPtr(ID *dot.ID) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "id",
@@ -659,7 +660,7 @@ func (ft *AccountFilters) ByIDPtr(ID *int64) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft *AccountFilters) ByOwnerID(OwnerID int64) *sq.ColumnFilter {
+func (ft *AccountFilters) ByOwnerID(OwnerID dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "owner_id",
@@ -668,7 +669,7 @@ func (ft *AccountFilters) ByOwnerID(OwnerID int64) *sq.ColumnFilter {
 	}
 }
 
-func (ft *AccountFilters) ByOwnerIDPtr(OwnerID *int64) *sq.ColumnFilterPtr {
+func (ft *AccountFilters) ByOwnerIDPtr(OwnerID *dot.ID) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "owner_id",
@@ -768,7 +769,7 @@ func (ft ShopFilters) Prefix() string {
 	return ft.prefix
 }
 
-func (ft *ShopFilters) ByID(ID int64) *sq.ColumnFilter {
+func (ft *ShopFilters) ByID(ID dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "id",
@@ -777,7 +778,7 @@ func (ft *ShopFilters) ByID(ID int64) *sq.ColumnFilter {
 	}
 }
 
-func (ft *ShopFilters) ByIDPtr(ID *int64) *sq.ColumnFilterPtr {
+func (ft *ShopFilters) ByIDPtr(ID *dot.ID) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "id",
@@ -806,7 +807,7 @@ func (ft *ShopFilters) ByNamePtr(Name *string) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft *ShopFilters) ByOwnerID(OwnerID int64) *sq.ColumnFilter {
+func (ft *ShopFilters) ByOwnerID(OwnerID dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "owner_id",
@@ -815,7 +816,7 @@ func (ft *ShopFilters) ByOwnerID(OwnerID int64) *sq.ColumnFilter {
 	}
 }
 
-func (ft *ShopFilters) ByOwnerIDPtr(OwnerID *int64) *sq.ColumnFilterPtr {
+func (ft *ShopFilters) ByOwnerIDPtr(OwnerID *dot.ID) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "owner_id",
@@ -844,7 +845,7 @@ func (ft *ShopFilters) ByIsTestPtr(IsTest *int) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft *ShopFilters) ByAddressID(AddressID int64) *sq.ColumnFilter {
+func (ft *ShopFilters) ByAddressID(AddressID dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "address_id",
@@ -853,7 +854,7 @@ func (ft *ShopFilters) ByAddressID(AddressID int64) *sq.ColumnFilter {
 	}
 }
 
-func (ft *ShopFilters) ByAddressIDPtr(AddressID *int64) *sq.ColumnFilterPtr {
+func (ft *ShopFilters) ByAddressIDPtr(AddressID *dot.ID) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "address_id",
@@ -863,7 +864,7 @@ func (ft *ShopFilters) ByAddressIDPtr(AddressID *int64) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft *ShopFilters) ByShipToAddressID(ShipToAddressID int64) *sq.ColumnFilter {
+func (ft *ShopFilters) ByShipToAddressID(ShipToAddressID dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "ship_to_address_id",
@@ -872,7 +873,7 @@ func (ft *ShopFilters) ByShipToAddressID(ShipToAddressID int64) *sq.ColumnFilter
 	}
 }
 
-func (ft *ShopFilters) ByShipToAddressIDPtr(ShipToAddressID *int64) *sq.ColumnFilterPtr {
+func (ft *ShopFilters) ByShipToAddressIDPtr(ShipToAddressID *dot.ID) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "ship_to_address_id",
@@ -882,7 +883,7 @@ func (ft *ShopFilters) ByShipToAddressIDPtr(ShipToAddressID *int64) *sq.ColumnFi
 	}
 }
 
-func (ft *ShopFilters) ByShipFromAddressID(ShipFromAddressID int64) *sq.ColumnFilter {
+func (ft *ShopFilters) ByShipFromAddressID(ShipFromAddressID dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "ship_from_address_id",
@@ -891,7 +892,7 @@ func (ft *ShopFilters) ByShipFromAddressID(ShipFromAddressID int64) *sq.ColumnFi
 	}
 }
 
-func (ft *ShopFilters) ByShipFromAddressIDPtr(ShipFromAddressID *int64) *sq.ColumnFilterPtr {
+func (ft *ShopFilters) ByShipFromAddressIDPtr(ShipFromAddressID *dot.ID) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "ship_from_address_id",
@@ -1015,7 +1016,7 @@ func (ft *ShopFilters) ByAutoCreateFFMPtr(AutoCreateFFM *bool) *sq.ColumnFilterP
 	}
 }
 
-func (ft *ShopFilters) ByOrderSourceID(OrderSourceID int64) *sq.ColumnFilter {
+func (ft *ShopFilters) ByOrderSourceID(OrderSourceID dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "order_source_id",
@@ -1024,7 +1025,7 @@ func (ft *ShopFilters) ByOrderSourceID(OrderSourceID int64) *sq.ColumnFilter {
 	}
 }
 
-func (ft *ShopFilters) ByOrderSourceIDPtr(OrderSourceID *int64) *sq.ColumnFilterPtr {
+func (ft *ShopFilters) ByOrderSourceIDPtr(OrderSourceID *dot.ID) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "order_source_id",
@@ -1224,7 +1225,7 @@ func (ft PartnerFilters) Prefix() string {
 	return ft.prefix
 }
 
-func (ft *PartnerFilters) ByID(ID int64) *sq.ColumnFilter {
+func (ft *PartnerFilters) ByID(ID dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "id",
@@ -1233,7 +1234,7 @@ func (ft *PartnerFilters) ByID(ID int64) *sq.ColumnFilter {
 	}
 }
 
-func (ft *PartnerFilters) ByIDPtr(ID *int64) *sq.ColumnFilterPtr {
+func (ft *PartnerFilters) ByIDPtr(ID *dot.ID) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "id",
@@ -1243,7 +1244,7 @@ func (ft *PartnerFilters) ByIDPtr(ID *int64) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft *PartnerFilters) ByOwnerID(OwnerID int64) *sq.ColumnFilter {
+func (ft *PartnerFilters) ByOwnerID(OwnerID dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "owner_id",
@@ -1252,7 +1253,7 @@ func (ft *PartnerFilters) ByOwnerID(OwnerID int64) *sq.ColumnFilter {
 	}
 }
 
-func (ft *PartnerFilters) ByOwnerIDPtr(OwnerID *int64) *sq.ColumnFilterPtr {
+func (ft *PartnerFilters) ByOwnerIDPtr(OwnerID *dot.ID) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "owner_id",
@@ -1523,7 +1524,7 @@ func (ft *AccountAuthFilters) ByAuthKeyPtr(AuthKey *string) *sq.ColumnFilterPtr 
 	}
 }
 
-func (ft *AccountAuthFilters) ByAccountID(AccountID int64) *sq.ColumnFilter {
+func (ft *AccountAuthFilters) ByAccountID(AccountID dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "account_id",
@@ -1532,7 +1533,7 @@ func (ft *AccountAuthFilters) ByAccountID(AccountID int64) *sq.ColumnFilter {
 	}
 }
 
-func (ft *AccountAuthFilters) ByAccountIDPtr(AccountID *int64) *sq.ColumnFilterPtr {
+func (ft *AccountAuthFilters) ByAccountIDPtr(AccountID *dot.ID) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "account_id",
@@ -1651,7 +1652,7 @@ func (ft *PartnerRelationFilters) ByAuthKeyPtr(AuthKey *string) *sq.ColumnFilter
 	}
 }
 
-func (ft *PartnerRelationFilters) ByPartnerID(PartnerID int64) *sq.ColumnFilter {
+func (ft *PartnerRelationFilters) ByPartnerID(PartnerID dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "partner_id",
@@ -1660,7 +1661,7 @@ func (ft *PartnerRelationFilters) ByPartnerID(PartnerID int64) *sq.ColumnFilter 
 	}
 }
 
-func (ft *PartnerRelationFilters) ByPartnerIDPtr(PartnerID *int64) *sq.ColumnFilterPtr {
+func (ft *PartnerRelationFilters) ByPartnerIDPtr(PartnerID *dot.ID) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "partner_id",
@@ -1670,7 +1671,7 @@ func (ft *PartnerRelationFilters) ByPartnerIDPtr(PartnerID *int64) *sq.ColumnFil
 	}
 }
 
-func (ft *PartnerRelationFilters) BySubjectID(SubjectID int64) *sq.ColumnFilter {
+func (ft *PartnerRelationFilters) BySubjectID(SubjectID dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "subject_id",
@@ -1679,7 +1680,7 @@ func (ft *PartnerRelationFilters) BySubjectID(SubjectID int64) *sq.ColumnFilter 
 	}
 }
 
-func (ft *PartnerRelationFilters) BySubjectIDPtr(SubjectID *int64) *sq.ColumnFilterPtr {
+func (ft *PartnerRelationFilters) BySubjectIDPtr(SubjectID *dot.ID) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "subject_id",
@@ -1836,7 +1837,7 @@ func (ft UserFilters) Prefix() string {
 	return ft.prefix
 }
 
-func (ft *UserFilters) ByID(ID int64) *sq.ColumnFilter {
+func (ft *UserFilters) ByID(ID dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "id",
@@ -1845,7 +1846,7 @@ func (ft *UserFilters) ByID(ID int64) *sq.ColumnFilter {
 	}
 }
 
-func (ft *UserFilters) ByIDPtr(ID *int64) *sq.ColumnFilterPtr {
+func (ft *UserFilters) ByIDPtr(ID *dot.ID) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "id",
@@ -2159,7 +2160,7 @@ func (ft *UserFilters) BySourcePtr(Source *m.UserSource) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft *UserFilters) ByRefUserID(RefUserID int64) *sq.ColumnFilter {
+func (ft *UserFilters) ByRefUserID(RefUserID dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "ref_user_id",
@@ -2168,7 +2169,7 @@ func (ft *UserFilters) ByRefUserID(RefUserID int64) *sq.ColumnFilter {
 	}
 }
 
-func (ft *UserFilters) ByRefUserIDPtr(RefUserID *int64) *sq.ColumnFilterPtr {
+func (ft *UserFilters) ByRefUserIDPtr(RefUserID *dot.ID) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "ref_user_id",
@@ -2178,7 +2179,7 @@ func (ft *UserFilters) ByRefUserIDPtr(RefUserID *int64) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft *UserFilters) ByRefSaleID(RefSaleID int64) *sq.ColumnFilter {
+func (ft *UserFilters) ByRefSaleID(RefSaleID dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "ref_sale_id",
@@ -2187,7 +2188,7 @@ func (ft *UserFilters) ByRefSaleID(RefSaleID int64) *sq.ColumnFilter {
 	}
 }
 
-func (ft *UserFilters) ByRefSaleIDPtr(RefSaleID *int64) *sq.ColumnFilterPtr {
+func (ft *UserFilters) ByRefSaleIDPtr(RefSaleID *dot.ID) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "ref_sale_id",
@@ -2211,7 +2212,7 @@ func (ft AccountUserFilters) Prefix() string {
 	return ft.prefix
 }
 
-func (ft *AccountUserFilters) ByAccountID(AccountID int64) *sq.ColumnFilter {
+func (ft *AccountUserFilters) ByAccountID(AccountID dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "account_id",
@@ -2220,7 +2221,7 @@ func (ft *AccountUserFilters) ByAccountID(AccountID int64) *sq.ColumnFilter {
 	}
 }
 
-func (ft *AccountUserFilters) ByAccountIDPtr(AccountID *int64) *sq.ColumnFilterPtr {
+func (ft *AccountUserFilters) ByAccountIDPtr(AccountID *dot.ID) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "account_id",
@@ -2230,7 +2231,7 @@ func (ft *AccountUserFilters) ByAccountIDPtr(AccountID *int64) *sq.ColumnFilterP
 	}
 }
 
-func (ft *AccountUserFilters) ByUserID(UserID int64) *sq.ColumnFilter {
+func (ft *AccountUserFilters) ByUserID(UserID dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "user_id",
@@ -2239,7 +2240,7 @@ func (ft *AccountUserFilters) ByUserID(UserID int64) *sq.ColumnFilter {
 	}
 }
 
-func (ft *AccountUserFilters) ByUserIDPtr(UserID *int64) *sq.ColumnFilterPtr {
+func (ft *AccountUserFilters) ByUserIDPtr(UserID *dot.ID) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "user_id",
@@ -2420,7 +2421,7 @@ func (ft *AccountUserFilters) ByInvitationSentAtPtr(InvitationSentAt *time.Time)
 	}
 }
 
-func (ft *AccountUserFilters) ByInvitationSentBy(InvitationSentBy int64) *sq.ColumnFilter {
+func (ft *AccountUserFilters) ByInvitationSentBy(InvitationSentBy dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "invitation_sent_by",
@@ -2581,7 +2582,7 @@ func (ft UserAuthFilters) Prefix() string {
 	return ft.prefix
 }
 
-func (ft *UserAuthFilters) ByUserID(UserID int64) *sq.ColumnFilter {
+func (ft *UserAuthFilters) ByUserID(UserID dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "user_id",
@@ -2590,7 +2591,7 @@ func (ft *UserAuthFilters) ByUserID(UserID int64) *sq.ColumnFilter {
 	}
 }
 
-func (ft *UserAuthFilters) ByUserIDPtr(UserID *int64) *sq.ColumnFilterPtr {
+func (ft *UserAuthFilters) ByUserIDPtr(UserID *dot.ID) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "user_id",
@@ -2690,7 +2691,7 @@ func (ft UserInternalFilters) Prefix() string {
 	return ft.prefix
 }
 
-func (ft *UserInternalFilters) ByID(ID int64) *sq.ColumnFilter {
+func (ft *UserInternalFilters) ByID(ID dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "id",
@@ -2699,7 +2700,7 @@ func (ft *UserInternalFilters) ByID(ID int64) *sq.ColumnFilter {
 	}
 }
 
-func (ft *UserInternalFilters) ByIDPtr(ID *int64) *sq.ColumnFilterPtr {
+func (ft *UserInternalFilters) ByIDPtr(ID *dot.ID) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "id",
@@ -2761,7 +2762,7 @@ func (ft AddressFilters) Prefix() string {
 	return ft.prefix
 }
 
-func (ft *AddressFilters) ByID(ID int64) *sq.ColumnFilter {
+func (ft *AddressFilters) ByID(ID dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "id",
@@ -2770,7 +2771,7 @@ func (ft *AddressFilters) ByID(ID int64) *sq.ColumnFilter {
 	}
 }
 
-func (ft *AddressFilters) ByIDPtr(ID *int64) *sq.ColumnFilterPtr {
+func (ft *AddressFilters) ByIDPtr(ID *dot.ID) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "id",
@@ -3141,7 +3142,7 @@ func (ft *AddressFilters) ByTypePtr(Type *string) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft *AddressFilters) ByAccountID(AccountID int64) *sq.ColumnFilter {
+func (ft *AddressFilters) ByAccountID(AccountID dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "account_id",
@@ -3150,7 +3151,7 @@ func (ft *AddressFilters) ByAccountID(AccountID int64) *sq.ColumnFilter {
 	}
 }
 
-func (ft *AddressFilters) ByAccountIDPtr(AccountID *int64) *sq.ColumnFilterPtr {
+func (ft *AddressFilters) ByAccountIDPtr(AccountID *dot.ID) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "account_id",
@@ -3283,7 +3284,7 @@ func (ft CreditFilters) Prefix() string {
 	return ft.prefix
 }
 
-func (ft *CreditFilters) ByID(ID int64) *sq.ColumnFilter {
+func (ft *CreditFilters) ByID(ID dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "id",
@@ -3292,7 +3293,7 @@ func (ft *CreditFilters) ByID(ID int64) *sq.ColumnFilter {
 	}
 }
 
-func (ft *CreditFilters) ByIDPtr(ID *int64) *sq.ColumnFilterPtr {
+func (ft *CreditFilters) ByIDPtr(ID *dot.ID) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "id",
@@ -3321,7 +3322,7 @@ func (ft *CreditFilters) ByAmountPtr(Amount *int) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft *CreditFilters) ByShopID(ShopID int64) *sq.ColumnFilter {
+func (ft *CreditFilters) ByShopID(ShopID dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "shop_id",
@@ -3330,7 +3331,7 @@ func (ft *CreditFilters) ByShopID(ShopID int64) *sq.ColumnFilter {
 	}
 }
 
-func (ft *CreditFilters) ByShopIDPtr(ShopID *int64) *sq.ColumnFilterPtr {
+func (ft *CreditFilters) ByShopIDPtr(ShopID *dot.ID) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "shop_id",
@@ -3449,7 +3450,7 @@ func (ft ShippingSourceFilters) Prefix() string {
 	return ft.prefix
 }
 
-func (ft *ShippingSourceFilters) ByID(ID int64) *sq.ColumnFilter {
+func (ft *ShippingSourceFilters) ByID(ID dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "id",
@@ -3458,7 +3459,7 @@ func (ft *ShippingSourceFilters) ByID(ID int64) *sq.ColumnFilter {
 	}
 }
 
-func (ft *ShippingSourceFilters) ByIDPtr(ID *int64) *sq.ColumnFilterPtr {
+func (ft *ShippingSourceFilters) ByIDPtr(ID *dot.ID) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "id",
@@ -3577,7 +3578,7 @@ func (ft ShippingSourceInternalFilters) Prefix() string {
 	return ft.prefix
 }
 
-func (ft *ShippingSourceInternalFilters) ByID(ID int64) *sq.ColumnFilter {
+func (ft *ShippingSourceInternalFilters) ByID(ID dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "id",
@@ -3586,7 +3587,7 @@ func (ft *ShippingSourceInternalFilters) ByID(ID int64) *sq.ColumnFilter {
 	}
 }
 
-func (ft *ShippingSourceInternalFilters) ByIDPtr(ID *int64) *sq.ColumnFilterPtr {
+func (ft *ShippingSourceInternalFilters) ByIDPtr(ID *dot.ID) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "id",
@@ -3705,7 +3706,7 @@ func (ft WebhookFilters) Prefix() string {
 	return ft.prefix
 }
 
-func (ft *WebhookFilters) ByID(ID int64) *sq.ColumnFilter {
+func (ft *WebhookFilters) ByID(ID dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "id",
@@ -3714,7 +3715,7 @@ func (ft *WebhookFilters) ByID(ID int64) *sq.ColumnFilter {
 	}
 }
 
-func (ft *WebhookFilters) ByIDPtr(ID *int64) *sq.ColumnFilterPtr {
+func (ft *WebhookFilters) ByIDPtr(ID *dot.ID) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "id",
@@ -3724,7 +3725,7 @@ func (ft *WebhookFilters) ByIDPtr(ID *int64) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft *WebhookFilters) ByAccountID(AccountID int64) *sq.ColumnFilter {
+func (ft *WebhookFilters) ByAccountID(AccountID dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "account_id",
@@ -3733,7 +3734,7 @@ func (ft *WebhookFilters) ByAccountID(AccountID int64) *sq.ColumnFilter {
 	}
 }
 
-func (ft *WebhookFilters) ByAccountIDPtr(AccountID *int64) *sq.ColumnFilterPtr {
+func (ft *WebhookFilters) ByAccountIDPtr(AccountID *dot.ID) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "account_id",
@@ -3852,7 +3853,7 @@ func (ft CallbackFilters) Prefix() string {
 	return ft.prefix
 }
 
-func (ft *CallbackFilters) ByID(ID int64) *sq.ColumnFilter {
+func (ft *CallbackFilters) ByID(ID dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "id",
@@ -3861,7 +3862,7 @@ func (ft *CallbackFilters) ByID(ID int64) *sq.ColumnFilter {
 	}
 }
 
-func (ft *CallbackFilters) ByIDPtr(ID *int64) *sq.ColumnFilterPtr {
+func (ft *CallbackFilters) ByIDPtr(ID *dot.ID) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "id",
@@ -3871,7 +3872,7 @@ func (ft *CallbackFilters) ByIDPtr(ID *int64) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft *CallbackFilters) ByWebhookID(WebhookID int64) *sq.ColumnFilter {
+func (ft *CallbackFilters) ByWebhookID(WebhookID dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "webhook_id",
@@ -3880,7 +3881,7 @@ func (ft *CallbackFilters) ByWebhookID(WebhookID int64) *sq.ColumnFilter {
 	}
 }
 
-func (ft *CallbackFilters) ByWebhookIDPtr(WebhookID *int64) *sq.ColumnFilterPtr {
+func (ft *CallbackFilters) ByWebhookIDPtr(WebhookID *dot.ID) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "webhook_id",
@@ -3890,7 +3891,7 @@ func (ft *CallbackFilters) ByWebhookIDPtr(WebhookID *int64) *sq.ColumnFilterPtr 
 	}
 }
 
-func (ft *CallbackFilters) ByAccountID(AccountID int64) *sq.ColumnFilter {
+func (ft *CallbackFilters) ByAccountID(AccountID dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "account_id",
@@ -3899,7 +3900,7 @@ func (ft *CallbackFilters) ByAccountID(AccountID int64) *sq.ColumnFilter {
 	}
 }
 
-func (ft *CallbackFilters) ByAccountIDPtr(AccountID *int64) *sq.ColumnFilterPtr {
+func (ft *CallbackFilters) ByAccountIDPtr(AccountID *dot.ID) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "account_id",

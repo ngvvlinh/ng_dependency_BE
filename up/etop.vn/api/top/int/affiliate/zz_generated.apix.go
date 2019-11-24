@@ -9,10 +9,9 @@ import (
 	fmt "fmt"
 	http "net/http"
 
-	proto "github.com/golang/protobuf/proto"
-
 	common "etop.vn/api/pb/common"
 	affiliate "etop.vn/api/pb/etop/affiliate"
+	"etop.vn/capi"
 	httprpc "etop.vn/capi/httprpc"
 )
 
@@ -52,29 +51,29 @@ func (s *AccountServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Req
 	serve(ctx, resp, req, reqMsg, exec)
 }
 
-func (s *AccountServiceServer) parseRoute(path string) (reqMsg proto.Message, _ httprpc.ExecFunc, _ error) {
+func (s *AccountServiceServer) parseRoute(path string) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
 	case "/affiliate.Account/DeleteAffiliate":
 		msg := &common.IDRequest{}
-		fn := func(ctx context.Context) (proto.Message, error) {
+		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.DeleteAffiliate(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/affiliate.Account/RegisterAffiliate":
 		msg := &affiliate.RegisterAffiliateRequest{}
-		fn := func(ctx context.Context) (proto.Message, error) {
+		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.RegisterAffiliate(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/affiliate.Account/UpdateAffiliate":
 		msg := &affiliate.UpdateAffiliateRequest{}
-		fn := func(ctx context.Context) (proto.Message, error) {
+		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.UpdateAffiliate(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/affiliate.Account/UpdateAffiliateBankAccount":
 		msg := &affiliate.UpdateAffiliateBankAccountRequest{}
-		fn := func(ctx context.Context) (proto.Message, error) {
+		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.UpdateAffiliateBankAccount(ctx, msg)
 		}
 		return msg, fn, nil
@@ -115,11 +114,11 @@ func (s *MiscServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Reques
 	serve(ctx, resp, req, reqMsg, exec)
 }
 
-func (s *MiscServiceServer) parseRoute(path string) (reqMsg proto.Message, _ httprpc.ExecFunc, _ error) {
+func (s *MiscServiceServer) parseRoute(path string) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
 	case "/affiliate.Misc/VersionInfo":
 		msg := &common.Empty{}
-		fn := func(ctx context.Context) (proto.Message, error) {
+		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.VersionInfo(ctx, msg)
 		}
 		return msg, fn, nil

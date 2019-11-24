@@ -7,6 +7,7 @@ import (
 
 	"etop.vn/backend/pkg/common/sq"
 	"etop.vn/backend/pkg/etop/model"
+	"etop.vn/capi/dot"
 )
 
 type ExternalAccountAhamoveFilters struct{ prefix string }
@@ -23,7 +24,7 @@ func (ft ExternalAccountAhamoveFilters) Prefix() string {
 	return ft.prefix
 }
 
-func (ft *ExternalAccountAhamoveFilters) ByID(ID int64) *sq.ColumnFilter {
+func (ft *ExternalAccountAhamoveFilters) ByID(ID dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "id",
@@ -32,7 +33,7 @@ func (ft *ExternalAccountAhamoveFilters) ByID(ID int64) *sq.ColumnFilter {
 	}
 }
 
-func (ft *ExternalAccountAhamoveFilters) ByIDPtr(ID *int64) *sq.ColumnFilterPtr {
+func (ft *ExternalAccountAhamoveFilters) ByIDPtr(ID *dot.ID) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "id",
@@ -42,7 +43,7 @@ func (ft *ExternalAccountAhamoveFilters) ByIDPtr(ID *int64) *sq.ColumnFilterPtr 
 	}
 }
 
-func (ft *ExternalAccountAhamoveFilters) ByOwnerID(OwnerID int64) *sq.ColumnFilter {
+func (ft *ExternalAccountAhamoveFilters) ByOwnerID(OwnerID dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "owner_id",
@@ -51,7 +52,7 @@ func (ft *ExternalAccountAhamoveFilters) ByOwnerID(OwnerID int64) *sq.ColumnFilt
 	}
 }
 
-func (ft *ExternalAccountAhamoveFilters) ByOwnerIDPtr(OwnerID *int64) *sq.ColumnFilterPtr {
+func (ft *ExternalAccountAhamoveFilters) ByOwnerIDPtr(OwnerID *dot.ID) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "owner_id",
@@ -379,7 +380,7 @@ func (ft AffiliateFilters) Prefix() string {
 	return ft.prefix
 }
 
-func (ft *AffiliateFilters) ByID(ID int64) *sq.ColumnFilter {
+func (ft *AffiliateFilters) ByID(ID dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "id",
@@ -388,7 +389,7 @@ func (ft *AffiliateFilters) ByID(ID int64) *sq.ColumnFilter {
 	}
 }
 
-func (ft *AffiliateFilters) ByIDPtr(ID *int64) *sq.ColumnFilterPtr {
+func (ft *AffiliateFilters) ByIDPtr(ID *dot.ID) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "id",
@@ -398,7 +399,7 @@ func (ft *AffiliateFilters) ByIDPtr(ID *int64) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft *AffiliateFilters) ByOwnerID(OwnerID int64) *sq.ColumnFilter {
+func (ft *AffiliateFilters) ByOwnerID(OwnerID dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "owner_id",
@@ -407,7 +408,7 @@ func (ft *AffiliateFilters) ByOwnerID(OwnerID int64) *sq.ColumnFilter {
 	}
 }
 
-func (ft *AffiliateFilters) ByOwnerIDPtr(OwnerID *int64) *sq.ColumnFilterPtr {
+func (ft *AffiliateFilters) ByOwnerIDPtr(OwnerID *dot.ID) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "owner_id",

@@ -20,6 +20,7 @@ import (
 	"etop.vn/backend/pkg/etop/authorize/claims"
 	logicorder "etop.vn/backend/pkg/etop/logic/orders"
 	"etop.vn/backend/pkg/etop/model"
+	"etop.vn/capi/dot"
 )
 
 func init() {
@@ -68,7 +69,7 @@ func (s *TradingService) TradingCreateOrder(ctx context.Context, r *TradingCreat
 	return err
 }
 
-func (s *TradingService) tradingCreateOrder(ctx context.Context, r *TradingCreateOrderEndpoint) (_orderID int64, _err error) {
+func (s *TradingService) tradingCreateOrder(ctx context.Context, r *TradingCreateOrderEndpoint) (_orderID dot.ID, _err error) {
 	defer func() {
 		if _err == nil {
 			return
@@ -166,7 +167,7 @@ func (s *TradingService) TradingGetOrder(ctx context.Context, q *TradingGetOrder
 func (s *TradingService) TradingGetOrders(ctx context.Context, q *TradingGetOrdersEndpoint) error {
 	paging := cmapi.CMPaging(q.Paging)
 	query := &ordermodelx.GetOrdersQuery{
-		ShopIDs:       []int64{model.EtopTradingAccountID},
+		ShopIDs:       []dot.ID{model.EtopTradingAccountID},
 		TradingShopID: q.Context.Shop.ID,
 		Paging:        paging,
 		Filters:       cmapi.ToFilters(q.Filters),

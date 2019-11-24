@@ -1,5 +1,9 @@
 package etop
 
+func (x AccountType) MarshalJSON() ([]byte, error) {
+	return []byte(`"` + x.String() + `"`), nil
+}
+
 func (m *CreateUserRequest) Censor() {
 	if m.Password != "" {
 		m.Password = "..."

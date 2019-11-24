@@ -42,8 +42,8 @@ func (c QueryBus) DispatchAll(ctx context.Context, msgs ...Query) error {
 }
 
 type CancelPurchaseOrderCommand struct {
-	ID     int64
-	ShopID int64
+	ID     dot.ID
+	ShopID dot.ID
 	Reason string
 
 	Result int `json:"-"`
@@ -55,9 +55,9 @@ func (h AggregateHandler) HandleCancelPurchaseOrder(ctx context.Context, msg *Ca
 }
 
 type ConfirmPurchaseOrderCommand struct {
-	ID                   int64
+	ID                   dot.ID
 	AutoInventoryVoucher inventory.AutoInventoryVoucher
-	ShopID               int64
+	ShopID               dot.ID
 
 	Result int `json:"-"`
 }
@@ -68,14 +68,14 @@ func (h AggregateHandler) HandleConfirmPurchaseOrder(ctx context.Context, msg *C
 }
 
 type CreatePurchaseOrderCommand struct {
-	ShopID        int64
-	SupplierID    int64
-	BasketValue   int64
-	TotalDiscount int64
-	TotalAmount   int64
+	ShopID        dot.ID
+	SupplierID    dot.ID
+	BasketValue   int
+	TotalDiscount int
+	TotalAmount   int
 	Note          string
 	Lines         []*PurchaseOrderLine
-	CreatedBy     int64
+	CreatedBy     dot.ID
 
 	Result *PurchaseOrder `json:"-"`
 }
@@ -86,8 +86,8 @@ func (h AggregateHandler) HandleCreatePurchaseOrder(ctx context.Context, msg *Cr
 }
 
 type DeletePurchaseOrderCommand struct {
-	ID     int64
-	ShopID int64
+	ID     dot.ID
+	ShopID dot.ID
 
 	Result int `json:"-"`
 }
@@ -98,12 +98,12 @@ func (h AggregateHandler) HandleDeletePurchaseOrder(ctx context.Context, msg *De
 }
 
 type UpdatePurchaseOrderCommand struct {
-	ID            int64
-	ShopID        int64
-	SupplierID    dot.NullInt64
-	BasketValue   dot.NullInt64
-	TotalDiscount dot.NullInt64
-	TotalAmount   dot.NullInt64
+	ID            dot.ID
+	ShopID        dot.ID
+	SupplierID    dot.NullID
+	BasketValue   dot.NullInt
+	TotalDiscount dot.NullInt
+	TotalAmount   dot.NullInt
 	Note          dot.NullString
 	Lines         []*PurchaseOrderLine
 
@@ -116,8 +116,8 @@ func (h AggregateHandler) HandleUpdatePurchaseOrder(ctx context.Context, msg *Up
 }
 
 type GetPurchaseOrderByIDQuery struct {
-	ID     int64
-	ShopID int64
+	ID     dot.ID
+	ShopID dot.ID
 
 	Result *PurchaseOrder `json:"-"`
 }
@@ -128,8 +128,8 @@ func (h QueryServiceHandler) HandleGetPurchaseOrderByID(ctx context.Context, msg
 }
 
 type GetPurchaseOrdersByIDsQuery struct {
-	IDs    []int64
-	ShopID int64
+	IDs    []dot.ID
+	ShopID dot.ID
 
 	Result *PurchaseOrdersResponse `json:"-"`
 }
@@ -140,7 +140,7 @@ func (h QueryServiceHandler) HandleGetPurchaseOrdersByIDs(ctx context.Context, m
 }
 
 type ListPurchaseOrdersQuery struct {
-	ShopID  int64
+	ShopID  dot.ID
 	Paging  meta.Paging
 	Filters meta.Filters
 
@@ -153,8 +153,8 @@ func (h QueryServiceHandler) HandleListPurchaseOrders(ctx context.Context, msg *
 }
 
 type ListPurchaseOrdersByReceiptIDQuery struct {
-	ReceiptID int64
-	ShopID    int64
+	ReceiptID dot.ID
+	ShopID    dot.ID
 
 	Result *PurchaseOrdersResponse `json:"-"`
 }
@@ -165,8 +165,8 @@ func (h QueryServiceHandler) HandleListPurchaseOrdersByReceiptID(ctx context.Con
 }
 
 type ListPurchaseOrdersBySupplierIDsAndStatusesQuery struct {
-	ShopID      int64
-	SupplierIDs []int64
+	ShopID      dot.ID
+	SupplierIDs []dot.ID
 	Statuses    []etop.Status3
 
 	Result *PurchaseOrdersResponse `json:"-"`
@@ -247,7 +247,7 @@ func (q *CreatePurchaseOrderCommand) SetCreatePurchaseOrderArgs(args *CreatePurc
 	q.CreatedBy = args.CreatedBy
 }
 
-func (q *DeletePurchaseOrderCommand) GetArgs(ctx context.Context) (_ context.Context, ID int64, shopID int64) {
+func (q *DeletePurchaseOrderCommand) GetArgs(ctx context.Context) (_ context.Context, ID dot.ID, shopID dot.ID) {
 	return ctx,
 		q.ID,
 		q.ShopID
@@ -291,7 +291,7 @@ func (q *GetPurchaseOrderByIDQuery) SetIDQueryShopArg(args *shopping.IDQueryShop
 	q.ShopID = args.ShopID
 }
 
-func (q *GetPurchaseOrdersByIDsQuery) GetArgs(ctx context.Context) (_ context.Context, IDs []int64, ShopID int64) {
+func (q *GetPurchaseOrdersByIDsQuery) GetArgs(ctx context.Context) (_ context.Context, IDs []dot.ID, ShopID dot.ID) {
 	return ctx,
 		q.IDs,
 		q.ShopID
@@ -312,13 +312,13 @@ func (q *ListPurchaseOrdersQuery) SetListQueryShopArgs(args *shopping.ListQueryS
 	q.Filters = args.Filters
 }
 
-func (q *ListPurchaseOrdersByReceiptIDQuery) GetArgs(ctx context.Context) (_ context.Context, receiptID int64, shopID int64) {
+func (q *ListPurchaseOrdersByReceiptIDQuery) GetArgs(ctx context.Context) (_ context.Context, receiptID dot.ID, shopID dot.ID) {
 	return ctx,
 		q.ReceiptID,
 		q.ShopID
 }
 
-func (q *ListPurchaseOrdersBySupplierIDsAndStatusesQuery) GetArgs(ctx context.Context) (_ context.Context, shopID int64, supplierIDs []int64, statuses []etop.Status3) {
+func (q *ListPurchaseOrdersBySupplierIDsAndStatusesQuery) GetArgs(ctx context.Context) (_ context.Context, shopID dot.ID, supplierIDs []dot.ID, statuses []etop.Status3) {
 	return ctx,
 		q.ShopID,
 		q.SupplierIDs,

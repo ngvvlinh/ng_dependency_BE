@@ -15,6 +15,7 @@ import (
 	"etop.vn/backend/pkg/common/conversion"
 	"etop.vn/backend/pkg/common/validate"
 	"etop.vn/capi"
+	"etop.vn/capi/dot"
 )
 
 var _ suppliering.Aggregate = &SupplierAggregate{}
@@ -138,7 +139,7 @@ func (a *SupplierAggregate) UpdateSupplier(
 }
 
 func (a *SupplierAggregate) DeleteSupplier(
-	ctx context.Context, ID int64, shopID int64,
+	ctx context.Context, ID dot.ID, shopID dot.ID,
 ) (deleted int, _ error) {
 	deleted, err := a.store(ctx).ID(ID).ShopID(shopID).SoftDelete()
 	event := &tradering.TraderDeletedEvent{

@@ -3,7 +3,6 @@ package ghnWebhook
 import (
 	"bytes"
 	"encoding/json"
-	"strconv"
 	"time"
 
 	logmodel "etop.vn/backend/com/etc/log/webhook/model"
@@ -17,6 +16,7 @@ import (
 	"etop.vn/backend/pkg/integration/shipping/ghn"
 	ghnclient "etop.vn/backend/pkg/integration/shipping/ghn/client"
 	"etop.vn/backend/pkg/integration/shipping/ghn/update"
+	"etop.vn/capi/util"
 	"etop.vn/common/l"
 )
 
@@ -68,7 +68,7 @@ func (wh *Webhook) Callback(c *httpx.Context) error {
 	if msg.ExternalCode == "" {
 		return cm.Errorf(cm.FailedPrecondition, nil, "ExternalCode is empty")
 	}
-	ffmID, err := strconv.ParseInt(msg.ExternalCode.String(), 10, 64)
+	ffmID, err := util.ParseID(msg.ExternalCode.String())
 	if err != nil {
 		return cm.Errorf(cm.FailedPrecondition, nil, "ExternalCode is invalid: %v", msg.ExternalCode)
 	}

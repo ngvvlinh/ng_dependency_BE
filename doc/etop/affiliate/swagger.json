@@ -194,7 +194,7 @@
       "type": "object",
       "properties": {
         "id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         }
       }
@@ -224,7 +224,7 @@
           "type": "string"
         },
         "id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "is_test": {

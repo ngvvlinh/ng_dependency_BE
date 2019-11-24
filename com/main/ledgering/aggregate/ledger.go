@@ -14,6 +14,7 @@ import (
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/cmsql"
 	"etop.vn/backend/pkg/common/conversion"
+	"etop.vn/capi/dot"
 )
 
 var _ ledgering.Aggregate = &LedgerAggregate{}
@@ -101,7 +102,7 @@ func (a *LedgerAggregate) UpdateLedger(
 	return shopLedger, err
 }
 
-func (a *LedgerAggregate) verifyBankAccount(ctx context.Context, ledgerID, shopID int64, bankAccount *identity.BankAccount) error {
+func (a *LedgerAggregate) verifyBankAccount(ctx context.Context, ledgerID, shopID dot.ID, bankAccount *identity.BankAccount) error {
 	if bankAccount == nil {
 		return nil
 	}
@@ -130,7 +131,7 @@ func (a *LedgerAggregate) verifyBankAccount(ctx context.Context, ledgerID, shopI
 }
 
 func (a *LedgerAggregate) DeleteLedger(
-	ctx context.Context, ID, shopID int64,
+	ctx context.Context, ID, shopID dot.ID,
 ) (deleted int, err error) {
 	shopLedger, err := a.store(ctx).ID(ID).ShopID(shopID).GetLedger()
 	if err != nil {
@@ -145,7 +146,7 @@ func (a *LedgerAggregate) DeleteLedger(
 	// Check ledger_id exists into any receipts
 	query := &receipting.ListReceiptsByLedgerIDsQuery{
 		ShopID:    shopID,
-		LedgerIDs: []int64{ID},
+		LedgerIDs: []dot.ID{ID},
 	}
 	if err := a.receiptQuery.Dispatch(ctx, query); err != nil {
 		return 0, err

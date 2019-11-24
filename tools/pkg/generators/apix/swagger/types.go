@@ -8,13 +8,15 @@ import (
 )
 
 var (
+	typeID        types.Type
 	typeTime      types.Type
 	typeTimestamp types.Type
 )
 
 func initTypes(ng generator.Engine) {
+	populateType(ng, &typeID, "etop.vn/capi/dot", "ID")
 	populateType(ng, &typeTime, "time", "Time")
-	populateType(ng, &typeTimestamp, "github.com/golang/protobuf/ptypes/timestamp", "Timestamp")
+	populateType(ng, &typeTimestamp, "etop.vn/capi/dot", "Time")
 }
 
 func populateType(ng generator.Engine, typ *types.Type, pkgPath, name string) {
@@ -102,6 +104,11 @@ func isEnum(typ types.Type, inner *types.Type) bool {
 	}
 	*inner = basic
 	return true
+}
+
+func isID(typ types.Type) bool {
+	typ = skipPointer(typ)
+	return typ == typeID
 }
 
 func isBasic(typ types.Type, inner *types.Type) bool {

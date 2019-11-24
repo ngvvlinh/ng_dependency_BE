@@ -7,6 +7,7 @@ import (
 
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/sq"
+	"etop.vn/capi/dot"
 )
 
 func startOfDay(dayFromToday int) time.Time {
@@ -111,7 +112,7 @@ var (
 	row_phí_khác          = NewSubject("Các phụ phí khác [Có liệt kê trong đối soát, chi tiết đơn giao hàng]", "₫", "sum(shipping_fee_other)", "SUM(shipping_fee_other)", nil)
 )
 
-func buildTables(moneyTransactionIDs []int64) []*Table {
+func buildTables(moneyTransactionIDs []dot.ID) []*Table {
 	inArgs := make([]interface{}, len(moneyTransactionIDs))
 	for i, id := range moneyTransactionIDs {
 		inArgs[i] = id

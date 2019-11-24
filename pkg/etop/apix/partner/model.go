@@ -1,5 +1,7 @@
 package partner
 
+import "etop.vn/capi/dot"
+
 type AuthMode string
 
 const (
@@ -8,9 +10,9 @@ const (
 )
 
 type PartnerShopToken struct {
-	PartnerID int64 `json:"partner_id"`
+	PartnerID dot.ID `json:"partner_id"`
 
-	ShopID         int64  `json:"shop_id"`
+	ShopID         dot.ID `json:"shop_id"`
 	ShopName       string `json:"shop_name"`
 	ShopOwnerEmail string `json:"shop_owner_email"`
 	ShopOwnerPhone string `json:"shop_owner_phone"`

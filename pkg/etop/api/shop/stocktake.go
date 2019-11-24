@@ -10,6 +10,7 @@ import (
 	pbshop "etop.vn/api/pb/etop/shop"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/cmapi"
+	"etop.vn/capi/dot"
 )
 
 func (s *StocktakeService) CreateStocktake(ctx context.Context, q *CreateStocktakeEndpoint) error {
@@ -43,8 +44,8 @@ func (s *StocktakeService) CreateStocktake(ctx context.Context, q *CreateStockta
 	return nil
 }
 
-func (s *StocktakeService) AttachShopVariantsInformation(ctx context.Context, shopID int64, stocktakeLines []*stocktaking.StocktakeLine) error {
-	var variantIDs []int64
+func (s *StocktakeService) AttachShopVariantsInformation(ctx context.Context, shopID dot.ID, stocktakeLines []*stocktaking.StocktakeLine) error {
+	var variantIDs []dot.ID
 	for _, value := range stocktakeLines {
 		variantIDs = append(variantIDs, value.VariantID)
 	}
@@ -57,13 +58,13 @@ func (s *StocktakeService) AttachShopVariantsInformation(ctx context.Context, sh
 	if err != nil {
 		return err
 	}
-	var mapVariants = make(map[int64]*catalog.ShopVariant)
-	var mapProductIDs = make(map[int64]int64)
+	var mapVariants = make(map[dot.ID]*catalog.ShopVariant)
+	var mapProductIDs = make(map[dot.ID]dot.ID)
 	for _, value := range queryVariants.Result.Variants {
 		mapVariants[value.VariantID] = value
 		mapProductIDs[value.ProductID] = value.ProductID
 	}
-	var productIDs []int64
+	var productIDs []dot.ID
 	for key, _ := range mapProductIDs {
 		productIDs = append(productIDs, key)
 	}
@@ -76,7 +77,7 @@ func (s *StocktakeService) AttachShopVariantsInformation(ctx context.Context, sh
 		return err
 	}
 
-	var mapProducts = make(map[int64]*catalog.ShopProduct)
+	var mapProducts = make(map[dot.ID]*catalog.ShopProduct)
 	for _, value := range queryProducts.Result.Products {
 		mapProducts[value.ProductID] = value
 	}
@@ -90,7 +91,7 @@ func (s *StocktakeService) AttachShopVariantsInformation(ctx context.Context, sh
 		return err
 	}
 
-	var mapInventoryVariant = make(map[int64]*inventory.InventoryVariant)
+	var mapInventoryVariant = make(map[dot.ID]*inventory.InventoryVariant)
 	for _, value := range queryInventoryVariant.Result.InventoryVariants {
 		mapInventoryVariant[value.VariantID] = value
 	}

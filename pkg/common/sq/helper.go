@@ -361,7 +361,7 @@ Sample code:
         filter.ByPartnerID(partnerID).Optional(),
     )
 
-	func FilterByID(id int64) *ColumnFilter {
+	func FilterByID(id dot.ID) *ColumnFilter {
 		return &ColumnFilter{
 			Column: "id",
 			Value:  id,
@@ -380,7 +380,7 @@ Sample code:
 
 Explaination of different modes:
 
-	func FilterByID(id int64)
+	func FilterByID(id dot.ID)
 
 	| mode      | id == 0           | id != 0 | notes                                  |
     |-----------|-------------------|---------|----------------------------------------|

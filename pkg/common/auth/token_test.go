@@ -10,6 +10,7 @@ import (
 	"github.com/stretchr/testify/require"
 
 	"etop.vn/backend/pkg/common/redis"
+	"etop.vn/capi/dot"
 	"etop.vn/common/l"
 )
 
@@ -45,7 +46,7 @@ func TestMain(M *testing.M) {
 }
 
 func TestGenerateValidateRevokeToken(t *testing.T) {
-	id := int64(123456789)
+	id := dot.ID(123456789)
 	var tokenStr string
 
 	t.Run("Generate", func(t *testing.T) {
@@ -72,7 +73,7 @@ func TestGenerateValidateRevokeToken(t *testing.T) {
 }
 
 func TestGenerateWithValueToken(T *testing.T) {
-	id := int64(123456789)
+	id := dot.ID(123456789)
 	t, err := gFoo.GenerateWithValue(&Token{
 		Usage:  UsageAccessToken,
 		UserID: id,
@@ -102,7 +103,7 @@ func TestGenerateWithValueToken(T *testing.T) {
 }
 
 func TestTokenWithTTL(T *testing.T) {
-	id := int64(123456789)
+	id := dot.ID(123456789)
 	t, err := gFoo.Generate(UsageAccessToken, id, 1)
 	if err != nil {
 		T.Fatal(err)

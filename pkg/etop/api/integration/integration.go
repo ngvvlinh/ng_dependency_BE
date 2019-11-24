@@ -27,6 +27,7 @@ import (
 	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/backend/pkg/integration/email"
 	"etop.vn/backend/pkg/integration/sms"
+	"etop.vn/capi/dot"
 	"etop.vn/common/jsonx"
 	"etop.vn/common/l"
 )
@@ -73,7 +74,7 @@ func (s *IntegrationService) Init(ctx context.Context, q *InitEndpoint) error {
 		return cm.Errorf(cm.InvalidArgument, nil, "Missing token")
 	}
 
-	var partnerID int64
+	var partnerID dot.ID
 	var relationError error
 	var relationQuery *model.GetPartnerRelationQuery
 	var requestInfo apipartner.PartnerShopToken
@@ -166,7 +167,7 @@ func (s *IntegrationService) Init(ctx context.Context, q *InitEndpoint) error {
 	}
 }
 
-func (s *IntegrationService) validatePartner(ctx context.Context, partnerID int64) (*model.Partner, error) {
+func (s *IntegrationService) validatePartner(ctx context.Context, partnerID dot.ID) (*model.Partner, error) {
 	partnerQuery := &model.GetPartner{PartnerID: partnerID}
 	if err := bus.Dispatch(ctx, partnerQuery); err != nil {
 		return nil, cm.MapError(err).Map(cm.NotFound, cm.PermissionDenied, "Mã xác thực không hợp lệ").Throw()
@@ -401,7 +402,7 @@ func formatVerificationCode(code string) string {
 	return code[:4] + " " + code[4:]
 }
 
-func getToken(partnerID int64, login string) (*auth.Token, string, map[string]string) {
+func getToken(partnerID dot.ID, login string) (*auth.Token, string, map[string]string) {
 	tokStr := fmt.Sprintf("%v-%v", partnerID, login)
 	var v map[string]string
 	var code string
@@ -416,7 +417,7 @@ func getToken(partnerID int64, login string) (*auth.Token, string, map[string]st
 	return nil, "", nil
 }
 
-func generateTokenWithVerificationCode(partnerID int64, login string, extra map[string]string) (*auth.Token, string, map[string]string, error) {
+func generateTokenWithVerificationCode(partnerID dot.ID, login string, extra map[string]string) (*auth.Token, string, map[string]string, error) {
 	tokStr := fmt.Sprintf("%v-%v", partnerID, login)
 	tok, code, v := getToken(partnerID, login)
 	if code != "" {

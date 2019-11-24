@@ -16,6 +16,7 @@ import (
 	"etop.vn/backend/pkg/common/cmsql"
 	"etop.vn/backend/pkg/common/validate"
 	"etop.vn/capi"
+	"etop.vn/capi/dot"
 )
 
 var _ customering.Aggregate = &CustomerAggregate{}
@@ -189,7 +190,7 @@ func (a *CustomerAggregate) UpdateCustomer(
 }
 
 func (a *CustomerAggregate) DeleteCustomer(
-	ctx context.Context, id int64, shopID int64,
+	ctx context.Context, id dot.ID, shopID dot.ID,
 ) (deleted int, _ error) {
 	customer, err := a.store(ctx).ShopID(shopID).ID(id).GetCustomerDB()
 	if err != nil {
@@ -220,7 +221,7 @@ func (a *CustomerAggregate) DeleteCustomer(
 }
 
 func (a *CustomerAggregate) BatchSetCustomersStatus(
-	ctx context.Context, ids []int64, shopID int64, status int32,
+	ctx context.Context, ids []dot.ID, shopID dot.ID, status int32,
 ) (*meta.UpdatedResponse, error) {
 	update := &model.ShopCustomer{Status: status}
 	n, err := a.store(ctx).IDs(ids...).PatchCustomerDB(update)

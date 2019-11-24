@@ -10,6 +10,7 @@ import (
 	"etop.vn/backend/pkg/common/cmsql"
 	"etop.vn/backend/pkg/common/sq"
 	"etop.vn/backend/pkg/common/sqlstore"
+	"etop.vn/capi/dot"
 )
 
 type CustomerGroupCustomerStoreFactory func(context.Context) *CustomerGroupCustomerStore
@@ -50,21 +51,21 @@ func (s *CustomerGroupCustomerStore) Filters(filters meta.Filters) *CustomerGrou
 	return s
 }
 
-func (s *CustomerGroupCustomerStore) ID(id int64) *CustomerGroupCustomerStore {
+func (s *CustomerGroupCustomerStore) ID(id dot.ID) *CustomerGroupCustomerStore {
 	s.preds = append(s.preds, s.ft.ByGroupID(id))
 	return s
 }
 
-func (s *CustomerGroupCustomerStore) CustomerID(id int64) *CustomerGroupCustomerStore {
+func (s *CustomerGroupCustomerStore) CustomerID(id dot.ID) *CustomerGroupCustomerStore {
 	s.preds = append(s.preds, s.ft.ByCustomerID(id))
 	return s
 }
 
-func (s *CustomerGroupCustomerStore) IDs(ids ...int64) *CustomerGroupCustomerStore {
+func (s *CustomerGroupCustomerStore) IDs(ids ...dot.ID) *CustomerGroupCustomerStore {
 	s.preds = append(s.preds, sq.PrefixedIn(&s.ft.prefix, "group_id", ids))
 	return s
 }
-func (s *CustomerGroupCustomerStore) CustomerIDs(ids ...int64) *CustomerGroupCustomerStore {
+func (s *CustomerGroupCustomerStore) CustomerIDs(ids ...dot.ID) *CustomerGroupCustomerStore {
 	s.preds = append(s.preds, sq.PrefixedIn(&s.ft.prefix, "customer_id", ids))
 	return s
 }

@@ -15,6 +15,7 @@ import (
 	"etop.vn/backend/pkg/etop/sqlstore"
 	"etop.vn/backend/pkg/external/haravan/convert"
 	haravanclient "etop.vn/backend/pkg/integration/haravan/client"
+	"etop.vn/capi/dot"
 	"etop.vn/common/jsonx"
 )
 
@@ -96,7 +97,7 @@ func (a *Aggregate) SendUpdateExternalPaymentStatus(ctx context.Context, args *h
 	return &meta.Empty{}, nil
 }
 
-func (a *Aggregate) validateUpdateExternalFulfillment(ctx context.Context, fulfillmentID int64) (xAccountHaravan *identity.ExternalAccountHaravan, externalOrderID string, externalFulfillmentID string, _err error) {
+func (a *Aggregate) validateUpdateExternalFulfillment(ctx context.Context, fulfillmentID dot.ID) (xAccountHaravan *identity.ExternalAccountHaravan, externalOrderID string, externalFulfillmentID string, _err error) {
 	query := &shipmodelx.GetFulfillmentExtendedQuery{
 		FulfillmentID: fulfillmentID,
 	}
@@ -125,7 +126,7 @@ func (a *Aggregate) validateUpdateExternalFulfillment(ctx context.Context, fulfi
 	return xAccountHaravan, externalMeta.ExternalOrderID, externalMeta.ExternalFulfillmentID, nil
 }
 
-func (a *Aggregate) getExternalAccountHaravan(ctx context.Context, shopID int64) (*identity.ExternalAccountHaravan, error) {
+func (a *Aggregate) getExternalAccountHaravan(ctx context.Context, shopID dot.ID) (*identity.ExternalAccountHaravan, error) {
 	account, err := a.xAccountHaravanStore(ctx).ShopID(shopID).GetXAccountHaravan()
 	if err != nil {
 		return nil, err
@@ -136,7 +137,7 @@ func (a *Aggregate) getExternalAccountHaravan(ctx context.Context, shopID int64)
 	return account, nil
 }
 
-func getExternalFulfillmentState(ctx context.Context, ffmID int64) (haravanclient.FulfillmentState, error) {
+func getExternalFulfillmentState(ctx context.Context, ffmID dot.ID) (haravanclient.FulfillmentState, error) {
 	query := &shipmodelx.GetFulfillmentQuery{
 		FulfillmentID: ffmID,
 	}
@@ -151,7 +152,7 @@ func getExternalFulfillmentState(ctx context.Context, ffmID int64) (haravanclien
 	return state, nil
 }
 
-func getExternalPaymentStatus(ctx context.Context, ffmID int64) (haravanclient.PaymentStatus, error) {
+func getExternalPaymentStatus(ctx context.Context, ffmID dot.ID) (haravanclient.PaymentStatus, error) {
 	query := &shipmodelx.GetFulfillmentQuery{
 		FulfillmentID: ffmID,
 	}

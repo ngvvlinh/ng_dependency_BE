@@ -10,6 +10,7 @@ import (
 
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/redis"
+	"etop.vn/capi/dot"
 	"etop.vn/common/jsonx"
 	"etop.vn/common/l"
 )
@@ -42,7 +43,7 @@ type Validator interface {
 type Token struct {
 	TokenStr  string
 	Usage     string
-	UserID    int64
+	UserID    dot.ID
 	Value     interface{}
 	ExpiresIn int
 }
@@ -50,7 +51,7 @@ type Token struct {
 // Store interface contains methods
 // to perform token actions
 type Store interface {
-	Generate(usage string, userID int64, ttl int) (*Token, error)
+	Generate(usage string, userID dot.ID, ttl int) (*Token, error)
 	GenerateWithValue(tok *Token, ttl int) (*Token, error)
 	Revoke(usage, tokenStr string) error
 	SetTTL(token *Token, ttl int) error
@@ -84,18 +85,18 @@ func (t *Token) ToKey() string {
 // from given token
 func (t *Token) ToValue() string {
 	if t.Value == nil {
-		return strconv.FormatInt(t.UserID, 16)
+		return strconv.FormatInt(int64(t.UserID), 16)
 	}
 
 	data, err := jsonx.Marshal(t.Value)
 	if err != nil {
 		ll.Panic("Unable to marshal json", l.Error(err))
 	}
-	return strconv.FormatInt(t.UserID, 16) + ":" + string(data)
+	return strconv.FormatInt(int64(t.UserID), 16) + ":" + string(data)
 }
 
 // Generate creates token for given userID and TTL.
-func (g *generator) Generate(usage string, userID int64, ttl int) (*Token, error) {
+func (g *generator) Generate(usage string, userID dot.ID, ttl int) (*Token, error) {
 	t := &Token{
 		Usage:  usage,
 		UserID: userID,
@@ -155,7 +156,7 @@ func (g *generator) Validate(usage, token string, v interface{}) (*Token, error)
 		return t, cm.Errorf(cm.NotFound, err, "invalid token")
 	}
 
-	t.UserID = userID
+	t.UserID = dot.ID(userID)
 	if v != nil && len(s) > 1 && len(s[1]) > 0 {
 		err = jsonx.Unmarshal([]byte(s[1]), v)
 		if err != nil {

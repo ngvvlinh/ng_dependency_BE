@@ -8,6 +8,7 @@ import (
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/cmsql"
+	"etop.vn/capi/dot"
 )
 
 var _ transaction.QueryService = &QueryService{}
@@ -27,7 +28,7 @@ func (q *QueryService) MessageBus() transaction.QueryBus {
 	return transaction.NewQueryServiceHandler(q).RegisterHandlers(b)
 }
 
-func (q QueryService) GetTransactionByID(ctx context.Context, tranID int64, userID int64) (*transaction.Transaction, error) {
+func (q QueryService) GetTransactionByID(ctx context.Context, tranID dot.ID, userID dot.ID) (*transaction.Transaction, error) {
 	return q.store(ctx).ID(tranID).AccountID(userID).GetTransaction()
 }
 

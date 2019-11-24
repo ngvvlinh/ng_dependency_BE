@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"etop.vn/backend/pkg/common/sq"
+	"etop.vn/capi/dot"
 )
 
 type EtopAcountFilters struct{ prefix string }
@@ -416,7 +417,7 @@ func (ft *VtigerContactFilters) ByCreatedAtPtr(CreatedAt *time.Time) *sq.ColumnF
 	}
 }
 
-func (ft *VtigerContactFilters) ByEtopUserID(EtopUserID int64) *sq.ColumnFilter {
+func (ft *VtigerContactFilters) ByEtopUserID(EtopUserID dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "etop_user_id",
@@ -425,7 +426,7 @@ func (ft *VtigerContactFilters) ByEtopUserID(EtopUserID int64) *sq.ColumnFilter 
 	}
 }
 
-func (ft *VtigerContactFilters) ByEtopUserIDPtr(EtopUserID *int64) *sq.ColumnFilterPtr {
+func (ft *VtigerContactFilters) ByEtopUserIDPtr(EtopUserID *dot.ID) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "etop_user_id",
@@ -772,7 +773,7 @@ func (ft *VtigerAccountFilters) ByFirstNamePtr(FirstName *string) *sq.ColumnFilt
 	}
 }
 
-func (ft *VtigerAccountFilters) ByRoleID(RoleID int64) *sq.ColumnFilter {
+func (ft *VtigerAccountFilters) ByRoleID(RoleID dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "role_id",
@@ -781,7 +782,7 @@ func (ft *VtigerAccountFilters) ByRoleID(RoleID int64) *sq.ColumnFilter {
 	}
 }
 
-func (ft *VtigerAccountFilters) ByRoleIDPtr(RoleID *int64) *sq.ColumnFilterPtr {
+func (ft *VtigerAccountFilters) ByRoleIDPtr(RoleID *dot.ID) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "role_id",

@@ -10,6 +10,7 @@ import (
 
 	meta "etop.vn/api/meta"
 	capi "etop.vn/capi"
+	dot "etop.vn/capi/dot"
 )
 
 type Command interface{ command() }
@@ -40,7 +41,7 @@ func (c QueryBus) DispatchAll(ctx context.Context, msgs ...Query) error {
 
 type CreateOrUpdateContactCommand struct {
 	ID                   string    `json:"id"`
-	EtopUserID           int64     `json:"etop_user_id"`
+	EtopUserID           dot.ID    `json:"etop_user_id"`
 	ContactNo            string    `json:"contact_no"`
 	Phone                string    `json:"phone"`
 	Lastname             string    `json:"lastname"`
@@ -74,7 +75,7 @@ func (h AggregateHandler) HandleCreateOrUpdateContact(ctx context.Context, msg *
 
 type CreateOrUpdateLeadCommand struct {
 	ID                   string    `json:"id"`
-	EtopUserID           int64     `json:"etop_user_id"`
+	EtopUserID           dot.ID    `json:"etop_user_id"`
 	ContactNo            string    `json:"contact_no"`
 	Phone                string    `json:"phone"`
 	Lastname             string    `json:"lastname"`
@@ -108,16 +109,16 @@ func (h AggregateHandler) HandleCreateOrUpdateLead(ctx context.Context, msg *Cre
 
 type CreateTicketCommand struct {
 	FfmCode     string
-	FfmID       int64
+	FfmID       dot.ID
 	ID          string
-	EtopUserID  int64 `json:"etop_user_id"`
+	EtopUserID  dot.ID `json:"etop_user_id"`
 	Code        string
 	Title       string
 	Value       string
 	OldValue    string
 	Reason      string
-	ShopID      int64
-	OrderID     int64
+	ShopID      dot.ID
+	OrderID     dot.ID
 	OrderCode   string
 	FfmUrl      string
 	Company     string
@@ -148,16 +149,16 @@ func (h AggregateHandler) HandleSyncContact(ctx context.Context, msg *SyncContac
 
 type UpdateTicketCommand struct {
 	FfmCode     string
-	FfmID       int64
+	FfmID       dot.ID
 	ID          string
-	EtopUserID  int64 `json:"etop_user_id"`
+	EtopUserID  dot.ID `json:"etop_user_id"`
 	Code        string
 	Title       string
 	Value       string
 	OldValue    string
 	Reason      string
-	ShopID      int64
-	OrderID     int64
+	ShopID      dot.ID
+	OrderID     dot.ID
 	OrderCode   string
 	FfmUrl      string
 	Company     string

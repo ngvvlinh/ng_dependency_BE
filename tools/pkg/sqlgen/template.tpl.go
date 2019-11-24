@@ -268,41 +268,6 @@ func (m {{.TypeNames}}) SQLPreload(table string) *core.PreloadDesc {
         return nil
     }
 }
-
-func (m *{{.TypeName}}) SQLPopulate(items core.IFind) error {
-    switch items := items.(type) {
-    {{range .Preloads -}}
-    case *{{.PluralTypeStr}}:
-        m.{{.FieldName}} = *items
-        return nil
-    {{end -}}
-    default:
-        return core.Errorf("can not populate %%T into %%T", items, m)
-    }
-}
-
-func (m {{.TypeNames}}) SQLPopulate(items core.IFind) error {
-    mapID := make(map[int64]*{{.TypeName}})
-    for _, item := range m {
-        mapID[item.ID] = item
-    }
-
-    switch items := items.(type) {
-    {{range .Preloads -}}
-    case *{{.PluralTypeStr}}:
-        for _, item := range *items {
-            mitem := mapID[item.{{.Fkey | toTitle}}]
-            if mitem == nil {
-                return core.Errorf("can not populate id %%v", item.{{.Fkey | toTitle}})
-            }
-            mitem.{{.FieldName}} = append(mitem.{{.FieldName}}, item)
-        }
-        return nil
-    {{end -}}
-    default:
-        return core.Errorf("can not populate %%T into %%T", items, m)
-    }
-}
 {{end}}
 
 {{if .IsSimple}}

@@ -12,6 +12,7 @@ import (
 	"etop.vn/backend/pkg/common/cmsql"
 	cc "etop.vn/backend/pkg/common/config"
 	"etop.vn/backend/pkg/etop/sqlstore"
+	"etop.vn/capi/dot"
 )
 
 func main() {
@@ -21,10 +22,10 @@ func main() {
 			ShopID: 1017379750412823345,
 			Code:   "",
 			EdCode: "",
-			ProductIDs: []int64{
+			ProductIDs: []dot.ID{
 				1096813038197039889,
 			},
-			VariantIDs: []int64{
+			VariantIDs: []dot.ID{
 				1096813038199788142,
 			},
 			PartnerID:     0,
@@ -174,7 +175,7 @@ func main() {
 			CustomerNameNorm: "",
 			ProductNameNorm:  "",
 			FulfillmentType:  1,
-			FulfillmentIDs:   []int64{},
+			FulfillmentIDs:   []dot.ID{},
 			ExternalMeta: json.RawMessage{
 				0x6e, 0x75, 0x6c, 0x6c,
 			},

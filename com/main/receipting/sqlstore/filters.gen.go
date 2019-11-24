@@ -7,6 +7,7 @@ import (
 
 	"etop.vn/backend/pkg/common/sq"
 	"etop.vn/backend/pkg/etop/model"
+	"etop.vn/capi/dot"
 )
 
 type ReceiptFilters struct{ prefix string }
@@ -23,7 +24,7 @@ func (ft ReceiptFilters) Prefix() string {
 	return ft.prefix
 }
 
-func (ft *ReceiptFilters) ByID(ID int64) *sq.ColumnFilter {
+func (ft *ReceiptFilters) ByID(ID dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "id",
@@ -32,7 +33,7 @@ func (ft *ReceiptFilters) ByID(ID int64) *sq.ColumnFilter {
 	}
 }
 
-func (ft *ReceiptFilters) ByIDPtr(ID *int64) *sq.ColumnFilterPtr {
+func (ft *ReceiptFilters) ByIDPtr(ID *dot.ID) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "id",
@@ -42,7 +43,7 @@ func (ft *ReceiptFilters) ByIDPtr(ID *int64) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft *ReceiptFilters) ByShopID(ShopID int64) *sq.ColumnFilter {
+func (ft *ReceiptFilters) ByShopID(ShopID dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "shop_id",
@@ -51,7 +52,7 @@ func (ft *ReceiptFilters) ByShopID(ShopID int64) *sq.ColumnFilter {
 	}
 }
 
-func (ft *ReceiptFilters) ByShopIDPtr(ShopID *int64) *sq.ColumnFilterPtr {
+func (ft *ReceiptFilters) ByShopIDPtr(ShopID *dot.ID) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "shop_id",
@@ -61,7 +62,7 @@ func (ft *ReceiptFilters) ByShopIDPtr(ShopID *int64) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft *ReceiptFilters) ByTraderID(TraderID int64) *sq.ColumnFilter {
+func (ft *ReceiptFilters) ByTraderID(TraderID dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "trader_id",
@@ -70,7 +71,7 @@ func (ft *ReceiptFilters) ByTraderID(TraderID int64) *sq.ColumnFilter {
 	}
 }
 
-func (ft *ReceiptFilters) ByTraderIDPtr(TraderID *int64) *sq.ColumnFilterPtr {
+func (ft *ReceiptFilters) ByTraderIDPtr(TraderID *dot.ID) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "trader_id",
@@ -251,7 +252,7 @@ func (ft *ReceiptFilters) ByRefTypePtr(RefType *string) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft *ReceiptFilters) ByLedgerID(LedgerID int64) *sq.ColumnFilter {
+func (ft *ReceiptFilters) ByLedgerID(LedgerID dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "ledger_id",
@@ -260,7 +261,7 @@ func (ft *ReceiptFilters) ByLedgerID(LedgerID int64) *sq.ColumnFilter {
 	}
 }
 
-func (ft *ReceiptFilters) ByLedgerIDPtr(LedgerID *int64) *sq.ColumnFilterPtr {
+func (ft *ReceiptFilters) ByLedgerIDPtr(LedgerID *dot.ID) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "ledger_id",
@@ -308,7 +309,7 @@ func (ft *ReceiptFilters) ByCreatedTypePtr(CreatedType *string) *sq.ColumnFilter
 	}
 }
 
-func (ft *ReceiptFilters) ByCreatedBy(CreatedBy int64) *sq.ColumnFilter {
+func (ft *ReceiptFilters) ByCreatedBy(CreatedBy dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "created_by",

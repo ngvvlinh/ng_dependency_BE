@@ -21,6 +21,7 @@ import (
 	cmservice "etop.vn/backend/pkg/common/service"
 	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/backend/pkg/etop/upload"
+	"etop.vn/capi/dot"
 	"etop.vn/common/jsonx"
 	"etop.vn/common/l"
 )
@@ -151,7 +152,7 @@ func (imp *Importer) toSpreadsheetData(idx imcsv.Indexer) *pbsheet.SpreadsheetDa
 	return imcsv.ToSpreadsheetData(imp.Schema, idx, imp.Rows, imp.LastRow)
 }
 
-func uploadFile(id int64, data []byte) (*upload.StoreFileCommand, error) {
+func uploadFile(id dot.ID, data []byte) (*upload.StoreFileCommand, error) {
 	fileName := fmt.Sprintf("%v.xlsx", id)
 	uploadCmd := &upload.StoreFileCommand{
 		UploadType: string(model.ImportTypeShopOrder),

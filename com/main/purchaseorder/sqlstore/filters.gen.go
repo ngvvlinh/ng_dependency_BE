@@ -7,6 +7,7 @@ import (
 
 	"etop.vn/api/main/etop"
 	"etop.vn/backend/pkg/common/sq"
+	"etop.vn/capi/dot"
 )
 
 type PurchaseOrderFilters struct{ prefix string }
@@ -23,7 +24,7 @@ func (ft PurchaseOrderFilters) Prefix() string {
 	return ft.prefix
 }
 
-func (ft *PurchaseOrderFilters) ByID(ID int64) *sq.ColumnFilter {
+func (ft *PurchaseOrderFilters) ByID(ID dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "id",
@@ -32,7 +33,7 @@ func (ft *PurchaseOrderFilters) ByID(ID int64) *sq.ColumnFilter {
 	}
 }
 
-func (ft *PurchaseOrderFilters) ByIDPtr(ID *int64) *sq.ColumnFilterPtr {
+func (ft *PurchaseOrderFilters) ByIDPtr(ID *dot.ID) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "id",
@@ -42,7 +43,7 @@ func (ft *PurchaseOrderFilters) ByIDPtr(ID *int64) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft *PurchaseOrderFilters) ByShopID(ShopID int64) *sq.ColumnFilter {
+func (ft *PurchaseOrderFilters) ByShopID(ShopID dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "shop_id",
@@ -51,7 +52,7 @@ func (ft *PurchaseOrderFilters) ByShopID(ShopID int64) *sq.ColumnFilter {
 	}
 }
 
-func (ft *PurchaseOrderFilters) ByShopIDPtr(ShopID *int64) *sq.ColumnFilterPtr {
+func (ft *PurchaseOrderFilters) ByShopIDPtr(ShopID *dot.ID) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "shop_id",
@@ -61,7 +62,7 @@ func (ft *PurchaseOrderFilters) ByShopIDPtr(ShopID *int64) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft *PurchaseOrderFilters) BySupplierID(SupplierID int64) *sq.ColumnFilter {
+func (ft *PurchaseOrderFilters) BySupplierID(SupplierID dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "supplier_id",
@@ -70,7 +71,7 @@ func (ft *PurchaseOrderFilters) BySupplierID(SupplierID int64) *sq.ColumnFilter 
 	}
 }
 
-func (ft *PurchaseOrderFilters) BySupplierIDPtr(SupplierID *int64) *sq.ColumnFilterPtr {
+func (ft *PurchaseOrderFilters) BySupplierIDPtr(SupplierID *dot.ID) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "supplier_id",
@@ -213,7 +214,7 @@ func (ft *PurchaseOrderFilters) ByStatusPtr(Status *etop.Status3) *sq.ColumnFilt
 	}
 }
 
-func (ft *PurchaseOrderFilters) ByCreatedBy(CreatedBy int64) *sq.ColumnFilter {
+func (ft *PurchaseOrderFilters) ByCreatedBy(CreatedBy dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "created_by",

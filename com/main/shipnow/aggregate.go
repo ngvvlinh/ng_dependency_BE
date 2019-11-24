@@ -21,6 +21,7 @@ import (
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/cmsql"
 	"etop.vn/capi"
+	"etop.vn/capi/dot"
 )
 
 var _ shipnow.Aggregate = &Aggregate{}
@@ -240,7 +241,7 @@ func (a *Aggregate) ConfirmShipnowFulfillment(ctx context.Context, cmd *shipnow.
 	return _result, err
 }
 
-func (a *Aggregate) PreparePickupAddress(ctx context.Context, shopID int64, pickupAddress *ordertypes.Address) (*ordertypes.Address, error) {
+func (a *Aggregate) PreparePickupAddress(ctx context.Context, shopID dot.ID, pickupAddress *ordertypes.Address) (*ordertypes.Address, error) {
 	if pickupAddress != nil {
 		return pickupAddress, nil
 	}
@@ -264,7 +265,7 @@ func (a *Aggregate) PreparePickupAddress(ctx context.Context, shopID int64, pick
 	return pickupAddress, nil
 }
 
-func (a *Aggregate) PrepareDeliveryPoints(ctx context.Context, orderIDs []int64) (points []*shipnow.DeliveryPoint, weightInfo shippingtypes.WeightInfo, valueinfo shippingtypes.ValueInfo, _err error) {
+func (a *Aggregate) PrepareDeliveryPoints(ctx context.Context, orderIDs []dot.ID) (points []*shipnow.DeliveryPoint, weightInfo shippingtypes.WeightInfo, valueinfo shippingtypes.ValueInfo, _err error) {
 	query := &ordering.GetOrdersQuery{
 		IDs: orderIDs,
 	}
@@ -275,7 +276,7 @@ func (a *Aggregate) PrepareDeliveryPoints(ctx context.Context, orderIDs []int64)
 	orders := query.Result.Orders
 
 	// Note: Không thay đổi thứ tự đơn hàng vì nó ảnh hưởng tới giá
-	mapOrders := make(map[int64]*ordering.Order)
+	mapOrders := make(map[dot.ID]*ordering.Order)
 	for _, order := range orders {
 		if order.Shipping == nil {
 			_err = cm.Errorf(cm.InvalidArgument, nil, "Đơn hàng thiếu thông tin giao hàng: khối lượng, COD,...")

@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"etop.vn/backend/pkg/common/sq"
+	"etop.vn/capi/dot"
 )
 
 type FooFilters struct{ prefix string }
@@ -22,7 +23,7 @@ func (ft FooFilters) Prefix() string {
 	return ft.prefix
 }
 
-func (ft *FooFilters) ByID(ID int64) *sq.ColumnFilter {
+func (ft *FooFilters) ByID(ID dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "id",
@@ -31,7 +32,7 @@ func (ft *FooFilters) ByID(ID int64) *sq.ColumnFilter {
 	}
 }
 
-func (ft *FooFilters) ByIDPtr(ID *int64) *sq.ColumnFilterPtr {
+func (ft *FooFilters) ByIDPtr(ID *dot.ID) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "id",
@@ -41,7 +42,7 @@ func (ft *FooFilters) ByIDPtr(ID *int64) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft *FooFilters) ByAccountID(AccountID int64) *sq.ColumnFilter {
+func (ft *FooFilters) ByAccountID(AccountID dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "account_id",
@@ -50,7 +51,7 @@ func (ft *FooFilters) ByAccountID(AccountID int64) *sq.ColumnFilter {
 	}
 }
 
-func (ft *FooFilters) ByAccountIDPtr(AccountID *int64) *sq.ColumnFilterPtr {
+func (ft *FooFilters) ByAccountIDPtr(AccountID *dot.ID) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "account_id",
@@ -150,7 +151,7 @@ func (ft AccountFilters) Prefix() string {
 	return ft.prefix
 }
 
-func (ft *AccountFilters) ByID(ID int64) *sq.ColumnFilter {
+func (ft *AccountFilters) ByID(ID dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "id",
@@ -159,7 +160,7 @@ func (ft *AccountFilters) ByID(ID int64) *sq.ColumnFilter {
 	}
 }
 
-func (ft *AccountFilters) ByIDPtr(ID *int64) *sq.ColumnFilterPtr {
+func (ft *AccountFilters) ByIDPtr(ID *dot.ID) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "id",

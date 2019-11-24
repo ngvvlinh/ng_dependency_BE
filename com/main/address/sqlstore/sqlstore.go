@@ -8,6 +8,7 @@ import (
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/cmsql"
 	"etop.vn/backend/pkg/etop/model"
+	"etop.vn/capi/dot"
 )
 
 type AddressStore struct {
@@ -29,7 +30,7 @@ func (s *AddressStore) WithContext(ctx context.Context) *AddressStore {
 	}
 }
 
-func (s *AddressStore) GetByID(ID int64) (*address.Address, error) {
+func (s *AddressStore) GetByID(ID dot.ID) (*address.Address, error) {
 	if ID == 0 {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "missing ID")
 	}

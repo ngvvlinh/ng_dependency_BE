@@ -5,7 +5,6 @@ import (
 	"io/ioutil"
 	"net/http"
 	"net/url"
-	"strconv"
 	"time"
 
 	cm "etop.vn/backend/pkg/common"
@@ -48,7 +47,7 @@ func (c *Client) SendSMS(ctx context.Context, phone string, content string) (sms
 	q.Set("from", c.cfg.BrandName)
 	q.Set("phone", phone)
 	q.Set("sms", content)
-	q.Set("bid", strconv.FormatInt(cm.NewID(), 10))
+	q.Set("bid", cm.NewID().String())
 	u.RawQuery = q.Encode()
 
 	req, err := http.NewRequest("GET", u.String(), nil)

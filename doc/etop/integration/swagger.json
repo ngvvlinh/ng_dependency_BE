@@ -275,7 +275,7 @@
           "type": "string"
         },
         "id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "last_name": {
@@ -344,7 +344,7 @@
       "type": "object",
       "properties": {
         "id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "image_url": {
@@ -383,7 +383,7 @@
           "type": "string"
         },
         "id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "phone": {
@@ -433,7 +433,7 @@
       "type": "object",
       "properties": {
         "shop_id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         }
       }
@@ -518,7 +518,7 @@
           "type": "string"
         },
         "id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "image_url": {
@@ -534,7 +534,7 @@
           "type": "string"
         },
         "ship_from_address_id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "status": {
@@ -556,7 +556,7 @@
           "type": "string"
         },
         "id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "image_url": {
@@ -580,7 +580,7 @@
           "type": "string"
         },
         "id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "phone": {

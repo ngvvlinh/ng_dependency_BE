@@ -10,6 +10,7 @@ import (
 	"etop.vn/backend/pkg/etop/api/convertpb"
 	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/backend/pkg/etop/sqlstore"
+	"etop.vn/capi/dot"
 )
 
 func init() {
@@ -98,7 +99,7 @@ func (s *AccountService) GetPublicPartners(ctx context.Context, q *GetPublicPart
 		return nil
 	}
 
-	listAccountIDs := make([]int64, 0, len(accountIDs))
+	listAccountIDs := make([]dot.ID, 0, len(accountIDs))
 	for id := range accountIDs {
 		listAccountIDs = append(listAccountIDs, id)
 	}
@@ -114,7 +115,7 @@ func (s *AccountService) GetPublicPartners(ctx context.Context, q *GetPublicPart
 	return nil
 }
 
-func isAdmin(accountIDs map[int64]int) bool {
+func isAdmin(accountIDs map[dot.ID]int) bool {
 	for _, typ := range accountIDs {
 		if typ == model.TagEtop {
 			return true

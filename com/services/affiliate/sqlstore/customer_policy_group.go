@@ -7,6 +7,7 @@ import (
 	"etop.vn/backend/com/services/affiliate/model"
 	"etop.vn/backend/pkg/common/cmsql"
 	"etop.vn/backend/pkg/common/sqlstore"
+	"etop.vn/capi/dot"
 )
 
 type CustomerPolicyGroupStoreFactory func(ctx context.Context) *CustomerPolicyGroupStore
@@ -49,7 +50,7 @@ func (s *CustomerPolicyGroupStore) Paging(paging meta.Paging) *CustomerPolicyGro
 	return s
 }
 
-func (s *CustomerPolicyGroupStore) ID(id int64) *CustomerPolicyGroupStore {
+func (s *CustomerPolicyGroupStore) ID(id dot.ID) *CustomerPolicyGroupStore {
 	s.preds = append(s.preds, s.ft.ByID(id))
 	return s
 }
@@ -59,7 +60,7 @@ func (s *CustomerPolicyGroupStore) Name(name string) *CustomerPolicyGroupStore {
 	return s
 }
 
-func (s *CustomerPolicyGroupStore) SupplyID(id int64) *CustomerPolicyGroupStore {
+func (s *CustomerPolicyGroupStore) SupplyID(id dot.ID) *CustomerPolicyGroupStore {
 	s.preds = append(s.preds, s.ft.BySupplyID(id))
 	return s
 }

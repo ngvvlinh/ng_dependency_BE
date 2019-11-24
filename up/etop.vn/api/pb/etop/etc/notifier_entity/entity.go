@@ -14,3 +14,7 @@ func (s *NotifierEntity) ToModel() string {
 	}
 	return NotifierEntity_name[int32(*s)]
 }
+
+func (x NotifierEntity) MarshalJSON() ([]byte, error) {
+	return []byte(`"` + x.String() + `"`), nil
+}

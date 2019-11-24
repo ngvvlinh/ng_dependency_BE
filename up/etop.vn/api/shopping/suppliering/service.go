@@ -6,6 +6,7 @@ import (
 	"etop.vn/api/meta"
 	"etop.vn/api/shopping"
 	. "etop.vn/capi/dot"
+	dot "etop.vn/capi/dot"
 )
 
 // +gen:api
@@ -15,7 +16,7 @@ type Aggregate interface {
 
 	UpdateSupplier(ctx context.Context, _ *UpdateSupplierArgs) (*ShopSupplier, error)
 
-	DeleteSupplier(ctx context.Context, ID int64, shopID int64) (deleted int, _ error)
+	DeleteSupplier(ctx context.Context, ID dot.ID, shopID dot.ID) (deleted int, _ error)
 }
 
 type QueryService interface {
@@ -37,7 +38,7 @@ type SuppliersResponse struct {
 
 // +convert:create=ShopSupplier
 type CreateSupplierArgs struct {
-	ShopID            int64
+	ShopID            dot.ID
 	FullName          string
 	Phone             string
 	Email             string
@@ -49,8 +50,8 @@ type CreateSupplierArgs struct {
 
 // +convert:update=ShopSupplier(ID,ShopID)
 type UpdateSupplierArgs struct {
-	ID                int64
-	ShopID            int64
+	ID                dot.ID
+	ShopID            dot.ID
 	FullName          NullString
 	Note              NullString
 	Phone             NullString

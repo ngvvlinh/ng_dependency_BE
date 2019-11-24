@@ -12,6 +12,7 @@ import (
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/cmsql"
 	"etop.vn/backend/pkg/common/conversion"
+	"etop.vn/capi/dot"
 )
 
 var _ addressing.Aggregate = &AddressAggregate{}
@@ -49,7 +50,7 @@ func (a *AddressAggregate) CreateAddress(ctx context.Context, args *addressing.C
 	return addr, err
 }
 
-func (a *AddressAggregate) UpdateAddress(ctx context.Context, ID int64, ShopID int64, args *addressing.UpdateAddressArgs) (*addressing.ShopTraderAddress, error) {
+func (a *AddressAggregate) UpdateAddress(ctx context.Context, ID dot.ID, ShopID dot.ID, args *addressing.UpdateAddressArgs) (*addressing.ShopTraderAddress, error) {
 	addr, err := a.store(ctx).ID(ID).ShopID(ShopID).GetAddress()
 	if err != nil {
 		return nil, err
@@ -65,7 +66,7 @@ func (a *AddressAggregate) UpdateAddress(ctx context.Context, ID int64, ShopID i
 	return addr, err
 }
 
-func (a *AddressAggregate) DeleteAddress(ctx context.Context, ID int64, ShopID int64) (deleted int, _ error) {
+func (a *AddressAggregate) DeleteAddress(ctx context.Context, ID dot.ID, ShopID dot.ID) (deleted int, _ error) {
 	deleted, err := a.store(ctx).ID(ID).ShopID(ShopID).SoftDelete()
 	return deleted, err
 }
@@ -94,7 +95,7 @@ func EditErrorMsg(str string) error {
 }
 
 func (a *AddressAggregate) SetDefaultAddress(
-	ctx context.Context, ID, traderID, shopID int64,
+	ctx context.Context, ID, traderID, shopID dot.ID,
 ) (*meta.UpdatedResponse, error) {
 	if err := a.store(ctx).UpdateStatusAddresses(shopID, traderID, false); err != nil {
 		return nil, err

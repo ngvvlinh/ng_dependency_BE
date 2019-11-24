@@ -10,6 +10,7 @@ import (
 	"etop.vn/backend/pkg/common/cmsql"
 	"etop.vn/backend/pkg/common/sq"
 	"etop.vn/backend/pkg/common/sqlstore"
+	"etop.vn/capi/dot"
 )
 
 type SupplyCommissionSettingStoreFactory func(ctx context.Context) *SupplyCommissionSettingStore
@@ -33,17 +34,17 @@ type SupplyCommissionSettingStore struct {
 	filters meta.Filters
 }
 
-func (s *SupplyCommissionSettingStore) ShopID(id int64) *SupplyCommissionSettingStore {
+func (s *SupplyCommissionSettingStore) ShopID(id dot.ID) *SupplyCommissionSettingStore {
 	s.preds = append(s.preds, s.ft.ByShopID(id))
 	return s
 }
 
-func (s *SupplyCommissionSettingStore) ProductID(id int64) *SupplyCommissionSettingStore {
+func (s *SupplyCommissionSettingStore) ProductID(id dot.ID) *SupplyCommissionSettingStore {
 	s.preds = append(s.preds, s.ft.ByProductID(id))
 	return s
 }
 
-func (s *SupplyCommissionSettingStore) ProductIDs(ids ...int64) *SupplyCommissionSettingStore {
+func (s *SupplyCommissionSettingStore) ProductIDs(ids ...dot.ID) *SupplyCommissionSettingStore {
 	s.preds = append(s.preds, sq.In("product_id", ids))
 	return s
 }

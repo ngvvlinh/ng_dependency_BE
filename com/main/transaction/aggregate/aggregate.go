@@ -9,6 +9,7 @@ import (
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/cmsql"
+	"etop.vn/capi/dot"
 )
 
 var _ transaction.Aggregate = &Aggregate{}
@@ -40,7 +41,7 @@ func (a *Aggregate) CreateTransaction(ctx context.Context, args *transaction.Cre
 	return a.store(ctx).CreateTransaction(trxn)
 }
 
-func (a *Aggregate) ConfirmTransaction(ctx context.Context, trxnID int64, accountID int64) (*transaction.Transaction, error) {
+func (a *Aggregate) ConfirmTransaction(ctx context.Context, trxnID dot.ID, accountID dot.ID) (*transaction.Transaction, error) {
 	if trxnID == 0 {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing TransactionID")
 	}
@@ -66,7 +67,7 @@ func canTransactionChange(trxn *transaction.Transaction) bool {
 	return trxn.Status == etoptypes.S3Zero
 }
 
-func (a *Aggregate) CancelTransaction(ctx context.Context, trxnID int64, accountID int64) (*transaction.Transaction, error) {
+func (a *Aggregate) CancelTransaction(ctx context.Context, trxnID dot.ID, accountID dot.ID) (*transaction.Transaction, error) {
 	if trxnID == 0 {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing TransactionID")
 	}

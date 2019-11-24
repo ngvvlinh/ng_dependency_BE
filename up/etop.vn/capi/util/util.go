@@ -1,5 +1,25 @@
 package util
 
+import (
+	"strconv"
+	"unsafe"
+
+	"etop.vn/capi/dot"
+)
+
+func Int64ToIDs(ids []int64) []dot.ID {
+	return *(*[]dot.ID)(unsafe.Pointer(&ids))
+}
+
+func IDsToInt64(ids []dot.ID) []int64 {
+	return *(*[]int64)(unsafe.Pointer(&ids))
+}
+
+func ParseID(s string) (dot.ID, error) {
+	id, err := strconv.ParseInt(s, 10, 64)
+	return dot.ID(id), err
+}
+
 func CoalesceString(ss ...string) string {
 	for _, s := range ss {
 		if s != "" {

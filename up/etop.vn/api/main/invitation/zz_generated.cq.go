@@ -12,6 +12,7 @@ import (
 	meta "etop.vn/api/meta"
 	shopping "etop.vn/api/shopping"
 	capi "etop.vn/capi"
+	dot "etop.vn/capi/dot"
 )
 
 type Command interface{ command() }
@@ -41,7 +42,7 @@ func (c QueryBus) DispatchAll(ctx context.Context, msgs ...Query) error {
 }
 
 type AcceptInvitationCommand struct {
-	UserID int64
+	UserID dot.ID
 	Token  string
 
 	Result int `json:"-"`
@@ -53,11 +54,11 @@ func (h AggregateHandler) HandleAcceptInvitation(ctx context.Context, msg *Accep
 }
 
 type CreateInvitationCommand struct {
-	AccountID int64
+	AccountID dot.ID
 	Email     string
 	Roles     []Role
 	Status    etop.Status3
-	InvitedBy int64
+	InvitedBy dot.ID
 	CreatedBy time.Time
 
 	Result *Invitation `json:"-"`
@@ -69,7 +70,7 @@ func (h AggregateHandler) HandleCreateInvitation(ctx context.Context, msg *Creat
 }
 
 type RejectInvitationCommand struct {
-	UserID int64
+	UserID dot.ID
 	Token  string
 
 	Result int `json:"-"`
@@ -81,7 +82,7 @@ func (h AggregateHandler) HandleRejectInvitation(ctx context.Context, msg *Rejec
 }
 
 type GetInvitationQuery struct {
-	ID int64
+	ID dot.ID
 
 	Result *Invitation `json:"-"`
 }
@@ -103,7 +104,7 @@ func (h QueryServiceHandler) HandleGetInvitationByToken(ctx context.Context, msg
 }
 
 type ListInvitationsQuery struct {
-	ShopID  int64
+	ShopID  dot.ID
 	Paging  meta.Paging
 	Filters meta.Filters
 
@@ -152,7 +153,7 @@ func (q *ListInvitationsByEmailQuery) query()         {}
 
 // implement conversion
 
-func (q *AcceptInvitationCommand) GetArgs(ctx context.Context) (_ context.Context, userID int64, token string) {
+func (q *AcceptInvitationCommand) GetArgs(ctx context.Context) (_ context.Context, userID dot.ID, token string) {
 	return ctx,
 		q.UserID,
 		q.Token
@@ -179,13 +180,13 @@ func (q *CreateInvitationCommand) SetCreateInvitationArgs(args *CreateInvitation
 	q.CreatedBy = args.CreatedBy
 }
 
-func (q *RejectInvitationCommand) GetArgs(ctx context.Context) (_ context.Context, userID int64, token string) {
+func (q *RejectInvitationCommand) GetArgs(ctx context.Context) (_ context.Context, userID dot.ID, token string) {
 	return ctx,
 		q.UserID,
 		q.Token
 }
 
-func (q *GetInvitationQuery) GetArgs(ctx context.Context) (_ context.Context, ID int64) {
+func (q *GetInvitationQuery) GetArgs(ctx context.Context) (_ context.Context, ID dot.ID) {
 	return ctx,
 		q.ID
 }

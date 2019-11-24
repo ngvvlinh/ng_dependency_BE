@@ -10,6 +10,7 @@ import (
 	"etop.vn/backend/pkg/common/cmsql"
 	"etop.vn/backend/pkg/common/sq"
 	"etop.vn/backend/pkg/common/sqlstore"
+	"etop.vn/capi/dot"
 )
 
 type ProductPromotionStoreFactory func(ctx context.Context) *ProductPromotionStore
@@ -33,22 +34,22 @@ type ProductPromotionStore struct {
 	filters meta.Filters
 }
 
-func (s *ProductPromotionStore) ID(id int64) *ProductPromotionStore {
+func (s *ProductPromotionStore) ID(id dot.ID) *ProductPromotionStore {
 	s.preds = append(s.preds, s.ft.ByID(id))
 	return s
 }
 
-func (s *ProductPromotionStore) ShopID(id int64) *ProductPromotionStore {
+func (s *ProductPromotionStore) ShopID(id dot.ID) *ProductPromotionStore {
 	s.preds = append(s.preds, s.ft.ByShopID(id))
 	return s
 }
 
-func (s *ProductPromotionStore) ProductID(id int64) *ProductPromotionStore {
+func (s *ProductPromotionStore) ProductID(id dot.ID) *ProductPromotionStore {
 	s.preds = append(s.preds, s.ft.ByProductID(id))
 	return s
 }
 
-func (s *ProductPromotionStore) ProductIDs(ids ...int64) *ProductPromotionStore {
+func (s *ProductPromotionStore) ProductIDs(ids ...dot.ID) *ProductPromotionStore {
 	s.preds = append(s.preds, sq.In("product_id", ids))
 	return s
 }

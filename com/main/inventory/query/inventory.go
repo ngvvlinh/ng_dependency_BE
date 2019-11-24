@@ -11,6 +11,7 @@ import (
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/cmsql"
 	"etop.vn/capi"
+	"etop.vn/capi/dot"
 )
 
 var _ inventory.QueryService = &InventoryQueryService{}
@@ -89,7 +90,7 @@ func (q *InventoryQueryService) GetInventoryVouchersByIDs(ctx context.Context, a
 	return &inventory.GetInventoryVouchersResponse{InventoryVoucher: inventoryVoucherItems}, nil
 }
 
-func (q *InventoryQueryService) GetInventoryVoucher(ctx context.Context, ShopID int64, ID int64) (*inventory.InventoryVoucher, error) {
+func (q *InventoryQueryService) GetInventoryVoucher(ctx context.Context, ShopID dot.ID, ID dot.ID) (*inventory.InventoryVoucher, error) {
 	result, err := q.InventoryVoucherStore(ctx).ID(ID).ShopID(ShopID).Get()
 	if err != nil {
 		return nil, err
@@ -97,7 +98,7 @@ func (q *InventoryQueryService) GetInventoryVoucher(ctx context.Context, ShopID 
 	return result, nil
 }
 
-func (q *InventoryQueryService) GetInventoryVariant(ctx context.Context, ShopID int64, VariantID int64) (*inventory.InventoryVariant, error) {
+func (q *InventoryQueryService) GetInventoryVariant(ctx context.Context, ShopID dot.ID, VariantID dot.ID) (*inventory.InventoryVariant, error) {
 	result, err := q.InventoryStore(ctx).VariantIDs(VariantID).ShopID(ShopID).Get()
 	if err != nil {
 		return nil, err
@@ -106,7 +107,7 @@ func (q *InventoryQueryService) GetInventoryVariant(ctx context.Context, ShopID 
 }
 
 func (q *InventoryQueryService) GetInventoryVouchersByRefIDs(
-	ctx context.Context, RefIDs []int64, ShopID int64,
+	ctx context.Context, RefIDs []dot.ID, ShopID dot.ID,
 ) (*inventory.GetInventoryVouchersResponse, error) {
 	inventoryVouchers, err := q.InventoryVoucherStore(ctx).RefIDs(RefIDs...).ShopID(ShopID).ListInventoryVoucher()
 	if err != nil {
@@ -115,7 +116,7 @@ func (q *InventoryQueryService) GetInventoryVouchersByRefIDs(
 	return &inventory.GetInventoryVouchersResponse{InventoryVoucher: inventoryVouchers}, nil
 }
 
-func (q *InventoryQueryService) GetInventoryVoucherByReference(ctx context.Context, ShopID int64, refID int64, refType inventory.InventoryRefType) (*inventory.GetInventoryVoucherByReferenceResponse, error) {
+func (q *InventoryQueryService) GetInventoryVoucherByReference(ctx context.Context, ShopID dot.ID, refID dot.ID, refType inventory.InventoryRefType) (*inventory.GetInventoryVoucherByReferenceResponse, error) {
 	result, err := q.InventoryVoucherStore(ctx).ShopID(ShopID).RefID(refID).RefType(string(refType)).ListInventoryVoucher()
 	if err != nil {
 		return nil, err

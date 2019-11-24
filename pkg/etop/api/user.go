@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"net/url"
-	"strconv"
 	"strings"
 	"time"
 
@@ -32,6 +31,7 @@ import (
 	"etop.vn/backend/pkg/integration/email"
 	"etop.vn/backend/pkg/integration/sms"
 	"etop.vn/capi"
+	"etop.vn/capi/dot"
 	"etop.vn/common/l"
 )
 
@@ -219,7 +219,7 @@ func (s *UserService) Register(ctx context.Context, r *RegisterEndpoint) error {
 		if user.Email != "" {
 			// unexpected: if both identifier exist, it must not be a stub!
 			return cm.Error(cm.Internal, "", nil).
-				Log("unexpected condition (1)", l.Int64("user_id", user.ID))
+				Log("unexpected condition (1)", l.ID("user_id", user.ID))
 		}
 		hashpwd = userByPhone.UserInternal.Hashpwd
 
@@ -238,7 +238,7 @@ func (s *UserService) Register(ctx context.Context, r *RegisterEndpoint) error {
 		if user.Phone != "" {
 			// unexpected: if both identifier exist, it must not be a stub!
 			return cm.Error(cm.Internal, "", nil).
-				Log("unexpected condition (2)", l.Int64("user_id", user.ID))
+				Log("unexpected condition (2)", l.ID("user_id", user.ID))
 		}
 		hashpwd = userByPhone.UserInternal.Hashpwd
 
@@ -569,7 +569,7 @@ func (s *UserService) SwitchAccount(ctx context.Context, r *SwitchAccountEndpoin
 	return err
 }
 
-func (s *UserService) CreateSessionResponse(ctx context.Context, claim *claims.ClaimInfo, token string, userID int64, user *model.User, preferAccountID int64, preferAccountType int, adminID int64) (*pbetop.AccessTokenResponse, error) {
+func (s *UserService) CreateSessionResponse(ctx context.Context, claim *claims.ClaimInfo, token string, userID dot.ID, user *model.User, preferAccountID dot.ID, preferAccountType int, adminID dot.ID) (*pbetop.AccessTokenResponse, error) {
 	resp, err := s.CreateLoginResponse(ctx, claim, token, userID, user, preferAccountID, preferAccountType, false, adminID)
 	if err != nil {
 		return nil, err
@@ -586,12 +586,12 @@ func (s *UserService) CreateSessionResponse(ctx context.Context, claim *claims.C
 	}, nil
 }
 
-func (s *UserService) CreateLoginResponse(ctx context.Context, claim *claims.ClaimInfo, token string, userID int64, user *model.User, preferAccountID int64, preferAccountType int, generateAllTokens bool, adminID int64) (*pbetop.LoginResponse, error) {
+func (s *UserService) CreateLoginResponse(ctx context.Context, claim *claims.ClaimInfo, token string, userID dot.ID, user *model.User, preferAccountID dot.ID, preferAccountType int, generateAllTokens bool, adminID dot.ID) (*pbetop.LoginResponse, error) {
 	resp, _, err := s.CreateLoginResponse2(ctx, claim, token, userID, user, preferAccountID, preferAccountType, generateAllTokens, adminID)
 	return resp, err
 }
 
-func (s *UserService) CreateLoginResponse2(ctx context.Context, claim *claims.ClaimInfo, token string, userID int64, user *model.User, preferAccountID int64, preferAccountType int, generateAllTokens bool, adminID int64) (_ *pbetop.LoginResponse, respShop *model.Shop, _ error) {
+func (s *UserService) CreateLoginResponse2(ctx context.Context, claim *claims.ClaimInfo, token string, userID dot.ID, user *model.User, preferAccountID dot.ID, preferAccountType int, generateAllTokens bool, adminID dot.ID) (_ *pbetop.LoginResponse, respShop *model.Shop, _ error) {
 
 	// Retrieve user info
 	if user != nil && user.ID != userID {
@@ -616,7 +616,7 @@ func (s *UserService) CreateLoginResponse2(ctx context.Context, claim *claims.Cl
 	}
 
 	var currentAccount *pbetop.LoginAccount
-	var currentAccountID int64
+	var currentAccountID dot.ID
 	availableAccounts := make([]*pbetop.LoginAccount, len(accQuery.Result))
 	for i, accUserX := range accQuery.Result {
 		availableAccounts[i] = convertpb.PbLoginAccount(accUserX)
@@ -662,7 +662,7 @@ func (s *UserService) CreateLoginResponse2(ctx context.Context, claim *claims.Cl
 	}
 
 	// MixedAccount
-	accountIDs := make(map[int64]int)
+	accountIDs := make(map[dot.ID]int)
 	for _, acc := range availableAccounts {
 		accountIDs[acc.Id] = int(acc.Type)
 	}
@@ -1130,8 +1130,8 @@ func (s *UserService) sendSTokenEmail(ctx context.Context, r *SendSTokenEmailEnd
 	return r, nil
 }
 
-func getToken(usage string, userID int64) (*auth.Token, string, map[string]string) {
-	tokStr := strconv.FormatInt(userID, 10)
+func getToken(usage string, userID dot.ID) (*auth.Token, string, map[string]string) {
+	tokStr := userID.String()
 	var v map[string]string
 	var code string
 
@@ -1145,8 +1145,8 @@ func getToken(usage string, userID int64) (*auth.Token, string, map[string]strin
 	return nil, "", nil
 }
 
-func generateToken(usage string, userID int64, generate bool, ttl int, extra string) (*auth.Token, string, map[string]string, error) {
-	tokStr := strconv.FormatInt(userID, 10)
+func generateToken(usage string, userID dot.ID, generate bool, ttl int, extra string) (*auth.Token, string, map[string]string, error) {
+	tokStr := userID.String()
 	tok, code, v := getToken(usage, userID)
 	if code != "" {
 		return tok, code, v, nil

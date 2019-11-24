@@ -7,18 +7,19 @@ import (
 	"etop.vn/api/main/etop"
 	"etop.vn/api/meta"
 	"etop.vn/api/shopping"
+	"etop.vn/capi/dot"
 )
 
 // +gen:api
 
 type Aggregate interface {
 	CreateInvitation(ctx context.Context, _ *CreateInvitationArgs) (*Invitation, error)
-	AcceptInvitation(ctx context.Context, userID int64, token string) (updated int, _ error)
-	RejectInvitation(ctx context.Context, userID int64, token string) (updated int, _ error)
+	AcceptInvitation(ctx context.Context, userID dot.ID, token string) (updated int, _ error)
+	RejectInvitation(ctx context.Context, userID dot.ID, token string) (updated int, _ error)
 }
 
 type QueryService interface {
-	GetInvitation(ctx context.Context, ID int64) (*Invitation, error)
+	GetInvitation(ctx context.Context, ID dot.ID) (*Invitation, error)
 	GetInvitationByToken(ctx context.Context, token string) (*Invitation, error)
 
 	ListInvitations(context.Context, *shopping.ListQueryShopArgs) (*InvitationsResponse, error)
@@ -44,10 +45,10 @@ type ListInvitationsByEmailArgs struct {
 
 // +convert:create=Invitation
 type CreateInvitationArgs struct {
-	AccountID int64
+	AccountID dot.ID
 	Email     string
 	Roles     []Role
 	Status    etop.Status3
-	InvitedBy int64
+	InvitedBy dot.ID
 	CreatedBy time.Time
 }

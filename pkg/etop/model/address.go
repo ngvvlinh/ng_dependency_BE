@@ -1,13 +1,15 @@
 package model
 
+import "etop.vn/capi/dot"
+
 type GetAddressQuery struct {
-	AddressID int64
+	AddressID dot.ID
 
 	Result *Address
 }
 
 type GetAddressesQuery struct {
-	AccountID int64
+	AccountID dot.ID
 
 	Result struct {
 		Addresses []*Address
@@ -25,6 +27,6 @@ type UpdateAddressCommand struct {
 }
 
 type DeleteAddressCommand struct {
-	ID        int64
-	AccountID int64
+	ID        dot.ID
+	AccountID dot.ID
 }

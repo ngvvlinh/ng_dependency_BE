@@ -9,6 +9,7 @@ import (
 	"etop.vn/backend/pkg/common/cmsql"
 	"etop.vn/backend/pkg/common/sqlstore"
 	"etop.vn/backend/pkg/common/validate"
+	"etop.vn/capi/dot"
 )
 
 type VtigerContactStoreFactory func(context.Context) *VtigerContactStore
@@ -53,7 +54,7 @@ func (v *VtigerContactStore) ByPhone(phone string) *VtigerContactStore {
 	return v
 }
 
-func (v *VtigerContactStore) ByEtopUserID(id int64) *VtigerContactStore {
+func (v *VtigerContactStore) ByEtopUserID(id dot.ID) *VtigerContactStore {
 	v.preds = append(v.preds, v.ft.ByEtopUserID(id))
 	return v
 }

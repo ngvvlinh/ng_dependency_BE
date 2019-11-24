@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"etop.vn/api/meta"
+	"etop.vn/capi/dot"
 )
 
 // +gen:api
@@ -40,7 +41,7 @@ type VhtCallLog struct {
 	RecordingPath   string
 	RecordingUrl    string
 	RecordFileSize  int32
-	EtopAccountID   int64
+	EtopAccountID   dot.ID
 	VtigerAccountID string
 }
 

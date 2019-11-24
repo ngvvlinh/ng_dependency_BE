@@ -9,6 +9,7 @@ import (
 
 	meta "etop.vn/api/meta"
 	capi "etop.vn/capi"
+	dot "etop.vn/capi/dot"
 )
 
 type Command interface{ command() }
@@ -38,7 +39,7 @@ func (c QueryBus) DispatchAll(ctx context.Context, msgs ...Query) error {
 }
 
 type CreateAffiliateReferralCodeCommand struct {
-	AffiliateAccountID int64
+	AffiliateAccountID dot.ID
 	Code               string
 
 	Result *AffiliateReferralCode `json:"-"`
@@ -50,8 +51,8 @@ func (h AggregateHandler) HandleCreateAffiliateReferralCode(ctx context.Context,
 }
 
 type CreateOrUpdateCommissionSettingCommand struct {
-	ProductID   int64
-	AccountID   int64
+	ProductID   dot.ID
+	AccountID   dot.ID
 	Amount      int32
 	Unit        string
 	Type        string
@@ -67,8 +68,8 @@ func (h AggregateHandler) HandleCreateOrUpdateCommissionSetting(ctx context.Cont
 }
 
 type CreateOrUpdateSupplyCommissionSettingCommand struct {
-	ShopID                   int64
-	ProductID                int64
+	ShopID                   dot.ID
+	ProductID                dot.ID
 	Level1DirectCommission   int32
 	Level1IndirectCommission int32
 	Level2DirectCommission   int32
@@ -90,7 +91,7 @@ func (h AggregateHandler) HandleCreateOrUpdateSupplyCommissionSetting(ctx contex
 }
 
 type CreateOrUpdateUserReferralCommand struct {
-	UserID           int64
+	UserID           dot.ID
 	ReferralCode     string
 	SaleReferralCode string
 
@@ -103,8 +104,8 @@ func (h AggregateHandler) HandleCreateOrUpdateUserReferral(ctx context.Context, 
 }
 
 type CreateProductPromotionCommand struct {
-	ShopID      int64
-	ProductID   int64
+	ShopID      dot.ID
+	ProductID   dot.ID
 	Amount      int32
 	Code        string
 	Description string
@@ -121,7 +122,7 @@ func (h AggregateHandler) HandleCreateProductPromotion(ctx context.Context, msg 
 }
 
 type OnTradingOrderCreatedCommand struct {
-	OrderID      int64
+	OrderID      dot.ID
 	ReferralCode string
 
 	Result struct {
@@ -134,7 +135,7 @@ func (h AggregateHandler) HandleOnTradingOrderCreated(ctx context.Context, msg *
 
 type OrderPaymentSuccessCommand struct {
 	EventMeta meta.EventMeta
-	OrderID   int64
+	OrderID   dot.ID
 
 	Result struct {
 	} `json:"-"`
@@ -145,9 +146,9 @@ func (h AggregateHandler) HandleOrderPaymentSuccess(ctx context.Context, msg *Or
 }
 
 type TradingOrderCreatingCommand struct {
-	ProductIDs   []int64
+	ProductIDs   []dot.ID
 	ReferralCode string
-	UserID       int64
+	UserID       dot.ID
 
 	Result struct {
 	} `json:"-"`
@@ -158,7 +159,7 @@ func (h AggregateHandler) HandleTradingOrderCreating(ctx context.Context, msg *T
 }
 
 type UpdateProductPromotionCommand struct {
-	ID          int64
+	ID          dot.ID
 	Amount      int32
 	Unit        string
 	Code        string
@@ -186,7 +187,7 @@ func (h QueryServiceHandler) HandleGetAffiliateAccountReferralByCode(ctx context
 }
 
 type GetAffiliateAccountReferralCodesQuery struct {
-	AffiliateAccountID int64
+	AffiliateAccountID dot.ID
 
 	Result []*AffiliateReferralCode `json:"-"`
 }
@@ -197,8 +198,8 @@ func (h QueryServiceHandler) HandleGetAffiliateAccountReferralCodes(ctx context.
 }
 
 type GetCommissionByProductIDQuery struct {
-	AccountID int64
-	ProductID int64
+	AccountID dot.ID
+	ProductID dot.ID
 
 	Result *CommissionSetting `json:"-"`
 }
@@ -209,8 +210,8 @@ func (h QueryServiceHandler) HandleGetCommissionByProductID(ctx context.Context,
 }
 
 type GetCommissionByProductIDsQuery struct {
-	AccountID  int64
-	ProductIDs []int64
+	AccountID  dot.ID
+	ProductIDs []dot.ID
 
 	Result []*CommissionSetting `json:"-"`
 }
@@ -221,7 +222,7 @@ func (h QueryServiceHandler) HandleGetCommissionByProductIDs(ctx context.Context
 }
 
 type GetReferralsByReferralIDQuery struct {
-	ID int64
+	ID dot.ID
 
 	Result []*UserReferral `json:"-"`
 }
@@ -232,7 +233,7 @@ func (h QueryServiceHandler) HandleGetReferralsByReferralID(ctx context.Context,
 }
 
 type GetSellerCommissionsQuery struct {
-	SellerID int64
+	SellerID dot.ID
 	Paging   meta.Paging
 	Filters  meta.Filters
 
@@ -245,8 +246,8 @@ func (h QueryServiceHandler) HandleGetSellerCommissions(ctx context.Context, msg
 }
 
 type GetShopProductPromotionQuery struct {
-	ShopID    int64
-	ProductID int64
+	ShopID    dot.ID
+	ProductID dot.ID
 
 	Result *ProductPromotion `json:"-"`
 }
@@ -257,8 +258,8 @@ func (h QueryServiceHandler) HandleGetShopProductPromotion(ctx context.Context, 
 }
 
 type GetShopProductPromotionByProductIDsQuery struct {
-	ShopID     int64
-	ProductIDs []int64
+	ShopID     dot.ID
+	ProductIDs []dot.ID
 
 	Result []*ProductPromotion `json:"-"`
 }
@@ -269,8 +270,8 @@ func (h QueryServiceHandler) HandleGetShopProductPromotionByProductIDs(ctx conte
 }
 
 type GetSupplyCommissionSettingsByProductIDsQuery struct {
-	ShopID     int64
-	ProductIDs []int64
+	ShopID     dot.ID
+	ProductIDs []dot.ID
 
 	Result []*SupplyCommissionSetting `json:"-"`
 }
@@ -281,7 +282,7 @@ func (h QueryServiceHandler) HandleGetSupplyCommissionSettingsByProductIDs(ctx c
 }
 
 type ListShopProductPromotionsQuery struct {
-	ShopID  int64
+	ShopID  dot.ID
 	Paging  meta.Paging
 	Filters meta.Filters
 

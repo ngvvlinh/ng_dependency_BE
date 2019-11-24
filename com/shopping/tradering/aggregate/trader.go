@@ -7,6 +7,7 @@ import (
 	"etop.vn/backend/com/shopping/tradering/sqlstore"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/cmsql"
+	"etop.vn/capi/dot"
 )
 
 var _ tradering.Aggregate = &TraderAgg{}
@@ -29,7 +30,7 @@ func (q *TraderAgg) MessageBus() tradering.CommandBus {
 	return tradering.NewAggregateHandler(q).RegisterHandlers(b)
 }
 
-func (a *TraderAgg) DeleteTrader(ctx context.Context, id int64, shopID int64,
+func (a *TraderAgg) DeleteTrader(ctx context.Context, id dot.ID, shopID dot.ID,
 ) (deleted int, _ error) {
 	_, err := a.store(ctx).ShopID(shopID).ID(id).GetTraderDB()
 	if err != nil {

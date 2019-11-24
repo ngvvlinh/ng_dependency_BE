@@ -13,6 +13,7 @@ import (
 	"etop.vn/backend/pkg/common/cmsql"
 	"etop.vn/backend/pkg/common/conversion"
 	"etop.vn/capi"
+	"etop.vn/capi/dot"
 )
 
 var _ carrying.Aggregate = &CarrierAggregate{}
@@ -65,7 +66,7 @@ func (a *CarrierAggregate) UpdateCarrier(
 }
 
 func (a *CarrierAggregate) DeleteCarrier(
-	ctx context.Context, id int64, shopID int64,
+	ctx context.Context, id dot.ID, shopID dot.ID,
 ) (deleted int, _ error) {
 	deleted, err := a.store(ctx).ID(id).ShopID(shopID).SoftDelete()
 	event := &tradering.TraderDeletedEvent{

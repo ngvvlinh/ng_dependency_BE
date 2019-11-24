@@ -11,6 +11,7 @@ import (
 	"etop.vn/backend/pkg/common/cmsql"
 	cc "etop.vn/backend/pkg/common/config"
 	"etop.vn/backend/pkg/etop/model"
+	"etop.vn/capi/dot"
 	"etop.vn/common/l"
 )
 
@@ -36,10 +37,9 @@ func main() {
 		ll.Fatal("Error while connecting database", l.Error(err))
 	}
 
-	mapShopIDsHaveLedgers := make(map[int64]bool)
+	mapShopIDsHaveLedgers := make(map[dot.ID]bool)
 	{
-		fromID := int64(0)
-
+		var fromID dot.ID
 		for {
 			shopLedgers, err := scanShopLedgersTypeCash(fromID)
 			if err != nil {
@@ -56,10 +56,9 @@ func main() {
 	}
 
 	// (Map) shopID (userID belongs to shopID) that need to create default shop ledger
-	mapshopIDUserID := make(map[int64]int64)
+	mapshopIDUserID := make(map[dot.ID]dot.ID)
 	{
-		fromID := int64(0)
-
+		var fromID dot.ID
 		for {
 			shops, err := scanShops(fromID)
 			if err != nil {
@@ -69,7 +68,6 @@ func main() {
 				break
 			}
 			fromID = shops[len(shops)-1].ID
-
 			for _, shop := range shops {
 				if _, ok := mapShopIDsHaveLedgers[shop.ID]; !ok {
 					mapshopIDUserID[shop.ID] = shop.OwnerID
@@ -81,7 +79,7 @@ func main() {
 	{
 		count, errCount, createdCount := len(mapshopIDUserID), 0, 0
 		maxGoroutines := 8
-		ch := make(chan int64, maxGoroutines)
+		ch := make(chan dot.ID, maxGoroutines)
 		chInsert := make(chan error, maxGoroutines)
 		for key, value := range mapshopIDUserID {
 			ch <- key
@@ -121,7 +119,7 @@ func main() {
 	}
 }
 
-func scanShops(fromID int64) (shops model.Shops, err error) {
+func scanShops(fromID dot.ID) (shops model.Shops, err error) {
 	err = db.
 		Where("id > ?", fromID).
 		OrderBy("id").
@@ -130,7 +128,7 @@ func scanShops(fromID int64) (shops model.Shops, err error) {
 	return
 }
 
-func scanShopLedgersTypeCash(fromID int64) (shopLedgers ledgeringmodel.ShopLedgers, err error) {
+func scanShopLedgersTypeCash(fromID dot.ID) (shopLedgers ledgeringmodel.ShopLedgers, err error) {
 	err = db.
 		Where("id > ? and type = ?", fromID, string(ledgering.LedgerTypeCash)).
 		OrderBy("id").

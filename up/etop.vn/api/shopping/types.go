@@ -1,19 +1,22 @@
 package shopping
 
-import "etop.vn/api/meta"
+import (
+	"etop.vn/api/meta"
+	"etop.vn/capi/dot"
+)
 
 type IDQueryShopArg struct {
-	ID     int64
-	ShopID int64
+	ID     dot.ID
+	ShopID dot.ID
 }
 
 type IDsQueryShopArgs struct {
-	IDs    []int64
-	ShopID int64
+	IDs    []dot.ID
+	ShopID dot.ID
 }
 
 type ListQueryShopArgs struct {
-	ShopID  int64
+	ShopID  dot.ID
 	Paging  meta.Paging
 	Filters meta.Filters
 }

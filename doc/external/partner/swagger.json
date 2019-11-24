@@ -468,7 +468,7 @@
       "type": "object",
       "properties": {
         "id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "image_url": {
@@ -495,7 +495,7 @@
           }
         },
         "id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         }
       }
@@ -513,7 +513,7 @@
           "type": "string"
         },
         "id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         }
       }
@@ -645,7 +645,7 @@
       "type": "object",
       "properties": {
         "id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         }
       }
@@ -720,14 +720,14 @@
           "$ref": "#/definitions/wxStatus"
         },
         "id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "include_insurance": {
           "type": "boolean"
         },
         "order_id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "pickup_address": {
@@ -765,7 +765,7 @@
           "$ref": "#/definitions/wyStatus"
         },
         "shop_id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "status": {
@@ -788,7 +788,7 @@
       "type": "object",
       "properties": {
         "id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "shipping_code": {
@@ -953,7 +953,7 @@
           "$ref": "#/definitions/wyStatus"
         },
         "id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "lines": {
@@ -983,7 +983,7 @@
           "$ref": "#/definitions/oyOrderAddress"
         },
         "shop_id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "status": {
@@ -1073,7 +1073,7 @@
           "type": "string"
         },
         "id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         }
       }
@@ -1099,7 +1099,7 @@
           "format": "int32"
         },
         "product_id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "product_name": {
@@ -1114,7 +1114,7 @@
           "format": "int32"
         },
         "variant_id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         }
       }
@@ -1183,7 +1183,7 @@
           "type": "string"
         },
         "id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "image_url": {
@@ -1289,7 +1289,7 @@
           }
         },
         "id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "metadata": {
@@ -1414,7 +1414,7 @@
           "type": "string"
         },
         "shop_id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         }
       }

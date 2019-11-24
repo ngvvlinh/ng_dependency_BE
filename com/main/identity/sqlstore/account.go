@@ -12,6 +12,7 @@ import (
 	"etop.vn/backend/pkg/common/sq"
 	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/backend/pkg/etop/sqlstore"
+	"etop.vn/capi/dot"
 )
 
 type AccountStoreFactory func(context.Context) *AccountStore
@@ -32,22 +33,22 @@ type AccountStore struct {
 	affiliateFt AffiliateFilters
 }
 
-func (s *AccountStore) ShopByID(id int64) *AccountStore {
+func (s *AccountStore) ShopByID(id dot.ID) *AccountStore {
 	s.preds = append(s.preds, s.shopFt.ByID(id))
 	return s
 }
 
-func (s *AccountStore) AffiliateByID(id int64) *AccountStore {
+func (s *AccountStore) AffiliateByID(id dot.ID) *AccountStore {
 	s.preds = append(s.preds, s.affiliateFt.ByID(id))
 	return s
 }
 
-func (s *AccountStore) AffiliatesByOwnerID(id int64) *AccountStore {
+func (s *AccountStore) AffiliatesByOwnerID(id dot.ID) *AccountStore {
 	s.preds = append(s.preds, s.affiliateFt.ByOwnerID(id))
 	return s
 }
 
-func (s *AccountStore) AffiliatesByIDs(ids ...int64) *AccountStore {
+func (s *AccountStore) AffiliatesByIDs(ids ...dot.ID) *AccountStore {
 	s.preds = append(s.preds, sq.In("id", ids))
 	return s
 }
@@ -88,7 +89,7 @@ func (s *AccountStore) GetAffiliates() ([]*identity.Affiliate, error) {
 
 type CreateAffiliateArgs struct {
 	Name        string
-	OwnerID     int64
+	OwnerID     dot.ID
 	Phone       string
 	Email       string
 	IsTest      bool
@@ -133,8 +134,8 @@ func (s *AccountStore) CreateAffiliate(args CreateAffiliateArgs) (*identity.Affi
 }
 
 type UpdateAffiliateArgs struct {
-	ID          int64
-	OwnerID     int64
+	ID          dot.ID
+	OwnerID     dot.ID
 	Phone       string
 	Email       string
 	Name        string
@@ -160,8 +161,8 @@ func (s *AccountStore) UpdateAffiliate(args UpdateAffiliateArgs) (*identity.Affi
 }
 
 type DeleteAffiliateArgs struct {
-	ID      int64
-	OwnerID int64
+	ID      dot.ID
+	OwnerID dot.ID
 }
 
 func (s *AccountStore) DeleteAffiliate(args DeleteAffiliateArgs) error {

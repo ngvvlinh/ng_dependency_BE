@@ -13,6 +13,7 @@ import (
 	"etop.vn/backend/pkg/common/conversion"
 	"etop.vn/backend/pkg/common/sq"
 	"etop.vn/backend/pkg/common/sqlstore"
+	"etop.vn/capi/dot"
 )
 
 type PurchaseOrderStoreFactory func(ctx context.Context) *PurchaseOrderStore
@@ -57,17 +58,17 @@ func (s *PurchaseOrderStore) Filters(filters meta.Filters) *PurchaseOrderStore {
 	return s
 }
 
-func (s *PurchaseOrderStore) ID(id int64) *PurchaseOrderStore {
+func (s *PurchaseOrderStore) ID(id dot.ID) *PurchaseOrderStore {
 	s.preds = append(s.preds, s.ft.ByID(id))
 	return s
 }
 
-func (s *PurchaseOrderStore) IDs(ids ...int64) *PurchaseOrderStore {
+func (s *PurchaseOrderStore) IDs(ids ...dot.ID) *PurchaseOrderStore {
 	s.preds = append(s.preds, sq.PrefixedIn(&s.ft.prefix, "id", ids))
 	return s
 }
 
-func (s *PurchaseOrderStore) ShopID(id int64) *PurchaseOrderStore {
+func (s *PurchaseOrderStore) ShopID(id dot.ID) *PurchaseOrderStore {
 	s.preds = append(s.preds, s.ft.ByShopID(id))
 	return s
 }
@@ -82,7 +83,7 @@ func (s *PurchaseOrderStore) Statuses(statuses ...etop.Status3) *PurchaseOrderSt
 	return s
 }
 
-func (s *PurchaseOrderStore) SupplierIDs(supplierIDs ...int64) *PurchaseOrderStore {
+func (s *PurchaseOrderStore) SupplierIDs(supplierIDs ...dot.ID) *PurchaseOrderStore {
 	s.preds = append(s.preds, sq.PrefixedIn(&s.ft.prefix, "supplier_id", supplierIDs))
 	return s
 }

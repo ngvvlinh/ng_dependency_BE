@@ -14,6 +14,7 @@ import (
 	"etop.vn/backend/pkg/common/cmapi"
 	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/backend/pkg/integration/bank"
+	"etop.vn/capi/dot"
 )
 
 func CompanyInfoToModel(e *etop.CompanyInfo) *model.CompanyInfo {
@@ -318,10 +319,9 @@ func PbProvinces(items []*location.Province) []*etop.Province {
 
 func PbProvince(m *location.Province) *etop.Province {
 	return &etop.Province{
-		Code:       m.Code,
-		Name:       m.Name,
-		Region:     m.Region.Name(),
-		RegionCode: int64(m.Region),
+		Code:   m.Code,
+		Name:   m.Name,
+		Region: m.Region.Name(),
 	}
 }
 
@@ -550,7 +550,7 @@ func PbAddressNoteToModel(item *etop.AddressNote) *model.AddressNote {
 	}
 }
 
-func PbCreateAddressToModel(accountID int64, p *etop.CreateAddressRequest) (*model.Address, error) {
+func PbCreateAddressToModel(accountID dot.ID, p *etop.CreateAddressRequest) (*model.Address, error) {
 	address := &etop.Address{
 		FullName:     p.FullName,
 		FirstName:    p.FirstName,
@@ -580,7 +580,7 @@ func PbCreateAddressToModel(accountID int64, p *etop.CreateAddressRequest) (*mod
 	return res, nil
 }
 
-func PbUpdateAddressToModel(accountID int64, p *etop.UpdateAddressRequest) (*model.Address, error) {
+func PbUpdateAddressToModel(accountID dot.ID, p *etop.UpdateAddressRequest) (*model.Address, error) {
 	address := &etop.Address{
 		FullName:     p.FullName,
 		FirstName:    p.FirstName,
@@ -618,7 +618,7 @@ func PbCreditExtended(item *model.CreditExtended) *etop.Credit {
 
 	return &etop.Credit{
 		Id:        item.ID,
-		Amount:    int64(item.Amount),
+		Amount:    item.Amount,
 		ShopId:    item.ShopID,
 		Type:      item.Type,
 		Shop:      PbShop(item.Shop),

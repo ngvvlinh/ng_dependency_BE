@@ -8,10 +8,11 @@ import (
 	"strings"
 	"unsafe"
 
-	cm "etop.vn/backend/pkg/common"
-
 	"github.com/asaskevich/govalidator"
 	"golang.org/x/text/unicode/norm"
+
+	cm "etop.vn/backend/pkg/common"
+	"etop.vn/capi/dot"
 )
 
 const (
@@ -223,14 +224,14 @@ func NormalizeExternalCode(s string) string {
 	return s
 }
 
-func ParseInt64ID(s string) (int64, bool) {
+func ParseInt64ID(s string) (dot.ID, bool) {
 	i, _ := strconv.ParseInt(s, 10, 64)
 
 	// our id has 19 characters
 	if i <= 1e18 {
 		return 0, false
 	}
-	return i, true
+	return dot.ID(i), true
 }
 
 // URLSlug ...

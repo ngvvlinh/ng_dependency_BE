@@ -80,7 +80,7 @@ func (s TokenStore) generateWithClaim(v *claims.Claim, ttl int) (*auth.Token, er
 	if ttl == 0 {
 		ttl = DefaultAccessTokenTTL
 	}
-	v.CAS = cm.NewID()
+	v.CAS = cm.RandomInt64()
 	t, err := s.auth.GenerateWithValue(t, ttl)
 	return t, err
 }
@@ -122,7 +122,7 @@ func (s TokenStore) UpdateSession(tokStr string, values map[string]string) error
 		ll.Error("Invalid access token", l.Error(err))
 		return err
 	}
-	v.CAS = cm.NewID()
+	v.CAS = cm.RandomInt64()
 	if v.Extra == nil {
 		v.Extra = make(map[string]string)
 	}

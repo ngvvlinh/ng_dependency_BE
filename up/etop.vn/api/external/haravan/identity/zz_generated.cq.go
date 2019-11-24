@@ -9,6 +9,7 @@ import (
 
 	meta "etop.vn/api/meta"
 	capi "etop.vn/capi"
+	dot "etop.vn/capi/dot"
 )
 
 type Command interface{ command() }
@@ -38,7 +39,7 @@ func (c QueryBus) DispatchAll(ctx context.Context, msgs ...Query) error {
 }
 
 type ConnectCarrierServiceExternalAccountHaravanCommand struct {
-	ShopID int64
+	ShopID dot.ID
 
 	Result *meta.Empty `json:"-"`
 }
@@ -49,7 +50,7 @@ func (h AggregateHandler) HandleConnectCarrierServiceExternalAccountHaravan(ctx 
 }
 
 type CreateExternalAccountHaravanCommand struct {
-	ShopID      int64
+	ShopID      dot.ID
 	Subdomain   string
 	RedirectURI string
 	Code        string
@@ -63,7 +64,7 @@ func (h AggregateHandler) HandleCreateExternalAccountHaravan(ctx context.Context
 }
 
 type DeleteConnectedCarrierServiceExternalAccountHaravanCommand struct {
-	ShopID int64
+	ShopID dot.ID
 
 	Result *meta.Empty `json:"-"`
 }
@@ -74,7 +75,7 @@ func (h AggregateHandler) HandleDeleteConnectedCarrierServiceExternalAccountHara
 }
 
 type UpdateExternalAccountHaravanTokenCommand struct {
-	ShopID      int64
+	ShopID      dot.ID
 	Subdomain   string
 	RedirectURI string
 	Code        string
@@ -88,7 +89,7 @@ func (h AggregateHandler) HandleUpdateExternalAccountHaravanToken(ctx context.Co
 }
 
 type GetExternalAccountHaravanByShopIDQuery struct {
-	ShopID int64
+	ShopID dot.ID
 
 	Result *ExternalAccountHaravan `json:"-"`
 }

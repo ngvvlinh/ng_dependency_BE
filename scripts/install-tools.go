@@ -5,7 +5,6 @@
 package scripts
 
 import (
-	_ "github.com/gogo/protobuf/protoc-gen-gogo"
 	_ "github.com/jteeuwen/go-bindata/go-bindata"
 	_ "golang.org/x/tools/cmd/goimports"
 )

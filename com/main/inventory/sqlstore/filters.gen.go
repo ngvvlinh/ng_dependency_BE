@@ -7,6 +7,7 @@ import (
 
 	"etop.vn/api/main/etop"
 	"etop.vn/backend/pkg/common/sq"
+	"etop.vn/capi/dot"
 )
 
 type InventoryVariantFilters struct{ prefix string }
@@ -23,7 +24,7 @@ func (ft InventoryVariantFilters) Prefix() string {
 	return ft.prefix
 }
 
-func (ft *InventoryVariantFilters) ByShopID(ShopID int64) *sq.ColumnFilter {
+func (ft *InventoryVariantFilters) ByShopID(ShopID dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "shop_id",
@@ -32,7 +33,7 @@ func (ft *InventoryVariantFilters) ByShopID(ShopID int64) *sq.ColumnFilter {
 	}
 }
 
-func (ft *InventoryVariantFilters) ByShopIDPtr(ShopID *int64) *sq.ColumnFilterPtr {
+func (ft *InventoryVariantFilters) ByShopIDPtr(ShopID *dot.ID) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "shop_id",
@@ -42,7 +43,7 @@ func (ft *InventoryVariantFilters) ByShopIDPtr(ShopID *int64) *sq.ColumnFilterPt
 	}
 }
 
-func (ft *InventoryVariantFilters) ByVariantID(VariantID int64) *sq.ColumnFilter {
+func (ft *InventoryVariantFilters) ByVariantID(VariantID dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "variant_id",
@@ -51,7 +52,7 @@ func (ft *InventoryVariantFilters) ByVariantID(VariantID int64) *sq.ColumnFilter
 	}
 }
 
-func (ft *InventoryVariantFilters) ByVariantIDPtr(VariantID *int64) *sq.ColumnFilterPtr {
+func (ft *InventoryVariantFilters) ByVariantIDPtr(VariantID *dot.ID) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "variant_id",
@@ -170,7 +171,7 @@ func (ft InventoryVoucherFilters) Prefix() string {
 	return ft.prefix
 }
 
-func (ft *InventoryVoucherFilters) ByShopID(ShopID int64) *sq.ColumnFilter {
+func (ft *InventoryVoucherFilters) ByShopID(ShopID dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "shop_id",
@@ -179,7 +180,7 @@ func (ft *InventoryVoucherFilters) ByShopID(ShopID int64) *sq.ColumnFilter {
 	}
 }
 
-func (ft *InventoryVoucherFilters) ByShopIDPtr(ShopID *int64) *sq.ColumnFilterPtr {
+func (ft *InventoryVoucherFilters) ByShopIDPtr(ShopID *dot.ID) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "shop_id",
@@ -189,7 +190,7 @@ func (ft *InventoryVoucherFilters) ByShopIDPtr(ShopID *int64) *sq.ColumnFilterPt
 	}
 }
 
-func (ft *InventoryVoucherFilters) ByID(ID int64) *sq.ColumnFilter {
+func (ft *InventoryVoucherFilters) ByID(ID dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "id",
@@ -198,7 +199,7 @@ func (ft *InventoryVoucherFilters) ByID(ID int64) *sq.ColumnFilter {
 	}
 }
 
-func (ft *InventoryVoucherFilters) ByIDPtr(ID *int64) *sq.ColumnFilterPtr {
+func (ft *InventoryVoucherFilters) ByIDPtr(ID *dot.ID) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "id",
@@ -208,7 +209,7 @@ func (ft *InventoryVoucherFilters) ByIDPtr(ID *int64) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft *InventoryVoucherFilters) ByCreatedBy(CreatedBy int64) *sq.ColumnFilter {
+func (ft *InventoryVoucherFilters) ByCreatedBy(CreatedBy dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "created_by",
@@ -227,7 +228,7 @@ func (ft *InventoryVoucherFilters) ByCreatedByPtr(CreatedBy *int64) *sq.ColumnFi
 	}
 }
 
-func (ft *InventoryVoucherFilters) ByUpdatedBy(UpdatedBy int64) *sq.ColumnFilter {
+func (ft *InventoryVoucherFilters) ByUpdatedBy(UpdatedBy dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "updated_by",
@@ -322,7 +323,7 @@ func (ft *InventoryVoucherFilters) ByNotePtr(Note *string) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft *InventoryVoucherFilters) ByTraderID(TraderID int64) *sq.ColumnFilter {
+func (ft *InventoryVoucherFilters) ByTraderID(TraderID dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "trader_id",
@@ -331,7 +332,7 @@ func (ft *InventoryVoucherFilters) ByTraderID(TraderID int64) *sq.ColumnFilter {
 	}
 }
 
-func (ft *InventoryVoucherFilters) ByTraderIDPtr(TraderID *int64) *sq.ColumnFilterPtr {
+func (ft *InventoryVoucherFilters) ByTraderIDPtr(TraderID *dot.ID) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "trader_id",
@@ -379,7 +380,7 @@ func (ft *InventoryVoucherFilters) ByTypePtr(Type *string) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft *InventoryVoucherFilters) ByRefID(RefID int64) *sq.ColumnFilter {
+func (ft *InventoryVoucherFilters) ByRefID(RefID dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "ref_id",
@@ -388,7 +389,7 @@ func (ft *InventoryVoucherFilters) ByRefID(RefID int64) *sq.ColumnFilter {
 	}
 }
 
-func (ft *InventoryVoucherFilters) ByRefIDPtr(RefID *int64) *sq.ColumnFilterPtr {
+func (ft *InventoryVoucherFilters) ByRefIDPtr(RefID *dot.ID) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "ref_id",

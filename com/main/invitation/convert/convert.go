@@ -9,6 +9,7 @@ import (
 	"etop.vn/backend/com/main/invitation/model"
 	_ "etop.vn/backend/com/main/invitation/model"
 	cm "etop.vn/backend/pkg/common"
+	"etop.vn/capi/dot"
 )
 
 // +gen:convert: etop.vn/backend/com/main/invitation/model -> etop.vn/api/main/invitation
@@ -35,7 +36,7 @@ func ConvertRolesToStrings(roles []invitation.Role) (outs []string) {
 	return
 }
 
-func GenerateToken(secretKey, email string, accountID int64, roles []invitation.Role, expiresAt int64) (string, error) {
+func GenerateToken(secretKey, email string, accountID dot.ID, roles []invitation.Role, expiresAt int64) (string, error) {
 	if expiresAt == 0 {
 		expiresAt = time.Now().Add(ExpiresIn).Unix()
 	}

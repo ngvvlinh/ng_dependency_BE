@@ -10,6 +10,7 @@ import (
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/cmsql"
+	"etop.vn/capi/dot"
 )
 
 var _ catalog.QueryService = &QueryService{}
@@ -150,8 +151,8 @@ func (s *QueryService) ListShopProductsWithVariants(
 	if err != nil {
 		return nil, err
 	}
-	var mapProductCollection = make(map[int64][]int64)
-	var productIDs []int64
+	var mapProductCollection = make(map[dot.ID][]dot.ID)
+	var productIDs []dot.ID
 	for _, product := range products {
 		productIDs = append(productIDs, product.ProductID)
 	}
@@ -267,7 +268,7 @@ func (s *QueryService) ListShopCollections(
 	}, nil
 }
 
-func (s *QueryService) ValidateVariantIDs(ctx context.Context, shopId int64, shopVariantIds []int64) error {
+func (s *QueryService) ValidateVariantIDs(ctx context.Context, shopId dot.ID, shopVariantIds []dot.ID) error {
 	dbResult, err := s.shopVariant(ctx).IDs(shopVariantIds...).ShopID(shopId).ListShopVariantsDB()
 	if err != nil {
 		return err
@@ -286,7 +287,7 @@ func (s *QueryService) ListShopCollectionsByProductID(
 	if err != nil {
 		return nil, err
 	}
-	collectionIDs := make([]int64, len(productCollections))
+	collectionIDs := make([]dot.ID, len(productCollections))
 	for _, pc := range productCollections {
 		collectionIDs = append(collectionIDs, pc.CollectionID)
 	}
@@ -295,7 +296,7 @@ func (s *QueryService) ListShopCollectionsByProductID(
 	return collections, err
 }
 
-func (s *QueryService) GetBrandByID(ctx context.Context, id int64, shopID int64) (*catalog.ShopBrand, error) {
+func (s *QueryService) GetBrandByID(ctx context.Context, id dot.ID, shopID dot.ID) (*catalog.ShopBrand, error) {
 	if shopID == 0 {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing value requirement")
 	}
@@ -303,7 +304,7 @@ func (s *QueryService) GetBrandByID(ctx context.Context, id int64, shopID int64)
 	return result, err
 }
 
-func (s *QueryService) GetBrandsByIDs(ctx context.Context, ids []int64, shopID int64) ([]*catalog.ShopBrand, error) {
+func (s *QueryService) GetBrandsByIDs(ctx context.Context, ids []dot.ID, shopID dot.ID) ([]*catalog.ShopBrand, error) {
 	if shopID == 0 {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing value requirement")
 	}
@@ -311,7 +312,7 @@ func (s *QueryService) GetBrandsByIDs(ctx context.Context, ids []int64, shopID i
 	return result, err
 }
 
-func (s *QueryService) ListBrands(ctx context.Context, paging meta.Paging, shopID int64) (*catalog.ListBrandsResult, error) {
+func (s *QueryService) ListBrands(ctx context.Context, paging meta.Paging, shopID dot.ID) (*catalog.ListBrandsResult, error) {
 	if shopID == 0 {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing value requirement")
 	}
@@ -332,7 +333,7 @@ func (s *QueryService) ListBrands(ctx context.Context, paging meta.Paging, shopI
 	return listBrandResult, err
 }
 
-func (s *QueryService) GetSupplierIDsByVariantID(ctx context.Context, variantID int64, shopID int64) ([]int64, error) {
+func (s *QueryService) GetSupplierIDsByVariantID(ctx context.Context, variantID dot.ID, shopID dot.ID) ([]dot.ID, error) {
 	if shopID == 0 || variantID == 0 {
 		return nil, cm.Error(cm.InvalidArgument, "Missing shop_id or supplier_id in request", nil)
 	}
@@ -340,14 +341,14 @@ func (s *QueryService) GetSupplierIDsByVariantID(ctx context.Context, variantID 
 	if err != nil {
 		return nil, err
 	}
-	var listSupplierIDs = make([]int64, len(variantSupplier))
+	var listSupplierIDs = make([]dot.ID, len(variantSupplier))
 	for _, value := range variantSupplier {
 		listSupplierIDs = append(listSupplierIDs, value.SupplierID)
 	}
 	return listSupplierIDs, nil
 }
 
-func (s *QueryService) GetVariantsBySupplierID(ctx context.Context, supplierID int64, shopID int64) (*catalog.ShopVariantsResponse, error) {
+func (s *QueryService) GetVariantsBySupplierID(ctx context.Context, supplierID dot.ID, shopID dot.ID) (*catalog.ShopVariantsResponse, error) {
 	if shopID == 0 || supplierID == 0 {
 		return nil, cm.Error(cm.InvalidArgument, "Missing shop_id or supplier_id in request", nil)
 	}
@@ -355,7 +356,7 @@ func (s *QueryService) GetVariantsBySupplierID(ctx context.Context, supplierID i
 	if err != nil {
 		return nil, err
 	}
-	var listVariants = make([]int64, len(variantSupplier))
+	var listVariants = make([]dot.ID, len(variantSupplier))
 	for _, value := range variantSupplier {
 		listVariants = append(listVariants, value.VariantID)
 	}

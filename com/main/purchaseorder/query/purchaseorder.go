@@ -15,6 +15,7 @@ import (
 	"etop.vn/backend/pkg/common/cmsql"
 	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/capi"
+	"etop.vn/capi/dot"
 )
 
 var _ purchaseorder.QueryService = &PurchaseOrderQuery{}
@@ -70,7 +71,7 @@ func (q *PurchaseOrderQuery) GetPurchaseOrderByID(
 	}
 
 	getInventoryVouchersQuery := &inventory.GetInventoryVouchersByRefIDsQuery{
-		RefIDs: []int64{purchaseOrder.ID},
+		RefIDs: []dot.ID{purchaseOrder.ID},
 		ShopID: args.ShopID,
 	}
 	if err := q.inventoryVoucherQuery.Dispatch(ctx, getInventoryVouchersQuery); err != nil {
@@ -101,9 +102,9 @@ func (q *PurchaseOrderQuery) ListPurchaseOrders(
 		return nil, err
 	}
 
-	var supplierIDs, purchaseOrderIDs []int64
-	mapPurchaseOrderIDAndInventoryVoucher := make(map[int64]*inventory.InventoryVoucher)
-	mapSupplier := make(map[int64]*suppliering.ShopSupplier)
+	var supplierIDs, purchaseOrderIDs []dot.ID
+	mapPurchaseOrderIDAndInventoryVoucher := make(map[dot.ID]*inventory.InventoryVoucher)
+	mapSupplier := make(map[dot.ID]*suppliering.ShopSupplier)
 	for _, purchaseOrder := range purchaseOrders {
 		supplierIDs = append(supplierIDs, purchaseOrder.SupplierID)
 		purchaseOrderIDs = append(purchaseOrderIDs, purchaseOrder.ID)
@@ -166,7 +167,7 @@ func (q *PurchaseOrderQuery) ListPurchaseOrders(
 }
 
 func (q *PurchaseOrderQuery) ListPurchaseOrdersByReceiptID(
-	ctx context.Context, receiptID, shopID int64,
+	ctx context.Context, receiptID, shopID dot.ID,
 ) (*purchaseorder.PurchaseOrdersResponse, error) {
 	getReceipt := &receipting.GetReceiptByIDQuery{
 		ID:     receiptID,
@@ -186,7 +187,7 @@ func (q *PurchaseOrderQuery) ListPurchaseOrdersByReceiptID(
 }
 
 func (q *PurchaseOrderQuery) GetPurchaseOrdersByIDs(
-	ctx context.Context, IDs []int64, ShopID int64,
+	ctx context.Context, IDs []dot.ID, ShopID dot.ID,
 ) (*purchaseorder.PurchaseOrdersResponse, error) {
 	query := q.store(ctx).ShopID(ShopID).IDs(IDs...)
 	count, err := query.Count()
@@ -209,9 +210,9 @@ func (q *PurchaseOrderQuery) GetPurchaseOrdersByIDs(
 	}, nil
 }
 
-func (q *PurchaseOrderQuery) addPaidAmount(ctx context.Context, shopID int64, purchaseOrders []*purchaseorder.PurchaseOrder) error {
-	mapPurchaseOrderIDAndPaidAmount := make(map[int64]int64)
-	var purchaseOrderIDs []int64
+func (q *PurchaseOrderQuery) addPaidAmount(ctx context.Context, shopID dot.ID, purchaseOrders []*purchaseorder.PurchaseOrder) error {
+	mapPurchaseOrderIDAndPaidAmount := make(map[dot.ID]int)
+	var purchaseOrderIDs []dot.ID
 	for _, purchaseOrder := range purchaseOrders {
 		mapPurchaseOrderIDAndPaidAmount[purchaseOrder.ID] = 0
 		purchaseOrderIDs = append(purchaseOrderIDs, purchaseOrder.ID)
@@ -229,7 +230,7 @@ func (q *PurchaseOrderQuery) addPaidAmount(ctx context.Context, shopID int64, pu
 	for _, receipt := range receipts {
 		for _, line := range receipt.Lines {
 			if _, ok := mapPurchaseOrderIDAndPaidAmount[line.RefID]; ok {
-				mapPurchaseOrderIDAndPaidAmount[line.RefID] += int64(line.Amount)
+				mapPurchaseOrderIDAndPaidAmount[line.RefID] += int(line.Amount)
 			}
 		}
 	}
@@ -240,7 +241,7 @@ func (q *PurchaseOrderQuery) addPaidAmount(ctx context.Context, shopID int64, pu
 }
 
 func (q *PurchaseOrderQuery) ListPurchaseOrdersBySupplierIDsAndStatuses(
-	ctx context.Context, shopID int64, supplierIDs []int64, statuses []etop.Status3,
+	ctx context.Context, shopID dot.ID, supplierIDs []dot.ID, statuses []etop.Status3,
 ) (*purchaseorder.PurchaseOrdersResponse, error) {
 	query := q.store(ctx).ShopID(shopID).SupplierIDs(supplierIDs...)
 	if len(statuses) != 0 {

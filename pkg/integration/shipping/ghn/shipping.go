@@ -82,7 +82,7 @@ func (p *Carrier) CreateFulfillment(
 			FromDistrictID:     int(fromQuery.Result.District.GhnId),
 			ToDistrictID:       int(toQuery.Result.District.GhnId),
 			Note:               note,
-			ExternalCode:       strconv.FormatInt(ffm.ID, 10),
+			ExternalCode:       ffm.ID.String(),
 			ClientContactName:  ffm.AddressFrom.GetFullName(),
 			ClientContactPhone: ffm.AddressFrom.Phone,
 			ClientAddress:      ffm.AddressFrom.GetFullAddress(),

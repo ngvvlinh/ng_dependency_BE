@@ -8,8 +8,6 @@ import (
 	"strings"
 	"time"
 
-	"etop.vn/backend/pkg/etop/api/convertpb"
-
 	"github.com/360EntSecGroup-Skylar/excelize"
 
 	txmodel "etop.vn/backend/com/main/moneytx/model"
@@ -19,6 +17,7 @@ import (
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/httpx"
+	"etop.vn/backend/pkg/etop/api/convertpb"
 	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/backend/pkg/integration/shipping/ghtk"
 )
@@ -201,7 +200,7 @@ func HandleImportMoneyTransactions(c *httpx.Context) error {
 	if err := bus.Dispatch(ctx, cmd); err != nil {
 		return cm.Error(cm.InvalidArgument, "unexpected error", err)
 	}
-	c.SetResultPb(convertpb.PbMoneyTransactionShippingExternalExtended(cmd.Result))
+	c.SetResult(convertpb.PbMoneyTransactionShippingExternalExtended(cmd.Result))
 	return nil
 }
 

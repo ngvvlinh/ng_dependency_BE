@@ -9,10 +9,9 @@ import (
 	fmt "fmt"
 	http "net/http"
 
-	proto "github.com/golang/protobuf/proto"
-
 	common "etop.vn/api/pb/common"
 	integration "etop.vn/api/pb/etop/integration"
+	"etop.vn/capi"
 	httprpc "etop.vn/capi/httprpc"
 )
 
@@ -52,41 +51,41 @@ func (s *IntegrationServiceServer) ServeHTTP(resp http.ResponseWriter, req *http
 	serve(ctx, resp, req, reqMsg, exec)
 }
 
-func (s *IntegrationServiceServer) parseRoute(path string) (reqMsg proto.Message, _ httprpc.ExecFunc, _ error) {
+func (s *IntegrationServiceServer) parseRoute(path string) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
 	case "/integration.Integration/GrantAccess":
 		msg := &integration.GrantAccessRequest{}
-		fn := func(ctx context.Context) (proto.Message, error) {
+		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.GrantAccess(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/integration.Integration/Init":
 		msg := &integration.InitRequest{}
-		fn := func(ctx context.Context) (proto.Message, error) {
+		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.Init(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/integration.Integration/LoginUsingToken":
 		msg := &integration.LoginUsingTokenRequest{}
-		fn := func(ctx context.Context) (proto.Message, error) {
+		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.LoginUsingToken(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/integration.Integration/Register":
 		msg := &integration.RegisterRequest{}
-		fn := func(ctx context.Context) (proto.Message, error) {
+		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.Register(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/integration.Integration/RequestLogin":
 		msg := &integration.RequestLoginRequest{}
-		fn := func(ctx context.Context) (proto.Message, error) {
+		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.RequestLogin(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/integration.Integration/SessionInfo":
 		msg := &common.Empty{}
-		fn := func(ctx context.Context) (proto.Message, error) {
+		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.SessionInfo(ctx, msg)
 		}
 		return msg, fn, nil
@@ -127,11 +126,11 @@ func (s *MiscServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Reques
 	serve(ctx, resp, req, reqMsg, exec)
 }
 
-func (s *MiscServiceServer) parseRoute(path string) (reqMsg proto.Message, _ httprpc.ExecFunc, _ error) {
+func (s *MiscServiceServer) parseRoute(path string) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
 	case "/integration.Misc/VersionInfo":
 		msg := &common.Empty{}
-		fn := func(ctx context.Context) (proto.Message, error) {
+		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.VersionInfo(ctx, msg)
 		}
 		return msg, fn, nil

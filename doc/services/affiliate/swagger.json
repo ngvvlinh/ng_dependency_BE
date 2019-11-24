@@ -698,7 +698,7 @@
           "type": "string"
         },
         "id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "last_name": {
@@ -760,7 +760,7 @@
           "type": "string"
         },
         "id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "is_test": {
@@ -889,7 +889,7 @@
           "type": "string"
         },
         "id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "image_url": {
@@ -908,22 +908,22 @@
           "type": "string"
         },
         "owner_id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "phone": {
           "type": "string"
         },
         "product_source_id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "ship_from_address_id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "ship_to_address_id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "shipping_service_select_strategy": {
@@ -988,7 +988,7 @@
           "type": "string"
         },
         "id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "phone": {
@@ -1057,7 +1057,7 @@
       "type": "object",
       "properties": {
         "product_id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "referral_code": {
@@ -1077,7 +1077,7 @@
           "format": "date-time"
         },
         "product_id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "unit": {
@@ -1097,7 +1097,7 @@
           "format": "int32"
         },
         "product_id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "unit": {
@@ -1119,14 +1119,14 @@
           "type": "string"
         },
         "id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "note": {
           "type": "string"
         },
         "product_id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "type": {
@@ -1181,7 +1181,7 @@
           "type": "string"
         },
         "product_id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         }
       }
@@ -1215,7 +1215,7 @@
       "type": "object",
       "properties": {
         "product_id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "referral_code": {
@@ -1276,7 +1276,7 @@
         "product_ids": {
           "type": "array",
           "items": {
-            "type": "integer",
+            "type": "string",
             "format": "int64"
           }
         }
@@ -1308,7 +1308,7 @@
       "type": "object",
       "properties": {
         "order_id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         }
       }
@@ -1329,14 +1329,14 @@
           "format": "int32"
         },
         "id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "product": {
           "$ref": "#/definitions/zkShopProduct"
         },
         "product_id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "type": {
@@ -1399,7 +1399,7 @@
           "$ref": "#/definitions/ocAffiliate"
         },
         "id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "note": {
@@ -1504,7 +1504,7 @@
           "$ref": "#/definitions/vcSupplyCommissionSettingDurationObject"
         },
         "product_id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "updated_at": {
@@ -1577,7 +1577,7 @@
           "type": "string"
         },
         "user_id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         }
       }
@@ -1603,7 +1603,7 @@
           }
         },
         "order_id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "shipping_address": {
@@ -1717,7 +1717,7 @@
           }
         },
         "id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "include_insurance": {
@@ -1730,22 +1730,22 @@
           }
         },
         "money_transaction_shipping_external_id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "money_transaction_shipping_id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "order": {
           "$ref": "#/definitions/vmOrder"
         },
         "order_id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "partner_id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "pickup_address": {
@@ -1816,7 +1816,7 @@
           "$ref": "#/definitions/ocShop"
         },
         "shop_id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "status": {
@@ -1961,7 +1961,7 @@
           "$ref": "#/definitions/vmOrderAddress"
         },
         "customer_id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "customer_payment_status": {
@@ -2003,7 +2003,7 @@
         "fulfillment_ids": {
           "type": "array",
           "items": {
-            "type": "integer",
+            "type": "string",
             "format": "int64"
           }
         },
@@ -2026,7 +2026,7 @@
           "type": "string"
         },
         "id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "lines": {
@@ -2043,7 +2043,7 @@
           "type": "string"
         },
         "partner_id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "payment_method": {
@@ -2057,8 +2057,7 @@
           "format": "date-time"
         },
         "received_amount": {
-          "type": "integer",
-          "format": "int32"
+          "type": "integer"
         },
         "reference_url": {
           "type": "string"
@@ -2087,7 +2086,7 @@
           "format": "int32"
         },
         "shop_id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "shop_name": {
@@ -2297,7 +2296,7 @@
           }
         },
         "order_id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "payment_price": {
@@ -2305,7 +2304,7 @@
           "format": "int32"
         },
         "product_id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "product_name": {
@@ -2324,7 +2323,7 @@
           "format": "int32"
         },
         "variant_id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         }
       }
@@ -2456,18 +2455,18 @@
           "$ref": "#/definitions/wxStatus"
         },
         "id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "order_ids": {
           "type": "array",
           "items": {
-            "type": "integer",
+            "type": "string",
             "format": "int64"
           }
         },
         "partner_id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "pickup_address": {
@@ -2526,7 +2525,7 @@
           "$ref": "#/definitions/wyStatus"
         },
         "shop_id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "status": {
@@ -2686,7 +2685,7 @@
           "format": "date-time"
         },
         "id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "include_insurance": {
@@ -2699,22 +2698,22 @@
           }
         },
         "money_transaction_shipping_external_id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "money_transaction_shipping_id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "order": {
           "$ref": "#/definitions/vmOrder"
         },
         "order_id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "partner_id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "pickup_address": {
@@ -2791,7 +2790,7 @@
           "$ref": "#/definitions/ocShop"
         },
         "shop_id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "status": {
@@ -2966,7 +2965,7 @@
       "type": "object",
       "properties": {
         "category_id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "code": {
@@ -2983,7 +2982,7 @@
           "type": "string"
         },
         "id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "image_urls": {
@@ -3000,7 +2999,7 @@
           "type": "string"
         },
         "product_source_category_id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "short_desc": {
@@ -3034,7 +3033,7 @@
           "type": "string"
         },
         "id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "image_urls": {
@@ -3080,11 +3079,11 @@
       "type": "object",
       "properties": {
         "brand_id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "category_id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "code": {
@@ -3093,7 +3092,7 @@
         "collection_ids": {
           "type": "array",
           "items": {
-            "type": "integer",
+            "type": "string",
             "format": "int64"
           }
         },
@@ -3111,7 +3110,7 @@
           "type": "string"
         },
         "id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "image_urls": {
@@ -3143,7 +3142,7 @@
           "type": "string"
         },
         "product_source_id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "product_type": {
@@ -3187,7 +3186,7 @@
       "type": "object",
       "properties": {
         "id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "name": {
@@ -3217,7 +3216,7 @@
           "type": "string"
         },
         "id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "image_urls": {
@@ -3276,7 +3275,7 @@
       "type": "object",
       "properties": {
         "id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "label": {

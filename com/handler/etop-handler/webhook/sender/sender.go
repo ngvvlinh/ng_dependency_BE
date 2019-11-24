@@ -9,9 +9,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/golang/protobuf/jsonpb"
-	"github.com/golang/protobuf/proto"
-
 	"etop.vn/backend/com/handler/etop-handler/webhook/storage"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/cmsql"
@@ -19,6 +16,9 @@ import (
 	"etop.vn/backend/pkg/common/redis"
 	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/backend/pkg/etop/sqlstore"
+	"etop.vn/capi"
+	"etop.vn/capi/dot"
+	"etop.vn/common/jsonx"
 	"etop.vn/common/l"
 )
 
@@ -36,7 +36,7 @@ var changesStore *storage.ChangesStore
 
 type WebhookSender struct {
 	db       *cmsql.Database
-	ssenders map[int64][]*SingleSender
+	ssenders map[dot.ID][]*SingleSender
 	running  bool
 
 	wg sync.WaitGroup
@@ -62,7 +62,7 @@ func (s *WebhookSender) Load() error {
 		return err
 	}
 
-	webhooks := make(map[int64][]*SingleSender)
+	webhooks := make(map[dot.ID][]*SingleSender)
 	for _, item := range items {
 		ss := NewSingleSender(item)
 		webhooks[item.AccountID] = append(webhooks[item.AccountID], ss)
@@ -73,7 +73,7 @@ func (s *WebhookSender) Load() error {
 	return nil
 }
 
-func (s *WebhookSender) Reload(ctx context.Context, accountID int64) error {
+func (s *WebhookSender) Reload(ctx context.Context, accountID dot.ID) error {
 	webhooks, err := sqlstore.Webhook(ctx).AccountID(accountID).List()
 	if err != nil {
 		ll.Error("webhook/reload", l.Error(err))
@@ -110,11 +110,11 @@ func (s *WebhookSender) Reload(ctx context.Context, accountID int64) error {
 	}
 	s.ssenders[accountID] = newSenders
 
-	ll.Info("reloaded ssenders", l.Int("n", len(webhooks)), l.Int64("account_id", accountID))
+	ll.Info("reloaded ssenders", l.Int("n", len(webhooks)), l.ID("account_id", accountID))
 	return nil
 }
 
-func findWebhook(items []*SingleSender, id int64) *SingleSender {
+func findWebhook(items []*SingleSender, id dot.ID) *SingleSender {
 	for _, item := range items {
 		if item.webhook.ID == id {
 			return item
@@ -153,11 +153,9 @@ func (s *WebhookSender) Wait() {
 	s.wg.Wait()
 }
 
-var marshaler = jsonpb.Marshaler{OrigName: true, EmitDefaults: false}
-
-func (s *WebhookSender) CollectPb(ctx context.Context, entity string, entityID int64, accountIDs []int64, pb proto.Message) (mq.Code, error) {
+func (s *WebhookSender) CollectPb(ctx context.Context, entity string, entityID dot.ID, accountIDs []dot.ID, pb capi.Message) (mq.Code, error) {
 	var b bytes.Buffer
-	if err := marshaler.Marshal(&b, pb); err != nil {
+	if err := jsonx.MarshalTo(&b, pb); err != nil {
 		ll.Error("error marshalling json", l.Error(err))
 		return mq.CodeStop, err
 	}
@@ -166,7 +164,7 @@ func (s *WebhookSender) CollectPb(ctx context.Context, entity string, entityID i
 	return mq.CodeOK, nil
 }
 
-func (s *WebhookSender) Collect(ctx context.Context, entity string, entityID int64, accountIDs []int64, msg []byte) {
+func (s *WebhookSender) Collect(ctx context.Context, entity string, entityID dot.ID, accountIDs []dot.ID, msg []byte) {
 	ll.Debug("Collect items for accounts", l.Any("ids", accountIDs))
 	for _, accountID := range accountIDs {
 		if accountID == 0 {
@@ -184,7 +182,7 @@ func (s *WebhookSender) Collect(ctx context.Context, entity string, entityID int
 	}
 }
 
-func (s *WebhookSender) ResetState(accountID int64) error {
+func (s *WebhookSender) ResetState(accountID dot.ID) error {
 	s.m.RLock()
 	defer s.m.RUnlock()
 

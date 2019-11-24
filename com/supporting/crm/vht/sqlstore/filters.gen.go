@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"etop.vn/backend/pkg/common/sq"
+	"etop.vn/capi/dot"
 )
 
 type VhtCallHistoryFilters struct{ prefix string }
@@ -402,7 +403,7 @@ func (ft *VhtCallHistoryFilters) ByRecordFileSizePtr(RecordFileSize *int32) *sq.
 	}
 }
 
-func (ft *VhtCallHistoryFilters) ByEtopAccountID(EtopAccountID int64) *sq.ColumnFilter {
+func (ft *VhtCallHistoryFilters) ByEtopAccountID(EtopAccountID dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "etop_account_id",
@@ -411,7 +412,7 @@ func (ft *VhtCallHistoryFilters) ByEtopAccountID(EtopAccountID int64) *sq.Column
 	}
 }
 
-func (ft *VhtCallHistoryFilters) ByEtopAccountIDPtr(EtopAccountID *int64) *sq.ColumnFilterPtr {
+func (ft *VhtCallHistoryFilters) ByEtopAccountIDPtr(EtopAccountID *dot.ID) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "etop_account_id",

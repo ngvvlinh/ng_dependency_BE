@@ -29,6 +29,7 @@ import (
 	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/backend/pkg/etop/sqlstore"
 	haravanconvert "etop.vn/backend/pkg/external/haravan/convert"
+	"etop.vn/capi/dot"
 	"etop.vn/common/l"
 )
 
@@ -311,7 +312,7 @@ func SHA256StringToInt32(s string) int32 {
 	return res
 }
 
-func generateTrackingUrl(shopID int64) string {
+func generateTrackingUrl(shopID dot.ID) string {
 	// Haravan will concat shipping_code to this link
 	baseURL := cm.MainSiteBaseURL()
 	return fmt.Sprintf("%v/s/%v/fulfillment?code=", baseURL, shopID)

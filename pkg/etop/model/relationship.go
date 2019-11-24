@@ -1,24 +1,27 @@
 package model
 
-import cm "etop.vn/backend/pkg/common"
+import (
+	cm "etop.vn/backend/pkg/common"
+	"etop.vn/capi/dot"
+)
 
 type GetAccountUserQuery struct {
-	UserID          int64
-	AccountID       int64
+	UserID          dot.ID
+	AccountID       dot.ID
 	FindByAccountID bool
 
 	Result *AccountUser
 }
 
 type GetAccountUserExtendedQuery struct {
-	UserID    int64
-	AccountID int64
+	UserID    dot.ID
+	AccountID dot.ID
 
 	Result AccountUserExtended
 }
 
 type GetAccountUserExtendedsQuery struct {
-	AccountIDs []int64
+	AccountIDs []dot.ID
 
 	Paging  *cm.Paging
 	Filters []cm.Filter
@@ -49,29 +52,29 @@ type AccountPermission struct {
 }
 
 type RemoveUserFromAccount struct {
-	AccountID int64
-	UserID    int64
+	AccountID dot.ID
+	UserID    dot.ID
 
 	Result bool
 }
 
 type UpdateRoleCommand struct {
-	AccountID int64
-	UserID    int64
+	AccountID dot.ID
+	UserID    dot.ID
 	Permission
 
 	Result *AccountUser
 }
 
 type GetAllAccountRolesQuery struct {
-	UserID int64
+	UserID dot.ID
 	Type   AccountType
 
 	Result []*AccountUserExtended
 }
 
 type GetAllAccountUsersQuery struct {
-	UserIDs []int64
+	UserIDs []dot.ID
 	Type    AccountType
 
 	Result []*AccountUser

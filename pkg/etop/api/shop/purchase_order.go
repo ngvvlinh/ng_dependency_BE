@@ -110,10 +110,10 @@ func (s *PurchaseOrderService) UpdatePurchaseOrder(ctx context.Context, r *Updat
 	cmd := &purchaseorder.UpdatePurchaseOrderCommand{
 		ID:            r.Id,
 		ShopID:        r.Context.Shop.ID,
-		SupplierID:    PInt64(r.SupplierId),
-		BasketValue:   PInt64(r.BasketValue),
-		TotalDiscount: PInt64(r.TotalDiscount),
-		TotalAmount:   PInt64(r.TotalAmount),
+		SupplierID:    PID(r.SupplierId),
+		BasketValue:   PInt(r.BasketValue),
+		TotalDiscount: PInt(r.TotalDiscount),
+		TotalAmount:   PInt(r.TotalAmount),
 		Note:          PString(r.Note),
 		Lines:         convertpb.Convert_api_PurchaseOrderLines_To_core_PurchaseOrderLines(r.Lines),
 	}

@@ -13,6 +13,7 @@ import (
 	"etop.vn/backend/pkg/common/conversion"
 	"etop.vn/backend/pkg/common/sq"
 	"etop.vn/backend/pkg/common/sqlstore"
+	"etop.vn/capi/dot"
 )
 
 type InvitationStoreFactory func(ctx context.Context) *InvitationStore
@@ -57,12 +58,12 @@ func (s *InvitationStore) Filters(filters meta.Filters) *InvitationStore {
 	return s
 }
 
-func (s *InvitationStore) ID(id int64) *InvitationStore {
+func (s *InvitationStore) ID(id dot.ID) *InvitationStore {
 	s.preds = append(s.preds, s.ft.ByID(id))
 	return s
 }
 
-func (s *InvitationStore) AccountID(id int64) *InvitationStore {
+func (s *InvitationStore) AccountID(id dot.ID) *InvitationStore {
 	s.preds = append(s.preds, s.ft.ByAccountID(id))
 	return s
 }

@@ -1,20 +1,16 @@
 package cmapi
 
 import (
-	"bytes"
 	"strings"
 	"time"
 
 	"github.com/asaskevich/govalidator"
-	"github.com/gogo/protobuf/proto"
-	"github.com/golang/protobuf/jsonpb"
-	"github.com/golang/protobuf/ptypes"
-	pbts "github.com/golang/protobuf/ptypes/timestamp"
 
 	meta "etop.vn/api/meta"
 	"etop.vn/api/pb/common"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/etop/model"
+	"etop.vn/capi/dot"
 	"etop.vn/common/jsonx"
 	"etop.vn/common/l"
 	"etop.vn/common/xerrors"
@@ -22,43 +18,12 @@ import (
 
 var ll = l.New()
 
-var marshaler = jsonpb.Marshaler{EmitDefaults: true, OrigName: true}
-
-func Marshal(v proto.Message) ([]byte, error) {
-	var buf bytes.Buffer
-	err := marshaler.Marshal(&buf, v)
-	return buf.Bytes(), err
+func PbTime(t time.Time) dot.Time {
+	return dot.Time(t)
 }
 
-func MustMarshalToString(v proto.Message) string {
-	var b strings.Builder
-	err := marshaler.Marshal(&b, v)
-	if err != nil {
-		panic(err)
-	}
-	return b.String()
-}
-
-func PbTime(t time.Time) *pbts.Timestamp {
-	if t.Year() < 1990 {
-		return nil
-	}
-	ts, err := ptypes.TimestampProto(t.Truncate(time.Second))
-	if err != nil {
-		ll.Error("Invalid timestamp", l.Time("t", t), l.Error(err))
-	}
-	return ts
-}
-
-func PbTimeToModel(t *pbts.Timestamp) time.Time {
-	if t == nil {
-		return time.Time{}
-	}
-	ts, err := ptypes.Timestamp(t)
-	if err != nil {
-		ll.Error("Invalid timestamp")
-	}
-	return ts
+func PbTimeToModel(t dot.Time) time.Time {
+	return time.Time(t)
 }
 
 func BareInt32(v *int32) int32 {

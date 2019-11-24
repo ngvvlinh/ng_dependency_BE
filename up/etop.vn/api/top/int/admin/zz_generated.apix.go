@@ -9,10 +9,9 @@ import (
 	fmt "fmt"
 	http "net/http"
 
-	proto "github.com/golang/protobuf/proto"
-
 	common "etop.vn/api/pb/common"
 	admin "etop.vn/api/pb/etop/admin"
+	"etop.vn/capi"
 	httprpc "etop.vn/capi/httprpc"
 )
 
@@ -52,17 +51,17 @@ func (s *AccountServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Req
 	serve(ctx, resp, req, reqMsg, exec)
 }
 
-func (s *AccountServiceServer) parseRoute(path string) (reqMsg proto.Message, _ httprpc.ExecFunc, _ error) {
+func (s *AccountServiceServer) parseRoute(path string) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
 	case "/admin.Account/CreatePartner":
 		msg := &admin.CreatePartnerRequest{}
-		fn := func(ctx context.Context) (proto.Message, error) {
+		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.CreatePartner(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/admin.Account/GenerateAPIKey":
 		msg := &admin.GenerateAPIKeyRequest{}
-		fn := func(ctx context.Context) (proto.Message, error) {
+		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.GenerateAPIKey(ctx, msg)
 		}
 		return msg, fn, nil
@@ -103,41 +102,41 @@ func (s *CreditServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Requ
 	serve(ctx, resp, req, reqMsg, exec)
 }
 
-func (s *CreditServiceServer) parseRoute(path string) (reqMsg proto.Message, _ httprpc.ExecFunc, _ error) {
+func (s *CreditServiceServer) parseRoute(path string) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
 	case "/admin.Credit/ConfirmCredit":
 		msg := &admin.ConfirmCreditRequest{}
-		fn := func(ctx context.Context) (proto.Message, error) {
+		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.ConfirmCredit(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/admin.Credit/CreateCredit":
 		msg := &admin.CreateCreditRequest{}
-		fn := func(ctx context.Context) (proto.Message, error) {
+		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.CreateCredit(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/admin.Credit/DeleteCredit":
 		msg := &common.IDRequest{}
-		fn := func(ctx context.Context) (proto.Message, error) {
+		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.DeleteCredit(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/admin.Credit/GetCredit":
 		msg := &admin.GetCreditRequest{}
-		fn := func(ctx context.Context) (proto.Message, error) {
+		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.GetCredit(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/admin.Credit/GetCredits":
 		msg := &admin.GetCreditsRequest{}
-		fn := func(ctx context.Context) (proto.Message, error) {
+		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.GetCredits(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/admin.Credit/UpdateCredit":
 		msg := &admin.UpdateCreditRequest{}
-		fn := func(ctx context.Context) (proto.Message, error) {
+		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.UpdateCredit(ctx, msg)
 		}
 		return msg, fn, nil
@@ -178,23 +177,23 @@ func (s *FulfillmentServiceServer) ServeHTTP(resp http.ResponseWriter, req *http
 	serve(ctx, resp, req, reqMsg, exec)
 }
 
-func (s *FulfillmentServiceServer) parseRoute(path string) (reqMsg proto.Message, _ httprpc.ExecFunc, _ error) {
+func (s *FulfillmentServiceServer) parseRoute(path string) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
 	case "/admin.Fulfillment/GetFulfillment":
 		msg := &common.IDRequest{}
-		fn := func(ctx context.Context) (proto.Message, error) {
+		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.GetFulfillment(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/admin.Fulfillment/GetFulfillments":
 		msg := &admin.GetFulfillmentsRequest{}
-		fn := func(ctx context.Context) (proto.Message, error) {
+		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.GetFulfillments(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/admin.Fulfillment/UpdateFulfillment":
 		msg := &admin.UpdateFulfillmentRequest{}
-		fn := func(ctx context.Context) (proto.Message, error) {
+		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.UpdateFulfillment(ctx, msg)
 		}
 		return msg, fn, nil
@@ -235,17 +234,17 @@ func (s *MiscServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Reques
 	serve(ctx, resp, req, reqMsg, exec)
 }
 
-func (s *MiscServiceServer) parseRoute(path string) (reqMsg proto.Message, _ httprpc.ExecFunc, _ error) {
+func (s *MiscServiceServer) parseRoute(path string) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
 	case "/admin.Misc/AdminLoginAsAccount":
 		msg := &admin.LoginAsAccountRequest{}
-		fn := func(ctx context.Context) (proto.Message, error) {
+		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.AdminLoginAsAccount(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/admin.Misc/VersionInfo":
 		msg := &common.Empty{}
-		fn := func(ctx context.Context) (proto.Message, error) {
+		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.VersionInfo(ctx, msg)
 		}
 		return msg, fn, nil
@@ -286,107 +285,107 @@ func (s *MoneyTransactionServiceServer) ServeHTTP(resp http.ResponseWriter, req 
 	serve(ctx, resp, req, reqMsg, exec)
 }
 
-func (s *MoneyTransactionServiceServer) parseRoute(path string) (reqMsg proto.Message, _ httprpc.ExecFunc, _ error) {
+func (s *MoneyTransactionServiceServer) parseRoute(path string) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
 	case "/admin.MoneyTransaction/ConfirmMoneyTransaction":
 		msg := &admin.ConfirmMoneyTransactionRequest{}
-		fn := func(ctx context.Context) (proto.Message, error) {
+		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.ConfirmMoneyTransaction(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/admin.MoneyTransaction/ConfirmMoneyTransactionShippingEtop":
 		msg := &admin.ConfirmMoneyTransactionShippingEtopRequest{}
-		fn := func(ctx context.Context) (proto.Message, error) {
+		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.ConfirmMoneyTransactionShippingEtop(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/admin.MoneyTransaction/ConfirmMoneyTransactionShippingExternal":
 		msg := &common.IDRequest{}
-		fn := func(ctx context.Context) (proto.Message, error) {
+		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.ConfirmMoneyTransactionShippingExternal(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/admin.MoneyTransaction/ConfirmMoneyTransactionShippingExternals":
 		msg := &common.IDsRequest{}
-		fn := func(ctx context.Context) (proto.Message, error) {
+		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.ConfirmMoneyTransactionShippingExternals(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/admin.MoneyTransaction/CreateMoneyTransactionShippingEtop":
 		msg := &common.IDsRequest{}
-		fn := func(ctx context.Context) (proto.Message, error) {
+		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.CreateMoneyTransactionShippingEtop(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/admin.MoneyTransaction/DeleteMoneyTransactionShippingEtop":
 		msg := &common.IDRequest{}
-		fn := func(ctx context.Context) (proto.Message, error) {
+		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.DeleteMoneyTransactionShippingEtop(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/admin.MoneyTransaction/DeleteMoneyTransactionShippingExternal":
 		msg := &common.IDRequest{}
-		fn := func(ctx context.Context) (proto.Message, error) {
+		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.DeleteMoneyTransactionShippingExternal(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/admin.MoneyTransaction/GetMoneyTransaction":
 		msg := &common.IDRequest{}
-		fn := func(ctx context.Context) (proto.Message, error) {
+		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.GetMoneyTransaction(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/admin.MoneyTransaction/GetMoneyTransactionShippingEtop":
 		msg := &common.IDRequest{}
-		fn := func(ctx context.Context) (proto.Message, error) {
+		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.GetMoneyTransactionShippingEtop(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/admin.MoneyTransaction/GetMoneyTransactionShippingEtops":
 		msg := &admin.GetMoneyTransactionShippingEtopsRequest{}
-		fn := func(ctx context.Context) (proto.Message, error) {
+		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.GetMoneyTransactionShippingEtops(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/admin.MoneyTransaction/GetMoneyTransactionShippingExternal":
 		msg := &common.IDRequest{}
-		fn := func(ctx context.Context) (proto.Message, error) {
+		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.GetMoneyTransactionShippingExternal(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/admin.MoneyTransaction/GetMoneyTransactionShippingExternals":
 		msg := &admin.GetMoneyTransactionShippingExternalsRequest{}
-		fn := func(ctx context.Context) (proto.Message, error) {
+		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.GetMoneyTransactionShippingExternals(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/admin.MoneyTransaction/GetMoneyTransactions":
 		msg := &admin.GetMoneyTransactionsRequest{}
-		fn := func(ctx context.Context) (proto.Message, error) {
+		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.GetMoneyTransactions(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/admin.MoneyTransaction/RemoveMoneyTransactionShippingExternalLines":
 		msg := &admin.RemoveMoneyTransactionShippingExternalLinesRequest{}
-		fn := func(ctx context.Context) (proto.Message, error) {
+		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.RemoveMoneyTransactionShippingExternalLines(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/admin.MoneyTransaction/UpdateMoneyTransaction":
 		msg := &admin.UpdateMoneyTransactionRequest{}
-		fn := func(ctx context.Context) (proto.Message, error) {
+		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.UpdateMoneyTransaction(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/admin.MoneyTransaction/UpdateMoneyTransactionShippingEtop":
 		msg := &admin.UpdateMoneyTransactionShippingEtopRequest{}
-		fn := func(ctx context.Context) (proto.Message, error) {
+		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.UpdateMoneyTransactionShippingEtop(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/admin.MoneyTransaction/UpdateMoneyTransactionShippingExternal":
 		msg := &admin.UpdateMoneyTransactionShippingExternalRequest{}
-		fn := func(ctx context.Context) (proto.Message, error) {
+		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.UpdateMoneyTransactionShippingExternal(ctx, msg)
 		}
 		return msg, fn, nil
@@ -427,11 +426,11 @@ func (s *NotificationServiceServer) ServeHTTP(resp http.ResponseWriter, req *htt
 	serve(ctx, resp, req, reqMsg, exec)
 }
 
-func (s *NotificationServiceServer) parseRoute(path string) (reqMsg proto.Message, _ httprpc.ExecFunc, _ error) {
+func (s *NotificationServiceServer) parseRoute(path string) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
 	case "/admin.Notification/CreateNotifications":
 		msg := &admin.CreateNotificationsRequest{}
-		fn := func(ctx context.Context) (proto.Message, error) {
+		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.CreateNotifications(ctx, msg)
 		}
 		return msg, fn, nil
@@ -472,23 +471,23 @@ func (s *OrderServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Reque
 	serve(ctx, resp, req, reqMsg, exec)
 }
 
-func (s *OrderServiceServer) parseRoute(path string) (reqMsg proto.Message, _ httprpc.ExecFunc, _ error) {
+func (s *OrderServiceServer) parseRoute(path string) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
 	case "/admin.Order/GetOrder":
 		msg := &common.IDRequest{}
-		fn := func(ctx context.Context) (proto.Message, error) {
+		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.GetOrder(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/admin.Order/GetOrders":
 		msg := &admin.GetOrdersRequest{}
-		fn := func(ctx context.Context) (proto.Message, error) {
+		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.GetOrders(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/admin.Order/GetOrdersByIDs":
 		msg := &common.IDsRequest{}
-		fn := func(ctx context.Context) (proto.Message, error) {
+		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.GetOrdersByIDs(ctx, msg)
 		}
 		return msg, fn, nil
@@ -529,17 +528,17 @@ func (s *ShopServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Reques
 	serve(ctx, resp, req, reqMsg, exec)
 }
 
-func (s *ShopServiceServer) parseRoute(path string) (reqMsg proto.Message, _ httprpc.ExecFunc, _ error) {
+func (s *ShopServiceServer) parseRoute(path string) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
 	case "/admin.Shop/GetShop":
 		msg := &common.IDRequest{}
-		fn := func(ctx context.Context) (proto.Message, error) {
+		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.GetShop(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/admin.Shop/GetShops":
 		msg := &admin.GetShopsRequest{}
-		fn := func(ctx context.Context) (proto.Message, error) {
+		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.GetShops(ctx, msg)
 		}
 		return msg, fn, nil

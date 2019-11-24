@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"math/rand"
-	"strconv"
 	"time"
 
 	shipmodel "etop.vn/backend/com/main/shipping/model"
@@ -17,6 +16,8 @@ import (
 	"etop.vn/backend/pkg/integration/shipping/ghn"
 	ghnclient "etop.vn/backend/pkg/integration/shipping/ghn/client"
 	"etop.vn/backend/pkg/integration/shipping/ghn/update"
+	"etop.vn/capi/dot"
+	"etop.vn/capi/util"
 	"etop.vn/common/l"
 	"etop.vn/common/xerrors"
 )
@@ -73,7 +74,7 @@ func (s *Synchronizer) Stop() {
 func (s *Synchronizer) syncCallbackLogs(id interface{}, p scheduler.Planner) (_err error) {
 	t0 := time.Now()
 	ctx := bus.Ctx()
-	shippingSourceID := id.(int64)
+	shippingSourceID := id.(dot.ID)
 
 	shippingSourceQuery := &model.GetShippingSource{ID: shippingSourceID}
 	if err := bus.Dispatch(ctx, shippingSourceQuery); err != nil {
@@ -145,12 +146,12 @@ func (s *Synchronizer) syncCallbackLogs(id interface{}, p scheduler.Planner) (_e
 
 	// ghnOrderLogs: order logs already sort by time asc
 	// externalCode = ffm ID (in Etop)
-	ffmIDs := make([]int64, 0, len(ghnOrderLogs))
-	ffmIDMap := make(map[int64]int64)
-	ffmsMap := make(map[int64]*shipmodel.Fulfillment)
+	ffmIDs := make([]dot.ID, 0, len(ghnOrderLogs))
+	ffmIDMap := make(map[dot.ID]dot.ID)
+	ffmsMap := make(map[dot.ID]*shipmodel.Fulfillment)
 	for _, log := range ghnOrderLogs {
 		if log.OrderInfo.ExternalCode != "" {
-			externalCode, err := strconv.ParseInt(log.OrderInfo.ExternalCode.String(), 10, 64)
+			externalCode, err := util.ParseID(log.OrderInfo.ExternalCode.String())
 			if err == nil {
 				ffmIDMap[externalCode] = externalCode
 			}
@@ -171,9 +172,9 @@ func (s *Synchronizer) syncCallbackLogs(id interface{}, p scheduler.Planner) (_e
 		ffmsMap[ffm.ID] = ffm
 	}
 
-	updateFfmMap := make(map[int64]*shipmodel.Fulfillment)
+	updateFfmMap := make(map[dot.ID]*shipmodel.Fulfillment)
 	for _, oLog := range ghnOrderLogs {
-		externalCode, err := strconv.ParseInt(oLog.OrderInfo.ExternalCode.String(), 10, 64)
+		externalCode, err := util.ParseID(oLog.OrderInfo.ExternalCode.String())
 		if err != nil {
 			continue
 		}

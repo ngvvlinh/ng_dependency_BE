@@ -20,13 +20,14 @@ import (
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/cmapi"
 	"etop.vn/backend/pkg/etop/model"
+	"etop.vn/capi/dot"
 )
 
 var locationBus = servicelocation.New().MessageBus()
 
 func PbOrdersWithFulfillments(items []ordermodelx.OrderWithFulfillments, accType int, shops []*model.Shop) []*order.Order {
 	res := make([]*order.Order, len(items))
-	shopsMap := make(map[int64]*model.Shop)
+	shopsMap := make(map[dot.ID]*model.Shop)
 	for _, shop := range shops {
 		shopsMap[shop.ID] = shop
 	}
@@ -939,9 +940,9 @@ func PbMoneyTransactionExtended(m *txmodely.MoneyTransactionExtended) *order.Mon
 		Id:                                 m.ID,
 		ShopId:                             m.ShopID,
 		Status:                             Pb3(m.Status),
-		TotalCod:                           int64(m.TotalCOD),
-		TotalOrders:                        int64(m.TotalOrders),
-		TotalAmount:                        int64(m.TotalAmount),
+		TotalCod:                           m.TotalCOD,
+		TotalOrders:                        m.TotalOrders,
+		TotalAmount:                        m.TotalAmount,
 		Code:                               m.Code,
 		Provider:                           m.Provider,
 		MoneyTransactionShippingExternalId: m.MoneyTransactionShippingExternalID,
@@ -963,8 +964,8 @@ func PbMoneyTransaction(m *txmodel.MoneyTransactionShipping) *order.MoneyTransac
 		Id:                                 m.ID,
 		ShopId:                             m.ShopID,
 		Status:                             Pb3(m.Status),
-		TotalCod:                           int64(m.TotalCOD),
-		TotalOrders:                        int64(m.TotalOrders),
+		TotalCod:                           m.TotalCOD,
+		TotalOrders:                        m.TotalOrders,
 		Code:                               m.Code,
 		Provider:                           m.Provider,
 		MoneyTransactionShippingExternalId: m.MoneyTransactionShippingExternalID,
@@ -991,8 +992,8 @@ func PbMoneyTransactionShippingExternalExtended(m *txmodel.MoneyTransactionShipp
 	res := &order.MoneyTransactionShippingExternal{
 		Id:             m.ID,
 		Code:           m.Code,
-		TotalCod:       int64(m.TotalCOD),
-		TotalOrders:    int64(m.TotalOrders),
+		TotalCod:       m.TotalCOD,
+		TotalOrders:    m.TotalOrders,
 		Status:         Pb3(m.Status),
 		Provider:       m.Provider,
 		CreatedAt:      cmapi.PbTime(m.CreatedAt),
@@ -1024,8 +1025,8 @@ func PbMoneyTransactionShippingExternalLineExtended(m *txmodel.MoneyTransactionS
 		ExternalCode:                       m.ExternalCode,
 		ExternalCustomer:                   m.ExternalCustomer,
 		ExternalAddress:                    m.ExternalAddress,
-		ExternalTotalCod:                   int64(m.ExternalTotalCOD),
-		ExternalTotalShippingFee:           int64(m.ExternalTotalShippingFee),
+		ExternalTotalCod:                   m.ExternalTotalCOD,
+		ExternalTotalShippingFee:           m.ExternalTotalShippingFee,
 		EtopFulfillmentId:                  m.EtopFulfillmentID,
 		EtopFulfillmentIdRaw:               m.EtopFulfillmentIdRaw,
 		Note:                               m.Note,
@@ -1063,17 +1064,15 @@ func PbPublicFulfillment(item *shipmodel.Fulfillment) *order.PublicFulfillment {
 	}
 
 	return &order.PublicFulfillment{
-		Id:                  item.ID,
-		ShippingState:       PbShippingState(item.ShippingState),
-		Status:              Pb5(item.Status),
-		ExpectedDeliveryAt:  cmapi.PbTime(item.ExpectedDeliveryAt),
-		DeliveredAt:         cmapi.PbTime(item.ShippingDeliveredAt),
-		EstimatedPickupAt:   nil,
-		EstimatedDeliveryAt: nil,
-		ShippingCode:        item.ShippingCode,
-		OrderId:             item.OrderID,
-		DeliveredAtText:     deliveredAtText,
-		ShippingStateText:   item.ShippingState.Text(),
+		Id:                 item.ID,
+		ShippingState:      PbShippingState(item.ShippingState),
+		Status:             Pb5(item.Status),
+		ExpectedDeliveryAt: cmapi.PbTime(item.ExpectedDeliveryAt),
+		DeliveredAt:        cmapi.PbTime(item.ShippingDeliveredAt),
+		ShippingCode:       item.ShippingCode,
+		OrderId:            item.OrderID,
+		DeliveredAtText:    deliveredAtText,
+		ShippingStateText:  item.ShippingState.Text(),
 	}
 }
 
@@ -1100,10 +1099,10 @@ func PbMoneyTransactionShippingEtopExtended(m *txmodely.MoneyTransactionShipping
 	return &order.MoneyTransactionShippingEtop{
 		Id:                m.ID,
 		Code:              m.Code,
-		TotalCod:          int64(m.TotalCOD),
-		TotalOrders:       int64(m.TotalOrders),
-		TotalAmount:       int64(m.TotalAmount),
-		TotalFee:          int64(m.TotalFee),
+		TotalCod:          m.TotalCOD,
+		TotalOrders:       m.TotalOrders,
+		TotalAmount:       m.TotalAmount,
+		TotalFee:          m.TotalFee,
 		Status:            Pb3(m.Status),
 		MoneyTransactions: PbMoneyTransactionExtendeds(m.MoneyTransactions),
 		CreatedAt:         cmapi.PbTime(m.CreatedAt),

@@ -6,14 +6,11 @@ import (
 	"sync"
 	"time"
 
-	cmService "etop.vn/backend/pkg/common/service"
-
-	"github.com/gogo/protobuf/jsonpb"
-	"github.com/gogo/protobuf/proto"
-
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/httpx"
+	cmService "etop.vn/backend/pkg/common/service"
 	"etop.vn/backend/pkg/etop/authorize/claims"
+	"etop.vn/capi/dot"
 	"etop.vn/common/l"
 )
 
@@ -27,8 +24,8 @@ type Event struct {
 	Type string
 
 	Global    bool // send to all users
-	AccountID int64
-	UserID    int64
+	AccountID dot.ID
+	UserID    dot.ID
 	Payload   interface{}
 
 	retryInSecond int
@@ -37,8 +34,8 @@ type Event struct {
 type Subscriber struct {
 	ID int64
 
-	AccountID int64
-	UserID    int64
+	AccountID dot.ID
+	UserID    dot.ID
 
 	AllEvents bool
 	Events    []string
@@ -81,7 +78,7 @@ func (s *EventStreamer) forward(event *Event) {
 		if ShouldSendEvent(event, subscriber) {
 			select {
 			case subscriber.ch <- event:
-				ll.Debug("send event to", l.Int64("Name", subscriber.AccountID), l.Int64("UserID", subscriber.UserID), l.Any("event", event))
+				ll.Debug("send event to", l.ID("Name", subscriber.AccountID), l.ID("UserID", subscriber.AccountID), l.Any("event", event))
 
 			default:
 				ll.Info("out of channel buffer, drop event")
@@ -96,9 +93,9 @@ func ShouldSendEvent(event *Event, subscriber *Subscriber) bool {
 		(event.UserID != 0 && event.UserID == subscriber.UserID)
 }
 
-func (s *EventStreamer) Subscribe(accountID int64, userID int64) (id int64, ch <-chan *Event) {
+func (s *EventStreamer) Subscribe(accountID dot.ID, userID dot.ID) (id int64, ch <-chan *Event) {
 	subscriber := &Subscriber{
-		ID:        cm.NewID(),
+		ID:        cm.RandomInt64(),
 		AllEvents: true,
 		AccountID: accountID,
 		UserID:    userID,
@@ -171,8 +168,6 @@ func (s *EventStreamer) HandleEventStream(c *httpx.Context) error {
 	}
 }
 
-var marshaler = jsonpb.Marshaler{OrigName: true, EmitDefaults: true}
-
 func writeEvent(w http.ResponseWriter, event *Event) {
 	if event.retryInSecond != 0 {
 		_, _ = fmt.Fprintf(w, "retry: %d000\n", event.retryInSecond)
@@ -186,11 +181,6 @@ func writeEvent(w http.ResponseWriter, event *Event) {
 
 	case string:
 		_, _ = fmt.Fprintf(w, "data: %s\n\n", payload)
-
-	case proto.Message:
-		_, _ = fmt.Fprint(w, "data: ")
-		_ = marshaler.Marshal(w, payload)
-		_, _ = fmt.Fprint(w, "\n\n")
 
 	default:
 		panic("unsupported payload type")

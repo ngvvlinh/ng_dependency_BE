@@ -5,25 +5,26 @@ import (
 
 	"etop.vn/api/main/etop"
 	"etop.vn/api/main/inventory"
+	"etop.vn/capi/dot"
 )
 
 // +gen:event:topic=event/stocktake
 
 type StocktakeConfirmedEvent struct {
-	StocktakeID          int64
-	ShopID               int64
+	StocktakeID          dot.ID
+	ShopID               dot.ID
 	Overstock            bool
-	ConfirmedBy          int64
+	ConfirmedBy          dot.ID
 	AutoInventoryVoucher inventory.AutoInventoryVoucher
 }
 
 type ShopStocktake struct {
-	ID            int64
-	ShopID        int64
+	ID            dot.ID
+	ShopID        dot.ID
 	TotalQuantity int32
 
-	CreatedBy    int64
-	UpdatedBy    int64
+	CreatedBy    dot.ID
+	UpdatedBy    dot.ID
 	CancelReason string
 
 	Note     string
@@ -40,10 +41,10 @@ type ShopStocktake struct {
 }
 
 type StocktakeLine struct {
-	ProductID   int64
+	ProductID   dot.ID
 	ProductName string
 
-	VariantID   int64
+	VariantID   dot.ID
 	OldQuantity int32
 	NewQuantity int32
 	VariantName string

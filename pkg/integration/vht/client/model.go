@@ -3,6 +3,8 @@ package client
 import (
 	"net/http"
 	"time"
+
+	"etop.vn/capi/dot"
 )
 
 // Client define header and url of request
@@ -55,7 +57,7 @@ type VhtCallHistory struct {
 	RecordingPath   string `json:"recording_path"`
 	RecordingUrl    string `json:"recording_url"`
 	RecordFileSize  int32  `json:"record_file_size"`
-	EtopAccountID   int64  `json:"etop_account_"id`
+	EtopAccountID   dot.ID `json:"etop_account_"id`
 	VtigerAccountID string `json:"vtiger_account_id"`
 }
 

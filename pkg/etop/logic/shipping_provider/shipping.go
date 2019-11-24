@@ -9,12 +9,13 @@ import (
 	pborder "etop.vn/api/pb/etop/order"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/etop/model"
+	"etop.vn/capi/dot"
 	"etop.vn/common/l"
 )
 
 var ll = l.New()
 
-func (ctrl *ProviderManager) GetExternalShippingServices(ctx context.Context, accountID int64, q *pborder.GetExternalShippingServicesRequest) ([]*model.AvailableShippingService, error) {
+func (ctrl *ProviderManager) GetExternalShippingServices(ctx context.Context, accountID dot.ID, q *pborder.GetExternalShippingServicesRequest) ([]*model.AvailableShippingService, error) {
 	fromQuery := &location.FindOrGetLocationQuery{
 		ProvinceCode: q.FromProvinceCode,
 		DistrictCode: q.FromDistrictCode,

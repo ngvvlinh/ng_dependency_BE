@@ -14,6 +14,7 @@ import (
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/cmsql"
 	cc "etop.vn/backend/pkg/common/config"
+	"etop.vn/capi/dot"
 	"etop.vn/common/l"
 )
 
@@ -39,10 +40,9 @@ func main() {
 		ll.Fatal("Error while connecting database", l.Error(err))
 	}
 
-	mapReceipt := make(map[int64]*model.Receipt)
+	mapReceipt := make(map[dot.ID]*model.Receipt)
 	{
-		fromID := int64(0)
-
+		var fromID dot.ID
 		for {
 			receipts, err := scanReceipts(fromID)
 			if err != nil {
@@ -63,11 +63,11 @@ func main() {
 	{
 		count, errCount, updatedCount := len(mapReceipt), 0, 0
 		maxGoroutines := 8
-		ch := make(chan int64, maxGoroutines)
+		ch := make(chan dot.ID, maxGoroutines)
 		chInsert := make(chan error, maxGoroutines)
 		for receiptID, receipt := range mapReceipt {
 			ch <- receiptID
-			go func(id, traderID int64) (_err error) {
+			go func(id, traderID dot.ID) (_err error) {
 				defer func() {
 					<-ch
 					chInsert <- _err
@@ -93,7 +93,7 @@ func main() {
 	}
 }
 
-func scanReceipts(fromID int64) (receipts model.Receipts, err error) {
+func scanReceipts(fromID dot.ID) (receipts model.Receipts, err error) {
 	err = db.
 		Where("id > ?", fromID).
 		Where("deleted_at is null").
@@ -103,7 +103,7 @@ func scanReceipts(fromID int64) (receipts model.Receipts, err error) {
 	return
 }
 
-func getTrader(traderID int64) (trader *model.Trader, err error) {
+func getTrader(traderID dot.ID) (trader *model.Trader, err error) {
 	var tradersModel tradermodel.ShopTraders
 	err = db.
 		Where("id = ?", traderID).
@@ -181,7 +181,7 @@ func getTrader(traderID int64) (trader *model.Trader, err error) {
 	return
 }
 
-func updateTraderForReceipt(ID int64, trader *model.Trader) (err error) {
+func updateTraderForReceipt(ID dot.ID, trader *model.Trader) (err error) {
 	traderJSON, err := json.Marshal(trader)
 	if err != nil {
 		return err

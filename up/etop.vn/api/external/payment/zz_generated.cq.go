@@ -11,6 +11,7 @@ import (
 
 	etop "etop.vn/api/main/etop"
 	capi "etop.vn/capi"
+	dot "etop.vn/capi/dot"
 )
 
 type Command interface{ command() }
@@ -58,7 +59,7 @@ func (h AggregateHandler) HandleCreateOrUpdatePayment(ctx context.Context, msg *
 }
 
 type UpdateExternalPaymentInfoCommand struct {
-	ID              int64
+	ID              dot.ID
 	Amount          int
 	Status          etop.Status4
 	State           PaymentState
@@ -85,7 +86,7 @@ func (h QueryServiceHandler) HandleGetPaymentByExternalTransID(ctx context.Conte
 }
 
 type GetPaymentByIDQuery struct {
-	ID int64
+	ID dot.ID
 
 	Result *Payment `json:"-"`
 }
@@ -155,7 +156,7 @@ func (q *GetPaymentByExternalTransIDQuery) GetArgs(ctx context.Context) (_ conte
 		q.TransactionID
 }
 
-func (q *GetPaymentByIDQuery) GetArgs(ctx context.Context) (_ context.Context, ID int64) {
+func (q *GetPaymentByIDQuery) GetArgs(ctx context.Context) (_ context.Context, ID dot.ID) {
 	return ctx,
 		q.ID
 }

@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"etop.vn/backend/pkg/etop/model"
+	"etop.vn/capi/dot"
 )
 
 type AccountAuthStore struct {
@@ -23,7 +24,7 @@ func (s *AccountAuthStore) Key(key string) *AccountAuthStore {
 	return s
 }
 
-func (s *AccountAuthStore) AccountID(id int64) *AccountAuthStore {
+func (s *AccountAuthStore) AccountID(id dot.ID) *AccountAuthStore {
 	s.preds = append(s.preds, s.ft.ByAccountID(id))
 	return s
 }

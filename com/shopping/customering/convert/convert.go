@@ -9,6 +9,7 @@ import (
 	"etop.vn/api/main/etop"
 	"etop.vn/api/shopping/addressing"
 	"etop.vn/api/shopping/customering"
+	_ "etop.vn/api/shopping/tradering"
 	orderconvert "etop.vn/backend/com/main/ordering/convert"
 	"etop.vn/backend/com/shopping/customering/model"
 	cm "etop.vn/backend/pkg/common"

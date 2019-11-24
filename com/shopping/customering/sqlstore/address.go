@@ -9,6 +9,7 @@ import (
 	"etop.vn/backend/pkg/common/cmsql"
 	"etop.vn/backend/pkg/common/sq"
 	"etop.vn/backend/pkg/common/sqlstore"
+	"etop.vn/capi/dot"
 )
 
 type AddressStoreFactory func(context.Context) *AddressStore
@@ -31,22 +32,22 @@ type AddressStore struct {
 	includeDeleted sqlstore.IncludeDeleted
 }
 
-func (s *AddressStore) ID(id int64) *AddressStore {
+func (s *AddressStore) ID(id dot.ID) *AddressStore {
 	s.preds = append(s.preds, s.ft.ByID(id))
 	return s
 }
 
-func (s *AddressStore) IDs(ids ...int64) *AddressStore {
+func (s *AddressStore) IDs(ids ...dot.ID) *AddressStore {
 	s.preds = append(s.preds, sq.PrefixedIn(&s.ft.prefix, "id", ids))
 	return s
 }
 
-func (s *AddressStore) ShopID(shopID int64) *AddressStore {
+func (s *AddressStore) ShopID(shopID dot.ID) *AddressStore {
 	s.preds = append(s.preds, s.ft.ByShopID(shopID))
 	return s
 }
 
-func (s *AddressStore) ShopTraderID(shopID, traderID int64) *AddressStore {
+func (s *AddressStore) ShopTraderID(shopID, traderID dot.ID) *AddressStore {
 	s.preds = append(s.preds, s.ft.ByShopID(shopID))
 	s.preds = append(s.preds, s.ft.ByTraderID(traderID))
 	return s
@@ -57,7 +58,7 @@ func (s *AddressStore) IsDefault(isDefault bool) *AddressStore {
 	return s
 }
 
-func (s *AddressStore) UpdateStatusAddresses(shopID, traderID int64, isDefault bool) error {
+func (s *AddressStore) UpdateStatusAddresses(shopID, traderID dot.ID, isDefault bool) error {
 	_, err := s.query().Where(
 		s.ft.ByShopID(shopID),
 		s.ft.ByTraderID(traderID)).
@@ -69,7 +70,7 @@ func (s *AddressStore) UpdateStatusAddresses(shopID, traderID int64, isDefault b
 	return err
 }
 
-func (s *AddressStore) SetDefaultAddress(ID, shopID, traderID int64) (int, error) {
+func (s *AddressStore) SetDefaultAddress(ID, shopID, traderID dot.ID) (int, error) {
 	sqlstore.MustNoPreds(s.preds)
 	updated, err := s.query().Where(
 		s.ft.ByID(ID),

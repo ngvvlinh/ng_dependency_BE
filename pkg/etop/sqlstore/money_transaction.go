@@ -16,6 +16,7 @@ import (
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/etop/model"
+	"etop.vn/capi/dot"
 )
 
 func init() {
@@ -123,8 +124,8 @@ func createMoneyTransactions(ctx context.Context, x Qx, cmd *modelx.CreateMoneyT
 	return nil
 }
 
-func CalcFulfillmentsInfo(fulfillments []*shipmodel.Fulfillment) (totalCOD int, totalAmount int, totalOrders int, totalShippingFee int, ffmIDs []int64) {
-	ffmIDs = make([]int64, len(fulfillments))
+func CalcFulfillmentsInfo(fulfillments []*shipmodel.Fulfillment) (totalCOD int, totalAmount int, totalOrders int, totalShippingFee int, ffmIDs []dot.ID) {
+	ffmIDs = make([]dot.ID, len(fulfillments))
 	totalCOD = 0
 	totalAmount = 0
 	totalOrders = 0
@@ -293,7 +294,7 @@ func GetMoneyTransactions(ctx context.Context, query *modelx.GetMoneyTransaction
 			}
 		}
 		if query.IncludeFulfillments {
-			moneyTransactionIDs := make([]int64, len(moneyTransactions))
+			moneyTransactionIDs := make([]dot.ID, len(moneyTransactions))
 			for i, transaction := range moneyTransactions {
 				moneyTransactionIDs[i] = transaction.ID
 			}
@@ -303,7 +304,7 @@ func GetMoneyTransactions(ctx context.Context, query *modelx.GetMoneyTransaction
 				Find((*shipmodely.FulfillmentExtendeds)(&fulfillments)); err != nil {
 				return err
 			}
-			ffmsByMoneyTransactionID := make(map[int64][]*shipmodely.FulfillmentExtended)
+			ffmsByMoneyTransactionID := make(map[dot.ID][]*shipmodely.FulfillmentExtended)
 			for _, ffm := range fulfillments {
 				ffmsByMoneyTransactionID[ffm.MoneyTransactionID] = append(ffmsByMoneyTransactionID[ffm.MoneyTransactionID], ffm)
 			}
@@ -584,7 +585,7 @@ func CreateMoneyTransactionShippingExternal(ctx context.Context, cmd *modelx.Cre
 			return err
 		}
 
-		ffmIDs := make([]int64, 0, len(cmd.Lines))
+		ffmIDs := make([]dot.ID, 0, len(cmd.Lines))
 		for _, line := range cmd.Lines {
 			createCmd := &modelx.CreateMoneyTransactionShippingExternalLine{
 				ExternalCode:                       line.ExternalCode,
@@ -723,7 +724,7 @@ func RemoveMoneyTransactionShippingExternalLines(ctx context.Context, cmd *model
 		Find((*txmodel.MoneyTransactionShippingExternalLines)(&lines)); err != nil {
 		return err
 	}
-	ffmIDs := make([]int64, 0, len(cmd.LineIDs))
+	ffmIDs := make([]dot.ID, 0, len(cmd.LineIDs))
 	for _, id := range cmd.LineIDs {
 		found := false
 		for _, line := range lines {
@@ -878,8 +879,8 @@ func UpdateMoneyTransactionShippingExternal(ctx context.Context, cmd *modelx.Upd
     	* Các ffms returned còn lại để nguyên, cho vào phiên sau
 */
 
-func PreprocessMoneyTransactionExternal(ctx context.Context, externalMoneyTransactionExtended *txmodel.MoneyTransactionShippingExternalExtended) (shopFfmMap map[int64][]*shipmodel.Fulfillment, _err error) {
-	shopFfmMap = make(map[int64][]*shipmodel.Fulfillment)
+func PreprocessMoneyTransactionExternal(ctx context.Context, externalMoneyTransactionExtended *txmodel.MoneyTransactionShippingExternalExtended) (shopFfmMap map[dot.ID][]*shipmodel.Fulfillment, _err error) {
+	shopFfmMap = make(map[dot.ID][]*shipmodel.Fulfillment)
 	if externalMoneyTransactionExtended.Status != model.S3Zero {
 		_err = cm.Error(cm.FailedPrecondition, "Can not confirm this money transaction", nil).WithMetap("id", externalMoneyTransactionExtended.ID)
 		return shopFfmMap, _err
@@ -952,9 +953,9 @@ func ConfirmMoneyTransactionShippingExternals(ctx context.Context, cmd *modelx.C
 	}
 	externalTransactions := query.Result.MoneyTransactionShippingExternals
 
-	var externalTransactionIDs []int64
-	var shopIDs []int64
-	shopFfmMap := make(map[int64][]*shipmodel.Fulfillment)
+	var externalTransactionIDs []dot.ID
+	var shopIDs []dot.ID
+	shopFfmMap := make(map[dot.ID][]*shipmodel.Fulfillment)
 	for _, externalTransaction := range externalTransactions {
 		_shopFfmMap, err := PreprocessMoneyTransactionExternal(ctx, externalTransaction)
 		if err != nil {
@@ -963,7 +964,7 @@ func ConfirmMoneyTransactionShippingExternals(ctx context.Context, cmd *modelx.C
 		externalTransactionIDs = append(externalTransactionIDs, externalTransaction.ID)
 		for shopId, ffms := range _shopFfmMap {
 			shopFfmMap[shopId] = mergeFulfillments(shopFfmMap[shopId], ffms)
-			if !cm.ContainInt64(shopIDs, shopId) {
+			if !cm.IDsContain(shopIDs, shopId) {
 				shopIDs = append(shopIDs, shopId)
 			}
 		}
@@ -973,7 +974,7 @@ func ConfirmMoneyTransactionShippingExternals(ctx context.Context, cmd *modelx.C
 		// make sure do not dupplicate ffm
 		for shopId, ffms := range _shopFfmMap {
 			shopFfmMap[shopId] = mergeFulfillments(shopFfmMap[shopId], ffms)
-			if !cm.ContainInt64(shopIDs, shopId) {
+			if !cm.IDsContain(shopIDs, shopId) {
 				shopIDs = append(shopIDs, shopId)
 			}
 		}
@@ -985,7 +986,7 @@ func ConfirmMoneyTransactionShippingExternals(ctx context.Context, cmd *modelx.C
 		return err
 	}
 
-	shopsMap := make(map[int64]*model.Shop)
+	shopsMap := make(map[dot.ID]*model.Shop)
 	for _, shop := range shopsQuery.Result.Shops {
 		shopsMap[shop.ID] = shop
 	}
@@ -1016,7 +1017,7 @@ func ConfirmMoneyTransactionShippingExternals(ctx context.Context, cmd *modelx.C
 
 func mergeFulfillments(ffms []*shipmodel.Fulfillment, subFfms []*shipmodel.Fulfillment) []*shipmodel.Fulfillment {
 	mergeFfms := append(ffms, subFfms...)
-	ffmsMap := make(map[int64]*shipmodel.Fulfillment)
+	ffmsMap := make(map[dot.ID]*shipmodel.Fulfillment)
 	for _, _ffm := range mergeFfms {
 		ffmsMap[_ffm.ID] = _ffm
 	}
@@ -1048,9 +1049,9 @@ func getExtraFfms(provider model.ShippingProvider, isNoneCOD bool, isReturned bo
 	return ffms, nil
 }
 
-func combineWithExtraFfms() map[int64][]*shipmodel.Fulfillment {
+func combineWithExtraFfms() map[dot.ID][]*shipmodel.Fulfillment {
 	var ffmAdditionals []*shipmodel.Fulfillment
-	shopFfmMap := make(map[int64][]*shipmodel.Fulfillment)
+	shopFfmMap := make(map[dot.ID][]*shipmodel.Fulfillment)
 	// merge with GHN's ffms returned or (ffm delivered and total_cod_amount = 0)
 	GHNFfms, _ := getExtraFfms(model.TypeGHN, true, true)
 	ffmAdditionals = append(ffmAdditionals, GHNFfms...)
@@ -1139,7 +1140,7 @@ func GetMoneyTransactionShippingExternals(ctx context.Context, query *modelx.Get
 			return err
 		}
 
-		moneyTransactionIDs := make([]int64, len(moneyTransactions))
+		moneyTransactionIDs := make([]dot.ID, len(moneyTransactions))
 		for i, transaction := range moneyTransactions {
 			moneyTransactionIDs[i] = transaction.ID
 		}
@@ -1149,7 +1150,7 @@ func GetMoneyTransactionShippingExternals(ctx context.Context, query *modelx.Get
 			Find((*txmodel.MoneyTransactionShippingExternalLineExtendeds)(&lines)); err != nil {
 			return err
 		}
-		linesMoneyTransactionHash := make(map[int64][]*txmodel.MoneyTransactionShippingExternalLineExtended)
+		linesMoneyTransactionHash := make(map[dot.ID][]*txmodel.MoneyTransactionShippingExternalLineExtended)
 		for _, line := range lines {
 			linesMoneyTransactionHash[line.MoneyTransactionShippingExternalID] = append(linesMoneyTransactionHash[line.MoneyTransactionShippingExternalID], line)
 		}
@@ -1457,7 +1458,7 @@ func GetMoneyTransactionShippingEtop(ctx context.Context, query *modelx.GetMoney
 	if err := x.Table("money_transaction_shipping").Where("money_transaction_shipping_etop_id = ?", query.ID).Find((*txmodel.MoneyTransactionShippings)(&moneyTransactionShippings)); err != nil {
 		return err
 	}
-	moneyTransactionShippingIDs := make([]int64, len(moneyTransactionShippings))
+	moneyTransactionShippingIDs := make([]dot.ID, len(moneyTransactionShippings))
 	for i, mt := range moneyTransactionShippings {
 		moneyTransactionShippingIDs[i] = mt.ID
 	}
@@ -1502,7 +1503,7 @@ func GetMoneyTransactionShippingEtops(ctx context.Context, query *modelx.GetMone
 		if err := s2.Find((*txmodel.MoneyTransactionShippingEtops)(&moneyTransactionShippingEtops)); err != nil {
 			return err
 		}
-		mtseIDs := make([]int64, len(moneyTransactionShippingEtops))
+		mtseIDs := make([]dot.ID, len(moneyTransactionShippingEtops))
 		for i, mtse := range moneyTransactionShippingEtops {
 			mtseIDs[i] = mtse.ID
 		}
@@ -1510,7 +1511,7 @@ func GetMoneyTransactionShippingEtops(ctx context.Context, query *modelx.GetMone
 		if err := x.Table("money_transaction_shipping").In("money_transaction_shipping_etop_id", mtseIDs).Find((*txmodel.MoneyTransactionShippings)(&moneyTransactionShippings)); err != nil {
 			return err
 		}
-		mtsIDs := make([]int64, len(moneyTransactionShippings))
+		mtsIDs := make([]dot.ID, len(moneyTransactionShippings))
 		for i, mt := range moneyTransactionShippings {
 			mtsIDs[i] = mt.ID
 		}
@@ -1521,7 +1522,7 @@ func GetMoneyTransactionShippingEtops(ctx context.Context, query *modelx.GetMone
 		if err := bus.Dispatch(ctx, mtQuery); err != nil {
 			return err
 		}
-		moneyTransactionsMap := make(map[int64][]*txmodely.MoneyTransactionExtended)
+		moneyTransactionsMap := make(map[dot.ID][]*txmodely.MoneyTransactionExtended)
 		for _, mt := range mtQuery.Result.MoneyTransactions {
 			moneyTransactionsMap[mt.MoneyTransactionShippingEtopID] = append(moneyTransactionsMap[mt.MoneyTransactionShippingEtopID], mt)
 		}
@@ -1563,11 +1564,11 @@ func UpdateMoneyTransactionShippingEtop(ctx context.Context, cmd *modelx.UpdateM
 	if err := s2.Find((*txmodel.MoneyTransactionShippings)(&moneyTransactionShippings)); err != nil {
 		return err
 	}
-	oldIDs := make([]int64, len(moneyTransactionShippings))
+	oldIDs := make([]dot.ID, len(moneyTransactionShippings))
 	for i, mt := range moneyTransactionShippings {
 		oldIDs[i] = mt.ID
 	}
-	newIDs := PatchID(oldIDs, cmd.Adds, cmd.Deletes, cmd.ReplaceAll)
+	newIDs := patchID(oldIDs, cmd.Adds, cmd.Deletes, cmd.ReplaceAll)
 	mtse, err := prepareMoneyTransactionShippingEtop(ctx, cmd.ID, newIDs)
 	if err != nil {
 		return err
@@ -1609,25 +1610,25 @@ func UpdateMoneyTransactionShippingEtop(ctx context.Context, cmd *modelx.UpdateM
 	return nil
 }
 
-func PatchID(list []int64, adds, deletes, replaceAll []int64) []int64 {
+func patchID(list []dot.ID, adds, deletes, replaceAll []dot.ID) []dot.ID {
 	if len(replaceAll) > 0 {
 		return replaceAll
 	}
-	newList := make([]int64, 0, len(list)+len(adds))
+	newList := make([]dot.ID, 0, len(list)+len(adds))
 	for _, id := range list {
-		if !cm.ContainInt64(newList, id) && !cm.ContainInt64(deletes, id) {
+		if !cm.IDsContain(newList, id) && !cm.IDsContain(deletes, id) {
 			newList = append(newList, id)
 		}
 	}
 	for _, id := range adds {
-		if !cm.ContainInt64(newList, id) && !cm.ContainInt64(deletes, id) {
+		if !cm.IDsContain(newList, id) && !cm.IDsContain(deletes, id) {
 			newList = append(newList, id)
 		}
 	}
 	return newList
 }
 
-func prepareMoneyTransactionShippingEtop(ctx context.Context, mtseID int64, mtIDs []int64) (*txmodel.MoneyTransactionShippingEtop, error) {
+func prepareMoneyTransactionShippingEtop(ctx context.Context, mtseID dot.ID, mtIDs []dot.ID) (*txmodel.MoneyTransactionShippingEtop, error) {
 	query := &modelx.GetMoneyTransactions{
 		IDs:                 mtIDs,
 		IncludeFulfillments: true,
@@ -1638,7 +1639,7 @@ func prepareMoneyTransactionShippingEtop(ctx context.Context, mtseID int64, mtID
 
 	moneyTransactions := query.Result.MoneyTransactions
 	if len(mtIDs) != len(moneyTransactions) {
-		var errID int64
+		var errID dot.ID
 		stop := false
 		for _, id := range mtIDs {
 			for _, mt := range moneyTransactions {
@@ -1707,7 +1708,7 @@ func DeleteMoneyTransactionShippingEtop(ctx context.Context, cmd *modelx.DeleteM
 	if err := x.Table("money_transaction_shipping").Where("money_transaction_shipping_etop_id = ?", cmd.ID).Find((*txmodel.MoneyTransactionShippings)(&moneyTransactionShippings)); err != nil {
 		return err
 	}
-	var mtIDs = make([]int64, len(moneyTransactionShippings))
+	var mtIDs = make([]dot.ID, len(moneyTransactionShippings))
 	for i, mt := range moneyTransactionShippings {
 		if mt.Status == model.S3Positive {
 			return cm.Errorf(cm.FailedPrecondition, nil, "Can not delete this MoneyTransactionShippingEtop. This MoneyTransactionShipping (id = %v) was confirmed", mt.ID)
@@ -1749,7 +1750,7 @@ func ConfirmMoneyTransactionShippingEtop(ctx context.Context, cmd *modelx.Confir
 
 	var _moneyTransactions = make([]*txmodel.MoneyTransactionShipping, len(moneyTransactionShippings))
 	totalCOD, totalAmount, totalOrders, totalFee := 0, 0, 0, 0
-	var ffmIDs []int64
+	var ffmIDs []dot.ID
 	for i, mt := range moneyTransactionShippings {
 		if mt.Status != model.S3Zero {
 			return cm.Errorf(cm.FailedPrecondition, nil, "Can not confirm this MoneyTransactionShipping (money_transaction_shipping_id = %v).", mt.ID)

@@ -14,3 +14,7 @@ func (s *CreditType) ToModel() string {
 	}
 	return CreditType_name[int32(*s)]
 }
+
+func (x CreditType) MarshalJSON() ([]byte, error) {
+	return []byte(`"` + x.String() + `"`), nil
+}

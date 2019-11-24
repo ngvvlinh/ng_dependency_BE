@@ -4,6 +4,7 @@ package sqlstore
 
 import (
 	"etop.vn/backend/pkg/common/sq"
+	"etop.vn/capi/dot"
 )
 
 type ShopTraderFilters struct{ prefix string }
@@ -20,7 +21,7 @@ func (ft ShopTraderFilters) Prefix() string {
 	return ft.prefix
 }
 
-func (ft *ShopTraderFilters) ByID(ID int64) *sq.ColumnFilter {
+func (ft *ShopTraderFilters) ByID(ID dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "id",
@@ -29,7 +30,7 @@ func (ft *ShopTraderFilters) ByID(ID int64) *sq.ColumnFilter {
 	}
 }
 
-func (ft *ShopTraderFilters) ByIDPtr(ID *int64) *sq.ColumnFilterPtr {
+func (ft *ShopTraderFilters) ByIDPtr(ID *dot.ID) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "id",
@@ -39,7 +40,7 @@ func (ft *ShopTraderFilters) ByIDPtr(ID *int64) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft *ShopTraderFilters) ByShopID(ShopID int64) *sq.ColumnFilter {
+func (ft *ShopTraderFilters) ByShopID(ShopID dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "shop_id",
@@ -48,7 +49,7 @@ func (ft *ShopTraderFilters) ByShopID(ShopID int64) *sq.ColumnFilter {
 	}
 }
 
-func (ft *ShopTraderFilters) ByShopIDPtr(ShopID *int64) *sq.ColumnFilterPtr {
+func (ft *ShopTraderFilters) ByShopIDPtr(ShopID *dot.ID) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "shop_id",

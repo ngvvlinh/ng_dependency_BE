@@ -8,6 +8,7 @@ import (
 	ordermodel "etop.vn/backend/com/main/ordering/model"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/etop/model"
+	"etop.vn/capi/dot"
 	"etop.vn/common/xerrors"
 )
 
@@ -26,11 +27,11 @@ func (c Carrier) ToString() string {
 }
 
 type ShipnowFulfillment struct {
-	ID int64
+	ID dot.ID
 
-	ShopID    int64
-	PartnerID int64
-	OrderIDs  []int64
+	ShopID    dot.ID
+	PartnerID dot.ID
+	OrderIDs  []dot.ID
 
 	PickupAddress *ordermodel.OrderAddress
 
@@ -90,7 +91,7 @@ type DeliveryPoint struct {
 	ShippingAddress *ordermodel.OrderAddress `json:"shipping_address"`
 	Items           []*ordermodel.OrderLine  `json:"items"`
 
-	OrderID          int64       `json:"order_id"`
+	OrderID          dot.ID      `json:"order_id"`
 	OrderCode        string      `json:"order_code"`
 	GrossWeight      int32       `json:"gross_weight"`
 	ChargeableWeight int32       `json:"chargeable_weight"`

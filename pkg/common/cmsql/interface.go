@@ -7,6 +7,7 @@ import (
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/sq"
 	"etop.vn/backend/pkg/common/sq/core"
+	"etop.vn/capi/dot"
 )
 
 // QueryInterface wraps common/sql.QueryInterface
@@ -42,7 +43,7 @@ type QueryInterface interface {
 	NotIn(column string, args ...interface{}) Query
 	Exists(column string, exists bool) Query
 	IsNull(column string, null bool) Query
-	InOrEqIDs(column string, args []int64) Query
+	InOrEqIDs(column string, args []dot.ID) Query
 
 	Preload(table string, preds ...interface{}) Query
 	Apply(funcs ...func(core.CommonQuery)) Query
@@ -197,7 +198,7 @@ func (q Query) IsNull(column string, null bool) Query {
 }
 
 // InOrEqIDs ...
-func (q Query) InOrEqIDs(column string, ids []int64) Query {
+func (q Query) InOrEqIDs(column string, ids []dot.ID) Query {
 	return inOrEqIDs(q.query, column, ids)
 }
 
@@ -332,7 +333,7 @@ func (db Database) IsNull(column string, null bool) Query {
 }
 
 // InOrEqIDs ...
-func (db Database) InOrEqIDs(column string, ids []int64) Query {
+func (db Database) InOrEqIDs(column string, ids []dot.ID) Query {
 	return inOrEqIDs(&db.db, column, ids)
 }
 
@@ -471,7 +472,7 @@ func (tx tx) IsNull(column string, null bool) Query {
 }
 
 // InOrEqIDs ...
-func (tx tx) InOrEqIDs(column string, ids []int64) Query {
+func (tx tx) InOrEqIDs(column string, ids []dot.ID) Query {
 	return inOrEqIDs(tx.tx, column, ids)
 }
 
@@ -600,7 +601,7 @@ func (q Query) BuildFind(objs core.IFind) (string, []interface{}, error) {
 	return q.query.BuildFind(objs)
 }
 
-func inOrEqIDs(q sq.CommonQuery, column string, ids []int64) Query {
+func inOrEqIDs(q sq.CommonQuery, column string, ids []dot.ID) Query {
 	if len(ids) == 1 {
 		return Query{q.Where(column+`=?`, ids[0])}
 	}

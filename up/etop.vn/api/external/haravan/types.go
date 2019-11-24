@@ -2,9 +2,11 @@ package haravan
 
 import (
 	"time"
+
+	"etop.vn/capi/dot"
 )
 
-var HaravanPartnerID int64 = 1000421281650350414
+var HaravanPartnerID dot.ID = 1000421281650350414
 
 type Address struct {
 	Country      string `json:"country"`

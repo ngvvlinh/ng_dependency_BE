@@ -5,10 +5,11 @@ import (
 	"time"
 
 	"etop.vn/api/main/etop"
+	"etop.vn/capi/dot"
 )
 
 type Payment struct {
-	ID              int64
+	ID              dot.ID
 	Amount          int
 	Status          etop.Status4
 	State           PaymentState

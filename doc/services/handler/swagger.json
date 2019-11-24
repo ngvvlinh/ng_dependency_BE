@@ -74,11 +74,11 @@
       "type": "object",
       "properties": {
         "account_id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "webhook_id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         }
       }

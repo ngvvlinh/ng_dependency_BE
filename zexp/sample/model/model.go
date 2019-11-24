@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"etop.vn/backend/pkg/common/sq"
+	"etop.vn/capi/dot"
 )
 
 //go:generate $ETOPDIR/backend/scripts/derive.sh
@@ -11,8 +12,8 @@ import (
 var _ = sqlgenFoo(&Foo{})
 
 type Foo struct {
-	ID        int64
-	AccountID int64
+	ID        dot.ID
+	AccountID dot.ID
 
 	ABC       string `sq:"'abc_2'"`
 	Def2      string
@@ -23,7 +24,7 @@ type Foo struct {
 var _ = sqlgenAccount(&Account{})
 
 type Account struct {
-	ID   int64
+	ID   dot.ID
 	Name string
 }
 

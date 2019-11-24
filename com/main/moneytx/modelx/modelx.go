@@ -8,12 +8,13 @@ import (
 	shipmodel "etop.vn/backend/com/main/shipping/model"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/etop/model"
+	"etop.vn/capi/dot"
 )
 
 // use for import csv file
 type CreateMoneyTransactions struct {
-	ShopIDMapFfms map[int64][]*shipmodel.Fulfillment
-	ShopIDMap     map[int64]*model.Shop
+	ShopIDMapFfms map[dot.ID][]*shipmodel.Fulfillment
+	ShopIDMap     map[dot.ID]*model.Shop
 
 	Result struct {
 		Created int
@@ -22,7 +23,7 @@ type CreateMoneyTransactions struct {
 
 type CreateMoneyTransaction struct {
 	Shop           *model.Shop
-	FulFillmentIDs []int64
+	FulFillmentIDs []dot.ID
 	TotalCOD       int
 	TotalAmount    int
 	TotalOrders    int
@@ -31,17 +32,17 @@ type CreateMoneyTransaction struct {
 }
 
 type GetMoneyTransaction struct {
-	ID     int64
-	ShopID int64
+	ID     dot.ID
+	ShopID dot.ID
 
 	Result *modely.MoneyTransactionExtended
 }
 
 type GetMoneyTransactions struct {
-	ShopID                             int64
-	IDs                                []int64
+	ShopID                             dot.ID
+	IDs                                []dot.ID
 	Paging                             *cm.Paging
-	MoneyTransactionShippingExternalID int64
+	MoneyTransactionShippingExternalID dot.ID
 	IncludeFulfillments                bool
 	Filters                            []cm.Filter
 
@@ -52,8 +53,8 @@ type GetMoneyTransactions struct {
 }
 
 type UpdateMoneyTransaction struct {
-	ID            int64
-	ShopID        int64
+	ID            dot.ID
+	ShopID        dot.ID
 	Note          string
 	InvoiceNumber string
 	BankAccount   *model.BankAccount
@@ -62,24 +63,24 @@ type UpdateMoneyTransaction struct {
 }
 
 type AddFfmsMoneyTransaction struct {
-	FulfillmentIDs     []int64
-	MoneyTransactionID int64
-	ShopID             int64
+	FulfillmentIDs     []dot.ID
+	MoneyTransactionID dot.ID
+	ShopID             dot.ID
 
 	Result *modely.MoneyTransactionExtended
 }
 
 type RemoveFfmsMoneyTransaction struct {
-	FulfillmentIDs     []int64
-	ShopID             int64
-	MoneyTransactionID int64
+	FulfillmentIDs     []dot.ID
+	ShopID             dot.ID
+	MoneyTransactionID dot.ID
 
 	Result *modely.MoneyTransactionExtended
 }
 
 type ConfirmMoneyTransaction struct {
-	MoneyTransactionID int64
-	ShopID             int64
+	MoneyTransactionID dot.ID
+	ShopID             dot.ID
 	TotalCOD           int
 	TotalAmount        int
 	TotalOrders        int
@@ -90,8 +91,8 @@ type ConfirmMoneyTransaction struct {
 }
 
 type DeleteMoneyTransaction struct {
-	MoneyTransactionID int64
-	ShopID             int64
+	MoneyTransactionID dot.ID
+	ShopID             dot.ID
 
 	Result struct {
 		Deleted int
@@ -110,7 +111,7 @@ type CreateMoneyTransactionShippingExternal struct {
 }
 
 type UpdateMoneyTransactionShippingExternal struct {
-	ID            int64
+	ID            dot.ID
 	BankAccount   *model.BankAccount
 	Note          string
 	InvoiceNumber string
@@ -126,21 +127,21 @@ type CreateMoneyTransactionShippingExternalLine struct {
 	EtopFulfillmentIdRaw               string
 	ExternalCustomer                   string
 	ExternalAddress                    string
-	MoneyTransactionShippingExternalID int64
+	MoneyTransactionShippingExternalID dot.ID
 	ExternalTotalShippingFee           int
 
 	Result *txmodel.MoneyTransactionShippingExternalLine
 }
 
 type RemoveMoneyTransactionShippingExternalLines struct {
-	MoneyTransactionShippingExternalID int64
-	LineIDs                            []int64
+	MoneyTransactionShippingExternalID dot.ID
+	LineIDs                            []dot.ID
 
 	Result *txmodel.MoneyTransactionShippingExternalExtended
 }
 
 type ConfirmMoneyTransactionShippingExternal struct {
-	ID int64
+	ID dot.ID
 
 	Result struct {
 		Updated int
@@ -148,7 +149,7 @@ type ConfirmMoneyTransactionShippingExternal struct {
 }
 
 type ConfirmMoneyTransactionShippingExternals struct {
-	IDs []int64
+	IDs []dot.ID
 
 	Result struct {
 		Updated int
@@ -156,7 +157,7 @@ type ConfirmMoneyTransactionShippingExternals struct {
 }
 
 type DeleteMoneyTransactionShippingExternal struct {
-	ID int64
+	ID dot.ID
 
 	Result struct {
 		Deleted int
@@ -164,13 +165,13 @@ type DeleteMoneyTransactionShippingExternal struct {
 }
 
 type GetMoneyTransactionShippingExternal struct {
-	ID int64
+	ID dot.ID
 
 	Result *txmodel.MoneyTransactionShippingExternalExtended
 }
 
 type GetMoneyTransactionShippingExternals struct {
-	IDs     []int64
+	IDs     []dot.ID
 	Paging  *cm.Paging
 	Filters []cm.Filter
 
@@ -181,7 +182,7 @@ type GetMoneyTransactionShippingExternals struct {
 }
 
 type CreateMoneyTransactionShippingEtop struct {
-	MoneyTransactionShippingIDs []int64
+	MoneyTransactionShippingIDs []dot.ID
 	BankAccount                 *model.BankAccount
 	Note                        string
 	InvoiceNumber               string
@@ -190,13 +191,13 @@ type CreateMoneyTransactionShippingEtop struct {
 }
 
 type GetMoneyTransactionShippingEtop struct {
-	ID int64
+	ID dot.ID
 
 	Result *modely.MoneyTransactionShippingEtopExtended
 }
 
 type GetMoneyTransactionShippingEtops struct {
-	IDs     []int64
+	IDs     []dot.ID
 	Paging  *cm.Paging
 	Status  *model.Status3
 	Filters []cm.Filter
@@ -207,10 +208,10 @@ type GetMoneyTransactionShippingEtops struct {
 	}
 }
 type UpdateMoneyTransactionShippingEtop struct {
-	ID            int64
-	Adds          []int64
-	Deletes       []int64
-	ReplaceAll    []int64
+	ID            dot.ID
+	Adds          []dot.ID
+	Deletes       []dot.ID
+	ReplaceAll    []dot.ID
 	BankAccount   *model.BankAccount
 	Note          string
 	InvoiceNumber string
@@ -219,7 +220,7 @@ type UpdateMoneyTransactionShippingEtop struct {
 }
 
 type ConfirmMoneyTransactionShippingEtop struct {
-	ID          int64
+	ID          dot.ID
 	TotalCOD    int
 	TotalAmount int
 	TotalOrders int
@@ -230,7 +231,7 @@ type ConfirmMoneyTransactionShippingEtop struct {
 }
 
 type DeleteMoneyTransactionShippingEtop struct {
-	ID int64
+	ID dot.ID
 
 	Result struct {
 		Deleted int

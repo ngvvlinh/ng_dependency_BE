@@ -10,6 +10,7 @@ import (
 	"etop.vn/backend/pkg/common/cmsql"
 	"etop.vn/backend/pkg/common/sq"
 	"etop.vn/backend/pkg/common/sqlstore"
+	"etop.vn/capi/dot"
 )
 
 type ShopProductCollectionStoreFactory func(context.Context) *ShopProductCollectionStore
@@ -52,22 +53,22 @@ func (s *ShopProductCollectionStore) Filters(filters meta.Filters) *ShopProductC
 	return s
 }
 
-func (s *ShopProductCollectionStore) ShopID(id int64) *ShopProductCollectionStore {
+func (s *ShopProductCollectionStore) ShopID(id dot.ID) *ShopProductCollectionStore {
 	s.preds = append(s.preds, s.ftShopProductCollection.ByShopID(id))
 	return s
 }
 
-func (s *ShopProductCollectionStore) IDs(ids []int64) *ShopProductCollectionStore {
+func (s *ShopProductCollectionStore) IDs(ids []dot.ID) *ShopProductCollectionStore {
 	s.preds = append(s.preds, sq.In("collection_id", ids))
 	return s
 }
 
-func (s *ShopProductCollectionStore) ProductID(id int64) *ShopProductCollectionStore {
+func (s *ShopProductCollectionStore) ProductID(id dot.ID) *ShopProductCollectionStore {
 	s.preds = append(s.preds, s.ftShopProductCollection.ByProductID(id))
 	return s
 }
 
-func (s *ShopProductCollectionStore) ProductIDs(ids []int64) *ShopProductCollectionStore {
+func (s *ShopProductCollectionStore) ProductIDs(ids []dot.ID) *ShopProductCollectionStore {
 	s.preds = append(s.preds, sq.In("product_id", ids))
 	return s
 }
@@ -77,7 +78,7 @@ func (s *ShopProductCollectionStore) CollectionID(ids ...int64) *ShopProductColl
 	return s
 }
 
-func (s *ShopProductCollectionStore) OptionalShopID(id int64) *ShopProductCollectionStore {
+func (s *ShopProductCollectionStore) OptionalShopID(id dot.ID) *ShopProductCollectionStore {
 	s.preds = append(s.preds, s.ftShopProductCollection.ByShopID(id).Optional())
 	return s
 }

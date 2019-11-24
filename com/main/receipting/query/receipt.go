@@ -9,6 +9,7 @@ import (
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/cmsql"
 	"etop.vn/backend/pkg/etop/model"
+	"etop.vn/capi/dot"
 )
 
 var _ receipting.QueryService = &ReceiptQuery{}
@@ -28,12 +29,12 @@ func (q *ReceiptQuery) MessageBus() receipting.QueryBus {
 	return receipting.NewQueryServiceHandler(q).RegisterHandlers(b)
 }
 
-func (q *ReceiptQuery) GetReceipt(ctx context.Context, id, ShopID int64) (*receipting.Receipt, error) {
+func (q *ReceiptQuery) GetReceipt(ctx context.Context, id, ShopID dot.ID) (*receipting.Receipt, error) {
 	receipt, err := q.store(ctx).ID(id).ShopID(ShopID).GetReceipt()
 	return receipt, err
 }
 
-func (q *ReceiptQuery) GetReceipts(ctx context.Context, shopID int64) ([]*receipting.Receipt, error) {
+func (q *ReceiptQuery) GetReceipts(ctx context.Context, shopID dot.ID) ([]*receipting.Receipt, error) {
 	receipts, err := q.store(ctx).ShopID(shopID).ListReceipts()
 	return receipts, err
 }
@@ -84,13 +85,13 @@ func (q *ReceiptQuery) ListReceiptsByRefsAndStatus(
 	return &receipting.ReceiptsResponse{Receipts: receipts}, nil
 }
 
-func (q *ReceiptQuery) GetReceiptByCode(ctx context.Context, code string, shopID int64) (*receipting.Receipt, error) {
+func (q *ReceiptQuery) GetReceiptByCode(ctx context.Context, code string, shopID dot.ID) (*receipting.Receipt, error) {
 	receipt, err := q.store(ctx).ShopID(shopID).Code(code).GetReceipt()
 	return receipt, err
 }
 
 func (q *ReceiptQuery) ListReceiptsByTraderIDsAndStatuses(
-	ctx context.Context, shopID int64, traderIDs []int64, statuses []etop.Status3,
+	ctx context.Context, shopID dot.ID, traderIDs []dot.ID, statuses []etop.Status3,
 ) (*receipting.ReceiptsResponse, error) {
 	query := q.store(ctx).ShopID(shopID).TraderIDs(traderIDs...)
 	if len(statuses) != 0 {

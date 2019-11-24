@@ -7,6 +7,7 @@ import (
 
 	m "etop.vn/backend/com/etc/log/payment/model"
 	"etop.vn/backend/pkg/common/sq"
+	"etop.vn/capi/dot"
 )
 
 type PaymentFilters struct{ prefix string }
@@ -23,7 +24,7 @@ func (ft PaymentFilters) Prefix() string {
 	return ft.prefix
 }
 
-func (ft *PaymentFilters) ByID(ID int64) *sq.ColumnFilter {
+func (ft *PaymentFilters) ByID(ID dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "id",
@@ -32,7 +33,7 @@ func (ft *PaymentFilters) ByID(ID int64) *sq.ColumnFilter {
 	}
 }
 
-func (ft *PaymentFilters) ByIDPtr(ID *int64) *sq.ColumnFilterPtr {
+func (ft *PaymentFilters) ByIDPtr(ID *dot.ID) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "id",

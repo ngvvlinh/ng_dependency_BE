@@ -9,6 +9,7 @@ import (
 	"etop.vn/api/main/shipnow/carrier/types"
 	shipnowtypes "etop.vn/api/main/shipnow/types"
 	shippingtypes "etop.vn/api/main/shipping/types"
+	"etop.vn/capi/dot"
 )
 
 type Manager interface {
@@ -23,16 +24,16 @@ type Manager interface {
 }
 
 type CreateExternalShipnowCommand struct {
-	ShopID               int64
-	ShipnowFulfillmentID int64
+	ShopID               dot.ID
+	ShipnowFulfillmentID dot.ID
 	PickupAddress        *ordertypes.Address
 	DeliveryPoints       []*shipnow.DeliveryPoint
 	ShippingNote         string
 }
 
 type CancelExternalShipnowCommand struct {
-	ShopID               int64
-	ShipnowFulfillmentID int64
+	ShopID               dot.ID
+	ShipnowFulfillmentID dot.ID
 	ExternalShipnowID    string
 	CarrierServiceCode   string
 	CancelReason         string
@@ -53,7 +54,7 @@ type ExternalShipnow struct {
 }
 
 type GetExternalShipnowServicesCommand struct {
-	ShopID         int64
+	ShopID         dot.ID
 	PickupAddress  *ordertypes.Address
 	DeliveryPoints []*shipnow.DeliveryPoint
 }
@@ -75,7 +76,7 @@ type RegisterExternalAccountResult struct {
 }
 
 type GetExternalAccountCommand struct {
-	OwnerID int64
+	OwnerID dot.ID
 	Carrier types.Carrier
 }
 
@@ -88,7 +89,7 @@ type ExternalAccount struct {
 }
 
 type VerifyExternalAccountCommand struct {
-	OwnerID int64
+	OwnerID dot.ID
 	Carrier types.Carrier
 }
 

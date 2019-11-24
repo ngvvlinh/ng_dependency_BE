@@ -8,6 +8,7 @@ import (
 	"etop.vn/backend/pkg/common/cmsql"
 	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/backend/pkg/etop/sqlstore"
+	"etop.vn/capi/dot"
 )
 
 type AccountUserStoreFactory func(context.Context) *AccountUserStore
@@ -27,12 +28,12 @@ type AccountUserStore struct {
 	ft    sqlstore.AccountUserFilters
 }
 
-func (s *AccountUserStore) ByAccountID(id int64) *AccountUserStore {
+func (s *AccountUserStore) ByAccountID(id dot.ID) *AccountUserStore {
 	s.preds = append(s.preds, s.ft.ByAccountID(id))
 	return s
 }
 
-func (s *AccountUserStore) ByUserID(id int64) *AccountUserStore {
+func (s *AccountUserStore) ByUserID(id dot.ID) *AccountUserStore {
 	s.preds = append(s.preds, s.ft.ByUserID(id))
 	return s
 }
@@ -44,8 +45,8 @@ func (s *AccountUserStore) GetAccountUserDB() (*model.AccountUser, error) {
 }
 
 type DeleteAccountUserArgs struct {
-	AccountID int64
-	UserID    int64
+	AccountID dot.ID
+	UserID    dot.ID
 }
 
 func (s *AccountUserStore) DeleteAccountUser(args DeleteAccountUserArgs) error {

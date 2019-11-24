@@ -11,6 +11,7 @@ import (
 	etop "etop.vn/api/main/etop"
 	types "etop.vn/api/main/ordering/types"
 	capi "etop.vn/capi"
+	dot "etop.vn/capi/dot"
 )
 
 type Command interface{ command() }
@@ -40,7 +41,7 @@ func (c QueryBus) DispatchAll(ctx context.Context, msgs ...Query) error {
 }
 
 type ReleaseOrdersForFfmCommand struct {
-	OrderIDs []int64
+	OrderIDs []dot.ID
 
 	Result *ReleaseOrdersForFfmResponse `json:"-"`
 }
@@ -51,9 +52,9 @@ func (h AggregateHandler) HandleReleaseOrdersForFfm(ctx context.Context, msg *Re
 }
 
 type ReserveOrdersForFfmCommand struct {
-	OrderIDs   []int64
+	OrderIDs   []dot.ID
 	Fulfill    types.Fulfill
-	FulfillIDs []int64
+	FulfillIDs []dot.ID
 
 	Result *ReserveOrdersForFfmResponse `json:"-"`
 }
@@ -64,9 +65,9 @@ func (h AggregateHandler) HandleReserveOrdersForFfm(ctx context.Context, msg *Re
 }
 
 type UpdateOrderPaymentInfoCommand struct {
-	ID            int64
+	ID            dot.ID
 	PaymentStatus etop.Status4
-	PaymentID     int64
+	PaymentID     dot.ID
 
 	Result struct {
 	} `json:"-"`
@@ -77,7 +78,7 @@ func (h AggregateHandler) HandleUpdateOrderPaymentInfo(ctx context.Context, msg 
 }
 
 type UpdateOrderShippingStatusCommand struct {
-	ID                         int64
+	ID                         dot.ID
 	FulfillmentShippingStates  []string
 	FulfillmentShippingStatus  etop.Status5
 	FulfillmentPaymentStatuses []int
@@ -93,7 +94,7 @@ func (h AggregateHandler) HandleUpdateOrderShippingStatus(ctx context.Context, m
 }
 
 type UpdateOrdersConfirmStatusCommand struct {
-	IDs           []int64
+	IDs           []dot.ID
 	ShopConfirm   etop.Status3
 	ConfirmStatus etop.Status3
 
@@ -106,7 +107,7 @@ func (h AggregateHandler) HandleUpdateOrdersConfirmStatus(ctx context.Context, m
 }
 
 type ValidateOrdersForShippingCommand struct {
-	OrderIDs []int64
+	OrderIDs []dot.ID
 
 	Result *ValidateOrdersForShippingResponse `json:"-"`
 }
@@ -128,7 +129,7 @@ func (h QueryServiceHandler) HandleGetOrderByCode(ctx context.Context, msg *GetO
 }
 
 type GetOrderByIDQuery struct {
-	ID int64
+	ID dot.ID
 
 	Result *Order `json:"-"`
 }
@@ -139,8 +140,8 @@ func (h QueryServiceHandler) HandleGetOrderByID(ctx context.Context, msg *GetOrd
 }
 
 type GetOrdersQuery struct {
-	ShopID int64
-	IDs    []int64
+	ShopID dot.ID
+	IDs    []dot.ID
 
 	Result *OrdersResponse `json:"-"`
 }
@@ -151,9 +152,9 @@ func (h QueryServiceHandler) HandleGetOrders(ctx context.Context, msg *GetOrders
 }
 
 type GetOrdersByIDsAndCustomerIDQuery struct {
-	ShopID     int64
-	IDs        []int64
-	CustomerID int64
+	ShopID     dot.ID
+	IDs        []dot.ID
+	CustomerID dot.ID
 
 	Result *OrdersResponse `json:"-"`
 }
@@ -164,8 +165,8 @@ func (h QueryServiceHandler) HandleGetOrdersByIDsAndCustomerID(ctx context.Conte
 }
 
 type ListOrdersByCustomerIDQuery struct {
-	ShopID     int64
-	CustomerID int64
+	ShopID     dot.ID
+	CustomerID dot.ID
 
 	Result *OrdersResponse `json:"-"`
 }
@@ -176,8 +177,8 @@ func (h QueryServiceHandler) HandleListOrdersByCustomerID(ctx context.Context, m
 }
 
 type ListOrdersByCustomerIDsQuery struct {
-	ShopID      int64
-	CustomerIDs []int64
+	ShopID      dot.ID
+	CustomerIDs []dot.ID
 
 	Result *OrdersResponse `json:"-"`
 }
@@ -327,20 +328,20 @@ func (q *GetOrdersQuery) SetGetOrdersArgs(args *GetOrdersArgs) {
 	q.IDs = args.IDs
 }
 
-func (q *GetOrdersByIDsAndCustomerIDQuery) GetArgs(ctx context.Context) (_ context.Context, shopID int64, IDs []int64, customerID int64) {
+func (q *GetOrdersByIDsAndCustomerIDQuery) GetArgs(ctx context.Context) (_ context.Context, shopID dot.ID, IDs []dot.ID, customerID dot.ID) {
 	return ctx,
 		q.ShopID,
 		q.IDs,
 		q.CustomerID
 }
 
-func (q *ListOrdersByCustomerIDQuery) GetArgs(ctx context.Context) (_ context.Context, shopID int64, customerID int64) {
+func (q *ListOrdersByCustomerIDQuery) GetArgs(ctx context.Context) (_ context.Context, shopID dot.ID, customerID dot.ID) {
 	return ctx,
 		q.ShopID,
 		q.CustomerID
 }
 
-func (q *ListOrdersByCustomerIDsQuery) GetArgs(ctx context.Context) (_ context.Context, shopID int64, customerIDs []int64) {
+func (q *ListOrdersByCustomerIDsQuery) GetArgs(ctx context.Context) (_ context.Context, shopID dot.ID, customerIDs []dot.ID) {
 	return ctx,
 		q.ShopID,
 		q.CustomerIDs

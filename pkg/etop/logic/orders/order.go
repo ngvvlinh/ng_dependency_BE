@@ -25,6 +25,7 @@ import (
 	"etop.vn/backend/pkg/etop/authorize/claims"
 	"etop.vn/backend/pkg/etop/logic/etop_shipping_price"
 	"etop.vn/backend/pkg/etop/model"
+	"etop.vn/capi/dot"
 	. "etop.vn/capi/dot"
 	"etop.vn/common/jsonx"
 	"etop.vn/common/l"
@@ -36,7 +37,7 @@ var ll = l.New()
 func CreateOrder(
 	ctx context.Context, claim *claims.ShopClaim,
 	authPartner *model.Partner, r *pborder.CreateOrderRequest,
-	tradingShopID *int64) (*pborder.Order, error) {
+	tradingShopID *dot.ID) (*pborder.Order, error) {
 	shipping := r.ShopShipping
 	if r.Shipping != nil {
 		shipping = r.Shipping
@@ -293,7 +294,7 @@ func CreateOrder(
 	return result, nil
 }
 
-func getCustomerByID(ctx context.Context, shopID, customerID int64) *pborder.OrderCustomer {
+func getCustomerByID(ctx context.Context, shopID, customerID dot.ID) *pborder.OrderCustomer {
 	getCustomer := &customering.GetCustomerByIDQuery{
 		ID:     customerID,
 		ShopID: shopID,
@@ -322,7 +323,7 @@ func getCustomerByID(ctx context.Context, shopID, customerID int64) *pborder.Ord
 	return customer
 }
 
-func updateOrCreateCustomerAddress(ctx context.Context, shopID, customerID int64, orderAddress *pborder.OrderAddress) error {
+func updateOrCreateCustomerAddress(ctx context.Context, shopID, customerID dot.ID, orderAddress *pborder.OrderAddress) error {
 	address, err := convertpb.OrderAddressToModel(orderAddress)
 	if err != nil {
 		return err
@@ -360,7 +361,7 @@ func updateOrCreateCustomerAddress(ctx context.Context, shopID, customerID int64
 }
 
 func createCustomerAddress(
-	ctx context.Context, shopID, traderID int64, orderAddress *ordermodel.OrderAddress) error {
+	ctx context.Context, shopID, traderID dot.ID, orderAddress *ordermodel.OrderAddress) error {
 	createAddressCmd := &addressing.CreateAddressCommand{
 		ShopID:       shopID,
 		TraderID:     traderID,
@@ -382,10 +383,10 @@ func createCustomerAddress(
 
 func PrepareOrderLines(
 	ctx context.Context,
-	shopID int64,
+	shopID dot.ID,
 	lines []*pborder.CreateOrderLine,
 ) ([]*ordermodel.OrderLine, error) {
-	variantIDs := make([]int64, 0, len(lines))
+	variantIDs := make([]dot.ID, 0, len(lines))
 	if len(lines) > 40 {
 		return nil, cm.Error(cm.InvalidArgument, "Đơn hàng có quá nhiều sản phẩm", nil)
 	}
@@ -705,7 +706,7 @@ func UpdateOrder(ctx context.Context, claim *claims.ShopClaim, authPartner *mode
 }
 
 func PrepareOrderLine(
-	shopID int64,
+	shopID dot.ID,
 	m *pborder.CreateOrderLine,
 	v *catalog.ShopVariantWithProduct,
 ) (*ordermodel.OrderLine, error) {
@@ -725,7 +726,7 @@ func PrepareOrderLine(
 
 func prepareOrderLine(
 	m *pborder.CreateOrderLine,
-	shopID int64,
+	shopID dot.ID,
 	v *catalog.ShopVariantWithProduct,
 ) (*ordermodel.OrderLine, error) {
 	productName, ok := validate.NormalizeGenericName(m.ProductName)
@@ -802,7 +803,7 @@ func prepareOrderLine(
 	return line, nil
 }
 
-func PrepareOrder(ctx context.Context, shopID int64, m *pborder.CreateOrderRequest, lines []*ordermodel.OrderLine) (*ordermodel.Order, error) {
+func PrepareOrder(ctx context.Context, shopID dot.ID, m *pborder.CreateOrderRequest, lines []*ordermodel.OrderLine) (*ordermodel.Order, error) {
 	if m.BasketValue <= 0 {
 		return nil, cm.Error(cm.InvalidArgument, "Giá trị đơn hàng không hợp lệ", nil).
 			WithMeta("reason", "basket_value <= 0")
@@ -812,8 +813,8 @@ func PrepareOrder(ctx context.Context, shopID int64, m *pborder.CreateOrderReque
 			WithMeta("reason", "total_amount < 0")
 	}
 
-	productIDs := make([]int64, len(lines))
-	variantIDs := make([]int64, len(lines))
+	productIDs := make([]dot.ID, len(lines))
+	variantIDs := make([]dot.ID, len(lines))
 
 	// {0} and duplicated ids are allowed
 	for i, line := range lines {
@@ -1019,7 +1020,7 @@ func PrepareOrder(ctx context.Context, shopID int64, m *pborder.CreateOrderReque
 	return order, nil
 }
 
-func CancelOrder(ctx context.Context, shopID int64, authPartnerID int64, orderID int64, cancelReason string, autoInventoryVoucher string) (*pborder.OrderWithErrorsResponse, error) {
+func CancelOrder(ctx context.Context, shopID dot.ID, authPartnerID dot.ID, orderID dot.ID, cancelReason string, autoInventoryVoucher string) (*pborder.OrderWithErrorsResponse, error) {
 	getOrderQuery := &ordermodelx.GetOrderQuery{
 		ShopID:             shopID,
 		PartnerID:          authPartnerID,
@@ -1048,7 +1049,7 @@ func CancelOrder(ctx context.Context, shopID int64, authPartnerID int64, orderID
 	updateOrderCmd := &ordermodelx.UpdateOrdersStatusCommand{
 		ShopID:        shopID,
 		PartnerID:     authPartnerID,
-		OrderIDs:      []int64{orderID},
+		OrderIDs:      []dot.ID{orderID},
 		ShopConfirm:   model.S3Negative.P(),
 		ConfirmStatus: model.S3Negative.P(),
 		CancelReason:  cancelReason,

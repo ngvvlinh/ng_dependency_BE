@@ -13,6 +13,7 @@ import (
 	"etop.vn/backend/pkg/common/cmsql"
 	"etop.vn/backend/pkg/common/sq"
 	"etop.vn/backend/pkg/common/sqlstore"
+	"etop.vn/capi/dot"
 )
 
 type CustomerStoreFactory func(context.Context) *CustomerStore
@@ -55,17 +56,17 @@ func (s *CustomerStore) Filters(filters meta.Filters) *CustomerStore {
 	return s
 }
 
-func (s *CustomerStore) ID(id int64) *CustomerStore {
+func (s *CustomerStore) ID(id dot.ID) *CustomerStore {
 	s.preds = append(s.preds, s.ft.ByID(id))
 	return s
 }
 
-func (s *CustomerStore) IDs(ids ...int64) *CustomerStore {
+func (s *CustomerStore) IDs(ids ...dot.ID) *CustomerStore {
 	s.preds = append(s.preds, sq.PrefixedIn(&s.ft.prefix, "id", ids))
 	return s
 }
 
-func (s *CustomerStore) ShopID(id int64) *CustomerStore {
+func (s *CustomerStore) ShopID(id dot.ID) *CustomerStore {
 	s.preds = append(s.preds, s.ft.ByShopID(id))
 	return s
 }
@@ -95,7 +96,7 @@ func (s *CustomerStore) Email(email string) *CustomerStore {
 	return s
 }
 
-func (s *CustomerStore) OptionalShopID(id int64) *CustomerStore {
+func (s *CustomerStore) OptionalShopID(id dot.ID) *CustomerStore {
 	s.preds = append(s.preds, s.ft.ByShopID(id).Optional())
 	return s
 }

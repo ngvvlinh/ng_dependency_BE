@@ -3,7 +3,6 @@ package handler
 import (
 	"context"
 	"fmt"
-	"strconv"
 	"time"
 
 	notifiermodel "etop.vn/backend/com/handler/notifier/model"
@@ -12,6 +11,7 @@ import (
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/mq"
 	etopmodel "etop.vn/backend/pkg/etop/model"
+	"etop.vn/capi/dot"
 	"etop.vn/common/l"
 )
 
@@ -70,9 +70,9 @@ func sendToOneSignal(ctx context.Context, noti *notifiermodel.Notification) erro
 
 	data := notifiermodel.PrepareNotiData(notifiermodel.NotiDataAddition{
 		Entity:   noti.Entity,
-		EntityID: strconv.FormatInt(noti.EntityID, 10),
-		NotiID:   strconv.FormatInt(noti.ID, 10),
-		ShopID:   strconv.FormatInt(noti.AccountID, 10),
+		EntityID: noti.EntityID.String(),
+		NotiID:   noti.ID.String(),
+		ShopID:   noti.AccountID.String(),
 		MetaData: noti.MetaData,
 	})
 
@@ -104,7 +104,7 @@ func sendToOneSignal(ctx context.Context, noti *notifiermodel.Notification) erro
 	return nil
 }
 
-func FilterDevicesByConfig(devices []*notifiermodel.Device, accountID int64) (deviceIDs []string) {
+func FilterDevicesByConfig(devices []*notifiermodel.Device, accountID dot.ID) (deviceIDs []string) {
 	for _, device := range devices {
 		if device.Config == nil {
 			deviceIDs = append(deviceIDs, device.ExternalDeviceID)
@@ -113,7 +113,7 @@ func FilterDevicesByConfig(devices []*notifiermodel.Device, accountID int64) (de
 		if device.Config.Mute {
 			continue
 		}
-		if device.Config.SubcribeAllShop || cm.ContainInt64(device.Config.SubcribeShopIDs, accountID) {
+		if device.Config.SubcribeAllShop || cm.IDsContain(device.Config.SubcribeShopIDs, accountID) {
 			deviceIDs = append(deviceIDs, device.ExternalDeviceID)
 		}
 	}

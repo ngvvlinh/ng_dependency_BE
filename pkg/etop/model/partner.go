@@ -1,7 +1,9 @@
 package model
 
+import "etop.vn/capi/dot"
+
 type GetPartner struct {
-	PartnerID int64
+	PartnerID dot.ID
 
 	Result struct {
 		Partner *Partner
@@ -9,8 +11,8 @@ type GetPartner struct {
 }
 
 type GetPartnerRelationQuery struct {
-	PartnerID         int64
-	AccountID         int64
+	PartnerID         dot.ID
+	AccountID         dot.ID
 	ExternalAccountID string
 	AuthKey           string
 
@@ -20,8 +22,8 @@ type GetPartnerRelationQuery struct {
 }
 
 type GetPartnerRelationsQuery struct {
-	PartnerID int64
-	OwnerID   int64
+	PartnerID dot.ID
+	OwnerID   dot.ID
 
 	Result struct {
 		Relations []*PartnerRelationFtShop
@@ -29,7 +31,7 @@ type GetPartnerRelationsQuery struct {
 }
 
 type GetPartnersFromRelationQuery struct {
-	AccountIDs []int64
+	AccountIDs []dot.ID
 
 	Result struct {
 		Partners []*Partner
@@ -45,8 +47,8 @@ type CreatePartnerCommand struct {
 }
 
 type CreatePartnerRelationCommand struct {
-	AccountID  int64
-	PartnerID  int64
+	AccountID  dot.ID
+	PartnerID  dot.ID
 	ExternalID string
 
 	Result struct {
@@ -55,8 +57,8 @@ type CreatePartnerRelationCommand struct {
 }
 
 type UpdatePartnerRelationCommand struct {
-	AccountID  int64
-	PartnerID  int64
+	AccountID  dot.ID
+	PartnerID  dot.ID
 	ExternalID string
 }
 

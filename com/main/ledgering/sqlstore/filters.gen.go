@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"etop.vn/backend/pkg/common/sq"
+	"etop.vn/capi/dot"
 )
 
 type ShopLedgerFilters struct{ prefix string }
@@ -22,7 +23,7 @@ func (ft ShopLedgerFilters) Prefix() string {
 	return ft.prefix
 }
 
-func (ft *ShopLedgerFilters) ByID(ID int64) *sq.ColumnFilter {
+func (ft *ShopLedgerFilters) ByID(ID dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "id",
@@ -31,7 +32,7 @@ func (ft *ShopLedgerFilters) ByID(ID int64) *sq.ColumnFilter {
 	}
 }
 
-func (ft *ShopLedgerFilters) ByIDPtr(ID *int64) *sq.ColumnFilterPtr {
+func (ft *ShopLedgerFilters) ByIDPtr(ID *dot.ID) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "id",
@@ -41,7 +42,7 @@ func (ft *ShopLedgerFilters) ByIDPtr(ID *int64) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft *ShopLedgerFilters) ByShopID(ShopID int64) *sq.ColumnFilter {
+func (ft *ShopLedgerFilters) ByShopID(ShopID dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "shop_id",
@@ -50,7 +51,7 @@ func (ft *ShopLedgerFilters) ByShopID(ShopID int64) *sq.ColumnFilter {
 	}
 }
 
-func (ft *ShopLedgerFilters) ByShopIDPtr(ShopID *int64) *sq.ColumnFilterPtr {
+func (ft *ShopLedgerFilters) ByShopIDPtr(ShopID *dot.ID) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "shop_id",
@@ -136,7 +137,7 @@ func (ft *ShopLedgerFilters) ByStatusPtr(Status *int32) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft *ShopLedgerFilters) ByCreatedBy(CreatedBy int64) *sq.ColumnFilter {
+func (ft *ShopLedgerFilters) ByCreatedBy(CreatedBy dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "created_by",

@@ -40,8 +40,8 @@ func (c QueryBus) DispatchAll(ctx context.Context, msgs ...Query) error {
 }
 
 type CreateAddressCommand struct {
-	ShopID       int64
-	TraderID     int64
+	ShopID       dot.ID
+	TraderID     dot.ID
 	FullName     string
 	Phone        string
 	Email        string
@@ -62,8 +62,8 @@ func (h AggregateHandler) HandleCreateAddress(ctx context.Context, msg *CreateAd
 }
 
 type DeleteAddressCommand struct {
-	ID     int64
-	ShopID int64
+	ID     dot.ID
+	ShopID dot.ID
 
 	Result int `json:"-"`
 }
@@ -74,9 +74,9 @@ func (h AggregateHandler) HandleDeleteAddress(ctx context.Context, msg *DeleteAd
 }
 
 type SetDefaultAddressCommand struct {
-	ID       int64
-	TraderID int64
-	ShopID   int64
+	ID       dot.ID
+	TraderID dot.ID
+	ShopID   dot.ID
 
 	Result *meta.UpdatedResponse `json:"-"`
 }
@@ -87,8 +87,8 @@ func (h AggregateHandler) HandleSetDefaultAddress(ctx context.Context, msg *SetD
 }
 
 type UpdateAddressCommand struct {
-	ID           int64
-	ShopID       int64
+	ID           dot.ID
+	ShopID       dot.ID
 	FullName     dot.NullString
 	Phone        dot.NullString
 	Email        dot.NullString
@@ -109,8 +109,8 @@ func (h AggregateHandler) HandleUpdateAddress(ctx context.Context, msg *UpdateAd
 }
 
 type GetAddressActiveByTraderIDQuery struct {
-	TraderID int64
-	ShopID   int64
+	TraderID dot.ID
+	ShopID   dot.ID
 
 	Result *ShopTraderAddress `json:"-"`
 }
@@ -121,8 +121,8 @@ func (h QueryServiceHandler) HandleGetAddressActiveByTraderID(ctx context.Contex
 }
 
 type GetAddressByIDQuery struct {
-	ID     int64
-	ShopID int64
+	ID     dot.ID
+	ShopID dot.ID
 
 	Result *ShopTraderAddress `json:"-"`
 }
@@ -133,8 +133,8 @@ func (h QueryServiceHandler) HandleGetAddressByID(ctx context.Context, msg *GetA
 }
 
 type GetAddressByTraderIDQuery struct {
-	TraderID int64
-	ShopID   int64
+	TraderID dot.ID
+	ShopID   dot.ID
 
 	Result *ShopTraderAddress `json:"-"`
 }
@@ -145,8 +145,8 @@ func (h QueryServiceHandler) HandleGetAddressByTraderID(ctx context.Context, msg
 }
 
 type ListAddressesByTraderIDQuery struct {
-	ShopID   int64
-	TraderID int64
+	ShopID   dot.ID
+	TraderID dot.ID
 
 	Result []*ShopTraderAddress `json:"-"`
 }
@@ -202,20 +202,20 @@ func (q *CreateAddressCommand) SetCreateAddressArgs(args *CreateAddressArgs) {
 	q.Coordinates = args.Coordinates
 }
 
-func (q *DeleteAddressCommand) GetArgs(ctx context.Context) (_ context.Context, ID int64, ShopID int64) {
+func (q *DeleteAddressCommand) GetArgs(ctx context.Context) (_ context.Context, ID dot.ID, ShopID dot.ID) {
 	return ctx,
 		q.ID,
 		q.ShopID
 }
 
-func (q *SetDefaultAddressCommand) GetArgs(ctx context.Context) (_ context.Context, ID int64, traderID int64, ShopID int64) {
+func (q *SetDefaultAddressCommand) GetArgs(ctx context.Context) (_ context.Context, ID dot.ID, traderID dot.ID, ShopID dot.ID) {
 	return ctx,
 		q.ID,
 		q.TraderID,
 		q.ShopID
 }
 
-func (q *UpdateAddressCommand) GetArgs(ctx context.Context) (_ context.Context, ID int64, ShopID int64, _ *UpdateAddressArgs) {
+func (q *UpdateAddressCommand) GetArgs(ctx context.Context) (_ context.Context, ID dot.ID, ShopID dot.ID, _ *UpdateAddressArgs) {
 	return ctx,
 		q.ID,
 		q.ShopID,
@@ -246,25 +246,25 @@ func (q *UpdateAddressCommand) SetUpdateAddressArgs(args *UpdateAddressArgs) {
 	q.Coordinates = args.Coordinates
 }
 
-func (q *GetAddressActiveByTraderIDQuery) GetArgs(ctx context.Context) (_ context.Context, traderID int64, ShopID int64) {
+func (q *GetAddressActiveByTraderIDQuery) GetArgs(ctx context.Context) (_ context.Context, traderID dot.ID, ShopID dot.ID) {
 	return ctx,
 		q.TraderID,
 		q.ShopID
 }
 
-func (q *GetAddressByIDQuery) GetArgs(ctx context.Context) (_ context.Context, ID int64, ShopID int64) {
+func (q *GetAddressByIDQuery) GetArgs(ctx context.Context) (_ context.Context, ID dot.ID, ShopID dot.ID) {
 	return ctx,
 		q.ID,
 		q.ShopID
 }
 
-func (q *GetAddressByTraderIDQuery) GetArgs(ctx context.Context) (_ context.Context, traderID int64, shopID int64) {
+func (q *GetAddressByTraderIDQuery) GetArgs(ctx context.Context) (_ context.Context, traderID dot.ID, shopID dot.ID) {
 	return ctx,
 		q.TraderID,
 		q.ShopID
 }
 
-func (q *ListAddressesByTraderIDQuery) GetArgs(ctx context.Context) (_ context.Context, ShopID int64, TraderID int64) {
+func (q *ListAddressesByTraderIDQuery) GetArgs(ctx context.Context) (_ context.Context, ShopID dot.ID, TraderID dot.ID) {
 	return ctx,
 		q.ShopID,
 		q.TraderID

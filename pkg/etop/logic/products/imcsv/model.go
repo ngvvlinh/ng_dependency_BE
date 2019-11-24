@@ -4,6 +4,7 @@ import (
 	catalogmodel "etop.vn/backend/com/main/catalog/model"
 	"etop.vn/backend/pkg/common/imcsv"
 	"etop.vn/backend/pkg/common/validate"
+	"etop.vn/capi/dot"
 )
 
 var schemaV0 = imcsv.Schema{
@@ -217,8 +218,8 @@ type RowProduct struct {
 	Weight        int // gram
 	Description   string
 
-	categoryID    int64
-	collectionIDs []int64
+	categoryID    dot.ID
+	collectionIDs []dot.ID
 	nameNormUa    string
 	attrNormKv    string
 }

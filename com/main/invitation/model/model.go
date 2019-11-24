@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"etop.vn/api/main/etop"
+	"etop.vn/capi/dot"
 )
 
 //go:generate $ETOPDIR/backend/scripts/derive.sh
@@ -11,13 +12,13 @@ import (
 var _ = sqlgenInvitation(&Invitation{})
 
 type Invitation struct {
-	ID         int64
-	AccountID  int64
+	ID         dot.ID
+	AccountID  dot.ID
 	Email      string
 	Roles      []string
 	Token      string
 	Status     etop.Status3
-	InvitedBy  int64
+	InvitedBy  dot.ID
 	AcceptedAt time.Time
 	RejectedAt time.Time
 	ExpiresAt  time.Time

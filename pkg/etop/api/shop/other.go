@@ -10,6 +10,7 @@ import (
 	"etop.vn/backend/pkg/common/cmapi"
 	"etop.vn/backend/pkg/etop/api/convertpb"
 	"etop.vn/backend/pkg/etop/model"
+	"etop.vn/capi/dot"
 )
 
 func init() {
@@ -129,7 +130,7 @@ func (s *AuthorizeService) GetAvailablePartners(ctx context.Context, q *GetAvail
 
 func (s *AuthorizeService) GetAuthorizedPartners(ctx context.Context, q *GetAuthorizedPartnersEndpoint) error {
 	query := &model.GetPartnersFromRelationQuery{
-		AccountIDs: []int64{q.Context.Shop.ID},
+		AccountIDs: []dot.ID{q.Context.Shop.ID},
 	}
 	if err := bus.Dispatch(ctx, query); err != nil {
 		return err

@@ -12,6 +12,7 @@ import (
 	cc "etop.vn/backend/pkg/common/config"
 	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/capi"
+	"etop.vn/capi/dot"
 	"etop.vn/common/l"
 )
 
@@ -41,9 +42,9 @@ func main() {
 	customerAggr := customeraggregate.NewCustomerAggregate(eventBus, db).MessageBus()
 	{
 		var arrayShops []model.Shops
-		fromID := int64(0)
+		var fromID dot.ID
 		count, errCount, createdCount, maxGoroutines := 0, 0, 0, 8
-		ch := make(chan int64, maxGoroutines)
+		ch := make(chan dot.ID, maxGoroutines)
 		chInsert := make(chan error, maxGoroutines)
 		for {
 			shops, err := scanShops(fromID)
@@ -61,7 +62,7 @@ func main() {
 		for _, shops := range arrayShops {
 			for _, shop := range shops {
 				ch <- shop.ID
-				go func(shopID int64) (_err error) {
+				go func(shopID dot.ID) (_err error) {
 					ctx, ctxCancel := context.WithCancel(context.Background())
 					defer func() {
 						<-ch
@@ -92,7 +93,7 @@ func main() {
 	}
 }
 
-func scanShops(fromID int64) (shops model.Shops, err error) {
+func scanShops(fromID dot.ID) (shops model.Shops, err error) {
 	err = db.
 		Where("id > ?", fromID).
 		OrderBy("id").

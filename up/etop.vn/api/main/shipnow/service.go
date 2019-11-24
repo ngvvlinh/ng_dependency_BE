@@ -10,6 +10,7 @@ import (
 	shipnowtypes "etop.vn/api/main/shipnow/types"
 	shippingtypes "etop.vn/api/main/shipping/types"
 	"etop.vn/api/meta"
+	"etop.vn/capi/dot"
 )
 
 // +gen:api
@@ -37,9 +38,9 @@ type QueryService interface {
 }
 
 type CreateShipnowFulfillmentArgs struct {
-	OrderIds            []int64
+	OrderIds            []dot.ID
 	Carrier             carriertypes.Carrier
-	ShopId              int64
+	ShopId              dot.ID
 	ShippingServiceCode string
 	ShippingServiceFee  int32
 	ShippingNote        string
@@ -48,21 +49,21 @@ type CreateShipnowFulfillmentArgs struct {
 }
 
 type ConfirmShipnowFulfillmentArgs struct {
-	Id     int64
-	ShopId int64
+	Id     dot.ID
+	ShopId dot.ID
 }
 
 type CancelShipnowFulfillmentArgs struct {
-	Id           int64
-	ShopId       int64
+	Id           dot.ID
+	ShopId       dot.ID
 	CancelReason string
 }
 
 type UpdateShipnowFulfillmentArgs struct {
-	Id                  int64
-	OrderIds            []int64
+	Id                  dot.ID
+	OrderIds            []dot.ID
 	Carrier             carriertypes.Carrier
-	ShopId              int64
+	ShopId              dot.ID
 	ShippingServiceCode string
 	ShippingServiceFee  int32
 	ShippingNote        string
@@ -71,7 +72,7 @@ type UpdateShipnowFulfillmentArgs struct {
 }
 
 type UpdateShipnowFulfillmentCarrierInfoArgs struct {
-	Id                         int64
+	Id                         dot.ID
 	ShippingCode               string
 	ShippingState              shipnowtypes.State
 	TotalFee                   int32
@@ -93,7 +94,7 @@ type UpdateShipnowFulfillmentCarrierInfoArgs struct {
 }
 
 type UpdateShipnowFulfillmentStateArgs struct {
-	Id             int64
+	Id             dot.ID
 	SyncStatus     etop.Status4
 	Status         etop.Status5
 	ConfirmStatus  etop.Status3
@@ -107,12 +108,12 @@ type GetShipnowServicesCommandResult struct {
 }
 
 type GetShipnowFulfillmentQueryArgs struct {
-	Id     int64
-	ShopId int64
+	Id     dot.ID
+	ShopId dot.ID
 }
 
 type GetShipnowFulfillmentsQueryArgs struct {
-	ShopIds []int64
+	ShopIds []dot.ID
 	Paging  *meta.Paging
 	Filters []*meta.Filter
 }
@@ -131,8 +132,8 @@ type GetShipnowFulfillmentByShippingCodeQueryArgs struct {
 }
 
 type GetShipnowServicesArgs struct {
-	ShopId         int64
-	OrderIds       []int64
+	ShopId         dot.ID
+	OrderIds       []dot.ID
 	PickupAddress  *types.Address
 	DeliveryPoints []*DeliveryPoint
 }

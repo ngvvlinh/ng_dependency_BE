@@ -7,6 +7,7 @@ import (
 	"etop.vn/backend/com/services/affiliate/model"
 	"etop.vn/backend/pkg/common/cmsql"
 	"etop.vn/backend/pkg/common/sqlstore"
+	"etop.vn/capi/dot"
 )
 
 type OrderPromotionStoreFactory func(ctx context.Context) *OrderPromotionStore
@@ -30,12 +31,12 @@ type OrderPromotionStore struct {
 	filters meta.Filters
 }
 
-func (s *OrderPromotionStore) ID(id int64) *OrderPromotionStore {
+func (s *OrderPromotionStore) ID(id dot.ID) *OrderPromotionStore {
 	s.preds = append(s.preds, s.ft.ByID(id))
 	return s
 }
 
-func (s *OrderPromotionStore) OrderCreatedNotifyID(id int64) *OrderPromotionStore {
+func (s *OrderPromotionStore) OrderCreatedNotifyID(id dot.ID) *OrderPromotionStore {
 	s.preds = append(s.preds, s.ft.ByOrderCreatedNotifyID(id))
 	return s
 }

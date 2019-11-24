@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"etop.vn/backend/pkg/common/validate"
+	"etop.vn/capi/dot"
 )
 
 //go:generate $ETOPDIR/backend/scripts/derive.sh
@@ -31,7 +32,7 @@ type VhtCallHistory struct {
 	RecordingPath   string
 	RecordingURL    string
 	RecordFileSize  int32
-	EtopAccountID   int64
+	EtopAccountID   dot.ID
 	VtigerAccountID string
 	SyncStatus      string
 	OData           string

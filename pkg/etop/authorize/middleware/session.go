@@ -16,6 +16,7 @@ import (
 	"etop.vn/backend/pkg/etop/authorize/permission"
 	"etop.vn/backend/pkg/etop/authorize/tokens"
 	"etop.vn/backend/pkg/etop/model"
+	"etop.vn/capi/dot"
 	"etop.vn/common/l"
 )
 
@@ -69,7 +70,7 @@ type Session struct {
 	IsSuperAdmin bool
 }
 
-func (s *Session) GetUserID() int64 {
+func (s *Session) GetUserID() dot.ID {
 	if s.Admin != nil {
 		return s.Admin.ID
 	}

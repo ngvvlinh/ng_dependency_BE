@@ -11,8 +11,6 @@ import (
 	"reflect"
 	"time"
 
-	"github.com/golang/protobuf/jsonpb"
-	"github.com/golang/protobuf/proto"
 	"github.com/gorilla/schema"
 	"github.com/julienschmidt/httprouter"
 	"github.com/twitchtv/twirp"
@@ -51,7 +49,6 @@ type Context struct {
 	hasResult bool
 	rawResult bool
 	result    interface{}
-	resultPb  proto.Message
 }
 
 func (c *Context) Context() context.Context {
@@ -84,38 +81,12 @@ func (c *Context) SetResult(v interface{}) {
 	c.hasResult = true
 }
 
-func (c *Context) SetResultPb(msg proto.Message) {
-	if c.hasResult {
-		ll.Panic("Must only set result once!")
-	}
-	if msg == nil {
-		ll.Panic("Result is empty")
-	}
-	c.resultPb = msg
-	c.hasResult = true
-}
-
 func (c *Context) DecodeJson(v interface{}) error {
 	body, err := ioutil.ReadAll(c.Req.Body)
 	if err != nil {
 		return cm.Error(cm.InvalidArgument, err.Error(), err)
 	}
 	err = jsonx.Unmarshal(body, v)
-	if err != nil {
-		return cm.Error(cm.InvalidArgument, err.Error(), err)
-	}
-
-	ll.Info("->"+c.Req.URL.Path, l.String("data", string(body)))
-	return nil
-}
-
-func (c *Context) DecodeJsonPb(msg proto.Message) error {
-	body, err := ioutil.ReadAll(c.Req.Body)
-	if err != nil {
-		return cm.Error(cm.InvalidArgument, err.Error(), err)
-	}
-
-	err = jsonpb.Unmarshal(bytes.NewReader(body), msg)
 	if err != nil {
 		return cm.Error(cm.InvalidArgument, err.Error(), err)
 	}
@@ -258,22 +229,6 @@ func (rt *Router) wrapJSON(next Handler) httprouter.Handle {
 				w.WriteHeader(http.StatusOK)
 				_, _ = w.Write(respBytes)
 
-			case c.resultPb != nil:
-				var buf bytes.Buffer
-				marshaler := &jsonpb.Marshaler{OrigName: true, EmitDefaults: true}
-				if err = marshaler.Marshal(&buf, c.resultPb); err != nil {
-					w.WriteHeader(http.StatusInternalServerError)
-					_ = json.NewEncoder(w).Encode(&xerrors.ErrorJSON{
-						Code: cm.Internal.String(),
-						Msg:  "failed to marshal json response",
-					})
-					ll.Error("Failed to marshal json response", l.Error(err))
-					return
-				}
-				w.Header().Set("Content-Type", "application/json")
-				w.WriteHeader(http.StatusOK)
-				_, _ = w.Write(buf.Bytes())
-
 			default:
 				ll.Panic("If error is nil, a result must always be provided!")
 			}
@@ -320,11 +275,11 @@ func RecoverAndLog(bot *telebot.Channel, logRequest bool) func(Handler) Handler 
 					}
 				}
 				if _err == nil {
-					if errs := cmWrapper.HasErrors(c.resultPb); errs != nil {
+					if errs := cmWrapper.HasErrors(c.result); errs != nil {
 						ll.Warn("->"+req.RequestURI,
 							l.Duration("d", d),
 							l.String("req", string(reqData)),
-							l.Stringer("resp", c.resultPb))
+							l.String("resp", jsonx.MustMarshalToString(c.result)))
 						go cmWrapper.SendErrorToBot(bot, req.RequestURI, c.Session, reqData, nil, errs, d, xerrors.LevelPartialError, nil)
 						return
 					}

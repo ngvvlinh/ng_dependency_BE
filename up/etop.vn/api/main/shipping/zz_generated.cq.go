@@ -10,6 +10,7 @@ import (
 	types "etop.vn/api/main/shipping/types"
 	meta "etop.vn/api/meta"
 	capi "etop.vn/capi"
+	dot "etop.vn/capi/dot"
 )
 
 type Command interface{ command() }
@@ -39,7 +40,7 @@ func (c QueryBus) DispatchAll(ctx context.Context, msgs ...Query) error {
 }
 
 type CancelFulfillmentCommand struct {
-	FulfillmentID int64
+	FulfillmentID dot.ID
 	CancelReason  string
 
 	Result *meta.Empty `json:"-"`
@@ -51,7 +52,7 @@ func (h AggregateHandler) HandleCancelFulfillment(ctx context.Context, msg *Canc
 }
 
 type ConfirmFulfillmentCommand struct {
-	FulfillmentID int64
+	FulfillmentID dot.ID
 
 	Result *meta.Empty `json:"-"`
 }
@@ -62,7 +63,7 @@ func (h AggregateHandler) HandleConfirmFulfillment(ctx context.Context, msg *Con
 }
 
 type CreateFulfillmentCommand struct {
-	OrderID             int64
+	OrderID             dot.ID
 	PickupAddress       *Address
 	ShippingAddress     *Address
 	ReturnAddress       *Address
@@ -83,7 +84,7 @@ func (h AggregateHandler) HandleCreateFulfillment(ctx context.Context, msg *Crea
 }
 
 type GetFulfillmentByIDCommand struct {
-	FulfillmentID int64
+	FulfillmentID dot.ID
 
 	Result *Fulfillment `json:"-"`
 }

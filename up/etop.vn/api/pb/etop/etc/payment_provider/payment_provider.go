@@ -8,3 +8,7 @@ func (s *PaymentProvider) ToPaymentProvider() payment.PaymentProvider {
 	}
 	return payment.PaymentProvider(PaymentProvider_name[int32(*s)])
 }
+
+func (x PaymentProvider) MarshalJSON() ([]byte, error) {
+	return []byte(`"` + x.String() + `"`), nil
+}

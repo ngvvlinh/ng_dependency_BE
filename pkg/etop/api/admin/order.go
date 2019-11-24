@@ -10,6 +10,7 @@ import (
 	"etop.vn/backend/pkg/common/cmapi"
 	"etop.vn/backend/pkg/etop/api/convertpb"
 	"etop.vn/backend/pkg/etop/model"
+	"etop.vn/capi/dot"
 )
 
 func init() {
@@ -86,7 +87,7 @@ func (s *FulfillmentService) GetFulfillments(ctx context.Context, q *GetFulfillm
 		Filters: cmapi.ToFilters(q.Filters),
 	}
 	if q.ShopId != 0 {
-		query.ShopIDs = []int64{q.ShopId}
+		query.ShopIDs = []dot.ID{q.ShopId}
 	}
 	if err := bus.Dispatch(ctx, query); err != nil {
 		return err

@@ -11,6 +11,7 @@ import (
 	"etop.vn/backend/pkg/common/cmapi"
 	"etop.vn/backend/pkg/etop/api/convertpb"
 	"etop.vn/backend/pkg/etop/model"
+	"etop.vn/capi/dot"
 )
 
 func PbPartner(m *model.Partner) *external.Partner {
@@ -29,7 +30,7 @@ func PbPartner(m *model.Partner) *external.Partner {
 	}
 }
 
-func CreateWebhookRequestToModel(m *external.CreateWebhookRequest, accountID int64) *model.Webhook {
+func CreateWebhookRequestToModel(m *external.CreateWebhookRequest, accountID dot.ID) *model.Webhook {
 	if m == nil {
 		return nil
 	}
@@ -172,8 +173,8 @@ func PbOrderHistory(order ordermodel.OrderHistory) *external.Order {
 	_ = order.FeeLines().Unmarshal(&feeLines)
 
 	res := &external.Order{
-		Id:                        *order.ID().Int64(),
-		ShopId:                    *order.ID().Int64(),
+		Id:                        *order.ID().ID(),
+		ShopId:                    *order.ID().ID(),
 		Code:                      order.Code().String(),
 		ExternalId:                order.ExternalOrderID().String(),
 		ExternalCode:              order.EdCode().String(),
@@ -409,9 +410,9 @@ func PbFulfillmentHistory(m shipmodel.FulfillmentHistory) *external.Fulfillment 
 	_ = m.AddressReturn().Unmarshal(&addressReturn)
 
 	return &external.Fulfillment{
-		Id:                       *m.ID().Int64(),
-		OrderId:                  *m.OrderID().Int64(),
-		ShopId:                   *m.ShopID().Int64(),
+		Id:                       *m.ID().ID(),
+		OrderId:                  *m.OrderID().ID(),
+		ShopId:                   *m.ShopID().ID(),
 		TotalItems:               m.TotalItems().Int32(),
 		BasketValue:              m.BasketValue().Int32(),
 		CreatedAt:                cmapi.PbTime(m.CreatedAt().Time()),

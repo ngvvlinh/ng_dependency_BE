@@ -5,11 +5,6 @@ import (
 	"fmt"
 	"time"
 
-	"etop.vn/backend/pkg/common/cmapi"
-	"etop.vn/backend/pkg/etop/api/convertpb"
-
-	"github.com/golang/protobuf/ptypes"
-
 	"etop.vn/api/main/ledgering"
 	"etop.vn/api/main/receipting"
 	pbcm "etop.vn/api/pb/common"
@@ -20,7 +15,10 @@ import (
 	"etop.vn/api/shopping/tradering"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
+	"etop.vn/backend/pkg/common/cmapi"
+	"etop.vn/backend/pkg/etop/api/convertpb"
 	"etop.vn/backend/pkg/etop/model"
+	"etop.vn/capi/dot"
 	. "etop.vn/capi/dot"
 )
 
@@ -46,21 +44,10 @@ func (s *ReceiptService) CreateReceipt(ctx context.Context, q *CreateReceiptEndp
 		return err
 	}
 	q.Result = convertpb.PbReceipt(result.(*receipting.CreateReceiptCommand).Result)
-
 	return nil
 }
 
 func (s *ReceiptService) createReceipt(ctx context.Context, q *CreateReceiptEndpoint) (_ *receipting.CreateReceiptCommand, err error) {
-	var paidAt time.Time
-	var checkHavePaidAt bool
-	if q.PaidAt.Seconds != 0 {
-		paidAt, err = ptypes.Timestamp(q.PaidAt)
-		if err != nil {
-			return nil, err
-		}
-		checkHavePaidAt = true
-	}
-
 	cmd := &receipting.CreateReceiptCommand{
 		ShopID:      q.Context.Shop.ID,
 		CreatedBy:   q.Context.UserID,
@@ -74,9 +61,7 @@ func (s *ReceiptService) createReceipt(ctx context.Context, q *CreateReceiptEndp
 		CreatedType: receipting.ReceiptCreatedTypeManual,
 		Status:      int32(model.S3Zero),
 		Lines:       convertpb.Convert_api_ReceiptLines_To_core_ReceiptLines(q.Lines),
-	}
-	if checkHavePaidAt {
-		cmd.PaidAt = paidAt
+		PaidAt:      q.PaidAt.ToTime(),
 	}
 	if err := receiptAggr.Dispatch(ctx, cmd); err != nil {
 		return nil, err
@@ -85,28 +70,16 @@ func (s *ReceiptService) createReceipt(ctx context.Context, q *CreateReceiptEndp
 }
 
 func (s *ReceiptService) UpdateReceipt(ctx context.Context, q *UpdateReceiptEndpoint) (err error) {
-	var paidAt time.Time
-	var checkHavePaidAt bool
-	if q.PaidAt.Seconds != 0 {
-		paidAt, err = ptypes.Timestamp(&q.PaidAt)
-		if err != nil {
-			return err
-		}
-		checkHavePaidAt = true
-	}
-
 	cmd := &receipting.UpdateReceiptCommand{
 		ID:          q.Id,
 		ShopID:      q.Context.Shop.ID,
 		Title:       PString(q.Title),
 		Description: PString(q.Description),
-		LedgerID:    PInt64(q.LedgerId),
-		TraderID:    PInt64(q.TraderId),
-		Amount:      PInt32(q.Amount),
+		LedgerID:    PID(q.LedgerId),
+		TraderID:    PID(q.TraderId),
+		Amount:      PInt(q.Amount),
 		Lines:       convertpb.Convert_api_ReceiptLines_To_core_ReceiptLines(q.Lines),
-	}
-	if checkHavePaidAt {
-		cmd.PaidAt = paidAt
+		PaidAt:      q.PaidAt.ToTime(),
 	}
 	if q.RefType != nil {
 		cmd.RefType = receipting.ReceiptRefType(*q.RefType)
@@ -203,7 +176,7 @@ func (s *ReceiptService) GetReceiptsByLedgerType(ctx context.Context, q *GetRece
 		return err
 	}
 
-	var ledgerIDs []int64
+	var ledgerIDs []dot.ID
 	for _, ledger := range listLedgersByType.Result.Ledgers {
 		ledgerIDs = append(ledgerIDs, ledger.ID)
 	}
@@ -230,10 +203,10 @@ func (s *ReceiptService) GetReceiptsByLedgerType(ctx context.Context, q *GetRece
 	return nil
 }
 
-func (s *ReceiptService) getInfosForReceipts(ctx context.Context, shopID int64, receipts []*receipting.Receipt) (receiptsResult []*pbshop.Receipt, _ error) {
-	mapOrderIDAndReceivedAmount := make(map[int64]int32)
-	mapLedger := make(map[int64]*ledgering.ShopLedger)
-	var refIDs, userIDs, traderIDs, ledgerIDs []int64
+func (s *ReceiptService) getInfosForReceipts(ctx context.Context, shopID dot.ID, receipts []*receipting.Receipt) (receiptsResult []*pbshop.Receipt, _ error) {
+	mapOrderIDAndReceivedAmount := make(map[dot.ID]int32)
+	mapLedger := make(map[dot.ID]*ledgering.ShopLedger)
+	var refIDs, userIDs, traderIDs, ledgerIDs []dot.ID
 
 	receiptsResult = convertpb.PbReceipts(receipts)
 
@@ -258,12 +231,12 @@ func (s *ReceiptService) getInfosForReceipts(ctx context.Context, shopID int64, 
 
 	// Get all users into receipts
 	getUsersOfCurrAccount := &model.GetAccountUserExtendedsQuery{
-		AccountIDs: []int64{shopID},
+		AccountIDs: []dot.ID{shopID},
 	}
 	if err := bus.Dispatch(ctx, getUsersOfCurrAccount); err != nil {
 		return nil, err
 	}
-	mapUserIDAndUser := make(map[int64]*model.User)
+	mapUserIDAndUser := make(map[dot.ID]*model.User)
 	for _, accountUser := range getUsersOfCurrAccount.Result.AccountUsers {
 		mapUserIDAndUser[accountUser.User.ID] = accountUser.User
 	}
@@ -296,14 +269,14 @@ func (s *ReceiptService) getInfosForReceipts(ctx context.Context, shopID int64, 
 }
 
 func listTraders(
-	ctx context.Context, shopID int64,
-	traderIDs []int64, receiptsResult []*pbshop.Receipt,
+	ctx context.Context, shopID dot.ID,
+	traderIDs []dot.ID, receiptsResult []*pbshop.Receipt,
 ) error {
-	mapSupplier := make(map[int64]*suppliering.ShopSupplier)
-	mapCustomer := make(map[int64]*customering.ShopCustomer)
-	mapCarrier := make(map[int64]*carrying.ShopCarrier)
-	var supplierIDs, customerIDs, carrierIDs []int64
-	mapTraderID := make(map[int64]bool)
+	mapSupplier := make(map[dot.ID]*suppliering.ShopSupplier)
+	mapCustomer := make(map[dot.ID]*customering.ShopCustomer)
+	mapCarrier := make(map[dot.ID]*carrying.ShopCarrier)
+	var supplierIDs, customerIDs, carrierIDs []dot.ID
+	mapTraderID := make(map[dot.ID]bool)
 	for _, traderID := range traderIDs {
 		if traderID == model.IndependentCustomerID {
 			customerIDs = append(customerIDs, traderID)

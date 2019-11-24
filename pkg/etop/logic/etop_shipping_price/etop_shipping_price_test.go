@@ -4,12 +4,12 @@ import (
 	"context"
 	"testing"
 
+	"github.com/stretchr/testify/assert"
+
 	"etop.vn/api/main/location"
 	servicelocation "etop.vn/backend/com/main/location"
 	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/common/l"
-
-	"github.com/stretchr/testify/assert"
 )
 
 var locationBus = servicelocation.New().MessageBus()

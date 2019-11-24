@@ -22,12 +22,13 @@ import (
 	"etop.vn/backend/pkg/etop/authorize/claims"
 	logicorder "etop.vn/backend/pkg/etop/logic/orders"
 	"etop.vn/backend/pkg/etop/model"
+	"etop.vn/capi/dot"
 	"etop.vn/common/l"
 )
 
 var ll = l.New()
 
-func CreateAndConfirmOrder(ctx context.Context, accountID int64, shopClaim *claims.ShopClaim, r *pbexternal.CreateOrderRequest) (_ *pbexternal.OrderAndFulfillments, _err error) {
+func CreateAndConfirmOrder(ctx context.Context, accountID dot.ID, shopClaim *claims.ShopClaim, r *pbexternal.CreateOrderRequest) (_ *pbexternal.OrderAndFulfillments, _err error) {
 	shipping := r.Shipping
 	if shipping == nil {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Cần cung cấp mục shipping")
@@ -177,8 +178,8 @@ func CreateAndConfirmOrder(ctx context.Context, accountID int64, shopClaim *clai
 	return convertpb.PbOrderAndFulfillments(orderQuery.Result.Order, orderQuery.Result.Fulfillments), nil
 }
 
-func CancelOrder(ctx context.Context, shopID int64, r *pbexternal.CancelOrderRequest) (*pbexternal.OrderAndFulfillments, error) {
-	var orderID int64
+func CancelOrder(ctx context.Context, shopID dot.ID, r *pbexternal.CancelOrderRequest) (*pbexternal.OrderAndFulfillments, error) {
+	var orderID dot.ID
 	var sqlQuery *ordersqlstore.OrderStore
 
 	count := 0
@@ -221,7 +222,7 @@ func CancelOrder(ctx context.Context, shopID int64, r *pbexternal.CancelOrderReq
 	return resp2, nil
 }
 
-func GetOrder(ctx context.Context, shopID int64, r *pbexternal.OrderIDRequest) (*pbexternal.OrderAndFulfillments, error) {
+func GetOrder(ctx context.Context, shopID dot.ID, r *pbexternal.OrderIDRequest) (*pbexternal.OrderAndFulfillments, error) {
 	orderQuery := &modelx.GetOrderQuery{
 		ShopID:             shopID,
 		OrderID:            r.Id,
@@ -235,7 +236,7 @@ func GetOrder(ctx context.Context, shopID int64, r *pbexternal.OrderIDRequest) (
 	return convertpb.PbOrderAndFulfillments(orderQuery.Result.Order, orderQuery.Result.Fulfillments), nil
 }
 
-func GetFulfillment(ctx context.Context, shopID int64, r *pbexternal.FulfillmentIDRequest) (*pbexternal.Fulfillment, error) {
+func GetFulfillment(ctx context.Context, shopID dot.ID, r *pbexternal.FulfillmentIDRequest) (*pbexternal.Fulfillment, error) {
 	s := fulfillmentStore(ctx).ShopID(shopID)
 	if r.Id != 0 {
 		s = s.ID(r.Id)

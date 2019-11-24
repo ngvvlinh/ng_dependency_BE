@@ -10,6 +10,7 @@ import (
 	etop "etop.vn/api/main/etop"
 	meta "etop.vn/api/meta"
 	capi "etop.vn/capi"
+	dot "etop.vn/capi/dot"
 )
 
 type Command interface{ command() }
@@ -39,8 +40,8 @@ func (c QueryBus) DispatchAll(ctx context.Context, msgs ...Query) error {
 }
 
 type CancelTransactionCommand struct {
-	TrxnID    int64
-	AccountID int64
+	TrxnID    dot.ID
+	AccountID dot.ID
 
 	Result *Transaction `json:"-"`
 }
@@ -51,8 +52,8 @@ func (h AggregateHandler) HandleCancelTransaction(ctx context.Context, msg *Canc
 }
 
 type ConfirmTransactionCommand struct {
-	TrxnID    int64
-	AccountID int64
+	TrxnID    dot.ID
+	AccountID dot.ID
 
 	Result *Transaction `json:"-"`
 }
@@ -63,9 +64,9 @@ func (h AggregateHandler) HandleConfirmTransaction(ctx context.Context, msg *Con
 }
 
 type CreateTransactionCommand struct {
-	ID        int64
+	ID        dot.ID
 	Amount    int
-	AccountID int64
+	AccountID dot.ID
 	Status    etop.Status3
 	Type      TransactionType
 	Note      string
@@ -80,7 +81,7 @@ func (h AggregateHandler) HandleCreateTransaction(ctx context.Context, msg *Crea
 }
 
 type GetBalanceQuery struct {
-	AccountID       int64
+	AccountID       dot.ID
 	TransactionType TransactionType
 
 	Result int `json:"-"`
@@ -92,8 +93,8 @@ func (h QueryServiceHandler) HandleGetBalance(ctx context.Context, msg *GetBalan
 }
 
 type GetTransactionByIDQuery struct {
-	TrxnID    int64
-	AccountID int64
+	TrxnID    dot.ID
+	AccountID dot.ID
 
 	Result *Transaction `json:"-"`
 }
@@ -104,7 +105,7 @@ func (h QueryServiceHandler) HandleGetTransactionByID(ctx context.Context, msg *
 }
 
 type ListTransactionsQuery struct {
-	AccountID int64
+	AccountID dot.ID
 	Paging    meta.Paging
 
 	Result *TransactionResponse `json:"-"`
@@ -126,13 +127,13 @@ func (q *ListTransactionsQuery) query()       {}
 
 // implement conversion
 
-func (q *CancelTransactionCommand) GetArgs(ctx context.Context) (_ context.Context, trxnID int64, accountID int64) {
+func (q *CancelTransactionCommand) GetArgs(ctx context.Context) (_ context.Context, trxnID dot.ID, accountID dot.ID) {
 	return ctx,
 		q.TrxnID,
 		q.AccountID
 }
 
-func (q *ConfirmTransactionCommand) GetArgs(ctx context.Context) (_ context.Context, trxnID int64, accountID int64) {
+func (q *ConfirmTransactionCommand) GetArgs(ctx context.Context) (_ context.Context, trxnID dot.ID, accountID dot.ID) {
 	return ctx,
 		q.TrxnID,
 		q.AccountID
@@ -174,7 +175,7 @@ func (q *GetBalanceQuery) SetGetBalanceArgs(args *GetBalanceArgs) {
 	q.TransactionType = args.TransactionType
 }
 
-func (q *GetTransactionByIDQuery) GetArgs(ctx context.Context) (_ context.Context, trxnID int64, accountID int64) {
+func (q *GetTransactionByIDQuery) GetArgs(ctx context.Context) (_ context.Context, trxnID dot.ID, accountID dot.ID) {
 	return ctx,
 		q.TrxnID,
 		q.AccountID

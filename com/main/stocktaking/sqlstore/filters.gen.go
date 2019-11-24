@@ -7,6 +7,7 @@ import (
 
 	"etop.vn/backend/pkg/common/sq"
 	"etop.vn/backend/pkg/etop/model"
+	"etop.vn/capi/dot"
 )
 
 type ShopStocktakeFilters struct{ prefix string }
@@ -23,7 +24,7 @@ func (ft ShopStocktakeFilters) Prefix() string {
 	return ft.prefix
 }
 
-func (ft *ShopStocktakeFilters) ByID(ID int64) *sq.ColumnFilter {
+func (ft *ShopStocktakeFilters) ByID(ID dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "id",
@@ -32,7 +33,7 @@ func (ft *ShopStocktakeFilters) ByID(ID int64) *sq.ColumnFilter {
 	}
 }
 
-func (ft *ShopStocktakeFilters) ByIDPtr(ID *int64) *sq.ColumnFilterPtr {
+func (ft *ShopStocktakeFilters) ByIDPtr(ID *dot.ID) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "id",
@@ -42,7 +43,7 @@ func (ft *ShopStocktakeFilters) ByIDPtr(ID *int64) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft *ShopStocktakeFilters) ByShopID(ShopID int64) *sq.ColumnFilter {
+func (ft *ShopStocktakeFilters) ByShopID(ShopID dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "shop_id",
@@ -51,7 +52,7 @@ func (ft *ShopStocktakeFilters) ByShopID(ShopID int64) *sq.ColumnFilter {
 	}
 }
 
-func (ft *ShopStocktakeFilters) ByShopIDPtr(ShopID *int64) *sq.ColumnFilterPtr {
+func (ft *ShopStocktakeFilters) ByShopIDPtr(ShopID *dot.ID) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "shop_id",
@@ -80,7 +81,7 @@ func (ft *ShopStocktakeFilters) ByTotalQuantityPtr(TotalQuantity *int32) *sq.Col
 	}
 }
 
-func (ft *ShopStocktakeFilters) ByCreatedBy(CreatedBy int64) *sq.ColumnFilter {
+func (ft *ShopStocktakeFilters) ByCreatedBy(CreatedBy dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "created_by",
@@ -99,7 +100,7 @@ func (ft *ShopStocktakeFilters) ByCreatedByPtr(CreatedBy *int64) *sq.ColumnFilte
 	}
 }
 
-func (ft *ShopStocktakeFilters) ByUpdatedBy(UpdatedBy int64) *sq.ColumnFilter {
+func (ft *ShopStocktakeFilters) ByUpdatedBy(UpdatedBy dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "updated_by",

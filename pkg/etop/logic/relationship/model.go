@@ -1,9 +1,12 @@
 package relationship
 
-import "etop.vn/backend/pkg/etop/model"
+import (
+	"etop.vn/backend/pkg/etop/model"
+	"etop.vn/capi/dot"
+)
 
 type InviterInfo struct {
-	InviterUserID      int64
+	InviterUserID      dot.ID
 	InviterFullName    string
 	InviterAccountName string
 	InviterAccountType model.AccountType
@@ -20,7 +23,7 @@ type InviteUserToAccountCommand struct {
 	InviterInfo *InviterInfo
 	Invitation  *InvitationInfo
 
-	AccountID    int64
+	AccountID    dot.ID
 	EmailOrPhone string
 
 	Result struct {
@@ -39,8 +42,8 @@ type GetOrCreateUserStubCommand struct {
 }
 
 type GetOrCreateInvitationCommand struct {
-	AccountID int64
-	UserID    int64
+	AccountID dot.ID
+	UserID    dot.ID
 
 	InviterInfo *InviterInfo
 	Invitation  *InvitationInfo

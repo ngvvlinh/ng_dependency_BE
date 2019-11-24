@@ -5,6 +5,8 @@ import (
 	"strings"
 	"time"
 
+	"github.com/valyala/tsvreader"
+
 	txmodel "etop.vn/backend/com/main/moneytx/model"
 	txmodelx "etop.vn/backend/com/main/moneytx/modelx"
 	cm "etop.vn/backend/pkg/common"
@@ -13,8 +15,6 @@ import (
 	"etop.vn/backend/pkg/etop/api/convertpb"
 	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/common/xerrors"
-
-	"github.com/valyala/tsvreader"
 )
 
 type Error struct {
@@ -156,6 +156,6 @@ func HandleImportMoneyTransactions(c *httpx.Context) error {
 	if err := bus.Dispatch(ctx, cmd); err != nil {
 		return cm.Error(cm.InvalidArgument, "unexpected error", err)
 	}
-	c.SetResultPb(convertpb.PbMoneyTransactionShippingExternalExtended(cmd.Result))
+	c.SetResult(convertpb.PbMoneyTransactionShippingExternalExtended(cmd.Result))
 	return nil
 }

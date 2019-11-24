@@ -5,6 +5,7 @@ import (
 
 	etoptypes "etop.vn/api/main/etop"
 	"etop.vn/api/meta"
+	"etop.vn/capi/dot"
 )
 
 // +gen:event:topic=event/identity
@@ -15,14 +16,14 @@ type Permission struct {
 }
 
 type Shop struct {
-	ID      int64
+	ID      dot.ID
 	Name    string
-	OwnerID int64
+	OwnerID dot.ID
 	IsTest  int
 
-	AddressID         int64
-	ShipToAddressID   int64
-	ShipFromAddressID int64
+	AddressID         dot.ID
+	ShipToAddressID   dot.ID
+	ShipFromAddressID dot.ID
 	Phone             string
 	WebsiteURL        string
 	ImageURL          string
@@ -37,8 +38,8 @@ type Shop struct {
 }
 
 type Affiliate struct {
-	ID          int64
-	OwnerID     int64
+	ID          dot.ID
+	OwnerID     dot.ID
 	Name        string
 	Phone       string
 	Email       string
@@ -51,7 +52,7 @@ type Affiliate struct {
 }
 
 type User struct {
-	ID int64
+	ID dot.ID
 
 	FullName  string
 	ShortName string
@@ -64,12 +65,12 @@ type User struct {
 
 	CreatedAt time.Time
 	UpdatedAt time.Time
-	RefUserID int64
-	RefSaleID int64
+	RefUserID dot.ID
+	RefSaleID dot.ID
 }
 
 type ExternalAccountAhamove struct {
-	ID                  int64
+	ID                  dot.ID
 	Phone               string
 	Name                string
 	ExternalID          string
@@ -100,13 +101,13 @@ type BankAccount struct {
 
 type AccountCreatedEvent struct {
 	meta.EventMeta
-	ShopID int64
-	UserID int64
+	ShopID dot.ID
+	UserID dot.ID
 }
 
 type UserCreatedEvent struct {
 	meta.EventMeta
-	UserID    int64
+	UserID    dot.ID
 	Email     string
 	FullName  string
 	ShortName string
@@ -114,5 +115,5 @@ type UserCreatedEvent struct {
 
 type GetCustomersByShop struct {
 	meta.EventMeta
-	ShopID int64
+	ShopID dot.ID
 }

@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"etop.vn/backend/pkg/etop/model"
+	"etop.vn/capi/dot"
 )
 
 type WebhookStore struct {
@@ -20,12 +21,12 @@ func Webhook(ctx context.Context) *WebhookStore {
 	return &WebhookStore{ctx: ctx}
 }
 
-func (s *WebhookStore) ID(id int64) *WebhookStore {
+func (s *WebhookStore) ID(id dot.ID) *WebhookStore {
 	s.preds = append(s.preds, s.ft.ByID(id))
 	return s
 }
 
-func (s *WebhookStore) AccountID(id int64) *WebhookStore {
+func (s *WebhookStore) AccountID(id dot.ID) *WebhookStore {
 	s.preds = append(s.preds, s.ft.ByAccountID(id))
 	return s
 }

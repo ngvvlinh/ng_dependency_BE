@@ -9,6 +9,7 @@ import (
 	"etop.vn/backend/com/services/affiliate/model"
 	"etop.vn/backend/pkg/common/cmsql"
 	"etop.vn/backend/pkg/common/sqlstore"
+	"etop.vn/capi/dot"
 )
 
 type UserReferralStoreFactory func(ctx context.Context) *UserReferralStore
@@ -32,12 +33,12 @@ type UserReferralStore struct {
 	filters meta.Filters
 }
 
-func (s *UserReferralStore) UserID(id int64) *UserReferralStore {
+func (s *UserReferralStore) UserID(id dot.ID) *UserReferralStore {
 	s.preds = append(s.preds, s.ft.ByUserID(id))
 	return s
 }
 
-func (s *UserReferralStore) ReferralID(id int64) *UserReferralStore {
+func (s *UserReferralStore) ReferralID(id dot.ID) *UserReferralStore {
 	s.preds = append(s.preds, s.ft.ByReferralID(id))
 	return s
 }

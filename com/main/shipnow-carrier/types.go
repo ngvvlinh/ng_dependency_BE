@@ -6,6 +6,7 @@ import (
 	ordertypes "etop.vn/api/main/ordering/types"
 	"etop.vn/api/main/shipnow/carrier"
 	shipnowtypes "etop.vn/api/main/shipnow/types"
+	"etop.vn/capi/dot"
 )
 
 type ShipnowCarrier interface {
@@ -23,7 +24,7 @@ type ShipnowCarrierAccount interface {
 }
 
 type GetShippingServiceArgs struct {
-	ShopID        int64
+	ShopID        dot.ID
 	PickupAddress *ordertypes.Address
 
 	DeliveryPoints []*shipnowtypes.DeliveryPoint
@@ -36,9 +37,9 @@ type RegisterExternalAccountArgs struct {
 }
 
 type GetExternalAccountArgs struct {
-	OwnerID int64
+	OwnerID dot.ID
 }
 
 type VerifyExternalAccountArgs struct {
-	OwnerID int64
+	OwnerID dot.ID
 }

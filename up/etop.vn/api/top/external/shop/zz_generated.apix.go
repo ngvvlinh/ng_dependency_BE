@@ -9,10 +9,9 @@ import (
 	fmt "fmt"
 	http "net/http"
 
-	proto "github.com/golang/protobuf/proto"
-
 	common "etop.vn/api/pb/common"
 	external "etop.vn/api/pb/external"
+	"etop.vn/capi"
 	httprpc "etop.vn/capi/httprpc"
 )
 
@@ -52,11 +51,11 @@ func (s *HistoryServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Req
 	serve(ctx, resp, req, reqMsg, exec)
 }
 
-func (s *HistoryServiceServer) parseRoute(path string) (reqMsg proto.Message, _ httprpc.ExecFunc, _ error) {
+func (s *HistoryServiceServer) parseRoute(path string) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
 	case "/shop.History/GetChanges":
 		msg := &external.GetChangesRequest{}
-		fn := func(ctx context.Context) (proto.Message, error) {
+		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.GetChanges(ctx, msg)
 		}
 		return msg, fn, nil
@@ -97,23 +96,23 @@ func (s *MiscServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Reques
 	serve(ctx, resp, req, reqMsg, exec)
 }
 
-func (s *MiscServiceServer) parseRoute(path string) (reqMsg proto.Message, _ httprpc.ExecFunc, _ error) {
+func (s *MiscServiceServer) parseRoute(path string) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
 	case "/shop.Misc/CurrentAccount":
 		msg := &common.Empty{}
-		fn := func(ctx context.Context) (proto.Message, error) {
+		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.CurrentAccount(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/shop.Misc/GetLocationList":
 		msg := &common.Empty{}
-		fn := func(ctx context.Context) (proto.Message, error) {
+		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.GetLocationList(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/shop.Misc/VersionInfo":
 		msg := &common.Empty{}
-		fn := func(ctx context.Context) (proto.Message, error) {
+		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.VersionInfo(ctx, msg)
 		}
 		return msg, fn, nil
@@ -154,35 +153,35 @@ func (s *ShippingServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Re
 	serve(ctx, resp, req, reqMsg, exec)
 }
 
-func (s *ShippingServiceServer) parseRoute(path string) (reqMsg proto.Message, _ httprpc.ExecFunc, _ error) {
+func (s *ShippingServiceServer) parseRoute(path string) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
 	case "/shop.Shipping/CancelOrder":
 		msg := &external.CancelOrderRequest{}
-		fn := func(ctx context.Context) (proto.Message, error) {
+		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.CancelOrder(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/shop.Shipping/CreateAndConfirmOrder":
 		msg := &external.CreateOrderRequest{}
-		fn := func(ctx context.Context) (proto.Message, error) {
+		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.CreateAndConfirmOrder(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/shop.Shipping/GetFulfillment":
 		msg := &external.FulfillmentIDRequest{}
-		fn := func(ctx context.Context) (proto.Message, error) {
+		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.GetFulfillment(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/shop.Shipping/GetOrder":
 		msg := &external.OrderIDRequest{}
-		fn := func(ctx context.Context) (proto.Message, error) {
+		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.GetOrder(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/shop.Shipping/GetShippingServices":
 		msg := &external.GetShippingServicesRequest{}
-		fn := func(ctx context.Context) (proto.Message, error) {
+		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.GetShippingServices(ctx, msg)
 		}
 		return msg, fn, nil
@@ -223,23 +222,23 @@ func (s *WebhookServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Req
 	serve(ctx, resp, req, reqMsg, exec)
 }
 
-func (s *WebhookServiceServer) parseRoute(path string) (reqMsg proto.Message, _ httprpc.ExecFunc, _ error) {
+func (s *WebhookServiceServer) parseRoute(path string) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
 	case "/shop.Webhook/CreateWebhook":
 		msg := &external.CreateWebhookRequest{}
-		fn := func(ctx context.Context) (proto.Message, error) {
+		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.CreateWebhook(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/shop.Webhook/DeleteWebhook":
 		msg := &external.DeleteWebhookRequest{}
-		fn := func(ctx context.Context) (proto.Message, error) {
+		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.DeleteWebhook(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/shop.Webhook/GetWebhooks":
 		msg := &common.Empty{}
-		fn := func(ctx context.Context) (proto.Message, error) {
+		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.GetWebhooks(ctx, msg)
 		}
 		return msg, fn, nil

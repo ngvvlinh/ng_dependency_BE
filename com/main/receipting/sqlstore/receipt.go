@@ -17,6 +17,7 @@ import (
 	"etop.vn/backend/pkg/common/sqlstore"
 	"etop.vn/backend/pkg/common/validate"
 	etopmodel "etop.vn/backend/pkg/etop/model"
+	"etop.vn/capi/dot"
 )
 
 type ReceiptStoreFactory func(ctx context.Context) *ReceiptStore
@@ -56,17 +57,17 @@ func (s *ReceiptStore) Filters(filters meta.Filters) *ReceiptStore {
 	return s
 }
 
-func (s *ReceiptStore) ID(id int64) *ReceiptStore {
+func (s *ReceiptStore) ID(id dot.ID) *ReceiptStore {
 	s.preds = append(s.preds, s.ft.ByID(id))
 	return s
 }
 
-func (s *ReceiptStore) IDs(ids ...int64) *ReceiptStore {
+func (s *ReceiptStore) IDs(ids ...dot.ID) *ReceiptStore {
 	s.preds = append(s.preds, sq.PrefixedIn(&s.ft.prefix, "id", ids))
 	return s
 }
 
-func (s *ReceiptStore) ShopID(id int64) *ReceiptStore {
+func (s *ReceiptStore) ShopID(id dot.ID) *ReceiptStore {
 	s.preds = append(s.preds, s.ft.ByShopID(id).Optional())
 	return s
 }
@@ -76,22 +77,22 @@ func (s *ReceiptStore) Code(code string) *ReceiptStore {
 	return s
 }
 
-func (s *ReceiptStore) TraderID(traderID int64) *ReceiptStore {
+func (s *ReceiptStore) TraderID(traderID dot.ID) *ReceiptStore {
 	s.preds = append(s.preds, s.ft.ByTraderID(traderID))
 	return s
 }
 
-func (s *ReceiptStore) TraderIDs(traderIDs ...int64) *ReceiptStore {
+func (s *ReceiptStore) TraderIDs(traderIDs ...dot.ID) *ReceiptStore {
 	s.preds = append(s.preds, sq.PrefixedIn(&s.ft.prefix, "trader_id", traderIDs))
 	return s
 }
 
-func (s *ReceiptStore) RefsID(id int64) *ReceiptStore {
-	s.preds = append(s.preds, sq.NewExpr("ref_ids @> ?", core.Array{V: []int64{id}}))
+func (s *ReceiptStore) RefsID(id dot.ID) *ReceiptStore {
+	s.preds = append(s.preds, sq.NewExpr("ref_ids @> ?", core.Array{V: []dot.ID{id}}))
 	return s
 }
 
-func (s *ReceiptStore) RefIDs(ids ...int64) *ReceiptStore {
+func (s *ReceiptStore) RefIDs(ids ...dot.ID) *ReceiptStore {
 	if len(ids) == 0 {
 		s.preds = append(s.preds, sq.NewExpr("false"))
 		return s
@@ -125,7 +126,7 @@ func (s *ReceiptStore) Statuses(statuses ...etop.Status3) *ReceiptStore {
 	return s
 }
 
-func (s *ReceiptStore) LedgerIDs(LedgerIDs ...int64) *ReceiptStore {
+func (s *ReceiptStore) LedgerIDs(LedgerIDs ...dot.ID) *ReceiptStore {
 	s.preds = append(s.preds, sq.PrefixedIn(&s.ft.prefix, "ledger_id", LedgerIDs))
 	return s
 }
@@ -276,7 +277,7 @@ func (s *ReceiptStore) ListReceipts() (receiptsResult []*receipting.Receipt, _ e
 	return receiptsResult, nil
 }
 
-func (s *ReceiptStore) SumAmountReceiptAndPayment() (receipt, payment int64, err error) {
+func (s *ReceiptStore) SumAmountReceiptAndPayment() (receipt, payment int, err error) {
 	var sqlReceipt, sqlPayment sql.NullInt64
 	query := s.query().Where(s.preds)
 	err = query.Table("receipt").Select(
@@ -284,5 +285,5 @@ func (s *ReceiptStore) SumAmountReceiptAndPayment() (receipt, payment int64, err
 		"SUM(amount) FILTER(WHERE type = 'payment')").
 		Scan(&sqlReceipt, &sqlPayment)
 
-	return sqlReceipt.Int64, sqlPayment.Int64, err
+	return int(sqlReceipt.Int64), int(sqlPayment.Int64), err
 }

@@ -3,6 +3,8 @@ package summary
 import (
 	"context"
 	"time"
+
+	"etop.vn/capi/dot"
 )
 
 // +gen:api
@@ -14,7 +16,7 @@ type QueryService interface {
 type SummaryPOSRequest struct {
 	DateFrom time.Time
 	DateTo   time.Time
-	ShopID   int64
+	ShopID   dot.ID
 }
 
 type SummaryPOSResponse struct {

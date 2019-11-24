@@ -7,6 +7,7 @@ import (
 	"etop.vn/api/meta"
 	"etop.vn/api/shopping"
 	. "etop.vn/capi/dot"
+	dot "etop.vn/capi/dot"
 )
 
 // +gen:api
@@ -14,16 +15,16 @@ import (
 type Aggregate interface {
 	CreateLedger(ctx context.Context, _ *CreateLedgerArgs) (*ShopLedger, error)
 	UpdateLedger(ctx context.Context, _ *UpdateLedgerArgs) (*ShopLedger, error)
-	DeleteLedger(ctx context.Context, ID, ShopID int64) (deleted int, _ error)
+	DeleteLedger(ctx context.Context, ID, ShopID dot.ID) (deleted int, _ error)
 }
 
 type QueryService interface {
 	GetLedgerByID(context.Context, *shopping.IDQueryShopArg) (*ShopLedger, error)
 	// AccountNumber of BankAccount
-	GetLedgerByAccountNumber(ctx context.Context, accountNumber string, shopID int64) (*ShopLedger, error)
+	GetLedgerByAccountNumber(ctx context.Context, accountNumber string, shopID dot.ID) (*ShopLedger, error)
 	ListLedgers(context.Context, *shopping.ListQueryShopArgs) (*ShopLedgersResponse, error)
-	ListLedgersByIDs(ctx context.Context, shopID int64, IDs []int64) (*ShopLedgersResponse, error)
-	ListLedgersByType(ctx context.Context, ledgerType LedgerType, shopID int64) (*ShopLedgersResponse, error)
+	ListLedgersByIDs(ctx context.Context, shopID dot.ID, IDs []dot.ID) (*ShopLedgersResponse, error)
+	ListLedgersByType(ctx context.Context, ledgerType LedgerType, shopID dot.ID) (*ShopLedgersResponse, error)
 }
 
 //-- queries --//
@@ -38,18 +39,18 @@ type ShopLedgersResponse struct {
 
 // +convert:create=ShopLedger
 type CreateLedgerArgs struct {
-	ShopID      int64
+	ShopID      dot.ID
 	Name        string
 	BankAccount *identity.BankAccount
 	Note        string
 	Type        LedgerType
-	CreatedBy   int64
+	CreatedBy   dot.ID
 }
 
 // +convert:update=ShopLedger(ID,ShopID)
 type UpdateLedgerArgs struct {
-	ID          int64
-	ShopID      int64
+	ID          dot.ID
+	ShopID      dot.ID
 	Name        NullString
 	BankAccount *identity.BankAccount
 	Note        NullString

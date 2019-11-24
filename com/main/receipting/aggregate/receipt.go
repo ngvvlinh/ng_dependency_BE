@@ -20,6 +20,7 @@ import (
 	"etop.vn/backend/pkg/common/conversion"
 	etopmodel "etop.vn/backend/pkg/etop/model"
 	"etop.vn/capi"
+	"etop.vn/capi/dot"
 	. "etop.vn/capi/dot"
 	"etop.vn/common/l"
 )
@@ -88,7 +89,7 @@ func (a *ReceiptAggregate) CreateReceipt(
 		Type:        args.Type,
 		RefType:     args.RefType,
 		Description: args.Description,
-		Amount:      args.Amount,
+		Amount:      int(args.Amount),
 		LedgerID:    args.LedgerID,
 		PaidAt:      args.PaidAt,
 		Lines:       args.Lines,
@@ -156,18 +157,18 @@ func (a *ReceiptAggregate) UpdateReceipt(
 		ID:          args.ID,
 		Title:       args.Title.String,
 		Description: args.Description.String,
-		LedgerID:    args.LedgerID.Int64,
+		LedgerID:    args.LedgerID.ID,
 		TraderID:    receipt.TraderID,
 		Type:        receipt.Type,
 		RefType:     receipt.RefType,
 		ShopID:      receipt.ShopID,
 	}
 	if receipt.Status == int32(etopmodel.S3Zero) {
-		if args.TraderID.Valid && args.TraderID.Int64 != receipt.TraderID {
-			receiptNeedValidate.TraderID = args.TraderID.Int64
+		if args.TraderID.Valid && args.TraderID.ID != receipt.TraderID {
+			receiptNeedValidate.TraderID = args.TraderID.ID
 		}
 		receiptNeedValidate.RefType = args.RefType
-		receiptNeedValidate.Amount = args.Amount.Int32
+		receiptNeedValidate.Amount = args.Amount.Int
 		receiptNeedValidate.Lines = args.Lines
 		receiptNeedValidate.PaidAt = args.PaidAt
 	}
@@ -176,15 +177,15 @@ func (a *ReceiptAggregate) UpdateReceipt(
 	}
 
 	if receipt.Status != int32(etopmodel.S3Zero) {
-		args.TraderID = PInt64(&receipt.TraderID)
-		args.Amount = PInt32(&receipt.Amount)
+		args.TraderID = PID(&receipt.TraderID)
+		args.Amount = PInt(&receipt.Amount)
 		args.RefType = receipt.RefType
 		args.Lines = receipt.Lines
 		args.Trader = receipt.Trader
 		args.PaidAt = receipt.PaidAt
 	} else {
-		if !args.TraderID.Valid || args.TraderID.Int64 == receipt.TraderID {
-			args.TraderID = PInt64(&receipt.TraderID)
+		if !args.TraderID.Valid || args.TraderID.ID == receipt.TraderID {
+			args.TraderID = PID(&receipt.TraderID)
 			args.RefType = receipt.RefType
 			args.Trader = receipt.Trader
 		} else {
@@ -205,7 +206,7 @@ func (a *ReceiptAggregate) UpdateReceipt(
 	return receipt, err
 }
 
-func (a *ReceiptAggregate) validateReceiptForCreateOrUpdate(ctx context.Context, shopID int64, receipt *receipting.Receipt) error {
+func (a *ReceiptAggregate) validateReceiptForCreateOrUpdate(ctx context.Context, shopID dot.ID, receipt *receipting.Receipt) error {
 	if receipt.ID == 0 && receipt.Title == "" {
 		return cm.Errorf(cm.InvalidArgument, nil, "Tiêu đề không hợp lệ")
 	}
@@ -255,7 +256,7 @@ func (a *ReceiptAggregate) validateTypeAndRefType(receiptType receipting.Receipt
 	return nil
 }
 
-func (a *ReceiptAggregate) validateLedger(ctx context.Context, ledgerID, shopID int64) error {
+func (a *ReceiptAggregate) validateLedger(ctx context.Context, ledgerID, shopID dot.ID) error {
 	query := &ledgering.GetLedgerByIDQuery{
 		ID:     ledgerID,
 		ShopID: shopID,
@@ -268,7 +269,7 @@ func (a *ReceiptAggregate) validateLedger(ctx context.Context, ledgerID, shopID 
 	return nil
 }
 
-func (a *ReceiptAggregate) validateAndFillTrader(ctx context.Context, shopID int64, receipt *receipting.Receipt) error {
+func (a *ReceiptAggregate) validateAndFillTrader(ctx context.Context, shopID dot.ID, receipt *receipting.Receipt) error {
 	query := &tradering.GetTraderInfoByIDQuery{
 		ID:     receipt.TraderID,
 		ShopID: shopID,
@@ -302,9 +303,9 @@ func (a *ReceiptAggregate) validateAndFillTrader(ctx context.Context, shopID int
 	return nil
 }
 
-func calcReceiptLinesTotalAmount(receipt *receipting.Receipt) (totalAmount int32, refIDs []int64, mapRefIDAmount map[int64]int32, err error) {
+func calcReceiptLinesTotalAmount(receipt *receipting.Receipt) (totalAmount int, refIDs []dot.ID, mapRefIDAmount map[dot.ID]int, err error) {
 	// Map of [ ref_id ] amount of line
-	mapRefIDAmount = make(map[int64]int32)
+	mapRefIDAmount = make(map[dot.ID]int)
 	for _, receiptLine := range receipt.Lines {
 		// check amount of a receiptLine < 0
 		if receiptLine.Amount <= 0 {
@@ -335,7 +336,7 @@ func (a *ReceiptAggregate) validateReceiptLines(
 	if err != nil {
 		return err
 	}
-	if totalAmountOfReceiptLines != receipt.Amount {
+	if int(totalAmountOfReceiptLines) != receipt.Amount {
 		return cm.Errorf(cm.FailedPrecondition, nil, "Amount of receipt must be equal to total amount of receiptLines")
 	}
 	if len(refIDs) == 0 {
@@ -355,7 +356,7 @@ func (a *ReceiptAggregate) validateReceiptLines(
 }
 
 func (a *ReceiptAggregate) DeleteReceipt(
-	ctx context.Context, id int64, shopID int64,
+	ctx context.Context, id dot.ID, shopID dot.ID,
 ) (deleted int, _ error) {
 	deleted, err := a.store(ctx).ID(id).ShopID(shopID).SoftDelete()
 	return deleted, err

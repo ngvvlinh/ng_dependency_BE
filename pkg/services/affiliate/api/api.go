@@ -17,6 +17,7 @@ import (
 	"etop.vn/backend/pkg/etop/api/convertpb"
 	pbshop "etop.vn/backend/pkg/etop/api/shop"
 	modeletop "etop.vn/backend/pkg/etop/model"
+	"etop.vn/capi/dot"
 	"etop.vn/common/l"
 )
 
@@ -113,7 +114,7 @@ func (s *TradingService) TradingGetProducts(ctx context.Context, q *TradingGetPr
 		return err
 	}
 
-	var productIds []int64
+	var productIds []dot.ID
 	for _, product := range query.Result.Products {
 		productIds = append(productIds, product.ProductID)
 	}
@@ -300,7 +301,7 @@ func (s *ShopService) ShopGetProducts(ctx context.Context, q *ShopGetProductsEnd
 		return err
 	}
 
-	var productIds []int64
+	var productIds []dot.ID
 	for _, product := range query.Result.Products {
 		productIds = append(productIds, product.ProductID)
 	}
@@ -445,7 +446,7 @@ func (s *AffiliateService) AffiliateGetProducts(ctx context.Context, q *Affiliat
 		return err
 	}
 
-	var productIds []int64
+	var productIds []dot.ID
 	for _, product := range query.Result.Products {
 		productIds = append(productIds, product.ProductID)
 	}
@@ -466,8 +467,6 @@ func (s *AffiliateService) AffiliateGetProducts(ctx context.Context, q *Affiliat
 				ProductId: tradingCommissionSetting.ProductID,
 				Amount:    tradingCommissionSetting.Level1DirectCommission,
 				Unit:      "percent",
-				CreatedAt: nil,
-				UpdatedAt: nil,
 			}
 		}
 		var pbAffCommissionSetting *pbaff.CommissionSetting = nil
@@ -495,16 +494,16 @@ func (s *AffiliateService) AffiliateGetProducts(ctx context.Context, q *Affiliat
 	return nil
 }
 
-func GetShopCommissionSettingsByProducts(ctx context.Context, accountID int64, productIds []int64) map[int64]*affiliate.CommissionSetting {
+func GetShopCommissionSettingsByProducts(ctx context.Context, accountID dot.ID, productIds []dot.ID) map[dot.ID]*affiliate.CommissionSetting {
 	getShopCommissionByProductIDsQuery := &affiliate.GetCommissionByProductIDsQuery{
 		AccountID:  accountID,
 		ProductIDs: productIds,
 	}
 	if err := affiliateQuery.Dispatch(ctx, getShopCommissionByProductIDsQuery); err != nil {
-		return map[int64]*affiliate.CommissionSetting{}
+		return map[dot.ID]*affiliate.CommissionSetting{}
 	}
 
-	shopCommissionMap := map[int64]*affiliate.CommissionSetting{}
+	shopCommissionMap := map[dot.ID]*affiliate.CommissionSetting{}
 	for _, e := range getShopCommissionByProductIDsQuery.Result {
 		shopCommissionMap[e.ProductID] = e
 	}
@@ -512,38 +511,38 @@ func GetShopCommissionSettingsByProducts(ctx context.Context, accountID int64, p
 	return shopCommissionMap
 }
 
-func GetSupplyCommissionSettingByProductIdsMap(ctx context.Context, shopID int64, productIDs []int64) map[int64]*affiliate.SupplyCommissionSetting {
+func GetSupplyCommissionSettingByProductIdsMap(ctx context.Context, shopID dot.ID, productIDs []dot.ID) map[dot.ID]*affiliate.SupplyCommissionSetting {
 	supplyCommissionSettingsQ := &affiliate.GetSupplyCommissionSettingsByProductIDsQuery{
 		ShopID:     shopID,
 		ProductIDs: productIDs,
 	}
 	if err := affiliateQuery.Dispatch(ctx, supplyCommissionSettingsQ); err != nil {
-		return map[int64]*affiliate.SupplyCommissionSetting{}
+		return map[dot.ID]*affiliate.SupplyCommissionSetting{}
 	}
-	supplyCommissionSettingMap := map[int64]*affiliate.SupplyCommissionSetting{}
+	supplyCommissionSettingMap := map[dot.ID]*affiliate.SupplyCommissionSetting{}
 	for _, e := range supplyCommissionSettingsQ.Result {
 		supplyCommissionSettingMap[e.ProductID] = e
 	}
 	return supplyCommissionSettingMap
 }
 
-func GetShopProductPromotionMapByProductIDs(ctx context.Context, shopID int64, productIDs []int64) map[int64]*affiliate.ProductPromotion {
+func GetShopProductPromotionMapByProductIDs(ctx context.Context, shopID dot.ID, productIDs []dot.ID) map[dot.ID]*affiliate.ProductPromotion {
 	promotionsQ := &affiliate.GetShopProductPromotionByProductIDsQuery{
 		ShopID:     shopID,
 		ProductIDs: productIDs,
 	}
 	if err := affiliateQuery.Dispatch(ctx, promotionsQ); err != nil {
-		return map[int64]*affiliate.ProductPromotion{}
+		return map[dot.ID]*affiliate.ProductPromotion{}
 	}
 
-	promotionMap := map[int64]*affiliate.ProductPromotion{}
+	promotionMap := map[dot.ID]*affiliate.ProductPromotion{}
 	for _, e := range promotionsQ.Result {
 		promotionMap[e.ProductID] = e
 	}
 	return promotionMap
 }
 
-func GetCommissionSettingByReferralCode(ctx context.Context, referralCode string, productID int64) (*affiliate.CommissionSetting, error) {
+func GetCommissionSettingByReferralCode(ctx context.Context, referralCode string, productID dot.ID) (*affiliate.CommissionSetting, error) {
 	referralQ := &affiliate.GetAffiliateAccountReferralByCodeQuery{Code: referralCode}
 	if err := affiliateQuery.Dispatch(ctx, referralQ); err != nil {
 		return nil, err
@@ -593,7 +592,7 @@ func (s *AffiliateService) GetReferrals(ctx context.Context, q *GetReferralsEndp
 		return err
 	}
 
-	var affiliateIDs []int64
+	var affiliateIDs []dot.ID
 	for _, userReferral := range referralQ.Result {
 		userQ := &identity.GetAffiliatesByOwnerIDQuery{
 			ID: userReferral.UserID,

@@ -1,6 +1,10 @@
 package address
 
-import "context"
+import (
+	"context"
+
+	"etop.vn/capi/dot"
+)
 
 // +gen:api
 
@@ -9,5 +13,5 @@ type QueryService interface {
 }
 
 type GetAddressByIDQueryArgs struct {
-	ID int64
+	ID dot.ID
 }

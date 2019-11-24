@@ -5,10 +5,11 @@ import (
 	"time"
 
 	orderv1types "etop.vn/api/main/ordering/types"
+	"etop.vn/capi/dot"
 )
 
 type Address struct {
-	ID        int64
+	ID        dot.ID
 	FullName  string
 	FirstName string
 	LastName  string
@@ -31,7 +32,7 @@ type Address struct {
 	Address1    string
 	Address2    string
 	Type        string
-	AccountID   int64
+	AccountID   dot.ID
 	CreatedAt   time.Time
 	UpdatedAt   time.Time
 	Coordinates *orderv1types.Coordinates

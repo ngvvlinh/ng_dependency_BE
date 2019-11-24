@@ -9,6 +9,7 @@ import (
 	"etop.vn/backend/pkg/common/cmsql"
 	"etop.vn/backend/pkg/common/sq"
 	"etop.vn/backend/pkg/common/sqlstore"
+	"etop.vn/capi/dot"
 )
 
 type CommissionSettingStoreFactory func(ctx context.Context) *AffiliateCommissonStore
@@ -28,17 +29,17 @@ type AffiliateCommissonStore struct {
 	preds []interface{}
 }
 
-func (s *AffiliateCommissonStore) ProductID(id int64) *AffiliateCommissonStore {
+func (s *AffiliateCommissonStore) ProductID(id dot.ID) *AffiliateCommissonStore {
 	s.preds = append(s.preds, s.ft.ByProductID(id))
 	return s
 }
 
-func (s *AffiliateCommissonStore) ProductIDs(ids []int64) *AffiliateCommissonStore {
+func (s *AffiliateCommissonStore) ProductIDs(ids []dot.ID) *AffiliateCommissonStore {
 	s.preds = append(s.preds, sq.In("product_id", ids))
 	return s
 }
 
-func (s *AffiliateCommissonStore) AccountID(id int64) *AffiliateCommissonStore {
+func (s *AffiliateCommissonStore) AccountID(id dot.ID) *AffiliateCommissonStore {
 	s.preds = append(s.preds, s.ft.ByAccountID(id))
 	return s
 }

@@ -20,6 +20,7 @@ import (
 	"etop.vn/backend/pkg/etop/sqlstore"
 	"etop.vn/backend/pkg/integration/shipping/ghn"
 	ghnclient "etop.vn/backend/pkg/integration/shipping/ghn/client"
+	"etop.vn/capi/dot"
 )
 
 func init() {
@@ -74,9 +75,8 @@ var vhtService = &VhtService{}
 
 func (s *MiscService) VersionInfo(ctx context.Context, q *VersionInfoEndpoint) error {
 	q.Result = &pbcm.VersionInfoResponse{
-		Service:   "etop-crm",
-		Version:   "0.1",
-		UpdatedAt: nil,
+		Service: "etop-crm",
+		Version: "0.1",
 	}
 	return nil
 }
@@ -127,7 +127,7 @@ func (s *CrmService) RefreshFulfillmentFromCarrier(ctx context.Context, r *Refre
 
 func (s *CrmService) SendNotification(ctx context.Context, r *SendNotificationEndpoint) error {
 	cmd := &notimodel.CreateNotificationsArgs{
-		AccountIDs:       []int64{r.AccountId},
+		AccountIDs:       []dot.ID{r.AccountId},
 		Title:            r.Title,
 		Message:          r.Message,
 		EntityID:         r.EntityId,

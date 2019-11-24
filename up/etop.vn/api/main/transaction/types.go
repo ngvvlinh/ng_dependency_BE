@@ -4,6 +4,7 @@ import (
 	"time"
 
 	etoptypes "etop.vn/api/main/etop"
+	"etop.vn/capi/dot"
 )
 
 type (
@@ -18,9 +19,9 @@ var (
 )
 
 type Transaction struct {
-	ID        int64
+	ID        dot.ID
 	Amount    int
-	AccountID int64
+	AccountID dot.ID
 	Status    etoptypes.Status3
 	Type      TransactionType
 	Note      string
@@ -31,5 +32,5 @@ type Transaction struct {
 
 type TransactionMetadata struct {
 	ReferralType ReferralType
-	ReferralIDs  []int64
+	ReferralIDs  []dot.ID
 }

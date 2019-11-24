@@ -9,6 +9,7 @@ import (
 
 	haravan "etop.vn/api/external/haravan"
 	capi "etop.vn/capi"
+	dot "etop.vn/capi/dot"
 )
 
 type Command interface{ command() }
@@ -38,7 +39,7 @@ func (c QueryBus) DispatchAll(ctx context.Context, msgs ...Query) error {
 }
 
 type CancelOrderCommand struct {
-	EtopShopID     int64
+	EtopShopID     dot.ID
 	TrackingNumber string `json:"tracking_number"`
 
 	Result *GetOrderResponse `json:"-"`
@@ -50,7 +51,7 @@ func (h AggregateHandler) HandleCancelOrder(ctx context.Context, msg *CancelOrde
 }
 
 type CreateOrderCommand struct {
-	EtopShopID            int64
+	EtopShopID            dot.ID
 	Origin                *haravan.Address `json:"origin"`
 	Destination           *haravan.Address `json:"destination"`
 	Items                 []*haravan.Item  `json:"items"`
@@ -72,7 +73,7 @@ func (h AggregateHandler) HandleCreateOrder(ctx context.Context, msg *CreateOrde
 }
 
 type GetOrderCommand struct {
-	EtopShopID     int64
+	EtopShopID     dot.ID
 	TrackingNumber string `json:"tracking_number"`
 
 	Result *GetOrderResponse `json:"-"`
@@ -84,7 +85,7 @@ func (h AggregateHandler) HandleGetOrder(ctx context.Context, msg *GetOrderComma
 }
 
 type GetShippingRateCommand struct {
-	EtopShopID  int64
+	EtopShopID  dot.ID
 	Origin      *haravan.Address `json:"origin"`
 	Destination *haravan.Address `json:"destination"`
 	CodAmount   float32          `json:"cod_amount"`

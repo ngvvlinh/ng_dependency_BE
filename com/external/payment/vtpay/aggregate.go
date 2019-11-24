@@ -11,6 +11,7 @@ import (
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/cmsql"
 	vtpayclient "etop.vn/backend/pkg/integration/payment/vtpay/client"
+	"etop.vn/capi/dot"
 	"etop.vn/common/jsonx"
 )
 
@@ -50,7 +51,7 @@ func (a *Aggregate) HandleExternalDataResponse(ctx context.Context, args *vtpay.
 	}
 }
 
-func (a *Aggregate) HandleExternalDataOrderResponse(ctx context.Context, orderID int64, args *vtpay.HandleExternalDataResponseArgs) error {
+func (a *Aggregate) HandleExternalDataOrderResponse(ctx context.Context, orderID dot.ID, args *vtpay.HandleExternalDataResponseArgs) error {
 	queryOrder := &ordering.GetOrderByIDQuery{ID: orderID}
 	if err := a.orderQS.Dispatch(ctx, queryOrder); err != nil {
 		return cm.Errorf(cm.InvalidArgument, err, "Mã đơn hàng không tồn tại (order_id = %v)", orderID)

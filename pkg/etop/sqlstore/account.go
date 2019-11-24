@@ -10,6 +10,7 @@ import (
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/validate"
 	"etop.vn/backend/pkg/etop/model"
+	"etop.vn/capi/dot"
 )
 
 func init() {
@@ -219,11 +220,11 @@ func DeleteShop(ctx context.Context, cmd *model.DeleteShopCommand) error {
 	})
 }
 
-func UpdateOrCreateAddress(ctx context.Context, address *model.Address, accountID int64, AddressType string) (int64, error) {
+func UpdateOrCreateAddress(ctx context.Context, address *model.Address, accountID dot.ID, AddressType string) (dot.ID, error) {
 	return updateOrCreateAddress(ctx, x, address, accountID, AddressType)
 }
 
-func updateOrCreateAddress(ctx context.Context, x Qx, address *model.Address, accountID int64, AddressType string) (int64, error) {
+func updateOrCreateAddress(ctx context.Context, x Qx, address *model.Address, accountID dot.ID, AddressType string) (dot.ID, error) {
 	addressObj := &model.Address{
 		Province:     address.Province,
 		ProvinceCode: address.ProvinceCode,

@@ -10,6 +10,7 @@ import (
 	paymentutil "etop.vn/backend/com/external/payment"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
+	"etop.vn/capi/dot"
 )
 
 var _ paymentmanager.Aggregate = &PaymentManager{}
@@ -93,7 +94,7 @@ func (ctrl *PaymentManager) CheckReturnData(ctx context.Context, args *paymentma
 	}
 }
 
-func (ctrl *PaymentManager) HandlerCheckReturnOrderData(ctx context.Context, orderID int64, args *paymentmanager.CheckReturnDataArgs) (*paymentmanager.CheckReturnDataResult, error) {
+func (ctrl *PaymentManager) HandlerCheckReturnOrderData(ctx context.Context, orderID dot.ID, args *paymentmanager.CheckReturnDataArgs) (*paymentmanager.CheckReturnDataResult, error) {
 	queryOrder := &ordering.GetOrderByIDQuery{ID: orderID}
 	if err := ctrl.orderQS.Dispatch(ctx, queryOrder); err != nil {
 		return nil, cm.Errorf(cm.InvalidArgument, err, "Mã đơn hàng không tồn tại (order_id = %v)", orderID)

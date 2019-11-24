@@ -10,6 +10,7 @@ import (
 	"etop.vn/backend/pkg/common/cmsql"
 	"etop.vn/backend/pkg/common/sq"
 	"etop.vn/backend/pkg/common/sqlstore"
+	"etop.vn/capi/dot"
 )
 
 var Sort = map[string]string{
@@ -35,7 +36,7 @@ type InventoryStore struct {
 	preds  []interface{}
 }
 
-func (s *InventoryStore) VariantID(id int64) *InventoryStore {
+func (s *InventoryStore) VariantID(id dot.ID) *InventoryStore {
 	s.preds = append(s.preds, s.ft.ByVariantID(id))
 	return s
 }
@@ -45,12 +46,12 @@ func (s *InventoryStore) Paging(page *cm.Paging) *InventoryStore {
 	return s
 }
 
-func (s *InventoryStore) VariantIDs(ids ...int64) *InventoryStore {
+func (s *InventoryStore) VariantIDs(ids ...dot.ID) *InventoryStore {
 	s.preds = append(s.preds, sq.PrefixedIn(&s.ft.prefix, "variant_id", ids))
 	return s
 }
 
-func (s *InventoryStore) ShopID(id int64) *InventoryStore {
+func (s *InventoryStore) ShopID(id dot.ID) *InventoryStore {
 	s.preds = append(s.preds, s.ft.ByShopID(id))
 	return s
 }

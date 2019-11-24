@@ -9,6 +9,7 @@ import (
 	"etop.vn/backend/pkg/common/cmsql"
 	cc "etop.vn/backend/pkg/common/config"
 	"etop.vn/backend/pkg/common/validate"
+	"etop.vn/capi/dot"
 	"etop.vn/common/l"
 )
 
@@ -36,7 +37,7 @@ func main() {
 		ll.Fatal("Error while connecting database", l.Error(err))
 	}
 	{
-		fromID := int64(0)
+		var fromID dot.ID
 		count, updated := 0, 0
 		for {
 			customers, err := scanCustomer(fromID)
@@ -75,7 +76,7 @@ func main() {
 	}
 }
 
-func scanCustomer(fromID int64) (customers customering.ShopCustomers, err error) {
+func scanCustomer(fromID dot.ID) (customers customering.ShopCustomers, err error) {
 	err = db.
 		Where("id > ?", fromID).
 		OrderBy("id").

@@ -7,11 +7,8 @@ import (
 	"io"
 	"io/ioutil"
 	"runtime/debug"
-	"strconv"
 	"strings"
 	"time"
-
-	"etop.vn/backend/pkg/common/cmapi"
 
 	"github.com/360EntSecGroup-Skylar/excelize"
 
@@ -20,11 +17,13 @@ import (
 	catalogmodel "etop.vn/backend/com/main/catalog/model"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
+	"etop.vn/backend/pkg/common/cmapi"
 	"etop.vn/backend/pkg/common/httpx"
 	"etop.vn/backend/pkg/common/imcsv"
 	"etop.vn/backend/pkg/common/validate"
 	"etop.vn/backend/pkg/etop/authorize/claims"
 	"etop.vn/backend/pkg/etop/model"
+	"etop.vn/capi/dot"
 )
 
 func HandleShopImportSampleProducts(c *httpx.Context) error {
@@ -33,7 +32,7 @@ func HandleShopImportSampleProducts(c *httpx.Context) error {
 	shop := claim.Shop
 
 	// share the same key with HandleShopImportProducts
-	key := strconv.FormatInt(shop.ID, 10)
+	key := shop.ID.String()
 
 	resp, err := idempgroup.DoAndWrapWithSubkey(key, claim.Token, 30*time.Second, func() (interface{}, error) {
 		return handleShopImportSampleProducts(c.Req.Context(), c, shop, userID)
@@ -47,11 +46,11 @@ func HandleShopImportSampleProducts(c *httpx.Context) error {
 		// Allow re-uploading immediately after error
 		idempgroup.ReleaseKey(key, claim.Token)
 	}
-	c.SetResultPb(respMsg)
+	c.SetResult(respMsg)
 	return nil
 }
 
-func handleShopImportSampleProducts(ctx context.Context, c *httpx.Context, shop *model.Shop, userID int64) (_resp *pbshop.ImportProductsResponse, _err error) {
+func handleShopImportSampleProducts(ctx context.Context, c *httpx.Context, shop *model.Shop, userID dot.ID) (_resp *pbshop.ImportProductsResponse, _err error) {
 	// check if shop already imports sample data
 	s := shopProductStore(ctx).
 		ShopID(shop.ID).
@@ -78,7 +77,7 @@ func HandleShopImportProducts(c *httpx.Context) error {
 	shop := claim.Shop
 
 	// share the same key with HandleShopImportSampleProducts
-	key := strconv.FormatInt(shop.ID, 10)
+	key := shop.ID.String()
 
 	resp, err := idempgroup.DoAndWrapWithSubkey(key, claim.Token, 30*time.Second, func() (interface{}, error) {
 		return handleShopImportProducts(c.Req.Context(), c, shop, userID)
@@ -92,11 +91,11 @@ func HandleShopImportProducts(c *httpx.Context) error {
 		// Allow re-uploading immediately after error
 		idempgroup.ReleaseKey(key, claim.Token)
 	}
-	c.SetResultPb(respMsg)
+	c.SetResult(respMsg)
 	return nil
 }
 
-func handleShopImportProducts(ctx context.Context, c *httpx.Context, shop *model.Shop, userID int64) (_resp *pbshop.ImportProductsResponse, _err error) {
+func handleShopImportProducts(ctx context.Context, c *httpx.Context, shop *model.Shop, userID dot.ID) (_resp *pbshop.ImportProductsResponse, _err error) {
 	mode, fileHeader, err := parseRequest(c)
 	if err != nil {
 		return nil, err
@@ -109,7 +108,7 @@ func handleShopImportProducts(ctx context.Context, c *httpx.Context, shop *model
 	return handleShopImportProductsFromFile(ctx, c, shop, userID, mode, file, fileHeader.Filename)
 }
 
-func handleShopImportProductsFromFile(ctx context.Context, c *httpx.Context, shop *model.Shop, userID int64, mode Mode, file io.ReadCloser, filename string) (_resp *pbshop.ImportProductsResponse, _err error) {
+func handleShopImportProductsFromFile(ctx context.Context, c *httpx.Context, shop *model.Shop, userID dot.ID, mode Mode, file io.ReadCloser, filename string) (_resp *pbshop.ImportProductsResponse, _err error) {
 	defer file.Close()
 	var debugOpts Debug
 	if cm.NotProd() {

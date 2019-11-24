@@ -3,6 +3,7 @@ package jsonx
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 	"reflect"
 	"sort"
@@ -95,11 +96,46 @@ func Marshal(v interface{}) ([]byte, error) {
 	return json.Marshal(v)
 }
 
+func MarshalToString(v interface{}) (string, error) {
+	var b strings.Builder
+	err := MarshalTo(&b, v)
+	if err != nil {
+		return "", nil
+	}
+	return strings.TrimSuffix(b.String(), "\n"), nil
+}
+
+func MustMarshalToString(v interface{}) string {
+	s, err := MarshalToString(v)
+	if err != nil {
+		panic(err)
+	}
+	return s
+}
+
+func MarshalTo(w io.Writer, v interface{}) error {
+	if enabledMode > 0 {
+		mustValidate(v, marshal)
+	}
+	return json.NewEncoder(w).Encode(v)
+}
+
 func Unmarshal(data []byte, v interface{}) error {
 	if enabledMode > 0 {
 		mustValidate(v, unmarshal)
 	}
 	return json.Unmarshal(data, v)
+}
+
+func UnmarshalString(s string, v interface{}) error {
+	return Unmarshal([]byte(s), v)
+}
+
+func UnmarshalFrom(r io.Reader, v interface{}) error {
+	if enabledMode > 0 {
+		mustValidate(v, unmarshal)
+	}
+	return json.NewDecoder(r).Decode(v)
 }
 
 func mustValidate(v interface{}, route routeType) {

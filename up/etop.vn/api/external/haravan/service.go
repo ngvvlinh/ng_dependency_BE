@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"etop.vn/api/meta"
+	"etop.vn/capi/dot"
 )
 
 // +gen:api
@@ -16,9 +17,9 @@ type Aggregate interface {
 
 // Call to update fulfillment's Haravan
 type SendUpdateExternalFulfillmentStateArgs struct {
-	FulfillmentID int64
+	FulfillmentID dot.ID
 }
 
 type SendUpdateExternalPaymentStatusArgs struct {
-	FulfillmentID int64
+	FulfillmentID dot.ID
 }

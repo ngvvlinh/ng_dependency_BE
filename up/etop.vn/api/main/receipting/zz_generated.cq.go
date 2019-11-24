@@ -41,8 +41,8 @@ func (c QueryBus) DispatchAll(ctx context.Context, msgs ...Query) error {
 }
 
 type CancelReceiptCommand struct {
-	ID     int64
-	ShopID int64
+	ID     dot.ID
+	ShopID dot.ID
 	Reason string
 
 	Result int `json:"-"`
@@ -54,8 +54,8 @@ func (h AggregateHandler) HandleCancelReceipt(ctx context.Context, msg *CancelRe
 }
 
 type ConfirmReceiptCommand struct {
-	ID     int64
-	ShopID int64
+	ID     dot.ID
+	ShopID dot.ID
 
 	Result int `json:"-"`
 }
@@ -66,20 +66,20 @@ func (h AggregateHandler) HandleConfirmReceipt(ctx context.Context, msg *Confirm
 }
 
 type CreateReceiptCommand struct {
-	ShopID      int64
-	TraderID    int64
+	ShopID      dot.ID
+	TraderID    dot.ID
 	Title       string
 	Type        ReceiptType
 	Status      int32
 	Description string
-	Amount      int32
-	LedgerID    int64
-	RefIDs      []int64
+	Amount      int
+	LedgerID    dot.ID
+	RefIDs      []dot.ID
 	RefType     ReceiptRefType
 	Lines       []*ReceiptLine
 	Trader      *Trader
 	PaidAt      time.Time
-	CreatedBy   int64
+	CreatedBy   dot.ID
 	CreatedType ReceiptCreatedType
 	ConfirmedAt time.Time
 
@@ -92,8 +92,8 @@ func (h AggregateHandler) HandleCreateReceipt(ctx context.Context, msg *CreateRe
 }
 
 type DeleteReceiptCommand struct {
-	ID     int64
-	ShopID int64
+	ID     dot.ID
+	ShopID dot.ID
 
 	Result int `json:"-"`
 }
@@ -104,14 +104,14 @@ func (h AggregateHandler) HandleDeleteReceipt(ctx context.Context, msg *DeleteRe
 }
 
 type UpdateReceiptCommand struct {
-	ID          int64
-	ShopID      int64
-	TraderID    dot.NullInt64
+	ID          dot.ID
+	ShopID      dot.ID
+	TraderID    dot.NullID
 	Title       dot.NullString
 	Description dot.NullString
-	Amount      dot.NullInt32
-	LedgerID    dot.NullInt64
-	RefIDs      []int64
+	Amount      dot.NullInt
+	LedgerID    dot.NullID
+	RefIDs      []dot.ID
 	RefType     ReceiptRefType
 	Lines       []*ReceiptLine
 	Trader      *Trader
@@ -127,7 +127,7 @@ func (h AggregateHandler) HandleUpdateReceipt(ctx context.Context, msg *UpdateRe
 
 type GetReceiptByCodeQuery struct {
 	Code   string
-	ShopID int64
+	ShopID dot.ID
 
 	Result *Receipt `json:"-"`
 }
@@ -138,8 +138,8 @@ func (h QueryServiceHandler) HandleGetReceiptByCode(ctx context.Context, msg *Ge
 }
 
 type GetReceiptByIDQuery struct {
-	ID     int64
-	ShopID int64
+	ID     dot.ID
+	ShopID dot.ID
 
 	Result *Receipt `json:"-"`
 }
@@ -150,7 +150,7 @@ func (h QueryServiceHandler) HandleGetReceiptByID(ctx context.Context, msg *GetR
 }
 
 type ListReceiptsQuery struct {
-	ShopID  int64
+	ShopID  dot.ID
 	Paging  meta.Paging
 	Filters meta.Filters
 
@@ -163,8 +163,8 @@ func (h QueryServiceHandler) HandleListReceipts(ctx context.Context, msg *ListRe
 }
 
 type ListReceiptsByIDsQuery struct {
-	IDs    []int64
-	ShopID int64
+	IDs    []dot.ID
+	ShopID dot.ID
 
 	Result *ReceiptsResponse `json:"-"`
 }
@@ -175,8 +175,8 @@ func (h QueryServiceHandler) HandleListReceiptsByIDs(ctx context.Context, msg *L
 }
 
 type ListReceiptsByLedgerIDsQuery struct {
-	ShopID    int64
-	LedgerIDs []int64
+	ShopID    dot.ID
+	LedgerIDs []dot.ID
 	Paging    meta.Paging
 	Filters   meta.Filters
 
@@ -189,8 +189,8 @@ func (h QueryServiceHandler) HandleListReceiptsByLedgerIDs(ctx context.Context, 
 }
 
 type ListReceiptsByRefsAndStatusQuery struct {
-	ShopID  int64
-	RefIDs  []int64
+	ShopID  dot.ID
+	RefIDs  []dot.ID
 	RefType ReceiptRefType
 	Status  int32
 
@@ -203,8 +203,8 @@ func (h QueryServiceHandler) HandleListReceiptsByRefsAndStatus(ctx context.Conte
 }
 
 type ListReceiptsByTraderIDsAndStatusesQuery struct {
-	ShopID    int64
-	TraderIDs []int64
+	ShopID    dot.ID
+	TraderIDs []dot.ID
 	Statuses  []etop.Status3
 
 	Result *ReceiptsResponse `json:"-"`
@@ -301,7 +301,7 @@ func (q *CreateReceiptCommand) SetCreateReceiptArgs(args *CreateReceiptArgs) {
 	q.ConfirmedAt = args.ConfirmedAt
 }
 
-func (q *DeleteReceiptCommand) GetArgs(ctx context.Context) (_ context.Context, ID int64, shopID int64) {
+func (q *DeleteReceiptCommand) GetArgs(ctx context.Context) (_ context.Context, ID dot.ID, shopID dot.ID) {
 	return ctx,
 		q.ID,
 		q.ShopID
@@ -340,7 +340,7 @@ func (q *UpdateReceiptCommand) SetUpdateReceiptArgs(args *UpdateReceiptArgs) {
 	q.PaidAt = args.PaidAt
 }
 
-func (q *GetReceiptByCodeQuery) GetArgs(ctx context.Context) (_ context.Context, code string, shopID int64) {
+func (q *GetReceiptByCodeQuery) GetArgs(ctx context.Context) (_ context.Context, code string, shopID dot.ID) {
 	return ctx,
 		q.Code,
 		q.ShopID
@@ -421,7 +421,7 @@ func (q *ListReceiptsByRefsAndStatusQuery) SetListReceiptsByRefsAndStatusArgs(ar
 	q.Status = args.Status
 }
 
-func (q *ListReceiptsByTraderIDsAndStatusesQuery) GetArgs(ctx context.Context) (_ context.Context, shopID int64, traderIDs []int64, statuses []etop.Status3) {
+func (q *ListReceiptsByTraderIDsAndStatusesQuery) GetArgs(ctx context.Context) (_ context.Context, shopID dot.ID, traderIDs []dot.ID, statuses []etop.Status3) {
 	return ctx,
 		q.ShopID,
 		q.TraderIDs,

@@ -7,6 +7,7 @@ import (
 	shipmodel "etop.vn/backend/com/main/shipping/model"
 	"etop.vn/backend/pkg/common/sq"
 	"etop.vn/backend/pkg/etop/model"
+	"etop.vn/capi/dot"
 )
 
 //go:generate $ETOPDIR/backend/scripts/derive.sh
@@ -32,7 +33,7 @@ var _ = sqlgenMoneyTransactionShippingFtShop(
 var _ = sqlgenMoneyTransactionShippingEtop(&MoneyTransactionShippingEtop{})
 
 type MoneyTransactionShippingExternal struct {
-	ID             int64
+	ID             dot.ID
 	Code           string
 	TotalCOD       int
 	TotalOrders    int
@@ -47,7 +48,7 @@ type MoneyTransactionShippingExternal struct {
 }
 
 type MoneyTransactionShippingExternalLine struct {
-	ID                                 int64
+	ID                                 dot.ID
 	ExternalCode                       string
 	ExternalCustomer                   string
 	ExternalAddress                    string
@@ -55,9 +56,9 @@ type MoneyTransactionShippingExternalLine struct {
 	ExternalCreatedAt                  time.Time
 	ExternalClosedAt                   time.Time
 	EtopFulfillmentIdRaw               string
-	EtopFulfillmentID                  int64
+	EtopFulfillmentID                  dot.ID
 	Note                               string
-	MoneyTransactionShippingExternalID int64
+	MoneyTransactionShippingExternalID dot.ID
 	CreatedAt                          time.Time `sq:"create"`
 	UpdatedAt                          time.Time `sq:"update"`
 	ImportError                        *model.Error
@@ -77,8 +78,8 @@ type MoneyTransactionShippingExternalExtended struct {
 }
 
 type MoneyTransactionShipping struct {
-	ID                                 int64
-	ShopID                             int64
+	ID                                 dot.ID
+	ShopID                             dot.ID
 	CreatedAt                          time.Time `sq:"create"`
 	UpdatedAt                          time.Time `sq:"update"`
 	ClosedAt                           time.Time
@@ -87,8 +88,8 @@ type MoneyTransactionShipping struct {
 	TotalAmount                        int
 	TotalOrders                        int
 	Code                               string
-	MoneyTransactionShippingExternalID int64
-	MoneyTransactionShippingEtopID     int64
+	MoneyTransactionShippingExternalID dot.ID
+	MoneyTransactionShippingEtopID     dot.ID
 	Provider                           string
 	ConfirmedAt                        time.Time
 	EtopTransferedAt                   time.Time
@@ -104,7 +105,7 @@ type MoneyTransactionShippingFtShop struct {
 }
 
 type MoneyTransactionShippingEtop struct {
-	ID                    int64
+	ID                    dot.ID
 	Code                  string
 	TotalCOD              int
 	TotalOrders           int

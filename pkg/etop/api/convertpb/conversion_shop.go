@@ -58,7 +58,7 @@ func Convert_api_ReceiptLine_To_core_ReceiptLine(in *shop.ReceiptLine) *receipti
 	return &receipting.ReceiptLine{
 		RefID:  in.RefId,
 		Title:  in.Title,
-		Amount: in.Amount,
+		Amount: int(in.Amount),
 	}
 }
 

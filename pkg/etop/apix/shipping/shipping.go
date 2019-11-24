@@ -13,6 +13,7 @@ import (
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/etop/apix/convertpb"
 	"etop.vn/backend/pkg/etop/logic/shipping_provider"
+	"etop.vn/capi/dot"
 	"etop.vn/common/l"
 )
 
@@ -69,7 +70,7 @@ func GetLocationList(ctx context.Context) (*pbexternal.LocationResponse, error) 
 	return locationList, nil
 }
 
-func GetShippingServices(ctx context.Context, accountID int64, r *pbexternal.GetShippingServicesRequest) (*pbexternal.GetShippingServicesResponse, error) {
+func GetShippingServices(ctx context.Context, accountID dot.ID, r *pbexternal.GetShippingServicesRequest) (*pbexternal.GetShippingServicesResponse, error) {
 	if r.PickupAddress == nil {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Cần cung cấp địa chỉ lấy hàng")
 	}

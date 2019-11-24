@@ -11,8 +11,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/golang/protobuf/jsonpb"
-	"github.com/golang/protobuf/proto"
 	"github.com/twitchtv/twirp"
 	"go.uber.org/zap/zapcore"
 
@@ -21,6 +19,8 @@ import (
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/telebot"
 	"etop.vn/backend/pkg/etop/authorize/middleware"
+	"etop.vn/capi"
+	"etop.vn/common/jsonx"
 	"etop.vn/common/l"
 	"etop.vn/common/xerrors"
 	"etop.vn/common/xerrors/logline"
@@ -44,7 +44,7 @@ type CensorInterface interface {
 	Censor()
 }
 
-func Censor(m proto.Message) {
+func Censor(m interface{}) {
 	if m, ok := m.(CensorInterface); ok {
 		m.Censor()
 	}
@@ -74,8 +74,6 @@ type TwerrJSON struct {
 	Msg  string            `json:"msg"`
 	Meta map[string]string `json:"meta,omitempty"`
 }
-
-var marshaler = jsonpb.Marshaler{OrigName: true, EmitDefaults: true}
 
 func EncodeTwirpError(w io.Writer, err twirp.Error) {
 	twerr := TwerrJSON{
@@ -126,8 +124,6 @@ func SendErrorToBot(bot *telebot.Channel, rpcName string, session *middleware.Se
 	buf.WriteString("\n→")
 
 	switch req := req.(type) {
-	case proto.Message:
-		_ = marshaler.Marshal(buf, req)
 	case []byte:
 		if len(req) == 0 {
 			buf.WriteString("<empty>")
@@ -146,8 +142,8 @@ func SendErrorToBot(bot *telebot.Channel, rpcName string, session *middleware.Se
 			}
 			buf.WriteString(req)
 		}
-	default:
-		_, _ = fmt.Fprintf(buf, "<unknown type=%T>", req)
+	default: // MUSTDO: interface for API message
+		_ = jsonx.MarshalTo(buf, req)
 	}
 
 	if err != nil {
@@ -185,7 +181,7 @@ func SendErrorToBot(bot *telebot.Channel, rpcName string, session *middleware.Se
 			if i > 0 {
 				buf.WriteByte(',')
 			}
-			_ = marshaler.Marshal(buf, e)
+			_ = jsonx.MarshalTo(buf, e)
 		}
 		buf.WriteByte(']')
 	}
@@ -197,7 +193,7 @@ func SendErrorToBot(bot *telebot.Channel, rpcName string, session *middleware.Se
 	bot.SendMessage(buf.String())
 }
 
-func RecoverAndLog(ctx context.Context, rpcName string, session *middleware.Session, req, resp proto.Message, recovered interface{}, err error, errs []*cmP.Error, t0 time.Time) (twError xerrors.TwError) {
+func RecoverAndLog(ctx context.Context, rpcName string, session *middleware.Session, req, resp capi.Message, recovered interface{}, err error, errs []*cmP.Error, t0 time.Time) (twError xerrors.TwError) {
 	var stacktrace []byte
 	if recovered != nil {
 		stacktrace = debug.Stack()

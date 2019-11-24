@@ -12,6 +12,7 @@ import (
 	paymentutil "etop.vn/backend/com/external/payment"
 	"etop.vn/backend/pkg/common/bus"
 	vtpayclient "etop.vn/backend/pkg/integration/payment/vtpay/client"
+	"etop.vn/capi/dot"
 	"etop.vn/common/l"
 )
 
@@ -67,7 +68,7 @@ func (a *Aggregate) ValidateTransaction(ctx context.Context, args *vtpaygateway.
 	}
 }
 
-func (a *Aggregate) HandleValiDateTransactionOrder(ctx context.Context, orderID int64, args *vtpaygateway.ValidateTransactionArgs) (*vtpaygateway.ValidateTransactionResult, error) {
+func (a *Aggregate) HandleValiDateTransactionOrder(ctx context.Context, orderID dot.ID, args *vtpaygateway.ValidateTransactionArgs) (*vtpaygateway.ValidateTransactionResult, error) {
 	queryOrder := &ordering.GetOrderByIDQuery{ID: orderID}
 	if err := a.orderQS.Dispatch(ctx, queryOrder); err != nil {
 		return nil, err

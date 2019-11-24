@@ -255,51 +255,9 @@ func (q *queryImpl) assertTable(obj core.ITableName) {
 	}
 }
 
-func (q *queryImpl) BuildPreload(table string, obj interface{}, preds ...interface{}) (string, []interface{}, error) {
-	preloader, ok := obj.(core.IPreload)
-	if !ok {
-		return "", nil, core.Errorf("common/sql: %T does not support preload", obj)
-	}
-	desc := preloader.SQLPreload(table)
-	if desc == nil {
-		return "", nil, core.Errorf("common/sql: %T does not support preload table %v", obj, table)
-	}
-
-	fkey, ids, items := desc.Fkey, desc.IDs, desc.Items
-	if ids == nil || fkey == "" || items == nil {
-		return "", nil, core.Errorf("common/sql: invalid preload description")
-	}
-
-	nq := q.NewQuery().In(fkey, ids).Where(preds...)
-	return nq.BuildFind(items)
-}
-
 // Build ...
 func (q *queryImpl) Build(preds ...interface{}) (string, []interface{}, error) {
 	return q.withPreds(preds).build("", nil, nil)
-}
-
-func (q *queryImpl) doPreloads(obj interface{}) error {
-	if len(q.preloads) == 0 {
-		return nil
-	}
-	exprs := make([]ExprString, len(q.preloads))
-	for i, preload := range q.preloads {
-		query, args, err := q.BuildPreload(preload.table, obj, preload.preds...)
-		if err != nil {
-			return err
-		}
-		exprs[i] = ExprString{query, args}
-	}
-
-	for _, expr := range exprs {
-		query, args := expr.SQL, expr.Args
-		_, err := q.db.ExecContext(q.ctx, query, args)
-		if err != nil {
-			return err
-		}
-	}
-	return nil
 }
 
 // BuildGet ...
@@ -400,9 +358,6 @@ func (q *queryImpl) Get(obj core.IGet, preds ...interface{}) (bool, error) {
 	if sqlErr == sql.ErrNoRows {
 		return false, nil
 	}
-	if err == nil && len(q.preloads) > 0 {
-		err = q.doPreloads(obj)
-	}
 	return err == nil, err
 }
 
@@ -418,9 +373,6 @@ func (q *queryImpl) Find(objs core.IFind, preds ...interface{}) error {
 	}
 	defer func() { _ = rows.Close() }()
 	err = objs.SQLScan(q.opts, rows)
-	if err == nil && len(q.preloads) > 0 {
-		err = q.doPreloads(objs)
-	}
 	return err
 }
 

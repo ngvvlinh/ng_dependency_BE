@@ -244,9 +244,11 @@ type methoder interface {
 }
 
 func getMethods(typ methoder) map[string]*types.Func {
+	ll.V(3).Debugf("getMethods of type %v (n=%v)", typ, typ.NumMethods())
 	result := map[string]*types.Func{}
 	for i, n := 0, typ.NumMethods(); i < n; i++ {
 		method := typ.Method(i)
+		ll.V(4).Debugf("method %v", method)
 		if method.Exported() {
 			result[method.Name()] = method
 		}

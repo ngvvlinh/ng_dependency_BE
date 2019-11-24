@@ -6,6 +6,7 @@ import (
 	"etop.vn/api/meta"
 	"etop.vn/api/shopping"
 	. "etop.vn/capi/dot"
+	dot "etop.vn/capi/dot"
 )
 
 // +gen:api
@@ -15,9 +16,9 @@ type Aggregate interface {
 
 	UpdateCustomer(ctx context.Context, _ *UpdateCustomerArgs) (*ShopCustomer, error)
 
-	DeleteCustomer(ctx context.Context, ID int64, shopID int64) (deleted int, _ error)
+	DeleteCustomer(ctx context.Context, ID dot.ID, shopID dot.ID) (deleted int, _ error)
 
-	BatchSetCustomersStatus(ctx context.Context, IDs []int64, shopID int64, status int32) (*meta.UpdatedResponse, error)
+	BatchSetCustomersStatus(ctx context.Context, IDs []dot.ID, shopID dot.ID, status int32) (*meta.UpdatedResponse, error)
 
 	AddCustomersToGroup(ctx context.Context, _ *AddCustomerToGroupArgs) (updateed int, _ error)
 
@@ -32,11 +33,11 @@ type QueryService interface {
 	GetCustomerByID(context.Context, *shopping.IDQueryShopArg) (*ShopCustomer, error)
 
 	// unused
-	GetCustomerByCode(ctx context.Context, code string, shopID int64) (*ShopCustomer, error)
+	GetCustomerByCode(ctx context.Context, code string, shopID dot.ID) (*ShopCustomer, error)
 
-	GetCustomerByPhone(ctx context.Context, phone string, shopID int64) (*ShopCustomer, error)
+	GetCustomerByPhone(ctx context.Context, phone string, shopID dot.ID) (*ShopCustomer, error)
 
-	GetCustomerByEmail(ctx context.Context, email string, shopID int64) (*ShopCustomer, error)
+	GetCustomerByEmail(ctx context.Context, email string, shopID dot.ID) (*ShopCustomer, error)
 
 	GetCustomerIndependentByShop(ctx context.Context, _ *GetCustomerIndependentByShop) (*ShopCustomer, error)
 
@@ -51,7 +52,7 @@ type QueryService interface {
 
 //-- queries --//
 type GetCustomerGroupArgs struct {
-	ID int64
+	ID dot.ID
 }
 
 type ListCustomerGroupArgs struct {
@@ -79,7 +80,7 @@ type CreateCustomerGroupArgs struct {
 
 // +convert:create=ShopCustomer
 type CreateCustomerArgs struct {
-	ShopID   int64
+	ShopID   dot.ID
 	FullName string
 	Gender   string
 	Type     CustomerType
@@ -91,8 +92,8 @@ type CreateCustomerArgs struct {
 
 // +convert:update=ShopCustomer(ID,ShopID)
 type UpdateCustomerArgs struct {
-	ID       int64
-	ShopID   int64
+	ID       dot.ID
+	ShopID   dot.ID
 	FullName NullString
 	Gender   NullString
 	Type     CustomerType
@@ -103,26 +104,26 @@ type UpdateCustomerArgs struct {
 }
 
 type BatchSetCustomersStatusArgs struct {
-	IDs    []int64
-	ShopID int64
+	IDs    []dot.ID
+	ShopID dot.ID
 	Status int32
 }
 
 type AddCustomerToGroupArgs struct {
-	GroupID     int64
-	CustomerIDs []int64
+	GroupID     dot.ID
+	CustomerIDs []dot.ID
 }
 
 type RemoveCustomerOutOfGroupArgs struct {
-	GroupID     int64
-	CustomerIDs []int64
+	GroupID     dot.ID
+	CustomerIDs []dot.ID
 }
 
 type UpdateCustomerGroupArgs struct {
-	ID   int64
+	ID   dot.ID
 	Name string
 }
 
 type GetCustomerIndependentByShop struct {
-	ShopID int64
+	ShopID dot.ID
 }

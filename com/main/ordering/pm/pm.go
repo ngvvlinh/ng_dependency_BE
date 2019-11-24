@@ -14,6 +14,7 @@ import (
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/etop/model"
+	"etop.vn/capi/dot"
 	"etop.vn/common/l"
 )
 
@@ -92,9 +93,9 @@ func (p *ProcessManager) ReceiptCancelled(ctx context.Context, event *receipting
 	return nil
 }
 
-func (p *ProcessManager) handleReceiptConfirmedOrCancelled(ctx context.Context, receiptID, shopID int64) error {
-	var orderIDs []int64
-	mapOrderIDAndReceivedAmount := make(map[int64]int32)
+func (p *ProcessManager) handleReceiptConfirmedOrCancelled(ctx context.Context, receiptID, shopID dot.ID) error {
+	var orderIDs []dot.ID
+	mapOrderIDAndReceivedAmount := make(map[dot.ID]int)
 	getReceiptByIDQuery := &receipting.GetReceiptByIDQuery{
 		ID:     receiptID,
 		ShopID: shopID,
@@ -134,15 +135,15 @@ func (p *ProcessManager) handleReceiptConfirmedOrCancelled(ctx context.Context, 
 }
 
 func (p *ProcessManager) updatePaymentStatus(
-	ctx context.Context, shopID int64,
-	orders []*ordering.Order, mapOrderIDAndReceivedAmount map[int64]int32,
+	ctx context.Context, shopID dot.ID,
+	orders []*ordering.Order, mapOrderIDAndReceivedAmount map[dot.ID]int,
 ) error {
 	for _, order := range orders {
 		if int(order.PaymentStatus) == int(model.S4Negative) || int(order.PaymentStatus) == int(model.S4SuperPos) {
 			continue
 		}
 		var status *model.Status3
-		if int32(order.TotalAmount) == mapOrderIDAndReceivedAmount[order.ID] {
+		if order.TotalAmount == mapOrderIDAndReceivedAmount[order.ID] {
 			status = model.S3Positive.P()
 		} else {
 			status = model.S3Zero.P()
@@ -161,8 +162,8 @@ func (p *ProcessManager) updatePaymentStatus(
 }
 
 func (p *ProcessManager) validateTotalAmountAndReceivedAmount(
-	ctx context.Context, shopID int64, orderIDs []int64,
-	receipts []*receipting.Receipt, mapOrderIDAndReceivedAmount map[int64]int32,
+	ctx context.Context, shopID dot.ID, orderIDs []dot.ID,
+	receipts []*receipting.Receipt, mapOrderIDAndReceivedAmount map[dot.ID]int,
 ) ([]*ordering.Order, error) {
 	for _, receipt := range receipts {
 		for _, receiptLine := range receipt.Lines {
@@ -210,7 +211,7 @@ func (p *ProcessManager) validateTotalAmountAndReceivedAmount(
 func (p *ProcessManager) ReceiptCreating(ctx context.Context, event *receipting.ReceiptCreatingEvent) error {
 	var orders []*ordering.Order
 	var isIndependentCustomer bool
-	mOrder := make(map[int64]*ordering.Order)
+	mOrder := make(map[dot.ID]*ordering.Order)
 	receipt := event.Receipt
 	refIDs := event.RefIDs
 	mapRefIDAmount := event.MapRefIDAmount
@@ -276,7 +277,7 @@ func (p *ProcessManager) ReceiptCreating(ctx context.Context, event *receipting.
 
 	// Get total amount each orderID
 	// Map of [ orderId ] amount of receiptLines (current receipts into DB)
-	mapRefIDAmountOld := make(map[int64]int32)
+	mapRefIDAmountOld := make(map[dot.ID]int)
 	for _, receiptElem := range receipts {
 		// Ignore current receipt when updating
 		if receiptElem.ID == receipt.ID {
@@ -298,7 +299,7 @@ func (p *ProcessManager) ReceiptCreating(ctx context.Context, event *receipting.
 	}
 	// Check each amount of receiptLine (param) with (total amount of old receiptLines + total amount of order)
 	for key, value := range mapRefIDAmount {
-		if value > int32(mOrder[key].TotalAmount)-mapRefIDAmountOld[key] {
+		if value > (mOrder[key].TotalAmount)-mapRefIDAmountOld[key] {
 			return cm.Errorf(cm.InvalidArgument, nil, "Giá trị của đơn hàng không hợp lệ, Vui lòng tải lại trang và thử lại")
 		}
 	}

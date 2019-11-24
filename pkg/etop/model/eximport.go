@@ -4,6 +4,7 @@ import (
 	"time"
 
 	cm "etop.vn/backend/pkg/common"
+	"etop.vn/capi/dot"
 )
 
 type ImportType string
@@ -16,9 +17,9 @@ const (
 var _ = sqlgenImportAttempt(&ImportAttempt{})
 
 type ImportAttempt struct {
-	ID           int64
-	UserID       int64
-	AccountID    int64
+	ID           dot.ID
+	UserID       dot.ID
+	AccountID    dot.ID
 	OriginalFile string
 	StoredFile   string
 	Type         ImportType
@@ -40,8 +41,8 @@ var _ = sqlgenExportAttempt(&ExportAttempt{})
 
 type ExportAttempt struct {
 	ID        string
-	UserID    int64
-	AccountID int64
+	UserID    dot.ID
+	AccountID dot.ID
 
 	ExportType   string
 	FileName     string `sq:"'filename'"`

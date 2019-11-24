@@ -40,8 +40,8 @@ func (c QueryBus) DispatchAll(ctx context.Context, msgs ...Query) error {
 }
 
 type AddCustomersToGroupCommand struct {
-	GroupID     int64
-	CustomerIDs []int64
+	GroupID     dot.ID
+	CustomerIDs []dot.ID
 
 	Result int `json:"-"`
 }
@@ -52,8 +52,8 @@ func (h AggregateHandler) HandleAddCustomersToGroup(ctx context.Context, msg *Ad
 }
 
 type BatchSetCustomersStatusCommand struct {
-	IDs    []int64
-	ShopID int64
+	IDs    []dot.ID
+	ShopID dot.ID
 	Status int32
 
 	Result *meta.UpdatedResponse `json:"-"`
@@ -65,7 +65,7 @@ func (h AggregateHandler) HandleBatchSetCustomersStatus(ctx context.Context, msg
 }
 
 type CreateCustomerCommand struct {
-	ShopID   int64
+	ShopID   dot.ID
 	FullName string
 	Gender   string
 	Type     CustomerType
@@ -94,8 +94,8 @@ func (h AggregateHandler) HandleCreateCustomerGroup(ctx context.Context, msg *Cr
 }
 
 type DeleteCustomerCommand struct {
-	ID     int64
-	ShopID int64
+	ID     dot.ID
+	ShopID dot.ID
 
 	Result int `json:"-"`
 }
@@ -106,8 +106,8 @@ func (h AggregateHandler) HandleDeleteCustomer(ctx context.Context, msg *DeleteC
 }
 
 type RemoveCustomersFromGroupCommand struct {
-	GroupID     int64
-	CustomerIDs []int64
+	GroupID     dot.ID
+	CustomerIDs []dot.ID
 
 	Result int `json:"-"`
 }
@@ -118,8 +118,8 @@ func (h AggregateHandler) HandleRemoveCustomersFromGroup(ctx context.Context, ms
 }
 
 type UpdateCustomerCommand struct {
-	ID       int64
-	ShopID   int64
+	ID       dot.ID
+	ShopID   dot.ID
 	FullName dot.NullString
 	Gender   dot.NullString
 	Type     CustomerType
@@ -137,7 +137,7 @@ func (h AggregateHandler) HandleUpdateCustomer(ctx context.Context, msg *UpdateC
 }
 
 type UpdateCustomerGroupCommand struct {
-	ID   int64
+	ID   dot.ID
 	Name string
 
 	Result *ShopCustomerGroup `json:"-"`
@@ -150,7 +150,7 @@ func (h AggregateHandler) HandleUpdateCustomerGroup(ctx context.Context, msg *Up
 
 type GetCustomerByCodeQuery struct {
 	Code   string
-	ShopID int64
+	ShopID dot.ID
 
 	Result *ShopCustomer `json:"-"`
 }
@@ -162,7 +162,7 @@ func (h QueryServiceHandler) HandleGetCustomerByCode(ctx context.Context, msg *G
 
 type GetCustomerByEmailQuery struct {
 	Email  string
-	ShopID int64
+	ShopID dot.ID
 
 	Result *ShopCustomer `json:"-"`
 }
@@ -173,8 +173,8 @@ func (h QueryServiceHandler) HandleGetCustomerByEmail(ctx context.Context, msg *
 }
 
 type GetCustomerByIDQuery struct {
-	ID     int64
-	ShopID int64
+	ID     dot.ID
+	ShopID dot.ID
 
 	Result *ShopCustomer `json:"-"`
 }
@@ -186,7 +186,7 @@ func (h QueryServiceHandler) HandleGetCustomerByID(ctx context.Context, msg *Get
 
 type GetCustomerByPhoneQuery struct {
 	Phone  string
-	ShopID int64
+	ShopID dot.ID
 
 	Result *ShopCustomer `json:"-"`
 }
@@ -197,7 +197,7 @@ func (h QueryServiceHandler) HandleGetCustomerByPhone(ctx context.Context, msg *
 }
 
 type GetCustomerGroupQuery struct {
-	ID int64
+	ID dot.ID
 
 	Result *ShopCustomerGroup `json:"-"`
 }
@@ -208,7 +208,7 @@ func (h QueryServiceHandler) HandleGetCustomerGroup(ctx context.Context, msg *Ge
 }
 
 type GetCustomerIndependentByShopQuery struct {
-	ShopID int64
+	ShopID dot.ID
 
 	Result *ShopCustomer `json:"-"`
 }
@@ -231,7 +231,7 @@ func (h QueryServiceHandler) HandleListCustomerGroups(ctx context.Context, msg *
 }
 
 type ListCustomersQuery struct {
-	ShopID  int64
+	ShopID  dot.ID
 	Paging  meta.Paging
 	Filters meta.Filters
 
@@ -244,8 +244,8 @@ func (h QueryServiceHandler) HandleListCustomers(ctx context.Context, msg *ListC
 }
 
 type ListCustomersByIDsQuery struct {
-	IDs    []int64
-	ShopID int64
+	IDs    []dot.ID
+	ShopID dot.ID
 
 	Result *CustomersResponse `json:"-"`
 }
@@ -290,7 +290,7 @@ func (q *AddCustomersToGroupCommand) SetAddCustomerToGroupArgs(args *AddCustomer
 	q.CustomerIDs = args.CustomerIDs
 }
 
-func (q *BatchSetCustomersStatusCommand) GetArgs(ctx context.Context) (_ context.Context, IDs []int64, shopID int64, status int32) {
+func (q *BatchSetCustomersStatusCommand) GetArgs(ctx context.Context) (_ context.Context, IDs []dot.ID, shopID dot.ID, status int32) {
 	return ctx,
 		q.IDs,
 		q.ShopID,
@@ -333,7 +333,7 @@ func (q *CreateCustomerGroupCommand) SetCreateCustomerGroupArgs(args *CreateCust
 	q.Name = args.Name
 }
 
-func (q *DeleteCustomerCommand) GetArgs(ctx context.Context) (_ context.Context, ID int64, shopID int64) {
+func (q *DeleteCustomerCommand) GetArgs(ctx context.Context) (_ context.Context, ID dot.ID, shopID dot.ID) {
 	return ctx,
 		q.ID,
 		q.ShopID
@@ -392,13 +392,13 @@ func (q *UpdateCustomerGroupCommand) SetUpdateCustomerGroupArgs(args *UpdateCust
 	q.Name = args.Name
 }
 
-func (q *GetCustomerByCodeQuery) GetArgs(ctx context.Context) (_ context.Context, code string, shopID int64) {
+func (q *GetCustomerByCodeQuery) GetArgs(ctx context.Context) (_ context.Context, code string, shopID dot.ID) {
 	return ctx,
 		q.Code,
 		q.ShopID
 }
 
-func (q *GetCustomerByEmailQuery) GetArgs(ctx context.Context) (_ context.Context, email string, shopID int64) {
+func (q *GetCustomerByEmailQuery) GetArgs(ctx context.Context) (_ context.Context, email string, shopID dot.ID) {
 	return ctx,
 		q.Email,
 		q.ShopID
@@ -417,7 +417,7 @@ func (q *GetCustomerByIDQuery) SetIDQueryShopArg(args *shopping.IDQueryShopArg) 
 	q.ShopID = args.ShopID
 }
 
-func (q *GetCustomerByPhoneQuery) GetArgs(ctx context.Context) (_ context.Context, phone string, shopID int64) {
+func (q *GetCustomerByPhoneQuery) GetArgs(ctx context.Context) (_ context.Context, phone string, shopID dot.ID) {
 	return ctx,
 		q.Phone,
 		q.ShopID

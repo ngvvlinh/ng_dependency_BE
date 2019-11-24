@@ -18,6 +18,7 @@ import (
 	"etop.vn/backend/pkg/common/validate"
 	apishop "etop.vn/backend/pkg/etop/api/shop"
 	"etop.vn/backend/pkg/etop/model"
+	"etop.vn/capi/dot"
 )
 
 var maxPaging = meta.Paging{Limit: 5000}
@@ -170,7 +171,7 @@ func loadAndCreateProducts(
 		//
 		// {
 		// 	if len(rowProduct.Collections) > 0 {
-		// 		rowProduct.collectionIDs = make([]int64, len(rowProduct.Collections))
+		// 		rowProduct.collectionIDs = make([]dot.ID, len(rowProduct.Collections))
 		// 	}
 		// 	for i, name := range rowProduct.Collections {
 		// 		if debug.FailPercent != 0 && isRandomFail(debug.FailPercent) {
@@ -263,7 +264,7 @@ func loadAndCreateProducts(
 		}
 		msgs = append(msgs, msg)
 
-		productIDs := []int64{variantReq.ProductId}
+		productIDs := []dot.ID{variantReq.ProductId}
 		if rowProduct.categoryID != 0 {
 			updateProductsCategoryCmd := &catalogmodelx.UpdateProductsShopCategoryCommand{
 				CategoryID: rowProduct.categoryID,
@@ -303,7 +304,7 @@ func loadAndCreateProducts(
 
 type Categories struct {
 	List []*catalogmodel.ShopCategory
-	Map  map[int64]*catalogmodel.ShopCategory
+	Map  map[dot.ID]*catalogmodel.ShopCategory
 	Sort map[[3]string]*catalogmodel.ShopCategory
 }
 
@@ -314,7 +315,7 @@ func normalizeCategory(cc [3]string) (res [3]string) {
 	return res
 }
 
-func loadCategories(ctx context.Context, shopID int64) (*Categories, error) {
+func loadCategories(ctx context.Context, shopID dot.ID) (*Categories, error) {
 	query := &catalogmodelx.GetProductSourceCategoriesQuery{
 		ShopID: shopID,
 	}
@@ -323,7 +324,7 @@ func loadCategories(ctx context.Context, shopID int64) (*Categories, error) {
 	}
 	categories := query.Result.Categories
 
-	mapCategory := make(map[int64]*catalogmodel.ShopCategory)
+	mapCategory := make(map[dot.ID]*catalogmodel.ShopCategory)
 	for _, c := range categories {
 		mapCategory[c.ID] = c
 	}
@@ -334,7 +335,7 @@ func loadCategories(ctx context.Context, shopID int64) (*Categories, error) {
 	}, nil
 }
 
-func sortCategories(mapCategory map[int64]*catalogmodel.ShopCategory) map[[3]string]*catalogmodel.ShopCategory {
+func sortCategories(mapCategory map[dot.ID]*catalogmodel.ShopCategory) map[[3]string]*catalogmodel.ShopCategory {
 	categories := make(map[[3]string]*catalogmodel.ShopCategory)
 	for _, c := range mapCategory {
 		cc, ok := buildCategoryHierarchy(mapCategory, c)
@@ -345,7 +346,7 @@ func sortCategories(mapCategory map[int64]*catalogmodel.ShopCategory) map[[3]str
 	return categories
 }
 
-func buildCategoryHierarchy(mapCategory map[int64]*catalogmodel.ShopCategory, category *catalogmodel.ShopCategory) (res [3]string, ok bool) {
+func buildCategoryHierarchy(mapCategory map[dot.ID]*catalogmodel.ShopCategory, category *catalogmodel.ShopCategory) (res [3]string, ok bool) {
 	i := 0
 	res[0] = validate.NormalizeSearch(category.Name)
 	for category.ParentID != 0 {
@@ -365,7 +366,7 @@ func buildCategoryHierarchy(mapCategory map[int64]*catalogmodel.ShopCategory, ca
 }
 
 // Load all collections and sort them into normalized map
-// func loadCollections(ctx context.Context, shopID int64) (map[string]*catalogmodel.ShopCollection, error) {
+// func loadCollections(ctx context.Context, shopID dot.ID) (map[string]*catalogmodel.ShopCollection, error) {
 // 	query := &catalogmodelx.GetShopCollectionsQuery{
 // 		ShopID: shopID,
 // 	}
@@ -380,7 +381,7 @@ func buildCategoryHierarchy(mapCategory map[int64]*catalogmodel.ShopCategory, ca
 // 	return mapCollection, nil
 // }
 
-func loadProducts(ctx context.Context, codeMode CodeMode, shopID int64, keys []string) (map[string]*catalog.ShopProduct, error) {
+func loadProducts(ctx context.Context, codeMode CodeMode, shopID dot.ID, keys []string) (map[string]*catalog.ShopProduct, error) {
 	s := shopProductStore(ctx).ShopID(shopID)
 	useCode := codeMode == CodeModeUseCode
 	if useCode {
@@ -414,7 +415,7 @@ func loadProducts(ctx context.Context, codeMode CodeMode, shopID int64, keys []s
 func loadVariants(
 	ctx context.Context,
 	codeMode CodeMode,
-	shopID int64,
+	shopID dot.ID,
 	codes []string,
 	attrNorms []interface{},
 ) (

@@ -9,9 +9,10 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/golang/protobuf/jsonpb"
-	"github.com/golang/protobuf/proto"
 	"github.com/twitchtv/twirp"
+
+	"etop.vn/capi"
+	"etop.vn/common/jsonx"
 )
 
 type Server interface {
@@ -155,8 +156,8 @@ func errFromPanic(p interface{}) error {
 	return fmt.Errorf("panic: %v", p)
 }
 
-type ExecFunc func(context.Context) (respContent proto.Message, err error)
-type ServeFunc func(ctx context.Context, resp http.ResponseWriter, req *http.Request, reqContent proto.Message, fn ExecFunc)
+type ExecFunc func(context.Context) (respContent capi.Message, err error)
+type ServeFunc func(ctx context.Context, resp http.ResponseWriter, req *http.Request, reqContent capi.Message, fn ExecFunc)
 
 func ParseRequestHeader(req *http.Request) (ServeFunc, error) {
 	if req.Method != "POST" {
@@ -177,15 +178,14 @@ func ParseRequestHeader(req *http.Request) (ServeFunc, error) {
 	}
 }
 
-func ServeJSON(ctx context.Context, resp http.ResponseWriter, req *http.Request, reqContent proto.Message, fn ExecFunc,
+func ServeJSON(ctx context.Context, resp http.ResponseWriter, req *http.Request, reqContent capi.Message, fn ExecFunc,
 ) {
-	unmarshaler := jsonpb.Unmarshaler{AllowUnknownFields: true}
-	if err := unmarshaler.Unmarshal(req.Body, reqContent); err != nil {
+	if err := jsonx.UnmarshalFrom(req.Body, reqContent); err != nil {
 		WriteError(ctx, resp, malformedRequestError("the json request could not be decoded").WithMeta("cause", err.Error()))
 		return
 	}
 	var err error
-	var respContent proto.Message
+	var respContent capi.Message
 	func() {
 		defer ensurePanicResponses(ctx, resp)
 		respContent, err = fn(ctx)
@@ -199,8 +199,7 @@ func ServeJSON(ctx context.Context, resp http.ResponseWriter, req *http.Request,
 		return
 	}
 	var buf bytes.Buffer
-	marshaler := &jsonpb.Marshaler{OrigName: true, EmitDefaults: true}
-	if err = marshaler.Marshal(&buf, respContent); err != nil {
+	if err = jsonx.MarshalTo(&buf, respContent); err != nil {
 		WriteError(ctx, resp, wrapInternal(err, "failed to marshal json response"))
 		return
 	}

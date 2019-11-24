@@ -310,6 +310,9 @@ func parseSchema(ng generator.Engine, definitions map[string]spec.Schema, typ ty
 		definitions[id] = s
 		return refSchema
 
+	case isID(typ):
+		return simpleType("string", "int64")
+
 	case isBasic(typ, &inner):
 		switch inner.(*types.Basic).Kind() {
 		case types.Bool:
@@ -322,7 +325,7 @@ func parseSchema(ng generator.Engine, definitions map[string]spec.Schema, typ ty
 			return simpleType("integer", "int32")
 
 		case types.Int64:
-			return simpleType("integer", "int64")
+			return simpleType("string", "int64")
 
 		case types.Float32:
 			return simpleType("integer", "float32")

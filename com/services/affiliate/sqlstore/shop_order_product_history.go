@@ -7,6 +7,7 @@ import (
 	"etop.vn/backend/com/services/affiliate/model"
 	"etop.vn/backend/pkg/common/cmsql"
 	"etop.vn/backend/pkg/common/sqlstore"
+	"etop.vn/capi/dot"
 )
 
 func NewShopOrderProductHistoryStore(db *cmsql.Database) ShopOrderProductHistoryStoreFactory {
@@ -30,27 +31,27 @@ type ShopOrderProductHistoryStore struct {
 	filters meta.Filters
 }
 
-func (s *ShopOrderProductHistoryStore) UserID(id int64) *ShopOrderProductHistoryStore {
+func (s *ShopOrderProductHistoryStore) UserID(id dot.ID) *ShopOrderProductHistoryStore {
 	s.preds = append(s.preds, s.ft.ByUserID(id))
 	return s
 }
 
-func (s *ShopOrderProductHistoryStore) CustomerPolicyGroup(id int64) *ShopOrderProductHistoryStore {
+func (s *ShopOrderProductHistoryStore) CustomerPolicyGroup(id dot.ID) *ShopOrderProductHistoryStore {
 	s.preds = append(s.preds, s.ft.ByCustomerPolicyGroupID(id))
 	return s
 }
 
-func (s *ShopOrderProductHistoryStore) ShopID(id int64) *ShopOrderProductHistoryStore {
+func (s *ShopOrderProductHistoryStore) ShopID(id dot.ID) *ShopOrderProductHistoryStore {
 	s.preds = append(s.preds, s.ft.ByShopID(id))
 	return s
 }
 
-func (s *ShopOrderProductHistoryStore) ProductID(id int64) *ShopOrderProductHistoryStore {
+func (s *ShopOrderProductHistoryStore) ProductID(id dot.ID) *ShopOrderProductHistoryStore {
 	s.preds = append(s.preds, s.ft.ByProductID(id))
 	return s
 }
 
-func (s *ShopOrderProductHistoryStore) OrderID(id int64) *ShopOrderProductHistoryStore {
+func (s *ShopOrderProductHistoryStore) OrderID(id dot.ID) *ShopOrderProductHistoryStore {
 	s.preds = append(s.preds, s.ft.ByOrderID(id))
 	return s
 }

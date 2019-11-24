@@ -6,13 +6,14 @@ import (
 
 	"etop.vn/backend/com/handler/pgevent"
 	cm "etop.vn/backend/pkg/common"
+	"etop.vn/capi/dot"
 )
 
 var _ = selFoo(&Foo{})
 
 // Foo is used for testing only
 type Foo struct {
-	ID     int64     `sel:" f.id"`
+	ID     dot.ID    `sel:" f.id"`
 	ShopID string    `sel:" f.shop_id"`
 	Time   time.Time `sel:"hf._time"`
 }

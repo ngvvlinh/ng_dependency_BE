@@ -3,6 +3,7 @@ package model
 import (
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/validate"
+	"etop.vn/capi/dot"
 	"etop.vn/common/xerrors"
 )
 
@@ -31,31 +32,31 @@ func ToError(err error) *Error {
 	}
 }
 
-func NewID() int64 {
+func NewID() dot.ID {
 	return cm.NewID()
 }
 
-func NewShopID() int64 {
+func NewShopID() dot.ID {
 	return cm.NewIDWithTag(TagShop)
 }
 
-func NewAffiliateID() int64 {
+func NewAffiliateID() dot.ID {
 	return cm.NewIDWithTag(TagAffiliate)
 }
 
-func IsPartnerID(id int64) bool {
+func IsPartnerID(id dot.ID) bool {
 	return cm.GetTag(id) == TagPartner
 }
 
-func IsShopID(id int64) bool {
+func IsShopID(id dot.ID) bool {
 	return cm.GetTag(id) == TagShop
 }
 
-func IsAffiliateID(id int64) bool {
+func IsAffiliateID(id dot.ID) bool {
 	return cm.GetTag(id) == TagAffiliate
 }
 
-func IsEtopAccountID(id int64) bool {
+func IsEtopAccountID(id dot.ID) bool {
 	return id == EtopAccountID
 }
 

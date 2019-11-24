@@ -109,7 +109,7 @@ func (c *Carrier) CalcShippingFee(ctx context.Context, cmd *CalcShippingFeeComma
 		}
 		return results[i].Transport < results[j].Transport
 	})
-	generator := newServiceIDGenerator(cmd.ArbitraryID)
+	generator := newServiceIDGenerator(int64(cmd.ArbitraryID))
 
 	now := time.Now()
 	expectedPickTime := shipping.CalcPickTime(model.TypeGHTK, now)

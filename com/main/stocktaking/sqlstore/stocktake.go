@@ -11,6 +11,7 @@ import (
 	"etop.vn/backend/pkg/common/conversion"
 	"etop.vn/backend/pkg/common/sq"
 	"etop.vn/backend/pkg/common/sqlstore"
+	"etop.vn/capi/dot"
 )
 
 var Sort = map[string]string{
@@ -43,23 +44,22 @@ func (s *ShopStocktakeStore) Paging(page *cm.Paging) *ShopStocktakeStore {
 	return s
 }
 
-func (s *ShopStocktakeStore) ID(id int64) *ShopStocktakeStore {
+func (s *ShopStocktakeStore) ID(id dot.ID) *ShopStocktakeStore {
 	s.preds = append(s.preds, s.ft.ByID(id))
 	return s
 }
 
-func (s *ShopStocktakeStore) IDs(ids ...int64) *ShopStocktakeStore {
+func (s *ShopStocktakeStore) IDs(ids ...dot.ID) *ShopStocktakeStore {
 	s.preds = append(s.preds, sq.PrefixedIn(&s.ft.prefix, "id", ids))
 	return s
 }
 
-func (s *ShopStocktakeStore) ShopID(id int64) *ShopStocktakeStore {
+func (s *ShopStocktakeStore) ShopID(id dot.ID) *ShopStocktakeStore {
 	s.preds = append(s.preds, s.ft.ByShopID(id))
 	return s
 }
 
 func (s *ShopStocktakeStore) Create(stocktake *st.ShopStocktake) error {
-
 	var stocktakeDB = &model.ShopStocktake{}
 	err := scheme.Convert(stocktake, stocktakeDB)
 	if err != nil {
@@ -67,7 +67,6 @@ func (s *ShopStocktakeStore) Create(stocktake *st.ShopStocktake) error {
 	}
 	err = s.CreateStocktakeDB(stocktakeDB)
 	return err
-
 }
 
 func (s *ShopStocktakeStore) Update(stocktake *st.ShopStocktake) error {

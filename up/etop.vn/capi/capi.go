@@ -2,6 +2,7 @@ package capi
 
 import (
 	"context"
+	"fmt"
 )
 
 type Bus interface {
@@ -15,4 +16,9 @@ type Event interface {
 
 type EventBus interface {
 	Publish(ctx context.Context, msg Event) error
+}
+
+// TODO: common interface
+type Message interface {
+	fmt.Stringer
 }

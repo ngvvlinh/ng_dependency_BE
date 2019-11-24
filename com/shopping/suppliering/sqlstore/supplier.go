@@ -14,6 +14,7 @@ import (
 	"etop.vn/backend/pkg/common/sq"
 	"etop.vn/backend/pkg/common/sqlstore"
 	"etop.vn/backend/pkg/common/validate"
+	"etop.vn/capi/dot"
 )
 
 type SupplierStoreFactory func(ctx context.Context) *SupplierStore
@@ -56,7 +57,7 @@ func (s *SupplierStore) Filters(filters meta.Filters) *SupplierStore {
 	return s
 }
 
-func (s *SupplierStore) ID(id int64) *SupplierStore {
+func (s *SupplierStore) ID(id dot.ID) *SupplierStore {
 	s.preds = append(s.preds, s.ft.ByID(id))
 	return s
 }
@@ -71,17 +72,17 @@ func (s *SupplierStore) Email(email string) *SupplierStore {
 	return s
 }
 
-func (s *SupplierStore) IDs(ids ...int64) *SupplierStore {
+func (s *SupplierStore) IDs(ids ...dot.ID) *SupplierStore {
 	s.preds = append(s.preds, sq.PrefixedIn(&s.ft.prefix, "id", ids))
 	return s
 }
 
-func (s *SupplierStore) ShopID(id int64) *SupplierStore {
+func (s *SupplierStore) ShopID(id dot.ID) *SupplierStore {
 	s.preds = append(s.preds, s.ft.ByShopID(id))
 	return s
 }
 
-func (s *SupplierStore) OptionalShopID(id int64) *SupplierStore {
+func (s *SupplierStore) OptionalShopID(id dot.ID) *SupplierStore {
 	s.preds = append(s.preds, s.ft.ByShopID(id).Optional())
 	return s
 }

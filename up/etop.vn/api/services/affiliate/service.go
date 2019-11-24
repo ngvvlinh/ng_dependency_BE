@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"etop.vn/api/meta"
+	"etop.vn/capi/dot"
 )
 
 // +gen:api
@@ -21,8 +22,8 @@ type Aggregate interface {
 }
 
 type CreateCommissionSettingArgs struct {
-	ProductID   int64
-	AccountID   int64
+	ProductID   dot.ID
+	AccountID   dot.ID
 	Amount      int32
 	Unit        string
 	Type        string
@@ -31,8 +32,8 @@ type CreateCommissionSettingArgs struct {
 }
 
 type CreateOrUpdateSupplyCommissionSettingArgs struct {
-	ShopID                   int64
-	ProductID                int64
+	ShopID                   dot.ID
+	ProductID                dot.ID
 	Level1DirectCommission   int32
 	Level1IndirectCommission int32
 	Level2DirectCommission   int32
@@ -47,8 +48,8 @@ type CreateOrUpdateSupplyCommissionSettingArgs struct {
 }
 
 type CreateProductPromotionArgs struct {
-	ShopID      int64
-	ProductID   int64
+	ShopID      dot.ID
+	ProductID   dot.ID
 	Amount      int32
 	Code        string
 	Description string
@@ -58,7 +59,7 @@ type CreateProductPromotionArgs struct {
 }
 
 type UpdateProductPromotionArgs struct {
-	ID          int64
+	ID          dot.ID
 	Amount      int32
 	Unit        string
 	Code        string
@@ -68,23 +69,23 @@ type UpdateProductPromotionArgs struct {
 }
 
 type OnTradingOrderCreatedArgs struct {
-	OrderID      int64
+	OrderID      dot.ID
 	ReferralCode string
 }
 
 type TradingOrderCreating struct {
-	ProductIDs   []int64
+	ProductIDs   []dot.ID
 	ReferralCode string
-	UserID       int64
+	UserID       dot.ID
 }
 
 type CreateReferralCodeArgs struct {
-	AffiliateAccountID int64
+	AffiliateAccountID dot.ID
 	Code               string
 }
 
 type CreateOrUpdateReferralArgs struct {
-	UserID           int64
+	UserID           dot.ID
 	ReferralCode     string
 	SaleReferralCode string
 }
@@ -103,17 +104,17 @@ type QueryService interface {
 }
 
 type GetCommissionByProductIDsArgs struct {
-	AccountID  int64
-	ProductIDs []int64
+	AccountID  dot.ID
+	ProductIDs []dot.ID
 }
 
 type GetCommissionByProductIDArgs struct {
-	AccountID int64
-	ProductID int64
+	AccountID dot.ID
+	ProductID dot.ID
 }
 
 type ListShopProductPromotionsArgs struct {
-	ShopID  int64
+	ShopID  dot.ID
 	Paging  meta.Paging
 	Filters meta.Filters
 }
@@ -125,21 +126,21 @@ type ListShopProductPromotionsResponse struct {
 }
 
 type GetProductPromotionArgs struct {
-	ShopID    int64
-	ProductID int64
+	ShopID    dot.ID
+	ProductID dot.ID
 }
 
 type GetShopProductPromotionByProductIDs struct {
-	ShopID     int64
-	ProductIDs []int64
+	ShopID     dot.ID
+	ProductIDs []dot.ID
 }
 
 type GetAffiliateAccountReferralCodesArgs struct {
-	AffiliateAccountID int64
+	AffiliateAccountID dot.ID
 }
 
 type GetReferralsByReferralIDArgs struct {
-	ID int64
+	ID dot.ID
 }
 
 type GetAffiliateReferralsArgs struct {
@@ -151,12 +152,12 @@ type GetAffiliateAccountReferralByCodeArgs struct {
 }
 
 type GetSupplyCommissionSettingsByProductIDsArgs struct {
-	ShopID     int64
-	ProductIDs []int64
+	ShopID     dot.ID
+	ProductIDs []dot.ID
 }
 
 type GetSellerCommissionsArgs struct {
-	SellerID int64
+	SellerID dot.ID
 	Paging   meta.Paging
 	Filters  meta.Filters
 }

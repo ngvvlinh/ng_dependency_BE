@@ -2,10 +2,7 @@ package shop
 
 import (
 	"context"
-	"strconv"
 	"time"
-
-	"etop.vn/backend/pkg/common/cmapi"
 
 	"github.com/asaskevich/govalidator"
 
@@ -42,6 +39,7 @@ import (
 	moneymodelx "etop.vn/backend/com/main/moneytx/modelx"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
+	"etop.vn/backend/pkg/common/cmapi"
 	"etop.vn/backend/pkg/common/idemp"
 	"etop.vn/backend/pkg/common/redis"
 	cmservice "etop.vn/backend/pkg/common/service"
@@ -51,6 +49,7 @@ import (
 	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/backend/pkg/etop/sqlstore"
 	"etop.vn/capi"
+	"etop.vn/capi/dot"
 	. "etop.vn/capi/dot"
 	"etop.vn/common/l"
 )
@@ -636,7 +635,7 @@ func (s *ProductService) UpdateProduct(ctx context.Context, q *UpdateProductEndp
 		Name:      PString(q.Name),
 		Unit:      PString(q.Unit),
 		Note:      PString(q.Note),
-		BrandID:   PInt64(q.BrandId),
+		BrandID:   PID(q.BrandId),
 
 		ShortDesc:   PString(q.ShortDesc),
 		Description: PString(q.Description),
@@ -1476,7 +1475,7 @@ func (s *PaymentService) PaymentTradingOrder(ctx context.Context, q *PaymentTrad
 
 	argGenCode := &paymentmanager.GenerateCodeCommand{
 		PaymentSource: payment.PaymentSourceOrder,
-		ID:            strconv.FormatInt(q.OrderId, 10),
+		ID:            q.OrderId.String(),
 	}
 	if err := paymentCtrl.Dispatch(ctx, argGenCode); err != nil {
 		return err
@@ -1720,8 +1719,8 @@ func (s *ProductService) RemoveProductCategory(ctx context.Context, r *RemovePro
 	return nil
 }
 
-func getProductsQuantity(ctx context.Context, shopID int64, products []*catalog.ShopProductWithVariants) ([]*pbshop.ShopProduct, error) {
-	var variantIDs []int64
+func getProductsQuantity(ctx context.Context, shopID dot.ID, products []*catalog.ShopProductWithVariants) ([]*pbshop.ShopProduct, error) {
+	var variantIDs []dot.ID
 	for _, valueProduct := range products {
 		for _, valueVariant := range valueProduct.Variants {
 			variantIDs = append(variantIDs, valueVariant.VariantID)
@@ -1734,8 +1733,8 @@ func getProductsQuantity(ctx context.Context, shopID int64, products []*catalog.
 	return PbProductsQuantity(products, inventoryVariants), nil
 }
 
-func getProductQuantity(ctx context.Context, shopID int64, shopProduct *catalog.ShopProductWithVariants) (*pbshop.ShopProduct, error) {
-	var variantIDs []int64
+func getProductQuantity(ctx context.Context, shopID dot.ID, shopProduct *catalog.ShopProductWithVariants) (*pbshop.ShopProduct, error) {
+	var variantIDs []dot.ID
 	for _, variant := range shopProduct.Variants {
 		variantIDs = append(variantIDs, variant.VariantID)
 	}
@@ -1747,9 +1746,9 @@ func getProductQuantity(ctx context.Context, shopID int64, shopProduct *catalog.
 	return shopProductPb, nil
 }
 
-func getVariantsQuantity(ctx context.Context, shopID int64, variantIDs []int64) (map[int64]*inventory.InventoryVariant, error) {
+func getVariantsQuantity(ctx context.Context, shopID dot.ID, variantIDs []dot.ID) (map[dot.ID]*inventory.InventoryVariant, error) {
 
-	var mapInventoryVariant = make(map[int64]*inventory.InventoryVariant)
+	var mapInventoryVariant = make(map[dot.ID]*inventory.InventoryVariant)
 	if len(variantIDs) == 0 {
 		return mapInventoryVariant, nil
 	}

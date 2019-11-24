@@ -25,6 +25,7 @@ import (
 	"etop.vn/backend/pkg/etop/logic/shipping_provider"
 	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/capi"
+	"etop.vn/capi/dot"
 	"etop.vn/common/l"
 )
 
@@ -100,7 +101,7 @@ func ConfirmOrder(ctx context.Context, shop *model.Shop, r *pbshop.ConfirmOrderR
 	if order.ConfirmStatus != model.S3Positive ||
 		order.ShopConfirm != model.S3Positive {
 		cmd := &ordermodelx.UpdateOrdersStatusCommand{
-			OrderIDs:      []int64{r.OrderId},
+			OrderIDs:      []dot.ID{r.OrderId},
 			ConfirmStatus: model.S3Positive.P(),
 			ShopConfirm:   model.S3Positive.P(),
 		}
@@ -134,7 +135,7 @@ func ConfirmOrder(ctx context.Context, shop *model.Shop, r *pbshop.ConfirmOrderR
 	return resp, nil
 }
 
-func ConfirmOrderAndCreateFulfillments(ctx context.Context, shop *model.Shop, partnerID int64, r *pbshop.OrderIDRequest) (resp *pborder.OrderWithErrorsResponse, _err error) {
+func ConfirmOrderAndCreateFulfillments(ctx context.Context, shop *model.Shop, partnerID dot.ID, r *pbshop.OrderIDRequest) (resp *pborder.OrderWithErrorsResponse, _err error) {
 	shopID := shop.ID
 	resp = &pborder.OrderWithErrorsResponse{}
 	query := &ordermodelx.GetOrderQuery{
@@ -232,7 +233,7 @@ func ConfirmOrderAndCreateFulfillments(ctx context.Context, shop *model.Shop, pa
 	if order.ConfirmStatus != model.S3Positive ||
 		order.ShopConfirm != model.S3Positive {
 		cmd := &ordermodelx.UpdateOrdersStatusCommand{
-			OrderIDs:      []int64{r.OrderId},
+			OrderIDs:      []dot.ID{r.OrderId},
 			ConfirmStatus: model.S3Positive.P(),
 			ShopConfirm:   model.S3Positive.P(),
 		}
@@ -244,12 +245,12 @@ func ConfirmOrderAndCreateFulfillments(ctx context.Context, shop *model.Shop, pa
 	}
 
 	// update order fulfillment_type: `shipment`
-	var ffmIDs []int64
+	var ffmIDs []dot.ID
 	for _, _ffm := range ffms {
 		ffmIDs = append(ffmIDs, _ffm.ID)
 	}
 	cmd := &ordering.ReserveOrdersForFfmCommand{
-		OrderIDs:   []int64{order.ID},
+		OrderIDs:   []dot.ID{order.ID},
 		Fulfill:    ordertypes.Fulfill(ordermodel.FulfillShipment),
 		FulfillIDs: ffmIDs,
 	}
@@ -371,7 +372,7 @@ func blockRachGiaDistrict(shopAddress *model.Address) error {
 
 func prepareSingleFulfillment(order *ordermodel.Order, shop *model.Shop, lines []*ordermodel.OrderLine, addressTo *model.Address) *shipmodel.Fulfillment {
 
-	var variantIDs []int64
+	var variantIDs []dot.ID
 	totalItems, totalWeight, basketValue, totalAmount := 0, 0, 0, 0
 
 	if len(order.Lines) != 0 {
@@ -387,7 +388,7 @@ func prepareSingleFulfillment(order *ordermodel.Order, shop *model.Shop, lines [
 		totalWeight = order.TotalWeight
 		basketValue = order.BasketValue
 		totalAmount = order.TotalAmount
-		variantIDs = []int64{}
+		variantIDs = []dot.ID{}
 	}
 
 	typeFrom := model.FFShop
@@ -584,7 +585,7 @@ func TryCancellingFulfillments(ctx context.Context, order *ordermodel.Order, ful
 
 	// update shop confirm
 	if len(ffmToCancel) > 0 {
-		ids := make([]int64, len(ffmToCancel))
+		ids := make([]dot.ID, len(ffmToCancel))
 		for i, ffm := range ffmToCancel {
 			ids[i] = ffm.ID
 		}

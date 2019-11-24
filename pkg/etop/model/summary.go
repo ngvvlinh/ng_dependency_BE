@@ -1,7 +1,9 @@
 package model
 
+import "etop.vn/capi/dot"
+
 type SummarizeFulfillmentsRequest struct {
-	ShopID   int64
+	ShopID   dot.ID
 	DateFrom string
 	DateTo   string
 
@@ -11,7 +13,7 @@ type SummarizeFulfillmentsRequest struct {
 }
 
 type SummarizePOSResquest struct {
-	ShopID   int64
+	ShopID   dot.ID
 	DateFrom string
 	DateTo   string
 

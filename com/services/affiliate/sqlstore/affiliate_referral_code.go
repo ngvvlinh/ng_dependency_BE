@@ -9,6 +9,7 @@ import (
 	"etop.vn/backend/com/services/affiliate/model"
 	"etop.vn/backend/pkg/common/cmsql"
 	"etop.vn/backend/pkg/common/sqlstore"
+	"etop.vn/capi/dot"
 )
 
 type AffiliateReferralCodeStoreFactory func(ctx context.Context) *AffiliateReferralCodeStore
@@ -55,7 +56,7 @@ func (s *AffiliateReferralCodeStore) Filters(filters meta.Filters) *AffiliateRef
 	return s
 }
 
-func (s *AffiliateReferralCodeStore) ID(id int64) *AffiliateReferralCodeStore {
+func (s *AffiliateReferralCodeStore) ID(id dot.ID) *AffiliateReferralCodeStore {
 	s.preds = append(s.preds, s.ft.ByID(id))
 	return s
 }
@@ -65,7 +66,7 @@ func (s *AffiliateReferralCodeStore) Code(code string) *AffiliateReferralCodeSto
 	return s
 }
 
-func (s *AffiliateReferralCodeStore) AffiliateID(id int64) *AffiliateReferralCodeStore {
+func (s *AffiliateReferralCodeStore) AffiliateID(id dot.ID) *AffiliateReferralCodeStore {
 	s.preds = append(s.preds, s.ft.ByAffiliateID(id))
 	return s
 }

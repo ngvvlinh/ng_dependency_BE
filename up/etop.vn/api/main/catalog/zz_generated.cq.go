@@ -41,9 +41,9 @@ func (c QueryBus) DispatchAll(ctx context.Context, msgs ...Query) error {
 }
 
 type AddShopProductCollectionCommand struct {
-	ProductID     int64
-	ShopID        int64
-	CollectionIDs []int64
+	ProductID     dot.ID
+	ShopID        dot.ID
+	CollectionIDs []dot.ID
 
 	Result int `json:"-"`
 }
@@ -54,7 +54,7 @@ func (h AggregateHandler) HandleAddShopProductCollection(ctx context.Context, ms
 }
 
 type CreateBrandCommand struct {
-	ShopID      int64
+	ShopID      dot.ID
 	BrandName   string
 	Description string
 
@@ -67,9 +67,9 @@ func (h AggregateHandler) HandleCreateBrand(ctx context.Context, msg *CreateBran
 }
 
 type CreateShopCategoryCommand struct {
-	ID       int64
-	ShopID   int64
-	ParentID int64
+	ID       dot.ID
+	ShopID   dot.ID
+	ParentID dot.ID
 	Name     string
 	Status   int
 
@@ -82,8 +82,8 @@ func (h AggregateHandler) HandleCreateShopCategory(ctx context.Context, msg *Cre
 }
 
 type CreateShopCollectionCommand struct {
-	ID          int64
-	ShopID      int64
+	ID          dot.ID
+	ShopID      dot.ID
 	Name        string
 	Description string
 	DescHTML    string
@@ -98,7 +98,7 @@ func (h AggregateHandler) HandleCreateShopCollection(ctx context.Context, msg *C
 }
 
 type CreateShopProductCommand struct {
-	ShopID          int64
+	ShopID          dot.ID
 	Code            string
 	Name            string
 	Unit            string
@@ -108,7 +108,7 @@ type CreateShopProductCommand struct {
 	PriceInfo       PriceInfo
 	ProductType     string
 	MetaFields      []*MetaField
-	BrandID         int64
+	BrandID         dot.ID
 
 	Result *ShopProductWithVariants `json:"-"`
 }
@@ -119,8 +119,8 @@ func (h AggregateHandler) HandleCreateShopProduct(ctx context.Context, msg *Crea
 }
 
 type CreateShopVariantCommand struct {
-	ShopID          int64
-	ProductID       int64
+	ShopID          dot.ID
+	ProductID       dot.ID
 	Code            string
 	Name            string
 	ImageURLs       []string
@@ -138,9 +138,9 @@ func (h AggregateHandler) HandleCreateShopVariant(ctx context.Context, msg *Crea
 }
 
 type CreateVariantSupplierCommand struct {
-	ShopID     int64
-	SupplierID int64
-	VariantID  int64
+	ShopID     dot.ID
+	SupplierID dot.ID
+	VariantID  dot.ID
 
 	Result *ShopVariantSupplier `json:"-"`
 }
@@ -151,9 +151,9 @@ func (h AggregateHandler) HandleCreateVariantSupplier(ctx context.Context, msg *
 }
 
 type CreateVariantsSupplierCommand struct {
-	ShopID     int64
-	SupplierID int64
-	VariantIDs []int64
+	ShopID     dot.ID
+	SupplierID dot.ID
+	VariantIDs []dot.ID
 
 	Result int `json:"-"`
 }
@@ -164,8 +164,8 @@ func (h AggregateHandler) HandleCreateVariantsSupplier(ctx context.Context, msg 
 }
 
 type DeleteShopBrandCommand struct {
-	Ids    []int64
-	ShopId int64
+	Ids    []dot.ID
+	ShopId dot.ID
 
 	Result int32 `json:"-"`
 }
@@ -176,8 +176,8 @@ func (h AggregateHandler) HandleDeleteShopBrand(ctx context.Context, msg *Delete
 }
 
 type DeleteShopCategoryCommand struct {
-	ID     int64
-	ShopID int64
+	ID     dot.ID
+	ShopID dot.ID
 
 	Result int `json:"-"`
 }
@@ -188,8 +188,8 @@ func (h AggregateHandler) HandleDeleteShopCategory(ctx context.Context, msg *Del
 }
 
 type DeleteShopProductsCommand struct {
-	IDs    []int64
-	ShopID int64
+	IDs    []dot.ID
+	ShopID dot.ID
 
 	Result int `json:"-"`
 }
@@ -200,8 +200,8 @@ func (h AggregateHandler) HandleDeleteShopProducts(ctx context.Context, msg *Del
 }
 
 type DeleteShopVariantsCommand struct {
-	IDs    []int64
-	ShopID int64
+	IDs    []dot.ID
+	ShopID dot.ID
 
 	Result int `json:"-"`
 }
@@ -212,9 +212,9 @@ func (h AggregateHandler) HandleDeleteShopVariants(ctx context.Context, msg *Del
 }
 
 type DeleteVariantSupplierCommand struct {
-	VariantID  int64
-	SupplierID int64
-	ShopID     int64
+	VariantID  dot.ID
+	SupplierID dot.ID
+	ShopID     dot.ID
 
 	Result struct {
 	} `json:"-"`
@@ -225,8 +225,8 @@ func (h AggregateHandler) HandleDeleteVariantSupplier(ctx context.Context, msg *
 }
 
 type RemoveShopProductCategoryCommand struct {
-	ProductID int64
-	ShopID    int64
+	ProductID dot.ID
+	ShopID    dot.ID
 
 	Result *ShopProductWithVariants `json:"-"`
 }
@@ -237,9 +237,9 @@ func (h AggregateHandler) HandleRemoveShopProductCategory(ctx context.Context, m
 }
 
 type RemoveShopProductCollectionCommand struct {
-	ProductID     int64
-	ShopID        int64
-	CollectionIDs []int64
+	ProductID     dot.ID
+	ShopID        dot.ID
+	CollectionIDs []dot.ID
 
 	Result int `json:"-"`
 }
@@ -250,8 +250,8 @@ func (h AggregateHandler) HandleRemoveShopProductCollection(ctx context.Context,
 }
 
 type UpdateBrandInfoCommand struct {
-	ShopID      int64
-	ID          int64
+	ShopID      dot.ID
+	ID          dot.ID
 	BrandName   string
 	Description string
 
@@ -264,10 +264,10 @@ func (h AggregateHandler) HandleUpdateBrandInfo(ctx context.Context, msg *Update
 }
 
 type UpdateShopCategoryCommand struct {
-	ID       int64
+	ID       dot.ID
 	Name     dot.NullString
-	ShopID   int64
-	ParentID int64
+	ShopID   dot.ID
+	ParentID dot.ID
 
 	Result *ShopCategory `json:"-"`
 }
@@ -278,8 +278,8 @@ func (h AggregateHandler) HandleUpdateShopCategory(ctx context.Context, msg *Upd
 }
 
 type UpdateShopCollectionCommand struct {
-	ID          int64
-	ShopID      int64
+	ID          dot.ID
+	ShopID      dot.ID
 	Name        dot.NullString
 	Description dot.NullString
 	DescHTML    dot.NullString
@@ -294,9 +294,9 @@ func (h AggregateHandler) HandleUpdateShopCollection(ctx context.Context, msg *U
 }
 
 type UpdateShopProductCategoryCommand struct {
-	CategoryID int64
-	ShopID     int64
-	ProductID  int64
+	CategoryID dot.ID
+	ShopID     dot.ID
+	ProductID  dot.ID
 
 	Result *ShopProductWithVariants `json:"-"`
 }
@@ -307,8 +307,8 @@ func (h AggregateHandler) HandleUpdateShopProductCategory(ctx context.Context, m
 }
 
 type UpdateShopProductImagesCommand struct {
-	ID      int64
-	ShopID  int64
+	ID      dot.ID
+	ShopID  dot.ID
 	Updates []*meta.UpdateSet
 
 	Result *ShopProductWithVariants `json:"-"`
@@ -320,8 +320,8 @@ func (h AggregateHandler) HandleUpdateShopProductImages(ctx context.Context, msg
 }
 
 type UpdateShopProductInfoCommand struct {
-	ShopID      int64
-	ProductID   int64
+	ShopID      dot.ID
+	ProductID   dot.ID
 	Code        dot.NullString
 	Name        dot.NullString
 	Unit        dot.NullString
@@ -332,9 +332,9 @@ type UpdateShopProductInfoCommand struct {
 	CostPrice   dot.NullInt32
 	ListPrice   dot.NullInt32
 	RetailPrice dot.NullInt32
-	BrandID     dot.NullInt64
+	BrandID     dot.NullID
 	ProductType string
-	CategoryID  int64
+	CategoryID  dot.ID
 
 	Result *ShopProductWithVariants `json:"-"`
 }
@@ -345,8 +345,8 @@ func (h AggregateHandler) HandleUpdateShopProductInfo(ctx context.Context, msg *
 }
 
 type UpdateShopProductMetaFieldsCommand struct {
-	ID         int64
-	ShopID     int64
+	ID         dot.ID
+	ShopID     dot.ID
 	MetaFields []*MetaField
 
 	Result *ShopProductWithVariants `json:"-"`
@@ -358,8 +358,8 @@ func (h AggregateHandler) HandleUpdateShopProductMetaFields(ctx context.Context,
 }
 
 type UpdateShopProductStatusCommand struct {
-	IDs    []int64
-	ShopID int64
+	IDs    []dot.ID
+	ShopID dot.ID
 	Status int16
 
 	Result int `json:"-"`
@@ -371,8 +371,8 @@ func (h AggregateHandler) HandleUpdateShopProductStatus(ctx context.Context, msg
 }
 
 type UpdateShopVariantAttributesCommand struct {
-	ShopID     int64
-	VariantID  int64
+	ShopID     dot.ID
+	VariantID  dot.ID
 	Attributes types.Attributes
 
 	Result *ShopVariant `json:"-"`
@@ -384,8 +384,8 @@ func (h AggregateHandler) HandleUpdateShopVariantAttributes(ctx context.Context,
 }
 
 type UpdateShopVariantImagesCommand struct {
-	ID      int64
-	ShopID  int64
+	ID      dot.ID
+	ShopID  dot.ID
 	Updates []*meta.UpdateSet
 
 	Result *ShopVariant `json:"-"`
@@ -397,8 +397,8 @@ func (h AggregateHandler) HandleUpdateShopVariantImages(ctx context.Context, msg
 }
 
 type UpdateShopVariantInfoCommand struct {
-	ShopID       int64
-	VariantID    int64
+	ShopID       dot.ID
+	VariantID    dot.ID
 	Code         dot.NullString
 	Name         dot.NullString
 	Note         dot.NullString
@@ -418,8 +418,8 @@ func (h AggregateHandler) HandleUpdateShopVariantInfo(ctx context.Context, msg *
 }
 
 type UpdateShopVariantStatusCommand struct {
-	IDs    []int64
-	ShopID int64
+	IDs    []dot.ID
+	ShopID dot.ID
 	Status int16
 
 	Result int `json:"-"`
@@ -431,8 +431,8 @@ func (h AggregateHandler) HandleUpdateShopVariantStatus(ctx context.Context, msg
 }
 
 type GetBrandByIDQuery struct {
-	Id     int64
-	ShopID int64
+	Id     dot.ID
+	ShopID dot.ID
 
 	Result *ShopBrand `json:"-"`
 }
@@ -443,8 +443,8 @@ func (h QueryServiceHandler) HandleGetBrandByID(ctx context.Context, msg *GetBra
 }
 
 type GetBrandsByIDsQuery struct {
-	Ids    []int64
-	ShopID int64
+	Ids    []dot.ID
+	ShopID dot.ID
 
 	Result []*ShopBrand `json:"-"`
 }
@@ -455,8 +455,8 @@ func (h QueryServiceHandler) HandleGetBrandsByIDs(ctx context.Context, msg *GetB
 }
 
 type GetShopCategoryQuery struct {
-	ID     int64
-	ShopID int64
+	ID     dot.ID
+	ShopID dot.ID
 
 	Result *ShopCategory `json:"-"`
 }
@@ -467,8 +467,8 @@ func (h QueryServiceHandler) HandleGetShopCategory(ctx context.Context, msg *Get
 }
 
 type GetShopCollectionQuery struct {
-	ID     int64
-	ShopID int64
+	ID     dot.ID
+	ShopID dot.ID
 
 	Result *ShopCollection `json:"-"`
 }
@@ -479,8 +479,8 @@ func (h QueryServiceHandler) HandleGetShopCollection(ctx context.Context, msg *G
 }
 
 type GetShopProductByIDQuery struct {
-	ProductID int64
-	ShopID    int64
+	ProductID dot.ID
+	ShopID    dot.ID
 
 	Result *ShopProduct `json:"-"`
 }
@@ -491,8 +491,8 @@ func (h QueryServiceHandler) HandleGetShopProductByID(ctx context.Context, msg *
 }
 
 type GetShopProductWithVariantsByIDQuery struct {
-	ProductID int64
-	ShopID    int64
+	ProductID dot.ID
+	ShopID    dot.ID
 
 	Result *ShopProductWithVariants `json:"-"`
 }
@@ -503,8 +503,8 @@ func (h QueryServiceHandler) HandleGetShopProductWithVariantsByID(ctx context.Co
 }
 
 type GetShopVariantByIDQuery struct {
-	VariantID int64
-	ShopID    int64
+	VariantID dot.ID
+	ShopID    dot.ID
 
 	Result *ShopVariant `json:"-"`
 }
@@ -515,8 +515,8 @@ func (h QueryServiceHandler) HandleGetShopVariantByID(ctx context.Context, msg *
 }
 
 type GetShopVariantWithProductByIDQuery struct {
-	VariantID int64
-	ShopID    int64
+	VariantID dot.ID
+	ShopID    dot.ID
 
 	Result *ShopVariantWithProduct `json:"-"`
 }
@@ -527,10 +527,10 @@ func (h QueryServiceHandler) HandleGetShopVariantWithProductByID(ctx context.Con
 }
 
 type GetSupplierIDsByVariantIDQuery struct {
-	VariantID int64
-	ShopID    int64
+	VariantID dot.ID
+	ShopID    dot.ID
 
-	Result []int64 `json:"-"`
+	Result []dot.ID `json:"-"`
 }
 
 func (h QueryServiceHandler) HandleGetSupplierIDsByVariantID(ctx context.Context, msg *GetSupplierIDsByVariantIDQuery) (err error) {
@@ -539,8 +539,8 @@ func (h QueryServiceHandler) HandleGetSupplierIDsByVariantID(ctx context.Context
 }
 
 type GetVariantsBySupplierIDQuery struct {
-	SupplierID int64
-	ShopID     int64
+	SupplierID dot.ID
+	ShopID     dot.ID
 
 	Result *ShopVariantsResponse `json:"-"`
 }
@@ -552,7 +552,7 @@ func (h QueryServiceHandler) HandleGetVariantsBySupplierID(ctx context.Context, 
 
 type ListBrandsQuery struct {
 	Paging meta.Paging
-	ShopId int64
+	ShopId dot.ID
 
 	Result *ListBrandsResult `json:"-"`
 }
@@ -563,7 +563,7 @@ func (h QueryServiceHandler) HandleListBrands(ctx context.Context, msg *ListBran
 }
 
 type ListShopCategoriesQuery struct {
-	ShopID  int64
+	ShopID  dot.ID
 	Paging  meta.Paging
 	Filters meta.Filters
 
@@ -576,7 +576,7 @@ func (h QueryServiceHandler) HandleListShopCategories(ctx context.Context, msg *
 }
 
 type ListShopCollectionsQuery struct {
-	ShopID  int64
+	ShopID  dot.ID
 	Paging  meta.Paging
 	Filters meta.Filters
 
@@ -589,8 +589,8 @@ func (h QueryServiceHandler) HandleListShopCollections(ctx context.Context, msg 
 }
 
 type ListShopCollectionsByProductIDQuery struct {
-	ProductID int64
-	ShopID    int64
+	ProductID dot.ID
+	ShopID    dot.ID
 
 	Result []*ShopCollection `json:"-"`
 }
@@ -601,7 +601,7 @@ func (h QueryServiceHandler) HandleListShopCollectionsByProductID(ctx context.Co
 }
 
 type ListShopProductsQuery struct {
-	ShopID  int64
+	ShopID  dot.ID
 	Paging  meta.Paging
 	Filters meta.Filters
 
@@ -614,8 +614,8 @@ func (h QueryServiceHandler) HandleListShopProducts(ctx context.Context, msg *Li
 }
 
 type ListShopProductsByIDsQuery struct {
-	IDs    []int64
-	ShopID int64
+	IDs    []dot.ID
+	ShopID dot.ID
 
 	Result *ShopProductsResponse `json:"-"`
 }
@@ -626,7 +626,7 @@ func (h QueryServiceHandler) HandleListShopProductsByIDs(ctx context.Context, ms
 }
 
 type ListShopProductsWithVariantsQuery struct {
-	ShopID  int64
+	ShopID  dot.ID
 	Paging  meta.Paging
 	Filters meta.Filters
 
@@ -639,8 +639,8 @@ func (h QueryServiceHandler) HandleListShopProductsWithVariants(ctx context.Cont
 }
 
 type ListShopProductsWithVariantsByIDsQuery struct {
-	IDs    []int64
-	ShopID int64
+	IDs    []dot.ID
+	ShopID dot.ID
 
 	Result *ShopProductsWithVariantsResponse `json:"-"`
 }
@@ -651,7 +651,7 @@ func (h QueryServiceHandler) HandleListShopProductsWithVariantsByIDs(ctx context
 }
 
 type ListShopVariantsQuery struct {
-	ShopID  int64
+	ShopID  dot.ID
 	Paging  meta.Paging
 	Filters meta.Filters
 
@@ -664,8 +664,8 @@ func (h QueryServiceHandler) HandleListShopVariants(ctx context.Context, msg *Li
 }
 
 type ListShopVariantsByIDsQuery struct {
-	IDs    []int64
-	ShopID int64
+	IDs    []dot.ID
+	ShopID dot.ID
 
 	Result *ShopVariantsResponse `json:"-"`
 }
@@ -676,8 +676,8 @@ func (h QueryServiceHandler) HandleListShopVariantsByIDs(ctx context.Context, ms
 }
 
 type ListShopVariantsWithProductByIDsQuery struct {
-	IDs    []int64
-	ShopID int64
+	IDs    []dot.ID
+	ShopID dot.ID
 
 	Result *ShopVariantsWithProductResponse `json:"-"`
 }
@@ -688,8 +688,8 @@ func (h QueryServiceHandler) HandleListShopVariantsWithProductByIDs(ctx context.
 }
 
 type ValidateVariantIDsQuery struct {
-	ShopId         int64
-	ShopVariantIds []int64
+	ShopId         dot.ID
+	ShopVariantIds []dot.ID
 
 	Result struct {
 	} `json:"-"`
@@ -911,7 +911,7 @@ func (q *CreateVariantsSupplierCommand) SetCreateVariantsSupplier(args *CreateVa
 	q.VariantIDs = args.VariantIDs
 }
 
-func (q *DeleteShopBrandCommand) GetArgs(ctx context.Context) (_ context.Context, ids []int64, shopId int64) {
+func (q *DeleteShopBrandCommand) GetArgs(ctx context.Context) (_ context.Context, ids []dot.ID, shopId dot.ID) {
 	return ctx,
 		q.Ids,
 		q.ShopId
@@ -956,7 +956,7 @@ func (q *DeleteShopVariantsCommand) SetIDsQueryShopArgs(args *shopping.IDsQueryS
 	q.ShopID = args.ShopID
 }
 
-func (q *DeleteVariantSupplierCommand) GetArgs(ctx context.Context) (_ context.Context, variantID int64, supplierID int64, shopID int64) {
+func (q *DeleteVariantSupplierCommand) GetArgs(ctx context.Context) (_ context.Context, variantID dot.ID, supplierID dot.ID, shopID dot.ID) {
 	return ctx,
 		q.VariantID,
 		q.SupplierID,
@@ -1221,13 +1221,13 @@ func (q *UpdateShopVariantStatusCommand) SetUpdateStatusArgs(args *UpdateStatusA
 	q.Status = args.Status
 }
 
-func (q *GetBrandByIDQuery) GetArgs(ctx context.Context) (_ context.Context, id int64, shopID int64) {
+func (q *GetBrandByIDQuery) GetArgs(ctx context.Context) (_ context.Context, id dot.ID, shopID dot.ID) {
 	return ctx,
 		q.Id,
 		q.ShopID
 }
 
-func (q *GetBrandsByIDsQuery) GetArgs(ctx context.Context) (_ context.Context, ids []int64, shopID int64) {
+func (q *GetBrandsByIDsQuery) GetArgs(ctx context.Context) (_ context.Context, ids []dot.ID, shopID dot.ID) {
 	return ctx,
 		q.Ids,
 		q.ShopID
@@ -1311,19 +1311,19 @@ func (q *GetShopVariantWithProductByIDQuery) SetGetShopVariantByIDQueryArgs(args
 	q.ShopID = args.ShopID
 }
 
-func (q *GetSupplierIDsByVariantIDQuery) GetArgs(ctx context.Context) (_ context.Context, variantID int64, shopID int64) {
+func (q *GetSupplierIDsByVariantIDQuery) GetArgs(ctx context.Context) (_ context.Context, variantID dot.ID, shopID dot.ID) {
 	return ctx,
 		q.VariantID,
 		q.ShopID
 }
 
-func (q *GetVariantsBySupplierIDQuery) GetArgs(ctx context.Context) (_ context.Context, supplierID int64, shopID int64) {
+func (q *GetVariantsBySupplierIDQuery) GetArgs(ctx context.Context) (_ context.Context, supplierID dot.ID, shopID dot.ID) {
 	return ctx,
 		q.SupplierID,
 		q.ShopID
 }
 
-func (q *ListBrandsQuery) GetArgs(ctx context.Context) (_ context.Context, paging meta.Paging, shopId int64) {
+func (q *ListBrandsQuery) GetArgs(ctx context.Context) (_ context.Context, paging meta.Paging, shopId dot.ID) {
 	return ctx,
 		q.Paging,
 		q.ShopId
@@ -1469,7 +1469,7 @@ func (q *ListShopVariantsWithProductByIDsQuery) SetIDsQueryShopArgs(args *shoppi
 	q.ShopID = args.ShopID
 }
 
-func (q *ValidateVariantIDsQuery) GetArgs(ctx context.Context) (_ context.Context, shopId int64, shopVariantIds []int64) {
+func (q *ValidateVariantIDsQuery) GetArgs(ctx context.Context) (_ context.Context, shopId dot.ID, shopVariantIds []dot.ID) {
 	return ctx,
 		q.ShopId,
 		q.ShopVariantIds

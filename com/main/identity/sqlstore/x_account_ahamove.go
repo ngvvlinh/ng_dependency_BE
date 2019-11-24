@@ -10,6 +10,7 @@ import (
 	"etop.vn/backend/com/main/identity/model"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/cmsql"
+	"etop.vn/capi/dot"
 )
 
 type XAccountAhamoveStoreFactory func(context.Context) *XAccountAhamoveStore
@@ -29,7 +30,7 @@ type XAccountAhamoveStore struct {
 	preds []interface{}
 }
 
-func (s *XAccountAhamoveStore) ID(id int64) *XAccountAhamoveStore {
+func (s *XAccountAhamoveStore) ID(id dot.ID) *XAccountAhamoveStore {
 	s.preds = append(s.preds, s.ft.ByID(id))
 	return s
 }
@@ -44,7 +45,7 @@ func (s *XAccountAhamoveStore) ExternalID(externalID string) *XAccountAhamoveSto
 	return s
 }
 
-func (s *XAccountAhamoveStore) OwnerID(id int64) *XAccountAhamoveStore {
+func (s *XAccountAhamoveStore) OwnerID(id dot.ID) *XAccountAhamoveStore {
 	s.preds = append(s.preds, s.ft.ByOwnerID(id))
 	return s
 }
@@ -64,8 +65,8 @@ func (s *XAccountAhamoveStore) GetXAccountAhamove() (*identity.ExternalAccountAh
 }
 
 type CreateXAccountAhamoveArgs struct {
-	ID      int64
-	OwnerID int64
+	ID      dot.ID
+	OwnerID dot.ID
 	Phone   string
 	Name    string
 }
@@ -91,7 +92,7 @@ func (s *XAccountAhamoveStore) CreateXAccountAhamove(args *CreateXAccountAhamove
 }
 
 type UpdateXAccountAhamoveInfoArgs struct {
-	ID                int64
+	ID                dot.ID
 	ExternalID        string
 	ExternalVerified  bool
 	ExternalToken     string
@@ -115,7 +116,7 @@ func (s *XAccountAhamoveStore) UpdateXAccountAhamove(args *UpdateXAccountAhamove
 }
 
 type UpdateXAccountAhamoveVerifiedInfoArgs struct {
-	ID                    int64
+	ID                    dot.ID
 	ExternalTickerID      string
 	LastSendVerifiedAt    time.Time
 	ExternalVerified      bool
@@ -136,7 +137,7 @@ func (s *XAccountAhamoveStore) UpdateXAccountAhamoveVerifiedInfo(args *UpdateXAc
 }
 
 type UpdateXAccountAhamoveVerificationImageArgs struct {
-	ID                  int64
+	ID                  dot.ID
 	IDCardFrontImg      string
 	IDCardBackImg       string
 	PortraitImg         string

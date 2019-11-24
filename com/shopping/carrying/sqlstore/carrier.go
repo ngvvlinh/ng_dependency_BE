@@ -13,6 +13,7 @@ import (
 	"etop.vn/backend/pkg/common/cmsql"
 	"etop.vn/backend/pkg/common/sq"
 	"etop.vn/backend/pkg/common/sqlstore"
+	"etop.vn/capi/dot"
 )
 
 type CarrierStoreFactory func(context.Context) *CarrierStore
@@ -55,22 +56,22 @@ func (s *CarrierStore) Filters(filters meta.Filters) *CarrierStore {
 	return s
 }
 
-func (s *CarrierStore) ID(id int64) *CarrierStore {
+func (s *CarrierStore) ID(id dot.ID) *CarrierStore {
 	s.preds = append(s.preds, s.ft.ByID(id))
 	return s
 }
 
-func (s *CarrierStore) IDs(ids ...int64) *CarrierStore {
+func (s *CarrierStore) IDs(ids ...dot.ID) *CarrierStore {
 	s.preds = append(s.preds, sq.PrefixedIn(&s.ft.prefix, "id", ids))
 	return s
 }
 
-func (s *CarrierStore) ShopID(id int64) *CarrierStore {
+func (s *CarrierStore) ShopID(id dot.ID) *CarrierStore {
 	s.preds = append(s.preds, s.ft.ByShopID(id))
 	return s
 }
 
-func (s *CarrierStore) OptionalShopID(id int64) *CarrierStore {
+func (s *CarrierStore) OptionalShopID(id dot.ID) *CarrierStore {
 	s.preds = append(s.preds, s.ft.ByShopID(id).Optional())
 	return s
 }

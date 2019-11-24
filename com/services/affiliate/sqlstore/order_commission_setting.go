@@ -7,6 +7,7 @@ import (
 	"etop.vn/backend/com/services/affiliate/model"
 	"etop.vn/backend/pkg/common/cmsql"
 	"etop.vn/backend/pkg/common/sqlstore"
+	"etop.vn/capi/dot"
 )
 
 func NewOrderCommissionSettingStoreFactory(db *cmsql.Database) OrderCommissionSettingStoreFactory {
@@ -49,17 +50,17 @@ func (s *OrderCommissionSettingStore) Paging(paging meta.Paging) *OrderCommissio
 	return s
 }
 
-func (s *OrderCommissionSettingStore) SupplyID(id int64) *OrderCommissionSettingStore {
+func (s *OrderCommissionSettingStore) SupplyID(id dot.ID) *OrderCommissionSettingStore {
 	s.preds = append(s.preds, s.ft.BySupplyID(id))
 	return s
 }
 
-func (s *OrderCommissionSettingStore) OrderID(id int64) *OrderCommissionSettingStore {
+func (s *OrderCommissionSettingStore) OrderID(id dot.ID) *OrderCommissionSettingStore {
 	s.preds = append(s.preds, s.ft.ByOrderID(id))
 	return s
 }
 
-func (s *OrderCommissionSettingStore) ProductID(id int64) *OrderCommissionSettingStore {
+func (s *OrderCommissionSettingStore) ProductID(id dot.ID) *OrderCommissionSettingStore {
 	s.preds = append(s.preds, s.ft.ByProductID(id))
 	return s
 }

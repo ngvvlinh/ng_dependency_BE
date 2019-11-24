@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"etop.vn/api/main/identity"
+	dot "etop.vn/capi/dot"
 )
 
 type LedgerType string
@@ -14,14 +15,14 @@ const (
 )
 
 type ShopLedger struct {
-	ID          int64
-	ShopID      int64
+	ID          dot.ID
+	ShopID      dot.ID
 	Name        string
 	BankAccount *identity.BankAccount
 	Note        string
 	Type        string
 	Status      int32
-	CreatedBy   int64
+	CreatedBy   dot.ID
 	CreatedAt   time.Time
 	UpdatedAt   time.Time
 }

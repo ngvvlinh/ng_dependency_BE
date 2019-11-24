@@ -2,7 +2,6 @@ package ghtk
 
 import (
 	"context"
-	"strconv"
 	"time"
 
 	"etop.vn/api/main/location"
@@ -89,7 +88,7 @@ func (p *Carrier) CreateFulfillment(ctx context.Context, order *ordermodel.Order
 		Request: &ghtkclient.CreateOrderRequest{
 			Products: products,
 			Order: &ghtkclient.OrderRequest{
-				ID:           strconv.FormatInt(ffm.ID, 10),
+				ID:           ffm.ID.String(),
 				PickName:     ffm.AddressFrom.GetFullName(),
 				PickMoney:    ffm.TotalCODAmount,
 				PickAddress:  cm.Coalesce(ffm.AddressFrom.Address1, ffm.AddressFrom.Address2),

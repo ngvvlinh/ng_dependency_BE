@@ -10,9 +10,10 @@ import (
 	"etop.vn/backend/pkg/common/cmapi"
 	"etop.vn/backend/pkg/etop/api/convertpb"
 	"etop.vn/backend/pkg/etop/model"
+	"etop.vn/capi/dot"
 )
 
-func PbProductsQuantity(shopProducts []*catalog.ShopProductWithVariants, inventoryVariants map[int64]*inventory.InventoryVariant) (res []*pbshop.ShopProduct) {
+func PbProductsQuantity(shopProducts []*catalog.ShopProductWithVariants, inventoryVariants map[dot.ID]*inventory.InventoryVariant) (res []*pbshop.ShopProduct) {
 	for _, product := range shopProducts {
 		productPb := PbProductQuantity(product, inventoryVariants)
 		res = append(res, productPb)
@@ -20,13 +21,13 @@ func PbProductsQuantity(shopProducts []*catalog.ShopProductWithVariants, invento
 	return
 }
 
-func PbProductQuantity(shopProduct *catalog.ShopProductWithVariants, inventoryVariants map[int64]*inventory.InventoryVariant) *pbshop.ShopProduct {
+func PbProductQuantity(shopProduct *catalog.ShopProductWithVariants, inventoryVariants map[dot.ID]*inventory.InventoryVariant) *pbshop.ShopProduct {
 	shopProductPb := PbShopProductWithVariants(shopProduct)
 	shopProductPb.Variants = PbVariantsQuantity(shopProduct.Variants, inventoryVariants)
 	return shopProductPb
 }
 
-func PbVariantsQuantity(shopVariants []*catalog.ShopVariant, inventoryVariants map[int64]*inventory.InventoryVariant) []*pbshop.ShopVariant {
+func PbVariantsQuantity(shopVariants []*catalog.ShopVariant, inventoryVariants map[dot.ID]*inventory.InventoryVariant) []*pbshop.ShopVariant {
 	var variants []*pbshop.ShopVariant
 	for _, variant := range shopVariants {
 		inventoryVariant := inventoryVariants[variant.VariantID]

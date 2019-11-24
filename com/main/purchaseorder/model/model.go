@@ -5,6 +5,7 @@ import (
 
 	"etop.vn/api/main/etop"
 	catalogmodel "etop.vn/backend/com/main/catalog/model"
+	"etop.vn/capi/dot"
 )
 
 //go:generate $ETOPDIR/backend/scripts/derive.sh
@@ -12,9 +13,9 @@ import (
 var _ = sqlgenPurchaseOrder(&PurchaseOrder{})
 
 type PurchaseOrder struct {
-	ID              int64
-	ShopID          int64
-	SupplierID      int64
+	ID              dot.ID
+	ShopID          dot.ID
+	SupplierID      dot.ID
 	Supplier        *PurchaseOrderSupplier
 	BasketValue     int64
 	TotalDiscount   int64
@@ -23,9 +24,9 @@ type PurchaseOrder struct {
 	CodeNorm        int32
 	Note            string
 	Status          etop.Status3
-	VariantIDs      []int64
+	VariantIDs      []dot.ID
 	Lines           []*PurchaseOrderLine
-	CreatedBy       int64
+	CreatedBy       dot.ID
 	CancelledReason string
 	ConfirmedAt     time.Time
 	CancelledAt     time.Time
@@ -36,9 +37,9 @@ type PurchaseOrder struct {
 
 type PurchaseOrderLine struct {
 	ProductName string `json:"product_name"`
-	ProductID   int64  `json:"product_id"`
+	ProductID   dot.ID `json:"product_id"`
 
-	VariantID    int64  `json:"variant_id"`
+	VariantID    dot.ID `json:"variant_id"`
 	Quantity     int64  `json:"quantity"`
 	PaymentPrice int64  `json:"payment_price"`
 	Code         string `json:"code"`

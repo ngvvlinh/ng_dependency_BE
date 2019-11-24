@@ -11,15 +11,16 @@ import (
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/sq/core"
 	"etop.vn/backend/pkg/etop/model"
+	"etop.vn/capi/dot"
 )
 
 type GetOrderQuery struct {
-	OrderID       int64
+	OrderID       dot.ID
 	ExternalID    string
-	ShopID        int64
-	PartnerID     int64
+	ShopID        dot.ID
+	PartnerID     dot.ID
 	Code          string
-	TradingShopID int64
+	TradingShopID dot.ID
 
 	IncludeFulfillment bool
 
@@ -31,11 +32,11 @@ type GetOrderQuery struct {
 }
 
 type GetOrderExtendedsQuery struct {
-	IDs           []int64
-	ShopIDs       []int64 // MixedAccount
-	PartnerID     int64
+	IDs           []dot.ID
+	ShopIDs       []dot.ID // MixedAccount
+	PartnerID     dot.ID
 	Status        *model.Status3
-	TradingShopID int64
+	TradingShopID dot.ID
 	DateFrom      time.Time
 	DateTo        time.Time
 
@@ -62,13 +63,13 @@ type OrderWithFulfillments struct {
 }
 
 type GetOrdersQuery struct {
-	ShopIDs       []int64 // MixedAccount
-	PartnerID     int64
-	TradingShopID int64
+	ShopIDs       []dot.ID // MixedAccount
+	PartnerID     dot.ID
+	TradingShopID dot.ID
 
 	Paging  *cm.Paging
 	Filters []cm.Filter
-	IDs     []int64
+	IDs     []dot.ID
 	Status  *int
 
 	Result struct {
@@ -79,7 +80,7 @@ type GetOrdersQuery struct {
 }
 
 type SimpleGetOrdersByExternalIDsQuery struct {
-	SourceID    int64
+	SourceID    dot.ID
 	SourceType  string
 	ExternalIDs []string
 
@@ -89,7 +90,7 @@ type SimpleGetOrdersByExternalIDsQuery struct {
 }
 
 type VerifyOrdersByEdCodeQuery struct {
-	ShopID           int64
+	ShopID           dot.ID
 	EdCodes          []string
 	OnlyActiveOrders bool // shop_confirm is not -1
 
@@ -99,9 +100,9 @@ type VerifyOrdersByEdCodeQuery struct {
 }
 
 type UpdateOrderCommand struct {
-	ID        int64
-	ShopID    int64
-	PartnerID int64
+	ID        dot.ID
+	ShopID    dot.ID
+	PartnerID dot.ID
 
 	ShopName        string
 	Customer        *ordermodel.OrderCustomer
@@ -125,13 +126,13 @@ type UpdateOrderCommand struct {
 	TotalItems      int
 	TotalDiscount   int
 
-	CustomerID int64
+	CustomerID dot.ID
 }
 
 type UpdateOrdersStatusCommand struct {
-	ShopID    int64
-	PartnerID int64
-	OrderIDs  []int64
+	ShopID    dot.ID
+	PartnerID dot.ID
+	OrderIDs  []dot.ID
 
 	Status        *model.Status4
 	ShopConfirm   *model.Status3
@@ -148,7 +149,7 @@ type CreateOrderCommand struct {
 }
 
 type CreateOrdersCommand struct {
-	ShopID int64
+	ShopID dot.ID
 	Orders []*ordermodel.Order
 
 	Result struct {
@@ -165,8 +166,8 @@ func SumOrderLineDiscount(lines []*ordermodel.OrderLine) int {
 }
 
 type UpdateOrderPaymentStatusCommand struct {
-	ShopID  int64
-	OrderID int64
+	ShopID  dot.ID
+	OrderID dot.ID
 	Status  *model.Status3
 
 	Result struct {
@@ -175,8 +176,8 @@ type UpdateOrderPaymentStatusCommand struct {
 }
 
 type UpdateOrderShippingInfoCommand struct {
-	ShopID          int64
-	OrderID         int64
+	ShopID          dot.ID
+	OrderID         dot.ID
 	ShippingAddress *ordermodel.OrderAddress
 	Shipping        *ordermodel.OrderShipping
 

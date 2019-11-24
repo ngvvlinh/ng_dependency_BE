@@ -8,12 +8,8 @@ import (
 	"io/ioutil"
 	"math"
 	"runtime/debug"
-	"strconv"
 	"strings"
 	"time"
-
-	"etop.vn/backend/pkg/common/cmapi"
-	"etop.vn/backend/pkg/etop/api/convertpb"
 
 	"github.com/360EntSecGroup-Skylar/excelize"
 
@@ -24,11 +20,14 @@ import (
 	"etop.vn/backend/com/main/ordering/modelx"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
+	"etop.vn/backend/pkg/common/cmapi"
 	"etop.vn/backend/pkg/common/httpx"
 	"etop.vn/backend/pkg/common/imcsv"
 	"etop.vn/backend/pkg/common/validate"
+	"etop.vn/backend/pkg/etop/api/convertpb"
 	"etop.vn/backend/pkg/etop/authorize/claims"
 	"etop.vn/backend/pkg/etop/model"
+	"etop.vn/capi/dot"
 	"etop.vn/common/strs"
 	"etop.vn/common/xerrors"
 )
@@ -37,7 +36,7 @@ func HandleImportOrders(c *httpx.Context) error {
 	claim := c.Claim.(*claims.ShopClaim)
 	userID := c.Session.GetUserID()
 	shop := claim.Shop
-	key := strconv.FormatInt(shop.ID, 10)
+	key := shop.ID.String()
 
 	resp, err := idempgroup.DoAndWrapWithSubkey(key, claim.Token, 30*time.Second, func() (interface{}, error) {
 		return handleImportOrder(c.Req.Context(), c, shop, userID)
@@ -51,11 +50,11 @@ func HandleImportOrders(c *httpx.Context) error {
 		// Allow re-uploading immediately after error
 		idempgroup.ReleaseKey(key, claim.Token)
 	}
-	c.SetResultPb(respMsg)
+	c.SetResult(respMsg)
 	return nil
 }
 
-func handleImportOrder(ctx context.Context, c *httpx.Context, shop *model.Shop, userID int64) (_resp *pborder.ImportOrdersResponse, _err error) {
+func handleImportOrder(ctx context.Context, c *httpx.Context, shop *model.Shop, userID dot.ID) (_resp *pborder.ImportOrdersResponse, _err error) {
 	var debugOpts Debug
 	if cm.NotProd() {
 		var err error
@@ -231,7 +230,7 @@ func handleImportOrder(ctx context.Context, c *httpx.Context, shop *model.Shop, 
 		order := orders[i]
 		order.IsOutsideEtop = false
 
-		var productIDs, variantIDs []int64
+		var productIDs, variantIDs []dot.ID
 		for j, rowOrderLine := range rowOrder.Lines {
 			line := order.Lines[j]
 

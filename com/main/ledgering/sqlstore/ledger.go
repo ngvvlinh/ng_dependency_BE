@@ -14,6 +14,7 @@ import (
 	"etop.vn/backend/pkg/common/conversion"
 	"etop.vn/backend/pkg/common/sq"
 	"etop.vn/backend/pkg/common/sqlstore"
+	"etop.vn/capi/dot"
 )
 
 type LedgerStoreFactory func(ctx context.Context) *LedgerStore
@@ -59,17 +60,17 @@ func (s *LedgerStore) Filters(filters meta.Filters) *LedgerStore {
 	return s
 }
 
-func (s *LedgerStore) ID(id int64) *LedgerStore {
+func (s *LedgerStore) ID(id dot.ID) *LedgerStore {
 	s.preds = append(s.preds, s.ft.ByID(id))
 	return s
 }
 
-func (s *LedgerStore) IDs(ids ...int64) *LedgerStore {
+func (s *LedgerStore) IDs(ids ...dot.ID) *LedgerStore {
 	s.preds = append(s.preds, sq.PrefixedIn(&s.ft.prefix, "id", ids))
 	return s
 }
 
-func (s *LedgerStore) ShopID(id int64) *LedgerStore {
+func (s *LedgerStore) ShopID(id dot.ID) *LedgerStore {
 	s.preds = append(s.preds, s.ft.ByShopID(id))
 	return s
 }

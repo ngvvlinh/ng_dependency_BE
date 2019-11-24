@@ -7,6 +7,7 @@ import (
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/etop/model"
+	"etop.vn/capi/dot"
 )
 
 func init() {
@@ -161,7 +162,7 @@ func GetAllAccountUsers(ctx context.Context, query *model.GetAllAccountUsersQuer
 	var m sync.Mutex
 	for i, userID := range query.UserIDs {
 		guard <- i
-		go func(uID int64) {
+		go func(uID dot.ID) {
 			defer func() {
 				<-guard
 			}()

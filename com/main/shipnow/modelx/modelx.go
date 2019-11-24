@@ -3,6 +3,7 @@ package modelx
 import (
 	"etop.vn/backend/com/main/shipnow/model"
 	cm "etop.vn/backend/pkg/common"
+	"etop.vn/capi/dot"
 )
 
 type UpdateShipnowFulfillmentArgs struct {
@@ -10,14 +11,14 @@ type UpdateShipnowFulfillmentArgs struct {
 }
 
 type GetByIDArgs struct {
-	ID int64
+	ID dot.ID
 
-	ShopID    int64
-	PartnerID int64
+	ShopID    dot.ID
+	PartnerID dot.ID
 }
 
 type GetShipnowFulfillmentsArgs struct {
-	ShopID  int64
+	ShopID  dot.ID
 	Paging  cm.Paging
 	Filters []cm.Filter
 

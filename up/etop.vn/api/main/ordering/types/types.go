@@ -6,13 +6,14 @@ import (
 
 	"etop.vn/api/main/catalog/types"
 	"etop.vn/api/main/location"
+	"etop.vn/capi/dot"
 )
 
 type ItemLine struct {
-	OrderId     int64
+	OrderId     dot.ID
 	Quantity    int32
-	ProductId   int64
-	VariantId   int64
+	ProductId   dot.ID
+	VariantId   dot.ID
 	IsOutside   bool
 	ProductInfo ProductInfo
 	TotalPrice  int32

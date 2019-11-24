@@ -8,6 +8,7 @@ import (
 	context "context"
 
 	capi "etop.vn/capi"
+	dot "etop.vn/capi/dot"
 )
 
 type Command interface{ command() }
@@ -37,7 +38,7 @@ func (c QueryBus) DispatchAll(ctx context.Context, msgs ...Query) error {
 }
 
 type GetAddressByIDQuery struct {
-	ID int64
+	ID dot.ID
 
 	Result *Address `json:"-"`
 }

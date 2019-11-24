@@ -12,6 +12,7 @@ import (
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/cmsql"
 	haravanclient "etop.vn/backend/pkg/integration/haravan/client"
+	"etop.vn/capi/dot"
 )
 
 const (
@@ -65,7 +66,7 @@ func (a *Aggregate) CreateExternalAccountHaravan(ctx context.Context, args *iden
 		return account, nil
 	}
 
-	var id int64
+	var id dot.ID
 	// code: user for Oauth
 	cmd := &haravanclient.GetAccessTokenRequest{
 		Subdomain:   args.Subdomain,
@@ -130,7 +131,7 @@ func (a *Aggregate) UpdateExternalAccountHaravanToken(ctx context.Context, args 
 	return a.xAccountHaravanStore(ctx).UpdateXAccountHaravan(cmdUpdate)
 }
 
-func (a *Aggregate) GetExternalAccountIDHaravan(ctx context.Context, shopID int64) (int, error) {
+func (a *Aggregate) GetExternalAccountIDHaravan(ctx context.Context, shopID dot.ID) (int, error) {
 	account, err := a.xAccountHaravanStore(ctx).ShopID(shopID).GetXAccountHaravan()
 	if err != nil {
 		return 0, nil
@@ -249,7 +250,7 @@ func (a *Aggregate) DeleteConnectedCarrierServiceExternalAccountHaravan(ctx cont
 	return &meta.Empty{}, nil
 }
 
-func (a *Aggregate) GetCurrentCarrierServiceID(ctx context.Context, shopID int64) (int, error) {
+func (a *Aggregate) GetCurrentCarrierServiceID(ctx context.Context, shopID dot.ID) (int, error) {
 	account, err := a.xAccountHaravanStore(ctx).ShopID(shopID).GetXAccountHaravan()
 	if err != nil {
 		return 0, err

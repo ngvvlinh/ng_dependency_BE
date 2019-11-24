@@ -3,6 +3,8 @@ package model
 import (
 	"encoding/json"
 	"time"
+
+	"etop.vn/capi/dot"
 )
 
 //go:generate $ETOPDIR/backend/scripts/derive.sh
@@ -10,7 +12,7 @@ import (
 var _ = sqlgenPayment(&Payment{})
 
 type Payment struct {
-	ID              int64
+	ID              dot.ID
 	Amount          int
 	Status          int
 	State           string

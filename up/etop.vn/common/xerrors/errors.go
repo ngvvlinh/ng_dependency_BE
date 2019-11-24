@@ -472,11 +472,11 @@ func (e *APIError) WithMetaJson(key string, value interface{}) *APIError {
 	return e
 }
 
-func (e *APIError) WithMetaID(key string, value int64) *APIError {
+func (e *APIError) WithMetaID(key string, value interface{ Int64() int64 }) *APIError {
 	if e.Meta == nil {
 		e.Meta = make(map[string]string)
 	}
-	e.Meta[key] = strconv.FormatInt(value, 10)
+	e.Meta[key] = strconv.FormatInt(value.Int64(), 10)
 	return e
 }
 

@@ -5,22 +5,23 @@ import (
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/etop/authorize/claims"
 	"etop.vn/backend/pkg/etop/model"
+	"etop.vn/capi/dot"
 )
 
-func MixAccount(claim *claims.Claim, m *pbetop.MixedAccount) ([]int64, error) {
+func MixAccount(claim *claims.Claim, m *pbetop.MixedAccount) ([]dot.ID, error) {
 	switch {
 	case m == nil:
 		// The same as default.
 
 	case m.All:
-		ids := make([]int64, 0, len(claim.AccountIDs))
+		ids := make([]dot.ID, 0, len(claim.AccountIDs))
 		for id := range claim.AccountIDs {
 			ids = append(ids, id)
 		}
 		return ids, nil
 
 	case m.AllShops:
-		ids := make([]int64, 0, len(claim.AccountIDs))
+		ids := make([]dot.ID, 0, len(claim.AccountIDs))
 		for id, typ := range claim.AccountIDs {
 			if typ == model.TagShop {
 				ids = append(ids, id)
@@ -41,5 +42,5 @@ func MixAccount(claim *claims.Claim, m *pbetop.MixedAccount) ([]int64, error) {
 	if claim.AccountID == 0 {
 		return nil, cm.Error(cm.InvalidArgument, "Expected account token", nil)
 	}
-	return []int64{claim.AccountID}, nil
+	return []dot.ID{claim.AccountID}, nil
 }

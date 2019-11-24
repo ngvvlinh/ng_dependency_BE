@@ -6,6 +6,7 @@ import (
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/etop/model"
+	"etop.vn/capi/dot"
 )
 
 func init() {
@@ -13,7 +14,7 @@ func init() {
 }
 
 type VerifyAdminQuery struct {
-	UserID int64
+	UserID dot.ID
 	Result *model.Permission
 }
 

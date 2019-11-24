@@ -9,6 +9,7 @@ import (
 	"etop.vn/api/shopping/suppliering"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/capi"
+	"etop.vn/capi/dot"
 )
 
 type ProcessManager struct {
@@ -37,7 +38,7 @@ func (m *ProcessManager) RegisterEventHandlers(eventBus bus.EventRegistry) {
 }
 
 func (m *ProcessManager) InventoryVoucherCreating(ctx context.Context, event *inventory.InventoryVoucherCreatingEvent) error {
-	var variantIDs []int64
+	var variantIDs []dot.ID
 	for _, value := range event.Line {
 		variantIDs = append(variantIDs, value.VariantID)
 	}
@@ -45,14 +46,14 @@ func (m *ProcessManager) InventoryVoucherCreating(ctx context.Context, event *in
 }
 
 func (m *ProcessManager) InventoryVoucherUpdating(ctx context.Context, event *inventory.InventoryVoucherUpdatingEvent) error {
-	var variantIDs []int64
+	var variantIDs []dot.ID
 	for _, value := range event.Line {
 		variantIDs = append(variantIDs, value.VariantID)
 	}
 	return m.VerifyVariantIDs(ctx, event.ShopID, variantIDs)
 }
 
-func (m *ProcessManager) VerifyVariantIDs(ctx context.Context, ShopID int64, variantIDs []int64) error {
+func (m *ProcessManager) VerifyVariantIDs(ctx context.Context, ShopID dot.ID, variantIDs []dot.ID) error {
 	query := catalog.ValidateVariantIDsQuery{
 		ShopId:         ShopID,
 		ShopVariantIds: variantIDs,
@@ -70,7 +71,7 @@ func (m *ProcessManager) DeleteVariantSupplier(ctx context.Context, event *suppl
 }
 
 func (m *ProcessManager) CreateVariantSupplier(ctx context.Context, event *purchaseorder.PurchaseOrderConfirmedEvent) error {
-	mapVariantSupplier := make(map[int64]int64)
+	mapVariantSupplier := make(map[dot.ID]dot.ID)
 	query := catalog.GetVariantsBySupplierIDQuery{
 		SupplierID: event.TraderID,
 		ShopID:     event.ShopID,
@@ -81,7 +82,7 @@ func (m *ProcessManager) CreateVariantSupplier(ctx context.Context, event *purch
 	for _, value := range query.Result.Variants {
 		mapVariantSupplier[value.VariantID] = event.TraderID
 	}
-	var variantIDs []int64
+	var variantIDs []dot.ID
 	for _, variant := range event.Lines {
 		if mapVariantSupplier[variant.VariantID] == 0 {
 			variantIDs = append(variantIDs, variant.VariantID)

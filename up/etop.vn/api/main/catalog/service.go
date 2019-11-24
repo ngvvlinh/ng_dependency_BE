@@ -7,6 +7,7 @@ import (
 	"etop.vn/api/meta"
 	"etop.vn/api/shopping"
 	. "etop.vn/capi/dot"
+	dot "etop.vn/capi/dot"
 )
 
 // +gen:api
@@ -69,7 +70,7 @@ type Aggregate interface {
 
 	UpdateBrandInfo(context.Context, *UpdateBrandArgs) (*ShopBrand, error)
 
-	DeleteShopBrand(ctx context.Context, ids []int64, shopId int64) (int32, error)
+	DeleteShopBrand(ctx context.Context, ids []dot.ID, shopId dot.ID) (int32, error)
 
 	// -- variant_supplier -- //
 
@@ -77,7 +78,7 @@ type Aggregate interface {
 
 	CreateVariantsSupplier(context.Context, *CreateVariantsSupplier) (int, error)
 
-	DeleteVariantSupplier(ctx context.Context, variantID int64, supplierID int64, shopID int64) error
+	DeleteVariantSupplier(ctx context.Context, variantID dot.ID, supplierID dot.ID, shopID dot.ID) error
 
 	//-- tag --//
 }
@@ -95,7 +96,7 @@ type QueryService interface {
 	ListShopVariants(context.Context, *shopping.ListQueryShopArgs) (*ShopVariantsResponse, error)
 	ListShopVariantsByIDs(context.Context, *shopping.IDsQueryShopArgs) (*ShopVariantsResponse, error)
 	ListShopVariantsWithProductByIDs(context.Context, *shopping.IDsQueryShopArgs) (*ShopVariantsWithProductResponse, error)
-	ValidateVariantIDs(ctx context.Context, shopId int64, shopVariantIds []int64) error
+	ValidateVariantIDs(ctx context.Context, shopId dot.ID, shopVariantIds []dot.ID) error
 	//--Category --//
 	GetShopCategory(context.Context, *GetShopCategoryArgs) (*ShopCategory, error)
 	ListShopCategories(context.Context, *shopping.ListQueryShopArgs) (*ShopCategoriesResponse, error)
@@ -106,42 +107,42 @@ type QueryService interface {
 	ListShopCollectionsByProductID(context.Context, *ListShopCollectionsByProductIDArgs) ([]*ShopCollection, error)
 
 	//-- Brand --//
-	GetBrandByID(ctx context.Context, id int64, shopID int64) (*ShopBrand, error)
-	GetBrandsByIDs(ctx context.Context, ids []int64, shopID int64) ([]*ShopBrand, error)
-	ListBrands(ctx context.Context, paging meta.Paging, shopId int64) (*ListBrandsResult, error)
+	GetBrandByID(ctx context.Context, id dot.ID, shopID dot.ID) (*ShopBrand, error)
+	GetBrandsByIDs(ctx context.Context, ids []dot.ID, shopID dot.ID) ([]*ShopBrand, error)
+	ListBrands(ctx context.Context, paging meta.Paging, shopId dot.ID) (*ListBrandsResult, error)
 
 	// -- variant_supplier -- //
 
-	GetSupplierIDsByVariantID(ctx context.Context, variantID int64, shopID int64) ([]int64, error)
+	GetSupplierIDsByVariantID(ctx context.Context, variantID dot.ID, shopID dot.ID) ([]dot.ID, error)
 
-	GetVariantsBySupplierID(ctx context.Context, supplierID int64, shopID int64) (*ShopVariantsResponse, error)
+	GetVariantsBySupplierID(ctx context.Context, supplierID dot.ID, shopID dot.ID) (*ShopVariantsResponse, error)
 
 	//-- query --//
 }
 
 type IDsArgs struct {
-	IDs []int64
+	IDs []dot.ID
 }
 
 type GetShopCategoryArgs struct {
-	ID     int64
-	ShopID int64
+	ID     dot.ID
+	ShopID dot.ID
 }
 
 type GetShopProductByIDQueryArgs struct {
-	ProductID int64
-	ShopID    int64
+	ProductID dot.ID
+	ShopID    dot.ID
 }
 
 type CreateVariantsSupplier struct {
-	ShopID     int64
-	SupplierID int64
-	VariantIDs []int64
+	ShopID     dot.ID
+	SupplierID dot.ID
+	VariantIDs []dot.ID
 }
 
 type GetShopVariantByIDQueryArgs struct {
-	VariantID int64
-	ShopID    int64
+	VariantID dot.ID
+	ShopID    dot.ID
 }
 
 type ShopProductsResponse struct {
@@ -175,13 +176,13 @@ type ShopVariantsWithProductResponse struct {
 }
 
 type ListShopCollectionsByProductIDArgs struct {
-	ProductID int64
-	ShopID    int64
+	ProductID dot.ID
+	ShopID    dot.ID
 }
 
 type GetShopCollectionArgs struct {
-	ID     int64
-	ShopID int64
+	ID     dot.ID
+	ShopID dot.ID
 }
 
 type ShopCollectionsResponse struct {
@@ -193,7 +194,7 @@ type ShopCollectionsResponse struct {
 //-- command --//
 
 type CreateShopProductArgs struct {
-	ShopID int64
+	ShopID dot.ID
 
 	Code      string
 	Name      string
@@ -204,20 +205,20 @@ type CreateShopProductArgs struct {
 	PriceInfo
 	ProductType ProductType
 	MetaFields  []*MetaField
-	BrandID     int64
+	BrandID     dot.ID
 }
 
 type CreateShopCategoryArgs struct {
-	ID       int64
-	ShopID   int64
-	ParentID int64
+	ID       dot.ID
+	ShopID   dot.ID
+	ParentID dot.ID
 	Name     string
 	Status   int
 }
 
 type UpdateShopProductInfoArgs struct {
-	ShopID    int64
-	ProductID int64
+	ShopID    dot.ID
+	ProductID dot.ID
 
 	Code        NullString
 	Name        NullString
@@ -229,27 +230,27 @@ type UpdateShopProductInfoArgs struct {
 	CostPrice   NullInt32
 	ListPrice   NullInt32
 	RetailPrice NullInt32
-	BrandID     NullInt64
+	BrandID     NullID
 	ProductType ProductType
-	CategoryID  int64
+	CategoryID  dot.ID
 }
 
 type UpdateShopProductCategoryArgs struct {
-	CategoryID int64
-	ShopID     int64
-	ProductID  int64
+	CategoryID dot.ID
+	ShopID     dot.ID
+	ProductID  dot.ID
 }
 
 type UpdateShopCategoryArgs struct {
-	ID       int64
+	ID       dot.ID
 	Name     NullString
-	ShopID   int64
-	ParentID int64
+	ShopID   dot.ID
+	ParentID dot.ID
 }
 
 type UpdateShopCollectionArgs struct {
-	ID     int64
-	ShopID int64
+	ID     dot.ID
+	ShopID dot.ID
 
 	Name        NullString
 	Description NullString
@@ -258,8 +259,8 @@ type UpdateShopCollectionArgs struct {
 }
 
 type CreateShopCollectionArgs struct {
-	ID     int64
-	ShopID int64
+	ID     dot.ID
+	ShopID dot.ID
 
 	Name        string
 	Description string
@@ -268,13 +269,13 @@ type CreateShopCollectionArgs struct {
 }
 
 type DeleteShopCategoryArgs struct {
-	ID     int64
-	ShopID int64
+	ID     dot.ID
+	ShopID dot.ID
 }
 
 type CreateShopVariantArgs struct {
-	ShopID    int64
-	ProductID int64
+	ShopID    dot.ID
+	ProductID dot.ID
 
 	Code       string
 	Name       string
@@ -286,8 +287,8 @@ type CreateShopVariantArgs struct {
 }
 
 type UpdateShopVariantInfoArgs struct {
-	ShopID    int64
-	VariantID int64
+	ShopID    dot.ID
+	VariantID dot.ID
 
 	Code         NullString
 	Name         NullString
@@ -301,69 +302,69 @@ type UpdateShopVariantInfoArgs struct {
 }
 
 type UpdateStatusArgs struct {
-	IDs    []int64
-	ShopID int64
+	IDs    []dot.ID
+	ShopID dot.ID
 	Status int16
 }
 
 type UpdateImagesArgs struct {
-	ID      int64
-	ShopID  int64
+	ID      dot.ID
+	ShopID  dot.ID
 	Updates []*meta.UpdateSet
 }
 
 type UpdateShopProductMetaFieldsArgs struct {
-	ID         int64
-	ShopID     int64
+	ID         dot.ID
+	ShopID     dot.ID
 	MetaFields []*MetaField
 }
 
 type UpdateShopVariantAttributes struct {
-	ShopID     int64
-	VariantID  int64
+	ShopID     dot.ID
+	VariantID  dot.ID
 	Attributes Attributes
 }
 
 type AddShopProductCollectionArgs struct {
-	ProductID     int64
-	ShopID        int64
-	CollectionIDs []int64
+	ProductID     dot.ID
+	ShopID        dot.ID
+	CollectionIDs []dot.ID
 }
 
 type RemoveShopProductColelctionArgs struct {
-	ProductID     int64
-	ShopID        int64
-	CollectionIDs []int64
+	ProductID     dot.ID
+	ShopID        dot.ID
+	CollectionIDs []dot.ID
 }
 
 type ValidSupplierIDEvent struct {
-	SupplierID int64
-	ShopID     int64
+	SupplierID dot.ID
+	ShopID     dot.ID
 }
 
 type RemoveShopProductCategoryArgs struct {
-	ProductID int64
-	ShopID    int64
+	ProductID dot.ID
+	ShopID    dot.ID
 }
 
 // +convert:create=ShopBrand
 type CreateBrandArgs struct {
-	ShopID      int64
+	ShopID      dot.ID
 	BrandName   string
 	Description string
 }
 
 // +convert:update=ShopBrand
 type UpdateBrandArgs struct {
-	ShopID      int64
-	ID          int64
+	ShopID      dot.ID
+	ID          dot.ID
 	BrandName   string
 	Description string
 }
 
 type ShopBrand struct {
-	ID     int64
-	ShopID int64
+	ID     dot.ID
+	ShopID dot.ID
 
 	BrandName   string
 	Description string
@@ -380,20 +381,20 @@ type ListBrandsResult struct {
 }
 
 type GetVariantsBySupplierIDResponse struct {
-	ShopID     int64
-	SupplierID int64
-	VariantIDs []int64
+	ShopID     dot.ID
+	SupplierID dot.ID
+	VariantIDs []dot.ID
 }
 
 type GetSuppliersByVariantIDResponse struct {
-	ShopID      int64
-	VariantID   int64
-	SupplierIDs []int64
+	ShopID      dot.ID
+	VariantID   dot.ID
+	SupplierIDs []dot.ID
 }
 
 // +convert:create=ShopVariantSupplier
 type CreateVariantSupplier struct {
-	ShopID     int64
-	SupplierID int64
-	VariantID  int64
+	ShopID     dot.ID
+	SupplierID dot.ID
+	VariantID  dot.ID
 }

@@ -7,6 +7,7 @@ import (
 	cc "etop.vn/backend/pkg/common/config"
 	"etop.vn/backend/pkg/etop/model"
 	ghtkclient "etop.vn/backend/pkg/integration/shipping/ghtk/client"
+	"etop.vn/capi/dot"
 )
 
 type Config struct {
@@ -56,7 +57,7 @@ type Connection struct {
 }
 
 type CalcShippingFeeCommand struct {
-	ArbitraryID int64 // This is provided as a seed, for stable randomization
+	ArbitraryID dot.ID // This is provided as a seed, for stable randomization
 
 	FromDistrictCode string
 	ToDistrictCode   string

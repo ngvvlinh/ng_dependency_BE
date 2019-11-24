@@ -27,8 +27,6 @@ require (
 	github.com/go-telegram-bot-api/telegram-bot-api v4.6.4+incompatible
 	github.com/go-test/deep v1.0.4
 	github.com/go-xorm/builder v0.3.4
-	github.com/gogo/protobuf v1.3.1
-	github.com/golang/protobuf v1.3.2
 	github.com/gorilla/schema v1.1.0
 	github.com/jteeuwen/go-bindata v3.0.7+incompatible
 	github.com/julienschmidt/httprouter v1.3.0

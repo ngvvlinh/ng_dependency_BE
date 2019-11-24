@@ -11,6 +11,7 @@ import (
 	orderconvert "etop.vn/backend/com/main/ordering/convert"
 	shipnowmodel "etop.vn/backend/com/main/shipnow/model"
 	"etop.vn/backend/pkg/etop/model"
+	"etop.vn/capi/dot"
 )
 
 func CarrierToModel(in carrier.Carrier) shipnowmodel.Carrier {
@@ -53,7 +54,7 @@ func ShipnowToModel(in *shipnow.ShipnowFulfillment) (out *shipnowmodel.ShipnowFu
 		CancelReason:               in.CancelReason,
 		ShippingServiceDescription: in.ShippingServiceDescription,
 	}
-	var orderIDs []int64
+	var orderIDs []dot.ID
 	for _, point := range in.DeliveryPoints {
 		if point.OrderId == 0 {
 			continue

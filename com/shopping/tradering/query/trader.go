@@ -12,6 +12,7 @@ import (
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/cmsql"
+	"etop.vn/capi/dot"
 )
 
 var _ tradering.QueryService = &TraderQuery{}
@@ -47,7 +48,7 @@ func (q *TraderQuery) GetTraderByID(
 }
 
 func (q *TraderQuery) GetTraderInfoByID(
-	ctx context.Context, ID, ShopID int64,
+	ctx context.Context, ID, ShopID dot.ID,
 ) (*tradering.ShopTrader, error) {
 	var fullName, phone string
 	trader, err := q.store(ctx).ID(ID).ShopID(ShopID).GetTrader()

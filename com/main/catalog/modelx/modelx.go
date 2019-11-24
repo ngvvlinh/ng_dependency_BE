@@ -4,12 +4,13 @@ import (
 	"etop.vn/api/main/catalog"
 	catalogmodel "etop.vn/backend/com/main/catalog/model"
 	"etop.vn/backend/pkg/etop/model"
+	"etop.vn/capi/dot"
 )
 
 // deprecated
 type GetShopVariantQuery struct {
-	ShopID    int64
-	VariantID int64
+	ShopID    dot.ID
+	VariantID dot.ID
 
 	ShopVariantStatus *int
 
@@ -18,8 +19,8 @@ type GetShopVariantQuery struct {
 
 // deprecated
 type RemoveShopVariantsCommand struct {
-	ShopID int64
-	IDs    []int64
+	ShopID dot.ID
+	IDs    []dot.ID
 
 	Result struct {
 		Removed int
@@ -28,7 +29,7 @@ type RemoveShopVariantsCommand struct {
 
 // deprecated
 type UpdateShopVariantCommand struct {
-	ShopID     int64
+	ShopID     dot.ID
 	Variant    *catalogmodel.ShopVariant
 	CostPrice  int32
 	Code       string
@@ -39,8 +40,8 @@ type UpdateShopVariantCommand struct {
 
 // deprecated
 type AddShopProductsCommand struct {
-	ShopID int64
-	IDs    []int64
+	ShopID dot.ID
+	IDs    []dot.ID
 
 	Result struct {
 		Products []*catalogmodel.ShopProduct
@@ -50,8 +51,8 @@ type AddShopProductsCommand struct {
 
 // deprecated
 type RemoveShopProductsCommand struct {
-	ShopID int64
-	IDs    []int64
+	ShopID dot.ID
+	IDs    []dot.ID
 
 	Result struct {
 		Removed int
@@ -60,7 +61,7 @@ type RemoveShopProductsCommand struct {
 
 // deprecated
 type UpdateShopProductCommand struct {
-	ShopID  int64
+	ShopID  dot.ID
 	Product *catalogmodel.ShopProduct
 	Code    string
 
@@ -69,8 +70,8 @@ type UpdateShopProductCommand struct {
 
 // deprecated
 type UpdateShopProductsTagsCommand struct {
-	ShopID     int64
-	ProductIDs []int64
+	ShopID     dot.ID
+	ProductIDs []dot.ID
 
 	Update *model.UpdateListRequest
 
@@ -81,8 +82,8 @@ type UpdateShopProductsTagsCommand struct {
 
 // deprecated
 type DeprecatedCreateVariantCommand struct {
-	ShopID    int64
-	ProductID int64
+	ShopID    dot.ID
+	ProductID dot.ID
 	// In `Dép Adidas Adilette Slides - Full Đỏ`, product_name is "Dép Adidas Adilette Slides"
 	ProductName string
 	// In `Dép Adidas Adilette Slides - Full Đỏ`, name is "Full Đỏ"
@@ -111,18 +112,18 @@ type DeprecatedCreateVariantCommand struct {
 
 // deprecated
 type CreateShopCategoryCommand struct {
-	ShopID   int64
+	ShopID   dot.ID
 	Name     string
-	ParentID int64
+	ParentID dot.ID
 
 	Result *catalogmodel.ShopCategory
 }
 
 // deprecated
 type UpdateProductsShopCategoryCommand struct {
-	CategoryID int64
-	ProductIDs []int64
-	ShopID     int64
+	CategoryID dot.ID
+	ProductIDs []dot.ID
+	ShopID     dot.ID
 
 	Result struct {
 		Updated int
@@ -131,16 +132,16 @@ type UpdateProductsShopCategoryCommand struct {
 
 // deprecated
 type GetShopCategoryQuery struct {
-	ShopID     int64
-	CategoryID int64
+	ShopID     dot.ID
+	CategoryID dot.ID
 
 	Result *catalogmodel.ShopCategory
 }
 
 // deprecated
 type GetProductSourceCategoriesQuery struct {
-	ShopID int64
-	IDs    []int64
+	ShopID dot.ID
+	IDs    []dot.ID
 
 	Result struct {
 		Categories []*catalogmodel.ShopCategory
@@ -149,9 +150,9 @@ type GetProductSourceCategoriesQuery struct {
 
 // deprecated
 type UpdateShopCategoryCommand struct {
-	ID       int64
-	ShopID   int64
-	ParentID int64
+	ID       dot.ID
+	ShopID   dot.ID
+	ParentID dot.ID
 	Name     string
 
 	Result *catalogmodel.ShopCategory
@@ -159,8 +160,8 @@ type UpdateShopCategoryCommand struct {
 
 // deprecated
 type RemoveShopCategoryCommand struct {
-	ID     int64
-	ShopID int64
+	ID     dot.ID
+	ShopID dot.ID
 
 	Result struct {
 		Removed int

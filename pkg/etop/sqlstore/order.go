@@ -20,6 +20,8 @@ import (
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/gencode"
 	"etop.vn/backend/pkg/etop/model"
+	"etop.vn/capi/dot"
+	"etop.vn/capi/util"
 	"etop.vn/common/l"
 	"etop.vn/common/xerrors"
 )
@@ -231,8 +233,8 @@ func GetOrders(ctx context.Context, query *ordermodelx.GetOrdersQuery) error {
 		query.Result.Total = int(total)
 	}
 
-	orderIds := make([]int64, len(query.Result.Orders))
-	shopIdsMap := make(map[int64]int64)
+	orderIds := make([]dot.ID, len(query.Result.Orders))
+	shopIdsMap := make(map[dot.ID]dot.ID)
 	for i, o := range query.Result.Orders {
 		orderIds[i] = o.ID
 		shopIdsMap[o.ShopID] = o.ShopID
@@ -247,16 +249,16 @@ func GetOrders(ctx context.Context, query *ordermodelx.GetOrdersQuery) error {
 	var shipnows []*shipnowmodel.ShipnowFulfillment
 	if err := x.Table("shipnow_fulfillment").
 		Where("status != ?", model.S5Negative).
-		Where("order_ids && ?", pq.Int64Array(orderIds)).
+		Where("order_ids && ?", pq.Int64Array(util.IDsToInt64(orderIds))).
 		Find((*shipnowmodel.ShipnowFulfillments)(&shipnows)); err != nil {
 		return err
 	}
 
-	orderShipments := make(map[int64][]*shipmodel.Fulfillment)
+	orderShipments := make(map[dot.ID][]*shipmodel.Fulfillment)
 	for _, ffm := range fulfillments {
 		orderShipments[ffm.OrderID] = append(orderShipments[ffm.OrderID], ffm)
 	}
-	orderShipnows := make(map[int64][]*shipnow.ShipnowFulfillment)
+	orderShipnows := make(map[dot.ID][]*shipnow.ShipnowFulfillment)
 	for _, ffm := range shipnows {
 		for _, orderID := range ffm.OrderIDs {
 			sn := shipnowconvert.Shipnow(ffm)
@@ -265,7 +267,7 @@ func GetOrders(ctx context.Context, query *ordermodelx.GetOrdersQuery) error {
 	}
 
 	// getShop
-	shopIds := make([]int64, 0, len(shopIdsMap))
+	shopIds := make([]dot.ID, 0, len(shopIdsMap))
 	for _, shopId := range shopIdsMap {
 		shopIds = append(shopIds, shopId)
 	}
@@ -557,7 +559,7 @@ func CreateOrders(ctx context.Context, cmd *ordermodelx.CreateOrdersCommand) err
 	return nil
 }
 
-func generateShopCode(ctx context.Context, shopID int64) (*model.Shop, error) {
+func generateShopCode(ctx context.Context, shopID dot.ID) (*model.Shop, error) {
 	queryShop := &model.GetShopQuery{
 		ShopID: shopID,
 	}
@@ -1137,7 +1139,7 @@ func UpdateFulfillmentsShippingState(ctx context.Context, cmd *shipmodelx.Update
 		Find((*shipmodel.Fulfillments)(&ffms)); err != nil {
 		return err
 	}
-	ffmsMap := make(map[int64]*shipmodel.Fulfillment)
+	ffmsMap := make(map[dot.ID]*shipmodel.Fulfillment)
 	for _, ffm := range ffms {
 		ffmsMap[ffm.ID] = ffm
 	}

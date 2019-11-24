@@ -11,6 +11,7 @@ import (
 	"etop.vn/backend/pkg/common/conversion"
 	"etop.vn/backend/pkg/common/sq"
 	"etop.vn/backend/pkg/common/sqlstore"
+	"etop.vn/capi/dot"
 )
 
 var scheme = conversion.Build(convert.RegisterConversions)
@@ -55,27 +56,27 @@ func (s *VariantSupplierStore) Filters(filters meta.Filters) *VariantSupplierSto
 	return s
 }
 
-func (s *VariantSupplierStore) VariantID(variantID int64) *VariantSupplierStore {
+func (s *VariantSupplierStore) VariantID(variantID dot.ID) *VariantSupplierStore {
 	s.preds = append(s.preds, s.ft.ByVariantID(variantID))
 	return s
 }
 
-func (s *VariantSupplierStore) VariantIDs(variantIDs ...int64) *VariantSupplierStore {
+func (s *VariantSupplierStore) VariantIDs(variantIDs ...dot.ID) *VariantSupplierStore {
 	s.preds = append(s.preds, sq.PrefixedIn(&s.ft.prefix, "variant_id", variantIDs))
 	return s
 }
 
-func (s *VariantSupplierStore) SupplierID(supplierID int64) *VariantSupplierStore {
+func (s *VariantSupplierStore) SupplierID(supplierID dot.ID) *VariantSupplierStore {
 	s.preds = append(s.preds, s.ft.BySupplierID(supplierID))
 	return s
 }
 
-func (s *VariantSupplierStore) SupplierIDs(supplierIDs ...int64) *VariantSupplierStore {
+func (s *VariantSupplierStore) SupplierIDs(supplierIDs ...dot.ID) *VariantSupplierStore {
 	s.preds = append(s.preds, sq.PrefixedIn(&s.ft.prefix, "Supplier_id", supplierIDs))
 	return s
 }
 
-func (s *VariantSupplierStore) ShopID(id int64) *VariantSupplierStore {
+func (s *VariantSupplierStore) ShopID(id dot.ID) *VariantSupplierStore {
 	s.preds = append(s.preds, s.ft.ByShopID(id))
 	return s
 }

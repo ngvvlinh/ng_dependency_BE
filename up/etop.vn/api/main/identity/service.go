@@ -2,6 +2,8 @@ package identity
 
 import (
 	"context"
+
+	"etop.vn/capi/dot"
 )
 
 // +gen:api
@@ -34,7 +36,7 @@ type Aggregate interface {
 
 type QueryService interface {
 	// -- Shop -- //
-	GetShopByID(ctx context.Context, ID int64) (*Shop, error)
+	GetShopByID(ctx context.Context, ID dot.ID) (*Shop, error)
 
 	// -- User -- //
 	GetUserByID(context.Context, *GetUserByIDQueryArgs) (*User, error)
@@ -49,9 +51,9 @@ type QueryService interface {
 	GetExternalAccountAhamoveByExternalID(context.Context, *GetExternalAccountAhamoveByExternalIDQueryArgs) (*ExternalAccountAhamove, error)
 
 	// -- Affiliate -- //
-	GetAffiliateByID(ctx context.Context, ID int64) (*Affiliate, error)
+	GetAffiliateByID(ctx context.Context, ID dot.ID) (*Affiliate, error)
 
-	GetAffiliateWithPermission(ctx context.Context, AffiliateID int64, UserID int64) (*GetAffiliateWithPermissionResult, error)
+	GetAffiliateWithPermission(ctx context.Context, AffiliateID dot.ID, UserID dot.ID) (*GetAffiliateWithPermissionResult, error)
 
 	GetAffiliatesByIDs(context.Context, *GetAffiliatesByIDsArgs) ([]*Affiliate, error)
 
@@ -60,11 +62,11 @@ type QueryService interface {
 
 //-- queries --//
 type GetUserByIDQueryArgs struct {
-	UserID int64
+	UserID dot.ID
 }
 
 type GetExternalAccountAhamoveArgs struct {
-	OwnerID int64
+	OwnerID dot.ID
 	Phone   string
 }
 
@@ -74,14 +76,14 @@ type GetExternalAccountAhamoveByExternalIDQueryArgs struct {
 
 //-- commands --//
 type CreateExternalAccountAhamoveArgs struct {
-	OwnerID int64 // user id
+	OwnerID dot.ID // user id
 	Phone   string
 	Name    string
 	Address string
 }
 
 type RequestVerifyExternalAccountAhamoveArgs struct {
-	OwnerID int64
+	OwnerID dot.ID
 	Phone   string
 }
 
@@ -89,12 +91,12 @@ type RequestVerifyExternalAccountAhamoveResult struct {
 }
 
 type UpdateVerifiedExternalAccountAhamoveArgs struct {
-	OwnerID int64
+	OwnerID dot.ID
 	Phone   string
 }
 
 type UpdateExternalAccountAhamoveVerificationArgs struct {
-	OwnerID             int64
+	OwnerID             dot.ID
 	Phone               string
 	IDCardFrontImg      string
 	IDCardBackImg       string
@@ -106,12 +108,12 @@ type UpdateExternalAccountAhamoveVerificationArgs struct {
 }
 
 type UpdateUserReferenceUserIDArgs struct {
-	UserID       int64
+	UserID       dot.ID
 	RefUserPhone string
 }
 
 type UpdateUserReferenceSaleIDArgs struct {
-	UserID       int64
+	UserID       dot.ID
 	RefSalePhone string
 }
 
@@ -121,16 +123,16 @@ type GetAffiliateWithPermissionResult struct {
 }
 
 type GetAffiliatesByIDsArgs struct {
-	AffiliateIDs []int64
+	AffiliateIDs []dot.ID
 }
 
 type GetAffiliatesByOwnerIDArgs struct {
-	ID int64
+	ID dot.ID
 }
 
 type CreateAffiliateArgs struct {
 	Name        string
-	OwnerID     int64
+	OwnerID     dot.ID
 	Phone       string
 	Email       string
 	IsTest      bool
@@ -138,20 +140,20 @@ type CreateAffiliateArgs struct {
 }
 
 type UpdateAffiliateInfoArgs struct {
-	ID      int64
-	OwnerID int64
+	ID      dot.ID
+	OwnerID dot.ID
 	Phone   string
 	Email   string
 	Name    string
 }
 
 type DeleteAffiliateArgs struct {
-	ID      int64
-	OwnerID int64
+	ID      dot.ID
+	OwnerID dot.ID
 }
 
 type UpdateAffiliateBankAccountArgs struct {
-	ID          int64
-	OwnerID     int64
+	ID          dot.ID
+	OwnerID     dot.ID
 	BankAccount *BankAccount
 }

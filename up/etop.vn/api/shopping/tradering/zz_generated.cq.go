@@ -9,6 +9,7 @@ import (
 
 	shopping "etop.vn/api/shopping"
 	capi "etop.vn/capi"
+	dot "etop.vn/capi/dot"
 )
 
 type Command interface{ command() }
@@ -38,8 +39,8 @@ func (c QueryBus) DispatchAll(ctx context.Context, msgs ...Query) error {
 }
 
 type DeleteTraderCommand struct {
-	ID     int64
-	ShopID int64
+	ID     dot.ID
+	ShopID dot.ID
 
 	Result int `json:"-"`
 }
@@ -50,8 +51,8 @@ func (h AggregateHandler) HandleDeleteTrader(ctx context.Context, msg *DeleteTra
 }
 
 type GetTraderByIDQuery struct {
-	ID     int64
-	ShopID int64
+	ID     dot.ID
+	ShopID dot.ID
 
 	Result *ShopTrader `json:"-"`
 }
@@ -62,8 +63,8 @@ func (h QueryServiceHandler) HandleGetTraderByID(ctx context.Context, msg *GetTr
 }
 
 type GetTraderInfoByIDQuery struct {
-	ID     int64
-	ShopID int64
+	ID     dot.ID
+	ShopID dot.ID
 
 	Result *ShopTrader `json:"-"`
 }
@@ -74,8 +75,8 @@ func (h QueryServiceHandler) HandleGetTraderInfoByID(ctx context.Context, msg *G
 }
 
 type ListTradersByIDsQuery struct {
-	IDs    []int64
-	ShopID int64
+	IDs    []dot.ID
+	ShopID dot.ID
 
 	Result *TradersResponse `json:"-"`
 }
@@ -94,7 +95,7 @@ func (q *ListTradersByIDsQuery) query()  {}
 
 // implement conversion
 
-func (q *DeleteTraderCommand) GetArgs(ctx context.Context) (_ context.Context, ID int64, shopID int64) {
+func (q *DeleteTraderCommand) GetArgs(ctx context.Context) (_ context.Context, ID dot.ID, shopID dot.ID) {
 	return ctx,
 		q.ID,
 		q.ShopID
@@ -113,7 +114,7 @@ func (q *GetTraderByIDQuery) SetIDQueryShopArg(args *shopping.IDQueryShopArg) {
 	q.ShopID = args.ShopID
 }
 
-func (q *GetTraderInfoByIDQuery) GetArgs(ctx context.Context) (_ context.Context, ID int64, ShopID int64) {
+func (q *GetTraderInfoByIDQuery) GetArgs(ctx context.Context) (_ context.Context, ID dot.ID, ShopID dot.ID) {
 	return ctx,
 		q.ID,
 		q.ShopID

@@ -15,6 +15,7 @@ import (
 	types3 "etop.vn/api/main/shipping/types"
 	meta "etop.vn/api/meta"
 	capi "etop.vn/capi"
+	dot "etop.vn/capi/dot"
 )
 
 type Command interface{ command() }
@@ -44,8 +45,8 @@ func (c QueryBus) DispatchAll(ctx context.Context, msgs ...Query) error {
 }
 
 type CancelShipnowFulfillmentCommand struct {
-	Id           int64
-	ShopId       int64
+	Id           dot.ID
+	ShopId       dot.ID
 	CancelReason string
 
 	Result *meta.Empty `json:"-"`
@@ -57,8 +58,8 @@ func (h AggregateHandler) HandleCancelShipnowFulfillment(ctx context.Context, ms
 }
 
 type ConfirmShipnowFulfillmentCommand struct {
-	Id     int64
-	ShopId int64
+	Id     dot.ID
+	ShopId dot.ID
 
 	Result *ShipnowFulfillment `json:"-"`
 }
@@ -69,9 +70,9 @@ func (h AggregateHandler) HandleConfirmShipnowFulfillment(ctx context.Context, m
 }
 
 type CreateShipnowFulfillmentCommand struct {
-	OrderIds            []int64
+	OrderIds            []dot.ID
 	Carrier             types.Carrier
-	ShopId              int64
+	ShopId              dot.ID
 	ShippingServiceCode string
 	ShippingServiceFee  int32
 	ShippingNote        string
@@ -87,8 +88,8 @@ func (h AggregateHandler) HandleCreateShipnowFulfillment(ctx context.Context, ms
 }
 
 type GetShipnowServicesCommand struct {
-	ShopId         int64
-	OrderIds       []int64
+	ShopId         dot.ID
+	OrderIds       []dot.ID
 	PickupAddress  *types1.Address
 	DeliveryPoints []*types2.DeliveryPoint
 
@@ -101,10 +102,10 @@ func (h AggregateHandler) HandleGetShipnowServices(ctx context.Context, msg *Get
 }
 
 type UpdateShipnowFulfillmentCommand struct {
-	Id                  int64
-	OrderIds            []int64
+	Id                  dot.ID
+	OrderIds            []dot.ID
 	Carrier             types.Carrier
-	ShopId              int64
+	ShopId              dot.ID
 	ShippingServiceCode string
 	ShippingServiceFee  int32
 	ShippingNote        string
@@ -120,7 +121,7 @@ func (h AggregateHandler) HandleUpdateShipnowFulfillment(ctx context.Context, ms
 }
 
 type UpdateShipnowFulfillmentCarrierInfoCommand struct {
-	Id                         int64
+	Id                         dot.ID
 	ShippingCode               string
 	ShippingState              types2.State
 	TotalFee                   int32
@@ -149,7 +150,7 @@ func (h AggregateHandler) HandleUpdateShipnowFulfillmentCarrierInfo(ctx context.
 }
 
 type UpdateShipnowFulfillmentStateCommand struct {
-	Id             int64
+	Id             dot.ID
 	SyncStatus     etop.Status4
 	Status         etop.Status5
 	ConfirmStatus  etop.Status3
@@ -166,8 +167,8 @@ func (h AggregateHandler) HandleUpdateShipnowFulfillmentState(ctx context.Contex
 }
 
 type GetShipnowFulfillmentQuery struct {
-	Id     int64
-	ShopId int64
+	Id     dot.ID
+	ShopId dot.ID
 
 	Result *GetShipnowFulfillmentQueryResult `json:"-"`
 }
@@ -189,7 +190,7 @@ func (h QueryServiceHandler) HandleGetShipnowFulfillmentByShippingCode(ctx conte
 }
 
 type GetShipnowFulfillmentsQuery struct {
-	ShopIds []int64
+	ShopIds []dot.ID
 	Paging  *meta.Paging
 	Filters []*meta.Filter
 

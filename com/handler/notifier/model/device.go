@@ -1,18 +1,20 @@
 package model
 
+import "etop.vn/capi/dot"
+
 type GetDeviceArgs struct {
-	UserID           int64
+	UserID           dot.ID
 	ExternalDeviceID string
 }
 
 type GetDevicesArgs struct {
-	UserID            int64
+	UserID            dot.ID
 	ExternalServiceID int
 }
 
 type CreateDeviceArgs struct {
-	UserID            int64
-	AccountID         int64
+	UserID            dot.ID
+	AccountID         dot.ID
 	DeviceID          string
 	DeviceName        string
 	ExternalDeviceID  string
@@ -21,7 +23,7 @@ type CreateDeviceArgs struct {
 }
 
 type UpdateDeviceArgs struct {
-	UserID           int64
+	UserID           dot.ID
 	ExternalDeviceID string
 	Config           *DeviceConfig
 }

@@ -9,6 +9,7 @@ import (
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/cmsql"
+	"etop.vn/capi/dot"
 )
 
 var _ st.QueryService = &StocktakeQuery{}
@@ -29,7 +30,7 @@ func (q *StocktakeQuery) MessageBus() st.QueryBus {
 	return st.NewQueryServiceHandler(q).RegisterHandlers(b)
 }
 
-func (q *StocktakeQuery) GetStocktakeByID(ctx context.Context, id int64, shopID int64) (*st.ShopStocktake, error) {
+func (q *StocktakeQuery) GetStocktakeByID(ctx context.Context, id dot.ID, shopID dot.ID) (*st.ShopStocktake, error) {
 	if shopID == 0 {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing value requirement")
 	}
@@ -40,7 +41,7 @@ func (q *StocktakeQuery) GetStocktakeByID(ctx context.Context, id int64, shopID 
 	return result, err
 }
 
-func (q *StocktakeQuery) GetStocktakesByIDs(ctx context.Context, ids []int64, shopID int64) ([]*st.ShopStocktake, error) {
+func (q *StocktakeQuery) GetStocktakesByIDs(ctx context.Context, ids []dot.ID, shopID dot.ID) ([]*st.ShopStocktake, error) {
 	if shopID == 0 {
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Missing value requirement")
 	}

@@ -13,6 +13,7 @@ import (
 	"etop.vn/backend/pkg/common/idemp"
 	"etop.vn/backend/pkg/common/sq/core"
 	"etop.vn/backend/pkg/etop/model"
+	"etop.vn/capi/dot"
 	"etop.vn/common/l"
 )
 
@@ -67,7 +68,7 @@ func summarizeFulfillments(ctx context.Context, query *model.SummarizeFulfillmen
 		return query, err
 	}
 
-	moneyTransactionIDs := make([]int64, len(moneyTransactions))
+	moneyTransactionIDs := make([]dot.ID, len(moneyTransactions))
 	for i, mt := range moneyTransactions {
 		moneyTransactionIDs[i] = mt.ID
 	}
@@ -87,7 +88,7 @@ func summarizeFulfillments(ctx context.Context, query *model.SummarizeFulfillmen
 	return query, nil
 }
 
-func execQuery(ctx context.Context, tables []*Table, shopID int64) error {
+func execQuery(ctx context.Context, tables []*Table, shopID dot.ID) error {
 	builder := NewSummaryQueryBuilder("fulfillment")
 	for _, table := range tables {
 		for i := range table.Data {

@@ -19,6 +19,7 @@ import (
 	"etop.vn/backend/pkg/integration/shipnow/ahamove"
 	"etop.vn/backend/pkg/integration/shipnow/ahamove/client"
 	"etop.vn/backend/pkg/integration/shipping"
+	"etop.vn/capi/dot"
 	"etop.vn/common/l"
 )
 
@@ -186,7 +187,7 @@ func (wh *Webhook) ProcessOrder(ctx context.Context, point *client.DeliveryPoint
 	// => release order (ETOP)
 	if point.Status == "" && shippingState == shipnowtypes.StateCancelled {
 		cmd := &ordering.ReleaseOrdersForFfmCommand{
-			OrderIDs: []int64{orderID},
+			OrderIDs: []dot.ID{orderID},
 		}
 		if err := wh.order.Dispatch(ctx, cmd); err != nil {
 			return err

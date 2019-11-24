@@ -41,12 +41,12 @@ func (c QueryBus) DispatchAll(ctx context.Context, msgs ...Query) error {
 }
 
 type CreateLedgerCommand struct {
-	ShopID      int64
+	ShopID      dot.ID
 	Name        string
 	BankAccount *identity.BankAccount
 	Note        string
 	Type        LedgerType
-	CreatedBy   int64
+	CreatedBy   dot.ID
 
 	Result *ShopLedger `json:"-"`
 }
@@ -57,8 +57,8 @@ func (h AggregateHandler) HandleCreateLedger(ctx context.Context, msg *CreateLed
 }
 
 type DeleteLedgerCommand struct {
-	ID     int64
-	ShopID int64
+	ID     dot.ID
+	ShopID dot.ID
 
 	Result int `json:"-"`
 }
@@ -69,8 +69,8 @@ func (h AggregateHandler) HandleDeleteLedger(ctx context.Context, msg *DeleteLed
 }
 
 type UpdateLedgerCommand struct {
-	ID          int64
-	ShopID      int64
+	ID          dot.ID
+	ShopID      dot.ID
 	Name        dot.NullString
 	BankAccount *identity.BankAccount
 	Note        dot.NullString
@@ -85,7 +85,7 @@ func (h AggregateHandler) HandleUpdateLedger(ctx context.Context, msg *UpdateLed
 
 type GetLedgerByAccountNumberQuery struct {
 	AccountNumber string
-	ShopID        int64
+	ShopID        dot.ID
 
 	Result *ShopLedger `json:"-"`
 }
@@ -96,8 +96,8 @@ func (h QueryServiceHandler) HandleGetLedgerByAccountNumber(ctx context.Context,
 }
 
 type GetLedgerByIDQuery struct {
-	ID     int64
-	ShopID int64
+	ID     dot.ID
+	ShopID dot.ID
 
 	Result *ShopLedger `json:"-"`
 }
@@ -108,7 +108,7 @@ func (h QueryServiceHandler) HandleGetLedgerByID(ctx context.Context, msg *GetLe
 }
 
 type ListLedgersQuery struct {
-	ShopID  int64
+	ShopID  dot.ID
 	Paging  meta.Paging
 	Filters meta.Filters
 
@@ -121,8 +121,8 @@ func (h QueryServiceHandler) HandleListLedgers(ctx context.Context, msg *ListLed
 }
 
 type ListLedgersByIDsQuery struct {
-	ShopID int64
-	IDs    []int64
+	ShopID dot.ID
+	IDs    []dot.ID
 
 	Result *ShopLedgersResponse `json:"-"`
 }
@@ -134,7 +134,7 @@ func (h QueryServiceHandler) HandleListLedgersByIDs(ctx context.Context, msg *Li
 
 type ListLedgersByTypeQuery struct {
 	LedgerType LedgerType
-	ShopID     int64
+	ShopID     dot.ID
 
 	Result *ShopLedgersResponse `json:"-"`
 }
@@ -178,7 +178,7 @@ func (q *CreateLedgerCommand) SetCreateLedgerArgs(args *CreateLedgerArgs) {
 	q.CreatedBy = args.CreatedBy
 }
 
-func (q *DeleteLedgerCommand) GetArgs(ctx context.Context) (_ context.Context, ID int64, ShopID int64) {
+func (q *DeleteLedgerCommand) GetArgs(ctx context.Context) (_ context.Context, ID dot.ID, ShopID dot.ID) {
 	return ctx,
 		q.ID,
 		q.ShopID
@@ -203,7 +203,7 @@ func (q *UpdateLedgerCommand) SetUpdateLedgerArgs(args *UpdateLedgerArgs) {
 	q.Note = args.Note
 }
 
-func (q *GetLedgerByAccountNumberQuery) GetArgs(ctx context.Context) (_ context.Context, accountNumber string, shopID int64) {
+func (q *GetLedgerByAccountNumberQuery) GetArgs(ctx context.Context) (_ context.Context, accountNumber string, shopID dot.ID) {
 	return ctx,
 		q.AccountNumber,
 		q.ShopID
@@ -237,13 +237,13 @@ func (q *ListLedgersQuery) SetListQueryShopArgs(args *shopping.ListQueryShopArgs
 	q.Filters = args.Filters
 }
 
-func (q *ListLedgersByIDsQuery) GetArgs(ctx context.Context) (_ context.Context, shopID int64, IDs []int64) {
+func (q *ListLedgersByIDsQuery) GetArgs(ctx context.Context) (_ context.Context, shopID dot.ID, IDs []dot.ID) {
 	return ctx,
 		q.ShopID,
 		q.IDs
 }
 
-func (q *ListLedgersByTypeQuery) GetArgs(ctx context.Context) (_ context.Context, ledgerType LedgerType, shopID int64) {
+func (q *ListLedgersByTypeQuery) GetArgs(ctx context.Context) (_ context.Context, ledgerType LedgerType, shopID dot.ID) {
 	return ctx,
 		q.LedgerType,
 		q.ShopID

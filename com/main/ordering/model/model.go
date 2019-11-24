@@ -10,6 +10,7 @@ import (
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/validate"
 	"etop.vn/backend/pkg/etop/model"
+	"etop.vn/capi/dot"
 )
 
 //go:generate $ETOPDIR/backend/scripts/derive.sh
@@ -32,13 +33,13 @@ const (
 var _ = sqlgenOrder(&Order{})
 
 type Order struct {
-	ID         int64
-	ShopID     int64
+	ID         dot.ID
+	ShopID     dot.ID
 	Code       string
 	EdCode     string
-	ProductIDs []int64
-	VariantIDs []int64
-	PartnerID  int64
+	ProductIDs []dot.ID
+	VariantIDs []dot.ID
+	PartnerID  dot.ID
 
 	Currency      string
 	PaymentMethod string
@@ -96,7 +97,7 @@ type Order struct {
 	ShopNote        string
 	ShippingNote    string
 	OrderSourceType model.OrderSourceType
-	OrderSourceID   int64
+	OrderSourceID   dot.ID
 	ExternalOrderID string
 	ReferenceURL    string
 	ExternalURL     string
@@ -110,17 +111,17 @@ type Order struct {
 	CustomerNameNorm string
 	ProductNameNorm  string
 	FulfillmentType  FulfillType
-	FulfillmentIDs   []int64
+	FulfillmentIDs   []dot.ID
 	ExternalMeta     json.RawMessage
-	TradingShopID    int64
+	TradingShopID    dot.ID
 
 	// payment
 	PaymentStatus model.Status4
-	PaymentID     int64
+	PaymentID     dot.ID
 
 	ReferralMeta json.RawMessage
 
-	CustomerID int64
+	CustomerID dot.ID
 }
 
 func (m *Order) SelfURL(baseURL string, accType int) string {
@@ -341,11 +342,11 @@ type MetaField struct {
 var _ = sqlgenOrderLine(&OrderLine{})
 
 type OrderLine struct {
-	OrderID     int64  `json:"order_id"`
-	VariantID   int64  `json:"variant_id"`
+	OrderID     dot.ID `json:"order_id"`
+	VariantID   dot.ID `json:"variant_id"`
 	ProductName string `json:"product_name"`
-	ProductID   int64  `json:"product_id"`
-	ShopID      int64  `json:"shop_id"`
+	ProductID   dot.ID `json:"product_id"`
+	ShopID      dot.ID `json:"shop_id"`
 
 	Weight       int `json:"weight"`
 	Quantity     int `json:"quantity"`

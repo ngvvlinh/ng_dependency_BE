@@ -1141,7 +1141,7 @@
       "type": "object",
       "properties": {
         "id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         }
       }
@@ -1152,7 +1152,7 @@
         "ids": {
           "type": "array",
           "items": {
-            "type": "integer",
+            "type": "string",
             "format": "int64"
           }
         }
@@ -1314,7 +1314,7 @@
           "type": "string"
         },
         "id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "last_name": {
@@ -1376,7 +1376,7 @@
           "type": "string"
         },
         "id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "is_test": {
@@ -1397,7 +1397,7 @@
       "type": "object",
       "properties": {
         "account_id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "response": {
@@ -1854,11 +1854,11 @@
           "format": "date-time"
         },
         "id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "invited_by": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "roles": {
@@ -1868,7 +1868,7 @@
           }
         },
         "shop_id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "status": {
@@ -1887,7 +1887,7 @@
       "type": "object",
       "properties": {
         "account_id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "invitee_identifier": {
@@ -1918,7 +1918,7 @@
           }
         },
         "id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "image_url": {
@@ -1942,7 +1942,7 @@
       "type": "object",
       "properties": {
         "account_id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "account_key": {
@@ -2014,7 +2014,7 @@
         "ids": {
           "type": "array",
           "items": {
-            "type": "integer",
+            "type": "string",
             "format": "int64"
           }
         }
@@ -2090,10 +2090,6 @@
         },
         "region": {
           "type": "string"
-        },
-        "region_code": {
-          "type": "integer",
-          "format": "int64"
         }
       }
     },
@@ -2101,7 +2097,7 @@
       "type": "object",
       "properties": {
         "id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "image_url": {
@@ -2179,7 +2175,7 @@
       "type": "object",
       "properties": {
         "account_id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "email": {
@@ -2229,7 +2225,7 @@
           "type": "string"
         },
         "id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "image_url": {
@@ -2248,22 +2244,22 @@
           "type": "string"
         },
         "owner_id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "phone": {
           "type": "string"
         },
         "product_source_id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "ship_from_address_id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "ship_to_address_id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "shipping_service_select_strategy": {
@@ -2310,7 +2306,7 @@
       "type": "object",
       "properties": {
         "account_id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "regenerate_tokens": {
@@ -2349,7 +2345,7 @@
           "type": "string"
         },
         "id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "last_name": {
@@ -2455,7 +2451,7 @@
       "type": "object",
       "properties": {
         "account_id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "url_slug": {
@@ -2496,7 +2492,7 @@
           "type": "string"
         },
         "id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "phone": {
@@ -2526,7 +2522,7 @@
       "type": "object",
       "properties": {
         "account_id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "account_name": {
@@ -2543,7 +2539,7 @@
           "format": "date-time"
         },
         "disabled_by": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "invitation_accepted_at": {
@@ -2559,7 +2555,7 @@
           "format": "date-time"
         },
         "invitation_sent_by": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "permission": {
@@ -2578,7 +2574,7 @@
           "type": "string"
         },
         "user_id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "user_short_name": {

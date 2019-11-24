@@ -3,11 +3,7 @@ package meta
 import (
 	"bytes"
 	"errors"
-	"time"
 
-	"github.com/golang/protobuf/jsonpb"
-	pbtypes "github.com/golang/protobuf/ptypes"
-	pbtimestamp "github.com/golang/protobuf/ptypes/timestamp"
 	uuid "github.com/satori/go.uuid"
 )
 
@@ -48,49 +44,4 @@ func (id *UUID) UnmarshalJSON(src []byte) error {
 		return nil
 	}
 	return errors.New("invalid uuid format")
-}
-
-func (id UUID) MarshalJSONPB(_ *jsonpb.Marshaler) ([]byte, error) {
-	return id.MarshalJSON()
-}
-
-func (id *UUID) UnmarshalJSONPB(_ *jsonpb.Unmarshaler, src []byte) error {
-	return id.UnmarshalJSON(src)
-}
-
-func (t *Timestamp) ToTime() time.Time {
-	if t == nil {
-		return time.Time{}
-	}
-	pbt := &pbtimestamp.Timestamp{
-		Seconds: t.Seconds,
-		Nanos:   t.Nanos,
-	}
-	result, _ := pbtypes.Timestamp(pbt)
-	return result
-}
-
-func PbTime(t time.Time) *Timestamp {
-	if t.Year() < 1990 {
-		return nil
-	}
-	ts, _ := pbtypes.TimestampProto(t)
-	if ts == nil {
-		return nil
-	}
-	return &Timestamp{Seconds: ts.Seconds, Nanos: ts.Nanos}
-}
-
-func (t Timestamp) MarshalJSONPB(_ *jsonpb.Marshaler) ([]byte, error) {
-	return []byte(t.ToTime().Format(time.RFC3339Nano)), nil
-}
-
-func (t *Timestamp) UnmarshalJSONPB(m *jsonpb.Unmarshaler, src []byte) error {
-	var ts pbtimestamp.Timestamp
-	err := m.Unmarshal(bytes.NewReader(src), &ts)
-	if err != nil {
-		return err
-	}
-	*t = Timestamp{Seconds: ts.Seconds, Nanos: ts.Nanos}
-	return nil
 }

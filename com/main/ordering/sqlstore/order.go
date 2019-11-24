@@ -12,6 +12,7 @@ import (
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/cmsql"
 	"etop.vn/backend/pkg/common/sq"
+	"etop.vn/capi/dot"
 )
 
 type OrderStoreFactory func(context.Context) *OrderStore
@@ -33,27 +34,27 @@ type OrderStore struct {
 	preds []interface{}
 }
 
-func (s *OrderStore) ID(id int64) *OrderStore {
+func (s *OrderStore) ID(id dot.ID) *OrderStore {
 	s.preds = append(s.preds, s.ft.ByID(id))
 	return s
 }
 
-func (s *OrderStore) IDs(ids ...int64) *OrderStore {
+func (s *OrderStore) IDs(ids ...dot.ID) *OrderStore {
 	s.preds = append(s.preds, sq.PrefixedIn(&s.ft.prefix, "id", ids))
 	return s
 }
 
-func (s *OrderStore) ShopID(id int64) *OrderStore {
+func (s *OrderStore) ShopID(id dot.ID) *OrderStore {
 	s.preds = append(s.preds, s.ft.ByShopID(id))
 	return s
 }
 
-func (s *OrderStore) PartnerID(id int64) *OrderStore {
+func (s *OrderStore) PartnerID(id dot.ID) *OrderStore {
 	s.preds = append(s.preds, s.ft.ByPartnerID(id))
 	return s
 }
 
-func (s *OrderStore) CustomerID(id int64) *OrderStore {
+func (s *OrderStore) CustomerID(id dot.ID) *OrderStore {
 	s.preds = append(s.preds, s.ft.ByCustomerID(id))
 	return s
 }
@@ -63,7 +64,7 @@ func (s *OrderStore) Statuses(values []etop.Status5) *OrderStore {
 	return s
 }
 
-func (s *OrderStore) CustomerIDs(ids ...int64) *OrderStore {
+func (s *OrderStore) CustomerIDs(ids ...dot.ID) *OrderStore {
 	s.preds = append(s.preds, sq.PrefixedIn(&s.ft.prefix, "customer_id", ids))
 	return s
 }
@@ -78,7 +79,7 @@ func (s *OrderStore) Code(code string) *OrderStore {
 	return s
 }
 
-func (s *OrderStore) ExternalShopID(shopID int64, externalID string) *OrderStore {
+func (s *OrderStore) ExternalShopID(shopID dot.ID, externalID string) *OrderStore {
 	s.preds = append(s.preds,
 		s.ft.ByShopID(shopID),
 		s.ft.ByExternalOrderID(externalID),
@@ -86,7 +87,7 @@ func (s *OrderStore) ExternalShopID(shopID int64, externalID string) *OrderStore
 	return s
 }
 
-func (s *OrderStore) ExternalPartnerID(partnerID int64, externalID string) *OrderStore {
+func (s *OrderStore) ExternalPartnerID(partnerID dot.ID, externalID string) *OrderStore {
 	s.preds = append(s.preds,
 		s.ft.ByPartnerID(partnerID),
 		s.ft.ByExternalOrderID(externalID),
@@ -122,9 +123,9 @@ func (s *OrderStore) GetOrders(args *ordering.GetOrdersArgs) (orders []*ordering
 }
 
 type UpdateOrdersForReserveOrdersFfmArgs struct {
-	OrderIDs   []int64
+	OrderIDs   []dot.ID
 	Fulfill    ordertypes.Fulfill
-	FulfillIDs []int64
+	FulfillIDs []dot.ID
 }
 
 func (s *OrderStore) UpdateOrdersForReserveOrdersFfm(args UpdateOrdersForReserveOrdersFfmArgs) ([]*ordering.Order, error) {
@@ -164,7 +165,7 @@ func (s *OrderStore) ListOrders() ([]*model.Order, error) {
 }
 
 type UpdateOrdersForReleaseOrderFfmArgs struct {
-	OrderIDs []int64
+	OrderIDs []dot.ID
 }
 
 func (s *OrderStore) UpdateOrdersForReleaseOrdersFfm(args UpdateOrdersForReleaseOrderFfmArgs) error {
@@ -187,7 +188,7 @@ func (s *OrderStore) UpdateOrdersForReleaseOrdersFfm(args UpdateOrdersForRelease
 }
 
 type UpdateOrderShippingStatusArgs struct {
-	ID                        int64
+	ID                        dot.ID
 	FulfillmentShippingStatus etop.Status5
 	EtopPaymentStatus         etop.Status4
 
@@ -212,7 +213,7 @@ func (s *OrderStore) UpdateOrderShippingStatus(args UpdateOrderShippingStatusArg
 }
 
 type UpdateOrdersConfirmStatusArgs struct {
-	IDs           []int64
+	IDs           []dot.ID
 	ShopConfirm   etop.Status3
 	ConfirmStatus etop.Status3
 }
@@ -232,9 +233,9 @@ func (s *OrderStore) UpdateOrdersConfirmStatus(args UpdateOrdersConfirmStatusArg
 }
 
 type UpdateOrderPaymentInfoArgs struct {
-	ID            int64
+	ID            dot.ID
 	PaymentStatus etop.Status4
-	PaymentID     int64
+	PaymentID     dot.ID
 }
 
 func (s *OrderStore) UpdateOrderPaymentInfo(args UpdateOrderPaymentInfoArgs) error {

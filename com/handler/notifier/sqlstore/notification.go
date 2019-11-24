@@ -9,6 +9,7 @@ import (
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/cmsql"
 	etopmodel "etop.vn/backend/pkg/etop/model"
+	"etop.vn/capi/dot"
 )
 
 type NotificationStore struct {
@@ -66,7 +67,7 @@ func (s *NotificationStore) CreateNotifications(args *model.CreateNotificationsA
 
 	accountIDs := args.AccountIDs
 	if args.SendAll {
-		accountIDs = []int64{}
+		accountIDs = []dot.ID{}
 		deviceStore := NewDeviceStore(s.db)
 		userIDs, _err := deviceStore.GetAllUsers()
 		if _err != nil {
@@ -90,7 +91,7 @@ func (s *NotificationStore) CreateNotifications(args *model.CreateNotificationsA
 
 	for i, accountID := range accountIDs {
 		guard <- i
-		go func(aID int64) (_err error) {
+		go func(aID dot.ID) (_err error) {
 			defer func() {
 				<-guard
 				chCreate <- _err

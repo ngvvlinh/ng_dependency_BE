@@ -9,6 +9,7 @@ import (
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/cmsql"
+	"etop.vn/capi/dot"
 )
 
 var _ invitation.QueryService = &InvitationQuery{}
@@ -33,7 +34,7 @@ func (q *InvitationQuery) MessageBus() invitation.QueryBus {
 }
 
 func (q *InvitationQuery) GetInvitation(
-	ctx context.Context, ID int64,
+	ctx context.Context, ID dot.ID,
 ) (*invitation.Invitation, error) {
 	invitation, err := q.store(ctx).ID(ID).GetInvitation()
 	if err != nil {

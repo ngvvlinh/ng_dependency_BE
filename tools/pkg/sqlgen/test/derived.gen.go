@@ -10,6 +10,7 @@ import (
 	"etop.vn/backend/pkg/common/cmsql"
 	sq "etop.vn/backend/pkg/common/sq"
 	core "etop.vn/backend/pkg/common/sq/core"
+	"etop.vn/capi/dot"
 )
 
 var __sqlModels []interface{ SQLVerifySchema(db *cmsql.Database) }
@@ -2240,7 +2241,7 @@ func (m *Profile) SQLPopulate(items core.IFind) error {
 }
 
 func (m Profiles) SQLPopulate(items core.IFind) error {
-	mapID := make(map[int64]*Profile)
+	mapID := make(map[dot.ID]*Profile)
 	for _, item := range m {
 		mapID[item.ID] = item
 	}

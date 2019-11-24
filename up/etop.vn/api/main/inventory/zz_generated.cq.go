@@ -40,10 +40,10 @@ func (c QueryBus) DispatchAll(ctx context.Context, msgs ...Query) error {
 
 type AdjustInventoryQuantityCommand struct {
 	Overstock bool
-	ShopID    int64
+	ShopID    dot.ID
 	Lines     []*InventoryVariant
 	Title     string
-	UserID    int64
+	UserID    dot.ID
 	Note      string
 
 	Result *AdjustInventoryQuantityRespone `json:"-"`
@@ -55,9 +55,9 @@ func (h AggregateHandler) HandleAdjustInventoryQuantity(ctx context.Context, msg
 }
 
 type CancelInventoryVoucherCommand struct {
-	ShopID    int64
-	ID        int64
-	UpdatedBy int64
+	ShopID    dot.ID
+	ID        dot.ID
+	UpdatedBy dot.ID
 	Reason    string
 
 	Result *InventoryVoucher `json:"-"`
@@ -71,7 +71,7 @@ func (h AggregateHandler) HandleCancelInventoryVoucher(ctx context.Context, msg 
 type CheckInventoryVariantsQuantityCommand struct {
 	Lines              []*InventoryVoucherItem
 	InventoryOverStock bool
-	ShopID             int64
+	ShopID             dot.ID
 	Type               InventoryVoucherType
 
 	Result struct {
@@ -83,9 +83,9 @@ func (h AggregateHandler) HandleCheckInventoryVariantsQuantity(ctx context.Conte
 }
 
 type ConfirmInventoryVoucherCommand struct {
-	ShopID    int64
-	ID        int64
-	UpdatedBy int64
+	ShopID    dot.ID
+	ID        dot.ID
+	UpdatedBy dot.ID
 
 	Result *InventoryVoucher `json:"-"`
 }
@@ -96,8 +96,8 @@ func (h AggregateHandler) HandleConfirmInventoryVoucher(ctx context.Context, msg
 }
 
 type CreateInventoryVariantCommand struct {
-	ShopID    int64
-	VariantID int64
+	ShopID    dot.ID
+	VariantID dot.ID
 
 	Result *InventoryVariant `json:"-"`
 }
@@ -109,14 +109,14 @@ func (h AggregateHandler) HandleCreateInventoryVariant(ctx context.Context, msg 
 
 type CreateInventoryVoucherCommand struct {
 	Overstock   bool
-	ShopID      int64
-	CreatedBy   int64
+	ShopID      dot.ID
+	CreatedBy   dot.ID
 	Title       string
-	RefID       int64
+	RefID       dot.ID
 	RefType     InventoryRefType
 	RefName     InventoryVoucherRefName
 	RefCode     string
-	TraderID    int64
+	TraderID    dot.ID
 	TotalAmount int32
 	Type        InventoryVoucherType
 	Note        string
@@ -131,8 +131,8 @@ func (h AggregateHandler) HandleCreateInventoryVoucher(ctx context.Context, msg 
 }
 
 type CreateInventoryVoucherByQuantityChangeCommand struct {
-	ShopID    int64
-	RefID     int64
+	ShopID    dot.ID
+	RefID     dot.ID
 	RefType   InventoryRefType
 	RefName   InventoryVoucherRefName
 	RefCode   string
@@ -140,7 +140,7 @@ type CreateInventoryVoucherByQuantityChangeCommand struct {
 	NoteOut   string
 	Title     string
 	Overstock bool
-	CreatedBy int64
+	CreatedBy dot.ID
 	Lines     []*InventoryVariantQuantityChange
 
 	Result *CreateInventoryVoucherByQuantityChangeResponse `json:"-"`
@@ -153,10 +153,10 @@ func (h AggregateHandler) HandleCreateInventoryVoucherByQuantityChange(ctx conte
 
 type CreateInventoryVoucherByReferenceCommand struct {
 	RefType   InventoryRefType
-	RefID     int64
+	RefID     dot.ID
 	Type      InventoryVoucherType
-	ShopID    int64
-	UserID    int64
+	ShopID    dot.ID
+	UserID    dot.ID
 	OverStock bool
 
 	Result []*InventoryVoucher `json:"-"`
@@ -168,8 +168,8 @@ func (h AggregateHandler) HandleCreateInventoryVoucherByReference(ctx context.Co
 }
 
 type UpdateInventoryVariantCostPriceCommand struct {
-	ShopID    int64
-	VariantID int64
+	ShopID    dot.ID
+	VariantID dot.ID
 	CostPrice int32
 
 	Result *InventoryVariant `json:"-"`
@@ -181,11 +181,11 @@ func (h AggregateHandler) HandleUpdateInventoryVariantCostPrice(ctx context.Cont
 }
 
 type UpdateInventoryVoucherCommand struct {
-	ID          int64
-	ShopID      int64
+	ID          dot.ID
+	ShopID      dot.ID
 	Title       dot.NullString
-	UpdatedBy   int64
-	TraderID    dot.NullInt64
+	UpdatedBy   dot.ID
+	TraderID    dot.NullID
 	TotalAmount int32
 	Note        dot.NullString
 	Lines       []*InventoryVoucherItem
@@ -199,8 +199,8 @@ func (h AggregateHandler) HandleUpdateInventoryVoucher(ctx context.Context, msg 
 }
 
 type GetInventoryVariantQuery struct {
-	ShopID    int64
-	VariantID int64
+	ShopID    dot.ID
+	VariantID dot.ID
 
 	Result *InventoryVariant `json:"-"`
 }
@@ -211,7 +211,7 @@ func (h QueryServiceHandler) HandleGetInventoryVariant(ctx context.Context, msg 
 }
 
 type GetInventoryVariantsQuery struct {
-	ShopID int64
+	ShopID dot.ID
 	Paging *meta.Paging
 
 	Result *GetInventoryVariantsResponse `json:"-"`
@@ -223,9 +223,9 @@ func (h QueryServiceHandler) HandleGetInventoryVariants(ctx context.Context, msg
 }
 
 type GetInventoryVariantsByVariantIDsQuery struct {
-	ShopID     int64
+	ShopID     dot.ID
 	Paging     *meta.Paging
-	VariantIDs []int64
+	VariantIDs []dot.ID
 
 	Result *GetInventoryVariantsResponse `json:"-"`
 }
@@ -236,8 +236,8 @@ func (h QueryServiceHandler) HandleGetInventoryVariantsByVariantIDs(ctx context.
 }
 
 type GetInventoryVoucherQuery struct {
-	ShopID int64
-	ID     int64
+	ShopID dot.ID
+	ID     dot.ID
 
 	Result *InventoryVoucher `json:"-"`
 }
@@ -248,8 +248,8 @@ func (h QueryServiceHandler) HandleGetInventoryVoucher(ctx context.Context, msg 
 }
 
 type GetInventoryVoucherByReferenceQuery struct {
-	ShopID  int64
-	RefID   int64
+	ShopID  dot.ID
+	RefID   dot.ID
 	RefType InventoryRefType
 
 	Result *GetInventoryVoucherByReferenceResponse `json:"-"`
@@ -261,7 +261,7 @@ func (h QueryServiceHandler) HandleGetInventoryVoucherByReference(ctx context.Co
 }
 
 type GetInventoryVouchersQuery struct {
-	ShopID  int64
+	ShopID  dot.ID
 	Paging  meta.Paging
 	Filters meta.Filters
 
@@ -274,9 +274,9 @@ func (h QueryServiceHandler) HandleGetInventoryVouchers(ctx context.Context, msg
 }
 
 type GetInventoryVouchersByIDsQuery struct {
-	ShopID int64
+	ShopID dot.ID
 	Paging *meta.Paging
-	IDs    []int64
+	IDs    []dot.ID
 
 	Result *GetInventoryVouchersResponse `json:"-"`
 }
@@ -287,8 +287,8 @@ func (h QueryServiceHandler) HandleGetInventoryVouchersByIDs(ctx context.Context
 }
 
 type GetInventoryVouchersByRefIDsQuery struct {
-	RefIDs []int64
-	ShopID int64
+	RefIDs []dot.ID
+	ShopID dot.ID
 
 	Result *GetInventoryVouchersResponse `json:"-"`
 }
@@ -529,7 +529,7 @@ func (q *UpdateInventoryVoucherCommand) SetUpdateInventoryVoucherArgs(args *Upda
 	q.Lines = args.Lines
 }
 
-func (q *GetInventoryVariantQuery) GetArgs(ctx context.Context) (_ context.Context, ShopID int64, VariantID int64) {
+func (q *GetInventoryVariantQuery) GetArgs(ctx context.Context) (_ context.Context, ShopID dot.ID, VariantID dot.ID) {
 	return ctx,
 		q.ShopID,
 		q.VariantID
@@ -563,13 +563,13 @@ func (q *GetInventoryVariantsByVariantIDsQuery) SetGetInventoryVariantsByVariant
 	q.VariantIDs = args.VariantIDs
 }
 
-func (q *GetInventoryVoucherQuery) GetArgs(ctx context.Context) (_ context.Context, ShopID int64, ID int64) {
+func (q *GetInventoryVoucherQuery) GetArgs(ctx context.Context) (_ context.Context, ShopID dot.ID, ID dot.ID) {
 	return ctx,
 		q.ShopID,
 		q.ID
 }
 
-func (q *GetInventoryVoucherByReferenceQuery) GetArgs(ctx context.Context) (_ context.Context, ShopID int64, refID int64, refType InventoryRefType) {
+func (q *GetInventoryVoucherByReferenceQuery) GetArgs(ctx context.Context) (_ context.Context, ShopID dot.ID, refID dot.ID, refType InventoryRefType) {
 	return ctx,
 		q.ShopID,
 		q.RefID,
@@ -606,7 +606,7 @@ func (q *GetInventoryVouchersByIDsQuery) SetGetInventoryVouchersByIDArgs(args *G
 	q.IDs = args.IDs
 }
 
-func (q *GetInventoryVouchersByRefIDsQuery) GetArgs(ctx context.Context) (_ context.Context, RefIDs []int64, ShopID int64) {
+func (q *GetInventoryVouchersByRefIDsQuery) GetArgs(ctx context.Context) (_ context.Context, RefIDs []dot.ID, ShopID dot.ID) {
 	return ctx,
 		q.RefIDs,
 		q.ShopID

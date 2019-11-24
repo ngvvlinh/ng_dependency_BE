@@ -3,7 +3,6 @@ package convertpb
 import (
 	"context"
 	"net/url"
-	"strconv"
 
 	"etop.vn/api/main/ledgering"
 	"etop.vn/api/main/location"
@@ -152,7 +151,7 @@ func GenerateRedirectAuthorizedPartnerURL(redirectUrl string, shop *model.Shop) 
 		return ""
 	}
 	query := u.Query()
-	query.Set("shop_id", strconv.FormatInt(shop.ID, 10))
+	query.Set("shop_id", shop.ID.String())
 	query.Set("email", shop.Email)
 	u.RawQuery = query.Encode()
 	res, _ := url.QueryUnescape(u.String())
@@ -360,7 +359,7 @@ func PbReceiptLine(m *receipting.ReceiptLine) *shop.ReceiptLine {
 	return &shop.ReceiptLine{
 		RefId:  m.RefID,
 		Title:  m.Title,
-		Amount: m.Amount,
+		Amount: int(m.Amount),
 	}
 }
 

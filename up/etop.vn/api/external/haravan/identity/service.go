@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"etop.vn/api/meta"
+	"etop.vn/capi/dot"
 )
 
 // +gen:api
@@ -25,7 +26,7 @@ type QueryService interface {
 }
 
 type GetExternalAccountHaravanByShopIDQueryArgs struct {
-	ShopID int64
+	ShopID dot.ID
 }
 
 type GetExternalAccountHaravanByXShopIDQueryArgs struct {
@@ -33,28 +34,28 @@ type GetExternalAccountHaravanByXShopIDQueryArgs struct {
 }
 
 type CreateExternalAccountHaravanArgs struct {
-	ShopID      int64
+	ShopID      dot.ID
 	Subdomain   string
 	RedirectURI string
 	Code        string
 }
 
 type UpdateExternalAccountHaravanTokenArgs struct {
-	ShopID      int64
+	ShopID      dot.ID
 	Subdomain   string
 	RedirectURI string
 	Code        string
 }
 
 type ConnectCarrierServiceExternalAccountHaravanArgs struct {
-	ShopID int64
+	ShopID dot.ID
 }
 
 type UpdateExternalShopIDAccountHaravanArgs struct {
-	ShopID         int64
+	ShopID         dot.ID
 	ExternalShopID int
 }
 
 type DeleteConnectedCarrierServiceExternalAccountHaravanArgs struct {
-	ShopID int64
+	ShopID dot.ID
 }

@@ -2,10 +2,11 @@ package sender
 
 import (
 	"encoding/json"
-	"strconv"
 	"testing"
 
 	"github.com/stretchr/testify/require"
+
+	"etop.vn/capi/dot"
 )
 
 func TestBuildJSON(t *testing.T) {
@@ -13,7 +14,7 @@ func TestBuildJSON(t *testing.T) {
 		[]byte(`{"a":"b"}`),
 		[]byte(`{"c":"d"}`),
 	}
-	id := int64(1234567890123456789)
+	id := dot.ID(1234567890123456789)
 	out := buildJSON(id, msgs)
 
 	var callback struct {
@@ -22,7 +23,7 @@ func TestBuildJSON(t *testing.T) {
 	}
 	err := json.Unmarshal(out, &callback)
 	require.NoError(t, err)
-	require.Equal(t, callback.ID, strconv.FormatInt(id, 10))
+	require.Equal(t, callback.ID, id.String())
 	require.EqualValues(t, callback.Changes, []map[string]string{
 		{"a": "b"},
 		{"c": "d"},

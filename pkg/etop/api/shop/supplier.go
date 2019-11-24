@@ -13,6 +13,7 @@ import (
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/cmapi"
 	"etop.vn/backend/pkg/etop/api/convertpb"
+	"etop.vn/capi/dot"
 	. "etop.vn/capi/dot"
 )
 
@@ -127,11 +128,11 @@ func (s *SupplierService) DeleteSupplier(ctx context.Context, r *DeleteSupplierE
 	return nil
 }
 
-func (s *SupplierService) listLiabilities(ctx context.Context, shopID int64, suppliers []*pbshop.Supplier) error {
-	var supplierIDs []int64
-	mapSupplierIDAndNumberOfPurchaseOrders := make(map[int64]int)
-	mapSupplierIDAndTotalAmountPurchaseOrders := make(map[int64]int64)
-	mapSupplierIDAndTotalAmountReceipts := make(map[int64]int64)
+func (s *SupplierService) listLiabilities(ctx context.Context, shopID dot.ID, suppliers []*pbshop.Supplier) error {
+	var supplierIDs []dot.ID
+	mapSupplierIDAndNumberOfPurchaseOrders := make(map[dot.ID]int)
+	mapSupplierIDAndTotalAmountPurchaseOrders := make(map[dot.ID]int)
+	mapSupplierIDAndTotalAmountReceipts := make(map[dot.ID]int)
 
 	for _, supplier := range suppliers {
 		supplierIDs = append(supplierIDs, supplier.Id)
@@ -160,12 +161,12 @@ func (s *SupplierService) listLiabilities(ctx context.Context, shopID int64, sup
 	}
 	receipts := listReceiptsBySupplierIDs.Result.Receipts
 	for _, receipt := range receipts {
-		mapSupplierIDAndTotalAmountReceipts[receipt.TraderID] += int64(receipt.Amount)
+		mapSupplierIDAndTotalAmountReceipts[receipt.TraderID] += receipt.Amount
 	}
 
 	for _, supplier := range suppliers {
 		supplier.Liability = &pbshop.SupplierLiability{
-			TotalPurchaseOrders: int32(mapSupplierIDAndNumberOfPurchaseOrders[supplier.Id]),
+			TotalPurchaseOrders: mapSupplierIDAndNumberOfPurchaseOrders[supplier.Id],
 			TotalAmount:         mapSupplierIDAndTotalAmountPurchaseOrders[supplier.Id],
 			PaidAmount:          mapSupplierIDAndTotalAmountReceipts[supplier.Id],
 			Liability:           mapSupplierIDAndTotalAmountPurchaseOrders[supplier.Id] - mapSupplierIDAndTotalAmountReceipts[supplier.Id],

@@ -8,6 +8,7 @@ import (
 	"etop.vn/api/meta"
 	"etop.vn/api/shopping"
 	. "etop.vn/capi/dot"
+	dot "etop.vn/capi/dot"
 )
 
 // +gen:api
@@ -17,15 +18,15 @@ type Aggregate interface {
 	UpdatePurchaseOrder(ctx context.Context, _ *UpdatePurchaseOrderArgs) (*PurchaseOrder, error)
 	CancelPurchaseOrder(ctx context.Context, _ *CancelPurchaseOrderArgs) (updated int, _ error)
 	ConfirmPurchaseOrder(ctx context.Context, _ *ConfirmPurchaseOrderArgs) (updated int, _ error)
-	DeletePurchaseOrder(ctx context.Context, ID, shopID int64) (deleted int, _ error)
+	DeletePurchaseOrder(ctx context.Context, ID, shopID dot.ID) (deleted int, _ error)
 }
 
 type QueryService interface {
 	GetPurchaseOrderByID(context.Context, *shopping.IDQueryShopArg) (*PurchaseOrder, error)
-	GetPurchaseOrdersByIDs(ctx context.Context, IDs []int64, ShopID int64) (*PurchaseOrdersResponse, error)
+	GetPurchaseOrdersByIDs(ctx context.Context, IDs []dot.ID, ShopID dot.ID) (*PurchaseOrdersResponse, error)
 	ListPurchaseOrders(context.Context, *shopping.ListQueryShopArgs) (*PurchaseOrdersResponse, error)
-	ListPurchaseOrdersBySupplierIDsAndStatuses(ctx context.Context, shopID int64, supplierIDs []int64, statuses []etop.Status3) (*PurchaseOrdersResponse, error)
-	ListPurchaseOrdersByReceiptID(ctx context.Context, receiptID, shopID int64) (*PurchaseOrdersResponse, error)
+	ListPurchaseOrdersBySupplierIDsAndStatuses(ctx context.Context, shopID dot.ID, supplierIDs []dot.ID, statuses []etop.Status3) (*PurchaseOrdersResponse, error)
+	ListPurchaseOrdersByReceiptID(ctx context.Context, receiptID, shopID dot.ID) (*PurchaseOrdersResponse, error)
 }
 
 //-- queries --//
@@ -40,36 +41,36 @@ type PurchaseOrdersResponse struct {
 
 // +convert:create=PurchaseOrder
 type CreatePurchaseOrderArgs struct {
-	ShopID        int64
-	SupplierID    int64
-	BasketValue   int64
-	TotalDiscount int64
-	TotalAmount   int64
+	ShopID        dot.ID
+	SupplierID    dot.ID
+	BasketValue   int
+	TotalDiscount int
+	TotalAmount   int
 	Note          string
 	Lines         []*PurchaseOrderLine
-	CreatedBy     int64
+	CreatedBy     dot.ID
 }
 
 // +convert:update=PurchaseOrder(ID,ShopID)
 type UpdatePurchaseOrderArgs struct {
-	ID            int64
-	ShopID        int64
-	SupplierID    NullInt64
-	BasketValue   NullInt64
-	TotalDiscount NullInt64
-	TotalAmount   NullInt64
+	ID            dot.ID
+	ShopID        dot.ID
+	SupplierID    NullID
+	BasketValue   NullInt
+	TotalDiscount NullInt
+	TotalAmount   NullInt
 	Note          NullString
 	Lines         []*PurchaseOrderLine
 }
 
 type CancelPurchaseOrderArgs struct {
-	ID     int64
-	ShopID int64
+	ID     dot.ID
+	ShopID dot.ID
 	Reason string
 }
 
 type ConfirmPurchaseOrderArgs struct {
-	ID                   int64
+	ID                   dot.ID
 	AutoInventoryVoucher inventory.AutoInventoryVoucher
-	ShopID               int64
+	ShopID               dot.ID
 }

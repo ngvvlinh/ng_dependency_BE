@@ -218,7 +218,7 @@ func Connect(c ConfigPostgres) (*Database, error) {
 	db.DB().SetMaxIdleConns(c.MaxIdleConns)
 
 	mu.Lock()
-	database := &Database{id: cm.NewID(), db: *db, dlog: *dlog}
+	database := &Database{id: int64(cm.NewID()), db: *db, dlog: *dlog}
 	dbPool[identifier] = database
 	defer mu.Unlock()
 	return database, nil

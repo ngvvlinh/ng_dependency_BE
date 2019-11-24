@@ -7,6 +7,7 @@ import (
 
 	"etop.vn/backend/pkg/common/sq"
 	"etop.vn/backend/pkg/etop/model"
+	"etop.vn/capi/dot"
 )
 
 type FulfillmentFilters struct{ prefix string }
@@ -23,7 +24,7 @@ func (ft FulfillmentFilters) Prefix() string {
 	return ft.prefix
 }
 
-func (ft *FulfillmentFilters) ByID(ID int64) *sq.ColumnFilter {
+func (ft *FulfillmentFilters) ByID(ID dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "id",
@@ -32,7 +33,7 @@ func (ft *FulfillmentFilters) ByID(ID int64) *sq.ColumnFilter {
 	}
 }
 
-func (ft *FulfillmentFilters) ByIDPtr(ID *int64) *sq.ColumnFilterPtr {
+func (ft *FulfillmentFilters) ByIDPtr(ID *dot.ID) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "id",
@@ -42,7 +43,7 @@ func (ft *FulfillmentFilters) ByIDPtr(ID *int64) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft *FulfillmentFilters) ByOrderID(OrderID int64) *sq.ColumnFilter {
+func (ft *FulfillmentFilters) ByOrderID(OrderID dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "order_id",
@@ -51,7 +52,7 @@ func (ft *FulfillmentFilters) ByOrderID(OrderID int64) *sq.ColumnFilter {
 	}
 }
 
-func (ft *FulfillmentFilters) ByOrderIDPtr(OrderID *int64) *sq.ColumnFilterPtr {
+func (ft *FulfillmentFilters) ByOrderIDPtr(OrderID *dot.ID) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "order_id",
@@ -61,7 +62,7 @@ func (ft *FulfillmentFilters) ByOrderIDPtr(OrderID *int64) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft *FulfillmentFilters) ByShopID(ShopID int64) *sq.ColumnFilter {
+func (ft *FulfillmentFilters) ByShopID(ShopID dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "shop_id",
@@ -70,7 +71,7 @@ func (ft *FulfillmentFilters) ByShopID(ShopID int64) *sq.ColumnFilter {
 	}
 }
 
-func (ft *FulfillmentFilters) ByShopIDPtr(ShopID *int64) *sq.ColumnFilterPtr {
+func (ft *FulfillmentFilters) ByShopIDPtr(ShopID *dot.ID) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "shop_id",
@@ -80,7 +81,7 @@ func (ft *FulfillmentFilters) ByShopIDPtr(ShopID *int64) *sq.ColumnFilterPtr {
 	}
 }
 
-func (ft *FulfillmentFilters) ByPartnerID(PartnerID int64) *sq.ColumnFilter {
+func (ft *FulfillmentFilters) ByPartnerID(PartnerID dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "partner_id",
@@ -89,7 +90,7 @@ func (ft *FulfillmentFilters) ByPartnerID(PartnerID int64) *sq.ColumnFilter {
 	}
 }
 
-func (ft *FulfillmentFilters) ByPartnerIDPtr(PartnerID *int64) *sq.ColumnFilterPtr {
+func (ft *FulfillmentFilters) ByPartnerIDPtr(PartnerID *dot.ID) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "partner_id",
@@ -954,7 +955,7 @@ func (ft *FulfillmentFilters) ByShippingReturningAtPtr(ShippingReturningAt *time
 	}
 }
 
-func (ft *FulfillmentFilters) ByMoneyTransactionID(MoneyTransactionID int64) *sq.ColumnFilter {
+func (ft *FulfillmentFilters) ByMoneyTransactionID(MoneyTransactionID dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "money_transaction_id",
@@ -963,7 +964,7 @@ func (ft *FulfillmentFilters) ByMoneyTransactionID(MoneyTransactionID int64) *sq
 	}
 }
 
-func (ft *FulfillmentFilters) ByMoneyTransactionIDPtr(MoneyTransactionID *int64) *sq.ColumnFilterPtr {
+func (ft *FulfillmentFilters) ByMoneyTransactionIDPtr(MoneyTransactionID *dot.ID) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "money_transaction_id",
@@ -973,7 +974,7 @@ func (ft *FulfillmentFilters) ByMoneyTransactionIDPtr(MoneyTransactionID *int64)
 	}
 }
 
-func (ft *FulfillmentFilters) ByMoneyTransactionShippingExternalID(MoneyTransactionShippingExternalID int64) *sq.ColumnFilter {
+func (ft *FulfillmentFilters) ByMoneyTransactionShippingExternalID(MoneyTransactionShippingExternalID dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "money_transaction_shipping_external_id",
@@ -982,7 +983,7 @@ func (ft *FulfillmentFilters) ByMoneyTransactionShippingExternalID(MoneyTransact
 	}
 }
 
-func (ft *FulfillmentFilters) ByMoneyTransactionShippingExternalIDPtr(MoneyTransactionShippingExternalID *int64) *sq.ColumnFilterPtr {
+func (ft *FulfillmentFilters) ByMoneyTransactionShippingExternalIDPtr(MoneyTransactionShippingExternalID *dot.ID) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "money_transaction_shipping_external_id",

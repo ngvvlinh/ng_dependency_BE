@@ -4,10 +4,11 @@ import (
 	"time"
 
 	"etop.vn/api/meta"
+	"etop.vn/capi/dot"
 )
 
 type CommissionSetting struct {
-	ProductID int64
+	ProductID dot.ID
 	Amount    int32
 	Unit      string
 	CreatedAt time.Time
@@ -15,8 +16,8 @@ type CommissionSetting struct {
 }
 
 type ProductPromotion struct {
-	ID          int64
-	ProductID   int64
+	ID          dot.ID
+	ProductID   dot.ID
 	Amount      int32
 	Unit        string
 	Code        string
@@ -28,13 +29,13 @@ type ProductPromotion struct {
 }
 
 type SellerCommission struct {
-	ID           int64
-	SellerID     int64
-	FromSellerID int64
-	ProductID    int64
-	OrderID      int64
-	ShopID       int64
-	SupplyID     int64
+	ID           dot.ID
+	SellerID     dot.ID
+	FromSellerID dot.ID
+	ProductID    dot.ID
+	OrderID      dot.ID
+	ShopID       dot.ID
+	SupplyID     dot.ID
 	Amount       int32
 	Description  string
 	Note         string
@@ -48,19 +49,19 @@ type SellerCommission struct {
 }
 
 type AffiliateReferralCode struct {
-	ID          int64
+	ID          dot.ID
 	Code        string
-	AffiliateID int64
-	UserID      int64
+	AffiliateID dot.ID
+	UserID      dot.ID
 	CreatedAt   time.Time
 	UpdatedAt   time.Time
 }
 
 type UserReferral struct {
-	UserID           int64
-	ReferralID       int64
+	UserID           dot.ID
+	ReferralID       dot.ID
 	ReferralCode     string
-	SaleReferralID   int64
+	SaleReferralID   dot.ID
 	SaleReferralCode string
 	ReferralAt       time.Time
 	ReferralSaleAt   time.Time
@@ -69,8 +70,8 @@ type UserReferral struct {
 }
 
 type SupplyCommissionSetting struct {
-	ShopID                   int64
-	ProductID                int64
+	ShopID                   dot.ID
+	ProductID                dot.ID
 	Level1DirectCommission   int32
 	Level1IndirectCommission int32
 	Level2DirectCommission   int32
@@ -94,5 +95,5 @@ type Duration struct {
 type OrderPaymentSuccessEvent struct {
 	meta.EventMeta
 
-	OrderID int64
+	OrderID dot.ID
 }

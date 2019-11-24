@@ -9,6 +9,7 @@ import (
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/cmsql"
+	"etop.vn/capi/dot"
 )
 
 var _ ledgering.QueryService = &LedgerQuery{}
@@ -58,7 +59,7 @@ func (q *LedgerQuery) ListLedgers(
 }
 
 func (q *LedgerQuery) ListLedgersByIDs(
-	ctx context.Context, shopID int64, IDs []int64,
+	ctx context.Context, shopID dot.ID, IDs []dot.ID,
 ) (*ledgering.ShopLedgersResponse, error) {
 	query := q.store(ctx).ShopID(shopID).IDs(IDs...)
 	ledgers, err := query.ListLedgers()
@@ -76,7 +77,7 @@ func (q *LedgerQuery) ListLedgersByIDs(
 }
 
 func (q *LedgerQuery) ListLedgersByType(
-	ctx context.Context, ledgerType ledgering.LedgerType, shopID int64,
+	ctx context.Context, ledgerType ledgering.LedgerType, shopID dot.ID,
 ) (*ledgering.ShopLedgersResponse, error) {
 	query := q.store(ctx).ShopID(shopID).Type(string(ledgerType))
 	ledgers, err := query.ListLedgers()
@@ -94,7 +95,7 @@ func (q *LedgerQuery) ListLedgersByType(
 }
 
 func (q *LedgerQuery) GetLedgerByAccountNumber(
-	ctx context.Context, accountNumber string, shopID int64,
+	ctx context.Context, accountNumber string, shopID dot.ID,
 ) (*ledgering.ShopLedger, error) {
 	ledger, err := q.store(ctx).ShopID(shopID).AccountNumber(accountNumber).GetLedger()
 	if err != nil {

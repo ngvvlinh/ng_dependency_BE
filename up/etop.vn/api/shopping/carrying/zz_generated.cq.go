@@ -40,7 +40,7 @@ func (c QueryBus) DispatchAll(ctx context.Context, msgs ...Query) error {
 }
 
 type CreateCarrierCommand struct {
-	ShopID   int64
+	ShopID   dot.ID
 	FullName string
 	Note     string
 
@@ -53,8 +53,8 @@ func (h AggregateHandler) HandleCreateCarrier(ctx context.Context, msg *CreateCa
 }
 
 type DeleteCarrierCommand struct {
-	ID     int64
-	ShopID int64
+	ID     dot.ID
+	ShopID dot.ID
 
 	Result int `json:"-"`
 }
@@ -65,8 +65,8 @@ func (h AggregateHandler) HandleDeleteCarrier(ctx context.Context, msg *DeleteCa
 }
 
 type UpdateCarrierCommand struct {
-	ID       int64
-	ShopID   int64
+	ID       dot.ID
+	ShopID   dot.ID
 	FullName dot.NullString
 	Note     dot.NullString
 
@@ -79,8 +79,8 @@ func (h AggregateHandler) HandleUpdateCarrier(ctx context.Context, msg *UpdateCa
 }
 
 type GetCarrierByIDQuery struct {
-	ID     int64
-	ShopID int64
+	ID     dot.ID
+	ShopID dot.ID
 
 	Result *ShopCarrier `json:"-"`
 }
@@ -91,7 +91,7 @@ func (h QueryServiceHandler) HandleGetCarrierByID(ctx context.Context, msg *GetC
 }
 
 type ListCarriersQuery struct {
-	ShopID  int64
+	ShopID  dot.ID
 	Paging  meta.Paging
 	Filters meta.Filters
 
@@ -104,8 +104,8 @@ func (h QueryServiceHandler) HandleListCarriers(ctx context.Context, msg *ListCa
 }
 
 type ListCarriersByIDsQuery struct {
-	IDs    []int64
-	ShopID int64
+	IDs    []dot.ID
+	ShopID dot.ID
 
 	Result *CarriersResponse `json:"-"`
 }
@@ -141,7 +141,7 @@ func (q *CreateCarrierCommand) SetCreateCarrierArgs(args *CreateCarrierArgs) {
 	q.Note = args.Note
 }
 
-func (q *DeleteCarrierCommand) GetArgs(ctx context.Context) (_ context.Context, ID int64, shopID int64) {
+func (q *DeleteCarrierCommand) GetArgs(ctx context.Context) (_ context.Context, ID dot.ID, shopID dot.ID) {
 	return ctx,
 		q.ID,
 		q.ShopID

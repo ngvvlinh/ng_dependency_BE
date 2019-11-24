@@ -9,6 +9,7 @@ import (
 	"etop.vn/backend/com/services/affiliate/model"
 	"etop.vn/backend/pkg/common/cmsql"
 	"etop.vn/backend/pkg/common/sqlstore"
+	"etop.vn/capi/dot"
 )
 
 type SellerCommissionStoreFactory func(ctx context.Context) *SellerCommissionStore
@@ -55,17 +56,17 @@ func (s *SellerCommissionStore) Filters(filters meta.Filters) *SellerCommissionS
 	return s
 }
 
-func (s *SellerCommissionStore) ID(id int64) *SellerCommissionStore {
+func (s *SellerCommissionStore) ID(id dot.ID) *SellerCommissionStore {
 	s.preds = append(s.preds, s.ft.ByID(id))
 	return s
 }
 
-func (s *SellerCommissionStore) SellerID(id int64) *SellerCommissionStore {
+func (s *SellerCommissionStore) SellerID(id dot.ID) *SellerCommissionStore {
 	s.preds = append(s.preds, s.ft.BySellerID(id))
 	return s
 }
 
-func (s *SellerCommissionStore) OrderID(id int64) *SellerCommissionStore {
+func (s *SellerCommissionStore) OrderID(id dot.ID) *SellerCommissionStore {
 	s.preds = append(s.preds, s.ft.ByOrderId(id))
 	return s
 }

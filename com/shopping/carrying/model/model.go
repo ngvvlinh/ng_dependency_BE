@@ -2,6 +2,8 @@ package model
 
 import (
 	"time"
+
+	"etop.vn/capi/dot"
 )
 
 //go:generate $ETOPDIR/backend/scripts/derive.sh
@@ -9,8 +11,8 @@ import (
 var _ = sqlgenShopCarrier(&ShopCarrier{})
 
 type ShopCarrier struct {
-	ID        int64
-	ShopID    int64
+	ID        dot.ID
+	ShopID    dot.ID
 	FullName  string
 	Note      string
 	Status    int32

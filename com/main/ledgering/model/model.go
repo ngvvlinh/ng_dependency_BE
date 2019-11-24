@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"etop.vn/backend/pkg/etop/model"
+	"etop.vn/capi/dot"
 )
 
 //go:generate $ETOPDIR/backend/scripts/derive.sh
@@ -11,14 +12,14 @@ import (
 var _ = sqlgenShopLedger(&ShopLedger{})
 
 type ShopLedger struct {
-	ID          int64
-	ShopID      int64
+	ID          dot.ID
+	ShopID      dot.ID
 	Name        string
 	BankAccount *model.BankAccount
 	Note        string
 	Type        string
 	Status      int32
-	CreatedBy   int64
+	CreatedBy   dot.ID
 	CreatedAt   time.Time `sq:"create"`
 	UpdatedAt   time.Time `sq:"update"`
 	DeletedAt   time.Time

@@ -13,6 +13,7 @@ import (
 	"etop.vn/backend/pkg/common/cmsql"
 	"etop.vn/backend/pkg/common/sq"
 	"etop.vn/backend/pkg/common/sqlstore"
+	"etop.vn/capi/dot"
 )
 
 type ShopProductStoreFactory func(context.Context) *ShopProductStore
@@ -64,37 +65,37 @@ func (s *ShopProductStore) Filters(filters meta.Filters) *ShopProductStore {
 	return s
 }
 
-func (s *ShopProductStore) ID(id int64) *ShopProductStore {
+func (s *ShopProductStore) ID(id dot.ID) *ShopProductStore {
 	s.preds = append(s.preds, s.FtShopProduct.ByProductID(id))
 	return s
 }
 
-func (s *ShopProductStore) BrandID(brandID int64) *ShopProductStore {
+func (s *ShopProductStore) BrandID(brandID dot.ID) *ShopProductStore {
 	s.preds = append(s.preds, s.FtShopProduct.ByBrandID(brandID))
 	return s
 }
 
-func (s *ShopProductStore) BrandIDs(ids ...int64) *ShopProductStore {
+func (s *ShopProductStore) BrandIDs(ids ...dot.ID) *ShopProductStore {
 	s.preds = append(s.preds, sq.In("brand_id", ids))
 	return s
 }
 
-func (s *ShopProductStore) CategoryID(id int64) *ShopProductStore {
+func (s *ShopProductStore) CategoryID(id dot.ID) *ShopProductStore {
 	s.preds = append(s.preds, s.FtShopProduct.ByCategoryID(id))
 	return s
 }
 
-func (s *ShopProductStore) IDs(ids ...int64) *ShopProductStore {
+func (s *ShopProductStore) IDs(ids ...dot.ID) *ShopProductStore {
 	s.preds = append(s.preds, sq.In("product_id", ids))
 	return s
 }
 
-func (s *ShopProductStore) ShopID(id int64) *ShopProductStore {
+func (s *ShopProductStore) ShopID(id dot.ID) *ShopProductStore {
 	s.preds = append(s.preds, s.FtShopProduct.ByShopID(id))
 	return s
 }
 
-func (s *ShopProductStore) OptionalShopID(id int64) *ShopProductStore {
+func (s *ShopProductStore) OptionalShopID(id dot.ID) *ShopProductStore {
 	s.preds = append(s.preds, s.FtShopProduct.ByShopID(id).Optional())
 	return s
 }
@@ -205,7 +206,7 @@ func (s *ShopProductStore) ListShopProductsWithVariantsDB() ([]*model.ShopProduc
 		return nil, err
 	}
 
-	productIDs := make([]int64, len(products))
+	productIDs := make([]dot.ID, len(products))
 	for i, p := range products {
 		productIDs[i] = p.ProductID
 	}
@@ -219,7 +220,7 @@ func (s *ShopProductStore) ListShopProductsWithVariantsDB() ([]*model.ShopProduc
 		}
 	}
 
-	mapProducts := make(map[int64]*model.ShopProductWithVariants)
+	mapProducts := make(map[dot.ID]*model.ShopProductWithVariants)
 	result := make([]*model.ShopProductWithVariants, len(products))
 	for i, p := range products {
 		result[i] = &model.ShopProductWithVariants{

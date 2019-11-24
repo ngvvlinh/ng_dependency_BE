@@ -9,6 +9,7 @@ import (
 
 	meta "etop.vn/api/meta"
 	capi "etop.vn/capi"
+	dot "etop.vn/capi/dot"
 )
 
 type Command interface{ command() }
@@ -38,7 +39,7 @@ func (c QueryBus) DispatchAll(ctx context.Context, msgs ...Query) error {
 }
 
 type SendUpdateExternalFulfillmentStateCommand struct {
-	FulfillmentID int64
+	FulfillmentID dot.ID
 
 	Result *meta.Empty `json:"-"`
 }
@@ -49,7 +50,7 @@ func (h AggregateHandler) HandleSendUpdateExternalFulfillmentState(ctx context.C
 }
 
 type SendUpdateExternalPaymentStatusCommand struct {
-	FulfillmentID int64
+	FulfillmentID dot.ID
 
 	Result *meta.Empty `json:"-"`
 }

@@ -3,6 +3,8 @@ package model
 import (
 	"encoding/json"
 	"time"
+
+	"etop.vn/capi/dot"
 )
 
 //go:generate $ETOPDIR/backend/scripts/derive.sh
@@ -10,7 +12,7 @@ import (
 var _ = sqlgenShippingProviderWebhook(&ShippingProviderWebhook{})
 
 type ShippingProviderWebhook struct {
-	ID               int64
+	ID               dot.ID
 	ShippingProvider string
 	Data             json.RawMessage
 	ShippingCode     string

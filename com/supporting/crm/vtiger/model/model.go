@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"etop.vn/backend/pkg/common/validate"
+	"etop.vn/capi/dot"
 )
 
 //go:generate $ETOPDIR/backend/scripts/derive.sh
@@ -37,7 +38,7 @@ type VtigerContact struct {
 	Secondaryemail       string
 	AssignedUserID       string
 	CreatedAt            time.Time `sq:"create"`
-	EtopUserID           int64
+	EtopUserID           dot.ID
 	UpdatedAt            time.Time `sq:"update"`
 	Description          string
 	Source               string
@@ -67,7 +68,7 @@ type VtigerAccount struct {
 	ID             string
 	UserName       string
 	FirstName      string
-	RoleID         int64
+	RoleID         dot.ID
 	Email1         string
 	Secondaryemail string
 	Status         string

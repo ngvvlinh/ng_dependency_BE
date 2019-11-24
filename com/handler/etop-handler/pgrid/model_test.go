@@ -4,14 +4,14 @@ import (
 	"reflect"
 	"testing"
 
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+
 	"etop.vn/backend/com/handler/pgevent"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/cmsql"
 	cc "etop.vn/backend/pkg/common/config"
 	"etop.vn/common/xerrors"
-
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
 )
 
 var db *cmsql.Database

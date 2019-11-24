@@ -14,6 +14,7 @@ import (
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/cmsql"
+	"etop.vn/capi/dot"
 	"etop.vn/common/l"
 )
 
@@ -266,7 +267,7 @@ func (a *Aggregate) OnTradingOrderCreated(ctx context.Context, args *affiliate.O
 	return nil
 }
 
-func (a *Aggregate) FetchOrderInfoToNotify(ctx context.Context, orderCreatedNotifyID int64) error {
+func (a *Aggregate) FetchOrderInfoToNotify(ctx context.Context, orderCreatedNotifyID dot.ID) error {
 	notify, err := a.orderCreatedNotify(ctx).ID(orderCreatedNotifyID).GetOrderCreatedNotifyDB()
 	if err != nil {
 		return err
@@ -422,7 +423,7 @@ func (a *Aggregate) CreateOrUpdateSupplyCommissionSetting(ctx context.Context, a
 		return nil, cm.Errorf(cm.InvalidArgument, nil, "Giá trị số phải lớn hơn 0")
 	}
 
-	customerPolicyGroupID := int64(0)
+	customerPolicyGroupID := dot.ID(0)
 	customerPolicyGroupName := args.Group
 	if customerPolicyGroupName != "" {
 		customerPolicyGroup, err := a.customerPolicyGroup(ctx).Name(customerPolicyGroupName).GetCustomerPolicyGroupDB()
@@ -506,7 +507,7 @@ func (a *Aggregate) CreateOrUpdateSupplyCommissionSetting(ctx context.Context, a
 	return a.supplyCommissionSetting(ctx).ShopID(args.ShopID).ProductID(args.ProductID).GetSupplyCommissionSetting()
 }
 
-func (a *Aggregate) CreateOrderPromotions(ctx context.Context, orderNotifyID int64, orderID int64) error {
+func (a *Aggregate) CreateOrderPromotions(ctx context.Context, orderNotifyID dot.ID, orderID dot.ID) error {
 	orderNotify, err := a.orderCreatedNotify(ctx).ID(orderNotifyID).GetOrderCreatedNotifyDB()
 	if err != nil {
 		return err
@@ -585,7 +586,7 @@ func (a *Aggregate) CreateOrderPromotions(ctx context.Context, orderNotifyID int
 	return nil
 }
 
-func (a *Aggregate) CreateOrderCommissionSettings(ctx context.Context, orderCreatedNotifyID int64) error {
+func (a *Aggregate) CreateOrderCommissionSettings(ctx context.Context, orderCreatedNotifyID dot.ID) error {
 	orderNotify, err := a.orderCreatedNotify(ctx).ID(orderCreatedNotifyID).GetOrderCreatedNotifyDB()
 	if err != nil {
 		return err
@@ -630,7 +631,7 @@ func (a *Aggregate) CreateOrderCommissionSettings(ctx context.Context, orderCrea
 	return a.orderCreatedNotify(ctx).UpdateOrderCreatedNotify(orderNotify)
 }
 
-func (a *Aggregate) ProcessOrderNotify(ctx context.Context, orderCreatedNotifyID int64) error {
+func (a *Aggregate) ProcessOrderNotify(ctx context.Context, orderCreatedNotifyID dot.ID) error {
 	return a.db.InTransaction(ctx, func(tx cmsql.QueryInterface) error {
 		orderCreatedNotify, err := a.orderCreatedNotify(ctx).ID(orderCreatedNotifyID).GetOrderCreatedNotifyDB()
 		if err != nil {
@@ -655,8 +656,8 @@ func (a *Aggregate) ProcessOrderNotify(ctx context.Context, orderCreatedNotifyID
 
 		// process cashback for shop
 		var shopCashbacks []*model.ShopCashback
-		shopCashbackMap := map[int64]*model.ShopCashback{}
-		sellerPromotionByProductID := map[int64]int32{}
+		shopCashbackMap := map[dot.ID]*model.ShopCashback{}
+		sellerPromotionByProductID := map[dot.ID]int32{}
 		for _, promotion := range orderPromotions {
 			var cashback = float64(0)
 			if promotion.Type != "cashback" {

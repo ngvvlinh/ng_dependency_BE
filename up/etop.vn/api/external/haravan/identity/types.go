@@ -1,10 +1,14 @@
 package identity
 
-import "time"
+import (
+	"time"
+
+	"etop.vn/capi/dot"
+)
 
 type ExternalAccountHaravan struct {
-	ID                                int64
-	ShopID                            int64
+	ID                                dot.ID
+	ShopID                            dot.ID
 	Subdomain                         string
 	ExternalShopID                    int
 	AccessToken                       string

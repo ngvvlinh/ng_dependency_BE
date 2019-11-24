@@ -1,14 +1,16 @@
 package model
 
+import "etop.vn/capi/dot"
+
 type UpdateAccountURLSlugCommand struct {
-	AccountID int64
+	AccountID dot.ID
 	URLSlug   string
 }
 
 type GetAccountAuthQuery struct {
 	AuthKey     string
 	AccountType AccountType
-	AccountID   int64
+	AccountID   dot.ID
 
 	Result struct {
 		AccountAuth *AccountAuth

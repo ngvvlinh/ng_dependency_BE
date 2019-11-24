@@ -10,6 +10,7 @@ import (
 	"etop.vn/backend/pkg/common/validate"
 	"etop.vn/backend/pkg/etop/authorize/login"
 	"etop.vn/backend/pkg/etop/model"
+	"etop.vn/capi/dot"
 	"etop.vn/common/xerrors"
 )
 
@@ -35,7 +36,7 @@ func User(ctx context.Context) *UserStore {
 	return &UserStore{ctx: ctx}
 }
 
-func (s *UserStore) ID(id int64) *UserStore {
+func (s *UserStore) ID(id dot.ID) *UserStore {
 	s.preds = append(s.preds, s.ft.ByID(id))
 	return s
 }

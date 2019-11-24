@@ -9,6 +9,7 @@ import (
 	"etop.vn/backend/pkg/common/cmsql"
 	"etop.vn/backend/pkg/etop/model"
 	"etop.vn/backend/pkg/etop/sqlstore"
+	"etop.vn/capi/dot"
 )
 
 type UserStoreFactory func(context.Context) *UserStore
@@ -28,7 +29,7 @@ type UserStore struct {
 	preds []interface{}
 }
 
-func (s *UserStore) ByID(id int64) *UserStore {
+func (s *UserStore) ByID(id dot.ID) *UserStore {
 	s.preds = append(s.preds, s.ft.ByID(id))
 	return s
 }
@@ -58,9 +59,9 @@ func (s *UserStore) GetUser() (*identity.User, error) {
 }
 
 type UpdateRefferenceIDArgs struct {
-	UserID    int64
-	RefUserID int64
-	RefSaleID int64
+	UserID    dot.ID
+	RefUserID dot.ID
+	RefSaleID dot.ID
 }
 
 func (s *UserStore) UpdateUserRefferenceID(args *UpdateRefferenceIDArgs) error {

@@ -2,12 +2,13 @@ package model
 
 import (
 	cm "etop.vn/backend/pkg/common"
+	"etop.vn/capi/dot"
 )
 
 type CreateShopCommand struct {
 	Name                        string
-	OwnerID                     int64
-	AddressID                   int64
+	OwnerID                     dot.ID
+	AddressID                   dot.ID
 	Address                     *Address
 	Phone                       string
 	BankAccount                 *BankAccount
@@ -32,14 +33,14 @@ type UpdateShopCommand struct {
 }
 
 type DeleteShopCommand struct {
-	ID      int64
-	OwnerID int64
+	ID      dot.ID
+	OwnerID dot.ID
 }
 
 type SetDefaultAddressShopCommand struct {
-	ShopID    int64
+	ShopID    dot.ID
 	Type      string
-	AddressID int64
+	AddressID dot.ID
 
 	Result struct {
 		Updated int
@@ -47,13 +48,13 @@ type SetDefaultAddressShopCommand struct {
 }
 
 type GetShopQuery struct {
-	ShopID int64
+	ShopID dot.ID
 
 	Result *Shop
 }
 
 type GetShopsQuery struct {
-	ShopIDs []int64
+	ShopIDs []dot.ID
 
 	Result struct {
 		Shops []*Shop
@@ -61,7 +62,7 @@ type GetShopsQuery struct {
 }
 
 type GetShopExtendedQuery struct {
-	ShopID int64
+	ShopID dot.ID
 
 	IncludeDeleted bool
 
@@ -79,8 +80,8 @@ type GetAllShopExtendedsQuery struct {
 
 // GetShopWithPermissionQuery will set HasPermission to false if the user has no permission to access the shop
 type GetShopWithPermissionQuery struct {
-	ShopID int64
-	UserID int64
+	ShopID dot.ID
+	UserID dot.ID
 
 	Result struct {
 		Shop       *Shop

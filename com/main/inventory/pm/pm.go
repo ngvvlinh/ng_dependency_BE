@@ -10,6 +10,7 @@ import (
 	stocktake "etop.vn/api/main/stocktaking"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/capi"
+	"etop.vn/capi/dot"
 )
 
 type ProcessManager struct {
@@ -54,7 +55,7 @@ func (m *ProcessManager) PurchaseOrderConfirmed(ctx context.Context, event *purc
 		isConfirm = true
 	}
 
-	var inventoryVoucherID int64
+	var inventoryVoucherID dot.ID
 	if isCreate {
 		cmd := &inventory.CreateInventoryVoucherByReferenceCommand{
 			RefType:   inventory.RefTypePurchaseOrder,
@@ -96,7 +97,7 @@ func (p *ProcessManager) OrderConfirmedEvent(ctx context.Context, event *orderin
 		isConfirm = true
 	}
 	var err error
-	var inventoryVoucherID int64
+	var inventoryVoucherID dot.ID
 	if isCreate {
 		cmdCreate := &inventory.CreateInventoryVoucherByReferenceCommand{
 			RefType:   inventory.RefTypeOrder,
@@ -135,7 +136,7 @@ func (p *ProcessManager) OrderConfirmingEvent(ctx context.Context, event *orderi
 		return nil
 	}
 	inventoryVoucherLines := []*inventory.InventoryVoucherItem{}
-	var variantIDs []int64
+	var variantIDs []dot.ID
 	for _, line := range event.Lines {
 		inventoryVoucherLines = append(inventoryVoucherLines, &inventory.InventoryVoucherItem{
 			VariantID: line.VariantId,
@@ -177,7 +178,7 @@ func (p *ProcessManager) StocktakeConfirmed(ctx context.Context, event *stocktak
 		isConfirm = true
 	}
 
-	var inventoryVoucherIDs []int64
+	var inventoryVoucherIDs []dot.ID
 	if isCreate {
 		cmdCreate := &inventory.CreateInventoryVoucherByReferenceCommand{
 			RefType:   inventory.RefTypeStockTake,
@@ -225,7 +226,7 @@ func (p *ProcessManager) OrderCancelledEvent(ctx context.Context, event *orderin
 		isConfirm = true
 	}
 	var err error
-	var inventoryVoucherID int64
+	var inventoryVoucherID dot.ID
 	if isCreate {
 		cmdCreate := &inventory.CreateInventoryVoucherByReferenceCommand{
 			RefType:   inventory.RefTypeOrder,

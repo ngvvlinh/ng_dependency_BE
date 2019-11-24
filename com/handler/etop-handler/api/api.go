@@ -30,9 +30,8 @@ func Init(s *sender.WebhookSender) {
 
 func (s *MiscService) VersionInfo(ctx context.Context, q *VersionInfoEndpoint) error {
 	q.Result = &pbcm.VersionInfoResponse{
-		Service:   "etop-event-handler",
-		Version:   "0.1",
-		UpdatedAt: nil,
+		Service: "etop-event-handler",
+		Version: "0.1",
 	}
 	return nil
 }

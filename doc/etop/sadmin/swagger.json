@@ -197,7 +197,7 @@
           "type": "string"
         },
         "id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "last_name": {
@@ -259,7 +259,7 @@
           "type": "string"
         },
         "id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "is_test": {
@@ -395,7 +395,7 @@
           }
         },
         "id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "image_url": {
@@ -525,7 +525,7 @@
           "type": "string"
         },
         "id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "image_url": {
@@ -544,22 +544,22 @@
           "type": "string"
         },
         "owner_id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "phone": {
           "type": "string"
         },
         "product_source_id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "ship_from_address_id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "ship_to_address_id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "shipping_service_select_strategy": {
@@ -624,7 +624,7 @@
           "type": "string"
         },
         "id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "phone": {
@@ -654,7 +654,7 @@
       "type": "object",
       "properties": {
         "account_id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "account_name": {
@@ -671,7 +671,7 @@
           "format": "date-time"
         },
         "disabled_by": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "invitation_accepted_at": {
@@ -687,7 +687,7 @@
           "format": "date-time"
         },
         "invitation_sent_by": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "permission": {
@@ -706,7 +706,7 @@
           "type": "string"
         },
         "user_id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "user_short_name": {
@@ -748,11 +748,11 @@
       "type": "object",
       "properties": {
         "account_id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         },
         "user_id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         }
       }
@@ -781,7 +781,7 @@
           "type": "string"
         },
         "user_id": {
-          "type": "integer",
+          "type": "string",
           "format": "int64"
         }
       }

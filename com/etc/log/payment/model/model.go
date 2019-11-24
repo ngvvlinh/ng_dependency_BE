@@ -3,6 +3,8 @@ package model
 import (
 	"encoding/json"
 	"time"
+
+	"etop.vn/capi/dot"
 )
 
 //go:generate $ETOPDIR/backend/scripts/derive.sh
@@ -17,7 +19,7 @@ var (
 var _ = sqlgenPayment(&Payment{})
 
 type Payment struct {
-	ID   int64
+	ID   dot.ID
 	Data json.RawMessage
 	// Mã từ eTop gửi sang đối tác
 	OrderID         string

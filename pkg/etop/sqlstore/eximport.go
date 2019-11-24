@@ -7,6 +7,7 @@ import (
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/sq"
 	"etop.vn/backend/pkg/etop/model"
+	"etop.vn/capi/dot"
 )
 
 func init() {
@@ -31,7 +32,7 @@ func (s *ExportAttemptStore) IncludeDeleted() *ExportAttemptStore {
 	return s
 }
 
-func (s *ExportAttemptStore) AccountID(id int64) *ExportAttemptStore {
+func (s *ExportAttemptStore) AccountID(id dot.ID) *ExportAttemptStore {
 	s.preds = append(s.preds, s.ft.ByAccountID(id))
 	return s
 }

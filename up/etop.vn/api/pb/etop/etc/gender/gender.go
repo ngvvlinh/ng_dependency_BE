@@ -20,3 +20,7 @@ func (g Gender) ToModel() string {
 	}
 	return g.String()
 }
+
+func (x Gender) MarshalJSON() ([]byte, error) {
+	return []byte(`"` + x.String() + `"`), nil
+}

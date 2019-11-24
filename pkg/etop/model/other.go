@@ -5,6 +5,7 @@ import (
 	"time"
 
 	cm "etop.vn/backend/pkg/common"
+	"etop.vn/capi/dot"
 )
 
 type GetHistoryQuery struct {
@@ -21,7 +22,7 @@ type GetHistoryQuery struct {
 }
 
 type GetBalanceShopCommand struct {
-	ShopID int64
+	ShopID dot.ID
 
 	Result struct {
 		Amount int
@@ -35,7 +36,7 @@ type GetShippingSources struct {
 }
 
 type GetShippingSource struct {
-	ID       int64
+	ID       dot.ID
 	Name     string
 	Username string
 	Type     ShippingProvider
@@ -59,12 +60,12 @@ type CreateShippingSource struct {
 }
 
 type GetShippingSourceInternal struct {
-	ID     int64
+	ID     dot.ID
 	Result *ShippingSourceInternal
 }
 
 type UpdateOrCreateShippingSourceInternal struct {
-	ID          int64
+	ID          dot.ID
 	LastSyncAt  time.Time
 	AccessToken string
 	ExpiresAt   time.Time
@@ -76,7 +77,7 @@ type UpdateOrCreateShippingSourceInternal struct {
 }
 
 type VTPostRequestInternalInfo struct {
-	ShippingSourceID int64
+	ShippingSourceID dot.ID
 	Username         string
 	Password         string
 }

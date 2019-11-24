@@ -10,6 +10,7 @@ import (
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/cmsql"
 	"etop.vn/backend/pkg/common/redis"
+	"etop.vn/capi/dot"
 )
 
 const currentVersion = "1"
@@ -34,7 +35,7 @@ func (q *DashboardQuery) MessageBus() summary.QueryBus {
 	return summary.NewQueryServiceHandler(q).RegisterHandlers(b)
 }
 
-func buildKey(shopID int64, dateFrom, dateTo time.Time) string {
+func buildKey(shopID dot.ID, dateFrom, dateTo time.Time) string {
 	key := "summary/pos:version=" + currentVersion +
 		",shop=" + strconv.Itoa(int(shopID)) +
 		",from=" + dateFrom.Format(dateLayout) +

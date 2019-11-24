@@ -1,6 +1,9 @@
 package tradering
 
-import "etop.vn/api/meta"
+import (
+	"etop.vn/api/meta"
+	"etop.vn/capi/dot"
+)
 
 // +gen:event:topic=event/tradering
 
@@ -11,8 +14,8 @@ var (
 )
 
 type ShopTrader struct {
-	ID       int64
-	ShopID   int64
+	ID       dot.ID
+	ShopID   dot.ID
 	Type     string
 	FullName string
 	Phone    string
@@ -20,6 +23,6 @@ type ShopTrader struct {
 
 type TraderDeletedEvent struct {
 	meta.EventMeta
-	ShopID   int64
-	TraderID int64
+	ShopID   dot.ID
+	TraderID dot.ID
 }

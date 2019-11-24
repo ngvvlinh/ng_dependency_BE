@@ -10,6 +10,7 @@ import (
 
 	meta "etop.vn/api/meta"
 	capi "etop.vn/capi"
+	dot "etop.vn/capi/dot"
 )
 
 type Command interface{ command() }
@@ -57,7 +58,7 @@ type CreateOrUpdateCallHistoryByCallIDCommand struct {
 	RecordingPath   string
 	RecordingUrl    string
 	RecordFileSize  int32
-	EtopAccountID   int64
+	EtopAccountID   dot.ID
 	VtigerAccountID string
 
 	Result *VhtCallLog `json:"-"`
@@ -87,7 +88,7 @@ type CreateOrUpdateCallHistoryBySDKCallIDCommand struct {
 	RecordingPath   string
 	RecordingUrl    string
 	RecordFileSize  int32
-	EtopAccountID   int64
+	EtopAccountID   dot.ID
 	VtigerAccountID string
 
 	Result *VhtCallLog `json:"-"`

@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"etop.vn/backend/pkg/common/sq"
+	"etop.vn/capi/dot"
 )
 
 type ExternalAccountHaravanFilters struct{ prefix string }
@@ -22,7 +23,7 @@ func (ft ExternalAccountHaravanFilters) Prefix() string {
 	return ft.prefix
 }
 
-func (ft *ExternalAccountHaravanFilters) ByID(ID int64) *sq.ColumnFilter {
+func (ft *ExternalAccountHaravanFilters) ByID(ID dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "id",
@@ -31,7 +32,7 @@ func (ft *ExternalAccountHaravanFilters) ByID(ID int64) *sq.ColumnFilter {
 	}
 }
 
-func (ft *ExternalAccountHaravanFilters) ByIDPtr(ID *int64) *sq.ColumnFilterPtr {
+func (ft *ExternalAccountHaravanFilters) ByIDPtr(ID *dot.ID) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "id",
@@ -41,7 +42,7 @@ func (ft *ExternalAccountHaravanFilters) ByIDPtr(ID *int64) *sq.ColumnFilterPtr 
 	}
 }
 
-func (ft *ExternalAccountHaravanFilters) ByShopID(ShopID int64) *sq.ColumnFilter {
+func (ft *ExternalAccountHaravanFilters) ByShopID(ShopID dot.ID) *sq.ColumnFilter {
 	return &sq.ColumnFilter{
 		Prefix: &ft.prefix,
 		Column: "shop_id",
@@ -50,7 +51,7 @@ func (ft *ExternalAccountHaravanFilters) ByShopID(ShopID int64) *sq.ColumnFilter
 	}
 }
 
-func (ft *ExternalAccountHaravanFilters) ByShopIDPtr(ShopID *int64) *sq.ColumnFilterPtr {
+func (ft *ExternalAccountHaravanFilters) ByShopIDPtr(ShopID *dot.ID) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "shop_id",

@@ -3,7 +3,6 @@ package shop
 import (
 	"context"
 	"fmt"
-	"strconv"
 	"strings"
 	"time"
 
@@ -20,6 +19,7 @@ import (
 	"etop.vn/backend/pkg/etop/api/convertpb"
 	logicorder "etop.vn/backend/pkg/etop/logic/orders"
 	"etop.vn/backend/pkg/etop/model"
+	"etop.vn/capi/dot"
 )
 
 func init() {
@@ -127,13 +127,13 @@ func (s *OrderService) GetOrdersByReceiptID(ctx context.Context, q *GetOrdersByR
 	if err := receiptQuery.Dispatch(ctx, queryReceipt); err != nil {
 		return err
 	}
-	var arrOrderID []int64
+	var arrOrderID []dot.ID
 	for _, value := range queryReceipt.Result.Lines {
 		arrOrderID = append(arrOrderID, value.RefID)
 	}
 
 	query := &ordermodelx.GetOrdersQuery{
-		ShopIDs:   []int64{shopID},
+		ShopIDs:   []dot.ID{shopID},
 		PartnerID: q.CtxPartner.GetID(),
 		IDs:       arrOrderID,
 	}
@@ -178,7 +178,7 @@ func (s *OrderService) CreateOrder(ctx context.Context, q *CreateOrderEndpoint) 
 			customerKey = phone
 		}
 	} else {
-		customerKey = strconv.FormatInt(q.CustomerId, 10)
+		customerKey = q.CustomerId.String()
 	}
 	key := fmt.Sprintf("CreateOrder %v-%v", q.Context.Shop.ID, customerKey)
 	res, err := idempgroup.DoAndWrap(key, 15*time.Second,
@@ -275,9 +275,9 @@ func (s *OrderService) ConfirmOrderAndCreateFulfillments(ctx context.Context, q 
 	return err
 }
 
-func (s *OrderService) addReceivedAmountToOrders(ctx context.Context, shopID int64, orders []*pborder.Order) error {
-	var orderIDs []int64
-	mOrderIDsAndReceivedAmounts := make(map[int64]int32)
+func (s *OrderService) addReceivedAmountToOrders(ctx context.Context, shopID dot.ID, orders []*pborder.Order) error {
+	var orderIDs []dot.ID
+	mOrderIDsAndReceivedAmounts := make(map[dot.ID]int)
 
 	for _, order := range orders {
 		mOrderIDsAndReceivedAmounts[order.Id] = 0

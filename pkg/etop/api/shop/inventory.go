@@ -9,6 +9,7 @@ import (
 	"etop.vn/api/shopping/tradering"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/cmapi"
+	"etop.vn/capi/dot"
 	. "etop.vn/capi/dot"
 )
 
@@ -85,7 +86,7 @@ func (s *InventoryService) UpdateInventoryVoucher(ctx context.Context, q *Update
 		ShopID:      shopID,
 		TotalAmount: q.TotalAmount,
 		UpdatedBy:   userID,
-		TraderID:    PInt64(q.TraderId),
+		TraderID:    PID(q.TraderId),
 		Note:        PString(q.Note),
 		Lines:       items,
 	}
@@ -238,11 +239,11 @@ func (s *InventoryService) GetInventoryVouchers(ctx context.Context, q *GetInven
 	return nil
 }
 
-func (s *InventoryService) checkValidateListTrader(ctx context.Context, shopID int64, inventoryVouchers []*inventory.InventoryVoucher) (result []*pbshop.InventoryVoucher, err error) {
+func (s *InventoryService) checkValidateListTrader(ctx context.Context, shopID dot.ID, inventoryVouchers []*inventory.InventoryVoucher) (result []*pbshop.InventoryVoucher, err error) {
 	if inventoryVouchers == nil {
 		return result, err
 	}
-	traderIDs := make([]int64, 0, len(inventoryVouchers))
+	traderIDs := make([]dot.ID, 0, len(inventoryVouchers))
 	for _, trader := range inventoryVouchers {
 		traderIDs = append(traderIDs, trader.TraderID)
 	}
@@ -254,7 +255,7 @@ func (s *InventoryService) checkValidateListTrader(ctx context.Context, shopID i
 		return result, err
 	}
 	traders := queryTraders.Result.Traders
-	var mapTraderValidate = make(map[int64]bool)
+	var mapTraderValidate = make(map[dot.ID]bool)
 	for _, trader := range traders {
 		mapTraderValidate[trader.ID] = true
 	}

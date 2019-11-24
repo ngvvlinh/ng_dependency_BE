@@ -11,6 +11,7 @@ import (
 	"etop.vn/backend/pkg/common/gencode"
 	"etop.vn/backend/pkg/common/sq"
 	"etop.vn/backend/pkg/common/validate"
+	"etop.vn/capi/dot"
 )
 
 //go:generate $ETOPDIR/backend/scripts/derive.sh
@@ -411,8 +412,8 @@ func GHNNoteCodeFromTryOn(to TryOn) string {
 var _ = sqlgenAccount(&Account{})
 
 type Account struct {
-	ID       int64
-	OwnerID  int64
+	ID       dot.ID
+	OwnerID  dot.ID
 	Name     string
 	Type     AccountType
 	ImageURL string
@@ -448,14 +449,14 @@ func (s *Partner) GetAccount() *Account {
 var _ = sqlgenShop(&Shop{})
 
 type Shop struct {
-	ID      int64
+	ID      dot.ID
 	Name    string
-	OwnerID int64
+	OwnerID dot.ID
 	IsTest  int
 
-	AddressID         int64
-	ShipToAddressID   int64
-	ShipFromAddressID int64
+	AddressID         dot.ID
+	ShipToAddressID   dot.ID
+	ShipFromAddressID dot.ID
 	Phone             string
 	BankAccount       *BankAccount
 	WebsiteURL        string
@@ -464,7 +465,7 @@ type Shop struct {
 	Code              string
 	AutoCreateFFM     bool
 
-	OrderSourceID int64
+	OrderSourceID dot.ID
 
 	Status    Status3
 	CreatedAt time.Time `sq:"create"`
@@ -558,8 +559,8 @@ type ShopDelete struct {
 var _ = sqlgenPartner(&Partner{})
 
 type Partner struct {
-	ID      int64
-	OwnerID int64
+	ID      dot.ID
+	OwnerID dot.ID
 	Status  Status3
 	IsTest  int
 
@@ -587,7 +588,7 @@ type AvailableFromEtopConfig struct {
 	RedirectUrl string `json:"redirect_url"`
 }
 
-func (p *Partner) GetID() int64 {
+func (p *Partner) GetID() dot.ID {
 	if p == nil {
 		return 0
 	}
@@ -622,7 +623,7 @@ var _ = sqlgenAccountAuth(&AccountAuth{})
 
 type AccountAuth struct {
 	AuthKey     string
-	AccountID   int64
+	AccountID   dot.ID
 	Status      Status3
 	Roles       []string
 	Permissions []string
@@ -666,12 +667,12 @@ var _ = sqlgenPartnerRelation(&PartnerRelation{})
 
 type PartnerRelation struct {
 	AuthKey           string
-	PartnerID         int64
-	SubjectID         int64
+	PartnerID         dot.ID
+	SubjectID         dot.ID
 	SubjectType       SubjectType
 	ExternalSubjectID string
 
-	Nonce     int64
+	Nonce     dot.ID
 	Status    Status3
 	CreatedAt time.Time `sq:"create"`
 	UpdatedAt time.Time `sq:"update"`
@@ -712,7 +713,7 @@ type UserInner struct {
 var _ = sqlgenUser(&User{})
 
 type User struct {
-	ID int64
+	ID dot.ID
 
 	UserInner `sq:"inline"`
 
@@ -732,8 +733,8 @@ type User struct {
 
 	IsTest    int
 	Source    UserSource
-	RefUserID int64
-	RefSaleID int64
+	RefUserID dot.ID
+	RefSaleID dot.ID
 }
 
 type UserExtended struct {
@@ -766,8 +767,8 @@ func (p *Permission) Validate() error {
 var _ = sqlgenAccountUser(&AccountUser{})
 
 type AccountUser struct {
-	AccountID int64
-	UserID    int64
+	AccountID dot.ID
+	UserID    dot.ID
 
 	Status         Status3 // 1: activated, -1: rejected/disabled, 0: pending
 	ResponseStatus Status3 // 1: accepted,  -1: rejected, 0: pending
@@ -783,7 +784,7 @@ type AccountUser struct {
 	Position  string
 
 	InvitationSentAt     time.Time
-	InvitationSentBy     int64
+	InvitationSentBy     dot.ID
 	InvitationAcceptedAt time.Time
 	InvitationRejectedAt time.Time
 
@@ -819,7 +820,7 @@ type AccountUserDelete struct {
 var _ = sqlgenUserAuth(&UserAuth{})
 
 type UserAuth struct {
-	UserID   int64
+	UserID   dot.ID
 	AuthType string
 	AuthKey  string
 
@@ -830,7 +831,7 @@ type UserAuth struct {
 var _ = sqlgenUserInternal(&UserInternal{})
 
 type UserInternal struct {
-	ID      int64
+	ID      dot.ID
 	Hashpwd string
 
 	UpdatedAt time.Time `sq:"update"`
@@ -868,7 +869,7 @@ func (f FfmAction) ToShippingState() ShippingState {
 var _ = sqlgenAddress(&Address{})
 
 type Address struct {
-	ID        int64  `json:"id"`
+	ID        dot.ID `json:"id"`
 	FullName  string `json:"full_name"`
 	FirstName string `json:"first_name"`
 	LastName  string `json:"last_name"`
@@ -891,7 +892,7 @@ type Address struct {
 	Address1    string       `json:"address1"`
 	Address2    string       `json:"address2"`
 	Type        string       `json:"type"`
-	AccountID   int64        `json:"account_id"`
+	AccountID   dot.ID       `json:"account_id"`
 	Notes       *AddressNote `json:"notes"`
 	CreatedAt   time.Time    `sq:"create" json:"-"`
 	UpdatedAt   time.Time    `sq:"update" json:"-"`
@@ -1104,9 +1105,9 @@ type CreateCodeCommand struct {
 var _ = sqlgenCredit(&Credit{})
 
 type Credit struct {
-	ID        int64
+	ID        dot.ID
 	Amount    int
-	ShopID    int64
+	ShopID    dot.ID
 	Type      string
 	Status    Status3
 	CreatedAt time.Time `sq:"create"`
@@ -1221,7 +1222,7 @@ func contains(lines []ShippingFeeLineType, feeType ShippingFeeLineType) bool {
 var _ = sqlgenShippingSource(&ShippingSource{})
 
 type ShippingSource struct {
-	ID        int64
+	ID        dot.ID
 	Name      string
 	Username  string
 	Type      string
@@ -1232,7 +1233,7 @@ type ShippingSource struct {
 var _ = sqlgenShippingSourceInternal(&ShippingSourceInternal{})
 
 type ShippingSourceInternal struct {
-	ID          int64
+	ID          dot.ID
 	CreatedAt   time.Time `sq:"create"`
 	UpdatedAt   time.Time `sq:"update"`
 	LastSyncAt  time.Time
@@ -1302,8 +1303,8 @@ func (service *AvailableShippingService) ApplyFeeMain(feeMain int) {
 var _ = sqlgenWebhook(&Webhook{})
 
 type Webhook struct {
-	ID        int64
-	AccountID int64
+	ID        dot.ID
+	AccountID dot.ID
 	Entities  []string
 	Fields    []string
 	URL       string
@@ -1356,9 +1357,9 @@ func (m *Webhook) BeforeInsert() error {
 var _ = sqlgenChangesData(&Callback{})
 
 type Callback struct {
-	ID        int64
-	WebhookID int64
-	AccountID int64
+	ID        dot.ID
+	WebhookID dot.ID
+	AccountID dot.ID
 	CreatedAt time.Time `sq:"create"`
 	Changes   json.RawMessage
 	Result    json.RawMessage // WebhookStatesError

@@ -7,6 +7,7 @@ import (
 	"etop.vn/backend/com/services/affiliate/model"
 	"etop.vn/backend/pkg/common/cmsql"
 	"etop.vn/backend/pkg/common/sqlstore"
+	"etop.vn/capi/dot"
 )
 
 type ShopCashbackStoreFactory func(ctx context.Context) *ShopCashbackStore
@@ -30,12 +31,12 @@ type ShopCashbackStore struct {
 	filters meta.Filters
 }
 
-func (s *ShopCashbackStore) ID(id int64) *ShopCashbackStore {
+func (s *ShopCashbackStore) ID(id dot.ID) *ShopCashbackStore {
 	s.preds = append(s.preds, s.ft.ByID(id))
 	return s
 }
 
-func (s *ShopCashbackStore) OrderID(id int64) *ShopCashbackStore {
+func (s *ShopCashbackStore) OrderID(id dot.ID) *ShopCashbackStore {
 	s.preds = append(s.preds, s.ft.ByOrderID(id))
 	return s
 }

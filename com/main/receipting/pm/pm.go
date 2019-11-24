@@ -17,6 +17,7 @@ import (
 	etopmodel "etop.vn/backend/pkg/etop/model"
 	"etop.vn/backend/pkg/etop/sqlstore"
 	"etop.vn/capi"
+	"etop.vn/capi/dot"
 )
 
 type ProcessManager struct {
@@ -50,15 +51,15 @@ func (m *ProcessManager) RegisterEventHandlers(eventBus bus.EventRegistry) {
 
 func (m *ProcessManager) MoneyTransactionConfirmed(ctx context.Context, event *receipting.MoneyTransactionConfirmedEvent) error {
 	var (
-		ledgerID         int64
-		totalShippingFee int32
+		ledgerID         dot.ID
+		totalShippingFee int
 		fulfillments     []*modely.FulfillmentExtended
-		orderIDs         []int64
+		orderIDs         []dot.ID
 	)
 
-	mapOrderAndTotalAmount := make(map[int64]int)
-	mapOrderAndReceivedAmount := make(map[int64]int32)
-	mapOrder := make(map[int64]ordermodelx.OrderWithFulfillments)
+	mapOrderAndTotalAmount := make(map[dot.ID]int)
+	mapOrderAndReceivedAmount := make(map[dot.ID]int)
+	mapOrder := make(map[dot.ID]ordermodelx.OrderWithFulfillments)
 
 	getMoneyTransaction := &modelx.GetMoneyTransaction{
 		ID:     event.MoneyTransactionID,
@@ -70,7 +71,7 @@ func (m *ProcessManager) MoneyTransactionConfirmed(ctx context.Context, event *r
 	for _, fulfillment := range getMoneyTransaction.Result.Fulfillments {
 		fulfillments = append(fulfillments, fulfillment)
 		orderIDs = append(orderIDs, fulfillment.OrderID)
-		totalShippingFee += int32(fulfillment.ShippingFeeShop)
+		totalShippingFee += fulfillment.ShippingFeeShop
 	}
 
 	if len(orderIDs) == 0 {
@@ -138,14 +139,14 @@ func (m *ProcessManager) MoneyTransactionConfirmed(ctx context.Context, event *r
 }
 
 func (m *ProcessManager) createPayment(
-	totalShippingFee int32, fulfillments []*modely.FulfillmentExtended, shopID, ledgerID int64, ctx context.Context,
+	totalShippingFee int, fulfillments []*modely.FulfillmentExtended, shopID, ledgerID dot.ID, ctx context.Context,
 ) error {
 	{
 		receiptLines := []*receipting.ReceiptLine{}
 		for _, fulfillment := range fulfillments {
 			receiptLines = append(receiptLines, &receipting.ReceiptLine{
 				RefID:  fulfillment.ID,
-				Amount: int32(fulfillment.ShippingFeeShop),
+				Amount: fulfillment.ShippingFeeShop,
 			})
 		}
 
@@ -172,18 +173,18 @@ func (m *ProcessManager) createPayment(
 }
 
 func createReceipts(
-	mapOrderAndTotalAmount map[int64]int, mapOrderAndReceivedAmount map[int64]int32,
-	mapOrder map[int64]ordermodelx.OrderWithFulfillments, shopID, ledgerID int64,
+	mapOrderAndTotalAmount map[dot.ID]int, mapOrderAndReceivedAmount map[dot.ID]int,
+	mapOrder map[dot.ID]ordermodelx.OrderWithFulfillments, shopID, ledgerID dot.ID,
 	m *ProcessManager, ctx context.Context) error {
 	for key, value := range mapOrderAndTotalAmount {
-		if int32(value)-mapOrderAndReceivedAmount[key] == 0 {
+		if value-mapOrderAndReceivedAmount[key] == 0 {
 			continue
 		}
 
 		receiptLines := []*receipting.ReceiptLine{}
 		receiptLines = append(receiptLines, &receipting.ReceiptLine{
 			RefID:  key,
-			Amount: int32(value) - mapOrderAndReceivedAmount[key],
+			Amount: value - mapOrderAndReceivedAmount[key],
 		})
 
 		traderID := mapOrder[key].CustomerID
@@ -198,9 +199,9 @@ func createReceipts(
 			Description: "Phiếu được tạo tự động qua thông qua đối soát Topship",
 			Type:        receipting.ReceiptTypeReceipt,
 			Status:      int32(etopmodel.S3Positive),
-			Amount:      int32(value) - mapOrderAndReceivedAmount[key],
+			Amount:      value - mapOrderAndReceivedAmount[key],
 			LedgerID:    ledgerID,
-			RefIDs:      []int64{key},
+			RefIDs:      []dot.ID{key},
 			RefType:     receipting.ReceiptRefTypeOrder,
 			Lines:       receiptLines,
 			PaidAt:      time.Now(),
@@ -216,7 +217,7 @@ func createReceipts(
 
 func (m *ProcessManager) getOrCreateBankAccount(
 	getMoneyTransaction *modelx.GetMoneyTransaction, bankAccount *etopmodel.BankAccount,
-	haveBankAccount bool, shopID int64, ctx context.Context, ledgerID int64) (int64, error) {
+	haveBankAccount bool, shopID dot.ID, ctx context.Context, ledgerID dot.ID) (dot.ID, error) {
 	if getMoneyTransaction.Result.BankAccount != nil {
 		bankAccount = getMoneyTransaction.Result.BankAccount
 		haveBankAccount = true

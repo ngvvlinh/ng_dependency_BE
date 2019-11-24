@@ -45,7 +45,7 @@ func HandleFulfillmentEvent(ctx context.Context, event *pgevent.PgEvent) (mq.Cod
 	} else if !ok {
 		return mq.CodeIgnore, nil
 	}
-	id := *ffmHistory.ID().Int64()
+	id := *ffmHistory.ID().ID()
 	if ffmHistory.ShippingState().String() != nil {
 		cmd := &haravan.SendUpdateExternalFulfillmentStateCommand{
 			FulfillmentID: id,

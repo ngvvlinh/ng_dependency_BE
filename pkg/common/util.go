@@ -14,6 +14,7 @@ import (
 
 	"github.com/dgrijalva/jwt-go"
 
+	"etop.vn/capi/dot"
 	"etop.vn/common/jsonx"
 	"etop.vn/common/l"
 )
@@ -142,7 +143,7 @@ func StringsContain(ss []string, s string) bool {
 	return false
 }
 
-func ContainInt64(list []int64, i int64) bool {
+func IDsContain(list []dot.ID, i dot.ID) bool {
 	for _, v := range list {
 		if v == i {
 			return true

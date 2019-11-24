@@ -14,3 +14,7 @@ func (s *AddressType) ToModel() string {
 	}
 	return AddressType_name[int32(*s)]
 }
+
+func (x AddressType) MarshalJSON() ([]byte, error) {
+	return []byte(`"` + x.String() + `"`), nil
+}

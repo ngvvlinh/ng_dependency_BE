@@ -5,6 +5,7 @@ import (
 
 	"etop.vn/api/main/inventory"
 	"etop.vn/api/meta"
+	"etop.vn/capi/dot"
 )
 
 // +gen:api
@@ -20,49 +21,49 @@ type Aggregate interface {
 }
 
 type QueryService interface {
-	GetStocktakeByID(ctx context.Context, id int64, shopID int64) (*ShopStocktake, error)
+	GetStocktakeByID(ctx context.Context, id dot.ID, shopID dot.ID) (*ShopStocktake, error)
 
-	GetStocktakesByIDs(ctx context.Context, ids []int64, shopID int64) ([]*ShopStocktake, error)
+	GetStocktakesByIDs(ctx context.Context, ids []dot.ID, shopID dot.ID) ([]*ShopStocktake, error)
 
 	ListStocktake(context.Context, *ListStocktakeRequest) (*ListStocktakeResponse, error)
 }
 
 // +convert:create=ShopStocktake
 type CreateStocktakeRequest struct {
-	ShopID        int64
+	ShopID        dot.ID
 	TotalQuantity int32
-	CreatedBy     int64
+	CreatedBy     dot.ID
 	Lines         []*StocktakeLine
 	Note          string
 }
 
 // +convert:update=ShopStocktake
 type UpdateStocktakeRequest struct {
-	ShopID        int64
-	ID            int64
+	ShopID        dot.ID
+	ID            dot.ID
 	TotalQuantity int32
-	UpdatedBy     int64
+	UpdatedBy     dot.ID
 	Lines         []*StocktakeLine
 	Note          string
 }
 
 type CancelStocktakeRequest struct {
-	ShopID       int64
-	ID           int64
+	ShopID       dot.ID
+	ID           dot.ID
 	CancelReason string
 }
 
 type ConfirmStocktakeRequest struct {
-	ID                   int64
-	ShopID               int64
-	ConfirmedBy          int64
+	ID                   dot.ID
+	ShopID               dot.ID
+	ConfirmedBy          dot.ID
 	OverStock            bool
 	AutoInventoryVoucher inventory.AutoInventoryVoucher
 }
 
 type ListStocktakeRequest struct {
 	Page   meta.Paging
-	ShopID int64
+	ShopID dot.ID
 	Filter []meta.Filter
 }
 

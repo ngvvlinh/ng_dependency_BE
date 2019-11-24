@@ -11,6 +11,7 @@ import (
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/etop/model"
+	"etop.vn/capi/dot"
 	"etop.vn/common/l"
 )
 
@@ -21,7 +22,7 @@ func init() {
 }
 
 type LoginUserQuery struct {
-	UserID       int64
+	UserID       dot.ID
 	PhoneOrEmail string
 	Password     string
 

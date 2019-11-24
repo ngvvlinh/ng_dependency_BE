@@ -8,6 +8,7 @@ import (
 	"etop.vn/api/main/receipting"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
+	"etop.vn/capi/dot"
 )
 
 type ProcessManager struct {
@@ -33,7 +34,7 @@ func (p *ProcessManager) ReceiptCreating(
 	ctx context.Context, event *receipting.ReceiptCreatingEvent,
 ) error {
 	var purchaseOrders []*purchaseorder.PurchaseOrder
-	mPurchaseOrder := make(map[int64]*purchaseorder.PurchaseOrder)
+	mPurchaseOrder := make(map[dot.ID]*purchaseorder.PurchaseOrder)
 	refIDs := event.RefIDs
 	receipt := event.Receipt
 	mapRefIDAmount := event.MapRefIDAmount
@@ -84,7 +85,7 @@ func (p *ProcessManager) ReceiptCreating(
 
 	// Get total amount each purchaseOrderID
 	// Map of [ purchaseOrderID ] amount of receiptLines (current receipts into DB)
-	mapRefIDAmountOld := make(map[int64]int32)
+	mapRefIDAmountOld := make(map[dot.ID]int)
 	for _, receiptElem := range receipts {
 		// Ignore current receipt when updating
 		if receiptElem.ID == receipt.ID {
@@ -105,7 +106,7 @@ func (p *ProcessManager) ReceiptCreating(
 
 	// Check each amount of receiptLine (param) with (total amount of old receiptLines + total amount of order)
 	for key, value := range mapRefIDAmount {
-		if value > int32(mPurchaseOrder[key].TotalAmount)-mapRefIDAmountOld[key] {
+		if value > mPurchaseOrder[key].TotalAmount-mapRefIDAmountOld[key] {
 			return cm.Errorf(cm.InvalidArgument, nil, "Giá trị của đơn hàng không hợp lệ, Vui lòng tải lại trang và thử lại")
 		}
 	}

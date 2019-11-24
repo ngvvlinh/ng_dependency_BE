@@ -3,10 +3,10 @@ package redis_test
 import (
 	"testing"
 
+	"github.com/stretchr/testify/require"
+
 	. "etop.vn/backend/pkg/common/redis"
 	"etop.vn/common/l"
-
-	"github.com/stretchr/testify/require"
 )
 
 var (

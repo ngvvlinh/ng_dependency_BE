@@ -2,6 +2,8 @@ package customering
 
 import (
 	"time"
+
+	dot "etop.vn/capi/dot"
 )
 
 type CustomerType string
@@ -13,9 +15,9 @@ const (
 )
 
 type ShopCustomer struct {
-	ID        int64
-	ShopID    int64
-	GroupIDs  []int64
+	ID        dot.ID
+	ShopID    dot.ID
+	GroupIDs  []dot.ID
 	Code      string
 	CodeNorm  int32
 	FullName  string
@@ -31,13 +33,13 @@ type ShopCustomer struct {
 }
 
 type ShopCustomerGroup struct {
-	ID   int64
+	ID   dot.ID
 	Name string
 }
 
 type ShopCustomerGroupCustomer struct {
-	GroupID    int64
-	CustomerID int64
+	GroupID    dot.ID
+	CustomerID dot.ID
 
 	CreatedAt time.Time
 	UpdatedAt time.Time

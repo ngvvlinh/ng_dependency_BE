@@ -11,6 +11,7 @@ import (
 	"etop.vn/backend/pkg/common/cmsql"
 	"etop.vn/backend/pkg/common/sq"
 	"etop.vn/backend/pkg/common/sqlstore"
+	"etop.vn/capi/dot"
 )
 
 type ListShopVariantsForImportArgs struct {
@@ -56,27 +57,27 @@ func (s *ShopVariantStore) GetPaging() meta.PageInfo {
 	return meta.FromPaging(s.paging)
 }
 
-func (s *ShopVariantStore) ID(id int64) *ShopVariantStore {
+func (s *ShopVariantStore) ID(id dot.ID) *ShopVariantStore {
 	s.preds = append(s.preds, s.FtShopVariant.ByVariantID(id))
 	return s
 }
 
-func (s *ShopVariantStore) ProductIDs(productIds ...int64) *ShopVariantStore {
+func (s *ShopVariantStore) ProductIDs(productIds ...dot.ID) *ShopVariantStore {
 	s.preds = append(s.preds, sq.PrefixedIn(&s.FtShopVariant.prefix, "product_id", productIds))
 	return s
 }
 
-func (s *ShopVariantStore) IDs(ids ...int64) *ShopVariantStore {
+func (s *ShopVariantStore) IDs(ids ...dot.ID) *ShopVariantStore {
 	s.preds = append(s.preds, sq.PrefixedIn(&s.FtShopVariant.prefix, "variant_id", ids))
 	return s
 }
 
-func (s *ShopVariantStore) ShopID(id int64) *ShopVariantStore {
+func (s *ShopVariantStore) ShopID(id dot.ID) *ShopVariantStore {
 	s.preds = append(s.preds, s.FtShopVariant.ByShopID(id))
 	return s
 }
 
-func (s *ShopVariantStore) OptionalShopID(id int64) *ShopVariantStore {
+func (s *ShopVariantStore) OptionalShopID(id dot.ID) *ShopVariantStore {
 	s.preds = append(s.preds, s.FtShopVariant.ByShopID(id).Optional())
 	return s
 }

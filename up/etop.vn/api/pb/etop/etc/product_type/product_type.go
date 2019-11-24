@@ -13,3 +13,7 @@ func PbProductType(s string) *ProductType {
 	res := ProductType(ProductType_value[s])
 	return &res
 }
+
+func (x ProductType) MarshalJSON() ([]byte, error) {
+	return []byte(`"` + x.String() + `"`), nil
+}

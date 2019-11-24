@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"etop.vn/api/main/catalog/types"
+	dot "etop.vn/capi/dot"
 	cmutil "etop.vn/capi/util"
 )
 
@@ -17,9 +18,9 @@ const (
 )
 
 type ShopProduct struct {
-	ShopID int64
+	ShopID dot.ID
 
-	ProductID int64
+	ProductID dot.ID
 
 	Code string
 
@@ -35,9 +36,9 @@ type ShopProduct struct {
 
 	PriceInfo
 
-	CategoryID int64
+	CategoryID dot.ID
 
-	CollectionIDs []int64
+	CollectionIDs []dot.ID
 
 	Tags []string
 
@@ -53,15 +54,15 @@ type ShopProduct struct {
 
 	MetaFields []*MetaField
 
-	BrandID int64
+	BrandID dot.ID
 }
 
 type ShopVariant struct {
-	ShopID int64
+	ShopID dot.ID
 
-	ProductID int64
+	ProductID dot.ID
 
-	VariantID int64
+	VariantID dot.ID
 
 	// variant.code is also known as sku
 	Code string
@@ -88,10 +89,10 @@ type ShopVariant struct {
 }
 
 type ShopCategory struct {
-	ID int64
+	ID dot.ID
 
-	ParentID int64
-	ShopID   int64
+	ParentID dot.ID
+	ShopID   dot.ID
 
 	Name string
 
@@ -103,8 +104,8 @@ type ShopCategory struct {
 }
 
 type ShopCollection struct {
-	ID     int64
-	ShopID int64
+	ID     dot.ID
+	ShopID dot.ID
 
 	Name        string
 	Description string
@@ -197,9 +198,9 @@ type ShopCategories struct {
 }
 
 type ShopProductCollection struct {
-	ProductID    int64
-	CollectionID int64
-	ShopID       int64
+	ProductID    dot.ID
+	CollectionID dot.ID
+	ShopID       dot.ID
 
 	CreatedAt time.Time
 	UpdatedAt time.Time
@@ -211,9 +212,9 @@ type MetaField struct {
 }
 
 type ShopVariantSupplier struct {
-	ShopID     int64
-	SupplierID int64
-	VariantID  int64
+	ShopID     dot.ID
+	SupplierID dot.ID
+	VariantID  dot.ID
 	CreatedAt  time.Time
 	UpdatedAt  time.Time
 }

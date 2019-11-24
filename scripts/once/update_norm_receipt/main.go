@@ -9,6 +9,7 @@ import (
 	"etop.vn/backend/pkg/common/cmsql"
 	cc "etop.vn/backend/pkg/common/config"
 	"etop.vn/backend/pkg/common/validate"
+	"etop.vn/capi/dot"
 	"etop.vn/common/l"
 )
 
@@ -35,7 +36,7 @@ func main() {
 	if db, err = cmsql.Connect(postgres); err != nil {
 		ll.Fatal("Error while connecting database", l.Error(err))
 	}
-	fromID := int64(0)
+	var fromID dot.ID
 	count, updated := 0, 0
 	var arrayReceipt []*receipting.Receipt
 	for {
@@ -71,7 +72,7 @@ func main() {
 	ll.S.Infof("Updated %v/%v", updated, count)
 }
 
-func scanReceipt(fromID int64) (receipts receipting.Receipts, err error) {
+func scanReceipt(fromID dot.ID) (receipts receipting.Receipts, err error) {
 	err = db.
 		Where("id > ?", fromID).
 		OrderBy("id").

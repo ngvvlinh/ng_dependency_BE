@@ -11,6 +11,7 @@ import (
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/etop/model"
+	"etop.vn/capi/dot"
 )
 
 func init() {
@@ -218,7 +219,7 @@ func UpdateShopProductsTags(ctx context.Context, cmd *catalogmodelx.UpdateShopPr
 		return err
 	}
 
-	productMap := make(map[int64]*catalogmodel.ShopProduct)
+	productMap := make(map[dot.ID]*catalogmodel.ShopProduct)
 	for _, p := range products {
 		productMap[p.ProductID] = p
 	}

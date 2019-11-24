@@ -14,12 +14,13 @@ import (
 	cc "etop.vn/backend/pkg/common/config"
 	. "etop.vn/backend/pkg/common/testing"
 	"etop.vn/backend/pkg/etop/model"
+	"etop.vn/capi/dot"
 )
 
 var (
 	db        *cmsql.Database
-	tranID    = int64(123)
-	accountID = int64(123456)
+	tranID    = dot.ID(123)
+	accountID = dot.ID(123456)
 	amount    = 25000
 )
 
@@ -55,7 +56,7 @@ func TestTransactionQueryService(t *testing.T) {
 			Type:      string(transaction.TransactionTypeAffiliate),
 			Metadata: &transactionmodel.TransactionMetadata{
 				ReferralType: string(transaction.ReferralTypeOrder),
-				ReferralIDs:  []int64{555555},
+				ReferralIDs:  []dot.ID{555555},
 			},
 		}
 		QS := NewQueryService(db).MessageBus()

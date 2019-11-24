@@ -14,6 +14,8 @@ import (
 
 	"github.com/lib/pq"
 
+	"etop.vn/capi/dot"
+	"etop.vn/capi/util"
 	"etop.vn/common/jsonx"
 )
 
@@ -184,11 +186,6 @@ type IJoin interface {
 	SQLJoin(SQLWriter, []JoinType) error
 }
 
-type IPreload interface {
-	SQLPreload(name string) *PreloadDesc
-	SQLPopulate(items IFind) error
-}
-
 type PreloadDesc struct {
 	Fkey  string
 	IDs   interface{}
@@ -248,6 +245,14 @@ func (i Interface) Int64() *int64 {
 	}
 	v := i.V.(int64)
 	return &v
+}
+
+func (i Interface) ID() *dot.ID {
+	if i.V == nil {
+		return nil
+	}
+	v := i.V.(int64)
+	return (*dot.ID)(&v)
 }
 
 func (i Interface) String() *string {
@@ -671,6 +676,12 @@ func (a Array) Scan(src interface{}) error {
 	switch v := a.V.(type) {
 	case *[]int64:
 		return (*pq.Int64Array)(v).Scan(src)
+
+	case *[]dot.ID:
+		var array pq.Int64Array
+		err := array.Scan(src)
+		*v = util.Int64ToIDs(array)
+		return err
 
 	case *[]int:
 		var int64s pq.Int64Array

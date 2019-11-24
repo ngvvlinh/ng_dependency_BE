@@ -10,6 +10,7 @@ import (
 	"etop.vn/backend/com/external/payment/payment/model"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/cmsql"
+	"etop.vn/capi/dot"
 )
 
 type PaymentStoreFactory func(context.Context) *PaymentStore
@@ -29,7 +30,7 @@ type PaymentStore struct {
 	preds []interface{}
 }
 
-func (s *PaymentStore) ID(id int64) *PaymentStore {
+func (s *PaymentStore) ID(id dot.ID) *PaymentStore {
 	s.preds = append(s.preds, s.ft.ByID(id))
 	return s
 }
@@ -85,7 +86,7 @@ func (s *PaymentStore) CreatePayment(args *CreatePaymentArgs) (*payment.Payment,
 }
 
 type UpdateExternalPaymentInfoArgs struct {
-	ID              int64
+	ID              dot.ID
 	Amount          int
 	Status          etop.Status4
 	State           payment.PaymentState

@@ -13,6 +13,7 @@ import (
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/cmapi"
 	"etop.vn/backend/pkg/etop/api/convertpb"
+	"etop.vn/capi/dot"
 	. "etop.vn/capi/dot"
 )
 
@@ -234,11 +235,11 @@ func (s *CustomerService) RemoveCustomersFromGroup(ctx context.Context, r *Remov
 	return nil
 }
 
-func (s *CustomerService) listLiabilities(ctx context.Context, shopID int64, customers []*pbshop.Customer) error {
-	var customerIDs []int64
-	mapCustomerIDAndNumberOfOrders := make(map[int64]int)
-	mapCustomerIDAndTotalAmountOrders := make(map[int64]int64)
-	mapCustomerIDAndTotalAmountReceipts := make(map[int64]int64)
+func (s *CustomerService) listLiabilities(ctx context.Context, shopID dot.ID, customers []*pbshop.Customer) error {
+	var customerIDs []dot.ID
+	mapCustomerIDAndNumberOfOrders := make(map[dot.ID]int)
+	mapCustomerIDAndTotalAmountOrders := make(map[dot.ID]int)
+	mapCustomerIDAndTotalAmountReceipts := make(map[dot.ID]int)
 
 	for _, customer := range customers {
 		customerIDs = append(customerIDs, customer.Id)
@@ -253,7 +254,7 @@ func (s *CustomerService) listLiabilities(ctx context.Context, shopID int64, cus
 	}
 	for _, order := range getOrdersByCustomerIDs.Result.Orders {
 		mapCustomerIDAndNumberOfOrders[order.CustomerID] += 1
-		mapCustomerIDAndTotalAmountOrders[order.CustomerID] += int64(order.TotalAmount)
+		mapCustomerIDAndTotalAmountOrders[order.CustomerID] += order.TotalAmount
 	}
 
 	getReceiptsByCustomerIDs := &receipting.ListReceiptsByTraderIDsAndStatusesQuery{
@@ -267,9 +268,9 @@ func (s *CustomerService) listLiabilities(ctx context.Context, shopID int64, cus
 	for _, receipt := range getReceiptsByCustomerIDs.Result.Receipts {
 		switch receipt.Type {
 		case receipting.ReceiptTypeReceipt:
-			mapCustomerIDAndTotalAmountReceipts[receipt.TraderID] += int64(receipt.Amount)
+			mapCustomerIDAndTotalAmountReceipts[receipt.TraderID] += receipt.Amount
 		case receipting.ReceiptTypePayment:
-			mapCustomerIDAndTotalAmountReceipts[receipt.TraderID] -= int64(receipt.Amount)
+			mapCustomerIDAndTotalAmountReceipts[receipt.TraderID] -= receipt.Amount
 		}
 	}
 

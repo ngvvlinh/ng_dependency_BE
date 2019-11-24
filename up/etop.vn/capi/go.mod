@@ -2,8 +2,9 @@ module etop.vn/capi
 
 go 1.13
 
+replace etop.vn/common => ../common
+
 require (
-	github.com/golang/protobuf v1.3.2
-	github.com/pkg/errors v0.8.1 // indirect
+	etop.vn/common v0.0.0-00010101000000-000000000000
 	github.com/twitchtv/twirp v5.9.0+incompatible
 )

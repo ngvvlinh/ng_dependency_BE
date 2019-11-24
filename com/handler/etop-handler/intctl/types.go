@@ -4,6 +4,7 @@ import (
 	"bytes"
 
 	cm "etop.vn/backend/pkg/common"
+	"etop.vn/capi/dot"
 )
 
 func Topic(prefix string) string {
@@ -25,5 +26,5 @@ func ParseKey(key []byte) string {
 }
 
 type ReloadWebhook struct {
-	AccountID int64 `json:"account_id"`
+	AccountID dot.ID `json:"account_id"`
 }

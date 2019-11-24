@@ -9,6 +9,7 @@ import (
 	identitymodel "etop.vn/backend/com/external/haravan/identity/model"
 	cm "etop.vn/backend/pkg/common"
 	"etop.vn/backend/pkg/common/cmsql"
+	"etop.vn/capi/dot"
 )
 
 type XAccountHaravanStoreFactory func(context.Context) *XAccountHaravanStore
@@ -28,12 +29,12 @@ type XAccountHaravanStore struct {
 	preds []interface{}
 }
 
-func (s *XAccountHaravanStore) ID(id int64) *XAccountHaravanStore {
+func (s *XAccountHaravanStore) ID(id dot.ID) *XAccountHaravanStore {
 	s.preds = append(s.preds, s.ft.ByID(id))
 	return s
 }
 
-func (s *XAccountHaravanStore) ShopID(id int64) *XAccountHaravanStore {
+func (s *XAccountHaravanStore) ShopID(id dot.ID) *XAccountHaravanStore {
 	s.preds = append(s.preds, s.ft.ByShopID(id))
 	return s
 }
@@ -58,8 +59,8 @@ func (s *XAccountHaravanStore) GetXAccountHaravan() (*identity.ExternalAccountHa
 }
 
 type CreateXAccountHaravanArgs struct {
-	ID             int64
-	ShopID         int64
+	ID             dot.ID
+	ShopID         dot.ID
 	Subdomain      string
 	AccessToken    string
 	ExternalShopID int
@@ -95,7 +96,7 @@ func (s *XAccountHaravanStore) CreateXAccountHaravan(args *CreateXAccountHaravan
 }
 
 type UpdateXAccountHaravanInfoArgs struct {
-	ShopID         int64
+	ShopID         dot.ID
 	Subdomain      string
 	AccessToken    string
 	ExternalShopID int
@@ -119,7 +120,7 @@ func (s *XAccountHaravanStore) UpdateXAccountHaravan(args *UpdateXAccountHaravan
 }
 
 type UpdateXShopIDAccountHaravanArgs struct {
-	ShopID         int64
+	ShopID         dot.ID
 	ExternalShopID int
 }
 
@@ -140,7 +141,7 @@ func (s *XAccountHaravanStore) UpdateXShopIDAccountHaravan(args *UpdateXShopIDAc
 }
 
 type UpdateXCarrierServiceInfoArgs struct {
-	ShopID                            int64
+	ShopID                            dot.ID
 	ExternalCarrierServiceID          int
 	ExternalConnectedCarrierServiceAt time.Time
 }
@@ -160,7 +161,7 @@ func (s *XAccountHaravanStore) UpdateXCarrierServiceInfo(args *UpdateXCarrierSer
 }
 
 type UpdateDeleteConnectedXCarrierSeriveArgs struct {
-	ShopID    int64
+	ShopID    dot.ID
 	SubDomain string
 }
 

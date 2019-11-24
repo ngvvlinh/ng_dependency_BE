@@ -16,6 +16,7 @@ import (
 	"etop.vn/backend/pkg/common/cmsql"
 	"etop.vn/backend/pkg/common/conversion"
 	"etop.vn/capi"
+	"etop.vn/capi/dot"
 	"etop.vn/common/l"
 )
 
@@ -128,10 +129,10 @@ func (a *PurchaseOrderAggregate) UpdatePurchaseOrder(
 		return nil, cm.Errorf(cm.FailedPrecondition, nil, "Không thể chỉnh sửa đơn nhập hàng, kiểm tra trạng thái đơn.")
 	}
 
-	if args.SupplierID.Valid && args.SupplierID.Int64 != purchaseOrder.SupplierID {
+	if args.SupplierID.Valid && args.SupplierID.ID != purchaseOrder.SupplierID {
 		// check supplier_id
 		getSupplier := &suppliering.GetSupplierByIDQuery{
-			ID:     args.SupplierID.Int64,
+			ID:     args.SupplierID.ID,
 			ShopID: args.ShopID,
 		}
 		if err := a.supplierQuery.Dispatch(ctx, getSupplier); err != nil {
@@ -167,11 +168,11 @@ func (a *PurchaseOrderAggregate) UpdatePurchaseOrder(
 	return purchaseOrder, err
 }
 
-func (a *PurchaseOrderAggregate) getLinesInPurchaseOrder(ctx context.Context, lines []*purchaseorder.PurchaseOrderLine, ShopID int64) error {
-	var variantIDs []int64
-	var productIDs []int64
-	mapVariantShopVariant := make(map[int64]*catalog.ShopVariant)
-	mapProductShopProduct := make(map[int64]*catalog.ShopProduct)
+func (a *PurchaseOrderAggregate) getLinesInPurchaseOrder(ctx context.Context, lines []*purchaseorder.PurchaseOrderLine, ShopID dot.ID) error {
+	var variantIDs []dot.ID
+	var productIDs []dot.ID
+	mapVariantShopVariant := make(map[dot.ID]*catalog.ShopVariant)
+	mapProductShopProduct := make(map[dot.ID]*catalog.ShopProduct)
 	for _, ln := range lines {
 		variantIDs = append(variantIDs, ln.VariantID)
 	}
@@ -251,9 +252,9 @@ func (a *PurchaseOrderAggregate) checkPurchaseOrder(
 		return cm.Errorf(cm.InvalidArgument, nil, "Tiền thanh toán không hợp lệ")
 	}
 
-	var variantIDs []int64
-	var totalPrice int64
-	mapVariant := make(map[int64]*catalog.ShopVariant)
+	var variantIDs []dot.ID
+	var totalPrice int
+	mapVariant := make(map[dot.ID]*catalog.ShopVariant)
 	for _, line := range args.Lines {
 		if line.VariantID == 0 {
 			return cm.Errorf(cm.NotFound, nil, "variant_id không thể bằng 0")
@@ -265,7 +266,7 @@ func (a *PurchaseOrderAggregate) checkPurchaseOrder(
 			return cm.Errorf(cm.InvalidArgument, nil, "số lượng của phiên bản sản phẩm không hợp lệ")
 		}
 		variantIDs = append(variantIDs, line.VariantID)
-		totalPrice += line.Quantity * line.PaymentPrice
+		totalPrice += int(line.Quantity) * int(line.PaymentPrice)
 	}
 	if totalPrice != args.BasketValue {
 		return cm.Errorf(cm.NotFound, nil, "Tiền hàng không hợp lệ")
@@ -360,7 +361,7 @@ func (a *PurchaseOrderAggregate) ConfirmPurchaseOrder(
 	return updated, nil
 }
 
-func (a *PurchaseOrderAggregate) DeletePurchaseOrder(ctx context.Context, ID, shopID int64) (deleted int, _ error) {
+func (a *PurchaseOrderAggregate) DeletePurchaseOrder(ctx context.Context, ID, shopID dot.ID) (deleted int, _ error) {
 	if _, err := a.store(ctx).ID(ID).ShopID(shopID).GetPurchaseOrder(); err != nil {
 		return 0, cm.MapError(err).
 			Wrap(cm.NotFound, "Không tìm thấy đơn nhập hàng.").

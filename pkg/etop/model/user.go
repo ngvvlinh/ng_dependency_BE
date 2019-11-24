@@ -1,6 +1,10 @@
 package model
 
-import "time"
+import (
+	"time"
+
+	"etop.vn/capi/dot"
+)
 
 // SignedInUser ...
 type SignedInUser struct {
@@ -9,19 +13,19 @@ type SignedInUser struct {
 
 // GetSignedInUserQuery ...
 type GetSignedInUserQuery struct {
-	UserID int64
+	UserID dot.ID
 
 	Result *SignedInUser
 }
 
 type GetUserByIDQuery struct {
-	UserID int64
+	UserID dot.ID
 
 	Result *User
 }
 
 type GetUserByLoginQuery struct {
-	UserID       int64
+	UserID       dot.ID
 	PhoneOrEmail string
 
 	Result UserExtended
@@ -43,12 +47,12 @@ type CreateUserCommand struct {
 }
 
 type SetPasswordCommand struct {
-	UserID   int64
+	UserID   dot.ID
 	Password string
 }
 
 type UpdateUserVerificationCommand struct {
-	UserID int64
+	UserID dot.ID
 
 	EmailVerifiedAt time.Time
 	PhoneVerifiedAt time.Time
@@ -58,7 +62,7 @@ type UpdateUserVerificationCommand struct {
 }
 
 type UpdateUserIdentifierCommand struct {
-	UserID    int64
+	UserID    dot.ID
 	Status    Status3 // We don't allow update status to 0
 	UserInner         // Must be normalized identifier
 

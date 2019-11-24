@@ -18,6 +18,7 @@ import (
 	etopmodel "etop.vn/backend/pkg/etop/model"
 	"etop.vn/backend/pkg/integration/email"
 	"etop.vn/capi"
+	"etop.vn/capi/dot"
 )
 
 var _ invitation.Aggregate = &InvitationAggregate{}
@@ -125,7 +126,7 @@ func (a *InvitationAggregate) checkStatusInvitation(invitation *model.Invitation
 	return nil
 }
 
-func (a *InvitationAggregate) checkUserBelongsToShop(ctx context.Context, email string, shopID int64) error {
+func (a *InvitationAggregate) checkUserBelongsToShop(ctx context.Context, email string, shopID dot.ID) error {
 	getUserQuery := &identity.GetUserByEmailQuery{
 		Email: email,
 	}
@@ -185,7 +186,7 @@ func (a *InvitationAggregate) checkRoles(roles []invitation.Role) bool {
 }
 
 func (a *InvitationAggregate) AcceptInvitation(
-	ctx context.Context, userID int64, token string,
+	ctx context.Context, userID dot.ID, token string,
 ) (int, error) {
 	invitationDB, err := a.store(ctx).Token(token).GetInvitationDB()
 	if err != nil {
@@ -216,7 +217,7 @@ func (a *InvitationAggregate) AcceptInvitation(
 }
 
 func (a *InvitationAggregate) RejectInvitation(
-	ctx context.Context, userID int64, token string,
+	ctx context.Context, userID dot.ID, token string,
 ) (int, error) {
 	invitationDB, err := a.store(ctx).Token(token).GetInvitationDB()
 	if err != nil {
@@ -239,7 +240,7 @@ func (a *InvitationAggregate) RejectInvitation(
 	return updated, err
 }
 
-func (a *InvitationAggregate) checkTokenBelongsToUser(ctx context.Context, userID int64, email string) error {
+func (a *InvitationAggregate) checkTokenBelongsToUser(ctx context.Context, userID dot.ID, email string) error {
 	getUserQuery := &identity.GetUserByIDQuery{
 		UserID: userID,
 	}

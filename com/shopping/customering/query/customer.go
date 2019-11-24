@@ -8,6 +8,7 @@ import (
 	"etop.vn/backend/com/shopping/customering/sqlstore"
 	"etop.vn/backend/pkg/common/bus"
 	"etop.vn/backend/pkg/common/cmsql"
+	"etop.vn/capi/dot"
 )
 
 var _ customering.QueryService = &CustomerQuery{}
@@ -50,7 +51,7 @@ func (q *CustomerQuery) GetCustomerByID(
 }
 
 func (q *CustomerQuery) GetCustomerByCode(
-	ctx context.Context, code string, shopID int64,
+	ctx context.Context, code string, shopID dot.ID,
 ) (*customering.ShopCustomer, error) {
 	return q.store(ctx).ShopID(shopID).Code(code).GetCustomer()
 }
@@ -63,8 +64,8 @@ func (q *CustomerQuery) ListCustomers(
 	if err != nil {
 		return nil, err
 	}
-	var mapCustomerGroup = make(map[int64][]int64)
-	var customerIDs []int64
+	var mapCustomerGroup = make(map[dot.ID][]dot.ID)
+	var customerIDs []dot.ID
 	for _, customer := range customers {
 		customerIDs = append(customerIDs, customer.ID)
 	}
@@ -136,7 +137,7 @@ func (q *CustomerQuery) ListCustomerGroups(
 }
 
 func (q *CustomerQuery) GetCustomerByPhone(
-	ctx context.Context, phone string, shopID int64,
+	ctx context.Context, phone string, shopID dot.ID,
 ) (*customering.ShopCustomer, error) {
 	customer, err := q.store(ctx).ShopID(shopID).Phone(phone).GetCustomer()
 	if err != nil {
@@ -146,7 +147,7 @@ func (q *CustomerQuery) GetCustomerByPhone(
 }
 
 func (q *CustomerQuery) GetCustomerByEmail(
-	ctx context.Context, email string, shopID int64,
+	ctx context.Context, email string, shopID dot.ID,
 ) (*customering.ShopCustomer, error) {
 	customer, err := q.store(ctx).ShopID(shopID).Email(email).GetCustomer()
 	if err != nil {

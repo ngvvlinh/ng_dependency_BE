@@ -9,11 +9,10 @@ import (
 	fmt "fmt"
 	http "net/http"
 
-	proto "github.com/golang/protobuf/proto"
-
 	common "etop.vn/api/pb/common"
 	external "etop.vn/api/pb/external"
 	partner "etop.vn/api/pb/external/partner"
+	"etop.vn/capi"
 	httprpc "etop.vn/capi/httprpc"
 )
 
@@ -53,11 +52,11 @@ func (s *HistoryServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Req
 	serve(ctx, resp, req, reqMsg, exec)
 }
 
-func (s *HistoryServiceServer) parseRoute(path string) (reqMsg proto.Message, _ httprpc.ExecFunc, _ error) {
+func (s *HistoryServiceServer) parseRoute(path string) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
 	case "/partner.History/GetChanges":
 		msg := &external.GetChangesRequest{}
-		fn := func(ctx context.Context) (proto.Message, error) {
+		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.GetChanges(ctx, msg)
 		}
 		return msg, fn, nil
@@ -98,23 +97,23 @@ func (s *MiscServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Reques
 	serve(ctx, resp, req, reqMsg, exec)
 }
 
-func (s *MiscServiceServer) parseRoute(path string) (reqMsg proto.Message, _ httprpc.ExecFunc, _ error) {
+func (s *MiscServiceServer) parseRoute(path string) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
 	case "/partner.Misc/CurrentAccount":
 		msg := &common.Empty{}
-		fn := func(ctx context.Context) (proto.Message, error) {
+		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.CurrentAccount(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/partner.Misc/GetLocationList":
 		msg := &common.Empty{}
-		fn := func(ctx context.Context) (proto.Message, error) {
+		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.GetLocationList(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/partner.Misc/VersionInfo":
 		msg := &common.Empty{}
-		fn := func(ctx context.Context) (proto.Message, error) {
+		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.VersionInfo(ctx, msg)
 		}
 		return msg, fn, nil
@@ -155,35 +154,35 @@ func (s *ShippingServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Re
 	serve(ctx, resp, req, reqMsg, exec)
 }
 
-func (s *ShippingServiceServer) parseRoute(path string) (reqMsg proto.Message, _ httprpc.ExecFunc, _ error) {
+func (s *ShippingServiceServer) parseRoute(path string) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
 	case "/partner.Shipping/CancelOrder":
 		msg := &external.CancelOrderRequest{}
-		fn := func(ctx context.Context) (proto.Message, error) {
+		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.CancelOrder(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/partner.Shipping/CreateAndConfirmOrder":
 		msg := &external.CreateOrderRequest{}
-		fn := func(ctx context.Context) (proto.Message, error) {
+		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.CreateAndConfirmOrder(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/partner.Shipping/GetFulfillment":
 		msg := &external.FulfillmentIDRequest{}
-		fn := func(ctx context.Context) (proto.Message, error) {
+		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.GetFulfillment(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/partner.Shipping/GetOrder":
 		msg := &external.OrderIDRequest{}
-		fn := func(ctx context.Context) (proto.Message, error) {
+		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.GetOrder(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/partner.Shipping/GetShippingServices":
 		msg := &external.GetShippingServicesRequest{}
-		fn := func(ctx context.Context) (proto.Message, error) {
+		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.GetShippingServices(ctx, msg)
 		}
 		return msg, fn, nil
@@ -224,17 +223,17 @@ func (s *ShopServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Reques
 	serve(ctx, resp, req, reqMsg, exec)
 }
 
-func (s *ShopServiceServer) parseRoute(path string) (reqMsg proto.Message, _ httprpc.ExecFunc, _ error) {
+func (s *ShopServiceServer) parseRoute(path string) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
 	case "/partner.Shop/AuthorizeShop":
 		msg := &partner.AuthorizeShopRequest{}
-		fn := func(ctx context.Context) (proto.Message, error) {
+		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.AuthorizeShop(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/partner.Shop/CurrentShop":
 		msg := &common.Empty{}
-		fn := func(ctx context.Context) (proto.Message, error) {
+		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.CurrentShop(ctx, msg)
 		}
 		return msg, fn, nil
@@ -275,23 +274,23 @@ func (s *WebhookServiceServer) ServeHTTP(resp http.ResponseWriter, req *http.Req
 	serve(ctx, resp, req, reqMsg, exec)
 }
 
-func (s *WebhookServiceServer) parseRoute(path string) (reqMsg proto.Message, _ httprpc.ExecFunc, _ error) {
+func (s *WebhookServiceServer) parseRoute(path string) (reqMsg capi.Message, _ httprpc.ExecFunc, _ error) {
 	switch path {
 	case "/partner.Webhook/CreateWebhook":
 		msg := &external.CreateWebhookRequest{}
-		fn := func(ctx context.Context) (proto.Message, error) {
+		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.CreateWebhook(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/partner.Webhook/DeleteWebhook":
 		msg := &external.DeleteWebhookRequest{}
-		fn := func(ctx context.Context) (proto.Message, error) {
+		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.DeleteWebhook(ctx, msg)
 		}
 		return msg, fn, nil
 	case "/partner.Webhook/GetWebhooks":
 		msg := &common.Empty{}
-		fn := func(ctx context.Context) (proto.Message, error) {
+		fn := func(ctx context.Context) (capi.Message, error) {
 			return s.inner.GetWebhooks(ctx, msg)
 		}
 		return msg, fn, nil

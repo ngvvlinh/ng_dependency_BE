@@ -7,13 +7,14 @@ import (
 	"etop.vn/api/main/ordering/types"
 	v1 "etop.vn/api/main/shipnow/carrier/types"
 	shippingtypes "etop.vn/api/main/shipping/types"
+	"etop.vn/capi/dot"
 )
 
 type DeliveryPoint struct {
 	ShippingAddress *types.Address
 	Lines           []*types.ItemLine
 	ShippingNote    string
-	OrderId         int64
+	OrderId         dot.ID
 	OrderCode       string
 	shippingtypes.WeightInfo
 	shippingtypes.ValueInfo
