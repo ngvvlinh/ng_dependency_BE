@@ -1,11 +1,11 @@
 package crm
 
 import (
-	service "etop.vn/api/root/services/crm"
+	service "etop.vn/api/top/services/crm"
 	"etop.vn/capi/httprpc"
 )
 
-// +gen:wrapper=etop.vn/api/root/services/crm
+// +gen:wrapper=etop.vn/api/top/services/crm
 // +gen:wrapper:package=crm
 
 func NewCrmServer(m httprpc.Muxer, secret string) {

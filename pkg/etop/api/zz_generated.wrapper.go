@@ -11,7 +11,7 @@ import (
 	cm "etop.vn/api/pb/common"
 	etop "etop.vn/api/pb/etop"
 	shop "etop.vn/api/pb/etop/shop"
-	api "etop.vn/api/root/int/etop"
+	api "etop.vn/api/top/int/etop"
 	common "etop.vn/backend/pkg/common"
 	bus "etop.vn/backend/pkg/common/bus"
 	metrics "etop.vn/backend/pkg/common/metrics"

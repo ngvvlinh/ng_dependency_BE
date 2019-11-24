@@ -10,7 +10,7 @@ import (
 
 	cm "etop.vn/api/pb/common"
 	handler "etop.vn/api/pb/services/handler"
-	api "etop.vn/api/root/services/handler"
+	api "etop.vn/api/top/services/handler"
 	common "etop.vn/backend/pkg/common"
 	bus "etop.vn/backend/pkg/common/bus"
 	metrics "etop.vn/backend/pkg/common/metrics"

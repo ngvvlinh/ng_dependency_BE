@@ -352,7 +352,7 @@ func simpleType(typ, format string) spec.Schema {
 func parseJsonTag(tag string) string {
 	st, err := ParseStructTags(tag)
 	if err != nil {
-		panic(fmt.Sprint("invalid tag %v", tag))
+		panic(fmt.Sprintf("invalid tag %v", tag))
 	}
 	for _, t := range st {
 		if t.Name == "json" {

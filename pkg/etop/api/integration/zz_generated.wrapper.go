@@ -10,7 +10,7 @@ import (
 
 	cm "etop.vn/api/pb/common"
 	integration "etop.vn/api/pb/etop/integration"
-	api "etop.vn/api/root/int/integration"
+	api "etop.vn/api/top/int/integration"
 	common "etop.vn/backend/pkg/common"
 	bus "etop.vn/backend/pkg/common/bus"
 	metrics "etop.vn/backend/pkg/common/metrics"

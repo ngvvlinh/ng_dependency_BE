@@ -12,7 +12,7 @@ import (
 	etop "etop.vn/api/pb/etop"
 	external "etop.vn/api/pb/external"
 	partner "etop.vn/api/pb/external/partner"
-	api "etop.vn/api/root/external/partner"
+	api "etop.vn/api/top/external/partner"
 	common "etop.vn/backend/pkg/common"
 	bus "etop.vn/backend/pkg/common/bus"
 	metrics "etop.vn/backend/pkg/common/metrics"

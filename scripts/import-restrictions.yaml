@@ -8,7 +8,7 @@
   - etop.vn/backend/pkg/etop/authorize/claims
   - etop.vn/backend/pkg/etop/authorize/middleware
   - etop.vn/backend/pkg/etop/model
-  - etop.vn/api/root/services/pgevent
+  - etop.vn/api/top/services/pgevent
 
 - baseImportPath: "./cmd/etop-uploader"
   allowedImports:

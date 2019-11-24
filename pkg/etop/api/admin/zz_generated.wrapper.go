@@ -12,7 +12,7 @@ import (
 	etop "etop.vn/api/pb/etop"
 	admin "etop.vn/api/pb/etop/admin"
 	order "etop.vn/api/pb/etop/order"
-	api "etop.vn/api/root/int/admin"
+	api "etop.vn/api/top/int/admin"
 	common "etop.vn/backend/pkg/common"
 	bus "etop.vn/backend/pkg/common/bus"
 	metrics "etop.vn/backend/pkg/common/metrics"
