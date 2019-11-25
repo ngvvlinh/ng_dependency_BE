@@ -163,7 +163,6 @@ func (q *InventoryAggregate) PreInventoryVariantForVoucher(ctx context.Context, 
 		if errValidate := validateInventoryVoucherItem(value); errValidate != nil {
 			return 0, nil, errValidate
 		}
-		totalAmount = totalAmount + value.Price*value.Quantity
 		inventoryvariant, err = q.InventoryStore(ctx).ShopID(args.ShopID).VariantID(value.VariantID).Get()
 		if err != nil && cm.ErrorCode(err) == cm.NotFound {
 			// Create InventoryVariant follow variant_id if it have not been exit
@@ -182,6 +181,8 @@ func (q *InventoryAggregate) PreInventoryVariantForVoucher(ctx context.Context, 
 		if args.RefType == inventory.RefTypeOrder || args.RefType == inventory.RefTypeStockTake {
 			args.Lines[key].Price = inventoryvariant.CostPrice
 		}
+		totalAmount = totalAmount + args.Lines[key].Price*value.Quantity
+
 		// if InventoryVoucher is type 'out' move InventoryVariant quantity from onhand -> picked
 		if args.Type == inventory.InventoryVoucherTypeOut {
 			if !overStock && inventoryvariant.QuantityOnHand < value.Quantity {
