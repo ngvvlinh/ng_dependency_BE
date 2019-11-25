@@ -23,19 +23,18 @@ import (
 	"etop.vn/backend/pkg/common/validate"
 	"etop.vn/backend/pkg/etop/authorize/claims"
 	"etop.vn/backend/pkg/etop/model"
-	"etop.vn/capi/dot"
 )
 
 func HandleShopImportSampleProducts(c *httpx.Context) error {
 	claim := c.Claim.(*claims.ShopClaim)
-	userID := c.Session.GetUserID()
 	shop := claim.Shop
+	user := claim.User
 
 	// share the same key with HandleShopImportProducts
 	key := shop.ID.String()
 
 	resp, err := idempgroup.DoAndWrapWithSubkey(key, claim.Token, 30*time.Second, func() (interface{}, error) {
-		return handleShopImportSampleProducts(c.Req.Context(), c, shop, userID)
+		return handleShopImportSampleProducts(c.Req.Context(), c, shop, user)
 	}, "tạo sản phẩm mẫu")
 	if err != nil {
 		return err
@@ -50,7 +49,7 @@ func HandleShopImportSampleProducts(c *httpx.Context) error {
 	return nil
 }
 
-func handleShopImportSampleProducts(ctx context.Context, c *httpx.Context, shop *model.Shop, userID dot.ID) (_resp *pbshop.ImportProductsResponse, _err error) {
+func handleShopImportSampleProducts(ctx context.Context, c *httpx.Context, shop *model.Shop, user *model.SignedInUser) (_resp *pbshop.ImportProductsResponse, _err error) {
 	// check if shop already imports sample data
 	s := shopProductStore(ctx).
 		ShopID(shop.ID).
@@ -68,19 +67,19 @@ func handleShopImportSampleProducts(ctx context.Context, c *httpx.Context, shop 
 	}
 
 	reader := ioutil.NopCloser(bytes.NewReader(dlShopProductXlsx))
-	return handleShopImportProductsFromFile(ctx, c, shop, userID, 0, reader, assetShopProductFilename)
+	return handleShopImportProductsFromFile(ctx, c, shop, user, 0, reader, assetShopProductFilename)
 }
 
 func HandleShopImportProducts(c *httpx.Context) error {
 	claim := c.Claim.(*claims.ShopClaim)
-	userID := c.Session.GetUserID()
 	shop := claim.Shop
+	user := claim.User
 
 	// share the same key with HandleShopImportSampleProducts
 	key := shop.ID.String()
 
 	resp, err := idempgroup.DoAndWrapWithSubkey(key, claim.Token, 30*time.Second, func() (interface{}, error) {
-		return handleShopImportProducts(c.Req.Context(), c, shop, userID)
+		return handleShopImportProducts(c.Req.Context(), c, shop, user)
 	}, "import đơn hàng")
 	if err != nil {
 		return err
@@ -95,7 +94,7 @@ func HandleShopImportProducts(c *httpx.Context) error {
 	return nil
 }
 
-func handleShopImportProducts(ctx context.Context, c *httpx.Context, shop *model.Shop, userID dot.ID) (_resp *pbshop.ImportProductsResponse, _err error) {
+func handleShopImportProducts(ctx context.Context, c *httpx.Context, shop *model.Shop, user *model.SignedInUser) (_resp *pbshop.ImportProductsResponse, _err error) {
 	mode, fileHeader, err := parseRequest(c)
 	if err != nil {
 		return nil, err
@@ -105,10 +104,10 @@ func handleShopImportProducts(ctx context.Context, c *httpx.Context, shop *model
 	if err != nil {
 		return nil, cm.Errorf(cm.InvalidArgument, err, "Không thể đọc được file. Vui lòng kiểm tra lại hoặc liên hệ hotro@etop.vn.").WithMeta("reason", "can not open file")
 	}
-	return handleShopImportProductsFromFile(ctx, c, shop, userID, mode, file, fileHeader.Filename)
+	return handleShopImportProductsFromFile(ctx, c, shop, user, mode, file, fileHeader.Filename)
 }
 
-func handleShopImportProductsFromFile(ctx context.Context, c *httpx.Context, shop *model.Shop, userID dot.ID, mode Mode, file io.ReadCloser, filename string) (_resp *pbshop.ImportProductsResponse, _err error) {
+func handleShopImportProductsFromFile(ctx context.Context, c *httpx.Context, shop *model.Shop, user *model.SignedInUser, mode Mode, file io.ReadCloser, filename string) (_resp *pbshop.ImportProductsResponse, _err error) {
 	defer file.Close()
 	var debugOpts Debug
 	if cm.NotProd() {
@@ -138,7 +137,7 @@ func handleShopImportProductsFromFile(ctx context.Context, c *httpx.Context, sho
 		duration := time.Since(startAt)
 		attempt := &model.ImportAttempt{
 			ID:           importID,
-			UserID:       userID,
+			UserID:       user.ID,
 			AccountID:    shop.ID,
 			OriginalFile: filename,
 			StoredFile:   uploadCmd.FileName,
@@ -246,7 +245,7 @@ func handleShopImportProductsFromFile(ctx context.Context, c *httpx.Context, sho
 		return imp.generateErrorResponse(_errs)
 	}
 
-	msgs, _errs, _cellErrs, err := loadAndCreateProducts(ctx, schema, idx, imp.Mode, codeMode, shop, rowProducts, debugOpts)
+	stocktakeId, msgs, _errs, _cellErrs, err := loadAndCreateProducts(ctx, schema, idx, imp.Mode, codeMode, shop, rowProducts, debugOpts, user)
 	if err != nil {
 		return nil, err
 	}
@@ -268,6 +267,7 @@ func handleShopImportProductsFromFile(ctx context.Context, c *httpx.Context, sho
 		importErrors = append(importErrors, cmapi.PbError(err))
 	}
 	resp.ImportErrors = importErrors
+	resp.StocktakeID = stocktakeId
 	return resp, nil
 }
 

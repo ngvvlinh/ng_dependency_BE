@@ -966,6 +966,7 @@ type ImportProductsResponse struct {
 	ImportErrors []*common.Error              `json:"import_errors"`
 	CellErrors   []*common.Error              `json:"cell_errors"`
 	ImportId     dot.ID                       `json:"import_id"`
+	StocktakeID  dot.ID                       `json:"stocktake_id"`
 }
 
 func (m *ImportProductsResponse) Reset()         { *m = ImportProductsResponse{} }

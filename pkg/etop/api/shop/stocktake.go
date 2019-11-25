@@ -15,7 +15,7 @@ import (
 
 func (s *StocktakeService) CreateStocktake(ctx context.Context, q *CreateStocktakeEndpoint) error {
 	shopID := q.Context.Shop.ID
-	UserID := q.Context.UserID
+	UserID := q.Context.User.ID
 
 	var lines []*stocktaking.StocktakeLine
 	for _, value := range q.Lines {

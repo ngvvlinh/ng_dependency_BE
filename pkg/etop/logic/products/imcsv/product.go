@@ -8,6 +8,7 @@ import (
 
 	"etop.vn/api/main/catalog"
 	"etop.vn/api/meta"
+	pbshop "etop.vn/api/pb/etop/shop"
 	"etop.vn/backend/com/main/catalog/convert"
 	catalogmodel "etop.vn/backend/com/main/catalog/model"
 	catalogmodelx "etop.vn/backend/com/main/catalog/modelx"
@@ -36,8 +37,8 @@ func loadAndCreateProducts(
 	shop *model.Shop,
 	rowProducts []*RowProduct,
 	debug Debug,
-) (msgs []string, _errs []error, _cellErrs []error, _err error) {
-
+	user *model.SignedInUser,
+) (stocktakeId dot.ID, msgs []string, _errs []error, _cellErrs []error, _err error) {
 	var categories *Categories
 	// var collections map[string]*catalogmodel.ShopCollection
 	var products map[string]*catalog.ShopProduct
@@ -210,6 +211,14 @@ func loadAndCreateProducts(
 
 	now := time.Now()
 	// Create new products/variants and add them to corresponding categories/collection
+	var createStocktakeCmd = &apishop.CreateStocktakeEndpoint{
+		CreateStocktakeRequest: &pbshop.CreateStocktakeRequest{
+			Note: "Tạo phiếu quản lý tồn kho theo file import",
+		},
+	}
+	createStocktakeCmd.Context.Shop = shop
+	createStocktakeCmd.Context.User = user
+	var stocktakeLines []*pbshop.StocktakeLine
 	for _, rowProduct := range rowProducts {
 		if debug.FailPercent != 0 && isRandomFail(debug.FailPercent) {
 			_errs = append(_errs, imcsv.CellErrorWithCode(idx.indexer, cm.Internal, errors.New("random error"), rowProduct.RowIndex, -1, "Random error for development"))
@@ -249,6 +258,41 @@ func loadAndCreateProducts(
 				WithMeta("variant_code", rowProduct.VariantCode)
 			_errs = append(_errs, err)
 			continue
+		}
+		if rowProduct.CostPrice > 0 {
+			updatePriceCmd := &apishop.UpdateInventoryVariantCostPriceEndpoint{
+				UpdateInventoryVariantCostPriceRequest: &pbshop.UpdateInventoryVariantCostPriceRequest{
+					VariantId: createVariantCmd.Result.Id,
+					CostPrice: rowProduct.CostPrice,
+				},
+			}
+			updatePriceCmd.Context.Shop = shop
+			if err := apishop.InventoryServiceImpl.UpdateInventoryVariantCostPrice(ctx, updatePriceCmd); err != nil {
+				err = imcsv.CellErrorWithCode(idx.indexer, cm.Unknown, err, rowProduct.RowIndex, -1,
+					`Không thể cập nhập giá cho phiên bản "%v" của sản phẩm "%v": %v`,
+					variantReq.Name, rowProduct.GetProductNameOrCode(), err).
+					WithMeta("product_code", rowProduct.ProductCode).
+					WithMeta("variant_code", rowProduct.VariantCode)
+				_errs = append(_errs, err)
+			}
+		}
+
+		if rowProduct.QuantityAvail != 0 {
+			createStocktakeCmd.TotalQuantity += rowProduct.QuantityAvail
+			// Prepare create stocktake
+			var stocktakeLine = &pbshop.StocktakeLine{
+				ProductId:   createVariantCmd.CreateVariantRequest.ProductId,
+				ProductName: rowProduct.ProductName,
+				VariantName: createVariantCmd.CreateVariantRequest.Name,
+				VariantId:   createVariantCmd.Result.Id,
+				OldQuantity: 0,
+				NewQuantity: rowProduct.QuantityAvail,
+				Code:        createVariantCmd.CreateVariantRequest.Code,
+				ImageUrl:    createVariantCmd.CreateVariantRequest.ImageUrls[0],
+				CostPrice:   rowProduct.CostPrice,
+				Attributes:  createVariantCmd.CreateVariantRequest.Attributes,
+			}
+			stocktakeLines = append(stocktakeLines, stocktakeLine)
 		}
 
 		// Fake the product, so subsequent create variant requests reuse the created product
@@ -299,6 +343,17 @@ func loadAndCreateProducts(
 		// 	}
 		// }
 	}
+	createStocktakeCmd.Lines = stocktakeLines
+	stocktakeId = 0
+	if len(stocktakeLines) > 0 {
+		err := apishop.StocktakeServiceImpl.CreateStocktake(ctx, createStocktakeCmd)
+		if err != nil {
+			_errs = append(_errs, err)
+		} else {
+			stocktakeId = createStocktakeCmd.Result.Id
+		}
+	}
+
 	return
 }
 

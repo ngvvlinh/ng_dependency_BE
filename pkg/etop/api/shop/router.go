@@ -11,9 +11,12 @@ import (
 // hack for imcsv
 // TODO: remove this
 var ProductServiceImpl *ProductService
+var StocktakeServiceImpl *StocktakeService
+var InventoryServiceImpl *InventoryService
 
 func NewShopServer(m httprpc.Muxer) {
 	ProductServiceImpl = productService
+	StocktakeServiceImpl = stocktakeService
 	servers := []httprpc.Server{
 		service.NewMiscServiceServer(WrapMiscService(miscService)),
 		service.NewBrandServiceServer(WrapBrandService(brandService)),
