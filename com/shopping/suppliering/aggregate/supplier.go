@@ -110,9 +110,9 @@ func (a *SupplierAggregate) UpdateSupplier(
 				return nil, cm.Error(cm.InvalidArgument, "Vui lòng nhập đúng định dạng số điện thoại", nil)
 			}
 			args.Phone.String = phone.String()
-			supplier, err = a.store(ctx).Phone(args.Phone.String).ShopID(args.ShopID).GetSupplier()
-			if err == nil && args.ID != supplier.ID {
-				return nil, cm.Errorf(cm.InvalidArgument, nil, "số điện thoại %v đã tồn tại", supplier.Phone)
+			supplierByPhone, err := a.store(ctx).Phone(args.Phone.String).ShopID(args.ShopID).GetSupplier()
+			if err == nil && args.ID != supplierByPhone.ID {
+				return nil, cm.Errorf(cm.InvalidArgument, nil, "số điện thoại %v đã tồn tại", supplierByPhone.Phone)
 			}
 		}
 	}
@@ -122,9 +122,9 @@ func (a *SupplierAggregate) UpdateSupplier(
 			return nil, cm.Error(cm.InvalidArgument, "Vui lòng nhập đúng định dạng email", nil)
 		}
 		args.Email.String = email.String()
-		supplier, err = a.store(ctx).Email(args.Email.String).ShopID(args.ShopID).GetSupplier()
-		if err == nil && args.ID != supplier.ID {
-			return nil, cm.Errorf(cm.InvalidArgument, nil, "Nhà cung cấp với email: %v đã tồn tại", supplier.Email)
+		supplierByEmail, err := a.store(ctx).Email(args.Email.String).ShopID(args.ShopID).GetSupplier()
+		if err == nil && args.ID != supplierByEmail.ID {
+			return nil, cm.Errorf(cm.InvalidArgument, nil, "Nhà cung cấp với email: %v đã tồn tại", supplierByEmail.Email)
 		}
 	}
 	if err = scheme.Convert(args, supplier); err != nil {
