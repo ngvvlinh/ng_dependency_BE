@@ -31,6 +31,7 @@ require (
 	github.com/jteeuwen/go-bindata v3.0.7+incompatible
 	github.com/julienschmidt/httprouter v1.3.0
 	github.com/k0kubun/pp v3.0.1+incompatible
+	github.com/kisielk/gotool v1.0.0 // indirect
 	github.com/lib/pq v1.2.0
 	github.com/pkg/errors v0.8.1
 	github.com/pquerna/ffjson v0.0.0-20190930134022-aa0246cd15f7
@@ -47,8 +48,6 @@ require (
 	golang.org/x/sync v0.0.0-20190911185100-cd5d95a43a6e
 	golang.org/x/text v0.3.2
 	golang.org/x/tools v0.0.0-20190821162956-65e3620a7ae7
-	google.golang.org/genproto v0.0.0-20191007204434-a023cd5227bd // indirect
-	google.golang.org/grpc v1.24.0 // indirect
 	gopkg.in/jcmturner/goidentity.v3 v3.0.0 // indirect
 	gopkg.in/resty.v1 v1.12.0
 	gopkg.in/yaml.v2 v2.2.4

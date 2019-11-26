@@ -133,7 +133,7 @@ func (s *CrmService) SendNotification(ctx context.Context, r *SendNotificationEn
 		EntityID:         r.EntityId,
 		Entity:           notimodel.NotiEntity(r.Entity.ToModel()),
 		SendNotification: true,
-		MetaData:         r.MetaData.GetData(),
+		MetaData:         r.MetaData.Data,
 	}
 	_, _, err := sqlstore.CreateNotifications(ctx, cmd)
 	if err != nil {

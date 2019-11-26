@@ -1,7 +1,7 @@
 package sadmin
 
 func (m *SAdminCreateUserRequest) Censor() {
-	if m.GetInfo().Password != "" {
+	if m.Info != nil && m.Info.Password != "" {
 		m.Info.Password = "..."
 	}
 }

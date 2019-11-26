@@ -1,25 +1,8 @@
-// source: etop/etc/credit_type/type.proto
-
 package credit_type
 
 import (
-	fmt "fmt"
-	math "math"
-
-	_ "github.com/gogo/protobuf/gogoproto"
-	proto "github.com/golang/protobuf/proto"
+	"etop.vn/common/jsonx"
 )
-
-// Reference imports to suppress errors if they are not otherwise used.
-var _ = proto.Marshal
-var _ = fmt.Errorf
-var _ = math.Inf
-
-// This is a compile-time assertion to ensure that this generated file
-// is compatible with the proto package it is being compiled against.
-// A compilation error at this line likely means your copy of the
-// proto package needs to be updated.
-const _ = proto.ProtoPackageIsVersion3 // please upgrade the proto package
 
 type CreditType int32
 
@@ -42,36 +25,14 @@ func (x CreditType) Enum() *CreditType {
 }
 
 func (x CreditType) String() string {
-	return proto.EnumName(CreditType_name, int32(x))
+	return jsonx.EnumName(CreditType_name, int32(x))
 }
 
 func (x *CreditType) UnmarshalJSON(data []byte) error {
-	value, err := proto.UnmarshalJSONEnum(CreditType_value, data, "CreditType")
+	value, err := jsonx.UnmarshalJSONEnum(CreditType_value, data, "CreditType")
 	if err != nil {
 		return err
 	}
 	*x = CreditType(value)
 	return nil
-}
-
-func (CreditType) EnumDescriptor() ([]byte, []int) {
-	return fileDescriptor_cb53ff62c8883727, []int{0}
-}
-
-func init() {
-	proto.RegisterEnum("credit_type.CreditType", CreditType_name, CreditType_value)
-}
-
-func init() { proto.RegisterFile("etop/etc/credit_type/type.proto", fileDescriptor_cb53ff62c8883727) }
-
-var fileDescriptor_cb53ff62c8883727 = []byte{
-	// 116 bytes of a gzipped FileDescriptorProto
-	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe2, 0x92, 0x4f, 0x2d, 0xc9, 0x2f,
-	0xd0, 0x4f, 0x2d, 0x49, 0xd6, 0x4f, 0x2e, 0x4a, 0x4d, 0xc9, 0x2c, 0x89, 0x2f, 0xa9, 0x2c, 0x48,
-	0xd5, 0x07, 0x11, 0x7a, 0x05, 0x45, 0xf9, 0x25, 0xf9, 0x42, 0xdc, 0x48, 0xe2, 0x52, 0x22, 0xe9,
-	0xf9, 0xe9, 0xf9, 0x60, 0x71, 0x7d, 0x10, 0x0b, 0xa2, 0x44, 0x4b, 0x8c, 0x8b, 0xcb, 0x19, 0xac,
-	0x28, 0xa4, 0xb2, 0x20, 0x55, 0x88, 0x83, 0x8b, 0xa5, 0x38, 0x23, 0xbf, 0x40, 0x80, 0xd1, 0x49,
-	0x73, 0xc6, 0x63, 0x39, 0x86, 0x28, 0x65, 0x90, 0x0d, 0x7a, 0x65, 0x79, 0xfa, 0x89, 0x05, 0x99,
-	0xfa, 0x05, 0x49, 0xfa, 0xd8, 0x2c, 0x04, 0x04, 0x00, 0x00, 0xff, 0xff, 0xae, 0x21, 0x3c, 0xa4,
-	0x87, 0x00, 0x00, 0x00,
 }

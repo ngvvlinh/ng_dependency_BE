@@ -11,7 +11,6 @@ import (
 	"github.com/pkg/errors"
 	"github.com/twitchtv/twirp"
 	"go.uber.org/zap/zapcore"
-	"google.golang.org/grpc/codes"
 
 	"etop.vn/common/jsonx"
 	"etop.vn/common/xerrors/logline"
@@ -55,23 +54,23 @@ type Code int
 
 // Error constants from twirp
 const (
-	Canceled           = Code(codes.Canceled)
-	Unknown            = Code(codes.Unknown)
-	InvalidArgument    = Code(codes.InvalidArgument)
-	DeadlineExceeded   = Code(codes.DeadlineExceeded)
-	NotFound           = Code(codes.NotFound)
-	AlreadyExists      = Code(codes.AlreadyExists)
-	PermissionDenied   = Code(codes.PermissionDenied)
-	Unauthenticated    = Code(codes.Unauthenticated)
-	ResourceExhausted  = Code(codes.ResourceExhausted)
-	FailedPrecondition = Code(codes.FailedPrecondition)
-	Aborted            = Code(codes.Aborted)
-	OutOfRange         = Code(codes.OutOfRange)
-	Unimplemented      = Code(codes.Unimplemented)
-	Internal           = Code(codes.Internal)
-	Unavailable        = Code(codes.Unavailable)
-	DataLoss           = Code(codes.DataLoss)
-	NoError            = Code(codes.OK)
+	NoError            = Code(0)
+	Canceled           = Code(1)
+	Unknown            = Code(2)
+	InvalidArgument    = Code(3)
+	DeadlineExceeded   = Code(4)
+	NotFound           = Code(5)
+	AlreadyExists      = Code(6)
+	PermissionDenied   = Code(7)
+	ResourceExhausted  = Code(8)
+	FailedPrecondition = Code(9)
+	Aborted            = Code(10)
+	OutOfRange         = Code(11)
+	Unimplemented      = Code(12)
+	Internal           = Code(13)
+	Unavailable        = Code(14)
+	DataLoss           = Code(15)
+	Unauthenticated    = Code(16)
 
 	RuntimePanic         = Code(100)
 	WrongPassword        = Code(1005)
@@ -101,7 +100,7 @@ type CustomCode struct {
 }
 
 var (
-	mapCodes       [codes.Unauthenticated + 1]string
+	mapCodes       [Unauthenticated + 1]string
 	mapCustomCodes map[Code]*CustomCode
 )
 
