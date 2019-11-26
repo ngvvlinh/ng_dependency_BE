@@ -33,6 +33,9 @@ type PurchaseOrder struct {
 	CreatedAt       time.Time `sq:"create"`
 	UpdatedAt       time.Time `sq:"update"`
 	DeletedAt       time.Time
+
+	SupplierFullNameNorm string
+	SupplierPhoneNorm    string
 }
 
 type PurchaseOrderLine struct {

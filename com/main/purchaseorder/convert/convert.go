@@ -10,6 +10,7 @@ import (
 	"etop.vn/backend/com/main/purchaseorder/model"
 	_ "etop.vn/backend/com/main/purchaseorder/model"
 	cm "etop.vn/backend/pkg/common"
+	"etop.vn/backend/pkg/common/validate"
 	"etop.vn/common/l"
 )
 
@@ -57,5 +58,9 @@ func updatePurchaseOrder(args *purchaseorder.UpdatePurchaseOrderArgs, out *purch
 
 func purchaseOrderDB(args *purchaseorder.PurchaseOrder, out *model.PurchaseOrder) {
 	convert_purchaseorder_PurchaseOrder_purchaseordermodel_PurchaseOrder(args, out)
+	if out.Supplier != nil {
+		out.SupplierFullNameNorm = validate.NormalizeSearch(out.Supplier.FullName)
+		out.SupplierPhoneNorm = validate.NormalizeSearchPhone(out.Supplier.Phone)
+	}
 	out.VariantIDs = args.GetVariantIDs()
 }

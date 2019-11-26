@@ -30,7 +30,7 @@ func sqlgenPurchaseOrder(_ *PurchaseOrder) bool { return true }
 type PurchaseOrders []*PurchaseOrder
 
 const __sqlPurchaseOrder_Table = "purchase_order"
-const __sqlPurchaseOrder_ListCols = "\"id\",\"shop_id\",\"supplier_id\",\"supplier\",\"basket_value\",\"total_discount\",\"total_amount\",\"code\",\"code_norm\",\"note\",\"status\",\"variant_ids\",\"lines\",\"created_by\",\"cancelled_reason\",\"confirmed_at\",\"cancelled_at\",\"created_at\",\"updated_at\",\"deleted_at\""
+const __sqlPurchaseOrder_ListCols = "\"id\",\"shop_id\",\"supplier_id\",\"supplier\",\"basket_value\",\"total_discount\",\"total_amount\",\"code\",\"code_norm\",\"note\",\"status\",\"variant_ids\",\"lines\",\"created_by\",\"cancelled_reason\",\"confirmed_at\",\"cancelled_at\",\"created_at\",\"updated_at\",\"deleted_at\",\"supplier_full_name_norm\",\"supplier_phone_norm\""
 const __sqlPurchaseOrder_Insert = "INSERT INTO \"purchase_order\" (" + __sqlPurchaseOrder_ListCols + ") VALUES"
 const __sqlPurchaseOrder_Select = "SELECT " + __sqlPurchaseOrder_ListCols + " FROM \"purchase_order\""
 const __sqlPurchaseOrder_Select_history = "SELECT " + __sqlPurchaseOrder_ListCols + " FROM history.\"purchase_order\""
@@ -74,6 +74,8 @@ func (m *PurchaseOrder) SQLArgs(opts core.Opts, create bool) []interface{} {
 		core.Now(m.CreatedAt, now, create),
 		core.Now(m.UpdatedAt, now, true),
 		core.Time(m.DeletedAt),
+		core.String(m.SupplierFullNameNorm),
+		core.String(m.SupplierPhoneNorm),
 	}
 }
 
@@ -99,6 +101,8 @@ func (m *PurchaseOrder) SQLScanArgs(opts core.Opts) []interface{} {
 		(*core.Time)(&m.CreatedAt),
 		(*core.Time)(&m.UpdatedAt),
 		(*core.Time)(&m.DeletedAt),
+		(*core.String)(&m.SupplierFullNameNorm),
+		(*core.String)(&m.SupplierPhoneNorm),
 	}
 }
 
@@ -136,7 +140,7 @@ func (_ *PurchaseOrders) SQLSelect(w SQLWriter) error {
 func (m *PurchaseOrder) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlPurchaseOrder_Insert)
 	w.WriteRawString(" (")
-	w.WriteMarkers(20)
+	w.WriteMarkers(22)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), true))
 	return nil
@@ -146,7 +150,7 @@ func (ms PurchaseOrders) SQLInsert(w SQLWriter) error {
 	w.WriteQueryString(__sqlPurchaseOrder_Insert)
 	w.WriteRawString(" (")
 	for i := 0; i < len(ms); i++ {
-		w.WriteMarkers(20)
+		w.WriteMarkers(22)
 		w.WriteArgs(ms[i].SQLArgs(w.Opts(), true))
 		w.WriteRawString("),(")
 	}
@@ -167,7 +171,7 @@ func (m *PurchaseOrder) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(m.ID)
+		w.WriteArg(int64(m.ID))
 	}
 	if m.ShopID != 0 {
 		flag = true
@@ -175,7 +179,7 @@ func (m *PurchaseOrder) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(m.ShopID)
+		w.WriteArg(int64(m.ShopID))
 	}
 	if m.SupplierID != 0 {
 		flag = true
@@ -183,7 +187,7 @@ func (m *PurchaseOrder) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(m.SupplierID)
+		w.WriteArg(int64(m.SupplierID))
 	}
 	if m.Supplier != nil {
 		flag = true
@@ -271,7 +275,7 @@ func (m *PurchaseOrder) SQLUpdate(w SQLWriter) error {
 		w.WriteByte('=')
 		w.WriteMarker()
 		w.WriteByte(',')
-		w.WriteArg(m.CreatedBy)
+		w.WriteArg(int64(m.CreatedBy))
 	}
 	if m.CancelledReason != "" {
 		flag = true
@@ -321,6 +325,22 @@ func (m *PurchaseOrder) SQLUpdate(w SQLWriter) error {
 		w.WriteByte(',')
 		w.WriteArg(m.DeletedAt)
 	}
+	if m.SupplierFullNameNorm != "" {
+		flag = true
+		w.WriteName("supplier_full_name_norm")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.SupplierFullNameNorm)
+	}
+	if m.SupplierPhoneNorm != "" {
+		flag = true
+		w.WriteName("supplier_phone_norm")
+		w.WriteByte('=')
+		w.WriteMarker()
+		w.WriteByte(',')
+		w.WriteArg(m.SupplierPhoneNorm)
+	}
 	if !flag {
 		return core.ErrNoColumn
 	}
@@ -331,7 +351,7 @@ func (m *PurchaseOrder) SQLUpdate(w SQLWriter) error {
 func (m *PurchaseOrder) SQLUpdateAll(w SQLWriter) error {
 	w.WriteQueryString(__sqlPurchaseOrder_UpdateAll)
 	w.WriteRawString(" = (")
-	w.WriteMarkers(20)
+	w.WriteMarkers(22)
 	w.WriteByte(')')
 	w.WriteArgs(m.SQLArgs(w.Opts(), false))
 	return nil
@@ -377,17 +397,23 @@ func (m PurchaseOrderHistory) CancelledAt() core.Interface { return core.Interfa
 func (m PurchaseOrderHistory) CreatedAt() core.Interface   { return core.Interface{m["created_at"]} }
 func (m PurchaseOrderHistory) UpdatedAt() core.Interface   { return core.Interface{m["updated_at"]} }
 func (m PurchaseOrderHistory) DeletedAt() core.Interface   { return core.Interface{m["deleted_at"]} }
+func (m PurchaseOrderHistory) SupplierFullNameNorm() core.Interface {
+	return core.Interface{m["supplier_full_name_norm"]}
+}
+func (m PurchaseOrderHistory) SupplierPhoneNorm() core.Interface {
+	return core.Interface{m["supplier_phone_norm"]}
+}
 
 func (m *PurchaseOrderHistory) SQLScan(opts core.Opts, row *sql.Row) error {
-	data := make([]interface{}, 20)
-	args := make([]interface{}, 20)
-	for i := 0; i < 20; i++ {
+	data := make([]interface{}, 22)
+	args := make([]interface{}, 22)
+	for i := 0; i < 22; i++ {
 		args[i] = &data[i]
 	}
 	if err := row.Scan(args...); err != nil {
 		return err
 	}
-	res := make(PurchaseOrderHistory, 20)
+	res := make(PurchaseOrderHistory, 22)
 	res["id"] = data[0]
 	res["shop_id"] = data[1]
 	res["supplier_id"] = data[2]
@@ -408,14 +434,16 @@ func (m *PurchaseOrderHistory) SQLScan(opts core.Opts, row *sql.Row) error {
 	res["created_at"] = data[17]
 	res["updated_at"] = data[18]
 	res["deleted_at"] = data[19]
+	res["supplier_full_name_norm"] = data[20]
+	res["supplier_phone_norm"] = data[21]
 	*m = res
 	return nil
 }
 
 func (ms *PurchaseOrderHistories) SQLScan(opts core.Opts, rows *sql.Rows) error {
-	data := make([]interface{}, 20)
-	args := make([]interface{}, 20)
-	for i := 0; i < 20; i++ {
+	data := make([]interface{}, 22)
+	args := make([]interface{}, 22)
+	for i := 0; i < 22; i++ {
 		args[i] = &data[i]
 	}
 	res := make(PurchaseOrderHistories, 0, 128)
@@ -444,6 +472,8 @@ func (ms *PurchaseOrderHistories) SQLScan(opts core.Opts, rows *sql.Rows) error 
 		m["created_at"] = data[17]
 		m["updated_at"] = data[18]
 		m["deleted_at"] = data[19]
+		m["supplier_full_name_norm"] = data[20]
+		m["supplier_phone_norm"] = data[21]
 		res = append(res, m)
 	}
 	if err := rows.Err(); err != nil {

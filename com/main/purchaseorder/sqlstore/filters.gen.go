@@ -223,7 +223,7 @@ func (ft *PurchaseOrderFilters) ByCreatedBy(CreatedBy dot.ID) *sq.ColumnFilter {
 	}
 }
 
-func (ft *PurchaseOrderFilters) ByCreatedByPtr(CreatedBy *int64) *sq.ColumnFilterPtr {
+func (ft *PurchaseOrderFilters) ByCreatedByPtr(CreatedBy *dot.ID) *sq.ColumnFilterPtr {
 	return &sq.ColumnFilterPtr{
 		Prefix: &ft.prefix,
 		Column: "created_by",
@@ -344,5 +344,43 @@ func (ft *PurchaseOrderFilters) ByDeletedAtPtr(DeletedAt *time.Time) *sq.ColumnF
 		Value:  DeletedAt,
 		IsNil:  DeletedAt == nil,
 		IsZero: DeletedAt != nil && (*DeletedAt).IsZero(),
+	}
+}
+
+func (ft *PurchaseOrderFilters) BySupplierFullNameNorm(SupplierFullNameNorm string) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "supplier_full_name_norm",
+		Value:  SupplierFullNameNorm,
+		IsNil:  SupplierFullNameNorm == "",
+	}
+}
+
+func (ft *PurchaseOrderFilters) BySupplierFullNameNormPtr(SupplierFullNameNorm *string) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "supplier_full_name_norm",
+		Value:  SupplierFullNameNorm,
+		IsNil:  SupplierFullNameNorm == nil,
+		IsZero: SupplierFullNameNorm != nil && (*SupplierFullNameNorm) == "",
+	}
+}
+
+func (ft *PurchaseOrderFilters) BySupplierPhoneNorm(SupplierPhoneNorm string) *sq.ColumnFilter {
+	return &sq.ColumnFilter{
+		Prefix: &ft.prefix,
+		Column: "supplier_phone_norm",
+		Value:  SupplierPhoneNorm,
+		IsNil:  SupplierPhoneNorm == "",
+	}
+}
+
+func (ft *PurchaseOrderFilters) BySupplierPhoneNormPtr(SupplierPhoneNorm *string) *sq.ColumnFilterPtr {
+	return &sq.ColumnFilterPtr{
+		Prefix: &ft.prefix,
+		Column: "supplier_phone_norm",
+		Value:  SupplierPhoneNorm,
+		IsNil:  SupplierPhoneNorm == nil,
+		IsZero: SupplierPhoneNorm != nil && (*SupplierPhoneNorm) == "",
 	}
 }
