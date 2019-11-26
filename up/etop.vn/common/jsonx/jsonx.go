@@ -93,6 +93,7 @@ func Marshal(v interface{}) ([]byte, error) {
 	if enabledMode > 0 {
 		mustValidate(v, marshal)
 	}
+	workaroundFillSlice(v)
 	return json.Marshal(v)
 }
 
@@ -117,6 +118,7 @@ func MarshalTo(w io.Writer, v interface{}) error {
 	if enabledMode > 0 {
 		mustValidate(v, marshal)
 	}
+	workaroundFillSlice(v)
 	return json.NewEncoder(w).Encode(v)
 }
 
@@ -333,4 +335,52 @@ func indirectType(t reflect.Type) reflect.Type {
 		t = t.Elem()
 	}
 	return t
+}
+
+func workaroundFillSlice(v interface{}) {
+	val := reflect.ValueOf(v)
+	workaroundFillSlice0(val)
+}
+
+func workaroundFillSlice0(val reflect.Value) {
+	if val.Kind() == reflect.Ptr {
+		if val.IsNil() {
+			return
+		}
+		val = val.Elem()
+	}
+	if val.Kind() != reflect.Struct {
+		return
+	}
+	typ := val.Type()
+	for i, n := 0, val.NumField(); i < n; i++ {
+		field := reflect.Indirect(val.Field(i))
+		fieldType := typ.Field(i)
+		if fieldType.Tag == "" {
+			continue
+		}
+
+		switch field.Kind() {
+		case reflect.Struct:
+			workaroundFillSlice0(field)
+
+		case reflect.Slice:
+			if field.IsNil() {
+				// workaround: set it to empty slice ([]Type)
+				// TODO: remove workaround
+				emptySlice := reflect.MakeSlice(field.Type(), 0, 0)
+				field.Set(emptySlice)
+				continue
+			}
+			elemType := fieldType.Type.Elem()
+			if elemType.Kind() == reflect.Ptr {
+				elemType = elemType.Elem()
+			}
+			if elemType.Kind() == reflect.Struct && elemType.Name() != "Time" {
+				for i, n := 0, field.Len(); i < n; i++ {
+					workaroundFillSlice0(field.Index(i))
+				}
+			}
+		}
+	}
 }
