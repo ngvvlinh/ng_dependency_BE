@@ -83,6 +83,13 @@ func shopCustomerDB(args *customering.ShopCustomer, out *model.ShopCustomer) {
 	out.FullNameNorm = validate.NormalizeSearch(args.FullName)
 }
 
+func shopCustomer(args *model.ShopCustomer, out *customering.ShopCustomer) {
+	convert_customeringmodel_ShopCustomer_customering_ShopCustomer(args, out)
+	if out.Type == customering.CustomerTypeIndependent {
+		out.FullName = "Khách lẻ"
+	}
+}
+
 func ShopTraderAddress(args *model.ShopTraderAddress, out *addressing.ShopTraderAddress) {
 	convert_customeringmodel_ShopTraderAddress_addressing_ShopTraderAddress(args, out)
 	out.Coordinates = orderconvert.Coordinates(args.Coordinates)

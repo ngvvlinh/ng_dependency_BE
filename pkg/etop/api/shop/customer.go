@@ -48,11 +48,9 @@ func (s *CustomerService) CreateCustomer(ctx context.Context, r *CreateCustomerE
 		Phone:    r.Phone,
 		Email:    r.Email,
 	}
-	err := customerAggr.Dispatch(ctx, cmd)
-	if err != nil {
+	if err := customerAggr.Dispatch(ctx, cmd); err != nil {
 		return err
 	}
-
 	r.Result = convertpb.PbCustomer(cmd.Result)
 	return nil
 }

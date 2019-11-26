@@ -21,6 +21,7 @@ Custom conversions:
     ShopTraderAddress          // in use
     ShopTraderAddressDB        // in use
     UpdateShopTraderAddress    // in use
+    shopCustomer               // in use
     shopCustomerDB             // in use
     updateShopCustomer         // in use
 
@@ -290,7 +291,7 @@ func Convert_customeringmodel_ShopCustomer_customering_ShopCustomer(arg *custome
 	if out == nil {
 		out = &customering.ShopCustomer{}
 	}
-	convert_customeringmodel_ShopCustomer_customering_ShopCustomer(arg, out)
+	shopCustomer(arg, out)
 	return out
 }
 

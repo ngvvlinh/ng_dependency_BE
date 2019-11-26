@@ -67,7 +67,7 @@ func (a *CustomerAggregate) CreateCustomer(
 		}
 		ct := &model.ShopCustomer{
 			ID:       cm.NewID(),
-			FullName: "Khach Le",
+			FullName: "Khách Lẻ",
 			ShopID:   args.ShopID,
 			Type:     customering.CustomerTypeIndependent,
 		}
